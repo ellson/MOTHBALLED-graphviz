@@ -216,14 +216,14 @@ xdot_begin_graph (graph_t *g, int s_arrows, int e_arrows)
 
     xd = GNEW(xdot_state_t);
 
-    if (GD_has_labels(g) & GRAPH_LABEL)
-	xd->g_l_draw = safe_dcl(g, g, "_ldraw_", "", agraphattr);
-    else
-	xd->g_l_draw = NULL;
     if (GD_n_cluster(g))
 	xd->g_draw = safe_dcl(g, g, "_draw_", "", agraphattr);
     else
 	xd->g_draw = NULL;
+    if (GD_has_labels(g) & GRAPH_LABEL)
+	xd->g_l_draw = safe_dcl(g, g, "_ldraw_", "", agraphattr);
+    else
+	xd->g_l_draw = NULL;
 
     xd->n_draw = safe_dcl(g, g->proto->n, "_draw_", "", agnodeattr);
     xd->n_l_draw = safe_dcl(g, g->proto->n, "_ldraw_", "", agnodeattr);
