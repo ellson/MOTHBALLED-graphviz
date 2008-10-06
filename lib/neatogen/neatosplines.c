@@ -961,11 +961,26 @@ void spline_edges0(graph_t * g)
     spline_edges1(g, et);
 }
 
+/* shiftClusters:
+ */
+static void
+shiftClusters (graph_t * g, pointf offset)
+{
+    int i;
+
+    for (i = 1; i <= GD_n_cluster(g); i++) {
+	shiftClusters (GD_clust(g)[i], offset);
+    }
+
+    GD_bb(g).UR.x -= offset.x;
+    GD_bb(g).UR.y -= offset.y;
+    GD_bb(g).LL.x -= offset.x;
+    GD_bb(g).LL.y -= offset.y;
+}
+
 /* spline_edges:
  * Compute bounding box, translate graph to origin,
- * then construct all edges. We assume the graph
- * has no clusters, and only nodes have been
- * positioned.
+ * then construct all edges.
  */
 void spline_edges(graph_t * g)
 {
@@ -979,10 +994,8 @@ void spline_edges(graph_t * g)
 	ND_pos(n)[0] -= offset.x;
 	ND_pos(n)[1] -= offset.y;
     }
-    GD_bb(g).UR.x -= GD_bb(g).LL.x;
-    GD_bb(g).UR.y -= GD_bb(g).LL.y;
-    GD_bb(g).LL.x = 0;
-    GD_bb(g).LL.y = 0;
+	
+    shiftClusters (g, GD_bb(g).LL);
     spline_edges0(g);
 }
 
