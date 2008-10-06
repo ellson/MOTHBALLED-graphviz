@@ -21,7 +21,7 @@
 extern "C" {
 #endif
 
-typedef int BIT_VTYPE;
+typedef int BIT_VTYPE_t;
 
 typedef enum {
     VTYPE_rgba = 0,
@@ -53,8 +53,8 @@ typedef struct inkpot_values_s {
 } inkpot_values_t;
 
 typedef struct inkpot_value_s {
-    IDX_VALUES index;	 /* write by set,  read by get, write by first, read/write by next */
-    BIT_VTYPE  vtype;	 /*  read by set, write by get,  read by first,       read by next */
+    IDX_VALUES_t index;	 /* write by set,  read by get, write by first, read/write by next */
+    BIT_VTYPE_t  vtype;	 /*  read by set, write by get,  read by first,       read by next */
     unsigned short value[4];    /*  read by set, write by get, write by first,      write by next */
 } inkpot_value_t;
 
