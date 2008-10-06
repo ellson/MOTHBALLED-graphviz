@@ -4,17 +4,17 @@
 pdfdir = $(pkgdatadir)/doc/pdf
 pkgconfigdir = $(libdir)/pkgconfig
 
-#pkginclude_HEADERS = inkpot.h
-#lib_LTLIBRARIES = libinkpot.la
-#pkgconfig_DATA = libinkpot.pc
-#bin_PROGRAMS = inkpot
+pkginclude_HEADERS = inkpot.h
+lib_LTLIBRARIES = libinkpot.la
+pkgconfig_DATA = libinkpot.pc
+bin_PROGRAMS = inkpot
 
-#noinst_HEADERS = inkpot_scheme.h inkpot_xlate.h inkpot_value.h \
-#	inkpot_define.h inkpot_value_table.h inkpot_scheme_table.h
-#noinst_LTLIBRARIES = libinkpot_C.la
+noinst_HEADERS = inkpot_scheme.h inkpot_xlate.h inkpot_value.h \
+	inkpot_lib_define.h inkpot_lib_value.h inkpot_lib_scheme.h
+noinst_LTLIBRARIES = libinkpot_C.la
 
-#man_MANS = inkpot.3 inkpot.1
-#pdf_DATA = inkpot.3.pdf inkpot.1.pdf
+man_MANS = inkpot.3 inkpot.1
+pdf_DATA = inkpot.3.pdf inkpot.1.pdf
 
 inkpot_SOURCES = inkpot.c
 inkpot_LDADD = $(builddir)/libinkpot.la
@@ -26,11 +26,11 @@ libinkpot_la_SOURCES = $(libinkpot_C_la_SOURCES)
 libinkpot_la_LIBADD = $(libinkpot_C_la_LIBADD)
 libinkpot_la_LDFLAGS = -version-info $(VERSION_INFO) -no-undefined
 
-inkpot_value_table.h: $(builddir)/inkpot_define.h
+inkpot_lib_value.h: $(builddir)/inkpot_lib_define.h
 
-inkpot_scheme_table.h: $(builddir)/inkpot_define.h
+inkpot_lib_scheme.h: $(builddir)/inkpot_lib_define.h
 
-inkpot_define.h: inkpot_lib.tcl inkpot_lib_procs.tcl \
+inkpot_lib_define.h: inkpot_lib.tcl inkpot_lib_procs.tcl \
 			$(builddir)/inkpot_lib_tk.dat \
        			$(builddir)/inkpot_lib_svg.dat \
 			$(builddir)/inkpot_lib_x11.dat \
@@ -62,7 +62,7 @@ inkpot.3.pdf: inkpot.3
 CLEANFILES = inkpot_lib_*.dat
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old *.tcl data/* \
-	inkpot_define.h inkpot_value_table.h inkpot_scheme_table.h
+	inkpot_lib_define.h inkpot_lib_value.h inkpot_lib_scheme.h
 
 DISTCLEANFILES = $(pdf_DATA) \
-	inkpot_define.h inkpot_value_table.h inkpot_scheme_table.h
+	inkpot_lib_define.h inkpot_lib_value.h inkpot_lib_scheme.h
