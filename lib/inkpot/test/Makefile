@@ -6,12 +6,14 @@ inkpot: inkpot.o $(LIBINKPOT)
 
 inkpot.o: inkpot.c inkpot.h
 
-inkpot_scheme.o: inkpot_scheme.c inkpot_scheme.h inkpot.h inkpot_define.h \
-	inkpot_value.h inkpot_xlate.h inkpot_scheme_table.h
+inkpot_scheme.o: inkpot_scheme.c inkpot_scheme.h inkpot.h \
+	inkpot_lib_define.h inkpot_lib_scheme.h \
+	inkpot_value.h inkpot_xlate.h
 
 inkpot_xlate.o: inkpot_xlate.c inkpot_xlate.h inkpot.h
 
-inkpot_value.o: inkpot_value.c inkpot_value.h inkpot.h inkpot_value_table.h
+inkpot_value.o: inkpot_value.c inkpot_value.h inkpot.h \
+	inkpot_lib_define.h inkpot_value_table.h
 
 inkpot.c:
 	ln -s ../inkpot.c
