@@ -190,9 +190,7 @@ foreach {icolor_range_schemes} [lsort -dictionary [array names ALL_RANGES_coded]
     incr SZT_RANGES
     incr cnt
 }
-if {! [string equal $last_icolor $icolor]} {
-    tab_end_block $f [list $icolor $schemes $cnt]
-}
+tab_end_block $f [list $icolor $schemes $cnt]
 tab_end $f "};\n"
 
 
@@ -212,32 +210,9 @@ foreach {icolor_range_schemes} [lsort -dictionary [array names ALL_RANGES_coded]
     set ALL_ICOLORS_coded($color) $SZT_ICOLORS
     incr SZT_ICOLORS
 }
-if {! [string equal $last_icolor $icolor]} {tab_end_block $f [list $icolor $schemes]}
+tab_end_block $f [list $icolor $schemes]
 tab_end $f "};\n"
 		    
-
-# generate TAB_SCHEMES_INDEX
-set SZT_SCHEMES_INDEX 0
-tab_begin $f "inkpot_scheme_index_t TAB_SCHEMES_INDEX\[SZT_SCHEMES_INDEX\] = {"
-foreach {scheme_icolor} [lsort [array names ALL_INDEX_ICOLORS_coded]] {
-    foreach {scheme icolor} $scheme_icolor {break}
-
-    tab_begin_block $f $SZT_SCHEMES_INDEX
-    set ALL_INDEX_SCHEMES_coded($scheme) $SZT_ICOLORS
-
-    foreach {icolors_idx} $ALL_INDEX_ICOLORS_coded($scheme_icolor) {
-        tab_elem $f $icolors_idx,
-        incr SZT_SCHEMES_INDEX
-    }
-
-    if {$range} {
-        tab_end_block $f $scheme/$icolor$range
-    } {
-        tab_end_block $f $scheme/$icolor
-    }
-}
-tab_end $f "};\n"
-
 
 # generate TAB_SCHEMES
 set SZT_SCHEMES 0
@@ -256,17 +231,30 @@ foreach {scheme} [lsort -ascii [array names ALL_SCHEMES]] {
 tab_end $f "};\n"
 
 
+if {0} {
+foreach {m2} [lsort -dictionary [mapm2 CV]] {
+    foreach {value schemes} $m2 {break}
+    foreach {m1} [map2m1 CV $value] {
+        lappend ALL_ALIASES(m1) $m2
+    }
+}
+}
+
+
 # generate TAB_ALTS
 set SZT_ALTS 0
 tab_begin $f "inkpot_name_t TAB_ALTS\[SZT_ALTS\] = {"
+#foreach {m1} [lsort -ascii [array names ALL_ALIASES]] {
+#    foreach {color schemes} $m1 {break}
 foreach {r_set} [map3 CV] {
     set scheme_bits 0
-    foreach {scheme} $r_set {
+    foreach {scheme} $schemes {
         foreach {scheme_idx scheme_bit} $ALL_SCHEMES_coded($scheme) {break}
         set scheme_bits [expr $scheme_bits | $scheme_bit]
     }
-    set m2s [map3m2 CV $r_set]
     set isneeded 0
+    set m2s [map3m2 CV $r_set]
+#    set m2s $ALL_ALIASES($m1)
     set cnt [llength $m2s]
     switch $cnt {
         0 {
@@ -294,7 +282,7 @@ foreach {r_set} [map3 CV] {
         }
     }
     if {$isneeded} {tab_end_block $f $aliases}
-}
+#}
 tab_end $f "};\n"
 
     
@@ -370,7 +358,7 @@ puts $f "\#define SZW_STRINGS $SZW_STRINGS"
 puts $f ""
 foreach {i} {
     STRINGS SCHEMES NAMES ALTS VALUES VALUE_TO TO_NAMES
-    SCHEMES_INDEX ICOLORS INDEXES RANGES NONAME_VALUES
+    ICOLORS INDEXES RANGES NONAME_VALUES
     VALUES_24 NONAME_VALUES_24
 } {
     if {[set SZT_$i] < 256} {

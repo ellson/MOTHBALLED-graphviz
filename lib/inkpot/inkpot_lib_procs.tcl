@@ -3,6 +3,94 @@
 ###########################################################
 # TAB  support formatting of outputput tables
 
+# private procs
+proc tab_start_row { } {
+    global comments
+    upvar 2 TAB_pos         pos
+    upvar 2 TAB_chan        ch
+    upvar 2 TAB_row_start   rstart
+    set indent "  "
+    if {$pos == 0} {
+        if  {$comments} {
+            set s "  /* [uplevel 2 $rstart] */ "
+            set w [expr 16 - [string length $s]]
+            if {$w < 0} {set w 0}
+            set s $indent$s[format "%.[set w]s " "        "]
+        } {
+	    set s $indent
+        }
+        puts -nonewline $ch $s
+        set pos [string length $s]
+    }
+}
+
+proc tab_end_row { } {
+    global comments
+    upvar 2 TAB_pos         pos
+    upvar 2 TAB_chan        ch
+    upvar 2 TAB_row_end     rend
+    if {$comments} {
+        set w [expr 5 - $pos / 8]
+        if {$w < 0} {set w 0}
+        set s " /* [uplevel 2 $rend] */"
+        puts $ch [format "%.[set w]s" "\t\t\t\t\t"]$s
+        set pos 0
+    }
+}
+
+
+# public procs
+proc tab_initialize {
+    chan
+    row_start
+    row_end
+    table_start
+} {
+    upvar TAB_pos         pos
+    upvar TAB_chan        ch
+    upvar TAB_row_start   rstart
+    upvar TAB_row_end     rend
+    set ch $chan
+    set rstart $row_start
+    set rend $row_end
+    puts $ch $table_start
+    set pos 0
+}
+
+proc tab_finalize { table_end } {
+    upvar TAB_pos         pos
+    upvar TAB_chan        ch
+    if {$pos} { tab_end_row }
+    puts $ch $table_end
+}
+
+proc tab_first_elem {data} {
+    upvar TAB_pos         pos
+    upvar TAB_chan        ch
+    if {$pos} { tab_end_row }
+    tab_start_row
+    puts -nonewline $ch $data
+    incr pos [string length $data]
+}
+
+proc tab_last_elem {data} {
+    upvar TAB_pos         pos
+    upvar TAB_chan        ch
+    puts -nonewline $ch $data
+    incr pos [string length $data]
+    tab_end_row
+}
+
+proc tab_next_elem {data} {
+    upvar TAB_pos         pos
+    upvar TAB_chan        ch
+    if {$pos > 64} { tab_end_row }
+    if {$pos == 0} { tab_start_row }
+    puts -nonewline $ch $data
+    incr pos [string length $data]
+}
+
+
 proc tab_begin {f s} {
     upvar pos pos
 
