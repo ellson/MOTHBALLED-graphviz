@@ -17,30 +17,27 @@
 #ifndef INKPOT_STRUCTS_H
 #define INKPOT_STRUCTS_H
 
-typedef unsigned char IDX_MRU_CACHE;
+typedef unsigned char IDX_MRU_CACHE_t;
 #define SZT_MRU_CACHE 4
 
-typedef struct inkpot_scheme_name_s {
-	IDX_STRINGS
+typedef struct inkpot_scheme_s {
+	IDX_STRINGS_t
 	     string_idx;        /* The scheme name in TAB_STRINGS.  (e.g. "x11") */
-} inkpot_scheme_name_t;
+} inkpot_scheme_t;
 
 typedef struct inkpot_range_s {
-        IDX_INDEXES
+        IDX_INDEXES_t
 	    size,
 	    first_value_idx;
 } inkpot_range_t;
 
-typedef struct inkpot_scheme_index_s { 
-	IDX_STRINGS
-	     scheme_string_idx; /* The indexed scheme name in TAB_STRINGS.  e.g "brewer" */
+typedef struct inkpot_icolor_s { 
+	IDX_STRINGS_t
+	    string_idx;         /* The icolor name in TAB_STRINGS. */
 
-	IDX_STRINGS
-	     subscheme_string_idx; /* The subscheme name in TAB_STRINGS. e.g "blues7" */
-
-	IDX_RANGES
+	IDX_RANGES_t
 	    range_idx;
-} inkpot_scheme_index_t;
+} inkpot_icolor_t;
 
 typedef struct inkpot_name_s {	/* Color_name used by one or more
 				 * inkpot_scheme_name_t. Each instance has
@@ -50,44 +47,46 @@ typedef struct inkpot_name_s {	/* Color_name used by one or more
 				 * inkpot_names_t are alpha sorted in
 				 * TAB_NAMES[] */
 
-	IDX_STRINGS
+	IDX_STRINGS_t
 	    string_idx;         /* The color name in TAB_STRINGS.
 				 * (e.g. "green") */
 
-	IDX_VALUES
+	IDX_VALUES_t
 	    value_idx;		/* An index into TAB_VALUE for this
 				 * inkpot_name_t */
 
-	MSK_SCHEMES
+	MSK_SCHEMES_t
 	    scheme_bits;	/* A bit for each inkpot_scheme_name_t
 				 * that includes this inkpot_name_t  */
 } inkpot_name_t;
 
 typedef struct inkpot_cache_element_s {
-	IDX_MRU_CACHE
+	IDX_MRU_CACHE_t
 	    next_recently_used_idx;
-	MSK_SCHEMES
+	MSK_SCHEMES_t
 	    scheme_bits;
-	IDX_NAMES
+	IDX_NAMES_t
 	    name_idx;
 } inkpot_cache_element_t;
 
 /* typedef struct inkpot_s inkpot_t; */  /* public opaque type in inkpot.h */
 
 struct inkpot_s {		/* The Ink Pot */
-	MSK_SCHEMES
+	MSK_SCHEMES_t
 	    scheme_bits,	/* One bit per inkpot_scheme_name_t */
 	    out_scheme_bit;     /* One scheme only for output. */
 
-	IDX_INDEXES
+	IDX_INDEXES_t
 	    index,		/* The index for the current value in active_schemes_index */
 	    out_index;		/* The index for the current value in active_out_schemes_index */
 
-	IDX_SCHEMES_INDEX
-	    active_schemes,                 /* The number of active index schemes. */
-	    scheme_list[SZT_SCHEMES_INDEX], /* The list of active index schemes. */
-	    active_out_schemes,             /* The number of active index schemes. */
-	    out_scheme_list[1];             /* The list of active index schemes. */
+	int
+	    active_schemes,     /* The number of active index schemes. */
+	    active_out_schemes; /* The number of active index schemes. */
+	    
+	IDX_ICOLORS_t
+	    scheme_list[SZT_ICOLORS], /* The list of active index schemes. */
+	    out_scheme_list[1]; /* The list of active index schemes. */
 
 	inkpot_name_t
 	    *out_name;		/* The current output name, or NULL. */
@@ -100,7 +99,7 @@ struct inkpot_s {		/* The Ink Pot */
 
 	inkpot_cache_element_t
 	    cache[SZT_MRU_CACHE];/* MRU chache of successful color lookups */
-	IDX_MRU_CACHE
+	IDX_MRU_CACHE_t
 	    most_recently_used_idx;
 
 	inkpot_write_disc_t

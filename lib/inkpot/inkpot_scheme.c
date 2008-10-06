@@ -76,91 +76,73 @@ static int string_cmpf (const char *k, const char *b)
     return 0;
 }
 
-static int inkpot_scheme_name_cmpf ( const void *key, const void *base)
+static int inkpot_scheme_cmpf ( const void *key, const void *base)
 {
     const char *k = (const char*)key;
-    const char *b = &TAB_STRINGS[((inkpot_scheme_name_t *)base)->string_idx];
+    const char *b = &TAB_STRINGS[((inkpot_scheme_t *)base)->string_idx];
 
     return string_cmpf(k, b);
 }
 
-static inkpot_scheme_name_t *inkpot_find_scheme_name ( const char *scheme )
+static inkpot_scheme_t *inkpot_find_scheme ( const char *scheme )
 {
     if (scheme == NULL)
         return NULL;
     /* FIXME - split scheme/subscheme/n */
-    return (inkpot_scheme_name_t *) bsearch(
+    return (inkpot_scheme_t *) bsearch(
             (void*)scheme, (void*)TAB_SCHEMES,
-            SZT_SCHEMES, sizeof(inkpot_scheme_name_t),
-            inkpot_scheme_name_cmpf); 
+            SZT_SCHEMES, sizeof(inkpot_scheme_t),
+            inkpot_scheme_cmpf); 
 }
 
-static int inkpot_scheme_index_cmpf ( const void *key, const void *base)
+static int inkpot_icolor_cmpf ( const void *key, const void *base)
 {
     const char *k = (const char*)key;
-    const char *b = &TAB_STRINGS[((inkpot_scheme_index_t *)base)->scheme_string_idx];
+    const char *b = &TAB_STRINGS[((inkpot_icolor_t *)base)->string_idx];
 
     return string_cmpf(k, b);
 }
 
-static int inkpot_subscheme_index_cmpf ( const void *key, const void *base)
+static inkpot_icolor_t *inkpot_find_icolor ( const char *icolor)
 {
-    const char *k = (const char*)key;
-    const char *b = &TAB_STRINGS[((inkpot_scheme_index_t *)base)->subscheme_string_idx];
-
-    return string_cmpf(k, b);
-}
-
-static inkpot_scheme_index_t *inkpot_find_scheme_index ( const char *scheme)
-{
-    if (scheme == NULL)
+    if (icolor == NULL)
         return NULL;
 
-    return (inkpot_scheme_index_t *) bsearch(
-            (void*)scheme, (void*)TAB_SCHEMES_INDEX,
-            SZT_SCHEMES_INDEX, sizeof(inkpot_scheme_index_t),
-            inkpot_scheme_index_cmpf); 
+    return (inkpot_icolor_t *) bsearch(
+            (void*)icolor, (void*)TAB_ICOLORS,
+            SZT_ICOLORS, sizeof(inkpot_icolor_t),
+            inkpot_icolor_cmpf); 
 }
-
-#if 0
-static inkpot_subscheme_index_t *inkpot_find_subscheme_index ( const char *subscheme )
-{
-    if (subscheme == NULL)
-	return NULL;
-
-    return (inkpot_subscheme_index_t *) bsearch(
-            (void*)subscheme, (void*)TAB_SUBSCHEMES_INDEX,
-            SZT_SUBSCHEMES_INDEX, sizeof(inkpot_subscheme_index_t),
-            inkpot_subscheme_index_cmpf); 
-}
-#endif
 
 static inkpot_status_t inkpot_scheme ( inkpot_t *inkpot, const char *scheme )
 {
-    inkpot_scheme_name_t *inkpot_scheme_name;
-    inkpot_scheme_index_t *inkpot_scheme_index;
-    IDX_SCHEMES_INDEX i;
+    inkpot_scheme_t *inkpot_scheme;
+    inkpot_icolor_t *inkpot_icolor;
+    IDX_ICOLORS_t i;
 
     if (scheme == NULL)
         return ((inkpot->status = INKPOT_SCHEME_UNKNOWN));
 
-    inkpot_scheme_name = inkpot_find_scheme_name(scheme);
-    if (inkpot_scheme_name) {
-        inkpot->scheme_bits |= 1 << (inkpot_scheme_name - TAB_SCHEMES);
+    inkpot_scheme = inkpot_find_scheme(scheme);
+    if (inkpot_scheme) {
+        inkpot->scheme_bits |= 1 << (inkpot_scheme - TAB_SCHEMES);
         return ((inkpot->status = INKPOT_SUCCESS));
     }
 
-    inkpot_scheme_index = inkpot_find_scheme_index(scheme);
-    if (! inkpot_scheme_index)
+#if 0
+    inkpot_icolor = inkpot_find_icolor(icolor);
+    if (! inkpot_icolor)
         return ((inkpot->status = INKPOT_SCHEME_UNKNOWN));
     
     for (i = 0; i < inkpot->active_schemes; i++)
-        if (inkpot->scheme_list[i] == (inkpot_scheme_index - TAB_SCHEMES_INDEX))
+        if (inkpot->scheme_list[i] == (inkpot_icolor - TAB_ICOLORS))
 	    return ((inkpot->status = INKPOT_SUCCESS));
 
-    inkpot->scheme_list[i] = (inkpot_scheme_index - TAB_SCHEMES_INDEX);
+    inkpot->scheme_list[i] = (inkpot_icolor - TAB_ICOLORS);
     inkpot->active_schemes++;
     return ((inkpot->status = INKPOT_SUCCESS));
+#endif
+        return ((inkpot->status = INKPOT_SCHEME_UNKNOWN));
 }
  
 inkpot_status_t inkpot_schemes_put ( inkpot_t *inkpot, const char *schemes )
@@ -202,16 +184,16 @@ inkpot_status_t inkpot_schemes_put ( inkpot_t *inkpot, const char *schemes )
  
 inkpot_status_t inkpot_scheme_get ( inkpot_t *inkpot, const char *scheme )
 {
-    inkpot_scheme_name_t *inkpot_scheme_name;
-    inkpot_scheme_index_t *inkpot_scheme_index;
-    IDX_SCHEMES idx;
+    inkpot_scheme_t *inkpot_scheme;
+    inkpot_icolor_t *inkpot_icolor;
+    IDX_SCHEMES_t idx;
 
     if (scheme == NULL)
         return ((inkpot->status = INKPOT_SCHEME_UNKNOWN));
 
-    inkpot_scheme_name = inkpot_find_scheme_name(scheme);
-    if (inkpot_scheme_name) {
-        idx = inkpot_scheme_name - TAB_SCHEMES;
+    inkpot_scheme = inkpot_find_scheme(scheme);
+    if (inkpot_scheme) {
+        idx = inkpot_scheme - TAB_SCHEMES;
 	if (! (inkpot->out_scheme_bit & (1 << idx))) {
         	inkpot->out_scheme_bit = 1 << idx;
 		inkpot->active_out_schemes = 0;
@@ -220,13 +202,13 @@ inkpot_status_t inkpot_scheme_get ( inkpot_t *inkpot, const char *scheme )
         return ((inkpot->status = INKPOT_SUCCESS));
     }
 
-    inkpot_scheme_index = inkpot_find_scheme_index(scheme);
-    if (! inkpot_scheme_index)
+    inkpot_icolor = inkpot_find_icolor(scheme);   /* FIXME */
+    if (! inkpot_icolor)
         return ((inkpot->status = INKPOT_SCHEME_UNKNOWN));
 
     if (inkpot->active_out_schemes == 0 
-	    || (inkpot->out_scheme_list[0] != (inkpot_scheme_index - TAB_SCHEMES_INDEX))) {
-	inkpot->out_scheme_list[0] = (inkpot_scheme_index - TAB_SCHEMES_INDEX);
+	    || (inkpot->out_scheme_list[0] != (inkpot_icolor - TAB_ICOLORS))) {
+	inkpot->out_scheme_list[0] = (inkpot_icolor - TAB_ICOLORS);
 	inkpot->active_out_schemes = 1;
        	inkpot->out_scheme_bit = 0;
 	inkpot->out_name = NULL;     /* clear cached name */
@@ -255,7 +237,7 @@ static int inkpot_name_cmpf ( const void *key, const void *base)
     return string_cmpf(k, b);
 }
 
-static inkpot_status_t inkpot_put_value_idx( inkpot_t *inkpot, IDX_VALUES value_idx)
+static inkpot_status_t inkpot_put_value_idx( inkpot_t *inkpot, IDX_VALUES_t value_idx)
 {
     if (inkpot->value.index != value_idx) {
 	inkpot->value.index = value_idx;
@@ -266,8 +248,8 @@ static inkpot_status_t inkpot_put_value_idx( inkpot_t *inkpot, IDX_VALUES value_
 
 static inkpot_status_t inkpot_cache_get( inkpot_t *inkpot )
 {
-    IDX_MRU_CACHE i;
-    IDX_NAMES cache_name_idx;
+    IDX_MRU_CACHE_t i;
+    IDX_NAMES_t cache_name_idx;
     const char *cache_color;
     char *color;
 
@@ -299,9 +281,9 @@ static inkpot_status_t inkpot_cache_get( inkpot_t *inkpot )
     return ((inkpot->status = INKPOT_COLOR_UNKNOWN));
 }
 
-static inkpot_status_t inkpot_cache_put ( inkpot_t *inkpot, IDX_NAMES name_idx )
+static inkpot_status_t inkpot_cache_put ( inkpot_t *inkpot, IDX_NAMES_t name_idx )
 {
-    IDX_MRU_CACHE i;
+    IDX_MRU_CACHE_t i;
 
     for (i = 0; i < SZT_MRU_CACHE; i++) {  
 	if (inkpot->cache[i].next_recently_used_idx == SZT_MRU_CACHE) {
@@ -322,7 +304,7 @@ static inkpot_status_t inkpot_put_name ( inkpot_t *inkpot )
     inkpot_status_t rc;
     char *color;
     inkpot_name_t *name;
-    IDX_ALTS i;
+    IDX_ALTS_t i;
 
     if (inkpot == NULL || ! inkpot->scheme_bits)
         return ((inkpot->status = INKPOT_SCHEME_UNKNOWN));
@@ -363,19 +345,19 @@ static inkpot_status_t inkpot_put_name ( inkpot_t *inkpot )
 
 static inkpot_status_t inkpot_put_index ( inkpot_t *inkpot, int index )
 {
-    IDX_SCHEMES_INDEX j;
-    IDX_INDEXES first, last;
-    IDX_VALUES value_idx;
+    IDX_ICOLORS_t j;
+    IDX_INDEXES_t first, last;
+    IDX_VALUES_t value_idx;
 
     if (!inkpot->active_schemes)
         return ((inkpot->status = INKPOT_SCHEME_UNKNOWN));
 
     j = inkpot->scheme_list[0];
-    first = TAB_SCHEMES_INDEX[j].first_value_idx;
-    if (++j >= SZT_SCHEMES_INDEX)
+    first = TAB_ICOLORS[j].range_idx;
+    if (++j >= SZT_ICOLORS)
 	last = SZT_INDEXES;
     else
-	last = TAB_SCHEMES_INDEX[j].first_value_idx;
+	last = TAB_ICOLORS[j].range_idx;
     last = last-1-first;
 
     /* clip user-provided index to fit available range */
@@ -424,9 +406,9 @@ inkpot_status_t inkpot_put_hsva ( inkpot_t *inkpot, double hsva[4] )
 inkpot_status_t inkpot_put ( inkpot_t *inkpot, const char *color )
 {
     inkpot_status_t rc = INKPOT_COLOR_UNKNOWN;
-    IDX_SCHEMES_INDEX j;
-    IDX_INDEXES first, last;
-    IDX_VALUES value_idx;
+    IDX_ICOLORS_t j;
+    IDX_INDEXES_t first, last;
+    IDX_VALUES_t value_idx;
     char *q, *s;
     const char *p;
     int i, c, len, index;
@@ -504,15 +486,15 @@ inkpot_status_t inkpot_put ( inkpot_t *inkpot, const char *color )
 	*++q = '\0';
 	for (i=0; i < inkpot->active_schemes; i++) {
 	    j = inkpot->scheme_list[i];
-	    p = &TAB_STRINGS[TAB_SCHEMES_INDEX[j].scheme_string_idx];
+	    p = &TAB_STRINGS[TAB_ICOLORS[j].string_idx];
 	    if (*p != *s || strcmp(p, s) != 0) 
 		continue;
 	    /* FIXME - deal with subschemes */
-	    first = TAB_SCHEMES_INDEX[j].first_value_idx;
-            if (++j >= SZT_SCHEMES_INDEX)
+	    first = TAB_ICOLORS[j].range_idx;
+            if (++j >= SZT_ICOLORS)
 	        last = SZT_INDEXES;
 	    else
-		last = TAB_SCHEMES_INDEX[j].first_value_idx;
+		last = TAB_ICOLORS[j].range_idx;
 	    last = last-1-first;
 
 	    /* clip user-provided index to fit available range */
@@ -544,9 +526,9 @@ inkpot_status_t inkpot_put ( inkpot_t *inkpot, const char *color )
 inkpot_status_t inkpot_get ( inkpot_t *inkpot, const char **color )
 {
     inkpot_name_t *out_name;
-    IDX_NAMES t;
-    IDX_ALTS i;
-    IDX_VALUES value_idx;
+    IDX_NAMES_t t;
+    IDX_ALTS_t i;
+    IDX_VALUES_t value_idx;
     int maybe;
 
     /* FIXME - why isn't this checking the current value then the 4 level cache? */
@@ -763,8 +745,8 @@ inkpot_status_t inkpot_write_rgb8 ( inkpot_t *inkpot )
 
 inkpot_status_t inkpot_debug_schemes( inkpot_t *inkpot )
 {
-    IDX_SCHEMES i;
-    IDX_SCHEMES_INDEX j;
+    IDX_SCHEMES_t i;
+    IDX_ICOLORS_t j;
     int found;
 
     inkpot_puts(inkpot, "schemes:\n");
@@ -789,12 +771,12 @@ inkpot_status_t inkpot_debug_schemes( inkpot_t *inkpot )
     }
     for (j = 0; j < inkpot->active_schemes; j++) {
         inkpot_puts(inkpot, " ");
-        inkpot_puts(inkpot, &TAB_STRINGS[TAB_SCHEMES_INDEX[inkpot->scheme_list[j]].scheme_string_idx]);
+        inkpot_puts(inkpot, &TAB_STRINGS[TAB_ICOLORS[inkpot->scheme_list[j]].string_idx]);
         inkpot_puts(inkpot, "#(in)");
     }
     for (j = 0; j < inkpot->active_out_schemes; j++) {
         inkpot_puts(inkpot, " ");
-        inkpot_puts(inkpot, &TAB_STRINGS[TAB_SCHEMES_INDEX[inkpot->out_scheme_list[j]].scheme_string_idx]);
+        inkpot_puts(inkpot, &TAB_STRINGS[TAB_ICOLORS[inkpot->out_scheme_list[j]].string_idx]);
         inkpot_puts(inkpot, "#(out)");
     }
     inkpot_puts(inkpot, "\n");
@@ -805,7 +787,7 @@ inkpot_status_t inkpot_debug_schemes( inkpot_t *inkpot )
 #if 0
 static inkpot_status_t inkpot_debug_scheme_names( inkpot_t *inkpot, int scheme_bits )
 {
-    IDX_SCHEMES_NAME i;
+    IDX_SCHEMES_NAME_t i;
     int found = 0;
 
     inkpot_puts(inkpot, "(");
@@ -837,14 +819,14 @@ static void inkpot_debug_rgba( inkpot_t *inkpot, VALUE value )
 #endif
 
 #if 0
-static inkpot_status_t inkpot_debug_names_schemes( inkpot_t *inkpot, MSK_SCHEMES scheme_bits, IDX_SCHEMES_INDEX active, IDX_SCHEMES_NAME *scheme_index )
+static inkpot_status_t inkpot_debug_names_schemes( inkpot_t *inkpot, MSK_SCHEMES_t scheme_bits, IDX_ICOLORS_t active, IDX_SCHEMES_NAME_t *scheme_index )
 {
     inkpot_name_t *name;
-    IDX_NAMES i;
+    IDX_NAMES_t i;
 #if 0
-    IDX_SCHEMES_INDEX j;
-    IDX_INDEXES k, first, last;
-    IDX_VALUES v;
+    IDX_ICOLORS_t j;
+    IDX_INDEXES_t k, first, last;
+    IDX_VALUES_t v;
     char buf[20];
 #endif
 
@@ -862,12 +844,12 @@ static inkpot_status_t inkpot_debug_names_schemes( inkpot_t *inkpot, MSK_SCHEMES
     }
 #if 0
     for (j=0; j < active; j++) {
-	first = scheme_index->first_value_idx;
-	j = scheme_index - TAB_SCHEMES_INDEX;
-	if (++j >= SZT_SCHEMES_INDEX)
+	first = scheme_index->range_idx;
+	j = scheme_index - TAB_ICOLORS;
+	if (++j >= SZT_ICOLORS)
 	    last = SZT_INDEXES;
 	else
-	    last = TAB_SCHEMES_INDEX[j].first_value_idx;
+	    last = TAB_ICOLORS[j].range_idx;
     
 	for (k = first; k < last; k++) {
 	    v = TAB_INDEXES[k];
@@ -911,9 +893,9 @@ inkpot_status_t inkpot_debug_values( inkpot_t *inkpot )
     inkpot_status_t rc;
     inkpot_value_t *value;
     inkpot_name_t *name;
-    IDX_VALUES i;
-    IDX_NAMES t;
-    MSK_SCHEMES scheme_bits;
+    IDX_VALUES_t i;
+    IDX_NAMES_t t;
+    MSK_SCHEMES_t scheme_bits;
     int found;
 
     inkpot_puts(inkpot, "values:\n");

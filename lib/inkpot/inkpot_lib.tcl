@@ -144,7 +144,7 @@ foreach {m2} [lsort -dictionary [mapm2 ICRIV]] {
 set SZT_INDEXES 0
 set index -1
 tab_initialize $f {set SZT_INDEXES} {list [map2m1 ICRIV $RIV] $size} \
-	"IDX_VALUES TAB_INDEXES\[SZT_INDEXES\] = {"
+	"IDX_VALUES_t TAB_INDEXES\[SZT_INDEXES\] = {"
 foreach {icolor_range_schemes} [lsort -ascii [array names ALL_RANGES]] {
     tab_row
     foreach {m2} $ALL_RANGES($icolor_range_schemes) {
@@ -183,7 +183,7 @@ tab_finalize "};\n"
 set SZT_ICOLORS 0
 set last_icolor ""
 tab_initialize $f {set SZT_ICOLORS} {list $icolor $schemes} \
-	"inkpot_scheme_index_t TAB_ICOLORS\[SZT_ICOLORS\] = {"
+	"inkpot_icolor_t TAB_ICOLORS\[SZT_ICOLORS\] = {"
 foreach {icolor_range_schemes} [lsort -dictionary [array names ALL_RANGES_coded]] {
     foreach {icolor range schemes} $icolor_range_schemes {break}
     foreach {first_idx size} $ALL_RANGES_coded($icolor_range_schemes) {break}
@@ -201,7 +201,7 @@ tab_finalize "};\n"
 # generate TAB_SCHEMES
 set SZT_SCHEMES 0
 tab_initialize $f {set SZT_SCHEMES} {set scheme} \
-	"inkpot_scheme_name_t TAB_SCHEMES\[SZT_SCHEMES\] = {"
+	"inkpot_scheme_t TAB_SCHEMES\[SZT_SCHEMES\] = {"
 foreach {scheme} [lsort -ascii [array names ALL_SCHEMES]] {
 #    tab_elem $f "{$ALL_SCHEME_STRINGS_coded($scheme),$ALL_INDEX_SCHEMES_coded($scheme)},"
     tab_elem "{$ALL_SCHEME_STRINGS_coded($scheme)},"
@@ -281,7 +281,7 @@ tab_finalize "};\n"
 # generate TAB_TO_NAMES
 set SZT_TO_NAMES 0
 tab_initialize $f {set SZT_TO_NAMES} {set alias_set} \
-	"IDX_NAMES TAB_TO_NAMES\[SZT_TO_NAMES\] = {"
+	"IDX_NAMES_t TAB_TO_NAMES\[SZT_TO_NAMES\] = {"
 foreach {m2} [mapm2 CV] {
     set alias_set [mapm21 CV $m2]
     foreach {value schemeset} $m2 {break}
@@ -300,7 +300,7 @@ tab_finalize "};\n"
 # generate TAB_VALUE_TO
 set SZT_VALUE_TO 0
 tab_initialize $f {set SZT_VALUE_TO} {set ALL_TO_NAMES_coded($value)} \
-	"IDX_TO_NAMES TAB_VALUE_TO\[SZT_VALUE_TO\] = {"
+	"IDX_TO_NAMES_t TAB_VALUE_TO\[SZT_VALUE_TO\] = {"
 # NB - this sort order must match TAB_VALUES
 foreach {value} [lsort -dictionary [map2 CV]] {
     tab_elem $ALL_TO_NAMES_coded($value),
@@ -338,7 +338,7 @@ foreach {i} {
         set int "unsigned long"
     }
     puts $f "\#define SZT_$i [set SZT_$i]"
-    puts $f "typedef $int IDX_$i\;"
+    puts $f "typedef $int IDX_[set i]_t\;"
     puts $f ""
 }
 foreach {i} {SCHEMES} {
@@ -351,9 +351,9 @@ foreach {i} {SCHEMES} {
     } elseif {[set SZT_$i] < 64} {
         set int "unsigned long"
     } else {
-        puts stderr "more that 64 bits in MSK_$i"
+        puts stderr "more that 64 bits in MSK_[set i]_t"
     }
-    puts $f "typedef $int MSK_$i\;"
+    puts $f "typedef $int MSK_[set i]_t\;"
     puts $f ""
 }
 close $f
