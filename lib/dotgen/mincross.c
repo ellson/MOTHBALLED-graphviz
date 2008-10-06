@@ -331,6 +331,171 @@ static void exchange(node_t * v, node_t * w)
     GD_rank(Root)[r].v[vi] = w;
 }
 
+
+void
+balanceNodes(graph_t *g, int r, node_t *v, node_t* w)
+{
+  node_t *s; //separator node
+  int sepIndex;
+  int nullType; //type of null nodes
+  int cntDummy = 0, cntOri = 0;
+  int k = 0, m = 0, k1 = 0, m1 = 0, i = 0;
+
+  //printf("Balancing nodes ... \n");
+  //printf("r = %d\n", r);
+
+  //we only consider v and w of different types
+  if (ND_node_type(v) == ND_node_type(w))
+    return;
+
+  //count the number of dummy and original nodes
+  for (i = 0; i < GD_rank(g)[r].n; i++) 
+  {
+    if (ND_node_type(GD_rank(g)[r].v[i]) == NORMAL )
+      cntOri++;
+    else
+      cntDummy++;
+  }
+
+  if (cntOri < cntDummy)
+  {
+    if (ND_node_type(v) == NORMAL)
+      s = v;
+    else s = w;
+  }
+  else
+  {
+    if (ND_node_type(v) == NORMAL)
+      s = w;
+    else s = v;
+  }
+
+  //get the separator node index
+  for (i = 0; i < GD_rank(g)[r].n; i++) 
+  {
+    if (GD_rank(g)[r].v[i] == s)
+      sepIndex = i;
+  }  
+
+  nullType = (ND_node_type(s) == NORMAL) ? VIRTUAL : NORMAL;
+  
+  //count the number of null nodes to the left and right of the separator node
+  for (i = sepIndex-1; i >= 0; i--)
+  {
+    if (ND_node_type(GD_rank(g)[r].v[i]) == nullType)
+      k++;
+    else break;
+  }
+
+  for (i = sepIndex+1; i < GD_rank(g)[r].n; i++)
+  {
+    if (ND_node_type(GD_rank(g)[r].v[i]) == nullType)
+      m++;
+    else break;
+
+  }
+
+  //now exchange v,w and calculate the same counts
+
+  exchange(v, w);
+  
+  //get the separator node index
+  for (i = 0; i < GD_rank(g)[r].n; i++) 
+  {
+    if (GD_rank(g)[r].v[i] == s)
+      sepIndex = i;
+  }  
+
+  //count the number of null nodes to the left and right of the separator node
+  for (i = sepIndex-1; i >= 0; i--)
+  {
+    if (ND_node_type(GD_rank(g)[r].v[i]) == nullType)
+      k1++;
+    else break;
+  }
+
+  for (i = sepIndex+1; i < GD_rank(g)[r].n; i++)
+  {
+    if (ND_node_type(GD_rank(g)[r].v[i]) == nullType)
+      m1++;
+    else break;
+  }
+
+  if (abs(k1-m1) > abs(k-m))
+  {
+    //printf("exchanging to revert to original ordering...\n");
+    exchange(v,w); //revert to the original ordering
+  }
+
+  //printf("v=%s, w=%s, k=%d, m=%d, k1=%d, m1=%d\n", v->name, w->name, k, m, k1, m1);
+}
+
+
+static int 
+balance(graph_t * g)
+{
+    int i, c0, c1, rv;
+    node_t *v, *w;
+    int r;
+
+    rv = 0;
+
+    //printf("maxr = %d, minr = %d\n", GD_maxrank(g), GD_minrank(g));
+
+    for (r = GD_maxrank(g); r >= GD_minrank(g); r--)
+    {
+
+      GD_rank(g)[r].candidate = FALSE;
+      for (i = 0; i < GD_rank(g)[r].n - 1; i++) 
+      //for (i = GD_rank(g)[r].n-2; i >= 0; i--) 
+      {
+	v = GD_rank(g)[r].v[i];
+	w = GD_rank(g)[r].v[i + 1];
+	assert(ND_order(v) < ND_order(w));
+	if (left2right(g, v, w))
+	    continue;
+	c0 = c1 = 0;
+	if (r > 0) {
+	    c0 += in_cross(v, w);
+	    c1 += in_cross(w, v);
+	}
+
+	//printf("before.... c0 = %d, c1 = %d\n", c0, c1);
+
+	if (GD_rank(g)[r + 1].n > 0) {
+	    c0 += out_cross(v, w);
+	    c1 += out_cross(w, v);
+	}
+
+	//printf("after.... c0 = %d, c1 = %d\n", c0, c1);
+
+	//printf("r = %d, c0 = %d, c1 = %d\n",r, c0, c1);
+
+	/*if ((c1 < c0) || ((c0 > 0) && reverse && (c1 == c0))) {
+	    exchange(v, w);
+	    rv += (c0 - c1);
+	    GD_rank(Root)[r].valid = FALSE;
+	    GD_rank(g)[r].candidate = TRUE;
+
+	    if (r > GD_minrank(g)) {
+		GD_rank(Root)[r - 1].valid = FALSE;
+		GD_rank(g)[r - 1].candidate = TRUE;
+	    }
+	    if (r < GD_maxrank(g)) {
+		GD_rank(Root)[r + 1].valid = FALSE;
+		GD_rank(g)[r + 1].candidate = TRUE;
+	    }
+	}*/
+	
+	if (c1 <= c0)
+	{
+	  balanceNodes(g, r, v, w);
+	}
+      }
+    }
+    return rv;
+}
+
 static int transpose_step(graph_t * g, int r, int reverse)
 {
     int i, c0, c1, rv;

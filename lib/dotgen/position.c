@@ -938,6 +938,22 @@ static void scale_bb(graph_t * g, graph_t * root, double xf, double yf)
     GD_bb(g).UR.y *= yf;
 }
 
+/**************************** EXTERNAL VARIABLES ***********************/
+extern double targetAR;
+extern double currentAR;
+extern double combiAR;
+extern int prevIterations;
+extern int curIterations;
+extern int nextiter;
+/**************************** EXTERNAL VARIABLES ***********************/
+
+
+/***********************************************************************
+ *  Some additional codes have been added at the end of set_aspect
+ *  function to estimate the next number of iterations for ranking phase
+ ***********************************************************************/
+
+
 /* set_aspect:
  * Set bounding boxes and, if ratio is set, rescale graph.
  * Note that if some dimension shrinks, there may be problems
@@ -1020,6 +1036,21 @@ static void set_aspect(graph_t * g)
 	    scale_bb(g, g, xf, yf);
 	}
     }
+
+    double AR = (GD_bb(g).UR.x - GD_bb(g).LL.x)/(GD_bb(g).UR.y - GD_bb(g).LL.y);
+    printf("AR=%0.4lf\t Area= %0.4lf\t", AR, (double)(GD_bb(g).UR.x - GD_bb(g).LL.x)*(GD_bb(g).UR.y - GD_bb(g).LL.y)/10000.0);
+    printf("Dummy=%d\n", countDummyNodes(g));
+    if (AR > 1.1*targetAR)
+    {
+      nextiter = (int)(targetAR * (double)(curIterations - prevIterations)/(AR));
+    }
+    else if (AR <= 0.8 * targetAR)
+    {
+      nextiter = -1;
+      printf("Going to apply another expansion.\n");
+    }
+    else nextiter = 0;
+    printf("next#iter=%d\n", nextiter);
 }
 
 static point resize_leaf(node_t * leaf, point lbound)

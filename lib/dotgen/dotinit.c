@@ -16,6 +16,7 @@
 
 
 #include    "dot.h"
+#include <time.h>
 
 static void 
 dot_init_node(node_t * n)
@@ -93,6 +94,27 @@ dot_cleanup_node(node_t * n)
     if (ND_shape(n))
 	ND_shape(n)->fns->freefn(n);
     memset(&(n->u), 0, sizeof(Agnodeinfo_t));
+}
+
+static void 
+dot_free_splines(edge_t * e)
+{
+    int i;
+    if (ED_spl(e)) {
+	for (i = 0; i < ED_spl(e)->size; i++)
+	    free(ED_spl(e)->list[i].list);
+	free(ED_spl(e)->list);
+	free(ED_spl(e));
+    }
+    ED_spl(e) = NULL;
+}
+
+static void 
+dot_cleanup_edge(edge_t * e)
+{
+    dot_free_splines(e);
+    free_label(ED_label(e));
+    memset(&(e->u), 0, sizeof(Agedgeinfo_t));
 }
 
 static void free_virtual_edge_list(node_t * n)
@@ -199,18 +221,79 @@ dumpRanks (graph_t * g)
 }
 #endif
 
+
+/***********************************************************************
+ * The codes in the dot_layout function has been changed.
+ * It gets an estimation of next number of iterations for ranking
+ * from the positioning step.
+ * User can change the number of iterations or stop the iterations.
+ ***********************************************************************/
+
+/**************************** EXTERNAL VARIABLES ***********************/
+extern double targetAR;
+extern double currentAR;
+extern double combiAR;
+extern int prevIterations;
+extern int curIterations;
+/**************************** EXTERNAL VARIABLES ***********************/
+
+int nextiter;
+int packiter = 0;
+int nPasses = 0;
+double start, finish, totalCLK;
+
 void dot_layout(Agraph_t * g)
 {
+
+  start = clock();
+
     setEdgeType (g, ET_SPLINE);
+
+    nextiter = -1;
     dot_init_node_edge(g);
+
+    printf("Target AR = ");
+    scanf("%lf", &targetAR);
+
+
+    do{
+
+    nPasses++;
+
     dot_rank(g);
+    packiter += curIterations;
+
     dot_mincross(g);
     /* dumpRanks (g); */
+
     dot_position(g);
+
+    char response[100];
+    finish = clock();
+    totalCLK += finish - start;
+
+    printf("Continue: yes/no/enter # of iterations? (y/n/i)");
+    scanf("%s",response);
+    if (!strcmp(response, "n") || !strcmp(response, "N"))
+      break;
+    else if (!strcmp(response, "i") || !strcmp(response, "I"))
+    {
+      printf("Enter # of iterations: ");
+      scanf("%d", &nextiter);
+    }
+   
+    start = clock();
+
+    } while (nextiter);
+
+
     /* dumpRanks (g); */
     dot_sameports(g);
     dot_splines(g);
     if (mapbool(agget(g, "compound")))
 	dot_compoundEdges(g);
     dotneato_postprocess(g);
+
+    printf("Packing iterations=%d\n# of Passes=%d\n", packiter, nPasses);
+    printf("Total time = %0.3lf sec\n\n", totalCLK/CLOCKS_PER_SEC);
 }
