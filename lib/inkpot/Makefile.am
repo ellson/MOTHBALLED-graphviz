@@ -4,17 +4,17 @@
 pdfdir = $(pkgdatadir)/doc/pdf
 pkgconfigdir = $(libdir)/pkgconfig
 
-pkginclude_HEADERS = inkpot.h
-lib_LTLIBRARIES = libinkpot.la
-pkgconfig_DATA = libinkpot.pc
-bin_PROGRAMS = inkpot
-
-noinst_HEADERS = inkpot_scheme.h inkpot_xlate.h inkpot_value.h \
-	inkpot_lib_define.h inkpot_lib_value.h inkpot_lib_scheme.h
-noinst_LTLIBRARIES = libinkpot_C.la
-
-man_MANS = inkpot.3 inkpot.1
-pdf_DATA = inkpot.3.pdf inkpot.1.pdf
+#pkginclude_HEADERS = inkpot.h
+#lib_LTLIBRARIES = libinkpot.la
+#pkgconfig_DATA = libinkpot.pc
+#bin_PROGRAMS = inkpot
+#
+#noinst_HEADERS = inkpot_scheme.h inkpot_xlate.h inkpot_value.h \
+#	inkpot_lib_define.h inkpot_lib_value.h inkpot_lib_scheme.h
+#noinst_LTLIBRARIES = libinkpot_C.la
+#
+#man_MANS = inkpot.3 inkpot.1
+#pdf_DATA = inkpot.3.pdf inkpot.1.pdf
 
 inkpot_SOURCES = inkpot.c
 inkpot_LDADD = $(builddir)/libinkpot.la
