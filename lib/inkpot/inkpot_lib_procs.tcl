@@ -64,92 +64,21 @@ proc tab_finalize { table_end } {
     puts $ch $table_end
 }
 
-proc tab_first_elem {data} {
+proc tab_elem {data} {
     upvar TAB_pos         pos
     upvar TAB_chan        ch
-    if {$pos} { tab_end_row }
-    tab_start_row
-    puts -nonewline $ch $data
-    incr pos [string length $data]
-}
-
-proc tab_last_elem {data} {
-    upvar TAB_pos         pos
-    upvar TAB_chan        ch
-    puts -nonewline $ch $data
-    incr pos [string length $data]
-    tab_end_row
-}
-
-proc tab_next_elem {data} {
-    upvar TAB_pos         pos
-    upvar TAB_chan        ch
-    if {$pos > 64} { tab_end_row }
+    if {$pos > 64} { 
+	puts $ch ""
+	set pos 0
+    }
     if {$pos == 0} { tab_start_row }
     puts -nonewline $ch $data
     incr pos [string length $data]
 }
 
-
-proc tab_begin {f s} {
-    upvar pos pos
-
-    puts $f $s
-    set pos 0
-}
-
-proc tab_end {f s} {
-    upvar pos pos
-
-    if {$pos} { puts $f "" }
-    puts $f $s
-    set pos 0
-}
-
-# $comment_list needs to be 8 char or less
-proc tab_begin_block {f {comment_list {}}} {
-    upvar pos pos
-    upvar comments comments
-    upvar indent indent
-
-    if {$pos == 0} {
-        incr pos [string length $indent]
-        if {$comments && [llength $comment_list]} {
-            set s [concat "/*" $comment_list "*/"]
-            incr pos [string length $s]
-            set w [expr 16 - $pos]
-            puts -nonewline $f $indent$s[format "%.[set w]s" "        "]
-            set pos 16
-        } {
-            puts -nonewline $f $indent
-        }
-    }
-}
-
-proc tab_end_block {f {comment_list {}}} {
-    upvar pos pos
-    upvar comments comments
-    upvar target_line_length target_line_length
-    
-    if {$comments && [llength $comment_list]} {
-        set w [expr 5 - $pos / 8]
-        if {$w < 0} {set w 0}
-        set s [concat "/*" $comment_list "*/"]
-        puts $f [format "%.[set w]s" "\t\t\t\t\t"]$s
-        set pos 0
-    } {
-        if {$pos >= $target_line_length} {
-            puts $f ""
-            set pos 0
-        }
-    }
-}
-
-proc tab_elem {f s} {
-    upvar pos pos
-
-    puts -nonewline $f $s
-    incr pos [string length $s]
+proc tab_row { } {
+    upvar TAB_pos         pos
+    if {$pos} { tab_end_row }
 }
 
 ###################################################################
