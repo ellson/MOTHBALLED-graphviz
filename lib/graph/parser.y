@@ -31,14 +31,9 @@ static Agraph_t		*G;
 static Agnode_t		*N;
 static Agedge_t		*E;
 static objstack_t	*SP;
-#if 0
-static Agraph_t		**Gstack;
-static int		GSP_allocated, GSP;
-#else
 #define GSTACK_SIZE 64
 static Agraph_t         *Gstack[GSTACK_SIZE];
-static int		GSP;
-#endif
+static int			GSP;
 
 static void subgraph_warn (void)
 {
@@ -50,19 +45,11 @@ static void subgraph_warn (void)
 
 static void push_subg(Agraph_t *g)
 {
-#if 0
-	if (GSP >= GSP_allocated) {
-		GSP_allocated += 32;
-		Gstack = realloc(Gstack, sizeof(Agraph_t*));
-	}
-#else
-	if (GSP == GSTACK_SIZE) {
+	if (GSP >= GSTACK_SIZE) {
 		agerr (AGERR, "Gstack overflow in graph parser\n"); exit(1);
 	}
-#endif
 	G = Gstack[GSP++] = g;
 }
-	
 
 static Agraph_t *pop_subg(void)
 {
