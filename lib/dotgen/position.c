@@ -1039,8 +1039,10 @@ static void set_aspect(graph_t * g)
 
 #ifdef ASPECT
     double AR = (GD_bb(g).UR.x - GD_bb(g).LL.x)/(GD_bb(g).UR.y - GD_bb(g).LL.y);
-    printf("AR=%0.4lf\t Area= %0.4lf\t", AR, (double)(GD_bb(g).UR.x - GD_bb(g).LL.x)*(GD_bb(g).UR.y - GD_bb(g).LL.y)/10000.0);
-    printf("Dummy=%d\n", countDummyNodes(g));
+    if (Verbose) {
+        fprintf(stderr, "AR=%0.4lf\t Area= %0.4lf\t", AR, (double)(GD_bb(g).UR.x - GD_bb(g).LL.x)*(GD_bb(g).UR.y - GD_bb(g).LL.y)/10000.0);
+        fprintf(stderr, "Dummy=%d\n", countDummyNodes(g));
+    }
     if (AR > 1.1*targetAR)
     {
       nextiter = (int)(targetAR * (double)(curIterations - prevIterations)/(AR));
@@ -1048,10 +1050,14 @@ static void set_aspect(graph_t * g)
     else if (AR <= 0.8 * targetAR)
     {
       nextiter = -1;
-      printf("Going to apply another expansion.\n");
+      if (Verbose)
+        fprintf(stderr, "Going to apply another expansion.\n");
     }
-    else nextiter = 0;
-    printf("next#iter=%d\n", nextiter);
+    else {
+	nextiter = 0;
+    }
+    if (Verbose)
+        fprintf(stderr, "next#iter=%d\n", nextiter);
 #endif
 }
 

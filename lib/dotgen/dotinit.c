@@ -240,6 +240,7 @@ extern int curIterations;
 int nextiter;
 int packiter = 0;
 int nPasses = 0;
+
 double start, finish, totalCLK;
 
 void dot_layout(Agraph_t * g)
@@ -247,10 +248,7 @@ void dot_layout(Agraph_t * g)
 
     setEdgeType (g, ET_SPLINE);
 
-#ifdef ASPECT
-    start = clock();
     nextiter = -1;
-#endif
 
     dot_init_node_edge(g);
 
@@ -258,50 +256,47 @@ void dot_layout(Agraph_t * g)
     printf("Target AR = ");
     scanf("%lf", &targetAR);
 
-
-    do{
-
-    nPasses++;
-
+    do {
+        nPasses++;
 #endif
-    dot_rank(g);
-    packiter += curIterations;
 
-    dot_mincross(g);
-    /* dumpRanks (g); */
+        start = clock();
+        dot_rank(g);
+        packiter += curIterations;
 
-    dot_position(g);
+        dot_mincross(g);
+        /* dumpRanks (g); */
+
+        dot_position(g);
+
+        finish = clock();
+        totalCLK += finish - start;
 
 #ifdef ASPECT
-    char response[100];
-    finish = clock();
-    totalCLK += finish - start;
-
-    printf("Continue: yes/no/enter # of iterations? (y/n/i)");
-    scanf("%s",response);
-    if (!strcmp(response, "n") || !strcmp(response, "N"))
-      break;
-    else if (!strcmp(response, "i") || !strcmp(response, "I"))
-    {
-      printf("Enter # of iterations: ");
-      scanf("%d", &nextiter);
-    }
-   
-    start = clock();
-
+        char response[100];
+        printf("Continue: yes/no/enter # of iterations? (y/n/i)");
+        scanf("%s",response);
+        if (!strcmp(response, "n") || !strcmp(response, "N"))
+            break;
+        else if (!strcmp(response, "i") || !strcmp(response, "I"))
+        {
+            printf("Enter # of iterations: ");
+            scanf("%d", &nextiter);
+        }
     } while (nextiter);
 #endif
 
-
-    /* dumpRanks (g); */
     dot_sameports(g);
+
     dot_splines(g);
+
     if (mapbool(agget(g, "compound")))
 	dot_compoundEdges(g);
+
     dotneato_postprocess(g);
 
-#ifdef ASPECT
-    printf("Packing iterations=%d\n# of Passes=%d\n", packiter, nPasses);
-    printf("Total time = %0.3lf sec\n\n", totalCLK/CLOCKS_PER_SEC);
-#endif
+    if (Verbose) {
+        fprintf(stderr, "Packing iterations=%d\n# of Passes=%d\n", packiter, nPasses);
+        fprintf(stderr, "Total time = %0.3lf sec\n\n", totalCLK/CLOCKS_PER_SEC);
+    }
 }
