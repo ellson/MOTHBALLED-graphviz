@@ -36,7 +36,7 @@ typedef struct stk_stack {
 /*  These functions are all very straightforward and self-commenting so */
 /*  I didn't think additional comments would be useful */
 stk_stack * StackJoin(stk_stack * stack1, stk_stack * stack2);
-stk_stack * StackCreate();
+stk_stack * StackCreate(void);
 void StackPush(stk_stack * theStack, DATA_TYPE newInfoPointer);
 void * StackPop(stk_stack * theStack);
 int StackNotEmpty(stk_stack *);
