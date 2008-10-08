@@ -254,6 +254,18 @@ AC_CHECK_PROG(PS2PDF,ps2pdf,ps2pdf,false)
 AC_CHECK_PROG(PS2PDF,pstopdf,pstopdf,false)
 PKG_PROG_PKG_CONFIG
 
+AC_ARG_WITH(tclsh,
+  [AC_HELP_STRING([--with-tcl=PROG], [use a specific tclsh])],
+  TCLSH=$withval,)
+
+if test "x$TCLSH" = "x"; then
+  AC_PATH_PROGS(TCLSH,[tclsh8.5 tclsh8.4 tclsh8.3 tclsh])
+  if test "x$TCLSH" = "x"; then
+    AC_MSG_ERROR([Unable to find a tclsh. Tclsh is a required program for building graphviz, independent of wether tcl-based graphviz products are built])
+    use_tcl="No (tclsh unavailable)"
+  fi
+fi
+
 # are we building for windows?
 # (these tests must follow AC_ISC_POSIX)
 #AC_CYGWIN
@@ -1336,20 +1348,6 @@ AC_ARG_ENABLE(tcl,
 
 if test "x$enable_tcl" != "xyes"; then
   use_tcl="No (disabled)"
-fi
-
-if test "x$use_tcl" = "x"; then
-  AC_ARG_WITH(tclsh,
-    [AC_HELP_STRING([--with-tcl=PROG], [use a specific tclsh])],
-    TCLSH=$withval,)
-
-  if test "x$TCLSH" = "x"; then
-    AC_PATH_PROGS(TCLSH,[tclsh8.5 tclsh8.4 tclsh8.3 tclsh])
-    if test "x$TCLSH" = "x"; then
-      AC_MSG_WARN([Unable to find a tclsh. The Tcl packages will not be built])
-      use_tcl="No (tclsh unavailable)"
-    fi
-  fi
 fi
 
 if test "x$use_tcl" = "x"; then
