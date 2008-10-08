@@ -1,6 +1,6 @@
-New layout: xxx
-
-Entry points: 
+To create a new layout plugin called xxx, you first need
+to provide two functions: xxx_layout and xxx_cleanup. The
+semantics of these are described below.
 
 ========================
 
@@ -28,8 +28,26 @@ Entry points:
 
     Layout the graph. When finished, each node should have its coordinates
   stored in points in ND_coord_i(n), each edge should have its layout
-  described in ED_spl(e). Note: If spline_edges() is used, the coordinates
-  in ND_pos will be correctly copied into ND_coord_i.
+  described in ED_spl(e). 
+  (N.B. As of version 2.21, ND_coord_i has been replaced by ND_coord,
+  which are now floating point coordinates.)
+
+    To add edges, there are 3 functions available:
+
+      - spline_edges1 (Agraph_t*, int edgeType)
+          Assumes the node coordinates are stored in ND_coord_i, and that
+        GD_bb is set. For each edge, this function constructs the appropriate 
+        data and stores it in ED_spl.
+      - spline_edges0 (Agraph_t*)
+          Assumes the node coordinates are stored in ND_pos, and that
+        GD_bb is set. This function uses the ratio attribute if set, 
+        copies the values in ND_pos to ND_coord_i (converting from 
+        inches to points); and calls spline_edges1 using the edge type
+        specified by setEdgeType().
+      - spline_edges (Agraph_t*)
+          Assumes the node coordinates are stored in ND_pos. This
+        function calculates the bounding box of g and stores it in GD_bb,
+        then calls spline_edges0().
 
     If the algorithm only works with connected components, the code can
   use the pack library to get components, lay them out individually, and
@@ -85,6 +103,48 @@ Entry points:
 
        dotneato_postprocess(g);
 
+  The following template will work in most cases, ignoring the problems of
+  handling disconnected graphs and removing node overlaps:
+
+  static void
+  xxx_init_node(node_t * n)
+  {
+    neato_init_node(n);
+    /* add algorithm-specific data, if desired */
+  }
+
+  static void
+  xxx_init_edge(edge_t * e)
+  {
+    common_init_edge(e);
+    /* add algorithm-specific data, if desired */
+  }
+
+  static void
+  xxx_init_node_edge(graph_t * g)
+  {
+    node_t *n;
+    edge_t *e;
+
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+        xxx_init_node(n);
+    }
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+        for (e = agfstout(g, n); e; e = agnxtout(g, e)){          
+            xxx_init_edge(e);
+        }
+    }
+  }
+
+  void
+  xxx_layout (Agraph_t* g)
+  {
+    xxx_init_node_edge(g);
+    /* Set ND_pos(n) for each node n */
+    spline_edges(g);
+    dotneato_postprocess(g);
+  }  
+
 ======================
 
   void xxx_cleanup(Agraph_t * g)
@@ -101,6 +161,40 @@ Entry points:
 
   libgvc does a final cleanup to the root graph, freeing any drawing,
   freeing its label, and zeroing out Agraphinfo_t of the root graph.
+
+  The following template will work in most cases:
+
+  static void xxx_cleanup_graph(Agraph_t * g)
+  {
+    /* Free any algorithm-specific data attached to the graph */
+    if (g != g->root) memset(&(g->u), 0, sizeof(Agraphinfo_t));
+  }
+
+  static void xxx_cleanup_edge (Agedge_t* e)
+  {
+    /* Free any algorithm-specific data attached to the edge */
+    gv_cleanup_edge(e);
+  }
+
+  static void xxx_cleanup_node (Agnode_t* n)
+  {
+    /* Free any algorithm-specific data attached to the node */
+    gv_cleanup_node(e);
+  }
+
+  void xxx_cleanup(Agraph_t * g)
+  {
+    Agnode_t *n;
+    Agedge_t *e;
+
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+        for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+            xxx_cleanup_edge(e);
+        }
+        xxx_cleanup_node(n);
+    }
+    xxx_cleanup_graph(g);
+  }   
 
 ==================
 

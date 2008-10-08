@@ -154,8 +154,8 @@ suggestions for better representations are welcome.
 To allow for changes in the format, Graphviz attaches the attribute
 <TT>xdotversion</TT> to the graph.
 <P>
-At present, additional drawing attributes are only attached to nodes
-and edges. There are six new attributes:
+Additional drawing attributes can appear on nodes, edges, clusters and 
+on the graph itself. There are six new attributes: 
 <SPACER TYPE=VERTICAL size=10>
 <TABLE  border bgcolor=beige>
 <TR><TD>_draw_<TD colspan=2>Drawing operations
@@ -166,8 +166,12 @@ and edges. There are six new attributes:
 <TR><TD>_tldraw_<TD>Tail label<TD>Edge only
 </TABLE>
 <P>
+For a given graph object, one will typically a draw directive before the
+label directive. For example, for a node, one would first use the commands
+in <B>_draw_</B> followed by the commands in <B>_ldraw_</B>.
+<P>
 The value of these attributes consists of the concatenation of some
-(multi-)set of the following 12 rendering or attribute operations.
+(multi-)set of the following 13 rendering or attribute operations.
 (The number is parentheses gives the xdot version when the operation
 was added to the format. If no version number is given, the operation
 was in the original specification.)
