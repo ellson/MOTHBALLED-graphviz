@@ -165,6 +165,9 @@ BuildRequires: xorg-x11-devel
 %define PYTHON 1
 BuildRequires: libtool-ltdl libtool-ltdl-devel ruby ruby-devel guile-devel python-devel
 %endif
+%if %fedora < 5
+Requires graphviz-gd
+%endif
 %if %fedora >= 5
 %define PHP 1
 %define JAVA 1
@@ -227,6 +230,9 @@ BuildRequires: xorg-x11-devel
 %define GUILE 1
 %define PYTHON 1
 BuildRequires: libtool-ltdl libtool-ltdl-devel ruby ruby-devel guile-devel python-devel
+%endif
+%if %att_fedora < 5
+Requires graphviz-gd
 %endif
 %if %att_fedora >= 5
 %define PHP 1
