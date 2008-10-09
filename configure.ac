@@ -155,8 +155,10 @@ case "${host_os}" in
 	PATHSEPARATOR=":"
         NO_POSTSCRIPT_ALIAS=1
 	AC_DEFINE_UNQUOTED(DARWIN_DYLIB,"$DARWIN_DYLIB",[Define for Darwin-style shared library names.])
+	echo ">>>>>host_os is $host_os"
 	case "${host_os}" in
-	*darwin9.4* )
+	*darwin9.4* | *darwin9.5* )
+		echo ">>>>>see darwin9.[45]"
 		EXTRA_SMYRNA_LDFLAGS="-dylib_file /System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib"
 		;;
 	esac
