@@ -22,9 +22,11 @@ inkpot_LDADD = $(builddir)/libinkpot.la
 
 libinkpot_C_la_SOURCES = inkpot_scheme.c inkpot_value.c inkpot_xlate.c
 libinkpot_C_la_LIBADD = $(top_builddir)/lib/rbtree/librbtree_C.la
+libinkpot_C_la_DEPENDENCIES = $(top_builddir)/lib/rbtree/librbtree_C.la
 
 libinkpot_la_SOURCES = $(libinkpot_C_la_SOURCES)
 libinkpot_la_LIBADD = $(libinkpot_C_la_LIBADD)
+libinkpot_la_DEPENDENCIES = $(libinkpot_C_la_DEPENDENCIES)
 libinkpot_la_LDFLAGS = -version-info $(VERSION_INFO) -no-undefined 
 
 inkpot_scheme.o inkpot_scheme.lo: inkpot_lib_define.h inkpot_lib_scheme.h 

@@ -45,7 +45,8 @@ libgvc_C_la_SOURCES = gvrender.c gvlayout.c gvdevice.c gvloadimage.c \
 	gvtextlayout.c gvusershape.c gvc.c
 libgvc_C_la_LIBADD = $(top_builddir)/lib/common/libcommon_C.la \
 	$(top_builddir)/lib/pack/libpack_C.la
-
+libgvc_C_la_DEPENDENCIES = $(top_builddir)/lib/rbtree/librbtree_C.la \
+	$(top_builddir)/lib/pack/libpack_C.la
 #For use with plugins.
 #   so it is linked with an empty table of builtins.
 libgvc_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
@@ -55,6 +56,7 @@ libgvc_la_LIBADD = $(libgvc_C_la_LIBADD) \
 	$(top_builddir)/lib/graph/libgraph.la \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
 	@GTS_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @MATH_LIBS@
+libgvc_la_DEPENDENCIES = $(libgvc_C_la_DEPENDENCIES)
 
 #For use without plugins.
 #  so it needs to be linked with a preset table of builtins, e.g. dot_builtins.c,
@@ -64,6 +66,7 @@ libgvc_la_LIBADD = $(libgvc_C_la_LIBADD) \
 libgvc_builtins_la_LDFLAGS = -version-info @VERSION_INFO@
 libgvc_builtins_la_SOURCES = $(libgvc_C_la_SOURCES)
 libgvc_builtins_la_LIBADD = $(libgvc_la_LIBADD)
+libgvc_builtins_la_DEPENDENCIES = $(libgvc_la_DEPENDENCIES)
 
 gvc.3.pdf: $(srcdir)/gvc.3
 	- @GROFF@ -Tps -man $(srcdir)/gvc.3 | @PS2PDF@ - - > gvc.3.pdf
