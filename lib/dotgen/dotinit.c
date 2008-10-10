@@ -237,28 +237,53 @@ extern int prevIterations;
 extern int curIterations;
 /**************************** EXTERNAL VARIABLES ***********************/
 
-int nextiter;
 int packiter = 0;
-int nPasses = 0;
-
-double start, finish, totalCLK;
 
 void dot_layout(Agraph_t * g)
 {
-
+    int rvi, targetITR, iter, packiter = 0;
+    double rv, start, finish, totalCLK;
     setEdgeType (g, ET_SPLINE);
+    attrsym_t *a;
+    char *p;
 
-    nextiter = -1;
+
+#define MIN_AR 1.0
+#define MAX_AR 20.0
+#define MIN_ITR 1
+#define DEF_ITR 5
+#define MAX_ITR 200
+
+    targetAR = MIN_AR; /* default target aspect-ratio and iterations */
+    targetITR = MIN_ITR;  /* if targetAR isn't given, the do just the minimum*/
+    if ((a = agfindattr(g, "aspect"))) {
+        p = agxget(g, a->index);
+	if (p[0]) {
+	    if ((rv = atof(p)) > MIN_AR) targetAR = rv;
+	    if (targetAR > MAX_AR) targetAR = MAX_AR;
+            targetITR = DEF_ITR;  /* if targetAR *is* given, the init default */
+	    if ((p = strchr(p, ','))) {
+		p++;
+		if (p[0]) {
+		    if ((rvi = atoi(p)) > MIN_ITR) targetITR = rvi;
+		    if (targetITR > MAX_ITR) targetITR = MAX_ITR;
+		}
+	    }
+	}
+    }
+
+    if (Verbose) 
+        fprintf(stderr, "Target AR = %g\n", targetAR);
 
     dot_init_node_edge(g);
 
-#ifdef ASPECT
-    printf("Target AR = ");
-    scanf("%lf", &targetAR);
+    iter = 0;
+    while (iter < targetITR) {
+	iter++;
 
-    do {
-        nPasses++;
-#endif
+        if (Verbose) 
+            fprintf(stderr, "Iteration = %d (of %d max) Current AR = %g\n",
+		iter, targetITR, currentAR);
 
         start = clock();
         dot_rank(g);
@@ -271,20 +296,7 @@ void dot_layout(Agraph_t * g)
 
         finish = clock();
         totalCLK += finish - start;
-
-#ifdef ASPECT
-        char response[100];
-        printf("Continue: yes/no/enter # of iterations? (y/n/i)");
-        scanf("%s",response);
-        if (!strcmp(response, "n") || !strcmp(response, "N"))
-            break;
-        else if (!strcmp(response, "i") || !strcmp(response, "I"))
-        {
-            printf("Enter # of iterations: ");
-            scanf("%d", &nextiter);
-        }
-    } while (nextiter);
-#endif
+    }
 
     dot_sameports(g);
 
@@ -296,7 +308,7 @@ void dot_layout(Agraph_t * g)
     dotneato_postprocess(g);
 
     if (Verbose) {
-        fprintf(stderr, "Packing iterations=%d\n# of Passes=%d\n", packiter, nPasses);
+        fprintf(stderr, "Packing iterations=%d\n# of Passes=%d\n", packiter, iter);
         fprintf(stderr, "Total time = %0.3lf sec\n\n", totalCLK/CLOCKS_PER_SEC);
     }
 }

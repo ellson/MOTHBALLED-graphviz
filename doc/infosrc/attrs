@@ -88,6 +88,8 @@ Multiplicative scale factor for arrowheads.
 Style of arrowhead on the tail node of an edge.
 See also the <A HREF=#d:dir>dir</A> attribute,
 and a <A HREF=#h:undir_note>limitation</A>.
+:aspect:G:aspectType:1.0,1;
+Target aspect ratio of the renderered graph, and optionally the maximum number of iterations allowed to achieve it.
 :bb:G:rect; write
 Bounding box of drawing in integer points.
 :bgcolor:GC:color:<none>;
