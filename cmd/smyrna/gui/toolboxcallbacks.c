@@ -83,8 +83,85 @@ void btnToolZoomOut_clicked(GtkWidget * widget, gpointer user_data)
     expose_event(view->drawing_area, NULL, NULL);
 }
 
+void btnToolZoomFit_clicked(GtkWidget * widget, gpointer user_data)
+{
+
+	float scx,scy,gcx,gcy,z,GDX,SDX;
+
+	(view->active_camera >=0)
+			? (z=view->cameras[view->active_camera]->r):(z=view->zoom*-1);
+
+	GDX=(view->bdxRight/z-view->bdxLeft/z);
+	SDX=(view->clipX2 -view->clipX1);
+	GDY=(view->bdxTop/z-view->bdxBottom/z);
+	SDY=(view->clipY2 -view->clipY1);
+	
+	if ((SDX / GDX) <= (SDY / GDY))
+	{
+		(view->active_camera >=0) ?
+			(view->cameras[view->active_camera]->r=view->cameras[view->active_camera]->r/ (SDX/GDX) ):
+				(view->zoom = view->zoom /(SDX/GDX));
+	}
+	else
+	{
+		(view->active_camera >=0) ?
+			(view->cameras[view->active_camera]->r=view->cameras[view->active_camera]->r/ (SDY/GDY) ):
+				(view->zoom = view->zoom /(SDY/GDY));
+
+	}
+
+}
+
 void btnToolFit_clicked(GtkWidget * widget, gpointer user_data)
 {
+	float scx,scy,gcx,gcy,z,GDX,SDX;
+	printf ("graph boundry summary\n");
+	printf ("---------------------\n");
+	printf ("G   (%f,%f) - (%f,%f)\n",view->bdxLeft/view->zoom*-1,view->bdyBottom/view->zoom
+		*-1,view->bdxRight/view->zoom*-1,view->bdyTop/view->zoom*-1);
+	printf ("Scr (%f,%f) - (%f,%f)\n",view->clipX1 ,view->clipY1 ,view->clipX2 ,view->clipY2);
+	printf ("Old Panx:%f\n",view->panx);
+
+
+	(view->active_camera >=0)
+			? (z=view->cameras[view->active_camera]->r):(z=view->zoom*-1);
+
+
+
+	printf ("Z:%f  BDX:%f zoom * BDX :%f\n",z,(view->bdxRight/z-view->bdxLeft/z),z*(view->bdxRight/z-view->bdxLeft/z));
+
+
+
+
+
+	gcx=view->bdxLeft/z+(view->bdxRight/z-view->bdxLeft/z)/(float)(2.0);
+	scx=view->clipX1+(view->clipX2 -view->clipX1)/(float)(2.0);
+	gcy=view->bdyBottom/z+(view->bdyTop/z-view->bdyBottom/z)/(float)(2.0);
+	scy=view->clipY1+(view->clipY2 -view->clipY1)/(float)(2.0);
+
+
+
+	if (view->active_camera >=0)
+	{
+
+		view->cameras[view->active_camera]->targetx +=(gcx-scx);
+		view->cameras[view->active_camera]->targety +=(gcx-scy);
+	}
+	else
+	{
+		float GDX=(view->bdxRight/z-view->bdxLeft/z);
+		float SDX=(view->clipX2 -view->clipX1);
+		printf ("GDX:%f SDX:%f \n",GDX,SDX);
+		view->panx += (gcx-scx);
+		view->pany += (gcy-scy);
+		view->zoom = view->zoom /(SDX/GDX);
+	}
+
+	printf ("scx:%f\n",scx);
+	printf ("gcx:%f\n",gcx);
+	printf ("New Panx:%f\n",view->panx);
+
+	glexpose();
 }
 void btnToolMove_clicked(GtkWidget * widget, gpointer user_data)
 {

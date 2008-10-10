@@ -123,6 +123,7 @@ int main(int argc, char *argv[])
     package_data_dir = g_build_filename(package_prefix, "share", NULL);
     package_locale_dir =
 	g_build_filename(package_prefix, "share", "locale", NULL);
+	add_pixmap_directory("C:/");
 #else
     if (smyrnaDir)
 	package_locale_dir = g_build_filename(smyrnaDir, "locale", NULL);
@@ -136,7 +137,6 @@ int main(int argc, char *argv[])
 #endif
     view = NEW(ViewInfo);
     init_viewport(view);
-
     gtk_set_locale();
     gtk_init(&argc, &argv);
     initFileName = parseArgs (argc, argv, view);

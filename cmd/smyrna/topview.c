@@ -237,7 +237,7 @@ static float set_gl_dot_size(topview * t)
 
 	dotsize=dotsize * DOT_SIZE_CORRECTION_FAC;
 	if (dotsize <=1)
-		dotsize=1;
+		dotsize=4;
 	glPointSize(dotsize);
 	return dotsize;
 
@@ -303,7 +303,7 @@ static int drawtopviewnodes(Agraph_t * g)
 		     view->clipY1)
 		 && (-view->Topview->Nodes[ind].y / view->zoom <
 		     view->clipY2))
-		|| (view->active_camera >= 0)) {
+		|| (view->active_camera >= 0) ) {
 		float zdepth;
 		v = &view->Topview->Nodes[ind];
 		if (!node_visible(v->Node))
@@ -335,7 +335,7 @@ static int drawtopviewnodes(Agraph_t * g)
 		else
 		    zdepth = (float) Z_BACK_PLANE;
 
-			if ((view->defaultnodeshape==0) || dotsize == 1)
+			if ((view->defaultnodeshape==0))
 			{
 				glVertex3f(v->distorted_x - ddx,
 				v->distorted_y - ddy, v->distorted_z - ddz);
@@ -716,7 +716,7 @@ static int draw_topview_label(topview_node * v, float zdepth)
 				1) *
 			    (double) 3) : (float) (log((double) v->degree +
 						       (double) 0.5) *
-						   (double) 3);
+						   (double) 3)*15;
 	fs = fs * v->zoom_factor;
 	if (OD_Selected(v->Node) == 1) {
 	    ddx = dx;
@@ -735,7 +735,7 @@ static int draw_topview_label(topview_node * v, float zdepth)
 
 	fontDrawString((int) (v->distorted_x - ddx),
 		       (int) (v->distorted_y - ddy), v->Label,
-		       (int) (fs * 5));
+		       (int) (fs * strlen(v->Label)));
 
 	return 1;
     } else
