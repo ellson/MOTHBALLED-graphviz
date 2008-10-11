@@ -1108,15 +1108,14 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
              */
             if ((nump < 4) || (nump > 60))
                 nump = DFLT_SAMPLE;
-            /* use bounding box of text label for mapping
+            /* use bounding box of text label or node image for mapping
              * when polygon has no peripheries and node is not filled
              */
             if (poly->peripheries == 0 && !filled) {
                 obj->url_map_shape = MAP_RECTANGLE;
                 nump = 2;
                 p = N_NEW(nump, pointf);
-                ldimen = ND_label(n)->dimen;
-                P2RECT(coord, p, ldimen.x / 2.0, ldimen.y / 2.0);
+                P2RECT(coord, p, ND_lw(n), ND_ht(n) / 2.0 );
             }
             /* circle or ellipse */
             else if (poly->sides < 3 && poly->skew == 0.0 && poly->distortion == 0.0) {
