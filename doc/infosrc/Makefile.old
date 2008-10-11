@@ -53,7 +53,7 @@ A2GIF= aa_box.gif aa_lbox.gif aa_rbox.gif aa_obox.gif aa_olbox.gif aa_orbox.gif\
        aa_tee.gif aa_ltee.gif aa_rtee.gif \
        aa_vee.gif aa_lvee.gif aa_rvee.gif 
 
-GIF = $(SGIF) $(AGIF) $(MGIF) $(A2GIF)
+GIF = $(SGIF) $(AGIF) $(MGIF) $(A2GIF) $(XGIF)
 DOTS = html2.dot html3.dot html4.dot
 HTML = attrs.html colors.html command.html lang.html output.html shapes.html \
        arrows.html
