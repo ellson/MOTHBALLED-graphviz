@@ -36,12 +36,13 @@ extern void epsf_emit_body(GVJ_t *job, usershape_t *us);
 extern shape_desc *find_user_shape(char *name);
 
 typedef enum {
-    FORMAT_PNG_SVG, FORMAT_GIF_SVG, FORMAT_JPEG_SVG,
-    FORMAT_PNG_XDOT, FORMAT_GIF_XDOT, FORMAT_JPEG_XDOT, FORMAT_PS_XDOT, FORMAT_SVG_XDOT,
-    FORMAT_PNG_FIG, FORMAT_GIF_FIG, FORMAT_JPEG_FIG,
+    FORMAT_PNG_XDOT, FORMAT_GIF_XDOT, FORMAT_JPEG_XDOT, FORMAT_SVG_XDOT, FORMAT_PS_XDOT,
+    FORMAT_PNG_DOT,  FORMAT_GIF_DOT,  FORMAT_JPEG_DOT,  FORMAT_SVG_DOT,  FORMAT_PS_DOT,
+    FORMAT_PNG_MAP,  FORMAT_GIF_MAP,  FORMAT_JPEG_MAP,  FORMAT_SVG_MAP,  FORMAT_PS_MAP,
+    FORMAT_PNG_SVG,  FORMAT_GIF_SVG,  FORMAT_JPEG_SVG,  FORMAT_SVG_SVG,
+    FORMAT_PNG_FIG,  FORMAT_GIF_FIG,  FORMAT_JPEG_FIG,
     FORMAT_PNG_VRML, FORMAT_GIF_VRML, FORMAT_JPEG_VRML,
-    FORMAT_PS_PS, FORMAT_PSLIB_PS, FORMAT_SVG_SVG,
-    FORMAT_PNG_DOT, FORMAT_GIF_DOT, FORMAT_JPEG_DOT, FORMAT_PS_DOT, FORMAT_SVG_DOT,
+    FORMAT_PS_PS, FORMAT_PSLIB_PS, 
 } format_type;
 
 static void core_loadimage_svg(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
@@ -231,7 +232,7 @@ static void core_loadimage_pslib(GVJ_t * job, usershape_t *us, boxf b, boolean f
     }
 }
 
-void core_loadimage_dot(GVJ_t *gvc, usershape_t *us, boxf b, boolean filled)
+void core_loadimage_null(GVJ_t *gvc, usershape_t *us, boxf b, boolean filled)
 {
     /* null function - basically suppress the missing loader message */
 }
@@ -256,8 +257,8 @@ static gvloadimage_engine_t engine_pslib = {
     core_loadimage_pslib
 };
 
-static gvloadimage_engine_t engine_dot = {
-    core_loadimage_dot
+static gvloadimage_engine_t engine_null = {
+    core_loadimage_null
 };
 
 static gvloadimage_engine_t engine_xdot = {
@@ -287,13 +288,21 @@ gvplugin_installed_t gvloadimage_core_types[] = {
     {FORMAT_PS_PS, "ps:lasi", 1, &engine_ps, NULL},
     {FORMAT_PSLIB_PS, "(lib):ps", 1, &engine_pslib, NULL},  /* for pslib */
 
-    {FORMAT_PNG_DOT, "png:dot", 1, &engine_dot, NULL},
-    {FORMAT_GIF_DOT, "gif:dot", 1, &engine_dot, NULL},
-    {FORMAT_JPEG_DOT, "jpeg:dot", 1, &engine_dot, NULL},
-    {FORMAT_JPEG_DOT, "jpe:dot", 1, &engine_dot, NULL},
-    {FORMAT_JPEG_DOT, "jpg:dot", 1, &engine_dot, NULL},
-    {FORMAT_PS_DOT, "ps:dot", 1, &engine_dot, NULL},
-    {FORMAT_SVG_DOT, "svg:dot", 1, &engine_dot, NULL},
+    {FORMAT_PNG_MAP, "png:map", 1, &engine_null, NULL},
+    {FORMAT_GIF_MAP, "gif:map", 1, &engine_null, NULL},
+    {FORMAT_JPEG_MAP, "jpeg:map", 1, &engine_null, NULL},
+    {FORMAT_JPEG_MAP, "jpe:map", 1, &engine_null, NULL},
+    {FORMAT_JPEG_MAP, "jpg:map", 1, &engine_null, NULL},
+    {FORMAT_PS_MAP, "ps:map", 1, &engine_null, NULL},
+    {FORMAT_SVG_MAP, "svg:map", 1, &engine_null, NULL},
+
+    {FORMAT_PNG_DOT, "png:dot", 1, &engine_null, NULL},
+    {FORMAT_GIF_DOT, "gif:dot", 1, &engine_null, NULL},
+    {FORMAT_JPEG_DOT, "jpeg:dot", 1, &engine_null, NULL},
+    {FORMAT_JPEG_DOT, "jpe:dot", 1, &engine_null, NULL},
+    {FORMAT_JPEG_DOT, "jpg:dot", 1, &engine_null, NULL},
+    {FORMAT_PS_DOT, "ps:dot", 1, &engine_null, NULL},
+    {FORMAT_SVG_DOT, "svg:dot", 1, &engine_null, NULL},
 
     {FORMAT_PNG_XDOT, "png:xdot", 1, &engine_xdot, NULL},
     {FORMAT_GIF_XDOT, "gif:xdot", 1, &engine_xdot, NULL},
