@@ -1046,7 +1046,7 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
     int flags = job->flags;
     int sides, peripheries, i, j, filled = 0, rect = 0, shape, nump = 0;
     polygon_t *poly = NULL;
-    pointf *vertices, ldimen, *p = NULL;
+    pointf *vertices, *p = NULL;
     pointf coord;
     char *s;
 
