@@ -1835,6 +1835,30 @@ fi
 AM_CONDITIONAL(WITH_RSVG, [test "x$use_rsvg" = "xYes"])
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for GS
+                                                                                
+AC_ARG_WITH(gs,
+  [AC_HELP_STRING([--with-gs=yes], [gs library])],
+  [], [with_gs=yes])
+
+if test "x$with_gs" != "xyes"; then
+  use_gs="No (disabled)"
+else
+  AC_CHECK_HEADER(ghostscript/iapi.h, GS_CFLAGS="",use_gs="No (missing headers)")
+  if test "x$use_gs" = "x"; then
+    AC_CHECK_LIB(gs, main, GS_LIBS="-lgs", use_gs="No (missing lib)")
+    if test "x$use_gs" = "x"; then
+      use_gs="Yes"
+      AC_DEFINE_UNQUOTED(HAVE_GS,1,
+        [Define if you have the gs library])
+      AC_SUBST(GS_CFLAGS)
+      AC_SUBST(GS_LIBS)
+    fi
+  fi
+fi
+AM_CONDITIONAL(WITH_GS, [test "x$use_gs" = "xYes"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for PANGO, CAIRO et.al.
                                                                                 
 AC_ARG_WITH(pangocairo,
@@ -2904,6 +2928,7 @@ AC_CONFIG_FILES(Makefile
 	plugin/gdk_pixbuf/Makefile
 	plugin/gdiplus/Makefile
 	plugin/glitz/Makefile
+	plugin/gs/Makefile
 	plugin/gtk/Makefile
 	plugin/lasi/Makefile
 	plugin/ming/Makefile
@@ -3021,6 +3046,7 @@ echo "  gd:            $use_gd"
 echo "  gdiplus:       $use_gdiplus"
 echo "  gdk_pixbuf:    $use_gdk_pixbuf"
 echo "  glitz:         $use_glitz"
+echo "  gs:            $use_gs"
 echo "  gtk:           $use_gtk"
 echo "  lasi:          $use_lasi"
 echo "  ming:          $use_ming"
