@@ -1893,11 +1893,11 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for LASI
                                                                                 
 AC_ARG_WITH(lasi,
-  [AC_HELP_STRING([--with-lasi=no], [lasi library])],
-  [], [with_lasi=no])
+  [AC_HELP_STRING([--with-lasi=yes], [lasi library])],
+  [], [with_lasi=yes])
 
 if test "x$with_lasi" != "xyes"; then
-  use_lasi="No (disabled by default - incomplete)"
+  use_lasi="No (disabled)"
 else
   PKG_CHECK_MODULES(LASI, [lasi],[
     use_lasi="Yes"
