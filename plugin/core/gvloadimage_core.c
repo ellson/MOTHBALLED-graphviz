@@ -284,6 +284,8 @@ gvplugin_installed_t gvloadimage_core_types[] = {
     {FORMAT_JPEG_VRML, "jpe:vrml", 1, &engine_vrml, NULL},
     {FORMAT_JPEG_VRML, "jpg:vrml", 1, &engine_vrml, NULL},
 
+    {FORMAT_PS_PS, "eps:ps", 1, &engine_ps, NULL},
+    {FORMAT_PS_PS, "eps:lasi", 1, &engine_ps, NULL},
     {FORMAT_PS_PS, "ps:ps", 1, &engine_ps, NULL},
     {FORMAT_PS_PS, "ps:lasi", 1, &engine_ps, NULL},
     {FORMAT_PSLIB_PS, "(lib):ps", 1, &engine_pslib, NULL},  /* for pslib */
@@ -294,6 +296,7 @@ gvplugin_installed_t gvloadimage_core_types[] = {
     {FORMAT_JPEG_MAP, "jpe:map", 1, &engine_null, NULL},
     {FORMAT_JPEG_MAP, "jpg:map", 1, &engine_null, NULL},
     {FORMAT_PS_MAP, "ps:map", 1, &engine_null, NULL},
+    {FORMAT_PS_MAP, "eps:map", 1, &engine_null, NULL},
     {FORMAT_SVG_MAP, "svg:map", 1, &engine_null, NULL},
 
     {FORMAT_PNG_DOT, "png:dot", 1, &engine_null, NULL},
@@ -302,6 +305,7 @@ gvplugin_installed_t gvloadimage_core_types[] = {
     {FORMAT_JPEG_DOT, "jpe:dot", 1, &engine_null, NULL},
     {FORMAT_JPEG_DOT, "jpg:dot", 1, &engine_null, NULL},
     {FORMAT_PS_DOT, "ps:dot", 1, &engine_null, NULL},
+    {FORMAT_PS_DOT, "eps:dot", 1, &engine_null, NULL},
     {FORMAT_SVG_DOT, "svg:dot", 1, &engine_null, NULL},
 
     {FORMAT_PNG_XDOT, "png:xdot", 1, &engine_xdot, NULL},
@@ -310,6 +314,7 @@ gvplugin_installed_t gvloadimage_core_types[] = {
     {FORMAT_JPEG_XDOT, "jpe:xdot", 1, &engine_xdot, NULL},
     {FORMAT_JPEG_XDOT, "jpg:xdot", 1, &engine_xdot, NULL},
     {FORMAT_PS_XDOT, "ps:xdot", 1, &engine_xdot, NULL},
+    {FORMAT_PS_XDOT, "eps:xdot", 1, &engine_xdot, NULL},
     {FORMAT_SVG_XDOT, "svg:xdot", 1, &engine_xdot, NULL},
 
     {FORMAT_SVG_SVG, "svg:svg", 1, &engine_svg, NULL},

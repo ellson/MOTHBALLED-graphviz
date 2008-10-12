@@ -1,6 +1,7 @@
 #!/usr/bin/tclsh
 
 set fn /usr/lib64/graphviz/config5
+#set fn $env(PREFIX)/lib/graphviz/config5
 set f [open $fn r]
 set d [read $f [file size $fn]]
 close $f
@@ -10,6 +11,7 @@ regsub -all -line {^#.*$} $d {} d
 proc mergealias {format} {
     switch $format {
 	jpg - jpeg - jpe {return jpg/jpe/jpeg}
+	ps - eps {return ps/eps}
 	default {return $format}
     }
 }
@@ -82,11 +84,13 @@ foreach {name} [array names LIB] {
 }
 foreach {name_iformat} [lsort [array names INAMEFORMAT]] {
     foreach {name iformat} $name_iformat {break}
-    if {[string equal $iformat svg]} {set color red} {set color black}
+    if {[string equal $iformat ps/eps]} {set color red} {set color black}
     puts $f "\t\"i-$iformat\" -> \"i-$name-$iformat\" \[color=$color\]"
     foreach {irender} [lsort -unique $INAMEFORMAT($name_iformat)] {
 	puts $f "\t\"i-$name-$iformat\" -> \"r-$irender\" \[color=$color\]"
-	set RENDERCOLOR($irender) $color
+        if {! [string equal $color black]} {
+	    set RENDERCOLOR($irender) $color
+        }
     }
 }
 foreach {name_oformat} [lsort [array names ONAMEFORMAT]] {
