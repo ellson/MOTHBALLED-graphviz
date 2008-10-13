@@ -229,28 +229,28 @@ was in the original specification.)
 <TD>B-spline using the given n control points
 <TR><TD>b n x<sub>1</sub> y<sub>1</sub> ... x<sub>n</sub> y<sub>n</sub>
 <TD>Filled B-spline using the given n control points (1.1)
-<TR><TD>T x y j w n -<I>c<sub>1</sub>c<sub>2</sub>...c<sub>n</sub><I>
+<TR><TD>T x y j w n -<I>b<sub>1</sub>b<sub>2</sub>...b<sub>n</sub></I>
 <TD>Text drawn using the baseline point (x,y). The text consists of the
-n characters following '-'. The text should be left-aligned (centered,
+n bytes following '-'. The text should be left-aligned (centered,
 right-aligned) on the point if j is -1 (0, 1), respectively. The value
 w gives the width of the text as computed by the library.
-<TR><TD>C n -<I>c<sub>1</sub>c<sub>2</sub>...c<sub>n</sub><I>
+<TR><TD>C n -<I>b<sub>1</sub>b<sub>2</sub>...b<sub>n</sub></I>
 <TD>Set fill color. The color value consists of the
-n characters following '-'. (1.1)
-<TR><TD>c n -<I>c<sub>1</sub>c<sub>2</sub>...c<sub>n</sub><I>
+n bytes following '-'. (1.1)
+<TR><TD>c n -<I>b<sub>1</sub>b<sub>2</sub>...b<sub>n</sub></I>
 <TD>Set pen color. The color value consists of the
-n characters following '-'. (1.1)
-<TR><TD>F s n -<I>c<sub>1</sub>c<sub>2</sub>...c<sub>n</sub><I>
+n bytes following '-'. (1.1)
+<TR><TD>F s n -<I>b<sub>1</sub>b<sub>2</sub>...b<sub>n</sub></I>
 <TD>Set font. The font size is s points. The font name consists of the
-n characters following '-'. (1.1)
-<TR><TD>S n -<I>c<sub>1</sub>c<sub>2</sub>...c<sub>n</sub><I>
+n bytes following '-'. (1.1)
+<TR><TD>S n -<I>b<sub>1</sub>b<sub>2</sub>...b<sub>n</sub></I>
 <TD>Set style attribute. The style value consists of the
-n characters following '-'. The syntax of the value is the same as
+n bytes following '-'. The syntax of the value is the same as
 specified for a <B>styleItem</B> in <A HREF=attrs.html#k:style>style</A>. (1.1)
-<TR><TD>I x y w h n -<I>c<sub>1</sub>c<sub>2</sub>...c<sub>n</sub><I>
+<TR><TD>I x y w h n -<I>b<sub>1</sub>b<sub>2</sub>...b<sub>n</sub></I>
 <TD>Externally-specified image drawn in the box with lower left
 corner (x,y) and upper right corner (x+w,y+h). The name of the image
-consists of the n characters following '-'. This is usually a bitmap
+consists of the n bytes following '-'. This is usually a bitmap
 image. Note that the image size, even when converted from pixels to
 points, might be different from the required size (w,h). It is
 assumed the renderer will perform the necessary scaling. (1.2)
