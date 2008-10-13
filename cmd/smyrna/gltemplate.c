@@ -242,9 +242,9 @@ gboolean expose_event(GtkWidget * widget, GdkEventExpose * event,
 static gboolean button_press_event(GtkWidget * widget,
 				   GdkEventButton * event, gpointer data)
 {
-    if (view->graphCount) {
-	if (glCompSetClick
-	    (view->Topview->topviewmenu, (int) event->x, (int) event->y))
+    if (view->graphCount)
+	{
+		if (glCompSetClick(view->Topview->topviewmenu, (int) event->x, (int) event->y))
 	    expose_event(view->drawing_area, NULL, NULL);
     }
 
@@ -252,30 +252,36 @@ static gboolean button_press_event(GtkWidget * widget,
     begin_y = (float) event->y;
 
     if (event->button == 3)	//right click
-	view->mouse.button = rightmousebutton;
+	{
+		view->mouse.button = rightmousebutton;
+		if (GetOGLPosRef    ((int) begin_x, (int) begin_y, &(view->GLx), &(view->GLy),
+	     &(view->GLz))) 
+		{
+				expose_event(view->drawing_area, NULL, NULL);
+		}
 
-
+	}
     if (event->button == 1)	//left click
     {
-	view->prevpanx = view->panx;
-	view->prevpany = view->pany;
-	view->mouse.mouse_down = 1;
-	view->mouse.button = leftmousebutton;
-	if (GetOGLPosRef
-	    ((int) begin_x, (int) begin_y, &(view->GLx), &(view->GLy),
-	     &(view->GLz))) {
-	    if (view->mouse.mouse_mode == MM_SINGLE_SELECT)	//single select
-	    {
-		view->Selection.Active = 1;
-		view->Selection.Type = 0;
-		view->Selection.AlreadySelected = 0;
-		view->Selection.X = view->GLx - SINGLE_SELECTION_WIDTH / 2;
-		view->Selection.Y = view->GLy - SINGLE_SELECTION_WIDTH / 2;
-		view->Selection.W = SINGLE_SELECTION_WIDTH;
-		view->Selection.H = SINGLE_SELECTION_WIDTH;
-		expose_event(view->drawing_area, NULL, NULL);
-	    }
-	}
+		view->prevpanx = view->panx;
+		view->prevpany = view->pany;
+		view->mouse.mouse_down = 1;
+		view->mouse.button = leftmousebutton;
+		if (GetOGLPosRef    ((int) begin_x, (int) begin_y, &(view->GLx), &(view->GLy),
+	     &(view->GLz))) 
+		{
+			if (view->mouse.mouse_mode == MM_SINGLE_SELECT)	//single select
+			{
+				view->Selection.Active = 1;
+				view->Selection.Type = 0;
+				view->Selection.AlreadySelected = 0;
+				view->Selection.X = view->GLx - SINGLE_SELECTION_WIDTH / 2;
+				view->Selection.Y = view->GLy - SINGLE_SELECTION_WIDTH / 2;
+				view->Selection.W = SINGLE_SELECTION_WIDTH;
+				view->Selection.H = SINGLE_SELECTION_WIDTH;
+				expose_event(view->drawing_area, NULL, NULL);
+			}
+		}
     }
     return FALSE;
 }
@@ -332,7 +338,6 @@ static gboolean button_release_event(GtkWidget * widget,
 	}
 	if (view->mouse.mouse_mode==MM_PAN)
 		{
-			view->mouse.pick=1;
 			expose_event(view->drawing_area, NULL, NULL);
 
 		}
