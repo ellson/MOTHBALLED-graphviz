@@ -27,8 +27,8 @@
 #ifdef HAVE_GS
 #ifdef HAVE_PANGOCAIRO
 #include <ghostscript/iapi.h>
+#include <ghostscript/ierrors.h>
 #include <cairo/cairo.h>
-#include <cairo/cairo-ps.h>
 
 #ifdef WIN32
 #define NUL_FILE "nul"
@@ -65,6 +65,12 @@ static int gs_writer(void *caller_handle, const char *str, int len)
     return len;
 }
 
+static void gs_error(GVJ_t * job, const char *funstr, int err)
+{
+    assert (err < 0);
+    job->common->errorfn("%s() returned: %s\n", funstr, gs_error_names[-err - 1]);
+}
+
 static cairo_pattern_t* gvloadimage_gs_load(GVJ_t * job, usershape_t *us)
 {
     gs_t *gs = NULL;
@@ -98,7 +104,7 @@ static cairo_pattern_t* gvloadimage_gs_load(GVJ_t * job, usershape_t *us)
 	cairo_t *cr; /* temp cr for gs */
 
 	if (!gvusershape_file_access(us)) {
-	    job->common->errorfn("Failure to access usershape file\n");
+	    job->common->errorfn("Failure to read shape file\n");
 	    return NULL;
 	}
 	gs = (gs_t *)malloc(sizeof(gs_t));
@@ -126,12 +132,13 @@ static cairo_pattern_t* gvloadimage_gs_load(GVJ_t * job, usershape_t *us)
 	}
 	rc = gsapi_new_instance(&instance, (void*)job);
 	if (rc) {
-	    job->common->errorfn("gsapi_new_instance() returned %d\n", rc);
+	    gs_error(job, "gsapi_new_instance", rc);
 	    return NULL;
 	}
 	rc = gsapi_set_stdio(instance, NULL, gs_writer, gs_writer);
 	if (rc) {
-	    job->common->errorfn("gsapi_set_stdio() returned %d\n", rc);
+	    gs_error(job, "gsapi_set_stdio", rc);
+	    gsapi_delete_instance(instance);
 	    return NULL;
 	}
 	sprintf(width_height, "-g%dx%d", us->x + us->w, us->y + us->h);
@@ -141,17 +148,23 @@ static cairo_pattern_t* gvloadimage_gs_load(GVJ_t * job, usershape_t *us)
 	rc = gsapi_init_with_args(instance, GS_ARGC, gs_args);
 	cairo_destroy(cr);
 	if (rc) {
-	    job->common->errorfn("gsapi_init_with_args() returned %d\n", rc);
+	    gs_error(job, "gsapi_init_with_args", rc);
 	    return NULL;
 	}
-	rc = gsapi_run_file(instance, us->name, 0, &exit_code); 
+	rc = gsapi_run_file(instance, us->name, -1, &exit_code); 
 	if (rc) {
-	    job->common->errorfn("gsapi_run_file() returned %d\n", rc);
+	    gs_error(job, "gsapi_run_file", rc);
+	    rc = gsapi_exit(instance);
+	    if (rc) {
+	        gs_error(job, "gsapi_exit", rc);
+	        return NULL;
+	    }
+	    gsapi_delete_instance(instance);
 	    return NULL;
 	}
 	rc = gsapi_exit(instance);
 	if (rc) {
-	    job->common->errorfn("gsapi_exit() returned %d\n", rc);
+	    gs_error(job, "gsapi_exit", rc);
 	    return NULL;
 	}
 	gsapi_delete_instance(instance);
