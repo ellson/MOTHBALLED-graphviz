@@ -70,6 +70,7 @@ extern char *gvcUsername(GVC_t*);
 /* parse command line args - minimally argv[0] sets layout engine */
 extern int gvParseArgs(GVC_t *gvc, int argc, char **argv);
 extern graph_t *gvNextInputGraph(GVC_t *gvc);
+extern graph_t *gvPluginsGraph(GVC_t *gvc);
 
 /* Compute a layout using a specified engine */
 extern int gvLayout(GVC_t *gvc, graph_t *g, const char *engine);

@@ -31,6 +31,8 @@
 #include        "gvcint.h"
 #include        "gvcproc.h"
 
+#include	"const.h"
+
 extern const int Demand_Loading;
 
 /*
@@ -453,4 +455,19 @@ void gvplugin_write_status(GVC_t * gvc)
 	    fprintf(stderr,"    %s\t: %s\n", api_names[api], gvplugin_list(gvc, api, "?"));
     }
 
+}
+
+Agraph_t * gvplugin_graph(GVC_t * gvc)
+{
+    Agraph_t *g;
+    Agnode_t *n;
+
+    aginit();
+    /* set persistent attributes here */
+    agnodeattr(NULL, "label", NODENAME_ESC);
+
+    g = agopen("G", AGDIGRAPH);
+    n = agnode(g, "plugins graph under-construction");
+
+    return g;
 }

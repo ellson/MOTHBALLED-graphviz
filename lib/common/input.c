@@ -32,6 +32,7 @@ static char *genericItems = "\n\
  -lv         - Use external library 'v'\n\
  -ofile      - Write output to 'file'\n\
  -O          - Automatically generate an output filename based on the input filename with a .'format' appended. (Causes all -ofile options to be ignored.) \n\
+ -P          - Internally generate a graph of the current plugins. \n\
  -q[l]       - Set level of message suppression (=1)\n\
  -s[v]       - Scale input by 'v' (=72)\n\
  -y          - Invert y coordinate in output\n";
@@ -180,6 +181,30 @@ void global_def(const char *dcl,
     sym->fixed = 1;
 }
 
+static void gvg_init(GVC_t *gvc, graph_t *g, char *fn, int gidx)
+{
+    GVG_t *gvg;
+
+    gvg = zmalloc(sizeof(GVG_t));
+    if (!gvc->gvgs) 
+	gvc->gvgs = gvg;
+    else
+	gvc->gvg->next = gvg;
+    gvc->gvg = gvg;
+    gvg->gvc = gvc;
+    gvg->g = g;
+    gvg->input_filename = fn;
+    gvg->graph_index = gidx;
+}
+
+static graph_t *P_graph;
+
+graph_t *gvPluginsGraph(GVC_t *gvc)
+{
+    gvg_init(gvc, P_graph, "<internal>", 0);
+    return P_graph;
+}
+
 void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 {
     char c;
@@ -274,6 +299,9 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
                         val, gvplugin_list(gvc, API_layout, val));
                     exit(1);
                 }
+		break;
+	    case 'P':
+		P_graph = gvplugin_graph(gvc);
 		break;
 	    case 'V':
 		fprintf(stderr, "%s - %s version %s (%s)\n",
@@ -441,7 +469,6 @@ graph_t *gvNextInputGraph(GVC_t *gvc)
     static char *fn;
     static FILE *fp;
     static int fidx, gidx;
-    GVG_t *gvg;
 
     while (!g) {
 	if (!fp) {
@@ -465,16 +492,7 @@ graph_t *gvNextInputGraph(GVC_t *gvc)
 	g = agread(fp);
 #endif
 	if (g) {
-	    gvg = zmalloc(sizeof(GVG_t));
-	    if (!gvc->gvgs) 
-		gvc->gvgs = gvg;
-	    else
-		gvc->gvg->next = gvg;
-	    gvc->gvg = gvg;
-	    gvg->gvc = gvc;
-	    gvg->g = g;
-	    gvg->input_filename = fn;
-	    gvg->graph_index = gidx++;
+	    gvg_init(gvc, g, fn, gidx++);
 	    break;
 	}
 	fp = NULL;

@@ -167,11 +167,13 @@ int main(int argc, char **argv)
 	    /* Perform layout and cleanup */
 	    gvLayoutJobs(Gvc, G);  /* take layout engine from command line */
 	    gvFreeLayout(Gvc, G);
-
-	    /* Delete graph */
-	    agclose(G);
 	}
-    } else {
+    }
+    else if ((G = gvPluginsGraph(Gvc))) {
+	    gvLayoutJobs(Gvc, G);  /* take layout engine from command line */
+	    gvRenderJobs(Gvc, G);
+    }
+    else {
 	while ((G = gvNextInputGraph(Gvc))) {
 	    if (prev) {
 		gvFreeLayout(Gvc, prev);

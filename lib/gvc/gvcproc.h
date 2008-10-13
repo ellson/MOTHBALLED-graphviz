@@ -43,6 +43,8 @@ extern "C" {
     extern void gvplugin_write_status(GVC_t * gvc);
     extern char *gvplugin_list(GVC_t * gvc, api_t api, const char *str);
 
+    extern Agraph_t * gvplugin_graph(GVC_t * gvc);
+
 /* job */
 
     extern void gvjobs_output_filename(GVC_t * gvc, const char *name);
