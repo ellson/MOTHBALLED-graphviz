@@ -193,7 +193,7 @@ BuildRequires: gd gd-devel perl-devel DevIL-devel lasi-devel
 %endif
 %if %fedora >= 8
 %define R_LANG 1
-BuildRequires: R-devel swig >= 1.3.33 ghostscript-devel
+BuildRequires: R-devel swig >= 1.3.33
 #
 # packaging is ok, but code is not ready for distribution
 #
