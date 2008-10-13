@@ -51,7 +51,7 @@ static void gvloadimage_gs_free(usershape_t *us)
     gs_t *gs = (gs_t*)us->data;
 
     if (gs->pattern) cairo_pattern_destroy(gs->pattern);
-    cairo_surface_destroy(gs->surface);
+    if (gs->surface) cairo_surface_destroy(gs->surface);
     free(gs);
 }
 
@@ -64,7 +64,7 @@ static int gs_writer(void *caller_handle, const char *str, int len)
     return len;
 }
 
-static void gs_error(GVJ_t * job, const char *funstr, int err)
+static void gs_error(GVJ_t * job, const char *name, const char *funstr, int err)
 {
     const char *errsrc;
 
@@ -79,8 +79,8 @@ static void gs_error(GVJ_t * job, const char *funstr, int err)
     else
 	errsrc = "Ghostscript internal error";
 
-    job->common->errorfn("%s() returned: %d \"%s\" (%s)\n",
-		funstr, err, gs_error_names[-err - 1], errsrc);
+    job->common->errorfn("%s: %s() returned: %d \"%s\" (%s)\n",
+		name, funstr, err, gs_error_names[-err - 1], errsrc);
 }
 
 static cairo_pattern_t* gvloadimage_gs_load(GVJ_t * job, usershape_t *us)
@@ -134,13 +134,13 @@ static cairo_pattern_t* gvloadimage_gs_load(GVJ_t * job, usershape_t *us)
 
 	rc = gsapi_new_instance(&instance, (void*)job);
 	if (rc) {
-	    gs_error(job, "gsapi_new_instance", rc);
+	    gs_error(job, us->name, "gsapi_new_instance", rc);
 	    return NULL;
 	}
 
 	rc = gsapi_set_stdio(instance, NULL, gs_writer, gs_writer);
 	if (rc) {
-	    gs_error(job, "gsapi_set_stdio", rc);
+	    gs_error(job, us->name, "gsapi_set_stdio", rc);
 	    gsapi_delete_instance(instance);
 	    return NULL;
 	}
@@ -165,7 +165,7 @@ static cairo_pattern_t* gvloadimage_gs_load(GVJ_t * job, usershape_t *us)
 	rc = gsapi_init_with_args(instance, GS_ARGC, gs_args);
 	cairo_destroy(cr); /* finished with temp context */
 	if (rc) {
-	    gs_error(job, "gsapi_init_with_args", rc);
+	    gs_error(job, us->name, "gsapi_init_with_args", rc);
 	    gsapi_delete_instance(instance);
 	    cairo_surface_destroy(gs->surface);
 	    cairo_pattern_destroy(gs->pattern);
@@ -175,7 +175,7 @@ static cairo_pattern_t* gvloadimage_gs_load(GVJ_t * job, usershape_t *us)
 
 	rc = gsapi_run_file(instance, us->name, -1, &exit_code); 
 	if (rc) {
-	    gs_error(job, "gsapi_run_file", rc);
+	    gs_error(job, us->name, "gsapi_run_file", rc);
 	    /* cache the result anyway, so that we don't repeat */
 	    cairo_surface_destroy(gs->surface);
 	    gs->surface = NULL;
@@ -184,7 +184,7 @@ static cairo_pattern_t* gvloadimage_gs_load(GVJ_t * job, usershape_t *us)
 	}
 	rc = gsapi_exit(instance);
 	if (rc) {
-	    gs_error(job, "gsapi_exit", rc);
+	    gs_error(job, us->name, "gsapi_exit", rc);
 	    /* cache the result anyway, so that we don't repeat */
 	    cairo_surface_destroy(gs->surface);
 	    gs->surface = NULL;
