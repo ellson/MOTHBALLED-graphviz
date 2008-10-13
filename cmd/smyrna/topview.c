@@ -65,8 +65,15 @@ void preparetopview(Agraph_t * g, topview * t)
     Agedge_t *e;
     Agsym_t *sym;
     int ind, ind2, data_type_count;	//number of columns for custom view->Topview data ,IP ,HOST, etc
-    char buf[256];
+	char buf[256];
     RGBColor color;
+
+	int maxlabelsize=0;
+	float maxedgelen,minedgelen,len,edgelength;
+	maxedgelen=0;
+	minedgelen=99999999;	//FIX ME if you have a giant graph or fix your graph
+	edgelength=0;
+
     ind = 0;
     ind2 = 0;
     gtk_widget_hide(glade_xml_get_widget(xml, "layout6"));	//hide top panel
@@ -92,106 +99,128 @@ void preparetopview(Agraph_t * g, topview * t)
     /* malloc topviewdata */
     t->TopviewData = NEW(topviewdata);
 
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
-	//set node TV reference
-	OD_TVRef(v) = ind;	//view->Topview reference
-	strcpy(buf, agget(v, "pos"));
-	if (strlen(buf)) {
-	    a = (float) atof(strtok(buf, ","));
-	    b = (float) atof(strtok(NULL, ","));
-	    str = strtok(NULL, ",");
-	    if (str)
-		c = (float) atof(str);
-	    else
-		c = (float) 0.0;
-	}
-	/*initialize group index, -1 means no group */
-	t->Nodes[ind].GroupIndex = -1;
-	t->Nodes[ind].Node = v;
-	if (agget(t->Nodes[ind].Node, "color")) {
-	    color = GetRGBColor(agget(t->Nodes[ind].Node, "color"));
-	    t->Nodes[ind].Color.R = color.R;
-	    t->Nodes[ind].Color.G = color.G;
-	    t->Nodes[ind].Color.B = color.B;
-	    t->Nodes[ind].Color.A = color.A;
-	} else
-	    randomize_color(&(t->Nodes[ind].Color), 2);
-	t->Nodes[ind].x = a;
-	t->Nodes[ind].y = b;
-	t->Nodes[ind].z = c;
-	t->Nodes[ind].distorted_x = a;
-	t->Nodes[ind].distorted_y = b;
-	t->Nodes[ind].distorted_z = c;
+    for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
+	{
+		//set node TV reference
+		OD_TVRef(v) = ind;	//view->Topview reference
+		strcpy(buf, agget(v, "pos"));
+		if (strlen(buf)) 
+		{
+			a = (float) atof(strtok(buf, ","));
+			b = (float) atof(strtok(NULL, ","));
+			str = strtok(NULL, ",");
+			if (str)
+				c = (float) atof(str);
+			else
+				c = (float) 0.0;
+		}
+		/*initialize group index, -1 means no group */
+		t->Nodes[ind].GroupIndex = -1;
+		t->Nodes[ind].Node = v;
+		if (agget(t->Nodes[ind].Node, "color")) 
+		{
+			color = GetRGBColor(agget(t->Nodes[ind].Node, "color"));
+			t->Nodes[ind].Color.R = color.R;
+			t->Nodes[ind].Color.G = color.G;
+			t->Nodes[ind].Color.B = color.B;
+			t->Nodes[ind].Color.A = color.A;
+		} else
+			randomize_color(&(t->Nodes[ind].Color), 2);
+		t->Nodes[ind].x = a;
+		t->Nodes[ind].y = b;
+		t->Nodes[ind].z = c;
+		t->Nodes[ind].distorted_x = a;
+		t->Nodes[ind].distorted_y = b;
+		t->Nodes[ind].distorted_z = c;
 
-	t->Nodes[ind].zoom_factor = 1;
-	t->Nodes[ind].degree = agdegree(g, v, 1, 1);
-	t->Nodes[ind].node_alpha = 1;
+		t->Nodes[ind].zoom_factor = 1;
+		t->Nodes[ind].degree = agdegree(g, v, 1, 1);
+		t->Nodes[ind].node_alpha = 1;
 	//    (float) log((double) t->Nodes[ind].degree + (double) 0.3);
-	if (d_attr1) {
-	    if (sym)
-		str = agxget(v, sym);
-	    else
-		str = agnameof(v);
-	    t->Nodes[ind].Label = strdup(str);
-	} else
-	    t->Nodes[ind].Label = '\0';
-	if (d_attr2) {
-	    str = agget(v, d_attr2);
-	    if (str) {
-		t->Nodes[ind].Label2 = strdup(str);
-	    }
-	} else
-	    t->Nodes[ind].Label2 = '\0';
-
-	for (e = agfstout(g, v); e; e = agnxtout(g, e)) {
-	    t->Edges[ind2].Hnode = aghead(e);
-	    t->Edges[ind2].Tnode = agtail(e);
-	    t->Edges[ind2].Edge = e;
-	    strcpy(buf, agget(aghead(e), "pos"));
-	    if (strlen(buf)) {
-		a = (float) atof(strtok(buf, ","));
-		b = (float) atof(strtok(NULL, ","));
-		str = strtok(NULL, ",");
-		if (str)
-		    c = (float) atof(str);
+		if (d_attr1) 
+		{
+			if (sym)
+				str = agxget(v, sym);
+			else
+				str = agnameof(v);
+			t->Nodes[ind].Label = strdup(str);
+		} 
 		else
-		    c = (float) 0.0;
+			t->Nodes[ind].Label = '\0';
+		if (d_attr2) 
+		{
+			str = agget(v, d_attr2);
+			if (str) 
+				t->Nodes[ind].Label2 = strdup(str);
+		} else
+			t->Nodes[ind].Label2 = '\0';
 
-		t->Edges[ind2].x1 = a;
-		t->Edges[ind2].y1 = b;
-		t->Edges[ind2].z1 = b;
-	    }
-	    strcpy(buf, agget(agtail(e), "pos"));
-	    if (strlen(buf)) {
-		a = (float) atof(strtok(buf, ","));
-		b = (float) atof(strtok(NULL, ","));
-		str = strtok(NULL, ",");
-		if (str)
-		    c = (float) atof(str);
-		else
-		    c = (float) 0.0;
-		t->Edges[ind2].x2 = a;
-		t->Edges[ind2].y2 = b;
-		t->Edges[ind2].z2 = c;
-	    }
-	    ind2++;
-	}
+		maxlabelsize = maxlabelsize + strlen(t->Nodes[ind].Label);
+
+		for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
+		{
+			t->Edges[ind2].Hnode = aghead(e);
+			t->Edges[ind2].Tnode = agtail(e);
+			t->Edges[ind2].Edge = e;
+			strcpy(buf, agget(aghead(e), "pos"));
+			if (strlen(buf))
+			{
+				a = (float) atof(strtok(buf, ","));
+				b = (float) atof(strtok(NULL, ","));
+				str = strtok(NULL, ",");
+				if (str)
+					c = (float) atof(str);
+				else
+					c = (float) 0.0;
+				t->Edges[ind2].x1 = a;
+				t->Edges[ind2].y1 = b;
+				t->Edges[ind2].z1 = b;
+			}
+			strcpy(buf, agget(agtail(e), "pos"));
+			if (strlen(buf)) 
+			{
+				a = (float) atof(strtok(buf, ","));
+				b = (float) atof(strtok(NULL, ","));
+				str = strtok(NULL, ",");
+				if (str)
+					c = (float) atof(str);
+				else
+					c = (float) 0.0;
+				t->Edges[ind2].x2 = a;
+				t->Edges[ind2].y2 = b;
+				t->Edges[ind2].z2 = c;
+			}
+			len=pow(pow((t->Edges[ind2].x2-t->Edges[ind2].x1),2)+pow((t->Edges[ind2].y2-t->Edges[ind2].y1),2),0.5);
+			if (len > maxedgelen)
+				maxedgelen=len;
+			if (len < minedgelen)
+				minedgelen=len;
+			edgelength = edgelength + len;
+			ind2++;
+		}
+		//calculate a decent fontsize 
 	ind++;
-    }
-    //attach edge node references   loop one more time
+	}
+//	calcfontsize(float totaledgelength,int totallabelsize,int edgecount,int totalnodecount)
+	view->FontSize=calcfontsize(edgelength,maxlabelsize,ind2,ind);
+	//attach edge node references ,  loop one more time
     ind = 0;
     ind2 = 0;
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
-	//set node TV reference
-	for (e = agfstout(g, v); e; e = agnxtout(g, e)) {
-	    t->Edges[ind2].Node1 =
-		&t->Nodes[OD_TVRef(t->Edges[ind2].Tnode)];
-	    t->Edges[ind2].Node2 =
-		&t->Nodes[OD_TVRef(t->Edges[ind2].Hnode)];
-	    ind2++;
+    for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
+	{
+		float minedgelength=0;
+		float maxedgelength=0;
+		//set node TV reference
+		for (e=agfstout(g, v); e; e = agnxtout(g, e)) 
+		{
+			t->Edges[ind2].Node1 =
+				&t->Nodes[OD_TVRef(t->Edges[ind2].Tnode)];
+			t->Edges[ind2].Node2 =
+				&t->Nodes[OD_TVRef(t->Edges[ind2].Hnode)];
+			ind2++;
 
-	}
-	ind++;
+		}
+		ind++;
     }
     t->Nodecount = ind;
     t->Edgecount = ind2;
@@ -243,6 +272,13 @@ static float set_gl_dot_size(topview * t)
 
 }
 
+float calcfontsize(float totaledgelength,int totallabelsize,int edgecount,int totalnodecount)
+{
+	float avglength=totaledgelength/(float)edgecount;
+	float avglabelsize=totallabelsize/(float)totalnodecount;
+	return avglength/ avglabelsize;
+
+}
 static int begintopviewnodes(Agraph_t* g)
 {
 	switch (view->defaultnodeshape)
@@ -362,8 +398,7 @@ static void drawtopviewedges(Agraph_t * g)
 
     glBegin(GL_LINES);
     set_topview_options();
-    for (ind = 0; ((ind < view->Topview->Edgecount) && view->drawedges);
-	 ind++) {
+    for (ind = 0; ((ind < view->Topview->Edgecount) && view->drawedges);ind++) {
 	if (((view->Topview->Edges[ind].x1 / view->zoom * -1 >
 	      view->clipX1)
 	     && (view->Topview->Edges[ind].x1 / view->zoom * -1 <
@@ -704,9 +739,8 @@ static int draw_topview_label(topview_node * v, float zdepth)
     float ddy = 0;
     if (!v->Label)
 	return 0;
-    if ((view->zoom * -1 / v->degree / v->zoom_factor) > 2)
-	return 0;
-    if ((v->distorted_x / view->zoom * -1 > view->clipX1)
+
+	if ((v->distorted_x / view->zoom * -1 > view->clipX1)
 	&& (v->distorted_x / view->zoom * -1 < view->clipX2)
 	&& (v->distorted_y / view->zoom * -1 > view->clipY1)
 	&& (v->distorted_y / view->zoom * -1 < view->clipY2)) {
@@ -716,12 +750,21 @@ static int draw_topview_label(topview_node * v, float zdepth)
 				1) *
 			    (double) 3) : (float) (log((double) v->degree +
 						       (double) 0.5) *
-						   (double) 3)*15;
+							   (double) 3)*view->FontSize;
+//	fs=view->FontSize;
 	fs = fs * v->zoom_factor;
 	if (OD_Selected(v->Node) == 1) {
 	    ddx = dx;
 	    ddy = dy;
 	}
+	if ((view->FontSize/view->zoom*-1) < 2)
+		return 0;
+
+
+
+	if ((view->FontSize/view->zoom*-1) > 10)
+		fs= 10;
+
 
 	fontSize((int) fs);
 	if ((log((float) v->degree) * -0.6 * view->zoom) > 0)
@@ -733,9 +776,10 @@ static int draw_topview_label(topview_node * v, float zdepth)
 	    fontColorA((float) log((double) v->degree + (double) 1),
 		       view->penColor.G, view->penColor.B, 1);
 
+//	fontColorA(0,0,0,1);
 	fontDrawString((int) (v->distorted_x - ddx),
 		       (int) (v->distorted_y - ddy), v->Label,
-		       (int) (fs * strlen(v->Label)));
+		       (int) (fs * strlen(v->Label)*0.7));
 
 	return 1;
     } else

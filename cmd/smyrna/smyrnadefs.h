@@ -413,7 +413,7 @@ typedef struct _ViewInfo
 	/*randomize edge colors or use default edge color*/
 	int rndEdgeColor;
 	/*Font Size*/
-	int FontSize;
+	float FontSize;
 
 
 	float bdxLeft,bdyTop,bdzTop;	

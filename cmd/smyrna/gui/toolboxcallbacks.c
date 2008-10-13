@@ -86,14 +86,14 @@ void btnToolZoomOut_clicked(GtkWidget * widget, gpointer user_data)
 void btnToolZoomFit_clicked(GtkWidget * widget, gpointer user_data)
 {
 
-	float scx,scy,gcx,gcy,z,GDX,SDX;
+	float scx,scy,gcx,gcy,z,GDX,SDX,GDY,SDY;
 
 	(view->active_camera >=0)
 			? (z=view->cameras[view->active_camera]->r):(z=view->zoom*-1);
 
 	GDX=(view->bdxRight/z-view->bdxLeft/z);
 	SDX=(view->clipX2 -view->clipX1);
-	GDY=(view->bdxTop/z-view->bdxBottom/z);
+	GDY=(view->bdyTop/z-view->bdyBottom/z);
 	SDY=(view->clipY2 -view->clipY1);
 	
 	if ((SDX / GDX) <= (SDY / GDY))
@@ -109,6 +109,7 @@ void btnToolZoomFit_clicked(GtkWidget * widget, gpointer user_data)
 				(view->zoom = view->zoom /(SDY/GDY));
 
 	}
+	btnToolFit_clicked(NULL,NULL);
 
 }
 
@@ -154,7 +155,6 @@ void btnToolFit_clicked(GtkWidget * widget, gpointer user_data)
 		printf ("GDX:%f SDX:%f \n",GDX,SDX);
 		view->panx += (gcx-scx);
 		view->pany += (gcy-scy);
-		view->zoom = view->zoom /(SDX/GDX);
 	}
 
 	printf ("scx:%f\n",scx);

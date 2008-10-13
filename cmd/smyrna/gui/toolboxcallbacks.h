@@ -40,6 +40,7 @@ _BB void btnToolPan_clicked(GtkWidget * widget, gpointer user_data);
 _BB void btnToolZoom_clicked(GtkWidget * widget, gpointer user_data);
 _BB void btnToolZoomIn_clicked(GtkWidget * widget, gpointer user_data);
 _BB void btnToolZoomOut_clicked(GtkWidget * widget, gpointer user_data);
+_BB void btnToolZoomFit_clicked(GtkWidget * widget, gpointer user_data);
 _BB void btnToolFit_clicked(GtkWidget * widget, gpointer user_data);
 _BB void btnToolMove_clicked(GtkWidget * widget, gpointer user_data);
 _BB void btnToolAddNode_clicked(GtkWidget * widget, gpointer user_data);
