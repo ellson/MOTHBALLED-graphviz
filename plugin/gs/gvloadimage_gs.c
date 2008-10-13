@@ -50,9 +50,8 @@ static void gvloadimage_gs_free(usershape_t *us)
 {
     gs_t *gs = (gs_t*)us->data;
 
-    cairo_pattern_destroy(gs->pattern);
+    if (gs->pattern) cairo_pattern_destroy(gs->pattern);
     cairo_surface_destroy(gs->surface);
-    cairo_destroy(gs->cr);
     free(gs);
 }
 
@@ -67,8 +66,21 @@ static int gs_writer(void *caller_handle, const char *str, int len)
 
 static void gs_error(GVJ_t * job, const char *funstr, int err)
 {
+    const char *errsrc;
+
     assert (err < 0);
-    job->common->errorfn("%s() returned: %s\n", funstr, gs_error_names[-err - 1]);
+
+    if (err >= e_VMerror) 
+	errsrc = "PostScript Level 1"; 
+    else if (err >= e_unregistered)
+	errsrc = "PostScript Level 2";
+    else if (err >= e_invalidid)
+	errsrc = "DPS error";
+    else
+	errsrc = "Ghostscript internal error";
+
+    job->common->errorfn("%s() returned: %d \"%s\" (%s)\n",
+		funstr, err, gs_error_names[-err - 1], errsrc);
 }
 
 static cairo_pattern_t* gvloadimage_gs_load(GVJ_t * job, usershape_t *us)
@@ -107,6 +119,32 @@ static cairo_pattern_t* gvloadimage_gs_load(GVJ_t * job, usershape_t *us)
 	    job->common->errorfn("Failure to read shape file\n");
 	    return NULL;
 	}
+
+#define GSAPI_REVISION_REQUIRED 863
+	rc = gsapi_revision(&gsapi_revision_info, sizeof(gsapi_revision_t));
+        if (rc && rc < sizeof(gsapi_revision_t)) {
+    	    job->common->errorfn("gs revision - struct too short %d\n", rc);
+	    return NULL;
+        }
+	if (gsapi_revision_info.revision < GSAPI_REVISION_REQUIRED) {
+    	    job->common->errorfn("gs revision - too old %d\n",
+		gsapi_revision_info.revision);
+	    return NULL;
+	}
+
+	rc = gsapi_new_instance(&instance, (void*)job);
+	if (rc) {
+	    gs_error(job, "gsapi_new_instance", rc);
+	    return NULL;
+	}
+
+	rc = gsapi_set_stdio(instance, NULL, gs_writer, gs_writer);
+	if (rc) {
+	    gs_error(job, "gsapi_set_stdio", rc);
+	    gsapi_delete_instance(instance);
+	    return NULL;
+	}
+
 	gs = (gs_t *)malloc(sizeof(gs_t));
 	if (!gs) {
 	    job->common->errorfn("malloc() failure\n");
@@ -119,53 +157,39 @@ static cairo_pattern_t* gvloadimage_gs_load(GVJ_t * job, usershape_t *us)
 	       		us->x + us->w,
 			us->y + us->h);
 	gs->pattern = cairo_pattern_create_for_surface (gs->surface);
-#define GSAPI_REVISION_REQUIRED 863
-	rc = gsapi_revision(&gsapi_revision_info, sizeof(gsapi_revision_t));
-        if (rc && rc < sizeof(gsapi_revision_t)) {
-    	    job->common->errorfn("gs revision - struct too short %d\n", rc);
-	    return NULL;
-        }
-	if (gsapi_revision_info.revision < GSAPI_REVISION_REQUIRED) {
-    	    job->common->errorfn("gs revision - too old %d\n",
-		gsapi_revision_info.revision);
-	    return NULL;
-	}
-	rc = gsapi_new_instance(&instance, (void*)job);
-	if (rc) {
-	    gs_error(job, "gsapi_new_instance", rc);
-	    return NULL;
-	}
-	rc = gsapi_set_stdio(instance, NULL, gs_writer, gs_writer);
-	if (rc) {
-	    gs_error(job, "gsapi_set_stdio", rc);
-	    gsapi_delete_instance(instance);
-	    return NULL;
-	}
+
 	sprintf(width_height, "-g%dx%d", us->x + us->w, us->y + us->h);
 	sprintf(dpi, "-r%d", us->dpi);
-	cr = cairo_create(gs->surface);
+	cr = cairo_create(gs->surface);  /* temp context for gs */
 	sprintf(cairo_context, "-sCairoContext=%p", cr);
 	rc = gsapi_init_with_args(instance, GS_ARGC, gs_args);
-	cairo_destroy(cr);
+	cairo_destroy(cr); /* finished with temp context */
 	if (rc) {
 	    gs_error(job, "gsapi_init_with_args", rc);
+	    gsapi_delete_instance(instance);
+	    cairo_surface_destroy(gs->surface);
+	    cairo_pattern_destroy(gs->pattern);
+	    free(gs);
 	    return NULL;
 	}
+
 	rc = gsapi_run_file(instance, us->name, -1, &exit_code); 
 	if (rc) {
 	    gs_error(job, "gsapi_run_file", rc);
-	    rc = gsapi_exit(instance);
-	    if (rc) {
-	        gs_error(job, "gsapi_exit", rc);
-	        return NULL;
-	    }
-	    gsapi_delete_instance(instance);
-	    return NULL;
+	    /* cache the result anyway, so that we don't repeat */
+	    cairo_surface_destroy(gs->surface);
+	    gs->surface = NULL;
+    	    cairo_pattern_destroy(gs->pattern);
+	    gs->pattern = NULL;
 	}
 	rc = gsapi_exit(instance);
 	if (rc) {
 	    gs_error(job, "gsapi_exit", rc);
-	    return NULL;
+	    /* cache the result anyway, so that we don't repeat */
+	    cairo_surface_destroy(gs->surface);
+	    gs->surface = NULL;
+    	    cairo_pattern_destroy(gs->pattern);
+	    gs->pattern = NULL;
 	}
 	gsapi_delete_instance(instance);
 
