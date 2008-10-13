@@ -57,6 +57,7 @@ GVC_t *gvNEWcontext(char **info, char *user)
 int gvFreeContext(GVC_t * gvc)
 {
     GVG_t *gvg, *gvg_next;
+    gvplugin_package_t *package, *package_next;
 
     if (gvc->active_jobs)
 	gvrender_end_job(gvc->active_jobs);
@@ -65,6 +66,13 @@ int gvFreeContext(GVC_t * gvc)
     while ((gvg = gvg_next)) {
 	gvg_next = gvg->next;
 	free(gvg);
+    }
+    package_next = gvc->packages;
+    while ((package = package_next)) {
+	package_next = package->next;
+	free(package->path);
+	free(package->packagename);
+	free(package);
     }
     gvjobs_delete(gvc);
     if (gvc->config_path)

@@ -40,6 +40,14 @@ extern "C" {
         char *type;
     } gvplugin_active_textlayout_t;
 
+    typedef struct gvplugin_package_s gvplugin_package_t;
+
+    struct gvplugin_package_s {
+        gvplugin_package_t *next;
+        char *path;
+        char *packagename;
+    };
+
     struct gvplugin_available_s {
 	gvplugin_available_t *next;       /* next plugin in linked list, or NULL */
 	const char *typestr;		 /* type string, e.g. "png" or "ps" */
@@ -85,6 +93,7 @@ extern "C" {
 	gvplugin_available_t *apis[ APIS ]; /* array of linked-list of plugins per api */
 	gvplugin_available_t *api[ APIS ];  /* array of current plugins per api */
 #undef ELEM
+	gvplugin_package_t *packages;   /* list of available packages */
 
 	/* keybindings for keyboard events */
 	gvevent_key_binding_t *keybindings;

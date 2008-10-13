@@ -160,6 +160,16 @@ static char *token(int *nest, char **tokens)
     return t;
 }
 
+static gvplugin_package_t * gvplugin_package_record(GVC_t * gvc, char *path, char *packagename)
+{
+    gvplugin_package_t *package = gmalloc(sizeof(gvplugin_package_t));
+    package->path = strdup(path);
+    package->packagename = strdup(packagename);
+    package->next = gvc->packages;
+    gvc->packages = package;
+    return package;
+}
+
 static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 {
     char *path, *packagename, *api;
@@ -167,6 +177,7 @@ static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
     api_t gv_api;
     int quality, rc;
     int nest = 0;
+    gvplugin_package_t *package;
 
     separator(&nest, &s);
     while (*s) {
@@ -175,6 +186,7 @@ static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 	    packagename = token(&nest, &s);
         else
 	    packagename = "x";
+        package = gvplugin_package_record(gvc, path, packagename);
 	do {
 	    api = token(&nest, &s);
 	    gv_api = gvplugin_api(api);
@@ -211,9 +223,6 @@ static void gvconfig_plugin_install_from_library(GVC_t * gvc, char *path, gvplug
 
     for (apis = library->apis; (types = apis->types); apis++) {
 	for (i = 0; types[i].type; i++) {
-	    /* FIXME - should only install if dependencies on other plugins are satisfied */
-	    /*         e.g. "render" "gtk" depends on "device" "gtk" */
-	    /*         only need to check during actual loading, so no need to store dependencies in config */
 	    gvplugin_install(gvc, apis->api, types[i].type,
 			types[i].quality, library->packagename, path, &types[i]);
         }
