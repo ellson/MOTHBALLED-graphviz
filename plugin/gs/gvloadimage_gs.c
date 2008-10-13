@@ -56,11 +56,6 @@ static void gvloadimage_gs_free(usershape_t *us)
     free(gs);
 }
 
-static void gs_error(const char *str, int rc)
-{
-    fprintf(stderr, "gs error %s %d\n", str, rc);
-}
-
 static int gs_writer(void *caller_handle, const char *str, int len)
 {
     GVJ_t *job = (GVJ_t*)caller_handle;
@@ -73,6 +68,7 @@ static int gs_writer(void *caller_handle, const char *str, int len)
 static cairo_pattern_t* gvloadimage_gs_load(GVJ_t * job, usershape_t *us)
 {
     gs_t *gs = NULL;
+    gsapi_revision_t gsapi_revision_info;
     void *instance;
     int rc, exit_code;
     char width_height[20], dpi[10], cairo_context[30];
@@ -101,13 +97,15 @@ static cairo_pattern_t* gvloadimage_gs_load(GVJ_t * job, usershape_t *us)
     if (!gs) {
 	cairo_t *cr; /* temp cr for gs */
 
-	if (!gvusershape_file_access(us))
+	if (!gvusershape_file_access(us)) {
+	    job->common->errorfn("Failure to access usershape file\n");
 	    return NULL;
-
+	}
 	gs = (gs_t *)malloc(sizeof(gs_t));
-	if (!gs)
+	if (!gs) {
+	    job->common->errorfn("malloc() failure\n");
 	    return NULL;
-
+	}
 	gs->cr = (cairo_t *)job->context;
 	gs->surface = cairo_surface_create_similar( 
 			cairo_get_target(gs->cr),
@@ -115,25 +113,47 @@ static cairo_pattern_t* gvloadimage_gs_load(GVJ_t * job, usershape_t *us)
 	       		us->x + us->w,
 			us->y + us->h);
 	gs->pattern = cairo_pattern_create_for_surface (gs->surface);
-
+#define GSAPI_REVISION_REQUIRED 863
+	rc = gsapi_revision(&gsapi_revision_info, sizeof(gsapi_revision_t));
+        if (rc && rc < sizeof(gsapi_revision_t)) {
+    	    job->common->errorfn("gs revision - struct too short %d\n", rc);
+	    return NULL;
+        }
+	if (gsapi_revision_info.revision < GSAPI_REVISION_REQUIRED) {
+    	    job->common->errorfn("gs revision - too old %d\n",
+		gsapi_revision_info.revision);
+	    return NULL;
+	}
 	rc = gsapi_new_instance(&instance, (void*)job);
-	if (rc) { gs_error("gsapi_new_instance", rc); return NULL; }
+	if (rc) {
+	    job->common->errorfn("gsapi_new_instance() returned %d\n", rc);
+	    return NULL;
+	}
 	rc = gsapi_set_stdio(instance, NULL, gs_writer, gs_writer);
-	if (rc) { gs_error("gsapi_set_stdio", rc); return NULL; }
+	if (rc) {
+	    job->common->errorfn("gsapi_set_stdio() returned %d\n", rc);
+	    return NULL;
+	}
 	sprintf(width_height, "-g%dx%d", us->x + us->w, us->y + us->h);
 	sprintf(dpi, "-r%d", us->dpi);
 	cr = cairo_create(gs->surface);
 	sprintf(cairo_context, "-sCairoContext=%p", cr);
 	rc = gsapi_init_with_args(instance, GS_ARGC, gs_args);
 	cairo_destroy(cr);
-	if (rc) { gs_error("gsapi_init_with_args", rc); return NULL; }
-
+	if (rc) {
+	    job->common->errorfn("gsapi_init_with_args() returned %d\n", rc);
+	    return NULL;
+	}
 	rc = gsapi_run_file(instance, us->name, 0, &exit_code); 
-	if (rc) { gs_error("gsapi_run_file", rc); return NULL; }
-
+	if (rc) {
+	    job->common->errorfn("gsapi_run_file() returned %d\n", rc);
+	    return NULL;
+	}
 	rc = gsapi_exit(instance);
-	if (rc) { gs_error("gsapi_exit", rc); return NULL; }
-
+	if (rc) {
+	    job->common->errorfn("gsapi_exit() returned %d\n", rc);
+	    return NULL;
+	}
 	gsapi_delete_instance(instance);
 
 	us->data = (void*)gs;
