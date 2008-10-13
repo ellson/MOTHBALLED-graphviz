@@ -106,9 +106,9 @@ static void fpinit(void)
     fpe_flags &= ~_FPU_MASK_IM;	/* invalid operation */
     fpe_flags &= ~_FPU_MASK_DM;	/* denormalized operand */
     fpe_flags &= ~_FPU_MASK_ZM;	/* zero-divide */
-    fpe_flags &= ~_FPU_MASK_OM;	/* overflow */
-    fpe_flags &= ~_FPU_MASK_UM;	/* underflow */
-    fpe_flags &= ~_FPU_MASK_PM;	/* precision (inexact result) */
+    /*fpe_flags &= ~_FPU_MASK_OM;        overflow */
+    /*fpe_flags &= ~_FPU_MASK_UM;        underflow */
+    /*fpe_flags &= ~_FPU_MASK_PM;        precision (inexact result) */
     _FPU_SETCW(fpe_flags);
 # endif
 #endif
