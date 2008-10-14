@@ -10,7 +10,7 @@ COMMON = common_cgraph
 NEATOGEN = neatogen_cgraph
 else
 GRAPH = graph
-COMMON = cgraph
+COMMON = common
 NEATOGEN = neatogen
 endif
 
