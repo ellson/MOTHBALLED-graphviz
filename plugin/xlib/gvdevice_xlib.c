@@ -88,9 +88,9 @@ static void handle_configure_notify(GVJ_t * job, XConfigureEvent * cev)
 /*	plugin/xlib/gvdevice_xlib.c */
 /*	lib/gvc/gvevent.c */
 
-    if (job->fit_mode)
-        job->zoom = MIN((double) cev->width / (double) job->width,
-			(double) cev->height / (double) job->height);
+    job->zoom *= 1 + MIN(
+	((double) cev->width - (double) job->width) / (double) job->width,
+	((double) cev->height - (double) job->height) / (double) job->height);
     if (cev->width > job->width || cev->height > job->height)
         job->has_grown = 1;
     job->width = cev->width;
