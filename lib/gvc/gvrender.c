@@ -30,7 +30,11 @@
 #include "macros.h"
 #include "colorprocs.h"
 #include "gvplugin_render.h"
+#if WITH_CGRAPH
+#include "cgraph.h"
+#else
 #include "graph.h"
+#endif
 #include "gvcint.h"
 #include "geom.h"
 #include "geomprocs.h"

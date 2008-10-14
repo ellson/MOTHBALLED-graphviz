@@ -15,9 +15,9 @@
 **********************************************************/
 
 
-#include <render.h>
-#include <pack.h>
 #include <ctype.h>
+#include "render.h"
+#include "pack.h"
 
 #define MARKED(n) ((n)->u.mark)
 #define MARK(n) ((n)->u.mark = 1)
