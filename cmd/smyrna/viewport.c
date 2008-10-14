@@ -270,6 +270,9 @@ void init_viewport(ViewInfo * view)
 {
     char *template_file;
     FILE *input_file;
+	GtkTextBuffer *a;
+	char* test;
+
 
     /*loading default visual attributes */
 #ifdef _WIN32
@@ -288,8 +291,15 @@ void init_viewport(ViewInfo * view)
 #ifndef _WIN32
     free (template_file);
 #endif
-
-    //init graphs
+	//init console text
+    xml = glade_xml_new(smyrnaGlade, NULL, NULL);
+	gtk_widget_hide	(glade_xml_get_widget(xml, "consoleText"));
+	view->consoleText=gtk_text_buffer_new(NULL);
+	gtk_text_buffer_set_text (view->consoleText,"Smyrna console is initialized:\n",-1);
+	a=gtk_text_view_get_buffer((GtkTextView*)glade_xml_get_widget(xml, "consoleText"));
+	test=gtk_text_buffer_get_text  (a,0,5,1);
+	gtk_text_view_set_buffer ((GtkTextView*)glade_xml_get_widget(xml, "consoleText"),view->consoleText);
+	//init graphs
     view->g = NULL;		//no graph, gl screen should check it
     view->graphCount = 0;	//and disable interactivity if count is zero
 

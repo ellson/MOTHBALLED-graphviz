@@ -110,7 +110,8 @@ void btnToolZoomFit_clicked(GtkWidget * widget, gpointer user_data)
 
 	}
 	btnToolFit_clicked(NULL,NULL);
-
+//    xml = glade_xml_new(SMYRNA_GLADE, NULL, NULL);
+	gtk_widget_hide	(glade_xml_get_widget(xml, "consoleText"));
 }
 
 void btnToolFit_clicked(GtkWidget * widget, gpointer user_data)

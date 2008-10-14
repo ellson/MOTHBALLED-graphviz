@@ -488,6 +488,7 @@ typedef struct _ViewInfo
 	int drawlabels;
 	viewtype_t dfltViewType;
 	gvk_layout dfltEngine;
+	GtkTextBuffer* consoleText;
 } ViewInfo;
 
 extern ViewInfo *view;
