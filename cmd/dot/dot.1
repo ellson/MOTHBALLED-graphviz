@@ -15,8 +15,11 @@ sfdp \- filter for drawing large undirected graphs
 \fBdot\fR
 [\fB\-\fR(\fBG\fR|\fBN\fR|\fBE\fR)\fIname=value\fR]
 [\fB\-T\fIlang\fR]
-[\fB\-l \fIlibfile\fR]
-[\fB\-o \fIoutfile\fR]
+[\fB\-l\fIlibfile\fR]
+[\fB\-o\fIoutfile\fR]
+[\fB\-K\fIlayout\fR]
+[\fB\-O\fR]
+[\fB\-P\fR]
 [\fB\-v\fR]
 [\fB\-V\fR]
 [files]
@@ -24,9 +27,12 @@ sfdp \- filter for drawing large undirected graphs
 \fBneato\fR
 [\fB\-\fR(\fBG\fR|\fBN\fR|\fBE\fR)\fIname=value\fR]
 [\fB\-T\fIlang\fR]
-[\fB\-l \fIlibfile\fR]
+[\fB\-l\fIlibfile\fR]
 [\fB\-n\fR[\fB1\fR|\fB2\fR]]
-[\fB\-o \fIoutfile\fR]
+[\fB\-o\fIoutfile\fR]
+[\fB\-K\fIlayout\fR]
+[\fB\-O\fR]
+[\fB\-P\fR]
 [\fB\-v\fR]
 [\fB\-V\fR]
 [files]
@@ -34,8 +40,11 @@ sfdp \- filter for drawing large undirected graphs
 \fBtwopi\fR
 [\fB\-\fR(\fBG\fR|\fBN\fR|\fBE\fR)\fIname=value\fR]
 [\fB\-T\fIlang\fR]
-[\fB\-l \fIlibfile\fR]
-[\fB\-o \fIoutfile\fR]
+[\fB\-l\fIlibfile\fR]
+[\fB\-o\fIoutfile\fR]
+[\fB\-K\fIlayout\fR]
+[\fB\-O\fR]
+[\fB\-P\fR]
 [\fB\-v\fR]
 [\fB\-V\fR]
 [files]
@@ -43,8 +52,11 @@ sfdp \- filter for drawing large undirected graphs
 \fBcirco\fR
 [\fB\-\fR(\fBG\fR|\fBN\fR|\fBE\fR)\fIname=value\fR]
 [\fB\-T\fIlang\fR]
-[\fB\-l \fIlibfile\fR]
-[\fB\-o \fIoutfile\fR]
+[\fB\-l\fIlibfile\fR]
+[\fB\-o\fIoutfile\fR]
+[\fB\-K\fIlayout\fR]
+[\fB\-O\fR]
+[\fB\-P\fR]
 [\fB\-v\fR]
 [\fB\-V\fR]
 [files]
@@ -52,8 +64,11 @@ sfdp \- filter for drawing large undirected graphs
 \fBfdp\fR
 [\fB\-\fR(\fBG\fR|\fBN\fR|\fBE\fR)\fIname=value\fR]
 [\fB\-T\fIlang\fR]
-[\fB\-l \fIlibfile\fR]
-[\fB\-o \fIoutfile\fR]
+[\fB\-l\fIlibfile\fR]
+[\fB\-o\fIoutfile\fR]
+[\fB\-K\fIlayout\fR]
+[\fB\-O\fR]
+[\fB\-P\fR]
 [\fB\-v\fR]
 [\fB\-V\fR]
 [files]
@@ -61,8 +76,11 @@ sfdp \- filter for drawing large undirected graphs
 \fBsfdp\fR
 [\fB\-\fR(\fBG\fR|\fBN\fR|\fBE\fR)\fIname=value\fR]
 [\fB\-T\fIlang\fR]
-[\fB\-l \fIlibfile\fR]
-[\fB\-o \fIoutfile\fR]
+[\fB\-l\fIlibfile\fR]
+[\fB\-o\fIoutfile\fR]
+[\fB\-K\fIlayout\fR]
+[\fB\-O\fR]
+[\fB\-P\fR]
 [\fB\-v\fR]
 [\fB\-V\fR]
 [files]
@@ -144,6 +162,12 @@ that has a non(hynull "href" attribute.),
 \fB\-Tcmapx\fP (client\(hyside imagemap for use in html and xhtml).
 Additional less common or more special\(hypurpose output formats
 can be found at http://www.graphviz.org/cvs/doc/info/output.html.)
+.P
+Alternative plugins providing support for a given output format
+can be found from the error message resulting from appending a ':' to the format. e.g. \fB-Tpng:\fP
+The first plugin listed is always the default.
+.P
+The \fB\-P\fP switch can be used to produce a graph of all output variants supported by plugins in the local installation of graphviz.
 .SH GRAPH FILE LANGUAGE
 Here is a synopsis of the graph file language, traditionally using the extension \fB.dot\fR, for graphs:
 .PP
@@ -620,7 +644,13 @@ and use any edge layouts already specified by the pos attribute.
 neato computes an edge layout for any edge that does not have a pos attribute.
 As usual, edge layout is guided by the \fBsplines\fR attribute.
 .PP
-\fB\-v\fP (verbose) prints delta energy every 100th iteration.
+\fB\-K\fIlayout\fR override the default layout engine implied by the command name.
+.PP
+\fB\-O\fP automatically generate output filenames based on the input filename and the -T format.
+.PP
+\fB\-P\fP generate a graph of the currently available plugins.
+.PP
+\fB\-v\fP (verbose) prints various information useful for debugging.
 .PP
 \fB\-V\fP (version) prints version information and exits.
 .PP
