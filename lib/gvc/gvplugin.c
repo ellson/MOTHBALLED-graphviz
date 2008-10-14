@@ -473,11 +473,15 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
     agraphattr(NULL, "label", "");
     agraphattr(NULL, "rankdir", "");
     agraphattr(NULL, "rank", "");
+    agraphattr(NULL, "ranksep", "");
 
     g = agopen("G", AGDIGRAPH);
 
     a = agfindattr(g, "rankdir");
     agxset(g, a->index, "LR");
+
+    a = agfindattr(g, "ranksep");
+    agxset(g, a->index, "1.5");
 
     a = agfindattr(g, "label");
     agxset(g, a->index, "\nPlugins");
@@ -511,6 +515,16 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 		        n = agnode(ssg, bufa);
                         a = agfindattr(n, "label");
 		        agxset(n, a->index, q);
+			if (! (p && *p)) {
+			    strcpy(bufb, "render_cg");
+			    m = agfindnode(sg, bufb);
+			    if (!m) {
+				m = agnode(sg, bufb);
+				a = agfindattr(m, "label");
+				agxset(m, a->index, "cg");
+			    }
+			    agedge(sg, m, n);
+			}
 			break;
 		    case API_render:
 			strcpy(bufb, api_names[api]);
@@ -531,6 +545,9 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 	}
     }
 
+    ssg = agsubg(g, "o_formats");
+    a = agfindattr(ssg, "rank");
+    agxset(ssg, a->index, "same");
     for (package = gvc->packages; package; package = package->next) {
         strcpy(bufa, package->name); 
 	strcat(bufa, "_");
@@ -549,9 +566,9 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 			n = agnode(g, bufa);
 		        strcpy(bufb, "o_");
 		        strcat(bufb, q);
-			m = agfindnode(g, bufb);
+			m = agfindnode(ssg, bufb);
 			if (!m) {
-			    m = agnode(g, bufb);
+			    m = agnode(ssg, bufb);
 			    a = agfindattr(m, "label");
 		            agxset(m, a->index, q);
 			}
