@@ -44,12 +44,17 @@ extern "C" {
     typedef int (*qsort_cmpf) (const void *, const void *);
     typedef int (*bsearch_cmpf) (const void *, const void *);
 
+#ifdef WITH_CGRAPH
+    typedef struct Agraph_s graph_t;
+    typedef struct Agnode_s node_t;
+    typedef struct Agedge_s edge_t;
+    typedef struct Agsym_s attrsym_t;
+#else
     typedef struct Agraph_t graph_t;
-
     typedef struct Agnode_t node_t;
     typedef struct Agedge_t edge_t;
-
     typedef struct Agsym_t attrsym_t;
+#endif
 
     typedef struct htmllabel_t htmllabel_t;
 
@@ -587,7 +592,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define ED_weight(e) (e)->u.weight
 #define ED_xpenalty(e) (e)->u.xpenalty
 
-#if WITH_CGRAPH
+#ifdef WITH_CGRAPH
 #include "cgraph.h"
 #else
 #include "graph.h"

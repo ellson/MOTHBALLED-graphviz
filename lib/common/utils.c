@@ -238,7 +238,11 @@ edge_t *debug_getedge(graph_t * g, char *s0, char *s1)
     n0 = agfindnode(g, s0);
     n1 = agfindnode(g, s1);
     if (n0 && n1)
+#ifdef WITH_CGRAPH
+        return agedge(g, n0, n1, (char *)NULL, FALSE);
+#else
 	return agfindedge(g, n0, n1);
+#endif
     else
 	return NULL;
 }

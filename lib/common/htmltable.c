@@ -1106,7 +1106,11 @@ static void checkChain(graph_t * g)
     edge_t *e;
     t = GD_nlist(g);
     for (h = ND_next(t); h; h = ND_next(h)) {
+#ifdef WITH_CGRAPH
+        if (!agedge(g, t, h, (char *)NULL, FALSE)) {
+#else
 	if (!agfindedge(g, t, h)) {
+#endif
 	    e = agedge(g, t, h);
 	    ED_minlen(e) = 0;
 	    elist_append(e, ND_out(t));
