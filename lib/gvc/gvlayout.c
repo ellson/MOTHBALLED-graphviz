@@ -33,8 +33,8 @@
 #endif
 #include "gvcproc.h"
 
-extern void graph_init(graph_t *g, boolean use_rankdir);
-extern void graph_cleanup(graph_t *g);
+extern void graph_init(Agraph_t *g, boolean use_rankdir);
+extern void graph_cleanup(Agraph_t *g);
 
 int gvlayout_select(GVC_t * gvc, const char *layout)
 {
@@ -58,7 +58,7 @@ int gvlayout_select(GVC_t * gvc, const char *layout)
  * Check that the root graph has been initialized. If not, initialize it.
  * Return 0 on success.
  */
-int gvLayoutJobs(GVC_t * gvc, graph_t * g)
+int gvLayoutJobs(GVC_t * gvc, Agraph_t * g)
 {
     gvlayout_engine_t *gvle;
     char *p;
@@ -97,7 +97,7 @@ int gvLayoutJobs(GVC_t * gvc, graph_t * g)
  * Then, if the root graph has not been cleaned up, clean it up and reset.
  * Only the root graph has GD_drawing non-null.
  */
-int gvFreeLayout(GVC_t * gvc, graph_t * g)
+int gvFreeLayout(GVC_t * gvc, Agraph_t * g)
 {
     if (GD_cleanup(g)) {
 	(GD_cleanup(g))(g);

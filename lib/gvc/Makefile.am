@@ -55,13 +55,13 @@ libgvc_C_la_DEPENDENCIES = $(top_builddir)/lib/rbtree/librbtree_C.la \
 	$(top_builddir)/lib/pack/libpack_C.la
 #For use with plugins.
 #   so it is linked with an empty table of builtins.
-libgvc_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
+libgvc_la_LDFLAGS = -version-info $(VERSION_INFO) -no-undefined
 libgvc_la_SOURCES = $(libgvc_C_la_SOURCES) no_builtins.c demand_loading.c
 libgvc_la_LIBADD = $(libgvc_C_la_LIBADD) \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
-	@GTS_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @MATH_LIBS@
+	$(GTS_LIBS) $(EXPAT_LIBS) $(Z_LIBS) $(MATH_LIBS)
 libgvc_la_DEPENDENCIES = $(libgvc_C_la_DEPENDENCIES)
 
 #For use without plugins.
@@ -69,7 +69,7 @@ libgvc_la_DEPENDENCIES = $(libgvc_C_la_DEPENDENCIES)
 #  		with either demand_loading.c or no_demand_loading.c,
 #  		and with the plugins themselves, e.g.
 #  -lgvplugin_dot_layout -lgvplugin_neato_layout -lgvplugin_gd -lgvplugin_pangocairo
-libgvc_builtins_la_LDFLAGS = -version-info @VERSION_INFO@
+libgvc_builtins_la_LDFLAGS = -version-info $(VERSION_INFO)
 libgvc_builtins_la_SOURCES = $(libgvc_C_la_SOURCES)
 libgvc_builtins_la_LIBADD = $(libgvc_la_LIBADD)
 libgvc_builtins_la_DEPENDENCIES = $(libgvc_la_DEPENDENCIES)

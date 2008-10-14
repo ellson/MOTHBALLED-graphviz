@@ -123,8 +123,8 @@ extern "C" {
 /* layout */
 
     extern int gvlayout_select(GVC_t * gvc, const char *str);
-    extern int gvFreeLayout(GVC_t * gvc, graph_t * g);
-    extern int gvLayoutJobs(GVC_t * gvc, graph_t * g);
+    extern int gvFreeLayout(GVC_t * gvc, Agraph_t * g);
+    extern int gvLayoutJobs(GVC_t * gvc, Agraph_t * g);
 
 /* argvlist */
     extern gv_argvlist_t *gvNEWargvlist(void);
