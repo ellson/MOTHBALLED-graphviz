@@ -45,7 +45,7 @@ extern "C" {
     struct gvplugin_package_s {
         gvplugin_package_t *next;
         char *path;
-        char *packagename;
+        char *name;
     };
 
     struct gvplugin_available_s {
@@ -54,9 +54,7 @@ extern "C" {
 	int quality;             /* programmer assigned quality
 					ranking within type (+ve or -ve int)
 					- codegens have quality = 0 */
-	char *path;		 /* file path to library containing plugin,
-					or NULL if builtin */
-	char *packagename;	 /* package name */
+	gvplugin_package_t *package;   /* details of library containing plugin */
 	gvplugin_installed_t *typeptr;  /* pointer to jumptable for plugin,
 					or NULL if not yet loaded */
     };
