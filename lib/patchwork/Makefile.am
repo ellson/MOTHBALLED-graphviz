@@ -3,19 +3,17 @@
 
 if WITH_CGRAPH
 GRAPH = cgraph
-COMMON = common_cgraph
 NEATOGEN = neatogen_cgraph
 FDPGEN = fdpgen_cgraph
 else
 GRAPH = graph
-COMMON = common
 NEATOGEN = neatogen
 FDPGEN = fdpgen
 endif
 
 AM_CPPFLAGS = \
         -I$(top_srcdir) \
-        -I$(top_srcdir)/lib/$(COMMON) \
+        -I$(top_srcdir)/lib/common \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/$(NEATOGEN) \
 	-I$(top_srcdir)/lib/$(FDPGEN) \

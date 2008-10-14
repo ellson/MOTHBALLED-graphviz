@@ -152,8 +152,13 @@ textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *f
 	        agerr(AGPREV, "in label of node %s\n", n->name);
 		break;
 	    case AGEDGE:
+#ifdef WITH_CGRAPH
+		agerr(AGPREV, "in label of edge %s %s %s\n",
+		        e->tail->name, agisdirected(g)?"->":"--", e->head->name);
+#else
 		agerr(AGPREV, "in label of edge %s %s %s\n",
 		        e->tail->name, AG_IS_DIRECTED(g)?"->":"--", e->head->name);
+#endif
 		break;
 	    }
 	}

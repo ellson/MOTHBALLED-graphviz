@@ -834,13 +834,22 @@ dia_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
 	    || (strcmp(shape_t, "circle") == 0)
 	    || (strcmp(shape_t, "doublecircle") == 0)) {
 	    cp_h = diaptf(ND_coord(head));
+#ifdef WITH_CGRAPH
+	    if (agisdirected(Rootgraph))
+#else
 	    if (AG_IS_DIRECTED(Rootgraph))
+#endif
+
 	        conn_h = ellipse_connection(cp_h, diapt(A[n - 1]));
 	    else
 	        conn_h = ellipse_connection(cp_h, diapt(A[0]));
         } else if (strcmp(shape_t, "record") == 0) { 
         } else {
+#ifdef WITH_CGRAPH
+	    if (agisdirected(Rootgraph))
+#else
 	    if (AG_IS_DIRECTED(Rootgraph))
+#endif
 	        conn_h = box_connection(head, diapt(A[n - 1]));
 	    else
 	        conn_h = box_connection(head, diapt(A[0]));
@@ -850,13 +859,21 @@ dia_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
 	    || (strcmp(shape_t, "circle") == 0)
 	    || (strcmp(shape_t, "doublecircle") == 0)) {
 	    cp_t = diaptf(ND_coord(tail));
+#ifdef WITH_CGRAPH
+	    if (agisdirected(Rootgraph))
+#else
 	    if (AG_IS_DIRECTED(Rootgraph))
+#endif
 	        conn_t = ellipse_connection(cp_t, diapt(A[0]));
 	    else
 	        conn_t = ellipse_connection(cp_t, diapt(A[n - 1]));
         } else if (strcmp(shape_t, "record") == 0) {
         } else {
+#ifdef WITH_CGRAPH
+	    if (agisdirected(Rootgraph))
+#else
 	    if (AG_IS_DIRECTED(Rootgraph))
+#endif
 	        conn_t = box_connection(tail, diapt(A[0]));
 	    else
 	        conn_t = box_connection(tail, diapt(A[n - 1]));

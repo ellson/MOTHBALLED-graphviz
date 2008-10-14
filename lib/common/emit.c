@@ -1839,7 +1839,12 @@ static void emit_edge(GVJ_t * job, edge_t * e)
 
 	s = malloc(strlen(e->tail->name) + 2 + strlen(e->head->name) + 1);
 	strcpy(s,e->tail->name);
+#ifdef WITH_CGRAPH
+	if (agisdirected(agraphof(e)))
+#else
 	if (AG_IS_DIRECTED(e->tail->graph))
+#endif
+
 	    strcat(s,"->");
 	else
 	    strcat(s,"--");

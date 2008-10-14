@@ -183,7 +183,11 @@ void arrow_flags(Agedge_t * e, int *sflag, int *eflag)
     arrowdir_t *arrowdir;
 
     *sflag = ARR_TYPE_NONE;
+#ifdef WITH_CGRAPH
+    *eflag = agisdirected(agraphof(e)) ? ARR_TYPE_NORM : ARR_TYPE_NONE;
+#else
     *eflag = AG_IS_DIRECTED(e->tail->graph) ? ARR_TYPE_NORM : ARR_TYPE_NONE;
+#endif
     if (E_dir && ((attr = agxget(e, E_dir->index)))[0]) {
 	for (arrowdir = Arrowdirs; arrowdir->dir; arrowdir++) {
 	    if (streq(attr, arrowdir->dir)) {
@@ -201,7 +205,11 @@ void arrow_flags(Agedge_t * e, int *sflag, int *eflag)
 	edge_t *f;
 	int s0, e0;
 	/* pick up arrowhead of opposing edge */
+#ifdef WITH_CGRAPH
+	f = agedge(agraphof(e), aghead(e), agtail(e), (char *)NULL, FALSE);
+#else
 	f = agfindedge(e->tail->graph, e->head, e->tail);
+#endif
 	arrow_flags(f, &s0, &e0);
 	*eflag = *eflag | s0;
 	*sflag = *sflag | e0;

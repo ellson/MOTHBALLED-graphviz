@@ -3,10 +3,8 @@
 
 if WITH_CGRAPH
 GRAPH = cgraph
-COMMON = common_cgraph
 else
 GRAPH = graph
-COMMON = common
 endif
 
 pdfdir = $(pkgdatadir)/doc/pdf
@@ -14,7 +12,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
-	-I$(top_srcdir)/lib/$(COMMON) \
+	-I$(top_srcdir)/lib/common \
 	-I$(top_srcdir)/lib/pathplan \
 	-I$(top_srcdir)/lib/$(GRAPH) \
 	-I$(top_srcdir)/lib/cdt \
@@ -51,7 +49,7 @@ pdf_DATA = gvc.3.pdf
 libgvc_C_la_SOURCES = gvrender.c gvlayout.c gvdevice.c gvloadimage.c \
 	gvcontext.c gvjobs.c gvevent.c gvplugin.c gvconfig.c \
 	gvtextlayout.c gvusershape.c gvc.c
-libgvc_C_la_LIBADD = $(top_builddir)/lib/$(COMMON)/libcommon_C.la \
+libgvc_C_la_LIBADD = $(top_builddir)/lib/common/libcommon_C.la \
 	$(top_builddir)/lib/pack/libpack_C.la
 libgvc_C_la_DEPENDENCIES = $(top_builddir)/lib/rbtree/librbtree_C.la \
 	$(top_builddir)/lib/pack/libpack_C.la

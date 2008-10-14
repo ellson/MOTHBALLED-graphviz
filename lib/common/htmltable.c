@@ -1581,7 +1581,11 @@ static char *nameOf(void *obj, agxbuf * xb)
 	ep = (Agedge_t *) obj;
 	agxbput(xb, ep->tail->name);
 	agxbput(xb, ep->head->name);
+#ifdef WITH_CGRAPH
+	if (agisdirected(agraphof(ep)))
+#else
 	if (AG_IS_DIRECTED(ep->tail->graph))
+#endif
 	    agxbput(xb, "->");
 	else
 	    agxbput(xb, "--");

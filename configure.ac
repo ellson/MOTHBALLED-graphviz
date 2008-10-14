@@ -2913,7 +2913,6 @@ AC_CONFIG_FILES(Makefile
 	lib/expr/Makefile
 	lib/expr/libexpr.pc
 	lib/common/Makefile
-	lib/common_cgraph/Makefile
 	lib/ingraphs/Makefile
 	lib/vpsc/Makefile
 	lib/gvc/Makefile
