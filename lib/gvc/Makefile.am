@@ -71,6 +71,6 @@ libgvc_builtins_la_DEPENDENCIES = $(libgvc_la_DEPENDENCIES)
 gvc.3.pdf: $(srcdir)/gvc.3
 	- @GROFF@ -Tps -man $(srcdir)/gvc.3 | @PS2PDF@ - - > gvc.3.pdf
 
-EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old regex_win32.h regex_win32.c plugins.tcl
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old regex_win32.h regex_win32.c
 
 DISTCLEANFILES = $(pdf_DATA)
