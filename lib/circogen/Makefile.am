@@ -13,10 +13,13 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/graph \
         -I$(top_srcdir)/lib/cdt
 
+if WITH_CGRAPH
+else
 noinst_HEADERS = block.h blockpath.h blocktree.h circo.h \
 	circpos.h circular.h deglist.h edgelist.h nodelist.h \
 	nodeset.h stack.h
 noinst_LTLIBRARIES = libcircogen_C.la
+endif
 
 libcircogen_C_la_SOURCES = circularinit.c nodelist.c block.c edgelist.c \
 	stack.c circular.c deglist.c blocktree.c blockpath.c \

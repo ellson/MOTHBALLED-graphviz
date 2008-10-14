@@ -1,14 +1,22 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
+if WITH_CGRAPH
+GRAPH = cgraph
+COMMON = common_cgraph
+else
+GRAPH = graph
+COMMON = common
+endif
+
 pdfdir = $(pkgdatadir)/doc/pdf
 pkgconfigdir = $(libdir)/pkgconfig
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
-	-I$(top_srcdir)/lib/common \
+	-I$(top_srcdir)/lib/$(COMMON) \
 	-I$(top_srcdir)/lib/pathplan \
-	-I$(top_srcdir)/lib/graph \
+	-I$(top_srcdir)/lib/$(GRAPH) \
 	-I$(top_srcdir)/lib/cdt \
 	$(INCLTDL) -I$(top_srcdir)/libltdl \
 	-DGVLIBDIR=\"$(pkglibdir)\" -DGVPLUGIN_CONFIG_FILE=\"$(GVPLUGIN_CONFIG_FILE)\"
@@ -43,7 +51,7 @@ pdf_DATA = gvc.3.pdf
 libgvc_C_la_SOURCES = gvrender.c gvlayout.c gvdevice.c gvloadimage.c \
 	gvcontext.c gvjobs.c gvevent.c gvplugin.c gvconfig.c \
 	gvtextlayout.c gvusershape.c gvc.c
-libgvc_C_la_LIBADD = $(top_builddir)/lib/common/libcommon_C.la \
+libgvc_C_la_LIBADD = $(top_builddir)/lib/$(COMMON)/libcommon_C.la \
 	$(top_builddir)/lib/pack/libpack_C.la
 libgvc_C_la_DEPENDENCIES = $(top_builddir)/lib/rbtree/librbtree_C.la \
 	$(top_builddir)/lib/pack/libpack_C.la
@@ -53,7 +61,7 @@ libgvc_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
 libgvc_la_SOURCES = $(libgvc_C_la_SOURCES) no_builtins.c demand_loading.c
 libgvc_la_LIBADD = $(libgvc_C_la_LIBADD) \
 	$(top_builddir)/lib/cdt/libcdt.la \
-	$(top_builddir)/lib/graph/libgraph.la \
+	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
 	@GTS_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @MATH_LIBS@
 libgvc_la_DEPENDENCIES = $(libgvc_C_la_DEPENDENCIES)

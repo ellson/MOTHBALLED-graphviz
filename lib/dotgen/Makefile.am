@@ -9,8 +9,11 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/cdt \
 	-I$(top_srcdir)/lib/pathplan
 
+if WITH_CGRAPH
+else
 noinst_HEADERS = dot.h dotprocs.h
 noinst_LTLIBRARIES = libdotgen_C.la
+endif
 
 libdotgen_C_la_LDFLAGS = -no-undefined
 libdotgen_C_la_SOURCES = acyclic.c class1.c class2.c cluster.c compound.c \

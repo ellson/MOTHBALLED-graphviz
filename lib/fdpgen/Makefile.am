@@ -11,9 +11,12 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/graph \
         -I$(top_srcdir)/lib/cdt
 
+if WITH_CGRAPH
+else
 noinst_HEADERS = comp.h dbg.h fdp.h grid.h tlayout.h xlayout.h \
 	clusteredges.h
 noinst_LTLIBRARIES = libfdpgen_C.la
+endif
 
 libfdpgen_C_la_SOURCES = comp.c dbg.c grid.c fdpinit.c layout.c \
 	tlayout.c xlayout.c clusteredges.c

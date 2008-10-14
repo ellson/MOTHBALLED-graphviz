@@ -9,8 +9,10 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/pathplan \
         -I$(top_srcdir)/lib/graph \
         -I$(top_srcdir)/lib/sfdpgen \
-        -I$(top_srcdir)/lib/cdt @IPSEPCOLA_INCLUDES@ $(GTS_CFLAGS)
+        -I$(top_srcdir)/lib/cdt $(IPSEPCOLA_INCLUDES) $(GTS_CFLAGS)
 
+if WITH_CGRAPH
+else
 noinst_LTLIBRARIES = libneatogen_C.la
 
 noinst_HEADERS = adjust.h edges.h geometry.h heap.h hedges.h info.h mem.h \
@@ -18,6 +20,7 @@ noinst_HEADERS = adjust.h edges.h geometry.h heap.h hedges.h info.h mem.h \
 	bfs.h closest.h conjgrad.h defs.h dijkstra.h embed_graph.h kkutils.h \
 	matrix_ops.h pca.h stress.h quad_prog_solver.h digcola.h \
 	quad_prog_vpsc.h delaunay.h sparsegraph.h multispline.h fPQ.h
+endif
 
 IPSEPCOLA_SOURCES = constrained_majorization_ipsep.c \
 	mosek_quad_solve.c mosek_quad_solve.h quad_prog_vpsc.c 

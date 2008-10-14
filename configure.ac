@@ -2659,7 +2659,7 @@ if test "x$with_cgraph" != "xyes"; then
   use_cgraph="No"
 else
   use_cgraph="Yes"
-  AC_DEFINE_UNQUOTED(USE_CGRAPH,1,[Define if you want CGRAPH])
+  AC_DEFINE_UNQUOTED(WITH_CGRAPH,1,[Define if you want CGRAPH])
 fi
 AM_CONDITIONAL(WITH_CGRAPH, [test "x$use_cgraph" = "xYes"])
 
@@ -2897,17 +2897,23 @@ AC_CONFIG_FILES(Makefile
 	lib/sfio/Sfio_f/Makefile
 	lib/vmalloc/Makefile
 	lib/dotgen/Makefile
+	lib/dotgen_cgraph/Makefile
 	lib/neatogen/Makefile
+	lib/neatogen_cgraph/Makefile
 	lib/fdpgen/Makefile
+	lib/fdpgen_cgraph/Makefile
 	lib/sparse/Makefile
 	lib/sfdpgen/Makefile
 	lib/circogen/Makefile
+	lib/circogen_cgraph/Makefile
 	lib/twopigen/Makefile
+	lib/twopigen_cgraph/Makefile
 	lib/patchwork/Makefile
 	lib/pack/Makefile
 	lib/expr/Makefile
 	lib/expr/libexpr.pc
 	lib/common/Makefile
+	lib/common_cgraph/Makefile
 	lib/ingraphs/Makefile
 	lib/vpsc/Makefile
 	lib/gvc/Makefile
