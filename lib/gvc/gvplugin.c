@@ -464,7 +464,7 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
     Agsym_t *a;
     gvplugin_package_t *package;
     gvplugin_available_t **pnext;
-    char buf[100], *p, *q;
+    char bufa[100], *buf1, *buf2, bufb[100], *p, *q;
     int api, found;
 
     aginit();
@@ -483,20 +483,22 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
     agxset(g, a->index, "\nPlugins");
 
     for (package = gvc->packages; package; package = package->next) {
-        strcpy(buf, "cluster_");
-        strcat(buf, package->name); 
-	sg = agsubg(g, buf);
+        strcpy(bufa, "cluster_");
+        strcat(bufa, package->name); 
+	sg = agsubg(g, bufa);
         a = agfindattr(sg, "label");
 	agxset(sg, a->index, package->name);
-
+        strcpy(bufa, package->name); 
+	strcat(bufa, "_");
+	buf1 = bufa + strlen(bufa);
 	for (api = 0; api < ARRAY_SIZE(api_names); api++) {
 	    found = 0;
-	    strcpy(buf, package->name);
-	    strcat(buf, "_");
-	    strcat(buf, api_names[api]);
-	    ssg = agsubg(sg, buf);
+	    strcpy(buf1, api_names[api]);
+	    ssg = agsubg(sg, bufa);
             a = agfindattr(ssg, "rank");
 	    agxset(ssg, a->index, "same");
+	    strcat(buf1, "_");
+	    buf2 = bufa + strlen(bufa);
 	    for (pnext = &(gvc->apis[api]); *pnext; pnext = &((*pnext)->next)) {
 		if ((*pnext)->package == package) {
 		    found++;
@@ -505,11 +507,16 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 		    switch (api) {
 		    case API_device:
 		    case API_loadimage:
+		        strcpy(buf2, q);
+		        n = agnode(ssg, bufa);
+                        a = agfindattr(n, "label");
+		        agxset(n, a->index, q);
+			break;
 		    case API_render:
-		        strcpy(buf, api_names[api]);
-		        strcat(buf, "_");
-		        strcat(buf, q);
-		        n = agnode(ssg, buf);
+			strcpy(bufb, api_names[api]);
+		        strcat(bufb, "_");
+		        strcat(bufb, q);
+		        n = agnode(ssg, bufb);
                         a = agfindattr(n, "label");
 		        agxset(n, a->index, q);
 			break;
@@ -525,58 +532,56 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
     }
 
     for (package = gvc->packages; package; package = package->next) {
-        strcpy(buf, "cluster_");
-        strcat(buf, package->name); 
-	sg = agfindsubg(g, buf);
+        strcpy(bufa, package->name); 
+	strcat(bufa, "_");
+	buf1 = bufa + strlen(bufa);
 	for (api = 0; api < ARRAY_SIZE(api_names); api++) {
-	    strcpy(buf, package->name);
-	    strcat(buf, "_");
-	    strcat(buf, api_names[api]);
-	    ssg = agfindsubg(sg, buf);
+	    strcpy(buf1, api_names[api]);
+	    strcat(buf1, "_");
+	    buf2 = bufa + strlen(bufa);
 	    for (pnext = &(gvc->apis[api]); *pnext; pnext = &((*pnext)->next)) {
 		if ((*pnext)->package == package) {
 		    q = strdup((*pnext)->typestr);
 		    if ((p = strchr(q, ':'))) *p++ = '\0';
 		    switch (api) {
 		    case API_device:
-		        strcpy(buf, api_names[api]);
-		        strcat(buf, "_");
-		        strcat(buf, q);
-			n = agfindnode(ssg, buf);
-		        strcpy(buf, "o_");
-		        strcat(buf, q);
-			m = agfindnode(g, buf);
+		        strcpy(buf2, q);
+			n = agnode(g, bufa);
+		        strcpy(bufb, "o_");
+		        strcat(bufb, q);
+			m = agfindnode(g, bufb);
 			if (!m) {
-			    m = agnode(g, buf);
-                            a = agfindattr(m, "label");
+			    m = agnode(g, bufb);
+			    a = agfindattr(m, "label");
 		            agxset(m, a->index, q);
 			}
-			e = agedge(g, n, m);
+			e = agfindedge(g, n, m);
+			if (!e)
+			    e = agedge(g, n, m);
 			if (p && *p) {
-			    strcpy(buf, "render_");
-			    strcat(buf, p);
-			    m = agfindnode(g, buf);
-			    if (m)
-			        agedge(g, m, n);
+			    strcpy(bufb, "render_");
+			    strcat(bufb, p);
+			    m = agnode(g, bufb);
+			    agedge(g, m, n);
 			}
 			break;
 		    case API_loadimage:
-		        strcpy(buf, api_names[api]);
-		        strcat(buf, "_");
-		        strcat(buf, q);
-			n = agfindnode(ssg, buf);
-		        strcpy(buf, "i_");
-		        strcat(buf, q);
-			m = agfindnode(g, buf);
+		        strcpy(buf2, q);
+			n = agnode(g, bufa);
+		        strcpy(bufb, "i_");
+		        strcat(bufb, q);
+			m = agfindnode(g, bufb);
 			if (!m) {
-			    m = agnode(g, buf);
+			    m = agnode(g, bufb);
                             a = agfindattr(m, "label");
 		            agxset(m, a->index, q);
 			}
-			e = agedge(g, m, n);
-			strcpy(buf, "render_");
-			strcat(buf, p);
-			m = agfindnode(g, buf);
+			e = agfindedge(g, m, n);
+			if (!e)
+			    e = agedge(g, m, n);
+			strcpy(bufb, "render_");
+			strcat(bufb, p);
+			m = agnode(g, bufb); 
 			agedge(g, n, m);
 			break;
 		    default:
