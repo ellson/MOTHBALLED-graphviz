@@ -44,16 +44,16 @@ extern "C" {
     typedef int (*qsort_cmpf) (const void *, const void *);
     typedef int (*bsearch_cmpf) (const void *, const void *);
 
-    typedef struct Agraph_s graph_t;
+    typedef struct Agraph_t graph_t;
 
-    typedef struct Agnode_s node_t;
-    typedef struct Agedge_s edge_t;
+    typedef struct Agnode_t node_t;
+    typedef struct Agedge_t edge_t;
 
-    typedef struct Agsym_s attrsym_t;
+    typedef struct Agsym_t attrsym_t;
 
-    typedef struct htmllabel_s htmllabel_t;
+    typedef struct htmllabel_t htmllabel_t;
 
-    typedef union inside_s {
+    typedef union inside_t {
 	struct {
 	    pointf* p;
 	    double* r;

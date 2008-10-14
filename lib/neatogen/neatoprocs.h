@@ -20,7 +20,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include <adjust.h>
+#include "adjust.h"
 
     extern void addEdgeLabels(edge_t * e, pointf rp, pointf rq);
     extern int allow_edits(int);
