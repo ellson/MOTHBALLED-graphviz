@@ -6,7 +6,7 @@ GRAPH = cgraph
 FDPGEN = fdpgen_cgraph
 else
 GRAPH = graph
-FDPGEN = cgraph
+FDPGEN = fdpgen
 endif
 
 AM_CPPFLAGS = \
