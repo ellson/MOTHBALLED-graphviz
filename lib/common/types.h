@@ -36,11 +36,6 @@ typedef unsigned char boolean;
 #include "gvcext.h"
 #include "pathgeom.h"
 #include "textpara.h"
-#ifdef WITH_CGRAPH
-#include "cgraph.h"
-#else
-#include "graph.h"
-#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -742,6 +737,12 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define ED_tree_index(e) (e)->u.tree_index
 #define ED_weight(e) (e)->u.weight
 #define ED_xpenalty(e) (e)->u.xpenalty
+#endif
+
+#ifdef WITH_CGRAPH
+#include "cgraph.h"
+#else
+#include "graph.h"
 #endif
 
     typedef struct {

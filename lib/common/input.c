@@ -18,12 +18,6 @@
 #include "render.h"
 #include "htmltable.h"
 
-#ifdef WITH_CGRAPH
-#define SET_RANKDIR(g,rd) (GD_rankdir2(g) = rd)
-#else
-#define SET_RANKDIR(g,rd) ((g)->u.rankdir = (rd))
-#endif
-
 static char *usageFmt =
     "Usage: %s [-Vv?] [-(GNE)name=val] [-(KTlso)<val>] <dot files>\n";
 
@@ -974,7 +968,7 @@ void do_graph_label(graph_t * sg)
 #ifdef WITH_CGRAPH
 	if (sg == agroot(sg))
 #else
-	if (sg == sg->root) {
+	if (sg == sg->root)
 #endif
 	    return;
 
