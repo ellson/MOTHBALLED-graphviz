@@ -185,10 +185,11 @@ void arrow_flags(Agedge_t * e, int *sflag, int *eflag)
     *sflag = ARR_TYPE_NONE;
 #ifdef WITH_CGRAPH
     *eflag = agisdirected(agraphof(e)) ? ARR_TYPE_NORM : ARR_TYPE_NONE;
+    if (E_dir && ((attr = agxget(e, E_dir)))[0]) {
 #else
     *eflag = AG_IS_DIRECTED(e->tail->graph) ? ARR_TYPE_NORM : ARR_TYPE_NONE;
-#endif
     if (E_dir && ((attr = agxget(e, E_dir->index)))[0]) {
+#endif
 	for (arrowdir = Arrowdirs; arrowdir->dir; arrowdir++) {
 	    if (streq(attr, arrowdir->dir)) {
 		*sflag = arrowdir->sflag;
@@ -197,10 +198,17 @@ void arrow_flags(Agedge_t * e, int *sflag, int *eflag)
 	    }
 	}
     }
+#ifdef WITH_CGRAPH
+    if (E_arrowhead && ((attr = agxget(e, E_arrowhead)))[0])
+	arrow_match_name(attr, eflag);
+    if (E_arrowtail && ((attr = agxget(e, E_arrowtail)))[0])
+	arrow_match_name(attr, sflag);
+#else
     if (E_arrowhead && ((attr = agxget(e, E_arrowhead->index)))[0])
 	arrow_match_name(attr, eflag);
     if (E_arrowtail && ((attr = agxget(e, E_arrowtail->index)))[0])
 	arrow_match_name(attr, sflag);
+#endif
     if (ED_conc_opp_flag(e)) {
 	edge_t *f;
 	int s0, e0;

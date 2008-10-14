@@ -1108,10 +1108,11 @@ static void checkChain(graph_t * g)
     for (h = ND_next(t); h; h = ND_next(h)) {
 #ifdef WITH_CGRAPH
         if (!agedge(g, t, h, (char *)NULL, FALSE)) {
+            e = agedge(g, t, h,NULL,1);
 #else
 	if (!agfindedge(g, t, h)) {
-#endif
 	    e = agedge(g, t, h);
+#endif
 	    ED_minlen(e) = 0;
 	    elist_append(e, ND_out(t));
 	    elist_append(e, ND_in(h));
@@ -1144,7 +1145,11 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
 
     lastn = NULL;
     for (i = 0; i <= tbl->cc; i++) {
+#ifdef WITH_CGRAPH
+	t = agnode(colg, nToName(i),1);
+#else
 	t = agnode(colg, nToName(i));
+#endif
 	alloc_elist(tbl->rc, ND_in(t));
 	alloc_elist(tbl->rc, ND_out(t));
 	if (lastn) {
@@ -1156,7 +1161,11 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
     }
     lastn = NULL;
     for (i = 0; i <= tbl->rc; i++) {
+#ifdef WITH_CGRAPH
+	t = agnode(rowg, nToName(i),1);
+#else
 	t = agnode(rowg, nToName(i));
+#endif
 	alloc_elist(tbl->cc, ND_in(t));
 	alloc_elist(tbl->cc, ND_out(t));
 	if (lastn) {
@@ -1181,9 +1190,15 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
     for (cells = tbl->u.n.cells; *cells; cells++) {
         int x, y, c, r;
 	cp = *cells;
+#ifdef WITH_CGRAPH
+	t = agnode(colg, nToName(cp->col),0);
+	h = agnode(colg, nToName(cp->col + cp->cspan),0);
+	e = agedge(colg, t, h,NULL,1);
+#else
 	t = agfindnode(colg, nToName(cp->col));
 	h = agfindnode(colg, nToName(cp->col + cp->cspan));
 	e = agedge(colg, t, h);
+#endif
         x = 0;
         for (c = 0; c < cp->cspan; c++)
             x += minc[cp->col + c];
@@ -1196,9 +1211,15 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
 	elist_append(e, ND_out(t));
 	elist_append(e, ND_in(h));
 
+#ifdef WITH_CGRAPH
+	t = agnode(rowg, nToName(cp->row),0);
+	h = agnode(rowg, nToName(cp->row + cp->rspan),0);
+	e = agedge(rowg, t, h,NULL,1);
+#else
 	t = agfindnode(rowg, nToName(cp->row));
 	h = agfindnode(rowg, nToName(cp->row + cp->rspan));
 	e = agedge(rowg, t, h);
+#endif
         y = 0;
         for (r = 0; r < cp->rspan; r++)
             y += minr[cp->row + r];
@@ -1267,8 +1288,13 @@ void sizeArray(htmltbl_t * tbl)
     tbl->heights = N_NEW(tbl->rc + 1, int);
     tbl->widths = N_NEW(tbl->cc + 1, int);
 
+#ifdef WITH_CGRAPH
+    rowg = agopen("rowg", Agdirected,NIL(Agdisc_t *));
+    colg = agopen("colg", Agdirected,NIL(Agdisc_t *));
+#else
     rowg = agopen("rowg", AGDIGRAPH);
     colg = agopen("colg", AGDIGRAPH);
+#endif
     makeGraphs(tbl, rowg, colg);
     rank(rowg, 2, INT_MAX);
     rank(colg, 2, INT_MAX);
@@ -1574,6 +1600,25 @@ size_html_tbl(graph_t *g, htmltbl_t * tbl, htmlcell_t * parent, htmlenv_t * env)
 static char *nameOf(void *obj, agxbuf * xb)
 {
     Agedge_t *ep;
+#ifdef WITH_CGRAPH
+    switch (agobjkind(obj)) {
+    case AGRAPH:
+	agxbput(xb, agnameof(((Agraph_t *) obj)));
+	break;
+    case AGNODE:
+	agxbput(xb, agnameof(((Agnode_t *) obj)));
+	break;
+    case AGEDGE:
+	ep = (Agedge_t *) obj;
+	agxbput(xb, agnameof(agtail(ep)));
+	agxbput(xb, agnameof(aghead(ep)));
+	if (agisdirected(agraphof(ep)))
+	    agxbput(xb, "->");
+	else
+	    agxbput(xb, "--");
+	break;
+    }
+#else
     switch (agobjkind(obj)) {
     case AGGRAPH:
 	agxbput(xb, ((Agraph_t *) obj)->name);
@@ -1585,16 +1630,13 @@ static char *nameOf(void *obj, agxbuf * xb)
 	ep = (Agedge_t *) obj;
 	agxbput(xb, ep->tail->name);
 	agxbput(xb, ep->head->name);
-#ifdef WITH_CGRAPH
-	if (agisdirected(agraphof(ep)))
-#else
 	if (AG_IS_DIRECTED(ep->tail->graph))
-#endif
 	    agxbput(xb, "->");
 	else
 	    agxbput(xb, "--");
 	break;
     }
+#endif
     return agxbuse(xb);
 }
 
@@ -1743,6 +1785,19 @@ int make_html_label(void *obj, textlabel_t * lp)
     char *s;
 
     env.obj = obj;
+#ifdef WITH_CGRAPH
+    switch (agobjkind(obj)) {
+    case AGRAPH:
+        env.g = ((Agraph_t *) obj)->root;
+        break;
+    case AGNODE:
+        env.g = agraphof(((Agnode_t *) obj));
+        break;
+    case AGEDGE:
+        env.g = agraphof(aghead (((Agedge_t *) obj)));
+        break;
+    }
+#else
     switch (agobjkind(obj)) {
     case AGGRAPH:
 	env.g = ((Agraph_t *) obj)->root;
@@ -1754,6 +1809,7 @@ int make_html_label(void *obj, textlabel_t * lp)
 	env.g = ((Agedge_t *) obj)->head->graph;
 	break;
     }
+#endif
     g = env.g->root;
 
     env.finfo.size = lp->fontsize;

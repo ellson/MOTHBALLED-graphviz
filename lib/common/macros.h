@@ -31,8 +31,6 @@
 #define SET_CLUST_EDGE(g) (GD_flags(g) |= 1)
 #define EDGE_TYPE(g) (GD_flags(g) & (7 << 1))
 
-#define SET_RANKDIR(g,rd) ((g)->u.rankdir = (rd))
-
 #ifndef streq
 #define streq(a,b)		(*(a)==*(b)&&!strcmp(a,b))
 #endif

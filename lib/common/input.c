@@ -18,6 +18,12 @@
 #include "render.h"
 #include "htmltable.h"
 
+#ifdef WITH_CGRAPH
+#define SET_RANKDIR(g,rd) (GD_rankdir2(g) = rd)
+#else
+#define SET_RANKDIR(g,rd) ((g)->u.rankdir = (rd))
+#endif
+
 static char *usageFmt =
     "Usage: %s [-Vv?] [-(GNE)name=val] [-(KTlso)<val>] <dot files>\n";
 
@@ -166,8 +172,24 @@ static void use_library(GVC_t *gvc, const char *name)
     gvc->common.lib = Lib;
 }
 
-void global_def(const char *dcl,
-		attrsym_t * ((*dclfun) (Agraph_t *, char *, char *)))
+#ifdef WITH_CGRAPH
+static void global_def(const char *dcl,int kind,
+         attrsym_t * ((*dclfun) (Agraph_t *, int kind, char *, char *)) )
+{
+    char *p;
+    const char *rhs = "true";
+
+    attrsym_t *sym;
+    if ((p = strchr(dcl, '='))) {
+        *p++ = '\0';
+        rhs = p;
+    }
+    sym = dclfun(NULL, kind, dcl, rhs);
+    sym->fixed = 1;
+}
+#else
+static void global_def(const char *dcl,
+	attrsym_t * ((*dclfun) (Agraph_t *, char *, char *)))
 {
     char *p;
     const char *rhs = "true";
@@ -180,6 +202,7 @@ void global_def(const char *dcl,
     sym = dclfun(NULL, dcl, rhs);
     sym->fixed = 1;
 }
+#endif
 
 static void gvg_init(GVC_t *gvc, graph_t *g, char *fn, int gidx)
 {
@@ -237,7 +260,10 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
     Verbose = gvc->common.verbose;
     CmdName = gvc->common.cmdname;
 
+#ifdef WITH_CGRAPH
+#else
     aginit();
+#endif
     nfiles = 0;
     for (i = 1; i < argc; i++)
 	if (argv[i] && argv[i][0] != '-')
@@ -250,7 +276,11 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 	    switch (c = argv[i][1]) {
 	    case 'G':
 		if (*rest)
+#ifdef WITH_CGRAPH
+		    global_def(rest,AGRAPH,agattr);
+#else
 		    global_def(rest, agraphattr);
+#endif
 		else {
 		    fprintf(stderr, "Missing argument for -G flag\n");
 		    dotneato_usage(1);
@@ -258,7 +288,11 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		break;
 	    case 'N':
 		if (*rest)
+#ifdef WITH_CGRAPH
+		    global_def(rest, AGNODE,agattr);
+#else
 		    global_def(rest, agnodeattr);
+#endif
 		else {
 		    fprintf(stderr, "Missing argument for -N flag\n");
 		    dotneato_usage(1);
@@ -266,7 +300,11 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		break;
 	    case 'E':
 		if (*rest)
+#ifdef WITH_CGRAPH
+		    global_def(rest, AGEDGE,agattr);
+#else
 		    global_def(rest, agedgeattr);
+#endif
 		else {
 		    fprintf(stderr, "Missing argument for -E flag\n");
 		    dotneato_usage(1);
@@ -373,8 +411,11 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
     }
 
     /* set persistent attributes here (if not already set from command line options) */
+#ifdef WITH_CGRAPH
+#else
     if (!(agfindattr(agprotograph()->proto->n, "label")))
 	agnodeattr(NULL, "label", NODENAME_ESC);
+#endif
 }
 
 /* getdoubles2ptf:
@@ -489,7 +530,11 @@ graph_t *gvNextInputGraph(GVC_t *gvc)
 #ifdef EXPERIMENTAL_MYFGETS
 	g = agread_usergets(fp, myfgets);
 #else
+#ifdef WITH_CGRAPH
+	g = agread(fp,NIL(Agdisc_t*));
+#else
 	g = agread(fp);
+#endif
 #endif
 	if (g) {
 	    gvg_init(gvc, g, fn, gidx++);
@@ -511,7 +556,11 @@ static int findCharset (graph_t * g)
     int enc;
     char* p;
 
+#ifdef WITH_CGRAPH
+    p = late_nnstring(g,agattr(g,AGRAPH,"charset",(char*)0),"utf-8");
+#else
     p = late_nnstring(g,agfindattr(g,"charset"),"utf-8");
+#endif
     if (!strcasecmp(p,"latin-1")
 	|| !strcasecmp(p,"latin1")
 	|| !strcasecmp(p,"l1")
@@ -604,8 +653,13 @@ void graph_init(graph_t * g, boolean use_rankdir)
 
     GD_charset(g) = findCharset (g);
 
+#ifdef WITH_CGRAPH
+    GD_drawing(g)->quantum =
+	late_double(g, agattr(g, AGRAPH, "quantum",(char*)0), 0.0, 0.0);
+#else
     GD_drawing(g)->quantum =
 	late_double(g, agfindattr(g, "quantum"), 0.0, 0.0);
+#endif
 
     /* setting rankdir=LR is only defined in dot,
      * but having it set causes shape code and others to use it. 
@@ -628,11 +682,20 @@ void graph_init(graph_t * g, boolean use_rankdir)
     else
 	SET_RANKDIR (g, (rankdir << 2));
 
-    xf = late_double(g, agfindattr(g, "nodesep"), DEFAULT_NODESEP,
-		     MIN_NODESEP);
+#ifdef WITH_CGRAPH
+    xf = late_double(g, agattr(g, AGRAPH, "nodesep",(char*)0),
+		DEFAULT_NODESEP, MIN_NODESEP);
+#else
+    xf = late_double(g, agfindattr(g, "nodesep"),
+		DEFAULT_NODESEP, MIN_NODESEP);
+#endif
     GD_nodesep(g) = POINTS(xf);
 
+#ifdef WITH_CGRAPH
+    p = late_string(g, agattr(g, AGRAPH, "ranksep", (char*)0), NULL);
+#else
     p = late_string(g, agfindattr(g, "ranksep"), NULL);
+#endif
     if (p) {
 	if (sscanf(p, "%lf", &xf) == 0)
 	    xf = DEFAULT_RANKSEP;
@@ -646,8 +709,13 @@ void graph_init(graph_t * g, boolean use_rankdir)
 	xf = DEFAULT_RANKSEP;
     GD_ranksep(g) = POINTS(xf);
 
+#ifdef WITH_CGRAPH
+    GD_showboxes(g) = late_int(g, agattr(g,AGRAPH, "showboxes",(char*)0), 0, 0);
+    p = late_string(g, agattr(g, AGRAPH,"fontnames",(char*)0), NULL);
+#else
     GD_showboxes(g) = late_int(g, agfindattr(g, "showboxes"), 0, 0);
     p = late_string(g, agfindattr(g, "fontnames"), NULL);
+#endif
     GD_fontnames(g) = maptoken(p, fontnamenames, fontnamecodes);
 
     setRatio(g);
@@ -680,6 +748,34 @@ void graph_init(graph_t * g, boolean use_rankdir)
     Initial_dist = MYHUGE;
 
     /* initialize nodes */
+#ifdef WITH_CGRAPH
+    N_height = agattr(g, AGNODE,"height",(char*)0);
+    N_width = agattr(g, AGNODE, "width",(char*)0);
+    N_shape = agattr(g, AGNODE, "shape",(char*)0);
+    N_color = agattr(g, AGNODE, "color",(char*)0);
+    N_fillcolor = agattr(g, AGNODE, "fillcolor",(char*)0);
+    N_style = agattr(g, AGNODE, "style",(char*)0);
+    N_fontsize = agattr(g, AGNODE, "fontsize",(char*)0);
+    N_fontname = agattr(g, AGNODE, "fontname",(char*)0);
+    N_fontcolor = agattr(g, AGNODE, "fontcolor",(char*)0);
+    N_label = agattr(g, AGNODE, "label",(char*)0);
+    N_showboxes = agattr(g, AGNODE, "showboxes",(char*)0);
+    N_penwidth = agattr(g, AGNODE, "penwidth",(char*)0);
+    /* attribs for polygon shapes */
+    N_sides = agattr(g, AGNODE, "sides",(char*)0);
+    N_peripheries = agattr(g, AGNODE, "peripheries",(char*)0);
+    N_skew = agattr(g, AGNODE, "skew",(char*)0);
+    N_orientation = agattr(g, AGNODE, "orientation",(char*)0);
+    N_distortion = agattr(g, AGNODE, "distortion",(char*)0);
+    N_fixed = agattr(g, AGNODE, "fixedsize",(char*)0);
+    N_imagescale = agattr(g, AGNODE, "imagescale",(char*)0);
+    N_nojustify = agattr(g, AGNODE, "nojustify",(char*)0);
+    N_layer = agattr(g, AGNODE, "layer",(char*)0);
+    N_group = agattr(g, AGNODE, "group",(char*)0);
+    N_comment = agattr(g, AGNODE, "comment",(char*)0);
+    N_vertices = agattr(g, AGNODE, "vertices",(char*)0);
+    N_z = agattr(g, AGNODE, "z",(char*)0);
+#else
     N_height = agfindattr(g->proto->n, "height");
     N_width = agfindattr(g->proto->n, "width");
     N_shape = agfindattr(g->proto->n, "shape");
@@ -706,8 +802,41 @@ void graph_init(graph_t * g, boolean use_rankdir)
     N_comment = agfindattr(g->proto->n, "comment");
     N_vertices = agfindattr(g->proto->n, "vertices");
     N_z = agfindattr(g->proto->n, "z");
+#endif
 
     /* initialize edges */
+#ifdef WITH_CGRAPH
+    E_weight = agattr(g, AGEDGE, "weight",(char*)0);
+    E_color = agattr(g, AGEDGE, "color",(char*)0);
+    E_fontsize = agattr(g, AGEDGE, "fontsize",(char*)0);
+    E_fontname = agattr(g, AGEDGE, "fontname",(char*)0);
+    E_fontcolor = agattr(g, AGEDGE, "fontcolor",(char*)0);
+    E_label = agattr(g, AGEDGE, "label",(char*)0);
+    E_label_float = agattr(g, AGEDGE, "labelfloat",(char*)0);
+    /* vladimir */
+    E_dir = agattr(g, AGEDGE, "dir",(char*)0);
+    E_arrowhead = agattr(g, AGEDGE, "arrowhead",(char*)0);
+    E_arrowtail = agattr(g, AGEDGE, "arrowtail",(char*)0);
+    E_headlabel = agattr(g, AGEDGE, "headlabel",(char*)0);
+    E_taillabel = agattr(g, AGEDGE, "taillabel",(char*)0);
+    E_labelfontsize = agattr(g, AGEDGE, "labelfontsize",(char*)0);
+    E_labelfontname = agattr(g, AGEDGE, "labelfontname",(char*)0);
+    E_labelfontcolor = agattr(g, AGEDGE, "labelfontcolor",(char*)0);
+    E_labeldistance = agattr(g, AGEDGE, "labeldistance",(char*)0);
+    E_labelangle = agattr(g, AGEDGE, "labelangle",(char*)0);
+    /* end vladimir */
+    E_minlen = agattr(g, AGEDGE, "minlen",(char*)0);
+    E_showboxes = agattr(g, AGEDGE, "showboxes",(char*)0);
+    E_style = agattr(g, AGEDGE, "style",(char*)0);
+    E_decorate = agattr(g, AGEDGE, "decorate",(char*)0);
+    E_arrowsz = agattr(g, AGEDGE, "arrowsize",(char*)0);
+    E_constr = agattr(g, AGEDGE, "constraint",(char*)0);
+    E_layer = agattr(g, AGEDGE, "layer",(char*)0);
+    E_comment = agattr(g, AGEDGE, "comment",(char*)0);
+    E_tailclip = agattr(g, AGEDGE, "tailclip",(char*)0);
+    E_headclip = agattr(g, AGEDGE, "headclip",(char*)0);
+    E_penwidth = agattr(g, AGEDGE, "penwidth",(char*)0);
+#else
     E_weight = agfindattr(g->proto->e, "weight");
     E_color = agfindattr(g->proto->e, "color");
     E_fontsize = agfindattr(g->proto->e, "fontsize");
@@ -738,6 +867,7 @@ void graph_init(graph_t * g, boolean use_rankdir)
     E_tailclip = agfindattr(g->proto->e, "tailclip");
     E_headclip = agfindattr(g->proto->e, "headclip");
     E_penwidth = agfindattr(g->proto->e, "penwidth");
+#endif
 }
 
 void graph_cleanup(graph_t *g)
@@ -745,7 +875,13 @@ void graph_cleanup(graph_t *g)
     free(GD_drawing(g));
     GD_drawing(g) = NULL;
     free_label(GD_label(g));
+#ifdef WITH_CGRAPH
+    //FIX HERE , STILL SHALLOW
+    //memset(&(g->u), 0, sizeof(Agraphinfo_t));
+    agclean(g, AGRAPH,"Agraphinfo_t");
+#else
     memset(&(g->u), 0, sizeof(Agraphinfo_t));
+#endif
 }
 
 /* charsetToStr:
@@ -790,14 +926,32 @@ void do_graph_label(graph_t * sg)
 	pointf dimen;
 
 	GD_has_labels(sg->root) |= GRAPH_LABEL;
+
+#ifdef WITH_CGRAPH
+	GD_label(sg) = make_label(agroot(sg), str, (aghtmlstr(str) ? LT_HTML : LT_NONE),
+	    late_double(sg, agattr(sg,AGRAPH,"fontsize",(char*)0),
+			DEFAULT_FONTSIZE, MIN_FONTSIZE),
+	    late_nnstring(sg, agattr(sg,AGRAPH, "fontname",(char*)0),
+			DEFAULT_FONTNAME),
+	    late_nnstring(sg, agattr(sg,AGRAPH, "fontcolor",(char*)0),
+			DEFAULT_COLOR));
+#else
 	GD_label(sg) = make_label((void*)sg, str, (aghtmlstr(str) ? LT_HTML : LT_NONE),
-		late_double(sg, agfindattr(sg, "fontsize"), DEFAULT_FONTSIZE, MIN_FONTSIZE),
-		late_nnstring(sg, agfindattr(sg, "fontname"), DEFAULT_FONTNAME),
-		late_nnstring(sg, agfindattr(sg, "fontcolor"), DEFAULT_COLOR));
+	    late_double(sg, agfindattr(sg, "fontsize"),
+			DEFAULT_FONTSIZE, MIN_FONTSIZE),
+	    late_nnstring(sg, agfindattr(sg, "fontname"),
+			DEFAULT_FONTNAME),
+	    late_nnstring(sg, agfindattr(sg, "fontcolor"),
+			DEFAULT_COLOR));
+#endif
 
 	/* set label position */
 	pos = agget(sg, "labelloc");
+#ifdef WITH_CGRAPH
+	if (sg != agroot(sg)) {
+#else
 	if (sg != sg->root) {
+#endif
 	    if (pos && (pos[0] == 'b'))
 		pos_flag = LABEL_AT_BOTTOM;
 	    else
@@ -817,14 +971,22 @@ void do_graph_label(graph_t * sg)
 	}
 	GD_label_pos(sg) = pos_flag;
 
-	if (sg == sg->root)
+#ifdef WITH_CGRAPH
+	if (sg == agroot(sg))
+#else
+	if (sg == sg->root) {
+#endif
 	    return;
 
 	/* Set border information for cluster labels to allow space
 	 */
 	dimen = GD_label(sg)->dimen;
 	PAD(dimen);
+#ifdef WITH_CGRAPH
+	if (!GD_flip(agroot(sg))) {
+#else
 	if (!GD_flip(sg->root)) {
+#endif
 	    if (GD_label_pos(sg) & LABEL_AT_TOP)
 		pos_ix = TOP_IX;
 	    else
