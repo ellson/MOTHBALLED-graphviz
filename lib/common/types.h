@@ -587,7 +587,11 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define ED_weight(e) (e)->u.weight
 #define ED_xpenalty(e) (e)->u.xpenalty
 
-#include <graph.h>
+#if WITH_CGRAPH
+#include "cgraph.h"
+#else
+#include "graph.h"
+#endif
 
     typedef struct {
         int useGrid;            /* use grid for speed up */

@@ -26,7 +26,11 @@
 #include "const.h"
 #include "gvplugin_layout.h"
 #include "gvcint.h"
+#if WITH_CGRAPH
+#include "cgraph.h"
+#else
 #include "graph.h"
+#endif
 #include "gvcproc.h"
 
 extern void graph_init(graph_t *g, boolean use_rankdir);

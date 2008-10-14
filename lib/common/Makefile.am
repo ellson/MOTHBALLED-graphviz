@@ -1,24 +1,35 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
+if WITH_CGRAPH
+GRAPH = cgraph
+FDPGEN = fdpgen_cgraph
+else
+GRAPH = graph
+FDPGEN = cgraph
+endif
+
 AM_CPPFLAGS = \
         -I$(top_srcdir) \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/pack \
-	-I$(top_srcdir)/lib/fdpgen \
+	-I$(top_srcdir)/lib/$(FDPGEN) \
 	-I$(top_srcdir)/lib/pathplan \
-	-I$(top_srcdir)/lib/graph \
-	-I$(top_srcdir)/lib/cdt @GD_INCLUDES@ @EXPAT_INCLUDES@ @Z_INCLUDES@
+	-I$(top_srcdir)/lib/$(GRAPH) \
+	-I$(top_srcdir)/lib/cdt $(GD_INCLUDES) $(EXPAT_INCLUDES) $(Z_INCLUDES)
 
 if WITH_WIN32
 AM_CFLAGS = -D_BLD_common=1
 endif
 
+if WITH_CGRAPH
+else
 pkginclude_HEADERS = arith.h geom.h color.h types.h textpara.h usershape.h
 noinst_HEADERS = render.h utils.h memory.h \
 	geomprocs.h colorprocs.h colortbl.h entities.h globals.h \
 	logic.h const.h macros.h htmllex.h htmltable.h pointset.h
 noinst_LTLIBRARIES = libcommon_C.la
+endif
 
 if WITH_CODEGENS
 CODEGENS = $(GD_CODEGENS) diagen.c hpglgen.c mifgen.c mpgen.c picgen.c vtxgen.c

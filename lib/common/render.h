@@ -49,7 +49,6 @@ extern "C" {
 #include "colorprocs.h"		/* must collow color.h (in types.h) */
 #include "geomprocs.h"		/* must follow geom.h (in types.h) */
 #include "agxbuf.h"
-#include "graph.h"		/* must follow types.h */
 #include "utils.h"		/* must follow types.h and agxbuf.h */
 #include "gvplugin.h"		/* must follow gvcext.h (in types.h) */
 #include "gvcjob.h"		/* must follow gvcext.h (in types.h) */

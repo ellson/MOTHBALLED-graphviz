@@ -20,7 +20,6 @@
 
 #include "builddate.h"
 #include "types.h"
-#include "graph.h"
 #include "const.h"
 #include "gvplugin.h"
 #include "gvcjob.h"

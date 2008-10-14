@@ -21,7 +21,6 @@
 #include <string.h>
 
 #include "gvplugin_layout.h"
-#include "graph.h"
 #include "gvcint.h"
 #include "gvcproc.h"
 
