@@ -69,9 +69,9 @@ char *gvplugin_api_name(api_t api)
  * quality sorted within the type, then, if qualities are the same,
  * last install wins.
  */
-boolean gvplugin_install(GVC_t * gvc, api_t api,
-		 const char *typestr, int quality, char *packagename, char *path,
-		 gvplugin_installed_t * typeptr)
+boolean gvplugin_install(GVC_t * gvc, api_t api, const char *typestr,
+	int quality, gvplugin_package_t *package,
+	gvplugin_installed_t * typeptr)
 {
     gvplugin_available_t *plugin, **pnext;
 #define TYPSIZ 63
@@ -114,8 +114,7 @@ boolean gvplugin_install(GVC_t * gvc, api_t api,
     *pnext = plugin;
     plugin->typestr = typestr;
     plugin->quality = quality;
-    plugin->packagename = packagename;	/* packagename,  all packages */
-    plugin->path = path;	/* filepath for .so, or NULL for builtins */
+    plugin->package = package;
     plugin->typeptr = typeptr;	/* null if not loaded */
 
     return TRUE;
@@ -129,7 +128,7 @@ boolean gvplugin_install(GVC_t * gvc, api_t api,
  * manually changed in the config file.
  */
 static boolean gvplugin_activate(GVC_t * gvc, api_t api,
-		 const char *typestr, char *packagename, char *path,
+		 const char *typestr, char *name, char *path,
 		 gvplugin_installed_t * typeptr)
 {
     gvplugin_available_t **pnext;
@@ -143,8 +142,8 @@ static boolean gvplugin_activate(GVC_t * gvc, api_t api,
 
     while (*pnext) {
 	if ( (strcasecmp(typestr, (*pnext)->typestr) == 0)
-	  && (strcasecmp(packagename, (*pnext)->packagename) == 0)
-	  && (strcasecmp(path, (*pnext)->path) == 0)) {
+	  && (strcasecmp(name, (*pnext)->package->name) == 0)
+	  && (strcasecmp(path, (*pnext)->package->path) == 0)) {
 	    (*pnext)->typeptr = typeptr;
 	    return TRUE;
 	}
@@ -298,7 +297,7 @@ gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, const char *str)
 	    continue;  /* dependencies not empty, but mismatched */
 	if (! reqpkg)
 	    break; /* found with no packagename constraints */
-	if (strcmp(reqpkg, (*pnext)->packagename) == 0)
+	if (strcmp(reqpkg, (*pnext)->package->name) == 0)
 	    break;  /* found with required matching packagname */
     }
     rv = *pnext;
@@ -308,7 +307,7 @@ gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, const char *str)
 	    rv = NULL;
 
     if (rv && rv->typeptr == NULL) {
-	library = gvplugin_library_load(gvc, rv->path);
+	library = gvplugin_library_load(gvc, rv->package->path);
 	if (library) {
 
             /* Now activate the library with real type ptrs */
@@ -320,13 +319,13 @@ gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, const char *str)
 				apis->api,
 				types[i].type,
 				library->packagename,
-				rv->path,
+				rv->package->path,
 				&types[i]);
 		}
             }
     	    if (gvc->common.verbose >= 1)
 		fprintf(stderr, "Activated plugin library: %s\n",
-			rv->path ? rv->path : "<builtin>");
+			rv->package->path ? rv->package->path : "<builtin>");
         }
     }
 
@@ -338,7 +337,7 @@ gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, const char *str)
 	fprintf(stderr, "Using %s: %s:%s\n",
 		api_names[api],
 		rv->typestr,
-		rv->packagename
+		rv->package->name
 		);
 
     gvc->api[api] = rv;
@@ -399,7 +398,7 @@ char *gvplugin_list(GVC_t * gvc, api_t api, const char *str)
 	    if (!s[0] || strcasecmp(s, q) == 0) {
 		/* list each member of the matching type as "type:path" */
 		append_buf(' ', (*pnext)->typestr, new);
-		buf = append_buf(':', (*pnext)->packagename, FALSE);
+		buf = append_buf(':', (*pnext)->package->name, FALSE);
 		new = FALSE;
 	    }
 	    free(q);
@@ -459,15 +458,135 @@ void gvplugin_write_status(GVC_t * gvc)
 
 Agraph_t * gvplugin_graph(GVC_t * gvc)
 {
-    Agraph_t *g;
-    Agnode_t *n;
+    Agraph_t *g, *sg, *ssg;
+    Agnode_t *n, *m;
+    Agedge_t *e;
+    Agsym_t *a;
+    gvplugin_package_t *package;
+    gvplugin_available_t **pnext;
+    char buf[100], *p, *q;
+    int api, found;
 
     aginit();
     /* set persistent attributes here */
     agnodeattr(NULL, "label", NODENAME_ESC);
+    agraphattr(NULL, "label", "");
+    agraphattr(NULL, "rankdir", "");
+    agraphattr(NULL, "rank", "");
 
     g = agopen("G", AGDIGRAPH);
-    n = agnode(g, "plugins graph under-construction");
+
+    a = agfindattr(g, "rankdir");
+    agxset(g, a->index, "LR");
+
+    a = agfindattr(g, "label");
+    agxset(g, a->index, "\nPlugins");
+
+    for (package = gvc->packages; package; package = package->next) {
+        strcpy(buf, "cluster_");
+        strcat(buf, package->name); 
+	sg = agsubg(g, buf);
+        a = agfindattr(sg, "label");
+	agxset(sg, a->index, package->name);
+
+	for (api = 0; api < ARRAY_SIZE(api_names); api++) {
+	    found = 0;
+	    strcpy(buf, package->name);
+	    strcat(buf, "_");
+	    strcat(buf, api_names[api]);
+	    ssg = agsubg(sg, buf);
+            a = agfindattr(ssg, "rank");
+	    agxset(ssg, a->index, "same");
+	    for (pnext = &(gvc->apis[api]); *pnext; pnext = &((*pnext)->next)) {
+		if ((*pnext)->package == package) {
+		    found++;
+		    q = strdup((*pnext)->typestr);
+		    if ((p = strchr(q, ':'))) *p++ = '\0';
+		    switch (api) {
+		    case API_device:
+		    case API_loadimage:
+		    case API_render:
+		        strcpy(buf, api_names[api]);
+		        strcat(buf, "_");
+		        strcat(buf, q);
+		        n = agnode(ssg, buf);
+                        a = agfindattr(n, "label");
+		        agxset(n, a->index, q);
+			break;
+		    default:
+			break;
+		    }
+		    free(q);
+		}
+	    }
+	    if (!found)
+	        agdelete(ssg->meta_node->graph, ssg->meta_node);
+	}
+    }
+
+    for (package = gvc->packages; package; package = package->next) {
+        strcpy(buf, "cluster_");
+        strcat(buf, package->name); 
+	sg = agfindsubg(g, buf);
+	for (api = 0; api < ARRAY_SIZE(api_names); api++) {
+	    strcpy(buf, package->name);
+	    strcat(buf, "_");
+	    strcat(buf, api_names[api]);
+	    ssg = agfindsubg(sg, buf);
+	    for (pnext = &(gvc->apis[api]); *pnext; pnext = &((*pnext)->next)) {
+		if ((*pnext)->package == package) {
+		    q = strdup((*pnext)->typestr);
+		    if ((p = strchr(q, ':'))) *p++ = '\0';
+		    switch (api) {
+		    case API_device:
+		        strcpy(buf, api_names[api]);
+		        strcat(buf, "_");
+		        strcat(buf, q);
+			n = agfindnode(ssg, buf);
+		        strcpy(buf, "o_");
+		        strcat(buf, q);
+			m = agfindnode(g, buf);
+			if (!m) {
+			    m = agnode(g, buf);
+                            a = agfindattr(m, "label");
+		            agxset(m, a->index, q);
+			}
+			e = agedge(g, n, m);
+			if (p && *p) {
+			    strcpy(buf, "render_");
+			    strcat(buf, p);
+			    m = agfindnode(g, buf);
+			    if (m)
+			        agedge(g, m, n);
+			}
+			break;
+		    case API_loadimage:
+		        strcpy(buf, api_names[api]);
+		        strcat(buf, "_");
+		        strcat(buf, q);
+			n = agfindnode(ssg, buf);
+		        strcpy(buf, "i_");
+		        strcat(buf, q);
+			m = agfindnode(g, buf);
+			if (!m) {
+			    m = agnode(g, buf);
+                            a = agfindattr(m, "label");
+		            agxset(m, a->index, q);
+			}
+			e = agedge(g, m, n);
+			strcpy(buf, "render_");
+			strcat(buf, p);
+			m = agfindnode(g, buf);
+			agedge(g, n, m);
+			break;
+		    default:
+			break;
+		    }
+		    free(q);
+		}
+	    }
+	}
+    }
 
     return g;
 }

@@ -34,7 +34,7 @@ extern "C" {
 /* plugins */
 
     extern boolean gvplugin_install(GVC_t * gvc, api_t api,
-		    const char *typestr, int quality, char *packagename, char *path,
+		    const char *typestr, int quality, gvplugin_package_t *package,
 		    gvplugin_installed_t * typeptr);
     extern gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, const char *type);
     extern gvplugin_library_t *gvplugin_library_load(GVC_t *gvc, char *path);

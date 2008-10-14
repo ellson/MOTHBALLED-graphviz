@@ -71,7 +71,7 @@ int gvFreeContext(GVC_t * gvc)
     while ((package = package_next)) {
 	package_next = package->next;
 	free(package->path);
-	free(package->packagename);
+	free(package->name);
 	free(package);
     }
     gvjobs_delete(gvc);

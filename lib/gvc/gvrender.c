@@ -68,7 +68,7 @@ int gvrender_select(GVJ_t * job, const char *str)
     plugin = gvc->api[API_device];
     if (plugin) {
 #ifdef WITH_CODEGENS
-	if (strcmp(plugin->packagename, "cg") == 0) {
+	if (strcmp(plugin->package->name, "cg") == 0) {
 	    cg_info = (codegen_info_t *) (plugin->typeptr);
 	    job->codegen = cg_info->cg;
 	    job->render.engine = NULL;

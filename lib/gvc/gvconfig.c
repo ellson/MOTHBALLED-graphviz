@@ -160,11 +160,11 @@ static char *token(int *nest, char **tokens)
     return t;
 }
 
-static gvplugin_package_t * gvplugin_package_record(GVC_t * gvc, char *path, char *packagename)
+static gvplugin_package_t * gvplugin_package_record(GVC_t * gvc, char *path, char *name)
 {
     gvplugin_package_t *package = gmalloc(sizeof(gvplugin_package_t));
-    package->path = strdup(path);
-    package->packagename = strdup(packagename);
+    package->path = (path) ? strdup(path) : NULL;
+    package->name = strdup(name);
     package->next = gvc->packages;
     gvc->packages = package;
     return package;
@@ -172,7 +172,7 @@ static gvplugin_package_t * gvplugin_package_record(GVC_t * gvc, char *path, cha
 
 static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 {
-    char *path, *packagename, *api;
+    char *path, *name, *api;
     const char *type;
     api_t gv_api;
     int quality, rc;
@@ -183,10 +183,10 @@ static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
     while (*s) {
 	path = token(&nest, &s);
 	if (nest == 0)
-	    packagename = token(&nest, &s);
+	    name = token(&nest, &s);
         else
-	    packagename = "x";
-        package = gvplugin_package_record(gvc, path, packagename);
+	    name = "x";
+        package = gvplugin_package_record(gvc, path, name);
 	do {
 	    api = token(&nest, &s);
 	    gv_api = gvplugin_api(api);
@@ -202,7 +202,7 @@ static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 		    else
 		        quality = 0;
 		    rc = gvplugin_install (gvc, gv_api,
-				    type, quality, packagename, path, NULL);
+				    type, quality, package, NULL);
 		    if (!rc) {
 		        agerr(AGERR, "config error: %s %s %s\n", path, api, type);
 		        return 0;
@@ -219,12 +219,14 @@ static void gvconfig_plugin_install_from_library(GVC_t * gvc, char *path, gvplug
 {
     gvplugin_api_t *apis;
     gvplugin_installed_t *types;
+    gvplugin_package_t *package;
     int i;
 
+    package = gvplugin_package_record(gvc, path, library->packagename);
     for (apis = library->apis; (types = apis->types); apis++) {
 	for (i = 0; types[i].type; i++) {
 	    gvplugin_install(gvc, apis->api, types[i].type,
-			types[i].quality, library->packagename, path, &types[i]);
+			types[i].quality, package, &types[i]);
         }
     }
 }
@@ -492,9 +494,12 @@ void gvconfig(GVC_t * gvc, boolean rescan)
 #ifdef WITH_CODEGENS
     codegen_info_t *p;
 
+    gvplugin_package_t *package;
+
+    package = gvplugin_package_record(gvc, NULL, "cg");
     for (p = cg; p->name; ++p)
         gvplugin_install(gvc, API_device, p->name, 0,
-                        "cg", NULL, (gvplugin_installed_t *) p);
+		package, (gvplugin_installed_t *) p);
 #endif
 
     /* builtins don't require LTDL */
