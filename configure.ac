@@ -2652,8 +2652,8 @@ dnl -----------------------------------
 dnl CGRAPH 
 
 AC_ARG_WITH(cgraph,
-  [AC_HELP_STRING([--with-cgraph=yes], [Use CGRAPH library])],
-  [], [with_cgraph=yes])
+  [AC_HELP_STRING([--with-cgraph=no], [Use CGRAPH library])],
+  [], [with_cgraph=no])
 
 if test "x$with_cgraph" != "xyes"; then
   use_cgraph="No"
