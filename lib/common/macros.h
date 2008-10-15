@@ -31,20 +31,6 @@
 #define SET_CLUST_EDGE(g) (GD_flags(g) |= 1)
 #define EDGE_TYPE(g) (GD_flags(g) & (7 << 1))
 
-#ifdef WITH_CGRAPH
-#define SET_RANKDIR(g,rd) (GD_rankdir2(g) = rd)
-#else
-#define SET_RANKDIR(g,rd) ((g)->u.rankdir = (rd))
-#define agnameof(x) ((x)->name)
-/* warning, agraphof doesn't work for edges */
-#define agraphof(n) ((n)->graph)
-#define agroot(g) ((g)->root)
-#define aghead(e) ((e)->head)
-#define agtail(e) ((e)->tail)
-#define agisdirected(g) ((g)->kind & AGFLAG_DIRECTED)
-#define AGID(x) ((x)->id)
-#endif
-
 #ifndef streq
 #define streq(a,b)		(*(a)==*(b)&&!strcmp(a,b))
 #endif
