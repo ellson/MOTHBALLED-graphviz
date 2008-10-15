@@ -1933,10 +1933,17 @@ static void init_gvc(GVC_t * gvc, graph_t * g)
     G_penwidth = agfindattr(g, "penwidth");
 
     /* default font */
+#ifndef WITH_CGRAPH
     gvc->defaultfontname = late_nnstring(g->proto->n,
                 N_fontname, DEFAULT_FONTNAME);
     gvc->defaultfontsize = late_double(g->proto->n,
                 N_fontsize, DEFAULT_FONTSIZE, MIN_FONTSIZE);
+#else
+    gvc->defaultfontname = late_nnstring(g->proto->n,
+                N_fontname, DEFAULT_FONTNAME);
+    gvc->defaultfontsize = late_double(g->proto->n,
+                N_fontsize, DEFAULT_FONTSIZE, MIN_FONTSIZE);
+#endif
 
     /* default line style */
     gvc->defaultlinestyle = defaultlinestyle;
@@ -2423,7 +2430,7 @@ static void emit_begin_cluster(GVJ_t * job, Agraph_t * sg)
     obj->emit_state = EMIT_CDRAW;
 
     initObjMapData (job, GD_label(sg), "graph", sg->meta_node->id, sg);
-
+    
 #ifdef WITH_CODEGENS
     Obj = CLST;
 #endif
