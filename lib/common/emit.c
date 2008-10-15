@@ -1024,7 +1024,11 @@ static boolean clust_in_layer(GVJ_t *job, graph_t * sg)
 
     if (job->numLayers <= 1)
 	return TRUE;
+#ifndef WITH_CGRAPH
     pg = late_string(sg, agfindattr(sg, "layer"), "");
+#else
+    pg = late_string(sg, agfindattr(sg, "layer"), "");
+#endif
     if (selectedlayer(job, pg))
 	return TRUE;
     if (pg[0])
@@ -1564,7 +1568,7 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e, char** styles)
     if (flags & GVRENDER_DOES_MAPS) {
         s = agget(e, "id");
         if (!s || !*s) { /* no external id, so use the internal one */
-	    sprintf(buf,"edge%d", AGID(e));
+	    sprintf(buf,"edge%ld", AGID(e));
 	    s = buf;
         }
 	obj->id = strdup_and_subst_obj(s, (void*)e);
@@ -2062,7 +2066,11 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
         junk = malloc(strlen(str)+1);
 	rv = sscanf(str, "%lf,%lf,%lf,\'%[^\']\'", &X, &Y, &Z, nodename);
 	if (rv == 4) {
+#ifndef WITH_CGRAPH
 	    n = agfindnode(g->root, nodename);
+#else
+	    n = agnode(g->root, nodename, 0);
+#endif
 	    if (n) {
 		x = ND_coord(n).x;
 		y = ND_coord(n).y;
@@ -2071,7 +2079,11 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 	else {
 	    rv = sscanf(str, "%lf,%lf,%lf,%[^,]%s", &X, &Y, &Z, nodename, junk);
 	    if (rv == 4) {
+#ifndef WITH_CGRAPH
                 n = agfindnode(g->root, nodename);
+#else
+                n = agnode(g->root, nodename, 0);
+#endif
                 if (n) {
                     x = ND_coord(n).x;
                     y = ND_coord(n).y;

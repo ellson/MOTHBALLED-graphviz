@@ -79,11 +79,6 @@ static void writenodeandport(FILE * fp, node_t * node, char *port)
 #endif
 }
 
-/* FIXME - there must be a proper way to get port info - these are 
- * supposed to be private to libgraph - from libgraph.h */
-#define TAILX 1
-#define HEADX 2
-
 /* _write_plain:
  */
 void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
@@ -126,20 +121,24 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
     }
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+
+/* FIXME - there must be a proper way to get port info - these are 
+ * supposed to be private to libgraph - from libgraph.h */
+#define TAILX 1
+#define HEADX 2
+
 #ifndef WITH_CGRAPH
 	    if (extend && e->attr) {
 		tport = e->attr[TAILX];
 		hport = e->attr[HEADX];
-	    } else
-#else /* WITH_CGRAPH */
-
-		if (extend) {		//assuming these two attrs have already been created by cgraph
-
-			tport =agget(e,TAILX);
-			hport = agget(e,HEADX);
 	    }
-		else
+#else /* WITH_CGRAPH */
+	    if (extend) {		//assuming these two attrs have already been created by cgraph
+		tport = agget(e,TAILX);
+		hport = agget(e,HEADX);
+	    }
 #endif /* WITH_CGRAPH */
+	    else
 		tport = hport = "";
 	    if (ED_spl(e)) {
 		splinePoints = 0;
@@ -148,17 +147,9 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
 		    splinePoints += bz.size;
 		}
 		fprintf(f, "edge ");
-#ifndef WITH_CGRAPH
-		writenodeandport(f, e->tail, tport);
-#else /* WITH_CGRAPH */
 		writenodeandport(f, agtail(e), tport);
-#endif /* WITH_CGRAPH */
 		fprintf(f, " ");
-#ifndef WITH_CGRAPH
-		writenodeandport(f, e->head, hport);
-#else /* WITH_CGRAPH */
 		writenodeandport(f, aghead(e), hport);
-#endif /* WITH_CGRAPH */
 		fprintf(f, " %d", splinePoints);
 		for (i = 0; i < ED_spl(e)->size; i++) {
 		    bz = ED_spl(e)->list[i];

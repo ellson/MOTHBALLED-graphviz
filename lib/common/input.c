@@ -167,11 +167,11 @@ static void use_library(GVC_t *gvc, const char *name)
 }
 
 #ifdef WITH_CGRAPH
-static void global_def(const char *dcl,int kind,
+static void global_def(char *dcl, int kind,
          attrsym_t * ((*dclfun) (Agraph_t *, int kind, char *, char *)) )
 {
     char *p;
-    const char *rhs = "true";
+    char *rhs = "true";
 
     attrsym_t *sym;
     if ((p = strchr(dcl, '='))) {
@@ -182,11 +182,11 @@ static void global_def(const char *dcl,int kind,
     sym->fixed = 1;
 }
 #else
-static void global_def(const char *dcl,
+static void global_def(char *dcl,
 	attrsym_t * ((*dclfun) (Agraph_t *, char *, char *)))
 {
     char *p;
-    const char *rhs = "true";
+    char *rhs = "true";
 
     attrsym_t *sym;
     if ((p = strchr(dcl, '='))) {
@@ -224,8 +224,8 @@ graph_t *gvPluginsGraph(GVC_t *gvc)
 
 void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 {
-    char c;
-    const char *rest, *val;
+    char c, *rest;
+    const char *val;
     int i, v, nfiles;
 
     /* establish if we are running in a CGI environment */
@@ -270,7 +270,7 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 	    case 'G':
 		if (*rest)
 #ifdef WITH_CGRAPH
-		    global_def(rest,AGRAPH,agattr);
+		    global_def(rest, AGRAPH, agattr);
 #else
 		    global_def(rest, agraphattr);
 #endif

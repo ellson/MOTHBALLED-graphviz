@@ -42,7 +42,7 @@ static Dtdisc_t ImageDictDisc = {
     NIL(Dtevent_f)
 };
 
-static usershape_t *user_init(char *str)
+static usershape_t *user_init(const char *str)
 {
     char *contents;
     char line[BUFSIZ];
@@ -100,7 +100,7 @@ static usershape_t *user_init(char *str)
 void epsf_init(node_t * n)
 {
     epsf_t *desc;
-    char *str;
+    const char *str;
     usershape_t *us;
     int dx, dy;
 
@@ -117,11 +117,7 @@ void epsf_init(node_t * n)
 	desc->offset.x = -us->x - (dx) / 2;
 	desc->offset.y = -us->y - (dy) / 2;
     } else
-#ifndef WITH_CGRAPH
-	agerr(AGWARN, "shapefile not set for epsf node %s\n", n->name);
-#else /* WITH_CGRAPH */
 	agerr(AGWARN, "shapefile not set for epsf node %s\n", agnameof(n));
-#endif /* WITH_CGRAPH */
 }
 
 void epsf_free(node_t * n)
