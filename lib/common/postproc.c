@@ -97,13 +97,8 @@ static void map_edge(edge_t * e)
 
     if (ED_spl(e) == NULL) {
 	if ((Concentrate == FALSE) || (ED_edge_type(e) != IGNORED))
-#ifndef WITH_CGRAPH
-	    agerr(AGERR, "lost %s %s edge\n", e->tail->name,
-		  e->head->name);
-#else /* WITH_CGRAPH */
 	    agerr(AGERR, "lost %s %s edge\n",agnameof(agtail(e)),
 		  agnameof(aghead(e)));
-#endif /* WITH_CGRAPH */
 	return;
     }
     for (j = 0; j < ED_spl(e)->size; j++) {
