@@ -24,21 +24,11 @@
 #ifdef DEBUG
 static int debugleveln(edge_t* e, int i)
 {
-#ifndef WITH_CGRAPH
-    return (GD_showboxes(e->head->graph) == i ||
-	    GD_showboxes(e->tail->graph) == i ||
-#else /* WITH_CGRAPH */
-    return (GD_showboxes(aghead(e)->graph) == i ||
-	    GD_showboxes(agtail(e)->graph) == i ||
-#endif /* WITH_CGRAPH */
+    return (GD_showboxes(agraphof(aghead(e))) == i ||
+	    GD_showboxes(agraphof(agtail(e))) == i ||
 	    ED_showboxes(e) == i ||
-#ifndef WITH_CGRAPH
-	    ND_showboxes(e->head) == i ||
-	    ND_showboxes(e->tail) == i);
-#else /* WITH_CGRAPH */
 	    ND_showboxes(aghead(e)) == i ||
 	    ND_showboxes(agtail(e)) == i);
-#endif /* WITH_CGRAPH */
 }
 
 static void showPoints(pointf ps[], int pn)
@@ -83,11 +73,7 @@ arrow_clip(edge_t * fe, node_t * hn,
     arrow_flags(e, &sflag, &eflag);
     if (info->splineMerge(hn))
 	eflag = ARR_NONE;
-#ifndef WITH_CGRAPH
-    if (info->splineMerge(fe->tail))
-#else /* WITH_CGRAPH */
     if (info->splineMerge(agtail(fe)))
-#endif /* WITH_CGRAPH */
 	sflag = ARR_NONE;
     if (j) {
 	i = sflag;
@@ -225,11 +211,6 @@ void shape_clip(node_t * n, pointf curve[4])
 bezier *new_spline(edge_t * e, int sz)
 {
     bezier *rv;
-#ifndef WITH_CGRAPH
-
-#else /* WITH_CGRAPH */
-	splines* sp_test;
-#endif /* WITH_CGRAPH */
     while (ED_edge_type(e) != NORMAL)
 	e = ED_to_orig(e);
     if (ED_spl(e) == NULL)
@@ -261,33 +242,20 @@ clip_and_install(edge_t * fe, node_t * hn, pointf * ps, int pn,
     boxf *tbox, *hbox;
     inside_t inside_context;
 
-#ifndef WITH_CGRAPH
-    tn = fe->tail;
-    g = tn->graph;
-#else /* WITH_CGRAPH */
     tn = agtail(fe);
     g = agraphof(tn);
-#endif /* WITH_CGRAPH */
     newspl = new_spline(fe, pn);
 
     for (orig = fe; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
 
     /* may be a reversed flat edge */
-#ifndef WITH_CGRAPH
-    if ((tn->u.rank == hn->u.rank) && (tn->u.order > hn->u.order)) {
-#else /* WITH_CGRAPH */
     if ((ND_rank(tn) == ND_rank(hn)) && (ND_order(tn) > ND_order(hn))) {
-#endif /* WITH_CGRAPH */
 	node_t *tmp;
 	tmp = hn;
 	hn = tn;
 	tn = tmp;
     }
-#ifndef WITH_CGRAPH
-    if (tn == orig->tail) {
-#else /* WITH_CGRAPH */
     if (tn == agtail(orig)) {
-#endif /* WITH_CGRAPH */
 	clipTail = ED_tail_port(orig).clip;
 	clipHead = ED_head_port(orig).clip;
 	tbox = ED_tail_port(orig).bp;
@@ -361,30 +329,14 @@ conc_slope(node_t* n)
 
     s_in = s_out = 0.0;
     for (cnt_in = 0; (e = ND_in(n).list[cnt_in]); cnt_in++)
-#ifndef WITH_CGRAPH
-	s_in += ND_coord(e->tail).x;
-#else /* WITH_CGRAPH */
 	s_in += ND_coord(agtail(e)).x;
-#endif /* WITH_CGRAPH */
     for (cnt_out = 0; (e = ND_out(n).list[cnt_out]); cnt_out++)
-#ifndef WITH_CGRAPH
-	s_out += ND_coord(e->head).x;
-#else /* WITH_CGRAPH */
 	s_out += ND_coord(aghead(e)).x;
-#endif /* WITH_CGRAPH */
     p.x = ND_coord(n).x - (s_in / cnt_in);
-#ifndef WITH_CGRAPH
-    p.y = ND_coord(n).y - ND_coord(ND_in(n).list[0]->tail).y;
-#else /* WITH_CGRAPH */
     p.y = ND_coord(n).y - ND_coord(agtail(ND_in(n).list[0])).y;
-#endif /* WITH_CGRAPH */
     m_in = atan2(p.y, p.x);
     p.x = (s_out / cnt_out) - ND_coord(n).x;
-#ifndef WITH_CGRAPH
-    p.y = ND_coord(ND_out(n).list[0]->head).y - ND_coord(n).y;
-#else /* WITH_CGRAPH */
     p.y = ND_coord(aghead(ND_out(n).list[0])).y - ND_coord(n).y;
-#endif /* WITH_CGRAPH */
     m_out = atan2(p.y, p.x);
     return ((m_in + m_out) / 2.0);
 }
@@ -434,18 +386,10 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
     node_t *n;
     int (*pboxfn) (node_t*, port*, int, boxf*, int*);
 
-#ifndef WITH_CGRAPH
-    n = e->tail;
-#else /* WITH_CGRAPH */
     n = agtail(e);
-#endif /* WITH_CGRAPH */
 
     if (ED_tail_port(e).dyna)
-#ifndef WITH_CGRAPH
-	ED_tail_port(e) = resolvePort(e->tail, e->head, &ED_tail_port(e));
-#else
 	ED_tail_port(e) = resolvePort(agtail(e), aghead(e), &ED_tail_port(e));
-#endif
     if (ND_shape(n))
 	pboxfn = ND_shape(n)->fns->pboxfn;
     else
@@ -453,11 +397,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
     P->start.p = add_pointf(ND_coord(n), ED_tail_port(e).p);
     if (merge) {
 	/*P->start.theta = - M_PI / 2; */
-#ifndef WITH_CGRAPH
-	P->start.theta = conc_slope(e->tail);
-#else /* WITH_CGRAPH */
 	P->start.theta = conc_slope(agtail(e));
-#endif /* WITH_CGRAPH */
 	P->start.constrained = TRUE;
     } else {
 	if (ED_tail_port(e).constrained) {
@@ -479,11 +419,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		/* b0.LL.y = ND_coord(n).y + ND_ht(n)/2; */
 		b0.LL.y = P->start.p.y;
 		b0.UR.x = b.UR.x;
-#ifndef WITH_CGRAPH
-		b0.UR.y = ND_coord(n).y + ND_ht(n)/2 + GD_ranksep(n->graph)/2;
-#else /* WITH_CGRAPH */
 		b0.UR.y = ND_coord(n).y + ND_ht(n)/2 + GD_ranksep(agraphof(n))/2;
-#endif /* WITH_CGRAPH */
 		b.UR.x = ND_coord(n).x - ND_lw(n) - (FUDGE-2);
 		b.UR.y = b0.LL.y;
 		b.LL.y = ND_coord(n).y - ND_ht(n)/2;
@@ -496,11 +432,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		b0.LL.y = P->start.p.y;
 		/* b0.LL.y = ND_coord(n).y + ND_ht(n)/2; */
 		b0.UR.x = b.UR.x+1;
-#ifndef WITH_CGRAPH
-		b0.UR.y = ND_coord(n).y + ND_ht(n)/2 + GD_ranksep(n->graph)/2;
-#else /* WITH_CGRAPH */
 		b0.UR.y = ND_coord(n).y + ND_ht(n)/2 + GD_ranksep(agraphof(n))/2;
-#endif /* WITH_CGRAPH */
 		b.LL.x = ND_coord(n).x + ND_rw(n) + (FUDGE-2);
 		b.UR.y = b0.LL.y;
 		b.LL.y = ND_coord(n).y - ND_ht(n)/2;
@@ -537,11 +469,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    P->start.p.x += 1;
 	}
 	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
-#ifndef WITH_CGRAPH
-	if (n == orig->tail)
-#else /* WITH_CGRAPH */
 	if (n == agtail(orig))
-#endif /* WITH_CGRAPH */
 	    ED_tail_port(orig).clip = FALSE;
 	else
 	    ED_head_port(orig).clip = FALSE;
@@ -560,11 +488,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		b0.UR.y = ND_coord(n).y - ND_ht(n)/2;
 		b0.UR.x = b.UR.x+1;
 		b0.LL.x = P->start.p.x;
-#ifndef WITH_CGRAPH
-		b0.LL.y = b0.UR.y - GD_ranksep(n->graph)/2;
-#else /* WITH_CGRAPH */
 		b0.LL.y = b0.UR.y - GD_ranksep(agraphof(n))/2;
-#endif /* WITH_CGRAPH */
 		b.LL.x = ND_coord(n).x + ND_rw(n) + (FUDGE-2);
 		b.LL.y = b0.UR.y;
 		b.UR.y = ND_coord(n).y + ND_ht(n)/2;
@@ -606,11 +530,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    endp->boxn = 1;
 	}
 	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
-#ifndef WITH_CGRAPH
-	if (n == orig->tail)
-#else /* WITH_CGRAPH */
 	if (n == agtail(orig))
-#endif /* WITH_CGRAPH */
 	    ED_tail_port(orig).clip = FALSE;
 	else
 	    ED_head_port(orig).clip = FALSE;
@@ -657,18 +577,10 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
     node_t *n;
     int (*pboxfn) (node_t* n, port*, int, boxf*, int*);
 
-#ifndef WITH_CGRAPH
-    n = e->head;
-#else /* WITH_CGRAPH */
     n = aghead(e);
-#endif /* WITH_CGRAPH */
 
     if (ED_head_port(e).dyna) 
-#ifndef WITH_CGRAPH
-	ED_head_port(e) = resolvePort(e->head, e->tail, &ED_head_port(e));
-#else /* WITH_CGRAPH */
 	ED_head_port(e) = resolvePort(aghead(e), agtail(e), &ED_head_port(e));
-#endif /* WITH_CGRAPH */
     if (ND_shape(n))
 	pboxfn = ND_shape(n)->fns->pboxfn;
     else
@@ -676,11 +588,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
     P->end.p = add_pointf(ND_coord(n), ED_head_port(e).p);
     if (merge) {
 	/*P->end.theta = M_PI / 2; */
-#ifndef WITH_CGRAPH
-	P->end.theta = conc_slope(e->head) + M_PI;
-#else /* WITH_CGRAPH */
 	P->end.theta = conc_slope(aghead(e)) + M_PI;
-#endif /* WITH_CGRAPH */
 	assert(P->end.theta < 2 * M_PI);
 	P->end.constrained = TRUE;
     } else {
@@ -708,11 +616,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		/* b0.UR.y = ND_coord(n).y - ND_ht(n)/2; */
 		b0.UR.y = P->end.p.y;
 		b0.UR.x = b.UR.x;
-#ifndef WITH_CGRAPH
-		b0.LL.y = ND_coord(n).y - ND_ht(n)/2 - GD_ranksep(n->graph)/2;
-#else /* WITH_CGRAPH */
 		b0.LL.y = ND_coord(n).y - ND_ht(n)/2 - GD_ranksep(agraphof(n))/2;
-#endif /* WITH_CGRAPH */
 		b.UR.x = ND_coord(n).x - ND_lw(n) - (FUDGE-2);
 		b.LL.y = b0.UR.y;
 		b.UR.y = ND_coord(n).y + ND_ht(n)/2;
@@ -725,11 +629,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		b0.UR.y = P->end.p.y;
 		/* b0.UR.y = ND_coord(n).y - ND_ht(n)/2; */
 		b0.UR.x = b.UR.x+1;
-#ifndef WITH_CGRAPH
-		b0.LL.y = ND_coord(n).y - ND_ht(n)/2 - GD_ranksep(n->graph)/2;
-#else /* WITH_CGRAPH */
 		b0.LL.y = ND_coord(n).y - ND_ht(n)/2 - GD_ranksep(agraphof(n))/2;
-#endif /* WITH_CGRAPH */
 		b.LL.x = ND_coord(n).x + ND_rw(n) + (FUDGE-2);
 		b.LL.y = b0.UR.y;
 		b.UR.y = ND_coord(n).y + ND_ht(n)/2;
@@ -759,11 +659,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    P->start.p.x -= 1;
 	}
 	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
-#ifndef WITH_CGRAPH
-	if (n == orig->head)
-#else /* WITH_CGRAPH */
 	if (n == aghead(orig))
-#endif /* WITH_CGRAPH */
 	    ED_head_port(orig).clip = FALSE;
 	else
 	    ED_tail_port(orig).clip = FALSE;
@@ -811,11 +707,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		b0.LL.x = b.LL.x-1;
 		b0.UR.y = ND_coord(n).y - ND_ht(n)/2;
 		b0.UR.x = P->end.p.x;
-#ifndef WITH_CGRAPH
-		b0.LL.y = b0.UR.y - GD_ranksep(n->graph)/2;
-#else /* WITH_CGRAPH */
 		b0.LL.y = b0.UR.y - GD_ranksep(agraphof(n))/2;
-#endif /* WITH_CGRAPH */
 		b.UR.x = ND_coord(n).x - ND_lw(n) - 2;
 		b.LL.y = b0.UR.y;
 		b.UR.y = ND_coord(n).y + ND_ht(n)/2;
@@ -832,11 +724,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    break;
 	}
 	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
-#ifndef WITH_CGRAPH
-	if (n == orig->head)
-#else /* WITH_CGRAPH */
 	if (n == aghead(orig))
-#endif /* WITH_CGRAPH */
 	    ED_head_port(orig).clip = FALSE;
 	else
 	    ED_tail_port(orig).clip = FALSE;
@@ -888,11 +776,7 @@ static void selfBottom (edge_t* edges[], int ind, int cnt,
     int pointn;
 
     e = edges[ind];
-#ifndef WITH_CGRAPH
-    n = e->tail;
-#else
     n = agtail(e);
-#endif
 
     stepx = (sizex / 2.) / cnt;
     stepx = MAX(stepx,2.);
@@ -921,11 +805,7 @@ static void selfBottom (edge_t* edges[], int ind, int cnt,
         points[pointn++] = pointfof(hp.x - dx, hp.y - hy / 3);
         points[pointn++] = hp;
         if (ED_label(e)) {
-#ifndef WITH_CGRAPH
-    	if (GD_flip(e->tail->graph)) {
-#else
 	if (GD_flip(agraphof(agtail(e)))) {
-#endif
     	    width = ED_label(e)->dimen.y;
     	    height = ED_label(e)->dimen.x;
     	} else {
@@ -940,11 +820,7 @@ static void selfBottom (edge_t* edges[], int ind, int cnt,
     	if (dx + stepx < width)
     	    dx += width - stepx;
         }
-#ifndef WITH_CGRAPH
-        clip_and_install(e, e->head, points, pointn, sinfo);
-#else
         clip_and_install(e, aghead(e), points, pointn, sinfo);
-#endif
 #ifdef DEBUG
         if (debugleveln(e,1))
 	    showPoints (points, pointn);
@@ -966,11 +842,7 @@ selfTop (edge_t* edges[], int ind, int cnt, double sizex, double stepy,
     int pointn;
 
     e = edges[ind];
-#ifndef WITH_CGRAPH
-    n = e->tail;
-#else
     n = agtail(e);
-#endif
 
     stepx = (sizex / 2.) / cnt;
     stepx = MAX(stepx, 2.);
@@ -999,11 +871,7 @@ selfTop (edge_t* edges[], int ind, int cnt, double sizex, double stepy,
         points[pointn++] = pointfof(hp.x - dx, hp.y + hy / 3);
         points[pointn++] = hp;
         if (ED_label(e)) {
-#ifndef WITH_CGRAPH
-    	    if (GD_flip(e->tail->graph)) {
-#else
 	    if (GD_flip(agraphof(agtail(e)))) {
-#endif
 		width = ED_label(e)->dimen.y;
 		height = ED_label(e)->dimen.x;
 	    } else {
@@ -1018,11 +886,7 @@ selfTop (edge_t* edges[], int ind, int cnt, double sizex, double stepy,
 	    if (dx + stepx < width)
 		dx += width - stepx;
         }
-#ifndef WITH_CGRAPH
-        clip_and_install(e, e->head, points, pointn, sinfo);
-#else
         clip_and_install(e, aghead(e), points, pointn, sinfo);
-#endif
 #ifdef DEBUG
         if (debugleveln(e,1))
 	    showPoints (points, pointn);
@@ -1044,11 +908,7 @@ selfRight (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
     int pointn;
 
     e = edges[ind];
-#ifndef WITH_CGRAPH
-    n = e->tail;
-#else
     n = agtail(e);
-#endif
 
     stepy = (sizey / 2.) / cnt;
     stepy = MAX(stepy, 2.);
@@ -1077,11 +937,7 @@ selfRight (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
         points[pointn++] = pointfof(hp.x + hx / 3, hp.y - dy);
         points[pointn++] = hp;
         if (ED_label(e)) {
-#ifndef WITH_CGRAPH
-	    if (GD_flip(e->tail->graph)) {
-#else
 	    if (GD_flip(agraphof(agtail(e)))) {
-#endif
 		width = ED_label(e)->dimen.y;
 		height = ED_label(e)->dimen.x;
 	    } else {
@@ -1096,11 +952,7 @@ selfRight (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
 	    if (dy + stepy < height)
 		dy += height - stepy;
         }
-#ifndef WITH_CGRAPH
-        clip_and_install(e, e->head, points, pointn, sinfo);
-#else
 	clip_and_install(e, aghead(e), points, pointn, sinfo);
-#endif
 #ifdef DEBUG
         if (debugleveln(e,1))
 	    showPoints (points, pointn);
@@ -1122,11 +974,7 @@ selfLeft (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
     int pointn;
 
     e = edges[ind];
-#ifndef WITH_CGRAPH
-    n = e->tail;
-#else /* WITH_CGRAPH */
     n = agtail(e);
-#endif /* WITH_CGRAPH */
 
     stepy = (sizey / 2.) / cnt;
     stepy = MAX(stepy,2.);
@@ -1155,11 +1003,7 @@ selfLeft (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
         points[pointn++] = pointfof(hp.x - hx / 3, hp.y - dy);
         points[pointn++] = hp;
         if (ED_label(e)) {
-#ifndef WITH_CGRAPH
-    	if (GD_flip(e->tail->graph)) {
-#else /* WITH_CGRAPH */
     	if (GD_flip(agraphof(agtail(e)))) {
-#endif /* WITH_CGRAPH */
     	    width = ED_label(e)->dimen.y;
     	    height = ED_label(e)->dimen.x;
     	} else {
@@ -1174,11 +1018,7 @@ selfLeft (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
     	if (dy + stepy < height)
     	    dy += height - stepy;
         }
-#ifndef WITH_CGRAPH
-        clip_and_install(e, e->head, points, pointn, sinfo);
-#else /* WITH_CGRAPH */
         clip_and_install(e, aghead(e), points, pointn, sinfo);
-#endif /* WITH_CGRAPH */
 #ifdef DEBUG
         if (debugleveln(e,1))
 	    showPoints (points, pointn);
@@ -1208,11 +1048,7 @@ selfRightSpace (edge_t* e)
           (!(ED_tail_port(e).side & (TOP|BOTTOM)))))) {
 	sw = SELF_EDGE_SIZE;
 	if (l) {
-#ifndef WITH_CGRAPH
-	    label_width = GD_flip(e->head->graph) ? l->dimen.y : l->dimen.x;
-#else /* WITH_CGRAPH */
 	    label_width = GD_flip(agraphof(aghead(e))) ? l->dimen.y : l->dimen.x;
-#endif /* WITH_CGRAPH */
 	    sw += label_width;
 	}
     }

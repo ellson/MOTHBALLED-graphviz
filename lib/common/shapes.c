@@ -206,7 +206,7 @@ static shape_desc Shapes[] = {	/* first entry is default for no such shape */
 
 static void unrecognized(node_t * n, char *p)
 {
-    agerr(AGWARN, "node %s, port %s unrecognized\n", n->name, p);
+    agerr(AGWARN, "node %s, port %s unrecognized\n", agnameof(n), p);
 }
 
 static double quant(double val, double q)
@@ -770,7 +770,7 @@ static void poly_init(node_t * n)
 	    PAD(dimen);
     }
     /* quantization */
-    if ((temp = GD_drawing(n->graph)->quantum) > 0.0) {
+    if ((temp = GD_drawing(agraphof(n))->quantum) > 0.0) {
 	temp = POINTS(temp);
 	dimen.x = quant(dimen.x, temp);
 	dimen.y = quant(dimen.y, temp);
@@ -784,30 +784,30 @@ static void poly_init(node_t * n)
              */
 	if (streq(ND_shape(n)->name, "custom")) {
 	    sfile = agget(n, "shapefile");
-	    imagesize = gvusershape_size(n->graph, sfile);
+	    imagesize = gvusershape_size(agraphof(n), sfile);
 	    if ((imagesize.x == -1) && (imagesize.y == -1)) {
 		agerr(AGWARN,
 		      "No or improper shapefile=\"%s\" for node \"%s\"\n",
-		      (sfile ? sfile : "<nil>"), n->name);
+		      (sfile ? sfile : "<nil>"), agnameof(n));
 	    	imagesize.x = imagesize.y = 0;
 	    }
 	    else {
-		GD_has_images(n->graph) = TRUE;
+		GD_has_images(agraphof(n)) = TRUE;
 	        imagesize.x += 2; /* some fixed padding */
 	        imagesize.y += 2;
 	    }
 	}
     }
     else  if ((sfile = agget(n, "image")) && (*sfile != '\0')) {
-	imagesize = gvusershape_size(n->graph, sfile);
+	imagesize = gvusershape_size(agraphof(n), sfile);
 	if ((imagesize.x == -1) && (imagesize.y == -1)) {
             agerr(AGWARN,
                 "No or improper image=\"%s\" for node \"%s\"\n",
-                (sfile ? sfile : "<nil>"), n->name);
+                (sfile ? sfile : "<nil>"), agnameof(n));
             imagesize.x = imagesize.y = 0;
         }
 	else {
-            GD_has_images(n->graph) = TRUE;
+            GD_has_images(agraphof(n)) = TRUE;
 	    imagesize.x += 2; /* some fixed padding */
 	    imagesize.y += 2;
 	}
@@ -868,7 +868,7 @@ static void poly_init(node_t * n)
 	if ((width < bb.x) || (height < bb.y))
 	    agerr(AGWARN,
 		  "node '%s', graph '%s' size too small for label\n",
-		  n->name, n->graph->name);
+		  agnameof(n), agraphof(n)->name);
 	bb.x = width;
 	bb.y = height;
     }
@@ -1061,7 +1061,7 @@ static boolean poly_inside(inside_t * inside_context, pointf p)
     boxf *bp = inside_context->s.bp;
     node_t *n = inside_context->s.n;
 
-    P = ccwrotatepf(p, 90*GD_rankdir(n->graph));
+    P = ccwrotatepf(p, 90*GD_rankdir(agraphof(n)));
 
     /* Quick test if port rectangle is target */
     if (bp) {
@@ -1075,7 +1075,7 @@ static boolean poly_inside(inside_t * inside_context, pointf p)
 	sides = poly->sides;
 
 	/* get point and node size adjusted for rankdir=LR */
-	if (GD_flip(n->graph)) {
+	if (GD_flip(agraphof(n))) {
 	    ysize = ND_lw(n) + ND_rw(n);
 	    xsize = ND_ht(n);
 	} else {
@@ -1304,7 +1304,7 @@ compassPort(node_t* n, boxf* bp, port* pp, char* compass, int sides, inside_t* i
 	defined = TRUE;
     } else {
 	p.x = p.y = 0.;
-	if (GD_flip(n->graph)) {
+	if (GD_flip(agraphof(n))) {
 	    b.UR.x = ND_ht(n) / 2.;
 	    b.LL.x = -b.UR.x;
 	    b.UR.y = ND_lw(n);
@@ -1411,12 +1411,12 @@ compassPort(node_t* n, boxf* bp, port* pp, char* compass, int sides, inside_t* i
 	    break;
 	}
     }
-    p = cwrotatepf(p, 90*GD_rankdir(n->graph));
+    p = cwrotatepf(p, 90*GD_rankdir(agraphof(n)));
     if (dyna) pp->side = side;
-    else pp->side = invflip_side(side, GD_rankdir(n->graph));
+    else pp->side = invflip_side(side, GD_rankdir(agraphof(n)));
     pp->bp = bp;
     PF2P(p, pp->p);
-    pp->theta = invflip_angle(theta, GD_rankdir(n->graph));
+    pp->theta = invflip_angle(theta, GD_rankdir(agraphof(n)));
     if ((p.x == 0) && (p.y == 0))
 	pp->order = MC_SCALE/2;
     else {
@@ -1448,7 +1448,7 @@ static port poly_port(node_t * n, char *portname, char *compass)
 	if (compassPort(n, bp, &rv, compass, sides, NULL)) {
 	    agerr(AGWARN,
 		"node %s, port %s, unrecognized compass point '%s' - ignored\n",
-		      n->name, portname, compass);
+		      agnameof(n), portname, compass);
 	}
     } 
     else {
@@ -1687,7 +1687,7 @@ point_inside(inside_t* inside_context, pointf p)
     pointf P;
     node_t *n = inside_context->s.n;
 
-    P = ccwrotatepf(p, 90*GD_rankdir(n->graph));
+    P = ccwrotatepf(p, 90*GD_rankdir(agraphof(n)));
 
     if (n != lastn) {
         int outp;
@@ -2111,7 +2111,7 @@ static void record_init(node_t * n)
     int sides = BOTTOM | RIGHT | TOP | LEFT; 
 
     /* Always use rankdir to determine how records are laid out */
-    flip = NOT(GD_realflip(n->graph));
+    flip = NOT(GD_realflip(agraphof(n)));
     reclblp = ND_label(n)->text;
     len = strlen(reclblp);
     textbuf = N_NEW(len + 1, char);
@@ -2128,9 +2128,8 @@ static void record_init(node_t * n)
     if (mapbool(late_string(n, N_fixed, "false"))) {
 	if ((sz.x < info->size.x) || (sz.y < info->size.y)) {
 /* should check that the record really won't fit, e.g., there may be no text.
-			agerr(AGWARN, "node '%s' size may be too small\n",
-				n->name);
- */
+			agerr(AGWARN, "node '%s' size may be too small\n", agnameof(n));
+*/
 	}
     } else {
 	sz.x = MAX(info->size.x, sz.x);
@@ -2199,7 +2198,7 @@ static port record_port(node_t * n, char *portname, char *compass)
 	if (compassPort(n, &subf->b, &rv, compass, subf->sides, NULL)) {
 	    agerr(AGWARN,
 	      "node %s, port %s, unrecognized compass point '%s' - ignored\n",
-	      n->name, portname, compass);
+	      agnameof(n), portname, compass);
 	}
     }
     else if (compassPort(n, &f->b, &rv, portname, sides, NULL)) {
@@ -2223,7 +2222,7 @@ record_inside(inside_t * inside_context, pointf p)
     boxf bbox;
 
     /* convert point to node coordinate system */
-    p = ccwrotatepf(p, 90*GD_rankdir(n->graph));
+    p = ccwrotatepf(p, 90*GD_rankdir(agraphof(n)));
 
     if (bp == NULL) {
 	fld0 = (field_t *) ND_shape_info(n);
@@ -2249,7 +2248,7 @@ static int record_path(node_t* n, port* prt, int side, boxf rv[], int *kptr)
     info = (field_t *) ND_shape_info(n);
 
     for (i = 0; i < info->n_flds; i++) {
-	if (!GD_flip(n->graph)) {
+	if (!GD_flip(agraphof(n))) {
 	    ls = info->fld[i]->b.LL.x;
 	    rs = info->fld[i]->b.UR.x;
 	} else {
@@ -2258,7 +2257,7 @@ static int record_path(node_t* n, port* prt, int side, boxf rv[], int *kptr)
 	}
 	if (BETWEEN(ls, p.x, rs)) {
 	    /* FIXME: I don't understand this code */
-	    if (GD_flip(n->graph)) {
+	    if (GD_flip(agraphof(n))) {
 		rv[0] = flip_rec_boxf(info->fld[i]->b, ND_coord(n));
 	    } else {
 		rv[0].LL.x = ND_coord(n).x + ls;
@@ -2413,7 +2412,7 @@ static boolean epsf_inside(inside_t * inside_context, pointf p)
     double x2;
     node_t *n = inside_context->s.n;
 
-    P = ccwrotatepf(p, 90*GD_rankdir(n->graph));
+    P = ccwrotatepf(p, 90*GD_rankdir(agraphof(n)));
     x2 = ND_ht(n) / 2;
     return ((P.y >= -x2) && (P.y <= x2) && (P.x >= -ND_lw(n)) && (P.x <= ND_rw(n)));
 }
@@ -2481,7 +2480,7 @@ cvtPt (pointf p, int rankdir)
 static char* closestSide (node_t*  n, node_t* other, port* oldport)
 {
     boxf b;
-    int rkd = GD_rankdir(n->graph->root);
+    int rkd = GD_rankdir(agraphof(n)->root);
     point p = {0, 0};
     point pt = cvtPt (ND_coord(n), rkd);
     point opt = cvtPt (ND_coord(other), rkd);
@@ -2494,7 +2493,7 @@ static char* closestSide (node_t*  n, node_t* other, port* oldport)
     if (oldport->bp) {
 	b = *oldport->bp;
     } else {
-	if (GD_flip(n->graph)) {
+	if (GD_flip(agraphof(n))) {
 	    b.UR.x = ND_ht(n) / 2;
 	    b.LL.x = -b.UR.x;
 	    b.UR.y = ND_lw(n);
