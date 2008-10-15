@@ -45,15 +45,17 @@ static void setYInvert(graph_t * g)
 /* canon:
  * Canonicalize a string which may not have been allocated using agstrdup.
  */
-static char* canon (char* s)
+static char* canon (graph_t *g, char* s)
 {
-    char* ns = agstrdup (s);
 #ifndef WITH_CGRAPH
+    char* ns = agstrdup (s);
     char* cs = agcanonical (ns);
-#else
-    char* cs = agcanonStr (ns);
-#endif
     agstrfree (ns);
+#else
+    char* ns = agstrdup (g, s);
+    char* cs = agcanonStr (ns);
+    agstrfree (g, ns);
+#endif
     return cs;
 }
 
@@ -61,7 +63,7 @@ static void writenodeandport(FILE * fp, node_t * node, char *port)
 {
     char *name;
     if (IS_CLUST_NODE(node))
-	name = canon (strchr(agnameof(node), ':') + 1);
+	name = canon (agraphof(node), strchr(agnameof(node), ':') + 1);
     else
 #ifndef WITH_CGRAPH
 	name = agcanonical (agnameof(node));
@@ -114,11 +116,7 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
 	    lbl = agcanonStr (agxget(n, N_label));
 #endif
 	else
-#ifndef WITH_CGRAPH
-	    lbl = canon(ND_label(n)->text);
-#else
 	    lbl = canon(agraphof(n),ND_label(n)->text);
-#endif
 	fprintf(f, " %.5g %.5g %s %s %s %s %s\n",
 		ND_width(n), ND_height(n), lbl,
 		late_nnstring(n, N_style, "solid"),
@@ -169,11 +167,7 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
 		}
 	    }
 	    if (ED_label(e)) {
-#ifndef WITH_CGRAPH
-		fprintf(f, " %s", canon(ED_label(e)->text));
-#else
 		fprintf(f, " %s", canon(agraphof(e),ED_label(e)->text));
-#endif
 		printptf(f, ED_label(e)->pos);
 	    }
 	    fprintf(f, " %s %s\n", late_nnstring(e, E_style, "solid"),

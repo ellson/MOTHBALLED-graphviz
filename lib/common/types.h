@@ -741,9 +741,20 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 
 #ifdef WITH_CGRAPH
 #include "cgraph.h"
+#define SET_RANKDIR(g,rd) (GD_rankdir2(g) = rd)
 #else
 #include "graph.h"
+#define SET_RANKDIR(g,rd) ((g)->u.rankdir = (rd))
+#define agnameof(x) ((x)->name)
+    /* warning, agraphof doesn't work for edges */
+#define agraphof(n) ((n)->graph)
+#define agroot(g) ((g)->root)
+#define aghead(e) ((e)->head)
+#define agtail(e) ((e)->tail)
+#define agisdirected(g) ((g)->kind & AGFLAG_DIRECTED)
+#define AGID(x) ((x)->id)
 #endif
+
 
     typedef struct {
         int useGrid;            /* use grid for speed up */
