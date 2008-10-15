@@ -140,6 +140,7 @@ typedef struct {
 
 int wantDegenerateComp;
 int Silent;
+int StatsOnly;
 int Verbose;
 char *CmdName;
 char **Files;
@@ -206,7 +207,7 @@ static int visit(Agnode_t * n, Agraph_t * map, Stack * sp, sccstate * st)
 		st->N_nodes_in_nontriv_SCC++;
 	    } while (t != n);
 	    nodeInduce(subg, map);
-	    if (!Silent)
+	    if (!StatsOnly)
 		agwrite(subg, stdout);
 	}
     }
@@ -292,7 +293,7 @@ static void process(Agraph_t * G)
 	if (getval(n) == 0)
 	    visit(n, map, &stack, &state);
     freeStack(&stack);
-    if (!Silent)
+    if (!StatsOnly)
 	agwrite(map, stdout);
     agclose(map);
 
@@ -301,14 +302,15 @@ static void process(Agraph_t * G)
 		agnnodes(G), agnedges(G), nc, state.Comp,
 		state.N_nodes_in_nontriv_SCC / (double) agnnodes(G),
 		Maxdegree, nontree_frac);
-    else
+    else if (!Silent)
 	fprintf(stderr, "%d nodes, %d edges, %d strong components\n",
 		agnnodes(G), agnedges(G), state.Comp);
 
 }
 
 static char *useString = "Usage: %s [-sdv?] <files>\n\
-  -s - silent\n\
+  -s - only produce statistics\n\
+  -S - silent\n\
   -d - allow degenerate components\n\
   -v - verbose\n\
   -? - print usage\n\
@@ -325,16 +327,20 @@ static void scanArgs(int argc, char **argv)
     int c;
 
     CmdName = argv[0];
-    while ((c = getopt(argc, argv, ":sdv?")) != EOF) {
+    while ((c = getopt(argc, argv, ":sdvS?")) != EOF) {
 	switch (c) {
 	case 's':
-	    Silent = 1;
+	    StatsOnly = 1;
 	    break;
 	case 'd':
 	    wantDegenerateComp = 1;
 	    break;
 	case 'v':
 	    Verbose = 1;
+	    break;
+	case 'S':
+	    Verbose = 0;
+	    Silent = 1;
 	    break;
 	case '?':
 	    if (optopt == '?')
