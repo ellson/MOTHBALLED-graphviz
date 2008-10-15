@@ -87,7 +87,8 @@ void btnToolZoomFit_clicked(GtkWidget * widget, gpointer user_data)
 {
 
 	float scx,scy,gcx,gcy,z,GDX,SDX,GDY,SDY;
-
+	GtkTextBuffer *a;
+	char* test;
 	(view->active_camera >=0)
 			? (z=view->cameras[view->active_camera]->r):(z=view->zoom*-1);
 
@@ -110,8 +111,7 @@ void btnToolZoomFit_clicked(GtkWidget * widget, gpointer user_data)
 
 	}
 	btnToolFit_clicked(NULL,NULL);
-//    xml = glade_xml_new(SMYRNA_GLADE, NULL, NULL);
-	gtk_widget_hide	(glade_xml_get_widget(xml, "consoleText"));
+	write_to_console("test entry\n");
 }
 
 void btnToolFit_clicked(GtkWidget * widget, gpointer user_data)
@@ -186,4 +186,15 @@ void btnToolDeleteEdge_clicked(GtkWidget * widget, gpointer user_data)
 }
 void btnToolFindEdge_clicked(GtkWidget * widget, gpointer user_data)
 {
+}
+
+int write_to_console(char* text)
+{
+	//init console text
+	GtkTextIter iter;
+	if(!view->consoleText)
+		view->consoleText=gtk_text_buffer_new(NULL);
+	gtk_text_buffer_get_end_iter(view->consoleText,&iter);
+	gtk_text_buffer_insert (view->consoleText,&iter,text,-1);
+	gtk_text_view_set_buffer ((GtkTextView*)glade_xml_get_widget(xml, "consoleText"),view->consoleText);
 }

@@ -13,6 +13,7 @@ int glmotion_main(ViewInfo * v,GdkEventMotion * event,GtkWidget * widget)
 {
 	
 	redraw = FALSE;
+	view->FontSizeConst=GetOGLDistance(14);
 	/*panning */
     if ((event->state & GDK_BUTTON1_MASK)&& (v->mouse.mouse_mode == MM_PAN))
 		glmotion_pan(v);

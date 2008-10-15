@@ -781,56 +781,74 @@ void drawEllipse(float xradius, float yradius,int angle1,int angle2)
  
    glEnd();
 }
-int draw_node_hintbox_gl_polygon(GLfloat x,GLfloat y,GLfloat fs,GLfloat pad,GLfloat z,GLfloat kts)
+int draw_node_hintbox_gl_polygon(GLfloat x,GLfloat y,GLfloat z,GLfloat fs,char* text)
 {
-	float w;
-	kts=kts*(GLfloat)1.15;
-	w=fs*kts+2*pad;
-	glBegin(GL_POLYGON);	//big rectangle
-	glVertex3f(x-w/(GLfloat)2.0 , y+fs ,z);
-	glVertex3f(x-w/(GLfloat)2.0 ,y+2*fs+2*pad,z);
-	glVertex3f(x+w/(GLfloat)2.0,y+2*fs+2*pad,z);
-	glVertex3f(x+w/(GLfloat)2.0,y+fs,z);
-	glVertex3f(x-w/(GLfloat)2.0 , y+fs ,z);
+
+	float X,Y,Z,pad;
+	pad=fs/5.0;
+	X=x;Y=y+fs;Z=z;
+	glBegin(GL_POLYGON);
+	//rectangle
+	glVertex3f(X,Y,Z);
+	Y=Y + 2*fs+2*pad;
+	glVertex3f(X,Y,Z);
+	X=X+2*pad+strlen(text)*fs;
+	glVertex3f(X,Y,Z);
+	Y=y+fs;
+	glVertex3f(X,Y,Z);
+	X=x;
+	glVertex3f(X,Y,Z);
+	//triangle
+	glEnd();
+	X=x;Y=y;
+	glBegin(GL_POLYGON);
+	glVertex3f(X,Y,Z);
+	Y=Y + fs;
+	glVertex3f(X,Y,Z);
+	X=X+2*pad;
+	glVertex3f(X,Y,Z);
+	X=x;Y=y;
+	glVertex3f(X,Y,Z);
 	glEnd();
 
-	glBegin(GL_POLYGON);	//litle triangle
-	glVertex3f(x,y,z);
-	glVertex3f(x-(fs/3) , y+fs ,z);
-	glVertex3f(x+fs/3,y+fs,z);
-	glVertex3f(x,y,z);
-	glEnd();
 	return 1;
 
 }
-int draw_node_hintbox_gl_line(GLfloat x,GLfloat y,GLfloat fs,GLfloat pad,GLfloat z,GLfloat kts)
+int draw_node_hintbox_gl_line(GLfloat x,GLfloat y,GLfloat z,GLfloat fs,char* text)
 {
-	float w;
-	kts=kts*(GLfloat)1.15;
-	w=fs*kts+(GLfloat)2*pad;
 
+
+	float X,Y,Z,pad;
+	pad=fs/5.0;
+	X=x;Y=y;Z=z+0.001;
 	glBegin(GL_LINE_STRIP);
-	glVertex3f(x,y,z);
-	glVertex3f(x-(fs/(GLfloat)3) , y+fs ,z);
-	glVertex3f(x-w/(GLfloat)2.0 , y+fs ,z);
-	glVertex3f(x-w/(GLfloat)2.0 ,y+2*fs+2*pad,z);
-	glVertex3f(x+w/(GLfloat)2.0,y+2*fs+2*pad,z);
-	glVertex3f(x+w/(GLfloat)2.0,y+fs,z);
-	glVertex3f(x+fs/(GLfloat)3,y+fs,z);
-	glVertex3f(x,y,z);
+	glVertex3f(X,Y,Z);
+	Y=Y + 2*fs+2*pad;
+	glVertex3f(X,Y,Z);
+	X=X+2*pad+strlen(text)*fs;
+	glVertex3f(X,Y,Z);
+	Y=y+fs;
+	glVertex3f(X,Y,Z);
+	X=x+fs;
+	glVertex3f(X,Y,Z);
+	X=x;Y=y;
+	glVertex3f(X,Y,Z);
 	glEnd();
+
+
+
 	return 1;
 
 }
 
 
-int draw_node_hintbox(GLfloat x,GLfloat y,GLfloat fs,GLfloat pad,GLfloat z,GLfloat kts,GLfloat z_offset)
+int draw_node_hintbox(GLfloat x,GLfloat y,GLfloat z,GLfloat fs,char* text)
 {
 	
 	glColor3f(1,1,0);
-		draw_node_hintbox_gl_polygon(x,y,fs,pad,z+(GLfloat)z_offset/100,kts);
+		draw_node_hintbox_gl_polygon(x,y,z,fs,text);
 	glColor3f(0,0,1);
-		draw_node_hintbox_gl_line(x,y,fs,pad,z+(GLfloat)0.001+(GLfloat)z_offset/100,kts);
+		draw_node_hintbox_gl_line(x,y,z,fs,text);
 	return 1;
 
 }

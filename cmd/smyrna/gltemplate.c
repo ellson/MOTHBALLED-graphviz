@@ -400,6 +400,8 @@ static gboolean motion_notify_event(GtkWidget * widget,
     if ((event->state & GDK_BUTTON1_MASK)
 	&& (view->mouse.mouse_mode == MM_ZOOM))
 	{
+		view->FontSizeConst=GetOGLDistance(14);
+
 		if (glmotion_main(view, event, widget))
 		    redraw = TRUE;
 	}

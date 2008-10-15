@@ -257,7 +257,7 @@ there i go, turn the page
 	atoi(get_attribute_value ("drawedges", view, g));
     view->drawlabels=
 	atoi(get_attribute_value ("drawlabels", view, g));
-
+	view->FontSizeConst=0; //this will be calculated later in topview.c while calculating optimum font size
 
 //FIXME: I don't think an openGL function can be called before it
   //     is initialized.
@@ -270,8 +270,7 @@ void init_viewport(ViewInfo * view)
 {
     char *template_file;
     FILE *input_file;
-	GtkTextBuffer *a;
-	char* test;
+
 
 
     /*loading default visual attributes */
@@ -291,14 +290,6 @@ void init_viewport(ViewInfo * view)
 #ifndef _WIN32
     free (template_file);
 #endif
-	//init console text
-    xml = glade_xml_new(smyrnaGlade, NULL, NULL);
-	gtk_widget_hide	(glade_xml_get_widget(xml, "consoleText"));
-	view->consoleText=gtk_text_buffer_new(NULL);
-	gtk_text_buffer_set_text (view->consoleText,"Smyrna console is initialized:\n",-1);
-	a=gtk_text_view_get_buffer((GtkTextView*)glade_xml_get_widget(xml, "consoleText"));
-	test=gtk_text_buffer_get_text  (a,0,5,1);
-	gtk_text_view_set_buffer ((GtkTextView*)glade_xml_get_widget(xml, "consoleText"),view->consoleText);
 	//init graphs
     view->g = NULL;		//no graph, gl screen should check it
     view->graphCount = 0;	//and disable interactivity if count is zero

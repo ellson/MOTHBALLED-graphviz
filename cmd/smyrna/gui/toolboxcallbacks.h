@@ -49,7 +49,7 @@ _BB void btnToolFindNode_clicked(GtkWidget * widget, gpointer user_data);
 _BB void btnToolAddEdge_clicked(GtkWidget * widget, gpointer user_data);
 _BB void btnToolDeleteEdge_clicked(GtkWidget * widget, gpointer user_data);
 _BB void btnToolFindEdge_clicked(GtkWidget * widget, gpointer user_data);
-
+int write_to_console(char* text);
 
 
 #endif

@@ -19,9 +19,9 @@ AM_CPPFLAGS = \
 
 if WITH_SMYRNA
 noinst_HEADERS = callbacks.h datalistcallbacks.h filterscallbacks.h gui.h \
-	menucallbacks.h toolboxcallbacks.h
+	menucallbacks.h toolboxcallbacks.h beacon.h
 noinst_LTLIBRARIES = libgui_C.la
 endif
 
 libgui_C_la_SOURCES = callbacks.c datalistcallbacks.c filterscallbacks.c \
-	gui.c menucallbacks.c toolboxcallbacks.c
+	gui.c menucallbacks.c toolboxcallbacks.c beacon.c
