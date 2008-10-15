@@ -65,22 +65,19 @@ void preparetopview(Agraph_t * g, topview * t)
     Agnode_t *v;
     Agedge_t *e;
     Agsym_t *sym;
-    int ind, ind2, data_type_count;	//number of columns for custom
-view->Topview data ,IP ,HOST, etc
+    int ind, ind2, data_type_count;	//number of columns for custom view->Topview data ,IP ,HOST, etc
 	char buf[256];
     RGBColor color;
 
 	int maxlabelsize=0;
 	float maxedgelen,minedgelen,len,edgelength;
 	maxedgelen=0;
-	minedgelen=99999999;	//FIX ME if you have a giant graph or fix
-your graph
+	minedgelen=99999999;	//FIX ME if you have a giant graph or fix your graph
 	edgelength=0;
 
     ind = 0;
     ind2 = 0;
-    gtk_widget_hide(glade_xml_get_widget(xml, "layout6"));	//hide top
-panel
+    gtk_widget_hide(glade_xml_get_widget(xml, "layout6"));	//hide top panel
 //      gtk_widget_hide(glade_xml_get_widget(xml, "menubar1")); //hide menu
     data_type_count = 0;
     d_attr1 = agget(g, "DataAttribute1");
@@ -210,8 +207,7 @@ t->Edges[ind2].y1),2),0.5);
 		//calculate a decent fontsize 
 	ind++;
 	}
-//	calcfontsize(float totaledgelength,int totallabelsize,int
-edgecount,int totalnodecount)
+//	calcfontsize(float totaledgelength,int totallabelsize,int edgecount,int totalnodecount)
 	view->FontSize=calcfontsize(edgelength,maxlabelsize,ind2,ind);
 	//attach edge node references ,  loop one more time
     ind = 0;
@@ -234,8 +230,7 @@ edgecount,int totalnodecount)
     }
     t->Nodecount = ind;
     t->Edgecount = ind2;
-    view->fmg.fisheye_distortion_fac = 5;	//need to be hooked to a
-widget
+    view->fmg.fisheye_distortion_fac = 5;	//need to be hooked to a widget
     set_boundaries(t);
     set_update_required(t);
     t->topviewmenu = glcreate_gl_topview_menu();
@@ -1002,8 +997,7 @@ void local_zoom(topview * t)
 		t->Nodes[i].distorted_y =
 		    view->mg.y + (GLfloat) dely *view->mg.kts;
 		t->Nodes[i].zoom_factor = view->mg.kts;
-	    } else		//get intersections and move nodes to edges
-of magnifier box
+	    } else		//get intersections and move nodes to edges of magnifier box
 	    {
 		t->Nodes[i].distorted_x = t->Nodes[i].x;
 		t->Nodes[i].distorted_y = t->Nodes[i].y;
@@ -1022,8 +1016,7 @@ of magnifier box
 
 void originate_distorded_coordinates(topview * t)
 {
-    //sets original coordinates values to distorded coords. this happens
-when lieft mouse click is released in geometrical fisyehey mode
+    //sets original coordinates values to distorded coords. this happens when lieft mouse click is released in geometrical fisyehey mode
     int i;
     for (i = 1; i < t->Nodecount; i++) {
 	t->Nodes[i].distorted_x = t->Nodes[i].x;
