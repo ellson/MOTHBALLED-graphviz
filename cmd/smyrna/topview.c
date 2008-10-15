@@ -28,6 +28,8 @@
 #include "topviewdata.h"
 #include "hier.h"
 #include "topfisheyeview.h"
+#include "beacon.h"
+
 static float dx = 0.0;
 static float dy = 0.0;
 static float dz = 0.0;
@@ -42,7 +44,6 @@ static int select_topview_node(topview_node * n);
 static int select_topview_edge(topview_edge * e);
 static int update_topview_node_from_cgraph(topview_node * Node);
 static int get_color_from_edge(topview_edge * e);
-static int draw_node_hint_boxes();
 
 void cleartopview(topview * t)
 {
@@ -64,19 +65,22 @@ void preparetopview(Agraph_t * g, topview * t)
     Agnode_t *v;
     Agedge_t *e;
     Agsym_t *sym;
-    int ind, ind2, data_type_count;	//number of columns for custom view->Topview data ,IP ,HOST, etc
+    int ind, ind2, data_type_count;	//number of columns for custom
+view->Topview data ,IP ,HOST, etc
 	char buf[256];
     RGBColor color;
 
 	int maxlabelsize=0;
 	float maxedgelen,minedgelen,len,edgelength;
 	maxedgelen=0;
-	minedgelen=99999999;	//FIX ME if you have a giant graph or fix your graph
+	minedgelen=99999999;	//FIX ME if you have a giant graph or fix
+your graph
 	edgelength=0;
 
     ind = 0;
     ind2 = 0;
-    gtk_widget_hide(glade_xml_get_widget(xml, "layout6"));	//hide top panel
+    gtk_widget_hide(glade_xml_get_widget(xml, "layout6"));	//hide top
+panel
 //      gtk_widget_hide(glade_xml_get_widget(xml, "menubar1")); //hide menu
     data_type_count = 0;
     d_attr1 = agget(g, "DataAttribute1");
@@ -119,7 +123,8 @@ void preparetopview(Agraph_t * g, topview * t)
 		t->Nodes[ind].Node = v;
 		if (agget(t->Nodes[ind].Node, "color")) 
 		{
-			color = GetRGBColor(agget(t->Nodes[ind].Node, "color"));
+			color = GetRGBColor(agget(t->Nodes[ind].Node,
+"color"));
 			t->Nodes[ind].Color.R = color.R;
 			t->Nodes[ind].Color.G = color.G;
 			t->Nodes[ind].Color.B = color.B;
@@ -155,7 +160,9 @@ void preparetopview(Agraph_t * g, topview * t)
 		} else
 			t->Nodes[ind].Label2 = '\0';
 
-		maxlabelsize = maxlabelsize + strlen(t->Nodes[ind].Label);
+		if(t->Nodes[ind].Label)
+			maxlabelsize = maxlabelsize +
+strlen(t->Nodes[ind].Label);
 
 		for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
 		{
@@ -190,7 +197,9 @@ void preparetopview(Agraph_t * g, topview * t)
 				t->Edges[ind2].y2 = b;
 				t->Edges[ind2].z2 = c;
 			}
-			len=pow(pow((t->Edges[ind2].x2-t->Edges[ind2].x1),2)+pow((t->Edges[ind2].y2-t->Edges[ind2].y1),2),0.5);
+	
+len=pow(pow((t->Edges[ind2].x2-t->Edges[ind2].x1),2)+pow((t->Edges[ind2].y2-
+t->Edges[ind2].y1),2),0.5);
 			if (len > maxedgelen)
 				maxedgelen=len;
 			if (len < minedgelen)
@@ -201,7 +210,8 @@ void preparetopview(Agraph_t * g, topview * t)
 		//calculate a decent fontsize 
 	ind++;
 	}
-//	calcfontsize(float totaledgelength,int totallabelsize,int edgecount,int totalnodecount)
+//	calcfontsize(float totaledgelength,int totallabelsize,int
+edgecount,int totalnodecount)
 	view->FontSize=calcfontsize(edgelength,maxlabelsize,ind2,ind);
 	//attach edge node references ,  loop one more time
     ind = 0;
@@ -224,7 +234,8 @@ void preparetopview(Agraph_t * g, topview * t)
     }
     t->Nodecount = ind;
     t->Edgecount = ind2;
-    view->fmg.fisheye_distortion_fac = 5;	//need to be hooked to a widget
+    view->fmg.fisheye_distortion_fac = 5;	//need to be hooked to a
+widget
     set_boundaries(t);
     set_update_required(t);
     t->topviewmenu = glcreate_gl_topview_menu();
@@ -240,18 +251,27 @@ void preparetopview(Agraph_t * g, topview * t)
     t->picked_nodes = '\0';
 }
 /*
-	this function calculates and sets node size(opengl dots, they are squares not a dots
-	if anybody has any problem with dot size please just modify this function
-	active_camera=-1 means view is in 2D mode,0 and above means there is a 3D camera active.
-	I use different params for both situations since they are viewed differently..
-	If node shape is other than opengl dots, '#r' is replaced with the calculated value
+	this function calculates and sets node size(opengl dots, they are
+squares not a dots
+	if anybody has any problem with dot size please just modify this
+function
+	active_camera=-1 means view is in 2D mode,0 and above means there is
+a 3D camera active.
+	I use different params for both situations since they are viewed
+differently..
+	If node shape is other than opengl dots, '#r' is replaced with the
+calculated value
 */
 /*
 	Notes about xdot:
-	I am planning to combine small graphs , for that purpose if there is an xdot string attached the either node or 
-	edge and if a node's draw_xdot attribute is set , xdot is drawn for the object
+	I am planning to combine small graphs , for that purpose if there is
+an xdot string attached the either node or 
+	edge and if a node's draw_xdot attribute is set , xdot is drawn for
+the object
 	example node:
-    A[draw_xdot="1",_draw_="S 6 -filled c 7 -#741818 C 7 -#741818 P 5 125 528 96 543 67 528 67 505 125 505 ", _ldraw_="F 14.000000 11 -Times-Roman c 7 -#eaeb2a T 96 516 0 22 3 -S24"]
+    A[draw_xdot="1",_draw_="S 6 -filled c 7 -#741818 C 7 -#741818 P 5 125
+528 96 543 67 528 67 505 125 505 ", _ldraw_="F 14.000000 11 -Times-Roman c 7
+-#eaeb2a T 96 516 0 22 3 -S24"]
 
 	smyrna draws a house instead of a dot.
 */
@@ -262,17 +282,19 @@ static float set_gl_dot_size(topview * t)
 	if (view->active_camera==-1)
 		dotsize = GL_DOTSIZE_CONSTANT / view->zoom;
 	else
-		dotsize = GL_DOTSIZE_CONSTANT / view->cameras[view->active_camera]->r*-1;
+		dotsize = GL_DOTSIZE_CONSTANT /
+view->cameras[view->active_camera]->r*-1;
 
-	dotsize=dotsize * DOT_SIZE_CORRECTION_FAC;
+//	dotsize=dotsize * DOT_SIZE_CORRECTION_FAC;
 	if (dotsize <=1)
-		dotsize=4;
+		dotsize=1;
 	glPointSize(dotsize);
 	return dotsize;
 
 }
 
-float calcfontsize(float totaledgelength,int totallabelsize,int edgecount,int totalnodecount)
+float calcfontsize(float totaledgelength,int totallabelsize,int
+edgecount,int totalnodecount)
 {
 	float avglength=totaledgelength/(float)edgecount;
 	float avglabelsize=totallabelsize/(float)totalnodecount;
@@ -323,9 +345,6 @@ static int drawtopviewnodes(Agraph_t * g)
     topview_node *v;
     float ddx, ddy, ddz;
     int ind = 0;
-    float dotsize = 0;
-	dotsize=set_gl_dot_size(view->Topview);		//sets the size of the gl points
-
 	set_topview_options();
 	begintopviewnodes(g);
 	for (ind = 0;
@@ -379,13 +398,15 @@ static int drawtopviewnodes(Agraph_t * g)
 			else if (view->defaultnodeshape==1)
 			{
 				draw_sphere(v->distorted_x - ddx,
-				v->distorted_y - ddy, v->distorted_z - ddz,0.25);
+				v->distorted_y - ddy, v->distorted_z -
+ddz,0.25);
 
 			}
 	    }
 	}
 	endtopviewnodes(g);
-    return 1;
+	view->mouse.button=-1;
+	return 1;
 
 }
 
@@ -398,7 +419,8 @@ static void drawtopviewedges(Agraph_t * g)
 
     glBegin(GL_LINES);
     set_topview_options();
-    for (ind = 0; ((ind < view->Topview->Edgecount) && view->drawedges);ind++) {
+    for (ind = 0; ((ind < view->Topview->Edgecount) &&
+view->drawedges);ind++) {
 	if (((view->Topview->Edges[ind].x1 / view->zoom * -1 >
 	      view->clipX1)
 	     && (view->Topview->Edges[ind].x1 / view->zoom * -1 <
@@ -486,158 +508,73 @@ void drawTopViewGraph(Agraph_t * g)
     }
 }
 
-static int is_node_picked(topview_node * n)
-{
-    int ind = 0;
-    int found = 0;
-    for (; ind < view->Topview->picked_node_count; ind++) {
-	if ((view->Topview->picked_nodes[ind] == n) && (!found))
-	    return 1;
-    }
-    return 0;
-}
-
-static int remove_from_pick_list(topview_node * n)
-{
-    int ind = 0;
-    int found = 0;
-    for (; ind < view->Topview->picked_node_count; ind++) {
-	if ((view->Topview->picked_nodes[ind] == n) && (!found))
-	    found = 1;
-	if ((found) && (ind < (view->Topview->picked_node_count - 1))) {
-	    view->Topview->picked_nodes[ind] =
-		view->Topview->picked_nodes[ind + 1];
-	}
-    }
-    if (found) {
-	view->Topview->picked_node_count--;
-	view->Topview->picked_nodes =
-	    realloc(view->Topview->picked_nodes,
-		    sizeof(topview_node *) *
-		    view->Topview->picked_node_count);
-	return 1;
-    }
-    return 0;
-}
-
-static int add_to_pick_list(topview_node * n)
-{
-    view->Topview->picked_node_count++;
-    view->Topview->picked_nodes =
-	realloc(view->Topview->picked_nodes,
-		sizeof(topview_node *) * view->Topview->picked_node_count);
-    view->Topview->picked_nodes[view->Topview->picked_node_count - 1] = n;
-    return 1;
-
-}
-
-static int pick_node(topview_node * n)
-{
-    static int closest_dif = 3;
-    float a, b;
-    a = ABS(n->distorted_x - view->GLx);
-    b = ABS(n->distorted_y - view->GLy);
-    a = (float) pow((a * a + b * b), (float) 0.5);
-    if (a < closest_dif) {
-	if (!is_node_picked(n)) {
-	    if (add_to_pick_list(n)) {
-		printf("node picked ,name:%s\n", agnameof(n->Node));
-		return 1;
-	    }
-	    return 0;
-	} else {
-	    if (remove_from_pick_list(n)) {
-		printf("node has been unpicked ,name:%s\n",
-		       agnameof(n->Node));
-		return 1;
-	    }
-	    return 0;
-	}
-    }
-    return 0;
-
-}
-static int draw_node_hint_boxes()
-{
-    int ind;
-    int fs = 12;
-    for (ind = 0; ind < view->Topview->picked_node_count; ind++) {
-	draw_node_hintbox(view->Topview->picked_nodes[ind]->distorted_x,
-			  view->Topview->picked_nodes[ind]->distorted_y,
-			  (GLfloat) fs, (GLfloat) 1, (GLfloat) 1,
-			  (GLfloat) (strlen
-				     (agnameof
-				      (view->Topview->picked_nodes[ind]->
-				       Node)) / 2), (GLfloat) ind);
-	fontSize(fs);
-	fontColorA(0, 0, 1, 1);
-	fontDrawString((int)
-		       (view->Topview->picked_nodes[ind]->distorted_x -
-			fs / 3 + 1 - fs),
-		       (int) (view->Topview->picked_nodes[ind]->
-			      distorted_y + fs + 1),
-		       agnameof(view->Topview->picked_nodes[ind]->Node),
-		       fs *
-		       strlen(agnameof
-			      (view->Topview->picked_nodes[ind]->Node)) /
-		       2);
-    }
-    return 1;
-}
 
 
 static int select_topview_node(topview_node * n)
 {
-    if (!view->Selection.Active) {
-	//implement hint box here
-	if (view->mouse.pick) {
-	    if (pick_node(n))
-		view->mouse.pick = 0;
+
+	if (view->mouse.button == rightmousebutton)
+	{
+		if (pick_node(n))
+			view->mouse.pick = 0;
+		return 0;
 	}
-	return 0;
-    }
+
+	if (!view->Selection.Active) 
+		return 0;
     if (is_point_in_rectangle
 	(n->x, n->y, view->Selection.X, view->Selection.Y,
-	 view->Selection.W, view->Selection.H)) {
-
-	switch (view->Selection.Type) {
-	case 0:
-/* FIX
- * Why is Selected being set to 1 in both cases?
- */
-	    if (OD_Selected(n->Node) == 0)
+	 view->Selection.W, view->Selection.H)) 
+	{
+		switch (view->Selection.Type)
 		{
-			OD_Selected(n->Node) = 1;
-			select_object(view->g[view->activeGraph], n->Node);
-	    } else {
-			OD_Selected(n->Node) = 1;
-			deselect_object(view->g[view->activeGraph], n->Node);
-	    }
+		case 0:
+	/* FIX
+	* Why is Selected being set to 1 in both cases?
+	*/
+			if (OD_Selected(n->Node) == 0)
+			{
+				OD_Selected(n->Node) = 1;
+				select_object(view->g[view->activeGraph],
+n->Node);
+			}
+			else
+			{
+				OD_Selected(n->Node) = 1;
+				deselect_object(view->g[view->activeGraph],
+n->Node);
+			}
 	    break;
 
 /*
-	int Active;			//0 there is no selection need to be applied
-    char Type;			//0     single selection , 1 rectangle , 2 rectangleX 
+	int Active;			//0 there is no selection need to be
+applied
+    char Type;			//0     single selection , 1 rectangle , 2
+rectangleX 
     float X, Y, W, H;		//selection boundries
     int Anti;			//subtract selections if 1
-    int AlreadySelected;	//for single selections to avoid selecting more than one object
+    int AlreadySelected;	//for single selections to avoid selecting
+more than one object
     RGBColor SelectionColor;
 */
 
 
-	case 1:
-	case 2:
-	    if (view->Selection.Anti == 0) {
-		select_object(view->g[view->activeGraph], n->Node);
-		view->Selection.AlreadySelected = 1;
-	    } else {
-		deselect_object(view->g[view->activeGraph], n->Node);
-		view->Selection.AlreadySelected = 1;
-	    }
+		case 1:
+		case 2:
+			if (view->Selection.Anti == 0) {
+				select_object(view->g[view->activeGraph],
+n->Node);
+				view->Selection.AlreadySelected = 1;
+			} else 
+			{
+				deselect_object(view->g[view->activeGraph],
+n->Node);
+				view->Selection.AlreadySelected = 1;
+		    }
 	    break;
 
+		}
 	}
-    }
     return 1;
 }
 
@@ -745,13 +682,15 @@ static int draw_topview_label(topview_node * v, float zdepth)
 	&& (v->distorted_y / view->zoom * -1 > view->clipY1)
 	&& (v->distorted_y / view->zoom * -1 < view->clipY2)) {
 
-	fs = (v->degree ==
+/*	fs = (v->degree ==
 	      1) ? (float) (log((double) v->degree +
 				1) *
 			    (double) 3) : (float) (log((double) v->degree +
 						       (double) 0.5) *
-							   (double) 3)*view->FontSize;
-//	fs=view->FontSize;
+							   (double)
+3)*view->FontSize;*/
+	fs=10;
+	//	view->FontSize;
 	fs = fs * v->zoom_factor;
 	if (OD_Selected(v->Node) == 1) {
 	    ddx = dx;
@@ -762,21 +701,21 @@ static int draw_topview_label(topview_node * v, float zdepth)
 
 
 
-	if ((view->FontSize/view->zoom*-1) > 10)
-		fs= 10;
+	/*if ((view->FontSize/view->zoom*-1) > 10)
+		fs= 10;*/
 
 
 	fontSize((int) fs);
-	if ((log((float) v->degree) * -0.6 * view->zoom) > 0)
+/*	if ((log((float) v->degree) * -0.6 * view->zoom) > 0)
 	    fontColorA((float) log((double) v->degree + (double) 1),
 		       view->penColor.G, view->penColor.B,
 		       view->penColor.A / (float) log((double) v->degree) *
 		       (float) -0.6 * (float) view->zoom);
 	else
 	    fontColorA((float) log((double) v->degree + (double) 1),
-		       view->penColor.G, view->penColor.B, 1);
+		       view->penColor.G, view->penColor.B, 1);*/
 
-//	fontColorA(0,0,0,1);
+	fontColorA(0,0,0,1);
 	fontDrawString((int) (v->distorted_x - ddx),
 		       (int) (v->distorted_y - ddy), v->Label,
 		       (int) (fs * strlen(v->Label)*0.7));
@@ -791,7 +730,8 @@ static int draw_topview_label(topview_node * v, float zdepth)
 static void set_topview_options()
 {
 
-    if ((view->mouse.mouse_mode == 10) && (view->mouse.mouse_down == 1))	//selected, if there is move move it, experimental
+    if ((view->mouse.mouse_mode == 10) && (view->mouse.mouse_down == 1))
+//selected, if there is move move it, experimental
     {
 	dx = view->GLx - view->GLx2;
 	dy = view->GLy - view->GLy2;
@@ -851,13 +791,15 @@ static int get_color_from_edge(topview_edge * e)
 	return_value = 1;
 
 
-    /*if both head and tail nodes are selected use selection color for edges */
+    /*if both head and tail nodes are selected use selection color for edges
+*/
     if ((OD_Selected(e->Node1->Node)) && (OD_Selected(e->Node2->Node))) {
 	glColor4f(view->selectedEdgeColor.R, view->selectedEdgeColor.G,
 		  view->selectedEdgeColor.B, view->selectedEdgeColor.A);
 	return return_value;
     }
-    /*if both head and tail nodes are highlighted use edge highlight color */
+    /*if both head and tail nodes are highlighted use edge highlight color
+*/
 
     if ((OD_Highlighted(e->Node1->Node))
 	&& (OD_Highlighted(e->Node2->Node))) {
@@ -867,7 +809,8 @@ static int get_color_from_edge(topview_edge * e)
 		  view->highlightedEdgeColor.A);
 	return return_value;
     }
-    /*edge maybe in a group and group may be selected, then use groups's color example:ATT hosts */
+    /*edge maybe in a group and group may be selected, then use groups's
+color example:ATT hosts */
     if ((e->Node1->GroupIndex >= 0) || (e->Node2->GroupIndex >= 0)) {
 	if (view->Topview->TopviewData->hostactive[e->Node1->GroupIndex] ==
 	    1) {
@@ -953,7 +896,9 @@ int load_host_buttons(Agraph_t * g, glCompSet * s)
     if (str)
 	btncount = atoi(str);
 
-//      Graph [hostbtncaption1="AT&T",hostbtnregex1="*.ATT*",hostbtncolorR1="1",hostbtncolorG1="0",hostbtncolorB1="0",hostbtncolorA1="1"];
+//      Graph
+[hostbtncaption1="AT&T",hostbtnregex1="*.ATT*",hostbtncolorR1="1",hostbtncol
+orG1="0",hostbtncolorB1="0",hostbtncolorA1="1"];
 
     hostregex = N_GNEW(btncount, char **);
     gtkhostbtn = N_GNEW(btncount, GtkButton *);
@@ -1057,7 +1002,8 @@ void local_zoom(topview * t)
 		t->Nodes[i].distorted_y =
 		    view->mg.y + (GLfloat) dely *view->mg.kts;
 		t->Nodes[i].zoom_factor = view->mg.kts;
-	    } else		//get intersections and move nodes to edges of magnifier box
+	    } else		//get intersections and move nodes to edges
+of magnifier box
 	    {
 		t->Nodes[i].distorted_x = t->Nodes[i].x;
 		t->Nodes[i].distorted_y = t->Nodes[i].y;
@@ -1076,7 +1022,8 @@ void local_zoom(topview * t)
 
 void originate_distorded_coordinates(topview * t)
 {
-    //sets original coordinates values to distorded coords. this happens when lieft mouse click is released in geometrical fisyehey mode
+    //sets original coordinates values to distorded coords. this happens
+when lieft mouse click is released in geometrical fisyehey mode
     int i;
     for (i = 1; i < t->Nodecount; i++) {
 	t->Nodes[i].distorted_x = t->Nodes[i].x;
@@ -1257,9 +1204,12 @@ static void menu_click_center(void *p)
 }
 
 /*1) 3D select or identify.
-2) Should 3D nodes have a size? (Strange behavior: some 3D views have large node sizes. Why the difference?)
-3) Sanity button - if I get lost in 3D, reset the viewpoint so that I have a good view of the graph
-4) Additional selection options when selecting nodes - at present, we do union - nice to have intersection, subtraction
+2) Should 3D nodes have a size? (Strange behavior: some 3D views have large
+node sizes. Why the difference?)
+3) Sanity button - if I get lost in 3D, reset the viewpoint so that I have a
+good view of the graph
+4) Additional selection options when selecting nodes - at present, we do
+union - nice to have intersection, subtraction
 5) User control of alpha, so I can fade out the edges.
 
 I'll see if I can track down the color bug.*/
@@ -1570,4 +1520,5 @@ element2s (gve_element el)
     }
     return s;
 }
+
 
