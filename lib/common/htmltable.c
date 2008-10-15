@@ -1601,7 +1601,11 @@ static char *nameOf(void *obj, agxbuf * xb)
 {
     Agedge_t *ep;
     switch (agobjkind(obj)) {
+#ifndef WITH_CGRAPH
+    case AGGRAPH:
+#else
     case AGRAPH:
+#endif
 	agxbput(xb, agnameof(((Agraph_t *) obj)));
 	break;
     case AGNODE:
