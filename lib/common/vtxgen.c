@@ -316,8 +316,8 @@ static void vtx_begin_node(node_t * n)
 	}
     }
     fprintf(Output_file, "  (shape\n"
-	    "    (id %d)\n"
-	    "    (layer %d)\n"
+	    "    (id %ld)\n"
+	    "    (layer %ld)\n"
 	    "    (type %s)\n", AGID(n) + 1, AGID(n), p->vtxshape);
 }
 
@@ -329,13 +329,13 @@ static void vtx_end_node(void)
 static void vtx_begin_edge(edge_t * e)
 {
     fprintf(Output_file, "  (connection\n"
-	    "    (id %d)\n"
-	    "    (layer %d)\n"
+	    "    (id %ld)\n"
+	    "    (layer %ld)\n"
 	    "    (rotation 0)\n"
 	    "    (textRotation 0)\n"
 	    "    (locked F)\n"
-	    "    (start %d)\n"
-	    "    (end %d)\n",
+	    "    (start %ld)\n"
+	    "    (end %ld)\n",
 	    AGID(e) + 1, AGID(e), AGID(agtail(e)) + 1, AGID(aghead(e)) + 1);
 }
 

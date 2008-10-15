@@ -51,7 +51,7 @@ extern "C" {
     extern void UF_setname(Agnode_t *, Agnode_t *);
 
     extern char *Fgets(FILE * fp);
-    extern char *safefile(const char *filename);
+    extern const char *safefile(const char *filename);
 
     extern boolean mapbool(char *);
     extern int maptoken(char *, char **, int *);

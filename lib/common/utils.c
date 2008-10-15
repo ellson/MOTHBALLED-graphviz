@@ -401,7 +401,7 @@ char *Fgets(FILE * fp)
  * equivalent.
  * Returns NULL if the argument is trivial.
  */
-char *safefile(const char *filename)
+const char *safefile(const char *filename)
 {
     static boolean onetime = TRUE;
     static char *safefilename = NULL;
@@ -1216,14 +1216,12 @@ static node_t *mapN(node_t * n, graph_t * clg)
 {
 #ifndef WITH_CGRAPH
     extern Agdict_t *agdictof(void *);
+    Agdict_t *d;
+    Agsym_t **list;
 #endif /* WITH_CGRAPH */
     node_t *nn;
     char *name;
     graph_t *g = agraphof(n);
-#ifndef WITH_CGRAPH
-    Agdict_t *d;
-#endif /* WITH_CGRAPH */
-    Agsym_t **list;
     Agsym_t *sym;
 
     if (!(IS_CLUST_NODE(n)))
@@ -1257,14 +1255,13 @@ static node_t *mapN(node_t * n, graph_t * clg)
 	/* Can use pointer comparison because of ref strings. */
 	if (agxget(nn, sym->index) != sym->value)
 	    agxset(nn, sym->index, sym->value);
-#else /* WITH_CGRAPH */
-	sym=0;
-	while (sym = agnxtattr(g, AGNODE, sym))
-	{
-		if (agxget(nn, sym) != sym->defval)
-	    agxset(nn, sym, sym->defval);
-#endif /* WITH_CGRAPH */
     }
+#else /* WITH_CGRAPH */
+    for (sym = agnxtattr(g, AGNODE, NULL); sym;  (sym = agnxtattr(g, AGNODE, sym))) {
+	if (agxget(nn, sym) != sym->defval)
+	    agxset(nn, sym, sym->defval);
+    }
+#endif /* WITH_CGRAPH */
     return nn;
 }
 
