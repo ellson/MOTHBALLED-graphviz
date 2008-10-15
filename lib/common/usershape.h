@@ -40,7 +40,7 @@ extern "C" {
 
     struct usershape_s {
 	Dtlink_t link;
-	char *name;
+	const char *name;
 	int macro_id;
 	boolean must_inline;
 	boolean nocache;
