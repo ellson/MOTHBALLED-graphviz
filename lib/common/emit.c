@@ -1010,7 +1010,7 @@ static boolean edge_in_layer(GVJ_t *job, graph_t * g, edge_t * e)
     if (pe[0])
 	return FALSE;
     for (cnt = 0; cnt < 2; cnt++) {
-	pn = late_string(cnt < 1 ? e->tail : e->head, N_layer, "");
+	pn = late_string(cnt < 1 ? agtail(e) : aghead(e), N_layer, "");
 	if ((pn[0] == '\0') || selectedlayer(job, pn))
 	    return TRUE;
     }
@@ -1057,12 +1057,12 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
 
     if (flags & GVRENDER_DOES_Z) {
         /* obj->z = late_double(n, N_z, 0.0, -MAXFLOAT); */
-	if (GD_odim(n->graph) >=3)
+	if (GD_odim(agraphof(n)) >=3)
             obj->z = POINTS(ND_pos(n)[2]);
 	else
             obj->z = 0.0;
     }
-    initObjMapData (job, ND_label(n), "node", n->id, n);
+    initObjMapData (job, ND_label(n), "node", AGID(n), n);
     if ((flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS))
            && (obj->url || obj->explicit_tooltip)) {
 
@@ -1206,13 +1206,13 @@ static void emit_node(GVJ_t * job, node_t * n)
     char *s;
 
     if (ND_shape(n) 				     /* node has a shape */
-	    && node_in_layer(job, n->graph, n)       /* and is in layer */
+	    && node_in_layer(job, agraphof(n), n)    /* and is in layer */
 	    && node_in_box(n, job->clip)             /* and is in page/view */
 	    && (ND_state(n) != gvc->common.viewNum)) /* and not already drawn */
     {
 	ND_state(n) = gvc->common.viewNum; 	     /* mark node as drawn */
 
-        gvrender_comment(job, n->name);
+        gvrender_comment(job, agnameof(n));
 	s = late_string(n, N_comment, "");
 	if (s[0])
 	    gvrender_comment(job, s);
@@ -1531,17 +1531,21 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e, char** styles)
      */
     if (styles && ED_spl(e)) gvrender_set_style(job, styles);
 
+#ifndef WITH_CGRAPH
     if (E_penwidth && ((s=agxget(e,E_penwidth->index)) && s[0])) {
+#else
+    if (E_penwidth && ((s=agxget(e,E_penwidth)) && s[0])) {
+#endif
 	penwidth = late_double(e, E_penwidth, 1.0, 0.0);
 	gvrender_set_penwidth(job, penwidth);
     }
 
     if (flags & GVRENDER_DOES_Z) {
-        /* obj->tail_z = late_double(e->tail, N_z, 0.0, -1000.0); */
-        /* obj->head_z = late_double(e->head, N_z, 0.0, -MAXFLOAT); */
-	if (GD_odim(e->tail->graph) >=3) {
-            obj->tail_z = POINTS(ND_pos(e->tail)[2]);
-            obj->head_z = POINTS(ND_pos(e->head)[2]);
+        /* obj->tail_z = late_double(agtail(e), N_z, 0.0, -1000.0); */
+        /* obj->head_z = late_double(aghead(e), N_z, 0.0, -MAXFLOAT); */
+	if (GD_odim(agraphof(agtail(e))) >=3) {
+            obj->tail_z = POINTS(ND_pos(agtail(e))[2]);
+            obj->head_z = POINTS(ND_pos(aghead(e))[2]);
 	} else {
             obj->tail_z = obj->head_z = 0.0;
 	}
@@ -1560,7 +1564,7 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e, char** styles)
     if (flags & GVRENDER_DOES_MAPS) {
         s = agget(e, "id");
         if (!s || !*s) { /* no external id, so use the internal one */
-	    sprintf(buf,"edge%d", e->id);
+	    sprintf(buf,"edge%d", AGID(e));
 	    s = buf;
         }
 	obj->id = strdup_and_subst_obj(s, (void*)e);
@@ -1835,16 +1839,16 @@ static void emit_edge(GVJ_t * job, edge_t * e)
     char **sp;
     char *p;
 
-    if (edge_in_box(e, job->clip) && edge_in_layer(job, e->head->graph, e) ) {
+    if (edge_in_box(e, job->clip) && edge_in_layer(job, agraphof(aghead(e)), e) ) {
 
-	s = malloc(strlen(e->tail->name) + 2 + strlen(e->head->name) + 1);
-	strcpy(s,e->tail->name);
+	s = malloc(strlen(agnameof(agtail(e))) + 2 + strlen(agnameof(aghead(e))) + 1);
+	strcpy(s,agnameof(agtail(e)));
 	if (agisdirected(agraphof(aghead(e))))
 
 	    strcat(s,"->");
 	else
 	    strcat(s,"--");
-	strcat(s,e->head->name);
+	strcat(s,agnameof(aghead(e)));
 	gvrender_comment(job, s);
 	free(s);
 
@@ -1937,7 +1941,7 @@ static void init_gvc(GVC_t * gvc, graph_t * g)
     /* default line style */
     gvc->defaultlinestyle = defaultlinestyle;
 
-    gvc->graphname = g->name;
+    gvc->graphname = agnameof(g);
 }
 
 static void init_job_pad(GVJ_t *job)
@@ -2193,7 +2197,7 @@ static void emit_view(GVJ_t * job, graph_t * g, int flags)
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    emit_node(job, n);
 	    for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-		emit_node(job, e->head);
+		emit_node(job, aghead(e));
 		emit_edge(job, e);
 	    }
 	}
@@ -2508,7 +2512,11 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	if (!pencolor) pencolor = DEFAULT_COLOR;
 	if (!fillcolor) fillcolor = DEFAULT_FILL;
 
+#ifndef WITH_CGRAPH
 	if (G_penwidth && ((s=agxget(sg, G_penwidth->index)) && s[0])) {
+#else
+	if (G_penwidth && ((s=agxget(sg, G_penwidth)) && s[0])) {
+#endif
 	    penwidth = late_double(sg, G_penwidth, 1.0, 0.0);
             gvrender_set_penwidth(job, penwidth);
 	}

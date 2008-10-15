@@ -318,7 +318,7 @@ static void vtx_begin_node(node_t * n)
     fprintf(Output_file, "  (shape\n"
 	    "    (id %d)\n"
 	    "    (layer %d)\n"
-	    "    (type %s)\n", n->id + 1, n->id, p->vtxshape);
+	    "    (type %s)\n", AGID(n) + 1, AGID(n), p->vtxshape);
 }
 
 static void vtx_end_node(void)
@@ -336,7 +336,7 @@ static void vtx_begin_edge(edge_t * e)
 	    "    (locked F)\n"
 	    "    (start %d)\n"
 	    "    (end %d)\n",
-	    e->id + 1, e->id, e->tail->id + 1, e->head->id + 1);
+	    AGID(e) + 1, AGID(e), AGID(agtail(e)) + 1, AGID(aghead(e)) + 1);
 }
 
 static void vtx_end_edge(void)

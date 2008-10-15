@@ -42,6 +42,7 @@
 #define aghead(e) ((e)->head)
 #define agtail(e) ((e)->tail)
 #define agisdirected(g) ((g)->kind & AGFLAG_DIRECTED)
+#define AGID(x) ((x)->id)
 #endif
 
 #ifndef streq

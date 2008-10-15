@@ -605,7 +605,7 @@ static void dia_ellipse(point p, int rx, int ry, int filled)
 
     switch (Obj) {
     case NODE:
-	nodeId = Curnode->id;
+	nodeId = AGID(Curnode);
 	break;
     default:
 	nodeId = -1;
@@ -790,8 +790,8 @@ dia_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
     if (Curedge) {
         conn_h = conn_t = -1;
 
-        head = Curedge->head;
-        tail = Curedge->tail;
+        head = aghead(Curedge);
+        tail = agtail(Curedge);
 
         shape_t = ND_shape(tail)->name;
 
@@ -866,17 +866,17 @@ dia_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
         if (arrow_at_start) {
 	    dia_printf
 	        ("        <dia:connection handle=\"0\" to=\"%d\" connection=\"%d\"/>\n",
-	         head->id, conn_h);
+	         AGID(head), conn_h);
 	    dia_printf
 	        ("        <dia:connection handle=\"%d\" to=\"%d\" connection=\"%d\"/>\n",
-	         (n - 1), tail->id, conn_t);
+	         (n - 1), AGID(tail), conn_t);
         } else {
 	    dia_printf
 	        ("        <dia:connection handle=\"0\" to=\"%d\" connection=\"%d\"/>\n",
-	         tail->id, conn_t);
+	         AGID(tail), conn_t);
 	    dia_printf
 	        ("        <dia:connection handle=\"%d\" to=\"%d\" connection=\"%d\"/>\n",
-	         (n - 1), head->id, conn_h);
+	         (n - 1), AGID(head), conn_h);
         }
     
         dia_fputs("      </dia:connections>\n");
@@ -902,7 +902,7 @@ static void dia_polygon(point * A, int n, int filled)
     case NODE:
 	dia_printf
 	    ("    <dia:object type=\"Standard - Polygon\" version=\"0\" id=\"%d\">\n",
-	     Curnode->id);
+	     AGID(Curnode));
 	break;
     case EDGE:
 	return;
@@ -910,7 +910,7 @@ static void dia_polygon(point * A, int n, int filled)
     case CLST:
 	dia_printf
 	    ("    <dia:object type=\"Standard - Polygon\" version=\"0\" id=\"%s\">\n",
-	     Curgraph->name);
+	     agnameof(Curgraph));
 	break;
     default:
 	dia_printf
