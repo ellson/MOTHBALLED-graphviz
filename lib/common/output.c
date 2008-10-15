@@ -167,7 +167,7 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
 		}
 	    }
 	    if (ED_label(e)) {
-		fprintf(f, " %s", canon(agraphof(e),ED_label(e)->text));
+		fprintf(f, " %s", canon(agraphof(agtail(e)),ED_label(e)->text));
 		printptf(f, ED_label(e)->pos);
 	    }
 	    fprintf(f, " %s %s\n", late_nnstring(e, E_style, "solid"),
