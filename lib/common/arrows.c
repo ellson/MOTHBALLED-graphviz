@@ -214,9 +214,9 @@ void arrow_flags(Agedge_t * e, int *sflag, int *eflag)
 	int s0, e0;
 	/* pick up arrowhead of opposing edge */
 #ifdef WITH_CGRAPH
-	f = agedge(agraphof(e), aghead(e), agtail(e), (char *)NULL, FALSE);
+	f = agedge(agraphof(aghead(e)), aghead(e), agtail(e), (char *)NULL, FALSE);
 #else
-	f = agfindedge(e->tail->graph, e->head, e->tail);
+	f = agfindedge(agraphof(aghead(e)), aghead(e), agtail(e));
 #endif
 	arrow_flags(f, &s0, &e0);
 	*eflag = *eflag | s0;

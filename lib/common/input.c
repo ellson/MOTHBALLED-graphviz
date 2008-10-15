@@ -254,8 +254,7 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
     Verbose = gvc->common.verbose;
     CmdName = gvc->common.cmdname;
 
-#ifdef WITH_CGRAPH
-#else
+#ifndef WITH_CGRAPH
     aginit();
 #endif
     nfiles = 0;
@@ -405,8 +404,7 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
     }
 
     /* set persistent attributes here (if not already set from command line options) */
-#ifdef WITH_CGRAPH
-#else
+#ifndef WITH_CGRAPH
     if (!(agfindattr(agprotograph()->proto->n, "label")))
 	agnodeattr(NULL, "label", NODENAME_ESC);
 #endif
@@ -941,11 +939,7 @@ void do_graph_label(graph_t * sg)
 
 	/* set label position */
 	pos = agget(sg, "labelloc");
-#ifdef WITH_CGRAPH
 	if (sg != agroot(sg)) {
-#else
-	if (sg != sg->root) {
-#endif
 	    if (pos && (pos[0] == 'b'))
 		pos_flag = LABEL_AT_BOTTOM;
 	    else
@@ -965,22 +959,14 @@ void do_graph_label(graph_t * sg)
 	}
 	GD_label_pos(sg) = pos_flag;
 
-#ifdef WITH_CGRAPH
 	if (sg == agroot(sg))
-#else
-	if (sg == sg->root)
-#endif
 	    return;
 
 	/* Set border information for cluster labels to allow space
 	 */
 	dimen = GD_label(sg)->dimen;
 	PAD(dimen);
-#ifdef WITH_CGRAPH
 	if (!GD_flip(agroot(sg))) {
-#else
-	if (!GD_flip(sg->root)) {
-#endif
 	    if (GD_label_pos(sg) & LABEL_AT_TOP)
 		pos_ix = TOP_IX;
 	    else

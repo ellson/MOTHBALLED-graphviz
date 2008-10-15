@@ -1226,7 +1226,7 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
 	ED_minlen(e) = y;
 	/* ED_minlen(e) = cp->data.box.UR.y; */
 #ifdef DEBUG
-	fprintf(stderr, "row edge %s -> %s %d\n", t->name, h->name,
+	fprintf(stderr, "row edge %s -> %s %d\n", agnameof(t), agnameof(h),
 		ED_minlen(e));
 #endif
 	elist_append(e, ND_out(t));
@@ -1600,7 +1600,6 @@ size_html_tbl(graph_t *g, htmltbl_t * tbl, htmlcell_t * parent, htmlenv_t * env)
 static char *nameOf(void *obj, agxbuf * xb)
 {
     Agedge_t *ep;
-#ifdef WITH_CGRAPH
     switch (agobjkind(obj)) {
     case AGRAPH:
 	agxbput(xb, agnameof(((Agraph_t *) obj)));
@@ -1612,31 +1611,12 @@ static char *nameOf(void *obj, agxbuf * xb)
 	ep = (Agedge_t *) obj;
 	agxbput(xb, agnameof(agtail(ep)));
 	agxbput(xb, agnameof(aghead(ep)));
-	if (agisdirected(agraphof(ep)))
+	if (agisdirected(agraphof(aghead(ep))))
 	    agxbput(xb, "->");
 	else
 	    agxbput(xb, "--");
 	break;
     }
-#else
-    switch (agobjkind(obj)) {
-    case AGGRAPH:
-	agxbput(xb, ((Agraph_t *) obj)->name);
-	break;
-    case AGNODE:
-	agxbput(xb, ((Agnode_t *) obj)->name);
-	break;
-    case AGEDGE:
-	ep = (Agedge_t *) obj;
-	agxbput(xb, ep->tail->name);
-	agxbput(xb, ep->head->name);
-	if (AG_IS_DIRECTED(ep->tail->graph))
-	    agxbput(xb, "->");
-	else
-	    agxbput(xb, "--");
-	break;
-    }
-#endif
     return agxbuse(xb);
 }
 
@@ -1785,9 +1765,12 @@ int make_html_label(void *obj, textlabel_t * lp)
     char *s;
 
     env.obj = obj;
-#ifdef WITH_CGRAPH
     switch (agobjkind(obj)) {
+#ifdef WITH_CGRAPH
     case AGRAPH:
+#else
+    case AGGRAPH:
+#endif
         env.g = ((Agraph_t *) obj)->root;
         break;
     case AGNODE:
@@ -1797,19 +1780,6 @@ int make_html_label(void *obj, textlabel_t * lp)
         env.g = agraphof(aghead (((Agedge_t *) obj)));
         break;
     }
-#else
-    switch (agobjkind(obj)) {
-    case AGGRAPH:
-	env.g = ((Agraph_t *) obj)->root;
-	break;
-    case AGNODE:
-	env.g = ((Agnode_t *) obj)->graph;
-	break;
-    case AGEDGE:
-	env.g = ((Agedge_t *) obj)->head->graph;
-	break;
-    }
-#endif
     g = env.g->root;
 
     env.finfo.size = lp->fontsize;

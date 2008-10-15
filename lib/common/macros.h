@@ -35,6 +35,13 @@
 #define SET_RANKDIR(g,rd) (GD_rankdir2(g) = rd)
 #else
 #define SET_RANKDIR(g,rd) ((g)->u.rankdir = (rd))
+#define agnameof(x) ((x)->name)
+/* warning, agraphof doesn't work for edges */
+#define agraphof(n) ((n)->graph)
+#define agroot(g) ((g)->root)
+#define aghead(e) ((e)->head)
+#define agtail(e) ((e)->tail)
+#define agisdirected(g) ((g)->kind & AGFLAG_DIRECTED)
 #endif
 
 #ifndef streq
