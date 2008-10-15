@@ -48,7 +48,11 @@ static void setYInvert(graph_t * g)
 static char* canon (char* s)
 {
     char* ns = agstrdup (s);
+#ifndef WITH_CGRAPH
     char* cs = agcanonical (ns);
+#else
+    char* cs = agcanonStr (ns);
+#endif
     agstrfree (ns);
     return cs;
 }
@@ -57,12 +61,20 @@ static void writenodeandport(FILE * fp, node_t * node, char *port)
 {
     char *name;
     if (IS_CLUST_NODE(node))
-	name = canon (strchr(node->name, ':') + 1);
+	name = canon (strchr(agnameof(node), ':') + 1);
     else
-	name = agcanonical (node->name);
+#ifndef WITH_CGRAPH
+	name = agcanonical (agnameof(node));
+#else
+	name = agcanonStr (agnameof(node));
+#endif
     fprintf(fp, "%s", name);	/* slimey i know */
     if (port && *port)
+#ifndef WITH_CGRAPH
 	fprintf(fp, ":%s", agcanonical(port));
+#else
+	fprintf(fp, ":%s", agcanonStr(port));
+#endif
 }
 
 /* FIXME - there must be a proper way to get port info - these are 
@@ -89,12 +101,24 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (IS_CLUST_NODE(n))
 	    continue;
-	fprintf(f, "node %s ", agcanonical(n->name));
+#ifndef WITH_CGRAPH
+	fprintf(f, "node %s ", agcanonical(agnameof(n)));
+#else
+	fprintf(f, "node %s ", agcanonStr(agnameof(n)));
+#endif
 	printptf(f, ND_coord(n));
 	if (ND_label(n)->html)   /* if html, get original text */
+#ifndef WITH_CGRAPH
 	    lbl = agcanonical (agxget(n, N_label->index));
+#else
+	    lbl = agcanonStr (agxget(n, N_label));
+#endif
 	else
+#ifndef WITH_CGRAPH
 	    lbl = canon(ND_label(n)->text);
+#else
+	    lbl = canon(agraphof(n),ND_label(n)->text);
+#endif
 	fprintf(f, " %.5g %.5g %s %s %s %s %s\n",
 		ND_width(n), ND_height(n), lbl,
 		late_nnstring(n, N_style, "solid"),
@@ -104,10 +128,20 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
     }
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+#ifndef WITH_CGRAPH
 	    if (extend && e->attr) {
 		tport = e->attr[TAILX];
 		hport = e->attr[HEADX];
 	    } else
+#else /* WITH_CGRAPH */
+
+		if (extend) {		//assuming these two attrs have already been created by cgraph
+
+			tport =agget(e,TAILX);
+			hport = agget(e,HEADX);
+	    }
+		else
+#endif /* WITH_CGRAPH */
 		tport = hport = "";
 	    if (ED_spl(e)) {
 		splinePoints = 0;
@@ -116,9 +150,17 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
 		    splinePoints += bz.size;
 		}
 		fprintf(f, "edge ");
+#ifndef WITH_CGRAPH
 		writenodeandport(f, e->tail, tport);
+#else /* WITH_CGRAPH */
+		writenodeandport(f, agtail(e), tport);
+#endif /* WITH_CGRAPH */
 		fprintf(f, " ");
+#ifndef WITH_CGRAPH
 		writenodeandport(f, e->head, hport);
+#else /* WITH_CGRAPH */
+		writenodeandport(f, aghead(e), hport);
+#endif /* WITH_CGRAPH */
 		fprintf(f, " %d", splinePoints);
 		for (i = 0; i < ED_spl(e)->size; i++) {
 		    bz = ED_spl(e)->list[i];
@@ -127,7 +169,11 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
 		}
 	    }
 	    if (ED_label(e)) {
+#ifndef WITH_CGRAPH
 		fprintf(f, " %s", canon(ED_label(e)->text));
+#else
+		fprintf(f, " %s", canon(agraphof(e),ED_label(e)->text));
+#endif
 		printptf(f, ED_label(e)->pos);
 	    }
 	    fprintf(f, " %s %s\n", late_nnstring(e, E_style, "solid"),
@@ -188,6 +234,7 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
     e_arrows = s_arrows = 0;
     setYInvert(g);
     agxbinit(&xb, BUFSIZ, xbuffer);
+#ifndef WITH_CGRAPH
     safe_dcl(g, g->proto->n, "pos", "", agnodeattr);
     safe_dcl(g, g->proto->n, "rects", "", agnodeattr);
     N_width = safe_dcl(g, g->proto->n, "width", "", agnodeattr);
@@ -208,6 +255,28 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 	}
     }
     safe_dcl(g, g, "bb", "", agraphattr);
+#else
+    safe_dcl(g, AGNODE, "pos", "");
+    safe_dcl(g, AGNODE, "rects", "");
+    N_width = safe_dcl(g, AGNODE, "width", "");
+    N_height = safe_dcl(g, AGNODE, "height", "");
+    safe_dcl(g, AGEDGE, "pos", "");
+    if (GD_has_labels(g) & EDGE_LABEL)
+	safe_dcl(g, AGEDGE, "lp", "");
+    if (GD_has_labels(g) & HEAD_LABEL)
+	safe_dcl(g, AGEDGE, "head_lp", "");
+    if (GD_has_labels(g) & TAIL_LABEL)
+	safe_dcl(g, AGEDGE, "tail_lp", "");
+    if (GD_label(g)) {
+	safe_dcl(g, AGRAPH, "lp", "");
+	if (GD_label(g)->text[0]) {
+	    ptf = GD_label(g)->pos;
+	    sprintf(buf, "%.5g,%.5g", ptf.x, YFDIR(ptf.y));
+	    agset(g, "lp", buf);
+	}
+    }
+    safe_dcl(g, AGRAPH, "bb", "");
+#endif
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (dim3) {
 	    sprintf(buf, "%.5g,%.5g,%d", ND_coord(n).x, YDIR(ND_coord(n).y), POINTS(ND_pos(n)[2]));
@@ -216,9 +285,15 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 	}
 	agset(n, "pos", buf);
 	sprintf(buf, "%.5g", PS2INCH(ND_ht(n)));
+#ifndef WITH_CGRAPH
 	agxset(n, N_height->index, buf);
 	sprintf(buf, "%.5g", PS2INCH(ND_lw(n) + ND_rw(n)));
 	agxset(n, N_width->index, buf);
+#else
+	agxset(n, N_height, buf);
+	sprintf(buf, "%.5g", PS2INCH(ND_lw(n) + ND_rw(n)));
+	agxset(n, N_width, buf);
+#endif
 	if (strcmp(ND_shape(n)->name, "record") == 0) {
 	    set_record_rects(n, ND_shape_info(n), &xb);
 	    agxbpop(&xb);	/* get rid of last space */
@@ -251,7 +326,11 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 				YFDIR(ND_height(n) / 2.0 * sin(i / (double) sides * M_PI * 2.0)));
 		    agxbput(&xb, buf);
 		}
+#ifndef WITH_CGRAPH
 		agxset(n, N_vertices->index, agxbuse(&xb));
+#else /* WITH_CGRAPH */
+		agxset(n, N_vertices, agxbuse(&xb));
+#endif /* WITH_CGRAPH */
 	    }
 	}
 	if (State >= GVSPLINES) {
