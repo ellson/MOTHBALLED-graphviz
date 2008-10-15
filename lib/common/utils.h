@@ -30,7 +30,14 @@ extern "C" {
     extern void enqueue(nodequeue *, Agnode_t *);
     extern Agnode_t *dequeue(nodequeue *);
 
+#ifndef WITH_CGRAPH
     extern int late_attr(void *, char *);
+    extern attrsym_t* safe_dcl(graph_t*, void*, char*, char*,
+             attrsym_t * (*fun) (Agraph_t *, char *, char *));
+#else
+    extern attrsym_t* late_attr(void *obj, char *name);
+    extern attrsym_t* safe_dcl(graph_t * g, int obj_kind, char *name, char *def);
+#endif
     extern int late_int(void *, Agsym_t *, int, int);
     extern double late_double(void *, Agsym_t *, double, double);
     extern char *late_nnstring(void *, Agsym_t *, char *);
@@ -62,8 +69,6 @@ extern "C" {
 
     extern int processClusterEdges(graph_t * g);
     extern void undoClusterEdges(graph_t * g);
-    extern attrsym_t* safe_dcl(graph_t*, void*, char*, char*,
-             attrsym_t * (*fun) (Agraph_t *, char *, char *));
 
     extern char *latin1ToUTF8(char *);
     extern char *htmlEntityUTF8(char *);

@@ -170,7 +170,7 @@ static void pic_begin_job(FILE * ofp, graph_t * g, const char **lib, char *user,
     fprintf(Output_file, "%s Creator: %s version %s (%s)\n",
 	    EscComment, info[0], info[1], info[2]);
     fprintf(Output_file, "%s For: %s\n", EscComment, user);
-    fprintf(Output_file, "%s Title: %s\n", EscComment, g->name);
+    fprintf(Output_file, "%s Title: %s\n", EscComment, agnameof(g));
 }
 
 static void pic_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
@@ -310,13 +310,13 @@ static void pic_end_page(void)
 
 static void pic_begin_node(node_t * n)
 {
-    fprintf(Output_file, "%s\t%s\n", EscComment, n->name);
+    fprintf(Output_file, "%s\t%s\n", EscComment, agnameof(n));
 }
 
 static void pic_begin_edge(edge_t * e)
 {
-    fprintf(Output_file, "%s\t%s -> %s\n", EscComment, e->tail->name,
-	    e->head->name);
+    fprintf(Output_file, "%s\t%s -> %s\n", EscComment,
+	    agnameof(agtail(e)), agnameof(aghead(e)));
 }
 
 static void pic_begin_context(void)

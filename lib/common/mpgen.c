@@ -107,7 +107,7 @@ mp_begin_job(FILE * ofp, graph_t * g, const char **lib, char *user, char *info[]
     fprintf(Output_file, "%% Created by program: %s version %s (%s)\n",
 	    info[0], info[1], info[2]);
     fprintf(Output_file, "%% For user: %s\n", user);
-    fprintf(Output_file, "%% Title: %s\n", g->name);
+    fprintf(Output_file, "%% Title: %s\n", agnameof(g));
     fprintf(Output_file,
 	    "%%  Put this between beginfig and endfig.  See 1st_read.mp.\n");
     fprintf(Output_file, "%% \n");

@@ -895,21 +895,21 @@ Agsym_t *setAttr(graph_t * g, void *obj, char *name, char *value,
 	    ap = agraphattr(g, name, "");
 #else /* WITH_CGRAPH */
 	case AGRAPH:
-	    ap = agattr(g, AGRAPH,name, "",1);
+	    ap = agattr(g, AGRAPH,name, "");
 #endif /* WITH_CGRAPH */
 	    break;
 	case AGNODE:
 #ifndef WITH_CGRAPH
 	    ap = agnodeattr(g, name, "");
 #else /* WITH_CGRAPH */
-	    ap = agattr(g,AGNODE, name, "",1);
+	    ap = agattr(g,AGNODE, name, "");
 #endif /* WITH_CGRAPH */
 	    break;
 	case AGEDGE:
 #ifndef WITH_CGRAPH
 	    ap = agedgeattr(g, name, "");
 #else /* WITH_CGRAPH */
-	    ap = agattr(g,AGEDGE, name, "",1);
+	    ap = agattr(g,AGEDGE, name, "");
 #endif /* WITH_CGRAPH */
 	    break;
 	}
@@ -1823,7 +1823,7 @@ void gv_cleanup_edge(edge_t * e)
     memset(&(e->u), 0, sizeof(Agedgeinfo_t));
 #else /* WITH_CGRAPH */
 	/*FIX HERE , shallow cleaning may not be enough here */
-	agdelrec(agraphof(e), e, "Agedgeinfo_t");	
+	agdelrec(e, "Agedgeinfo_t");	
 #endif /* WITH_CGRAPH */
 }
 
@@ -1837,7 +1837,7 @@ void gv_cleanup_node(node_t * n)
     memset(&(n->u), 0, sizeof(Agnodeinfo_t));
 #else /* WITH_CGRAPH */
 	/*FIX HERE , shallow cleaning may not be enough here */
-	agdelrec(agraphof(n), n, "Agnodeinfo_t");	
+	agdelrec(n, "Agnodeinfo_t");	
 #endif /* WITH_CGRAPH */
 }
 
