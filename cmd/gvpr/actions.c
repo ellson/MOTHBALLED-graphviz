@@ -365,7 +365,7 @@ Agraph_t *compOf(Agraph_t * g, Agnode_t * n)
 
 /* isEdge:
  * Return edge, if any, between t and h with given key.
- * Edge is in root graph
+ * Edge is in g.
  */
 Agedge_t *isEdge(Agraph_t* g, Agnode_t * t, Agnode_t * h, char *key)
 {
@@ -374,8 +374,9 @@ Agedge_t *isEdge(Agraph_t* g, Agnode_t * t, Agnode_t * h, char *key)
     root = sameG(t, h, "isEdge", "tail and head node");
     if (!root)
 	return 0;
-    if (g && (root != agroot(g)))
-	return 0;
+    if (g) {
+	if (root != agroot(g)) return 0;
+    }
     else
 	g = root;
 
