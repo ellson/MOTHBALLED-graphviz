@@ -97,8 +97,13 @@ static void map_edge(edge_t * e)
 
     if (ED_spl(e) == NULL) {
 	if ((Concentrate == FALSE) || (ED_edge_type(e) != IGNORED))
+#ifndef WITH_CGRAPH
 	    agerr(AGERR, "lost %s %s edge\n", e->tail->name,
 		  e->head->name);
+#else /* WITH_CGRAPH */
+	    agerr(AGERR, "lost %s %s edge\n",agnameof(agtail(e)),
+		  agnameof(aghead(e)));
+#endif /* WITH_CGRAPH */
 	return;
     }
     for (j = 0; j < ED_spl(e)->size; j++) {
@@ -305,7 +310,11 @@ static void place_flip_graph_label(graph_t * g)
     int c;
     pointf p, d;
 
+#ifndef WITH_CGRAPH
     if ((g != g->root) && (GD_label(g)) && !GD_label(g)->set) {
+#else /* WITH_CGRAPH */
+    if ((g != agroot(g)) && (GD_label(g)) && !GD_label(g)->set) {
+#endif /* WITH_CGRAPH */
 
 	if (GD_label_pos(g) & LABEL_AT_TOP) {
 	    d = GD_border(g)[RIGHT_IX];
@@ -341,7 +350,11 @@ void place_graph_label(graph_t * g)
     int c;
     pointf p, d;
 
+#ifndef WITH_CGRAPH
     if ((g != g->root) && (GD_label(g)) && !GD_label(g)->set) {
+#else /* WITH_CGRAPH */
+    if ((g != agroot(g)) && (GD_label(g)) && !GD_label(g)->set) {
+#endif /* WITH_CGRAPH */
 	if (GD_label_pos(g) & LABEL_AT_TOP) {
 	    d = GD_border(g)[TOP_IX];
 	    p.y = GD_bb(g).UR.y - d.y / 2;

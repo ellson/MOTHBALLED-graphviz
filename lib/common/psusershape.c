@@ -117,7 +117,11 @@ void epsf_init(node_t * n)
 	desc->offset.x = -us->x - (dx) / 2;
 	desc->offset.y = -us->y - (dy) / 2;
     } else
+#ifndef WITH_CGRAPH
 	agerr(AGWARN, "shapefile not set for epsf node %s\n", n->name);
+#else /* WITH_CGRAPH */
+	agerr(AGWARN, "shapefile not set for epsf node %s\n", agnameof(n));
+#endif /* WITH_CGRAPH */
 }
 
 void epsf_free(node_t * n)

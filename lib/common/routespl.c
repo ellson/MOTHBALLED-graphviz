@@ -322,7 +322,11 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
     }
     else flip = 0;
 
+#ifndef WITH_CGRAPH
     if (realedge->tail != realedge->head) {
+#else /* WITH_CGRAPH */
+    if (agtail(realedge) != aghead(realedge)) {
+#endif /* WITH_CGRAPH */
 	/* I assume that the path goes either down only or
 	   up - right - down */
 	for (bi = 0, pi = 0; bi < boxn; bi++) {

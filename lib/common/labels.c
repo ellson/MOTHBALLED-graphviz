@@ -117,17 +117,29 @@ textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *f
         char *s;
 
     switch (agobjkind(obj)) {
+#ifndef WITH_CGRAPH
     case AGGRAPH:
+#else
+    case AGRAPH:
+#endif
         sg = (graph_t*)obj;
 	g = sg->root;
 	break;
     case AGNODE:
         n = (node_t*)obj;
+#ifndef WITH_CGRAPH
 	g = n->graph->root;
+#else
+	g = agroot(agraphof(n));
+#endif
 	break;
     case AGEDGE:
         e = (edge_t*)obj;
+#ifndef WITH_CGRAPH
 	g = e->head->graph->root;
+#else
+	g = agroot(agraphof(aghead(e)));
+#endif
 	break;
     }
     rv->fontname = fontname;
@@ -145,19 +157,28 @@ textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *f
 	rv->html = TRUE;
 	if (make_html_label(obj, rv)) {
 	    switch (agobjkind(obj)) {
+#ifndef WITH_CGRAPH
 	    case AGGRAPH:
 	        agerr(AGPREV, "in label of graph %s\n",sg->name);
+#else
+	    case AGRAPH:
+	        agerr(AGPREV, "in label of graph %s\n",agnameof(sg));
+#endif
 		break;
 	    case AGNODE:
+#ifndef WITH_CGRAPH
 	        agerr(AGPREV, "in label of node %s\n", n->name);
+#else
+	        agerr(AGPREV, "in label of node %s\n", agnameof(n));
+#endif
 		break;
 	    case AGEDGE:
-#ifdef WITH_CGRAPH
+#ifndef WITH_CGRAPH
 		agerr(AGPREV, "in label of edge %s %s %s\n",
 		        e->tail->name, agisdirected(g)?"->":"--", e->head->name);
 #else
 		agerr(AGPREV, "in label of edge %s %s %s\n",
-		        e->tail->name, AG_IS_DIRECTED(g)?"->":"--", e->head->name);
+		        agnameof(agtail(e)), AG_IS_DIRECTED(g)?"->":"--", agnameof(aghead(e)));
 #endif
 		break;
 	    }
@@ -279,8 +300,13 @@ char *strdup_and_subst_obj(char *str, void *obj)
 
     /* prepare substitution strings */
     switch (agobjkind(obj)) {
+#ifndef WITH_CGRAPH
 	case AGGRAPH:
 	    g_str = ((graph_t *)obj)->name;
+#else
+	case AGRAPH:
+	    g_str = agnameof((graph_t *)obj);
+#endif
 	    g_len = strlen(g_str);
 	    tl = GD_label((graph_t *)obj);
 	    if (tl) {
@@ -289,9 +315,15 @@ char *strdup_and_subst_obj(char *str, void *obj)
 	    }
 	    break;
 	case AGNODE:
+#ifndef WITH_CGRAPH
 	    g_str = ((node_t *)obj)->graph->name;
 	    g_len = strlen(g_str);
 	    n_str = ((node_t *)obj)->name;
+#else
+	    g_str = agnameof(agraphof((node_t *)obj));
+	    g_len = strlen(g_str);
+	    n_str = agnameof((node_t *)obj);
+#endif
 	    n_len = strlen(n_str);
 	    tl = ND_label((node_t *)obj);
 	    if (tl) {
@@ -300,6 +332,7 @@ char *strdup_and_subst_obj(char *str, void *obj)
 	    }
 	    break;
 	case AGEDGE:
+#ifndef WITH_CGRAPH
 	    g_str = ((edge_t *)obj)->tail->graph->root->name;
 	    g_len = strlen(g_str);
 	    t_str = ((edge_t *)obj)->tail->name;
@@ -308,6 +341,16 @@ char *strdup_and_subst_obj(char *str, void *obj)
 	    if ((tp_str = pt.name))
 	        tp_len = strlen(tp_str);
 	    h_str = ((edge_t *)obj)->head->name;
+#else
+	    g_str = agnameof(agroot(agraphof(agtail(((edge_t *)obj)))));
+	    g_len = strlen(g_str);
+	    t_str = agnameof(agtail(((edge_t *)obj)));
+	    t_len = strlen(t_str);
+	    pt = ED_tail_port((edge_t *)obj);
+	    if ((tp_str = pt.name))
+	        tp_len = strlen(tp_str);
+	    h_str = agnameof(aghead(((edge_t *)obj)));
+#endif
 	    h_len = strlen(h_str);
 	    pt = ED_head_port((edge_t *)obj);
 	    if ((hp_str = pt.name))
@@ -318,7 +361,11 @@ char *strdup_and_subst_obj(char *str, void *obj)
 		l_str = tl->text;
 	    	if (str) l_len = strlen(l_str);
 	    }
+#ifndef WITH_CGRAPH
 	    if (((edge_t *)obj)->tail->graph->root->kind & AGFLAG_DIRECTED)
+#else
+	    if (agisdirected(agroot(agraphof(agtail(((edge_t*)obj))))))
+#endif
 		e_str = "->";
 	    else
 		e_str = "--";
