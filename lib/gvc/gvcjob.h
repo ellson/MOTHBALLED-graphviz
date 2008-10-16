@@ -55,7 +55,7 @@ extern "C" {
  GVDEVICE_DOES_PAGES		provides pagination support -Tps	
  GVDEVICE_DOES_LAYERS		provides support for layers -Tps	
  GVDEVICE_EVENTS		supports mouse events -Tgtk, -Txlib	
- GVDEVICE_DOES_TRUECOLOR	supports alph channel -Tpng, -Tgtk, -Txlib 
+ GVDEVICE_DOES_TRUECOLOR	supports alpha channel -Tpng, -Tgtk, -Txlib 
  GVDEVICE_BINARY_FORMAT		Suppresses \r\n substitution for linends 
  GVDEVICE_COMPRESSED_FORMAT	controls libz compression		
  GVDEVICE_NO_WRITER		used when gvdevice is not used because device uses its own writer, -Tming, devil outputs   (FIXME seems to overlap OUTPUT_NOT_REQUIRED)
@@ -76,7 +76,7 @@ extern "C" {
  GVRENDER_DOES_TOOLTIPS		can represent tooltip info -Tcmapx, -Tsvg		
  GVRENDER_DOES_TARGETS		can represent target info (open link in a new tab or window) 
  GVRENDER_DOES_Z		render support 2.5D representation -Tvrml 
- GVRENDER_NO_BG			don't paint white background, assumes white paper -Tps 
+ GVRENDER_NO_WHITE_BG		don't paint white background, assumes white paper -Tps 
  LAYOUT_NOT_REQUIRED 		don't perform layout -Tcanon 		
  OUTPUT_NOT_REQUIRED		don't use gvdevice for output (basically when agwrite() used instead) -Tcanon, -Txdot 
  */
@@ -107,7 +107,7 @@ extern "C" {
 #define GVRENDER_DOES_TOOLTIPS (1<<22)
 #define GVRENDER_DOES_TARGETS (1<<23)
 #define GVRENDER_DOES_Z (1<<24)
-#define GVRENDER_NO_BG (1<<25)
+#define GVRENDER_NO_WHITE_BG (1<<25)
 #define LAYOUT_NOT_REQUIRED (1<<26)
 #define OUTPUT_NOT_REQUIRED (1<<27)
 

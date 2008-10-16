@@ -341,7 +341,7 @@ gvrender_engine_t tkgen_engine = {
 
 gvrender_features_t render_features_tk = {
     GVRENDER_Y_GOES_DOWN
-	| GVRENDER_NO_BG, /* flags */
+	| GVRENDER_NO_WHITE_BG, /* flags */
     4.,                         /* default pad - graph units */
     NULL, 			/* knowncolors */
     0,				/* sizeof knowncolors */

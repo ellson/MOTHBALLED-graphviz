@@ -377,7 +377,7 @@ static gvdevice_features_t device_features_quartz_paged = {
 	GVDEVICE_DOES_PAGES
 	  | GVDEVICE_BINARY_FORMAT
       | GVDEVICE_DOES_TRUECOLOR
-	  | GVRENDER_NO_BG,			/* flags */
+	  | GVRENDER_NO_WHITE_BG,			/* flags */
     {36.,36.},                    /* default margin - points */
     {0.,0.},                    /* default page width, height - points */
     {72.,72.}                  /* dpi */

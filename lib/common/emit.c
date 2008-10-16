@@ -817,21 +817,25 @@ static boolean write_node_test(Agraph_t * g, Agnode_t * n)
     return TRUE;
 }
 
-void emit_background(GVJ_t * job, graph_t *g)
+static void emit_background(GVJ_t * job, graph_t *g)
 {
     char *str;
     
-    if (! ((str = agget(g, "bgcolor")) && str[0])) {
-	if (job->flags & GVRENDER_NO_BG)
-	    str = "transparent";
-	else
-	    str = "white";
-    }
+    /* if no bgcolor specified - first assume default of "transparent" */
+    if (! ((str = agget(g, "bgcolor")) && str[0]))
+	str = "transparent";
 
-    gvrender_set_fillcolor(job, str);
-    gvrender_set_pencolor(job, str);
-    if (!(job->flags & GVRENDER_NO_BG))
+    /* if device has no truecolor support, change "transparent" (default or given) to "white" */
+    if (! (job->flags & GVDEVICE_DOES_TRUECOLOR) && (streq(str, "transparent")))
+	str = "white";
+
+    /* except for "tranparent" on truecolor, or "white" on (assumed) white paper, paint background */
+    if (!(   ((job->flags & GVDEVICE_DOES_TRUECOLOR) && streq(str, "transparent"))
+          || ((job->flags & GVRENDER_NO_WHITE_BG) && streq(str, "white")))) {
+        gvrender_set_fillcolor(job, str);
+        gvrender_set_pencolor(job, str);
         gvrender_box(job, job->clip, TRUE);	/* filled */
+    }
 }
 
 static void setup_page(GVJ_t * job, graph_t * g)

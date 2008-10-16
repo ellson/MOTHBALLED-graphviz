@@ -543,7 +543,7 @@ static gvrender_engine_t lasi_engine = {
 static gvrender_features_t render_features_lasi = {
     GVRENDER_DOES_TRANSFORM
 	| GVRENDER_DOES_MAPS
-	| GVRENDER_NO_BG
+	| GVRENDER_NO_WHITE_BG
 	| GVRENDER_DOES_MAP_RECTANGLE,
     4.,                         /* default pad - graph units */
     NULL,			/* knowncolors */
