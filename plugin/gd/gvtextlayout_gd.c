@@ -136,6 +136,7 @@ static boolean gd_textlayout(textpara_t * para, char **fontpath)
 	}
 	/* call gdImageStringFT with null *im to get brect and to set font cache */
 #ifdef HAVE_GD_FONTCONFIG
+	gdFTUseFontConfig(1);  /* tell gd that we really want to use fontconfig, 'cos it s not the default */
 	if (para->postscript_alias)
 	    fontlist = psfontResolve (para->postscript_alias);
 	else
