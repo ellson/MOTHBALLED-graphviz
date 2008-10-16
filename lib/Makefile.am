@@ -7,7 +7,7 @@ CGRAPH_DIRS = circogen_cgraph dotgen_cgraph \
 	fdpgen_cgraph neatogen_cgraph twopigen_cgraph
 
 SUBDIRS = cdt graph cgraph gd pathplan sfio vmalloc ast vpsc \
-	rbtree sparse sfdpgen patchwork inkpot expr common \
+	rbtree sparse sfdpgen patchwork expr common \
 	pack gvc xdot ingraphs topfish glcomp $(GRAPH_DIRS) $(CGRAPH_DIRS)
 
 EXTRA_DIST = Makefile.old

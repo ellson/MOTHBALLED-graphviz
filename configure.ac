@@ -2888,8 +2888,6 @@ AC_CONFIG_FILES(Makefile
 	lib/cgraph/libcgraph.pc
 	lib/gd/Makefile
 	lib/rbtree/Makefile
-	lib/inkpot/Makefile
-	lib/inkpot/libinkpot.pc
 	lib/pathplan/Makefile
 	lib/pathplan/libpathplan.pc
 	lib/ast/Makefile
