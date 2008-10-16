@@ -780,7 +780,7 @@ static adjust_data adjustMode[] = {
     {AM_COMPRESS, "compress", "compress"},
     {AM_VPSC, "vpsc", "vpsc"},
     {AM_IPSEP, "ipsep", "ipsep"},
-    {AM_FDP, "fdp", "fdp"},
+    {AM_PRISM, "prism", "prism"},
     {AM_NONE, 0, 0}
 };
 
@@ -863,7 +863,7 @@ removeOverlapAs(graph_t * G, char* flag)
 	    ret = scAdjust(G, -1);
 	    break;
 #if ((HAVE_GTS || HAVE_TRIANGLE) && SFDP)
-	case AM_FDP:
+	case AM_PRISM:
 	    ret = fdpAdjust(G);
 	    break;
 #endif
