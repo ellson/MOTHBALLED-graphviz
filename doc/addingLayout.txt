@@ -251,7 +251,7 @@ gvplugin_library_t gvplugin_xxx_layout_LTX_library = { "xxx_layout", apis };
   plugin is in the library libgvplugin_dot_layout.so.
 
   - run
-      dot -C
+      dot -c
   to regenerate the config file.
 
 NOTES:
