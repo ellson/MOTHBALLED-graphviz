@@ -31,10 +31,6 @@
 
 #include	"dot.h"
 
-void expand_ranksets(graph_t *);
-static void saveVirtualEdges(graph_t *);
-static void restoreVirtualEdges(graph_t *);
-
 static void 
 renewlist(elist * L)
 {
@@ -62,10 +58,11 @@ cleanup1(graph_t * g)
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    f = ED_to_virt(e);
+	    /* Null out any other references to f to make sure we don't 
+	     * handle it a second time. For example, parallel multiedges 
+	     * share a virtual edge.
+	     */
 	    if (f && (e == ED_to_orig(f))) {
-		/* Null out any other references to f to make sure we don't handle it
-		 * a second time. For example, parallel multiedges share a virtual edge.
-		 */
 		edge_t *e1, *f1;
 		for (e1 = agfstout(g, n); e1; e1 = agnxtout(g, e1)) {
 		    if (e != e1) {
@@ -262,7 +259,7 @@ collapse_cluster(graph_t * g, graph_t * subg)
 	return;
     make_new_cluster(g, subg);
     if (CL_type == LOCAL) {
-	dot_rank(subg);
+	dot_rank(subg, 0);
 	cluster_leader(subg);
     } else
 	dot_scan_ranks(subg);
@@ -405,7 +402,7 @@ void rank1(graph_t * g)
  * Leaf sets and clusters remain merged.
  * Sets minrank and maxrank appropriately.
  */
-void expand_ranksets(graph_t * g)
+static void expand_ranksets(graph_t * g, aspect_t* asp)
 {
     int c;
     node_t *n, *leader;
@@ -418,11 +415,8 @@ void expand_ranksets(graph_t * g)
 	    /* The following works because ND_rank(n) == 0 if n is not in a
 	     * cluster, and ND_rank(n) = the local rank offset if n is in
 	     * a cluster. */
-	    if (leader != n)
-#ifdef ASPECT
-		if (ND_rank(n) == 0)
-#endif
-		    ND_rank(n) += ND_rank(leader);
+	    if ((leader != n) && (!asp || (ND_rank(n) == 0)))
+		ND_rank(n) += ND_rank(leader);
 
 	    if (GD_maxrank(g) < ND_rank(n))
 		GD_maxrank(g) = ND_rank(n);
@@ -465,96 +459,98 @@ setRanks (graph_t* g, attrsym_t* lsym)
 }
 #endif
 
-node_t **virtualEdgeHeadList = NULL;
-node_t **virtualEdgeTailList = NULL;
-
-int nVirtualEdges = 0;
+#ifdef UNUSED
+static node_t **virtualEdgeHeadList = NULL;
+static node_t **virtualEdgeTailList = NULL;
+static int nVirtualEdges = 0;
 
 static void
 saveVirtualEdges(graph_t *g)
 {
-  if (virtualEdgeHeadList != NULL)
-  {
-    free(virtualEdgeHeadList);
-  }
-  if (virtualEdgeTailList != NULL)
-  {
-    free(virtualEdgeTailList);
-  }
-
-  //allocate memory
     edge_t *e;
     node_t *n;
     int cnt = 0;
     int lc;
     
-    for (n = agfstnode(g); n; n = agnxtnode(g, n))
-      for (lc = 0; lc < ND_in(n).size; lc++)
-      {
-	e = ND_in(n).list[lc];
-	if (ED_edge_type(e) == VIRTUAL)
-	  cnt++;
-      }
+    if (virtualEdgeHeadList != NULL) {
+	free(virtualEdgeHeadList);
+    }
+    if (virtualEdgeTailList != NULL) {
+	free(virtualEdgeTailList);
+    }
+
+  /* allocate memory */
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	for (lc = 0; lc < ND_in(n).size; lc++) {
+	    e = ND_in(n).list[lc];
+	    if (ED_edge_type(e) == VIRTUAL) cnt++;
+	}
+    }
 
     nVirtualEdges = cnt;
-    virtualEdgeHeadList = (node_t **)malloc(sizeof(node_t *) * cnt);
-    virtualEdgeTailList = (node_t **)malloc(sizeof(node_t *) * cnt);
+    virtualEdgeHeadList = N_GNEW(cnt, node_t*);
+    virtualEdgeTailList = N_GNEW(cnt, node_t*);
 
-    for (n = agfstnode(g); n; n = agnxtnode(g, n))
-      for (lc = 0, cnt = 0; lc < ND_in(n).size; lc++)
-      {
-	e = ND_in(n).list[lc];
-	if (ED_edge_type(e) == VIRTUAL)
-	  {
-	    virtualEdgeHeadList[cnt] = e->head;
-	    virtualEdgeTailList[cnt] = e->tail;
-	    printf("saved virtual edge: %s->%s\n", virtualEdgeTailList[cnt]->name, virtualEdgeHeadList[cnt]->name);	    
-	    cnt++;
-	  }
-      }
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	for (lc = 0, cnt = 0; lc < ND_in(n).size; lc++) {
+	    e = ND_in(n).list[lc];
+	    if (ED_edge_type(e) == VIRTUAL) {
+		virtualEdgeHeadList[cnt] = e->head;
+		virtualEdgeTailList[cnt] = e->tail;
+		if (Verbose)
+		    printf("saved virtual edge: %s->%s\n", 
+			virtualEdgeTailList[cnt]->name, 
+			virtualEdgeHeadList[cnt]->name);	    
+		cnt++;
+	    }
+	}
+    }
 }
 
 static void
 restoreVirtualEdges(graph_t *g)
 {
-  int i;
-  edge_t e;
+    int i;
+    edge_t e;
 
-  for (i = 0; i < nVirtualEdges; i++)
-  {
-    if (virtualEdgeTailList[i] && virtualEdgeHeadList[i])
-      {
-	printf("restoring virtual edge: %s->%s\n", virtualEdgeTailList[i]->name, virtualEdgeHeadList[i]->name);
-	virtual_edge(virtualEdgeTailList[i], virtualEdgeHeadList[i], NULL);
-      }
-    else
-      {
-	printf("Deleted?\n");
-      }
-  }
-  printf("restored %d virt edges\n", nVirtualEdges);
-  getchar();
+    for (i = 0; i < nVirtualEdges; i++) {
+	if (virtualEdgeTailList[i] && virtualEdgeHeadList[i]) {
+	    if (Verbose)
+		printf("restoring virtual edge: %s->%s\n", 
+		    virtualEdgeTailList[i]->name, virtualEdgeHeadList[i]->name);
+	    virtual_edge(virtualEdgeTailList[i], virtualEdgeHeadList[i], NULL);
+	}
+    }
+    if (Verbose)
+	printf("restored %d virt edges\n", nVirtualEdges);
 }
+#endif
 
-extern int nextiter;
-
-
-void dot_rank(graph_t * g)
+/* dot_rank:
+ * asp != NULL => g is root
+ */
+void dot_rank(graph_t * g, aspect_t* asp)
 {
     point p;
 #ifdef ALLOW_LEVELS
     attrsym_t* N_level;
 #endif
     edgelabel_ranks(g);
-#ifdef ASPECT
-    init_UF_size(g);
-    initEdgeTypes(g);
-#endif
+
+    if (asp) {
+	init_UF_size(g);
+	initEdgeTypes(g);
+    }
+
     collapse_sets(g,g);
     /*collapse_leaves(g); */
     class1(g);
     p = minmax_edges(g);
     decompose(g, 0);
+    if (asp && ((g->u.comp.size > 1)||(g->u.n_cluster > 0))) {
+	asp->badGraph = 1;
+	asp = NULL;
+    }
     acyclic(g);
     if (minmax_edges2(g, p))
 	decompose(g, 0);
@@ -563,11 +559,13 @@ void dot_rank(graph_t * g)
 	setRanks(g, N_level);
     else
 #endif
-#ifdef ASPECT
-#else
-    rank1(g);
-#endif
-    expand_ranksets(g);
+
+    if (asp)
+	rank3(g, asp);
+    else
+	rank1(g);
+
+    expand_ranksets(g, asp);
     cleanup1(g);
 }
 

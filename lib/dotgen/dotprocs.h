@@ -25,6 +25,8 @@ _BEGIN_EXTERNS_			/* public data */
 extern "C" {
 #endif
 
+#include "aspect.h"
+
     extern void acyclic(Agraph_t *);
     extern void allocate_ranks(Agraph_t *);
     extern void build_ranks(Agraph_t *, int);
@@ -61,6 +63,7 @@ extern "C" {
     extern Agedge_t *new_virtual_edge(Agnode_t *, Agnode_t *, Agedge_t *);
     extern int nonconstraint_edge(Agedge_t *);
     extern void other_edge(Agedge_t *);
+    extern void rank1(graph_t * g);
     extern int portcmp(port p0, port p1);
     extern int ports_eq(edge_t *, edge_t *);
     extern void rec_reset_vlists(Agraph_t *);
@@ -79,9 +82,9 @@ extern "C" {
 #endif
     extern void dot_nodesize(Agnode_t *, boolean);
     extern void dot_concentrate(Agraph_t *);
-    extern void dot_mincross(Agraph_t *);
-    extern void dot_position(Agraph_t *);
-    extern void dot_rank(Agraph_t *);
+    extern void dot_mincross(Agraph_t *, int);
+    extern void dot_position(Agraph_t *, aspect_t*);
+    extern void dot_rank(Agraph_t *, aspect_t*);
     extern void dot_sameports(Agraph_t *);
     extern void dot_splines(Agraph_t *);
 #undef extern

@@ -16,6 +16,7 @@
 
 
 #include    "dot.h"
+#include    "aspect.h"
 #include <time.h>
 
 static void 
@@ -94,27 +95,6 @@ dot_cleanup_node(node_t * n)
     if (ND_shape(n))
 	ND_shape(n)->fns->freefn(n);
     memset(&(n->u), 0, sizeof(Agnodeinfo_t));
-}
-
-static void 
-dot_free_splines(edge_t * e)
-{
-    int i;
-    if (ED_spl(e)) {
-	for (i = 0; i < ED_spl(e)->size; i++)
-	    free(ED_spl(e)->list[i].list);
-	free(ED_spl(e)->list);
-	free(ED_spl(e));
-    }
-    ED_spl(e) = NULL;
-}
-
-static void 
-dot_cleanup_edge(edge_t * e)
-{
-    dot_free_splines(e);
-    free_label(ED_label(e));
-    memset(&(e->u), 0, sizeof(Agedgeinfo_t));
 }
 
 static void free_virtual_edge_list(node_t * n)
@@ -221,94 +201,63 @@ dumpRanks (graph_t * g)
 }
 #endif
 
+#define MIN_AR 1.0
+#define MAX_AR 20.0
+#define DEF_PASSES 5
 
-/***********************************************************************
- * The codes in the dot_layout function has been changed.
- * It gets an estimation of next number of iterations for ranking
- * from the positioning step.
- * User can change the number of iterations or stop the iterations.
- ***********************************************************************/
+static aspect_t*
+setAspect (Agraph_t * g, aspect_t* adata)
+{
+    double rv;
+    char *p;
+    int r, passes = DEF_PASSES;
 
-/**************************** EXTERNAL VARIABLES ***********************/
-extern double targetAR;
-extern double currentAR;
-extern double combiAR;
-extern int prevIterations;
-extern int curIterations;
-/**************************** EXTERNAL VARIABLES ***********************/
+    p = agget (g, "aspect");
 
-int packiter = 0;
+    if (!p || ((r = sscanf (p, "%lf,%d", &rv, &passes)) <= 0)) {
+	adata->nextIter = 0;
+	adata->badGraph = 0;
+	return NULL;
+    }
+    
+    if (rv < MIN_AR) rv = MIN_AR;
+    else if (rv > MAX_AR) rv = MAX_AR;
+    adata->targetAR = rv;
+    adata->nextIter = -1;
+    adata->nPasses = passes;
+    adata->badGraph = 0;
+
+    if (Verbose) 
+        fprintf(stderr, "Target AR = %g\n", adata->targetAR);
+
+    return adata;
+}
 
 void dot_layout(Agraph_t * g)
 {
-    int rvi, targetITR, iter, packiter = 0;
-    double rv, start, finish, totalCLK;
+    aspect_t aspect;
+    aspect_t* asp;
+
     setEdgeType (g, ET_SPLINE);
-    attrsym_t *a;
-    char *p;
-
-
-#define MIN_AR 1.0
-#define MAX_AR 20.0
-#define MIN_ITR 1
-#define DEF_ITR 5
-#define MAX_ITR 200
-
-    targetAR = MIN_AR; /* default target aspect-ratio and iterations */
-    targetITR = MIN_ITR;  /* if targetAR isn't given, the do just the minimum*/
-    if ((a = agfindattr(g, "aspect"))) {
-        p = agxget(g, a->index);
-	if (p[0]) {
-	    if ((rv = atof(p)) > MIN_AR) targetAR = rv;
-	    if (targetAR > MAX_AR) targetAR = MAX_AR;
-            targetITR = DEF_ITR;  /* if targetAR *is* given, the init default */
-	    if ((p = strchr(p, ','))) {
-		p++;
-		if (p[0]) {
-		    if ((rvi = atoi(p)) > MIN_ITR) targetITR = rvi;
-		    if (targetITR > MAX_ITR) targetITR = MAX_ITR;
-		}
-	    }
-	}
-    }
-
-    if (Verbose) 
-        fprintf(stderr, "Target AR = %g\n", targetAR);
+    asp = setAspect (g, &aspect);
 
     dot_init_node_edge(g);
 
-    iter = 0;
-    while (iter < targetITR) {
-	iter++;
-
-        if (Verbose) 
-            fprintf(stderr, "Iteration = %d (of %d max) Current AR = %g\n",
-		iter, targetITR, currentAR);
-
-        start = clock();
-        dot_rank(g);
-        packiter += curIterations;
-
-        dot_mincross(g);
-        /* dumpRanks (g); */
-
-        dot_position(g);
-
-        finish = clock();
-        totalCLK += finish - start;
-    }
+    do {
+        dot_rank(g, asp);
+	if (aspect.badGraph) {
+	    agerr(AGWARN, "dot does not support the aspect attribute for disconnected graphs or graphs with clusters\n");
+	    asp = NULL;
+	    aspect.nextIter = 0;
+	}
+        dot_mincross(g,  (asp != NULL));
+        dot_position(g, asp);
+	aspect.nPasses--;
+    } while (aspect.nextIter && aspect.nPasses);
 
     dot_sameports(g);
-
     dot_splines(g);
-
     if (mapbool(agget(g, "compound")))
 	dot_compoundEdges(g);
-
     dotneato_postprocess(g);
-
-    if (Verbose) {
-        fprintf(stderr, "Packing iterations=%d\n# of Passes=%d\n", packiter, iter);
-        fprintf(stderr, "Total time = %0.3lf sec\n\n", totalCLK/CLOCKS_PER_SEC);
-    }
 }
