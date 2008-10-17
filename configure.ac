@@ -2656,7 +2656,7 @@ AC_ARG_WITH(cgraph,
   [], [with_cgraph=no])
 
 if test "x$with_cgraph" != "xyes"; then
-  use_cgraph="No"
+  use_cgraph="No (disabled by default - experimental)"
 else
   use_cgraph="Yes"
   AC_DEFINE_UNQUOTED(WITH_CGRAPH,1,[Define if you want CGRAPH])
