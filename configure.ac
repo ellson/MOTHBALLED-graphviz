@@ -2664,6 +2664,21 @@ fi
 AM_CONDITIONAL(WITH_CGRAPH, [test "x$use_cgraph" = "xYes"])
 
 dnl -----------------------------------
+dnl ORTHO 
+
+AC_ARG_WITH(ortho,
+  [AC_HELP_STRING([--with-ortho=no], [ORTHO features in neato layout engine])],
+  [], [with_ortho=no])
+
+if test "x$with_ortho" != "xyes"; then
+  use_ortho="No (disabled by default - experimental)"
+else
+  use_ortho="Yes"
+  AC_DEFINE_UNQUOTED(ORTHO,1,[Define if you want ORTHO])
+fi
+AM_CONDITIONAL(WITH_ORTHO, [test "x$use_ortho" = "xYes"])
+
+dnl -----------------------------------
 dnl DIGCOLA 
 
 AC_ARG_WITH(digcola,
@@ -3022,14 +3037,15 @@ echo "graphviz-$VERSION will be compiled with the following:"
 echo ""
 echo "options:"
 echo "  cgraph:        $use_cgraph"
-echo "  digcola:       $use_digcola"
-echo "  gts:           $use_gts"
-echo "  ipsepcola:     $use_ipsepcola"
-echo "  sfdp:          $use_sfdp"
 echo "  codegens:      $use_codegens"
+echo "  digcola:       $use_digcola"
+echo "  expat:         $use_expat"
 echo "  fontconfig:    $use_fontconfig"
 echo "  freetype:      $use_freetype"
-echo "  expat:         $use_expat"
+echo "  gts:           $use_gts"
+echo "  ipsepcola:     $use_ipsepcola"
+echo "  ortho:         $use_ortho"
+echo "  sfdp:          $use_sfdp"
 echo ""
 echo "commands:"
 echo "  dot:           Yes (always enabled)"
