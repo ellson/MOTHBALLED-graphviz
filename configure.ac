@@ -2391,7 +2391,7 @@ else
     fi
   else
     # using the internal libgd
-    use_gd="Yes"
+    use_gd="Yes [internal]"
     AC_MSG_WARN(Using internal libgd source.)
     AC_DEFINE_UNQUOTED(HAVE_GD_GIF,1,[Define if the GD library has the GD_GIF feature])
     AC_DEFINE_UNQUOTED(HAVE_LIBGD,1,[Define if either internal or external GD library is availabel])
@@ -3023,6 +3023,7 @@ echo ""
 echo "options:"
 echo "  cgraph:        $use_cgraph"
 echo "  digcola:       $use_digcola"
+echo "  gts:           $use_gts"
 echo "  ipsepcola:     $use_ipsepcola"
 echo "  sfdp:          $use_sfdp"
 echo "  codegens:      $use_codegens"
