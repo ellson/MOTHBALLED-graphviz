@@ -614,7 +614,7 @@ If "in", the edges *->n appear
 left-to-right in the same order in which they are defined for all
 nodes n.
 :orientation:N:double:0.0:360.0;
-Angle, in degrees, used to rotate node shapes.
+Angle, in degrees, used to rotate polygon node shapes. For any number of polygon sides, 0 degrees rotation results in a flat base.
 :orientation:G:string:"";
 If "[lL]*", set graph orientation to landscape
 Used only if <A HREF=#d:rotate><B>rotate</B></A> is not defined.
