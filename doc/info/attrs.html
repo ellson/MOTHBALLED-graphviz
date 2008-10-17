@@ -76,6 +76,13 @@ This field indicates which graph component uses the attribute.
 <HR ALIGN=CENTER WIDTH="70%" SIZE=3>
 <TABLE ALIGN=CENTER>
 <TR><TH>Name</TH><TH><A HREF=#h:uses>Used By</A></TH><TH>Type</TH><TH>Default</TH><TH>Minimum</TH><TH>Notes</TH></TR>
+ <TR><TD><A NAME=a:Damping HREF=#d:Damping>Damping</A>
+</TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.99</TD><TD>0.0</TD><TD>neato only</TD> </TR>
+ <TR><TD><A NAME=a:K HREF=#d:K>K</A>
+</TD><TD>GC</TD><TD>double</TD><TD ALIGN="CENTER">0.3</TD><TD>0</TD><TD>sfdp, fdp only</TD> </TR>
+ <TR><TD><A NAME=a:URL HREF=#d:URL>URL</A>
+</TD><TD>ENGC</TD><TD><A HREF=#k:lblString>lblString</A>
+</TD><TD ALIGN="CENTER">&#60;none&#62;</TD><TD></TD><TD>svg, postscript, map only</TD> </TR>
  <TR><TD><A NAME=a:arrowhead HREF=#d:arrowhead>arrowhead</A>
 </TD><TD>E</TD><TD><A HREF=#k:arrowType>arrowType</A>
 </TD><TD ALIGN="CENTER">normal</TD><TD></TD><TD></TD> </TR>
@@ -86,7 +93,7 @@ This field indicates which graph component uses the attribute.
 </TD><TD ALIGN="CENTER">normal</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:aspect HREF=#d:aspect>aspect</A>
 </TD><TD>G</TD><TD><A HREF=#k:aspectType>aspectType</A>
-</TD><TD ALIGN="CENTER">1.0,1</TD><TD></TD><TD>dot only</TD> </TR>
+</TD><TD ALIGN="CENTER"></TD><TD></TD><TD>dot only</TD> </TR>
  <TR><TD><A NAME=a:bb HREF=#d:bb>bb</A>
 </TD><TD>G</TD><TD><A HREF=#k:rect>rect</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD>write only</TD> </TR>
@@ -118,8 +125,6 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:constraint HREF=#d:constraint>constraint</A>
 </TD><TD>E</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">true</TD><TD></TD><TD>dot only</TD> </TR>
- <TR><TD><A NAME=a:Damping HREF=#d:Damping>Damping</A>
-</TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.99</TD><TD>0.0</TD><TD>neato only</TD> </TR>
  <TR><TD><A NAME=a:decorate HREF=#d:decorate>decorate</A>
 </TD><TD>E</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
@@ -139,6 +144,9 @@ This field indicates which graph component uses the attribute.
 </TD><TD>N</TD><TD>double</TD><TD ALIGN="CENTER">0.0</TD><TD>-100.0</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:dpi HREF=#d:dpi>dpi</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">96.0<BR>0.0</TD><TD></TD><TD>svg, bitmap output only</TD> </TR>
+ <TR><TD><A NAME=a:edgeURL HREF=#d:edgeURL>edgeURL</A>
+</TD><TD>E</TD><TD><A HREF=#k:lblString>lblString</A>
+</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
  <TR><TD><A NAME=a:edgehref HREF=#d:edgehref>edgehref</A>
 </TD><TD>E</TD><TD><A HREF=#k:lblString>lblString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
@@ -148,9 +156,6 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:edgetooltip HREF=#d:edgetooltip>edgetooltip</A>
 </TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, cmap only</TD> </TR>
- <TR><TD><A NAME=a:edgeURL HREF=#d:edgeURL>edgeURL</A>
-</TD><TD>E</TD><TD><A HREF=#k:lblString>lblString</A>
-</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
  <TR><TD><A NAME=a:epsilon HREF=#d:epsilon>epsilon</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">.0001 * # nodes(mode == KK)<BR>.0001(mode == major)</TD><TD></TD><TD>neato only</TD> </TR>
  <TR><TD><A NAME=a:esep HREF=#d:esep>esep</A>
@@ -175,6 +180,9 @@ This field indicates which graph component uses the attribute.
 </TD><TD>ENGC</TD><TD>double</TD><TD ALIGN="CENTER">14.0</TD><TD>1.0</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:group HREF=#d:group>group</A>
 </TD><TD>N</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>dot only</TD> </TR>
+ <TR><TD><A NAME=a:headURL HREF=#d:headURL>headURL</A>
+</TD><TD>E</TD><TD><A HREF=#k:lblString>lblString</A>
+</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
  <TR><TD><A NAME=a:headclip HREF=#d:headclip>headclip</A>
 </TD><TD>E</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">true</TD><TD></TD><TD></TD> </TR>
@@ -193,9 +201,6 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:headtooltip HREF=#d:headtooltip>headtooltip</A>
 </TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, cmap only</TD> </TR>
- <TR><TD><A NAME=a:headURL HREF=#d:headURL>headURL</A>
-</TD><TD>E</TD><TD><A HREF=#k:lblString>lblString</A>
-</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
  <TR><TD><A NAME=a:height HREF=#d:height>height</A>
 </TD><TD>N</TD><TD>double</TD><TD ALIGN="CENTER">0.5</TD><TD>0.02</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:href HREF=#d:href>href</A>
@@ -209,11 +214,12 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:imagescale HREF=#d:imagescale>imagescale</A>
 </TD><TD>N</TD><TD><A HREF=#k:bool>bool</A>
 <BR>string</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=a:K HREF=#d:K>K</A>
-</TD><TD>GC</TD><TD>double</TD><TD ALIGN="CENTER">0.3</TD><TD>0</TD><TD>sfdp, fdp only</TD> </TR>
  <TR><TD><A NAME=a:label HREF=#d:label>label</A>
 </TD><TD>ENGC</TD><TD><A HREF=#k:lblString>lblString</A>
 </TD><TD ALIGN="CENTER">"\N" (nodes)<BR>"" (otherwise)</TD><TD></TD><TD></TD> </TR>
+ <TR><TD><A NAME=a:labelURL HREF=#d:labelURL>labelURL</A>
+</TD><TD>E</TD><TD><A HREF=#k:lblString>lblString</A>
+</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
  <TR><TD><A NAME=a:labelangle HREF=#d:labelangle>labelangle</A>
 </TD><TD>E</TD><TD>double</TD><TD ALIGN="CENTER">-25.0</TD><TD>-180.0</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:labeldistance HREF=#d:labeldistance>labeldistance</A>
@@ -243,9 +249,6 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:labeltooltip HREF=#d:labeltooltip>labeltooltip</A>
 </TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, cmap only</TD> </TR>
- <TR><TD><A NAME=a:labelURL HREF=#d:labelURL>labelURL</A>
-</TD><TD>E</TD><TD><A HREF=#k:lblString>lblString</A>
-</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
  <TR><TD><A NAME=a:landscape HREF=#d:landscape>landscape</A>
 </TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
@@ -417,6 +420,9 @@ This field indicates which graph component uses the attribute.
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:stylesheet HREF=#d:stylesheet>stylesheet</A>
 </TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg only</TD> </TR>
+ <TR><TD><A NAME=a:tailURL HREF=#d:tailURL>tailURL</A>
+</TD><TD>E</TD><TD><A HREF=#k:lblString>lblString</A>
+</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
  <TR><TD><A NAME=a:tailclip HREF=#d:tailclip>tailclip</A>
 </TD><TD>E</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">true</TD><TD></TD><TD></TD> </TR>
@@ -435,9 +441,6 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:tailtooltip HREF=#d:tailtooltip>tailtooltip</A>
 </TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, cmap only</TD> </TR>
- <TR><TD><A NAME=a:tailURL HREF=#d:tailURL>tailURL</A>
-</TD><TD>E</TD><TD><A HREF=#k:lblString>lblString</A>
-</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
  <TR><TD><A NAME=a:target HREF=#d:target>target</A>
 </TD><TD>ENGC</TD><TD><A HREF=#k:escString>escString</A>
 <BR>string</TD><TD ALIGN="CENTER">&#60;none&#62;</TD><TD></TD><TD>svg, map only</TD> </TR>
@@ -447,9 +450,6 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:truecolor HREF=#d:truecolor>truecolor</A>
 </TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD>bitmap output only</TD> </TR>
- <TR><TD><A NAME=a:URL HREF=#d:URL>URL</A>
-</TD><TD>ENGC</TD><TD><A HREF=#k:lblString>lblString</A>
-</TD><TD ALIGN="CENTER">&#60;none&#62;</TD><TD></TD><TD>svg, postscript, map only</TD> </TR>
  <TR><TD><A NAME=a:vertices HREF=#d:vertices>vertices</A>
 </TD><TD>N</TD><TD><A HREF=#k:pointfList>pointfList</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD>write only</TD> </TR>
@@ -468,6 +468,46 @@ This field indicates which graph component uses the attribute.
 <HR>
 <H1>Attribute Descriptions</H1>
 <DL>
+<DT><A NAME=d:Damping HREF=#a:Damping><STRONG>Damping</STRONG></A>
+<DD>  Factor damping force motions. On each iteration, a nodes movement
+  is limited to this factor of its potential motion. By being less than
+  1.0, the system tends to ``cool'', thereby preventing cycling.
+
+<DT><A NAME=d:K HREF=#a:K><STRONG>K</STRONG></A>
+<DD>  Spring constant used in virtual physical model. It roughly corresponds
+  to an ideal edge length (in inches), in that increasing K tends to
+  increase the distance between nodes.
+  Note that the edge attribute <A HREF=#d:len>len</A> can be used to
+  override this value for adjacent nodes.
+
+<DT><A NAME=d:URL HREF=#a:URL><STRONG>URL</STRONG></A>
+<DD>  Hyperlinks incorporated into device-dependent output.
+  At present, used in ps2, cmap, i*map and svg formats.
+  For all these formats, URLs can be attached to nodes, edges and
+  clusters. URL attributes can also be attached to the root graph in ps2,
+  cmap and i*map formats. This serves as the base URL for relative URLs in the
+  former, and as the default image map file in the latter.
+  <P>
+  For svg, cmapx and imap output, the active area for a node is its
+  visible image.
+  For example, an unfilled
+  node with no drawn boundary will only be active on its label.
+  For other output, the active area is its bounding box.
+  The active area for a cluster is its bounding box.
+  For edges, the active areas are small circles where the edge contacts its head
+  and tail nodes. In addition, for svg, cmapx and imap, the active area
+  includes a thin polygon approximating the edge. The circles may
+  overlap the related node, and the edge URL dominates.
+  If the edge has a label, this will also be active.
+  Finally, if the edge has a head or tail label, this will also be active.
+  <P>
+  Note that, for edges, the attributes <A HREF=#d:headURL>headURL</A>,
+  <A HREF=#d:tailURL>tailURL</A>, <A HREF=#d:labelURL>labelURL</A> and
+  <A HREF=#d:edgeURL>edgeURL</A> allow control of various parts of an
+  edge.
+  Also note that, if active areas of two edges overlap, it is unspecified
+  which area dominates.
+
 <DT><A NAME=d:arrowhead HREF=#a:arrowhead><STRONG>arrowhead</STRONG></A>
 <DD>  Style of arrowhead on the head node of an edge.
   See also the <A HREF=#d:dir>dir</A> attribute,
@@ -482,7 +522,23 @@ This field indicates which graph component uses the attribute.
   and a <A HREF=#h:undir_note>limitation</A>.
 
 <DT><A NAME=d:aspect HREF=#a:aspect><STRONG>aspect</STRONG></A>
-<DD>  Target aspect ratio of the renderered graph, and optionally the maximum number of iterations allowed to achieve it.
+<DD>  Target aspect ratio (width of the layout divided by the height)
+  of the graph drawing. If unset, dot minimizes the total edge length.
+  For certain graphs, like those with large fan-in or fan-out, this can
+  lead to very wide layouts. Setting <TT>aspect</TT> will cause dot to try
+  to adjust the layout to get an aspect ratio close to that specified
+  by <TT>aspect</TT>.
+  <P>
+  By default, dot will do 5 passes attempting to achieve the desired
+  aspect ratio. For certain graphs, more passes will be needed to get
+  close enough. The <TT>aspect</TT> attribute can also be used to 
+  specify the maximum number of passes to try.
+  <P>
+  At present, there is no mechanism for widening a very tall layout.
+  Also, the algorithm doesn't handle clusters, nor disconnected graphs.
+  For the latter case, one can split the pipeline<BR>
+  <TT>ccomps -x | dot | gvpack | neato -n2</TT>
+  to get a similar effect.
 
 <DT><A NAME=d:bb HREF=#a:bb><STRONG>bb</STRONG></A>
 <DD>  Bounding box of drawing in integer points.
@@ -582,11 +638,6 @@ This field indicates which graph component uses the attribute.
   yielding the graph:<BR>
   <IMG SRC="constraint.gif">
 
-<DT><A NAME=d:Damping HREF=#a:Damping><STRONG>Damping</STRONG></A>
-<DD>  Factor damping force motions. On each iteration, a nodes movement
-  is limited to this factor of its potential motion. By being less than
-  1.0, the system tends to ``cool'', thereby preventing cycling.
-
 <DT><A NAME=d:decorate HREF=#a:decorate><STRONG>decorate</STRONG></A>
 <DD>  If true, attach edge label to edge by a 2-segment
   polyline, underlining the label, then going to the closest point of spline.
@@ -635,6 +686,15 @@ This field indicates which graph component uses the attribute.
   it is used to guarantee that the dimensions in the output correspond to
   the correct number of points or inches.
 
+<DT><A NAME=d:edgeURL HREF=#a:edgeURL><STRONG>edgeURL</STRONG></A>
+<DD>  If <B>edgeURL</B> is defined, this is the link used for the non-label
+  parts of an edge. This value overrides any <A HREF=#d:URL>URL</A>
+  defined for the edge.
+  Also, this value is used near the head or tail node unless overridden
+  by a <A HREF=#d:headURL>headURL</A> or <A HREF=#d:tailURL>tailURL</A> value,
+  respectively.
+  See <A HREF=#h:undir_note>limitation</A>.
+
 <DT><A NAME=d:edgehref HREF=#a:edgehref><STRONG>edgehref</STRONG></A>
 <DD>  Synonym for <A HREF=#d:edgeURL>edgeURL</A>.
 
@@ -651,15 +711,6 @@ This field indicates which graph component uses the attribute.
 <DD>  Tooltip annotation attached to the non-label part of an edge.
   This is used only if the edge has a <A HREF=#d:URL>URL</A>
   or <A HREF=#d:edgeURL>edgeURL</A> attribute.
-
-<DT><A NAME=d:edgeURL HREF=#a:edgeURL><STRONG>edgeURL</STRONG></A>
-<DD>  If <B>edgeURL</B> is defined, this is the link used for the non-label
-  parts of an edge. This value overrides any <A HREF=#d:URL>URL</A>
-  defined for the edge.
-  Also, this value is used near the head or tail node unless overridden
-  by a <A HREF=#d:headURL>headURL</A> or <A HREF=#d:tailURL>tailURL</A> value,
-  respectively.
-  See <A HREF=#h:undir_note>limitation</A>.
 
 <DT><A NAME=d:epsilon HREF=#a:epsilon><STRONG>epsilon</STRONG></A>
 <DD>  Terminating condition. If the length squared of all energy gradients are
@@ -746,6 +797,13 @@ This field indicates which graph component uses the attribute.
   same group attribute, parameters are set to avoid crossings and keep
   the edges straight.
 
+<DT><A NAME=d:headURL HREF=#a:headURL><STRONG>headURL</STRONG></A>
+<DD>  If <B>headURL</B> is defined, it is
+  output as part of the head label of the edge.
+  Also, this value is used near the head node, overriding any
+  <A HREF=#d:URL>URL</A> value.
+  See <A HREF=#h:undir_note>limitation</A>.
+
 <DT><A NAME=d:headclip HREF=#a:headclip><STRONG>headclip</STRONG></A>
 <DD>  If true, the head of an edge is clipped to the boundary of the head node;
   otherwise, the end of the edge goes to the center of the node, or the
@@ -775,13 +833,6 @@ This field indicates which graph component uses the attribute.
 <DT><A NAME=d:headtooltip HREF=#a:headtooltip><STRONG>headtooltip</STRONG></A>
 <DD>  Tooltip annotation attached to the head of an edge. This is used only
   if the edge has a <A HREF=#d:headURL>headURL</A> attribute.
-
-<DT><A NAME=d:headURL HREF=#a:headURL><STRONG>headURL</STRONG></A>
-<DD>  If <B>headURL</B> is defined, it is
-  output as part of the head label of the edge.
-  Also, this value is used near the head node, overriding any
-  <A HREF=#d:URL>URL</A> value.
-  See <A HREF=#h:undir_note>limitation</A>.
 
 <DT><A NAME=d:height HREF=#a:height><STRONG>height</STRONG></A>
 <DD>  Height of node, in inches. This is taken as the initial, minimum height
@@ -844,18 +895,16 @@ This field indicates which graph component uses the attribute.
   expansion, if  <TT>imagescale=true</TT>, width and height are
   scaled uniformly.
 
-<DT><A NAME=d:K HREF=#a:K><STRONG>K</STRONG></A>
-<DD>  Spring constant used in virtual physical model. It roughly corresponds
-  to an ideal edge length (in inches), in that increasing K tends to
-  increase the distance between nodes.
-  Note that the edge attribute <A HREF=#d:len>len</A> can be used to
-  override this value for adjacent nodes.
-
 <DT><A NAME=d:label HREF=#a:label><STRONG>label</STRONG></A>
 <DD>  Text label attached to objects.
   If a node's <A HREF=#d:shape>shape</A> is record, then the label can
   have a <A HREF=shapes.html#record>special format</A>
   which describes the record layout.
+
+<DT><A NAME=d:labelURL HREF=#a:labelURL><STRONG>labelURL</STRONG></A>
+<DD>  If <B>labelURL</B> is defined, this is the link used for the label
+  of an edge. This value overrides any <A HREF=#d:URL>URL</A>
+  defined for the edge.
 
 <DT><A NAME=d:labelangle HREF=#a:labelangle><STRONG>labelangle</STRONG></A>
 <DD>  This, along with <A HREF=#d:labeldistance>labeldistance</A>, determine
@@ -932,11 +981,6 @@ This field indicates which graph component uses the attribute.
 <DD>  Tooltip annotation attached to label of an edge.
   This is used only if the edge has a <A HREF=#d:URL>URL</A>
   or <A HREF=#d:labelURL>labelURL</A> attribute.
-
-<DT><A NAME=d:labelURL HREF=#a:labelURL><STRONG>labelURL</STRONG></A>
-<DD>  If <B>labelURL</B> is defined, this is the link used for the label
-  of an edge. This value overrides any <A HREF=#d:URL>URL</A>
-  defined for the edge.
 
 <DT><A NAME=d:landscape HREF=#a:landscape><STRONG>landscape</STRONG></A>
 <DD>  If true, the graph is rendered in landscape mode. Synonymous with
@@ -1114,6 +1158,22 @@ This field indicates which graph component uses the attribute.
   Voronoi-based technique.
   If the value is "scalexy", x and y are separately
   scaled to remove overlaps.
+  If sfdp is available, one can set overlap=prism to use a proximity graph-
+  based algorithm for overlap removal. This last is the preferred technique,
+  though scale and false can work well with small graphs.
+  <P>
+  If the value is "compress", the layout will be scaled down as much as
+  possible without introducing any overlaps, obviously assuming there are
+  none to begin with.
+  <P>
+  <B>N.B.</B>The remaining allowed values of <TT>overlap</TT>
+  correspond to algorithms which, at present, can produce bad aspect ratios.
+  In addition, we deprecate the use of the "ortho*" and "portho*".
+  <P>
+  If the value is "vpsc", overlap removal is done as a
+  quadratic optimization to minimize node displacement while removing
+  node overlaps.
+  <P>
   If the value is "orthoxy" or "orthoyx", overlaps
   are moved by optimizing two constraint problems, one for the x axis and
   one for the y. The suffix indicates which axis is processed first.
@@ -1125,20 +1185,13 @@ This field indicates which graph component uses the attribute.
   to the previous four, except only pseudo-orthogonal ordering is
   enforced.
   <P>
-  If the value is "compress", the layout will be scaled down as much as
-  possible without introducing any overlaps, obviously assuming there are
-  none to begin with.
-  <P>
-  If the value is "vpsc", overlap removal is similarly to "ortho", except
-  quadratic optimization is used to minimize node displacement.
-  <P>
   If the layout is done by neato with <A HREF=#d:mode>mode</A>="ipsep",
   then one can use <TT>overlap=ipsep</TT>.
   In this case, the overlap removal constraints are
   incorporated into the layout algorithm itself.
   N.B. At present, this only supports one level of clustering.
   <P>
-  Except for fdp, the layouts assume <TT>overlap="true"</TT> as the default.
+  Except for fdp and sfdp, the layouts assume <TT>overlap="true"</TT> as the default.
   Fdp first uses a number of passes using built-in, force-directed technique
   to remove overlaps. Thus, fdp accepts <B>overlap</B> with an integer
   prefix followed by a colon, specifying the number of tries. If there is
@@ -1148,7 +1201,12 @@ This field indicates which graph component uses the attribute.
   <TT>overlap="0:true"</TT> and <TT>overlap="0:"</TT> all turn off all overlap
   removal.
   <P>
-  Except for the Voronoi method, all of these transforms preserve the
+  By default, sfdp uses <TT>overlap="prism"</TT>. This is preceded by a
+  small scaling up, controlled by the 
+  <A HREF="#d:overlap_scaling"><TT>overlap_scaling</TT></A> attribute,
+  which can remove a significant portion of the overlap.
+  <P>
+  Except for the Voronoi and prism methods, all of these transforms preserve the
   orthogonal ordering of the original layout. That is, if the x coordinates
   of two nodes are originally the same, they will remain the same, and if
   the x coordinate of one node is originally less than the x coordinate of
@@ -1156,9 +1214,6 @@ This field indicates which graph component uses the attribute.
   similar properties hold for the y coordinates.
   This is not quite true for the "porth*" cases. For these, orthogonal
   ordering is only preserved among nodes related by an edge.
-  <P>
-  <B>NOTE: </B>The methods "orthoxy" and "orthoyx" are still evolving. The
-  semantics of these may change, or these methods may disappear altogether.
 
 <DT><A NAME=d:overlap_scaling HREF=#a:overlap_scaling><STRONG>overlap_scaling</STRONG></A>
 <DD>  When <TT>overlap=sfdp</TT>, the layout is scaled by this factor, thereby
@@ -1506,6 +1561,13 @@ This field indicates which graph component uses the attribute.
 <DT><A NAME=d:stylesheet HREF=#a:stylesheet><STRONG>stylesheet</STRONG></A>
 <DD>  A URL or pathname specifying an XML style sheet, used in SVG output.
 
+<DT><A NAME=d:tailURL HREF=#a:tailURL><STRONG>tailURL</STRONG></A>
+<DD>  If <B>tailURL</B> is defined, it is
+  output as part of the tail label of the edge.
+  Also, this value is used near the tail node, overriding any
+  <A HREF=#d:URL>URL</A> value.
+  See <A HREF=#h:undir_note>limitation</A>.
+
 <DT><A NAME=d:tailclip HREF=#a:tailclip><STRONG>tailclip</STRONG></A>
 <DD>  If true, the tail of an edge is clipped to the boundary of the tail node;
   otherwise, the end of the edge goes to the center of the node, or the
@@ -1533,13 +1595,6 @@ This field indicates which graph component uses the attribute.
 <DT><A NAME=d:tailtooltip HREF=#a:tailtooltip><STRONG>tailtooltip</STRONG></A>
 <DD>  Tooltip annotation attached to the tail of an edge. This is used only
   if the edge has a <A HREF=#d:tailURL>tailURL</A> attribute.
-
-<DT><A NAME=d:tailURL HREF=#a:tailURL><STRONG>tailURL</STRONG></A>
-<DD>  If <B>tailURL</B> is defined, it is
-  output as part of the tail label of the edge.
-  Also, this value is used near the tail node, overriding any
-  <A HREF=#d:URL>URL</A> value.
-  See <A HREF=#h:undir_note>limitation</A>.
 
 <DT><A NAME=d:target HREF=#a:target><STRONG>target</STRONG></A>
 <DD>  If the object has a URL, this attribute determines which window
@@ -1572,34 +1627,6 @@ This field indicates which graph component uses the attribute.
   a color palette, font
   antialiasing can show up as a fuzzy white area around characters.
   Using <B>truecolor</B>=true avoids this problem.
-
-<DT><A NAME=d:URL HREF=#a:URL><STRONG>URL</STRONG></A>
-<DD>  Hyperlinks incorporated into device-dependent output.
-  At present, used in ps2, cmap, i*map and svg formats.
-  For all these formats, URLs can be attached to nodes, edges and
-  clusters. URL attributes can also be attached to the root graph in ps2,
-  cmap and i*map formats. This serves as the base URL for relative URLs in the
-  former, and as the default image map file in the latter.
-  <P>
-  For svg, cmapx and imap output, the active area for a node is its
-  visible image.
-  For example, an unfilled
-  node with no drawn boundary will only be active on its label.
-  For other output, the active area is its bounding box.
-  The active area for a cluster is its bounding box.
-  For edges, the active areas are small circles where the edge contacts its head
-  and tail nodes. In addition, for svg, cmapx and imap, the active area
-  includes a thin polygon approximating the edge. The circles may
-  overlap the related node, and the edge URL dominates.
-  If the edge has a label, this will also be active.
-  Finally, if the edge has a head or tail label, this will also be active.
-  <P>
-  Note that, for edges, the attributes <A HREF=#d:headURL>headURL</A>,
-  <A HREF=#d:tailURL>tailURL</A>, <A HREF=#d:labelURL>labelURL</A> and
-  <A HREF=#d:edgeURL>edgeURL</A> allow control of various parts of an
-  edge.
-  Also note that, if active areas of two edges overlap, it is unspecified
-  which area dominates.
 
 <DT><A NAME=d:vertices HREF=#a:vertices><STRONG>vertices</STRONG></A>
 <DD>  If the input graph defines this attribute, the node is polygonal,
@@ -1692,8 +1719,9 @@ the given types.
   <TT>empty</TT>, <TT>invempty</TT>).
 
 <DT><A NAME=k:aspectType><STRONG>aspectType</STRONG></A>
-<DD><p>An aspect ratio, double, followed optionally by a ',' and a max iteration count.
-  If the aspect ratio is given, but no max iteration count, then the max iteration count defaults to 5.
+<DD><p>An aspect ratio, double, followed optionally by a ',' and a maximum pass 
+  count. If the aspect ratio is given, but no maximum pass count, the
+  latter defaults to 5.
 
 <DT><A NAME=k:clusterMode><STRONG>clusterMode</STRONG></A>
 <DD>"local","global","none"
@@ -1898,13 +1926,13 @@ the given types.
   Using "fast" gives about a 2-4 times overall speedup compared with "normal", 
   though layout quality can suffer a little. 
 
+<DT><A NAME=k:rankType><STRONG>rankType</STRONG></A>
+<DD>"same", "min", "source", "max", "sink"
+
 <DT><A NAME=k:rankdir><STRONG>rankdir</STRONG></A>
 <DD>"TB", "LR", "BT", "RL", corresponding to directed graphs drawn
   from top to bottom, from left to right, from bottom to top, and from
   right to left, respectively.
-
-<DT><A NAME=k:rankType><STRONG>rankType</STRONG></A>
-<DD>"same", "min", "source", "max", "sink"
 
 <DT><A NAME=k:rect><STRONG>rect</STRONG></A>
 <DD>"%d,%d,%d,%d"  The rect llx,lly,urx,ury gives the coordinates, in
