@@ -88,8 +88,24 @@ Multiplicative scale factor for arrowheads.
 Style of arrowhead on the tail node of an edge.
 See also the <A HREF=#d:dir>dir</A> attribute,
 and a <A HREF=#h:undir_note>limitation</A>.
-:aspect:G:aspectType:1.0,1; dot
-Target aspect ratio of the renderered graph, and optionally the maximum number of iterations allowed to achieve it.
+:aspect:G:aspectType; dot
+Target aspect ratio (width of the layout divided by the height)
+of the graph drawing. If unset, dot minimizes the total edge length.
+For certain graphs, like those with large fan-in or fan-out, this can
+lead to very wide layouts. Setting <TT>aspect</TT> will cause dot to try
+to adjust the layout to get an aspect ratio close to that specified
+by <TT>aspect</TT>.
+<P>
+By default, dot will do 5 passes attempting to achieve the desired
+aspect ratio. For certain graphs, more passes will be needed to get
+close enough. The <TT>aspect</TT> attribute can also be used to 
+specify the maximum number of passes to try.
+<P>
+At present, there is no mechanism for widening a very tall layout.
+Also, the algorithm doesn't handle clusters, nor disconnected graphs.
+For the latter case, one can split the pipeline<BR>
+<TT>ccomps -x | dot | gvpack | neato -n2</TT>
+to get a similar effect.
 :bb:G:rect; write
 Bounding box of drawing in integer points.
 :bgcolor:GC:color:<none>;
@@ -629,6 +645,22 @@ If the value converts to "false", node overlaps are removed by a
 Voronoi-based technique.
 If the value is "scalexy", x and y are separately
 scaled to remove overlaps.
+If sfdp is available, one can set overlap=prism to use a proximity graph-
+based algorithm for overlap removal. This last is the preferred technique,
+though scale and false can work well with small graphs.
+<P>
+If the value is "compress", the layout will be scaled down as much as
+possible without introducing any overlaps, obviously assuming there are
+none to begin with.
+<P>
+<B>N.B.</B>The remaining allowed values of <TT>overlap</TT>
+correspond to algorithms which, at present, can produce bad aspect ratios.
+In addition, we deprecate the use of the "ortho*" and "portho*".
+<P>
+If the value is "vpsc", overlap removal is done as a
+quadratic optimization to minimize node displacement while removing
+node overlaps.
+<P>
 If the value is "orthoxy" or "orthoyx", overlaps
 are moved by optimizing two constraint problems, one for the x axis and
 one for the y. The suffix indicates which axis is processed first.
@@ -640,20 +672,13 @@ The values "portho", "porthoxy", "porthoxy", and "portho_yx" are similar
 to the previous four, except only pseudo-orthogonal ordering is
 enforced.
 <P>
-If the value is "compress", the layout will be scaled down as much as
-possible without introducing any overlaps, obviously assuming there are
-none to begin with.
-<P>
-If the value is "vpsc", overlap removal is similarly to "ortho", except
-quadratic optimization is used to minimize node displacement.
-<P>
 If the layout is done by neato with <A HREF=#d:mode>mode</A>="ipsep",
 then one can use <TT>overlap=ipsep</TT>.
 In this case, the overlap removal constraints are
 incorporated into the layout algorithm itself.
 N.B. At present, this only supports one level of clustering.
 <P>
-Except for fdp, the layouts assume <TT>overlap="true"</TT> as the default.
+Except for fdp and sfdp, the layouts assume <TT>overlap="true"</TT> as the default.
 Fdp first uses a number of passes using built-in, force-directed technique
 to remove overlaps. Thus, fdp accepts <B>overlap</B> with an integer
 prefix followed by a colon, specifying the number of tries. If there is
@@ -663,7 +688,12 @@ uses <TT>overlap="9:portho"</TT>. Note that <TT>overlap="true"</TT>,
 <TT>overlap="0:true"</TT> and <TT>overlap="0:"</TT> all turn off all overlap
 removal.
 <P>
-Except for the Voronoi method, all of these transforms preserve the
+By default, sfdp uses <TT>overlap="prism"</TT>. This is preceded by a
+small scaling up, controlled by the 
+<A HREF="#d:overlap_scaling"><TT>overlap_scaling</TT></A> attribute,
+which can remove a significant portion of the overlap.
+<P>
+Except for the Voronoi and prism methods, all of these transforms preserve the
 orthogonal ordering of the original layout. That is, if the x coordinates
 of two nodes are originally the same, they will remain the same, and if
 the x coordinate of one node is originally less than the x coordinate of
@@ -671,9 +701,6 @@ another, this relation will still hold in the transformed layout. The
 similar properties hold for the y coordinates.
 This is not quite true for the "porth*" cases. For these, orthogonal
 ordering is only preserved among nodes related by an edge.
-<P>
-<B>NOTE: </B>The methods "orthoxy" and "orthoyx" are still evolving. The
-semantics of these may change, or these methods may disappear altogether.
 :overlap_scaling:G:double:-4:-1.0e10; sfdp
 When <TT>overlap=sfdp</TT>, the layout is scaled by this factor, thereby
 removing a fair amount of node overlap, and making node overlap removal

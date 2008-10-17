@@ -6,8 +6,9 @@
 # The type <typename> is given the anchor k:<typename>, so
 # the description can be linked with <HREF="k:<typename>">
 :aspectType
-<p>An aspect ratio, double, followed optionally by a ',' and a max iteration count.
-If the aspect ratio is given, but no max iteration count, then the max iteration count defaults to 5.
+<p>An aspect ratio, double, followed optionally by a ',' and a maximum pass 
+count. If the aspect ratio is given, but no maximum pass count, the
+latter defaults to 5.
 :arrowType
 <TABLE>
   <TR><TD>"normal"<TD><IMG SRC="a_normal.gif">
