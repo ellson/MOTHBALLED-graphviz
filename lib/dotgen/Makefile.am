@@ -11,7 +11,7 @@ AM_CPPFLAGS = \
 
 if WITH_CGRAPH
 else
-noinst_HEADERS = dot.h dotprocs.h
+noinst_HEADERS = dot.h dotprocs.h aspect.h
 noinst_LTLIBRARIES = libdotgen_C.la
 endif
 
