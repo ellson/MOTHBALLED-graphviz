@@ -53,6 +53,7 @@ configure-stamp:
 	--with-pangocairo \
 	--with-x \
 	--with-gdk-pixbuf \
+	--without-ghostscript \
 	--without-gnomeui \
 	--without-gtk \
 	--without-gtkgl \
