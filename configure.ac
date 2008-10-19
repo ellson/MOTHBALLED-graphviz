@@ -24,6 +24,9 @@ AC_SUBST(GRAPHVIZ_VERSION_MAJOR)
 AC_SUBST(GRAPHVIZ_VERSION_MINOR)
 AC_SUBST(GRAPHVIZ_VERSION_MICRO)
 
+VERSION_DATE=`date -u +%Y%m%d.%H%M`
+AC_SUBST(VERSION_DATE)
+
 #NB: "development" on the next line gets changed to "stable" when building a release
 GRAPHVIZ_COLLECTION=development
 
@@ -190,7 +193,7 @@ AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 AM_CONFIG_HEADER(config.h)
 
 # put BUILDDATE in its own file so that only targets that use it get rebuilt
-echo "#define BUILDDATE \"`date -u '+%a %b %d %T %Z %Y'`\"" > builddate.h
+echo "#define BUILDDATE \"$VERSION_DATE\"" > builddate.h
 
 # only update ast_common.h (for GNU builds) from master if changed
 if ! `cmp -s $srcdir/ast_common.h.in ast_common.h`; then
