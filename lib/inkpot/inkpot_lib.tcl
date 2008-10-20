@@ -182,7 +182,15 @@ foreach {rangeset} [lsort -dictionary [array names ALL_RANGESETS]] {
 	    puts stderr "Weird! Non-zero index $index for non-indexed color"
 	    exit
 	}
-	set ALL_SIMPLECOLORS($value) $ALL_RANGESETS($rangeset)
+	foreach {m1_range} $ALL_RANGESETS($rangeset) {
+	    foreach {m1 range} $m1_range {break}
+	    foreach {color schemes} $m1 {break}
+	    if {$range != 1} {
+		puts stderr "Weird! Range $range != 1 for non-indexed color"
+		exit
+	    }
+	    lappend ALL_ALTS($color) [list $value $schemes]
+	}
 	continue
     }
     tab_row
@@ -233,6 +241,7 @@ foreach {m1_range} [lsort -ascii [array names ALL_RANGES_coded]] {
 	tab_row
 	set cnt 0
 	set last_color $color
+	set ALL_ALTS_coded($color) $SZT_RANGES
     }
     set scheme_bits 0
     foreach {scheme} $schemes {
@@ -246,29 +255,10 @@ foreach {m1_range} [lsort -ascii [array names ALL_RANGES_coded]] {
 tab_finalize "};\n"
 
 #accumulate altsets for all non-indexed colors
-if {0} {
-foreach {color} [lsort -ascii [map1 C_RIV]] {
-    set altset [list]
-    foreach {m2} [lsort -dictionary [map1m2 C_RIV $color]] {
-        foreach {RIV schemes} $m2 {break}
-	foreach {range index value} $RIV {break}
-	if {$range != 1 || $index != 0} {continue}
-	lappend altset $m2
-    }
-    if {[llength $altset]} {
-        lappend ALL_ALTSETS($altset) $color
-    }
+foreach {color} [lsort -ascii [array names ALL_ALTS]] {
+    lappend ALL_ALTSETS($ALL_ALTS($color)) $color
 }
 
-} {
-
-foreach {color} [lsort -ascii [map1 C_RIV]] {
-    set altset [lsort -dictionary [map1m2 C_RIV $color]]
-    lappend ALL_ALTSETS($altset) $color
-}
-
-}
-	
 # generate TAB_ALTS
 set SZT_ALTS 0
 tab_initialize $f {set first_idx} {set aliases} \
@@ -281,10 +271,8 @@ foreach {altset} [lsort -dictionary [array names ALL_ALTSETS]] {
             puts stderr "shouldn't happen - has to be at least one alt in an altset"
         }
         1 {
-	    foreach {m2} $altset {break}
-	    foreach {RIV schemes} $m2 {break}
-	    foreach {range index value} $RIV {break}
-	    if {$range != 1} {continue}
+	    foreach {value_schemes} $altset {break}
+	    foreach {value schemes} $value_schemes {break}
 	    set scheme_bits 0
     	    foreach {scheme} $schemes {
                 foreach {scheme_idx scheme_bit} $ALL_SCHEMES_coded($scheme) {break}
@@ -297,10 +285,8 @@ foreach {altset} [lsort -dictionary [array names ALL_ALTSETS]] {
         }
         default {
             set first_idx $SZT_ALTS
-	    foreach {m2} $altset {
-	        foreach {RIV schemes} $m2 {break}
-	        foreach {range index value} $RIV {break}
-	        if {$range != 1} {continue}
+	    foreach {value_schemes} $altset {
+	        foreach {value schemes} $value_schemes {break}
 	        set scheme_bits 0
     	        foreach {scheme} $schemes {
                     foreach {scheme_idx scheme_bit} $ALL_SCHEMES_coded($scheme) {break}
@@ -317,8 +303,6 @@ foreach {altset} [lsort -dictionary [array names ALL_ALTSETS]] {
     tab_row
 }
 tab_finalize "};\n"
-
-print_first ALL_ALTS_coded
 
 # generate TAB_NAMES
 set SZT_NAMES 0
