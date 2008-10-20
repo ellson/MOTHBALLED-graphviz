@@ -27,6 +27,7 @@
 #include "inkpot_scheme.h"
 #include "inkpot_xlate.h"
 #include "inkpot_lib_scheme.h"
+#include "inkpot_lib_string.h"
 
 static size_t inkpot_writer (void *closure, const char *data, size_t length)
 {
