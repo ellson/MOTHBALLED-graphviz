@@ -556,7 +556,7 @@ static void write_body(Agraph_t * g, iochan_t * ofile)
 
     /* has_attr = (agattrrec(g) != NIL(Agattr_t*)); */
     write_subgs(g, ofile);
-    dd = agdatadict(g);
+    dd = agdatadict(agroot(g));
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (write_node_test(g, n, AGSEQ(n)))
 	    write_node(n, ofile, dd->dict.n);
