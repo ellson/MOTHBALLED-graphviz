@@ -1936,9 +1936,13 @@ static void init_gvc(GVC_t * gvc, graph_t * g)
     gvc->bb = GD_bb(g);
 
     /* clusters have peripheries */
+#ifndef WITH_CGRAPH
     G_peripheries = agfindattr(g, "peripheries");
-
     G_penwidth = agfindattr(g, "penwidth");
+#else
+    G_peripheries = agattr(g, AGRAPH,"peripheries",(char*)0);
+    G_penwidth = agattr(g, AGRAPH,"penwidth",(char*)0);
+#endif
 
     /* default font */
 #ifndef WITH_CGRAPH
@@ -1947,9 +1951,9 @@ static void init_gvc(GVC_t * gvc, graph_t * g)
     gvc->defaultfontsize = late_double(g->proto->n,
                 N_fontsize, DEFAULT_FONTSIZE, MIN_FONTSIZE);
 #else
-    gvc->defaultfontname = late_nnstring(g->proto->n,
+    gvc->defaultfontname = late_nnstring(NULL,
                 N_fontname, DEFAULT_FONTNAME);
-    gvc->defaultfontsize = late_double(g->proto->n,
+    gvc->defaultfontsize = late_double(NULL,
                 N_fontsize, DEFAULT_FONTSIZE, MIN_FONTSIZE);
 #endif
 
