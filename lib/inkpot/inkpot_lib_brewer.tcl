@@ -27,12 +27,12 @@ foreach {rec ColorName NumOfColors Type CritVal ix ixa r g b SchemeType} [regexp
 		regsub -all -- {\d} $d {} d
 		set ll [string length $t]
         	if {$l != $ll} {
-			puts stderr "scheme $nam contains digits!"
+			puts stderr "$argv0: scheme $nam contains digits!"
 		}
 	}
 
 	if {! [info exists nam]} {
-		puts stderr "ColorName was not set before use"
+		puts stderr "$argv0: ColorName was not set before use"
 	}
 
 if {1} {
@@ -41,7 +41,7 @@ if {1} {
 #
 	set ixn [string first $ixa "abcdefghijklmnopqrstuvwxyz"]
 	if {$ixn < 0} {
-		puts stderr "Failed to convert alpha index \"$ixa\" to an integer"
+		puts stderr "$argv0: Failed to convert alpha index \"$ixa\" to an integer"
 	}
 	incr ixn
 
@@ -50,9 +50,10 @@ if {1} {
                 foreach {rr gg bb} $COLORS($nam_ixn) {break}
         	if {$r != $rr || $g != $gg || $b != $bb} {
 			puts stderr ""
-			puts stderr "\"$nam $ixa\" is not unique and rgb doesn't match: $r $g $b != $rr $gg $bb"
-			puts stderr "In record: [string trim $rec :]"
-			puts stderr "Retaining first value found, discarding second."
+			puts stderr "$argv0: \"$nam $ixa\" is not unique"
+			puts stderr " and rgb doesn't match: $r $g $b != $rr $gg $bb"
+			puts stderr " in record: [string trim $rec :]"
+			puts stderr " Retaining first value found, discarding second."
 			puts stderr ""
 		} {
 			#                   puts "$nam ixa is not unique"     
@@ -73,7 +74,7 @@ if {1} {
 
 			puts stderr ""
 			foreach {color} [lrange [lsort -ascii [array name COLORS]] end-5 end] {
-				puts stderr "COLORS\($color\) = $COLORS($color)"
+				puts stderr "$argv0: COLORS\($color\) = $COLORS($color)"
 			}
 			exit
 		} {
