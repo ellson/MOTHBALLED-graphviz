@@ -31,7 +31,7 @@
 
 typedef struct {
     Agrec_t h;
-    char cc_subg;
+    char cc_subg;   /* true iff subgraph corresponds to a component */
 } Agraphinfo_t;
 
 typedef struct {
@@ -284,28 +284,22 @@ static char *getBuf(int n)
  * edges in subg. Copy the attributes of subg to g. Return the subgraph.
  * If not, return null.
  */
-static Agraph_t *projectG(Agraph_t * subg, Agraph_t * g, char *pfx,
-			  int pfxlen, int inCluster)
+static Agraph_t *projectG(Agraph_t * subg, Agraph_t * g, int inCluster)
 {
     Agraph_t *proj = 0;
     Agnode_t *n;
     Agnode_t *m;
-    char *name;
 
     for (n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
 	if ((m = agfindnode(g, agnameof(n)))) {
 	    if (proj == 0) {
-		name = getBuf(strlen(agnameof(subg)) + pfxlen + 2);
-		sprintf(name, "%s_%s", agnameof(subg), pfx);
-		proj = agsubg(g, name, 1);
+		proj = agsubg(g, agnameof(subg), 1);
 	    }
 	    agsubnode(proj, m, 1);
 	}
     }
     if (!proj && inCluster) {
-	name = getBuf(strlen(agnameof(subg)) + pfxlen + 2);
-	sprintf(name, "%s_%s", agnameof(subg), pfx);
-	proj = agsubg(g, name, 1);
+	proj = agsubg(g, agnameof(subg), 1);
     }
     if (proj) {
 	nodeInduce(proj, subg);
@@ -320,8 +314,7 @@ static Agraph_t *projectG(Agraph_t * subg, Agraph_t * g, char *pfx,
  * If non-empty, add to subgraph.
  */
 static void
-subgInduce(Agraph_t * root, Agraph_t * g, char *pfx, int pfxlen,
-	   int inCluster)
+subgInduce(Agraph_t * root, Agraph_t * g, int inCluster)
 {
     Agraph_t *subg;
     Agraph_t *proj;
@@ -331,9 +324,9 @@ subgInduce(Agraph_t * root, Agraph_t * g, char *pfx, int pfxlen,
     for (subg = agfstsubg(root); subg; subg = agnxtsubg(subg)) {
 	if (GD_cc_subg(subg))
 	    continue;
-	if ((proj = projectG(subg, g, pfx, pfxlen, inCluster))) {
+	if ((proj = projectG(subg, g, inCluster))) {
 	    in_cluster = inCluster || (useClusters && isCluster(subg));
-	    subgInduce(subg, proj, pfx, pfxlen, in_cluster);
+	    subgInduce(subg, proj, in_cluster);
 	}
     }
 }
@@ -341,25 +334,22 @@ subgInduce(Agraph_t * root, Agraph_t * g, char *pfx, int pfxlen,
 static void
 subGInduce(Agraph_t* g, Agraph_t * out)
 {
-    subgInduce(g, out, agnameof(out), strlen(agnameof(out)), 0);
+    subgInduce(g, out, 0);
 }
 
 #define PFX1 "%s_cc"
 #define PFX2 "%s_cc_%ld"
 
-/* deriveGraph:
- * Create derived graph dg of g where nodes correspond to cluster or
- * top-level nodes and there is an edge in dg if there is an edge in g
- * between any nodes in the respective clusters.
+/* deriveClusters:
+ * Construct nodes in derived graph corresponding top-level clusters.
+ * Since a cluster might be wrapped in a subgraph, we need to traverse
+ * down into the tree of subgraphs
  */
-static Agraph_t *deriveGraph(Agraph_t * g)
+static void deriveClusters(Agraph_t* dg, Agraph_t * g)
 {
-    Agraph_t *dg;
+    Agraph_t *subg;
     Agnode_t *dn;
     Agnode_t *n;
-    Agraph_t *subg;
-
-    dg = agopen("dg", Agstrictundirected, (Agdisc_t *) 0);
 
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
 	if (!strncmp(agnameof(subg), "cluster", 7)) {
@@ -367,10 +357,33 @@ static Agraph_t *deriveGraph(Agraph_t * g)
 	    agbindrec (dn, "nodeinfo", sizeof(Agnodeinfo_t), TRUE);
 	    ND_ptr(dn) = (Agobj_t*)subg;
 	    for (n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
+		if (ND_ptr(n)) {
+		   fprintf (stderr, "Error: node \"%s\" belongs to two disjoint clusters \"%s\" and \"%s\"\n",
+			agnameof (n), agnameof(subg), agnameof(ND_dn(n)));  
+		}
 		ND_ptr(n) = (Agobj_t*)dn;
 	    }
 	}
+	else {
+	    deriveClusters (dg, subg);
+	}
     }
+}
+
+/* deriveGraph:
+ * Create derived graph dg of g where nodes correspond to top-level nodes 
+ * or clusters, and there is an edge in dg if there is an edge in g
+ * between any nodes in the respective clusters.
+ */
+static Agraph_t *deriveGraph(Agraph_t * g)
+{
+    Agraph_t *dg;
+    Agnode_t *dn;
+    Agnode_t *n;
+
+    dg = agopen("dg", Agstrictundirected, (Agdisc_t *) 0);
+
+    deriveClusters (dg, g);
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (ND_dn(n))
