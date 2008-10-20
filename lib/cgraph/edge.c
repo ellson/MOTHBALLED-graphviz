@@ -111,14 +111,17 @@ static Agedge_t *agfindedge_by_key(Agraph_t * g, Agnode_t * t, Agnode_t * h,
     template.base.tag = key;
     template.node = t;		/* guess that fan-in < fan-out */
     sn = agsubrep(g, h);
-    if (t != h) {
-	dtrestore(g->e_id, sn->in_id);
-	e = (Agedge_t *) dtsearch(g->e_id, &template);
-	sn->in_id = dtextract(g->e_id);
-    } else {			/* self edge */
-	dtrestore(g->e_id, sn->out_id);
-	e = (Agedge_t *) dtsearch(g->e_id, &template);
-	sn->out_id = dtextract(g->e_id);
+    if (!sn) e = 0;
+    else {
+	if (t != h) {
+	    dtrestore(g->e_id, sn->in_id);
+	    e = (Agedge_t *) dtsearch(g->e_id, &template);
+	    sn->in_id = dtextract(g->e_id);
+	} else {			/* self edge */
+	    dtrestore(g->e_id, sn->out_id);
+	    e = (Agedge_t *) dtsearch(g->e_id, &template);
+	    sn->out_id = dtextract(g->e_id);
+	}
     }
     return e;
 }
