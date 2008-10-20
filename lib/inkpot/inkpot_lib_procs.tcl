@@ -12,10 +12,10 @@ proc tab_start_row { } {
     set indent "  "
     if {$pos == 0} {
         if  {$comments} {
-            set s "  /* [uplevel 2 $rstart] */ "
+            set s "$indent/* [uplevel 2 $rstart] */"
             set w [expr 16 - [string length $s]]
             if {$w < 0} {set w 0}
-            set s $indent$s[format "%.[set w]s " "        "]
+            set s $s[format "%.[set w]s" "               "]
         } {
 	    set s $indent
         }
@@ -30,6 +30,9 @@ proc tab_end_row { } {
     upvar 2 TAB_chan        ch
     upvar 2 TAB_row_end     rend
     if {$comments} {
+	if {$pos > 40} {
+	    puts -nonewline $ch "\n\t\t\t\t\t"
+	}
         set w [expr 5 - $pos / 8]
         if {$w < 0} {set w 0}
         set s " /* [uplevel 2 $rend] */"
@@ -65,11 +68,17 @@ proc tab_finalize { table_end } {
 }
 
 proc tab_elem {data} {
+    global comments
     upvar TAB_pos         pos
     upvar TAB_chan        ch
-    if {$pos > 64} { 
-	puts $ch ""
-	set pos 0
+    if {$pos > 72} { 
+	if {$comments} {
+	    puts -nonewline $ch "\n\t\t"
+	    set pos 16
+        } {
+	    puts $ch ""
+	    set pos 0
+        }
     }
     if {$pos == 0} { tab_start_row }
     puts -nonewline $ch $data
