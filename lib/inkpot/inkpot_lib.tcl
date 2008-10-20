@@ -1,10 +1,8 @@
 #!/usr/bin/tclsh
 
 set comments 1
-set target_line_length 60
-set indent "  "
 
-set preamble "/*\n * DO NOT EDIT !!\n *\n * The files:\n *\tinkpot_lib_define.h\n *\tinkpot_lib_value.h\n *\tinkpot_lib_scheme.h\n * are generated as a matched set.\n */\n"
+set preamble "/*\n * DO NOT EDIT !!\n *\n * The files:\n *\tinkpot_lib_define.h\n *\tinkpot_lib_value.h\n *\tinkpot_lib_scheme.h\n *\tinkpot_lib_string.h\n * are generated as a matched set.\n */\n"
 
 if {! $argc} {exit}
 
@@ -14,12 +12,14 @@ source inkpot_lib_procs.tcl
 # merge input data
 foreach {lib} $argv {
     set f [open $lib r]
-    array set COLORS [read $f [file size $lib]]
+    foreach {color value} [read $f [file size $lib]] {
+	set COLORS($color) $value
+    }
     close $f
 
     foreach {scheme coding} $COLORS() {break}
     array unset COLORS {}
-    lappend ALL_STRINGS($scheme) scheme
+    set ALL_STRINGS($scheme) {}
     set ALL_SCHEMES($scheme) {}
 
     foreach {color} [array names COLORS] {
@@ -35,63 +35,96 @@ foreach {lib} $argv {
 
         switch [llength $color] {
             1 {
-                lappend ALL_STRINGS($color) color
-		map CV $color $value $scheme
+		set icolor $color
+		set range 1
+		set index 0
             }
             2 {
                 foreach {icolor index} $color {break}
-                lappend ALL_STRINGS($icolor) icolor
-		map ICRIV $icolor [list 0 $index $value] $scheme
+		set range 0
             }
             3 {
                 foreach {icolor range index} $color {break}
-                lappend ALL_STRINGS($icolor) icolor
-		map ICRIV $icolor [list $range $index $value] $scheme
+		if {$range == 1} {
+		    puts stderr "Weird.  Unexpected range==1. I guess that means I can't use 1 as a flag! $color $value $scheme"
+		    exit
+		}
             }
             default {
-                puts stderr "wrong number of keys in: \"$color\""
+                puts stderr "Weird! Too many fields in: \"$color\""
+		exit 
             }
         }
+	map C_RIV $icolor [list $range $index $value] $scheme
+        set ALL_STRINGS($icolor) {}
     }
+    array unset COLORS
+}
+
+#------------------------------------------------- crunch some data ----------
+
+# find all unique color_schemeset_range and list index_value
+# find all unique value and list color_schemeset_range_index
+foreach {m2} [mapm2 C_RIV] {
+    foreach {RIV schemes} $m2 {break}
+    foreach {range index value} $RIV {break}
+    foreach {m1} [map2m1 C_RIV $RIV] {
+	lappend ALL_COLORSCHEMESRANGES([list $m1 $range]) [list $index $value]
+    	lappend ALL_VALUES($value) [list $m1 $range $index]
+    }
+}
+#share rangesets between aliases such as grey/0-100 and gray/0-100
+foreach {m1_range} [array names ALL_COLORSCHEMESRANGES] {
+    set rangeset [concat [lsort -dictionary -unique $ALL_COLORSCHEMESRANGES($m1_range)]]
+    lappend ALL_RANGESETS($rangeset) $m1_range
 }
 
 #------------------------------------------------- write inkpot_lib_value.h
 set f [open inkpot_lib_value.h w]
 puts $f $preamble
 
+
+proc format_color {color range index} {
+    switch $range {
+	0 {
+	    set color $color$index
+	}
+	1 {
+	    if {$index} {
+		puts stderr "Weird! Color with range == 1 but index != 0. $color/$range/$index"
+		exit
+	    }
+	    # otherwise just $color
+	}
+	default {
+	    set color $color$range/$index
+	}
+    }
+    return $color
+}
+
 # generate TAB_VALUES_24
-tab_initialize $f {set SZT_VALUES} {map2m1 CV $value} \
+tab_initialize $f {set SZT_VALUES} {set comment} \
 	"unsigned char TAB_VALUES_24\[SZT_VALUES_24\] = {"
 set SZT_VALUES 0
-foreach {value} [lsort -dictionary [map2 CV]] {
+foreach {value} [lsort -dictionary [array names ALL_VALUES]] {
     foreach {r g b} $value {break}
     tab_elem [format "0x%02x,0x%02x,0x%02x," $r $g $b]
+    set comment [list]
+    foreach {m1_range_index} [lsort -unique $ALL_VALUES($value)] {
+        foreach {m1 range index} $m1_range_index {break}
+	foreach {color schemes} $m1 {break}
+	lappend comment [list $schemes [format_color $color $range $index]]
+    }
     tab_row
     set ALL_VALUES_coded($value) $SZT_VALUES
     incr SZT_VALUES
 }
 tab_finalize "};\n"
-
-# generate NONAME_VALUES_24
-tab_initialize $f {set SZT_NONAME_VALUES} {map2m1 ICRIV $range_index_value} \
-	"unsigned char TAB_NONAME_VALUES_24\[SZT_NONAME_VALUES_24\] = {"
-set SZT_NONAME_VALUES 0
-foreach {range_index_value} [lsort -dictionary [map2 ICRIV]] {
-    foreach {range index value} $range_index_value {break}
-    if {! [info exists ALL_VALUES_coded($value)]} {
-        foreach {r g b} $value {break}
-        tab_elem [format "0x%02x,0x%02x,0x%02x," $r $g $b]
-	tab_row
-        set ALL_VALUES_coded($value) [expr $SZT_NONAME_VALUES + $SZT_VALUES]
-        incr SZT_NONAME_VALUES
-    }
-}
-tab_finalize "};\n"
     
 close $f
-
-#------------------------------------------------- write inkpot_lib_scheme.h
-set f [open inkpot_lib_scheme.h w]
+#------------------------------------------------- write inkpot_lib_string.h
+set f [open inkpot_lib_string.h w]
 puts $f $preamble
 
 # generate TAB_STRINGS
@@ -106,22 +139,7 @@ foreach {string} [lsort -ascii [array names ALL_STRINGS]] {
     incr len
     tab_elem "\"$string\\0\""
     tab_row
-    foreach {usage} $ALL_STRINGS($string) {
-        switch $usage {
-            scheme {
-                set ALL_SCHEME_STRINGS_coded($string) $SZT_STRINGS
-            }
-            icolor {
-                set ALL_ICOLOR_STRINGS_coded($string) $SZT_STRINGS
-            }
-            color {
-                set ALL_COLOR_STRINGS_coded($string) $SZT_STRINGS
-            }
-            default {
-                puts stderr "Unknown usage $usage for string \"$string\""
-            }
-        }
-    }
+    set ALL_STRINGS_coded($string) $SZT_STRINGS
     incr SZW_STRINGS
     if {$len > $SZL_STRINGS} {set SZL_STRINGS $len}
     incr SZT_STRINGS $len
@@ -130,81 +148,18 @@ tab_finalize "};\n"
 # don't count the null in the length of the longest string
 incr SZL_STRINGS -1
 
+close $f
+#------------------------------------------------- write inkpot_lib_scheme.h
+set f [open inkpot_lib_scheme.h w]
+puts $f $preamble
 
-foreach {m2} [lsort -dictionary [mapm2 ICRIV]] {
-    foreach {RIV schemes} $m2 {break}
-    foreach {range index value} $RIV {break}
-    foreach {m1} [map2m1 ICRIV $RIV] {
-	 foreach {icolor schemes} $m1 {break}
-	 lappend ALL_RANGES([list $icolor $range $schemes]) $m2
-    }
-}
-
-# generate TAB_INDEXES
-set SZT_INDEXES 0
-set index -1
-tab_initialize $f {set SZT_INDEXES} {list [map2m1 ICRIV $RIV] $size} \
-	"IDX_VALUES_t TAB_INDEXES\[SZT_INDEXES\] = {"
-foreach {icolor_range_schemes} [lsort -ascii [array names ALL_RANGES]] {
-    tab_row
-    foreach {m2} $ALL_RANGES($icolor_range_schemes) {
-	foreach {RIV schemes} $m2 {break}
-	foreach {range index value} $RIV {break}
-        tab_elem $ALL_VALUES_coded($value),
-        incr SZT_INDEXES
-    }
-    set size [llength $ALL_RANGES($icolor_range_schemes)]
-    set ALL_RANGES_coded($icolor_range_schemes) [list $SZT_INDEXES $size]
-}
-tab_finalize "};\n"
-
-# generate TAB_RANGES
-set SZT_RANGES 0
-set last_icolor ""
-tab_initialize $f {set SZT_RANGES} {list $icolor $schemes $cnt} \
-	"inkpot_range_t TAB_RANGES\[SZT_RANGES\] = {"
-foreach {icolor_range_schemes} [lsort -dictionary [array names ALL_RANGES_coded]] {
-    foreach {icolor range schemes} $icolor_range_schemes {break}
-    foreach {first_idx size} $ALL_RANGES_coded($icolor_range_schemes) {break}
-    if {! [string equal $last_icolor $icolor]} {
-	 tab_row
-	 set cnt 0
-	 set last_icolor $icolor
-    }
-    set size [llength $ALL_RANGES($icolor_range_schemes)]
-    tab_elem "{$size,$first_idx},"
-    incr SZT_RANGES
-    incr cnt
-}
-tab_finalize "};\n"
-
-
-# generate TAB_ICOLORS
-set SZT_ICOLORS 0
-set last_icolor ""
-tab_initialize $f {set SZT_ICOLORS} {list $icolor $schemes} \
-	"inkpot_icolor_t TAB_ICOLORS\[SZT_ICOLORS\] = {"
-foreach {icolor_range_schemes} [lsort -dictionary [array names ALL_RANGES_coded]] {
-    foreach {icolor range schemes} $icolor_range_schemes {break}
-    foreach {first_idx size} $ALL_RANGES_coded($icolor_range_schemes) {break}
-    if {! [string equal $last_icolor $icolor]} {
-	 tab_elem "{$ALL_ICOLOR_STRINGS_coded($icolor),$first_idx},"
-	 tab_row
-	 set  last_icolor $icolor
-    }
-    set ALL_ICOLORS_coded($color) $SZT_ICOLORS
-    incr SZT_ICOLORS
-}
-tab_finalize "};\n"
-		    
 
 # generate TAB_SCHEMES
 set SZT_SCHEMES 0
 tab_initialize $f {set SZT_SCHEMES} {set scheme} \
 	"inkpot_scheme_t TAB_SCHEMES\[SZT_SCHEMES\] = {"
 foreach {scheme} [lsort -ascii [array names ALL_SCHEMES]] {
-#    tab_elem $f "{$ALL_SCHEME_STRINGS_coded($scheme),$ALL_INDEX_SCHEMES_coded($scheme)},"
-    tab_elem "{$ALL_SCHEME_STRINGS_coded($scheme)},"
+    tab_elem $ALL_STRINGS_coded($scheme),
     tab_row
     set ALL_SCHEMES_coded($scheme) [list $SZT_SCHEMES [expr 1 << $SZT_SCHEMES]]
     incr SZT_SCHEMES
@@ -212,9 +167,106 @@ foreach {scheme} [lsort -ascii [array names ALL_SCHEMES]] {
 tab_finalize "};\n"
 
 
-foreach {color} [lsort -ascii [map1 CV]] {
-    set altset [lsort -dictionary [map1m2 CV $color]]
+# generate TAB_INDEXES
+set SZT_INDEXES 0
+set index -1
+tab_initialize $f {set SZT_INDEXES} {set comment} \
+	"IDX_VALUES_t TAB_INDEXES\[SZT_INDEXES\] = {"
+foreach {rangeset} [lsort -dictionary [array names ALL_RANGESETS]] {
+    set size [llength $rangeset]
+    if {$size == 1} {
+        #simple non-indexed color
+	foreach {index_value} $rangeset {break}
+	foreach {index value} $index_value {break}
+	if {$index} {
+	    puts stderr "Weird! Non-zero index $index for non-indexed color"
+	    exit
+	}
+	set ALL_SIMPLECOLORS($value) $ALL_RANGESETS($rangeset)
+	continue
+    }
+    tab_row
+    set found 0
+    set first_szt_index $SZT_INDEXES
+    foreach {index_value} $rangeset {
+	foreach {index value} $index_value {break}
+	if {! $found} {
+	    set min_index $index
+	    set max_index $index
+	    incr found
+        } {
+	    if {$index < $min_index} {set min_index $index}
+	    if {$index > $max_index} {set max_index $index}
+	}
+        tab_elem $ALL_VALUES_coded($value),
+        incr SZT_INDEXES
+    }
+    set last_index $index
+    set comment [list]
+    foreach {m1_range} $ALL_RANGESETS($rangeset) {
+	foreach {m1 range} $m1_range {break}
+	if {$range} {
+	    if {$range != $size} {
+	        puts stderr "Weird! Range doesn't match size. $m1 $range != $size"
+		exit
+	    }
+        } {
+	    set range $size
+        }
+        foreach {color schemes} $m1 {break}
+        lappend comment [list $schemes $color/$range/$min_index-$max_index]
+        set ALL_RANGES_coded([list $m1 $range]) [list $first_szt_index $size]
+    }
+}
+tab_finalize "};\n"
+
+# generate TAB_RANGES
+set SZT_RANGES 0
+set last_color ""
+tab_initialize $f {set SZT_RANGES} {list $schemes $color $cnt} \
+	"inkpot_range_t TAB_RANGES\[SZT_RANGES\] = {"
+foreach {m1_range} [lsort -ascii [array names ALL_RANGES_coded]] {
+    foreach {m1 range} $m1_range {break}
+    foreach {color schemes} $m1 {break}
+    foreach {first_idx size} $ALL_RANGES_coded($m1_range) {break}
+    if {! [string equal $last_color $color]} {
+	tab_row
+	set cnt 0
+	set last_color $color
+    }
+    set scheme_bits 0
+    foreach {scheme} $schemes {
+        foreach {scheme_idx scheme_bit} $ALL_SCHEMES_coded($scheme) {break}
+        set scheme_bits [expr $scheme_bits | $scheme_bit]
+    }
+    tab_elem "{$size,$first_idx,[format {0x%x} $scheme_bits]},"
+    incr SZT_RANGES
+    incr cnt
+}
+tab_finalize "};\n"
+
+#accumulate altsets for all non-indexed colors
+if {0} {
+foreach {color} [lsort -ascii [map1 C_RIV]] {
+    set altset [list]
+    foreach {m2} [lsort -dictionary [map1m2 C_RIV $color]] {
+        foreach {RIV schemes} $m2 {break}
+	foreach {range index value} $RIV {break}
+	if {$range != 1 || $index != 0} {continue}
+	lappend altset $m2
+    }
+    if {[llength $altset]} {
+        lappend ALL_ALTSETS($altset) $color
+    }
+}
+
+} {
+
+foreach {color} [lsort -ascii [map1 C_RIV]] {
+    set altset [lsort -dictionary [map1m2 C_RIV $color]]
     lappend ALL_ALTSETS($altset) $color
+}
+
 }
 	
 # generate TAB_ALTS
@@ -229,8 +281,10 @@ foreach {altset} [lsort -dictionary [array names ALL_ALTSETS]] {
             puts stderr "shouldn't happen - has to be at least one alt in an altset"
         }
         1 {
-	    foreach {value_schemes} $altset {break}
-	    foreach {value schemes} $value_schemes {break}
+	    foreach {m2} $altset {break}
+	    foreach {RIV schemes} $m2 {break}
+	    foreach {range index value} $RIV {break}
+	    if {$range != 1} {continue}
 	    set scheme_bits 0
     	    foreach {scheme} $schemes {
                 foreach {scheme_idx scheme_bit} $ALL_SCHEMES_coded($scheme) {break}
@@ -243,8 +297,10 @@ foreach {altset} [lsort -dictionary [array names ALL_ALTSETS]] {
         }
         default {
             set first_idx $SZT_ALTS
-	    foreach {value_schemes} $altset {
-	        foreach {value schemes} $value_schemes {break}
+	    foreach {m2} $altset {
+	        foreach {RIV schemes} $m2 {break}
+	        foreach {range index value} $RIV {break}
+	        if {$range != 1} {continue}
 	        set scheme_bits 0
     	        foreach {scheme} $schemes {
                     foreach {scheme_idx scheme_bit} $ALL_SCHEMES_coded($scheme) {break}
@@ -262,13 +318,14 @@ foreach {altset} [lsort -dictionary [array names ALL_ALTSETS]] {
 }
 tab_finalize "};\n"
 
-    
+print_first ALL_ALTS_coded
+
 # generate TAB_NAMES
 set SZT_NAMES 0
 tab_initialize $f {set SZT_NAMES} {set color} \
 	"inkpot_name_t TAB_NAMES\[SZT_NAMES\] = {"
-foreach {color} [map1 CV] {
-    tab_elem "{$ALL_COLOR_STRINGS_coded($color),$ALL_ALTS_coded($color)},"
+foreach {color} [map1 C_RIV] {
+    tab_elem "{$ALL_STRINGS_coded($color),$ALL_ALTS_coded($color)},"
     tab_row
     set ALL_NAMES_coded($color) $SZT_NAMES
     incr SZT_NAMES
@@ -280,8 +337,8 @@ tab_finalize "};\n"
 set SZT_TO_NAMES 0
 tab_initialize $f {set SZT_TO_NAMES} {set alias_set} \
 	"IDX_NAMES_t TAB_TO_NAMES\[SZT_TO_NAMES\] = {"
-foreach {m2} [mapm2 CV] {
-    set alias_set [mapm21 CV $m2]
+foreach {m2} [mapm2 C_RIV] {
+    set alias_set [mapm21 C_RIV $m2]
     foreach {value schemeset} $m2 {break}
     set ALL_TO_NAMES_coded($value) $SZT_TO_NAMES
     set first_idx $SZT_TO_NAMES
@@ -300,31 +357,27 @@ set SZT_VALUE_TO 0
 tab_initialize $f {set SZT_VALUE_TO} {set ALL_TO_NAMES_coded($value)} \
 	"IDX_TO_NAMES_t TAB_VALUE_TO\[SZT_VALUE_TO\] = {"
 # NB - this sort order must match TAB_VALUES
-foreach {value} [lsort -dictionary [map2 CV]] {
+foreach {value} [lsort -dictionary [map2 C_RIV]] {
     tab_elem $ALL_TO_NAMES_coded($value),
     tab_row
     incr SZT_VALUE_TO
 }
 tab_finalize "};\n"
     
+
 close $f
-
-
 #------------------------------------------------- write inkpot_lib_define.h
 set f [open inkpot_lib_define.h w]
 puts $f $preamble
 
 set SZT_VALUES_24 [expr 3*$SZT_VALUES]
-set SZT_NONAME_VALUES_24 [expr 3*$SZT_NONAME_VALUES]
-incr SZT_VALUES $SZT_NONAME_VALUES
 
 puts $f "\#define SZL_STRINGS $SZL_STRINGS"
 puts $f "\#define SZW_STRINGS $SZW_STRINGS"
 puts $f ""
 foreach {i} {
     STRINGS SCHEMES NAMES ALTS VALUES VALUE_TO TO_NAMES
-    ICOLORS INDEXES RANGES NONAME_VALUES
-    VALUES_24 NONAME_VALUES_24
+    INDEXES RANGES VALUES_24
 } {
     if {[set SZT_$i] < 256} {
         set int "unsigned char"
