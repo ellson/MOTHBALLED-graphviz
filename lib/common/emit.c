@@ -2243,7 +2243,11 @@ static void emit_begin_graph(GVJ_t * job, graph_t * g)
     obj->u.g = g;
     obj->emit_state = EMIT_GDRAW;
 
+#ifndef WITH_CGRAPH
+    initObjMapData (job, GD_label(g), "graph", g->meta_node->id, g);
+#else
     initObjMapData (job, GD_label(g), "graph", AGID(g), g);
+#endif
 
 #ifdef WITH_CODEGENS
     Obj = NONE;
@@ -2379,7 +2383,11 @@ fprintf(stderr,"focus=%g,%g view=%g,%g\n",
 /* support for stderr_once */
 static void free_string_entry(Dict_t * dict, char *key, Dtdisc_t * disc)
 {
+#ifndef WITH_CGRAPH
     agstrfree(key);
+#else
+    free(key);
+#endif
 }
 
 static Dict_t *strings;
@@ -2400,7 +2408,11 @@ int emit_once(char *str)
     if (strings == 0)
 	strings = dtopen(&stringdict, Dtoset);
     if (!dtsearch(strings, str)) {
+#ifndef WITH_CGRAPH
 	dtinsert(strings, agstrdup(str));
+#else
+	dtinsert(strings, strdup(str));
+#endif
 	return TRUE;
     }
     return FALSE;
@@ -2453,7 +2465,11 @@ static void emit_begin_cluster(GVJ_t * job, Agraph_t * sg)
     obj->u.sg = sg;
     obj->emit_state = EMIT_CDRAW;
 
+#ifndef WITH_CGRAPH
+    initObjMapData (job, GD_label(sg), "graph", sg->meta_node->id, sg);
+#else
     initObjMapData (job, GD_label(sg), "graph", AGID(sg), sg);
+#endif
     
 #ifdef WITH_CODEGENS
     Obj = CLST;
