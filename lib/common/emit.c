@@ -1031,7 +1031,7 @@ static boolean clust_in_layer(GVJ_t *job, graph_t * sg)
 #ifndef WITH_CGRAPH
     pg = late_string(sg, agfindattr(sg, "layer"), "");
 #else
-    pg = late_string(sg, agfindattr(sg, "layer"), "");
+    pg = late_string(sg, agattr(sg, AGRAPH, "layer", 0), "");
 #endif
     if (selectedlayer(job, pg))
 	return TRUE;
@@ -2346,7 +2346,11 @@ fprintf(stderr,"focus=%g,%g view=%g,%g\n",
 	job->focus.x, job->focus.y, job->view.x, job->view.y);
 #endif
 
+#ifndef WITH_CGRAPH
     s = late_string(g, agfindattr(g, "comment"), "");
+#else
+    s = late_string(g, agattr(g, AGRAPH, "comment", 0), "");
+#endif
     gvrender_comment(job, s);
 
     emit_begin_graph(job, g);

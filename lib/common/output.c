@@ -122,20 +122,22 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 
+#ifndef WITH_CGRAPH
 /* FIXME - there must be a proper way to get port info - these are 
  * supposed to be private to libgraph - from libgraph.h */
 #define TAILX 1
 #define HEADX 2
 
-#ifndef WITH_CGRAPH
 	    if (extend && e->attr) {
 		tport = e->attr[TAILX];
 		hport = e->attr[HEADX];
 	    }
 #else /* WITH_CGRAPH */
 	    if (extend) {		//assuming these two attrs have already been created by cgraph
-		tport = agget(e,TAILX);
-		hport = agget(e,HEADX);
+		if (!(tport = agget(e,"tailport")))
+		    tport = "";
+		if (!(hport = agget(e,"headport")))
+		    hport = "";
 	    }
 #endif /* WITH_CGRAPH */
 	    else
