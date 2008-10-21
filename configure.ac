@@ -2913,17 +2913,12 @@ AC_CONFIG_FILES(Makefile
 	lib/sfio/Sfio_f/Makefile
 	lib/vmalloc/Makefile
 	lib/dotgen/Makefile
-	lib/dotgen_cgraph/Makefile
 	lib/neatogen/Makefile
-	lib/neatogen_cgraph/Makefile
 	lib/fdpgen/Makefile
-	lib/fdpgen_cgraph/Makefile
 	lib/sparse/Makefile
 	lib/sfdpgen/Makefile
 	lib/circogen/Makefile
-	lib/circogen_cgraph/Makefile
 	lib/twopigen/Makefile
-	lib/twopigen_cgraph/Makefile
 	lib/patchwork/Makefile
 	lib/pack/Makefile
 	lib/expr/Makefile
