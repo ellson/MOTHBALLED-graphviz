@@ -778,7 +778,7 @@ finishEdge (edge_t* e, Ppoly_t spl, int flip, pointf p, pointf q)
 	q1 = q;
     }
     if (Verbose > 1)
-	fprintf(stderr, "spline %s %s\n", e->tail->name, e->head->name);
+	fprintf(stderr, "spline %s %s\n", agnameof(agtail(e)), agnameof(aghead(e)));
     clip_and_install(e, e->head, spline, spl.pn, &sinfo);
     free(spline);
 
@@ -885,7 +885,7 @@ genroute(tripoly_t * trip, int s, int t, edge_t * e, int doPolyline)
 	cpts[i] =
 	    mkCtrlPts(t, mult+1, pl.ps[i], pl.ps[i + 1], pl.ps[i + 2], trip);
 	if (!cpts[i]) {
-	    agerr(AGWARN, "Could not create control points for multiple spline for edge (%s,%s)\n", e->tail->name, e->head->name);
+	    agerr(AGWARN, "Could not create control points for multiple spline for edge (%s,%s)\n", agnameof(agtail(e)), agnameof(aghead(e)));
 	    return 1;
 	}
     }
