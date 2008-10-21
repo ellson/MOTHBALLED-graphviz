@@ -137,13 +137,13 @@ int countDummyNodes(graph_t * g)
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 #ifdef UNUSED
 	    /* this loop can be avoided */
-	    for (k = ND_rank(e->tail)+1; k < ND_rank(e->head); k++) {
+	    for (k = ND_rank(agtail(e))+1; k < ND_rank(aghead(e)); k++) {
 	       count++;
 	    }
 #endif
 		/* flat edges do not have dummy nodes */
-	    if (ND_rank(e->head) != ND_rank(e->tail))	
-		count += abs(ND_rank(e->head) - ND_rank(e->tail)) - 1;
+	    if (ND_rank(aghead(e)) != ND_rank(agtail(e)))	
+		count += abs(ND_rank(aghead(e)) - ND_rank(agtail(e))) - 1;
 	}
     }
     return count;
@@ -228,14 +228,14 @@ static void computeLayerWidths(graph_t * g)
              * the commented codes next, gives a segmentation fault. I 
              * forgot the reason why.
              */
-	    for (k = ND_rank(e->tail) + 1; k < ND_rank(e->head); k++) {
+	    for (k = ND_rank(agtail(e)) + 1; k < ND_rank(aghead(e)); k++) {
 		layerWidthInfo[k].nDummyNodes++;
 	    }
 
 #ifdef UNUSED
-	    if (ND_rank(e->head) != ND_rank(e->tail))
+	    if (ND_rank(aghead(e)) != ND_rank(agtail(e)))
 		/* flat edges do not have dummy nodes  */
-		layerWidthInfo[k].nDummyNodes = abs(ND_rank(e->head) - ND_rank(e->tail)) - 1;
+		layerWidthInfo[k].nDummyNodes = abs(ND_rank(aghead(e)) - ND_rank(agtail(e))) - 1;
 #endif
 	}
 
@@ -304,11 +304,11 @@ static int getMaxDummyNodes(nodeGroup_t * ng)
     for (i = 0; i < ng->nNodes; i++) {
 	node_t *n = ng->nodes[i];
 	edge_t *e;
-	graph_t *g = n->graph;
+	graph_t *g = agraphof(n);
 	for (e = agfstin(g, n); e; e = agnxtin(g, e)) {
-	    cnt += ND_rank(e->head) - ND_rank(e->tail);	// it's 1 more than the original count
-	    if (ND_rank(e->head) - ND_rank(e->tail) > max)
-		max = ND_rank(e->head) - ND_rank(e->tail);
+	    cnt += ND_rank(aghead(e)) - ND_rank(agtail(e));	// it's 1 more than the original count
+	    if (ND_rank(aghead(e)) - ND_rank(agtail(e)) > max)
+		max = ND_rank(aghead(e)) - ND_rank(agtail(e));
 	}
     }
 
@@ -325,7 +325,7 @@ static int getOutDegree(nodeGroup_t * ng)
     for (i = 0; i < ng->nNodes; i++) {
 	node_t *n = ng->nodes[i];
 	edge_t *e;
-	graph_t *g = n->graph;
+	graph_t *g = agraphof(n);
 
 	/* count outdegree. This loop might be unnecessary. */
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
@@ -439,7 +439,7 @@ checkHorizontalEdge(graph_t * g, nodeGroup_t * ng, int nextLayerIndex)
     for (i = 0; i < ng->nNodes; i++) {
 	for (e = agfstout(g, ng->nodes[i]); e; e = agnxtout(g, e)) {
 	    if (layerWidthInfo[nextLayerIndex].layerNumber ==
-		ND_rank(e->head)) {
+		ND_rank(aghead(e))) {
 		return 1;
 	    }
 	}
@@ -566,13 +566,11 @@ static void reduceMaxWidth(graph_t * g)
 		layerWidthInfo[nextLayerIndex].nNodeGroupsInLayer++;
 		layerWidthInfo[nextLayerIndex].width += ng->width;
 
-		int jj;
-		for (jj = 0;
-		     jj <
-		     layerWidthInfo[nextLayerIndex].nNodeGroupsInLayer;
-		     jj++) {
-		    //printf("%s\n", layerWidthInfo[nextLayerIndex].nodeGroupsInLayer[jj]->nodes[0]->name);
-		}
+		//int jj;
+		//for (jj = 0; jj < layerWidthInfo[nextLayerIndex].nNodeGroupsInLayer; jj++) {
+		    //Agnode_t *node = layerWidthInfo[nextLayerIndex].nodeGroupsInLayer[jj]->nodes[0];
+		    //printf("%s\n", agnameof(node));
+		//}
 	    }
 
 	}
@@ -661,12 +659,12 @@ static void reduceMaxWidth(graph_t * g)
 
 	for (n = agfstnode(g); n; n = agnxtnode(g, n))
 	    for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-		if ((ND_rank(e->head) > layerWidthInfo[nLayers].layerNumber
-		     && ND_rank(e->tail) <
+		if ((ND_rank(aghead(e)) > layerWidthInfo[nLayers].layerNumber
+		     && ND_rank(agtail(e)) <
 		     layerWidthInfo[nLayers].layerNumber)
-		    || (ND_rank(e->head) <
+		    || (ND_rank(aghead(e)) <
 			layerWidthInfo[nLayers].layerNumber
-			&& ND_rank(e->tail) >
+			&& ND_rank(agtail(e)) >
 			layerWidthInfo[nLayers].layerNumber)
 		    )
 		    nDummy++;
@@ -745,11 +743,9 @@ static void reduceMaxWidth2(graph_t * g)
 #if 0
     printf("\nSorted nodes in mx layer:\n---------------------------\n");
     for (i = 0; i < layerWidthInfo[maxLayerIndex].nNodeGroupsInLayer; i++) {
+	Agnode_t *node = layerWidthInfo[maxLayerIndex].nodeGroupsInLayer[i]->nodes[0];
 	printf("%s. width=%lf, height=%lf\n",
-	       layerWidthInfo[maxLayerIndex].nodeGroupsInLayer[i]->
-	       nodes[0]->name,
-	       layerWidthInfo[maxLayerIndex].nodeGroupsInLayer[i]->width,
-	       layerWidthInfo[maxLayerIndex].nodeGroupsInLayer[i]->height);
+	       agnameof(node), node->width, node->height);
     }
 #endif
 
@@ -805,7 +801,8 @@ static void reduceMaxWidth2(graph_t * g)
 
 	    for (p = 0; p < fstNdGrp->nNodes; p++)
 		for (q = 0; q < ng->nNodes; q++) {
-		    //printf("Trying to add virtual edge: %s -> %s\n", fstNdGrp->nodes[p]->name, ng->nodes[q]->name);
+		    //printf("Trying to add virtual edge: %s -> %s\n",
+		    //    agnameof(fstNdGrp->nodes[p]), agnameof(ng->nodes[q]));
 
 		    /* The following code is for deletion of long virtual edges.
 		     * It's no longer used.
@@ -818,10 +815,10 @@ static void reduceMaxWidth2(graph_t * g)
 			int fail = 0;
 			cnt = 0;
 
-			for (et = agfstin(g, ev->head); et;
+			for (et = agfstin(g, aghead(ev)); et;
 			     et = agnxtin(g, et)) {
-			    if (et->head == ev->head
-				&& et->tail == ev->tail) {
+			    if (aghead(et) == aghead(ev)
+				&& agtail(et) == agtail(ev)) {
 				fail = 1;
 				break;
 			    }
@@ -834,8 +831,10 @@ static void reduceMaxWidth2(graph_t * g)
 
 
 			if (ED_edge_type(ev) == VIRTUAL
-			    && ND_rank(ev->head) > ND_rank(ev->tail) + 1) {
-			    //printf("%d. inNode= %s.deleted: %s->%s\n", test++, ng->nodes[q]->name, ev->tail->name, ev->head->name);
+			    && ND_rank(aghead(ev)) > ND_rank(agtail(ev)) + 1) {
+			    //printf("%d. inNode= %s.deleted: %s->%s\n",
+			    //   test++, agnameof(ng->nodes[q]),
+			    //   agnameof(agtail(ev)), agnameof(aghead(ev)));
 
 			    delete_fast_edge(ev);
 			    free(ev);
@@ -978,7 +977,7 @@ static void applyPacking(graph_t * g, double targetAR)
     node_t *v;
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
-	//printf("%s, rank = %d, ranktype = %d\n", v->name, ND_rank(v), ND_ranktype(v));
+	//printf("%s, rank = %d, ranktype = %d\n", agnameof(v), ND_rank(v), ND_ranktype(v));
     }
 
     //GD_nodesep(g) = 0.25;
@@ -990,7 +989,7 @@ static void applyPacking(graph_t * g, double targetAR)
     for (i = 0; i < 1; i++) {
 	//printf("iteration = %d\n----------------------\n", i);
 	for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
-	    //printf("%s rank = %d\n", v->name, ND_rank(v));
+	    //printf("%s rank = %d\n", agnameof(v), ND_rank(v));
 	}
 
 	computeLayerWidths(g);
@@ -1054,7 +1053,7 @@ static void applyPacking(graph_t * g, double targetAR)
 
     for (k = 0; k < nLayers; k++) {
 	//printf("Layer#=%d, #dumNd=%d, width=%0.1lf, node=%s\n", layerWidthInfo[k].layerNumber, layerWidthInfo[k].nDummyNodes, layerWidthInfo[k].width,
-	// layerWidthInfo[k].nodeGroupsInLayer[0]->nodes[0]->name);
+	// agnameof(layerWidthInfo[k].nodeGroupsInLayer[0]->nodes[0]));
 	if (layerWidthInfo[k].width > maxW)	// && layerWidthInfo[k].nNodeGroupsInLayer > 0)
 	{
 	    maxW = layerWidthInfo[k].width;
@@ -1064,11 +1063,11 @@ static void applyPacking(graph_t * g, double targetAR)
 	    index = k;
 	}
     }
-    //printf("Ht=%d, MxW=%d, #ndGr=%d, #dumNd=%d, lyr#=%d, 1stNd=%s\n", (nLayers-1)*DPI, maxW, nNodeG, nDummy, l, layerWidthInfo[index].nodeGroupsInLayer[0]->nodes[0]->name);
+    //printf("Ht=%d, MxW=%d, #ndGr=%d, #dumNd=%d, lyr#=%d, 1stNd=%s\n", (nLayers-1)*DPI, maxW, nNodeG, nDummy, l, agnameof(layerWidthInfo[index].nodeGroupsInLayer[0]->nodes[0]));
 
     // printf("Finally...\n------------------\n");
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
-	//printf("%s, rank = %d, ranktype = %d\n", v->name, ND_rank(v), ND_ranktype(v));
+	//printf("%s, rank = %d, ranktype = %d\n", agnameof(v, ND_rank(v), ND_ranktype(v));
     }
 
 }
@@ -1113,7 +1112,7 @@ void applyPacking4(graph_t * g)
 	/*    printf("iteration = %d\n----------------------\n", i);
 	   for (v = agfstnode(g); v; v = agnxtnode(g,v))
 	   {
-	   printf("%s rank = %d\n", v->name, ND_rank(v));
+	   printf("%s rank = %d\n", agnameof(v), ND_rank(v));
 	   }
 	 */
 
@@ -1175,7 +1174,7 @@ static int countDummyDiff(graph_t * g, Agnode_t * v, int max)
 
     for (j = 0; j < ND_in(v).size; j++) {
 	e = ND_in(v).list[j];
-	u = e->tail;
+	u = agtail(e);
 
 	if (myNodeInfo[ND_id(u)].rank == myNodeInfo[ND_id(v)].rank + 1) {
 	    dummydiff += countDummyDiff(g, u, max);
@@ -1257,7 +1256,7 @@ static void applyPromotionHeuristic(graph_t * g)
 static int allNeighborsAreBelow(Agnode_t * n)
 {
     Agedge_t *e;
-    graph_t *g = n->graph;
+    graph_t *g = agraphof(n);
     int i;
 
     //for (e = agfstout(g,n); e; e = agnxtout(g,e))
@@ -1266,11 +1265,11 @@ static int allNeighborsAreBelow(Agnode_t * n)
 	if (ED_edge_type(e) == VIRTUAL) {
 	    if (ED_to_orig(e) != NULL)
 		e = ED_to_orig(e);
-	    else if (ND_node_type(e->head) == VIRTUAL)
+	    else if (ND_node_type(aghead(e)) == VIRTUAL)
 		continue;
 	}
 
-	if (ND_pinned(e->head) != 2)	//neighbor of n is not below
+	if (ND_pinned(aghead(e)) != 2)	//neighbor of n is not below
 	{
 	    return 0;
 	}
@@ -1668,8 +1667,8 @@ void applyExpansion(graph_t * g)
 	    node_t *nd = ng->nodes[p];
 
 	    while (e = ND_in(nd).list[0]) {
-		printf("Reversing edge: %s->%s\n", e->tail->name,
-		       e->head->name);
+		printf("Reversing edge: %s->%s\n", agnemeof(agtail(e)),
+		       agnameof(aghead(e)));
 		reverse_edge(e);
 	    }
 
@@ -1678,42 +1677,38 @@ void applyExpansion(graph_t * g)
 	    edge_t *e3;
 	    for (v3 = agfstnode(g); v3; v3 = agnxtnode(g, v3)) {
 		for (e3 = agfstout(g, v3); e3; e3 = agnxtout(g, e3)) {
-		    if (ND_rank(e3->head) > k && ND_rank(e3->tail) < k) {
+		    if (ND_rank(aghead(e3)) > k && ND_rank(agtail(e3)) < k) {
 			printf("Reversing long edge: %s->%s\n",
-			       e3->tail->name, e3->head->name);
+			       agnameof(agtail(e3)), agnameof(aghead(e3)));
 			reverse_edge(e3);
 		    }
 
 		}
 	    }
 
-	    /*for (l = 0; l < nLayers; l++)
-	       {
-	       if (layerWidthInfo[l].layerNumber <= k)
-	       continue;
+	    /*for (l = 0; l < nLayers; l++) {
+	        if (layerWidthInfo[l].layerNumber <= k)
+	            continue;
 
-	       for (j = 0; j < layerWidthInfo[l].nNodeGroupsInLayer; j++)
-	       {
-	       int q;
-	       nodeGroup_t *ng2 = layerWidthInfo[l].nodeGroupsInLayer[j];
-	       for (q = 0; q < ng2->nNodes; q++)
-	       {
-	       node_t *nd2 = ng2->nodes[q];
-	       edge_t *e2;
-	       int s = 0;
-	       while (e2 = ND_in(nd2).list[s])
-	       {
-	       if (ND_rank(e2->tail) < k)
-	       {
-	       printf("Reversing edge: %s->%s\n", e2->tail->name, e2->head->name);
-	       getchar();
-	       //reverse_edge(e2);
-	       }
-	       else s++;
-	       }
-	       }
-	       }
-	       } */
+	        for (j = 0; j < layerWidthInfo[l].nNodeGroupsInLayer; j++) {
+	            int q;
+	            nodeGroup_t *ng2 = layerWidthInfo[l].nodeGroupsInLayer[j];
+	            for (q = 0; q < ng2->nNodes; q++) {
+	                node_t *nd2 = ng2->nodes[q];
+	                edge_t *e2;
+	                int s = 0;
+	                while (e2 = ND_in(nd2).list[s]) {
+	                    if (ND_rank(agtail(e2)) < k) {
+	                        printf("Reversing edge: %s->%s\n",
+				    agnameof(agtail(e2)), agnameof(aghead(e2)));
+	                        getchar();
+	                        //reverse_edge(e2);
+	                    }
+	                    else s++;
+	                }
+	            }
+	        }
+	    } */
 
 	    if (sink == NULL) {
 		int brFlag = 1;
