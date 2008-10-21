@@ -201,8 +201,8 @@ raiseLevel(objlist * l, int maxlvl, void *ex, int minlvl, graph_t ** gp,
  */
 static objlist *objectList(edge_t * ep, expand_t* pm)
 {
-    node_t *h = ep->head;
-    node_t *t = ep->tail;
+    node_t *h = aghead(ep);
+    node_t *t = agtail(ep);
     graph_t *hg = PARENT(h);
     graph_t *tg = PARENT(t);
     int hlevel;
@@ -269,7 +269,7 @@ int compoundEdges(graph_t * g, expand_t* pm, int edgetype)
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    head = e->head;
+	    head = aghead(e);
 	    if ((n == head) && ED_count(e)) {	/* self arc */
 		if (!P) {
 		    P = NEW(path);
