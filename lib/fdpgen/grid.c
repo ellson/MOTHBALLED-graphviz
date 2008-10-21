@@ -236,7 +236,7 @@ void addGrid(Grid * g, int i, int j, Agnode_t * n)
     cellp = dtinsert(g->data, &key);
     cellp->nodes = newNode(g, n, cellp->nodes);
     if (Verbose >= 3) {
-	fprintf(stderr, "grid(%d,%d): %s\n", i, j, n->name);
+	fprintf(stderr, "grid(%d,%d): %s\n", i, j, agnameof(n));
     }
 }
 
