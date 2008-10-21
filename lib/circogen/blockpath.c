@@ -44,22 +44,42 @@ static Agraph_t *clone_graph(Agraph_t * ing, Agraph_t ** xg)
     static int id = 0;
 
     sprintf(gname, "_clone_%d", id++);
+#ifndef WITH_CGRAPH
     clone = agsubg(ing, gname);
+#else /* WITH_CGRAPH */
+    clone = agsubg(ing, gname,1);
+    agbindrec(clone, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	//node custom data
+#endif /* WITH_CGRAPH */
     sprintf(gname, "_clone_%d", id++);
+#ifndef WITH_CGRAPH
     xclone = agopen(gname, ing->kind);
-
     for (n = agfstnode(ing); n; n = agnxtnode(ing, n)) {
 	aginsert(clone, n);
-	xn = agnode(xclone, n->name);
+	xn = agnode(xclone, agnameof(n));
+#else /* WITH_CGRAPH */
+    xclone = agopen(gname, ing->desc,NIL(Agdisc_t *));
+    for (n = agfstnode(ing); n; n = agnxtnode(ing, n)) {
+	agsubnode(clone,n,1);
+	xn = agnode(xclone, agnameof(n),1);
+        agbindrec(xn, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);	//node custom data
+#endif /* WITH_CGRAPH */
 	CLONE(n) = xn;
     }
 
     for (n = agfstnode(ing); n; n = agnxtnode(ing, n)) {
 	xn = CLONE(n);
+#ifndef WITH_CGRAPH
 	for (e = agfstout(ing, n); e; e = agnxtout(ing, e)) {
 	    aginsert(clone, e);
 	    xh = CLONE(e->head);
 	    xe = agedge(xclone, xn, xh);
+#else /* WITH_CGRAPH */
+	for (e = agfstout(ing, n); e; e = agnxtout(ing, e)) {
+	    agsubedge(clone,e,1);
+	    xh = CLONE(aghead(e));
+	    xe = agedge(xclone, xn, xh,(char*)0,1);
+	    agbindrec(xe, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//node custom data
+#endif /* WITH_CGRAPH */
 	    ORIGE(xe) = e;
 	    DEGREE(xn) += 1;
 	    DEGREE(xh) += 1;
@@ -78,7 +98,7 @@ static Agraph_t *clone_graph(Agraph_t * ing, Agraph_t ** xg)
     for (n = agfstnode(root); n; n = agnxtnode(root, n)) {
 	Agnode_t *t = agnode(clone, n);
 	for (e = agfstout(root, n); e; e = agnxtout(root, e)) {
-	    Agnode_t *h = agnode(clone, e->head->name);
+	    Agnode_t *h = agnode(clone, agnameof(aghead(e)));
 	    agedge(clone, t, h);
 	}
     }
@@ -124,17 +144,21 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
     neighbors_without = N_GNEW(node_degree, Agnode_t *);
 
     for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
-	n1 = e->head;
+	n1 = aghead(e);
 	if (n1 == n)
-	    n1 = e->tail;
+	    n1 = agtail(e);
 	has_pair_edge = 0;
 	for (ep = agfstedge(g, n); ep; ep = agnxtedge(g, ep, n)) {
 	    if (ep == e)
 		continue;
-	    n2 = ep->head;
+	    n2 = aghead(ep);
 	    if (n2 == n)
-		n2 = ep->tail;
+		n2 = agtail(ep);
+#ifndef WITH_CGRAPH
 	    ex = agfindedge(g, n1, n2);
+#else /* WITH_CGRAPH */
+	    ex = agedge(g, n1, n2,(char*)0,0);
+#endif /* WITH_CGRAPH */
 	    if (ex) {
 		has_pair_edge = 1;
 		if (n1 < n2) {	/* count edge only once */
@@ -167,7 +191,12 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 		    break;
 		tp = neighbors_without[mark];
 		hp = neighbors_without[mark + 1];
+#ifndef WITH_CGRAPH
 		agedge(g, tp, hp);
+#else /* WITH_CGRAPH */
+		agbindrec(agedge(g, tp, hp,(char*)0,1), "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//node custom data
+
+#endif /* WITH_CGRAPH */
 		DEGREE(tp)++;
 		DEGREE(hp)++;
 		diff--;
@@ -177,7 +206,13 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 	    while (diff > 0) {
 		tp = neighbors_without[0];
 		hp = neighbors_without[mark];
+#ifndef WITH_CGRAPH
 		agedge(g, tp, hp);
+#else /* WITH_CGRAPH */
+
+		agbindrec(agedge(g, tp, hp,(char*)0,1), "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//node custom data
+
+#endif /* WITH_CGRAPH */
 		DEGREE(tp)++;
 		DEGREE(hp)++;
 		mark++;
@@ -189,7 +224,12 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 	    tp = neighbors_with[0];
 	    for (mark = 0; mark < no_pair_count; mark++) {
 		hp = neighbors_without[mark];
+#ifndef WITH_CGRAPH
 		agedge(g, tp, hp);
+#else /* WITH_CGRAPH */
+		agbindrec(agedge(g, tp, hp,(char*)0,1), "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//node custom data
+
+#endif /* WITH_CGRAPH */
 		DEGREE(tp)++;
 		DEGREE(hp)++;
 	    }
@@ -223,18 +263,18 @@ static Agraph_t *remove_pair_edges(Agraph_t * ing)
 
 	/* Remove all adjacent nodes since they have to be reinserted */
 	for (e = agfstedge(g, currnode); e; e = agnxtedge(g, e, currnode)) {
-	    adjNode = e->head;
+	    adjNode = aghead(e);
 	    if (currnode == adjNode)
-		adjNode = e->tail;
+		adjNode = agtail(e);
 	    removeDeglist(dl, adjNode);
 	}
 
 	find_pair_edges(g, currnode, outg);
 
 	for (e = agfstedge(g, currnode); e; e = agnxtedge(g, e, currnode)) {
-	    adjNode = e->head;
+	    adjNode = aghead(e);
 	    if (currnode == adjNode)
-		adjNode = e->tail;
+		adjNode = agtail(e);
 
 	    DEGREE(adjNode)--;
 	    insertDeglist(dl, adjNode);
@@ -357,13 +397,17 @@ static void dfs(Agraph_t * g, Agnode_t * n, Agraph_t * tree)
 
     SET_VISITED(n);
     for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
-	neighbor = e->head;
+	neighbor = aghead(e);
 	if (neighbor == n)
-	    neighbor = e->tail;
+	    neighbor = agtail(e);
 
 	if (!VISITED(neighbor)) {
 	    /* add the edge to the dfs tree */
+#ifndef WITH_CGRAPH
 	    aginsert(tree, e);
+#else /* WITH_CGRAPH */
+	    agsubedge(tree,e,1);
+#endif /* WITH_CGRAPH */
 	    TPARENT(neighbor) = n;
 	    dfs(g, neighbor, tree);
 	}
@@ -381,9 +425,19 @@ static Agraph_t *spanning_tree(Agraph_t * g)
     static int id = 0;
 
     sprintf(gname, "_span_%d", id++);
+#ifndef WITH_CGRAPH
     tree = agsubg(g, gname);
+#else /* WITH_CGRAPH */
+    tree = agsubg(g, gname,1);
+    agbindrec(tree, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	//node custom data
+#endif /* WITH_CGRAPH */
+
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+#ifndef WITH_CGRAPH
 	aginsert(tree, n);
+#else /* WITH_CGRAPH */
+	agsubnode(tree,n,1);
+#endif /* WITH_CGRAPH */
 	DISTONE(n) = 0;
 	DISTTWO(n) = 0;
 	UNSET_VISITED(n);
@@ -410,8 +464,12 @@ static void block_graph(Agraph_t * g, block_t * sn)
 
     for (n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    if (BLOCK(e->head) == sn)
+	    if (BLOCK(aghead(e)) == sn)
+#ifndef WITH_CGRAPH
 		aginsert(subg, e);
+#else /* WITH_CGRAPH */
+		agsubedge(subg,e,1);
+#endif /* WITH_CGRAPH */
 	}
     }
 }
@@ -444,7 +502,7 @@ static int count_all_crossings(nodelist_t * list, Agraph_t * subg)
 		     (edgelistitem *) dtnext(openEdgeList, eitem)) {
 		    ep = eitem->edge;
 		    if (EDGEORDER(ep) > EDGEORDER(e)) {
-			if ((ep->head != n) && (ep->tail != n))
+			if ((aghead(ep) != n) && (agtail(ep) != n))
 			    crossings++;
 		    }
 		}
@@ -486,9 +544,9 @@ static nodelist_t *reduce(nodelist_t * list, Agraph_t * subg, int *cnt)
 	/*  move curnode next to its neighbors */
 	for (e = agfstedge(subg, curnode); e;
 	     e = agnxtedge(subg, e, curnode)) {
-	    neighbor = e->tail;
+	    neighbor = agtail(e);
 	    if (neighbor == curnode)
-		neighbor = e->head;
+		neighbor = aghead(e);
 
 	    for (j = 0; j < 2; j++) {
 		listCopy = cloneNodelist(list);
@@ -561,12 +619,12 @@ static void place_node(Agraph_t * g, Agnode_t * n, nodelist_t * list)
     nodelistitem_t *one, *two;
 
     for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	appendNodelist(neighbors, NULL, e->head);
-	SET_NEIGHBOR(e->head);
+	appendNodelist(neighbors, NULL, aghead(e));
+	SET_NEIGHBOR(aghead(e));
     }
     for (e = agfstin(g, n); e; e = agnxtin(g, e)) {
-	appendNodelist(neighbors, NULL, e->tail);
-	SET_NEIGHBOR(e->tail);
+	appendNodelist(neighbors, NULL, agtail(e));
+	SET_NEIGHBOR(agtail(e));
     }
 
     /* Look for 2 neighbors consecutive on list */

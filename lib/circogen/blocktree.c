@@ -26,7 +26,11 @@ static int min_value(int x, int y)
 
 static void addNode(block_t * bp, Agnode_t * n)
 {
+#ifndef WITH_CGRAPH
     aginsert(bp->sub_graph, n);
+#else /* WITH_CGRAPH */
+    agsubnode(bp->sub_graph, n,1);
+#endif /* WITH_CGRAPH */
     SET_BCDONE(n);
     BLOCK(n) = bp;
 }
@@ -37,7 +41,12 @@ static Agraph_t *makeBlockGraph(Agraph_t * g, circ_state * state)
     Agraph_t *subg;
 
     sprintf(name, "_block_%d", state->blockCount++);
+#ifndef WITH_CGRAPH
     subg = agsubg(g, name);
+#else /* WITH_CGRAPH */
+    subg = agsubg(g, name,1);
+    agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	//node custom data
+#endif /* WITH_CGRAPH */
     return subg;
 }
 
@@ -73,9 +82,9 @@ static void dfs(Agraph_t * g, Agnode_t * n, circ_state * state, int isRoot)
     stackPush(state->bcstack, n);
 
     for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
-	Agnode_t *neighbor = e->head;
+	Agnode_t *neighbor = aghead(e);
 	if (neighbor == n)
-	    neighbor = e->tail;
+	    neighbor = agtail(e);
 
 	if (neighbor == PARENT(n))
 	    continue;
@@ -196,7 +205,11 @@ static void find_blocks(Agraph_t * g, circ_state * state)
     /*      check to see if there is a node which is set to be the root
      */
     if (state->rootname) {
+#ifndef WITH_CGRAPH
 	root = agfindnode(g, state->rootname);
+#else /* WITH_CGRAPH */
+	root = agnode(g, state->rootname,0);
+#endif /* WITH_CGRAPH */
     }
     if (!root && state->N_root) {
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
@@ -288,6 +301,7 @@ block_t *createBlocktree(Agraph_t * g, circ_state * state)
 	Agraph_t *subg = bp->sub_graph;
 
 	child = n = agfstnode(subg);
+
 	min = VAL(n);
 	parent = PARENT(n);
 	for (n = agnxtnode(subg, n); n; n = agnxtnode(subg, n)) {

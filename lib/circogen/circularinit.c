@@ -36,6 +36,9 @@
 
 static void circular_init_edge(edge_t * e)
 {
+#ifdef WITH_CGRAPH
+    agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//node custom data
+#endif /* WITH_CGRAPH */
     common_init_edge(e);
 
     ED_factor(e) = late_double(e, E_weight, 1.0, 0.0);
@@ -51,9 +54,9 @@ static void circular_init_node_edge(graph_t * g)
 
     GD_neato_nlist(g) = N_NEW(agnnodes(g) + 1, node_t *);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	neato_init_node(n);
 	ND_alg(n) = alg + i;
 	GD_neato_nlist(g)[i++] = n;
-	neato_init_node(n);
     }
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
@@ -80,7 +83,12 @@ void circo_init_graph(graph_t * g)
 static node_t *makeDerivedNode(graph_t * dg, char *name, int isNode,
 			       void *orig)
 {
+#ifndef WITH_CGRAPH
     node_t *n = agnode(dg, name);
+#else /* WITH_CGRAPH */
+    node_t *n = agnode(dg, name,1);
+    agbindrec(n, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);	//node custom data
+#endif /* WITH_CGRAPH */
     ND_alg(n) = (void *) NEW(cdata);
     if (isNode) {
 	ND_pos(n) = N_NEW(Ndim, double);
@@ -117,7 +125,11 @@ Agraph_t **circomps(Agraph_t * g, int *cnt)
     Agedge_t *me;
 #endif
 
+#ifndef WITH_CGRAPH
     dg = agopen("derived", AGFLAG_STRICT);
+#else /* WITH_CGRAPH */
+    dg = agopen("derived", Agstrictundirected,NIL(Agdisc_t *));
+#endif /* WITH_CGRAPH */
     GD_alg(g) = dg;  /* store derived graph for closing later */
 #ifdef USER_BLOCKS
     sg = g->meta_node->graph;
@@ -140,16 +152,21 @@ Agraph_t **circomps(Agraph_t * g, int *cnt)
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
 	if (DNODE(v))
 	    continue;
-	n = makeDerivedNode(dg, v->name, 1, v);
+	n = makeDerivedNode(dg, agnameof(v), 1, v);
 	DNODE(v) = n;
     }
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
 	for (e = agfstout(g, v); e; e = agnxtout(g, e)) {
-	    dt = DNODE(e->tail);
-	    dh = DNODE(e->head);
-	    if (dt != dh)
+	    dt = DNODE(agtail(e));
+	    dh = DNODE(aghead(e));
+	    if (dt != dh) {
+#ifndef WITH_CGRAPH
 		agedge(dg, dt, dh);
+#else /* WITH_CGRAPH */
+		agbindrec(agedge(dg, dt, dh,(char*)0,1), "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//node custom data
+#endif /* WITH_CGRAPH */
+	    }
 	}
     }
 
@@ -182,11 +199,17 @@ Agraph_t **circomps(Agraph_t * g, int *cnt)
 	for (n = agfstnode(sg); n; n = agnxtnode(sg, n)) {
 	    p = ORIGN(n);
 	    for (e = agfstout(g, p); e; e = agnxtout(g, e)) {
-		/* n = DNODE(e->tail); by construction since e->tail == p */
-		dh = DNODE(e->head);
+		/* n = DNODE(agtail(e)); by construction since agtail(e) == p */
+		dh = DNODE(aghead(e));
 		if (n != dh) {
+#ifndef WITH_CGRAPH
 		    ep = agedge(dg, n, dh);
 		    aginsert(sg, ep);
+#else /* WITH_CGRAPH */
+		    ep = agedge(dg, n, dh,(char*)0,1);
+		    agbindrec(ep, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//node custom data
+		    agsubedge(sg,ep,1);
+#endif /* WITH_CGRAPH */
 		}
 	    }
 	}
@@ -313,5 +336,10 @@ void circo_cleanup(graph_t * g)
 	gv_cleanup_node(n);
     }
     free(GD_neato_nlist(g));
-    if (g != g->root) memset(&(g->u), 0, sizeof(Agraphinfo_t));
+    if (g != agroot(g)) 
+#ifndef WITH_CGRAPH
+	memset(&(g->u), 0, sizeof(Agraphinfo_t));
+#else /* WITH_CGRAPH */
+	agclean (g,AGRAPH,"Agraphinfo_t");
+#endif /* WITH_CGRAPH */
 }

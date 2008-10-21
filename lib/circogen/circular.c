@@ -38,14 +38,23 @@ static void initGraphAttrs(Agraph_t * g, circ_state * state)
     attrsym_t *G_mindist;
     node_t *n = agfstnode(g);
 
-    rg = ORIGN(n)->graph;
+    rg = agraphof(ORIGN(n));
     if (rg != rootg) {		/* new root graph */
 	state->blockCount = 0;
 	rootg = rg;
+#ifndef WITH_CGRAPH
 	G_mindist = agfindattr(rootg, "mindist");
+#else /* WITH_CGRAPH */
+	G_mindist = agattr(rootg,AGRAPH, "mindist",(char*)0);
+#endif /* WITH_CGRAPH */
 	min_dist = late_double(rootg, G_mindist, MINDIST, 0.0);
+#ifndef WITH_CGRAPH
 	N_artpos = agfindattr(rootg->proto->n, "articulation_pos");
 	N_root = agfindattr(rootg->proto->n, "root");
+#else /* WITH_CGRAPH */
+	N_artpos = agattr(rootg,AGNODE, "articulation_pos",(char*)0);
+	N_root = agattr(rootg,AGNODE, "root",(char*)0);
+#endif /* WITH_CGRAPH */
 	rootname = agget(rootg, "root");
     }
     initBlocklist(&state->bl);
