@@ -26,10 +26,10 @@ void reverse_edge(edge_t * e)
     edge_t *f;
 
     delete_fast_edge(e);
-    if ((f = find_fast_edge(e->head, e->tail)))
+    if ((f = find_fast_edge(aghead(e), agtail(e))))
 	merge_oneway(e, f);
     else
-	virtual_edge(e->head, e->tail, e);
+	virtual_edge(aghead(e), agtail(e), e);
 }
 
 static void 
@@ -44,7 +44,7 @@ dfs(node_t * n)
     ND_mark(n) = TRUE;
     ND_onstack(n) = TRUE;
     for (i = 0; (e = ND_out(n).list[i]); i++) {
-	w = e->head;
+	w = aghead(e);
 	if (ND_onstack(w)) {
 	    reverse_edge(e);
 	    i--;
