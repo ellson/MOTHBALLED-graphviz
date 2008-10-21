@@ -117,7 +117,7 @@ void printNodeset(nodeset_t * ns)
     nsitem_t *ip;
     for (ip = (nsitem_t *) dtfirst(ns); ip;
 	 ip = (nsitem_t *) dtnext(ns, ip)) {
-	fprintf(stderr, "%s", ip->np->name);
+	fprintf(stderr, "%s", agnameof(ip->np));
     }
     fputs("\n", stderr);
 }
