@@ -27,11 +27,12 @@ static void setNStepsToLeaf(Agraph_t * g, Agnode_t * n, Agnode_t * prev)
 {
     Agnode_t *next;
     Agedge_t *ep;
+
     int nsteps = SLEAF(n) + 1;
 
     for (ep = agfstedge(g, n); ep; ep = agnxtedge(g, ep, n)) {
-	if ((next = ep->tail) == n)
-	    next = ep->head;
+	if ((next = agtail(ep)) == n)
+	    next = aghead(ep);
 
 	if (prev == next)
 	    continue;
@@ -53,8 +54,8 @@ static int isLeaf(Agraph_t * g, Agnode_t * n)
     Agnode_t *np;
 
     for (ep = agfstedge(g, n); ep; ep = agnxtedge(g, ep, n)) {
-	if ((np = ep->tail) == n)
-	    np = ep->head;
+	if ((np = agtail(ep)) == n)
+	    np = aghead(ep);
 	if (n == np)
 	    continue;		/* loop */
 	if (neighp) {
@@ -126,8 +127,8 @@ static void setNStepsToCenter(Agraph_t * g, Agnode_t * n, Agnode_t * prev)
     int nsteps = SCENTER(n) + 1;
 
     for (ep = agfstedge(g, n); ep; ep = agnxtedge(g, ep, n)) {
-	if ((next = ep->tail) == n)
-	    next = ep->head;
+	if ((next = agtail(ep)) == n)
+	    next = aghead(ep);
 
 	if (prev == next)
 	    continue;
@@ -195,8 +196,8 @@ static void setChildSubtreeSpans(Agraph_t * g, Agnode_t * n)
 
     ratio = SPAN(n) / STSIZE(n);
     for (ep = agfstedge(g, n); ep; ep = agnxtedge(g, ep, n)) {
-	if ((next = ep->tail) == n)
-	    next = ep->head;
+	if ((next = agtail(ep)) == n)
+	    next = aghead(ep);
 	if (SPARENT(next) != n)
 	    continue;		/* handles loops */
 
@@ -229,8 +230,8 @@ static void setChildPositions(Agraph_t * sg, Agnode_t * n)
 	theta = THETA(n) - SPAN(n) / 2;
 
     for (ep = agfstedge(sg, n); ep; ep = agnxtedge(sg, ep, n)) {
-	if ((next = ep->tail) == n)
-	    next = ep->head;
+	if ((next = agtail(ep)) == n)
+	    next = aghead(ep);
 	if (SPARENT(next) != n)
 	    continue;		/* handles loops */
 	if (THETA(next) != UNSET)
@@ -257,7 +258,11 @@ static void setAbsolutePos(Agraph_t * g)
     double xf;
     double hyp;
 
+#ifndef WITH_CGRAPH
     p = late_string(g, agfindattr(g->root, "ranksep"), NULL);
+#else /* WITH_CGRAPH */
+    p = late_string(g, agattr(g->root,AGRAPH, "ranksep",(char*)0), NULL);
+#endif /* WITH_CGRAPH */
     if (p) {
 	if (sscanf(p, "%lf", &xf) == 0)
 	    xf = DEF_RANKSEP;
@@ -320,7 +325,7 @@ void circleLayout(Agraph_t * sg, Agnode_t * center)
     if (!center)
 	center = findCenterNode(sg);
     if (Verbose)
-	fprintf(stderr, "root = %s\n", center->name);
+	fprintf(stderr, "root = %s\n", agnameof(center));
 
     /* maxNStepsToCenter = setParentNodes(sg,center); */
     setParentNodes(sg, center);

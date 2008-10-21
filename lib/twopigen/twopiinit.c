@@ -27,8 +27,10 @@
 
 static void twopi_init_edge(edge_t * e)
 {
+#ifdef WITH_CGRAPH
+    agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//node custom data
+#endif /* WITH_CGRAPH */
     common_init_edge(e);
-
     ED_factor(e) = late_double(e, E_weight, 1.0, 0.0);
 }
 
@@ -41,9 +43,9 @@ static void twopi_init_node_edge(graph_t * g)
 
     GD_neato_nlist(g) = N_NEW(agnnodes(g) + 1, node_t *);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	neato_init_node(n);
 	ND_alg(n) = alg + i;
 	GD_neato_nlist(g)[i++] = n;
-	neato_init_node(n);
     }
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
@@ -70,7 +72,11 @@ void twopi_layout(Agraph_t * g)
     twopi_init_graph(g);
     s = agget(g, "root");
     if (s && (*s != '\0')) {
+#ifndef WITH_CGRAPH
 	ctr = agfindnode(g, s);
+#else /* WITH_CGRAPH */
+	ctr = agnode(g, s,0);
+#endif /* WITH_CGRAPH */
 	if (!ctr) {
 	    agerr(AGWARN, "specified root node \"%s\" was not found.", s);
 	    agerr(AGPREV, "Using default calculation for root node\n");
@@ -123,7 +129,12 @@ void twopi_layout(Agraph_t * g)
 static void twopi_cleanup_graph(graph_t * g)
 {
     free(GD_neato_nlist(g));
-    if (g != g->root) memset(&(g->u), 0, sizeof(Agraphinfo_t));
+    if (g != agroot(g))
+#ifndef WITH_CGRAPH
+	memset(&(g->u), 0, sizeof(Agraphinfo_t));
+#else /* WITH_CGRAPH */
+	agclean(g,AGRAPH,"Agraphinfo_t");
+#endif /* WITH_CGRAPH */
 }
 
 void twopi_cleanup(graph_t * g)
