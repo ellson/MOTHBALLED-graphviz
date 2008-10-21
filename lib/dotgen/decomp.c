@@ -79,8 +79,8 @@ search_component(graph_t * g, node_t * n)
     for (c = 0; c <= 3; c++) {
 	if (vec[c].list)
 	    for (i = 0; (e = vec[c].list[i]); i++) {
-		if ((other = e->head) == n)
-		    other = e->tail;
+		if ((other = aghead(e)) == n)
+		    other = agtail(e);
 		if ((ND_mark(other) != Cmark) && (other == UF_find(other)))
 		    search_component(g, other);
 	    }
