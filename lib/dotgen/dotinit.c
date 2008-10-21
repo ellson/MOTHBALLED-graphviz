@@ -22,8 +22,11 @@
 static void 
 dot_init_node(node_t * n)
 {
+#ifdef WITH_CGRAPH
+    agbindrec(n, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);	//graph custom data
+#endif /* WITH_CGRAPH */
     common_init_node(n);
-    dot_nodesize(n, GD_flip(n->graph));
+    dot_nodesize(n, GD_flip(agraphof(n)));
     alloc_elist(4, ND_in(n));
     alloc_elist(4, ND_out(n));
     alloc_elist(2, ND_flat_in(n));
@@ -36,12 +39,14 @@ static void
 dot_init_edge(edge_t * e)
 {
     char *tailgroup, *headgroup;
-
+#ifdef WITH_CGRAPH
+    agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//graph custom data
+#endif /* WITH_CGRAPH */
     common_init_edge(e);
 
     ED_weight(e) = late_double(e, E_weight, 1.0, 0.0);
-    tailgroup = late_string(e->tail, N_group, "");
-    headgroup = late_string(e->head, N_group, "");
+    tailgroup = late_string(agtail(e), N_group, "");
+    headgroup = late_string(aghead(e), N_group, "");
     ED_count(e) = ED_xpenalty(e) = 1;
     if (tailgroup[0] && (tailgroup == headgroup)) {
 	ED_xpenalty(e) = CL_CROSS;
@@ -94,7 +99,11 @@ dot_cleanup_node(node_t * n)
     free_label(ND_label(n));
     if (ND_shape(n))
 	ND_shape(n)->fns->freefn(n);
+#ifndef WITH_CGRAPH
     memset(&(n->u), 0, sizeof(Agnodeinfo_t));
+#else /* WITH_CGRAPH */
+	agclean(agraphof(n), AGNODE,"Agnodeinfo_t");	
+#endif /* WITH_CGRAPH */
 }
 
 static void free_virtual_edge_list(node_t * n)
@@ -143,12 +152,17 @@ dot_cleanup_graph(graph_t * g)
     }
 
     free_list(GD_comp(g));
-    if ((g == g->root) && GD_rank(g)) {
+    if ((g == agroot(g)) && GD_rank(g)) {
 	for (i = GD_minrank(g); i <= GD_maxrank(g); i++)
 	    free(GD_rank(g)[i].v);
 	free(GD_rank(g));
     }
-    if (g != g->root) memset(&(g->u), 0, sizeof(Agraphinfo_t));
+    if (g != agroot(g)) 
+#ifndef WITH_CGRAPH
+	memset(&(g->u), 0, sizeof(Agraphinfo_t));
+#else /* WITH_CGRAPH */
+	agclean(g,AGRAPH,"Agraphinfo_t");
+#endif /* WITH_CGRAPH */
 }
 
 /* delete the layout (but retain the underlying graph) */
