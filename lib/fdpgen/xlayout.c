@@ -409,7 +409,7 @@ static int adjust(Agraph_t * g, double temp)
 	    overlaps += ov;
 	}
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    applyAttr(n, e->head);
+	    applyAttr(n,aghead(e));
 	}
     }
     if (overlaps == 0)

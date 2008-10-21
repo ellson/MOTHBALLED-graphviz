@@ -193,10 +193,19 @@ void fdp_initParams(graph_t * g)
     T_Cell = DFLT_Cell;
     T_C = D_C;
     T_Tfact = D_Tfact;
+#ifndef WITH_CGRAPH
     T_maxIters = late_int(g, agfindattr(g, "maxiter"), DFLT_maxIters, 0);
     D_K = T_K = late_double(g, agfindattr(g, "K"), DFLT_K, 0.0);
+#else /* WITH_CGRAPH */
+    T_maxIters = late_int(g, agattr(g,AGRAPH, "maxiter",(char*)0), DFLT_maxIters, 0);
+    D_K = T_K = late_double(g, agattr(g,AGRAPH, "K",(char*)0), DFLT_K, 0.0);
+#endif /* WITH_CGRAPH */
     if (D_T0 == -1.0) {
+#ifndef WITH_CGRAPH
 	T_T0 = late_double(g, agfindattr(g, "T0"), -1.0, 0.0);
+#else /* WITH_CGRAPH */
+	T_T0 = late_double(g, agattr(g,AGRAPH, "T0",(char*)0), -1.0, 0.0);
+#endif /* WITH_CGRAPH */
     } else
 	T_T0 = D_T0;
     T_seed = DFLT_seed;
@@ -283,8 +292,8 @@ static void doNeighbor(Grid * grid, int i, int j, node_list * nodes)
 	    p = nodes->node;
 	    for (qs = cellp->nodes; qs != 0; qs = qs->next) {
 		q = qs->node;
-		xdelta = q->u.pos[0] - p->u.pos[0];
-		ydelta = q->u.pos[1] - p->u.pos[1];
+		xdelta = (ND_pos(q))[0] - (ND_pos(p))[0];
+		ydelta = (ND_pos(q))[1] - (ND_pos(p))[1];
 		dist2 = xdelta * xdelta + ydelta * ydelta;
 		if (dist2 < T_Cell2)
 		    doRep(p, q, xdelta, ydelta, dist2);
@@ -419,14 +428,14 @@ static void gAdjust(Agraph_t * g, double temp, bport_t * pp, Grid * grid)
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	DISP(n)[0] = DISP(n)[1] = 0;
-	addGrid(grid, FLOOR(n->u.pos[0] / T_Cell), FLOOR(n->u.pos[1] / T_Cell),
+	addGrid(grid, FLOOR((ND_pos(n))[0] / T_Cell), FLOOR((ND_pos(n))[1] / T_Cell),
 		n);
     }
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e))
-	    if (n != e->head)
-		applyAttr(n, e->head, e);
+	    if (n != aghead(e))
+		applyAttr(n, aghead(e), e);
     }
     walkGrid(grid, gridRepulse);
 
@@ -454,8 +463,8 @@ static void adjust(Agraph_t * g, double temp, bport_t * pp)
 	    applyRep(n, n1);
 	}
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    if (n != e->head)
-		applyAttr(n, e->head, e);
+	    if (n != aghead(e))
+		applyAttr(n, aghead(e), e);
 	}
     }
 
@@ -582,9 +591,9 @@ static pointf initPositions(graph_t * g, bport_t * pp)
 		node_t *op;
 		edge_t *ep;
 		for (ep = agfstedge(g, np); ep; ep = agnxtedge(g, ep, np)) {
-		    if (ep->head == ep->tail)
+		    if (aghead(ep) == agtail(ep))
 			continue;
-		    op = (ep->head == np ? ep->tail : ep->head);
+		    op = (aghead(ep) == np ? agtail(ep) : aghead(ep));
 		    if (!hasPos(op))
 			continue;
 		    if (cnt) {
@@ -648,16 +657,16 @@ void dumpstat(graph_t * g)
 	l = dx * dx + dy * dy;
 	if (l > max2)
 	    max2 = l;
-	fprintf(stderr, "%s: (%f,%f) (%f,%f)\n", np->name,
+	fprintf(stderr, "%s: (%f,%f) (%f,%f)\n", agnameof(np),
 		ND_pos(np)[0], ND_pos(np)[1], DISP(np)[0], DISP(np)[1]);
     }
     fprintf(stderr, "max delta = %f\n", sqrt(max2));
     for (np = agfstnode(g); np; np = agnxtnode(g, np)) {
 	for (ep = agfstout(g, np); ep; ep = agnxtout(g, ep)) {
-	    dx = ND_pos(np)[0] - ND_pos(ep->head)[0];
-	    dy = ND_pos(np)[1] - ND_pos(ep->head)[1];
-	    fprintf(stderr, "  %s --  %s  (%f)\n", np->name,
-		    ep->head->name, sqrt(dx * dx + dy * dy));
+	    dx = ND_pos(np)[0] - ND_pos(aghead(ep))[0];
+	    dy = ND_pos(np)[1] - ND_pos(aghead(ep))[1];
+	    fprintf(stderr, "  %s --  %s  (%f)\n", agnameof(np),
+		    agnameof(aghead(ep)), sqrt(dx * dx + dy * dy));
 	}
     }
 }
