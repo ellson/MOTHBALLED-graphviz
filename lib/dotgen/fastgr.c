@@ -30,11 +30,11 @@ static edge_t *ffe(node_t * u, elist uL, node_t * v, elist vL)
     if ((uL.size > 0) && (vL.size > 0)) {
 	if (uL.size < vL.size) {
 	    for (i = 0; (e = uL.list[i]); i++)
-		if (e->head == v)
+		if (aghead(e) == v)
 		    break;
 	} else {
 	    for (i = 0; (e = vL.list[i]); i++)
-		if (e->tail == u)
+		if (agtail(e) == u)
 		    break;
 	}
     } else
@@ -79,23 +79,23 @@ edge_t *fast_edge(edge_t * e)
 #ifdef DEBUG
     int i;
     edge_t *f;
-    for (i = 0; (f = ND_out(e->tail).list[i]); i++) {
+    for (i = 0; (f = ND_out(agtail(e)).list[i]); i++) {
 	if (e == f) {
 	    fprintf(stderr, "duplicate fast edge\n");
 	    return;
 	}
-	assert(e->head != f->head);
+	assert(aghead(e) != aghead(f));
     }
-    for (i = 0; (f = ND_in(e->head).list[i]); i++) {
+    for (i = 0; (f = ND_in(aghead(e)).list[i]); i++) {
 	if (e == f) {
 	    fprintf(stderr, "duplicate fast edge\n");
 	    return;
 	}
-	assert(e->tail != f->tail);
+	assert(agtail(e) != agtail(f));
     }
 #endif
-    elist_append(e, ND_out(e->tail));
-    elist_append(e, ND_in(e->head));
+    elist_append(e, ND_out(agtail(e)));
+    elist_append(e, ND_in(aghead(e)));
     return e;
 }
 
@@ -118,8 +118,8 @@ void zapinlist(elist * L, edge_t * e)
 void delete_fast_edge(edge_t * e)
 {
     assert(e != NULL);
-    zapinlist(&(ND_out(e->tail)), e);
-    zapinlist(&(ND_in(e->head)), e);
+    zapinlist(&(ND_out(agtail(e))), e);
+    zapinlist(&(ND_in(aghead(e))), e);
 }
 
 static void 
@@ -129,22 +129,22 @@ safe_delete_fast_edge(edge_t * e)
     edge_t *f;
 
     assert(e != NULL);
-    for (i = 0; (f = ND_out(e->tail).list[i]); i++)
+    for (i = 0; (f = ND_out(agtail(e)).list[i]); i++)
 	if (f == e)
-	    zapinlist(&(ND_out(e->tail)), e);
-    for (i = 0; (f = ND_in(e->head).list[i]); i++)
+	    zapinlist(&(ND_out(agtail(e))), e);
+    for (i = 0; (f = ND_in(aghead(e)).list[i]); i++)
 	if (f == e)
-	    zapinlist(&(ND_in(e->head)), e);
+	    zapinlist(&(ND_in(aghead(e))), e);
 }
 
 void other_edge(edge_t * e)
 {
-    elist_append(e, ND_other(e->tail));
+    elist_append(e, ND_other(agtail(e)));
 }
 
 void safe_other_edge(edge_t * e)
 {
-    safe_list_append(e, &(ND_other(e->tail)));
+    safe_list_append(e, &(ND_other(agtail(e))));
 }
 
 #ifdef OBSOLETE
@@ -152,7 +152,7 @@ void
 delete_other_edge(edge_t * e)
 {
     assert(e != NULL);
-    zapinlist(&(ND_other(e->tail)), e);
+    zapinlist(&(ND_other(agtail(e))), e);
 }
 #endif
 
@@ -166,24 +166,29 @@ edge_t *new_virtual_edge(node_t * u, node_t * v, edge_t * orig)
 {
     edge_t *e;
 
+#ifndef WITH_CGRAPH
     e = NEW(edge_t);
-    e->tail = u;
-    e->head = v;
+#else /* WITH_CGRAPH */
+    e=agedge(agraphof(orig),u,v,"",1);
+    agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//graph custom data
+#endif /* WITH_CGRAPH */
+    agtail(e) = u;
+    aghead(e) = v;
     ED_edge_type(e) = VIRTUAL;
 
     if (orig) {
-	e->id = orig->id;
+	AGID(e) = AGID(orig);
 	ED_count(e) = ED_count(orig);
 	ED_xpenalty(e) = ED_xpenalty(orig);
 	ED_weight(e) = ED_weight(orig);
 	ED_minlen(e) = ED_minlen(orig);
-	if (e->tail == orig->tail)
+	if (agtail(e) == agtail(orig))
 	    ED_tail_port(e) = ED_tail_port(orig);
-	else if (e->tail == orig->head)
+	else if (agtail(e) == aghead(orig))
 	    ED_tail_port(e) = ED_head_port(orig);
-	if (e->head == orig->head)
+	if (aghead(e) == aghead(orig))
 	    ED_head_port(e) = ED_head_port(orig);
-	else if (e->head == orig->tail)
+	else if (aghead(e) == agtail(orig))
 	    ED_head_port(e) = ED_tail_port(orig);
 
 	if (ED_to_virt(orig) == NULL)
@@ -207,7 +212,7 @@ void fast_node(graph_t * g, Agnode_t * n)
 #endif
     ND_next(n) = GD_nlist(g);
     if (ND_next(n))
-	ND_next(n)->u.prev = n;
+	ND_prev(ND_next(n)) = n;
     GD_nlist(g) = n;
     ND_prev(n) = NULL;
     assert(n != ND_next(n));
@@ -219,7 +224,7 @@ void fast_nodeapp(node_t * u, node_t * v)
     assert(ND_next(v) == NULL);
     ND_next(v) = ND_next(u);
     if (ND_next(u))
-	ND_next(u)->u.prev = v;
+	ND_prev(ND_next(u)) = v;
     ND_prev(v) = u;
     ND_next(u) = v;
 }
@@ -228,9 +233,9 @@ void delete_fast_node(graph_t * g, node_t * n)
 {
     assert(find_fast_node(g, n));
     if (ND_next(n))
-	ND_next(n)->u.prev = ND_prev(n);
+	ND_prev(ND_next(n)) = ND_prev(n);
     if (ND_prev(n))
-	ND_prev(n)->u.next = ND_next(n);
+	ND_next(ND_prev(n)) = ND_next(n);
     else
 	GD_nlist(g) = ND_next(n);
 }
@@ -240,8 +245,13 @@ node_t *virtual_node(graph_t * g)
     node_t *n;
 
     n = NEW(node_t);
+#ifndef WITH_CGRAPH
     n->name = "virtual";
     n->graph = g;
+#else /* WITH_CGRAPH */
+//  agnameof(n) = "virtual";
+    n->root = g;
+#endif /* WITH_CGRAPH */
     ND_node_type(n) = VIRTUAL;
     ND_lw(n) = ND_rw(n) = 1;
     ND_ht(n) = 1;
@@ -255,9 +265,9 @@ node_t *virtual_node(graph_t * g)
 
 void flat_edge(graph_t * g, edge_t * e)
 {
-    elist_append(e, ND_flat_out(e->tail));
-    elist_append(e, ND_flat_in(e->head));
-    GD_has_flat_edges(g->root) = GD_has_flat_edges(g) = TRUE;
+    elist_append(e, ND_flat_out(agtail(e)));
+    elist_append(e, ND_flat_in(aghead(e)));
+    GD_has_flat_edges(agroot(g)) = GD_has_flat_edges(g) = TRUE;
 }
 
 void delete_flat_edge(edge_t * e)
@@ -265,8 +275,8 @@ void delete_flat_edge(edge_t * e)
     assert(e != NULL);
     if (ED_to_orig(e) && ED_to_virt(ED_to_orig(e)) == e)
 	ED_to_virt(ED_to_orig(e)) = NULL;
-    zapinlist(&(ND_flat_out(e->tail)), e);
-    zapinlist(&(ND_flat_in(e->head)), e);
+    zapinlist(&(ND_flat_out(agtail(e))), e);
+    zapinlist(&(ND_flat_in(aghead(e))), e);
 }
 
 #ifdef DEBUG
@@ -288,8 +298,8 @@ void fastgr(graph_t * g)
     for (n = GD_nlist(g); n; n = ND_next(n)) {
 	fprintf(stderr, "%s %d: (", NAME(n), ND_rank(n));
 	for (i = 0; e = ND_out(n).list[i]; i++) {
-	    fprintf(stderr, " %s:%d", NAME(e->head), ED_count(e));
-	    w = e->head;
+	    fprintf(stderr, " %s:%d", NAME(aghead(e)), ED_count(e));
+	    w = aghead(e);
 	    if (g == g->root) {
 		for (j = 0; f = ND_in(w).list[j]; j++)
 		    if (e == f)
@@ -299,8 +309,8 @@ void fastgr(graph_t * g)
 	}
 	fprintf(stderr, " ) (");
 	for (i = 0; e = ND_in(n).list[i]; i++) {
-	    fprintf(stderr, " %s:%d", NAME(e->tail), ED_count(e));
-	    w = e->tail;
+	    fprintf(stderr, " %s:%d", NAME(agtail(e)), ED_count(e));
+	    w = agtail(e);
 	    if (g == g->root) {
 		for (j = 0; f = ND_out(w).list[j]; j++)
 		    if (e == f)
@@ -357,9 +367,9 @@ void unmerge_oneway(edge_t * e)
 
 	/* unmerge from a virtual edge chain */
 	while ((ED_edge_type(rep) == VIRTUAL)
-	       && (ND_node_type(rep->head) == VIRTUAL)
-	       && (ND_out(rep->head).size == 1)) {
-	    rep = ND_out(rep->head).list[0];
+	       && (ND_node_type(aghead(rep)) == VIRTUAL)
+	       && (ND_out(aghead(rep)).size == 1)) {
+	    rep = ND_out(aghead(rep)).list[0];
 	    unrep(rep, e);
 	}
     }

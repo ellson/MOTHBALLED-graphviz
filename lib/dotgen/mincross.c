@@ -25,9 +25,9 @@
 #include "dot.h"
 
 /* #define DEBUG */
-#define MARK(v)			((v)->u.mark)
-#define saveorder(v)	((v)->u.coord.x)
-#define flatindex(v)	((v)->u.low)
+#define MARK(v)		(ND_mark(v))
+#define saveorder(v)	(ND_coord(v)).x
+#define flatindex(v)	ND_low(v)
 
 	/* forward declarations */
 static boolean medians(graph_t * g, int r0, int r1);
@@ -144,7 +144,7 @@ static int betweenclust(edge_t * e)
 {
     while (ED_to_orig(e))
 	e = ED_to_orig(e);
-    return (ND_clust(e->tail) != ND_clust(e->head));
+    return (ND_clust(agtail(e)) != ND_clust(aghead(e)));
 }
 
 static void do_ordering(graph_t * g, int outflag)
@@ -175,11 +175,11 @@ static void do_ordering(graph_t * g, int outflag)
 	for (ne = 1; (f = sortlist[ne]); ne++) {
 	    e = sortlist[ne - 1];
 	    if (outflag) {
-		u = e->head;
-		v = f->head;
+		u = aghead(e);
+		v = aghead(f);
 	    } else {
-		u = e->tail;
-		v = f->tail;
+		u = agtail(e);
+		v = agtail(f);
 	    }
 	    if (find_flat_edge(u, v))
 		continue;
@@ -205,9 +205,10 @@ static void ordered_edges(graph_t * g)
 	else if (ordering[0])
 	    agerr(AGERR, "ordering '%s' not recognized.\n", ordering);
     }
-
-    else {
+    else
+    {
 	/* search meta-graph to find subgraphs that may be ordered */
+#ifndef WITH_CGRAPH
 	graph_t *mg, *subg;
 	node_t *mm, *mn;
 	edge_t *me;
@@ -218,6 +219,11 @@ static void ordered_edges(graph_t * g)
 	    mn = me->head;
 	    subg = agusergraph(mn);
 	    /* clusters are processed by seperate calls to ordered_edges */
+#else /* WITH_CGRAPH */
+	graph_t *subg;
+
+	for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
+#endif /* WITH_CGRAPH */
 	    if (!is_cluster(subg))
 		ordered_edges(subg);
 	}
@@ -283,15 +289,16 @@ static int in_cross(node_t * v, node_t * w)
     register int inv, cross = 0, t;
 
     for (e2 = ND_in(w).list; *e2; e2++) {
-	register int cnt = (*e2)->u.xpenalty;
-	inv = ((*e2)->tail)->u.order;
+	register int cnt = ED_xpenalty(*e2);		
+		
+	inv = ND_order((agtail(*e2)));
 
 	for (e1 = ND_in(v).list; *e1; e1++) {
-	    t = ((*e1)->tail)->u.order - inv;
+	    t = ND_order(agtail(*e1)) - inv;
 	    if ((t > 0)
 		|| ((t == 0)
-		    && ((*e1)->u.tail_port.p.x > (*e2)->u.tail_port.p.x)))
-		cross += (*e1)->u.xpenalty * cnt;
+		    && (  ED_tail_port(*e1).p.x > ED_tail_port(*e2).p.x)))
+		cross += ED_xpenalty(*e1) * cnt;
 	}
     }
     return cross;
@@ -303,15 +310,15 @@ static int out_cross(node_t * v, node_t * w)
     register int inv, cross = 0, t;
 
     for (e2 = ND_out(w).list; *e2; e2++) {
-	register int cnt = (*e2)->u.xpenalty;
-	inv = ((*e2)->head)->u.order;
+	register int cnt = ED_xpenalty(*e2);
+	inv = ND_order(aghead(*e2));
 
 	for (e1 = ND_out(v).list; *e1; e1++) {
-	    t = ((*e1)->head)->u.order - inv;
+	    t = ND_order(aghead(*e1)) - inv;
 	    if ((t > 0)
 		|| ((t == 0)
-		    && ((*e1)->u.head_port.p.x > (*e2)->u.head_port.p.x)))
-		cross += (*e1)->u.xpenalty * cnt;
+		    && ((ED_head_port(*e1)).p.x > (ED_head_port(*e2)).p.x)))
+		cross += ((ED_xpenalty(*e1)) * cnt);
 	}
     }
     return cross;
@@ -552,7 +559,7 @@ static int mincross(graph_t * g, int startpass, int endpass, int doBalance)
     for (pass = startpass; pass <= endpass; pass++) {
 	if (pass <= 1) {
 	    maxthispass = MIN(4, MaxIter);
-	    if (g == g->root)
+	    if (g == agroot(g))
 		build_ranks(g, pass);
 	    if (pass == 0)
 		flat_breakcycles(g);
@@ -669,7 +676,7 @@ static void merge2(graph_t * g)
 		if (Verbose)
 		    fprintf(stderr,
 			    "merge2: graph %s, rank %d has only %d < %d nodes\n",
-			    g->name, r, i, GD_rank(g)[r].n);
+			    agnameof(g), r, i, GD_rank(g)[r].n);
 		GD_rank(g)[r].n = i;
 		break;
 	    }
@@ -714,7 +721,7 @@ static void cleanup2(graph_t * g, int nc)
     }
     if (Verbose)
 	fprintf(stderr, "mincross %s: %d crossings, %.2f secs.\n",
-		g->name, nc, elapsed_sec());
+		agnameof(g), nc, elapsed_sec());
 }
 
 static node_t *neighbor(node_t * v, int dir)
@@ -808,7 +815,11 @@ void rec_reset_vlists(graph_t * g)
 #ifdef DEBUG
 	    assert(GD_rank(g->root)[r].v[ND_order(u)] == u);
 #endif
+#ifndef WITH_CGRAPH
 	    GD_rank(g)[r].v = ND_rank(g->root)[r].v + ND_order(u);
+#else /* WITH_CGRAPH */
+	    GD_rank(g)[r].v = GD_rank(agroot(g))[r].v + ND_order(u);
+#endif /* WITH_CGRAPH */
 	    GD_rank(g)[r].n = ND_order(w) - ND_order(u) + 1;
 	}
 }
@@ -825,7 +836,7 @@ static void init_mincross(graph_t * g)
     /* alloc +1 for the null terminator usage in do_ordering() */
     /* also, the +1 avoids attempts to alloc 0 sizes, something
        that efence complains about */
-    size = agnedges(g->root) + 1;
+    size = agnedges(agroot(g)) + 1;
     TE_list = N_NEW(size, edge_t *);
     TI_list = N_NEW(size, int);
     mincross_options(g);
@@ -842,11 +853,11 @@ void flat_rev(Agraph_t * g, Agedge_t * e)
     int j;
     Agedge_t *rev;
 
-    if (!ND_flat_out(e->head).list)
+    if (!ND_flat_out(aghead(e)).list)
 	rev = NULL;
     else
-	for (j = 0; (rev = ND_flat_out(e->head).list[j]); j++)
-	    if (rev->head == e->tail)
+	for (j = 0; (rev = ND_flat_out(aghead(e)).list[j]); j++)
+	    if (aghead(rev) == agtail(e))
 		break;
     if (rev) {
 	merge_oneway(e, rev);
@@ -855,9 +866,9 @@ void flat_rev(Agraph_t * g, Agedge_t * e)
 	if ((ED_edge_type(rev) == FLATORDER)
 	    && (ED_to_orig(rev) == 0))
 	    ED_to_orig(rev) = e;
-	elist_append(e, ND_other(e->tail));
+	elist_append(e, ND_other(agtail(e)));
     } else {
-	rev = new_virtual_edge(e->head, e->tail, e);
+	rev = new_virtual_edge(aghead(e), agtail(e), e);
 	if (ED_edge_type(e) == FLATORDER)
 	    ED_edge_type(rev) = FLATORDER;
 	else
@@ -876,29 +887,33 @@ static void flat_search(graph_t * g, node_t * v)
 
     ND_mark(v) = TRUE;
     ND_onstack(v) = TRUE;
+#ifndef WITH_CGRAPH
     hascl = (ND_n_cluster(g->root) > 0);
+#else /* WITH_CGRAPH */
+    hascl = (GD_n_cluster(agroot(g)) > 0);
+#endif /* WITH_CGRAPH */
     if (ND_flat_out(v).list)
 	for (i = 0; (e = ND_flat_out(v).list[i]); i++) {
 	    if (hascl
-		&& NOT(agcontains(g, e->tail) && agcontains(g, e->head)))
+		&& NOT(agcontains(g, agtail(e)) && agcontains(g, aghead(e))))
 		continue;
 	    if (ED_weight(e) == 0)
 		continue;
-	    if (ND_onstack(e->head) == TRUE) {
-		assert(flatindex(e->head) < M->nrows);
-		assert(flatindex(e->tail) < M->ncols);
-		ELT(M, flatindex(e->head), flatindex(e->tail)) = 1;
+	    if (ND_onstack(aghead(e)) == TRUE) {
+		assert(flatindex(aghead(e)) < M->nrows);
+		assert(flatindex(agtail(e)) < M->ncols);
+		ELT(M, flatindex(aghead(e)), flatindex(agtail(e))) = 1;
 		delete_flat_edge(e);
 		i--;
 		if (ED_edge_type(e) == FLATORDER)
 		    continue;
 		flat_rev(g, e);
 	    } else {
-		assert(flatindex(e->head) < M->nrows);
-		assert(flatindex(e->tail) < M->ncols);
-		ELT(M, flatindex(e->tail), flatindex(e->head)) = 1;
-		if (ND_mark(e->head) == FALSE)
-		    flat_search(g, e->head);
+		assert(flatindex(aghead(e)) < M->nrows);
+		assert(flatindex(agtail(e)) < M->ncols);
+		ELT(M, flatindex(agtail(e)), flatindex(aghead(e))) = 1;
+		if (ND_mark(aghead(e)) == FALSE)
+		    flat_search(g, aghead(e));
 	    }
 	}
     ND_onstack(v) = FALSE;
@@ -945,8 +960,8 @@ void allocate_ranks(graph_t * g)
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	cn[ND_rank(n)]++;
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    low = ND_rank(e->tail);
-	    high = ND_rank(e->head);
+	    low = ND_rank(agtail(e));
+	    high = ND_rank(aghead(e));
 	    if (low > high) {
 		int t = low;
 		low = high;
@@ -973,7 +988,7 @@ void install_in_rank(graph_t * g, node_t * n)
     i = GD_rank(g)[r].n;
     if (GD_rank(g)[r].an <= 0) {
 	agerr(AGERR, "install_in_rank %s %s rank %d i = %d an = 0\n",
-	      g->name, n->name, r, i);
+	      agnameof(g), agnameof(n), r, i);
 	abort();
     }
 
@@ -1020,9 +1035,9 @@ void build_ranks(graph_t * g, int pass)
 	edge_t *e;
 	for (n = GD_nlist(g); n; n = ND_next(n)) {
 	    for (i = 0; (e = ND_out(n).list[i]); i++)
-		assert(MARK(e->head) == FALSE);
+		assert(MARK(aghead(e)) == FALSE);
 	    for (i = 0; (e = ND_in(n).list[i]); i++)
-		assert(MARK(e->tail) == FALSE);
+		assert(MARK(agtail(e)) == FALSE);
 	}
     }
 #endif
@@ -1061,7 +1076,7 @@ void build_ranks(graph_t * g, int pass)
 	}
     }
 
-    if ((g == g->root) && ncross(g) > 0)
+    if ((g == agroot(g)) && ncross(g) > 0)
 	transpose(g, FALSE);
     free_queue(q);
 }
@@ -1074,17 +1089,17 @@ void enqueue_neighbors(nodequeue * q, node_t * n0, int pass)
     if (pass == 0) {
 	for (i = 0; i < ND_out(n0).size; i++) {
 	    e = ND_out(n0).list[i];
-	    if ((MARK(e->head)) == FALSE) {
-		MARK(e->head) = TRUE;
-		enqueue(q, e->head);
+	    if ((MARK(aghead(e))) == FALSE) {
+		MARK(aghead(e)) = TRUE;
+		enqueue(q, aghead(e));
 	    }
 	}
     } else {
 	for (i = 0; i < ND_in(n0).size; i++) {
 	    e = ND_in(n0).list[i];
-	    if ((MARK(e->tail)) == FALSE) {
-		MARK(e->tail) = TRUE;
-		enqueue(q, e->tail);
+	    if ((MARK(agtail(e))) == FALSE) {
+		MARK(agtail(e)) = TRUE;
+		enqueue(q, agtail(e));
 	    }
 	}
     }
@@ -1103,14 +1118,14 @@ static int postorder(graph_t * g, node_t * v, node_t ** list, int r)
 	for (i = 0; (e = ND_flat_out(v).list[i]); i++) {
 	    if (ED_weight(e) == 0)
 		continue;
-	    if ((ND_node_type(e->head) == NORMAL) &
-		(NOT(agcontains(g, e->head))))
+	    if ((ND_node_type(aghead(e)) == NORMAL) &
+		(NOT(agcontains(g, aghead(e)))))
 		continue;
-	    if (ND_clust(e->head) != ND_clust(e->tail))
+	    if (ND_clust(aghead(e)) != ND_clust(agtail(e)))
 		continue;
 
-	    if (MARK(e->head) == FALSE)
-		cnt += postorder(g, e->head, list + cnt, r);
+	    if (MARK(aghead(e)) == FALSE)
+		cnt += postorder(g, aghead(e), list + cnt, r);
 	}
     }
     assert(ND_rank(v) == r);
@@ -1139,13 +1154,13 @@ static void flat_reorder(graph_t * g)
 	    for (j = 0; j < ND_flat_in(v).size; j++) {
 		flat_e = ND_flat_in(v).list[j];
 		if ((ED_weight(flat_e) > 0)
-		    && (inside_cluster(g, flat_e->tail)))
+		    && (inside_cluster(g, aghead(flat_e))))
 		    local_in_cnt++;
 	    }
 	    for (j = 0; j < ND_flat_out(v).size; j++) {
 		flat_e = ND_flat_out(v).list[j];
 		if ((ED_weight(flat_e) > 0)
-		    && (inside_cluster(g, flat_e->head)))
+		    && (inside_cluster(g, aghead(flat_e))))
 		    local_out_cnt++;
 	    }
 	    if ((local_in_cnt == 0) && (local_out_cnt == 0))
@@ -1179,7 +1194,7 @@ static void flat_reorder(graph_t * g)
 		v = GD_rank(g)[r].v[i];
 		if (ND_flat_out(v).list) {
 		    for (j = 0; (e = ND_flat_out(v).list[j]); j++) {
-			if (ND_order(e->head) < ND_order(e->tail)) {
+			if (ND_order(aghead(e)) < ND_order(agtail(e))) {
 			    /*assert(ED_weight(e) == 0); */
 			    delete_flat_edge(e);
 			    j--;
@@ -1207,29 +1222,29 @@ static void reorder(graph_t * g, int r, int reverse, int hasfixed)
 	lp = vlist;
 	while (lp < ep) {
 	    /* find leftmost node that can be compared */
-	    while ((lp < ep) && ((*lp)->u.mval < 0))
+	    while ((lp < ep) && (ND_mval(*lp) < 0))
 		lp++;
 	    if (lp >= ep)
 		break;
 	    /* find the node that can be compared */
 	    sawclust = muststay = FALSE;
 	    for (rp = lp + 1; rp < ep; rp++) {
-		if (sawclust && (*rp)->u.clust)
+		if (sawclust && ND_clust(*rp))
 		    continue;	/* ### */
 		if (left2right(g, *lp, *rp)) {
 		    muststay = TRUE;
 		    break;
 		}
-		if ((*rp)->u.mval >= 0)
+		if (ND_mval(*rp) >= 0)
 		    break;
-		if ((*rp)->u.clust)
+		if (ND_clust(*rp))
 		    sawclust = TRUE;	/* ### */
 	    }
 	    if (rp >= ep)
 		break;
 	    if (muststay == FALSE) {
-		register int p1 = ((*lp)->u.mval);
-		register int p2 = ((*rp)->u.mval);
+		register int p1 = (ND_mval(*lp));
+		register int p2 = (ND_mval(*rp));
 		if ((p1 > p2) || ((p1 == p2) && (reverse))) {
 		    exchange(*lp, *rp);
 		    changed++;
@@ -1300,15 +1315,13 @@ static int local_cross(elist l, int dir)
     for (i = 0; (e = l.list[i]); i++) {
 	if (is_out)
 	    for (j = i + 1; (f = l.list[j]); j++) {
-		if ((ND_order(f->head) -
-		     ND_order(e->head)) * (ED_tail_port(f).p.x -
-					   ED_tail_port(e).p.x) < 0)
+		if ((ND_order(aghead(f)) - ND_order(aghead(e)))
+			 * (ED_tail_port(f).p.x - ED_tail_port(e).p.x) < 0)
 		    cross += ED_xpenalty(e) * ED_xpenalty(f);
 	} else
 	    for (j = i + 1; (f = l.list[j]); j++) {
-		if ((ND_order(f->tail) -
-		     ND_order(e->tail)) * (ED_head_port(f).p.x -
-					   ED_head_port(e).p.x) < 0)
+		if ((ND_order(agtail(f)) - ND_order(agtail(e)))
+			* (ED_head_port(f).p.x - ED_head_port(e).p.x) < 0)
 		    cross += ED_xpenalty(e) * ED_xpenalty(f);
 	    }
     }
@@ -1336,13 +1349,13 @@ static int rcross(graph_t * g, int r)
     for (top = 0; top < GD_rank(g)[r].n; top++) {
 	register edge_t *e;
 	if (max > 0) {
-	    for (i = 0; (e = rtop[top]->u.out.list[i]); i++) {
-		for (k = ND_order(e->head) + 1; k <= max; k++)
+	    for (i = 0; (e = ND_out(rtop[top]).list[i]); i++) {
+		for (k = ND_order(aghead(e)) + 1; k <= max; k++)
 		    cross += Count[k] * ED_xpenalty(e);
 	    }
 	}
-	for (i = 0; (e = rtop[top]->u.out.list[i]); i++) {
-	    register int inv = ND_order(e->head);
+	for (i = 0; (e = ND_out(rtop[top]).list[i]); i++) {
+	    register int inv = ND_order(aghead(e));
 	    if (inv > max)
 		max = inv;
 	    Count[inv] += ED_xpenalty(e);
@@ -1402,20 +1415,20 @@ static int flat_mval(node_t * n)
 
     if (ND_flat_in(n).size > 0) {
 	fl = ND_flat_in(n).list;
-	nn = fl[0]->tail;
+	nn = agtail(fl[0]);
 	for (i = 1; (e = fl[i]); i++)
-	    if (ND_order(e->tail) > ND_order(nn))
-		nn = e->tail;
+	    if (ND_order(agtail(e)) > ND_order(nn))
+		nn = agtail(e);
 	if (ND_mval(nn) >= 0) {
 	    ND_mval(n) = ND_mval(nn) + 1;
 	    return FALSE;
 	}
     } else if (ND_flat_out(n).size > 0) {
 	fl = ND_flat_out(n).list;
-	nn = fl[0]->head;
+	nn = aghead(fl[0]);
 	for (i = 1; (e = fl[i]); i++)
-	    if (ND_order(e->head) < ND_order(nn))
-		nn = e->head;
+	    if (ND_order(aghead(e)) < ND_order(nn))
+		nn = aghead(e);
 	if (ND_mval(nn) > 0) {
 	    ND_mval(n) = ND_mval(nn) - 1;
 	    return FALSE;
@@ -1424,7 +1437,7 @@ static int flat_mval(node_t * n)
     return TRUE;
 }
 
-#define VAL(node,port) (MC_SCALE * (node)->u.order + (port).order)
+#define VAL(node,port) (MC_SCALE * ND_order(node) + (port).order)
 
 static boolean medians(graph_t * g, int r0, int r1)
 {
@@ -1441,11 +1454,11 @@ static boolean medians(graph_t * g, int r0, int r1)
 	if (r1 > r0)
 	    for (j0 = 0; (e = ND_out(n).list[j0]); j0++) {
 		if (ED_xpenalty(e) > 0)
-		    list[j++] = VAL(e->head, ED_head_port(e));
+		    list[j++] = VAL(aghead(e), ED_head_port(e));
 	} else
 	    for (j0 = 0; (e = ND_in(n).list[j0]); j0++) {
 		if (ED_xpenalty(e) > 0)
-		    list[j++] = VAL(e->tail, ED_tail_port(e));
+		    list[j++] = VAL(agtail(e), ED_tail_port(e));
 	    }
 	switch (j) {
 	case 0:
@@ -1486,12 +1499,12 @@ static boolean medians(graph_t * g, int r0, int r1)
 
 static int nodeposcmpf(node_t ** n0, node_t ** n1)
 {
-    return ((*n0)->u.order - (*n1)->u.order);
+    return (ND_order(*n0) - ND_order(*n1));
 }
 
 static int edgeidcmpf(edge_t ** e0, edge_t ** e1)
 {
-    return ((*e0)->id - (*e1)->id);
+    return (AGID(*e0) - AGID(*e1));
 }
 
 /* following code deals with weights of edges of "virtual" nodes */
@@ -1523,7 +1536,7 @@ static int endpoint_class(node_t * n)
 void virtual_weight(edge_t * e)
 {
     int t;
-    t = table[endpoint_class(e->tail)][endpoint_class(e->head)];
+    t = table[endpoint_class(agtail(e))][endpoint_class(aghead(e))];
     ED_weight(e) *= t;
 }
 

@@ -27,7 +27,7 @@ static node_t *make_vn_slot(graph_t * g, int r, int pos)
 	ALLOC(GD_rank(g)[r].n + 2, GD_rank(g)[r].v, node_t *);
     for (i = GD_rank(g)[r].n; i > pos; i--) {
 	v[i] = v[i - 1];
-	v[i]->u.order++;
+	ND_order(v[i])++;
     }
     n = v[pos] = virtual_node(g);
     ND_order(n) = pos;
@@ -64,7 +64,7 @@ static void setbounds(node_t * v, int *bounds, int lpos, int rpos)
 	ord = ND_order(v);
 	if (ND_in(v).size == 0) {	/* flat */
 	    assert(ND_out(v).size == 2);
-	    findlr(ND_out(v).list[0]->head, ND_out(v).list[1]->head, &l,
+	    findlr(aghead(ND_out(v).list[0]), aghead(ND_out(v).list[1]), &l,
 		   &r);
 	    /* the other flat edge could be to the left or right */
 	    if (r <= lpos)
@@ -84,11 +84,11 @@ static void setbounds(node_t * v, int *bounds, int lpos, int rpos)
 	    boolean onleft, onright;
 	    onleft = onright = FALSE;
 	    for (i = 0; (f = ND_out(v).list[i]); i++) {
-		if (ND_order(f->head) <= lpos) {
+		if (ND_order(aghead(f)) <= lpos) {
 		    onleft = TRUE;
 		    continue;
 		}
-		if (ND_order(f->head) >= rpos) {
+		if (ND_order(aghead(f)) >= rpos) {
 		    onright = TRUE;
 		    continue;
 		}
@@ -106,13 +106,13 @@ static int flat_limits(graph_t * g, edge_t * e)
     int lnode, rnode, r, bounds[4], lpos, rpos, pos;
     node_t **rank;
 
-    r = ND_rank(e->tail) - 1;
+    r = ND_rank(agtail(e)) - 1;
     rank = GD_rank(g)[r].v;
     lnode = 0;
     rnode = GD_rank(g)[r].n - 1;
     bounds[HLB] = bounds[SLB] = lnode - 1;
     bounds[HRB] = bounds[SRB] = rnode + 1;
-    findlr(e->tail, e->head, &lpos, &rpos);
+    findlr(agtail(e), aghead(e), &lpos, &rpos);
     while (lnode <= rnode) {
 	setbounds(rank[lnode], bounds, lpos, rpos);
 	if (lnode != rnode)
@@ -146,8 +146,8 @@ flat_node(edge_t * e)
 
     if (ED_label(e) == NULL)
 	return;
-    g = e->tail->graph;
-    r = ND_rank(e->tail);
+    g = agraphof(agtail(e));
+    r = ND_rank(agtail(e));
 
     place = flat_limits(g, e);
     /* grab ypos = LL.y of label box before make_vn_slot() */
@@ -169,13 +169,13 @@ flat_node(edge_t * e)
     ND_lw(vn) = ND_rw(vn) = dimen.x / 2;
     ND_label(vn) = ED_label(e);
     ND_coord(vn).y = ypos + h2;
-    ve = virtual_edge(vn, e->tail, e);	/* was NULL? */
+    ve = virtual_edge(vn, agtail(e), e);	/* was NULL? */
     ED_tail_port(ve).p.x = -ND_lw(vn);
-    ED_head_port(ve).p.x = ND_rw(e->tail);
+    ED_head_port(ve).p.x = ND_rw(agtail(e));
     ED_edge_type(ve) = FLATORDER;
-    ve = virtual_edge(vn, e->head, e);
+    ve = virtual_edge(vn, aghead(e), e);
     ED_tail_port(ve).p.x = ND_rw(vn);
-    ED_head_port(ve).p.x = ND_lw(e->head);
+    ED_head_port(ve).p.x = ND_lw(aghead(e));
     ED_edge_type(ve) = FLATORDER;
     /* another assumed symmetry of ht1/ht2 of a label node */
     if (GD_rank(g)[r - 1].ht1 < h2)
@@ -212,8 +212,8 @@ static void abomination(graph_t * g)
 static int
 flatAdjacent (edge_t* e)
 {
-    node_t* tn = e->tail;
-    node_t* hn = e->head;
+    node_t* tn = agtail(e);
+    node_t* hn = aghead(e);
     int i, lo, hi;
     node_t* n;
     rank_t *rank;
@@ -226,7 +226,7 @@ flatAdjacent (edge_t* e)
 	lo = ND_order(hn);
 	hi = ND_order(tn);
     }
-    rank = &(GD_rank(tn->graph)[ND_rank(tn)]);
+    rank = &(GD_rank(agraphof(tn))[ND_rank(tn)]);
     for (i = lo + 1; i < hi; i++) {
 	n = rank->v[i];
 	if ((ND_node_type(n) == VIRTUAL && ND_label(n)) || 
@@ -302,8 +302,8 @@ flat_edges(graph_t * g)
 	    for (j = 0; j < ND_other(n).size; j++) {
 		edge_t* le;
 		e = ND_other(n).list[j];
-		if (ND_rank(e->tail) != ND_rank(e->head)) continue;
-		if (e->tail == e->head) continue; /* skip loops */
+		if (ND_rank(agtail(e)) != ND_rank(aghead(e))) continue;
+		if (agtail(e) == aghead(e)) continue; /* skip loops */
 		le = e;
 		while (ED_to_virt(le)) le = ED_to_virt(le);
 		ED_adjacent(e) = ED_adjacent(le); 
