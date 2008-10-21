@@ -78,9 +78,9 @@ mkClusters (graph_t * g, clist_t* pclist, graph_t* parent)
         clist = pclist;
     mg = g->meta_node->graph;
     for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
-        mn = me->head;
+        mn = aghead(me);
         subg = agusergraph(mn);
-        if (!strncmp(subg->name, "cluster", 7)) {
+        if (!strncmp(agnameof(subg), "cluster", 7)) {
 #ifdef FDP_GEN
             GD_alg(subg) = (void *) NEW(gdata); /* freed in cleanup_subgs */
             GD_ndim(subg) = GD_ndim(parent);
@@ -105,8 +105,8 @@ static void patchwork_init_node(node_t * n)
 {
     agset(n,"shape","box");
     /* common_init_node(n); */
-    /* gv_nodesize(n, GD_flip(n->graph)); */
-    /* ND_pos(n) = ALLOC(GD_ndim(n->graph), 0, double); */
+    /* gv_nodesize(n, GD_flip(agraphof(n))); */
+    /* ND_pos(n) = ALLOC(GD_ndim(agraphof(n)), 0, double); */
 }
 
 static void patchwork_init_edge(edge_t * e)
@@ -149,7 +149,12 @@ void patchwork_init_graph(graph_t * g)
 static void patchwork_cleanup_graph(graph_t * g)
 {
     free(GD_neato_nlist(g));
-    if (g != g->root) memset(&(g->u), 0, sizeof(Agraphinfo_t));
+    if (g != agroot(g))
+#ifndef WITH_CGRAPH
+        memset(&(g->u), 0, sizeof(Agraphinfo_t));
+#else /* WITH_CGRAPH */
+        agclean(g, AGRAPH , "Agraphinfo_t");
+#endif /* WITH_CGRAPH */
 }
 
 void patchwork_cleanup(graph_t * g)

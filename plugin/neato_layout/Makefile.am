@@ -3,15 +3,13 @@
 
 if WITH_CGRAPH
 GRAPH = cgraph
-COMMON = common_cgraph
 else
 GRAPH = graph
-COMMON = common
 endif
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
-	-I$(top_srcdir)/lib/$(COMMON) \
+	-I$(top_srcdir)/lib/common \
 	-I$(top_srcdir)/lib/pathplan \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/$(GRAPH) \
