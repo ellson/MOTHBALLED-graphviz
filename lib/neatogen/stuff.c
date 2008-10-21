@@ -194,9 +194,12 @@ static double setEdgeLen(graph_t * G, node_t * np, int lenx)
 {
     edge_t *ep;
     double total_len = 0.0;
-    double len;
+    double len=0;
+
     for (ep = agfstout(G, np); ep; ep = agnxtout(G, ep)) {
+#ifndef WITH_CGRAPH
 	len = doubleattr(ep, lenx, 1.0);
+#endif /* WITH_CGRAPH */
 	if (len <= 0) {
 	    agerr(AGERR, "bad edge len %f in %s ignored\n", len, G->name);
 	    len = 1.0;
@@ -219,6 +222,9 @@ int scan_graph_mode(graph_t * G, int mode)
     char *str;
     node_t *np, *xp, *other;
     double total_len = 0.0;
+#ifdef WITH_CGRAPH
+    int c=0;
+#endif /* WITH_CGRAPH */
 
     if (Verbose)
 	fprintf(stderr, "Scanning graph %s, %d nodes\n", G->name,
@@ -237,6 +243,7 @@ int scan_graph_mode(graph_t * G, int mode)
 	    }
 	}
     }
+
     nV = agnnodes(G);
     nE = agnedges(G);
 
@@ -287,16 +294,16 @@ int scan_graph(graph_t * g)
 
 void free_scan_graph(graph_t * g)
 {
-    /* int  nG; */
+#ifndef WITH_CGRAPH
     free(GD_neato_nlist(g));
     if (!Nop) {
 	free_array(GD_dist(g));
 	free_array(GD_spring(g));
 	free_array(GD_sum_t(g));
-	/* nG = agnnodes(g); */
 	free_3array(GD_t(g));
 	GD_t(g) = NULL;
     }
+#endif /* WITH_CGRAPH */
 }
 
 void jitter_d(node_t * np, int nG, int n)
@@ -361,8 +368,13 @@ void diffeq_model(graph_t * G, int nG)
 	for (j = 0; j < i; j++) {
 	    f = Spring_coeff / (D[i][j] * D[i][j]);
 	    if ((e =
+#ifndef WITH_CGRAPH
 		 agfindedge(G, GD_neato_nlist(G)[i],
 			    GD_neato_nlist(G)[j])))
+#else /* WITH_CGRAPH */
+		 agedge(G, GD_neato_nlist(G)[i],
+			    GD_neato_nlist(G)[j],(char*)0,0)))
+#endif /* WITH_CGRAPH */
 		f = f * ED_factor(e);
 	    K[i][j] = K[j][i] = f;
 	}

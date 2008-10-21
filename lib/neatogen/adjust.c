@@ -750,8 +750,8 @@ void normalize(graph_t * g)
     if (e == NULL)
 	return;
 
-    theta = -atan2(ND_pos(e->head)[1] - ND_pos(e->tail)[1],
-		   ND_pos(e->head)[0] - ND_pos(e->tail)[0]);
+    theta = -atan2(ND_pos(aghead(e))[1] - ND_pos(agtail(e))[1],
+		   ND_pos(aghead(e))[0] - ND_pos(agtail(e))[0]);
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
 	p.x = ND_pos(v)[0];
@@ -832,7 +832,7 @@ removeOverlapAs(graph_t * G, char* flag)
 	return 0;
 
     if (Verbose)
-	fprintf(stderr, "Adjusting %s using %s\n", G->name, am->print);
+	fprintf(stderr, "Adjusting %s using %s\n", agnameof(G), am->print);
 
     if (am->mode > AM_SCALE) {
 /* start_timer(); */

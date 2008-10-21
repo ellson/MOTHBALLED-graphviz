@@ -1819,10 +1819,19 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 		compute_stressf(coords, lap2, dim, n),
 		iterations, elapsed_sec());
     }
+#ifdef WITH_CGRAPH
+    if (Verbose)
+	fprintf (stderr, "coords\n");
+#endif /* WITH_CGRAPH */
 
     for (i = 0; i < dim; i++) {
 	for (j = 0; j < n; j++) {
 	    d_coords[i][j] = coords[i][j];
+#ifdef WITH_CGRAPH
+            if (Verbose)
+		fprintf (stderr, "%d\n",coords[i][j]);
+			
+#endif /* WITH_CGRAPH */
 	}
     }
     free(coords[0]);

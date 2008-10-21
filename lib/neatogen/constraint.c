@@ -232,7 +232,12 @@ static graph_t *mkNConstraintG(graph_t * g, Dt_t * list,
 
     for (p = (nitem *) dtflatten(list); p;
 	 p = (nitem *) dtlink(list, (Dtlink_t *) p)) {
-	n = agnode(cg, p->np->name);	/* FIX */
+#ifndef WITH_CGRAPH
+	n = agnode(cg, agnameof(p->np));	/* FIX */
+#else
+	n = agnode(cg, agnameof(p->np), 1);      /* FIX */
+	agbindrec(n, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE); //node custom data
+#endif
 	ND_alg(n) = p;
 	p->cnode = n;
 	alloc_elist(0, ND_in(n));
@@ -256,7 +261,11 @@ static graph_t *mkNConstraintG(graph_t * g, Dt_t * list,
 		ED_minlen(e) = delta;
 		ED_weight(e) = 1;
 	    }
+#ifndef WITH_CGRAPH
 	    if (e && agfindedge(g,p->np, nxp->np)) {
+#else /* WITH_CGRAPH */
+	    if (e && agedge(g,p->np, nxp->np, (char*)0, 0)) {
+#endif /* WITH_CGRAPH */
 		ED_weight(e) = 100;
             }
 #if 0
@@ -280,7 +289,7 @@ static graph_t *mkNConstraintG(graph_t * g, Dt_t * list,
 	n = p->cnode;
 	for (e = agfstout(cg,n); e; e = agnxtout(cg,e)) {
 	    elist_append(e, ND_out(n));
-	    elist_append(e, ND_in(e->head));
+	    elist_append(e, ND_in(aghead(e)));
 	}
     }
 
@@ -330,7 +339,12 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
 	if (oldval != p->val) {
 	    oldval = p->val;
 	    /* n = newNode (cg); */
-	    n = agnode(cg, p->np->name);	/* FIX */
+#ifndef WITH_CGRAPH
+	    n = agnode(cg, agnameof(p->np));	/* FIX */
+#else
+	    n = agnode(cg, agnameof(p->np), 1);	/* FIX */
+	    agbindrec(n, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE); //node custom data
+#endif
 	    ND_alg(n) = p;
 	    if (root) {
 		ND_next(lastn) = n;
@@ -369,7 +383,13 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
     vg = agopen("vg", AGDIGRAPHSTRICT);
     for (p = (nitem *) dtflatten(list); p;
 	 p = (nitem *) dtlink(list, (Dtlink_t *) p)) {
-	n = agnode(vg, p->np->name);
+#ifndef WITH_CGRAPH
+	n = agnode(vg, agnameof(p->np));     /* FIX */
+#else
+	n = agnode(cg, agnameof(p->np), 1);  /* FIX */
+	agbindrec(cg, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);  //node custom data
+
+#endif
 	p->vnode = n;
 	ND_alg(n) = p;
     }
