@@ -164,11 +164,11 @@ static void fdp_cleanup_graph(graph_t * g)
     cleanup_subgs(g);
     free(GD_neato_nlist(g));
     free(GD_alg(g));
-#ifndef WITH_CGRAPH
-    if (g != g->root) memset(&(g->u), 0, sizeof(Agraphinfo_t));
-#else /* WITH_CGRAPH */
     if (g != agroot(g))
-	agclean(g,AGRAPH , "Agraphinfo_t");				
+#ifndef WITH_CGRAPH
+	memset(&(g->u), 0, sizeof(Agraphinfo_t));
+#else /* WITH_CGRAPH */
+	agclean(g, AGRAPH , "Agraphinfo_t");				
 #endif /* WITH_CGRAPH */
 }
 

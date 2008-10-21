@@ -152,7 +152,12 @@ static void neato_cleanup_graph(graph_t * g)
 {
     if (Nop || (Pack < 0))
 	free_scan_graph(g);
-    if (g != g->root) memset(&(g->u), 0, sizeof(Agraphinfo_t));
+    if (g != agroot(g))
+#ifndef WITH_CGRAPH
+        memset(&(g->u), 0, sizeof(Agraphinfo_t));
+#else /* WITH_CGRAPH */
+        agclean(g, AGRAPH , "Agraphinfo_t");
+#endif /* WITH_CGRAPH */
 }
 
 void neato_cleanup(graph_t * g)

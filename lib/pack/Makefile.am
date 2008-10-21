@@ -6,16 +6,14 @@ pdfdir = $(pkgdatadir)/doc/pdf
 
 if WITH_CGRAPH
 GRAPH = cgraph
-NEATOGEN = neatogen_cgraph
 else
 GRAPH = graph
-NEATOGEN = neatogen
 endif
 
 AM_CPPFLAGS = -I$(top_srcdir) \
         -I$(top_srcdir)/lib/common \
 	-I$(top_srcdir)/lib/gvc \
-	-I$(top_srcdir)/lib/$(NEATOGEN) \
+	-I$(top_srcdir)/lib/neatogen \
 	-I$(top_srcdir)/lib/pathplan \
 	-I$(top_srcdir)/lib/$(GRAPH) \
 	-I$(top_srcdir)/lib/cdt

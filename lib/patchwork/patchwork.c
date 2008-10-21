@@ -42,7 +42,11 @@ static treenode_t *treebuilder(Agraph_t *g)
 		subg = GD_clust(g)[i];
 		if (agnnodes(subg) == 0) continue;
 		p = newtreenode(&first,&prev);
+#ifndef WITH_CGRAPH
 		p->kind = AGGRAPH;
+#else
+		p->kind = AGRAPH;
+#endif
 		p->u.subg = subg;
 		p->leftchild = treebuilder(subg);
 	}
@@ -161,41 +165,44 @@ static void finishNode (node_t* n)
 
 static rect_t walker(treenode_t *tree)
 {
-	treenode_t	*p;
-	Agnode_t	*n;
-	pointf		center;
+    treenode_t	*p;
+    Agnode_t	*n;
+    pointf		center;
     rect_t      r, rr;
 
-	switch(tree->kind) {
-		case AGGRAPH:
-		case AGRAPH:
-			break;
-		case AGNODE:
-			rr = tree->r;
-			center.x = (tree->r.UR.x + tree->r.LL.x) / 2.0;
-			center.y = (tree->r.UR.y + tree->r.LL.y) / 2.0;
+    switch(tree->kind) {
+#ifndef WITH_CGRAPH
+	case AGGRAPH:
+#else
+	case AGRAPH:
+#endif
+	    break;
+	case AGNODE:
+	    rr = tree->r;
+	    center.x = (tree->r.UR.x + tree->r.LL.x) / 2.0;
+	    center.y = (tree->r.UR.y + tree->r.LL.y) / 2.0;
 
-			n = tree->u.n;
-			ND_coord(n) = center;
-			ND_height(n) = PS2INCH(tree->r.UR.y - tree->r.LL.y);
-			ND_width(n) = PS2INCH(tree->r.UR.x - tree->r.LL.x);
-			gv_nodesize(n,GD_flip(n->graph));
-			finishNode (n);
-			/*fprintf(stderr,"%s coord %.5g %.5g ht %d width %d\n",
-				n->name, ND_coord(n).x, ND_coord(n).y, ND_ht(n),
-				ND_rw(n)+ND_lw(n));*/
-			break;
-		default: abort();
+	    n = tree->u.n;
+	    ND_coord(n) = center;
+	    ND_height(n) = PS2INCH(tree->r.UR.y - tree->r.LL.y);
+	    ND_width(n) = PS2INCH(tree->r.UR.x - tree->r.LL.x);
+	    gv_nodesize(n,GD_flip(agraphof(n)));
+	    finishNode (n);
+	    /*fprintf(stderr,"%s coord %.5g %.5g ht %d width %d\n",
+		    agnameof(n), ND_coord(n).x, ND_coord(n).y, ND_ht(n),
+		    ND_rw(n)+ND_lw(n));*/
+	    break;
+	default: abort();
+    }
+    if ((p = tree->leftchild)) {
+	rr = walker (p);
+	p = p->rightsib;
+	for (; p; p = p->rightsib) {
+	    r = walker(p);
+	    EXPANDBB(rr,r);
 	}
-	if ((p = tree->leftchild)) {
-		rr = walker (p);
-		p = p->rightsib;
-		for (; p; p = p->rightsib) {
-			r = walker(p);
-			EXPANDBB(rr,r);
-		}
-		GD_bb(tree->u.subg) = rr;
-	}
+	GD_bb(tree->u.subg) = rr;
+    }
     return rr;
 }
 

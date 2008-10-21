@@ -3,17 +3,15 @@
 
 if WITH_CGRAPH
 GRAPH = cgraph
-FDPGEN = fdpgen_cgraph
 else
 GRAPH = graph
-FDPGEN = fdpgen
 endif
 
 AM_CPPFLAGS = \
         -I$(top_srcdir) \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/pack \
-	-I$(top_srcdir)/lib/$(FDPGEN) \
+	-I$(top_srcdir)/lib/fdpgen \
 	-I$(top_srcdir)/lib/pathplan \
 	-I$(top_srcdir)/lib/$(GRAPH) \
 	-I$(top_srcdir)/lib/cdt $(GD_INCLUDES) $(EXPAT_INCLUDES) $(Z_INCLUDES)
