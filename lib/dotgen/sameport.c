@@ -44,18 +44,31 @@ void dot_sameports(graph_t * g)
     same_t same[MAXSAME];
     int i;
 
+#ifndef WITH_CGRAPH
     E_samehead = agfindattr(g->proto->e, "samehead");
     E_sametail = agfindattr(g->proto->e, "sametail");
+#else /* WITH_CGRAPH */
+    E_samehead = agattr(g, AGEDGE, "samehead",(char*)0);
+    E_sametail = agattr(g, AGEDGE, "sametail",(char*)0);
+#endif /* WITH_CGRAPH */
     if (!(E_samehead || E_sametail))
 	return;
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	n_same = 0;
 	for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
-	    if (e->head == n && E_samehead &&
+	    if (aghead(e) == n && E_samehead &&
+#ifndef WITH_CGRAPH
 		(id = agxget(e, E_samehead->index))[0])
+#else /* WITH_CGRAPH */
+	        (id = agxget(e, E_sametail->index))[0])
+#endif /* WITH_CGRAPH */
 		sameedge(same, n, e, id);
-	    else if (e->tail == n && E_sametail &&
-		     (id = agxget(e, E_sametail->index))[0])
+	    else if (agtail(e) == n && E_sametail &&
+#ifndef WITH_CGRAPH
+	        (id = agxget(e, E_sametail->index))[0])
+#else /* WITH_CGRAPH */
+	        (id = agxget(e, E_sametail))[0])
+#endif /* WITH_CGRAPH */
 		sameedge(same, n, e, id);
 	}
 	for (i = 0; i < n_same; i++) {
@@ -79,7 +92,7 @@ static void sameedge(same_t * same, node_t * n, edge_t * e, char *id)
 	}
     if (++n_same > MAXSAME) {
 	agerr(AGERR, "too many same{head,tail} groups for node %s\n",
-	      n->name);
+	      agnameof(n));
 	return;
     }
     alloc_elist(1, same[i].l);
@@ -89,7 +102,7 @@ static void sameedge(same_t * same, node_t * n, edge_t * e, char *id)
     same[i].arr_len = 0;
   set_arrow:
     arrow_flags(e, &sflag, &eflag);
-    if ((flag = e->head == n ? eflag : sflag))
+    if ((flag = aghead(e) == n ? eflag : sflag))
 	same[i].arr_len =
 	    /* only consider arrows if there's exactly one arrow */
 	    (++same[i].n_arr == 1) ? arrow_length(e, flag) : 0;
@@ -121,10 +134,10 @@ static void sameport(node_t * u, elist * l, double arr_len)
        bring the angles within PI of each other. av(a,b)!=av(a,b+2*PI) */
     for (i = 0; i < l->size; i++) {
 	e = l->list[i];
-	if (e->head == u)
-	    v = e->tail;
+	if (aghead(e) == u)
+	    v = agtail(e);
 	else
-	    v = e->head;
+	    v = aghead(e);
 	x1 = ND_coord(v).x - ND_coord(u).x;
 	y1 = ND_coord(v).y - ND_coord(u).y;
 	r = hypot(x1, y1);
@@ -138,7 +151,7 @@ static void sameport(node_t * u, elist * l, double arr_len)
     /* (x1,y1),(x2,y2) is a segment that must cross the node boundary */
     x1 = ND_coord(u).x;
     y1 = ND_coord(u).y;	/* center of node */
-    r = MAX(ND_lw(u) + ND_rw(u), ND_ht(u) + GD_ranksep(u->graph));	/* far away */
+    r = MAX(ND_lw(u) + ND_rw(u), ND_ht(u) + GD_ranksep(agraphof(u)));	/* far away */
     x2 = x * r + ND_coord(u).x;
     y2 = y * r + ND_coord(u).y;
     {				/* now move (x1,y1) to the node boundary */
@@ -214,31 +227,31 @@ nodes and maintaining equal separation when specified
 	for (; e; e = ED_to_virt(e)) {	/* assign to all virt edges of e */
 	    for (f = e; f;
 		 f = ED_edge_type(f) == VIRTUAL &&
-		 ND_node_type(f->head) == VIRTUAL &&
-		 ND_out(f->head).size == 1 ?
-		 ND_out(f->head).list[0] : NULL) {
-		if (f->head == u)
+		 ND_node_type(aghead(f)) == VIRTUAL &&
+		 ND_out(aghead(f)).size == 1 ?
+		 ND_out(aghead(f)).list[0] : NULL) {
+		if (aghead(f) == u)
 		    ED_head_port(f) = prt;
-		if (f->tail == u)
+		if (agtail(f) == u)
 		    ED_tail_port(f) = prt;
 	    }
 	    for (f = e; f;
 		 f = ED_edge_type(f) == VIRTUAL &&
-		 ND_node_type(f->tail) == VIRTUAL &&
-		 ND_in(f->tail).size == 1 ?
-		 ND_in(f->tail).list[0] : NULL) {
-		if (f->head == u)
+		 ND_node_type(agtail(f)) == VIRTUAL &&
+		 ND_in(agtail(f)).size == 1 ?
+		 ND_in(agtail(f)).list[0] : NULL) {
+		if (aghead(f) == u)
 		    ED_head_port(f) = prt;
-		if (f->tail == u)
+		if (agtail(f) == u)
 		    ED_tail_port(f) = prt;
 	    }
 	}
 #else
 	for (; e; e = ED_to_virt(e)) {	/* assign to all virt edges of e */
-	    if (e->head == u)
+	    if (aghead(e) == u)
 		ED_head_port(e) =
 		    arr_port.defined && !eflag ? arr_prt : prt;
-	    if (e->tail == u)
+	    if (agtail(e) == u)
 		ED_tail_port(e) =
 		    arr_port.defined && !sflag ? arr_prt : prt;
 	}

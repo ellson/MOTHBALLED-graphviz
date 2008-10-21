@@ -131,10 +131,10 @@ collapse_rankset(graph_t * g, graph_t * subg, int kind)
 	}
 	switch (kind) {
 	case SOURCERANK:
-	    GD_minset(g)->u.ranktype = kind;
+	    ND_ranktype(GD_minset(g)) = kind;
 	    break;
 	case SINKRANK:
-	    GD_maxset(g)->u.ranktype = kind;
+	    ND_ranktype(GD_maxset(g)) = kind;
 	    break;
 	}
     }
@@ -189,9 +189,13 @@ node_induce(graph_t * par, graph_t * g)
     }
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	for (e = agfstout(g->root, n); e; e = agnxtout(g->root, e)) {
-	    if (agcontains(g, e->head))
+	for (e = agfstout(agroot(g), n); e; e = agnxtout(agroot(g), e)) {
+	    if (agcontains(g, aghead(e)))
+#ifndef WITH_CGRAPH
 		aginsert(g, e);
+#else /* WITH_CGRAPH */
+		agsubedge(g,e,1);
+#endif /* WITH_CGRAPH */
 	}
     }
 }
@@ -270,15 +274,20 @@ static void
 collapse_sets(graph_t *rg, graph_t *g)
 {
     int c;
-    graph_t *mg, *subg;
-    node_t *mn, *n;
-    edge_t *me;
+    graph_t  *subg;
+    node_t *n;
 
+#ifndef WITH_CGRAPH
+    graph_t *mg;
+    node_t *mn;
+    edge_t *me;
     mg = g->meta_node->graph;
     for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
 	mn = me->head;
 	subg = agusergraph(mn);
-
+#else /* WITH_CGRAPH */
+    for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
+#endif /* WITH_CGRAPH */
 	c = rank_set_class(subg);
 	if (c) {
 	    if ((c == CLUSTER) && CL_type == LOCAL)
@@ -286,7 +295,7 @@ collapse_sets(graph_t *rg, graph_t *g)
 	    else
 		collapse_rankset(rg, subg, c);
 	}
-	else collapse_sets(rg,subg);
+	else collapse_sets(rg, subg);
 
 	/* mark nodes with ordered edges so their leaves are not collapsed */
 	if (agget(subg, "ordering"))
@@ -298,7 +307,9 @@ collapse_sets(graph_t *rg, graph_t *g)
 static void 
 find_clusters(graph_t * g)
 {
-    graph_t *mg, *subg;
+    graph_t *subg;
+#ifndef WITH_CGRAPH
+    graph_t *mg;
     node_t *mn;
     edge_t *me;
 
@@ -306,7 +317,9 @@ find_clusters(graph_t * g)
     for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
 	mn = me->head;
 	subg = agusergraph(mn);
-
+#else /* WITH_CGRAPH */
+    for (subg = agfstsubg(subg); subg; subg = agnxtsubg(subg)) {
+#endif /* WITH_CGRAPH */
 	if (GD_set_type(subg) == CLUSTER)
 	    collapse_cluster(g, subg);
     }
@@ -317,8 +330,8 @@ set_minmax(graph_t * g)
 {
     int c;
 
-    GD_minrank(g) += GD_leader(g)->u.rank;
-    GD_maxrank(g) += GD_leader(g)->u.rank;
+    GD_minrank(g) += ND_rank(GD_leader(g));
+    GD_maxrank(g) += ND_rank(GD_leader(g));
     for (c = 1; c <= GD_n_cluster(g); c++)
 	set_minmax(GD_clust(g)[c]);
 }
@@ -342,16 +355,16 @@ minmax_edges(graph_t * g)
 	GD_maxset(g) = UF_find(GD_maxset(g));
 
     if ((n = GD_maxset(g))) {
-	slen.y = (GD_maxset(g)->u.ranktype == SINKRANK);
+	slen.y = (ND_ranktype(GD_maxset(g)) == SINKRANK);
 	while ((e = ND_out(n).list[0])) {
-	    assert(e->head == UF_find(e->head));
+	    assert(aghead(e) == UF_find(aghead(e)));
 	    reverse_edge(e);
 	}
     }
     if ((n = GD_minset(g))) {
-	slen.x = (GD_minset(g)->u.ranktype == SOURCERANK);
+	slen.x = (ND_ranktype(GD_minset(g)) == SOURCERANK);
 	while ((e = ND_in(n).list[0])) {
-	    assert(e->tail == UF_find(e->tail));
+	    assert(agtail(e) == UF_find(agtail(e)));
 	    reverse_edge(e);
 	}
     }
@@ -427,7 +440,7 @@ static void expand_ranksets(graph_t * g, aspect_t* asp)
 		UF_singleton(n);
 	    n = agnxtnode(g, n);
 	}
-	if (g == g->root) {
+	if (g == agroot(g)) {
 	    if (CL_type == LOCAL) {
 		for (c = 1; c <= GD_n_cluster(g); c++)
 		    set_minmax(GD_clust(g)[c]);
@@ -571,7 +584,7 @@ void dot_rank(graph_t * g, aspect_t* asp)
 
 int is_cluster(graph_t * g)
 {
-    return (strncmp(g->name, "cluster", 7) == 0);
+    return (strncmp(agnameof(g), "cluster", 7) == 0);
 }
 
 #ifdef OBSOLETE
@@ -598,11 +611,11 @@ potential_leaf(graph_t * g, edge_t * e, node_t * leaf)
 
     if ((ED_tail_port(e).p.x) || (ED_head_port(e).p.x))
 	return;
-    if ((ED_minlen(e) != 1) || (ND_order(e->tail) > 0))
+    if ((ED_minlen(e) != 1) || (ND_order(agtail(e)) > 0))
 	return;
-    par = ((leaf != e->head) ? e->head : e->tail);
+    par = ((leaf != aghead(e)) ? aghead(e) : agtail(e));
     ND_ranktype(leaf) = LEAFSET;
-    if (par == e->tail)
+    if (par == agtail(e))
 	GD_outleaf(par) = merge_leaves(g, GD_outleaf(par), leaf);
     else
 	GD_inleaf(par) = merge_leaves(g, GD_inleaf(par), leaf);
