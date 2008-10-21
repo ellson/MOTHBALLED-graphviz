@@ -15,9 +15,10 @@
 **********************************************************/
 
 
-#include <circular.h>
-#include	<block.h>
-#include	<assert.h>
+#include <assert.h>
+
+#include "circular.h"
+#include "block.h"
 
 void initBlocklist(blocklist_t * bl)
 {
