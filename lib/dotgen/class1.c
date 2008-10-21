@@ -27,7 +27,11 @@ int nonconstraint_edge(edge_t * e)
 {
     char *constr;
 
+#ifndef WITH_CGRAPH
     if (E_constr && (constr = agxget(e, E_constr->index))) {
+#else /* WITH_CGRAPH */
+    if (E_constr && (constr = agxget(e, E_constr))) {
+#endif /* WITH_CGRAPH */
 	if (constr[0] && mapbool(constr) == FALSE)
 	    return TRUE;
     }
@@ -41,12 +45,12 @@ interclust1(graph_t * g, node_t * t, node_t * h, edge_t * e)
     int offset, t_len, h_len, t_rank, h_rank;
     edge_t *rt, *rh;
 
-    if (ND_clust(e->tail))
-	t_rank = ND_rank(e->tail) - ND_rank(GD_leader(ND_clust(e->tail)));
+    if (ND_clust(agtail(e)))
+	t_rank = ND_rank(agtail(e)) - ND_rank(GD_leader(ND_clust(agtail(e))));
     else
 	t_rank = 0;
-    if (ND_clust(e->head))
-	h_rank = ND_rank(e->head) - ND_rank(GD_leader(ND_clust(e->head)));
+    if (ND_clust(aghead(e)))
+	h_rank = ND_rank(aghead(e)) - ND_rank(GD_leader(ND_clust(aghead(e))));
     else
 	h_rank = 0;
     offset = ED_minlen(e) + t_rank - h_rank;
@@ -83,8 +87,8 @@ void class1(graph_t * g)
 	    if (nonconstraint_edge(e))
 		continue;
 
-	    t = UF_find(e->tail);
-	    h = UF_find(e->head);
+	    t = UF_find(agtail(e));
+	    h = UF_find(aghead(e));
 
 	    /* skip self, flat, and intra-cluster edges */
 	    if (t == h)
@@ -93,7 +97,7 @@ void class1(graph_t * g)
 
 	    /* inter-cluster edges require special treatment */
 	    if (ND_clust(t) || ND_clust(h)) {
-		interclust1(g, e->tail, e->head, e);
+		interclust1(g, agtail(e), aghead(e), e);
 		continue;
 	    }
 
@@ -103,7 +107,7 @@ void class1(graph_t * g)
 		virtual_edge(t, h, e);
 
 #ifdef NOTDEF
-	    if ((t == e->tail) && (h == e->head)) {
+	    if ((t == agtail(e)) && (h == aghead(e))) {
 		if (rep = find_fast_edge(t, h))
 		    merge_oneway(e, rep);
 		else
