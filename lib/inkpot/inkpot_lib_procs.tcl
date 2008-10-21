@@ -115,6 +115,30 @@ proc print_first {a} {
 }
 
 ####################################################################
+# setfrom pattern struct
+#
+# recursive proc for unpacking pseudo-structs with llength checks
+
+proc setfrom {pattern struct {d_ {1}}} {
+    set l_ [llength $pattern]
+    if {$l_ != [llength $struct]} {
+        puts stderr "setfrom: llengths don't match: \"$pattern\" \"$struct\""
+        exit
+    }
+    for {set i_ 0} {$i_ < $l_} {incr i_} {
+	set p_ [lindex $pattern $i_]
+	set s_ [lindex $struct $i_]
+        if {[llength $p_] > 1} {
+            setfrom $p_ $s_ [expr $d_ + 1]
+	} {
+	    upvar $d_ $p_ $p_
+	    set $p_ $s_
+	}
+    }
+}
+
+
+####################################################################
 #  MAP  --mapping m:n relationships between elements of 2 sets
 #
 # Public procs:
@@ -164,7 +188,7 @@ proc mapc {M map} {
             upvar #0 MAP_[set M]_m2_1 MAP_m2_1
             upvar #0 MAP_[set M]_m1_2 MAP_m1_2
             foreach {xy} [array names MAP_12_3] {
-                foreach {x y} $xy {break}
+                setfrom {x y} $xy
                 set r_set [lsort -unique $MAP_12_3($xy)]
                 set m1 [list $x $r_set]
                 set m2 [list $y $r_set]
@@ -199,22 +223,22 @@ proc mapc {M map} {
 proc map1 {M} { ;#get {x...}
     upvar #0 MAP_[set M]_1_m2 MAP_1_m2
     if {! [info exists MAP_1_m2]} {mapc $M 1_m2}
-    lsort [array names MAP_1_m2]
+    array names MAP_1_m2
 }
 proc map2 {M} { ;#get {y...}
     upvar #0 MAP_[set M]_2_m1 MAP_2_m1
     if {! [info exists MAP_2_m1]} {mapc $M 2_m1}
-    lsort [array names MAP_2_m1]
+    array names MAP_2_m1
 }
 proc mapm1 {M} { ;#get {{x {r...}}...}
     upvar #0 MAP_[set M]_m1_2 MAP_m1_2
     if {! [info exists MAP_m1_2]} {mapc $M m1_2}
-    lsort [array names MAP_m1_2]
+    array names MAP_m1_2
 }
 proc mapm2 {M} { ;#get {{y {r...}}...}
     upvar #0 MAP_[set M]_m2_1 MAP_m2_1
     if {! [info exists MAP_m2_1]} {mapc $M m2_1}
-    lsort [array names MAP_m2_1]
+    array names MAP_m2_1
 }
 proc map1m2 {M x} { ;#from x get {y {r...}}
     upvar #0 MAP_[set M]_1_m2 MAP_1_m2
@@ -241,7 +265,7 @@ proc map12 {M x} { ;#from x get {y...}
     if {! [info exists MAP_1_m2]} {mapc $M 1_m2}
     set res [list]
     foreach {m} $MAP_1_m2($x) {
-	foreach {y r_set} $m {break}
+	setfrom {y r_set} $m
         lappend res $y
     }
     lsort -unique $res
@@ -251,7 +275,7 @@ proc map21 {M y} { ;#from y get {x...}
     if {! [info exists MAP_2_m1]} {mapc $M 2_m1}
     set res [list]
     foreach {m} $MAP_2_m1($y) {
-	foreach {x r_set} $m {break}
+	setfrom {x r_set} $m
         lappend res $x
     }
     lsort -unique $res
@@ -287,9 +311,9 @@ if {0} {  ;# for testing
 	map_debug CV
 	puts ""
 
-	puts "map1 CV                : [map1 CV]"
+	puts "map1 CV                : [lsort [map1 CV]]"
 	puts "              expected : black green grey0 lime noir vert"
-	puts "map2 CV                : [map2 CV]"
+	puts "map2 CV                : [lsort [map2 CV]]"
        	puts "              expected : 0 1 2"
 	puts "map1m2 CV green        : [map1m2 CV green]"
 	puts "              expected : {1 {tk x11}} {2 svg}"
