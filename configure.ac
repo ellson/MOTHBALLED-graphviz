@@ -225,10 +225,10 @@ AC_ARG_ENABLE(static,
 if test "x$enable_static" = "xyes"; then
 	AC_ENABLE_STATIC
 	AC_DEFINE(ENABLE_STATIC,1,[Define if you want statically linked executables])
-        use_static="No (disabled by default)"
+        use_static="Yes"
 else
 	AC_DISABLE_STATIC
-        use_static="Yes"
+        use_static="No (disabled by default)"
 fi
 AM_CONDITIONAL(ENABLE_STATIC, [test "x$enable_static" = "xyes"])
 
@@ -469,8 +469,6 @@ dnl libtool ltdl on-demand plugin loading
 AC_ARG_ENABLE(ltdl,
   [AC_HELP_STRING([--enable-ltdl], [support on-demand plugin loading])])
 if test "x$enable_ltdl" != "xno"; then
-  use_ltdl="No (disabled)"
-else
   AC_DEFINE(ENABLE_LTDL,1,[Define if you want on-demand plugin loading])
   AC_CONFIG_SUBDIRS(libltdl)
   AC_LIBTOOL_DLOPEN
@@ -482,6 +480,8 @@ else
   else
      AC_LIBLTDL_INSTALLABLE
   fi
+else
+  use_ltdl="No (disabled)"
 fi
 AM_CONDITIONAL(ENABLE_LTDL, [test "x$enable_ltdl" != "xno"])
 AC_SUBST(INCLTDL)
