@@ -50,11 +50,9 @@ libgvc_C_la_SOURCES = gvrender.c gvlayout.c gvdevice.c gvloadimage.c \
 	gvcontext.c gvjobs.c gvevent.c gvplugin.c gvconfig.c \
 	gvtextlayout.c gvusershape.c gvc.c
 libgvc_C_la_LIBADD = \
-	$(top_builddir)/lib/rbtree/librbtree_C.la \
 	$(top_builddir)/lib/pack/libpack_C.la \
 	$(top_builddir)/lib/common/libcommon_C.la
 libgvc_C_la_DEPENDENCIES = \
-	$(top_builddir)/lib/rbtree/librbtree_C.la \
 	$(top_builddir)/lib/pack/libpack_C.la \
 	$(top_builddir)/lib/common/libcommon_C.la
 #For use with plugins.
