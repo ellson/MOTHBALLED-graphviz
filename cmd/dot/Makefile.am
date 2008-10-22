@@ -1,6 +1,12 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
+if WITH_CGRAPH
+GRAPH = cgraph
+else
+GRAPH = graph
+endif
+
 pdfdir = $(pkgdatadir)/doc/pdf
 
 linkedman = neato.1 twopi.1 fdp.1 circo.1
@@ -17,7 +23,7 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/common \
         -I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/pathplan \
-	-I$(top_srcdir)/lib/graph \
+	-I$(top_srcdir)/lib/$(GRAPH) \
 	-I$(top_srcdir)/lib/cdt
 
 if ENABLE_SHARED
@@ -81,7 +87,7 @@ dot_static_LDADD = \
 	$(top_builddir)/plugin/core/.libs/libgvplugin_core_C.a \
 	$(top_builddir)/lib/gvc/libgvc_C.la \
 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
-	$(top_builddir)/lib/graph/libgraph_C.la \
+	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH)_C.la \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
        	@GTS_LIBS@ @ICONV_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
 
@@ -92,7 +98,7 @@ dot_builtins_LDADD = \
 	$(top_builddir)/plugin/core/libgvplugin_core.la \
 	$(top_builddir)/lib/gvc/libgvc_builtins.la \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
-	$(top_builddir)/lib/graph/libgraph.la \
+	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
 	$(top_builddir)/lib/cdt/libcdt.la \
        	@GTS_LIBS@ @ICONV_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
 

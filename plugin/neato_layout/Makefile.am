@@ -34,14 +34,14 @@ libgvplugin_neato_layout_C_la_LIBADD = \
 	$(top_builddir)/lib/fdpgen/libfdpgen_C.la \
 	$(top_builddir)/lib/circogen/libcircogen_C.la
 
-libgvplugin_neato_layout_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
+libgvplugin_neato_layout_la_LDFLAGS = -version-info $(GVPLUGIN_VERSION_INFO)
 libgvplugin_neato_layout_la_SOURCES = $(libgvplugin_neato_layout_C_la_SOURCES)
 libgvplugin_neato_layout_la_LIBADD = $(libgvplugin_neato_layout_C_la_LIBADD) \
 	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
-	$(GTS_LIBS) @IPSEPCOLA_LIBS@ @MATH_LIBS@
+	$(GTS_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
 	
 if WITH_SFDP
 libgvplugin_neato_layout_C_la_LIBADD += $(top_builddir)/lib/sfdpgen/libsfdpgen_C.la

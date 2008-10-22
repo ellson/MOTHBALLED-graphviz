@@ -3,6 +3,12 @@
 
 SUBDIRS = demo
 
+if WITH_CGRAPH
+GRAPH = cgraph
+else
+GRAPH = graph
+endif
+
 pdfdir = $(pkgdatadir)/doc/pdf
 htmldir = $(pkgdatadir)/doc/html
 
@@ -12,14 +18,14 @@ AM_CPPFLAGS = \
         -I$(top_srcdir) \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/common \
-	-I$(top_srcdir)/lib/graph \
+	-I$(top_srcdir)/lib/$(GRAPH) \
 	-I$(top_srcdir)/lib/cdt \
 	-I$(top_srcdir)/lib/pathplan \
-	-I$(top_srcdir)/tclpkg/tclhandle @GD_INCLUDES@ @TCL_INCLUDES@
+	-I$(top_srcdir)/tclpkg/tclhandle $(GD_INCLUDES) $(TCL_INCLUDES)
 
-LIBS =  @LIBS@ -lc
+LIBS =  $(LIBS) -lc
 
-AM_CFLAGS = @TCL_CFLAGS@
+AM_CFLAGS = $(TCL_CFLAGS)
 
 man = tcldot.3tcl
 pdf = tcldot.3tcl.pdf
@@ -49,12 +55,12 @@ if WITH_LIBGD
 if WITH_MYLIBGD
 libtcldot_la_LIBADD += $(top_builddir)/lib/gd/libgvgd_C.la
 else
-libtcldot_la_LIBADD += @GD_LIBS@
+libtcldot_la_LIBADD += $(GD_LIBS)
 endif
-libtcldot_la_LIBADD += @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@
+libtcldot_la_LIBADD += $(FONTCONFIG_LIBS) $(FREETYPE2_LIBS) $(JPEG_LIBS) $(PNG_LIBS) $(Z_LIBS)
 endif
 
-libtcldot_la_LIBADD += @LIBGEN_LIBS@ @ICONV_LIBS@ @MATH_LIBS@
+libtcldot_la_LIBADD += $(LIBGEN_LIBS) $(ICONV_LIBS) $(MATH_LIBS)
 
 libtcldot_builtin_la_SOURCES = \
 	tcldot.c $(CODEGENS) $(GDTCLFT) \
@@ -68,13 +74,13 @@ libtcldot_builtin_la_LIBADD = \
 	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout_C.la \
 	$(top_builddir)/plugin/core/libgvplugin_core_C.la \
 	$(top_builddir)/lib/gvc/libgvc_C.la \
-	$(top_builddir)/lib/graph/libgraph_C.la \
+	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH)_C.la \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
-	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la @GTS_LIBS@
+	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la $(GTS_LIBS)
 
 if WITH_PANGOCAIRO
-libtcldot_builtin_la_LIBADD += $(top_builddir)/plugin/pango/libgvplugin_pango_C.la @PANGOCAIRO_LIBS@
+libtcldot_builtin_la_LIBADD += $(top_builddir)/plugin/pango/libgvplugin_pango_C.la $(PANGOCAIRO_LIBS)
 endif
 
 if WITH_LIBGD
@@ -82,12 +88,12 @@ libtcldot_builtin_la_LIBADD += $(top_builddir)/plugin/gd/libgvplugin_gd_C.la
 if WITH_MYLIBGD
 libtcldot_builtin_la_LIBADD += $(top_builddir)/lib/gd/libgvgd_C.la
 else
-libtcldot_builtin_la_LIBADD += @GD_LIBS@
+libtcldot_builtin_la_LIBADD += $(GD_LIBS)
 endif
-libtcldot_builtin_la_LIBADD += @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@
+libtcldot_builtin_la_LIBADD += $(FONTCONFIG_LIBS) $(FREETYPE2_LIBS) $(JPEG_LIBS) $(PNG_LIBS) $(Z_LIBS)
 endif
 
-libtcldot_builtin_la_LIBADD += @ICONV_LIBS@ @EXPAT_LIBS@ @LIBGEN_LIBS@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
+libtcldot_builtin_la_LIBADD += $(ICONV_LIBS) $(EXPAT_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
 
 if WITH_TCL
 all-local: pkgIndex.tcl
@@ -97,7 +103,7 @@ pkgIndex.tcl: libtcldot.la
 endif
 
 tcldot.3tcl.pdf: $(srcdir)/tcldot.3tcl
-	- @GROFF@ -Tps -man $(srcdir)/tcldot.3tcl | @PS2PDF@ - - >tcldot.3tcl.pdf
+	- $(GROFF) -Tps -man $(srcdir)/tcldot.3tcl | $(PS2PDF) - - >tcldot.3tcl.pdf
 
 EXTRA_DIST = $(man) $(pdf) $(html) README README.Tkspline Makefile.old
 

@@ -542,6 +542,7 @@ void gvconfig(GVC_t * gvc, boolean rescan)
     	    f = fopen(gvc->config_path,"r");
     	    if (!f) {
     	        agerr (AGERR,"failed to open %s for read.\n", gvc->config_path);
+		exit(1);
     	    }
     	    else {
     	        config_text = gmalloc(config_st.st_size + 1);

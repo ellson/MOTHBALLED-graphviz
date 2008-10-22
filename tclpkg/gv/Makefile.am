@@ -3,21 +3,27 @@
 
 SUBDIRS = demo
 
+if WITH_CGRAPH
+GRAPH = cgraph
+else
+GRAPH = graph
+endif
+
 pdfdir = $(pkgdatadir)/doc/pdf
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/common \
-	-I$(top_srcdir)/lib/graph \
+	-I$(top_srcdir)/lib/$(GRAPH) \
 	-I$(top_srcdir)/lib/cdt \
 	-I$(top_srcdir)/lib/pathplan
 
-LIBS =  @LIBS@ -lc
+LIBS =  $(LIBS) -lc
 
 BASESOURCES = gv.cpp gv.i
 BASELIBS = $(top_builddir)/lib/gvc/libgvc.la \
-	$(top_builddir)/lib/graph/libgraph.la \
+	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
 	$(top_builddir)/lib/cdt/libcdt.la
 
 pkgsharpdir = $(pkglibdir)/sharp
@@ -84,7 +90,7 @@ OCAML_data += gv.a gv.cmx gv.cmxa
 endif
 nodist_libgv_ocaml_la_SOURCES = gv_ocaml.cpp $(OCAML_data)
 libgv_ocaml_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
-libgv_ocaml_la_LIBADD = $(BASELIBS) @OCAML_LIBS@
+libgv_ocaml_la_LIBADD = $(BASELIBS) $(OCAML_LIBS)
 libgv_ocaml_la_LDFLAGS = -module -avoid-version
 libgv_ocaml_la_CPPFLAGS = $(AM_CPPFLAGS) $(OCAML_INCLUDES)
 gv.ml gv.mli: gv_ocaml.cpp
@@ -328,40 +334,40 @@ $(man): gv.i gv_doc_writer.tcl gv_doc_template.tcl gv_doc_langs.tcl
 	$(TCLSH) $(srcdir)/gv_doc_writer.tcl "$(srcdir)"
 
 gv.3sharp.pdf: gv.3sharp
-	- @GROFF@ -Tps -man gv.3sharp | @PS2PDF@ - - >gv.3sharp.pdf
+	- $(GROFF) -Tps -man gv.3sharp | $(PS2PDF) - - >gv.3sharp.pdf
 
 gv.3guile.pdf: gv.3guile
-	- @GROFF@ -Tps -man gv.3guile | @PS2PDF@ - - >gv.3guile.pdf
+	- $(GROFF) -Tps -man gv.3guile | $(PS2PDF) - - >gv.3guile.pdf
 
 gv.3io.pdf: gv.3io
-	- @GROFF@ -Tps -man gv.3io | @PS2PDF@ - - >gv.3io.pdf
+	- $(GROFF) -Tps -man gv.3io | $(PS2PDF) - - >gv.3io.pdf
 
 gv.3java.pdf: gv.3java
-	- @GROFF@ -Tps -man gv.3java | @PS2PDF@ - - >gv.3java.pdf
+	- $(GROFF) -Tps -man gv.3java | $(PS2PDF) - - >gv.3java.pdf
 
 gv.3lua.pdf: gv.3lua
-	- @GROFF@ -Tps -man gv.3lua | @PS2PDF@ - - >gv.3lua.pdf
+	- $(GROFF) -Tps -man gv.3lua | $(PS2PDF) - - >gv.3lua.pdf
 
 gv.3ocaml.pdf: gv.3ocaml
-	- @GROFF@ -Tps -man gv.3ocaml | @PS2PDF@ - - >gv.3ocaml.pdf
+	- $(GROFF) -Tps -man gv.3ocaml | $(PS2PDF) - - >gv.3ocaml.pdf
 
 gv.3perl.pdf: gv.3perl
-	- @GROFF@ -Tps -man gv.3perl | @PS2PDF@ - - >gv.3perl.pdf
+	- $(GROFF) -Tps -man gv.3perl | $(PS2PDF) - - >gv.3perl.pdf
 
 gv.3php.pdf: gv.3php
-	- @GROFF@ -Tps -man gv.3php | @PS2PDF@ - - >gv.3php.pdf
+	- $(GROFF) -Tps -man gv.3php | $(PS2PDF) - - >gv.3php.pdf
 
 gv.3python.pdf: gv.3python
-	- @GROFF@ -Tps -man gv.3python | @PS2PDF@ - - >gv.3python.pdf
+	- $(GROFF) -Tps -man gv.3python | $(PS2PDF) - - >gv.3python.pdf
 
 gv.3r.pdf: gv.3r
-	- @GROFF@ -Tps -man gv.3r | @PS2PDF@ - - >gv.3r.pdf
+	- $(GROFF) -Tps -man gv.3r | $(PS2PDF) - - >gv.3r.pdf
 
 gv.3ruby.pdf: gv.3ruby
-	- @GROFF@ -Tps -man gv.3ruby | @PS2PDF@ - - >gv.3ruby.pdf
+	- $(GROFF) -Tps -man gv.3ruby | $(PS2PDF) - - >gv.3ruby.pdf
 
 gv.3tcl.pdf: gv.3tcl
-	- @GROFF@ -Tps -man gv.3tcl | @PS2PDF@ - - >gv.3tcl.pdf
+	- $(GROFF) -Tps -man gv.3tcl | $(PS2PDF) - - >gv.3tcl.pdf
 
 install-data-hook:
 if WITH_LUA
