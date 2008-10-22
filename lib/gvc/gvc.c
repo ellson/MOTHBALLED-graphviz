@@ -40,11 +40,11 @@ GVC_t *gvContext(void)
 {
     GVC_t *gvc;
 
-    aginit();
 #ifndef WITH_CGRAPH
+    aginit();
     agnodeattr(NULL, "label", NODENAME_ESC);
 #else
-    agattr(NULL, AGNODE, "label", NODENAME_ESC, 1);
+    agattr(NULL, AGNODE, "label", NODENAME_ESC);
 #endif
     gvc = gvNEWcontext(LibInfo, gvUsername());
     gvconfig(gvc, FALSE); /* configure for available plugins and codegens */

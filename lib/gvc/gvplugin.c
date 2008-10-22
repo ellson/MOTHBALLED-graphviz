@@ -457,6 +457,7 @@ void gvplugin_write_status(GVC_t * gvc)
 
 Agraph_t * gvplugin_graph(GVC_t * gvc)
 {
+#ifndef WITH_CGRAPH
     Agraph_t *g, *sg, *ssg;
     Agnode_t *n, *m;
     Agedge_t *e;
@@ -610,4 +611,7 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
     }
 
     return g;
+#else
+    return NULL;
+#endif
 }
