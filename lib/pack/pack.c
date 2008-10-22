@@ -166,7 +166,7 @@ fillEdge(Agedge_t * e, point p, PointSet * ps, int dx, int dy,
 
     /* If doS is false or the edge has not splines, use line segment */
     if (!doS || !ED_spl(e)) {
-	h = e->head;
+	h = aghead(e);
 	hpt = coord(h);
 	MOVEPT(hpt);
 	CELL(hpt, ssize);
@@ -246,8 +246,8 @@ genBox(Agraph_t * g, ginfo * info, int ssize, int margin, point center)
 
     if (Verbose > 2) {
 	int i;
-	fprintf(stderr, "%s no. cells %d W %d H %d\n", g->name, info->nc,
-		W, H);
+	fprintf(stderr, "%s no. cells %d W %d H %d\n",
+		agnameof(g), info->nc, W, H);
 	for (i = 0; i < info->nc; i++)
 	    fprintf(stderr, "  %d %d cell\n", info->cells[i].x,
 		    info->cells[i].y);
@@ -301,8 +301,8 @@ genPoly(Agraph_t * root, Agraph_t * g, ginfo * info,
 	/* backup the alg data */
 	alg = N_GNEW(agnnodes(g), void *);
 	for (i = 0, n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	    alg[i++] = n->u.alg;
-	    n->u.alg = 0;
+	    alg[i++] = ND_alg(n);
+	    ND_alg(n) = 0;
 	}
 
 	/* do bbox of top clusters */
@@ -353,7 +353,7 @@ genPoly(Agraph_t * root, Agraph_t * g, ginfo * info,
 	    } else {
 		CELL(pt, ssize);
 		for (e = agfstout(eg, n); e; e = agnxtout(eg, e)) {
-		    if (ND_clust(n) == ND_clust(e->head))
+		    if (ND_clust(n) == ND_clust(aghead(e)))
 			continue;
 		    fillEdge(e, pt, ps, dx, dy, ssize, doSplines);
 		}
@@ -362,7 +362,7 @@ genPoly(Agraph_t * root, Agraph_t * g, ginfo * info,
 
 	/* restore the alg data */
 	for (i = 0, n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	    n->u.alg = alg[i++];
+	    ND_alg(n)= alg[i++];
 	}
 	free(alg);
 
@@ -397,8 +397,8 @@ genPoly(Agraph_t * root, Agraph_t * g, ginfo * info,
 
     if (Verbose > 2) {
 	int i;
-	fprintf(stderr, "%s no. cells %d W %d H %d\n", g->name, info->nc,
-		W, H);
+	fprintf(stderr, "%s no. cells %d W %d H %d\n",
+		agnameof(g), info->nc, W, H);
 	for (i = 0; i < info->nc; i++)
 	    fprintf(stderr, "  %d %d cell\n", info->cells[i].x,
 		    info->cells[i].y);
@@ -609,8 +609,9 @@ point *putGraphs(int ng, Agraph_t ** gs, Agraph_t * root,
 	    fixed_cnt++;
 	}
 	if (Verbose > 2) {
-	    fprintf(stderr, "bb[%s] %.5g %.5g %.5g %.5g\n", g->name, GD_bb(g).LL.x,
-		    GD_bb(g).LL.y, GD_bb(g).UR.x, GD_bb(g).UR.y);
+	    fprintf(stderr, "bb[%s] %.5g %.5g %.5g %.5g\n", agnameof(g),
+		GD_bb(g).LL.x, GD_bb(g).LL.y,
+		GD_bb(g).UR.x, GD_bb(g).UR.y);
 	}
     }
 

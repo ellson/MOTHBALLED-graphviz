@@ -63,12 +63,14 @@ static void addCluster(clist_t * clist, graph_t * subg)
 static void
 mkClusters (graph_t * g, clist_t* pclist, graph_t* parent)
 {
-    node_t*  mn;
-    edge_t*  me;
-    graph_t* mg;
     graph_t* subg;
     clist_t  list;
     clist_t* clist;
+#ifndef WITH_CGRAPH
+    node_t*  mn;
+    edge_t*  me;
+    graph_t* mg;
+#endif
 
     if (pclist == NULL) {
         clist = &list;
@@ -76,10 +78,15 @@ mkClusters (graph_t * g, clist_t* pclist, graph_t* parent)
     }
     else
         clist = pclist;
+
+#ifndef WITH_CGRAPH
     mg = g->meta_node->graph;
     for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
         mn = aghead(me);
         subg = agusergraph(mn);
+#else /* WITH_CGRAPH */
+    for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
+#endif /* WITH_CGRAPH */
         if (!strncmp(agnameof(subg), "cluster", 7)) {
 #ifdef FDP_GEN
             GD_alg(subg) = (void *) NEW(gdata); /* freed in cleanup_subgs */
@@ -138,7 +145,11 @@ static void patchwork_init_node_edge(graph_t * g)
 
 void patchwork_init_graph(graph_t * g)
 {
-    N_shape = agnodeattr(g,"shape","box");
+#ifndef WITH_CGRAPH
+    N_shape = agnodeattr(g, "shape", "box");
+#else
+    N_shape = agattr(g, AGNODE, "shape","box");
+#endif
     setEdgeType (g, ET_LINE);
     /* GD_ndim(g) = late_int(g,agfindattr(g,"dim"),2,2); */
     Ndim = GD_ndim(g) = 2;	/* The algorithm only makes sense in 2D */
