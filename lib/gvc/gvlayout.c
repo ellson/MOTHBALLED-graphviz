@@ -65,7 +65,8 @@ int gvLayoutJobs(GVC_t * gvc, Agraph_t * g)
     int rc;
 
     GD_gvc(g) = gvc;
-    if (g != g->root) GD_gvc(g->root) = gvc;
+    if (g != agroot(g))
+	GD_gvc(agroot(g)) = gvc;
 
     if ((p = agget(g, "layout"))) {
 	rc = gvlayout_select(gvc, p);
@@ -81,7 +82,7 @@ int gvLayoutJobs(GVC_t * gvc, Agraph_t * g)
 	return -1;
 
     graph_init(g, gvc->layout.features->flags & LAYOUT_USES_RANKDIR);
-    GD_drawing(g->root) = GD_drawing(g);
+    GD_drawing(agroot(g)) = GD_drawing(g);
     if (gvle && gvle->layout) {
 	gvle->layout(g);
 	if (gvle->cleanup)
