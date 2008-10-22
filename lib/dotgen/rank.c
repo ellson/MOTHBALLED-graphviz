@@ -283,7 +283,7 @@ collapse_sets(graph_t *rg, graph_t *g)
     edge_t *me;
     mg = g->meta_node->graph;
     for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
-	mn = me->head;
+	mn = aghead(me);
 	subg = agusergraph(mn);
 #else /* WITH_CGRAPH */
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
