@@ -1026,3 +1026,12 @@ int point_within_sphere_with_coords(float x0, float y0, float z0, float r,
 		return 1;
 	return 0;
 }
+float distance_to_line(float ax,float ay,float bx,float by,float cx,float cy)
+{
+	//this function returns the distance between a line(a-b) segment and a point(c) in 2D plane
+	return sqrt(
+				pow(((by-ay)*(cx-ax)+(bx-ax)*(cy-ay)),2)
+				/
+				(  pow((bx-ax),2) + pow((by-ay),2))
+				);
+}

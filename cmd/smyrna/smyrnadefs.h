@@ -337,6 +337,10 @@ typedef struct _selection {
     int Anti;			//subtract selections if 1
     int AlreadySelected;	//for single selections to avoid selecting more than one object
     RGBColor SelectionColor;
+	float node_distance; //to get the closest node , this value is updated for each node, distance between selection coords and node coords, smallest gets to be selected
+	topview_node* single_selected_node; //pointer to selected node in a single node/edge selection cycle,after each node loop this value is checked and if it is in the limits that node is selected or deselected
+										//before the node/edge loop this value is nulled
+	topview_edge* single_selected_edge;//pointer to selected/picked edge
 
 } selection;
 typedef struct _magnifier {

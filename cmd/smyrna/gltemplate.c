@@ -250,15 +250,19 @@ static gboolean button_press_event(GtkWidget * widget,
 
     begin_x = (float) event->x;
     begin_y = (float) event->y;
+	//update mouse coordinates of view if there is left or right click
+	if ((event->button == 1) || (event->button == 3))
+	{
+		GetOGLPosRef    ((int) begin_x, (int) begin_y, &(view->GLx), &(view->GLy),&(view->GLz));
+			view->Selection.X = view->GLx;
+			view->Selection.Y = view->GLy;
 
-    if (event->button == 3)	//right click
+	}
+	
+	if (event->button == 3)	//right click
 	{
 		view->mouse.button = rightmousebutton;
-		if (GetOGLPosRef    ((int) begin_x, (int) begin_y, &(view->GLx), &(view->GLy),
-	     &(view->GLz))) 
-		{
 				expose_event(view->drawing_area, NULL, NULL);
-		}
 
 	}
     if (event->button == 1)	//left click
@@ -267,20 +271,12 @@ static gboolean button_press_event(GtkWidget * widget,
 		view->prevpany = view->pany;
 		view->mouse.mouse_down = 1;
 		view->mouse.button = leftmousebutton;
-		if (GetOGLPosRef    ((int) begin_x, (int) begin_y, &(view->GLx), &(view->GLy),
-	     &(view->GLz))) 
+		if (view->mouse.mouse_mode == MM_SINGLE_SELECT)	//single select
 		{
-			if (view->mouse.mouse_mode == MM_SINGLE_SELECT)	//single select
-			{
-				view->Selection.Active = 1;
-				view->Selection.Type = 0;
-				view->Selection.AlreadySelected = 0;
-				view->Selection.X = view->GLx - SINGLE_SELECTION_WIDTH / 2;
-				view->Selection.Y = view->GLy - SINGLE_SELECTION_WIDTH / 2;
-				view->Selection.W = SINGLE_SELECTION_WIDTH;
-				view->Selection.H = SINGLE_SELECTION_WIDTH;
-				expose_event(view->drawing_area, NULL, NULL);
-			}
+			view->Selection.Active = 1;
+			view->Selection.Type = 0;
+			view->Selection.AlreadySelected = 0;
+			expose_event(view->drawing_area, NULL, NULL);
 		}
     }
     return FALSE;
