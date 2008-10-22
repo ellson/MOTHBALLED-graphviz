@@ -885,7 +885,7 @@ static void poly_init(node_t * n)
      * Need this to guarantee final node size is regular.
      */
     if (regular) {
-	bb.x = bb.y = MAX(bb.x, bb.y);
+	width = height = bb.x = bb.y = MAX(bb.x, bb.y);
     }
 
     /* Compute space available for label.  Provides the justification borders */
