@@ -19,7 +19,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/cdt \
 	-I$(top_srcdir)/lib/pathplan
 
-LIBS =  $(LIBS) -lc
+LIBS = -lc
 
 BASESOURCES = gv.cpp gv.i
 BASELIBS = $(top_builddir)/lib/gvc/libgvc.la \

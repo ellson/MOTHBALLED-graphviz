@@ -225,8 +225,10 @@ AC_ARG_ENABLE(static,
 if test "x$enable_static" = "xyes"; then
 	AC_ENABLE_STATIC
 	AC_DEFINE(ENABLE_STATIC,1,[Define if you want statically linked executables])
+        use_static="No (disabled by default)"
 else
 	AC_DISABLE_STATIC
+        use_static="Yes"
 fi
 AM_CONDITIONAL(ENABLE_STATIC, [test "x$enable_static" = "xyes"])
 
@@ -235,7 +237,9 @@ AC_ARG_ENABLE(shared,
 if test "x$enable_shared" != "xno"; then
 	AC_ENABLE_SHARED
 	AC_DEFINE(ENABLE_SHARED,1,[Define if you want shared lib executables])
+        use_shared="Yes"
 else
+        use_shared="No (disabled)"
 	AC_DISABLE_SHARED
 fi
 AM_CONDITIONAL(ENABLE_SHARED, [test "x$enable_shared" = "xyes"])
@@ -465,9 +469,12 @@ dnl libtool ltdl on-demand plugin loading
 AC_ARG_ENABLE(ltdl,
   [AC_HELP_STRING([--enable-ltdl], [support on-demand plugin loading])])
 if test "x$enable_ltdl" != "xno"; then
+  use_ltdl="No (disabled)"
+else
   AC_DEFINE(ENABLE_LTDL,1,[Define if you want on-demand plugin loading])
   AC_CONFIG_SUBDIRS(libltdl)
   AC_LIBTOOL_DLOPEN
+  use_ltdl="Yes"
   
   if test "x$DARWIN9" = "xyes"; then
      AC_LIBLTDL_CONVENIENCE
@@ -3042,8 +3049,11 @@ echo "  fontconfig:    $use_fontconfig"
 echo "  freetype:      $use_freetype"
 echo "  gts:           $use_gts"
 echo "  ipsepcola:     $use_ipsepcola"
+echo "  ltdl:          $use_ltdl"
 echo "  ortho:         $use_ortho"
 echo "  sfdp:          $use_sfdp"
+echo "  shared:        $use_shared"
+echo "  static:        $use_static"
 echo ""
 echo "commands:"
 echo "  dot:           Yes (always enabled)"

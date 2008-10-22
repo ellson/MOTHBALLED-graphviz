@@ -23,7 +23,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/pathplan \
 	-I$(top_srcdir)/tclpkg/tclhandle $(GD_INCLUDES) $(TCL_INCLUDES)
 
-LIBS =  $(LIBS) -lc
+LIBS = -lc
 
 AM_CFLAGS = $(TCL_CFLAGS)
 
