@@ -19,6 +19,8 @@
 #endif
 
 #include <string.h>
+#include <stdlib.h>
+#include <math.h>
 
 #include "gvplugin_layout.h"
 #include "gvcint.h"
@@ -50,14 +52,17 @@ static char *s_key = "key";
 
 static void gv_graph_state(GVJ_t *job, graph_t *g)
 {
-    int i, j;
+#ifndef WITH_CGRAPH
+    int i;
+#endif
+    int j;
     Agsym_t *a;
     gv_argvlist_t *list;
 
     list = &(job->selected_obj_type_name);
     j = 0;
-    if (g == g->root) {
-	if (g->kind && AGFLAG_DIRECTED) 
+    if (g == agroot(g)) {
+	if (agisdirected(g))
             gv_argvlist_set_item(list, j++, s_digraph);
 	else
             gv_argvlist_set_item(list, j++, s_graph);
@@ -65,28 +70,48 @@ static void gv_graph_state(GVJ_t *job, graph_t *g)
     else {
         gv_argvlist_set_item(list, j++, s_subgraph);
     }
-    gv_argvlist_set_item(list, j++, g->name);
+    gv_argvlist_set_item(list, j++, agnameof(g));
     list->argc = j;
 
     list = &(job->selected_obj_attributes);
+#ifndef WITH_CGRAPH
     for (i = 0, j = 0; i < dtsize(g->univ->globattr->dict); i++) {
         a = g->univ->globattr->list[i];
+#else
+    a = NULL;
+    while ((a = agnxtattr(g, AGRAPH, a))) {
+#endif
         gv_argvlist_set_item(list, j++, a->name);
+#ifndef WITH_CGRAPH
         gv_argvlist_set_item(list, j++, agxget(g, a->index));
+#else
+        gv_argvlist_set_item(list, j++, agxget(g, a));
+#endif
         gv_argvlist_set_item(list, j++, (char*)GVATTR_STRING);
     }
     list->argc = j;
 
+#ifndef WITH_CGRAPH
     a = agfindattr(g->root, s_href);
     if (!a)
 	a = agfindattr(g->root, s_URL);
     if (a)
 	job->selected_href = strdup_and_subst_obj(agxget(g, a->index), (void*)g);
+#else
+    a = agattr(agroot(g), AGRAPH, s_href, NULL);
+    if (!a)
+	a = agattr(agroot(g), AGRAPH, s_URL, NULL);
+    if (a)
+	job->selected_href = strdup_and_subst_obj(agxget(g, a), (void*)g);
+#endif
 }
 
 static void gv_node_state(GVJ_t *job, node_t *n)
 {
-    int i, j;
+#ifndef WITH_CGRAPH
+    int i;
+#endif
+    int j;
     Agsym_t *a;
     Agraph_t *g;
     gv_argvlist_t *list;
@@ -94,28 +119,48 @@ static void gv_node_state(GVJ_t *job, node_t *n)
     list = &(job->selected_obj_type_name);
     j = 0;
     gv_argvlist_set_item(list, j++, s_node);
-    gv_argvlist_set_item(list, j++, n->name);
+    gv_argvlist_set_item(list, j++, agnameof(n));
     list->argc = j;
 
     list = &(job->selected_obj_attributes);
-    g = n -> graph -> root;
+    g = agroot(agraphof(n));
+#ifndef WITH_CGRAPH
     for (i = 0, j = 0; i < dtsize(g->univ->nodeattr->dict); i++) {
         a = g->univ->nodeattr->list[i];
+#else
+    a = NULL;
+    while ((a = agnxtattr(g, AGNODE, a))) {
+#endif
         gv_argvlist_set_item(list, j++, a->name);
+#ifndef WITH_CGRAPH
         gv_argvlist_set_item(list, j++, agxget(n, a->index));
+#else
+        gv_argvlist_set_item(list, j++, agxget(n, a));
+#endif
     }
     list->argc = j;
 
+#ifndef WITH_CGRAPH
     a = agfindattr(n->graph->proto->n, s_href);
     if (!a)
         a = agfindattr(n->graph->proto->n, s_URL);
     if (a)
 	job->selected_href = strdup_and_subst_obj(agxget(n, a->index), (void*)n);
+#else
+    a = agattr(g, AGNODE, s_href, NULL);
+    if (!a)
+        a = agattr(g, AGNODE, s_URL, NULL);
+    if (a)
+	job->selected_href = strdup_and_subst_obj(agxget(n, a), (void*)n);
+#endif
 }
 
 static void gv_edge_state(GVJ_t *job, edge_t *e)
 {
-    int i, j;
+#ifndef WITH_CGRAPH
+    int i;
+#endif
+    int j;
     Agsym_t *a;
     Agraph_t *g;
     gv_argvlist_t *nlist, *alist;
@@ -127,45 +172,74 @@ static void gv_edge_state(GVJ_t *job, edge_t *e)
      * in edge names */
     j = 0;
     gv_argvlist_set_item(nlist, j++, s_edge);
-    gv_argvlist_set_item(nlist, j++, e->tail->name);
+    gv_argvlist_set_item(nlist, j++, agnameof(agtail(e)));
     j++; /* skip tailport slot for now */
-    gv_argvlist_set_item(nlist, j++, (e->tail->graph->kind && AGFLAG_DIRECTED)?"->":"--");
-    gv_argvlist_set_item(nlist, j++, e->head->name);
+    gv_argvlist_set_item(nlist, j++, agisdirected(agraphof(agtail(e)))?"->":"--");
+    gv_argvlist_set_item(nlist, j++, agnameof(aghead(e)));
     j++; /* skip headport slot for now */
     j++; /* skip key slot for now */
     nlist->argc = j;
 
     alist = &(job->selected_obj_attributes);
-    g = e -> head -> graph -> root;
+    g = agroot(agraphof(aghead(e)));
+#ifndef WITH_CGRAPH
     for (i = 0, j = 0; i < dtsize(g->univ->edgeattr->dict); i++) {
         a = g->univ->edgeattr->list[i];
+#else
+    a = NULL;
+    while ((a = agnxtattr(g, AGEDGE, a))) {
+#endif
 
 	/* tailport and headport can be shown as part of the name, but they
 	 * are not identifying properties of the edge so we 
 	 * also list them as modifyable attributes. */
         if (strcmp(a->name,s_tailport) == 0)
+#ifndef WITH_CGRAPH
 	    gv_argvlist_set_item(nlist, 2, agxget(e, a->index));
+#else
+	    gv_argvlist_set_item(nlist, 2, agxget(e, a));
+#endif
 	else if (strcmp(a->name,s_headport) == 0)
+#ifndef WITH_CGRAPH
 	    gv_argvlist_set_item(nlist, 5, agxget(e, a->index));
+#else
+	    gv_argvlist_set_item(nlist, 5, agxget(e, a));
+#endif
 
 	/* key is strictly an identifying property to distinguish multiple
 	 * edges between the same node pair.   Its non-writable, so
 	 * no need to list it as an attribute as well. */
 	else if (strcmp(a->name,s_key) == 0) {
+#ifndef WITH_CGRAPH
 	    gv_argvlist_set_item(nlist, 6, agxget(e, a->index));
+#else
+	    gv_argvlist_set_item(nlist, 6, agxget(e, a));
+#endif
 	    continue;
 	}
 
         gv_argvlist_set_item(alist, j++, a->name);
+#ifndef WITH_CGRAPH
         gv_argvlist_set_item(alist, j++, agxget(e, a->index));
+#else
+        gv_argvlist_set_item(alist, j++, agxget(e, a));
+#endif
     }
     alist->argc = j;
 
+#ifndef WITH_CGRAPH
     a = agfindattr(e->head->graph->proto->e, s_href);
     if (!a)
 	a = agfindattr(e->head->graph->proto->e, s_URL);
     if (a)
 	job->selected_href = strdup_and_subst_obj(agxget(e, a->index), (void*)e);
+#else
+    a = agattr(agraphof(e), AGEDGE, s_href, NULL);
+    if (!a)
+	a = agattr(agraphof(e), AGEDGE, s_URL, NULL);
+    if (a)
+	job->selected_href = strdup_and_subst_obj(agxget(e, a), (void*)e);
+#endif
 }
 
 static void gvevent_refresh(GVJ_t * job)
@@ -229,7 +303,11 @@ static void gvevent_leave_obj(GVJ_t * job)
 
     if (obj) {
         switch (agobjkind(obj)) {
+#ifndef WITH_CGRAPH
         case AGGRAPH:
+#else /* WITH_CGRAPH */
+        case AGRAPH:
+#endif /* WITH_CGRAPH */
 	    GD_gui_state((graph_t*)obj) &= ~GUI_STATE_ACTIVE;
 	    break;
         case AGNODE:
@@ -258,26 +336,48 @@ static void gvevent_enter_obj(GVJ_t * job)
     obj = job->current_obj;
     if (obj) {
         switch (agobjkind(obj)) {
+#ifndef WITH_CGRAPH
         case AGGRAPH:
+#else /* WITH_CGRAPH */
+        case AGRAPH:
+#endif /* WITH_CGRAPH */
 	    g = (graph_t*)obj;
 	    GD_gui_state(g) |= GUI_STATE_ACTIVE;
+#ifndef WITH_CGRAPH
 	    a = agfindattr(g->root, s_tooltip);
 	    if (a)
 		job->active_tooltip = strdup_and_subst_obj(agxget(g, a->index), obj);
+#else /* WITH_CGRAPH */
+	    a = agattr(agroot(g), AGRAPH, s_tooltip, NULL);
+	    if (a)
+		job->active_tooltip = strdup_and_subst_obj(agxget(g, a), obj);
+#endif /* WITH_CGRAPH */
 	    break;
         case AGNODE:
 	    n = (node_t*)obj;
 	    ND_gui_state(n) |= GUI_STATE_ACTIVE;
+#ifndef WITH_CGRAPH
 	    a = agfindattr(n->graph->proto->n, s_tooltip);
 	    if (a)
 		job->active_tooltip = strdup_and_subst_obj(agxget(n, a->index), obj);
+#else /* WITH_CGRAPH */
+	    a = agattr(agraphof(n), AGNODE, s_tooltip, NULL);
+	    if (a)
+		job->active_tooltip = strdup_and_subst_obj(agxget(n, a), obj);
+#endif /* WITH_CGRAPH */
 	    break;
         case AGEDGE:
 	    e = (edge_t*)obj;
 	    ED_gui_state(e) |= GUI_STATE_ACTIVE;
+#ifndef WITH_CGRAPH
 	    a = agfindattr(e->head->graph->proto->e, s_tooltip);
 	    if (a)
 		job->active_tooltip = strdup_and_subst_obj(agxget(e, a->index), obj);
+#else /* WITH_CGRAPH */
+	    a = agattr(agraphof(e), AGEDGE, s_tooltip, NULL);
+	    if (a)
+		job->active_tooltip = strdup_and_subst_obj(agxget(e, a), obj);
+#endif /* WITH_CGRAPH */
 	    break;
         }
     }
@@ -335,7 +435,11 @@ static void gvevent_select_current_obj(GVJ_t * job)
     obj = job->selected_obj;
     if (obj) {
         switch (agobjkind(obj)) {
+#ifndef WITH_CGRAPH
         case AGGRAPH:
+#else /* WITH_CGRAPH */
+        case AGRAPH:
+#endif /* WITH_CGRAPH */
 	    GD_gui_state((graph_t*)obj) |= GUI_STATE_VISITED;
 	    GD_gui_state((graph_t*)obj) &= ~GUI_STATE_SELECTED;
 	    break;
@@ -358,7 +462,11 @@ static void gvevent_select_current_obj(GVJ_t * job)
     obj = job->selected_obj = job->current_obj;
     if (obj) {
         switch (agobjkind(obj)) {
+#ifndef WITH_CGRAPH
         case AGGRAPH:
+#else /* WITH_CGRAPH */
+        case AGRAPH:
+#endif /* WITH_CGRAPH */
 	    GD_gui_state((graph_t*)obj) |= GUI_STATE_SELECTED;
 	    gv_graph_state(job, (graph_t*)obj);
 	    break;
@@ -579,14 +687,22 @@ static void gvevent_read (GVJ_t * job, const char *filename, const char *layout)
 
     gvc = job->gvc;
     if (!filename) {
+#ifndef WITH_CGRAPH
 	g = agopen("G", AGDIGRAPH);
+#else /* WITH_CGRAPH */
+		agopen("G", Agdirected, NIL(Agdisc_t *));
+#endif /* WITH_CGRAPH */
 	job->output_filename = "new.dot";
     }
     else {
 	f = fopen(filename, "r");
 	if (!f)
 	   return;   /* FIXME - need some error handling */
+#ifndef WITH_CGRAPH
 	g = agread(f);
+#else /* WITH_CGRAPH */
+	g = agread(f,NIL(Agdisc_t *));
+#endif /* WITH_CGRAPH */
 	fclose(f);
     }
     if (!g)

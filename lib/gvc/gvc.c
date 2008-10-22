@@ -1,4 +1,4 @@
-/* $Id$ $Revision$ */
+ /* $Id$ $Revision$ */
 /* vim:set shiftwidth=4 ts=8: */
 
 /**********************************************************
@@ -41,7 +41,11 @@ GVC_t *gvContext(void)
     GVC_t *gvc;
 
     aginit();
+#ifndef WITH_CGRAPH
     agnodeattr(NULL, "label", NODENAME_ESC);
+#else
+    agattr(NULL, AGNODE, "label", NODENAME_ESC, 1);
+#endif
     gvc = gvNEWcontext(LibInfo, gvUsername());
     gvconfig(gvc, FALSE); /* configure for available plugins and codegens */
     return gvc;

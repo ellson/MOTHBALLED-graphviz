@@ -26,11 +26,13 @@
 #include "config.h"
 #endif
 
-#include	"types.h"
-#include        "gvplugin.h"
-#include        "gvcjob.h"
-#include        "gvcint.h"
-#include        "gvcproc.h"
+#include <stdlib.h>
+
+#include "types.h"
+#include "gvplugin.h"
+#include "gvcjob.h"
+#include "gvcint.h"
+#include "gvcproc.h"
 
 /* from common/utils.c */
 extern void *zmalloc(size_t);
