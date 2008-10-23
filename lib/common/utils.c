@@ -299,11 +299,7 @@ edge_t *debug_getedge(graph_t * g, char *s0, char *s1)
     n0 = agfindnode(g, s0);
     n1 = agfindnode(g, s1);
     if (n0 && n1)
-#ifdef WITH_CGRAPH
-        return agedge(g, n0, n1, (char *)NULL, FALSE);
-#else
 	return agfindedge(g, n0, n1);
-#endif
     else
 	return NULL;
 }
@@ -1229,21 +1225,17 @@ static node_t *mapN(node_t * n, graph_t * clg)
 #ifndef WITH_CGRAPH
     aginsert(clg, n);
 #else /* WITH_CGRAPH */
-    agsubnode(clg, n,1);
+    agsubnode(clg, n, 1);
 #endif /* WITH_CGRAPH */
     name = strchr(agnameof(n), ':');
     assert(name);
     name++;
-#ifndef WITH_CGRAPH
     if ((nn = agfindnode(g, name)))
-#else /* WITH_CGRAPH */
-    if ((nn = agnode(g, name,0)))
-#endif /* WITH_CGRAPH */
 	return nn;
 #ifndef WITH_CGRAPH
     nn = agnode(g, name);
 #else /* WITH_CGRAPH */
-    nn = agnode(g, name,1);
+    nn = agnode(g, name, 1);
     agbindrec(nn, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);	//node custom data
 #endif /* WITH_CGRAPH */
 

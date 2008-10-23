@@ -2074,11 +2074,7 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
         junk = malloc(strlen(str)+1);
 	rv = sscanf(str, "%lf,%lf,%lf,\'%[^\']\'", &X, &Y, &Z, nodename);
 	if (rv == 4) {
-#ifndef WITH_CGRAPH
 	    n = agfindnode(g->root, nodename);
-#else
-	    n = agnode(g->root, nodename, 0);
-#endif
 	    if (n) {
 		x = ND_coord(n).x;
 		y = ND_coord(n).y;
@@ -2087,11 +2083,7 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 	else {
 	    rv = sscanf(str, "%lf,%lf,%lf,%[^,]%s", &X, &Y, &Z, nodename, junk);
 	    if (rv == 4) {
-#ifndef WITH_CGRAPH
                 n = agfindnode(g->root, nodename);
-#else
-                n = agnode(g->root, nodename, 0);
-#endif
                 if (n) {
                     x = ND_coord(n).x;
                     y = ND_coord(n).y;

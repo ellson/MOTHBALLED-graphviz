@@ -1106,11 +1106,10 @@ static void checkChain(graph_t * g)
     edge_t *e;
     t = GD_nlist(g);
     for (h = ND_next(t); h; h = ND_next(h)) {
-#ifdef WITH_CGRAPH
-        if (!agedge(g, t, h, (char *)NULL, FALSE)) {
-            e = agedge(g, t, h,NULL,1);
-#else
 	if (!agfindedge(g, t, h)) {
+#ifdef WITH_CGRAPH
+            e = agedge(g, t, h, NULL, 1);
+#else
 	    e = agedge(g, t, h);
 #endif
 	    ED_minlen(e) = 0;
@@ -1190,13 +1189,11 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
     for (cells = tbl->u.n.cells; *cells; cells++) {
         int x, y, c, r;
 	cp = *cells;
-#ifdef WITH_CGRAPH
-	t = agnode(colg, nToName(cp->col),0);
-	h = agnode(colg, nToName(cp->col + cp->cspan),0);
-	e = agedge(colg, t, h,NULL,1);
-#else
 	t = agfindnode(colg, nToName(cp->col));
 	h = agfindnode(colg, nToName(cp->col + cp->cspan));
+#ifdef WITH_CGRAPH
+	e = agedge(colg, t, h, NULL, 1);
+#else
 	e = agedge(colg, t, h);
 #endif
         x = 0;
@@ -1211,13 +1208,11 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
 	elist_append(e, ND_out(t));
 	elist_append(e, ND_in(h));
 
-#ifdef WITH_CGRAPH
-	t = agnode(rowg, nToName(cp->row),0);
-	h = agnode(rowg, nToName(cp->row + cp->rspan),0);
-	e = agedge(rowg, t, h,NULL,1);
-#else
 	t = agfindnode(rowg, nToName(cp->row));
 	h = agfindnode(rowg, nToName(cp->row + cp->rspan));
+#ifdef WITH_CGRAPH
+	e = agedge(rowg, t, h, NULL, 1);
+#else
 	e = agedge(rowg, t, h);
 #endif
         y = 0;
