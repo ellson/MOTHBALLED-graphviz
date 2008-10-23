@@ -19,13 +19,11 @@ extern "C" {
 #endif
 
 
-
 #ifndef INFO_H
 #define INFO_H
 
 #include "voronoi.h"
 #include "poly.h"
-#include "graph.h"
 
     typedef struct ptitem {	/* Point list */
 	struct ptitem *next;
