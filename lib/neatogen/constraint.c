@@ -140,10 +140,14 @@ static void mapGraphs(graph_t * g, graph_t * cg, distfn dist)
 	tp = (nitem *) ND_alg(n);
 	t = tp->cnode;
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    hp = (nitem *) ND_alg(e->head);
+	    hp = (nitem *) ND_alg(aghead(e));
 	    delta = dist(&tp->bb, &hp->bb);
 	    h = hp->cnode;
+#ifndef WITH_CGRAPH
 	    ce = agedge(cg, t, h);
+#else
+	    ce = agedge(cg, t, h, NULL, 1);
+#endif
 	    ED_weight(ce) = 1;
 	    if (ED_minlen(ce) < delta) {
 		if (ED_minlen(ce) == 0.0) {
@@ -225,7 +229,11 @@ static graph_t *mkNConstraintG(graph_t * g, Dt_t * list,
 {
     nitem *p;
     nitem *nxp;
+#ifndef WITH_CGRAPH
     graph_t *cg = agopen("cg", AGDIGRAPHSTRICT);
+#else
+    graph_t *cg = agopen("cg", Agstrictdirected, NIL(Agdisc_t *));
+#endif
     node_t *n;
     edge_t *e;
     node_t *lastn = NULL;
@@ -256,7 +264,11 @@ static graph_t *mkNConstraintG(graph_t * g, Dt_t * list,
 	    e = NULL;
 	    if (intersect(p, nxp)) {
 	        double delta = dist(&p->bb, &nxp->bb);
+#ifndef WITH_CGRAPH
 	        e = agedge(cg, p->cnode, nxp->cnode);
+#else
+	        e = agedge(cg, p->cnode, nxp->cnode, NULL, 1);
+#endif
 		assert (delta <= 0xFFFF);
 		ED_minlen(e) = delta;
 		ED_weight(e) = 1;
@@ -264,7 +276,7 @@ static graph_t *mkNConstraintG(graph_t * g, Dt_t * list,
 #ifndef WITH_CGRAPH
 	    if (e && agfindedge(g,p->np, nxp->np)) {
 #else /* WITH_CGRAPH */
-	    if (e && agedge(g,p->np, nxp->np, NULL, 0)) {
+	    if (e && agedge(g, p->np, nxp->np, NULL, 0)) {
 #endif /* WITH_CGRAPH */
 		ED_weight(e) = 100;
             }
@@ -308,7 +320,11 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
     nitem *p;
     nitem *nxt = NULL;
     nitem *nxp;
+#ifndef WITH_CGRAPH
     graph_t *cg = agopen("cg", AGDIGRAPHSTRICT);
+#else
+    graph_t *cg = agopen("cg", Agstrictdirected, NIL(Agdisc_t *));
+#endif
     graph_t *vg;
     node_t *prev = NULL;
     node_t *root = NULL;
@@ -362,7 +378,11 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
 		    alloc_elist(2 * (cnt - 1), ND_out(prev));
 		else
 		    alloc_elist(cnt - lcnt - 1, ND_out(prev));
+#ifndef WITH_CGRAPH
 		e = agedge(cg, prev, n);
+#else
+		e = agedge(cg, prev, n, NULL, 1);
+#endif
 		ED_minlen(e) = SCALE;
 		ED_weight(e) = 1;
 		elist_append(e, ND_out(prev));
@@ -380,7 +400,11 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
      * Remaining outedges are immediate right neighbors.
      * FIX: Incremental algorithm to construct trans. reduction?
      */
+#ifndef WITH_CGRAPH
     vg = agopen("vg", AGDIGRAPHSTRICT);
+#else
+    vg = agopen("vg", Agstrictdirected, NIL(Agdisc_t *));
+#endif
     for (p = (nitem *) dtflatten(list); p;
 	 p = (nitem *) dtlink(list, (Dtlink_t *) p)) {
 #ifndef WITH_CGRAPH
@@ -409,7 +433,11 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
 	for (nxp = nxt; nxp;
 	     nxp = (nitem *) dtlink(list, (Dtlink_t *) nxp)) {
 	    if (intersect(p, nxp))
+#ifndef WITH_CGRAPH
 		agedge(vg, p->vnode, nxp->vnode);
+#else
+		agedge(vg, p->vnode, nxp->vnode, NULL, 1);
+#endif
 	}
     }
 
@@ -440,16 +468,28 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
 	alloc_elist(1, ND_in(an));
 	alloc_elist(1, ND_out(an));
 
+#ifndef WITH_CGRAPH
 	e = agedge(cg, root, an);
+#else
+	e = agedge(cg, root, an, 1);
+#endif
 	ED_minlen(e) = p->val - root_val;
 	elist_append(e, ND_out(root));
 	elist_append(e, ND_in(an));
 
+#ifndef WITH_CGRAPH
 	e = agedge(cg, an, vn);
+#else
+	e = agedge(cg, an, vn, 1);
+#endif
 	elist_append(e, ND_out(an));
 	elist_append(e, ND_in(vn));
 
+#ifndef WITH_CGRAPH
 	e = agedge(cg, n, vn);
+#else
+	e = agedge(cg, n, vn, 1);
+#endif
 	elist_append(e, ND_out(n));
 	elist_append(e, ND_in(vn));
     }
@@ -531,8 +571,13 @@ static void constrainY(graph_t* g, nitem* nlist, int nnodes, intersectfn ifn,
     rank(cg, 2, INT_MAX);
 #ifdef DEBUG
     {
+#ifndef WITH_CGRAPH
 	Agsym_t *mlsym = agedgeattr(cg, "minlen", "");
 	Agsym_t *rksym = agnodeattr(cg, "rank", "");
+#else
+	Agsym_t *mlsym = agattr(cg, AGEDGE, "minlen", "");
+	Agsym_t *rksym = agattr(cg, AGNODE, "rank", "");
+#endif
 	char buf[100];
 	node_t *n;
 	edge_t *e;
