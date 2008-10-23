@@ -165,8 +165,8 @@ static void initPos(Agraph_t * g)
     char *p;
     point *sp;
     int pn;
-    attrsym_t *N_pos = agfindattr(g->proto->n, "pos");
-    attrsym_t *E_pos = agfindattr(g->proto->e, "pos");
+    attrsym_t *N_pos = agfindnodeattr(g, "pos");
+    attrsym_t *E_pos = agfindedgeattr(g, "pos");
 
     assert(N_pos);
     if (!E_pos) {

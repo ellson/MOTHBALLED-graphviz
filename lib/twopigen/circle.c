@@ -258,11 +258,7 @@ static void setAbsolutePos(Agraph_t * g)
     double xf;
     double hyp;
 
-#ifndef WITH_CGRAPH
-    p = late_string(g, agfindattr(g->root, "ranksep"), NULL);
-#else /* WITH_CGRAPH */
-    p = late_string(g, agattr(g->root,AGRAPH, "ranksep", NULL), NULL);
-#endif /* WITH_CGRAPH */
+    p = late_string(g, agfindgraphattr(g->root, "ranksep"), NULL);
     if (p) {
 	if (sscanf(p, "%lf", &xf) == 0)
 	    xf = DEF_RANKSEP;
