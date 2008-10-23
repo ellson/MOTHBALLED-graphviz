@@ -597,9 +597,9 @@ cloneGraph (graph_t* g)
 {
     Agsym_t* sym;
     graph_t* auxg;
-    Agsym_t **list;
-    
 #ifndef WITH_CGRAPH
+    Agsym_t **list;
+
     auxg = agopen ("auxg", AG_IS_DIRECTED(g)?AGDIGRAPH:AGRAPH);
     agraphattr(auxg, "rank", "");
 #else /* WITH_CGRAPH */
@@ -611,7 +611,7 @@ cloneGraph (graph_t* g)
 		auxg = agopen ("auxg",Agundirected, NIL(Agdisc_t *));
 
 
-    agattr(auxg,AGRAPH, "rank", "",1);
+    agattr(auxg, AGRAPH, "rank", "");
 #endif /* WITH_CGRAPH */
     GD_drawing(auxg) = NEW(layout_t);
     GD_drawing(auxg)->quantum = GD_drawing(g)->quantum; 
@@ -1144,7 +1144,7 @@ make_flat_bottom_edges(spline_info_t* sp, path * P, edge_t ** edges, int
 	else ps = routepolylines(P, &pn);
 	if (pn == 0)
 	    return;
-	clip_and_install(e, e->head, ps, pn, &sinfo);
+	clip_and_install(e, aghead(e), ps, pn, &sinfo);
 	P->nbox = 0;
     }
 }
@@ -1371,7 +1371,7 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
 	if (ED_tree_index(e) & BWDEDGE) {
 	    MAKEFWDEDGE(&fwdedgeb, e);
 #ifndef WITH_CGRAPH
-	    fwdedgea.tail = e->head;
+	    fwdedgea.tail = aghead(e);
 	    fwdedgea.u.tail_port = ED_head_port(e);
 #else /* WITH_CGRAPH */
 	    agtail(&fwdedgea) = aghead(e);
@@ -1389,7 +1389,7 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
 	while (ED_to_virt(le))
 	    le = ED_to_virt(le);
 #ifndef WITH_CGRAPH
-	fwdedgea.head = le->head;
+	fwdedgea.head = aghead(le);
 	fwdedgea.u.head_port.defined = FALSE;
 	fwdedgea.u.edge_type = VIRTUAL;
 	fwdedgea.u.head_port.p.x = fwdedgea.u.head_port.p.y = 0;
@@ -1427,7 +1427,7 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
 	b.UR.y = tend.boxes[tend.boxn - 1].UR.y;
 	b.LL.y = tend.boxes[tend.boxn - 1].LL.y;
 	b = makeregularend(b, BOTTOM,
-	    	   ND_coord(tn).y - GD_rank(tn->graph)[ND_rank(tn)].ht1);
+	    	   ND_coord(tn).y - GD_rank(agraphof(tn))[ND_rank(tn)].ht1);
 	if (b.LL.x < b.UR.x && b.LL.y < b.UR.y)
 	    tend.boxes[tend.boxn++] = b;
 	longedge = 0;
@@ -1450,9 +1450,9 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
 	        continue;
 	    }
 	    hend.nb = maximal_bbox(sp, hn, e, ND_out(hn).list[0]);
-	    endpath(P, e, REGULAREDGE, &hend, spline_merge(e->head));
+	    endpath(P, e, REGULAREDGE, &hend, spline_merge(aghead(e)));
 	    b = makeregularend(hend.boxes[hend.boxn - 1], TOP,
-	    	       ND_coord(hn).y + GD_rank(hn->graph)[ND_rank(hn)].ht2);
+	    	       ND_coord(hn).y + GD_rank(agraphof(hn))[ND_rank(hn)].ht2);
 	    if (b.LL.x < b.UR.x && b.LL.y < b.UR.y)
 	        hend.boxes[hend.boxn++] = b;
 	    P->end.theta = M_PI / 2, P->end.constrained = TRUE;
@@ -1480,7 +1480,7 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
 	    tend.nb = maximal_bbox(sp, tn, ND_in(tn).list[0], e);
 	    beginpath(P, e, REGULAREDGE, &tend, spline_merge(tn));
 	    b = makeregularend(tend.boxes[tend.boxn - 1], BOTTOM,
-	    	       ND_coord(tn).y - GD_rank(tn->graph)[ND_rank(tn)].ht1);
+	    	       ND_coord(tn).y - GD_rank(agraphof(tn))[ND_rank(tn)].ht1);
 	    if (b.LL.x < b.UR.x && b.LL.y < b.UR.y)
 	        tend.boxes[tend.boxn++] = b;
 	    P->start.theta = -M_PI / 2, P->start.constrained = TRUE;
@@ -1489,11 +1489,11 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
 	boxes[boxn++] = rank_box(sp, g, ND_rank(tn));
 	b = hend.nb = maximal_bbox(sp, hn, e, NULL);
 	endpath(P, hackflag ? &fwdedgeb : e, REGULAREDGE, &hend,
-	        spline_merge(e->head));
+	        spline_merge(aghead(e)));
 	b.UR.y = hend.boxes[hend.boxn - 1].UR.y;
 	b.LL.y = hend.boxes[hend.boxn - 1].LL.y;
 	b = makeregularend(b, TOP,
-	    	   ND_coord(hn).y + GD_rank(hn->graph)[ND_rank(hn)].ht2);
+	    	   ND_coord(hn).y + GD_rank(agraphof(hn))[ND_rank(hn)].ht2);
 	if (b.LL.x < b.UR.x && b.LL.y < b.UR.y)
 	    hend.boxes[hend.boxn++] = b;
 	completeregularpath(P, segfirst, e, &tend, &hend, boxes, boxn,
@@ -1540,7 +1540,7 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
 	    pointfs[i].x += sp->Multisep;
 	for (i = 0; i < pointn; i++)
 	    pointfs2[i] = pointfs[i];
-	clip_and_install(e, e->head, pointfs2, pointn, &sinfo);
+	clip_and_install(e, aghead(e), pointfs2, pointn, &sinfo);
     }
 }
 
@@ -1879,7 +1879,7 @@ static edge_t *straight_path(edge_t * e, int cnt, pointf * plist, int *np)
     edge_t *f = e;
 
     while (cnt--)
-	f = ND_out(f->head).list[0];
+	f = ND_out(aghead(f)).list[0];
     plist[(*np)++] = plist[n - 1];
     plist[(*np)++] = plist[n - 1];
     plist[(*np)] = ND_coord(agtail(f));  /* will be overwritten by next spline */
