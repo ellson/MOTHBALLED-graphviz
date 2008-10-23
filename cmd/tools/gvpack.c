@@ -226,13 +226,8 @@ static void init_node_edge(Agraph_t * g)
     node_t *n;
     edge_t *e;
     int nG = agnnodes(g);
-#ifndef WITH_CGRAPH
-    attrsym_t *N_pos = agfindattr(g->proto->n, "pos");
-    attrsym_t *N_pin = agfindattr(g->proto->n, "pin");
-#else
-    attrsym_t *N_pos = agattr(g, AGNODE, "pos", 0);
-    attrsym_t *N_pin = agattr(g, AGNODE, "pin", 0);
-#endif
+    attrsym_t *N_pos = agfindgraphattr(g, "pos");
+    attrsym_t *N_pin = agfindgraphattr(g, "pin");
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	neato_init_node(n);
@@ -254,11 +249,7 @@ static void init_graph(Agraph_t * g, boolean fill)
     int d;
 
     graph_init(g, FALSE);
-#ifndef WITH_CGRAPH
-    d = late_int(g, agfindattr(g, "dim"), 2, 2);
-#else
-    d = late_int(g, agattr(g, AGRAPH, "dim"), 2, 2);
-#endif
+    d = late_int(g, agfindgraphattr(g, "dim"), 2, 2);
     if (d != 2) {
 	fprintf(stderr, "Error: graph %s has dim = %d (!= 2)\n", agnameof(g),
 		d);
@@ -607,24 +598,18 @@ static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt, GVC_t * gvc)
     root = agopen("root", kind);
     GD_gvc(root) = gvc;
     initAttrs(root, gs, cnt);
-#ifndef WITH_CGRAPH
-    G_bb = agfindattr(root, "bb");
-#else
-    G_bb = agattr(root, AGRAPH, "bb", NULL);
-#endif
+    G_bb = agfindgraphattr(root, "bb");
     if (DOPACK) assert(G_bb);
 
     /* add command-line attributes */
     for (i = 0; i < G_cnt; i++) {
-#ifndef WITH_CGRAPH
-	rv = agfindattr(root, G_args[i].name);
+	rv = agfindgraphattr(root, G_args[i].name);
 	if (rv)
+#ifndef WITH_CGRAPH
 	    agxset(root, rv->index, G_args[i].value);
 	else
 	    agraphattr(root, G_args[i].name, G_args[i].value);
 #else
-	rv = agattr(root, AGRAPH, G_args[i].name, NULL);
-	if (rv)
 	    agxset(root, rv, G_args[i].value);
 	else
 	    agattr(root, AGRAPH, G_args[i].name, G_args[i].value);
