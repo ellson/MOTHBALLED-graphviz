@@ -604,7 +604,11 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 	}
     }
 
+#ifndef WITH_CGRAPH
     ssg = agsubg(g, "o_formats");
+#else
+    ssg = agsubg(g, "o_formats", 1);
+#endif
     a = agfindgraphattr(ssg, "rank");
 #ifndef WITH_CGRAPH
     agxset(ssg, a->index, "same");
