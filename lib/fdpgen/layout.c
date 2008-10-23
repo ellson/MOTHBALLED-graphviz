@@ -441,7 +441,7 @@ copyAttr (graph_t* g, graph_t* dg, char* attr)
 #ifndef WITH_CGRAPH
 	    agraphattr(dg, attr, ov_val);
 #else /* WITH_CGRAPH */
-	    agattr(dg,AGRAPH, attr, ov_val,1);
+	    agattr(dg, AGRAPH, attr, ov_val);
 #endif /* WITH_CGRAPH */
     }
 }
