@@ -33,7 +33,6 @@ extern "C" {
     extern double distvec(double *, double *, double *);
     extern void do_graph_label(Agraph_t *);
     extern void final_energy(graph_t *, int);
-    extern double doubleattr(void *, int, double);
     extern double fpow32(double);
     extern Ppolyline_t getPath(edge_t *, vconfig_t *, int, Ppoly_t **,
 			       int);

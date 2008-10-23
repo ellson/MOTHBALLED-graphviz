@@ -115,7 +115,7 @@ static void free_3array(double ***rv)
     }
 }
 
-double doubleattr(void *obj, int index, double defval)
+static double doubleattr(void *obj, int index, double defval)
 {
     double val;
     if (index < 0)
@@ -197,9 +197,7 @@ static double setEdgeLen(graph_t * G, node_t * np, int lenx)
     double len=0;
 
     for (ep = agfstout(G, np); ep; ep = agnxtout(G, ep)) {
-#ifndef WITH_CGRAPH
 	len = doubleattr(ep, lenx, 1.0);
-#endif /* WITH_CGRAPH */
 	if (len <= 0) {
 	    agerr(AGERR, "bad edge len %f in %s ignored\n", len, agnameof(G));
 	    len = 1.0;
