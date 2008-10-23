@@ -852,27 +852,15 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 			     argv[0], " findedge tailnodename headnodename\"", NULL);
 	    return TCL_ERROR;
 	}
-#ifndef WITH_CGRAPH
 	if (!(tail = agfindnode(g, argv[2]))) {
-#else
-	if (!(tail = agnode(g, argv[2], 0))) {
-#endif
 	    Tcl_AppendResult(interp, "Tail node \"", argv[2], "\" not found.", NULL);
 	    return TCL_ERROR;
 	}
-#ifndef WITH_CGRAPH
 	if (!(head = agfindnode(g, argv[3]))) {
-#else
-	if (!(head = agnode(g, argv[3], 0))) {
-#endif
 	    Tcl_AppendResult(interp, "Head node \"", argv[3], "\" not found.", NULL);
 	    return TCL_ERROR;
 	}
-#ifndef WITH_CGRAPH
 	if (!(e = agfindedge(g, tail, head))) {
-#else
-	if (!(e = agedge(g, tail, head, NULL, 0))) {
-#endif
 	    Tcl_AppendResult(interp, "Edge \"", argv[2], " - ", argv[3], "\" not found.", NULL);
 	    return TCL_ERROR;
 	}
@@ -885,11 +873,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0], " findnode nodename\"", NULL);
 	    return TCL_ERROR;
 	}
-#ifndef WITH_CGRAPH
 	if (!(n = agfindnode(g, argv[2]))) {
-#else
-	if (!(n = agnode(g, argv[2], 0))) {
-#endif
 	    Tcl_AppendResult(interp, "Node not found.", NULL);
 	    return TCL_ERROR;
 	}

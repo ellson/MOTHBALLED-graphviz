@@ -321,11 +321,7 @@ Agedge_t *findedge(Agnode_t *t, Agnode_t *h)
 {
     if (!t || !h)
         return NULL;
-#ifndef WITH_CGRAPH
     return agfindedge(agraphof(t), t, h);
-#else
-    return agedge(agraphof(t), t, h, NULL, 0);
-#endif
 }
 
 Agsym_t *findattr(Agraph_t *g, char *name)
@@ -495,11 +491,7 @@ Agraph_t *nextsubg(Agraph_t *g, Agraph_t *sg)
     mg = agraphof(ng);
     if (!mg) 
         return NULL;
-#ifndef WITH_CGRAPH
     e = agfindedge(mg, ng, nsg);
-#else
-    e = agedge(mg, ng, nsg, NULL, 0);
-#endif
     if (!e) 
         return NULL;
     e = agnxtout(mg, e);
@@ -543,11 +535,7 @@ Agraph_t *nextsupg(Agraph_t *g, Agraph_t *sg)
     mg = agraphof(ng);
     if (!mg) 
         return NULL;
-#ifndef WITH_CGRAPH
     e = agfindedge(mg, nsg, ng);
-#else
-    e = agedge(mg, nsg, ng, NULL, 0);
-#endif
     if (!e) 
         return NULL;
     e = agnxtin(mg, e);
@@ -631,11 +619,7 @@ Agnode_t *nexthead(Agnode_t *n, Agnode_t *h)
     if (!n || !h)
         return NULL;
     g = agraphof(n);
-#ifndef WITH_CGRAPH
     e = agfindedge(g, n, h);
-#else
-    e = agedge(g, n, h, NULL, 0);
-#endif
     if (!e)
         return NULL;
     do {
@@ -721,11 +705,7 @@ Agnode_t *nexttail(Agnode_t *n, Agnode_t *t)
 
     if (!n || !t)
         return NULL;
-#ifndef WITH_CGRAPH
     e = agfindedge(g, t, n);
-#else
-    e = agedge(g, t, n, NULL, 0);
-#endif
     if (!e)
         return NULL;
     do {

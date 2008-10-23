@@ -72,11 +72,7 @@ void twopi_layout(Agraph_t * g)
     twopi_init_graph(g);
     s = agget(g, "root");
     if (s && (*s != '\0')) {
-#ifndef WITH_CGRAPH
 	ctr = agfindnode(g, s);
-#else /* WITH_CGRAPH */
-	ctr = agnode(g, s,0);
-#endif /* WITH_CGRAPH */
 	if (!ctr) {
 	    agerr(AGWARN, "specified root node \"%s\" was not found.", s);
 	    agerr(AGPREV, "Using default calculation for root node\n");
