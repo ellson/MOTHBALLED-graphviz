@@ -32,7 +32,11 @@
 
 #include "gvplugin_render.h"
 #include "gvplugin_device.h"
+#ifndef WITH_CGRAPH
 #include "graph.h"
+#else
+#include "cgraph.h"
+#endif
 #include "agxbuf.h"
 #include "utils.h"
 
@@ -155,9 +159,17 @@ static void xdot_end_node(GVJ_t* job)
 {
     Agnode_t* n = job->obj->u.n; 
     if (agxblen(xbufs[EMIT_NDRAW]))
+#ifndef WITH_CGRAPH
 	agxset(n, xd->n_draw->index, agxbuse(xbufs[EMIT_NDRAW]));
+#else /* WITH_CGRAPH */
+	agxset(n, xd->n_draw, agxbuse(xbufs[EMIT_NDRAW]));
+#endif /* WITH_CGRAPH */
     if (agxblen(xbufs[EMIT_NLABEL]))
+#ifndef WITH_CGRAPH
 	agxset(n, xd->n_l_draw->index, agxbuse(xbufs[EMIT_NLABEL]));
+#else /* WITH_CGRAPH */
+	agxset(n, xd->n_l_draw, agxbuse(xbufs[EMIT_NLABEL]));
+#endif /* WITH_CGRAPH */
 }
 
 static void xdot_end_edge(GVJ_t* job)
@@ -165,26 +177,58 @@ static void xdot_end_edge(GVJ_t* job)
     Agedge_t* e = job->obj->u.e; 
 
     if (agxblen(xbufs[EMIT_EDRAW]))
+#ifndef WITH_CGRAPH
 	agxset(e, xd->e_draw->index, agxbuse(xbufs[EMIT_EDRAW]));
+#else /* WITH_CGRAPH */
+	agxset(e, xd->e_draw, agxbuse(xbufs[EMIT_EDRAW]));
+#endif /* WITH_CGRAPH */
     if (agxblen(xbufs[EMIT_TDRAW]))
+#ifndef WITH_CGRAPH
 	agxset(e, xd->t_draw->index, agxbuse(xbufs[EMIT_TDRAW]));
+#else /* WITH_CGRAPH */
+	agxset(e, xd->t_draw, agxbuse(xbufs[EMIT_TDRAW]));
+#endif /* WITH_CGRAPH */
     if (agxblen(xbufs[EMIT_HDRAW]))
+#ifndef WITH_CGRAPH
 	agxset(e, xd->h_draw->index, agxbuse(xbufs[EMIT_HDRAW]));
+#else /* WITH_CGRAPH */
+	agxset(e, xd->h_draw, agxbuse(xbufs[EMIT_HDRAW]));
+#endif /* WITH_CGRAPH */
     if (agxblen(xbufs[EMIT_ELABEL]))
+#ifndef WITH_CGRAPH
 	agxset(e, xd->e_l_draw->index,agxbuse(xbufs[EMIT_ELABEL]));
+#else /* WITH_CGRAPH */
+	agxset(e, xd->e_l_draw,agxbuse(xbufs[EMIT_ELABEL]));
+#endif /* WITH_CGRAPH */
     if (agxblen(xbufs[EMIT_TLABEL]))
+#ifndef WITH_CGRAPH
 	agxset(e, xd->tl_draw->index, agxbuse(xbufs[EMIT_TLABEL]));
+#else /* WITH_CGRAPH */
+	agxset(e, xd->tl_draw, agxbuse(xbufs[EMIT_TLABEL]));
+#endif /* WITH_CGRAPH */
     if (agxblen(xbufs[EMIT_HLABEL]))
+#ifndef WITH_CGRAPH
 	agxset(e, xd->hl_draw->index, agxbuse(xbufs[EMIT_HLABEL]));
+#else /* WITH_CGRAPH */
+	agxset(e, xd->hl_draw, agxbuse(xbufs[EMIT_HLABEL]));
+#endif /* WITH_CGRAPH */
 }
 
 static void xdot_end_cluster(GVJ_t * job)
 {
     Agraph_t* cluster_g = job->obj->u.sg;
 
+#ifndef WITH_CGRAPH
     agxset(cluster_g, xd->g_draw->index, agxbuse(xbufs[EMIT_CDRAW]));
+#else /* WITH_CGRAPH */
+    agxset(cluster_g, xd->g_draw, agxbuse(xbufs[EMIT_CDRAW]));
+#endif /* WITH_CGRAPH */
     if (GD_label(cluster_g))
+#ifndef WITH_CGRAPH
 	agxset(cluster_g, xd->g_l_draw->index, agxbuse(xbufs[EMIT_CLABEL]));
+#else /* WITH_CGRAPH */
+	agxset(cluster_g, xd->g_l_draw, agxbuse(xbufs[EMIT_CLABEL]));
+#endif /* WITH_CGRAPH */
 }
 
 /* 
@@ -217,36 +261,71 @@ xdot_begin_graph (graph_t *g, int s_arrows, int e_arrows)
     xd = GNEW(xdot_state_t);
 
     if (GD_n_cluster(g))
+#ifndef WITH_CGRAPH
 	xd->g_draw = safe_dcl(g, g, "_draw_", "", agraphattr);
+#else
+	xd->g_draw = safe_dcl(g, AGRAPH, "_draw_", "");
+#endif
     else
 	xd->g_draw = NULL;
     if (GD_has_labels(g) & GRAPH_LABEL)
+#ifndef WITH_CGRAPH
 	xd->g_l_draw = safe_dcl(g, g, "_ldraw_", "", agraphattr);
+#else
+	xd->g_l_draw = safe_dcl(g, AGRAPH, "_ldraw_", "");
+#endif
     else
 	xd->g_l_draw = NULL;
 
+#ifndef WITH_CGRAPH
     xd->n_draw = safe_dcl(g, g->proto->n, "_draw_", "", agnodeattr);
     xd->n_l_draw = safe_dcl(g, g->proto->n, "_ldraw_", "", agnodeattr);
 
     xd->e_draw = safe_dcl(g, g->proto->e, "_draw_", "", agedgeattr);
+#else
+    xd->n_draw = safe_dcl(g, AGNODE, "_draw_", "");
+    xd->n_l_draw = safe_dcl(g, AGNODE, "_ldraw_", "");
+
+    xd->e_draw = safe_dcl(g, AGEDGE, "_draw_", "");
+#endif
     if (e_arrows)
+#ifndef WITH_CGRAPH
 	xd->h_draw = safe_dcl(g, g->proto->e, "_hdraw_", "", agedgeattr);
+#else
+	xd->h_draw = safe_dcl(g, AGEDGE, "_hdraw_", "");
+#endif
     else
 	xd->h_draw = NULL;
     if (s_arrows)
+#ifndef WITH_CGRAPH
 	xd->t_draw = safe_dcl(g, g->proto->e, "_tdraw_", "", agedgeattr);
+#else
+	xd->t_draw = safe_dcl(g, AGEDGE, "_tdraw_", "");
+#endif
     else
 	xd->t_draw = NULL;
     if (GD_has_labels(g) & EDGE_LABEL)
+#ifndef WITH_CGRAPH
 	xd->e_l_draw = safe_dcl(g, g->proto->e, "_ldraw_", "", agedgeattr);
+#else
+	xd->e_l_draw = safe_dcl(g, AGEDGE, "_ldraw_", "");
+#endif
     else
 	xd->e_l_draw = NULL;
     if (GD_has_labels(g) & HEAD_LABEL)
+#ifndef WITH_CGRAPH
 	xd->hl_draw = safe_dcl(g, g->proto->e, "_hldraw_", "", agedgeattr);
+#else
+	xd->hl_draw = safe_dcl(g, AGEDGE, "_hldraw_", "");
+#endif
     else
 	xd->hl_draw = NULL;
     if (GD_has_labels(g) & TAIL_LABEL)
+#ifndef WITH_CGRAPH
 	xd->tl_draw = safe_dcl(g, g->proto->e, "_tldraw_", "", agedgeattr);
+#else
+	xd->tl_draw = safe_dcl(g, AGEDGE, "_tldraw_", "");
+#endif
     else
 	xd->tl_draw = NULL;
 
@@ -283,11 +362,20 @@ static void xdot_end_graph(graph_t* g)
 
     if (agxblen(xbufs[EMIT_GDRAW])) {
 	if (!xd->g_draw)
+#ifndef WITH_CGRAPH
 	    xd->g_draw = safe_dcl(g, g, "_draw_", "", agraphattr);
 	agxset(g, xd->g_draw->index, agxbuse(xbufs[EMIT_GDRAW]));
+#else /* WITH_CGRAPH */
+	    xd->g_draw = safe_dcl(g, AGRAPH, "_draw_", "");
+	agxset(g, xd->g_draw, agxbuse(xbufs[EMIT_GDRAW]));
+#endif /* WITH_CGRAPH */
     }
     if (GD_label(g))
+#ifndef WITH_CGRAPH
 	agxset(g, xd->g_l_draw->index, agxbuse(xbufs[EMIT_GLABEL]));
+#else /* WITH_CGRAPH */
+	agxset(g, xd->g_l_draw, agxbuse(xbufs[EMIT_GLABEL]));
+#endif /* WITH_CGRAPH */
     agsafeset (g, "xdotversion", XDOTVERSION, "");
 
     for (i = 0; i < NUMXBUFS; i++)

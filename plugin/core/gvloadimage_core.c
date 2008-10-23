@@ -28,9 +28,6 @@
 #include "gvplugin_loadimage.h"
 #include "gvio.h"
 
-/* for n->name */
-#include "graph.h"
-
 extern void core_loadimage_xdot(GVJ_t*, usershape_t*, boxf, boolean);
 extern void epsf_emit_body(GVJ_t *job, usershape_t *us);
 extern shape_desc *find_user_shape(char *name);

@@ -40,7 +40,6 @@
 #include "gvplugin_device.h"
 #include "gvio.h"
 #include "gvcint.h"
-#include "graph.h"
 #include "types.h"		/* need the SVG font name schemes */
 
 extern char *strdup_and_subst_obj(char *str, void *obj);
@@ -172,9 +171,9 @@ static void svg_begin_graph(GVJ_t * job)
     obj_state_t *obj = job->obj;
 
     gvputs(job, "<!--");
-    if (obj->u.g->name[0]) {
+    if (agnameof(obj->u.g)[0]) {
         gvputs(job, " Title: ");
-	gvputs(job, xml_string(obj->u.g->name));
+	gvputs(job, xml_string(agnameof(obj->u.g)));
     }
     gvprintf(job, " Pages: %d -->\n", job->pagesArraySize.x * job->pagesArraySize.y);
 
@@ -220,9 +219,9 @@ static void svg_begin_page(GVJ_t * job)
 	    job->scale.x, job->scale.y, -job->rotation,
 	    job->translation.x, -job->translation.y);
     /* default style */
-    if (obj->u.g->name[0]) {
+    if (agnameof(obj->u.g)[0]) {
         gvputs(job, "<title>");
-        gvputs(job, xml_string(obj->u.g->name));
+        gvputs(job, xml_string(agnameof(obj->u.g)));
         gvputs(job, "</title>\n");
     }
 }
@@ -240,7 +239,7 @@ static void svg_begin_cluster(GVJ_t * job)
     gvputs(job, xml_string(obj->id));
     gvputs(job, "\" class=\"cluster\">");
     gvputs(job, "<title>");
-    gvputs(job, xml_string(obj->u.sg->name));
+    gvputs(job, xml_string(agnameof(obj->u.g)));
     gvputs(job, "</title>\n");
 }
 
@@ -257,7 +256,7 @@ static void svg_begin_node(GVJ_t * job)
     gvputs(job, xml_string(obj->id));
     gvputs(job, "\" class=\"node\">");
     gvputs(job, "<title>");
-    gvputs(job, xml_string(obj->u.n->name));
+    gvputs(job, xml_string(agnameof(obj->u.n)));
     gvputs(job, "</title>\n");
 }
 

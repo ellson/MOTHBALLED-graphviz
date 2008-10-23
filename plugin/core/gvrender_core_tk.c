@@ -31,7 +31,6 @@
 #include "gvplugin_device.h"
 #include "gvio.h"
 #include "gvcint.h"
-#include "graph.h"
 #include "types.h"		/* need the SVG font name schemes */
 
 typedef enum { FORMAT_TK, } format_type;
@@ -68,23 +67,23 @@ static void tkgen_print_tags(GVJ_t *job)
     switch (obj->emit_state) {
     case EMIT_NDRAW:
 	ObjType = "node";
-        ObjId = obj->u.n->id;
+        ObjId = AGID(obj->u.n);
 	break;
     case EMIT_NLABEL:
 	ObjType = "node label";
-        ObjId = obj->u.n->id;
+        ObjId = AGID(obj->u.n);
 	break;
     case EMIT_EDRAW:
     case EMIT_TDRAW:
     case EMIT_HDRAW:
 	ObjType = "edge";
-        ObjId = obj->u.e->id;
+        ObjId = AGID(obj->u.e);
 	break;
     case EMIT_ELABEL:
     case EMIT_TLABEL:
     case EMIT_HLABEL:
 	ObjType = "edge label";
-        ObjId = obj->u.e->id;
+        ObjId = AGID(obj->u.e);
 	break;
     case EMIT_GDRAW:
 	ObjType = "graph";
@@ -96,11 +95,11 @@ static void tkgen_print_tags(GVJ_t *job)
 	break;
     case EMIT_CDRAW:
 	ObjType = "cluster";
-	ObjId = obj->u.sg->meta_node->id;
+	ObjId = AGID(obj->u.sg);
 	break;
     case EMIT_CLABEL:
 	ObjType = "cluster label";
-	ObjId = obj->u.sg->meta_node->id;
+	ObjId = AGID(obj->u.sg);
 	break;
     default:
 	assert (0);
@@ -142,9 +141,9 @@ static void tkgen_begin_graph(GVJ_t * job)
     obj_state_t *obj = job->obj;
 
     gvputs(job, "#");
-    if (obj->u.g->name[0]) {
+    if (agnameof(obj->u.g)[0]) {
         gvputs(job, " Title: ");
-	gvputs(job, tkgen_string(obj->u.g->name));
+	gvputs(job, tkgen_string(agnameof(obj->u.g)));
     }
     gvprintf(job, " Pages: %d\n", job->pagesArraySize.x * job->pagesArraySize.y);
 }

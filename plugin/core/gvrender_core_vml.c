@@ -28,7 +28,6 @@
 #include "gvplugin_render.h"
 #include "gvplugin_device.h"
 #include "gvio.h"
-#include "graph.h"
 
 typedef enum { FORMAT_VML, FORMAT_VMLZ, } format_type;
 
@@ -164,9 +163,9 @@ static void vml_begin_graph(GVJ_t * job)
     obj_state_t *obj = job->obj;
 
     gvputs(job, "<head>");
-    if (obj->u.g->name[0]) {
+    if (agnameof(obj->u.g)[0]) {
         gvputs(job, "<title>");
-	gvputs(job, xml_string(obj->u.g->name));
+	gvputs(job, xml_string(agnameof(obj->u.g)));
         gvputs(job, "</title>");
     }
     gvprintf(job, "<!-- Pages: %d -->\n</head>\n", job->pagesArraySize.x * job->pagesArraySize.y);

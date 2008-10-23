@@ -18,12 +18,18 @@
 #include "config.h"
 #endif
 
+#include <stdlib.h>
+
 #include "gvplugin_render.h"
 #include "gvplugin_device.h"
 #include "gvio.h"
 
 /* for g->name */
+#ifndef WITH_CGRAPH
 #include "graph.h"
+#else
+#include "cgraph.h"
+#endif
 
 extern char *xml_string(char *str);
 extern char *xml_url_string(char *str);
@@ -172,12 +178,12 @@ static void map_begin_page(GVJ_t * job)
 	    gvputs(job, "default ");
 	    gvputs(job, xml_string(obj->url));
 	    gvputs(job, " ");
-	    gvputs(job, xml_string(obj->u.g->name));
+	    gvputs(job, xml_string(agnameof(obj->u.g)));
 	    gvputs(job, "\n");
 	}
         break;
     case FORMAT_CMAPX:
-	s = xml_string(obj->u.g->name);
+	s = xml_string(agnameof(obj->u.g));
 	gvputs(job, "<map id=\"");
 	gvputs(job, s);
 	gvputs(job, "\" name=\"");
