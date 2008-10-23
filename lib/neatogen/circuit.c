@@ -45,7 +45,8 @@ int circuit_model(graph_t * g, int nG)
 {
     double **Gm;
     double **Gm_inv;
-    int rv, i, j;
+    int rv;
+    long i, j;
     node_t *v;
     edge_t *e;
 
@@ -55,8 +56,8 @@ int circuit_model(graph_t * g, int nG)
     /* set non-diagonal entries */
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
 	for (e = agfstedge(g, v); e; e = agnxtedge(g, e, v)) {
-	    i = ND_id(e->tail);
-	    j = ND_id(e->head);
+	    i = AGID(agtail(e));
+	    j = AGID(aghead(e));
 	    if (i == j)
 		continue;
 	    /* conductance is 1/resistance */
