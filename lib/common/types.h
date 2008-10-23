@@ -744,8 +744,11 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #ifdef WITH_CGRAPH
 #include "cgraph.h"
 #define SET_RANKDIR(g,rd) (GD_rankdir2(g) = rd)
-#define agfindedge(g,t,h) (agedge(g,t,h,NULL,0));
+#define agfindedge(g,t,h) (agedge(g,t,h,NULL,0))
 #define agfindnode(g,n) (agnode(g,n,0))
+#define agfindgraphattr(g,a) (agattr(g,AGRAPH,a,NULL))
+#define agfindnodeattr(g,a) (agattr(g,AGNODE,a,NULL))
+#define agfindedgeattr(g,a) (agattr(g,AGEDGE,a,NULL))
 #else
 #include "graph.h"
 #define SET_RANKDIR(g,rd) ((g)->u.rankdir = (rd))
@@ -757,6 +760,9 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define agtail(e) ((e)->tail)
 #define agisdirected(g) ((g)->kind & AGFLAG_DIRECTED)
 #define AGID(x) ((x)->id)
+#define agfindgraphattr(g,a) agraphattr(g,a)
+#define agfindnodeattr(g,a) agfindattr((g)->proto->n,a)
+#define agfindedgeattr(g,a) agfindattr((g)->proto->e,a)
 #endif
 
 
