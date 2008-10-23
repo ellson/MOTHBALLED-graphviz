@@ -154,11 +154,7 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 	    n2 = aghead(ep);
 	    if (n2 == n)
 		n2 = agtail(ep);
-#ifndef WITH_CGRAPH
 	    ex = agfindedge(g, n1, n2);
-#else /* WITH_CGRAPH */
-	    ex = agedge(g, n1, n2, NULL, 0);
-#endif /* WITH_CGRAPH */
 	    if (ex) {
 		has_pair_edge = 1;
 		if (n1 < n2) {	/* count edge only once */

@@ -205,11 +205,7 @@ static void find_blocks(Agraph_t * g, circ_state * state)
     /*      check to see if there is a node which is set to be the root
      */
     if (state->rootname) {
-#ifndef WITH_CGRAPH
 	root = agfindnode(g, state->rootname);
-#else /* WITH_CGRAPH */
-	root = agnode(g, state->rootname,0);
-#endif /* WITH_CGRAPH */
     }
     if (!root && state->N_root) {
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
