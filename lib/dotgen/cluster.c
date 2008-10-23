@@ -460,7 +460,7 @@ void mark_lowclusters(Agraph_t * root)
 #ifndef WITH_CGRAPH
 		while (e && (vn = e->head)->u.node_type == VIRTUAL) {
 #else /* WITH_CGRAPH */
-		while (e && (vn = ND_node_type(aghead(e))) == VIRTUAL) {
+		while (e && (ND_node_type(vn = aghead(e))) == VIRTUAL) {
 #endif /* WITH_CGRAPH */
 		    ND_clust(vn) = NULL;
 		    e = ND_out(aghead(e)).list[0];
@@ -493,7 +493,7 @@ static void mark_lowcluster_basic(Agraph_t * g)
 #ifndef WITH_CGRAPH
 		while (e && (vn = e->head)->u.node_type == VIRTUAL) {
 #else /* WITH_CGRAPH */
-		while (e && (vn = ND_node_type(aghead(e))) == VIRTUAL) {
+		while (e && (ND_node_type(vn = aghead(e))) == VIRTUAL) {
 #endif /* WITH_CGRAPH */
 		    if (ND_clust(vn) == NULL)
 			ND_clust(vn) = g;
