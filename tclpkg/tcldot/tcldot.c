@@ -511,8 +511,13 @@ static int nodecmd(ClientData clientData, Tcl_Interp * interp,
 		 (CONST84 char ***) &argv2) != TCL_OK)
 		return TCL_ERROR;
 	    for (j = 0; j < argc2; j++) {
+#ifndef WITH_CGRAPH
 		if ((a = agfindattr(g->proto->n, argv2[j]))) {
 		    Tcl_AppendElement(interp, agxget(n, a->index));
+#else
+		if ((a = agattr(g, AGNODE, argv2[j], 0))) {
+		    Tcl_AppendElement(interp, agxget(n, a));
+#endif
 		} else {
 		    Tcl_AppendResult(interp, " No attribute named \"",
 				     argv2[j], "\"", NULL);
@@ -532,9 +537,15 @@ static int nodecmd(ClientData clientData, Tcl_Interp * interp,
 		 (CONST84 char ***) &argv2) != TCL_OK)
 		return TCL_ERROR;
 	    for (j = 0; j < argc2; j++) {
+#ifndef WITH_CGRAPH
 		if ((a = agfindattr(g->proto->n, argv2[j]))) {
 		    Tcl_AppendElement(interp, argv2[j]);
 		    Tcl_AppendElement(interp, agxget(n, a->index));
+#else
+		if ((a = agattr(g, AGNODE, argv2[j], 0))) {
+		    Tcl_AppendElement(interp, argv2[j]);
+		    Tcl_AppendElement(interp, agxget(n, a));
+#endif
 		} else {
 		    Tcl_AppendResult(interp, " No attribute named \"",
 				     argv2[j], "\"", NULL);
@@ -968,8 +979,13 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		 (CONST84 char ***) &argv2) != TCL_OK)
 		return TCL_ERROR;
 	    for (j = 0; j < argc2; j++) {
+#ifndef WITH_CGRAPH
 		if ((a = agfindattr(agroot(g), argv2[j]))) {
 		    Tcl_AppendElement(interp, agxget(g, a->index));
+#else
+		if ((a = agattr(agroot(g), AGRAPH, argv2[j], 0))) {
+		    Tcl_AppendElement(interp, agxget(g, a));
+#endif
 		} else {
 		    Tcl_AppendResult(interp, " No attribute named \"", argv2[j], "\"", NULL);
 		    return TCL_ERROR;
@@ -988,9 +1004,15 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		 (CONST84 char ***) &argv2) != TCL_OK)
 		return TCL_ERROR;
 	    for (j = 0; j < argc2; j++) {
+#ifndef WITH_CGRAPH
 		if ((a = agfindattr(agroot(g), argv2[j]))) {
 		    Tcl_AppendElement(interp, argv2[j]);
 		    Tcl_AppendElement(interp, agxget(g, a->index));
+#else
+		if ((a = agattr(agroot(g), AGRAPH, argv2[j], 0))) {
+		    Tcl_AppendElement(interp, argv2[j]);
+		    Tcl_AppendElement(interp, agxget(g, a));
+#endif
 		} else {
 		    Tcl_AppendResult(interp, " No attribute named \"", argv2[j], "\"", NULL);
 		    return TCL_ERROR;
@@ -1008,8 +1030,13 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		 (CONST84 char ***) &argv2) != TCL_OK)
 		return TCL_ERROR;
 	    for (j = 0; j < argc2; j++) {
+#ifndef WITH_CGRAPH
 		if ((a = agfindattr(g->proto->e, argv2[j]))) {
 		    Tcl_AppendElement(interp, agxget(g->proto->e, a->index));
+#else
+		if ((a = agattr(g, AGEDGE, argv2[j], 0))) {
+		    Tcl_AppendElement(interp, agxget(g, a));
+#endif
 		} else {
 		    Tcl_AppendResult(interp, " No attribute named \"", argv2[j], "\"", NULL);
 		    return TCL_ERROR;
@@ -1230,7 +1257,11 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		Tcl_Free((char *) argv2);
 		return TCL_ERROR;
 	    }
+#ifndef WITH_CGRAPH
 	    setedgeattributes(g, g->proto->e, argv2, argc2);
+#else
+	    setedgeattributes(g, NULL, argv2, argc2);
+#endif
 	    Tcl_Free((char *) argv2);
 	} else {
 	    if ((argc < 4) || (argc % 2)) {
@@ -1238,7 +1269,11 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 				 "\" setedgeattributes attributename attributevalue ?attributename attributevalue? ?...?",
 				 NULL);
 	    }
+#ifndef WITH_CGRAPH
 	    setedgeattributes(g, g->proto->e, &argv[2], argc - 2);
+#else
+	    setedgeattributes(g, NULL, &argv[2], argc - 2);
+#endif
 	}
 	reset_layout(gvc, g);
 	return TCL_OK;
@@ -1257,7 +1292,11 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		Tcl_Free((char *) argv2);
 		return TCL_ERROR;
 	    }
+#ifndef WITH_CGRAPH
 	    setnodeattributes(g, g->proto->n, argv2, argc2);
+#else
+	    setnodeattributes(g, NULL, argv2, argc2);
+#endif
 	    Tcl_Free((char *) argv2);
 	} else {
 	    if ((argc < 4) || (argc % 2)) {
@@ -1265,7 +1304,11 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 				 "\" setnodeattributes attributename attributevalue ?attributename attributevalue? ?...?",
 				 NULL);
 	    }
+#ifndef WITH_CGRAPH
 	    setnodeattributes(g, g->proto->n, &argv[2], argc - 2);
+#else
+	    setnodeattributes(g, NULL, &argv[2], argc - 2);
+#endif
 	}
 	reset_layout(gvc, g);
 	return TCL_OK;
