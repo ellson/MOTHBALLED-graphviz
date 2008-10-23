@@ -405,7 +405,7 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 
     /* set persistent attributes here (if not already set from command line options) */
 #ifndef WITH_CGRAPH
-    if (!(agfindattr(agprotograph()->proto->n, "label")))
+    if (!(agfindnodeattr(agprotograph(), "label")))
 	agnodeattr(NULL, "label", NODENAME_ESC);
 #endif
 }
@@ -548,11 +548,7 @@ static int findCharset (graph_t * g)
     int enc;
     char* p;
 
-#ifdef WITH_CGRAPH
-    p = late_nnstring(g,agattr(g,AGRAPH,"charset", NULL),"utf-8");
-#else
-    p = late_nnstring(g,agfindattr(g,"charset"),"utf-8");
-#endif
+    p = late_nnstring(g,agfindgraphattr(g,"charset"),"utf-8");
     if (!strcasecmp(p,"latin-1")
 	|| !strcasecmp(p,"latin1")
 	|| !strcasecmp(p,"l1")
@@ -645,13 +641,8 @@ void graph_init(graph_t * g, boolean use_rankdir)
 
     GD_charset(g) = findCharset (g);
 
-#ifdef WITH_CGRAPH
     GD_drawing(g)->quantum =
-	late_double(g, agattr(g, AGRAPH, "quantum", NULL), 0.0, 0.0);
-#else
-    GD_drawing(g)->quantum =
-	late_double(g, agfindattr(g, "quantum"), 0.0, 0.0);
-#endif
+	late_double(g, agfindgraphattr(g, "quantum"), 0.0, 0.0);
 
     /* setting rankdir=LR is only defined in dot,
      * but having it set causes shape code and others to use it. 
@@ -674,20 +665,11 @@ void graph_init(graph_t * g, boolean use_rankdir)
     else
 	SET_RANKDIR (g, (rankdir << 2));
 
-#ifdef WITH_CGRAPH
-    xf = late_double(g, agattr(g, AGRAPH, "nodesep", NULL),
+    xf = late_double(g, agfindgraphattr(g, "nodesep"),
 		DEFAULT_NODESEP, MIN_NODESEP);
-#else
-    xf = late_double(g, agfindattr(g, "nodesep"),
-		DEFAULT_NODESEP, MIN_NODESEP);
-#endif
     GD_nodesep(g) = POINTS(xf);
 
-#ifdef WITH_CGRAPH
-    p = late_string(g, agattr(g, AGRAPH, "ranksep", (char*)0), NULL);
-#else
-    p = late_string(g, agfindattr(g, "ranksep"), NULL);
-#endif
+    p = late_string(g, agfindgraphattr(g, "ranksep"), NULL);
     if (p) {
 	if (sscanf(p, "%lf", &xf) == 0)
 	    xf = DEFAULT_RANKSEP;
@@ -701,13 +683,8 @@ void graph_init(graph_t * g, boolean use_rankdir)
 	xf = DEFAULT_RANKSEP;
     GD_ranksep(g) = POINTS(xf);
 
-#ifdef WITH_CGRAPH
-    GD_showboxes(g) = late_int(g, agattr(g,AGRAPH, "showboxes", NULL), 0, 0);
-    p = late_string(g, agattr(g, AGRAPH,"fontnames", NULL), NULL);
-#else
-    GD_showboxes(g) = late_int(g, agfindattr(g, "showboxes"), 0, 0);
-    p = late_string(g, agfindattr(g, "fontnames"), NULL);
-#endif
+    GD_showboxes(g) = late_int(g, agfindgraphattr(g, "showboxes"), 0, 0);
+    p = late_string(g, agfindgraphattr(g, "fontnames"), NULL);
     GD_fontnames(g) = maptoken(p, fontnamenames, fontnamecodes);
 
     setRatio(g);
@@ -740,126 +717,64 @@ void graph_init(graph_t * g, boolean use_rankdir)
     Initial_dist = MYHUGE;
 
     /* initialize nodes */
-#ifdef WITH_CGRAPH
-    N_height = agattr(g, AGNODE,"height", NULL);
-    N_width = agattr(g, AGNODE, "width", NULL);
-    N_shape = agattr(g, AGNODE, "shape", NULL);
-    N_color = agattr(g, AGNODE, "color", NULL);
-    N_fillcolor = agattr(g, AGNODE, "fillcolor", NULL);
-    N_style = agattr(g, AGNODE, "style", NULL);
-    N_fontsize = agattr(g, AGNODE, "fontsize", NULL);
-    N_fontname = agattr(g, AGNODE, "fontname", NULL);
-    N_fontcolor = agattr(g, AGNODE, "fontcolor", NULL);
-    N_label = agattr(g, AGNODE, "label", NULL);
-    N_showboxes = agattr(g, AGNODE, "showboxes", NULL);
-    N_penwidth = agattr(g, AGNODE, "penwidth", NULL);
+    N_height = agfindnodeattr(g, "height");
+    N_width = agfindnodeattr(g, "width");
+    N_shape = agfindnodeattr(g, "shape");
+    N_color = agfindnodeattr(g, "color");
+    N_fillcolor = agfindnodeattr(g, "fillcolor");
+    N_style = agfindnodeattr(g, "style");
+    N_fontsize = agfindnodeattr(g, "fontsize");
+    N_fontname = agfindnodeattr(g, "fontname");
+    N_fontcolor = agfindnodeattr(g, "fontcolor");
+    N_label = agfindnodeattr(g, "label");
+    N_showboxes = agfindnodeattr(g, "showboxes");
+    N_penwidth = agfindnodeattr(g, "penwidth");
     /* attribs for polygon shapes */
-    N_sides = agattr(g, AGNODE, "sides", NULL);
-    N_peripheries = agattr(g, AGNODE, "peripheries", NULL);
-    N_skew = agattr(g, AGNODE, "skew", NULL);
-    N_orientation = agattr(g, AGNODE, "orientation", NULL);
-    N_distortion = agattr(g, AGNODE, "distortion", NULL);
-    N_fixed = agattr(g, AGNODE, "fixedsize", NULL);
-    N_imagescale = agattr(g, AGNODE, "imagescale", NULL);
-    N_nojustify = agattr(g, AGNODE, "nojustify", NULL);
-    N_layer = agattr(g, AGNODE, "layer", NULL);
-    N_group = agattr(g, AGNODE, "group", NULL);
-    N_comment = agattr(g, AGNODE, "comment", NULL);
-    N_vertices = agattr(g, AGNODE, "vertices", NULL);
-    N_z = agattr(g, AGNODE, "z", NULL);
-#else
-    N_height = agfindattr(g->proto->n, "height");
-    N_width = agfindattr(g->proto->n, "width");
-    N_shape = agfindattr(g->proto->n, "shape");
-    N_color = agfindattr(g->proto->n, "color");
-    N_fillcolor = agfindattr(g->proto->n, "fillcolor");
-    N_style = agfindattr(g->proto->n, "style");
-    N_fontsize = agfindattr(g->proto->n, "fontsize");
-    N_fontname = agfindattr(g->proto->n, "fontname");
-    N_fontcolor = agfindattr(g->proto->n, "fontcolor");
-    N_label = agfindattr(g->proto->n, "label");
-    N_showboxes = agfindattr(g->proto->n, "showboxes");
-    N_penwidth = agfindattr(g->proto->n, "penwidth");
-    /* attribs for polygon shapes */
-    N_sides = agfindattr(g->proto->n, "sides");
-    N_peripheries = agfindattr(g->proto->n, "peripheries");
-    N_skew = agfindattr(g->proto->n, "skew");
-    N_orientation = agfindattr(g->proto->n, "orientation");
-    N_distortion = agfindattr(g->proto->n, "distortion");
-    N_fixed = agfindattr(g->proto->n, "fixedsize");
-    N_imagescale = agfindattr(g->proto->n, "imagescale");
-    N_nojustify = agfindattr(g->proto->n, "nojustify");
-    N_layer = agfindattr(g->proto->n, "layer");
-    N_group = agfindattr(g->proto->n, "group");
-    N_comment = agfindattr(g->proto->n, "comment");
-    N_vertices = agfindattr(g->proto->n, "vertices");
-    N_z = agfindattr(g->proto->n, "z");
-#endif
+    N_sides = agfindnodeattr(g, "sides");
+    N_peripheries = agfindnodeattr(g, "peripheries");
+    N_skew = agfindnodeattr(g, "skew");
+    N_orientation = agfindnodeattr(g, "orientation");
+    N_distortion = agfindnodeattr(g, "distortion");
+    N_fixed = agfindnodeattr(g, "fixedsize");
+    N_imagescale = agfindnodeattr(g, "imagescale");
+    N_nojustify = agfindnodeattr(g, "nojustify");
+    N_layer = agfindnodeattr(g, "layer");
+    N_group = agfindnodeattr(g, "group");
+    N_comment = agfindnodeattr(g, "comment");
+    N_vertices = agfindnodeattr(g, "vertices");
+    N_z = agfindnodeattr(g, "z");
 
     /* initialize edges */
-#ifdef WITH_CGRAPH
-    E_weight = agattr(g, AGEDGE, "weight", NULL);
-    E_color = agattr(g, AGEDGE, "color", NULL);
-    E_fontsize = agattr(g, AGEDGE, "fontsize", NULL);
-    E_fontname = agattr(g, AGEDGE, "fontname", NULL);
-    E_fontcolor = agattr(g, AGEDGE, "fontcolor", NULL);
-    E_label = agattr(g, AGEDGE, "label", NULL);
-    E_label_float = agattr(g, AGEDGE, "labelfloat", NULL);
+    E_weight = agfindedgeattr(g, "weight");
+    E_color = agfindedgeattr(g, "color");
+    E_fontsize = agfindedgeattr(g, "fontsize");
+    E_fontname = agfindedgeattr(g, "fontname");
+    E_fontcolor = agfindedgeattr(g, "fontcolor");
+    E_label = agfindedgeattr(g, "label");
+    E_label_float = agfindedgeattr(g, "labelfloat");
     /* vladimir */
-    E_dir = agattr(g, AGEDGE, "dir", NULL);
-    E_arrowhead = agattr(g, AGEDGE, "arrowhead", NULL);
-    E_arrowtail = agattr(g, AGEDGE, "arrowtail", NULL);
-    E_headlabel = agattr(g, AGEDGE, "headlabel", NULL);
-    E_taillabel = agattr(g, AGEDGE, "taillabel", NULL);
-    E_labelfontsize = agattr(g, AGEDGE, "labelfontsize", NULL);
-    E_labelfontname = agattr(g, AGEDGE, "labelfontname", NULL);
-    E_labelfontcolor = agattr(g, AGEDGE, "labelfontcolor", NULL);
-    E_labeldistance = agattr(g, AGEDGE, "labeldistance", NULL);
-    E_labelangle = agattr(g, AGEDGE, "labelangle", NULL);
+    E_dir = agfindedgeattr(g, "dir");
+    E_arrowhead = agfindedgeattr(g, "arrowhead");
+    E_arrowtail = agfindedgeattr(g, "arrowtail");
+    E_headlabel = agfindedgeattr(g, "headlabel");
+    E_taillabel = agfindedgeattr(g, "taillabel");
+    E_labelfontsize = agfindedgeattr(g, "labelfontsize");
+    E_labelfontname = agfindedgeattr(g, "labelfontname");
+    E_labelfontcolor = agfindedgeattr(g, "labelfontcolor");
+    E_labeldistance = agfindedgeattr(g, "labeldistance");
+    E_labelangle = agfindedgeattr(g, "labelangle");
     /* end vladimir */
-    E_minlen = agattr(g, AGEDGE, "minlen", NULL);
-    E_showboxes = agattr(g, AGEDGE, "showboxes", NULL);
-    E_style = agattr(g, AGEDGE, "style", NULL);
-    E_decorate = agattr(g, AGEDGE, "decorate", NULL);
-    E_arrowsz = agattr(g, AGEDGE, "arrowsize", NULL);
-    E_constr = agattr(g, AGEDGE, "constraint", NULL);
-    E_layer = agattr(g, AGEDGE, "layer", NULL);
-    E_comment = agattr(g, AGEDGE, "comment", NULL);
-    E_tailclip = agattr(g, AGEDGE, "tailclip", NULL);
-    E_headclip = agattr(g, AGEDGE, "headclip", NULL);
-    E_penwidth = agattr(g, AGEDGE, "penwidth", NULL);
-#else
-    E_weight = agfindattr(g->proto->e, "weight");
-    E_color = agfindattr(g->proto->e, "color");
-    E_fontsize = agfindattr(g->proto->e, "fontsize");
-    E_fontname = agfindattr(g->proto->e, "fontname");
-    E_fontcolor = agfindattr(g->proto->e, "fontcolor");
-    E_label = agfindattr(g->proto->e, "label");
-    E_label_float = agfindattr(g->proto->e, "labelfloat");
-    /* vladimir */
-    E_dir = agfindattr(g->proto->e, "dir");
-    E_arrowhead = agfindattr(g->proto->e, "arrowhead");
-    E_arrowtail = agfindattr(g->proto->e, "arrowtail");
-    E_headlabel = agfindattr(g->proto->e, "headlabel");
-    E_taillabel = agfindattr(g->proto->e, "taillabel");
-    E_labelfontsize = agfindattr(g->proto->e, "labelfontsize");
-    E_labelfontname = agfindattr(g->proto->e, "labelfontname");
-    E_labelfontcolor = agfindattr(g->proto->e, "labelfontcolor");
-    E_labeldistance = agfindattr(g->proto->e, "labeldistance");
-    E_labelangle = agfindattr(g->proto->e, "labelangle");
-    /* end vladimir */
-    E_minlen = agfindattr(g->proto->e, "minlen");
-    E_showboxes = agfindattr(g->proto->e, "showboxes");
-    E_style = agfindattr(g->proto->e, "style");
-    E_decorate = agfindattr(g->proto->e, "decorate");
-    E_arrowsz = agfindattr(g->proto->e, "arrowsize");
-    E_constr = agfindattr(g->proto->e, "constraint");
-    E_layer = agfindattr(g->proto->e, "layer");
-    E_comment = agfindattr(g->proto->e, "comment");
-    E_tailclip = agfindattr(g->proto->e, "tailclip");
-    E_headclip = agfindattr(g->proto->e, "headclip");
-    E_penwidth = agfindattr(g->proto->e, "penwidth");
-#endif
+    E_minlen = agfindedgeattr(g, "minlen");
+    E_showboxes = agfindedgeattr(g, "showboxes");
+    E_style = agfindedgeattr(g, "style");
+    E_decorate = agfindedgeattr(g, "decorate");
+    E_arrowsz = agfindedgeattr(g, "arrowsize");
+    E_constr = agfindedgeattr(g, "constraint");
+    E_layer = agfindedgeattr(g, "layer");
+    E_comment = agfindedgeattr(g, "comment");
+    E_tailclip = agfindedgeattr(g, "tailclip");
+    E_headclip = agfindedgeattr(g, "headclip");
+    E_penwidth = agfindedgeattr(g, "penwidth");
 }
 
 void graph_cleanup(graph_t *g)
@@ -919,23 +834,13 @@ void do_graph_label(graph_t * sg)
 
 	GD_has_labels(sg->root) |= GRAPH_LABEL;
 
-#ifdef WITH_CGRAPH
-	GD_label(sg) = make_label(agroot(sg), str, (aghtmlstr(str) ? LT_HTML : LT_NONE),
-	    late_double(sg, agattr(sg,AGRAPH,"fontsize", NULL),
-			DEFAULT_FONTSIZE, MIN_FONTSIZE),
-	    late_nnstring(sg, agattr(sg,AGRAPH, "fontname", NULL),
-			DEFAULT_FONTNAME),
-	    late_nnstring(sg, agattr(sg,AGRAPH, "fontcolor", NULL),
-			DEFAULT_COLOR));
-#else
 	GD_label(sg) = make_label((void*)sg, str, (aghtmlstr(str) ? LT_HTML : LT_NONE),
-	    late_double(sg, agfindattr(sg, "fontsize"),
+	    late_double(sg, agfindgraphattr(sg, "fontsize"),
 			DEFAULT_FONTSIZE, MIN_FONTSIZE),
-	    late_nnstring(sg, agfindattr(sg, "fontname"),
+	    late_nnstring(sg, agfindgraphattr(sg, "fontname"),
 			DEFAULT_FONTNAME),
-	    late_nnstring(sg, agfindattr(sg, "fontcolor"),
+	    late_nnstring(sg, agfindgraphattr(sg, "fontcolor"),
 			DEFAULT_COLOR));
-#endif
 
 	/* set label position */
 	pos = agget(sg, "labelloc");
