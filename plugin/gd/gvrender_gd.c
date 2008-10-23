@@ -28,7 +28,6 @@
 
 #include "gvplugin_render.h"
 #include "gvplugin_device.h"
-#include "graph.h"	/* for agget  for truecolor test */
 #include "gvcint.h"	/* for gvc->g for agget */
 
 #ifdef HAVE_LIBGD

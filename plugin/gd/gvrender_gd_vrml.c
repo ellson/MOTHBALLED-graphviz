@@ -38,9 +38,6 @@
 /* for gvcolor_t */
 #include "color.h"
 
-/* for ? */
-#include "graph.h"
-
 /* for late_double() */
 #include "agxbuf.h"
 #include "utils.h"
@@ -116,7 +113,7 @@ static char *nodefilename(const char *filename, node_t * n, char *buf)
 	else
 	    dir = ".";
     }
-    sprintf(buf, "%s/node%d.png", dir, n->id);
+    sprintf(buf, "%s/node%ld.png", dir, AGID(n));
     return buf;
 }
 
@@ -247,7 +244,7 @@ static void vrml_begin_node(GVJ_t *job)
     int width, height;
     int transparent;
 
-    gvprintf(job, "# node %s\n", n->name);
+    gvprintf(job, "# node %s\n", agnameof(n));
     if (z < MinZ)
 	MinZ = z;
     if (shapeOf(n) != SH_POINT) {
@@ -281,15 +278,15 @@ static void vrml_begin_edge(GVJ_t *job)
     edge_t *e = obj->u.e;
 
     IsSegment = 0;
-    gvprintf(job, "# edge %s -> %s\n", e->tail->name, e->head->name);
+    gvprintf(job, "# edge %s -> %s\n", agnameof(agtail(e)), agnameof(aghead(e)));
     gvputs(job,   " Group { children [\n");
 }
 
 static void
 finishSegment (GVJ_t *job, edge_t *e)
 {
-    pointf p0 = ND_coord(e->tail);
-    pointf p1 = ND_coord(e->head);
+    pointf p0 = ND_coord(agtail(e));
+    pointf p1 = ND_coord(aghead(e));
     double o_x, o_y, o_z;
     double x, y, y0, z, theta;
 
@@ -387,7 +384,7 @@ interpolate_zcoord(GVJ_t *job, pointf p1, pointf fst, double fstz, pointf snd, d
 
     if (fstz == sndz)
 	return fstz;
-    if (ND_rank(e->tail) != ND_rank(e->head)) {
+    if (ND_rank(agtail(e)) != ND_rank(aghead(e))) {
 	if (snd.y == fst.y)
 	    rv = (fstz + sndz) / 2.0;
 	else
@@ -471,7 +468,7 @@ vrml_bezier(GVJ_t *job, pointf * A, int n, int arrow_at_start, int arrow_at_end,
     assert(e);
 
     if (straight(A,n)) {
-	doSegment (job, A, ND_coord(e->tail),Fstz,ND_coord(e->head),Sndz);
+	doSegment (job, A, ND_coord(agtail(e)),Fstz,ND_coord(aghead(e)),Sndz);
 	return;
     }
 
@@ -494,7 +491,7 @@ vrml_bezier(GVJ_t *job, pointf * A, int n, int arrow_at_start, int arrow_at_end,
 	    (obj->penwidth), -(obj->penwidth), -(obj->penwidth),
 	    (obj->penwidth), -(obj->penwidth));
     gvputs(job,   "}\n");
-    gvprintf(job, " appearance DEF E%d Appearance {\n", e->id);
+    gvprintf(job, " appearance DEF E%ld Appearance {\n", AGID(e));
     gvputs(job,   "   material Material {\n");
     gvputs(job,   "   ambientIntensity 0.33\n");
     gvprintf(job, "   diffuseColor %.3f %.3f %.3f\n",
@@ -524,7 +521,7 @@ static void doArrowhead (GVJ_t *job, pointf * A)
     y = (CylHt + ht)/2.0;
 
     gvputs(job,   "Transform {\n");
-    if (DIST2(A[1], ND_coord(e->tail)) < DIST2(A[1], ND_coord(e->head))) {
+    if (DIST2(A[1], ND_coord(agtail(e))) < DIST2(A[1], ND_coord(aghead(e)))) {
 	TailHt = ht;
 	gvprintf(job, "  translation 0 %.3f 0\n", -y);
 	gvprintf(job, "  rotation 0 0 1 %.3f\n", M_PI);
@@ -595,7 +592,7 @@ static void vrml_polygon(GVJ_t *job, pointf * A, int np, int filled)
 	gvputs(job,   "      ambientIntensity 0.33\n");
 	gvputs(job,   "        diffuseColor 1 1 1\n");
 	gvputs(job,   "    }\n");
-	gvprintf(job, "    texture ImageTexture { url \"node%d.png\" }\n", n->id);
+	gvprintf(job, "    texture ImageTexture { url \"node%ld.png\" }\n", AGID(n));
 	gvputs(job,   "  }\n");
 	gvputs(job,   "  geometry Extrusion {\n");
 	gvputs(job,   "    crossSection [");
@@ -641,7 +638,7 @@ static void vrml_polygon(GVJ_t *job, pointf * A, int np, int filled)
 		  (A[0].x + A[2].x) / 2.0 - A[1].x) + M_PI / 2.0;
 
 	/* this is gruesome, but how else can we get z coord */
-	if (DIST2(p, ND_coord(e->tail)) < DIST2(p, ND_coord(e->head)))
+	if (DIST2(p, ND_coord(agtail(e))) < DIST2(p, ND_coord(aghead(e))))
 	    z = obj->tail_z;
 	else
 	    z = obj->head_z;
@@ -656,7 +653,7 @@ static void vrml_polygon(GVJ_t *job, pointf * A, int np, int filled)
 	gvputs(job,   "        Shape {\n");
 	gvprintf(job, "          geometry Cone {bottomRadius %.3f height %.3f }\n",
 		obj->penwidth * 2.5, obj->penwidth * 10.0);
-	gvprintf(job, "          appearance USE E%d\n", e->id);
+	gvprintf(job, "          appearance USE E%ld\n", AGID(e));
 	gvputs(job,   "        }\n");
 	gvputs(job,   "      ]\n");
 	gvputs(job,   "    }\n");
@@ -759,7 +756,7 @@ static void vrml_ellipse(GVJ_t * job, pointf * A, int filled)
 	gvputs(job,   "              ambientIntensity 0.33\n");
 	gvputs(job,   "              diffuseColor 1 1 1\n");
 	gvputs(job,   "            }\n");
-	gvprintf(job, "            texture ImageTexture { url \"node%d.png\" }\n", n->id);
+	gvprintf(job, "            texture ImageTexture { url \"node%ld.png\" }\n", AGID(n));
 	gvputs(job,   "          }\n");
 	gvputs(job,   "        }\n");
 	gvputs(job,   "      ]\n");
@@ -770,7 +767,7 @@ static void vrml_ellipse(GVJ_t * job, pointf * A, int filled)
     case EDGE_OBJTYPE:
 	e = obj->u.e;
 	/* this is gruesome, but how else can we get z coord */
-	if (DIST2(A[0], ND_coord(e->tail)) < DIST2(A[0], ND_coord(e->head)))
+	if (DIST2(A[0], ND_coord(agtail(e))) < DIST2(A[0], ND_coord(aghead(e))))
 	    z = obj->tail_z;
 	else
 	    z = obj->head_z;
@@ -780,7 +777,7 @@ static void vrml_ellipse(GVJ_t * job, pointf * A, int filled)
 	gvputs(job,   "  children [\n");
 	gvputs(job,   "    Shape {\n");
 	gvprintf(job, "      geometry Sphere {radius %.3f }\n", (double) rx);
-	gvprintf(job, "      appearance USE E%d\n", e->id);
+	gvprintf(job, "      appearance USE E%d\n", AGID(e));
 	gvputs(job,   "    }\n");
 	gvputs(job,   "  ]\n");
 	gvputs(job,   "}\n");
