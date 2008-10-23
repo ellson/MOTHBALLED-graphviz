@@ -140,7 +140,7 @@ static void lasi_begin_graph(GVJ_t * job)
 //    setupLatin1 = FALSE;
 
     if (job->common->viewNum == 0) {
-	gvprintf(job, "%%%%Title: %s\n", obj->u.g->name);
+	gvprintf(job, "%%%%Title: %s\n", agnameof(obj->u.g));
     	if (job->render.id != FORMAT_EPS)
 	    gvputs(job, "%%Pages: (atend)\n");
 	else
@@ -240,7 +240,7 @@ static void lasi_begin_cluster(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
-    gvprintf(job, "%% %s\n", obj->u.sg->name);
+    gvprintf(job, "%% %s\n", agnameof(obj->u.sg));
     gvputs(job, "gsave\n");
 }
 
