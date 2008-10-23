@@ -45,15 +45,15 @@ static void initGraphAttrs(Agraph_t * g, circ_state * state)
 #ifndef WITH_CGRAPH
 	G_mindist = agfindattr(rootg, "mindist");
 #else /* WITH_CGRAPH */
-	G_mindist = agattr(rootg,AGRAPH, "mindist",(char*)0);
+	G_mindist = agattr(rootg,AGRAPH, "mindist", NULL);
 #endif /* WITH_CGRAPH */
 	min_dist = late_double(rootg, G_mindist, MINDIST, 0.0);
 #ifndef WITH_CGRAPH
 	N_artpos = agfindattr(rootg->proto->n, "articulation_pos");
 	N_root = agfindattr(rootg->proto->n, "root");
 #else /* WITH_CGRAPH */
-	N_artpos = agattr(rootg,AGNODE, "articulation_pos",(char*)0);
-	N_root = agattr(rootg,AGNODE, "root",(char*)0);
+	N_artpos = agattr(rootg,AGNODE, "articulation_pos", NULL);
+	N_root = agattr(rootg,AGNODE, "root", NULL);
 #endif /* WITH_CGRAPH */
 	rootname = agget(rootg, "root");
     }
