@@ -5,6 +5,7 @@ SUBDIRS = demo
 
 if WITH_CGRAPH
 GRAPH = cgraph
+DEFS += -DWITH_CGRAPH
 else
 GRAPH = graph
 endif
