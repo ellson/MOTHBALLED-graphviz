@@ -233,9 +233,9 @@ static cluster_data* cluster_map(graph_t *mastergraph, graph_t *g)
     cluster_data *cdata = GNEW(cluster_data);
 
     cdata->ntoplevel = agnnodes(g);
-    mg = agraphof(mastergraph);
 #ifndef WITH_CGRAPH
     mm = mastergraph->meta_node;
+    mg = agraphof(mm); 
     for (me = agfstout(mg, mm); me; me = agnxtout(mg, me)) {
         mn = aghead(me);
         subg = agusergraph(mn);
@@ -256,7 +256,7 @@ static cluster_data* cluster_map(graph_t *mastergraph, graph_t *g)
         mn = me->head;
         subg = agusergraph(mn);
 #else
-    for (subg = agfstsubg(mg); subg; subg = agnxtsubg(subg)) {
+    for (subg = agfstsubg(mastergraph); subg; subg = agnxtsubg(subg)) {
 #endif
         /* clusters are processed by separate calls to ordered_edges */
         if (!strncmp(agnameof(subg), "cluster", 7)) {
