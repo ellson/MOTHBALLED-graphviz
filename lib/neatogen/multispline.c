@@ -779,7 +779,7 @@ finishEdge (edge_t* e, Ppoly_t spl, int flip, pointf p, pointf q)
     }
     if (Verbose > 1)
 	fprintf(stderr, "spline %s %s\n", agnameof(agtail(e)), agnameof(aghead(e)));
-    clip_and_install(e, e->head, spline, spl.pn, &sinfo);
+    clip_and_install(e, aghead(e), spline, spl.pn, &sinfo);
     free(spline);
 
     addEdgeLabels(e, p1, q1);
@@ -850,14 +850,14 @@ genroute(tripoly_t * trip, int s, int t, edge_t * e, int doPolyline)
     Pedge_t *medges = N_GNEW(trip->poly.pn, Pedge_t);
     int pn;
     int mult = ED_count(e);
-    node_t* head = e->head;
+    node_t* head = aghead(e);
 
     eps[0].x = trip->poly.ps[s].x, eps[0].y = trip->poly.ps[s].y;
     eps[1].x = trip->poly.ps[t].x, eps[1].y = trip->poly.ps[t].y;
     Pshortestpath(&(trip->poly), eps, &pl);
 
     if (pl.pn == 2) {
-	makeStraightEdge(head->graph, e, doPolyline);
+	makeStraightEdge(agraphof(head), e, doPolyline);
 	return 0;
     }
 
@@ -872,7 +872,7 @@ genroute(tripoly_t * trip, int s, int t, edge_t * e, int doPolyline)
 	}
 	tweakPath (poly, s, t, pl);
 	Proutespline(medges, poly.pn, pl, evs, &spl);
-	finishEdge (e, spl, e->head != head, eps[0], eps[1]);
+	finishEdge (e, spl, aghead(e) != head, eps[0], eps[1]);
 	free(medges);
 
 	return 0;
@@ -915,7 +915,7 @@ genroute(tripoly_t * trip, int s, int t, edge_t * e, int doPolyline)
 	    tweakPath (poly, 0, pl.pn-1, mmpl);
 	    Proutespline(medges, poly.pn, mmpl, evs, &spl);
 	}
-	finishEdge (e, spl, e->head != head, eps[0], eps[1]);
+	finishEdge (e, spl, aghead(e) != head, eps[0], eps[1]);
 
 	e = ED_to_virt(e);
     }
@@ -1299,8 +1299,8 @@ triPath(tgraph * g, int n, int v0, int v1, PQ * pq)
 int makeMultiSpline(edge_t* e, router_t * rtr, int doPolyline)
 {
     Ppolyline_t line = ED_path(e);
-    node_t *t = e->tail;
-    node_t *h = e->head;
+    node_t *t = agtail(e);
+    node_t *h = aghead(e);
     pointf t_p = line.ps[0];
     pointf h_p = line.ps[line.pn - 1];
     tripoly_t *poly;

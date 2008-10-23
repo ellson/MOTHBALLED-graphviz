@@ -111,11 +111,11 @@ static void makePortLabels(edge_t * e)
 {
     if (ED_head_label(e) && !ED_head_label(e)->set) {
 	place_portlabel(e, TRUE);
-	updateBB(e->tail->graph, ED_head_label(e));
+	updateBB(agraphof(agtail(e)), ED_head_label(e));
     }
     if (ED_tail_label(e) && !ED_tail_label(e)->set) {
 	place_portlabel(e, FALSE);
-	updateBB(e->tail->graph, ED_tail_label(e));
+	updateBB(agraphof(agtail(e)), ED_tail_label(e));
     }
 }
 
@@ -200,7 +200,7 @@ polylineMidpoint (splines* spl, pointf* pp, pointf* pq)
  */
 void addEdgeLabels(edge_t * e, pointf rp, pointf rq)
 {
-    int et = EDGE_TYPE (e->head->graph->root);
+    int et = EDGE_TYPE (agroot(agraphof(aghead(e))));
     pointf p, q;
     pointf d;			/* midpoint of segment p-q */
     point ld;
@@ -252,7 +252,7 @@ void addEdgeLabels(edge_t * e, pointf rp, pointf rq)
 	ED_label(e)->pos.x = spf.x + ld.x;
 	ED_label(e)->pos.y = spf.y + ld.y;
 	ED_label(e)->set = TRUE;
-	updateBB(e->tail->graph, ED_label(e));
+	updateBB(agraphof(agtail(e)), ED_label(e));
     }
     makePortLabels(e);
 }
@@ -335,15 +335,15 @@ static edge_t *equivEdge(Dt_t * map, edge_t * e)
     edgeitem dummy;
     edgeitem *ip;
 
-    if (e->tail < e->head) {
-	test.n1 = e->tail;
+    if (agtail(e) < aghead(e)) {
+	test.n1 = agtail(e);
 	test.p1 = ED_tail_port(e).p;
-	test.n2 = e->head;
+	test.n2 = aghead(e);
 	test.p2 = ED_head_port(e).p;
-    } else if (e->tail > e->head) {
-	test.n2 = e->tail;
+    } else if (agtail(e) > aghead(e)) {
+	test.n2 = agtail(e);
 	test.p2 = ED_tail_port(e).p;
-	test.n1 = e->head;
+	test.n1 = aghead(e);
 	test.p1 = ED_head_port(e).p;
     } else {
 	pointf hp = ED_head_port(e).p;
@@ -363,7 +363,7 @@ static edge_t *equivEdge(Dt_t * map, edge_t * e)
 	} else {
 	    test.p1 = test.p2 = tp;
 	}
-	test.n2 = test.n1 = e->tail;
+	test.n2 = test.n1 = agtail(e);
     }
     dummy.id = test;
     dummy.e = e;
@@ -387,7 +387,7 @@ void makeSelfArcs(path * P, edge_t * e, int stepx)
 	edges1[0] = e;
 	makeSelfEdge(P, edges1, 0, 1, stepx, stepx, &sinfo);
 	if (ED_label(e))
-	    updateBB(e->tail->graph, ED_label(e));
+	    updateBB(agraphof(agtail(e)), ED_label(e));
 	makePortLabels(e);
     } else {
 	int i;
@@ -400,7 +400,7 @@ void makeSelfArcs(path * P, edge_t * e, int stepx)
 	for (i = 0; i < cnt; i++) {
 	    e = edges[i];
 	    if (ED_label(e))
-		updateBB(e->tail->graph, ED_label(e));
+		updateBB(agraphof(agtail(e)), ED_label(e));
 	    makePortLabels(e);
 	}
 	free(edges);
@@ -415,8 +415,8 @@ void
 makeStraightEdge(graph_t * g, edge_t * e, int doPolyline)
 {
     pointf dumb[4];
-    node_t *n = e->tail;
-    node_t *head = e->head;
+    node_t *n = agtail(e);
+    node_t *head = aghead(e);
     int e_cnt = ED_count(e);
     pointf perp;
     pointf del;
@@ -429,7 +429,7 @@ makeStraightEdge(graph_t * g, edge_t * e, int doPolyline)
     p = dumb[1] = dumb[0] = add_pointf(ND_coord(n), ED_tail_port(e).p);
     q = dumb[2] = dumb[3] = add_pointf(ND_coord(head), ED_head_port(e).p);
     if (e_cnt == 1) {
-	clip_and_install(e, e->head, dumb, 4, &sinfo);
+	clip_and_install(e, aghead(e), dumb, 4, &sinfo);
 	addEdgeLabels(e, p, q);
 	return;
     }
@@ -457,7 +457,7 @@ makeStraightEdge(graph_t * g, edge_t * e, int doPolyline)
     }
 
     for (i = 0; i < e_cnt; i++) {
-	if (e0->head == head) {
+	if (aghead(e0) == head) {
 	    p = dumb[0];
 	    q = dumb[3];
 	    for (j = 0; j < 4; j++) {
@@ -480,10 +480,10 @@ makeStraightEdge(graph_t * g, edge_t * e, int doPolyline)
 		pts[i] = dumber[i];
 	    }
 	    make_polyline (line, &spl);
-	    clip_and_install(e0, e0->head, spl.ps, spl.pn, &sinfo);
+	    clip_and_install(e0, aghead(e0), spl.ps, spl.pn, &sinfo);
 	}
 	else
-	    clip_and_install(e0, e0->head, dumber, 4, &sinfo);
+	    clip_and_install(e0, aghead(e0), dumber, 4, &sinfo);
 
 	addEdgeLabels(e0, p, q);
 	e0 = ED_to_virt(e0);
@@ -648,14 +648,14 @@ getPath(edge_t * e, vconfig_t * vconfig, int chkPts, Ppoly_t ** obs,
     int pp, qp;
     Ppoint_t p, q;
 
-    p = add_pointf(ND_coord(e->tail), ED_tail_port(e).p);
-    q = add_pointf(ND_coord(e->head), ED_head_port(e).p);
+    p = add_pointf(ND_coord(agtail(e)), ED_tail_port(e).p);
+    q = add_pointf(ND_coord(aghead(e)), ED_head_port(e).p);
 
     /* determine the polygons (if any) that contain the endpoints */
     pp = qp = POLYID_NONE;
     if (chkPts) {
-	pp = ND_lim(e->tail);
-	qp = ND_lim(e->head);
+	pp = ND_lim(agtail(e));
+	qp = ND_lim(aghead(e));
 /*
 	for (i = 0; i < npoly; i++) {
 	    if ((pp == POLYID_NONE) && in_poly(*obs[i], p))
@@ -681,8 +681,8 @@ makePolyline(edge_t * e)
     q0 = line.ps[line.pn - 1];
     make_polyline (line, &spl);
     if (Verbose > 1)
-	fprintf(stderr, "polyline %s %s\n", e->tail->name, e->head->name);
-    clip_and_install(e, e->head, spl.ps, spl.pn, &sinfo);
+	fprintf(stderr, "polyline %s %s\n", agnameof(agtail(e)), agnameof(aghead(e)));
+    clip_and_install(e, aghead(e), spl.ps, spl.pn, &sinfo);
     addEdgeLabels(e, p0, q0);
 }
 
@@ -725,8 +725,8 @@ void makeSpline(edge_t * e, Ppoly_t ** obs, int npoly, boolean chkPts)
 
     /* north why did you ever use int coords */
     if (Verbose > 1)
-	fprintf(stderr, "spline %s %s\n", e->tail->name, e->head->name);
-    clip_and_install(e, e->head, spline.ps, spline.pn, &sinfo);
+	fprintf(stderr, "spline %s %s\n", agnameof(agtail(e)), agnameof(aghead(e)));
+    clip_and_install(e, aghead(e), spline.ps, spline.pn, &sinfo);
     free(barriers);
     addEdgeLabels(e, p, q);
 }
@@ -805,8 +805,8 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
     /* spline-drawing pass */
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-/* fprintf (stderr, "%s -- %s %d\n", e->tail->name, e->head->name, ED_count(e)); */
-	    node_t *head = e->head;
+/* fprintf (stderr, "%s -- %s %d\n", agnameof(agtail(e)), agnameof(aghead(e)), ED_count(e)); */
+	    node_t *head = aghead(e);
 	    if (useEdges && ED_spl(e)) {
 		addEdgeLabels(e,
 			      add_pointf(ND_coord(n), ED_tail_port(e).p),
@@ -1010,10 +1010,10 @@ static void scaleEdge(edge_t * e, double xf, double yf)
     bezier *bez;
     pointf delh, delt;
 
-    delh.x = POINTS(ND_pos(e->head)[0] * (xf - 1.0));
-    delh.y = POINTS(ND_pos(e->head)[1] * (yf - 1.0));
-    delt.x = POINTS(ND_pos(e->tail)[0] * (xf - 1.0));
-    delt.y = POINTS(ND_pos(e->tail)[1] * (yf - 1.0));
+    delh.x = POINTS(ND_pos(aghead(e))[0] * (xf - 1.0));
+    delh.y = POINTS(ND_pos(aghead(e))[1] * (yf - 1.0));
+    delt.x = POINTS(ND_pos(agtail(e))[0] * (xf - 1.0));
+    delt.y = POINTS(ND_pos(agtail(e))[1] * (yf - 1.0));
 
     bez = ED_spl(e)->list;
     for (i = 0; i < ED_spl(e)->size; i++) {

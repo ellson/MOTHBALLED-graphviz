@@ -137,18 +137,18 @@ static int degreeKind(graph_t * g, node_t * n, node_t ** op)
     node_t *other = NULL;
 
     for (ep = agfstedge(g, n); ep; ep = agnxtedge(g, ep, n)) {
-	if (ep->head == ep->tail)
+	if (aghead(ep) == agtail(ep))
 	    continue;		/* ignore loops */
 	if (deg == 1) {
-	    if (((ep->tail == n) && (ep->head == other)) ||	/* ignore multiedge */
-		((ep->tail == other) && (ep->head == n)))
+	    if (((agtail(ep) == n) && (aghead(ep) == other)) ||	/* ignore multiedge */
+		((agtail(ep) == other) && (aghead(ep) == n)))
 		continue;
 	    return 2;
 	} else {		/* deg == 0 */
-	    if (ep->tail == n)
-		other = ep->head;
+	    if (agtail(ep) == n)
+		other = aghead(ep);
 	    else
-		other = ep->tail;
+		other = agtail(ep);
 	    *op = other;
 	    deg++;
 	}
@@ -201,7 +201,7 @@ static double setEdgeLen(graph_t * G, node_t * np, int lenx)
 	len = doubleattr(ep, lenx, 1.0);
 #endif /* WITH_CGRAPH */
 	if (len <= 0) {
-	    agerr(AGERR, "bad edge len %f in %s ignored\n", len, G->name);
+	    agerr(AGERR, "bad edge len %f in %s ignored\n", len, agnameof(G));
 	    len = 1.0;
 	}
 	ED_dist(ep) = len;
@@ -227,7 +227,7 @@ int scan_graph_mode(graph_t * G, int mode)
 #endif /* WITH_CGRAPH */
 
     if (Verbose)
-	fprintf(stderr, "Scanning graph %s, %d nodes\n", G->name,
+	fprintf(stderr, "Scanning graph %s, %d nodes\n", agnameof(G),
 		agnnodes(G));
 
     /* Eliminate singletons and trees */
@@ -367,13 +367,12 @@ void diffeq_model(graph_t * G, int nG)
     for (i = 0; i < nG; i++) {
 	for (j = 0; j < i; j++) {
 	    f = Spring_coeff / (D[i][j] * D[i][j]);
-	    if ((e =
 #ifndef WITH_CGRAPH
-		 agfindedge(G, GD_neato_nlist(G)[i],
-			    GD_neato_nlist(G)[j])))
+	    if ((e = agfindedge(G, GD_neato_nlist(G)[i],
+		    GD_neato_nlist(G)[j])))
 #else /* WITH_CGRAPH */
-		 agedge(G, GD_neato_nlist(G)[i],
-			    GD_neato_nlist(G)[j],(char*)0,0)))
+	    if ((e = agedge(G, GD_neato_nlist(G)[i],
+		    GD_neato_nlist(G)[j],(char*)0,0)))
 #endif /* WITH_CGRAPH */
 		f = f * ED_factor(e);
 	    K[i][j] = K[j][i] = f;
@@ -449,7 +448,7 @@ void solve_model(graph_t * G, int nG)
     }
     if (GD_move(G) == MaxIter)
 	agerr(AGWARN, "Max. iterations (%d) reached on graph %s\n",
-	      MaxIter, G->name);
+	      MaxIter, agnameof(G));
 }
 
 void update_arrays(graph_t * G, int nG, int i)
@@ -597,7 +596,7 @@ void move_node(graph_t * G, int nG, node_t * n)
 	    sum += fabs(b[i]);
 	}			/* Why not squared? */
 	sum = sqrt(sum);
-	fprintf(stderr, "%s %.3f\n", n->name, sum);
+	fprintf(stderr, "%s %.3f\n", agnameof(n), sum);
     }
 }
 
@@ -631,7 +630,7 @@ void heapdown(node_t * v)
     while ((left = 2 * i + 1) < Heapsize) {
 	right = left + 1;
 	if ((right < Heapsize)
-	    && (Heap[right]->u.dist < Heap[left]->u.dist))
+	    && (ND_dist(Heap[right]) < ND_dist(Heap[left])))
 	    c = right;
 	else
 	    c = left;
@@ -711,8 +710,8 @@ void s1(graph_t * G, node_t * node)
 	if (v != Src)
 	    make_spring(G, Src, v, ND_dist(v));
 	for (e = agfstedge(G, v); e; e = agnxtedge(G, e, v)) {
-	    if ((u = e->head) == v)
-		u = e->tail;
+	    if ((u = agtail(e)) == v)
+		u = agtail(e);     /* FIXME - isn't this redundant? Why the if? */
 	    f = ND_dist(v) + ED_dist(e);
 	    if (ND_dist(u) > f) {
 		ND_dist(u) = f;
