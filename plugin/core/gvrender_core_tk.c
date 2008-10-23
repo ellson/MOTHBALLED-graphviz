@@ -31,7 +31,6 @@
 #include "gvplugin_device.h"
 #include "gvio.h"
 #include "gvcint.h"
-#include "types.h"		/* need the SVG font name schemes */
 
 typedef enum { FORMAT_TK, } format_type;
 

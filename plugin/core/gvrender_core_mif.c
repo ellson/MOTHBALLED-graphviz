@@ -32,7 +32,6 @@
 #include "gvplugin_render.h"
 #include "gvplugin_device.h"
 #include "gvcint.h"
-#include "graph.h"
 
 typedef enum { FORMAT_MIF, } format_type;
 

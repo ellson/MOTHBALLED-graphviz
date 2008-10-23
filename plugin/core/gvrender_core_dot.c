@@ -32,11 +32,6 @@
 
 #include "gvplugin_render.h"
 #include "gvplugin_device.h"
-#ifndef WITH_CGRAPH
-#include "graph.h"
-#else
-#include "cgraph.h"
-#endif
 #include "agxbuf.h"
 #include "utils.h"
 

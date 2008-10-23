@@ -24,13 +24,6 @@
 #include "gvplugin_device.h"
 #include "gvio.h"
 
-/* for g->name */
-#ifndef WITH_CGRAPH
-#include "graph.h"
-#else
-#include "cgraph.h"
-#endif
-
 extern char *xml_string(char *str);
 extern char *xml_url_string(char *str);
 

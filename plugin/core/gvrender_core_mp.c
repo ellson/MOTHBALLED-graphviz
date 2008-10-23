@@ -36,7 +36,6 @@
 #include "gvio.h"
 #include "gvplugin_render.h"
 #include "gvplugin_device.h"
-#include "graph.h"
 #include "agxbuf.h"
 #include "utils.h"
 #include "color.h"

@@ -40,7 +40,6 @@
 #include "gvplugin_device.h"
 #include "gvio.h"
 #include "gvcint.h"
-#include "types.h"		/* need the SVG font name schemes */
 
 extern char *strdup_and_subst_obj(char *str, void *obj);
 
