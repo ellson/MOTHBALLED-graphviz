@@ -477,7 +477,7 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 #ifndef WITH_CGRAPH
     g = agopen("G", AGDIGRAPH);
 #else
-    g = agopen("G", Agdigraph, NULL);
+    g = agopen("G", Agdirected, NULL);
 #endif
 
     a = agfindgraphattr(g, "rankdir");
