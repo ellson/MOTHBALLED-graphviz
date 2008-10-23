@@ -221,10 +221,11 @@ static cluster_data* cluster_map(graph_t *mastergraph, graph_t *g)
 {
 #ifndef WITH_CGRAPH
     /* search meta-graph to find clusters */
+    graph_t *mg;
     node_t *mm, *mn;
     edge_t *me;
 #endif
-    graph_t *mg, *subg;
+    graph_t *subg;
     node_t *n;
      /* array of arrays of node indices in each cluster */
     int **cs,*cn;
