@@ -33,7 +33,7 @@ extern "C" {
 	double theta;
     } rdata;
 
-#define RDATA(n) ((rdata*)((n)->u.alg))
+#define RDATA(n) ((rdata*)(ND_alg(n)))
 #define SLEAF(n) (RDATA(n)->nStepsToLeaf)
 #define STSIZE(n) (RDATA(n)->subtreeSize)
 #define NCHILD(n) (RDATA(n)->nChildren)
