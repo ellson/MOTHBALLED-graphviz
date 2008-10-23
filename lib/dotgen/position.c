@@ -229,7 +229,7 @@ make_LR_constraints(graph_t * g)
     /* make edges to constrain left-to-right ordering */
     for (i = GD_minrank(g); i <= GD_maxrank(g); i++) {
 	double last;
-	last = rank[i].v[0]->u.rank = 0;
+	last = ND_rank(rank[i].v[0]) = 0;
 	nodesep = sep[i & 1];
 	for (j = 0; j < rank[i].n; j++) {
 	    u = rank[i].v[j];
@@ -909,8 +909,8 @@ static void dot_compute_bb(graph_t * g, graph_t * root)
 	LL.x = (double)(ND_rank(GD_ln(g)));
 	UR.x = (double)(ND_rank(GD_rn(g)));
     }
-    LL.y = (double)(ND_coord(ND_rank(root)[GD_maxrank(g)].v[0]).y - GD_ht1(g));
-    UR.y = (double)(ND_coord(ND_rank(root)[GD_minrank(g)].v[0]).y + GD_ht2(g));
+    LL.y = ND_coord(GD_rank(root)[GD_maxrank(g)].v[0]).y - GD_ht1(g);
+    UR.y = ND_coord(GD_rank(root)[GD_minrank(g)].v[0]).y + GD_ht2(g);
     GD_bb(g).LL = LL;
     GD_bb(g).UR = UR;
 }
