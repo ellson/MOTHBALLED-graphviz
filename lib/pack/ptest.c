@@ -14,10 +14,10 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#include <render.h>
-#include <neatoprocs.h>
 #include <assert.h>
-#include <pack.h>
+#include "render.h"
+#include "neatoprocs.h"
+#include "pack.h"
 
 /* Test driver for libpack library.
  * Input consists of graphs in dot format.
