@@ -18,10 +18,10 @@
 /* avoid compiler warnings with template changes in Tcl8.4 */
 /*    specifically just the change to Tcl_CmdProc */
 #define USE_NON_CONST
+#include <tcl.h>
 #include "builddate.h"
 #include "render.h"
 #include "gvc.h"
-#include <tcl.h>
 #include "tclhandle.h"
 
 #ifndef CONST84
@@ -58,7 +58,7 @@ static void *graphTblPtr, *nodeTblPtr, *edgeTblPtr;
 
 static size_t Tcldot_string_writer(GVJ_t *job, const char *s, size_t len)
 {
-    Tcl_AppendResult((Tcl_Interp*)(job->context), s, (char *) NULL);
+    Tcl_AppendResult((Tcl_Interp*)(job->context), s, NULL);
     return len;
 }
 
@@ -69,7 +69,7 @@ static size_t Tcldot_channel_writer(GVJ_t *job, const char *s, size_t len)
 
 static void reset_layout(GVC_t *gvc, Agraph_t * sg)
 {
-    Agraph_t *g = sg->root;
+    Agraph_t *g = agroot(sg);
 
     if (GD_drawing(g)) {	/* only cleanup once between layouts */
 	gvFreeLayout(gvc, g);
@@ -91,7 +91,7 @@ static void deleteEdges(Tcl_Interp * interp, Agraph_t * g, Agnode_t * n)
 	    fprintf(stderr, "Bad entry in edgeTbl\n");
 	tclhandleFreeIndex(edgeTblPtr, e->handle);
 	e1 = agnxtedge(g, e, n);
-	agdelete(g->root, e);
+	agdelete(agroot(g), e);
 	e = e1;
     }
 }
@@ -109,9 +109,9 @@ static void deleteNodes(Tcl_Interp * interp, Agraph_t * g)
 	if (!np)
 	    fprintf(stderr, "Bad entry in nodeTbl\n");
 	tclhandleFreeIndex(nodeTblPtr, n->handle);
-	deleteEdges(interp, g->root, n);
+	deleteEdges(interp, agroot(g), n);
 	n1 = agnxtnode(g, n);
-	agdelete(g->root, n);
+	agdelete(agroot(g), n);
 	n = n1;
     }
 }
@@ -125,7 +125,7 @@ static void deleteGraph(Tcl_Interp * interp, Agraph_t * g)
     if (g->meta_node) {
 	for (e = agfstout(g->meta_node->graph, g->meta_node); e;
 	     e = agnxtout(g->meta_node->graph, e)) {
-	    deleteGraph(interp, agusergraph(e->head));
+	    deleteGraph(interp, agusergraph(aghead(e)));
 	}
 	tclhandleString(graphTblPtr, buf, g->handle);
 	Tcl_DeleteCommand(interp, buf);
@@ -133,7 +133,7 @@ static void deleteGraph(Tcl_Interp * interp, Agraph_t * g)
 	if (!sgp)
 	    fprintf(stderr, "Bad entry in graphTbl\n");
 	tclhandleFreeIndex(graphTblPtr, g->handle);
-	if (g == g->root) {
+	if (g == agroot(g)) {
 	    agclose(g);
 	} else {
 	    agdelete(g->meta_node->graph, g->meta_node);
@@ -149,8 +149,8 @@ static void setgraphattributes(Agraph_t * g, char *argv[], int argc)
     Agsym_t *a;
 
     for (i = 0; i < argc; i++) {
-	if (!(a = agfindattr(g->root, argv[i])))
-	    a = agraphattr(g->root, argv[i], "");
+	if (!(a = agfindattr(agroot(g), argv[i])))
+	    a = agraphattr(agroot(g), argv[i], "");
 	agxset(g, a->index, argv[++i]);
     }
 }
@@ -168,7 +168,7 @@ setedgeattributes(Agraph_t * g, Agedge_t * e, char *argv[], int argc)
 	    continue;
 	}
 	if (!(a = agfindattr(g->proto->e, argv[i])))
-	    a = agedgeattr(g->root, argv[i], "");
+	    a = agedgeattr(agroot(g), argv[i], "");
 	agxset(e, a->index, argv[++i]);
     }
 }
@@ -181,7 +181,7 @@ setnodeattributes(Agraph_t * g, Agnode_t * n, char *argv[], int argc)
 
     for (i = 0; i < argc; i++) {
 	if (!(a = agfindattr(g->proto->n, argv[i])))
-	    a = agnodeattr(g->root, argv[i], "");
+	    a = agnodeattr(agroot(g), argv[i], "");
 	agxset(n, a->index, argv[++i]);
     }
 }
@@ -204,15 +204,15 @@ static int edgecmd(ClientData clientData, Tcl_Interp * interp,
     if (argc < 2) {
 	Tcl_AppendResult(interp, "wrong # args: should be \"",
 			 argv[0], "\" option ?arg arg ...?",
-			 (char *) NULL);
+			 NULL);
 	return TCL_ERROR;
     }
     if (!(ep = (Agedge_t **) tclhandleXlate(edgeTblPtr, argv[0]))) {
-	Tcl_AppendResult(interp, " \"", argv[0], "\"", (char *) NULL);
+	Tcl_AppendResult(interp, " \"", argv[0], "\"", NULL);
 	return TCL_ERROR;
     }
     e = *ep;
-    g = e->tail->graph;
+    g = agraphof(agtail(e));
 
     c = argv[1][0];
     length = strlen(argv[1]);
@@ -233,9 +233,9 @@ static int edgecmd(ClientData clientData, Tcl_Interp * interp,
 	return TCL_OK;
 
     } else if ((c == 'l') && (strncmp(argv[1], "listnodes", length) == 0)) {
-	tclhandleString(nodeTblPtr, buf, e->tail->handle);
+	tclhandleString(nodeTblPtr, buf, agtail(e)->handle);
 	Tcl_AppendElement(interp, buf);
-	tclhandleString(nodeTblPtr, buf, e->head->handle);
+	tclhandleString(nodeTblPtr, buf, aghead(e)->handle);
 	Tcl_AppendElement(interp, buf);
 	return TCL_OK;
 
@@ -251,7 +251,7 @@ static int edgecmd(ClientData clientData, Tcl_Interp * interp,
 		    Tcl_AppendElement(interp, agxget(e, a->index));
 		} else {
 		    Tcl_AppendResult(interp, " No attribute named \"",
-				     argv2[j], "\"", (char *) 0);
+				     argv2[j], "\"", NULL);
 		    return TCL_ERROR;
 		}
 	    }
@@ -273,7 +273,7 @@ static int edgecmd(ClientData clientData, Tcl_Interp * interp,
 		    Tcl_AppendElement(interp, agxget(e, a->index));
 		} else {
 		    Tcl_AppendResult(interp, " No attribute named \"",
-				     argv2[j], "\"", (char *) 0);
+				     argv2[j], "\"", NULL);
 		    return TCL_ERROR;
 		}
 	    }
@@ -292,32 +292,32 @@ static int edgecmd(ClientData clientData, Tcl_Interp * interp,
 		Tcl_AppendResult(interp, "wrong # args: should be \"",
 				 argv[0],
 				 "\" setattributes attributename attributevalue ?attributename attributevalue? ?...?",
-				 (char *) NULL);
+				 NULL);
 		Tcl_Free((char *) argv2);
 		return TCL_ERROR;
 	    }
-	    setedgeattributes(g->root, e, argv2, argc2);
+	    setedgeattributes(agroot(g), e, argv2, argc2);
 	    Tcl_Free((char *) argv2);
 	} else {
 	    if ((argc < 4) || (argc % 2)) {
 		Tcl_AppendResult(interp, "wrong # args: should be \"",
 				 argv[0],
 				 "\" setattributes attributename attributevalue ?attributename attributevalue? ?...?",
-				 (char *) NULL);
+				 NULL);
 		return TCL_ERROR;
 	    }
-	    setedgeattributes(g->root, e, &argv[2], argc - 2);
+	    setedgeattributes(agroot(g), e, &argv[2], argc - 2);
 	}
 	reset_layout(gvc, g);
 	return TCL_OK;
 
     } else if ((c == 's') && (strncmp(argv[1], "showname", length) == 0)) {
-	if (g->kind && AGFLAG_DIRECTED)
+	if (agisdirected(g))
 	    s = "->";
 	else
 	    s = "--";
 	Tcl_AppendResult(interp,
-			 e->tail->name, s, e->head->name, (char *) NULL);
+			 agnameof(agtail(e)), s, agnameof(aghead(e)), NULL);
 	return TCL_OK;
 
     } else {
@@ -325,7 +325,7 @@ static int edgecmd(ClientData clientData, Tcl_Interp * interp,
 			 "\": must be one of:",
 			 "\n\tdelete, listattributes, listnodes,",
 			 "\n\tueryattributes, queryattributevalues,",
-			 "\n\tsetattributes, showname", (char *) NULL);
+			 "\n\tsetattributes, showname", NULL);
 	return TCL_ERROR;
     }
 }
@@ -350,11 +350,11 @@ static int nodecmd(ClientData clientData, Tcl_Interp * interp,
     if (argc < 2) {
 	Tcl_AppendResult(interp, "wrong # args: should be \"",
 			 argv[0], " option ?arg arg ...?\"",
-			 (char *) NULL);
+			 NULL);
 	return TCL_ERROR;
     }
     if (!(np = (Agnode_t **) tclhandleXlate(nodeTblPtr, argv[0]))) {
-	Tcl_AppendResult(interp, " \"", argv[0], "\"", (char *) NULL);
+	Tcl_AppendResult(interp, " \"", argv[0], "\"", NULL);
 	return TCL_ERROR;
     }
     n = *np;
@@ -369,21 +369,21 @@ static int nodecmd(ClientData clientData, Tcl_Interp * interp,
 	    Tcl_AppendResult(interp, "wrong # args: should be \"",
 			     argv[0],
 			     " addedge head ?attributename attributevalue? ?...?\"",
-			     (char *) NULL);
+			     NULL);
 	    return TCL_ERROR;
 	}
 	if (!(np = (Agnode_t **) tclhandleXlate(nodeTblPtr, argv[2]))) {
 	    if (!(head = agfindnode(g, argv[2]))) {
 		Tcl_AppendResult(interp, "Head node \"", argv[2],
-				 "\" not found.", (char *) NULL);
+				 "\" not found.", NULL);
 		return TCL_ERROR;
 	    }
 	} else {
 	    head = *np;
-	    if (g->root != head->graph->root) {
+	    if (agroot(g) != head->graph->root) {
 		Tcl_AppendResult(interp, "Nodes ", argv[0], " and ",
 				 argv[2], " are not in the same graph.",
-				 (char *) NULL);
+				 NULL);
 		return TCL_ERROR;
 	    }
 	}
@@ -407,7 +407,7 @@ static int nodecmd(ClientData clientData, Tcl_Interp * interp,
 	} else {
 	    tclhandleString(edgeTblPtr, interp->result, e->handle);
 	}
-	setedgeattributes(g->root, e, &argv[3], argc - 3);
+	setedgeattributes(agroot(g), e, &argv[3], argc - 3);
 	reset_layout(gvc, g);
 	return TCL_OK;
 
@@ -423,18 +423,18 @@ static int nodecmd(ClientData clientData, Tcl_Interp * interp,
 	if (argc < 3) {
 	    Tcl_AppendResult(interp, "wrong # args: should be \"",
 			     argv[0], " findedge headnodename\"",
-			     (char *) NULL);
+			     NULL);
 	    return TCL_ERROR;
 	}
 	if (!(head = agfindnode(g, argv[2]))) {
 	    Tcl_AppendResult(interp, "Head node \"", argv[2],
-			     "\" not found.", (char *) NULL);
+			     "\" not found.", NULL);
 	    return TCL_ERROR;
 	}
 	if (!(e = agfindedge(g, n, head))) {
 	    tclhandleString(nodeTblPtr, buf, head->handle);
 	    Tcl_AppendResult(interp, "Edge \"", argv[0],
-			     " - ", buf, "\" not found.", (char *) NULL);
+			     " - ", buf, "\" not found.", NULL);
 	    return TCL_ERROR;
 	}
 	tclhandleString(edgeTblPtr, buf, e->handle);
@@ -484,7 +484,7 @@ static int nodecmd(ClientData clientData, Tcl_Interp * interp,
 		    Tcl_AppendElement(interp, agxget(n, a->index));
 		} else {
 		    Tcl_AppendResult(interp, " No attribute named \"",
-				     argv2[j], "\"", (char *) 0);
+				     argv2[j], "\"", NULL);
 		    return TCL_ERROR;
 		}
 	    }
@@ -506,7 +506,7 @@ static int nodecmd(ClientData clientData, Tcl_Interp * interp,
 		    Tcl_AppendElement(interp, agxget(n, a->index));
 		} else {
 		    Tcl_AppendResult(interp, " No attribute named \"",
-				     argv2[j], "\"", (char *) 0);
+				     argv2[j], "\"", NULL);
 		    return TCL_ERROR;
 		}
 	    }
@@ -516,7 +516,7 @@ static int nodecmd(ClientData clientData, Tcl_Interp * interp,
 
     } else if ((c == 's')
 	       && (strncmp(argv[1], "setattributes", length) == 0)) {
-	g = g->root;
+	g = agroot(g);
 	if (argc == 3) {
 	    if (Tcl_SplitList
 		(interp, argv[2], &argc2,
@@ -526,7 +526,7 @@ static int nodecmd(ClientData clientData, Tcl_Interp * interp,
 		Tcl_AppendResult(interp, "wrong # args: should be \"",
 				 argv[0],
 				 "\" setattributes attributename attributevalue ?attributename attributevalue? ?...?",
-				 (char *) NULL);
+				 NULL);
 		Tcl_Free((char *) argv2);
 		return TCL_ERROR;
 	    }
@@ -537,7 +537,7 @@ static int nodecmd(ClientData clientData, Tcl_Interp * interp,
 		Tcl_AppendResult(interp, "wrong # args: should be \"",
 				 argv[0],
 				 "\" setattributes attributename attributevalue ?attributename attributevalue? ?...?",
-				 (char *) NULL);
+				 NULL);
 		return TCL_ERROR;
 	    }
 	    setnodeattributes(g, n, &argv[2], argc - 2);
@@ -546,7 +546,7 @@ static int nodecmd(ClientData clientData, Tcl_Interp * interp,
 	return TCL_OK;
 
     } else if ((c == 's') && (strncmp(argv[1], "showname", length) == 0)) {
-	interp->result = n->name;
+	interp->result = agnameof(n);
 	return TCL_OK;
 
     } else {
@@ -554,7 +554,7 @@ static int nodecmd(ClientData clientData, Tcl_Interp * interp,
 			 "\": must be one of:",
 			 "\n\taddedge, listattributes, listedges, listinedges,",
 			 "\n\tlistoutedges, queryattributes, queryattributevalues,",
-			 "\n\tsetattributes, showname.", (char *) NULL);
+			 "\n\tsetattributes, showname.", NULL);
 	return TCL_ERROR;
     }
 }
@@ -569,7 +569,7 @@ static void tcldot_layout(GVC_t *gvc, Agraph_t * g, char *engine)
 
 /* support old behaviors if engine isn't specified*/
     if (!engine || *engine == '\0') {
-	if (AG_IS_DIRECTED(g))
+	if (agisdirected(g))
 	    rc = gvlayout_select(gvc, "dot");
 	else
 	    rc = gvlayout_select(gvc, "neato");
@@ -632,11 +632,11 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
     if (argc < 2) {
 	Tcl_AppendResult(interp, "wrong # args: should be \"",
 			 argv[0], " option ?arg arg ...?\"",
-			 (char *) NULL);
+			 NULL);
 	return TCL_ERROR;
     }
     if (!(gp = (Agraph_t **) tclhandleXlate(graphTblPtr, argv[0]))) {
-	Tcl_AppendResult(interp, " \"", argv[0], "\"", (char *) NULL);
+	Tcl_AppendResult(interp, " \"", argv[0], "\"", NULL);
 	return TCL_ERROR;
     }
 
@@ -649,34 +649,34 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	if ((argc < 4) || (argc % 2)) {
 	    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
 			     " addedge tail head ?attributename attributevalue? ?...?\"",
-			     (char *) NULL);
+			     NULL);
 	    return TCL_ERROR;
 	}
 	if (!(np = (Agnode_t **) tclhandleXlate(nodeTblPtr, argv[2]))) {
 	    if (!(tail = agfindnode(g, argv[2]))) {
 		Tcl_AppendResult(interp, "Tail node \"", argv[2],
-				 "\" not found.", (char *) NULL);
+				 "\" not found.", NULL);
 		return TCL_ERROR;
 	    }
 	} else {
 	    tail = *np;
-	    if (g->root != tail->graph->root) {
+	    if (agroot(g) != tail->graph->root) {
 		Tcl_AppendResult(interp, "Node ", argv[2],
-				 " is not in the graph.", (char *) NULL);
+				 " is not in the graph.", NULL);
 		return TCL_ERROR;
 	    }
 	}
 	if (!(np = (Agnode_t **) tclhandleXlate(nodeTblPtr, argv[3]))) {
 	    if (!(head = agfindnode(g, argv[3]))) {
 		Tcl_AppendResult(interp, "Head node \"", argv[3],
-				 "\" not found.", (char *) NULL);
+				 "\" not found.", NULL);
 		return TCL_ERROR;
 	    }
 	} else {
 	    head = *np;
-	    if (g->root != head->graph->root) {
+	    if (agroot(g) != head->graph->root) {
 		Tcl_AppendResult(interp, "Node ", argv[3],
-				 " is not in the graph.", (char *) NULL);
+				 " is not in the graph.", NULL);
 		return TCL_ERROR;
 	    }
 	}
@@ -700,7 +700,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	} else {
 	    tclhandleString(edgeTblPtr, interp->result, e->handle);
 	}
-	setedgeattributes(g->root, e, &argv[4], argc - 4);
+	setedgeattributes(agroot(g), e, &argv[4], argc - 4);
 	reset_layout(gvc, g);
 	return TCL_OK;
 
@@ -747,7 +747,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 				 (Tcl_CmdDeleteProc *) NULL);
 #endif				/* TCLOBJ */
 	}
-	setnodeattributes(g->root, n, &argv[i], argc - i);
+	setnodeattributes(agroot(g), n, &argv[i], argc - i);
 	reset_layout(gvc, g);
 	return TCL_OK;
 
@@ -756,7 +756,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	if (argc < 2) {
 	    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
 			     "\" addsubgraph ?name? ?attributename attributevalue? ?...?",
-			     (char *) NULL);
+			     NULL);
 	}
 	if (argc % 2) {
 	    /* if odd number of args then argv[2] is name */
@@ -809,12 +809,12 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 
     } else if ((c == 'c') && (strncmp(argv[1], "countnodes", length) == 0)) {
 	sprintf(buf, "%d", agnnodes(g));
-	Tcl_AppendResult(interp, buf, (char *) NULL);
+	Tcl_AppendResult(interp, buf, NULL);
 	return TCL_OK;
 
     } else if ((c == 'c') && (strncmp(argv[1], "countedges", length) == 0)) {
 	sprintf(buf, "%d", agnedges(g));
-	Tcl_AppendResult(interp, buf, (char *) NULL);
+	Tcl_AppendResult(interp, buf, NULL);
 	return TCL_OK;
 
     } else if ((c == 'd') && (strncmp(argv[1], "delete", length) == 0)) {
@@ -828,23 +828,23 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    Tcl_AppendResult(interp, "wrong # args: should be \"",
 			     argv[0],
 			     " findedge tailnodename headnodename\"",
-			     (char *) NULL);
+			     NULL);
 	    return TCL_ERROR;
 	}
 	if (!(tail = agfindnode(g, argv[2]))) {
 	    Tcl_AppendResult(interp, "Tail node \"", argv[2],
-			     "\" not found.", (char *) NULL);
+			     "\" not found.", NULL);
 	    return TCL_ERROR;
 	}
 	if (!(head = agfindnode(g, argv[3]))) {
 	    Tcl_AppendResult(interp, "Head node \"", argv[3],
-			     "\" not found.", (char *) NULL);
+			     "\" not found.", NULL);
 	    return TCL_ERROR;
 	}
 	if (!(e = agfindedge(g, tail, head))) {
 	    Tcl_AppendResult(interp, "Edge \"", argv[2],
 			     " - ", argv[3], "\" not found.",
-			     (char *) NULL);
+			     NULL);
 	    return TCL_ERROR;
 	}
 	tclhandleString(edgeTblPtr, buf, e->handle);
@@ -855,29 +855,29 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	if (argc < 3) {
 	    Tcl_AppendResult(interp, "wrong # args: should be \"",
 			     argv[0], " findnode nodename\"",
-			     (char *) NULL);
+			     NULL);
 	    return TCL_ERROR;
 	}
 	if (!(n = agfindnode(g, argv[2]))) {
-	    Tcl_AppendResult(interp, "Node not found.", (char *) NULL);
+	    Tcl_AppendResult(interp, "Node not found.", NULL);
 	    return TCL_ERROR;
 	}
 	tclhandleString(nodeTblPtr, buf, n->handle);
-	Tcl_AppendResult(interp, buf, (char *) NULL);
+	Tcl_AppendResult(interp, buf, NULL);
 	return TCL_OK;
 
     } else if ((c == 'l')
 	       && (strncmp(argv[1], "layoutedges", length) == 0)) {
-	g = g->root;
+	g = agroot(g);
 	if (!GD_drawing(g))
-	    tcldot_layout(gvc, g, (argc > 2) ? argv[2] : (char *) NULL);
+	    tcldot_layout(gvc, g, (argc > 2) ? argv[2] : NULL);
 	return TCL_OK;
 
     } else if ((c == 'l')
 	       && (strncmp(argv[1], "layoutnodes", length) == 0)) {
-	g = g->root;
+	g = agroot(g);
 	if (!GD_drawing(g))
-	    tcldot_layout(gvc, g, (argc > 2) ? argv[2] : (char *) NULL);
+	    tcldot_layout(gvc, g, (argc > 2) ? argv[2] : NULL);
 	return TCL_OK;
 
     } else if ((c == 'l')
@@ -933,7 +933,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	if (g->meta_node) {
 	    for (e = agfstout(g->meta_node->graph, g->meta_node); e;
 		 e = agnxtout(g->meta_node->graph, e)) {
-		sg = agusergraph(e->head);
+		sg = agusergraph(aghead(e));
 		tclhandleString(graphTblPtr, buf, sg->handle);
 		Tcl_AppendElement(interp, buf);
 	    }
@@ -948,11 +948,11 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		 (CONST84 char ***) &argv2) != TCL_OK)
 		return TCL_ERROR;
 	    for (j = 0; j < argc2; j++) {
-		if ((a = agfindattr(g->root, argv2[j]))) {
+		if ((a = agfindattr(agroot(g), argv2[j]))) {
 		    Tcl_AppendElement(interp, agxget(g, a->index));
 		} else {
 		    Tcl_AppendResult(interp, " No attribute named \"",
-				     argv2[j], "\"", (char *) 0);
+				     argv2[j], "\"", NULL);
 		    return TCL_ERROR;
 		}
 	    }
@@ -969,12 +969,12 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		 (CONST84 char ***) &argv2) != TCL_OK)
 		return TCL_ERROR;
 	    for (j = 0; j < argc2; j++) {
-		if ((a = agfindattr(g->root, argv2[j]))) {
+		if ((a = agfindattr(agroot(g), argv2[j]))) {
 		    Tcl_AppendElement(interp, argv2[j]);
 		    Tcl_AppendElement(interp, agxget(g, a->index));
 		} else {
 		    Tcl_AppendResult(interp, " No attribute named \"",
-				     argv2[j], "\"", (char *) 0);
+				     argv2[j], "\"", NULL);
 		    return TCL_ERROR;
 		}
 	    }
@@ -995,7 +995,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 				      agxget(g->proto->e, a->index));
 		} else {
 		    Tcl_AppendResult(interp, " No attribute named \"",
-				     argv2[j], "\"", (char *) 0);
+				     argv2[j], "\"", NULL);
 		    return TCL_ERROR;
 		}
 	    }
@@ -1018,7 +1018,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 				      agxget(g->proto->e, a->index));
 		} else {
 		    Tcl_AppendResult(interp, " No attribute named \"",
-				     argv2[j], "\"", (char *) 0);
+				     argv2[j], "\"", NULL);
 		    return TCL_ERROR;
 		}
 	    }
@@ -1039,7 +1039,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 				      agxget(g->proto->n, a->index));
 		} else {
 		    Tcl_AppendResult(interp, " No attribute named \"",
-				     argv2[j], "\"", (char *) 0);
+				     argv2[j], "\"", NULL);
 		    return TCL_ERROR;
 		}
 	    }
@@ -1062,7 +1062,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 				      agxget(g->proto->n, a->index));
 		} else {
 		    Tcl_AppendResult(interp, " No attribute named \"",
-				     argv2[j], "\"", (char *) 0);
+				     argv2[j], "\"", NULL);
 		    return TCL_ERROR;
 		}
 	    }
@@ -1084,7 +1084,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		if ((Tcl_GetBoolean(interp, argv[3], &tkgendata.eval)) !=
 		    TCL_OK) {
 		    Tcl_AppendResult(interp, " Invalid boolean: \"",
-				     argv[3], "\"", (char *) 0);
+				     argv[3], "\"", NULL);
 		    return TCL_ERROR;
 		}
 	    }
@@ -1093,7 +1093,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
         rc = gvjobs_output_langname(gvc, "tk");
 	if (rc == NO_SUPPORT) {
 	    Tcl_AppendResult(interp, " Format: \"tk\" not recognized.\n",
-                                     (char *) 0);
+                                     NULL);
 	    return TCL_ERROR;
 	}
 
@@ -1105,9 +1105,9 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	job->output_file = stdout;
 
 	/* make sure that layout is done */
-	g = g->root;
+	g = agroot(g);
 	if (!GD_drawing(g) || argc > 3)
-	    tcldot_layout (gvc, g, (argc > 3) ? argv[3] : (char *) NULL);
+	    tcldot_layout (gvc, g, (argc > 3) ? argv[3] : NULL);
 
 	/* render graph TK canvas commands */
 	gvc->common.viewNum = 0;
@@ -1125,28 +1125,28 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	if (argc < 3) {
 	    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
 			     " rendergd gdhandle ?DOT|NEATO|TWOPI|FDP|CIRCO?\"",
-			     (char *) NULL);
+			     NULL);
 	    return TCL_ERROR;
 	}
 	rc = gvjobs_output_langname(gvc, "gd:gd:gd");
 	if (rc == NO_SUPPORT) {
 	    Tcl_AppendResult(interp, " Format: \"gd\" not recognized.\n",
-                                     (char *) 0);
+                                     NULL);
 	    return TCL_ERROR;
 	}
         job = gvc->job;
 
 	if (!  (hdl = tclhandleXlate(GDHandleTable, argv[2]))) {
-	    Tcl_AppendResult(interp, "GD Image not found.", (char *) NULL);
+	    Tcl_AppendResult(interp, "GD Image not found.", NULL);
 	    return TCL_ERROR;
 	}
 	job->context = *hdl;
 	job->external_context = TRUE;
 
 	/* make sure that layout is done */
-	g = g->root;
+	g = agroot(g);
 	if (!GD_drawing(g) || argc > 4)
-	    tcldot_layout(gvc, g, (argc > 4) ? argv[4] : (char *) NULL);
+	    tcldot_layout(gvc, g, (argc > 4) ? argv[4] : NULL);
 	
 	gvc->common.viewNum = 0;
 	gvRenderJobs(gvc, g);
@@ -1154,7 +1154,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	gvdevice_finalize(job);
 	fflush(job->output_file);
 	gvjobs_delete(gvc);
-	Tcl_AppendResult(interp, argv[2], (char *) NULL);
+	Tcl_AppendResult(interp, argv[2], NULL);
 	return TCL_OK;
 #endif
 
@@ -1169,7 +1169,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		Tcl_AppendResult(interp, "wrong # args: should be \"",
 				 argv[0],
 				 "\" setattributes attributename attributevalue ?attributename attributevalue? ?...?",
-				 (char *) NULL);
+				 NULL);
 		Tcl_Free((char *) argv2);
 		return TCL_ERROR;
 	    }
@@ -1185,7 +1185,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		Tcl_AppendResult(interp, "wrong # args: should be \"",
 				 argv[0],
 				 "\" setattributes attributename attributevalue ?attributename attributevalue? ?...?",
-				 (char *) NULL);
+				 NULL);
 		return TCL_ERROR;
 	    }
 	    setgraphattributes(g, &argv[2], argc - 2);
@@ -1204,7 +1204,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		Tcl_AppendResult(interp, "wrong # args: should be \"",
 				 argv[0],
 				 "\" setedgeattributes attributename attributevalue ?attributename attributevalue? ?...?",
-				 (char *) NULL);
+				 NULL);
 		Tcl_Free((char *) argv2);
 		return TCL_ERROR;
 	    }
@@ -1215,7 +1215,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		Tcl_AppendResult(interp, "wrong # args: should be \"",
 				 argv[0],
 				 "\" setedgeattributes attributename attributevalue ?attributename attributevalue? ?...?",
-				 (char *) NULL);
+				 NULL);
 	    }
 	    setedgeattributes(g, g->proto->e, &argv[2], argc - 2);
 	}
@@ -1233,7 +1233,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		Tcl_AppendResult(interp, "wrong # args: should be \"",
 				 argv[0],
 				 "\" setnodeattributes attributename attributevalue ?attributename attributevalue? ?...?",
-				 (char *) NULL);
+				 NULL);
 		Tcl_Free((char *) argv2);
 		return TCL_ERROR;
 	    }
@@ -1244,7 +1244,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		Tcl_AppendResult(interp, "wrong # args: should be \"",
 				 argv[0],
 				 "\" setnodeattributes attributename attributevalue ?attributename attributevalue? ?...?",
-				 (char *) NULL);
+				 NULL);
 	    }
 	    setnodeattributes(g, g->proto->n, &argv[2], argc - 2);
 	}
@@ -1252,15 +1252,15 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	return TCL_OK;
 
     } else if ((c == 's') && (strncmp(argv[1], "showname", length) == 0)) {
-	interp->result = g->name;
+	interp->result = agnameof(g);
 	return TCL_OK;
 
     } else if ((c == 'w') && (strncmp(argv[1], "write", length) == 0)) {
-	g = g->root;
+	g = agroot(g);
 	if (argc < 3) {
 	    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
 	      " write fileHandle ?language ?DOT|NEATO|TWOPI|FDP|CIRCO|NOP??\"",
-	      (char *) NULL);
+	      NULL);
 	    return TCL_ERROR;
 	}
 
@@ -1273,7 +1273,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	if (i == NO_SUPPORT) {
 	    const char *s = gvplugin_list(gvc, API_render, argv[3]);
 	    Tcl_AppendResult(interp, "Bad langname: \"", argv[3],
-		"\". Use one of:", s, (char *)NULL);
+		"\". Use one of:", s, NULL);
 	    return TCL_ERROR;
 	}
 
@@ -1294,11 +1294,11 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    chan = Tcl_GetChannel(interp, argv[2], &mode);
 
 	    if (!chan) {
-	        Tcl_AppendResult(interp, "Channel not open: \"", argv[2], (char *)NULL);
+	        Tcl_AppendResult(interp, "Channel not open: \"", argv[2], NULL);
 	        return TCL_ERROR;
 	    }
 	    if (!(mode & TCL_WRITABLE)) {
-	        Tcl_AppendResult(interp, "Channel not writable: \"", argv[2], (char *)NULL);
+	        Tcl_AppendResult(interp, "Channel not writable: \"", argv[2], NULL);
 	        return TCL_ERROR;
 	    }
 	    job->output_file = (FILE *)chan;
@@ -1307,7 +1307,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 
 	/* make sure that layout is done  - unless canonical output */
 	if ((!GD_drawing(g) || argc > 4) && !(job->flags & LAYOUT_NOT_REQUIRED)) {
-	    tcldot_layout(gvc, g, (argc > 4) ? argv[4] : (char *) NULL);
+	    tcldot_layout(gvc, g, (argc > 4) ? argv[4] : NULL);
 	}
 
 	gvc->common.viewNum = 0;
@@ -1326,7 +1326,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	 "\n\tqueryattributes, queryedgeattributes, querynodeattributes,",
 	 "\n\tqueryattributevalues, queryedgeattributevalues, querynodeattributevalues,",
 	 "\n\tsetattributes, setedgeattributes, setnodeattributes,",
-	 "\n\tshowname, write.", (char *) NULL);
+	 "\n\tshowname, write.", NULL);
 	return TCL_ERROR;
     }
 }				/* graphcmd */
@@ -1342,49 +1342,78 @@ static int dotnew(ClientData clientData, Tcl_Interp * interp,
     GVC_t *gvc;
     Agraph_t *g, **gp;
     char c;
-    int i, length, kind;
+    int i, length;
+#ifndef WITH_CGRAPH
+    int kind;
+#else
+    Agdesc_t kind;
+#endif
     unsigned long id;
 
     if ((argc < 2)) {
 	Tcl_AppendResult(interp, "wrong # args: should be \"",
 			 argv[0],
 			 " graphtype ?graphname? ?attributename attributevalue? ?...?\"",
-			 (char *) NULL);
+			 NULL);
 	return TCL_ERROR;
     }
     gvc = (GVC_t *) clientData;
     c = argv[1][0];
     length = strlen(argv[1]);
     if ((c == 'd') && (strncmp(argv[1], "digraph", length) == 0)) {
+#ifndef WITH_CGRAPH
 	kind = AGDIGRAPH;
+#else
+	kind = Agdirected;
+#endif
     } else if ((c == 'd')
 	       && (strncmp(argv[1], "digraphstrict", length) == 0)) {
+#ifndef WITH_CGRAPH
 	kind = AGDIGRAPHSTRICT;
+#else
+	kind = Agstrictdirected;
+#endif
     } else if ((c == 'g') && (strncmp(argv[1], "graph", length) == 0)) {
+#ifndef WITH_CGRAPH
 	kind = AGRAPH;
+#else
+	kind = Agundirected;
+#endif
     } else if ((c == 'g')
 	       && (strncmp(argv[1], "graphstrict", length) == 0)) {
+#ifndef WITH_CGRAPH
 	kind = AGRAPHSTRICT;
+#else
+	kind = Agstrictundirected;
+#endif
     } else {
 	Tcl_AppendResult(interp, "bad graphtype \"", argv[1],
 			 "\": must be one of:",
 			 "\n\tdigraph, digraphstrict, graph, graphstrict.",
-			 (char *) NULL);
+			 NULL);
 	return TCL_ERROR;
     }
     gp = (Agraph_t **) tclhandleAlloc(graphTblPtr, interp->result, &id);
     if (argc % 2) {
 	/* if odd number of args then argv[2] is name */
+#ifndef WITH_CGRAPH
 	g = agopen(argv[2], kind);
+#else
+	g = agopen(argv[2], kind, NIL(Agdisc_t *));
+#endif
 	i = 3;
     } else {
 	/* else use handle as name */
+#ifndef WITH_CGRAPH
 	g = agopen(interp->result, kind);
+#else
+	g = agopen(interp->result, kind, NIL(Agdisc_t *));
+#endif
 	i = 2;
     }
     if (!g) {
 	Tcl_AppendResult(interp, "\nFailure to open graph.",
-			 (char *) NULL);
+			 NULL);
 	return TCL_ERROR;
     }
     *gp = g;
@@ -1583,13 +1612,13 @@ static int dotread(ClientData clientData, Tcl_Interp * interp,
 
     if (argc < 2) {
 	Tcl_AppendResult(interp, "wrong # args: should be \"",
-			 argv[0], " fileHandle\"", (char *) NULL);
+			 argv[0], " fileHandle\"", NULL);
 	return TCL_ERROR;
     }
     channel = Tcl_GetChannel(interp, argv[1], &mode);
     if (channel == NULL || !(mode & TCL_READABLE)) {
 	Tcl_AppendResult(interp, "\nChannel \"",
-			 argv[1], "\"", "is unreadable.", (char *) NULL);
+			 argv[1], "\"", "is unreadable.", NULL);
 	return TCL_ERROR;
     }
     gvc = (GVC_t *) clientData;
@@ -1602,16 +1631,16 @@ static int dotread(ClientData clientData, Tcl_Interp * interp,
     g = agread_usergets((FILE *) channel, (mygets));
     if (!g) {
 	Tcl_AppendResult(interp, "\nFailure to read graph \"",
-			 argv[1], "\"", (char *) NULL);
+			 argv[1], "\"", NULL);
 	if (agerrors()) {
 	    Tcl_AppendResult(interp, " because of syntax errors.",
-			     (char *) NULL);
+			     NULL);
 	}
 	return TCL_ERROR;
     }
     if (agerrors()) {
 	Tcl_AppendResult(interp, "\nSyntax errors in file \"",
-			 argv[1], " \"", (char *) NULL);
+			 argv[1], " \"", NULL);
 	return TCL_ERROR;
     }
     /* we use GD_drawing(g) as a flag that layout has been done.
@@ -1634,21 +1663,21 @@ static int dotstring(ClientData clientData, Tcl_Interp * interp,
 
     if (argc < 2) {
 	Tcl_AppendResult(interp, "wrong # args: should be \"",
-			 argv[0], " string\"", (char *) NULL);
+			 argv[0], " string\"", NULL);
 	return TCL_ERROR;
     }
     if (!(g = agmemread(argv[1]))) {
 	Tcl_AppendResult(interp, "\nFailure to read string \"",
-			 argv[1], "\"", (char *) NULL);
+			 argv[1], "\"", NULL);
 	if (agerrors()) {
 	    Tcl_AppendResult(interp, " because of syntax errors.",
-			     (char *) NULL);
+			     NULL);
 	}
 	return TCL_ERROR;
     }
     if (agerrors()) {
 	Tcl_AppendResult(interp, "\nSyntax errors in string \"",
-			 argv[1], " \"", (char *) NULL);
+			 argv[1], " \"", NULL);
 	return TCL_ERROR;
     }
     /* we use GD_drawing(g) as a flag that layout has been done.
