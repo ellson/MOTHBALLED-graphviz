@@ -149,13 +149,12 @@ static void setgraphattributes(Agraph_t * g, char *argv[], int argc)
     Agsym_t *a;
 
     for (i = 0; i < argc; i++) {
+	if (!(a = agfindgraphattr(agroot(g), argv[i])))
 #ifndef WITH_CGRAPH
-	if (!(a = agfindattr(agroot(g), argv[i])))
 	    a = agraphattr(agroot(g), argv[i], "");
 	agxset(g, a->index, argv[++i]);
 #else
-	if (!(a = agattr(agroot(g), AGRAPH, argv[i], NULL)))
-	    a = agattr(agroot(g), agraph, argv[i], "");
+	    a = agattr(agroot(g), AGRAPH, argv[i], "");
 	agxset(g, a, argv[++i]);
 #endif
     }
@@ -173,12 +172,11 @@ setedgeattributes(Agraph_t * g, Agedge_t * e, char *argv[], int argc)
 	    i++;
 	    continue;
 	}
+	if (!(a = agfindedgeattr(g, argv[i])))
 #ifndef WITH_CGRAPH
-	if (!(a = agfindattr(g->proto->e, argv[i])))
 	    a = agedgeattr(agroot(g), argv[i], "");
 	agxset(e, a->index, argv[++i]);
 #else
-	if (!(a = agattr(g, AGEDGE, argv[i], NULL)))
 	    a = agattr(agroot(g), AGEDGE, argv[i], "");
 	agxset(e, a, argv[++i]);
 #endif
@@ -192,12 +190,11 @@ setnodeattributes(Agraph_t * g, Agnode_t * n, char *argv[], int argc)
     Agsym_t *a;
 
     for (i = 0; i < argc; i++) {
+	if (!(a = agfindnodeattr(g, argv[i])))
 #ifndef WITH_CGRAPH
-	if (!(a = agfindattr(g->proto->n, argv[i])))
 	    a = agnodeattr(agroot(g), argv[i], "");
 	agxset(n, a->index, argv[++i]);
 #else
-	if (!(a = agattr(g, AGNODE, argv[i], NULL)))
 	    a = agattr(agroot(g), AGNODE, argv[i], "");
 	agxset(n, a, argv[++i]);
 #endif
@@ -265,11 +262,10 @@ static int edgecmd(ClientData clientData, Tcl_Interp * interp,
 		 (CONST84 char ***) &argv2) != TCL_OK)
 		return TCL_ERROR;
 	    for (j = 0; j < argc2; j++) {
+		if ((a = agfindedgeattr(g, argv2[j]))) {
 #ifndef WITH_CGRAPH
-		if ((a = agfindattr(g->proto->e, argv2[j]))) {
 		    Tcl_AppendElement(interp, agxget(e, a->index));
 #else
-		if ((a = agattr(g, AGEDGE, argv2[j], NULL))) {
 		    Tcl_AppendElement(interp, agxget(e, a));
 #endif
 		} else {
@@ -291,13 +287,11 @@ static int edgecmd(ClientData clientData, Tcl_Interp * interp,
 		 (CONST84 char ***) &argv2) != TCL_OK)
 		return TCL_ERROR;
 	    for (j = 0; j < argc2; j++) {
-#ifndef WITH_CGRAPH
-		if ((a = agfindattr(g->proto->e, argv2[j]))) {
+		if ((a = agfindedgeattr(g, argv2[j]))) {
 		    Tcl_AppendElement(interp, argv2[j]);
+#ifndef WITH_CGRAPH
 		    Tcl_AppendElement(interp, agxget(e, a->index));
 #else
-		if ((a = agattr(g, AGEDGE, argv2[j], NULL))) {
-		    Tcl_AppendElement(interp, argv2[j]);
 		    Tcl_AppendElement(interp, agxget(e, a));
 #endif
 		} else {
@@ -511,11 +505,10 @@ static int nodecmd(ClientData clientData, Tcl_Interp * interp,
 		 (CONST84 char ***) &argv2) != TCL_OK)
 		return TCL_ERROR;
 	    for (j = 0; j < argc2; j++) {
+		if ((a = agfindnodeattr(g, argv2[j]))) {
 #ifndef WITH_CGRAPH
-		if ((a = agfindattr(g->proto->n, argv2[j]))) {
 		    Tcl_AppendElement(interp, agxget(n, a->index));
 #else
-		if ((a = agattr(g, AGNODE, argv2[j], 0))) {
 		    Tcl_AppendElement(interp, agxget(n, a));
 #endif
 		} else {
@@ -537,13 +530,11 @@ static int nodecmd(ClientData clientData, Tcl_Interp * interp,
 		 (CONST84 char ***) &argv2) != TCL_OK)
 		return TCL_ERROR;
 	    for (j = 0; j < argc2; j++) {
-#ifndef WITH_CGRAPH
-		if ((a = agfindattr(g->proto->n, argv2[j]))) {
+		if ((a = agfindnodeattr(g, argv2[j]))) {
 		    Tcl_AppendElement(interp, argv2[j]);
+#ifndef WITH_CGRAPH
 		    Tcl_AppendElement(interp, agxget(n, a->index));
 #else
-		if ((a = agattr(g, AGNODE, argv2[j], 0))) {
-		    Tcl_AppendElement(interp, argv2[j]);
 		    Tcl_AppendElement(interp, agxget(n, a));
 #endif
 		} else {
@@ -646,10 +637,13 @@ static void tcldot_layout(GVC_t *gvc, Agraph_t * g, char *engine)
 	sprintf(buf, "%d %d %d %d",
 		ROUND(GD_bb(g).LL.x), ROUND(GD_bb(g).LL.y),
 		ROUND(GD_bb(g).UR.x), ROUND(GD_bb(g).UR.y));
-    if (!(a = agfindattr(g, "bb"))) {
+    if (!(a = agfindgraphattr(g, "bb"))) 
 	a = agraphattr(g, "bb", "");
-    }
+#ifndef WITH_CGRAPH
     agxset(g, a->index, buf);
+#else
+    agxset(g, a, buf);
+#endif
 }
 
 static int graphcmd(ClientData clientData, Tcl_Interp * interp,
@@ -963,11 +957,10 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		 (CONST84 char ***) &argv2) != TCL_OK)
 		return TCL_ERROR;
 	    for (j = 0; j < argc2; j++) {
+		if ((a = agfindgraphattr(g, argv2[j]))) {
 #ifndef WITH_CGRAPH
-		if ((a = agfindattr(agroot(g), argv2[j]))) {
 		    Tcl_AppendElement(interp, agxget(g, a->index));
 #else
-		if ((a = agattr(agroot(g), AGRAPH, argv2[j], 0))) {
 		    Tcl_AppendElement(interp, agxget(g, a));
 #endif
 		} else {
@@ -988,13 +981,11 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		 (CONST84 char ***) &argv2) != TCL_OK)
 		return TCL_ERROR;
 	    for (j = 0; j < argc2; j++) {
-#ifndef WITH_CGRAPH
-		if ((a = agfindattr(agroot(g), argv2[j]))) {
+		if ((a = agfindgraphattr(g, argv2[j]))) {
 		    Tcl_AppendElement(interp, argv2[j]);
+#ifndef WITH_CGRAPH
 		    Tcl_AppendElement(interp, agxget(g, a->index));
 #else
-		if ((a = agattr(agroot(g), AGRAPH, argv2[j], 0))) {
-		    Tcl_AppendElement(interp, argv2[j]);
 		    Tcl_AppendElement(interp, agxget(g, a));
 #endif
 		} else {
@@ -1014,11 +1005,10 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		 (CONST84 char ***) &argv2) != TCL_OK)
 		return TCL_ERROR;
 	    for (j = 0; j < argc2; j++) {
+		if ((a = agfindedgeattr(g, argv2[j]))) {
 #ifndef WITH_CGRAPH
-		if ((a = agfindattr(g->proto->e, argv2[j]))) {
 		    Tcl_AppendElement(interp, agxget(g->proto->e, a->index));
 #else
-		if ((a = agattr(g, AGEDGE, argv2[j], 0))) {
 		    Tcl_AppendElement(interp, agxget(g, a));
 #endif
 		} else {
@@ -1038,13 +1028,11 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		 (CONST84 char ***) &argv2) != TCL_OK)
 		return TCL_ERROR;
 	    for (j = 0; j < argc2; j++) {
-#ifndef WITH_CGRAPH
-		if ((a = agfindattr(g->proto->e, argv2[j]))) {
+		if ((a = agfindedgeattr(g, argv2[j]))) {
 		    Tcl_AppendElement(interp, argv2[j]);
+#ifndef WITH_CGRAPH
 		    Tcl_AppendElement(interp, agxget(g->proto->e, a->index));
 #else
-		if ((a = agattr(g, AGEDGE, argv2[j], NULL))) {
-		    Tcl_AppendElement(interp, argv2[j]);
 		    Tcl_AppendElement(interp, agxget(g, a));
 #endif
 		} else {
@@ -1065,11 +1053,10 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		 (CONST84 char ***) &argv2) != TCL_OK)
 		return TCL_ERROR;
 	    for (j = 0; j < argc2; j++) {
+		if ((a = agfindnodeattr(g, argv2[j]))) {
 #ifndef WITH_CGRAPH
-		if ((a = agfindattr(g->proto->n, argv2[j]))) {
 		    Tcl_AppendElement(interp, agxget(g->proto->n, a->index));
 #else
-		if ((a = agattr(g, AGNODE, argv2[j], NULL))) {
 		    Tcl_AppendElement(interp, agxget(g, a));
 #endif
 		} else {
@@ -1091,13 +1078,11 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		 (CONST84 char ***) &argv2) != TCL_OK)
 		return TCL_ERROR;
 	    for (j = 0; j < argc2; j++) {
-#ifndef WITH_CGRAPH
-		if ((a = agfindattr(g->proto->n, argv2[j]))) {
+		if ((a = agfindnodeattr(g, argv2[j]))) {
 		    Tcl_AppendElement(interp, argv2[j]);
+#ifndef WITH_CGRAPH
 		    Tcl_AppendElement(interp, agxget(g->proto->n, a->index));
 #else
-		if ((a = agattr(g, AGNODE, argv2[j], NULL))) {
-		    Tcl_AppendElement(interp, argv2[j]);
 		    Tcl_AppendElement(interp, agxget(g, a));
 #endif
 		} else {
