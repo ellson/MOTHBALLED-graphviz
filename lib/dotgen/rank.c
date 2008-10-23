@@ -318,7 +318,7 @@ find_clusters(graph_t * g)
 	mn = me->head;
 	subg = agusergraph(mn);
 #else /* WITH_CGRAPH */
-    for (subg = agfstsubg(subg); subg; subg = agnxtsubg(subg)) {
+    for (subg = agfstsubg(agroot(g)); subg; subg = agnxtsubg(subg)) {
 #endif /* WITH_CGRAPH */
 	if (GD_set_type(subg) == CLUSTER)
 	    collapse_cluster(g, subg);
@@ -560,7 +560,7 @@ void dot_rank(graph_t * g, aspect_t* asp)
     class1(g);
     p = minmax_edges(g);
     decompose(g, 0);
-    if (asp && ((g->u.comp.size > 1)||(g->u.n_cluster > 0))) {
+    if (asp && ((GD_comp(g).size > 1)||(GD_n_cluster(g) > 0))) {
 	asp->badGraph = 1;
 	asp = NULL;
     }
