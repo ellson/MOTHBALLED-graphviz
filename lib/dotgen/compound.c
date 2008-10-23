@@ -102,7 +102,11 @@ static graph_t *getCluster(graph_t * g, char *cluster_name)
 
     if (!cluster_name || (*cluster_name == '\0'))
 	return NULL;
+#ifndef WITH_CGRAPH
     sg = agfindsubg(g, cluster_name);
+#else
+    sg = agsubg(g, cluster_name, 0);
+#endif
     if (sg == NULL)
 	agerr(AGWARN, "cluster named %s not found\n", cluster_name);
     return sg;
@@ -319,14 +323,14 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
     /* at present, we only handle single spline case */
     if (ED_spl(e)->size > 1) {
 	agerr(AGWARN, "%s -> %s: spline size > 1 not supported\n",
-	      e->tail->name, e->head->name);
+	      agnameof(agtail(e)), agnameof(aghead(e)));
 	return;
     }
     bez = ED_spl(e)->list;
     size = bez->size;
 
-    head = e->head;
-    tail = e->tail;
+    head = aghead(e);
+    tail = agtail(e);
 
     /* allocate new Bezier */
     nbez = GNEW(bezier);
@@ -347,7 +351,7 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
 	bb = &(GD_bb(lh));
 	if (!inBoxf(ND_coord(head), bb)) {
 	    agerr(AGWARN, "%s -> %s: head not inside head cluster %s\n",
-		  e->tail->name, e->head->name, agget(e, "lhead"));
+		  agnameof(agtail(e)), agnameof(aghead(e)), agget(e, "lhead"));
 	} else {
 	    /* If first control point is in bb, degenerate case. Spline
 	     * reduces to four points between the arrow head and the point 
@@ -358,7 +362,7 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
 		if (inBoxf(ND_coord(tail), bb)) {
 		    agerr(AGWARN,
 			  "%s -> %s: tail is inside head cluster %s\n",
-			  e->tail->name, e->head->name, agget(e, "lhead"));
+			  agnameof(agtail(e)), agnameof(aghead(e)), agget(e, "lhead"));
 		} else {
 		    assert(bez->sflag);	/* must be arrowhead on tail */
 		    p = boxIntersectf(bez->list[0], bez->sp, bb);
@@ -407,7 +411,7 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
 	bb = &(GD_bb(lt));
 	if (!inBoxf(ND_coord(tail), bb)) {
 	    agerr(AGWARN, "%s -> %s: tail not inside tail cluster %s\n",
-		  e->tail->name, head->name, agget(e, "ltail"));
+		agnameof(agtail(e)), agnameof(aghead(e)), agget(e, "ltail"));
 	} else {
 	    /* If last control point is in bb, degenerate case. Spline
 	     * reduces to four points between arrow head, and the point
@@ -417,8 +421,8 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
 	    if (inBoxf(bez->list[endi], bb)) {
 		if (inBoxf(ND_coord(head), bb)) {
 		    agerr(AGWARN,
-			  "%s -> %s: head is inside tail cluster %s\n",
-			  e->tail->name, e->head->name, agget(e, "ltail"));
+			"%s -> %s: head is inside tail cluster %s\n",
+		  	agnameof(agtail(e)), agnameof(aghead(e)), agget(e, "ltail"));
 		} else {
 		    assert(bez->eflag);	/* must be arrowhead on head */
 		    p = boxIntersectf(bez->list[endi], nbez->ep, bb);
