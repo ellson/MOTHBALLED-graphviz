@@ -264,7 +264,7 @@ static graph_t *mkNConstraintG(graph_t * g, Dt_t * list,
 #ifndef WITH_CGRAPH
 	    if (e && agfindedge(g,p->np, nxp->np)) {
 #else /* WITH_CGRAPH */
-	    if (e && agedge(g,p->np, nxp->np, (char*)0, 0)) {
+	    if (e && agedge(g,p->np, nxp->np, NULL, 0)) {
 #endif /* WITH_CGRAPH */
 		ED_weight(e) = 100;
             }
