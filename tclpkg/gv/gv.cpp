@@ -540,7 +540,7 @@ Agraph_t *nextsupg(Agraph_t *g, Agraph_t *sg)
     nsg = sg->meta_node;
     if (!ng || !nsg) 
         return NULL;
-    mg = agraphog(ng);
+    mg = agraphof(ng);
     if (!mg) 
         return NULL;
 #ifndef WITH_CGRAPH
