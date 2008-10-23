@@ -466,18 +466,23 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
     char bufa[100], *buf1, *buf2, bufb[100], *p, *q;
     int api, found;
 
+#ifndef WITH_CGRAPH
     aginit();
     /* set persistent attributes here */
-    agnodeattr(NULL, "label", NODENAME_ESC);
     agraphattr(NULL, "label", "");
     agraphattr(NULL, "rankdir", "");
     agraphattr(NULL, "rank", "");
     agraphattr(NULL, "ranksep", "");
+    agnodeattr(NULL, "label", NODENAME_ESC);
 
-#ifndef WITH_CGRAPH
     g = agopen("G", AGDIGRAPH);
 #else
-    g = agopen("G", Agdirected, NULL);
+    g = agopen("G", Agdirected, NIL(Agdisc_t *));
+    agattr(g, AGRAPH, "label", "");
+    agattr(g, AGRAPH, "rankdir", "");
+    agattr(g, AGRAPH, "rank", "");
+    agattr(g, AGRAPH, "ranksep", "");
+    agattr(g, AGNODE, "label", NODENAME_ESC);
 #endif
 
     a = agfindgraphattr(g, "rankdir");
@@ -600,7 +605,11 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 		}
 	    }
 	    if (!found)
-	        agdelete(ssg->meta_node->graph, ssg->meta_node);
+#ifndef WITH_CGRAPH
+		agdelete(ssg->meta_node->graph, ssg->meta_node);
+#else
+	        agdelete(g, ssg);
+#endif
 	}
     }
 
