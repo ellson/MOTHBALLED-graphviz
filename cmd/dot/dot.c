@@ -138,8 +138,8 @@ static graph_t *create_test_graph(void)
 #ifndef WITH_CGRAPH
 	node[j] = agnode(g, name);
 #else /* WITH_CGRAPH */
-	node[j] = agnode(g, name, NULL, 1);
-    agbindrec(node[j], "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);	//node custom data
+	node[j] = agnode(g, name, 1);
+	agbindrec(node[j], "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);	//node custom data
 
 #endif /* WITH_CGRAPH */
     }
