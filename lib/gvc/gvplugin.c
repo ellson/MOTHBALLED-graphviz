@@ -474,7 +474,11 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
     agraphattr(NULL, "rank", "");
     agraphattr(NULL, "ranksep", "");
 
+#ifndef WITH_CGRAPH
     g = agopen("G", AGDIGRAPH);
+#else
+    g = agopen("G", Agdigraph, NULL);
+#endif
 
     a = agfindgraphattr(g, "rankdir");
 #ifndef WITH_CGRAPH
@@ -500,7 +504,11 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
     for (package = gvc->packages; package; package = package->next) {
         strcpy(bufa, "cluster_");
         strcat(bufa, package->name); 
+#ifndef WITH_CGRAPH
 	sg = agsubg(g, bufa);
+#else
+	sg = agsubg(g, bufa, 1);
+#endif
         a = agfindgraphattr(sg, "label");
 #ifndef WITH_CGRAPH
 	agxset(sg, a->index, package->name);
@@ -513,7 +521,11 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 	for (api = 0; api < ARRAY_SIZE(api_names); api++) {
 	    found = 0;
 	    strcpy(buf1, api_names[api]);
-	    ssg = agsubg(sg, bufa);
+#ifndef WITH_CGRAPH
+	    ssg = agsubg(g, bufa);
+#else
+	    ssg = agsubg(g, bufa, 1);
+#endif
             a = agfindgraphattr(ssg, "rank");
 #ifndef WITH_CGRAPH
 	    agxset(ssg, a->index, "same");
@@ -561,7 +573,7 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 #ifndef WITH_CGRAPH
 			    agedge(sg, m, n);
 #else
-			    agedge(sg, m, n, 1);
+			    agedge(sg, m, n, NULL, 1);
 #endif
 			}
 			break;
@@ -640,7 +652,7 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 #ifndef WITH_CGRAPH
 			    e = agedge(g, n, m);
 #else
-			    e = agedge(g, n, m, 1);
+			    e = agedge(g, n, m, NULL, 1);
 #endif
 			if (p && *p) {
 			    strcpy(bufb, "render_");
@@ -650,7 +662,7 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 			    agedge(g, m, n);
 #else
 			    m = agnode(g, bufb, 1);
-			    agedge(g, m, n, 1);
+			    agedge(g, m, n, NULL, 1);
 #endif
 			}
 			break;
@@ -682,7 +694,7 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 #ifndef WITH_CGRAPH
 			    e = agedge(g, m, n);
 #else
-			    e = agedge(g, m, n, 1);
+			    e = agedge(g, m, n, NULL, 1);
 #endif
 			strcpy(bufb, "render_");
 			strcat(bufb, p);
@@ -691,7 +703,7 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 			agedge(g, n, m);
 #else
 			m = agnode(g, bufb, 1); 
-			agedge(g, n, m, 1);
+			agedge(g, n, m, NULL, 1);
 #endif
 			break;
 		    default:
