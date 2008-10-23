@@ -645,11 +645,7 @@ static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt, GVC_t * gvc)
 
 	/* Clone nodes, checking for node name conflicts */
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-#ifndef WITH_CGRAPH
 	    if (doWarn && agfindnode(root, agnameof(n))) {
-#else
-	    if (doWarn && agnode(root, agnameof(n), 0)) {
-#endif
 		fprintf(stderr,
 			"Warning: node %s in graph[%d] %s already defined\n",
 			agnameof(n), i, agnameof(g));
