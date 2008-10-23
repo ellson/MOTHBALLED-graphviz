@@ -226,8 +226,13 @@ static void init_node_edge(Agraph_t * g)
     node_t *n;
     edge_t *e;
     int nG = agnnodes(g);
+#ifndef WITH_CGRAPH
     attrsym_t *N_pos = agfindattr(g->proto->n, "pos");
     attrsym_t *N_pin = agfindattr(g->proto->n, "pin");
+#else
+    attrsym_t *N_pos = agattr(g, AGNODE, "pos", 0);
+    attrsym_t *N_pin = agattr(g, AGNODE, "pin", 0);
+#endif
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	neato_init_node(n);
@@ -249,9 +254,13 @@ static void init_graph(Agraph_t * g, boolean fill)
     int d;
 
     graph_init(g, FALSE);
+#ifndef WITH_CGRAPH
     d = late_int(g, agfindattr(g, "dim"), 2, 2);
+#else
+    d = late_int(g, agattr(g, AGRAPH, "dim"), 2, 2);
+#endif
     if (d != 2) {
-	fprintf(stderr, "Error: graph %s has dim = %d (!= 2)\n", g->name,
+	fprintf(stderr, "Error: graph %s has dim = %d (!= 2)\n", agnameof(g),
 		d);
 	exit(1);
     }
@@ -473,7 +482,7 @@ static char *xName(Dt_t * names, char *oldname)
 
 #define MARK(e) (ED_alg(e) = e)
 #define MARKED(e) (ED_alg(e))
-#define ISCLUSTER(g) (!strncmp(g->name,"cluster",7))
+#define ISCLUSTER(g) (!strncmp(agnameof(g),"cluster",7))
 #define SETCLUST(g,h) (GD_alg(g) = h)
 #define GETCLUST(g) ((Agraph_t*)GD_alg(g))
 
@@ -503,9 +512,9 @@ cloneSubg(Agraph_t * g, Agraph_t * ng, Agsym_t * G_bb, Dt_t * gnames)
     /* clone subgraphs */
     mg = g->meta_node->graph;
     for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
-	mn = me->head;
+	mn = aghead(me);
 	subg = agusergraph(mn);
-	nsubg = agsubg(ng, xName(gnames, subg->name));
+	nsubg = agsubg(ng, xName(gnames, agnameof(subg)));
 	cloneSubg(subg, nsubg, G_bb, gnames);
 	/* if subgraphs are clusters, point to the new 
 	 * one so we can find it later.
@@ -517,9 +526,12 @@ cloneSubg(Agraph_t * g, Agraph_t * ng, Agsym_t * G_bb, Dt_t * gnames)
     /* add remaining nodes */
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	nn = NEWNODE(n);
-	if (!agfindnode(ng, nn->name)) {
+#ifndef WITH_CGRAPH
+	if (!agfindnode(ng, agnameof(nn)))
 	    aginsert(ng, nn);
-	}
+#else
+        agsubnode(ng, agnameof(nn), 1);
+#endif
     }
 
     /* add remaining edges. libgraph doesn't provide a way to find
@@ -529,8 +541,8 @@ cloneSubg(Agraph_t * g, Agraph_t * ng, Agsym_t * G_bb, Dt_t * gnames)
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    if (MARKED(e))
 		continue;
-	    nt = NEWNODE(e->tail);
-	    nh = NEWNODE(e->head);
+	    nt = NEWNODE(agtail(e));
+	    nh = NEWNODE(aghead(e));
 	    ne = agedge(ng, nt, nh);
 	    cloneEdge(e, ne);
 	    MARK(e);
@@ -595,16 +607,28 @@ static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt, GVC_t * gvc)
     root = agopen("root", kind);
     GD_gvc(root) = gvc;
     initAttrs(root, gs, cnt);
+#ifndef WITH_CGRAPH
     G_bb = agfindattr(root, "bb");
+#else
+    G_bb = agattr(root, AGRAPH, "bb", NULL);
+#endif
     if (DOPACK) assert(G_bb);
 
     /* add command-line attributes */
     for (i = 0; i < G_cnt; i++) {
+#ifndef WITH_CGRAPH
 	rv = agfindattr(root, G_args[i].name);
 	if (rv)
 	    agxset(root, rv->index, G_args[i].value);
 	else
 	    agraphattr(root, G_args[i].name, G_args[i].value);
+#else
+	rv = agattr(root, AGRAPH, G_args[i].name, NULL);
+	if (rv)
+	    agxset(root, rv, G_args[i].value);
+	else
+	    agattr(root, AGRAPH, G_args[i].name, G_args[i].value);
+#endif
     }
 
     /* do common initialization. This will handle root's label. */
@@ -616,25 +640,37 @@ static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt, GVC_t * gvc)
     for (i = 0; i < cnt; i++) {
 	g = gs[i];
 	if (verbose)
-	    fprintf(stderr, "Cloning graph %s\n", g->name);
+	    fprintf(stderr, "Cloning graph %s\n", agnameof(g));
 	GD_n_cluster(root) += GD_n_cluster(g);
 
 	/* Clone nodes, checking for node name conflicts */
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	    if (doWarn && agfindnode(root, n->name)) {
+#ifndef WITH_CGRAPH
+	    if (doWarn && agfindnode(root, agnameof(n))) {
+#else
+	    if (doWarn && agnode(root, agnameof(n), 0)) {
+#endif
 		fprintf(stderr,
 			"Warning: node %s in graph[%d] %s already defined\n",
-			n->name, i, g->name);
+			agnameof(n), i, agnameof(g));
 		fprintf(stderr, "Some nodes will be renamed.\n");
 		doWarn = FALSE;
 	    }
-	    np = agnode(root, xName(nnames, n->name));
+#ifndef WITH_CGRAPH
+	    np = agnode(root, xName(nnames, agnameof(n)));
+#else
+	    np = agnode(root, xName(nnames, agnameof(n)), 1);
+#endif
 	    ND_alg(n) = np;
 	    cloneNode(n, np);
 	}
 
 	/* wrap the clone of g in a subgraph of root */
-	subg = agsubg(root, xName(gnames, g->name));
+#ifndef WITH_CGRAPH
+	subg = agsubg(root, xName(gnames, agnameof(g)));
+#else
+	subg = agsubg(root, xName(gnames, agnameof(g)), 1);
+#endif
 	cloneSubg(g, subg, G_bb, gnames);
     }
     dtclose(gnames);
@@ -685,18 +721,27 @@ static Agraph_t **readGraphs(int *cp, GVC_t* gvc)
     while ((g = nextGraph(&ig)) != 0) {
 	GD_gvc(g) = gvc;
 	if (verbose)
-	    fprintf(stderr, "Reading graph %s\n", g->name);
+	    fprintf(stderr, "Reading graph %s\n", agnameof(g));
 	if (cnt >= sz) {
 	    sz += nGraphs;
 	    gs = ALLOC(sz, gs, Agraph_t *);
 	}
 	if (kind == -1)
 	    kind = g->kind;
+#ifndef WITH_CGRAPH
 	else if ((kind & AGFLAG_DIRECTED) != AG_IS_DIRECTED(g)) {
+#else
+	else if (!agisdirected(g) || agisdirected(g)) {
+	    /* DUH !! - did I lose something in translation ? */
+#endif
 	    fprintf(stderr,
 		    "Error: all graphs must be directed or undirected\n");
 	    exit(1);
+#ifndef WITH_CGRAPH
 	} else if (!AG_IS_STRICT(g))
+#else
+	} else if (!agisstrict(g))
+#endif
 	    kind = g->kind;
 	init_graph(g, DOPACK);
 	gs[cnt++] = g;
@@ -739,7 +784,7 @@ void dump(Agraph_t * g)
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
 	fprintf(stderr, "%s\n", v->name);
 	for (e = agfstout(g, v); e; e = agnxtout(g, e)) {
-	    fprintf(stderr, "  %s -- %s\n", e->tail->name, e->head->name);
+	    fprintf(stderr, "  %s -- %s\n", agnameof(agtail(e)), agnameof(aghead(e)));
 	}
     }
 }
@@ -753,7 +798,7 @@ void dumps(Agraph_t * g)
 
     mg = g->meta_node->graph;
     for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
-	mn = me->head;
+	mn = aghead(me);
 	subg = agusergraph(mn);
 	dump(subg);
 	fprintf(stderr, "====\n");
