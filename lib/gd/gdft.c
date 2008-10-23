@@ -1483,8 +1483,7 @@ static char* find_postscript_font(FcPattern **fontpattern, char* fontname)
       FcPattern* pattern =
 	FcPatternBuild(0,
 		       FC_FAMILY, FcTypeString, postscript_alias[i].family,
-		       FC_STYLE, FcTypeString, postscript_alias[i].style,
-		       (char*)0);
+		       FC_STYLE, FcTypeString, postscript_alias[i].style, NULL);
       font = find_font(pattern);
       FcPatternDestroy(pattern);
 
