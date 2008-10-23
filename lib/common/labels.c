@@ -149,7 +149,11 @@ textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *f
 	rv->html = TRUE;
 	if (make_html_label(obj, rv)) {
 	    switch (agobjkind(obj)) {
+#ifndef WITH_CGRAPH
+	    case AGGRAPH:
+#else
 	    case AGRAPH:
+#endif
 	        agerr(AGPREV, "in label of graph %s\n",agnameof(sg));
 		break;
 	    case AGNODE:
