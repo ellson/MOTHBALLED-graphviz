@@ -744,6 +744,8 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #ifdef WITH_CGRAPH
 #include "cgraph.h"
 #define SET_RANKDIR(g,rd) (GD_rankdir2(g) = rd)
+#define agfindedge(g,t,h) (agedge(g,t,h,NULL,0));
+#define agfindnode(g,n) (agnode(g,n,0))
 #else
 #include "graph.h"
 #define SET_RANKDIR(g,rd) ((g)->u.rankdir = (rd))
