@@ -17,9 +17,9 @@
 #ifndef CIRCULAR_H
 #define CIRCULAR_H
 
-#include <render.h>
-#include <block.h>
-#include <stack.h>
+#include "render.h"
+#include "block.h"
+#include "stack.h"
 
 typedef struct {
     blocklist_t bl;
@@ -79,13 +79,13 @@ typedef struct {
     int order;
 } edata;
 
-#define NDATA(n) ((ndata*)((n)->u.alg))
+#define NDATA(n) ((ndata*)(ND_alg(n)))
 #define DNODE(n)	(NDATA(n)->dnode)
 
-#define EDGEDATA(e)  ((edata*)((e)->u.alg))
+#define EDGEDATA(e)  ((edata*)(ED_alg(e)))
 #define EDGEORDER(e) (EDGEDATA(e)->order)
 
-#define DATA(n) ((cdata*)((n)->u.alg))
+#define DATA(n) ((cdata*)(ND_alg(n)))
 #define ORIGG(n)	(DATA(n)->orig.g)
 #define ORIGN(n)	(DATA(n)->orig.np)
 #define FLAGS(n) (DATA(n)->flags)
