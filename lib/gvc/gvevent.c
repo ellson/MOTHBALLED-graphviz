@@ -91,17 +91,13 @@ static void gv_graph_state(GVJ_t *job, graph_t *g)
     }
     list->argc = j;
 
-#ifndef WITH_CGRAPH
-    a = agfindattr(g->root, s_href);
+    a = agfindgraphattr(agroot(g), s_href);
     if (!a)
-	a = agfindattr(g->root, s_URL);
+	a = agfindgraphattr(agroot(g), s_URL);
     if (a)
+#ifndef WITH_CGRAPH
 	job->selected_href = strdup_and_subst_obj(agxget(g, a->index), (void*)g);
 #else
-    a = agattr(agroot(g), AGRAPH, s_href, NULL);
-    if (!a)
-	a = agattr(agroot(g), AGRAPH, s_URL, NULL);
-    if (a)
 	job->selected_href = strdup_and_subst_obj(agxget(g, a), (void*)g);
 #endif
 }
@@ -140,17 +136,13 @@ static void gv_node_state(GVJ_t *job, node_t *n)
     }
     list->argc = j;
 
-#ifndef WITH_CGRAPH
-    a = agfindattr(n->graph->proto->n, s_href);
+    a = agfindnodeattr(agraphof(n), s_href);
     if (!a)
-        a = agfindattr(n->graph->proto->n, s_URL);
+        a = agfindnodeattr(agraphof(n), s_URL);
     if (a)
+#ifndef WITH_CGRAPH
 	job->selected_href = strdup_and_subst_obj(agxget(n, a->index), (void*)n);
 #else
-    a = agattr(g, AGNODE, s_href, NULL);
-    if (!a)
-        a = agattr(g, AGNODE, s_URL, NULL);
-    if (a)
 	job->selected_href = strdup_and_subst_obj(agxget(n, a), (void*)n);
 #endif
 }
@@ -227,17 +219,13 @@ static void gv_edge_state(GVJ_t *job, edge_t *e)
     }
     alist->argc = j;
 
-#ifndef WITH_CGRAPH
-    a = agfindattr(e->head->graph->proto->e, s_href);
+    a = agfindedgeattr(agraphof(aghead(e)), s_href);
     if (!a)
-	a = agfindattr(e->head->graph->proto->e, s_URL);
+	a = agfindedgeattr(agraphof(aghead(e)), s_URL);
     if (a)
+#ifndef WITH_CGRAPH
 	job->selected_href = strdup_and_subst_obj(agxget(e, a->index), (void*)e);
 #else
-    a = agattr(agraphof(e), AGEDGE, s_href, NULL);
-    if (!a)
-	a = agattr(agraphof(e), AGEDGE, s_URL, NULL);
-    if (a)
 	job->selected_href = strdup_and_subst_obj(agxget(e, a), (void*)e);
 #endif
 }
@@ -343,39 +331,33 @@ static void gvevent_enter_obj(GVJ_t * job)
 #endif /* WITH_CGRAPH */
 	    g = (graph_t*)obj;
 	    GD_gui_state(g) |= GUI_STATE_ACTIVE;
-#ifndef WITH_CGRAPH
-	    a = agfindattr(g->root, s_tooltip);
+	    a = agfindgraphattr(agroot(g), s_tooltip);
 	    if (a)
+#ifndef WITH_CGRAPH
 		job->active_tooltip = strdup_and_subst_obj(agxget(g, a->index), obj);
 #else /* WITH_CGRAPH */
-	    a = agattr(agroot(g), AGRAPH, s_tooltip, NULL);
-	    if (a)
 		job->active_tooltip = strdup_and_subst_obj(agxget(g, a), obj);
 #endif /* WITH_CGRAPH */
 	    break;
         case AGNODE:
 	    n = (node_t*)obj;
 	    ND_gui_state(n) |= GUI_STATE_ACTIVE;
-#ifndef WITH_CGRAPH
-	    a = agfindattr(n->graph->proto->n, s_tooltip);
+	    a = agfindnodeattr(agraphof(n), s_tooltip);
 	    if (a)
+#ifndef WITH_CGRAPH
 		job->active_tooltip = strdup_and_subst_obj(agxget(n, a->index), obj);
 #else /* WITH_CGRAPH */
-	    a = agattr(agraphof(n), AGNODE, s_tooltip, NULL);
-	    if (a)
 		job->active_tooltip = strdup_and_subst_obj(agxget(n, a), obj);
 #endif /* WITH_CGRAPH */
 	    break;
         case AGEDGE:
 	    e = (edge_t*)obj;
 	    ED_gui_state(e) |= GUI_STATE_ACTIVE;
-#ifndef WITH_CGRAPH
-	    a = agfindattr(e->head->graph->proto->e, s_tooltip);
+	    a = agfindedgeattr(agraphof(aghead(e)), s_tooltip);
 	    if (a)
+#ifndef WITH_CGRAPH
 		job->active_tooltip = strdup_and_subst_obj(agxget(e, a->index), obj);
 #else /* WITH_CGRAPH */
-	    a = agattr(agraphof(e), AGEDGE, s_tooltip, NULL);
-	    if (a)
 		job->active_tooltip = strdup_and_subst_obj(agxget(e, a), obj);
 #endif /* WITH_CGRAPH */
 	    break;

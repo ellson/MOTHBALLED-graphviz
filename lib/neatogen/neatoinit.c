@@ -144,13 +144,8 @@ static void neato_init_node_edge(graph_t * g)
     int nG = agnnodes(g);
     attrsym_t *N_pin;
 
-#ifndef WITH_CGRAPH
-    N_pos = agfindattr(g->proto->n, "pos");
-    N_pin = agfindattr(g->proto->n, "pin");
-#else
-    N_pos = agattr(g, AGNODE, "pos", 0);
-    N_pin = agattr(g, AGNODE, "pin", 0);
-#endif
+    N_pos = agfindnodeattr(g, "pos");
+    N_pin = agfindnodeattr(g, "pin");
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	neato_init_node(n);
@@ -424,11 +419,7 @@ static pos_edge nop_init_edges(Agraph_t * g)
     node_t *n;
     edge_t *e;
     int nedges = 0;
-#ifndef WITH_CGRAPH
-    attrsym_t *E_pos = agfindattr(g->proto->e, "pos");
-#else
-    attrsym_t *E_pos = agattr(g, AGEDGE, "pos", NULL);
-#endif
+    attrsym_t *E_pos = agfindedgeattr(g, "pos");
 
     if (!E_pos || (Nop < 2))
 	return NoEdges;
@@ -669,13 +660,8 @@ int init_nop(Agraph_t * g, int adjust)
     int i;
     node_t *np;
     pos_edge posEdges;		/* How many edges have spline info */
-#ifndef WITH_CGRAPH
-    attrsym_t *G_lp = agfindattr(g, "lp");
-    attrsym_t *G_bb = agfindattr(g, "bb");
-#else /* WITH_CGRAPH */
-    attrsym_t *G_lp = agattr(g, AGRAPH, "lp", NULL);
-    attrsym_t *G_bb = agattr(g, AGRAPH, "bb", NULL);
-#endif /* WITH_CGRAPH */
+    attrsym_t *G_lp = agfindgraphattr(g, "lp");
+    attrsym_t *G_bb = agfindgraphattr(g, "bb");
 
     /* If G_bb not defined, define it */
     if (!G_bb)
@@ -733,13 +719,8 @@ static void neato_init_graph (Agraph_t * g)
     int outdim;
 
     setEdgeType (g, ET_LINE);
-#ifndef WITH_CGRAPH
-    outdim = late_int(g, agfindattr(g, "dimen"), 2, 2);
-    GD_ndim(g->root) = late_int(g, agfindattr(g, "dim"), outdim, 2);
-#else /* WITH_CGRAPH */
-    outdim = late_int(g, agattr(g, AGRAPH, "dimen", NULL), 2, 2);
-    GD_ndim(g->root) = late_int(g, agattr(g, AGRAPH, "dim", NULL), outdim, 2);
-#endif /* WITH_CGRAPH */
+    outdim = late_int(g, agfindgraphattr(g, "dimen"), 2, 2);
+    GD_ndim(agroot(g)) = late_int(g, agfindgraphattr(g, "dim"), outdim, 2);
     Ndim = GD_ndim(g->root) = MIN(GD_ndim(g->root), MAXDIM);
     GD_odim(g->root) = MIN(outdim, Ndim);
     neato_init_node_edge(g);
@@ -1222,11 +1203,7 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
 
 #ifdef DIGCOLA
     if (mode != MODE_MAJOR) {
-#ifndef WITH_CGRAPH
-        double lgap = late_double(g, agfindattr(g, "levelsgap"), 0.0, -MAXDOUBLE);
-#else /* WITH_CGRAPH */
-        double lgap = late_double(g, agattr(g, AGRAPH, "levelsgap", NULL), 0.0, -MAXDOUBLE);
-#endif /* WITH_CGRAPH */
+        double lgap = late_double(g, agfindgraphattr(g, "levelsgap"), 0.0, -MAXDOUBLE);
         if (mode == MODE_HIER) {        
             stress_majorization_with_hierarchy(gp, nv, ne, coords, nodes, Ndim,
                        (init == INIT_SELF), model, MaxIter, lgap);
