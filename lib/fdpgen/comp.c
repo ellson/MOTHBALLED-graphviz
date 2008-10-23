@@ -74,9 +74,11 @@ graph_t **findCComp(graph_t * g, int *cnt, int *pinned)
     bport_t *pp;
     graph_t **comps;
     graph_t **cp;
+#ifndef WITH_CGRAPH
     graph_t *mg;
-    edge_t *me;
     node_t *mn;
+#endif
+    edge_t *me;
     int pinflag = 0;
 
 /* fprintf (stderr, "comps of %s starting at %d \n", g->name, c_cnt); */
@@ -155,8 +157,8 @@ graph_t **findCComp(graph_t * g, int *cnt, int *pinned)
 	mn = me->head;
 	*cp++ = agusergraph(mn);
 #else /* WITH_CGRAPH */
-    for (me = agfstsubg(g); me; me = agnxtsubg(me)) {
-	*cp++ = me;
+    for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
+	*cp++ = subg;
 #endif /* WITH_CGRAPH */
 	c_cnt--;
     }
