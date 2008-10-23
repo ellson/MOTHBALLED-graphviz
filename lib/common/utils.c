@@ -1326,7 +1326,7 @@ safe_dcl(graph_t * g, int obj_kind, char *name, char *def)
     if (a == NULL)
 	a = fun(g, name, def);
 #else /* WITH_CGRAPH */
-	attrsym_t *a = agattr(g,obj_kind,name,(char*)0);
+	attrsym_t *a = agattr(g,obj_kind,name, NULL);
 	if (!a)	/*attribute exists*/		
 		a=agattr(g,obj_kind,name,def);
 #endif /* WITH_CGRAPH */

@@ -427,9 +427,9 @@ copyAttr (graph_t* g, graph_t* dg, char* attr)
 	ov_val = agxget(g,ov->index);
 	ov = agfindattr(dg, attr);
 #else /* WITH_CGRAPH */
-    if ((ov = agattr(g,AGRAPH, attr,(char*)0))) {
+    if ((ov = agattr(g,AGRAPH, attr, NULL))) {
 	ov_val = agxget(g,ov);
-	ov = agattr(dg,AGRAPH, attr,(char*)0);
+	ov = agattr(dg,AGRAPH, attr, NULL);
 #endif /* WITH_CGRAPH */
 	if (ov)
 #ifndef WITH_CGRAPH
@@ -565,13 +565,13 @@ static graph_t *deriveGraph(graph_t * g, layout_info * infop)
 #ifndef WITH_CGRAPH
 		de = agedge(dg, tl, hd);
 #else /* WITH_CGRAPH */
-		de = agedge(dg, tl, hd,(char*)0,1);
+		de = agedge(dg, tl, hd, NULL,1);
 #endif /* WITH_CGRAPH */
 	    else
 #ifndef WITH_CGRAPH
 		de = agedge(dg, hd, tl);
 #else /* WITH_CGRAPH */
-		de = agedge(dg, hd, tl,(char*)0,1);
+		de = agedge(dg, hd, tl, NULL,1);
 		agbindrec(de, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//node custom data
 #endif /* WITH_CGRAPH */
 	    ED_dist(de) = ED_dist(e);
@@ -607,13 +607,13 @@ static graph_t *deriveGraph(graph_t * g, layout_info * infop)
 #ifndef WITH_CGRAPH
 		    de = agedge(dg, m, dn);
 #else /* WITH_CGRAPH */
-		    de = agedge(dg, m, dn,(char*)0,1);
+		    de = agedge(dg, m, dn, NULL,1);
 #endif /* WITH_CGRAPH */
 		else
 #ifndef WITH_CGRAPH
 		    de = agedge(dg, dn, m);
 #else /* WITH_CGRAPH */
-		    de = agedge(dg, dn, m,(char*)0,1);
+		    de = agedge(dg, dn, m, NULL,1);
 #endif /* WITH_CGRAPH */
 		ED_dist(de) = ED_dist(pp->e);
 		ED_factor(de) = ED_factor(pp->e);
@@ -1058,9 +1058,9 @@ void init_info(graph_t * g, layout_info * infop)
     infop->G_width = agfindattr(g, "width");
     infop->G_height = agfindattr(g, "height");
 #else /* WITH_CGRAPH */
-    infop->G_coord = agattr(g,AGRAPH, "coords",(char*)0);
-    infop->G_width = agattr(g,AGRAPH, "width",(char*)0);
-    infop->G_height = agattr(g, AGRAPH,"height",(char*)0);
+    infop->G_coord = agattr(g,AGRAPH, "coords", NULL);
+    infop->G_width = agattr(g,AGRAPH, "width", NULL);
+    infop->G_height = agattr(g, AGRAPH,"height", NULL);
 #endif /* WITH_CGRAPH */
     infop->rootg = g;
     infop->gid = 0;
@@ -1135,7 +1135,7 @@ void fdp_init_graph(Agraph_t * g)
     g->u.ndim = late_int(g, agfindattr(g, "dim"), 2, 2);
     Ndim = g->u.ndim = MIN(g->u.ndim, MAXDIM);
 #else /* WITH_CGRAPH */
-    GD_ndim(g) = late_int(g, agattr(g,AGRAPH, "dim",(char*)0), 2, 2);
+    GD_ndim(g) = late_int(g, agattr(g,AGRAPH, "dim", NULL), 2, 2);
     Ndim = GD_ndim(g) = MIN(GD_ndim(g), MAXDIM);
 #endif /* WITH_CGRAPH */
 

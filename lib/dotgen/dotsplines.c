@@ -666,9 +666,9 @@ cloneGraph (graph_t* g)
     E_sametail = agfindattr(auxg->proto->e, "sametail");
     E_weight = agfindattr(auxg->proto->e, "weight");
 #else /* WITH_CGRAPH */
-    E_samehead = agattr(auxg,AGEDGE, "samehead",(char*)0);
-    E_sametail = agattr(auxg,AGEDGE, "sametail",(char*)0);
-    E_weight = agattr(auxg,AGEDGE, "weight",(char*)0);
+    E_samehead = agattr(auxg,AGEDGE, "samehead", NULL);
+    E_sametail = agattr(auxg,AGEDGE, "sametail", NULL);
+    E_weight = agattr(auxg,AGEDGE, "weight", NULL);
 #endif /* WITH_CGRAPH */
     if (!E_weight)
 #ifndef WITH_CGRAPH

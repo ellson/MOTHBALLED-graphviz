@@ -197,14 +197,14 @@ void fdp_initParams(graph_t * g)
     T_maxIters = late_int(g, agfindattr(g, "maxiter"), DFLT_maxIters, 0);
     D_K = T_K = late_double(g, agfindattr(g, "K"), DFLT_K, 0.0);
 #else /* WITH_CGRAPH */
-    T_maxIters = late_int(g, agattr(g,AGRAPH, "maxiter",(char*)0), DFLT_maxIters, 0);
-    D_K = T_K = late_double(g, agattr(g,AGRAPH, "K",(char*)0), DFLT_K, 0.0);
+    T_maxIters = late_int(g, agattr(g,AGRAPH, "maxiter", NULL), DFLT_maxIters, 0);
+    D_K = T_K = late_double(g, agattr(g,AGRAPH, "K", NULL), DFLT_K, 0.0);
 #endif /* WITH_CGRAPH */
     if (D_T0 == -1.0) {
 #ifndef WITH_CGRAPH
 	T_T0 = late_double(g, agfindattr(g, "T0"), -1.0, 0.0);
 #else /* WITH_CGRAPH */
-	T_T0 = late_double(g, agattr(g,AGRAPH, "T0",(char*)0), -1.0, 0.0);
+	T_T0 = late_double(g, agattr(g,AGRAPH, "T0", NULL), -1.0, 0.0);
 #endif /* WITH_CGRAPH */
     } else
 	T_T0 = D_T0;

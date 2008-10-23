@@ -164,7 +164,7 @@ Agraph_t **circomps(Agraph_t * g, int *cnt)
 #ifndef WITH_CGRAPH
 		agedge(dg, dt, dh);
 #else /* WITH_CGRAPH */
-		agbindrec(agedge(dg, dt, dh,(char*)0,1), "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//node custom data
+		agbindrec(agedge(dg, dt, dh, NULL, 1), "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//node custom data
 #endif /* WITH_CGRAPH */
 	    }
 	}
@@ -206,7 +206,7 @@ Agraph_t **circomps(Agraph_t * g, int *cnt)
 		    ep = agedge(dg, n, dh);
 		    aginsert(sg, ep);
 #else /* WITH_CGRAPH */
-		    ep = agedge(dg, n, dh,(char*)0,1);
+		    ep = agedge(dg, n, dh, NULL, 1);
 		    agbindrec(ep, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//node custom data
 		    agsubedge(sg,ep,1);
 #endif /* WITH_CGRAPH */

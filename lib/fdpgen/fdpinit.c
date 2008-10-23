@@ -41,14 +41,14 @@ static void initialPositions(graph_t * g)
 #ifndef WITH_CGRAPH
     possym = agfindattr(g->proto->n, "pos");
 #else /* WITH_CGRAPH */
-    possym = agattr(g,AGNODE, "pos",(char*)0);
+    possym = agattr(g,AGNODE, "pos", NULL);
 #endif /* WITH_CGRAPH */
     if (!possym)
 	return;
 #ifndef WITH_CGRAPH
     pinsym = agfindattr(g->proto->n, "pin");
 #else /* WITH_CGRAPH */
-    pinsym = agattr(g,AGNODE, "pin",(char*)0);
+    pinsym = agattr(g,AGNODE, "pin", NULL);
 #endif /* WITH_CGRAPH */
     for (i = 0; (np = GD_neato_nlist(g)[i]); i++) {
 #ifndef WITH_CGRAPH
@@ -122,7 +122,7 @@ void fdp_init_node_edge(graph_t * g)
 #ifndef WITH_CGRAPH
     E_len = agfindattr(g->proto->e, "len");
 #else /* WITH_CGRAPH */
-    E_len = agattr(g,AGEDGE, "len",(char*)0);
+    E_len = agattr(g,AGEDGE, "len", NULL);
 #endif /* WITH_CGRAPH */
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {

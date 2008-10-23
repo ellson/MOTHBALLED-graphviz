@@ -1940,8 +1940,8 @@ static void init_gvc(GVC_t * gvc, graph_t * g)
     G_peripheries = agfindattr(g, "peripheries");
     G_penwidth = agfindattr(g, "penwidth");
 #else
-    G_peripheries = agattr(g, AGRAPH,"peripheries",(char*)0);
-    G_penwidth = agattr(g, AGRAPH,"penwidth",(char*)0);
+    G_peripheries = agattr(g, AGRAPH,"peripheries", NULL);
+    G_penwidth = agattr(g, AGRAPH,"penwidth", NULL);
 #endif
 
     /* default font */
