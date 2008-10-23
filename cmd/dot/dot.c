@@ -126,18 +126,32 @@ static graph_t *create_test_graph(void)
     char name[10];
 
     /* Create a new graph */
+#ifndef WITH_CGRAPH
     g = agopen("new_graph", AGDIGRAPH);
+#else /* WITH_CGRAPH */
+    g = agopen("new_graph", Agdirected,NIL(Agdisc_t *));
+#endif /* WITH_CGRAPH */
 
     /* Add nodes */
     for (j = 0; j < NUMNODES; j++) {
 	sprintf(name, "%d", j);
+#ifndef WITH_CGRAPH
 	node[j] = agnode(g, name);
+#else /* WITH_CGRAPH */
+	node[j] = agnode(g, name, NULL, 1);
+    agbindrec(node[j], "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);	//node custom data
+
+#endif /* WITH_CGRAPH */
     }
 
     /* Connect nodes */
     for (j = 0; j < NUMNODES; j++) {
 	for (k = j + 1; k < NUMNODES; k++) {
+#ifndef WITH_CGRAPH
 	    agedge(g, node[j], node[k]);
+#else /* WITH_CGRAPH */
+	    agedge(g, node[j], node[k], NULL, 1);
+#endif /* WITH_CGRAPH */
 	}
     }
     return g;
@@ -146,7 +160,9 @@ static graph_t *create_test_graph(void)
 int main(int argc, char **argv)
 {
     graph_t *prev = NULL;
+#ifndef WITH_CGRAPH
 
+#endif /* WITH_CGRAPH */
     Gvc = gvNEWcontext(Info, gvUsername());
     gvParseArgs(Gvc, argc, argv);
 
@@ -175,6 +191,10 @@ int main(int argc, char **argv)
     }
     else {
 	while ((G = gvNextInputGraph(Gvc))) {
+#ifdef WITH_CGRAPH
+
+
+#endif /* WITH_CGRAPH */
 	    if (prev) {
 		gvFreeLayout(Gvc, prev);
 		agclose(prev);
