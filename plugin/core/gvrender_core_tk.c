@@ -94,11 +94,19 @@ static void tkgen_print_tags(GVJ_t *job)
 	break;
     case EMIT_CDRAW:
 	ObjType = "cluster";
+#ifndef WITH_CGRAPH
+	ObjId = obj->u.sg->meta_node->id;
+#else
 	ObjId = AGID(obj->u.sg);
+#endif
 	break;
     case EMIT_CLABEL:
 	ObjType = "cluster label";
+#ifndef WITH_CGRAPH
+	ObjId = obj->u.sg->meta_node->id;
+#else
 	ObjId = AGID(obj->u.sg);
+#endif
 	break;
     default:
 	assert (0);
