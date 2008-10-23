@@ -115,15 +115,26 @@ static void free_3array(double ***rv)
     }
 }
 
+
+#ifdef WITH_CGRAPH
+static double doubleattr(void *obj, Agsym_t* index, double defval)
+#else
 static double doubleattr(void *obj, int index, double defval)
+#endif
 {
     double val;
+
+#ifdef WITH_CGRAPH
+    if (index == NULL)
+#else
     if (index < 0)
+#endif
 	return defval;
     if (sscanf(agxget(obj, index), "%lf", &val) < 1)
 	return defval;
     return val;
 }
+
 
 /* degreeKind;
  * Returns degree of n ignoring loops and multiedges.
@@ -190,7 +201,11 @@ static node_t *prune(graph_t * G, node_t * np, node_t * next)
     return next;
 }
 
+#ifdef WITH_CGRAPH
+static double setEdgeLen(graph_t * G, node_t * np, Agsym_t* lenx)
+#else
 static double setEdgeLen(graph_t * G, node_t * np, int lenx)
+#endif
 {
     edge_t *ep;
     double total_len = 0.0;
@@ -216,12 +231,14 @@ static double setEdgeLen(graph_t * G, node_t * np, int lenx)
  */
 int scan_graph_mode(graph_t * G, int mode)
 {
-    int i, lenx, nV, nE, deg;
+    int i, nV, nE, deg;
     char *str;
     node_t *np, *xp, *other;
     double total_len = 0.0;
 #ifdef WITH_CGRAPH
-    int c=0;
+    Agsym_t* lenx;
+#else
+    int lenx;
 #endif /* WITH_CGRAPH */
 
     if (Verbose)
@@ -245,7 +262,11 @@ int scan_graph_mode(graph_t * G, int mode)
     nV = agnnodes(G);
     nE = agnedges(G);
 
+#ifdef WITH_CGRAPH
+    lenx = agattr(G, AGEDGE, "len", 0);
+#else
     lenx = agindex(G->root->proto->e, "len");
+#endif
     if (mode == MODE_KK) {
 	Epsilon = .0001 * nV;
 	getdouble(G, "epsilon", &Epsilon);
@@ -292,7 +313,6 @@ int scan_graph(graph_t * g)
 
 void free_scan_graph(graph_t * g)
 {
-#ifndef WITH_CGRAPH
     free(GD_neato_nlist(g));
     if (!Nop) {
 	free_array(GD_dist(g));
@@ -301,7 +321,6 @@ void free_scan_graph(graph_t * g)
 	free_3array(GD_t(g));
 	GD_t(g) = NULL;
     }
-#endif /* WITH_CGRAPH */
 }
 
 void jitter_d(node_t * np, int nG, int n)

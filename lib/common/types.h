@@ -435,6 +435,8 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define GD_showboxes(g) (((Agraphinfo_t*)AGDATA(g))->showboxes)
 #define GD_fontnames(g) (((Agraphinfo_t*)AGDATA(g))->fontnames)
 #define GD_spring(g) (((Agraphinfo_t*)AGDATA(g))->spring)
+#define GD_sum_t(g) (((Agraphinfo_t*)AGDATA(g))->sum_t)
+#define GD_t(g) (((Agraphinfo_t*)AGDATA(g))->t)
 
 #else
 
