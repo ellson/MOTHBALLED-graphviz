@@ -200,10 +200,12 @@ on_about1_activate                     (GtkMenuItem     *menuitem,
 static void
 load_store_with_attrs(GtkListStore *model, GVJ_t *job)
 {
+#if 0
         gint attrs_len = job->selected_obj_attributes.argc, i;
         gchar **attrs = job->selected_obj_attributes.argv;
         GtkTreeIter iter;
         gvattr_t type;
+#endif
 
         gtk_list_store_clear(model);
 
