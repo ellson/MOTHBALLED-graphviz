@@ -844,10 +844,11 @@ static void poly_init(node_t * n)
          * We assume the ellipse is defined by a scaling up of bb.
          */
 	temp = bb.y * SQRT2;
-	/* if there is height to spare and the label is centered vertically */
 	if (height > temp && ND_label(n)->valign == 'c') {
+	    /* if there is height to spare
+	     * and the label is centered vertically
+	     * then just pad x in proportion to the spare height */
 	    bb.x *= sqrt(1. / (1. - SQR(bb.y / height)));
-	    bb.y = height;
 	}
 	else {
 	    bb.x *= SQRT2;
