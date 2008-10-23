@@ -91,9 +91,9 @@ static void gv_graph_state(GVJ_t *job, graph_t *g)
     }
     list->argc = j;
 
-    a = agfindgraphattr(agroot(g), s_href);
+    a = agfindgraphattr(g, s_href);
     if (!a)
-	a = agfindgraphattr(agroot(g), s_URL);
+	a = agfindgraphattr(g, s_URL);
     if (a)
 #ifndef WITH_CGRAPH
 	job->selected_href = strdup_and_subst_obj(agxget(g, a->index), (void*)g);
@@ -331,7 +331,7 @@ static void gvevent_enter_obj(GVJ_t * job)
 #endif /* WITH_CGRAPH */
 	    g = (graph_t*)obj;
 	    GD_gui_state(g) |= GUI_STATE_ACTIVE;
-	    a = agfindgraphattr(agroot(g), s_tooltip);
+	    a = agfindgraphattr(g, s_tooltip);
 	    if (a)
 #ifndef WITH_CGRAPH
 		job->active_tooltip = strdup_and_subst_obj(agxget(g, a->index), obj);
