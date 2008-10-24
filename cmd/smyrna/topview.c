@@ -35,14 +35,15 @@ static float dz = 0.0;
    /* Forward declarations */
 static glCompSet *glcreate_gl_topview_menu();
 static void set_boundaries(topview * t);
-static void set_topview_options();
+static void set_topview_options(void);
 static int draw_topview_label(topview_node * v, float zdepth);
 static int node_visible(Agnode_t * n);
 static int select_topview_node(topview_node * n);
 static int select_topview_edge(topview_edge * e);
 static int update_topview_node_from_cgraph(topview_node * Node);
 static int get_color_from_edge(topview_edge * e);
-static int draw_node_hint_boxes();
+static int draw_node_hint_boxes(void);
+static int pick_node(topview_node * n);
 
 void cleartopview(topview * t)
 {
@@ -731,7 +732,7 @@ static int select_topview_edge(topview_edge * e)
 				view->Selection.single_selected_edge=e;
 		}
 
-		return;
+		return 0;
 	}
     if (!view->Selection.Active)
 		return 0;
