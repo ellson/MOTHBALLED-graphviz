@@ -617,10 +617,12 @@ static int pick_node(topview_node * n)
 static int draw_node_hint_boxes()
 {
     int ind;
-    int fs = 12;
-    for (ind = 0; ind < view->Topview->picked_node_count; ind++) {
+	char buf[512];
+	float fs = view->FontSizeConst;
+	strcpy(buf,"line 1:12334444 \n line 2:falan filan");
+	for (ind = 0; ind < view->Topview->picked_node_count; ind++) {
 //	int draw_node_hintbox(GLfloat x,GLfloat y,GLfloat z,GLfloat fs,char* text)
-	draw_node_hintbox(view->Topview->picked_nodes[ind]->distorted_x,
+		draw_node_hintbox(view->Topview->picked_nodes[ind]->distorted_x,
 			  view->Topview->picked_nodes[ind]->distorted_y,
 				view->Topview->picked_nodes[ind]->distorted_z,
 			  (GLfloat) fs,agnameof(view->Topview->picked_nodes[ind]->Node)
@@ -628,16 +630,17 @@ static int draw_node_hint_boxes()
 			  ;
 	fontSize(fs);
 	fontColorA(0, 0, 1, 1);
-	fontDrawString((int)
-		       (view->Topview->picked_nodes[ind]->distorted_x -
-			fs / 3 + 1 - fs),
-		       (int) (view->Topview->picked_nodes[ind]->
-			      distorted_y + fs + 1),
+
+
+	fontDrawString(
+		       (view->Topview->picked_nodes[ind]->distorted_x),
+		        (view->Topview->picked_nodes[ind]->
+			      distorted_y+fs+fs/5.0 ),
 		       agnameof(view->Topview->picked_nodes[ind]->Node),
 		       fs *
-		       strlen(agnameof
+		       (float)strlen(agnameof
 			      (view->Topview->picked_nodes[ind]->Node)) /
-		       2);
+		       2.0);
     }
     return 1;
 }

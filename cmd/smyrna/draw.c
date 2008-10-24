@@ -785,32 +785,33 @@ int draw_node_hintbox_gl_polygon(GLfloat x,GLfloat y,GLfloat z,GLfloat fs,char* 
 
 {
 
+
 	float X,Y,Z,pad;
 	pad=fs/5.0;
-	X=x;Y=y+fs;Z=z;
+	X=x;Y=y;Z=z+0.0005;
 	glBegin(GL_POLYGON);
-	//rectangle
 	glVertex3f(X,Y,Z);
-	Y=Y + 2*fs+2*pad;
+	Y=Y + fs;
 	glVertex3f(X,Y,Z);
-	X=X+2*pad+strlen(text)*fs;
+	X=X+fs;
+	glVertex3f(X,Y,Z);
+	X=x;y=y;
+	glVertex3f(X,Y,Z);
+	glEnd();
+
+	X=x;Y=y+fs;
+	glBegin(GL_POLYGON);
+	glVertex3f(X,Y,Z);
+	X=x;Y=Y+fs+2*pad;
+	glVertex3f(X,Y,Z);
+	X=x+strlen(text)*fs/2.0+2.0*pad;
 	glVertex3f(X,Y,Z);
 	Y=y+fs;
 	glVertex3f(X,Y,Z);
 	X=x;
 	glVertex3f(X,Y,Z);
-	//triangle
 	glEnd();
-	X=x;Y=y;
-	glBegin(GL_POLYGON);
-	glVertex3f(X,Y,Z);
-	Y=Y + fs;
-	glVertex3f(X,Y,Z);
-	X=X+2*pad;
-	glVertex3f(X,Y,Z);
-	X=x;Y=y;
-	glVertex3f(X,Y,Z);
-	glEnd();
+
 
 	return 1;
 
@@ -826,7 +827,7 @@ int draw_node_hintbox_gl_line(GLfloat x,GLfloat y,GLfloat z,GLfloat fs,char* tex
 	glVertex3f(X,Y,Z);
 	Y=Y + 2*fs+2*pad;
 	glVertex3f(X,Y,Z);
-	X=X+2*pad+strlen(text)*fs;
+	X=X+2*pad+strlen(text)*fs/2.0;
 	glVertex3f(X,Y,Z);
 	Y=y+fs;
 	glVertex3f(X,Y,Z);

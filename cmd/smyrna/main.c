@@ -103,6 +103,8 @@ parseArgs (int argc, char *argv[], ViewInfo* view)
     else
 	return NULL;
 }
+extern int create_font_file(char* fontdescription,float gw,float gh);
+extern int load_png_font(char* file_name);
 
 int main(int argc, char *argv[])
 {
@@ -115,7 +117,8 @@ int main(int argc, char *argv[])
 	smyrnaDir = SMYRNA_PATH;
 #endif
 
-    load_attributes();
+//	create_font_file("c:\\pango_test.png",(float)64.0,(float)64.0);
+	load_attributes();
 
 #ifdef G_OS_WIN32
     package_prefix =

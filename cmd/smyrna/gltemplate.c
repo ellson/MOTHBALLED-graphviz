@@ -132,7 +132,7 @@ static void realize(GtkWidget * widget, gpointer data)
     static char *smyrna_font;
 
 #ifdef WIN32
-    smyrna_font = "c:/arial.tga";
+    smyrna_font = "c:/pango_font.tga";
 #else
     smyrna_font = smyrnaPath("arial.tga");
 #endif
@@ -290,7 +290,9 @@ static gboolean button_press_event(GtkWidget * widget,
 static gboolean button_release_event(GtkWidget * widget,
 				     GdkEventButton * event, gpointer data)
 {
-    if (event->button == 1)	//left click release
+	view->FontSizeConst=GetOGLDistance(14);
+
+	if (event->button == 1)	//left click release
     {
 		if (glCompSetRelease
 	    (view->Topview->topviewmenu, (int) event->x_root,
@@ -396,7 +398,6 @@ static gboolean motion_notify_event(GtkWidget * widget,
     if ((event->state & GDK_BUTTON1_MASK)
 	&& (view->mouse.mouse_mode == MM_ZOOM))
 	{
-		view->FontSizeConst=GetOGLDistance(14);
 
 		if (glmotion_main(view, event, widget))
 		    redraw = TRUE;

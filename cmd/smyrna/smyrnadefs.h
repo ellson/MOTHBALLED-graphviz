@@ -493,7 +493,7 @@ typedef struct _ViewInfo
 	viewtype_t dfltViewType;
 	gvk_layout dfltEngine;
 	GtkTextBuffer* consoleText;
-	int FontSizeConst;
+	float FontSizeConst;
 } ViewInfo;
 
 extern ViewInfo *view;
