@@ -65,7 +65,9 @@ int fontLoad (char *name)
 
 	fontMakeMap ();
 
-    return fontLoadTGA (name, font.texId);
+//    return fontLoadTGA (name, font.texId);
+    return fontLoadPNG ("c:\\pango_test.png", font.texId);
+
 }
 /*
 =============
@@ -97,7 +99,7 @@ fontDrawChar
 Draws a character that is 'size' pixels in w and h.  
 =============
 */
-void fontDrawChar (char c, int x, int y, int size, int shadow)
+void fontDrawChar (char c, GLfloat x, GLfloat y, GLfloat size, int shadow)
 {
 	if (!font.gradient && !shadow)
         glColor4fv (font.fgColor);
@@ -108,20 +110,20 @@ void fontDrawChar (char c, int x, int y, int size, int shadow)
 
     glBegin (GL_QUADS);
 		glTexCoord2f (tPoints[(int)c][0], tPoints[(int)c][1]);
-		glVertex3i (x, y,0);
+		glVertex3f (x, y,0);
 
     	glTexCoord2f (tPoints[(int)c][0] + font.tIncX, tPoints[(int)c][1]);
-		glVertex3i (x + size, y,0);
+		glVertex3f (x + size, y,0);
 
         if (!shadow)
             glColor4fv (font.fgColor);
         else glColor4fv (font.bgColor);
 
         glTexCoord2f (tPoints[(int)c][0] + font.tIncX, tPoints[(int)c][1] + font.tIncY);
-		glVertex3i (x + size + font.italic, y + size,0);
+		glVertex3f (x + size + font.italic, y + size,0);
 
         glTexCoord2f (tPoints[(int)c][0], tPoints[(int)c][1] + font.tIncY);
-		glVertex3i (x + font.italic, y + size,0);
+		glVertex3f (x + font.italic, y + size,0);
 	glEnd ();
 }
 /*
@@ -238,11 +240,11 @@ fontSize
 Sets the font size.
 =============
 */
-void fontSize (int size)
+void fontSize (GLfloat size)
 {
     font.size = size;
 }
-void fontzdepth(float zdepth)
+void fontzdepth(GLfloat zdepth)
 {
 	font.zdepth=zdepth;
 }
@@ -276,13 +278,13 @@ Draws a character to the screen
 Bold is just a hack, nothing special
 =============
 */
-void fontRenderChar (char c, int x, int y, int size)
+void fontRenderChar (char c, GLfloat x, GLfloat y, GLfloat size)
 {
     if (font.shadow)
     {
         if (!font.bold)
-	        fontDrawChar (c, x + 1,  y + 1, size, 1);
-        else fontDrawChar (c, x + 2,  y + 1, size, 1);
+	        fontDrawChar (c, x + 1.0,  y + 1.0, size, 1);
+        else fontDrawChar (c, x + 2.0,  y + 1.0, size, 1);
     }
     
 
@@ -290,7 +292,7 @@ void fontRenderChar (char c, int x, int y, int size)
 	fontDrawChar (c, x, y, size, 0);
 
 	if (font.bold)
-        fontDrawChar (c, x + 1, y, size, 0);
+        fontDrawChar (c, x + 1.0, y, size, 0);
 }
 /*
 =============
@@ -300,7 +302,7 @@ Handles all the fun that comes with a \\, returns amount to advance string.
 After this funtion *buffptr ++ will be the next character to draw or parse.
 =============
 */
-int fontSlashParser (char *buffPtr, int *x, int *y)
+int fontSlashParser (char *buffPtr, GLfloat *x, GLfloat *y)
 {
     int ret = 0;
 
@@ -338,19 +340,19 @@ fontWalkString
 Does the actual rendering of our string.  
 =============
 */
-void fontWalkString (char *buffPtr, int xpos, int ypos, int *vPort,float width)
+void fontWalkString (char *buffPtr, GLfloat xpos, GLfloat ypos, int *vPort,float width)
 {
-    int size = font.size;
-	int x = xpos;
-	int y = ypos;
-	int carrage = 0;
-	int tabs = 0;
+    GLfloat size = font.size;
+	GLfloat x = xpos;
+	GLfloat y = ypos;
+	GLfloat carrage = 0;
+	GLfloat tabs = 0;
     int len = strlen (buffPtr);
     int xMax;
 	int charCount;
 	int maxcharCount;
 	char* tempC;
-	int charGap;
+	GLfloat charGap;
 	xMax = vPort[0] + vPort[2];
 
     carrage = fontGetCharHits (buffPtr, '\n');
@@ -400,7 +402,7 @@ void fontWalkString (char *buffPtr, int xpos, int ypos, int *vPort,float width)
 	}
 	if (charCount > maxcharCount)
 		maxcharCount=charCount;
-	charGap=(int)(width / (float)maxcharCount);
+	charGap=(width / (float)maxcharCount);
 
 
 	for ( ; *buffPtr; *buffPtr ++, x += charGap) //size*0.7 is the distance between2 characters
@@ -458,7 +460,7 @@ fontDrawString
 Renders a string at xpos, ypos.
 =============
 */
-void fontDrawString (int xpos, int ypos, char *s,int width,...)
+void fontDrawString (GLfloat xpos, GLfloat ypos, char *s,GLfloat width,...)
 {
 	va_list	msg;
     char buffer[FONT_MAX_LEN] = {'\0'};

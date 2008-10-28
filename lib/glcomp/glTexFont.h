@@ -15,6 +15,8 @@
 #ifndef __GLTEXFONTH__
 #define __GLTEXFONTH__
 
+typedef float GLfloat;
+
 /* Error Codes */
 #define FONT_FILE_NOT_FOUND          -13 /* file was not found */
 #define FONT_BAD_IMAGE_TYPE          -14 /* color mapped image or image is not uncompressed */
@@ -32,16 +34,16 @@ typedef struct
     float fgColor[4];   /* foreground color, default white */
     float gdColor[4];   /* gradient color, default gray */
     float bgColor[4];   /* background color, default gray */
-    int size;           /* size of text, default 12 */
+    float size;           /* size of text, default 12 */
     int shadow;         /* shadow text? default 0 */
     int gradient;       /* gradient? default 0 */
     int italic;         /* italic amount, defaul 0 */
     int bold;           /* bold text? */
     int region;         /* do we have a text region */
-    int regionX;        /* lower left x */
-    int regionY;        /* lower left y */
-    int regionW;        /* text region w */
-    int regionH;        /* text region h */
+    float regionX;        /* lower left x */
+    float regionY;        /* lower left y */
+    float regionW;        /* text region w */
+    float regionH;        /* text region h */
     float tIncX;        /* used for texture coords, x axis amount to move */
     float tIncY;        /* used for texture coords, y axis amount to move */
     int blockRow;       /* characters per row */
@@ -79,7 +81,7 @@ fontDrawString
 Draws a string at (xpos, ypos) in the applications window.
 =============
 */
-void fontDrawString (int xpos, int ypos, char *s,int width,...);
+void fontDrawString (GLfloat xpos, GLfloat ypos, char *s,GLfloat width,...);
 /*
 =============
 fontRegion
@@ -96,7 +98,7 @@ fontSize
 Sets the font size.
 =============
 */
-void fontSize (int size);
+void fontSize (GLfloat size);
 
 
 void fontzdepth(float zdepth);

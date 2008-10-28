@@ -19,6 +19,10 @@
 #include "glutils.h"
 #include "topview.h"
 #include "topfisheyeview.h"
+#include "glTexFont.h"
+
+extern texFont_t font;
+
 
 
 /*
@@ -89,6 +93,7 @@ int glexpose_main(ViewInfo * view)
     draw_selection_box(view);
     drawBorders(view);
 	drawRotatingTools();
+	drawtestpoly();
 	/*DEBUG*/
 /*	if (view->mouse.mouse_mode == MM_PAN)
 	{
@@ -114,6 +119,23 @@ int glexpose_main(ViewInfo * view)
 	params:ViewInfo	, global view variable defined in viewport.c
 	return value:none
 */
+void drawtestpoly()
+{
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+//	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE , GL_DECAL);
+	glBindTexture(GL_TEXTURE_2D,font.texId);
+	glColor3f(1,0,0);
+	glBegin(GL_POLYGON);
+		glTexCoord2f(0.0,0.0);glVertex3f(0.0,0.0,0.0);
+		glTexCoord2f(0.0,1.0);glVertex3f(0.0,256.0,0.0);
+		glTexCoord2f(1.0,1.0);glVertex3f(256.0,256.0,0.0);
+		glTexCoord2f(1.0,0.0);glVertex3f(256.0,0.0,0.0);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+
+}
+
 void glexpose_grid(ViewInfo * view)
 {
     //drawing grids

@@ -22,5 +22,7 @@ int glexpose_main(ViewInfo * v);
 void glexpose_grid(ViewInfo * v);
 int glexpose_drawgraph(ViewInfo * view);
 void drawRotatingTools();
+void drawtestpoly();
+
 
 #endif

@@ -20,6 +20,8 @@
 #include "glTexFont.h"
 #include "glTexFontTGA.h"
 #include "glTexFontInclude.h"
+#include <png.h>
+
 
 GLenum texFormat;
 
@@ -232,5 +234,154 @@ fprintf(stderr,"font: %s\n", name);
 	free (imageData);
 
 	return 1;
+}
+unsigned char *load_png_font(char* file_name,int *imageWidth,int *imageHeight)
+{
+	unsigned char *imageData = NULL;
+	unsigned char header[8];
+	int rowbytes,i,ii,c;
+
+	png_structp png_ptr;
+	png_infop info_ptr;
+	png_infop end_info;
+	png_bytepp row_pointers; //actual image data
+	int is_png=0;
+	FILE *fp = fopen(file_name, "rb");
+    if (!fp)
+    {
+        return 0;
+    }
+    fread(header, 1, 8, fp);
+    is_png = !png_sig_cmp(header, 0, 8);
+    if (!is_png)
+    {
+        return 1;
+    }
+	else
+		printf("file is a valid ping file \n");
+
+    png_ptr = png_create_read_struct
+       (PNG_LIBPNG_VER_STRING, NULL,NULL,NULL);
+    if (!png_ptr)
+        return -1;
+
+    info_ptr = png_create_info_struct(png_ptr);
+    if (!info_ptr)
+    {
+        png_destroy_read_struct(&png_ptr,
+           (png_infopp)NULL, (png_infopp)NULL);
+        return -1;
+    }
+
+    end_info = png_create_info_struct(png_ptr);
+    if (!end_info)
+    {
+        png_destroy_read_struct(&png_ptr, &info_ptr,
+          (png_infopp)NULL);
+        return -1;
+    }
+
+
+	png_init_io(png_ptr, fp);
+
+//If you had previously opened the file and read any of the signature from the beginning in order to see if this was a PNG file, you need to let libpng know that there are some bytes missing from the start of the file.
+
+    png_set_sig_bytes(png_ptr, 8);
+	png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
+
+   row_pointers = png_malloc(png_ptr,
+	   info_ptr->height*sizeof(png_bytepp));
+	row_pointers = png_get_rows(png_ptr, info_ptr);
+	*imageWidth=info_ptr->width;
+	*imageHeight=info_ptr->height;
+	texFormat = GL_ALPHA;	
+	rowbytes = png_get_rowbytes(png_ptr, info_ptr);
+/*   for (i=0; i < info_ptr->height; i++)
+      row_pointers[i]=png_malloc(png_ptr,
+	  info_ptr->width*info_ptr->width/2);*/
+ //  png_set_rows(png_ptr, info_ptr, &row_pointers);
+	imageData=malloc(info_ptr->height*info_ptr->width);
+	c=0;
+	for (i=0; i < info_ptr->height; i++)
+   {
+	   printf ("ROW:%i\n",i);
+	   for (ii=0;ii < 1024; ii=ii+4)	
+		{
+/*			if ((row_pointers[i][ii+1] == 0) || (row_pointers[i][ii+1] == 255))
+				imageData[c]=0;
+			else*/
+			imageData[c]=row_pointers[255-i][ii];
+			c++;
+//			printf ("(%i %i)",row_pointers[i][ii],row_pointers[i][ii+1]);
+		}
+		printf ("\n---------------\n");
+   }
+
+
+   return imageData;
+
+   
+
+
+}
+
+
+/*#define imageWidth 256
+#define imageHeight 256 
+static GLubyte imageData[imageWidth][imageHeight][4];*/
+
+int fontLoadPNG (char *name, int id)
+{
+	GLubyte *imageData = NULL;
+	int imageWidth,imageHeight,idx,idx2,c;
+	
+//	imageData = fontGetData (s, size, imageBits);
+	imageData =load_png_font(name,&imageWidth,&imageHeight);
+
+	c=0;
+	idx2=0;
+/*	for (idx=0;idx < imageWidth*imageHeight+30000;idx=idx+1)
+		{
+			if (c!=imageData[idx])
+			{
+				c=imageData[idx];
+				printf ("%i) %i \n ",idx2,imageData[idx]);
+			}
+
+			idx2++;
+			c=((((idx&0x8)==0)^((idx2&0x8))==0))*255;
+				imageData[idx][idx2][0] = c;
+				imageData[idx][idx2][1] = c;
+				imageData[idx][idx2][2] = c;
+				imageData[idx][idx2][3] = 255;
+
+		}*/
+
+
+	/* no image data */
+	if (imageData == NULL)
+		return FONT_BAD_DATA;
+
+	glBindTexture (GL_TEXTURE_2D, id);
+	glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	/* glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); */
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	/* glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); */
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+//	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE , GL_DECAL);
+
+	glTexImage2D (GL_TEXTURE_2D, 0, texFormat, imageWidth, imageHeight, 0, texFormat, GL_UNSIGNED_BYTE, imageData);
+//	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+
+	/* release data, its been uploaded */
+
+	return 1;
+}
+void naber()
+{
+
 }
 

@@ -135,7 +135,7 @@ float GetOGLDistance(int l)
     winY = (float) viewport[3] - (float) y;
     gluUnProject(winX, winY, wwinZ, modelview, projection, viewport,
 		 &posXX, &posYY, &posZZ);
-    return ((float) (posXX - posX));
+	return ((float) (posXX - posX));
 
 }
 int GetFixedOGLPoslocal(int x, int y, float kts, GLfloat * X, GLfloat * Y,
