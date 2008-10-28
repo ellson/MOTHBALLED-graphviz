@@ -18,7 +18,7 @@ man_MANS = inkpot.3 inkpot.1
 pdf_DATA = inkpot.3.pdf inkpot.1.pdf
 
 inkpot_SOURCES = inkpot.c
-inkpot_LDADD = $(builddir)/libinkpot.la
+inkpot_LDADD = $(top_builddir)/lib/inkpot/libinkpot.la
 
 libinkpot_C_la_SOURCES = inkpot_scheme.c inkpot_value.c inkpot_xlate.c
 libinkpot_C_la_LIBADD = $(top_builddir)/lib/rbtree/librbtree_C.la
@@ -43,26 +43,26 @@ inkpot_lib_scheme.h: inkpot_lib_define.h
 inkpot_lib_string.h: inkpot_lib_define.h
 
 inkpot_lib_define.h: inkpot_lib.tcl inkpot_lib_procs.tcl \
-			$(builddir)/inkpot_lib_tk.dat \
-       			$(builddir)/inkpot_lib_svg.dat \
-			$(builddir)/inkpot_lib_x11.dat \
-		       	$(builddir)/inkpot_lib_brewer.dat
+			$(top_builddir)/lib/inkpot/inkpot_lib_tk.dat \
+       			$(top_builddir)/lib/inkpot/inkpot_lib_svg.dat \
+			$(top_builddir)/lib/inkpot/inkpot_lib_x11.dat \
+		       	$(top_builddir)/lib/inkpot/inkpot_lib_brewer.dat
 	$(TCLSH) inkpot_lib.tcl \
-			$(builddir)/inkpot_lib_tk.dat \
-			$(builddir)/inkpot_lib_svg.dat \
-			$(builddir)/inkpot_lib_x11.dat \
-			$(builddir)/inkpot_lib_brewer.dat
+			$(top_builddir)/lib/inkpot/inkpot_lib_tk.dat \
+			$(top_builddir)/lib/inkpot/inkpot_lib_svg.dat \
+			$(top_builddir)/lib/inkpot/inkpot_lib_x11.dat \
+			$(top_builddir)/lib/inkpot/inkpot_lib_brewer.dat
 
-inkpot_lib_x11.dat: inkpot_lib_x11.tcl data/rgb.txt
+$(top_builddir)/lib/inkpot/inkpot_lib_x11.dat: inkpot_lib_x11.tcl data/rgb.txt
 	$(TCLSH) inkpot_lib_x11.tcl data/rgb.txt
 
-inkpot_lib_svg.dat: inkpot_lib_svg.tcl data/types.html
+$(top_builddir)/lib/inkpot/inkpot_lib_svg.dat: inkpot_lib_svg.tcl data/types.html
 	$(TCLSH) inkpot_lib_svg.tcl data/types.html
 
-inkpot_lib_tk.dat: inkpot_lib_tk.tcl data/xcolors.c
+$(top_builddir)/lib/inkpot/inkpot_lib_tk.dat: inkpot_lib_tk.tcl data/xcolors.c
 	$(TCLSH) inkpot_lib_tk.tcl data/xcolors.c
 
-inkpot_lib_brewer.dat: inkpot_lib_brewer.tcl data/brewer_colors
+$(top_builddir)/lib/inkpot/inkpot_lib_brewer.dat: inkpot_lib_brewer.tcl data/brewer_colors
 	$(TCLSH) inkpot_lib_brewer.tcl data/brewer_colors
 
 inkpot.1.pdf: inkpot.1
