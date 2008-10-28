@@ -18,6 +18,7 @@
 
 #ifdef WIN32
 #include "windows.h"
+#include "gltexfont.h"
 //#define       SMYRNA_GLADE "C:/Projects/graphviz2/share/gui/smyrna.glade"
 #define	SMYRNA_ATTRS "c:/Projects/graphviz2/share/gui/attrs.txt"
 #endif
@@ -494,6 +495,7 @@ typedef struct _ViewInfo
 	gvk_layout dfltEngine;
 	GtkTextBuffer* consoleText;
 	float FontSizeConst;
+	fontset_t* fontset;
 } ViewInfo;
 
 extern ViewInfo *view;

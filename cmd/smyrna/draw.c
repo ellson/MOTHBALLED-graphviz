@@ -459,7 +459,8 @@ static void EmbedText(xdot_op * op, int param)
 	x = (GLfloat) op->u.text.x;
     if (op->u.text.align == -1)
 	x = (GLfloat) op->u.text.x + op->u.text.width;
-    fontSize(view->FontSize);
+    fontSize(view->fontset
+		view->FontSize);
     if (param == 0)
 	fontColor(view->penColor.R, view->penColor.G, view->penColor.B);
     if (param == 1)		//selected

@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
 	smyrnaDir = SMYRNA_PATH;
 #endif
 
-//	create_font_file("c:\\pango_test.png",(float)64.0,(float)64.0);
+	create_font_file("c:\\pango_test.png",(float)64.0,(float)64.0);
 	load_attributes();
 
 #ifdef G_OS_WIN32
