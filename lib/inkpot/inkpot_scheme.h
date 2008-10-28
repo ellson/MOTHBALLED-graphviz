@@ -27,17 +27,14 @@ typedef struct inkpot_scheme_s {
 
 typedef struct inkpot_range_s {
     IDX_INDEXES_t
-	size,
+	size;
+
+    MSK_SCHEMES_t
+	scheme_bits;	/* A bit for each inkpot_scheme_name_t
+			 * that includes this inkpot_name_t  */
+    IDX_INDEXES_t
 	first_value_idx;
 } inkpot_range_t;
-
-typedef struct inkpot_icolor_s { 
-    IDX_STRINGS_t
-	string_idx;         /* The icolor name in TAB_STRINGS. */
-
-    IDX_RANGES_t
-	range_idx;
-} inkpot_icolor_t;
 
 typedef struct inkpot_name_s {    /* Color_name used by one or more
 			 * inkpot_scheme_name_t. Each instance has
@@ -51,14 +48,14 @@ typedef struct inkpot_name_s {    /* Color_name used by one or more
 	string_idx;         /* The color name in TAB_STRINGS.
 			 * (e.g. "green") */
 
+    MSK_SCHEMES_t
+	scheme_bits;	/* A bit for each inkpot_scheme_name_t
+			 * that includes this inkpot_name_t  */
+
     IDX_VALUES_t
 	value_idx;	/* An index into TAB_VALUE for this
 			 * inkpot_name_t, or, if scheme_bits == 0
 			 * an index into TAB_ALTS */
-
-    MSK_SCHEMES_t
-	scheme_bits;	/* A bit for each inkpot_scheme_name_t
-			 * that includes this inkpot_name_t  */
 } inkpot_name_t;
 
 typedef struct inkpot_cache_element_s {
@@ -85,10 +82,6 @@ struct inkpot_s {    	/* The Ink Pot */
 	active_schemes,     /* The number of active index schemes. */
 	active_out_schemes; /* The number of active index schemes. */
 	
-    IDX_ICOLORS_t
-	scheme_list[SZT_ICOLORS], /* The list of active index schemes. */
-	out_scheme_list[1]; /* The list of active index schemes. */
-
     inkpot_name_t
 	*out_name;		/* The current output name, or NULL. */
 
