@@ -158,7 +158,7 @@ set SZT_SCHEMES 0
 tab_initialize $f {set SZT_SCHEMES} {set scheme} \
 	"inkpot_scheme_t TAB_SCHEMES\[SZT_SCHEMES\] = {"
 foreach {scheme} [lsort -ascii [array names ALL_SCHEMES]] {
-    tab_elem $ALL_STRINGS_coded($scheme),
+    tab_elem "{$ALL_STRINGS_coded($scheme)},"
     tab_row
     set ALL_SCHEMES_coded($scheme) [list $SZT_SCHEMES [expr 1 << $SZT_SCHEMES]]
     incr SZT_SCHEMES
