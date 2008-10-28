@@ -15,6 +15,10 @@
 #ifndef __GLTEXFONTH__
 #define __GLTEXFONTH__
 
+#include <stdlib.h>
+
+#include "glpangofont.h"	
+
 typedef float GLfloat;
 
 /* Error Codes */
@@ -50,13 +54,37 @@ typedef struct
     int blockCol;       /* characters per col */
     unsigned int texId; /* texture id */
 	float zdepth;	//third dimension , depth of fonts
+	char* fontdesc;	//font description
 } texFont_t;
 
-#endif
+
+typedef struct
+{
+	texFont_t** fonts;
+	int count;
+	int activefont;
+	char* font_directory;	//location where the glfont files are stored
+}fontset_t;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+/*
+	check if font is already loaded
+	if loaded returns the id
+	else returns -1
+*/
+int fontId(fontset_t* fontset,char* fontdesc);
 
+
+
+/*
+	load font via font description
+	returns the id,
+	if font already exists no malloc just returns the id
+*/
+int add_font(fontset_t* fontset,char* fontdesc);
+	
 /*
 =============
 fontLoad
@@ -64,7 +92,7 @@ fontLoad
 Loads up out font from the passed image file name.  
 =============
 */
-int fontLoad (char *name);
+int fontLoad (texFont_t* font,char *name);
 /*
 =============
 fontLoadEx
@@ -73,7 +101,7 @@ Same as above but it loads a custom font map with row chars per row and col
 chars per column.  
 =============
 */
-int fontLoadEx (char *name, int row, int col);
+int fontLoadEx (texFont_t* font,char *name, int row, int col);
 /*
 =============
 fontDrawString
@@ -81,7 +109,7 @@ fontDrawString
 Draws a string at (xpos, ypos) in the applications window.
 =============
 */
-void fontDrawString (GLfloat xpos, GLfloat ypos, char *s,GLfloat width,...);
+void fontDrawString (texFont_t* font,GLfloat xpos, GLfloat ypos, char *s,GLfloat width,...);
 /*
 =============
 fontRegion
@@ -90,7 +118,7 @@ Sets up a font region.  Upper left corner is described by (xpos, ypos).
 The region is w units wide and h units tall.  
 =============
 */
-void fontRegion (int xpos, int ypos, int w, int h);
+void fontRegion (texFont_t* font,int xpos, int ypos, int w, int h);
 /*
 =============
 fontSize 
@@ -98,10 +126,10 @@ fontSize
 Sets the font size.
 =============
 */
-void fontSize (GLfloat size);
+void fontSize (texFont_t* font,GLfloat size);
 
 
-void fontzdepth(float zdepth);
+void fontzdepth(texFont_t* font,float zdepth);
 
 /*
 =============
@@ -110,7 +138,7 @@ fontShadow
 Draws shadowed text.
 =============
 */
-void fontShadow (void);
+void fontShadow (texFont_t* font);
 /*
 =============
 fontGradient
@@ -118,7 +146,7 @@ fontGradient
 Draws gradient text. 
 =============
 */
-void fontGradient (void);
+void fontGradient (texFont_t* font);
 /*
 =============
 fontColor*, fontShadowColor*, fonrGradientColor*
@@ -126,18 +154,22 @@ fontColor*, fontShadowColor*, fonrGradientColor*
 Sets color for various operations. 
 =============
 */
-void fontColor (float r, float g, float b);
-void fontColorA (float r, float g, float b, float a);
-void fontColorp (float *clr);
-void fontColorAp (float *clr);
-void fontShadowColor (float r, float g, float b);
-void fontShadowColorA (float r, float g, float b, float a);
-void fontShadowColorp (float *clr);
-void fontShadowColorAp (float *clr);
-void fontGradientColor (float r, float g, float b);
-void fontGradientColorA (float r, float g, float b, float a);
-void fontGradientColorp (float *clr);
-void fontGradientColorAp (float *clr);
+void fontColor (texFont_t* font,float r, float g, float b);
+void fontColorA (texFont_t* font,float r, float g, float b, float a);
+void fontColorp (texFont_t* font,float *clr);
+void fontColorAp (texFont_t* font,float *clr);
+void fontShadowColor (texFont_t* font,float r, float g, float b);
+void fontShadowColorA (texFont_t* font,float r, float g, float b, float a);
+void fontShadowColorp (texFont_t* font,float *clr);
+void fontShadowColorAp (texFont_t* font,float *clr);
+void fontGradientColor (texFont_t* font,float r, float g, float b);
+void fontGradientColorA (texFont_t* font,float r, float g, float b, float a);
+void fontGradientColorp (texFont_t* font,float *clr);
+void fontGradientColorAp (texFont_t* font,float *clr);
 #ifdef __cplusplus
 }
 #endif
+
+#endif
+
+
