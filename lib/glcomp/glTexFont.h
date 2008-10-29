@@ -76,8 +76,14 @@ extern "C" {
 */
 int fontId(fontset_t* fontset,char* fontdesc);
 
+/*
+	Initialize fontset as an empty set
+*/
+
+void fontset_init(fontset_t* fs);
 
 
+void copy_font(texFont_t* targetfont,const texFont_t* sourcefont);
 /*
 	load font via font description
 	returns the id,
@@ -151,9 +157,11 @@ void fontGradient (texFont_t* font);
 =============
 fontColor*, fontShadowColor*, fonrGradientColor*
 
+
 Sets color for various operations. 
 =============
 */
+
 void fontColor (texFont_t* font,float r, float g, float b);
 void fontColorA (texFont_t* font,float r, float g, float b, float a);
 void fontColorp (texFont_t* font,float *clr);

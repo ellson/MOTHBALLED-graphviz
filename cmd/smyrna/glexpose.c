@@ -21,8 +21,6 @@
 #include "topfisheyeview.h"
 #include "glTexFont.h"
 
-extern texFont_t font;
-
 
 
 /*
@@ -124,7 +122,7 @@ void drawtestpoly()
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 //	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE , GL_DECAL);
-	glBindTexture(GL_TEXTURE_2D,font.texId);
+	glBindTexture(GL_TEXTURE_2D,view->fontset->fonts[view->fontset->activefont]->texId);
 	glColor3f(1,0,0);
 	glBegin(GL_POLYGON);
 		glTexCoord2f(0.0,0.0);glVertex3f(0.0,0.0,0.0);

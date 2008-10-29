@@ -259,6 +259,7 @@ there i go, turn the page
 	atoi(get_attribute_value ("drawlabels", view, g));
 	view->FontSizeConst=0; //this will be calculated later in topview.c while calculating optimum font size
 
+
 //FIXME: I don't think an openGL function can be called before it
   //     is initialized.
 #ifdef _WIN32
@@ -405,6 +406,9 @@ void init_viewport(ViewInfo * view)
     set_viewport_settings_from_template(view, view->default_attributes);
     view->dfltViewType = VT_NONE;
     view->dfltEngine = GVK_NONE;
+	//create fontset
+	view->fontset=(fontset_t*)malloc(sizeof(fontset_t));
+	fontset_init(view->fontset);
 }
 
 

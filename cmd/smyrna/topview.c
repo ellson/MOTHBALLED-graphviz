@@ -229,6 +229,7 @@ void preparetopview(Agraph_t * g, topview * t)
     set_boundaries(t);
     set_update_required(t);
     t->topviewmenu = glcreate_gl_topview_menu();
+	//set componenet set's  font with already loaded default font.This will be inherited by all components added to this set as default
     attach_camera_widget(view);
     load_host_buttons(t, g, t->topviewmenu);
     t->h = '\0';
@@ -628,11 +629,11 @@ static int draw_node_hint_boxes()
 			  (GLfloat) fs,agnameof(view->Topview->picked_nodes[ind]->Node)
 			  )
 			  ;
-	fontSize(fs);
-	fontColorA(0, 0, 1, 1);
+	fontSize(view->fontset->fonts[view->fontset->activefont],fs);
+	fontColorA(view->fontset->fonts[view->fontset->activefont],0, 0, 1, 1);
 
 
-	fontDrawString(
+	fontDrawString(view->fontset->fonts[view->fontset->activefont],
 		       (view->Topview->picked_nodes[ind]->distorted_x),
 		        (view->Topview->picked_nodes[ind]->
 			      distorted_y+fs+fs/5.0 ),
@@ -858,18 +859,18 @@ static int draw_topview_label(topview_node * v, float zdepth)
 		fs= 10;
 
 
-	fontSize((int) fs);
+	fontSize(view->fontset->fonts[view->fontset->activefont],(int) fs);
 	if ((log((float) v->degree) * -0.6 * view->zoom) > 0)
-	    fontColorA((float) log((double) v->degree + (double) 1),
+	    fontColorA(view->fontset->fonts[view->fontset->activefont],(float) log((double) v->degree + (double) 1),
 		       view->penColor.G, view->penColor.B,
 		       view->penColor.A / (float) log((double) v->degree) *
 		       (float) -0.6 * (float) view->zoom);
 	else
-	    fontColorA((float) log((double) v->degree + (double) 1),
+	    fontColorA(view->fontset->fonts[view->fontset->activefont],(float) log((double) v->degree + (double) 1),
 		       view->penColor.G, view->penColor.B, 1);
 
 //	fontColorA(0,0,0,1);
-	fontDrawString((int) (v->distorted_x - ddx),
+	fontDrawString(view->fontset->fonts[view->fontset->activefont],(int) (v->distorted_x - ddx),
 		       (int) (v->distorted_y - ddy), v->Label,
 		       (int) (fs * strlen(v->Label)*0.7));
 
@@ -1370,11 +1371,13 @@ static glCompSet *glcreate_gl_topview_menu()
 {
 
     glCompSet *s = NEW(glCompSet);
-    glCompPanel *p;
+
+	glCompPanel *p;
     glCompButton *b;
     glCompLabel *l;
-	/* GtkRequisition requisition; */
 
+	copy_font(&(s->font),view->fontset->fonts[view->fontset->activefont]);
+	/* GtkRequisition requisition; *//* What??*/
     if (!smyrna_icon_pan) {
 #ifdef _WIN32
 	smyrna_icon_pan = "c:/pan.raw";

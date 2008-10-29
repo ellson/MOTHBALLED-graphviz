@@ -136,9 +136,10 @@ static void realize(GtkWidget * widget, gpointer data)
 #else
     smyrna_font = smyrnaPath("arial.tga");
 #endif
-    g_print("loading font....%i\n", fontLoad(smyrna_font));
+//    g_print("loading font....%i\n", fontLoad(smyrna_font));
 
-  /*** OpenGL BEGIN ***/
+	add_font(view->fontset,"Vladimir script bold 16");//wired default font
+	/*** OpenGL BEGIN ***/
     if (!gdk_gl_drawable_gl_begin(gldrawable, glcontext))
 	return;
 

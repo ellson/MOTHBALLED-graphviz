@@ -239,8 +239,8 @@ unsigned char *load_png_font(char* file_name,int *imageWidth,int *imageHeight)
 {
 	unsigned char *imageData = NULL;
 	unsigned char header[8];
-	int rowbytes,i,ii,c,pixeloffset;
-
+	int rowbytes,i,ii,b0,b1,b2,b3,pixeloffset;
+	long int c;
 	png_structp png_ptr;
 	png_infop info_ptr;
 	png_infop end_info;
@@ -302,14 +302,40 @@ unsigned char *load_png_font(char* file_name,int *imageWidth,int *imageHeight)
 	//decide what pixel offset to use, ro
 	pixeloffset = png_get_rowbytes(png_ptr, info_ptr)/info_ptr->width;
 
+	b0=-1;b1=-1;b2=-1;b3=-1;
+
 	for (i=0; i < info_ptr->height; i++)
    {
-	   for (ii=0;ii < 1024; ii=ii+pixeloffset)	
+	   printf ("Column:%i\n",i);
+	   for (ii=0;ii < png_get_rowbytes(png_ptr, info_ptr); ii=ii+pixeloffset)	
 		{
-			imageData[c]=row_pointers[255-i][ii];
+			imageData[c]=row_pointers[info_ptr->height-i-1][ii];
+
+			if(
+					(b0!=row_pointers[info_ptr->height-i-1][ii])
+							||
+					(b1!=row_pointers[info_ptr->height-i-1][ii+1])
+							||
+					(b2!=row_pointers[info_ptr->height-i-1][ii+2])
+							||
+					(b3!=row_pointers[info_ptr->height-i-1][ii+3])
+					)
+			{
+				b0=row_pointers[info_ptr->height-i-1][ii];
+				b1=row_pointers[info_ptr->height-i-1][ii+1];
+				b2=row_pointers[info_ptr->height-i-1][ii+2];
+				b3=row_pointers[info_ptr->height-i-1][ii+3];
+					printf ("(%i,%i,%i,%i)",b0,b1,b2,b3);
+
+			}
+
+
 			c++;
 		}
+	   printf ("\n");
    }
+	printf ("embedded bytes:%i\n",c);
+
 	//cleaning libpng mess
 	png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 	png_free(png_ptr, row_pointers);
