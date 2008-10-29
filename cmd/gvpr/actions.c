@@ -192,16 +192,29 @@ Agobj_t *copy(Agraph_t * g, Agobj_t * obj)
     return nobj;
 }
 
+typedef struct {
+    Dtlink_t link;
+    Agedge_t *key;
+    Agedge_t *val;
+} edgepair_t;
+
+static Agedge_t*
+mapEdge (Dt_t* emap, Agedge_t* e)
+{
+     edgepair_t* ep = dtmatch (emap, &e);     
+     if (ep) return ep->val;
+     else return NULL;
+}
+
 /* cloneSubg:
  * Clone subgraph sg in tgt.
  */
-static Agraph_t *cloneSubg(Agraph_t * tgt, Agraph_t * g)
+static Agraph_t *cloneSubg(Agraph_t * tgt, Agraph_t * g, Dt_t* emap)
 {
     Agraph_t *ng;
     Agraph_t *sg;
     Agnode_t *t;
     Agnode_t *newt;
-    Agnode_t *newh;
     Agedge_t *e;
     Agedge_t *newe;
 
@@ -216,10 +229,8 @@ static Agraph_t *cloneSubg(Agraph_t * tgt, Agraph_t * g)
 	agsubnode(ng, newt, 1);
     }
     for (t = agfstnode(g); t; t = agnxtnode(g, t)) {
-	newt = agnode(tgt, agnameof(t), 0);
 	for (e = agfstout(g, t); e; e = agnxtout(g, e)) {
-	    newh = agnode(tgt, agnameof(aghead(e)), 0);
-	    newe = agedge(tgt, newt, newh, agnameof(e), 0);
+	    newe = mapEdge (emap, e);
 	    if (!newe)
 		error(ERROR_PANIC,
 		      "edge (%s,%s)[%s] not found in cloned graph %s",
@@ -229,7 +240,7 @@ static Agraph_t *cloneSubg(Agraph_t * tgt, Agraph_t * g)
 	}
     }
     for (sg = agfstsubg(g); sg; sg = agnxtsubg(sg)) {
-	if (!cloneSubg(ng, sg)) {
+	if (!cloneSubg(ng, sg, emap)) {
 	    error(ERROR_FATAL, "error cloning subgraph %s from graph %s",
 		  agnameof(sg), agnameof(g));
 	}
@@ -237,14 +248,37 @@ static Agraph_t *cloneSubg(Agraph_t * tgt, Agraph_t * g)
     return ng;
 }
 
+static int cmppair(Dt_t * d, Agedge_t** key1, Agedge_t** key2, Dtdisc_t * disc)
+{
+    if (*key1 > *key2) return 1;
+    else if (*key1 < *key2) return -1;
+    else return 0;
+}
+
+static Dtdisc_t edgepair = {
+    offsetof(edgepair_t, key),
+    sizeof(Agedge_t*),
+    offsetof(edgepair_t, link),
+    NIL(Dtmake_f),
+    NIL(Dtfree_f),
+    (Dtcompar_f) cmppair,
+    NIL(Dthash_f),
+    NIL(Dtmemory_f),
+    NIL(Dtevent_f)
+};
+
 /* cloneGraph:
  * Clone node, edge and subgraph structure from src to tgt.
  */
 static void cloneGraph(Agraph_t * tgt, Agraph_t * src)
 {
     Agedge_t *e;
+    Agedge_t *ne;
     Agnode_t *t;
     Agraph_t *sg;
+    Dt_t* emap = dtopen (&edgepair, Dtoset);
+    edgepair_t* data = (edgepair_t*)malloc(sizeof(edgepair_t)*agnedges(src));
+    edgepair_t* ep = data;
 
     for (t = agfstnode(src); t; t = agnxtnode(src, t)) {
 	if (!copy(tgt, OBJ(t))) {
@@ -254,20 +288,26 @@ static void cloneGraph(Agraph_t * tgt, Agraph_t * src)
     }
     for (t = agfstnode(src); t; t = agnxtnode(src, t)) {
 	for (e = agfstout(src, t); e; e = agnxtout(src, e)) {
-	    if (!copy(tgt, OBJ(e))) {
+	    if (!(ne = (Agedge_t*)copy(tgt, OBJ(e)))) {
 		error(ERROR_FATAL,
 		      "error cloning edge (%s,%s)[%s] from graph %s",
 		      agnameof(agtail(e)), agnameof(aghead(e)),
 		      agnameof(e), agnameof(src));
 	    }
+	    ep->key = e;
+	    ep->val = ne;
+	    dtinsert (emap, ep++);
 	}
     }
     for (sg = agfstsubg(src); sg; sg = agnxtsubg(sg)) {
-	if (!cloneSubg(tgt, sg)) {
+	if (!cloneSubg(tgt, sg, emap)) {
 	    error(ERROR_FATAL, "error cloning subgraph %s from graph %s",
 		  agnameof(sg), agnameof(src));
 	}
     }
+
+    dtclose (emap);
+    free (data);
 }
 
 /* clone:
