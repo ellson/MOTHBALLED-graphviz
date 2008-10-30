@@ -1,0 +1,30 @@
+all:    librbtree.a
+ROOT=../..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
+
+INCS =  -I. -I$(ROOT) 
+
+DEFINES = -DHAVE_CONFIG_H
+
+HDRS = misc.h red_black_tree.h stack.h
+
+OBJS = misc.o red_black_tree.o stack.o
+
+librbtree.a : $(OBJS)
+	$(RM) librbtree.a
+	$(AR) cr librbtree.a $(OBJS)
+	$(RANLIB) librbtree.a
+
+install: librbtree.a 
+#	$(MKPATH) $(INCDIR)
+#	$(INSTALL) $(INST_HDRS) $(INCDIR)
+	$(MKPATH) $(LIBDIR)
+	$(INSTALL) librbtree.a $(LIBDIR)
+
+clean:
+	$(RM) core *.o
+
+distclean: clean
+	$(RM) *.a
+
