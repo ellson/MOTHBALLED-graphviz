@@ -23,8 +23,8 @@ libsparse.a : $(OBJS)
 	$(RANLIB) libsparse.a
 
 install: libsparse.a 
-	$(MKPATH) $(INCDIR)
-	$(INSTALL) $(INST_HDRS) $(INCDIR)
+#	$(MKPATH) $(INCDIR)
+#	$(INSTALL) $(INST_HDRS) $(INCDIR)
 	$(MKPATH) $(LIBDIR)
 	$(INSTALL) libsparse.a $(LIBDIR)
 
