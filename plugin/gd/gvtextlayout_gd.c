@@ -97,7 +97,30 @@ char *gd_alternate_fontlist(char *font)
 }
 #endif				/* HAVE_GD_FONTCONFIG */
 
-extern char* psfontResolve (PostscriptAlias* pa);
+/* gd_psfontResolve:
+ *  * Construct alias for postscript fontname.
+ *   * NB. Uses a static array - non-reentrant.
+ *    */
+
+#define ADD_ATTR(a) \
+  if (a) { \
+        strcat(buf, comma ? " " : ", "); \
+        comma = 1; \
+        strcat(buf, a); \
+  }
+
+char* gd_psfontResolve (PostscriptAlias* pa)
+{
+    static char buf[1024];
+    int comma=0;
+    strcpy(buf, pa->family);
+
+    ADD_ATTR(pa->weight);
+    ADD_ATTR(pa->stretch);
+    ADD_ATTR(pa->style);
+   
+    return buf;
+}
 
 static boolean gd_textlayout(textpara_t * para, char **fontpath)
 {
@@ -138,7 +161,7 @@ static boolean gd_textlayout(textpara_t * para, char **fontpath)
 #ifdef HAVE_GD_FONTCONFIG
 	gdFTUseFontConfig(1);  /* tell gd that we really want to use fontconfig, 'cos it s not the default */
 	if (para->postscript_alias)
-	    fontlist = psfontResolve (para->postscript_alias);
+	    fontlist = gd_psfontResolve (para->postscript_alias);
 	else
 	    fontlist = para->fontname;
 #else
