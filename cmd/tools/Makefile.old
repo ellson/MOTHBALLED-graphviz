@@ -1,6 +1,6 @@
 ALL_BIN = gc gvcolor acyclic nop ccomps sccmap tred unflatten gxl2dot \
-          dot2gxl dijkstra gvpack bcomps mm2gv gvgen 
-ALL = $(ALL_BIN) dot2gxl.1
+          gv2gxl dijkstra gvpack bcomps
+ALL = $(ALL_BIN) gv2gxl.1
 
 all : $(ALL)
 ROOT=../..
@@ -40,6 +40,9 @@ GVLIBS = -L$(LOC_LIB)/gvc -lgvc $(PLUGS) \
         -L$(LOC_LIB)/circogen -lcircogen \
         -L$(LOC_LIB)/fdpgen -lfdpgen \
         -L$(LOC_LIB)/sfdpgen -lsfdpgen \
+        -L$(LOC_LIB)/patchwork -lpatchwork \
+        -L$(LOC_LIB)/sparse -lsparse \
+        -L$(LOC_LIB)/rbtree -lrbtree \
         -L$(LOC_LIB)/twopigen -ltwopigen \
         -L$(LOC_LIB)/pack -lpack \
         -L$(LOC_LIB)/common -lcommon \
@@ -63,32 +66,11 @@ GCOBJS = gc.o
 TOBJS = tred.o
 CCOBJS = ccomps.o
 SCCOBJS = sccmap.o
-GXLOBJS = cvtgxl.o   dot2gxl.o  gxl2dot.o
+GXLOBJS = cvtgxl.o   gv2gxl.o  gxl2gv.o
 GVPOBJS = gvpack.o gvpack_builtins.o
-MMGVOBJS = mm2gv.o matrix_market.o mmio.o
-GVGENOBJS = gvgen.o graph_generator.o
-
 BCCOBJS = bcomps.o
 MANS = acyclic.1 gvcolor.1 nop.1 tred.1 ccomps.1 gc.1 sccmap.1 \
-	unflatten.1 gxl2dot.1 dot2gxl.1 gvpack.1 bcomps.1
-
-gvgen : gvgen.o
-	$(CSLD) $(LDFLAGS) gvgen.o $(ALIBS) -o $@
-
-gvgen.o : gvgen.c
-	$(CC) -c $(CCFLAGS) $(DEFINES) $(DNINCS) $(INCS) gvgen.c
-
-mm2gv : $(GVPOBJS)
-	$(CPP) $(LDFLAGS) $(MMGVOBJS) $(INGLIB) $(PDNLIBS) -o $@
-
-mm2gv.o : mm2gv.c
-	$(CC) -c $(CCFLAGS) $(DEFINES) $(DNINCS) $(PINCS) mm2gv.c
-
-matrix_market.o : matrix_market.c
-	$(CC) -c $(CCFLAGS) $(DEFINES) $(DNINCS) $(PINCS) matrix_market.c
-
-mmio.o : mmio.c
-	$(CC) -c $(CCFLAGS) $(DEFINES) $(DNINCS) $(PINCS) mmio.c
+	unflatten.1 gxl2gv.1 gv2gxl.1 gvpack.1 bcomps.1
 
 gvpack : $(GVPOBJS)
 	$(CPP) $(LDFLAGS) $(GVPOBJS) $(INGLIB) $(PDNLIBS) -o $@
@@ -105,21 +87,21 @@ dijkstra : dijkstra.o
 dijkstra.o : dijkstra.c
 	$(CC) -c $(CCFLAGS) $(DEFINES) $(DNINCS) $(INCS) dijkstra.c
 
-gxl2dot : $(GXLOBJS)
+gxl2gv : $(GXLOBJS)
 	$(CSLD) $(LDFLAGS) $(GXLOBJS) $(INGLIB) $(ALIBS) $(EXPAT_LIB) -o $@
 
-dot2gxl : gxl2dot
+gv2gxl : gxl2gv
 	$(RM) -f $@
 	$(LN) -s $? $@
 
 cvtgxl.o : cvtgxl.c
 	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $(EXPAT_INC) cvtgxl.c
 
-dot2gxl.o : dot2gxl.c
-	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $(EXPAT_INC) dot2gxl.c
+gv2gxl.o : gv2gxl.c
+	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $(EXPAT_INC) gv2gxl.c
 
-gxl2dot.o : gxl2dot.c
-	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $(EXPAT_INC) gxl2dot.c
+gxl2gv.o : gxl2gv.c
+	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $(EXPAT_INC) gxl2gv.c
 
 sccmap : $(SCCOBJS)
 	$(CSLD) $(LDFLAGS) $(SCCOBJS) $(INGLIB) $(ALIBS) -o $@
@@ -148,7 +130,7 @@ gc : $(GCOBJS)
 bcomps : $(BCCOBJS)
 	$(CSLD) $(LDFLAGS) $(BCCOBJS) $(INGLIB) $(LIBS) -o $@
 
-dot2gxl.1: gxl2dot.1
+gv2gxl.1: gxl2gv.1
 	$(RM) -f $@
 	$(LN) -s $? $@
 
