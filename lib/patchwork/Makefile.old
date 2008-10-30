@@ -8,6 +8,7 @@ INCS =	-I. -I$(ROOT) \
 	-I../neatogen \
 	-I../pack \
 	-I../gvc \
+	-I../fdpgen \
 	-I../pathplan \
 	-I../graph \
 	-I../cdt \

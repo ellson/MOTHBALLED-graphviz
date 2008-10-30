@@ -15,7 +15,7 @@ DEFINES = -DHAVE_CONFIG_H
 
 OBJS = acyclic.o compound.o flat.o sameport.o class1.o conc.o \
        position.o dotsplines.o class2.o decomp.o dotinit.o rank.o \
-       cluster.o fastgr.o mincross.o 
+       cluster.o fastgr.o mincross.o aspect.o
 
 HFILES = dot.h dotprocs.h
 
