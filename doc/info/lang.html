@@ -117,11 +117,11 @@ the parser will actually accept any identifier.
 <P>
 An <I>ID</I> is one of the following: 
 <MENU>
-<LI> Any string of alphabetic characters, underscores or
-digits, not beginning with a digit;
+<LI> Any string of alphabetic (<TT>[a-zA-Z\200-\377]</TT>) characters, underscores (<TT>'_'</TT>) or
+digits (<TT>[0-9]</TT>), not beginning with a digit;
 <LI> a number [<tt>-</tt>]<sup>?</sup>(<tt>.</tt>[<tt>0</tt>-<tt>9</tt>]<sup>+</sup>  | [<tt>0</tt>-<tt>9</tt>]<sup>+</sup>(<tt>.</tt>[<tt>0</tt>-<tt>9</tt>]<sup>*</sup>)<sup>?</sup> ); 
 <LI> any double-quoted string (&quot;...&quot;) possibly containing escaped 
-quotes (\&quot;);
+quotes (\&quot;)<SUP>1</SUP>;
 <LI> an <A NAME=html>HTML string</A> (&lt;...&gt;).
 </MENU>
 Note that in HTML strings, angle
@@ -200,5 +200,12 @@ glyph, and the HTML entity name. Thus, to include a lower-case Greek beta
 into a string, one can use the ascii sequence <TT>&amp;beta;</TT>. 
 In general, one should only use entities that are allowed in the output
 character set, and for which there is a glyph in the font.
+<HR>
+<OL TYPE="1">
+<LI> In quoted strings in DOT, the only escaped character is double-quote
+("). That is, in quoted strings, the dyad \" is converted to "; all other
+characters are left unchanged. In particular, \\ remains \\. Layout
+engines may apply additional escape sequences.
+</OL>
 </BODY>
 </HTML>
