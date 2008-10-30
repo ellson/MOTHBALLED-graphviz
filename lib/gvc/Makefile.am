@@ -63,7 +63,7 @@ libgvc_la_LIBADD = $(libgvc_C_la_LIBADD) \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
-	$(GTS_LIBS) $(EXPAT_LIBS) $(Z_LIBS) $(MATH_LIBS)
+	$(EXPAT_LIBS) $(Z_LIBS) $(MATH_LIBS)
 libgvc_la_DEPENDENCIES = $(libgvc_C_la_DEPENDENCIES)
 
 #For use without plugins.

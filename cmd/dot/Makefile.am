@@ -71,7 +71,7 @@ uninstall-hook:
 	(cd $(DESTDIR)$(libdir); rm -f config;)
 
 dot.1.pdf: $(srcdir)/dot.1
-	- @GROFF@ -Tps -man $(srcdir)/dot.1 | @PS2PDF@ - - >dot.1.pdf
+	- $(GROFF) -Tps -man $(srcdir)/dot.1 | $(PS2PDF) - - >dot.1.pdf
 
 # This automagic technique for building the list of builtins requires that the
 # symbols be in the binary image, but libtool makes it difficult
@@ -89,7 +89,7 @@ dot_static_LDADD = \
 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
 	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH)_C.la \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
-       	@GTS_LIBS@ @ICONV_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
+       	$(GTS_LIBS) $(ICONV_LIBS) $(EXPAT_LIBS) $(Z_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
 
 dot_builtins_SOURCES = dot.c $(top_srcdir)/lib/gvc/dot_builtins.c $(top_srcdir)/lib/gvc/no_demand_loading.c
 dot_builtins_LDADD = \
@@ -100,21 +100,21 @@ dot_builtins_LDADD = \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
 	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
 	$(top_builddir)/lib/cdt/libcdt.la \
-       	@GTS_LIBS@ @ICONV_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
+       	$(GTS_LIBS) $(ICONV_LIBS) $(EXPAT_LIBS) $(Z_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
 
 if WITH_LIBGD
 if WITH_MYLIBGD
-dot_static_LDADD += $(top_builddir)/plugin/gd/.libs/libgvplugin_gd_C.a $(top_builddir)/lib/gd/libgvgd_C.la @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@
-dot_builtins_LDADD += $(top_builddir)/plugin/gd/libgvplugin_gd.la $(top_builddir)/lib/gd/libgvgd_C.la @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@
+dot_static_LDADD += $(top_builddir)/plugin/gd/.libs/libgvplugin_gd_C.a $(top_builddir)/lib/gd/libgvgd_C.la $(FONTCONFIG_LIBS) $(FREETYPE2_LIBS) $(JPEG_LIBS) $(PNG_LIBS) $(Z_LIBS)
+dot_builtins_LDADD += $(top_builddir)/plugin/gd/libgvplugin_gd.la $(top_builddir)/lib/gd/libgvgd_C.la $(FONTCONFIG_LIBS) $(FREETYPE2_LIBS) $(JPEG_LIBS) $(PNG_LIBS) $(Z_LIBS)
 else
-dot_static_LDADD += $(top_builddir)/plugin/gd/.libs/libgvplugin_gd_C.a @GD_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@
-dot_builtins_LDADD += $(top_builddir)/plugin/gd/libgvplugin_gd.la @GD_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@
+dot_static_LDADD += $(top_builddir)/plugin/gd/.libs/libgvplugin_gd_C.a $(GD_LIBS) $(FONTCONFIG_LIBS) $(FREETYPE2_LIBS) $(JPEG_LIBS) $(PNG_LIBS) $(Z_LIBS)
+dot_builtins_LDADD += $(top_builddir)/plugin/gd/libgvplugin_gd.la $(GD_LIBS) $(FONTCONFIG_LIBS) $(FREETYPE2_LIBS) $(JPEG_LIBS) $(PNG_LIBS) $(Z_LIBS)
 endif
 endif
 
 if WITH_PANGOCAIRO
-dot_static_LDADD += $(top_builddir)/plugin/pango/.libs/libgvplugin_pango_C.a @PANGOCAIRO_LIBS@
-dot_builtins_LDADD += $(top_builddir)/plugin/pango/libgvplugin_pango.la @PANGOCAIRO_LIBS@
+dot_static_LDADD += $(top_builddir)/plugin/pango/.libs/libgvplugin_pango_C.a $(PANGOCAIRO_LIBS)
+dot_builtins_LDADD += $(top_builddir)/plugin/pango/libgvplugin_pango.la $(PANGOCAIRO_LIBS)
 endif
 
 EXTRA_DIST = Makefile.old dot.1 dot.1.pdf
