@@ -21,7 +21,7 @@ AWKDIR = $(ROOT)/awk
 INST_HDRS = geom.h color.h types.h textpara.h usershape.h
 NOINST_HDRS = render.h utils.h memory.h \
 	geomprocs.h colorprocs.h const.h macros.h pointset.h
-NOINST_GENERATED_HDRS = colortbl.h ps.h htmltable.h  htmlparse.h htmllex.h 
+NOINST_GENERATED_HDRS = colortbl.h htmltable.h  htmlparse.h htmllex.h 
 
 GD_CODEGENS = 
 CODEGENS = $(GD_CODEGENS) diagen.o hpglgen.o mifgen.o mpgen.o picgen.o vtxgen.o 
@@ -56,7 +56,6 @@ install: libcommon.a
 
 $(OBJS) : $(INST_HDRS) $(NOINST_HDRS)
 colxlate.o : colortbl.h
-utils.o : ps.h
 emit.o mapgen.o utils.o htmllex.o htmltable.o htmlparse.o : htmltable.h
 htmllex.o : htmlparse.h
 htmlparse.o htmllex.o : htmllex.h
@@ -68,9 +67,6 @@ fontmetrics.o: ps_font_equiv.h
 ps_font_equiv.h: ps_font_equiv.txt ps_fontmap.txt ps_fontmap.txt
 	cp ps_fontmap.txt ps_font_equiv.h
 	./mksvgfonts.pl fontmap.cfg ps_font_equiv.txt | LC_ALL=C $(SORT) >>ps_font_equiv.h
-
-ps.h : ps.txt
-	$(AWK) -f $(AWKDIR)/stringize.awk ps.txt > ps.h
 
 colortbl.h : color_names brewer_colors
 	$(AWK) -f $(AWKDIR)/brewer.awk brewer_colors > brewer_lib
