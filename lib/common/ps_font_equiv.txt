@@ -27,7 +27,7 @@
 {"Palatino-Italic",		PALATINO,		0,		0,		"italic",	29},
 {"Palatino-Roman",		PALATINO,		"roman",	0,		0,		28},
 {"Symbol",			SYMBOL,			0,        	0,		0,		32},
-{"Times-Bold",			TIMES,			"medium",	0,		0,		2 },
+{"Times-Bold",			"Times",		"bold",		0,		0,		2 },
 {"Times-BoldItalic",		TIMES,			"medium",	0,		"italic",	3 },
 {"Times-Italic",		TIMES,			0,        	0,		"italic",	1 },
 {"Times-Roman",			TIMES,			0,        	0,		0,		0 },

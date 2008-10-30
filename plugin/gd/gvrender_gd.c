@@ -351,7 +351,7 @@ void gdgen_text(gdImagePtr im, pointf spf, pointf epf, int fontcolor, double fon
     }
 }
 
-extern char* psfontResolve (PostscriptAlias* pa);
+extern char* gd_psfontResolve (PostscriptAlias* pa);
 
 static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
@@ -390,7 +390,7 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 
 #ifdef HAVE_GD_FONTCONFIG
     if (para->postscript_alias)
-	fontname = psfontResolve (para->postscript_alias);
+	fontname = gd_psfontResolve (para->postscript_alias);
     else
 #endif
 	fontname = para->fontname;
