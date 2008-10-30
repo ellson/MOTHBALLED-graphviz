@@ -10,9 +10,9 @@ LOC_LIB=$(ROOT)/lib
 LOC_INCDIR=$(LOC_LIB)/include
 LOC_LIBDIR=$(LOC_LIB)/lib
 
-INCS = -I. -I$(ROOT) -I$(LOC_INCDIR) -I$(LOC_LIB)/agraph -I$(LOC_LIB)/cdt
+INCS = -I. -I$(ROOT) -I$(LOC_INCDIR) -I$(LOC_LIB)/cgraph -I$(LOC_LIB)/cdt
 
-DEFINES = -DHAVE_CONFIG_H
+DEFINES = -DHAVE_CONFIG_H -DUSE_CGRAPH
 
 OBJS = gvpr.o parse.o compile.o gprstate.o actions.o queue.o
 
@@ -24,7 +24,7 @@ gdefs.h : gprdata mkdefs
 mkdefs : mkdefs.o
 	$(CC) $(LDFLAGS) mkdefs.o -o $@
 
-GLIBS = -L$(LOC_LIB)/agraph -L$(LOC_LIB)/cdt -lagraph -lcdt
+GLIBS = -L$(LOC_LIB)/cgraph -L$(LOC_LIB)/cdt -lcgraph -lcdt
 LIBS = -L$(LOC_LIBDIR) -lexpr -last -lvmalloc -lsfio -lingraphs $(GLIBS) -lm
 
 gvpr : $(OBJS) $(LOC_LIBDIR)/libexpr.a
