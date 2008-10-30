@@ -821,11 +821,11 @@ static void emit_background(GVJ_t * job, graph_t *g)
 {
     char *str;
     
-    /* if no bgcolor specified - first assume default of "transparent" */
+    /* if no bgcolor specified - first assume default of "white" */
     if (! ((str = agget(g, "bgcolor")) && str[0]))
-	str = "transparent";
+	str = "white";
 
-    /* if device has no truecolor support, change "transparent" (default or given) to "white" */
+    /* if device has no truecolor support, change "transparent" to "white" */
     if (! (job->flags & GVDEVICE_DOES_TRUECOLOR) && (streq(str, "transparent")))
 	str = "white";
 
