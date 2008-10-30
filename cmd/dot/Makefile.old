@@ -35,6 +35,9 @@ LIBS = -L$(LOC_LIB)/gvc -lgvc_dot_builtins $(PLUGS) \
        -L$(LOC_LIB)/circogen -lcircogen \
        -L$(LOC_LIB)/fdpgen -lfdpgen \
        -L$(LOC_LIB)/sfdpgen -lsfdpgen \
+       -L$(LOC_LIB)/patchwork -lpatchwork \
+       -L$(LOC_LIB)/sparse -lsparse \
+       -L$(LOC_LIB)/rbtree -lrbtree \
        -L$(LOC_LIB)/twopigen -ltwopigen \
        -L$(LOC_LIB)/pack -lpack \
        -L$(LOC_LIB)/common -lcommon \
