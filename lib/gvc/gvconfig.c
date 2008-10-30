@@ -93,6 +93,16 @@ extern const int Demand_Loading;
 
  */
 
+static gvplugin_package_t * gvplugin_package_record(GVC_t * gvc, char *path, char *name)
+{
+    gvplugin_package_t *package = gmalloc(sizeof(gvplugin_package_t));
+    package->path = (path) ? strdup(path) : NULL;
+    package->name = strdup(name);
+    package->next = gvc->packages;
+    gvc->packages = package;
+    return package;
+}
+
 #ifdef ENABLE_LTDL
 /*
   separator - consume all non-token characters until next token.  This includes:
@@ -157,16 +167,6 @@ static char *token(int *nest, char **tokens)
     separator(nest, tokens);
     *s = '\0';
     return t;
-}
-
-static gvplugin_package_t * gvplugin_package_record(GVC_t * gvc, char *path, char *name)
-{
-    gvplugin_package_t *package = gmalloc(sizeof(gvplugin_package_t));
-    package->path = (path) ? strdup(path) : NULL;
-    package->name = strdup(name);
-    package->next = gvc->packages;
-    gvc->packages = package;
-    return package;
 }
 
 static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
