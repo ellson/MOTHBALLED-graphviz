@@ -541,7 +541,22 @@ mobile computing.
 <HR>
 </BODY>
 </HTML>
-
+<H1 align=CENTER><A NAME=d:image_fmts>Image Formats</A></H1>
+<HR>
+The <A HREF=attrs.html#a:image>image</A> and <A HREF=attrs.html#a:shapefile>shapefile</A> attributes specify an image file to be included
+as part of the final diagram. Not all image formats can be read. In addition,
+even if read, not all image formats can necessarily be used in a given
+output format.
+<P>
+The graph below shows what image formats can be used in which output formats,
+and the required plugins. On the left are the supported image formats. 
+On the right are the supported output formats.
+In the middle are the plugins: image loaders, renderers, drivers, arranged by 
+plugin library.  
+This presents the most general case. A given installation may not provide
+one of the plugins, in which case, that transformation is not possible.
+<BR>
+<IMG WIDTH="80%" SRC="plugins.png">
 <HR>
 <H2>Notes</H2>
 <OL TYPE="1">
