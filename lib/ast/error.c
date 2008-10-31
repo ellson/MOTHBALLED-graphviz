@@ -41,12 +41,14 @@ void setErrorFileLine (char* src, int line) {
 void setErrorId (char* id) { error_info.id = id; }
 void setErrorErrors (int errors) { error_info.errors = errors; }
 int  getErrorErrors () { return error_info.errors; }
+void setTraceLevel (int i) { error_info.trace = i; }
 
 void errorv(const char *id, int level, va_list ap)
 {
     char *s;
     int flags;
 
+    if (level < error_info.trace) return;
     if (level < 0)
 	flags = 0;
     else {

@@ -33,6 +33,7 @@ extern "C" {
 	int indent;
 	int line;
 	int warnings;
+	int trace;
 	char *file;
 	char *id;
     } Error_info_t;
@@ -57,6 +58,7 @@ extern "C" {
 
     extern Error_info_t error_info;
 
+    extern void setTraceLevel (int);
     extern void setErrorLine (int);
     extern void setErrorFileLine (char*, int);
     extern void setErrorId (char*);
