@@ -55,6 +55,10 @@ libgvc_C_la_LIBADD = \
 libgvc_C_la_DEPENDENCIES = \
 	$(top_builddir)/lib/pack/libpack_C.la \
 	$(top_builddir)/lib/common/libcommon_C.la
+if WITH_ORTHO
+libgvc_C_la_LIBADD += $(top_builddir)/lib/ortho/libortho_C.la
+libgvc_C_la_DEPENDENCIES +=  $(top_builddir)/lib/ortho/libortho_C.la
+endif
 #For use with plugins.
 #   so it is linked with an empty table of builtins.
 libgvc_la_LDFLAGS = -version-info $(VERSION_INFO) -no-undefined

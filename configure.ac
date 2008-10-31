@@ -2928,6 +2928,7 @@ AC_CONFIG_FILES(Makefile
 	lib/twopigen/Makefile
 	lib/patchwork/Makefile
 	lib/pack/Makefile
+	lib/ortho/Makefile
 	lib/expr/Makefile
 	lib/expr/libexpr.pc
 	lib/common/Makefile

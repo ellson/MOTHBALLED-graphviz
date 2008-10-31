@@ -696,6 +696,7 @@ CFLAGS="$RPM_OPT_FLAGS" \
 	--with%{!?MING:out}-ming \
 	--with%{!?PANGOCAIRO:out}-pangocairo \
 	--with%{!?RSVG:out}-rsvg \
+	--with%{!?ORTHO:out}-ortho \
 	--with%{!?SFDP:out}-sfdp \
 	--with%{!?SMYRNA:out}-smyrna
 make %{?_smp_mflags}
