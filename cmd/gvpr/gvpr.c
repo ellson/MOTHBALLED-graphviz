@@ -60,6 +60,7 @@ static const char *usage =
    -i         - create node induced subgraph\n\
    -a <args>  - string arguments available as ARGV[0..]\n\
    -o <ofile> - write output to <ofile>; stdout by default\n\
+   -q         - turn off warning messages\n\
    -V         - print version info\n\
    -?         - print usage info\n\
 If no files are specified, stdin is used\n";
@@ -247,7 +248,7 @@ static void scanArgs(int argc, char **argv)
     error_info.id = options.cmdName;
 #endif
 
-    while ((c = getopt(argc, argv, ":?Vcia:f:o:")) != -1) {
+    while ((c = getopt(argc, argv, ":q?Vcia:f:o:")) != -1) {
 	switch (c) {
 	case 'c':
 	    options.compflags |= SRCOUT;
@@ -264,6 +265,9 @@ static void scanArgs(int argc, char **argv)
 	    break;
 	case 'o':
 	    outname = optarg;
+	    break;
+	case 'q':
+	    setTraceLevel (ERROR_ERROR);
 	    break;
 	case 'V':
 	    fprintf(stderr, "%s version %s (%s)\n",
