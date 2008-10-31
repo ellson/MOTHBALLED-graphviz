@@ -6,7 +6,7 @@ GRAPHS = KW91.gv Latin1.gv NaN.gv abstract.gv alf.gv arrows.gv \
 	clust5.gv crazy.gv ctext.gv dfa.gv fig6.gv fsm.gv \
 	grammar.gv hashtable.gv honda-tokoro.gv jcctree.gv jsort.gv \
 	ldbxtried.gv longflat.gv mike.gv nhg.gv oldarrows.gv \
-	pgram.gv pm2way.gv pmpipe.gv polypoly.gv proc3d.gv \
+	pgram.gv pm2way.gv pmpipe.gv polypoly.gv proc3d.gv psfonttest.gv \
 	record2.gv records.gv rowe.gv russian.gv sdh.gv shells.gv states.gv \
 	structs.gv table.gv train11.gv trapeziumlr.gv tree.gv triedds.gv \
 	try.gv unix.gv unix2.gv viewfile.gv world.gv switch.gv
@@ -23,14 +23,14 @@ test:
 	$(top_builddir)/cmd/dot/dot -Tcanon -Tcmap -Tcmapx \
 		-Tdia -Tgv -Tfig -Tgif -Thpgl \
 		-Tismap -Timap -Tjpg -Tmif -Tmp -Tpcl -Tpdf -Tpic \
-		-Tplain -Tplain-ext -Tpng -Tps -Tps2 -Tps:cairo -Tps:lasi -Tsvg \
+		-Tplain -Tplain-ext -Tpng -Tps -Tps2 -Tps:lasi -Tps:cairo -Tsvg \
 		-Tsvg:cairo -Tsvgz -Tvrml -Tvtx -Txdot \
 		-O $(GRAPHS) 
 ins_test:
 	dot -Tcanon -Tcmap -Tcmapx \
 		-Tdia -Tgv -Tfig -Tgif -Thpgl \
 		-Tismap -Timap -Tjpg -Tmif -Tmp -Tpcl -Tpdf -Tpic \
-		-Tplain -Tplain-ext -Tpng -Tps -Tps2 -Tps:cairo -Tps:lasi -Tsvg \
+		-Tplain -Tplain-ext -Tpng -Tps -Tps2 -Tps:lasi -Tps:cairo -Tsvg \
 		-Tsvg:cairo -Tsvgz -Tvrml -Tvtx -Txdot \
 		-O $(GRAPHS) 
 
