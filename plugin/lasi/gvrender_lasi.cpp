@@ -343,6 +343,10 @@ static void lasi_textpara(GVJ_t * job, pointf p, textpara_t * para)
     char *str;
     const char *font;
     const PangoFontDescription *pango_font;
+    FontStretch stretch; 
+    FontStyle style;
+    FontVariant variant;
+    FontWeight weight; 
 
     if (job->obj->pencolor.u.HSVA[3] < .5)
 	return;  /* skip transparent text */
@@ -350,15 +354,56 @@ static void lasi_textpara(GVJ_t * job, pointf p, textpara_t * para)
     if (para->layout) {
 	pango_font = pango_layout_get_font_description((PangoLayout*)(para->layout));
 	font = pango_font_description_get_family(pango_font);
+	switch (pango_font_description_get_stretch(pango_font)) {
+	    case PANGO_STRETCH_ULTRA_CONDENSED: stretch = ULTRACONDENSED; break;
+	    case PANGO_STRETCH_EXTRA_CONDENSED: stretch = EXTRACONDENSED; break;
+	    case PANGO_STRETCH_CONDENSED: stretch = CONDENSED; break;
+	    case PANGO_STRETCH_SEMI_CONDENSED: stretch = SEMICONDENSED; break;
+	    case PANGO_STRETCH_NORMAL: stretch = NORMAL_STRETCH; break;
+	    case PANGO_STRETCH_SEMI_EXPANDED: stretch = SEMIEXPANDED; break;
+	    case PANGO_STRETCH_EXPANDED: stretch = EXPANDED; break;
+	    case PANGO_STRETCH_EXTRA_EXPANDED: stretch = EXTRAEXPANDED; break;
+	    case PANGO_STRETCH_ULTRA_EXPANDED: stretch = ULTRAEXPANDED; break;
+	}
+	switch (pango_font_description_get_style(pango_font)) {
+	    case PANGO_STYLE_NORMAL: style = NORMAL_STYLE; break;
+	    case PANGO_STYLE_OBLIQUE: style = OBLIQUE; break;
+	    case PANGO_STYLE_ITALIC: style = ITALIC; break;
+	}
+	switch (pango_font_description_get_variant(pango_font)) {
+	    case PANGO_VARIANT_NORMAL: variant = NORMAL_VARIANT; break;
+	    case PANGO_VARIANT_SMALL_CAPS: variant = SMALLCAPS; break;
+	}
+	switch (pango_font_description_get_weight(pango_font)) {
+	    case PANGO_WEIGHT_ULTRALIGHT: weight = ULTRALIGHT; break;
+	    case PANGO_WEIGHT_LIGHT: weight = LIGHT; break;
+	    case PANGO_WEIGHT_NORMAL: weight = NORMAL_WEIGHT; break;
+	    case PANGO_WEIGHT_SEMIBOLD: weight = BOLD; break; /* no exact match in lasi */
+	    case PANGO_WEIGHT_BOLD: weight = BOLD; break;
+	    case PANGO_WEIGHT_ULTRABOLD: weight = ULTRABOLD; break;
+	    case PANGO_WEIGHT_HEAVY: weight = HEAVY; break;
+	}
     }
     else {
 	font = para->postscript_alias->svg_font_family;
+	stretch = NORMAL_STRETCH;
+	if (para->postscript_alias->svg_font_style
+	&& strcmp(para->postscript_alias->svg_font_style, "italic") == 0)
+	    style = ITALIC;
+	else
+	    style = NORMAL_STYLE;
+	variant = NORMAL_VARIANT;
+	if (para->postscript_alias->svg_font_weight
+	&& strcmp(para->postscript_alias->svg_font_weight, "bold") == 0)
+	    weight = BOLD;
+	else
+	    weight = NORMAL_WEIGHT;
     }
 
     ps_set_color(job, &(job->obj->pencolor));
 //    gvprintdouble(job, para->fontsize);
 //    gvprintf(job, " /%s set_font\n", para->fontname);
-    doc.osBody() << setFont(font) << setFontSize(para->fontsize) << endl;
+    doc.osBody() << setFont(font, style, weight, variant, stretch) << setFontSize(para->fontsize) << endl;
     switch (para->just) {
     case 'r':
         p.x -= para->width;
