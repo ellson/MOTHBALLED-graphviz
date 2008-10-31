@@ -110,8 +110,11 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	    fontclass = G_OBJECT_CLASS_NAME(G_OBJECT_GET_CLASS(font));
 
 	    buf[0] = '\0';
-	    if (psfnt)
-		strcat(buf, "(ps) ");
+	    if (psfnt) {
+		strcat(buf, "(ps:pango  ");
+		strcat(buf, psfnt);
+		strcat(buf, ") ");
+	    }
 	    strcat(buf, "(");
 	    strcat(buf, fontclass);
 	    strcat(buf, ") ");
