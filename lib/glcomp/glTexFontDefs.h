@@ -34,7 +34,7 @@
 #define fontColorCopy(a,b)          {b[0]= a[0]; b[1]= a[1]; b[2]= a[2]; b[3]= a[3];} /* copys colors */
 
 /* various functions used by the library, see texFont.c for info */
-void fontDrawChar (texFont_t* font,char c, int x, int y, int size, int shadow);
+void fontDrawChar (texFont_t* font,char c, GLfloat x, GLfloat y, GLfloat size, int shadow);
 void fontScissorNormal (texFont_t* font,int xpos, int ypos, int tabs, int carrage, int size, int len);
 int fontSetColorFromToken (texFont_t* font,char *s);
 int fontGetCharHits (char *s, char f);
@@ -44,4 +44,4 @@ void fontReset (texFont_t* font);
 void fontScissorTextRegion (texFont_t* font);
 int fontItalicsMode (texFont_t* font,char *s);
 int fontBoldMode (texFont_t* font,char *s);
-void fontRenderChar (texFont_t* font,char c, int x, int y, int size);
+void fontRenderChar (texFont_t* font,char c, GLfloat x, GLfloat y, GLfloat size);

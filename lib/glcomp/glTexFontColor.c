@@ -12,7 +12,7 @@
     Contact     -- vandals1@home.com
     Web         -- http://members.home.com/vandals1
 */
-#include "glTexfont.h"
+#include "glTexFont.h"
 
 /* color functions must be defined in texfont->h */
 

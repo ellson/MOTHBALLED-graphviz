@@ -6,10 +6,10 @@ AM_CPPFLAGS = \
 	$(GTK_CFLAGS) $(GTKGL_CFLAGS) $(GTKGLEXT_CFLAGS) $(GLADE_CFLAGS) $(FREETYPE2_CFLAGS)
 
 if WITH_SMYRNA
-noinst_HEADERS = glcompset.h glcomptexture.h glutils.h \
-	glTexFont.h glTexFontDefs.h glTexFontInclude.h glTexFontTGA.h
+noinst_HEADERS = glcompset.h glcomptexture.h glutils.h glTexFont.h \
+		 glTexFontDefs.h glTexFontInclude.h glTexFontTGA.h glpangofont.h
 noinst_LTLIBRARIES = libglcomp_C.la
 endif
 
 libglcomp_C_la_SOURCES = glcompset.c glcomptexture.c glutils.c \
-	glTexFont.c glTexFontColor.c glTexFontTGA.c
+	glTexFont.c glTexFontColor.c glTexFontTGA.c glpangofont.c
