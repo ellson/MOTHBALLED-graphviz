@@ -133,7 +133,7 @@ void fontScissorNormal (texFont_t* font,int xpos, int ypos, int tabs, int carrag
 		sy = ypos;
 		ey = size;
 	}
-    glScissor (font,xpos, sy, ex, ey);
+    glScissor (xpos, sy, ex, ey);
 }
 /*
 =============
@@ -406,9 +406,9 @@ void fontWalkString (texFont_t* font,char *buffPtr, GLfloat xpos, GLfloat ypos, 
 
 
 
-
+/*
 		if(*buffPtr==' ')		//SPACE
-			x = x - size;
+			x = x + size;*/
 
 		switch (*buffPtr)
 		{
@@ -790,6 +790,7 @@ int add_font(fontset_t* fontset,char* fontdesc)
 			fontset->fonts=realloc(fontset->fonts,sizeof(texFont_t*)*(fontset->count+1));
 			fontset->fonts[fontset->count]=(texFont_t*)malloc(sizeof(texFont_t));
 			font_init(fontset->fonts[fontset->count]);
+			fontset->fonts[fontset->count]->fontdesc=strdup(fontdesc);
 			glGenTextures (1, &(fontset->fonts[fontset->count]->texId));	//get  opengl texture name
 			if (fontset->fonts[fontset->count]->texId >= 0)
 			{
