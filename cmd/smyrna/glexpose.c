@@ -91,7 +91,7 @@ int glexpose_main(ViewInfo * view)
     draw_selection_box(view);
     drawBorders(view);
 	drawRotatingTools();
-	drawtestpoly();
+//	drawtestpoly();
 	/*DEBUG*/
 /*	if (view->mouse.mouse_mode == MM_PAN)
 	{

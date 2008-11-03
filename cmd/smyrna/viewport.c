@@ -34,6 +34,7 @@
 
   /* Forward declarations */
 static int init_object_custom_data(Agraph_t * graph, void *obj);
+static void refresh_borders(Agraph_t* g);
 
 #define countof( array ) ( sizeof( array )/sizeof( array[0] ) )
 
@@ -57,8 +58,9 @@ void clear_viewport(ViewInfo * view)
 {
     int ind = 0;
     /*free topview if there is one */
-    if (view->graphCount) {
-	cleartopview(view->Topview);
+	if (GD_TopView(view->g[view->activeGraph]))
+		cleartopview(view->Topview);
+	if (view->graphCount) {
 	/*all cgraph graphs should be freed */
 	for (ind = 0; ind < view->graphCount; ind++) {
 	    agclose(view->g[ind]);
@@ -667,7 +669,7 @@ static char* create_xdot_for_graph(Agraph_t * graph, int keeppos)
     } 
 
 #ifdef _WIN32
-    path = "\"C:/Program Files/Graphviz2.15/bin/dot.exe\" ";
+    path = "\"C:/Program Files/Graphviz 2.20/bin/dot.exe\" ";
 #else
     path = "dot ";
 #endif
@@ -680,7 +682,7 @@ static char* create_xdot_for_graph(Agraph_t * graph, int keeppos)
 	else cmd = RALLOC (buflen, cmd, char);
     }
     sprintf (cmd, FMT, path, fix, alg, dotfile, xdotfile);
-    r = system (cmd);
+	r = system (cmd);
     unlink (dotfile);
     free (dotfile);
 
@@ -689,7 +691,11 @@ static char* create_xdot_for_graph(Agraph_t * graph, int keeppos)
 	free (xdotfile);
 	return 0;
     }
-    else return xdotfile;
+    else
+	{
+		return xdotfile;
+
+	}
 }
 
 /*
@@ -709,6 +715,7 @@ layoutGraph (Agraph_t *oldg, int keeppos, int closeold)
     if (closeold)
 	agclose (oldg);
     newg = agread(input_file, NIL(Agdisc_t *));
+	refresh_borders(newg);
     g_print ("xdot is being loaded\n");
     fclose (input_file);
     unlink (infile);  // Remove temp file
@@ -723,26 +730,32 @@ static Agraph_t *loadGraph(char *filename)
 {
     Agraph_t *g;
     FILE *input_file;
-    if (!(input_file = fopen(filename, "r"))) {
-	g_print("Cannot open %s\n", filename);
-	return 0;
+	char* bf;
+	char buf[512];
+    if (!(input_file = fopen(filename, "r")))
+	{
+		g_print("Cannot open %s\n", filename);
+		return 0;
     }
-    if (!(g = agread(input_file, NIL(Agdisc_t *)))) {
-	g_print("Cannot read graph in  %s\n", filename);
-	fclose (input_file);
-	return 0;
+    if (!(g = agread(input_file, NIL(Agdisc_t *)))) 
+	{
+		g_print("Cannot read graph in  %s\n", filename);
+		fclose (input_file);
+		return 0;
     }
 
 	/* If no position info, run layout with -Txdot
          */
-    if (!agattr(g, AGNODE, "pos", NULL)) {
-	g = layoutGraph (g, 0, 1);
-	if (!g) return 0;
+    if (!agattr(g, AGNODE, "pos", NULL)) 
+	{
+		g = layoutGraph (g, 0, 1);
+		if (!g) return 0;
     }
 	/* If position info but not xdot, set Topview mode
          */
-    else if (!agattr(g, AGRAPH, "xdotversion", 0)) {
-	agattr(g, AGRAPH, "TopView", "1");
+    else if (!agattr(g, AGRAPH, "xdotversion", 0)) 
+	{
+		agattr(g, AGRAPH, "TopView", "1");
     }
 
     attach_object_custom_data_to_graph(g);
@@ -768,10 +781,26 @@ static Agraph_t *loadGraph(char *filename)
 	}
     }
 #endif
-	if(strcasecmp(agget(g, "TopView"),"1")==0)
-		preparetopview(g, view->Topview);
+	bf=agget(g, "TopView");
+
+	if (bf)
+	{
+		if(strcasecmp(agget(g, "TopView"),"1")==0)
+			preparetopview(g, view->Topview);
+	}
+	else	//set graph borders
+	{
+		refresh_borders(g);
+		scanGraph(g);	//calling font caching routines once....
+	}
     return g;
 }
+static void refresh_borders(Agraph_t* g)
+{
+		sscanf(agget(g,"bb"),"%f,%f,%f,%f",&(view->bdxLeft),&(view->bdyBottom),&(view->bdxRight),&(view->bdyTop));	
+}
+
+
 
 /* add_graph_to_viewport_from_file:
  * returns 1 if successfull else 0

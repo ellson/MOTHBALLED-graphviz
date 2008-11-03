@@ -26,6 +26,7 @@
 typedef struct {
     xdot_op op;
     void *obj;
+	void *font;		//pointer to font in view->fontset
     int size;
 } sdot_op;
 

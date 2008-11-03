@@ -45,7 +45,7 @@ PangoLayout *  get_pango_layout (cairo_t	*cr,
 
 	desc = pango_font_description_from_string(fontdescription);
 //	pango_font_description_set_family(desc, "CENTAUR.TTF");
-    //pango_font_description_set_size (desc, DEFAULT_FONT_SIZE * PANGO_SCALE/2.0);
+    pango_font_description_set_size (desc, DEFAULT_FONT_SIZE * PANGO_SCALE/2.0);
 //	pango_font_description_set_style    (desc,PANGO_STYLE_ITALIC);
 
     if (! pango_parse_markup (markup_text, -1, '\0', &attr_list, &text, NULL, NULL))

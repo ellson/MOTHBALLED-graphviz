@@ -439,8 +439,9 @@ static void SetStyle(xdot_op * op, int param)
 
 static void SetFont(xdot_op * op, int param)
 {
-//      view->FontName=ABSet(op->u.font.name);
-    view->FontSize = (int) op->u.font.size;
+	//activate the right font
+	view->fontset->activefont=add_font(view->fontset,op->u.font.name);//load or set active font
+	view->FontSize = (int) op->u.font.size;
 }
 
 static void InsertImage(xdot_op * op, int param)
@@ -465,8 +466,7 @@ static void EmbedText(xdot_op * op, int param)
     if (param == 1)		//selected
 	fontColor(view->fontset->fonts[view->fontset->activefont],view->selectedNodeColor.R, view->selectedNodeColor.G,
 		  view->selectedNodeColor.B);
-
-    fontDrawString(view->fontset->fonts[view->fontset->activefont],(int) (x - dx), op->u.text.y - (int) dy,
+	fontDrawString(view->fontset->fonts[view->fontset->activefont],(int) (x - dx), op->u.text.y - (int) dy,
 		   op->u.text.text, op->u.text.width);
 }
 
@@ -627,22 +627,26 @@ static void drawXdot(xdot * xDot, int param, void *p)
     sdot_op *ops = (sdot_op *) (xDot->ops);
     sdot_op *op;
 
-    for (id = 0; id < xDot->cnt; id++) {
-	op = ops + id;
-	op->obj = p;
-	op->op.drawfunc(&(op->op), param);
+    for (id = 0; id < xDot->cnt; id++)
+	{
+		op = ops + id;
+		op->obj = p;
+		op->op.drawfunc(&(op->op), param);
     }
     if (OD_Preselected(p) == 1)
-	select_object(view->g[view->activeGraph], p);
+		select_object(view->g[view->activeGraph], p);
     OD_Preselected(p) = 0;
 }
+
+
 
 static void drawXdotwithattr(void *p, char *attr, int param)
 {
     xdot *xDot;
-    if ((xDot = parseXDotF(agget(p, attr), OpFns, sizeof(sdot_op)))) {
-	drawXdot(xDot, param, p);
-	freeXDot(xDot);
+    if ((xDot = parseXDotF(agget(p, attr), OpFns, sizeof(sdot_op))))
+	{
+		drawXdot(xDot, param, p);
+		freeXDot(xDot);
     }
 }
 
@@ -656,6 +660,8 @@ static void drawXdotwithattrs(void *e, int param)
     drawXdotwithattr(e, "_tldraw_", param);
 }
 
+
+
 void drawGraph(Agraph_t * g)
 {
     Agnode_t *v;
@@ -663,44 +669,113 @@ void drawGraph(Agraph_t * g)
     Agraph_t *s;
     int param = 0;
 
-    for (s = agfstsubg(g); s; s = agnxtsubg(s)) {
-	OD_SelFlag(s) = 0;
-	if (OD_Selected(s) == 1)
-	    param = 1;
-	else
-	    param = 0;
-	drawXdotwithattrs(s, param);
+    for (s = agfstsubg(g); s; s = agnxtsubg(s))
+	{
+		OD_SelFlag(s) = 0;
+		if (OD_Selected(s) == 1)
+			param = 1;
+		else
+		    param = 0;
+		drawXdotwithattrs(s, param);
     }
 
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
-	if (OD_Selected(v) == 1)
-	    param = 1;
-	else
-	    param = 0;
-	OD_SelFlag(v) = 0;
-	drawXdotwithattr(v, "_draw_", param);
-	drawXdotwithattr(v, "_ldraw_", param);
-	for (e = agfstout(g, v); e; e = agnxtout(g, e)) {
-	    OD_SelFlag(e) = 0;
-	    if (OD_Selected(e) == 1)
-		param = 1;
-	    else
-		param = 0;
-
-	    drawXdotwithattrs(e, param);
-
-	}
+    for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
+	{
+		if (OD_Selected(v) == 1)
+			param = 1;
+		else
+			param = 0;
+		OD_SelFlag(v) = 0;
+		drawXdotwithattr(v, "_draw_", param); //draw primitives
+		drawXdotwithattr(v, "_ldraw_", param);//label drawing
+		for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
+		{
+			OD_SelFlag(e) = 0;
+			if (OD_Selected(e) == 1)
+				param = 1;
+			else
+				param = 0;
+		    drawXdotwithattrs(e, param);
+		}
     }
-    if ((view->Selection.Active > 0) && (!view->SignalBlock)) {
-	view->Selection.Active = 0;
-	drawGraph(g);
-	view->SignalBlock = 1;
-	glexpose();
-	view->SignalBlock = 0;
+    if ((view->Selection.Active > 0) && (!view->SignalBlock)) 
+	{
+		view->Selection.Active = 0;
+		drawGraph(g);
+		view->SignalBlock = 1;
+		glexpose();
+		view->SignalBlock = 0;
     }
 
 }
 
+
+/*
+	this function is used to cache fonts in view->fontset
+*/
+
+static void scanXdot(xdot * xDot, void *p)
+{
+    int id;
+    sdot_op *ops = (sdot_op *) (xDot->ops);
+    sdot_op *op;
+
+    for (id = 0; id < xDot->cnt; id++)
+	{
+		op = ops + id;
+		op->obj = p;
+		if (op->op.kind==xd_font)
+		{
+			add_font(view->fontset,op->op.u.font.name);//load or set active font
+		}
+    }
+
+}
+
+
+static void scanXdotwithattr(void *p, char *attr)
+{
+    xdot *xDot;
+    if ((xDot = parseXDotF(agget(p, attr), OpFns, sizeof(sdot_op))))
+	{
+		scanXdot(xDot, p);
+		freeXDot(xDot);
+    }
+}
+
+static void scanXdotwithattrs(void *e)
+{
+    scanXdotwithattr(e, "_draw_");
+    scanXdotwithattr(e, "_ldraw_");
+    scanXdotwithattr(e, "_hdraw_");
+    scanXdotwithattr(e, "_tdraw_");
+    scanXdotwithattr(e, "_hldraw_");
+    scanXdotwithattr(e, "_tldraw_");
+}
+
+
+
+/*
+	iterate in nodes and edges to cache fonts, run this once or whenever a new font is added to the graph
+*/
+
+
+void scanGraph(Agraph_t * g)
+{
+    Agnode_t *v;
+    Agedge_t *e;
+    Agraph_t *s;
+    for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
+	{
+		scanXdotwithattr(v, "_draw_"); 
+		scanXdotwithattr(v, "_ldraw_");
+		for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
+		{
+	      scanXdotwithattrs(e);
+		}
+    }
+
+}
 int randomize_color(RGBColor * c, int brightness)
 {
     float R, B, G;

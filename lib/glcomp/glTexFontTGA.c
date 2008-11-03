@@ -306,7 +306,6 @@ unsigned char *load_png_font(char* file_name,int *imageWidth,int *imageHeight)
 
 	for (i=0; i < info_ptr->height; i++)
    {
-	   printf ("Column:%i\n",i);
 	   for (ii=0;ii < png_get_rowbytes(png_ptr, info_ptr); ii=ii+pixeloffset)	
 		{
 			imageData[c]=row_pointers[info_ptr->height-i-1][ii];
@@ -325,17 +324,13 @@ unsigned char *load_png_font(char* file_name,int *imageWidth,int *imageHeight)
 				b1=row_pointers[info_ptr->height-i-1][ii+1];
 				b2=row_pointers[info_ptr->height-i-1][ii+2];
 				b3=row_pointers[info_ptr->height-i-1][ii+3];
-					printf ("(%i,%i,%i,%i)",b0,b1,b2,b3);
 
 			}
 
 
 			c++;
 		}
-	   printf ("\n");
    }
-	printf ("embedded bytes:%i\n",c);
-
 	//cleaning libpng mess
 	png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 	png_free(png_ptr, row_pointers);

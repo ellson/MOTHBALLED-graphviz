@@ -138,7 +138,7 @@ static void realize(GtkWidget * widget, gpointer data)
 #endif
 //    g_print("loading font....%i\n", fontLoad(smyrna_font));
 
-	add_font(view->fontset,"Vladimir script bold 16");//wired default font
+	add_font(view->fontset,"Times 16");//wired in default font
 	/*** OpenGL BEGIN ***/
     if (!gdk_gl_drawable_gl_begin(gldrawable, glcontext))
 	return;
@@ -323,6 +323,7 @@ static gboolean button_release_event(GtkWidget * widget,
 	    view->Selection.Active = 1;
 	    expose_event(view->drawing_area, NULL, NULL);
 	}
+
 	if (view->mouse.mouse_mode == MM_MOVE) {
 	    if (GD_TopView(view->g[view->activeGraph]) == 0)
 		move_nodes(view->g[view->activeGraph]);

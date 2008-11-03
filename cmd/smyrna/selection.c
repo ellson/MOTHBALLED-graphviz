@@ -629,10 +629,14 @@ int lineintersects(float X1, float X2, float Y1, float Y2)
     float x, y, m, iter;
     float RX, RY, RW, RH;
     int intersects, in;
+	if (view->mouse.mouse_mode == MM_SINGLE_SELECT)
+	{
+	    RW = 10;
+	    RH = 10;
+	}
+
     RX = view->Selection.X;
     RY = view->Selection.Y;
-    RW = view->Selection.W;
-    RH = view->Selection.H;
     if ((is_point_in_rectangle(X1, Y1, RX, RY, RW, RH))
 	&& (is_point_in_rectangle(X2, Y2, RX, RY, RW, RH)))
 	return 1;
