@@ -36,6 +36,7 @@ typedef struct {
  */
 extern drawfunc_t OpFns[];
 extern void drawGraph(Agraph_t * g);
+void scanGraph(Agraph_t * g);
 void draw_selection_box(ViewInfo * view);
 void draw_magnifier(ViewInfo * view);
 void draw_fisheye_magnifier(ViewInfo * view);
