@@ -86,9 +86,7 @@ void btnToolZoomOut_clicked(GtkWidget * widget, gpointer user_data)
 void btnToolZoomFit_clicked(GtkWidget * widget, gpointer user_data)
 {
 
-	float scx,scy,gcx,gcy,z,GDX,SDX,GDY,SDY;
-	GtkTextBuffer *a;
-	char* test;
+	float z,GDX,SDX,GDY,SDY;
 	(view->active_camera >=0)
 			? (z=view->cameras[view->active_camera]->r):(z=view->zoom*-1);
 
@@ -116,7 +114,7 @@ void btnToolZoomFit_clicked(GtkWidget * widget, gpointer user_data)
 
 void btnToolFit_clicked(GtkWidget * widget, gpointer user_data)
 {
-	float scx,scy,gcx,gcy,z,GDX,SDX;
+	float scx,scy,gcx,gcy,z;
 	printf ("graph boundry summary\n");
 	printf ("---------------------\n");
 	printf ("G   (%f,%f) - (%f,%f)\n",view->bdxLeft/view->zoom*-1,view->bdyBottom/view->zoom
@@ -188,7 +186,7 @@ void btnToolFindEdge_clicked(GtkWidget * widget, gpointer user_data)
 {
 }
 
-int write_to_console(char* text)
+void write_to_console(char* text)
 {
 	//init console text
 	GtkTextIter iter;
