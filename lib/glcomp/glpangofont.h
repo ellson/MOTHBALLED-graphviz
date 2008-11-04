@@ -1,11 +1,27 @@
+/* vim:set shiftwidth=4 ts=8: */
+
+/**********************************************************
+*      This software is part of the graphviz package      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2007 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+**********************************************************/
 
 #ifndef GLPANGOFONT_H
 #define GLPANGOFONT_H
 #include <cairo.h>
 #include <pango/pangocairo.h>
 #include <png.h>
+
 //creates a font file with given name and font description
 //returns non-zero if fails
 int create_font_file(char* fontdescription,char* fontfile,float gw,float gh);
+
 #endif
 
