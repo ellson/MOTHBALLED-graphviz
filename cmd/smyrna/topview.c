@@ -36,10 +36,10 @@ static float dz = 0.0;
 static glCompSet *glcreate_gl_topview_menu();
 static void set_boundaries(topview * t);
 static void set_topview_options(void);
-static int draw_topview_label(topview_node * v, float zdepth);
+/* static int draw_topview_label(topview_node * v, float zdepth); */
 static int node_visible(Agnode_t * n);
 static int select_topview_node(topview_node * n);
-static int select_topview_edge(topview_edge * e);
+/* static int select_topview_edge(topview_edge * e); */
 static int update_topview_node_from_cgraph(topview_node * Node);
 static int get_color_from_edge(topview_edge * e);
 static int draw_node_hint_boxes(void);
@@ -209,8 +209,8 @@ void preparetopview(Agraph_t * g, topview * t)
     ind2 = 0;
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
 	{
-		float minedgelength=0;
-		float maxedgelength=0;
+		/* float minedgelength=0; */
+		/* float maxedgelength=0; */
 		//set node TV reference
 		for (e=agfstout(g, v); e; e = agnxtout(g, e)) 
 		{
@@ -305,41 +305,35 @@ static int begintopviewnodes(Agraph_t* g)
 
 
 }
-static int enddrawcycle(Agraph_t* g)
+static void enddrawcycle(Agraph_t* g)
 {
-	if (view->Selection.single_selected_edge)	
-	{
-		if (view->mouse.button== rightmousebutton)	//right click pick mode
-			printf ("an edge picked, implement it\n");//pick_node(view->Selection.single_selected_node);
-		else	//left click single select mode
-		{
-			if (OD_Selected(view->Selection.single_selected_edge->Edge) == 0)
-			{
-				OD_Selected(view->Selection.single_selected_edge->Edge) = 1;
-				select_object(view->g[view->activeGraph], view->Selection.single_selected_edge->Edge);
-			} else {
-				OD_Selected(view->Selection.single_selected_edge->Edge) = 1;
-				deselect_object(view->g[view->activeGraph], view->Selection.single_selected_edge->Edge);
-			}
-		}
-		return 1;
+    if (view->Selection.single_selected_edge)	{
+	if (view->mouse.button== rightmousebutton)	//right click pick mode
+	    printf ("an edge picked, implement it\n");//pick_node(view->Selection.single_selected_node);
+	else {	//left click single select mode
+	    if (OD_Selected(view->Selection.single_selected_edge->Edge) == 0) {
+		OD_Selected(view->Selection.single_selected_edge->Edge) = 1;
+		select_object(view->g[view->activeGraph], view->Selection.single_selected_edge->Edge);
+	    } else {
+		OD_Selected(view->Selection.single_selected_edge->Edge) = 1;
+		deselect_object(view->g[view->activeGraph], view->Selection.single_selected_edge->Edge);
+	    }
 	}
-	if (view->Selection.single_selected_node)	
-	{
-		if (view->mouse.button== rightmousebutton)	//right click pick mode
-			pick_node(view->Selection.single_selected_node);
-		else	//left click single select mode
-		{
-			if (OD_Selected(view->Selection.single_selected_node->Node) == 0)
-			{
-				OD_Selected(view->Selection.single_selected_node->Node) = 1;
-				select_object(view->g[view->activeGraph], view->Selection.single_selected_node->Node);
-			} else {
-				OD_Selected(view->Selection.single_selected_node->Node) = 1;
-				deselect_object(view->g[view->activeGraph], view->Selection.single_selected_node->Node);
-			}
-		}
+	/* return 1; */
+    }
+    if (view->Selection.single_selected_node)	{
+	if (view->mouse.button== rightmousebutton)	//right click pick mode
+	    pick_node(view->Selection.single_selected_node);
+	else {	//left click single select mode
+	    if (OD_Selected(view->Selection.single_selected_node->Node) == 0) {
+		OD_Selected(view->Selection.single_selected_node->Node) = 1;
+		select_object(view->g[view->activeGraph], view->Selection.single_selected_node->Node);
+	    } else {
+		OD_Selected(view->Selection.single_selected_node->Node) = 1;
+		deselect_object(view->g[view->activeGraph], view->Selection.single_selected_node->Node);
+	    }
 	}
+    }
 
 }
 
@@ -506,6 +500,7 @@ static void drawtopviewedges(Agraph_t * g)
 
 }
 
+#if 0
 static int drawtopviewlabels(Agraph_t * g)
 {
     //drawing labels
@@ -523,6 +518,7 @@ static int drawtopviewlabels(Agraph_t * g)
     return 0;
 
 }
+#endif
 
 
 void drawTopViewGraph(Agraph_t * g)
@@ -718,7 +714,7 @@ static int select_topview_node(topview_node * n)
 }
 
 
-
+#if 0
 static int select_topview_edge(topview_edge * e)
 {
     
@@ -763,6 +759,7 @@ static int select_topview_edge(topview_edge * e)
     return 1;
 
 }
+#endif
 
 static int update_topview_node_from_cgraph(topview_node * Node)
 {
@@ -824,6 +821,7 @@ int set_update_required(topview * t)
 
 }
 
+#if 0
 static int draw_topview_label(topview_node * v, float zdepth)
 {
 
@@ -878,6 +876,7 @@ static int draw_topview_label(topview_node * v, float zdepth)
     } else
 	return 0;
 }
+#endif
 
 
 
@@ -1370,13 +1369,12 @@ static char *smyrna_icon_rotate;
 static glCompSet *glcreate_gl_topview_menu()
 {
 
-    glCompSet *s = NEW(glCompSet);
-
-	glCompPanel *p;
+    glCompSet *s = glCompSetNew();
+    glCompPanel *p;
     glCompButton *b;
     glCompLabel *l;
 
-	copy_font(&(s->font),view->fontset->fonts[view->fontset->activefont]);
+    copy_font(s->font,view->fontset->fonts[view->fontset->activefont]);
 	/* GtkRequisition requisition; *//* What??*/
     if (!smyrna_icon_pan) {
 #ifdef _WIN32

@@ -474,6 +474,7 @@ void switch_Mouse(GtkMenuItem * menuitem, int mouse_mode)
 	params:widget to shop popup , event handler to check click type and custom data
 	return value:true or false, fails (false) if listed keys (in switch) are not pressed
 */
+#if 0
 static gboolean button_press_event_popup_menu(GtkWidget * widget,
 					      GdkEventButton * event,
 					      gpointer data)
@@ -486,6 +487,7 @@ static gboolean button_press_event_popup_menu(GtkWidget * widget,
     }
     return FALSE;
 }
+#endif
 
 
 /*

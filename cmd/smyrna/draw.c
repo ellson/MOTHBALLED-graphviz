@@ -764,7 +764,6 @@ void scanGraph(Agraph_t * g)
 {
     Agnode_t *v;
     Agedge_t *e;
-    Agraph_t *s;
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
 	{
 		scanXdotwithattr(v, "_draw_"); 
