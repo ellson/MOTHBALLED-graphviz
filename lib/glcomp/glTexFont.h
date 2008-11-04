@@ -15,11 +15,13 @@
 #ifndef __GLTEXFONTH__
 #define __GLTEXFONTH__
 
+#ifdef _WIN32
 #include <stdlib.h>
-
 #include "glpangofont.h"	
-
 typedef float GLfloat;
+#else
+#include "GL/gl.h"	
+#endif
 
 /* Error Codes */
 #define FONT_FILE_NOT_FOUND          -13 /* file was not found */
@@ -74,15 +76,15 @@ extern "C" {
 	if loaded returns the id
 	else returns -1
 */
-int fontId(fontset_t* fontset,char* fontdesc);
+/* int fontId(fontset_t* fontset,char* fontdesc); */
 
 /*
 	Initialize fontset as an empty set
 */
 
-void fontset_init(fontset_t* fs);
+fontset_t* fontset_init();
 
-
+void free_font_set(fontset_t* fontset);
 void copy_font(texFont_t* targetfont,const texFont_t* sourcefont);
 /*
 	load font via font description
@@ -162,6 +164,7 @@ Sets color for various operations.
 =============
 */
 
+texFont_t* font_init();
 void fontColor (texFont_t* font,float r, float g, float b);
 void fontColorA (texFont_t* font,float r, float g, float b, float a);
 void fontColorp (texFont_t* font,float *clr);
