@@ -16,6 +16,10 @@
 /*Open GL texture handling and storing mechanism
   includes glPanel,glCompButton,glCompCustomButton,clCompLabel,glCompStyle
 */
+
+#ifndef GLCOMPTEXTURE_H
+#define GLCOMPTEXTURE_H
+
 #ifdef _WIN32
 #include "windows.h"
 #endif
@@ -23,10 +27,8 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#ifndef GLCOMPTEXTURE_H
-#define GLCOMPTEXTURE_H
 typedef struct {
-    int id;
+    unsigned int id;
     float w, h;
 } glCompTexture;
 
