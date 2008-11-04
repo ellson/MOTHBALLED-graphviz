@@ -408,7 +408,7 @@ static int get_temp_coords(topview* t,int level,int v,double* coord_x,double* co
 		if (recorded < 100)
 		{
 			printf ("OAL  AL  (x0,y0)-(x1,y1) current \n");
-			printf ("%i   %i  (%f,%f)-(%f,%f) (%f,%f)\n",OAL,AL,x0,y0,x1,y1,coord_x,coord_y);
+			printf ("%i   %i  (%f,%f)-(%f,%f) (%f,%f)\n",OAL,AL,x0,y0,x1,y1,*coord_x,*coord_y);
 			recorded ++;
 		}
 
