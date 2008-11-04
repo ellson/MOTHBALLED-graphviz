@@ -54,29 +54,30 @@ typedef enum { FORMAT_PS, FORMAT_PS2, FORMAT_EPS } format_type;
 //static int isLatin1;
 //static char setupLatin1;
 
-PostscriptDocument doc;
+PostscriptDocument *doc;
 size_t (*save_write_fn) (GVJ_t *job, const char *s, size_t len);
 
 static size_t lasi_head_writer(GVJ_t * job, const char *s, size_t len)
 {
-    doc.osHeader() << s;
+    doc->osHeader() << s;
     return len;
 }
 
 static size_t lasi_body_writer(GVJ_t * job, const char *s, size_t len)
 {
-    doc.osBody() << s;
+    doc->osBody() << s;
     return len;
 }
 
 static size_t lasi_footer_writer(GVJ_t * job, const char *s, size_t len)
 {
-    doc.osFooter() << s;
+    doc->osFooter() << s;
     return len;
 }
 
 static void lasi_begin_job(GVJ_t * job)
 {
+    doc = new PostscriptDocument;
     save_write_fn = job->gvc->write_fn;
     job->gvc->write_fn = lasi_head_writer;
 
@@ -124,10 +125,12 @@ static void lasi_end_job(GVJ_t * job)
 	    std::ostream & str_;
         } swapper(cout, output);
     
-        doc.write(cout);
+        doc->write(cout);
     
         job->gvc->write_fn = save_write_fn;
         gvputs(job, output.str().c_str());
+
+	delete doc;
     }
 }
 
@@ -403,7 +406,7 @@ static void lasi_textpara(GVJ_t * job, pointf p, textpara_t * para)
     ps_set_color(job, &(job->obj->pencolor));
 //    gvprintdouble(job, para->fontsize);
 //    gvprintf(job, " /%s set_font\n", para->fontname);
-    doc.osBody() << setFont(font, style, weight, variant, stretch) << setFontSize(para->fontsize) << endl;
+    doc->osBody() << setFont(font, style, weight, variant, stretch) << setFontSize(para->fontsize) << endl;
     switch (para->just) {
     case 'r':
         p.x -= para->width;
@@ -422,7 +425,7 @@ static void lasi_textpara(GVJ_t * job, pointf p, textpara_t * para)
 //    gvprintdouble(job, para->width);
 //    str = ps_string(para->str,isLatin1);
 //    gvprintf(job, " %s alignedtext\n", str);
-    doc.osBody() << show(para->str) << endl;
+    doc->osBody() << show(para->str) << endl;
 
 }
 
