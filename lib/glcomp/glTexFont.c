@@ -1,3 +1,4 @@
+/* vim:set shiftwidth=4 ts=8: */
 /*
     glTexFont Library R6
 
@@ -19,8 +20,8 @@
 #include "glTexFontTGA.h"
 #include "glTexFontDefs.h"
 #include "glTexFontInclude.h"
-
-
+#include "glpangofont.h"
+#include "memory.h"
 
 /* just a global for our default colors */
 float white[] = {1.0, 1.0, 1.0, 1.0};
@@ -144,7 +145,7 @@ Scissor region used setup for a text region.
 */
 void fontScissorTextRegion (texFont_t* font)
 {
-    glScissor (font,font->regionX, font->regionY, font->regionW, font->regionH);
+    glScissor (font->regionX, font->regionY, font->regionW, font->regionH);
 }
 /*
 =============
@@ -331,7 +332,6 @@ void fontWalkString (texFont_t* font,char *buffPtr, GLfloat xpos, GLfloat ypos, 
 	GLfloat y = ypos;
 	GLfloat carrage = 0;
 	GLfloat tabs = 0;
-    int len = strlen (buffPtr);
     int xMax;
 	int charCount;
 	int maxcharCount;
@@ -453,7 +453,7 @@ void fontDrawString (texFont_t* font,GLfloat xpos, GLfloat ypos, char *s,GLfloat
 	va_start (msg, s);
 #ifdef _WIN32
 	_vsntprintf (buffer, FONT_MAX_LEN - 1, s, msg);	
-#else /* linux */
+#else /* not Windows */
 	vsnprintf (buffer, FONT_MAX_LEN - 1, s, msg);	
 #endif
 	va_end (msg);
@@ -690,7 +690,7 @@ void fontSetModes (int state)
 }
 
 
-int fontId(fontset_t* fontset,char* fontdesc)
+static int fontId(fontset_t* fontset,char* fontdesc)
 {
 	int ind=0;
 	for (ind=0;ind < fontset->count;ind ++)
@@ -706,8 +706,10 @@ int fontId(fontset_t* fontset,char* fontdesc)
 	if font already exists no malloc just returns the id
 */
 
-void font_init(texFont_t* font)
+texFont_t* font_init()
 {
+    texFont_t* font = NEW(texFont_t);
+
 	font->fgColor[0]=1.0;font->fgColor[1]=1.0;font->fgColor[2]=1.0;font->fgColor[3]=1.0;
 	font->gdColor[0]=0.5;font->gdColor[1]=0.5;font->gdColor[2]=0.5;font->gdColor[3]=1.0;
 	font->bgColor[0]=0.5;font->bgColor[1]=0.5;font->bgColor[2]=0.5;font->bgColor[3]=1.0;
@@ -730,7 +732,9 @@ void font_init(texFont_t* font)
 
 	fontMakeMap (font);
 
+    return font;
 }
+
 void copy_font(texFont_t* targetfont,const texFont_t* sourcefont)
 {
 	targetfont->fgColor[0]=sourcefont->fgColor[0];
@@ -768,57 +772,81 @@ void copy_font(texFont_t* targetfont,const texFont_t* sourcefont)
 		targetfont->fontdesc=(char*)0;
 	fontMakeMap (targetfont);
 }
-void fontset_init(fontset_t* fs)
+
+#ifndef _WIN32
+#define TMPTEMP "/tmp/_sfXXXX"
+#endif
+
+fontset_t* fontset_init()
 {
+    fontset_t* fs = NEW(fontset_t);
 	fs->activefont=-1;
 	fs->count=0;
-	fs->font_directory=NULL; //FIX ME
+#ifdef _WIN32
+	fs->font_directory = "c:/fontfiles"; //FIX ME
+#else
+    fs->font_directory = strdup (TMPTEMP);
+    mkdtemp (fs->font_directory);
+#endif
 	fs->fonts=0;
+    return fs;
 }
 
+static char* fontpath = NULL;
+static int fontpathsz = 0;
 
 int add_font(fontset_t* fontset,char* fontdesc)
 {
-	int id=0;	
-	char buf[512];
-	id=fontId(fontset,fontdesc);
-	if (id==-1)
-	{
-		sprintf(buf,"%s/%s.png","c:/fontfiles",fontdesc);
-		if(create_font_file(fontdesc,buf,(float)32,(float)32)==0)
-		{
-			fontset->fonts=realloc(fontset->fonts,sizeof(texFont_t*)*(fontset->count+1));
-			fontset->fonts[fontset->count]=(texFont_t*)malloc(sizeof(texFont_t));
-			font_init(fontset->fonts[fontset->count]);
-			fontset->fonts[fontset->count]->fontdesc=strdup(fontdesc);
-			glGenTextures (1, &(fontset->fonts[fontset->count]->texId));	//get  opengl texture name
-			if (fontset->fonts[fontset->count]->texId >= 0)
-			{
-				if(!fontLoadPNG (buf, fontset->fonts[fontset->count]->texId))
-					return -1;
-				fontset->activefont=fontset->count;
-				fontset->count++;
-				return fontset->count;
-			}
-			else
-				return -1;
-		}
-		else
-			return -1;
+    int id;	
+    int sz;
+    texFont_t* tf;
+
+    id=fontId(fontset,fontdesc);
+
+    if (id==-1) {
+	sz = strlen(fontset->font_directory)+strlen(fontdesc)+6;
+	if (sz > fontpathsz) {
+	    fontpathsz = 2*sz;
+	    fontpath = ALLOC (fontpathsz, fontpath, char); 
+        }
+	sprintf(fontpath,"%s/%s.png",fontset->font_directory,fontdesc);
+	if(create_font_file(fontdesc,fontpath,(float)32,(float)32)==0) {
+	    fontset->fonts = ALLOC(fontset->count+1,fontset->fonts,texFont_t*);
+	    fontset->fonts[fontset->count] = tf = font_init ();
+	    tf->fontdesc = strdup(fontdesc);
+	    glGenTextures (1, &(tf->texId));	//get  opengl texture name
+	    if ((tf->texId >= 0) && fontLoadPNG (fontpath, tf->texId)) {
+		fontset->activefont=fontset->count;
+		fontset->count++;
+		return fontset->count;
+	    }
+	    else
+		return -1;
 	}
 	else
-		return id;
+	    return -1;
+    }
+    else
+	return id;
 }
+
 void free_font_set(fontset_t* fontset)
 {
-	int ind;
-	for (ind=0;ind < fontset->count;ind ++)
-	{
-		free(fontset->fonts[ind]->fontdesc);
-		free(fontset->fonts[ind]);
-	}
-	free(fontset->fonts);
-	free(fontset->font_directory);
-	free(fontset);
+    int ind;
+    for (ind=0;ind < fontset->count;ind ++) {
+#ifndef _WIN32
+	sprintf(fontpath,"%s/%s.png",fontset->font_directory,fontset->fonts[ind]->fontdesc);
+	unlink (fontpath);
+#endif
+	free(fontset->fonts[ind]->fontdesc);
+	free(fontset->fonts[ind]);
+    }
+    free(fontset->fonts);
+#ifndef _WIN32
+    if (fontset->font_directory)
+	rmdir (fontset->font_directory);
+#endif
+    free(fontset->font_directory);
+    free(fontset);
 }
 
