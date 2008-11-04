@@ -2,6 +2,7 @@
 #include "viewport.h"
 #include "selection.h"
 #include "gltemplate.h"
+#include "toolboxcallbacks.h"
 
 int pick_node(topview_node * n)
 {
@@ -15,9 +16,7 @@ int pick_node(topview_node * n)
 	if (!is_node_picked(n)) {
 	    if (add_to_pick_list(n)) {
 		sprintf(buf,"Clicked node name:%s\n",agnameof(n->Node));
-#ifdef _WIN32
 		write_to_console(buf);
-#endif
 		return 1;
 	    }
 	    return 0;
@@ -85,7 +84,7 @@ int add_to_pick_list(topview_node * n)
 int draw_node_hint_boxes()
 {
     int ind;
-    int fs = 12;
+    /* int fs = 12; */
     for (ind = 0; ind < view->Topview->picked_node_count; ind++) 
 	{
 		draw_node_hintbox(view->Topview->picked_nodes[ind]->distorted_x,
