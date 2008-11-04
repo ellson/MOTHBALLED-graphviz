@@ -14,7 +14,7 @@
 **********************************************************/
 
 #include "glcompset.h"
-
+#include "memory.h"
 
 void glCompDrawBegin()		//pushes a gl stack 
 {
@@ -105,7 +105,7 @@ glCompPanel *glCompPanelNew(GLfloat x, GLfloat y, GLfloat w, GLfloat h)
     p->pos.y = y;
     p->width = w;
     p->height = h;
-	font_init(&p->font);
+    p->font = font_init();
     return p;
 }
 
@@ -115,10 +115,9 @@ int glCompSetAddPanel(glCompSet * s, glCompPanel * p)
     s->panels = realloc(s->panels, sizeof(glCompPanel *) * s->panelcount);
     s->panels[s->panelcount - 1] = p;
     p->parentset = s;
-	if (p->font.texId==-1)	//no font has been set yet
-		copy_font(&(p->font),&(s->font));
-
-	return 1;
+    if (p->font->texId==-1)	//no font has been set yet
+	copy_font(p->font,s->font);
+    return 1;
 }
 
 int glCompSetAddLabel(glCompSet * s, glCompLabel * p)
@@ -126,8 +125,8 @@ int glCompSetAddLabel(glCompSet * s, glCompLabel * p)
     s->labelcount++;
     s->labels = realloc(s->labels, sizeof(glCompLabel *) * s->labelcount);
     s->labels[s->labelcount - 1] = p;
-	if (p->font.texId==-1)	//no font has been set yet
-		copy_font(&(p->font),&(s->font));
+    if (p->font->texId==-1)	//no font has been set yet
+	copy_font(p->font,s->font);
     return 1;
 }
 
@@ -135,13 +134,14 @@ int glCompSetRemovePanel(glCompSet * s, glCompPanel * p)
 {
     int ind = 0;
     int found = 0;
-	for (ind; ind < s->panelcount; ind++) {
+	for (; ind < s->panelcount; ind++) {
 	if ((s->panels[ind] == p) && found == 0)
 	    found = 1;
 	if ((found == 1)&&(ind <(s->panelcount-1)))
 	    s->panels[ind] = s->panels[ind + 1];
     }
     if (found) {
+	free(p->font);
 	free(p);
 	s->panelcount--;
 	s->panels =
@@ -155,13 +155,14 @@ int glCompSetRemoveLabel(glCompSet * s, glCompLabel * p)
 {
     int ind = 0;
     int found = 0;
-    for (ind; ind < s->labelcount - 1; ind++) {
+    for (; ind < s->labelcount - 1; ind++) {
 	if ((s->labels[ind] == p) && found == 0)
 	    found = 1;
 	if (found == 1)
 	    s->labels[ind] = s->labels[ind + 1];
     }
     if (found) {
+	free(p->font);
 	free(p->text);
 	free(p);
 	s->labelcount--;
@@ -180,10 +181,10 @@ int glCompDrawLabel(glCompLabel * p)
 	    p->pos.y = p->pos.y + p->panel->pos.y;
 	}
 
-	fontSize(&p->font,(int) p->size);
-	fontColorA(&p->font,p->color.R, p->color.G, p->color.B, p->color.A);
+	fontSize(p->font,(int) p->size);
+	fontColorA(p->font,p->color.R, p->color.G, p->color.B, p->color.A);
 
-	fontDrawString(&p->font,(int) p->pos.x, (int) p->pos.y, p->text,
+	fontDrawString(p->font,(int) p->pos.x, (int) p->pos.y, p->text,
 		       (int) (p->size * p->fontsizefactor *
 			      strlen(p->text)));
 	if (p->panel) {
@@ -213,7 +214,7 @@ int glCompSetDraw(glCompSet * s)
 int glCompSetDrawPanels(glCompSet * s)
 {
     int ind = 0;
-    for (ind; ind < s->panelcount; ind++) {
+    for (; ind < s->panelcount; ind++) {
 	glCompDrawPanel(s->panels[ind]);
     }
     for (ind = 0; ind < s->buttoncount; ind++) {
@@ -229,7 +230,7 @@ int glCompSetDrawPanels(glCompSet * s)
 int glCompSetHide(glCompSet * s)
 {
     int ind = 0;
-    for (ind; ind < s->panelcount; ind++) {
+    for (; ind < s->panelcount; ind++) {
 	s->panels[ind]->visible = 0;
     }
     for (ind = 0; ind < s->buttoncount; ind++) {
@@ -245,7 +246,7 @@ int glCompSetHide(glCompSet * s)
 int glCompSetShow(glCompSet * s)
 {
     int ind = 0;
-    for (ind; ind < s->panelcount; ind++) {
+    for (; ind < s->panelcount; ind++) {
 	s->panels[ind]->visible = 1;
     }
     for (ind = 0; ind < s->buttoncount; ind++) {
@@ -304,7 +305,7 @@ glCompButton *glCompButtonNew(GLfloat x, GLfloat y, GLfloat w, GLfloat h,
     p->callbackfunc = '\0';
     p->panel = '\0';
     p->customptr = '\0';
-	font_init(&p->font);
+    p->font = font_init();
     return p;
 }
 
@@ -315,8 +316,8 @@ int glCompSetAddButton(glCompSet * s, glCompButton * p)
 	realloc(s->buttons, sizeof(glCompButton *) * s->buttoncount);
     s->buttons[s->buttoncount - 1] = p;
     p->parentset = s;
-	if (p->font.texId==-1)	//no font has been set yet
-		copy_font(&(p->font),&(s->font));
+    if (p->font->texId==-1)	//no font has been set yet
+	copy_font((p->font),(s->font));
     return 1;
 }
 
@@ -324,13 +325,14 @@ int glCompSetRemoveButton(glCompSet * s, glCompButton * p)
 {
     int ind = 0;
     int found = 0;
-    for (ind; ind < s->buttoncount ; ind++) {
+    for (; ind < s->buttoncount ; ind++) {
 	if ((s->buttons[ind] == p) && found == 0)
 	    found = 1;
 	if ((found == 1) &&(ind <= (s->buttoncount-1)))
 	    s->buttons[ind] = s->buttons[ind + 1];
     }
     if (found) {
+	free(p->font);
 	free(p->caption);
 	free(p);
 	s->buttoncount--;
@@ -435,10 +437,10 @@ int glCompDrawButton(glCompButton * p)
 	fonty =
 	    (p->height - p->thickness * (GLfloat) 2 -
 	     p->fontsize) / (GLfloat) 2.0 + p->pos.y + p->thickness;
-	fontSize(&p->font,(int) p->fontsize);
+	fontSize(p->font,(int) p->fontsize);
 //              fontColorA (p->fontcolor.R,p->fontcolor.B,p->fontcolor.G,p->fontcolor.A);
-	fontColorA(&p->font,0, 0, 0, 1);
-	fontDrawString(&p->font,(int) fontx, (int) fonty, p->caption,
+	fontColorA(p->font,0, 0, 0, 1);
+	fontDrawString(p->font,(int) fontx, (int) fonty, p->caption,
 		       (int) (p->fontsize * strlen(p->caption) *
 			      GLCOMPSET_FONT_SIZE_FACTOR));
     }
@@ -546,10 +548,6 @@ int glCompSetRelease(glCompSet * s, int x, int y)
     return 1;
 }
 
-
-
-
-
 int glCompPointInButton(glCompButton * p, float x, float y)
 {
     float button_x, button_y;
@@ -581,7 +579,6 @@ void glCompSetGetPos(int x, int y, float *X, float *Y, float *Z)
     GLdouble modelview[16];
     GLdouble projection[16];
     GLfloat winX, winY;
-    float kts = 1;
     glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev(GL_PROJECTION_MATRIX, projection);
     glGetIntegerv(GL_VIEWPORT, viewport);
@@ -601,7 +598,6 @@ void glCompSetGetPos(int x, int y, float *X, float *Y, float *Z)
     *Y = (float) posY;
     *Z = (float) posZ;
 }
-
 
 void glCompButtonClick(glCompButton * p)
 {
@@ -645,7 +641,7 @@ glCompLabel *glCompLabelNew(GLfloat x, GLfloat y, GLfloat size, char *text)
     p->visible = 1;
     p->fontsizefactor = GLCOMPSET_FONT_SIZE_FACTOR;
     p->panel = '\0';
-	font_init(&p->font);
+    p->font = font_init();
     return p;
 }
 
@@ -701,23 +697,30 @@ void glCompSetClear(glCompSet * s)
 	free(s->panels[ind]);
     }
     free(s->panels);
+    free(s->font);
     free(s);
 }
 
-void change_fonts(glCompSet * s,const texFont_t* sourcefont)
+glCompSet* glCompSetNew()
 {
-    int ind = 0;
-    for (ind = 0; ind < s->buttoncount; ind++) 
-	{
-		copy_font(&(s->buttons[ind]->font),sourcefont);	
+    glCompSet *s = NEW(glCompSet);
+    s->font = font_init();
+    return s;
+}
+#if 0
+static void change_fonts(glCompSet * s,const texFont_t* sourcefont)
+{
+    int ind;
+
+    for (ind = 0; ind < s->buttoncount; ind++) {
+	copy_font((s->buttons[ind]->font),sourcefont);	
     }
-    for (ind = 0; ind < s->labelcount; ind++) 
-	{
-		copy_font(&(s->labels[ind]->font),sourcefont);	
+    for (ind = 0; ind < s->labelcount; ind++) {
+	copy_font((s->labels[ind]->font),sourcefont);	
 
     }
-    for (ind = 0; ind < s->panelcount; ind++) 
-	{
-		copy_font(&(s->panels[ind]->font),sourcefont);	
+    for (ind = 0; ind < s->panelcount; ind++) {
+	copy_font((s->panels[ind]->font),sourcefont);	
     }
 }
+#endif

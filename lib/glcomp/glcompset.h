@@ -79,7 +79,7 @@ typedef struct _glCompPanel {
     int visible;
     void *parentset;		//parent compset
     int data;
-	texFont_t font;	//pointer to font to use
+    texFont_t* font;	//pointer to font to use
 
 } glCompPanel;
 typedef struct _glCompLabel {
@@ -91,7 +91,7 @@ typedef struct _glCompLabel {
     char *text;
     GLfloat fontsizefactor;
     glCompPanel *panel;		//container panel
-	texFont_t font;	//pointer to font to use
+    texFont_t* font;	//pointer to font to use
 } glCompLabel;
 
 
@@ -116,10 +116,8 @@ typedef struct _glCompButton {
     callbackfunc_t callbackfunc;	//call back for button click
     void *customptr;		//general purpose void pointer to pass to call back
     int data;
-	texFont_t font;	//pointer to font to use
+    texFont_t* font;	//pointer to font to use
 } glCompButton;
-
-
 
 typedef struct {
     glCompPanel **panels;
@@ -132,14 +130,14 @@ typedef struct {
     int active;			//0 dont draw, 1 draw
     int enabled;		//0 disabled 1 enabled(allow mouse interaction)
     GLfloat clickedX, clickedY;
-	texFont_t font;	//pointer to font to use
+    texFont_t* font;	//pointer to font to use
 } glCompSet;
 
+glCompSet* glCompSetNew();
 glCompPanel *glCompPanelNew(GLfloat x, GLfloat y, GLfloat w, GLfloat h);
 void glCompSetClear(glCompSet * s);
 int glCompSetAddPanel(glCompSet * s, glCompPanel * p);
 int glCompSetRemovePanel(glCompSet * s, glCompPanel * p);
-int glCompSetDraw(glCompSet * s);
 
 glCompButton *glCompButtonNew(GLfloat x, GLfloat y, GLfloat w, GLfloat h,
 			      char *caption, char *glyphfile,
@@ -175,7 +173,7 @@ int glCompSetDrawPanels(glCompSet * s);
 	change all components's fonts  in s 
 	to sourcefont
 */
-void change_fonts(glCompSet * s,const texFont_t* sourcefont);
+/* void change_fonts(glCompSet * s,const texFont_t* sourcefont); */
 
 
 
