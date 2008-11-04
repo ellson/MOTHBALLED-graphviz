@@ -170,6 +170,7 @@ static int set_scalebtn_widget_to_attribute(char *attribute, char *widget_name)
     }
     return 0;
 }
+#if 0
 static int set_combobox_widget(char *attribute,char *widget_name)
 {
     char *buf;
@@ -189,6 +190,7 @@ static int set_combobox_widget(char *attribute,char *widget_name)
 
     return 0;
 }
+#endif
 static int get_combobox_widget_to_attribute(char *attribute, char *widget_name, Agraph_t * g)
 {
     char buf[25];
