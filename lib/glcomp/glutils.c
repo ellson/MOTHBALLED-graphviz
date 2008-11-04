@@ -67,7 +67,6 @@ int GetOGLPosRef(int x, int y, float *X, float *Y, float *Z)
     GLdouble modelview[16];
     GLdouble projection[16];
     GLfloat winX, winY;
-    float kts = 1;
     //glTranslatef (0.0,0.0,0.0);
     glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev(GL_PROJECTION_MATRIX, projection);
@@ -108,7 +107,6 @@ float GetOGLDistance(int l)
     GLdouble modelview[16];
     GLdouble projection[16];
     GLfloat winX, winY;
-    float kts = 1;
 
 
 
