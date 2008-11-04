@@ -58,16 +58,17 @@ void clear_viewport(ViewInfo * view)
 {
     int ind = 0;
     /*free topview if there is one */
-	if (GD_TopView(view->g[view->activeGraph]))
-		cleartopview(view->Topview);
-	if (view->graphCount) {
+    if ((view->activeGraph >= 0) && GD_TopView(view->g[view->activeGraph]))
+	cleartopview(view->Topview);
+    if (view->graphCount) {
 	/*all cgraph graphs should be freed */
 	for (ind = 0; ind < view->graphCount; ind++) {
 	    agclose(view->g[ind]);
 	}
 	/*frees itself */
-	free(view);
     }
+    free_font_set (view->fontset);
+    free(view);
 }
 
 static char *get_attribute_value(char *attr, ViewInfo * view, Agraph_t * g)
@@ -408,9 +409,9 @@ void init_viewport(ViewInfo * view)
     set_viewport_settings_from_template(view, view->default_attributes);
     view->dfltViewType = VT_NONE;
     view->dfltEngine = GVK_NONE;
+
 	//create fontset
-	view->fontset=(fontset_t*)malloc(sizeof(fontset_t));
-	fontset_init(view->fontset);
+    view->fontset = fontset_init();
 }
 
 
@@ -728,10 +729,11 @@ layoutGraph (Agraph_t *oldg, int keeppos, int closeold)
  */
 static Agraph_t *loadGraph(char *filename)
 {
+    char* s;
     Agraph_t *g;
     FILE *input_file;
-	char* bf;
-	char buf[512];
+	/* char* bf; */
+	/* char buf[512]; */
     if (!(input_file = fopen(filename, "r")))
 	{
 		g_print("Cannot open %s\n", filename);
@@ -781,13 +783,8 @@ static Agraph_t *loadGraph(char *filename)
 	}
     }
 #endif
-	bf=agget(g, "TopView");
-
-	if (bf)
-	{
-		if(strcasecmp(agget(g, "TopView"),"1")==0)
-			preparetopview(g, view->Topview);
-	}
+	if((s = agget(g, "TopView")) && (*s == '1'))
+		preparetopview(g, view->Topview);
 	else	//set graph borders
 	{
 		refresh_borders(g);
