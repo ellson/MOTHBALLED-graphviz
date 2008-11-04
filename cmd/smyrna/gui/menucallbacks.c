@@ -241,7 +241,7 @@ void mEdgePropertiesSlot(GtkWidget * widget, gpointer user_data)
 void mShowCodeSlot(GtkWidget * widget, gpointer user_data)
 {
 }
-static mSlot (GtkWidget * widget, gpointer user_data, gvk_layout layout, int doCursor)
+static void mSlot (GtkWidget * widget, gpointer user_data, gvk_layout layout, int doCursor)
 {
     GdkCursor *cursor;
     GdkWindow *w;
