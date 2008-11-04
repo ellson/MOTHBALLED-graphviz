@@ -239,7 +239,7 @@ unsigned char *load_png_font(char* file_name,int *imageWidth,int *imageHeight)
 {
 	unsigned char *imageData = NULL;
 	unsigned char header[8];
-	int rowbytes,i,ii,b0,b1,b2,b3,pixeloffset;
+	int i,ii,b0,b1,b2,b3,pixeloffset;
 	long int c;
 	png_structp png_ptr;
 	png_infop info_ptr;
@@ -345,7 +345,7 @@ static GLubyte imageData[imageWidth][imageHeight][4];*/
 int fontLoadPNG (char *name, int id)
 {
 	GLubyte *imageData = NULL;
-	int imageWidth,imageHeight,idx,idx2,c;
+	int imageWidth,imageHeight,idx2,c;
 	
 //	imageData = fontGetData (s, size, imageBits);
 	imageData =load_png_font(name,&imageWidth,&imageHeight);

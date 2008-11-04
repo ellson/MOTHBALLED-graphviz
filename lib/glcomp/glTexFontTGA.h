@@ -13,4 +13,5 @@
     Web         -- http://members.home.com/vandals1
 */
 int fontLoadTGA (char *name, int id); /* id is the texture id to bind too */
+int fontLoadPNG (char *name, int id);
 
