@@ -1,15 +1,28 @@
+/* vim:set shiftwidth=4 ts=8: */
+
+/**********************************************************
+*      This software is part of the graphviz package      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2007 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+**********************************************************/
+
 #include "glpangofont.h"
+
 #define DEFAULT_FONT_FAMILY "Arial"
 #define DEFAULT_FONT_SIZE 32
 #define ANTIALIAS
 
-
-static int file_exists(const char * filename);
-
 static int file_exists(const char * filename)
 {
 	FILE * file;
-	if ( file = fopen(filename, "r"))
+	if (( file = fopen(filename, "r")))
     {
         fclose(file);
         return 1;
@@ -17,7 +30,7 @@ static int file_exists(const char * filename)
     return 0;
 }
 
-PangoLayout *  get_pango_layout (cairo_t	*cr,
+static PangoLayout *  get_pango_layout (cairo_t	*cr,
 		  char	*markup_text,
 		  char* fontdescription,
 		  double	*width,
@@ -69,23 +82,16 @@ PangoLayout *  get_pango_layout (cairo_t	*cr,
     return layout;
 }
 
-cairo_status_t
+static cairo_status_t
 writer (void *closure, const unsigned char *data, unsigned int length)
 {
-	int a;
 	if (length == fwrite(data, 1, length, (FILE *)closure))
 	{
 		return CAIRO_STATUS_SUCCESS;
-
 	}
 
 	return CAIRO_STATUS_WRITE_ERROR;
 }
-
-
-
-
-
 
 int create_font_file(char* fontdescription,char* fontfile,float gw,float gh)
 {
@@ -100,7 +106,7 @@ int create_font_file(char* fontdescription,char* fontfile,float gw,float gh)
     PangoLayout *layout;
     double width, height;
 	FILE* output_file;
-	char* c;
+	int c;
 	int	return_value=-1;
 
 	if(file_exists(fontfile))	//checking if font file has already been created
