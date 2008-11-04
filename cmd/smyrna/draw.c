@@ -112,11 +112,12 @@ static void set_options(sdot_op * op, int param)
 
     if ((param == 1) && (view->mouse.mouse_mode == 10) && (view->mouse.mouse_down == 1))	//selected, if there is move, move it
     {
-	dx = view->GLx - view->GLx2;
-	dy = view->GLy - view->GLy2;
-    } else {
-	dx = 0;
-	dy = 0;
+		dx = view->GLx - view->GLx2;
+		dy = view->GLy - view->GLy2;
+    } else 
+	{
+		dx = 0;
+		dy = 0;
     }
 
 }
@@ -128,62 +129,74 @@ static void relocate_spline(sdot_op * sop, int param)
     Agnode_t *hn;		//head node
     int i = 0;
     xdot_op *op = &sop->op;
-    if (AGTYPE(sop->obj) == AGEDGE) {
-	e = sop->obj;
-	tn = agtail(e);
-	hn = aghead(e);
-	if ((OD_Selected(hn) == 1) && (OD_Selected(tn) == 0)) {
-	    set_options(sop, 1);
-	    for (i = 1; i < op->u.bezier.cnt - 1; i = i + 1) {
-		if ((dx != 0) || (dy != 0)) {
-		    op->u.bezier.pts[i].x =
-			op->u.bezier.pts[i].x -
-			(int) (dx * (float) i /
-			       (float) (op->u.bezier.cnt));
-		    op->u.bezier.pts[i].y =
-			op->u.bezier.pts[i].y -
-			(int) (dy * (float) i /
-			       (float) (op->u.bezier.cnt));
+    if (AGTYPE(sop->obj) == AGEDGE)
+	{
+		e = sop->obj;
+		tn = agtail(e);
+		hn = aghead(e);
+		if ((OD_Selected(hn) == 1) && (OD_Selected(tn) == 0))
+		{
+			set_options(sop, 1);
+			for (i = 1; i < op->u.bezier.cnt - 1; i = i + 1)
+			{
+				if ((dx != 0) || (dy != 0)) 
+				{
+					op->u.bezier.pts[i].x =
+							op->u.bezier.pts[i].x -
+								(int) (dx * (float) i /
+									(float) (op->u.bezier.cnt));
+					op->u.bezier.pts[i].y =
+								op->u.bezier.pts[i].y -
+									(int) (dy * (float) i /
+								       (float) (op->u.bezier.cnt));
+				}
+		    }
+			if ((dx != 0) || (dy != 0)) 
+			{
+				op->u.bezier.pts[op->u.bezier.cnt - 1].x =
+						op->u.bezier.pts[op->u.bezier.cnt - 1].x - (int) dx;
+				op->u.bezier.pts[op->u.bezier.cnt - 1].y =
+						op->u.bezier.pts[op->u.bezier.cnt - 1].y - (int) dy;
+			}
 		}
-	    }
-	    if ((dx != 0) || (dy != 0)) {
-		op->u.bezier.pts[op->u.bezier.cnt - 1].x =
-		    op->u.bezier.pts[op->u.bezier.cnt - 1].x - (int) dx;
-		op->u.bezier.pts[op->u.bezier.cnt - 1].y =
-		    op->u.bezier.pts[op->u.bezier.cnt - 1].y - (int) dy;
-	    }
-	}
-	else if ((OD_Selected(hn) == 0) && (OD_Selected(tn) == 1)) {
-	    set_options(sop, 1);
-	    for (i = op->u.bezier.cnt - 1; i > 0; i = i - 1) {
-		if ((dx != 0) || (dy != 0)) {
-		    op->u.bezier.pts[i].x =
-			op->u.bezier.pts[i].x -
-			(int) (dx * (float) (op->u.bezier.cnt - i) /
-			       (float) (op->u.bezier.cnt));
-		    op->u.bezier.pts[i].y =
-			op->u.bezier.pts[i].y -
-			(int) (dy * (float) (op->u.bezier.cnt - i) /
-			       (float) (op->u.bezier.cnt));
+		else if ((OD_Selected(hn) == 0) && (OD_Selected(tn) == 1))
+		{
+			set_options(sop, 1);
+			for (i = op->u.bezier.cnt - 1; i > 0; i = i - 1) 
+			{
+				if ((dx != 0) || (dy != 0)) 
+				{
+					op->u.bezier.pts[i].x =
+						op->u.bezier.pts[i].x -
+							(int) (dx * (float) (op->u.bezier.cnt - i) /
+											(float) (op->u.bezier.cnt));
+				op->u.bezier.pts[i].y =
+						op->u.bezier.pts[i].y -
+							(int) (dy * (float) (op->u.bezier.cnt - i) /
+								(float) (op->u.bezier.cnt));
+				}
+			}
+			if ((dx != 0) || (dy != 0)) 
+			{
+				op->u.bezier.pts[0].x = op->u.bezier.pts[0].x - (int) dx;
+				op->u.bezier.pts[0].y = op->u.bezier.pts[0].y - (int) dy;
+			}
 		}
-	    }
-	    if ((dx != 0) || (dy != 0)) {
-		op->u.bezier.pts[0].x = op->u.bezier.pts[0].x - (int) dx;
-		op->u.bezier.pts[0].y = op->u.bezier.pts[0].y - (int) dy;
-	    }
-	}
-	else if ((OD_Selected(hn) == 1) && (OD_Selected(tn) == 1)) {
-	    set_options(sop, 1);
-	    for (i = 0; i < op->u.bezier.cnt; i = i + 1) {
-		if ((dx != 0) || (dy != 0)) {
-		    op->u.bezier.pts[i].x =
-			op->u.bezier.pts[i].x - (int) dx;
-		    op->u.bezier.pts[i].y =
-			op->u.bezier.pts[i].y - (int) dy;
+		else if ((OD_Selected(hn) == 1) && (OD_Selected(tn) == 1)) 
+		{
+		    set_options(sop, 1);
+			for (i = 0; i < op->u.bezier.cnt; i = i + 1) 
+			{
+				if ((dx != 0) || (dy != 0)) 
+				{
+					op->u.bezier.pts[i].x =
+							op->u.bezier.pts[i].x - (int) dx;
+					op->u.bezier.pts[i].y =
+							op->u.bezier.pts[i].y - (int) dy;
+				}
+			}
 		}
-	    }
 	}
-    }
 }
 
 static void DrawBeziers(xdot_op * op, int param)
