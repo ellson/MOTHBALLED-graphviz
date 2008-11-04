@@ -6,7 +6,7 @@
 int pick_node(topview_node * n)
 {
     static int closest_dif = 3;
-	static buf[512];
+	static char buf[512];
 	float a, b;
     a = ABS(n->distorted_x - view->GLx);
     b = ABS(n->distorted_y - view->GLy);
@@ -15,7 +15,9 @@ int pick_node(topview_node * n)
 	if (!is_node_picked(n)) {
 	    if (add_to_pick_list(n)) {
 		sprintf(buf,"Clicked node name:%s\n",agnameof(n->Node));
+#ifdef _WIN32
 		write_to_console(buf);
+#endif
 		return 1;
 	    }
 	    return 0;
