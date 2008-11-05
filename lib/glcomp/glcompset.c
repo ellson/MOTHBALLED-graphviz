@@ -184,9 +184,9 @@ int glCompDrawLabel(glCompLabel * p)
 	fontSize(p->font,(int) p->size);
 	fontColorA(p->font,p->color.R, p->color.G, p->color.B, p->color.A);
 
-	fontDrawString(p->font,(int) p->pos.x, (int) p->pos.y, p->text,
+	fontDrawString(p->font,(int) p->pos.x, (int) p->pos.y,
 		       (int) (p->size * p->fontsizefactor *
-			      strlen(p->text)));
+			      strlen(p->text)), p->text);
 	if (p->panel) {
 	    p->pos.x = p->pos.x - p->panel->pos.x;
 	    p->pos.y = p->pos.y - p->panel->pos.y;
@@ -440,9 +440,9 @@ int glCompDrawButton(glCompButton * p)
 	fontSize(p->font,(int) p->fontsize);
 //              fontColorA (p->fontcolor.R,p->fontcolor.B,p->fontcolor.G,p->fontcolor.A);
 	fontColorA(p->font,0, 0, 0, 1);
-	fontDrawString(p->font,(int) fontx, (int) fonty, p->caption,
+	fontDrawString(p->font,(int) fontx, (int) fonty,
 		       (int) (p->fontsize * strlen(p->caption) *
-			      GLCOMPSET_FONT_SIZE_FACTOR));
+			      GLCOMPSET_FONT_SIZE_FACTOR), p->caption);
     }
     //put glyph
     else {

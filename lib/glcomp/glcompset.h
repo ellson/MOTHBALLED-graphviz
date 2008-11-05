@@ -133,7 +133,7 @@ typedef struct {
     texFont_t* font;	//pointer to font to use
 } glCompSet;
 
-glCompSet* glCompSetNew();
+glCompSet* glCompSetNew(void);
 glCompPanel *glCompPanelNew(GLfloat x, GLfloat y, GLfloat w, GLfloat h);
 void glCompSetClear(glCompSet * s);
 int glCompSetAddPanel(glCompSet * s, glCompPanel * p);
@@ -150,8 +150,8 @@ int glCompDrawButton(glCompButton * p);
 int glCompSetDraw(glCompSet * s);
 int glCompSetHide(glCompSet * s);
 int glCompSetShow(glCompSet * s);
-void glCompDrawBegin();		//pushes a gl stack 
-void glCompDrawEnd();		//pops the gl stack 
+void glCompDrawBegin(void);		//pushes a gl stack 
+void glCompDrawEnd(void);		//pops the gl stack 
 int glCompDrawPanel(glCompPanel * p);
 int glCompSetClick(glCompSet * s, int x, int y);
 int glCompSetRelease(glCompSet * s, int x, int y);

@@ -444,7 +444,9 @@ fontDrawString
 Renders a string at xpos, ypos.
 =============
 */
-void fontDrawString (texFont_t* font,GLfloat xpos, GLfloat ypos, char *s,GLfloat width,...)
+void 
+fontDrawString (texFont_t* font, GLfloat xpos, GLfloat ypos, 
+    GLfloat width, char *s, ...)
 {
 	va_list	msg;
     char buffer[FONT_MAX_LEN] = {'\0'};

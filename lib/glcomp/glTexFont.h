@@ -82,7 +82,7 @@ extern "C" {
 	Initialize fontset as an empty set
 */
 
-fontset_t* fontset_init();
+extern fontset_t* fontset_init(void);
 
 void free_font_set(fontset_t* fontset);
 void copy_font(texFont_t* targetfont,const texFont_t* sourcefont);
@@ -117,7 +117,7 @@ fontDrawString
 Draws a string at (xpos, ypos) in the applications window.
 =============
 */
-void fontDrawString (texFont_t* font,GLfloat xpos, GLfloat ypos, char *s,GLfloat width,...);
+void fontDrawString (texFont_t*, GLfloat , GLfloat , GLfloat, char*, ...);
 /*
 =============
 fontRegion
@@ -164,7 +164,7 @@ Sets color for various operations.
 =============
 */
 
-texFont_t* font_init();
+texFont_t* font_init(void);
 void fontColor (texFont_t* font,float r, float g, float b);
 void fontColorA (texFont_t* font,float r, float g, float b, float a);
 void fontColorp (texFont_t* font,float *clr);
