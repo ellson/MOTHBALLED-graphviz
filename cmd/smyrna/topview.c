@@ -36,7 +36,7 @@ static float dz = 0.0;
 static glCompSet *glcreate_gl_topview_menu();
 static void set_boundaries(topview * t);
 static void set_topview_options(void);
-/* static int draw_topview_label(topview_node * v, float zdepth); */
+static int draw_topview_label(topview_node * v, float zdepth);
 static int node_visible(Agnode_t * n);
 static int select_topview_node(topview_node * n);
 /* static int select_topview_edge(topview_edge * e); */
