@@ -846,7 +846,8 @@ void free_font_set(fontset_t* fontset)
     if (fontset->font_directory)
 	rmdir (fontset->font_directory);
 #endif
-    free(fontset->font_directory);
+	if (fontset->font_directory)
+		free(fontset->font_directory);
     free(fontset);
 }
 
