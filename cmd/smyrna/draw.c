@@ -481,7 +481,7 @@ static void EmbedText(xdot_op * op, int param)
 	fontColor(view->fontset->fonts[view->fontset->activefont],view->selectedNodeColor.R, view->selectedNodeColor.G,
 		  view->selectedNodeColor.B);
 	fontDrawString(view->fontset->fonts[view->fontset->activefont],(int) (x - dx), op->u.text.y - (int) dy,
-		   op->u.text.text, op->u.text.width);
+		   op->u.text.width, op->u.text.text);
 }
 
 void draw_selection_box(ViewInfo * view)

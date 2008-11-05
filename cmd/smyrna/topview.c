@@ -633,11 +633,10 @@ static int draw_node_hint_boxes()
 		       (view->Topview->picked_nodes[ind]->distorted_x),
 		        (view->Topview->picked_nodes[ind]->
 			      distorted_y+fs+fs/5.0 ),
-		       agnameof(view->Topview->picked_nodes[ind]->Node),
 		       fs *
 		       (float)strlen(agnameof
-			      (view->Topview->picked_nodes[ind]->Node)) /
-		       2.0);
+			      (view->Topview->picked_nodes[ind]->Node)) / 2.0,
+		       agnameof(view->Topview->picked_nodes[ind]->Node));
     }
     return 1;
 }
@@ -869,8 +868,8 @@ static int draw_topview_label(topview_node * v, float zdepth)
 
 //	fontColorA(0,0,0,1);
 	fontDrawString(view->fontset->fonts[view->fontset->activefont],(int) (v->distorted_x - ddx),
-		       (int) (v->distorted_y - ddy), v->Label,
-		       (int) (fs * strlen(v->Label)*0.7));
+		       (int) (v->distorted_y - ddy),
+		       (int) (fs * strlen(v->Label)*0.7), v->Label);
 
 	return 1;
     } else
