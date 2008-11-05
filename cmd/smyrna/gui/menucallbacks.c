@@ -33,6 +33,7 @@ void mOpenSlot(GtkWidget * widget, gpointer user_data)
 
 
     filter = gtk_file_filter_new();
+    gtk_file_filter_add_pattern(filter, "*.gv");
     gtk_file_filter_add_pattern(filter, "*.dot");
     dialog = gtk_file_chooser_dialog_new("Open File",
 					 NULL,

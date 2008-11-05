@@ -32,6 +32,7 @@ XDOT DRAWING FUNCTIONS, maybe need to move them somewhere else
 //delta values
 static float dx = 0.0;
 static float dy = 0.0;
+static float globalz = 0.0;
 
 GLubyte rasters[24] = {
     0xc0, 0x00, 0xc0, 0x00, 0xc0, 0x00, 0xc0, 0x00, 0xc0, 0x00, 0xff, 0x00,
@@ -98,7 +99,7 @@ DrawBezier(GLfloat * xp, GLfloat * yp, GLfloat * zp, int filled, int param)
 	Z = Az * a * a * a + Bz * 3 * a * a * b + Cz * 3 * a * b * b +
 	    Dz * b * b * b;
 	// Draw the line from point to point (assuming OGL is set up properly)
-	glVertex3d(X, Y, Z);
+	glVertex3d(X, Y, Z+globalz);
 	// Change the variable
 	a -= 0.05;
 	b = 1.0 - a;
@@ -331,8 +332,8 @@ static void DrawEllipse(xdot_op * op, int param)
     for (i = 0; i < 360; i = i + 1) {
 	//convert degrees into radians
 	float degInRad = (float) (i * DEG2RAD);
-	glVertex2f((GLfloat) (x + cos(degInRad) * xradius),
-		   (GLfloat) (y + sin(degInRad) * yradius));
+	glVertex3f((GLfloat) (x + cos(degInRad) * xradius),
+		   (GLfloat) (y + sin(degInRad) * yradius),globalz);
     }
     glEnd();
 }
@@ -374,9 +375,9 @@ static void DrawPolygon(xdot_op * op, int param)
     for (i = 0; i < op->u.polygon.cnt; i = i + 1) {
 	glVertex3f((GLfloat) op->u.polygon.pts[i].x - dx,
 		   (GLfloat) op->u.polygon.pts[i].y - dy,
-		   (GLfloat) op->u.polygon.pts[i].z);
+		   (GLfloat) op->u.polygon.pts[i].z+globalz);
     }
-    glVertex3f((GLfloat) op->u.polygon.pts[0].x - dx, (GLfloat) op->u.polygon.pts[0].y - dy, (GLfloat) op->u.polygon.pts[0].z);	//close the polygon
+    glVertex3f((GLfloat) op->u.polygon.pts[0].x - dx, (GLfloat) op->u.polygon.pts[0].y - dy, (GLfloat) op->u.polygon.pts[0].z+globalz);	//close the polygon
     glEnd();
 }
 
@@ -396,7 +397,7 @@ static void DrawPolyline(xdot_op * op, int param)
     for (i = 0; i < op->u.polyline.cnt; i = i + 1) {
 	glVertex3f((GLfloat) op->u.polyline.pts[i].x - dx,
 		   (GLfloat) op->u.polyline.pts[i].y - dy,
-		   (GLfloat) op->u.polyline.pts[i].z);
+		   (GLfloat) op->u.polyline.pts[i].z+globalz);
     }
     glEnd();
 }
@@ -497,15 +498,15 @@ void draw_selection_box(ViewInfo * view)
 	}
 	glBegin(GL_LINE_STRIP);
 	glVertex3f((GLfloat) view->GLx, (GLfloat) view->GLy,
-		   (GLfloat) 0.001);
+		   (GLfloat) 0.001+globalz);
 	glVertex3f((GLfloat) view->GLx, (GLfloat) view->GLy2,
-		   (GLfloat) 0.001);
+		   (GLfloat) 0.001+globalz);
 	glVertex3f((GLfloat) view->GLx2, (GLfloat) view->GLy2,
-		   (GLfloat) 0.001);
+		   (GLfloat) 0.001+globalz);
 	glVertex3f((GLfloat) view->GLx2, (GLfloat) view->GLy,
-		   (GLfloat) 0.001);
+		   (GLfloat) 0.001+globalz);
 	glVertex3f((GLfloat) view->GLx, (GLfloat) view->GLy,
-		   (GLfloat) 0.001);
+		   (GLfloat) 0.001+globalz);
 	glEnd();
 	if (view->mouse.mouse_mode == 5)
 	    glDisable(GL_LINE_STIPPLE);
@@ -573,7 +574,7 @@ static void draw_circle(float originX, float originY, float radius)
 	 angle += (float) 0.1) {
 	vectorX = originX + radius * (float) sin(angle);
 	vectorY = originY + radius * (float) cos(angle);
-	glVertex2d(vectorX1, vectorY1);
+	glVertex3d(vectorX1, vectorY1,globalz);
 	vectorY1 = vectorY;
 	vectorX1 = vectorX;
     }
@@ -639,9 +640,15 @@ static void drawXdot(xdot * xDot, int param, void *p)
     int id;
     sdot_op *ops = (sdot_op *) (xDot->ops);
     sdot_op *op;
+	//to avoid the overlapping , z is slightly increased for each xdot of a particular object
+	if (AGTYPE(p)==AGEDGE)
+		globalz=1;	
+	else
+		globalz=0;	
 
-    for (id = 0; id < xDot->cnt; id++)
+	for (id = 0; id < xDot->cnt; id++)
 	{
+		globalz +=  GLOBAL_Z_OFFSET;
 		op = ops + id;
 		op->obj = p;
 		op->op.drawfunc(&(op->op), param);
@@ -681,8 +688,7 @@ void drawGraph(Agraph_t * g)
     Agedge_t *e;
     Agraph_t *s;
     int param = 0;
-
-    for (s = agfstsubg(g); s; s = agnxtsubg(s))
+	for (s = agfstsubg(g); s; s = agnxtsubg(s))
 	{
 		OD_SelFlag(s) = 0;
 		if (OD_Selected(s) == 1)
@@ -816,7 +822,7 @@ void drawCircle(float x, float y, float radius, float zdepth)
 	float degInRad = (float) (i * DEG2RAD);
 	glVertex3f((GLfloat) (x + cos(degInRad) * radius),
 		   (GLfloat) (y + sin(degInRad) * radius),
-		   (GLfloat) zdepth);
+		   (GLfloat) zdepth+globalz);
     }
 
     glEnd();
@@ -863,7 +869,7 @@ void drawEllipse(float xradius, float yradius,int angle1,int angle2)
    {
       //convert degrees into radians
       float degInRad = (float)i*(float)DEG2RAD;
-      glVertex2f((GLfloat)(cos(degInRad)*xradius),(GLfloat)(sin(degInRad)*yradius));
+      glVertex3f((GLfloat)(cos(degInRad)*xradius),(GLfloat)(sin(degInRad)*yradius),globalz);
    }
  
    glEnd();

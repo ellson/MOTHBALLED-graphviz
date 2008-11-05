@@ -58,7 +58,7 @@ int update_graph_properties(Agraph_t * graph);	//updates graph from gui
 void load_graph_properties(Agraph_t * graph);	//load from graph to gui
 
 void update_object_properties(int typeIndex, Agraph_t * g);	//updates objects from gui(node ,edge, cluster)
-int load_object_properties(int typeIndex, Agraph_t * g);	//load  from object to gui;
+int load_object_properties(gve_element typeIndex, Agraph_t * g);
 void load_attributes();		//loads attributes from a text file
 void change_selected_graph_attributes(Agraph_t * g, char *attrname,
 				      char *attrvalue);

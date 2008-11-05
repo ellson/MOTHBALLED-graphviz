@@ -67,7 +67,6 @@ void clear_viewport(ViewInfo * view)
 	}
 	/*frees itself */
     }
-    free_font_set (view->fontset);
     free(view);
 }
 
@@ -790,7 +789,8 @@ static Agraph_t *loadGraph(char *filename)
 		refresh_borders(g);
 		scanGraph(g);	//calling font caching routines once....
 	}
-    return g;
+	btnToolZoomFit_clicked(NULL,NULL);
+	return g;
 }
 static void refresh_borders(Agraph_t* g)
 {

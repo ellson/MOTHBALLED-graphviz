@@ -350,250 +350,194 @@ int load_object_properties(gve_element typeIndex, Agraph_t * g)	//load  from obj
     //according to object type (typeIndex) set the reference object
     switch (typeIndex)		//typeindex 0 means new object
     {
-    case GVE_CLUSTER:			//graph  sub graph (cluster)
-	obj = GD_selectedGraphs(g)[0];
-	break;
-    case GVE_NODE:			//Node
-	obj = GD_selectedNodes(g)[0];
-	break;
-    case GVE_EDGE:			//Edge
-	obj = GD_selectedEdges(g)[0];
-	break;
-    default :
-	break;
+		case GVE_CLUSTER:			//graph  sub graph (cluster)
+			obj = GD_selectedGraphs(g)[0];
+		break;
+		case GVE_NODE:			//Node
+			obj = GD_selectedNodes(g)[0];
+		break;
+		case GVE_EDGE:			//Edge
+			obj = GD_selectedEdges(g)[0];
+		break;
+		default :
+		break;
     }
     for (widgetcounter = 0; widgetcounter < MAXIMUM_WIDGET_COUNT;
-	 widgetcounter++) {
+	 widgetcounter++)
+	{
 	//create the labels and widget here
-	attr[widgetcounter].ComboValuesCount = 0;
-	attr[widgetcounter].ComboValues = '\0';
+		attr[widgetcounter].ComboValuesCount = 0;
+		attr[widgetcounter].ComboValues = '\0';
 
-	if (!AttrWidgets[widgetcounter]) {
-	    AttrLabels[widgetcounter] =
-		gtk_label_new(attr[widgetcounter].Name);
-	    switch (attr[widgetcounter].Type) {
-	    case 'F':		//float
-		AttrWidgets[widgetcounter] =
-		    gtk_spin_button_new_with_range(0, 100, 0.001);
-		g_signal_connect((gpointer) AttrWidgets[widgetcounter],
-				 "value-changed",
-				 G_CALLBACK(attr_widgets_modifiedSlot),
-				 (gpointer) widgetcounter);
+		if (!AttrWidgets[widgetcounter]) 
+		{
+			AttrLabels[widgetcounter] =
+			gtk_label_new(attr[widgetcounter].Name);
+			switch (attr[widgetcounter].Type) 
+			{
+				case 'F':		//float
+					AttrWidgets[widgetcounter] =
+					gtk_spin_button_new_with_range(0, 100, 0.001);
+					g_signal_connect((gpointer) AttrWidgets[widgetcounter],"value-changed", G_CALLBACK(attr_widgets_modifiedSlot),(gpointer) widgetcounter);
 
-		break;
-	    case 'C':		//color box
-		AttrWidgets[widgetcounter] = gtk_color_button_new();
-		gtk_widget_set_size_request(AttrWidgets[widgetcounter], 50,
-					    23);
-		g_signal_connect((gpointer) AttrWidgets[widgetcounter],
-				 "color-set",
-				 G_CALLBACK(attr_widgets_modifiedSlot),
-				 (gpointer) widgetcounter);
+				break;
+				case 'C':		//color box
+					AttrWidgets[widgetcounter] = gtk_color_button_new();
+					gtk_widget_set_size_request(AttrWidgets[widgetcounter], 50, 23);
+					g_signal_connect((gpointer) AttrWidgets[widgetcounter],"color-set",G_CALLBACK(attr_widgets_modifiedSlot),(gpointer) widgetcounter);
 
-		break;
-	    default:		//alphanumreric         GTK Entry
-		AttrWidgets[widgetcounter] = gtk_entry_new();
-		gtk_widget_set_size_request(AttrWidgets[widgetcounter],
-					    130, 23);
-		g_signal_connect((gpointer) AttrWidgets[widgetcounter],
-				 "changed",
-				 G_CALLBACK(attr_widgets_modifiedSlot),
-				 (gpointer) widgetcounter);
+				break;
+				default:		//alphanumreric         GTK Entry
+					AttrWidgets[widgetcounter] = gtk_entry_new();
+					gtk_widget_set_size_request(AttrWidgets[widgetcounter],130, 23);
+					g_signal_connect((gpointer) AttrWidgets[widgetcounter], "changed", G_CALLBACK(attr_widgets_modifiedSlot),(gpointer) widgetcounter);
+				break;
+		    }
+		    attr[widgetcounter].attrWidget = AttrWidgets[widgetcounter];
+		}
+		//locate widget on the GtkLayout* layout
+		if (attr[widgetcounter].ApplyTo[typeIndex] == 1) 
+		{
+			gtk_layout_put(layout, AttrWidgets[widgetcounter], X, Y);
+			gtk_layout_put(layout, AttrLabels[widgetcounter], X - 80, Y);
+			gtk_widget_show(AttrWidgets[widgetcounter]);
+			gtk_widget_show(AttrLabels[widgetcounter]);
+			Y = Y + Yinc;
+			switch (attr[widgetcounter].Type) 
+			{
+				case 'F':
+					if (agget(obj, attr[widgetcounter].Name))
+						gtk_spin_button_set_value((GtkSpinButton *)	AttrWidgets[widgetcounter],atof(agget(obj,attr[widgetcounter].Name)));
+					else
+					    gtk_spin_button_set_value((GtkSpinButton *)AttrWidgets[widgetcounter],atof(attr[widgetcounter].Default));
+				break;
+				case 'C':
+					if (agget(obj, attr[widgetcounter].Name))
+						setGdkColor(&color,	agget(obj, attr[widgetcounter].Name));
+					else
+						setGdkColor(&color, attr[widgetcounter].Default);
 
-		break;
-	    }
-	    attr[widgetcounter].attrWidget = AttrWidgets[widgetcounter];
+					gtk_color_button_set_color((GtkColorButton *)AttrWidgets[widgetcounter],&color);
+				break;
+				default:
+					if (agget(obj, attr[widgetcounter].Name))
+						gtk_entry_set_text((GtkEntry *)AttrWidgets[widgetcounter],agget(obj,attr[widgetcounter].Name));
+					else
+						gtk_entry_set_text((GtkEntry *)AttrWidgets[widgetcounter],attr[widgetcounter].Default);
+			}
+			gtk_widget_show(AttrWidgets[widgetcounter]);
+			gtk_widget_show(AttrLabels[widgetcounter]);
+		}
+		else 
+		{
+			gtk_widget_hide(AttrWidgets[widgetcounter]);
+			gtk_widget_hide(AttrLabels[widgetcounter]);
+		}
+		if (Y > widget_per_page * Yinc) 
+		{
+			X = 320;
+			Y = OriginalY;
+		}
+		attr_widgets_modified[widgetcounter] = 0;	//set to unmodified
 	}
-	//locate widget on the GtkLayout* layout
-	if (attr[widgetcounter].ApplyTo[typeIndex] == 1) {
-	    gtk_layout_put(layout, AttrWidgets[widgetcounter], X, Y);
-	    gtk_layout_put(layout, AttrLabels[widgetcounter], X - 80, Y);
-	    gtk_widget_show(AttrWidgets[widgetcounter]);
-	    gtk_widget_show(AttrLabels[widgetcounter]);
-	    Y = Y + Yinc;
-	    switch (attr[widgetcounter].Type) {
-	    case 'F':
-		if (agget(obj, attr[widgetcounter].Name))
-		    gtk_spin_button_set_value((GtkSpinButton *)
-					      AttrWidgets[widgetcounter],
-					      atof(agget
-						   (obj,
-						    attr[widgetcounter].
-						    Name)));
-		else
-		    gtk_spin_button_set_value((GtkSpinButton *)
-					      AttrWidgets[widgetcounter],
-					      atof(attr[widgetcounter].
-						   Default));
-		break;
-	    case 'C':
-		if (agget(obj, attr[widgetcounter].Name))
-		    setGdkColor(&color,
-				agget(obj, attr[widgetcounter].Name));
-		else
-		    setGdkColor(&color, attr[widgetcounter].Default);
-
-		gtk_color_button_set_color((GtkColorButton *)
-					   AttrWidgets[widgetcounter],
-					   &color);
-		break;
-	    default:
-		if (agget(obj, attr[widgetcounter].Name))
-		    gtk_entry_set_text((GtkEntry *)
-				       AttrWidgets[widgetcounter],
-				       agget(obj,
-					     attr[widgetcounter].Name));
-		else
-		    gtk_entry_set_text((GtkEntry *)
-				       AttrWidgets[widgetcounter],
-				       attr[widgetcounter].Default);
-
-	    }
-	    gtk_widget_show(AttrWidgets[widgetcounter]);
-	    gtk_widget_show(AttrLabels[widgetcounter]);
-	} else {
-	    gtk_widget_hide(AttrWidgets[widgetcounter]);
-	    gtk_widget_hide(AttrLabels[widgetcounter]);
-
-	}
-	if (Y > widget_per_page * Yinc) {
-	    X = 320;
-	    Y = OriginalY;
-	}
-	attr_widgets_modified[widgetcounter] = 0;	//set to unmodified
-    }
 
 
     //first part, common attributes
     sprintf(buf, "%i", OD_ID(obj));
-    gtk_entry_set_text((GtkEntry *)
-		       glade_xml_get_widget(xml, "objEntryName"),
-		       OD_ObjName(obj));
-    gtk_entry_set_text((GtkEntry *)
-		       glade_xml_get_widget(xml, "objEntryLabel"),
-		       agnameof(obj));
-
-    gtk_toggle_button_set_active((GtkToggleButton *)
-				 glade_xml_get_widget(xml,
-						      "frmObjectchkVisible"),
-				 OD_Visible(obj));
-    gtk_toggle_button_set_active((GtkToggleButton *)
-				 glade_xml_get_widget(xml,
-						      "frmObjectchkLocked"),
-				 OD_Locked(obj));
-    gtk_toggle_button_set_active((GtkToggleButton *)
-				 glade_xml_get_widget(xml,
-						      "frmObjectchkHighlighted"),
-				 OD_Highlighted(obj));
+    gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(xml, "objEntryName"),OD_ObjName(obj));
+	gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(xml, "objEntryLabel"),agnameof(obj));
+    gtk_toggle_button_set_active((GtkToggleButton *)glade_xml_get_widget(xml,"frmObjectchkVisible"),OD_Visible(obj));
+    gtk_toggle_button_set_active((GtkToggleButton *)glade_xml_get_widget(xml,"frmObjectchkLocked"),OD_Locked(obj));
+	gtk_toggle_button_set_active((GtkToggleButton *)glade_xml_get_widget(xml,"frmObjectchkHighlighted"),OD_Highlighted(obj));
     //get the position info // show only one item is selected
     if (((GD_selectedNodesCount(g) == 1) && (typeIndex == GVE_NODE))
 	|| ((GD_selectedEdgesCount(g) == 1) && (typeIndex == GVE_EDGE))
-	|| ((GD_selectedGraphsCount(g) == 1) && (typeIndex == GVE_EDGE))) {
-	sprintf(line, "%s", agget(obj, "pos"));
-	a = (float) atof(strtok(line, ","));
-	b = (float) atof(strtok(NULL, ","));
-	gtk_spin_button_set_value((GtkSpinButton *)
-				  glade_xml_get_widget(xml,
-						       "frmObjectPosX"),
-				  a);
-	gtk_spin_button_set_value((GtkSpinButton *)
-				  glade_xml_get_widget(xml,
-						       "frmObjectPosY"),
-				  b);
-	gtk_spin_button_set_value((GtkSpinButton *)
-				  glade_xml_get_widget(xml,
-						       "frmObjectPosZ"),
-				  0);
-	gtk_widget_show(glade_xml_get_widget(xml, "frmObjectPosX"));
-	gtk_widget_show(glade_xml_get_widget(xml, "frmObjectPosY"));
-	gtk_widget_show(glade_xml_get_widget(xml, "frmObjectPosZ"));
-	gtk_widget_show(glade_xml_get_widget(xml, "frmObjectlabel3"));
-	gtk_label_set_text((GtkLabel *)
-			   glade_xml_get_widget(xml, "frmObjectPosLabelX"),
-			   "X:");
-
-    } else {
-	gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectPosX"));
-	gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectPosY"));
-	gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectPosZ"));
-	gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectlabel3"));
-	gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectPosLabelY"));
-	gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectPosLabelZ"));
-	switch (typeIndex)	//typeindex 0 means new object
+	|| ((GD_selectedGraphsCount(g) == 1) && (typeIndex == GVE_EDGE))) 
 	{
-	case GVE_CLUSTER:		//graph  sub graph (cluster)
-	    gtk_label_set_text((GtkLabel *)
-			       glade_xml_get_widget(xml,
-						    "frmObjectPosLabelX"),
-			       "Changes that you make will be applied to all selected clusters");
-	    break;
-	case GVE_NODE:		//Node
-	    gtk_label_set_text((GtkLabel *)
-			       glade_xml_get_widget(xml,
-						    "frmObjectPosLabelX"),
-			       "Changes that you make will be applied to all selected nodes!");
-	    break;
-	case GVE_EDGE:		//Edge
-	    gtk_label_set_text((GtkLabel *)
-			       glade_xml_get_widget(xml,
-						    "frmObjectPosLabelX"),
-			       "Changes that you make will be applied to all selected edges!");
-	    break;
-	default :
-	    break;
-	}
+		sprintf(line, "%s", agget(obj, "pos"));
+		a = (float) atof(strtok(line, ","));
+		b = (float) atof(strtok(NULL, ","));
+		gtk_spin_button_set_value((GtkSpinButton *)glade_xml_get_widget(xml,"frmObjectPosX"),a);
+		gtk_spin_button_set_value((GtkSpinButton *)glade_xml_get_widget(xml,"frmObjectPosY"),b);
+		gtk_spin_button_set_value((GtkSpinButton *)glade_xml_get_widget(xml,"frmObjectPosZ"),0);
+		gtk_widget_show(glade_xml_get_widget(xml, "frmObjectPosX"));
+		gtk_widget_show(glade_xml_get_widget(xml, "frmObjectPosY"));
+		gtk_widget_show(glade_xml_get_widget(xml, "frmObjectPosZ"));
+		gtk_widget_show(glade_xml_get_widget(xml, "frmObjectlabel3"));
+		gtk_label_set_text((GtkLabel *)glade_xml_get_widget(xml, "frmObjectPosLabelX"),"X:");
     }
+	else 
+	{
+		gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectPosX"));
+		gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectPosY"));
+		gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectPosZ"));
+		gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectlabel3"));
+		gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectPosLabelY"));
+		gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectPosLabelZ"));
+		switch (typeIndex)	//typeindex 0 means new object
+		{
+			case GVE_CLUSTER:		//graph  sub graph (cluster)
+				gtk_label_set_text((GtkLabel *)glade_xml_get_widget(xml,"frmObjectPosLabelX"),"Changes that you make will be applied to all selected clusters");
+			break;
+			case GVE_NODE:		//Node
+				gtk_label_set_text((GtkLabel *)glade_xml_get_widget(xml,"frmObjectPosLabelX"),"Changes that you make will be applied to all selected nodes!");
+		    break;
+			case GVE_EDGE:		//Edge
+				gtk_label_set_text((GtkLabel *)glade_xml_get_widget(xml,"frmObjectPosLabelX"),"Changes that you make will be applied to all selected edges!");
+		    break;
+			default :
+				break;
+		}
+	}
     return 1;
 }
 void update_object_properties(int typeIndex, Agraph_t * g)	//updates objects from gui(node ,edge, cluster)
 {
     int ind = 0;
-    for (ind = 0; ind < widgetcounter; ind++) {
-	//if widget has been changed
-	if (attr_widgets_modified[ind] == 1) {
-	    switch (typeIndex)	//typeindex 0 means new object
-	    {
-	    case GVE_CLUSTER:		//graph  sub graph (cluster)
-		change_selected_graph_attributes(g, attr[ind].Name,
-						 get_attribute_string_value_from_widget
-						 (&attr[ind]));
-		break;
-	    case GVE_NODE:		//Node
-		change_selected_node_attributes(g, attr[ind].Name,
-						get_attribute_string_value_from_widget
-						(&attr[ind]));
-		break;
-	    case GVE_EDGE:		//Edge
-		change_selected_edge_attributes(g, attr[ind].Name,
-						get_attribute_string_value_from_widget
-						(&attr[ind]));
-		break;
-	    }
-	}
+    for (ind = 0; ind < widgetcounter; ind++) 
+	{
+		//if widget has been changed
+		if (attr_widgets_modified[ind] == 1)
+		{
+			switch (typeIndex)	//typeindex 0 means new object
+			{
+				case GVE_CLUSTER:		//graph  sub graph (cluster)
+					change_selected_graph_attributes(g, attr[ind].Name,
+							 get_attribute_string_value_from_widget
+							 (&attr[ind]));
+				break;
+				case GVE_NODE:		//Node
+					change_selected_node_attributes(g, attr[ind].Name,
+							get_attribute_string_value_from_widget
+							(&attr[ind]));
+				break;
+				case GVE_EDGE:		//Edge
+					change_selected_edge_attributes(g, attr[ind].Name,
+								get_attribute_string_value_from_widget
+								(&attr[ind]));
+				break;
+			}
+		}
 
-    }
+	}
 }
 char *get_attribute_string_value_from_widget(attribute * att)
 {
     GdkColor color;
-    switch (att->Type) {
-    case 'F':
-	sprintf(guibuffer, "%f",
-		gtk_spin_button_get_value((GtkSpinButton *) att->
-					  attrWidget));
-	return guibuffer;
-	break;
-    case 'C':
-	gtk_color_button_get_color((GtkColorButton *) att->attrWidget,
-				   &color);
-	sprintf(guibuffer, "#%x%x%x", color.red / 255, color.green / 255,
-		color.blue / 255);
-	return guibuffer;
-	break;
-    default:
-	strcpy(guibuffer,
-	       gtk_entry_get_text((GtkEntry *) att->attrWidget));
-	return guibuffer;
+    switch (att->Type)
+	{
+	    case 'F':
+			sprintf(guibuffer, "%f",gtk_spin_button_get_value((GtkSpinButton *) att->attrWidget));
+			return guibuffer;
+		break;
+		case 'C':
+			gtk_color_button_get_color((GtkColorButton *) att->attrWidget,&color);
+			sprintf(guibuffer, "#%x%x%x", color.red / 255, color.green / 255,color.blue / 255);
+			return guibuffer;
+			break;
+		default:
+			strcpy(guibuffer,gtk_entry_get_text((GtkEntry *) att->attrWidget));
+			return guibuffer;
     }
 }
 void change_selected_graph_attributes(Agraph_t * g, char *attrname,
@@ -602,8 +546,9 @@ void change_selected_graph_attributes(Agraph_t * g, char *attrname,
     int ind = 0;
     agattr(g, AGRAPH, attrname, "");
 
-    for (ind = 0; ind < GD_selectedGraphsCount(g); ind++) {
-	agset(GD_selectedGraphs(g)[ind], attrname, attrvalue);
+    for (ind = 0; ind < GD_selectedGraphsCount(g); ind++) 
+	{
+		agset(GD_selectedGraphs(g)[ind], attrname, attrvalue);
     }
 
 
@@ -614,8 +559,9 @@ void change_selected_node_attributes(Agraph_t * g, char *attrname,
     int ind = 0;
     agattr(g, AGNODE, attrname, "");
 
-    for (ind = 0; ind < GD_selectedNodesCount(g); ind++) {
-	agset(GD_selectedNodes(g)[ind], attrname, attrvalue);
+    for (ind = 0; ind < GD_selectedNodesCount(g); ind++) 
+	{
+		agset(GD_selectedNodes(g)[ind], attrname, attrvalue);
     }
 }
 void change_selected_edge_attributes(Agraph_t * g, char *attrname,
@@ -624,8 +570,9 @@ void change_selected_edge_attributes(Agraph_t * g, char *attrname,
     int ind = 0;
     agattr(g, AGEDGE, attrname, "");
 
-    for (ind = 0; ind < GD_selectedEdgesCount(g); ind++) {
-	agset(GD_selectedEdges(g)[ind], attrname, attrvalue);
+    for (ind = 0; ind < GD_selectedEdgesCount(g); ind++) 
+	{
+		agset(GD_selectedEdges(g)[ind], attrname, attrvalue);
 
     }
 }

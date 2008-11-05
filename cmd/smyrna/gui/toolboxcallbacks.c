@@ -68,7 +68,7 @@ void btnToolZoom_clicked(GtkWidget * widget, gpointer user_data)
 
 void btnToolZoomIn_clicked(GtkWidget * widget, gpointer user_data)
 {
-    view->zoom = view->zoom + ZOOM_STEP;
+	view->zoom = view->zoom + ZOOM_STEP*GetOGLDistance(250);
     if (view->zoom > MAX_ZOOM)
 	view->zoom = (float) MAX_ZOOM;
     glexpose();
@@ -77,7 +77,8 @@ void btnToolZoomIn_clicked(GtkWidget * widget, gpointer user_data)
 
 void btnToolZoomOut_clicked(GtkWidget * widget, gpointer user_data)
 {
-    view->zoom = view->zoom - ZOOM_STEP;
+	view->FontSizeConst=GetOGLDistance(14);
+	view->zoom = view->zoom - ZOOM_STEP*GetOGLDistance(250);
     if (view->zoom < MIN_ZOOM)
 	view->zoom = MIN_ZOOM;
     expose_event(view->drawing_area, NULL, NULL);
@@ -109,7 +110,6 @@ void btnToolZoomFit_clicked(GtkWidget * widget, gpointer user_data)
 
 	}
 	btnToolFit_clicked(NULL,NULL);
-	write_to_console("test entry\n");
 }
 
 void btnToolFit_clicked(GtkWidget * widget, gpointer user_data)

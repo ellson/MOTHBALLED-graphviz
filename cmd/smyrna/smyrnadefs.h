@@ -62,6 +62,7 @@
 #define MM_MOVE					10
 #define MM_MAGNIFIER			20
 #define MM_FISHEYE_MAGNIFIER	21
+#define GLOBAL_Z_OFFSET			0.001
 
 #define MAX_ZOOM	-0.000033
 #define MIN_ZOOM	-1500.00000
