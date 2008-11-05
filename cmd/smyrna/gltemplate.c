@@ -345,15 +345,17 @@ static gboolean button_release_event(GtkWidget * widget,
 	}
     if (event->button == 3)	//right click
 	{
-	if (view->Topview->is_top_fisheye) {
-	    GetFixedOGLPoslocal((int) event->x, (int) event->y,
-				view->GLDepth, &(view->GLx2),
-				&(view->GLy2), &(view->GLz2));
-	    changetopfishfocus(view->Topview, &view->GLx2, &view->GLy2, 0,
-			       1);
-	    expose_event(view->drawing_area, NULL, NULL);
+
+		if ((view->activeGraph >= 0) && (GD_TopView(view->g[view->activeGraph])))
+		{
+			if(view->Topview->is_top_fisheye)
+			{
+				GetFixedOGLPoslocal((int) event->x, (int) event->y,view->GLDepth, &(view->GLx2),&(view->GLy2), &(view->GLz2));
+				changetopfishfocus(view->Topview, &view->GLx2, &view->GLy2, 0,1);
+				expose_event(view->drawing_area, NULL, NULL);
+			}
+		}
 	}
-    }
 
     dx = 0.0;
     dy = 0.0;

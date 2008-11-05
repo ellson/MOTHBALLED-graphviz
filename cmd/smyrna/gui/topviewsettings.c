@@ -334,7 +334,7 @@ int load_settings_from_graph(Agraph_t * g)
 		/*select the right item in combo box */
 		gtk_combo_box_set_active((GtkComboBox *)
 				 glade_xml_get_widget(xml,
-						      "settingscombobox1"),
+						      "settingscombobox2"),
 				 atoi(buf));
 
 	}

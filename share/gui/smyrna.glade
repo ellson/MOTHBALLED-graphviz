@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.3 on Tue Oct 14 12:15:11 2008 -->
+<!--Generated with glade3 3.4.3 on Wed Nov 05 16:00:41 2008 -->
 <glade-interface>
   <widget class="GtkWindow" id="frmObject">
     <property name="width_request">470</property>
@@ -1114,7 +1114,7 @@ topview</property>
                 <child>
                   <widget class="GtkLabel" id="label92">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">page 4</property>
+                    <property name="label" translatable="yes">Layout</property>
                   </widget>
                   <packing>
                     <property name="type">tab</property>
@@ -1210,6 +1210,7 @@ topview</property>
                       <widget class="GtkToolButton" id="toolbutton16">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">zoom +</property>
+                        <signal name="clicked" handler="btnToolZoomIn_clicked"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -1219,6 +1220,7 @@ topview</property>
                       <widget class="GtkToolButton" id="toolbutton17">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">zoom -</property>
+                        <signal name="clicked" handler="btnToolZoomOut_clicked"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -1267,6 +1269,7 @@ topview</property>
                       <widget class="GtkToolButton" id="toolbutton20">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">move</property>
+                        <signal name="clicked" handler="btnToolMove_clicked"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -1330,26 +1333,10 @@ topview</property>
           <widget class="GtkVBox" id="vbox7">
             <property name="visible">True</property>
             <child>
-              <widget class="GtkLabel" id="label93">
-                <property name="visible">True</property>
-                <property name="label" translatable="yes">Smyrna Console</property>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-              </packing>
+              <placeholder/>
             </child>
             <child>
-              <widget class="GtkTextView" id="consoleText">
-                <property name="height_request">49</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="editable">False</property>
-                <property name="text" translatable="yes">vgnvnvnvbnbvnb</property>
-              </widget>
-              <packing>
-                <property name="position">1</property>
-              </packing>
+              <placeholder/>
             </child>
             <child>
               <widget class="GtkHSeparator" id="hseparator18">

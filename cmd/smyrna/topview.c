@@ -156,7 +156,8 @@ void preparetopview(Agraph_t * g, topview * t)
 		} else
 			t->Nodes[ind].Label2 = '\0';
 
-		maxlabelsize = maxlabelsize + strlen(t->Nodes[ind].Label);
+		if (t->Nodes[ind].Label)
+			maxlabelsize = maxlabelsize + strlen(t->Nodes[ind].Label);
 
 		for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
 		{
@@ -266,9 +267,9 @@ static float set_gl_dot_size(topview * t)
 	else
 		dotsize = GL_DOTSIZE_CONSTANT / view->cameras[view->active_camera]->r*-1;
 
-	dotsize=dotsize * DOT_SIZE_CORRECTION_FAC;
+//	dotsize=dotsize * DOT_SIZE_CORRECTION_FAC;
 	if (dotsize <=1)
-		dotsize=4;
+		dotsize=1;
 	glPointSize(dotsize);
 	return dotsize;
 
@@ -500,7 +501,6 @@ static void drawtopviewedges(Agraph_t * g)
 
 }
 
-#if 0
 static int drawtopviewlabels(Agraph_t * g)
 {
     //drawing labels
@@ -518,13 +518,12 @@ static int drawtopviewlabels(Agraph_t * g)
     return 0;
 
 }
-#endif
 
 
 void drawTopViewGraph(Agraph_t * g)
 {
     drawtopviewnodes(g);
-//    drawtopviewlabels(g);
+    drawtopviewlabels(g);
     drawtopviewedges(g);
 	enddrawcycle(g);
 
@@ -820,7 +819,7 @@ int set_update_required(topview * t)
 
 }
 
-#if 0
+
 static int draw_topview_label(topview_node * v, float zdepth)
 {
 
@@ -833,27 +832,24 @@ static int draw_topview_label(topview_node * v, float zdepth)
 	if ((v->distorted_x / view->zoom * -1 > view->clipX1)
 	&& (v->distorted_x / view->zoom * -1 < view->clipX2)
 	&& (v->distorted_y / view->zoom * -1 > view->clipY1)
-	&& (v->distorted_y / view->zoom * -1 < view->clipY2)) {
-
-	fs = (v->degree ==
-	      1) ? (float) (log((double) v->degree +
-				1) *
-			    (double) 3) : (float) (log((double) v->degree +
-						       (double) 0.5) *
-							   (double) 3)*view->FontSize;
+	&& (v->distorted_y / view->zoom * -1 < view->clipY2)) 
+	{
+		fs = (v->degree ==1) ? 
+				(float) (log((double) v->degree +1) *(double) 3) 
+					:
+				(float) (log((double) v->degree +(double) 0.5) *(double) 3)*14;
 //	fs=view->FontSize;
 	fs = fs * v->zoom_factor;
 	if (OD_Selected(v->Node) == 1) {
 	    ddx = dx;
 	    ddy = dy;
 	}
-	if ((view->FontSize/view->zoom*-1) < 2)
+	if ((fs / view->zoom*-1) < 35)
 		return 0;
 
+	fs= 10;
 
 
-	if ((view->FontSize/view->zoom*-1) > 10)
-		fs= 10;
 
 
 	fontSize(view->fontset->fonts[view->fontset->activefont],(int) fs);
@@ -861,21 +857,20 @@ static int draw_topview_label(topview_node * v, float zdepth)
 	    fontColorA(view->fontset->fonts[view->fontset->activefont],(float) log((double) v->degree + (double) 1),
 		       view->penColor.G, view->penColor.B,
 		       view->penColor.A / (float) log((double) v->degree) *
-		       (float) -0.6 * (float) view->zoom);
+		       (float) -0.4 * (float) view->zoom);
 	else
 	    fontColorA(view->fontset->fonts[view->fontset->activefont],(float) log((double) v->degree + (double) 1),
-		       view->penColor.G, view->penColor.B, 1);
+		       view->penColor.G, view->penColor.B, 0.7);
 
 //	fontColorA(0,0,0,1);
 	fontDrawString(view->fontset->fonts[view->fontset->activefont],(int) (v->distorted_x - ddx),
-		       (int) (v->distorted_y - ddy),
-		       (int) (fs * strlen(v->Label)*0.7), v->Label);
+		       (int) (v->distorted_y - ddy), (int) (fs * strlen(v->Label)*0.6),v->Label   );
 
 	return 1;
     } else
 	return 0;
 }
-#endif
+
 
 
 
