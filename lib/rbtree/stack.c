@@ -1,7 +1,7 @@
 #include "stack.h"
 
-int StackNotEmpty(stk_stack * theStack) {
-  return( theStack ? (int) theStack->top : 0);
+intptr_t StackNotEmpty(stk_stack * theStack) {
+  return( theStack ? (intptr_t) theStack->top : 0);
 }
 
 stk_stack * StackJoin(stk_stack * stack1, stk_stack * stack2) {

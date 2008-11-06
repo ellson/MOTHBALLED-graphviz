@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<stdint.h>
 
 #ifndef INC_E_MISC_
 #define INC_E_MISC_
