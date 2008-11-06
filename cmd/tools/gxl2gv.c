@@ -695,7 +695,7 @@ Agraph_t *gxl_to_gv(FILE * gxlFile)
 	done = len < sizeof(buf);
 	if (XML_Parse(parser, buf, len, done) == XML_STATUS_ERROR) {
 	    fprintf(stderr,
-		    "%s at line %d\n",
+		    "%s at line %lu\n",
 		    XML_ErrorString(XML_GetErrorCode(parser)),
 		    XML_GetCurrentLineNumber(parser));
 	    exit(1);
