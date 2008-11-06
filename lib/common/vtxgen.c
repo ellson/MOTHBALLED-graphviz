@@ -315,10 +315,17 @@ static void vtx_begin_node(node_t * n)
 	    break;
 	}
     }
+#ifndef WITH_CGRAPH
+    fprintf(Output_file, "  (shape\n"
+	    "    (id %d)\n"
+	    "    (layer %d)\n"
+	    "    (type %s)\n", AGID(n) + 1, AGID(n), p->vtxshape);
+#else
     fprintf(Output_file, "  (shape\n"
 	    "    (id %ld)\n"
 	    "    (layer %ld)\n"
 	    "    (type %s)\n", AGID(n) + 1, AGID(n), p->vtxshape);
+#endif
 }
 
 static void vtx_end_node(void)
@@ -328,6 +335,17 @@ static void vtx_end_node(void)
 
 static void vtx_begin_edge(edge_t * e)
 {
+#ifndef WITH_CGRAPH
+    fprintf(Output_file, "  (connection\n"
+	    "    (id %d)\n"
+	    "    (layer %d)\n"
+	    "    (rotation 0)\n"
+	    "    (textRotation 0)\n"
+	    "    (locked F)\n"
+	    "    (start %d)\n"
+	    "    (end %d)\n",
+	    AGID(e) + 1, AGID(e), AGID(agtail(e)) + 1, AGID(aghead(e)) + 1);
+#else
     fprintf(Output_file, "  (connection\n"
 	    "    (id %ld)\n"
 	    "    (layer %ld)\n"
@@ -337,6 +355,7 @@ static void vtx_begin_edge(edge_t * e)
 	    "    (start %ld)\n"
 	    "    (end %ld)\n",
 	    AGID(e) + 1, AGID(e), AGID(agtail(e)) + 1, AGID(aghead(e)) + 1);
+#endif
 }
 
 static void vtx_end_edge(void)

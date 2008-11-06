@@ -1572,7 +1572,11 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e, char** styles)
     if (flags & GVRENDER_DOES_MAPS) {
         s = agget(e, "id");
         if (!s || !*s) { /* no external id, so use the internal one */
+#ifndef WITH_CGRAPH
+	    sprintf(buf,"edge%d", AGID(e));
+#else
 	    sprintf(buf,"edge%ld", AGID(e));
+#endif
 	    s = buf;
         }
 	obj->id = strdup_and_subst_obj(s, (void*)e);
