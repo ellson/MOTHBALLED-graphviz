@@ -81,8 +81,17 @@ int glupdatecamera(ViewInfo * view)
 */
 int glexpose_main(ViewInfo * view)
 {
-    if (!glupdatecamera(view))
+	static int doonce=0;
+	if (!glupdatecamera(view))
 	return 0;
+	if (view->activeGraph >= 0)
+	{
+		if(!doonce)
+		{
+			doonce=1;
+			btnToolZoomFit_clicked(NULL,NULL);
+		}
+	}
 
 	glexpose_grid(view);
     draw_fisheye_magnifier(view);

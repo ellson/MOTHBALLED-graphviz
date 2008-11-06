@@ -789,7 +789,6 @@ static Agraph_t *loadGraph(char *filename)
 		refresh_borders(g);
 		scanGraph(g);	//calling font caching routines once....
 	}
-	btnToolZoomFit_clicked(NULL,NULL);
 	return g;
 }
 static void refresh_borders(Agraph_t* g)

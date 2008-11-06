@@ -28,6 +28,12 @@
 #include "topviewdata.h"
 #include "hier.h"
 #include "topfisheyeview.h"
+#ifdef WIN32
+#include "regex_win32.h"
+#else
+#include "regex.h"
+#endif
+
 static float dx = 0.0;
 static float dy = 0.0;
 static float dz = 0.0;
@@ -374,14 +380,14 @@ static int drawtopviewnodes(Agraph_t * g)
 	     ((ind < view->Topview->Nodecount) && (view->drawnodes));
 	     ind++) 
 	{
-	    if (((-view->Topview->Nodes[ind].x / view->zoom > view->clipX1)
-		 && (-view->Topview->Nodes[ind].x / view->zoom <
+	    if (((-view->Topview->Nodes[ind].distorted_x / view->zoom > view->clipX1)
+		 && (-view->Topview->Nodes[ind].distorted_x / view->zoom <
 		     view->clipX2)
-		 && (-view->Topview->Nodes[ind].y / view->zoom >
+		 && (-view->Topview->Nodes[ind].distorted_y / view->zoom >
 		     view->clipY1)
-		 && (-view->Topview->Nodes[ind].y / view->zoom <
+		 && (-view->Topview->Nodes[ind].distorted_y / view->zoom <
 		     view->clipY2))
-		|| (view->active_camera >= 0) ) {
+			 || (view->active_camera >= 0) ) {
 		float zdepth;
 		v = &view->Topview->Nodes[ind];
 		if (!node_visible(v->Node))
@@ -426,6 +432,11 @@ static int drawtopviewnodes(Agraph_t * g)
 
 			}
 	    }
+		else
+		{
+			int a=1;
+		}
+
 	}
 	endtopviewnodes(g);
     return 1;
@@ -504,8 +515,9 @@ static void drawtopviewedges(Agraph_t * g)
 static int drawtopviewlabels(Agraph_t * g)
 {
     //drawing labels
-    int ind = 0;
-    if (view->drawlabels) {
+	int ind = 0;
+
+	if (view->drawlabels) {
 	topview_node *v;
 	for (ind = 0; ind < view->Topview->Nodecount; ind++) {
 	    v = &view->Topview->Nodes[ind];
@@ -819,6 +831,13 @@ int set_update_required(topview * t)
 
 }
 
+float calculate_font_size(topview_node * v)
+{
+	double n;
+	n=(double)v->degree+(double)1.00;
+	return n;
+
+}
 
 static int draw_topview_label(topview_node * v, float zdepth)
 {
@@ -834,6 +853,9 @@ static int draw_topview_label(topview_node * v, float zdepth)
 	&& (v->distorted_y / view->zoom * -1 > view->clipY1)
 	&& (v->distorted_y / view->zoom * -1 < view->clipY2)) 
 	{
+		fs=calculate_font_size(v);
+	
+
 		fs = (v->degree ==1) ? 
 				(float) (log((double) v->degree +1) *(double) 3) 
 					:
@@ -869,6 +891,7 @@ static int draw_topview_label(topview_node * v, float zdepth)
 	return 1;
     } else
 	return 0;
+	//vestedbb.com
 }
 
 
@@ -1005,8 +1028,8 @@ int move_TVnodes()
     for (ind = 0; ind < view->Topview->Nodecount; ind++) {
 	v = &view->Topview->Nodes[ind];
 	if (OD_Selected(v->Node)) {
-	    v->x = v->x - dx;
-	    v->y = v->y - dy;
+	    v->distorted_x = v->distorted_x - dx;
+	    v->distorted_y = v->distorted_y - dy;
 	}
     }
     return 1;
@@ -1658,3 +1681,20 @@ element2s (gve_element el)
     return s;
 }
 
+static int node_regex(topview_node * n,char* exp)
+{
+
+    regex_t preg;
+	char *data =n->Label;
+	int return_value=0;
+	if (data) 
+	{
+	    regcomp(&preg, exp, REG_NOSUB);
+	    if (regexec(&preg, data, 0, 0, 0) == 0)
+			return_value=1;
+		else
+			return_value=0;
+	    regfree(&preg);
+	} 
+	return return_value;
+}

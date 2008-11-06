@@ -176,7 +176,8 @@ static void realize(GtkWidget * widget, gpointer data)
 static gboolean configure_event(GtkWidget * widget,
 				GdkEventConfigure * event, gpointer data)
 {
-    int vPort[4];
+	static doonce=0;
+	int vPort[4];
     float aspect;
     GdkGLContext *glcontext = gtk_widget_get_gl_context(widget);
     GdkGLDrawable *gldrawable = gtk_widget_get_gl_drawable(widget);
@@ -205,7 +206,6 @@ static gboolean configure_event(GtkWidget * widget,
     glMatrixMode(GL_MODELVIEW);
     gdk_gl_drawable_gl_end(gldrawable);
 	/*** OpenGL END ***/
-
     return TRUE;
 }
 
