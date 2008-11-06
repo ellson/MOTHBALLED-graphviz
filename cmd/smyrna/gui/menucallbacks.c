@@ -207,6 +207,35 @@ void mGraphPropertiesSlot(GtkWidget * widget, gpointer user_data)
 	gtk_widget_hide(glade_xml_get_widget(xml, "dlgOpenGraph"));
     }
 }
+
+void mNodeFindSlot(GtkWidget * widget, gpointer user_data)
+{
+	if((view->activeGraph !=-1) && (GD_TopView(view->g[view->activeGraph])))
+	{
+		gtk_dialog_set_response_sensitive((GtkDialog *)
+						  glade_xml_get_widget(xml,
+								       "findDialog"),
+						  1, 1);
+		gtk_dialog_set_response_sensitive((GtkDialog *)
+						  glade_xml_get_widget(xml,
+								       "findDialog"),
+						  2, 1);
+
+	
+		respond =
+			gtk_dialog_run((GtkDialog *)
+				   glade_xml_get_widget(xml, "findDialog"));
+
+		gtk_widget_hide(glade_xml_get_widget(xml, "findDialog"));
+		if (respond ==1)
+			select_with_regex(
+				gtk_entry_get_text((GtkEntry*) glade_xml_get_widget(xml,"findText"))
+				);
+	}
+
+}
+
+
 static void mPropertiesSlot(int count, gve_element element)
 {
     if (count > 0) {

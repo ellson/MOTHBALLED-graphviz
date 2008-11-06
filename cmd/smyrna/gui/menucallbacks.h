@@ -34,6 +34,7 @@ _BB void mCopySlot(GtkWidget * widget, gpointer user_data);
 _BB void mPasteSlot(GtkWidget * widget, gpointer user_data);
 _BB void mDeleteSlot(GtkWidget * widget, gpointer user_data);
 _BB void mTopviewSettingsSlot(GtkWidget * widget, gpointer user_data);
+_BB void mNodeFindSlot(GtkWidget * widget, gpointer user_data);
 
 //view
 _BB void mShowToolBoxSlot(GtkWidget * widget, gpointer user_data);

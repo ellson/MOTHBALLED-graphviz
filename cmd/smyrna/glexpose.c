@@ -90,6 +90,7 @@ int glexpose_main(ViewInfo * view)
 		{
 			doonce=1;
 			btnToolZoomFit_clicked(NULL,NULL);
+			btnToolZoomFit_clicked(NULL,NULL);
 		}
 	}
 

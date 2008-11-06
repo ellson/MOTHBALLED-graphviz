@@ -1681,6 +1681,26 @@ element2s (gve_element el)
     return s;
 }
 
+void select_with_regex(char* exp)
+{
+	topview_node *v;
+	int ind=0;
+	for (ind = 0; ind < view->Topview->Nodecount; ind++) 
+	{
+	    v = &view->Topview->Nodes[ind];
+	    if (node_visible(v->Node))
+		{
+			if(node_regex(v,exp))
+			{
+				OD_Selected(v->Node) = 1;
+				select_object(view->g[view->activeGraph], v->Node);
+			}
+		}
+	}
+
+
+}
+
 static int node_regex(topview_node * n,char* exp)
 {
 
