@@ -113,7 +113,11 @@ static char *nodefilename(const char *filename, node_t * n, char *buf)
 	else
 	    dir = ".";
     }
+#ifndef WITH_CGRAPH
+    sprintf(buf, "%s/node%d.png", dir, AGID(n));
+#else
     sprintf(buf, "%s/node%ld.png", dir, AGID(n));
+#endif
     return buf;
 }
 
