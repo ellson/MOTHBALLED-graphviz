@@ -20,7 +20,8 @@
 #include "glpangofont.h"	
 typedef float GLfloat;
 #else
-#include "GL/gl.h"	
+#include <unistd.h>
+#include <GL/gl.h>	
 #endif
 
 /* Error Codes */
