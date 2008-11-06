@@ -434,7 +434,7 @@ static int drawtopviewnodes(Agraph_t * g)
 	    }
 		else
 		{
-			int a=1;
+			/* int a=1; */
 		}
 
 	}
@@ -1681,6 +1681,24 @@ element2s (gve_element el)
     return s;
 }
 
+static int node_regex(topview_node * n,char* exp)
+{
+
+    regex_t preg;
+	char *data =n->Label;
+	int return_value=0;
+	if (data) 
+	{
+	    regcomp(&preg, exp, REG_NOSUB);
+	    if (regexec(&preg, data, 0, 0, 0) == 0)
+			return_value=1;
+		else
+			return_value=0;
+	    regfree(&preg);
+	} 
+	return return_value;
+}
+
 void select_with_regex(char* exp)
 {
 	topview_node *v;
@@ -1701,20 +1719,3 @@ void select_with_regex(char* exp)
 
 }
 
-static int node_regex(topview_node * n,char* exp)
-{
-
-    regex_t preg;
-	char *data =n->Label;
-	int return_value=0;
-	if (data) 
-	{
-	    regcomp(&preg, exp, REG_NOSUB);
-	    if (regexec(&preg, data, 0, 0, 0) == 0)
-			return_value=1;
-		else
-			return_value=0;
-	    regfree(&preg);
-	} 
-	return return_value;
-}
