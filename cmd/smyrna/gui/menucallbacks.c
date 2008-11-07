@@ -285,14 +285,9 @@ static void mSlot (GtkWidget * widget, gpointer user_data, gvk_layout layout, in
     if (respond == GTK_RESPONSE_YES)
 	do_graph_layout(view->g[view->activeGraph], layout, 0);
     gtk_object_destroy((GtkObject *) Dlg);
+	return;
 
-    if (!doCursor) return;
 
-    cursor = gdk_cursor_new(GDK_HAND2);
-    w = (GdkWindow *) glade_xml_get_widget(xml, "frmMain");
-    gdk_window_set_cursor((GdkWindow *) view->drawing_area->window,
-			  cursor);
-    gdk_cursor_destroy(cursor);
 }
 
 void mDotSlot(GtkWidget * widget, gpointer user_data)
@@ -386,4 +381,19 @@ void mAbout(GtkWidget * widget, gpointer user_data)
 
 void mHelp(GtkWidget * widget, gpointer user_data)
 {
+}
+
+
+
+void change_cursor(GdkCursorType C)
+{
+
+	GdkCursor *cursor;
+	GdkWindow * w;
+	cursor = gdk_cursor_new(C);
+    w = (GdkWindow *) glade_xml_get_widget(xml, "frmMain");
+    gdk_window_set_cursor((GdkWindow *) view->drawing_area->window,
+			  cursor);
+    gdk_cursor_destroy(cursor);
+	return;
 }

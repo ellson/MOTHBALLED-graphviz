@@ -467,7 +467,37 @@ static gboolean key_press_event(GtkWidget * widget, GdkEventKey * event,
 */
 void switch_Mouse(GtkMenuItem * menuitem, int mouse_mode)
 {
-    view->mouse.mouse_mode = mouse_mode;
+	switch (mouse_mode)
+	{
+
+	case -1:
+		change_cursor(GDK_TOP_LEFT_ARROW);
+		break;
+	case 0:
+		change_cursor(GDK_HAND2);
+		break;
+	case 1:
+		change_cursor(GDK_SIZING);
+		break;
+	case 3:
+		change_cursor(GDK_CROSS);
+		break;
+	case 4:
+		change_cursor(GDK_TCROSS);
+		break;
+	case 5:
+		change_cursor(GDK_CROSSHAIR);
+		break;
+	case 10:
+		change_cursor(GDK_FLEUR);
+		break;
+	case MM_ROTATE:
+		change_cursor(GDK_EXCHANGE);
+		break;
+	default:
+		break;
+	};
+	view->mouse.mouse_mode = mouse_mode;
 }
 
 

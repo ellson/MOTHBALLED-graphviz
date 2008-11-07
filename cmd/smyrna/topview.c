@@ -1243,13 +1243,14 @@ static void menu_click_hide(void *p)
 
 static void menu_click_pan(void *p)
 {
-    view->mouse.mouse_mode = MM_PAN;
+	switch_Mouse(NULL,MM_PAN);
 
 }
 
 static void menu_click_zoom(void *p)
 {
-    view->mouse.mouse_mode = MM_ZOOM;
+
+	switch_Mouse(NULL,MM_ZOOM);
 
 }
 
@@ -1306,7 +1307,8 @@ static void menu_click_3d_view(void *p)
 static void menu_switch_to_normal_mode(void *p)
 {
     view->Topview->is_top_fisheye = 0;
-    g_timer_stop(view->timer);
+
+	g_timer_stop(view->timer);
 
 }
 
@@ -1324,27 +1326,37 @@ static void menu_switch_to_fisheye(void *p)
 
 static void menu_click_rotate(void *p)
 {
-    view->mouse.mouse_mode = MM_ROTATE;
+	switch_Mouse(NULL,MM_ROTATE);
+
+	view->mouse.mouse_mode = MM_ROTATE;
 }
 
 static void menu_click_rotate_x(void *p)
 {
-    view->mouse.rotate_axis = MOUSE_ROTATE_X;
+	switch_Mouse(NULL,MM_ROTATE);
+
+	view->mouse.rotate_axis = MOUSE_ROTATE_X;
 }
 
 static void menu_click_rotate_y(void *p)
 {
-    view->mouse.rotate_axis = MOUSE_ROTATE_Y;
+	switch_Mouse(NULL,MM_ROTATE);
+
+	view->mouse.rotate_axis = MOUSE_ROTATE_Y;
 }
 
 static void menu_click_rotate_xy(void *p)
 {
-    view->mouse.rotate_axis = MOUSE_ROTATE_XY;
+	switch_Mouse(NULL,MM_ROTATE);
+
+	view->mouse.rotate_axis = MOUSE_ROTATE_XY;
 }
 
 static void menu_click_rotate_z(void *p)
 {
-    view->mouse.rotate_axis = MOUSE_ROTATE_Z;
+	switch_Mouse(NULL,MM_ROTATE);
+
+	view->mouse.rotate_axis = MOUSE_ROTATE_Z;
 }
 
 static void menu_click_center(void *p)

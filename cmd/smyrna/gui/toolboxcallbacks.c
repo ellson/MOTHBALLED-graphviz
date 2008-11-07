@@ -58,7 +58,10 @@ void btnToolAntiRectXSelect_clicked(GtkWidget * widget, gpointer user_data)
 
 void btnToolPan_clicked(GtkWidget * widget, gpointer user_data)
 {
-    switch_Mouse(NULL, 0);
+
+
+	switch_Mouse(NULL, 0);
+
 }
 
 void btnToolZoom_clicked(GtkWidget * widget, gpointer user_data)
@@ -185,7 +188,10 @@ void btnToolDeleteEdge_clicked(GtkWidget * widget, gpointer user_data)
 void btnToolFindEdge_clicked(GtkWidget * widget, gpointer user_data)
 {
 }
-
+void btnToolCursor_clicked(GtkWidget * widget, gpointer user_data)
+{
+ switch_Mouse(NULL, -1);
+}
 void write_to_console(char* text)
 {
 	//init console text
