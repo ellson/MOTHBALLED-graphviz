@@ -217,8 +217,20 @@ image. Note that the image size, even when converted from pixels to
 points, might be different from the required size (w,h). It is
 assumed the renderer will perform the necessary scaling. (1.2)
 </TABLE>
-<SPACER TYPE=VERTICAL size=10>
-In handling alignment, the application may want to recompute the
+<P>
+Note that the filled figures (ellipses, polygons and B-Splines)
+imply two operations: first, drawing the filled figure with the
+current fill color; second, drawing an unfilled figure with the
+current pen color, pen width and pen style.
+the
+<P>
+Style values which can be incorporated in the graphics model do not
+appear in xdot output. In particular, the style values
+<TT>filled</T>, <TT>rounded</T>, <TT>diagonals</T>, and <TT>invis</T>
+will not appear. Indeed, if <TT>invis</T>, there will not be any
+xdot output at all.
+<P>
+In handling text alignment, the application may want to recompute the
 string width using its own rendering primitives.
 <P>
 The text operation is only used in the label attributes. Normally,
