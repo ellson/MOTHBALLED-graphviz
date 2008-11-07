@@ -20,6 +20,7 @@
 #include "topview.h"
 #include "topfisheyeview.h"
 #include "glTexFont.h"
+#include "gui/toolboxcallbacks.h"
 
 
 

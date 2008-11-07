@@ -28,6 +28,7 @@
 #include "selection.h"
 #include "glcompset.h"
 #include "viewportcamera.h"
+#include "gui/menucallbacks.h"
 static float begin_x = 0.0;
 static float begin_y = 0.0;
 static float dx = 0.0;
@@ -176,7 +177,7 @@ static void realize(GtkWidget * widget, gpointer data)
 static gboolean configure_event(GtkWidget * widget,
 				GdkEventConfigure * event, gpointer data)
 {
-	static doonce=0;
+	/* static int doonce=0; */
 	int vPort[4];
     float aspect;
     GdkGLContext *glcontext = gtk_widget_get_gl_context(widget);

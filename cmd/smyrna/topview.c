@@ -17,6 +17,7 @@
 #include "glTexFontTGA.h"
 #include "glTexFontDefs.h"
 #include "glTexFontInclude.h"
+#include "gltemplate.h"
 #include "topview.h"
 #include "math.h"
 #include "memory.h"

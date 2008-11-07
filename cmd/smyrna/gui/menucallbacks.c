@@ -16,6 +16,7 @@
 
 #include "menucallbacks.h"
 #include "viewport.h"
+#include "topview.h"
 #include "tvnodes.h"
 #include "selection.h"
 #include "topviewsettings.h"
@@ -273,8 +274,8 @@ void mShowCodeSlot(GtkWidget * widget, gpointer user_data)
 }
 static void mSlot (GtkWidget * widget, gpointer user_data, gvk_layout layout, int doCursor)
 {
-    GdkCursor *cursor;
-    GdkWindow *w;
+    /* GdkCursor *cursor; */
+    /* GdkWindow *w; */
     Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
 						      GTK_DIALOG_MODAL,
 						      GTK_MESSAGE_QUESTION,
