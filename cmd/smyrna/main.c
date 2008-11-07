@@ -167,7 +167,9 @@ int main(int argc, char *argv[])
 
     if (initFileName)
 	add_graph_to_viewport_from_file(initFileName);
-    gtk_main();
+	change_cursor(GDK_TOP_LEFT_ARROW);
+	gtk_main();
+
 
 
 #ifdef G_OS_WIN32

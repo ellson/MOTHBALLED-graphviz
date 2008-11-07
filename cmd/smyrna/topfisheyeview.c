@@ -162,33 +162,35 @@ static v_data *makeGraph(topview * tv, int *nedges)
     int i_nedges;
 
     ne = 0;
-    for (i = 0; i < nv; i++) {
-	graph[i].edges = edges++;	/* reserve space for the self loop */
-	graph[i].ewgts = ewgts++;
-#ifdef STYLES
-	graph[i].styles = NULL;
-#endif
-	i_nedges = 1;		/* one for the self */
+    for (i = 0; i < nv; i++)
+	{
+		graph[i].edges = edges++;	/* reserve space for the self loop */
+		graph[i].ewgts = ewgts++;
+		#ifdef STYLES
+		graph[i].styles = NULL;
+		#endif
+		i_nedges = 1;		/* one for the self */
 
-	np = tv->Nodes[i].Node;
-	if (!g)
-	    g = agraphof(np);
-	for (ep = agfstedge(g, np); ep; ep = agnxtedge(g, ep, np)) {
-	    Agnode_t *vp;
-	    Agnode_t *tp = agtail(ep);
-	    Agnode_t *hp = aghead(ep);
-	    assert(hp != tp);
-	    /* FIX: handle multiedges */
-	    vp = (tp == np ? hp : tp);
-	    ne++;
-	    i_nedges++;
-	    *edges++ = OD_TVRef(vp);
-	    *ewgts++ = 1;
-	}
+		np = tv->Nodes[i].Node;
+		if (!g)
+			g = agraphof(np);
+		for (ep = agfstedge(g, np); ep; ep = agnxtedge(g, ep, np)) 
+		{
+			Agnode_t *vp;
+			Agnode_t *tp = agtail(ep);
+			Agnode_t *hp = aghead(ep);
+			assert(hp != tp);
+			/* FIX: handle multiedges */
+			vp = (tp == np ? hp : tp);
+			ne++;
+			i_nedges++;
+			*edges++ = OD_TVRef(vp);
+			*ewgts++ = 1;
+		}
 
-	graph[i].nedges = i_nedges;
-	graph[i].edges[0] = i;
-	graph[i].ewgts[0] = 1 - i_nedges;
+		graph[i].nedges = i_nedges;
+		graph[i].edges[0] = i;
+		graph[i].ewgts[0] = 1 - i_nedges;
     }
     ne /= 2;			/* each edge counted twice */
     *nedges = ne;
