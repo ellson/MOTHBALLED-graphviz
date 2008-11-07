@@ -264,9 +264,9 @@ the
 <P>
 Style values which can be incorporated in the graphics model do not
 appear in xdot output. In particular, the style values
-<TT>filled</T>, <TT>rounded</T>, <TT>diagonals</T>, and <TT>invis</T>
-will not appear. Indeed, if <TT>invis</T>, there will not be any
-xdot output at all.
+<TT>filled</TT>, <TT>rounded</TT>, <TT>diagonals</TT>, and <TT>invis</TT>
+will not appear. Indeed, if style contains <TT>invis</TT>, 
+there will not be any xdot output at all.
 <P>
 In handling text alignment, the application may want to recompute the
 string width using its own rendering primitives.
