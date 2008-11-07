@@ -58,13 +58,17 @@ typedef enum {
 /* There are as many xbufs as there are values of emit_state_t.
  * However, only the first NUMXBUFS are distinct. Nodes, clusters, and
  * edges are drawn atomically, so they share the DRAW and LABEL buffers
- * are shared.
  */
 static agxbuf xbuf[NUMXBUFS];
 static agxbuf* xbufs[] = {
     xbuf+EMIT_GDRAW, xbuf+EMIT_CDRAW, xbuf+EMIT_TDRAW, xbuf+EMIT_HDRAW, 
     xbuf+EMIT_GLABEL, xbuf+EMIT_CLABEL, xbuf+EMIT_TLABEL, xbuf+EMIT_HLABEL, 
     xbuf+EMIT_CDRAW, xbuf+EMIT_CDRAW, xbuf+EMIT_CLABEL, xbuf+EMIT_CLABEL, 
+};
+static double penwidth [] = {
+    1, 1, 1, 1,
+    1, 1, 1, 1,
+    1, 1, 1, 1,
 };
 
 typedef struct {
@@ -128,6 +132,7 @@ static void xdot_style (GVJ_t *job)
 	return;
     agxbinit(&xbuf, BUFSIZ, buf);
     while ((p = *s++)) {
+	if (streq(p, "filled") || streq(p, "bold") || streq(p, "setlinewidth")) continue;
         agxbput(&xbuf, p);
         while (*p)
             p++;
@@ -147,7 +152,14 @@ static void xdot_style (GVJ_t *job)
         }
         xdot_str (job, "S ", agxbuse(&xbuf));
     }
+
     agxbfree(&xbuf);
+
+    if (job->obj->penwidth != penwidth[job->obj->emit_state]) {
+	penwidth[job->obj->emit_state] = job->obj->penwidth;
+	sprintf ((char*)buf, "setlinewidth(%.3f)", job->obj->penwidth);
+        xdot_str (job, "S ", (char*)buf);
+    }
 }
 
 static void xdot_end_node(GVJ_t* job)
@@ -165,6 +177,8 @@ static void xdot_end_node(GVJ_t* job)
 #else /* WITH_CGRAPH */
 	agxset(n, xd->n_l_draw, agxbuse(xbufs[EMIT_NLABEL]));
 #endif /* WITH_CGRAPH */
+    penwidth[EMIT_NDRAW] = 1;
+    penwidth[EMIT_NLABEL] = 1;
 }
 
 static void xdot_end_edge(GVJ_t* job)
@@ -207,6 +221,12 @@ static void xdot_end_edge(GVJ_t* job)
 #else /* WITH_CGRAPH */
 	agxset(e, xd->hl_draw, agxbuse(xbufs[EMIT_HLABEL]));
 #endif /* WITH_CGRAPH */
+    penwidth[EMIT_EDRAW] = 1;
+    penwidth[EMIT_ELABEL] = 1;
+    penwidth[EMIT_TDRAW] = 1;
+    penwidth[EMIT_HDRAW] = 1;
+    penwidth[EMIT_TLABEL] = 1;
+    penwidth[EMIT_HLABEL] = 1;
 }
 
 static void xdot_end_cluster(GVJ_t * job)
@@ -224,6 +244,8 @@ static void xdot_end_cluster(GVJ_t * job)
 #else /* WITH_CGRAPH */
 	agxset(cluster_g, xd->g_l_draw, agxbuse(xbufs[EMIT_CLABEL]));
 #endif /* WITH_CGRAPH */
+    penwidth[EMIT_CDRAW] = 1;
+    penwidth[EMIT_CLABEL] = 1;
 }
 
 /* 
@@ -376,6 +398,8 @@ static void xdot_end_graph(graph_t* g)
     for (i = 0; i < NUMXBUFS; i++)
 	agxbfree(xbuf+i);
     free (xd);
+    penwidth[EMIT_GDRAW] = 1;
+    penwidth[EMIT_GLABEL] = 1;
 }
 
 static void dot_end_graph(GVJ_t *job)
@@ -492,7 +516,7 @@ void core_loadimage_xdot(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
     output_point(xbufs[emit_state], b.LL);
     sprintf(buf, "%d %d ", ROUND(b.UR.x - b.LL.x), ROUND(b.UR.y - b.LL.y));
     agxbput(xbufs[emit_state], buf);
-    xdot_str (job, "", us->name);
+    xdot_str (job, "", (char*)(us->name));
 }
 
 gvrender_engine_t dot_engine = {
