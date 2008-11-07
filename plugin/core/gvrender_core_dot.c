@@ -110,14 +110,23 @@ static void xdot_points(GVJ_t *job, char c, pointf * A, int n)
         output_point(xbufs[emit_state], A[i]);
 }
 
+static char*
+color2str (unsigned char rgba[4])
+{
+    static char buf [10];
+
+    sprintf (buf, "#%02x%02x%02x%02x", rgba[0], rgba[1],  rgba[2], rgba[3]);
+    return buf;
+}
+
 static void xdot_pencolor (GVJ_t *job)
 {
-    xdot_str (job, "c ", job->obj->pencolor.u.string);
+    xdot_str (job, "c ", color2str (job->obj->pencolor.u.rgba));
 }
 
 static void xdot_fillcolor (GVJ_t *job)
 {
-    xdot_str (job, "C ", job->obj->fillcolor.u.string);
+    xdot_str (job, "C ", color2str (job->obj->fillcolor.u.rgba));
 }
 
 static void xdot_style (GVJ_t *job)
@@ -594,7 +603,7 @@ gvrender_features_t render_features_xdot = {
     0.,                         /* default pad - graph units */
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
-    COLOR_STRING,		/* color_type */
+    RGBA_BYTE,		/* color_type */
 };
 
 gvdevice_features_t device_features_canon = {
