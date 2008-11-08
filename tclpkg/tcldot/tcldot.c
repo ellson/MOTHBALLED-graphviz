@@ -49,6 +49,12 @@ Tcl_GetString(Tcl_Obj *obj) {
 #endif
 ********* */
 
+#if ((TCL_MAJOR_VERSION == 8) && (TCL_MINOR_VERSION >= 6)) || ( TCL_MAJOR_VERSION > 8)
+#else
+#define Tcl_GetStringResult(interp) interp->result
+#define Tcl_SetResult(interp,result,freeproc) interp->result = result
+#endif
+
 #if HAVE_LIBGD
 extern void *GDHandleTable;
 extern int Gdtclft_Init(Tcl_Interp *);
@@ -416,21 +422,21 @@ static int nodecmd(ClientData clientData, Tcl_Interp * interp,
 	if (!
 	    (ep = (Agedge_t **) tclhandleXlateIndex(edgeTblPtr, e->handle))
 	    || *ep != e) {
-	    ep = (Agedge_t **) tclhandleAlloc(edgeTblPtr, interp->result,
+	    ep = (Agedge_t **) tclhandleAlloc(edgeTblPtr, Tcl_GetStringResult(interp),
 					      &id);
 	    *ep = e;
 	    e->handle = id;
 #ifndef TCLOBJ
-	    Tcl_CreateCommand(interp, interp->result, edgecmd,
+	    Tcl_CreateCommand(interp, Tcl_GetStringResult(interp), edgecmd,
 			      (ClientData) gvc,
 			      (Tcl_CmdDeleteProc *) NULL);
 #else				/* TCLOBJ */
-	    Tcl_CreateObjCommand(interp, interp->result, edgecmd,
+	    Tcl_CreateObjCommand(interp, Tcl_GetStringResult(interp), edgecmd,
 				 (ClientData) gvc,
 				 (Tcl_CmdDeleteProc *) NULL);
 #endif				/* TCLOBJ */
 	} else {
-	    tclhandleString(edgeTblPtr, interp->result, e->handle);
+	    tclhandleString(edgeTblPtr, Tcl_GetStringResult(interp), e->handle);
 	}
 	setedgeattributes(agroot(g), e, &argv[3], argc - 3);
 	reset_layout(gvc, g);
@@ -579,7 +585,7 @@ static int nodecmd(ClientData clientData, Tcl_Interp * interp,
 	return TCL_OK;
 
     } else if ((c == 's') && (strncmp(argv[1], "showname", length) == 0)) {
-	interp->result = agnameof(n);
+	Tcl_SetResult(interp, agnameof(n), NULL);
 	return TCL_OK;
 
     } else {
@@ -720,19 +726,19 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	if (!
 	    (ep = (Agedge_t **) tclhandleXlateIndex(edgeTblPtr, e->handle))
 	    || *ep != e) {
-	    ep = (Agedge_t **) tclhandleAlloc(edgeTblPtr, interp->result,
+	    ep = (Agedge_t **) tclhandleAlloc(edgeTblPtr, Tcl_GetStringResult(interp),
 					      &id);
 	    *ep = e;
 	    e->handle = id;
 #ifndef TCLOBJ
-	    Tcl_CreateCommand(interp, interp->result, edgecmd,
+	    Tcl_CreateCommand(interp, Tcl_GetStringResult(interp), edgecmd,
 			      (ClientData) gvc, (Tcl_CmdDeleteProc *) NULL);
 #else				/* TCLOBJ */
-	    Tcl_CreateObjCommand(interp, interp->result, edgecmd,
+	    Tcl_CreateObjCommand(interp, Tcl_GetStringResult(interp), edgecmd,
 				 (ClientData) gvc, (Tcl_CmdDeleteProc *) NULL);
 #endif				/* TCLOBJ */
 	} else {
-	    tclhandleString(edgeTblPtr, interp->result, e->handle);
+	    tclhandleString(edgeTblPtr, Tcl_GetStringResult(interp), e->handle);
 	}
 	setedgeattributes(agroot(g), e, &argv[4], argc - 4);
 	reset_layout(gvc, g);
@@ -747,32 +753,32 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		(np =
 		 (Agnode_t **) tclhandleXlateIndex(nodeTblPtr, n->handle))
 		|| *np != n) {
-		np = (Agnode_t **) tclhandleAlloc(nodeTblPtr, interp->result, &id);
+		np = (Agnode_t **) tclhandleAlloc(nodeTblPtr, Tcl_GetStringResult(interp), &id);
 		*np = n;
 		n->handle = id;
 #ifndef TCLOBJ
-		Tcl_CreateCommand(interp, interp->result, nodecmd,
+		Tcl_CreateCommand(interp, Tcl_GetStringResult(interp), nodecmd,
 				  (ClientData) gvc, (Tcl_CmdDeleteProc *) NULL);
 #else				/* TCLOBJ */
-		Tcl_CreateObjCommand(interp, interp->result, nodecmd,
+		Tcl_CreateObjCommand(interp, Tcl_GetStringResult(interp), nodecmd,
 				     (ClientData) gvc, (Tcl_CmdDeleteProc *) NULL);
 #endif				/* TCLOBJ */
 	    } else {
-		tclhandleString(nodeTblPtr, interp->result, n->handle);
+		tclhandleString(nodeTblPtr, Tcl_GetStringResult(interp), n->handle);
 	    }
 	} else {
 	    /* else use handle as name */
-	    np = (Agnode_t **) tclhandleAlloc(nodeTblPtr, interp->result,
+	    np = (Agnode_t **) tclhandleAlloc(nodeTblPtr, Tcl_GetStringResult(interp),
 					      &id);
-	    n = agnode(g, interp->result);
+	    n = agnode(g, Tcl_GetStringResult(interp));
 	    i = 2;
 	    *np = n;
 	    n->handle = id;
 #ifndef TCLOBJ
-	    Tcl_CreateCommand(interp, interp->result, nodecmd,
+	    Tcl_CreateCommand(interp, Tcl_GetStringResult(interp), nodecmd,
 			      (ClientData) gvc, (Tcl_CmdDeleteProc *) NULL);
 #else				/* TCLOBJ */
-	    Tcl_CreateObjCommand(interp, interp->result, nodecmd,
+	    Tcl_CreateObjCommand(interp, Tcl_GetStringResult(interp), nodecmd,
 				 (ClientData) gvc, (Tcl_CmdDeleteProc *) NULL);
 #endif				/* TCLOBJ */
 	}
@@ -792,31 +798,31 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    sg = agsubg(g, argv[2]);
 	    i = 3;
 	    if (!  (sgp = (Agraph_t **) tclhandleXlateIndex(graphTblPtr, sg->handle)) || *sgp != sg) {
-		sgp = (Agraph_t **) tclhandleAlloc(graphTblPtr, interp->result, &id);
+		sgp = (Agraph_t **) tclhandleAlloc(graphTblPtr, Tcl_GetStringResult(interp), &id);
 		*sgp = sg;
 		sg->handle = id;
 #ifndef TCLOBJ
-		Tcl_CreateCommand(interp, interp->result, graphcmd,
+		Tcl_CreateCommand(interp, Tcl_GetStringResult(interp), graphcmd,
 				  (ClientData) gvc, (Tcl_CmdDeleteProc *) NULL);
 #else				/* TCLOBJ */
-		Tcl_CreateObjCommand(interp, interp->result, graphcmd,
+		Tcl_CreateObjCommand(interp, Tcl_GetStringResult(interp), graphcmd,
 				     (ClientData) gvc, (Tcl_CmdDeleteProc *) NULL);
 #endif				/* TCLOBJ */
 	    } else {
-		tclhandleString(graphTblPtr, interp->result, sg->handle);
+		tclhandleString(graphTblPtr, Tcl_GetStringResult(interp), sg->handle);
 	    }
 	} else {
 	    /* else use handle as name */
-	    sgp = (Agraph_t **) tclhandleAlloc(graphTblPtr, interp->result, &id);
-	    sg = agsubg(g, interp->result);
+	    sgp = (Agraph_t **) tclhandleAlloc(graphTblPtr, Tcl_GetStringResult(interp), &id);
+	    sg = agsubg(g, Tcl_GetStringResult(interp));
 	    i = 2;
 	    *sgp = sg;
 	    sg->handle = id;
 #ifndef TCLOBJ
-	    Tcl_CreateCommand(interp, interp->result, graphcmd,
+	    Tcl_CreateCommand(interp, Tcl_GetStringResult(interp), graphcmd,
 			      (ClientData) gvc, (Tcl_CmdDeleteProc *) NULL);
 #else				/* TCLOBJ */
-	    Tcl_CreateObjCommand(interp, interp->result, graphcmd,
+	    Tcl_CreateObjCommand(interp, Tcl_GetStringResult(interp), graphcmd,
 				 (ClientData) gvc, (Tcl_CmdDeleteProc *) NULL);
 #endif				/* TCLOBJ */
 	}
@@ -1283,7 +1289,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	return TCL_OK;
 
     } else if ((c == 's') && (strncmp(argv[1], "showname", length) == 0)) {
-	interp->result = agnameof(g);
+	Tcl_SetResult(interp, agnameof(g), NULL);
 	return TCL_OK;
 
     } else if ((c == 'w') && (strncmp(argv[1], "write", length) == 0)) {
@@ -1420,7 +1426,7 @@ static int dotnew(ClientData clientData, Tcl_Interp * interp,
 			 "\n\tdigraph, digraphstrict, graph, graphstrict.", NULL);
 	return TCL_ERROR;
     }
-    gp = (Agraph_t **) tclhandleAlloc(graphTblPtr, interp->result, &id);
+    gp = (Agraph_t **) tclhandleAlloc(graphTblPtr, Tcl_GetStringResult, &id);
     if (argc % 2) {
 	/* if odd number of args then argv[2] is name */
 #ifndef WITH_CGRAPH
@@ -1432,9 +1438,9 @@ static int dotnew(ClientData clientData, Tcl_Interp * interp,
     } else {
 	/* else use handle as name */
 #ifndef WITH_CGRAPH
-	g = agopen(interp->result, kind);
+	g = agopen(Tcl_GetStringResult, kind);
 #else
-	g = agopen(interp->result, kind, NIL(Agdisc_t *));
+	g = agopen(Tcl_GetStringResult, kind, NIL(Agdisc_t *));
 #endif
 	i = 2;
     }
@@ -1446,10 +1452,10 @@ static int dotnew(ClientData clientData, Tcl_Interp * interp,
     g->handle = id;
 
 #ifndef TCLOBJ
-    Tcl_CreateCommand(interp, interp->result, graphcmd,
+    Tcl_CreateCommand(interp, Tcl_GetStringResult, graphcmd,
 		      (ClientData) gvc, (Tcl_CmdDeleteProc *) NULL);
 #else				/* TCLOBJ */
-    Tcl_CreateObjCommand(interp, interp->result, graphcmd,
+    Tcl_CreateObjCommand(interp, Tcl_GetStringResult, graphcmd,
 			 (ClientData) gvc, (Tcl_CmdDeleteProc *) NULL);
 #endif				/* TCLOBJ */
     setgraphattributes(g, &argv[i], argc - i);
@@ -1488,17 +1494,17 @@ static int tcldot_fixup(Tcl_Interp * interp, GVC_t * gvc, graph_t * g)
 				 (Tcl_CmdDeleteProc *) NULL);
 #endif				/* TCLOBJ */
 	    if (sg == g)
-		strcpy(interp->result, buf);
+		strcpy(Tcl_GetStringResult, buf);
 	}
     } else {
-	gp = (Agraph_t **) tclhandleAlloc(graphTblPtr, interp->result, &id);
+	gp = (Agraph_t **) tclhandleAlloc(graphTblPtr, Tcl_GetStringResult, &id);
 	*gp = g;
 	g->handle = id;
 #ifndef TCLOBJ
-	Tcl_CreateCommand(interp, interp->result, graphcmd,
+	Tcl_CreateCommand(interp, Tcl_GetStringResult, graphcmd,
 			  (ClientData) gvc, (Tcl_CmdDeleteProc *) NULL);
 #else				/* TCLOBJ */
-	Tcl_CreateObjCommand(interp, interp->result, graphcmd,
+	Tcl_CreateObjCommand(interp, Tcl_GetStringResult, graphcmd,
 			     (ClientData) gvc, (Tcl_CmdDeleteProc *) NULL);
 #endif				/* TCLOBJ */
     }
