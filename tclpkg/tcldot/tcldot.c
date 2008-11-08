@@ -51,8 +51,12 @@ Tcl_GetString(Tcl_Obj *obj) {
 
 #if ((TCL_MAJOR_VERSION == 8) && (TCL_MINOR_VERSION >= 6)) || ( TCL_MAJOR_VERSION > 8)
 #else
+#ifndef Tcl_GetStringResult
 #define Tcl_GetStringResult(interp) interp->result
+#endif
+#ifndef Tcl_SetResult
 #define Tcl_SetResult(interp,result_string,freeproc) interp->result = result_string
+#endif
 #endif
 
 #if HAVE_LIBGD
