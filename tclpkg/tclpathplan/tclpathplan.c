@@ -54,6 +54,11 @@
 #define CONST84
 #endif
 
+#if ((TCL_MAJOR_VERSION == 8) && (TCL_MINOR_VERSION >= 6)) || ( TCL_MAJOR_VERSION > 8)
+#else
+#define Tcl_GetStringResult(interp) interp->result
+#endif
+
 typedef Ppoint_t point;
 
 typedef struct poly_s {
@@ -186,7 +191,7 @@ static void expandPercentsEval(Tcl_Interp * interp,	/* interpreter context */
     }
     if (Tcl_GlobalEval(interp, Tcl_DStringValue(&scripts)) != TCL_OK)
 	fprintf(stderr, "%s while in binding: %s\n\n",
-		interp->result, Tcl_DStringValue(&scripts));
+		Tcl_GetStringResult(interp), Tcl_DStringValue(&scripts));
     Tcl_DStringFree(&scripts);
 }
 
