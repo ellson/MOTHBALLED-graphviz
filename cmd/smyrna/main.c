@@ -49,8 +49,6 @@ gchar *package_locale_dir;
 static char* smyrnaDir;
 char* smyrnaGlade;
 
-extern unsigned char Verbose;
-
 char*
 smyrnaPath (char* suffix)
 {
