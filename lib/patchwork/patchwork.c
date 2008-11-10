@@ -215,6 +215,11 @@ int main()
 
 	aginit();
 	g = agread(stdin);
+#ifndef WITH_CGRAPH
+	root.kind = AGGRAPH;
+#else
+	root.kind = AGRAPH;
+#endif
 	root.leftchild = treebuilder(g);
 	sizeit(&root);
 	/*layouter(&root,LR,r);*/
@@ -229,6 +234,11 @@ void patchwork_layout(Agraph_t *g)
 	static treenode_t 	root;
 	rect_t r = {{0.0, 0.0}, {100.0, 100.0}};
 	patchwork_init_graph(g);
+#ifndef WITH_CGRAPH
+	root.kind = AGGRAPH;
+#else
+	root.kind = AGRAPH;
+#endif
 	root.leftchild = treebuilder(g);
 	root.u.subg = g;
 	sizeit(&root);
