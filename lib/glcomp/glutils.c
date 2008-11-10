@@ -86,7 +86,9 @@ int GetOGLPosRef(int x, int y, float *X, float *Y, float *Z)
     *X = (float) posX;
     *Y = (float) posY;
     *Z = (float) posZ;
-    return 1;
+//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	return 1;
 
 }
 
@@ -133,6 +135,7 @@ float GetOGLDistance(int l)
     winY = (float) viewport[3] - (float) y;
     gluUnProject(winX, winY, wwinZ, modelview, projection, viewport,
 		 &posXX, &posYY, &posZZ);
+//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	return ((float) (posXX - posX));
 
 }
@@ -168,7 +171,8 @@ int GetFixedOGLPoslocal(int x, int y, float kts, GLfloat * X, GLfloat * Y,
     *Y = (GLfloat) posY;
     *Z = (GLfloat) posZ;
 
-    return 1;
+//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	return 1;
 
 }
 

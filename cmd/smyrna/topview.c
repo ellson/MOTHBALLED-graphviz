@@ -1316,11 +1316,9 @@ static void menu_switch_to_normal_mode(void *p)
 static void menu_switch_to_fisheye(void *p)
 {
     if (!view->Topview->h) {
-	please_wait();
 	prepare_topological_fisheye(view->Topview);
-	view->Topview->animate = 1;
+	view->Topview->animate = 0;
 	g_timer_start(view->timer);
-	please_dont_wait();
     }
     view->Topview->is_top_fisheye = 1;
 }
