@@ -4,12 +4,10 @@ CURL=curl
 MAKE=make
 TAR=tar
 
-# local
-
-LOCAL=$(CURDIR)/usr/local
-LOCAL_INCLUDE=$(LOCAL)/include
-LOCAL_LIB=$(LOCAL)/lib
-LOCAL_BIN=$(LOCAL)/bin
+PREFIX=$(HOME)/FIX/leopard
+PREFIX_INCLUDE=$(PREFIX)/include
+PREFIX_LIB=$(PREFIX)/lib
+PREFIX_BIN=$(PREFIX)/bin
 
 # package URL
 
@@ -17,9 +15,13 @@ PKGCONFIG_URL=http://pkgconfig.freedesktop.org/releases/pkg-config-0.23.tar.gz
 GD_URL=http://www.libgd.org/releases/gd-2.0.35.tar.gz
 PIXMAN_URL=http://cairographics.org/releases/pixman-0.10.0.tar.gz
 CAIRO_URL=http://cairographics.org/releases/cairo-1.6.4.tar.gz
+#CAIRO_URL=http://cairographics.org/releases/cairo-1.8.0.tar.gz
+#CAIRO_URL=http://cairographics.org/releases/cairo-1.8.2.tar.gz
 GETTEXT_URL=ftp://mirrors.kernel.org/gnu/gettext/gettext-0.17.tar.gz
 GLIB_URL=http://ftp.gnome.org/pub/GNOME/sources/glib/2.16/glib-2.16.3.tar.gz
+#GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.18/glib-2.18.2.tar.gz
 PANGO_URL=http://ftp.gnome.org/pub/GNOME/sources/pango/1.20/pango-1.20.2.tar.gz
+#PANGO_URL=http://ftp.gnome.org/pub/GNOME/sources/pango/1.22/pango-1.22.2.tar.gz
 
 # libraries
 
@@ -52,10 +54,10 @@ PANGO_DIR=$(call dirname, $(PANGO_URL))
 # -arch to build 32-bit/64-bit Universal Binaries
 # pkgconfig to look for X11 libraries too
 
-BASE_CONFIG=--prefix=$(LOCAL) --disable-dependency-tracking --enable-static=yes --enable-shared=no PKG_CONFIG="$(LOCAL_BIN)/pkg-config" PKG_CONFIG_PATH="$(LOCAL)/lib/pkgconfig:/usr/X11/lib/pkgconfig"
+BASE_CONFIG=--prefix=$(PREFIX) --disable-dependency-tracking --enable-static=yes --enable-shared=no PKG_CONFIG="$(PREFIX_BIN)/pkg-config" PKG_CONFIG_PATH="$(PREFIX)/lib/pkgconfig:/usr/X11/lib/pkgconfig"
 FLAG_CONFIG=CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64" LDFLAGS="-arch ppc -arch i386 -arch ppc64" 
 
-install: $(LOCAL_LIB)/$(PANGO) $(LOCAL_LIB)/$(GD)
+install: $(PREFIX_LIB)/$(PANGO) $(PREFIX_LIB)/$(GD)
 
 uninstall:
 	$(MAKE) -C $(PANGO_DIR) uninstall
@@ -90,7 +92,7 @@ distclean:
 # --with-included-modules=yes to embed pango modules within pango itself
 # link also to CoreFoundation and CoreServices because of gettext dependency
 
-$(LOCAL_LIB)/$(PANGO): $(PANGO_DIR)/pango/$(PANGO)
+$(PREFIX_LIB)/$(PANGO): $(PANGO_DIR)/pango/$(PANGO)
 	@echo
 	@echo INSTALLING PANGO...
 	@echo
@@ -101,9 +103,9 @@ $(PANGO_DIR)/pango/$(PANGO): $(PANGO_DIR)/Makefile
 	@echo MAKING PANGO...
 	@echo
 	if [[ -e $@ ]]; then $(MAKE) -C $(PANGO_DIR) clean; fi && \
-	PATH=$(PATH):$(LOCAL_BIN) $(MAKE) -C $(PANGO_DIR)
+	PATH=$(PATH):$(PREFIX_BIN) $(MAKE) -C $(PANGO_DIR)
 	
-$(PANGO_DIR)/Makefile: $(LOCAL_LIB)/$(CAIRO) $(LOCAL_LIB)/$(GLIB) | $(LOCAL_BIN)/$(PKGCONFIG) $(PANGO_DIR)/configure
+$(PANGO_DIR)/Makefile: $(PREFIX_LIB)/$(CAIRO) $(PREFIX_LIB)/$(GLIB) | $(PREFIX_BIN)/$(PKGCONFIG) $(PANGO_DIR)/configure
 	@echo
 	@echo CONFIGURING PANGO...
 	@echo
@@ -129,7 +131,7 @@ $(PANGO_DIR).tar.gz:
 # run configure once for each architecture, capturing config.h and glibconfig.h
 # run configure again for Universal Binary, recomposing config.h and glibconfig.h from captured versions
 
-$(LOCAL_LIB)/$(GLIB): $(GLIB_DIR)/glib/$(GLIB)
+$(PREFIX_LIB)/$(GLIB): $(GLIB_DIR)/glib/$(GLIB)
 	@echo
 	@echo INSTALLING GLIB...
 	@echo
@@ -142,7 +144,7 @@ $(GLIB_DIR)/glib/$(GLIB): $(GLIB_DIR)/Makefile
 	if [[ -e $@ ]]; then $(MAKE) -C $(GLIB_DIR) clean; fi && \
 	$(MAKE) -C $(GLIB_DIR)
 	
-$(GLIB_DIR)/Makefile: $(LOCAL_LIB)/$(INTL) | $(LOCAL_BIN)/$(PKGCONFIG) $(GLIB_DIR)/configure 
+$(GLIB_DIR)/Makefile: $(PREFIX_LIB)/$(INTL) | $(PREFIX_BIN)/$(PKGCONFIG) $(GLIB_DIR)/configure 
 	@echo
 	@echo CONFIGURING GLIB...
 	@echo
@@ -157,29 +159,29 @@ $(GLIB_DIR)/Makefile: $(LOCAL_LIB)/$(INTL) | $(LOCAL_BIN)/$(PKGCONFIG) $(GLIB_DI
 	echo "ac_cv_func_posix_getgrgid_r=yes" >>darwin.cache && \
 	echo "ac_cv_func_vsnprintf_c99=yes" >>darwin.cache && \
 	echo "ac_cv_func_printf_unix98=yes" >>darwin.cache && \
-	PATH=$(LOCAL_BIN):gobject:$$PATH && \
+	PATH=$(PREFIX_BIN):gobject:$$PATH && \
 	echo --- GLIB-GENMARSHAL PASS --- && \
-	./configure $(BASE_CONFIG) CFLAGS="-I$(LOCAL_INCLUDE)" LDFLAGS="-L$(LOCAL_LIB)" && \
+	./configure $(BASE_CONFIG) CFLAGS="-I$(PREFIX_INCLUDE)" LDFLAGS="-L$(PREFIX_LIB)" && \
 	$(MAKE) -C glib && \
 	$(MAKE) -C gobject glib-genmarshal && \
 	cp darwin.cache darwinian.cache && \
 	echo --- PPC PASS --- && \
-	./configure --cache-file=darwinian.cache --build=$$BUILD --host=powerpc-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch ppc -I$(LOCAL_INCLUDE)" LDFLAGS="-arch ppc -L$(LOCAL_LIB)" && \
+	./configure --cache-file=darwinian.cache --build=$$BUILD --host=powerpc-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch ppc -I$(PREFIX_INCLUDE)" LDFLAGS="-arch ppc -L$(PREFIX_LIB)" && \
 	cp config.h config.ppc.h && \
 	cp glibconfig.h glibconfig.ppc.h && \
 	cp darwin.cache darwinian.cache && \
 	echo --- I386 PASS --- && \
-	./configure --cache-file=darwinian.cache --build=$$BUILD --host=i686-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch i386 -I$(LOCAL_INCLUDE)" LDFLAGS="-arch i386 -L$(LOCAL_LIB)" && \
+	./configure --cache-file=darwinian.cache --build=$$BUILD --host=i686-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch i386 -I$(PREFIX_INCLUDE)" LDFLAGS="-arch i386 -L$(PREFIX_LIB)" && \
 	cp config.h config.i386.h && \
 	cp glibconfig.h glibconfig.i386.h && \
 	cp darwin.cache darwinian.cache && \
 	echo --- PPC64 PASS --- && \
-	./configure --cache-file=darwinian.cache --build=$$BUILD --host=powerpc-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch ppc64 -I$(LOCAL_INCLUDE)" LDFLAGS="-arch ppc64 -L$(LOCAL_LIB)" && \
+	./configure --cache-file=darwinian.cache --build=$$BUILD --host=powerpc-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch ppc64 -I$(PREFIX_INCLUDE)" LDFLAGS="-arch ppc64 -L$(PREFIX_LIB)" && \
 	cp config.h config.ppc64.h && \
 	cp glibconfig.h glibconfig.ppc64.h && \
 	cp darwin.cache darwinian.cache && \
 	echo --- UNIVERSAL BINARY PASS --- && \
-	./configure $(BASE_CONFIG) CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -I$(LOCAL_INCLUDE)" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -L$(LOCAL_LIB)" && \
+	./configure $(BASE_CONFIG) CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -I$(PREFIX_INCLUDE)" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -L$(PREFIX_LIB)" && \
 	rm config.h && \
 	echo "#if defined(__ppc__)" >>config.h && \
 	cat config.ppc.h >>config.h && \
@@ -203,7 +205,7 @@ $(GLIB_DIR)/configure: | $(GLIB_DIR).tar.gz
 	@echo
 	@echo CONFIGURING GLIB...
 	@echo
-	$(TAR) xzf $| && patch -p0 <glib.patch
+	$(TAR) xzf $| && (cd ${GLIB_DIR}; patch -p1 <../glib.patch)
 	
 $(GLIB_DIR).tar.gz:
 	@echo
@@ -215,7 +217,7 @@ $(GLIB_DIR).tar.gz:
 # gettext
 #
 
-$(LOCAL_LIB)/$(INTL): $(GETTEXT_DIR)/gettext-runtime/intl/$(INTL)
+$(PREFIX_LIB)/$(INTL): $(GETTEXT_DIR)/gettext-runtime/intl/$(INTL)
 	@echo
 	@echo INSTALLING GETTEXT...
 	@echo
@@ -252,7 +254,7 @@ $(GETTEXT_DIR).tar.gz:
 # patch to fence missing ATSUI API in 64-bit
 # patch to require pixman-1 in linking
 
-$(LOCAL_LIB)/$(CAIRO): $(CAIRO_DIR)/src/$(CAIRO)
+$(PREFIX_LIB)/$(CAIRO): $(CAIRO_DIR)/src/$(CAIRO)
 	@echo
 	@echo INSTALLING CAIRO...
 	@echo
@@ -265,7 +267,7 @@ $(CAIRO_DIR)/src/$(CAIRO): $(CAIRO_DIR)/Makefile
 	if [[ -e $@ ]]; then $(MAKE) -C $(CAIRO_DIR) clean; fi && \
 	$(MAKE) -C $(CAIRO_DIR)
 	
-$(CAIRO_DIR)/Makefile: $(LOCAL_LIB)/$(PIXMAN) | $(LOCAL_BIN)/$(PKGCONFIG) $(CAIRO_DIR)/configure
+$(CAIRO_DIR)/Makefile: $(PREFIX_LIB)/$(PIXMAN) | $(PREFIX_BIN)/$(PKGCONFIG) $(CAIRO_DIR)/configure
 	@echo
 	@echo CONFIGURING CAIRO...
 	@echo
@@ -275,7 +277,7 @@ $(CAIRO_DIR)/configure: | $(CAIRO_DIR).tar.gz
 	@echo
 	@echo UNTARRING CAIRO...
 	@echo
-	$(TAR) xzf $| && patch -p0 <cairo.patch
+	$(TAR) xzf $| && (cd ${CAIRO_DIR}; patch -p1 <../cairo.patch)
 	
 $(CAIRO_DIR).tar.gz:
 	@echo
@@ -289,7 +291,7 @@ $(CAIRO_DIR).tar.gz:
 # patch to detect endianness, MMX, SSE and SSE2 during Universal Binary build
 # omit -O2 since it bombs Apple gcc
 
-$(LOCAL_LIB)/$(PIXMAN): $(PIXMAN_DIR)/pixman/$(PIXMAN)
+$(PREFIX_LIB)/$(PIXMAN): $(PIXMAN_DIR)/pixman/$(PIXMAN)
 	@echo
 	@echo INSTALLING PIXMAN...
 	@echo
@@ -302,7 +304,7 @@ $(PIXMAN_DIR)/pixman/$(PIXMAN): $(PIXMAN_DIR)/Makefile
 	if [[ -e $@ ]]; then $(MAKE) -C $(PIXMAN_DIR) clean; fi && \
 	$(MAKE) -C $(PIXMAN_DIR)
 	
-$(PIXMAN_DIR)/Makefile: | $(LOCAL_BIN)/$(PKGCONFIG) $(PIXMAN_DIR)/configure 
+$(PIXMAN_DIR)/Makefile: | $(PREFIX_BIN)/$(PKGCONFIG) $(PIXMAN_DIR)/configure 
 	@echo
 	@echo CONFIGURING PIXMAN...
 	@echo
@@ -312,7 +314,7 @@ $(PIXMAN_DIR)/configure: | $(PIXMAN_DIR).tar.gz
 	@echo
 	@echo UNTARRING PIXMAN...
 	@echo
-	$(TAR) xzf $| && patch -p0 <pixman.patch
+	$(TAR) xzf $| && (cd ${PIXMAN_DIR}; patch -p1 <../pixman.patch)
 	
 $(PIXMAN_DIR).tar.gz:
 	@echo
@@ -324,7 +326,7 @@ $(PIXMAN_DIR).tar.gz:
 # gd
 #
 
-$(LOCAL_LIB)/$(GD): $(GD_DIR)/$(GD)
+$(PREFIX_LIB)/$(GD): $(GD_DIR)/$(GD)
 	@echo
 	@echo INSTALLING GD...
 	@echo
@@ -360,7 +362,7 @@ $(GD_DIR).tar.gz:
 #
 # only needed during build, don't need Universal Binary
 
-$(LOCAL_BIN)/$(PKGCONFIG): $(PKGCONFIG_DIR)/$(PKGCONFIG)
+$(PREFIX_BIN)/$(PKGCONFIG): $(PKGCONFIG_DIR)/$(PKGCONFIG)
 	@echo
 	@echo INSTALLING PKGCONFIG...
 	@echo
@@ -377,7 +379,7 @@ $(PKGCONFIG_DIR)/Makefile: | $(PKGCONFIG_DIR)/configure
 	@echo
 	@echo CONFIGURING PKGCONFIG...
 	@echo
-	cd $(PKGCONFIG_DIR) && ./configure --prefix=$(LOCAL) --disable-dependency-tracking
+	cd $(PKGCONFIG_DIR) && ./configure --prefix=$(PREFIX) --disable-dependency-tracking
 	
 $(PKGCONFIG_DIR)/configure: | $(PKGCONFIG_DIR).tar.gz
 	@echo
