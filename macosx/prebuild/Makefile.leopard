@@ -52,7 +52,7 @@ PANGO_DIR=$(call dirname, $(PANGO_URL))
 # -arch to build 32-bit/64-bit Universal Binaries
 # pkgconfig to look for X11 libraries too
 
-BASE_CONFIG=--prefix=$(LOCAL) --disable-dependency-tracking --enable-static=yes --enable-shared=no PKG_CONFIG="$(LOCAL_BIN)/pkg-config" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig"
+BASE_CONFIG=--prefix=$(LOCAL) --disable-dependency-tracking --enable-static=yes --enable-shared=no PKG_CONFIG="$(LOCAL_BIN)/pkg-config" PKG_CONFIG_PATH="$(LOCAL)/lib/pkgconfig:/usr/X11/lib/pkgconfig"
 FLAG_CONFIG=CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64" LDFLAGS="-arch ppc -arch i386 -arch ppc64" 
 
 install: $(LOCAL_LIB)/$(PANGO) $(LOCAL_LIB)/$(GD)
