@@ -27,6 +27,8 @@
 #include "assert.h"
 #include "hier.h"
 #include "topfisheyeview.h"
+static void get_temp_coords(topview* t,int level,int v,double* coord_x,double* coord_y);
+static int get_temp_coords2(topview* t,int level,int v,double* coord_x,double* coord_y,float *R,float *G,float *B);
 
 static double dist(double x1, double y1, double x2, double y2)
 {
@@ -261,7 +263,7 @@ void prepare_topological_fisheye(topview* t)
 
 void printalllevels(topview* t)
 {
-    int level, v, i, n;
+    int level, v;
     Hierarchy *hp = t->h;
     glPointSize(5);
     glBegin(GL_POINTS);
@@ -446,7 +448,7 @@ void get_temp_coords(topview* t,int level,int v,double* coord_x,double* coord_y)
 {
     Hierarchy *hp = t->h;
 	ex_vtx_data *gg = hp->geom_graphs[level];
-	v_data *g = hp->graphs[level];
+	/* v_data *g = hp->graphs[level]; */
 	/*TEMP*/t->animate=0;/*TEMP*/
 	if (!t->animate)	
 	{
