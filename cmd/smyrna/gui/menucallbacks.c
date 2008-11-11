@@ -316,6 +316,13 @@ void mFdpSlot(GtkWidget * widget, gpointer user_data)
     mSlot (widget, user_data, GVK_FDP, 0);
 }
 
+void mSfdpSlot(GtkWidget * widget, gpointer user_data)
+{
+    mSlot (widget, user_data, GVK_SFDP, 0);
+}
+
+
+
 //select
 void mSelectAllSlot(GtkWidget * widget, gpointer user_data)
 {

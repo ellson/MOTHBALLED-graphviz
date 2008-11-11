@@ -268,16 +268,18 @@ void preparetopview(Agraph_t * g, topview * t)
 
 static float set_gl_dot_size(topview * t)
 {
-	float dotsize;
+	GLfloat a;
+	static float dotsize;
+	static float prevdotsize;
 	if (view->active_camera==-1)
-		dotsize = GL_DOTSIZE_CONSTANT / view->zoom;
+		dotsize = (float)GL_DOTSIZE_CONSTANT / view->zoom;
 	else
-		dotsize = GL_DOTSIZE_CONSTANT / view->cameras[view->active_camera]->r*-1;
+		dotsize = (float)GL_DOTSIZE_CONSTANT / view->cameras[view->active_camera]->r*(float)-1;
 
 //	dotsize=dotsize * DOT_SIZE_CORRECTION_FAC;
-	if (dotsize <=1)
-		dotsize=1;
-	glPointSize(dotsize);
+	if (dotsize <=1.2)
+		dotsize=1.2;
+	glPointSize((GLfloat)dotsize);
 	return dotsize;
 
 }
@@ -295,6 +297,7 @@ static int begintopviewnodes(Agraph_t* g)
 	{
 	case 0:
 		set_gl_dot_size(view->Topview);		
+		glEnable(GL_POINT_SMOOTH);
 		glBegin(GL_POINTS);
 		break;
 	case 1:
@@ -352,6 +355,7 @@ static int endtopviewnodes(Agraph_t* g)
 	{
 	case 0:
 		glEnd();
+		glDisable(GL_POINT_SMOOTH);
 		break;
 	case 1:
 		break;
@@ -392,7 +396,7 @@ static int drawtopviewnodes(Agraph_t * g)
 		float zdepth;
 		v = &view->Topview->Nodes[ind];
 		if (!node_visible(v->Node))
-		    break;
+		    continue;
 
 		select_topview_node(v);
 		//UPDATE view->Topview data from cgraph

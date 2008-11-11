@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.3 on Mon Nov 10 14:54:28 2008 -->
+<!--Generated with glade3 3.4.3 on Tue Nov 11 10:24:15 2008 -->
 <glade-interface>
   <widget class="GtkWindow" id="frmObject">
     <property name="width_request">470</property>
@@ -1088,6 +1088,17 @@ topview</property>
                         <property name="label" translatable="yes">Fdp</property>
                         <property name="icon">lfdp.png</property>
                         <signal name="clicked" handler="mFdpSlot"/>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkToolButton" id="toolbutton24">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Sfdp</property>
+                        <property name="icon">lfdp.png</property>
+                        <signal name="clicked" handler="mSfdpSlot"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>

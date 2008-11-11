@@ -24,7 +24,8 @@
 void btnToolSingleSelect_clicked(GtkWidget * widget, gpointer user_data)
 {
     deselect_all(view->g[view->activeGraph]);
-    switch_Mouse(NULL, 3);
+	//gtk_toggle_tool_button_set_active   ((GtkToggleToolButton*)widget,1);
+	switch_Mouse(NULL, 3);
 }
 
 void btnToolRectSelect_clicked(GtkWidget * widget, gpointer user_data)

@@ -58,6 +58,7 @@ _BB void mNeatoSlot(GtkWidget * widget, gpointer user_data);
 _BB void mTwopiSlot(GtkWidget * widget, gpointer user_data);
 _BB void mCircoSlot(GtkWidget * widget, gpointer user_data);
 _BB void mFdpSlot(GtkWidget * widget, gpointer user_data);
+_BB void mSfdpSlot(GtkWidget * widget, gpointer user_data);
 
 //select
 _BB void mSelectAllSlot(GtkWidget * widget, gpointer user_data);

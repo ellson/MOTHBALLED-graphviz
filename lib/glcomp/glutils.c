@@ -30,7 +30,8 @@ int GetFixedOGLPos(int x, int y, float kts, GLfloat * X, GLfloat * Y,
     GLfloat winX, winY;
     GLdouble posX, posY, posZ;
 
-    glBegin(GL_POINTS);
+	glColor4f(0,0,0,0.001);
+	glBegin(GL_POINTS);
     glVertex3f(10.00, 10.00, 1.00);
     glEnd();
 	
@@ -73,7 +74,9 @@ int GetOGLPosRef(int x, int y, float *X, float *Y, float *Z)
     glGetIntegerv(GL_VIEWPORT, viewport);
 
     //draw a point  to a not important location to get window coordinates
-    glBegin(GL_POINTS);
+	glColor4f(0,0,0,0.001);
+
+	glBegin(GL_POINTS);
     glVertex3f(10.00, 10.00, 0.00);
     glEnd();
     gluProject(10.0, 10.0, 0.00, modelview, projection, viewport, &wwinX,
@@ -118,6 +121,8 @@ float GetOGLDistance(int l)
     glGetIntegerv(GL_VIEWPORT, viewport);
 
     //draw a point  to a not important location to get window coordinates
+	glColor4f(0,0,0,0.001);
+
 	glBegin(GL_POINTS);
     glVertex3f(10.00, 10.00, 1.00);
     glEnd();
@@ -156,6 +161,7 @@ int GetFixedOGLPoslocal(int x, int y, float kts, GLfloat * X, GLfloat * Y,
     glGetDoublev(GL_PROJECTION_MATRIX, projection);
     glGetIntegerv(GL_VIEWPORT, viewport);
 
+	glColor4f(0,0,0,0.001);
 	glBegin(GL_POINTS);
     glVertex3f(10.00, 10.00, 0.00);
     glEnd();

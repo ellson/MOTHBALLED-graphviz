@@ -237,7 +237,8 @@ typedef enum {
     GVK_NEATO,
     GVK_TWOPI,
     GVK_CIRCO,
-    GVK_FDP   /* keep last */
+    GVK_FDP,   
+	GVK_SFDP/* keep last */
 } gvk_layout;
 
 typedef struct _attribute {

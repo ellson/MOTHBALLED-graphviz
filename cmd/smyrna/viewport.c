@@ -662,6 +662,9 @@ static char* create_xdot_for_graph(Agraph_t * graph, int keeppos)
 	case GVK_FDP :
 	    alg = " -Kfdp";
 	    break;
+	case GVK_SFDP :
+	    alg = " -Ksfdp";
+	    break;
 	default :
 	    /* can't happen */
 	    break;
