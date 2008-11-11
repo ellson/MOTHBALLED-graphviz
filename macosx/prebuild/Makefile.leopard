@@ -43,7 +43,7 @@ PANGO_DIR=$(call dirname, $(PANGO_URL))
 #
 # target
 #
-# --prefix to dump results into usr/local not /usr/local
+# --prefix to dump results into $(PREFIX) not /usr/local
 # --disable-dependency-tracking since this is one-off build
 # --enable-static=yes since this builds static libraries
 # --enable-shared=no since this doesn't build dynamic libraries

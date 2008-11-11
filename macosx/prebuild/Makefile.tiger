@@ -12,6 +12,8 @@ PKGCONFIG_URL=http://pkgconfig.freedesktop.org/releases/pkg-config-0.23.tar.gz
 #LIBPNG_URL=ftp://ftp.simplesystems.org/pub/png/src/libpng-1.2.29.tar.gz
 LIBPNG_URL=http://prdownloads.sourceforge.net/libpng/libpng-1.2.31.tar.gz
 GD_URL=http://www.libgd.org/releases/gd-2.0.35.tar.gz
+FREETYPE_URL=http://download.savannah.gnu.org/releases/freetype/freetype-2.3.7.tar.gz
+FONTCONFIG_URL=http://fontconfig.org/release/fontconfig-2.6.0.tar.gz
 #PIXMAN_URL=http://cairographics.org/releases/pixman-0.10.0.tar.gz
 #CAIRO_URL=http://cairographics.org/releases/cairo-1.6.4.tar.gz
 PIXMAN_URL=http://cairographics.org/releases/pixman-0.12.0.tar.gz
@@ -21,12 +23,16 @@ GETTEXT_URL=ftp://mirrors.kernel.org/gnu/gettext/gettext-0.17.tar.gz
 GLIB_URL=http://ftp.gnome.org/pub/GNOME/sources/glib/2.18/glib-2.18.2.tar.gz
 #PANGO_URL=http://ftp.gnome.org/pub/GNOME/sources/pango/1.20/pango-1.20.2.tar.gz
 PANGO_URL=http://ftp.gnome.org/pub/GNOME/sources/pango/1.22/pango-1.22.1.tar.gz
+LIBXML2_URL=ftp://xmlsoft.org/libxml2/libxml2-2.7.2.tar.gz
 
 # libraries
 
 PKGCONFIG=pkg-config
 LIBPNG=libpng.la
 LIBICONV=libiconv.la
+FREETYPE=libfreetype.la
+FONTCONFIG=libfontconfig.la
+LIBXML2=libxml2.la
 GD=libgd.la
 PIXMAN=libpixman-1.la
 CAIRO=libcairo.la
@@ -38,6 +44,8 @@ PANGO=libpango-1.0.la
 dirname=$(basename $(basename $(notdir $(1))))
 PKGCONFIG_DIR=$(call dirname, $(PKGCONFIG_URL))
 LIBPNG_DIR=$(call dirname, $(LIBPNG_URL))
+FREETYPE_DIR=$(call dirname, $(FREETYPE_URL))
+FONTCONFIG_DIR=$(call dirname, $(FONTCONFIG_URL))
 GD_DIR=$(call dirname, $(GD_URL))
 PIXMAN_DIR=$(call dirname, $(PIXMAN_URL))
 CAIRO_DIR=$(call dirname, $(CAIRO_URL))
@@ -45,6 +53,7 @@ LIBICONV_DIR=$(call dirname, $(LIBICONV_URL))
 GETTEXT_DIR=$(call dirname, $(GETTEXT_URL))
 GLIB_DIR=$(call dirname, $(GLIB_URL))
 PANGO_DIR=$(call dirname, $(PANGO_URL))
+LIBXML2_DIR=$(call dirname, $(LIBXML2_URL))
 
 #
 # target
@@ -58,7 +67,8 @@ PANGO_DIR=$(call dirname, $(PANGO_URL))
 # pkgconfig to look for X11 libraries too
 
 BASE_CONFIG=--prefix=$(PREFIX) --disable-dependency-tracking --enable-static=yes --enable-shared=no PKG_CONFIG="$(PREFIX)/bin/pkg-config" PKG_CONFIG_PATH="$(PREFIX)/lib/pkgconfig:/usr/X11/lib/pkgconfig:/usr/X11R6/lib/pkgconfig"
-FLAG_CONFIG=CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64" LDFLAGS="-arch ppc -arch i386 -arch ppc64" 
+#FLAG_CONFIG=CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64" LDFLAGS="-arch ppc -arch i386 -arch ppc64" 
+FLAG_CONFIG=CFLAGS="-O2 -arch i386" LDFLAGS="-arch i386" 
 
 install: $(PREFIX)/lib/$(PANGO) $(PREFIX)/lib/$(GD)
 
@@ -66,34 +76,43 @@ uninstall:
 	$(MAKE) -C $(PANGO_DIR) uninstall
 	$(MAKE) -C $(GLIB_DIR) uninstall
 	$(MAKE) -C $(GETTEXT_DIR) uninstall
+	$(MAKE) -C $(FREETYPE_DIR) uninstall
+	$(MAKE) -C $(FONTCONFIG_DIR) uninstall
 	$(MAKE) -C $(LIBICONV_DIR) uninstall
 	$(MAKE) -C $(CAIRO_DIR) uninstall
 	$(MAKE) -C $(PIXMAN_DIR) uninstall
 	$(MAKE) -C $(GD_DIR) uninstall
 	$(MAKE) -C $(LIBPNG_DIR) uninstall
 	$(MAKE) -C $(PKGCONFIG_DIR) uninstall
+	$(MAKE) -C $(LIBXML2_DIR) uninstall
 	
 clean:
 	$(MAKE) -C $(PANGO_DIR) clean
 	$(MAKE) -C $(GLIB_DIR) clean
 	$(MAKE) -C $(GETTEXT_DIR) clean
+	$(MAKE) -C $(FREETYPE_DIR) clean
+	$(MAKE) -C $(FONTCONFIG_DIR) clean
 	$(MAKE) -C $(LIBICONV_DIR) clean
 	$(MAKE) -C $(CAIRO_DIR) clean
 	$(MAKE) -C $(PIXMAN_DIR) clean
 	$(MAKE) -C $(GD_DIR) clean
 	$(MAKE) -C $(LIBPNG_DIR) clean
 	$(MAKE) -C $(PKGCONFIG_DIR) clean
+	$(MAKE) -C $(LIBXML2_DIR) clean
 	
 distclean:
 	$(MAKE) -C $(PANGO_DIR) distclean
 	$(MAKE) -C $(GLIB_DIR) distclean
 	$(MAKE) -C $(GETTEXT_DIR) distclean
+	$(MAKE) -C $(FREETYPE_DIR) distclean
+	$(MAKE) -C $(FONTCONFIG_DIR) distclean
 	$(MAKE) -C $(LIBICONV_DIR) distclean
 	$(MAKE) -C $(CAIRO_DIR) distclean
 	$(MAKE) -C $(PIXMAN_DIR) distclean
 	$(MAKE) -C $(GD_DIR) distclean
 	$(MAKE) -C $(LIBPNG_DIR) distclean
 	$(MAKE) -C $(PKGCONFIG_DIR) distclean
+	$(MAKE) -C $(LIBXML2_DIR) distclean
 
 #
 # pango
@@ -101,7 +120,7 @@ distclean:
 # --with-included-modules=yes to embed pango modules within pango itself
 # link also to CoreFoundation and CoreServices because of gettext dependency
 
-$(PREFIX)/lib/$(PANGO): $(PANGO_DIR)/pango/$(PANGO)
+$(PREFIX)/lib/$(PANGO): $(PANGO_DIR)/pango/$(PANGO) 
 	@echo
 	@echo INSTALLING PANGO...
 	@echo
@@ -114,7 +133,7 @@ $(PANGO_DIR)/pango/$(PANGO): $(PANGO_DIR)/Makefile
 	if [[ -e $@ ]]; then $(MAKE) -C $(PANGO_DIR) clean; fi && \
 	PATH=$(PATH):$(PREFIX)/bin $(MAKE) -C $(PANGO_DIR)
 	
-$(PANGO_DIR)/Makefile: $(PREFIX)/lib/$(CAIRO) $(PREFIX)/lib/$(GLIB) | $(PREFIX)/bin/$(PKGCONFIG) $(PANGO_DIR)/configure
+$(PANGO_DIR)/Makefile: $(PREFIX)/lib/$(CAIRO) $(PREFIX)/lib/$(GLIB) $(PREFIX)/lib/$(FONTCONFIG) | $(PREFIX)/bin/$(PKGCONFIG) $(PANGO_DIR)/configure
 	@echo
 	@echo CONFIGURING PANGO...
 	@echo
@@ -131,6 +150,111 @@ $(PANGO_DIR).tar.gz:
 	@echo TRANSFERRING PANGO...
 	@echo
 	$(CURL) --remote-name --location $(PANGO_URL) || rm -f $(PANGO_DIR).tar.gz
+
+#
+# freetype
+#
+
+$(PREFIX)/lib/$(FREETYPE): $(FREETYPE_DIR)/objs/$(FREETYPE)
+	@echo
+	@echo INSTALLING FREETYPE...
+	@echo
+	$(MAKE) -C $(FREETYPE_DIR) install
+
+$(FREETYPE_DIR)/objs/$(FREETYPE): $(FREETYPE_DIR)/Makefile
+	@echo
+	@echo MAKING FREETYPE...
+	@echo
+	if [[ -e $@ ]]; then $(MAKE) -C $(FREETYPE_DIR) clean; fi && \
+	PATH=$(PATH):$(PREFIX)/bin $(MAKE) -C $(FREETYPE_DIR)
+	
+$(FREETYPE_DIR)/Makefile: | $(PREFIX)/bin/$(PKGCONFIG) $(FREETYPE_DIR)/configure
+	@echo
+	@echo CONFIGURING FREETYPE...
+	@echo
+	cd $(FREETYPE_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG)
+
+$(FREETYPE_DIR)/configure: | $(FREETYPE_DIR).tar.gz
+	@echo
+	@echo UNTARRING FREETYPE...
+	@echo
+	$(TAR) xzf $|
+		
+$(FREETYPE_DIR).tar.gz:
+	@echo
+	@echo TRANSFERRING FREETYPE...
+	@echo
+	$(CURL) --remote-name --location $(FREETYPE_URL) || rm -f $(FREETYPE_DIR).tar.gz
+
+#
+# fontconfig
+#
+
+$(PREFIX)/lib/$(FONTCONFIG): $(FONTCONFIG_DIR)/objs/$(FONTCONFIG)
+	@echo
+	@echo INSTALLING FONTCONFIG...
+	@echo
+	$(MAKE) -C $(FONTCONFIG_DIR) install
+
+$(FONTCONFIG_DIR)/objs/$(FONTCONFIG): $(FONTCONFIG_DIR)/Makefile
+	@echo
+	@echo MAKING FONTCONFIG...
+	@echo
+	if [[ -e $@ ]]; then $(MAKE) -C $(FONTCONFIG_DIR) clean; fi && \
+	PATH=$(PATH):$(PREFIX)/bin $(MAKE) -C $(FONTCONFIG_DIR)
+	
+$(FONTCONFIG_DIR)/Makefile: $(PREFIX)/lib/$(LIBXML2) $(PREFIX)/lib/$(FREETYPE) | $(PREFIX)/bin/$(PKGCONFIG) $(FONTCONFIG_DIR)/configure
+	@echo
+	@echo CONFIGURING FONTCONFIG...
+	@echo
+	cd $(FONTCONFIG_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG)
+
+$(FONTCONFIG_DIR)/configure: | $(FONTCONFIG_DIR).tar.gz
+	@echo
+	@echo UNTARRING FONTCONFIG...
+	@echo
+	$(TAR) xzf $|
+		
+$(FONTCONFIG_DIR).tar.gz:
+	@echo
+	@echo TRANSFERRING FONTCONFIG...
+	@echo
+	$(CURL) --remote-name --location $(FONTCONFIG_URL) || rm -f $(FONTCONFIG_DIR).tar.gz
+
+#
+# libxml2
+#
+
+$(PREFIX)/lib/$(LIBXML2): $(LIBXML2_DIR)/$(LIBXML2)
+	@echo
+	@echo INSTALLING LIBXML2...
+	@echo
+	$(MAKE) -C $(LIBXML2_DIR) install
+
+$(LIBXML2_DIR)/$(LIBXML2): $(LIBXML2_DIR)/Makefile
+	@echo
+	@echo MAKING LIBXML2...
+	@echo
+	if [[ -e $@ ]]; then $(MAKE) -C $(LIBXML2_DIR) clean; fi && \
+	PATH=$(PATH):$(PREFIX)/bin $(MAKE) -C $(LIBXML2_DIR)
+	
+$(LIBXML2_DIR)/Makefile: | $(PREFIX)/bin/$(PKGCONFIG) $(LIBXML2_DIR)/configure
+	@echo
+	@echo CONFIGURING LIBXML2...
+	@echo
+	cd $(LIBXML2_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG)
+
+$(LIBXML2_DIR)/configure: | $(LIBXML2_DIR).tar.gz
+	@echo
+	@echo UNTARRING LIBXML2...
+	@echo
+	$(TAR) xzf $|
+		
+$(LIBXML2_DIR).tar.gz:
+	@echo
+	@echo TRANSFERRING LIBXML2...
+	@echo
+	$(CURL) --remote-name --location $(LIBXML2_URL) || rm -f $(LIBXML2_DIR).tar.gz
 
 #
 # glib
