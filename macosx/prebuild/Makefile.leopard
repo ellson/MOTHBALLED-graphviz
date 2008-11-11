@@ -4,16 +4,12 @@ CURL=curl
 MAKE=make
 TAR=tar
 
-PREFIX=$(HOME)/FIX/leopard
-PREFIX_INCLUDE=$(PREFIX)/include
-PREFIX_LIB=$(PREFIX)/lib
-PREFIX_BIN=$(PREFIX)/bin
-
 # package URL
 
 PKGCONFIG_URL=http://pkgconfig.freedesktop.org/releases/pkg-config-0.23.tar.gz
 GD_URL=http://www.libgd.org/releases/gd-2.0.35.tar.gz
-PIXMAN_URL=http://cairographics.org/releases/pixman-0.10.0.tar.gz
+#PIXMAN_URL=http://cairographics.org/releases/pixman-0.10.0.tar.gz
+PIXMAN_URL=http://cairographics.org/releases/pixman-0.12.0.tar.gz
 CAIRO_URL=http://cairographics.org/releases/cairo-1.6.4.tar.gz
 #CAIRO_URL=http://cairographics.org/releases/cairo-1.8.0.tar.gz
 #CAIRO_URL=http://cairographics.org/releases/cairo-1.8.2.tar.gz
@@ -54,10 +50,10 @@ PANGO_DIR=$(call dirname, $(PANGO_URL))
 # -arch to build 32-bit/64-bit Universal Binaries
 # pkgconfig to look for X11 libraries too
 
-BASE_CONFIG=--prefix=$(PREFIX) --disable-dependency-tracking --enable-static=yes --enable-shared=no PKG_CONFIG="$(PREFIX_BIN)/pkg-config" PKG_CONFIG_PATH="$(PREFIX)/lib/pkgconfig:/usr/X11/lib/pkgconfig"
+BASE_CONFIG=--prefix=$(PREFIX) --disable-dependency-tracking --enable-static=yes --enable-shared=no PKG_CONFIG="$(PREFIX)/bin/pkg-config" PKG_CONFIG_PATH="$(PREFIX)/lib/pkgconfig:/usr/X11/lib/pkgconfig"
 FLAG_CONFIG=CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64" LDFLAGS="-arch ppc -arch i386 -arch ppc64" 
 
-install: $(PREFIX_LIB)/$(PANGO) $(PREFIX_LIB)/$(GD)
+install: $(PREFIX)/lib/$(PANGO) $(PREFIX)/lib/$(GD)
 
 uninstall:
 	$(MAKE) -C $(PANGO_DIR) uninstall
@@ -92,7 +88,7 @@ distclean:
 # --with-included-modules=yes to embed pango modules within pango itself
 # link also to CoreFoundation and CoreServices because of gettext dependency
 
-$(PREFIX_LIB)/$(PANGO): $(PANGO_DIR)/pango/$(PANGO)
+$(PREFIX)/lib/$(PANGO): $(PANGO_DIR)/pango/$(PANGO)
 	@echo
 	@echo INSTALLING PANGO...
 	@echo
@@ -103,9 +99,9 @@ $(PANGO_DIR)/pango/$(PANGO): $(PANGO_DIR)/Makefile
 	@echo MAKING PANGO...
 	@echo
 	if [[ -e $@ ]]; then $(MAKE) -C $(PANGO_DIR) clean; fi && \
-	PATH=$(PATH):$(PREFIX_BIN) $(MAKE) -C $(PANGO_DIR)
+	PATH=$(PATH):$(PREFIX)/bin $(MAKE) -C $(PANGO_DIR)
 	
-$(PANGO_DIR)/Makefile: $(PREFIX_LIB)/$(CAIRO) $(PREFIX_LIB)/$(GLIB) | $(PREFIX_BIN)/$(PKGCONFIG) $(PANGO_DIR)/configure
+$(PANGO_DIR)/Makefile: $(PREFIX)/lib/$(CAIRO) $(PREFIX)/lib/$(GLIB) | $(PREFIX)/bin/$(PKGCONFIG) $(PANGO_DIR)/configure
 	@echo
 	@echo CONFIGURING PANGO...
 	@echo
@@ -131,7 +127,7 @@ $(PANGO_DIR).tar.gz:
 # run configure once for each architecture, capturing config.h and glibconfig.h
 # run configure again for Universal Binary, recomposing config.h and glibconfig.h from captured versions
 
-$(PREFIX_LIB)/$(GLIB): $(GLIB_DIR)/glib/$(GLIB)
+$(PREFIX)/lib/$(GLIB): $(GLIB_DIR)/glib/$(GLIB)
 	@echo
 	@echo INSTALLING GLIB...
 	@echo
@@ -144,7 +140,7 @@ $(GLIB_DIR)/glib/$(GLIB): $(GLIB_DIR)/Makefile
 	if [[ -e $@ ]]; then $(MAKE) -C $(GLIB_DIR) clean; fi && \
 	$(MAKE) -C $(GLIB_DIR)
 	
-$(GLIB_DIR)/Makefile: $(PREFIX_LIB)/$(INTL) | $(PREFIX_BIN)/$(PKGCONFIG) $(GLIB_DIR)/configure 
+$(GLIB_DIR)/Makefile: $(PREFIX)/lib/$(INTL) | $(PREFIX)/bin/$(PKGCONFIG) $(GLIB_DIR)/configure 
 	@echo
 	@echo CONFIGURING GLIB...
 	@echo
@@ -159,29 +155,29 @@ $(GLIB_DIR)/Makefile: $(PREFIX_LIB)/$(INTL) | $(PREFIX_BIN)/$(PKGCONFIG) $(GLIB_
 	echo "ac_cv_func_posix_getgrgid_r=yes" >>darwin.cache && \
 	echo "ac_cv_func_vsnprintf_c99=yes" >>darwin.cache && \
 	echo "ac_cv_func_printf_unix98=yes" >>darwin.cache && \
-	PATH=$(PREFIX_BIN):gobject:$$PATH && \
+	PATH=$(PREFIX)/bin:gobject:$$PATH && \
 	echo --- GLIB-GENMARSHAL PASS --- && \
-	./configure $(BASE_CONFIG) CFLAGS="-I$(PREFIX_INCLUDE)" LDFLAGS="-L$(PREFIX_LIB)" && \
+	./configure $(BASE_CONFIG) CFLAGS="-I$(PREFIX)/include" LDFLAGS="-L$(PREFIX)/lib" && \
 	$(MAKE) -C glib && \
 	$(MAKE) -C gobject glib-genmarshal && \
 	cp darwin.cache darwinian.cache && \
 	echo --- PPC PASS --- && \
-	./configure --cache-file=darwinian.cache --build=$$BUILD --host=powerpc-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch ppc -I$(PREFIX_INCLUDE)" LDFLAGS="-arch ppc -L$(PREFIX_LIB)" && \
+	./configure --cache-file=darwinian.cache --build=$$BUILD --host=powerpc-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch ppc -I$(PREFIX)/include" LDFLAGS="-arch ppc -L$(PREFIX)/lib" && \
 	cp config.h config.ppc.h && \
 	cp glibconfig.h glibconfig.ppc.h && \
 	cp darwin.cache darwinian.cache && \
 	echo --- I386 PASS --- && \
-	./configure --cache-file=darwinian.cache --build=$$BUILD --host=i686-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch i386 -I$(PREFIX_INCLUDE)" LDFLAGS="-arch i386 -L$(PREFIX_LIB)" && \
+	./configure --cache-file=darwinian.cache --build=$$BUILD --host=i686-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch i386 -I$(PREFIX)/include" LDFLAGS="-arch i386 -L$(PREFIX)/lib" && \
 	cp config.h config.i386.h && \
 	cp glibconfig.h glibconfig.i386.h && \
 	cp darwin.cache darwinian.cache && \
 	echo --- PPC64 PASS --- && \
-	./configure --cache-file=darwinian.cache --build=$$BUILD --host=powerpc-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch ppc64 -I$(PREFIX_INCLUDE)" LDFLAGS="-arch ppc64 -L$(PREFIX_LIB)" && \
+	./configure --cache-file=darwinian.cache --build=$$BUILD --host=powerpc-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch ppc64 -I$(PREFIX)/include" LDFLAGS="-arch ppc64 -L$(PREFIX)/lib" && \
 	cp config.h config.ppc64.h && \
 	cp glibconfig.h glibconfig.ppc64.h && \
 	cp darwin.cache darwinian.cache && \
 	echo --- UNIVERSAL BINARY PASS --- && \
-	./configure $(BASE_CONFIG) CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -I$(PREFIX_INCLUDE)" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -L$(PREFIX_LIB)" && \
+	./configure $(BASE_CONFIG) CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -I$(PREFIX)/include" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -L$(PREFIX)/lib" && \
 	rm config.h && \
 	echo "#if defined(__ppc__)" >>config.h && \
 	cat config.ppc.h >>config.h && \
@@ -217,7 +213,7 @@ $(GLIB_DIR).tar.gz:
 # gettext
 #
 
-$(PREFIX_LIB)/$(INTL): $(GETTEXT_DIR)/gettext-runtime/intl/$(INTL)
+$(PREFIX)/lib/$(INTL): $(GETTEXT_DIR)/gettext-runtime/intl/$(INTL)
 	@echo
 	@echo INSTALLING GETTEXT...
 	@echo
@@ -254,7 +250,7 @@ $(GETTEXT_DIR).tar.gz:
 # patch to fence missing ATSUI API in 64-bit
 # patch to require pixman-1 in linking
 
-$(PREFIX_LIB)/$(CAIRO): $(CAIRO_DIR)/src/$(CAIRO)
+$(PREFIX)/lib/$(CAIRO): $(CAIRO_DIR)/src/$(CAIRO)
 	@echo
 	@echo INSTALLING CAIRO...
 	@echo
@@ -267,7 +263,7 @@ $(CAIRO_DIR)/src/$(CAIRO): $(CAIRO_DIR)/Makefile
 	if [[ -e $@ ]]; then $(MAKE) -C $(CAIRO_DIR) clean; fi && \
 	$(MAKE) -C $(CAIRO_DIR)
 	
-$(CAIRO_DIR)/Makefile: $(PREFIX_LIB)/$(PIXMAN) | $(PREFIX_BIN)/$(PKGCONFIG) $(CAIRO_DIR)/configure
+$(CAIRO_DIR)/Makefile: $(PREFIX)/lib/$(PIXMAN) | $(PREFIX)/bin/$(PKGCONFIG) $(CAIRO_DIR)/configure
 	@echo
 	@echo CONFIGURING CAIRO...
 	@echo
@@ -291,7 +287,7 @@ $(CAIRO_DIR).tar.gz:
 # patch to detect endianness, MMX, SSE and SSE2 during Universal Binary build
 # omit -O2 since it bombs Apple gcc
 
-$(PREFIX_LIB)/$(PIXMAN): $(PIXMAN_DIR)/pixman/$(PIXMAN)
+$(PREFIX)/lib/$(PIXMAN): $(PIXMAN_DIR)/pixman/$(PIXMAN)
 	@echo
 	@echo INSTALLING PIXMAN...
 	@echo
@@ -304,7 +300,7 @@ $(PIXMAN_DIR)/pixman/$(PIXMAN): $(PIXMAN_DIR)/Makefile
 	if [[ -e $@ ]]; then $(MAKE) -C $(PIXMAN_DIR) clean; fi && \
 	$(MAKE) -C $(PIXMAN_DIR)
 	
-$(PIXMAN_DIR)/Makefile: | $(PREFIX_BIN)/$(PKGCONFIG) $(PIXMAN_DIR)/configure 
+$(PIXMAN_DIR)/Makefile: | $(PREFIX)/bin/$(PKGCONFIG) $(PIXMAN_DIR)/configure 
 	@echo
 	@echo CONFIGURING PIXMAN...
 	@echo
@@ -314,7 +310,8 @@ $(PIXMAN_DIR)/configure: | $(PIXMAN_DIR).tar.gz
 	@echo
 	@echo UNTARRING PIXMAN...
 	@echo
-	$(TAR) xzf $| && (cd ${PIXMAN_DIR}; patch -p1 <../pixman.patch)
+#	$(TAR) xzf $| && (cd ${PIXMAN_DIR}; patch -p1 <../pixman.patch)
+	$(TAR) xzf $|
 	
 $(PIXMAN_DIR).tar.gz:
 	@echo
@@ -326,7 +323,7 @@ $(PIXMAN_DIR).tar.gz:
 # gd
 #
 
-$(PREFIX_LIB)/$(GD): $(GD_DIR)/$(GD)
+$(PREFIX)/lib/$(GD): $(GD_DIR)/$(GD)
 	@echo
 	@echo INSTALLING GD...
 	@echo
@@ -362,7 +359,7 @@ $(GD_DIR).tar.gz:
 #
 # only needed during build, don't need Universal Binary
 
-$(PREFIX_BIN)/$(PKGCONFIG): $(PKGCONFIG_DIR)/$(PKGCONFIG)
+$(PREFIX)/bin/$(PKGCONFIG): $(PKGCONFIG_DIR)/$(PKGCONFIG)
 	@echo
 	@echo INSTALLING PKGCONFIG...
 	@echo
