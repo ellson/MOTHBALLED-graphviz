@@ -4,6 +4,8 @@ CURL=curl
 MAKE=make
 TAR=tar
 
+PREFIX=$(HOME)/FIX/tiger
+
 # package URL
 
 PKGCONFIG_URL=http://pkgconfig.freedesktop.org/releases/pkg-config-0.23.tar.gz
@@ -259,13 +261,13 @@ $(GETTEXT_DIR).tar.gz:
 # libiconv
 #
 
-$(PREFIX)/lib/$(LIBICONV): $(LIBICONV_DIR)/$(LIBICONV)
+$(PREFIX)/lib/$(LIBICONV): $(LIBICONV_DIR)/lib/$(LIBICONV)
 	@echo
 	@echo INSTALLING LIBICONV...
 	@echo
 	$(MAKE) -C $(LIBICONV_DIR) install
 	
-$(LIBICONV_DIR)/$(LIBICONV): $(LIBICONV_DIR)/Makefile
+$(LIBICONV_DIR)/lib/$(LIBICONV): $(LIBICONV_DIR)/Makefile
 	@echo
 	@echo MAKING LIBICONV...
 	@echo
