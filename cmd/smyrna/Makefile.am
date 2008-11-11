@@ -13,14 +13,14 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/cmd/smyrna/gui \
 	$(GTK_CFLAGS) $(GTKGLEXT_CFLAGS) $(GLADE_CFLAGS) $(FREETYPE2_CFLAGS) $(FONTCONFIG_CFLAGS) $(GTS_CFLAGS)
 
-if WITH_SMYRNA
 noinst_HEADERS = btree.h draw.h filter.h glexpose.h glmotion.h gltemplate.h \
 	hier.h materials.h selection.h smyrnadefs.h support.h topview.h \
 	topviewdata.h topviewdefs.h trackball.h tvnodes.h viewport.h \
 	topfisheyeview.h viewportcamera.h \
 	gui/callbacks.h gui/datalistcallbacks.h gui/filterscallbacks.h \
 	gui/glmenu.h gui/gui.h gui/menucallbacks.h gui/toolboxcallbacks.h \
-	gui/topviewsettings.h
+	gui/topviewsettings.h gui/beacon.h
+if WITH_SMYRNA
 bin_PROGRAMS = smyrna
 endif
 
