@@ -2998,7 +2998,6 @@ AC_CONFIG_FILES(Makefile
 	rtest/Makefile
 	share/Makefile
 	share/examples/Makefile
-	share/icons/Makefile
 	share/gui/Makefile
 	graphviz.spec
 	debian/control

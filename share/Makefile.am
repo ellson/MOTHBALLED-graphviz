@@ -1,3 +1,3 @@
-SUBDIRS = examples  gui  icons
+SUBDIRS = examples  gui
 
 EXTRA_DIST = fonts
