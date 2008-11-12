@@ -701,8 +701,8 @@ int init_nop(Agraph_t * g, int adjust)
 	node_t *n;
 	State = GVSPLINES;
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	    ND_coord(n).x = POINTS(ND_pos(n)[0]);
-	    ND_coord(n).y = POINTS(ND_pos(n)[1]);
+	    ND_coord(n).x = POINTS_PER_INCH * (ND_pos(n)[0]);
+	    ND_coord(n).y = POINTS_PER_INCH * (ND_pos(n)[1]);
 	}
     }
     else if (posEdges != AllEdges)
@@ -1377,7 +1377,7 @@ static void addZ (Agraph_t* g)
 
     if ((Ndim >= 3) && N_z) { 
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	    sprintf(buf, "%d", POINTS(ND_pos(n)[2]));
+	    sprintf(buf, "%lf", POINTS_PER_INCH * (ND_pos(n)[2]));
 #ifndef WITH_CGRAPH
 	    agxset(n, N_z->index, buf);
 #else /* WITH_CGRAPH */

@@ -1010,10 +1010,10 @@ static void scaleEdge(edge_t * e, double xf, double yf)
     bezier *bez;
     pointf delh, delt;
 
-    delh.x = POINTS(ND_pos(aghead(e))[0] * (xf - 1.0));
-    delh.y = POINTS(ND_pos(aghead(e))[1] * (yf - 1.0));
-    delt.x = POINTS(ND_pos(agtail(e))[0] * (xf - 1.0));
-    delt.y = POINTS(ND_pos(agtail(e))[1] * (yf - 1.0));
+    delh.x = POINTS_PER_INCH * (ND_pos(aghead(e))[0] * (xf - 1.0));
+    delh.y = POINTS_PER_INCH * (ND_pos(aghead(e))[1] * (yf - 1.0));
+    delt.x = POINTS_PER_INCH * (ND_pos(agtail(e))[0] * (xf - 1.0));
+    delt.y = POINTS_PER_INCH * (ND_pos(agtail(e))[1] * (yf - 1.0));
 
     bez = ED_spl(e)->list;
     for (i = 0; i < ED_spl(e)->size; i++) {
@@ -1173,8 +1173,8 @@ void neato_set_aspect(graph_t * g)
 
     _neato_set_aspect(g);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	ND_coord(n).x = POINTS(ND_pos(n)[0]);
-	ND_coord(n).y = POINTS(ND_pos(n)[1]);
+	ND_coord(n).x = POINTS_PER_INCH * (ND_pos(n)[0]);
+	ND_coord(n).y = POINTS_PER_INCH * (ND_pos(n)[1]);
     }
 }
 
