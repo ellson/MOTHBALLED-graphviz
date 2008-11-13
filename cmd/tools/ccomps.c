@@ -25,9 +25,10 @@
 #endif
 
 #include <ctype.h>
-
 #include <stdlib.h>
 #include "cgraph.h"
+
+#define N_NEW(n,t)       (t*)malloc((n)*sizeof(t))
 
 typedef struct {
     Agrec_t h;
@@ -62,7 +63,9 @@ typedef struct {
   /* internals of libgraph */
 #define TAG_NODE            1
 
-#define INTERNAL 0
+#define INTERNAL 0       /* Basically means all components need to be 
+                          * generated before output
+                          */
 #define EXTERNAL 1
 #define SILENT   2
 #define EXTRACT  3
@@ -76,6 +79,8 @@ char *suffix = 0;
 char *outfile = 0;
 char *path = 0;
 int sufcnt = 0;
+int sorted = 0;
+int sortIndex = 0;
 int x_index = -1;
 char *x_node;
 
@@ -88,6 +93,7 @@ static char *useString =
   -n - do not induce subgraphs\n\
   -v - verbose\n\
   -o - output file template\n\
+  -z - sort by size, largest first\n\
   -? - print usage\n\
 If no files are specified, stdin is used\n";
 
@@ -126,7 +132,7 @@ static void init(int argc, char *argv[])
 {
     int c;
 
-    while ((c = getopt(argc, argv, ":o:xCX:nsv?")) != -1) {
+    while ((c = getopt(argc, argv, ":zo:xCX:nsv?")) != -1) {
 	switch (c) {
 	case 'o':
 	    outfile = optarg;
@@ -162,6 +168,9 @@ static void init(int argc, char *argv[])
 	case 'v':
 	    verbose = 1;
 	    break;
+	case 'z':
+	    sorted = 1;
+	    break;
 	case '?':
 	    if (optopt == '?')
 		usage(0);
@@ -174,6 +183,18 @@ static void init(int argc, char *argv[])
     argv += optind;
     argc -= optind;
 
+    if (sorted) {
+	if ((printMode == EXTRACT) && (x_index >= 0)) {
+	    printMode = INTERNAL;
+	    sortIndex = x_index;
+	}
+	else if (printMode == EXTERNAL) {
+	    sortIndex = -1;
+	    printMode = INTERNAL;
+	}
+	else
+	    sorted = 0;    /* not relevant; turn off */
+    }
     if (argc)
 	Files = argv;
 }
@@ -432,6 +453,48 @@ static void unionNodes(Agraph_t * dg, Agraph_t * g)
     }
 }
 
+typedef int (*qsort_cmpf) (const void *, const void *);
+
+static int cmp(Agraph_t** p0, Agraph_t** p1)
+{
+    return (agnnodes(*p1) - agnnodes(*p0));
+}
+
+static void
+printSorted (Agraph_t* root, int c_cnt)
+{
+    Agraph_t** ccs = N_NEW(c_cnt, Agraph_t*);
+    Agraph_t* subg;
+    int i = 0;
+
+    for (subg = agfstsubg(root); subg; subg = agnxtsubg(subg)) {
+	if (GD_cc_subg(subg))
+	    ccs[i++] = subg;
+    }
+    /* sort by component size, largest first */
+    qsort (ccs, c_cnt, sizeof(Agraph_t*), (qsort_cmpf)cmp);
+
+    if (sortIndex >= 0) {
+	if (sortIndex >= c_cnt) {
+	    fprintf(stderr,
+		"ccomps: component %d not found in graph %s - ignored\n",
+		sortIndex, agnameof(root));
+	    return;
+	}
+	subg = ccs[sortIndex];
+	if (doAll)
+	    subGInduce(root, subg);
+	gwrite(subg);
+    }
+    else for (i = 0; i < c_cnt; i++) {
+	subg = ccs[i];
+	if (doAll)
+	    subGInduce(root, subg);
+	gwrite(subg);
+    }
+    free (ccs);
+}
+
 /* processClusters:
  * Return 0 if graph is connected.
  */
@@ -497,8 +560,11 @@ static int processClusters(Agraph_t * g)
 		return 0;
 	    }
 	}
+#if 0
+  until bug 1515 is fixed
 	if (printMode != INTERNAL)
 	    agdelete(g, out);
+#endif
 	agdelete(dg, dout);
 	if (verbose)
 	    fprintf(stderr, "(%4ld) %7ld nodes %7ld edges\n",
@@ -512,7 +578,9 @@ static int processClusters(Agraph_t * g)
 	return 1;
     }
 
-    if (printMode == INTERNAL)
+    if (sorted) 
+	printSorted (g, c_cnt);
+    else if (printMode == INTERNAL)
 	gwrite(g);
 
     if (verbose)
@@ -597,8 +665,11 @@ static int process(Agraph_t * g)
 		return 0;
 	    }
 	}
+#if 0
+  until bug 1515 is fixed
 	if (printMode != INTERNAL)
 	    agdelete(g, out);
+#endif
 	if (verbose)
 	    fprintf(stderr, "(%4ld) %7ld nodes %7ld edges\n",
 		    c_cnt, n_cnt, e_cnt);
@@ -611,7 +682,9 @@ static int process(Agraph_t * g)
 	return 1;
     }
 
-    if (printMode == INTERNAL)
+    if (sorted)
+	printSorted (g, c_cnt);
+    else if (printMode == INTERNAL)
 	gwrite(g);
 
     if (verbose)
