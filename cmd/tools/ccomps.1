@@ -4,7 +4,7 @@ ccomps \- connected components filter for graphs
 .SH SYNOPSIS
 .B ccomps
 [
-.B \-sxvnC?
+.B \-sxvnzC?
 ]
 [
 .BI -X [#]v
@@ -31,6 +31,11 @@ Only the connected components are printed, as separate graphs.
 .TP
 .B \-v
 Counts of nodes, edges and connected components are printed.
+.TP
+.B \-z
+Sort components by size, with the largest first. This is only
+effective if either \fB-x\fP or \fB-X#v\fP is present.
+Thus, \fB-zX#0\fP will cause the largest component to be printed.
 .TP
 .B \-C
 Use clusters in computing components in addition to normal edge
