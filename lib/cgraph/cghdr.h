@@ -128,7 +128,7 @@ void *agdictobjmem(Dict_t * dict, Void_t * p, size_t size,
 void agdictobjfree(Dict_t * dict, Void_t * p, Dtdisc_t * disc);
 
 	/* name-value pair operations */
-Agdatadict_t *agdatadict(Agraph_t * g);
+Agdatadict_t *agdatadict(Agraph_t * g, int cflag);
 Agattr_t *agattrrec(void *obj);
 
 void agraphattr_init(Agraph_t * g);
