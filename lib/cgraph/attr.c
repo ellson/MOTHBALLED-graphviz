@@ -41,12 +41,13 @@ static void init_all_attrs(Agraph_t * g);
 static Agdesc_t ProtoDesc = {1,0,1,0,1,1};
 static Agraph_t *ProtoGraph;
 
-Agdatadict_t *agdatadict(Agraph_t * g)
+Agdatadict_t *agdatadict(Agraph_t * g, int cflag)
 {
     Agdatadict_t *rv;
-    while ((rv = (Agdatadict_t *) aggetrec(g, DataDictName, FALSE))
-	   == NIL(Agdatadict_t *))
+    rv = (Agdatadict_t *) aggetrec(g, DataDictName, FALSE);
+	if (rv || !cflag) return rv;
 	init_all_attrs(g);
+    rv = (Agdatadict_t *) aggetrec(g, DataDictName, FALSE);
     return rv;
 }
 
@@ -55,21 +56,15 @@ Dict_t *agdictof(Agraph_t * g, int kind)
     Agdatadict_t *dd;
     Dict_t *dict;
 
-    dd = agdatadict(g);
-    switch (kind) {
-    case AGRAPH:
-	dict = dd->dict.g;
-	break;
-    case AGNODE:
-	dict = dd->dict.n;
-	break;
-    case AGINEDGE:
-    case AGOUTEDGE:
-	dict = dd->dict.e;
-	break;
-    default:
-	abort();
+    dd = agdatadict(g,FALSE);
+    if (dd) switch (kind) {
+		case AGRAPH: dict = dd->dict.g; break;
+		case AGNODE: dict = dd->dict.n; break;
+		case AGINEDGE:
+		case AGOUTEDGE: dict = dd->dict.e; break;
+		default: abort();
     }
+    else dict = NIL(Dict_t*);
     return dict;
 }
 
@@ -102,31 +97,31 @@ static Agdatadict_t *agmakedatadict(Agraph_t * g)
     Agdatadict_t *parent_dd, *dd;
 
     dd = (Agdatadict_t *) agbindrec(g, DataDictName, sizeof(Agdatadict_t),
-				    FALSE);
+		FALSE);
     dd->dict.n = agdtopen(g, &AgDataDictDisc, Dttree);
     dd->dict.e = agdtopen(g, &AgDataDictDisc, Dttree);
     dd->dict.g = agdtopen(g, &AgDataDictDisc, Dttree);
     if ((par = agparent(g))) {
-	parent_dd = agdatadict(par);
-	assert(dd != parent_dd);
-	dtview(dd->dict.n, parent_dd->dict.n);
-	dtview(dd->dict.e, parent_dd->dict.e);
-	dtview(dd->dict.g, parent_dd->dict.g);
+		parent_dd = agdatadict(par,FALSE);
+		assert(dd != parent_dd);
+		dtview(dd->dict.n, parent_dd->dict.n);
+		dtview(dd->dict.e, parent_dd->dict.e);
+		dtview(dd->dict.g, parent_dd->dict.g);
     }
     else {
-	if (ProtoGraph && (g != ProtoGraph)) {
-	    /* you can't dtview here for several reasons. the proto
-	    graph could change, and the sym indices don't match */
-	    parent_dd = agdatadict(ProtoGraph);
-	    agcopydict(parent_dd->dict.n,dd->dict.n,g,AGNODE);
-	    agcopydict(parent_dd->dict.e,dd->dict.e,g,AGEDGE);
-	    agcopydict(parent_dd->dict.g,dd->dict.g,g,AGRAPH);
-	}
+		if (ProtoGraph && (g != ProtoGraph)) {
+			/* it's not ok to dtview here for several reasons. the proto
+			graph could change, and the sym indices don't match */
+			parent_dd = agdatadict(ProtoGraph,FALSE);
+			agcopydict(parent_dd->dict.n,dd->dict.n,g,AGNODE);
+			agcopydict(parent_dd->dict.e,dd->dict.e,g,AGEDGE);
+			agcopydict(parent_dd->dict.g,dd->dict.g,g,AGRAPH);
+		}
     }
     return dd;
 }
 
-	/* look up or update a value associated with an object. */
+/* look up an attribute with possible viewpathing */
 Agsym_t *agdictsym(Dict_t * dict, char *name)
 {
     Agsym_t key;
@@ -163,8 +158,7 @@ static int topdictsize(Agobj_t * obj)
     return dtsize(agdictof(agroot(agraphof(obj)), AGTYPE(obj)));
 }
 
-/* ha ha good thing we documented this API! */
-/* OK, g can be either the enclosing graph, or ProtoGraph */
+/* g can be either the enclosing graph, or ProtoGraph */
 static Agrec_t *agmakeattrs(Agraph_t *g, void *obj)
 {
     int sz;
@@ -176,22 +170,20 @@ static Agrec_t *agmakeattrs(Agraph_t *g, void *obj)
     rec = agbindrec(obj, AgDataRecName, sizeof(Agattr_t), FALSE);
     datadict = agdictof(g, AGTYPE(obj));
     if (rec->dict == NIL(Dict_t *)) {
-	rec->dict = datadict;
-	/* don't malloc(0) */
-	sz = topdictsize(obj);
-	if (sz < MINATTR)
-	    sz = MINATTR;
-	rec->str = agalloc(agraphof(obj), sz * sizeof(char *));
-	/* doesn't call agxset() so no obj-modified callbacks occur */
-	for (sym = (Agsym_t *) dtfirst(datadict); sym;
-	     sym = (Agsym_t *) dtnext(datadict, sym))
+		rec->dict = datadict;
+		/* don't malloc(0) */
+		sz = topdictsize(obj);
+		if (sz < MINATTR) sz = MINATTR;
+		rec->str = agalloc(agraphof(obj), sz * sizeof(char *));
+		/* doesn't call agxset() so no obj-modified callbacks occur */
+		for (sym = (Agsym_t *) dtfirst(datadict); sym;
+			sym = (Agsym_t *) dtnext(datadict, sym))
 	    rec->str[sym->id] = agstrdup(agraphof(obj), sym->defval);
     } else {
-	assert(rec->dict == datadict);
+		assert(rec->dict == datadict);
     }
     return (Agrec_t *) rec;
 }
-
 
 static void freeattr(Agobj_t * obj, Agattr_t * attr)
 {
@@ -201,7 +193,7 @@ static void freeattr(Agobj_t * obj, Agattr_t * attr)
     g = agraphof(obj);
     sz = topdictsize(obj);
     for (i = 0; i < sz; i++)
-	agstrfree(g, attr->str[i]);
+		agstrfree(g, attr->str[i]);
     agfree(g, attr->str);
 }
 
@@ -231,15 +223,78 @@ static void addattr(Agraph_t * g, Agobj_t * obj, Agsym_t * sym)
     assert(attr != NIL(Agattr_t *));
     if (sym->id >= MINATTR)
 	attr->str = (char **) AGDISC(g, mem)->resize(AGCLOS(g, mem),
-						     attr->str,
-						     sym->id *
-						     sizeof(char *),
-						     (sym->id +
-						      1) * sizeof(char *));
+		 attr->str,
+		 sym->id * sizeof(char *),
+		 (sym->id + 1) * sizeof(char *));
     attr->str[sym->id] = agstrdup(g, sym->defval);
     /* agmethod_upd(g,obj,sym);  JCE and GN didn't like this. */
 }
 
+
+static Agsym_t *setattr(Agraph_t * g, int kind, char *name, char *value)
+{
+    Agdatadict_t *dd;
+	Dict_t *ldict, *rdict;
+	Agsym_t	*lsym, *psym, *rsym, *rv;
+	Agraph_t *root;
+	Agnode_t *n;
+	Agedge_t *e;
+
+	assert(value);
+	root = agroot(g);
+	dd = agdatadict(g,TRUE);	/* force initialization of string attributes */
+    ldict = agdictof(g, kind);
+	lsym = aglocaldictsym(ldict, name);
+    if (lsym) { /* update old local definiton */
+		agstrfree(g, lsym->defval);
+		lsym->defval = agstrdup(g, value);
+		rv = lsym;
+	}
+	else {
+		psym = agdictsym(ldict, name);	/* search with viewpath up to root */
+		if (psym) {	/* new local definition */
+			lsym = agnewsym(g, name, value, psym->id, kind);
+			dtinsert(ldict, lsym);
+			rv = lsym;
+		}
+		else {	/* new global definition */
+			rdict = agdictof(root, kind);
+			rsym = agnewsym(g, name, value, dtsize(rdict), kind);
+			dtinsert(rdict, rsym);
+			switch (kind) {
+				case AGRAPH:
+					agapply(root, (Agobj_t *) root, (agobjfn_t) addattr,
+						rsym, TRUE);
+					break;
+				case AGNODE:
+					for (n = agfstnode(root); n; n = agnxtnode(root, n))
+						addattr(g, (Agobj_t *) n, rsym);
+					break;
+				case AGINEDGE:
+				case AGOUTEDGE:
+					for (n = agfstnode(root); n; n = agnxtnode(root, n))
+						for (e = agfstout(root, n); e;
+							 e = agnxtout(root, e))
+								addattr(g, (Agobj_t *) e, rsym);
+					break;
+			}
+			rv = rsym;
+		}
+	}
+    if (rv && (kind == AGRAPH))
+		agxset(g, rv, value);
+	agmethod_upd(g, g, rv);	/* JCE and GN wanted this */
+	return rv;
+}
+
+static Agsym_t *getattr(Agraph_t * g, int kind, char *name)
+{
+	Agsym_t *rv = 0;
+	Dict_t *dict;
+    dict = agdictof(g, kind);
+	if (dict) rv = agdictsym(dict, name);	/* viewpath up to root */
+	return rv;
+}
 
 /*
  * create or update an existing attribute and return its descriptor.
@@ -249,63 +304,15 @@ static void addattr(Agraph_t * g, Agobj_t * obj, Agsym_t * sym)
  */
 Agsym_t *agattr(Agraph_t * g, int kind, char *name, char *value)
 {
-    Agraph_t *root;
-    Agsym_t *lsym, *rsym;
-    Dict_t *ldict, *rdict;
-    Agnode_t *n;
-    Agedge_t *e;
+	Agsym_t *rv;
 
-    if (g == 0) {if (ProtoGraph == 0) ProtoGraph = agopen(0,ProtoDesc,0); g = ProtoGraph;}
-    ldict = agdictof(g, kind);
-    lsym = aglocaldictsym(ldict, name);
-    root = agroot(g);
-    if (lsym) {
-	/* this attr was previously defined in this graph */
-	if (value) {
-	    agstrfree(g, lsym->defval);
-	    lsym->defval = agstrdup(g, value);
+    if (g == 0) {
+		if (ProtoGraph == 0) ProtoGraph = agopen(0,ProtoDesc,0);
+		g = ProtoGraph;
 	}
-    } else {			/* not previously defined here */
-	rsym = agdictsym(ldict, name);	/* viewpath up to root */
-	if (value) {		/* need to define */
-	    if (rsym) {
-		lsym = agnewsym(g, name, value, rsym->id, kind);
-		dtinsert(ldict, lsym);
-	    } else {		/* just define globally */
-		rdict = agdictof(root, kind);
-		lsym = rsym =
-		    agnewsym(g, name, value, dtsize(rdict), kind);
-		dtinsert(rdict, rsym);
-
-		switch (kind) {
-		case AGRAPH:
-		    agapply(root, (Agobj_t *) root, (agobjfn_t) addattr,
-			    lsym, TRUE);
-		    break;
-		case AGNODE:
-		    for (n = agfstnode(root); n; n = agnxtnode(root, n))
-			addattr(g, (Agobj_t *) n, lsym);
-		    break;
-		case AGINEDGE:
-		case AGOUTEDGE:
-		    for (n = agfstnode(root); n; n = agnxtnode(root, n))
-			for (e = agfstout(root, n); e;
-			     e = agnxtout(root, e))
-			    addattr(g, (Agobj_t *) e, lsym);
-		    break;
-		}
-	    }
-	    agmethod_upd(g, g, lsym);	/* JCE and GN wanted this instead */
-	} else
-	    return rsym;
-    }
-    /* in graphs, defaults and actual values are always the same.
-     * see also agxset() where graph attrs are handled.  therefore
-     * agxset() must not call agattr() in its implementation 
-     */
-    if (lsym && (kind == AGRAPH))
-	agxset(g, lsym, value);
-    return lsym;
+	if (value) rv = setattr(g,kind,name,value);
+	else rv = getattr(g,kind,name);
+	return rv;
 }
 
 Agsym_t *agnxtattr(Agraph_t * g, int kind, Agsym_t * attr)
@@ -315,9 +322,9 @@ Agsym_t *agnxtattr(Agraph_t * g, int kind, Agsym_t * attr)
 
     d = agdictof(g, kind);
     if (attr)
-	rv = (Agsym_t *) dtnext(d, attr);
+		rv = (Agsym_t *) dtnext(d, attr);
     else
-	rv = (Agsym_t *) dtfirst(d);
+		rv = (Agsym_t *) dtfirst(d);
     return rv;
 }
 
@@ -345,15 +352,15 @@ void agraphattr_delete(Agraph_t * g)
 
     Ag_G_global = g;
     if ((attr = agattrrec(g))) {
-	freeattr((Agobj_t *) g, attr);
-	agdelrec(g, attr->h.name);
-    }
+		freeattr((Agobj_t *) g, attr);
+		agdelrec(g, attr->h.name);
+	}
 
-    if ((dd = agdatadict(g))) {
-	agdtclose(g, dd->dict.n);
-	agdtclose(g, dd->dict.e);
-	agdtclose(g, dd->dict.g);
-	agdelrec(g, dd->h.name);
+    if ((dd = agdatadict(g,FALSE))) {
+		agdtclose(g, dd->dict.n);
+		agdtclose(g, dd->dict.e);
+		agdtclose(g, dd->dict.g);
+		agdelrec(g, dd->h.name);
     }
 }
 
@@ -363,7 +370,7 @@ void agnodeattr_init(Agraph_t *g, Agnode_t * n)
 
     data = agattrrec(n);
     if ((!data) || (!data->dict))
-	(void) agmakeattrs(g,n);
+		(void) agmakeattrs(g,n);
 }
 
 void agnodeattr_delete(Agnode_t * n)
@@ -371,8 +378,8 @@ void agnodeattr_delete(Agnode_t * n)
     Agattr_t *rec;
 
     if ((rec = agattrrec(n))) {
-	freeattr((Agobj_t *) n, rec);
-	agdelrec(n, AgDataRecName);
+		freeattr((Agobj_t *) n, rec);
+		agdelrec(n, AgDataRecName);
     }
 }
 
@@ -390,8 +397,8 @@ void agedgeattr_delete(Agedge_t * e)
     Agattr_t *rec;
 
     if ((rec = agattrrec(e))) {
-	freeattr((Agobj_t *) e, rec);
-	agdelrec(e, AgDataRecName);
+		freeattr((Agobj_t *) e, rec);
+		agdelrec(e, AgDataRecName);
     }
 }
 
@@ -403,10 +410,10 @@ char *agget(void *obj, char *name)
 
     sym = agattrsym(obj, name);
     if (sym == NILsym)
-	rv = 0;		/* note was "", but this provides more info */
-    else {
-	data = agattrrec((Agobj_t *) obj);
-	rv = (char *) (data->str[sym->id]);
+		rv = 0;		/* note was "", but this provides more info */
+		else {
+		data = agattrrec((Agobj_t *) obj);
+		rv = (char *) (data->str[sym->id]);
     }
     return rv;
 }
@@ -429,9 +436,9 @@ int agset(void *obj, char *name, char *value)
 
     sym = agattrsym(obj, name);
     if (sym == NILsym)
-	rv = FAILURE;
+		rv = FAILURE;
     else
-	rv = agxset(obj, sym, value);
+		rv = agxset(obj, sym, value);
     return rv;
 }
 
@@ -449,16 +456,16 @@ int agxset(void *obj, Agsym_t * sym, char *value)
     agstrfree(g, data->str[sym->id]);
     data->str[sym->id] = agstrdup(g, value);
     if (hdr->tag.objtype == AGRAPH) {
-	/* also update dict default */
-	Dict_t *dict;
-	dict = agdatadict(g)->dict.g;
-	if ((lsym = aglocaldictsym(dict, sym->name))) {
-	    agstrfree(g, lsym->defval);
-	    lsym->defval = agstrdup(g, value);
-	} else {
-	    lsym = agnewsym(g, sym->name, value, sym->id, AGTYPE(hdr));
-	    dtinsert(dict, lsym);
-	}
+		/* also update dict default */
+		Dict_t *dict;
+		dict = agdatadict(g,FALSE)->dict.g;
+		if ((lsym = aglocaldictsym(dict, sym->name))) {
+			agstrfree(g, lsym->defval);
+			lsym->defval = agstrdup(g, value);
+		} else {
+			lsym = agnewsym(g, sym->name, value, sym->id, AGTYPE(hdr));
+			dtinsert(dict, lsym);
+		}
     }
     agmethod_upd(g, obj, sym);
     return SUCCESS;
@@ -475,9 +482,9 @@ int agsafeset(void* obj, char* name, char* value, char* def)
 
 
 /*
- * here we are attaching attributes to the already created graph objs.
- * presumably they were already initialized, so we don't invoke any
- * of the old methods.
+ * attach attributes to the already created graph objs.
+ * presumably they were already initialized, so we don't invoke
+ * any of the old methods.
  */
 static void init_all_attrs(Agraph_t * g)
 {
@@ -489,10 +496,10 @@ static void init_all_attrs(Agraph_t * g)
     agapply(root, (Agobj_t *) root, (agobjfn_t) agraphattr_init,
 	    NIL(Agdisc_t *), TRUE);
     for (n = agfstnode(root); n; n = agnxtnode(root, n)) {
-	agnodeattr_init(g,n);
-	for (e = agfstout(root, n); e; e = agnxtout(root, e)) {
-	    agedgeattr_init(g,e);
-	}
+		agnodeattr_init(g,n);
+		for (e = agfstout(root, n); e; e = agnxtout(root, e)) {
+			agedgeattr_init(g,e);
+		}
     }
 }
 
@@ -512,9 +519,9 @@ int agcopyattr(void *oldobj, void *newobj)
     if (AGTYPE(oldobj) != AGTYPE(newobj)) return 1;
     sym = 0;
     while ((sym = agnxtattr(g, AGTYPE(oldobj), sym))) {
-	newsym = agattrsym(newobj,sym->name);
-	if (!newsym) return 1;
-	r = agxset(newobj, newsym, agxget(oldobj, sym));
+		newsym = agattrsym(newobj,sym->name);
+		if (!newsym) return 1;
+		r = agxset(newobj, newsym, agxget(oldobj, sym));
     }
     return r;
 }

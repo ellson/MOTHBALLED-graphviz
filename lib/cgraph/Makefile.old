@@ -4,7 +4,7 @@ all:	$(LIBNAME)
 
 ROOT=../..
 
-include $(ROOT)/Config.mk
+include $(ROOT)/Config.mk.old
 include $(ROOT)/makearch/$(ARCH)
 
 INCS =	-I. -I../cdt -I$(ROOT)
@@ -64,6 +64,9 @@ main2:  main2.c $(LIBNAME)
 
 main3:  main3.c $(LIBNAME)
 	$(CC) $(CCFLAGS) main3.c $(INCS) $(LIBNAME) -L$(HOME)/arch/$(ARCH)/lib -lcdt -o main3
+
+main4:  main4.c $(LIBNAME)
+	$(CC) $(CCFLAGS) main4.c $(INCS) $(LIBNAME) -L$(HOME)/arch/$(ARCH)/lib -lcdt -o main4
 
 main:  main.c $(LIBNAME)
 	$(CC) $(CCFLAGS) main.c $(INCS) $(LIBNAME) -L$(HOME)/arch/$(ARCH)/lib -lcdt -o main
