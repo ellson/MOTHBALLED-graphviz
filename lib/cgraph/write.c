@@ -196,45 +196,45 @@ static void write_dict(Agraph_t * g, iochan_t * ofile, char *name,
     else view = 0;
     for (sym = (Agsym_t *) dtfirst(dict); sym;
 	 sym = (Agsym_t *) dtnext(dict, sym)) {
-	if (EMPTY(sym->defval)) {	/* try to skip empty str (default) */
-	    if (view == NIL(Dict_t *))
-		continue;	/* no parent */
-	    psym = (Agsym_t *) dtsearch(view, sym);
-	    assert(psym);
-	    if (EMPTY(psym->defval))
-		continue;	/* also empty in parent */
-	}
-	if (cnt++ == 0) {
-	    indent(g, ofile);
-	    ioput(g, ofile, name);
-	    ioput(g, ofile, " [");
-	    Level++;
-	} else {
-	    ioput(g, ofile, ",\n");
-	    indent(g, ofile);
-	}
-	write_canonstr(g, ofile, sym->name);
-	ioput(g, ofile, "=");
-	write_canonstr(g, ofile, sym->defval);
+		if (EMPTY(sym->defval)) {	/* try to skip empty str (default) */
+			if (view == NIL(Dict_t *))
+			continue;	/* no parent */
+			psym = (Agsym_t *) dtsearch(view, sym);
+			assert(psym);
+			if (EMPTY(psym->defval))
+			continue;	/* also empty in parent */
+		}
+		if (cnt++ == 0) {
+			indent(g, ofile);
+			ioput(g, ofile, name);
+			ioput(g, ofile, " [");
+			Level++;
+		} else {
+			ioput(g, ofile, ",\n");
+			indent(g, ofile);
+		}
+		write_canonstr(g, ofile, sym->name);
+		ioput(g, ofile, "=");
+		write_canonstr(g, ofile, sym->defval);
     }
     if (cnt > 0) {
-	Level--;
-	if (cnt > 1) {
-	    ioput(g, ofile, "\n");
-	    indent(g, ofile);
+		Level--;
+		if (cnt > 1) {
+			ioput(g, ofile, "\n");
+			indent(g, ofile);
+		}
+		ioput(g, ofile, "];\n");
 	}
-	ioput(g, ofile, "];\n");
-    }
     dtview(dict, view);		/* restore previous view */
 }
 
 static void write_dicts(Agraph_t * g, iochan_t * ofile, int top)
 {
     Agdatadict_t *def;
-    if ((def = agdatadict(g))) {
-	write_dict(g, ofile, "graph", def->dict.g, top);
-	write_dict(g, ofile, "node", def->dict.n, top);
-	write_dict(g, ofile, "edge", def->dict.e, top);
+    if ((def = agdatadict(g,FALSE))) {
+		write_dict(g, ofile, "graph", def->dict.g, top);
+		write_dict(g, ofile, "node", def->dict.n, top);
+		write_dict(g, ofile, "edge", def->dict.e, top);
     }
 }
 
@@ -306,9 +306,9 @@ static int irrelevant_subgraph(Agraph_t * g)
 		&& strcmp(sdata->str[i], pdata->str[i]))
 		return FALSE;
     }
-    dd = agdatadict(g);
-    if ((dtsize(dd->dict.n) > 0) || (dtsize(dd->dict.e) > 0))
-	return FALSE;
+    dd = agdatadict(g,FALSE);
+	if (!dd) return TRUE;
+    if ((dtsize(dd->dict.n) > 0) || (dtsize(dd->dict.e) > 0)) return FALSE;
     return TRUE;
 }
 
@@ -402,37 +402,33 @@ static void write_nondefault_attrs(void *obj, iochan_t * ofile,
     int cnt = 0;
 
     if ((AGTYPE(obj) == AGINEDGE) || (AGTYPE(obj) == AGOUTEDGE)) {
-	if (write_edge_name(obj, ofile, FALSE))
-	    cnt++;
-    }
+		if (write_edge_name(obj, ofile, FALSE)) cnt++;
+	}
     data = agattrrec(obj);
     g = agraphof(obj);
-    if (data)
-	for (sym = (Agsym_t *) dtfirst(defdict); sym;
-	     sym = (Agsym_t *) dtnext(defdict, sym)) {
+    if (data) for (sym = (Agsym_t *) dtfirst(defdict); sym;
+	  sym = (Agsym_t *) dtnext(defdict, sym)) {
 	    if ((AGTYPE(obj) == AGINEDGE) || (AGTYPE(obj) == AGOUTEDGE)) {
-		if (Tailport && (sym->id == Tailport->id))
-		    continue;
-		if (Headport && (sym->id == Headport->id))
-		    continue;
+			if (Tailport && (sym->id == Tailport->id)) continue;
+			if (Headport && (sym->id == Headport->id)) continue;
 	    }
 	    if (data->str[sym->id] != sym->defval) {
-		if (cnt++ == 0) {
-		    indent(g, ofile);
-		    ioput(g, ofile, " [");
-		    Level++;
-		} else {
-		    ioput(g, ofile, ",\n");
-		    indent(g, ofile);
-		}
-		write_canonstr(g, ofile, sym->name);
-		ioput(g, ofile, "=");
-		write_canonstr(g, ofile, data->str[sym->id]);
+			if (cnt++ == 0) {
+				indent(g, ofile);
+				ioput(g, ofile, " [");
+				Level++;
+			} else {
+				ioput(g, ofile, ",\n");
+				indent(g, ofile);
+			}
+			write_canonstr(g, ofile, sym->name);
+			ioput(g, ofile, "=");
+			write_canonstr(g, ofile, data->str[sym->id]);
 	    }
 	}
     if (cnt > 0) {
-	ioput(g, ofile, "]");
-	Level--;
+		ioput(g, ofile, "]");
+		Level--;
     }
     AGATTRWF((Agobj_t *) obj) = TRUE;
 }
@@ -556,16 +552,16 @@ static void write_body(Agraph_t * g, iochan_t * ofile)
 
     /* has_attr = (agattrrec(g) != NIL(Agattr_t*)); */
     write_subgs(g, ofile);
-    dd = agdatadict(agroot(g));
+    dd = agdatadict(agroot(g),FALSE);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	if (write_node_test(g, n, AGSEQ(n)))
-	    write_node(n, ofile, dd->dict.n);
-	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    if (write_node_test(g, e->node, AGSEQ(n)))
-		write_node(e->node, ofile, dd->dict.n);
-	    if (write_edge_test(g, e))
-		write_edge(e, ofile, dd->dict.e);
-	}
+		if (write_node_test(g, n, AGSEQ(n)))
+			write_node(n, ofile, dd? dd->dict.n : 0);
+		for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+			if (write_node_test(g, e->node, AGSEQ(n)))
+				write_node(e->node, ofile, dd? dd->dict.n : 0);
+			if (write_edge_test(g, e))
+				write_edge(e, ofile, dd? dd->dict.e : 0);
+		}
     }
 }
 
