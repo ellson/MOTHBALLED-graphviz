@@ -136,9 +136,18 @@ static void xdot_style (GVJ_t *job)
     char* p, **s;
     int more;
 
+    /* First, check if penwidth state is correct */
+    if (job->obj->penwidth != penwidth[job->obj->emit_state]) {
+	penwidth[job->obj->emit_state] = job->obj->penwidth;
+	sprintf ((char*)buf, "setlinewidth(%.3f)", job->obj->penwidth);
+        xdot_str (job, "S ", (char*)buf);
+    }
+
+    /* now process raw style, if any */
     s = job->obj->rawstyle;
     if (!s)
 	return;
+
     agxbinit(&xbuf, BUFSIZ, buf);
     while ((p = *s++)) {
 	if (streq(p, "filled") || streq(p, "bold") || streq(p, "setlinewidth")) continue;
@@ -164,11 +173,6 @@ static void xdot_style (GVJ_t *job)
 
     agxbfree(&xbuf);
 
-    if (job->obj->penwidth != penwidth[job->obj->emit_state]) {
-	penwidth[job->obj->emit_state] = job->obj->penwidth;
-	sprintf ((char*)buf, "setlinewidth(%.3f)", job->obj->penwidth);
-        xdot_str (job, "S ", (char*)buf);
-    }
 }
 
 static void xdot_end_node(GVJ_t* job)
