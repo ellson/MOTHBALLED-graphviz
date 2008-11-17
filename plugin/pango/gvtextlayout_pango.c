@@ -83,7 +83,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	cairo_font_options_set_hint_metrics(options,CAIRO_HINT_METRICS_ON);
 	cairo_font_options_set_subpixel_order(options,CAIRO_SUBPIXEL_ORDER_BGR);
 	pango_cairo_context_set_font_options(context, options);
-
+	cairo_font_options_destroy(options);
 	g_object_unref(fontmap);
     }
 
