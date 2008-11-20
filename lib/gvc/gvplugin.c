@@ -166,7 +166,7 @@ gvplugin_library_t *gvplugin_library_load(GVC_t *gvc, char *path)
     if (!Demand_Loading)
 	return NULL;
 
-    libdir = gvconfig_libdir();
+    libdir = gvconfig_libdir(gvc);
     len = strlen(libdir) + 1 + strlen(path) + 1;
     if (len > lenp) {
 	lenp = len+20;

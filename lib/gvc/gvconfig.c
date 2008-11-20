@@ -38,7 +38,7 @@ typedef struct {
     char **gl_pathv;        /* list of paths matching pattern */
 } glob_t;
 static void globfree (glob_t* pglob);
-static int glob (char*, int, int (*errfunc)(const char *, int), glob_t*);
+static int glob (GVC_t * gvc, char*, int, int (*errfunc)(const char *, int), glob_t*);
 #else
 #include        <regex.h>
 #include	<glob.h>
@@ -271,7 +271,7 @@ static void gvconfig_write_library_config(GVC_t *gvc, char *path, gvplugin_libra
 
 #define BSZ 1024
 
-char * gvconfig_libdir(void)
+char * gvconfig_libdir(GVC_t * gvc)
 {
     static char line[BSZ];
     static char *libdir;
@@ -331,6 +331,9 @@ char * gvconfig_libdir(void)
 	    }
 #endif
 	}
+	if (gvc->common.verbose > 1) 
+	    fprintf (stderr, "libdir = \"%s\"\n",
+		(libdir ? libdir : "<null>"));
     }
     return libdir;
 }
@@ -385,7 +388,7 @@ static void config_rescan(GVC_t *gvc, char *config_path)
 	fprintf(f, "# Manual edits to this file **will be lost** on upgrade.\n\n");
     }
 
-    libdir = gvconfig_libdir();
+    libdir = gvconfig_libdir(gvc);
 
     config_re = gmalloc(strlen(plugin_re_beg) + 20 + strlen(plugin_re_end) + 1);
 
@@ -407,7 +410,12 @@ static void config_rescan(GVC_t *gvc, char *config_path)
     strcat(config_glob, plugin_glob);
 
     /* load all libraries even if can't save config */
+
+#if defined(WIN32)
+    rc = glob(gvc, config_glob, GLOB_NOSORT, NULL, &globbuf);
+#else
     rc = glob(config_glob, GLOB_NOSORT, NULL, &globbuf);
+#endif
     if (rc == 0) {
 	for (i = 0; i < globbuf.gl_pathc; i++) {
 	    re_status = regexec(&re, globbuf.gl_pathv[i], (size_t) 0, NULL, 0);
@@ -508,7 +516,7 @@ void gvconfig(GVC_t * gvc, boolean rescan)
 #ifdef ENABLE_LTDL
     if (Demand_Loading) {
         /* see if there are any new plugins */
-        libdir = gvconfig_libdir();
+        libdir = gvconfig_libdir(gvc);
         rc = stat(libdir, &libdir_st);
         if (rc == -1) {
     	    /* if we fail to stat it then it probably doesn't exist so just fail silently */
@@ -576,11 +584,9 @@ void gvconfig(GVC_t * gvc, boolean rescan)
  * Assumes only GLOB_NOSORT flag given. That is, there is no offset,
  * and no previous call to glob.
  */
-char * gvconfig_libdir(void);
 
 static int
-glob (char* pattern, int flags, int (*errfunc)(const char *, int),
-         glob_t *pglob)
+glob (GVC_t* gvc, char* pattern, int flags, int (*errfunc)(const char *, int), glob_t *pglob)
 {
     char* libdir;
     WIN32_FIND_DATA wfd;
@@ -594,7 +600,7 @@ glob (char* pattern, int flags, int (*errfunc)(const char *, int),
     
     h = FindFirstFile (pattern, &wfd);
     if (h == INVALID_HANDLE_VALUE) return GLOB_NOMATCH;
-    libdir = gvconfig_libdir();
+    libdir = gvconfig_libdir(gvc);
     do {
       if (cnt >= arrsize-1) {
         arrsize += 512;

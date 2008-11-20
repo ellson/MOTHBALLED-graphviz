@@ -27,7 +27,7 @@ extern "C" {
 
 /* configuration */
 
-    extern char *gvconfig_libdir(void);
+    extern char *gvconfig_libdir(GVC_t * gvc);
     extern void gvconfig(GVC_t * gvc, boolean rescan);
     extern char *gvhostname(void);
 
