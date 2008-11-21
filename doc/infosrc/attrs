@@ -51,7 +51,7 @@ is limited to this factor of its potential motion. By being less than
 #  Set by attribute, overwritten, unused
 #:Nodesep:G:double:1.0;
 #  Set by attribute, overwritten, unused
-:URL:ENGC:lblString:<none>;   map,ps,svg
+:URL:ENGC:escString:<none>;   map,ps,svg
 Hyperlinks incorporated into device-dependent output.
 At present, used in ps2, cmap, i*map and svg formats.
 For all these formats, URLs can be attached to nodes, edges and
@@ -235,7 +235,7 @@ For bitmap output, this guarantees that text rendering will be
 done more accurately, both in size and in placement. For SVG output,
 it is used to guarantee that the dimensions in the output correspond to
 the correct number of points or inches.
-:edgeURL:E:lblString:"";  map,svg
+:edgeURL:E:escString:"";  map,svg
 If <B>edgeURL</B> is defined, this is the link used for the non-label
 parts of an edge. This value overrides any <A HREF=#d:URL>URL</A>
 defined for the edge.
@@ -332,7 +332,7 @@ Font size, <A HREF=#points>in points</A>, used for text.
 If the end points of an edge belong to the same group, i.e., have the
 same group attribute, parameters are set to avoid crossings and keep
 the edges straight.
-:headURL:E:lblString:"";   map,svg
+:headURL:E:escString:"";   map,svg
 If <B>headURL</B> is defined, it is
 output as part of the head label of the edge.
 Also, this value is used near the head node, overriding any
@@ -369,7 +369,7 @@ will be the final height of the node. Otherwise, if the node label
 requires more height to fit, the node's height will be increased to
 contain the label. Note also that, if the output format is dot, the
 value given to <B>height</B> will be the final value.
-:href:E:lblString:"";  map,ps,svg
+:href:E:escString:"";  map,ps,svg
 Synonym for <A HREF=#d:URL>URL</A>.
 :id:GNE:lblString:"";  map,ps,svg
 Allows the graph author to provide an id for graph objects which is to be included in the output.
@@ -430,7 +430,7 @@ Text label attached to objects.
 If a node's <A HREF=#d:shape>shape</A> is record, then the label can
 have a <A HREF=shapes.html#record>special format</A>
 which describes the record layout.
-:labelURL:E:lblString:"";  map,svg
+:labelURL:E:escString:"";  map,svg
 If <B>labelURL</B> is defined, this is the link used for the label
 of an edge. This value overrides any <A HREF=#d:URL>URL</A>
 defined for the edge.
@@ -1009,7 +1009,7 @@ Set style for node or edge. For cluster subgraph, if "filled", the
 cluster box's background is filled.
 :stylesheet:G:string:"";  svg
 A URL or pathname specifying an XML style sheet, used in SVG output.
-:tailURL:E:lblString:""; map,svg
+:tailURL:E:escString:""; map,svg
 If <B>tailURL</B> is defined, it is
 output as part of the tail label of the edge.
 Also, this value is used near the tail node, overriding any
