@@ -243,7 +243,7 @@ Also, this value is used near the head or tail node unless overridden
 by a <A HREF=#d:headURL>headURL</A> or <A HREF=#d:tailURL>tailURL</A> value,
 respectively.
 See <A HREF=#h:undir_note>limitation</A>.
-:edgehref:E:lblString:"";  map,svg
+:edgehref:E:escString:"";  map,svg
 Synonym for <A HREF=#d:edgeURL>edgeURL</A>.
 :edgetarget:E:escString:<none>;   map,svg
 If the edge has a <A HREF=#d:URL>URL</A> or <A HREF=#d:edgeURL>edgeURL</A>
@@ -342,7 +342,7 @@ See <A HREF=#h:undir_note>limitation</A>.
 If true, the head of an edge is clipped to the boundary of the head node;
 otherwise, the end of the edge goes to the center of the node, or the
 center of a port, if applicable.
-:headhref:E:lblString:"";  map,svg
+:headhref:E:escString:"";  map,svg
 Synonym for <A HREF=#d:headURL>headURL</A>.
 :headlabel:E:lblString:"";
 Text label to be placed near head of edge.
@@ -463,7 +463,7 @@ If not set, defaults to edge's fontname.
 :labelfontsize:E:double:14.0:1.0;
 Font size, <A HREF=#points>in points</A>, used for headlabel and taillabel.
 If not set, defaults to edge's fontsize.
-:labelhref:E:lblString:"";  map,svg
+:labelhref:E:escString:"";  map,svg
 Synonym for <A HREF=#d:labelURL>labelURL</A>.
 :labeljust:GC:string:"c";
 Justification for cluster labels. If "r", the label
@@ -1019,7 +1019,7 @@ See <A HREF=#h:undir_note>limitation</A>.
 If true, the tail of an edge is clipped to the boundary of the tail node;
 otherwise, the end of the edge goes to the center of the node, or the
 center of a port, if applicable.
-:tailhref:E:lblString:"";  map,svg
+:tailhref:E:escString:"";  map,svg
 Synonym for <A HREF=#d:tailURL>tailURL</A>.
 :taillabel:E:lblString:"";
 Text label to be placed near tail of edge.
