@@ -281,6 +281,15 @@ Agedge_t *agedge(Agraph_t * g, Agnode_t * t, Agnode_t * h, char *name,
 	    e = agfindedge_by_key(g, h, t, key);
 	if (e)
 	    return e;
+	if (cflag) {
+	    e = agfindedge_by_key(agroot(g), t, h, key);
+	    if ((e == NILedge) && agisundirected(g))
+		e = agfindedge_by_key(agroot(g), h, t, key);
+	    if (e) {
+		subedge(g,e);
+		return e;
+	    }
+	}
     }
 
     if (cflag && ok_to_make_edge(g, t, h)
