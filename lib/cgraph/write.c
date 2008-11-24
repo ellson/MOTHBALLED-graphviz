@@ -545,7 +545,7 @@ static void write_edge(Agedge_t * e, iochan_t * ofile, Dict_t * d)
 
 static void write_body(Agraph_t * g, iochan_t * ofile)
 {
-    Agnode_t *n;
+    Agnode_t *n, *prev;
     Agedge_t *e;
     Agdatadict_t *dd;
     /* int                  has_attr; */
@@ -556,9 +556,12 @@ static void write_body(Agraph_t * g, iochan_t * ofile)
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 		if (write_node_test(g, n, AGSEQ(n)))
 			write_node(n, ofile, dd? dd->dict.n : 0);
+		prev = n;
 		for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-			if (write_node_test(g, e->node, AGSEQ(n)))
-				write_node(e->node, ofile, dd? dd->dict.n : 0);
+			if ((prev != aghead(e)) && write_node_test(g, aghead(e), AGSEQ(n)))  {
+				write_node(aghead(e), ofile, dd? dd->dict.n : 0);
+				prev = aghead(e);
+			}
 			if (write_edge_test(g, e))
 				write_edge(e, ofile, dd? dd->dict.e : 0);
 		}
