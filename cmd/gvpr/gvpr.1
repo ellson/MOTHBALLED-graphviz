@@ -32,7 +32,7 @@ It copies input graphs to its
 output, possibly transforming their structure and attributes,
 creating new graphs, or printing arbitrary information.
 The graph model is that provided by
-.IR libagraph (3).
+.IR libcgraph (3).
 In particular, \fBgvpr\fP reads and writes graphs using the
 dot language.
 .PP
@@ -252,7 +252,7 @@ and \fBE\fP clauses, and the current graph in \fBBEG_G\fP and \fBEND_G\fP
 clauses.
 .PP
 As usual in the 
-.IR libagraph (3)
+.IR libcgraph (3)
 model, attributes are string\(hyvalued.
 In addition,
 .B gvpr
@@ -852,7 +852,7 @@ graph following only forward arcs. In
 a traversal of the graph using a bread\(hyfirst search on the
 graph ignoring edge directions. See the item on \fBTV_dfs\fR above
 for the role of \fB$tvroot\fP.
-.IR libagraph (3),
+.IR libcgraph (3),
 edges in undirected graphs are given an arbitrary direction, which is
 used for this traversal. The choice of roots for the traversal is the
 same as described for \fBTV_dfs\fR above.
@@ -860,7 +860,7 @@ same as described for \fBTV_dfs\fR above.
 \fBTV_rev\fR : \fItvtype_t\fR
 a traversal of the graph using a depth\(hyfirst search on the
 graph following only reverse arcs. In
-.IR libagraph (3),
+.IR libcgraph (3),
 edges in undirected graphs are given an arbitrary direction, which is
 used for this traversal. The choice of roots for the traversal is the
 same as described for \fBTV_dfs\fR above.
@@ -995,4 +995,4 @@ and the confusion between '=' and '=='.
 Emden R. Gansner <erg@research.att.com>
 .SH "SEE ALSO"
 .PP
-awk(1), gc(1), dot(1), nop(1), libexpr(3), libagraph(3)
+awk(1), gc(1), dot(1), nop(1), libexpr(3), libcgraph(3)
