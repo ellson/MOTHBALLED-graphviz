@@ -17,7 +17,7 @@
 #ifndef ATT_GRAPH_H
 #define ATT_GRAPH_H
 
-#include		<cdt.h>
+#include		"cdt.h"
 
 #ifdef __cplusplus
 extern "C" {
