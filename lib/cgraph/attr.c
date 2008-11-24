@@ -170,7 +170,7 @@ static Agrec_t *agmakeattrs(Agraph_t *g, void *obj)
     rec = agbindrec(obj, AgDataRecName, sizeof(Agattr_t), FALSE);
     datadict = agdictof(g, AGTYPE(obj));
     if (rec->dict == NIL(Dict_t *)) {
-		rec->dict = datadict;
+		rec->dict = agdictof(agroot(g),AGTYPE(obj));
 		/* don't malloc(0) */
 		sz = topdictsize(obj);
 		if (sz < MINATTR) sz = MINATTR;
