@@ -68,5 +68,8 @@ main3:  main3.c $(LIBNAME)
 main4:  main4.c $(LIBNAME)
 	$(CC) $(CCFLAGS) main4.c $(INCS) $(LIBNAME) -L$(HOME)/arch/$(ARCH)/lib -lcdt -o main4
 
+cgtest:  cgtest.c $(LIBNAME)
+	$(CC) $(CCFLAGS) cgtest.c $(INCS) $(LIBNAME) -L$(HOME)/arch/$(ARCH)/lib -lcdt -o cgtest
+
 main:  main.c $(LIBNAME)
 	$(CC) $(CCFLAGS) main.c $(INCS) $(LIBNAME) -L$(HOME)/arch/$(ARCH)/lib -lcdt -o main
