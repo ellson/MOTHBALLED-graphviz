@@ -4,7 +4,7 @@
 </head>
 <body bgcolor=#ffffff>
 
-<h1>Graphviz todo list 3-November-2008</h1>
+<h1>Graphviz todo list 25-November-2008</h1>
 <P>
 The 4 categories give a rough time as to when a task should be done, 
 and reflect an assessment of the task's ease multiplied by its importance. 
@@ -31,9 +31,8 @@ SCN - Treemaps
 JCE - Extend attribute set for line styles
 JCE - Allow arrowheads in the middle of edges
 JCE - Support single, uniform font descriptors &#224; la pango
-ERG - Better aspect ratio in dot
+?   - Move generic node adjustment and spline routing out of neato
 ERG - New text labels with font elements &lt;B&gt;, &lt;I&gt;, &lt;TT&gt;, etc. (support via fontconfig or egregious hacks)
-ERG - New orthogonal routing code
 AB  - Create Graph editor for Topview/Graphviz with OpenGL and GTK. (smyrna - in process) (Deprecate use of lefty)
 YH/ERG - Clusters in sfdp
 YH/ERG - Fixed nodes in sfdp
@@ -45,14 +44,13 @@ SCN/AB - New dot core:
    - cgraph
    - new rank assignment (have prototype)
    - new mincross + clusters (partial prototype)
-   - use floats not ints where appropriate
    - symmetrize layouts
   - Ulrik's improvements with network simplex
 JCE - Shapes
 	- SVG grammar or other grammar to specify node and arrow shapes
 	- user-defined nodes in all code generators
 YH/ERG - additional graph packing strategies
-? - Filters for GraphML, Matrix Market and Chaco formats.
+? - Filters for GraphML and Chaco formats.
 ? - Library for bundled edges (Given two sets of nodes, with positions, 
 forming a bipartite graph, return splines to bundle the edges together)
 ? - better spacing of edges along the side of a node, especially
@@ -96,6 +94,10 @@ ERG - New multiedge code
 YH/ERG - New overlap adjustment strategies
 YH - Faster fdp (sfdp)
 ERG - Variable port depending on layout
+ERG - Better aspect ratio in dot
+ERG - New orthogonal routing code
+JCE - use floats not ints where appropriate
+YH - Filters for Matrix Market
 </pre>
 <H2>Retired</H2>
 <pre>
