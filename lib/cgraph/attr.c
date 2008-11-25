@@ -155,7 +155,10 @@ char *AgDataRecName = "_AG_strdata";
 
 static int topdictsize(Agobj_t * obj)
 {
-    return dtsize(agdictof(agroot(agraphof(obj)), AGTYPE(obj)));
+	Dict_t *d;
+
+	d = agdictof(agroot(agraphof(obj)), AGTYPE(obj));
+    return d? dtsize(d) : 0;
 }
 
 /* g can be either the enclosing graph, or ProtoGraph */
@@ -169,6 +172,7 @@ static Agrec_t *agmakeattrs(Agraph_t *g, void *obj)
     /*g = agraphof(obj);*/
     rec = agbindrec(obj, AgDataRecName, sizeof(Agattr_t), FALSE);
     datadict = agdictof(g, AGTYPE(obj));
+	assert(datadict);
     if (rec->dict == NIL(Dict_t *)) {
 		rec->dict = agdictof(agroot(g),AGTYPE(obj));
 		/* don't malloc(0) */
@@ -320,11 +324,13 @@ Agsym_t *agnxtattr(Agraph_t * g, int kind, Agsym_t * attr)
     Dict_t *d;
     Agsym_t *rv;
 
-    d = agdictof(g, kind);
-    if (attr)
+    if ((d = agdictof(g, kind))) {
+	if (attr)
 		rv = (Agsym_t *) dtnext(d, attr);
-    else
+	else
 		rv = (Agsym_t *) dtfirst(d);
+    }
+    else rv = 0;
     return rv;
 }
 
