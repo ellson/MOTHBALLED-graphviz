@@ -18,6 +18,12 @@ typedef struct treenode_t {
 #define BT 101
 #define LR 202
 
+typedef struct rlist_s {
+	treenode_t *elt;
+	int n, extent;
+	double sum;
+} rlist_t;
+
 static treenode_t *newtreenode(treenode_t **first, treenode_t **prev)
 {
 	treenode_t *p;
@@ -78,58 +84,55 @@ static double sizeit(treenode_t *tree)
 	return tree->area;
 }
 
-/* normal layout */
-static void layouter(treenode_t *tree, int dir, rect_t r)
+static rect_t mkrectangle(double x0, double y0, double x1, double y1)
 {
-	double	delta;
-	pointf	ref;
-	rect_t	r0;
-	treenode_t	*p;
-
-	tree->r = r;
-	if (dir == BT) delta = (r.UR.y - r.LL.y) / tree->area;
-	else if (dir == LR) delta = (r.UR.x - r.LL.x) / tree->area;
-	else abort();
-	ref = r.LL;
-	for (p = tree->leftchild; p; p = p->rightsib) {
-		r0.LL = ref;
-		if (dir == BT) {
-			r0.UR.x = r.UR.x;
-			r0.UR.y = ref.y + p->area * delta;
-		}
-		else {
-			r0.UR.x = ref.x + p->area * delta;
-			r0.UR.y = r.UR.y;
-		}
-		layouter(p,(dir == BT? LR : BT),r0);
-		if (dir == BT) ref.y = r0.UR.y;
-		else ref.x = r0.UR.x;
-	}
+	rect_t	rv;
+	rv.LL.x = x0; rv.LL.y = y0; rv.UR.x = x1; rv.UR.y = y1;
+	return rv;
 }
 
-/* squarified layout */
-static double aspect(rect_t r) { return (r.UR.y - r.LL.y)/(r.UR.x - r.LL.x); }
-
-static void sqlayouter(treenode_t *list, int dir, rect_t r, double total)
+static double weight(treenode_t *tree, treenode_t *split)
 {
-	double frac = list->area / total;
-	rect_t s = r;
-	if (dir == BT) s.UR.y = s.LL.y +  frac * (r.UR.y - r.LL.y);
-	else s.UR.x = s.LL.x + frac * (r.UR.x - r.LL.x);
-	list->r = s;
+	double rv = 0.0;
+	while (tree && (tree!=split)) {rv = rv + tree->area; tree = tree->rightsib;}
+	return rv;
+}
 
-	if (list->leftchild) {
-		if (aspect(r) > 1) sqlayouter(list->leftchild, BT, r, list->area);
-		else sqlayouter(list->leftchild, LR,r, list->area);
+static void layout(treenode_t *tree, treenode_t *split, rect_t r)
+{
+	double size, halfsize, w1, tmp, width, height;
+	rect_t r1,r2;
+	treenode_t *p;
+
+	if (!tree) return;
+	if (!tree->rightsib || (tree->rightsib==split)) {tree->r = r; layout(tree->leftchild,0,r); return;}
+	size = weight(tree,split);
+	halfsize = size / 2.0;
+	w1 = 0; tmp = 0;
+
+	for (p = tree; p && (p != split); p = p->rightsib) {
+		tmp = w1 + p->area;
+		if (abs(halfsize - tmp) > abs(halfsize- w1))
+			break;
+		w1 = tmp;
 	}
 
-	if (list->rightsib) {
-		total = total - list->area;
-		if (dir == BT) r.LL.y = s.UR.y;
-		else r.LL.x = s.UR.x;
-		if (aspect(r) > 1) sqlayouter(list->rightsib, BT, r, total);
-		else sqlayouter(list->rightsib, LR, r, total);
+	width = r.UR.x - r.LL.x;
+	height = r.UR.y - r.LL.y;
+	if (width > height) {
+		r1 = mkrectangle(r.LL.x,r.LL.y,r.LL.x + width * w1 / size, r.UR.y);
+		r2 = mkrectangle(r1.UR.x,r.LL.y,r.UR.x,r.UR.y);
 	}
+	else {
+	/*  this was bottom to top - but we want top to bottom layout 
+		r1 = mkrectangle(r.LL.x,r.LL.y,r.UR.x,r.LL.y + height * w1 / size);
+		r2 = mkrectangle(r.LL.x,r1.UR.y,r.UR.x,r.UR.y);
+	*/
+		r1 = mkrectangle(r.LL.x,r.UR.y - height * w1 / size,r.UR.x,r.UR.y);
+		r2 = mkrectangle(r.LL.x,r.LL.y,r.UR.x,r1.LL.y);
+	}
+	layout(tree,p,r1);
+	layout(p,split,r2);
 }
 
 static void printer(treenode_t *tree)
@@ -223,7 +226,6 @@ int main()
 	root.leftchild = treebuilder(g);
 	sizeit(&root);
 	/*layouter(&root,LR,r);*/
-	sqlayouter(&root,LR,r,root.area);
 	printer(&root);
 	return 0;
 }
@@ -242,7 +244,7 @@ void patchwork_layout(Agraph_t *g)
 	root.leftchild = treebuilder(g);
 	root.u.subg = g;
 	sizeit(&root);
-	sqlayouter(&root,LR,r,root.area);
+	layout(&root,0,r);
 	/* printer(&root); */
 	walker(&root);
 	/* compute_bb(g); */

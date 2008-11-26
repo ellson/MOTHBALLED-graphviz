@@ -118,7 +118,7 @@ static void patchwork_init_node(node_t * n)
 
 static void patchwork_init_edge(edge_t * e)
 {
-    common_init_edge(e);
+    /* common_init_edge(e); */
 
     ED_factor(e) = late_double(e, E_weight, 1.0, 0.0);
 }
