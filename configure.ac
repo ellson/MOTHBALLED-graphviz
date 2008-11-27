@@ -138,6 +138,7 @@ case "${host_os}" in
 	CXXFLAGS="${CXXFLAGS} -DWIN32 -DMSWIN32"
 	PATHSEPARATOR=";"
         NO_POSTSCRIPT_ALIAS=1
+	BROWSER="xdg-open"
 	;;
   *cygwin* )
 	CYGWIN=yes
@@ -145,12 +146,14 @@ case "${host_os}" in
 	PATHSEPARATOR=";"
         NO_POSTSCRIPT_ALIAS=1
 	AC_DEFINE(NO_POSTSCRIPT_ALIAS,1,[Alias PostScript font names to URW type 1 fonts])
+	BROWSER="xdg-open"
 	;;
   *mingw32* )
 	MINGW32=yes
 	DEFAULT_FONTPATH="C:/WINDOWS/FONTS;C:/WINNT/Fonts;C:/winnt/fonts"
 	PATHSEPARATOR=":"
         NO_POSTSCRIPT_ALIAS=1
+	BROWSER="xdg-open"
 	;;
   *darwin9* )
 	DARWIN9=yes
@@ -158,6 +161,7 @@ case "${host_os}" in
 	PATHSEPARATOR=":"
         NO_POSTSCRIPT_ALIAS=1
 	AC_DEFINE_UNQUOTED(DARWIN_DYLIB,"$DARWIN_DYLIB",[Define for Darwin-style shared library names.])
+	BROWSER="open"
 	case "${host_os}" in
 	*darwin9.4* | *darwin9.5* )
 		EXTRA_SMYRNA_LDFLAGS="-dylib_file /System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib"
@@ -168,12 +172,14 @@ case "${host_os}" in
 	DEFAULT_FONTPATH="~/Library/Fonts:/Library/Fonts:/Network/Library/Fonts:/System/Library/Fonts"
 	PATHSEPARATOR=":"
         NO_POSTSCRIPT_ALIAS=1
+	BROWSER="open"
 	AC_DEFINE_UNQUOTED(DARWIN_DYLIB,"$DARWIN_DYLIB",[Define for Darwin-style shared library names.])
 	;;
   * ) # This sucks!  Whatever happened to standards for file system layout?
 	DEFAULT_FONTPATH="/usr/share/fonts/default/Type1:/usr/X11R6/lib/X11/fonts/TrueType:/usr/X11R6/lib/X11/fonts/truetype:/usr/X11R6/lib/X11/fonts/TTF:/usr/share/fonts/TrueType:/usr/share/fonts/truetype:/usr/openwin/lib/X11/fonts/TrueType:/usr/X11R6/lib/X11/fonts/Type1:/usr/common/share/fonts/ttf";
 	PATHSEPARATOR=":"
         NO_POSTSCRIPT_ALIAS=0
+	BROWSER="xdg-open"
 	;;
 esac
 AC_SUBST(CYGWIN)
@@ -188,6 +194,7 @@ AM_CONDITIONAL(WITH_DARWIN9, [test "x$DARWIN9" = "xyes"])
 
 DEFAULT_DPI=96
 AC_DEFINE_UNQUOTED(DEFAULT_DPI,$DEFAULT_DPI,Default DPI.)
+AC_DEFINE_UNQUOTED(BROWSER,"$BROWSER",[Command to open a browser on a URL])
 
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 AM_CONFIG_HEADER(config.h)
