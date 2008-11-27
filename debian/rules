@@ -54,7 +54,6 @@ configure-stamp:
 	--with-x \
 	--with-gdk-pixbuf \
 	--without-ghostscript \
-	--without-gnomeui \
 	--without-gtk \
 	--without-gtkgl \
 	--without-gtkglext \
