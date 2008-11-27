@@ -1,5 +1,7 @@
 #! /bin/sh
 
+libtoolize --ltdl --force --copy || exit 1
+
 autoreconf -v --install --force || exit 1
 
 # ensure config/depcomp exists even if still using automake-1.4
