@@ -71,8 +71,6 @@
 #include <X11/extensions/Xrender.h>
 #endif
 
-#define BROWSER "xdg-open"
-
 typedef struct window_glitz_s {
     Window win;
     unsigned long event_mask;
