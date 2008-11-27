@@ -55,7 +55,7 @@
 #include <X11/Xutil.h>
 #include <X11/extensions/Xrender.h>
 
-#define BROWSER "firefox"
+#define BROWSER "xdg-open"
 
 typedef struct window_xlib_s {
     Window win;
