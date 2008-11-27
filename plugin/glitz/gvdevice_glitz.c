@@ -71,19 +71,7 @@
 #include <X11/extensions/Xrender.h>
 #endif
 
-/* Don't load up the glitz plugin with all that gnome stuff */
-/*   - OTOH now we are dependent on a firefox installation */
-/*                                                         */
-/* This undef must follow gvplugin_device.h because        */
-/*	 config.h is reincluded via:                       */
-/*             types.h->cdt.h->ast_common.h                */
-/*                      FIXME                              */
-#undef HAVE_GNOMEUI
 #define BROWSER "firefox"
-
-#ifdef HAVE_GNOMEUI
-#include <libgnome/libgnome.h>
-#endif
 
 typedef struct window_glitz_s {
     Window win;
@@ -180,9 +168,6 @@ static Visual *find_argb_visual(Display * dpy, int scr)
 
 static void browser_show(GVJ_t *job)
 {
-#ifdef HAVE_GNOMEUI
-   gnome_url_show(job->selected_href, NULL);
-#else
 #if defined HAVE_SYS_TYPES_H && defined HAVE_UNISTD_H && defined HAVE_ERRNO_H
    char *exec_argv[3] = {BROWSER, NULL, NULL};
    pid_t pid;
@@ -200,7 +185,6 @@ static void browser_show(GVJ_t *job)
    }
 #else
    fprintf(stdout,"browser_show: %s\n", job->selected_href);
-#endif
 #endif
 }
 

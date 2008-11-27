@@ -88,7 +88,7 @@ BuildRequires: perl ruby-devel guile-devel python-devel
 %define PANGOCAIRO 1
 %define RSVG 1
 BuildRequires: libtool-ltdl libtool-ltdl-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel java-devel
-BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel gtk2-devel libgnomeui-devel
+BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel gtk2-devel
 BuildRequires: librsvg2-devel
 %endif
 %if %rhel >= 6
@@ -130,7 +130,7 @@ BuildRequires: perl ruby-devel guile-devel python-devel
 %define PANGOCAIRO 1
 %define RSVG 1
 BuildRequires: libtool-ltdl libtool-ltdl-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel java-devel
-BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel gtk2-devel libgnomeui-devel
+BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel gtk2-devel
 BuildRequires: librsvg2-devel
 %endif
 %if %att_rhel >= 6
@@ -182,7 +182,7 @@ BuildRequires: mono-core ocaml
 %define LUA 1
 %define PANGOCAIRO 1
 %define RSVG 1
-BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel lua-devel gtk2-devel libgnomeui-devel
+BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel lua-devel gtk2-devel
 BuildRequires: librsvg2-devel
 %endif
 %if %fedora >= 7
@@ -250,7 +250,7 @@ BuildRequires: mono-core ocaml
 %define LUA 1
 %define PANGOCAIRO 1
 %define RSVG 1
-BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel lua-devel gtk2-devel libgnomeui-devel
+BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel lua-devel gtk2-devel
 BuildRequires: librsvg2-devel
 %endif
 %if %att_fedora >= 7
