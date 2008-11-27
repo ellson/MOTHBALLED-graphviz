@@ -2168,28 +2168,6 @@ fi
 AM_CONDITIONAL(WITH_GLADE, [test "x$use_glade" = "xYes"])
 
 dnl -----------------------------------
-dnl INCLUDES and LIBS for GNOMEUI.
-
-AC_ARG_WITH(gnomeui,
-  [AC_HELP_STRING([--with-gnomeui=yes], [gnomeui library])],
-  [], [with_gnomeui=yes])
-
-if test "x$with_gnomeui" != "xyes"; then
-  use_gnomeui="No (disabled)"
-else
-  PKG_CHECK_MODULES(GNOMEUI, [libgnomeui-2.0],[
-    use_gnomeui="Yes"
-    AC_DEFINE_UNQUOTED(HAVE_GNOMEUI,1,
-      [Define if you have the gnomeui library])
-    AC_SUBST(GNOMEUI_CFLAGS)
-    AC_SUBST(GNOMEUI_LIBS)
-  ],[
-    use_gnomeui="No (gnomeui library not available)"
-  ])
-fi
-AM_CONDITIONAL(WITH_GNOMEUI, [test "x$use_gnomeui" = "xYes"])
-
-dnl -----------------------------------
 dnl INCLUDES and LIBS for MING (SWF renderer)
 
 AC_ARG_WITH(ming,
