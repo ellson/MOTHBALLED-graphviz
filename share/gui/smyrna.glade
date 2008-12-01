@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.3 on Tue Nov 11 10:24:15 2008 -->
+<!--Generated with glade3 3.4.3 on Tue Nov 11 13:44:14 2008 -->
 <glade-interface>
   <widget class="GtkWindow" id="frmObject">
     <property name="width_request">470</property>
@@ -2600,6 +2600,7 @@ topview</property>
                 <property name="width_request">492</property>
                 <property name="height_request">27</property>
                 <property name="visible">True</property>
+                <property name="text" translatable="yes">([country="US",min="0",max="0"]) </property>
               </widget>
               <packing>
                 <property name="x">83</property>
@@ -4938,12 +4939,40 @@ Intersection
         <property name="visible">True</property>
         <property name="spacing">2</property>
         <child>
+          <widget class="GtkVBox" id="vbox8">
+            <property name="visible">True</property>
+            <child>
+              <widget class="GtkLabel" id="label94">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">
+Search in
+</property>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkComboBox" id="combobox1">
+                <property name="visible">True</property>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
           <widget class="GtkVBox" id="vbox7">
             <property name="visible">True</property>
             <child>
               <widget class="GtkLabel" id="label93">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">FIND NODES</property>
+                <property name="label" translatable="yes">Regular Expression</property>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -4961,7 +4990,7 @@ Intersection
             </child>
           </widget>
           <packing>
-            <property name="position">1</property>
+            <property name="position">2</property>
           </packing>
         </child>
         <child internal-child="action_area">

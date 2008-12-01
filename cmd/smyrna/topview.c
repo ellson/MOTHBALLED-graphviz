@@ -319,9 +319,8 @@ static int begintopviewnodes(Agraph_t* g)
 static void enddrawcycle(Agraph_t* g)
 {
     if (view->Selection.single_selected_edge)	{
-	if (view->mouse.button== rightmousebutton)	//right click pick mode
-	    printf ("an edge picked, implement it\n");//pick_node(view->Selection.single_selected_node);
-	else {	//left click single select mode
+	if (!(view->mouse.button== rightmousebutton))	//right click pick mode
+	{	//left click single select mode
 	    if (OD_Selected(view->Selection.single_selected_edge->Edge) == 0) {
 		OD_Selected(view->Selection.single_selected_edge->Edge) = 1;
 		select_object(view->g[view->activeGraph], view->Selection.single_selected_edge->Edge);
@@ -610,7 +609,6 @@ static int pick_node(topview_node * n)
 	{
 		if (add_to_pick_list(n)) 
 		{
-			printf("node picked ,name:%s\n", agnameof(n->Node));
 			return 1;
 	    }
 	    return 0;
@@ -619,7 +617,6 @@ static int pick_node(topview_node * n)
 	{
 		if (remove_from_pick_list(n)) 
 		{
-			printf("node has been unpicked ,name:%s\n",agnameof(n->Node));
 			return 1;
 		}
 	    return 0;
@@ -778,7 +775,6 @@ static int select_topview_edge(topview_edge * e)
 
 static int update_topview_node_from_cgraph(topview_node * Node)
 {
-    //for now just color, maybe i need more later
     char *buf;
     buf = agget(Node->Node, "color");
     if (buf)
@@ -861,21 +857,23 @@ static int draw_topview_label(topview_node * v, float zdepth)
 		fs=calculate_font_size(v);
 	
 
-		fs = (v->degree ==1) ? 
+/*		fs = (v->degree ==1) ? 
 				(float) (log((double) v->degree +1) *(double) 3) 
 					:
-				(float) (log((double) v->degree +(double) 0.5) *(double) 3)*14;
-//	fs=view->FontSize;
+				(float) (log((double) v->degree +(double) 0.5) *(double) 3)*14;*/
+
+		fs =(float) (log((double) v->degree +(double) 0.5) *(double) 3)*14;
+	//	fs=view->FontSize;
 	fs = fs * v->zoom_factor;
 	if (OD_Selected(v->Node) == 1) {
 	    ddx = dx;
 	    ddy = dy;
 	}
-	if ((fs / view->zoom*-1) < 35)
+	if ((fs / view->zoom*-1) < 25)
 		return 0;
 
-	fs= 10;
-
+//	fs= 10;
+	fs= fs * 0.2;
 
 
 
@@ -944,8 +942,6 @@ static void set_boundaries(topview * t)
     view->bdzTop = 0;
     view->bdzBottom = 0;
 
-    printf("graph borders:(%f,%f) (%f,%f)\n", view->bdxLeft,
-	   view->bdyBottom, view->bdxRight, view->bdyTop);
 }
 
 static int get_color_from_edge(topview_edge * e)

@@ -72,6 +72,7 @@ static void usage(int v)
     exit(v);
 }
 
+
 static char*
 parseArgs (int argc, char *argv[], ViewInfo* view)
 {

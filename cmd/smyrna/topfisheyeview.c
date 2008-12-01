@@ -249,7 +249,8 @@ void prepare_topological_fisheye(topview* t)
     view->Topview->parms.repos.width =(int) (view->bdxRight-view->bdxLeft);
     view->Topview->parms.repos.height =(int) (view->bdyTop-view->bdyBottom);
 	set_active_levels(hp, fs->foci_nodes, fs->num_foci, &(t->parms.level));
-	t->parms.repos.distortion=3;
+	printf ("dist:%s\n",agget(view->g[view->active_camera],"topologicalfisheyedistortionfactor"));
+	t->parms.repos.distortion=atof(agget(view->g[view->active_camera],"topologicalfisheyedistortionfactor"));
 	positionAllItems(hp, fs, &(t->parms.repos));
 	refresh_old_values(t);
 
@@ -269,15 +270,12 @@ void printalllevels(topview* t)
     glBegin(GL_POINTS);
     for (level = 0; level < hp->nlevels; level++) 
 	{
-		printf ("LEVEL:%d\n",level);
-		printf ("----------------------\n");
 		for (v = 0; v < hp->nvtxs[level]; v++) 
 		{
 			ex_vtx_data *gg = hp->geom_graphs[level];
 			if (gg[v].active_level == level) 
 			{
 				double x0,y0;
-				printf ("Level(%d) AL(%d) size(%d),",level,gg[v].active_level,gg[v].size);
 				get_temp_coords(t,level,v,&x0,&y0);
 				glColor3f((GLfloat) (hp->nlevels - level) / (GLfloat) hp->nlevels,
 						(GLfloat) level / (GLfloat) hp->nlevels, 0);
@@ -316,9 +314,9 @@ void drawtopologicalfisheye(topview * t)
 				else
 					glColor3f (1,0,0);
 
-			/*			glColor3f((GLfloat) (hp->nlevels - level) /
+						glColor3f((GLfloat) (hp->nlevels - level) /
 					  (GLfloat) hp->nlevels,
-				  (GLfloat) level / (GLfloat) hp->nlevels, 0);*/
+				  (GLfloat) level / (GLfloat) hp->nlevels, 0);
 				glVertex3f((GLfloat) x0, (GLfloat) y0, (GLfloat) 0);
 			}
 		}
@@ -341,11 +339,11 @@ void drawtopologicalfisheye(topview * t)
 				{
 					double x, y;
 					n = g[v].edges[i];
-//					glColor3f((GLfloat) (hp->nlevels - level) /     (GLfloat) hp->nlevels,      (GLfloat) level / (GLfloat) hp->nlevels, 0);
-					if ((gg[v].size > 1) || (gg[n].size > 1))
+					glColor3f((GLfloat) (hp->nlevels - level) /     (GLfloat) hp->nlevels,      (GLfloat) level / (GLfloat) hp->nlevels*2, 0);
+/*					if ((gg[v].size > 1) || (gg[n].size > 1))
 						glColor3f (0,1,0);
 					else
-						glColor3f (1,0,0);
+						glColor3f (1,0,0);*/
 					if (gg[n].active_level == level) 
 					{
 						if (v < n) 
@@ -543,8 +541,6 @@ static int get_temp_coords2(topview* t,int level,int v,double* coord_x,double* c
 		get_interpolated_coords(x0,y0,x1,y1,view->active_frame,view->total_frames,coord_x,coord_y);
 		if (recorded < 100)
 		{
-			printf ("OAL  AL  (x0,y0)-(x1,y1) current \n");
-			printf ("%i   %i  (%f,%f)-(%f,%f) (%f,%f)\n",OAL,AL,x0,y0,x1,y1,*coord_x,*coord_y);
 			recorded ++;
 		}
 
@@ -574,9 +570,6 @@ void infotopfisheye(topview * t, float *x, float *y, float *z)
 	Hierarchy *hp = t->h;
 	int closest_fine_node;
 	find_closest_active_node(hp, *x, *y, &closest_fine_node);
-	printf ("topological fisheye selected node summary.\n");
-
-	printf ("size:%d\n",hp->geom_graphs[0][closest_fine_node].size);
 	
 
 
