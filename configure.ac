@@ -274,10 +274,10 @@ AC_ARG_WITH(tclsh,
 
 if test "x$TCLSH" = "x"; then
   AC_PATH_PROGS(TCLSH,[tclsh8.6 tclsh8.5 tclsh8.4 tclsh8.3 tclsh])
-  if test "x$TCLSH" = "x"; then
-    AC_MSG_ERROR([Unable to find a tclsh. Tclsh is a required program for building graphviz, independent of wether tcl-based graphviz products are built])
-    use_tcl="No (tclsh unavailable)"
-  fi
+#  if test "x$TCLSH" = "x"; then
+#    AC_MSG_ERROR([Unable to find a tclsh. Tclsh is a required program for building graphviz, independent of wether tcl-based graphviz products are built])
+#    use_tcl="No (tclsh unavailable)"
+#  fi
 fi
 
 # are we building for windows?
