@@ -422,7 +422,7 @@ popFont (void)
 %token <font> T_font
 
 %type <txt> fonttext
-%type <i> br
+%type <i> br  
 %type <tbl> table fonttable
 %type <img> image
 

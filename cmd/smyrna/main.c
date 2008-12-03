@@ -48,6 +48,7 @@ gchar *package_data_dir;
 gchar *package_locale_dir;
 static char* smyrnaDir;
 char* smyrnaGlade;
+unsigned char SmyrnaVerbose;
 
 char*
 smyrnaPath (char* suffix)
@@ -81,7 +82,7 @@ parseArgs (int argc, char *argv[], ViewInfo* view)
     while ((c = getopt(argc, argv, ":K:txv?")) != -1) {
 	switch (c) {
 	case 'v':
-	    Verbose = 1;
+	    SmyrnaVerbose = 1;
 	    break;
 	case 't':
 	    view->dfltViewType = VT_TOPVIEW; 
