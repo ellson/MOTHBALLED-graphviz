@@ -249,8 +249,6 @@ void prepare_topological_fisheye(topview* t)
     view->Topview->parms.repos.width =(int) (view->bdxRight-view->bdxLeft);
     view->Topview->parms.repos.height =(int) (view->bdyTop-view->bdyBottom);
 	set_active_levels(hp, fs->foci_nodes, fs->num_foci, &(t->parms.level));
-	printf ("dist:%s\n",agget(view->g[view->active_camera],"topologicalfisheyedistortionfactor"));
-	t->parms.repos.distortion=atof(agget(view->g[view->active_camera],"topologicalfisheyedistortionfactor"));
 	positionAllItems(hp, fs, &(t->parms.repos));
 	refresh_old_values(t);
 
@@ -261,7 +259,6 @@ void prepare_topological_fisheye(topview* t)
 /*
 	draws all level 0 nodes and edges, during animation
 */
-
 void printalllevels(topview* t)
 {
     int level, v;
@@ -290,15 +287,30 @@ void drawtopologicalfisheye(topview * t)
 {
     int level, v, i, n;
     Hierarchy *hp = t->h;
-	static int a=0;
-	if(a==0)
+
+	
+	glEnable(GL_POINT_SMOOTH);	/*turn this off to make points look square*/
+	//draw focused node little bigger than others
+	glPointSize(8);
+    glBegin(GL_POINTS);
+
+	for (v = 0; v < hp->nvtxs[0]; v++) 
 	{
-		printalllevels(t);
-		a=1;
+		ex_vtx_data *gg = hp->geom_graphs[0];
+		if ((gg[v].active_level == 0) &&(v==t->fs->foci_nodes[0]))
+		{
+			double x0,y0;
+			get_temp_coords(t,0,v,&x0,&y0);
+			glColor3f(0,0,1);
+			glVertex3f((GLfloat) x0, (GLfloat) y0, (GLfloat) -0.1);
+		}
 	}
+	glEnd();
 
 
-    glPointSize(5);
+
+	//drawing nodes
+	glPointSize(5);
     glBegin(GL_POINTS);
     for (level = 0; level < hp->nlevels; level++) 
 	{
@@ -321,9 +333,12 @@ void drawtopologicalfisheye(topview * t)
 			}
 		}
     }
-    glEnd();
+	glEnd();
 
-    glBegin(GL_LINES);
+
+
+	//and edges
+	glBegin(GL_LINES);
     for (level = 0; level < hp->nlevels; level++)
 	{
 		for (v = 0; v < hp->nvtxs[level]; v++) 
@@ -364,6 +379,8 @@ void drawtopologicalfisheye(topview * t)
 		}
 	}
     glEnd();
+	glDisable(GL_POINT_SMOOTH);
+
 }
 
 
@@ -584,6 +601,7 @@ void infotopfisheye(topview * t, float *x, float *y, float *z)
 void changetopfishfocus(topview * t, float *x, float *y,
 				   float *z, int num_foci)
 {
+
 	focus_t *fs = t->fs;
     int i;
     int closest_fine_node;
@@ -596,14 +614,16 @@ void changetopfishfocus(topview * t, float *x, float *y,
 	find_closest_active_node(hp, x[i], y[i], &closest_fine_node);
 	fs->foci_nodes[i] = closest_fine_node;
 	fs->x_foci[i] =
-	    hp->geom_graphs[cur_level][closest_fine_node].x_coord;
+		hp->geom_graphs[cur_level][closest_fine_node].physical_x_coord;
 	fs->y_foci[i] =
-	    hp->geom_graphs[cur_level][closest_fine_node].y_coord;
+		hp->geom_graphs[cur_level][closest_fine_node].physical_y_coord;
     }
+
 
     set_active_levels(hp, fs->foci_nodes, fs->num_foci, &(t->parms.level));
     view->Topview->parms.repos.width =(int) (view->bdxRight-view->bdxLeft);
     view->Topview->parms.repos.height =(int) (view->bdyTop-view->bdyBottom);
+	t->parms.repos.distortion=atof(agget(view->g[0],"topologicalfisheyedistortionfactor"));
 	positionAllItems(hp, fs, &(t->parms.repos));
 	t->animate=1;
 

@@ -1038,17 +1038,21 @@ findClosestActiveNode(Hierarchy * hierarchy, int node,
 
     graph = hierarchy->geom_graphs[level];
 
-    if (graph[node].active_level == level) {	// node is active
-	double delx = x - graph[node].physical_x_coord;
-	double dely = y - graph[node].physical_y_coord;
-	double dist = delx*delx + dely*dely;
+    if (graph[node].active_level == level)
+	{	// node is active
+		double delx = x - graph[node].physical_x_coord;
+		double dely = y - graph[node].physical_y_coord;
+		double dist = delx*delx + dely*dely;
 
-	if (dist < closest_dist) {
-	    closest_dist = dist;
-	    *closest_node = node;
-	    *closest_node_level = level;
-	}
-	return closest_dist;
+		if (dist < closest_dist) 
+		{
+			closest_dist = dist;
+			*closest_node = node;
+			*closest_node_level = level;
+
+
+		}
+		return closest_dist;
     }
 
     closest_dist =
@@ -1074,8 +1078,9 @@ static int
 find_leftmost_descendant(Hierarchy * hierarchy, int node, int level,
 			 int cur_level)
 {
-    while (level > cur_level) {
-	node = hierarchy->cv2v[level--][2 * node];
+    while (level > cur_level) 
+	{
+		node = hierarchy->cv2v[level--][2 * node];
     }
     return node;
 }
@@ -1093,13 +1098,11 @@ find_closest_active_node(Hierarchy * hierarchy, double x, double y,
     int top_level = hierarchy->nlevels - 1;
     double min_dist = 1e20;
 
-    for (i = 0; i < hierarchy->nvtxs[top_level]; i++) {
-	min_dist = findClosestActiveNode(hierarchy, i, top_level, x, y, 
-	    min_dist, &closest_node, &closest_node_level);
+    for (i = 0; i < hierarchy->nvtxs[top_level]; i++) 
+	{
+		min_dist = findClosestActiveNode(hierarchy, i, top_level, x, y,min_dist, &closest_node, &closest_node_level);
     }
-    *closest_fine_node =
-	find_leftmost_descendant(hierarchy, closest_node,
-				 closest_node_level, cur_level);
+    *closest_fine_node =find_leftmost_descendant(hierarchy, closest_node,closest_node_level, cur_level);
 
     return min_dist;
 }

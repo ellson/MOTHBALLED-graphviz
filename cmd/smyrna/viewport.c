@@ -818,6 +818,7 @@ int add_graph_to_viewport_from_file(char *fileName)
 	view->activeGraph = view->graphCount - 1;
 	//GUI update , graph combo box on top-right should be updated
 	load_settings_from_graph(view->default_attributes);
+	update_graph_from_settings(view->g[view->activeGraph]);
 	refreshControls(view);
 	return 1;
     } else
