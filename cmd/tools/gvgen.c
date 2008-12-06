@@ -36,7 +36,8 @@
 #endif
 #include "graph_generator.h"
 
-typedef enum { unknown, grid, circle, complete, path, tree, torus, cylinder,
+typedef enum { unknown, grid, circle, complete, completeb, 
+    path, tree, torus, cylinder,
     sierpinski, hypercube, star, wheel
 } GraphType;
 
@@ -77,6 +78,7 @@ static char *Usage = "Usage: %s [-dV?] [options]\n\
  -G[f]<h,w>    : partial grid (folded if f is used)\n\
  -h<x>         : hypercube \n\
  -k<x>         : complete \n\
+ -b<x,y>       : complete binary\n\
  -o<outfile>   : put output in <outfile> (stdout)\n\
  -p<x>         : path \n\
  -s<x>         : star\n\
@@ -132,7 +134,7 @@ static int setOne(char *s, opts_t* opts)
     else return d;
 }
 
-/* setOne:
+/* setTwo:
  * Return non-zero on error.
  */
 static int setTwo(char *s, opts_t* opts)
@@ -173,7 +175,7 @@ static char* setFold(char *s, opts_t* opts)
     return next;
 }
 
-static char *optList = ":c:C:dg:G:h:k:o:p:s:S:t:T:Vw:?";
+static char *optList = ":c:C:dg:G:h:k:b:o:p:s:S:t:T:Vw:?";
 
 static GraphType init(int argc, char *argv[], opts_t* opts)
 {
@@ -212,6 +214,11 @@ static GraphType init(int argc, char *argv[], opts_t* opts)
 	case 'k':
 	    graphType = complete;
 	    if (setOne(optarg, opts))
+		errexit(c);
+	    break;
+	case 'b':
+	    graphType = completeb;
+	    if (setTwo(optarg, opts))
 		errexit(c);
 	    break;
 	case 'o':
@@ -329,6 +336,9 @@ int main(int argc, char *argv[])
 	break;
     case complete:
 	makeComplete(opts.graphSize1, ef);
+	break;
+    case completeb:
+	makeCompleteB(opts.graphSize1, opts.graphSize2, ef);
 	break;
     case hypercube:
 	makeHypercube(opts.graphSize1, ef);
