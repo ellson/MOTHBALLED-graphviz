@@ -71,7 +71,7 @@ libgv_java_la_LDFLAGS = -module -avoid-version
 libgv_java_la_CPPFLAGS = $(AM_CPPFLAGS) $(JAVA_INCLUDES)
 $(JAVA_data): gv_java.cpp
 gv_java.cpp: gv.i
-	$(SWIG) -c++ -java -o gv_java.cpp $(srcdir)/gv.i
+	$(SWIG) -package org.graphviz -c++ -java -o gv_java.cpp $(srcdir)/gv.i
 
 pkgluadir = $(pkglibdir)/lua
 LUA_data = 
