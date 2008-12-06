@@ -25,6 +25,9 @@ gvgen \- generate graphs
 .BI -k n
 ]
 [
+.BI -b x,y
+]
+[
 .BI -p n
 ]
 [
@@ -81,6 +84,11 @@ This will have \fI2^n\fP vertices and \fIn*2^(n-1)\fP edges.
 .BI \-k " n"
 Generate a complete graph on \fIn\fP vertices with 
 \fIn*(n-1)/2\fP edges.
+.TP
+.BI \-b " x,y"
+Generate a complete \fIx\fP by \fIy\fP bipartite graph.
+This will have \fIx+y\fP vertices and
+\fIx*y\fP edges.
 .TP
 .BI \-p " n"
 Generate a path on \fIn\fP vertices.

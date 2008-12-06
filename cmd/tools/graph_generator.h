@@ -21,6 +21,7 @@ typedef void (*edgefn)(int, int);
 
 extern void makeCircle(int , edgefn);
 extern void makeComplete(int , edgefn);
+extern void makeCompleteB(int, int, edgefn);
 extern void makePath(int , edgefn);
 extern void makeStar(int , edgefn);
 extern void makeWheel (int, edgefn);

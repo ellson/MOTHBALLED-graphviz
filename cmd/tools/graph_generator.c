@@ -92,6 +92,17 @@ void makeWheel(int n, edgefn ef)
     ef (2, n);
 }
 
+void makeCompleteB(int dim1, int dim2, edgefn ef)
+{
+    int i, j;
+
+    for (i = 1; i <= dim1; i++) {
+	for (j = 1; j <= dim2; j++) {
+	    ef ( i, dim1 + j);
+	}
+    }
+}
+
 void makeTorus(int dim1, int dim2, edgefn ef)
 {
     int i, j, n = 0;
