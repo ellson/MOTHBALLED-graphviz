@@ -18,6 +18,6 @@
 #define ORTHO_H
 #include <render.h>
 
-void orthoEdges (Agraph_t* g, int useLbls, splineInfo* sinfo);
+void orthoEdges (Agraph_t* g, int useLbls);
 
 #endif
