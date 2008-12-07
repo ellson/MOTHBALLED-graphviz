@@ -797,7 +797,7 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
     }
 #ifdef ORTHO
     else if (edgetype == ET_ORTHO) {
-	orthoEdges (g, 0, &sinfo);
+	orthoEdges (g, 0);
 	useEdges = 1;
     }
 #endif
@@ -819,7 +819,7 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 		    P->boxes = N_NEW(agnnodes(g) + 20 * 2 * 9, boxf);
 		}
 		makeSelfArcs(P, e, GD_nodesep(g));
-	    } else if (vconfig) { /* ET_SPLINE or ET_POLYLINE */
+	    } else if (vconfig) { /* ET_SPLINE or ET_PLINE */
 #ifdef HAVE_GTS
 		if ((ED_count(e) > 1) || BOUNDARY_PORT(e)) {
 		    int fail = 0;
