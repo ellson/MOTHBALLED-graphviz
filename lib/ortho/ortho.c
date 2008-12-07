@@ -17,9 +17,13 @@
 
 /* TODO:
  * In dot, prefer bottom or top routing
+ * In general, prefer closest side to closest side routing.
+ * Fix arrowheads
  * Ports/compass points
  * Edge labels
  * Loops
+ * Weights on edges in nodes
+ * Edge concentrators?
  */
 
 #ifdef HAVE_CONFIG_H
@@ -34,7 +38,7 @@
 #include <globals.h>
 #include <render.h>
 
-#define DEBUG
+/* #define DEBUG */
 
 #define CELL(n) ((cell*)ND_alg(n))
 #define MID(a,b) (((a)+(b))/2.0)
@@ -433,6 +437,14 @@ assignSegs (int nrtes, route* route_list, maze* mp)
     }
 }
 
+/* addLoop:
+ * Add temporary nodes to sgraph corresponding to cell cp, represented
+ * by np.
+ */
+static void
+addLoop (sgraph* sg, cell* cp, snode* np)
+{
+}
 /* addNodeEdges:
  * Add temporary node to sgraph corresponding to cell cp, represented
  * by np.
@@ -1173,37 +1185,51 @@ static int edgecmp(epair_t* e0, epair_t* e1)
     return (e0->d - e1->d);
 }
 
+static boolean spline_merge(node_t * n)
+{
+    return FALSE;
+}
+
+static boolean swap_ends_p(edge_t * e)
+{
+    return FALSE;
+}
+
+static splineInfo sinfo = { swap_ends_p, spline_merge };
+
 void
-orthoEdges (Agraph_t* g, int useLbls, splineInfo* sinfo)
+orthoEdges (Agraph_t* g, int useLbls)
 {
     sgraph* sg;
     maze* mp;
-    int n_edges = agnedges(g);
-    route* route_list = N_NEW (n_edges, route);
+    int n_edges;
+    route* route_list;
     int i, gstart;
     Agnode_t* n;
     Agedge_t* e;
     snode* sn;
     snode* dn;
-    epair_t* es = N_GNEW(n_edges, epair_t);
+    epair_t* es = N_GNEW(agnedges(g), epair_t);
     cell* start;
     cell* dest;
 
     mp = mkMaze (g);
     sg = mp->sg;
 
-    i = 0;
+    n_edges = 0;
     for (n = agfstnode (g); n; n = agnxtnode(g, n)) {
         for (e = agfstout(g, n); e; e = agnxtout(g,e)) {
-	    es[i].e = e;
-	    es[i].d = edgeLen (e);
-	    i++;
+	    if ((Nop == 2) && ED_spl(e)) continue;
+	    es[n_edges].e = e;
+	    es[n_edges].d = edgeLen (e);
+	    n_edges++;
 	}
     }
 
+    route_list = N_NEW (n_edges, route);
+
     qsort((char *)es, n_edges, sizeof(epair_t), (qsort_cmpf) edgecmp);
 
-    fflush (stdout);
     gstart = sg->nnodes;
     PQgen (sg->nnodes+2);
     sn = &sg->nodes[gstart];
@@ -1213,8 +1239,12 @@ orthoEdges (Agraph_t* g, int useLbls, splineInfo* sinfo)
         start = CELL(e->tail);
         dest = CELL(e->head);
 
-       	addNodeEdges (sg, dest, dn);
-	addNodeEdges (sg, start, sn);
+	if (start == dest)
+	    addLoop (sg, start, dn);
+	else {
+       	    addNodeEdges (sg, dest, dn);
+	    addNodeEdges (sg, start, sn);
+	}
        	shortPath (sg, dn, sn);
 	    
        	route_list[i] = convertSPtoRoute(sg, sn, dn);
@@ -1224,15 +1254,15 @@ orthoEdges (Agraph_t* g, int useLbls, splineInfo* sinfo)
 
     mp->hchans = extractHChans (mp);
     mp->vchans = extractVChans (mp);
-    assignSegs (agnedges(g), route_list, mp);
-    assignTracks (agnedges(g), route_list, mp);
+    assignSegs (n_edges, route_list, mp);
+    assignTracks (n_edges, route_list, mp);
     /* emitGraph (stdout, mp, g, route_list); */
-    attachOrthoEdges (mp, n_edges, route_list, sinfo, es);
+    attachOrthoEdges (mp, n_edges, route_list, &sinfo, es);
 
     freeSGraph (sg);
     dtclose (mp->hchans);
     dtclose (mp->vchans);
-    for (i=0; i < agnedges(g); i++)
+    for (i=0; i < n_edges; i++)
 	free (route_list[i].segs);
     free (route_list);
     freeMaze (mp);
