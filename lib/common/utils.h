@@ -82,6 +82,7 @@ extern "C" {
 
     extern Agsym_t *setAttr(graph_t*, void*, char*name, char *value, Agsym_t*);
     extern void setEdgeType (graph_t* g, int dflt);
+    extern int edgeType (char* s, int dflt);
 #ifdef __cplusplus
 }
 #endif

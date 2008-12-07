@@ -1659,33 +1659,16 @@ boolean overlap_edge(edge_t *e, boxf b)
     return FALSE;
 }
 
-/* setEdgeType:
- * Sets graph's edge type based on the "splines" attribute.
- * If the attribute is not defined, use default.
- * If the attribute is "", use NONE.
- * If attribute value matches (case indepedent), use match.
- *   ortho => ET_ORTHO
- *   none => ET_NONE
- *   line => ET_LINE
- *   polyline => ET_PLINE
- *   spline => ET_SPLINE
- * If attribute is boolean, true means ET_SPLINE, false means ET_LINE.
- * Else warn and use default.
+/* edgeType:
+ * Convert string to edge type.
  */
-void setEdgeType (graph_t* g, int dflt)
+int edgeType (char* s, int dflt)
 {
-    char* s = agget(g, "splines");
     int et;
 
-    if (!s) {
-	GD_flags(g) |= dflt;
-	return;
-    }
-    if (*s == '\0') {
-	et = ET_NONE;
-	return;
-    }
-    et = 0;
+    if (!s || (*s == '\0')) return dflt;
+
+    et = ET_NONE;
     switch (*s) {
     case '0' :    /* false */
 	et = ET_LINE;
@@ -1718,7 +1701,7 @@ void setEdgeType (graph_t* g, int dflt)
 	break;
     case 'n' :
     case 'N' :
-	if (!strcasecmp (s+1, "one")) return;
+	if (!strcasecmp (s+1, "one")) return et;
 	break;
     case 'o' :
     case 'O' :
@@ -1745,6 +1728,34 @@ void setEdgeType (graph_t* g, int dflt)
 	agerr(AGWARN, "Unknown \"splines\" value: \"%s\" - ignored\n", s);
 	et = dflt;
     }
+    return et;
+}
+
+/* setEdgeType:
+ * Sets graph's edge type based on the "splines" attribute.
+ * If the attribute is not defined, use default.
+ * If the attribute is "", use NONE.
+ * If attribute value matches (case indepedent), use match.
+ *   ortho => ET_ORTHO
+ *   none => ET_NONE
+ *   line => ET_LINE
+ *   polyline => ET_PLINE
+ *   spline => ET_SPLINE
+ * If attribute is boolean, true means ET_SPLINE, false means ET_LINE.
+ * Else warn and use default.
+ */
+void setEdgeType (graph_t* g, int dflt)
+{
+    char* s = agget(g, "splines");
+    int et;
+
+    if (!s) {
+	et = dflt;
+    }
+    else if (*s == '\0') {
+	et = ET_NONE;
+    }
+    else et = edgeType (s, dflt);
     GD_flags(g) |= et;
 }
 
