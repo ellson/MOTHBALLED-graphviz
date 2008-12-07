@@ -232,7 +232,7 @@ static void _dot_splines(graph_t * g, int normalize)
     if (et == ET_NONE) return; 
 #ifdef ORTHO
     if (et == ET_ORTHO) {
-	orthoEdges (g, 0, &sinfo);
+	orthoEdges (g, 0);
 	goto finish;
     } 
 #endif
