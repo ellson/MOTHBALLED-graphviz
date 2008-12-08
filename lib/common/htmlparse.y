@@ -470,7 +470,7 @@ table : opt_space T_table {
           $2->u.p.rows = dtopen(&rowDisc, Dtqueue);
           HTMLstate.tblstack = $2;
           $2->font = dupFont (HTMLstate.fontstack->cfont);
-          $$ = $2;
+          $<tbl>$ = $2;
         }
         rows T_end_table opt_space {
           if (nonSpace(agxbuse(HTMLstate.str))) {
