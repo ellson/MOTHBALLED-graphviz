@@ -24,6 +24,7 @@ extern "C" {
 #endif
 
 #include <geom.h>
+#include <SparseMatrix.h>
 
 #define DFLT_MARGIN     4   /* 4 points */
 
@@ -55,6 +56,8 @@ typedef struct {
     extern int cAdjust(graph_t *, int);
     extern int scAdjust(graph_t *, int);
     extern adjust_data *graphAdjustMode(graph_t *G);
+    extern double *getSizes(Agraph_t * g, pointf pad);
+    extern SparseMatrix makeMatrix(Agraph_t * g, int dim);
 
 #ifdef __cplusplus
 }

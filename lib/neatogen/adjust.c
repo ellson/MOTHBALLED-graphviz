@@ -30,8 +30,8 @@
 #include "heap.h"
 #include "hedges.h"
 #include "digcola.h"
-#if ((defined(HAVE_GTS) || defined(HAVE_TRIANGLE)) && defined(SFDP))
-#include "sfdp.h"
+#if (defined(HAVE_GTS) || defined(HAVE_TRIANGLE))
+#include "overlap.h"
 #endif
 #ifdef IPSEPCOLA
 #include "csolve_VPSC.h"
@@ -658,6 +658,136 @@ static void updateGraph(Agraph_t * graph)
     }
 }
 
+/* getSizes:
+ * Set up array of half sizes in inches.
+ */
+double *getSizes(Agraph_t * g, pointf pad)
+{
+    Agnode_t *n;
+    real *sizes = N_GNEW(2 * agnnodes(g), real);
+    int i;
+
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	i = ND_id(n);
+	sizes[i * 2] = ND_width(n) * .5 + pad.x;
+	sizes[i * 2 + 1] = ND_height(n) * .5 + pad.y;
+    }
+
+    return sizes;
+}
+
+/* makeMatrix:
+ * Assumes g is connected and simple, i.e., we can have a->b and b->a
+ * but not a->b and a->b
+ */
+SparseMatrix makeMatrix(Agraph_t * g, int dim)
+{
+    SparseMatrix A = 0;
+    Agnode_t *n;
+    Agedge_t *e;
+    Agsym_t *sym;
+    int nnodes;
+    int nedges;
+    int i, row;
+    int *I;
+    int *J;
+    real *val;
+    real v;
+    int type = MATRIX_TYPE_REAL;
+
+    if (!g)
+	return NULL;
+    nnodes = agnnodes(g);
+    nedges = agnedges(g);
+
+    /* Assign node ids */
+    i = 0;
+    for (n = agfstnode(g); n; n = agnxtnode(g, n))
+	ND_id(n) = i++;
+
+    I = N_GNEW(nedges, int);
+    J = N_GNEW(nedges, int);
+    val = N_GNEW(nedges, real);
+
+    sym = agfindedgeattr(g, "weight");
+    i = 0;
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	row = ND_id(n);
+	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+	    I[i] = row;
+	    J[i] = ND_id(e->head);
+	    if (!sym || (sscanf(agxget(e, sym->index), "%lf", &v) != 1))
+		v = 1;
+	    val[i] = v;
+	    i++;
+	}
+    }
+
+    A = SparseMatrix_from_coordinate_arrays(nedges, nnodes, nnodes, I, J,
+					    val, type);
+
+    free(I);
+    free(J);
+    free(val);
+
+    return A;
+}
+
+#if ((HAVE_GTS || HAVE_TRIANGLE))
+static int
+fdpAdjust (graph_t* g)
+{
+    SparseMatrix A0 = makeMatrix(g, Ndim);
+    SparseMatrix A = A0;
+    real *sizes;
+    real *pos = N_NEW(Ndim * agnnodes(g), real);
+    Agnode_t *n;
+    int flag, i;
+    expand_t sep = sepFactor(g);
+    pointf pad;
+
+    if (sep.doAdd) {
+	pad.x = PS2INCH(sep.x);
+	pad.y = PS2INCH(sep.y);
+    } else {
+	pad.x = PS2INCH(DFLT_MARGIN);
+	pad.y = PS2INCH(DFLT_MARGIN);
+    }
+    sizes = getSizes(g, pad);
+
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	real* npos = pos + (Ndim * ND_id(n));
+	for (i = 0; i < Ndim; i++) {
+	    npos[i] = ND_pos(n)[i];
+	}
+    }
+
+    if (!SparseMatrix_is_symmetric(A, FALSE)
+	|| A->type != MATRIX_TYPE_REAL) {
+	A = SparseMatrix_get_real_adjacency_matrix_symmetrized(A);
+    } else {
+	A = SparseMatrix_remove_diagonal(A);
+    }
+
+    remove_overlap(Ndim, A, A->m, pos, sizes, 1000, -4, &flag);
+
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	real *npos = pos + (Ndim * ND_id(n));
+	for (i = 0; i < Ndim; i++) {
+	    ND_pos(n)[i] = npos[i];
+	}
+    }
+
+    free(sizes);
+    free(pos);
+    if (A != A0)
+	SparseMatrix_delete(A);
+    SparseMatrix_delete (A0);
+
+    return flag;
+}
+#endif
+
 #ifdef IPSEPCOLA
 static int
 vpscAdjust(graph_t* G)
@@ -862,7 +992,7 @@ removeOverlapAs(graph_t * G, char* flag)
 	case AM_COMPRESS:
 	    ret = scAdjust(G, -1);
 	    break;
-#if ((HAVE_GTS || HAVE_TRIANGLE) && SFDP)
+#if ((HAVE_GTS || HAVE_TRIANGLE))
 	case AM_PRISM:
 	    ret = fdpAdjust(G);
 	    break;
