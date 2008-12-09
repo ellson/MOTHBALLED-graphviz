@@ -18,7 +18,7 @@
 #include "config.h"
 #endif
 
-#if (defined(HAVE_GTS) || defined(HAVE_TRIANGLE))
+#if ((defined(HAVE_GTS) || defined(HAVE_TRIANGLE)) && defined(SFDP))
 #include "SparseMatrix.h"
 #include "overlap.h"
 #include "call_tri.h"

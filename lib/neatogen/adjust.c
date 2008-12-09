@@ -30,7 +30,7 @@
 #include "heap.h"
 #include "hedges.h"
 #include "digcola.h"
-#if (defined(HAVE_GTS) || defined(HAVE_TRIANGLE))
+#if ((defined(HAVE_GTS) || defined(HAVE_TRIANGLE)) && defined(SFDP))
 #include "overlap.h"
 #endif
 #ifdef IPSEPCOLA
@@ -733,7 +733,7 @@ SparseMatrix makeMatrix(Agraph_t * g, int dim)
     return A;
 }
 
-#if ((HAVE_GTS || HAVE_TRIANGLE))
+#if ((defined(HAVE_GTS) || defined(HAVE_TRIANGLE)) && defined(SFDP))
 static int
 fdpAdjust (graph_t* g)
 {
@@ -992,7 +992,7 @@ removeOverlapAs(graph_t * G, char* flag)
 	case AM_COMPRESS:
 	    ret = scAdjust(G, -1);
 	    break;
-#if ((HAVE_GTS || HAVE_TRIANGLE))
+#if ((defined(HAVE_GTS) || defined(HAVE_TRIANGLE)) && defined(SFDP))
 	case AM_PRISM:
 	    ret = fdpAdjust(G);
 	    break;
