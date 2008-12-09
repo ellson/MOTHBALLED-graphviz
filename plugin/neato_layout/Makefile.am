@@ -33,6 +33,7 @@ libgvplugin_neato_layout_C_la_LIBADD = \
 	$(top_builddir)/lib/patchwork/libpatchwork_C.la \
 	$(top_builddir)/lib/fdpgen/libfdpgen_C.la \
 	$(top_builddir)/lib/sparse/libsparse_C.la \
+	$(top_builddir)/lib/rbtree/librbtree_C.la \
 	$(top_builddir)/lib/circogen/libcircogen_C.la
 
 libgvplugin_neato_layout_la_LDFLAGS = -version-info $(GVPLUGIN_VERSION_INFO)
