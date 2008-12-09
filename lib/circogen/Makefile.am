@@ -16,6 +16,7 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/neatogen \
         -I$(top_srcdir)/lib/pack \
         -I$(top_srcdir)/lib/pathplan \
+        -I$(top_srcdir)/lib/sparse \
         -I$(top_srcdir)/lib/$(GRAPH) \
         -I$(top_srcdir)/lib/cdt
 
