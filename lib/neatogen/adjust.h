@@ -23,8 +23,8 @@
 extern "C" {
 #endif
 
-#include <geom.h>
-#include <SparseMatrix.h>
+#include "geom.h"
+#include "SparseMatrix.h"
 
 #define DFLT_MARGIN     4   /* 4 points */
 
