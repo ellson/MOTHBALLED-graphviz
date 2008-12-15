@@ -521,12 +521,12 @@ int writeFile(Agraph_t * g, char *f)
     Sfio_t *fp;
 
     if (!f) {
-	error(1, "NULL string passed to writeG");
+	error(ERROR_FATAL, "NULL string passed to writeG");
 	return 1;
     }
     fp = sfopen(0, f, "w");
     if (!fp) {
-	error(1, "Could not open %s for writing in writeG", f);
+	error(ERROR_FATAL, "Could not open %s for writing in writeG", f);
 	return 1;
     }
     rv = agwrite(g, fp);
@@ -544,12 +544,12 @@ Agraph_t *readFile(char *f)
     Sfio_t *fp;
 
     if (!f) {
-	error(1, "NULL string passed to readG");
+	error(ERROR_FATAL, "NULL string passed to readG");
 	return 0;
     }
     fp = sfopen(0, f, "r");
     if (!fp) {
-	error(1, "Could not open %s for reading in readG", f);
+	error(ERROR_FATAL, "Could not open %s for reading in readG", f);
 	return 0;
     }
     gp = readG(fp);
@@ -591,7 +591,7 @@ int openFile(Expr_t * ex, char *fname, char *mode)
 	if (!ex->file[idx])
 	    break;
     if (idx == elementsof(ex->file)) {
-	error(1, "openF: no available descriptors");
+	error(ERROR_FATAL, "openF: no available descriptors");
 	return -1;
     }
     ex->file[idx] = sfopen(0, fname, mode);
@@ -606,11 +606,11 @@ int closeFile(Expr_t * ex, int fd)
     int rv;
 
     if ((0 <= fd) && (fd <= 2)) {
-	error(1, "closeF: cannot close standard stream %d", fd);
+	error(ERROR_FATAL, "closeF: cannot close standard stream %d", fd);
 	return -1;
     }
     if (!ex->file[fd]) {
-	error(1, "closeF: stream %d not open", fd);
+	error(ERROR_FATAL, "closeF: stream %d not open", fd);
 	return -1;
     }
     rv = sfclose(ex->file[fd]);
