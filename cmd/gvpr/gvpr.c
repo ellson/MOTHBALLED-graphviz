@@ -479,10 +479,8 @@ static void travDFS(Gpr_t * state, comp_prog * xprog, trav_fns * fns)
 	    else
 		cure = fns->fstedge(state->curgraph, curn);
 	    if (cure) {
-#if 0
-		if (entry == agopp(cure))  /* skip loops */
+		if (entry == agopp(cure))  /* skip edge used to get here */
 		    continue;
-#endif
 		nd = nData(cure->node);
 		if (MARKED(nd)) {
                     /* For undirected DFS, visit an edge only if its head
