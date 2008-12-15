@@ -1,3 +1,9 @@
+.
+.de TQ
+.  br
+.  ns
+.  TP \\$1
+..
 .TH GVPR 1 "24 April 2008"
 .SH NAME
 gvpr \- graph pattern scanning and processing language
@@ -798,11 +804,15 @@ graph (cf. \fB$tvtype\fP below).
 The default value is \fBNULL\fP for each input graph.
 .TP
 \fB$tvtype\fP : \fBtvtype_t\fP
-indicates how \fBgvpr\fP traverses a graph. At present, it can only take
-one of six values: \fBTV_flat\fP, \fBTV_dfs\fP, \fBTV_fwd\fP,
-\fBTV_rev\fP, \fBTV_bfs\fP, \fBTV_ne\fP, and \fBTV_en\fP. 
+indicates how \fBgvpr\fP traverses a graph. It can only take
+one of the constant values with the previx "TV_" described below.
 \fBTV_flat\fP is the default.
-The meaning of these values is discussed below.
+.IP
+In the underlying graph library
+.IR cgraph (3),
+edges in undirected graphs are given an arbitrary direction. This is
+used for traversals, such as \fBTV_fwd\fR, requiring directed edges.
+.
 .TP
 \fBARGC\fP : \fBint\fP
 denotes the number of arguments specified by the 
@@ -833,6 +843,10 @@ a traversal which first visits all of the edges, then all
 of the nodes.
 .TP
 \fBTV_dfs\fR : \fItvtype_t\fR
+.TQ
+\fBTV_postdfs\fR : \fItvtype_t\fR
+.TQ
+\fBTV_prepostdfs\fR : \fItvtype_t\fR
 a traversal of the graph using a depth\(hyfirst search on the
 underlying undirected graph. 
 To do the traversal, \fBgvpr\fP will check the value of
@@ -843,27 +857,47 @@ component. On the other hand, if \fB$tvroot\fP has changed, its connected
 component will be toured, assuming it has not been previously visited or,
 if \fB$tvroot\fP is \fBNULL\fP, the traversal will stop. Note that using
 \fBTV_dfs\fP and \fB$tvroot\fP, it is possible to create an infinite loop.
+.
+.IP
+By default, the traversal is done in pre-order. That is, a node is
+visited before all of its unvisited edges. For \fBTV_postdfs\fR,
+all of a node's unvisited edges are visited before the node. For
+\fBTV_prepostdfs\fR, a node is visited twice, before and after all of
+its unvisited edges.
+.
 .TP
 \fBTV_fwd\fR : \fItvtype_t\fR
-a traversal of the graph using a depth\(hyfirst search on the
-graph following only forward arcs. In
-.TP
-\fBTV_bfs\fR : \fItvtype_t\fR
-a traversal of the graph using a bread\(hyfirst search on the
-graph ignoring edge directions. See the item on \fBTV_dfs\fR above
-for the role of \fB$tvroot\fP.
-.IR libcgraph (3),
-edges in undirected graphs are given an arbitrary direction, which is
-used for this traversal. The choice of roots for the traversal is the
+.TQ
+\fBTV_postfwd\fR : \fItvtype_t\fR
+.TQ
+\fBTV_prepostfwd\fR : \fItvtype_t\fR
+A traversal of the graph using a depth\(hyfirst search on the
+graph following only forward arcs.
+The choice of roots for the traversal is the
 same as described for \fBTV_dfs\fR above.
+The different order of visitation specified by \fBTV_fwd\fR,
+\fBTV_postfwd\fR and \fBTV_prepostfwd\fR are the same as those
+specified by the analogous traversals \fBTV_dfs\fR,
+\fBTV_postdfs\fR and \fBTV_prepostdfs\fR.
 .TP
 \fBTV_rev\fR : \fItvtype_t\fR
-a traversal of the graph using a depth\(hyfirst search on the
-graph following only reverse arcs. In
-.IR libcgraph (3),
-edges in undirected graphs are given an arbitrary direction, which is
-used for this traversal. The choice of roots for the traversal is the
+.TQ
+\fBTV_postrev\fR : \fItvtype_t\fR
+.TQ
+\fBTV_prepostrev\fR : \fItvtype_t\fR
+A traversal of the graph using a depth\(hyfirst search on the
+graph following only reverse arcs.
+The choice of roots for the traversal is the
 same as described for \fBTV_dfs\fR above.
+The different order of visitation specified by \fBTV_rev\fR,
+\fBTV_postrev\fR and \fBTV_prepostrev\fR are the same as those
+specified by the analogous traversals \fBTV_dfs\fR,
+\fBTV_postdfs\fR and \fBTV_prepostdfs\fR.
+.TP
+\fBTV_bfs\fR : \fItvtype_t\fR
+A traversal of the graph using a bread\(hyfirst search on the
+graph ignoring edge directions. See the item on \fBTV_dfs\fR above
+for the role of \fB$tvroot\fP.
 .SH EXAMPLES
 .PP
 .ta \w'\f(CWdelete array[expression]'u

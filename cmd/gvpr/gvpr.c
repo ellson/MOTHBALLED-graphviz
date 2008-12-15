@@ -279,11 +279,11 @@ static void scanArgs(int argc, char **argv)
 		error(ERROR_USAGE, "%s", usage);
 		exit(0);
 	    } else {
-		error(2, "option -%c unrecognized", optopt);
+		error(ERROR_ERROR, "option -%c unrecognized", optopt);
 	    }
 	    break;
 	case ':':
-	    error(2, "missing argument for option -%c", optopt);
+	    error(ERROR_ERROR, "missing argument for option -%c", optopt);
 	    break;
 	}
     }
@@ -293,7 +293,7 @@ static void scanArgs(int argc, char **argv)
     /* Handle additional semantics */
     if (options.useFile == 0) {
 	if (argc == 0) {
-	    error(2, "No program supplied via argument or -f option");
+	    error(ERROR_ERROR, "No program supplied via argument or -f option");
 #ifdef GVDLL
 	    setErrorErrors (1);
 #else
@@ -393,14 +393,19 @@ static Agnode_t *nextNode(Gpr_t * state, nodestream * nodes)
 typedef Agedge_t *(*fstedgefn_t) (Agraph_t*, Agnode_t *);
 typedef Agedge_t *(*nxttedgefn_t) (Agraph_t*, Agedge_t *, Agnode_t *);
 
+#define PRE_VISIT 1
+#define POST_VISIT 2
+
 typedef struct {
     fstedgefn_t fstedge;
     nxttedgefn_t nxtedge;
+    unsigned char undirected;
+    unsigned char visit;
 } trav_fns;
 
-static trav_fns DFSfns = { agfstedge, agnxtedge };
-static trav_fns FWDfns = { agfstout, (nxttedgefn_t) agnxtout };
-static trav_fns REVfns = { agfstin, (nxttedgefn_t) agnxtin };
+static trav_fns DFSfns = { agfstedge, agnxtedge, 1, 0};
+static trav_fns FWDfns = { agfstout, (nxttedgefn_t) agnxtout, 0, 0};
+static trav_fns REVfns = { agfstin, (nxttedgefn_t) agnxtin, 0, 0};
 
 static void travBFS(Gpr_t * state, comp_prog * xprog)
 {
@@ -465,7 +470,8 @@ static void travDFS(Gpr_t * state, comp_prog * xprog, trav_fns * fns)
 	cure = 0;
 	MARK(nd);
 	PUSH(nd);
-	evalNode(state, xprog, n);
+	if (fns->visit & PRE_VISIT)
+	    evalNode(state, xprog, n);
 	more = 1;
 	while (more) {
 	    if (cure)
@@ -473,11 +479,20 @@ static void travDFS(Gpr_t * state, comp_prog * xprog, trav_fns * fns)
 	    else
 		cure = fns->fstedge(state->curgraph, curn);
 	    if (cure) {
-		if (entry == agopp(cure))
+#if 0
+		if (entry == agopp(cure))  /* skip loops */
 		    continue;
+#endif
 		nd = nData(cure->node);
 		if (MARKED(nd)) {
-		    if (ONSTACK(nd))
+                    /* For undirected DFS, visit an edge only if its head
+                     * is on the stack, to avoid visiting it twice.
+                     * This is no problem in directed DFS.
+                     */
+		    if (fns->undirected) {
+			if (ONSTACK(nd)) evalEdge(state, xprog, cure);
+		    }
+		    else
 			evalEdge(state, xprog, cure);
 		} else {
 		    evalEdge(state, xprog, cure);
@@ -485,11 +500,14 @@ static void travDFS(Gpr_t * state, comp_prog * xprog, trav_fns * fns)
 		    entry = cure;
 		    curn = cure->node;
 		    cure = 0;
-		    evalNode(state, xprog, curn);
+		    if (fns->visit & PRE_VISIT)
+			evalNode(state, xprog, curn);
 		    MARK(nd);
 		    PUSH(nd);
 		}
 	    } else {
+		if (fns->visit & POST_VISIT)
+		    evalNode(state, xprog, curn);
 		nd = nData(curn);
 		POP(nd);
 		cure = entry;
@@ -564,12 +582,39 @@ static void traverse(Gpr_t * state, comp_prog * xprog)
 	travBFS(state, xprog);
 	break;
     case TV_dfs:
+	DFSfns.visit = PRE_VISIT;
 	travDFS(state, xprog, &DFSfns);
 	break;
     case TV_fwd:
+	FWDfns.visit = PRE_VISIT;
 	travDFS(state, xprog, &FWDfns);
 	break;
     case TV_rev:
+	REVfns.visit = PRE_VISIT;
+	travDFS(state, xprog, &REVfns);
+	break;
+    case TV_postdfs:
+	DFSfns.visit = POST_VISIT;
+	travDFS(state, xprog, &DFSfns);
+	break;
+    case TV_postfwd:
+	FWDfns.visit = POST_VISIT;
+	travDFS(state, xprog, &FWDfns);
+	break;
+    case TV_postrev:
+	REVfns.visit = POST_VISIT | PRE_VISIT;
+	travDFS(state, xprog, &REVfns);
+	break;
+    case TV_prepostdfs:
+	DFSfns.visit = POST_VISIT | PRE_VISIT;
+	travDFS(state, xprog, &DFSfns);
+	break;
+    case TV_prepostfwd:
+	FWDfns.visit = POST_VISIT | PRE_VISIT;
+	travDFS(state, xprog, &FWDfns);
+	break;
+    case TV_prepostrev:
+	REVfns.visit = POST_VISIT;
 	travDFS(state, xprog, &REVfns);
 	break;
     case TV_ne:

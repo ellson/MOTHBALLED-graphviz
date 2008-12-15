@@ -26,8 +26,12 @@ extern "C" {
 #include "ast.h"
 #include "vmalloc.h"
 
-    typedef enum { TV_flat, TV_bfs, TV_dfs, TV_fwd, TV_rev, TV_ne,
-	    TV_en } trav_type;
+    typedef enum { TV_flat, TV_ne, TV_en, 
+                   TV_bfs, 
+                   TV_dfs, TV_fwd, TV_rev,
+                   TV_postdfs, TV_postfwd, TV_postrev,
+                   TV_prepostdfs, TV_prepostfwd, TV_prepostrev,
+    } trav_type;
 
     typedef struct {
 	Agraph_t *curgraph;

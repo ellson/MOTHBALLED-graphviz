@@ -1563,14 +1563,20 @@ refval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
     Extype_t v;
     if (sym->lex == CONSTANT) {
 	switch (sym->index) {
-	case C_dfs:
-	    v.integer = TV_dfs;
+	case C_flat:
+	    v.integer = TV_flat;
+	    break;
+	case C_ne:
+	    v.integer = TV_ne;
+	    break;
+	case C_en:
+	    v.integer = TV_en;
 	    break;
 	case C_bfs:
 	    v.integer = TV_bfs;
 	    break;
-	case C_flat:
-	    v.integer = TV_flat;
+	case C_dfs:
+	    v.integer = TV_dfs;
 	    break;
 	case C_fwd:
 	    v.integer = TV_fwd;
@@ -1578,11 +1584,23 @@ refval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	case C_rev:
 	    v.integer = TV_rev;
 	    break;
-	case C_ne:
-	    v.integer = TV_ne;
+	case C_postdfs:
+	    v.integer = TV_postdfs;
 	    break;
-	case C_en:
-	    v.integer = TV_en;
+	case C_postfwd:
+	    v.integer = TV_postfwd;
+	    break;
+	case C_postrev:
+	    v.integer = TV_postrev;
+	    break;
+	case C_prepostdfs:
+	    v.integer = TV_prepostdfs;
+	    break;
+	case C_prepostfwd:
+	    v.integer = TV_prepostfwd;
+	    break;
+	case C_prepostrev:
+	    v.integer = TV_prepostrev;
 	    break;
 	case C_null:
 	    v.integer = 0;
@@ -1604,9 +1622,9 @@ refval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 static void cvtError(Exid_t * xref, char *msg)
 {
     if (xref)
-	error(1, "%s: %s", xref->name, msg);
+	error(ERROR_FATAL, "%s: %s", xref->name, msg);
     else
-	error(1, "%s", msg);
+	error(ERROR_FATAL, "%s", msg);
 }
 #endif
 
@@ -1733,8 +1751,106 @@ binary(Expr_t * pg, Exnode_t * l, Exnode_t * ex, Exnode_t * r, int arg,
     return ret;
 }
 
+/* strToTvtype:
+ */
+static int
+strToTvtype (char* s)
+{
+    int rt = 0;
+    char* sfx;
+
+    if (!strncmp(s, "TV_", 3)) {
+	sfx = s + 3;
+	if (!strcmp(sfx, "flat")) {
+	    rt = TV_flat;
+	} else if (!strcmp(sfx, "ne")) {
+	    rt = TV_ne;
+	} else if (!strcmp(sfx, "en")) {
+	    rt = TV_en;
+	} else if (!strcmp(sfx, "bfs")) {
+	    rt = TV_bfs;
+	} else if (!strcmp(sfx, "dfs")) {
+	    rt = TV_dfs;
+	} else if (!strcmp(sfx, "fwd")) {
+	    rt = TV_fwd;
+	} else if (!strcmp(sfx, "rev")) {
+	    rt = TV_rev;
+	} else if (!strcmp(sfx, "postdfs")) {
+	    rt = TV_postdfs;
+	} else if (!strcmp(sfx, "postfwd")) {
+	    rt = TV_postfwd;
+	} else if (!strcmp(sfx, "postrev")) {
+	    rt = TV_postrev;
+	} else if (!strcmp(sfx, "prepostdfs")) {
+	    rt = TV_prepostdfs;
+	} else if (!strcmp(sfx, "prepostfwd")) {
+	    rt = TV_prepostfwd;
+	} else if (!strcmp(sfx, "prepostrev")) {
+	    rt = TV_prepostrev;
+	} else
+	    error(ERROR_FATAL, "illegal string \"%s\" for type tvtype_t", s);
+    } else
+	error(ERROR_FATAL, "illegal string \"%s\" for type tvtype_t", s);
+    return rt;
+}
+
+/* tvtypeToStr:
+ */
+static char*
+tvtypeToStr (int v)
+{
+    char* s = 0;
+
+    switch (v) {
+    case TV_flat:
+	s = "TV_flat";
+	break;
+    case TV_ne:
+	s = "TV_ne";
+	break;
+    case TV_en:
+	s = "TV_en";
+	break;
+    case TV_bfs:
+	s = "TV_bfs";
+	break;
+    case TV_dfs:
+	s = "TV_dfs";
+	break;
+    case TV_fwd:
+	s = "TV_fwd";
+	break;
+    case TV_rev:
+	s = "TV_rev";
+	break;
+    case TV_postdfs:
+	s = "TV_postdfs";
+	break;
+    case TV_postfwd:
+	s = "TV_postfwd";
+	break;
+    case TV_postrev:
+	s = "TV_postrev";
+	break;
+    case TV_prepostdfs:
+	s = "TV_prepostdfs";
+	break;
+    case TV_prepostfwd:
+	s = "TV_prepostfwd";
+	break;
+    case TV_prepostrev:
+	s = "TV_prepostrev";
+	break;
+    default:
+	exerror("Unexpected value %d for type tvtype_t",
+	    v);
+	break;
+    }
+    return s;
+}
+
 /* stringOf:
- * Convert value x of type string.
+ * Convert value x to type string.
  * Assume x does not have a built-in type
  * Return -1 if conversion cannot be done, 0 otherwise.
  * If arg is > 0, conversion unnecessary; just report possibility.
@@ -1747,27 +1863,8 @@ int stringOf(Expr_t * prog, register Exnode_t * x, int arg)
 	return 0;
 
     if (x->type == T_tvtyp) {
-	switch (x->data.constant.value.integer) {
-	case TV_flat:
-	    x->data.constant.value.string = "TV_flat";
-	    break;
-	case TV_dfs:
-	    x->data.constant.value.string = "TV_dfs";
-	    break;
-	case TV_bfs:
-	    x->data.constant.value.string = "TV_bfs";
-	    break;
-	case TV_fwd:
-	    x->data.constant.value.string = "TV_fwd";
-	    break;
-	case TV_rev:
-	    x->data.constant.value.string = "TV_rev";
-	    break;
-	default:
-	    exerror("Unexpected value %d for type tvtype_t",
-		    x->data.constant.value.integer);
-	    break;
-	}
+	x->data.constant.value.string = 
+	    tvtypeToStr (x->data.constant.value.integer);
     } else {
 	objp = INT2PTR(Agobj_t *, x->data.constant.value.integer);
 	if (!objp)
@@ -1835,28 +1932,10 @@ convert(Expr_t * prog, register Exnode_t * x, int type,
     } else if (type == STRING) {
 	if (x->type == T_tvtyp) {
 	    ret = 0;
-	    if (!arg)
-		switch (x->data.constant.value.integer) {
-		case TV_flat:
-		    x->data.constant.value.string = "TV_flat";
-		    break;
-		case TV_dfs:
-		    x->data.constant.value.string = "TV_dfs";
-		    break;
-		case TV_bfs:
-		    x->data.constant.value.string = "TV_bfs";
-		    break;
-		case TV_fwd:
-		    x->data.constant.value.string = "TV_fwd";
-		    break;
-		case TV_rev:
-		    x->data.constant.value.string = "TV_rev";
-		    break;
-		default:
-		    error(3, "Unexpected value %d for type tvtype_t",
-			  x->data.constant.value.integer);
-		    break;
-		}
+	    if (!arg) {
+		x->data.constant.value.string =
+		    tvtypeToStr (x->data.constant.value.integer);
+	    }
 	}
 #ifdef OLD
 	else {
@@ -1871,19 +1950,11 @@ convert(Expr_t * prog, register Exnode_t * x, int type,
     } else if ((type == T_tvtyp) && (x->type == INTEGER)) {
 	if (arg)
 	    ret = 0;
+	else if (validTVT(x->data.constant.value.integer))
+	    ret = 0;
 	else
-	    switch (x->data.constant.value.integer) {
-	    case TV_flat:
-	    case TV_dfs:
-	    case TV_bfs:
-	    case TV_fwd:
-	    case TV_rev:
-		break;
-	    default:
-		error(1, "Integer value %d not legal for type tvtype_t",
-		      x->data.constant.value.integer);
-		break;
-	    }
+	    error(ERROR_FATAL, "Integer value %d not legal for type tvtype_t",
+		x->data.constant.value.integer);
     }
     /* in case libexpr hands us the trivial case */
     else if (x->type == type) {
@@ -1894,28 +1965,9 @@ convert(Expr_t * prog, register Exnode_t * x, int type,
 	    if (arg)
 		ret = 0;
 	    else {
+		ret = 0;
 		s = x->data.constant.value.string;
-		if (!strncmp(s, "TV_", 3)) {
-		    if (!strcmp(s + 3, "flat")) {
-			x->data.constant.value.integer = TV_flat;
-			ret = 0;
-		    } else if (!strcmp(s + 3, "dfs")) {
-			x->data.constant.value.integer = TV_dfs;
-			ret = 0;
-		    } else if (!strcmp(s + 3, "bfs")) {
-			x->data.constant.value.integer = TV_bfs;
-			ret = 0;
-		    } else if (!strcmp(s + 3, "fwd")) {
-			x->data.constant.value.integer = TV_fwd;
-			ret = 0;
-		    } else if (!strcmp(s + 3, "rev")) {
-			x->data.constant.value.integer = TV_rev;
-			ret = 0;
-		    } else
-			error(ERROR_FATAL,
-			      "illegal string \"%s\" for type tvtype_t",
-			      s);
-		}
+		x->data.constant.value.integer = strToTvtype(s);
 	    }
 	}
     }

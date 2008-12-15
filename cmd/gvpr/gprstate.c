@@ -26,20 +26,7 @@
 
 int validTVT(int c)
 {
-    int rv = 0;
-
-    switch (c) {
-    case TV_flat:
-    case TV_bfs:
-    case TV_dfs:
-    case TV_fwd:
-    case TV_rev:
-    case TV_ne:
-    case TV_en:
-	rv = 1;
-	break;
-    }
-    return rv;
+    return ((TV_flat <= c) && (c <= TV_prepostrev));
 }
 
 void initGPRState(Gpr_t * state, Vmalloc_t * vm, gpr_info * info)
