@@ -18,6 +18,8 @@
 #include "config.h"
 #endif
 
+#include "gvconfig.h"
+
 #include	<string.h>
 
 #ifdef ENABLE_LTDL
@@ -214,7 +216,7 @@ static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 }
 #endif
 
-static void gvconfig_plugin_install_from_library(GVC_t * gvc, char *path, gvplugin_library_t *library)
+void gvconfig_plugin_install_from_library(GVC_t * gvc, char *path, gvplugin_library_t *library)
 {
     gvplugin_api_t *apis;
     gvplugin_installed_t *types;

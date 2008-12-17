@@ -18,6 +18,7 @@
 #define			GVC_H
 
 #include "types.h"
+#include "gvplugin.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -103,6 +104,12 @@ extern int gvFreeLayout(GVC_t *gvc, graph_t *g);
 
 /* Clean up graphviz context */
 extern int gvFreeContext(GVC_t *gvc);
+
+/** Add a library from your user application
+ * @param gvc Graphviz context to add library to
+ * @param lib library to add
+ */
+extern void gvAddLibrary(GVC_t *gvc, gvplugin_library_t *lib);
 
 #ifdef __cplusplus
 }

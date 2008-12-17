@@ -25,6 +25,7 @@
 #include "gvcjob.h"
 #include "gvcint.h"
 #include "gvcproc.h"
+#include "gvconfig.h"
 
 extern GVC_t *gvNEWcontext(char **info, char *user);
 extern char *gvUsername(void);
@@ -192,6 +193,12 @@ int gvRenderData(GVC_t *gvc, graph_t *g, const char *format, char **result, unsi
     gvjobs_delete(gvc);
 
     return 0;
+}
+
+
+void gvAddLibrary(GVC_t *gvc, gvplugin_library_t *lib)
+{
+    gvconfig_plugin_install_from_library(gvc, NULL, lib);
 }
 
 char **gvcInfo(GVC_t* gvc) { return gvc->common.info; }
