@@ -316,9 +316,6 @@ extern "C" {
 	pointf  pad;		/* padding around bb - graph units */
 	boxf    clip;		/* clip region in graph units */
 	boxf	pageBox;	/* current page in graph units */
-#ifdef WITH_CODEGENS
-	pointf	pageOffset;	/* offset for current page in graph units */
-#endif
 	pointf	pageSize;	/* page size in graph units */
 	pointf  focus;		/* viewport focus - graph units */
 
@@ -370,6 +367,7 @@ extern "C" {
 
 /* Must be last as separately compiled plugins are not compiled with WITH_CODEGENS */
 #ifdef WITH_CODEGENS
+	pointf	pageOffset;	/* offset for current page in graph units */
 	codegen_t *codegen;	/* current  codegen */
 #endif
     };
