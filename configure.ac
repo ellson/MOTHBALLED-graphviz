@@ -1335,6 +1335,8 @@ else
 	use_ruby="No (ruby not available)"
       else
         RUBY_INCLUDES="-I`$RUBY $srcdir/config/config_ruby.rb INCLUDES`"
+	# hack for powerpc-darwin8 (10.4)
+	RUBY_INCLUDES=`echo $RUBY_INCLUDES | sed 's/powerpc/universal/'`
         RUBY_LIBS="-L`$RUBY $srcdir/config/config_ruby.rb lib` `$RUBY -rrbconfig -e \"puts Config::CONFIG[['LIBRUBYARG_SHARED']]\"`"
         RUBY_INSTALL_DIR="`$RUBY $srcdir/config/config_ruby.rb archsitelib`"
         save_CPPFLAGS=$CPPFLAGS

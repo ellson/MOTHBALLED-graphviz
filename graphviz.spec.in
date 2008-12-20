@@ -303,6 +303,7 @@ fi
 %defattr(-,root,root,-)
 %doc AUTHORS COPYING ChangeLog NEWS README
 %{_bindir}/*
+%exclude %{_bindir}/diffimg
 %dir %{_libdir}/graphviz
 %{_libdir}/*.so.*
 %{_libdir}/graphviz/*.so.*
@@ -343,6 +344,7 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 [ -x $RPM_INSTALL_PREFIX0/bin/dot ] && LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c || :
 
 %files gd
+%{_bindir}/diffimg
 %{_libdir}/graphviz/libgvplugin_gd.so.*
 
 #-- graphviz-devil rpm --------------------------------------------------

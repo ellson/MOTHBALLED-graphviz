@@ -83,6 +83,8 @@ libgv_lua_la_CPPFLAGS = $(AM_CPPFLAGS) $(LUA_INCLUDES)
 $(LUA_data): gv_lua.cpp
 gv_lua.cpp: gv.i
 	$(SWIG) -c++ -lua -o gv_lua.cpp $(srcdir)/gv.i
+	mv $@ $@.orig
+	sed '/include/s/malloc\.h/cstdlib/' $@.orig > $@
 
 pkgocamldir = $(pkglibdir)/ocaml
 OCAML_data = gv.cmo gv.cma gv.cmi gv.mli META.gv
