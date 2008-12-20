@@ -191,6 +191,11 @@ int agisstrict(Agraph_t * g)
     return g->desc.strict;
 }
 
+int agissimple(Agraph_t * g)
+{
+    return (g->desc.strict && g->desc.no_loop);
+}
+
 int agdegree(Agraph_t * g, Agnode_t * n, int want_in, int want_out)
 {
     Agedge_t *e;

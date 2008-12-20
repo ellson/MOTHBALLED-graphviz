@@ -113,15 +113,19 @@ static Agedge_t *agfindedge_by_key(Agraph_t * g, Agnode_t * t, Agnode_t * h,
     sn = agsubrep(g, h);
     if (!sn) e = 0;
     else {
+#if 0
 	if (t != h) {
+#endif
 	    dtrestore(g->e_id, sn->in_id);
 	    e = (Agedge_t *) dtsearch(g->e_id, &template);
 	    sn->in_id = dtextract(g->e_id);
+#if 0
 	} else {			/* self edge */
 	    dtrestore(g->e_id, sn->out_id);
 	    e = (Agedge_t *) dtsearch(g->e_id, &template);
 	    sn->out_id = dtextract(g->e_id);
 	}
+#endif
     }
     return e;
 }
@@ -175,11 +179,9 @@ static void installedge(Agraph_t * g, Agedge_t * e)
 	sn = agsubrep(g, t);
 	ins(g->e_seq, &sn->out_seq, out);
 	ins(g->e_id, &sn->out_id, out);
-	if (t != h) {
-	    sn = agsubrep(g, h);
-	    ins(g->e_seq, &sn->in_seq, in);
-	    ins(g->e_id, &sn->in_id, in);
-	}
+	sn = agsubrep(g, h);
+	ins(g->e_seq, &sn->in_seq, in);
+	ins(g->e_id, &sn->in_id, in);
 	g = agparent(g);
     }
 }
@@ -224,7 +226,7 @@ static int ok_to_make_edge(Agraph_t * g, Agnode_t * t, Agnode_t * h)
 
     /* protect against self, multi-edges in strict graphs */
     if (agisstrict(g)) {
-	if (t == h)
+	if (g->desc.no_loop && (t == h)) /* simple graphs */
 	    return FALSE;
 	key = Tag;
 	key.objtype = 0;	/* wild card */
@@ -319,11 +321,9 @@ void agdeledgeimage(Agraph_t * g, Agedge_t * e, void *ignored)
     sn = agsubrep(g, t);
     del(g->e_seq, &sn->out_seq, out);
     del(g->e_id, &sn->out_id, out);
-    if (t != h) {
-	sn = agsubrep(g, h);
-	del(g->e_seq, &sn->in_seq, in);
-	del(g->e_id, &sn->in_id, in);
-    }
+    sn = agsubrep(g, h);
+    del(g->e_seq, &sn->in_seq, in);
+    del(g->e_id, &sn->in_id, in);
 #ifdef DEBUG
     for (e = agfstin(g,h); e; e = agnxtin(g,e))
 	assert(e != in);

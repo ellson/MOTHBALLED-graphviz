@@ -139,7 +139,8 @@ struct Agedgepair_s {
 
 struct Agdesc_s {		/* graph descriptor */
     unsigned directed:1;	/* if edges are asymmetric */
-    unsigned strict:1;		/* if and self, multi-edges forbidden */
+    unsigned strict:1;		/* if multi-edges forbidden */
+    unsigned no_loop:1;		/* if no loops */
     unsigned maingraph:1;	/* if this is the top level graph */
     unsigned flatlock:1;	/* if sets are flattened into lists in cdt */
     unsigned no_write:1;	/* if a temporary subgraph */
@@ -266,6 +267,7 @@ extern int agwrite(Agraph_t * g, void *chan);
 extern int agisdirected(Agraph_t * g);
 extern int agisundirected(Agraph_t * g);
 extern int agisstrict(Agraph_t * g);
+extern int agissimple(Agraph_t * g);
 
 /* nodes */
 extern Agnode_t *agnode(Agraph_t * g, char *name, int createflag);
