@@ -16,10 +16,10 @@
 
 #include "gvplugin.h"
 
-extern gvplugin_installed_t gvdevice_types_xlib;
+extern gvplugin_installed_t gvdevice_types_xlib[];
 
 static gvplugin_api_t apis[] = {
-    {API_device, &gvdevice_types_xlib},
+    {API_device, gvdevice_types_xlib},
     {(api_t)0, 0},
 };
 
