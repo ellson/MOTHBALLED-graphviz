@@ -16,10 +16,10 @@
 
 #include "gvplugin.h"
 
-extern gvplugin_installed_t gvdevice_types_glitz;
+extern gvplugin_installed_t gvdevice_types_glitz[];
 
 static gvplugin_api_t apis[] = {
-    {API_device, &gvdevice_types_glitz},
+    {API_device, gvdevice_types_glitz},
     {(api_t)0, 0},
 };
 

@@ -16,10 +16,10 @@
 
 #include "gvplugin.h"
 
-extern gvplugin_installed_t gvloadimage_gs_types;
+extern gvplugin_installed_t gvloadimage_gs_types[];
 
 static gvplugin_api_t apis[] = {
-    {API_loadimage, &gvloadimage_gs_types},
+    {API_loadimage, gvloadimage_gs_types},
     {(api_t)0, 0},
 };
 
