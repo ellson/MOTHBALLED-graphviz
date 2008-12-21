@@ -19,11 +19,11 @@
 #include "gvplugin_quartz.h"
 #include "gvio.h"
 
-extern gvplugin_installed_t gvrender_quartz_types;
-// extern gvplugin_installed_t gvtextlayout_quartz_types;
-extern gvplugin_installed_t gvloadimage_quartz_types;
-extern gvplugin_installed_t gvdevice_quartz_types;
-extern gvplugin_installed_t gvdevice_quartz_types_for_cairo;
+extern gvplugin_installed_t gvrender_quartz_types[];
+// extern gvplugin_installed_t gvtextlayout_quartz_types[];
+extern gvplugin_installed_t gvloadimage_quartz_types[];
+extern gvplugin_installed_t gvdevice_quartz_types[];
+extern gvplugin_installed_t gvdevice_quartz_types_for_cairo[];
 
 /* Uniform Type Identifiers corresponding to each format_type */
 CFStringRef format_uti [] = {
@@ -55,11 +55,11 @@ CGDataConsumerCallbacks device_data_consumer_callbacks = {
 };
 
 static gvplugin_api_t apis[] = {
-    {API_render, &gvrender_quartz_types},
-  //  {API_textlayout, &gvtextlayout_quartz_types},
-	{API_loadimage, &gvloadimage_quartz_types},
-    {API_device, &gvdevice_quartz_types},
-    {API_device, &gvdevice_quartz_types_for_cairo},
+    {API_render, gvrender_quartz_types},
+  //  {API_textlayout, gvtextlayout_quartz_types},
+	{API_loadimage, gvloadimage_quartz_types},
+    {API_device, gvdevice_quartz_types},
+    {API_device, gvdevice_quartz_types_for_cairo},
     {(api_t)0, 0},
 };
 
