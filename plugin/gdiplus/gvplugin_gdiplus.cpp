@@ -20,11 +20,11 @@
 
 #include <vector>
 
-extern gvplugin_installed_t gvrender_gdiplus_types;
-// extern gvplugin_installed_t gvtextlayout_gdiplus_types;
-extern gvplugin_installed_t gvloadimage_gdiplus_types;
-extern gvplugin_installed_t gvdevice_gdiplus_types;
-extern gvplugin_installed_t gvdevice_gdiplus_types_for_cairo;
+extern gvplugin_installed_t gvrender_gdiplus_types[];
+// extern gvplugin_installed_t gvtextlayout_gdiplus_types[];
+extern gvplugin_installed_t gvloadimage_gdiplus_types[];
+extern gvplugin_installed_t gvdevice_gdiplus_types[];
+extern gvplugin_installed_t gvdevice_gdiplus_types_for_cairo[];
 
 using namespace std;
 using namespace Gdiplus;
@@ -69,11 +69,11 @@ void SaveBitmapToStream(Bitmap &bitmap, IStream *stream, int format)
 }
 
 static gvplugin_api_t apis[] = {
-    {API_render, &gvrender_gdiplus_types},
-  //  {API_textlayout, &gvtextlayout_gdiplus_types},
-	{API_loadimage, &gvloadimage_gdiplus_types},
-    {API_device, &gvdevice_gdiplus_types},
-	{API_device, &gvdevice_gdiplus_types_for_cairo},
+    {API_render, gvrender_gdiplus_types},
+  //  {API_textlayout, gvtextlayout_gdiplus_types},
+	{API_loadimage, gvloadimage_gdiplus_types},
+    {API_device, gvdevice_gdiplus_types},
+	{API_device, gvdevice_gdiplus_types_for_cairo},
     {(api_t)0, 0},
 };
 

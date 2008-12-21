@@ -16,10 +16,10 @@
 
 #include "gvplugin.h"
 
-extern gvplugin_installed_t gvlayout_dot_layout;
+extern gvplugin_installed_t gvlayout_dot_layout[];
 
 static gvplugin_api_t apis[] = {
-    {API_layout, &gvlayout_dot_layout},
+    {API_layout, gvlayout_dot_layout},
     {(api_t)0, 0},
 };
 
