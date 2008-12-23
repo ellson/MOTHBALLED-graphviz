@@ -117,8 +117,6 @@ extern "C" {
     extern int initMapData (GVJ_t*, char*, char*, char*, char*, char*, void*);
     extern boolean isPolygon(node_t *);
     extern char *strdup_and_subst_obj(char *str, void *obj);
-    extern char *xml_string(char *s);
-    extern char *xml_url_string(char *s);
     extern void makeSelfEdge(path * P, edge_t * edges[], int ind, int cnt,
 	double sizex, double sizey, splineInfo * sinfo);
     extern textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *fontname, char *fontcolor);
@@ -153,6 +151,9 @@ extern "C" {
 #if defined(_BLD_dot) && defined(_DLL)
 #   define extern __EXPORT__
 #endif
+
+    extern char *xml_string(char *s);
+    extern char *xml_url_string(char *s);
 
 #ifdef WITH_CODEGENS
     extern codegen_info_t *first_codegen(void);

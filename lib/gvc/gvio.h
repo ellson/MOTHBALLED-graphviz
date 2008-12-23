@@ -23,6 +23,10 @@
 extern "C" {
 #endif
 
+#if defined(_BLD_dot) && defined(__EXPORT__)
+#   define extern __EXPORT__
+#endif
+
     extern size_t gvwrite (GVJ_t * job, const char *s, size_t len);
     extern int gvputc(GVJ_t * job, int c);
     extern int gvputs(GVJ_t * job, const char *s);
@@ -30,6 +34,8 @@ extern "C" {
     extern void gvprintdouble(GVJ_t * job, double num); 
     extern void gvprintpointf(GVJ_t * job, pointf p);
     extern void gvprintpointflist(GVJ_t * job, pointf *p, int n);
+
+#undef extern
 
 #ifdef __cplusplus
 }

@@ -485,7 +485,7 @@ if test "x$enable_ltdl" != "xno"; then
      AC_LIBLTDL_CONVENIENCE
      LIBLTDL="$LIBLTDL -Wl,-unexported_symbol,_lt_*"
   else
-     AC_LIBLTDL_INSTALLABLE
+     AC_LIBLTDL_CONVENIENCE
   fi
 else
   use_ltdl="No (disabled)"
