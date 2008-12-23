@@ -70,7 +70,6 @@ extern "C" {
     extern double arrow_length(edge_t * e, int flag);
     extern int arrowEndClip(edge_t*, pointf*, int, int , bezier*, int eflag);
     extern int arrowStartClip(edge_t*, pointf* ps, int, int, bezier*, int sflag);
-    extern void attach_attrs(Agraph_t *);
     extern void beginpath(path *, Agedge_t *, int, pathend_t *, boolean);
     extern void bezier_clip(inside_t * inside_context,
 			    boolean(*insidefn) (inside_t * inside_context,
@@ -103,7 +102,6 @@ extern "C" {
     extern void endpath(path *, Agedge_t *, int, pathend_t *, boolean);
     extern void epsf_init(node_t * n);
     extern void epsf_free(node_t * n);
-    extern void cat_libfile(GVJ_t * job, const char **arglib, const char **stdlib);
     extern shape_desc *find_user_shape(char *);
     extern void free_line(textpara_t *);
     extern void free_label(textlabel_t *);
@@ -116,7 +114,6 @@ extern "C" {
     extern void gv_cleanup_node(Agnode_t * n);
     extern int initMapData (GVJ_t*, char*, char*, char*, char*, char*, void*);
     extern boolean isPolygon(node_t *);
-    extern char *strdup_and_subst_obj(char *str, void *obj);
     extern void makeSelfEdge(path * P, edge_t * edges[], int ind, int cnt,
 	double sizex, double sizey, splineInfo * sinfo);
     extern textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *fontname, char *fontcolor);
@@ -124,7 +121,6 @@ extern "C" {
     extern char **parse_style(char *s);
     extern void place_graph_label(Agraph_t *);
     extern void place_portlabel(edge_t * e, boolean head_p);
-    extern char *ps_string(char *s, int);
     extern void pop_obj_state(GVJ_t *job);
     extern obj_state_t* push_obj_state(GVJ_t *job);
     extern int rank(graph_t * g, int balance, int maxiter);
@@ -146,14 +142,12 @@ extern "C" {
     extern void update_bb_bz(boxf *bb, pointf *cp);
     extern void write_attributed_dot(graph_t *g, FILE *f);
     extern void write_canonical_dot(graph_t *g, FILE *f);
-    extern void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend);
 
 #if defined(_BLD_dot) && defined(_DLL)
 #   define extern __EXPORT__
 #endif
 
-    extern char *xml_string(char *s);
-    extern char *xml_url_string(char *s);
+    extern void cat_libfile(GVJ_t * job, const char **arglib, const char **stdlib);
 
 #ifdef WITH_CODEGENS
     extern codegen_info_t *first_codegen(void);

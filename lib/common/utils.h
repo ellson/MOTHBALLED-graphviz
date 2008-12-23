@@ -30,6 +30,23 @@ extern "C" {
     extern void enqueue(nodequeue *, Agnode_t *);
     extern Agnode_t *dequeue(nodequeue *);
 
+#if defined(_BLD_dot) && defined(_DLL)
+#   define extern __EXPORT__
+#endif
+
+    extern pointf Bezier(pointf *, int, double, pointf *, pointf *);
+    extern void attach_attrs(graph_t * g);
+    extern void attach_attrs_and_arrows(graph_t*, int*, int*);
+    extern char *xml_string(char *str);
+    extern void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend);
+    extern void output_point(agxbuf *xbuf, pointf p);
+    extern char *ps_string(char *s, int);
+    extern char *strdup_and_subst_obj(char *str, void *obj);
+    extern char *xml_url_string(char *s);
+    extern void epsf_emit_body(GVJ_t *job, usershape_t *us);
+    extern void epsf_define(GVJ_t * job);
+    extern void undoClusterEdges(graph_t * g);
+
 #ifndef WITH_CGRAPH
     extern int late_attr(void *, char *);
     extern attrsym_t* safe_dcl(graph_t*, void*, char*, char*,
@@ -38,6 +55,9 @@ extern "C" {
     extern attrsym_t* late_attr(void *obj, char *name);
     extern attrsym_t* safe_dcl(graph_t * g, int obj_kind, char *name, char *def);
 #endif
+
+#undef extern
+
     extern int late_int(void *, Agsym_t *, int, int);
     extern double late_double(void *, Agsym_t *, double, double);
     extern char *late_nnstring(void *, Agsym_t *, char *);
@@ -68,14 +88,12 @@ extern "C" {
     extern boolean overlap_edge(edge_t *e, boxf b);
 
     extern int processClusterEdges(graph_t * g);
-    extern void undoClusterEdges(graph_t * g);
 
     extern char *latin1ToUTF8(char *);
     extern char *htmlEntityUTF8(char *);
     extern char* utf8ToLatin1 (char* ins);
     extern char* scanEntity (char* t, agxbuf* xb);
 
-    extern pointf Bezier(pointf *, int, double, pointf *, pointf *);
     extern pointf dotneato_closest(splines * spl, pointf p);
     extern pointf neato_closest(splines * spl, pointf p);
     extern pointf spline_at_y(splines * spl, double y);

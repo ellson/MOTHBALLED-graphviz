@@ -35,12 +35,6 @@
 #include "agxbuf.h"
 #include "utils.h"
 
-extern void attach_attrs(graph_t * g);
-extern void attach_attrs_and_arrows(graph_t*, int*, int*);
-extern char *xml_string(char *str);
-extern void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend);
-extern void output_point(agxbuf *xbuf, pointf p);
-
 #define GNEW(t)          (t*)malloc(sizeof(t))
 
 typedef enum {
