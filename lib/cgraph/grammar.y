@@ -526,7 +526,7 @@ static void closesubg()
 		yyerror("libgraph: parser lost root graph\n");
 }
 
-extern void *yyin;
+extern FILE *yyin;
 Agraph_t *agconcat(Agraph_t *g, void *chan, Agdisc_t *disc)
 {
 	yyin = chan;
