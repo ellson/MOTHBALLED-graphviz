@@ -23,7 +23,7 @@
 extern "C" {
 #endif
 
-#if defined(_BLD_dot) && defined(__EXPORT__)
+#if defined(_BLD_dot) && defined(_DLL)
 #   define extern __EXPORT__
 #endif
 
