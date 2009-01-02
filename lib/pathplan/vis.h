@@ -22,8 +22,8 @@
 #include <math.h>
 #include <stdlib.h>
 #include <limits.h>
-#include <vispath.h>
-#include <pathutil.h>
+#include "vispath.h"
+#include "pathutil.h"
 
 #ifdef __cplusplus
 extern "C" {
