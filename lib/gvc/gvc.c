@@ -18,18 +18,15 @@
 #include "config.h"
 #endif
 
+#define _BLD_gvc 1
+#include "gvc.h"
+
 #include "builddate.h"
-#include "types.h"
 #include "const.h"
-#include "gvplugin.h"
 #include "gvcjob.h"
 #include "gvcint.h"
 #include "gvcproc.h"
 #include "gvconfig.h"
-
-extern GVC_t *gvNEWcontext(char **info, char *user);
-extern char *gvUsername(void);
-extern int gvRenderJobs (GVC_t * gvc, graph_t * g);
 
 static char *LibInfo[] = {
     "libgvc",		/* Program */

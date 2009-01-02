@@ -24,6 +24,10 @@
 extern "C" {
 #endif
 
+#if defined(_BLD_gvc) && defined(__EXPORT__)
+#define extern  __EXPORT__
+#endif
+
 #define dotneato_initialize dotneato_initialize_DEPRECATED_BY_gvParseArgs
 #define parse_args parse_args_DEPRECATED_BY_gvParseArgs
 
@@ -110,6 +114,8 @@ extern int gvFreeContext(GVC_t *gvc);
  * @param lib library to add
  */
 extern void gvAddLibrary(GVC_t *gvc, gvplugin_library_t *lib);
+
+#undef extern
 
 #ifdef __cplusplus
 }
