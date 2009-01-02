@@ -15,9 +15,9 @@
 **********************************************************/
 
 
-#include    "dot.h"
-#include    "aspect.h"
 #include <time.h>
+#include "dot.h"
+#include "aspect.h"
 
 static void 
 dot_init_node(node_t * n)
@@ -26,7 +26,7 @@ dot_init_node(node_t * n)
     agbindrec(n, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);	//graph custom data
 #endif /* WITH_CGRAPH */
     common_init_node(n);
-    dot_nodesize(n, GD_flip(agraphof(n)));
+    gv_nodesize(n, GD_flip(agraphof(n)));
     alloc_elist(4, ND_in(n));
     alloc_elist(4, ND_out(n));
     alloc_elist(2, ND_flat_in(n));

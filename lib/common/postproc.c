@@ -17,7 +17,6 @@
 
 #include "render.h"
 
-
 static int Rankdir;
 static boolean Flip;
 static pointf Offset;
@@ -140,28 +139,6 @@ void translate_bb(graph_t * g, int rankdir)
 	translate_bb(GD_clust(g)[c], rankdir);
 }
 
-void dot_nodesize(node_t * n, boolean flip)
-{
-    double x, y;
-    int ps;
-
-    if (flip == FALSE) {
-	x = ND_width(n);
-	y = ND_height(n);
-    } else {
-	y = ND_width(n);
-	x = ND_height(n);
-    }
-    ps = POINTS(x) / 2;
-    if (ps < 1) ps = 1;
-    ND_lw(n) = ND_rw(n) = ps;
-
-    if (x == y)
-	ND_ht(n) = 2*ps;
-    else
-	ND_ht(n) = POINTS(y);
-}
-
 /* translate_drawing:
  * Translate and/or rotate nodes, spline points, and bbox info if
  * necessary. Also, if Rankdir (!= RANKDIR_BT), reset ND_lw, ND_rw, 
@@ -175,7 +152,7 @@ static void translate_drawing(graph_t * g)
 
     if (!shift && !Rankdir) return;
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
-	if (Rankdir) dot_nodesize(v, FALSE);
+	if (Rankdir) gv_nodesize(v, FALSE);
 	ND_coord(v) = map_point(ND_coord(v));
 	if (State == GVSPLINES)
 	    for (e = agfstout(g, v); e; e = agnxtout(g, e))
