@@ -22,8 +22,8 @@
  */
 
 #include <stdlib.h>
-#include <vispath.h>
-#include <pathutil.h>
+#include "vispath.h"
+#include "pathutil.h"
 
 #ifdef DMALLOC
 #include "dmalloc.h"
