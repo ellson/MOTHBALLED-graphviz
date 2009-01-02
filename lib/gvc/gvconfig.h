@@ -19,7 +19,6 @@
 #ifndef GVCONFIG_H
 #define GVCONFIG_H
 
-#include "gvc.h"
 #include "gvplugin.h"
 
 #ifdef __cplusplus
