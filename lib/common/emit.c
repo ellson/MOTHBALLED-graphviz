@@ -27,6 +27,7 @@
 #include "render.h"
 #include "agxbuf.h"
 #include "htmltable.h"
+#include "gvc.h"
 
 #define P2RECT(p, pr, sx, sy) (pr[0].x = p.x - sx, pr[0].y = p.y - sy, pr[1].x = p.x + sx, pr[1].y = p.y + sy)
 #define FUZZ 3
