@@ -84,16 +84,16 @@ lefty_LDADD = $(top_builddir)/cmd/lefty/dot2l/libdot2l.la \
 	-lXt -lXmu -lXext -lX11 @SOCKET_LIBS@ @MATH_LIBS@
 endif
 
-if WITH_WIN32
-if RC_IS_RC
-lefty.res : ws/mswin32/lefty.rc
-	rc -l 0x409 -Iws/mswin32 '-IC:\\progra~1\\microsoft visual studio 8\\vc\\PlatformSDK\\include' -DNDEBUG -fo lefty.res ws/mswin32/lefty.rc
-endif
-if RC_IS_WINDRES
-lefty.res : ws/mswin32/lefty.rc
-	windres -l 0x409 -Iws/mswin32 -DNDEBUG -Ocoff -o lefty.res ws/mswin32/lefty.rc
-endif
-endif
+#if WITH_WIN32
+#if RC_IS_RC
+#lefty.res : ws/mswin32/lefty.rc
+#	rc -l 0x409 -Iws/mswin32 '-IC:\\progra~1\\microsoft visual studio 8\\vc\\PlatformSDK\\include' -DNDEBUG -fo lefty.res ws/mswin32/lefty.rc
+#endif
+#if RC_IS_WINDRES
+#lefty.res : ws/mswin32/lefty.rc
+#	windres -l 0x409 -Iws/mswin32 -DNDEBUG -Ocoff -o lefty.res ws/mswin32/lefty.rc
+#endif
+#endif
 
 lefty.1.pdf: $(srcdir)/lefty.1
 	- @GROFF@ -Tps -man $(srcdir)/lefty.1 | @PS2PDF@ - - >lefty.1.pdf
