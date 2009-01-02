@@ -1051,7 +1051,7 @@ static void set_aspect(graph_t * g, aspect_t* asp)
 
 static point resize_leaf(node_t * leaf, point lbound)
 {
-    dot_nodesize(leaf, GD_flip(agraphof(leaf)));
+    gv_nodesize(leaf, GD_flip(agraphof(leaf)));
     ND_coord(leaf).y = lbound.y;
     ND_coord(leaf).x = lbound.x + ND_lw(leaf);
     lbound.x = lbound.x + ND_lw(leaf) + ND_rw(leaf) + GD_nodesep(agraphof(leaf));
