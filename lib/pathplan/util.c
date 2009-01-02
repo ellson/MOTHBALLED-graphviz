@@ -16,8 +16,8 @@
 
 
 #include <assert.h>
-#include <pathutil.h>
 #include <stdlib.h>
+#include "pathutil.h"
 
 #ifdef DMALLOC
 #include "dmalloc.h"

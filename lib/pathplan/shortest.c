@@ -22,7 +22,7 @@
 #endif
 #include <limits.h>
 #include <math.h>
-#include "pathplan.h"
+#include "pathutil.h"
 
 #ifdef DMALLOC
 #include "dmalloc.h"

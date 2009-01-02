@@ -18,8 +18,8 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
-#include <pathutil.h>
-#include <tri.h>
+#include "pathutil.h"
+#include "tri.h"
 
 #ifdef DMALLOC
 #include "dmalloc.h"

@@ -21,7 +21,7 @@
 #include <malloc.h>
 #endif
 #include <math.h>
-#include "pathplan.h"
+#include "pathutil.h"
 #include "solvers.h"
 
 #ifdef DMALLOC
