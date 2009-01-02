@@ -18,7 +18,9 @@
 
 #ifndef _PATHUTIL_INCLUDE
 #define _PATHUTIL_INCLUDE
-#include <pathplan.h>
+#define _BLD_pathplan 1
+
+#include "pathplan.h"
 
 #ifdef __cplusplus
 extern "C" {
