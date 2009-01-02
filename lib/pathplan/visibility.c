@@ -15,7 +15,7 @@
 **********************************************************/
 
 
-#include <vis.h>
+#include "vis.h"
 
 #ifdef DMALLOC
 #include "dmalloc.h"
