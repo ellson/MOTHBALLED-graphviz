@@ -109,7 +109,6 @@ extern "C" {
     extern splines *getsplinepoints(edge_t * e);
     extern void gv_free_splines(edge_t * e);
     extern void gv_cleanup_edge(Agedge_t * e);
-    extern void gv_nodesize(Agnode_t * n, boolean flip);
     extern void gv_cleanup_node(Agnode_t * n);
     extern int initMapData (GVJ_t*, char*, char*, char*, char*, char*, void*);
     extern boolean isPolygon(node_t *);
@@ -135,17 +134,19 @@ extern "C" {
     extern shape_kind shapeOf(node_t *);
     extern void shape_clip(node_t * n, pointf curve[4]);
     extern void make_simple_label (graph_t* g, textlabel_t* rv);
-    extern void start_timer(void);
     extern pointf textsize(graph_t *g, textpara_t * para, char *fontname, double fontsize);
     extern void translate_bb(Agraph_t *, int);
     extern void update_bb_bz(boxf *bb, pointf *cp);
     extern void write_attributed_dot(graph_t *g, FILE *f);
     extern void write_canonical_dot(graph_t *g, FILE *f);
 
-#if defined(_BLD_dot) && defined(_DLL)
+#if defined(_BLD_common) && defined(__EXPORT__)
 #   define extern __EXPORT__
 #endif
 
+    extern void gv_nodesize(Agnode_t * n, boolean flip);
+    extern void start_timer(void);
+    extern double elapsed_sec(void);
     extern void cat_libfile(GVJ_t * job, const char **arglib, const char **stdlib);
 
 #ifdef WITH_CODEGENS

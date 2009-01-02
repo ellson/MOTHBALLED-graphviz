@@ -14,13 +14,16 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-
 #ifndef WIN32
 
 #include        <unistd.h>
 #include	<sys/types.h>
 #include	<sys/times.h>
 #include	<sys/param.h>
+
+#define _BLD_common 1
+#include        "render.h"
+
 #ifndef HZ
 #define HZ 60
 #endif
