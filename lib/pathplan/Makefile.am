@@ -4,6 +4,10 @@
 pdfdir = $(pkgdatadir)/doc/pdf
 pkgconfigdir = $(libdir)/pkgconfig
 
+if WITH_WIN32
+AM_CPPFLAGS = -O0
+endif
+
 pkginclude_HEADERS = pathgeom.h pathplan.h
 noinst_HEADERS = pathutil.h solvers.h tri.h vis.h vispath.h
 

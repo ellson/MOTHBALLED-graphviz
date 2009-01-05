@@ -38,10 +38,6 @@
  */
 #define PDFMAX  14400           /*  Maximum size of PDF page  */
 
-extern void epsf_define(GVJ_t * job);
-extern char *ps_string(char *ins, int latin);
-extern void cat_libfile(GVJ_t * job, const char **arglib, const char **stdlib);
-
 typedef enum { FORMAT_PS, FORMAT_PS2, FORMAT_EPS } format_type;
 
 static int isLatin1;

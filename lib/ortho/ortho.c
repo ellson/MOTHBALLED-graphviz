@@ -33,10 +33,10 @@
 #include <stddef.h>
 #include <maze.h>
 #include "fPQ.h"
-#include <memory.h>
-#include <geomprocs.h>
-#include <globals.h>
-#include <render.h>
+#include "memory.h"
+#include "geomprocs.h"
+#include "globals.h"
+#include "render.h"
 
 /* #define DEBUG */
 
