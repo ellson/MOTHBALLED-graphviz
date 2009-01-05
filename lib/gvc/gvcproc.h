@@ -19,9 +19,7 @@
 #ifndef GVCPROC_H
 #define GVCPROC_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#define extern
 
 /* these are intended to be private entry points - see gvc.h for the public ones */
 
@@ -132,7 +130,6 @@ extern "C" {
     extern void gv_argvlist_reset(gv_argvlist_t *list);
     extern void gv_argvlist_free(gv_argvlist_t *list);
 
-#ifdef __cplusplus
-}
-#endif
+#undef extern
+
 #endif				/* GVCPROC_H */

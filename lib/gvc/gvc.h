@@ -24,34 +24,15 @@
 extern "C" {
 #endif
 
-#if defined(_BLD_gvc) && defined(__EXPORT__)
-#define extern  __EXPORT__
+#ifdef GVDLL
+# ifdef _BLD_gvc
+#  define extern __declspec(dllimport)
+# else
+#  define extern __declspec(dllexport)
+# endif
+#else
+# define extern
 #endif
-
-#define dotneato_initialize dotneato_initialize_DEPRECATED_BY_gvParseArgs
-#define parse_args parse_args_DEPRECATED_BY_gvParseArgs
-
-#define dot_layout dot_layout_DEPRECATED_BY_gvLayout
-#define neato_layout dot_layout_DEPRECATED_BY_gvLayout
-#define fdp_layout dot_layout_DEPRECATED_BY_gvLayout
-#define circo_layout dot_layout_DEPRECATED_BY_gvLayout
-#define twopi_layout dot_layout_DEPRECATED_BY_gvLayout
-#define gvBindContext gvBindContext_DEPRECATED_BY_gvLayout
-#define gvlayout_layout gvlayout_layout_DEPRECATED_BY_gvLayoutJobs
-
-#define emit_jobs emit_jobs_DEPRECATED_BY_gvRenderJobs
-#define dotneato_write dotneato_write_DEPRECATED_BY_gvRenderJobs
-
-#define dot_cleanup dot_cleanup_DEPRECATED_BY_gvFreeLayout
-#define neato_cleanup dot_cleanup_DEPRECATED_BY_gvFreeLayout
-#define fdp_cleanup dot_cleanup_DEPRECATED_BY_gvFreeLayout
-#define circo_cleanup dot_cleanup_DEPRECATED_BY_gvFreeLayout
-#define twopi_cleanup dot_cleanup_DEPRECATED_BY_gvFreeLayout
-#define gvlayout_cleanup gvlayout_cleanup_DEPRECATED_BY_gvFreeLayout
-
-#define gvCleanup gvCleanup_DEPRECATED_BY_gvFreeContext
-#define dotneato_terminate dotneato_terminate_DEPRECATED_BY_gvFreeContext
-#define next_input_graph next_input_graph_DEPRECATED_BY_gvNextInputGraph
 
 /* misc */
 /* FIXME - this needs eliminating or renaming */
@@ -120,4 +101,5 @@ extern void gvAddLibrary(GVC_t *gvc, gvplugin_library_t *lib);
 #ifdef __cplusplus
 }
 #endif
+
 #endif			/* GVC_H */

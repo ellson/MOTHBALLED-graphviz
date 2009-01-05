@@ -19,12 +19,14 @@
 
 #include "gvcjob.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#if defined(_BLD_gvio) && defined(__EXPORT__)
-#   define extern __EXPORT__
+#ifdef GVDLL
+# ifdef _BLD_gvc
+#  define extern __declspec(dllimport)
+# else
+#  define extern __declspec(dllexport)
+# endif
+#else
+# define extern
 #endif
 
     extern size_t gvwrite (GVJ_t * job, const char *s, size_t len);
@@ -37,7 +39,4 @@ extern "C" {
 
 #undef extern
 
-#ifdef __cplusplus
-}
-#endif
 #endif				/* GVDEVICE_H */
