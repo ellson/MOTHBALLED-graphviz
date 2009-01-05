@@ -14,16 +14,12 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-
 #ifndef _POINTSET_H
 #define _POINTSET_H 1
 
-#include "render.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
     typedef Dict_t PointSet;
     typedef Dict_t PointMap;
@@ -41,9 +37,10 @@ extern "C" {
     extern void clearPM(PointMap *);
     extern void freePM(PointMap *);
     extern int insertPM(PointMap *, int, int, int);
-#endif
 
 
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* _POINTSET_H */

@@ -144,11 +144,6 @@ extern "C" {
 #   define extern __EXPORT__
 #endif
 
-    extern void gv_nodesize(Agnode_t * n, boolean flip);
-    extern void start_timer(void);
-    extern double elapsed_sec(void);
-    extern void cat_libfile(GVJ_t * job, const char **arglib, const char **stdlib);
-
 #ifdef WITH_CODEGENS
     extern codegen_info_t *first_codegen(void);
     extern codegen_info_t *next_codegen(codegen_info_t * p);

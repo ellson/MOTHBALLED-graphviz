@@ -14,8 +14,21 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+#ifndef _UTILS_H
+#define _UTILS_H 1
+
 #ifdef __cplusplus
 extern "C" {
+#endif
+
+#ifdef GVDLL
+# ifdef _BLD_gvc
+#  define extern __declspec(dllimport)
+# else
+#  define extern __declspec(dllexport)
+# endif
+#else
+# define extern
 #endif
 
 #ifndef HAVE_STRCASECMP
@@ -29,11 +42,6 @@ extern "C" {
     extern void free_queue(nodequeue *);
     extern void enqueue(nodequeue *, Agnode_t *);
     extern Agnode_t *dequeue(nodequeue *);
-
-#if defined(_BLD_dot) && defined(_DLL)
-#   define extern __EXPORT__
-#endif
-
     extern pointf Bezier(pointf *, int, double, pointf *, pointf *);
     extern void attach_attrs(graph_t * g);
     extern void attach_attrs_and_arrows(graph_t*, int*, int*);
@@ -101,6 +109,22 @@ extern "C" {
     extern Agsym_t *setAttr(graph_t*, void*, char*name, char *value, Agsym_t*);
     extern void setEdgeType (graph_t* g, int dflt);
     extern int edgeType (char* s, int dflt);
+
+    /* from postproc.c */ 
+    extern void gv_nodesize(Agnode_t * n, boolean flip);
+
+    /* from timing.c */
+    extern void start_timer(void);
+    extern double elapsed_sec(void);
+
+    /* from psusershape.c */
+    extern void cat_libfile(GVJ_t * job, const char **arglib, const char **stdlib);
+
+
+#undef extern
+
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* _UTILS_H */
