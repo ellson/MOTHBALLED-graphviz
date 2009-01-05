@@ -19,6 +19,10 @@
 
 #include "gvcjob.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifdef GVDLL
 # ifdef _BLD_gvc
 #  define extern __declspec(dllimport)
@@ -38,5 +42,9 @@
     extern void gvprintpointflist(GVJ_t * job, pointf *p, int n);
 
 #undef extern
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif				/* GVDEVICE_H */
