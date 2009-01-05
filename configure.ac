@@ -231,7 +231,6 @@ AC_ARG_ENABLE(static,
         [AC_HELP_STRING([--enable-static], [build static executable])])
 if test "x$enable_static" = "xyes"; then
 	AC_ENABLE_STATIC
-	AC_DEFINE(ENABLE_STATIC,1,[Define if you want statically linked executables])
         use_static="Yes"
 else
 	AC_DISABLE_STATIC
@@ -243,8 +242,13 @@ AC_ARG_ENABLE(shared,
         [AC_HELP_STRING([--enable-shared], [build shared executable])])
 if test "x$enable_shared" != "xno"; then
 	AC_ENABLE_SHARED
-	AC_DEFINE(ENABLE_SHARED,1,[Define if you want shared lib executables])
         use_shared="Yes"
+	case "${host_os}" in
+  		*uwin* | *cygwin* | *mingw32* )
+			AC_DEFINE_UNQUOTED(GVDLL,1, [Define for DLLs on Windows.])
+		;;
+	esac
+
 else
         use_shared="No (disabled)"
 	AC_DISABLE_SHARED
