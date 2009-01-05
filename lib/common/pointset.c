@@ -15,6 +15,7 @@
 **********************************************************/
 
 
+#include "render.h"
 #include "pointset.h"
 
 typedef struct {
