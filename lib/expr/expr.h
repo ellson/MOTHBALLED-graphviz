@@ -41,12 +41,12 @@ extern "C" {
 #endif
 #endif
 
-#include <exparse.h>
+#include "exparse.h"
 
 #undef	extern
 
-#include <cdt.h>
-#include <vmalloc.h>
+#include "cdt.h"
+#include "vmalloc.h"
 
 #define EX_VERSION	20000101L
 
