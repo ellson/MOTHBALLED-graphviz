@@ -45,7 +45,11 @@ static char setupLatin1;
 
 static void psgen_begin_job(GVJ_t * job)
 {
-    gvputs(job, "%!PS-Adobe-3.0 EPSF-3.0\n");
+    gvputs(job, "%!PS-Adobe-3.0");
+    if (job->render.id == FORMAT_EPS)
+	gvputs(job, " EPSF-3.0\n");
+    else
+	gvputs(job, "\n");
     gvprintf(job, "%%%%Creator: %s version %s (%s)\n",
 	    job->common->info[0], job->common->info[1], job->common->info[2]);
     gvprintf(job, "%%%%For: %s\n", job->common->user);
