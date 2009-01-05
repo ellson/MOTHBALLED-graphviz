@@ -16,10 +16,10 @@
 
 
 /* solves the system ab=c using gauss reduction */
-#include <render.h>
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "render.h"
 #define asub(i,j) a[(i)*n + (j)]
 
 
