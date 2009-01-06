@@ -27,13 +27,15 @@ typedef struct inkpot_scheme_s {
 
 typedef struct inkpot_range_s {
     IDX_INDEXES_t
-	size;
-
+	size;		/* 1,0 for alts,  all but last alt=1, last alt is 0,
+			 * n>=2 for ranges
+			 */
     MSK_SCHEMES_t
 	scheme_bits;	/* A bit for each inkpot_scheme_name_t
-			 * that includes this inkpot_name_t  */
+			 * that includes this inkpot_name_t
+			 */
     IDX_INDEXES_t
-	first_value_idx;
+	first_value_idx; /* index of first in range, or first alternative */
 } inkpot_range_t;
 
 typedef struct inkpot_name_s {    /* Color_name used by one or more
@@ -50,12 +52,13 @@ typedef struct inkpot_name_s {    /* Color_name used by one or more
 
     MSK_SCHEMES_t
 	scheme_bits;	/* A bit for each inkpot_scheme_name_t
-			 * that includes this inkpot_name_t  */
+			 * that includes this inkpot_name_t.
+			  if = 0, then name has multiple values  */
 
     IDX_VALUES_t
 	value_idx;	/* An index into TAB_VALUE for this
 			 * inkpot_name_t, or, if scheme_bits == 0
-			 * an index into TAB_ALTS */
+			 * an index into TAB_RANGES */
 } inkpot_name_t;
 
 typedef struct inkpot_cache_element_s {
