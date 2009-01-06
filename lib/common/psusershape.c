@@ -20,6 +20,7 @@
 
 #include <sys/stat.h>
 
+#define _BLD_common 1
 #include "render.h"
 #include "gvio.h"
 
