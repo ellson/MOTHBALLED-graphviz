@@ -56,4 +56,11 @@ static gvplugin_api_t apis[] = {
     {(api_t)0, 0},
 };
 
+
+#ifdef GVDLL
+__declspec(dllexport) gvplugin_library_t gvplugin_core_LTX_library = { "core", apis };
+#else
 gvplugin_library_t gvplugin_core_LTX_library = { "core", apis };
+#endif
+
+

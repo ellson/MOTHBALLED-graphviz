@@ -22,5 +22,10 @@ static gvplugin_api_t apis[] = {
     {API_layout, gvlayout_dot_layout},
     {(api_t)0, 0},
 };
-
+#ifdef GVDLL
+__declspec(dllexport) gvplugin_library_t gvplugin_dot_layout_LTX_library = { "dot_layout", apis };
+#else
 gvplugin_library_t gvplugin_dot_layout_LTX_library = { "dot_layout", apis };
+#endif
+
+

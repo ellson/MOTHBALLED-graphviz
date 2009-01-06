@@ -26,7 +26,11 @@
 #include "logic.h"
 #include "memory.h"
 #include "agxbuf.h"
+
+#define _BLD_gvc 1
 #include "utils.h"
+#include "gvplugin_loadimage.h"
+
 
 extern shape_desc *find_user_shape(char *);
 

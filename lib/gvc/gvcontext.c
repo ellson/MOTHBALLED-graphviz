@@ -33,6 +33,7 @@
 #include "gvcjob.h"
 #include "gvcint.h"
 #include "gvcproc.h"
+#include "gvc.h"
 
 /* from common/utils.c */
 extern void *zmalloc(size_t);

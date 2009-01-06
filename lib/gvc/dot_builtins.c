@@ -19,6 +19,7 @@
 #endif
 
 #include "gvplugin.h"
+//#include "gvcext.h"
 
 #if defined(GVDLL) && !defined(ENABLE_LTDL)
 #define extern	__declspec(dllimport)

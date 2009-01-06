@@ -23,6 +23,7 @@
 extern "C" {
 #endif
 
+#define _BLD_gvc 1
 #ifdef GVDLL
 # ifdef _BLD_gvc
 #  define extern __declspec(dllexport)

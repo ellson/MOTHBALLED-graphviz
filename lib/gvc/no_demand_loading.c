@@ -14,8 +14,4 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#ifdef GVDLL
-__declspec(dllexport) int Demand_Loading = 0;
-#else
 const int Demand_Loading = 0;
-#endif

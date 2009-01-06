@@ -577,7 +577,7 @@ static void vrml_polygon(GVJ_t *job, pointf * A, int np, int filled)
     case NODE_OBJTYPE:
 	n = obj->u.n;
 	pen = set_penstyle(job, im, brush);
-	points = N_GNEW(np, gdPoint);
+	points = N_GGNEW(np, gdPoint);
 	for (i = 0; i < np; i++) {
 	    mp = vrml_node_point(job, n, A[i]);
 	    points[i].x = ROUND(mp.x);

@@ -25,13 +25,9 @@ extern "C" {
 #endif
 
 #ifdef GVDLL
-# ifdef _BLD_gvc
-#  define extern __declspec(dllexport)
-# else
-#  define extern __declspec(dllimport)
-# endif
+#define extern __declspec(dllexport)
 #else
-# define extern
+#define extern
 #endif
 
 /* misc */
@@ -44,7 +40,7 @@ extern char *gvUsername(void);
 
 /*  set up a graphviz context - alternative */
 /*     (wraps the above two functions using info built into libgvc) */
-extern GVC_t *gvContext(void);
+ extern GVC_t *gvContext(void);
 
 /* get information associated with a graphviz context */
 extern char **gvcInfo(GVC_t*);

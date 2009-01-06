@@ -23,4 +23,8 @@ static gvplugin_api_t apis[] = {
     {(api_t)0, 0},
 };
 
-gvplugin_library_t gvplugin_neato_layout_LTX_library = { "neato_layout", apis };
+#ifdef GVDLL
+__declspec(dllexport) gvplugin_library_t gvplugin_neato_layout_LTX_library = { "dot_layout", apis };
+#else
+gvplugin_library_t gvplugin_neato_layout_LTX_library = { "dot_layout", apis };
+#endif

@@ -32,6 +32,7 @@
 #include "graph.h"
 #endif
 #include "gvcproc.h"
+#include "gvc.h"
 
 extern void graph_init(Agraph_t *g, boolean use_rankdir);
 extern void graph_cleanup(Agraph_t *g);

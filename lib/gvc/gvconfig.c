@@ -61,10 +61,12 @@ static int glob (GVC_t * gvc, char*, int, int (*errfunc)(const char *, int), glo
 #include        "gvcproc.h"
 
 #ifdef GVDLL
-__declspec(dllexport) int Demand_Loading;
+__declspec(dllexport) int Demand_Loading ;
 #else
-extern const int Demand_Loading;
+extern const int Demand_Loading ;
 #endif
+
+
 
 #ifdef WITH_CODEGENS
     extern codegen_t HPGL_CodeGen, MIF_CodeGen, MP_CodeGen, PIC_CodeGen, DIA_CodeGen, VTX_CodeGen;

@@ -19,5 +19,5 @@
 #endif
 
 #include "gvcext.h"
-
 lt_symlist_t lt_preloaded_symbols[] = { { 0, 0 } };
+
