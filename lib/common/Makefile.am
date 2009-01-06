@@ -17,7 +17,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/cdt $(GD_INCLUDES) $(EXPAT_INCLUDES) $(Z_INCLUDES)
 
 if WITH_WIN32
-AM_CFLAGS = -D_BLD_common=1
+AM_CFLAGS = -D_BLD_gvc=1
+AM_CPPFLAGS += -O0
 endif
 
 pkginclude_HEADERS = arith.h geom.h color.h types.h textpara.h usershape.h
