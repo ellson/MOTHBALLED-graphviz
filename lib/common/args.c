@@ -26,6 +26,7 @@
 #include <ctype.h>
 #include "render.h"
 #include "tlayout.h"
+#include "gvc.h"
 
 static int
 neato_extra_args(GVC_t *gvc, int argc, char** argv)
