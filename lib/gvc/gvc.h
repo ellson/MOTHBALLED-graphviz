@@ -26,9 +26,9 @@ extern "C" {
 
 #ifdef GVDLL
 # ifdef _BLD_gvc
-#  define extern __declspec(dllimport)
-# else
 #  define extern __declspec(dllexport)
+# else
+#  define extern __declspec(dllimport)
 # endif
 #else
 # define extern
