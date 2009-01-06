@@ -123,7 +123,7 @@ extern "C" {
 	*E_tailclip, *E_headclip,
 	*E_penwidth;
 
-    EXTERN fdpParms_t fdp_parms;
+    extern fdpParms_t fdp_parms;
 
 #undef external
 #undef EXTERN
