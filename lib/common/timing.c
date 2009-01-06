@@ -21,7 +21,7 @@
 #include	<sys/times.h>
 #include	<sys/param.h>
 
-#include        "render.h"
+
 
 #ifndef HZ
 #define HZ 60
@@ -33,6 +33,9 @@ typedef struct tms mytime_t;
 #else
 
 #include	<time.h>
+#include "render.h"
+#include    "utils.h"
+
 typedef clock_t mytime_t;
 #define GET_TIME(S) S = clock()
 #define DIFF_IN_SECS(S,T) ((S - T) / (double)CLOCKS_PER_SEC)
