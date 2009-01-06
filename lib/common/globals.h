@@ -37,7 +37,7 @@
 #if !defined(_BLD_dotneato) && defined(__IMPORT__)
 #   define external __IMPORT__
 #endif
-#if !defined(_BLD_common) && defined(GVDLL)
+#if !defined(_BLD_gvc) && defined(GVDLL)
 #define extern	__declspec(dllimport)
 #endif
 #endif

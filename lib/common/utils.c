@@ -14,12 +14,13 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#define _BLD_common 1
+#define _BLD_gvc 1
 #include "render.h"
 #include "agxbuf.h"
 #include "htmltable.h"
 #include "entities.h"
 #include "logic.h"
+#include "gvc.h"
 
 #ifndef WIN32
 #include <unistd.h>

@@ -21,7 +21,7 @@
 #include	<sys/times.h>
 #include	<sys/param.h>
 
-#define _BLD_common 1
+#define _BLD_gvc 1
 #include        "render.h"
 
 #ifndef HZ

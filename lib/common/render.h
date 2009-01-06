@@ -140,7 +140,7 @@ extern "C" {
     extern void write_attributed_dot(graph_t *g, FILE *f);
     extern void write_canonical_dot(graph_t *g, FILE *f);
 
-#if defined(_BLD_common) && defined(__EXPORT__)
+#if defined(_BLD_gvc) && defined(__EXPORT__)
 #   define extern __EXPORT__
 #endif
 
