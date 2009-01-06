@@ -70,10 +70,15 @@ extern "C" {
 
     typedef struct gvplugin_available_s gvplugin_available_t;
 
-#if defined(GVDLL) && !defined(ENABLE_LTDL)
-    extern lt_symlist_t lt_preloaded_symbols[];
+
+#if !defined (ENABLE_LTDL)
+	 lt_symlist_t lt_preloaded_symbols[];
 #else
-    extern const lt_symlist_t lt_preloaded_symbols[];
+#if defined(GVDLL)
+	__declspec(dllexport) lt_symlist_t lt_preloaded_symbols[];
+#else
+	extern const lt_symlist_t lt_preloaded_symbols[] ;
+#endif
 #endif
 
 #ifdef __cplusplus
