@@ -157,6 +157,7 @@ static void cleanup_subgs(graph_t * g)
 	}
 	cleanup_subgs(subg);
     }
+    free (GD_clust(g));
 }
 
 static void fdp_cleanup_graph(graph_t * g)
