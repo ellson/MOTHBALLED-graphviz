@@ -18,6 +18,8 @@ AM_CPPFLAGS = \
 
 if WITH_WIN32
 AM_CFLAGS = -D_BLD_common=1
+else
+AM_CFLAGS = -DDEBUG
 endif
 
 pkginclude_HEADERS = arith.h geom.h color.h types.h textpara.h usershape.h
