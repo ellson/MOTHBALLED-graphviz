@@ -19,6 +19,11 @@ AM_CPPFLAGS = \
 	$(INCLTDL) -I$(top_srcdir)/libltdl \
 	-DGVLIBDIR=\"$(pkglibdir)\" -DGVPLUGIN_CONFIG_FILE=\"$(GVPLUGIN_CONFIG_FILE)\"
 
+if WITH_WIN32
+AM_CFLAGS = -D_BLD_gvc=1
+AM_CPPFLAGS += -O0
+endif
+
 LIBS = $(LIBLTDL) $(SOCKET_LIBS) $(Z_LIBS) $(MATH_LIBS)
 
 pkginclude_HEADERS = gvc.h gvcext.h gvplugin.h gvcjob.h \

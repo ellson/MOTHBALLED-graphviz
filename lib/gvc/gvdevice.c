@@ -57,8 +57,6 @@ static unsigned long int crc;
 #include "gvcint.h"
 #include "gvcproc.h"
 #include "logic.h"
-
-#define _BLD_gvc 1
 #include "gvio.h"
 
 #ifdef WITH_CODEGENS
