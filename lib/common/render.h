@@ -89,7 +89,6 @@ extern "C" {
     extern void dotneato_set_margins(GVC_t * gvc, Agraph_t *);
     extern void dotneato_write(GVC_t * gvc, graph_t *g);
     extern void dotneato_write_one(GVC_t * gvc, graph_t *g);
-    extern double elapsed_sec(void);
     extern void emit_clusters(GVJ_t * job, Agraph_t * g, int flags);
     /* extern void emit_begin_edge(GVJ_t * job, edge_t * e, char**); */
     /* extern void emit_end_edge(GVJ_t * job); */

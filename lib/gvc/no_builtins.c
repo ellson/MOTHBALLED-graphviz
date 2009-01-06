@@ -20,8 +20,4 @@
 
 #include "gvcext.h"
 
-#if defined(GVDLL) && !defined(ENABLE_LTDL)
 lt_symlist_t lt_preloaded_symbols[] = { { 0, 0 } };
-#else
-const lt_symlist_t lt_preloaded_symbols[] = { { 0, 0 } };
-#endif
