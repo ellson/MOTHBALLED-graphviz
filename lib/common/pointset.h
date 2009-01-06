@@ -23,8 +23,13 @@ extern "C" {
 
     typedef Dict_t PointSet;
     typedef Dict_t PointMap;
+#ifdef GVDLL
+#define extern __declspec(dllexport)
+#else
+#define extern
+#endif
 
-    extern PointSet *newPS(void);
+	extern PointSet *newPS(void);
     extern void freePS(PointSet *);
     extern void insertPS(PointSet *, point);
     extern void addPS(PointSet *, int, int);
@@ -38,7 +43,7 @@ extern "C" {
     extern void freePM(PointMap *);
     extern int insertPM(PointMap *, int, int, int);
 
-
+#undef extern
 #ifdef __cplusplus
 }
 #endif

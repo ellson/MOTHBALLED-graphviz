@@ -17,6 +17,7 @@
 #include <ctype.h>
 #include "render.h"
 #include "htmltable.h"
+#include "gvc.h"
 
 static char *usageFmt =
     "Usage: %s [-Vv?] [-(GNE)name=val] [-(KTlso)<val>] <dot files>\n";

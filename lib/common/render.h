@@ -1,5 +1,4 @@
-/* $Id$ $Revision$ */
-/* vim:set shiftwidth=4 ts=8: */
+
 
 /**********************************************************
 *      This software is part of the graphviz package      *
@@ -61,8 +60,13 @@ extern "C" {
     } epsf_t;
 
     typedef void (*nodesizefn_t) (Agnode_t *, boolean);
+#ifdef GVDLL
+#define extern __declspec(dllexport)
+#else
+#define extern
+#endif
 
-    extern void add_box(path *, boxf);
+	extern void add_box(path *, boxf);
     extern void arrow_flags(Agedge_t * e, int *sflag, int *eflag);
     extern boxf arrow_bb(pointf p, pointf u, double arrowsize, int flag);
     extern void arrow_gen(GVJ_t * job, emit_state_t emit_state, pointf p, pointf u,
@@ -139,9 +143,7 @@ extern "C" {
     extern void write_attributed_dot(graph_t *g, FILE *f);
     extern void write_canonical_dot(graph_t *g, FILE *f);
 
-#if defined(_BLD_gvc) && defined(__EXPORT__)
-#   define extern __EXPORT__
-#endif
+
 
 #ifdef WITH_CODEGENS
     extern codegen_info_t *first_codegen(void);

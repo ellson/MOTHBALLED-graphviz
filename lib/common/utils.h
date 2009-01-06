@@ -21,14 +21,11 @@
 extern "C" {
 #endif
 
+
 #ifdef GVDLL
-# ifdef _BLD_gvc
-#  define extern __declspec(dllexport)
-# else
-#  define extern __declspec(dllimport)
-# endif
+#define extern __declspec(dllexport)
 #else
-# define extern
+#define extern
 #endif
 
 #ifndef HAVE_STRCASECMP
@@ -64,7 +61,7 @@ extern "C" {
     extern attrsym_t* safe_dcl(graph_t * g, int obj_kind, char *name, char *def);
 #endif
 
-#undef extern
+
 
     extern int late_int(void *, Agsym_t *, int, int);
     extern double late_double(void *, Agsym_t *, double, double);

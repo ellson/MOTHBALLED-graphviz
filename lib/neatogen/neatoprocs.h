@@ -21,6 +21,11 @@
 extern "C" {
 #endif
 #include "adjust.h"
+#ifdef GVDLL
+#define extern __declspec(dllexport)
+#else
+#define extern
+#endif
 
     extern void addEdgeLabels(edge_t * e, pointf rp, pointf rq);
     extern int allow_edits(int);
@@ -78,6 +83,7 @@ extern "C" {
     extern void free_array(double **rv);
     extern int matinv(double **A, double **Ainv, int n);
 
+#undef extern
 #ifdef __cplusplus
 }
 #endif

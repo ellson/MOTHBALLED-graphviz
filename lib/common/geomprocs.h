@@ -24,8 +24,15 @@
 extern "C" {
 #endif
 
+
 #include "geom.h"
 
+#ifdef GVDLL
+#define extern __declspec(dllexport)
+#else
+#define extern
+#endif
+	
 extern box mkbox(point p, point q);
 extern boxf mkboxf(pointf p, pointf q);
 
@@ -249,7 +256,7 @@ static inline pointf scale (double c, pointf p)
     r.y = c * p.y;
     return r;
 }
-
+#undef extern
 #ifdef __cplusplus
 }
 #endif

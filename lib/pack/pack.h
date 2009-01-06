@@ -46,7 +46,11 @@ extern "C" {
 	pack_mode mode;		/* granularity and method */
 	boolean *fixed;		/* fixed[i] == true implies g[i] should not be moved */
     } pack_info;
-
+#ifdef GVDLL
+#define extern __declspec(dllexport)
+#else
+#define extern
+#endif
     extern point *putGraphs(int, Agraph_t **, Agraph_t *, pack_info *);
     extern int packGraphs(int, Agraph_t **, Agraph_t *, pack_info *);
     extern int packSubgraphs(int, Agraph_t **, Agraph_t *, pack_info *);
@@ -58,7 +62,7 @@ extern "C" {
     extern Agraph_t **ccomps(Agraph_t *, int *, char *);
     extern Agraph_t **pccomps(Agraph_t *, int *, char *, boolean *);
     extern int nodeInduce(Agraph_t *);
-
+#undef extern
 #ifdef __cplusplus
 }
 #endif
