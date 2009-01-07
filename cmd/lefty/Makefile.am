@@ -75,6 +75,15 @@ lefty_LDADD = lefty.res $(top_builddir)/cmd/lefty/dot2l/libdot2l.la \
 	$(top_builddir)/cmd/lefty/ws/mswin32/libws.la \
 	$(top_builddir)/cmd/lefty/os/mswin32/libos.la \
 	-luser32 -lgdi32 -lwinspool -lcomdlg32 -ladvapi32 -lshell32 @MATH_LIBS@
+
+if RC_IS_RC
+lefty.res : ws/mswin32/lefty.rc
+	rc -l 0x409 -Iws/mswin32 '-IC:\\progra~1\\microsoft visual studio 8\\vc\\PlatformSDK\\include' -DNDEBUG -fo lefty.res ws/mswin32/lefty.rc
+else
+lefty.res : ws/mswin32/lefty.rc
+	windres -l 0x409 -Iws/mswin32 -DNDEBUG -Ocoff -o lefty.res ws/mswin32/lefty.rc
+endif
+
 else
 lefty_LDADD = $(top_builddir)/cmd/lefty/dot2l/libdot2l.la \
 	$(top_builddir)/cmd/lefty/ws/x11/libws.la \
@@ -82,15 +91,6 @@ lefty_LDADD = $(top_builddir)/cmd/lefty/dot2l/libdot2l.la \
 	$(top_builddir)/cmd/lefty/os/unix/libos.la \
 	@X_LIBS@ @XAW_LIBS@ @X_PRE_LIBS@ @XPM_LIBS@ \
 	-lXt -lXmu -lXext -lX11 @SOCKET_LIBS@ @MATH_LIBS@
-endif
-
-if WITH_WIN32
-if RC_IS_RC
-lefty.res : ws/mswin32/lefty.rc
-	rc -l 0x409 -Iws/mswin32 '-IC:\\progra~1\\microsoft visual studio 8\\vc\\PlatformSDK\\include' -DNDEBUG -fo lefty.res ws/mswin32/lefty.rc
-else
-lefty.res : ws/mswin32/lefty.rc
-	windres -l 0x409 -Iws/mswin32 -DNDEBUG -Ocoff -o lefty.res ws/mswin32/lefty.rc
 endif
 
 lefty.1.pdf: $(srcdir)/lefty.1
