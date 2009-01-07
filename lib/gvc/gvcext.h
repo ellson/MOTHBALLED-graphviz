@@ -71,13 +71,15 @@ extern "C" {
     typedef struct gvplugin_available_s gvplugin_available_t;
 
 #if defined(GVDLL)
-__declspec(dllexport) lt_symlist_t lt_preloaded_symbols[];
+	__declspec(dllexport) lt_symlist_t lt_preloaded_symbols[];
 #else
-extern lt_symlist_t lt_preloaded_symbols[];
+	extern lt_symlist_t lt_preloaded_symbols[];
 #endif
 
 #ifdef __cplusplus
 }
 #endif
+
+
 
 #endif
