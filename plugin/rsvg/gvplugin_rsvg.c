@@ -22,5 +22,9 @@ static gvplugin_api_t apis[] = {
     {API_loadimage, gvloadimage_rsvg_types},
     {(api_t)0, 0},
 };
-
+#ifdef GVDLL
+__declspec(dllexport) gvplugin_library_t gvplugin_rsvg_LTX_library = { "rsvg", apis };
+#else
 gvplugin_library_t gvplugin_rsvg_LTX_library = { "rsvg", apis };
+#endif
+
