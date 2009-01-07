@@ -18,9 +18,7 @@
 #include "config.h"
 #endif
 
-#define _BLD_gvc 1
 #include "gvc.h"
-
 #include "builddate.h"
 #include "const.h"
 #include "gvcjob.h"

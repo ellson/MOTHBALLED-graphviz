@@ -40,7 +40,7 @@ extern char *gvUsername(void);
 
 /*  set up a graphviz context - alternative */
 /*     (wraps the above two functions using info built into libgvc) */
- extern GVC_t *gvContext(void);
+extern GVC_t *gvContext(void);
 
 /* get information associated with a graphviz context */
 extern char **gvcInfo(GVC_t*);

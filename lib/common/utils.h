@@ -62,7 +62,6 @@ extern "C" {
 #endif
 
 
-
     extern int late_int(void *, Agsym_t *, int, int);
     extern double late_double(void *, Agsym_t *, double, double);
     extern char *late_nnstring(void *, Agsym_t *, char *);
@@ -116,7 +115,6 @@ extern "C" {
 
     /* from psusershape.c */
     extern void cat_libfile(GVJ_t * job, const char **arglib, const char **stdlib);
-
 
 #undef extern
 

@@ -23,15 +23,10 @@
 extern "C" {
 #endif
 
-#define _BLD_gvc 1
 #ifdef GVDLL
-# ifdef _BLD_gvc
-#  define extern __declspec(dllexport)
-# else
-#  define extern __declspec(dllimport)
-# endif
+#define extern __declspec(dllexport)
 #else
-# define extern
+#define extern
 #endif
 
     extern size_t gvwrite (GVJ_t * job, const char *s, size_t len);

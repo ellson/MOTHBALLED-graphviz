@@ -13,6 +13,7 @@
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
+
 #ifdef GVDLL
 __declspec(dllexport) int Demand_Loading = 1;
 #else
