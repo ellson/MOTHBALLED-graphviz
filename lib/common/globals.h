@@ -42,18 +42,13 @@
 #endif
 #endif
 
-
 #ifndef external
 #   define external   extern
 #endif
 #ifndef EXTERN
 #define EXTERN extern
 #endif
-#ifdef GVDLL
-#define extern __declspec(dllexport)
-#else
-#define extern
-#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

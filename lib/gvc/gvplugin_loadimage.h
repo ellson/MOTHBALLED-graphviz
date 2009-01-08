@@ -24,12 +24,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 #ifdef GVDLL
 #  define extern __declspec(dllexport)
-#else
-# define extern
 #endif
-
 
 extern boolean gvusershape_file_access(usershape_t *us);
 extern void gvusershape_file_release(usershape_t *us);
@@ -37,6 +35,10 @@ extern void gvusershape_file_release(usershape_t *us);
     struct gvloadimage_engine_s {
 	void (*loadimage) (GVJ_t *job, usershape_t *us, boxf b, boolean filled);
     };
+
+#ifdef extern
+#undef extern
+#endif
 
 #ifdef __cplusplus
 }
