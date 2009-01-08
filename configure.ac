@@ -284,10 +284,6 @@ if test "x$TCLSH" = "x"; then
 #  fi
 fi
 
-AC_CHECK_PROGS(RC,rc windres,false)
-AM_CONDITIONAL(RC_IS_RC, [test "x$RC" = "xrc"])
-AM_CONDITIONAL(RC_IS_WINDRES, [test "x$RC" = "xwindres"])
-
 dnl -----------------------------------
 dnl checks for compilers
 
@@ -299,6 +295,7 @@ AC_PROG_CXX
 #  DEC : Enable NaN/Inf
 
 if test "${GCC}" != "yes" ; then
+    AC_CHECK_PROGS(RC,rc,false)
     case "${build}" in
         *-*-hpux* )
 	    CFLAGS="${CFLAGS} -Wp,-H30000"
@@ -313,6 +310,7 @@ if test "${GCC}" != "yes" ; then
 	    ;;
     esac
 else
+    AC_CHECK_PROGS(RC,windres,false)
     case "${CC}" in
 	*icc* )
 	    # -Wall causes relocation errors with icc
@@ -355,6 +353,9 @@ fi
 if `echo ${CFLAGS} | $GREP ffast-math >/dev/null`; then
     AC_DEFINE_UNQUOTED(NO_FPERR,1,[Define if no fpu error exception handling is required.])
 fi
+
+AM_CONDITIONAL(RC_IS_RC, [test "x$RC" = "xrc"])
+AM_CONDITIONAL(RC_IS_WINDRES, [test "x$RC" = "xwindres"])
 
 dnl -----------------------------------
 dnl Check for various typedefs and provide substitutes if they do not exist.
