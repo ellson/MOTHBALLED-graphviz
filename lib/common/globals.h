@@ -49,6 +49,10 @@
 #define EXTERN extern
 #endif
 
+#ifdef GVDLL
+#define extern __declspec(dllexport)
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -127,7 +131,9 @@ extern "C" {
 
 #undef external
 #undef EXTERN
+#ifdef extern
 #undef extern
+#endif
 
 #ifdef __cplusplus
 }
