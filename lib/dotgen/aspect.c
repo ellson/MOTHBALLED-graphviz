@@ -24,7 +24,7 @@
 /* TODO:
  *   - Support clusters
  *   - Support disconnected graphs
- *   - Provide algorithms for aspect rations < 1
+ *   - Provide algorithms for aspect ratios < 1
  */
 
 #define DPI 72
