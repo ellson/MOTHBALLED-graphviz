@@ -404,7 +404,7 @@ the width and height attributes specify the exact size of the node.
 During rendering, in the default case (<TT>imagescale=false</TT>),
 the image retains its natural size.
 If <TT>imagescale=true</TT>,
-the image is uniformly scaled (i.e., its aspect ration is
+the image is uniformly scaled (i.e., its aspect ratio is
 preserved) to fit inside the node.
 At least one dimension of the image will be as large as possible
 given the size of the node.
