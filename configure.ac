@@ -1,7 +1,8 @@
 # $Id$ $Revision$
 
 # Process this file with autoconf to produce a configure script
-AC_PREREQ([2.60])
+# Try to use version available on FC8
+AC_PREREQ(2.61)
 
 dnl graphviz package version number, (as distinct from shared library version)
 dnl For the minor number: odd => unstable series
@@ -13,9 +14,7 @@ m4_define(graphviz_version_minor, 21)
 #NB: the next line gets changed to a date/time string for development releases
 m4_define(graphviz_version_micro, 0)
 
-AC_INIT([graphviz],
-      graphviz_version_major.graphviz_version_minor.graphviz_version_micro,
-      [http://www.graphviz.org/])
+AC_INIT([graphviz],[graphviz_version_major.graphviz_version_minor.graphviz_version_micro],[http://www.graphviz.org/])
 
 GRAPHVIZ_VERSION_MAJOR=graphviz_version_major()
 GRAPHVIZ_VERSION_MINOR=graphviz_version_minor()
@@ -197,7 +196,7 @@ AC_DEFINE_UNQUOTED(DEFAULT_DPI,$DEFAULT_DPI,Default DPI.)
 AC_DEFINE_UNQUOTED(BROWSER,"$BROWSER",[Command to open a browser on a URL])
 
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS([config.h])
 
 # put BUILDDATE in its own file so that only targets that use it get rebuilt
 echo "#define BUILDDATE \"$VERSION_DATE\"" > builddate.h
@@ -228,7 +227,7 @@ dnl -----------------------------------
 # Static/Shared binaries 
 
 AC_ARG_ENABLE(static,
-        [AC_HELP_STRING([--enable-static], [build static executable])])
+        [AS_HELP_STRING([--enable-static],[build static executable])])
 if test "x$enable_static" = "xyes"; then
 	AC_ENABLE_STATIC
         use_static="Yes"
@@ -239,7 +238,7 @@ fi
 AM_CONDITIONAL(ENABLE_STATIC, [test "x$enable_static" = "xyes"])
 
 AC_ARG_ENABLE(shared,
-        [AC_HELP_STRING([--enable-shared], [build shared executable])])
+        [AS_HELP_STRING([--enable-shared],[build shared executable])])
 if test "x$enable_shared" != "xno"; then
 	AC_ENABLE_SHARED
         use_shared="Yes"
@@ -258,7 +257,7 @@ AM_CONDITIONAL(ENABLE_SHARED, [test "x$enable_shared" = "xyes"])
 dnl -----------------------------------
 dnl checks for various programs
 
-AC_ISC_POSIX
+AC_SEARCH_LIBS([strerror],[cposix])
 AM_PROG_LEX
 AC_PROG_YACC
 AC_PROG_AWK
@@ -273,7 +272,7 @@ AC_CHECK_PROG(PS2PDF,pstopdf,pstopdf,false)
 PKG_PROG_PKG_CONFIG
 
 AC_ARG_WITH(tclsh,
-  [AC_HELP_STRING([--with-tcl=PROG], [use a specific tclsh])],
+  [AS_HELP_STRING([--with-tcl=PROG],[use a specific tclsh])],
   TCLSH=$withval,)
 
 if test "x$TCLSH" = "x"; then
@@ -370,7 +369,7 @@ AC_TYPE_UID_T
 dnl -----------------------------------
 dnl Checks for header files
 
-# AC_STDC_HEADERS
+# AC_HEADER_STDC
 AC_CHECK_HEADERS(stdarg.h stddef.h stddef.h stdlib.h stdint.h malloc.h \
 	search.h getopt.h pthread.h values.h float.h limits.h termios.h \
 	errno.h time.h unistd.h fenv.h string.h strings.h inttypes.h setjmp.h \
@@ -380,9 +379,6 @@ AC_CHECK_HEADERS(stdarg.h stddef.h stddef.h stdlib.h stdint.h malloc.h \
 AC_HEADER_TIME
 AC_HEADER_DIRENT
 AC_HEADER_STDBOOL
-
-# Check for st_blksize in struct stat
-# AC_ST_BLKSIZE
 
 # Internationalization macros
 # AM_GNU_GETTEXT
@@ -407,13 +403,13 @@ fi
 # -----------------------------------
 # Test if compiler supports bool
 AC_MSG_CHECKING([for bool])
-AC_TRY_COMPILE([
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
     #ifdef HAVE_STDBOOL_H>
     #include <stdbool.h>
     #endif
-    ],[
+    ]], [[
     bool foo = true, bar = false;
-    ],[
+    ]])],[
 AC_MSG_RESULT(yes)
 AC_DEFINE(HAVE_BOOL, 1,[Define to 1 if compiler supports bool])
     ],[
@@ -422,10 +418,10 @@ AC_MSG_RESULT(no)])
 # -----------------------------------
 # Test for direct I/O
 AC_MSG_CHECKING([for struct dioattr])
-AC_TRY_COMPILE([#include <sys/types.h>
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
 #include <fcntl.h>
-#include <stdio.h>],[
-struct dioattr dio;],[
+#include <stdio.h>]], [[
+struct dioattr dio;]])],[
 AC_MSG_RESULT(yes)
 AC_DEFINE(HAVE_STRUCT_DIOATTR, 1,
 [Define to 1 if you have struct dioattr])],[
@@ -474,7 +470,7 @@ dnl -----------------------------------
 dnl libtool ltdl on-demand plugin loading
 
 AC_ARG_ENABLE(ltdl,
-  [AC_HELP_STRING([--enable-ltdl], [support on-demand plugin loading])])
+  [AS_HELP_STRING([--enable-ltdl],[support on-demand plugin loading])])
 if test "x$enable_ltdl" != "xno"; then
   AC_DEFINE(ENABLE_LTDL,1,[Define if you want on-demand plugin loading])
   AC_CONFIG_SUBDIRS(libltdl)
@@ -520,7 +516,7 @@ dnl -----------------------------------
 dnl old codegens
 
 AC_ARG_WITH(codegens,
-  [AC_HELP_STRING([--with-codegens=yes], [use old codegens])],
+  [AS_HELP_STRING([--with-codegens=yes],[use old codegens])],
   [],[with_codegens=yes])
 
 if test "x$with_codegens" = "xyes"; then
@@ -535,7 +531,7 @@ dnl -----------------------------------
 dnl ElectricFence support for debugging
 
 AC_ARG_WITH(efence,
-   [AC_HELP_STRING([--with-efence=no], [use efence for debugging memory use])],
+   [AS_HELP_STRING([--with-efence=no],[use efence for debugging memory use])],
    [],[with_efence=no])
 if test "x$with_efence" = "xyes"; then
 	LIBS="$LIBS -lefence"
@@ -558,7 +554,7 @@ dnl -----------------------------------
 dnl check for SWIG - needed for script-language bindings
 
 AC_ARG_ENABLE(swig,
-  [AC_HELP_STRING([--enable-swig=yes], [swig-generated language bindings])],
+  [AS_HELP_STRING([--enable-swig=yes],[swig-generated language bindings])],
   [],[enable_swig=yes])
 
 if test "x$enable_swig" != "xyes"; then
@@ -594,7 +590,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for C#
 
 AC_ARG_ENABLE(sharp,
-  [AC_HELP_STRING([--enable-sharp=yes], [C# language bindings])],
+  [AS_HELP_STRING([--enable-sharp=yes],[C# language bindings])],
   [],[enable_sharp=yes])
 
 if test "x$enable_sharp" != "xyes"; then
@@ -625,7 +621,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for GUILE
 
 AC_ARG_ENABLE(guile,
-  [AC_HELP_STRING([--enable-guile=yes], [guile language bindings])],
+  [AS_HELP_STRING([--enable-guile=yes],[guile language bindings])],
   [],[enable_guile=yes])
 
 if test "x$enable_guile" != "xyes"; then
@@ -678,7 +674,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for IO   (disbled until supported by swig)
 
 AC_ARG_ENABLE(io,
-  [AC_HELP_STRING([--enable-io=no], [io language bindings])],
+  [AS_HELP_STRING([--enable-io=no],[io language bindings])],
   [], [enable_io=no])
 
 if test "x$enable_io" != "xyes"; then
@@ -709,7 +705,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for JAVA
 
 AC_ARG_ENABLE(java,
-  [AC_HELP_STRING([--enable-java=yes], [java language bindings])],
+  [AS_HELP_STRING([--enable-java=yes],[java language bindings])],
   [], [enable_java=yes])
 
 if test "x$enable_java" != "xyes"; then
@@ -757,7 +753,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for LUA
 
 AC_ARG_ENABLE(lua,
-  [AC_HELP_STRING([--enable-lua=yes], [lua language bindings])],
+  [AS_HELP_STRING([--enable-lua=yes],[lua language bindings])],
   [], [enable_lua=yes])
 
 if test "x$enable_lua" != "xyes"; then
@@ -898,7 +894,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for OCAML
 
 AC_ARG_ENABLE(ocaml,
-  [AC_HELP_STRING([--enable-ocaml=yes], [ocaml language bindings])],
+  [AS_HELP_STRING([--enable-ocaml=yes],[ocaml language bindings])],
   [], [enable_ocaml=yes])
 
 if test "x$enable_ocaml" != "xyes"; then
@@ -939,7 +935,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for PERL
 
 AC_ARG_ENABLE(perl,
-  [AC_HELP_STRING([--enable-perl=yes], [perl language bindings])],
+  [AS_HELP_STRING([--enable-perl=yes],[perl language bindings])],
   [], [enable_perl=yes])
 
 if test "x$enable_perl" != "xyes"; then
@@ -986,7 +982,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for PHP
 
 AC_ARG_ENABLE(php,
-  [AC_HELP_STRING([--enable-php=yes], [php language bindings])],
+  [AS_HELP_STRING([--enable-php=yes],[php language bindings])],
   [], [enable_php=yes])
 
 if test "x$enable_php" != "xyes"; then
@@ -1034,7 +1030,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for PYTHON
 
 AC_ARG_ENABLE(python,
-  [AC_HELP_STRING([--enable-python=yes], [python language bindings])],
+  [AS_HELP_STRING([--enable-python=yes],[python language bindings])],
   [], [enable_python=yes])
 
 if test "x$enable_python" != "xyes"; then
@@ -1098,7 +1094,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for PYTHON23
 
 AC_ARG_ENABLE(python23,
-  [AC_HELP_STRING([--enable-python23=no], [python23 language bindings])],
+  [AS_HELP_STRING([--enable-python23=no],[python23 language bindings])],
   [], [enable_python23=no])
 
 if test "x$enable_python23" != "xyes"; then
@@ -1162,7 +1158,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for PYTHON24
 
 AC_ARG_ENABLE(python24,
-  [AC_HELP_STRING([--enable-python24=no], [python24 language bindings])],
+  [AS_HELP_STRING([--enable-python24=no],[python24 language bindings])],
   [], [enable_python24=no])
 
 if test "x$enable_python24" != "xyes"; then
@@ -1226,7 +1222,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for PYTHON25
 
 AC_ARG_ENABLE(python25,
-  [AC_HELP_STRING([--enable-python25=no], [python25 language bindings])],
+  [AS_HELP_STRING([--enable-python25=no],[python25 language bindings])],
   [], [enable_python25=no])
 
 if test "x$enable_python25" != "xyes"; then
@@ -1290,7 +1286,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for R
 
 AC_ARG_ENABLE(r,
-  [AC_HELP_STRING([--enable-r=yes], [R language bindings])],
+  [AS_HELP_STRING([--enable-r=yes],[R language bindings])],
   [], [enable_r=yes])
 
 if test "x$enable_r" != "xyes"; then
@@ -1318,7 +1314,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for RUBY
 
 AC_ARG_ENABLE(ruby,
-  [AC_HELP_STRING([--enable-ruby=yes], [ruby language bindings])],
+  [AS_HELP_STRING([--enable-ruby=yes],[ruby language bindings])],
   [], [enable_ruby=yes])
 
 if test "x$enable_ruby" != "xyes"; then
@@ -1362,7 +1358,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for TCL
 
 AC_ARG_ENABLE(tcl,
-  [AC_HELP_STRING([--enable-tcl=yes], [tcl language bindings])],
+  [AS_HELP_STRING([--enable-tcl=yes],[tcl language bindings])],
   [], [enable_tcl=yes])
 
 if test "x$enable_tcl" != "xyes"; then
@@ -1502,7 +1498,7 @@ fi
 
 if test "x$use_tk" = "x"; then
     AC_ARG_WITH(wish,
-        [AC_HELP_STRING([--with-wish=PROG], [use a specific wish])],
+        [AS_HELP_STRING([--with-wish=PROG],[use a specific wish])],
         WISH=$withval,)
     if test "x$WISH" = "x"; then
         AC_PATH_PROGS(WISH,[wish8.6 wish8.5 wish8.4 wish8.3 wish])
@@ -1610,11 +1606,11 @@ dnl -----------------------------------
 dnl Support for generic "extra" search paths for includes and libraries
 
 AC_ARG_WITH(extraincludedir,
-  [AC_HELP_STRING([--with-extraincludedir=DIR], [use extra includes from DIR])],
+  [AS_HELP_STRING([--with-extraincludedir=DIR],[use extra includes from DIR])],
   [CPPFLAGS="$CPPFLAGS -I$withval"])
 
 AC_ARG_WITH(extralibdir,
-  [AC_HELP_STRING([--with-extralibdir=DIR], [use extra libraries from DIR])],
+  [AS_HELP_STRING([--with-extralibdir=DIR],[use extra libraries from DIR])],
   [LDFLAGS="$LDFLAGS -L$withval"])
 
 dnl -----------------------------------
@@ -1641,7 +1637,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for EXPAT
 
 AC_ARG_WITH(expat,
-  [AC_HELP_STRING([--with-expat=yes], [use expat])],
+  [AS_HELP_STRING([--with-expat=yes],[use expat])],
   [],[with_expat=yes])
 
 if test "x$with_expat" != "xyes"; then
@@ -1662,12 +1658,12 @@ else
 	EXPAT_LIBS=""
   fi
   AC_ARG_WITH(expatincludedir,
-    [AC_HELP_STRING([--with-expatincludedir=DIR], [use EXPAT includes from DIR])],
+    [AS_HELP_STRING([--with-expatincludedir=DIR],[use EXPAT includes from DIR])],
     [EXPAT_INCLUDES="-I$withval"])
   CPPFLAGS="$CPPFLAGS $EXPAT_INCLUDES"
   EXPAT_LIBDIR="/usr/lib$LIBPOSTFIX"
   AC_ARG_WITH(expatlibdir,
-    [AC_HELP_STRING([--with-expatlibdir=DIR], [use EXPAT libraries from DIR])],
+    [AS_HELP_STRING([--with-expatlibdir=DIR],[use EXPAT libraries from DIR])],
     [EXPAT_LIBDIR="$withval"])
   if test "$EXPAT_LIBDIR" != "/usr/lib$LIBPOSTFIX"; then
 	  EXPAT_LIBS="-L$EXPAT_LIBDIR"
@@ -1698,7 +1694,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for DEVIL
 
 AC_ARG_WITH(devil,
-  [AC_HELP_STRING([--with-devil=yes], [DevIL plugin])],
+  [AS_HELP_STRING([--with-devil=yes],[DevIL plugin])],
   [],[with_devil=yes])
 
 if test "x$with_devil" != "xyes"; then
@@ -1706,10 +1702,10 @@ if test "x$with_devil" != "xyes"; then
 else
 
   AC_ARG_WITH(devilincludedir,
-    [AC_HELP_STRING([--with-devilincludedir=DIR], [use DevIL includes from DIR])],
+    [AS_HELP_STRING([--with-devilincludedir=DIR],[use DevIL includes from DIR])],
     [DEVIL_INCLUDES="-I$withval"])
   AC_ARG_WITH(devillibdir,
-    [AC_HELP_STRING([--with-devillibdir=DIR], [use DevIL libraries from DIR])],
+    [AS_HELP_STRING([--with-devillibdir=DIR],[use DevIL libraries from DIR])],
     [DEVIL_LIBS="-L$withval"])
 
   save_CPPFLAGS=$CPPFLAGS
@@ -1747,10 +1743,10 @@ dnl INCLUDES and LIBS for XPM
 #
 
 AC_ARG_WITH(Xpmincludedir,
-  [AC_HELP_STRING([--with-Xpmincludedir=DIR], [use Xpm includes from DIR])],
+  [AS_HELP_STRING([--with-Xpmincludedir=DIR],[use Xpm includes from DIR])],
   [XPM_INCLUDES="-I$withval"])
 AC_ARG_WITH(Xpmlibdir,
-  [AC_HELP_STRING([--with-Xpmlibdir=DIR], [use Xpm libraries from DIR])],
+  [AS_HELP_STRING([--with-Xpmlibdir=DIR],[use Xpm libraries from DIR])],
   [XPM_LIBS="-L$withval"])
 
 save_CPPFLAGS=$CPPFLAGS
@@ -1770,10 +1766,10 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for XAW
 
 AC_ARG_WITH(Xawincludedir,
-  [AC_HELP_STRING([--with-Xawincludedir=DIR], [use Xaw includes from DIR])],
+  [AS_HELP_STRING([--with-Xawincludedir=DIR],[use Xaw includes from DIR])],
   [XAW_INCLUDES="-I$withval"])
 AC_ARG_WITH(Xawlibdir,
-  [AC_HELP_STRING([--with-Xawlibdir=DIR], [use Xaw libraries from DIR])],
+  [AS_HELP_STRING([--with-Xawlibdir=DIR],[use Xaw libraries from DIR])],
   [XAW_LIBS="-L$withval"])
 save_CPPFLAGS=$CPPFLAGS
 save_LDFLAGS=$LDFLAGS
@@ -1808,10 +1804,10 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for Z
 
 AC_ARG_WITH(zincludedir,
-  [AC_HELP_STRING([--with-zincludedir=DIR], [use Z includes from DIR])],
+  [AS_HELP_STRING([--with-zincludedir=DIR],[use Z includes from DIR])],
   [Z_INCLUDES="-I$withval"])
 AC_ARG_WITH(zlibdir,
-  [AC_HELP_STRING([--with-zlibdir=DIR], [use Z libraries from DIR])],
+  [AS_HELP_STRING([--with-zlibdir=DIR],[use Z libraries from DIR])],
   [Z_LIBS="-L$withval"])
 
 save_CPPFLAGS=$CPPFLAGS
@@ -1835,7 +1831,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for RSVG
                                                                                 
 AC_ARG_WITH(rsvg,
-  [AC_HELP_STRING([--with-rsvg=yes], [rsvg library])],
+  [AS_HELP_STRING([--with-rsvg=yes],[rsvg library])],
   [], [with_rsvg=yes])
 
 if test "x$with_rsvg" != "xyes"; then
@@ -1857,7 +1853,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for GHOSTSCRIPT
                                                                                 
 AC_ARG_WITH(ghostscript,
-  [AC_HELP_STRING([--with-ghostscript=yes], [ghostscript library])],
+  [AS_HELP_STRING([--with-ghostscript=yes],[ghostscript library])],
   [], [with_ghostscript=yes])
 
 if test "x$with_ghostscript" != "xyes"; then
@@ -1881,7 +1877,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for PANGO, CAIRO et.al.
                                                                                 
 AC_ARG_WITH(pangocairo,
-  [AC_HELP_STRING([--with-pangocairo=yes], [pangocairo library])],
+  [AS_HELP_STRING([--with-pangocairo=yes],[pangocairo library])],
   [], [with_pangocairo=yes])
 
 if test "x$with_pangocairo" != "xyes"; then
@@ -1912,7 +1908,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for LASI
                                                                                 
 AC_ARG_WITH(lasi,
-  [AC_HELP_STRING([--with-lasi=yes], [lasi library])],
+  [AS_HELP_STRING([--with-lasi=yes],[lasi library])],
   [], [with_lasi=yes])
 
 if test "x$with_lasi" != "xyes"; then
@@ -1934,7 +1930,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for GLITZ
                                                                                 
 AC_ARG_WITH(glitz,
-  [AC_HELP_STRING([--with-glitz=no], [glitz library])],
+  [AS_HELP_STRING([--with-glitz=no],[glitz library])],
   [], [with_glitz=no])
 
 if test "x$with_glitz" != "xyes"; then
@@ -1956,7 +1952,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for FREETYPE2
                                                                                 
 AC_ARG_WITH(freetype2,
-  [AC_HELP_STRING([--with-freetype2=yes], [freetype2 library])],
+  [AS_HELP_STRING([--with-freetype2=yes],[freetype2 library])],
   [], [with_freetype2=yes])
 
 if test "x$with_freetype2" != "xyes"; then
@@ -2002,7 +1998,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for FONTCONFIG
                                                                                 
 AC_ARG_WITH(fontconfig,
-  [AC_HELP_STRING([--with-fontconfig=yes], [use fontconfig library])],
+  [AS_HELP_STRING([--with-fontconfig=yes],[use fontconfig library])],
   [], [with_fontconfig=yes])
 
 if test "x$with_fontconfig" != "xyes"; then
@@ -2048,7 +2044,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for GDK_PIXBUF.
 
 AC_ARG_WITH(gdk-pixbuf,
-  [AC_HELP_STRING([--with-gdk-pixbuf=yes], [gdk-pixbuf library])],
+  [AS_HELP_STRING([--with-gdk-pixbuf=yes],[gdk-pixbuf library])],
   [], [with_gdk_pixbuf=yes])
 
 if test "x$with_gdk_pixbuf" != "xyes"; then
@@ -2070,7 +2066,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for GTK.
 
 AC_ARG_WITH(gtk,
-  [AC_HELP_STRING([--with-gtk=yes], [gtk+ library])],
+  [AS_HELP_STRING([--with-gtk=yes],[gtk+ library])],
   [], [with_gtk=yes])
 
 if test "x$with_gtk" != "xyes"; then
@@ -2092,7 +2088,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for GTKGL.
 
 AC_ARG_WITH(gtkgl,
-  [AC_HELP_STRING([--with-gtkgl=yes], [gtkgl library])],
+  [AS_HELP_STRING([--with-gtkgl=yes],[gtkgl library])],
   [], [with_gtkgl=yes])
 
 if test "x$with_gtkgl" != "xyes"; then
@@ -2114,7 +2110,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for GTKGLEXT.
 
 AC_ARG_WITH(gtkglext,
-  [AC_HELP_STRING([--with-gtkglext=yes], [gtkglext library])],
+  [AS_HELP_STRING([--with-gtkglext=yes],[gtkglext library])],
   [], [with_gtkglext=yes])
 
 if test "x$with_gtkglext" != "xyes"; then
@@ -2136,7 +2132,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for GTS.
 
 AC_ARG_WITH(gts,
-  [AC_HELP_STRING([--with-gts=yes], [gts library])],
+  [AS_HELP_STRING([--with-gts=yes],[gts library])],
   [], [with_gts=yes])
 
 if test "x$with_gts" != "xyes"; then
@@ -2158,7 +2154,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for GLADE.
 
 AC_ARG_WITH(glade,
-  [AC_HELP_STRING([--with-glade=yes], [glade library])],
+  [AS_HELP_STRING([--with-glade=yes],[glade library])],
   [], [with_glade=yes])
 
 if test "x$with_glade" != "xyes"; then
@@ -2180,7 +2176,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for MING (SWF renderer)
 
 AC_ARG_WITH(ming,
-  [AC_HELP_STRING([--with-ming=no], [ming library (plugin for -Tswf)])],
+  [AS_HELP_STRING([--with-ming=no],[ming library (plugin for -Tswf)])],
   [], [with_ming=no])
 
 if test "x$with_ming" != "xyes"; then
@@ -2202,7 +2198,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for QUARTZ 
 
 AC_ARG_WITH(quartz,
-  [AC_HELP_STRING([--with-quartz=no], [Quartz framework (Mac OS X)])],
+  [AS_HELP_STRING([--with-quartz=no],[Quartz framework (Mac OS X)])],
   [], [with_quartz=no])
 
 if test "x$with_quartz" != "xyes"; then
@@ -2225,11 +2221,11 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for PLATFORMSDK
 
 AC_ARG_WITH(platformsdkincludedir,
-  [AC_HELP_STRING([--with-platformsdkincludedir=DIR], [use Platform SDK (Windows) includes from DIR])],
+  [AS_HELP_STRING([--with-platformsdkincludedir=DIR],[use Platform SDK (Windows) includes from DIR])],
   [PLATFORMSDKINCLUDE=$withval; PLATFORMSDKINCLUDE_ESCAPED=${PLATFORMSDKINCLUDE//'\\'/\\\\}; PLATFORMSDKINCLUDE_ESCAPED=${PLATFORMSDKINCLUDE_ESCAPED// /\\ }])
 
 AC_ARG_WITH(platformsdklibdir,
-  [AC_HELP_STRING([--with-platformsdklibdir=DIR], [use Platform SDK (Windows) libraries from DIR])],
+  [AS_HELP_STRING([--with-platformsdklibdir=DIR],[use Platform SDK (Windows) libraries from DIR])],
   [PLATFORMSDKLIB=$withval])
 
 AC_SUBST(PLATFORMSDKINCLUDE)
@@ -2240,7 +2236,7 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for GDI+ 
 
 AC_ARG_WITH(gdiplus,
-  [AC_HELP_STRING([--with-gdiplus=no], [GDI+ framework (Windows)])],
+  [AS_HELP_STRING([--with-gdiplus=no],[GDI+ framework (Windows)])],
   [], [with_gdiplus=no])
 
 if test "x$with_gdiplus" != "xyes"; then
@@ -2266,12 +2262,11 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for GD
                                                                                 
 AC_ARG_WITH(libgd,
-  [AC_HELP_STRING([--with-libgd=yes], [use gd library])],
+  [AS_HELP_STRING([--with-libgd=yes],[use gd library])],
   [], [with_libgd=yes])
 
 AC_ARG_WITH(mylibgd,
-  [AC_HELP_STRING([--with-mylibgd=no],
-    [use internal gd library in preference to any installed libgd])],
+  [AS_HELP_STRING([--with-mylibgd=no],[use internal gd library in preference to any installed libgd])],
   [], [with_mylibgd=no])
 
 if test "x$with_mylibgd" = "xyes"; then
@@ -2362,11 +2357,11 @@ else
       save_CPPFLAGS=$CPPFLAGS
       save_LDFLAGS=$LDFLAGS
       AC_ARG_WITH(gdincludedir,
-        [AC_HELP_STRING([--with-gdincludedir=DIR], [use GD includes from DIR])],
+        [AS_HELP_STRING([--with-gdincludedir=DIR],[use GD includes from DIR])],
         GD_INCLUDES="-I$withval")
       CPPFLAGS="$CPPFLAGS $GD_INCLUDES"
       AC_ARG_WITH(gdlibdir,
-        [AC_HELP_STRING([--with-gdlibdir=DIR], [use GD libraries from DIR])],
+        [AS_HELP_STRING([--with-gdlibdir=DIR],[use GD libraries from DIR])],
         [GD_LDFLAGS="-L$withval"])
       LDFLAGS="$LDFLAGS $GD_LDFLAGS"
       AC_CHECK_HEADER(gd.h,,[
@@ -2421,11 +2416,11 @@ if test "x$with_mylibgd" = "xyes"; then
 save_CPPFLAGS=$CPPFLAGS
 save_LDFLAGS=$LDFLAGS
 AC_ARG_WITH(iconvincludedir,
-  [AC_HELP_STRING([--with-iconvincludedir=DIR], [use ICONV includes from DIR])],
+  [AS_HELP_STRING([--with-iconvincludedir=DIR],[use ICONV includes from DIR])],
   [ICONV_INCLUDES="-I$withval"])
 CPPFLAGS="$CPPFLAGS $ICONV_INCLUDES"
 AC_ARG_WITH(iconvlibdir,
-  [AC_HELP_STRING([--with-iconvlibdir=DIR], [use ICONV libraries from DIR])],
+  [AS_HELP_STRING([--with-iconvlibdir=DIR],[use ICONV libraries from DIR])],
   [ICONV_LIBS="-L$withval"])
 LDFLAGS="$LDFLAGS $ICONV_LIBS"
 
@@ -2470,11 +2465,11 @@ else
 	PNG_INCLUDES=""
 fi
 AC_ARG_WITH(pngincludedir,
-  [AC_HELP_STRING([--with-pngincludedir=DIR], [use PNG includes from DIR])],
+  [AS_HELP_STRING([--with-pngincludedir=DIR],[use PNG includes from DIR])],
   [PNG_INCLUDES="-I$withval"])
 CPPFLAGS="$CPPFLAGS $PNG_INCLUDES $Z_INCLUDES"
 AC_ARG_WITH(pnglibdir,
-  [AC_HELP_STRING([--with-pnglibdir=DIR], [use PNG libraries from DIR])],
+  [AS_HELP_STRING([--with-pnglibdir=DIR],[use PNG libraries from DIR])],
   [PNG_LIBS="-L$withval"])
 LDFLAGS="$LDFLAGS $PNG_LIBS $Z_LIBS"
 AC_CHECK_HEADER(png.h,
@@ -2500,12 +2495,12 @@ if test "x$with_mylibgd" = "xyes"; then
 save_CPPFLAGS=$CPPFLAGS
 save_LDFLAGS=$LDFLAGS
 AC_ARG_WITH(jpegincludedir,
-  [AC_HELP_STRING([--with-jpegincludedir=DIR], [use JPEG includes from DIR])],
+  [AS_HELP_STRING([--with-jpegincludedir=DIR],[use JPEG includes from DIR])],
   [JPEG_INCLUDES="-I$withval"])
 CPPFLAGS="$CPPFLAGS $JPEG_INCLUDES"
 JPEG_LIBDIR="/usr/lib$LIBPOSTFIX"
 AC_ARG_WITH(jpeglibdir,
-  [AC_HELP_STRING([--with-jpeglibdir=DIR], [use JPEG libraries from DIR])],
+  [AS_HELP_STRING([--with-jpeglibdir=DIR],[use JPEG libraries from DIR])],
   [JPEG_LIBDIR="$withval"])
 if test "$JPEG_LIBDIR" != "/usr/lib$LIBPOSTFIX"; then
 	JPEG_LIBS="-L$JPEG_LIBDIR"
@@ -2599,7 +2594,7 @@ dnl -----------------------------------
 dnl SFDP
  
 AC_ARG_WITH(sfdp,
-  [AC_HELP_STRING([--with-sfdp=no], [sfdp layout engine])],
+  [AS_HELP_STRING([--with-sfdp=no],[sfdp layout engine])],
   [], [with_sfdp=no])
 
 if test "x$with_sfdp" != "xyes"; then
@@ -2614,7 +2609,7 @@ dnl -----------------------------------
 dnl SMYRNA 
 
 AC_ARG_WITH(smyrna,
-  [AC_HELP_STRING([--with-smyrna=no], [SMYRNA large graph viewer])],
+  [AS_HELP_STRING([--with-smyrna=no],[SMYRNA large graph viewer])],
   [], [with_smyrna=no])
 
 if test "x$with_smyrna" != "xyes"; then
@@ -2649,7 +2644,7 @@ dnl -----------------------------------
 dnl CGRAPH 
 
 AC_ARG_WITH(cgraph,
-  [AC_HELP_STRING([--with-cgraph=no], [Use CGRAPH library])],
+  [AS_HELP_STRING([--with-cgraph=no],[Use CGRAPH library])],
   [], [with_cgraph=no])
 
 if test "x$with_cgraph" != "xyes"; then
@@ -2664,7 +2659,7 @@ dnl -----------------------------------
 dnl ORTHO 
 
 AC_ARG_WITH(ortho,
-  [AC_HELP_STRING([--with-ortho=no], [ORTHO features in neato layout engine])],
+  [AS_HELP_STRING([--with-ortho=no],[ORTHO features in neato layout engine])],
   [], [with_ortho=no])
 
 if test "x$with_ortho" != "xyes"; then
@@ -2679,7 +2674,7 @@ dnl -----------------------------------
 dnl DIGCOLA 
 
 AC_ARG_WITH(digcola,
-  [AC_HELP_STRING([--with-digcola=yes], [DIGCOLA features in neato layout engine])],
+  [AS_HELP_STRING([--with-digcola=yes],[DIGCOLA features in neato layout engine])],
   [], [with_digcola=yes])
 
 if test "x$with_digcola" != "xyes"; then
@@ -2692,7 +2687,7 @@ fi
 dnl -----------------------------------
 dnl IPSEPCOLA   /* disabled by default due to C++ issues on some platforms */
 AC_ARG_WITH(ipsepcola,
-  [AC_HELP_STRING([--with-ipsepcola=no], [IPSEPCOLA features in neato layout engine])],
+  [AS_HELP_STRING([--with-ipsepcola=no],[IPSEPCOLA features in neato layout engine])],
   [], [with_ipsepcola=no])
 
 if test "x$with_ipsepcola" != "xyes"; then
@@ -2715,7 +2710,7 @@ AM_CONDITIONAL(WITH_IPSEPCOLA, [test "x$use_ipsepcola" = "xYes"])
 # Special checks
 
 AC_MSG_CHECKING(if have working sincos())
-AC_TRY_RUN([
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
 	#include <stdio.h>
 	#include <assert.h>
 	#define PI 3.14159265358979323846
@@ -2728,117 +2723,89 @@ AC_TRY_RUN([
 		assert(cosx<0.0000001);
 		assert(cosx>(-0.0000001));
 		return 0;
-	}]
-	,
-	AC_MSG_RESULT(yes)
-	AC_DEFINE_UNQUOTED(HAVE_SINCOS,1,[Define if libm provides a *working* sincos function])
-	,
-	AC_MSG_RESULT(no)
-	,
-	AC_MSG_RESULT(no - assumed because cross-compiling)
-	)
+	}
+	]])],[AC_MSG_RESULT(yes)
+	AC_DEFINE_UNQUOTED(HAVE_SINCOS,1,Define if libm provides a *working* sincos function)
+	],[AC_MSG_RESULT(no)
+	],[AC_MSG_RESULT(no - assumed because cross-compiling)
+	])
 
 # -----------------------------------
 AC_MSG_CHECKING(if FILE struct contains _cnt)
-AC_TRY_COMPILE(
-	#include <stdio.h>
-	,
-	FILE *f;
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>
+	]], [[FILE *f;
 	int i;
 	i = f->_cnt;
-	,
-	AC_MSG_RESULT(yes)
-	AC_DEFINE_UNQUOTED(HAVE_FILE_CNT,1,[Define if FILE structure provides _cnt])
-	,
-	AC_MSG_RESULT(no)
-	)
+	]])],[AC_MSG_RESULT(yes)
+	AC_DEFINE_UNQUOTED(HAVE_FILE_CNT,1,Define if FILE structure provides _cnt)
+	],[AC_MSG_RESULT(no)
+	])
 
 # -----------------------------------
 
 AC_MSG_CHECKING(if FILE struct contains _r)
-AC_TRY_COMPILE(
-	#include <stdio.h>
-	,
-	FILE *f;
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>
+	]], [[FILE *f;
 	int i;
 	i = f->_r;
-	,
-	AC_MSG_RESULT(yes)
-	AC_DEFINE_UNQUOTED(HAVE_FILE_R,1,[Define if FILE structure provides _r])
-	,
-	AC_MSG_RESULT(no)
-	)
+	]])],[AC_MSG_RESULT(yes)
+	AC_DEFINE_UNQUOTED(HAVE_FILE_R,1,Define if FILE structure provides _r)
+	],[AC_MSG_RESULT(no)
+	])
 
 # -----------------------------------
 
 AC_MSG_CHECKING(if FILE struct contains _next)
-AC_TRY_COMPILE(
-	#include <stdio.h>
-	,
-	FILE *f;
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>
+	]], [[FILE *f;
 	int i;
 	i = f->_next;
-	,
-	AC_MSG_RESULT(yes)
-	AC_DEFINE_UNQUOTED(HAVE_FILE_NEXT,1,[Define if FILE structure provides _next])
-	,
-	AC_MSG_RESULT(no)
-	)
+	]])],[AC_MSG_RESULT(yes)
+	AC_DEFINE_UNQUOTED(HAVE_FILE_NEXT,1,Define if FILE structure provides _next)
+	],[AC_MSG_RESULT(no)
+	])
 
 # -----------------------------------
 
 AC_MSG_CHECKING(if FILE struct contains _IO_read_end)
-AC_TRY_COMPILE(
-	#include <stdio.h>
-	,
-	FILE *f;
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>
+	]], [[FILE *f;
 	int i;
 	i = f->_IO_read_end;
-	,
-	AC_MSG_RESULT(yes)
-	AC_DEFINE_UNQUOTED(HAVE_FILE_IO_READ_END,1,[Define if FILE structure provides _IO_read_end])
-	,
-	AC_MSG_RESULT(no)
-	)
+	]])],[AC_MSG_RESULT(yes)
+	AC_DEFINE_UNQUOTED(HAVE_FILE_IO_READ_END,1,Define if FILE structure provides _IO_read_end)
+	],[AC_MSG_RESULT(no)
+	])
 
 # -----------------------------------
 
 AC_MSG_CHECKING(if errno externs are declared)
-AC_TRY_LINK(
-	#include <stdio.h>
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>
 	#include <errno.h>
-	,
-	if ( errno < sys_nerr ) return sys_errlist[[errno]];
-	,
-	AC_MSG_RESULT(yes)
-	AC_DEFINE_UNQUOTED(HAVE_ERRNO_DECL,1,[Define if errno externs are declared])
-	,
-	AC_MSG_RESULT(no)
-	)
+	]], [[if ( errno < sys_nerr ) return sys_errlist[errno];
+	]])],[AC_MSG_RESULT(yes)
+	AC_DEFINE_UNQUOTED(HAVE_ERRNO_DECL,1,Define if errno externs are declared)
+	],[AC_MSG_RESULT(no)
+	])
 
 # -----------------------------------
 
 AC_MSG_CHECKING(if getopt externs are declared)
-AC_TRY_LINK(
-	#include <stdlib.h>
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
 	#include <stdio.h>
 	#if HAVE_UNISTD_H
 	#include <unistd.h>
 	#endif
-	,
-	if ( optopt ) exit(0); else exit(1);
-	,
-	AC_MSG_RESULT(yes)
-	AC_DEFINE_UNQUOTED(HAVE_GETOPT_DECL,1,[Define if getopt externs are declared])
-	,
-	AC_MSG_RESULT(no)
-	)
+	]], [[if ( optopt ) exit(0); else exit(1);
+	]])],[AC_MSG_RESULT(yes)
+	AC_DEFINE_UNQUOTED(HAVE_GETOPT_DECL,1,Define if getopt externs are declared)
+	],[AC_MSG_RESULT(no)
+	])
 
 # -----------------------------------
 
 AC_MSG_CHECKING(if intptr_t is declared)
-AC_TRY_LINK(
-	#include <stdlib.h>
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
 	#if HAVE_STDINT_H
 	#include <stdint.h>
 	#endif
@@ -2848,14 +2815,11 @@ AC_TRY_LINK(
 	#if HAVE_UNISTD_H
 	#include <unistd.h>
 	#endif
-	,
-	intptr_t  abc;
-	,
-	AC_MSG_RESULT(yes)
-	AC_DEFINE_UNQUOTED(HAVE_INTPTR_T,1,[Define if intptr_t is declared])
-	,
-	AC_MSG_RESULT(no)
-	)
+	]], [[intptr_t  abc;
+	]])],[AC_MSG_RESULT(yes)
+	AC_DEFINE_UNQUOTED(HAVE_INTPTR_T,1,Define if intptr_t is declared)
+	],[AC_MSG_RESULT(no)
+	])
 
 # -----------------------------------
 
