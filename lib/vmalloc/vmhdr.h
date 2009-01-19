@@ -32,6 +32,7 @@ extern "C" {
 **	Written by Kiem-Phong Vo, kpv@research.att.com, 01/16/94.
 */
 
+
 #if _PACKAGE_ast
 
 #if defined(__STDPP__directive) && defined(__STDPP__hide)
