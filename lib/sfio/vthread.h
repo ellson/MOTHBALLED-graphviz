@@ -45,6 +45,7 @@ extern "C" {
 #endif
 #undef vt_threaded
 
+
 #if _may_use_threads && !defined(vt_threaded) && _hdr_pthread
 #define vt_threaded		1
 #include			<pthread.h>
