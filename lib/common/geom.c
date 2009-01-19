@@ -193,8 +193,10 @@ int lineToBox(pointf p, pointf q, boxf b)
     }
     return -1;
 }
-
-inline void rect2poly(pointf *p)
+#ifdef WIN32_STATIC
+#define inline
+#endif
+void rect2poly(pointf *p)
 {
     p[3].x = p[2].x = p[1].x;
     p[2].y = p[1].y;
@@ -357,7 +359,7 @@ inline box flip_rec_box(box b, point p)
     return r;
 }
 
-inline boxf flip_rec_boxf(boxf b, pointf p)
+boxf flip_rec_boxf(boxf b, pointf p)
 {
     boxf r;
     /* flip box */
@@ -372,6 +374,11 @@ inline boxf flip_rec_boxf(boxf b, pointf p)
     r.UR.y += p.y;
     return r;
 }
+
+#ifdef WIN32_STATIC
+#undef inline
+#endif
+
 
 #define SMALL 0.0000000001
 

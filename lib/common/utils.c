@@ -1760,7 +1760,9 @@ void setEdgeType (graph_t* g, int dflt)
     GD_flags(g) |= et;
 }
 
+#ifndef WIN32_STATIC
 #ifndef HAVE_STRCASECMP
+
 
 #include <string.h>
 #include <ctype.h>
@@ -1779,9 +1781,10 @@ int strcasecmp(const char *s1, const char *s2)
 }
 
 #endif				/* HAVE_STRCASECMP */
+#endif				/*WIN32_STATIC*/
 
-#ifndef HAVE_STRNCASECMP
-
+#ifndef WIN32_STATIC
+#ifndef HAVE_STRCASECMP
 #include <string.h>
 #include <ctype.h>
 
@@ -1803,7 +1806,7 @@ int strncasecmp(const char *s1, const char *s2, unsigned int n)
 }
 
 #endif				/* HAVE_STRNCASECMP */
-
+#endif
 void gv_free_splines(edge_t * e)
 {
     int i;
