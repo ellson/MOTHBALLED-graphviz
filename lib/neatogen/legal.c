@@ -219,9 +219,9 @@ static int find_intersection(vertex *l,
 		  intersection* ilist, data *input)
 {
     double x, y;
-    int i[3];
-    sgnarea(l, m, i);
     pointf p;
+	int i[3];
+    sgnarea(l, m, i);
 
     if (i[2] > 0)
 	return 0;

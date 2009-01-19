@@ -177,6 +177,8 @@ static void computeLayerWidths(graph_t * g)
 {
     int i;
     node_t *v;
+    node_t *n;
+    edge_t *e;
 
     nLayers = 0;
 
@@ -216,8 +218,6 @@ static void computeLayerWidths(graph_t * g)
     }
 
 
-    node_t *n;
-    edge_t *e;
 
     /* Count dummy nodes in the layer */
     for (n = agfstnode(g); n; n = agnxtnode(g, n))
