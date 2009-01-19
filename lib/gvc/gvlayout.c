@@ -86,6 +86,8 @@ int gvLayoutJobs(GVC_t * gvc, Agraph_t * g)
     GD_drawing(agroot(g)) = GD_drawing(g);
     if (gvle && gvle->layout) {
 	gvle->layout(g);
+
+
 	if (gvle->cleanup)
 	    GD_cleanup(g) = gvle->cleanup;
     }
