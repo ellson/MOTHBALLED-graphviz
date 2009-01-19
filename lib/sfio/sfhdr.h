@@ -134,7 +134,7 @@ extern "C" {
 #endif /*_FIOCLEX*/
 #endif				/*F_SETFD */
 
-#if _hdr_unistd
+#ifdef _hdr_unistd
 #include	<unistd.h>
 #endif
 
