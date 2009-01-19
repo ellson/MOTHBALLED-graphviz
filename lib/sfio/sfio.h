@@ -99,12 +99,15 @@ extern "C" {
 #endif				/* _PACKAGE_ast */
 
 /* Sfoff_t should be large enough for largest file address */
+
+
 #define Sfoff_t		_ast_intmax_t
 #define Sflong_t	_ast_intmax_t
 #define Sfulong_t	unsigned _ast_intmax_t
 #define Sfdouble_t	_ast_fltmax_t
 
-    typedef struct _sfio_s Sfio_t;
+	typedef struct _sfio_s Sfio_t;
+
     typedef struct _sfdisc_s Sfdisc_t;
     typedef ssize_t(*Sfread_f)
 	_ARG_((Sfio_t *, Void_t *, size_t, Sfdisc_t *));
