@@ -111,6 +111,7 @@ BuildRequires:  /usr/include/tcl.h /usr/include/tk.h
 %endif
 %if %att_rhel >= 3
 %define IPSEPCOLA 1
+%define SFDP 1
 BuildRequires: fontconfig-devel tcl-devel tk-devel 
 %endif
 %if %att_rhel == 4
@@ -122,7 +123,6 @@ BuildRequires: xorg-x11-devel
 %define RUBY 1
 %define GUILE 1
 %define PYTHON 1
-%define SFDP 1
 BuildRequires: perl ruby-devel guile-devel python-devel
 %endif
 %if %att_rhel >= 5
