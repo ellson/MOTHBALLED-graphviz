@@ -4,7 +4,7 @@ autoreconf -v --install --force || exit 1
 
 # ensure config/depcomp exists even if still using automake-1.4
 # otherwise "make dist" fails.
-touch config/depcomp libltdl/config/config.rpath
+touch config/depcomp 
 
 # ensure COPYING is based on cpl1.0.txt
 #   cpl1.0.txt was obtained from: http://www.opensource.org/licenses/cpl1.0.txt
