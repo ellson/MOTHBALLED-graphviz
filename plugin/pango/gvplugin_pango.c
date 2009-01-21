@@ -29,10 +29,29 @@ static gvplugin_api_t apis[] = {
     {(api_t)0, 0},
 };
 
+
+
+
+/*visual studio*/
+#ifdef WIN32_DLL
+#ifndef GVPLUGIN_PANGO_EXPORTS
+__declspec(dllimport) gvplugin_library_t gvplugin_pango_LTX_library = { "cairo", apis };
+#else
+__declspec(dllexport) gvplugin_library_t gvplugin_pango_LTX_library = { "cairo", apis };
+#endif
+#endif
+/*end visual studio*/
+
+
+#ifndef WIN32_DLL
 #ifdef GVDLL
 __declspec(dllexport) gvplugin_library_t gvplugin_pango_LTX_library = { "cairo", apis };
 #else
 gvplugin_library_t gvplugin_pango_LTX_library = { "cairo", apis };
 #endif
+#endif
+
+
+
 
 
