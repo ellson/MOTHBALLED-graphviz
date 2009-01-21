@@ -29,6 +29,14 @@ extern "C" {
 #  define extern __declspec(dllexport)
 #endif
 
+/*visual studio*/
+#ifdef WIN32_DLL
+#ifndef GVC_EXPORTS
+#define extern __declspec(dllimport)
+#endif
+#endif
+/*end visual studio*/
+
 extern boolean gvusershape_file_access(usershape_t *us);
 extern void gvusershape_file_release(usershape_t *us);
 
