@@ -163,6 +163,14 @@ extern "C" {
 #define DT_DISC		3	/* discipline is about to be changed    */
 #define DT_METH		4	/* method is about to be changed        */
 
+/*visual studio*/
+#ifdef WIN32_DLL
+#ifndef CDT_EXPORTS
+#define extern __declspec(dllimport)
+#endif
+#endif
+/*end visual studio*/
+
 #if _BLD_cdt && defined(__EXPORT__)
 #define extern	__EXPORT__
 #endif
@@ -182,7 +190,7 @@ extern "C" {
 
 /* compatibility stuff; will go away */
 #ifndef KPVDEL
-    extern Dtmethod_t *Dtorder;
+	extern Dtmethod_t *Dtorder;
     extern Dtmethod_t *Dttree;
     extern Dtmethod_t *Dthash;
     extern Dtmethod_t _Dttree;

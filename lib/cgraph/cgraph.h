@@ -186,6 +186,14 @@ struct Agdisc_s {		/* user's discipline */
 #define extern  __declspec(dllimport)
 #endif
 
+/*visual studio*/
+#ifdef WIN32_DLL
+#ifndef CGRAPH_EXPORTS
+#define extern __declspec(dllimport)
+#endif
+#endif
+/*end visual studio*/
+
 extern Agmemdisc_t AgMemDisc;
 extern Agiddisc_t AgIdDisc;
 extern Agiodisc_t AgIoDisc;
