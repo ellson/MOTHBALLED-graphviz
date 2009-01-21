@@ -28,6 +28,14 @@ extern "C" {
 #define extern
 #endif
 
+/*visual studio*/
+#ifdef WIN32_DLL
+#ifndef GVC_EXPORTS
+#define extern __declspec(dllimport)
+#endif
+#endif
+/*end visual studio*/
+
 #ifndef HAVE_STRCASECMP
     extern int strcasecmp(const char *s1, const char *s2);
 #endif
@@ -66,7 +74,7 @@ extern "C" {
     extern double late_double(void *, Agsym_t *, double, double);
     extern char *late_nnstring(void *, Agsym_t *, char *);
     extern char *late_string(void *, Agsym_t *, char *);
-    extern boolean late_bool(void *, Agsym_t *, int);
+	extern boolean late_bool(void *, Agsym_t *, int);
 
     extern Agnode_t *UF_find(Agnode_t *);
     extern Agnode_t *UF_union(Agnode_t *, Agnode_t *);

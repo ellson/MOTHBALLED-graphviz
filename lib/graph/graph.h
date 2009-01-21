@@ -134,6 +134,14 @@ extern "C" {
 #define extern  __IMPORT__
 #endif
 #endif
+
+/*visual studio*/
+#ifdef WIN32_DLL
+#ifndef GRAPH_EXPORTS
+#define extern __declspec(dllimport)
+#endif
+#endif
+/*end visual studio*/
     extern char *agstrcanon(char *, char *);
     extern char *agcanonical(char *);
     extern char *agcanon(char *);

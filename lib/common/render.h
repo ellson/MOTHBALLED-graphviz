@@ -66,6 +66,14 @@ extern "C" {
 #define extern
 #endif
 
+/*visual studio*/
+#ifdef WIN32_DLL
+#ifndef GVC_EXPORTS
+#define extern __declspec(dllimport)
+#endif
+#endif
+/*end visual studio*/
+
 	extern void add_box(path *, boxf);
     extern void arrow_flags(Agedge_t * e, int *sflag, int *eflag);
     extern boxf arrow_bb(pointf p, pointf u, double arrowsize, int flag);

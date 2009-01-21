@@ -30,6 +30,14 @@ extern "C" {
 #define extern
 #endif
 
+/*visual studio*/
+#ifdef WIN32_DLL
+#ifndef GVC_EXPORTS
+#define extern __declspec(dllimport)
+#endif
+#endif
+/*end visual studio*/
+	
 /* misc */
 /* FIXME - this needs eliminating or renaming */
 extern void gvToggle(int);

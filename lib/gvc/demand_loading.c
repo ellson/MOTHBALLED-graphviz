@@ -14,8 +14,20 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+/*visual studio*/
+#ifdef WIN32_DLL
+#ifndef GVC_EXPORTS
+__declspec(dllimport) int Demand_Loading = 1;
+#else
+__declspec(dllexport) int Demand_Loading = 1;
+#endif
+#endif
+/*end visual studio*/
+
+#ifndef WIN32_DLL
 #ifdef GVDLL
 __declspec(dllexport) int Demand_Loading = 1;
 #else
 const int Demand_Loading = 1;
+#endif
 #endif
