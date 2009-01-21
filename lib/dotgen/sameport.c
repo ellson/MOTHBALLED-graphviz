@@ -179,6 +179,7 @@ static void sameport(node_t * u, elist * l, double arr_len)
     prt.constrained = FALSE;
     prt.defined = TRUE;
     prt.clip = FALSE;
+    prt.dyna = FALSE;
     prt.theta = 0;
     prt.side = 0;
 
