@@ -29,6 +29,14 @@ extern "C" {
 #define extern
 #endif
 
+/*visual studio*/
+#ifdef WIN32_DLL
+#ifndef GVC_EXPORTS
+#define extern __declspec(dllimport)
+#endif
+#endif
+/*end visual studio*/
+
 	extern PointSet *newPS(void);
     extern void freePS(PointSet *);
     extern void insertPS(PointSet *, point);
