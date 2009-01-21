@@ -24,10 +24,17 @@
 
 #include "builddate.h"
 #include "gvc.h"
+
+#ifndef WIN32_DLL
 #ifdef GVDLL
 __declspec(dllimport) boolean MemTest;
 #else
 #include "globals.h"
+#endif
+#endif
+
+#ifdef WIN32_DLL
+__declspec(dllimport) boolean MemTest;
 #endif
 
 #include <time.h>
