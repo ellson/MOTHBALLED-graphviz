@@ -33,6 +33,14 @@ extern "C" {
 #define extern
 #endif
 	
+/*visual studio*/
+#ifdef WIN32_DLL
+#ifndef GVC_EXPORTS
+#define extern __declspec(dllimport)
+#endif
+#endif
+/*end visual studio*/
+
 extern box mkbox(point p, point q);
 extern boxf mkboxf(pointf p, pointf q);
 
@@ -53,9 +61,10 @@ extern void rect2poly(pointf *p);
 
 extern int line_intersect (pointf a, pointf b, pointf c, pointf d, pointf* p);
 
-#ifdef WIN32_STATIC
+#ifdef WIN32_STATIC ||  WIN32_DLL
 #define inline __inline
 #endif
+#define inline __inline
 
 
 static inline point pointof(int x, int y)
