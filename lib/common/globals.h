@@ -45,6 +45,13 @@
 #endif
 #endif
 #endif
+/*visual studio*/
+#ifdef WIN32_DLL
+#ifndef GVC_EXPORTS
+#define extern __declspec(dllimport)
+#endif
+#endif
+/*end visual studio*/
 
 #ifndef external
 #   define external   extern
