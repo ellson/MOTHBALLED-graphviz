@@ -49,13 +49,21 @@ extern "C" {
 	/* this is computed from the above */
 	array2 vis;
     };
+#ifdef WIN32_DLL
+#ifndef PATHPLAN_EXPORTS
+#define extern __declspec(dllimport)
+#endif
+#endif
+/*end visual studio*/
 
-    extern COORD *ptVis(vconfig_t *, int, Ppoint_t);
+	extern COORD *ptVis(vconfig_t *, int, Ppoint_t);
     extern int directVis(Ppoint_t, int, Ppoint_t, int, vconfig_t *);
     extern void visibility(vconfig_t *);
     extern int *makePath(Ppoint_t p, int pp, COORD * pvis,
 			 Ppoint_t q, int qp, COORD * qvis,
 			 vconfig_t * conf);
+
+#undef extern
 
 #ifdef __cplusplus
 }

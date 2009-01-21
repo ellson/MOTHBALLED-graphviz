@@ -38,13 +38,14 @@ extern "C" {
 #define vt_threaded     0
 #endif
 
+
 #if !defined(vt_threaded) || (defined(vt_threaded) && vt_threaded == 1)
 #define _may_use_threads	1
 #else
 #define _may_use_threads	0
 #endif
 #undef vt_threaded
-
+#undef _may_use_threads	
 
 #if _may_use_threads && !defined(vt_threaded) && _hdr_pthread
 #define vt_threaded		1

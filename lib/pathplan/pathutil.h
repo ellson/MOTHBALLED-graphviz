@@ -34,7 +34,14 @@ extern "C" {
 #define TRUE	(NOT(FALSE))
 #endif
 
-    typedef double COORD;
+/*visual studio*/
+#ifdef WIN32_DLL
+#ifndef PATHPLAN_EXPORTS
+#define extern __declspec(dllimport)
+#endif
+#endif
+/*end visual studio*/
+	typedef double COORD;
     extern COORD area2(Ppoint_t, Ppoint_t, Ppoint_t);
     extern int wind(Ppoint_t a, Ppoint_t b, Ppoint_t c);
     extern COORD dist2(Ppoint_t, Ppoint_t);
@@ -44,6 +51,7 @@ extern "C" {
     Ppoly_t copypoly(Ppoly_t);
     void freepoly(Ppoly_t);
 
+#undef extern
 #ifdef __cplusplus
 }
 #endif
