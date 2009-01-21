@@ -29,7 +29,15 @@ extern "C" {
 #define extern
 #endif
 
-    extern size_t gvwrite (GVJ_t * job, const char *s, size_t len);
+/*visual studio*/
+#ifdef WIN32_DLL
+#ifndef GVC_EXPORTS
+#define extern __declspec(dllimport)
+#endif
+#endif
+/*end visual studio*/
+
+	extern size_t gvwrite (GVJ_t * job, const char *s, size_t len);
     extern int gvputc(GVJ_t * job, int c);
     extern int gvputs(GVJ_t * job, const char *s);
     extern void gvprintf(GVJ_t * job, const char *format, ...);

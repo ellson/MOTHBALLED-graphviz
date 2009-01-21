@@ -59,11 +59,25 @@ static int glob (GVC_t * gvc, char*, int, int (*errfunc)(const char *, int), glo
 #include	"gvcjob.h"
 #include	"gvcint.h"
 #include        "gvcproc.h"
+
+/*visual studio*/
+#ifdef WIN32_DLL
+#ifndef GVC_EXPORTS
+__declspec(dllimport) int Demand_Loading;
+#else
+__declspec(dllexport) int Demand_Loading;
+#endif
+#endif
+/*end visual studio*/
+
+#ifndef WIN32_DLL
 #ifdef GVDLL
 __declspec(dllexport) int Demand_Loading;
 #else
 extern const int Demand_Loading;
 #endif
+#endif
+
 
 #ifdef WITH_CODEGENS
     extern codegen_t HPGL_CodeGen, MIF_CodeGen, MP_CodeGen, PIC_CodeGen, DIA_CodeGen, VTX_CodeGen;
@@ -243,10 +257,18 @@ static void gvconfig_plugin_install_builtins(GVC_t * gvc)
 /* For Windows DLLs using builtins, we need to initialize
  * the lt_preloaded_symbols table.
  */
+/*visual studio*/
+#if defined(WIN32_DLL) && !defined(ENABLE_LTDL)
+    init_lt_preloaded_symbols();
+#endif
+/*end visual studio*/
+
+#ifndef WIN32_DLL
 #if defined(GVDLL) && !defined(ENABLE_LTDL)
     init_lt_preloaded_symbols();
 #endif
-    s = lt_preloaded_symbols;
+#endif
+	s = lt_preloaded_symbols;
     for (s = lt_preloaded_symbols; (name = s->name); s++)
 	if (name[0] == 'g' && strstr(name, "_LTX_library")) 
 	    gvconfig_plugin_install_from_library(gvc, NULL,
