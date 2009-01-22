@@ -1784,7 +1784,7 @@ int strcasecmp(const char *s1, const char *s2)
 #endif				/*WIN32_STATIC*/
 
 #ifndef WIN32_STATIC
-#ifndef HAVE_STRCASECMP
+#ifndef HAVE_STRNCASECMP
 #include <string.h>
 #include <ctype.h>
 
