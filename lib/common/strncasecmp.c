@@ -18,7 +18,6 @@
 #include "config.h"
 #endif
 
-#ifndef HAVE_STRNCASECMP
 
 #include <string.h>
 #include <ctype.h>
@@ -40,4 +39,3 @@ int strncasecmp(const char *s1, const char *s2, unsigned int n)
     return tolower(*(unsigned char *) s1) - tolower(*(unsigned char *) s2);
 }
 
-#endif				/* HAVE_STRNCASECMP */
