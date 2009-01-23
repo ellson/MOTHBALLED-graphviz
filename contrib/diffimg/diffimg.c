@@ -35,12 +35,17 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
+#ifndef WIN32
+//#include <unistd.h>
+#endif
+
 #ifdef WIN32
 #define EX_USAGE		64
 #define EX_DATAERR		65
 #define EX_NOINPUT		66
 #define EX_UNAVAILABLE	69
+#define bool int
+#define false 0
 #else
 #include <sysexits.h>
 #endif
