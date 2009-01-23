@@ -23,6 +23,7 @@
 
 static Agtag_t Tag;		/* to silence warnings about initialization */
 
+
 /* return first outedge of <n> */
 Agedge_t *agfstout(Agraph_t * g, Agnode_t * n)
 {

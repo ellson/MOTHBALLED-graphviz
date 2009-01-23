@@ -215,7 +215,8 @@ extern "C" {
 
     extern Dtlink_t *dtflatten _ARG_((Dt_t *));
     extern Dtlink_t *dtextract _ARG_((Dt_t *));
-    extern int dtrestore _ARG_((Dt_t *, Dtlink_t *));
+	extern int dtrestore _ARG_((Dt_t *, Dtlink_t *));
+
 
     extern int dtwalk
 	_ARG_((Dt_t *, int (*)(Dt_t *, Void_t *, Void_t *), Void_t *));
