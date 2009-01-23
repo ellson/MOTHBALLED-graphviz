@@ -13,6 +13,7 @@
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
+#include "mem.h"
 
 #ifdef __cplusplus
 extern "C" {
