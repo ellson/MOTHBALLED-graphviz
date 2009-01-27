@@ -1215,7 +1215,7 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
             ipsep_options opt;
             pointf* nsize;
 	    cluster_data *cs = (cluster_data*)cluster_map(mg,g);
-			nsize=(pointf*) malloc (sizeof(nsize) * nv);
+	    nsize = N_GNEW(nv, pointf);
             opt.edge_gap = lgap;
 #ifdef MOSEK
             opt.mosek = 0;
@@ -1227,7 +1227,7 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
                 opt.diredges = 1;
                 if(Verbose)
                     fprintf(stderr,"Generating Edge Constraints...\n");
-			} else if (str && !strncasecmp(str,"hier",4)) {
+	    } else if (str && !strncasecmp(str,"hier",4)) {
                 opt.diredges = 2;
                 if(Verbose)
                     fprintf(stderr,"Generating DiG-CoLa Edge Constraints...\n");
@@ -1268,7 +1268,7 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
 
             stress_majorization_cola(gp, nv, ne, coords, nodes, Ndim, model, MaxIter, &opt);
 	    freeClusterData(cs);
-		free (nsize);
+	    free (nsize);
         }
 #endif
     }
