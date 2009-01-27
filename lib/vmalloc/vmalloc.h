@@ -111,28 +111,6 @@ extern "C" {
 #if !_BLD_vmalloc && defined(__IMPORT__)
 #define extern	__IMPORT__
 #endif
-
-/*visual studio*/
-
-
-
-#define VMALLOC_EXPORTS 1
-#define WIN32_DLL
-
-
-#ifdef WIN32_DLL
-#ifndef VMALLOC_EXPORTS
-#define extern __declspec(dllimport)
-#else
-#define extern __declspec(dllexport)
-#endif
-#endif
-/*end visual studio*/
-
-
-
-
-
      extern Vmethod_t *Vmbest;	/* best allocation              */
     extern Vmethod_t *Vmlast;	/* last-block allocation        */
     extern Vmethod_t *Vmpool;	/* pool allocation              */
@@ -145,6 +123,7 @@ extern "C" {
     extern Vmalloc_t *Vmheap;	/* heap region                  */
     extern Vmalloc_t *Vmregion;	/* malloc region                */
 
+#undef extern
      _END_EXTERNS_ _BEGIN_EXTERNS_	/* public functions */
 #if _BLD_vmalloc && defined(__EXPORT__)
 #define extern	__EXPORT__
