@@ -1781,7 +1781,7 @@ int strcasecmp(const char *s1, const char *s2)
 }
 
 #endif				/* HAVE_STRCASECMP */
-#endif				/*WIN32_STATIC*/
+#endif				/* WIN32_STATIC */
 
 #ifndef WIN32_STATIC
 #ifndef HAVE_STRNCASECMP
@@ -1806,7 +1806,7 @@ int strncasecmp(const char *s1, const char *s2, unsigned int n)
 }
 
 #endif				/* HAVE_STRNCASECMP */
-#endif
+#endif                          /* WIN32_STATIC */
 void gv_free_splines(edge_t * e)
 {
     int i;
