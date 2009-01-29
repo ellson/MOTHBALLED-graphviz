@@ -124,6 +124,11 @@ extern "C" {
     /* from psusershape.c */
     extern void cat_libfile(GVJ_t * job, const char **arglib, const char **stdlib);
 
+    /**/
+#ifdef WIN32	
+	extern void fix_fc(void);
+#endif
+
 #undef extern
 
 #ifdef __cplusplus
