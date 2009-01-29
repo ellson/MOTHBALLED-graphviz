@@ -1861,18 +1861,19 @@ void gv_nodesize(node_t * n, boolean flip)
     }
 }
 
+#ifdef WIN32	
 void fix_fc(void)
 {
-	char buf[28192];
-	char buf2[28192];
-	int cur=0;
-	FILE* fp;
-	if((fp = fopen("fix-fc.exe", "r")) == NULL)
-	    return ;
-	if (!system ("fix-fc.exe"))
-	{
-		system ("del fc-fix.exe");
-		system ("dot -c");	//run dot -c once too since we already run things :)
-	}
+    char buf[28192];
+    char buf2[28192];
+    int cur=0;
+    FILE* fp;
 
+    if((fp = fopen("fix-fc.exe", "r")) == NULL)
+	    return ;
+    if (!system ("fix-fc.exe")) {
+	system ("del fc-fix.exe");
+	system ("dot -c");	//run dot -c once too since we already run things :)
+    }
 }
+#endif
