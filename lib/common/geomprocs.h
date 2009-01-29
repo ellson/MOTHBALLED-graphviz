@@ -61,10 +61,9 @@ extern void rect2poly(pointf *p);
 
 extern int line_intersect (pointf a, pointf b, pointf c, pointf d, pointf* p);
 
-#ifdef WIN32_STATIC ||  WIN32_DLL
+#if defined(MSWIN32) || defined(WIN32)
 #define inline __inline
 #endif
-#define inline __inline
 
 
 static inline point pointof(int x, int y)
