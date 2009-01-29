@@ -408,9 +408,8 @@ extern "C" {
 		exerror("cannot convert %s to %s", extypename(p, x->type),
 			extypename(p, type));
 	    if (x->op != CONSTANT) {
+		Exid_t *sym = (xref ? xref->data.variable.symbol : NiL);
 		if (EXTERNAL(t2t)) {
-		    Exid_t *sym =
-			(xref ? xref->data.variable.symbol : NiL);
 		    int a = (arg ? arg : 1);
 		    if ((*p->disc->convertf) (p, x, type, sym, a,
 					      p->disc) < 0) {
@@ -431,8 +430,8 @@ extern "C" {
 								       type));
 			}
 		    }
-		    if (sym && (sym->lex == FUNCTION)) xref = NiL;
 		}
+		if (sym && (sym->lex == FUNCTION)) xref = NiL;
 		x = exnewnode(p, t2t, 0, type, x, xref);
 	    } else
 		switch (t2t) {
