@@ -311,8 +311,7 @@ $(PIXMAN_DIR)/configure: | $(PIXMAN_DIR).tar.gz
 	@echo
 	@echo UNTARRING PIXMAN...
 	@echo
-#	$(TAR) xzf $| && (cd ${PIXMAN_DIR}; patch -p1 <../pixman.patch)
-	$(TAR) xzf $|
+	$(TAR) xzf $| && (cd ${PIXMAN_DIR}; patch -p1 <../pixman.patch)
 	
 $(PIXMAN_DIR).tar.gz:
 	@echo
