@@ -473,8 +473,10 @@ AC_ARG_ENABLE(ltdl,
   [AS_HELP_STRING([--enable-ltdl],[support on-demand plugin loading])])
 if test "x$enable_ltdl" != "xno"; then
   AC_DEFINE(ENABLE_LTDL,1,[Define if you want on-demand plugin loading])
-  AC_CONFIG_SUBDIRS(libltdl)
   AC_LIBTOOL_DLOPEN
+  LT_CONFIG_LTDL_DIR
+  LT_INIT
+  AC_CONFIG_SUBDIRS(libltdl)
   use_ltdl="Yes"
   
   if test "x$DARWIN9" = "xyes"; then
