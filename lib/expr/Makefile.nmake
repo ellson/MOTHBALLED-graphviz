@@ -9,7 +9,7 @@ CCFLAGS = $(CC.OPTIMIZE) $(CC.SUFFIX.DYNAMIC:@?$(CC.DLL)??)
 
 /* NOTE: -o mam bug in -I for exparse.c if exparse.y not first */
 
-expr 2.0 :LIBRARY: RELEASE expr.h exlib.h exgram.h exparse.y \
+expr 2.0 :LIBRARY: expr.h exlib.h exgram.h exparse.y \
 		excc.c excontext.c exdata.c exeval.c exexpr.c \
 		exerror.c exopen.c exrewind.c extoken.c extype.c \
 		exzero.c
