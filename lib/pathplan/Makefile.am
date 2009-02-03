@@ -27,6 +27,6 @@ libpathplan_la_LIBADD = @MATH_LIBS@
 pathplan.3.pdf: $(srcdir)/pathplan.3
 	- @GROFF@ -Tps -man $(srcdir)/pathplan.3 | @PS2PDF@ - - >pathplan.3.pdf
 
-EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old path.lefty
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old path.lefty Pathplan.vcproj
 
 DISTCLEANFILES = $(pdf_DATA)
