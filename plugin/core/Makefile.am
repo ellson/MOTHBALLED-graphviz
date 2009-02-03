@@ -55,7 +55,7 @@ if WITH_DARWIN9
 libgvplugin_core_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_core_LTX_library
 endif
 
-EXTRA_DIST = ps.h Makefile.old
+EXTRA_DIST = ps.h Makefile.old plugincore.vcproj gvplugin_core.vcproj
 
 DISTCLEANFILES = ps.h
 

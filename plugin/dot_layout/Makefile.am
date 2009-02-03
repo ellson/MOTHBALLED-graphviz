@@ -47,5 +47,5 @@ if WITH_DARWIN9
 libgvplugin_dot_layout_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_dot_layout_LTX_library
 endif
 
-EXTRA_DIST = Makefile.old
+EXTRA_DIST = Makefile.old gvplugin_dot_layout.vcproj
 
