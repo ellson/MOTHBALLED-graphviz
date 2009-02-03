@@ -10,4 +10,4 @@ noinst_LTLIBRARIES = libsparse_C.la
 
 libsparse_C_la_SOURCES = SparseMatrix.c
 
-EXTRA_DIST = Makefile.old
+EXTRA_DIST = Makefile.old gvsparse.vcproj

@@ -20,4 +20,4 @@ $(libvmalloc_C_la_OBJECTS): ${top_builddir}/FEATURE/vmalloc
 
 DISTCLEANFILES = ${top_builddir}/FEATURE/vmalloc
 
-EXTRA_DIST = README Makefile.old features
+EXTRA_DIST = README Makefile.old features vmalloc.vcproj
