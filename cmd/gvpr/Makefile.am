@@ -42,6 +42,6 @@ gdefs.h: $(top_srcdir)/cmd/gvpr/gprdata mkdefs
 gvpr.1.pdf: $(srcdir)/gvpr.1
 	- @GROFF@ -Tps -man $(srcdir)/gvpr.1 | @PS2PDF@ - - >gvpr.1.pdf
 
-EXTRA_DIST = $(man_MANS) $(pdf_DATA) lib Makefile.old gprdata mkdefs.c gdefs.h
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) lib Makefile.old gprdata mkdefs.c gdefs.h gvpr.vcproj
 
 DISTCLEANFILES = $(pdf_DATA) gdefs.h mkdefs
