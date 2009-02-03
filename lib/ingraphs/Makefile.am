@@ -17,4 +17,4 @@ noinst_LTLIBRARIES = libingraphs_C.la
 
 libingraphs_C_la_SOURCES = ingraphs.c
 
-EXTRA_DIST = Makefile.old
+EXTRA_DIST = Makefile.old ingraphs.vcproj

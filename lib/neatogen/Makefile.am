@@ -45,4 +45,4 @@ libneatogen_C_la_SOURCES = adjust.c circuit.c edges.c geometry.c \
     overlap.c call_tri.c \
 	compute_hierarchy.c delaunay.c multispline.c $(WITH_IPSEPCOLA_SOURCES)
 
-EXTRA_DIST = Makefile.old $(IPSEPCOLA_SOURCES)
+EXTRA_DIST = Makefile.old $(IPSEPCOLA_SOURCES) gvneatogen.vcproj
