@@ -24,4 +24,4 @@ noinst_LTLIBRARIES = libpatchwork_C.la
 
 libpatchwork_C_la_SOURCES = patchwork.c patchworkinit.c
 
-EXTRA_DIST = Makefile.old
+EXTRA_DIST = Makefile.old gvpatchwork.vcproj
