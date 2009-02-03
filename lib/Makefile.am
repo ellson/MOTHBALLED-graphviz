@@ -6,4 +6,4 @@ SUBDIRS = cdt graph cgraph gd pathplan sfio vmalloc ast \
 	pack gvc xdot ingraphs topfish glcomp \
 	circogen dotgen fdpgen neatogen twopigen sfdpgen
 
-EXTRA_DIST = Makefile.old
+EXTRA_DIST = Makefile.old gvc.vcproj
