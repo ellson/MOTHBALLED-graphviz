@@ -29,4 +29,4 @@ libcircogen_C_la_SOURCES = circularinit.c nodelist.c block.c edgelist.c \
 	stack.c circular.c deglist.c blocktree.c blockpath.c \
 	circpos.c nodeset.c
 
-EXTRA_DIST = Makefile.old
+EXTRA_DIST = Makefile.old gvcircogen.vcproj
