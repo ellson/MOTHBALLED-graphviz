@@ -117,6 +117,6 @@ dot_static_LDADD += $(top_builddir)/plugin/pango/.libs/libgvplugin_pango_C.a $(P
 dot_builtins_LDADD += $(top_builddir)/plugin/pango/libgvplugin_pango.la $(PANGOCAIRO_LIBS)
 endif
 
-EXTRA_DIST = Makefile.old dot.1 dot.1.pdf
+EXTRA_DIST = Makefile.old dot.1 dot.1.pdf dot.vcproj
 
 DISTCLEANFILES = dot.1.pdf
