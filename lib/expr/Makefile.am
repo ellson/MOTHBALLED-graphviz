@@ -72,6 +72,6 @@ expr.3.pdf: $(srcdir)/expr.3
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) \
 	Makefile.nmake Makefile.orig Makefile.old \
 	exparse.c exparse.h exop.h \
-	y.tab.c y.tab.h y.output
+	y.tab.c y.tab.h y.output expr.vcproj
 
 DISTCLEANFILES = $(pdf_DATA) exparse.[ch] exop.h y.tab.[ch] y.output
