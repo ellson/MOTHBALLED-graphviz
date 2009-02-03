@@ -47,6 +47,6 @@ cgraph.3.pdf: $(srcdir)/cgraph.3
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old cmpnd.c \
 	main.c tester.c grammar.c grammar.h scan.c \
-	y.tab.c y.tab.h y.output
+	y.tab.c y.tab.h y.output cgraph.vcproj
 
 DISTCLEANFILES = $(pdf_DATA) grammar.[ch] scan.c y.output y.tab.[ch]
