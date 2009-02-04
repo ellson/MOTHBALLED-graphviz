@@ -39,7 +39,7 @@
 @property(readonly) GVGraphDefaultAttributes *defaultEdgeAttributes;
 
 + (void)initialize;
-+ (NSEnumerator *)devices;
++ (NSArray *)pluginsWithAPI:(api_t)api;
 
 - (id)initWithURL:(NSURL *)URL error:(NSError **)outError;
 
