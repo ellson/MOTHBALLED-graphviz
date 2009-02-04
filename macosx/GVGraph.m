@@ -14,6 +14,7 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+
 #import "GVGraph.h"
 #import "GVGraphArguments.h"
 #import "GVGraphDefaultAttributes.h"
@@ -29,6 +30,8 @@ static GVC_t *_graphContext = nil;
 @synthesize graphAttributes = _graphAttributes;
 @synthesize defaultNodeAttributes = _defaultNodeAttributes;
 @synthesize defaultEdgeAttributes = _defaultEdgeAttributes;
+
+extern char *gvplugin_list(GVC_t * gvc, api_t api, const char *str);
 
 + (void)initialize
 {
