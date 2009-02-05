@@ -288,6 +288,7 @@ dnl checks for compilers
 
 AC_PROG_CC
 AC_PROG_CXX
+AC_PROG_OBJC
 
 # Workaround for native compilers
 #  HP  : http://bugs.gnome.org/db/31/3163.html
