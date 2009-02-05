@@ -17,7 +17,19 @@
 #ifndef GVPLUGIN_QUARTZ_H
 #define GVPLUGIN_QUARTZ_H
 
+#include <Availability.h>
+
+#if defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
 #include <ApplicationServices/ApplicationServices.h>
+#elif defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
+#include <CoreGraphics/CoreGraphics.h>
+#endif
+
+#include "types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef enum {
 	FORMAT_NONE,
@@ -39,7 +51,31 @@ static const int BYTE_ALIGN = 15;			/* align to 16 bytes */
 static const int BITS_PER_COMPONENT = 8;	/* bits per color component */
 static const int BYTES_PER_PIXEL = 4;		/* bytes per pixel */
 
+#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 1040
 extern CFStringRef format_uti [];
+#endif
+
 extern CGDataConsumerCallbacks device_data_consumer_callbacks;
+
+typedef struct {
+	CGFontRef font;
+	CGGlyph* glyphs;
+	size_t glyph_count;
+} quartz_layout;
+
+/* gvtextlayout_quartz.c in Mac OS X */
+/* GVTextLayout.m in iPhoneOS */
+
+void quartz_free_layout(void *layout);
+boolean quartz_textlayout(textpara_t *para, char **fontpath);
+
+/* gvrender_quartz.c in Mac OS X */
+/* GVTextLayout.m in iPhoneOS */
+
+void quartzgen_textpara(GVJ_t *job, pointf p, textpara_t *para);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

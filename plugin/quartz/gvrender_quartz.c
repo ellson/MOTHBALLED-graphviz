@@ -47,6 +47,7 @@ static void quartzgen_end_job(GVJ_t *job)
 			CGPDFContextClose(context);
 			break;
 			
+#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 1040
 		default:	/* bitmap formats */
 			{
 				/* create an image destination */
@@ -65,6 +66,7 @@ static void quartzgen_end_job(GVJ_t *job)
 				CGDataConsumerRelease(data_consumer);
 			}
 			break;
+#endif
 		}
 		CGContextRelease(context);
 	}
@@ -115,6 +117,7 @@ static void quartzgen_begin_page(GVJ_t *job)
 			}
 			break;
 		
+#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 1040
 		default: /* bitmap formats */
 			{	
 				/* create a true color bitmap for drawing into */
@@ -134,6 +137,7 @@ static void quartzgen_begin_page(GVJ_t *job)
 				CGColorSpaceRelease(color_space);
 			}
 			break;
+#endif
 		}
 		
 	}
@@ -175,64 +179,6 @@ static void quartzgen_begin_anchor(GVJ_t *job, char *url, char *tooltip, char *t
 		/* clean up */
 		CFRelease(uri);
 	}
-}
-
-static void quartzgen_textpara(GVJ_t *job, pointf p, textpara_t *para)
-{
-	CGContextRef context = (CGContextRef)job->context;
-	
-	CFStringRef str = CFStringCreateWithBytesNoCopy(kCFAllocatorDefault, (const UInt8 *)para->str, strlen(para->str), kCFStringEncodingUTF8, FALSE, kCFAllocatorNull);
-	if (str) {
-	/* set up the Core Text line */
-	CFStringRef attribute_keys[] = {
-		kCTFontAttributeName,
-		kCTForegroundColorAttributeName
-	};
-	CFStringRef fontname = CFStringCreateWithBytesNoCopy(kCFAllocatorDefault, (const UInt8 *)para->fontname, strlen(para->fontname), kCFStringEncodingUTF8, FALSE, kCFAllocatorNull);
-	CFTypeRef attribute_values[] = {
-		CTFontCreateWithName(fontname, para->fontsize, NULL),
-		CGColorCreateGenericRGB(job->obj->pencolor.u.RGBA [0], job->obj->pencolor.u.RGBA [1], job->obj->pencolor.u.RGBA [2], job->obj->pencolor.u.RGBA [3])
-	};
-	CFDictionaryRef attributes = CFDictionaryCreate(
-		kCFAllocatorDefault,
-		(const void**)&attribute_keys,
-		(const void**)&attribute_values,
-		sizeof(attribute_values) / sizeof(attribute_values[0]),
-		&kCFTypeDictionaryKeyCallBacks,
-		&kCFTypeDictionaryValueCallBacks);
-	CFAttributedStringRef attributed_str = CFAttributedStringCreate(kCFAllocatorDefault, str, attributes);
-	CTLineRef line = CTLineCreateWithAttributedString(attributed_str);
-	
-	/* adjust text position */
-	switch (para->just) {
-		case 'r':
-			p.x -= para->width;
-			break;
-		case 'l':
-			p.x -= 0.0;
-			break;
-		case 'n':
-		default:
-			p.x -= para->width / 2.0;
-			break;
-		}
-		p.y += para->yoffset_centerline;
-	
-	/* draw it */
-	CGContextSetTextPosition(context, p.x, p.y);
-	CTLineDraw(line, context);
-	
-	/* clean up */
-	CFRelease(line);
-	CFRelease(attributed_str);
-	CFRelease(str);
-	CFRelease(attributes);
-	int i;
-	for (i = 0; i < sizeof(attribute_values) / sizeof(attribute_values[0]); ++i)
-		CFRelease(attribute_values[i]);
-	CFRelease(fontname);
-	}
-
 }
 
 static void quartzgen_path(GVJ_t *job, int filled)
@@ -365,6 +311,7 @@ static gvrender_features_t render_features_quartz = {
     RGBA_DOUBLE				/* color_type */
 };
 
+#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 1040
 static gvdevice_features_t device_features_quartz = {
     GVDEVICE_BINARY_FORMAT
       | GVDEVICE_DOES_TRUECOLOR,/* flags */
@@ -372,6 +319,7 @@ static gvdevice_features_t device_features_quartz = {
     {0.,0.},                    /* default page width, height - points */
     {96.,96.}                  /* dpi */
 };
+#endif
 
 static gvdevice_features_t device_features_quartz_paged = {
 	GVDEVICE_DOES_PAGES
@@ -389,6 +337,8 @@ gvplugin_installed_t gvrender_quartz_types[] = {
 };
 
 gvplugin_installed_t gvdevice_quartz_types[] = {
+	{FORMAT_PDF, "pdf:quartz", 8, NULL, &device_features_quartz_paged},
+#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 1040
 	{FORMAT_BMP, "bmp:quartz", 8, NULL, &device_features_quartz},
 	{FORMAT_GIF, "gif:quartz", 8, NULL, &device_features_quartz},
 	{FORMAT_EXR, "exr:quartz", 8, NULL, &device_features_quartz},
@@ -396,7 +346,6 @@ gvplugin_installed_t gvdevice_quartz_types[] = {
 	{FORMAT_JPEG, "jpeg:quartz", 8, NULL, &device_features_quartz},
 	{FORMAT_JPEG, "jpg:quartz", 8, NULL, &device_features_quartz},
 	{FORMAT_JPEG2000, "jp2:quartz", 8, NULL, &device_features_quartz},
-	{FORMAT_PDF, "pdf:quartz", 8, NULL, &device_features_quartz_paged},
 	{FORMAT_PICT, "pct:quartz", 8, NULL, &device_features_quartz},
 	{FORMAT_PICT, "pict:quartz", 8, NULL, &device_features_quartz},
 	{FORMAT_PNG, "png:quartz", 8, NULL, &device_features_quartz},
@@ -405,5 +354,6 @@ gvplugin_installed_t gvdevice_quartz_types[] = {
 	{FORMAT_TIFF, "tif:quartz", 8, NULL, &device_features_quartz},
 	{FORMAT_TIFF, "tiff:quartz", 8, NULL, &device_features_quartz},
 	{FORMAT_TGA, "tga:quartz", 8, NULL, &device_features_quartz},
+#endif
 	{0, NULL, 0, NULL, NULL}
 };
