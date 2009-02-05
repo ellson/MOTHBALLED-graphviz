@@ -1,0 +1,6 @@
+LIBRARY	"gvplugin_dot_layout"
+EXPORTS
+enqueue_neighbors	
+gvplugin_dot_layout_LTX_library	
+lt_preloaded_symbols	
+
