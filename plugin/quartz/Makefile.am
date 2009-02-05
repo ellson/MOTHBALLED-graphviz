@@ -25,7 +25,9 @@ libgvplugin_quartz_C_la_SOURCES = \
 	gvdevice_quartz.c \
 	gvloadimage_quartz.c \
 	gvplugin_quartz.c \
-	gvrender_quartz.c
+	gvrender_quartz.c \
+	gvtextlayout_quartz.c \
+	GVTextLayout.m
 
 libgvplugin_quartz_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_quartz_la_SOURCES = $(libgvplugin_quartz_C_la_SOURCES)
