@@ -431,7 +431,6 @@ extern "C" {
 			}
 		    }
 		}
-		if (sym && (sym->lex == FUNCTION)) xref = NiL;
 		x = exnewnode(p, t2t, 0, type, x, xref);
 	    } else
 		switch (t2t) {
@@ -550,7 +549,7 @@ extern "C" {
 	    num++;
 	    if (type != args->data.operand.left->type)
 		args->data.operand.left =
-		    excast(expr.program, args->data.operand.left, type, x,
+		    excast(expr.program, args->data.operand.left, type, NiL,
 			   num);
 	    args = args->data.operand.right;
 	    N(t);
