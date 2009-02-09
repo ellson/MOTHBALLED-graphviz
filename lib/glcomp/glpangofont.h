@@ -15,7 +15,7 @@
 
 #ifndef GLPANGOFONT_H
 #define GLPANGOFONT_H
-#include <cairo.h>
+#include <cairo/cairo.h>
 #include <pango/pangocairo.h>
 #include <png.h>
 
