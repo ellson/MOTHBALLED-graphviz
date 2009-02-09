@@ -195,8 +195,12 @@ int main(int argc, char **argv)
 	    gvFreeLayout(Gvc, G);
 	}
     }
-    else if ((G = gvPluginsGraph(Gvc))) {
-	    gvLayoutJobs(Gvc, G);  /* take layout engine from command line */
+    else if ((G = gvPluginsGraph(Gvc)))
+	{
+		int a=1;
+		a=a+1;
+		printf ("twetwtert\n");
+		gvLayoutJobs(Gvc, G);  /* take layout engine from command line */
 	    gvRenderJobs(Gvc, G);
     }
     else {

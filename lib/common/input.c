@@ -199,7 +199,7 @@ static void global_def(char *dcl,
 }
 #endif
 
-static void gvg_init(GVC_t *gvc, graph_t *g, char *fn, int gidx)
+static int gvg_init(GVC_t *gvc, graph_t *g, char *fn, int gidx)
 {
     GVG_t *gvg;
 
@@ -213,6 +213,7 @@ static void gvg_init(GVC_t *gvc, graph_t *g, char *fn, int gidx)
     gvg->g = g;
     gvg->input_filename = fn;
     gvg->graph_index = gidx;
+	return 0;
 }
 
 static graph_t *P_graph;
