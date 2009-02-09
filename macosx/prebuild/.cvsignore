@@ -6,5 +6,7 @@ libiconv-*
 libpng-*
 pango-*
 pixman-*
+fontconfig-*
+freetype-*
 pkg-config-*
 usr

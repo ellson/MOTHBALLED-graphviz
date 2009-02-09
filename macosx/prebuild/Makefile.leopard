@@ -9,6 +9,8 @@ PREFIX=$(HOME)/FIX/leopard
 # package URL
 
 PKGCONFIG_URL=http://pkgconfig.freedesktop.org/releases/pkg-config-0.23.tar.gz
+FREETYPE_URL=http://download.savannah.gnu.org/releases-noredirect/freetype/freetype-2.3.8.tar.gz
+FONTCONFIG_URL=http://www.fontconfig.org/release/fontconfig-2.6.0.tar.gz
 GD_URL=http://www.libgd.org/releases/gd-2.0.35.tar.gz
 PIXMAN_URL=http://cairographics.org/releases/pixman-0.13.2.tar.gz
 CAIRO_URL=http://cairographics.org/releases/cairo-1.8.6.tar.gz
@@ -19,6 +21,8 @@ PANGO_URL=http://ftp.gnome.org/pub/GNOME/sources/pango/1.22/pango-1.22.4.tar.gz
 # libraries
 
 PKGCONFIG=pkg-config
+FREETYPE=libfreetype.la
+FONTCONFIG=libfontconfig.la
 GD=libgd.la
 PIXMAN=libpixman-1.la
 CAIRO=libcairo.la
@@ -29,6 +33,8 @@ PANGO=libpango-1.0.la
 # directories
 dirname=$(basename $(basename $(notdir $(1))))
 PKGCONFIG_DIR=$(call dirname, $(PKGCONFIG_URL))
+FREETYPE_DIR=$(call dirname, $(FREETYPE_URL))
+FONTCONFIG_DIR=$(call dirname, $(FONTCONFIG_URL))
 GD_DIR=$(call dirname, $(GD_URL))
 PIXMAN_DIR=$(call dirname, $(PIXMAN_URL))
 CAIRO_DIR=$(call dirname, $(CAIRO_URL))
@@ -59,6 +65,8 @@ uninstall:
 	$(MAKE) -C $(CAIRO_DIR) uninstall
 	$(MAKE) -C $(PIXMAN_DIR) uninstall
 	$(MAKE) -C $(GD_DIR) uninstall
+	$(MAKE) -C $(FONTCONFIG_DIR) uninstall
+	$(MAKE) -C $(FREETYPE_DIR) uninstall
 	$(MAKE) -C $(PKGCONFIG_DIR) uninstall
 	
 clean:
@@ -68,6 +76,8 @@ clean:
 	$(MAKE) -C $(CAIRO_DIR) clean
 	$(MAKE) -C $(PIXMAN_DIR) clean
 	$(MAKE) -C $(GD_DIR) clean
+	$(MAKE) -C $(FONTCONFIG_DIR) clean
+	$(MAKE) -C $(FREETYPE_DIR) clean
 	$(MAKE) -C $(PKGCONFIG_DIR) clean
 	
 distclean:
@@ -77,6 +87,8 @@ distclean:
 	$(MAKE) -C $(CAIRO_DIR) distclean
 	$(MAKE) -C $(PIXMAN_DIR) distclean
 	$(MAKE) -C $(GD_DIR) distclean
+	$(MAKE) -C $(FONTCONFIG_DIR) distclean
+	$(MAKE) -C $(FREETYPE_DIR) distclean
 	$(MAKE) -C $(PKGCONFIG_DIR) distclean
 
 #
@@ -98,7 +110,7 @@ $(PANGO_DIR)/pango/$(PANGO): $(PANGO_DIR)/Makefile
 	if [[ -e $@ ]]; then $(MAKE) -C $(PANGO_DIR) clean; fi && \
 	PATH=$(PATH):$(PREFIX)/bin $(MAKE) -C $(PANGO_DIR)
 	
-$(PANGO_DIR)/Makefile: $(PREFIX)/lib/$(CAIRO) $(PREFIX)/lib/$(GLIB) | $(PREFIX)/bin/$(PKGCONFIG) $(PANGO_DIR)/configure
+$(PANGO_DIR)/Makefile: $(PREFIX)/lib/$(FREETYPE)  $(PREFIX)/lib/$(FONTCONFIG) $(PREFIX)/lib/$(CAIRO) $(PREFIX)/lib/$(GLIB) | $(PREFIX)/bin/$(PKGCONFIG) $(PANGO_DIR)/configure
 	@echo
 	@echo CONFIGURING PANGO...
 	@echo
@@ -269,7 +281,7 @@ $(CAIRO_DIR)/src/$(CAIRO): $(CAIRO_DIR)/Makefile
 	if [[ -e $@ ]]; then $(MAKE) -C $(CAIRO_DIR) clean; fi && \
 	$(MAKE) -C $(CAIRO_DIR)
 	
-$(CAIRO_DIR)/Makefile: $(PREFIX)/lib/$(PIXMAN) | $(PREFIX)/bin/$(PKGCONFIG) $(CAIRO_DIR)/configure
+$(CAIRO_DIR)/Makefile: $(PREFIX)/lib/$(FREETYPE) $(PREFIX)/lib/$(FONTCONFIG) $(PREFIX)/lib/$(PIXMAN) | $(PREFIX)/bin/$(PKGCONFIG) $(CAIRO_DIR)/configure
 	@echo
 	@echo CONFIGURING CAIRO...
 	@echo
@@ -341,7 +353,7 @@ $(GD_DIR)/$(GD): $(GD_DIR)/Makefile
 	if [[ -e $@ ]]; then $(MAKE) -C $(GD_DIR) clean; fi && \
 	$(MAKE) -C $(GD_DIR)
 	
-$(GD_DIR)/Makefile: | $(GD_DIR)/configure
+$(GD_DIR)/Makefile: $(PREFIX)/lib/$(FREETYPE) $(PREFIX)/lib/$(FONTCONFIG) | $(GD_DIR)/configure
 	@echo
 	@echo CONFIGURING GD...
 	@echo
@@ -358,6 +370,76 @@ $(GD_DIR).tar.gz:
 	@echo TRANSFERRING GD...
 	@echo
 	$(CURL) --remote-name --location $(GD_URL) || rm -f $(GD_DIR).tar.gz
+	
+#
+# fontconfig
+#
+
+$(PREFIX)/lib/$(FONTCONFIG): $(FONTCONFIG_DIR)/$(FONTCONFIG)
+	@echo
+	@echo INSTALLING FONTCONFIG...
+	@echo
+	$(MAKE) -C $(FONTCONFIG_DIR) install
+	
+$(FONTCONFIG_DIR)/$(FONTCONFIG): $(FONTCONFIG_DIR)/Makefile
+	@echo
+	@echo MAKING FONTCONFIG...
+	@echo
+	if [[ -e $@ ]]; then $(MAKE) -C $(FONTCONFIG_DIR) clean; fi && \
+	$(MAKE) -C $(FONTCONFIG_DIR)
+	
+$(FONTCONFIG_DIR)/Makefile: | $(FONTCONFIG_DIR)/configure
+	@echo
+	@echo CONFIGURING FONTCONFIG...
+	@echo
+	cd $(FONTCONFIG_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG)
+	
+$(FONTCONFIG_DIR)/configure: | $(FONTCONFIG_DIR).tar.gz
+	@echo
+	@echo UNTARRING FONTCONFIG...
+	@echo
+	$(TAR) xzf $|
+	
+$(FONTCONFIG_DIR).tar.gz:
+	@echo
+	@echo TRANSFERRING FONTCONFIG...
+	@echo
+	$(CURL) --remote-name --location $(FONTCONFIG_URL) || rm -f $(FONTCONFIG_DIR).tar.gz
+	
+#
+# freetype
+#
+
+$(PREFIX)/lib/$(FREETYPE): $(FREETYPE_DIR)/$(FREETYPE)
+	@echo
+	@echo INSTALLING FREETYPE...
+	@echo
+	$(MAKE) -C $(FREETYPE_DIR) install
+	
+$(FREETYPE_DIR)/$(FREETYPE): $(FREETYPE_DIR)/Makefile
+	@echo
+	@echo MAKING FREETYPE...
+	@echo
+	if [[ -e $@ ]]; then $(MAKE) -C $(FREETYPE_DIR) clean; fi && \
+	$(MAKE) -C $(FREETYPE_DIR)
+	
+$(FREETYPE_DIR)/Makefile: | $(FREETYPE_DIR)/configure
+	@echo
+	@echo CONFIGURING FREETYPE...
+	@echo
+	cd $(FREETYPE_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG)
+	
+$(FREETYPE_DIR)/configure: | $(FREETYPE_DIR).tar.gz
+	@echo
+	@echo UNTARRING FREETYPE...
+	@echo
+	$(TAR) xzf $|
+	
+$(FREETYPE_DIR).tar.gz:
+	@echo
+	@echo TRANSFERRING FREETYPE...
+	@echo
+	$(CURL) --remote-name --location $(FREETYPE_URL) || rm -f $(FREETYPE_DIR).tar.gz
 	
 #
 # pkgconfig
