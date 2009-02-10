@@ -59,60 +59,78 @@ static void tkgen_print_color(GVJ_t * job, gvcolor_t color)
 
 static void tkgen_print_tags(GVJ_t *job)
 {
-    char *ObjType;
+    char *ObjType, *ObjPart;
     unsigned int ObjId;
     obj_state_t *obj = job->obj;
+    int ObjHandle;
 
     switch (obj->emit_state) {
     case EMIT_NDRAW:
 	ObjType = "node";
+	ObjPart = "shape";
         ObjId = AGID(obj->u.n);
+	ObjHandle = obj->u.n->handle;
 	break;
     case EMIT_NLABEL:
-	ObjType = "node label";
+	ObjType = "node";
+	ObjPart = "label";
         ObjId = AGID(obj->u.n);
+	ObjHandle = obj->u.n->handle;
 	break;
     case EMIT_EDRAW:
     case EMIT_TDRAW:
     case EMIT_HDRAW:
 	ObjType = "edge";
+	ObjPart = "shape";
         ObjId = AGID(obj->u.e);
+	ObjHandle = obj->u.e->handle;
 	break;
     case EMIT_ELABEL:
     case EMIT_TLABEL:
     case EMIT_HLABEL:
-	ObjType = "edge label";
+	ObjType = "edge";
+	ObjPart = "label";
         ObjId = AGID(obj->u.e);
+	ObjHandle = obj->u.e->handle;
 	break;
     case EMIT_GDRAW:
 	ObjType = "graph";
+	ObjPart = "shape";
 	ObjId = -1;  /* hack! */
+	ObjHandle = obj->u.g->handle;
 	break;
     case EMIT_GLABEL:
+	ObjType = "graph";
+	ObjPart = "label";
 	ObjType = "graph label";
 	ObjId = -1;  /* hack! */
+	ObjHandle = obj->u.g->handle;
 	break;
     case EMIT_CDRAW:
 	ObjType = "cluster";
+	ObjPart = "shape";
 #ifndef WITH_CGRAPH
 	ObjId = obj->u.sg->meta_node->id;
 #else
 	ObjId = AGID(obj->u.sg);
 #endif
+	ObjHandle = obj->u.sg->handle;
 	break;
     case EMIT_CLABEL:
-	ObjType = "cluster label";
+	ObjType = "cluster";
+	ObjPart = "label";
 #ifndef WITH_CGRAPH
 	ObjId = obj->u.sg->meta_node->id;
 #else
 	ObjId = AGID(obj->u.sg);
 #endif
+	ObjHandle = obj->u.sg->handle;
 	break;
     default:
 	assert (0);
 	break;
     }
-    gvprintf(job, " -tags {id%ld %s}", ObjId, ObjType);
+    gvprintf(job, " -tags {id%d %s%d %s %s}", ObjId, ObjType, ObjHandle, ObjType, ObjPart);
 }
 
 static void tkgen_canvas(GVJ_t * job)
