@@ -217,14 +217,18 @@ proc saveFileAs {type} {
 	set dot {{{DOT Graph Files} {.dot}} {{All Files} *}}
 	set fig {{{FIG Image Files} {.fig}} {{All Files} *}}
 	set gif {{{GIF Image Files} {.gif}} {{All Files} *}}
-	set gv  {{{DOT Graph Files} {.gv}} {{All Files} *}}
+	set gv  {{{GV Graph Files} {.gv}} {{All Files} *}}
 	set hpgl {{{HPGL Image Files} {.hpgl}} {{All Files} *}}
 	set jpg {{{JPG Image Files} {.jpg}} {{All Files} *}}
 	set mif {{{MIF Image Files} {.mif}} {{All Files} *}}
 	set pcl {{{PCL Image Files} {.pcl}} {{All Files} *}}
+	set pdf {{{PDF Image Files} {.pdf}} {{All Files} *}}
 	set png {{{PNG Image Files} {.png}} {{All Files} *}}
 	set ps {{{PostScript Files} {.ps}} {{All Files} *}}
 	set svg {{{SVG Image Files} {.svg}} {{All Files} *}}
+	set tiff {{{TIFF Image Files} {.tiff}} {{All Files} *}}
+	set vml {{{VML Image Files} {.vml}} {{All Files} *}}
+	set vtx {{{VTX Image Files} {.vtx}} {{All Files} *}}
 
 	set fn [tk_getSaveFile \
 		-defaultextension .$type \
@@ -653,12 +657,20 @@ menu .m.file.m.export
 	-command "saveFileAs hpgl"
 .m.file.m.export add command -label "MIF ..." -underline 0 \
 	-command "saveFileAs mif"
+.m.file.m.export add command -label "PDF ..." -underline 0 \
+	-command "saveFileAs pdf"
 .m.file.m.export add command -label "PNG ..." -underline 0 \
 	-command "saveFileAs png"
 .m.file.m.export add command -label "PS ..." -underline 0 \
 	-command "saveFileAs ps"
 .m.file.m.export add command -label "SVG ..." -underline 0 \
 	-command "saveFileAs svg"
+.m.file.m.export add command -label "TIFF ..." -underline 0 \
+	-command "saveFileAs tiff"
+.m.file.m.export add command -label "VML ..." -underline 0 \
+	-command "saveFileAs vml"
+.m.file.m.export add command -label "VTX ..." -underline 0 \
+	-command "saveFileAs vtx"
 .m.file.m add separator
 .m.file.m add command -label "Print Setup ..." -underline 0 \
 	-command "printSetup"
