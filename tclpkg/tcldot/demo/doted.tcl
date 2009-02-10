@@ -2,7 +2,6 @@
 # next line is a comment in tcl \
 exec wish "$0" ${1+"$@"}
 
-package require Tkspline
 package require Tcldot
 
 # doted - dot/gv graph editor - John Ellson (ellson@graphviz.org)
@@ -21,7 +20,7 @@ proc mouse_anyenter {c} {
 	set item [string range [lindex [$c gettags current] 0] 1 end]
 	set saveFill [list $item [lindex [$c itemconfigure 1$item -fill] 4]]
 	$c itemconfigure 1$item -fill black \
-		-stipple @$tk_library/demos/images/gray25.bmp
+		-stipple @$tk_library/demos/images/gray25.xbm
 }
 
 # as the mouse moves out of an object restore its shading
@@ -601,7 +600,7 @@ button .b.layout \
 	-height [.b.h cget -width] \
 	-foreground green \
 	-activeforeground green\
-	-bitmap @$tk_library/demos/images/gray25.bmp \
+	-bitmap @$tk_library/demos/images/gray25.xbm \
 	-command "layout $c"
 
 # initialize zoom state

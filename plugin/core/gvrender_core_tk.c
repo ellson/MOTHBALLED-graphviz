@@ -62,18 +62,20 @@ static void tkgen_print_tags(GVJ_t *job)
     char *ObjType, *ObjPart;
     unsigned int ObjId;
     obj_state_t *obj = job->obj;
-    int ObjHandle;
+    int ObjHandle, ObjFlag;
 
     switch (obj->emit_state) {
     case EMIT_NDRAW:
 	ObjType = "node";
 	ObjPart = "shape";
+	ObjFlag = 1;
         ObjId = AGID(obj->u.n);
 	ObjHandle = obj->u.n->handle;
 	break;
     case EMIT_NLABEL:
 	ObjType = "node";
 	ObjPart = "label";
+	ObjFlag = 0;
         ObjId = AGID(obj->u.n);
 	ObjHandle = obj->u.n->handle;
 	break;
@@ -82,6 +84,7 @@ static void tkgen_print_tags(GVJ_t *job)
     case EMIT_HDRAW:
 	ObjType = "edge";
 	ObjPart = "shape";
+	ObjFlag = 1;
         ObjId = AGID(obj->u.e);
 	ObjHandle = obj->u.e->handle;
 	break;
@@ -90,18 +93,21 @@ static void tkgen_print_tags(GVJ_t *job)
     case EMIT_HLABEL:
 	ObjType = "edge";
 	ObjPart = "label";
+	ObjFlag = 0;
         ObjId = AGID(obj->u.e);
 	ObjHandle = obj->u.e->handle;
 	break;
     case EMIT_GDRAW:
 	ObjType = "graph";
 	ObjPart = "shape";
+	ObjFlag = 1;
 	ObjId = -1;  /* hack! */
 	ObjHandle = obj->u.g->handle;
 	break;
     case EMIT_GLABEL:
 	ObjType = "graph";
 	ObjPart = "label";
+	ObjFlag = 0;
 	ObjType = "graph label";
 	ObjId = -1;  /* hack! */
 	ObjHandle = obj->u.g->handle;
@@ -109,6 +115,7 @@ static void tkgen_print_tags(GVJ_t *job)
     case EMIT_CDRAW:
 	ObjType = "cluster";
 	ObjPart = "shape";
+	ObjFlag = 1;
 #ifndef WITH_CGRAPH
 	ObjId = obj->u.sg->meta_node->id;
 #else
@@ -119,6 +126,7 @@ static void tkgen_print_tags(GVJ_t *job)
     case EMIT_CLABEL:
 	ObjType = "cluster";
 	ObjPart = "label";
+	ObjFlag = 0;
 #ifndef WITH_CGRAPH
 	ObjId = obj->u.sg->meta_node->id;
 #else
@@ -130,7 +138,11 @@ static void tkgen_print_tags(GVJ_t *job)
 	assert (0);
 	break;
     }
+#if 0
     gvprintf(job, " -tags {id%d %s%d %s %s}", ObjId, ObjType, ObjHandle, ObjType, ObjPart);
+#else
+    gvprintf(job, " -tags {%d%s%d}", ObjFlag, ObjType, ObjHandle);
+#endif
 }
 
 static void tkgen_canvas(GVJ_t * job)
