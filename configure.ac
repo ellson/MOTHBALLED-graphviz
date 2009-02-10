@@ -2584,7 +2584,7 @@ if test "$use_tcl" = "Yes"; then
     if test "x$SWIG" != "x"; then
 	TCL_PKGINDEX_SWIG="gv/pkgIndex.tcl"
     fi
-    if test "$HAVE_TK" = "1"; then
+    if test "$use_tk" = "Yes"; then
         TK_PKGINDEX="tkspline/pkgIndex.tcl"
     fi
 fi
