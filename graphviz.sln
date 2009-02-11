@@ -177,6 +177,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "topfish", "lib\topfish\topf
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libpng", "lib\libpng\1.2.24\libpng-1.2.24-src\libpng.vcproj", "{86DDD3C7-E71D-49FC-9137-E2514607721E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gts", "lib\GTS\gts.vcproj", "{0DEA7FAC-4190-4B39-BEF0-1C055758FED3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -395,6 +397,10 @@ Global
 		{86DDD3C7-E71D-49FC-9137-E2514607721E}.Debug|Win32.Build.0 = Debug|Win32
 		{86DDD3C7-E71D-49FC-9137-E2514607721E}.Release|Win32.ActiveCfg = Release|Win32
 		{86DDD3C7-E71D-49FC-9137-E2514607721E}.Release|Win32.Build.0 = Release|Win32
+		{0DEA7FAC-4190-4B39-BEF0-1C055758FED3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0DEA7FAC-4190-4B39-BEF0-1C055758FED3}.Debug|Win32.Build.0 = Debug|Win32
+		{0DEA7FAC-4190-4B39-BEF0-1C055758FED3}.Release|Win32.ActiveCfg = Release|Win32
+		{0DEA7FAC-4190-4B39-BEF0-1C055758FED3}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
