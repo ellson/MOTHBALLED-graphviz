@@ -342,34 +342,29 @@ void drawtopfishedges(topview * t)
 		{
 			ex_vtx_data *gg = hp->geom_graphs[level];
 			v_data *g = hp->graphs[level];
-			if (gg[v].active_level == level) 
+			double x0,y0;
+			if (get_temp_coords(t,level,v,&x0,&y0)) 
 			{
-				double x0,y0;
-				get_temp_coords(t,level,v,&x0,&y0);
-
 				for (i = 1; i < g[v].nedges; i++) 
 				{
 					double x, y;
 					n = g[v].edges[i];
 					glColor3f((GLfloat) (hp->nlevels - level) /     (GLfloat) hp->nlevels,      (GLfloat) level / (GLfloat) hp->nlevels*2, 0);
-/*					if ((gg[v].size > 1) || (gg[n].size > 1))
-						glColor3f (0,1,0);
-					else
-						glColor3f (1,0,0);*/
-					if (gg[n].active_level == level) 
+					if 	(get_temp_coords(t,level,n,&x,&y))
 					{
-						if (v < n) 
-						{
-							get_temp_coords(t,level,n,&x,&y);
 							glVertex3f((GLfloat) x0, (GLfloat) y0,(GLfloat) 0);
 							glVertex3f((GLfloat) x, (GLfloat) y,(GLfloat) 0);
-						}
 					}
-					else if (gg[n].active_level > level) 
+					else// if (gg[n].active_level > level) 
 					{
-						find_physical_coords(hp, level, n, &x, &y);
-						glVertex3f((GLfloat) x0, (GLfloat) y0,(GLfloat) 0);
-						glVertex3f((GLfloat) x, (GLfloat) y, (GLfloat) 0);
+						int levell,nodee;
+						find_active_ancestor_info(hp, level, n,  &levell,&nodee);
+//						find_physical_coords(hp, level, n, &x, &y);
+						if 	(get_temp_coords(t,levell,nodee,&x,&y))
+						{
+							glVertex3f((GLfloat) x0, (GLfloat) y0,(GLfloat) 0);
+							glVertex3f((GLfloat) x, (GLfloat) y, (GLfloat) 0);
+						}
 					}
 				}
 			}
@@ -383,7 +378,7 @@ void drawtopfishedges(topview * t)
 void drawtopologicalfisheye(topview * t)
 {
 	drawtopfishnodes(t);
-//	drawtopfishedges(t);
+	drawtopfishedges(t);
 }
 
 
@@ -392,8 +387,6 @@ int get_temp_coords(topview* t,int level,int v,double* coord_x,double* coord_y)
     Hierarchy *hp = t->h;
 	ex_vtx_data *gg = hp->geom_graphs[level];
 	/* v_data *g = hp->graphs[level]; */
-	/*TEMP*/t->animate=0;/*TEMP*/
-	view->Topview->animate=1;
 
 	if (!t->animate)	
 	{
@@ -406,21 +399,34 @@ int get_temp_coords(topview* t,int level,int v,double* coord_x,double* coord_y)
 	else
 	{
 
-			double x0,y0;	
-			if  (
+			double x0,y0,x1,y1;	
+						if  (
 				((level == gg[v].old_active_level)  && (level == gg[v].active_level))
 						||
 				((level < gg[v].old_active_level)  && (level == gg[v].active_level))
-						||
+					||
 				((level == gg[v].old_active_level)  && (level < gg[v].active_level))
 				)
 			{
+				
 				get_active_frame(t);
-				find_old_physical_coords(t->h,level,v,&x0,&y0);
-				x0 =gg[v].old_physical_x_coord; 
-				y0 =gg[v].old_physical_y_coord; 
+				if (!((level == gg[v].old_active_level)  && (level < gg[v].active_level)))
+				{
+					find_old_physical_coords(t->h,level,v,&x0,&y0);
+					x1=(double)gg[v].physical_x_coord;
+					y1=(double)gg[v].physical_y_coord;
+				}
+				else
+				{
+					find_physical_coords(t->h,level,v,&x1,&y1);
+					x0=(double)gg[v].old_physical_x_coord;
+					y0=(double)gg[v].old_physical_y_coord;
 
-				get_interpolated_coords(x0,y0,(double)gg[v].physical_x_coord,(double)gg[v].physical_y_coord,view->active_frame,view->total_frames,coord_x,coord_y);
+
+				}
+
+//				get_interpolated_coords(x0,y0,(double)gg[v].physical_x_coord,(double)gg[v].physical_y_coord,view->active_frame,view->total_frames,coord_x,coord_y);
+				get_interpolated_coords(x0,y0,x1,y1,view->active_frame,view->total_frames,coord_x,coord_y);
 			}
 			else
 				return 0;
@@ -650,7 +656,6 @@ void changetopfishfocus(topview * t, float *x, float *y,
     view->Topview->parms.repos.height =(int) (view->bdyTop-view->bdyBottom);
 	t->parms.repos.distortion=atof(agget(view->g[0],"topologicalfisheyedistortionfactor"));
 	positionAllItems(hp, fs, &(t->parms.repos));
-	t->animate=1;
 
 	if(t->animate)
 	{
@@ -663,7 +668,6 @@ void refresh_old_values(topview* t)
 {
     int level, v;
     Hierarchy *hp = t->h;
-	t->animate=0;
     for (level = 0; level < hp->nlevels; level++)
 	{
 		for (v = 0; v < hp->nvtxs[level]; v++)

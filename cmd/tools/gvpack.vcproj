@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pathplan.lib gvc.lib cgraph.lib vpsc.lib ingraphs.lib neatogen.lib cdt.lib sparse.lib graph.lib $(NOINHERIT)"
+				AdditionalDependencies="pathplan.lib gvc.lib cgraph.lib vpsc.lib ingraphs.lib neatogen.lib cdt.lib sparse.lib graph.lib gts.lib $(NOINHERIT)"
 				OutputFile="c:/graphviz-ms/bin/$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="C:\graphviz-ms\bin;C:\gtk\lib"
