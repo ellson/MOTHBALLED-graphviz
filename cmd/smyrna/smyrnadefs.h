@@ -20,12 +20,12 @@
 #include "windows.h"
 #include "gltexfont.h"
 //#define       SMYRNA_GLADE "C:/Projects/graphviz2/share/gui/smyrna.glade"
-#define	SMYRNA_ATTRS "c:/Projects/graphviz2/share/gui/attrs.txt"
+#define	SMYRNA_ATTRS "c:/graphviz-ms/share/gui/attrs.txt"
 #endif
 #ifdef _WIN32
-#define SMYRNA_GLADE "c:\\Projects\\graphviz2\\share\\gui\\smyrna.glade"
-#define GTKTOPVIEW_ATTRS "c:\\Projects\\ATT\\GTK\\GTKTest2\\attrs.txt"
-#define DEFAULT_ATTRIBUTES_TEMPLATE_DOT_FILE	"C:\\GTK\\2.0\\bin\\attr_template.dot"
+#define SMYRNA_GLADE "c:/graphviz-ms/share/gui/smyrna.glade"
+#define GTKTOPVIEW_ATTRS "c:/graphviz-ms/share/gui/attrs.txt"
+#define DEFAULT_ATTRIBUTES_TEMPLATE_DOT_FILE	"c:/graphviz-ms/share/gui/attr_template.dot"
 // #else
 // using -DGTKTOPVIEW_GLADE from Makefile.am and configure.ac
 // using -DGTKTOPVIEW_ATTRS from Makefile.am and configure.ac

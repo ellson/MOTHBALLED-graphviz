@@ -597,76 +597,82 @@ void load_attributes()
 
     //loads attributes from a text file
     file = fopen(smyrna_attrs, "r");
-    if (file != NULL) {
-	while (fgets(line, sizeof line, file) != NULL) {
-	    pch = strtok(line, ",");
-	    ind = 0;
-	    while (pch != NULL) {
-		ss = strdup(pch);
-//                              ABRemove(&ss,'\"');
-//                              ABRemove(&ss,' ');
-		pch = strtok(NULL, ",");
-		switch (ind) {
-		case 0:
-		    attr[attrcount].Type = ss[0];
-		    break;
-		case 1:
-		    attr[attrcount].Name = strdup(ss);
-		    break;
-		case 2:
-		    attr[attrcount].Default = strdup(ss);
-		    break;
-		case 3:
-		    if (strstr(ss, "ANY_ELEMENT")) {
-			attr[attrcount].ApplyTo[GVE_GRAPH] = 1;
-			attr[attrcount].ApplyTo[GVE_CLUSTER] = 1;
-			attr[attrcount].ApplyTo[GVE_NODE] = 1;
-			attr[attrcount].ApplyTo[GVE_EDGE] = 1;
-		    } else {
-			attr[attrcount].ApplyTo[GVE_GRAPH] =
-			    strstr(ss, "GRAPH") ? 1 : 0;
-			attr[attrcount].ApplyTo[GVE_CLUSTER] =
-			    strstr(ss, "CLUSTER") ? 1 : 0;
-			attr[attrcount].ApplyTo[GVE_NODE] =
-			    strstr(ss, "NODE") ? 1 : 0;
-			attr[attrcount].ApplyTo[GVE_EDGE] =
-			    strstr(ss, "EDGE") ? 1 : 0;
-		    }
-		    break;
-		case 4:
-		    if (strstr(ss, "ALL_ENGINES")) {
-			attr[attrcount].Engine[GVK_DOT] = 1;
-			attr[attrcount].Engine[GVK_NEATO] = 1;
-			attr[attrcount].Engine[GVK_TWOPI] = 1;
-			attr[attrcount].Engine[GVK_CIRCO] = 1;
-			attr[attrcount].Engine[GVK_FDP] = 1;
-		    } else {
-			attr[attrcount].Engine[GVK_DOT] =
-			    strstr(ss, "DOT") ? 1 : 0;
-			attr[attrcount].Engine[GVK_NEATO] =
-			    strstr(ss, "NEATO") ? 1 : 0;
-			attr[attrcount].Engine[GVK_TWOPI] =
-			    strstr(ss, "TWOPI") ? 1 : 0;
-			attr[attrcount].Engine[GVK_CIRCO] =
-			    strstr(ss, "CIRCO") ? 1 : 0;
-			attr[attrcount].Engine[GVK_FDP] =
-			    strstr(ss, "FDP") ? 1 : 0;
-		    }
-		    break;
-		default:
-		    attr[attrcount].ComboValues =
-			RALLOC(attr[attrcount].ComboValuesCount, 
-				attr[attrcount].ComboValues, char*);
-		    attr[attrcount].ComboValues[attr[attrcount].
-						ComboValuesCount] =
-			strdup(ss);
-		    attr[attrcount].ComboValuesCount++;
-		    break;
+    if (file != NULL) 
+	{
+		while (fgets(line, sizeof line, file) != NULL) 
+		{
+		    pch = strtok(line, ",");
+			ind = 0;
+			while (pch != NULL)
+			{
+				ss = strdup(pch);
+	//                              ABRemove(&ss,'\"');
+	//                              ABRemove(&ss,' ');
+				pch = strtok(NULL, ",");
+				switch (ind) 
+				{
+				case 0:
+				    attr[attrcount].Type = ss[0];
+					break;
+				case 1:	
+					attr[attrcount].Name = strdup(ss);
+					break;
+				case 2:
+					attr[attrcount].Default = strdup(ss);
+					break;
+				case 3:
+				    if (strstr(ss, "ANY_ELEMENT")) 
+					{
+						attr[attrcount].ApplyTo[GVE_GRAPH] = 1;
+						attr[attrcount].ApplyTo[GVE_CLUSTER] = 1;
+						attr[attrcount].ApplyTo[GVE_NODE] = 1;
+						attr[attrcount].ApplyTo[GVE_EDGE] = 1;
+					} 
+					else 
+					{
+						attr[attrcount].ApplyTo[GVE_GRAPH] =
+								strstr(ss, "GRAPH") ? 1 : 0;
+						attr[attrcount].ApplyTo[GVE_CLUSTER] =
+								strstr(ss, "CLUSTER") ? 1 : 0;
+						attr[attrcount].ApplyTo[GVE_NODE] =
+								strstr(ss, "NODE") ? 1 : 0;
+						attr[attrcount].ApplyTo[GVE_EDGE] =
+								strstr(ss, "EDGE") ? 1 : 0;
+					}
+					break;
+				case 4:
+					if (strstr(ss, "ALL_ENGINES")) 
+					{
+						attr[attrcount].Engine[GVK_DOT] = 1;
+						attr[attrcount].Engine[GVK_NEATO] = 1;
+						attr[attrcount].Engine[GVK_TWOPI] = 1;
+						attr[attrcount].Engine[GVK_CIRCO] = 1;
+						attr[attrcount].Engine[GVK_FDP] = 1;
+					}
+					else 
+					{
+						attr[attrcount].Engine[GVK_DOT] =
+								strstr(ss, "DOT") ? 1 : 0;
+						attr[attrcount].Engine[GVK_NEATO] =
+								strstr(ss, "NEATO") ? 1 : 0;
+						attr[attrcount].Engine[GVK_TWOPI] =
+								strstr(ss, "TWOPI") ? 1 : 0;
+						attr[attrcount].Engine[GVK_CIRCO] =
+								strstr(ss, "CIRCO") ? 1 : 0;
+						attr[attrcount].Engine[GVK_FDP] =
+								strstr(ss, "FDP") ? 1 : 0;
+					}
+					break;
+				default:
+					attr[attrcount].ComboValues =RALLOC(attr[attrcount].ComboValuesCount, attr[attrcount].ComboValues, char*);
+					attr[attrcount].ComboValues[attr[attrcount].ComboValuesCount] =	strdup(ss);
+					attr[attrcount].ComboValuesCount++;
+					break;
+				}
+				ind++;
+			}
+			attrcount++;
 		}
-		ind++;
-	    }
-	    attrcount++;
-	}
     }
 }
 

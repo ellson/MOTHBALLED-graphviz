@@ -672,7 +672,7 @@ static char* create_xdot_for_graph(Agraph_t * graph, int keeppos)
     } 
 
 #ifdef _WIN32
-    path = "\"C:/Program Files/Graphviz 2.20/bin/dot.exe\" ";
+    path = "\"C:/graphviz-ms/bin/dot.exe\" ";
 #else
     path = "dot ";
 #endif

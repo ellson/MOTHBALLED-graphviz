@@ -139,7 +139,7 @@ static void realize(GtkWidget * widget, gpointer data)
 #endif
 //    g_print("loading font....%i\n", fontLoad(smyrna_font));
 
-	add_font(view->fontset,"Times 16");//wired in default font
+	add_font(view->fontset,"Times 14");//wired in default font
 	/*** OpenGL BEGIN ***/
     if (!gdk_gl_drawable_gl_begin(gldrawable, glcontext))
 	return;
