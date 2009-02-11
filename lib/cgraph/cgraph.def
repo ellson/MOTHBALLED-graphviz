@@ -19,7 +19,6 @@ agcallbacks
 agcanonStr	
 agclean	
 agclose	
-agcontains	
 agcopyattr	
 agdatadict	
 AgDataDictDisc	
@@ -83,7 +82,6 @@ aginternalmaplookup
 aginternalmapprint	
 AgIoDisc	
 agisdirected	
-agissimple	
 agisstrict	
 agisundirected	
 aglasterr	
@@ -161,4 +159,6 @@ agxbput_n
 agxget	
 agxset	
 node_in_subg	
+agread
+agsetfile
 
