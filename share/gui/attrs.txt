@@ -15,7 +15,6 @@ B,compound, false, GRAPH, DOT
 B,concentrate, false, GRAPH, DOT
 B,constraint, true, EDGE, DOT
 B,decorate, false, EDGE, ALL_ENGINES
-D,dir, forward, EDGE, ALL_ENGINES,Forward,Backward
 F,distortion, 0.0, NODE, ALL_ENGINES
 C,fillcolor, lightgrey, NODE Or CLUSTER, ALL_ENGINES
 B,fixedsize, false, NODE, ALL_ENGINES
