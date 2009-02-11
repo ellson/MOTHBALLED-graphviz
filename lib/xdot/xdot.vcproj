@@ -39,6 +39,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)/lib/common&quot;;&quot;$(SolutionDir)/lib/cdt&quot;;&quot;$(SolutionDir)/lib/cgraph&quot;;&quot;$(SolutionDir)/lib/xdot&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -59,6 +60,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				OutputFile="c:/graphviz-ms/bin/$(ProjectName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
