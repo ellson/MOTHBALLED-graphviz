@@ -1732,7 +1732,7 @@ int Tcldot_Init(Tcl_Interp * interp)
     agnodeattr(NULL, "label", NODENAME_ESC);
 
     /* create a GraphViz Context and pass a pointer to it in clientdata */
-    gvc = gvNEWcontext(Info, gvUsername());
+    gvc = gvNEWcontext(Info, gvUsername(), lt_preloaded_symbols);
 
     /* configure for available plugins and codegens */
     gvconfig(gvc, FALSE);

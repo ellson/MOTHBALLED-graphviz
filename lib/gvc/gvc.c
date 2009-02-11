@@ -32,7 +32,7 @@ static char *LibInfo[] = {
     BUILDDATE		/* Build Date */
 };
 
-GVC_t *gvContext(void)
+GVC_t *gvContext(const lt_symlist_t *builtins)
 {
     GVC_t *gvc;
 
@@ -42,7 +42,7 @@ GVC_t *gvContext(void)
 #else
     agattr(NULL, AGNODE, "label", NODENAME_ESC);
 #endif
-    gvc = gvNEWcontext(LibInfo, gvUsername());
+    gvc = gvNEWcontext(LibInfo, gvUsername(), builtins);
     gvconfig(gvc, FALSE); /* configure for available plugins and codegens */
     return gvc;
 }

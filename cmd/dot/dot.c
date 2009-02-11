@@ -173,7 +173,27 @@ int main(int argc, char **argv)
 #ifndef WITH_CGRAPH
 
 #endif /* WITH_CGRAPH */
-    Gvc = gvNEWcontext(Info, gvUsername());
+
+#if 0
+
+/* For Windows DLLs using builtins, we need to initialize
+ *  * the lt_preloaded_symbols table.
+ *   */
+/*visual studio*/
+#if defined(WIN32_DLL) && !defined(ENABLE_LTDL)
+    init_lt_preloaded_symbols();
+#endif
+/*end visual studio*/
+
+#ifndef WIN32_DLL
+#if defined(GVDLL) && !defined(ENABLE_LTDL)
+    init_lt_preloaded_symbols();
+#endif
+#endif
+
+#endif
+
+    Gvc = gvNEWcontext(Info, gvUsername(), lt_preloaded_symbols);
     gvParseArgs(Gvc, argc, argv);
 
 #ifndef WIN32

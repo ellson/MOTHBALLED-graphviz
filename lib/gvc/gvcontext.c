@@ -44,7 +44,7 @@ extern void emit_once_reset(void);
 /* from common/globals.c */
 extern int graphviz_errors;
 
-GVC_t *gvNEWcontext(char **info, char *user)
+GVC_t *gvNEWcontext(char **info, char *user, const lt_symlist_t *builtins)
 {
     GVC_t *gvc = zmalloc(sizeof(GVC_t));
 
@@ -52,6 +52,7 @@ GVC_t *gvNEWcontext(char **info, char *user)
 	gvc->common.info = info;
 	gvc->common.user = user;
 	gvc->common.errorfn = agerrorf;
+	gvc->common.builtins = builtins;
     }
     return gvc;
 }

@@ -48,6 +48,7 @@ extern Agdict_t *agdictof(void *);
  * into a single output graph, ready to be sent to neato -s -n2.
  *  -m <i> specifies the margin, in points, about each graph.
  */
+
 char *Info[] = {
     "gvpack",			/* Program */
     VERSION,			/* Version */
@@ -797,7 +798,7 @@ int main(int argc, char *argv[])
 
     init(argc, argv);
 
-    gvc = gvNEWcontext(Info, gvUsername());
+    gvc = gvNEWcontext(Info, gvUsername(), lt_preloaded_symbols);
     gs = readGraphs(&cnt, gvc);
     if (cnt == 0)
 	exit(0);

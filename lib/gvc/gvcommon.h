@@ -34,6 +34,7 @@ extern "C" {
 	/* rendering state */
 	int viewNum;     /* current view - 1 based count of views,
 			    all pages in all layers */
+	const lt_symlist_t *builtins;
     } GVCOMMON_t;
 
 #ifdef __cplusplus

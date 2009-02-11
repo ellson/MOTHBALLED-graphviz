@@ -254,6 +254,8 @@ static void gvconfig_plugin_install_builtins(GVC_t * gvc)
     const lt_symlist_t *s;
     const char *name;
 
+#if 0
+
 /* For Windows DLLs using builtins, we need to initialize
  * the lt_preloaded_symbols table.
  */
@@ -268,8 +270,12 @@ static void gvconfig_plugin_install_builtins(GVC_t * gvc)
     init_lt_preloaded_symbols();
 #endif
 #endif
-	s = lt_preloaded_symbols;
-    for (s = lt_preloaded_symbols; (name = s->name); s++)
+    gvc->common.builtins = lt_preloaded_symbols;
+
+#endif
+
+
+    for (s = gvc->common.builtins; (name = s->name); s++)
 	if (name[0] == 'g' && strstr(name, "_LTX_library")) 
 	    gvconfig_plugin_install_from_library(gvc, NULL,
 		    (gvplugin_library_t *)(s->address));
