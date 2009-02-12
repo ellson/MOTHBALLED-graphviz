@@ -51,7 +51,7 @@ endif
 man_MANS = dot.1 
 pdf_DATA = dot.1.pdf
 
-dot_SOURCES = dot.c
+dot_SOURCES = dot.c no_builtins.c
 dot_LDADD = $(top_builddir)/lib/gvc/libgvc.la
 
 install-data-hook:
@@ -79,7 +79,7 @@ dot.1.pdf: $(srcdir)/dot.1
 # Workaround is to link explicity to the .libs/libxxx.a
 # A better approach is probably to provide an explicit list of builtins
 # like $(top_srcdir)/lib/gvc/dot_builtins.c
-dot_static_SOURCES = dot.c $(top_srcdir)/lib/gvc/no_demand_loading.c
+dot_static_SOURCES = dot.c dot_builtins.c no_demand_loading.c
 dot_static_LDFLAGS = -export-dynamic -dlpreopen self -export-symbols-regex '.*_LTX_library'
 dot_static_LDADD = \
 	$(top_builddir)/plugin/dot_layout/.libs/libgvplugin_dot_layout_C.a \
@@ -91,12 +91,12 @@ dot_static_LDADD = \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
        	$(GTS_LIBS) $(ICONV_LIBS) $(EXPAT_LIBS) $(Z_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
 
-dot_builtins_SOURCES = dot.c $(top_srcdir)/lib/gvc/dot_builtins.c $(top_srcdir)/lib/gvc/no_demand_loading.c
+dot_builtins_SOURCES = dot.c dot_builtins.c no_demand_loading.c
 dot_builtins_LDADD = \
 	$(top_builddir)/plugin/dot_layout/libgvplugin_dot_layout.la \
 	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout.la \
 	$(top_builddir)/plugin/core/libgvplugin_core.la \
-	$(top_builddir)/lib/gvc/libgvc_builtins.la \
+	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
 	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
 	$(top_builddir)/lib/cdt/libcdt.la \

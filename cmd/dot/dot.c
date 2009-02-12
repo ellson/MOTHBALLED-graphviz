@@ -22,7 +22,6 @@
 #include "config.h"
 #endif
 
-#include "builddate.h"
 #include "gvc.h"
 
 #ifndef WIN32_DLL
@@ -54,12 +53,6 @@ __declspec(dllimport) boolean MemTest;
 #elif HAVE_SYS_FPU_H
 # include <sys/fpu.h>
 #endif
-
-char *Info[] = {
-    "Graphviz",			/* Program */
-    VERSION,			/* Version */
-    BUILDDATE			/* Build Date */
-};
 
 static GVC_t *Gvc;
 static graph_t * G;
@@ -193,7 +186,7 @@ int main(int argc, char **argv)
 
 #endif
 
-    Gvc = gvNEWcontext(Info, gvUsername(), lt_preloaded_symbols);
+    Gvc = gvNEWcontext(lt_preloaded_symbols);
     gvParseArgs(Gvc, argc, argv);
 
 #ifndef WIN32
