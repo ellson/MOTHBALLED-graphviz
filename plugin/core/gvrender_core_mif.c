@@ -188,7 +188,6 @@ static void mif_begin_graph(GVJ_t * job)
 {
     int i;
 
-    gvprintf(job, "# For: %s\n", job->common->user);
     gvprintf(job, "# Title: %s\n", job->obj->u.g->name);
     gvprintf(job, "# Pages: %d\n",
 	job->pagesArraySize.x * job->pagesArraySize.y);

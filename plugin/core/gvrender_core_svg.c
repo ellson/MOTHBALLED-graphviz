@@ -151,17 +151,7 @@ static void svg_begin_job(GVJ_t * job)
     gvputs(job, xml_string(job->common->info[1]));
     gvputs(job, " (");
     gvputs(job, xml_string(job->common->info[2]));
-    /* We have absolutely no idea what character set the username
-     * may be in. To be conservative, we only output the username
-     * if it is all ascii. Since SVG output is UTF-8, we could check
-     * if the string appears to be in this format and allow it.
-     */
-    if (isAscii (job->common->user)) {
-	gvputs(job, ")\n     For user: ");
-	gvputs(job, xml_string(job->common->user));
-    }
-    else
-	gvputs(job, ")\n");
+    gvputs(job, ")\n");
     gvputs(job, " -->\n");
 }
 

@@ -79,7 +79,6 @@ static void lasi_begin_job(GVJ_t * job)
 //    gvputs(job, "%!PS-Adobe-3.0 EPSF-3.0\n");
     gvprintf(job, "%%%%Creator: %s version %s (%s)\n",
 	    job->common->info[0], job->common->info[1], job->common->info[2]);
-    gvprintf(job, "%%%%For: %s\n", job->common->user);
 }
 
 static void lasi_end_job(GVJ_t * job)

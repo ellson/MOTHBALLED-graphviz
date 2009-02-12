@@ -254,6 +254,8 @@ static void gvconfig_plugin_install_builtins(GVC_t * gvc)
     const lt_symlist_t *s;
     const char *name;
 
+    if (gvc->common.builtins == NULL) return;
+
     for (s = gvc->common.builtins; (name = s->name); s++)
 	if (name[0] == 'g' && strstr(name, "_LTX_library")) 
 	    gvconfig_plugin_install_from_library(gvc, NULL,

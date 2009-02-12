@@ -301,7 +301,6 @@ static void pic_begin_graph(GVJ_t * job)
 
     gvprintf(job, "%s Creator: %s version %s (%s)\n",
 	EscComment, job->common->info[0], job->common->info[1], job->common->info[2]);
-    gvprintf(job, "%s For: %s\n", EscComment, job->common->user);
     gvprintf(job, "%s Title: %s\n", EscComment, obj->u.g->name);
     gvprintf(job,
             "%s save point size and font\n.nr .S \\n(.s\n.nr DF \\n(.f\n",

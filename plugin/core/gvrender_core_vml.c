@@ -153,8 +153,7 @@ static void vml_begin_job(GVJ_t * job)
     gvputs(job, xml_string(job->common->info[1]));
     gvputs(job, " (");
     gvputs(job, xml_string(job->common->info[2]));
-    gvputs(job, ")\n     For user: ");
-    gvputs(job, xml_string(job->common->user));
+    gvputs(job, ")\n");
     gvputs(job, " -->\n");
 }
 

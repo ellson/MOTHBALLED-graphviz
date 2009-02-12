@@ -28,6 +28,7 @@
 
 #include <stdlib.h>
 
+#include "builddate.h"
 #include "types.h"
 #include "gvplugin.h"
 #include "gvcjob.h"
@@ -44,13 +45,18 @@ extern void emit_once_reset(void);
 /* from common/globals.c */
 extern int graphviz_errors;
 
-GVC_t *gvNEWcontext(char **info, char *user, const lt_symlist_t *builtins)
+static char *LibInfo[] = {
+    "graphviz",         /* Program */
+    VERSION,            /* Version */
+    BUILDDATE           /* Build Date */
+};
+
+GVC_t *gvNEWcontext(const lt_symlist_t *builtins)
 {
     GVC_t *gvc = zmalloc(sizeof(GVC_t));
 
     if (gvc) {
-	gvc->common.info = info;
-	gvc->common.user = user;
+	gvc->common.info = LibInfo;
 	gvc->common.errorfn = agerrorf;
 	gvc->common.builtins = builtins;
     }

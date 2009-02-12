@@ -85,12 +85,10 @@ static void quartzgen_begin_page(GVJ_t *job)
 				/* create the auxiliary info for PDF content, author and title */
 				CFStringRef auxiliaryKeys[] = {
 					kCGPDFContextCreator,
-					kCGPDFContextAuthor,
 					kCGPDFContextTitle
 				};
 				CFStringRef auxiliaryValues[] = {
 					CFStringCreateWithFormat(kCFAllocatorDefault, NULL, CFSTR("%s %s"), job->common->info[0], job->common->info[1]),
-					CFStringCreateWithBytesNoCopy(kCFAllocatorDefault, (const UInt8 *)job->common->user, strlen(job->common->user), kCFStringEncodingUTF8, false, kCFAllocatorNull),
 					job->obj->type == ROOTGRAPH_OBJTYPE ?
 						CFStringCreateWithBytesNoCopy(kCFAllocatorDefault, (const UInt8 *)job->obj->u.g->name, strlen(job->obj->u.g->name), kCFStringEncodingUTF8, false, kCFAllocatorNull)
 						: CFSTR("")

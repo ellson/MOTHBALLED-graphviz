@@ -168,9 +168,7 @@ static void tkgen_begin_job(GVJ_t * job)
     gvputs(job, tkgen_string(job->common->info[1]));
     gvputs(job, " (");
     gvputs(job, tkgen_string(job->common->info[2]));
-    gvputs(job, ")\n#     For user: ");
-    gvputs(job, tkgen_string(job->common->user));
-    gvputs(job, "\n");
+    gvputs(job, ")\n");
 }
 
 static void tkgen_begin_graph(GVJ_t * job)

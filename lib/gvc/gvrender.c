@@ -154,7 +154,6 @@ void gvrender_begin_job(GVJ_t * job)
 	if (cg && cg->begin_job)
 	    cg->begin_job(job->output_file, gvc->g,
 		    gvc->common.lib,
-		    gvc->common.user,
 		    gvc->common.info,
 		    job->pagesArraySize);
     }

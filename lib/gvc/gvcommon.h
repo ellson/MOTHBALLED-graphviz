@@ -22,7 +22,6 @@ extern "C" {
 #endif
 
     typedef struct GVCOMMON_s {
-	char *user;
 	char **info;
 	char *cmdname;
 	int verbose;

@@ -19,18 +19,11 @@
 #endif
 
 #include "gvc.h"
-#include "builddate.h"
 #include "const.h"
 #include "gvcjob.h"
 #include "gvcint.h"
 #include "gvcproc.h"
 #include "gvconfig.h"
-
-static char *LibInfo[] = {
-    "libgvc",		/* Program */
-    VERSION,		/* Version */
-    BUILDDATE		/* Build Date */
-};
 
 GVC_t *gvContext(const lt_symlist_t *builtins)
 {
@@ -42,7 +35,7 @@ GVC_t *gvContext(const lt_symlist_t *builtins)
 #else
     agattr(NULL, AGNODE, "label", NODENAME_ESC);
 #endif
-    gvc = gvNEWcontext(LibInfo, gvUsername(), builtins);
+    gvc = gvNEWcontext(builtins);
     gvconfig(gvc, FALSE); /* configure for available plugins and codegens */
     return gvc;
 }
@@ -197,6 +190,5 @@ void gvAddLibrary(GVC_t *gvc, gvplugin_library_t *lib)
 }
 
 char **gvcInfo(GVC_t* gvc) { return gvc->common.info; }
-char *gvcUsername(GVC_t* gvc) { return gvc->common.user; }
 char *gvcVersion(GVC_t* gvc) { return gvc->common.info[1]; }
 char *gvcBuildDate(GVC_t* gvc) { return gvc->common.info[2]; }

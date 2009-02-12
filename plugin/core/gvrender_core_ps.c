@@ -52,7 +52,6 @@ static void psgen_begin_job(GVJ_t * job)
 	gvputs(job, "\n");
     gvprintf(job, "%%%%Creator: %s version %s (%s)\n",
 	    job->common->info[0], job->common->info[1], job->common->info[2]);
-    gvprintf(job, "%%%%For: %s\n", job->common->user);
 }
 
 static void psgen_end_job(GVJ_t * job)

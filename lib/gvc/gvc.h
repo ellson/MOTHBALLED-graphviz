@@ -43,8 +43,7 @@ extern "C" {
 extern void gvToggle(int);
 
 /* set up a graphviz context */
-extern GVC_t *gvNEWcontext(char **info, char *user, const lt_symlist_t *builtins);
-extern char *gvUsername(void);
+extern GVC_t *gvNEWcontext(const lt_symlist_t *builtins);
 
 /*  set up a graphviz context - alternative */
 /*     (wraps the above two functions using info built into libgvc) */
@@ -54,7 +53,6 @@ extern GVC_t *gvContext(const lt_symlist_t *builtins);
 extern char **gvcInfo(GVC_t*);
 extern char *gvcVersion(GVC_t*);
 extern char *gvcBuildDate(GVC_t*);
-extern char *gvcUsername(GVC_t*);
 
 /* parse command line args - minimally argv[0] sets layout engine */
 extern int gvParseArgs(GVC_t *gvc, int argc, char **argv);
