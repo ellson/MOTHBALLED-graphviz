@@ -205,8 +205,7 @@ static void vtx_comment(char *str)
 }
 
 static void
-vtx_begin_job(FILE * ofp, graph_t * g, const char **lib, char *user,
-	      char *info[], point pages)
+vtx_begin_job(FILE * ofp, graph_t * g, const char **lib, char *info[], point pages)
 {
     char *date = "";
 #ifdef SUPPORT_WRITEDATE
