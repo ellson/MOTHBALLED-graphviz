@@ -308,8 +308,6 @@ edge_t *debug_getedge(graph_t * g, char *s0, char *s1)
 
 #if !defined(MSWIN32) && !defined(WIN32)
 #include	<pwd.h>
-static unsigned char userbuf[SMALLBUF];
-static agxbuf xb;
 
 #if 0
 static void cleanup(void)
