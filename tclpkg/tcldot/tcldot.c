@@ -19,7 +19,6 @@
 /*    specifically just the change to Tcl_CmdProc */
 #define USE_NON_CONST
 #include <tcl.h>
-#include "builddate.h"
 #include "render.h"
 #include "gvc.h"
 #include "tclhandle.h"
@@ -27,12 +26,6 @@
 #ifndef CONST84
 #define CONST84
 #endif
-
-char *Info[] = {
-    "tcldot",			/* Program */
-    VERSION,			/* Version */
-    BUILDDATE			/* Build Date */
-};
 
 /* ******* not ready yet
 #if (TCL_MAJOR_VERSION > 7)
@@ -1732,7 +1725,7 @@ int Tcldot_Init(Tcl_Interp * interp)
     agnodeattr(NULL, "label", NODENAME_ESC);
 
     /* create a GraphViz Context and pass a pointer to it in clientdata */
-    gvc = gvNEWcontext(Info, gvUsername(), lt_preloaded_symbols);
+    gvc = gvNEWcontext(lt_preloaded_symbols);
 
     /* configure for available plugins and codegens */
     gvconfig(gvc, FALSE);
