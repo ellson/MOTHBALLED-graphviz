@@ -94,8 +94,7 @@ static void mp_cat_libfile(FILE * ofp, const char **arglib, const char **stdlib)
 }
 
 static void
-mp_begin_job(FILE * ofp, graph_t * g, const char **lib, char *user, char *info[],
-	     point pages)
+mp_begin_job(FILE * ofp, graph_t * g, const char **lib, char *info[], point pages)
 {
     /* pages and libraries not here (yet?) */
     /* Pages = pages; */
@@ -106,7 +105,6 @@ mp_begin_job(FILE * ofp, graph_t * g, const char **lib, char *user, char *info[]
     fprintf(Output_file, "%%--- graphviz MetaPost input\n");
     fprintf(Output_file, "%% Created by program: %s version %s (%s)\n",
 	    info[0], info[1], info[2]);
-    fprintf(Output_file, "%% For user: %s\n", user);
     fprintf(Output_file, "%% Title: %s\n", agnameof(g));
     fprintf(Output_file,
 	    "%%  Put this between beginfig and endfig.  See 1st_read.mp.\n");

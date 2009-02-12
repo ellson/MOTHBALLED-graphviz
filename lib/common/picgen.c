@@ -159,8 +159,7 @@ static void pic_reset(void)
     onetime = TRUE;
 }
 
-static void pic_begin_job(FILE * ofp, graph_t * g, const char **lib, char *user,
-			  char *info[], point pages)
+static void pic_begin_job(FILE * ofp, graph_t * g, const char **lib, char *info[], point pages)
 {
     /* U_lib = lib; */
     if (onetime && (pages.x * pages.y > 1)) {
@@ -169,7 +168,6 @@ static void pic_begin_job(FILE * ofp, graph_t * g, const char **lib, char *user,
     }
     fprintf(Output_file, "%s Creator: %s version %s (%s)\n",
 	    EscComment, info[0], info[1], info[2]);
-    fprintf(Output_file, "%s For: %s\n", EscComment, user);
     fprintf(Output_file, "%s Title: %s\n", EscComment, agnameof(g));
 }
 
