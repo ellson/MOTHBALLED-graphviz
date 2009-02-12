@@ -17,3 +17,8 @@
 #include "gvplugin.h"
 
 extern gvplugin_library_t gvplugin_neato_layout_LTX_library;
+
+lt_symlist_t lt_preloaded_symbols[] = {
+	{ "gvplugin_neato_layout_LTX_library", (void*)(&gvplugin_neato_layout_LTX_library) },
+	{ 0, 0 }
+};
