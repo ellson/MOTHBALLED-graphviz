@@ -36,8 +36,6 @@
 #include "ingraphs.h"
 #include "pack.h"
 
-#include "builddate.h"
-
 extern Agdict_t *agdictof(void *);
 
 /* gvpack:
@@ -48,12 +46,6 @@ extern Agdict_t *agdictof(void *);
  * into a single output graph, ready to be sent to neato -s -n2.
  *  -m <i> specifies the margin, in points, about each graph.
  */
-
-char *Info[] = {
-    "gvpack",			/* Program */
-    VERSION,			/* Version */
-    BUILDDATE			/* Build Date */
-};
 
 typedef struct {
     Dtlink_t link;
@@ -798,7 +790,7 @@ int main(int argc, char *argv[])
 
     init(argc, argv);
 
-    gvc = gvNEWcontext(Info, gvUsername(), lt_preloaded_symbols);
+    gvc = gvNEWcontext(lt_preloaded_symbols);
     gs = readGraphs(&cnt, gvc);
     if (cnt == 0)
 	exit(0);

@@ -29,6 +29,7 @@
 #else
 #include "compat_unistd.h"
 #endif
+#include "builddate.h"
 #include "gprstate.h"
 #include "cgraph.h"
 #include "ingraphs.h"
@@ -43,10 +44,9 @@
 #else
 #include "compat_getopt.h"
 #endif
-#include "builddate.h"
 
 char *Info[] = {
-    "dot",			/* Program */
+    "gvpr",			/* Program */
     VERSION,			/* Version */
     BUILDDATE			/* Build Date */
 };
