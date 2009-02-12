@@ -319,39 +319,6 @@ static void cleanup(void)
 #endif
 #endif
 
-char *gvUsername(void)
-{
-    char *user = NULL;
-#if !defined(MSWIN32) && !defined(WIN32)
-    static int first = 1;
-    struct passwd *p;
-    if (first) {
-	agxbinit(&xb, SMALLBUF, userbuf);
-#if 0
-	atexit(cleanup);
-#endif
-	first = 0;
-    }
-    p = (struct passwd *) getpwuid(getuid());
-    if (p) {
-	agxbputc(&xb, '(');
-	agxbput(&xb, p->pw_name);
-	agxbput(&xb, ") ");
-#ifdef SVR4
-	agxbput(&xb, p->pw_comment);
-#else
-	agxbput(&xb, p->pw_gecos);
-#endif
-	user = agxbuse(&xb);
-    }
-#endif
-    if (user == NULL)
-	user = getenv ("USERNAME");
-    if (user == NULL)
-	user = "Bill Gates";
-    return user;
-}
-
 /* Fgets:
  * Read a complete line.
  * Return pointer to line, 
