@@ -2890,7 +2890,6 @@ AC_CONFIG_FILES(Makefile
 	lib/vpsc/Makefile
 	lib/gvc/Makefile
 	lib/gvc/libgvc.pc
-	lib/gvc/libgvc_builtins.pc
 	lib/xdot/Makefile
 	lib/topfish/Makefile
 	lib/glcomp/Makefile
