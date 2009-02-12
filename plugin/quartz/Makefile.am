@@ -31,7 +31,7 @@ libgvplugin_quartz_C_la_SOURCES = \
 
 libgvplugin_quartz_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_quartz_la_SOURCES = $(libgvplugin_quartz_C_la_SOURCES)
-libgvplugin_quartz_la_LIBADD = @QUARTZ_LIBS@
+libgvplugin_quartz_la_LIBADD = @QUARTZ_LIBS@ -framework CoreFoundation
 
 if WITH_WIN32
 libgvplugin_quartz_la_LDFLAGS += -no-undefined
