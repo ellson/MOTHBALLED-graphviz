@@ -35,7 +35,7 @@ extern char *gvplugin_list(GVC_t * gvc, api_t api, const char *str);
 
 + (void)initialize
 {
-	_graphContext = gvContext();
+	_graphContext = gvContext((void*)0);
 }
 
 + (NSArray *)pluginsWithAPI:(api_t)api
