@@ -22,6 +22,11 @@ extern "C" {
 
 #ifndef _TBL_H
 #define _TBL_H
+#ifdef WIN32
+#include "mem.h"
+#endif
+
+
 
 #define T_INTEGER 1
 #define T_REAL    2
