@@ -16,7 +16,7 @@ PIXMAN_URL=http://cairographics.org/releases/pixman-0.13.2.tar.gz
 CAIRO_URL=http://cairographics.org/releases/cairo-1.8.6.tar.gz
 GETTEXT_URL=ftp://mirrors.kernel.org/gnu/gettext/gettext-0.17.tar.gz
 GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.18/glib-2.18.2.tar.gz
-PANGO_URL=http://ftp.gnome.org/pub/GNOME/sources/pango/1.22/pango-1.22.4.tar.gz
+PANGO_URL=http://ftp.gnome.org/pub/GNOME/sources/pango/1.23/pango-1.23.0.tar.gz
 
 # libraries
 
@@ -108,9 +108,9 @@ $(PANGO_DIR)/pango/$(PANGO): $(PANGO_DIR)/Makefile
 	@echo MAKING PANGO...
 	@echo
 	if [[ -e $@ ]]; then $(MAKE) -C $(PANGO_DIR) clean; fi && \
-	PATH=$(PATH):$(PREFIX)/bin $(MAKE) -C $(PANGO_DIR)
+	PATH=$(PATH):$(PREFIX)/bin $(MAKE) -C $(PANGO_DIR) LDFLAGS='-framework CoreFoundation -framework CoreServices -framework AppKit -framework Foundation -framework Quartz -framework WebKit'
 	
-$(PANGO_DIR)/Makefile: $(PREFIX)/lib/$(FREETYPE)  $(PREFIX)/lib/$(FONTCONFIG) $(PREFIX)/lib/$(CAIRO) $(PREFIX)/lib/$(GLIB) | $(PREFIX)/bin/$(PKGCONFIG) $(PANGO_DIR)/configure
+$(PANGO_DIR)/Makefile: $(PREFIX)/lib/$(CAIRO) $(PREFIX)/lib/$(GLIB) | $(PREFIX)/bin/$(PKGCONFIG) $(PANGO_DIR)/configure
 	@echo
 	@echo CONFIGURING PANGO...
 	@echo
@@ -279,9 +279,9 @@ $(CAIRO_DIR)/src/$(CAIRO): $(CAIRO_DIR)/Makefile
 	@echo MAKING CAIRO...
 	@echo
 	if [[ -e $@ ]]; then $(MAKE) -C $(CAIRO_DIR) clean; fi && \
-	$(MAKE) -C $(CAIRO_DIR)
+	$(MAKE) -C $(CAIRO_DIR) LDFLAGS='-framework CoreFoundation -framework CoreServices -framework AppKit -framework Foundation -framework Quartz -framework WebKit'
 	
-$(CAIRO_DIR)/Makefile: $(PREFIX)/lib/$(FREETYPE) $(PREFIX)/lib/$(FONTCONFIG) $(PREFIX)/lib/$(PIXMAN) | $(PREFIX)/bin/$(PKGCONFIG) $(CAIRO_DIR)/configure
+$(CAIRO_DIR)/Makefile: $(PREFIX)/lib/$(PIXMAN) | $(PREFIX)/bin/$(PKGCONFIG) $(CAIRO_DIR)/configure
 	@echo
 	@echo CONFIGURING CAIRO...
 	@echo
@@ -353,7 +353,7 @@ $(GD_DIR)/$(GD): $(GD_DIR)/Makefile
 	if [[ -e $@ ]]; then $(MAKE) -C $(GD_DIR) clean; fi && \
 	$(MAKE) -C $(GD_DIR)
 	
-$(GD_DIR)/Makefile: $(PREFIX)/lib/$(FREETYPE) $(PREFIX)/lib/$(FONTCONFIG) | $(GD_DIR)/configure
+$(GD_DIR)/Makefile: | $(GD_DIR)/configure
 	@echo
 	@echo CONFIGURING GD...
 	@echo
