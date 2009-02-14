@@ -635,6 +635,7 @@ This package contains development files for graphviz.
 %package graphs
 Group:          Applications/Multimedia
 Summary:        Demo graphs for graphviz
+BuildArch: noarch
 
 %description graphs
 Some demo graphs for graphviz.
@@ -648,6 +649,7 @@ Some demo graphs for graphviz.
 %package doc
 Group:          Documentation
 Summary:        PDF and HTML documents for graphviz
+BuildArch: noarch
 
 %description doc
 Provides some additional PDF and HTML documentation for graphviz.
