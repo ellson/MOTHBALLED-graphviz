@@ -635,7 +635,12 @@ This package contains development files for graphviz.
 %package graphs
 Group:          Applications/Multimedia
 Summary:        Demo graphs for graphviz
+
+%if 0%{fedora?}
+%if %fedora >= 10
 BuildArch: noarch
+%endif
+%endif
 
 %description graphs
 Some demo graphs for graphviz.
@@ -649,7 +654,12 @@ Some demo graphs for graphviz.
 %package doc
 Group:          Documentation
 Summary:        PDF and HTML documents for graphviz
+
+%if 0%{fedora?}
+%if %fedora >= 10
 BuildArch: noarch
+%endif
+%endif
 
 %description doc
 Provides some additional PDF and HTML documentation for graphviz.
