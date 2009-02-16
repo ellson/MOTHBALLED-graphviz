@@ -99,7 +99,7 @@ my %KnownTypes = (
 	svg =>    'image/svg+xml',
 );
 
-my %KnownServers = ( 'dot' => 1, 'neato' => 1 , 'twopi' => 1 );
+my %KnownServers = ( 'dot' => 1, 'neato' => 1, 'twopi' => 1, 'circo' => 1, 'fdp' => 1 );
 
 # What content type is returned.  Usually $KnownTypes{$tag},
 # but not always.
