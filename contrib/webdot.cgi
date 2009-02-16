@@ -79,7 +79,9 @@ my $SigCommand = '/usr/bin/cksum';
 # set 
 
 my %KnownTypes = (
-	dot =>    'application/x-dot',
+	dot =>    'text/vnd.graphviz',
+	gv =>     'text/vnd.graphviz',
+	xdot =>   'text/vnd.graphviz',
 	gif =>    'image/gif',
 	png =>    'image/png',
 	mif =>    'application/x-mif',
