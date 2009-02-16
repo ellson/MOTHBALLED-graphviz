@@ -291,21 +291,8 @@ void drawtopfishnodes(topview * t)
 	
 	glEnable(GL_POINT_SMOOTH);	/*turn this off to make points look square*/
 	//draw focused node little bigger than others
-	glPointSize(8);
-//    glBegin(GL_POINTS);
-
-/*	for (v = 0; v < hp->nvtxs[0]; v++) 
-	{
-		ex_vtx_data *gg = hp->geom_graphs[0];
-		if ((gg[v].active_level == 0) &&(v==t->fs->foci_nodes[0]))
-		{
-			double x0,y0;
-			get_temp_coords(t,0,v,&x0,&y0);
-			glColor3f(0,0,1);
-			glVertex3f((GLfloat) x0, (GLfloat) y0, (GLfloat) -0.1);
-		}
-	}
-	glEnd();*/
+/*		ex_vtx_data *gg = hp->geom_graphs[0];
+		if ((gg[v].active_level == 0) &&(v==t->fs->foci_nodes[0]))*/
 
 
 
@@ -399,37 +386,47 @@ int get_temp_coords(topview* t,int level,int v,double* coord_x,double* coord_y)
 	else
 	{
 
-			double x0,y0,x1,y1;	
-						if  (
-				((level == gg[v].old_active_level)  && (level == gg[v].active_level))
-						||
-				((level < gg[v].old_active_level)  && (level == gg[v].active_level))
-					||
-				((level == gg[v].old_active_level)  && (level < gg[v].active_level))
-				)
-			{
 				
+				double x0,y0,x1,y1;	
+				int OAL,AL;
+
+				x0=0;
+				y0=0;
+				x1=0;
+				y1=0;
 				get_active_frame(t);
-				if (!((level == gg[v].old_active_level)  && (level < gg[v].active_level)))
+
+				AL=gg[v].active_level;
+				OAL=gg[v].old_active_level;
+
+				if ((OAL < level) || (AL < level))	//no draw 
+					return 0;
+				if ((OAL >= level) || (AL >= level))	//draw the node
 				{
-					find_old_physical_coords(t->h,level,v,&x0,&y0);
-					x1=(double)gg[v].physical_x_coord;
-					y1=(double)gg[v].physical_y_coord;
+					if((OAL == level) && (AL == level)) //draw as is from old coords to new)
+					{
+						x0=(double)gg[v].old_physical_x_coord;
+						y0=(double)gg[v].old_physical_y_coord;
+						x1=(double)gg[v].physical_x_coord;
+						y1=(double)gg[v].physical_y_coord;					
+					}
+					if((OAL > level) && (AL == level)) //draw as  from ancs  to new)
+					{
+						find_old_physical_coords(t->h,level,v,&x0,&y0);
+						x1=(double)gg[v].physical_x_coord;
+						y1=(double)gg[v].physical_y_coord;		
+					}
+					if((OAL == level) && (AL > level)) //draw as  from ancs  to new)
+					{
+						find_physical_coords(t->h,level,v,&x1,&y1);
+						x0=(double)gg[v].old_physical_x_coord;
+						y0=(double)gg[v].old_physical_y_coord;		
+					}
+					get_interpolated_coords(x0,y0,x1,y1,view->active_frame,view->total_frames,coord_x,coord_y);
+					if ((x0 == 0) || (x1==0))
+						return 0;
+
 				}
-				else
-				{
-					find_physical_coords(t->h,level,v,&x1,&y1);
-					x0=(double)gg[v].old_physical_x_coord;
-					y0=(double)gg[v].old_physical_y_coord;
-
-
-				}
-
-//				get_interpolated_coords(x0,y0,(double)gg[v].physical_x_coord,(double)gg[v].physical_y_coord,view->active_frame,view->total_frames,coord_x,coord_y);
-				get_interpolated_coords(x0,y0,x1,y1,view->active_frame,view->total_frames,coord_x,coord_y);
-			}
-			else
-				return 0;
 	}
 	return 1;
 }
@@ -657,6 +654,8 @@ void changetopfishfocus(topview * t, float *x, float *y,
 	t->parms.repos.distortion=atof(agget(view->g[0],"topologicalfisheyedistortionfactor"));
 	positionAllItems(hp, fs, &(t->parms.repos));
 
+	view->Topview->animate=1;
+
 	if(t->animate)
 	{
 		view->active_frame=0;
@@ -708,7 +707,7 @@ int get_active_frame(topview* t)
 	else
 	{
 		g_timer_stop(view->timer); 
-//		view->Topview->animate=0;
+		view->Topview->animate=0;
 		return 0;
 	}
 
