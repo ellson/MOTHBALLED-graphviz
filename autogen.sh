@@ -1,5 +1,12 @@
 #! /bin/sh
 
+# autoregen doesn't run libtoolize with --ltdl on older systems, so force it
+if test -x /usr/bin/libtoolize; then
+    /usr/bin/libtoolize --copy --force --ltdl
+elif test -x /usr/bin/glibtoolize; then
+    /usr/bin/glibtoolize --copy --force --ltdl
+fi
+
 autoreconf -v --install --force || exit 1
 
 # ensure config/depcomp exists even if still using automake-1.4
