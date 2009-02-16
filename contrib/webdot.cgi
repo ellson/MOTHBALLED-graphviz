@@ -91,6 +91,7 @@ my %KnownTypes = (
 	epsi =>   'application/postscript',
 	pdf =>    'application/pdf',
 	map =>    'text/plain',
+	cmapx =>  'text/plain',
 	txt =>    'text/plain',
 	src =>    'text/plain',
 	svg =>    'image/svg+xml',
@@ -209,7 +210,21 @@ sub up_doc {
 		$cmd = "$EPSIfilter < $tmpfile > $tagfile";
 		return unless (run_under_lock($tagfh, $cmd));
 	} elsif ($tag eq 'pdf') {
-		$cmd = "$GS -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=$tagfile $tmpfile";
+		# need BoundingBox
+		my @box;
+		open(EPS, "<$tmpfile") or
+			trouble "webdot: Cannot open $tmpfile for reading", return;
+		while(<EPS>) {
+			if(/^%%BoundingBox:\s*(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s*$/) {
+				@box = ($1, $2, $3, $4);
+				last;
+			}
+		}
+		unless( @box ) {
+			trouble "webdot: I didn't find a valid boundingbox in $tmpfile";
+			return;
+		}
+		$cmd = "$GS -dDEVICEWIDTHPOINTS=$box[2] -dDEVICEHEIGHTPOINTS=$box[3] -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=$tagfile $tmpfile";
 		return unless (run_under_lock($tagfh, $cmd));
 	}
     }
@@ -237,7 +252,8 @@ sub get_dot {
 	    trouble("Unknown tag type $tag from $url\n");
 	    return;
 	}
-	($base = $url) =~ s%[/:]%-%g;	# remember to make safe for PC's
+	$base = $url;
+	$base =~ s%[/:]%-%g;	# remember to make safe for PC's
 	# trouble("I see: '$base' '$url' '$layouter' '$tag' \n"); return;
 	up_doc($base, $url, $layouter, $tag);
     } else {
@@ -262,7 +278,8 @@ EOF
 sub main {
     my $arg;
     if ($arg = ($ENV{'PATH_INFO'})) {
-	    $arg =~ s:/::;
+	    $arg =~ s%^/%%;			# strip initial slash
+	    $arg =~ s%(^[^:]+:/)([^/])%$1/$2%;	# reinstate double slash before hostname if web server removed it
 	}
 	else  {
 		$arg = $ARGV[0];
