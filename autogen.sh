@@ -3,6 +3,9 @@
 # autoregen doesn't run libtoolize with --ltdl on older systems, so force it
 if test -x /usr/bin/libtoolize; then
     /usr/bin/libtoolize --copy --force --ltdl
+elif test -x /opt/local/bin/glibtoolize; then
+    # Mac OSx is such a mess!!!
+    /opt/local/bin/glibtoolize --copy --force --ltdl
 elif test -x /usr/bin/glibtoolize; then
     /usr/bin/glibtoolize --copy --force --ltdl
 fi
