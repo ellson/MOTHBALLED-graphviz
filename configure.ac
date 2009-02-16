@@ -470,14 +470,25 @@ AC_REPLACE_FUNCS([strcasecmp strncasecmp])
 dnl -----------------------------------
 dnl libtool ltdl on-demand plugin loading
 
+m4_ifdef([LT_INIT],
+    [ #code that is for Libtool 2.x
+AM_PROG_LIBTOOL
+    ],
+    [ #code that is for 1.5.x
+    ])
 AC_ARG_ENABLE(ltdl,
   [AS_HELP_STRING([--enable-ltdl],[support on-demand plugin loading])])
 if test "x$enable_ltdl" != "xno"; then
   AC_DEFINE(ENABLE_LTDL,1,[Define if you want on-demand plugin loading])
   AC_LIBTOOL_DLOPEN
-  LT_CONFIG_LTDL_DIR
-  LT_INIT
-  AC_CONFIG_SUBDIRS(libltdl)
+m4_ifdef([LT_INIT],
+    [ #code that is for Libtool 2.x
+  LT_CONFIG_LTDL_DIR([libltdl])
+  LTDL_INIT
+    ],
+    [ #code that is for 1.5.x
+  AC_CONFIG_SUBDIRS([libltdl])
+    ])
   use_ltdl="Yes"
   
   if test "x$DARWIN9" = "xyes"; then
@@ -492,7 +503,12 @@ fi
 AM_CONDITIONAL(ENABLE_LTDL, [test "x$enable_ltdl" != "xno"])
 AC_SUBST(INCLTDL)
 AC_SUBST(LIBLTDL)
+m4_ifdef([LT_INIT],
+    [ #code that is for Libtool 2.x
+    ],
+    [ #code that is for 1.5.x
 AM_PROG_LIBTOOL
+    ])
 
 # Checks for libraries.
 #AC_CHECK_LIB([ICE], [main])
