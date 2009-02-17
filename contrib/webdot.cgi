@@ -268,7 +268,7 @@ sub show_results {
     my $size = length($TheGoods);
 
     print <<EOF ;
-Content-type: $ContentType;
+Content-type: $ContentType
 Content-length: $size
 Pragma: no-cache
 
