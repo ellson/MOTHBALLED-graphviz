@@ -308,14 +308,89 @@ void drawtopfishnodes(topview * t)
 			double x0,y0;
 			if (get_temp_coords(t,level,v,&x0,&y0))
 			{
-				glColor3f((GLfloat) (hp->nlevels - level) /  (GLfloat) hp->nlevels,
+				if (level !=0)
+					glColor3f((GLfloat)0,
 				  (GLfloat) level / (GLfloat) hp->nlevels, 0);
+				else
+				glColor3f((GLfloat) 1,
+				  (GLfloat) level / (GLfloat) hp->nlevels*2, 0);
+
+/*								glColor3f((GLfloat) (hp->nlevels - level)*0.5 /  (GLfloat) hp->nlevels,
+				  (GLfloat) level / (GLfloat) hp->nlevels, 0);*/
+
 				glVertex3f((GLfloat) x0, (GLfloat) y0, (GLfloat) 0);
 			}
 		}
     }
 	glEnd();
 
+}
+void drawtopfishnodelabels(topview* t)
+{
+	int  v, i, n,value;
+	char* str;
+	float fs = view->FontSizeConst;
+	Hierarchy *hp = t->h;
+    str = agget(view->g[view->activeGraph], "topologicalfisheyelabelfinenodes");
+	value = (float) atof(str);
+	if(value>0)
+	{
+		for (v = 0; v < hp->nvtxs[0]; v++) 
+		{
+			ex_vtx_data *gg = hp->geom_graphs[0];
+			if (gg[v].active_level==0)	
+			{
+	
+				if(view->Topview->Nodes[v].Label)
+					str=view->Topview->Nodes[v].Label;
+				else
+					itoa(v,str,10);
+			fontSize(view->fontset->fonts[view->fontset->activefont],fs);
+			fontColorA(view->fontset->fonts[view->fontset->activefont],0, 0, 0, 1);
+			fontDrawString(view->fontset->fonts[view->fontset->activefont],gg[v].physical_x_coord,gg[v].physical_y_coord
+		       , (int)(fs*strlen(str)*0.6),str  );
+
+			}
+
+		}
+	}
+
+	
+	//agattr(g, AGRAPH, attribute, buf);
+}
+void drawtopfishfocusnodelabels(topview* t)
+{
+	int  v, i, n,value;
+	char* str;
+	float fs = view->FontSizeConst;
+	Hierarchy *hp = t->h;
+    str = agget(view->g[view->activeGraph], "topologicalfisheyelabelfocus");
+	value = (float) atof(str);
+	if(value>0)
+	{
+		for (v = 0; v < hp->nvtxs[0]; v++) 
+		{
+			ex_vtx_data *gg = hp->geom_graphs[0];
+			if ((gg[v].active_level == 0) &&(v==t->fs->foci_nodes[0]))
+
+			{
+	
+				if(view->Topview->Nodes[v].Label)
+					str=view->Topview->Nodes[v].Label;
+				else
+					itoa(v,str,10);
+			fontSize(view->fontset->fonts[view->fontset->activefont],fs*1.5);
+			fontColorA(view->fontset->fonts[view->fontset->activefont],0, 0, 1, 1);
+			fontDrawString(view->fontset->fonts[view->fontset->activefont],gg[v].physical_x_coord,gg[v].physical_y_coord
+		       , (int)(fs*strlen(str)*0.7*1.5),str  );
+
+			}
+
+		}
+	}
+
+	
+	//agattr(g, AGRAPH, attribute, buf);
 }
 void drawtopfishedges(topview * t)
 {
@@ -336,7 +411,12 @@ void drawtopfishedges(topview * t)
 				{
 					double x, y;
 					n = g[v].edges[i];
-					glColor3f((GLfloat) (hp->nlevels - level) /     (GLfloat) hp->nlevels,      (GLfloat) level / (GLfloat) hp->nlevels*2, 0);
+				if (level !=0)
+					glColor3f((GLfloat) (hp->nlevels - level)*0.2 /  (GLfloat) hp->nlevels,
+				  (GLfloat) level / (GLfloat) hp->nlevels, 0);
+				else
+				glColor3f((GLfloat) 1,
+				  (GLfloat) level / (GLfloat) hp->nlevels*2, 0);
 					if 	(get_temp_coords(t,level,n,&x,&y))
 					{
 							glVertex3f((GLfloat) x0, (GLfloat) y0,(GLfloat) 0);
@@ -366,6 +446,11 @@ void drawtopologicalfisheye(topview * t)
 {
 	drawtopfishnodes(t);
 	drawtopfishedges(t);
+	if(!t->animate)
+	{
+		drawtopfishnodelabels(t);
+		drawtopfishfocusnodelabels(t);
+	}
 }
 
 

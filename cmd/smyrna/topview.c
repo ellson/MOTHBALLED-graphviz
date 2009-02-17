@@ -855,6 +855,7 @@ static int draw_topview_label(topview_node * v, float zdepth)
 	&& (v->distorted_y / view->zoom * -1 < view->clipY2)) 
 	{
 		fs=calculate_font_size(v);
+		
 	
 
 /*		fs = (v->degree ==1) ? 
@@ -1338,8 +1339,7 @@ static void menu_click_rotate(void *p)
 
 	}
 	/*DEBUG*/
-
-
+	drawtopfishnodelabels(view->Topview);
 	view->mouse.mouse_mode = MM_ROTATE;
 }
 
