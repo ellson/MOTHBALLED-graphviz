@@ -1,0 +1,11 @@
+--- pango-1.22.4/configure	2008-12-16 15:14:30.000000000 +0900
++++ pango-1.22.4.patched/configure	2009-02-17 09:37:16.000000000 +0900
+@@ -22874,7 +22874,7 @@
+ 
+ fi
+ if test "x$ac_cv_header_Carbon_Carbon_h" = x""yes; then
+-  have_atsui=true
++  have_atsui=false
+ else
+   have_atsui=false
+ fi
