@@ -243,6 +243,18 @@ sub get_dot {
     my $urltag = shift;
     my ($url, $base, $layouter, $tag);
 
+    if ($urltag =~ m%^/%) {
+	my $serverport;
+	if ($serverport = $ENV{'SERVER_NAME'}) {
+	    unless (80 == $ENV{'SERVER_PORT'}) {
+		$serverport .= ":$ENV{'SERVER_PORT'}";
+	    }
+	} else {
+	    $serverport = 'localhost';
+	}
+	$urltag = "http://$serverport$urltag";
+    }
+
     # if ($urltag =~ /^(.+)[.]([^.]+)$/) {
     if ($urltag =~ /^(.+)[.]([^.]+)[.]([^.]+)$/) {
 	($url, $layouter, $tag) = ($1, $2, $3);
@@ -280,8 +292,8 @@ EOF
 sub main {
     my $arg;
     if ($arg = ($ENV{'PATH_INFO'})) {
-	    $arg =~ s%^/%%;			# strip initial slash
-	    $arg =~ s%(^[^:]+:/)([^/])%$1/$2%;	# reinstate double slash before hostname if web server removed it
+	    $arg =~ s%^/([^:]+:/)%$1%;		# strip initial slash before fully-qualified URLs
+	    $arg =~ s%^([^:]+:/)([^/])%$1/$2%;	# reinstate double slash before hostname if web server removed it
 	}
 	else  {
 		$arg = $ARGV[0];
