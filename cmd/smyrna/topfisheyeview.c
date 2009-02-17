@@ -297,7 +297,7 @@ void drawtopfishnodes(topview * t)
 
 
 	//drawing nodes
-	glPointSize(5);
+	glPointSize(7);
 	level=0;
     glBegin(GL_POINTS);
     for (level = 0; level < hp->nlevels; level++) 
@@ -309,7 +309,7 @@ void drawtopfishnodes(topview * t)
 			if (get_temp_coords(t,level,v,&x0,&y0))
 			{
 				if (level !=0)
-					glColor3f((GLfloat)0,
+					glColor3f((GLfloat) (hp->nlevels - level)*0.5 /  (GLfloat) hp->nlevels,
 				  (GLfloat) level / (GLfloat) hp->nlevels, 0);
 				else
 				glColor3f((GLfloat) 1,
@@ -348,7 +348,7 @@ void drawtopfishnodelabels(topview* t)
 			fontSize(view->fontset->fonts[view->fontset->activefont],fs);
 			fontColorA(view->fontset->fonts[view->fontset->activefont],0, 0, 0, 1);
 			fontDrawString(view->fontset->fonts[view->fontset->activefont],gg[v].physical_x_coord,gg[v].physical_y_coord
-		       , (int)(fs*strlen(str)*0.6),str  );
+		       , (int)(fs*strlen(str)*0.4),str  );
 
 			}
 
@@ -412,7 +412,7 @@ void drawtopfishedges(topview * t)
 					double x, y;
 					n = g[v].edges[i];
 				if (level !=0)
-					glColor3f((GLfloat) (hp->nlevels - level)*0.2 /  (GLfloat) hp->nlevels,
+					glColor3f((GLfloat) (hp->nlevels - level)*0.5 /  (GLfloat) hp->nlevels,
 				  (GLfloat) level / (GLfloat) hp->nlevels, 0);
 				else
 				glColor3f((GLfloat) 1,
