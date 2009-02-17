@@ -1010,8 +1010,8 @@ else
   if test "x$use_swig" != "xYes"; then
     use_php="No (swig not available)"
   else
-    if test `$SWIG -help 2>&1 | $GREP -c '\-php5 *- Generate'` = 0; then
-      use_php="No (swig does not support -php5 option)"
+    if test `$SWIG -help 2>&1 | $GREP -c '\-php *- Generate'` = 0 && `$SWIG -help 2>&1 | $GREP -c '\-php5 *- Generate'` = 0; then
+      use_php="No (swig does not support -php or -php5 option)"
     else
       AC_CHECK_PROG(PHP,php,php)
       if test "x$PHP" = "x"; then
