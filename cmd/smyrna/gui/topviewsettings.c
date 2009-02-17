@@ -225,11 +225,6 @@ default values are stored in a template graph ""
 int load_settings_from_graph(Agraph_t * g)
 {
 	char *buf;	/*local buffer*/
-	
-	
-	
-	
-	
 	set_color_button_widget("bgcolor", "settingsColorBtn1");
     set_color_button_widget("bordercolor", "settingsColorBtn2");
     set_color_button_widget("gridcolor", "settingsColorBtn3");

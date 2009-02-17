@@ -27,9 +27,11 @@
 #include "assert.h"
 #include "hier.h"
 #include "topfisheyeview.h"
+#include <string.h>
+
 static int get_temp_coords(topview* t,int level,int v,double* coord_x,double* coord_y);
 static int get_temp_coords2(topview* t,int level,int v,double* coord_x,double* coord_y,float *R,float *G,float *B);
-
+static int FLUSH=0;
 static double dist(double x1, double y1, double x2, double y2)
 {
     return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
@@ -222,6 +224,7 @@ void prepare_topological_fisheye(topview* t)
     Hierarchy *hp;
     ex_vtx_data *gg;
     topview_node *np;
+	char buf[512];
 
     v_data *graph = makeGraph(t, &ne);
 
@@ -248,6 +251,13 @@ void prepare_topological_fisheye(topview* t)
 
     view->Topview->parms.repos.width =(int) (view->bdxRight-view->bdxLeft);
     view->Topview->parms.repos.height =(int) (view->bdyTop-view->bdyBottom);
+	sscanf(agget(view->g[0],"topologicalfisheyedistortionfactor"),"%lf",&view->Topview->parms.repos.distortion);
+	sscanf(agget(view->g[0],"topologicalfisheyefinenodes"),"%d",&view->Topview->parms.level.num_fine_nodes);
+	sscanf(agget(view->g[0],"topologicalfisheyecoarseningfactor"),"%lf",&view->Topview->parms.level.coarsening_rate);
+	sscanf(agget(view->g[0],"topologicalfisheyedist2limit"),"%d",&view->Topview->parms.hier.dist2_limit);
+	sscanf(agget(view->g[0],"topologicalfisheyeanimate"),"%d",&view->Topview->animate);
+
+		
 	set_active_levels(hp, fs->foci_nodes, fs->num_foci, &(t->parms.level));
 	positionAllItems(hp, fs, &(t->parms.repos));
 	refresh_old_values(t);
@@ -327,70 +337,47 @@ void drawtopfishnodes(topview * t)
 }
 void drawtopfishnodelabels(topview* t)
 {
-	int  v, i, n,value;
+	int  v, i, n,finenodes,focusnodes;
+	char buf[512];
 	char* str;
 	float fs = view->FontSizeConst;
 	Hierarchy *hp = t->h;
-    str = agget(view->g[view->activeGraph], "topologicalfisheyelabelfinenodes");
-	value = (float) atof(str);
-	if(value>0)
+    finenodes=focusnodes=0;
+	str = agget(view->g[view->activeGraph], "topologicalfisheyelabelfinenodes");
+	if(strcmp(str,"1")==0){finenodes=1;}
+    str = agget(view->g[view->activeGraph], "topologicalfisheyelabelfocus");
+	if(strcmp(str,"1")==0){focusnodes=1;}
+	if((finenodes)||(focusnodes))
 	{
 		for (v = 0; v < hp->nvtxs[0]; v++) 
 		{
 			ex_vtx_data *gg = hp->geom_graphs[0];
 			if (gg[v].active_level==0)	
 			{
-	
 				if(view->Topview->Nodes[v].Label)
-					str=view->Topview->Nodes[v].Label;
+					strcpy(buf,view->Topview->Nodes[v].Label);
 				else
-					sprintf(str,"%10d",v);
-			fontSize(view->fontset->fonts[view->fontset->activefont],fs);
-			fontColorA(view->fontset->fonts[view->fontset->activefont],0, 0, 0, 1);
-			fontDrawString(view->fontset->fonts[view->fontset->activefont],gg[v].physical_x_coord,gg[v].physical_y_coord
-		       , (int)(fs*strlen(str)*0.4),str  );
+					sprintf(buf,"%d",v);
 
+				if((v==t->fs->foci_nodes[0]) &&(focusnodes))
+				{
+					fs=view->FontSizeConst*1.4;
+					fontColorA(view->fontset->fonts[view->fontset->activefont],0, 0, 1, 1);
+					fontSize(view->fontset->fonts[view->fontset->activefont],fs);
+					fontDrawString(view->fontset->fonts[view->fontset->activefont],gg[v].physical_x_coord,gg[v].physical_y_coord, (fs*strlen(buf)*0.4),buf);
+				}
+				else if (finenodes)
+				{
+					fs=view->FontSizeConst;
+					fontColorA(view->fontset->fonts[view->fontset->activefont],0, 0, 0, 1);
+					fontSize(view->fontset->fonts[view->fontset->activefont],fs);
+					fontDrawString(view->fontset->fonts[view->fontset->activefont],gg[v].physical_x_coord,gg[v].physical_y_coord, (fs*strlen(buf)*0.4),buf);
+				}
 			}
 
 		}
 	}
 
-	
-	//agattr(g, AGRAPH, attribute, buf);
-}
-void drawtopfishfocusnodelabels(topview* t)
-{
-	int  v, i, n,value;
-	char* str;
-	float fs = view->FontSizeConst;
-	Hierarchy *hp = t->h;
-    str = agget(view->g[view->activeGraph], "topologicalfisheyelabelfocus");
-	value = (float) atof(str);
-	if(value>0)
-	{
-		for (v = 0; v < hp->nvtxs[0]; v++) 
-		{
-			ex_vtx_data *gg = hp->geom_graphs[0];
-			if ((gg[v].active_level == 0) &&(v==t->fs->foci_nodes[0]))
-
-			{
-	
-				if(view->Topview->Nodes[v].Label)
-					str=view->Topview->Nodes[v].Label;
-				else
-					sprintf(str,"%10d",v);
-			fontSize(view->fontset->fonts[view->fontset->activefont],fs*1.5);
-			fontColorA(view->fontset->fonts[view->fontset->activefont],0, 0, 1, 1);
-			fontDrawString(view->fontset->fonts[view->fontset->activefont],gg[v].physical_x_coord,gg[v].physical_y_coord
-		       , (int)(fs*strlen(str)*0.7*1.5),str  );
-
-			}
-
-		}
-	}
-
-	
-	//agattr(g, AGRAPH, attribute, buf);
 }
 void drawtopfishedges(topview * t)
 {
@@ -447,10 +434,16 @@ void drawtopologicalfisheye(topview * t)
 	drawtopfishnodes(t);
 	drawtopfishedges(t);
 	if(!t->animate)
-	{
 		drawtopfishnodelabels(t);
-		drawtopfishfocusnodelabels(t);
+
+	if (FLUSH==1)
+	{
+		FLUSH=0;
+		expose_event(view->drawing_area, NULL, NULL);
+		;
 	}
+
+
 }
 
 
@@ -516,170 +509,7 @@ int get_temp_coords(topview* t,int level,int v,double* coord_x,double* coord_y)
 	return 1;
 }
 
-static int get_temp_coords2(topview* t,int level,int v,double* coord_x,double* coord_y,float *R,float *G,float *B)
-{
-	static int recorded =0;
-	Hierarchy *hp = t->h;
-	ex_vtx_data *gg = hp->geom_graphs[level];
-	/* v_data *g = hp->graphs[level]; */
-	int OAL,AL;
-	OAL=gg[v].old_active_level;
-	AL=gg[v].active_level;
-	/*if ((OAL > level) && (AL>level))
-		return 0;*/
-	
-	if ((OAL < level) && (AL<level))
-		return 0;
 
-//	t->animate=0;
-	if (!t->animate)
-	{
-		if (AL == level)
-		{
-			*coord_x=(double)gg[v].physical_x_coord;
-			*coord_y=(double)gg[v].physical_y_coord;
-			return 1;
-		}
-		else
-			return 0;
-	}
-	else
-	{
-
-		double x0,y0,x1,y1;	
-		x0=0;
-		y0=0;
-		x1=0;
-		y1=0;
-
-		get_active_frame(t);
-		if ((OAL == level) && (AL==level))
-		{
-			x0=(double)gg[v].old_physical_x_coord;
-			y0=(double)gg[v].old_physical_y_coord;
-			x1=(double)gg[v].physical_x_coord;
-			y1=(double)gg[v].physical_y_coord;
-			*G=0;
-			*R=1;
-
-		}
-		if ((OAL == level) && (AL>level))
-		{
-			x0=(double)gg[v].old_physical_x_coord;
-			y0=(double)gg[v].old_physical_y_coord;
-			find_physical_coords(t->h,level,v,&x1,&y1);
-			*G=view->active_frame/view->total_frames;
-				*R=0;
-
-
-		}
-		if ((OAL > level) && (AL==level))
-		{
-			find_old_physical_coords(t->h,level,v,&x0,&y0);
-			x1=(double)gg[v].physical_x_coord;
-			y1=(double)gg[v].physical_y_coord;
-			*R=view->active_frame/view->total_frames;
-			*G=1/(view->active_frame/view->total_frames+0.0000001);
-
-		}
-		if ((OAL > level) && (AL>level))
-		{
-			find_old_physical_coords(t->h,level,v,&x0,&y0);
-			find_physical_coords(t->h,level,v,&x1,&y1);
-			*G=1;
-			*R=0;
-
-		}
-
-		get_interpolated_coords(x0,y0,x1,y1,view->active_frame,view->total_frames,coord_x,coord_y);
-		if (recorded < 100)
-		{
-			recorded ++;
-		}
-
-
-		return 1;
-	}
-	return 0;
-}
-
-
-
-
-
-void drawtopologicalfisheye2(topview * t)
-{
-    int level, v, i, n;
-    Hierarchy *hp = t->h;
-	float R,G,B;
-
-	static int debug_mode=1;
-
-	//draw only nodes and super nodes
-	glPointSize(4);
-    glBegin(GL_POINTS);
-
-    for (level = 0; level < hp->nlevels; level++)
-	{
-		for (v = 0; v < hp->nvtxs[level]; v++)
-		{
-			{
-				/* ex_vtx_data *gg = hp->geom_graphs[level]; */
-					double x0,y0;
-					if(get_temp_coords2(t,level,v,&x0,&y0,&R,&G,&B))
-					{
-						glColor3f((GLfloat)R,(GLfloat)G,(GLfloat)B);
-						glVertex3f((GLfloat) x0, (GLfloat) y0, (GLfloat) 0);
-					}
-			}
-		}
-	}
-	glEnd();
-
-
-
-
-	//draw edges
-	glBegin(GL_LINES);
-    for (level = 0; level < hp->nlevels; level++)
-	{
-		for (v = 0; v < hp->nvtxs[level]; v++) 
-		{
-			ex_vtx_data *gg = hp->geom_graphs[level];
-			v_data *g = hp->graphs[level];
-				double x0,y0;
-				if(get_temp_coords2(t,level,v,&x0,&y0,&R,&G,&B)&& ((gg[v].active_level ==level ) || (gg[v].old_active_level ==level)) )
-				{
-					for (i = 1; i < g[v].nedges; i++) 
-					{
-						double x, y;
-						n = g[v].edges[i];
-						if(get_temp_coords2(t,level,n,&x,&y,&R,&G,&B))
-						{
-								if (((x0==0)||(x==0) || (y0==0) || (y==0)) &&(debug_mode))
-								{
-									/*printf ("(%f,%f)->(%f,%f)\n",x0,y0,x,y);*/
-								}
-								else
-								{
-									glColor3f((GLfloat)R,(GLfloat)G,(GLfloat)B);
-//									glColor3f((GLfloat) (hp->nlevels - level) /	(GLfloat) hp->nlevels,(GLfloat) level / (GLfloat) hp->nlevels, 0);
-									glVertex3f((GLfloat) x0, (GLfloat) y0,(GLfloat) 0);
-									glVertex3f((GLfloat) x, (GLfloat) y,(GLfloat) 0);
-								}
-						}
-						else
-						{
-							//get_temp_coords(t,level,n,&x,&y);
-						}
-					}
-				}
-			
-		}
-    }
-    glEnd();
-
-}
 
 /*  In loop,
  *  update fs.
@@ -736,7 +566,17 @@ void changetopfishfocus(topview * t, float *x, float *y,
     set_active_levels(hp, fs->foci_nodes, fs->num_foci, &(t->parms.level));
     view->Topview->parms.repos.width =(int) (view->bdxRight-view->bdxLeft);
     view->Topview->parms.repos.height =(int) (view->bdyTop-view->bdyBottom);
-	t->parms.repos.distortion=atof(agget(view->g[0],"topologicalfisheyedistortionfactor"));
+
+	sscanf(agget(view->g[0],"topologicalfisheyedistortionfactor"),"%lf",&view->Topview->parms.repos.distortion);
+	sscanf(agget(view->g[0],"topologicalfisheyefinenodes"),"%d",&view->Topview->parms.level.num_fine_nodes);
+	sscanf(agget(view->g[0],"topologicalfisheyecoarseningfactor"),"%lf",&view->Topview->parms.level.coarsening_rate);
+	sscanf(agget(view->g[0],"topologicalfisheyedist2limit"),"%d",&view->Topview->parms.hier.dist2_limit);
+	sscanf(agget(view->g[0],"topologicalfisheyeanimate"),"%d",&view->Topview->animate);
+
+
+
+
+
 	positionAllItems(hp, fs, &(t->parms.repos));
 
 	view->Topview->animate=1;
@@ -793,6 +633,7 @@ int get_active_frame(topview* t)
 	{
 		g_timer_stop(view->timer); 
 		view->Topview->animate=0;
+		FLUSH=1;
 		return 0;
 	}
 

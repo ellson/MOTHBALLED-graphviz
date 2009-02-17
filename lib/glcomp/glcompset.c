@@ -16,6 +16,22 @@
 #include "glcompset.h"
 #include "memory.h"
 
+
+#ifdef WIN32
+char *
+mystrdup(const char *string)
+{
+     char       *nstr;
+ 
+     nstr = (char *) malloc(strlen(string) + 1);
+     if (nstr)
+         strcpy(nstr, string);
+     return nstr;
+}
+#define strdup mystrdup
+#endif
+
+
 void glCompDrawBegin()		//pushes a gl stack 
 {
     int vPort[4];
@@ -683,9 +699,12 @@ int glCompPanelShow(glCompPanel * p)
 void glCompSetClear(glCompSet * s)
 {
     int ind = 0;
-    for (ind = 0; ind < s->buttoncount; ind++) {
-	free(s->buttons[ind]->caption);
-	free(s->buttons[ind]);
+    for (ind = 0; ind < s->buttoncount; ind++) 
+	{
+		/*if (s->buttons[ind]->caption)
+			free(s->buttons[ind]->caption);
+		free(s->buttons[ind]);*/
+		glCompSetRemoveButton(s, s->buttons[ind]);
     }
     free(s->buttons);
     for (ind = 0; ind < s->labelcount; ind++) {

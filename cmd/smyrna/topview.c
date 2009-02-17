@@ -1321,25 +1321,16 @@ static void menu_switch_to_fisheye(void *p)
 	g_timer_start(view->timer);
     }
     view->Topview->is_top_fisheye = 1;
+/*    char* str;
+	int value;
+	str = agget(view->g[view->activeGraph], "topologicalfisheyelabelfinenodes");
+	value = (float) atof(str);*/
+
 }
 
 static void menu_click_rotate(void *p)
 {
 	switch_Mouse(NULL,MM_ROTATE);
-	/*DEBUG*/
-	if (view->Topview->animate==0)
-	{
-		view->Topview->animate=1;
-		printf("fisheye animated\n");
-	}
-	else
-	{
-		view->Topview->animate=0;
-		printf("fisheye constant\n");
-
-	}
-	/*DEBUG*/
-	drawtopfishnodelabels(view->Topview);
 	view->mouse.mouse_mode = MM_ROTATE;
 }
 
