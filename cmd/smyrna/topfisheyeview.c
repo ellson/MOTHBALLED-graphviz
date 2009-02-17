@@ -344,7 +344,7 @@ void drawtopfishnodelabels(topview* t)
 				if(view->Topview->Nodes[v].Label)
 					str=view->Topview->Nodes[v].Label;
 				else
-					itoa(v,str,10);
+					sprintf(str,"%10d",v);
 			fontSize(view->fontset->fonts[view->fontset->activefont],fs);
 			fontColorA(view->fontset->fonts[view->fontset->activefont],0, 0, 0, 1);
 			fontDrawString(view->fontset->fonts[view->fontset->activefont],gg[v].physical_x_coord,gg[v].physical_y_coord
@@ -378,7 +378,7 @@ void drawtopfishfocusnodelabels(topview* t)
 				if(view->Topview->Nodes[v].Label)
 					str=view->Topview->Nodes[v].Label;
 				else
-					itoa(v,str,10);
+					sprintf(str,"%10d",v);
 			fontSize(view->fontset->fonts[view->fontset->activefont],fs*1.5);
 			fontColorA(view->fontset->fonts[view->fontset->activefont],0, 0, 1, 1);
 			fontDrawString(view->fontset->fonts[view->fontset->activefont],gg[v].physical_x_coord,gg[v].physical_y_coord
