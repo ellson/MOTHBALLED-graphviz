@@ -259,7 +259,7 @@ sub get_dot {
 	# trouble("I see: '$base' '$url' '$layouter' '$tag' \n"); return;
 	up_doc($base, $url, $layouter, $tag);
     } else {
-	trouble("Unknown url format: $url\n");
+	trouble("Unknown url format: $urltag\n");
     }
 }
 
