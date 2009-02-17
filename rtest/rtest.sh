@@ -24,6 +24,7 @@ fi
 TESTFILE=tests.txt     # Test specifications
 GRAPHDIR=graphs        # Directory of input graphs and data
 OUTDIR=ndata           # Directory for test output
+OUTHTML=nhtml          # Directory for html test report
 REFDIR=nshare          # Directory for expected test output
 GENERATE=              # If set, generate test data
 VERBOSE=               # If set, give verbose output
@@ -150,23 +151,43 @@ function doDiff
       awk -f strps.awk $FILE1 > $TMPFILE1
       awk -f strps.awk $FILE2 > $TMPFILE2
       diff -q $TMPFILE2 $TMPFILE1 > /dev/null 
+      if [[ $? != 0 ]]
+      then
+          print -u 2 "Test $1:$2 : == Failed == $OUTFILE"
+      fi
       ;;
     svg )
       sed '/^<!--/d' < $FILE1 | sed '/-->$/d' > $TMPFILE1
       sed '/^<!--/d' < $FILE2 | sed '/-->$/d' > $TMPFILE2
       diff -q $TMPFILE2 $TMPFILE1 > /dev/null 
+      if [[ $? != 0 ]]
+      then
+          print -u 2 "Test $1:$2 : == Failed == $OUTFILE"
+      fi
       ;;
     png )
-      $DIFFIMG $FILE2 $FILE1 > /dev/null 
+      $DIFFIMG $FILE2 $FILE1 >$OUTHTML/dif_$OUTFILE
+      if [[ $? != 0 ]]
+      then
+	  echo "<p>" >>$OUTHTML/index.html
+	  cp $FILE2 $OUTHTML/old_$OUTFILE
+	  echo "<img src=\"old_$OUTFILE\" width=\"192\" height=\"192\">" >>$OUTHTML/index.html
+	  cp $FILE1 $OUTHTML/new_$OUTFILE
+	  echo "<img src=\"new_$OUTFILE\" width=\"192\" height=\"192\">" >>$OUTHTML/index.html
+	  echo "<img src=\"dif_$OUTFILE\" width=\"192\" height=\"192\">" >>$OUTHTML/index.html
+          print -u 2 "Test $1:$2 : == Failed == $OUTFILE"
+      else
+	  rm $OUTHTML/dif_$OUTFILE
+      fi
       ;;
     * )
       diff -q $FILE2 $FILE1 > /dev/null 
+      if [[ $? != 0 ]]
+      then
+          print -u 2 "Test $1:$2 : == Failed == $OUTFILE"
+      fi
       ;;
     esac
-    if [[ $? != 0 ]]
-    then
-	    print -u 2 "Test $1:$2 : == Failed == $OUTFILE"
-    fi
 }
 
 # Generate output file name given 3 parameters.
@@ -329,6 +350,12 @@ if [[ ! -d "$OUTDIR" ]]
 then
   mkdir $OUTDIR
 fi
+
+if [[ ! -d "$OUTHTML" ]]
+then
+  mkdir $OUTHTML
+fi
+rm -f $OUTHTML/*
 
 if [[ ! -x $DOT ]]
 then
