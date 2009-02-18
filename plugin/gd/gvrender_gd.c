@@ -608,6 +608,8 @@ static gvrender_engine_t gdgen_engine = {
     0,				/* gdgen_end_edge */
     0,				/* gdgen_begin_anchor */
     0,				/* gdgen_end_anchor */
+    0,				/* gdgen_begin_label */
+    0,				/* gdgen_end_label */
     gdgen_textpara,
     gdgen_resolve_color,
     gdgen_ellipse,
