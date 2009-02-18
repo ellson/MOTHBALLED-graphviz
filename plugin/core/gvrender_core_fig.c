@@ -496,6 +496,8 @@ gvrender_engine_t fig_engine = {
     fig_end_edge,
     0,				/* fig_begin_anchor */
     0,				/* fig_end_anchor */
+    0,				/* fig_begin_label */
+    0,				/* fig_end_label */
     fig_textpara,
     fig_resolve_color,
     fig_ellipse,

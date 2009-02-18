@@ -629,6 +629,26 @@ void gvrender_end_anchor(GVJ_t * job)
 #endif
 }
 
+void gvrender_begin_label(GVJ_t * job, label_type type)
+{
+    gvrender_engine_t *gvre = job->render.engine;
+	
+    if (gvre) {
+		if (gvre->begin_label)
+			gvre->begin_label(job, type);
+    }
+}
+
+void gvrender_end_label(GVJ_t * job)
+{
+    gvrender_engine_t *gvre = job->render.engine;
+	
+    if (gvre) {
+		if (gvre->end_label)
+			gvre->end_label(job);
+    }
+}
+
 void gvrender_set_font(GVJ_t * job, char *fontname, double fontsize)
 {
     gvrender_engine_t *gvre = job->render.engine;

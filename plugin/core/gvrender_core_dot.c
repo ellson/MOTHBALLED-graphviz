@@ -547,6 +547,8 @@ gvrender_engine_t dot_engine = {
     0,				/* dot_end_edge */
     0,				/* dot_begin_anchor */
     0,				/* dot_end_anchor */
+    0,				/* dot_begin_label */
+    0,				/* dot_end_label */
     0,				/* dot_textpara */
     0,				/* dot_resolve_color */
     0,				/* dot_ellipse */
@@ -578,6 +580,8 @@ gvrender_engine_t xdot_engine = {
     xdot_end_edge,
     0,				/* xdot_begin_anchor */
     0,				/* xdot_end_anchor */
+    0,				/* xdot_begin_label */
+    0,				/* xdot_end_label */
     xdot_textpara,
     0,				/* xdot_resolve_color */
     xdot_ellipse,

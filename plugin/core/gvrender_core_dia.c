@@ -897,6 +897,7 @@ gvrender_engine_t dia_engine = {
     dia_begin_node, dia_end_node,
     dia_begin_edge, dia_end_edge,
     0, /* dia_begin_anchor */ 0, /* dia_end_anchor */
+    0, /* dia_begin_label */ 0, /* dia_end_label */
     dia_textpara, dia_resolve_color,
     dia_ellipse, dia_polygon,
     dia_bezier, dia_polyline,
