@@ -809,6 +809,8 @@ static gvrender_engine_t vrml_engine = {
     vrml_end_edge,
     0,                          /* vrml_begin_anchor */
     0,                          /* vrml_end_anchor */
+    0,                          /* vrml_begin_label */
+    0,                          /* vrml_end_label */
     vrml_textpara,
     0,				/* vrml_resolve_color */
     vrml_ellipse,
