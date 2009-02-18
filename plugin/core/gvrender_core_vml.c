@@ -392,6 +392,8 @@ gvrender_engine_t vml_engine = {
     0,                          /* vml_end_edge */
     vml_begin_anchor,
     vml_end_anchor,
+    0,				/* vml_begin_label */
+    0,				/* vml_end_label */
     vml_textpara,
     0,				/* vml_resolve_color */
     vml_ellipse,

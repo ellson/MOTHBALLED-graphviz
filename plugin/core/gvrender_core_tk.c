@@ -363,7 +363,9 @@ gvrender_engine_t tkgen_engine = {
     0,				/* tkgen_end_edge */
     0,				/* tkgen_begin_anchor */
     0,				/* tkgen_end_anchor */
-    tkgen_textpara,
+    0,				/* tkgen_begin_label */
+    0,				/* tkgen_end_label */
+   tkgen_textpara,
     0,				/* tkgen_resolve_color */
     tkgen_ellipse,
     tkgen_polygon,

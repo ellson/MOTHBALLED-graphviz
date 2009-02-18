@@ -490,6 +490,8 @@ gvrender_engine_t svg_engine = {
     svg_end_edge,
     svg_begin_anchor,
     svg_end_anchor,
+    0,				/* svg_begin_anchor */
+	0,				/* svg_end_anchor */
     svg_textpara,
     0,				/* svg_resolve_color */
     svg_ellipse,
