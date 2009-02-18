@@ -289,6 +289,8 @@ static gvrender_engine_t quartzgen_engine = {
     0,							/* quartzgen_end_edge */
     quartzgen_begin_anchor,
     0,							/* quartzgen_end_anchor */
+	0,							/* quartzgen_begin_label */
+	0,							/* quartzgen_end_label */
     quartzgen_textpara,
     0,
     quartzgen_ellipse,
