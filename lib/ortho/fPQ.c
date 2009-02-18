@@ -41,7 +41,7 @@ PQgen(int sz)
 }
 
 void
-PQfree()
+PQfree(void)
 {
   free (pq);
   pq = NULL;
@@ -49,13 +49,13 @@ PQfree()
 }
 
 void
-PQinit()
+PQinit(void)
 {
   PQcnt = 0;
 }
 
 void
-PQcheck ()
+PQcheck (void)
 {
   int i;
  
@@ -125,7 +125,7 @@ PQdownheap (int k)
 }
 
 snode*
-PQremove ()
+PQremove (void)
 {
   snode* n;
 
@@ -149,7 +149,7 @@ PQupdate (snode* n, int d)
 }
 
 void
-PQprint ()
+PQprint (void)
 {
   int    i;
   snode*  n;

@@ -57,7 +57,7 @@ static Dtdisc_t intSetDisc = {
 };
 
 Dt_t* 
-openIntSet ()
+openIntSet (void)
 {
 	return dtopen(&intSetDisc,Dtoset);
 }

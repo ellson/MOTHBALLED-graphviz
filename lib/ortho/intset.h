@@ -24,5 +24,5 @@ typedef struct {
     Dtlink_t  link;
 } intitem;
 
-extern Dt_t* openIntSet ();
+extern Dt_t* openIntSet (void);
 #endif

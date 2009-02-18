@@ -174,14 +174,14 @@ PQprint ()
 #define FPQ_H
 
 void PQgen(int sz);
-void PQfree();
-void PQinit();
-void PQcheck ();
+void PQfree(void);
+void PQinit(void);
+void PQcheck (void);
 void PQupheap(int);
 void PQ_insert(snode* np);
 void PQdownheap (int k);
-snode* PQremove ();
+snode* PQremove (void);
 void PQupdate (snode* n, int d);
-void PQprint ();
+void PQprint (void);
 #endif
 #endif
