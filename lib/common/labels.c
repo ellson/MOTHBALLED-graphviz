@@ -227,8 +227,9 @@ void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
     if (lp->u.txt.nparas < 1)
 	return;
 
-    gvrender_begin_context(job);
-    gvrender_set_pencolor(job, lp->fontcolor);
+    gvrender_begin_label(job, LABEL_PLAIN);
+	gvrender_begin_context(job);
+	gvrender_set_pencolor(job, lp->fontcolor);
     gvrender_set_font(job, lp->fontname, lp->fontsize);
 
     /* position for first para */
@@ -264,6 +265,7 @@ void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
     }
 
     gvrender_end_context(job);
+	gvrender_end_label(job);
     obj->emit_state = old_emit_state;
 }
 

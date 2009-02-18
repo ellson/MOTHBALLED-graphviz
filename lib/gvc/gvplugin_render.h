@@ -48,6 +48,8 @@ extern "C" {
 	void (*begin_anchor) (GVJ_t * job,
 		char *href, char *tooltip, char *target, char *id);
 	void (*end_anchor) (GVJ_t * job);
+	void (*begin_label) (GVJ_t * job, label_type type);
+	void (*end_label) (GVJ_t * job);
 	void (*textpara) (GVJ_t * job, pointf p, textpara_t * str);
 	void (*resolve_color) (GVJ_t * job, gvcolor_t * color);
 	void (*ellipse) (GVJ_t * job, pointf * A, int filled);

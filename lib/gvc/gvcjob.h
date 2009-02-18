@@ -38,6 +38,8 @@ extern "C" {
     typedef enum { PEN_NONE, PEN_DASHED, PEN_DOTTED, PEN_SOLID } pen_type;
     typedef enum { FILL_NONE, FILL_SOLID } fill_type;
     typedef enum { FONT_REGULAR, FONT_BOLD, FONT_ITALIC } font_type;
+    typedef enum { LABEL_PLAIN, LABEL_HTML } label_type;
+
 #define PENWIDTH_NORMAL 1.
 #define PENWIDTH_BOLD 2.
     typedef enum { GVATTR_STRING, GVATTR_BOOL, GVATTR_COLOR } gvattr_t;
