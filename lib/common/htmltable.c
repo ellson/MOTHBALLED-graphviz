@@ -130,6 +130,7 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
 	 */
     p_.y = p.y + (b.UR.y-b.LL.y)/2.0;
 
+ 	gvrender_begin_label(job, LABEL_HTML);
     gvrender_begin_context(job);
     for(i=0; i<nparas; i++) {
 	/* set p.x to leftmost point where the line of text begins */
@@ -188,7 +189,8 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
 	}
     }
 
-    gvrender_end_context(job);
+	gvrender_end_context(job);
+    gvrender_end_label(job);
 }
 
 static void
