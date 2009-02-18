@@ -348,6 +348,8 @@ static gvrender_engine_t cairogen_engine = {
     0,				/* cairogen_end_edge */
     0,				/* cairogen_begin_anchor */
     0,				/* cairogen_end_anchor */
+    0,				/* cairogen_begin_label */
+    0,				/* cairogen_end_label */
     cairogen_textpara,
     0,				/* cairogen_resolve_color */
     cairogen_ellipse,

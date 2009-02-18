@@ -572,6 +572,8 @@ static gvrender_engine_t lasi_engine = {
     lasi_end_edge,
     lasi_begin_anchor,
     0,				/* lasi_end_anchor */
+    0,				/* lasi_begin_label */
+    0,				/* lasi_end_label */
     lasi_textpara,
     0,				/* lasi_resolve_color */
     lasi_ellipse,

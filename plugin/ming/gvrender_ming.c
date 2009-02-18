@@ -277,6 +277,8 @@ static gvrender_engine_t ming_engine = {
     0,				/* ming_end_edge */
     0,				/* ming_begin_anchor */
     0,				/* ming_end_anchor */
+    0,				/* ming_begin_label */
+    0,				/* ming_end_label */
     ming_textpara,
     0,				/* ming_resolve_color */
     ming_ellipse,
