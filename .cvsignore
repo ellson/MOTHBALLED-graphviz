@@ -28,6 +28,7 @@ depcomp
 graphviz.spec
 install-sh
 libtool
+libltdl
 ltmain.sh
 missing
 mkinstalldirs
