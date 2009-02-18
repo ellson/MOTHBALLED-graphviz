@@ -319,6 +319,8 @@ static gvrender_engine_t gdiplusgen_engine = {
     0,							/* gdiplusgen_end_edge */
     0,							/* gdiplusgen_begin_anchor */
     0,							/* gdiplusgen_end_anchor */
+    0,							/* gdiplusgen_begin_label */
+    0,							/* gdiplusgen_end_label */
     gdiplusgen_textpara,
     0,
     gdiplusgen_ellipse,
