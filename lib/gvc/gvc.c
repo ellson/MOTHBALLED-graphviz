@@ -138,6 +138,41 @@ int gvRenderFilename(GVC_t *gvc, graph_t *g, const char *format, const char *fil
     return 0;
 }
 
+/* Render layout in a specified format to an external context */
+int gvRenderContext(GVC_t *gvc, graph_t *g, const char *format, void *context)
+{
+    int rc;
+    GVJ_t *job;
+	
+    g = g->root;
+	
+    /* create a job for the required format */
+    rc = gvjobs_output_langname(gvc, format);
+    job = gvc->job;
+    if (rc == NO_SUPPORT) {
+		agerr(AGERR, "Format: \"%s\" not recognized. Use one of:%s\n",
+			  format, gvplugin_list(gvc, API_device, format));
+		return -1;
+    }
+	
+    job->output_lang = gvrender_select(job, job->output_langname);
+    if (!GD_drawing(g) && !(job->flags & LAYOUT_NOT_REQUIRED)) {
+		fprintf(stderr, "Layout was not done\n");
+		return -1;
+    }
+	
+	job->context = context;
+	job->external_context = TRUE;
+	
+    gvRenderJobs(gvc, g);
+    gvrender_end_job(job);
+    gvdevice_finalize(job);
+    
+	gvjobs_delete(gvc);
+	
+    return 0;
+}
+
 /* Render layout in a specified format to a malloc'ed string */
 int gvRenderData(GVC_t *gvc, graph_t *g, const char *format, char **result, unsigned int *length)
 {

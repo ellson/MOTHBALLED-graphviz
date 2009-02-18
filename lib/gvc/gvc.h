@@ -80,6 +80,9 @@ extern int gvRender(GVC_t *gvc, graph_t *g, const char *format, FILE *out);
 /* Render layout in a specified format to an open FILE */
 extern int gvRenderFilename(GVC_t *gvc, graph_t *g, const char *format, const char *filename);
 
+/* Render layout in a specified format to an external context */
+extern int gvRenderContext(GVC_t *gvc, graph_t *g, const char *format, void *context);
+
 /* Render layout in a specified format to a malloc'ed string */
 extern int gvRenderData(GVC_t *gvc, graph_t *g, const char *format, char **result, unsigned int *length);
 
