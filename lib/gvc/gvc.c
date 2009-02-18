@@ -25,7 +25,7 @@
 #include "gvcproc.h"
 #include "gvconfig.h"
 
-GVC_t *gvContext(const lt_symlist_t *builtins)
+GVC_t *gvContext(void)
 {
     GVC_t *gvc;
 
@@ -35,7 +35,7 @@ GVC_t *gvContext(const lt_symlist_t *builtins)
 #else
     agattr(NULL, AGNODE, "label", NODENAME_ESC);
 #endif
-    gvc = gvNEWcontext(builtins);
+    gvc = gvNEWcontext(NULL);
     gvconfig(gvc, FALSE); /* configure for available plugins and codegens */
     return gvc;
 }
