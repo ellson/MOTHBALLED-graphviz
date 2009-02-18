@@ -1,6 +1,8 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
+PATHPLAN_VERSION="4:0:0"
+
 pdfdir = $(pkgdatadir)/doc/pdf
 pkgconfigdir = $(libdir)/pkgconfig
 
@@ -20,7 +22,7 @@ pdf_DATA = pathplan.3.pdf
 libpathplan_C_la_SOURCES = cvt.c inpoly.c route.c shortest.c \
 	shortestpth.c solvers.c triang.c util.c visibility.c
 
-libpathplan_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
+libpathplan_la_LDFLAGS = -version-info $(PATHPLAN_VERSION) -no-undefined
 libpathplan_la_SOURCES = $(libpathplan_C_la_SOURCES)
 libpathplan_la_LIBADD = @MATH_LIBS@
 
