@@ -40,6 +40,23 @@ GVC_t *gvContext(void)
     return gvc;
 }
 
+GVC_t *gvContextBuiltins(const lt_symlist_t *builtins)
+{
+    GVC_t *gvc;
+
+#ifndef WITH_CGRAPH
+    aginit();
+    agnodeattr(NULL, "label", NODENAME_ESC);
+#else
+    agattr(NULL, AGNODE, "label", NODENAME_ESC);
+#endif
+    gvc = gvNEWcontext(builtins);
+    gvconfig(gvc, FALSE); /* configure for available plugins and codegens */
+    return gvc;
+}
+
+
+
 /* gvLayout:
  * Selects layout based on engine and binds it to gvc;
  * does the layout and sets the graph's bbox.
