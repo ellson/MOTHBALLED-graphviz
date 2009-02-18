@@ -1,7 +1,7 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
-GVC_VERSION="5:0:0"
+GVC_VERSION="4:0:0"
 
 if WITH_CGRAPH
 GRAPH = cgraph
