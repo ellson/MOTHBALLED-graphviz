@@ -494,6 +494,8 @@ gvrender_engine_t vtx_engine = {
     vtx_end_edge,
     0,				/* vtx_begin_anchor */
     0,				/* vtx_end_anchor */
+    0,				/* vtx_begin_label */
+    0,				/* vtx_end_label */
     vtx_textpara,
     vtx_resolve_color,
     vtx_ellipse,
