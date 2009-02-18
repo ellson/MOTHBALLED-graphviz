@@ -58,7 +58,7 @@ dnl ===========================================================================
 # libtool shared library version for plugins
 
 # Increment if the interface has additions, changes, removals.
-GVPLUGIN_CURRENT=5
+GVPLUGIN_CURRENT=6
 
 # Increment any time the source changes; set to
 # 0 if you increment CURRENT
