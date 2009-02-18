@@ -501,9 +501,9 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 
     a = agfindgraphattr(g, "label");
 #ifndef WITH_CGRAPH
-    agxset(g, a->index, "\nPlugins");
+    agxset(g, a->index, "Plugins");
 #else
-    agxset(g, a, "\nPlugins");
+    agxset(g, a, "Plugins");
 #endif
 
     for (package = gvc->packages; package; package = package->next) {
