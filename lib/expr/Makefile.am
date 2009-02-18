@@ -1,6 +1,8 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
+EXPR_VERSION="4:0:0"
+
 pdfdir = $(pkgdatadir)/doc/pdf
 pkgconfigdir = $(libdir)/pkgconfig
 
@@ -24,7 +26,7 @@ noinst_LTLIBRARIES = libexpr_C.la
 #### -no-undefined breaks Mac OS/X builds.
 #### libast has "extern char **environ" which remains
 ####      undefined until linked with main()
-#libexpr_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
+#libexpr_la_LDFLAGS = -version-info $(EXPR_VERSION) -no-undefined
 
 libexpr_C_la_SOURCES = excc.c excontext.c exdata.c exerror.c \
 	exeval.c exexpr.c exlexname.c exopen.c exrewind.c extoken.c \
@@ -34,7 +36,7 @@ libexpr_C_la_LIBADD = \
 	$(top_builddir)/lib/vmalloc/libvmalloc_C.la \
 	$(top_builddir)/lib/sfio/libsfio_C.la
 
-#libexpr_la_LDFLAGS = -version-info @VERSION_INFO@
+#libexpr_la_LDFLAGS = -version-info $(EXPR_VERSION)
 #libexpr_la_SOURCES = $(libexpr_C_la_SOURCES)
 #libexpr_la_LIBADD = $(libexpr_C_la_LIBADD) \
 #	$(top_builddir)/lib/cdt/libcdt.la
