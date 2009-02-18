@@ -48,6 +48,7 @@ libgvplugin_gd_la_LIBADD = \
 	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
 	$(top_builddir)/lib/cdt/libcdt.la @GD_LIBS@ @MATH_LIBS@
 endif
+libtcldot_la_DEPENDENCIES =  $(top_builddir)/lib/gvc/libgvc.la
 
 if WITH_WIN32
 libgvplugin_gd_la_LDFLAGS += -no-undefined
