@@ -1,6 +1,8 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
+GRAPH_VERSION="4:0:0"
+
 pdfdir = $(pkgdatadir)/doc/pdf
 pkgconfigdir = $(libdir)/pkgconfig
 
@@ -20,7 +22,7 @@ libgraph_C_la_SOURCES = \
 	attribs.c agxbuf.c edge.c graph.c graphio.c lexer.c \
 	node.c parser.y refstr.c trie.c
  
-libgraph_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
+libgraph_la_LDFLAGS = -version-info $(GRAPH_VERSION) -no-undefined
 libgraph_la_SOURCES = $(libgraph_C_la_SOURCES)
 libgraph_la_LIBADD = $(top_builddir)/lib/cdt/libcdt.la
 

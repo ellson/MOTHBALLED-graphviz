@@ -1,6 +1,8 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
+GVC_VERSION="5:0:0"
+
 if WITH_CGRAPH
 GRAPH = cgraph
 else
@@ -51,7 +53,7 @@ libgvc_C_la_LIBADD += $(top_builddir)/lib/ortho/libortho_C.la
 libgvc_C_la_DEPENDENCIES +=  $(top_builddir)/lib/ortho/libortho_C.la
 endif
 
-libgvc_la_LDFLAGS = -version-info $(VERSION_INFO) -no-undefined
+libgvc_la_LDFLAGS = -version-info $(GVC_VERSION) -no-undefined
 libgvc_la_SOURCES = $(libgvc_C_la_SOURCES) demand_loading.c
 libgvc_la_LIBADD = $(libgvc_C_la_LIBADD) \
 	$(top_builddir)/lib/cdt/libcdt.la \
