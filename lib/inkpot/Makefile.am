@@ -1,6 +1,8 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
+INKPOT_VERSION="1:0:0"
+
 pdfdir = $(pkgdatadir)/doc/pdf
 pkgconfigdir = $(libdir)/pkgconfig
 
@@ -26,7 +28,7 @@ libinkpot_C_la_DEPENDENCIES = $(top_builddir)/lib/rbtree/librbtree_C.la
 
 libinkpot_la_SOURCES = $(libinkpot_C_la_SOURCES)
 libinkpot_la_LIBADD = $(libinkpot_C_la_LIBADD)
-libinkpot_la_LDFLAGS = -version-info $(VERSION_INFO) -no-undefined 
+libinkpot_la_LDFLAGS = -version-info $(INKPOT_VERSION) -no-undefined 
 
 
 inkpot_scheme.o inkpot_scheme.lo: inkpot_lib_define.h \
