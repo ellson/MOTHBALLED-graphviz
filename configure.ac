@@ -40,7 +40,7 @@ dnl ===========================================================================
 m4_pattern_allow([^LT_(CURRENT|REVISION|AGE)$])
 
 # Increment if the interface has additions, changes, removals.
-LT_CURRENT=4
+LT_CURRENT=5
 
 # Increment any time the source changes; set to
 # 0 if you increment CURRENT
