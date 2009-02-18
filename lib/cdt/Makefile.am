@@ -1,6 +1,8 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
+CDT_VERSION="4:0:0"
+
 pdfdir = $(pkgdatadir)/doc/pdf
 pkgextraincludedir = $(pkgincludedir)
 pkgconfigdir = $(libdir)/pkgconfig
@@ -19,7 +21,7 @@ libcdt_C_la_SOURCES = dtclose.c dtdisc.c dtextract.c dtflatten.c \
 	dthash.c dtlist.c dtmethod.c dtopen.c dtrenew.c dtrestore.c dtsize.c \
 	dtstat.c dtstrhash.c dttree.c dtview.c dtwalk.c
 
-libcdt_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
+libcdt_la_LDFLAGS = -version-info $(CDT_VERSION) -no-undefined
 libcdt_la_SOURCES = $(libcdt_C_la_SOURCES)
 
 cdt.3.pdf: $(srcdir)/cdt.3

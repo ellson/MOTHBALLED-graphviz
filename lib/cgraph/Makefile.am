@@ -1,6 +1,8 @@
 # $Id$ $Revision$ 
 ## Process this file with automake to produce Makefile.in
 
+CGRAPH_VERSION="4:0:0"
+
 pdfdir = $(pkgdatadir)/doc/pdf
 pkgconfigdir = $(libdir)/pkgconfig
 
@@ -20,7 +22,7 @@ libcgraph_C_la_SOURCES = agerror.c agxbuf.c apply.c attr.c edge.c \
 	flatten.c graph.c grammar.y id.c imap.c io.c mem.c node.c \
 	obj.c pend.c rec.c refstr.c scan.l subg.c utils.c write.c
 
-libcgraph_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
+libcgraph_la_LDFLAGS = -version-info $(CGRAPH_VERSION) -no-undefined
 libcgraph_la_SOURCES = $(libcgraph_C_la_SOURCES)
 libcgraph_la_LIBADD = $(top_builddir)/lib/cdt/libcdt.la
 
