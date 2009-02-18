@@ -1,6 +1,8 @@
 # $Id$ $Revision$ 
 ## Process this file with automake to produce Makefile.in
 
+AGRAPH_VERSION="4:0:0"
+
 pdfdir = $(pkgdatadir)/doc/pdf
 pkgconfigdir = $(libdir)/pkgconfig
 
@@ -24,7 +26,7 @@ libagraph_C_la_SOURCES = agerror.c apply.c attr.c \
 	mem.c node.c obj.c pend.c rec.c refstr.c scan.l subg.c \
 	utils.c write.c
 
-libagraph_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
+libagraph_la_LDFLAGS = -version-info $(AGRAPH_VERSION) -no-undefined
 libagraph_la_SOURCES = $(libagraph_C_la_SOURCES)
 libagraph_la_LIBADD = $(top_builddir)/lib/cdt/libcdt.la
 
