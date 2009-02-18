@@ -494,6 +494,8 @@ gvrender_engine_t mp_engine = {
     mp_end_edge,
     0,				/* mp_begin_anchor */
     0,				/* mp_end_anchor */
+    0,				/* mp_begin_label */
+    0,				/* mp_end_label */
     mp_textpara,
     mp_resolve_color,
     mp_ellipse,

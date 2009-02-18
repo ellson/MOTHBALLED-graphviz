@@ -346,6 +346,8 @@ gvrender_engine_t mif_engine = {
     0,				/* mif_end_edge */
     0,				/* mif_begin_anchor */
     0,				/* mif_end_anchor */
+    0,				/* mif_begin_label */
+    0,				/* mif_end_label */
     mif_textpara,
     0, 				/* mif_resolve_color */
     mif_ellipse,

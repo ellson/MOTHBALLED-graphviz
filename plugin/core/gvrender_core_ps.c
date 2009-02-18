@@ -453,6 +453,8 @@ static gvrender_engine_t psgen_engine = {
     psgen_end_edge,
     psgen_begin_anchor,
     0,				/* psgen_end_anchor */
+    0,				/* psgen_begin_label */
+    0,				/* psgen_end_label */
     psgen_textpara,
     0,				/* psgen_resolve_color */
     psgen_ellipse,

@@ -651,6 +651,8 @@ gvrender_engine_t pic_engine = {
     0,				/* pic_end_edge */
     0,				/* pic_begin_anchor */
     0,				/* pic_end_anchor */
+    0,				/* pic_begin_label */
+    0,				/* pic_end_label */
     pic_textpara,
     0,				/* pic_resolve_color */
     pic_ellipse,

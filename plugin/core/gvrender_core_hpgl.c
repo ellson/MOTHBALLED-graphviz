@@ -494,6 +494,8 @@ gvrender_engine_t hpgl_engine = {
     hpgl_end_edge,
     0,				/* hpgl_begin_anchor */
     0,				/* hpgl_end_anchor */
+    0,				/* hpgl_begin_label */
+    0,				/* hpgl_end_label */
     hpgl_textpara,
     hpgl_resolve_color,
     hpgl_ellipse,

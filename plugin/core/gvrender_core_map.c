@@ -283,6 +283,8 @@ static gvrender_engine_t map_engine = {
     0,				/* map_end_edge */
     map_begin_anchor,
     0,				/* map_end_anchor */
+    0,				/* map_begin_label */
+    0,				/* map_end_label */
     0,				/* map_textpara */
     0,				/* map_resolve_color */
     0,				/* map_ellipse */
