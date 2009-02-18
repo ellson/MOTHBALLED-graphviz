@@ -1057,5 +1057,33 @@ hold true:
 <p>
 A.	The user had installed Microsoft Word.<br>
 B.	There is also another version of Graphviz.app present in the system. (Possibly the previous version 1.13 released by Pixelglow Software)<br>
+<A name=Q42 HREF=#Q42><B>Q41</A>. What do all these plugin libraries do?</B>
+<p>
+<ul>
+	<li><b>lasi</b> - Adds support for UTF8 characters, beyond ASCII, in postScript output. This table provides a feture comparison of the various PosScript renderers:
+	<table>
+		<tr>
+			<th></th>
+			<th>UTF8</th>
+			<th>hyperlinks</th>
+			<th>human readable PostScript</th>
+		</tr>
+		<tr>
+			<th>-Tps:core</th><td>no</td><td>yes</td><td>++</td>
+		</tr>
+		<tr>
+			<th>-Tps:lasi</th><td>yes</td><td>yes</td><td>+</td>
+		</tr>
+		<tr>
+			<th>-Tps:cairo</th><td>yes</td><td>no</td><td>--</td>
+		</tr>
+	</table>
+	<li><b>gs</b> - Provides support for usershapes in PostScript that can be embedded in all output formats.  It interprets the format and renders to a cairo surface.  Requires a recent version of ghostscript.  (Not needed for PostScript in PostScript) 
+	<li><b>rsvg</b> - Provides support for usershapes in SVG that can be embedded in all output formats.  It interprets the format and renders to a cairo surface.  (Not needed for SVG in SVG)
+	<li><b>glitz</b> - OpenGL output.   But this may not be the right way to dot it, and my glitz plugin is unfinished.  Not useful at this time.
+	<li><b>ming</b> - Flash output.  Was sort of working at one point, not now.  Needs development.  Might be interesting opportunities for a dynamic graph output.  Not useful at this time.
+</ul>
+
+
 </BODY>
 </HTML>
