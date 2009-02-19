@@ -6,23 +6,23 @@ TAR=tar
 
 PREFIX=$(HOME)/FIX/tiger
 
+#ARCHS=-arch ppc -arch i386 -arch ppc64 -arch x86_64
+ARCHS=-arch ppc -arch i386 -arch ppc64
+
 # package URL
 
 PKGCONFIG_URL=http://pkgconfig.freedesktop.org/releases/pkg-config-0.23.tar.gz
-#LIBPNG_URL=ftp://ftp.simplesystems.org/pub/png/src/libpng-1.2.29.tar.gz
+FONTCONFIG_URL=http://fontconfig.org/release/fontconfig-2.6.0.tar.gz
+XFT_URL=http://xorg.freedesktop.org/releases/individual/lib/libXft-2.1.8.2.tar.gz
 LIBPNG_URL=http://prdownloads.sourceforge.net/libpng/libpng-1.2.31.tar.gz
 GD_URL=http://www.libgd.org/releases/gd-2.0.35.tar.gz
 FREETYPE_URL=http://download.savannah.gnu.org/releases/freetype/freetype-2.3.7.tar.gz
-FONTCONFIG_URL=http://fontconfig.org/release/fontconfig-2.6.0.tar.gz
-#PIXMAN_URL=http://cairographics.org/releases/pixman-0.10.0.tar.gz
-#CAIRO_URL=http://cairographics.org/releases/cairo-1.6.4.tar.gz
-PIXMAN_URL=http://cairographics.org/releases/pixman-0.12.0.tar.gz
-CAIRO_URL=http://cairographics.org/releases/cairo-1.8.0.tar.gz
+PIXMAN_URL=http://cairographics.org/releases/pixman-0.13.2.tar.gz
+CAIRO_URL=http://cairographics.org/releases/cairo-1.8.6.tar.gz
 LIBICONV_URL=http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.12.tar.gz
 GETTEXT_URL=ftp://mirrors.kernel.org/gnu/gettext/gettext-0.17.tar.gz
-GLIB_URL=http://ftp.gnome.org/pub/GNOME/sources/glib/2.18/glib-2.18.2.tar.gz
-#PANGO_URL=http://ftp.gnome.org/pub/GNOME/sources/pango/1.20/pango-1.20.2.tar.gz
-PANGO_URL=http://ftp.gnome.org/pub/GNOME/sources/pango/1.22/pango-1.22.1.tar.gz
+GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.18/glib-2.18.2.tar.gz
+PANGO_URL=http://ftp.gnome.org/pub/GNOME/sources/pango/1.22/pango-1.22.4.tar.gz
 LIBXML2_URL=ftp://xmlsoft.org/libxml2/libxml2-2.7.2.tar.gz
 
 # libraries
@@ -32,6 +32,7 @@ LIBPNG=libpng.la
 LIBICONV=libiconv.la
 FREETYPE=libfreetype.la
 FONTCONFIG=libfontconfig.la
+XFT=libXft.la
 LIBXML2=libxml2.la
 GD=libgd.la
 PIXMAN=libpixman-1.la
@@ -46,6 +47,7 @@ PKGCONFIG_DIR=$(call dirname, $(PKGCONFIG_URL))
 LIBPNG_DIR=$(call dirname, $(LIBPNG_URL))
 FREETYPE_DIR=$(call dirname, $(FREETYPE_URL))
 FONTCONFIG_DIR=$(call dirname, $(FONTCONFIG_URL))
+XFT_DIR=$(call dirname, $(XFT_URL))
 GD_DIR=$(call dirname, $(GD_URL))
 PIXMAN_DIR=$(call dirname, $(PIXMAN_URL))
 CAIRO_DIR=$(call dirname, $(CAIRO_URL))
@@ -58,7 +60,7 @@ LIBXML2_DIR=$(call dirname, $(LIBXML2_URL))
 #
 # target
 #
-# --prefix to dump results into $PREFIX not /usr/local
+# --prefix to dump results into $(PREFIX) not /usr/local
 # --disable-dependency-tracking since this is one-off build
 # --enable-static=yes since this builds static libraries
 # --enable-shared=no since this doesn't build dynamic libraries
@@ -67,7 +69,7 @@ LIBXML2_DIR=$(call dirname, $(LIBXML2_URL))
 # pkgconfig to look for X11 libraries too
 
 BASE_CONFIG=--prefix=$(PREFIX) --disable-dependency-tracking --enable-static=yes --enable-shared=no PKG_CONFIG="$(PREFIX)/bin/pkg-config" PKG_CONFIG_PATH="$(PREFIX)/lib/pkgconfig:/usr/X11/lib/pkgconfig:/usr/X11R6/lib/pkgconfig"
-#FLAG_CONFIG=CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64" LDFLAGS="-arch ppc -arch i386 -arch ppc64" 
+#FLAG_CONFIG=CFLAGS="-O2 $(ARCHS)" LDFLAGS="$(ARCHS)"
 FLAG_CONFIG=CFLAGS="-O2 -arch i386" LDFLAGS="-arch i386" 
 
 install: $(PREFIX)/lib/$(PANGO) $(PREFIX)/lib/$(GD)
@@ -82,6 +84,7 @@ uninstall:
 	$(MAKE) -C $(CAIRO_DIR) uninstall
 	$(MAKE) -C $(PIXMAN_DIR) uninstall
 	$(MAKE) -C $(GD_DIR) uninstall
+	$(MAKE) -C $(FONTCONFIG_DIR) uninstall
 	$(MAKE) -C $(LIBPNG_DIR) uninstall
 	$(MAKE) -C $(PKGCONFIG_DIR) uninstall
 	$(MAKE) -C $(LIBXML2_DIR) uninstall
@@ -96,6 +99,7 @@ clean:
 	$(MAKE) -C $(CAIRO_DIR) clean
 	$(MAKE) -C $(PIXMAN_DIR) clean
 	$(MAKE) -C $(GD_DIR) clean
+	$(MAKE) -C $(FONTCONFIG_DIR) clean
 	$(MAKE) -C $(LIBPNG_DIR) clean
 	$(MAKE) -C $(PKGCONFIG_DIR) clean
 	$(MAKE) -C $(LIBXML2_DIR) clean
@@ -110,6 +114,7 @@ distclean:
 	$(MAKE) -C $(CAIRO_DIR) distclean
 	$(MAKE) -C $(PIXMAN_DIR) distclean
 	$(MAKE) -C $(GD_DIR) distclean
+	$(MAKE) -C $(FONTCONFIG_DIR) distclean
 	$(MAKE) -C $(LIBPNG_DIR) distclean
 	$(MAKE) -C $(PKGCONFIG_DIR) distclean
 	$(MAKE) -C $(LIBXML2_DIR) distclean
@@ -120,7 +125,7 @@ distclean:
 # --with-included-modules=yes to embed pango modules within pango itself
 # link also to CoreFoundation and CoreServices because of gettext dependency
 
-$(PREFIX)/lib/$(PANGO): $(PANGO_DIR)/pango/$(PANGO) 
+$(PREFIX)/lib/$(PANGO): $(PANGO_DIR)/pango/$(PANGO)
 	@echo
 	@echo INSTALLING PANGO...
 	@echo
@@ -133,7 +138,7 @@ $(PANGO_DIR)/pango/$(PANGO): $(PANGO_DIR)/Makefile
 	if [[ -e $@ ]]; then $(MAKE) -C $(PANGO_DIR) clean; fi && \
 	PATH=$(PATH):$(PREFIX)/bin $(MAKE) -C $(PANGO_DIR)
 	
-$(PANGO_DIR)/Makefile: $(PREFIX)/lib/$(CAIRO) $(PREFIX)/lib/$(GLIB) $(PREFIX)/lib/$(FONTCONFIG) | $(PREFIX)/bin/$(PKGCONFIG) $(PANGO_DIR)/configure
+$(PANGO_DIR)/Makefile: $(PREFIX)/lib/$(CAIRO) $(PREFIX)/lib/$(GLIB) $(PREFIX)/lib/$(FONTCONFIG) $(PREFIX)/lib/$(FREETYPE) | $(PREFIX)/bin/$(PKGCONFIG) $(PANGO_DIR)/configure
 	@echo
 	@echo CONFIGURING PANGO...
 	@echo
@@ -143,7 +148,7 @@ $(PANGO_DIR)/configure: | $(PANGO_DIR).tar.gz
 	@echo
 	@echo UNTARRING PANGO...
 	@echo
-	$(TAR) xzf $|
+	$(TAR) xzf $| && (cd ${PANGO_DIR}; patch -p1 <../pango.patch)
 		
 $(PANGO_DIR).tar.gz:
 	@echo
@@ -187,40 +192,40 @@ $(FREETYPE_DIR).tar.gz:
 	$(CURL) --remote-name --location $(FREETYPE_URL) || rm -f $(FREETYPE_DIR).tar.gz
 
 #
-# fontconfig
+# libpng
 #
 
-$(PREFIX)/lib/$(FONTCONFIG): $(FONTCONFIG_DIR)/objs/$(FONTCONFIG)
+$(PREFIX)/lib/$(LIBPNG): $(LIBPNG_DIR)/$(LIBPNG)
 	@echo
-	@echo INSTALLING FONTCONFIG...
+	@echo INSTALLING LIBPNG...
 	@echo
-	$(MAKE) -C $(FONTCONFIG_DIR) install
-
-$(FONTCONFIG_DIR)/objs/$(FONTCONFIG): $(FONTCONFIG_DIR)/Makefile
-	@echo
-	@echo MAKING FONTCONFIG...
-	@echo
-	if [[ -e $@ ]]; then $(MAKE) -C $(FONTCONFIG_DIR) clean; fi && \
-	PATH=$(PATH):$(PREFIX)/bin $(MAKE) -C $(FONTCONFIG_DIR)
+	$(MAKE) -C $(LIBPNG_DIR) install
 	
-$(FONTCONFIG_DIR)/Makefile: $(PREFIX)/lib/$(LIBXML2) $(PREFIX)/lib/$(FREETYPE) | $(PREFIX)/bin/$(PKGCONFIG) $(FONTCONFIG_DIR)/configure
+$(LIBPNG_DIR)/$(LIBPNG): $(LIBPNG_DIR)/Makefile
 	@echo
-	@echo CONFIGURING FONTCONFIG...
+	@echo MAKING LIBPNG...
 	@echo
-	cd $(FONTCONFIG_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG)
-
-$(FONTCONFIG_DIR)/configure: | $(FONTCONFIG_DIR).tar.gz
+	if [[ -e $@ ]]; then $(MAKE) -C $(LIBPNG_DIR) clean; fi && \
+	$(MAKE) -C $(LIBPNG_DIR)
+	
+$(LIBPNG_DIR)/Makefile: $(PREFIX)/lib/$(LIBPNG) | $(LIBPNG_DIR)/configure
 	@echo
-	@echo UNTARRING FONTCONFIG...
+	@echo CONFIGURING LIBPNG...
+	@echo
+	cd $(LIBPNG_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG)
+	
+$(LIBPNG_DIR)/configure: | $(LIBPNG_DIR).tar.gz
+	@echo
+	@echo UNTARRING LIBPNG...
 	@echo
 	$(TAR) xzf $|
-		
-$(FONTCONFIG_DIR).tar.gz:
+	
+$(LIBPNG_DIR).tar.gz:
 	@echo
-	@echo TRANSFERRING FONTCONFIG...
+	@echo TRANSFERRING LIBPNG...
 	@echo
-	$(CURL) --remote-name --location $(FONTCONFIG_URL) || rm -f $(FONTCONFIG_DIR).tar.gz
-
+	$(CURL) --remote-name --location $(LIBPNG_URL) || rm -f $(LIBPNG_DIR).tar.gz
+	
 #
 # libxml2
 #
@@ -313,8 +318,13 @@ $(GLIB_DIR)/Makefile: $(PREFIX)/lib/$(INTL) | $(PREFIX)/bin/$(PKGCONFIG) $(GLIB_
 	cp config.h config.ppc64.h && \
 	cp glibconfig.h glibconfig.ppc64.h && \
 	cp darwin.cache darwinian.cache && \
+	echo --- X86_64 PASS --- && \
+	./configure --cache-file=darwinian.cache --build=$$BUILD --host=x86_64-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch x86_64 -I$(PREFIX)/include" LDFLAGS="-arch x86_64 -L$(PREFIX)/lib" && \
+	cp config.h config.x86_64.h && \
+	cp glibconfig.h glibconfig.x86_64.h && \
+	cp darwin.cache darwinian.cache && \
 	echo --- UNIVERSAL BINARY PASS --- && \
-	./configure $(BASE_CONFIG) --with-libiconv=gnu CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -I$(PREFIX)/include" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -L$(PREFIX)/lib" && \
+	./configure $(BASE_CONFIG) --with-libiconv=gnu CFLAGS="-O2 $(ARCHS) -I$(PREFIX)/include" LDFLAGS="$(ARCHS) -L$(PREFIX)/lib" && \
 	rm config.h && \
 	echo "#if defined(__ppc__)" >>config.h && \
 	cat config.ppc.h >>config.h && \
@@ -322,6 +332,8 @@ $(GLIB_DIR)/Makefile: $(PREFIX)/lib/$(INTL) | $(PREFIX)/bin/$(PKGCONFIG) $(GLIB_
 	cat config.i386.h >>config.h && \
 	echo "#elif defined(__ppc64__)" >>config.h && \
 	cat config.ppc64.h >>config.h && \
+	echo "#elif defined(__x86_64__)" >>config.h && \
+	cat config.x86_64.h >>config.h && \
 	echo "#endif" >>config.h && \
 	rm glibconfig.h && \
 	echo "#if defined(__ppc__)" >>glibconfig.h && \
@@ -330,6 +342,8 @@ $(GLIB_DIR)/Makefile: $(PREFIX)/lib/$(INTL) | $(PREFIX)/bin/$(PKGCONFIG) $(GLIB_
 	cat glibconfig.i386.h >>glibconfig.h && \
 	echo "#elif defined(__ppc64__)" >>glibconfig.h && \
 	cat glibconfig.ppc64.h >>glibconfig.h && \
+	echo "#elif defined(__x86_64__)" >>glibconfig.h && \
+	cat glibconfig.x86_64.h >>glibconfig.h && \
 	echo "#endif" >>glibconfig.h && \
 	touch stamp-gc-h && \
 	$(MAKE) clean
@@ -373,7 +387,7 @@ $(GETTEXT_DIR)/configure: | $(GETTEXT_DIR).tar.gz
 	@echo
 	@echo UNTARRING GETTEXT...
 	@echo
-	$(TAR) xzf $| && patch -p0 <gettext.patch
+	$(TAR) xzf $| && (cd ${GETTEXT_DIR}; patch -p1 <../gettext.patch)
 	
 $(GETTEXT_DIR).tar.gz:
 	@echo
@@ -433,9 +447,9 @@ $(CAIRO_DIR)/src/$(CAIRO): $(CAIRO_DIR)/Makefile
 	@echo MAKING CAIRO...
 	@echo
 	if [[ -e $@ ]]; then $(MAKE) -C $(CAIRO_DIR) clean; fi && \
-	$(MAKE) -C $(CAIRO_DIR) CFLAGS=-I/usr/X11R6/include
+	$(MAKE) -C $(CAIRO_DIR)
 	
-$(CAIRO_DIR)/Makefile: $(PREFIX)/lib/$(PIXMAN) $(PREFIX)/lib/$(LIBPNG) | $(PREFIX)/bin/$(PKGCONFIG) $(CAIRO_DIR)/configure
+$(CAIRO_DIR)/Makefile: $(PREFIX)/lib/$(PIXMAN) $(PREFIX)/lib/$(FONTCONFIG) $(PREFIX)/lib/$(LIBPNG) | $(PREFIX)/bin/$(PKGCONFIG) $(CAIRO_DIR)/configure
 	@echo
 	@echo CONFIGURING CAIRO...
 	@echo
@@ -445,8 +459,7 @@ $(CAIRO_DIR)/configure: | $(CAIRO_DIR).tar.gz
 	@echo
 	@echo UNTARRING CAIRO...
 	@echo
-#	$(TAR) xzf $| && patch -p0 <cairo.patch
-	$(TAR) xzf $|
+	$(TAR) xzf $| && (cd ${CAIRO_DIR}; patch -p1 <../cairo.patch)
 	
 $(CAIRO_DIR).tar.gz:
 	@echo
@@ -477,14 +490,13 @@ $(PIXMAN_DIR)/Makefile: | $(PREFIX)/bin/$(PKGCONFIG) $(PIXMAN_DIR)/configure
 	@echo
 	@echo CONFIGURING PIXMAN...
 	@echo
-	cd $(PIXMAN_DIR) && ./configure $(BASE_CONFIG) CFLAGS="-arch ppc -arch i386 -arch ppc64" LDFLAGS="-arch ppc -arch i386 -arch ppc64"
+	cd $(PIXMAN_DIR) && ./configure $(BASE_CONFIG) CFLAGS="$(ARCHS)" LDFLAGS="$(ARCHS)"
 	
 $(PIXMAN_DIR)/configure: | $(PIXMAN_DIR).tar.gz
 	@echo
 	@echo UNTARRING PIXMAN...
 	@echo
-#	$(TAR) xzf $| && patch -p0 <pixman.patch
-	$(TAR) xzf $|
+	$(TAR) xzf $| && (cd ${PIXMAN_DIR}; patch -p1 <../pixman.patch)
 	
 $(PIXMAN_DIR).tar.gz:
 	@echo
@@ -509,7 +521,7 @@ $(GD_DIR)/$(GD): $(GD_DIR)/Makefile
 	if [[ -e $@ ]]; then $(MAKE) -C $(GD_DIR) clean; fi && \
 	$(MAKE) -C $(GD_DIR)
 	
-$(GD_DIR)/Makefile: $(PREFIX)/lib/$(LIBPNG) | $(GD_DIR)/configure
+$(GD_DIR)/Makefile: $(PREFIX)/lib/$(LIBPNG) $(PREFIX)/lib/$(FONTCONFIG) | $(GD_DIR)/configure
 	@echo
 	@echo CONFIGURING GD...
 	@echo
@@ -528,40 +540,89 @@ $(GD_DIR).tar.gz:
 	$(CURL) --remote-name --location $(GD_URL) || rm -f $(GD_DIR).tar.gz
 	
 #
-# libpng
+# xft
 #
 
-$(PREFIX)/lib/$(LIBPNG): $(LIBPNG_DIR)/$(LIBPNG)
+$(PREFIX)/lib/$(XFT): $(XFT_DIR)/src/$(XFT)
 	@echo
-	@echo INSTALLING LIBPNG...
+	@echo INSTALLING XFT...
 	@echo
-	$(MAKE) -C $(LIBPNG_DIR) install
-	
-$(LIBPNG_DIR)/$(LIBPNG): $(LIBPNG_DIR)/Makefile
+	$(MAKE) -C $(XFT_DIR) install
+
+$(XFT_DIR)/src/$(XFT): $(XFT_DIR)/Makefile
 	@echo
-	@echo MAKING LIBPNG...
+	@echo MAKING XFT...
 	@echo
-	if [[ -e $@ ]]; then $(MAKE) -C $(LIBPNG_DIR) clean; fi && \
-	$(MAKE) -C $(LIBPNG_DIR)
-	
-$(LIBPNG_DIR)/Makefile: $(PREFIX)/lib/$(LIBPNG) | $(LIBPNG_DIR)/configure
+	if [[ -e $@ ]]; then $(MAKE) -C $(XFT_DIR) clean; fi && \
+	$(MAKE) -C $(XFT_DIR)
+
+$(XFT_DIR)/Makefile: $(PREFIX)/lib/$(FONTCONFIG) | $(PREFIX)/bin/$(PKGCONFIG) $(XFT_DIR)/configure
 	@echo
-	@echo CONFIGURING LIBPNG...
+	@echo CONFIGURING XFT...
 	@echo
-	cd $(LIBPNG_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG)
-	
-$(LIBPNG_DIR)/configure: | $(LIBPNG_DIR).tar.gz
+	cd $(XFT_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG)
+
+$(XFT_DIR)/configure: | $(XFT_DIR).tar.gz
 	@echo
-	@echo UNTARRING LIBPNG...
+	@echo UNTARRING XFT...
 	@echo
 	$(TAR) xzf $|
 	
-$(LIBPNG_DIR).tar.gz:
+$(XFT_DIR).tar.gz:
 	@echo
-	@echo TRANSFERRING LIBPNG...
+	@echo TRANSFERRING XFT...
 	@echo
-	$(CURL) --remote-name --location $(LIBPNG_URL) || rm -f $(LIBPNG_DIR).tar.gz
+	$(CURL) --remote-name --location $(XFT_URL) || rm -f $(XFT_DIR).tar.gz
+
+#
+# fontconfig
+#
+# patch to produce correct architecture cache files under Universal Binary builds
+# and fix undefined FcDebug symbol under dead stripping
+# make install to skip actual fonts.conf install
+#
+#
+
+$(PREFIX)/lib/$(FONTCONFIG): $(FONTCONFIG_DIR)/src/$(FONTCONFIG)
+	@echo
+	@echo INSTALLING FONTCONFIG...
+	@echo
+	$(MAKE) -C $(FONTCONFIG_DIR)/fontconfig install
+	$(MAKE) -C $(FONTCONFIG_DIR)/fc-case install
+	$(MAKE) -C $(FONTCONFIG_DIR)/fc-lang install
+	$(MAKE) -C $(FONTCONFIG_DIR)/fc-glyphname install
+	$(MAKE) -C $(FONTCONFIG_DIR)/fc-arch install
+	$(MAKE) -C $(FONTCONFIG_DIR)/src install
+	$(MAKE) -C $(FONTCONFIG_DIR)/fc-cache install
+	$(MAKE) -C $(FONTCONFIG_DIR)/fc-cat install
+	$(MAKE) -C $(FONTCONFIG_DIR)/fc-list install
+	$(MAKE) -C $(FONTCONFIG_DIR)/fc-match install
 	
+$(FONTCONFIG_DIR)/src/$(FONTCONFIG): $(FONTCONFIG_DIR)/Makefile
+	@echo
+	@echo MAKING FONTCONFIG...
+	@echo
+	if [[ -e $@ ]]; then $(MAKE) -C $(FONTCONFIG_DIR) clean; fi && \
+	$(MAKE) -C $(FONTCONFIG_DIR)
+	
+$(FONTCONFIG_DIR)/Makefile: | $(PREFIX)/bin/$(PKGCONFIG) $(FONTCONFIG_DIR)/configure
+	@echo
+	@echo CONFIGURING FONTCONFIG...
+	@echo
+	cd $(FONTCONFIG_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG) --with-confdir="/usr/X11/lib/X11/fontconfig" --with-cache-dir="/usr/X11/var/cache/fontconfig" 
+	
+$(FONTCONFIG_DIR)/configure: | $(FONTCONFIG_DIR).tar.gz
+	@echo
+	@echo UNTARRING FONTCONFIG...
+	@echo
+	$(TAR) xzf $| && (cd ${FONTCONFIG_DIR}; patch -p1 <../fontconfig.patch)
+	
+$(FONTCONFIG_DIR).tar.gz:
+	@echo
+	@echo TRANSFERRING FONTCONFIG...
+	@echo
+	$(CURL) --remote-name --location $(FONTCONFIG_URL) || rm -f $(FONTCONFIG_DIR).tar.gz
+
 #
 # pkgconfig
 #
