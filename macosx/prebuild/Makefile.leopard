@@ -9,6 +9,8 @@ PREFIX=$(HOME)/FIX/leopard
 # package URL
 
 PKGCONFIG_URL=http://pkgconfig.freedesktop.org/releases/pkg-config-0.23.tar.gz
+FONTCONFIG_URL=http://fontconfig.org/release/fontconfig-2.6.0.tar.gz
+XFT_URL=http://xorg.freedesktop.org/releases/individual/lib/libXft-2.1.8.2.tar.gz
 GD_URL=http://www.libgd.org/releases/gd-2.0.35.tar.gz
 PIXMAN_URL=http://cairographics.org/releases/pixman-0.13.2.tar.gz
 CAIRO_URL=http://cairographics.org/releases/cairo-1.8.6.tar.gz
@@ -19,6 +21,8 @@ PANGO_URL=http://ftp.gnome.org/pub/GNOME/sources/pango/1.22/pango-1.22.4.tar.gz
 # libraries
 
 PKGCONFIG=pkg-config
+FONTCONFIG=libfontconfig.la
+XFT=libXft.la
 GD=libgd.la
 PIXMAN=libpixman-1.la
 CAIRO=libcairo.la
@@ -29,6 +33,8 @@ PANGO=libpango-1.0.la
 # directories
 dirname=$(basename $(basename $(notdir $(1))))
 PKGCONFIG_DIR=$(call dirname, $(PKGCONFIG_URL))
+FONTCONFIG_DIR=$(call dirname, $(FONTCONFIG_URL))
+XFT_DIR=$(call dirname, $(XFT_URL))
 GD_DIR=$(call dirname, $(GD_URL))
 PIXMAN_DIR=$(call dirname, $(PIXMAN_URL))
 CAIRO_DIR=$(call dirname, $(CAIRO_URL))
@@ -59,6 +65,7 @@ uninstall:
 	$(MAKE) -C $(CAIRO_DIR) uninstall
 	$(MAKE) -C $(PIXMAN_DIR) uninstall
 	$(MAKE) -C $(GD_DIR) uninstall
+	$(MAKE) -C $(FONTCONFIG_DIR) uninstall
 	$(MAKE) -C $(PKGCONFIG_DIR) uninstall
 	
 clean:
@@ -68,6 +75,7 @@ clean:
 	$(MAKE) -C $(CAIRO_DIR) clean
 	$(MAKE) -C $(PIXMAN_DIR) clean
 	$(MAKE) -C $(GD_DIR) clean
+	$(MAKE) -C $(FONTCONFIG_DIR) clean
 	$(MAKE) -C $(PKGCONFIG_DIR) clean
 	
 distclean:
@@ -77,6 +85,7 @@ distclean:
 	$(MAKE) -C $(CAIRO_DIR) distclean
 	$(MAKE) -C $(PIXMAN_DIR) distclean
 	$(MAKE) -C $(GD_DIR) distclean
+	$(MAKE) -C $(FONTCONFIG_DIR) distclean
 	$(MAKE) -C $(PKGCONFIG_DIR) distclean
 
 #
@@ -98,7 +107,7 @@ $(PANGO_DIR)/pango/$(PANGO): $(PANGO_DIR)/Makefile
 	if [[ -e $@ ]]; then $(MAKE) -C $(PANGO_DIR) clean; fi && \
 	PATH=$(PATH):$(PREFIX)/bin $(MAKE) -C $(PANGO_DIR)
 	
-$(PANGO_DIR)/Makefile: $(PREFIX)/lib/$(CAIRO) $(PREFIX)/lib/$(GLIB) | $(PREFIX)/bin/$(PKGCONFIG) $(PANGO_DIR)/configure
+$(PANGO_DIR)/Makefile: $(PREFIX)/lib/$(CAIRO) $(PREFIX)/lib/$(GLIB) $(PREFIX)/lib/$(FONTCONFIG) $(PREFIX)/lib/$(XFT) | $(PREFIX)/bin/$(PKGCONFIG) $(PANGO_DIR)/configure
 	@echo
 	@echo CONFIGURING PANGO...
 	@echo
@@ -269,7 +278,7 @@ $(CAIRO_DIR)/src/$(CAIRO): $(CAIRO_DIR)/Makefile
 	if [[ -e $@ ]]; then $(MAKE) -C $(CAIRO_DIR) clean; fi && \
 	$(MAKE) -C $(CAIRO_DIR)
 	
-$(CAIRO_DIR)/Makefile: $(PREFIX)/lib/$(PIXMAN) | $(PREFIX)/bin/$(PKGCONFIG) $(CAIRO_DIR)/configure
+$(CAIRO_DIR)/Makefile: $(PREFIX)/lib/$(PIXMAN) $(PREFIX)/lib/$(FONTCONFIG) | $(PREFIX)/bin/$(PKGCONFIG) $(CAIRO_DIR)/configure
 	@echo
 	@echo CONFIGURING CAIRO...
 	@echo
@@ -341,11 +350,11 @@ $(GD_DIR)/$(GD): $(GD_DIR)/Makefile
 	if [[ -e $@ ]]; then $(MAKE) -C $(GD_DIR) clean; fi && \
 	$(MAKE) -C $(GD_DIR)
 	
-$(GD_DIR)/Makefile: | $(GD_DIR)/configure
+$(GD_DIR)/Makefile: $(PREFIX)/lib/$(FONTCONFIG) | $(GD_DIR)/configure
 	@echo
 	@echo CONFIGURING GD...
 	@echo
-	cd $(GD_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG)
+	cd $(GD_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG) LIBS="-liconv -lexpat" --with-fontconfig=$(PREFIX)
 	
 $(GD_DIR)/configure: | $(GD_DIR).tar.gz
 	@echo
@@ -359,6 +368,77 @@ $(GD_DIR).tar.gz:
 	@echo
 	$(CURL) --remote-name --location $(GD_URL) || rm -f $(GD_DIR).tar.gz
 	
+#
+# xft
+#
+
+$(PREFIX)/lib/$(XFT): $(XFT_DIR)/src/$(XFT)
+	@echo
+	@echo INSTALLING XFT...
+	@echo
+	$(MAKE) -C $(XFT_DIR) install
+	
+$(XFT_DIR)/src/$(XFT): $(XFT_DIR)/Makefile
+	@echo
+	@echo MAKING XFT...
+	@echo
+	if [[ -e $@ ]]; then $(MAKE) -C $(XFT_DIR) clean; fi && \
+	$(MAKE) -C $(XFT_DIR)
+	
+$(XFT_DIR)/Makefile: $(PREFIX)/lib/$(FONTCONFIG) | $(PREFIX)/bin/$(PKGCONFIG) $(XFT_DIR)/configure
+	@echo
+	@echo CONFIGURING XFT...
+	@echo
+	cd $(XFT_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG)
+	
+$(XFT_DIR)/configure: | $(XFT_DIR).tar.gz
+	@echo
+	@echo UNTARRING XFT...
+	@echo
+	$(TAR) xzf $|
+	
+$(XFT_DIR).tar.gz:
+	@echo
+	@echo TRANSFERRING XFT...
+	@echo
+	$(CURL) --remote-name --location $(XFT_URL) || rm -f $(XFT_DIR).tar.gz
+
+#
+# fontconfig
+#
+# patch to produce correct architecture cache files under Universal Binary builds
+
+$(PREFIX)/lib/$(FONTCONFIG): $(FONTCONFIG_DIR)/src/$(FONTCONFIG)
+	@echo
+	@echo INSTALLING FONTCONFIG...
+	@echo
+	$(MAKE) -C $(FONTCONFIG_DIR) install
+	
+$(FONTCONFIG_DIR)/src/$(FONTCONFIG): $(FONTCONFIG_DIR)/Makefile
+	@echo
+	@echo MAKING FONTCONFIG...
+	@echo
+	if [[ -e $@ ]]; then $(MAKE) -C $(FONTCONFIG_DIR) clean; fi && \
+	$(MAKE) -C $(FONTCONFIG_DIR)
+	
+$(FONTCONFIG_DIR)/Makefile: | $(PREFIX)/bin/$(PKGCONFIG) $(FONTCONFIG_DIR)/configure
+	@echo
+	@echo CONFIGURING FONTCONFIG...
+	@echo
+	cd $(FONTCONFIG_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG)
+	
+$(FONTCONFIG_DIR)/configure: | $(FONTCONFIG_DIR).tar.gz
+	@echo
+	@echo UNTARRING FONTCONFIG...
+	@echo
+	$(TAR) xzf $| && (cd ${FONTCONFIG_DIR}; patch -p1 <../fontconfig.patch)
+	
+$(FONTCONFIG_DIR).tar.gz:
+	@echo
+	@echo TRANSFERRING FONTCONFIG...
+	@echo
+	$(CURL) --remote-name --location $(FONTCONFIG_URL) || rm -f $(FONTCONFIG_DIR).tar.gz
+
 #
 # pkgconfig
 #
