@@ -610,7 +610,7 @@ $(FONTCONFIG_DIR)/Makefile: | $(PREFIX)/bin/$(PKGCONFIG) $(FONTCONFIG_DIR)/confi
 	@echo
 	cd $(FONTCONFIG_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG) --with-confdir="/usr/X11/lib/X11/fontconfig" --with-cache-dir="/usr/X11/var/cache/fontconfig" 
 	
-$(FONTCONFIG_DIR)/configure: | $(FONTCONFIG_DIR).tar.gz
+$(FONTCONFIG_DIR)/configure: $(PREFIX)/lib/$(FREETYPE) | $(FONTCONFIG_DIR).tar.gz
 	@echo
 	@echo UNTARRING FONTCONFIG...
 	@echo
