@@ -1,3 +1,4 @@
+diff -ru fontconfig-2.6.0/fc-arch/fc-arch.c fontconfig-2.6.0.patched/fc-arch/fc-arch.c
 --- fontconfig-2.6.0/fc-arch/fc-arch.c	2006-09-04 06:37:14.000000000 +0800
 +++ fontconfig-2.6.0.patched/fc-arch/fc-arch.c	2009-02-19 10:48:05.000000000 +0900
 @@ -92,6 +92,20 @@
@@ -21,3 +22,15 @@
  	arch = NULL;
  	/*
  	 * Search for signature
+diff -ru fontconfig-2.6.0/src/fcdbg.c fontconfig-2.6.0.patched/src/fcdbg.c
+--- fontconfig-2.6.0/src/fcdbg.c	2006-09-05 16:56:47.000000000 +0800
++++ fontconfig-2.6.0.patched/src/fcdbg.c	2009-02-19 21:35:23.000000000 +0900
+@@ -396,7 +396,7 @@
+     }
+ }
+ 
+-int FcDebugVal;
++int FcDebugVal = 0;
+ 
+ void
+ FcInitDebug (void)
