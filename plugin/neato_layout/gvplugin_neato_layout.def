@@ -20,7 +20,6 @@ init_nop
 initial_positions	
 jitter3d	
 jitter_d	
-lt_preloaded_symbols	
 make_spring	
 makeObstacle	
 makeSelfArcs	
