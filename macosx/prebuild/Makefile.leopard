@@ -407,12 +407,23 @@ $(XFT_DIR).tar.gz:
 # fontconfig
 #
 # patch to produce correct architecture cache files under Universal Binary builds
+# and fix undefined FcDebug symbol under dead stripping
+# make install to skip actual fonts.conf install
 
 $(PREFIX)/lib/$(FONTCONFIG): $(FONTCONFIG_DIR)/src/$(FONTCONFIG)
 	@echo
 	@echo INSTALLING FONTCONFIG...
 	@echo
-	$(MAKE) -C $(FONTCONFIG_DIR) install
+	$(MAKE) -C $(FONTCONFIG_DIR)/fontconfig install
+	$(MAKE) -C $(FONTCONFIG_DIR)/fc-case install
+	$(MAKE) -C $(FONTCONFIG_DIR)/fc-lang install
+	$(MAKE) -C $(FONTCONFIG_DIR)/fc-glyphname install
+	$(MAKE) -C $(FONTCONFIG_DIR)/fc-arch install
+	$(MAKE) -C $(FONTCONFIG_DIR)/src install
+	$(MAKE) -C $(FONTCONFIG_DIR)/fc-cache install
+	$(MAKE) -C $(FONTCONFIG_DIR)/fc-cat install
+	$(MAKE) -C $(FONTCONFIG_DIR)/fc-list install
+	$(MAKE) -C $(FONTCONFIG_DIR)/fc-match install
 	
 $(FONTCONFIG_DIR)/src/$(FONTCONFIG): $(FONTCONFIG_DIR)/Makefile
 	@echo
@@ -425,7 +436,7 @@ $(FONTCONFIG_DIR)/Makefile: | $(PREFIX)/bin/$(PKGCONFIG) $(FONTCONFIG_DIR)/confi
 	@echo
 	@echo CONFIGURING FONTCONFIG...
 	@echo
-	cd $(FONTCONFIG_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG)
+	cd $(FONTCONFIG_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG) --with-confdir="/usr/X11/lib/X11/fontconfig" --with-cache-dir="/usr/X11/var/cache/fontconfig" 
 	
 $(FONTCONFIG_DIR)/configure: | $(FONTCONFIG_DIR).tar.gz
 	@echo
