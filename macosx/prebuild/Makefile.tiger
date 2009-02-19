@@ -7,7 +7,7 @@ TAR=tar
 PREFIX=$(HOME)/FIX/tiger
 
 #ARCHS=-arch ppc -arch i386 -arch ppc64 -arch x86_64
-ARCHS=-arch ppc -arch i386 -arch ppc64
+ARCHS=-arch i386
 
 # package URL
 
@@ -69,8 +69,7 @@ LIBXML2_DIR=$(call dirname, $(LIBXML2_URL))
 # pkgconfig to look for X11 libraries too
 
 BASE_CONFIG=--prefix=$(PREFIX) --disable-dependency-tracking --enable-static=yes --enable-shared=no PKG_CONFIG="$(PREFIX)/bin/pkg-config" PKG_CONFIG_PATH="$(PREFIX)/lib/pkgconfig:/usr/X11/lib/pkgconfig:/usr/X11R6/lib/pkgconfig"
-#FLAG_CONFIG=CFLAGS="-O2 $(ARCHS)" LDFLAGS="$(ARCHS)"
-FLAG_CONFIG=CFLAGS="-O2 -arch i386" LDFLAGS="-arch i386" 
+FLAG_CONFIG=CFLAGS="-O2 $(ARCHS)" LDFLAGS="$(ARCHS)"
 
 install: $(PREFIX)/lib/$(PANGO) $(PREFIX)/lib/$(GD)
 
@@ -453,7 +452,7 @@ $(CAIRO_DIR)/Makefile: $(PREFIX)/lib/$(PIXMAN) $(PREFIX)/lib/$(FONTCONFIG) $(PRE
 	@echo
 	@echo CONFIGURING CAIRO...
 	@echo
-	cd $(CAIRO_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG)
+	cd $(CAIRO_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG) --enable-quartz=no
 	
 $(CAIRO_DIR)/configure: | $(CAIRO_DIR).tar.gz
 	@echo
