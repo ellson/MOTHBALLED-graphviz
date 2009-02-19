@@ -527,9 +527,9 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 	    found = 0;
 	    strcpy(buf1, api_names[api]);
 #ifndef WITH_CGRAPH
-	    ssg = agsubg(g, bufa);
+	    ssg = agsubg(sg, bufa);
 #else
-	    ssg = agsubg(g, bufa, 1);
+	    ssg = agsubg(sg, bufa, 1);
 #endif
             a = agfindgraphattr(ssg, "rank");
 #ifndef WITH_CGRAPH
