@@ -95,7 +95,7 @@ int agerrors(void)
 static int
 _is_number_char(char c)
 {
-    return (isdigit(c) || c == '.' || c == '-');
+    return (isdigit(c) || c == '.' || c == '-' || c == '+');
 }
 
 /* _agstrcanon:
