@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pathplan.lib gvc.lib vpsc.lib ingraphs.lib neatogen.lib cdt.lib sparse.lib graph.lib gts.lib glib-2.0.lib $(NOINHERIT)"
+				AdditionalDependencies="pathplan.lib gvc.lib vpsc.lib ingraphs.lib neatogen.lib cdt.lib sparse.lib graph.lib gts.lib glib-2.0.lib gvplugin_neato_layout.lib $(NOINHERIT)"
 				OutputFile="c:/graphviz-ms/bin/$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="C:\graphviz-ms\bin;C:\gtk\lib"
@@ -135,7 +135,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="pathplan.lib gvc.lib cgraph.lib vpsc.lib ingraphs.lib neatogen.lib cdt.lib sparse.lib graph.lib $(NOINHERIT)"
+				AdditionalDependencies="pathplan.lib gvc.lib vpsc.lib ingraphs.lib neatogen.lib cdt.lib sparse.lib graph.lib gts.lib glib-2.0.lib gvplugin_neato_layout.lib $(NOINHERIT)"
 				OutputFile="c:/graphviz-ms/bin/$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="C:\graphviz-ms\bin;C:\gtk\lib"
@@ -197,6 +197,10 @@
 			>
 			<File
 				RelativePath=".\gvpack.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gvpack_builtins.c"
 				>
 			</File>
 		</Filter>

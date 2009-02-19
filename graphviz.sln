@@ -129,6 +129,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "acyclic", "cmd\tools\acyclic.vcproj", "{E72DB0B2-A9B1-47D0-B6CE-563A20434F6E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bcomps", "cmd\tools\bcomps.vcproj", "{98127EF3-6289-4251-A057-D7C34B1B67AC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A334BA89-79FC-40E4-8D42-4852ECD2505B} = {A334BA89-79FC-40E4-8D42-4852ECD2505B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ccomps", "cmd\tools\ccomps.vcproj", "{1B030847-602F-4095-8FA2-E8B5CF793F60}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -176,6 +179,11 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xdot", "lib\xdot\xdot.vcproj", "{C99C1195-2032-408B-9822-F09F49006A3C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "smyrna", "cmd\smyrna\smyrna.vcproj", "{13145C00-3694-4342-AFBE-4FAA7E1086BC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C0663A08-F276-4DD6-B17C-E501EE066F7C} = {C0663A08-F276-4DD6-B17C-E501EE066F7C}
+		{86DDD3C7-E71D-49FC-9137-E2514607721E} = {86DDD3C7-E71D-49FC-9137-E2514607721E}
+		{CCEF85C9-BC40-4C26-8755-581276C8B7DA} = {CCEF85C9-BC40-4C26-8755-581276C8B7DA}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "topfish", "lib\topfish\topfish.vcproj", "{3CD86498-8B4C-4018-A9BF-F9E008F376DD}"
 EndProject
@@ -375,8 +383,8 @@ Global
 		{89ED80CE-5DEF-46B1-9A12-1D991236EE3E}.Release|Win32.Build.0 = Debug|Win32
 		{8262E86F-BCFF-4F29-B583-4320932B023B}.Debug|Win32.ActiveCfg = Debug|Win32
 		{8262E86F-BCFF-4F29-B583-4320932B023B}.Debug|Win32.Build.0 = Debug|Win32
-		{8262E86F-BCFF-4F29-B583-4320932B023B}.Release|Win32.ActiveCfg = Release|Win32
-		{8262E86F-BCFF-4F29-B583-4320932B023B}.Release|Win32.Build.0 = Release|Win32
+		{8262E86F-BCFF-4F29-B583-4320932B023B}.Release|Win32.ActiveCfg = Debug|Win32
+		{8262E86F-BCFF-4F29-B583-4320932B023B}.Release|Win32.Build.0 = Debug|Win32
 		{0DEA6915-263C-4570-B25C-E0A449894D45}.Debug|Win32.ActiveCfg = Debug|Win32
 		{0DEA6915-263C-4570-B25C-E0A449894D45}.Debug|Win32.Build.0 = Debug|Win32
 		{0DEA6915-263C-4570-B25C-E0A449894D45}.Release|Win32.ActiveCfg = Debug|Win32
@@ -399,12 +407,12 @@ Global
 		{3CD86498-8B4C-4018-A9BF-F9E008F376DD}.Release|Win32.Build.0 = Debug|Win32
 		{86DDD3C7-E71D-49FC-9137-E2514607721E}.Debug|Win32.ActiveCfg = Debug|Win32
 		{86DDD3C7-E71D-49FC-9137-E2514607721E}.Debug|Win32.Build.0 = Debug|Win32
-		{86DDD3C7-E71D-49FC-9137-E2514607721E}.Release|Win32.ActiveCfg = Release|Win32
-		{86DDD3C7-E71D-49FC-9137-E2514607721E}.Release|Win32.Build.0 = Release|Win32
+		{86DDD3C7-E71D-49FC-9137-E2514607721E}.Release|Win32.ActiveCfg = Debug|Win32
+		{86DDD3C7-E71D-49FC-9137-E2514607721E}.Release|Win32.Build.0 = Debug|Win32
 		{0DEA7FAC-4190-4B39-BEF0-1C055758FED3}.Debug|Win32.ActiveCfg = Debug|Win32
 		{0DEA7FAC-4190-4B39-BEF0-1C055758FED3}.Debug|Win32.Build.0 = Debug|Win32
-		{0DEA7FAC-4190-4B39-BEF0-1C055758FED3}.Release|Win32.ActiveCfg = Release|Win32
-		{0DEA7FAC-4190-4B39-BEF0-1C055758FED3}.Release|Win32.Build.0 = Release|Win32
+		{0DEA7FAC-4190-4B39-BEF0-1C055758FED3}.Release|Win32.ActiveCfg = Debug|Win32
+		{0DEA7FAC-4190-4B39-BEF0-1C055758FED3}.Release|Win32.Build.0 = Debug|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

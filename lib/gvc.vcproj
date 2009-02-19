@@ -478,10 +478,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\gvc\no_builtins.c"
-				>
-			</File>
-			<File
 				RelativePath=".\common\ns.c"
 				>
 			</File>

@@ -128,7 +128,6 @@ gvAddLibrary
 gvcBuildDate	
 gvcInfo	
 gvContext	
-gvcUsername	
 gvcVersion	
 Gvfilepath	
 gvFreeContext	
@@ -150,7 +149,6 @@ gvRenderData
 gvRenderFilename	
 gvRenderJobs	
 gvToggle	
-gvUsername	
 gvusershape_file_access	
 gvusershape_file_release	
 gvwrite	
@@ -205,7 +203,6 @@ lt_dlpreload_default
 lt_dlseterror	
 lt_dlsetsearchpath	
 lt_dlsym	
-lt_preloaded_symbols	
 make_label	
 make_simple_label	
 makeSelfEdge	
