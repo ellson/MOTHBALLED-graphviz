@@ -29,8 +29,7 @@ usr/local/bin/$(DOT): $(GV_DIR)/cmd/dot/.libs/$(DOT)
 	@echo
 	$(MAKE) DESTDIR=$(CURDIR) -C $(GV_DIR) install-strip
 	rm -rf usr/local/lib/graphviz/tcl/libtcldot_builtin.*
-	ditto $(PREFIX)/bin/fc-cache -arch ppc -arch i386 usr/local/bin/gv-fc-cache-32
-	ditto $(PREFIX)/bin/fc-cache -arch ppc64 -arch x86_64 usr/local/bin/gv-fc-cache-64
+	cp $(PREFIX)/bin/fc-cache usr/local/bin/gv-fc-cache
 	
 Release/Graphviz.app: ../*.m ../*.h $(GV_DIR)/cmd/dot/.libs/$(DOT)
 	@echo
@@ -41,8 +40,8 @@ Release/Graphviz.app: ../*.m ../*.h $(GV_DIR)/cmd/dot/.libs/$(DOT)
 postinstall:
 	echo "/usr/local/bin/dot -c" >$@
 	make -n -C ../../tclpkg install-data-hook >>$@
-	echo "/usr/local/bin/gv-fc-cache-32" >>$@
-	echo "/usr/local/bin/gv-fc-cache-64" >>$@
+	echo "arch -arch i386 -arch ppc /usr/local/bin/gv-fc-cache" >>$@
+	echo "if [ `sysctl -n hw.cpu64bit_capable` = "1" ]; then arch -arch x86_64 -arch ppc64 /usr/local/bin/gv-fc-cache; fi" >>$@
 
 $(GV_DIR)/cmd/dot/.libs/$(DOT): $(GV_DIR)/Makefile
 	@echo
