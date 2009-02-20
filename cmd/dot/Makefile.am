@@ -73,7 +73,7 @@ uninstall-hook:
 dot.1.pdf: $(srcdir)/dot.1
 	- $(GROFF) -Tps -man $(srcdir)/dot.1 | $(PS2PDF) - - >dot.1.pdf
 
-dot_static_SOURCES = dot.c dot_builtins.c no_demand_loading.c
+dot_static_SOURCES = dot.c dot_builtins.c no_demand_loading.c stub.cpp
 dot_static_LDADD = \
 	$(top_builddir)/plugin/dot_layout/libgvplugin_dot_layout_C.la \
 	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout_C.la \
