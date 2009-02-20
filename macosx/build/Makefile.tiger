@@ -65,4 +65,4 @@ $(GV_DIR)/Makefile: $(GV_DIR)/configure
 	@echo
 	@echo CONFIGURING GRAPHVIZ...
 	@echo
-	cd $(GV_DIR) && ./configure --disable-shared --enable-static --disable-dependency-tracking --with-ipsepcola --with-quartz CFLAGS="-O2 $(ARCHS) -I$(PREFIX)/include" CXXFLAGS="-O2 $(ARCHS) -I$(PREFIX)/include" OBJCFLAGS="-O2 $(ARCHS) -I$(PREFIX)/include" LDFLAGS="$(ARCHS) -L$(PREFIX)/lib -Wl,-dead_strip" GDLIB_CONFIG="$(PREFIX)/bin/gdlib-config" PKG_CONFIG="$(PREFIX)/bin/pkg-config" PKG_CONFIG_PATH="$(PREFIX)/lib/pkgconfig:/usr/X11/lib/pkgconfig"
+	cd $(GV_DIR) && ./configure --disable-shared --enable-static --disable-dependency-tracking --with-ipsepcola --without-quartz CFLAGS="-O2 $(ARCHS) -I$(PREFIX)/include" CXXFLAGS="-O2 $(ARCHS) -I$(PREFIX)/include" OBJCFLAGS="-O2 $(ARCHS) -I$(PREFIX)/include" LDFLAGS="$(ARCHS) -L$(PREFIX)/lib -Wl,-dead_strip" GDLIB_CONFIG="$(PREFIX)/bin/gdlib-config" PKG_CONFIG="$(PREFIX)/bin/pkg-config" PKG_CONFIG_PATH="$(PREFIX)/lib/pkgconfig:/usr/X11/lib/pkgconfig"
