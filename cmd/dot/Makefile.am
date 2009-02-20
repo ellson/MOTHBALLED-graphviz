@@ -79,7 +79,7 @@ dot.1.pdf: $(srcdir)/dot.1
 # Workaround is to link explicity to the .libs/libxxx.a
 # A better approach is probably to provide an explicit list of builtins
 # like $(top_srcdir)/lib/gvc/dot_builtins.c
-dot_static_SOURCES = dot.c dot_builtins.c no_demand_loading.c
+dot_static_SOURCES = dot.c no_demand_loading.c
 dot_static_LDFLAGS = -export-dynamic -dlpreopen self -export-symbols-regex '.*_LTX_library'
 dot_static_LDADD = \
 	$(top_builddir)/plugin/dot_layout/.libs/libgvplugin_dot_layout_C.a \
