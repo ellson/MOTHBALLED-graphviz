@@ -41,7 +41,7 @@ postinstall:
 	echo "/usr/local/bin/dot -c" >$@
 	make -n -C ../../tclpkg install-data-hook >>$@
 	echo "arch -arch i386 -arch ppc /usr/local/bin/gv-fc-cache" >>$@
-	echo "if [ `sysctl -n hw.cpu64bit_capable` = "1" ]; then arch -arch x86_64 -arch ppc64 /usr/local/bin/gv-fc-cache; fi" >>$@
+	echo "if [ `sysctl -n hw.cpu64bit_capable` ]; then arch -arch x86_64 -arch ppc64 /usr/local/bin/gv-fc-cache; fi" >>$@
 
 $(GV_DIR)/cmd/dot/.libs/$(DOT): $(GV_DIR)/Makefile
 	@echo
