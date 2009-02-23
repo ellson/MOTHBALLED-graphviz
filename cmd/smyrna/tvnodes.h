@@ -103,27 +103,27 @@ extern tv_nodes TV_Nodes;
 
 
 
-void execute_tv_nodes();
+void execute_tv_nodes(void);
 int set_filter(tv_filter * TV_Filter, char *MinData1,
 		      char *MaxData1, char *MinData2, char *MaxData2,
 		      char *Filter_String, int selected, int visible,
 		      int highlighted);
 int tv_nodes_goto_page(int page);
-int tv_nodes_next_page();
-int tv_nodes_prior_page();
-int tv_nodes_last_page();
-int tv_nodes_first_page();
+int tv_nodes_next_page(void);
+int tv_nodes_prior_page(void);
+int tv_nodes_last_page(void);
+int tv_nodes_first_page(void);
 
-int reset_page_History();
-int prepare_page_history();
+int reset_page_History(void);
+int prepare_page_history(void);
 int create_save_subgraph_from_filter(char* filename);
-int update_TV_data_from_gui();
-int apply_filter_from_gui();
-int tv_select_all();
-int tv_unselect_all();
-int tv_highligh_all();
-int tv_unhighligh_all();
-int tv_show_all();
-int tv_hide_all();
-int tv_save_as();
+int update_TV_data_from_gui(void);
+int apply_filter_from_gui(void);
+int tv_select_all(void);
+int tv_unselect_all(void);
+int tv_highligh_all(void);
+int tv_unhighligh_all(void);
+int tv_show_all(void);
+int tv_hide_all(void);
+int tv_save_as(void);
 #endif
