@@ -40,7 +40,7 @@ static float dy = 0.0;
 static float dz = 0.0;
 
    /* Forward declarations */
-static glCompSet *glcreate_gl_topview_menu();
+static glCompSet *glcreate_gl_topview_menu(void);
 static void set_boundaries(topview * t);
 static void set_topview_options(void);
 static int draw_topview_label(topview_node * v, float zdepth);
@@ -624,7 +624,7 @@ static int pick_node(topview_node * n)
     return 0;
 
 }
-static int draw_node_hint_boxes()
+static int draw_node_hint_boxes(void)
 {
     int ind;
 	char buf[512];
@@ -901,7 +901,7 @@ static int draw_topview_label(topview_node * v, float zdepth)
 
 
 
-static void set_topview_options()
+static void set_topview_options(void)
 {
 
     if ((view->mouse.mouse_mode == 10) && (view->mouse.mouse_down == 1))	//selected, if there is move move it, experimental
@@ -1023,7 +1023,7 @@ static int node_visible(Agnode_t * n)
     return OD_Visible(n);
 }
 
-int move_TVnodes()
+int move_TVnodes(void)
 {
     topview_node *v;
     int ind = 0;
@@ -1197,7 +1197,7 @@ void originate_distorded_coordinates(topview * t)
 }
 
 #if 0
-void test_callback()
+void test_callback(void)
 {
 }
 #endif
@@ -1398,7 +1398,7 @@ static char *smyrna_icon_zoomminus;
 static char *smyrna_icon_fisheye;
 static char *smyrna_icon_rotate;
 
-static glCompSet *glcreate_gl_topview_menu()
+static glCompSet *glcreate_gl_topview_menu(void)
 {
 
     glCompSet *s = glCompSetNew();

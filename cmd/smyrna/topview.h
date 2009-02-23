@@ -28,7 +28,7 @@ void cleartopview(topview * t);
 void preparetopview(Agraph_t * g, topview * t);
 void drawTopViewGraph(Agraph_t * g);
 int set_update_required(topview * t);
-int move_TVnodes();
+int move_TVnodes(void);
 void local_zoom(topview * t);
 void originate_distorded_coordinates(topview * t);
 float calcfontsize(float totaledgelength,int totallabelsize,int edgecount,int totalnodecount);

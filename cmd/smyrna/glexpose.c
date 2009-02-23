@@ -128,7 +128,7 @@ int glexpose_main(ViewInfo * view)
 	params:ViewInfo	, global view variable defined in viewport.c
 	return value:none
 */
-void drawtestpoly()
+void drawtestpoly(void)
 {
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -191,7 +191,7 @@ int glexpose_drawgraph(ViewInfo * view)
     return 0;
 }
 
-void drawRotatingTools()
+void drawRotatingTools(void)
 {
 	float x,y;
 	float x1,y1,z1;
