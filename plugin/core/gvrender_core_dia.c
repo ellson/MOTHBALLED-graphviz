@@ -28,9 +28,10 @@
 #include "macros.h"
 #include "const.h"
 
-#include "gvio.h"
 #include "gvplugin_render.h"
 #include "gvplugin_device.h"
+#include "gvio.h"
+#include "gvcint.h"
 
 typedef enum { FORMAT_DIA, } format_type;
 
@@ -238,6 +239,7 @@ static void dia_end_job(GVJ_t *job)
 
 static void dia_begin_graph(GVJ_t * job)
 {
+    gvprintf(job, "<dia:diagram xmlns:dia=\"http://www.lysator.liu.se/~alla/dia/\">\n");
 #if 0
     Rootgraph = g;
     PB.LL.x = PB.LL.y = 0;
@@ -249,8 +251,7 @@ static void dia_begin_graph(GVJ_t * job)
 	init_dia();
 	onetime = FALSE;
     }
-    dia_fputs
-	("<dia:diagram xmlns:dia=\"http://www.lysator.liu.se/~alla/dia/\">\n");
+#endif
     gvputs(job, "  <dia:diagramdata>\n");
 
     gvputs(job, "    <dia:attribute name=\"background\">\n");
@@ -311,7 +312,6 @@ static void dia_begin_graph(GVJ_t * job)
     gvputs(job, "    </dia:attribute>\n");
 
     gvputs(job, "  </dia:diagramdata>\n");
-#endif
 }
 
 static void dia_end_graph(GVJ_t * job)
@@ -332,30 +332,34 @@ static void dia_end_page(GVJ_t * job)
 
 static void dia_begin_cluster(GVJ_t * job)
 {
-    gvprintf(job, "<dia:group>\n");
+//    obj_state_t *obj = job->obj;
+
+    gvprintf(job, "    <dia:group>\n");
 }
 
 static void dia_end_cluster(GVJ_t * job)
 {
-    gvprintf(job, "</dia:group>\n");
+    gvprintf(job, "    </dia:group>\n");
 }
 
 static void dia_begin_node(GVJ_t * job)
 {
-    gvprintf(job, "<dia:group>\n");
+    gvprintf(job, "    <dia:group>\n");
 }
 
 static void dia_end_node(GVJ_t * job)
 {
-    gvprintf(job, "</dia:group>\n");
+    gvprintf(job, "    </dia:group>\n");
 }
 
 static void dia_begin_edge(GVJ_t * job)
 {
+    gvprintf(job, "    <dia:group>\n");
 }
 
 static void dia_end_edge(GVJ_t * job)
 {
+    gvprintf(job, "    </dia:group>\n");
 }
 
 static void dia_begin_context(void)
@@ -432,28 +436,77 @@ static void dia_set_style(char **s)
 #endif
 }
 
-static void dia_textpara(GVJ_t * job, point p, textpara_t * para)
+static void dia_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
-#if 0
+    obj_state_t *obj = job->obj;
+    PostscriptAlias *pA;
     int anchor;
-    pointf mp;
-    context_t *cp;
+    double size;
+    char *family=NULL, *weight=NULL, *stretch=NULL, *style=NULL;
 
-    cp = &(cstk[SP]);
     switch (para->just) {
     case 'l':
-	anchor = 0;
-	break;
+        anchor = 0;
+        break;
     case 'r':
-	anchor = 2;
-	break;
+        anchor = 2;
+        break;
     default:
     case 'n':
-	anchor = 1;
-	break;
+        anchor = 1;
+        break;
     }
+    p.y += para->yoffset_centerline;
 
-    mp = dia_pt(p);
+    pA = para->postscript_alias;
+    if (pA) {
+        switch(GD_fontnames(job->gvc->g)) {
+                case PSFONTS:
+                    family = pA->name;
+                    weight = pA->weight;
+                    style = pA->style;
+                    break;
+                case SVGFONTS:
+                    family = pA->svg_font_family;
+                    weight = pA->svg_font_weight;
+                    style = pA->svg_font_style;
+                    break;
+                default:
+                case NATIVEFONTS:
+                    family = pA->family;
+                    weight = pA->weight;
+                    style = pA->style;
+                    break;
+        }
+        stretch = pA->stretch;
+#if 0
+        gvprintf(job, " font-family=\"%s", family);
+        if (pA->svg_font_family) gvprintf(job, ",%s", pA->svg_font_family);
+        gvputs(job, "\"");
+        if (weight) gvprintf(job, " font-weight=\"%s\"", weight);
+        if (stretch) gvprintf(job, " font-stretch=\"%s\"", stretch);
+        if (style) gvprintf(job, " font-style=\"%s\"", style);
+#endif
+    }
+    else
+	family = para->fontname;
+    size = para->fontsize;
+
+#if 0
+    switch (obj->pencolor.type) {
+    case COLOR_STRING:
+        if (strcasecmp(obj->pencolor.u.string, "black"))
+            gvprintf(job, " fill=\"%s\"", obj->pencolor.u.string);
+        break;
+    case RGBA_BYTE:
+        gvprintf(job, " fill=\"#%02x%02x%02x\"",
+                obj->pencolor.u.rgba[0], obj->pencolor.u.rgba[1], obj->pencolor.u.rgba[2]);
+        break;
+    default:
+        assert(0);              /* internal error */
+    }
+#endif
+
     gvprintf(job,
 	"    <dia:object type=\"Standard - Text\" version=\"0\" id=\"%s\">\n",
 	 "0");
@@ -465,18 +518,22 @@ static void dia_textpara(GVJ_t * job, point p, textpara_t * para)
     gvputs(job, "#</dia:string>\n");
     gvputs(job, "          </dia:attribute>\n");
     gvputs(job, "          <dia:attribute name=\"font\">\n");
-    gvprintf(job, "            <dia:font name=\"%s\"/>\n", cp->fontfam);
+    gvprintf(job, "            <dia:font name=\"%s\"/>\n", family);
     gvputs(job, "          </dia:attribute>\n");
     gvputs(job, "          <dia:attribute name=\"height\">\n");
-    gvprintf(job, "            <dia:real val=\"%g\"/>\n",
-	       Scale * (cp->fontsz));
+    gvprintf(job, "            <dia:real val=\"%g\"/>\n", size);
     gvputs(job, "          </dia:attribute>\n");
     gvputs(job, "          <dia:attribute name=\"pos\">\n");
-    gvprintf(job, "            <dia:point val=\"%g,%g\"/>\n", mp.x, mp.y);
+    gvprintf(job, "            <dia:point val=\"%g,%g\"/>\n", p.x, p.y);
     gvputs(job, "          </dia:attribute>\n");
     gvputs(job, "          <dia:attribute name=\"color\">\n");
+#if 0
     gvprintf(job, "            <dia:color val=\"%s\"/>\n",
 	       dia_resolve_color(cp->pencolor));
+#else
+    gvprintf(job, "            <dia:color val=\"%s\"/>\n",
+	       "black");
+#endif
     gvputs(job, "          </dia:attribute>\n");
     gvputs(job, "          <dia:attribute name=\"alignment\">\n");
     gvprintf(job, "            <dia:enum val=\"%d\"/>\n", anchor);
@@ -484,15 +541,16 @@ static void dia_textpara(GVJ_t * job, point p, textpara_t * para)
     gvputs(job, "        </dia:composite>\n");
     gvputs(job, "      </dia:attribute>\n");
     gvputs(job, "      <dia:attribute name=\"obj_pos\">\n");
-    gvprintf(job, "        <dia:point val=\"%g,%g\"/>\n", mp.x, mp.y);
+    gvprintf(job, "        <dia:point val=\"%g,%g\"/>\n", p.x, p.y);
     gvputs(job, "      </dia:attribute>\n");
+#if 0
     gvputs(job, "      <dia:attribute name=\"obj_bb\">\n");
     gvprintf(job, "        <dia:rectangle val=\"%g,%g;%g,%g\"/>\n",
-	       mp.x - (Scale * (para->width) / 2.), mp.y - 0.4,
-	       mp.x + (Scale * (para->width) / 2.), mp.y + 0.4);
+	       p.x - (Scale * (para->width) / 2.), p.y - 0.4,
+	       p.x + (Scale * (para->width) / 2.), p.y + 0.4);
     gvputs(job, "      </dia:attribute>\n");
-    gvputs(job, "    </dia:object>\n");
 #endif
+    gvputs(job, "    </dia:object>\n");
 }
 
 static void dia_ellipse(GVJ_t * job, pointf *A, int filled)
@@ -914,7 +972,8 @@ static gvrender_features_t render_features_dia = {
 };
 
 static gvdevice_features_t device_features_dia = {
-    0,                          /* flags */
+    GVDEVICE_BINARY_FORMAT
+      | GVDEVICE_COMPRESSED_FORMAT, /* flags */
     {0.,0.},                    /* default margin - points */
     {0.,0.},                    /* default page width, height - points */
     {72.,72.},                  /* default dpi */
