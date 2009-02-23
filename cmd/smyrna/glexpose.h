@@ -21,8 +21,8 @@ int glupdatecamera(ViewInfo * v);
 int glexpose_main(ViewInfo * v);
 void glexpose_grid(ViewInfo * v);
 int glexpose_drawgraph(ViewInfo * view);
-void drawRotatingTools();
-void drawtestpoly();
+void drawRotatingTools(void);
+void drawtestpoly(void);
 
 
 #endif
