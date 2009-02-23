@@ -47,19 +47,19 @@ extern int widgetcounter;	//number of attributes counted dynamically, might be r
 extern attribute attr[MAXIMUM_WIDGET_COUNT];
 
 
-void create_object_properties();	//creates general purpose object properties template
-void object_properties_node_init();	//customize window for Nodes
-void object_properties_edge_init();	//customize window for Edges
-void object_properties_cluster_init();	//customize window for Cluster
-void object_properties_graph_init();	//customize window for Graph , this shows the graph default values
+void create_object_properties(void);	//creates general purpose object properties template
+void object_properties_node_init(void);	//customize window for Nodes
+void object_properties_edge_init(void);	//customize window for Edges
+void object_properties_cluster_init(void);	//customize window for Cluster
+void object_properties_graph_init(void);	//customize window for Graph , this shows the graph default values
 void graph_properties_init(int newgraph);	//initialize little open graph dialog
-GtkComboBox *get_SelectGraph();	//freaking GLADE!!!!!
+GtkComboBox *get_SelectGraph(void);	//freaking GLADE!!!!!
 int update_graph_properties(Agraph_t * graph);	//updates graph from gui
 void load_graph_properties(Agraph_t * graph);	//load from graph to gui
 
 void update_object_properties(int typeIndex, Agraph_t * g);	//updates objects from gui(node ,edge, cluster)
 int load_object_properties(gve_element typeIndex, Agraph_t * g);
-void load_attributes();		//loads attributes from a text file
+void load_attributes(void);		//loads attributes from a text file
 void change_selected_graph_attributes(Agraph_t * g, char *attrname,
 				      char *attrvalue);
 void change_selected_node_attributes(Agraph_t * g, char *attrname,

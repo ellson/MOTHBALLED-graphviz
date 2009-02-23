@@ -506,7 +506,7 @@ extern int respond;
 extern char* smyrnaPath (char* suffix);
 extern char* smyrnaGlade;
 
-extern void glexpose();
+extern void glexpose(void);
 
 extern char* layout2s (gvk_layout gvkl);
 extern gvk_layout s2layout (char* s);

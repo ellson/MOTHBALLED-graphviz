@@ -41,7 +41,7 @@ void clear_tv_filter(tv_filter * TV_Filter)
 }
 
 static
-tv_filter *create_tv_filter()
+tv_filter *create_tv_filter(void)
 {
     tv_filter *f;
     f = NEW(tv_filter);
@@ -104,7 +104,7 @@ set_filter(tv_filter * TV_Filter, char *MinData1, char *MaxData1,
 
 #ifdef UNUSED
 static
-int reverse_selection()
+int reverse_selection(void)
 {
     int i = 0;
     for (i; i < view->Topview->Nodecount; i++) {
@@ -308,7 +308,7 @@ static int update_node_gui_objects(tv_node * TV_Node)
 }
 
 
-int tv_nodes_last_page()
+int tv_nodes_last_page(void)
 {
     if (TV_Nodes.activepage < TV_Nodes.pagecount)
 	return tv_nodes_goto_page(TV_Nodes.pagecount);
@@ -316,7 +316,7 @@ int tv_nodes_last_page()
 	return 0;
 }
 
-int tv_nodes_first_page()
+int tv_nodes_first_page(void)
 {
     if (TV_Nodes.activepage > 0)
 	return tv_nodes_goto_page(0);
@@ -324,7 +324,7 @@ int tv_nodes_first_page()
 	return 0;
 }
 
-static int hide_data_widgets()
+static int hide_data_widgets(void)
 {
     int i;
     for (i = 0; i < MAX_NODE_PER_PAGE; i++) {
@@ -387,7 +387,7 @@ int tv_nodes_goto_page(int page)
     return 1;
 }
 
-int tv_nodes_prior_page()
+int tv_nodes_prior_page(void)
 {
     if (TV_Nodes.activepage > 0) {
 	return tv_nodes_goto_page(TV_Nodes.activepage - 1);
@@ -396,7 +396,7 @@ int tv_nodes_prior_page()
 }
 
 
-int tv_nodes_next_page()
+int tv_nodes_next_page(void)
 {
     if (TV_Nodes.activepage < TV_Nodes.pagecount) {
 	return tv_nodes_goto_page(TV_Nodes.activepage + 1);
@@ -404,7 +404,7 @@ int tv_nodes_next_page()
 	return 0;
 }
 
-void execute_tv_nodes()
+void execute_tv_nodes(void)
 {
 
     gtk_widget_hide(glade_xml_get_widget(xml, "frmTVNodes"));
@@ -420,7 +420,7 @@ void execute_tv_nodes()
 }
 
 
-int reset_page_History()
+int reset_page_History(void)
 {
 /*	if(TV_Nodes.page_history_count > 0)
 	{
@@ -443,7 +443,7 @@ static int push_to_page_history(int index)
 }
 
 #ifdef UNUSED
-static int pop_from_page_history()
+static int pop_from_page_history(void)
 {
     if (TV_Nodes.page_history_count > 0) {
 	int return_value;
@@ -458,7 +458,7 @@ static int pop_from_page_history()
 }
 #endif
 
-static int set_data_attributes()
+static int set_data_attributes(void)
 {
     GtkLabel *lblData1;
     GtkLabel *lblData2;
@@ -491,7 +491,7 @@ static int set_data_attributes()
 
 }
 
-int prepare_page_history()
+int prepare_page_history(void)
 {
     GtkLabel *lblTVPage;
     GtkSpinButton *spn;
@@ -567,7 +567,7 @@ int create_save_subgraph_from_filter(char* filename)
 
 }
 
-int update_TV_data_from_gui()
+int update_TV_data_from_gui(void)
 {
     int i;
     int index = 0;
@@ -623,7 +623,7 @@ int update_TV_data_from_gui()
 
 }
 
-int apply_filter_from_gui()
+int apply_filter_from_gui(void)
 {
     int selected;
     int visible;
@@ -685,7 +685,7 @@ int apply_filter_from_gui()
 }
 
 
-int tv_select_all()
+int tv_select_all(void)
 {
 
     tv_node tvn;
@@ -719,7 +719,7 @@ int tv_unselect_all()
 
 }
 
-int tv_highligh_all()
+int tv_highligh_all(void)
 {
     tv_node tvn;
     int i;
@@ -735,7 +735,7 @@ int tv_highligh_all()
 
 }
 
-int tv_unhighligh_all()
+int tv_unhighligh_all(void)
 {
     tv_node tvn;
     int i;
@@ -750,7 +750,7 @@ int tv_unhighligh_all()
 
 }
 
-int tv_show_all()
+int tv_show_all(void)
 {
     tv_node tvn;
     int i;
@@ -767,7 +767,7 @@ int tv_show_all()
 
 }
 
-int tv_hide_all()
+int tv_hide_all(void)
 {
     tv_node tvn;
     int i;
@@ -782,7 +782,7 @@ int tv_hide_all()
 
 
 }
-int tv_save_as()
+int tv_save_as(void)
 {
 	GtkWidget *dialog;
 	dialog = gtk_file_chooser_dialog_new("Save File",

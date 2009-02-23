@@ -55,7 +55,7 @@ attribute attr[MAXIMUM_WIDGET_COUNT];
 
 //loads object properties form and does some fixes
 //call this function only ones
-void create_object_properties()
+void create_object_properties(void)
 {
 #ifdef UNUSED
     char *data0 = "TEST0";
@@ -82,18 +82,18 @@ void create_object_properties()
 }
 
 //call this after create_object_properties()
-void object_properties_node_init()
+void object_properties_node_init(void)
 {
 
 }
-void object_properties_edge_init()	//customize window for Edges
+void object_properties_edge_init(void)	//customize window for Edges
 {
 }
-void object_properties_cluster_init()	//customize window for Cluster
+void object_properties_cluster_init(void)	//customize window for Cluster
 {
 
 }
-void object_properties_graph_init()	//customize window for Graph , this shows the graph default values
+void object_properties_graph_init(void)	//customize window for Graph , this shows the graph default values
 {
 
 }
@@ -134,7 +134,7 @@ void graph_properties_init(int newgraph)	//initialize little open graph dialog
     result = gtk_dialog_run(GTK_DIALOG(gladewidget));
 }
 
-GtkComboBox *get_SelectGraph()
+GtkComboBox *get_SelectGraph(void)
 {
     GtkComboBox *cb;
     if (!cbSelectGraph) {
@@ -577,7 +577,7 @@ void change_selected_edge_attributes(Agraph_t * g, char *attrname,
     }
 }
 
-void load_attributes()
+void load_attributes(void)
 {
     FILE *file;
     char line[BUFSIZ];
