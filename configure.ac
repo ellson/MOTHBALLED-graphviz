@@ -515,14 +515,14 @@ dnl -----------------------------------
 dnl old codegens
 
 AC_ARG_WITH(codegens,
-  [AS_HELP_STRING([--with-codegens=yes],[use old codegens])],
-  [],[with_codegens=yes])
+  [AS_HELP_STRING([--with-codegens=no],[use old codegens])],
+  [],[with_codegens=no])
 
 if test "x$with_codegens" = "xyes"; then
   use_codegens="Yes"
   AC_DEFINE(WITH_CODEGENS,1,[Define if you want the old codegens])
 else
-  use_codegens="No (disabled)"
+  use_codegens="No (disabled by default - deprecated)"
 fi
 AM_CONDITIONAL(WITH_CODEGENS, [test "x$use_codegens" = "xYes"])
 
