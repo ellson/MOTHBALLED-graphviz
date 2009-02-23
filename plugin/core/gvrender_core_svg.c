@@ -114,18 +114,6 @@ static void svg_comment(GVJ_t * job, char *str)
     gvputs(job, " -->\n");
 }
 
-/* isAscii:
- * Return true if all characters in the string are ascii.
- */
-static int isAscii (char* s)
-{
-    int c;
-    while ((c = *s++) != '\0') {
-	if (!isascii (c)) return 0;
-    }
-    return 1;
-}
-
 static void svg_begin_job(GVJ_t * job)
 {
     char *s;
