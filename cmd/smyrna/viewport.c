@@ -830,7 +830,7 @@ int add_graph_to_viewport_from_file(char *fileName)
 /* add_new_graph_to_viewport:
  * returns graph index , otherwise -1
  */
-int add_new_graph_to_viewport()
+int add_new_graph_to_viewport(void)
 {
     //returns graph index , otherwise -1
     Agraph_t *graph;
@@ -892,7 +892,7 @@ void refreshControls(ViewInfo * v)
 /* save_graph_with_file_name:
  * saves graph with file name; if file name is NULL save as is
  */
-static int save_graph_with_file_name(Agraph_t * graph, char *fileName)
+int save_graph_with_file_name(Agraph_t * graph, char *fileName)
 {
     FILE *output_file;
     update_graph_params(graph);
@@ -920,7 +920,7 @@ static int save_graph_with_file_name(Agraph_t * graph, char *fileName)
 /* save_graph:
  * save without prompt
  */
-int save_graph()
+int save_graph(void)
 {
     //check if there is an active graph
     if (view->activeGraph > -1) {
@@ -939,7 +939,7 @@ int save_graph()
 /* save_as_graph:
  * save with prompt
  */
-int save_as_graph()
+int save_as_graph(void)
 {
     //check if there is an active graph
     if (view->activeGraph > -1) {
@@ -1213,10 +1213,10 @@ int setGdkColor(GdkColor * c, char *color) {
 
 }
 
-void glexpose() {
+void glexpose(void) {
     expose_event(view->drawing_area, NULL, NULL);
 }
-int gl_main_expose() {
+int gl_main_expose(void) {
 	if(view->Topview->animate==1)
 		expose_event(view->drawing_area, NULL, NULL);
 	return 1;
@@ -1227,7 +1227,7 @@ int gl_main_expose() {
 /*I liked to have a please wait window on the screen all i got was the outer borders of the window
 GTK requires a custom widget expose function 
 */
-void please_wait()
+void please_wait(void)
 {
     gtk_widget_hide(glade_xml_get_widget(xml, "frmWait"));
     gtk_widget_show(glade_xml_get_widget(xml, "frmWait"));
@@ -1236,7 +1236,7 @@ void please_wait()
 						   "frmWait"), 1);
 
 }
-void please_dont_wait()
+void please_dont_wait(void)
 {
     gtk_widget_hide(glade_xml_get_widget(xml, "frmWait"));
 }

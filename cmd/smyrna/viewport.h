@@ -27,18 +27,19 @@ void init_viewport(ViewInfo * view);
 void set_viewport_settings_from_template(ViewInfo * view, Agraph_t *);
 void clear_viewport(ViewInfo * view);
 int add_graph_to_viewport_from_file(char *fileName);
-int save_graph();
-int save_as_graph();
+int save_graph(void);
+int save_graph_with_file_name(Agraph_t * graph, char *fileName);
+int save_as_graph(void);
 
 int do_graph_layout(Agraph_t * graph, int Engine, int keeppos);
 void refreshControls(ViewInfo * v);
 
 void movenode(void *n, float dx, float dy);
-void glexpose();
-int gl_main_expose();
+void glexpose(void);
+int gl_main_expose(void);
 void move_nodes(Agraph_t * g);
-void please_wait();
-void please_dont_wait();
+void please_wait(void);
+void please_dont_wait(void);
 
 
  /* helper functions */

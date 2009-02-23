@@ -39,7 +39,7 @@ void open_graph_clicked(GtkWidget * widget, gpointer user_data)
 void save_graph_clicked(GtkWidget * widget, gpointer user_data)
 {
     if (view->activeGraph > -1)
-	save_graph(view->g[view->activeGraph], NULL);
+	save_graph_with_file_name(view->g[view->activeGraph], NULL);
 }
 
 
@@ -59,7 +59,7 @@ void save_as_graph_clicked(GtkWidget * widget, gpointer user_data)
     if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
 	char *filename;
 	filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
-	save_graph(view->g[view->activeGraph], filename);
+	save_graph_with_file_name(view->g[view->activeGraph], filename);
 	g_free(filename);
     }
     gtk_widget_destroy(dialog);
