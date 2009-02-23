@@ -1,11 +1,15 @@
 #! /bin/sh
 
 # autoregen doesn't run libtoolize with --ltdl on older systems, so force it
-if test -x /usr/bin/libtoolize; then
-    /usr/bin/libtoolize --copy --force --ltdl
-elif test -x /opt/local/bin/glibtoolize; then
+
+LIBTOOLIZE=libtoolize
+if test -x /opt/local/bin/glibtoolize; then
     export LIBTOOLIZE=/opt/local/bin/glibtoolize
 fi
+export LIBTOOLIZE
+
+echo "autogen.sh: running: $LIBTOOLIZE --copy --force --ltdl"
+$LIBTOOLIZE --copy --force --ltdl
 
 autoreconf -v --install --force || exit 1
 
