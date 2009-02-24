@@ -139,7 +139,9 @@ int gvrender_features(GVJ_t * job)
 
 void gvrender_begin_job(GVJ_t * job)
 {
+#ifdef WITH_CODEGENS
     GVC_t *gvc = job->gvc;
+#endif
     gvrender_engine_t *gvre = job->render.engine;
 
     gvdevice_initialize(job);
@@ -651,9 +653,9 @@ void gvrender_end_label(GVJ_t * job)
 
 void gvrender_set_font(GVJ_t * job, char *fontname, double fontsize)
 {
+#ifdef WITH_CODEGENS
     gvrender_engine_t *gvre = job->render.engine;
 
-#ifdef WITH_CODEGENS
     if (!gvre) {
 	codegen_t *cg = job->codegen;
 
