@@ -182,6 +182,7 @@ static void sameport(node_t * u, elist * l, double arr_len)
     prt.dyna = FALSE;
     prt.theta = 0;
     prt.side = 0;
+    prt.name = NULL;
 
 #ifdef OBSOLETE
 /* This is commented because a version of gcc cannot handle it otherwise.
