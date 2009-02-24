@@ -342,7 +342,7 @@ static void vml_end_graph(GVJ_t * job)
    gvputs(job, "<!-- insert any other NON-IE html content here -->\n");
    gvputs(job, "</DIV>\n");
 
-   gvputs(job, "</BODY>\n</HTML>");
+   gvputs(job, "</BODY>\n</HTML>\n");
 }
 
 static void
