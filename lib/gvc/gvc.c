@@ -35,12 +35,13 @@ GVC_t *gvContext(void)
 #else
     agattr(NULL, AGNODE, "label", NODENAME_ESC);
 #endif
-    gvc = gvNEWcontext(NULL);
+    /* default to no builtins, demand loading enabled */
+    gvc = gvNEWcontext(NULL, TRUE);
     gvconfig(gvc, FALSE); /* configure for available plugins and codegens */
     return gvc;
 }
 
-GVC_t *gvContextBuiltins(const lt_symlist_t *builtins)
+GVC_t *gvContextPlugins(const lt_symlist_t *builtins, int demand_loading)
 {
     GVC_t *gvc;
 
@@ -50,7 +51,7 @@ GVC_t *gvContextBuiltins(const lt_symlist_t *builtins)
 #else
     agattr(NULL, AGNODE, "label", NODENAME_ESC);
 #endif
-    gvc = gvNEWcontext(builtins);
+    gvc = gvNEWcontext(builtins, demand_loading);
     gvconfig(gvc, FALSE); /* configure for available plugins and codegens */
     return gvc;
 }

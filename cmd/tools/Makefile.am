@@ -133,6 +133,7 @@ gc.1.pdf: $(srcdir)/gc.1
 	- @GROFF@ -Tps -man $(srcdir)/gc.1 | @PS2PDF@ - - >gc.1.pdf
 
 gvpack_SOURCES = gvpack.c gvpack_builtins.c
+gvpack_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=0
 
 gvpack_LDADD = \
 	$(top_builddir)/lib/gvc/libgvc.la \

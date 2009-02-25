@@ -52,6 +52,7 @@ man_MANS = dot.1
 pdf_DATA = dot.1.pdf
 
 dot_SOURCES = dot.c no_builtins.c
+dot_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
 dot_LDADD = $(top_builddir)/lib/gvc/libgvc.la
 
 install-data-hook:
@@ -73,7 +74,8 @@ uninstall-hook:
 dot.1.pdf: $(srcdir)/dot.1
 	- $(GROFF) -Tps -man $(srcdir)/dot.1 | $(PS2PDF) - - >dot.1.pdf
 
-dot_static_SOURCES = dot.c dot_builtins.c no_demand_loading.c
+dot_static_SOURCES = dot.c dot_builtins.c
+dot_static_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=0
 dot_static_LDADD = \
 	$(top_builddir)/plugin/dot_layout/libgvplugin_dot_layout_C.la \
 	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout_C.la \
@@ -84,7 +86,8 @@ dot_static_LDADD = \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
        	$(GTS_LIBS) $(ICONV_LIBS) $(EXPAT_LIBS) $(Z_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
 
-dot_builtins_SOURCES = dot.c dot_builtins.c no_demand_loading.c
+dot_builtins_SOURCES = dot.c dot_builtins.c
+dot_builtins_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
 dot_builtins_LDADD = \
 	$(top_builddir)/plugin/dot_layout/libgvplugin_dot_layout.la \
 	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout.la \

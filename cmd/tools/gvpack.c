@@ -790,7 +790,7 @@ int main(int argc, char *argv[])
 
     init(argc, argv);
 
-    gvc = gvNEWcontext(lt_preloaded_symbols);
+    gvc = gvNEWcontext(lt_preloaded_symbols, DEMAND_LOADING);
     gs = readGraphs(&cnt, gvc);
     if (cnt == 0)
 	exit(0);

@@ -30,8 +30,7 @@ LIBS = $(LIBLTDL) $(SOCKET_LIBS) $(Z_LIBS) $(MATH_LIBS)
 
 pkginclude_HEADERS = gvc.h gvcext.h gvplugin.h gvcjob.h \
 	gvcommon.h gvplugin_render.h gvplugin_layout.h gvconfig.h \
-	gvplugin_textlayout.h gvplugin_device.h gvplugin_loadimage.h \
-	demand_loading.c no_demand_loading.c
+	gvplugin_textlayout.h gvplugin_device.h gvplugin_loadimage.h
 noinst_HEADERS = gvcint.h gvcproc.h gvio.h
 noinst_LTLIBRARIES = libgvc_C.la
 lib_LTLIBRARIES = libgvc.la
@@ -54,7 +53,7 @@ libgvc_C_la_DEPENDENCIES +=  $(top_builddir)/lib/ortho/libortho_C.la
 endif
 
 libgvc_la_LDFLAGS = -version-info $(GVC_VERSION) -no-undefined
-libgvc_la_SOURCES = $(libgvc_C_la_SOURCES) demand_loading.c
+libgvc_la_SOURCES = $(libgvc_C_la_SOURCES)
 libgvc_la_LIBADD = $(libgvc_C_la_LIBADD) \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \

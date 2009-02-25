@@ -266,7 +266,8 @@ fi
 dnl -----------------------------------
 dnl checks for compilers
 
-AC_PROG_CC
+AM_PROG_CC_C_O
+#AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_OBJC
 
@@ -990,7 +991,7 @@ else
   if test "x$use_swig" != "xYes"; then
     use_php="No (swig not available)"
   else
-    if test `$SWIG -help 2>&1 | $GREP -c '\-php *- Generate'` = 0 && `$SWIG -help 2>&1 | $GREP -c '\-php5 *- Generate'` = 0; then
+    if test `$SWIG -help 2>&1 | $GREP -c '\-php5* *- Generate'` = 0 ; then
       use_php="No (swig does not support -php or -php5 option)"
     else
       AC_CHECK_PROG(PHP,php,php)
