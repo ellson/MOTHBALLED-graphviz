@@ -44,6 +44,7 @@ GDTCLFT = $(top_srcdir)/tclpkg/gdtclft/gdtclft.c
 endif
 
 libtcldot_la_SOURCES = tcldot.c no_builtins.c $(CODEGENS) $(GDTCLFT)
+libtcldot_la_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
 libtcldot_la_LDFLAGS = -no-undefined 
 
 libtcldot_la_LIBADD = $(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
@@ -64,9 +65,8 @@ endif
 
 libtcldot_la_LIBADD += $(LIBGEN_LIBS) $(ICONV_LIBS) $(MATH_LIBS)
 
-libtcldot_builtin_la_SOURCES = \
-	tcldot.c tcldot_builtins.c $(CODEGENS) $(GDTCLFT) \
-	$(top_srcdir)/lib/gvc/no_demand_loading.c 
+libtcldot_builtin_la_SOURCES = tcldot.c tcldot_builtins.c $(CODEGENS) $(GDTCLFT)
+libtcldot_builtin_la_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
 libtcldot_builtin_la_LDFLAGS =
 
 libtcldot_builtin_la_LIBADD = \

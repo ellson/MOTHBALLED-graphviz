@@ -28,7 +28,8 @@ static char emptystring[] = {'\0'};
 static GVC_t *gvc;
 
 static void gv_init(void) {
-    gvc = gvContextBuiltins(lt_preloaded_symbols);
+    /* list of builtins, enable demand loading */
+    gvc = gvContextPlugins(lt_preloaded_symbols, DEMAND_LOADING);
 }
 
 Agraph_t *graph(char *name)
