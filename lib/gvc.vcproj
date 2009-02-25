@@ -366,10 +366,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\gvc\demand_loading.c"
-				>
-			</File>
-			<File
 				RelativePath=".\common\diagen.c"
 				>
 			</File>

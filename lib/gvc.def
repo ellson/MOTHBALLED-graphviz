@@ -32,7 +32,6 @@ coord
 cwrotatep	
 cwrotatepf	
 Damping	
-Demand_Loading	
 dequeue	
 do_graph_label	
 dotneato_args_initialize	
