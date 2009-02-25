@@ -60,25 +60,6 @@ static int glob (GVC_t * gvc, char*, int, int (*errfunc)(const char *, int), glo
 #include	"gvcint.h"
 #include        "gvcproc.h"
 
-/*visual studio*/
-#ifdef WIN32_DLL
-#ifndef GVC_EXPORTS
-__declspec(dllimport) int Demand_Loading;
-#else
-__declspec(dllexport) int Demand_Loading;
-#endif
-#endif
-/*end visual studio*/
-
-#ifndef WIN32_DLL
-#ifdef GVDLL
-__declspec(dllexport) int Demand_Loading;
-#else
-extern const int Demand_Loading;
-#endif
-#endif
-
-
 #ifdef WITH_CODEGENS
     extern codegen_t HPGL_CodeGen, MIF_CodeGen, MP_CodeGen, PIC_CodeGen, DIA_CodeGen, VTX_CodeGen;
 #endif
@@ -528,7 +509,7 @@ void gvconfig(GVC_t * gvc, boolean rescan)
    
     gvc->config_found = FALSE;
 #ifdef ENABLE_LTDL
-    if (Demand_Loading) {
+    if (gvc->common.demand_loading) {
         /* see if there are any new plugins */
         libdir = gvconfig_libdir(gvc);
         rc = stat(libdir, &libdir_st);
