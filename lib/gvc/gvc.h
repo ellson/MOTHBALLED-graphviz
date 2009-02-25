@@ -43,12 +43,12 @@ extern "C" {
 extern void gvToggle(int);
 
 /* set up a graphviz context */
-extern GVC_t *gvNEWcontext(const lt_symlist_t *builtins);
+extern GVC_t *gvNEWcontext(const lt_symlist_t *builtins, int demand_loading);
 
 /*  set up a graphviz context - and init graph - retaining old API */
 extern GVC_t *gvContext(void);
 /*  set up a graphviz context - and init graph - with builtins */
-extern GVC_t *gvContextBuiltins(const lt_symlist_t *builtins);
+extern GVC_t *gvContextPlugins(const lt_symlist_t *builtins, int demand_loading);
 
 /* get information associated with a graphviz context */
 extern char **gvcInfo(GVC_t*);
