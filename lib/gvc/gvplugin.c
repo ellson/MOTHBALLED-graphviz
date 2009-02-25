@@ -32,8 +32,6 @@
 
 #include	"const.h"
 
-extern const int Demand_Loading;
-
 /*
  * Define an apis array of name strings using an enumerated api_t as index.
  * The enumerated type is defined gvplugin.h.  The apis array is
@@ -163,7 +161,7 @@ gvplugin_library_t *gvplugin_library_load(GVC_t *gvc, char *path)
     char *libdir;
     char *suffix = "_LTX_library";
 
-    if (!Demand_Loading)
+    if (! gvc->common.demand_loading)
 	return NULL;
 
     libdir = gvconfig_libdir(gvc);
@@ -434,7 +432,7 @@ void gvplugin_write_status(GVC_t * gvc)
     int api;
 
 #ifdef ENABLE_LTDL
-    if (Demand_Loading) {
+    if (gvc->common.demand_loading) {
         fprintf(stderr,"The plugin configuration file:\n\t%s\n", gvc->config_path);
         if (gvc->config_found)
 	    fprintf(stderr,"\t\twas successfully loaded.\n");

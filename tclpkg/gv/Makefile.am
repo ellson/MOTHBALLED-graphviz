@@ -22,10 +22,11 @@ AM_CPPFLAGS = \
 
 LIBS = -lc
 
-BASESOURCES = gv.cpp gv.i no_builtins.c
+BASESOURCES = gv.cpp gv.i gv_builtins.c
 BASELIBS = $(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
 	$(top_builddir)/lib/cdt/libcdt.la
+BASECPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
 
 pkgsharpdir = $(pkglibdir)/sharp
 SHARP_data = gv.cs gvPINVOKE.cs SWIGTYPE_p_Agraph_t.cs SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agedge_t.cs SWIGTYPE_p_Agsym_t.cs SWIGTYPE_p_FILE.cs
@@ -33,7 +34,7 @@ nodist_libgv_sharp_la_SOURCES = gv_sharp.cpp $(SHARP_data)
 libgv_sharp_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
 libgv_sharp_la_LIBADD = $(BASELIBS) $(SHARP_LIBS) 
 libgv_sharp_la_LDFLAGS = -module -avoid-version
-libgv_sharp_la_CPPFLAGS = $(AM_CPPFLAGS) $(SHARP_INCLUDES)
+libgv_sharp_la_CPPFLAGS = $(BASECPPFLAGS) $(SHARP_INCLUDES)
 $(SHARP_data): gv_sharp.cpp
 gv_sharp.cpp: gv.i
 	$(SWIG) -c++ -csharp -namespace gv -o gv_sharp.cpp $(srcdir)/gv.i
@@ -44,7 +45,7 @@ nodist_libgv_guile_la_SOURCES = gv_guile.cpp $(GUILE_data)
 libgv_guile_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
 libgv_guile_la_LIBADD = $(BASELIBS) $(GUILE_LIBS)
 libgv_guile_la_LDFLAGS = -module -avoid-version
-libgv_guile_la_CPPFLAGS = $(AM_CPPFLAGS) $(GUILE_INCLUDES)
+libgv_guile_la_CPPFLAGS = $(BASECPPFLAGS) $(GUILE_INCLUDES)
 $(GUILE_data): gv_guile.cpp
 gv_guile.cpp: gv.i
 	$(SWIG) -c++ -guile -o gv_guile.cpp $(srcdir)/gv.i
@@ -57,7 +58,7 @@ nodist_libgv_io_la_SOURCES = gv_io.cpp $(IO_data)
 libgv_io_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
 libgv_io_la_LIBADD = $(BASELIBS) $(IO_LIBS)
 libgv_io_la_LDFLAGS = -module -avoid-version
-libgv_io_la_CPPFLAGS = $(AM_CPPFLAGS) $(IO_INCLUDES)
+libgv_io_la_CPPFLAGS = $(BASECPPFLAGS) $(IO_INCLUDES)
 $(IO_data): gv_io.cpp
 gv_io.cpp: gv.i
 	$(SWIG) -c++ -io -o gv_io.cpp $(srcdir)/gv.i
@@ -68,7 +69,7 @@ nodist_libgv_java_la_SOURCES = gv_java.cpp
 libgv_java_la_SOURCES = $(BASESOURCES)  gv_dummy_init.c
 libgv_java_la_LIBADD = $(BASELIBS) $(JAVA_LIBS)
 libgv_java_la_LDFLAGS = -module -avoid-version
-libgv_java_la_CPPFLAGS = $(AM_CPPFLAGS) $(JAVA_INCLUDES)
+libgv_java_la_CPPFLAGS = $(BASECPPFLAGS) $(JAVA_INCLUDES)
 $(JAVA_data): gv_java.cpp
 gv_java.cpp: gv.i
 	$(SWIG) -package org.graphviz -c++ -java -o gv_java.cpp $(srcdir)/gv.i
@@ -79,7 +80,7 @@ nodist_libgv_lua_la_SOURCES = gv_lua.cpp $(LUA_data)
 libgv_lua_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
 libgv_lua_la_LIBADD = $(BASELIBS) $(LUA_LIBS)
 libgv_lua_la_LDFLAGS = -module -avoid-version
-libgv_lua_la_CPPFLAGS = $(AM_CPPFLAGS) $(LUA_INCLUDES)
+libgv_lua_la_CPPFLAGS = $(BASECPPFLAGS) $(LUA_INCLUDES)
 $(LUA_data): gv_lua.cpp
 gv_lua.cpp: gv.i
 	$(SWIG) -c++ -lua -o gv_lua.cpp $(srcdir)/gv.i
@@ -95,7 +96,7 @@ nodist_libgv_ocaml_la_SOURCES = gv_ocaml.cpp $(OCAML_data)
 libgv_ocaml_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
 libgv_ocaml_la_LIBADD = $(BASELIBS) $(OCAML_LIBS)
 libgv_ocaml_la_LDFLAGS = -module -avoid-version
-libgv_ocaml_la_CPPFLAGS = $(AM_CPPFLAGS) $(OCAML_INCLUDES)
+libgv_ocaml_la_CPPFLAGS = $(BASECPPFLAGS) $(OCAML_INCLUDES)
 gv.ml gv.mli: gv_ocaml.cpp
 gv_ocaml.cpp: gv.i
 	$(SWIG) -c++ -ocaml -o gv_ocaml.cpp $(srcdir)/gv.i
@@ -125,7 +126,7 @@ nodist_libgv_perl_la_SOURCES = gv_perl.cpp $(PERL_data)
 libgv_perl_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
 libgv_perl_la_LIBADD = $(BASELIBS) $(PERL_LIBS)
 libgv_perl_la_LDFLAGS = -module -avoid-version
-libgv_perl_la_CPPFLAGS = $(AM_CPPFLAGS) $(PERL_INCLUDES)
+libgv_perl_la_CPPFLAGS = $(BASECPPFLAGS) $(PERL_INCLUDES)
 $(PERL_data): gv_perl.cpp
 gv_perl.cpp: gv.i
 	$(SWIG) -c++ -perl -o gv_perl.cpp $(srcdir)/gv.i
@@ -136,7 +137,7 @@ nodist_libgv_php_la_SOURCES = gv_php.cpp php_gv.h
 libgv_php_la_SOURCES = $(BASESOURCES) gv_php_init.c
 libgv_php_la_LIBADD = $(BASELIBS) $(PHP_LIBS)
 libgv_php_la_LDFLAGS = -module -avoid-version
-libgv_php_la_CPPFLAGS = $(AM_CPPFLAGS) $(PHP_INCLUDES)
+libgv_php_la_CPPFLAGS = $(BASECPPFLAGS) $(PHP_INCLUDES)
 gv.php: gv_php.cpp
 php_gv.h: gv_php.cpp
 gv_php.cpp: gv.i
@@ -148,7 +149,7 @@ nodist_libgv_python_la_SOURCES = gv_python.cpp $(PYTHON_data)
 libgv_python_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
 libgv_python_la_LIBADD = $(BASELIBS) $(PYTHON_LIBS)
 libgv_python_la_LDFLAGS = -module -avoid-version
-libgv_python_la_CPPFLAGS = $(AM_CPPFLAGS) $(PYTHON_INCLUDES)
+libgv_python_la_CPPFLAGS = $(BASECPPFLAGS) $(PYTHON_INCLUDES)
 $(PYTHON_data): gv_python.cpp
 gv_python.cpp: gv.i
 	$(SWIG) -c++ -python -o gv_python.cpp $(srcdir)/gv.i
@@ -158,21 +159,21 @@ nodist_libgv_python23_la_SOURCES = $(nodist_libgv_python_la_SOURCES)
 libgv_python23_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
 libgv_python23_la_LIBADD = $(BASELIBS) $(PYTHON23_LIBS)
 libgv_python23_la_LDFLAGS = -module -avoid-version
-libgv_python23_la_CPPFLAGS = $(AM_CPPFLAGS) $(PYTHON23_INCLUDES)
+libgv_python23_la_CPPFLAGS = $(BASECPPFLAGS) $(PYTHON23_INCLUDES)
 
 pkgpython24dir = $(pkglibdir)/python24
 nodist_libgv_python24_la_SOURCES = $(nodist_libgv_python_la_SOURCES)
 libgv_python24_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
 libgv_python24_la_LIBADD = $(BASELIBS) $(PYTHON24_LIBS)
 libgv_python24_la_LDFLAGS = -module -avoid-version
-libgv_python24_la_CPPFLAGS = $(AM_CPPFLAGS) $(PYTHON24_INCLUDES)
+libgv_python24_la_CPPFLAGS = $(BASECPPFLAGS) $(PYTHON24_INCLUDES)
 
 pkgpython25dir = $(pkglibdir)/python25
 nodist_libgv_python25_la_SOURCES = $(nodist_libgv_python_la_SOURCES)
 libgv_python25_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
 libgv_python25_la_LIBADD = $(BASELIBS) $(PYTHON25_LIBS)
 libgv_python25_la_LDFLAGS = -module -avoid-version
-libgv_python25_la_CPPFLAGS = $(AM_CPPFLAGS) $(PYTHON25_INCLUDES)
+libgv_python25_la_CPPFLAGS = $(BASECPPFLAGS) $(PYTHON25_INCLUDES)
 
 pkgRdir = $(pkglibdir)/R
 R_data = 
@@ -180,7 +181,7 @@ nodist_libgv_R_la_SOURCES = gv_R.cpp $(R_data)
 libgv_R_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
 libgv_R_la_LIBADD = $(BASELIBS) $(R_LIBS)
 libgv_R_la_LDFLAGS = -module -avoid-version
-libgv_R_la_CPPFLAGS = $(AM_CPPFLAGS) $(R_CFLAGS)
+libgv_R_la_CPPFLAGS = $(BASECPPFLAGS) $(R_CFLAGS)
 $(R_data): gv_R.cpp
 gv_R.cpp: gv.i
 	$(SWIG) -c++ -r -o gv_R.cpp $(srcdir)/gv.i
@@ -191,7 +192,7 @@ nodist_libgv_ruby_la_SOURCES = gv_ruby.cpp $(RUBY_data)
 libgv_ruby_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
 libgv_ruby_la_LIBADD = $(BASELIBS) $(RUBY_LIBS)
 libgv_ruby_la_LDFLAGS = -module -avoid-version
-libgv_ruby_la_CPPFLAGS = $(AM_CPPFLAGS) $(RUBY_INCLUDES)
+libgv_ruby_la_CPPFLAGS = $(BASECPPFLAGS) $(RUBY_INCLUDES)
 $(RUBY_data): gv_ruby.cpp
 gv_ruby.cpp: gv.i
 	$(SWIG) -c++ -ruby -o gv_ruby.cpp $(srcdir)/gv.i
@@ -202,7 +203,7 @@ nodist_libgv_tcl_la_SOURCES = gv_tcl.cpp $(TCL_data)
 libgv_tcl_la_SOURCES = $(BASESOURCES) gv_tcl_init.c
 libgv_tcl_la_LIBADD = $(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la $(BASELIBS) $(TCL_LIBS)
 libgv_tcl_la_LDFLAGS = -module -avoid-version
-libgv_tcl_la_CPPFLAGS = $(AM_CPPFLAGS) $(TCL_INCLUDES)
+libgv_tcl_la_CPPFLAGS = $(BASECPPFLAGS) $(TCL_INCLUDES)
 $(TCL_data): gv_tcl.cpp
 gv_tcl.cpp: gv.i
 	$(SWIG) -c++ -tcl -namespace -o gv_tcl.cpp $(srcdir)/gv.i
