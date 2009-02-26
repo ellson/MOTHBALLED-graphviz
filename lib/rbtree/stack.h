@@ -12,6 +12,17 @@
 extern "C" {
 #endif
 
+/* needed for intptr_t */
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+#if HAVE_INTTYPES_H
+#include <inttypes.h>
+#endif
+
 #include "misc.h"
 
 /*  CONVENTIONS:  All data structures for stacks have the prefix */
