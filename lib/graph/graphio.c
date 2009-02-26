@@ -183,7 +183,10 @@ void agsetodisc(
 )
 {
     AG.fwrite = myfwrite;
+#if defined(__SUNPRO_C)
+#undef ferror
     AG.ferror = myferror;
+#endif
 }
 
 /* agfprintf:
