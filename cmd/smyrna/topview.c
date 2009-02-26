@@ -1634,6 +1634,8 @@ s2layout (char* s)
 	return GVK_CIRCO;
     else if (strcaseeq(s, "fdp"))
 	return GVK_FDP;
+    else if (strcaseeq(s, "sfdp"))
+	return GVK_SFDP;
     else
 	return GVK_NONE;
 
@@ -1661,6 +1663,9 @@ layout2s (gvk_layout gvkl)
 	break;
     case GVK_FDP :
 	s = "fdp";
+	break;
+    case GVK_SFDP :
+	s = "sfdp";
 	break;
     default :
 	s = "";
