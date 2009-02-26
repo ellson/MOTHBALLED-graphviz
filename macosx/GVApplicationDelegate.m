@@ -26,4 +26,16 @@
 	[_attributeInspectorController showWindow:sender];
 }
 
+- (BOOL)applicationOpenUntitledFile:(NSApplication*)theApplication
+{
+	if (!_applicationStarted)
+		[[NSDocumentController sharedDocumentController] openDocument:self];
+	return YES;
+}
+
+- (void)applicationDidFinishLaunching:(NSNotification*)aNotification
+{
+	_applicationStarted = YES;
+}
+
 @end

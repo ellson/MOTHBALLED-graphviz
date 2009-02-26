@@ -20,8 +20,12 @@
 
 @interface GVApplicationDelegate : NSObject {
 	GVAttributeInspectorController *_attributeInspectorController;
+	BOOL _applicationStarted;
 }
 
 - (IBAction)showAttributeInspector:(id)sender;
+
+- (BOOL)applicationOpenUntitledFile:(NSApplication*)theApplication;
+- (void)applicationDidFinishLaunching:(NSNotification*)aNotification;
 
 @end
