@@ -1722,7 +1722,7 @@ int Tcldot_Init(Tcl_Interp * interp)
 #endif
 
     aginit();
-    agsetodisc(gvfwrite, gvferror);
+    agsetiodisc(NULL, gvfwrite, gvferror);
     /* set persistent attributes here */
     agnodeattr(NULL, "label", NODENAME_ESC);
 
