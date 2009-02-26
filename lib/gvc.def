@@ -330,3 +330,6 @@ dot_layout
 enqueue_neighbors
 colorxlate
 fix_fc
+gvContextPlugins
+gvfwrite
+gvferror
