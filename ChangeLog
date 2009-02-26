@@ -6,7 +6,7 @@ February 26, 2009
 		- plugin api changed, version bumped.  Affects third party
 		  plugins for graphviz.
 		- 90% conversion to libgraph done, not in use yet, (and yes,
-		  its true what thay say about the last 10% )
+		  its true what they say about the last 10% )
 		- Internal layout code completely converted to floating
 		  point.
 		- new "dot -P" option for generating a graph of available
@@ -25,7 +25,8 @@ February 26, 2009
 		- new Fedora 10 and 11 builds
 	- MacOSx: 
 		- Universal binary for Leopard: i386, x86_64, ppc, ppc64
-		- Should not conflict with parallel install of MacPorts version of graphviz
+		- Should not conflict with parallel install of MacPorts
+		  version of graphviz
 		- Improved GUI 
 	- Windows:
 		- builds now use mingw, so that GNU tools can be used
