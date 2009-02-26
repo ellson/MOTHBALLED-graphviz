@@ -19,6 +19,8 @@ February 26, 2009
 		- new quartz plugin (MacOSx only)
 		- new gdiplus plugin (Windows only)
 		- new -Tvml support in core plugin (thanks Steve Roush)
+		- new -Ttk support in core plugin (also used by Tcldot and
+		  gv_tcl language bindings.)
 		- disabled old style codegens completely
 	- Linux:
 		- new Ubuntu8 builds
