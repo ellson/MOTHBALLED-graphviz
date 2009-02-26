@@ -1,3 +1,53 @@
+February 26, 2009
+	- Preparation for Release 2.22
+	- Core:
+		- libgvc api changed, version bumped.  Affects third party
+		  applications using libgvc.
+		- plugin api changed, version bumped.  Affects third party
+		  plugins for graphviz.
+		- 90% conversion to libgraph done, not in use yet, (and yes,
+		  its true what thay say about the last 10% )
+		- Internal layout code completely converted to floating
+		  point.
+		- new "dot -P" option for generating a graph of available
+		  plugins.
+	- Plugins:
+		- new rsvg plugin for support of node shapes in SVG format
+		- new gs plugin for support of node shapes in PS format
+		- new lasi plugin for support of UTF-8 characters in PS output
+		  (the above thee plugins are Linux only, at the moment)
+		- new quartz plugin (MacOSx only)
+		- new gdiplus plugin (Windows only)
+		- new -Tvml support in core plugin (thanks Steve Roush)
+		- disabled old style codegens completely
+	- Linux:
+		- new Ubuntu8 builds
+		- new Fedora 10 and 11 builds
+	- MacOSx: 
+		- Universal binary for Leopard: i386, x86_64, ppc, ppc64
+		- Should not conflict with parallel install of MacPorts version of graphviz
+		- Improved GUI 
+	- Windows:
+		- builds now use mingw, so that GNU tools can be used
+		- VisualC project files also available.
+	- Language Bindings:
+		- fixed problem with writing dot, xdot, plain, canon to 
+		  memory or to Tcl_Channels
+		- renamed man pages to Debian style:  gv.3tcl, gv.3perl, etc
+	- Fixed bugs:
+		827, 1365, 1366, 1367, 1368, 1374, 1375, 1376, 1378, 1380, 1382,
+		1383, 1385, 1386, 1388, 1390, 1391, 1392, 1394, 1395, 1397,
+		1398, 1399, 1405, 1407, 1410, 1412, 1414, 1415, 1416, 1421,
+		1424, 1425, 1427, 1429, 1431, 1433, 1435, 1436, 1437, 1438,
+		1440, 1441, 1444, 1446, 1451, 1452, 1453, 1456, 1457, 1459,
+		1460, 1461, 1462, 1463, 1464, 1465, 1466, 1470, 1474, 1475,
+		1476, 1477, 1478, 1484, 1485, 1489, 1490, 1492, 1493, 1495,
+		1496, 1499, 1500, 1501, 1502, 1503, 1505, 1509, 1513, 1521,
+		1523, 1525, 1530, 1531, 1532, 1533, 1535, 1536, 1539, 1540,
+		1542, 1543, 1546, 1547, 1551, 1553, 1554, 1561, 1565, 1566, 
+		1568, 1569, 1570, 1571, 1573, 1577, 1578, 1579, 1580,
+		
+
 August 2, 2008
 	- drop libagraph from distribution - part of migration to libcgraph
 	- rename file format from .dot to .gv to avoid conflict with Word templates
