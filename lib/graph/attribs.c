@@ -340,6 +340,7 @@ void aginitlib(int gs, int ns, int es)
 	AG.node_nbytes = ns;
 	AG.edge_nbytes = es;
 	AG.init_called = TRUE;
+	AG.fgets = fgets;   /* init to system version of fwrite() */
 	AG.fwrite = fwrite;   /* init to system version of fwrite() */
 #if defined(__SUNPRO_C) || defined(__CYGWIN__)
 #undef ferror

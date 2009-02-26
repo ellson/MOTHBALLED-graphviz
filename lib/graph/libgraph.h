@@ -129,7 +129,7 @@ extern "C" {
 	char *linebuf;
 	short syntax_errors;
 	unsigned char accepting_state, init_called;
-	size_t (*fread) (void *ptr, size_t size, size_t nmemb, FILE *stream);
+	char * (*fgets) (char *s, int size, FILE *stream);
 	size_t (*fwrite) (const void *ptr, size_t size, size_t nmemb, FILE *stream);
 	int (*ferror) (FILE *stream);
     } AG;

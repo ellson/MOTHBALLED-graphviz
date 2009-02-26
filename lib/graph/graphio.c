@@ -178,12 +178,12 @@ char *agstrcanon(char *arg, char *buf)
 }
 
 void agsetiodisc(
-    size_t (*myfread) (void *ptr, size_t size, size_t nmemb, FILE *stream),
+    char * (*myfgets) (char *s, int size, FILE *stream),
     size_t (*myfwrite) (const void *ptr, size_t size, size_t nmemb, FILE *stream),
     int (*myferror) (FILE *stream)
 )
 {
-    if (myfread) AG.fread = myfread;
+    if (myfgets) AG.fgets = myfgets;
     if (myfwrite) AG.fwrite = myfwrite;
 #if defined(__SUNPRO_C) || defined(__CYGWIN__)
 #undef ferror
