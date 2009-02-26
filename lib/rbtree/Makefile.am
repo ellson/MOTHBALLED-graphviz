@@ -1,6 +1,8 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
+AM_CPPFLAGS = -I$(top_srcdir)
+
 noinst_HEADERS = misc.h red_black_tree.h stack.h
 noinst_LTLIBRARIES = librbtree_C.la
 
