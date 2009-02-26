@@ -185,7 +185,7 @@ void agsetiodisc(
 {
     if (myfread) AG.fread = myfread;
     if (myfwrite) AG.fwrite = myfwrite;
-#if defined(__SUNPRO_C)
+#if defined(__SUNPRO_C) || defined(__CYGWIN__)
 #undef ferror
 #endif
     if (myferror) AG.ferror = myferror;
