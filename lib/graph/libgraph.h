@@ -25,8 +25,9 @@ extern "C" {
 #if _PACKAGE_ast
 #include    <ast.h>
 #else
-#include <string.h>
+#include <stdarg.h>
 #include <stdlib.h>
+#include <string.h>
 #ifndef MSWIN32
 #include <unistd.h>
 #endif
@@ -128,6 +129,8 @@ extern "C" {
 	char *linebuf;
 	short syntax_errors;
 	unsigned char accepting_state, init_called;
+	size_t (*fwrite) (FILE *fp, const char *s, size_t len);
+	int (*ferror) (FILE *fp);
     } AG;
 
 /* follow structs used in graph parser */

@@ -24,6 +24,7 @@
 #include "gvcint.h"
 #include "gvcproc.h"
 #include "gvconfig.h"
+#include "gvio.h"
 
 GVC_t *gvContext(void)
 {
@@ -31,6 +32,7 @@ GVC_t *gvContext(void)
 
 #ifndef WITH_CGRAPH
     aginit();
+    agsetodisc(gvfwrite, gvferror);
     agnodeattr(NULL, "label", NODENAME_ESC);
 #else
     agattr(NULL, AGNODE, "label", NODENAME_ESC);
@@ -47,6 +49,7 @@ GVC_t *gvContextPlugins(const lt_symlist_t *builtins, int demand_loading)
 
 #ifndef WITH_CGRAPH
     aginit();
+    agsetodisc(gvfwrite, gvferror);
     agnodeattr(NULL, "label", NODENAME_ESC);
 #else
     agattr(NULL, AGNODE, "label", NODENAME_ESC);

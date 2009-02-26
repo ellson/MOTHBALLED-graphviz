@@ -16,10 +16,7 @@
 
 
 #include "libgraph.h"
-
-#ifdef DMALLOC
-#include "dmalloc.h"
-#endif
+#include <string.h>
 
 typedef struct printdict_t {
     Dict_t *nodesleft, *edgesleft, *subgleft, *e_insubg, *n_insubg;
@@ -180,11 +177,61 @@ char *agstrcanon(char *arg, char *buf)
 	return (_agstrcanon(arg, buf));
 }
 
+void agsetodisc(size_t (*fwrite) (FILE *fp, const char *s, size_t len), int (*ferror) (FILE *fp))
+{
+	AG.fwrite = fwrite;
+	AG.ferror = ferror;
+}
+
+/* agfprintf:
+ * Note that this function is unsafe due to the fixed buffer size.
+ * It should only be used when the caller is sure the input will not
+ * overflow the buffer. In particular, it should be avoided for
+ * input coming from users. Also, if vsnprintf is available, the
+ * code should check for return values to use it safely.
+ */
+void agfprintf(FILE *fp, const char *format, ...)
+{
+    char buf[BUFSIZ];
+    size_t len;
+    va_list argp;
+
+    va_start(argp, format);
+#ifdef HAVE_VSNPRINTF
+    len = vsnprintf((char *)buf, sizeof(buf), format, argp);
+#else
+    len = vsprintf((char *)buf, format, argp);
+#endif
+    va_end(argp);
+
+    AG.fwrite(fp, buf, len);
+}
+
+int agputs(const char *s, FILE *fp)
+{
+    size_t len = strlen(s);
+
+    if (AG.fwrite(fp, s, len) != len) {
+	return EOF;
+    }
+    return +1;
+}
+
+
+int agputc(int c, FILE *fp)
+{
+    const char cc = c;
+
+    if (AG.fwrite (fp, &cc, 1) != 1) {
+	return EOF;
+    }
+    return c;
+}
 
 static void tabover(FILE * fp, int tab)
 {
     while (tab--)
-	putc('\t', fp);
+	agputc('\t', fp);
 }
 
 static char *getoutputbuffer(char *str)
@@ -232,14 +279,14 @@ static void write_dict(Agdict_t * dict, FILE * fp)
 	a = dict->list[i];
 	if (ISEMPTYSTR(a->value) == FALSE) {
 	    if (cnt++ == 0)
-		fprintf(fp, "\t%s [", dict->name);
+		agfprintf(fp, "\t%s [", dict->name);
 	    else
-		fprintf(fp, ", ");
-	    fprintf(fp, "%s=%s", a->name, agcanonical(a->value));
+		agfprintf(fp, ", ");
+	    agfprintf(fp, "%s=%s", a->name, agcanonical(a->value));
 	}
     }
     if (cnt > 0)
-	fprintf(fp, "];\n");
+	agfprintf(fp, "];\n");
 }
 
 static void write_diffattr(FILE * fp, int indent, void *obj, void *par,
@@ -262,24 +309,24 @@ static void write_diffattr(FILE * fp, int indent, void *obj, void *par,
 	if (strcmp(p, q)) {
 	    if (cnt++ == 0) {
 		tabover(fp, indent);
-		fprintf(fp, "%s [", dict->name);
+		agfprintf(fp, "%s [", dict->name);
 	    } else {
-		fprintf(fp, ",\n");
+		agfprintf(fp, ",\n");
 		tabover(fp, indent + 1);
 	    }
-	    fprintf(fp, "%s=", agcanonical(a->name));
-	    fprintf(fp, "%s", agcanonical(p));
+	    agfprintf(fp, "%s=", agcanonical(a->name));
+	    agfprintf(fp, "%s", agcanonical(p));
 	}
     }
     if (cnt > 0)
-	fprintf(fp, "];\n");
+	agfprintf(fp, "];\n");
 }
 
 static void writeattr(FILE * fp, int *npp, char *name, char *val)
 {
-    fprintf(fp, ++(*npp) > 1 ? ", " : " [");
-    fprintf(fp, "%s=", agcanonical(name));
-    fprintf(fp, "%s", agcanonical(val));
+    agfprintf(fp, ++(*npp) > 1 ? ", " : " [");
+    agfprintf(fp, "%s=", agcanonical(name));
+    agfprintf(fp, "%s", agcanonical(val));
 }
 
 void agwrnode(Agraph_t * g, FILE * fp, Agnode_t * n, int full, int indent)
@@ -303,20 +350,20 @@ void agwrnode(Agraph_t * g, FILE * fp, Agnode_t * n, int full, int indent)
 	    if (strcmp(defval, myval)) {
 		if (didwrite == FALSE) {
 		    tabover(fp, indent);
-		    fprintf(fp, "%s", agcanonical(n->name));
+		    agfprintf(fp, "%s", agcanonical(n->name));
 		    didwrite = TRUE;
 		}
 		writeattr(fp, &nprint, a->name, myval);
 	    }
 	}
 	if (didwrite) {
-	    fprintf(fp, (nprint > 0 ? "];\n" : ";\n"));
+	    agfprintf(fp, (nprint > 0 ? "];\n" : ";\n"));
 	    return;
 	}
     }
     if ((agfstout(g, n) == NULL) && (agfstin(g, n) == NULL)) {
 	tabover(fp, indent);
-	fprintf(fp, "%s;\n", agcanonical(n->name));
+	agfprintf(fp, "%s;\n", agcanonical(n->name));
     }
 }
 
@@ -325,23 +372,23 @@ void agwrnode(Agraph_t * g, FILE * fp, Agnode_t * n, int full, int indent)
 static void writenodeandport(FILE * fp, char *node, char *port)
 {
     char *ss;
-    fprintf(fp, "%s", agcanonical(node));	/* slimey i know */
+    agfprintf(fp, "%s", agcanonical(node));	/* slimey i know */
     if (port && *port) {
 	if (aghtmlstr(port)) {
-	    fprintf(fp, ":%s", agstrcanon(port, getoutputbuffer(port)));
+	    agfprintf(fp, ":%s", agstrcanon(port, getoutputbuffer(port)));
 	}
 	else {
 	    ss = strchr (port, ':');
 	    if (ss) {
 		*ss = '\0';
-		fprintf(fp, ":%s",
+		agfprintf(fp, ":%s",
 		    _agstrcanon(port, getoutputbuffer(port)));
-		fprintf(fp, ":%s",
+		agfprintf(fp, ":%s",
 		    _agstrcanon(ss+1, getoutputbuffer(ss+1)));
 		*ss = ':';
 	    }
 	    else {
-		fprintf(fp, ":%s", _agstrcanon(port, getoutputbuffer(port)));
+		agfprintf(fp, ":%s", _agstrcanon(port, getoutputbuffer(port)));
 	    }
 	}
     }
@@ -364,7 +411,7 @@ void agwredge(Agraph_t * g, FILE * fp, Agedge_t * e, int list_all)
     else
 	edgeop = "--";
     writenodeandport(fp, e->tail->name, tport);
-    fprintf(fp, " %s ", edgeop);
+    agfprintf(fp, " %s ", edgeop);
     writenodeandport(fp, e->head->name, hport);
     if (list_all) {
 	for (i = 0; i < dtsize(d->dict); i++) {
@@ -381,7 +428,7 @@ void agwredge(Agraph_t * g, FILE * fp, Agedge_t * e, int list_all)
 		writeattr(fp, &nprint, a->name, myval);
 	}
     }
-    fprintf(fp, (nprint > 0 ? "];\n" : ";\n"));
+    agfprintf(fp, (nprint > 0 ? "];\n" : ";\n"));
 }
 
 Dtdisc_t agEdgedisc = {
@@ -408,9 +455,9 @@ write_subg(Agraph_t * g, FILE * fp, Agraph_t * par, int indent,
 	tabover(fp, indent++);
 	if (dtsearch(state->subgleft, g->meta_node)) {
 	    if (strncmp(g->name, "_anonymous", 10))
-		fprintf(fp, "subgraph %s {\n", agcanonical(g->name));
+		agfprintf(fp, "subgraph %s {\n", agcanonical(g->name));
 	    else
-		fprintf(fp, "{\n");	/* no name printed for anonymous subg */
+		agfprintf(fp, "{\n");	/* no name printed for anonymous subg */
 	    write_diffattr(fp, indent, g, par, g->univ->globattr);
 	    /* The root node and edge environment use the dictionaries,
 	     * not the proto node or edge, so the next level down must
@@ -427,7 +474,7 @@ write_subg(Agraph_t * g, FILE * fp, Agraph_t * par, int indent,
 	    write_diffattr(fp, indent, g->proto->e, pe, g->univ->edgeattr);
 	    dtdelete(state->subgleft, g->meta_node);
 	} else {
-	    fprintf(fp, "subgraph %s;\n", agcanonical(g->name));
+	    agfprintf(fp, "subgraph %s;\n", agcanonical(g->name));
 	    return;
 	}
     } else
@@ -477,7 +524,7 @@ write_subg(Agraph_t * g, FILE * fp, Agraph_t * par, int indent,
 
     if (indent > 1) {
 	tabover(fp, indent - 1);
-	fprintf(fp, "}\n");
+	agfprintf(fp, "}\n");
     }
 }
 
@@ -527,9 +574,9 @@ int agwrite(Agraph_t * g, FILE * fp)
     t0 = (AG_IS_STRICT(g)) ? "strict " : "";
     t1 = (AG_IS_DIRECTED(g)) ? "digraph" : "graph";
     if (strncmp(g->name, "_anonymous", 10))
-	fprintf(fp, "%s%s %s {\n", t0, t1, agcanonical(g->name));
+	agfprintf(fp, "%s%s %s {\n", t0, t1, agcanonical(g->name));
     else
-	fprintf(fp, "%s%s {\n", t0, t1);
+	agfprintf(fp, "%s%s {\n", t0, t1);
 
     /* write the top level attribute defs */
     write_dict(g->univ->globattr, fp);
@@ -539,7 +586,7 @@ int agwrite(Agraph_t * g, FILE * fp)
     /* write the graph contents */
     p = new_printdict_t(g);
     write_subg(g, fp, (Agraph_t *) 0, 0, p);
-    fprintf(fp, "}\n");
+    agfprintf(fp, "}\n");
     free_printdict_t(p);
-    return ferror(fp);
+    return AG.ferror(fp);
 }

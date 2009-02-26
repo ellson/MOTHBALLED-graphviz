@@ -163,6 +163,10 @@ extern "C" {
     extern void agreadline(int);
     extern void agsetfile(char *);
     extern Agraph_t *agmemread(char *);
+    extern void agsetodisc(size_t (*fwrite) (FILE *fp, const char *s, size_t len), int (*ferror) (FILE *fp));
+    extern void agfprintf(FILE *fp, const char *format, ...);
+    extern int agputs(const char *s, FILE *fp);
+    extern int agputc(int c, FILE *fp);
     extern int agwrite(Agraph_t *, FILE *);
     extern int agerrors(void);
     extern Agraph_t *agprotograph(void);

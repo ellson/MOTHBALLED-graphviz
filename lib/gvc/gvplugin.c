@@ -29,6 +29,7 @@
 #include        "gvcjob.h"
 #include        "gvcint.h"
 #include        "gvcproc.h"
+#include        "gvio.h"
 
 #include	"const.h"
 
@@ -466,6 +467,7 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 
 #ifndef WITH_CGRAPH
     aginit();
+    agsetodisc(gvfwrite, gvferror);
     /* set persistent attributes here */
     agraphattr(NULL, "label", "");
     agraphattr(NULL, "rankdir", "");

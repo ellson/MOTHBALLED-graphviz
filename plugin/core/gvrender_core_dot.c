@@ -415,20 +415,20 @@ static void dot_end_graph(GVJ_t *job)
 
     switch (job->render.id) {
 	case FORMAT_PLAIN:
-	    write_plain(job, g, job->output_file, FALSE);
+	    write_plain(job, g, (FILE*)job, FALSE);
 	    break;
 	case FORMAT_PLAIN_EXT:
-	    write_plain(job, g, job->output_file, TRUE);
+	    write_plain(job, g, (FILE*)job, TRUE);
 	    break;
 	case FORMAT_DOT:
 	case FORMAT_CANON:
 	    if (!(job->flags & OUTPUT_NOT_REQUIRED))
-		agwrite(g, job->output_file);
+		agwrite(g, (FILE*)job);
 	    break;
 	case FORMAT_XDOT:
 	    xdot_end_graph(g);
 	    if (!(job->flags & OUTPUT_NOT_REQUIRED))
-		agwrite(g, job->output_file);
+		agwrite(g, (FILE*)job);
 	    break;
     }
 }

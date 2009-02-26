@@ -21,6 +21,7 @@
 #include <tcl.h>
 #include "render.h"
 #include "gvc.h"
+#include "gvio.h"
 #include "tclhandle.h"
 
 #ifndef CONST84
@@ -1721,6 +1722,7 @@ int Tcldot_Init(Tcl_Interp * interp)
 #endif
 
     aginit();
+    agsetodisc(gvfwrite, gvferror);
     /* set persistent attributes here */
     agnodeattr(NULL, "label", NODENAME_ESC);
 

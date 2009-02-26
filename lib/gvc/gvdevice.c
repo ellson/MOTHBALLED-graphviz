@@ -252,6 +252,16 @@ size_t gvwrite (GVJ_t * job, const char *s, size_t len)
     return len;
 }
 
+int gvferror (FILE* fp)
+{
+    return 0;
+}
+
+size_t gvfwrite (FILE* fp, const char *s, size_t len)
+{
+    return gvwrite((GVJ_t*)fp, s, len);
+}
+
 int gvputs(GVJ_t * job, const char *s)
 {
     size_t len = strlen(s);

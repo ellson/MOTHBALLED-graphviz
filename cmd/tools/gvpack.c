@@ -31,6 +31,7 @@
 
 #include <assert.h>
 #include "gvc.h"
+#include "gvio.h"
 #include "render.h"
 #include "neatoprocs.h"
 #include "ingraphs.h"
@@ -162,6 +163,7 @@ static void init(int argc, char *argv[])
     int c;
 
     aginit();
+    agsetodisc(gvfwrite, gvferror);
     while ((c = getopt(argc, argv, ":ngvum:o:G:?")) != -1) {
 	switch (c) {
 	case 'n':

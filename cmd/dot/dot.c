@@ -23,6 +23,7 @@
 #endif
 
 #include "gvc.h"
+#include "gvio.h"
 
 #ifndef WIN32_DLL
 #ifdef GVDLL
@@ -127,6 +128,8 @@ static graph_t *create_test_graph(void)
 
     /* Create a new graph */
 #ifndef WITH_CGRAPH
+    aginit();
+    agsetodisc(gvfwrite, gvferror);
     g = agopen("new_graph", AGDIGRAPH);
 #else /* WITH_CGRAPH */
     g = agopen("new_graph", Agdirected,NIL(Agdisc_t *));
@@ -167,7 +170,7 @@ int main(int argc, char **argv)
 
 #endif /* WITH_CGRAPH */
 
-    Gvc = gvNEWcontext(lt_preloaded_symbols, DEMAND_LOADING);
+    Gvc = gvContextPlugins(lt_preloaded_symbols, DEMAND_LOADING);
     gvParseArgs(Gvc, argc, argv);
 
 #ifndef WIN32

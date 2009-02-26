@@ -324,6 +324,17 @@ Agsym_t *agprvattr(void *obj, Agsym_t *a)
 	return (Agsym_t *)dtprev(dict->dict, a);
 }
 
+static size_t agfwrite(FILE *fp, const char *s, size_t len)
+{
+        return fwrite(s, sizeof(char), len, fp);
+}
+
+static int agferror(FILE *fp)
+{
+        return ferror(fp);
+}
+
+
 	/* this is normally called by the aginit() macro */
 void aginitlib(int gs, int ns, int es)
 {
@@ -332,6 +343,8 @@ void aginitlib(int gs, int ns, int es)
 	AG.node_nbytes = ns;
 	AG.edge_nbytes = es;
 	AG.init_called = TRUE;
+	AG.fwrite = agfwrite;
+	AG.ferror = agferror;
 	initproto();
     } else
 	if ((AG.graph_nbytes != gs) || (AG.node_nbytes != ns)
