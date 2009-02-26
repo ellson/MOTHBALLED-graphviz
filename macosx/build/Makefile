@@ -3,6 +3,7 @@
 MAKE=make
 PACKAGEMAKER=/Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker
 XCODEBUILD=xcodebuild
+PMSURVEY=$(CURDIR)/pmsurvey
 
 # prefix
 
@@ -17,11 +18,17 @@ DOT=dot
 # graphviz
 #
 
-graphviz.pkg: graphviz.pmdoc usr/local/bin/$(DOT) Release/Graphviz.app postinstall
+graphviz.pkg: usr/local/bin/$(DOT) graphviz.pmdoc/02graphviz-contents.xml postinstall
 	@echo
 	@echo PACKAGING GRAPHVIZ...
 	@echo
-	"$(PACKAGEMAKER)" --doc graphviz.pmdoc --out $@
+	"$(PACKAGEMAKER)" --verbose --doc graphviz.pmdoc --out $@
+
+graphviz.pmdoc/02graphviz-contents.xml: Release/Graphviz.app
+	@echo
+	@echo SURVEYING GRAPHVIZ...
+	@echo
+	"$(PMSURVEY)" "$(CURDIR)/Release/Graphviz.app" >$@ 
 
 usr/local/bin/$(DOT): $(GV_DIR)/cmd/dot/.libs/$(DOT)
 	@echo
