@@ -163,7 +163,7 @@ static void init(int argc, char *argv[])
     int c;
 
     aginit();
-    agsetodisc(gvfwrite, gvferror);
+    agsetiodisc(NULL, gvfwrite, gvferror);
     while ((c = getopt(argc, argv, ":ngvum:o:G:?")) != -1) {
 	switch (c) {
 	case 'n':

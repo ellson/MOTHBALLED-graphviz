@@ -163,7 +163,8 @@ extern "C" {
     extern void agreadline(int);
     extern void agsetfile(char *);
     extern Agraph_t *agmemread(char *);
-    extern void agsetodisc(
+    extern void agsetiodisc(
+        size_t (*myfread) (void *ptr, size_t size, size_t nmemb, FILE *stream),
 	size_t (*myfwrite) (const void *ptr, size_t size, size_t nmemb, FILE *stream),
 	int (*myferror) (FILE *stream) );
     extern void agfprintf(FILE *fp, const char *format, ...);

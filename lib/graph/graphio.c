@@ -177,16 +177,18 @@ char *agstrcanon(char *arg, char *buf)
 	return (_agstrcanon(arg, buf));
 }
 
-void agsetodisc(
+void agsetiodisc(
+    size_t (*myfread) (void *ptr, size_t size, size_t nmemb, FILE *stream),
     size_t (*myfwrite) (const void *ptr, size_t size, size_t nmemb, FILE *stream),
     int (*myferror) (FILE *stream)
 )
 {
-    AG.fwrite = myfwrite;
+    if (myfread) AG.fread = myfread;
+    if (myfwrite) AG.fwrite = myfwrite;
 #if defined(__SUNPRO_C)
 #undef ferror
-    AG.ferror = myferror;
 #endif
+    if (myferror) AG.ferror = myferror;
 }
 
 /* agfprintf:

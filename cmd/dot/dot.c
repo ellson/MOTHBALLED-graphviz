@@ -129,7 +129,7 @@ static graph_t *create_test_graph(void)
     /* Create a new graph */
 #ifndef WITH_CGRAPH
     aginit();
-    agsetodisc(gvfwrite, gvferror);
+    agsetiodisc(NULL, gvfwrite, gvferror);
     g = agopen("new_graph", AGDIGRAPH);
 #else /* WITH_CGRAPH */
     g = agopen("new_graph", Agdirected,NIL(Agdisc_t *));

@@ -467,7 +467,7 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 
 #ifndef WITH_CGRAPH
     aginit();
-    agsetodisc(gvfwrite, gvferror);
+    agsetiodisc(NULL, gvfwrite, gvferror);
     /* set persistent attributes here */
     agraphattr(NULL, "label", "");
     agraphattr(NULL, "rankdir", "");
