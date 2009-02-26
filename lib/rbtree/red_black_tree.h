@@ -1,8 +1,31 @@
+/* $Id$Revision: */
+/* vim:set shiftwidth=4 ts=8: */
+
+/**********************************************************
+*      This software is part of the graphviz package      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2004 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+**********************************************************/
+
+#ifndef RED_BLACK_TREE_H
+#define RED_BLACK_TREE_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifdef DMALLOC
 #include <dmalloc.h>
 #endif
-#include"misc.h"
-#include"stack.h"
+#include "misc.h"
+#include "stack.h"
 
 /*  CONVENTIONS:  All data structures for red-black trees have the prefix */
 /*                "rb_" to prevent name conflicts. */
@@ -65,3 +88,9 @@ rb_red_blk_node* TreeSuccessor(rb_red_blk_tree*,rb_red_blk_node*);
 rb_red_blk_node* RBExactQuery(rb_red_blk_tree*, void*);
 stk_stack * RBEnumerate(rb_red_blk_tree* tree,void* low, void* high);
 void NullFunction(void*);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
