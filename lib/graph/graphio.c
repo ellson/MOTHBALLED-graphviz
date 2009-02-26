@@ -185,7 +185,7 @@ void agsetiodisc(
 {
     if (myfgets) AG.fgets = myfgets;
     if (myfwrite) AG.fwrite = myfwrite;
-#if defined(__SUNPRO_C) || defined(__CYGWIN__)
+#if defined(__SUNPRO_C) || defined(__CYGWIN__) || defined(__MINGW32__)
 #undef ferror
 #endif
     if (myferror) AG.ferror = myferror;

@@ -324,7 +324,7 @@ Agsym_t *agprvattr(void *obj, Agsym_t *a)
 	return (Agsym_t *)dtprev(dict->dict, a);
 }
 
-#if defined(__SUNPRO_C) || defined(__CYGWIN__)
+#if defined(__SUNPRO_C) || defined(__CYGWIN__) || defined(__MINGW32__)
 /* for systems where ferror is a macro */
 static int agferror(FILE *stream)
 {
@@ -342,7 +342,7 @@ void aginitlib(int gs, int ns, int es)
 	AG.init_called = TRUE;
 	AG.fgets = fgets;   /* init to system version of fwrite() */
 	AG.fwrite = fwrite;   /* init to system version of fwrite() */
-#if defined(__SUNPRO_C) || defined(__CYGWIN__)
+#if defined(__SUNPRO_C) || defined(__CYGWIN__) || defined(__MINGW32__)
 #undef ferror
 	AG.ferror = agferror; /* init to ferror macro wrapper function */
 #else
