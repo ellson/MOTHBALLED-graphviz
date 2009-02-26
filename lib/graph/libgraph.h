@@ -129,8 +129,8 @@ extern "C" {
 	char *linebuf;
 	short syntax_errors;
 	unsigned char accepting_state, init_called;
-	size_t (*fwrite) (FILE *fp, const char *s, size_t len);
-	int (*ferror) (FILE *fp);
+	size_t (*fwrite) (const void *ptr, size_t size, size_t nmemb, FILE *stream);
+	int (*ferror) (FILE *stream);
     } AG;
 
 /* follow structs used in graph parser */

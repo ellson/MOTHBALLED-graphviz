@@ -177,10 +177,13 @@ char *agstrcanon(char *arg, char *buf)
 	return (_agstrcanon(arg, buf));
 }
 
-void agsetodisc(size_t (*fwrite) (FILE *fp, const char *s, size_t len), int (*ferror) (FILE *fp))
+void agsetodisc(
+    size_t (*myfwrite) (const void *ptr, size_t size, size_t nmemb, FILE *stream),
+    int (*myferror) (FILE *stream)
+)
 {
-	AG.fwrite = fwrite;
-	AG.ferror = ferror;
+    AG.fwrite = myfwrite;
+    AG.ferror = myferror;
 }
 
 /* agfprintf:
@@ -204,14 +207,14 @@ void agfprintf(FILE *fp, const char *format, ...)
 #endif
     va_end(argp);
 
-    AG.fwrite(fp, buf, len);
+    AG.fwrite(buf, sizeof(char), len, fp);
 }
 
 int agputs(const char *s, FILE *fp)
 {
     size_t len = strlen(s);
 
-    if (AG.fwrite(fp, s, len) != len) {
+    if (AG.fwrite(s, sizeof(char), len, fp) != len) {
 	return EOF;
     }
     return +1;
@@ -222,7 +225,7 @@ int agputc(int c, FILE *fp)
 {
     const char cc = c;
 
-    if (AG.fwrite (fp, &cc, 1) != 1) {
+    if (AG.fwrite (&cc, sizeof(char), 1, fp) != 1) {
 	return EOF;
     }
     return c;

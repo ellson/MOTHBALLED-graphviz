@@ -252,14 +252,20 @@ size_t gvwrite (GVJ_t * job, const char *s, size_t len)
     return len;
 }
 
-int gvferror (FILE* fp)
+int gvferror (FILE* stream)
 {
+    GVJ_t *job = (GVJ_t*)stream;
+
+    if (!job->gvc->write_fn && !job->output_data)
+	return ferror(job->output_file);
+
     return 0;
 }
 
-size_t gvfwrite (FILE* fp, const char *s, size_t len)
+size_t gvfwrite (const void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
-    return gvwrite((GVJ_t*)fp, s, len);
+    assert(size = sizeof(char));
+    return gvwrite((GVJ_t*)stream, ptr, nmemb);
 }
 
 int gvputs(GVJ_t * job, const char *s)
