@@ -1,6 +1,16 @@
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include<stdio.h>
 #include<stdlib.h>
-#include<stdint.h>
+
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+#ifdef HAVE_INTTYPES_H
+#include <inttypes.h>
+#endif
 
 #ifndef INC_E_MISC_
 #define INC_E_MISC_
