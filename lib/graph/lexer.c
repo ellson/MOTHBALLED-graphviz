@@ -35,7 +35,6 @@ static unsigned char Comment_start;
 static unsigned char Start_html_string;
 int Line_number;
 static char *InputFile;
-static gets_f Lexer_gets;
 
 static void
 storeFileName (char* fname, int len)
@@ -76,14 +75,15 @@ void agsetfile(char *f)
 void aglexinit(FILE * fp, gets_f mygets)
 {
     Lexer_fp = fp;
-    Lexer_gets = mygets;
+    if (mygets)
+        AG.fgets = mygets;
     LexPtr = NULL;
     if (AG.linebuf == NULL) {
 	LineBufSize = BUFSIZ;
 	AG.linebuf = N_NEW(LineBufSize, char);
 	TokenBuf = N_NEW(LineBufSize, char);
     }
-    (Lexer_gets) (AG.linebuf, 0, fp);	/* reset mygets */
+    AG.fgets (AG.linebuf, 0, fp);	/* reset mygets */
 }
 
 #define ISSPACE(c) ((c != 0) && ((isspace(c) || iscntrl(c))))
@@ -230,9 +230,9 @@ int myaglex(void)
  * In particular, the buffer will contain a '\n' as the last non-null char.
  * Ignore lines beginning with '#'; update cpp line number if applicable.
  * Fold long lines, i.e., ignore escaped newlines.
- * Assume the Lexer_gets function reads upto newline or buffer length
+ * Assume the AG.fgets function reads upto newline or buffer length
  * like fgets.
- * Need to be careful that Lexer_gets might not return full physical line
+ * Need to be careful that AG.fgets might not return full physical line
  * because buffer is too small to hold it.
  */
 static char *lex_gets(void)
@@ -251,8 +251,7 @@ static char *lex_gets(void)
 	}
 
 	/* off by one so we can back up in LineBuf */
-	clp =
-	    (Lexer_gets) (AG.linebuf + curlen + 1,
+	clp = AG.fgets (AG.linebuf + curlen + 1,
 			  LineBufSize - curlen - 1, Lexer_fp);
 	if (clp == NULL)
 	    break;

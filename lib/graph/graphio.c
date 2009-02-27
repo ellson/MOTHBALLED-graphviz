@@ -64,23 +64,31 @@ static char *memgets(char *ubuf, int n, FILE * mbuf)
 
 Agraph_t *agread(FILE * fp)
 {
-    aglexinit(fp, (fgets));	/* use system fgets */
+    aglexinit(fp, NULL);	/* use fgets from current io discipline */
     agparse();
     return AG.parsed_g;
 }
 
 Agraph_t *agmemread(char *cp)
 {
-    /* cast into a file pointer, but flag that this is in-memory input */
-    aglexinit((FILE *) cp, (memgets));	/* memgets defined above */
+    gets_f savefgets = AG.fgets;
+ 
+    AG.fgets = memgets;  /* memgets defined above */
+    /* cast cp into a file pointer */
+    aglexinit((FILE *) cp, NULL);
     agparse();
+    AG.fgets = savefgets;
     return AG.parsed_g;
 }
 
 Agraph_t *agread_usergets(FILE * fp, gets_f usergets)
 {
-    aglexinit(fp, (usergets));	/* usergets provided externally */
+    gets_f savefgets = AG.fgets;
+
+    AG.fgets = usergets;		/* usergets provided externally */
+    aglexinit(fp, NULL);
     agparse();
+    AG.fgets = savefgets;
     return AG.parsed_g;
 }
 
