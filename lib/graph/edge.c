@@ -22,6 +22,8 @@
 #include "dmalloc.h"
 #endif
 
+#if 0
+/* graphs_of_e() is never used - suppress compiler warnings. */
 static void graphs_of_e(Agedge_t * e, Dict_t * g_e, Agraph_t * g)
 {
     Agedge_t *sub;
@@ -35,6 +37,7 @@ static void graphs_of_e(Agedge_t * e, Dict_t * g_e, Agraph_t * g)
 	 sub = agnxtin(g->meta_node->graph, sub))
 	graphs_of_e(e, g_e, agusergraph(sub->head));
 }
+#endif
 
 static Agedge_t *esearch(Agraph_t * g, Agnode_t * tail, Agnode_t * head,
 			 char *usrkey)
