@@ -1796,8 +1796,10 @@ CPPFLAGS=$save_CPPFLAGS
 AC_SUBST(XAW_INCLUDES)
 AC_SUBST(XAW_LIBS)
 AM_CONDITIONAL(WITH_XAW, [test "x$with_xaw" != "xno"])
-if test "x$with_xaw" = "xno" && "$no_x" != yes; then
+if test "x$with_xaw" = "xno"; then
+    if test "x$no_x" != "xyes"; then
 	AC_MSG_WARN(Lefty cannot be built)
+    fi
 fi
 
 dnl -----------------------------------
