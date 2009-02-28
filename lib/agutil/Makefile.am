@@ -13,4 +13,5 @@ noinst_LTLIBRARIES = libagutil_C.la
 endif
 
 libagutil_C_la_SOURCES = dynattr.c nodeq.c agutil.h
+
 EXTRA_DIST = agutil.vcproj
