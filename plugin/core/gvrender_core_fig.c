@@ -345,6 +345,8 @@ static void fig_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
     int npoints = n;
     int i;
 
+    assert (n >= 4);
+
     pointf pf, V[4];
     point p;
     int j, step;
