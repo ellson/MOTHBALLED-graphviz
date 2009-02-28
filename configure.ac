@@ -2858,6 +2858,7 @@ AC_CONFIG_FILES(Makefile
 	graphs/directed/Makefile
 	graphs/undirected/Makefile
 	lib/Makefile
+	lib/agutil/Makefile
 	lib/cdt/Makefile
 	lib/cdt/libcdt.pc
 	lib/graph/Makefile
