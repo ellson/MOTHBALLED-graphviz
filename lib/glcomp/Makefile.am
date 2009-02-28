@@ -14,3 +14,5 @@ endif
 
 libglcomp_C_la_SOURCES = glcompset.c glcomptexture.c glutils.c \
 	glTexFont.c glTexFontColor.c glTexFontTGA.c glpangofont.c
+
+EXTRA_DIST = glcomp.vcproj
