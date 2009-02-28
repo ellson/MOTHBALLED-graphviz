@@ -13,3 +13,5 @@ noinst_LTLIBRARIES = libxdot_C.la
 endif
 
 libxdot_C_la_SOURCES = xdot.c
+
+EXTRA_DIST = xdot.vcproj
