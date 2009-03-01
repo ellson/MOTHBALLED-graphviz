@@ -31,8 +31,8 @@ February 26, 2009
 		  version of graphviz
 		- Improved GUI 
 	- Windows:
-		- builds now use mingw, so that GNU tools can be used
-		- VisualC project files also available.
+		- VisualC project files now available, in addition to the GNU
+		Makefiles that are used the mingw builds.
 	- Language Bindings:
 		- fixed problem with writing dot, xdot, plain, canon to 
 		  memory or to Tcl_Channels
@@ -49,7 +49,7 @@ February 26, 2009
 		1523, 1525, 1530, 1531, 1532, 1533, 1535, 1536, 1539, 1540,
 		1542, 1543, 1546, 1547, 1551, 1553, 1554, 1561, 1565, 1566, 
 		1568, 1569, 1570, 1571, 1573, 1577, 1578, 1579, 1580, 1581,
-		1582
+		1582, 1584, 1586,
 		
 
 August 2, 2008
