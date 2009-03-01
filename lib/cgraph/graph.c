@@ -239,10 +239,10 @@ Dtdisc_t Ag_subgraph_id_disc = {
 };
 
 
-/* directed, strict, maingraph */
-Agdesc_t Agdirected = { 1, 0, 1 };
-Agdesc_t Agstrictdirected = { 1, 1, 1 };
-Agdesc_t Agundirected = { 0, 0, 1 };
-Agdesc_t Agstrictundirected = { 0, 1, 1 };
+/* directed, strict, no_loops, maingraph */
+Agdesc_t Agdirected = { 1, 0, 0, 1 };
+Agdesc_t Agstrictdirected = { 1, 1, 0, 1 };
+Agdesc_t Agundirected = { 0, 0, 0, 1 };
+Agdesc_t Agstrictundirected = { 0, 1, 0, 1 };
 
 Agdisc_t AgDefaultDisc = { &AgMemDisc, &AgIdDisc, &AgIoDisc };
