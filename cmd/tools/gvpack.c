@@ -221,8 +221,8 @@ static void init_node_edge(Agraph_t * g)
     node_t *n;
     edge_t *e;
     int nG = agnnodes(g);
-    attrsym_t *N_pos = agfindgraphattr(g, "pos");
-    attrsym_t *N_pin = agfindgraphattr(g, "pin");
+    attrsym_t *N_pos = agfindnodeattr(g, "pos");
+    attrsym_t *N_pin = agfindnodeattr(g, "pin");
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	neato_init_node(n);
@@ -445,16 +445,25 @@ static void redoBB(Agraph_t * g, char *s, Agsym_t * G_bb, point delta)
  * dictionary names and the old name. If the old name has not
  * been used, use it and add it to names. If it has been used,
  * create a new name using the old name and a number.
+ * Note that returned string will immediately made into an agstring.
  */
 static char *xName(Dt_t * names, char *oldname)
 {
-    char name[BUFSIZ];
+    static char* name = NULL;
+    static int namelen = 0;
     char *namep;
     pair_t *p;
+    int len;
 
     p = (pair_t *) dtmatch(names, oldname);
     if (p) {
 	p->cnt++;
+	len = strlen(oldname) + 100; /* 100 for "_gv" and decimal no. */
+	if (namelen < len) {
+	    if (name) free (name);
+	    name = N_NEW(len, char);
+	    namelen = len;
+	}
 	sprintf(name, "%s_gv%d", oldname, p->cnt);
 	namep = name;
     } else {
