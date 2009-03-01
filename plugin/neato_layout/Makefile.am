@@ -58,4 +58,4 @@ if WITH_DARWIN9
 libgvplugin_neato_layout_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_neato_layout_LTX_library -Wl,-exported_symbol,_neato_init_node -Wl,-exported_symbol,_init_nop -Wl,-exported_symbol,_user_pos
 endif
 
-EXTRA_DIST = Makefile.old gvplugin_neato_layout.vcproj
+EXTRA_DIST = Makefile.old gvplugin_neato_layout.vcproj gvplugin_neato_layout.def
