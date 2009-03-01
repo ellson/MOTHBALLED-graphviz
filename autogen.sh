@@ -4,7 +4,7 @@
 
 LIBTOOLIZE=libtoolize
 if test -x /opt/local/bin/glibtoolize; then
-    export LIBTOOLIZE=/opt/local/bin/glibtoolize
+    LIBTOOLIZE=/opt/local/bin/glibtoolize
 fi
 export LIBTOOLIZE
 
