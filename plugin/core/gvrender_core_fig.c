@@ -345,7 +345,6 @@ static void fig_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
     int npoints = n;
     int i;
 
-    assert (n >= 4);
 
     pointf pf, V[4];
     point p;
@@ -355,7 +354,9 @@ static void fig_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 
     char *buffer;
     char *buf;
-    buffer =
+    assert (n >= 4);
+
+	buffer =
         malloc((npoints + 1) * (BEZIERSUBDIVISION +
                                 1) * 20 * sizeof(char));
     buf = buffer;
