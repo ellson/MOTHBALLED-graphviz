@@ -222,15 +222,6 @@ set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
 
 
 
-/*
-
-but here i am, on the road again
-here i am, up on the stage
-here i go, playing the star again
-there i go, turn the page
-
-*/
-
     /*default line width */
     view->LineWidth =
 	(float) atof(get_attribute_value("defaultlinewidth", view, g));
@@ -584,15 +575,46 @@ static void clear_graph(Agraph_t * graph)
 }
 
 /* create_xdot_for_graph:
- * Returns (malloced) temp filename for output data
+ * Returns temp filename for output data
  * or NULL on error.
- * Calling program needs to remove file and free storage:
+ * Calling program needs to remove file :
  *    fname = create_xdot_for_graph (...)
  *       ... use fname ...
  *    unlink (fname);
- *    free (fname);
+ * Uses the mkTemp function to get temp names.
+ * N.B. The returned file name is a static buffer.
+ *
  */
 #define FMT "%s%s -Txdot%s %s -o%s"
+
+#ifdef WIN32
+#define DOTTEMP "c:\\tmp\\_dotXXXXXX"
+#define XDOTTEMP "c:\\tmp\\_xdotXXXXXX"
+
+#define mkTemp(b,s) (_mktemp_s(b,s))
+
+#else
+#define DOTTEMP "/tmp/_dotXXXXXX"
+#define XDOTTEMP "/tmp/_xdotXXXXXX"
+
+/* mkTemp:
+ * Given a template string buf of the form abcdXXXXX,
+ * and its size bufsz, replace the X's by characters creating
+ * a unique file name.
+ * Return 0 on success, non-zero on failure.
+ */
+static int
+mkTemp (char* buf, size_t bufsz)
+{
+    int rv = mkstemp (buf);
+    if (rv < 0) return -1;
+    else {
+	close (rv);
+	return 0;
+    }
+}
+
+#endif
 
 static char* create_xdot_for_graph(Agraph_t * graph, int keeppos)
 {
@@ -602,11 +624,12 @@ static char* create_xdot_for_graph(Agraph_t * graph, int keeppos)
     int len;
     int r = 0;
     FILE *output_file;
-    char* dotfile;
-    char* xdotfile;
     char* fix;
     char* alg;
     char* path;
+    static char xdotfile[sizeof(XDOTTEMP)];
+    char dotfile[sizeof(DOTTEMP)];
+
     /* The accesses below and in update_graph_params are only valid if 
      * custom_graph_data has been attached to the graph.
      */
@@ -615,14 +638,11 @@ static char* create_xdot_for_graph(Agraph_t * graph, int keeppos)
 
     if (haveData)
 	update_graph_params(graph);
-    if (!(dotfile = tempnam(0,"_dot"))) return 0;
-    if (!(xdotfile = tempnam(0,"_xdot"))) {
-	free (dotfile);
-	return 0;
-    }
+    strcpy (dotfile, DOTTEMP);
+    if (mkTemp(dotfile, sizeof(dotfile))) return 0;
+    strcpy (xdotfile, XDOTTEMP);
+    if (mkTemp(xdotfile, sizeof(xdotfile))) return 0;
     if (!(output_file = fopen(dotfile, "w"))) {
-	free (xdotfile);
-	free (dotfile);
 	return 0;
     }
 
@@ -660,7 +680,7 @@ static char* create_xdot_for_graph(Agraph_t * graph, int keeppos)
 	    alg = " -Kcirco";
 	    break;
 	case GVK_FDP :
-	    alg = " -Kfdp";
+	    alg = " -Ksfdp";
 	    break;
 	case GVK_SFDP :
 	    alg = " -Ksfdp";
@@ -685,20 +705,15 @@ static char* create_xdot_for_graph(Agraph_t * graph, int keeppos)
 	else cmd = RALLOC (buflen, cmd, char);
     }
     sprintf (cmd, FMT, path, fix, alg, dotfile, xdotfile);
-	r = system (cmd);
+    r = system (cmd);
     unlink (dotfile);
-    free (dotfile);
 
     if (r) { // something went wrong
 	unlink (xdotfile);
-	free (xdotfile);
 	return 0;
     }
     else
-	{
-		return xdotfile;
-
-	}
+	return xdotfile;
 }
 
 /*
@@ -722,7 +737,6 @@ layoutGraph (Agraph_t *oldg, int keeppos, int closeold)
     g_print ("xdot is being loaded\n");
     fclose (input_file);
     unlink (infile);  // Remove temp file
-    free (infile);    // Free storage for temp file name
     return newg;
 }
 

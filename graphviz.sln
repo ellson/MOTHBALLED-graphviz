@@ -170,8 +170,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "prune", "contrib\prune\prun
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "diffimg", "contrib\diffimg\diffimg.vcproj", "{89ED80CE-5DEF-46B1-9A12-1D991236EE3E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fc-fix", "windows\cmd\fc-fix\fc-fix.vcproj", "{0DEA6915-263C-4570-B25C-E0A449894D45}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glcomp", "lib\glcomp\glcomp.vcproj", "{CCEF85C9-BC40-4C26-8755-581276C8B7DA}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xdot", "lib\xdot\xdot.vcproj", "{C99C1195-2032-408B-9822-F09F49006A3C}"
@@ -379,10 +377,6 @@ Global
 		{89ED80CE-5DEF-46B1-9A12-1D991236EE3E}.Debug|Win32.Build.0 = Debug|Win32
 		{89ED80CE-5DEF-46B1-9A12-1D991236EE3E}.Release|Win32.ActiveCfg = Release|Win32
 		{89ED80CE-5DEF-46B1-9A12-1D991236EE3E}.Release|Win32.Build.0 = Release|Win32
-		{0DEA6915-263C-4570-B25C-E0A449894D45}.Debug|Win32.ActiveCfg = Debug|Win32
-		{0DEA6915-263C-4570-B25C-E0A449894D45}.Debug|Win32.Build.0 = Debug|Win32
-		{0DEA6915-263C-4570-B25C-E0A449894D45}.Release|Win32.ActiveCfg = Release|Win32
-		{0DEA6915-263C-4570-B25C-E0A449894D45}.Release|Win32.Build.0 = Release|Win32
 		{CCEF85C9-BC40-4C26-8755-581276C8B7DA}.Debug|Win32.ActiveCfg = Debug|Win32
 		{CCEF85C9-BC40-4C26-8755-581276C8B7DA}.Debug|Win32.Build.0 = Debug|Win32
 		{CCEF85C9-BC40-4C26-8755-581276C8B7DA}.Release|Win32.ActiveCfg = Release|Win32
