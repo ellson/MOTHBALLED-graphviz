@@ -581,6 +581,15 @@ static void free_printdict_t(printdict_t * dict)
     free(dict);
 }
 
+#if defined(__SUNPRO_C) || defined(__CYGWIN__) || defined(__MINGW32__)
+/* for systems where ferror is a macro */
+static int agferror(FILE *stream)
+{
+        return ferror(stream);
+}
+#endif
+
+
 int agwrite(Agraph_t * g, FILE * fp)
 {
     printdict_t *p;
