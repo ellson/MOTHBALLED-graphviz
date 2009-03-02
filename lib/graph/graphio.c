@@ -586,6 +586,18 @@ int agwrite(Agraph_t * g, FILE * fp)
     printdict_t *p;
     char *t0, *t1;
 
+    if (AG.fwrite == NULL) {
+        AG.fwrite = fwrite;   /* init to system version of fwrite() */
+    }
+    if (AG.ferror == NULL) {
+#if defined(__SUNPRO_C) || defined(__CYGWIN__) || defined(__MINGW32__)
+#undef ferror
+	AG.ferror = agferror; /* init to ferror macro wrapper function */
+#else
+	AG.ferror = ferror;   /* init to system version of ferror() */
+#endif
+    }
+
     /* write the graph header */
     t0 = (AG_IS_STRICT(g)) ? "strict " : "";
     t1 = (AG_IS_DIRECTED(g)) ? "digraph" : "graph";

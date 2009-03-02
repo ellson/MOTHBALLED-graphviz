@@ -77,6 +77,8 @@ void aglexinit(FILE * fp, gets_f mygets)
     Lexer_fp = fp;
     if (mygets)
         AG.fgets = mygets;
+    if (AG.fgets == NULL)
+	AG.fgets = fgets;
     LexPtr = NULL;
     if (AG.linebuf == NULL) {
 	LineBufSize = BUFSIZ;

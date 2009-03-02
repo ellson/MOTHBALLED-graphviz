@@ -1,14 +1,13 @@
-February 26, 2009
-	- Preparation for Release 2.22
+March 1, 2009
+	- Release 2.22
 	- Core:
 		- libgvc api changed, version bumped.  Affects third party
 		  applications using libgvc.
 		- plugin api changed, version bumped.  Affects third party
 		  plugins for graphviz.
-		- 90% conversion to libgraph done, not in use yet, (and yes,
-		  its true what they say about the last 10% )
-		- Internal layout code completely converted to floating
-		  point.
+		- 90% conversion to cgraph has been done, but not enabled yet,
+		  (and yes, its true what they say about the last 10% )
+		- layout code completely converted to floating point.
 		- new "dot -P" option for generating a graph of available
 		  plugins.
 	- Plugins:
@@ -32,7 +31,7 @@ February 26, 2009
 		- Improved GUI 
 	- Windows:
 		- VisualC project files now available, in addition to the GNU
-		Makefiles that are used the mingw builds.
+		  Makefiles that are used the mingw builds.
 	- Language Bindings:
 		- fixed problem with writing dot, xdot, plain, canon to 
 		  memory or to Tcl_Channels
@@ -51,7 +50,6 @@ February 26, 2009
 		1568, 1569, 1570, 1571, 1573, 1577, 1578, 1579, 1580, 1581,
 		1582, 1584, 1586,
 		
-
 August 2, 2008
 	- drop libagraph from distribution - part of migration to libcgraph
 	- rename file format from .dot to .gv to avoid conflict with Word templates
