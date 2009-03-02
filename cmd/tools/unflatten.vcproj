@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cgraph.lib graph.lib ingraphs.lib"
+				AdditionalDependencies="cgraph.lib  ingraphs.lib"
 				OutputFile="c:/graphviz-ms/bin/$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="C:\graphviz-ms\bin"
@@ -135,7 +135,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cgraph.lib graph.lib ingraphs.lib"
+				AdditionalDependencies="cgraph.lib  ingraphs.lib"
 				OutputFile="c:/graphviz-ms/bin/$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="C:\graphviz-ms\bin"
@@ -197,11 +197,11 @@
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\release\BuildLog.htm"
+			RelativePath=".\debug\BuildLog.htm"
 			>
 		</File>
 		<File
-			RelativePath=".\debug\BuildLog.htm"
+			RelativePath=".\release\BuildLog.htm"
 			>
 		</File>
 	</Files>
