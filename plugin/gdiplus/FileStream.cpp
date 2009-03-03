@@ -15,6 +15,11 @@
 **********************************************************/
 
 #include "FileStream.h"
+#include "gvplugin_device.h"
+
+#include "gvplugin_gdiplus.h"
+
+
 
 IStream *FileStream::Create(char *name, FILE *file)
 {
@@ -148,6 +153,7 @@ HRESULT FileStream::Commit(
 
 HRESULT FileStream::Revert()
 {
+	return 0;
 }
 
 HRESULT FileStream::LockRegion( 

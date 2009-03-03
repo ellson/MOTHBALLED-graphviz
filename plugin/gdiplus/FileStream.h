@@ -21,6 +21,8 @@
 #include <sys/stat.h>
 #include <objbase.h>
 
+
+
 class FileStream : public IStream
 {
 public:
@@ -28,62 +30,62 @@ public:
 	
 	/* IUnknown methods */
 	
-	virtual STDMETHODCALLTYPE HRESULT QueryInterface( 
+	virtual HRESULT STDMETHODCALLTYPE  QueryInterface( 
 		REFIID riid,
 		void **ppvObject);
     
-	virtual STDMETHODCALLTYPE ULONG AddRef();
+	virtual ULONG STDMETHODCALLTYPE  AddRef();
     
-	virtual STDMETHODCALLTYPE ULONG Release();
+	virtual ULONG STDMETHODCALLTYPE  Release();
             
  	/* ISequentialStream methods */
     
-	virtual STDMETHODCALLTYPE HRESULT Read( 
+	virtual HRESULT STDMETHODCALLTYPE  Read( 
 		void *pv,
 		ULONG cb,
 		ULONG *pcbRead);
     
-	virtual STDMETHODCALLTYPE HRESULT Write( 
+	virtual HRESULT STDMETHODCALLTYPE  Write( 
 		const void *pv,
 		ULONG cb,
 		ULONG *pcbWritten);
 
 	/* IStream methods */
 	
-	virtual STDMETHODCALLTYPE HRESULT Seek( 
+	virtual HRESULT STDMETHODCALLTYPE  Seek( 
 		LARGE_INTEGER dlibMove,
 		DWORD dwOrigin,
 		ULARGE_INTEGER *plibNewPosition);
     
-	virtual STDMETHODCALLTYPE HRESULT SetSize( 
+	virtual HRESULT STDMETHODCALLTYPE  SetSize( 
         	ULARGE_INTEGER libNewSize);
     
-	virtual STDMETHODCALLTYPE HRESULT CopyTo( 
+	virtual HRESULT STDMETHODCALLTYPE  CopyTo( 
 		IStream *pstm,
 		ULARGE_INTEGER cb,
 		ULARGE_INTEGER *pcbRead,
  		ULARGE_INTEGER *pcbWritten);
     
- 	virtual STDMETHODCALLTYPE HRESULT Commit( 
+ 	virtual HRESULT STDMETHODCALLTYPE  Commit( 
         	DWORD grfCommitFlags);
     
- 	virtual STDMETHODCALLTYPE HRESULT Revert();
+ 	virtual HRESULT STDMETHODCALLTYPE  Revert();
     
-	virtual STDMETHODCALLTYPE HRESULT LockRegion( 
+	virtual HRESULT STDMETHODCALLTYPE  LockRegion( 
         	ULARGE_INTEGER libOffset,
         	ULARGE_INTEGER cb,
         	DWORD dwLockType);
     
-	virtual STDMETHODCALLTYPE HRESULT UnlockRegion( 
+	virtual HRESULT STDMETHODCALLTYPE  UnlockRegion( 
         	ULARGE_INTEGER libOffset,
         	ULARGE_INTEGER cb,
         	DWORD dwLockType);
     
-	virtual STDMETHODCALLTYPE HRESULT Stat( 
+	virtual HRESULT STDMETHODCALLTYPE  Stat( 
         	STATSTG *pstatstg,
         	DWORD grfStatFlag);
     
-	virtual STDMETHODCALLTYPE HRESULT Clone( 
+	virtual HRESULT STDMETHODCALLTYPE  Clone( 
         	IStream **ppstm);
         
 private:
