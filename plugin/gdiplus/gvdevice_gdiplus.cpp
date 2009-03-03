@@ -18,11 +18,19 @@
 #include "config.h"
 #endif
 
-#include "gvplugin_device.h"
 
+#include "gvplugin_device.h"
+#include "gvplugin_render.h"
+#include "graph.h"
 #include "gvplugin_gdiplus.h"
 
-extern "C" size_t gvdevice_write(GVJ_t *job, const unsigned char *s, unsigned int len);
+extern "C" size_t gvwrite(GVJ_t *job, const unsigned char *s, unsigned int len);
+
+
+
+
+
+
 
 using namespace Gdiplus;
 
@@ -41,14 +49,15 @@ static void gdiplus_format(GVJ_t *job)
 		job->height,					/* height in pixels */
 		job->width * BYTES_PER_PIXEL,	/* bytes per row: exactly width # of pixels */
 		PixelFormat32bppPARGB,			/* pixel format: corresponds to CAIRO_FORMAT_ARGB32 */
-		job->imagedata);				/* pixel data from job */
+		(BYTE*)job->imagedata);				/* pixel data from job */
 	SaveBitmapToStream(bitmap, stream, job->device.id);
 	
 	/* blast the streamed buffer back to the gvdevice */
 	/* NOTE: this is somewhat inefficient since we should be streaming directly to gvdevice rather than buffering first */
 	/* ... however, GDI+ requires any such direct IStream to implement Seek Read, Write, Stat methods and gvdevice really only offers a write-once model */
 	stream->Release();
-	gvdevice_write(job, (unsigned char*)GlobalLock(buffer), GlobalSize(buffer));
+	gvwrite(job, (const unsigned char*)GlobalLock(buffer), GlobalSize(buffer));
+
 	GlobalFree(buffer);
 }
 
