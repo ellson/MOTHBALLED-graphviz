@@ -77,4 +77,20 @@ static gvplugin_api_t apis[] = {
     {(api_t)0, 0},
 };
 
-gvplugin_library_t gvplugin_gdiplus_LTX_library = { "gdiplus", apis };
+
+
+
+#ifdef WIN32_DLL /*visual studio*/
+#ifndef GVPLUGIN_GDIPLUS_EXPORTS
+__declspec(dllimport) gvplugin_library_t gvplugin_gdiplus_LTX_library = { "gdiplus", apis };
+#else
+__declspec(dllexport) gvplugin_library_t gvplugin_gdiplus_LTX_library = { "gdiplus", apis };
+#endif
+#else /*end visual studio*/
+#ifdef GVDLL
+__declspec(dllexport) gvplugin_library_t gvplugin_gdiplus_LTX_library = { "gdiplus", apis };
+#else
+gvplugin_library_t gvplugin_library_t gvplugin_gdiplus_LTX_library = { "gdiplus", apis };
+#endif
+#endif
+
