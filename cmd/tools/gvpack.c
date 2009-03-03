@@ -66,7 +66,11 @@ static int verbose = 0;
 static char **myFiles = 0;
 static int nGraphs = 0;		/* Guess as to no. of graphs */
 static FILE *outfp;		/* output; stdout by default */
-static int kind = -1;		/* type of graph; -1 = undefined */
+#ifndef WITH_CGRAPH
+static int kind;		/* type of graph */
+#else
+static Agdesc_t kind;		/* type of graph */
+#endif
 static int G_cnt;		/* No. of -G arguments */
 static int G_sz;		/* Storage size for -G arguments */
 static attr_t *G_args;		/* Storage for -G arguments */
@@ -162,6 +166,7 @@ static void init(int argc, char *argv[])
     int c;
 
     aginit();
+    agnodeattr(NULL, "label", NODENAME_ESC);
     while ((c = getopt(argc, argv, ":ngvum:o:G:?")) != -1) {
 	switch (c) {
 	case 'n':
@@ -597,7 +602,11 @@ static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt, GVC_t * gvc)
 
     if (verbose)
 	fprintf(stderr, "Creating clone graph\n");
+#ifndef WITH_CGRAPH
     root = agopen("root", kind);
+#else
+    root = agopen("root", kind, &AgDefaultDisc);
+#endif
     GD_gvc(root) = gvc;
     initAttrs(root, gs, cnt);
     G_bb = agfindgraphattr(root, "bb");
@@ -695,6 +704,7 @@ static Agraph_t **readGraphs(int *cp, GVC_t* gvc)
     ingraph_state ig;
     int cnt = 0;
     int sz = 0;
+    int kindUnset = 1;
 
     /* set various state values */
     PSinputscale = POINTS_PER_INCH;
@@ -709,23 +719,29 @@ static Agraph_t **readGraphs(int *cp, GVC_t* gvc)
 	    sz += nGraphs;
 	    gs = ALLOC(sz, gs, Agraph_t *);
 	}
-	if (kind == -1)
-	    kind = g->kind;
 #ifndef WITH_CGRAPH
+	if (kindUnset) {
+	    kindUnset = 0;
+	    kind = g->kind;
+	}
 	else if ((kind & AGFLAG_DIRECTED) != AG_IS_DIRECTED(g)) {
-#else
-	else if (!agisdirected(g) || agisdirected(g)) {
-	    /* DUH !! - did I lose something in translation ? */
-#endif
 	    fprintf(stderr,
 		    "Error: all graphs must be directed or undirected\n");
 	    exit(1);
-#ifndef WITH_CGRAPH
 	} else if (!AG_IS_STRICT(g))
-#else
-	} else if (!agisstrict(g))
-#endif
 	    kind = g->kind;
+#else
+	if (kindUnset) {
+	    kindUnset = 0;
+	    kind = g->desc;
+	}
+	else if (kind.directed != g->desc.directed) {
+	    fprintf(stderr,
+		    "Error: all graphs must be directed or undirected\n");
+	    exit(1);
+	} else if (!agisstrict(g))
+	    kind = g->desc;
+#endif
 	init_graph(g, DOPACK);
 	gs[cnt++] = g;
     }
