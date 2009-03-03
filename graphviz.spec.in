@@ -208,9 +208,6 @@ BuildRequires: ghostscript-devel
 #define MING 1
 #BuildRequires: ming ming-devel
 %endif
-%if %fedora >= 11
-BuildRequires: libgcj-devel
-%endif
 %endif
 
 #-- AT&T-internal Fedora specific Build Requirements --------------------------------------
@@ -276,9 +273,6 @@ BuildRequires: ghostscript-devel
 %define GHOSTSCRIPT 1
 #define MING 1
 #BuildRequires: ming ming-devel
-%endif
-%if %att_fedora >= 11
-BuildRequires: libgcj-devel
 %endif
 %endif
 
