@@ -55,7 +55,7 @@ static Image* gdiplus_loadimage(GVJ_t * job, usershape_t *us)
 
 		/* create image from the usershape file */
 		/* NOTE: since Image::FromStream consumes the stream, we assume FileStream's lifetime should be shorter than us->name and us->f... */	
-		IStream *stream = FileStream::Create(us->name, us->f);
+		IStream *stream = FileStream::Create((char*)us->name, us->f);
 		us->data = Image::FromStream (stream);
 		
 		/* clean up */
