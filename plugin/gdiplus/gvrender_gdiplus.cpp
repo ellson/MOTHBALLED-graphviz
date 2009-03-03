@@ -29,7 +29,7 @@
 #include <memory>
 #include <vector>
 
-extern "C" size_t gvdevice_write(GVJ_t *job, const unsigned char *s, unsigned int len);
+extern "C" size_t gvwrite(GVJ_t *job, const unsigned char *s, unsigned int len);
 
 using namespace std;
 using namespace Gdiplus;
@@ -99,7 +99,7 @@ static void gdiplusgen_end_job(GVJ_t *job)
 		HGLOBAL buffer = NULL;
 		GetHGlobalFromStream(stream, &buffer);
 		stream->Release();
-		gvdevice_write(job, (unsigned char*)GlobalLock(buffer), GlobalSize(buffer));
+		gvwrite(job, (unsigned char*)GlobalLock(buffer), GlobalSize(buffer));
 		GlobalFree(buffer);
 			
 		/* since this is an internal job, shut down GDI+ */
