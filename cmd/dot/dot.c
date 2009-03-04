@@ -172,7 +172,6 @@ int main(int argc, char **argv)
 
     Gvc = gvContextPlugins(lt_preloaded_symbols, DEMAND_LOADING);
     gvParseArgs(Gvc, argc, argv);
-
 #ifndef WIN32
     signal(SIGUSR1, gvToggle);
     signal(SIGINT, intr);
