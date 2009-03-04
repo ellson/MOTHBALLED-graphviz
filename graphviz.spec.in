@@ -732,6 +732,9 @@ rm -rf %{buildroot}
 #-- changelog --------------------------------------------------
 
 %changelog
+* Tue Mar 03 2009 John Ellson <ellson@research.att.com>
+- release graphviz-2.22 - see ChangeLog for details
+
 * Fri Oct 26 2007 John Ellson <ellson@research.att.com>
 - reinstated binary relocatability in AT&T's rpms since we need it internally
 * Wed Aug 15 2007 John Ellson <ellson@research.att.com>
