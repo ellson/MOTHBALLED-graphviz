@@ -64,4 +64,4 @@ $(GDIPLUS_HEADS) : %.h : $(PLATFORMSDKINCLUDE_ESCAPED)/%.h
 	else cp "$(PLATFORMSDKINCLUDE)\$*.h" $*.h; \
 	fi
 	
-EXTRA_DIST = $(PATCHES)
+EXTRA_DIST = $(PATCHES) gvplugin_gdiplus.vcproj gvplugin_gdiplus.def
