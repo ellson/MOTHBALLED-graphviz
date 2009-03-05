@@ -5,7 +5,94 @@
 <body bgcolor=#ffffff>
 <h2>Graphviz Build Instructions for Windows</h2>
 <P>
-(Graphviz versions &gt; 2.14)
+<b>(Graphviz versions &gt;= 2.22)</b>
+<P>
+We now build both Visual Studio and MinGW versions of Graphviz.
+In addition, the source package comes with project files for Visual Studio,
+so building from source should be fairly simple in either case.
+<UL>
+<LI>
+The first step is to add the third-party libraries. This are listed
+<A HREF="http://www.graphviz.org/Download_source.php">here</A>.
+This is most easily done by installing
+a Windows binary version of <A HREF="http://www.gtk.org">GTK 2.0</A> or later. 
+<LI>
+Next, download and unwrap the Graphviz source package. Go to
+<A HREF=http://www.graphviz.org/Download_source.php>http://www.graphviz.org/Download_source.php</A>
+and copy over either the stable release
+or the development source package.
+</UL>
+Let $ROOT be the root directory (folder) 
+in which you stored the Graphviz source.
+<h3>Building with Visual Studio</h3>
+<OL>
+<LI>
+Copy the file $ROOT/windows/config.h into $ROOT.
+<LI>
+Copy the folder $ROOT/windows/FEATURE into $ROOT.
+<LI>
+Start Visual Studio and read in $ROOT/graphviz.sln.
+There are project files for all of the parts of Graphviz.
+<LI>
+Modify the various settings for include file and library directories to find
+the third-party software.
+<LI>
+Modify the settings as to where you want the software installed.
+<LI>
+Build Graphviz.
+</OL>
+<h3>Building with MinGW</h3>
+<OL>
+<LI> Install MinGW and Msys.  This gives a mini GNU-like compile environment 
+<LI> Set environment variables based on your machine, giving values to the
+first six below:
+<CODE>
+<PRE>
+export INSTALLROOT           # Root install directory
+export GTKDIR                # Root of GTK tree
+export FONTCONFIGINCLUDEDIR  # Path of fontconfig include dir
+export FONTCONFIGLIBDIR      # Path of fontconfig lib dir
+export FREETYPEINCLUDEDIR    # Path of freetype2 include dir
+export FREETYPELIBDIR        # Path of freetype2 lib dir
+
+export CFLAGS="-DGVDLL=1"
+export CPPFLAGS="-I$GTKDIR/include -I$GTKDIR/include/freetype2 "
+export LDFLAGS="-L$GTKDIR/lib -no-undefined"
+export FONTCONFIG_CFLAGS=-I$GTKDIR/include/
+export FONTCONFIG_LIBS="-L$FONTCONFIGLIBDIR -lfontconfig"
+export FREETYPE2_CFLAGS=-I$FREETYPEINCLUDEDIR
+export FREETYPE2_LIBS="-L$FREETYPELIBDIR
+export PKG_CONFIG=$GTKDIR/bin/pkg-config
+export PKG_CONFIG_PATH=$GTKDIR/lib/pkgconfig
+
+export PANGOFLAGS="--with-fontconfig --with-fontconfiglibdir$FONTCONFIGLIBDIR --with-fontconfigincludedir=$FONTCONFIGINCLUDEDIR --with-pangocairo"
+
+</PRE>
+</CODE>
+<LI> Change directory to $ROOT and run configure:<BR>
+<CODE>
+<PRE>
+./configure -C --prefix=$INSTALLROOT --without-gdk-pixbuf --with-mylibgd --disable-swig --without-x  --disable-tcl --without-ipsepcola --with-codegens --enable-shared --disable-static --with-freetype=$GTKDIR/lib --enable-ltdl $PANGOFLAGS --without-gtk --without-gtkgl
+
+</PRE>
+</CODE>
+When configure finishes, it lists all of the Graphviz features that have been
+enabled. If there are problems, you can check for errors in <TT>config.log</TT>.
+You may have to add or modify
+other flags and environment variables for <TT>configure</TT> to give you the
+settings you want. Run <TT>configure --help</TT>
+to see the allowed options and environment variables.
+<LI> Run <TT>make</TT>
+<LI> Run <TT>make install</TT>
+</OL>
+These builds create a feature-full version of Graphviz. You can tailor
+them to your wants. This is fairly simple for MinGW: just remove or reset
+the flag of the option you don't want. For Visual Studio, you will probably
+need to reset some of the values in <TT>config.h</TT> and some of the
+compile-time options.
+<HR>
+<P>
+<b>(2.21 &gt;= Graphviz versions &gt; 2.14)</b>
 <P>
 To simplify our build process, especially as most Windows users only
 want a binary version of the software, the Graphviz build for Windows
@@ -46,11 +133,11 @@ Build Graphviz:<BR><BR>
 <TT>make install</TT><BR><BR>
 </OL>
 <P>
-Presumably, a similar approach would work with Cygwin or Mingw. 
+Presumably, a similar approach would work with Cygwin or MinGW. 
 The following are some notes by
 <A HREF="https://mailman.research.att.com/pipermail/graphviz-devel/2007/000444.html">Steve Roush</A> 
 describing how he
-made a static build of the libraries on Mingw.
+made a static build of the libraries on MinGW.
 <MENU>
 <LI> Install MinGW and Msys.  This gives a mini GNU-like compile environment 
 that produces Windows-compatible results.
@@ -120,8 +207,9 @@ If you
 desire to build directly using Visual Studio or other non-Unix-based
 environment, you will need to derive the necessary information from the
 supplied Makefiles.
+<HR>
 <P>
-(2.14 &gt;= Graphviz versions &gt;= 2.3)
+<b>(2.14 &gt;= Graphviz versions &gt;= 2.3)</b>
 <P>
 We build Graphviz on Windows using the MS Visual C++ 6.0 compiler 
 only. The simplest way to build the software from source on Windows is as 
