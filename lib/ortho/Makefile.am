@@ -15,7 +15,7 @@ if WITH_ORTHO
 AM_CFLAGS = -D_BLD_gvc=1
 endif
 
-noinst_HEADERS = fPQ.h intset.h maze.h partition.h rawgraph.h sgraph.h structures.h trap.h
+noinst_HEADERS = fPQ.h ortho.h intset.h maze.h partition.h rawgraph.h sgraph.h structures.h trap.h
 
 if WITH_ORTHO
 noinst_LTLIBRARIES = libortho_C.la
