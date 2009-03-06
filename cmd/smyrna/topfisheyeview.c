@@ -318,12 +318,19 @@ void drawtopfishnodes(topview * t)
 			double x0,y0;
 			if (get_temp_coords(t,level,v,&x0,&y0))
 			{
+
+				if (!(((-x0 / view->zoom > view->clipX1)
+					&& (-x0 / view->zoom <	view->clipX2)
+							&& (-y0 / view->zoom > view->clipY1)
+								&& (-y0 / view->zoom < view->clipY2))))
+						continue;
+
 				if (level !=0)
-					glColor3f((GLfloat) (hp->nlevels - level)*0.5 /  (GLfloat) hp->nlevels,
-				  (GLfloat) level / (GLfloat) hp->nlevels, 0);
+					glColor4f((GLfloat) (hp->nlevels - level)*0.5 /  (GLfloat) hp->nlevels,
+				  (GLfloat) level / (GLfloat) hp->nlevels, 0,view->defaultnodealpha);
 				else
-				glColor3f((GLfloat) 1,
-				  (GLfloat) level / (GLfloat) hp->nlevels*2, 0);
+				glColor4f((GLfloat) 1,
+				  (GLfloat) level / (GLfloat) hp->nlevels*2, 0,view->defaultnodealpha);
 
 /*								glColor3f((GLfloat) (hp->nlevels - level)*0.5 /  (GLfloat) hp->nlevels,
 				  (GLfloat) level / (GLfloat) hp->nlevels, 0);*/
@@ -399,8 +406,8 @@ void drawtopfishedges(topview * t)
 					double x, y;
 					n = g[v].edges[i];
 				if (level !=0)
-					glColor3f((GLfloat) (hp->nlevels - level)*0.5 /  (GLfloat) hp->nlevels,
-				  (GLfloat) level / (GLfloat) hp->nlevels, 0);
+					glColor4f((GLfloat) (hp->nlevels - level)*0.5 /  (GLfloat) hp->nlevels,
+				  (GLfloat) level / (GLfloat) hp->nlevels, 0,view->defaultnodealpha);
 				else
 				glColor3f((GLfloat) 1,
 				  (GLfloat) level / (GLfloat) hp->nlevels*2, 0);
@@ -416,6 +423,20 @@ void drawtopfishedges(topview * t)
 //						find_physical_coords(hp, level, n, &x, &y);
 						if 	(get_temp_coords(t,levell,nodee,&x,&y))
 						{
+
+							if( (!(((-x0 / view->zoom > view->clipX1)
+								&& (-x0 / view->zoom <	view->clipX2)
+									&& (-y0 / view->zoom > view->clipY1)
+										&& (-y0 / view->zoom < view->clipY2))))
+										&&
+								(!(((-x / view->zoom > view->clipX1)
+									&& (-x / view->zoom <	view->clipX2)
+										&& (-y / view->zoom > view->clipY1)
+											&& (-y / view->zoom < view->clipY2)))))
+
+								continue;
+
+
 							glVertex3f((GLfloat) x0, (GLfloat) y0,(GLfloat) 0);
 							glVertex3f((GLfloat) x, (GLfloat) y, (GLfloat) 0);
 						}
@@ -431,18 +452,19 @@ void drawtopfishedges(topview * t)
 
 void drawtopologicalfisheye(topview * t)
 {
+	get_active_frame(t);
 	drawtopfishnodes(t);
 	drawtopfishedges(t);
 	if(!t->animate)
 		drawtopfishnodelabels(t);
 
-	if (FLUSH==1)
+
+/*	if (FLUSH==1)
 	{
 		FLUSH=0;
 		expose_event(view->drawing_area, NULL, NULL);
 		;
-	}
-
+	}*/
 
 }
 
@@ -472,8 +494,6 @@ int get_temp_coords(topview* t,int level,int v,double* coord_x,double* coord_y)
 				y0=0;
 				x1=0;
 				y1=0;
-				get_active_frame(t);
-
 				AL=gg[v].active_level;
 				OAL=gg[v].old_active_level;
 
