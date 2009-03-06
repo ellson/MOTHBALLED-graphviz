@@ -1,5 +1,6 @@
-/* config.h.  Generated from config.h.in by configure.  */
-/* config.h.in.  Generated from configure.ac by autoheader.  */
+/* manually generated configuration for Windows */
+
+#include "config_version.h"
 
 /* Command to open a browser on a URL */
 #define BROWSER "xdg-open"
@@ -32,9 +33,6 @@
 
 
 
-
-/* Compatibility version number for plugins. */
-#define GVPLUGIN_VERSION 5
 
 /* Define to 1 if you have `alloca', as a function or macro. */
 #define HAVE_ALLOCA 1
@@ -442,24 +440,6 @@
 /* Define if you want ORTHO */
 /* #undef ORTHO */
 
-/* Name of package */
-#define PACKAGE "graphviz"
-
-/* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "http://www.graphviz.org/"
-
-/* Define to the full name of this package. */
-#define PACKAGE_NAME "graphviz"
-
-/* Define to the full name and version of this package. */
-#define PACKAGE_STRING "graphviz 2.21.20090107.1610"
-
-/* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "graphviz"
-
-/* Define to the version of this package. */
-#define PACKAGE_VERSION "2.21.20090107.1610"
-
 /* Path separator character. */
 #define PATHSEPARATOR ":"
 
@@ -483,14 +463,8 @@
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #define TIME_WITH_SYS_TIME 1
 
-/* Version number of package */
-#define VERSION "2.21.20090107.1610"
-
 /* Define if you want CGRAPH */
 /* #undef WITH_CGRAPH */
-
-/* Define if you want the old codegens */
-#define WITH_CODEGENS 1
 
 /* Define to 1 if the X Window System is missing or not being used. */
 #define X_DISPLAY_MISSING 1
