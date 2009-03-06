@@ -26,7 +26,7 @@ AM_CFLAGS = -D_BLD_gvc=1
 AM_CPPFLAGS += -O0
 endif
 
-LIBS = $(LIBLTDL) $(SOCKET_LIBS) $(Z_LIBS) $(MATH_LIBS)
+LIBS = $(SOCKET_LIBS) $(Z_LIBS) $(MATH_LIBS)
 
 pkginclude_HEADERS = gvc.h gvcext.h gvplugin.h gvcjob.h \
 	gvcommon.h gvplugin_render.h gvplugin_layout.h gvconfig.h \
@@ -50,6 +50,10 @@ libgvc_C_la_DEPENDENCIES = \
 if WITH_ORTHO
 libgvc_C_la_LIBADD += $(top_builddir)/lib/ortho/libortho_C.la
 libgvc_C_la_DEPENDENCIES +=  $(top_builddir)/lib/ortho/libortho_C.la
+endif
+if ENABLE_LTDL
+libgvc_C_la_LIBADD += $(top_builddir)/libltdl/libltdlc.la
+libgvc_C_la_DEPENDENCIES += $(top_builddir)/libltdl/libltdlc.la
 endif
 
 libgvc_la_LDFLAGS = -version-info $(GVC_VERSION) -no-undefined
