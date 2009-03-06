@@ -1,0 +1,14 @@
+#define HAVE_ARGZ_APPEND 0
+#undef GVDLL
+#define HAVE_GTS 1
+#define IPSEPCOLA 1
+
+#undef HAVE_CBRT
+#undef HAVE_INTTYPES_H
+#undef HAVE_STDBOOL_H
+#undef HAVE_STDINT_H
+#undef HAVE_STRCASECMP
+#undef HAVE_STRINGS_H
+#undef HAVE_STRNCASECMP
+#undef HAVE_UNISTD_H
+#undef HAVE_VALUES_H
