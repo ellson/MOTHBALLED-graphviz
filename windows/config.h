@@ -4,7 +4,6 @@
 
 /* Command to open a browser on a URL */
 #define BROWSER "xdg-open"
-#define GVPLUGIN_CONFIG_FILE "config"
 
 #define HAVE_ARGZ_APPEND 0
 
@@ -30,9 +29,6 @@
 
 /* Define if you want on-demand plugin loading */
 #define ENABLE_LTDL 1
-
-
-
 
 /* Define to 1 if you have `alloca', as a function or macro. */
 #define HAVE_ALLOCA 1
