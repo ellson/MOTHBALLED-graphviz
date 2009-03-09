@@ -193,7 +193,7 @@ void agsetiodisc(
 {
     if (myfgets) AG.fgets = myfgets;
     if (myfwrite) AG.fwrite = myfwrite;
-#if defined(__SUNPRO_C) || defined(__CYGWIN__) || defined(__MINGW32__)
+#if defined(__SUNPRO_C) || defined(__CYGWIN__) || defined(__MINGW32__) || defined(__FreeBSD__)
 #undef ferror
 #endif
     if (myferror) AG.ferror = myferror;
@@ -581,7 +581,7 @@ static void free_printdict_t(printdict_t * dict)
     free(dict);
 }
 
-#if defined(__SUNPRO_C) || defined(__CYGWIN__) || defined(__MINGW32__)
+#if defined(__SUNPRO_C) || defined(__CYGWIN__) || defined(__MINGW32__) || defined(__FreeBSD__)
 /* for systems where ferror is a macro */
 static int agferror(FILE *stream)
 {
@@ -599,7 +599,7 @@ int agwrite(Agraph_t * g, FILE * fp)
         AG.fwrite = fwrite;   /* init to system version of fwrite() */
     }
     if (AG.ferror == NULL) {
-#if defined(__SUNPRO_C) || defined(__CYGWIN__) || defined(__MINGW32__)
+#if defined(__SUNPRO_C) || defined(__CYGWIN__) || defined(__MINGW32__) || defined(__FreeBSD__)
 #undef ferror
 	AG.ferror = agferror; /* init to ferror macro wrapper function */
 #else
