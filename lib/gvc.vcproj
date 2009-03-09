@@ -222,62 +222,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\gvc\gvc.h"
-				>
-			</File>
-			<File
-				RelativePath=".\gvc\gvcext.h"
-				>
-			</File>
-			<File
-				RelativePath=".\gvc\gvcint.h"
-				>
-			</File>
-			<File
-				RelativePath=".\gvc\gvcjob.h"
-				>
-			</File>
-			<File
-				RelativePath=".\gvc\gvcommon.h"
-				>
-			</File>
-			<File
-				RelativePath=".\gvc\gvconfig.h"
-				>
-			</File>
-			<File
-				RelativePath=".\gvc\gvcproc.h"
-				>
-			</File>
-			<File
-				RelativePath=".\gvc\gvio.h"
-				>
-			</File>
-			<File
-				RelativePath=".\gvc\gvplugin.h"
-				>
-			</File>
-			<File
-				RelativePath=".\gvc\gvplugin_device.h"
-				>
-			</File>
-			<File
-				RelativePath=".\gvc\gvplugin_layout.h"
-				>
-			</File>
-			<File
-				RelativePath=".\gvc\gvplugin_loadimage.h"
-				>
-			</File>
-			<File
-				RelativePath=".\gvc\gvplugin_render.h"
-				>
-			</File>
-			<File
-				RelativePath=".\gvc\gvplugin_textlayout.h"
-				>
-			</File>
-			<File
 				RelativePath=".\common\htmllex.h"
 				>
 			</File>
@@ -311,10 +255,6 @@
 			</File>
 			<File
 				RelativePath=".\common\ps_font_equiv.h"
-				>
-			</File>
-			<File
-				RelativePath=".\gvc\regex_win32.h"
 				>
 			</File>
 			<File
@@ -363,10 +303,6 @@
 			</File>
 			<File
 				RelativePath=".\common\colxlate.c"
-				>
-			</File>
-			<File
-				RelativePath=".\common\diagen.c"
 				>
 			</File>
 			<File
@@ -438,10 +374,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\common\hpglgen.c"
-				>
-			</File>
-			<File
 				RelativePath=".\common\htmllex.c"
 				>
 			</File>
@@ -466,14 +398,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\common\mifgen.c"
-				>
-			</File>
-			<File
-				RelativePath=".\common\mpgen.c"
-				>
-			</File>
-			<File
 				RelativePath=".\common\ns.c"
 				>
 			</File>
@@ -483,10 +407,6 @@
 			</File>
 			<File
 				RelativePath=".\pack\pack.c"
-				>
-			</File>
-			<File
-				RelativePath=".\common\picgen.c"
 				>
 			</File>
 			<File
@@ -521,15 +441,7 @@
 				RelativePath=".\common\utils.c"
 				>
 			</File>
-			<File
-				RelativePath=".\common\vtxgen.c"
-				>
-			</File>
 		</Filter>
-		<File
-			RelativePath=".\gvc\debug\BuildLog.htm"
-			>
-		</File>
 		<File
 			RelativePath=".\common\entities.html"
 			>

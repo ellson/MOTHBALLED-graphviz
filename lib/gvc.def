@@ -252,10 +252,7 @@ newPM
 newPS	
 nodeInduce	
 Nop	
-Obj	
-Output_file	
 Output_file_name	
-Output_lang	
 output_point	
 overlap_edge	
 overlap_label	

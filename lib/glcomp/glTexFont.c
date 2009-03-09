@@ -689,7 +689,9 @@ void fontSetModes (int state)
 	
 		glMatrixMode (matrixMode);
 	}
+
 }
+
 
 
 static int fontId(fontset_t* fontset,char* fontdesc)

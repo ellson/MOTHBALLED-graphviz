@@ -55,6 +55,7 @@
 
 #define GLCOMPSET_PANEL_BEVEL				(GLfloat)0.1
 #define	GLCOMPSET_BEVEL_DIFF				(GLfloat)0.001
+#define GLCOMPSET_DEFAULT_PAD		(GLfloat)3
 
 typedef void (*callbackfunc_t) (void *component);
 
@@ -82,6 +83,26 @@ typedef struct _glCompPanel {
     texFont_t* font;	//pointer to font to use
 
 } glCompPanel;
+typedef struct _glCompTrackBar {
+	GLfloat width,height;
+	glCompPanel* outerpanel;
+	glCompPanel* trackline;
+	glCompPanel* indicator;
+
+    GLfloat bevel;
+    glCompColor color;
+    glCompColor shadowcolor;
+
+
+	float value;
+	float maxvalue;
+	float minvalue;
+	int enabled;
+    int visible;
+    void *parentset;		//parent compset
+    int data;
+    texFont_t* font;	//pointer to font to use
+}glCompTrackBar;
 typedef struct _glCompLabel {
     glCompPoint pos;
     GLfloat size;

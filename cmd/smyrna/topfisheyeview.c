@@ -407,10 +407,10 @@ void drawtopfishedges(topview * t)
 					n = g[v].edges[i];
 				if (level !=0)
 					glColor4f((GLfloat) (hp->nlevels - level)*0.5 /  (GLfloat) hp->nlevels,
-				  (GLfloat) level / (GLfloat) hp->nlevels, 0,view->defaultnodealpha);
+				  (GLfloat) level / (GLfloat) hp->nlevels, 0,view->defaultedgealpha);
 				else
-				glColor3f((GLfloat) 1,
-				  (GLfloat) level / (GLfloat) hp->nlevels*2, 0);
+				glColor4f((GLfloat) 1,
+				  (GLfloat) level / (GLfloat) hp->nlevels*2, 0,view->defaultedgealpha);
 					if 	(get_temp_coords(t,level,n,&x,&y))
 					{
 							glVertex3f((GLfloat) x0, (GLfloat) y0,(GLfloat) 0);
