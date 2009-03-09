@@ -1,3 +1,6 @@
+March 9, 2009
+	- Release 2.22.1
+		- build fixes for Visual Studio and for FreeBSD
 March 3, 2009
 	- Release 2.22
 	- Core:
