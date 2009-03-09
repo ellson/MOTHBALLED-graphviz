@@ -581,8 +581,9 @@ static void free_printdict_t(printdict_t * dict)
     free(dict);
 }
 
-#if defined(__SUNPRO_C) || defined(__CYGWIN__) || defined(__MINGW32__) || defined(__FreeBSD__)
-/* for systems where ferror is a macro */
+#ifdef ferror
+/* if ferror is a macro (__SUNPRO_C __CYGWIN__ __MINGW32__ __FreeBSD__ and poss others)
+ * then wrap it in a function */
 static int agferror(FILE *stream)
 {
         return ferror(stream);
@@ -599,8 +600,10 @@ int agwrite(Agraph_t * g, FILE * fp)
         AG.fwrite = fwrite;   /* init to system version of fwrite() */
     }
     if (AG.ferror == NULL) {
-#if defined(__SUNPRO_C) || defined(__CYGWIN__) || defined(__MINGW32__) || defined(__FreeBSD__)
+#ifdef ferror
 #undef ferror
+	/* if ferror is a macro, then use our wrapper function, but 
+ 	 * undef the macro first so it doesn't subst in "AG.ferror" */
 	AG.ferror = agferror; /* init to ferror macro wrapper function */
 #else
 	AG.ferror = ferror;   /* init to system version of ferror() */
