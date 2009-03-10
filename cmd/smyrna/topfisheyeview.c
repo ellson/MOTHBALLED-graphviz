@@ -230,7 +230,6 @@ void prepare_topological_fisheye(topview* t)
     Hierarchy *hp;
     ex_vtx_data *gg;
     topview_node *np;
-	char buf[512];
 
     v_data *graph = makeGraph(t, &ne);
 
@@ -302,7 +301,7 @@ void printalllevels(topview* t)
 
 void drawtopfishnodes(topview * t)
 {
-    int level, v, i, n;
+    int level, v;
     Hierarchy *hp = t->h;
 
 	
@@ -333,8 +332,8 @@ void drawtopfishnodes(topview * t)
 						continue;
 
 				if (level !=0)
-					glColor4f((GLfloat) (hp->nlevels - level)*0.5 /  (GLfloat) hp->nlevels,
-				  (GLfloat) level / (GLfloat) hp->nlevels, 0,view->defaultnodealpha);
+					glColor4f((GLfloat) (hp->nlevels - level)*(GLfloat)0.5 /  (GLfloat) hp->nlevels,
+				  (GLfloat) level / (GLfloat) hp->nlevels, (GLfloat)0,(GLfloat)view->defaultnodealpha);
 				else
 				glColor4f((GLfloat) 1,
 				  (GLfloat) level / (GLfloat) hp->nlevels*2, 0,view->defaultnodealpha);
@@ -351,7 +350,7 @@ void drawtopfishnodes(topview * t)
 }
 void drawtopfishnodelabels(topview* t)
 {
-	int  v, i, n,finenodes,focusnodes;
+	int  v, finenodes,focusnodes;
 	char buf[512];
 	char* str;
 	float fs = view->FontSizeConst;
@@ -375,18 +374,17 @@ void drawtopfishnodelabels(topview* t)
 
 				if((v==t->fs->foci_nodes[0]) &&(focusnodes))
 				{
-					fs=view->FontSizeConst*1.4;
-					fontColorA(view->fontset->fonts[view->fontset->activefont],0, 0, 1, 1);
+					fs=view->FontSizeConst*(float)1.4;
+					fontColorA(view->fontset->fonts[view->fontset->activefont],(float)0, (float)0, (float)1, (float)1);
 					fontSize(view->fontset->fonts[view->fontset->activefont],fs);
-					fontDrawString(view->fontset->fonts[view->fontset->activefont],gg[v].physical_x_coord,gg[v].physical_y_coord, (fs*strlen(buf)*0.4),buf);
-					printf ("focus coords : %f , %f\n",gg[v].physical_x_coord,gg[v].physical_y_coord);
+					fontDrawString(view->fontset->fonts[view->fontset->activefont],gg[v].physical_x_coord,gg[v].physical_y_coord, (fs*strlen(buf)*(GLfloat)0.4),buf);
 				}
 				else if (finenodes)
 				{
 					fs=view->FontSizeConst;
 					fontColorA(view->fontset->fonts[view->fontset->activefont],0, 0, 0, 1);
 					fontSize(view->fontset->fonts[view->fontset->activefont],fs);
-					fontDrawString(view->fontset->fonts[view->fontset->activefont],gg[v].physical_x_coord,gg[v].physical_y_coord, (fs*strlen(buf)*0.4),buf);
+					fontDrawString(view->fontset->fonts[view->fontset->activefont],gg[v].physical_x_coord,gg[v].physical_y_coord, (fs*strlen(buf)*(GLfloat)0.4),buf);
 				}
 			}
 
@@ -414,7 +412,7 @@ void drawtopfishedges(topview * t)
 					double x, y;
 					n = g[v].edges[i];
 				if (level !=0)
-					glColor4f((GLfloat) (hp->nlevels - level)*0.5 /  (GLfloat) hp->nlevels,
+					glColor4f((GLfloat) (hp->nlevels - level)*(GLfloat)0.5 /  (GLfloat) hp->nlevels,
 				  (GLfloat) level / (GLfloat) hp->nlevels, 0,view->defaultedgealpha);
 				else
 				glColor4f((GLfloat) 1,
@@ -672,7 +670,7 @@ int get_active_frame(topview* t)
 
 void drawtopologicalfisheyestatic(topview * t)
 {
-    int level, v, i, n;
+    int level, v;
     Hierarchy* hp = t->h;
 
 	glPointSize(15);
@@ -680,12 +678,12 @@ void drawtopologicalfisheyestatic(topview * t)
     for (level=0;level < hp->nlevels;level++) {
 	for (v=0;v < hp->nvtxs[level]; v++) {
 	    ex_vtx_data* gg = hp->geom_graphs[level];
-	    vtx_data* g = hp->graphs[level];
+	    v_data* g = hp->graphs[level];
 	    if(gg[v].active_level==level) {
 		double x0 = gg[v].physical_x_coord;
 		double y0 = gg[v].physical_y_coord;
 //		glColor3f((GLfloat)(hp->nlevels-level)/(GLfloat)hp->nlevels,(GLfloat)level/(GLfloat)hp->nlevels,0);
-		glColor4f(0,1,0,0.2);
+		glColor4f((GLfloat)0,(GLfloat)1,(GLfloat)0,(GLfloat)0.2);
 		glVertex3f((GLfloat)x0,(GLfloat)y0,(GLfloat)0);
 	    }
 	}

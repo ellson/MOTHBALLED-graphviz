@@ -17,6 +17,9 @@
 #include "glTexFontTGA.h"
 #include "glTexFontDefs.h"
 #include "glTexFontInclude.h"
+#include "glcompbutton.h"
+#include "glcomppanel.h"
+#include "glcomplabel.h"
 #include "gltemplate.h"
 #include "topview.h"
 #include "math.h"
@@ -79,7 +82,7 @@ void preparetopview(Agraph_t * g, topview * t)
 	int maxlabelsize=0;
 	float maxedgelen,minedgelen,len,edgelength;
 	maxedgelen=0;
-	minedgelen=99999999;	//FIX ME if you have a giant graph or fix your graph
+	minedgelen=99999999.00000;	//FIX ME if you have a giant graph or fix your graph
 	edgelength=0;
 
     ind = 0;
@@ -164,7 +167,7 @@ void preparetopview(Agraph_t * g, topview * t)
 			t->Nodes[ind].Label2 = '\0';
 
 		if (t->Nodes[ind].Label)
-			maxlabelsize = maxlabelsize + strlen(t->Nodes[ind].Label);
+			maxlabelsize = maxlabelsize + (int)strlen(t->Nodes[ind].Label);
 
 		for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
 		{
@@ -1441,11 +1444,11 @@ static glCompSet *glcreate_gl_topview_menu(void)
      */
 
     //small panel left bottom
-    p = glCompPanelNew(25, 25, 325, 40);
+    p = glCompPanelNew(25, 25, 325, 40,scientific_y);
     p->data = 0;
     glCompSetAddPanel(s, p);
 
-    b = glCompButtonNew(5, 7, 75, 25, "BROWSE", '\0', 0, 0);
+    b = glCompButtonNew(5, 7, 75, 25, "BROWSE", '\0', 0, 0,scientific_y);
     b->panel = p;
     b->groupid = 1;
     b->customptr = view;
@@ -1453,7 +1456,7 @@ static glCompSet *glcreate_gl_topview_menu(void)
     b->callbackfunc = menu_click_control;
 
 
-    b = glCompButtonNew(85, 7, 75, 25, "SHOW", '\0', 0, 0);
+    b = glCompButtonNew(85, 7, 75, 25, "SHOW", '\0', 0, 0,scientific_y);
     b->panel = p;
     b->customptr = view;
     b->groupid = 1;
@@ -1461,14 +1464,14 @@ static glCompSet *glcreate_gl_topview_menu(void)
     glCompSetAddButton(s, b);
 
 
-    b = glCompButtonNew(165, 7, 75, 25, "CAMERAS", '\0', 0, 0);
+    b = glCompButtonNew(165, 7, 75, 25, "CAMERAS", '\0', 0, 0,scientific_y);
     b->customptr = view;
     b->panel = p;
     b->groupid = 1;
     b->callbackfunc = menu_click_3d_view;
     glCompSetAddButton(s, b);
 
-    b = glCompButtonNew(245, 7, 75, 25, "HIDE", '\0', 0, 0);
+    b = glCompButtonNew(245, 7, 75, 25, "HIDE", '\0', 0, 0,scientific_y);
     b->color.R = 1;
     b->customptr = view;
     b->panel = p;
@@ -1476,14 +1479,18 @@ static glCompSet *glcreate_gl_topview_menu(void)
     b->callbackfunc = menu_click_hide;
     glCompSetAddButton(s, b);
 
+    //Fisheye control panel
+//	p = glCompPanelNew(	25, view->h-40, 165, 40,scientific_y);
+  //  p->data = 1;		//control panel
+  //  glCompSetAddPanel(s, p);
 
-    //control panel
-    p = glCompPanelNew(25, 75, 165, 277);
+	//control panel
+    p = glCompPanelNew(25, 75, 165, 277,scientific_y);
     p->data = 1;		//control panel
     glCompSetAddPanel(s, p);
 
     //view mode normal button
-    b = glCompButtonNew(5, 7, 75, 25, "NORMAL", '\0', 0, 0);
+    b = glCompButtonNew(5, 7, 75, 25, "NORMAL", '\0', 0, 0,scientific_y);
     b->color.R = 0;
     b->color.G = 1;
     b->color.B = (float) 0.1;
@@ -1494,7 +1501,7 @@ static glCompSet *glcreate_gl_topview_menu(void)
 
     glCompSetAddButton(s, b);
     //view mode fisheye button
-    b = glCompButtonNew(85, 7, 75, 25, "FISHEYE", '\0', 0, 0);
+    b = glCompButtonNew(85, 7, 75, 25, "FISHEYE", '\0', 0, 0,scientific_y);
     b->color.R = 0;
     b->color.G = 1;
     b->color.B = (float) 0.1;
@@ -1505,33 +1512,33 @@ static glCompSet *glcreate_gl_topview_menu(void)
     glCompSetAddButton(s, b);
 
     //rotate
-    b = glCompButtonNew(5, 197, 72, 72, "", smyrna_icon_rotate, 72, 72);
+    b = glCompButtonNew(5, 197, 72, 72, "", smyrna_icon_rotate, 72, 72,scientific_y);
     b->groupid = 3;
     b->customptr = view;
     b->panel = p;
     b->callbackfunc = menu_click_rotate;
     glCompSetAddButton(s, b);
 
-    b = glCompButtonNew(80, 251, 40, 20, "X", '\0', 0, 0);
+    b = glCompButtonNew(80, 251, 40, 20, "X", '\0', 0, 0,scientific_y);
     b->customptr = view;
     b->panel = p;
     b->groupid = 1;
     b->callbackfunc = menu_click_rotate_x;
     glCompSetAddButton(s, b);
-    b = glCompButtonNew(125, 251, 40, 20, "Y", '\0', 0, 0);
+    b = glCompButtonNew(125, 251, 40, 20, "Y", '\0', 0, 0,scientific_y);
     b->customptr = view;
     b->panel = p;
     b->groupid = 1;
     b->callbackfunc = menu_click_rotate_y;
     glCompSetAddButton(s, b);
-    b = glCompButtonNew(80, 231, 40, 20, "XY", '\0', 0, 0);
+    b = glCompButtonNew(80, 231, 40, 20, "XY", '\0', 0, 0,scientific_y);
     b->customptr = view;
     b->panel = p;
     b->groupid = 1;
     b->callbackfunc = menu_click_rotate_xy;
 
 	glCompSetAddButton(s, b);
-    b = glCompButtonNew(125, 231, 40, 20, "Z", '\0', 0, 0);
+    b = glCompButtonNew(125, 231, 40, 20, "Z", '\0', 0, 0,scientific_y);
     b->customptr = view;
     b->panel = p;
     b->groupid = 1;
@@ -1539,7 +1546,7 @@ static glCompSet *glcreate_gl_topview_menu(void)
     glCompSetAddButton(s, b);
 
 	//sanity button to center the drawing and fit it in the screen
-    b = glCompButtonNew(80, 201, 90, 20, "center", '\0', 0, 0);
+    b = glCompButtonNew(80, 201, 90, 20, "center", '\0', 0, 0,scientific_y);
     b->customptr = view;
     b->panel = p;
     b->groupid = 0;
@@ -1554,7 +1561,7 @@ static glCompSet *glcreate_gl_topview_menu(void)
 
     //pan button
     b = glCompButtonNew(5, 120, 72, 72, "adasasds", smyrna_icon_pan, 72,
-			72);
+			72,scientific_y);
     b->groupid = 3;
     b->customptr = view;
     b->panel = p;
@@ -1562,7 +1569,7 @@ static glCompSet *glcreate_gl_topview_menu(void)
     glCompSetAddButton(s, b);
     //zoom
     b = glCompButtonNew(85, 120, 72, 72, "adasasds", smyrna_icon_zoom, 72,
-			72);
+			72,scientific_y);
     b->groupid = 3;
     b->customptr = view;
     b->panel = p;
@@ -1570,7 +1577,7 @@ static glCompSet *glcreate_gl_topview_menu(void)
     glCompSetAddButton(s, b);
     //zoom +
     b = glCompButtonNew(85, 82, 36, 36, "adasasds", smyrna_icon_zoomplus,
-			36, 36);
+			36, 36,scientific_y);
     b->groupid = 0;
     b->customptr = view;
     b->panel = p;
@@ -1578,7 +1585,7 @@ static glCompSet *glcreate_gl_topview_menu(void)
     glCompSetAddButton(s, b);
     //zoom -
     b = glCompButtonNew(121, 82, 36, 36, "adasasds", smyrna_icon_zoomminus,
-			36, 36);
+			36, 36,scientific_y);
     b->groupid = 0;
     b->panel = p;
     b->customptr = view;
@@ -1586,19 +1593,19 @@ static glCompSet *glcreate_gl_topview_menu(void)
     glCompSetAddButton(s, b);
 
     b = glCompButtonNew(5, 45, 72, 72, "adasasds", smyrna_icon_fisheye, 72,
-			72);
+			72,scientific_y);
     b->groupid = 3;
     b->panel = p;
     b->customptr = view;
     b->callbackfunc = menu_click_fisheye_magnifier;
     glCompSetAddButton(s, b);
     //zoom percantage label
-    l = glCompLabelNew(100, 45, 24, "100");
+    l = glCompLabelNew(100, 45, 24, "100",scientific_y);
     l->panel = p;
     l->fontsizefactor = (float) 0.4;
     glCompSetAddLabel(s, l);
     view->Topview->customptr = l;
-    l = glCompLabelNew(93, 65, 20, "zoom");
+    l = glCompLabelNew(93, 65, 20, "zoom",scientific_y);
     l->panel = p;
     l->fontsizefactor = (float) 0.4;
     glCompSetAddLabel(s, l);

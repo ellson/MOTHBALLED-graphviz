@@ -455,7 +455,7 @@ static void SetFont(xdot_op * op, int param)
 {
 	//activate the right font
 	view->fontset->activefont=add_font(view->fontset,op->u.font.name);//load or set active font
-	view->FontSize = (int) op->u.font.size;
+	view->FontSize =  op->u.font.size;
 }
 
 static void InsertImage(xdot_op * op, int param)
@@ -480,8 +480,8 @@ static void EmbedText(xdot_op * op, int param)
     if (param == 1)		//selected
 	fontColor(view->fontset->fonts[view->fontset->activefont],view->selectedNodeColor.R, view->selectedNodeColor.G,
 		  view->selectedNodeColor.B);
-	fontDrawString(view->fontset->fonts[view->fontset->activefont],(int) (x - dx), op->u.text.y - (int) dy,
-		   op->u.text.width, op->u.text.text);
+	fontDrawString(view->fontset->fonts[view->fontset->activefont], (x - dx), (GLfloat)op->u.text.y -  dy,
+		   (GLfloat)op->u.text.width, op->u.text.text);
 }
 
 void draw_selection_box(ViewInfo * view)
@@ -648,7 +648,7 @@ static void drawXdot(xdot * xDot, int param, void *p)
 
 	for (id = 0; id < xDot->cnt; id++)
 	{
-		globalz +=  GLOBAL_Z_OFFSET;
+		globalz +=  (float)GLOBAL_Z_OFFSET;
 		op = ops + id;
 		op->obj = p;
 		op->op.drawfunc(&(op->op), param);
@@ -879,9 +879,9 @@ int draw_node_hintbox_gl_polygon(GLfloat x,GLfloat y,GLfloat z,GLfloat fs,char* 
 {
 
 
-	float X,Y,Z,pad;
-	pad=fs/5.0;
-	X=x;Y=y;Z=z+0.0005;
+	GLfloat X,Y,Z,pad;
+	pad=fs/(GLfloat)5.0;
+	X=x;Y=y;Z=z+(GLfloat)0.0005;
 	glBegin(GL_POLYGON);
 	glVertex3f(X,Y,Z);
 	Y=Y + fs;
@@ -897,7 +897,7 @@ int draw_node_hintbox_gl_polygon(GLfloat x,GLfloat y,GLfloat z,GLfloat fs,char* 
 	glVertex3f(X,Y,Z);
 	X=x;Y=Y+fs+2*pad;
 	glVertex3f(X,Y,Z);
-	X=x+strlen(text)*fs/2.0+2.0*pad;
+	X=x+strlen(text)*fs/(GLfloat)2.0+(GLfloat)2.0*pad;
 	glVertex3f(X,Y,Z);
 	Y=y+fs;
 	glVertex3f(X,Y,Z);
@@ -913,14 +913,14 @@ int draw_node_hintbox_gl_line(GLfloat x,GLfloat y,GLfloat z,GLfloat fs,char* tex
 {
 
 
-	float X,Y,Z,pad;
-	pad=fs/5.0;
-	X=x;Y=y;Z=z+0.001;
+	GLfloat X,Y,Z,pad;
+	pad=fs/(GLfloat)5.0;
+	X=x;Y=y;Z=z+(GLfloat)0.001;
 	glBegin(GL_LINE_STRIP);
 	glVertex3f(X,Y,Z);
 	Y=Y + 2*fs+2*pad;
 	glVertex3f(X,Y,Z);
-	X=X+2*pad+strlen(text)*fs/2.0;
+	X=X+2*pad+strlen(text)*fs/(GLfloat)2.0;
 	glVertex3f(X,Y,Z);
 	Y=y+fs;
 	glVertex3f(X,Y,Z);

@@ -138,16 +138,7 @@ void fontScissorNormal (texFont_t* font,int xpos, int ypos, int tabs, int carrag
 }
 /*
 =============
-fontScissorTextRegion
 
-Scissor region used setup for a text region.
-=============
-*/
-void fontScissorTextRegion (texFont_t* font)
-{
-    glScissor (font->regionX, font->regionY, font->regionW, font->regionH);
-}
-/*
 =============
 fontFgColorReset
 
@@ -210,7 +201,7 @@ fontRegion
 Sets up a font region.  Only good for one fontDrawString. 
 =============
 */
-void fontRegion (texFont_t* font,int x, int y, int w, int h)
+void fontRegion (texFont_t* font,float x, float y, float w, float h)
 {
     font->region = 1;
     font->regionX = x;
@@ -268,8 +259,8 @@ void fontRenderChar (texFont_t* font,char c, GLfloat x, GLfloat y, GLfloat size)
     if (font->shadow)
     {
         if (!font->bold)
-	        fontDrawChar (font,c, x + 1.0,  y + 1.0, size, 1);
-        else fontDrawChar (font,c, x + 2.0,  y + 1.0, size, 1);
+	        fontDrawChar (font,c, x + (GLfloat)1.0,  y + (GLfloat)1.0, size, 1);
+        else fontDrawChar (font,c, x + (GLfloat)2.0,  y + (GLfloat)1.0, size, 1);
     }
     
 
@@ -277,7 +268,7 @@ void fontRenderChar (texFont_t* font,char c, GLfloat x, GLfloat y, GLfloat size)
 	fontDrawChar (font,c, x, y, size, 0);
 
 	if (font->bold)
-        fontDrawChar (font,c, x + 1.0, y, size, 0);
+        fontDrawChar (font,c, x + (GLfloat)1.0, y, size, 0);
 }
 /*
 =============
@@ -339,8 +330,8 @@ void fontWalkString (texFont_t* font,char *buffPtr, GLfloat xpos, GLfloat ypos, 
 	GLfloat charGap;
 	xMax = vPort[0] + vPort[2];
 
-    carrage = fontGetCharHits (buffPtr, '\n');
-	tabs = fontGetCharHits (buffPtr, '\t');
+    carrage = (GLfloat) fontGetCharHits (buffPtr, '\n');
+	tabs = (GLfloat) fontGetCharHits (buffPtr, '\t');
 
 	if (!tabs)
 		tabs = 1;
@@ -797,12 +788,12 @@ fontset_t* fontset_init()
 }
 
 static char* fontpath = NULL;
-static int fontpathsz = 0;
+static size_t fontpathsz = 0;
 
 int add_font(fontset_t* fontset,char* fontdesc)
 {
     int id;	
-    int sz;
+    size_t sz;
     texFont_t* tf;
 
     id=fontId(fontset,fontdesc);

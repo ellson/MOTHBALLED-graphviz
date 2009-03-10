@@ -236,6 +236,21 @@ gboolean expose_event(GtkWidget * widget, GdkEventExpose * event,
     return TRUE;
 }
 
+static gboolean key_release_event(GtkWidget * widget,
+				     GdkEventButton * event, gpointer data)
+{
+	printf ("a key is released\n");
+
+}
+
+static gboolean key_press_event(GtkWidget * widget, GdkEventKey * event,
+				gpointer data)
+{
+	printf ("a key is pressed\n");
+
+}
+
+
 /*
 	when a mouse button is clicked this function is called
 	params:gtk opgn gl canvas , GdkEventButton object and custom data
@@ -583,7 +598,7 @@ void create_window(GdkGLConfig * glconfig, GtkWidget * vbox)
 //  GDK_BUTTON_MOTION_MASK      = 1 << 4,
 			  GDK_BUTTON_MOTION_MASK |
 			   GDK_POINTER_MOTION_MASK|
-			  GDK_BUTTON_PRESS_MASK |
+			  GDK_BUTTON_PRESS_MASK |GDK_KEY_PRESS |
 			  GDK_BUTTON_RELEASE_MASK |
 			  GDK_VISIBILITY_NOTIFY_MASK);
 
@@ -598,7 +613,11 @@ void create_window(GdkGLConfig * glconfig, GtkWidget * vbox)
 		     G_CALLBACK(button_press_event), NULL);
     g_signal_connect(G_OBJECT(view->drawing_area), "button_release_event",
 		     G_CALLBACK(button_release_event), NULL);
-    g_signal_connect(G_OBJECT(view->drawing_area), "motion_notify_event",
+    g_signal_connect(G_OBJECT(view->drawing_area), "key_release_event",
+		     G_CALLBACK(button_release_event), NULL);
+    g_signal_connect(G_OBJECT(view->drawing_area), "key_press_event",
+		     G_CALLBACK(button_release_event), NULL);
+	g_signal_connect(G_OBJECT(view->drawing_area), "motion_notify_event",
 		     G_CALLBACK(motion_notify_event), NULL);
 
 

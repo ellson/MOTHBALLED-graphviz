@@ -52,7 +52,7 @@ unsigned char *fontGetRGBA (FILE *s, int size)
 {
 	unsigned char *rgba;
 	unsigned char temp;
-	int bread;
+	size_t bread;
 	int i;
 
 	rgba = malloc (size * 4); 
@@ -86,11 +86,11 @@ fontGetRGB
 Reads in RGB data for a 24bit image. 
 =============
 */
-unsigned char *fontGetRGB (FILE *s, int size)
+unsigned char *fontGetRGB (FILE *s, size_t size)
 {
 	unsigned char *rgb;
 	unsigned char temp;
-	int bread;
+	size_t bread;
 	int i;
 
 	rgb = malloc (size * 3); 
@@ -98,7 +98,7 @@ unsigned char *fontGetRGB (FILE *s, int size)
 	if (rgb == NULL)
 		return 0;
 
-	bread = fread (rgb, sizeof (unsigned char), size * 3, s);
+	bread = fread (rgb, sizeof (unsigned char), size * (size_t) 3, s);
 
 	if (bread != size * 3)
 	{
@@ -107,7 +107,7 @@ unsigned char *fontGetRGB (FILE *s, int size)
 	}
 
     /* TGA is stored in BGR, make it RGB */
-	for (i = 0; i < size * 3; i += 3)
+	for (i = 0; i < (int)size * 3; i += 3)
 	{
 		temp = rgb[i];
 		rgb[i] = rgb[i + 2];
@@ -128,7 +128,7 @@ Reads a gray scale image.
 unsigned char *fontGetGray (FILE *s, int size)
 {
 	unsigned char *grayData;
-	int bread;
+	size_t bread;
 
 	grayData = malloc (size);
 
@@ -304,9 +304,9 @@ unsigned char *load_png_font(char* file_name,int *imageWidth,int *imageHeight)
 
 	b0=-1;b1=-1;b2=-1;b3=-1;
 
-	for (i=0; i < info_ptr->height; i++)
+	for (i=0; i < (int)info_ptr->height; i++)
    {
-	   for (ii=0;ii < png_get_rowbytes(png_ptr, info_ptr); ii=ii+pixeloffset)	
+	   for (ii=0;ii < (int)png_get_rowbytes(png_ptr, info_ptr); ii=ii+pixeloffset)	
 		{
 			imageData[c]=row_pointers[info_ptr->height-i-1][ii];
 

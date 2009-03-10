@@ -46,8 +46,8 @@ int glmotion_main(ViewInfo * v,GdkEventMotion * event,GtkWidget * widget)
 	&& ((v->mouse.mouse_mode == MM_MAGNIFIER)
 	    || (v->mouse.mouse_mode == MM_FISHEYE_MAGNIFIER)))
 	{
-		v->mouse.mouse_X = event->x;
-		v->mouse.mouse_Y =  event->y;
+		v->mouse.mouse_X = (float)event->x;
+		v->mouse.mouse_Y =  (float)event->y;
 		redraw = TRUE;
     }
 

@@ -17,6 +17,10 @@
 #include "gui.h"
 #include "math.h"
 #include "memory.h"
+#include "glcompbutton.h"
+#include "glcomplabel.h"
+#include "glcomppanel.h"
+
 
 static viewport_camera *new_viewport_camera(ViewInfo * view)
 {
@@ -195,13 +199,13 @@ void attach_camera_widget(ViewInfo * view)
     /*container for camera buttons */
     p = glCompPanelNew((GLfloat) 25, (GLfloat) 75,
 		       (GLfloat) 4 * PANEL_PADDING +
-		       3 * CAMERA_BUTTON_WIDTH, (GLfloat) p_height);
+		       3 * CAMERA_BUTTON_WIDTH, (GLfloat) p_height,scientific_y);
     p->data = 3;
     glCompSetAddPanel(s, p);
 
     b = glCompButtonNew((GLfloat) PANEL_PADDING, (GLfloat) PANEL_PADDING,
 			(GLfloat) CAMERA_BUTTON_WIDTH,
-			(GLfloat) CAMERA_BUTTON_HEIGHT, "ADD", '\0', 0, 0);
+			(GLfloat) CAMERA_BUTTON_HEIGHT, "ADD", '\0', 0, 0,scientific_y);
     b->panel = p;
     b->groupid = 0;
     b->customptr = view;
@@ -212,7 +216,7 @@ void attach_camera_widget(ViewInfo * view)
 			(GLfloat) CAMERA_BUTTON_WIDTH,
 			(GLfloat) PANEL_PADDING,
 			(GLfloat) CAMERA_BUTTON_WIDTH,
-			(GLfloat) CAMERA_BUTTON_HEIGHT, "2D", '\0', 0, 0);
+			(GLfloat) CAMERA_BUTTON_HEIGHT, "2D", '\0', 0, 0,scientific_y);
     b->panel = p;
     b->groupid = 4;		//4 is assigned to all camera buttons 
     b->customptr = view;
@@ -228,7 +232,7 @@ void attach_camera_widget(ViewInfo * view)
 	sprintf(buf, "CAM%i", ind + 1);
 	b = glCompButtonNew((GLfloat)x, (GLfloat)y, (GLfloat) CAMERA_BUTTON_WIDTH,
 			    (GLfloat) CAMERA_BUTTON_HEIGHT, buf, '\0', 0,
-			    0);
+			    0,scientific_y);
 	b->panel = p;
 	b->groupid = 4;		//4 is assigned to all camera buttons 
 	b->data = ind;		//assign camera id to custom data to use single call back
@@ -239,7 +243,7 @@ void attach_camera_widget(ViewInfo * view)
 	x = PANEL_PADDING * 2 + CAMERA_BUTTON_WIDTH;
 	b = glCompButtonNew((GLfloat)x,(GLfloat) y, (GLfloat) CAMERA_BUTTON_WIDTH,
 			    (GLfloat) CAMERA_BUTTON_HEIGHT, "Remove", '\0',
-			    0, 0);
+			    0, 0,scientific_y);
 	b->panel = p;
 	b->groupid = 0;
 	b->data = ind;		//assign camera id to custom data to use single call back
@@ -251,7 +255,7 @@ void attach_camera_widget(ViewInfo * view)
 	b = glCompButtonNew((GLfloat) x, (GLfloat) y,
 			    (GLfloat) CAMERA_BUTTON_WIDTH,
 			    (GLfloat) CAMERA_BUTTON_HEIGHT, "Edit", '\0',
-			    0, 0);
+			    0, 0,scientific_y);
 	b->panel = p;
 	b->groupid = 0;
 	b->data = ind;		//assign camera id to custom data to use single call back

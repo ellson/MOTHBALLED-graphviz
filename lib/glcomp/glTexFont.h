@@ -23,6 +23,7 @@ typedef float GLfloat;
 #include <unistd.h>
 #include <GL/gl.h>	
 #endif
+#include "glcompdefs.h"
 
 /* Error Codes */
 #define FONT_FILE_NOT_FOUND          -13 /* file was not found */
@@ -36,38 +37,6 @@ typedef float GLfloat;
 typedef float vec2_t[2];
 #endif
 
-typedef struct
-{
-    float fgColor[4];   /* foreground color, default white */
-    float gdColor[4];   /* gradient color, default gray */
-    float bgColor[4];   /* background color, default gray */
-    float size;           /* size of text, default 12 */
-    int shadow;         /* shadow text? default 0 */
-    int gradient;       /* gradient? default 0 */
-    int italic;         /* italic amount, defaul 0 */
-    int bold;           /* bold text? */
-    int region;         /* do we have a text region */
-    float regionX;        /* lower left x */
-    float regionY;        /* lower left y */
-    float regionW;        /* text region w */
-    float regionH;        /* text region h */
-    float tIncX;        /* used for texture coords, x axis amount to move */
-    float tIncY;        /* used for texture coords, y axis amount to move */
-    int blockRow;       /* characters per row */
-    int blockCol;       /* characters per col */
-    unsigned int texId; /* texture id */
-	float zdepth;	//third dimension , depth of fonts
-	char* fontdesc;	//font description
-} texFont_t;
-
-
-typedef struct
-{
-	texFont_t** fonts;
-	int count;
-	int activefont;
-	char* font_directory;	//location where the glfont files are stored
-}fontset_t;
 
 #ifdef __cplusplus
 extern "C" {
@@ -127,7 +96,7 @@ Sets up a font region.  Upper left corner is described by (xpos, ypos).
 The region is w units wide and h units tall.  
 =============
 */
-void fontRegion (texFont_t* font,int xpos, int ypos, int w, int h);
+void fontRegion (texFont_t* font,float xpos, float ypos, float w, float h);
 /*
 =============
 fontSize 

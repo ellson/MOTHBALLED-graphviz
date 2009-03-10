@@ -148,11 +148,23 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\glcompbutton.h"
+				>
+			</File>
+			<File
+				RelativePath=".\glcomplabel.h"
+				>
+			</File>
+			<File
 				RelativePath=".\glcompset.h"
 				>
 			</File>
 			<File
 				RelativePath=".\glcomptexture.h"
+				>
+			</File>
+			<File
+				RelativePath=".\glCompTrackBar.h"
 				>
 			</File>
 			<File
@@ -192,11 +204,27 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\glcompbutton.c"
+				>
+			</File>
+			<File
+				RelativePath=".\glcomplabel.c"
+				>
+			</File>
+			<File
+				RelativePath=".\glcomppanel.c"
+				>
+			</File>
+			<File
 				RelativePath=".\glcompset.c"
 				>
 			</File>
 			<File
 				RelativePath=".\glcomptexture.c"
+				>
+			</File>
+			<File
+				RelativePath=".\glCompTrackBar.c"
 				>
 			</File>
 			<File
