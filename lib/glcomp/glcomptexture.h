@@ -26,11 +26,9 @@
 #include <stdio.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include "glcompdefs.h"
 
-typedef struct {
-    unsigned int id;
-    float w, h;
-} glCompTexture;
+
 
 glCompTexture *glCompCreateTextureFromRaw(char *filename, int width,
 					  int height, int wrap);

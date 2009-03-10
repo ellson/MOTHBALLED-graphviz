@@ -58,7 +58,7 @@ static PangoLayout *  get_pango_layout (cairo_t	*cr,
 
 	desc = pango_font_description_from_string(fontdescription);
 //	pango_font_description_set_family(desc, "CENTAUR.TTF");
-    pango_font_description_set_size (desc, DEFAULT_FONT_SIZE * PANGO_SCALE/2.0);
+    pango_font_description_set_size (desc, (gint)(DEFAULT_FONT_SIZE * PANGO_SCALE/2.0));
 //	pango_font_description_set_style    (desc,PANGO_STYLE_ITALIC);
 
     if (! pango_parse_markup (markup_text, -1, '\0', &attr_list, &text, NULL, NULL))
@@ -112,7 +112,7 @@ int create_font_file(char* fontdescription,char* fontfile,float gw,float gh)
 	if(file_exists(fontfile))	//checking if font file has already been created
 		return 0;
 	//create the right size canvas for character set
-	surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32,(float)ncolumns*gw,gh*(float)ncolumns);
+	surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32,(int)((float)ncolumns*gw),(int)(gh*(float)ncolumns));
 	cr = cairo_create(surface);
 	//draw a rectangle with same size of canvas
 	cairo_rectangle(cr, 0, 0,(float)ncolumns*gw,gh*(float)ncolumns);
@@ -132,10 +132,10 @@ int create_font_file(char* fontdescription,char* fontfile,float gw,float gh)
 		cairo_move_to(cr,X,Y);
 		layout = get_pango_layout (cr,buf,fontdescription, &width, &height);
 		pango_cairo_show_layout(cr, layout);
-		X=X+gw;
+		X=X+(int)gw;
 		if (counter==ncolumns)
 		{
-			X=0;Y=Y+gh;
+			X=0;Y=Y+(int)gh;
 			counter=0;
 		}
 	}	
