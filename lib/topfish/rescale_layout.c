@@ -338,14 +338,16 @@ rescale_layout_polarFocus(v_data * graph, int n,
     int *ordering;
     double ratio;
 
-    for (i = 0; i < n; i++) {
-	distances[i] = DIST(x_coords[i], y_coords[i], x_focus, y_focus);
+    for (i = 0; i < n; i++) 
+	{
+		distances[i] = DIST(x_coords[i], y_coords[i], x_focus, y_focus);
     }
     cpvec(orig_distances, 0, n - 1, distances);
 
     ordering = N_NEW(n, int);
-    for (i = 0; i < n; i++) {
-	ordering[i] = i;
+    for (i = 0; i < n; i++) 
+	{
+		ordering[i] = i;
     }
     quicksort_place(distances, ordering, 0, n - 1);
 
@@ -353,41 +355,51 @@ rescale_layout_polarFocus(v_data * graph, int n,
     smoothed_densities = smooth_vec(densities, ordering, n, interval, smoothed_densities);
 
     // rescale distances
-    if (distortion < 1.01 && distortion > 0.99) {
-	for (i = 1; i < n; i++) {
-	    distances[ordering[i]] =
-		distances[ordering[i - 1]] + (orig_distances[ordering[i]] -
+    if (distortion < 1.01 && distortion > 0.99) 
+	{
+		for (i = 1; i < n; i++) 
+		{
+			distances[ordering[i]] =	distances[ordering[i - 1]] + (orig_distances[ordering[i]] -
 					      orig_distances[ordering
 							     [i -
 							      1]]) / smoothed_densities[ordering[i]];
-	}
-    } else {
-	double factor;
-	// just to make milder behavior:
-	if (distortion >= 0) {
-	    factor = sqrt(distortion);
-	} else {
-	    factor = -sqrt(-distortion);
-	}
-	for (i = 1; i < n; i++) {
-	    distances[ordering[i]] =
-		distances[ordering[i - 1]] + (orig_distances[ordering[i]] -
+		}
+    } else 
+	{
+		double factor;
+		// just to make milder behavior:
+		if (distortion >= 0) 
+		{
+			factor = sqrt(distortion);
+		} 
+		else 
+		{
+			factor = -sqrt(-distortion);
+		}
+		for (i = 1; i < n; i++) 
+		{
+			distances[ordering[i]] =
+				distances[ordering[i - 1]] + (orig_distances[ordering[i]] -
 					      orig_distances[ordering
 							     [i -
 							      1]]) /
-		pow(smoothed_densities[ordering[i]], factor);
-	}
+			pow(smoothed_densities[ordering[i]], factor);
+		}
     }
 
     // compute new coordinate:
-    for (i = 0; i < n; i++) {
-	if (orig_distances[i] == 0) {
-	    ratio = 0;
-	} else {
-	    ratio = distances[i] / orig_distances[i];
-	}
-	x_coords[i] = x_focus + (x_coords[i] - x_focus) * ratio;
-	y_coords[i] = y_focus + (y_coords[i] - y_focus) * ratio;
+    for (i = 0; i < n; i++) 
+	{
+		if (orig_distances[i] == 0) 
+		{
+			ratio = 0;
+		} 
+		else 
+		{
+			ratio = distances[i] / orig_distances[i];
+		}
+		x_coords[i] = x_focus + (x_coords[i] - x_focus) * ratio;
+		y_coords[i] = y_focus + (y_coords[i] - y_focus) * ratio;
     }
 
     free(densities);
@@ -413,29 +425,34 @@ rescale_layout_polar(double *x_coords, double *y_coords,
 
     width -= 2 * margin;
     height -= 2 * margin;
+	printf ("polar focus coords : %f , %f\n",x_foci[0],y_foci[0]);
+
 
     // compute original aspect ratio
     minX = maxX = x_coords[0];
     minY = maxY = y_coords[0];
-    for (i = 1; i < n; i++) {
-	if (x_coords[i] < minX)
-	    minX = x_coords[i];
-	if (y_coords[i] < minY)
-	    minY = y_coords[i];
-	if (x_coords[i] > maxX)
-	    maxX = x_coords[i];
-	if (y_coords[i] > maxY)
-	    maxY = y_coords[i];
+    for (i = 1; i < n; i++) 
+	{
+		if (x_coords[i] < minX)
+		    minX = x_coords[i];
+		if (y_coords[i] < minY)
+			minY = y_coords[i];
+		if (x_coords[i] > maxX)
+			maxX = x_coords[i];
+		if (y_coords[i] > maxY)
+			maxY = y_coords[i];
     }
     aspect_ratio = (maxX - minX) / (maxY - minY);
 
     // construct mutual neighborhood graph
     graph = UG_graph(x_coords, y_coords, n, 0);
 
-    if (num_foci == 1) {	// accelerate execution of most common case
-	rescale_layout_polarFocus(graph, n, x_coords, y_coords, x_foci[0],
+    if (num_foci == 1) 
+	{	// accelerate execution of most common case
+		rescale_layout_polarFocus(graph, n, x_coords, y_coords, x_foci[0],
 				  y_foci[0], interval, distortion);
-    } else {
+    } else
+	{
 	// average-based rescale
 	double *final_x_coords = N_NEW(n, double);
 	double *final_y_coords = N_NEW(n, double);

@@ -42,6 +42,7 @@ static double dist3d(double x1, double y1, double z1, double x2, double y2,
     return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) +
 		(z1 - z2) * (z1 - z2));
 }
+static void drawtopologicalfisheyestatic(topview * t);
 
 
 static double G(double x)
@@ -57,43 +58,48 @@ void fisheye_polar(double x_focus, double y_focus, topview * t)
     double distance, distorted_distance, ratio, range;
 
     range = 0;
-    for (i = 1; i < t->Nodecount; i++) {
-	if (point_within_ellips_with_coords
-	    ((float) x_focus, (float) y_focus, (float) view->fmg.R,
-	     (float) view->fmg.R, t->Nodes[i].x, t->Nodes[i].y)) {
-	    range =
-		MAX(range,
+    for (i = 1; i < t->Nodecount; i++) 
+	{
+		if (point_within_ellips_with_coords
+			((float) x_focus, (float) y_focus, (float) view->fmg.R,
+			(float) view->fmg.R, t->Nodes[i].x, t->Nodes[i].y)) 
+		{
+				range =	MAX(range,
 		    dist(t->Nodes[i].x, t->Nodes[i].y, x_focus, y_focus));
-	}
+		}
     }
 
-    for (i = 1; i < t->Nodecount; i++) {
+    for (i = 1; i < t->Nodecount; i++) 
+	{
 
-	if (point_within_ellips_with_coords
-	    ((float) x_focus, (float) y_focus, (float) view->fmg.R,
-	     (float) view->fmg.R, t->Nodes[i].x, t->Nodes[i].y)) {
-	    distance =
-		dist(t->Nodes[i].x, t->Nodes[i].y, x_focus, y_focus);
-	    distorted_distance = G(distance / range) * range;
-	    if (distance != 0) {
-		ratio = distorted_distance / distance;
-	    } else {
-		ratio = 0;
-	    }
-	    t->Nodes[i].distorted_x =
-		(float) x_focus + (t->Nodes[i].x -
-				   (float) x_focus) * (float) ratio;
-	    t->Nodes[i].distorted_y =
-		(float) y_focus + (t->Nodes[i].y -
-				   (float) y_focus) * (float) ratio;
-	    t->Nodes[i].zoom_factor =
-		(float) 1 *(float) distorted_distance / (float) distance;
-	} else {
-	    t->Nodes[i].distorted_x = t->Nodes[i].x;
-	    t->Nodes[i].distorted_y = t->Nodes[i].y;
-	    t->Nodes[i].zoom_factor = 1;
+		if (point_within_ellips_with_coords
+			((float) x_focus, (float) y_focus, (float) view->fmg.R,
+			(float) view->fmg.R, t->Nodes[i].x, t->Nodes[i].y)) 
+		{
+			distance =
+				dist(t->Nodes[i].x, t->Nodes[i].y, x_focus, y_focus);
+				distorted_distance = G(distance / range) * range;
+			if (distance != 0) 
+			{
+				ratio = distorted_distance / distance;
+			}
+			else 
+			{
+				ratio = 0;
+			}
+			t->Nodes[i].distorted_x =
+					(float) x_focus + (t->Nodes[i].x -  (float) x_focus) * (float) ratio;
+		    t->Nodes[i].distorted_y =
+			(float) y_focus + (t->Nodes[i].y - (float) y_focus) * (float) ratio;
+		    t->Nodes[i].zoom_factor =(float) 1 *(float) distorted_distance / (float) distance;
+		}
+		else 
+		{
+			t->Nodes[i].distorted_x = t->Nodes[i].x;
+			t->Nodes[i].distorted_y = t->Nodes[i].y;
+			t->Nodes[i].zoom_factor = 1;
+		}
 	}
-    }
 }
 void fisheye_spherical(double x_focus, double y_focus, double z_focus,
 		       topview * t)
@@ -251,12 +257,13 @@ void prepare_topological_fisheye(topview* t)
 
     view->Topview->parms.repos.width =(int) (view->bdxRight-view->bdxLeft);
     view->Topview->parms.repos.height =(int) (view->bdyTop-view->bdyBottom);
+	view->Topview->parms.repos.rescale=Polar;
+
 	sscanf(agget(view->g[0],"topologicalfisheyedistortionfactor"),"%lf",&view->Topview->parms.repos.distortion);
 	sscanf(agget(view->g[0],"topologicalfisheyefinenodes"),"%d",&view->Topview->parms.level.num_fine_nodes);
 	sscanf(agget(view->g[0],"topologicalfisheyecoarseningfactor"),"%lf",&view->Topview->parms.level.coarsening_rate);
 	sscanf(agget(view->g[0],"topologicalfisheyedist2limit"),"%d",&view->Topview->parms.hier.dist2_limit);
 	sscanf(agget(view->g[0],"topologicalfisheyeanimate"),"%d",&view->Topview->animate);
-
 		
 	set_active_levels(hp, fs->foci_nodes, fs->num_foci, &(t->parms.level));
 	positionAllItems(hp, fs, &(t->parms.repos));
@@ -372,6 +379,7 @@ void drawtopfishnodelabels(topview* t)
 					fontColorA(view->fontset->fonts[view->fontset->activefont],0, 0, 1, 1);
 					fontSize(view->fontset->fonts[view->fontset->activefont],fs);
 					fontDrawString(view->fontset->fonts[view->fontset->activefont],gg[v].physical_x_coord,gg[v].physical_y_coord, (fs*strlen(buf)*0.4),buf);
+					printf ("focus coords : %f , %f\n",gg[v].physical_x_coord,gg[v].physical_y_coord);
 				}
 				else if (finenodes)
 				{
@@ -454,6 +462,8 @@ void drawtopologicalfisheye(topview * t)
 {
 	get_active_frame(t);
 	drawtopfishnodes(t);
+//	drawtopologicalfisheyestatic(t);
+
 	drawtopfishedges(t);
 	if(!t->animate)
 		drawtopfishnodelabels(t);
@@ -577,13 +587,12 @@ void changetopfishfocus(topview * t, float *x, float *y,
 	find_closest_active_node(hp, x[i], y[i], &closest_fine_node);
 	fs->foci_nodes[i] = closest_fine_node;
 	fs->x_foci[i] =
-		hp->geom_graphs[cur_level][closest_fine_node].physical_x_coord;
+		hp->geom_graphs[cur_level][closest_fine_node].x_coord;
 	fs->y_foci[i] =
-		hp->geom_graphs[cur_level][closest_fine_node].physical_y_coord;
+		hp->geom_graphs[cur_level][closest_fine_node].y_coord;
     }
 
 
-    set_active_levels(hp, fs->foci_nodes, fs->num_foci, &(t->parms.level));
     view->Topview->parms.repos.width =(int) (view->bdxRight-view->bdxLeft);
     view->Topview->parms.repos.height =(int) (view->bdyTop-view->bdyBottom);
 
@@ -595,6 +604,7 @@ void changetopfishfocus(topview * t, float *x, float *y,
 
 
 
+    set_active_levels(hp, fs->foci_nodes, fs->num_foci, &(t->parms.level));
 
 
 	positionAllItems(hp, fs, &(t->parms.repos));
@@ -659,5 +669,63 @@ int get_active_frame(topview* t)
 
 }
 
+
+void drawtopologicalfisheyestatic(topview * t)
+{
+    int level, v, i, n;
+    Hierarchy* hp = t->h;
+
+	glPointSize(15);
+	glBegin(GL_POINTS);
+    for (level=0;level < hp->nlevels;level++) {
+	for (v=0;v < hp->nvtxs[level]; v++) {
+	    ex_vtx_data* gg = hp->geom_graphs[level];
+	    vtx_data* g = hp->graphs[level];
+	    if(gg[v].active_level==level) {
+		double x0 = gg[v].physical_x_coord;
+		double y0 = gg[v].physical_y_coord;
+//		glColor3f((GLfloat)(hp->nlevels-level)/(GLfloat)hp->nlevels,(GLfloat)level/(GLfloat)hp->nlevels,0);
+		glColor4f(0,1,0,0.2);
+		glVertex3f((GLfloat)x0,(GLfloat)y0,(GLfloat)0);
+	    }
+	}
+    }
+    glEnd();
+
+	
+	
+	
+/*	glBegin(GL_LINES);
+    for (level=0;level < hp->nlevels;level++) {
+	for (v=0;v < hp->nvtxs[level]; v++) {
+	    ex_vtx_data* gg = hp->geom_graphs[level];
+	    vtx_data* g = hp->graphs[level];
+	    if(gg[v].active_level==level) {
+		double x0 = gg[v].physical_x_coord;
+		double y0 = gg[v].physical_y_coord;
+
+		for (i=1;i < g[v].nedges;i++) {
+		    double x,y;
+			n = g[v].edges[i];
+			glColor3f((GLfloat)(hp->nlevels-level)/(GLfloat)hp->nlevels,(GLfloat)level/(GLfloat)hp->nlevels,0);
+			if (gg[n].active_level == level) {
+			if (v < n) {
+			    x = gg[n].physical_x_coord;
+			    y = gg[n].physical_y_coord;
+			    glVertex3f((GLfloat)x0,(GLfloat)y0,(GLfloat)0);
+			    glVertex3f((GLfloat)x,(GLfloat)y,(GLfloat)0);
+			}
+			}
+		    else if (gg[n].active_level > level) {
+			find_physical_coords(hp, level, n, &x, &y);
+			glVertex3f((GLfloat)x0,(GLfloat)y0,(GLfloat)0);
+			glVertex3f((GLfloat)x,(GLfloat)y,(GLfloat)0);
+		    }
+		}
+	    }
+	}
+    }
+    glEnd();*/
+}
 
 
