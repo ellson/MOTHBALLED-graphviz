@@ -425,8 +425,6 @@ rescale_layout_polar(double *x_coords, double *y_coords,
 
     width -= 2 * margin;
     height -= 2 * margin;
-	printf ("polar focus coords : %f , %f\n",x_foci[0],y_foci[0]);
-
 
     // compute original aspect ratio
     minX = maxX = x_coords[0];
