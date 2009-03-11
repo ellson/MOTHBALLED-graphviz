@@ -34,6 +34,7 @@
 #include "gvplugin_device.h"
 #include "agxbuf.h"
 #include "utils.h"
+#include "gvio.h"
 
 #define GNEW(t)          (t*)malloc(sizeof(t))
 
@@ -413,6 +414,7 @@ static void dot_end_graph(GVJ_t *job)
 {
     graph_t *g = job->obj->u.g;
 
+    agsetiodisc(NULL, gvfwrite, gvferror);
     switch (job->render.id) {
 	case FORMAT_PLAIN:
 	    write_plain(job, g, (FILE*)job, FALSE);
@@ -431,6 +433,7 @@ static void dot_end_graph(GVJ_t *job)
 		agwrite(g, (FILE*)job);
 	    break;
     }
+    agsetiodisc(NULL, NULL, NULL);
 }
 
 static void xdot_textpara(GVJ_t * job, pointf p, textpara_t * para)
