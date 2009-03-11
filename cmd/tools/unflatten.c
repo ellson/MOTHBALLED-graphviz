@@ -30,7 +30,6 @@
 #include <unistd.h>
 #endif
 #include    "cgraph.h"
-#define degreeOf(n,I,O) (agdegree(n->root, n, I, O)) 
 #include    "ingraphs.h"
 
 #ifdef HAVE_GETOPT_H
@@ -47,15 +46,31 @@ static Agnode_t *ChainNode;
 static FILE *outFile;
 static char *cmd;
 
+static int myindegree(Agnode_t *n)
+{
+	return agdegree(n->root, n, TRUE, FALSE);
+}
+
+/* need outdegree without selfarcs */
+static int myoutdegree(Agnode_t *n)
+{
+	Agedge_t 	*e;
+	int rv = 0;
+
+	for (e = agfstout(n->root, n); e; e = agnxtout(n->root, e)) {
+		if (agtail(e) != aghead(e)) rv++;
+	}
+	return rv;
+}
+
 static int isleaf(Agnode_t * n)
 {
-    return (degreeOf(n, TRUE, TRUE) == 1);
+    return ((myindegree(n) + myoutdegree(n)) == 1);
 }
 
 static int ischainnode(Agnode_t * n)
 {
-    return ((degreeOf(n, TRUE, FALSE) == 1)
-	    && degreeOf(n, FALSE, TRUE) == 1);
+    return ((myindegree(n) == 1) && myoutdegree(n) == 1);
 }
 
 static void adjustlen(Agedge_t * e, Agsym_t * sym, int newlen)
@@ -83,7 +98,7 @@ static void transform(Agraph_t * g)
     s_ix = bindedgeattr(g, "style");
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	d = degreeOf(n, TRUE, TRUE);
+	d = myindegree(n) + myoutdegree(n);
 	if (d == 0) {
 	    if (ChainLimit < 1)
 		continue;
