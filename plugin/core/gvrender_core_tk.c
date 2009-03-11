@@ -14,8 +14,6 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-/* FIXME - incomplete replacement for codegen */
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -113,7 +111,7 @@ static void tkgen_print_tags(GVJ_t *job)
 	ObjHandle = obj->u.g->handle;
 	break;
     case EMIT_CDRAW:
-	ObjType = "cluster";
+	ObjType = "graph";
 	ObjPart = "shape";
 	ObjFlag = 1;
 #ifndef WITH_CGRAPH
@@ -124,7 +122,7 @@ static void tkgen_print_tags(GVJ_t *job)
 	ObjHandle = obj->u.sg->handle;
 	break;
     case EMIT_CLABEL:
-	ObjType = "cluster";
+	ObjType = "graph";
 	ObjPart = "label";
 	ObjFlag = 0;
 #ifndef WITH_CGRAPH
@@ -138,11 +136,7 @@ static void tkgen_print_tags(GVJ_t *job)
 	assert (0);
 	break;
     }
-#if 0
-    gvprintf(job, " -tags {id%d %s%d %s %s}", ObjId, ObjType, ObjHandle, ObjType, ObjPart);
-#else
     gvprintf(job, " -tags {%d%s%d}", ObjFlag, ObjType, ObjHandle);
-#endif
 }
 
 static void tkgen_canvas(GVJ_t * job)
