@@ -1,6 +1,7 @@
 #include "glcompbutton.h"
 #include "glcomptexture.h"
 #include "glTexFont.h"
+#include <string.h>
 
 glCompButton *glCompButtonNew(GLfloat x, GLfloat y, GLfloat w, GLfloat h,
 			      char *caption, char *glyphfile,

@@ -1,5 +1,5 @@
-#include "glcomptrackbar.h"
-#include "gltexfont.h"
+#include "glCompTrackBar.h"
+#include "glTexFont.h"
 
 
 

@@ -15,8 +15,9 @@
 #ifndef __GLTEXFONTH__
 #define __GLTEXFONTH__
 
-#ifdef _WIN32
 #include <stdlib.h>
+#include <string.h>
+#ifdef _WIN32
 #include "glpangofont.h"	
 typedef float GLfloat;
 #else
