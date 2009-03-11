@@ -91,12 +91,12 @@ Agedge_t *agnxtedge(Agraph_t * g, Agedge_t * e, Agnode_t * n)
 {
     Agedge_t *rv;
 
-    if (n == AGTAIL(e)) {
-	rv = agnxtout(g, e);
-	if (rv == NILedge)
-	    rv = agfstin(g, n);
+	if (AGTYPE(e) == AGOUTEDGE) {
+		rv = agnxtout(g, e);
+		if (rv == NILedge)
+			rv = agfstin(g, n);
     } else
-	rv = agnxtin(g, e);
+		rv = agnxtin(g, e);
     return rv;
 }
 
