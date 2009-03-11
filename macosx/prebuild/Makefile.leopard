@@ -56,7 +56,7 @@ PANGO_DIR=$(call dirname, $(PANGO_URL))
 # pkgconfig to look for X11 libraries too
 
 BASE_CONFIG=--prefix=$(PREFIX) --disable-dependency-tracking --enable-static=yes --enable-shared=no PKG_CONFIG="$(PREFIX)/bin/pkg-config" PKG_CONFIG_PATH="$(PREFIX)/lib/pkgconfig:/usr/X11/lib/pkgconfig"
-FLAG_CONFIG=CFLAGS="-O2 $(ARCHS)" LDFLAGS="$(ARCHS)" 
+FLAG_CONFIG=CFLAGS="-O2 $(ARCHS) -I$(PREFIX)/include" LDFLAGS="$(ARCHS) -L$(PREFIX)/lib" 
 
 install: $(PREFIX)/lib/$(PANGO) $(PREFIX)/lib/$(GD)
 
@@ -321,7 +321,7 @@ $(PIXMAN_DIR)/Makefile: | $(PREFIX)/bin/$(PKGCONFIG) $(PIXMAN_DIR)/configure
 	@echo
 	@echo CONFIGURING PIXMAN...
 	@echo
-	cd $(PIXMAN_DIR) && ./configure $(BASE_CONFIG) CFLAGS="$(ARCHS)" LDFLAGS="$(ARCHS)"
+	cd $(PIXMAN_DIR) && ./configure $(BASE_CONFIG) CFLAGS="$(ARCHS) -I$(PREFIX)/include" LDFLAGS="$(ARCHS) -L$(PREFIX)/lib"
 	
 $(PIXMAN_DIR)/configure: | $(PIXMAN_DIR).tar.gz
 	@echo
