@@ -225,7 +225,7 @@ set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
     /*default line width */
     view->LineWidth =
 	(float) atof(get_attribute_value("defaultlinewidth", view, g));
-    view->FontSize = atoi(get_attribute_value("defaultfontsize", view, g));
+    view->FontSize = (float)atof(get_attribute_value("defaultfontsize", view, g));
 
     view->topviewusermode = atoi(get_attribute_value("usermode", view, g));
     get_attribute_value("defaultmagnifierwidth", view, g);
@@ -390,7 +390,7 @@ void init_viewport(ViewInfo * view)
 	view->total_frames=1500;
 	view->frame_length=1;
 	/*add a call back to the main()*/
-	g_timeout_add_full(G_PRIORITY_DEFAULT,100,gl_main_expose,NULL,NULL);
+	g_timeout_add_full((gint)G_PRIORITY_DEFAULT,(guint)100,gl_main_expose,NULL,NULL);
 	view->Topview->topviewmenu = '\0';
 	view->cameras='\0';;
 	view->camera_count=0;
@@ -620,8 +620,8 @@ static char* create_xdot_for_graph(Agraph_t * graph, int keeppos)
 {
     static char buf[BUFSIZ];
     static char* cmd = buf;
-    static int buflen = BUFSIZ;
-    int len;
+    static size_t buflen = BUFSIZ;
+    size_t len;
     int r = 0;
     FILE *output_file;
     char* fix;

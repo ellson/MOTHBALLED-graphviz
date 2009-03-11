@@ -89,7 +89,7 @@ int draw_node_hint_boxes()
 	{
 		draw_node_hintbox(view->Topview->picked_nodes[ind]->distorted_x,
 			  view->Topview->picked_nodes[ind]->distorted_y,
-					view->Topview->picked_nodes[ind]->distorted_z+0.001,
+					view->Topview->picked_nodes[ind]->distorted_z+(float)0.001,
 					(GLfloat) view->FontSizeConst,
 				     agnameof(view->Topview->picked_nodes[ind]->Node));
 /*	fontSize(fs);

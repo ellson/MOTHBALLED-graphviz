@@ -38,9 +38,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/D &quot;_CRT_SECURE_NO_DEPRECATE&quot;"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)/lib/gvc&quot;;&quot;C:\gtk\include\libglade-2.0&quot;;&quot;$(SolutionDir)/lib/neatogen&quot;;&quot;$(SolutionDir)/lib/sparse&quot;;&quot;$(SolutionDir)/lib/topfish&quot;;&quot;C:\gtk\lib\gtkglext-1.0\include&quot;;&quot;C:\gtk\include\gtkglext-1.0\&quot;;C:\gtk\include\cairo;&quot;C:\gtk\include\atk-1.0&quot;;&quot;C:\gtk\lib\gtk-2.0\include\cairo&quot;;&quot;C:\gtk\lib\gtk-2.0\include&quot;;&quot;C:\gtk\include\gtk-2.0\&quot;;&quot;$(SolutionDir)/cmd/smyrna/gui&quot;;&quot;$(SolutionDir)/cmd/smyrna&quot;;&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)/lib/glcomp&quot;;&quot;C:\gtk\lib\glib-2.0\include&quot;;&quot;C:\gtk\include\glib-2.0&quot;;&quot;C:\gtk\include\pango-1.0\&quot;;C:\gtk\include;&quot;$(SolutionDir)/lib/common&quot;;&quot;$(SolutionDir)/lib/cdt&quot;;&quot;$(SolutionDir)/lib/cgraph&quot;;&quot;$(SolutionDir)/windows\lib\ingraphs&quot;;&quot;$(SolutionDir)/lib/xdot&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;HAVE_TRIANGLE;HAVE_CONFIG_H;HAVE_GTS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;HAVE_TRIANGLE;HAVE_CONFIG_H;HAVE_GTS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -48,6 +49,7 @@
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
+				DisableSpecificWarnings="4995;4996"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -397,10 +399,6 @@
 			</File>
 			<File
 				RelativePath=".\gui\topviewsettings.c"
-				>
-			</File>
-			<File
-				RelativePath=".\trackball.c"
 				>
 			</File>
 			<File

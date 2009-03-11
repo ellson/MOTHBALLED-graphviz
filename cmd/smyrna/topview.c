@@ -82,7 +82,7 @@ void preparetopview(Agraph_t * g, topview * t)
 	int maxlabelsize=0;
 	float maxedgelen,minedgelen,len,edgelength;
 	maxedgelen=0;
-	minedgelen=99999999.00000;	//FIX ME if you have a giant graph or fix your graph
+	minedgelen=(float)99999999.00000;	//FIX ME if you have a giant graph or fix your graph
 	edgelength=0;
 
     ind = 0;
@@ -202,7 +202,7 @@ void preparetopview(Agraph_t * g, topview * t)
 				t->Edges[ind2].y2 = b;
 				t->Edges[ind2].z2 = c;
 			}
-			len=pow(pow((t->Edges[ind2].x2-t->Edges[ind2].x1),2)+pow((t->Edges[ind2].y2-t->Edges[ind2].y1),2),0.5);
+			len=(float)pow(pow((t->Edges[ind2].x2-t->Edges[ind2].x1),2)+pow((t->Edges[ind2].y2-t->Edges[ind2].y1),2),0.5);
 			if (len > maxedgelen)
 				maxedgelen=len;
 			if (len < minedgelen)
@@ -271,7 +271,6 @@ void preparetopview(Agraph_t * g, topview * t)
 
 static float set_gl_dot_size(topview * t)
 {
-	GLfloat a;
 	static float dotsize;
 	static float prevdotsize;
 	if (view->active_camera==-1)
@@ -281,7 +280,7 @@ static float set_gl_dot_size(topview * t)
 
 //	dotsize=dotsize * DOT_SIZE_CORRECTION_FAC;
 	if (dotsize <=1.2)
-		dotsize=1.2;
+		dotsize=(float)1.2;
 	glPointSize((GLfloat)dotsize);
 	return dotsize;
 
@@ -645,13 +644,14 @@ static int draw_node_hint_boxes(void)
 	fontColorA(view->fontset->fonts[view->fontset->activefont],0, 0, 1, 1);
 
 
-	fontDrawString(view->fontset->fonts[view->fontset->activefont],
+	fontDrawString(
+		view->fontset->fonts[view->fontset->activefont],
 		       (view->Topview->picked_nodes[ind]->distorted_x),
 		        (view->Topview->picked_nodes[ind]->
-			      distorted_y+fs+fs/5.0 ),
+			      distorted_y+fs+fs/(GLfloat)5.0 ),
 		       fs *
 		       (float)strlen(agnameof
-			      (view->Topview->picked_nodes[ind]->Node)) / 2.0,
+			      (view->Topview->picked_nodes[ind]->Node)) / (GLfloat)2.0,
 		       agnameof(view->Topview->picked_nodes[ind]->Node));
     }
     return 1;
@@ -674,7 +674,7 @@ static int select_topview_node(topview_node * n)
 		|| 
 		(view->mouse.button== rightmousebutton))	//single selection or right click (picking)
 	{
-		float dist=pow((view->Selection.X-n->distorted_x),2)+pow((view->Selection.Y-n->distorted_y),2);
+		float dist=(float)pow((view->Selection.X-n->distorted_x),2)+(float)pow((view->Selection.Y-n->distorted_y),2);
 		if ((view->Selection.node_distance==-1) ||(dist < view->Selection.node_distance))
 		{
 				view->Selection.node_distance=dist;
@@ -837,8 +837,8 @@ int set_update_required(topview * t)
 
 float calculate_font_size(topview_node * v)
 {
-	double n;
-	n=(double)v->degree+(double)1.00;
+	float n;
+	n=(float)v->degree+(float)1.00;
 	return n;
 
 }
@@ -877,11 +877,11 @@ static int draw_topview_label(topview_node * v, float zdepth)
 		return 0;
 
 //	fs= 10;
-	fs= fs * 0.2;
+	fs= fs * (float)0.2;
 
 
 
-	fontSize(view->fontset->fonts[view->fontset->activefont],(int) fs);
+	fontSize(view->fontset->fonts[view->fontset->activefont],fs);
 	if ((log((float) v->degree) * -0.6 * view->zoom) > 0)
 	    fontColorA(view->fontset->fonts[view->fontset->activefont],(float) log((double) v->degree + (double) 1),
 		       view->penColor.G, view->penColor.B,
@@ -889,11 +889,11 @@ static int draw_topview_label(topview_node * v, float zdepth)
 		       (float) -0.4 * (float) view->zoom);
 	else
 	    fontColorA(view->fontset->fonts[view->fontset->activefont],(float) log((double) v->degree + (double) 1),
-		       view->penColor.G, view->penColor.B, 0.7);
+		       view->penColor.G, view->penColor.B, (float)0.7);
 
 //	fontColorA(0,0,0,1);
-	fontDrawString(view->fontset->fonts[view->fontset->activefont],(int) (v->distorted_x - ddx),
-		       (int) (v->distorted_y - ddy), (int) (fs * strlen(v->Label)*0.6),v->Label   );
+	fontDrawString(view->fontset->fonts[view->fontset->activefont],(v->distorted_x - ddx),
+		        (v->distorted_y - ddy),  (fs * strlen(v->Label)*(float)0.6),v->Label   );
 
 	return 1;
     } else
@@ -1267,16 +1267,16 @@ static void menu_click_fisheye_magnifier(void *p)
 
 static void menu_click_zoom_minus(void *p)
 {
-    if ((view->zoom - ZOOM_STEP) > MIN_ZOOM)
-	view->zoom = view->zoom - ZOOM_STEP;
+    if ((view->zoom - (float)ZOOM_STEP) > (float)MIN_ZOOM)
+	view->zoom = view->zoom - (float)ZOOM_STEP;
     else
-	view->zoom = MIN_ZOOM;
+	view->zoom = (float)MIN_ZOOM;
 }
 
 static void menu_click_zoom_plus(void *p)
 {
-    if ((view->zoom + ZOOM_STEP) < MAX_ZOOM)
-	view->zoom = view->zoom + ZOOM_STEP;
+    if ((view->zoom + (float)ZOOM_STEP) < (float)MAX_ZOOM)
+	view->zoom = view->zoom + (float)ZOOM_STEP;
     else
 	view->zoom = (float) MAX_ZOOM;
 

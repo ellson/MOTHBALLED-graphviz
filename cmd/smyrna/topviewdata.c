@@ -15,6 +15,9 @@
 
 #include "topviewdata.h"
 #include "btree.h"
+#include "glcomppanel.h"
+#include "glcompbutton.h"
+
 #include <memory.h>
 
 static int validate_group_node(tv_node * TV_Node, char *regex_string)
@@ -85,7 +88,7 @@ int load_host_buttons(topview * t, Agraph_t * g, glCompSet * s)
     t->TopviewData->gtkhostcolor = N_GNEW(btncount, GtkColorButton *);
     t->TopviewData->gtkhostbtncount = btncount;
     if (btncount > 0) {
-	p = glCompPanelNew(25, 75, 165, 400);
+	p = glCompPanelNew(25, 75, 165, 400,scientific_y);
 	p->data = 2;		//data panel
 	p->color.R = (float) 0.80;
 	p->color.B = (float) 0.2;
@@ -112,7 +115,7 @@ int load_host_buttons(topview * t, Agraph_t * g, glCompSet * s)
 					   (GLfloat) 1) * (GLfloat) 36,
 			    (GLfloat) 150, (GLfloat) 35, agget(g,
 							       hostbtncaption),
-			    '\0', 0, 0);
+			    '\0', 0, 0,scientific_y);
 	b->color.R = (float) atof(agget(g, hostbtncolorR));
 	b->color.G = (float) atof(agget(g, hostbtncolorG));
 	b->color.B = (float) atof(agget(g, hostbtncolorB));

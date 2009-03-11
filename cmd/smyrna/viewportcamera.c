@@ -164,7 +164,8 @@ void attach_camera_widget(ViewInfo * view)
 #define	CAMERA_BUTTON_WIDTH		75
 
 
-    int ind, ind2, x, y;
+    int ind, ind2;
+	GLfloat x, y;
     char buf[256];
     glCompPanel *p;
     glCompButton *b;

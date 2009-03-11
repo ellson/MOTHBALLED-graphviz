@@ -1,4 +1,7 @@
-#include "glCompTrackBar.h"
+#include "glcomptrackbar.h"
+#include "gltexfont.h"
+
+
 
 glCompTrackBar* glCompTrackBarNew(GLfloat x, GLfloat y, GLfloat w, GLfloat h,glCompOrientation orientation)
 {

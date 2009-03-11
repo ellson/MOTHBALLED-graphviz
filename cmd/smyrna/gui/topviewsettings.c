@@ -163,7 +163,7 @@ static int set_scalebtn_widget_to_attribute(char *attribute, char *widget_name)
 	buf = agget(view->default_attributes, attribute);
     if (buf) {
 	value = (float) atof(buf);
-	gtk_range_set_value((GtkSpinButton *)
+	gtk_range_set_value((GtkRange *)
 				  glade_xml_get_widget(xml, widget_name),
 				  value);
 	return 1;
@@ -196,7 +196,7 @@ static int get_combobox_widget_to_attribute(char *attribute, char *widget_name, 
     char buf[25];
     float value;
 
-    value=
+    value=(float)
 	gtk_combo_box_get_active((GtkComboBox *)
 					  glade_xml_get_widget(xml,
 						       widget_name));
