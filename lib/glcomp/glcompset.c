@@ -69,7 +69,7 @@ static void glCompSetGetPos(int x, int y, float *X, float *Y, float *Z)
 
 
 
-void glCompDrawBegin()		//pushes a gl stack 
+void glCompDrawBegin(void)		//pushes a gl stack 
 {
     int vPort[4];
 
@@ -91,7 +91,7 @@ void glCompDrawBegin()		//pushes a gl stack
 
 }
 
-void glCompDrawEnd()		//pops the gl stack 
+void glCompDrawEnd(void)		//pops the gl stack 
 {
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();

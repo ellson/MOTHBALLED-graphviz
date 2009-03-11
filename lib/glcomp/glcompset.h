@@ -34,8 +34,8 @@ extern int glCompSetShow(glCompSet * s);
 extern int glCompSetClick(glCompSet * s, int x, int y);
 extern int glCompSetRelease(glCompSet * s, int x, int y);
 
-extern void glCompDrawBegin();
-extern void glCompDrawEnd();
+extern void glCompDrawBegin(void);
+extern void glCompDrawEnd(void);
 
 /*
 	change all components's fonts  in s 
