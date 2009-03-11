@@ -25,4 +25,5 @@ glCompTrackBar* glCompTrackBarNew(GLfloat x, GLfloat y, GLfloat w, GLfloat h,glC
 		p->indicator->shadowwidth=0;
 
 	p->font=font_init();
+	return NULL;
 }
