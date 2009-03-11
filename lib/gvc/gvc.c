@@ -32,7 +32,6 @@ GVC_t *gvContext(void)
 
 #ifndef WITH_CGRAPH
     aginit();
-    agsetiodisc(NULL, gvfwrite, gvferror);
     agnodeattr(NULL, "label", NODENAME_ESC);
 #else
     agattr(NULL, AGNODE, "label", NODENAME_ESC);
@@ -49,7 +48,6 @@ GVC_t *gvContextPlugins(const lt_symlist_t *builtins, int demand_loading)
 
 #ifndef WITH_CGRAPH
     aginit();
-    agsetiodisc(NULL, gvfwrite, gvferror);
     agnodeattr(NULL, "label", NODENAME_ESC);
 #else
     agattr(NULL, AGNODE, "label", NODENAME_ESC);
