@@ -14,9 +14,6 @@
 **********************************************************/
 
 #include "glcomptexture.h"
-#ifndef _WIN32
-#include "stdlib.h"
-#endif
 
 glCompTexture *glCompCreateTextureFromRaw(char *filename, int width,
 					  int height, int wrap)
