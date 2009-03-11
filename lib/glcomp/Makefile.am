@@ -7,12 +7,18 @@ AM_CPPFLAGS = \
 	$(GTK_CFLAGS) $(GTKGL_CFLAGS) $(GTKGLEXT_CFLAGS) $(GLADE_CFLAGS) $(FREETYPE2_CFLAGS)
 
 if WITH_SMYRNA
-noinst_HEADERS = glcompset.h glcomptexture.h glutils.h glTexFont.h \
-		 glTexFontDefs.h glTexFontInclude.h glTexFontTGA.h glpangofont.h
+noinst_HEADERS = glcompbutton.h glcompdefs.h glcomplabel.h \
+	glcomppanel.h glcompset.h glcomptexture.h \
+	glCompTrackBar.h glpangofont.h glTexFontDefs.h \
+	glTexFont.h glTexFontInclude.h glTexFontTGA.h \
+	glutils.h
+
 noinst_LTLIBRARIES = libglcomp_C.la
 endif
 
-libglcomp_C_la_SOURCES = glcompset.c glcomptexture.c glutils.c \
-	glTexFont.c glTexFontColor.c glTexFontTGA.c glpangofont.c
+libglcomp_C_la_SOURCES = glcompbutton.c glcomplabel.c \
+	glcomppanel.c glcompset.c glcomptexture.c \
+	glCompTrackBar.c glpangofont.c glTexFont.c \
+	glTexFontColor.c glTexFontTGA.c glutils.c
 
 EXTRA_DIST = glcomp.vcproj

@@ -1,4 +1,4 @@
-#include "glcomptrackbar.h"
+#include "glCompTrackBar.h"
 
 glCompTrackBar* glCompTrackBarNew(GLfloat x, GLfloat y, GLfloat w, GLfloat h,glCompOrientation orientation)
 {
