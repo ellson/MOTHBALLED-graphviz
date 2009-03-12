@@ -762,6 +762,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define agfindgraphattr(g,a) agfindattr((g)->root,a)
 #define agfindnodeattr(g,a) agfindattr((g)->proto->n,a)
 #define agfindedgeattr(g,a) agfindattr((g)->proto->e,a)
+#define agcanonStr(s) agcanonical(s)
 #endif
 
 

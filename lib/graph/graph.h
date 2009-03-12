@@ -167,7 +167,6 @@ extern "C" {
         char * (*myfgets) (char *s, int size, FILE *stream),
 	size_t (*myfwrite) (const void *ptr, size_t size, size_t nmemb, FILE *stream),
 	int (*myferror) (FILE *stream) );
-    extern void agfprintf(FILE *fp, const char *format, ...);
     extern int agputs(const char *s, FILE *fp);
     extern int agputc(int c, FILE *fp);
     extern int agwrite(Agraph_t *, FILE *);
