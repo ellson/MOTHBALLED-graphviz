@@ -414,7 +414,11 @@ static void dot_end_graph(GVJ_t *job)
 {
     graph_t *g = job->obj->u.g;
 
+#ifndef WITH_CGRAPH
     agsetiodisc(NULL, gvfwrite, gvferror);
+#else
+    // FIXME
+#endif
     switch (job->render.id) {
 	case FORMAT_PLAIN:
 	    write_plain(job, g, (FILE*)job, FALSE);
@@ -433,7 +437,11 @@ static void dot_end_graph(GVJ_t *job)
 		agwrite(g, (FILE*)job);
 	    break;
     }
+#ifndef WITH_CGRAPH
     agsetiodisc(NULL, NULL, NULL);
+#else
+    // FIXME
+#endif
 }
 
 static void xdot_textpara(GVJ_t * job, pointf p, textpara_t * para)
