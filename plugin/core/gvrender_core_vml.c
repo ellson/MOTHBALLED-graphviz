@@ -260,9 +260,9 @@ static void vml_begin_graph(GVJ_t * job)
     gvputs(job, "<HEAD>");
     gvputs(job, "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
  
-    if (obj->u.g->name[0]) {
+    if (agnameof(obj)[0]) {
         gvputs(job, "<TITLE>");
-	gvputs(job, html_string(obj->u.g->name));
+	gvputs(job, html_string(agnameof(obj)));
         gvputs(job, "</TITLE>");
     }
     gvprintf(job, "<!-- Pages: %d -->\n", job->pagesArraySize.x * job->pagesArraySize.y);
