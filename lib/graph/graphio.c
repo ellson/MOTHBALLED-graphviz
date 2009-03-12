@@ -205,10 +205,12 @@ void agsetiodisc(
  * overflow the buffer. In particular, it should be avoided for
  * input coming from users. Also, if vsnprintf is available, the
  * code should check for return values to use it safely.
+ *
+ * JCE.  I think this function is now safe, but may truncate output.
  */
 void agfprintf(FILE *fp, const char *format, ...)
 {
-    char buf[BUFSIZ];
+    char buf[8192];
     size_t len;
     va_list argp;
 
@@ -219,6 +221,20 @@ void agfprintf(FILE *fp, const char *format, ...)
     len = vsprintf((char *)buf, format, argp);
 #endif
     va_end(argp);
+    if (len <= 0){
+#ifdef HAVE_VSNPRINTF
+    	fprintf(stderr, "vsnprintf() error: %d\n", len);
+#else
+    	fprintf(stderr, "vsprintf() error: %d\n", len);
+#endif
+	return;
+    }
+#ifdef HAVE_VSNPRINTF
+    if (len > sizeof(buf)) {
+    	fprintf(stderr, "vsnprintf() truncated string at %d characters\n", sizeof(buf));
+	len = sizeof(buf);
+    }
+#endif
 
     AG.fwrite(buf, sizeof(char), len, fp);
 }
