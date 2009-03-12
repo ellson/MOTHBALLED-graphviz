@@ -16,7 +16,6 @@
 
 
 #include "libgraph.h"
-#include <string.h>
 
 typedef struct printdict_t {
     Dict_t *nodesleft, *edgesleft, *subgleft, *e_insubg, *n_insubg;
@@ -199,45 +198,6 @@ void agsetiodisc(
     if (myferror) AG.ferror = myferror;
 }
 
-/* agfprintf:
- * Note that this function is unsafe due to the fixed buffer size.
- * It should only be used when the caller is sure the input will not
- * overflow the buffer. In particular, it should be avoided for
- * input coming from users. Also, if vsnprintf is available, the
- * code should check for return values to use it safely.
- *
- * JCE.  I think this function is now safe, but may truncate output.
- */
-void agfprintf(FILE *fp, const char *format, ...)
-{
-    char buf[8192];
-    size_t len;
-    va_list argp;
-
-    va_start(argp, format);
-#ifdef HAVE_VSNPRINTF
-    len = vsnprintf((char *)buf, sizeof(buf), format, argp);
-#else
-    len = vsprintf((char *)buf, format, argp);
-#endif
-    va_end(argp);
-    if (len <= 0){
-#ifdef HAVE_VSNPRINTF
-    	fprintf(stderr, "vsnprintf() error: %d\n", len);
-#else
-    	fprintf(stderr, "vsprintf() error: %d\n", len);
-#endif
-	return;
-    }
-#ifdef HAVE_VSNPRINTF
-    if (len > sizeof(buf)) {
-    	fprintf(stderr, "vsnprintf() truncated string at %d characters\n", sizeof(buf));
-	len = sizeof(buf);
-    }
-#endif
-
-    AG.fwrite(buf, sizeof(char), len, fp);
-}
 
 int agputs(const char *s, FILE *fp)
 {
@@ -248,7 +208,6 @@ int agputs(const char *s, FILE *fp)
     }
     return +1;
 }
-
 
 int agputc(int c, FILE *fp)
 {
@@ -310,15 +269,21 @@ static void write_dict(Agdict_t * dict, FILE * fp)
     for (i = 0; i < dtsize(dict->dict); i++) {
 	a = dict->list[i];
 	if (ISEMPTYSTR(a->value) == FALSE) {
-	    if (cnt++ == 0)
-		agfprintf(fp, "\t%s [", dict->name);
-	    else
-		agfprintf(fp, ", ");
-	    agfprintf(fp, "%s=%s", a->name, agcanonical(a->value));
+	    if (cnt++ == 0) {
+		agputc('\t', fp);
+		agputs(dict->name, fp);
+		agputs(" [", fp);
+	    }
+	    else {
+		agputs(", ", fp);
+            }
+	    agputs(a->name, fp);
+	    agputc('=', fp);
+	    agputs(agcanonical(a->value), fp);
 	}
     }
     if (cnt > 0)
-	agfprintf(fp, "];\n");
+	agputs("];\n", fp);
 }
 
 static void write_diffattr(FILE * fp, int indent, void *obj, void *par,
@@ -341,24 +306,27 @@ static void write_diffattr(FILE * fp, int indent, void *obj, void *par,
 	if (strcmp(p, q)) {
 	    if (cnt++ == 0) {
 		tabover(fp, indent);
-		agfprintf(fp, "%s [", dict->name);
+	        agputs(dict->name, fp);
+	        agputs(" [", fp);
 	    } else {
-		agfprintf(fp, ",\n");
+	        agputs(",\n", fp);
 		tabover(fp, indent + 1);
 	    }
-	    agfprintf(fp, "%s=", agcanonical(a->name));
-	    agfprintf(fp, "%s", agcanonical(p));
+	    agputs(agcanonical(a->name), fp);
+	    agputc('=', fp);
+	    agputs(agcanonical(p), fp);
 	}
     }
     if (cnt > 0)
-	agfprintf(fp, "];\n");
+	agputs("];\n", fp);
 }
 
 static void writeattr(FILE * fp, int *npp, char *name, char *val)
 {
-    agfprintf(fp, ++(*npp) > 1 ? ", " : " [");
-    agfprintf(fp, "%s=", agcanonical(name));
-    agfprintf(fp, "%s", agcanonical(val));
+    agputs(++(*npp) > 1 ? ", " : " [", fp);
+    agputs(agcanonical(name), fp);
+    agputc('=', fp);
+    agputs(agcanonical(val), fp);
 }
 
 void agwrnode(Agraph_t * g, FILE * fp, Agnode_t * n, int full, int indent)
@@ -382,20 +350,21 @@ void agwrnode(Agraph_t * g, FILE * fp, Agnode_t * n, int full, int indent)
 	    if (strcmp(defval, myval)) {
 		if (didwrite == FALSE) {
 		    tabover(fp, indent);
-		    agfprintf(fp, "%s", agcanonical(n->name));
+		    agputs(agcanonical(n->name), fp);
 		    didwrite = TRUE;
 		}
 		writeattr(fp, &nprint, a->name, myval);
 	    }
 	}
 	if (didwrite) {
-	    agfprintf(fp, (nprint > 0 ? "];\n" : ";\n"));
+	    agputs(nprint > 0 ? "];\n" : ";\n", fp);
 	    return;
 	}
     }
     if ((agfstout(g, n) == NULL) && (agfstin(g, n) == NULL)) {
 	tabover(fp, indent);
-	agfprintf(fp, "%s;\n", agcanonical(n->name));
+	agputs(agcanonical(n->name), fp);
+	agputs(";\n", fp);
     }
 }
 
@@ -404,23 +373,25 @@ void agwrnode(Agraph_t * g, FILE * fp, Agnode_t * n, int full, int indent)
 static void writenodeandport(FILE * fp, char *node, char *port)
 {
     char *ss;
-    agfprintf(fp, "%s", agcanonical(node));	/* slimey i know */
+    agputs(agcanonical(node), fp);	/* slimey i know */
     if (port && *port) {
 	if (aghtmlstr(port)) {
-	    agfprintf(fp, ":%s", agstrcanon(port, getoutputbuffer(port)));
+            agputc(':', fp);
+	    agputs(agstrcanon(port, getoutputbuffer(port)), fp);
 	}
 	else {
 	    ss = strchr (port, ':');
 	    if (ss) {
 		*ss = '\0';
-		agfprintf(fp, ":%s",
-		    _agstrcanon(port, getoutputbuffer(port)));
-		agfprintf(fp, ":%s",
-		    _agstrcanon(ss+1, getoutputbuffer(ss+1)));
+                agputc(':', fp);
+		agputs(_agstrcanon(port, getoutputbuffer(port)), fp);
+                agputc(':', fp);
+		agputs(_agstrcanon(ss+1, getoutputbuffer(ss+1)), fp);
 		*ss = ':';
 	    }
 	    else {
-		agfprintf(fp, ":%s", _agstrcanon(port, getoutputbuffer(port)));
+                agputc(':', fp);
+		agputs(_agstrcanon(port, getoutputbuffer(port)), fp);
 	    }
 	}
     }
@@ -428,7 +399,7 @@ static void writenodeandport(FILE * fp, char *node, char *port)
 
 void agwredge(Agraph_t * g, FILE * fp, Agedge_t * e, int list_all)
 {
-    char *myval, *defval, *edgeop, *tport, *hport;
+    char *myval, *defval, *tport, *hport;
     int i, nprint = 0;
     Agdict_t *d = e->tail->graph->univ->edgeattr;
     Agsym_t *a;
@@ -438,12 +409,8 @@ void agwredge(Agraph_t * g, FILE * fp, Agedge_t * e, int list_all)
 	hport = e->attr[HEADX];
     }
     else tport = hport = "";
-    if (g->kind & AGFLAG_DIRECTED)
-	edgeop = "->";
-    else
-	edgeop = "--";
     writenodeandport(fp, e->tail->name, tport);
-    agfprintf(fp, " %s ", edgeop);
+    agputs(((g->kind & AGFLAG_DIRECTED) ? " -> " : " -- "), fp);
     writenodeandport(fp, e->head->name, hport);
     if (list_all) {
 	for (i = 0; i < dtsize(d->dict); i++) {
@@ -460,7 +427,7 @@ void agwredge(Agraph_t * g, FILE * fp, Agedge_t * e, int list_all)
 		writeattr(fp, &nprint, a->name, myval);
 	}
     }
-    agfprintf(fp, (nprint > 0 ? "];\n" : ";\n"));
+    agputs(nprint > 0 ? "];\n" : ";\n", fp);
 }
 
 Dtdisc_t agEdgedisc = {
@@ -486,10 +453,14 @@ write_subg(Agraph_t * g, FILE * fp, Agraph_t * par, int indent,
     if (indent) {
 	tabover(fp, indent++);
 	if (dtsearch(state->subgleft, g->meta_node)) {
-	    if (strncmp(g->name, "_anonymous", 10))
-		agfprintf(fp, "subgraph %s {\n", agcanonical(g->name));
-	    else
-		agfprintf(fp, "{\n");	/* no name printed for anonymous subg */
+	    if (strncmp(g->name, "_anonymous", 10)) {
+		agputs("subgraph ", fp);
+		agputs(agcanonical(g->name), fp);
+		agputs(" {\n", fp);
+	    }
+	    else {
+		agputs("{\n", fp);	/* no name printed for anonymous subg */
+	    }
 	    write_diffattr(fp, indent, g, par, g->univ->globattr);
 	    /* The root node and edge environment use the dictionaries,
 	     * not the proto node or edge, so the next level down must
@@ -506,7 +477,9 @@ write_subg(Agraph_t * g, FILE * fp, Agraph_t * par, int indent,
 	    write_diffattr(fp, indent, g->proto->e, pe, g->univ->edgeattr);
 	    dtdelete(state->subgleft, g->meta_node);
 	} else {
-	    agfprintf(fp, "subgraph %s;\n", agcanonical(g->name));
+	    agputs("subgraph ", fp);
+	    agputs(agcanonical(g->name), fp);
+	    agputs(";\n", fp);
 	    return;
 	}
     } else
@@ -556,7 +529,7 @@ write_subg(Agraph_t * g, FILE * fp, Agraph_t * par, int indent,
 
     if (indent > 1) {
 	tabover(fp, indent - 1);
-	agfprintf(fp, "}\n");
+	agputs("}\n", fp);
     }
 }
 
@@ -610,7 +583,6 @@ static int agferror(FILE *stream)
 int agwrite(Agraph_t * g, FILE * fp)
 {
     printdict_t *p;
-    char *t0, *t1;
 
     if (AG.fwrite == NULL) {
         AG.fwrite = fwrite;   /* init to system version of fwrite() */
@@ -627,12 +599,13 @@ int agwrite(Agraph_t * g, FILE * fp)
     }
 
     /* write the graph header */
-    t0 = (AG_IS_STRICT(g)) ? "strict " : "";
-    t1 = (AG_IS_DIRECTED(g)) ? "digraph" : "graph";
-    if (strncmp(g->name, "_anonymous", 10))
-	agfprintf(fp, "%s%s %s {\n", t0, t1, agcanonical(g->name));
-    else
-	agfprintf(fp, "%s%s {\n", t0, t1);
+    agputs((AG_IS_STRICT(g)) ? "strict " : "", fp);
+    agputs((AG_IS_DIRECTED(g)) ? "digraph" : "graph", fp);
+    if (strncmp(g->name, "_anonymous", 10)) {
+	agputc(' ', fp);
+	agputs(agcanonical(g->name), fp);
+    }
+    agputs(" {\n", fp);
 
     /* write the top level attribute defs */
     write_dict(g->univ->globattr, fp);
@@ -642,7 +615,7 @@ int agwrite(Agraph_t * g, FILE * fp)
     /* write the graph contents */
     p = new_printdict_t(g);
     write_subg(g, fp, (Agraph_t *) 0, 0, p);
-    agfprintf(fp, "}\n");
+    agputs("}\n", fp);
     free_printdict_t(p);
     return AG.ferror(fp);
 }
