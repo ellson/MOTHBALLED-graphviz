@@ -16,12 +16,41 @@
 
 #include "render.h"
 #include "agxbuf.h"
+#include <stdarg.h>
+#include <string.h>
 
 #define YDIR(y) (Y_invert ? (Y_off - (y)) : (y))
 #define YFDIR(y) (Y_invert ? (YF_off - (y)) : (y))
 
 int Y_off;           /* ymin + ymax */
 double YF_off;       /* Y_off in inches */
+
+#ifdef WITH_CGRAPH
+/* agfprintf:
+ * Note that this function is unsafe due to the fixed buffer size.
+ * It should only be used when the caller is sure the input will not
+ * overflow the buffer. In particular, it should be avoided for
+ * input coming from users. Also, if vsnprintf is available, the
+ * code should check for return values to use it safely.
+ */
+static void agfprintf(FILE *fp, const char *format, ...)
+{
+    char buf[BUFSIZ];
+    size_t len;
+    va_list argp;
+
+    va_start(argp, format);
+#ifdef HAVE_VSNPRINTF
+    len = vsnprintf((char *)buf, sizeof(buf), format, argp);
+#else
+    len = vsprintf((char *)buf, format, argp);
+#endif
+    va_end(argp);
+
+// FIXME
+//    ioput(g, fp, buf);
+}
+#endif
 
 static void printptf(FILE * f, pointf pt)
 {
