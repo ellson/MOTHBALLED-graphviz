@@ -253,6 +253,7 @@ static void vml_begin_job(GVJ_t * job)
 static void vml_begin_graph(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
+    char *name;
 
     graphHeight =(int)(job->bb.UR.y - job->bb.LL.y);
     graphWidth  =(int)(job->bb.UR.x - job->bb.LL.x);
@@ -260,9 +261,16 @@ static void vml_begin_graph(GVJ_t * job)
     gvputs(job, "<HEAD>");
     gvputs(job, "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
  
-    if (agnameof(obj)[0]) {
+
+#ifndef WITH_CGRAPH
+    name = obj->u.g->name;
+#else
+    // FIXME
+    name = "FIXME";
+#endif
+    if (name[0]) {
         gvputs(job, "<TITLE>");
-	gvputs(job, html_string(agnameof(obj)));
+	gvputs(job, html_string(name));
         gvputs(job, "</TITLE>");
     }
     gvprintf(job, "<!-- Pages: %d -->\n", job->pagesArraySize.x * job->pagesArraySize.y);
