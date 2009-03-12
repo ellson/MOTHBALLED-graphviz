@@ -94,7 +94,7 @@ static void auto_output_filename(GVJ_t *job)
     static char *buf;
     static size_t bufsz;
     char gidx[100];  /* large enough for '.' plus any integer */
-    char *fn, *p;
+    char *fn, *p, *q;
     size_t len;
 
     if (job->graph_index)
@@ -115,14 +115,14 @@ static void auto_output_filename(GVJ_t *job)
     strcpy(buf, fn);
     strcat(buf, gidx);
     strcat(buf, ".");
-    if ((p = strchr(job->output_langname, ':'))) {
-        strcat(buf, p+1);
+    p = strdup(job->output_langname);
+    while ((q = strrchr(p, ':'))) {
+        strcat(buf, q+1);
         strcat(buf, ".");
-        strncat(buf, job->output_langname, (p - job->output_langname));
+	*q = '\0';
     }
-    else {
-        strcat(buf, job->output_langname);
-    }
+    strcat(buf, p);
+    free(p);
 
     job->output_filename = buf;
 }
