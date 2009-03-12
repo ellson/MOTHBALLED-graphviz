@@ -715,8 +715,12 @@ SparseMatrix makeMatrix(Agraph_t * g, int dim)
 	row = ND_id(n);
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    I[i] = row;
-	    J[i] = ND_id(e->head);
+	    J[i] = ND_id(aghead(e));
+#ifndef WITH_CGRAPH
 	    if (!sym || (sscanf(agxget(e, sym->index), "%lf", &v) != 1))
+#else
+	    if (!sym || (sscanf(agxget(e, sym), "%lf", &v) != 1))
+#endif
 		v = 1;
 	    val[i] = v;
 	    i++;
