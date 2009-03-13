@@ -1,4 +1,4 @@
-#define TIMES "Times New Roman"
+#define TIMES "Times Roman"
 #define COURIER "Courier"
 #define HELVETICA "Arial"
 #define HELVETICA "Arial"
