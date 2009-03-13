@@ -357,7 +357,7 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     gdImagePtr im = (gdImagePtr) job->context;
     pointf spf, epf;
-    double parawidth = para->width * job->scale.x;
+    double parawidth = para->width * job->scale.x * POINTS_PER_INCH / job->dpi.x;
     char* fontname;
 
     if (!im)
@@ -385,7 +385,7 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     else {
 	spf.x += p.x;
 	epf.x += p.x;
-	epf.y = spf.y = p.y - para->yoffset_centerline * job->scale.y;
+	epf.y = spf.y = p.y - para->yoffset_centerline * job->zoom;
     }
 
 #ifdef HAVE_GD_FONTCONFIG
@@ -397,7 +397,7 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 
     gdgen_text(im, spf, epf,
             job->obj->pencolor.u.index,
-            para->fontsize * job->scale.x,
+            para->fontsize * job->zoom,
             job->dpi.x,
             job->rotation ? (M_PI / 2) : 0,
             fontname,
