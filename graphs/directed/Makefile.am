@@ -26,7 +26,8 @@ test:
 	$(top_builddir)/cmd/dot/dot \
 		-Tcanon -Tgv -Tplain -Tplain-ext -Txdot \
 		-Tcmap -Tcmapx -Tismap -Timap \
-		-Tjpg -Tpdf -Tfig -Tgif -Tpng \
+		-Tjpg -Tpdf -Tfig -Tgif \
+		-Tpng:cairo -Tpng:gd -Tpng:cairo:gd -Tpng:cairo:cairo -Tpng:gd:gd \
 		-Tps -Tps2 -Tps:lasi -Tps:cairo -Tpdf \
 		-Tsvg -Tsvg:cairo -Tsvgz -Tvrml \
 		$(CODEGEN_FORMATS) -O $(GRAPHS) 
@@ -35,6 +36,7 @@ ins_test:
                 -Tcanon -Tgv -Tplain -Tplain-ext -Txdot \
                 -Tcmap -Tcmapx -Tismap -Timap \
                 -Tjpg -Tpdf -Tfig -Tgif -Tpng \
+		-Tpng:cairo -Tpng:gd -Tpng:cairo:gd -Tpng:cairo:cairo -Tpng:gd:gd \
                 -Tps -Tps2 -Tps:lasi -Tps:cairo -Tpdf \
                 -Tsvg -Tsvg:cairo -Tsvgz -Tvrml \
                 $(CODEGEN_FORMATS) -O $(GRAPHS) 

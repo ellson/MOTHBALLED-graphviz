@@ -357,7 +357,7 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     gdImagePtr im = (gdImagePtr) job->context;
     pointf spf, epf;
-    double parawidth = para->width * job->scale.x * POINTS_PER_INCH / job->dpi.x;
+    double parawidth = para->width * job->zoom * job->dpi.x / POINTS_PER_INCH;
     char* fontname;
 
     if (!im)
@@ -385,7 +385,7 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     else {
 	spf.x += p.x;
 	epf.x += p.x;
-	epf.y = spf.y = p.y - para->yoffset_centerline * job->zoom;
+	epf.y = spf.y = p.y - para->yoffset_centerline * job->zoom * job->dpi.x / POINTS_PER_INCH;
     }
 
 #ifdef HAVE_GD_FONTCONFIG
@@ -396,12 +396,12 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	fontname = para->fontname;
 
     gdgen_text(im, spf, epf,
-            job->obj->pencolor.u.index,
-            para->fontsize * job->zoom,
-            job->dpi.x,
-            job->rotation ? (M_PI / 2) : 0,
-            fontname,
-            para->str);
+	    job->obj->pencolor.u.index,
+	    para->fontsize * job->zoom,
+	    job->dpi.x,
+	    job->rotation ? (M_PI / 2) : 0,
+	    fontname,
+	    para->str);
 }
 
 static int gdgen_set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr brush)
@@ -427,7 +427,7 @@ static int gdgen_set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr brush)
 	pen = obj->pencolor.u.index;
     }
 
-    width = obj->penwidth * job->scale.x;
+    width = obj->penwidth * job->zoom;
     if (width < PENWIDTH_NORMAL)
 	width = PENWIDTH_NORMAL;  /* gd can't do thin lines */
     gdImageSetThickness(im, width);
