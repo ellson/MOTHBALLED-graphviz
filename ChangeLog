@@ -1,8 +1,14 @@
+March 13, 2009
+	- Release 2.22.2
+		- fix for buffer overflow (present in 2.22.0 and 2.22.1)
+	- Fixed bugs:
+		1596, 1602
+
 March 9, 2009
 	- Release 2.22.1
 		- build fixes for Visual Studio and for FreeBSD
 March 3, 2009
-	- Release 2.22
+	- Release 2.22.0
 	- Core:
 		- libgvc api changed, version bumped.  Affects third party
 		  applications using libgvc.
