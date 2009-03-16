@@ -34,17 +34,27 @@ static void quartzgen_begin_job(GVJ_t *job)
 {
 	if (!job->external_context)
 		job->context = NULL;
+	else if (job->device.id == FORMAT_CGIMAGE)
+	{
+		/* save the passed-in context in the window field, so we can create a CGContext in the context field later on */
+		job->window = job->context;
+		*((CGImageRef*)job->window) = NULL;
+		job->context = NULL;
+	}
 }
 
 static void quartzgen_end_job(GVJ_t *job)
 {
+	CGContextRef context = (CGContextRef)job->context;
 	if (!job->external_context) {
-		CGContextRef context = (CGContextRef)job->context;
 		switch (job->device.id) {
 		
 		case FORMAT_PDF:
 			/* save the PDF */
 			CGPDFContextClose(context);
+			break;
+				
+		case FORMAT_CGIMAGE:
 			break;
 			
 #if __MAC_OS_X_VERSION_MIN_REQUIRED >= 1040
@@ -70,13 +80,19 @@ static void quartzgen_end_job(GVJ_t *job)
 		}
 		CGContextRelease(context);
 	}
+	else if (job->device.id == FORMAT_CGIMAGE)
+	{
+		/* create an image and save it where the window field is, which was set to the passed-in context at begin job */
+		*((CGImageRef*)job->window) = CGBitmapContextCreateImage(context);
+		CGContextRelease(context);
+	}
 }
 
 static void quartzgen_begin_page(GVJ_t *job)
 {
 	CGRect bounds = CGRectMake(0.0, 0.0, job->width, job->height);
 	
-	if (!job->external_context && !job->context) {
+	if (!job->context) {
 		
 		switch (job->device.id) {
 		
@@ -115,18 +131,17 @@ static void quartzgen_begin_page(GVJ_t *job)
 			}
 			break;
 		
-#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 1040
 		default: /* bitmap formats */
 			{	
 				/* create a true color bitmap for drawing into */
-				CGColorSpaceRef color_space = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
+				CGColorSpaceRef color_space = CGColorSpaceCreateDeviceRGB();
 				job->context = CGBitmapContextCreate(
 					NULL,														/* data: let Quartz take care of memory management */
 					job->width,													/* width in pixels */
 					job->height,												/* height in pixels */
 					BITS_PER_COMPONENT,											/* bits per component */
 					(job->width * BYTES_PER_PIXEL + BYTE_ALIGN) & ~BYTE_ALIGN,	/* bytes per row: align to 16 byte boundary */
-					color_space,												/* color space: sRGB */
+					color_space,												/* color space: device RGB */
 					kCGImageAlphaPremultipliedFirst								/* bitmap info: premul ARGB has best support in OS X */
 				);
 				job->imagedata = CGBitmapContextGetData((CGContextRef)job->context);
@@ -135,7 +150,6 @@ static void quartzgen_begin_page(GVJ_t *job)
 				CGColorSpaceRelease(color_space);
 			}
 			break;
-#endif
 		}
 		
 	}
@@ -311,7 +325,7 @@ static gvrender_features_t render_features_quartz = {
     RGBA_DOUBLE				/* color_type */
 };
 
-#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 1040
+#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 1040 || __IPHONE_OS_VERSION_MIN_REQUIRED >= 20000
 static gvdevice_features_t device_features_quartz = {
     GVDEVICE_BINARY_FORMAT
       | GVDEVICE_DOES_TRUECOLOR,/* flags */
@@ -338,6 +352,9 @@ gvplugin_installed_t gvrender_quartz_types[] = {
 
 gvplugin_installed_t gvdevice_quartz_types[] = {
 	{FORMAT_PDF, "pdf:quartz", 8, NULL, &device_features_quartz_paged},
+#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 1040 || __IPHONE_OS_VERSION_MIN_REQUIRED >= 20000
+	{FORMAT_CGIMAGE, "cgimage:quartz", 8, NULL, &device_features_quartz},
+#endif
 #if __MAC_OS_X_VERSION_MIN_REQUIRED >= 1040
 	{FORMAT_BMP, "bmp:quartz", 8, NULL, &device_features_quartz},
 	{FORMAT_GIF, "gif:quartz", 8, NULL, &device_features_quartz},

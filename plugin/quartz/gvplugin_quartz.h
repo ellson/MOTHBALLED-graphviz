@@ -33,6 +33,7 @@ extern "C" {
 
 typedef enum {
 	FORMAT_NONE,
+	FORMAT_CGIMAGE,
 	FORMAT_BMP,
 	FORMAT_EXR,
 	FORMAT_GIF,
