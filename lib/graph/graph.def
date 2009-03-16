@@ -112,4 +112,5 @@ myaglex
 TrieStateTbl	
 TrieTransTbl	
 agsetiodisc
-agfprintf
+agputc
+agputs
