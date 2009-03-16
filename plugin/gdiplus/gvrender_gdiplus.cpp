@@ -221,6 +221,7 @@ static void gdiplusgen_textpara(GVJ_t *job, pointf p, textpara_t *para)
 		context->TranslateTransform(p.x, p.y + center);
 		context->ScaleTransform(1.0, -1.0);
 
+		Gdiplus::Font* a=find_font(para->fontname, para->fontsize).get();
 		/* draw the text */
 		SolidBrush brush(Color(job->obj->pencolor.u.rgba [3], job->obj->pencolor.u.rgba [0], job->obj->pencolor.u.rgba [1], job->obj->pencolor.u.rgba [2]));
 		context->DrawString(&wide_str.front(), wide_count - 1, find_font(para->fontname, para->fontsize).get(), PointF(0, -center), &brush);
