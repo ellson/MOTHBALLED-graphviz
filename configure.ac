@@ -2854,6 +2854,7 @@ rm -f conftest*
 
 # Generate Makefiles
 AC_CONFIG_FILES(Makefile
+	debian/changelog
 	doc/Makefile
 	doc/info/Makefile
 	doc/schema/Makefile
