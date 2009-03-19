@@ -62,7 +62,7 @@ install-data-hook:
 # create "neato", "fdp" etc as soflinks to "dot"
 # run "dot -c", if possible, to create plugin config
 install-exec-hook:
-	(cd $(DESTDIR)$(bindir); for i in $(linkedprogram); do rm -f $$i; $(LN_S) dot$(EXEEXT) $$i; done;)
+	(cd $(DESTDIR)$(bindir); if test -x dot$(EXEEXT); then for i in $(linkedprogram); do rm -f $$i; $(LN_S) dot$(EXEEXT) $$i; done; fi;)
 	if test "x$(DESTDIR)" = "x"; then if test -x $(bindir)/dot$(EXEEXT); then if test -x /sbin/ldconfig; then /sbin/ldconfig 2>/dev/null; fi; $(bindir)/dot$(EXEEXT) -c; else $(bindir)/dot_static$(EXEEXT) -c; fi; fi
 
 uninstall-hook:
