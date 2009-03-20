@@ -41,7 +41,7 @@ libgvplugin_pango_la_LDFLAGS += -no-undefined
 endif
 
 if WITH_DARWIN9
-libgvplugin_pango_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_pango_LTX_library
+libgvplugin_pango_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_pango_LTX_library -framework CoreFoundation -framework CoreServices
 endif
 
 EXTRA_DIST = Makefile.old gvplugin_pango.vcproj
