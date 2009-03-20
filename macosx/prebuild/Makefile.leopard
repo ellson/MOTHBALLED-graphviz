@@ -62,7 +62,7 @@ PANGO_DIR=$(call dirname, $(PANGO_URL))
 # pkgconfig to look for X11 libraries too
 
 BASE_CONFIG=--prefix=$(PREFIX) --disable-dependency-tracking --enable-static=yes --enable-shared=no PKG_CONFIG="$(PREFIX)/bin/pkg-config" PKG_CONFIG_PATH="$(PREFIX)/lib/pkgconfig:/usr/X11/lib/pkgconfig"
-FLAG_CONFIG=CFLAGS="-O2 $(ARCHS) -I$(PREFIX)/include" LDFLAGS="$(ARCHS) -L$(PREFIX)/lib" 
+FLAG_CONFIG=CFLAGS="-O2 $(ARCHS) -I$(PREFIX)/include" LDFLAGS="$(ARCHS) -L$(PREFIX)/lib -framework CoreFoundation -framework CoreServices" 
 
 install: $(PREFIX)/lib/$(PANGO) $(PREFIX)/lib/$(GD)
 
@@ -125,7 +125,7 @@ $(PANGO_DIR)/Makefile: $(PREFIX)/lib/$(CAIRO) $(PREFIX)/lib/$(GLIB) $(PREFIX)/li
 	@echo
 	@echo CONFIGURING PANGO...
 	@echo
-	cd $(PANGO_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG) --with-included-modules=yes LDFLAGS="$(ARCHS) -L$(PREFIX)/lib -framework CoreFoundation -framework CoreServices"
+	cd $(PANGO_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG) --with-included-modules=yes
 
 $(PANGO_DIR)/configure: | $(PANGO_DIR).tar.gz
 	@echo
