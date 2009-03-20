@@ -230,7 +230,7 @@ $(GLIB_DIR)/configure: | $(GLIB_DIR).tar.gz
 	@echo
 	@echo CONFIGURING GLIB...
 	@echo
-	$(TAR) xzf $| && (cd ${GLIB_DIR}; patch -p1 <../glib.patch)
+	$(TAR) xzf $| && (cd $(GLIB_DIR); patch -p1 <../glib.patch)
 	
 $(GLIB_DIR).tar.gz:
 	@echo
@@ -265,7 +265,7 @@ $(GETTEXT_DIR)/configure: | $(GETTEXT_DIR).tar.gz
 	@echo
 	@echo UNTARRING GETTEXT...
 	@echo
-	$(TAR) xzf $| && patch -p0 <gettext.patch
+	$(TAR) xzf $| && (cd $(GETTEXT_DIR); patch -p1 <../gettext.patch)
 	
 $(GETTEXT_DIR).tar.gz:
 	@echo
@@ -302,7 +302,7 @@ $(CAIRO_DIR)/configure: | $(CAIRO_DIR).tar.gz
 	@echo
 	@echo UNTARRING CAIRO...
 	@echo
-	$(TAR) xzf $| && (cd ${CAIRO_DIR}; patch -p1 <../cairo.patch)
+	$(TAR) xzf $| && (cd $(CAIRO_DIR); patch -p1 <../cairo.patch)
 	
 $(CAIRO_DIR).tar.gz:
 	@echo
@@ -314,13 +314,13 @@ $(CAIRO_DIR).tar.gz:
 # libpng
 #
 
-$(PREFIX)/lib/$(LIBPNG): $(LIBPNG_DIR)/libpng/$(LIBPNG)
+$(PREFIX)/lib/$(LIBPNG): $(LIBPNG_DIR)/$(LIBPNG)
 	@echo
 	@echo INSTALLING LIBPNG...
 	@echo
 	$(MAKE) -C $(LIBPNG_DIR) install
 	
-$(LIBPNG_DIR)/libpng/$(LIBPNG): $(LIBPNG_DIR)/Makefile
+$(LIBPNG_DIR)/$(LIBPNG): $(LIBPNG_DIR)/Makefile
 	@echo
 	@echo MAKING LIBPNG...
 	@echo
@@ -374,7 +374,7 @@ $(PIXMAN_DIR)/configure: | $(PIXMAN_DIR).tar.gz
 	@echo
 	@echo UNTARRING PIXMAN...
 	@echo
-	$(TAR) xzf $| && (cd ${PIXMAN_DIR}; patch -p1 <../pixman.patch)
+	$(TAR) xzf $| && (cd $(PIXMAN_DIR); patch -p1 <../pixman.patch)
 	
 $(PIXMAN_DIR).tar.gz:
 	@echo
@@ -421,20 +421,20 @@ $(GD_DIR).tar.gz:
 # freetype
 #
 
-$(PREFIX)/lib/$(FREETYPE): $(FREETYPE_DIR)/src/$(FREETYPE)
+$(PREFIX)/lib/$(FREETYPE): $(FREETYPE_DIR)/objs/$(FREETYPE)
 	@echo
 	@echo INSTALLING FREETYPE...
 	@echo
 	$(MAKE) -C $(FREETYPE_DIR) install
 	
-$(FREETYPE_DIR)/src/$(FREETYPE): $(FREETYPE_DIR)/Makefile
+$(FREETYPE_DIR)/objs/$(FREETYPE): $(FREETYPE_DIR)/Makefile
 	@echo
 	@echo MAKING FREETYPE...
 	@echo
 	if [[ -e $@ ]]; then $(MAKE) -C $(FREETYPE_DIR) clean; fi && \
 	$(MAKE) -C $(FREETYPE_DIR)
 	
-$(FREETYPE_DIR)/Makefile: $(PREFIX)/lib/$(FONTCONFIG) | $(PREFIX)/bin/$(PKGCONFIG) $(FREETYPE_DIR)/configure
+$(FREETYPE_DIR)/Makefile: | $(PREFIX)/bin/$(PKGCONFIG) $(FREETYPE_DIR)/configure
 	@echo
 	@echo CONFIGURING FREETYPE...
 	@echo
@@ -526,7 +526,7 @@ $(FONTCONFIG_DIR)/configure: | $(FONTCONFIG_DIR).tar.gz
 	@echo
 	@echo UNTARRING FONTCONFIG...
 	@echo
-	$(TAR) xzf $| && (cd ${FONTCONFIG_DIR}; patch -p1 <../fontconfig.patch)
+	$(TAR) xzf $| && (cd $(FONTCONFIG_DIR); patch -p1 <../fontconfig.patch)
 	
 $(FONTCONFIG_DIR).tar.gz:
 	@echo
