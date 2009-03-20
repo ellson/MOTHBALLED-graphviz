@@ -1451,8 +1451,8 @@ static void pos_html_cell(htmlcell_t * cp, boxf pos, int sides)
  */
 static void pos_html_tbl(htmltbl_t * tbl, boxf pos, int sides)
 {
-    double x, y, delx, dely, extra, oldsz;
-    int i, plus;
+    int x, y, delx, dely, oldsz;
+    int i, extra, plus;
     htmlcell_t **cells = tbl->u.n.cells;
     htmlcell_t *cp;
     boxf cbox;
@@ -1702,7 +1702,7 @@ void printTbl(htmltbl_t * tbl, int ind)
 {
     htmlcell_t **cells = tbl->u.n.cells;
     indent(ind);
-    fprintf(stderr, "tbl %d %d ", tbl->cc, tbl->rc);
+    fprintf(stderr, "tbl (%x) %d %d ", tbl, tbl->cc, tbl->rc);
     printData(&tbl->data);
     fputs("\n", stderr);
     while (*cells)
