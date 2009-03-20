@@ -125,7 +125,7 @@ $(PANGO_DIR)/Makefile: $(PREFIX)/lib/$(CAIRO) $(PREFIX)/lib/$(GLIB) $(PREFIX)/li
 	@echo
 	@echo CONFIGURING PANGO...
 	@echo
-	cd $(PANGO_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG) --with-included-modules=yes LIBS="-framework CoreFoundation -framework CoreServices"
+	cd $(PANGO_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG) --with-included-modules=yes LDFLAGS="$(ARCHS) -L$(PREFIX)/lib -framework CoreFoundation -framework CoreServices"
 
 $(PANGO_DIR)/configure: | $(PANGO_DIR).tar.gz
 	@echo
