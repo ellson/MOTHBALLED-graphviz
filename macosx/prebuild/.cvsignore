@@ -9,4 +9,4 @@ pixman-*
 fontconfig-*
 freetype-*
 pkg-config-*
-usr
+libXft-*
