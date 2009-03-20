@@ -131,7 +131,7 @@ $(PANGO_DIR)/configure: | $(PANGO_DIR).tar.gz
 	@echo
 	@echo UNTARRING PANGO...
 	@echo
-	$(TAR) xzf $| && (cd ${PANGO_DIR}; patch -p1 <../pango.patch)
+	$(TAR) xzf $| && (cd $(PANGO_DIR); patch -p1 <../pango.patch)
 		
 $(PANGO_DIR).tar.gz:
 	@echo
