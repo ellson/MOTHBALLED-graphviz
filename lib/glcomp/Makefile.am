@@ -10,7 +10,7 @@ if WITH_SMYRNA
 noinst_HEADERS = glcompbutton.h glcompdefs.h glcomplabel.h \
 	glcomppanel.h glcompset.h glcomptexture.h \
 	glCompTrackBar.h glpangofont.h glTexFontDefs.h \
-	glTexFont.h glTexFontInclude.h glTexFontTGA.h \
+	glTexFont.h glTexFontInclude.h glpangofont.c \
 	glutils.h
 
 noinst_LTLIBRARIES = libglcomp_C.la
