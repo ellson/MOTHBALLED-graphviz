@@ -20,9 +20,7 @@
 #define GLCOMPSET_H
 
 #include "glTexFont.h"
-#include "glTexFontTGA.h"
-#include "glTexFontDefs.h"
-#include "glTexFontInclude.h"
+#include "glcomptextpng.h"
 #include "glcomptexture.h"
 
 

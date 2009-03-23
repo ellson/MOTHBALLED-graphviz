@@ -22,7 +22,9 @@
 #if defined(_WIN32) && !defined(__CYGWIN__)
 #define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
+#include <windowsx.h>
 #endif
+#include "otk_lib.h"
 #include <gtk/gtk.h>
 #include <gtk/gtkgl.h>
 #include <glade/glade.h>
@@ -116,7 +118,7 @@ int main(int argc, char *argv[])
     GdkGLConfig *glconfig;
     char* initFileName;
 
-    smyrnaDir = getenv ("SMYRNA_PATH");
+	smyrnaDir = getenv ("SMYRNA_PATH");
 #ifndef _WIN32
     if (!smyrnaDir)
 	smyrnaDir = SMYRNA_PATH;

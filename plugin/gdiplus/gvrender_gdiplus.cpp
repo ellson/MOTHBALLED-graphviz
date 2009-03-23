@@ -34,6 +34,22 @@ extern "C" size_t gvwrite(GVJ_t *job, const unsigned char *s, unsigned int len);
 using namespace std;
 using namespace Gdiplus;
 
+
+
+static char* gdiplus_psfontResolve (PostscriptAlias* pa)
+{
+    static char buf[1024];
+    int comma=0;
+    strcpy(buf, pa->family);
+
+    ADD_ATTR(pa->weight);
+    ADD_ATTR(pa->stretch);
+    ADD_ATTR(pa->style);
+   
+    return buf;
+}
+
+
 /* Graphics for internal use, so that we can record image etc. for subsequent retrieval off the job struct */
 struct ImageGraphics: public Graphics
 {
@@ -186,13 +202,31 @@ static auto_ptr<Font> find_font(char *fontname, double fontsize)
 		return auto_ptr<Font>(new Font(reference.hdc, &found_font));
 	}
 	else
-		return auto_ptr<Font>(new Font(FontFamily::GenericSerif(), fontsize));
+	{
+		strncpy(font_to_find.lfFaceName,"Times New Roman", sizeof(font_to_find.lfFaceName) - 1);
+		font_to_find.lfFaceName[sizeof(font_to_find.lfFaceName) - 1] = '\0';
+		font_to_find.lfPitchAndFamily = 0;
+		if(EnumFontFamiliesExA(reference.hdc,
+			&font_to_find,
+				fetch_first_font,
+				(LPARAM)&found_font,
+		0) == 0) 
+		{
+			found_font.lfHeight = (LONG)-fontsize;
+			found_font.lfWidth = 0;
+			return auto_ptr<Font>(new Font(reference.hdc, &found_font));
+		}
+
+	}
+//	"gdiplus cannot find the default font Times New Roman."
+	return NULL;
 }
 
 static void gdiplusgen_textpara(GVJ_t *job, pointf p, textpara_t *para)
 {
 	/* convert incoming UTF8 string to wide chars */
 	/* NOTE: conversion is 1 or more UTF8 chars to 1 wide char */
+	char* fontname;
 	int wide_count = MultiByteToWideChar(CP_UTF8, 0, para->str, -1, NULL, 0);
 	if (wide_count > 1) {
 		vector<WCHAR> wide_str(wide_count);
@@ -224,7 +258,15 @@ static void gdiplusgen_textpara(GVJ_t *job, pointf p, textpara_t *para)
 		Gdiplus::Font* a=find_font(para->fontname, para->fontsize).get();
 		/* draw the text */
 		SolidBrush brush(Color(job->obj->pencolor.u.rgba [3], job->obj->pencolor.u.rgba [0], job->obj->pencolor.u.rgba [1], job->obj->pencolor.u.rgba [2]));
-		context->DrawString(&wide_str.front(), wide_count - 1, find_font(para->fontname, para->fontsize).get(), PointF(0, -center), &brush);
+
+
+#ifdef HAVE_GD_FONTCONFIG
+    if (para->postscript_alias)
+		fontname = para->postscript_alias->family;
+    else
+#endif
+	fontname = para->fontname;
+		context->DrawString(&wide_str.front(), wide_count - 1, find_font(fontname, para->fontsize).get(), PointF(0, -center), &brush);
 		context->Restore(saved);
 	}
 }

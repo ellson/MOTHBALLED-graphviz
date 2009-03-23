@@ -102,6 +102,7 @@ int glexpose_main(ViewInfo * view)
     draw_selection_box(view);
     drawBorders(view);
 	drawRotatingTools();
+
 //	drawtestpoly();
 	/*DEBUG*/
 /*	if (view->mouse.mouse_mode == MM_PAN)
@@ -183,6 +184,9 @@ int glexpose_drawgraph(ViewInfo * view)
 				drawtopologicalfisheye(view->Topview);
 			}
 			glCompSetDraw(view->Topview->topviewmenu);
+//			OtkUpdateCheck();
+	//		OtkDisplayFunct();
+
 		}
 		else
 			drawGraph(view->g[view->activeGraph]);  //xdot based drawing functions

@@ -1,324 +1,45 @@
-/* vim:set shiftwidth=4 ts=8: */
-/*
-    glTexFont Library R6
-
-    Copyright (c) 1999 Nate Miller
-    
-    Notice: Usage of any code in this file is subject to the rules
-    described in the LICENSE.TXT file included in this directory.
-    Reading, compiling, or otherwise using this code constitutes
-    automatic acceptance of the rules in said text file.
-
-    File        -- glTexFont.c
-    Date        -- 5/30/99
-    Author      -- Nate 'm|d' Miller
-    Contact     -- vandals1@home.com
-    Web         -- http://members.home.com/vandals1
-*/
-//#define FONT_LIB_DEBUG /* un-comment for debug regions */
 #include "glTexFont.h"
-#include "glTexFontTGA.h"
-#include "glTexFontDefs.h"
-#include "glTexFontInclude.h"
 #include "glpangofont.h"
 #include "memory.h"
 
-/* just a global for our default colors */
-float white[] = {1.0, 1.0, 1.0, 1.0};
-float gray[] = {0.5, 0.5, 0.5, 1.0};
-
-
-/*
-    tPoints contains our map for the font image.  After fontMakeMap this array
-    will contain all the information to get the proper key from the font map.
-*/
 vec2_t tPoints[257]; 
 
-/*
-=============
-fontLoad
 
-Load the passed image name and use it for the font.  
-=============
-*/
-int fontLoad (texFont_t* font,char *name)
+int glCompLoadFont (glCompText* font,char *name)
 {
     glGenTextures (1, &(font->texId));
-
-	font->blockRow = FONT_BLOCK_ROW;
-	font->blockCol = FONT_BLOCK_COL;
-
 	fontMakeMap (font);
-
-//    return fontLoadTGA (name, font.texId);
-    return fontLoadPNG ("c:\\pango_test.png", font->texId);
+    return glCompLoadFontPNG ("c:\\pango_test.png", font->texId);
 
 }
-/*
-=============
-fontLoadEx
 
-Loads the passed image which has 'col' characters per column and 'row' 
-characters per row. 
-=============
-*/
-int fontLoadEx (texFont_t* font,char *name, int row, int col)
+
+void fontForeColorReset (glCompText* font)
 {
-    /* make sure we have valid dimensions */
-/*	if (row * col != 256)
-		return 0;*/
 
-    glGenTextures (1, &(font->texId));
+	font->color.R=1.00;
+	font->color.G=1.00;
+	font->color.B=1.00;
+	font->color.A=1.00;
 
-	font->blockRow = row;
-	font->blockCol = col;
 
-	fontMakeMap (font);
-
-    return fontLoadTGA (name, font->texId);
 }
-/*
-=============
-fontDrawChar
-
-Draws a character that is 'size' pixels in w and h.  
-=============
-*/
-void fontDrawChar (texFont_t* font,char c, GLfloat x, GLfloat y, GLfloat size, int shadow)
+void fontReset (glCompText* font)
 {
-	if (!font->gradient && !shadow)
-        glColor4fv (font->fgColor);
-    else if (!font->gradient && shadow)
-        glColor4fv (font->bgColor);
-    else if (font->gradient && !shadow)
-        glColor4fv (font->gdColor);
-
-    glBegin (GL_QUADS);
-		glTexCoord2f (tPoints[(int)c][0], tPoints[(int)c][1]);
-		glVertex3f (x, y,0);
-
-    	glTexCoord2f (tPoints[(int)c][0] + font->tIncX, tPoints[(int)c][1]);
-		glVertex3f (x + size, y,0);
-
-        if (!shadow)
-            glColor4fv (font->fgColor);
-        else glColor4fv (font->bgColor);
-
-        glTexCoord2f (tPoints[(int)c][0] + font->tIncX, tPoints[(int)c][1] + font->tIncY);
-		glVertex3f (x + size + font->italic, y + size,0);
-
-        glTexCoord2f (tPoints[(int)c][0], tPoints[(int)c][1] + font->tIncY);
-		glVertex3f (x + font->italic, y + size,0);
-	glEnd ();
-}
-/*
-=============
-fontScissorNormal
-
-Normal scissor region for text rendering.  
-=============
-*/
-void fontScissorNormal (texFont_t* font,int xpos, int ypos, int tabs, int carrage, int size, int len)
-{
-    int sy;
-    int ex;
-    int ey;
-
-    ex = len * size * tabs;
-
-    if (carrage)
-	{
-		sy = ypos - (size * carrage);
-		ey = size * (carrage + 1);
-	} else {
-		sy = ypos;
-		ey = size;
-	}
-    glScissor (xpos, sy, ex, ey);
-}
-/*
-=============
-
-=============
-fontFgColorReset
-
-Resets the font color.
-=============
-*/
-void fontForeColorReset (texFont_t* font)
-{
-    fontColorCopy (white, font->fgColor);
-}
-/*
-=============
-fontBgColorReset
-
-Resets the shadow color.
-=============
-*/
-void fontShadowColorReset (texFont_t* font)
-{
-    fontColorCopy (gray, font->bgColor);
-}
-/*
-=============
-fontGdColorReset
-
-Resets the gradient color.
-=============
-*/
-void fontGradientColorReset (texFont_t* font)
-{
-    fontColorCopy (gray, font->gdColor);
-}
-/*
-=============
-fontReset
-
-Resets the font.  Only resets variables that could possible change.
-=============
-*/
-void fontReset (texFont_t* font)
-{
-    font->size = 12;
-    font->shadow = 0;
-    font->region = 0;
-    font->gradient = 0;
-    font->italic = 0;
-    font->bold = 0;
-    font->regionX = 0;
-    font->regionY = 0;
-    font->regionW = 0;
-    font->regionH = 0;
+    font->fontheight = 12;
     fontForeColorReset (font);
-    fontShadowColorReset (font);
-    fontGradientColorReset (font);
 }
-/*
-=============
-fontRegion
-
-Sets up a font region.  Only good for one fontDrawString. 
-=============
-*/
-void fontRegion (texFont_t* font,float x, float y, float w, float h)
+void fontSize (glCompText* font,GLfloat size)
 {
-    font->region = 1;
-    font->regionX = x;
-    font->regionY = y - h;
-    font->regionW = w;
-    font->regionH = h;
+    font->fontheight = size;
 }
-/*
-=============
-fontSize
-
-Sets the font size.
-=============
-*/
-void fontSize (texFont_t* font,GLfloat size)
-{
-    font->size = size;
-}
-void fontzdepth(texFont_t* font,GLfloat zdepth)
+void fontzdepth(glCompText* font,GLfloat zdepth)
 {
 	font->zdepth=zdepth;
 }
-/*
-=============
-fontShadow
-
-Draws a shadow if called.
-=============
-*/
-void fontShadow (texFont_t* font)
+void fontWalkString (glCompText* font,char *bf, GLfloat xpos, GLfloat ypos, int *vPort,float width)
 {
-    font->shadow = 1;
-}
-/*
-=============
-fontGradient
-
-Draws gradient text if called.
-=============
-*/
-void fontGradient (texFont_t* font)
-{
-    font->gradient = 1;
-}
-/*
-=============
-fontRenderChar
-
-Draws a character to the screen
-Bold is just a hack, nothing special
-=============
-*/
-void fontRenderChar (texFont_t* font,char c, GLfloat x, GLfloat y, GLfloat size)
-{
-    if (font->shadow)
-    {
-        if (!font->bold)
-	        fontDrawChar (font,c, x + (GLfloat)1.0,  y + (GLfloat)1.0, size, 1);
-        else fontDrawChar (font,c, x + (GLfloat)2.0,  y + (GLfloat)1.0, size, 1);
-    }
-    
-
-
-	fontDrawChar (font,c, x, y, size, 0);
-
-	if (font->bold)
-        fontDrawChar (font,c, x + (GLfloat)1.0, y, size, 0);
-}
-/*
-=============
-fontSlashParser
-
-Handles all the fun that comes with a \\, returns amount to advance string.
-After this funtion *buffptr ++ will be the next character to draw or parse.
-=============
-*/
-int fontSlashParser (texFont_t* font,char *buffPtr, GLfloat *x, GLfloat *y)
-{
-    int ret = 0;
-
-    *buffPtr ++;
-
-    if (!*buffPtr)
-        return ret;
-
-    switch (*buffPtr)
-    {
-        case 'a':
-        case 'c':
-            *x -= font->size;
-            return fontSetColorFromToken (font,buffPtr);
-        break;
-        case 'i':
-            *x -= font->size;
-            return fontItalicsMode (font,buffPtr);
-        break;
-        case 'b':
-            *x -= font->size;
-            return fontBoldMode (font,buffPtr);
-        break;
-        default:
-            *buffPtr --;
-            fontRenderChar (font,*buffPtr, *x, *y, font->size);
-            return ret;
-        break;
-    }
-}
-/*
-=============
-fontWalkString
-
-Does the actual rendering of our string.  
-=============
-*/
-void fontWalkString (texFont_t* font,char *buffPtr, GLfloat xpos, GLfloat ypos, int *vPort,float width)
-{
-    GLfloat size = font->size;
+	GLfloat size = font->fontheight;
 	GLfloat x = xpos;
 	GLfloat y = ypos;
 	GLfloat carrage = 0;
@@ -330,30 +51,16 @@ void fontWalkString (texFont_t* font,char *buffPtr, GLfloat xpos, GLfloat ypos, 
 	GLfloat charGap;
 	xMax = vPort[0] + vPort[2];
 
-    carrage = (GLfloat) fontGetCharHits (buffPtr, '\n');
-	tabs = (GLfloat) fontGetCharHits (buffPtr, '\t');
+    carrage = (GLfloat) fontGetCharHits (bf, '\n');
+	tabs = (GLfloat) fontGetCharHits (bf, '\t');
 
 	if (!tabs)
 		tabs = 1;
 	else tabs *= FONT_TAB_SPACE;
-
-/*    if (font.region)
-    {
-        fontScissorTextRegion ();
-        x = font.regionX;
-        y = (font.regionY + font.regionH) - font.size;
-    } else 
-	fontScissorNormal (xpos, ypos, tabs, carrage, font.size, len); */
-
-#ifdef FONT_LIB_DEBUG
-    glClearColor (1,0,1,1);
-    glClear (GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-#endif
-
     /* lets draw! */
 	//width for each char should be calculated , we need the max line length of the paragraph
 
-	tempC=buffPtr;
+	tempC=bf;
 	charCount=0;
 	maxcharCount=0;
 
@@ -380,52 +87,24 @@ void fontWalkString (texFont_t* font,char *buffPtr, GLfloat xpos, GLfloat ypos, 
 	charGap=(width / (float)maxcharCount);
 
 
-	for ( ; *buffPtr; *buffPtr ++, x += charGap) //size*0.7 is the distance between2 characters
+	for ( ; *bf; *bf ++, x += charGap) //size*0.7 is the distance between2 characters
 	{
-	//	if (x > xMax)
-	//		break;
-    /*    if (font.region)
-        {
-            if (x + size > (font.regionX + font.regionW))
-            {
-                y -= size;
-                x = font.regionX;
-            }
-            if (y < font.regionY)
-                break;
-        }*/
 
+	    glBegin (GL_QUADS);
+		glTexCoord2f (tPoints[(int)(*bf)][0], tPoints[(int)(*bf)][1]);
+		glVertex3f (x, y,0);
 
+    	glTexCoord2f (tPoints[(int)(*bf)][0] + font->tIncX, tPoints[(int)(*bf)][1]);
+		glVertex3f (x + size, y,0);
 
-/*
-		if(*buffPtr==' ')		//SPACE
-			x = x + size;*/
+		glColor4f (font->color.R,font->color.G,font->color.B,font->color.A);
 
-		switch (*buffPtr)
-		{
+        glTexCoord2f (tPoints[(int)(*bf)][0] + font->tIncX, tPoints[(int)(*bf)][1] + font->tIncY);
+		glVertex3f (x + size, y + size,0);
 
-		
-			case '\n':
-				y -= size;
-                x = xpos - size;
-				continue; 
-			break;
-			case '\t':
-				x += (size * FONT_TAB_SPACE);
-				continue; 
-			break;
-            case '\\':
-                buffPtr += fontSlashParser (font,buffPtr, &x, &y);
-                if (*buffPtr == '\n' || *buffPtr == '\t')
-                {
-                    buffPtr -= 1;
-                    continue;
-                }
-            break;
-            default :
-                fontRenderChar (font,*buffPtr, x, y, size);
-            break;
-		}
+        glTexCoord2f (tPoints[(int)(*bf)][0], tPoints[(int)(*bf)][1] + font->tIncY);
+		glVertex3f (x , y + size,0);
+		glEnd ();
 	}
 }
 /*
@@ -436,21 +115,10 @@ Renders a string at xpos, ypos.
 =============
 */
 void 
-fontDrawString (texFont_t* font, GLfloat xpos, GLfloat ypos, 
-    GLfloat width, char *s, ...)
+fontDrawString (glCompText* font, GLfloat xpos, GLfloat ypos, 
+    GLfloat width, char *s)
 {
-	va_list	msg;
-    char buffer[FONT_MAX_LEN] = {'\0'};
     int vPort[4];
-	
-	va_start (msg, s);
-#ifdef _WIN32
-	_vsntprintf (buffer, FONT_MAX_LEN - 1, s, msg);	
-#else /* not Windows */
-	vsnprintf (buffer, FONT_MAX_LEN - 1, s, msg);	
-#endif
-	va_end (msg);
-
     /* get current viewport */
     glGetIntegerv (GL_VIEWPORT, vPort);
     /* setup various opengl things that we need */
@@ -471,7 +139,7 @@ fontDrawString (texFont_t* font, GLfloat xpos, GLfloat ypos,
     /* draw the string */
 
 
-	fontWalkString (font,buffer, xpos, ypos, vPort,(float)width);
+	fontWalkString (font,s, xpos, ypos, vPort,(float)width);
 	
 /*	glMatrixMode (GL_PROJECTION);
 	glPopMatrix ();
@@ -480,75 +148,6 @@ fontDrawString (texFont_t* font, GLfloat xpos, GLfloat ypos,
 
 	fontSetModes (FONT_RESTORE_MODES);
     fontReset (font);
-}
-/*
-=============
-fontSetColorFromToken
-
-Grabs a color token from a buffer and sets color.  
-=============
-*/	
-int fontSetColorFromToken (texFont_t* font,char *s)
-{
-	int clr[4];
-	int ret = 1;
-
-	if (*s == 'c')
-	{
-		s += 1;
-		if (sscanf (s, "(%d %d %d)", &clr[0], &clr[1], &clr[2]) != 3)
-			return -1;
-		fontColor (font,clr[0] * FONT_ITOF, clr[1] * FONT_ITOF, clr[2] * FONT_ITOF);
-	} else if (*s == 'a')
-	{
-		s += 1;
-		if (sscanf (s, "(%d %d %d %d)", &clr[0], &clr[1], &clr[2], &clr[3]) != 4)
-			return -1;
-		fontColorA (font,clr[0] * FONT_ITOF, clr[1] * FONT_ITOF, clr[2] * FONT_ITOF, clr[3] * FONT_ITOF);
-	}
-
-	while (*s != ')' && ret ++)
-		s += 1;
-
-    return ret + 1;
-}
-/*
-=============
-fontItalicsMode
-
-Either turns on or off italics.
-=============
-*/	
-int fontItalicsMode (texFont_t* font,char *s)
-{
-    s += 1;
-
-    if (*s == '+')
-        font->italic = FONT_ITALIC;
-    else if (*s == '-')
-        font->italic = 0;
-    else return -1;
-
-    return 2;
-}
-/*
-=============
-fontBoldMode
-
-Either turns on or off bold.
-=============
-*/	
-int fontBoldMode (texFont_t* font,char *s)
-{
-    s += 1;
-
-    if (*s == '+')
-        font->bold = 1;
-    else if (*s == '-')
-        font->bold = 0;
-    else return -1;
-
-    return 2;
 }
 /*
 =============
@@ -577,15 +176,15 @@ fontMakeMap
 Makes the font map which allows the correct characters to be drawn.
 =============
 */
-void fontMakeMap (texFont_t* font)
+void fontMakeMap (glCompText* font)
 {
 #define VCOPY(d,x,y) {d[0] = x; d[1] = y;}
 	int i = 0;
 	float x, y;
 
 
-	font->tIncX = (float)pow (font->blockCol, -1);
-	font->tIncY = (float)pow (font->blockRow, -1);
+	font->tIncX = (float)pow (C_DPI, -1);
+	font->tIncY = (float)pow (R_DPI, -1);
 
 	
 	for (y = 1 - font->tIncY; y >= 0; y -= font->tIncY)
@@ -695,33 +294,21 @@ static int fontId(fontset_t* fontset,char* fontdesc)
 	}
 	return -1;
 }
-/*
-	load font via font description
-	returns the id,
-	if font already exists no malloc just returns the id
-*/
 
-texFont_t* font_init()
+
+glCompText* font_init()
 {
-    texFont_t* font = NEW(texFont_t);
+    glCompText* font = NEW(glCompText);
 
-	font->fgColor[0]=1.0;font->fgColor[1]=1.0;font->fgColor[2]=1.0;font->fgColor[3]=1.0;
-	font->gdColor[0]=0.5;font->gdColor[1]=0.5;font->gdColor[2]=0.5;font->gdColor[3]=1.0;
-	font->bgColor[0]=0.5;font->bgColor[1]=0.5;font->bgColor[2]=0.5;font->bgColor[3]=1.0;
-	font->size=12;
-	font->shadow=0;
-	font->gradient=0;
-	font->italic=0;
-	font->bold=0;
-	font->region=0;
-	font->regionX=0;
-	font->regionY=0;
-	font->regionW=0;
-	font->regionH=0;
+	font->color.R=1.00;
+	font->color.G=1.00;
+	font->color.B=1.00;
+	font->color.A=1.00;
+
+
+	font->fontheight=12;
 	font->tIncX=0.0;
 	font->tIncY=0.0;
-	font->blockRow=FONT_BLOCK_ROW;
-	font->blockCol=FONT_BLOCK_COL;
 	font->texId=-1;
 	font->fontdesc=(char*)0;
 
@@ -730,34 +317,18 @@ texFont_t* font_init()
     return font;
 }
 
-void copy_font(texFont_t* targetfont,const texFont_t* sourcefont)
+void copy_font(glCompText* targetfont,const glCompText* sourcefont)
 {
-	targetfont->fgColor[0]=sourcefont->fgColor[0];
-	targetfont->fgColor[1]=sourcefont->fgColor[1];
-	targetfont->fgColor[2]=sourcefont->fgColor[2];
-	targetfont->fgColor[3]=sourcefont->fgColor[3];
-	targetfont->gdColor[0]=sourcefont->gdColor[0];
-	targetfont->gdColor[1]=sourcefont->gdColor[1];
-	targetfont->gdColor[2]=sourcefont->gdColor[2];
-	targetfont->gdColor[3]=sourcefont->gdColor[3];
-	targetfont->bgColor[0]=sourcefont->bgColor[0];
-	targetfont->bgColor[1]=sourcefont->bgColor[1];
-	targetfont->bgColor[2]=sourcefont->bgColor[2];
-	targetfont->bgColor[3]=sourcefont->bgColor[3];
-	targetfont->size=sourcefont->size;
-	targetfont->shadow=sourcefont->shadow;
-	targetfont->gradient=sourcefont->gradient;
-	targetfont->italic=sourcefont->italic;
-	targetfont->bold=sourcefont->bold;
-	targetfont->region=sourcefont->region;
-	targetfont->regionX=sourcefont->regionX;
-	targetfont->regionY=sourcefont->regionY;
-	targetfont->regionW=sourcefont->regionW;
-	targetfont->regionH=sourcefont->regionH;
+	targetfont->color.R=sourcefont->color.R;
+	targetfont->color.G=sourcefont->color.G;
+	targetfont->color.B=sourcefont->color.B;
+	targetfont->color.A=sourcefont->color.A;
+
+
+
+	targetfont->fontheight=sourcefont->fontheight;
 	targetfont->tIncX=sourcefont->tIncX;
 	targetfont->tIncY=sourcefont->tIncY;
-	targetfont->blockRow=sourcefont->blockRow;
-	targetfont->blockCol=sourcefont->blockCol;
 	targetfont->texId=sourcefont->texId;
 	if (targetfont->fontdesc)
 		free(targetfont->fontdesc);
@@ -794,7 +365,7 @@ int add_font(fontset_t* fontset,char* fontdesc)
 {
     int id;	
     size_t sz;
-    texFont_t* tf;
+    glCompText* tf;
 
     id=fontId(fontset,fontdesc);
 
@@ -806,11 +377,11 @@ int add_font(fontset_t* fontset,char* fontdesc)
         }
 	sprintf(fontpath,"%s/%s.png",fontset->font_directory,fontdesc);
 	if(create_font_file(fontdesc,fontpath,(float)32,(float)32)==0) {
-	    fontset->fonts = ALLOC(fontset->count+1,fontset->fonts,texFont_t*);
+	    fontset->fonts = ALLOC(fontset->count+1,fontset->fonts,glCompText*);
 	    fontset->fonts[fontset->count] = tf = font_init ();
 	    tf->fontdesc = strdup(fontdesc);
 	    glGenTextures (1, &(tf->texId));	//get  opengl texture name
-	    if ((tf->texId >= 0) && fontLoadPNG (fontpath, tf->texId)) {
+	    if ((tf->texId >= 0) && glCompLoadFontPNG (fontpath, tf->texId)) {
 		fontset->activefont=fontset->count;
 		fontset->count++;
 		return fontset->count;
@@ -846,3 +417,12 @@ void free_font_set(fontset_t* fontset)
     free(fontset);
 }
 
+void fontColor (glCompText* font,float r, float g, float b,float a)
+{
+
+	
+	font->color.R=r;
+	font->color.G=g;
+	font->color.B=b;
+	font->color.A=a;
+}

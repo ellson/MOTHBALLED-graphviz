@@ -140,10 +140,15 @@ void mTopviewSettingsSlot(GtkWidget * widget, gpointer user_data)
 void mShowToolBoxSlot(GtkWidget * widget, gpointer user_data)
 {
 
-    gtk_widget_hide(glade_xml_get_widget(xml, "frmToolBox"));
-    gtk_widget_show(glade_xml_get_widget(xml, "frmToolBox"));
+    gtk_widget_hide(glade_xml_get_widget(xml, "gtkglwindow"));
+    gtk_widget_show(glade_xml_get_widget(xml, "gtkglwindow"));
     gtk_window_set_keep_above((GtkWindow *)
-			      glade_xml_get_widget(xml, "frmToolBox"), 1);
+			      glade_xml_get_widget(xml, "gtkglwindow"), 1);
+
+if(!gtk_widget_set_gl_capability    (glade_xml_get_widget(xml, "glfixed"), configure_gl(),gtk_widget_get_gl_context(view->drawing_area),0,0))
+	printf("glwidget creation failed \n");
+
+	
 
 }
 

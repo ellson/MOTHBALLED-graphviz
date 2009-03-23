@@ -41,6 +41,13 @@ struct GraphicsContext
 
 static const int BYTES_PER_PIXEL = 4;		/* bytes per pixel */
 
+#define ADD_ATTR(a) \
+  if (a) { \
+        strcat(buf, comma ? " " : ", "); \
+        comma = 1; \
+        strcat(buf, a); \
+  }
+
 extern void SaveBitmapToStream(Gdiplus::Bitmap &bitmap, IStream *stream, int format);
 
 #endif

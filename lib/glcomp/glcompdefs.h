@@ -1,9 +1,17 @@
 #ifndef GLCOMPDEFS_H
 #define GLCOMPDEFS_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdarg.h>
+#include <math.h>
 #ifdef _WIN32
-#include "windows.h"
+#include <windows.h>
+#include <winuser.h>
+#include <tchar.h>
 #endif
+#include <GL/gl.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <GL/gl.h>
@@ -44,6 +52,18 @@
 #define	GLCOMPSET_BEVEL_DIFF				(GLfloat)0.001
 #define GLCOMPSET_DEFAULT_PAD		(GLfloat)3
 
+#define FONT_GET_MODES              1 
+#define FONT_RESTORE_MODES          2 
+#define FONT_MAX_LEN                1024 /* maximum chars to draw to the screen, used for buffers also */
+#define FONT_TAB_SPACE              4    /* spaces to draw for a tab, make option? */
+#define FONT_ITOF                   (float) pow (255, -1)
+#define FONT_ITALIC                 8    /* italic amount in pixels */
+#define fontColorCopy(a,b)          {b[0]= a[0]; b[1]= a[1]; b[2]= a[2]; b[3]= a[3];} /* copys colors */
+
+#define C_DPI              16
+#define R_DPI              16
+
+
 typedef void (*callbackfunc_t) (void *component);
 typedef enum { inverted_y,scientific_y} glCompOrientation;
 
@@ -62,32 +82,21 @@ typedef struct {
 } glCompTexture;
 typedef struct
 {
-    float fgColor[4];   /* foreground color, default white */
-    float gdColor[4];   /* gradient color, default gray */
-    float bgColor[4];   /* background color, default gray */
-    float size;           /* size of text, default 12 */
-    int shadow;         /* shadow text? default 0 */
-    int gradient;       /* gradient? default 0 */
-    int italic;         /* italic amount, defaul 0 */
-    int bold;           /* bold text? */
-    int region;         /* do we have a text region */
-    float regionX;        /* lower left x */
-    float regionY;        /* lower left y */
-    float regionW;        /* text region w */
-    float regionH;        /* text region h */
+	char* fontdesc;	//font description
+	glCompColor color;
+    float fontheight;           /* size of text, default 12 */
     float tIncX;        /* used for texture coords, x axis amount to move */
     float tIncY;        /* used for texture coords, y axis amount to move */
     int blockRow;       /* characters per row */
     int blockCol;       /* characters per col */
-    unsigned int texId; /* texture id */
+    int texId; /* texture id */
 	float zdepth;	//third dimension , depth of fonts
-	char* fontdesc;	//font description
-} texFont_t;
+} glCompText;
 
 
 typedef struct
 {
-	texFont_t** fonts;
+	glCompText** fonts;
 	int count;
 	int activefont;
 	char* font_directory;	//location where the glfont files are stored
@@ -109,7 +118,7 @@ typedef struct _glCompPanel {
     int visible;
     void *parentset;		//parent compset
     int data;
-    texFont_t* font;	//pointer to font to use
+    glCompText* font;	//pointer to font to use
 	glCompOrientation orientation;
 
 } glCompPanel;
@@ -131,7 +140,7 @@ typedef struct _glCompTrackBar {
     int visible;
     void *parentset;		//parent compset
     int data;
-    texFont_t* font;	//pointer to font to use
+    glCompText* font;	//pointer to font to use
 	glCompOrientation orientation;
 
 }glCompTrackBar;
@@ -144,7 +153,7 @@ typedef struct _glCompLabel {
     char *text;
     GLfloat fontsizefactor;
     glCompPanel *panel;		//container panel
-    texFont_t* font;	//pointer to font to use
+    glCompText* font;	//pointer to font to use
 	glCompOrientation orientation;
 
 } glCompLabel;
@@ -171,7 +180,7 @@ typedef struct _glCompButton {
     callbackfunc_t callbackfunc;	//call back for button click
     void *customptr;		//general purpose void pointer to pass to call back
     int data;
-    texFont_t* font;	//pointer to font to use
+    glCompText* font;	//pointer to font to use
 	glCompOrientation orientation;
 
 } glCompButton;
@@ -187,7 +196,7 @@ typedef struct {
     int active;			//0 dont draw, 1 draw
     int enabled;		//0 disabled 1 enabled(allow mouse interaction)
     GLfloat clickedX, clickedY;
-    texFont_t* font;	//pointer to font to use
+    glCompText* font;	//pointer to font to use
 } glCompSet;
 
 #endif

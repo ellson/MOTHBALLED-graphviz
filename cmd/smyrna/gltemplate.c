@@ -137,7 +137,6 @@ static void realize(GtkWidget * widget, gpointer data)
 #else
     smyrna_font = smyrnaPath("arial.tga");
 #endif
-//    g_print("loading font....%i\n", fontLoad(smyrna_font));
 
 	add_font(view->fontset,"Times 14");//wired in default font
 	/*** OpenGL BEGIN ***/

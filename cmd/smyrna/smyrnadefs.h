@@ -18,7 +18,7 @@
 
 #ifdef WIN32
 #include "windows.h"
-#include "gltexfont.h"
+//#include "gltexfont.h"
 //#define       SMYRNA_GLADE "C:/Projects/graphviz2/share/gui/smyrna.glade"
 #define	SMYRNA_ATTRS "c:/graphviz-ms/share/gui/attrs.txt"
 #endif
@@ -182,6 +182,8 @@ typedef struct {
     topviewdata *TopviewData;
     void *customptr;
     Hierarchy *h;
+	glCompColor srcColor;	//fine node colors of topfisheye
+	glCompColor tarColor;   //supernode colors of fisheye
     int is_top_fisheye;	//1 draw hierarchy 0 draw regular topview
     focus_t* fs;
     struct {

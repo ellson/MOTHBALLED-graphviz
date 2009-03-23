@@ -14,9 +14,7 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 #include "glTexFont.h"
-#include "glTexFontTGA.h"
-#include "glTexFontDefs.h"
-#include "glTexFontInclude.h"
+#include "glcomptextpng.h"
 #include "glcompbutton.h"
 #include "glcomppanel.h"
 #include "glcomplabel.h"
@@ -37,6 +35,9 @@
 #else
 #include "regex.h"
 #endif
+#include "otk_lib.h"
+
+
 
 static float dx = 0.0;
 static float dy = 0.0;
@@ -54,6 +55,7 @@ static int update_topview_node_from_cgraph(topview_node * Node);
 static int get_color_from_edge(topview_edge * e);
 static int draw_node_hint_boxes(void);
 static int pick_node(topview_node * n);
+
 
 void cleartopview(topview * t)
 {
@@ -81,6 +83,13 @@ void preparetopview(Agraph_t * g, topview * t)
 
 	int maxlabelsize=0;
 	float maxedgelen,minedgelen,len,edgelength;
+
+//	OtkInitWindow( 700, 500, NULL, NULL );
+//	OtkMakeButton( OtkOuterWindow, 10.0, 10.0, 80.0, 80.0, "Hello World !", 0, 0 );
+//	OtkMainLoop();
+
+
+
 	maxedgelen=0;
 	minedgelen=(float)99999999.00000;	//FIX ME if you have a giant graph or fix your graph
 	edgelength=0;
@@ -641,7 +650,7 @@ static int draw_node_hint_boxes(void)
 			  )
 			  ;
 	fontSize(view->fontset->fonts[view->fontset->activefont],fs);
-	fontColorA(view->fontset->fonts[view->fontset->activefont],0, 0, 1, 1);
+	fontColor(view->fontset->fonts[view->fontset->activefont],0, 0, 1, 1);
 
 
 	fontDrawString(
@@ -858,7 +867,8 @@ static int draw_topview_label(topview_node * v, float zdepth)
 	&& (v->distorted_y / view->zoom * -1 < view->clipY2)) 
 	{
 		fs=calculate_font_size(v);
-		
+		if (v->degree==0)
+			printf("haha\n");
 	
 
 /*		fs = (v->degree ==1) ? 
@@ -866,9 +876,11 @@ static int draw_topview_label(topview_node * v, float zdepth)
 					:
 				(float) (log((double) v->degree +(double) 0.5) *(double) 3)*14;*/
 
-		fs =(float) (log((double) v->degree +(double) 0.5) *(double) 3)*14;
+		fs =(float) (log((double) v->degree +(double) 0.7) *(double) 3)*14;
 	//	fs=view->FontSize;
 	fs = fs * v->zoom_factor;
+	if (v->degree < 3)
+		fs=fs*2;
 	if (OD_Selected(v->Node) == 1) {
 	    ddx = dx;
 	    ddy = dy;
@@ -877,21 +889,22 @@ static int draw_topview_label(topview_node * v, float zdepth)
 		return 0;
 
 //	fs= 10;
-	fs= fs * (float)0.2;
+	fs= fs * (float)0.182;
 
 
 
 	fontSize(view->fontset->fonts[view->fontset->activefont],fs);
 	if ((log((float) v->degree) * -0.6 * view->zoom) > 0)
-	    fontColorA(view->fontset->fonts[view->fontset->activefont],(float) log((double) v->degree + (double) 1),
+	    fontColor(view->fontset->fonts[view->fontset->activefont],(float) log((double) v->degree + (double) 1),
 		       view->penColor.G, view->penColor.B,
 		       view->penColor.A / (float) log((double) v->degree) *
 		       (float) -0.4 * (float) view->zoom);
 	else
-	    fontColorA(view->fontset->fonts[view->fontset->activefont],(float) log((double) v->degree + (double) 1),
+	    fontColor(view->fontset->fonts[view->fontset->activefont],(float) log((double) v->degree + (double) 1),
 		       view->penColor.G, view->penColor.B, (float)0.7);
 
-//	fontColorA(0,0,0,1);
+	fontColor(view->fontset->fonts[view->fontset->activefont],0,0,0,view->penColor.A / (float) log((double) v->degree) *
+		       (float) -0.4 * (float) view->zoom);
 	fontDrawString(view->fontset->fonts[view->fontset->activefont],(v->distorted_x - ddx),
 		        (v->distorted_y - ddy),  (fs * strlen(v->Label)*(float)0.6),v->Label   );
 

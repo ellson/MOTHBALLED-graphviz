@@ -176,18 +176,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\glTexFontDefs.h"
-				>
-			</File>
-			<File
-				RelativePath=".\glTexFontInclude.h"
-				>
-			</File>
-			<File
-				RelativePath=".\glTexFontTGA.h"
-				>
-			</File>
-			<File
 				RelativePath=".\glutils.h"
 				>
 			</File>
@@ -220,6 +208,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\glcomptextpng.c"
+				>
+			</File>
+			<File
 				RelativePath=".\glcomptexture.c"
 				>
 			</File>
@@ -233,14 +225,6 @@
 			</File>
 			<File
 				RelativePath=".\glTexFont.c"
-				>
-			</File>
-			<File
-				RelativePath=".\glTexFontColor.c"
-				>
-			</File>
-			<File
-				RelativePath=".\glTexFontTGA.c"
 				>
 			</File>
 			<File

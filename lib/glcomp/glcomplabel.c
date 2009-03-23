@@ -65,7 +65,7 @@ int glCompDrawLabel(glCompLabel * p)
 	}
 
 	fontSize(p->font, p->size);
-	fontColorA(p->font,p->color.R, p->color.G, p->color.B, p->color.A);
+	fontColor(p->font,p->color.R, p->color.G, p->color.B, p->color.A);
 
 	fontDrawString(p->font, p->pos.x,  p->pos.y,
 		        (p->size * p->fontsizefactor *

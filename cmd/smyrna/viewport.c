@@ -70,7 +70,7 @@ void clear_viewport(ViewInfo * view)
     free(view);
 }
 
-static char *get_attribute_value(char *attr, ViewInfo * view, Agraph_t * g)
+char *get_attribute_value(char *attr, ViewInfo * view, Agraph_t * g)
 {
     char *buf;
     buf = agget(g, attr);

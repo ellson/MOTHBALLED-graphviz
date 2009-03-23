@@ -15,9 +15,7 @@
 #include "topfisheyeview.h"
 
 #include "glTexFont.h"
-#include "glTexFontTGA.h"
-#include "glTexFontDefs.h"
-#include "glTexFontInclude.h"
+#include "glcomptextpng.h"
 #include "math.h"
 #include "memory.h"
 #include "viewport.h"
@@ -28,10 +26,27 @@
 #include "hier.h"
 #include "topfisheyeview.h"
 #include <string.h>
+#include "color.h"
+
 
 static int get_temp_coords(topview* t,int level,int v,double* coord_x,double* coord_y);
 static int get_temp_coords2(topview* t,int level,int v,double* coord_x,double* coord_y,float *R,float *G,float *B);
 static int FLUSH=0;
+
+static void color_interpolation(glCompColor srcColor,glCompColor tarColor,glCompColor* color,int levelcount,int level)
+{
+	if (levelcount <=0)
+		return;
+
+
+	color->R=((float)level*tarColor.R-(float)level*srcColor.R+(float)levelcount*srcColor.R) /
+				(float)levelcount;
+	color->G=((float)level*tarColor.G-(float)level*srcColor.G+(float)levelcount*srcColor.G) /
+				(float)levelcount;
+	color->B=((float)level*tarColor.B-(float)level*srcColor.B+(float)levelcount*srcColor.B) /
+				(float)levelcount;
+}
+
 static double dist(double x1, double y1, double x2, double y2)
 {
     return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
@@ -51,6 +66,7 @@ static double G(double x)
     return (view->fmg.fisheye_distortion_fac +
 	    1) * x / (view->fmg.fisheye_distortion_fac * x + 1);
 }
+
 
 void fisheye_polar(double x_focus, double y_focus, topview * t)
 {
@@ -230,6 +246,7 @@ void prepare_topological_fisheye(topview* t)
     Hierarchy *hp;
     ex_vtx_data *gg;
     topview_node *np;
+	gvcolor_t cl;
 
     v_data *graph = makeGraph(t, &ne);
 
@@ -257,6 +274,20 @@ void prepare_topological_fisheye(topview* t)
     view->Topview->parms.repos.width =(int) (view->bdxRight-view->bdxLeft);
     view->Topview->parms.repos.height =(int) (view->bdyTop-view->bdyBottom);
 	view->Topview->parms.repos.rescale=Polar;
+
+	//topological fisheye 
+
+	colorxlate(get_attribute_value("topologicalfisheyefinestcolor", view, view->g[view->activeGraph]), &cl,
+		RGBA_DOUBLE);
+	view->Topview->srcColor.R = (float) cl.u.RGBA[0];
+    view->Topview->srcColor.G = (float) cl.u.RGBA[1];
+    view->Topview->srcColor.B = (float) cl.u.RGBA[2];
+	colorxlate(get_attribute_value("topologicalfisheyecoarsestcolor", view, view->g[view->activeGraph]), &cl,
+		RGBA_DOUBLE);
+	view->Topview->tarColor.R = (float) cl.u.RGBA[0];
+    view->Topview->tarColor.G = (float) cl.u.RGBA[1];
+    view->Topview->tarColor.B = (float) cl.u.RGBA[2];
+
 
 	sscanf(agget(view->g[0],"topologicalfisheyedistortionfactor"),"%lf",&view->Topview->parms.repos.distortion);
 	sscanf(agget(view->g[0],"topologicalfisheyefinenodes"),"%d",&view->Topview->parms.level.num_fine_nodes);
@@ -301,9 +332,19 @@ void printalllevels(topview* t)
 
 void drawtopfishnodes(topview * t)
 {
-    int level, v;
+	glCompColor srcColor;
+	glCompColor tarColor;
+	glCompColor color;
+	int level, v;
     Hierarchy *hp = t->h;
-
+	static max_visible_level=0;
+	srcColor.R=view->Topview->srcColor.R;
+	srcColor.G=view->Topview->srcColor.G;
+	srcColor.B=view->Topview->srcColor.B;
+	tarColor.R=view->Topview->tarColor.R;
+	tarColor.G=view->Topview->tarColor.G;
+	tarColor.B=view->Topview->tarColor.B;
+	
 	
 	glEnable(GL_POINT_SMOOTH);	/*turn this off to make points look square*/
 	//draw focused node little bigger than others
@@ -331,12 +372,17 @@ void drawtopfishnodes(topview * t)
 								&& (-y0 / view->zoom < view->clipY2))))
 						continue;
 
-				if (level !=0)
-					glColor4f((GLfloat) (hp->nlevels - level)*(GLfloat)0.5 /  (GLfloat) hp->nlevels,
-				  (GLfloat) level / (GLfloat) hp->nlevels, (GLfloat)0,(GLfloat)view->defaultnodealpha);
-				else
-				glColor4f((GLfloat) 1,
-				  (GLfloat) level / (GLfloat) hp->nlevels*2, 0,view->defaultnodealpha);
+//				if (level !=0)
+//					glColor4f((GLfloat) (hp->nlevels - level)*(GLfloat)0.5 /  (GLfloat) hp->nlevels,
+//				  (GLfloat) level / (GLfloat) hp->nlevels, (GLfloat)0,(GLfloat)view->defaultnodealpha);
+	//			else
+//				glColor4f((GLfloat) 1,
+//				  (GLfloat) level / (GLfloat) hp->nlevels*2, 0,view->defaultnodealpha);
+
+				if (max_visible_level < level)
+					max_visible_level=level;
+				color_interpolation(srcColor,tarColor,&color,max_visible_level,level);
+				glColor4f(color.R,color.G,color.B,(GLfloat)view->defaultnodealpha);
 
 /*								glColor3f((GLfloat) (hp->nlevels - level)*0.5 /  (GLfloat) hp->nlevels,
 				  (GLfloat) level / (GLfloat) hp->nlevels, 0);*/
@@ -375,14 +421,14 @@ void drawtopfishnodelabels(topview* t)
 				if((v==t->fs->foci_nodes[0]) &&(focusnodes))
 				{
 					fs=view->FontSizeConst*(float)1.4;
-					fontColorA(view->fontset->fonts[view->fontset->activefont],(float)0, (float)0, (float)1, (float)1);
+					fontColor(view->fontset->fonts[view->fontset->activefont],(float)0, (float)0, (float)1, (float)1);
 					fontSize(view->fontset->fonts[view->fontset->activefont],fs);
 					fontDrawString(view->fontset->fonts[view->fontset->activefont],gg[v].physical_x_coord,gg[v].physical_y_coord, (fs*strlen(buf)*(GLfloat)0.4),buf);
 				}
 				else if (finenodes)
 				{
-					fs=view->FontSizeConst;
-					fontColorA(view->fontset->fonts[view->fontset->activefont],0, 0, 0, 1);
+					fs=view->FontSizeConst*1.2;
+					fontColor(view->fontset->fonts[view->fontset->activefont],0, 0, 0, 1);
 					fontSize(view->fontset->fonts[view->fontset->activefont],fs);
 					fontDrawString(view->fontset->fonts[view->fontset->activefont],gg[v].physical_x_coord,gg[v].physical_y_coord, (fs*strlen(buf)*(GLfloat)0.4),buf);
 				}
@@ -394,8 +440,20 @@ void drawtopfishnodelabels(topview* t)
 }
 void drawtopfishedges(topview * t)
 {
-    int level, v, i, n;
+	glCompColor srcColor;
+	glCompColor tarColor;
+	glCompColor color;
+
+	int level, v, i, n;
     Hierarchy *hp = t->h;
+		static max_visible_level=0;
+	srcColor.R=view->Topview->srcColor.R;
+	srcColor.G=view->Topview->srcColor.G;
+	srcColor.B=view->Topview->srcColor.B;
+	tarColor.R=view->Topview->tarColor.R;
+	tarColor.G=view->Topview->tarColor.G;
+	tarColor.B=view->Topview->tarColor.B;
+
 	//and edges
 	glBegin(GL_LINES);
     for (level = 0; level < hp->nlevels; level++)
@@ -411,12 +469,14 @@ void drawtopfishedges(topview * t)
 				{
 					double x, y;
 					n = g[v].edges[i];
-				if (level !=0)
-					glColor4f((GLfloat) (hp->nlevels - level)*(GLfloat)0.5 /  (GLfloat) hp->nlevels,
-				  (GLfloat) level / (GLfloat) hp->nlevels, 0,view->defaultedgealpha);
-				else
-				glColor4f((GLfloat) 1,
-				  (GLfloat) level / (GLfloat) hp->nlevels*2, 0,view->defaultedgealpha);
+
+
+				if (max_visible_level < level)
+					max_visible_level=level;
+				color_interpolation(srcColor,tarColor,&color,max_visible_level,level);
+				glColor4f(color.R,color.G,color.B,(GLfloat)view->defaultnodealpha);
+
+
 					if 	(get_temp_coords(t,level,n,&x,&y))
 					{
 							glVertex3f((GLfloat) x0, (GLfloat) y0,(GLfloat) 0);
@@ -573,6 +633,7 @@ void changetopfishfocus(topview * t, float *x, float *y,
 				   float *z, int num_foci)
 {
 
+	gvcolor_t cl;
 	focus_t *fs = t->fs;
     int i;
     int closest_fine_node;
@@ -594,11 +655,25 @@ void changetopfishfocus(topview * t, float *x, float *y,
     view->Topview->parms.repos.width =(int) (view->bdxRight-view->bdxLeft);
     view->Topview->parms.repos.height =(int) (view->bdyTop-view->bdyBottom);
 
+	colorxlate(get_attribute_value("topologicalfisheyefinestcolor", view, view->g[view->activeGraph]), &cl,
+		RGBA_DOUBLE);
+	view->Topview->srcColor.R = (float) cl.u.RGBA[0];
+    view->Topview->srcColor.G = (float) cl.u.RGBA[1];
+    view->Topview->srcColor.B = (float) cl.u.RGBA[2];
+	colorxlate(get_attribute_value("topologicalfisheyecoarsestcolor", view, view->g[view->activeGraph]), &cl,
+		RGBA_DOUBLE);
+	view->Topview->tarColor.R = (float) cl.u.RGBA[0];
+    view->Topview->tarColor.G = (float) cl.u.RGBA[1];
+    view->Topview->tarColor.B = (float) cl.u.RGBA[2];
+
+
+
 	sscanf(agget(view->g[0],"topologicalfisheyedistortionfactor"),"%lf",&view->Topview->parms.repos.distortion);
 	sscanf(agget(view->g[0],"topologicalfisheyefinenodes"),"%d",&view->Topview->parms.level.num_fine_nodes);
 	sscanf(agget(view->g[0],"topologicalfisheyecoarseningfactor"),"%lf",&view->Topview->parms.level.coarsening_rate);
 	sscanf(agget(view->g[0],"topologicalfisheyedist2limit"),"%d",&view->Topview->parms.hier.dist2_limit);
 	sscanf(agget(view->g[0],"topologicalfisheyeanimate"),"%d",&view->Topview->animate);
+
 
 
 
@@ -725,5 +800,4 @@ void drawtopologicalfisheyestatic(topview * t)
     }
     glEnd();*/
 }
-
 

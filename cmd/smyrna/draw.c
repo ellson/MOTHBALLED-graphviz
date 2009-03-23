@@ -476,10 +476,10 @@ static void EmbedText(xdot_op * op, int param)
 	x = (GLfloat) op->u.text.x + op->u.text.width;
 	fontSize(view->fontset->fonts[view->fontset->activefont],view->FontSize);
     if (param == 0)
-	fontColor(view->fontset->fonts[view->fontset->activefont],view->penColor.R, view->penColor.G, view->penColor.B);
+	fontColor(view->fontset->fonts[view->fontset->activefont],view->penColor.R, view->penColor.G, view->penColor.B,1);
     if (param == 1)		//selected
 	fontColor(view->fontset->fonts[view->fontset->activefont],view->selectedNodeColor.R, view->selectedNodeColor.G,
-		  view->selectedNodeColor.B);
+		  view->selectedNodeColor.B,1);
 	fontDrawString(view->fontset->fonts[view->fontset->activefont], (x - dx), (GLfloat)op->u.text.y -  dy,
 		   (GLfloat)op->u.text.width, op->u.text.text);
 }

@@ -184,7 +184,7 @@ int glCompDrawButton(glCompButton * p)
 	     p->fontsize) / (GLfloat) 2.0 + p->pos.y + p->thickness;
 	fontSize(p->font,p->fontsize);
 //              fontColorA (p->fontcolor.R,p->fontcolor.B,p->fontcolor.G,p->fontcolor.A);
-	fontColorA(p->font,0, 0, 0, 1);
+	fontColor(p->font,0, 0, 0, 1);
 	fontDrawString(p->font,(GLfloat) fontx, (GLfloat) fonty,
 		        (p->fontsize *(GLfloat) strlen(p->caption) *
 			      GLCOMPSET_FONT_SIZE_FACTOR), p->caption);
