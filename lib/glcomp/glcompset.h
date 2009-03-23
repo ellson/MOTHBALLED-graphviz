@@ -19,7 +19,7 @@
 #ifndef GLCOMPSET_H
 #define GLCOMPSET_H
 
-#include "glTexFont.h"
+#include "glcomptext.h"
 #include "glcomptextpng.h"
 #include "glcomptexture.h"
 
