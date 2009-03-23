@@ -10,7 +10,7 @@ if WITH_SMYRNA
 noinst_HEADERS = glcompbutton.h glcompdefs.h glcomplabel.h \
 	glcomppanel.h glcompset.h glcomptexture.h \
 	glCompTrackBar.h glpangofont.h glTexFontDefs.h \
-	glTexFont.h glTexFontInclude.h glpangofont.c \
+	glTexFont.h glTexFontInclude.h glpangofont.h \
 	glutils.h
 
 noinst_LTLIBRARIES = libglcomp_C.la
@@ -19,6 +19,6 @@ endif
 libglcomp_C_la_SOURCES = glcompbutton.c glcomplabel.c \
 	glcomppanel.c glcompset.c glcomptexture.c \
 	glCompTrackBar.c glpangofont.c glTexFont.c \
-	glTexFontColor.c glTexFontTGA.c glutils.c
+	glutils.c glpangofont.c
 
 EXTRA_DIST = glcomp.vcproj
