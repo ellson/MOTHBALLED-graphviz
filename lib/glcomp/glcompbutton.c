@@ -1,6 +1,19 @@
+/**********************************************************
+*      This software is part of the graphviz package      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2007 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+**********************************************************/
+
 #include "glcompbutton.h"
 #include "glcomptexture.h"
-#include "glTexFont.h"
+#include "glcomptext.h"
 #include <string.h>
 
 glCompButton *glCompButtonNew(GLfloat x, GLfloat y, GLfloat w, GLfloat h,
@@ -182,10 +195,10 @@ int glCompDrawButton(glCompButton * p)
 	fonty =
 	    (p->height - p->thickness * (GLfloat) 2 -
 	     p->fontsize) / (GLfloat) 2.0 + p->pos.y + p->thickness;
-	fontSize(p->font,p->fontsize);
+	p->font->fontheight=p->fontsize;
 //              fontColorA (p->fontcolor.R,p->fontcolor.B,p->fontcolor.G,p->fontcolor.A);
 	fontColor(p->font,0, 0, 0, 1);
-	fontDrawString(p->font,(GLfloat) fontx, (GLfloat) fonty,
+	glprintf(p->font,(GLfloat) fontx, (GLfloat) fonty,
 		        (p->fontsize *(GLfloat) strlen(p->caption) *
 			      GLCOMPSET_FONT_SIZE_FACTOR), p->caption);
     }

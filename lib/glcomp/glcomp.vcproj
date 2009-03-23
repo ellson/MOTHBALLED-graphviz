@@ -160,19 +160,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\glcomptext.h"
+				>
+			</File>
+			<File
 				RelativePath=".\glcomptexture.h"
 				>
 			</File>
 			<File
-				RelativePath=".\glCompTrackBar.h"
+				RelativePath=".\glcomptrackbar.h"
 				>
 			</File>
 			<File
 				RelativePath=".\glpangofont.h"
-				>
-			</File>
-			<File
-				RelativePath=".\glTexFont.h"
 				>
 			</File>
 			<File
@@ -208,6 +208,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\glcomptext.c"
+				>
+			</File>
+			<File
 				RelativePath=".\glcomptextpng.c"
 				>
 			</File>
@@ -216,15 +220,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\glCompTrackBar.c"
+				RelativePath=".\glcomptrackbar.c"
 				>
 			</File>
 			<File
 				RelativePath=".\glpangofont.c"
-				>
-			</File>
-			<File
-				RelativePath=".\glTexFont.c"
 				>
 			</File>
 			<File
