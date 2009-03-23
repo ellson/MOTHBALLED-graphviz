@@ -1,6 +1,18 @@
+/**********************************************************
+*      This software is part of the graphviz package      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2007 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+**********************************************************/
 #include "glcomplabel.h"
 #include "glcomptexture.h"
-#include "glTexFont.h"
+#include "glcomptext.h"
 
 
 glCompLabel *glCompLabelNew(GLfloat x, GLfloat y, GLfloat size, char *text,glCompOrientation orientation)
@@ -64,10 +76,10 @@ int glCompDrawLabel(glCompLabel * p)
 	    p->pos.y = p->pos.y + p->panel->pos.y;
 	}
 
-	fontSize(p->font, p->size);
+	p->font->fontheight=p->size;
 	fontColor(p->font,p->color.R, p->color.G, p->color.B, p->color.A);
 
-	fontDrawString(p->font, p->pos.x,  p->pos.y,
+	glprintf(p->font, p->pos.x,  p->pos.y,
 		        (p->size * p->fontsizefactor *
 			      strlen(p->text)), p->text);
 	if (p->panel) {

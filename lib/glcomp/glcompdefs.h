@@ -1,3 +1,15 @@
+/**********************************************************
+*      This software is part of the graphviz package      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2007 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+**********************************************************/
 #ifndef GLCOMPDEFS_H
 #define GLCOMPDEFS_H
 
@@ -52,13 +64,8 @@
 #define	GLCOMPSET_BEVEL_DIFF				(GLfloat)0.001
 #define GLCOMPSET_DEFAULT_PAD		(GLfloat)3
 
-#define FONT_GET_MODES              1 
-#define FONT_RESTORE_MODES          2 
 #define FONT_MAX_LEN                1024 /* maximum chars to draw to the screen, used for buffers also */
 #define FONT_TAB_SPACE              4    /* spaces to draw for a tab, make option? */
-#define FONT_ITOF                   (float) pow (255, -1)
-#define FONT_ITALIC                 8    /* italic amount in pixels */
-#define fontColorCopy(a,b)          {b[0]= a[0]; b[1]= a[1]; b[2]= a[2]; b[3]= a[3];} /* copys colors */
 
 #define C_DPI              16
 #define R_DPI              16
@@ -80,6 +87,21 @@ typedef struct {
     unsigned int id;
     float w, h;
 } glCompTexture;
+
+typedef struct 
+{
+	int matrix;
+	int poly[2];
+	int islightingon;
+	int isblendon;
+	int isdepthon;
+	int istextureon;
+	int blendfrom;
+	int blendto;
+}fontglcache;
+
+
+
 typedef struct
 {
 	char* fontdesc;	//font description
@@ -91,6 +113,8 @@ typedef struct
     int blockCol;       /* characters per col */
     int texId; /* texture id */
 	float zdepth;	//third dimension , depth of fonts
+	float  bmp[257][2]; //texture bitmaps
+	fontglcache glcache;
 } glCompText;
 
 
