@@ -9,7 +9,7 @@ AM_CPPFLAGS = \
 if WITH_SMYRNA
 noinst_HEADERS = glcompbutton.h glcompdefs.h glcomplabel.h \
 	glcomppanel.h glcompset.h glcomptexture.h \
-	glcomptrackBar.h glpangofont.h glcomptextpng.h\
+	glCompTrackBar.h glpangofont.h glcomptextpng.h\
 	glcomptext.h \
 	glutils.h
 
@@ -18,7 +18,7 @@ endif
 
 libglcomp_C_la_SOURCES = glcompbutton.c glcomplabel.c \
 	glcomppanel.c glcompset.c glcomptexture.c glcomptextpng.c\
-	glcomptrackBar.c glpangofont.c glcomptext.c \
+	glCompTrackBar.c glpangofont.c glcomptext.c \
 	glutils.c 
 
 EXTRA_DIST = glcomp.vcproj
