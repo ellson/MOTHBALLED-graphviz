@@ -15,7 +15,6 @@
 #include <png.h>
 
 
-GLenum texFormat;
 
 unsigned char *load_png_font(char* file_name,int *imageWidth,int *imageHeight)
 {
@@ -78,7 +77,6 @@ unsigned char *load_png_font(char* file_name,int *imageWidth,int *imageHeight)
    row_pointers = png_get_rows(png_ptr, info_ptr);
 	*imageWidth=info_ptr->width;
 	*imageHeight=info_ptr->height;
-	texFormat = GL_ALPHA;	//it is always GL_ALPHA, we dont need textures have their own colors
 	imageData=malloc(info_ptr->height*info_ptr->width);
 	c=0;
 	//decide what pixel offset to use, ro
@@ -167,7 +165,7 @@ int glCompLoadFontPNG (char *name, int id)
 	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 //	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE , GL_DECAL);
 
-	glTexImage2D (GL_TEXTURE_2D, 0, texFormat, imageWidth, imageHeight, 0, texFormat, GL_UNSIGNED_BYTE, imageData);
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_ALPHA, imageWidth, imageHeight, 0, GL_ALPHA, GL_UNSIGNED_BYTE, imageData);
 //	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
 
 	/* release data, its been uploaded */
