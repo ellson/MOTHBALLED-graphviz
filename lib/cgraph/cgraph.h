@@ -374,6 +374,7 @@ extern Agraph_t *agparent(Agraph_t * g);
 /* set cardinality */
 extern int agnnodes(Agraph_t * g), agnedges(Agraph_t * g);
 extern int agdegree(Agraph_t * g, Agnode_t * n, int in, int out);
+extern int agcountuniqedges(Agraph_t * g, Agnode_t * n, int in, int out);
 
 /* memory */
 extern void *agalloc(Agraph_t * g, size_t size);
