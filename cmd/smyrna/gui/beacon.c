@@ -94,7 +94,7 @@ int draw_node_hint_boxes()
 				     agnameof(view->Topview->picked_nodes[ind]->Node));
 /*	fontSize(fs);
 	fontColorA(0, 0, 1, 1);
-	fontDrawString((int)
+	glprintf((int)
 		       (view->Topview->picked_nodes[ind]->distorted_x -
 			fs / 3 + 1 - fs),
 		       (int) (view->Topview->picked_nodes[ind]->

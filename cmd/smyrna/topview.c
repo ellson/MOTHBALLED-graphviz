@@ -13,7 +13,7 @@
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
-#include "glTexFont.h"
+#include "glcomptext.h"
 #include "glcomptextpng.h"
 #include "glcompbutton.h"
 #include "glcomppanel.h"
@@ -649,11 +649,11 @@ static int draw_node_hint_boxes(void)
 			  (GLfloat) fs,agnameof(view->Topview->picked_nodes[ind]->Node)
 			  )
 			  ;
-	fontSize(view->fontset->fonts[view->fontset->activefont],fs);
+		view->fontset->fonts[view->fontset->activefont]->fontheight=fs;
 	fontColor(view->fontset->fonts[view->fontset->activefont],0, 0, 1, 1);
 
 
-	fontDrawString(
+	glprintf(
 		view->fontset->fonts[view->fontset->activefont],
 		       (view->Topview->picked_nodes[ind]->distorted_x),
 		        (view->Topview->picked_nodes[ind]->
@@ -893,7 +893,7 @@ static int draw_topview_label(topview_node * v, float zdepth)
 
 
 
-	fontSize(view->fontset->fonts[view->fontset->activefont],fs);
+	view->fontset->fonts[view->fontset->activefont]->fontheight=fs;
 	if ((log((float) v->degree) * -0.6 * view->zoom) > 0)
 	    fontColor(view->fontset->fonts[view->fontset->activefont],(float) log((double) v->degree + (double) 1),
 		       view->penColor.G, view->penColor.B,
@@ -905,7 +905,7 @@ static int draw_topview_label(topview_node * v, float zdepth)
 
 	fontColor(view->fontset->fonts[view->fontset->activefont],0,0,0,view->penColor.A / (float) log((double) v->degree) *
 		       (float) -0.4 * (float) view->zoom);
-	fontDrawString(view->fontset->fonts[view->fontset->activefont],(v->distorted_x - ddx),
+	glprintf(view->fontset->fonts[view->fontset->activefont],(v->distorted_x - ddx),
 		        (v->distorted_y - ddy),  (fs * strlen(v->Label)*(float)0.6),v->Label   );
 
 	return 1;

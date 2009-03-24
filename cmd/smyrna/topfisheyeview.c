@@ -14,7 +14,7 @@
 **********************************************************/
 #include "topfisheyeview.h"
 
-#include "glTexFont.h"
+#include "glcomptext.h"
 #include "glcomptextpng.h"
 #include "math.h"
 #include "memory.h"
@@ -422,15 +422,15 @@ void drawtopfishnodelabels(topview* t)
 				{
 					fs=view->FontSizeConst*(float)1.4;
 					fontColor(view->fontset->fonts[view->fontset->activefont],(float)0, (float)0, (float)1, (float)1);
-					fontSize(view->fontset->fonts[view->fontset->activefont],fs);
-					fontDrawString(view->fontset->fonts[view->fontset->activefont],gg[v].physical_x_coord,gg[v].physical_y_coord, (fs*strlen(buf)*(GLfloat)0.4),buf);
+					view->fontset->fonts[view->fontset->activefont]->fontheight=fs;
+					glprintf(view->fontset->fonts[view->fontset->activefont],gg[v].physical_x_coord,gg[v].physical_y_coord, (fs*strlen(buf)*(GLfloat)0.4),buf);
 				}
 				else if (finenodes)
 				{
 					fs=view->FontSizeConst*1.2;
 					fontColor(view->fontset->fonts[view->fontset->activefont],0, 0, 0, 1);
-					fontSize(view->fontset->fonts[view->fontset->activefont],fs);
-					fontDrawString(view->fontset->fonts[view->fontset->activefont],gg[v].physical_x_coord,gg[v].physical_y_coord, (fs*strlen(buf)*(GLfloat)0.4),buf);
+					view->fontset->fonts[view->fontset->activefont]->fontheight=fs;
+					glprintf(view->fontset->fonts[view->fontset->activefont],gg[v].physical_x_coord,gg[v].physical_y_coord, (fs*strlen(buf)*(GLfloat)0.4),buf);
 				}
 			}
 

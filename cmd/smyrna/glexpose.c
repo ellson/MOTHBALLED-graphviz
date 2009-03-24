@@ -19,7 +19,7 @@
 #include "glutils.h"
 #include "topview.h"
 #include "topfisheyeview.h"
-#include "glTexFont.h"
+#include "glcomptext.h"
 #include "gui/toolboxcallbacks.h"
 
 
