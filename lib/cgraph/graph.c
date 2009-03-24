@@ -196,18 +196,42 @@ int agissimple(Agraph_t * g)
     return (g->desc.strict && g->desc.no_loop);
 }
 
-int agdegree(Agraph_t * g, Agnode_t * n, int want_in, int want_out)
+static int cnt(Dict_t * d, Dtlink_t ** set)
+{
+	int rv;
+    dtrestore(d, *set);
+    rv = dtsize(d);
+    *set = dtextract(d);
+	return rv;
+}
+
+int agcountuniqedges(Agraph_t * g, Agnode_t * n, int want_in, int want_out)
 {
     Agedge_t *e;
+    Agsubnode_t *sn;
     int rv = 0;
 
-    if (want_in)
-	for (e = agfstin(g, n); e; e = agnxtin(g, e))
-	    rv++;
-    if (want_out)
-	for (e = agfstout(g, n); e; e = agnxtout(g, e))
-	    rv++;
+    sn = agsubrep(g, n);
+    if (want_out) rv = cnt(g->e_seq,&(sn->out_seq));
+    if (want_in) {
+		if (!want_out) rv += cnt(g->e_seq,&(sn->in_seq));	/* cheap */
+		else {	/* less cheap */
+			for (e = agfstin(g, n); e; e = agnxtin(g, e))
+				if (e->node != n) rv++;  /* don't double count loops */
+		}
+    }
     return rv;
+}
+
+int agdegree(Agraph_t * g, Agnode_t * n, int want_in, int want_out)
+{
+    Agsubnode_t *sn;
+    int rv = 0;
+
+    sn = agsubrep(g, n);
+    if (want_out) rv += cnt(g->e_seq,&(sn->out_seq));
+    if (want_in) rv += cnt(g->e_seq,&(sn->out_seq));
+	return rv;
 }
 
 int agraphidcmpf(Dict_t * d, void *arg0, void *arg1, Dtdisc_t * disc)

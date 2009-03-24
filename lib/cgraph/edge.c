@@ -95,8 +95,11 @@ Agedge_t *agnxtedge(Agraph_t * g, Agedge_t * e, Agnode_t * n)
 		rv = agnxtout(g, e);
 		if (rv == NILedge)
 			rv = agfstin(g, n);
-    } else
-		rv = agnxtin(g, e);
+    } else {
+		do {
+			rv = agnxtin(g, e);		/* so that we only see each edge once, */
+		} while (rv->node == n);	/* ignore loops as in-edges */
+	}
     return rv;
 }
 
@@ -180,11 +183,9 @@ static void installedge(Agraph_t * g, Agedge_t * e)
 	sn = agsubrep(g, t);
 	ins(g->e_seq, &sn->out_seq, out);
 	ins(g->e_id, &sn->out_id, out);
-	if (t != h) {
-		sn = agsubrep(g, h);
-		ins(g->e_seq, &sn->in_seq, in);
-		ins(g->e_id, &sn->in_id, in);
-	}
+	sn = agsubrep(g, h);
+	ins(g->e_seq, &sn->in_seq, in);
+	ins(g->e_id, &sn->in_id, in);
 	g = agparent(g);
     }
 }
