@@ -31,7 +31,8 @@
 #define GLOB_NOMATCH    3   /* No matches found.  */
 #define GLOB_NOSORT     4
 #define DMKEY "Software\\Microsoft" //key to look for library dir
-#include        <regex_win32.c>
+#include "regex_win32.h"
+//#include        <regex_win32.c>
 typedef struct {
     int gl_pathc;           /* count of total paths so far */
     int gl_matchc;          /* count of paths matching pattern */
