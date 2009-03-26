@@ -467,8 +467,10 @@ static void drawtopviewedges(Agraph_t * g)
 
     glBegin(GL_LINES);
     set_topview_options();
-    for (ind = 0; ((ind < view->Topview->Edgecount) && view->drawedges);ind++) {
-	if (((view->Topview->Edges[ind].x1 / view->zoom * -1 >
+    for (ind = 0; ((ind < view->Topview->Edgecount) && view->drawedges);ind++) 
+	{
+
+		if (((view->Topview->Edges[ind].x1 / view->zoom * -1 >
 	      view->clipX1)
 	     && (view->Topview->Edges[ind].x1 / view->zoom * -1 <
 		 view->clipX2)
@@ -487,6 +489,9 @@ static void drawtopviewedges(Agraph_t * g)
 		 view->clipY2))
 	    || (view->active_camera >= 0)) {
 	    e = &view->Topview->Edges[ind];
+	    if (!get_color_from_edge(e)) 
+			continue;
+
 	    //select_topview_edge(e);
 	    if (OD_Selected(e->Node1->Node) == 1) 
 		{	//tail is selected
@@ -511,15 +516,13 @@ static void drawtopviewedges(Agraph_t * g)
 			dddy = 0;
 			dddz = 0;
 	    }
-	    if (get_color_from_edge(e)) 
-		{
-			glVertex3f(e->Node1->distorted_x - ddx,
+		glVertex3f(e->Node1->distorted_x - ddx,
 				   e->Node1->distorted_y - ddy,
 				e->Node1->distorted_z - ddz);
-			glVertex3f(e->Node2->distorted_x - dddx,
+		glVertex3f(e->Node2->distorted_x - dddx,
 				   e->Node2->distorted_y - dddy,
-				e->Node2->distorted_z - ddz);
-	    }
+			e->Node2->distorted_z - ddz);
+	    
 	}
     }
     glEnd();
@@ -536,8 +539,8 @@ static int drawtopviewlabels(Agraph_t * g)
 	topview_node *v;
 	for (ind = 0; ind < view->Topview->Nodecount; ind++) {
 	    v = &view->Topview->Nodes[ind];
-	    if (!node_visible(v->Node))
-		break;
+		if (!node_visible(v->Node))
+		    continue;
 	    draw_topview_label(v, 1);
 	}
 	return 1;

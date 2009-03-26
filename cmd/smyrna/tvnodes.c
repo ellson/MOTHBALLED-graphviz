@@ -139,72 +139,64 @@ int validate_node(tv_node * TV_Node)
     data_attr2 = agget(view->g[view->activeGraph], "DataAttribute2");
 
 
-    if (TV_Nodes.filtered) {
-	int valid = 1;
-	if ((MP_Flag == 1) || (!n)) {
-	    n = tree_from_filter_string(TV_Nodes.filter.filter_string);
-	    MP_Flag = 0;
-	    buf =
-		agget(view->Topview->Nodes[TV_Node->index].Node,
-		      data_attr1);
-	    if (buf) {
-		if (strcmp(TV_Nodes.filter.min_data1, buf))
-		    valid = 0;
-	    }
-	}
-	if (data_attr1 && TV_Nodes.filter.max_data1
-	    && agget(view->Topview->Nodes[TV_Node->index].Node,
-		     data_attr1)) {
-	    if (strcmp
-		(agget
-		 (view->Topview->Nodes[TV_Node->index].Node, data_attr1),
-		 TV_Nodes.filter.min_data1))
-		valid = 0;
-	}
-	//string data checks attr2
-	if (data_attr2 && TV_Nodes.filter.min_data2
-	    && agget(view->Topview->Nodes[TV_Node->index].Node,
-		     data_attr2)) {
-	    if (strcmp
-		(TV_Nodes.filter.min_data2,
-		 agget(view->Topview->Nodes[TV_Node->index].Node,
-		       data_attr2)))
-		valid = 0;
-	}
-	if (data_attr2 && TV_Nodes.filter.max_data2
-	    && agget(view->Topview->Nodes[TV_Node->index].Node,
-		     data_attr2)) {
+    if (TV_Nodes.filtered) 
+	{
+		int valid = 1;
+		if ((MP_Flag == 1) || (!n)) 
+		{
+			n = tree_from_filter_string(TV_Nodes.filter.filter_string);
+			MP_Flag = 0;
+			buf =agget(view->Topview->Nodes[TV_Node->index].Node,data_attr1);
+			if (buf) 
+			{
+				if (strcmp(TV_Nodes.filter.min_data1, buf))
+				valid = 0;
+		    }
+		}
+		if (data_attr1 && strlen(TV_Nodes.filter.max_data1) && agget(view->Topview->Nodes[TV_Node->index].Node,data_attr1)) 
+		{
+			if (strcmp(agget(view->Topview->Nodes[TV_Node->index].Node, data_attr1), TV_Nodes.filter.min_data1))
+				valid = 0;
+		}
+		//string data checks attr2
+		if (data_attr2 && strlen(TV_Nodes.filter.min_data2) && agget(view->Topview->Nodes[TV_Node->index].Node,data_attr2)) 
+		{
+			if (strcmp(TV_Nodes.filter.min_data2,agget(view->Topview->Nodes[TV_Node->index].Node,data_attr2)))
+				valid = 0;
+		}
+		if (data_attr2 && strlen(TV_Nodes.filter.max_data2)
+			&& agget(view->Topview->Nodes[TV_Node->index].Node,
+				 data_attr2)) 
+		{
 
-	    if (strcmp
-		(agget
-		 (view->Topview->Nodes[TV_Node->index].Node, data_attr2),
-		 TV_Nodes.filter.min_data2))
-		valid = 0;
-			 
-	}
-	if (strlen(TV_Nodes.filter.filter_string) > 0)
-	    valid = evaluate_expresions(TV_Node, n);
-	//if show only highlighted 
-	if (TV_Nodes.filter.highlighted >= 0) {
-	    if (OD_Highlighted(view->Topview->Nodes[TV_Node->index].Node)
-		!= TV_Nodes.filter.highlighted)
-		valid = 0;
-	}
-	//if show only visibles
-	if (TV_Nodes.filter.visible >= 0) {
-	    if (OD_Visible(view->Topview->Nodes[TV_Node->index].Node)
-		 != TV_Nodes.filter.visible)
-		valid = 0;
-	}
-	//if show only selected
-	if (TV_Nodes.filter.selected >= 0) {
-	    if (OD_Selected(view->Topview->Nodes[TV_Node->index].Node)
-		!= TV_Nodes.filter.selected)
-		valid = 0;
-	}
-	return valid;
-    } else
-	return 1;
+			if (strcmp(agget(view->Topview->Nodes[TV_Node->index].Node, data_attr2),TV_Nodes.filter.min_data2))
+				valid = 0;
+				 
+		}
+		if (strlen(TV_Nodes.filter.filter_string) > 0)
+			valid = evaluate_expresions(TV_Node, n);
+		//if show only highlighted 
+		if (TV_Nodes.filter.highlighted >= 0) 
+		{
+			if (OD_Highlighted(view->Topview->Nodes[TV_Node->index].Node)!= TV_Nodes.filter.highlighted)
+				valid = 0;
+		}
+		//if show only visibles
+		if (TV_Nodes.filter.visible >= 0) 
+		{
+			if (OD_Visible(view->Topview->Nodes[TV_Node->index].Node)!= TV_Nodes.filter.visible)
+				valid = 0;
+		}
+		//if show only selected
+		if (TV_Nodes.filter.selected >= 0) 
+		{
+			if (OD_Selected(view->Topview->Nodes[TV_Node->index].Node)!= TV_Nodes.filter.selected)
+				valid = 0;
+		}
+		return valid;
+    }
+	else
+		return 1;
 }
 
 static int update_node_gui_objects(tv_node * TV_Node)
@@ -502,18 +494,22 @@ int prepare_page_history(void)
     TV_Nodes.activepage = -1;
     reset_page_History();
     push_to_page_history(0);
-	for (i = 0; i < view->Topview->Nodecount; i++) {
-	tvn.index = i;
-	if (validate_node(&tvn)) {
-	    count++;
-	    view->Topview->Nodes[i].valid = 1;
-	} else
-	    view->Topview->Nodes[i].valid = 0;
-	if (count == TV_Nodes.recordperpage) {
-	    push_to_page_history(i + 1);
-	    TV_Nodes.pagecount++;
-	    count = 0;
-	}
+	for (i = 0; i < view->Topview->Nodecount; i++)
+	{
+		tvn.index = i;
+		if (validate_node(&tvn)) 
+		{
+			count++;
+			view->Topview->Nodes[i].valid = 1;
+		}
+		else
+		    view->Topview->Nodes[i].valid = 0;
+		if (count == TV_Nodes.recordperpage) 
+		{
+			push_to_page_history(i + 1);
+			TV_Nodes.pagecount++;
+			count = 0;
+		}
     }
     spn = (GtkSpinButton *) glade_xml_get_widget(xml, "spnTVGotopage");
     gtk_spin_button_set_value(spn, 0);
@@ -685,6 +681,12 @@ int apply_filter_from_gui(void)
 }
 
 
+static cache_validate_node(tv_node* tvn)
+{
+
+	return view->Topview->Nodes[tvn->index].valid;
+}
+
 int tv_select_all(void)
 {
 
@@ -692,7 +694,7 @@ int tv_select_all(void)
     int i;
     for (i = 0; i < view->Topview->Nodecount; i++) {
 	tvn.index = i;
-	if (validate_node(&tvn)) {
+	if (cache_validate_node(&tvn)) {
 	    select_node(view->g[view->activeGraph],
 			view->Topview->Nodes[i].Node);
 	}
@@ -709,7 +711,7 @@ int tv_unselect_all()
     int i;
     for (i = 0; i < view->Topview->Nodecount; i++) {
 	tvn.index = i;
-	if (validate_node(&tvn)) {
+	if (cache_validate_node(&tvn)) {
 	    deselect_node(view->g[view->activeGraph],
 			  view->Topview->Nodes[i].Node);
 	}
@@ -723,11 +725,13 @@ int tv_highligh_all(void)
 {
     tv_node tvn;
     int i;
-    for (i = 0; i < view->Topview->Nodecount; i++) {
-	tvn.index = i;
-	if (validate_node(&tvn)) {
-	    OD_Highlighted(view->Topview->Nodes[i].Node) = 1;
-	}
+    for (i = 0; i < view->Topview->Nodecount; i++) 
+	{
+		tvn.index = i;
+		if (cache_validate_node(&tvn)) 
+		{
+			OD_Highlighted(view->Topview->Nodes[i].Node) = 1;
+		}
     }
     apply_filter_from_gui();
     return 1;
@@ -741,7 +745,7 @@ int tv_unhighligh_all(void)
     int i;
     for (i = 0; i < view->Topview->Nodecount; i++) {
 	tvn.index = i;
-	if (validate_node(&tvn)) {
+	if (cache_validate_node(&tvn)) {
 	    OD_Highlighted(view->Topview->Nodes[i].Node) = 0;
 	}
     }
@@ -756,7 +760,7 @@ int tv_show_all(void)
     int i;
     for (i = 0; i < view->Topview->Nodecount; i++) {
 	tvn.index = i;
-	if (validate_node(&tvn)) {
+	if (cache_validate_node(&tvn)) {
 	    OD_Visible(view->Topview->Nodes[i].Node) = 1;
 	}
     }
@@ -773,7 +777,7 @@ int tv_hide_all(void)
     int i;
     for (i = 0; i < view->Topview->Nodecount; i++) {
 	tvn.index = i;
-	if (validate_node(&tvn)) {
+	if (cache_validate_node(&tvn)) {
 	    OD_Visible(view->Topview->Nodes[i].Node) = 0;
 	}
     }
