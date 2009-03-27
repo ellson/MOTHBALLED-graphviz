@@ -17,8 +17,9 @@
 #ifndef BTREE_H
 #define	BTREE_H
 #include "tvnodes.h"
+#ifdef WIN32
 #include "regex_win32.h"
-
+#endif
 btree_node *new_node(char *attribute, char *regex, float min, float max);
 int insert_node(btree_node * parent_n, btree_node * n);
 int delete_node(btree_node * n);
