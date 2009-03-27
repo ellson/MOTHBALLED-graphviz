@@ -32,12 +32,10 @@
 #include "topfisheyeview.h"
 #ifdef WIN32
 #include "regex_win32.h"
+#include "otk_lib.h"
 #else
 #include "regex.h"
 #endif
-#include "otk_lib.h"
-
-
 
 static float dx = 0.0;
 static float dy = 0.0;
