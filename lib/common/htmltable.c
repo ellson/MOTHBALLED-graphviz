@@ -1333,7 +1333,7 @@ static void pos_html_cell(htmlcell_t * cp, boxf pos, int sides)
     pointf oldsz;
     boxf cbox;
 
-    if (!cp->data.pencolor)
+    if (!cp->data.pencolor && cp->parent->data.pencolor)
 	cp->data.pencolor = strdup(cp->parent->data.pencolor);
 
     /* If fixed, align cell */
