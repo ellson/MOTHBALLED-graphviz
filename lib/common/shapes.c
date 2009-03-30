@@ -1326,12 +1326,16 @@ compassPort(node_t* n, boxf* bp, port* pp, char* compass, int sides, inside_t* i
     if (compass && *compass) {
 	switch (*compass++) {
 	case 'e':
-	    p.x = b.UR.x;
-	    theta = 0.0;
-	    constrain = TRUE;
-	    defined = TRUE;
-	    clip = FALSE;
-	    side = sides & RIGHT;
+	    if (*compass)
+		rv = 1;
+	    else {
+		p.x = b.UR.x;
+		theta = 0.0;
+		constrain = TRUE;
+		defined = TRUE;
+		clip = FALSE;
+		side = sides & RIGHT;
+	    }
 	    break;
 	case 's':
 	    p.y = b.LL.y;
@@ -1366,12 +1370,16 @@ compassPort(node_t* n, boxf* bp, port* pp, char* compass, int sides, inside_t* i
 	    }
 	    break;
 	case 'w':
-	    p.x = b.LL.x;
-	    theta = M_PI;
-	    constrain = TRUE;
-	    defined = TRUE;
-	    clip = FALSE;
-	    side = sides & LEFT;
+	    if (*compass)
+		rv = 1;
+	    else {
+		p.x = b.LL.x;
+		theta = M_PI;
+		constrain = TRUE;
+		defined = TRUE;
+		clip = FALSE;
+		side = sides & LEFT;
+	    }
 	    break;
 	case 'n':
 	    p.y = b.UR.y;
