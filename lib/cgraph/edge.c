@@ -91,15 +91,15 @@ Agedge_t *agnxtedge(Agraph_t * g, Agedge_t * e, Agnode_t * n)
 {
     Agedge_t *rv;
 
-	if (AGTYPE(e) == AGOUTEDGE) {
-		rv = agnxtout(g, e);
-		if (rv == NILedge)
-			rv = agfstin(g, n);
+    if (AGTYPE(e) == AGOUTEDGE) {
+	rv = agnxtout(g, e);
+	if (rv == NILedge)
+	    rv = agfstin(g, n);
     } else {
-		do {
-			rv = agnxtin(g, e);		/* so that we only see each edge once, */
-		} while (rv->node == n);	/* ignore loops as in-edges */
-	}
+	do {
+	    rv = agnxtin(g, e);		/* so that we only see each edge once, */
+	} while (rv && (rv->node == n));	/* ignore loops as in-edges */
+    }
     return rv;
 }
 
