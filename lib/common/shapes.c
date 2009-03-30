@@ -1821,12 +1821,37 @@ static void point_gencode(GVJ_t * job, node_t * n)
 
 static char *reclblp;
 
+static void free_field (field_t* f)
+{
+    int i;
+
+    for (i=0; i<f->n_flds; i++ ) {
+        free_field(f->fld[i]);
+    }
+
+    free(f->id);
+    free_label(f->lp);
+    free(f->fld);
+    free(f);
+}
+
+/* parse_error:
+ * Clean up memory allocated in parse_reclbl, then return NULL
+ */
+static field_t*
+parse_error (field_t* rv, char* port)
+{
+    free_field (rv);
+    if (port) free (port);
+    return NULL;
+}
+
 static field_t*
 parse_reclbl(node_t * n, int LR, int flag, char *text)
 {
     field_t *fp, *rv = NEW(field_t);
     char *tsp, *psp, *hstsp, *hspsp, *sp;
-    char port[SMALLBUF];
+    char* tmpport = NULL;
     int maxf, cnt, mode, wflag, ishardspace, fi;
     textlabel_t *lbl = ND_label(n);
 
@@ -1850,47 +1875,48 @@ parse_reclbl(node_t * n, int LR, int flag, char *text)
     rv->LR = LR;
     mode = 0;
     fi = 0;
-    hstsp = tsp = text, hspsp = psp = &port[0];
+    hstsp = tsp = text;
     wflag = TRUE;
     ishardspace = FALSE;
     while (wflag) {
 	switch (*reclblp) {
 	case '<':
 	    if (mode & (HASTABLE | HASPORT))
-		return NULL;
+		return parse_error(rv, tmpport);
 	    if (lbl->html) goto dotext;
 	    mode |= (HASPORT | INPORT);
 	    reclblp++;
+	    hspsp = psp = text;
 	    break;
 	case '>':
 	    if (lbl->html) goto dotext;
 	    if (!(mode & INPORT))
-		return NULL;
+		return parse_error(rv, tmpport);
+	    if (psp > text + 1 && psp - 1 != hspsp && *(psp - 1) == ' ')
+		psp--;
+	    *psp = '\000';
+	    tmpport = strdup(text);
 	    mode &= ~INPORT;
 	    reclblp++;
 	    break;
 	case '{':
 	    reclblp++;
 	    if (mode != 0 || !*reclblp)
-		return NULL;
+		return parse_error(rv, tmpport);
 	    mode = HASTABLE;
 	    if (!(rv->fld[fi++] = parse_reclbl(n, NOT(LR), FALSE, text)))
-		return NULL;
+		return parse_error(rv, tmpport);
 	    break;
 	case '}':
 	case '|':
 	case '\000':
 	    if ((!*reclblp && !flag) || (mode & INPORT))
-		return NULL;
+		return parse_error(rv, tmpport);
 	    if (!(mode & HASTABLE))
 		fp = rv->fld[fi++] = NEW(field_t);
-	    if (mode & HASPORT) {
-		if (psp > &port[0] + 1 &&
-		    psp - 1 != hspsp && *(psp - 1) == ' ')
-		    psp--;
-		*psp = '\000';
-		fp->id = strdup(&port[0]);
-		hspsp = psp = &port[0];
+	    if (tmpport) {
+		fp->id = tmpport;
+		tmpport = NULL;
 	    }
 	    if (!(mode & (HASTEXT | HASTABLE)))
 		mode |= HASTEXT, *tsp++ = ' ';
@@ -1933,7 +1959,7 @@ parse_reclbl(node_t * n, int LR, int flag, char *text)
 	default:
 dotext :
 	    if ((mode & HASTABLE) && *reclblp != ' ')
-		return NULL;
+		return parse_error(rv, tmpport);
 	    if (!(mode & (INTEXT | INPORT)) && *reclblp != ' ')
 		mode |= (INTEXT | HASTEXT);
 	    if (mode & INTEXT) {
@@ -1944,7 +1970,7 @@ dotext :
 		    hstsp = tsp - 1;
 	    } else if (mode & INPORT) {
 		if (!(*reclblp == ' ' && !ishardspace &&
-		      (psp == &port[0] || *(psp - 1) == ' ')))
+		      (psp == text || *(psp - 1) == ' ')))
 		    *psp++ = *reclblp;
 		if (ishardspace)
 		    hspsp = psp - 1;
@@ -2155,20 +2181,6 @@ static void record_init(node_t * n)
     ND_height(n) = PS2INCH(info->size.y + 1);   /* Kluge!!  +1 to fix rounding diff between layout and rendering 
 							otherwise we can get -1 coords in output */
     ND_shape_info(n) = (void *) info;
-}
-
-static void free_field (field_t* f)
-{
-    int i;
-
-    for (i=0; i<f->n_flds; i++ ) {
-        free_field(f->fld[i]);
-    }
-
-    free(f->id);
-    free_label(f->lp);
-    free(f->fld);
-    free(f);
 }
 
 static void record_free(node_t * n)
