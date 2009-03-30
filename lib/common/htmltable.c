@@ -1334,7 +1334,7 @@ static void pos_html_cell(htmlcell_t * cp, boxf pos, int sides)
     boxf cbox;
 
     if (!cp->data.pencolor)
-	cp->data.pencolor = cp->parent->data.pencolor;
+	cp->data.pencolor = strdup(cp->parent->data.pencolor);
 
     /* If fixed, align cell */
     if (cp->data.flags & FIXED_FLAG) {
@@ -1458,7 +1458,7 @@ static void pos_html_tbl(htmltbl_t * tbl, boxf pos, int sides)
     boxf cbox;
 
     if (tbl->u.n.parent && !tbl->data.pencolor)
-	tbl->data.pencolor = tbl->u.n.parent->data.pencolor;
+	tbl->data.pencolor = strdup (tbl->u.n.parent->data.pencolor);
 
     oldsz = tbl->data.box.UR.x;
     delx = (pos.UR.x - pos.LL.x) - oldsz;
