@@ -111,7 +111,7 @@ mkClusters (graph_t * g, clist_t* pclist, graph_t* parent)
 static void patchwork_init_node(node_t * n)
 {
     agset(n,"shape","box");
-    /* common_init_node(n); */
+    common_init_node_opt(n,FALSE);
     /* gv_nodesize(n, GD_flip(agraphof(n))); */
     /* ND_pos(n) = ALLOC(GD_ndim(agraphof(n)), 0, double); */
 }
