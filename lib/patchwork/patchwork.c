@@ -157,12 +157,14 @@ static void printer(treenode_t *tree)
 
 static void finishNode (node_t* n)
 {
+#ifdef OLD_AND_UNIMPROVED
     char* str = strdup_and_subst_obj(NODENAME_ESC, (void*)n);
     ND_shape(n) = bind_shape("box", n);
     ND_label(n) = make_label((void*)n, str, LT_NONE,
 		late_double(n, N_fontsize, DEFAULT_FONTSIZE, MIN_FONTSIZE),
 		late_nnstring(n, N_fontname, DEFAULT_FONTNAME),
 		late_nnstring(n, N_fontcolor, DEFAULT_COLOR));
+#endif
     ND_shape(n)->fns->initfn(n);
 }
 
@@ -204,6 +206,10 @@ static rect_t walker(treenode_t *tree)
 	    r = walker(p);
 	    EXPANDBB(rr,r);
 	}
+	rr.LL.x -= 2./72.;
+	rr.LL.y -= 2./72.;
+	rr.UR.x += 2./72.;
+	rr.UR.y += 2./72.;
 	GD_bb(tree->u.subg) = rr;
     }
     return rr;

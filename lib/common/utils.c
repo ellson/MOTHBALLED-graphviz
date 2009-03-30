@@ -582,7 +582,7 @@ int test_toggle()
     return Tflag;
 }
 
-void common_init_node(node_t * n)
+void common_init_node_opt(node_t * n, int shape_init_flag)
 {
     char *str;
 	ND_width(n) =
@@ -602,8 +602,11 @@ void common_init_node(node_t * n)
 		late_nnstring(n, N_fontname, DEFAULT_FONTNAME),
 		late_nnstring(n, N_fontcolor, DEFAULT_COLOR));
     ND_showboxes(n) = late_int(n, N_showboxes, 0, 0);
-    ND_shape(n)->fns->initfn(n);
+    if (shape_init_flag) ND_shape(n)->fns->initfn(n);
 }
+
+void common_init_node(node_t * n)
+    { return common_init_node_opt(n,TRUE); }
 
 struct fontinfo {
     double fontsize;
