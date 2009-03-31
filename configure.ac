@@ -1884,6 +1884,30 @@ fi
 AM_CONDITIONAL(WITH_GS, [test "x$use_ghostscript" = "xYes"])
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for VISIO
+                                                                                
+AC_ARG_WITH(visio,
+  [AS_HELP_STRING([--with-visio=no],[visio library])],
+  [], [with_visio=no])
+
+if test "x$with_visio" != "xyes"; then
+  use_visio="No (disabled by default - experimental)"
+else
+#  AC_CHECK_HEADER(visio/visio.h, VISIO_CFLAGS="",use_visio="No (missing headers)")
+#  if test "x$use_visio" = "x"; then
+#    AC_CHECK_LIB(visio, main, VISIO_LIBS="-lgs", use_visio="No (missing lib)")
+#    if test "x$use_visio" = "x"; then
+      use_visio="Yes"
+      AC_DEFINE_UNQUOTED(HAVE_VISIO,1,
+        [Define if you have the visio library])
+      AC_SUBST(VISIO_CFLAGS)
+      AC_SUBST(VISIO_LIBS)
+#    fi
+#  fi
+fi
+AM_CONDITIONAL(WITH_VISIO, [test "x$use_visio" = "xYes"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for PANGO, CAIRO et.al.
                                                                                 
 AC_ARG_WITH(pangocairo,
@@ -2920,6 +2944,7 @@ AC_CONFIG_FILES(Makefile
 	plugin/pango/Makefile
 	plugin/quartz/Makefile
 	plugin/rsvg/Makefile
+	plugin/visio/Makefile
 	plugin/xlib/Makefile
 	plugin/dot_layout/Makefile
 	plugin/neato_layout/Makefile
@@ -3040,6 +3065,7 @@ echo "  ming:          $use_ming"
 echo "  pangocairo:    $use_pangocairo"
 echo "  quartz:        $use_quartz"
 echo "  rsvg:          $use_rsvg"
+echo "  visio:         $use_visio"
 echo "  xlib:          $use_xlib"
 echo ""
 echo "language extensions:"
