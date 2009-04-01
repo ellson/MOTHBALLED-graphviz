@@ -15,6 +15,17 @@
 #include "memory.h"
 #include "glut.h"
 
+void
+print_bitmap_string(void* font, char* s)
+{
+   if (s && strlen(s)) {
+      while (*s) {
+         glutBitmapCharacter(font, *s);
+         s++;
+      }
+   }
+}
+
 void init_gl_vars(glCompText* f)
 {
 
@@ -314,3 +325,4 @@ void fontColor (glCompText* font,float r, float g, float b,float a)
 	font->color.B=b;
 	font->color.A=a;
 }
+
