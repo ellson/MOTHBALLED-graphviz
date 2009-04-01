@@ -330,3 +330,4 @@ fix_fc
 gvContextPlugins
 gvfwrite
 gvferror
+common_init_node_opt
