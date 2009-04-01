@@ -755,6 +755,7 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
     path *P = NULL;
     int useEdges = (Nop > 1);
     router_t* rtr = 0;
+    int legal;
 
     /* build configuration */
     if (edgetype != ET_LINE) {
@@ -773,7 +774,7 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
     }
     npoly = i;
     if (obs) {
-	if (Plegal_arrangement(obs, npoly)) {
+	if ((legal = Plegal_arrangement(obs, npoly))) {
 	    if (edgetype != ET_ORTHO) vconfig = Pobsopen(obs, npoly);
 	}
 	else if (Verbose)
@@ -784,7 +785,7 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
     /* route edges  */
     if (Verbose)
 	fprintf(stderr, "Creating edges using %s\n",
-	    (edgetype == ET_ORTHO) ? "orthogonal lines" :
+	    (legal && (edgetype == ET_ORTHO)) ? "orthogonal lines" :
 	    (vconfig ? (edgetype == ET_SPLINE ? "splines" : "polylines") : 
 		"line segments"));
     if (vconfig) {
@@ -796,7 +797,7 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 	}
     }
 #ifdef ORTHO
-    else if (edgetype == ET_ORTHO) {
+    else if (legal && (edgetype == ET_ORTHO)) {
 	orthoEdges (g, 0);
 	useEdges = 1;
     }
