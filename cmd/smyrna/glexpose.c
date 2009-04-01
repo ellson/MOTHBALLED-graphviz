@@ -102,6 +102,9 @@ int glexpose_main(ViewInfo * view)
     draw_selection_box(view);
     drawBorders(view);
 	drawRotatingTools();
+//		draw_stuff();
+
+
 
 //	drawtestpoly();
 	/*DEBUG*/
@@ -173,7 +176,8 @@ void glexpose_grid(ViewInfo * view)
 */
 int glexpose_drawgraph(ViewInfo * view)
 {
-    if (view->activeGraph > -1) 
+    
+	if (view->activeGraph > -1) 
 	{
 		if (GD_TopView(view->g[view->activeGraph])) 
 		{
@@ -183,16 +187,18 @@ int glexpose_drawgraph(ViewInfo * view)
 			{
 				drawtopologicalfisheye(view->Topview);
 			}
-			glCompSetDraw(view->Topview->topviewmenu);
+//			glCompDrawBegin();
 //			OtkUpdateCheck();
-	//		OtkDisplayFunct();
+//			glCompDrawEnd();
+			glCompSetDraw(view->Topview->topviewmenu);
+//			OtkDrawAll_scene( 0);
 
 		}
 		else
 			drawGraph(view->g[view->activeGraph]);  //xdot based drawing functions
 		return 1;
     }
-    return 0;
+	return 0;
 }
 
 void drawRotatingTools(void)

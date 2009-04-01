@@ -144,7 +144,9 @@ static void realize(GtkWidget * widget, gpointer data)
 	return;
 
     glClearColor(view->bgColor.R, view->bgColor.G, view->bgColor.B, view->bgColor.A);	//background color
-    glClearDepth(1.0);
+	glClearDepth(1.0);
+	glClear(GL_COLOR_BUFFER_BIT);
+
 
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);

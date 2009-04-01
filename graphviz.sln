@@ -184,6 +184,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libpng", "lib\libpng\1.2.24
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvplugin_gdiplus", "plugin\gdiplus\gvplugin_gdiplus.vcproj", "{0F4D5D8F-F4D6-4A5D-97E0-9B482257F493}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "otk", "lib\otk_lib\otk.vcproj", "{343EB043-1F93-4F40-989D-FA309E4668AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -394,6 +396,10 @@ Global
 		{0F4D5D8F-F4D6-4A5D-97E0-9B482257F493}.Debug|Win32.Build.0 = Debug|Win32
 		{0F4D5D8F-F4D6-4A5D-97E0-9B482257F493}.Release|Win32.ActiveCfg = Release|Win32
 		{0F4D5D8F-F4D6-4A5D-97E0-9B482257F493}.Release|Win32.Build.0 = Release|Win32
+		{343EB043-1F93-4F40-989D-FA309E4668AF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{343EB043-1F93-4F40-989D-FA309E4668AF}.Debug|Win32.Build.0 = Debug|Win32
+		{343EB043-1F93-4F40-989D-FA309E4668AF}.Release|Win32.ActiveCfg = Release|Win32
+		{343EB043-1F93-4F40-989D-FA309E4668AF}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

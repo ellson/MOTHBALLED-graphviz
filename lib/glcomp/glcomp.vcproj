@@ -228,6 +228,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\glutfonts.c"
+				>
+			</File>
+			<File
 				RelativePath=".\glutils.c"
 				>
 			</File>

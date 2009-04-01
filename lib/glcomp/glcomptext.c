@@ -13,6 +13,8 @@
 #include "glcomptext.h"
 #include "glpangofont.h"
 #include "memory.h"
+#include "glut.h"
+
 void init_gl_vars(glCompText* f)
 {
 
@@ -70,7 +72,8 @@ void
 glprintf (glCompText* font, GLfloat xpos, GLfloat ypos, 
     GLfloat width, char *bf)
 {
-    int vPort[4];
+
+	int vPort[4];
 	GLfloat size = font->fontheight;
 	GLfloat x = xpos;
 	GLfloat y = ypos;
@@ -79,7 +82,12 @@ glprintf (glCompText* font, GLfloat xpos, GLfloat ypos,
 	int maxcharCount;
 	char* tempC;
 	GLfloat charGap;
+	glColor4f (font->color.R,font->color.G,font->color.B,font->color.A);
+	glRasterPos3f(xpos,ypos,1);
+	  print_bitmap_string(GLUT_BITMAP_HELVETICA_12,bf);	
+	return ;
 	
+
 	glGetIntegerv (GL_VIEWPORT, vPort);
 
 	init_gl_vars(font);

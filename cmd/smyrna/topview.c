@@ -53,6 +53,7 @@ static int update_topview_node_from_cgraph(topview_node * Node);
 static int get_color_from_edge(topview_edge * e);
 static int draw_node_hint_boxes(void);
 static int pick_node(topview_node * n);
+extern OtkWidget* OtkOuterWindow;
 
 
 void cleartopview(topview * t)
@@ -82,9 +83,7 @@ void preparetopview(Agraph_t * g, topview * t)
 	int maxlabelsize=0;
 	float maxedgelen,minedgelen,len,edgelength;
 
-//	OtkInitWindow( 700, 500, NULL, NULL );
-//	OtkMakeButton( OtkOuterWindow, 10.0, 10.0, 80.0, 80.0, "Hello World !", 0, 0 );
-//	OtkMainLoop();
+
 
 
 
@@ -868,8 +867,6 @@ static int draw_topview_label(topview_node * v, float zdepth)
 	&& (v->distorted_y / view->zoom * -1 < view->clipY2)) 
 	{
 		fs=calculate_font_size(v);
-		if (v->degree==0)
-			printf("haha\n");
 	
 
 /*		fs = (v->degree ==1) ? 

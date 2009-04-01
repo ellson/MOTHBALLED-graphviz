@@ -15,6 +15,7 @@
 #include "glcomptexture.h"
 #include "glcomptext.h"
 #include <string.h>
+#include "glut.h"
 
 glCompButton *glCompButtonNew(GLfloat x, GLfloat y, GLfloat w, GLfloat h,
 			      char *caption, char *glyphfile,
@@ -197,10 +198,13 @@ int glCompDrawButton(glCompButton * p)
 	     p->fontsize) / (GLfloat) 2.0 + p->pos.y + p->thickness;
 	p->font->fontheight=p->fontsize;
 //              fontColorA (p->fontcolor.R,p->fontcolor.B,p->fontcolor.G,p->fontcolor.A);
-	fontColor(p->font,0, 0, 0, 1);
-	glprintf(p->font,(GLfloat) fontx, (GLfloat) fonty,
+	glColor4f(0, 0, 0, 1);
+/*	glprintf(p->font,(GLfloat) fontx, (GLfloat) fonty,
 		        (p->fontsize *(GLfloat) strlen(p->caption) *
-			      GLCOMPSET_FONT_SIZE_FACTOR), p->caption);
+			      GLCOMPSET_FONT_SIZE_FACTOR), p->caption);*/
+//    glTranslatef((GLfloat) fontx,(GLfloat) fonty,p->bevel);
+	glRasterPos3f(fontx,fonty,p->bevel + GLCOMPSET_BEVEL_DIFF * 3);
+	  print_bitmap_string(GLUT_BITMAP_HELVETICA_12,p->caption);
     }
     //put glyph
     else {
