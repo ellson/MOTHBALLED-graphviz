@@ -19,6 +19,8 @@
 #include "gvcjob.h"
 #include "gvio.h"
 
+extern "C" char *xml_string(char* str);
+
 namespace Visio
 {
 	static const float INCHES_PER_POINT = 1.0 / 72.0;
@@ -70,7 +72,7 @@ namespace Visio
 	
 	void Run::Print(GVJ_t* job, unsigned int index) const
 	{
-		gvprintf(job, "<pp IX='%d'/><cp IX='%d'/>%s\n", index, index, _text ? _text : "");	/* para mark + char mark + actual text */
+		gvprintf(job, "<pp IX='%d'/><cp IX='%d'/>%s\n", index, index, _text ? xml_string(_text) : "");	/* para mark + char mark + actual text */
 	}
 	
 	Text* Text::CreateText(GVJ_t* job, pointf p, textpara_t* para)
