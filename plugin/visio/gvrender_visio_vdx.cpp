@@ -29,8 +29,6 @@
 
 typedef enum { FORMAT_VDX } format_type;
 
-extern char *xml_string(char *str);
-
 static void vdxgen_begin_job(GVJ_t * job)
 {
    	job->context = new Visio::Render();
