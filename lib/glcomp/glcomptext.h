@@ -32,9 +32,12 @@ extern void free_font_set(fontset_t* fontset);
 extern void copy_font(glCompText* targetfont,const glCompText* sourcefont);
 extern int add_font(fontset_t* fontset,char* fontdesc);
 extern void glprintf (glCompText*, GLfloat , GLfloat , GLfloat, char*);
+extern	void glprintfglut (void* font, GLfloat xpos, GLfloat ypos, char *bf);
+
 extern glCompText* font_init(void);
 extern void fontColor (glCompText* font,float r, float g, float b,float a);
 extern int glCompLoadFontPNG (char *name, int id);
+
 
 #ifdef __cplusplus
 }

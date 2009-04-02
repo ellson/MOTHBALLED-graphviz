@@ -108,6 +108,7 @@ int glCompDrawButton(glCompButton * p)
     float color_fac;
     float thickness = p->thickness;
     float fontx, fonty;
+	GLfloat fontwidth;
     if (!p->visible)
 	return 0;
     if (p->panel) {
@@ -188,14 +189,6 @@ int glCompDrawButton(glCompButton * p)
 		   p->pos.y + p->height - p->thickness, p->bevel);
 	glEnd();
 	//draw caption
-	fontx =
-	    (p->width - p->thickness * (GLfloat) 2 -
-	     p->fontsize * strlen(p->caption) *
-	     GLCOMPSET_FONT_SIZE_FACTOR) / (GLfloat) 2.0 + p->pos.x +
-	    p->thickness;
-	fonty =
-	    (p->height - p->thickness * (GLfloat) 2 -
-	     p->fontsize) / (GLfloat) 2.0 + p->pos.y + p->thickness;
 	p->font->fontheight=p->fontsize;
 //              fontColorA (p->fontcolor.R,p->fontcolor.B,p->fontcolor.G,p->fontcolor.A);
 	glColor4f(0, 0, 0, 1);
@@ -203,8 +196,24 @@ int glCompDrawButton(glCompButton * p)
 		        (p->fontsize *(GLfloat) strlen(p->caption) *
 			      GLCOMPSET_FONT_SIZE_FACTOR), p->caption);*/
 //    glTranslatef((GLfloat) fontx,(GLfloat) fonty,p->bevel);
+
+	/*get the string length*/
+	fontwidth=(GLfloat)glutBitmapLength(GLUT_BITMAP_HELVETICA_12,p->caption);
+
+
+	fontx =
+	    (p->width - p->thickness * (GLfloat) 2 -
+	     fontwidth )/ (GLfloat) 2.0 + p->pos.x +
+	    p->thickness;
+	fonty =
+	    (p->height - p->thickness * (GLfloat) 2 -
+	     p->fontsize) / (GLfloat) 2.0 + p->pos.y + p->thickness;
+
+		
 	glRasterPos3f(fontx,fonty,p->bevel + GLCOMPSET_BEVEL_DIFF * 3);
-	  print_bitmap_string(GLUT_BITMAP_HELVETICA_12,p->caption);
+
+    glprintfglut (GLUT_BITMAP_HELVETICA_12, fontx,fonty, p->caption);
+//	print_bitmap_string(GLUT_BITMAP_HELVETICA_12,p->caption);
     }
     //put glyph
     else {

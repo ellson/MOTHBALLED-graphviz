@@ -76,6 +76,11 @@ void restore_gl_vars(glCompText* f)
 		glDisable (GL_TEXTURE_2D);
 	glMatrixMode (f->glcache.matrix);
 }
+void glprintfglut (void* font, GLfloat xpos, GLfloat ypos, char *bf)
+{
+	glRasterPos3f(xpos,ypos,1);
+	  print_bitmap_string(font,bf);	
+}
 
 
 
@@ -93,10 +98,6 @@ glprintf (glCompText* font, GLfloat xpos, GLfloat ypos,
 	int maxcharCount;
 	char* tempC;
 	GLfloat charGap;
-	glColor4f (font->color.R,font->color.G,font->color.B,font->color.A);
-	glRasterPos3f(xpos,ypos,1);
-	  print_bitmap_string(GLUT_BITMAP_HELVETICA_12,bf);	
-	return ;
 	
 
 	glGetIntegerv (GL_VIEWPORT, vPort);
