@@ -211,7 +211,6 @@ int glCompDrawButton(glCompButton * p)
 
 		
 	glRasterPos3f(fontx,fonty,p->bevel + GLCOMPSET_BEVEL_DIFF * 3);
-
     glprintfglut (GLUT_BITMAP_HELVETICA_12, fontx,fonty, p->caption);
 //	print_bitmap_string(GLUT_BITMAP_HELVETICA_12,p->caption);
     }

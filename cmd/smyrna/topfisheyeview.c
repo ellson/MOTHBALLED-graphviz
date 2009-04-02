@@ -420,17 +420,15 @@ void drawtopfishnodelabels(topview* t)
 
 				if((v==t->fs->foci_nodes[0]) &&(focusnodes))
 				{
-					fs=view->FontSizeConst*(float)1.4;
-					fontColor(view->fontset->fonts[view->fontset->activefont],(float)0, (float)0, (float)1, (float)1);
+					glColor4f((float)0, (float)0, (float)1, (float)1);
 					view->fontset->fonts[view->fontset->activefont]->fontheight=fs;
-					glprintf(view->fontset->fonts[view->fontset->activefont],gg[v].physical_x_coord,gg[v].physical_y_coord, (fs*strlen(buf)*(GLfloat)0.4),buf);
+					glprintfglut(GLUT_BITMAP_HELVETICA_18,gg[v].physical_x_coord,gg[v].physical_y_coord,buf);
 				}
 				else if (finenodes)
 				{
-					fs=view->FontSizeConst*1.2;
-					fontColor(view->fontset->fonts[view->fontset->activefont],0, 0, 0, 1);
+					glColor4f(0, 0, 0, 1);
 					view->fontset->fonts[view->fontset->activefont]->fontheight=fs;
-					glprintf(view->fontset->fonts[view->fontset->activefont],gg[v].physical_x_coord,gg[v].physical_y_coord, (fs*strlen(buf)*(GLfloat)0.4),buf);
+					glprintfglut(GLUT_BITMAP_HELVETICA_10,gg[v].physical_x_coord,gg[v].physical_y_coord,buf);
 				}
 			}
 

@@ -23,6 +23,7 @@ typedef float GLfloat;
 #include <GL/gl.h>	
 #endif
 #include "glcompdefs.h"
+#include "glut.h"
 
 #ifdef __cplusplus
 extern "C" {

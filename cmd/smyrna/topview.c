@@ -19,6 +19,7 @@
 #include "glcomppanel.h"
 #include "glcomplabel.h"
 #include "gltemplate.h"
+#include "glutils.h"
 #include "topview.h"
 #include "math.h"
 #include "memory.h"
@@ -637,8 +638,9 @@ static int draw_node_hint_boxes(void)
 {
     int ind;
 	char buf[512];
-	float fs = view->FontSizeConst;
-	strcpy(buf,"line 1:12334444 \n line 2:falan filan");
+	GLfloat fontwidth;
+	float fs = GetOGLDistance(12);
+
 	for (ind = 0; ind < view->Topview->picked_node_count; ind++) {
 //	int draw_node_hintbox(GLfloat x,GLfloat y,GLfloat z,GLfloat fs,char* text)
 		draw_node_hintbox(view->Topview->picked_nodes[ind]->distorted_x,
@@ -648,17 +650,15 @@ static int draw_node_hint_boxes(void)
 			  )
 			  ;
 		view->fontset->fonts[view->fontset->activefont]->fontheight=fs;
-	fontColor(view->fontset->fonts[view->fontset->activefont],0, 0, 1, 1);
+	/*blue font color*/
+//	fontwidth=GetOGLDistance(glutBitmapLength(GLUT_BITMAP_HELVETICA_12,agnameof(view->Topview->picked_nodes[ind]->Node)));
+	glColor4f(0, 0, 1, 1);
+    glprintfglut (GLUT_BITMAP_HELVETICA_12, view->Topview->picked_nodes[ind]->distorted_x,
+					(view->Topview->picked_nodes[ind]->distorted_y+fs+fs/(GLfloat)5.0) ,
+					agnameof(view->Topview->picked_nodes[ind]->Node));
 
 
-	glRasterPos3f(GLUT_BITMAP_HELVETICA_12,   (view->Topview->picked_nodes[ind]->distorted_x),
-		        (view->Topview->picked_nodes[ind]->
-			      distorted_y+fs+fs/(GLfloat)5.0 ),
-		       fs *
-		       (float)strlen(agnameof(view->Topview->picked_nodes[ind]->Node)) / (GLfloat)2.0)
-    glprintfglut (GLUT_BITMAP_HELVETICA_12, fontx,fonty, p->caption);
-
-		       agnameof(view->Topview->picked_nodes[ind]->Node));
+		       
     }
     return 1;
 }
@@ -880,15 +880,24 @@ static int draw_topview_label(topview_node * v, float zdepth)
 	    ddx = dx;
 	    ddy = dy;
 	}
-	if ((fs / view->zoom*-1) < 25)
+	if ((fs / view->zoom*-1) < 15)
 		return 0;
 
 //	fs= 10;
 	fs= fs * (float)0.182;
 
+/*#define GLUT_BITMAP_9_BY_15		((void*)2)
+#define GLUT_BITMAP_8_BY_13		((void*)3)
+#define GLUT_BITMAP_TIMES_ROMAN_10	((void*)4)
+#define GLUT_BITMAP_TIMES_ROMAN_24	((void*)5)
+#if (GLUT_API_VERSION >= 3)
+#define GLUT_BITMAP_HELVETICA_10	((void*)6)
+#define GLUT_BITMAP_HELVETICA_12	((void*)7)
+#define GLUT_BITMAP_HELVETICA_18	((void*)8)*/
 
 
-	view->fontset->fonts[view->fontset->activefont]->fontheight=fs;
+
+/*	view->fontset->fonts[view->fontset->activefont]->fontheight=fs;
 	if ((log((float) v->degree) * -0.6 * view->zoom) > 0)
 	    fontColor(view->fontset->fonts[view->fontset->activefont],(float) log((double) v->degree + (double) 1),
 		       view->penColor.G, view->penColor.B,
@@ -899,9 +908,10 @@ static int draw_topview_label(topview_node * v, float zdepth)
 		       view->penColor.G, view->penColor.B, (float)0.7);
 
 	fontColor(view->fontset->fonts[view->fontset->activefont],0,0,0,view->penColor.A / (float) log((double) v->degree) *
-		       (float) -0.4 * (float) view->zoom);
-	glprintf(view->fontset->fonts[view->fontset->activefont],(v->distorted_x - ddx),
-		        (v->distorted_y - ddy),  (fs * strlen(v->Label)*(float)0.6),v->Label   );
+		       (float) -0.4 * (float) view->zoom);*/
+	glColor4f(0,0.5,0.1,0.7);
+	glprintfglut(GLUT_BITMAP_HELVETICA_10,(v->distorted_x - ddx),
+		        (v->distorted_y - ddy),v->Label   );
 
 	return 1;
     } else
