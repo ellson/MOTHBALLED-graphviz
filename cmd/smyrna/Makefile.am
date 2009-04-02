@@ -11,7 +11,7 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/common \
         -I$(top_srcdir)/lib/neatogen \
         -I$(top_srcdir)/cmd/smyrna/gui \
-	$(GTK_CFLAGS) $(GTKGLEXT_CFLAGS) $(GLADE_CFLAGS) $(FREETYPE2_CFLAGS) $(FONTCONFIG_CFLAGS) $(GTS_CFLAGS)
+	$(GTK_CFLAGS) $(GLUT_CFLAGS) $(GTKGLEXT_CFLAGS) $(GLADE_CFLAGS) $(FREETYPE2_CFLAGS) $(FONTCONFIG_CFLAGS) $(GTS_CFLAGS)
 
 noinst_HEADERS = btree.h draw.h filter.h glexpose.h glmotion.h gltemplate.h \
 	hier.h materials.h selection.h smyrnadefs.h support.h topview.h \
@@ -38,7 +38,7 @@ smyrna_LDADD = $(top_builddir)/lib/cgraph/libcgraph_C.la \
 		$(top_builddir)/lib/topfish/libtopfish_C.la \
 		$(top_builddir)/lib/common/libcommon_C.la \
 		$(top_builddir)/lib/neatogen/libneatogen_C.la \
-		$(GTK_LIBS) $(GTKGLEXT_LIBS) $(GLADE_LIBS) $(EXPAT_LIBS) $(GTS_LIBS) \
+		$(GTK_LIBS) $(GLUT_LIBS) $(GTKGLEXT_LIBS) $(GLADE_LIBS) $(EXPAT_LIBS) $(GTS_LIBS) \
 		$(EXTRA_SMYRNA_LDFLAGS)
 
 EXTRA_DIST = smyrna.vcproj

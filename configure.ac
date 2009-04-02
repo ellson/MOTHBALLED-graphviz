@@ -2454,11 +2454,11 @@ if test "x$with_glut" != "xyes"; then
 else
   save_CPPFLAGS=$CPPFLAGS
   save_LDFLAGS=$LDFLAGS
-  GLUT_INCLUDES="-I/usr/include/GL"
+  GLUT_CFLAGS="-I/usr/include/GL"
   AC_ARG_WITH(glutincludedir,
     [AS_HELP_STRING([--with-glutincludedir=DIR],[use GLUT includes from DIR])],
-    [GLUT_INCLUDES="-I$withval"])
-  CPPFLAGS="$CPPFLAGS $GLUT_INCLUDES"
+    [GLUT_CFLAGS="-I$withval"])
+  CPPFLAGS="$CPPFLAGS $GLUT_CFLAGS"
   AC_ARG_WITH(glutlibdir,
     [AS_HELP_STRING([--with-glutlibdir=DIR],[use GLUT libraries from DIR])],
     [GLUT_LIBS="-L$withval"])
@@ -2478,7 +2478,7 @@ fi
 
 LDFLAGS=$save_LDFLAGS
 CPPFLAGS=$save_CPPFLAGS
-AC_SUBST(GLUT_INCLUDES)
+AC_SUBST(GLUT_CFLAGS)
 AC_SUBST(GLUT_LIBS)
 
 dnl -----------------------------------
