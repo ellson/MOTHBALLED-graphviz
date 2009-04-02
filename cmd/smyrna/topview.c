@@ -32,7 +32,6 @@
 #include "topfisheyeview.h"
 #ifdef WIN32
 #include "regex_win32.h"
-#include "otk_lib.h"
 #else
 #include "regex.h"
 #endif
@@ -53,7 +52,6 @@ static int update_topview_node_from_cgraph(topview_node * Node);
 static int get_color_from_edge(topview_edge * e);
 static int draw_node_hint_boxes(void);
 static int pick_node(topview_node * n);
-extern OtkWidget* OtkOuterWindow;
 
 
 void cleartopview(topview * t)
@@ -653,14 +651,13 @@ static int draw_node_hint_boxes(void)
 	fontColor(view->fontset->fonts[view->fontset->activefont],0, 0, 1, 1);
 
 
-	glprintf(
-		view->fontset->fonts[view->fontset->activefont],
-		       (view->Topview->picked_nodes[ind]->distorted_x),
+	glRasterPos3f(GLUT_BITMAP_HELVETICA_12,   (view->Topview->picked_nodes[ind]->distorted_x),
 		        (view->Topview->picked_nodes[ind]->
 			      distorted_y+fs+fs/(GLfloat)5.0 ),
 		       fs *
-		       (float)strlen(agnameof
-			      (view->Topview->picked_nodes[ind]->Node)) / (GLfloat)2.0,
+		       (float)strlen(agnameof(view->Topview->picked_nodes[ind]->Node)) / (GLfloat)2.0)
+    glprintfglut (GLUT_BITMAP_HELVETICA_12, fontx,fonty, p->caption);
+
 		       agnameof(view->Topview->picked_nodes[ind]->Node));
     }
     return 1;
