@@ -2443,6 +2443,45 @@ if test "x$with_mylibgd" = "xyes"; then
 fi
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for GLUT
+
+AC_ARG_WITH(glut,
+  [AS_HELP_STRING([--with-glut=yes],[GLUT library])],
+  [], [with_glut=yes])
+
+if test "x$with_glut" != "xyes"; then
+  use_glut="No (disabled)"
+else
+  save_CPPFLAGS=$CPPFLAGS
+  save_LDFLAGS=$LDFLAGS
+  GLUT_INCLUDES="-I/usr/include/GL"
+  AC_ARG_WITH(glutincludedir,
+    [AS_HELP_STRING([--with-glutincludedir=DIR],[use GLUT includes from DIR])],
+    [GLUT_INCLUDES="-I$withval"])
+  CPPFLAGS="$CPPFLAGS $GLUT_INCLUDES"
+  AC_ARG_WITH(glutlibdir,
+    [AS_HELP_STRING([--with-glutlibdir=DIR],[use GLUT libraries from DIR])],
+    [GLUT_LIBS="-L$withval"])
+  LDFLAGS="$LDFLAGS $GLUT_LIBS"
+  
+  AC_CHECK_HEADER(glut.h,
+    AC_CHECK_LIB(glut,main,
+      [GLUT_LIBS="$GLUT_LIBS -lglut"
+      use_glut="Yes"
+      AC_DEFINE_UNQUOTED(HAVE_GLUT,1,[Define if you have the GLUT library])],
+      use_glut="No (missing libglut)"
+      AC_MSG_WARN(Optional glut library not available),
+      []),
+    use_glut="No (missing glut.h)"
+    AC_MSG_WARN(Optional glut library not available - no glut.h))
+fi
+
+LDFLAGS=$save_LDFLAGS
+CPPFLAGS=$save_CPPFLAGS
+AC_SUBST(GLUT_INCLUDES)
+AC_SUBST(GLUT_LIBS)
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for ICONV (only with mylibgd)
 
 if test "x$with_mylibgd" = "xyes"; then
@@ -2482,44 +2521,52 @@ AC_SUBST(ICONV_LIBS)
 fi
 
 dnl -----------------------------------
-dnl INCLUDES and LIBS for PNG (only with mylibgd)
+dnl INCLUDES and LIBS for PNG 
 
-if test "x$with_mylibgd" = "xyes"; then
+AC_ARG_WITH(png,
+  [AS_HELP_STRING([--with-png=yes],[PNG library])],
+  [], [with_png=yes])
 
-save_CPPFLAGS=$CPPFLAGS
-save_LDFLAGS=$LDFLAGS
-AC_PATH_PROG(LIBPNG_CONFIG,libpng-config)
-if test -n "$LIBPNG_CONFIG"; then
+if test "x$with_png" != "xyes"; then
+  use_png="No (disabled)"
+else
+  save_CPPFLAGS=$CPPFLAGS
+  save_LDFLAGS=$LDFLAGS
+  AC_PATH_PROG(LIBPNG_CONFIG,libpng-config)
+  if test -n "$LIBPNG_CONFIG"; then
         PNG_INCLUDES=`$LIBPNG_CONFIG --cflags`
         PNG_PREFIX=`$LIBPNG_CONFIG --prefix`
 	if test "${PNG_PREFIX}/lib" != "/usr/lib" ; then
   		PNG_LIBS="-L${PNG_PREFIX}/lib"
  	fi
-else
+  else
 	PNG_INCLUDES=""
-fi
-AC_ARG_WITH(pngincludedir,
-  [AS_HELP_STRING([--with-pngincludedir=DIR],[use PNG includes from DIR])],
-  [PNG_INCLUDES="-I$withval"])
-CPPFLAGS="$CPPFLAGS $PNG_INCLUDES $Z_INCLUDES"
-AC_ARG_WITH(pnglibdir,
-  [AS_HELP_STRING([--with-pnglibdir=DIR],[use PNG libraries from DIR])],
-  [PNG_LIBS="-L$withval"])
-LDFLAGS="$LDFLAGS $PNG_LIBS $Z_LIBS"
-AC_CHECK_HEADER(png.h,
+  fi
+  AC_ARG_WITH(pngincludedir,
+    [AS_HELP_STRING([--with-pngincludedir=DIR],[use PNG includes from DIR])],
+    [PNG_INCLUDES="-I$withval"])
+  CPPFLAGS="$CPPFLAGS $PNG_INCLUDES $Z_INCLUDES"
+  AC_ARG_WITH(pnglibdir,
+    [AS_HELP_STRING([--with-pnglibdir=DIR],[use PNG libraries from DIR])],
+    [PNG_LIBS="-L$withval"])
+  LDFLAGS="$LDFLAGS $PNG_LIBS $Z_LIBS"
+  AC_CHECK_HEADER(png.h,
 	AC_CHECK_LIB(png,main,
 		[PNG_LIBS="$PNG_LIBS -lpng"
+		use_png="Yes"
 		AC_DEFINE_UNQUOTED(HAVE_GD_PNG,1,[Define if the GD library has the GD_PNG feature])
 		AC_DEFINE_UNQUOTED(HAVE_LIBPNG,1,[Define if you have the PNG library])],
+		use_png="No (missing libpng)"
 		AC_MSG_WARN(Optional png library not available),
 		[$Z_LIBS $MATH_LIBS]),
+	use_png="No (missing png.h)"
 	AC_MSG_WARN(Optional png library not available - no png.h))
+
+fi
 LDFLAGS=$save_LDFLAGS
 CPPFLAGS=$save_CPPFLAGS
 AC_SUBST(PNG_INCLUDES)
 AC_SUBST(PNG_LIBS)
-
-fi
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for JPEG (only with mylibgd)
@@ -2664,6 +2711,14 @@ else
   if test "x$use_gts" != "xYes"; then
      AC_MSG_WARN(SMYRNA requires GTS)
      requires="$requires gts"
+  fi
+  if test "x$use_glut" != "xYes"; then
+     AC_MSG_WARN(SMYRNA requires GLUT)
+     requires="$requires glut"
+  fi
+  if test "x$use_png" != "xYes"; then
+     AC_MSG_WARN(SMYRNA requires PNG)
+     requires="$requires png"
   fi
   if test "x$requires" != "x"; then
      use_smyrna="No (requires:$requires)"
@@ -3031,10 +3086,12 @@ echo "  digcola:       $use_digcola"
 echo "  expat:         $use_expat"
 echo "  fontconfig:    $use_fontconfig"
 echo "  freetype:      $use_freetype"
+echo "  glut:          $use_glut"
 echo "  gts:           $use_gts"
 echo "  ipsepcola:     $use_ipsepcola"
 echo "  ltdl:          $use_ltdl"
 echo "  ortho:         $use_ortho"
+echo "  png:           $use_png"
 echo "  sfdp:          $use_sfdp"
 echo "  shared:        $use_shared"
 echo "  static:        $use_static"
