@@ -2463,7 +2463,7 @@ else
     [GLUT_LIBS="-L$withval"])
   LDFLAGS="$LDFLAGS $GLUT_LIBS"
   
-  AC_CHECK_HEADER(glut.h,
+  AC_CHECK_HEADER(GL/glut.h,
     AC_CHECK_LIB(glut,main,
       [GLUT_LIBS="$GLUT_LIBS -lglut"
       use_glut="Yes"
@@ -2471,8 +2471,8 @@ else
       use_glut="No (missing libglut)"
       AC_MSG_WARN(Optional glut library not available),
       []),
-    use_glut="No (missing glut.h)"
-    AC_MSG_WARN(Optional glut library not available - no glut.h))
+    use_glut="No (missing GL/glut.h)"
+    AC_MSG_WARN(Optional glut library not available - no GL/glut.h))
 fi
 
 LDFLAGS=$save_LDFLAGS
