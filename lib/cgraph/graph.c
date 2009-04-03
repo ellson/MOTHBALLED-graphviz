@@ -230,7 +230,7 @@ int agdegree(Agraph_t * g, Agnode_t * n, int want_in, int want_out)
 
     sn = agsubrep(g, n);
     if (want_out) rv += cnt(g->e_seq,&(sn->out_seq));
-    if (want_in) rv += cnt(g->e_seq,&(sn->out_seq));
+    if (want_in) rv += cnt(g->e_seq,&(sn->in_seq));
 	return rv;
 }
 
