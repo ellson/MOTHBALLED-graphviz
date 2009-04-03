@@ -15,7 +15,7 @@
 #include "glcomptexture.h"
 #include "glcomptext.h"
 #include <string.h>
-#include "glut.h"
+#include <GL/glut.h>
 
 glCompButton *glCompButtonNew(GLfloat x, GLfloat y, GLfloat w, GLfloat h,
 			      char *caption, char *glyphfile,

@@ -13,7 +13,7 @@
 #include "glcomptext.h"
 #include "glpangofont.h"
 #include "memory.h"
-#include "glut.h"
+#include <GL/glut.h>
 
 void
 print_bitmap_string(void* font, char* s)

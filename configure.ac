@@ -2454,7 +2454,6 @@ if test "x$with_glut" != "xyes"; then
 else
   save_CPPFLAGS=$CPPFLAGS
   save_LDFLAGS=$LDFLAGS
-  GLUT_CFLAGS="-I/usr/include/GL"
   AC_ARG_WITH(glutincludedir,
     [AS_HELP_STRING([--with-glutincludedir=DIR],[use GLUT includes from DIR])],
     [GLUT_CFLAGS="-I$withval"])
