@@ -1213,6 +1213,10 @@ static void emit_node(GVJ_t * job, node_t * n)
 {
     GVC_t *gvc = job->gvc;
     char *s;
+    char *style;
+    char **styles = 0;
+    char **sp;
+    char *p;
 
     if (ND_shape(n) 				     /* node has a shape */
 	    && node_in_layer(job, agraphof(n), n)    /* and is in layer */
@@ -1226,6 +1230,15 @@ static void emit_node(GVJ_t * job, node_t * n)
 	if (s[0])
 	    gvrender_comment(job, s);
         
+	style = late_string(n, N_style, "");
+	if (style[0]) {
+	    styles = parse_style(style);
+	    sp = styles;
+	    while ((p = *sp++)) {
+		if (streq(p, "invis")) return;
+	    }
+	}
+
 	emit_begin_node(job, n);
 	ND_shape(n)->fns->codefn(job, n);
 	emit_end_node(job);
