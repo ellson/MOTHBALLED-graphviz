@@ -70,8 +70,8 @@ namespace Visio
 		/* output the graphic as a subshape of a top level shape, given its id and bounds */
 		void PrintInnerShape(GVJ_t* job, Graphic* graphic, unsigned int outerId, boxf outerBounds);
 		
-		/* output the graphic as an edge shape, given the start and end node ids */
-		void PrintEdgeShape(GVJ_t* job, Graphic* graphic, unsigned int beginId, unsigned int endId);
+		/* output the graphic as an edge connector, given the start and end node ids */
+		void PrintEdgeShape(GVJ_t* job, Graphic* graphic, unsigned int beginId, unsigned int endId, int edgeType);
 		
 		/* output all the collected texts */
 		void PrintTexts(GVJ_t* job);

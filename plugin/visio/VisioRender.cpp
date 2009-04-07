@@ -16,6 +16,8 @@
 
 #include "VisioRender.h"
 
+#include "const.h"
+#include "macros.h"
 #include "gvcjob.h"
 #include "gvio.h"
 
@@ -23,6 +25,21 @@ namespace Visio
 {
 	static const float INCHES_PER_POINT = 1.0 / 72.0;
 	static const float ZERO_ADJUST = 0.125;
+	
+	enum ConLineRouteExt
+	{
+		LORouteExtDefault = 0,
+		LORouteExtStraight = 1,
+		LORouteExtNURBS	= 2
+	};
+	
+	enum ShapeRouteStyle
+	{
+		LORouteDefault = 0,
+		LORouteRightAngle = 1,
+		LORouteStraight = 2,
+		LORouteCenterToCenter = 16
+	};
 	
 	Render::Render():
 		_pageId(0),
@@ -157,16 +174,22 @@ namespace Visio
 		
 		if (_graphics.size() > 0)
 		{
-			/* get previously saved ids for tail and head node */
-			NodeIds::const_iterator beginId = _nodeIds.find(job->obj->u.e->tail);
-			NodeIds::const_iterator endId = _nodeIds.find(job->obj->u.e->head);
+			Agedge_t* edge = job->obj->u.e;
+			
+			/* get previously saved ids for tail and head node; edge type for graph */
+			NodeIds::const_iterator beginId = _nodeIds.find(edge->tail);
+			NodeIds::const_iterator endId = _nodeIds.find(edge->head);
 			
 			/* output first connectable shape as an edge shape, all else as regular outer shapes */
 			bool firstConnector = true;
 			for (Graphics::const_iterator nextGraphic = _graphics.begin(), lastGraphic = _graphics.end(); nextGraphic != lastGraphic; ++nextGraphic)
 				if (firstConnector && (*nextGraphic)->IsConnectable())
 				{
-					PrintEdgeShape(job, _graphics[0], beginId == _nodeIds.end() ? 0 : beginId->second, endId == _nodeIds.end() ? 0 : endId->second);
+					PrintEdgeShape(job,
+						_graphics[0],
+						beginId == _nodeIds.end() ? 0 : beginId->second,
+						endId == _nodeIds.end() ? 0 : endId->second,
+						EDGE_TYPE(edge->head->graph->root));
 					firstConnector = false;
 				}
 				else
@@ -272,7 +295,7 @@ namespace Visio
 		PrintTexts(job);
 		
 		/* output Line, Fill, Geom */
-		graphic->Print(job, bounds.LL, bounds.UR);
+		graphic->Print(job, bounds.LL, bounds.UR, true);
 		
 		gvputs(job, "</Shape>\n");
 	}
@@ -304,12 +327,12 @@ namespace Visio
 		gvputs(job, "</Misc>\n");
 		
 		/* output Line, Fill, Geom */
-		graphic->Print(job, innerBounds.LL, innerBounds.UR);
+		graphic->Print(job, innerBounds.LL, innerBounds.UR, true);
 
 		gvputs(job, "</Shape>\n");
 	}
 	
-	void Render::PrintEdgeShape(GVJ_t* job, Graphic* graphic, unsigned int beginId, unsigned int endId)
+	void Render::PrintEdgeShape(GVJ_t* job, Graphic* graphic, unsigned int beginId, unsigned int endId, int edgeType)
 	{
 		pointf first = graphic->GetFirst();
 		pointf last = graphic->GetLast();
@@ -360,9 +383,9 @@ namespace Visio
 		gvputs(job, "</Misc>\n");
 		
 		gvputs(job, "<Layout>\n");
-		gvputs(job, "<ShapeRouteStyle>1</ShapeRouteStyle>\n");
+		gvprintf(job, "<ShapeRouteStyle>%d</ShapeRouteStyle>\n", edgeType == ET_LINE ? LORouteCenterToCenter : LORouteRightAngle);
 		gvputs(job, "<ConFixedCode>6</ConFixedCode>\n");
-		gvputs(job, "<ConLineRouteExt>2</ConLineRouteExt>\n");
+		gvprintf(job, "<ConLineRouteExt>%d</ConLineRouteExt>\n", edgeType == ET_LINE || edgeType == ET_PLINE ? LORouteExtStraight : LORouteExtNURBS);
 		gvputs(job, "<ShapeSplittable>1</ShapeSplittable>\n");
 		gvputs(job, "</Layout>\n");
 		
@@ -428,7 +451,7 @@ namespace Visio
 		PrintTexts(job);
 		
 		/* output Line, Fill, Geom */
-		graphic->Print(job, first, last);
+		graphic->Print(job, first, last, edgeType != ET_LINE && edgeType != ET_PLINE);
 		
 		gvputs(job, "</Shape>\n");
 	}

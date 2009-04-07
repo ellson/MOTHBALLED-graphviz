@@ -73,7 +73,7 @@ namespace Visio
 		_points[1] = points[1];
 	}
 	
-	void Ellipse::Print(GVJ_t* job, pointf first, pointf last) const
+	void Ellipse::Print(GVJ_t* job, pointf first, pointf last, bool allowCurves) const
 	{
 		gvputs(job, "<Geom>\n");
 		if (!_filled)
@@ -204,7 +204,7 @@ namespace Visio
 		return true;
 	}
 	
-	void Bezier::Print(GVJ_t* job, pointf first, pointf last) const
+	void Bezier::Print(GVJ_t* job, pointf first, pointf last, bool allowCurves) const
 	{
 		gvputs(job, "<Geom>\n");
 		if (!_filled)
@@ -223,42 +223,70 @@ namespace Visio
 			gvprintf(job, "<Y F='Height*%f' />", (_points[0].y - first.y) * yscale);
 			gvputs(job, "</MoveTo>\n");
 			
-			/* convert Graphviz cubic bezier into VDX NURBS curve: */
-			/* NURBS control points == bezier control points */
-			/* NURBS order == bezier order == 3 */
-			/* NURBS knot vector == { 0, 0, 0, 0,  1, 2 ... } */
-			
-			gvputs(job, "<NURBSTo>");
-			
-			/* Ctl[P-1].X */
-			gvprintf(job, "<X F='Width*%f'/>", (_points[_pointCount - 1].x - first.x) * xscale);
-			
-			/* Ctl[P-1].Y */
-			gvprintf(job, "<Y F='Height*%f'/>", (_points[_pointCount - 1].y - first.y) * yscale);
-			
-			/* Knot[P-1] */
-			gvprintf(job, "<A>%d</A>", std::max(_pointCount - 4, 0));
-			
-			/* Ctl[P-1].Weight */
-			gvputs(job, "<B>1</B>");	
-			
-			/* Knot[0] */
-			gvputs(job, "<C>0</C>");
-			
-			/* Weight[0] */
-			gvputs(job, "<D>1</D>");	
-			
-			/* Knot[P], Degree, XType, YType */
-			gvprintf(job, "<E F='NURBS(%d, 3, 0, 0", std::max(_pointCount - 3, 0));				
-			for (int i = 1; i < _pointCount; ++i)
-			/* Ctl[i].X, Ctl[i].Y, Knot[i], Ctl[i].Weight */
-				gvprintf(job, ", %f, %f, %d, 1",					
-						 (_points[i].x - first.x) * xscale,
-						 (_points[i].y - first.y) * yscale,
-						 std::max(i - 3, 0));	
-			gvputs(job, ")'/>");
-			
-			gvputs(job, "</NURBSTo>\n");
+			if (allowCurves)
+			{
+				/* convert Graphviz cubic bezier into VDX NURBS curve: */
+				/* NURBS control points == bezier control points */
+				/* NURBS order == bezier order == 3 */
+				/* NURBS knot vector == { 0, 0, 0, 0,  1, 2 ... } */
+				
+				gvputs(job, "<NURBSTo>");
+				
+				/* Ctl[P-1].X */
+				gvprintf(job, "<X F='Width*%f'/>", (_points[_pointCount - 1].x - first.x) * xscale);
+				
+				/* Ctl[P-1].Y */
+				gvprintf(job, "<Y F='Height*%f'/>", (_points[_pointCount - 1].y - first.y) * yscale);
+				
+				/* Knot[P-1] */
+				gvprintf(job, "<A>%d</A>", std::max(_pointCount - 4, 0));
+				
+				/* Ctl[P-1].Weight */
+				gvputs(job, "<B>1</B>");	
+				
+				/* Knot[0] */
+				gvputs(job, "<C>0</C>");
+				
+				/* Weight[0] */
+				gvputs(job, "<D>1</D>");	
+				
+				/* Knot[P], Degree, XType, YType */
+				gvprintf(job, "<E F='NURBS(%d, 3, 0, 0", std::max(_pointCount - 3, 0));				
+				for (int i = 1; i < _pointCount; ++i)
+				/* Ctl[i].X, Ctl[i].Y, Knot[i], Ctl[i].Weight */
+					gvprintf(job, ", %f, %f, %d, 1",					
+							 (_points[i].x - first.x) * xscale,
+							 (_points[i].y - first.y) * yscale,
+							 std::max(i - 3, 0));	
+				gvputs(job, ")'/>");
+				
+				gvputs(job, "</NURBSTo>\n");
+			}
+			else
+			{
+				/* output lines only, so skip all the Bezier control points i.e. use every 3rd point */
+				
+				if (_pointCount == 4)
+				{
+					/* single point, use VDX LineTo */
+					gvputs(job, "<LineTo>");
+					gvprintf(job, "<X F='Width*%f' />", (_points[3].x - first.x) * xscale);
+					gvprintf(job, "<Y F='Height*%f' />", (_points[3].y - first.y) * yscale);
+					gvputs(job, "</LineTo>\n");
+				}
+				else
+				{
+					/* multiple points, use VDX PolylineTo */
+					gvputs(job, "<PolylineTo>");
+					gvprintf(job, "<X F='Width*%f' />", (_points[_pointCount - 1].x - first.x) * xscale);
+					gvprintf(job, "<Y F='Height*%f' />", (_points[_pointCount - 1].y - first.y) * yscale);
+					gvputs(job, "<A F='POLYLINE(0, 0");
+					for (int i = 3; i < _pointCount - 1; i += 3)
+						gvprintf(job, ", %f, %f", (_points[i].x - first.x) * xscale, (_points[i].y - first.y) * yscale);
+					gvputs(job, ")' />");
+					gvputs(job, "</PolylineTo>\n");
+				}
+			}
 		}
 		gvputs(job, "</Geom>\n");
 	}
@@ -282,7 +310,7 @@ namespace Visio
 		return false;
 	}
 
-	void Polygon::Print(GVJ_t* job, pointf first, pointf last) const
+	void Polygon::Print(GVJ_t* job, pointf first, pointf last, bool allowCurves) const
 	{
 		gvputs(job, "<Geom>\n");
 		if (!_filled)
@@ -356,7 +384,7 @@ namespace Visio
 		return false;
 	}
 	
-	void Polyline::Print(GVJ_t* job, pointf first, pointf last) const
+	void Polyline::Print(GVJ_t* job, pointf first, pointf last, bool allowCurves) const
 	{
 		gvputs(job, "<Geom>\n");
 		if (_pointCount > 0)
@@ -565,14 +593,14 @@ namespace Visio
 		return _geom->IsConnectable();
 	}
 	
-	void Graphic::Print(GVJ_t* job, pointf first, pointf last) const
+	void Graphic::Print(GVJ_t* job, pointf first, pointf last, bool allowCurves) const
 	{
 		if (_line)
 			_line->Print(job);
 		if (_fill)
 			_fill->Print(job);
 		if (_geom)
-			_geom->Print(job, first, last);
+			_geom->Print(job, first, last, allowCurves);
 		
 	}
 	

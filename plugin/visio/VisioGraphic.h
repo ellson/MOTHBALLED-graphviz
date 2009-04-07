@@ -70,7 +70,7 @@ namespace Visio
 		virtual bool IsConnectable() const = 0;	/* whether this geom can be turned into a connector -- used by edge logic */
 		
 		/* given first (lower left) and last points (upper right), output the geometry */ 
-		virtual void Print(GVJ_t* job, pointf first, pointf last) const = 0;
+		virtual void Print(GVJ_t* job, pointf first, pointf last, bool allowCurves) const = 0;
 	};
 	
 	class Ellipse: public Geom
@@ -84,7 +84,7 @@ namespace Visio
 		virtual pointf GetCenter() const;
 		virtual bool IsConnectable() const;
 
-		void Print(GVJ_t* job, pointf first, pointf last) const;
+		void Print(GVJ_t* job, pointf first, pointf last, bool allowCurves) const;
 
 	private:
 		bool _filled;
@@ -114,7 +114,7 @@ namespace Visio
 		virtual pointf GetCenter() const;
 		virtual bool IsConnectable() const;
 
-		virtual void Print(GVJ_t* job, pointf first, pointf last) const;
+		virtual void Print(GVJ_t* job, pointf first, pointf last, bool allowCurves) const;
 		
 
 	private:
@@ -129,7 +129,7 @@ namespace Visio
 		virtual pointf GetCenter() const;
 		virtual bool IsConnectable() const;
 		
-		virtual void Print(GVJ_t* job, pointf first, pointf last) const;
+		virtual void Print(GVJ_t* job, pointf first, pointf last, bool allowCurves) const;
 
 	private:
 		bool _filled;
@@ -143,7 +143,7 @@ namespace Visio
 		virtual pointf GetCenter() const;
 		virtual bool IsConnectable() const;
 
-		void Print(GVJ_t* job, pointf first, pointf last) const;
+		void Print(GVJ_t* job, pointf first, pointf last, bool allowCurves) const;
 
 	};
 	
@@ -165,7 +165,7 @@ namespace Visio
 		pointf GetCenter() const;
 		bool IsConnectable() const;
 
-		void Print(GVJ_t* job, pointf first, pointf last) const;
+		void Print(GVJ_t* job, pointf first, pointf last, bool allowCurves) const;
 		
 	private:
 		Graphic(Line* line, Fill* fill, Geom* geom);
