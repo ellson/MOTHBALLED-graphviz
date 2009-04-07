@@ -161,8 +161,17 @@ namespace Visio
 			NodeIds::const_iterator beginId = _nodeIds.find(job->obj->u.e->tail);
 			NodeIds::const_iterator endId = _nodeIds.find(job->obj->u.e->head);
 			
-			/* output first shape as an edge shape */
-			PrintEdgeShape(job, _graphics[0], beginId == _nodeIds.end() ? 0 : beginId->second, endId == _nodeIds.end() ? 0 : endId->second);
+			/* output first connectable shape as an edge shape, all else as regular outer shapes */
+			bool firstConnector = true;
+			for (Graphics::const_iterator nextGraphic = _graphics.begin(), lastGraphic = _graphics.end(); nextGraphic != lastGraphic; ++nextGraphic)
+				if (firstConnector && (*nextGraphic)->IsConnectable())
+				{
+					PrintEdgeShape(job, _graphics[0], beginId == _nodeIds.end() ? 0 : beginId->second, endId == _nodeIds.end() ? 0 : endId->second);
+					firstConnector = false;
+				}
+				else
+					PrintOuterShape(job, *nextGraphic);
+
 		}
 		ClearGraphicsAndTexts();
 	}

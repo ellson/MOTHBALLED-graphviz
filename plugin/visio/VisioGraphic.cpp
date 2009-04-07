@@ -112,6 +112,12 @@ namespace Visio
 		return center;
 	}
 	
+	bool Ellipse::IsConnectable() const
+	{
+		/* cannot be a connector */
+		return false;
+	}
+	
 	Path::Path(pointf* points, int pointCount)
 	{
 		/* copy over the points */
@@ -165,7 +171,6 @@ namespace Visio
 		return _points[_pointCount - 1];
 	}
 	
-	
 	Bezier::Bezier(pointf* points, int pointCount, bool filled):
 		Path(points, pointCount),
 		_filled(filled)
@@ -191,6 +196,12 @@ namespace Visio
 		else
 			/* just return the middle point */
 			return _points[_pointCount / 2];
+	}
+
+	bool Bezier::IsConnectable() const
+	{
+		/* can be a connector */
+		return true;
 	}
 	
 	void Bezier::Print(GVJ_t* job, pointf first, pointf last) const
@@ -265,6 +276,12 @@ namespace Visio
 		return center;
 	}
 	
+	bool Polygon::IsConnectable() const
+	{
+		/* cannot be a connector */
+		return false;
+	}
+
 	void Polygon::Print(GVJ_t* job, pointf first, pointf last) const
 	{
 		gvputs(job, "<Geom>\n");
@@ -331,6 +348,12 @@ namespace Visio
 		else
 			/* just return the middle point */
 			return _points[_pointCount / 2];
+	}
+	
+	bool Polyline::IsConnectable() const
+	{
+		/* cannot be a connector */
+		return false;
 	}
 	
 	void Polyline::Print(GVJ_t* job, pointf first, pointf last) const
@@ -535,6 +558,11 @@ namespace Visio
 	pointf Graphic::GetCenter() const
 	{
 		return _geom->GetCenter();
+	}
+	
+	bool Graphic::IsConnectable() const
+	{
+		return _geom->IsConnectable();
 	}
 	
 	void Graphic::Print(GVJ_t* job, pointf first, pointf last) const
