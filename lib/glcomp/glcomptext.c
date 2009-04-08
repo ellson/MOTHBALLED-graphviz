@@ -21,7 +21,8 @@ print_bitmap_string(void* font, char* s)
    if (s && strlen(s)) {
       while (*s) {
          glutBitmapCharacter(font, *s);
-         s++;
+//         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *s);
+		s++;
       }
    }
 }
@@ -98,7 +99,16 @@ glprintf (glCompText* font, GLfloat xpos, GLfloat ypos,
 	int maxcharCount;
 	char* tempC;
 	GLfloat charGap;
-	
+
+	//set the color
+	glColor4f(font->color.R,font->color.G,font->color.B,font->color.A);
+	if (!font)
+		return;
+	if (font->isglut)
+	{
+		glprintfglut (font->glutfont, xpos,ypos,bf);
+		return;
+	}
 
 	glGetIntegerv (GL_VIEWPORT, vPort);
 
@@ -166,6 +176,54 @@ static int fontId(fontset_t* fontset,char* fontdesc)
 	return -1;
 }
 
+static int glutfontId(fontset_t* fontset,void* glutfont)
+{
+	int ind=0;
+	for (ind=0;ind < fontset->count;ind ++)
+	{
+		if (fontset->fonts[ind]->glutfont=glutfont)
+			return ind;
+	}
+	return -1;
+}
+
+
+glCompText* glut_font_init()
+{
+    glCompText* font = NEW(glCompText);
+	int idx = 0;
+	font->color.R=1.00;
+	font->color.G=1.00;
+	font->color.B=1.00;
+	font->color.A=1.00;
+
+
+/*	font->fontheight=12;
+	font->tIncX=0.0;
+	font->tIncY=0.0;
+	font->texId=-1;
+	font->fontdesc=(char*)0;
+
+
+
+
+	font->tIncX = (float)pow (C_DPI, -1);
+	font->tIncY = (float)pow (R_DPI, -1);
+
+	
+	for (y = 1 - font->tIncY; y >= 0; y -= font->tIncY)
+	{
+		for (x = 0; x <= 1 - font->tIncX; x += font->tIncX, idx ++)
+		{
+			font->bmp[idx][0]=x;
+			font->bmp[idx][1]=y;
+		}
+	}*/
+    return font;
+}
+
+
+
 
 glCompText* font_init()
 {
@@ -184,6 +242,7 @@ glCompText* font_init()
 	font->tIncY=0.0;
 	font->texId=-1;
 	font->fontdesc=(char*)0;
+
 
 
 
@@ -262,41 +321,62 @@ fontset_t* fontset_init()
 static char* fontpath = NULL;
 static size_t fontpathsz = 0;
 
-int add_font(fontset_t* fontset,char* fontdesc)
+glCompText* add_glut_font(fontset_t* fontset,void* glutfont)
+{
+	int id;
+	id=glutfontId(fontset,glutfont);
+	if(id==-1)
+	{
+		fontset->fonts = ALLOC(fontset->count+1,fontset->fonts,glCompText*);
+		fontset->fonts[fontset->count] = glut_font_init ();
+		fontset->fonts[fontset->count]->isglut=1;
+		fontset->fonts[fontset->count]->glutfont=glutfont;
+		fontset->count++;
+		return fontset->fonts[fontset->count-1];
+	}
+	else
+		return fontset->fonts[id];
+}
+
+
+glCompText* add_font(fontset_t* fontset,char* fontdesc)
 {
     int id;	
     size_t sz;
     glCompText* tf;
 
     id=fontId(fontset,fontdesc);
-
-    if (id==-1) {
-	sz = strlen(fontset->font_directory)+strlen(fontdesc)+6;
-	if (sz > fontpathsz) {
-	    fontpathsz = 2*sz;
-	    fontpath = ALLOC (fontpathsz, fontpath, char); 
-        }
-	sprintf(fontpath,"%s/%s.png",fontset->font_directory,fontdesc);
-	if(create_font_file(fontdesc,fontpath,(float)32,(float)32)==0) {
-	    fontset->fonts = ALLOC(fontset->count+1,fontset->fonts,glCompText*);
-	    fontset->fonts[fontset->count] = tf = font_init ();
-	    tf->fontdesc = strdup(fontdesc);
-	    glGenTextures (1, &(tf->texId));	//get  opengl texture name
-	    if ((tf->texId >= 0) && glCompLoadFontPNG (fontpath, tf->texId)) {
-		fontset->activefont=fontset->count;
-		fontset->count++;
-		return fontset->count;
-	    }
-	    else
-		return -1;
+	if (id==-1) 
+	{
+		sz = strlen(fontset->font_directory)+strlen(fontdesc)+6;
+		if (sz > fontpathsz) 
+		{
+			fontpathsz = 2*sz;
+			fontpath = ALLOC (fontpathsz, fontpath, char); 
+		}
+		sprintf(fontpath,"%s/%s.png",fontset->font_directory,fontdesc);
+		if(create_font_file(fontdesc,fontpath,(float)32,(float)32)==0) 
+		{
+			fontset->fonts = ALLOC(fontset->count+1,fontset->fonts,glCompText*);
+			fontset->fonts[fontset->count] = tf = font_init ();
+			tf->fontdesc = strdup(fontdesc);
+			fontset->fonts[fontset->count]->isglut=0;
+			glGenTextures (1, &(tf->texId));	//get  opengl texture name
+			if ((tf->texId >= 0) && glCompLoadFontPNG (fontpath, tf->texId)) 
+			{
+				fontset->activefont=fontset->count;
+				fontset->count++;
+				return fontset->fonts[fontset->count-1];
+			}
+			else
+				return NULL;
+		}
+		else
+			return NULL;
 	}
 	else
-	    return -1;
-    }
-    else
-	return id;
+		return fontset->fonts[id];
 }
-
 void free_font_set(fontset_t* fontset)
 {
     int ind;

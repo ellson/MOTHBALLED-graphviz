@@ -239,14 +239,12 @@ void glCompSetClear(glCompSet * s)
 	free(s->panels[ind]);
     }
     free(s->panels);
-    free(s->font);
     free(s);
 }
 
 glCompSet* glCompSetNew()
 {
     glCompSet *s = NEW(glCompSet);
-    s->font = font_init();
     return s;
 }
 
