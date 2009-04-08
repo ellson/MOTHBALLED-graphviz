@@ -34,9 +34,16 @@ glCompPanel *glCompPanelNew(GLfloat x, GLfloat y, GLfloat w, GLfloat h,glCompOri
     p->width = w;
     p->height = h;
 	p->orientation=orientation;
+	p->text=(char*)0;
     p->font = font_init();
     return p;
 }
+void glCompSetPanelText(glCompPanel * p,char* t)
+{
+	p->text=realloc(p->text,strlen(t)+sizeof(char));
+	strcpy(p->text,t);
+}
+
 int glCompDrawPanel(glCompPanel * p)
 {
     if (!p->visible)
@@ -75,6 +82,12 @@ int glCompDrawPanel(glCompPanel * p)
 	       p->bevel);
     glEnd();
     glLineWidth(1);
+	//draw text
+	if(p->text)
+	{
+
+
+	}
     return 1;
 }
 
@@ -84,8 +97,7 @@ int glCompSetAddPanel(glCompSet * s, glCompPanel * p)
     s->panels = realloc(s->panels, sizeof(glCompPanel *) * s->panelcount);
     s->panels[s->panelcount - 1] = p;
     p->parentset = s;
-    if (p->font->texId==-1)	//no font has been set yet
-	copy_font(p->font,s->font);
+	p->font=s->fontset->fonts[s->fontset->activefont];
     return 1;
 }
 
@@ -101,6 +113,7 @@ int glCompSetRemovePanel(glCompSet * s, glCompPanel * p)
     }
     if (found) {
 	free(p->font);
+	free(p->text);
 	free(p);
 	s->panelcount--;
 	s->panels =
