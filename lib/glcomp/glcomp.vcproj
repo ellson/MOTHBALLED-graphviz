@@ -101,7 +101,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;C:\gtk\lib\glib-2.0\include&quot;;&quot;C:\gtk\include\glib-2.0&quot;;&quot;C:\gtk\include\pango-1.0\&quot;;C:\gtk\include;&quot;$(SolutionDir)/lib/common&quot;;&quot;$(SolutionDir)/lib/cdt&quot;;&quot;$(SolutionDir)/lib/cgraph&quot;;&quot;$(SolutionDir)/lib/xdot&quot;"
+				AdditionalIncludeDirectories="&quot;C:\graphviz-ms\graphviz2\lib\glut\glut-3.7.6-bin&quot;;&quot;C:\gtk\lib\glib-2.0\include&quot;;&quot;C:\gtk\include\glib-2.0&quot;;&quot;C:\gtk\include\pango-1.0\&quot;;C:\gtk\include;&quot;$(SolutionDir)/lib/common&quot;;&quot;$(SolutionDir)/lib/cdt&quot;;&quot;$(SolutionDir)/lib/cgraph&quot;;&quot;$(SolutionDir)/lib/xdot&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
