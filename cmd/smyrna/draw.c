@@ -454,7 +454,7 @@ static void SetStyle(xdot_op * op, int param)
 static void SetFont(xdot_op * op, int param)
 {
 	//activate the right font
-	view->fontset->activefont=add_font(view->fontset,op->u.font.name);//load or set active font
+	view->widgets->fontset->activefont=add_font(view->widgets->fontset,op->u.font.name);//load or set active font
 	view->FontSize =  op->u.font.size;
 }
 
@@ -474,13 +474,13 @@ static void EmbedText(xdot_op * op, int param)
 	x = (GLfloat) op->u.text.x;
     if (op->u.text.align == -1)
 	x = (GLfloat) op->u.text.x + op->u.text.width;
-	view->fontset->fonts[view->fontset->activefont]->fontheight=view->FontSize;
+	view->widgets->fontset->fonts[view->widgets->fontset->activefont]->fontheight=view->FontSize;
     if (param == 0)
-	fontColor(view->fontset->fonts[view->fontset->activefont],view->penColor.R, view->penColor.G, view->penColor.B,1);
+	fontColor(view->widgets->fontset->fonts[view->widgets->fontset->activefont],view->penColor.R, view->penColor.G, view->penColor.B,1);
     if (param == 1)		//selected
-	fontColor(view->fontset->fonts[view->fontset->activefont],view->selectedNodeColor.R, view->selectedNodeColor.G,
+	fontColor(view->widgets->fontset->fonts[view->widgets->fontset->activefont],view->selectedNodeColor.R, view->selectedNodeColor.G,
 		  view->selectedNodeColor.B,1);
-	glprintf(view->fontset->fonts[view->fontset->activefont], (x - dx), (GLfloat)op->u.text.y -  dy,
+	glprintf(view->widgets->fontset->fonts[view->widgets->fontset->activefont], (x - dx), (GLfloat)op->u.text.y -  dy,
 		   (GLfloat)op->u.text.width, op->u.text.text);
 }
 
@@ -745,7 +745,7 @@ static void scanXdot(xdot * xDot, void *p)
 		op->obj = p;
 		if (op->op.kind==xd_font)
 		{
-			add_font(view->fontset,op->op.u.font.name);//load or set active font
+			add_font(view->widgets->fontset,op->op.u.font.name);//load or set active font
 		}
     }
 

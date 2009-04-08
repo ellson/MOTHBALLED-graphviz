@@ -178,7 +178,6 @@ typedef struct {
     int Nodecount;
     int Edgecount;
     int limits[4];
-    glCompSet *topviewmenu;	//for novice user open gl menu
     topviewdata *TopviewData;
     void *customptr;
     Hierarchy *h;
@@ -499,7 +498,8 @@ typedef struct _ViewInfo
 	gvk_layout dfltEngine;
 	GtkTextBuffer* consoleText;
 	float FontSizeConst;
-	fontset_t* fontset;
+    glCompSet *widgets;	//for novice user open gl menu
+
 } ViewInfo;
 
 extern ViewInfo *view;

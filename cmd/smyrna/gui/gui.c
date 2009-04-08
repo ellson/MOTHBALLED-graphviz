@@ -303,7 +303,7 @@ int update_graph_properties(Agraph_t * graph)	//updates graph from gui
 
 
     //check if the engine has been changed, if so do new layout
-    if (GD_Engine(graph) != gtk_combo_box_get_active((GtkComboBox *)
+/*    if (GD_Engine(graph) != gtk_combo_box_get_active((GtkComboBox *)
 				 glade_xml_get_widget(xml, "cbLayout"))) {
 	Dlg =
 	    (GtkMessageDialog *) gtk_message_dialog_new(NULL,
@@ -319,7 +319,7 @@ int update_graph_properties(Agraph_t * graph)	//updates graph from gui
 						     (xml, "cbLayout")),
 			    0);
 	gtk_object_destroy((GtkObject *) Dlg);
-    }
+    }*/
     return 1;
 }
 

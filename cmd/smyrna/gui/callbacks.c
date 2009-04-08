@@ -162,7 +162,7 @@ void graph_select_change(GtkWidget * widget, gpointer user_data)
 
 
     if (!view->SignalBlock) {
-	active_graph = gtk_combo_box_get_active((GtkComboBox *) widget);
+	active_graph = gtk_combo_box_get_active((GtkComboBox*) widget);
 
 	if (active_graph > -1) {
 	    view->activeGraph = active_graph;

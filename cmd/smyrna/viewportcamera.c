@@ -169,7 +169,7 @@ void attach_camera_widget(ViewInfo * view)
     char buf[256];
     glCompPanel *p;
     glCompButton *b;
-    glCompSet *s = view->Topview->topviewmenu;
+	glCompSet *s = view->widgets;
     int p_height;
     /*first we need to get rid of the old menu */
     for (ind = 0; ind < s->panelcount; ind++) {

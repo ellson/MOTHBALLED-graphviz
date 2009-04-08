@@ -42,7 +42,7 @@ static float dy = 0.0;
 static float dz = 0.0;
 
    /* Forward declarations */
-static glCompSet *glcreate_gl_topview_menu(void);
+glCompSet *glcreate_gl_topview_menu(void);
 static void set_boundaries(topview * t);
 static void set_topview_options(void);
 static int draw_topview_label(topview_node * v, float zdepth);
@@ -61,8 +61,6 @@ void cleartopview(topview * t)
     free(t->Nodes);
     /*clear edges */
     free(t->Edges);
-    /*clear gl menu */
-    glCompSetClear(t->topviewmenu);
     free(t);
 }
 
@@ -109,8 +107,6 @@ void preparetopview(Agraph_t * g, topview * t)
 
     t->Nodes = N_GNEW(agnnodes(g), topview_node);
 
-    printf("# of edges :%i\n", agnnodes(g));
-    printf("# of edges :%i\n", agnedges(g));
 
     /* malloc topviewdata */
     t->TopviewData = NEW(topviewdata);
@@ -239,15 +235,18 @@ void preparetopview(Agraph_t * g, topview * t)
 		}
 		ind++;
     }
-    t->Nodecount = ind;
+	view->widgets =glcreate_gl_topview_menu();
+//	view->widgets->fontset = fontset_init();
+//	add_font(view->widgets->fontset,"Times 14");//wired in default font
+
+	t->Nodecount = ind;
     t->Edgecount = ind2;
     view->fmg.fisheye_distortion_fac = 5;	//need to be hooked to a widget
     set_boundaries(t);
     set_update_required(t);
-    t->topviewmenu = glcreate_gl_topview_menu();
 	//set componenet set's  font with already loaded default font.This will be inherited by all components added to this set as default
     attach_camera_widget(view);
-    load_host_buttons(t, g, t->topviewmenu);
+    load_host_buttons(t, g, view->widgets);
     t->h = '\0';
     if (view->dfltViewType == VT_TOPFISH)
 	t->is_top_fisheye = 1;
@@ -256,6 +255,8 @@ void preparetopview(Agraph_t * g, topview * t)
 
     t->picked_node_count = 0;
     t->picked_nodes = '\0';
+
+
 }
 /*
 	this function calculates and sets node size(opengl dots, they are squares not a dots
@@ -649,7 +650,7 @@ static int draw_node_hint_boxes(void)
 			  (GLfloat) fs,agnameof(view->Topview->picked_nodes[ind]->Node)
 			  )
 			  ;
-		view->fontset->fonts[view->fontset->activefont]->fontheight=fs;
+		view->widgets->fontset->fonts[view->widgets->fontset->activefont]->fontheight=fs;
 	/*blue font color*/
 //	fontwidth=GetOGLDistance(glutBitmapLength(GLUT_BITMAP_HELVETICA_12,agnameof(view->Topview->picked_nodes[ind]->Node)));
 	glColor4f(0, 0, 1, 1);
@@ -1419,15 +1420,18 @@ static char *smyrna_icon_zoomminus;
 static char *smyrna_icon_fisheye;
 static char *smyrna_icon_rotate;
 
-static glCompSet *glcreate_gl_topview_menu(void)
+glCompSet *glcreate_gl_topview_menu(void)
 {
 
     glCompSet *s = glCompSetNew();
     glCompPanel *p;
     glCompButton *b;
     glCompLabel *l;
+	s->fontset=fontset_init();
+	/*add a glut font*/
+	add_glut_font(s->fontset,GLUT_BITMAP_HELVETICA_12);	
+	s->fontset->activefont=0;
 
-    copy_font(s->font,view->fontset->fonts[view->fontset->activefont]);
 	/* GtkRequisition requisition; *//* What??*/
     if (!smyrna_icon_pan) {
 #ifdef _WIN32

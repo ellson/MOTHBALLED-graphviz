@@ -84,56 +84,6 @@ set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
 {
     gvcolor_t cl;
     char *buf;
-#if 0
-    graph[antialiasing = 1,
-	  bgcolor = "#ffffff",
-	  bordercolor = "#38eb29",
-	  bordercoloralpha = "1",
-	  bordervisible = "1",
-	  defaultfontname = "1",
-	  defaultfontsize = "52",
-	  gridcolor = "#6033d8",
-	  gridcoloralpha = "1",
-	  gridvisible = "1",
-	  highlightededgecolor = "#c41b50",
-	  highlightededgecoloralpha = "1",
-	  highlightednodecolor = "#d1cd24",
-	  highlightednodecoloralpha = "1",
-	  defaultlinewidth = "1"
-	  nodesizewithdegree = "1",
-	  randomizeedgecolors = "1",
-	  randomizenodecolors = "1",
-	  selectededgecolor = "#ffc0cb",
-	  selectededgecoloralpha = "1",
-	  selectednodecolor = "#8ce61d",
-	  selectednodecoloralpha = "1",
-	  gridcoloralpha = "1",
-	  defaultmagnifierwidth = "300",
-	  defaultmagnifierheight = "200",
-	  defaultmagnifierkts = "5",
-	  defaultfisheyemagnifierradius = "250"
-	  defaultfisheyemagnifierdistort = "5",
-	  usermode = "1",
-	  topologicalfisheyefinenodes = "50",
-	  topologicalfisheyecoarseningfactor = "2.5",
-	  topologicalfisheyedistortionfactor = "1",
-	  topologicalfisheyedist2limit = "1",
-	  topologicalfisheyeanimate = "1",
-	  topologicalfisheyelabelfinenodes = "1",
-	  topologicalfisheyecolornodes = "1",
-	  topologicalfisheyecoloredges = "1",
-	  topologicalfisheyelabelfocus = "1",
-	  topologicalfisheyefinestcolor = "red",
-	  topologicalfisheyecoarsestcolor = "green",
-	  drawnodes="1",
-	  drawedges="1"]
-	;
-
-	  
-
-
-    border color
-#endif
      colorxlate(get_attribute_value("bordercolor", view, g), &cl,
 		RGBA_DOUBLE);
     view->borderColor.R = (float) cl.u.RGBA[0];
@@ -391,7 +341,6 @@ void init_viewport(ViewInfo * view)
 	view->frame_length=1;
 	/*add a call back to the main()*/
 	g_timeout_add_full((gint)G_PRIORITY_DEFAULT,(guint)100,gl_main_expose,NULL,NULL);
-	view->Topview->topviewmenu = '\0';
 	view->cameras='\0';;
 	view->camera_count=0;
 	view->active_camera=-1;
@@ -401,7 +350,6 @@ void init_viewport(ViewInfo * view)
     view->dfltEngine = GVK_NONE;
 
 	//create fontset
-    view->fontset = fontset_init();
 }
 
 
@@ -831,8 +779,9 @@ int add_graph_to_viewport_from_file(char *fileName)
 	view->g[view->graphCount - 1] = graph;
 	view->activeGraph = view->graphCount - 1;
 	//GUI update , graph combo box on top-right should be updated
-	load_settings_from_graph(view->default_attributes);
+	load_settings_from_graph(view->g[view->activeGraph]);
 	update_graph_from_settings(view->g[view->activeGraph]);
+    set_viewport_settings_from_template(view, view->g[view->activeGraph]);
 	refreshControls(view);
 	return 1;
     } else

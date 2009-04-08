@@ -138,7 +138,6 @@ static void realize(GtkWidget * widget, gpointer data)
     smyrna_font = smyrnaPath("arial.tga");
 #endif
 
-	add_font(view->fontset,"Times 14");//wired in default font
 	/*** OpenGL BEGIN ***/
     if (!gdk_gl_drawable_gl_begin(gldrawable, glcontext))
 	return;
@@ -262,7 +261,7 @@ static gboolean button_press_event(GtkWidget * widget,
 {
     if (view->graphCount)
 	{
-		if (glCompSetClick(view->Topview->topviewmenu, (int) event->x, (int) event->y))
+		if (glCompSetClick(view->widgets, (int) event->x, (int) event->y))
 	    expose_event(view->drawing_area, NULL, NULL);
     }
 
@@ -313,7 +312,7 @@ static gboolean button_release_event(GtkWidget * widget,
 	if (event->button == 1)	//left click release
     {
 		if (glCompSetRelease
-	    (view->Topview->topviewmenu, (int) event->x_root,
+	    (view->widgets, (int) event->x_root,
 	     (int) event->y_root))		{
 			 expose_event(view->drawing_area, NULL, NULL);	}
 	view->mouse.mouse_down = 0;
@@ -582,7 +581,6 @@ void create_window(GdkGLConfig * glconfig, GtkWidget * vbox)
      */
 
     gdk_gl_query_version(&major, &minor);
-    g_print("\nOpenGL extension version - %d.%d\n", major, minor);
 
     /* Try double-buffered visual */
 

@@ -237,9 +237,9 @@ int load_settings_from_graph(Agraph_t * g)
     set_color_button_widget("topologicaltopviewcoarsestcolor",
 					 "settingsColorBtn9");
 
-    set_color_button_widget("topologicaltopviewfinestcolor",
+    set_color_button_widget("topologicalfisheyefinestcolor",
 			    "settingsColorBtn10");
-    set_color_button_widget("topologicaltopviewcoarsestcolor   ",
+    set_color_button_widget("topologicalfisheyecoarsestcolor",
 			    "settingsColorBtn11");
 
 
