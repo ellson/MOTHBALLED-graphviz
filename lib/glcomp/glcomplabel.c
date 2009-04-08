@@ -40,8 +40,7 @@ int glCompSetAddLabel(glCompSet * s, glCompLabel * p)
     s->labelcount++;
     s->labels = realloc(s->labels, sizeof(glCompLabel *) * s->labelcount);
     s->labels[s->labelcount - 1] = p;
-    if (p->font->texId==-1)	//no font has been set yet
-	copy_font(p->font,s->font);
+	p->font=s->fontset->fonts[s->fontset->activefont];
     return 1;
 }
 
