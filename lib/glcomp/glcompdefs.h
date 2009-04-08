@@ -50,9 +50,9 @@
 #define	GLCOMPSET_BUTTON_THICKNESS		(GLfloat)3
 #define	GLCOMPSET_BUTTON_BEVEL_BRIGHTNESS		(GLfloat)1.7
 #define GLCOMPSET_FONT_SIZE				(GLfloat)12
-#define	GLCOMPSET_BUTTON_FONT_COLOR_R		(GLfloat)1
-#define	GLCOMPSET_BUTTON_FONT_COLOR_G		(GLfloat)1
-#define	GLCOMPSET_BUTTON_FONT_COLOR_B		(GLfloat)1
+#define	GLCOMPSET_BUTTON_FONT_COLOR_R		(GLfloat)0
+#define	GLCOMPSET_BUTTON_FONT_COLOR_G		(GLfloat)0
+#define	GLCOMPSET_BUTTON_FONT_COLOR_B		(GLfloat)0
 #define	GLCOMPSET_BUTTON_FONT_COLOR_ALPHA	(GLfloat)1
 #define GLCOMPSET_FONT_SIZE_FACTOR			(GLfloat)0.7
 #define	GLCOMPSET_LABEL_COLOR_R		(GLfloat)0
@@ -101,7 +101,6 @@ typedef struct
 }fontglcache;
 
 
-
 typedef struct
 {
 	char* fontdesc;	//font description
@@ -115,6 +114,8 @@ typedef struct
 	float zdepth;	//third dimension , depth of fonts
 	float  bmp[257][2]; //texture bitmaps
 	fontglcache glcache;
+	int isglut;/*use glutfont*/
+	void* glutfont;
 } glCompText;
 
 
@@ -125,9 +126,6 @@ typedef struct
 	int activefont;
 	char* font_directory;	//location where the glfont files are stored
 }fontset_t;
-
-
-
 
 
 
@@ -144,6 +142,7 @@ typedef struct _glCompPanel {
     int data;
     glCompText* font;	//pointer to font to use
 	glCompOrientation orientation;
+	char* text;
 
 } glCompPanel;
 typedef struct _glCompTrackBar {
@@ -220,7 +219,7 @@ typedef struct {
     int active;			//0 dont draw, 1 draw
     int enabled;		//0 disabled 1 enabled(allow mouse interaction)
     GLfloat clickedX, clickedY;
-    glCompText* font;	//pointer to font to use
+	fontset_t* fontset; /*font repository*/
 } glCompSet;
 
 #endif

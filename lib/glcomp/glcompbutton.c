@@ -62,8 +62,7 @@ glCompButton *glCompButtonNew(GLfloat x, GLfloat y, GLfloat w, GLfloat h,
 	p->callbackfunc = '\0';
     p->panel = '\0';
     p->customptr = '\0';
-    p->font = font_init();
-
+	p->font=(glCompText*)0;
     return p;
 }
 
@@ -75,9 +74,8 @@ int glCompSetAddButton(glCompSet * s, glCompButton * p)
 	realloc(s->buttons, sizeof(glCompButton *) * s->buttoncount);
     s->buttons[s->buttoncount - 1] = p;
     p->parentset = s;
-    if (p->font->texId==-1)	//no font has been set yet
-	copy_font((p->font),(s->font));
-    return 1;
+	p->font=s->fontset->fonts[s->fontset->activefont];
+	return 1;
 }
 
 int glCompSetRemoveButton(glCompSet * s, glCompButton * p)
@@ -128,7 +126,8 @@ int glCompDrawButton(glCompButton * p)
 	glColor4f(p->color.R, p->color.G, p->color.B, p->color.A);
 	p->thickness = p->thickness * (GLfloat) 1.2;
     }
-    if (!p->hasglyph) {
+    if (!p->hasglyph) 
+	{
 	glBegin(GL_POLYGON);
 	glVertex3f(p->pos.x + p->thickness, p->pos.y + p->thickness,
 		   p->bevel);
@@ -189,14 +188,7 @@ int glCompDrawButton(glCompButton * p)
 		   p->pos.y + p->height - p->thickness, p->bevel);
 	glEnd();
 	//draw caption
-	p->font->fontheight=p->fontsize;
-//              fontColorA (p->fontcolor.R,p->fontcolor.B,p->fontcolor.G,p->fontcolor.A);
-	glColor4f(0, 0, 0, 1);
-/*	glprintf(p->font,(GLfloat) fontx, (GLfloat) fonty,
-		        (p->fontsize *(GLfloat) strlen(p->caption) *
-			      GLCOMPSET_FONT_SIZE_FACTOR), p->caption);*/
-//    glTranslatef((GLfloat) fontx,(GLfloat) fonty,p->bevel);
-
+	fontColor(p->font,p->fontcolor.R, p->fontcolor.G, p->fontcolor.B, p->fontcolor.A);
 	/*get the string length*/
 	fontwidth=(GLfloat)glutBitmapLength(GLUT_BITMAP_HELVETICA_12,p->caption);
 
@@ -210,12 +202,11 @@ int glCompDrawButton(glCompButton * p)
 	     p->fontsize) / (GLfloat) 2.0 + p->pos.y + p->thickness;
 
 		
-	glRasterPos3f(fontx,fonty,p->bevel + GLCOMPSET_BEVEL_DIFF * 3);
-    glprintfglut (GLUT_BITMAP_HELVETICA_12, fontx,fonty, p->caption);
-//	print_bitmap_string(GLUT_BITMAP_HELVETICA_12,p->caption);
-    }
+	glprintf(p->font, fontx,fonty, fontwidth,p->caption);
+	}
     //put glyph
-    else {
+    else 
+	{
 
 	glEnable(GL_TEXTURE_2D);
 	fontx =
@@ -238,7 +229,7 @@ int glCompDrawButton(glCompButton * p)
 	glTexCoord2d(0.0f, 0.0f);
 	glVertex3d(fontx, fonty + p->glyph->h,
 		   p->bevel + GLCOMPSET_BEVEL_DIFF);
-//              glTexCoord2d(fontx,fonty); glVertex3d(fontx,fonty,p->bevel+GLCOMPSET_BEVEL_DIFF);
+              glTexCoord2d(fontx,fonty); glVertex3d(fontx,fonty,p->bevel+GLCOMPSET_BEVEL_DIFF);
 
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
