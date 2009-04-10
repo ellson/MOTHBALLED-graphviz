@@ -60,19 +60,21 @@ namespace Visio
 	
 	/* Geom VDX element */
 	
-	struct Connection
+	class Connection
 	{
-		bool connectable;
-		pointf first;
-		pointf last;
-		pointf center;
+	public:
+		virtual pointf GetFirst() const = 0;
+		virtual pointf GetLast() const = 0;
+		virtual pointf GetCenter() const = 0;
 	};
 	
 	class Geom
 	{
 	public:
+		virtual ~Geom();
+		
 		virtual boxf GetBounds() const = 0;				/* bounding box -- used by node logic */
-		virtual Connection GetConnection() const = 0;	/* first, last and center points -- used by edge logic */
+		virtual const Connection* GetConnection() const = 0;	/* first, last and center points -- used by edge logic */
 		
 		/* given first (lower left) and last points (upper right), output the geometry */ 
 		virtual void Print(GVJ_t* job, pointf first, pointf last, bool allowCurves) const = 0;
@@ -84,7 +86,7 @@ namespace Visio
 		Ellipse(pointf* points, bool filled);
 		
 		virtual boxf GetBounds() const;
-		virtual Connection GetConnection() const;
+		virtual const Connection* GetConnection() const;
 
 		void Print(GVJ_t* job, pointf first, pointf last, bool allowCurves) const;
 
@@ -106,12 +108,16 @@ namespace Visio
 		int _pointCount;
 	};
 		
-	class Bezier: public Path
+	class Bezier: public Path, public Connection
 	{
 	public:
 		Bezier(pointf* points, int pointCount, bool filled);
 		
-		virtual Connection GetConnection() const;
+		virtual const Connection* GetConnection() const;
+		
+		virtual pointf GetFirst() const;
+		virtual pointf GetLast() const;
+		virtual pointf GetCenter() const;		
 
 		virtual void Print(GVJ_t* job, pointf first, pointf last, bool allowCurves) const;
 		
@@ -125,7 +131,7 @@ namespace Visio
 	public:
 		Polygon(pointf* points, int pointCount, bool filled);
 		
-		virtual Connection GetConnection() const;
+		virtual const Connection* GetConnection() const;
 		
 		virtual void Print(GVJ_t* job, pointf first, pointf last, bool allowCurves) const;
 
@@ -138,7 +144,7 @@ namespace Visio
 	public:
 		Polyline(pointf* points, int pointCount);
 		
-		virtual Connection GetConnection() const;
+		virtual const Connection* GetConnection() const;
 
 		void Print(GVJ_t* job, pointf first, pointf last, bool allowCurves) const;
 
@@ -157,7 +163,7 @@ namespace Visio
 		~Graphic();
 
 		boxf GetBounds() const;
-		Connection GetConnection() const;
+		const Connection* GetConnection() const;
 
 		void Print(GVJ_t* job, pointf first, pointf last, bool allowCurves) const;
 		
