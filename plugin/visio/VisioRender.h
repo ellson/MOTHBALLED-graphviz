@@ -28,9 +28,9 @@
 namespace Visio
 {
 	typedef std::map<Agnode_t*, unsigned int> NodeIds;
-	typedef std::vector<Graphic*> Graphics;
-	typedef std::vector<Text*> Texts;
-	typedef std::vector<Hyperlink*> Hyperlinks;
+	typedef std::vector<const Graphic*> Graphics;
+	typedef std::vector<const Text*> Texts;
+	typedef std::vector<const Hyperlink*> Hyperlinks;
 
 	/* object wrapper for render function callback */
 	class Render
@@ -60,18 +60,18 @@ namespace Visio
 	private:
 		/* graphics and texts maintenance */
 		void ClearGraphicsAndTexts();
-		void AddGraphic(GVJ_t* job, Graphic* graphic);
-		void AddText(GVJ_t* job, Text* text);
-		void AddHyperlink(GVJ_t* job, Hyperlink* hyperlink);
+		void AddGraphic(GVJ_t* job, const Graphic* graphic);
+		void AddText(GVJ_t* job, const Text* text);
+		void AddHyperlink(GVJ_t* job, const Hyperlink* hyperlink);
 		
 		/* output the graphic as top level shape */
-		void PrintOuterShape(GVJ_t* job, Graphic* graphic);
+		void PrintOuterShape(GVJ_t* job, const Graphic* graphic);
 		
 		/* output the graphic as a subshape of a top level shape, given its id and bounds */
-		void PrintInnerShape(GVJ_t* job, Graphic* graphic, unsigned int outerId, boxf outerBounds);
+		void PrintInnerShape(GVJ_t* job, const Graphic* graphic, unsigned int outerId, boxf outerBounds);
 		
 		/* output the graphic as an edge connector, given the start and end node ids */
-		bool PrintEdgeShape(GVJ_t* job, Graphic* graphic, unsigned int beginId, unsigned int endId, int edgeType);
+		bool PrintEdgeShape(GVJ_t* job, const Graphic* graphic, unsigned int beginId, unsigned int endId, int edgeType);
 		
 		/* output all the collected texts */
 		void PrintTexts(GVJ_t* job);
