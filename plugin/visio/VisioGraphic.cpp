@@ -65,6 +65,10 @@ namespace Visio
 			gvprintf(job, "<EndArrow>%d</EndArrow>\n", _endArrow);	
 		gvputs(job, "</Line>\n");
 	}
+	
+	Geom::~Geom()
+	{
+	}
 
 	Ellipse::Ellipse(pointf* points, bool filled):
 		_filled(filled)
@@ -95,11 +99,9 @@ namespace Visio
 		return bounds;
 	}
 		
-	Connection Ellipse::GetConnection() const
+	const Connection* Ellipse::GetConnection() const
 	{
-		Connection connection;
-		connection.connectable = false;
-		return connection;
+		return NULL;
 	}
 	
 	Path::Path(pointf* points, int pointCount)
@@ -151,14 +153,27 @@ namespace Visio
 	{
 	}
 	
-	Connection Bezier::GetConnection() const
+	const Connection* Bezier::GetConnection() const
 	{
-		Connection connection;
-		connection.connectable = true;
-		connection.first = _points[0];
-		connection.last = _points[1];
+		return this;
+	}
+	
+	pointf Bezier::GetFirst() const
+	{
+		return _points[0];
+	}
+	
+	pointf Bezier::GetLast() const
+	{
+		return _points[1];
+	}
+	
+	pointf Bezier::GetCenter() const
+	{
 		if (_pointCount >= 4 && _pointCount % 2 == 0)
 		{
+			pointf center;
+			
 			/* the central control polygon for the bezier curve */
 			pointf p0 = _points[_pointCount / 2 - 2];
 			pointf p1 = _points[_pointCount / 2 - 1];
@@ -166,14 +181,13 @@ namespace Visio
 			pointf p3 = _points[_pointCount / 2 + 1];
 			
 			/* use de Casteljou's algorithm to get a midpoint */
-			connection.center.x = 0.125 * p0.x + 0.375 * p1.x + 0.375 * p2.x + 0.125 * p3.x;
-			connection.center.y = 0.125 * p0.y + 0.375 * p1.y + 0.375 * p2.y + 0.125 * p3.y;
+			center.x = 0.125 * p0.x + 0.375 * p1.x + 0.375 * p2.x + 0.125 * p3.x;
+			center.y = 0.125 * p0.y + 0.375 * p1.y + 0.375 * p2.y + 0.125 * p3.y;
+			return center;
 		}
 		else
 		/* just return the middle point */
-			connection.center = _points[_pointCount / 2];
-		
-		return connection;
+			return _points[_pointCount / 2];
 	}
 	
 	void Bezier::Print(GVJ_t* job, pointf first, pointf last, bool allowCurves) const
@@ -269,11 +283,9 @@ namespace Visio
 	{
 	}
 	
-	Connection Polygon::GetConnection() const
+	const Connection* Polygon::GetConnection() const
 	{
-		Connection connection;
-		connection.connectable = false;
-		return connection;
+		return NULL;
 	}
 	
 	void Polygon::Print(GVJ_t* job, pointf first, pointf last, bool allowCurves) const
@@ -325,11 +337,9 @@ namespace Visio
 	{
 	}
 	
-	Connection Polyline::GetConnection() const
+	const Connection* Polyline::GetConnection() const
 	{
-		Connection connection;
-		connection.connectable = false;
-		return connection;
+		return NULL;
 	}
 	
 	void Polyline::Print(GVJ_t* job, pointf first, pointf last, bool allowCurves) const
@@ -521,7 +531,7 @@ namespace Visio
 		return _geom->GetBounds();
 	}
 	
-	Connection Graphic::GetConnection() const
+	const Connection* Graphic::GetConnection() const
 	{
 		return _geom->GetConnection();
 	}
