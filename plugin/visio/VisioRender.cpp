@@ -244,7 +244,7 @@ namespace Visio
 		_hyperlinks.clear();
 	}
 	
-	void Render::AddGraphic(GVJ_t* job, Graphic* graphic)
+	void Render::AddGraphic(GVJ_t* job, const Graphic* graphic)
 	{
 		if (_inComponent)
 			/* if in component, accumulate for end node/edge */
@@ -254,21 +254,21 @@ namespace Visio
 			PrintOuterShape(job, graphic);		
 	}
 
-	void Render::AddText(GVJ_t* job, Text* text)
+	void Render::AddText(GVJ_t* job, const Text* text)
 	{
 		/* if in component, accumulate for end node/edge */
 		if (_inComponent)
 			_texts.push_back(text);
 	}
 
-	void Render::AddHyperlink(GVJ_t* job, Hyperlink* hyperlink)
+	void Render::AddHyperlink(GVJ_t* job, const Hyperlink* hyperlink)
 	{
 		/* if in component, accumulate for end node/edge */
 		if (_inComponent)
 			_hyperlinks.push_back(hyperlink);
 	}
 	
-	void Render::PrintOuterShape(GVJ_t* job, Graphic* graphic)
+	void Render::PrintOuterShape(GVJ_t* job, const Graphic* graphic)
 	{
 		boxf bounds = graphic->GetBounds();
 		
@@ -297,7 +297,7 @@ namespace Visio
 		gvputs(job, "</Shape>\n");
 	}
 	
-	void Render::PrintInnerShape(GVJ_t* job, Graphic* graphic, unsigned int outerId, boxf outerBounds)
+	void Render::PrintInnerShape(GVJ_t* job, const Graphic* graphic, unsigned int outerId, boxf outerBounds)
 	{
 		boxf innerBounds = graphic->GetBounds();
 		
@@ -329,13 +329,15 @@ namespace Visio
 		gvputs(job, "</Shape>\n");
 	}
 	
-	bool Render::PrintEdgeShape(GVJ_t* job, Graphic* graphic, unsigned int beginId, unsigned int endId, int edgeType)
+	bool Render::PrintEdgeShape(GVJ_t* job, const Graphic* graphic, unsigned int beginId, unsigned int endId, int edgeType)
 	{
-		Connection connection = graphic->GetConnection();
-		if (connection.connectable)
+		if (const Connection* connection = graphic->GetConnection())
 		{
-			bool zeroWidth = connection.first.x == connection.last.x;
-			bool zeroHeight = connection.first.y == connection.last.y;
+			pointf first = connection->GetFirst();
+			pointf last = connection->GetLast();
+			
+			bool zeroWidth = first.x == last.x;
+			bool zeroHeight = first.y == last.y;
 
 			gvprintf(job, "<Shape ID='%d' Type='Shape'>\n", ++_shapeId);
 			
@@ -356,10 +358,10 @@ namespace Visio
 				
 			/* XForm1D walking glue makes connector attach to its nodes */
 			gvputs(job, "<XForm1D>\n");
-			gvprintf(job, "<BeginX F='_WALKGLUE(BegTrigger,EndTrigger,WalkPreference)'>%f</BeginX>\n", connection.first.x * INCHES_PER_POINT);
-			gvprintf(job, "<BeginY F='_WALKGLUE(BegTrigger,EndTrigger,WalkPreference)'>%f</BeginY>\n", connection.first.y * INCHES_PER_POINT);
-			gvprintf(job, "<EndX F='_WALKGLUE(EndTrigger,BegTrigger,WalkPreference)'>%f</EndX>\n", connection.last.x * INCHES_PER_POINT);
-			gvprintf(job, "<EndY F='_WALKGLUE(EndTrigger,BegTrigger,WalkPreference)'>%f</EndY>\n", connection.last.y * INCHES_PER_POINT);
+			gvprintf(job, "<BeginX F='_WALKGLUE(BegTrigger,EndTrigger,WalkPreference)'>%f</BeginX>\n", first.x * INCHES_PER_POINT);
+			gvprintf(job, "<BeginY F='_WALKGLUE(BegTrigger,EndTrigger,WalkPreference)'>%f</BeginY>\n", first.y * INCHES_PER_POINT);
+			gvprintf(job, "<EndX F='_WALKGLUE(EndTrigger,BegTrigger,WalkPreference)'>%f</EndX>\n", last.x * INCHES_PER_POINT);
+			gvprintf(job, "<EndY F='_WALKGLUE(EndTrigger,BegTrigger,WalkPreference)'>%f</EndY>\n", last.y * INCHES_PER_POINT);
 			gvputs(job, "</XForm1D>\n");
 			
 			gvputs(job, "<Protection>\n");
@@ -399,13 +401,13 @@ namespace Visio
 
 			if (zeroWidth)
 			{
-				connection.first.x -= ZERO_ADJUST;
-				connection.last.x += ZERO_ADJUST;
+				first.x -= ZERO_ADJUST;
+				last.x += ZERO_ADJUST;
 			}
 			if (zeroHeight)
 			{
-				connection.first.y -= ZERO_ADJUST;
-				connection.last.y += ZERO_ADJUST;
+				first.y -= ZERO_ADJUST;
+				last.y += ZERO_ADJUST;
 			}
 			
 			/* compute center to attach text to. if text has been rendered, use overall bounding box center; if not, use the path center */
@@ -432,12 +434,12 @@ namespace Visio
 				textCenter.y = (outerTextBounds.LL.y + outerTextBounds.UR.y) / 2.0;
 			}
 			else
-				textCenter = connection.center;
+				textCenter = connection->GetCenter();
 			
 			/* Control for positioning text */
 			gvputs(job, "<Control NameU='TextPosition'>\n");
-			gvprintf(job, "<X>%f</X>\n", (textCenter.x - connection.first.x) * INCHES_PER_POINT);
-			gvprintf(job, "<Y>%f</Y>\n", (textCenter.y - connection.first.y) * INCHES_PER_POINT);
+			gvprintf(job, "<X>%f</X>\n", (textCenter.x - first.x) * INCHES_PER_POINT);
+			gvprintf(job, "<Y>%f</Y>\n", (textCenter.y - first.y) * INCHES_PER_POINT);
 			gvputs(job, "<XDyn F='Controls.TextPosition'/>\n");
 			gvputs(job, "<YDyn F='Controls.TextPosition.Y'/>\n");
 			gvputs(job, "<XCon F='IF(OR(STRSAME(SHAPETEXT(TheText),&quot;&quot;),HideText),5,0)'>5</XCon>\n");
@@ -448,11 +450,13 @@ namespace Visio
 			PrintTexts(job);
 			
 			/* output Line, Fill, Geom */
-			graphic->Print(job, connection.first, connection.last, edgeType != ET_LINE && edgeType != ET_PLINE);
+			graphic->Print(job, first, last, edgeType != ET_LINE && edgeType != ET_PLINE);
 			
 			gvputs(job, "</Shape>\n");
+			return true;
 		}
-		return connection.connectable;
+		else
+			return false;
 	}
 	
 	void Render::PrintTexts(GVJ_t* job)
