@@ -94,28 +94,12 @@ namespace Visio
 		bounds.UR.y = _points[1].y;
 		return bounds;
 	}
-	
-	pointf Ellipse::GetFirst() const
+		
+	Connection Ellipse::GetConnection() const
 	{
-		return _points[0];
-	}
-	
-	pointf Ellipse::GetLast() const
-	{
-		return _points[1];
-	}
-	
-	pointf Ellipse::GetCenter() const
-	{
-		/* only called for edges, so return a null point */
-		pointf center = {0, 0};
-		return center;
-	}
-	
-	bool Ellipse::IsConnectable() const
-	{
-		/* cannot be a connector */
-		return false;
+		Connection connection;
+		connection.connectable = false;
+		return connection;
 	}
 	
 	Path::Path(pointf* points, int pointCount)
@@ -161,24 +145,18 @@ namespace Visio
 		return bounds;
 	}
 	
-	pointf Path::GetFirst() const
-	{
-		return _points[0];
-	}
-	
-	pointf Path::GetLast() const
-	{
-		return _points[_pointCount - 1];
-	}
-	
 	Bezier::Bezier(pointf* points, int pointCount, bool filled):
 		Path(points, pointCount),
 		_filled(filled)
 	{
 	}
 	
-	pointf Bezier::GetCenter() const
+	Connection Bezier::GetConnection() const
 	{
+		Connection connection;
+		connection.connectable = true;
+		connection.first = _points[0];
+		connection.last = _points[1];
 		if (_pointCount >= 4 && _pointCount % 2 == 0)
 		{
 			/* the central control polygon for the bezier curve */
@@ -188,20 +166,14 @@ namespace Visio
 			pointf p3 = _points[_pointCount / 2 + 1];
 			
 			/* use de Casteljou's algorithm to get a midpoint */
-			pointf center;
-			center.x = 0.125 * p0.x + 0.375 * p1.x + 0.375 * p2.x + 0.125 * p3.x;
-			center.y = 0.125 * p0.y + 0.375 * p1.y + 0.375 * p2.y + 0.125 * p3.y;
-			return center;
+			connection.center.x = 0.125 * p0.x + 0.375 * p1.x + 0.375 * p2.x + 0.125 * p3.x;
+			connection.center.y = 0.125 * p0.y + 0.375 * p1.y + 0.375 * p2.y + 0.125 * p3.y;
 		}
 		else
-			/* just return the middle point */
-			return _points[_pointCount / 2];
-	}
-
-	bool Bezier::IsConnectable() const
-	{
-		/* can be a connector */
-		return true;
+		/* just return the middle point */
+			connection.center = _points[_pointCount / 2];
+		
+		return connection;
 	}
 	
 	void Bezier::Print(GVJ_t* job, pointf first, pointf last, bool allowCurves) const
@@ -297,19 +269,13 @@ namespace Visio
 	{
 	}
 	
-	pointf Polygon::GetCenter() const
+	Connection Polygon::GetConnection() const
 	{
-		/* should not get called, return a null point */
-		pointf center = {0, 0};
-		return center;
+		Connection connection;
+		connection.connectable = false;
+		return connection;
 	}
 	
-	bool Polygon::IsConnectable() const
-	{
-		/* cannot be a connector */
-		return false;
-	}
-
 	void Polygon::Print(GVJ_t* job, pointf first, pointf last, bool allowCurves) const
 	{
 		gvputs(job, "<Geom>\n");
@@ -359,29 +325,11 @@ namespace Visio
 	{
 	}
 	
-	pointf Polyline::GetCenter() const
+	Connection Polyline::GetConnection() const
 	{
-		if (_pointCount >= 2 && _pointCount % 2 == 0)
-		{
-			/* the center two points */
-			pointf p0 = _points[_pointCount / 2 - 1];
-			pointf p1 = _points[_pointCount / 2];
-			
-			/* take the midpoint */
-			pointf center;
-			center.x = (p0.x + p1.x) * 0.5;
-			center.y = (p0.y + p1.y) * 0.5;
-			return center;
-		}
-		else
-			/* just return the middle point */
-			return _points[_pointCount / 2];
-	}
-	
-	bool Polyline::IsConnectable() const
-	{
-		/* cannot be a connector */
-		return false;
+		Connection connection;
+		connection.connectable = false;
+		return connection;
 	}
 	
 	void Polyline::Print(GVJ_t* job, pointf first, pointf last, bool allowCurves) const
@@ -573,26 +521,11 @@ namespace Visio
 		return _geom->GetBounds();
 	}
 	
-	pointf Graphic::GetFirst() const
+	Connection Graphic::GetConnection() const
 	{
-		return _geom->GetFirst();
+		return _geom->GetConnection();
 	}
-	
-	pointf Graphic::GetLast() const
-	{
-		return _geom->GetLast();
-	}
-
-	pointf Graphic::GetCenter() const
-	{
-		return _geom->GetCenter();
-	}
-	
-	bool Graphic::IsConnectable() const
-	{
-		return _geom->IsConnectable();
-	}
-	
+		
 	void Graphic::Print(GVJ_t* job, pointf first, pointf last, bool allowCurves) const
 	{
 		if (_line)

@@ -183,15 +183,12 @@ namespace Visio
 			/* output first connectable shape as an edge shape, all else as regular outer shapes */
 			bool firstConnector = true;
 			for (Graphics::const_iterator nextGraphic = _graphics.begin(), lastGraphic = _graphics.end(); nextGraphic != lastGraphic; ++nextGraphic)
-				if (firstConnector && (*nextGraphic)->IsConnectable())
-				{
-					PrintEdgeShape(job,
-						_graphics[0],
-						beginId == _nodeIds.end() ? 0 : beginId->second,
-						endId == _nodeIds.end() ? 0 : endId->second,
-						EDGE_TYPE(edge->head->graph->root));
+				if (firstConnector && PrintEdgeShape(job,
+					_graphics[0],
+					beginId == _nodeIds.end() ? 0 : beginId->second,
+					endId == _nodeIds.end() ? 0 : endId->second,
+					EDGE_TYPE(edge->head->graph->root)))
 					firstConnector = false;
-				}
 				else
 					PrintOuterShape(job, *nextGraphic);
 
@@ -332,128 +329,130 @@ namespace Visio
 		gvputs(job, "</Shape>\n");
 	}
 	
-	void Render::PrintEdgeShape(GVJ_t* job, Graphic* graphic, unsigned int beginId, unsigned int endId, int edgeType)
+	bool Render::PrintEdgeShape(GVJ_t* job, Graphic* graphic, unsigned int beginId, unsigned int endId, int edgeType)
 	{
-		pointf first = graphic->GetFirst();
-		pointf last = graphic->GetLast();
-		
-		bool zeroWidth = first.x == last.x;
-		bool zeroHeight = first.y == last.y;
+		Connection connection = graphic->GetConnection();
+		if (connection.connectable)
+		{
+			bool zeroWidth = connection.first.x == connection.last.x;
+			bool zeroHeight = connection.first.y == connection.last.y;
 
-		gvprintf(job, "<Shape ID='%d' Type='Shape'>\n", ++_shapeId);
-		
-		/* XForm depends on XForm1D */
-		gvputs(job, "<XForm>\n");
-		gvputs(job, "<PinX F='GUARD((BeginX+EndX)/2)'/>\n");
-		gvputs(job, "<PinY F='GUARD((BeginY+EndY)/2)'/>\n");
-		if (zeroWidth)
-			gvprintf(job, "<Width F='GUARD(%f)'/>\n", 2 * ZERO_ADJUST);	/* if vertical line, expand width to 0.25 inches */
-		else
-			gvputs(job, "<Width F='GUARD(EndX-BeginX)'/>\n");
-		if (zeroHeight)
-			gvprintf(job, "<Height F='GUARD(%f)'/>\n", 2 * ZERO_ADJUST);	/* if horizontal line, expand height to 0.25 inches */
-		else
-			gvputs(job, "<Height F='GUARD(EndY-BeginY)'/>\n");
-		gvputs(job, "<Angle F='GUARD(0DA)'/>\n");
-		gvputs(job, "</XForm>\n");
+			gvprintf(job, "<Shape ID='%d' Type='Shape'>\n", ++_shapeId);
 			
-		/* XForm1D walking glue makes connector attach to its nodes */
-		gvputs(job, "<XForm1D>\n");
-		gvprintf(job, "<BeginX F='_WALKGLUE(BegTrigger,EndTrigger,WalkPreference)'>%f</BeginX>\n", first.x * INCHES_PER_POINT);
-		gvprintf(job, "<BeginY F='_WALKGLUE(BegTrigger,EndTrigger,WalkPreference)'>%f</BeginY>\n", first.y * INCHES_PER_POINT);
-		gvprintf(job, "<EndX F='_WALKGLUE(EndTrigger,BegTrigger,WalkPreference)'>%f</EndX>\n", last.x * INCHES_PER_POINT);
-		gvprintf(job, "<EndY F='_WALKGLUE(EndTrigger,BegTrigger,WalkPreference)'>%f</EndY>\n", last.y * INCHES_PER_POINT);
-		gvputs(job, "</XForm1D>\n");
-		
-		gvputs(job, "<Protection>\n");
-		gvputs(job, "<LockHeight>1</LockHeight>\n");
-		gvputs(job, "<LockCalcWH>1</LockCalcWH>\n");
-		gvputs(job, "</Protection>\n");
-		
-		gvputs(job, "<Misc>\n");
-		gvputs(job, "<NoAlignBox>1</NoAlignBox>\n");
-		gvputs(job, "<DynFeedback>2</DynFeedback>\n");
-		gvputs(job, "<GlueType>2</GlueType>\n");
-		if (beginId && endId)
-		{
-			gvprintf(job, "<BegTrigger F='_XFTRIGGER(Sheet.%d!EventXFMod)'/>\n", beginId);
-			gvprintf(job, "<EndTrigger F='_XFTRIGGER(Sheet.%d!EventXFMod)'/>\n", endId);
-		}
-		gvputs(job, "<ObjType>2</ObjType>\n");
-		gvputs(job, "</Misc>\n");
-		
-		gvputs(job, "<Layout>\n");
-		gvprintf(job, "<ShapeRouteStyle>%d</ShapeRouteStyle>\n", edgeType == ET_LINE ? LORouteCenterToCenter : LORouteRightAngle);
-		gvputs(job, "<ConFixedCode>6</ConFixedCode>\n");
-		gvprintf(job, "<ConLineRouteExt>%d</ConLineRouteExt>\n", edgeType == ET_LINE || edgeType == ET_PLINE ? LORouteExtStraight : LORouteExtNURBS);
-		gvputs(job, "<ShapeSplittable>1</ShapeSplittable>\n");
-		gvputs(job, "</Layout>\n");
-		
-		/* output Hyperlink */
-		PrintHyperlinks(job);
-
-		/* TextXForm depends on custom control */
-		gvputs(job, "<TextXForm>\n");
-		gvputs(job, "<TxtPinX F='SETATREF(Controls.TextPosition)'/>\n");
-		gvputs(job, "<TxtPinY F='SETATREF(Controls.TextPosition.Y)'/>\n");
-		gvputs(job, "<TxtWidth F='MAX(TEXTWIDTH(TheText),5*Char.Size)'/>\n");
-		gvputs(job, "<TxtHeight F='TEXTHEIGHT(TheText,TxtWidth)'/>\n");
-		gvputs(job, "</TextXForm>\n");
-
-		if (zeroWidth)
-		{
-			first.x -= ZERO_ADJUST;
-			last.x += ZERO_ADJUST;
-		}
-		if (zeroHeight)
-		{
-			first.y -= ZERO_ADJUST;
-			last.y += ZERO_ADJUST;
-		}
-		
-		/* compute center to attach text to. if text has been rendered, use overall bounding box center; if not, use the path center */
-		pointf textCenter;
-		if (_texts.size() > 0)
-		{
-			boxf outerTextBounds = _texts[0]->GetBounds();
+			/* XForm depends on XForm1D */
+			gvputs(job, "<XForm>\n");
+			gvputs(job, "<PinX F='GUARD((BeginX+EndX)/2)'/>\n");
+			gvputs(job, "<PinY F='GUARD((BeginY+EndY)/2)'/>\n");
+			if (zeroWidth)
+				gvprintf(job, "<Width F='GUARD(%f)'/>\n", 2 * ZERO_ADJUST);	/* if vertical line, expand width to 0.25 inches */
+			else
+				gvputs(job, "<Width F='GUARD(EndX-BeginX)'/>\n");
+			if (zeroHeight)
+				gvprintf(job, "<Height F='GUARD(%f)'/>\n", 2 * ZERO_ADJUST);	/* if horizontal line, expand height to 0.25 inches */
+			else
+				gvputs(job, "<Height F='GUARD(EndY-BeginY)'/>\n");
+			gvputs(job, "<Angle F='GUARD(0DA)'/>\n");
+			gvputs(job, "</XForm>\n");
+				
+			/* XForm1D walking glue makes connector attach to its nodes */
+			gvputs(job, "<XForm1D>\n");
+			gvprintf(job, "<BeginX F='_WALKGLUE(BegTrigger,EndTrigger,WalkPreference)'>%f</BeginX>\n", connection.first.x * INCHES_PER_POINT);
+			gvprintf(job, "<BeginY F='_WALKGLUE(BegTrigger,EndTrigger,WalkPreference)'>%f</BeginY>\n", connection.first.y * INCHES_PER_POINT);
+			gvprintf(job, "<EndX F='_WALKGLUE(EndTrigger,BegTrigger,WalkPreference)'>%f</EndX>\n", connection.last.x * INCHES_PER_POINT);
+			gvprintf(job, "<EndY F='_WALKGLUE(EndTrigger,BegTrigger,WalkPreference)'>%f</EndY>\n", connection.last.y * INCHES_PER_POINT);
+			gvputs(job, "</XForm1D>\n");
 			
-			for (Texts::const_iterator nextText = _texts.begin() + 1, lastText = _texts.end();
-				 nextText != lastText;
-				 ++nextText)
+			gvputs(job, "<Protection>\n");
+			gvputs(job, "<LockHeight>1</LockHeight>\n");
+			gvputs(job, "<LockCalcWH>1</LockCalcWH>\n");
+			gvputs(job, "</Protection>\n");
+			
+			gvputs(job, "<Misc>\n");
+			gvputs(job, "<NoAlignBox>1</NoAlignBox>\n");
+			gvputs(job, "<DynFeedback>2</DynFeedback>\n");
+			gvputs(job, "<GlueType>2</GlueType>\n");
+			if (beginId && endId)
 			{
-				boxf innerTextBounds = (*nextText)->GetBounds();
-				if (outerTextBounds.LL.x > innerTextBounds.LL.x)
-					outerTextBounds.LL.x = innerTextBounds.LL.x;
-				if (outerTextBounds.LL.y > innerTextBounds.LL.y)
-					outerTextBounds.LL.y = innerTextBounds.LL.y;
-				if (outerTextBounds.UR.x < innerTextBounds.UR.x)
-					outerTextBounds.UR.x = innerTextBounds.UR.x;
-				if (outerTextBounds.UR.y < innerTextBounds.UR.y)
-					outerTextBounds.UR.y = innerTextBounds.UR.y;
+				gvprintf(job, "<BegTrigger F='_XFTRIGGER(Sheet.%d!EventXFMod)'/>\n", beginId);
+				gvprintf(job, "<EndTrigger F='_XFTRIGGER(Sheet.%d!EventXFMod)'/>\n", endId);
 			}
-			textCenter.x = (outerTextBounds.LL.x + outerTextBounds.UR.x) / 2.0;
-			textCenter.y = (outerTextBounds.LL.y + outerTextBounds.UR.y) / 2.0;
-		}
-		else
-			textCenter = graphic->GetCenter();
-		
-		/* Control for positioning text */
-		gvputs(job, "<Control NameU='TextPosition'>\n");
-		gvprintf(job, "<X>%f</X>\n", (textCenter.x - first.x) * INCHES_PER_POINT);
-		gvprintf(job, "<Y>%f</Y>\n", (textCenter.y - first.y) * INCHES_PER_POINT);
-		gvputs(job, "<XDyn F='Controls.TextPosition'/>\n");
-		gvputs(job, "<YDyn F='Controls.TextPosition.Y'/>\n");
-		gvputs(job, "<XCon F='IF(OR(STRSAME(SHAPETEXT(TheText),&quot;&quot;),HideText),5,0)'>5</XCon>\n");
-		gvputs(job, "<YCon>0</YCon>\n");
-		gvputs(job, "</Control>\n");
+			gvputs(job, "<ObjType>2</ObjType>\n");
+			gvputs(job, "</Misc>\n");
 			
-		/* output Para, Char, Text */
-		PrintTexts(job);
-		
-		/* output Line, Fill, Geom */
-		graphic->Print(job, first, last, edgeType != ET_LINE && edgeType != ET_PLINE);
-		
-		gvputs(job, "</Shape>\n");
+			gvputs(job, "<Layout>\n");
+			gvprintf(job, "<ShapeRouteStyle>%d</ShapeRouteStyle>\n", edgeType == ET_LINE ? LORouteCenterToCenter : LORouteRightAngle);
+			gvputs(job, "<ConFixedCode>6</ConFixedCode>\n");
+			gvprintf(job, "<ConLineRouteExt>%d</ConLineRouteExt>\n", edgeType == ET_LINE || edgeType == ET_PLINE ? LORouteExtStraight : LORouteExtNURBS);
+			gvputs(job, "<ShapeSplittable>1</ShapeSplittable>\n");
+			gvputs(job, "</Layout>\n");
+			
+			/* output Hyperlink */
+			PrintHyperlinks(job);
+
+			/* TextXForm depends on custom control */
+			gvputs(job, "<TextXForm>\n");
+			gvputs(job, "<TxtPinX F='SETATREF(Controls.TextPosition)'/>\n");
+			gvputs(job, "<TxtPinY F='SETATREF(Controls.TextPosition.Y)'/>\n");
+			gvputs(job, "<TxtWidth F='MAX(TEXTWIDTH(TheText),5*Char.Size)'/>\n");
+			gvputs(job, "<TxtHeight F='TEXTHEIGHT(TheText,TxtWidth)'/>\n");
+			gvputs(job, "</TextXForm>\n");
+
+			if (zeroWidth)
+			{
+				connection.first.x -= ZERO_ADJUST;
+				connection.last.x += ZERO_ADJUST;
+			}
+			if (zeroHeight)
+			{
+				connection.first.y -= ZERO_ADJUST;
+				connection.last.y += ZERO_ADJUST;
+			}
+			
+			/* compute center to attach text to. if text has been rendered, use overall bounding box center; if not, use the path center */
+			pointf textCenter;
+			if (_texts.size() > 0)
+			{
+				boxf outerTextBounds = _texts[0]->GetBounds();
+				
+				for (Texts::const_iterator nextText = _texts.begin() + 1, lastText = _texts.end();
+					 nextText != lastText;
+					 ++nextText)
+				{
+					boxf innerTextBounds = (*nextText)->GetBounds();
+					if (outerTextBounds.LL.x > innerTextBounds.LL.x)
+						outerTextBounds.LL.x = innerTextBounds.LL.x;
+					if (outerTextBounds.LL.y > innerTextBounds.LL.y)
+						outerTextBounds.LL.y = innerTextBounds.LL.y;
+					if (outerTextBounds.UR.x < innerTextBounds.UR.x)
+						outerTextBounds.UR.x = innerTextBounds.UR.x;
+					if (outerTextBounds.UR.y < innerTextBounds.UR.y)
+						outerTextBounds.UR.y = innerTextBounds.UR.y;
+				}
+				textCenter.x = (outerTextBounds.LL.x + outerTextBounds.UR.x) / 2.0;
+				textCenter.y = (outerTextBounds.LL.y + outerTextBounds.UR.y) / 2.0;
+			}
+			else
+				textCenter = connection.center;
+			
+			/* Control for positioning text */
+			gvputs(job, "<Control NameU='TextPosition'>\n");
+			gvprintf(job, "<X>%f</X>\n", (textCenter.x - connection.first.x) * INCHES_PER_POINT);
+			gvprintf(job, "<Y>%f</Y>\n", (textCenter.y - connection.first.y) * INCHES_PER_POINT);
+			gvputs(job, "<XDyn F='Controls.TextPosition'/>\n");
+			gvputs(job, "<YDyn F='Controls.TextPosition.Y'/>\n");
+			gvputs(job, "<XCon F='IF(OR(STRSAME(SHAPETEXT(TheText),&quot;&quot;),HideText),5,0)'>5</XCon>\n");
+			gvputs(job, "<YCon>0</YCon>\n");
+			gvputs(job, "</Control>\n");
+				
+			/* output Para, Char, Text */
+			PrintTexts(job);
+			
+			/* output Line, Fill, Geom */
+			graphic->Print(job, connection.first, connection.last, edgeType != ET_LINE && edgeType != ET_PLINE);
+			
+			gvputs(job, "</Shape>\n");
+		}
+		return connection.connectable;
 	}
 	
 	void Render::PrintTexts(GVJ_t* job)
