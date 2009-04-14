@@ -2554,17 +2554,20 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	    filled = TRUE;
 	}
 	else {
+	    if (((color = agget(sg, "color")) != 0) && color[0])
+		fillcolor = pencolor = color;
 	    if (((color = agget(sg, "pencolor")) != 0) && color[0])
 		pencolor = color;
-	    else if (((color = agget(sg, "color")) != 0) && color[0])
-		fillcolor = pencolor = color;
-	    /* bgcolor is supported for backward compatability */
-	    else if (((color = agget(sg, "bgcolor")) != 0) && color[0]) {
+	    if (((color = agget(sg, "fillcolor")) != 0) && color[0])
+		fillcolor = color;
+	    /* bgcolor is supported for backward compatability 
+	       if fill is set, fillcolor trumps bgcolor, so
+               don't bother checking.
+             */
+	    if (!filled && ((color = agget(sg, "bgcolor")) != 0) && color[0]) {
 		fillcolor = color;
 	        filled = TRUE;
             }
-	    if (((color = agget(sg, "fillcolor")) != 0) && color[0])
-		fillcolor = color;
 	}
 	if (!pencolor) pencolor = DEFAULT_COLOR;
 	if (!fillcolor) fillcolor = DEFAULT_FILL;
