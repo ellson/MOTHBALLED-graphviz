@@ -213,8 +213,8 @@ static double setEdgeLen(graph_t * G, node_t * np, int lenx)
 
     for (ep = agfstout(G, np); ep; ep = agnxtout(G, ep)) {
 	len = doubleattr(ep, lenx, 1.0);
-	if (len <= 0) {
-	    agerr(AGERR, "bad edge len %f in %s ignored\n", len, agnameof(G));
+	if ((len < 0) || ((len == 0) && !Nop)) {
+	    agerr(AGWARN, "bad edge len %f in %s - set to 1\n", len, agnameof(G));
 	    len = 1.0;
 	}
 	ED_dist(ep) = len;
