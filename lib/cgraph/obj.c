@@ -18,11 +18,7 @@
 
 int agdelete(Agraph_t * g, void *obj)
 {
-    Agraph_t *h;
-
-    h = agraphof(obj);
-    if ((g != h)
-	&& ((AGTYPE((Agobj_t *) obj) != AGRAPH) || (g != agparent(h))))
+    if ((AGTYPE((Agobj_t *) obj) == AGRAPH) && (g != agparent(obj)))
 	agerr(AGERR, "agdelete on wrong graph");
 
     switch (AGTYPE((Agobj_t *) obj)) {
