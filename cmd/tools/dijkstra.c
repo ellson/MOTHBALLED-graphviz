@@ -47,24 +47,31 @@ typedef struct nodedata_s {
     Agrec_t hdr;
     double dist;		/* always positive for scanned nodes */
     Agnode_t* prev;
+    int done;                   /* > 0 if finished */
 } nodedata_t;
 
+#if 0
 typedef struct edgedata_s {
     Agrec_t hdr;
-    double length;		/* always positive for initialized */
+    double length;		/* non-negative */
+    int init;                   /* non-zero if length is set */
 } edgedata_t;
+#endif
 
 static double getlength(Agedge_t * e)
 {
-    edgedata_t *data;
-    data = (edgedata_t *) (e->base.data);
-    if (data->length == 0) {
-	if (len_sym)
-	    data->length = atof(agxget(e, len_sym));
-	if (data->length <= 0)
-	    data->length = 1.0;
+    double len;
+    char*  lens;
+    char*  p;
+
+    if (len_sym && (*(lens = agxget(e, len_sym)))) {
+	len = strtod (lens, &p);
+	if ((len < 0) || (p == lens))
+	    len = 1;
     }
-    return data->length;
+    else
+	len = 1;
+    return len;
 }
 
 #ifdef USE_FNS
@@ -86,6 +93,8 @@ static void setdist(Agnode_t * n, double dist)
 #define setdist(n,d) (((nodedata_t*)((n)->base.data))->dist = (d))
 #define getprev(n) (((nodedata_t*)((n)->base.data))->prev)
 #define setprev(n,p) (((nodedata_t*)((n)->base.data))->prev = (p))
+#define isDone(n) (((nodedata_t*)((n)->base.data))->done)
+#define setDone(n) (((nodedata_t*)((n)->base.data))->done = 1)
 #endif
 
 static int cmpf(Dt_t * d, void *key1, void *key2, Dtdisc_t * disc)
@@ -144,7 +153,9 @@ static void pre(Agraph_t * g)
 {
     len_sym = agattr(g, AGEDGE, "len", NULL);
     aginit(g, AGNODE, "dijkstra", sizeof(nodedata_t), 1);
+#if 0
     aginit(g, AGEDGE, "dijkstra", sizeof(edgedata_t), 1);
+#endif
 }
 
 static void post(Agraph_t * g)
@@ -209,8 +220,9 @@ void dijkstra(Dict_t * Q, Agraph_t * G, Agnode_t * n)
     setdist(n, 1);
     dtinsert(Q, n);
     while ((u = extract_min(Q))) {
+	setDone (u);
 	for (e = agfstedge(G, u); e; e = agnxtedge(G, e, u)) {
-	    update(Q, e->node, u, getlength(e));
+	    if (!isDone(e->node)) update(Q, e->node, u, getlength(e));
 	}
     }
     post(G);
