@@ -198,10 +198,12 @@ int agdelnode(Agraph_t * g, Agnode_t * n)
 	agrecclose((Agobj_t *) n);
 	agfreeid(g, AGNODE, AGID(n));
     }
-    return agapply(g, (Agobj_t *) n, (agobjfn_t) agdelnodeimage, NILnode,
-		   FALSE);
-    if (g == agroot(g))
-	agfree(g, n);
+    if (agapply (g, (Agobj_t *) n, (agobjfn_t) agdelnodeimage, NILnode, FALSE) == SUCCESS) {
+	if (g == agroot(g))
+	    agfree(g, n);
+	return SUCCESS;
+    } else
+	return FAILURE;
 }
 
 static void dict_relabel(Agnode_t * n, void *arg)
