@@ -15,12 +15,12 @@ LIBPNG_URL=http://downloads.sourceforge.net/libpng/libpng-1.2.35.tar.gz
 FREETYPE_URL=http://download.savannah.gnu.org/releases/freetype/freetype-2.3.9.tar.gz
 FONTCONFIG_URL=http://fontconfig.org/release/fontconfig-2.6.0.tar.gz
 XFT_URL=http://xorg.freedesktop.org/releases/individual/lib/libXft-2.1.8.2.tar.gz
-GD_URL=http://www.libgd.org/releases/gd-2.0.35.tar.gz
-PIXMAN_URL=http://cairographics.org/releases/pixman-0.14.0.tar.gz
+GD_URL=http://www.libgd.org/releases/gd-2.0.36RC1.tar.gz
+PIXMAN_URL=http://cairographics.org/releases/pixman-0.15.2.tar.gz
 CAIRO_URL=http://cairographics.org/releases/cairo-1.8.6.tar.gz
 GETTEXT_URL=ftp://mirrors.kernel.org/gnu/gettext/gettext-0.17.tar.gz
-GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.20/glib-2.20.0.tar.gz
-PANGO_URL=http://ftp.gnome.org/pub/GNOME/sources/pango/1.24/pango-1.24.0.tar.gz
+GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.20/glib-2.20.1.tar.gz
+PANGO_URL=http://ftp.gnome.org/pub/GNOME/sources/pango/1.24/pango-1.24.1.tar.gz
 
 # libraries
 
