@@ -22,8 +22,8 @@ GETTEXT_URL=ftp://mirrors.kernel.org/gnu/gettext/gettext-0.17.tar.gz
 GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.20/glib-2.20.1.tar.gz
 PANGO_URL=http://ftp.gnome.org/pub/GNOME/sources/pango/1.24/pango-1.24.1.tar.gz
 GTS_URL=http://downloads.sourceforge.net/gts/gts-0.7.6.tar.gz
-GTK_URL=http://ftp.gnome.org/pub/gnome/sources/gtk+/2.15/gtk+-2.15.5.tar.gz
-ATK_URL=http://ftp.acc.umu.se/pub/gnome/sources/atk/1.24/atk-1.24.0.tar.gz
+GTK_URL=http://ftp.gnome.org/pub/gnome/sources/gtk+/2.16/gtk+-2.16.1.tar.gz
+ATK_URL=http://ftp.acc.umu.se/pub/gnome/sources/atk/1.26/atk-1.26.0.tar.gz
 TIFF_URL=ftp://ftp.remotesensing.org/pub/libtiff/tiff-4.0.0beta3.tar.gz
 JPEG_URL=http://www.ijg.org/files/jpegsrc.v6b.tar.gz
 
@@ -44,7 +44,7 @@ GTS=libgts.la
 GTK=libgtk+.la
 ATK=libatk-1.0.la
 TIFF=libtiff.la
-JPEG=libjpeg.la
+JPEG=libjpeg.a
 
 # directories
 dirname=$(basename $(basename $(notdir $(1))))
@@ -79,7 +79,10 @@ JPEG_DIR=$(call dirname, $(JPEG_URL))
 BASE_CONFIG=--prefix=$(PREFIX) --disable-dependency-tracking --enable-static=yes --enable-shared=no PKG_CONFIG="$(PREFIX)/bin/pkg-config" PKG_CONFIG_PATH="$(PREFIX)/lib/pkgconfig:/usr/X11/lib/pkgconfig"
 FLAG_CONFIG=CFLAGS="-O2 $(ARCHS) -I$(PREFIX)/include" LDFLAGS="$(ARCHS) -L$(PREFIX)/lib -framework CoreFoundation -framework CoreServices" 
 
-install: $(PREFIX)/lib/$(PANGO) $(PREFIX)/lib/$(GD) $(PREFIX)/lib/$(GTS) $(PREFIX)/lib/$(GTK)
+install: $(PREFIX)/lib/$(PANGO) $(PREFIX)/lib/$(GD) $(PREFIX)/lib/$(GTS)
+
+# gtk dropped, unable to build....
+# $(PREFIX)/lib/$(GTK)
 
 uninstall:
 	$(MAKE) -C $(JPEG_DIR) uninstall
@@ -140,7 +143,7 @@ $(PREFIX)/lib/$(JPEG): $(JPEG_DIR)/$(JPEG)
 	@echo
 	@echo INSTALLING JPEG...
 	@echo
-	$(MAKE) -C $(JPEG_DIR) install
+	$(MAKE) -C $(JPEG_DIR) install install-lib install-headers
 
 $(JPEG_DIR)/$(JPEG): $(JPEG_DIR)/Makefile
 	@echo
@@ -255,11 +258,11 @@ $(GTK_DIR)/gtk/$(GTK): $(GTK_DIR)/Makefile
 	if [[ -e $@ ]]; then $(MAKE) -C $(GTK_DIR) clean; fi && \
 	PATH=$(PATH):$(PREFIX)/bin $(MAKE) -C $(GTK_DIR)
 	
-$(GTK_DIR)/Makefile: $(PREFIX)/lib/$(PANGO) $(PREFIX)/lib/$(ATK) | $(PREFIX)/bin/$(PKGCONFIG) $(GTK_DIR)/configure
+$(GTK_DIR)/Makefile: $(PREFIX)/lib/$(PANGO) $(PREFIX)/lib/$(ATK) $(PREFIX)/lib/$(PNG) $(PREFIX)/lib/$(JPEG) $(PREFIX)/lib/$(TIFF) | $(PREFIX)/bin/$(PKGCONFIG) $(GTK_DIR)/configure
 	@echo
 	@echo CONFIGURING GTK...
 	@echo
-	cd $(GTK_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG) --without-libjasper --without-libtiff --without-libjpeg --disable-modules
+	cd $(GTK_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG) --without-libjasper --without-libjpeg --disable-modules
 
 $(GTK_DIR)/configure: | $(GTK_DIR).tar.gz
 	@echo
@@ -605,7 +608,7 @@ $(GD_DIR)/$(GD): $(GD_DIR)/Makefile
 	if [[ -e $@ ]]; then $(MAKE) -C $(GD_DIR) clean; fi && \
 	$(MAKE) -C $(GD_DIR)
 	
-$(GD_DIR)/Makefile: $(PREFIX)/lib/$(FONTCONFIG) $(PREFIX)/lib/$(PNG) | $(GD_DIR)/configure
+$(GD_DIR)/Makefile: $(PREFIX)/lib/$(FONTCONFIG) $(PREFIX)/lib/$(PNG) $(PREFIX)/lib/$(JPEG) | $(GD_DIR)/configure
 	@echo
 	@echo CONFIGURING GD...
 	@echo
