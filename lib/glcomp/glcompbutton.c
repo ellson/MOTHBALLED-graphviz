@@ -82,21 +82,21 @@ int glCompSetRemoveButton(glCompSet * s, glCompButton * p)
 {
     int ind = 0;
     int found = 0;
-    for (; ind < s->buttoncount ; ind++) {
-	if ((s->buttons[ind] == p) && found == 0)
-	    found = 1;
-	if ((found == 1) &&(ind <= (s->buttoncount-1)))
-	    s->buttons[ind] = s->buttons[ind + 1];
+    for (ind; ind < s->buttoncount ; ind++) 
+	{
+		if ((s->buttons[ind] == p) && found == 0)
+			found = 1;
+		if ((found == 1) &&(ind <= (s->buttoncount-1)))
+			s->buttons[ind] = s->buttons[ind + 1];
     }
-    if (found) {
-	free(p->font);
-	free(p->caption);
-	free(p);
-	s->buttoncount--;
-	s->buttons =
-	    realloc(s->buttons, sizeof(glCompButton *) * s->buttoncount);
+    if (found) 
+	{
+		free(p->caption);
+		free(p);
+		s->buttoncount--;
+		s->buttons =  realloc(s->buttons, sizeof(glCompButton *) * s->buttoncount);
 
-	return 1;
+		return 1;
     }
     return 0;
 }
