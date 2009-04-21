@@ -36,23 +36,20 @@ extern int SelectPolyline(sdot_op * op);
 extern int SelectText(sdot_op * op);
 extern int SelectImage(sdot_op * op);
 
-extern int select_node(Agraph_t * g, Agnode_t *);
-extern int select_edge(Agraph_t * g, Agedge_t *);
-extern int select_object(Agraph_t * g, void *obj);
+extern int select_node(topview_node*);
+extern int select_edge(topview_edge*);
 
-extern int deselect_object(Agraph_t * g, void *obj);
-extern int deselect_node(Agraph_t * g, Agnode_t *);
-extern int deselect_edge(Agraph_t * g, Agedge_t *);
 
-extern int select_all_nodes(Agraph_t * g);
-extern int select_all_edges(Agraph_t * g);
-extern int select_all_graphs(Agraph_t * g);
-extern int select_all(Agraph_t * g);
+extern int deselect_node(topview_node*);
+extern int deselect_edge(topview_edge* );
 
-extern int deselect_all_nodes(Agraph_t * g);
-extern int deselect_all_edges(Agraph_t * g);
-extern int deselect_all_graphs(Agraph_t * g);
-extern int deselect_all(Agraph_t * g);
+extern int select_all_nodes();
+extern int select_all_edges();
+extern int select_all();
+
+extern int deselect_all_nodes();
+extern int deselect_all_edges();
+extern int deselect_all();
 int point_within_sphere_with_coords(float x0, float y0, float z0, float r,float x, float y,float z);
 float distance_to_line(float ax,float ay,float bx,float by,float cx,float cy);
 

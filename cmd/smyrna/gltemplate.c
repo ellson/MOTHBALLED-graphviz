@@ -341,9 +341,6 @@ static gboolean button_release_event(GtkWidget * widget,
 	}
 
 	if (view->mouse.mouse_mode == MM_MOVE) {
-	    if (GD_TopView(view->g[view->activeGraph]) == 0)
-		move_nodes(view->g[view->activeGraph]);
-	    else
 		move_TVnodes();
 	}
 
@@ -362,7 +359,7 @@ static gboolean button_release_event(GtkWidget * widget,
     if (event->button == 3)	//right click
 	{
 
-		if ((view->activeGraph >= 0) && (GD_TopView(view->g[view->activeGraph])))
+		if (view->activeGraph >= 0)
 		{
 			if(view->Topview->is_top_fisheye)
 			{

@@ -179,8 +179,8 @@ int glexpose_drawgraph(ViewInfo * view)
     
 	if (view->activeGraph > -1) 
 	{
-		if (GD_TopView(view->g[view->activeGraph])) 
-		{
+//		if (GD_TopView(view->g[view->activeGraph])) 
+//		{
 			if(!view->Topview->is_top_fisheye)
 				drawTopViewGraph(view->g[view->activeGraph]);	//view->Topview style dots and straight lines
 			else 
@@ -192,9 +192,9 @@ int glexpose_drawgraph(ViewInfo * view)
 //			glCompDrawEnd();
 //			OtkDrawAll_scene( 0);
 
-		}
-		else
-			drawGraph(view->g[view->activeGraph]);  //xdot based drawing functions
+//		}
+//		else
+//			drawGraph(view->g[view->activeGraph]);  //xdot based drawing functions
 		glCompSetDraw(view->widgets);
 		return 1;
     }

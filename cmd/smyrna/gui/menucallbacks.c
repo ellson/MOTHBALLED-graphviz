@@ -48,7 +48,8 @@ void mOpenSlot(GtkWidget * widget, gpointer user_data)
     if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
 	char *filename;
 	filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
-
+	if (view->activeGraph == 0)
+		close_graph(view,0);
 	add_graph_to_viewport_from_file(filename);
 	g_free(filename);
 	}
@@ -68,6 +69,12 @@ void mSaveAsSlot(GtkWidget * widget, gpointer user_data)
 {
     save_as_graph();		//save with prompt
 }
+void mCloseSlot(GtkWidget * widget, gpointer user_data)
+{
+	printf("mCloseSlot clicked\n");
+	if (view->activeGraph == 0)
+		close_graph(view,0);
+}
 
 void mOptionsSlot(GtkWidget * widget, gpointer user_data)
 {
@@ -83,10 +90,11 @@ void mQuitSlot(GtkWidget * widget, gpointer user_data)
 #endif
     for (gIndex = 0; gIndex < view->graphCount; gIndex++) {
 	view->activeGraph = gIndex;
-	if (GD_Modified(view->g[view->activeGraph])) {
+	if (view->Topview->Graphdata.Modified)
+	{
 	    sprintf(buf,
 		    "graph %s has been modified \n , would you like to save it before quitting the the program?",
-		     GD_GraphName(view->g[view->activeGraph]));
+		     view->Topview->Graphdata.GraphFileName);
 	    Dlg =
 		(GtkMessageDialog *) gtk_message_dialog_new(NULL,
 							    GTK_DIALOG_MODAL,
@@ -212,7 +220,7 @@ void mGraphPropertiesSlot(GtkWidget * widget, gpointer user_data)
 
 void mNodeFindSlot(GtkWidget * widget, gpointer user_data)
 {
-	if((view->activeGraph !=-1) && (GD_TopView(view->g[view->activeGraph])))
+	if(view->activeGraph !=-1)
 	{
 		gtk_dialog_set_response_sensitive((GtkDialog *)
 						  glade_xml_get_widget(xml,
@@ -238,36 +246,24 @@ void mNodeFindSlot(GtkWidget * widget, gpointer user_data)
 }
 
 
-static void mPropertiesSlot(int count, gve_element element)
+static void mPropertiesSlot(gve_element element)
 {
-    if (count > 0) {
+	if (view->activeGraph >=0 )
 	gtk_widget_hide(glade_xml_get_widget(xml, "frmObject"));
 	gtk_widget_show(glade_xml_get_widget(xml, "frmObject"));
-	load_object_properties(element, view->g[view->activeGraph]);
-    } else {
-	char buf[BUFSIZ];
-	sprintf (buf, "You need to select some %ss first!",element2s(element)); 
-	Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
-							  GTK_DIALOG_MODAL,
-							  GTK_MESSAGE_QUESTION,
-							  GTK_BUTTONS_OK,
-							  buf);
-	respond = gtk_dialog_run((GtkDialog *) Dlg);
-	gtk_widget_hide((GtkWidget *) Dlg);
-
-    }
+//	load_object_properties(element, view->g[view->activeGraph]);
 }
 void mClusterPropertiesSlot(GtkWidget * widget, gpointer user_data)
 {
-    mPropertiesSlot (GD_selectedGraphsCount(view->g[view->activeGraph]),GVE_CLUSTER);
+    mPropertiesSlot (GVE_CLUSTER);
 }
 void mNodePropertiesSlot(GtkWidget * widget, gpointer user_data)
 {
-    mPropertiesSlot (GD_selectedNodesCount(view->g[view->activeGraph]), GVE_NODE);
+    mPropertiesSlot (GVE_NODE);
 }
 void mEdgePropertiesSlot(GtkWidget * widget, gpointer user_data)
 {
-    mPropertiesSlot (GD_selectedEdgesCount(view->g[view->activeGraph]), GVE_EDGE);
+    mPropertiesSlot (GVE_EDGE);
 }
 
 void mShowCodeSlot(GtkWidget * widget, gpointer user_data)
@@ -277,7 +273,7 @@ static void mSlot (GtkWidget * widget, gpointer user_data, gvk_layout layout, in
 {
     /* GdkCursor *cursor; */
     /* GdkWindow *w; */
-    Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
+/*    Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
 						      GTK_DIALOG_MODAL,
 						      GTK_MESSAGE_QUESTION,
 						      GTK_BUTTONS_YES_NO,
@@ -286,7 +282,7 @@ static void mSlot (GtkWidget * widget, gpointer user_data, gvk_layout layout, in
     respond = gtk_dialog_run((GtkDialog *) Dlg);
     if (respond == GTK_RESPONSE_YES)
 	do_graph_layout(view->g[view->activeGraph], layout, 0);
-    gtk_object_destroy((GtkObject *) Dlg);
+    gtk_object_destroy((GtkObject *) Dlg);*/
 	return;
 
 
@@ -348,7 +344,7 @@ void mSelectAllEdgesSlot(GtkWidget * widget, gpointer user_data)
 
 void mSelectAllClustersSlot(GtkWidget * widget, gpointer user_data)
 {
-    select_all_graphs(view->g[view->activeGraph]);
+    //select_all_graphs(view->g[view->activeGraph]);
 }
 
 
@@ -365,7 +361,7 @@ void mUnselectAllEdgesSlot(GtkWidget * widget, gpointer user_data)
 
 void mUnselectAllClustersSlot(GtkWidget * widget, gpointer user_data)
 {
-    deselect_all_graphs(view->g[view->activeGraph]);
+//    deselect_all_graphs(view->g[view->activeGraph]);
 }
 
 void mSingleSelectSlot(GtkWidget * widget, gpointer user_data)

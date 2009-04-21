@@ -176,7 +176,7 @@ void fisheye_spherical(double x_focus, double y_focus, double z_focus,
 
 static v_data *makeGraph(topview * tv, int *nedges)
 {
-    int i;
+    int i,i2;
     int ne = tv->Edgecount;	/* upper bound */
     int nv = tv->Nodecount;
     v_data *graph = N_NEW(nv, v_data);
@@ -210,7 +210,7 @@ static v_data *makeGraph(topview * tv, int *nedges)
 			vp = (tp == np ? hp : tp);
 			ne++;
 			i_nedges++;
-			*edges++ = OD_TVRef(vp);
+			*edges++ =((temp_node_record*)AGDATA(vp))->TVref;
 			*ewgts++ = 1;
 		}
 

@@ -96,6 +96,31 @@ typedef struct {
 
 #define MAX_BTN_CNT 50
 
+typedef enum { 
+    VT_NONE,
+    VT_XDOT,
+    VT_TOPVIEW,
+    VT_TOPFISH,
+} viewtype_t;
+
+typedef enum { 
+    GVE_NONE = -1, 
+    GVE_GRAPH,
+    GVE_CLUSTER,
+    GVE_NODE,
+    GVE_EDGE   /* keep last */
+} gve_element;
+
+typedef enum { 
+    GVK_NONE = -1, 
+    GVK_DOT,
+    GVK_NEATO,
+    GVK_TWOPI,
+    GVK_CIRCO,
+    GVK_FDP,   
+    GVK_SFDP/* keep last */
+} gvk_layout;
+
 typedef struct {
     GtkButton **gtkhostbtn;
     int gtkhostbtncount;
@@ -103,44 +128,77 @@ typedef struct {
     int hostactive[MAX_BTN_CNT];  //temporary static, convert to dynamic,realloc
     char **hostregex;
 } topviewdata;
-typedef struct {
-    Agnode_t *Node;
-    /*original coordinates */
-    float x;
-    float y;
-    float z;
-    /*coordinates to draw */
-    float distorted_x;
-    float distorted_y;
-    float distorted_z;
-    float zoom_factor;
-    int in_fish_eye;		//boolean value if to apply fisheye
-    RGBColor Color;
-    RGBColor GroupColor;
-    int GroupIndex;		//default -1;
-    int update_required;
-    char *Label;
-    char *Label2;
-    int degree;
-    float node_alpha;
-    int valid;
-} topview_node;
 
-typedef struct {
-    Agnode_t *Tnode;		//Tail node
-    Agnode_t *Hnode;		//Tail node
-    Agedge_t *Edge;		//edge itself
-    float x1;
-    float y1;
-    float z1;
-    float x2;
-    float y2;
-    float z2;
-    topview_node *Node1;
-    topview_node *Node2;
-    RGBColor Color;
-    int update_required;
-} topview_edge;
+
+//bind this to cgraph g
+/*
+#define GD_data(g) ((custom_graph_data*)AGDATA(g))
+#define GD_TopView(g) (GD_data(g)->TopView)
+#define GD_Engine(g) (GD_data(g)->Engine)
+#define GD_GraphFileName(g) (GD_data(g)->GraphFileName)
+#define GD_GraphName(g) (GD_data(g)->GraphName)
+#define GD_AlwaysShow(g) (GD_data(g)->AlwaysShow)
+#define GD_Locked(g) (GD_data(g)->Locked)
+#define GD_Modified(g) (GD_data(g)->Modified)
+#define GD_selectedGraphs(g) (GD_data(g)->selectedGraphs)
+#define GD_selectedGraphsCount(g) (GD_data(g)->selectedGraphsCount)
+#define GD_selectedNodesCount(g) (GD_data(g)->selectedNodesCount)
+#define GD_selectedNodes(g) (GD_data(g)->selectedNodes)
+#define GD_selectedEdgesCount(g) (GD_data(g)->selectedEdgesCount)
+#define GD_selectedEdges(g) (GD_data(g)->selectedEdges)
+*/
+
+
+typedef enum { GEpixels, GEinches, GEmm } GEunit;
+
+typedef struct _object_data	//has to be attached to every Node, Edge, Graph and cluster
+{
+    Agrec_t h;
+    int ID;
+    char *ObjName;
+    int ObjType;
+    int Layer;
+    int Visible;
+    int Locked;
+    int Highlighted;
+    int Selected;
+    int Preselected;
+    int NumDataCount;
+    float *NumData;
+    int StrDataCount;
+    char **StrData;
+    int selectionflag;
+    int param;			//generic purpose param
+    int TVRef;			//Topview reference
+
+} element_data;
+typedef struct _temp_node_record	//helper record to identofy head and tail of edges
+{
+    Agrec_t h;
+    int ID;
+    int TVref; //topview data structure reference
+}temp_node_record;
+
+/*#define OD_ID(p) (((custom_object_data*)AGDATA(p))->ID)
+#define OD_ObjName(p) (((custom_object_data*)AGDATA(p))->ObjName)
+#define OD_ObjType(p) (((custom_object_data*)AGDATA(p))->ObjType)
+#define OD_Layer(p) (((custom_object_data*)AGDATA(p))->Layer)
+#define OD_Visible(p) (p->data.Visible)
+#define OD_Locked(p) (((custom_object_data*)AGDATA(p))->Locked)
+#define OD_Highlighted(p) (((custom_object_data*)AGDATA(p))->Highlighted)
+#define OD_NumDataCount(p) (((custom_object_data*)AGDATA(p))->NumDataCount)
+#define OD_NumData(p) (((custom_object_data*)AGDATA(p))->NumData)
+#define OD_StrDataCount(p) (((custom_object_data*)AGDATA(p))->StrDataCount)
+#define OD_StrData(p) (((custom_object_data*)AGDATA(p))->StrData)
+#define OD_Selected(p) (((custom_object_data*)AGDATA(p))->Selected)
+#define OD_Preselected(p) (((custom_object_data*)AGDATA(p))->Preselected)
+#define OD_SelFlag(p) (((custom_object_data*)AGDATA(p))->selectionflag)
+#define OD_TVRef(p) (((custom_object_data*)AGDATA(p))->TVRef)*/
+
+#define OD_Visible(p) (p.data.Visible)
+#define OD_Locked(p) (p.data.Locked)
+#define OD_Highlighted(p) (p.data.Highlighted)
+
 
 
 typedef enum { CAM_PERSPECTIVE,CAM_ORTHO} cam_t;
@@ -173,6 +231,63 @@ typedef struct _viewport_camera{
 
 
 typedef struct {
+    Agnode_t *Node;
+    /*original coordinates */
+    float x;
+    float y;
+    float z;
+    /*coordinates to draw */
+    float distorted_x;
+    float distorted_y;
+    float distorted_z;
+    float zoom_factor;
+    int in_fish_eye;		//boolean value if to apply fisheye
+    RGBColor Color;
+    RGBColor GroupColor;
+    int GroupIndex;		//default -1;
+    int update_required;
+    char *Label;
+    char *Label2;
+    int degree;
+    float node_alpha;
+    int valid;
+	element_data data;
+} topview_node;
+
+typedef struct {
+//    topview_node *Tnode;		//Tail node
+//    topview_node *Hnode;		//Tail node
+    Agedge_t *Edge;		//edge itself
+    float x1;
+    float y1;
+    float z1;
+    float x2;
+    float y2;
+    float z2;
+    topview_node *Node1; //Tail
+    topview_node *Node2; //Head
+    RGBColor Color;
+    int update_required;
+	element_data data;
+} topview_edge;
+typedef struct _graph_data {
+    Agrec_t h;
+    char *GraphFileName;
+    //graph's location, change these to move the whole graph
+    int Modified;		//if graph has been modified after loading
+    float offsetx;
+    float offsety;
+    float offsetz;
+
+    topview_node **selectedNodes;
+    topview_edge **selectedEdges;
+
+    int selectedGraphsCount;
+    int selectedNodesCount;
+    int selectedEdgesCount;
+} graph_data;
+
+typedef struct {
     topview_node *Nodes;
     topview_edge *Edges;
     int Nodecount;
@@ -193,6 +308,8 @@ typedef struct {
 	int animate;
 	topview_node** picked_nodes;
 	int picked_node_count;
+	graph_data Graphdata;
+	int maxnodedegree;
 
 } topview;
 
@@ -217,30 +334,7 @@ typedef struct _mouse_attr {
 	clicked_mouse_button button;
 } mouse_attr;
 
-typedef enum { 
-    VT_NONE,
-    VT_XDOT,
-    VT_TOPVIEW,
-    VT_TOPFISH,
-} viewtype_t;
 
-typedef enum { 
-    GVE_NONE = -1, 
-    GVE_GRAPH,
-    GVE_CLUSTER,
-    GVE_NODE,
-    GVE_EDGE   /* keep last */
-} gve_element;
-
-typedef enum { 
-    GVK_NONE = -1, 
-    GVK_DOT,
-    GVK_NEATO,
-    GVK_TWOPI,
-    GVK_CIRCO,
-    GVK_FDP,   
-    GVK_SFDP/* keep last */
-} gvk_layout;
 
 typedef struct _attribute {
     char Type;
@@ -253,85 +347,6 @@ typedef struct _attribute {
     GtkWidget *attrWidget;
 
 } attribute;
-
-//bind this to cgraph g
-typedef struct _custom_graph_data {
-    Agrec_t h;
-    char *GraphName;
-    char *GraphFileName;
-    int AlwaysShow;		//active or not draw it 
-    int TopView;		//default 0, 1 for topview data, dots and lines
-    int Locked;
-    gvk_layout Engine;
-    //graph's location, change these to move the whole graph
-    int Modified;		//if graph has been modified after loading
-    float offsetx;
-    float offsety;
-    float offsetz;
-
-    Agraph_t **selectedGraphs;	//clusters , subgraphs indeed
-    Agnode_t **selectedNodes;
-    Agedge_t **selectedEdges;
-
-    int selectedGraphsCount;
-    int selectedNodesCount;
-    int selectedEdgesCount;
-} custom_graph_data;
-
-#define GD_data(g) ((custom_graph_data*)AGDATA(g))
-#define GD_TopView(g) (GD_data(g)->TopView)
-#define GD_Engine(g) (GD_data(g)->Engine)
-#define GD_GraphFileName(g) (GD_data(g)->GraphFileName)
-#define GD_GraphName(g) (GD_data(g)->GraphName)
-#define GD_AlwaysShow(g) (GD_data(g)->AlwaysShow)
-#define GD_Locked(g) (GD_data(g)->Locked)
-#define GD_Modified(g) (GD_data(g)->Modified)
-#define GD_selectedGraphs(g) (GD_data(g)->selectedGraphs)
-#define GD_selectedGraphsCount(g) (GD_data(g)->selectedGraphsCount)
-#define GD_selectedNodesCount(g) (GD_data(g)->selectedNodesCount)
-#define GD_selectedNodes(g) (GD_data(g)->selectedNodes)
-#define GD_selectedEdgesCount(g) (GD_data(g)->selectedEdgesCount)
-#define GD_selectedEdges(g) (GD_data(g)->selectedEdges)
-
-typedef enum { GEpixels, GEinches, GEmm } GEunit;
-
-typedef struct _custom_object_data	//has to be attached to every Node, Edge, Graph and cluster
-{
-    Agrec_t h;
-    int ID;
-    char *ObjName;
-    int ObjType;
-    int Layer;
-    int Visible;
-    int Locked;
-    int Highlighted;
-    int Selected;
-    int Preselected;
-    int NumDataCount;
-    float *NumData;
-    int StrDataCount;
-    char **StrData;
-    int selectionflag;
-    int param;			//generic purpose param
-    int TVRef;			//Topview reference
-
-} custom_object_data;
-
-#define OD_ID(p) (((custom_object_data*)AGDATA(p))->ID)
-#define OD_ObjName(p) (((custom_object_data*)AGDATA(p))->ObjName)
-#define OD_ObjType(p) (((custom_object_data*)AGDATA(p))->ObjType)
-#define OD_Layer(p) (((custom_object_data*)AGDATA(p))->Layer)
-#define OD_Visible(p) (((custom_object_data*)AGDATA(p))->Visible)
-#define OD_Locked(p) (((custom_object_data*)AGDATA(p))->Locked)
-#define OD_Highlighted(p) (((custom_object_data*)AGDATA(p))->Highlighted)
-#define OD_NumDataCount(p) (((custom_object_data*)AGDATA(p))->NumDataCount)
-#define OD_NumData(p) (((custom_object_data*)AGDATA(p))->NumData)
-#define OD_StrDataCount(p) (((custom_object_data*)AGDATA(p))->StrDataCount)
-#define OD_StrData(p) (((custom_object_data*)AGDATA(p))->StrData)
-#define OD_Selected(p) (((custom_object_data*)AGDATA(p))->Selected)
-#define OD_Preselected(p) (((custom_object_data*)AGDATA(p))->Preselected)
-#define OD_SelFlag(p) (((custom_object_data*)AGDATA(p))->selectionflag)
-#define OD_TVRef(p) (((custom_object_data*)AGDATA(p))->TVRef)
 
 typedef struct _selection {
     int Active;			//0 there is no selection need to be applied
@@ -494,11 +509,24 @@ typedef struct _ViewInfo
 	int drawnodes;
 	int drawedges;
 	int drawlabels;
+	int drawnodelabels;
+	int drawedgelabels;
+
+	/*labelling properties*/
+	void* glutfont;
+	glCompColor nodelabelcolor;
+	glCompColor edgelabelcolor;
+	int labelwithdegree;
+	int labelnumberofnodes;
+	int labelshownodes;
+	int labelshowedges;
+
 	viewtype_t dfltViewType;
 	gvk_layout dfltEngine;
 	GtkTextBuffer* consoleText;
 	float FontSizeConst;
     glCompSet *widgets;	//for novice user open gl menu
+	int visiblenodecount;	/*helper variable to know the number of the nodes being rendered, good data to optimize speed*/
 
 } ViewInfo;
 

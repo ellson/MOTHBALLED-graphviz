@@ -125,7 +125,7 @@ static void set_options(sdot_op * op, int param)
 
 static void relocate_spline(sdot_op * sop, int param)
 {
-    Agedge_t *e;
+/*    Agedge_t *e;
     Agnode_t *tn;		//tail node
     Agnode_t *hn;		//head node
     int i = 0;
@@ -197,7 +197,7 @@ static void relocate_spline(sdot_op * sop, int param)
 				}
 			}
 		}
-	}
+	}*/
 }
 
 static void DrawBeziers(xdot_op * op, int param)
@@ -210,7 +210,7 @@ static void DrawBeziers(xdot_op * op, int param)
     int temp = 0;
     int filled;
     int i = 0;
-    SelectBeziers((sdot_op *) op);
+//    SelectBeziers((sdot_op *) op);
     relocate_spline((sdot_op *) op, param);
     if (op->kind == xd_filled_bezier)
 	filled = 1;
@@ -301,7 +301,7 @@ static void DrawEllipse(xdot_op * op, int param)
     y = op->u.ellipse.y - dy;
     xradius = (GLfloat) op->u.ellipse.w;
     yradius = (GLfloat) op->u.ellipse.h;
-    SelectEllipse((sdot_op *) op);
+//    SelectEllipse((sdot_op *) op);
     if (op->kind == xd_filled_ellipse) {
 	if (param == 0)
 	    glColor4f(view->fillColor.R, view->fillColor.G,
@@ -343,7 +343,7 @@ static void DrawPolygon(xdot_op * op, int param)
 {
     int i = 0;
     int filled;
-    SelectPolygon((sdot_op *) op);
+    //SelectPolygon((sdot_op *) op);
     set_options((sdot_op *) op, param);
 
     if (op->kind == xd_filled_polygon) {
@@ -390,7 +390,7 @@ static void DrawPolyline(xdot_op * op, int param)
     if (param == 1)		//selected
 	glColor4f(view->selectedNodeColor.R, view->selectedNodeColor.G,
 		  view->selectedNodeColor.B, view->selectedNodeColor.A);
-    SelectPolyline((sdot_op *) op);
+    //SelectPolyline((sdot_op *) op);
     set_options((sdot_op *) op, param);
     glLineWidth(view->LineWidth);
     glBegin(GL_LINE_STRIP);
@@ -460,13 +460,13 @@ static void SetFont(xdot_op * op, int param)
 
 static void InsertImage(xdot_op * op, int param)
 {
-    SelectImage((sdot_op *) op);
+ //   SelectImage((sdot_op *) op);
 
 }
 static void EmbedText(xdot_op * op, int param)
 {
     GLfloat x;
-    SelectText((sdot_op *) op);
+//    SelectText((sdot_op *) op);
     set_options((sdot_op *) op, param);
     if (op->u.text.align == 1)
 	x = (GLfloat) op->u.text.x - (GLfloat) (op->u.text.width / 2.0);
@@ -635,7 +635,7 @@ void drawBorders(ViewInfo * view)
     }
 }
 
-static void drawXdot(xdot * xDot, int param, void *p)
+/*static void drawXdot(xdot * xDot, int param, void *p)
 {
     int id;
     sdot_op *ops = (sdot_op *) (xDot->ops);
@@ -656,7 +656,7 @@ static void drawXdot(xdot * xDot, int param, void *p)
     if (OD_Preselected(p) == 1)
 		select_object(view->g[view->activeGraph], p);
     OD_Preselected(p) = 0;
-}
+}*/
 
 
 
@@ -682,7 +682,7 @@ static void drawXdotwithattrs(void *e, int param)
 
 
 
-void drawGraph(Agraph_t * g)
+/*void drawGraph(Agraph_t * g)
 {
     Agnode_t *v;
     Agedge_t *e;
@@ -726,7 +726,7 @@ void drawGraph(Agraph_t * g)
 		view->SignalBlock = 0;
     }
 
-}
+}*/
 
 
 /*

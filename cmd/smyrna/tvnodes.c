@@ -178,19 +178,19 @@ int validate_node(tv_node * TV_Node)
 		//if show only highlighted 
 		if (TV_Nodes.filter.highlighted >= 0) 
 		{
-			if (OD_Highlighted(view->Topview->Nodes[TV_Node->index].Node)!= TV_Nodes.filter.highlighted)
+			if (view->Topview->Nodes[TV_Node->index].data.Highlighted!= TV_Nodes.filter.highlighted)
 				valid = 0;
 		}
 		//if show only visibles
 		if (TV_Nodes.filter.visible >= 0) 
 		{
-			if (OD_Visible(view->Topview->Nodes[TV_Node->index].Node)!= TV_Nodes.filter.visible)
+			if (view->Topview->Nodes[TV_Node->index].data.Visible!= TV_Nodes.filter.visible)
 				valid = 0;
 		}
 		//if show only selected
 		if (TV_Nodes.filter.selected >= 0) 
 		{
-			if (OD_Selected(view->Topview->Nodes[TV_Node->index].Node)!= TV_Nodes.filter.selected)
+			if (view->Topview->Nodes[TV_Node->index].data.Selected!= TV_Nodes.filter.selected)
 				valid = 0;
 		}
 		return valid;
@@ -220,7 +220,7 @@ static int update_node_gui_objects(tv_node * TV_Node)
     }
     gtk_widget_show((GtkWidget *) TV_Node->chkSelected);
     gtk_toggle_button_set_active((GtkToggleButton *) TV_Node->chkSelected,
-	OD_Selected(view->Topview-> Nodes[TV_Node->index].Node));
+		view->Topview-> Nodes[TV_Node->index].data.Selected);
 
     //Id Label
     if (!TV_Node->IDLabel) {
@@ -241,7 +241,7 @@ static int update_node_gui_objects(tv_node * TV_Node)
 
     gtk_widget_show((GtkWidget *) TV_Node->chkVisible);
     gtk_toggle_button_set_active((GtkToggleButton *) TV_Node->chkVisible,
-	OD_Visible(view->Topview->Nodes[TV_Node->index].Node));
+		view->Topview->Nodes[TV_Node->index].data.Visible);
     //highlighted
     if (!TV_Node->chkHighlighted) {
 	TV_Node->chkHighlighted =
@@ -251,7 +251,7 @@ static int update_node_gui_objects(tv_node * TV_Node)
     }
     gtk_widget_show((GtkWidget *) TV_Node->chkHighlighted);
     gtk_toggle_button_set_active((GtkToggleButton*)TV_Node-> chkHighlighted,
-	OD_Highlighted(view->Topview->Nodes[TV_Node->index].Node));
+		view->Topview->Nodes[TV_Node->index].data.Highlighted);
 
 
     //NAME
@@ -579,31 +579,31 @@ int update_TV_data_from_gui(void)
 	    // apply if selected
 	    if (gtk_toggle_button_get_active
 		((GtkToggleButton *) TV_Nodes.TV_Node[i].chkSelected)) {
-		if (!OD_Selected(view->Topview->Nodes[index].Node))
+			if (!view->Topview->Nodes[index].data.Selected)
 		    select_node(view->g[view->activeGraph],
 				view->Topview->Nodes[index].Node);
 	    } else {
-		if (OD_Selected(view->Topview->Nodes[index].Node))
+		if (view->Topview->Nodes[index].data.Selected)
 		    deselect_node(view->g[view->activeGraph],
 				  view->Topview->Nodes[index].Node);
 	    }
 	    // apply if Visible
 	    if (gtk_toggle_button_get_active
 		((GtkToggleButton *) TV_Nodes.TV_Node[i].chkVisible)) {
-		if (!OD_Visible(view->Topview->Nodes[index].Node))
-		     OD_Visible(view->Topview->Nodes[index].Node) = 1;
+			if (!view->Topview->Nodes[index].data.Visible)
+				view->Topview->Nodes[index].data.Visible = 1;
 	    } else {
-		if (OD_Visible(view->Topview->Nodes[index].Node))
-		     OD_Visible(view->Topview->Nodes[index].Node) = 0;
+			if (view->Topview->Nodes[index].data.Visible)
+		     view->Topview->Nodes[index].data.Visible = 0;
 	    }
 	    // apply if Highlighted
 	    if (gtk_toggle_button_get_active
 		((GtkToggleButton *) TV_Nodes.TV_Node[i].chkHighlighted)) {
-		if (!OD_Highlighted(view->Topview->Nodes[index].Node))
-		     OD_Highlighted(view->Topview->Nodes[index].Node) = 1;
+			if (!view->Topview->Nodes[index].data.Highlighted)
+		     view->Topview->Nodes[index].data.Highlighted = 1;
 	    } else {
-		if (OD_Highlighted(view->Topview->Nodes[index].Node))
-		     OD_Highlighted(view->Topview->Nodes[index].Node) = 0;
+		if (view->Topview->Nodes[index].data.Highlighted)
+		     view->Topview->Nodes[index].data.Highlighted = 0;
 	    }
 	    //Data1 
 	    agset((void *) view->Topview->Nodes[index].Node, data_attr1,
@@ -730,7 +730,7 @@ int tv_highligh_all(void)
 		tvn.index = i;
 		if (cache_validate_node(&tvn)) 
 		{
-			OD_Highlighted(view->Topview->Nodes[i].Node) = 1;
+			view->Topview->Nodes[i].data.Highlighted = 1;
 		}
     }
     apply_filter_from_gui();
@@ -746,7 +746,7 @@ int tv_unhighligh_all(void)
     for (i = 0; i < view->Topview->Nodecount; i++) {
 	tvn.index = i;
 	if (cache_validate_node(&tvn)) {
-	    OD_Highlighted(view->Topview->Nodes[i].Node) = 0;
+		view->Topview->Nodes[i].data.Highlighted = 0;
 	}
     }
     apply_filter_from_gui();
@@ -761,7 +761,7 @@ int tv_show_all(void)
     for (i = 0; i < view->Topview->Nodecount; i++) {
 	tvn.index = i;
 	if (cache_validate_node(&tvn)) {
-	    OD_Visible(view->Topview->Nodes[i].Node) = 1;
+		view->Topview->Nodes[i].data.Visible = 1;
 	}
     }
     apply_filter_from_gui();
@@ -778,7 +778,7 @@ int tv_hide_all(void)
     for (i = 0; i < view->Topview->Nodecount; i++) {
 	tvn.index = i;
 	if (cache_validate_node(&tvn)) {
-	    OD_Visible(view->Topview->Nodes[i].Node) = 0;
+		view->Topview->Nodes[i].data.Visible = 0;
 	}
     }
     apply_filter_from_gui();

@@ -51,6 +51,8 @@ static char* smyrnaDir;
 char* smyrnaGlade;
 unsigned char SmyrnaVerbose;
 
+
+
 char*
 smyrnaPath (char* suffix)
 {
@@ -111,11 +113,70 @@ parseArgs (int argc, char *argv[], ViewInfo* view)
 }
 extern int create_font_file(char* fontdescription,float gw,float gh);
 extern int load_png_font(char* file_name);
+static void close_cgraph(Agraph_t* g)
+{
+	Agnode_t *v;
+	for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
+	{
+		agdelrec(v, "temp_node_record");
+	}
+	agclose(g);
+}
+
+
+static Agraph_t* test_cgraph(Agraph_t* g,char* filename)
+{
+
+	Agnode_t *v;
+	Agedge_t *e;
+	FILE *input_file;
+	char buf[512];
+	if (g)
+		close_cgraph(g);
+	
+	if (!(input_file = fopen(filename, "r")))
+	{
+		g_print("Cannot open %s\n", filename);
+		return 0;
+    }
+    if (!(g = agread(input_file, NIL(Agdisc_t *)))) 
+	{
+		g_print("Cannot read graph in  %s\n", filename);
+		fclose (input_file);
+		return 0;
+    }
+
+    for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
+	{
+		agbindrec(v, "temp_node_record", sizeof(temp_node_record), TRUE);//graph custom data
+	}
+    for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
+	{
+		for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
+		{
+			strcpy(buf, agget(aghead(e), "pos"));
+		}
+	}
+
+	return g;
+}
+
+
+
+
+
 
 int main(int argc, char *argv[])
 {
     GdkGLConfig *glconfig;
     char* initFileName;
+	Agraph_t* g=NULL;
+	Agraph_t* testg=NULL;
+
+//	testg=test_cgraph(testg,"c:/4elt.gv");
+//	agclose(testg);
+//	test_cgraph(testg,"c:/4elt.gv");
+
 
 	smyrnaDir = getenv ("SMYRNA_PATH");
 #ifndef _WIN32

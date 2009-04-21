@@ -369,248 +369,153 @@ static int point_within_polygon(xdot_op * op)
 
 
 //select functions
-static int select_graph(Agraph_t * g, Agraph_t * G)
+
+int select_node(topview_node* N)
 {
     int ind = 0;
     //check if in the list
-    for (ind = 0; ind < GD_selectedGraphsCount(g); ind++) {
-	if (GD_selectedGraphs(g)[ind] == G)
+	for (ind = 0; ind < view->Topview->Graphdata.selectedNodesCount; ind++) 
+	{
+		if (view->Topview->Graphdata.selectedNodes[ind] == N)
 	    return 0;
     }
     //for single selections i think realloc is ok, for mass selections i ll figure out something else
-    GD_selectedGraphs(g) = RALLOC(GD_selectedGraphsCount(g)+1,
-		GD_selectedGraphs(g), Agraph_t*);
-    GD_selectedGraphs(g)[GD_selectedGraphsCount(g)] = G;
-    GD_selectedGraphsCount(g)++;
-    OD_Selected(G) = 1;
+    view->Topview->Graphdata.selectedNodes =
+		RALLOC(view->Topview->Graphdata.selectedNodesCount+2,view->Topview->Graphdata.selectedNodes, topview_node*);
+	view->Topview->Graphdata.selectedNodes[view->Topview->Graphdata.selectedNodesCount] = N;
+    view->Topview->Graphdata.selectedNodesCount++;
+    
+	N->data.Selected=1;
     return 1;
 }
 
-int select_node(Agraph_t * g, Agnode_t * N)
+int select_edge(topview_edge* E)
 {
     int ind = 0;
     //check if in the list
-    for (ind = 0; ind < GD_selectedNodesCount(g); ind++) {
-	if (GD_selectedNodes(g)[ind] == N)
-	    return 0;
+    for (ind = 0; ind < view->Topview->Graphdata.selectedEdgesCount;ind++) 
+	{
+		if (view->Topview->Graphdata.selectedEdges[ind] == E)
+			return 0;
     }
     //for single selections i think realloc is ok, for mass selections i ll figure out something else
-    GD_selectedNodes(g) =
-	RALLOC(GD_selectedNodesCount(g)+2,GD_selectedNodes(g), Agnode_t*);
-    GD_selectedNodes(g)[GD_selectedNodesCount(g)] = N;
-    GD_selectedNodesCount(g)++;
-    OD_Selected(N) = 1;
-    return 1;
-}
-
-int select_edge(Agraph_t * g, Agedge_t * E)
-{
-    int ind = 0;
-    //check if in the list
-    for (ind = 0; ind < GD_selectedEdgesCount(g); ind++) {
-	if (GD_selectedEdges(g)[ind] == E)
-	    return 0;
-    }
-    //for single selections i think realloc is ok, for mass selections i ll figure out something else
-    GD_selectedEdges(g) =
-	RALLOC(GD_selectedEdgesCount(g)+1,GD_selectedEdges(g), Agedge_t*);
-    GD_selectedEdges(g)[GD_selectedEdgesCount(g)] = E;
-    GD_selectedEdgesCount(g)++;
-    OD_Selected(E) = 1;
+view->Topview->Graphdata.selectedEdges =	
+		RALLOC(view->Topview->Graphdata.selectedEdgesCount+1,view->Topview->Graphdata.selectedEdges, topview_edge*);
+	view->Topview->Graphdata.selectedEdges[view->Topview->Graphdata.selectedEdgesCount] = E;
+	view->Topview->Graphdata.selectedEdgesCount ++;
+	E->data.Selected=1;
     return 1;
 
 }
-int select_object(Agraph_t * g, void *obj)
-{
-    switch (AGTYPE(obj)) {
-    case AGNODE:
-	select_node(g, obj);
-	break;
-    case AGEDGE:
-	select_edge(g, obj);
-	break;
-    case AGRAPH:
-	select_graph(g, obj);
-	break;
-    default:
-	break;
-    }
-    return 1;
-}
 
-int deselect_node(Agraph_t * g, Agnode_t * N)
+int deselect_node(topview_node* N)
 {
     int ind = 0;
     int valid = 0;
     //check if in the list
-    for (ind = 0; ind < GD_selectedNodesCount(g); ind++) {
-	if (valid)
-	    GD_selectedNodes(g)[ind - 1] = GD_selectedNodes(g)[ind];
-	if (GD_selectedNodes(g)[ind] == N)
-	    valid = 1;
+    for (ind = 0; ind < view->Topview->Graphdata.selectedNodesCount; ind++) 
+	{
+		if (valid)
+			view->Topview->Graphdata.selectedNodes[ind-1]=view->Topview->Graphdata.selectedNodes[ind];
+		if (view->Topview->Graphdata.selectedNodes[ind] == N)
+			valid = 1;
     }
     //for single selections i think realloc is ok, for mass selections i ll figure out something else
-    if (valid) {
-	GD_selectedNodes(g) =
-	    RALLOC(GD_selectedNodesCount(g)-1,GD_selectedNodes(g), Agnode_t*);
-	GD_selectedNodesCount(g)--;
-	OD_Selected(N) = 0;
-	OD_SelFlag(N) = 0;
-    }
-    return 1;
-
-}
-
-int deselect_edge(Agraph_t * g, Agedge_t * E)
-{
-    int ind = 0;
-    int valid = 0;
-    //check if in the list
-    for (ind = 0; ind < GD_selectedEdgesCount(g); ind++) {
-	if (valid)
-	    GD_selectedEdges(g)[ind-1] = GD_selectedEdges(g)[ind];
-	if (GD_selectedEdges(g)[ind] == E)
-	    valid = 1;
-    }
-    //for single selections i think realloc is ok, for mass selections i ll figure out something else
-    if (valid) {
-	GD_selectedEdges(g) =
-	    RALLOC(GD_selectedEdgesCount(g)-1,GD_selectedEdges(g), Agedge_t*);
-	GD_selectedEdgesCount(g)--;
-	OD_Selected(E) = 0;
-	OD_SelFlag(E) = 0;
-
-    }
-    return 1;
-}
-static int deselect_graph(Agraph_t * g, Agraph_t * G)
-{
-    int ind = 0;
-    int valid = 0;
-    //check if in the list
-    for (ind = 0; ind < GD_selectedGraphsCount(g); ind++) {
-	if (valid)
-	    GD_selectedGraphs(g)[ind-1] = GD_selectedGraphs(g)[ind];
-	if (GD_selectedGraphs(g)[ind] == G)
-	    valid = 1;
-    }
-    //for single selections i think realloc is ok, for mass selections i ll figure out something else
-    if (valid) {
-	GD_selectedGraphs(g) =
-	    RALLOC(GD_selectedGraphsCount(g)-1,GD_selectedGraphs(g), Agraph_t*);
-	GD_selectedGraphsCount(g)--;
-	OD_Selected(G) = 0;
-	OD_SelFlag(G) = 0;
-    }
-    return 1;
-}
-int deselect_object(Agraph_t * g, void *obj)
-{
-    switch (AGTYPE(obj)) {
-    case AGNODE:
-	deselect_node(g, obj);
-	break;
-    case AGEDGE:
-	deselect_edge(g, obj);
-	break;
-    case AGRAPH:
-	deselect_graph(g, obj);
-	break;
-    default:
-	break;
-    }
-    return 1;
-}
-
-int select_all_nodes(Agraph_t * g)
-{
-    Agnode_t *n;
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	select_node(g, n);
-    }
-    return 1;
-
-}
-
-int select_all_edges(Agraph_t * g)
-{
-    Agnode_t *n;
-    Agedge_t *e;
-
-
-    n = agfstnode(g);
-
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    select_edge(g, e);
+    if (valid) 
+	{
+		view->Topview->Graphdata.selectedNodes=RALLOC(view->Topview->Graphdata.selectedNodesCount-1,view->Topview->Graphdata.selectedNodes,topview_node*);
+		view->Topview->Graphdata.selectedNodesCount--;
+		N->data.Selected=0;
+		N->data.selectionflag=0;
 	}
+    return 1;
+
+}
+
+int deselect_edge(topview_edge* E)
+{
+
+    int ind = 0;
+    int valid = 0;
+    //check if in the list
+    for (ind = 0; ind < view->Topview->Graphdata.selectedEdgesCount; ind++) 
+	{
+		if (valid)
+			view->Topview->Graphdata.selectedEdges[ind-1]=view->Topview->Graphdata.selectedEdges[ind];
+		if (view->Topview->Graphdata.selectedEdges[ind] == E)
+			valid = 1;
     }
-    return 1;
-
-}
-
-int select_all_graphs(Agraph_t * g)
-{
-    Agraph_t *s;
-    for (s = agfstsubg(g); s; s = agnxtsubg(s))
-	select_graph(g, s);
-    return 1;
-}
-
-int deselect_all_nodes(Agraph_t * g)
-{
-    Agnode_t *n;
-
-
-    n = agfstnode(g);
-
-
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	deselect_node(g, n);
-    }
-    return 1;
-
-
-}
-
-int deselect_all_edges(Agraph_t * g)
-{
-    {
-	Agnode_t *n;
-	Agedge_t *e;
-	n = agfstnode(g);
-	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	    for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-		deselect_edge(g, e);
-	    }
+    //for single selections i think realloc is ok, for mass selections i ll figure out something else
+    if (valid) 
+	{
+		view->Topview->Graphdata.selectedEdges=RALLOC(view->Topview->Graphdata.selectedEdgesCount-1,view->Topview->Graphdata.selectedEdges,topview_edge*);
+		view->Topview->Graphdata.selectedEdgesCount--;
+		E->data.Selected=0;
+		E->data.selectionflag=0;
 	}
-	return 1;
-    }
-
-
+    return 1;
+	
 }
-int deselect_all_graphs(Agraph_t * g)
+
+int select_all_nodes()
 {
-    Agraph_t *s;
-    for (s = agfstsubg(g); s; s = agnxtsubg(s))
-	deselect_graph(g, s);
+    int ind = 0;
+    //check if in the list
+	for (ind = 0; ind < view->Topview->Nodecount;ind ++)
+	{
+		select_node(&view->Topview->Nodes[ind]);
+    }
     return 1;
 }
 
+int select_all_edges()
+{
+    int ind = 0;
+    //check if in the list
+	for (ind = 0; ind < view->Topview->Edges;ind ++)
+	{
+		select_edge(&view->Topview->Edges[ind]);
+    }
+    return 1;
+
+}
+
+
+int deselect_all_nodes()
+{
+    int ind = 0;
+    //check if in the list
+	for (ind = 0; ind < view->Topview->Nodecount;ind ++)
+	{
+		deselect_node(&view->Topview->Nodes[ind]);
+    }
+    return 1;
+
+}
+
+int deselect_all_edges()
+{
+    int ind = 0;
+    //check if in the list
+	for (ind = 0; ind < view->Topview->Edges;ind ++)
+	{
+		deselect_edge(&view->Topview->Edges[ind]);
+    }
+    return 1;
+
+}
 int select_all(Agraph_t * g)
 {
-    select_all_nodes(g);
-    select_all_edges(g);
-    select_all_graphs(g);
+    select_all_nodes();
+    select_all_edges();
     return 1;
 
 }
 
 int deselect_all(Agraph_t * g)
 {
-    deselect_all_nodes(g);
-    deselect_all_edges(g);
-    deselect_all_graphs(g);
+    deselect_all_nodes();
+    deselect_all_edges();
     return 1;
 }
 
@@ -685,298 +590,6 @@ int is_point_in_rectangle(float X, float Y, float RX, float RY, float RW,
 
 }
 
-int SelectBeziers(sdot_op * op)
-{
-    if (!view->Selection.Active)
-	return 0;
-    switch (view->Selection.Type) {
-    case 0:
-	if (view->Selection.AlreadySelected)
-	    return 0;
-	if (spline_x_rect((xdot_op *) op)) {
-	    if (OD_Selected(op->obj) == 0) {
-		OD_Selected(op->obj) = 1;
-		select_object(view->g[view->activeGraph], op->obj);
-		view->Selection.AlreadySelected = 1;
-	    } else {
-		OD_Selected(op->obj) = 0;
-		deselect_object(view->g[view->activeGraph], op->obj);
-		view->Selection.AlreadySelected = 1;
-	    }
-	}
-	break;
-    case 1:
-#if 0
-        if (OD_Selected(((xdot*)(op->parentxdot))->obj) == 1)
-               return 0;
-#endif
-	if ((OD_SelFlag(op->obj) != -1) && spline_in_rect((xdot_op *) op)) {
-	    OD_Preselected(op->obj) = 1;
-//          select_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
-	    view->Selection.AlreadySelected = 1;
-	} else {
-	    OD_Preselected(op->obj) = 0;
-//                        deselect_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
-	    view->Selection.AlreadySelected = 1;
-	    OD_SelFlag(op->obj) = -1;
-	}
-	break;
-    case 2:
-	if (OD_Selected(op->obj) == 1)
-	    return 0;
-	if (spline_x_rect((xdot_op *) op)) {
-	    OD_Selected(op->obj) = 1;
-	    select_object(view->g[view->activeGraph], op->obj);
-	    view->Selection.AlreadySelected = 1;
-	}
-	break;
-    default:
-	return 0;
-    }
-    return 1;
-
-}
-
-int SelectPolygon(sdot_op * op)
-{
-
-    if (!view->Selection.Active)
-	return 0;
-    switch (view->Selection.Type) {
-    case 0:
-	if (view->Selection.AlreadySelected)
-	    return 0;
-	if ((point_within_polygon((xdot_op *) op))
-	    || (polygon_x_rect((xdot_op *) op))) {
-	    if (OD_Selected(op->obj) == 0) {
-		OD_Selected(op->obj) = 1;
-		select_object(view->g[view->activeGraph], op->obj);
-		view->Selection.AlreadySelected = 1;
-	    } else {
-		OD_Selected(op->obj) = 0;
-		deselect_object(view->g[view->activeGraph], op->obj);
-		view->Selection.AlreadySelected = 1;
-	    }
-	}
-	break;
-    case 1:
-	if (OD_Selected(op->obj) == 1)
-	    return 0;
-	if ((OD_SelFlag(op->obj) != -1) && polygon_in_rect((xdot_op *) op)) {
-	    OD_Preselected(op->obj) = 1;
-//  select_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
-//  view->Selection.AlreadySelected=1;
-	} else {
-	    OD_Selected(op->obj) = 1;
-	    OD_Preselected(op->obj) = 0;
-//  deselect_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
-	    view->Selection.AlreadySelected = 1;
-	    OD_SelFlag(op->obj) = -1;
-	}
-	break;
-    case 2:
-	if (OD_Selected(op->obj) == 1)
-	    return 0;
-	if (polygon_x_rect((xdot_op *) op)) {
-	    OD_Selected(op->obj) = 1;
-	    select_object(view->g[view->activeGraph], op->obj);
-	    view->Selection.AlreadySelected = 1;
-	}
-	break;
-    default:
-	return 0;
-    }
-    return 1;
-}
-
-int SelectPolyline(sdot_op * op)
-{
-    if (!view->Selection.Active)
-	return 0;
-    switch (view->Selection.Type) {
-    case 0:
-	if (view->Selection.AlreadySelected)
-	    return 0;
-
-	if (polyline_x_rect((xdot_op *) op)) {
-	    if (OD_Selected(op->obj) == 0) {
-		OD_Selected(op->obj) = 1;
-		select_object(view->g[view->activeGraph], op->obj);
-		view->Selection.AlreadySelected = 1;
-	    } else {
-		OD_Selected(op->obj) = 0;
-		deselect_object(view->g[view->activeGraph], op->obj);
-		view->Selection.AlreadySelected = 1;
-	    }
-	}
-	break;
-    case 1:
-	if (OD_Selected(op->obj) == 1)
-	    return 0;
-	if ((OD_SelFlag(op->obj) != -1)
-	    && polyline_in_rect((xdot_op *) op)) {
-	    OD_Preselected(op->obj) = 1;
-	} else {
-	    OD_Preselected(op->obj) = 0;
-	    view->Selection.AlreadySelected = 1;
-	    OD_SelFlag(op->obj) = -1;
-	}
-
-
-	break;
-    case 2:
-	if (OD_Selected(op->obj) == 1)
-	    return 0;
-	if (polyline_x_rect((xdot_op *) op)) {
-	    OD_Selected(op->obj) = 1;
-	    select_object(view->g[view->activeGraph], op->obj);
-	    view->Selection.AlreadySelected = 1;
-	}
-	break;
-    default:
-	return 0;
-    }
-
-    return 1;
-
-}
-
-int SelectEllipse(sdot_op * op)
-{
-    if (!view->Selection.Active)
-	return 0;
-    switch (view->Selection.Type) {
-    case 0:
-	if (view->Selection.AlreadySelected)
-	    return 0;
-
-	if (point_within_ellipse((xdot_op *) op)) {
-	    if (OD_Selected(op->obj) == 0) {
-		OD_Selected(op->obj) = 1;
-		select_object(view->g[view->activeGraph], op->obj);
-		view->Selection.AlreadySelected = 1;
-
-	    } else {
-		OD_Selected(op->obj) = 0;
-		deselect_object(view->g[view->activeGraph], op->obj);
-		view->Selection.AlreadySelected = 1;
-
-	    }
-	} else if (ellipse_x_rect((xdot_op *) op)) {
-	    if (OD_Selected(op->obj) == 0) {
-		OD_Selected(op->obj) = 1;
-		select_object(view->g[view->activeGraph], op->obj);
-		view->Selection.AlreadySelected = 1;
-	    } else {
-		OD_Selected(op->obj) = 0;
-		deselect_object(view->g[view->activeGraph], op->obj);
-		view->Selection.AlreadySelected = 1;
-	    }
-	}
-	break;
-    case 1:
-	if (OD_Selected(op->obj) == 1)
-	    return 0;
-	if ((OD_SelFlag(op->obj) != -1) && ellipse_in_rect((xdot_op *) op)) {
-	    OD_Preselected(op->obj) = 1;
-	    view->Selection.AlreadySelected = 1;
-	} else {
-	    OD_Preselected(op->obj) = 0;
-	    view->Selection.AlreadySelected = 1;
-	    OD_SelFlag(op->obj) = -1;
-	}
-	break;
-    case 2:
-	if (OD_Selected(op->obj) == 1)
-	    return 0;
-	if (ellipse_x_rect((xdot_op *) op)) {
-	    OD_Selected(op->obj) = 1;
-	    select_object(view->g[view->activeGraph], op->obj);
-	    view->Selection.AlreadySelected = 1;
-
-	}
-	break;
-    default:
-	return 0;
-    }
-    return 1;
-}
-
-int SelectText(sdot_op * op)
-{
-    if (!view->Selection.Active)
-	return 0;
-    switch (view->Selection.Type) {
-    case 0:
-	if (view->Selection.AlreadySelected)
-	    return 0;
-	if (text_x_rect(op)) {
-	    if (OD_Selected(op->obj) == 0)
-		OD_Selected(op->obj) = 1;
-	    else
-		OD_Selected(op->obj) = 0;
-	}
-	break;
-    case 1:
-	if (OD_Selected(op->obj) == 1)
-	    return 0;
-	if (text_in_rect(op)) {
-	    OD_Selected(op->obj) = 1;
-	    select_object(view->g[view->activeGraph], op->obj);
-	    view->Selection.AlreadySelected = 1;
-	}
-	break;
-    case 2:
-	if (OD_Selected(op->obj) == 1)
-	    return 0;
-	if (text_x_rect(op)) {
-	    OD_Selected(op->obj) = 1;
-	    select_object(view->g[view->activeGraph], op->obj);
-	    view->Selection.AlreadySelected = 1;
-	}
-	break;
-    default:
-	return 0;
-    }
-    return 1;
-
-}
-
-int SelectImage(sdot_op * op)
-{
-    if (!view->Selection.Active)
-	return 0;
-    switch (view->Selection.Type) {
-    case 0:
-	if (view->Selection.AlreadySelected)
-	    return 0;
-	if (image_x_rect((xdot_op *) op)) {
-	    if (OD_Selected(op->obj) == 0) {
-		OD_Selected(op->obj) = 1;
-		select_object(view->g[view->activeGraph], op->obj);
-		view->Selection.AlreadySelected = 1;
-	    } else
-		OD_Selected(op->obj) = 0;
-	}
-	break;
-    case 1:
-	if (OD_Selected(op->obj) == 1)
-	    return 0;
-	if (image_in_rect((xdot_op *) op))
-	    OD_Selected(op->obj) = 1;
-	break;
-    case 2:
-	if (OD_Selected(op->obj) == 1)
-	    return 0;
-	if (image_x_rect((xdot_op *) op))
-	    OD_Selected(op->obj) = 1;
-	break;
-    default:
-	return 0;
-    }
-    return 1;
-
-}
 
 #if 0
 static int line_intersects(float *x, float *y, float *X, float *Y)

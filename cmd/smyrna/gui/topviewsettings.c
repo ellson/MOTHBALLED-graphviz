@@ -73,7 +73,28 @@ static int get_color_button_widget_to_attribute(char *attribute,
     free(buf);
     return 1;
 }
-
+static int get_text_widget_to_attribute(char *attribute,char *widget_name,Agraph_t * g)
+{
+    char buf[512];
+	if (strlen(attribute)> 512)
+		return 0;
+	sprintf (buf, "%s",gtk_entry_get_text ((GtkToggleButton *)glade_xml_get_widget(xml, widget_name)));
+	agattr(g, AGRAPH, attribute, buf);
+	return 1;
+}
+static int set_text_widget(char *attribute,	char *widget_name)
+{
+    char* buf;
+    buf = agget(view->g[view->activeGraph], attribute);
+    if ((!buf) || (strcmp(buf, "") == 0))
+	buf = agget(view->default_attributes, attribute);
+    if (buf) {
+			gtk_entry_set_text((GtkEntry*)glade_xml_get_widget(xml,widget_name),buf);
+                                                         
+	return 1;
+    }
+    return 0;
+}
 static int set_checkbox_widget(char *attribute, char *widget_name)
 {
     char *buf;
@@ -170,18 +191,19 @@ static int set_scalebtn_widget_to_attribute(char *attribute, char *widget_name)
     }
     return 0;
 }
-#if 0
+
 static int set_combobox_widget(char *attribute,char *widget_name)
 {
     char *buf;
-    float value;
+    int value;
     buf = agget(view->g[view->activeGraph], attribute);
 
     if ((!buf) || (strcmp(buf, "") == 0))
 	buf = agget(view->default_attributes, attribute);
     if (buf)
 	 {
-		gtk_combo_box_set_active(
+		value=(int) atof(buf);
+		 gtk_combo_box_set_active(
 				(GtkComboBox *)  glade_xml_get_widget(xml,widget_name),
 				(int)value);
 
@@ -190,7 +212,7 @@ static int set_combobox_widget(char *attribute,char *widget_name)
 
     return 0;
 }
-#endif
+
 static int get_combobox_widget_to_attribute(char *attribute, char *widget_name, Agraph_t * g)
 {
     char buf[25];
@@ -241,6 +263,7 @@ int load_settings_from_graph(Agraph_t * g)
 			    "settingsColorBtn10");
     set_color_button_widget("topologicalfisheyecoarsestcolor",
 			    "settingsColorBtn11");
+	set_text_widget("topologicalfisheyelabelattribute","finenodelabelattribute",g);
 
 
     set_checkbox_widget("bordervisible", "settingsChkBox2");
@@ -251,6 +274,21 @@ int load_settings_from_graph(Agraph_t * g)
 	set_checkbox_widget("drawnodes", "settingsChkBox5-1");
 	set_checkbox_widget("drawedges", "settingsChkBox5-2");
 	set_checkbox_widget("drawlabels", "settingsChkBox5-3");
+
+
+	/*page 2 label settings*/
+	set_combobox_widget("labelglutfont","labelfont");
+
+	set_color_button_widget("nodelabelcolor","nodelabelcolor");
+	set_color_button_widget("edgelabelcolor","edgelabelcolor");
+	set_text_widget("nodelabelattribute","labelnodeattribute");
+	set_text_widget("edgelabelattribute","labeledgeattribute");
+	set_checkbox_widget("labelwithdegree", "labelwithdegree");
+    set_spinbtn_widget("labelnumberofnodes","labelzoomfactor");
+	set_checkbox_widget("shownodelabels", "labelshownodes");
+	set_checkbox_widget("showedgelabels", "labelshowedges");
+
+
 
 	set_checkbox_widget("usermode", "settingsChkBox10");
     set_checkbox_widget("nodesizewithdegree", "settingsChkBox11");
@@ -374,6 +412,8 @@ int update_graph_from_settings(Agraph_t * g)
 					 "settingsColorBtn10", g);
     get_color_button_widget_to_attribute("topologicalfisheyecoarsestcolor",
 					 "settingsColorBtn11", g);
+	get_text_widget_to_attribute("topologicalfisheyelabelattribute","finenodelabelattribute",g);
+
 
     get_checkbox_widget_to_attribute("bordervisible", "settingsChkBox2",
 				     g);
@@ -390,8 +430,28 @@ int update_graph_from_settings(Agraph_t * g)
     get_checkbox_widget_to_attribute("drawlabels",
 				     "settingsChkBox5-3", g);
 	
+	/*page 2 label settings*/
+	get_combobox_widget_to_attribute("labelglutfont","labelfont", g);
+
+	get_color_button_widget_to_attribute("nodelabelcolor","nodelabelcolor", g);
+	get_color_button_widget_to_attribute("edgelabelcolor","edgelabelcolor", g);
+
+	get_text_widget_to_attribute("nodelabelattribute","labelnodeattribute",g);
+	get_text_widget_to_attribute("edgelabelattribute","labeledgeattribute",g);
 	
-	
+	get_checkbox_widget_to_attribute("labelwithdegree", "labelwithdegree", g);
+    get_spinbtn_widget_to_attribute("labelnumberofnodes","labelzoomfactor", g);
+	get_checkbox_widget_to_attribute("shownodelabels", "labelshownodes", g);
+	get_checkbox_widget_to_attribute("showedgelabels", "labelshowedges", g);
+
+
+
+
+
+
+
+
+
 	get_checkbox_widget_to_attribute("usermode", "settingsChkBox10", g);
 
 

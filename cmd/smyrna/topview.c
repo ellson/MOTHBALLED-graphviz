@@ -46,6 +46,7 @@ glCompSet *glcreate_gl_topview_menu(void);
 static void set_boundaries(topview * t);
 static void set_topview_options(void);
 static int draw_topview_label(topview_node * v, float zdepth);
+static int draw_topview_edge_label(topview_edge * e, float zdepth);
 static int node_visible(Agnode_t * n);
 static int select_topview_node(topview_node * n);
 /* static int select_topview_edge(topview_edge * e); */
@@ -54,15 +55,44 @@ static int get_color_from_edge(topview_edge * e);
 static int draw_node_hint_boxes(void);
 static int pick_node(topview_node * n);
 
+static void remove_recs()
+{
+	Agraph_t* g;
+    Agnode_t *v;
+	if(view->activeGraph < 0)
+		return;
+	g=view->g[view->activeGraph];
+	for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
+	{
+		agdelrec(v,"temp_node_record");
+	}
+}
 
 void cleartopview(topview * t)
 {
-    /*clear nodes */
-    free(t->Nodes);
-    /*clear edges */
-    free(t->Edges);
-    free(t);
+	/*free attached records*/
+	/*clear nodes */
+	free (t->Nodes);
+	free (t->Edges);
+//    free(t);
 }
+static void init_element_data(element_data* d)
+{
+							   
+	d->Highlighted=0;
+	d->Layer=0;
+	d->Visible=1;
+	d->Highlighted=0;
+	d->Selected=0;
+	d->Preselected=0;
+	d->NumDataCount=0;
+	d->NumData=(float*)0;
+	d->StrDataCount=0;
+	d->StrData=(char**)0;
+	d->selectionflag=0;
+	d->param=0;
+	d->TVRef=-1;
+}	
 
 void preparetopview(Agraph_t * g, topview * t)
 {
@@ -81,9 +111,6 @@ void preparetopview(Agraph_t * g, topview * t)
 	float maxedgelen,minedgelen,len,edgelength;
 
 
-
-
-
 	maxedgelen=0;
 	minedgelen=(float)99999999.00000;	//FIX ME if you have a giant graph or fix your graph
 	edgelength=0;
@@ -93,7 +120,8 @@ void preparetopview(Agraph_t * g, topview * t)
     gtk_widget_hide(glade_xml_get_widget(xml, "layout6"));	//hide top panel
 //      gtk_widget_hide(glade_xml_get_widget(xml, "menubar1")); //hide menu
     data_type_count = 0;
-    d_attr1 = agget(g, "DataAttribute1");
+	d_attr1=NULL;
+    d_attr1 = agget(g, "nodelabelattribute");
     if (d_attr1) {
 	if (!strcmp(d_attr1, "\\N"))
 	    sym = 0;
@@ -106,17 +134,19 @@ void preparetopview(Agraph_t * g, topview * t)
     t->Edges = N_GNEW(agnedges(g), topview_edge);
 
     t->Nodes = N_GNEW(agnnodes(g), topview_node);
-
+	t->maxnodedegree=1;
 
     /* malloc topviewdata */
-    t->TopviewData = NEW(topviewdata);
+//    t->TopviewData = NEW(topviewdata);
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
 	{
-		//set node TV reference
-		OD_TVRef(v) = ind;	//view->Topview reference
+
+		str=agget(v, "pos");
 		strcpy(buf, agget(v, "pos"));
 		if (strlen(buf)) 
+		//bind temp record;
+		agbindrec(v, "temp_node_record", sizeof(temp_node_record), TRUE);//graph custom data
 		{
 			a = (float) atof(strtok(buf, ","));
 			b = (float) atof(strtok(NULL, ","));
@@ -129,6 +159,10 @@ void preparetopview(Agraph_t * g, topview * t)
 		/*initialize group index, -1 means no group */
 		t->Nodes[ind].GroupIndex = -1;
 		t->Nodes[ind].Node = v;
+		t->Nodes[ind].data.TVRef=ind;
+		((temp_node_record*)AGDATA(v))->TVref=ind;
+		init_element_data(&t->Nodes[ind].data);
+
 		if (agget(t->Nodes[ind].Node, "color")) 
 		{
 			color = GetRGBColor(agget(t->Nodes[ind].Node, "color"));
@@ -147,8 +181,10 @@ void preparetopview(Agraph_t * g, topview * t)
 
 		t->Nodes[ind].zoom_factor = 1;
 		t->Nodes[ind].degree = agdegree(g, v, 1, 1);
+		if (t->Nodes[ind].degree > t->maxnodedegree)
+			t->maxnodedegree=t->Nodes[ind].degree;
+
 		t->Nodes[ind].node_alpha = 1;
-	//    (float) log((double) t->Nodes[ind].degree + (double) 0.3);
 		if (d_attr1) 
 		{
 			if (sym)
@@ -172,11 +208,12 @@ void preparetopview(Agraph_t * g, topview * t)
 
 		for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
 		{
-			t->Edges[ind2].Hnode = aghead(e);
-			t->Edges[ind2].Tnode = agtail(e);
+
+			init_element_data(&t->Edges[ind].data);/*init edge data*/
 			t->Edges[ind2].Edge = e;
 			strcpy(buf, agget(aghead(e), "pos"));
 			if (strlen(buf))
+
 			{
 				a = (float) atof(strtok(buf, ","));
 				b = (float) atof(strtok(NULL, ","));
@@ -211,51 +248,52 @@ void preparetopview(Agraph_t * g, topview * t)
 			edgelength = edgelength + len;
 			ind2++;
 		}
-		//calculate a decent fontsize 
 	ind++;
 	}
-//	calcfontsize(float totaledgelength,int totallabelsize,int edgecount,int totalnodecount)
+	/*calculate font size*/
 	view->FontSize=calcfontsize(edgelength,maxlabelsize,ind2,ind);
-	//attach edge node references ,  loop one more time
+
+	/*attach edge node references ,  loop one more time*/
     ind = 0;
     ind2 = 0;
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
 	{
-		/* float minedgelength=0; */
-		/* float maxedgelength=0; */
-		//set node TV reference
 		for (e=agfstout(g, v); e; e = agnxtout(g, e)) 
 		{
-			t->Edges[ind2].Node1 =
-				&t->Nodes[OD_TVRef(t->Edges[ind2].Tnode)];
-			t->Edges[ind2].Node2 =
-				&t->Nodes[OD_TVRef(t->Edges[ind2].Hnode)];
+			t->Edges[ind2].Node1 =&t->Nodes[((temp_node_record*)AGDATA(agtail(e)))->TVref];
+			t->Edges[ind2].Node2 =&t->Nodes[((temp_node_record*)AGDATA(aghead(e)))->TVref];
 			ind2++;
 
 		}
 		ind++;
     }
+	/*create glcomp menu system*/
 	view->widgets =glcreate_gl_topview_menu();
-//	view->widgets->fontset = fontset_init();
-//	add_font(view->widgets->fontset,"Times 14");//wired in default font
 
+	/*set some stats for topview*/
 	t->Nodecount = ind;
     t->Edgecount = ind2;
-    view->fmg.fisheye_distortion_fac = 5;	//need to be hooked to a widget
-    set_boundaries(t);
-    set_update_required(t);
-	//set componenet set's  font with already loaded default font.This will be inherited by all components added to this set as default
-    attach_camera_widget(view);
-    load_host_buttons(t, g, view->widgets);
-    t->h = '\0';
+
+	/*get border values for the graph*/
+	set_boundaries(t);
+	/*reset update required? values to false*/
+	set_update_required(t);
+	/*for 3d graphs , camera controlling widget extension*/
+	attach_camera_widget(view);
+
+	/*for grouped data , group data viewing buttons extension*/	
+//	load_host_buttons(t, g, view->widgets);
+	/*set topologilca fisheye to NULL*/
+	t->h = '\0';
     if (view->dfltViewType == VT_TOPFISH)
-	t->is_top_fisheye = 1;
+		t->is_top_fisheye = 1;
     else
-	t->is_top_fisheye = 0;
+		t->is_top_fisheye = 0;
 
-    t->picked_node_count = 0;
+	/*reset picked nodes*/
+	t->picked_node_count = 0;
     t->picked_nodes = '\0';
-
+	btnToolZoomFit_clicked(NULL,NULL);
 
 }
 /*
@@ -329,29 +367,37 @@ static void enddrawcycle(Agraph_t* g)
     if (view->Selection.single_selected_edge)	{
 	if (!(view->mouse.button== rightmousebutton))	//right click pick mode
 	{	//left click single select mode
-	    if (OD_Selected(view->Selection.single_selected_edge->Edge) == 0) {
-		OD_Selected(view->Selection.single_selected_edge->Edge) = 1;
-		select_object(view->g[view->activeGraph], view->Selection.single_selected_edge->Edge);
-	    } else {
-		OD_Selected(view->Selection.single_selected_edge->Edge) = 1;
-		deselect_object(view->g[view->activeGraph], view->Selection.single_selected_edge->Edge);
+		if (view->Selection.single_selected_edge->data.Selected == 0) 
+		{
+			view->Selection.single_selected_edge->data.Selected = 1;
+			select_edge(view->g[view->activeGraph], view->Selection.single_selected_edge);
+	    } 
+		else
+		{
+			view->Selection.single_selected_edge->data.Selected = 1;
+			deselect_edge(view->g[view->activeGraph], view->Selection.single_selected_edge);
 	    }
 	}
 	/* return 1; */
     }
-    if (view->Selection.single_selected_node)	{
-	if (view->mouse.button== rightmousebutton)	//right click pick mode
-	    pick_node(view->Selection.single_selected_node);
-	else {	//left click single select mode
-	    if (OD_Selected(view->Selection.single_selected_node->Node) == 0) {
-		OD_Selected(view->Selection.single_selected_node->Node) = 1;
-		select_object(view->g[view->activeGraph], view->Selection.single_selected_node->Node);
-	    } else {
-		OD_Selected(view->Selection.single_selected_node->Node) = 1;
-		deselect_object(view->g[view->activeGraph], view->Selection.single_selected_node->Node);
+    if (view->Selection.single_selected_node)	
+	{
+		if (view->mouse.button== rightmousebutton)	//right click pick mode
+			pick_node(view->Selection.single_selected_node);
+	else 
+	{	//left click single select mode
+	    if (view->Selection.single_selected_node->data.Selected == 0) 
+		{
+			view->Selection.single_selected_node->data.Selected = 1;
+			select_node(view->Selection.single_selected_node);
+	    } 
+		else 
+		{
+			view->Selection.single_selected_node->data.Selected = 1;
+			deselect_node(view->g[view->activeGraph], view->Selection.single_selected_node);
 	    }
 	}
-    }
+	}
 
 }
 
@@ -380,7 +426,7 @@ static int endtopviewnodes(Agraph_t* g)
 
 static int drawtopviewnodes(Agraph_t * g)
 {
-    topview_node *v;
+	topview_node *v;
     float ddx, ddy, ddz;
     int ind = 0;
     float dotsize = 0;
@@ -388,6 +434,7 @@ static int drawtopviewnodes(Agraph_t * g)
 
 	set_topview_options();
 	begintopviewnodes(g);
+	view->visiblenodecount=0;
 	for (ind = 0;
 	     ((ind < view->Topview->Nodecount) && (view->drawnodes));
 	     ind++) 
@@ -404,12 +451,12 @@ static int drawtopviewnodes(Agraph_t * g)
 		v = &view->Topview->Nodes[ind];
 		if (!node_visible(v->Node))
 		    continue;
-
+		view->visiblenodecount = view->visiblenodecount + 1;
 		select_topview_node(v);
 		//UPDATE view->Topview data from cgraph
 		if (v->update_required)
 		    update_topview_node_from_cgraph(v);
-		if (OD_Selected(v->Node) == 1) {
+		if (v->data.Selected == 1) {
 /*		    glColor4f(view->selectedNodeColor.R,
 			      view->selectedNodeColor.G,
 			      view->selectedNodeColor.B,
@@ -490,7 +537,7 @@ static void drawtopviewedges(Agraph_t * g)
 			continue;
 
 	    //select_topview_edge(e);
-	    if (OD_Selected(e->Node1->Node) == 1) 
+		if (e->Node1->data.Selected == 1) 
 		{	//tail is selected
 			ddx = dx;
 			ddy = dy;
@@ -501,7 +548,7 @@ static void drawtopviewedges(Agraph_t * g)
 			ddy = 0;
 			ddz = 0;
 	    }
-	    if (OD_Selected(e->Node2->Node) == 1) 
+		if (e->Node2->data.Selected == 1) 
 		{	//head
 			dddx = dx;
 			dddy = dy;
@@ -531,27 +578,66 @@ static int drawtopviewlabels(Agraph_t * g)
 {
     //drawing labels
 	int ind = 0;
-
-	if (view->drawlabels) {
 	topview_node *v;
-	for (ind = 0; ind < view->Topview->Nodecount; ind++) {
-	    v = &view->Topview->Nodes[ind];
+	float f;
+
+	if ((view->visiblenodecount >view->labelnumberofnodes) || (!view->labelshownodes))
+		return 0;
+	if (view->Topview->maxnodedegree > 15)
+		f=15;
+	else
+		f=view->Topview->maxnodedegree;
+	for (ind = 0; ind < view->Topview->Nodecount; ind++) 
+	{
+		
+		v = &view->Topview->Nodes[ind];
+
+		if( ((float)view->visiblenodecount   > view->labelnumberofnodes * v->degree /  f) && view->labelwithdegree)
+			continue;
 		if (!node_visible(v->Node))
 		    continue;
 	    draw_topview_label(v, 1);
 	}
 	return 1;
-    }
-    return 0;
+}
+static int drawtopviewedgelabels(Agraph_t * g)
+{
+    //drawing labels
+	int ind = 0;
+	topview_edge *e;
+	float f;
 
+	if ((view->visiblenodecount >view->labelnumberofnodes) || (!view->labelshowedges))
+		return 0;
+	if (view->Topview->maxnodedegree > 15)
+		f=15;
+	else
+		f=view->Topview->maxnodedegree;
+	for (ind = 0; ind < view->Topview->Edgecount; ind++) 
+	{
+		
+		e = &view->Topview->Edges[ind];
+
+		if(
+			(((float)view->visiblenodecount   > view->labelnumberofnodes * e->Node1->degree /  f) && view->labelwithdegree)
+									&&
+			(((float)view->visiblenodecount   > view->labelnumberofnodes * e->Node2->degree /  f) && view->labelwithdegree)
+			)
+			continue;
+		if( (!node_visible(e->Node1)) && (!node_visible(e->Node2)) )
+		    continue;
+		draw_topview_edge_label(e, 0.001);
+	}
+	return 1;
 }
 
 
 void drawTopViewGraph(Agraph_t * g)
 {
     drawtopviewnodes(g);
-    drawtopviewlabels(g);
+	drawtopviewlabels(g);
     drawtopviewedges(g);
+	drawtopviewedgelabels(g);
 	enddrawcycle(g);
 
 
@@ -722,10 +808,11 @@ static int select_topview_node(topview_node * n)
 	case 1:
 	case 2:
 	    if (view->Selection.Anti == 0) {
-		select_object(view->g[view->activeGraph], n->Node);
+		select_node(n);
 		view->Selection.AlreadySelected = 1;
 	    } else {
-		deselect_object(view->g[view->activeGraph], n->Node);
+
+		deselect_node (n);
 		view->Selection.AlreadySelected = 1;
 	    }
 	    break;
@@ -856,68 +943,59 @@ static int draw_topview_label(topview_node * v, float zdepth)
     float fs = 0;
     float ddx = 0;
     float ddy = 0;
-    if (!v->Label)
-	return 0;
-
+	char* buf;
 	if ((v->distorted_x / view->zoom * -1 > view->clipX1)
 	&& (v->distorted_x / view->zoom * -1 < view->clipX2)
 	&& (v->distorted_y / view->zoom * -1 > view->clipY1)
 	&& (v->distorted_y / view->zoom * -1 < view->clipY2)) 
 	{
-		fs=calculate_font_size(v);
-	
-
-/*		fs = (v->degree ==1) ? 
-				(float) (log((double) v->degree +1) *(double) 3) 
-					:
-				(float) (log((double) v->degree +(double) 0.5) *(double) 3)*14;*/
-
-		fs =(float) (log((double) v->degree +(double) 0.7) *(double) 3)*14;
-	//	fs=view->FontSize;
-	fs = fs * v->zoom_factor;
-	if (v->degree < 3)
-		fs=fs*2;
-	if (OD_Selected(v->Node) == 1) {
-	    ddx = dx;
-	    ddy = dy;
-	}
-	if ((fs / view->zoom*-1) < 15)
-		return 0;
-
-//	fs= 10;
-	fs= fs * (float)0.182;
-
-/*#define GLUT_BITMAP_9_BY_15		((void*)2)
-#define GLUT_BITMAP_8_BY_13		((void*)3)
-#define GLUT_BITMAP_TIMES_ROMAN_10	((void*)4)
-#define GLUT_BITMAP_TIMES_ROMAN_24	((void*)5)
-#if (GLUT_API_VERSION >= 3)
-#define GLUT_BITMAP_HELVETICA_10	((void*)6)
-#define GLUT_BITMAP_HELVETICA_12	((void*)7)
-#define GLUT_BITMAP_HELVETICA_18	((void*)8)*/
-
-
-
-/*	view->fontset->fonts[view->fontset->activefont]->fontheight=fs;
-	if ((log((float) v->degree) * -0.6 * view->zoom) > 0)
-	    fontColor(view->fontset->fonts[view->fontset->activefont],(float) log((double) v->degree + (double) 1),
-		       view->penColor.G, view->penColor.B,
-		       view->penColor.A / (float) log((double) v->degree) *
-		       (float) -0.4 * (float) view->zoom);
-	else
-	    fontColor(view->fontset->fonts[view->fontset->activefont],(float) log((double) v->degree + (double) 1),
-		       view->penColor.G, view->penColor.B, (float)0.7);
-
-	fontColor(view->fontset->fonts[view->fontset->activefont],0,0,0,view->penColor.A / (float) log((double) v->degree) *
-		       (float) -0.4 * (float) view->zoom);*/
-	glColor4f(0,0.5,0.1,0.7);
-	glprintfglut(GLUT_BITMAP_HELVETICA_10,(v->distorted_x - ddx),
-		        (v->distorted_y - ddy),v->Label   );
-
-	return 1;
+		if (v->data.Selected == 1) 
+		{
+		    ddx = dx;
+			ddy = dy;
+		}
+		glColor4f(view->nodelabelcolor.R,view->nodelabelcolor.G,view->nodelabelcolor.B,view->nodelabelcolor.A);
+		buf=agget(agraphof(v->Node),"nodelabelattribute");
+		if (buf)
+			glprintfglut(view->glutfont,(v->distorted_x - ddx),(v->distorted_y - ddy),agget(v->Node,buf));
+		return 1;
     } else
-	return 0;
-	//vestedbb.com
+		return 0;
+}
+static int draw_topview_edge_label(topview_edge * e, float zdepth)
+{
+
+    float fs = 0;
+    float ddx = 0;
+    float ddy = 0;
+	char* buf;
+	float x1,y1,x2,y2,x,y;
+	x1=e->Node1->distorted_x;
+	y1=e->Node1->distorted_y;
+	x2=e->Node2->distorted_x;
+	y2=e->Node2->distorted_y;
+
+
+	if ((x1 / view->zoom * -1 > view->clipX1)
+	&& (x1 / view->zoom * -1 < view->clipX2)
+	&& (y1 / view->zoom * -1 > view->clipY1)
+	&& (y1 / view->zoom * -1 < view->clipY2)) 
+	{
+
+		x=(x2-x1)/2.00 + x1;
+		y=(y2-y1)/2.00 + y1;
+		if (e->data.Selected==1)
+		{
+		    ddx = dx;
+			ddy = dy;
+		}
+		glColor4f(view->edgelabelcolor.R,view->edgelabelcolor.G,view->edgelabelcolor.B,view->edgelabelcolor.A);
+		buf=agget(agraphof(e->Edge),"edgelabelattribute");
+		if (buf)
+			glprintfglut(view->glutfont,x - ddx,y - ddy,agget(e->Edge,buf));
+		return 1;
+    } else
+		return 0;
 }
 
 
@@ -979,21 +1057,20 @@ static int get_color_from_edge(topview_edge * e)
     Alpha = (float) gtk_range_get_value((GtkRange *) AlphaScale);
 
     //check visibility;
-    if ((node_visible(e->Node1->Node))
-	&& (node_visible(e->Node2->Node)))
+    if ((node_visible(e->Node1))
+	&& (node_visible(e->Node2)))
 	return_value = 1;
 
 
     /*if both head and tail nodes are selected use selection color for edges */
-    if ((OD_Selected(e->Node1->Node)) || (OD_Selected(e->Node2->Node))) {
+	if ((e->Node1->data.Selected) || (e->Node2->data.Selected)) {
 	glColor4f(view->selectedEdgeColor.R, view->selectedEdgeColor.G,
 		  view->selectedEdgeColor.B, view->selectedEdgeColor.A);
 	return return_value;
     }
     /*if both head and tail nodes are highlighted use edge highlight color */
-
-    if ((OD_Highlighted(e->Node1->Node))
-	&& (OD_Highlighted(e->Node2->Node))) {
+	if ((e->Node1->data.Highlighted)
+	&& (e->Node2->data.Highlighted)) {
 	glColor4f(view->highlightedEdgeColor.R,
 		  view->highlightedEdgeColor.G,
 		  view->highlightedEdgeColor.B,
@@ -1031,18 +1108,20 @@ static int get_color_from_edge(topview_edge * e)
 
     /*get edge's color attribute */
     color_string = agget(e->Edge, "color");
-    if (color_string) {
-	c = GetRGBColor(color_string);
-	glColor4f(c.R, c.G, c.B, Alpha);
+    if (color_string) 
+	{
+		c = GetRGBColor(color_string);
+		glColor4f(c.R, c.G, c.B, Alpha);
     } else
-	glColor4f(e->Node1->Color.R, e->Node1->Color.G, e->Node1->Color.B,
+	glColor4f
+	(e->Node1->Color.R, e->Node1->Color.G, e->Node1->Color.B,
 		  Alpha);
     return return_value;
 }
 
-static int node_visible(Agnode_t * n)
+static int node_visible(topview_node * n)
 {
-    return OD_Visible(n);
+	n->data.Visible;
 }
 
 int move_TVnodes(void)
@@ -1051,7 +1130,7 @@ int move_TVnodes(void)
     int ind = 0;
     for (ind = 0; ind < view->Topview->Nodecount; ind++) {
 	v = &view->Topview->Nodes[ind];
-	if (OD_Selected(v->Node)) {
+	if (v->data.Selected) {
 	    v->distorted_x = v->distorted_x - dx;
 	    v->distorted_y = v->distorted_y - dy;
 	}
@@ -1388,10 +1467,7 @@ static void menu_click_center(void *p)
 {
 	if (view->active_camera == -1)	/*2D mode*/
 	{	
-		view->panx=0;
-		view->pany=0;
-		view->panz=0;
-		view->zoom=-20;
+		btnToolZoomFit_clicked(NULL,NULL);
 	}
 	else	/*there is active camera , adjust it to look at the center*/
 	{
@@ -1589,6 +1665,7 @@ glCompSet *glcreate_gl_topview_menu(void)
     b->panel = p;
     b->callbackfunc = menu_click_pan;
     glCompSetAddButton(s, b);
+
     //zoom
     b = glCompButtonNew(85, 120, 72, 72, "adasasds", smyrna_icon_zoom, 72,
 			72,scientific_y);
@@ -1759,8 +1836,8 @@ void select_with_regex(char* exp)
 		{
 			if(node_regex(v,exp))
 			{
-				OD_Selected(v->Node) = 1;
-				select_object(view->g[view->activeGraph], v->Node);
+				v->data.Selected = 1;
+				select_node(v);
 			}
 		}
 	}

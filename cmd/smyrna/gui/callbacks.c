@@ -76,7 +76,7 @@ void remove_graph_clicked(GtkWidget * widget, gpointer user_data)
 
 static void btn_clicked(GtkWidget * widget, gvk_layout layout)
 {
-    GdkCursor *cursor;
+/*    GdkCursor *cursor;
     GdkWindow *w;
     Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
 						      GTK_DIALOG_MODAL,
@@ -102,7 +102,7 @@ static void btn_clicked(GtkWidget * widget, gvk_layout layout)
 	gtk_button_set_image(GTK_BUTTON
 		 (glade_xml_get_widget(xml, "btn_neato")),
 		 gtk_image_new_from_file("c:\fonts.png"));
-    }
+    }*/
 }
 void btn_dot_clicked(GtkWidget * widget, gpointer user_data)
 {
@@ -156,21 +156,6 @@ void dlgOpenGraph_OK_Clicked(GtkWidget * button, gpointer data)
 }
 
 
-void graph_select_change(GtkWidget * widget, gpointer user_data)
-{
-    gint active_graph;
-
-
-    if (!view->SignalBlock) {
-	active_graph = gtk_combo_box_get_active((GtkComboBox*) widget);
-
-	if (active_graph > -1) {
-	    view->activeGraph = active_graph;
-	    refreshControls(view);
-	}
-    }
-}
-
 //dlgOpenGraph btnOK clicked
 void on_dlgOpenGraph_btnOK_clicked(GtkWidget * widget, gpointer user_data)
 {
@@ -223,14 +208,9 @@ void frmObject_set_scroll(GtkWidget * widget, gpointer user_data)
 void frmObjectBtnOK_clicked(GtkWidget * widget, gpointer user_data)
 {
     //call function to update object values
-    update_object_properties(frmObjectTypeIndex, frmObjectg);
-    if (GD_TopView(view->g[view->activeGraph]) == 0)
-	do_graph_layout(view->g[view->activeGraph], 0, 1);
-    else {
+//    update_object_properties(frmObjectTypeIndex, frmObjectg);
 	set_update_required(view->Topview);
 	deselect_all(view->g[view->activeGraph]);
-    }
-
     gtk_widget_hide(glade_xml_get_widget(xml, "frmObject"));
 }
 
