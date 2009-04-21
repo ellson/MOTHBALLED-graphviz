@@ -172,28 +172,32 @@ static int glCompPointInButton(glCompButton * p, float x, float y)
 int glCompSetClick(glCompSet * s, int x, int y)
 {
 
-    if (s) {
-	int ind = 0;
-	float X, Y, Z;
+    if (s) 
+	{
+		int ind = 0;
+		float X, Y, Z;
+	
+		glCompDrawBegin();
+		glCompSetGetPos(x, y, &X, &Y, &Z);
+		glCompDrawEnd();
 
-	glCompDrawBegin();
-	glCompSetGetPos(x, y, &X, &Y, &Z);
-	glCompDrawEnd();
 
+		s->clickedX = X;
+		s->clickedY = Y;
 
-	s->clickedX = X;
-	s->clickedY = Y;
-
-	for (ind = 0; ind < s->buttoncount; ind++) {
-	    if ((s->buttons[ind]->visible) && (s->buttons[ind]->enabled)) {
-		if (glCompPointInButton(s->buttons[ind], X, Y)) {
-		    if (s->buttons[ind]->groupid > -1)
-			s->buttons[ind]->status = 1;
+		for (ind = 0; ind < s->buttoncount; ind++) 
+		{
+			if ((s->buttons[ind]->visible) && (s->buttons[ind]->enabled)) 
+			{
+				if (glCompPointInButton(s->buttons[ind], X, Y)) 
+				{
+					if (s->buttons[ind]->groupid > -1)
+					s->buttons[ind]->status = 1;
+				}
+			}
 		}
-	    }
-	}
-	return 1;
-    } else
+		return 1;
+	} else
 	return 0;
 }
 

@@ -112,7 +112,6 @@ int glCompSetRemovePanel(glCompSet * s, glCompPanel * p)
 	    s->panels[ind] = s->panels[ind + 1];
     }
     if (found) {
-	free(p->font);
 	free(p->text);
 	free(p);
 	s->panelcount--;
