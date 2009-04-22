@@ -837,7 +837,7 @@ void do_graph_label(graph_t * sg)
     int pos_ix;
 
     /* it would be nice to allow multiple graph labels in the future */
-    if ((str = agget(sg, "label"))) {
+    if ((str = agget(sg, "label")) && (*str != '\0')) {
 	char pos_flag;
 	pointf dimen;
 
