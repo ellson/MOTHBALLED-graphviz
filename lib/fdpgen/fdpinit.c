@@ -135,21 +135,11 @@ void fdp_init_node_edge(graph_t * g)
 
 static void cleanup_subgs(graph_t * g)
 {
-#ifndef WITH_CGRAPH
-    graph_t *mg;
-    edge_t *me;
-    node_t *mn;
-#endif /* WITH_CGRAPH */
     graph_t *subg;
+    int i;
 
-#ifndef WITH_CGRAPH
-    mg = g->meta_node->graph;
-    for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
-	mn = me->head;
-	subg = agusergraph(mn);
-#else /* WITH_CGRAPH */
-    for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
-#endif /* WITH_CGRAPH */
+    for (i = 1; i <= GD_n_cluster(g); i++) {
+	subg = GD_clust(g)[i];
 	free_label(GD_label(subg));
 	if (GD_alg(subg)) {
 	    free(PORTS(subg));
@@ -181,7 +171,7 @@ void fdp_cleanup(graph_t * g)
     n = agfstnode(g);
     free(ND_alg(n));
     for (; n; n = agnxtnode(g, n)) {
-	for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
+	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    gv_cleanup_edge(e);
 	}
 	gv_cleanup_node(n);
