@@ -236,6 +236,7 @@ gboolean expose_event(GtkWidget * widget, GdkEventExpose * event,
     return TRUE;
 }
 
+#ifdef UNUSED
 static gboolean key_release_event(GtkWidget * widget,
 				     GdkEventButton * event, gpointer data)
 {
@@ -249,6 +250,7 @@ static gboolean key_press_event(GtkWidget * widget, GdkEventKey * event,
 	printf ("a key is pressed\n");
 
 }
+#endif
 
 
 /*

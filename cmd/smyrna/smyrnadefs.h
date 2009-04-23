@@ -43,9 +43,7 @@
 #include "cgraph.h"
 #include "glcompset.h"
 #include "hier.h"
-
-typedef unsigned char md5_byte_t; /* 8-bit byte */
-typedef unsigned int md5_word_t; /* 32-bit word */
+#include "md5.h"
 
 #define IS_TEST_MODE_ON							0
 #define	DEFAULT_MAGNIFIER_WIDTH					300

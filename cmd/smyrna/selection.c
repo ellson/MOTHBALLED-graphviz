@@ -19,6 +19,7 @@
 #include "geomprocs.h"
 #include "memory.h"
 
+#ifdef UNUSED
 static int rectintersects(float x, float y, float W, float H)
 {
     //returns 1 if rect is completely in the clip rect
@@ -103,7 +104,9 @@ static int within_bezier(GLfloat * xp, GLfloat * yp, GLfloat * zp, int isx)
 	return 1;
 
 }
+#endif
 
+#ifdef UNUSED
 static int spline_in_rect(xdot_op * op)
 {
     //JUST SEND ALL CONTROL POINTS IN 3D ARRAYS
@@ -366,7 +369,7 @@ static int point_within_polygon(xdot_op * op)
     }
     return c;
 }
-
+#endif
 
 //select functions
 

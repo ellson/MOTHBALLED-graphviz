@@ -659,7 +659,7 @@ void drawBorders(ViewInfo * view)
 }*/
 
 
-
+#ifdef UNUSED
 static void drawXdotwithattr(void *p, char *attr, int param)
 {
 /*    xdot *xDot;
@@ -679,6 +679,7 @@ static void drawXdotwithattrs(void *e, int param)
     drawXdotwithattr(e, "_hldraw_", param);
     drawXdotwithattr(e, "_tldraw_", param);*/
 }
+#endif
 
 
 

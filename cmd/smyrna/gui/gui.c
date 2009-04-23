@@ -188,7 +188,6 @@ int update_graph_properties(Agraph_t * graph)	//updates graph from gui
 {
     FILE *file;
     int respond = 0;
-    int id = 0;
 
     //check if file is changed
     if (strcasecmp
@@ -271,7 +270,6 @@ char *get_attribute_string_value_from_widget(attribute * att)
 void change_selected_graph_attributes(Agraph_t * g, char *attrname,
 				      char *attrvalue)
 {
-    int ind = 0;
     agattr(g, AGRAPH, attrname, "");
 	agset(view->g[view->activeGraph],attrname,attrvalue);
 

@@ -99,9 +99,9 @@ int show_close_nosavedlg(void)
             buf);
 
   gtk_window_set_title(GTK_WINDOW(dialog), "Smyrna Warning");
-  gtk_dialog_add_button(dialog,"Yes",0);
-  gtk_dialog_add_button(dialog,"No",1);
-  gtk_dialog_add_button(dialog,"Cancel",2);
+  gtk_dialog_add_button((GtkDialog*)dialog,"Yes",0);
+  gtk_dialog_add_button((GtkDialog*)dialog,"No",1);
+  gtk_dialog_add_button((GtkDialog*)dialog,"Cancel",2);
   rv=gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy(dialog);
   return rv;

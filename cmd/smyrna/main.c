@@ -118,6 +118,7 @@ extern int create_font_file(char* fontdescription,char* fontfile,float gw,float 
 
 extern int load_png_font(char* file_name);
 extern void add_pixmap_directory (const gchar     *directory);
+#ifdef UNUSED
 static void close_cgraph(Agraph_t* g)
 {
 	Agnode_t *v;
@@ -128,18 +129,12 @@ static void close_cgraph(Agraph_t* g)
 	agclose(g);
 }
 
-
-
-
-
-
-
+#endif
 
 int main(int argc, char *argv[])
 {
     GdkGLConfig *glconfig;
     char* initFileName;
-	Agraph_t* g=NULL;
 	smyrnaDir = getenv ("SMYRNA_PATH");
 #ifndef _WIN32
     if (!smyrnaDir)

@@ -55,6 +55,7 @@ static int get_color_from_edge(topview_edge * e);
 static int draw_node_hint_boxes(void);
 static int pick_node(topview_node * n);
 
+#ifdef UNUSED
 static void remove_recs()
 {
 	Agraph_t* g;
@@ -67,6 +68,7 @@ static void remove_recs()
 		agdelrec(v,"temp_node_record");
 	}
 }
+#endif
 
 void cleartopview(topview * t)
 {
@@ -316,7 +318,6 @@ void preparetopview(Agraph_t * g, topview * t)
 static float set_gl_dot_size(topview * t)
 {
 	static float dotsize;
-	static float prevdotsize;
 	if (view->active_camera==-1)
 		dotsize = (float)GL_DOTSIZE_CONSTANT / view->zoom;
 	else
@@ -938,7 +939,6 @@ float calculate_font_size(topview_node * v)
 static int draw_topview_label(topview_node * v, float zdepth)
 {
 
-    float fs = 0;
     float ddx = 0;
     float ddy = 0;
 	char* buf;
@@ -963,7 +963,6 @@ static int draw_topview_label(topview_node * v, float zdepth)
 static int draw_topview_edge_label(topview_edge * e, float zdepth)
 {
 
-    float fs = 0;
     float ddx = 0;
     float ddy = 0;
 	char* buf;

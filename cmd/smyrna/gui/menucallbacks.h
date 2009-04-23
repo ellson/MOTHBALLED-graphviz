@@ -78,8 +78,6 @@ _BB void mSelectAreaXSlot(GtkWidget * widget, gpointer user_data);
 _BB void mAbout(GtkWidget * widget, gpointer user_data);
 _BB void mHelp(GtkWidget * widget, gpointer user_data);
 void change_cursor(GdkCursorType C);
-
-
-
+int show_close_nosavedlg(void);
 
 #endif

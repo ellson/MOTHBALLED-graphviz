@@ -155,8 +155,8 @@ void btnToolFit_clicked(GtkWidget * widget, gpointer user_data)
 	}
 	else
 	{
-		float GDX=(view->bdxRight/z-view->bdxLeft/z);
-		float SDX=(view->clipX2 -view->clipX1);
+		/* float GDX=(view->bdxRight/z-view->bdxLeft/z); */
+		/* float SDX=(view->clipX2 -view->clipX1); */
 //		printf ("GDX:%f SDX:%f \n",GDX,SDX);
 		view->panx += (gcx-scx);
 		view->pany += (gcy-scy);

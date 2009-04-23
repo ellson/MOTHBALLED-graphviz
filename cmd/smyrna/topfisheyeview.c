@@ -29,10 +29,14 @@
 #include "color.h"
 #include "colorprocs.h"
 
+#ifdef MSWIN32
 #include <wincrypt.h>
+#endif
 
 static int get_temp_coords(topview* t,int level,int v,double* coord_x,double* coord_y);
+#ifdef UNUSED
 static int get_temp_coords2(topview* t,int level,int v,double* coord_x,double* coord_y,float *R,float *G,float *B);
+#endif
 static int FLUSH=0;
 
 static void color_interpolation(glCompColor srcColor,glCompColor tarColor,glCompColor* color,int levelcount,int level)
@@ -59,8 +63,9 @@ static double dist3d(double x1, double y1, double z1, double x2, double y2,
     return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) +
 		(z1 - z2) * (z1 - z2));
 }
+#ifdef UNUSED
 static void drawtopologicalfisheyestatic(topview * t);
-
+#endif
 
 static double G(double x)
 {
@@ -339,7 +344,7 @@ void drawtopfishnodes(topview * t)
 	glCompColor color;
 	int level, v;
     Hierarchy *hp = t->h;
-	static max_visible_level=0;
+	static int max_visible_level=0;
 	srcColor.R=view->Topview->srcColor.R;
 	srcColor.G=view->Topview->srcColor.G;
 	srcColor.B=view->Topview->srcColor.B;
@@ -363,7 +368,6 @@ void drawtopfishnodes(topview * t)
 	{
 		for (v = 0; v < hp->nvtxs[level]; v++) 
 		{
-			ex_vtx_data *gg = hp->geom_graphs[level];
 			double x0,y0;
 			if (get_temp_coords(t,level,v,&x0,&y0))
 			{
@@ -401,7 +405,6 @@ void drawtopfishnodelabels(topview* t)
 	int  v, finenodes,focusnodes;
 	char buf[512];
 	char* str;
-	float fs = view->FontSizeConst;
 	Hierarchy *hp = t->h;
     finenodes=focusnodes=0;
 	str = agget(view->g[view->activeGraph], "topologicalfisheyelabelfinenodes");
@@ -444,7 +447,7 @@ void drawtopfishedges(topview * t)
 
 	int level, v, i, n;
     Hierarchy *hp = t->h;
-		static max_visible_level=0;
+		static int max_visible_level=0;
 	srcColor.R=view->Topview->srcColor.R;
 	srcColor.G=view->Topview->srcColor.G;
 	srcColor.B=view->Topview->srcColor.B;
@@ -458,7 +461,6 @@ void drawtopfishedges(topview * t)
 	{
 		for (v = 0; v < hp->nvtxs[level]; v++) 
 		{
-			ex_vtx_data *gg = hp->geom_graphs[level];
 			v_data *g = hp->graphs[level];
 			double x0,y0;
 			if (get_temp_coords(t,level,v,&x0,&y0)) 
@@ -741,6 +743,7 @@ int get_active_frame(topview* t)
 }
 
 
+#ifdef UNUSED
 void drawtopologicalfisheyestatic(topview * t)
 {
     int level, v;
@@ -751,7 +754,6 @@ void drawtopologicalfisheyestatic(topview * t)
     for (level=0;level < hp->nlevels;level++) {
 	for (v=0;v < hp->nvtxs[level]; v++) {
 	    ex_vtx_data* gg = hp->geom_graphs[level];
-	    v_data* g = hp->graphs[level];
 	    if(gg[v].active_level==level) {
 		double x0 = gg[v].physical_x_coord;
 		double y0 = gg[v].physical_y_coord;
@@ -798,4 +800,5 @@ void drawtopologicalfisheyestatic(topview * t)
     }
     glEnd();*/
 }
+#endif
 
