@@ -465,6 +465,13 @@ void init_viewport(ViewInfo * view)
     set_viewport_settings_from_template(view, view->default_attributes);
     view->dfltViewType = VT_NONE;
     view->dfltEngine = GVK_NONE;
+	view->Topview->Graphdata.selectedNodesCount=0;
+	view->Topview->Graphdata.GraphFileName=(char*)0;
+	view->Topview->Graphdata.Modified=0;
+	view->Topview->Graphdata.selectedEdges=0;
+	view->Topview->Graphdata.selectedEdgesCount=0;
+	view->Topview->Graphdata.selectedNodes=0;
+
 
 	//create fontset
 }

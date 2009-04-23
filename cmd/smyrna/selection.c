@@ -410,6 +410,20 @@ view->Topview->Graphdata.selectedEdges =
     return 1;
 
 }
+static void update_cgraph_pos(topview_node* N)
+{
+    char buf[512];
+    double x, y;
+    Agsym_t* pos;
+	Agnode_t* obj=N->Node;
+
+    if ((AGTYPE(obj) == AGNODE) && (pos = agattrsym (obj, "pos"))) 
+	{
+		sprintf (buf, "%lf,%lf",N->distorted_x,N->distorted_y);
+		agxset(obj, pos, buf);
+	}
+}
+
 
 int deselect_node(topview_node* N)
 {
@@ -431,9 +445,12 @@ int deselect_node(topview_node* N)
 		N->data.Selected=0;
 		N->data.selectionflag=0;
 	}
+	/*update cgraph with pos values*/
+	update_cgraph_pos(N);
     return 1;
 
 }
+
 
 int deselect_edge(topview_edge* E)
 {

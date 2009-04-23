@@ -458,11 +458,10 @@ static int drawtopviewnodes(Agraph_t * g)
 		if (v->update_required)
 		    update_topview_node_from_cgraph(v);
 		if (v->data.Selected == 1) {
-/*		    glColor4f(view->selectedNodeColor.R,
+		    glColor4f(view->selectedNodeColor.R,
 			      view->selectedNodeColor.G,
 			      view->selectedNodeColor.B,
-			      view->selectedNodeColor.A); */
-			glColor4f(1,0,0,1);
+			      view->selectedNodeColor.A); 
 		    ddx = dx;
 		    ddy = dy;
 		    ddz = dz;
