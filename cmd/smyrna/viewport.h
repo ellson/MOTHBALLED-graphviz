@@ -40,8 +40,10 @@ int gl_main_expose(void);
 void move_nodes(Agraph_t * g);
 void please_wait(void);
 void please_dont_wait(void);
+extern BYTE* get_md5_key(Agraph_t* graph);
 
 
  /* helper functions */
 extern int setGdkColor(GdkColor * c, char *color);
+extern char *get_attribute_value(char *attr, ViewInfo * view, Agraph_t * g);
 #endif

@@ -580,12 +580,10 @@ int update_TV_data_from_gui(void)
 	    if (gtk_toggle_button_get_active
 		((GtkToggleButton *) TV_Nodes.TV_Node[i].chkSelected)) {
 			if (!view->Topview->Nodes[index].data.Selected)
-		    select_node(view->g[view->activeGraph],
-				view->Topview->Nodes[index].Node);
+		    select_node(&view->Topview->Nodes[index]);
 	    } else {
 		if (view->Topview->Nodes[index].data.Selected)
-		    deselect_node(view->g[view->activeGraph],
-				  view->Topview->Nodes[index].Node);
+		    deselect_node(&view->Topview->Nodes[index]);
 	    }
 	    // apply if Visible
 	    if (gtk_toggle_button_get_active
@@ -695,8 +693,7 @@ int tv_select_all(void)
     for (i = 0; i < view->Topview->Nodecount; i++) {
 	tvn.index = i;
 	if (cache_validate_node(&tvn)) {
-	    select_node(view->g[view->activeGraph],
-			view->Topview->Nodes[i].Node);
+	    select_node(&view->Topview->Nodes[i]);
 	}
     }
     apply_filter_from_gui();
@@ -712,8 +709,7 @@ int tv_unselect_all()
     for (i = 0; i < view->Topview->Nodecount; i++) {
 	tvn.index = i;
 	if (cache_validate_node(&tvn)) {
-	    deselect_node(view->g[view->activeGraph],
-			  view->Topview->Nodes[i].Node);
+	    deselect_node(&view->Topview->Nodes[i]);
 	}
     }
     apply_filter_from_gui();

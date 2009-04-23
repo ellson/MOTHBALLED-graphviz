@@ -26,6 +26,7 @@ typedef void iochan_t;
 static void ioput(Agraph_t * g, iochan_t * ofile, char *str)
 {
     AGDISC(g, io)->putstr(ofile, str);
+	
 }
 
 static void write_body(Agraph_t * g, iochan_t * ofile);

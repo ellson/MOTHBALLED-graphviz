@@ -31,6 +31,8 @@
 #include "colorprocs.h"
 #include "memory.h"
 #include "topviewsettings.h"
+#include "md5.h"
+
 
   /* Forward declarations */
 static int init_object_custom_data(Agraph_t * graph, void *obj);
@@ -97,12 +99,35 @@ static void* get_glut_font(int ind)
 	}
 
 }
+static fill_key(BYTE* b,BYTE* data)
+{
+	int ind=0;
+	for (ind=0;ind < 16;ind ++)
+	{
+		b[ind]=data[ind];
+	}
 
+}
 
 
 void close_graph(ViewInfo * view,int graphid)
 {
-    if (graphid >= 0) 
+	int ind=0;
+	int modified=0;
+	/*check if graph has been modified*/
+	fill_key(view->final_key,get_md5_key(view->g[graphid]));
+	printf ("graph original identification:");
+	for (ind=0;ind < 16;ind ++)
+	{
+		printf ("%x ",view->orig_key[ind]);
+	}
+	printf ("graph final identification:");
+	for (ind=0;ind < 16;ind ++)
+	{
+		printf ("%x ",view->final_key[ind]);
+	}
+
+	if (graphid >= 0) 
 		cleartopview(view->Topview);
     agclose(view->g[0]);
 	view->graphCount = view->graphCount -1;
@@ -417,7 +442,6 @@ void init_viewport(ViewInfo * view)
  */
 static void load_graph_params(Agraph_t * graph)
 {
-    char* s;
 	view->Topview->Graphdata.Modified=0;
 	view->Topview->Graphdata.selectedEdges=NULL;
 	view->Topview->Graphdata.selectedNodes=NULL;
@@ -461,7 +485,6 @@ static int attach_object_custom_data_to_graph(Agraph_t * graph)
  */
 static void update_graph_params(Agraph_t * graph)
 {
-    char tempString[100];
 	agattr(graph, AGRAPH, "GraphFileName",view->Topview->Graphdata.GraphFileName);
 }
 
@@ -565,7 +588,6 @@ mkTemp (char* buf, size_t bufsz)
 
 static Agraph_t *loadGraph(char *filename)
 {
-    char* s;
     Agraph_t *g;
     FILE *input_file;
 	/* char* bf; */
@@ -608,7 +630,8 @@ static void refresh_borders(Agraph_t* g)
 int add_graph_to_viewport_from_file(char *fileName)
 {
     //returns 1 if successfull else 0
-    Agraph_t *graph;
+	int ind=0;
+	Agraph_t *graph;
     graph = loadGraph(fileName);
     if (graph) {
 	view->graphCount = view->graphCount + 1;
@@ -621,6 +644,15 @@ int add_graph_to_viewport_from_file(char *fileName)
 	load_settings_from_graph(view->g[view->activeGraph]);
 	update_graph_from_settings(view->g[view->activeGraph]);
     set_viewport_settings_from_template(view, view->g[view->activeGraph]);
+	fill_key(view->orig_key,get_md5_key(graph));
+	printf ("graph original identification:");
+	for (ind=0;ind < 16;ind ++)
+	{
+		printf ("%x ",view->orig_key[ind]);
+	}
+
+
+
 	return 1;
     } else
 	return 0;
@@ -644,6 +676,36 @@ int add_new_graph_to_viewport(void)
 	return -1;
 }
 #endif
+static BYTE md5_digest[16];
+static md5_state_t pms;
+
+int append_to_md5(void *chan, char *str)
+{
+	md5_append(&pms,str,(int)strlen(str));
+	return 1;
+
+}
+int flush_md5 (void *chan)
+{
+	md5_finish(&pms,md5_digest);
+	return 1;
+}
+
+
+BYTE* get_md5_key(Agraph_t* graph)
+{
+	Agiodisc_t* xio;	
+	Agiodisc_t a; 
+	xio=graph->clos->disc.io;
+	a.afread=graph->clos->disc.io->afread; 
+	a.putstr=append_to_md5;
+	a.flush=flush_md5;
+	graph->clos->disc.io=&a;
+	md5_init(&pms);
+	agwrite(graph,NULL);
+	graph->clos->disc.io=xio;
+	return md5_digest;
+}
 
 /* save_graph_with_file_name:
  * saves graph with file name; if file name is NULL save as is
@@ -661,7 +723,6 @@ int save_graph_with_file_name(Agraph_t * graph, char *fileName)
 	g_print("there is no file name to save! Programmer error\n");
 	return 0;
     }
-
     if (output_file == NULL) {
 	g_print("Cannot create file \n");
 	return 0;
@@ -689,6 +750,7 @@ int save_graph(void)
 	} else
 	    return save_as_graph();
     }
+	fill_key(view->orig_key,get_md5_key(view->g[view->activeGraph]));
     return 1;
 
 }
