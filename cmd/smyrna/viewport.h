@@ -40,7 +40,7 @@ int gl_main_expose(void);
 void move_nodes(Agraph_t * g);
 void please_wait(void);
 void please_dont_wait(void);
-extern BYTE* get_md5_key(Agraph_t* graph);
+extern md5_byte_t* get_md5_key(Agraph_t* graph);
 
 
  /* helper functions */

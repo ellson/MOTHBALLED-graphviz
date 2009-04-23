@@ -44,7 +44,8 @@
 #include "glcompset.h"
 #include "hier.h"
 
-typedef unsigned char       BYTE;
+typedef unsigned char md5_byte_t; /* 8-bit byte */
+typedef unsigned int md5_word_t; /* 32-bit word */
 
 #define IS_TEST_MODE_ON							0
 #define	DEFAULT_MAGNIFIER_WIDTH					300
@@ -529,8 +530,8 @@ typedef struct _ViewInfo
 	float FontSizeConst;
     glCompSet *widgets;	//for novice user open gl menu
 	int visiblenodecount;	/*helper variable to know the number of the nodes being rendered, good data to optimize speed*/
-	BYTE orig_key[16] ;	/*md5 result for original graph*/
-	BYTE final_key[16] ;	/*md5 result right before graph is saved*/
+	md5_byte_t orig_key[16] ;	/*md5 result for original graph*/
+	md5_byte_t final_key[16] ;	/*md5 result right before graph is saved*/
 
 } ViewInfo;
 

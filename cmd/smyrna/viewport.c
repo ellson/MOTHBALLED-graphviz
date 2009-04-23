@@ -94,7 +94,7 @@ static void* get_glut_font(int ind)
 	}
 
 }
-static void fill_key(BYTE* b,BYTE* data)
+static void fill_key(md5_byte_t* b,md5_byte_t* data)
 {
 	int ind=0;
 	for (ind=0;ind < 16;ind ++)
@@ -103,7 +103,7 @@ static void fill_key(BYTE* b,BYTE* data)
 	}
 
 }
-static int compare_keys(BYTE* b1,BYTE* b2)
+static int compare_keys(md5_byte_t* b1,md5_byte_t* b2)
 {
 	/*1 keys are equal*/
 	/*0 not equal*/
@@ -697,7 +697,7 @@ int add_new_graph_to_viewport(void)
 	return -1;
 }
 #endif
-static BYTE md5_digest[16];
+static md5_byte_t md5_digest[16];
 static md5_state_t pms;
 
 int append_to_md5(void *chan, char *str)
@@ -713,7 +713,7 @@ int flush_md5 (void *chan)
 }
 
 
-BYTE* get_md5_key(Agraph_t* graph)
+md5_byte_t* get_md5_key(Agraph_t* graph)
 {
 	Agiodisc_t* xio;	
 	Agiodisc_t a; 
