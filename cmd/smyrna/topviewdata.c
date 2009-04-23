@@ -56,7 +56,7 @@ int prepare_nodes_for_groups(topview * t, topviewdata * td, int groupindex)
     return 1;
 }
 
-int load_host_buttons(topview * t, Agraph_t * g, glCompSet * s)
+/*int load_host_buttons(topview * t, Agraph_t * g, glCompSet * s)
 {
     GtkLayout *layout;
     int btncount = 0;
@@ -165,7 +165,7 @@ int load_host_buttons(topview * t, Agraph_t * g, glCompSet * s)
 	prepare_nodes_for_groups(t, t->TopviewData, i);
     }
     return 1;
-}
+}*/
 void glhost_button_clicked_Slot(void *p)
 {
     //negative active
@@ -178,7 +178,7 @@ void glhost_button_clicked_Slot(void *p)
     glexpose();
 }
 
-void host_button_clicked_Slot(GtkWidget * widget, gpointer user_data)
+/*void host_button_clicked_Slot(GtkWidget * widget, gpointer user_data)
 {
     //negative active
     if (view->Topview->TopviewData->hostactive[(int) user_data] == 0)
@@ -186,4 +186,4 @@ void host_button_clicked_Slot(GtkWidget * widget, gpointer user_data)
     else
 	view->Topview->TopviewData->hostactive[(int) user_data] = 0;
     glexpose();
-}
+}*/
