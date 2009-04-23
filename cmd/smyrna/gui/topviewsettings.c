@@ -78,7 +78,7 @@ static int get_text_widget_to_attribute(char *attribute,char *widget_name,Agraph
     char buf[512];
 	if (strlen(attribute)> 512)
 		return 0;
-	sprintf (buf, "%s",gtk_entry_get_text ((GtkToggleButton *)glade_xml_get_widget(xml, widget_name)));
+	sprintf (buf, "%s",gtk_entry_get_text ((GtkEntry *)glade_xml_get_widget(xml, widget_name)));
 	agattr(g, AGRAPH, attribute, buf);
 	return 1;
 }
@@ -263,7 +263,7 @@ int load_settings_from_graph(Agraph_t * g)
 			    "settingsColorBtn10");
     set_color_button_widget("topologicalfisheyecoarsestcolor",
 			    "settingsColorBtn11");
-	set_text_widget("topologicalfisheyelabelattribute","finenodelabelattribute",g);
+	set_text_widget("topologicalfisheyelabelattribute","finenodelabelattribute");
 
 
     set_checkbox_widget("bordervisible", "settingsChkBox2");

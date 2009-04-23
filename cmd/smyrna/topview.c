@@ -47,7 +47,7 @@ static void set_boundaries(topview * t);
 static void set_topview_options(void);
 static int draw_topview_label(topview_node * v, float zdepth);
 static int draw_topview_edge_label(topview_edge * e, float zdepth);
-static int node_visible(Agnode_t * n);
+static int node_visible(topview_node* n);
 static int select_topview_node(topview_node * n);
 /* static int select_topview_edge(topview_edge * e); */
 static int update_topview_node_from_cgraph(topview_node * Node);
@@ -370,12 +370,12 @@ static void enddrawcycle(Agraph_t* g)
 		if (view->Selection.single_selected_edge->data.Selected == 0) 
 		{
 			view->Selection.single_selected_edge->data.Selected = 1;
-			select_edge(view->g[view->activeGraph], view->Selection.single_selected_edge);
+			select_edge(view->Selection.single_selected_edge);
 	    } 
 		else
 		{
 			view->Selection.single_selected_edge->data.Selected = 1;
-			deselect_edge(view->g[view->activeGraph], view->Selection.single_selected_edge);
+			deselect_edge(view->Selection.single_selected_edge);
 	    }
 	}
 	/* return 1; */
@@ -394,7 +394,7 @@ static void enddrawcycle(Agraph_t* g)
 		else 
 		{
 			view->Selection.single_selected_node->data.Selected = 1;
-			deselect_node(view->g[view->activeGraph], view->Selection.single_selected_node);
+			deselect_node(view->Selection.single_selected_node);
 	    }
 	}
 	}
@@ -449,7 +449,7 @@ static int drawtopviewnodes(Agraph_t * g)
 			 || (view->active_camera >= 0) ) {
 		float zdepth;
 		v = &view->Topview->Nodes[ind];
-		if (!node_visible(v->Node))
+		if (!node_visible(v))
 		    continue;
 		view->visiblenodecount = view->visiblenodecount + 1;
 		select_topview_node(v);
@@ -594,7 +594,7 @@ static int drawtopviewlabels(Agraph_t * g)
 
 		if( ((float)view->visiblenodecount   > view->labelnumberofnodes * v->degree /  f) && view->labelwithdegree)
 			continue;
-		if (!node_visible(v->Node))
+		if (!node_visible(v))
 		    continue;
 	    draw_topview_label(v, 1);
 	}
@@ -724,8 +724,6 @@ static int pick_node(topview_node * n)
 static int draw_node_hint_boxes(void)
 {
     int ind;
-	char buf[512];
-	GLfloat fontwidth;
 	float fs = GetOGLDistance(12);
 
 	for (ind = 0; ind < view->Topview->picked_node_count; ind++) {
@@ -1121,7 +1119,8 @@ static int get_color_from_edge(topview_edge * e)
 
 static int node_visible(topview_node * n)
 {
-	n->data.Visible;
+	return n->data.Visible;
+
 }
 
 int move_TVnodes(void)
@@ -1832,7 +1831,7 @@ void select_with_regex(char* exp)
 	for (ind = 0; ind < view->Topview->Nodecount; ind++) 
 	{
 	    v = &view->Topview->Nodes[ind];
-	    if (node_visible(v->Node))
+	    if (node_visible(v))
 		{
 			if(node_regex(v,exp))
 			{

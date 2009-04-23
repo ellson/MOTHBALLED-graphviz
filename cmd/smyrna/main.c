@@ -32,6 +32,7 @@
 #include "menucallbacks.h"
 #include "gltemplate.h"
 #include "memory.h"
+#include "md5.h"
 #ifdef ENABLE_NLS
 #include "libintl.h"
 #endif
@@ -50,6 +51,8 @@ gchar *package_locale_dir;
 static char* smyrnaDir;
 char* smyrnaGlade;
 unsigned char SmyrnaVerbose;
+
+
 
 
 
@@ -111,8 +114,10 @@ parseArgs (int argc, char *argv[], ViewInfo* view)
     else
 	return NULL;
 }
-extern int create_font_file(char* fontdescription,float gw,float gh);
+extern int create_font_file(char* fontdescription,char* fontfile,float gw,float gh);
+
 extern int load_png_font(char* file_name);
+extern void add_pixmap_directory (const gchar     *directory);
 static void close_cgraph(Agraph_t* g)
 {
 	Agnode_t *v;
@@ -160,6 +165,26 @@ static Agraph_t* test_cgraph(Agraph_t* g,char* filename)
 
 	return g;
 }
+static void test_md5()
+{
+		char buf[512];
+		BYTE digest[16];
+		md5_state_t pms;
+		int ind=0;
+
+		strcpy(buf,"sdfsdfsdfasdf asdfas dasdf asdf asdfas fsd asd fasdf asd fasdf sda fsdf asdf sda fasfsdf sdf sdf");
+		/* Initialize the algorithm. */
+		md5_init(&pms);
+		for (ind =0 ; ind < 1500000 ; ind ++)
+		{
+			md5_append(&pms,buf,32);
+		}
+		md5_finish(&pms,digest);
+		for (ind=0;ind < 16;ind ++)
+		{
+			printf ("%x ",digest[ind]);
+		}
+}
 
 
 
@@ -176,6 +201,8 @@ int main(int argc, char *argv[])
 //	testg=test_cgraph(testg,"c:/4elt.gv");
 //	agclose(testg);
 //	test_cgraph(testg,"c:/4elt.gv");
+	test_md5();
+
 
 
 	smyrnaDir = getenv ("SMYRNA_PATH");

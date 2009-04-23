@@ -454,8 +454,8 @@ static void SetStyle(xdot_op * op, int param)
 static void SetFont(xdot_op * op, int param)
 {
 	//activate the right font
-	view->widgets->fontset->activefont=add_font(view->widgets->fontset,op->u.font.name);//load or set active font
-	view->FontSize =  op->u.font.size;
+/*	view->widgets->fontset->activefont=add_font(view->widgets->fontset,op->u.font.name);//load or set active font
+	view->FontSize =  op->u.font.size;*/
 }
 
 static void InsertImage(xdot_op * op, int param)
@@ -662,22 +662,22 @@ void drawBorders(ViewInfo * view)
 
 static void drawXdotwithattr(void *p, char *attr, int param)
 {
-    xdot *xDot;
+/*    xdot *xDot;
     if ((xDot = parseXDotF(agget(p, attr), OpFns, sizeof(sdot_op))))
 	{
 		drawXdot(xDot, param, p);
 		freeXDot(xDot);
-    }
+    }*/
 }
 
 static void drawXdotwithattrs(void *e, int param)
 {
-    drawXdotwithattr(e, "_draw_", param);
+ /*   drawXdotwithattr(e, "_draw_", param);
     drawXdotwithattr(e, "_ldraw_", param);
     drawXdotwithattr(e, "_hdraw_", param);
     drawXdotwithattr(e, "_tdraw_", param);
     drawXdotwithattr(e, "_hldraw_", param);
-    drawXdotwithattr(e, "_tldraw_", param);
+    drawXdotwithattr(e, "_tldraw_", param);*/
 }
 
 

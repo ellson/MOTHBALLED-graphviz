@@ -472,7 +472,7 @@ int select_all_edges()
 {
     int ind = 0;
     //check if in the list
-	for (ind = 0; ind < view->Topview->Edges;ind ++)
+	for (ind = 0; ind < view->Topview->Edgecount;ind ++)
 	{
 		select_edge(&view->Topview->Edges[ind]);
     }
@@ -497,7 +497,7 @@ int deselect_all_edges()
 {
     int ind = 0;
     //check if in the list
-	for (ind = 0; ind < view->Topview->Edges;ind ++)
+	for (ind = 0; ind < view->Topview->Edgecount;ind ++)
 	{
 		deselect_edge(&view->Topview->Edges[ind]);
     }

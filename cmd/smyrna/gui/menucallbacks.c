@@ -20,7 +20,7 @@
 #include "tvnodes.h"
 #include "selection.h"
 #include "topviewsettings.h"
-
+#include "gltemplate.h"
 //file
 char buf[255];
 void mNewSlot(GtkWidget * widget, gpointer user_data)
@@ -222,6 +222,7 @@ void mNodeFindSlot(GtkWidget * widget, gpointer user_data)
 {
 	if(view->activeGraph !=-1)
 	{
+	
 		gtk_dialog_set_response_sensitive((GtkDialog *)
 						  glade_xml_get_widget(xml,
 								       "findDialog"),
@@ -238,8 +239,8 @@ void mNodeFindSlot(GtkWidget * widget, gpointer user_data)
 
 		gtk_widget_hide(glade_xml_get_widget(xml, "findDialog"));
 		if (respond ==1)
-			select_with_regex(
-				gtk_entry_get_text((GtkEntry*) glade_xml_get_widget(xml,"findText"))
+			select_with_regex((gchar*)
+			gtk_entry_get_text((GtkEntry*) glade_xml_get_widget(xml,"findText"))
 				);
 	}
 

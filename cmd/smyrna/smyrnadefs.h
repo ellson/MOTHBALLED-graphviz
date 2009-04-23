@@ -527,6 +527,8 @@ typedef struct _ViewInfo
 	float FontSizeConst;
     glCompSet *widgets;	//for novice user open gl menu
 	int visiblenodecount;	/*helper variable to know the number of the nodes being rendered, good data to optimize speed*/
+	BYTE orig_key[16] ;	/*md5 result for original graph*/
+	BYTE final_key[16] ;	/*md5 result right before graph is saved*/
 
 } ViewInfo;
 

@@ -27,7 +27,9 @@
 #include "topfisheyeview.h"
 #include <string.h>
 #include "color.h"
+#include "colorprocs.h"
 
+#include <wincrypt.h>
 
 static int get_temp_coords(topview* t,int level,int v,double* coord_x,double* coord_y);
 static int get_temp_coords2(topview* t,int level,int v,double* coord_x,double* coord_y,float *R,float *G,float *B);
@@ -176,7 +178,7 @@ void fisheye_spherical(double x_focus, double y_focus, double z_focus,
 
 static v_data *makeGraph(topview * tv, int *nedges)
 {
-    int i,i2;
+    int i;
     int ne = tv->Edgecount;	/* upper bound */
     int nv = tv->Nodecount;
     v_data *graph = N_NEW(nv, v_data);
