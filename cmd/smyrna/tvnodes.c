@@ -679,7 +679,7 @@ int apply_filter_from_gui(void)
 }
 
 
-static cache_validate_node(tv_node* tvn)
+static int cache_validate_node(tv_node* tvn)
 {
 
 	return view->Topview->Nodes[tvn->index].valid;
