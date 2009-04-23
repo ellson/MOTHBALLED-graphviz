@@ -62,14 +62,9 @@ void clear_viewport(ViewInfo * view)
     /*free topview if there is one */
     if (view->activeGraph >= 0) 
 		cleartopview(view->Topview);
-    if (view->graphCount) {
-	/*all cgraph graphs should be freed */
-	for (ind = 0; ind < view->graphCount; ind++) {
-	    agclose(view->g[ind]);
-	}
-	/*frees itself */
-    }
-    free(view);
+    if (view->graphCount) 
+		agclose(view->g[view->activeGraph]);
+	init_viewport(view);
 }
 static void* get_glut_font(int ind)
 {
@@ -99,7 +94,7 @@ static void* get_glut_font(int ind)
 	}
 
 }
-static fill_key(BYTE* b,BYTE* data)
+static void fill_key(BYTE* b,BYTE* data)
 {
 	int ind=0;
 	for (ind=0;ind < 16;ind ++)
@@ -108,30 +103,56 @@ static fill_key(BYTE* b,BYTE* data)
 	}
 
 }
+static int compare_keys(BYTE* b1,BYTE* b2)
+{
+	/*1 keys are equal*/
+	/*0 not equal*/
+
+	int ind=0;
+	int eq=1;
+	for (ind=0;ind < 16;ind ++)
+	{
+		if (b1[ind] != b2[ind])
+		{
+			eq=0;
+		}
+	}
+	return eq;
+}
 
 
-void close_graph(ViewInfo * view,int graphid)
+int close_graph(ViewInfo * view,int graphid)
 {
 	int ind=0;
 	int modified=0;
-	/*check if graph has been modified*/
+	if (view->activeGraph < 0)
+		return 1;
 	fill_key(view->final_key,get_md5_key(view->g[graphid]));
-	printf ("graph original identification:");
-	for (ind=0;ind < 16;ind ++)
+	if (!compare_keys(view->final_key,view->orig_key))
+		view->Topview->Graphdata.Modified=1;
+	if (view->Topview->Graphdata.Modified)
 	{
-		printf ("%x ",view->orig_key[ind]);
-	}
-	printf ("graph final identification:");
-	for (ind=0;ind < 16;ind ++)
-	{
-		printf ("%x ",view->final_key[ind]);
-	}
+		switch (show_close_nosavedlg())
+		{
+			case 0:	/*save and close*/
+				save_graph();
+				clear_viewport(view);
+				return 1;
+				break;
+			case 1:/*dont save but close*/
+				clear_viewport(view);
+				return 1;
+				break;
+			case 2:/*cancel do nothing*/
+				return 0;
+				break;
+			default:
+				break;
+		}
+    }
+	clear_viewport(view);
+	return 1;
 
-	if (graphid >= 0) 
-		cleartopview(view->Topview);
-    agclose(view->g[0]);
-	view->graphCount = view->graphCount -1;
-	view->activeGraph=-1;
 }
 
 char *get_attribute_value(char *attr, ViewInfo * view, Agraph_t * g)
@@ -977,9 +998,12 @@ void glexpose(void) {
     expose_event(view->drawing_area, NULL, NULL);
 }
 int gl_main_expose(void) {
-	if(view->Topview->animate==1)
-		expose_event(view->drawing_area, NULL, NULL);
-	return 1;
+	if (view->activeGraph >= 0)
+	{
+		if(view->Topview->animate==1)
+			expose_event(view->drawing_area, NULL, NULL);
+		return 1;
+	}
 }
 
 
@@ -1000,4 +1024,6 @@ void please_dont_wait(void)
 {
     gtk_widget_hide(glade_xml_get_widget(xml, "frmWait"));
 }
+
+
 

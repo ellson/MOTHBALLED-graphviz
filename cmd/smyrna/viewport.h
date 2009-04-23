@@ -27,7 +27,7 @@ void init_viewport(ViewInfo * view);
 void set_viewport_settings_from_template(ViewInfo * view, Agraph_t *);
 void clear_viewport(ViewInfo * view);
 int add_graph_to_viewport_from_file(char *fileName);
-void close_graph(ViewInfo * view,int graphid);
+int close_graph(ViewInfo * view,int graphid);
 int save_graph(void);
 int save_graph_with_file_name(Agraph_t * graph, char *fileName);
 int save_as_graph(void);

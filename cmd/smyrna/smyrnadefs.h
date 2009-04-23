@@ -44,6 +44,8 @@
 #include "glcompset.h"
 #include "hier.h"
 
+typedef unsigned char       BYTE;
+
 #define IS_TEST_MODE_ON							0
 #define	DEFAULT_MAGNIFIER_WIDTH					300
 #define	DEFAULT_MAGNIFIER_HEIGHT				225

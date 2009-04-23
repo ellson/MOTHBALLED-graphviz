@@ -129,62 +129,6 @@ static void close_cgraph(Agraph_t* g)
 }
 
 
-static Agraph_t* test_cgraph(Agraph_t* g,char* filename)
-{
-
-	Agnode_t *v;
-	Agedge_t *e;
-	FILE *input_file;
-	char buf[512];
-	if (g)
-		close_cgraph(g);
-	
-	if (!(input_file = fopen(filename, "r")))
-	{
-		g_print("Cannot open %s\n", filename);
-		return 0;
-    }
-    if (!(g = agread(input_file, NIL(Agdisc_t *)))) 
-	{
-		g_print("Cannot read graph in  %s\n", filename);
-		fclose (input_file);
-		return 0;
-    }
-
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
-	{
-		agbindrec(v, "temp_node_record", sizeof(temp_node_record), TRUE);//graph custom data
-	}
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
-	{
-		for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
-		{
-			strcpy(buf, agget(aghead(e), "pos"));
-		}
-	}
-
-	return g;
-}
-static void test_md5()
-{
-		char buf[512];
-		BYTE digest[16];
-		md5_state_t pms;
-		int ind=0;
-
-		strcpy(buf,"sdfsdfsdfasdf asdfas dasdf asdf asdfas fsd asd fasdf asd fasdf sda fsdf asdf sda fasfsdf sdf sdf");
-		/* Initialize the algorithm. */
-		md5_init(&pms);
-		for (ind =0 ; ind < 1500000 ; ind ++)
-		{
-			md5_append(&pms,buf,32);
-		}
-		md5_finish(&pms,digest);
-		for (ind=0;ind < 16;ind ++)
-		{
-			printf ("%x ",digest[ind]);
-		}
-}
 
 
 
@@ -196,15 +140,6 @@ int main(int argc, char *argv[])
     GdkGLConfig *glconfig;
     char* initFileName;
 	Agraph_t* g=NULL;
-	Agraph_t* testg=NULL;
-
-//	testg=test_cgraph(testg,"c:/4elt.gv");
-//	agclose(testg);
-//	test_cgraph(testg,"c:/4elt.gv");
-	test_md5();
-
-
-
 	smyrnaDir = getenv ("SMYRNA_PATH");
 #ifndef _WIN32
     if (!smyrnaDir)

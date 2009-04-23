@@ -82,43 +82,31 @@ void mOptionsSlot(GtkWidget * widget, gpointer user_data)
 
 void mQuitSlot(GtkWidget * widget, gpointer user_data)
 {
-    //1 check all graphs 1 by 1 to see any unsaved
-    int respond;
-    int gIndex;
-#ifdef UNUSED
-    int active_graph = view->activeGraph;	//stores the active graph in case quit aborted
-#endif
-    for (gIndex = 0; gIndex < view->graphCount; gIndex++) {
-	view->activeGraph = gIndex;
-	if (view->Topview->Graphdata.Modified)
-	{
-	    sprintf(buf,
-		    "graph %s has been modified \n , would you like to save it before quitting the the program?",
-		     view->Topview->Graphdata.GraphFileName);
-	    Dlg =
-		(GtkMessageDialog *) gtk_message_dialog_new(NULL,
-							    GTK_DIALOG_MODAL,
-							    GTK_MESSAGE_QUESTION,
-							    GTK_BUTTONS_NONE,
-							    buf);
-	    gtk_dialog_add_button((GtkDialog *) Dlg, "YES", 100);
-	    gtk_dialog_add_button((GtkDialog *) Dlg, "NO", 101);
-	    gtk_dialog_add_button((GtkDialog *) Dlg, "Cancel", 102);
-
-	    respond = gtk_dialog_run((GtkDialog *) Dlg);
-	    if (respond == 100)	//save and continue
-	    {
-		if (!save_graph())
-		    break;
-	    }
-	    if (respond == 102)	//save and continue
-	    {
-		break;
-	    }
-	}
-    }
-    gtk_main_quit();
+	if (close_graph(view,view->activeGraph));
+		gtk_main_quit();
 }
+
+int show_close_nosavedlg(void)
+{
+  GtkWidget *dialog;
+  char buf[512];
+  int rv;	/*return value*/
+  sprintf(buf,"%s has been modified. Do you want to save it before closing?",view->Topview->Graphdata.GraphFileName);
+  dialog = gtk_message_dialog_new(NULL,
+            GTK_DIALOG_MODAL,
+            GTK_MESSAGE_QUESTION,
+            GTK_BUTTONS_NONE,
+            buf);
+
+  gtk_window_set_title(GTK_WINDOW(dialog), "Smyrna Warning");
+  gtk_dialog_add_button(dialog,"Yes",0);
+  gtk_dialog_add_button(dialog,"No",1);
+  gtk_dialog_add_button(dialog,"Cancel",2);
+  rv=gtk_dialog_run(GTK_DIALOG(dialog));
+  gtk_widget_destroy(dialog);
+  return rv;
+}
+
 
 
 //edit
