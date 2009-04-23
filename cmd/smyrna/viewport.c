@@ -25,6 +25,7 @@
 #include "color.h"
 #include <glade/glade.h>
 #include "gui.h"
+#include "menucallbacks.h"
 #include "string.h"
 #include "topview.h"
 #include "gltemplate.h"
@@ -35,8 +36,10 @@
 
 
   /* Forward declarations */
+#ifdef UNUSED
 static int init_object_custom_data(Agraph_t * graph, void *obj);
 static void refresh_borders(Agraph_t* g);
+#endif
 
 #define countof( array ) ( sizeof( array )/sizeof( array[0] ) )
 
@@ -45,6 +48,7 @@ ViewInfo *view;
 GtkMessageDialog *Dlg;
 int respond;
 
+#ifdef UNUSED
 static int mapbool(char *p)
 {
     if (p == NULL)
@@ -55,10 +59,10 @@ static int mapbool(char *p)
 	return TRUE;
     return atoi(p);
 }
+#endif
 
 void clear_viewport(ViewInfo * view)
 {
-    int ind = 0;
     /*free topview if there is one */
     if (view->activeGraph >= 0) 
 		cleartopview(view->Topview);
@@ -123,8 +127,6 @@ static int compare_keys(md5_byte_t* b1,md5_byte_t* b2)
 
 int close_graph(ViewInfo * view,int graphid)
 {
-	int ind=0;
-	int modified=0;
 	if (view->activeGraph < 0)
 		return 1;
 	fill_key(view->final_key,get_md5_key(view->g[graphid]));
@@ -313,6 +315,16 @@ set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
 #ifdef _WIN32
     glClearColor(view->bgColor.R, view->bgColor.G, view->bgColor.B, view->bgColor.A);	//background color
 #endif
+}
+
+static gboolean gl_main_expose(gpointer data) {
+	if (view->activeGraph >= 0)
+	{
+		if(view->Topview->animate==1)
+			expose_event(view->drawing_area, NULL, NULL);
+		return 1;
+	}
+	return 0;
 }
 
 void init_viewport(ViewInfo * view)
@@ -509,6 +521,7 @@ static void update_graph_params(Agraph_t * graph)
 	agattr(graph, AGRAPH, "GraphFileName",view->Topview->Graphdata.GraphFileName);
 }
 
+#ifdef UNUSED
 /* clear_object_xdot:
  * clear single object's xdot info
  */ 
@@ -565,6 +578,7 @@ static void clear_graph(Agraph_t * graph)
 
 }
 
+#endif
 /* create_xdot_for_graph:
  * Returns temp filename for output data
  * or NULL on error.
@@ -588,6 +602,7 @@ static void clear_graph(Agraph_t * graph)
 #define DOTTEMP "/tmp/_dotXXXXXX"
 #define XDOTTEMP "/tmp/_xdotXXXXXX"
 
+#ifdef UNUSED
 /* mkTemp:
  * Given a template string buf of the form abcdXXXXX,
  * and its size bufsz, replace the X's by characters creating
@@ -604,6 +619,7 @@ mkTemp (char* buf, size_t bufsz)
 	return 0;
     }
 }
+#endif
 
 #endif
 
@@ -638,10 +654,12 @@ static Agraph_t *loadGraph(char *filename)
 	preparetopview(g, view->Topview);
 	return g;
 }
+#ifdef UNUSED
 static void refresh_borders(Agraph_t* g)
 {
 		sscanf(agget(g,"bb"),"%f,%f,%f,%f",&(view->bdxLeft),&(view->bdyBottom),&(view->bdxRight),&(view->bdyTop));	
 }
+#endif
 
 
 
@@ -702,7 +720,7 @@ static md5_state_t pms;
 
 int append_to_md5(void *chan, char *str)
 {
-	md5_append(&pms,str,(int)strlen(str));
+	md5_append(&pms,(unsigned char*)str,(int)strlen(str));
 	return 1;
 
 }
@@ -831,6 +849,7 @@ void movenode(void *obj, float dx, float dy)
 	}
 }
 
+#ifdef UNUSED
 static char *move_xdot(void *obj, xdot * x, int dx, int dy, int dz)
 {
     int i = 0;
@@ -884,7 +903,6 @@ static char *move_xdot(void *obj, xdot * x, int dx, int dy, int dz)
 
 }
 
-#ifdef UNUSED
 static char *offset_spline(xdot * x, float dx, float dy, float headx,
 			   float heady)
 {
@@ -997,15 +1015,6 @@ int setGdkColor(GdkColor * c, char *color) {
 void glexpose(void) {
     expose_event(view->drawing_area, NULL, NULL);
 }
-int gl_main_expose(void) {
-	if (view->activeGraph >= 0)
-	{
-		if(view->Topview->animate==1)
-			expose_event(view->drawing_area, NULL, NULL);
-		return 1;
-	}
-}
-
 
 /*following code does not do what i like it to do*/
 /*I liked to have a please wait window on the screen all i got was the outer borders of the window

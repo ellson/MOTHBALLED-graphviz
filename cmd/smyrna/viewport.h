@@ -36,7 +36,6 @@ int do_graph_layout(Agraph_t * graph, int Engine, int keeppos);
 
 void movenode(void *n, float dx, float dy);
 void glexpose(void);
-int gl_main_expose(void);
 void move_nodes(Agraph_t * g);
 void please_wait(void);
 void please_dont_wait(void);
