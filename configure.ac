@@ -3143,6 +3143,6 @@ echo "  gv_tcl:        $use_gv_tcl"
 echo ""
 echo "  tcldot:        $use_tcldot"
 echo "  tclpathplan:   $use_tclpathplan"
-echo "  gctclft:       $use_gdtclft"
+echo "  gdtclft:       $use_gdtclft"
 echo "  tkspline:      $use_tkspline"
 
