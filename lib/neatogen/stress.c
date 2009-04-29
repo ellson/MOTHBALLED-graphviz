@@ -1360,6 +1360,39 @@ static float *compute_weighted_apsp_packed(vtx_data * graph, int n)
     return Dij;
 }
 
+
+/* mdsModel:
+ * Update matrix with actual edge lengths
+ */
+float*
+mdsModel(vtx_data * graph, int nG)
+{
+    int i, j, e;
+    float *Dij;
+    int shift = 0;
+    double delta;
+
+    if (graph->ewgts == NULL) return 0;
+
+    /* first, compute shortest paths to fill in non-edges */
+    Dij = compute_weighted_apsp_packed(graph, nG);
+
+    /* then, replace edge entries will user-supplied len */
+    for (i = 0; i < nG; i++) {
+	shift += i;
+	for (e = 1; e < graph[i].nedges; e++) {
+	    j = graph[i].edges[e];
+	    if (j < i) continue;
+	    delta += abs(Dij[i*nG + j - shift] - graph[i].ewgts[e]);
+	    Dij[i*nG + j - shift] = graph[i].ewgts[e];
+	}
+    }
+    if (Verbose) {
+	fprintf (stderr, "mdsModel: delta = %f\n", delta);
+    }
+    return Dij;
+}
+
 /* compute_apsp_packed:
  * Assumes integral weights > 0.
  */
@@ -1535,6 +1568,10 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 	    agerr(AGPREV,
 		  "is undefined. Reverting to the shortest path model.\n");
 	}
+    } else if (model == MODEL_MDS) {
+	if (Verbose)
+	    fprintf(stderr, "Calculating MDS model");
+	Dij = mdsModel(graph, n);
     }
     if (!Dij) {
 	if (Verbose)
