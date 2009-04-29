@@ -121,6 +121,9 @@ int stress_majorization_cola(
     if (maxi == 0)
 	return iterations;
 
+    if (Verbose)
+	start_timer();
+
     if (model == MODEL_SUBSET) {
 	/* weight graph to separate high-degree nodes */
 	/* and perform slower Dijkstra-based computation */
@@ -135,11 +138,20 @@ int stress_majorization_cola(
 	    agerr(AGPREV,
 		  "is undefined. Reverting to the shortest path model.\n");
 	}
+    } else if (model == MODEL_MDS) {
+	if (Verbose)
+	    fprintf(stderr, "Calculating MDS model");
+	Dij = mdsModel(graph, n);
     }
     if (!Dij) {
 	if (Verbose)
-	    fprintf(stderr, "Calculating shortest paths\n ");
+	    fprintf(stderr, "Calculating shortest paths");
 	Dij = compute_apsp_packed(graph, n);
+    }
+    if (Verbose) {
+	fprintf(stderr, ": %.2f sec\n", elapsed_sec());
+	fprintf(stderr, "Setting initial positions");
+	start_timer();
     }
 
     diameter = -1;
@@ -178,6 +190,7 @@ int stress_majorization_cola(
     for (i = 0; i < n; i++) {
 	d_coords[1][i] -= y_0;
     }
+    if (Verbose) fprintf(stderr, ": %.2f sec", elapsed_sec());
 
 	/**************************
 	** Laplacian computation **

@@ -25,6 +25,7 @@
 #define MODEL_SHORTPATH      0
 #define MODEL_CIRCUIT        1
 #define MODEL_SUBSET         2
+#define MODEL_MDS            3
 
 #define MODE_KK          0
 #define MODE_MAJOR       1
