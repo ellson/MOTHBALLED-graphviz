@@ -116,23 +116,34 @@ static void free_3array(double ***rv)
 }
 
 
+/* lenattr:
+ * Return 1 if attribute not defined
+ * Return 2 if attribute string bad
+ */
 #ifdef WITH_CGRAPH
-static double doubleattr(void *obj, Agsym_t* index, double defval)
+static int lenattr(edge_t* e, Agsym_t* index, double* val)
 #else
-static double doubleattr(void *obj, int index, double defval)
+static int lenattr(edge_t* e, int index, double* val)
 #endif
 {
-    double val;
+    char* s;
 
 #ifdef WITH_CGRAPH
     if (index == NULL)
 #else
     if (index < 0)
 #endif
-	return defval;
-    if (sscanf(agxget(obj, index), "%lf", &val) < 1)
-	return defval;
-    return val;
+	return 1;
+
+    s = agxget(e, index);
+    if (*s == '\0') return 1;
+
+    if ((sscanf(s, "%lf", val) < 1) || (*val < 0) || ((*val == 0) && !Nop)) {
+	agerr(AGWARN, "bad edge len \"%s\"", s);
+	return 2;
+    }
+    else
+	return 0;
 }
 
 
@@ -202,20 +213,20 @@ static node_t *prune(graph_t * G, node_t * np, node_t * next)
 }
 
 #ifdef WITH_CGRAPH
-static double setEdgeLen(graph_t * G, node_t * np, Agsym_t* lenx)
+static double setEdgeLen(graph_t * G, node_t * np, Agsym_t* lenx, double dfltlen)
 #else
-static double setEdgeLen(graph_t * G, node_t * np, int lenx)
+static double setEdgeLen(graph_t * G, node_t * np, int lenx, double dfltlen)
 #endif
 {
     edge_t *ep;
     double total_len = 0.0;
-    double len=0;
+    double len;
+    int err;
 
     for (ep = agfstout(G, np); ep; ep = agnxtout(G, ep)) {
-	len = doubleattr(ep, lenx, 1.0);
-	if ((len < 0) || ((len == 0) && !Nop)) {
-	    agerr(AGWARN, "bad edge len %f in %s - set to 1\n", len, agnameof(G));
-	    len = 1.0;
+	if ((err = lenattr(ep, lenx, &len))) {
+	    if (err == 2) agerr(AGPREV, " in %s - setting to %.02f\n", agnameof(G), dfltlen);
+	    len = dfltlen;
 	}
 	ED_dist(ep) = len;
 	total_len += len;
@@ -235,6 +246,7 @@ int scan_graph_mode(graph_t * G, int mode)
     char *str;
     node_t *np, *xp, *other;
     double total_len = 0.0;
+    double dfltlen = 1.0;
 #ifdef WITH_CGRAPH
     Agsym_t* lenx;
 #else
@@ -244,6 +256,7 @@ int scan_graph_mode(graph_t * G, int mode)
     if (Verbose)
 	fprintf(stderr, "Scanning graph %s, %d nodes\n", agnameof(G),
 		agnnodes(G));
+
 
     /* Eliminate singletons and trees */
     if (Reduce) {
@@ -279,14 +292,14 @@ int scan_graph_mode(graph_t * G, int mode)
 	    GD_neato_nlist(G)[i] = np;
 	    ND_id(np) = i++;
 	    ND_heapindex(np) = -1;
-	    total_len += setEdgeLen(G, np, lenx);
+	    total_len += setEdgeLen(G, np, lenx, dfltlen);
 	}
     } else {
 	Epsilon = DFLT_TOLERANCE;
 	getdouble(G, "epsilon", &Epsilon);
 	for (i = 0, np = agfstnode(G); np; np = agnxtnode(G, np)) {
 	    ND_id(np) = i++;
-	    total_len += setEdgeLen(G, np, lenx);
+	    total_len += setEdgeLen(G, np, lenx, dfltlen);
 	}
     }
 
