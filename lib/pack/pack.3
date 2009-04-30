@@ -8,7 +8,7 @@
 \f5
 #include <graphviz/pack.h>
 
-typedef enum { l_clust, l_node, l_graph} pack_mode;
+typedef enum { l_clust, l_node, l_graph, l_array} pack_mode;
 
 typedef struct {
     unsigned int margin;
@@ -16,6 +16,9 @@ typedef struct {
     pack_mode    mode;
     boolean*     fixed;
 } pack_info;
+
+point*     putRects(int ng, boxf* bbs, pack_info* pinfo);
+int        packRects(int ng, boxf* bbs, pack_info* pinfo);
 
 point*     putGraphs (int, Agraph_t**, Agraph_t*, pack_info*);
 int        packGraphs (int, Agraph_t**, Agraph_t*, pack_info*);
@@ -38,8 +41,7 @@ One set of functions can be used to take a single graph and
 break it apart into connected components. A complementary set
 of functions takes a collection of graphs (not necessarily components
 of a single graph) which have been laid out separately, and packs them
-together moderately tightly. The packing is done using the polyomino
-algorithm of K. Freivalds et al.
+together.
 
 As this library is meant to be used with \fIlibcommon\fP, it relies
 on the \fIAgraphinfo_t\fP, \fIAgnodeinfo_t\fP and \fIAgedgeinfo_t\fP used 
@@ -85,15 +87,16 @@ single layout which avoids any overlap. It takes as input \fIng\fP
 graphs \fIgs\fP. For each graph, it is assumed that all the nodes have
 been positioned using \fIpos\fP, and that the \fIxsize\fP and \fIysize\fP
 fields have been set.
-The packing is done using the polyomino-based
-algorithm of Freivalds et al. This allows for a fairly tight packing, in
-which a convex part of one graph might be inserted into the concave part
-of another.
 .PP
 If \fIroot\fP is non-NULL, it is taken as the root
 graph of the subgraphs \fIgs\fP and is used to find the edges. Otherwise, 
 \fIputGraphs\fP uses the edges found in each graph \fIgs[i]\fP.
 .PP
+For the modes \fIl_node\fP, \fIl_clust\fP, and \fIl_graph\fP,
+the packing is done using the polyomino-based
+algorithm of Freivalds et al. This allows for a fairly tight packing, in
+which a convex part of one graph might be inserted into the concave part
+of another.
 The granularity of the polyominoes used depends on the value of
 \fIip->mode\fP. If this is \fIl_node\fP, a polyomino is constructed
 to approximate the nodes and edges. If this is \fIl_clust\fP, the
@@ -101,6 +104,9 @@ polyomino treats top-level clusters as single rectangles, unioned
 with the polyominoes for the remaining nodes and edges. If the value
 is \fIl_graph\fP, the polyomino for a graph is a single rectangle
 corresponding to the bounding box of the graph.
+.PP
+The mode \fIl_node\fP specifies that the graphs should be packed as an
+array.
 .PP
 If \fIip->doSplines\fP is true, the function uses the spline information
 in the \fIspl\fP field of an edge, if it exists. 
@@ -135,11 +141,26 @@ the \fIspl\fP field in \fIAedgeinfo_t\fP.
 This function takes \fIng\fP subgraphs \fIgs\fP of a root graph \fIroot\fP
 and calls \fIputGraphs\fP with the given arguments to generate
 a packing of the subgraphs. If successful, it then invokes
-\fIshiftGraphs\fP to apply the new positions. It returns 0 on success.
+shifts the subgraphs to their new positions. It returns 0 on success.
 .PP
 .SS "  int packSubgraphs (int ng, Agraph_t** gs, Agraph_t* root, pack_info* ip)"
 This function simply calls \fIpackGraphs\fP with the given arguments, and
 then recomputes the bounding box of the \fIroot\fP graph.
+.PP
+.SS "  point* putRects (int ng, boxf* bbs, pack_info* ip)"
+\fIputRects\fP packs together a collection of rectangles into a
+single layout which avoids any overlap. It takes as input \fIng\fP 
+rectangles \fIbbs\fP.
+.PP
+Its behavior and return value are analogous to those of \fIputGraphs\fP.
+However, the modes \fIl_node\fP and \fIl_clust\fP are illegal.
+The fields \fIfixed\fP and \fIdoSplines\fP of \fIip\fP
+are unused.
+.PP
+.SS "  int packRects (int ng, boxf* bbs, pack_info* ip)"
+\fIpackRects\fP is analogous to \fIpackGraphs\fP: it calls
+\fIputRects\fP and, if this is successful, it translates
+the rectangles in \fIbbs\fP appropriately.
 .SS "Utility functions"
 The library provides several functions which can be used to tailor the
 packing based on graph attributes.
