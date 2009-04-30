@@ -301,13 +301,17 @@ static void addEdge (GtsSegment * e, estate* es)
     es->n += 1;
 }
 
-typedef int (*qsort_r_cmpf) (void *, const void *, const void *);
+/* If qsort_r ever becomes standardized, this should be used
+ * instead of having a global variable.
+ */
+static double* _vals;
+typedef int (*qsort_cmpf) (const void *, const void *);
 
 static int 
-vcmp (double* v, int* a, int* b)
+vcmp (int* a, int* b)
 {
-    double va = v[*a];
-    double vb = v[*b];
+    double va = _vals[*a];
+    double vb = _vals[*b];
 
     if (va < vb) return -1; 
     else if (va > vb) return 1; 
@@ -351,7 +355,6 @@ int *delaunay_tri(double *x, double *y, int n, int* pnedges)
 	int* vs = N_GNEW(n, int);
 	int* ip;
 	int i, hd, tl;
-	double* vals;
 
 	*pnedges = nedges = n-1;
 	ip = edges = N_GNEW(2 * nedges, int);
@@ -360,10 +363,10 @@ int *delaunay_tri(double *x, double *y, int n, int* pnedges)
 	    vs[i] = i;
 
 	if (x[0] == x[1])  /* vertical line */ 
-	    vals = y;
+	    _vals = y;
 	else              
-	    vals = x;
-	qsort_r (vs, n, sizeof(int), vals, (qsort_r_cmpf)vcmp);
+	    _vals = x;
+	qsort (vs, n, sizeof(int), (qsort_cmpf)vcmp);
 
 	tl = vs[0];
 	for (i = 1; i < n; i++) {
