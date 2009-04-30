@@ -841,6 +841,9 @@ void compute_bb(graph_t * g)
 	B2BF(GD_bb(GD_clust(g)[i]), BF);
 	EXPANDBB(bb,BF);
     }
+    if (GD_label(g) && GD_label(g)->set) {
+	bb = addLabelBB(bb, GD_label(g), GD_flip(g));
+    }
 
     GD_bb(g) = bb;
 }
