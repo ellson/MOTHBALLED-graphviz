@@ -654,6 +654,12 @@ static void translate(Agraph_t * g, pos_edge posEdges)
  * clusters, edges and labels. If certain position information
  * is missing, init_nop will use a standard neato technique to
  * supply it.
+ *
+ * If adjust is false, init_nop does nothing but initialize all
+ * of the basic graph information. No tweaking of positions or 
+ * filling in edge splines is done.
+ *
+ * Returns 0 on success.
  */
 int init_nop(Agraph_t * g, int adjust)
 {
@@ -662,6 +668,7 @@ int init_nop(Agraph_t * g, int adjust)
     pos_edge posEdges;		/* How many edges have spline info */
     attrsym_t *G_lp = agfindgraphattr(g, "lp");
     attrsym_t *G_bb = agfindgraphattr(g, "bb");
+    int didAdjust;  /* Have nodes been moved? */
 
     /* If G_bb not defined, define it */
     if (!G_bb)
@@ -683,12 +690,19 @@ int init_nop(Agraph_t * g, int adjust)
     posEdges = nop_init_edges(g);
 
     if (adjust && Nop == 1)
-	adjustNodes(g);
+	didAdjust = adjustNodes(g);
+
+    if (didAdjust) {
+	if (GD_label(g)) GD_label(g)->set = FALSE;
+/* FIX: 
+ *   - if nodes are moved, clusters are no longer valid.
+ */
+    }
 
     /* If g does not have a good "bb" attribute or we adjusted the nodes, 
      * compute it. 
      */
-    if (!chkBB(g, G_bb) || (adjust && Nop == 1))
+    if (!chkBB(g, G_bb) || didAdjust)
 	compute_bb(g);
 
     /* At this point, all bounding boxes should be correctly defined.
