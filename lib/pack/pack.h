@@ -26,21 +26,20 @@ extern "C" {
 #include "types.h"
 
 /* Type indicating granularity and method 
- *  l_undef  - unspecified
- *  l_node   - polyomino using nodes and edges
- *  l_clust  - polyomino using nodes and edges and top-level clusters
- *             (assumes ND_clust(n) unused by application)
- *  l_graph  - polyomino using graph bounding box
- *  l_hull   - polyomino using convex hull (unimplemented)
- *  l_tile   - tiling using graph bounding box (unimplemented)
- *  l_bisect - alternate bisection using graph bounding box (unimplemented)
+ *  l_undef    - unspecified
+ *  l_node     - polyomino using nodes and edges
+ *  l_clust    - polyomino using nodes and edges and top-level clusters
+ *               (assumes ND_clust(n) unused by application)
+ *  l_graph    - polyomino using computer graph bounding box
+ *  l_array    - array based on graph bounding boxes
+ *  l_hull     - polyomino using convex hull (unimplemented)
+ *  l_tile     - tiling using graph bounding box (unimplemented)
+ *  l_bisect   - alternate bisection using graph bounding box (unimplemented)
  */
-    typedef enum { l_undef, l_clust, l_node, l_graph } pack_mode;
+    typedef enum { l_undef, l_clust, l_node, l_graph, l_array } pack_mode;
 
     typedef struct {
-#ifdef UNIMPLEMENTED
 	float aspect;		/* desired aspect ratio */
-#endif
 	unsigned int margin;	/* margin left around objects, in points */
 	int doSplines;		/* use splines in constructing graph shape */
 	pack_mode mode;		/* granularity and method */
@@ -60,10 +59,16 @@ extern "C" {
 #endif
 /*end visual studio*/
 
+    extern point *putRects(int ng, boxf* bbs, pack_info* pinfo);
+    extern int packRects(int ng, boxf* bbs, pack_info* pinfo);
+
     extern point *putGraphs(int, Agraph_t **, Agraph_t *, pack_info *);
     extern int packGraphs(int, Agraph_t **, Agraph_t *, pack_info *);
     extern int packSubgraphs(int, Agraph_t **, Agraph_t *, pack_info *);
     extern int pack_graph(int, Agraph_t **, Agraph_t *, boolean*);
+
+    extern int shiftGraphs(int, Agraph_t**, point*, Agraph_t*, int);
+
     extern pack_mode getPackMode(Agraph_t * g, pack_mode dflt);
     extern int getPack(Agraph_t *, int not_def, int dflt);
 

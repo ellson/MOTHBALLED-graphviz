@@ -32,34 +32,35 @@
 #define CELL(p,s) ((p).x = (p).x/(s), (p).y = ((p).y/(s)))
 
 typedef struct {
-    Agraph_t *graph;		/* related graph */
     int perim;			/* half size of bounding rectangle perimeter */
     point *cells;		/* cells in covering polyomino */
     int nc;			/* no. of cells */
     int index;			/* index in original array */
-
 } ginfo;
+
+typedef struct {
+    double width, height;
+} ainfo;
 
 /* computeStep:
  * Compute grid step size. This is a root of the
  * quadratic equation al^2 +bl + c, where a, b and
  * c are defined below.
  */
-static int computeStep(int ng, Agraph_t ** gs, int margin)
+static int computeStep(int ng, boxf* bbs, int margin)
 {
     double l1, l2;
     double a, b, c, d, r;
     double W, H;		/* width and height of graph, with margin */
-    Agraph_t *g;
-    int i;
+    int i, root;
 
     a = C * ng - 1;
     c = 0;
     b = 0;
     for (i = 0; i < ng; i++) {
-	g = gs[i];
-	W = GD_bb(g).UR.x - GD_bb(g).LL.x + 2 * margin;
-	H = GD_bb(g).UR.y - GD_bb(g).LL.y + 2 * margin;
+	boxf bb = bbs[i];
+	W = bb.UR.x - bb.LL.x + 2 * margin;
+	H = bb.UR.y - bb.LL.y + 2 * margin;
 	b -= (W + H);
 	c -= (W * H);
     }
@@ -71,16 +72,18 @@ static int computeStep(int ng, Agraph_t ** gs, int margin)
     r = sqrt(d);
     l1 = (-b + r) / (2 * a);
     l2 = (-b - r) / (2 * a);
+    root = (int) l1;
+    if (root == 0) root = 1;
     if (Verbose > 2) {
 	fprintf(stderr, "Packing: compute grid size\n");
 	fprintf(stderr, "a %f b %f c %f d %f r %f\n", a, b, c, d, r);
-	fprintf(stderr, "root %d (%f) %d (%f)\n", (int) l1, l1, (int) l2,
+	fprintf(stderr, "root %d (%f) %d (%f)\n", root, l1, (int) l2,
 		l2);
 	fprintf(stderr, " r1 %f r2 %f\n", a * l1 * l1 + b * l1 + c,
 		a * l2 * l2 + b * l2 + c);
     }
 
-    return (int) l1;
+    return root;
 }
 
 /* cmpf;
@@ -215,7 +218,7 @@ fillEdge(Agedge_t * e, point p, PointSet * ps, int dx, int dy,
  * the graph.
  */
 static void
-genBox(Agraph_t * g, ginfo * info, int ssize, int margin, point center)
+genBox(boxf bb0, ginfo * info, int ssize, int margin, point center, char* s)
 {
     PointSet *ps;
     int W, H;
@@ -223,7 +226,7 @@ genBox(Agraph_t * g, ginfo * info, int ssize, int margin, point center)
     box bb;
     int x, y;
 
-    BF2B(GD_bb(g), bb);
+    BF2B(bb, bb);
     ps = newPS();
 
     LL.x = center.x - margin;
@@ -237,7 +240,6 @@ genBox(Agraph_t * g, ginfo * info, int ssize, int margin, point center)
 	for (y = LL.y; y <= UR.y; y++)
 	    addPS(ps, x, y);
 
-    info->graph = g;
     info->cells = pointsOf(ps);
     info->nc = sizeOf(ps);
     W = GRID(bb.UR.x - bb.LL.x + 2 * margin, ssize);
@@ -247,7 +249,7 @@ genBox(Agraph_t * g, ginfo * info, int ssize, int margin, point center)
     if (Verbose > 2) {
 	int i;
 	fprintf(stderr, "%s no. cells %d W %d H %d\n",
-		agnameof(g), info->nc, W, H);
+		s, info->nc, W, H);
 	for (i = 0; i < info->nc; i++)
 	    fprintf(stderr, "  %d %d cell\n", info->cells[i].x,
 		    info->cells[i].y);
@@ -388,7 +390,6 @@ genPoly(Agraph_t * root, Agraph_t * g, ginfo * info,
 	    }
 	}
 
-    info->graph = g;
     info->cells = pointsOf(ps);
     info->nc = sizeOf(ps);
     W = GRID(ROUND(GD_bb(g).UR.x - GD_bb(g).LL.x) + 2 * margin, ssize);
@@ -413,7 +414,7 @@ genPoly(Agraph_t * root, Agraph_t * g, ginfo * info,
  * If so, add cells to pointset, store point in place and return true.
  */
 static int
-fits(int x, int y, ginfo * info, PointSet * ps, point * place, int step)
+fits(int x, int y, ginfo * info, PointSet * ps, point * place, int step, boxf* bbs)
 {
     point *cells = info->cells;
     int n = info->nc;
@@ -430,7 +431,7 @@ fits(int x, int y, ginfo * info, PointSet * ps, point * place, int step)
 	cells++;
     }
 
-    PF2P(GD_bb(info->graph).LL, LL);
+    PF2P(bbs[info->index].LL, LL);
     place->x = step * x - LL.x;
     place->y = step * y - LL.y;
 
@@ -481,42 +482,42 @@ placeFixed(ginfo * info, PointSet * ps, point * place, point center)
  */
 static void
 placeGraph(int i, ginfo * info, PointSet * ps, point * place, int step,
-	   int margin)
+	   int margin, boxf* bbs)
 {
     int x, y;
     int W, H;
     int bnd;
+    boxf bb = bbs[info->index];
 
     if (i == 0) {
-	Agraph_t *g = info->graph;
-	W = GRID(ROUND(GD_bb(g).UR.x - GD_bb(g).LL.x) + 2 * margin, step);
-	H = GRID(ROUND(GD_bb(g).UR.y - GD_bb(g).LL.y) + 2 * margin, step);
-	if (fits(-W / 2, -H / 2, info, ps, place, step))
+	W = GRID(ROUND(bb.UR.x - bb.LL.x) + 2 * margin, step);
+	H = GRID(ROUND(bb.UR.y - bb.LL.y) + 2 * margin, step);
+	if (fits(-W / 2, -H / 2, info, ps, place, step, bbs))
 	    return;
     }
 
-    if (fits(0, 0, info, ps, place, step))
+    if (fits(0, 0, info, ps, place, step, bbs))
 	return;
-    W = ROUND(GD_bb(info->graph).UR.x - GD_bb(info->graph).LL.x);
-    H = ROUND(GD_bb(info->graph).UR.y - GD_bb(info->graph).LL.y);
+    W = ROUND(bb.UR.x - bb.LL.x);
+    H = ROUND(bb.UR.y - bb.LL.y);
     if (W >= H) {
 	for (bnd = 1;; bnd++) {
 	    x = 0;
 	    y = -bnd;
 	    for (; x < bnd; x++)
-		if (fits(x, y, info, ps, place, step))
+		if (fits(x, y, info, ps, place, step, bbs))
 		    return;
 	    for (; y < bnd; y++)
-		if (fits(x, y, info, ps, place, step))
+		if (fits(x, y, info, ps, place, step, bbs))
 		    return;
 	    for (; x > -bnd; x--)
-		if (fits(x, y, info, ps, place, step))
+		if (fits(x, y, info, ps, place, step, bbs))
 		    return;
 	    for (; y > -bnd; y--)
-		if (fits(x, y, info, ps, place, step))
+		if (fits(x, y, info, ps, place, step, bbs))
 		    return;
 	    for (; x < 0; x++)
-		if (fits(x, y, info, ps, place, step))
+		if (fits(x, y, info, ps, place, step, bbs))
 		    return;
 	}
     } else {
@@ -524,19 +525,19 @@ placeGraph(int i, ginfo * info, PointSet * ps, point * place, int step,
 	    y = 0;
 	    x = -bnd;
 	    for (; y > -bnd; y--)
-		if (fits(x, y, info, ps, place, step))
+		if (fits(x, y, info, ps, place, step, bbs))
 		    return;
 	    for (; x < bnd; x++)
-		if (fits(x, y, info, ps, place, step))
+		if (fits(x, y, info, ps, place, step, bbs))
 		    return;
 	    for (; y < bnd; y++)
-		if (fits(x, y, info, ps, place, step))
+		if (fits(x, y, info, ps, place, step, bbs))
 		    return;
 	    for (; x > -bnd; x--)
-		if (fits(x, y, info, ps, place, step))
+		if (fits(x, y, info, ps, place, step, bbs))
 		    return;
 	    for (; y > 0; y--)
-		if (fits(x, y, info, ps, place, step))
+		if (fits(x, y, info, ps, place, step, bbs))
 		    return;
 	}
     }
@@ -555,7 +556,161 @@ void dumpp(ginfo * info, char *pfx)
 }
 #endif
 
-/* putGraphs:
+/* ampf;
+ * Sort by height, then width
+ */
+static int acmpf(const void *X, const void *Y)
+{
+    ainfo* x = *(ainfo **) X;
+    ainfo* y = *(ainfo **) Y;
+    if (x->height < y->height) return 1;
+    else if (x->height > y->height) return -1;
+    else if (x->width < y->width) return 1;
+    else if (x->width > y->width) return -1;
+    else return 0;
+}
+
+/* arrayRects:
+ */
+static point *
+arrayRects (int ng, boxf* gs, pack_info* pinfo)
+{
+    int i;
+    int nr, nc;
+    int r, c;
+    ainfo *info;
+    ainfo *ip;
+    ainfo **sinfo;
+    double* widths;
+    double* heights;
+    double v, wd, ht;
+    point* places = N_NEW(ng, point);
+    boxf bb;
+
+    nc = ceil(sqrt(ng));
+    nr = (ng + (nc-1))/nc;
+    widths = N_NEW(nc+1, double);
+    heights = N_NEW(nr+1, double);
+
+    ip = info = N_NEW(ng, ainfo);
+    for (i = 0; i < ng; i++, ip++) {
+	bb = gs[i];
+	ip->width = bb.UR.x - bb.LL.x + pinfo->margin;
+	ip->height = bb.UR.y - bb.LL.y + pinfo->margin;
+    }
+
+    sinfo = N_NEW(ng, ainfo*);
+    for (i = 0; i < ng; i++) {
+	sinfo[i] = info + i;
+    }
+    qsort(sinfo, ng, sizeof(ainfo *), acmpf);
+
+    /* compute column widths and row heights */
+    r = c = 0;
+    for (i = 0; i < ng; i++, ip++) {
+	ip = sinfo[i];
+	widths[c] = MAX(widths[c],ip->width);
+	heights[r] = MAX(heights[r],ip->height);
+	c++;
+	if (c == nc) {
+	    c = 0;
+	    r++;
+	}
+    }
+
+    /* convert widths and heights to positions */
+    wd = 0;
+    for (i = 0; i <= nc; i++) {
+	v = widths[i];
+	widths[i] = wd;
+	wd += v;
+    }
+
+    ht = 0;
+    for (i = nr; 0 < i; i--) {
+	v = heights[i-1];
+	heights[i] = ht;
+	ht += v;
+    }
+    heights[0] = ht;
+
+    /* position rects */
+    r = c = 0;
+    for (i = 0; i < ng; i++, ip++) {
+	int idx;
+	ip = sinfo[i];
+	idx = ip-info;
+	bb = gs[idx];
+	places[idx].x = (widths[c] + widths[c+1] - bb.UR.x - bb.LL.x)/2.0;
+	places[idx].y = (heights[r] + heights[r+1] - bb.UR.y - bb.LL.y)/2.0;
+	c++;
+	if (c == nc) {
+	    c = 0;
+	    r++;
+	}
+    }
+
+    free (info);
+    free (sinfo);
+    free (widths);
+    free (heights);
+    return places;
+}
+
+static point*
+polyRects(int ng, boxf* gs, pack_info * pinfo)
+{
+    int stepSize;
+    ginfo *info;
+    ginfo **sinfo;
+    point *places;
+    Dict_t *ps;
+    int i;
+    point center;
+
+    /* calculate grid size */
+    stepSize = computeStep(ng, gs, pinfo->margin);
+    if (Verbose)
+	fprintf(stderr, "step size = %d\n", stepSize);
+    if (stepSize <= 0)
+	return 0;
+
+    /* generate polyomino cover for the rectangles */
+    center.x = center.y = 0;
+    info = N_NEW(ng, ginfo);
+    for (i = 0; i < ng; i++) {
+	info[i].index = i;
+	genBox(gs[i], info + i, stepSize, pinfo->margin, center, "");
+    }
+
+    /* sort */
+    sinfo = N_NEW(ng, ginfo *);
+    for (i = 0; i < ng; i++) {
+	sinfo[i] = info + i;
+    }
+    qsort(sinfo, ng, sizeof(ginfo *), cmpf);
+
+    ps = newPS();
+    places = N_NEW(ng, point);
+    for (i = 0; i < ng; i++)
+	placeGraph(i, sinfo[i], ps, places + (sinfo[i]->index),
+		       stepSize, pinfo->margin, gs);
+
+    free(sinfo);
+    for (i = 0; i < ng; i++)
+	free(info[i].cells);
+    free(info);
+    freePS(ps);
+
+    if (Verbose > 1)
+	for (i = 0; i < ng; i++)
+	    fprintf(stderr, "pos[%d] %d %d\n", i, places[i].x,
+		    places[i].y);
+
+    return places;
+}
+
+/* polyGraphs:
  *  Given a collection of graphs, reposition them in the plane
  *  to not overlap but pack "nicely".
  *   ng is the number of graphs
@@ -575,8 +730,8 @@ void dumpp(ginfo * info, char *pfx)
  * Depends on graph fields bb, node fields pos, xsize and ysize, and
  * edge field spl.
  */
-point *putGraphs(int ng, Agraph_t ** gs, Agraph_t * root,
-		 pack_info * pinfo)
+static point*
+polyGraphs(int ng, Agraph_t ** gs, Agraph_t * root, pack_info * pinfo)
 {
     int stepSize;
     ginfo *info;
@@ -588,6 +743,7 @@ point *putGraphs(int ng, Agraph_t ** gs, Agraph_t * root,
     int fixed_cnt = 0;
     box bb, fixed_bb = { {0, 0}, {0, 0} };
     point center;
+    boxf* bbs;
 
     if (ng <= 0)
 	return 0;
@@ -616,10 +772,13 @@ point *putGraphs(int ng, Agraph_t ** gs, Agraph_t * root,
     }
 
     /* calculate grid size */
-    stepSize = computeStep(ng, gs, pinfo->margin);
+    bbs = N_GNEW(ng, boxf);
+    for (i = 0; i < ng; i++)
+	bbs[i] = GD_bb(gs[i]);
+    stepSize = computeStep(ng, bbs, pinfo->margin);
     if (Verbose)
 	fprintf(stderr, "step size = %d\n", stepSize);
-    if (stepSize < 0)
+    if (stepSize <= 0)
 	return 0;
 
     /* generate polyomino cover for the graphs */
@@ -630,9 +789,10 @@ point *putGraphs(int ng, Agraph_t ** gs, Agraph_t * root,
 	center.x = center.y = 0;
     info = N_NEW(ng, ginfo);
     for (i = 0; i < ng; i++) {
+	Agraph_t *g = gs[i];
 	info[i].index = i;
 	if (pinfo->mode == l_graph)
-	    genBox(gs[i], info + i, stepSize, pinfo->margin, center);
+	    genBox(GD_bb(g), info + i, stepSize, pinfo->margin, center, agnameof(g));
 	else if (genPoly(root, gs[i], info + i, stepSize, pinfo, center)) {
 	    return 0;
 	}
@@ -656,12 +816,12 @@ point *putGraphs(int ng, Agraph_t ** gs, Agraph_t * root,
 	for (i = 0; i < ng; i++) {
 	    if (!fixed[i])
 		placeGraph(i, sinfo[i], ps, places + (sinfo[i]->index),
-			   stepSize, pinfo->margin);
+			   stepSize, pinfo->margin, bbs);
 	}
     } else {
 	for (i = 0; i < ng; i++)
 	    placeGraph(i, sinfo[i], ps, places + (sinfo[i]->index),
-		       stepSize, pinfo->margin);
+		       stepSize, pinfo->margin, bbs);
     }
 
     free(sinfo);
@@ -669,6 +829,7 @@ point *putGraphs(int ng, Agraph_t ** gs, Agraph_t * root,
 	free(info[i].cells);
     free(info);
     freePS(ps);
+    free (bbs);
 
     if (Verbose > 1)
 	for (i = 0; i < ng; i++)
@@ -676,6 +837,86 @@ point *putGraphs(int ng, Agraph_t ** gs, Agraph_t * root,
 		    places[i].y);
 
     return places;
+}
+
+point *putGraphs(int ng, Agraph_t ** gs, Agraph_t * root,
+		 pack_info * pinfo)
+{
+    int i;
+    boxf* bbs;
+    Agraph_t* g;
+    point* pts;
+
+    if (ng <= 0) return NULL;
+
+    if (pinfo->mode <= l_graph)
+	return polyGraphs (ng, gs, root, pinfo);
+    
+    bbs = N_GNEW(ng, boxf);
+
+    for (i = 0; i < ng; i++) {
+	g = gs[i];
+	compute_bb(g);
+	bbs[i] = GD_bb(g);
+    }
+
+    if (pinfo->mode == l_array)
+	pts = arrayRects (ng, bbs, pinfo);
+
+    free (bbs);
+
+    return pts;
+}
+
+point *
+putRects(int ng, boxf* bbs, pack_info* pinfo)
+{
+    if (ng <= 0) return NULL;
+    if ((pinfo->mode == l_node) || (pinfo->mode == l_clust)) return NULL;
+    if (pinfo->mode == l_graph)
+	return polyRects (ng, bbs, pinfo);
+    else if (pinfo->mode == l_array)
+	return arrayRects (ng, bbs, pinfo);
+    else
+	return NULL;
+}
+
+/* packRects:
+ * Packs rectangles.
+ *  ng - number of rectangles
+ *  bbs - array of rectangles
+ *  info - parameters used in packing
+ * This decides where to layout the rectangles and repositions 
+ * the bounding boxes.
+ *
+ * Returns 0 on success.
+ */
+int 
+packRects(int ng, boxf* bbs, pack_info* pinfo)
+{
+    int i;
+    point *pp;
+    boxf bb;
+    point p;
+
+    if (ng < 0) return -1;
+    if (ng <= 1) return 0;
+
+    pp = putRects(ng, bbs, pinfo);
+    if (!pp)
+	return 1;
+
+    for (i = 0; i < ng; i++) { 
+	bb = bbs[i];
+	p = pp[i];
+	bb.LL.x += p.x;
+	bb.UR.x += p.x;
+	bb.LL.y += p.y;
+	bb.UR.y += p.y;
+	bbs[i] = bb;
+    }
+    free(pp);
+    return 0;
 }
 
 /* shiftEdge:
@@ -754,7 +995,7 @@ static void shiftGraph(Agraph_t * g, int dx, int dy)
  * the pos and coord fields in nodehinfo_t and
  * the spl field in Aedgeinfo_t.
  */
-static int
+int
 shiftGraphs(int ng, Agraph_t ** gs, point * pp, Agraph_t * root,
 	    int doSplines)
 {
@@ -879,6 +1120,10 @@ pack_mode getPackMode(Agraph_t * g, pack_mode dflt)
 
     if (p && *p) {
 	switch (*p) {
+	case 'a':
+	    if (streq(p, "array"))
+		mode = l_array;
+	    break;
 #ifdef NOT_IMPLEMENTED
 	case 'b':
 	    if (streq(p, "bisect"))
