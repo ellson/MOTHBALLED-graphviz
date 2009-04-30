@@ -301,6 +301,31 @@ static void addEdge (GtsSegment * e, estate* es)
     es->n += 1;
 }
 
+typedef int (*qsort_r_cmpf) (void *, const void *, const void *);
+
+static int 
+vcmp (double* v, int* a, int* b)
+{
+    double va = v[*a];
+    double vb = v[*b];
+
+    if (va < vb) return -1; 
+    else if (va > vb) return 1; 
+    else return 0;
+}
+
+/* delaunay_tri:
+ * Given n points whose coordinates are in the x[] and y[]
+ * arrays, compute a Delaunay triangulation of the points.
+ * The number of edges in the triangulation is returned in pnedges.
+ * The return value itself is an array e of 2*(*pnedges) integers,
+ * with edge i having points whose indices are e[2*i] and e[2*i+1].
+ *
+ * If the points are collinear, GTS fails with 0 edges.
+ * In this case, we sort the points by x coordinates (or y coordinates
+ * if the points form a vertical line). We then return a "triangulation"
+ * consisting of the n-1 pairs of adjacent points.
+ */
 int *delaunay_tri(double *x, double *y, int n, int* pnedges)
 {
     GtsSurface* s = tri(x, y, n, NULL, 0);
@@ -315,11 +340,41 @@ int *delaunay_tri(double *x, double *y, int n, int* pnedges)
     stats.delaunay = NULL;
     edgeStats (s, &stats);
     *pnedges = nedges = stats.n;
-    edges = N_GNEW(2 * nedges, int);
 
-    state.n = 0;
-    state.edges = edges;
-    gts_surface_foreach_edge (s, (GtsFunc) addEdge, &state);
+    if (nedges) {
+	edges = N_GNEW(2 * nedges, int);
+	state.n = 0;
+	state.edges = edges;
+	gts_surface_foreach_edge (s, (GtsFunc) addEdge, &state);
+    }
+    else {
+	int* vs = N_GNEW(n, int);
+	int* ip;
+	int i, hd, tl;
+	double* vals;
+
+	*pnedges = nedges = n-1;
+	ip = edges = N_GNEW(2 * nedges, int);
+
+	for (i = 0; i < n; i++)
+	    vs[i] = i;
+
+	if (x[0] == x[1])  /* vertical line */ 
+	    vals = y;
+	else              
+	    vals = x;
+	qsort_r (vs, n, sizeof(int), vals, (qsort_r_cmpf)vcmp);
+
+	tl = vs[0];
+	for (i = 1; i < n; i++) {
+	    hd = vs[i];
+	    *ip++ = tl;
+	    *ip++ = hd;
+	    tl = hd;
+	}
+
+	free (vs);
+    }
 
     gts_object_destroy (GTS_OBJECT (s));
 
