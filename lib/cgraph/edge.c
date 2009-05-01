@@ -329,11 +329,9 @@ void agdeledgeimage(Agraph_t * g, Agedge_t * e, void *ignored)
     sn = agsubrep(g, t);
     del(g->e_seq, &sn->out_seq, out);
     del(g->e_id, &sn->out_id, out);
-	if (t != h) {
-		sn = agsubrep(g, h);
-		del(g->e_seq, &sn->in_seq, in);
-		del(g->e_id, &sn->in_id, in);
-	}
+    sn = agsubrep(g, h);
+    del(g->e_seq, &sn->in_seq, in);
+    del(g->e_id, &sn->in_id, in);
 #ifdef DEBUG
     for (e = agfstin(g,h); e; e = agnxtin(g,e))
 	assert(e != in);
