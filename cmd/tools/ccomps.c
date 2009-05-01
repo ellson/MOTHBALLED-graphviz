@@ -560,11 +560,8 @@ static int processClusters(Agraph_t * g)
 		return 0;
 	    }
 	}
-#if 0
-  until bug 1515 is fixed
 	if (printMode != INTERNAL)
 	    agdelete(g, out);
-#endif
 	agdelete(dg, dout);
 	if (verbose)
 	    fprintf(stderr, "(%4ld) %7ld nodes %7ld edges\n",
@@ -665,11 +662,8 @@ static int process(Agraph_t * g)
 		return 0;
 	    }
 	}
-#if 0
-  until bug 1515 is fixed
 	if (printMode != INTERNAL)
 	    agdelete(g, out);
-#endif
 	if (verbose)
 	    fprintf(stderr, "(%4ld) %7ld nodes %7ld edges\n",
 		    c_cnt, n_cnt, e_cnt);
