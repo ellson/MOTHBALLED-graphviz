@@ -1346,7 +1346,7 @@ else
         save_CPPFLAGS=$CPPFLAGS
         CPPFLAGS="$CPPFLAGS $RUBY_INCLUDES"
         AC_CHECK_HEADER(ruby.h,,[
-          use_python25="No (missing header)"
+          use_ruby="No (missing header)"
           RUBY=
         ])
         CPPFLAGS=$save_CPPFLAGS
