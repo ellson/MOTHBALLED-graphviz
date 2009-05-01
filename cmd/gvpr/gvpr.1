@@ -738,17 +738,25 @@ returns the sine of \fId\fP.
 .TP
 \fBatan2\fP(\fIy\fP : \fBdouble\fP, \fIx\fP : \fBdouble\fP) : \fBdouble\fP
 returns the arctangent of \fIy/x\fP in the range \-pi to pi.
-.SS "Miscellaneous"
 .TP
-\fBexit\fP() : \fBvoid\fP
+\fBMIN\fP(\fIy\fP : \fBdouble\fP, \fIx\fP : \fBdouble\fP) : \fBdouble\fP
+returns the minimum of \fIy\fP and \fIx\fP.
+.TP
+\fBMAX\fP(\fIy\fP : \fBdouble\fP, \fIx\fP : \fBdouble\fP) : \fBdouble\fP
+returns the maximum of \fIy\fP and \fIx\fP.
+.SS "Miscellaneous"
 .TP
 \fBexit\fP(\fIv\fP : \fBint\fP) : \fBvoid\fP
 causes
 .B gvpr
 to exit with the exit code
 .IR v .
-.I v
-defaults to 0 if omitted.
+.TP
+\fBsystem\fP(\fIcmd\fP : \fBstring\fP) : \fBint\fP
+provides the standard C function
+.IR system (3).
+It executes \fIcmd\fP if the user's shell environment, and
+returns the exit status of the shell.
 .TP
 \fBrand\fP() : \fBdouble\fP
 returns a pseudo\(hyrandom double between 0 and 1.
