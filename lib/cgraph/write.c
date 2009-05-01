@@ -226,7 +226,7 @@ static void write_dict(Agraph_t * g, iochan_t * ofile, char *name,
 		}
 		ioput(g, ofile, "];\n");
 	}
-    dtview(dict, view);		/* restore previous view */
+    if (!top) dtview(dict, view);		/* restore previous view */
 }
 
 static void write_dicts(Agraph_t * g, iochan_t * ofile, int top)
