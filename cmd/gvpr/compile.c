@@ -43,6 +43,8 @@
 #include <math.h>
 
 #define ISEDGE(e) (AGTYPE(e)&2)
+#define MIN(a,b)        ((a)<(b)?(a):(b))
+#define MAX(a,b)        ((a)>(b)?(a):(b))
 
 #include <gdefs.h>
 
@@ -1156,6 +1158,15 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    break;
 	case F_log:
 	    v.floating = log(args[0].floating);
+	    break;
+	case F_min:
+	    v.floating = MIN(args[0].floating, args[1].floating);
+	    break;
+	case F_max:
+	    v.floating = MAX(args[0].floating, args[1].floating);
+	    break;
+	case F_sys:
+	    v.integer = system(args[0].string);
 	    break;
 	case F_hasattr:
 	case F_get:
