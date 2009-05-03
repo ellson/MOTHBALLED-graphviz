@@ -670,12 +670,19 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 			if (p && *p) {
 			    strcpy(bufb, "render_");
 			    strcat(bufb, p);
+			    m = agfindnode(ssg, bufb);
+			    if (!m)
 #ifndef WITH_CGRAPH
-			    m = agnode(g, bufb);
-			    agedge(g, m, n);
+			        m = agnode(g, bufb);
 #else
-			    m = agnode(g, bufb, 1);
-			    agedge(g, m, n, NULL, 1);
+			        m = agnode(g, bufb, 1);
+#endif
+			    e = agfindedge(g, m, n);
+			    if (!e)
+#ifndef WITH_CGRAPH
+			        e = agedge(g, m, n);
+#else
+			        e = agedge(g, m, n, NULL, 1);
 #endif
 			}
 			break;
@@ -711,12 +718,19 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 #endif
 			strcpy(bufb, "render_");
 			strcat(bufb, p);
+			m = agfindnode(g, bufb);
+			if (!m)
 #ifndef WITH_CGRAPH
-			m = agnode(g, bufb); 
-			agedge(g, n, m);
+			    m = agnode(g, bufb); 
 #else
-			m = agnode(g, bufb, 1); 
-			agedge(g, n, m, NULL, 1);
+			    m = agnode(g, bufb, 1); 
+#endif
+			e = agfindedge(g, n, m);
+			if (!e)
+#ifndef WITH_CGRAPH
+			    e = agedge(g, n, m);
+#else
+			    e = agedge(g, n, m, NULL, 1);
 #endif
 			break;
 		    default:
