@@ -462,7 +462,7 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
     Agsym_t *a;
     gvplugin_package_t *package;
     gvplugin_available_t **pnext;
-    char bufa[100], *buf1, *buf2, bufb[100], *p, *q;
+    char bufa[100], *buf1, *buf2, bufb[100], *p, *q, *t;
     int api, found;
 
 #ifndef WITH_CGRAPH
@@ -542,11 +542,25 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 	    for (pnext = &(gvc->apis[api]); *pnext; pnext = &((*pnext)->next)) {
 		if ((*pnext)->package == package) {
 		    found++;
-		    q = strdup((*pnext)->typestr);
+		    t = q = strdup((*pnext)->typestr);
 		    if ((p = strchr(q, ':'))) *p++ = '\0';
+		    /* Now p = renderer, e.g. "gd"
+		     * and q = device, e.g. "png"
+		     * or  q = imageloader, e.g. "png" */
 		    switch (api) {
 		    case API_device:
 		    case API_loadimage:
+
+		        /* hack for aliases */
+		        if (!strncmp(q,"jp",2))
+			    q = "jpeg/jpe/jpg";
+		        else if (!strncmp(q,"tif",3))
+			    q = "tiff/tif";
+		        else if (!strcmp(q,"x11") || !strcmp(q,"xlib"))
+			    q = "x11/xlib";
+		        else if (!strcmp(q,"dot") || !strcmp(q,"gv"))
+			    q = "gv/dot";
+
 		        strcpy(buf2, q);
 #ifndef WITH_CGRAPH
 		        n = agnode(ssg, bufa);
@@ -601,7 +615,7 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 		    default:
 			break;
 		    }
-		    free(q);
+		    free(t);
 		}
 	    }
 	    if (!found)
@@ -614,9 +628,9 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
     }
 
 #ifndef WITH_CGRAPH
-    ssg = agsubg(g, "o_formats");
+    ssg = agsubg(g, "output_formats");
 #else
-    ssg = agsubg(g, "o_formats", 1);
+    ssg = agsubg(g, "output_formats", 1);
 #endif
     a = agfindgraphattr(ssg, "rank");
 #ifndef WITH_CGRAPH
@@ -634,8 +648,22 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 	    buf2 = bufa + strlen(bufa);
 	    for (pnext = &(gvc->apis[api]); *pnext; pnext = &((*pnext)->next)) {
 		if ((*pnext)->package == package) {
-		    q = strdup((*pnext)->typestr);
+		    t = q = strdup((*pnext)->typestr);
 		    if ((p = strchr(q, ':'))) *p++ = '\0';
+		    /* Now p = renderer, e.g. "gd"
+		     * and q = device, e.g. "png"
+		     * or  q = imageloader, e.g. "png" */
+
+		    /* hack for aliases */
+		    if (!strncmp(q,"jp",2))
+			q = "jpeg/jpe/jpg";
+		    else if (!strncmp(q,"tif",3))
+			q = "tiff/tif";
+		    else if (!strcmp(q,"x11") || !strcmp(q,"xlib"))
+			q = "x11/xlib";
+		    else if (!strcmp(q,"dot") || !strcmp(q,"gv"))
+			q = "gv/dot";
+
 		    switch (api) {
 		    case API_device:
 		        strcpy(buf2, q);
@@ -644,7 +672,7 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 #else
 			n = agnode(g, bufa, 1);
 #endif
-		        strcpy(bufb, "o_");
+		        strcpy(bufb, "output_");
 		        strcat(bufb, q);
 			m = agfindnode(ssg, bufb);
 			if (!m) {
@@ -693,7 +721,7 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 #else
 			n = agnode(g, bufa, 1);
 #endif
-		        strcpy(bufb, "i_");
+		        strcpy(bufb, "input_");
 		        strcat(bufb, q);
 			m = agfindnode(g, bufb);
 			if (!m) {
@@ -736,7 +764,7 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 		    default:
 			break;
 		    }
-		    free(q);
+		    free(t);
 		}
 	    }
 	}
