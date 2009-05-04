@@ -1041,5 +1041,11 @@ void please_dont_wait(void)
     gtk_widget_hide(glade_xml_get_widget(xml, "frmWait"));
 }
 
+int apply_gvpr(Agraph_t* g,char* prog)
+{
+#ifdef WIN32	
+	Agraph_t* a=exec_gvpr(prog,g);
+#endif
+}
 
 

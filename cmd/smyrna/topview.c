@@ -319,7 +319,8 @@ static float set_gl_dot_size(topview * t)
 {
 	static float dotsize;
 	if (view->active_camera==-1)
-		dotsize = (float)GL_DOTSIZE_CONSTANT / view->zoom;
+//		dotsize = (float)GL_DOTSIZE_CONSTANT / view->zoom;
+		dotsize = 2.00;
 	else
 		dotsize = (float)GL_DOTSIZE_CONSTANT / view->cameras[view->active_camera]->r*(float)-1;
 
@@ -487,7 +488,7 @@ static int drawtopviewnodes(Agraph_t * g)
 			else if (view->defaultnodeshape==1)
 			{
 				draw_sphere(v->distorted_x - ddx,
-				v->distorted_y - ddy, v->distorted_z - ddz,0.25);
+				v->distorted_y - ddy, v->distorted_z - ddz,0.0025);
 
 			}
 	    }

@@ -391,3 +391,8 @@ void change_cursor(GdkCursorType C)
     gdk_cursor_destroy(cursor);
 	return;
 }
+void mTestgvpr(GtkWidget * widget, gpointer user_data)
+{
+	apply_gvpr(view->g[view->activeGraph],"c:/graphviz-ms/bin/makered.g");
+	
+}

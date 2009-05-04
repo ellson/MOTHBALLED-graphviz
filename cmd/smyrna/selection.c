@@ -413,7 +413,6 @@ view->Topview->Graphdata.selectedEdges =
 static void update_cgraph_pos(topview_node* N)
 {
     char buf[512];
-    double x, y;
     Agsym_t* pos;
 	Agnode_t* obj=N->Node;
 

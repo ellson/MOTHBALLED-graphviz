@@ -261,7 +261,7 @@ static gboolean key_press_event(GtkWidget * widget, GdkEventKey * event,
 static gboolean button_press_event(GtkWidget * widget,
 				   GdkEventButton * event, gpointer data)
 {
-    if (view->graphCount)
+	if (view->graphCount)
 	{
 		if (glCompSetClick(view->widgets, (int) event->x, (int) event->y))
 	    expose_event(view->drawing_area, NULL, NULL);
@@ -310,6 +310,7 @@ static gboolean button_release_event(GtkWidget * widget,
 				     GdkEventButton * event, gpointer data)
 {
 	view->FontSizeConst=GetOGLDistance(14);
+
 
 	if (event->button == 1)	//left click release
     {
@@ -377,6 +378,17 @@ static gboolean button_release_event(GtkWidget * widget,
     return FALSE;
 }
 
+static scroll_event(GtkWidget * widget,
+				    GdkEventScroll * event, gpointer data)
+{
+	if(event->direction==0)
+	    view->mouse.dx = -30;
+	if(event->direction==1)
+	    view->mouse.dx = 30;
+	glmotion_zoom(view);
+	glexpose();
+}
+
 /*
 	when  mouse is moved over glcanvas this function is called
 	params:gtk opgn gl canvas , GdkEventMotion object and custom data
@@ -392,7 +404,8 @@ static gboolean motion_notify_event(GtkWidget * widget,
 
 
     gboolean redraw = FALSE;
-    dx = x - begin_x;
+
+	dx = x - begin_x;
     dy = y - begin_y;
 
     view->mouse.dx = dx;
@@ -598,6 +611,7 @@ void create_window(GdkGLConfig * glconfig, GtkWidget * vbox)
 			   GDK_POINTER_MOTION_MASK|
 			  GDK_BUTTON_PRESS_MASK |GDK_KEY_PRESS |
 			  GDK_BUTTON_RELEASE_MASK |
+			  GDK_SCROLL |
 			  GDK_VISIBILITY_NOTIFY_MASK);
 
     g_signal_connect_after(G_OBJECT(view->drawing_area), "realize",
@@ -609,14 +623,22 @@ void create_window(GdkGLConfig * glconfig, GtkWidget * vbox)
 
     g_signal_connect(G_OBJECT(view->drawing_area), "button_press_event",
 		     G_CALLBACK(button_press_event), NULL);
+    g_signal_connect(G_OBJECT(view->drawing_area), "2button_press_event",
+		     G_CALLBACK(button_press_event), NULL);
+
     g_signal_connect(G_OBJECT(view->drawing_area), "button_release_event",
 		     G_CALLBACK(button_release_event), NULL);
     g_signal_connect(G_OBJECT(view->drawing_area), "key_release_event",
 		     G_CALLBACK(button_release_event), NULL);
     g_signal_connect(G_OBJECT(view->drawing_area), "key_press_event",
 		     G_CALLBACK(button_release_event), NULL);
+    g_signal_connect(G_OBJECT(view->drawing_area), "scroll_event",
+		     G_CALLBACK(scroll_event), NULL);
+
 	g_signal_connect(G_OBJECT(view->drawing_area), "motion_notify_event",
 		     G_CALLBACK(motion_notify_event), NULL);
+
+
 
 
     gtk_box_pack_start(GTK_BOX(vbox), view->drawing_area, TRUE, TRUE, 0);

@@ -32,7 +32,7 @@
 #include "menucallbacks.h"
 #include "gltemplate.h"
 #include "memory.h"
-#include "md5.h"
+#include "gvprpipe.h"
 #ifdef ENABLE_NLS
 #include "libintl.h"
 #endif

@@ -354,6 +354,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\gvprpipe.c"
+				>
+			</File>
+			<File
 				RelativePath=".\hier.c"
 				>
 			</File>
