@@ -194,7 +194,6 @@ int main(int argc, char **argv)
     else if ((G = gvPluginsGraph(Gvc))) {
 	    gvLayoutJobs(Gvc, G);  /* take layout engine from command line */
 	    gvRenderJobs(Gvc, G);
-	    gvFreeLayout(Gvc, G);
     }
     else {
 	while ((G = gvNextInputGraph(Gvc))) {
