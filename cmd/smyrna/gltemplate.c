@@ -165,6 +165,8 @@ static void realize(GtkWidget * widget, gpointer data)
 //  glEnable(GL_LINE_SMOOTH);
 
     gdk_gl_drawable_gl_end(gldrawable);
+
+
   /*** OpenGL END ***/
     return;
 }
@@ -207,7 +209,9 @@ static gboolean configure_event(GtkWidget * widget,
     glMatrixMode(GL_MODELVIEW);
     gdk_gl_drawable_gl_end(gldrawable);
 	/*** OpenGL END ***/
-    return TRUE;
+
+
+	return TRUE;
 }
 
 /*
@@ -220,12 +224,14 @@ gboolean expose_event(GtkWidget * widget, GdkEventExpose * event,
 {
     GdkGLContext *glcontext = gtk_widget_get_gl_context(widget);
     GdkGLDrawable *gldrawable = gtk_widget_get_gl_drawable(widget);
+
+
 	/*** OpenGL BEGIN ***/
     if (!gdk_gl_drawable_gl_begin(gldrawable, glcontext))
 	return FALSE;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
-    glexpose_main(view);	//draw all stuff
+	glexpose_main(view);	//draw all stuff
     /* Swap buffers */
     if (gdk_gl_drawable_is_double_buffered(gldrawable))
 	gdk_gl_drawable_swap_buffers(gldrawable);
@@ -233,7 +239,15 @@ gboolean expose_event(GtkWidget * widget, GdkEventExpose * event,
 	glFlush();
     gdk_gl_drawable_gl_end(gldrawable);
   /*** OpenGL END ***/
-    return TRUE;
+	if (view->initFile)
+	{
+		view->initFile=0;
+		if (view->activeGraph == 0)
+			close_graph(view,0);
+		add_graph_to_viewport_from_file(view->initFileName);
+	}
+    
+	return TRUE;
 }
 
 #ifdef UNUSED

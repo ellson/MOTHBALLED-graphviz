@@ -183,15 +183,19 @@ int main(int argc, char *argv[])
     g_signal_connect((gpointer) gladewidget, "destroy",
 		     G_CALLBACK(mQuitSlot), NULL);
     glade_xml_signal_autoconnect(xml);
-    gtk_gl_init(0, 0);
+    if (initFileName)
+	{
+		view->initFile=1;
+		view->initFileName=strdup(initFileName);
+	}
+	gtk_gl_init(0, 0);
     /* Configure OpenGL framebuffer. */
     glconfig = configure_gl();
     gladewidget = glade_xml_get_widget(xml, "vbox2");
     create_window(glconfig, gladewidget);
 
-    if (initFileName)
-	add_graph_to_viewport_from_file(initFileName);
 	change_cursor(GDK_TOP_LEFT_ARROW);
+	glutInit(&argc,&argv);
 	gtk_main();
 
 

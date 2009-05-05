@@ -312,9 +312,8 @@ set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
 
 //FIXME: I don't think an openGL function can be called before it
   //     is initialized.
-#ifdef _WIN32
-    glClearColor(view->bgColor.R, view->bgColor.G, view->bgColor.B, view->bgColor.A);	//background color
-#endif
+	if (view->graphCount > 0)
+		glClearColor(view->bgColor.R, view->bgColor.G, view->bgColor.B, view->bgColor.A);	//background color
 }
 
 static gboolean gl_main_expose(gpointer data) {
@@ -678,7 +677,8 @@ int add_graph_to_viewport_from_file(char *fileName)
     //returns 1 if successfull else 0
 	int ind=0;
 	Agraph_t *graph;
-    graph = loadGraph(fileName);
+
+	graph = loadGraph(fileName);
     if (graph) {
 	view->graphCount = view->graphCount + 1;
 	view->g =
@@ -686,22 +686,19 @@ int add_graph_to_viewport_from_file(char *fileName)
 				  sizeof(Agraph_t *) * view->graphCount);
 	view->g[view->graphCount - 1] = graph;
 	view->activeGraph = view->graphCount - 1;
-	//GUI update , graph combo box on top-right should be updated
 	load_settings_from_graph(view->g[view->activeGraph]);
 	update_graph_from_settings(view->g[view->activeGraph]);
     set_viewport_settings_from_template(view, view->g[view->activeGraph]);
 	fill_key(view->orig_key,get_md5_key(graph));
-	printf ("graph original identification:");
-	for (ind=0;ind < 16;ind ++)
-	{
-		printf ("%x ",view->orig_key[ind]);
-	}
-
+    expose_event(view->drawing_area, NULL, NULL);
 
 
 	return 1;
     } else
-	return 0;
+	{
+		return 0;
+
+	}
 
 }
 
