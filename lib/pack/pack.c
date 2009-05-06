@@ -226,7 +226,7 @@ genBox(boxf bb0, ginfo * info, int ssize, int margin, point center, char* s)
     box bb;
     int x, y;
 
-    BF2B(bb, bb);
+    BF2B(bb0, bb);
     ps = newPS();
 
     LL.x = center.x - margin;
@@ -729,6 +729,9 @@ polyRects(int ng, boxf* gs, pack_info * pinfo)
  * 
  * Depends on graph fields bb, node fields pos, xsize and ysize, and
  * edge field spl.
+ *
+ * NOTE: fixed mode does not always work. The fixed ones get translated
+ * back to be centered on the origin.
  */
 static point*
 polyGraphs(int ng, Agraph_t ** gs, Agraph_t * root, pack_info * pinfo)
