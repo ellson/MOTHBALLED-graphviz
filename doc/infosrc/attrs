@@ -107,7 +107,7 @@ For the latter case, one can split the pipeline<BR>
 <TT>ccomps -x | dot | gvpack | neato -n2</TT>
 to get a similar effect.
 :bb:G:rect; write
-Bounding box of drawing in integer points.
+Bounding box of drawing in points.
 :bgcolor:GC:color:<none>;
 When attached to the root graph, this color is used as the background for
 entire canvas. When a cluster attribute, it is used as the initial

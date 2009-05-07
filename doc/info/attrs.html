@@ -541,7 +541,7 @@ This field indicates which graph component uses the attribute.
   to get a similar effect.
 
 <DT><A NAME=d:bb HREF=#a:bb><STRONG>bb</STRONG></A>
-<DD>  Bounding box of drawing in integer points.
+<DD>  Bounding box of drawing in points.
 
 <DT><A NAME=d:bgcolor HREF=#a:bgcolor><STRONG>bgcolor</STRONG></A>
 <DD>  When attached to the root graph, this color is used as the background for
@@ -1937,7 +1937,7 @@ the given types.
   right to left, respectively.
 
 <DT><A NAME=k:rect><STRONG>rect</STRONG></A>
-<DD>"%d,%d,%d,%d"  The rect llx,lly,urx,ury gives the coordinates, in
+<DD>"%f,%f,%f,%f"  The rectangle llx,lly,urx,ury gives the coordinates, in
    points, of the lower-left corner (llx,lly) and the upper-right corner
    (urx,ury).
 
@@ -1958,8 +1958,8 @@ the given types.
   <TABLE>
    <TR><TD ALIGN=right>where spline<TD>=<TD>(endp)? (startp)? point (triple)+</TR>
    <TR><TD ALIGN=right>and triple<TD>=<TD>point point point</TR>
-   <TR><TD ALIGN=right>and endp<TD>=<TD>"e,%d,%d"</TR>
-   <TR><TD ALIGN=right>and startp<TD>=<TD>"s,%d,%d"</TR>
+   <TR><TD ALIGN=right>and endp<TD>=<TD>"e,%f,%f"</TR>
+   <TR><TD ALIGN=right>and startp<TD>=<TD>"s,%f,%f"</TR>
   </TABLE>
   If a spline has points p<SUB>1</SUB> p<SUB>2</SUB> p<SUB>3</SUB> ... p<SUB>n</SUB>, (n = 1 (mod 3)), the points
    correspond to the control points of a B-spline from p<SUB>1</SUB> to p<SUB>n</SUB>. If startp

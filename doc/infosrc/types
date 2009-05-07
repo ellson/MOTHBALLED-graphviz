@@ -241,8 +241,8 @@ spline ( ';' spline )*<BR>
 <TABLE>
  <TR><TD ALIGN=right>where spline<TD>=<TD>(endp)? (startp)? point (triple)+</TR>
  <TR><TD ALIGN=right>and triple<TD>=<TD>point point point</TR>
- <TR><TD ALIGN=right>and endp<TD>=<TD>"e,%d,%d"</TR>
- <TR><TD ALIGN=right>and startp<TD>=<TD>"s,%d,%d"</TR>
+ <TR><TD ALIGN=right>and endp<TD>=<TD>"e,%f,%f"</TR>
+ <TR><TD ALIGN=right>and startp<TD>=<TD>"s,%f,%f"</TR>
 </TABLE>
 If a spline has points p<SUB>1</SUB> p<SUB>2</SUB> p<SUB>3</SUB> ... p<SUB>n</SUB>, (n = 1 (mod 3)), the points
  correspond to the control points of a B-spline from p<SUB>1</SUB> to p<SUB>n</SUB>. If startp
@@ -252,7 +252,7 @@ If a spline has points p<SUB>1</SUB> p<SUB>2</SUB> p<SUB>3</SUB> ... p<SUB>n</SU
 :rankType
 "same", "min", "source", "max", "sink"
 :rect
-"%d,%d,%d,%d"  The rect llx,lly,urx,ury gives the coordinates, in
+"%f,%f,%f,%f"  The rectangle llx,lly,urx,ury gives the coordinates, in
  points, of the lower-left corner (llx,lly) and the upper-right corner
  (urx,ury).
 :smoothType
