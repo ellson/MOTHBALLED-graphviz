@@ -246,7 +246,7 @@ static void doBorder(GVJ_t * job, char *color, int border, boxf BF)
     gvrender_begin_context(job);
 
     if (!color)
-	color = "black";
+	color = DEFAULT_COLOR;
     gvrender_set_fillcolor(job, color);
     gvrender_set_pencolor(job, color);
 
@@ -1457,7 +1457,7 @@ static void pos_html_tbl(htmltbl_t * tbl, boxf pos, int sides)
     htmlcell_t *cp;
     boxf cbox;
 
-    if (tbl->u.n.parent && !tbl->data.pencolor)
+    if (tbl->u.n.parent && tbl->u.n.parent->data.pencolor && !tbl->data.pencolor)
 	tbl->data.pencolor = strdup (tbl->u.n.parent->data.pencolor);
 
     oldsz = tbl->data.box.UR.x;
