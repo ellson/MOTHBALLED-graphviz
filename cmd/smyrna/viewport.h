@@ -40,6 +40,8 @@ void move_nodes(Agraph_t * g);
 void please_wait(void);
 void please_dont_wait(void);
 extern md5_byte_t* get_md5_key(Agraph_t* graph);
+colorschemaset* create_color_theme(int themeid);
+extern void getcolorfromschema(colorschemaset* sc,float l,float maxl,RGBColor* c);
 
 
  /* helper functions */

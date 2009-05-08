@@ -20,12 +20,12 @@
 #include "windows.h"
 //#include "gltexfont.h"
 //#define       SMYRNA_GLADE "C:/Projects/graphviz2/share/gui/smyrna.glade"
-#define	SMYRNA_ATTRS "c:/graphviz-ms/share/gui/attrs.txt"
+#define	SMYRNA_ATTRS "c:/graphviz-ms/graphviz2/share/gui/attrs.txt"
 #endif
 #ifdef _WIN32
-#define SMYRNA_GLADE "c:/graphviz-ms/share/gui/smyrna.glade"
+#define SMYRNA_GLADE "c:/graphviz-ms/graphviz2/share/gui/smyrna.glade"
 #define GTKTOPVIEW_ATTRS "c:/graphviz-ms/share/gui/attrs.txt"
-#define DEFAULT_ATTRIBUTES_TEMPLATE_DOT_FILE	"c:/graphviz-ms/share/gui/attr_template.dot"
+#define DEFAULT_ATTRIBUTES_TEMPLATE_DOT_FILE	"c:/graphviz-ms/graphviz2/share/gui/attr_template.dot"
 // #else
 // using -DGTKTOPVIEW_GLADE from Makefile.am and configure.ac
 // using -DGTKTOPVIEW_ATTRS from Makefile.am and configure.ac
@@ -96,6 +96,19 @@ typedef struct {
 } RGBColor;
 
 #define MAX_BTN_CNT 50
+typedef struct{
+	float perc;
+	RGBColor c;
+	int smooth;
+
+}colorschema;
+
+typedef struct{
+	int schemacount;
+	colorschema* s;
+}colorschemaset;
+
+
 
 typedef enum { 
     VT_NONE,
@@ -265,6 +278,7 @@ typedef struct {
     float x2;
     float y2;
     float z2;
+	float length;
     topview_node *Node1; //Tail
     topview_node *Node2; //Head
     RGBColor Color;
@@ -311,7 +325,7 @@ typedef struct {
 	int picked_node_count;
 	graph_data Graphdata;
 	int maxnodedegree;
-
+	float maxedgelen;
 } topview;
 
 enum {
@@ -532,6 +546,8 @@ typedef struct _ViewInfo
 	md5_byte_t final_key[16] ;	/*md5 result right before graph is saved*/
 	char* initFileName;	//file name from command line
 	int initFile;
+	colorschemaset* colschms;
+
 
 } ViewInfo;
 

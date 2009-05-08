@@ -47,7 +47,6 @@ ViewInfo *view;
 /* these two global variables should be wrapped in something else */
 GtkMessageDialog *Dlg;
 int respond;
-
 #ifdef UNUSED
 static int mapbool(char *p)
 {
@@ -303,15 +302,8 @@ set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
 	view->labelnumberofnodes=atof(get_attribute_value ("labelnumberofnodes", view, g));
 	view->labelshownodes=atoi(get_attribute_value ("shownodelabels", view, g));
 	view->labelshowedges=atoi(get_attribute_value ("showedgelabels", view, g));
+	view->colschms=create_color_theme(atoi(get_attribute_value ("colortheme", view, g)));
 
-
-
-
-	
-
-
-//FIXME: I don't think an openGL function can be called before it
-  //     is initialized.
 	if (view->graphCount > 0)
 		glClearColor(view->bgColor.R, view->bgColor.G, view->bgColor.B, view->bgColor.A);	//background color
 }
@@ -470,6 +462,8 @@ void init_viewport(ViewInfo * view)
 	view->Topview->Graphdata.selectedEdges=0;
 	view->Topview->Graphdata.selectedEdgesCount=0;
 	view->Topview->Graphdata.selectedNodes=0;
+	view->colschms=NULL;
+
 
 
 	//create fontset
@@ -657,7 +651,6 @@ static Agraph_t *loadGraph(char *filename)
     }
 	load_graph_params(g);
 	view->Topview->Graphdata.GraphFileName = strdup (filename);
-	preparetopview(g, view->Topview);
 	return g;
 }
 #ifdef UNUSED
@@ -689,6 +682,7 @@ int add_graph_to_viewport_from_file(char *fileName)
 	load_settings_from_graph(view->g[view->activeGraph]);
 	update_graph_from_settings(view->g[view->activeGraph]);
     set_viewport_settings_from_template(view, view->g[view->activeGraph]);
+	update_topview(graph, view->Topview,1);
 	fill_key(view->orig_key,get_md5_key(graph));
     expose_event(view->drawing_area, NULL, NULL);
 
@@ -1044,5 +1038,150 @@ int apply_gvpr(Agraph_t* g,char* prog)
 	Agraph_t* a=exec_gvpr(prog,g);
 #endif
 }
+float interpol(float minv,float maxv,float minc,float maxc,float x)
+{
+	return ((x-minv)*(maxc-minc)/(maxv-minv)+minc);
+}
+void getcolorfromschema(colorschemaset* sc,float l,float maxl,RGBColor* c)
+{
+	int ind;
+	float cuml=0.00;
+	float percl=l/maxl*100.00;
+	for (ind=0;ind < sc->schemacount;ind ++)
+	{
+		if (percl < sc->s[ind].perc)
+			break;
+	}
+
+	if (sc->s[ind].smooth)
+	{
+		c->R=interpol(sc->s[ind-1].perc,sc->s[ind].perc,sc->s[ind-1].c.R,sc->s[ind].c.R,percl);
+		c->G=interpol(sc->s[ind-1].perc,sc->s[ind].perc,sc->s[ind-1].c.G,sc->s[ind].c.G,percl);
+		c->B=interpol(sc->s[ind-1].perc,sc->s[ind].perc,sc->s[ind-1].c.B,sc->s[ind].c.B,percl);
+	}
+	else
+	{
+		c->R=sc->s[ind].c.R;
+		c->G=sc->s[ind].c.G;
+		c->B=sc->s[ind].c.B;
+	}
+}
+static void set_color_theme_color(colorschemaset* sc,char** colorstr,int colorcnt,int smooth)
+{
+	int ind=0;
+    gvcolor_t cl;
+	float av_perc;
+	av_perc=100.00/(float)(colorcnt-1);
+	for (ind; ind < colorcnt; ind ++)
+	{
+		colorxlate(colorstr[ind], &cl,RGBA_DOUBLE);
+		sc->s[ind].c.R=cl.u.RGBA[0];
+		sc->s[ind].c.G=cl.u.RGBA[1];
+		sc->s[ind].c.B=cl.u.RGBA[2];
+		sc->s[ind].c.A=cl.u.RGBA[3];
+		sc->s[ind].perc=ind*av_perc;
+		sc->s[ind].smooth=smooth;
+	}
 
 
+
+
+
+}
+
+/*typedef struct{
+	float perc;
+	RGBColor c;
+	int smooth;
+
+}colorschema;
+
+typedef struct{
+	int schemacount;
+	colorschema* s;
+}colorschemaset; */
+
+void clear_color_theme (colorschemaset* cs)
+{
+	free(cs->s);
+	free(cs);
+}
+
+
+
+colorschemaset* create_color_theme(int themeid)
+{
+	char **colors;
+	colorschemaset* s=malloc(sizeof(colorschemaset));
+
+	if (view->colschms)
+		clear_color_theme (view->colschms);
+	s->schemacount=4;
+	s->s=malloc(sizeof(colorschema)*4);
+
+
+	colors=malloc(sizeof(char*)*4);
+
+
+	switch (themeid)
+	{
+		case 0:		//deep blue
+
+			colors[0]=strdup("#C8CBED");
+			colors[1]=strdup("#9297D3");
+			colors[2]=strdup("#blue");
+			colors[3]=strdup("#2C2E41");
+			set_color_theme_color(s,colors,s->schemacount,1);
+			break;
+		case 1:		//all pastel
+			colors[0]=strdup("#EBBE29");
+			colors[1]=strdup("#D58C4A");
+			colors[2]=strdup("#74AE09");
+			colors[3]=strdup("#893C49");
+			set_color_theme_color(s,colors,s->schemacount,1);
+			break;
+		case 2:		//magma
+			colors[0]=strdup("#E0061E");
+			colors[1]=strdup("#F0F143");
+			colors[2]=strdup("#95192B");
+			colors[3]=strdup("#EB712F");
+			set_color_theme_color(s,colors,s->schemacount,1);
+			break;
+		case 3:		//rain forest
+			colors[0]=strdup("#1E6A10");
+			colors[1]=strdup("#2ABE0E");
+			colors[2]=strdup("#AEDD39");
+			colors[3]=strdup("#5EE88B");
+			set_color_theme_color(s,colors,s->schemacount,1);
+			break;
+	}
+	free (colors[0]);
+	free (colors[1]);
+	free (colors[2]);
+	free (colors[3]);
+	free (colors);
+	return s;
+}
+
+
+void test_color_pallete()
+{
+	int ind=0;
+	float xGAP=5;
+	float yGAP=80;
+	float x=50;
+	float y=50;
+	RGBColor c;
+	for (ind=0;ind < 350;ind ++)
+	{
+		getcolorfromschema(view->colschms,ind,350,&c);
+		x=ind*xGAP;
+		glBegin(GL_POLYGON);
+		glColor3f(c.R,c.G,c.B);
+			glVertex3f(x,y,0.0);
+			glVertex3f(x+xGAP,y,0.0);
+			glVertex3f(x+xGAP,y+yGAP,0.0);
+			glVertex3f(x,y+yGAP,0.0);
+		glEnd();
+	}
+}

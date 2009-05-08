@@ -23,8 +23,8 @@ void on_settingsOKBtn_clicked(GtkWidget * widget, gpointer user_data)
 {
     update_graph_from_settings(view->g[view->activeGraph]);
     set_viewport_settings_from_template(view, view->g[view->activeGraph]);
-    gtk_widget_hide(glade_xml_get_widget(xml, "dlgSettings"));
-
+	settvcolorinfo(view->g[view->activeGraph],view->Topview);
+	gtk_widget_hide(glade_xml_get_widget(xml, "dlgSettings"));
 }
 
 void on_settingsCancelBtn_clicked(GtkWidget * widget, gpointer user_data)
@@ -254,10 +254,12 @@ int load_settings_from_graph(Agraph_t * g)
     set_color_button_widget("highlightededgecolor", "settingsColorBtn7");
     set_color_button_widget("selectednodecolor", "settingsColorBtn8");
     set_color_button_widget("selectededgecolor", "settingsColorBtn9");
-    set_color_button_widget("topologicaltopviewfinestcolor",
+	set_color_button_widget("defaultnodecolor","DefaultNodeCbtn");
+	set_color_button_widget("defaultedgecolor","DefaultEdgeCbtn");
+
+	set_color_button_widget("topologicaltopviewfinestcolor",
 					 "settingsColorBtn9");
-    set_color_button_widget("topologicaltopviewcoarsestcolor",
-					 "settingsColorBtn9");
+    set_color_button_widget("topologicaltopviewcoarsestcolor","settingsColorBtn9");
 
     set_color_button_widget("topologicalfisheyefinestcolor",
 			    "settingsColorBtn10");
@@ -268,8 +270,6 @@ int load_settings_from_graph(Agraph_t * g)
 
     set_checkbox_widget("bordervisible", "settingsChkBox2");
     set_checkbox_widget("gridvisible", "settingsChkBox3");
-    set_checkbox_widget("randomizenodecolors", "settingsChkBox4");
-    set_checkbox_widget("randomizeedgecolors", "settingsChkBox5");
 
 	set_checkbox_widget("drawnodes", "settingsChkBox5-1");
 	set_checkbox_widget("drawedges", "settingsChkBox5-2");
@@ -282,6 +282,9 @@ int load_settings_from_graph(Agraph_t * g)
 	set_color_button_widget("nodelabelcolor","nodelabelcolor");
 	set_color_button_widget("edgelabelcolor","edgelabelcolor");
 	set_text_widget("nodelabelattribute","labelnodeattribute");
+	set_text_widget("edgecolorattribute","edgecolortxt");
+
+
 	set_text_widget("edgelabelattribute","labeledgeattribute");
 	set_checkbox_widget("labelwithdegree", "labelwithdegree");
     set_spinbtn_widget("labelnumberofnodes","labelzoomfactor");
@@ -357,6 +360,21 @@ int load_settings_from_graph(Agraph_t * g)
 				 atoi(buf));
 
 	}
+    /*Color theme*/
+    buf = agget(view->g[view->activeGraph], "colortheme");
+    if (!buf)
+	buf = agget(view->default_attributes, "colortheme");
+    if (buf)
+	{
+		/*select the right item in combo box */
+		gtk_combo_box_set_active((GtkComboBox *)
+				 glade_xml_get_widget(xml,
+						      "colorthemecb"),
+				 atoi(buf));
+
+	}
+
+
 
     /*Node Shape Combo, 0:opengl dots, 1:circle ,2:box */
     buf = agget(view->g[view->activeGraph], "defaultselectionmethod");
@@ -408,6 +426,12 @@ int update_graph_from_settings(Agraph_t * g)
     get_color_button_widget_to_attribute("selectededgecolor",
 					 "settingsColorBtn9", g);
 
+
+    get_color_button_widget_to_attribute("defaultnodecolor","DefaultNodeCbtn", g);
+    get_color_button_widget_to_attribute("defaultedgecolor","DefaultEdgeCbtn", g);
+
+
+
     get_color_button_widget_to_attribute("topologicalfisheyefinestcolor",
 					 "settingsColorBtn10", g);
     get_color_button_widget_to_attribute("topologicalfisheyecoarsestcolor",
@@ -418,10 +442,6 @@ int update_graph_from_settings(Agraph_t * g)
     get_checkbox_widget_to_attribute("bordervisible", "settingsChkBox2",
 				     g);
     get_checkbox_widget_to_attribute("gridvisible", "settingsChkBox3", g);
-    get_checkbox_widget_to_attribute("randomizenodecolors",
-				     "settingsChkBox4", g);
-    get_checkbox_widget_to_attribute("randomizeedgecolors",
-				     "settingsChkBox5", g);
 
     get_checkbox_widget_to_attribute("drawnodes",
 				     "settingsChkBox5-1", g);
@@ -439,6 +459,8 @@ int update_graph_from_settings(Agraph_t * g)
 	get_text_widget_to_attribute("nodelabelattribute","labelnodeattribute",g);
 	get_text_widget_to_attribute("edgelabelattribute","labeledgeattribute",g);
 	
+	get_text_widget_to_attribute("edgecolorattribute","edgecolortxt",g);
+
 	get_checkbox_widget_to_attribute("labelwithdegree", "labelwithdegree", g);
     get_spinbtn_widget_to_attribute("labelnumberofnodes","labelzoomfactor", g);
 	get_checkbox_widget_to_attribute("shownodelabels", "labelshownodes", g);
@@ -498,6 +520,8 @@ int update_graph_from_settings(Agraph_t * g)
 
 	get_combobox_widget_to_attribute("defaultnodeshape","settingscombobox1", g)	;
 	get_combobox_widget_to_attribute("defaultselectionmethod","settingscombobox2", g)	;
+	get_combobox_widget_to_attribute("colortheme","colorthemecb", g)	;
+
 	return 1;
 }
 
