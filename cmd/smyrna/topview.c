@@ -36,6 +36,7 @@
 #else
 #include "regex.h"
 #endif
+#include "color.h"
 
 static float dx = 0.0;
 static float dy = 0.0;
@@ -95,6 +96,127 @@ static void init_element_data(element_data* d)
 	d->param=0;
 	d->TVRef=-1;
 }	
+static int setpositioninfo(float* x,float* y,float* z,char* buf)
+{
+	int ind=0;
+	int commacount=0;
+	/*zero all values*/
+	*x=0;
+	*y=0;
+	*z=0;
+
+	/*find out if 2D or 3 d, count commas*/
+	if (!buf)
+		return 0;
+	for (ind;ind < strlen(buf); ind=ind +1)
+	{
+		if( buf[ind]==',')
+			commacount ++;
+	}
+	if (commacount == 1) /*2D no z value*/
+	{
+		sscanf(buf,"%f,%f",x,y);
+		z=0;
+	}
+	else 
+		sscanf(buf,"%f,%f,%f",*x,*y,*z);
+	return 1;
+}
+static void setRGBcolor(RGBColor* c,char* colorstr)
+{
+    gvcolor_t cl;
+	/*if node has color attribute*/
+	if (colorstr != '\0') 
+		colorxlate(colorstr, &cl, RGBA_DOUBLE);
+	else
+		colorxlate(agget(view->g[view->activeGraph],"defaultnodecolor"), &cl, RGBA_DOUBLE);
+		c->R = (float) cl.u.RGBA[0];
+		c->G = (float) cl.u.RGBA[1];
+		c->B = (float) cl.u.RGBA[2];
+		c->A = (float) cl.u.RGBA[3];
+
+}
+
+
+
+
+/*update position info from cgraph*/
+void settvposinfo(Agraph_t* g,topview* t)
+{
+    int ind;
+	float maxedgelen,len;
+	maxedgelen=0;
+	/*loop nodes*/
+	for (ind=0;ind < t->Nodecount ; ind ++)
+	{
+		if (!setpositioninfo(&t->Nodes[ind].x,&t->Nodes[ind].y,&t->Nodes[ind].z,agget(t->Nodes[ind].Node, "pos")))
+			printf ("missing position information of node %s , setting to zero\n",agnameof(t->Nodes[ind].Node));
+		/*distorted coordiantes, same with original ones at the beginning*/
+		t->Nodes[ind].distorted_x = t->Nodes[ind].x;
+		t->Nodes[ind].distorted_y = t->Nodes[ind].y;
+		t->Nodes[ind].distorted_z = t->Nodes[ind].z;
+	}
+	/*loop edges*/
+	for (ind=0;ind < t->Edgecount ; ind ++)
+	{
+		setpositioninfo(&t->Edges[ind].x1,&t->Edges[ind].y1,&t->Edges[ind].z1,agget(t->Edges[ind].Node1->Node, "pos"));
+		setpositioninfo(&t->Edges[ind].x2,&t->Edges[ind].y2,&t->Edges[ind].z2,agget(t->Edges[ind].Node2->Node, "pos"));
+		len=(float)pow(pow((t->Edges[ind].x2-t->Edges[ind].x1),2)+pow((t->Edges[ind].y2-t->Edges[ind].y1),2),0.5);
+		if (len > maxedgelen)
+			maxedgelen=len;
+		t->Edges[ind].length=len;
+	}
+	t->maxedgelen=maxedgelen;
+}
+void settvcolorinfo(Agraph_t* g,topview* t)
+{
+    int ind;
+	RGBColor color;
+	/*loop nodes*/
+	float maxvalue=0;
+	char* str;
+	for (ind=0;ind < t->Nodecount ; ind ++)
+	{
+		setRGBcolor(&color,agget(t->Nodes[ind].Node, "color"));
+		t->Nodes[ind].Color.R = color.R;t->Nodes[ind].Color.G = color.G;t->Nodes[ind].Color.B = color.B;t->Nodes[ind].Color.A = color.A;
+	}
+	if (agget(g,"edgecolorattribute"))
+	{
+		str=agget(g,"edgecolorattribute");
+		if(strlen(str) > 0)
+		{
+			t->maxedgelen=0;
+			for (ind=0;ind < t->Edgecount ; ind ++)
+			{
+				t->Edges[ind].length=atof(agget(t->Edges[ind].Edge, str));
+				if (t->Edges[ind].length > t->maxedgelen)
+					t->maxedgelen=t->Edges[ind].length;
+			}
+		}
+	}
+
+
+	/*loop edges*/
+	for (ind=0;ind < t->Edgecount ; ind ++)
+	{
+			char* color_string = agget(t->Edges[ind].Edge, "color");
+			if (color_string) 
+				color = GetRGBColor(color_string);
+			else	/*use color theme*/
+				getcolorfromschema(view->colschms,t->Edges[ind].length,t->maxedgelen,&color);
+			t->Edges[ind].Color.R=color.R;	t->Edges[ind].Color.G=color.G;	t->Edges[ind].Color.B=color.B;	t->Edges[ind].Color.A=color.A;
+	}
+}
+void update_topview(Agraph_t * g, topview * t,int init)
+{
+	if (init)
+		preparetopview(g,t);
+	settvposinfo(g,t);
+	settvcolorinfo(g,t);
+	set_boundaries(t);
+	set_update_required(t);
+	btnToolZoomFit_clicked(NULL,NULL);
+}
 
 void preparetopview(Agraph_t * g, topview * t)
 {
@@ -132,130 +254,44 @@ void preparetopview(Agraph_t * g, topview * t)
     }
     d_attr2 = agget(g, "DataAttribute2");
 
-    /*initialize node and edge array */
-    t->Edges = N_GNEW(agnedges(g), topview_edge);
+
+	/*initialize node and edge array */
+	printf("# of edges:%d\n",agnedges(g));
+	printf("# of nodes:%d\n",agnnodes(g));
+
+
+	t->Edges = N_GNEW(agnedges(g), topview_edge);
 
     t->Nodes = N_GNEW(agnnodes(g), topview_node);
 	t->maxnodedegree=1;
 
-    /* malloc topviewdata */
-//    t->TopviewData = NEW(topviewdata);
-
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
 	{
-
-		str=agget(v, "pos");
-		strcpy(buf, agget(v, "pos"));
-		if (strlen(buf)) 
 		//bind temp record;
 		agbindrec(v, "temp_node_record", sizeof(temp_node_record), TRUE);//graph custom data
-		{
-			a = (float) atof(strtok(buf, ","));
-			b = (float) atof(strtok(NULL, ","));
-			str = strtok(NULL, ",");
-			if (str)
-				c = (float) atof(str);
-			else
-				c = (float) 0.0;
-		}
 		/*initialize group index, -1 means no group */
 		t->Nodes[ind].GroupIndex = -1;
 		t->Nodes[ind].Node = v;
 		t->Nodes[ind].data.TVRef=ind;
 		((temp_node_record*)AGDATA(v))->TVref=ind;
 		init_element_data(&t->Nodes[ind].data);
-
-		if (agget(t->Nodes[ind].Node, "color")) 
-		{
-			color = GetRGBColor(agget(t->Nodes[ind].Node, "color"));
-			t->Nodes[ind].Color.R = color.R;
-			t->Nodes[ind].Color.G = color.G;
-			t->Nodes[ind].Color.B = color.B;
-			t->Nodes[ind].Color.A = color.A;
-		} else
-			randomize_color(&(t->Nodes[ind].Color), 2);
-		t->Nodes[ind].x = a;
-		t->Nodes[ind].y = b;
-		t->Nodes[ind].z = c;
-		t->Nodes[ind].distorted_x = a;
-		t->Nodes[ind].distorted_y = b;
-		t->Nodes[ind].distorted_z = c;
-
 		t->Nodes[ind].zoom_factor = 1;
 		t->Nodes[ind].degree = agdegree(g, v, 1, 1);
 		if (t->Nodes[ind].degree > t->maxnodedegree)
 			t->maxnodedegree=t->Nodes[ind].degree;
 
 		t->Nodes[ind].node_alpha = 1;
-		if (d_attr1) 
-		{
-			if (sym)
-				str = agxget(v, sym);
-			else
-				str = agnameof(v);
-			t->Nodes[ind].Label = strdup(str);
-		} 
-		else
-			t->Nodes[ind].Label = '\0';
-		if (d_attr2) 
-		{
-			str = agget(v, d_attr2);
-			if (str) 
-				t->Nodes[ind].Label2 = strdup(str);
-		} else
-			t->Nodes[ind].Label2 = '\0';
-
-		if (t->Nodes[ind].Label)
-			maxlabelsize = maxlabelsize + (int)strlen(t->Nodes[ind].Label);
-
 		for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
 		{
-
-			init_element_data(&t->Edges[ind].data);/*init edge data*/
+			init_element_data(&t->Edges[ind2].data);/*init edge data*/
 			t->Edges[ind2].Edge = e;
-			strcpy(buf, agget(aghead(e), "pos"));
-			if (strlen(buf))
-
-			{
-				a = (float) atof(strtok(buf, ","));
-				b = (float) atof(strtok(NULL, ","));
-				str = strtok(NULL, ",");
-				if (str)
-					c = (float) atof(str);
-				else
-					c = (float) 0.0;
-				t->Edges[ind2].x1 = a;
-				t->Edges[ind2].y1 = b;
-				t->Edges[ind2].z1 = b;
-			}
-			strcpy(buf, agget(agtail(e), "pos"));
-			if (strlen(buf)) 
-			{
-				a = (float) atof(strtok(buf, ","));
-				b = (float) atof(strtok(NULL, ","));
-				str = strtok(NULL, ",");
-				if (str)
-					c = (float) atof(str);
-				else
-					c = (float) 0.0;
-				t->Edges[ind2].x2 = a;
-				t->Edges[ind2].y2 = b;
-				t->Edges[ind2].z2 = c;
-			}
-			len=(float)pow(pow((t->Edges[ind2].x2-t->Edges[ind2].x1),2)+pow((t->Edges[ind2].y2-t->Edges[ind2].y1),2),0.5);
-			if (len > maxedgelen)
-				maxedgelen=len;
-			if (len < minedgelen)
-				minedgelen=len;
-			edgelength = edgelength + len;
 			ind2++;
 		}
 	ind++;
 	}
-	/*calculate font size*/
-	view->FontSize=calcfontsize(edgelength,maxlabelsize,ind2,ind);
 
-	/*attach edge node references ,  loop one more time*/
+
+	/*attach edge node references ,  loop one more time,set colors*/
     ind = 0;
     ind2 = 0;
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
@@ -265,21 +301,18 @@ void preparetopview(Agraph_t * g, topview * t)
 			t->Edges[ind2].Node1 =&t->Nodes[((temp_node_record*)AGDATA(agtail(e)))->TVref];
 			t->Edges[ind2].Node2 =&t->Nodes[((temp_node_record*)AGDATA(aghead(e)))->TVref];
 			ind2++;
-
 		}
 		ind++;
     }
-	/*create glcomp menu system*/
-	view->widgets =glcreate_gl_topview_menu();
-
 	/*set some stats for topview*/
 	t->Nodecount = ind;
     t->Edgecount = ind2;
 
-	/*get border values for the graph*/
-	set_boundaries(t);
-	/*reset update required? values to false*/
-	set_update_required(t);
+
+	/*create glcomp menu system*/
+	view->widgets =glcreate_gl_topview_menu();
+
+
 	/*for 3d graphs , camera controlling widget extension*/
 	attach_camera_widget(view);
 
@@ -295,25 +328,9 @@ void preparetopview(Agraph_t * g, topview * t)
 	/*reset picked nodes*/
 	t->picked_node_count = 0;
     t->picked_nodes = '\0';
-	btnToolZoomFit_clicked(NULL,NULL);
 
 }
-/*
-	this function calculates and sets node size(opengl dots, they are squares not a dots
-	if anybody has any problem with dot size please just modify this function
-	active_camera=-1 means view is in 2D mode,0 and above means there is a 3D camera active.
-	I use different params for both situations since they are viewed differently..
-	If node shape is other than opengl dots, '#r' is replaced with the calculated value
-*/
-/*
-	Notes about xdot:
-	I am planning to combine small graphs , for that purpose if there is an xdot string attached the either node or 
-	edge and if a node's draw_xdot attribute is set , xdot is drawn for the object
-	example node:
-    A[draw_xdot="1",_draw_="S 6 -filled c 7 -#741818 C 7 -#741818 P 5 125 528 96 543 67 528 67 505 125 505 ", _ldraw_="F 14.000000 11 -Times-Roman c 7 -#eaeb2a T 96 516 0 22 3 -S24"]
 
-	smyrna draws a house instead of a dot.
-*/
 
 static float set_gl_dot_size(topview * t)
 {
@@ -438,7 +455,7 @@ static int drawtopviewnodes(Agraph_t * g)
 	begintopviewnodes(g);
 	view->visiblenodecount=0;
 	for (ind = 0;
-	     ((ind < view->Topview->Nodecount) && (view->drawnodes));
+	     ((ind < view->Topview->Nodecount) );
 	     ind++) 
 	{
 	    if (((-view->Topview->Nodes[ind].distorted_x / view->zoom > view->clipX1)
@@ -451,9 +468,12 @@ static int drawtopviewnodes(Agraph_t * g)
 			 || (view->active_camera >= 0) ) {
 		float zdepth;
 		v = &view->Topview->Nodes[ind];
+		view->visiblenodecount = view->visiblenodecount + 1;
+			if(!view->drawnodes)
+				continue;
+
 		if (!node_visible(v))
 		    continue;
-		view->visiblenodecount = view->visiblenodecount + 1;
 		select_topview_node(v);
 		//UPDATE view->Topview data from cgraph
 		if (v->update_required)
@@ -582,7 +602,7 @@ static int drawtopviewlabels(Agraph_t * g)
 	topview_node *v;
 	float f;
 
-	if ((view->visiblenodecount >view->labelnumberofnodes) || (!view->labelshownodes))
+	if ((view->visiblenodecount >view->labelnumberofnodes) || (!view->labelshownodes) ||(!view->drawnodes))
 		return 0;
 	if (view->Topview->maxnodedegree > 15)
 		f=15;
@@ -1104,15 +1124,7 @@ static int get_color_from_edge(topview_edge * e)
     }
 
     /*get edge's color attribute */
-    color_string = agget(e->Edge, "color");
-    if (color_string) 
-	{
-		c = GetRGBColor(color_string);
-		glColor4f(c.R, c.G, c.B, Alpha);
-    } else
-	glColor4f
-	(e->Node1->Color.R, e->Node1->Color.G, e->Node1->Color.B,
-		  Alpha);
+	glColor4f(e->Color.R,e->Color.G,e->Color.B,1);
     return return_value;
 }
 
