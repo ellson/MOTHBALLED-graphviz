@@ -3,7 +3,7 @@
 
 htmldir = $(pkgdatadir)/doc/html/info
 
-html_DATA = attrs.html colors.html command.html grammar.html \
+html_DATA = attrs.html colors.html command.html \
   index.html lang.html output.html shapes.html arrows.html \
   Mcircle.gif Mdiamond.gif Msquare.gif a_box.gif a_crow.gif a_diamond.gif \
   a_dot.gif a_ediamond.gif a_empty.gif a_forward.gif a_halfopen.gif \
