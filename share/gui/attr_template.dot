@@ -1,0 +1,71 @@
+strict digraph template {
+	graph [antialiasing=1,
+		bgcolor="#ffffff",
+		bordercolor="#38eb29",
+		bordercoloralpha="1",
+		bordervisible="1",
+		defaultfontname="1",
+		defaultfontsize="52",
+		gridcolor="#6033d8",
+		gridcoloralpha="1",
+		gridsize="30",
+		gridvisible="0",
+		highlightededgecolor="#c41b50",
+		highlightededgecoloralpha="1",
+		highlightednodecolor="#d1cd24",
+		highlightednodecoloralpha="1",
+		defaultlinewidth="1"
+		nodesizewithdegree="1",
+		selectededgecolor="#EE1F1C",
+		selectededgecoloralpha="1",
+		selectednodecolor="#8ce61d",
+		selectednodecoloralpha="1",
+		gridcoloralpha="1",
+		defaultmagnifierwidth="300",
+		defaultmagnifierheight="200",
+		defaultmagnifierkts="5",
+		defaultfisheyemagnifierradius="250"
+		defaultfisheyemagnifierdistort="5",
+		usermode="1",
+		topologicalfisheyefinenodes="50",
+		topologicalfisheyecoarseningfactor="2.5",
+		topologicalfisheyedistortionfactor="1",
+		topologicalfisheyedist2limit="1",
+		topologicalfisheyeanimate="1",
+		topologicalfisheyelabelfinenodes="1",
+		topologicalfisheyecolornodes="1",
+		topologicalfisheyecoloredges="1",
+		topologicalfisheyelabelfocus="1",
+		topologicalfisheyefinestcolor="red",
+		topologicalfisheyecoarsestcolor="green",
+		topologicalfisheyelabelattribute="label",
+		drawnodes="1",
+		drawedges="1",
+		drawlabels="1",
+		defaultnodealpha="0.8",
+		defaultedgealpha="0.5",
+		defaultnodeshape="0",
+		defaultselectionmethod="2"
+
+		labelglutfont="0"
+		nodelabelcolor="#8ce61d"
+		edgelabelcolor="#8ce61d"
+		nodelabelattribute="name"
+		edgelabelattribute="name"
+		labelwithdegree="1"
+		labelnumberofnodes="23.45"
+		shownodelabels="1"
+		showedgelabels="1"
+		colortheme="1"
+		defaultnodecolor="blue"
+		defaultedgecolor="pink"
+		edgecolorattribute=""
+
+
+
+	];
+
+A->B;
+}
+
+
