@@ -846,18 +846,19 @@ RGBColor GetRGBColor(char *color)
 {
     gvcolor_t cl;
     RGBColor c;
-    if (color != '\0') {
-
-	colorxlate(color, &cl, RGBA_DOUBLE);
-	c.R = (float) cl.u.RGBA[0];
-	c.G = (float) cl.u.RGBA[1];
-	c.B = (float) cl.u.RGBA[2];
-	c.A = (float) cl.u.RGBA[3];
-    } else {
-	c.R = view->penColor.R;
-	c.G = view->penColor.G;
-	c.B = view->penColor.B;
-	c.A = view->penColor.A;
+    if (color != '\0') 
+	{
+		colorxlate(color, &cl, RGBA_DOUBLE);
+		c.R = (float) cl.u.RGBA[0];
+		c.G = (float) cl.u.RGBA[1];
+		c.B = (float) cl.u.RGBA[2];
+		c.A = (float) cl.u.RGBA[3];
+    } else 
+	{
+		c.R = view->penColor.R;
+		c.G = view->penColor.G;
+		c.B = view->penColor.B;
+		c.A = view->penColor.A;
     }
     return c;
 }

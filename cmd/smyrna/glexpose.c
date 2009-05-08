@@ -103,6 +103,7 @@ int glexpose_main(ViewInfo * view)
     drawBorders(view);
 	drawRotatingTools();
 //		draw_stuff();
+//	test_color_pallete();
 
 
 
