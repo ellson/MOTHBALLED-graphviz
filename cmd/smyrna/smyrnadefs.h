@@ -22,14 +22,6 @@
 //#define       SMYRNA_GLADE "C:/Projects/graphviz2/share/gui/smyrna.glade"
 #define	SMYRNA_ATTRS "c:/graphviz-ms/graphviz2/share/gui/attrs.txt"
 #endif
-#ifdef _WIN32
-#define SMYRNA_GLADE "c:/graphviz-ms/graphviz2/share/gui/smyrna.glade"
-#define GTKTOPVIEW_ATTRS "c:/graphviz-ms/share/gui/attrs.txt"
-#define DEFAULT_ATTRIBUTES_TEMPLATE_DOT_FILE	"c:/graphviz-ms/graphviz2/share/gui/attr_template.dot"
-// #else
-// using -DGTKTOPVIEW_GLADE from Makefile.am and configure.ac
-// using -DGTKTOPVIEW_ATTRS from Makefile.am and configure.ac
-#endif
 #ifdef	WIN32			//this  is needed on WIN32 to get libglade see the callback
 #define _BB  __declspec(dllexport)
 #else
@@ -547,6 +539,10 @@ typedef struct _ViewInfo
 	char* initFileName;	//file name from command line
 	int initFile;
 	colorschemaset* colschms;
+	char* template_file;
+	char* glade_file;
+	char* attr_file;
+
 
 
 } ViewInfo;

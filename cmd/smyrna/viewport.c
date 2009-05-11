@@ -317,36 +317,66 @@ static gboolean gl_main_expose(gpointer data) {
 	}
 	return 0;
 }
+void get_data_dir()
+{
+/*
+#define SMYRNA_GLADE "c:/graphviz-ms/graphviz2/share/gui/smyrna.glade"
+#define GTKTOPVIEW_ATTRS "c:/graphviz-ms/share/gui/attrs.txt"
+#define DEFAULT_ATTRIBUTES_TEMPLATE_DOT_FILE	"c:/graphviz-ms/graphviz2/share/gui/attr_template.dot"
+*/
+
+
+
+#ifdef WIN32
+
+	int a=GetCurrentDirectory(0, NULL);
+	if (view->template_file)
+	{
+		free(view->template_file);
+		free(view->glade_file);
+		free(view->attr_file);
+	}
+	view->template_file=(char*)malloc(sizeof(char)*(a+13));
+	view->glade_file=(char*)malloc(sizeof(char)*(a+13));
+	view->attr_file=(char*)malloc(sizeof(char)*(a+10));
+	GetCurrentDirectory(a, view->template_file);
+	GetCurrentDirectory(a, view->glade_file);
+	GetCurrentDirectory(a, view->attr_file);
+	strcat(view->template_file,"\\template.dot");
+	strcat(view->glade_file,"\\smyrna.glade");
+	strcat(view->attr_file,"\\attrs.txt");
+
+
+/*#define SMYRNA_GLADE "c:/graphviz-ms/graphviz2/share/gui/smyrna.glade"
+#define GTKTOPVIEW_ATTRS "c:/graphviz-ms/share/gui/attrs.txt"
+#define DEFAULT_ATTRIBUTES_TEMPLATE_DOT_FILE	"c:/graphviz-ms/graphviz2/share/gui/attr_template.dot"*/
+
+
+#endif
+}
 
 void init_viewport(ViewInfo * view)
 {
-    char *template_file;
-    FILE *input_file;
+    FILE *input_file=NULL;
 
+	
+		get_data_dir();
 
-
-    /*loading default visual attributes */
-#ifdef _WIN32
-    template_file = DEFAULT_ATTRIBUTES_TEMPLATE_DOT_FILE;
-#else
-    template_file = smyrnaPath ("template.dot");
-#endif
-    input_file = fopen(template_file, "r");
-    if (!input_file) {
-	fprintf (stderr, "default attributes template graph file \"%s\" not found\n", template_file);
-	exit(-1);
-    } else if (!(view->default_attributes = agread(input_file, 0))) {
-	fprintf (stderr, "could not load default attributes template graph file \"%s\"\n", template_file);
-	exit(-1);
+	input_file = fopen(view->template_file, "rb");
+	if (!input_file) {
+		fprintf (stderr, "default attributes template graph file \"%s\" not found\n", "c://graphviz-ms//bin//template");
+		exit(-1);
+    } else if (!(view->default_attributes = agread(input_file, 0))) 
+	{
+		fprintf (stderr, "could not load default attributes template graph file \"%s\"\n", view->template_file);
+		exit(-1);
     }
-#ifndef _WIN32
-    free (template_file);
-#endif
+
 	//init graphs
     view->g = NULL;		//no graph, gl screen should check it
     view->graphCount = 0;	//and disable interactivity if count is zero
 
-    view->bdxLeft = 0;
+	view->bdxLeft = 0;
     view->bdxRight = 500;
     view->bdyBottom = 0;
     view->bdyTop = 500;

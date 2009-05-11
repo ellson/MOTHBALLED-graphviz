@@ -66,6 +66,8 @@ smyrnaPath (char* suffix)
     return buf;
 }
 
+
+
 static char *useString = "Usage: smyrn [-txv?] [-K<engine>] <file>\n\
   -n         - use TopView mode\n\
   -e         - use XDOT mode\n\
@@ -162,6 +164,7 @@ int main(int argc, char *argv[])
     textdomain(GETTEXT_PACKAGE);
 #endif
     view = NEW(ViewInfo);
+
     init_viewport(view);
     gtk_set_locale();
     gtk_init(&argc, &argv);
@@ -172,7 +175,7 @@ int main(int argc, char *argv[])
 #endif
     if (!(smyrnaGlade)) {
 #ifdef _WIN32
-	smyrnaGlade = SMYRNA_GLADE;
+		smyrnaGlade = view->glade_file;
 #else
 	smyrnaGlade = smyrnaPath ("smyrna.glade");
 #endif
