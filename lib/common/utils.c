@@ -605,8 +605,9 @@ void common_init_node_opt(node_t * n, int shape_init_flag)
     if (shape_init_flag) ND_shape(n)->fns->initfn(n);
 }
 
-void common_init_node(node_t * n)
-    { return common_init_node_opt(n,TRUE); }
+void common_init_node(node_t * n) {
+    common_init_node_opt(n,TRUE);
+}
 
 struct fontinfo {
     double fontsize;
