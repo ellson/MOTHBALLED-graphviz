@@ -327,9 +327,12 @@ void get_data_dir()
 
 
 
-#ifdef WIN32
 
+#ifdef WIN32
 	int a=GetCurrentDirectory(0, NULL);
+#else
+	int a=getenv ("SMYRNA_PATH");
+#endif
 	if (view->template_file)
 	{
 		free(view->template_file);
@@ -339,9 +342,17 @@ void get_data_dir()
 	view->template_file=(char*)malloc(sizeof(char)*(a+13));
 	view->glade_file=(char*)malloc(sizeof(char)*(a+13));
 	view->attr_file=(char*)malloc(sizeof(char)*(a+10));
+#ifdef WIN32
 	GetCurrentDirectory(a, view->template_file);
 	GetCurrentDirectory(a, view->glade_file);
 	GetCurrentDirectory(a, view->attr_file);
+#else
+	view->template_file=getenv ("SMYRNA_PATH");;
+	view->glade_file=getenv ("SMYRNA_PATH");;
+	view->attr_file=getenv ("SMYRNA_PATH");;
+#endif
+	
+
 	strcat(view->template_file,"\\template.dot");
 	strcat(view->glade_file,"\\smyrna.glade");
 	strcat(view->attr_file,"\\attrs.txt");
@@ -352,7 +363,6 @@ void get_data_dir()
 #define DEFAULT_ATTRIBUTES_TEMPLATE_DOT_FILE	"c:/graphviz-ms/graphviz2/share/gui/attr_template.dot"*/
 
 
-#endif
 }
 
 void init_viewport(ViewInfo * view)
