@@ -542,6 +542,7 @@ typedef struct _ViewInfo
 	char* template_file;
 	char* glade_file;
 	char* attr_file;
+	int flush;
 
 
 

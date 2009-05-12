@@ -37,7 +37,6 @@ static int get_temp_coords(topview* t,int level,int v,double* coord_x,double* co
 #ifdef UNUSED
 static int get_temp_coords2(topview* t,int level,int v,double* coord_x,double* coord_y,float *R,float *G,float *B);
 #endif
-static int FLUSH=1;
 
 static void color_interpolation(glCompColor srcColor,glCompColor tarColor,glCompColor* color,int levelcount,int level)
 {
@@ -518,15 +517,12 @@ void drawtopfishedges(topview * t)
 
 void drawtopologicalfisheye(topview * t)
 {
-	if (FLUSH==1)
-	{
 		get_active_frame(t);
 		drawtopfishnodes(t);
 		drawtopfishedges(t);
 		if(!t->animate)
-		drawtopfishnodelabels(t);
-		FLUSH=0;
-	}
+			drawtopfishnodelabels(t);
+
 }
 
 

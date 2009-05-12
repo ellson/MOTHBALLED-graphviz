@@ -279,6 +279,7 @@ void preparetopview(Agraph_t * g, topview * t)
 		t->Nodes[ind].degree = agdegree(g, v, 1, 1);
 		if (t->Nodes[ind].degree > t->maxnodedegree)
 			t->maxnodedegree=t->Nodes[ind].degree;
+		view->Topview->Nodes[ind].Label=NULL;
 
 		t->Nodes[ind].node_alpha = 1;
 		for (e = agfstout(g, v); e; e = agnxtout(g, e)) 

@@ -315,7 +315,7 @@ static gboolean gl_main_expose(gpointer data) {
 			expose_event(view->drawing_area, NULL, NULL);
 		return 1;
 	}
-	return 0;
+	return 1;
 }
 
 void get_data_dir()
@@ -486,7 +486,7 @@ void init_viewport(ViewInfo * view)
 	view->Topview->Graphdata.selectedEdgesCount=0;
 	view->Topview->Graphdata.selectedNodes=0;
 	view->colschms=NULL;
-
+	view->flush=1;
 
 
 	//create fontset

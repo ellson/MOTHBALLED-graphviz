@@ -225,26 +225,28 @@ gboolean expose_event(GtkWidget * widget, GdkEventExpose * event,
     GdkGLContext *glcontext = gtk_widget_get_gl_context(widget);
     GdkGLDrawable *gldrawable = gtk_widget_get_gl_drawable(widget);
 
-
-	/*** OpenGL BEGIN ***/
-    if (!gdk_gl_drawable_gl_begin(gldrawable, glcontext))
-	return FALSE;
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glLoadIdentity();
-	glexpose_main(view);	//draw all stuff
-    /* Swap buffers */
-    if (gdk_gl_drawable_is_double_buffered(gldrawable))
-	gdk_gl_drawable_swap_buffers(gldrawable);
-    else
-	glFlush();
-    gdk_gl_drawable_gl_end(gldrawable);
-  /*** OpenGL END ***/
-	if (view->initFile)
+	if(view->flush==1)
 	{
-		view->initFile=0;
-		if (view->activeGraph == 0)
-			close_graph(view,0);
-		add_graph_to_viewport_from_file(view->initFileName);
+	/*** OpenGL BEGIN ***/
+	    if (!gdk_gl_drawable_gl_begin(gldrawable, glcontext))
+		return FALSE;
+	    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	    glLoadIdentity();
+		glexpose_main(view);	//draw all stuff
+    /* Swap buffers */
+	    if (gdk_gl_drawable_is_double_buffered(gldrawable))
+		gdk_gl_drawable_swap_buffers(gldrawable);
+	    else
+		glFlush();
+		gdk_gl_drawable_gl_end(gldrawable);
+  /*** OpenGL END ***/
+		if (view->initFile)
+		{
+			view->initFile=0;
+			if (view->activeGraph == 0)
+				close_graph(view,0);
+			add_graph_to_viewport_from_file(view->initFileName);
+		}
 	}
     
 	return TRUE;
