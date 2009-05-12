@@ -394,8 +394,8 @@ static gboolean button_release_event(GtkWidget * widget,
     return FALSE;
 }
 
-static scroll_event(GtkWidget * widget,
-				    GdkEventScroll * event, gpointer data)
+static gboolean
+scroll_event(GtkWidget * widget, GdkEventScroll * event, gpointer data)
 {
 	if(event->direction==0)
 	    view->mouse.dx = -30;
@@ -403,6 +403,7 @@ static scroll_event(GtkWidget * widget,
 	    view->mouse.dx = 30;
 	glmotion_zoom(view);
 	glexpose();
+    return TRUE;
 }
 
 /*

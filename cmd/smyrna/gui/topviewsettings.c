@@ -17,6 +17,7 @@
 #include "gui.h"
 #include "colorprocs.h"
 #include "viewport.h"
+#include "topview.h"
 #include "memory.h"
 
 void on_settingsOKBtn_clicked(GtkWidget * widget, gpointer user_data)

@@ -36,6 +36,7 @@
 #ifdef ENABLE_NLS
 #include "libintl.h"
 #endif
+#include <assert.h>
 
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
@@ -48,25 +49,35 @@ gchar *package_prefix;
 gchar *package_data_dir;
 #endif
 gchar *package_locale_dir;
-static char* smyrnaDir;
+static char* smyrnaDir;    /* path to directory containin smyrna data files */
 char* smyrnaGlade;
 unsigned char SmyrnaVerbose;
 
-
-
-
-
+/* smyrnaPath:
+ * Construct pathname for smyrna data file.
+ * Base file name is given as suffix.
+ * The function resolves the directory containing the data files,
+ * and constructs a complete pathname.
+ * The returned string is malloced, so the application should free
+ * it later.
+ * Returns NULL on error.
+ */
 char*
 smyrnaPath (char* suffix)
 {
     char* buf;
-    if (!smyrnaDir) return NULL;
+    assert (smyrnaDir);
+#ifdef _WIN32
+    char* pathSep = "\\";
+#else
+    char* pathSep = "/";
+#endif
+
     buf = N_NEW(strlen(smyrnaDir)+strlen(suffix)+2,char);
-    sprintf (buf, "%s/%s", smyrnaDir, suffix);
+    sprintf (buf, "%s%s%s", smyrnaDir, pathSep, suffix);
+
     return buf;
 }
-
-
 
 static char *useString = "Usage: smyrn [-txv?] [-K<engine>] <file>\n\
   -n         - use TopView mode\n\
@@ -137,13 +148,19 @@ int main(int argc, char *argv[])
 {
     GdkGLConfig *glconfig;
     char* initFileName;
-	smyrnaDir = getenv ("SMYRNA_PATH");
-#ifndef _WIN32
-    if (!smyrnaDir)
+
+    smyrnaDir = getenv ("SMYRNA_PATH");
+    if (!smyrnaDir) {
+#ifdef _WIN32
+	int sz = GetCurrentDirectory(0, NULL);
+	smyrnaDir = N_NEW(sz, char);
+	GetCurrentDirectory (sz, smyrnaDir);
+#else
 	smyrnaDir = SMYRNA_PATH;
 #endif
+    }
 
-	load_attributes();
+    load_attributes();
 
 #ifdef G_OS_WIN32
     package_prefix =
@@ -151,12 +168,9 @@ int main(int argc, char *argv[])
     package_data_dir = g_build_filename(package_prefix, "share", NULL);
     package_locale_dir =
 	g_build_filename(package_prefix, "share", "locale", NULL);
-	add_pixmap_directory("C:/");
+    add_pixmap_directory("C:/");
 #else
-    if (smyrnaDir)
-	package_locale_dir = g_build_filename(smyrnaDir, "locale", NULL);
-    else
-	package_locale_dir = g_build_filename(SMYRNA_PATH, "locale", NULL);
+    package_locale_dir = g_build_filename(smyrnaDir, "locale", NULL);
 #endif	/* # */
 #ifdef ENABLE_NLS
     bindtextdomain(GETTEXT_PACKAGE, package_locale_dir);
@@ -175,7 +189,7 @@ int main(int argc, char *argv[])
 #endif
     if (!(smyrnaGlade)) {
 #ifdef _WIN32
-		smyrnaGlade = view->glade_file;
+	smyrnaGlade = view->glade_file;
 #else
 	smyrnaGlade = smyrnaPath ("smyrna.glade");
 #endif
@@ -198,7 +212,7 @@ int main(int argc, char *argv[])
     create_window(glconfig, gladewidget);
 
 	change_cursor(GDK_TOP_LEFT_ARROW);
-	glutInit(&argc,&argv);
+	glutInit(&argc,argv);
 	gtk_main();
 
 

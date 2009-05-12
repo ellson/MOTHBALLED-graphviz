@@ -318,34 +318,18 @@ static gboolean gl_main_expose(gpointer data) {
 	return 1;
 }
 
-void get_data_dir()
+static void 
+get_data_dir()
 {
-#ifdef WIN32
-	int a=GetCurrentDirectory(0, NULL);
-#endif
-	if (view->template_file) {
-		free(view->template_file);
-		free(view->glade_file);
-		free(view->attr_file);
-	}
-#ifdef WIN32
-	view->template_file=(char*)malloc(sizeof(char)*(a+13));
-	view->glade_file=(char*)malloc(sizeof(char)*(a+13));
-	view->attr_file=(char*)malloc(sizeof(char)*(a+10));
+    if (view->template_file) {
+	free(view->template_file);
+	free(view->glade_file);
+	free(view->attr_file);
+    }
 
-	GetCurrentDirectory(a, view->template_file);
-	GetCurrentDirectory(a, view->glade_file);
-	GetCurrentDirectory(a, view->attr_file);
-
-	strcat(view->template_file,"\\template.dot");
-	strcat(view->glade_file,"\\smyrna.glade");
-	strcat(view->attr_file,"\\attrs.txt");
-#else
-	view->template_file = smyrnaPath ("template.dot");
-	view->glade_file = smyrnaPath ("smyrna.glade");
-	view->attr_file = smyrnaPath ("attrs.txt");
-#endif
-	
+    view->template_file = smyrnaPath ("template.dot");
+    view->glade_file = smyrnaPath ("smyrna.glade");
+    view->attr_file = smyrnaPath ("attrs.txt");
 }
 
 void init_viewport(ViewInfo * view)
@@ -353,9 +337,9 @@ void init_viewport(ViewInfo * view)
     FILE *input_file=NULL;
 
 	
-		get_data_dir();
+    get_data_dir();
 
-	input_file = fopen(view->template_file, "rb");
+    input_file = fopen(view->template_file, "rb");
 	if (!input_file) {
 		fprintf (stderr, "default attributes template graph file \"%s\" not found\n", "c://graphviz-ms//bin//template");
 		exit(-1);
@@ -691,7 +675,6 @@ static void refresh_borders(Agraph_t* g)
 int add_graph_to_viewport_from_file(char *fileName)
 {
     //returns 1 if successfull else 0
-	int ind=0;
 	Agraph_t *graph;
 
 	graph = loadGraph(fileName);
@@ -1055,7 +1038,7 @@ void please_dont_wait(void)
     gtk_widget_hide(glade_xml_get_widget(xml, "frmWait"));
 }
 
-int apply_gvpr(Agraph_t* g,char* prog)
+void apply_gvpr(Agraph_t* g,char* prog)
 {
 #ifdef WIN32	
 	Agraph_t* a=exec_gvpr(prog,g);
@@ -1068,7 +1051,7 @@ float interpol(float minv,float maxv,float minc,float maxc,float x)
 void getcolorfromschema(colorschemaset* sc,float l,float maxl,RGBColor* c)
 {
 	int ind;
-	float cuml=0.00;
+	/* float cuml=0.00; */
 	float percl=l/maxl*100.00;
 	for (ind=0;ind < sc->schemacount;ind ++)
 	{
@@ -1095,7 +1078,7 @@ static void set_color_theme_color(colorschemaset* sc,char** colorstr,int colorcn
     gvcolor_t cl;
 	float av_perc;
 	av_perc=100.00/(float)(colorcnt-1);
-	for (ind; ind < colorcnt; ind ++)
+	for (; ind < colorcnt; ind ++)
 	{
 		colorxlate(colorstr[ind], &cl,RGBA_DOUBLE);
 		sc->s[ind].c.R=cl.u.RGBA[0];
