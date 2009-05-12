@@ -37,6 +37,7 @@
 #include "regex.h"
 #endif
 #include "color.h"
+#include "colorprocs.h"
 
 static float dx = 0.0;
 static float dy = 0.0;
@@ -108,7 +109,7 @@ static int setpositioninfo(float* x,float* y,float* z,char* buf)
 	/*find out if 2D or 3 d, count commas*/
 	if (!buf)
 		return 0;
-	for (ind;ind < strlen(buf); ind=ind +1)
+	for (;ind < strlen(buf); ind=ind +1)
 	{
 		if( buf[ind]==',')
 			commacount ++;
@@ -119,7 +120,7 @@ static int setpositioninfo(float* x,float* y,float* z,char* buf)
 		z=0;
 	}
 	else 
-		sscanf(buf,"%f,%f,%f",*x,*y,*z);
+		sscanf(buf,"%f,%f,%f",x,y,z);
 	return 1;
 }
 static void setRGBcolor(RGBColor* c,char* colorstr)
@@ -173,7 +174,7 @@ void settvcolorinfo(Agraph_t* g,topview* t)
     int ind;
 	RGBColor color;
 	/*loop nodes*/
-	float maxvalue=0;
+	/* float maxvalue=0; */
 	char* str;
 	for (ind=0;ind < t->Nodecount ; ind ++)
 	{
@@ -220,19 +221,19 @@ void update_topview(Agraph_t * g, topview * t,int init)
 
 void preparetopview(Agraph_t * g, topview * t)
 {
-    char *str;
+    /* char *str; */
     char *d_attr1;
     char *d_attr2;
-    float a, b, c;
+    /* float a, b, c; */
     Agnode_t *v;
     Agedge_t *e;
     Agsym_t *sym;
     int ind, ind2, data_type_count;	//number of columns for custom view->Topview data ,IP ,HOST, etc
-	char buf[256];
-    RGBColor color;
+	/* char buf[256]; */
+    /* RGBColor color; */
 
-	int maxlabelsize=0;
-	float maxedgelen,minedgelen,len,edgelength;
+	/* int maxlabelsize=0; */
+	float maxedgelen,minedgelen,edgelength;
 
 
 	maxedgelen=0;
@@ -1065,9 +1066,9 @@ static void set_boundaries(topview * t)
 
 static int get_color_from_edge(topview_edge * e)
 {
-    RGBColor c;
+    /* RGBColor c; */
     GdkColor color;
-    char *color_string;
+    /* char *color_string; */
     int return_value = 0;
     float Alpha = 0;
     GtkHScale *AlphaScale =
