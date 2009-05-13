@@ -110,7 +110,7 @@ typedef struct
     float tIncY;        /* used for texture coords, y axis amount to move */
     int blockRow;       /* characters per row */
     int blockCol;       /* characters per col */
-    int texId; /* texture id */
+    GLuint texId; /* texture id */
 	float zdepth;	//third dimension , depth of fonts
 	float  bmp[257][2]; //texture bitmaps
 	fontglcache glcache;
