@@ -32,18 +32,27 @@ extern "C" {
  *               (assumes ND_clust(n) unused by application)
  *  l_graph    - polyomino using computer graph bounding box
  *  l_array    - array based on graph bounding boxes
+ *  l_aspect   - tiling based on graph bounding boxes preserving aspect ratio
  *  l_hull     - polyomino using convex hull (unimplemented)
  *  l_tile     - tiling using graph bounding box (unimplemented)
  *  l_bisect   - alternate bisection using graph bounding box (unimplemented)
  */
-    typedef enum { l_undef, l_clust, l_node, l_graph, l_array } pack_mode;
+    typedef enum { l_undef, l_clust, l_node, l_graph, l_array, l_aspect } pack_mode;
+
+#define PK_COL_MAJOR 1
+#define PK_USER_VALS 2
+
+typedef unsigned char packval_t;
 
     typedef struct {
 	float aspect;		/* desired aspect ratio */
+	int sz;			/* row/column size size */
 	unsigned int margin;	/* margin left around objects, in points */
 	int doSplines;		/* use splines in constructing graph shape */
 	pack_mode mode;		/* granularity and method */
 	boolean *fixed;		/* fixed[i] == true implies g[i] should not be moved */
+	packval_t* vals;	/* for arrays, sort numbers */
+	int flags;       
     } pack_info;
 #ifdef GVDLL
 #define extern __declspec(dllexport)
@@ -65,12 +74,13 @@ extern "C" {
     extern point *putGraphs(int, Agraph_t **, Agraph_t *, pack_info *);
     extern int packGraphs(int, Agraph_t **, Agraph_t *, pack_info *);
     extern int packSubgraphs(int, Agraph_t **, Agraph_t *, pack_info *);
-    extern int pack_graph(int, Agraph_t **, Agraph_t *, boolean*);
 
     extern int shiftGraphs(int, Agraph_t**, point*, Agraph_t*, int);
 
     extern pack_mode getPackMode(Agraph_t * g, pack_mode dflt);
     extern int getPack(Agraph_t *, int not_def, int dflt);
+    extern pack_mode getPackInfo(Agraph_t * g, pack_mode dflt, int dfltMargin, pack_info*);
+    extern pack_mode getPackModeInfo(Agraph_t * g, pack_mode dflt, pack_info*);
 
     extern int isConnected(Agraph_t *);
     extern Agraph_t **ccomps(Agraph_t *, int *, char *);

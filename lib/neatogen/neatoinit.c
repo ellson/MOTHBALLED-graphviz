@@ -1448,6 +1448,7 @@ void neato_layout(Agraph_t * g)
     int layoutMode;
     int model;
     pack_mode mode;
+    pack_info pinfo;
 
     if (Nop) {
 	int save = PSinputscale;
@@ -1465,7 +1466,7 @@ void neato_layout(Agraph_t * g)
 	neato_init_graph(g);
 	layoutMode = neatoMode(g);
 	model = neatoModel(g);
-	mode = getPackMode(g, l_undef);
+	mode = getPackModeInfo (g, l_undef, &pinfo);
 	Pack = getPack(g, -1, CL_OFFSET);
 	/* pack if just packmode defined. */
 	if (mode == l_undef) {
@@ -1474,7 +1475,7 @@ void neato_layout(Agraph_t * g)
 	     */
 	    if ((Pack < 0) && layoutMode)
 		Pack = CL_OFFSET;
-	    mode = l_node;
+	    pinfo.mode = l_node;
 	} else if (Pack < 0)
 	    Pack = CL_OFFSET;
 	if (Pack >= 0) {
@@ -1482,7 +1483,6 @@ void neato_layout(Agraph_t * g)
 	    graph_t **cc;
 	    int n_cc;
 	    int i;
-	    pack_info pinfo;
 	    boolean pin;
 
 	    cc = pccomps(g, &n_cc, cc_pfx, &pin);
@@ -1501,8 +1501,6 @@ void neato_layout(Agraph_t * g)
 		} else
 		    bp = 0;
 		pinfo.margin = Pack;
-		pinfo.doSplines = 0;
-		pinfo.mode = mode;
 		pinfo.fixed = bp;
 		packGraphs(n_cc, cc, 0, &pinfo);
 		if (bp)

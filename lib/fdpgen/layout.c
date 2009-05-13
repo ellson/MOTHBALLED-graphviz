@@ -1064,9 +1064,7 @@ void init_info(graph_t * g, layout_info * infop)
 #endif /* WITH_CGRAPH */
     infop->rootg = g;
     infop->gid = 0;
-    infop->pack.margin = getPack(g, CL_OFFSET / 2, CL_OFFSET / 2);
-    infop->pack.doSplines = 0;
-    infop->pack.mode = getPackMode(g, l_node);
+    infop->pack.mode = getPackInfo(g, l_node, CL_OFFSET / 2, &(infop->pack));
 }
 
 /* mkClusters:

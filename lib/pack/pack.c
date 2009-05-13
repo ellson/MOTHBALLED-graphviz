@@ -21,15 +21,23 @@
  */
 
 #include <math.h>
+#include <assert.h>
 #include "render.h"
 #include "pack.h"
 #include "pointset.h"
+#include <assert.h>
+
+#define strneq(a,b,n)		(!strncmp(a,b,n))
 
 #define C 100			/* Max. avg. polyomino size */
 
 #define MOVEPT(p) ((p).x += dx, (p).y += dy)
-#define GRID(x,s) (((x) + ((s)-1)) / (s))
-#define CELL(p,s) ((p).x = (p).x/(s), (p).y = ((p).y/(s)))
+/* Given cell size s, GRID(x:double,s:int) returns how many cells are required by size x */
+#define GRID(x,s) ((int)ceil((x)/(s)))
+/* Given grid cell size s, CVAL(v:int,s:int) returns index of cell containing point v */
+#define CVAL(v,s) ((v) >= 0 ? (v)/(s) : (((v)+1)/(s))-1)
+/* Given grid cell size s, CELL(p:point,s:int) sets p to cell containing point p */
+#define CELL(p,s) ((p).x = CVAL((p).x,s), (p).y = CVAL((p).y,(s)))
 
 typedef struct {
     int perim;			/* half size of bounding rectangle perimeter */
@@ -40,6 +48,7 @@ typedef struct {
 
 typedef struct {
     double width, height;
+    int index;			/* index in original array */
 } ainfo;
 
 /* computeStep:
@@ -242,8 +251,8 @@ genBox(boxf bb0, ginfo * info, int ssize, int margin, point center, char* s)
 
     info->cells = pointsOf(ps);
     info->nc = sizeOf(ps);
-    W = GRID(bb.UR.x - bb.LL.x + 2 * margin, ssize);
-    H = GRID(bb.UR.y - bb.LL.y + 2 * margin, ssize);
+    W = GRID(bb0.UR.x - bb0.LL.x + 2 * margin, ssize);
+    H = GRID(bb0.UR.y - bb0.LL.y + 2 * margin, ssize);
     info->perim = W + H;
 
     if (Verbose > 2) {
@@ -392,8 +401,8 @@ genPoly(Agraph_t * root, Agraph_t * g, ginfo * info,
 
     info->cells = pointsOf(ps);
     info->nc = sizeOf(ps);
-    W = GRID(ROUND(GD_bb(g).UR.x - GD_bb(g).LL.x) + 2 * margin, ssize);
-    H = GRID(ROUND(GD_bb(g).UR.y - GD_bb(g).LL.y) + 2 * margin, ssize);
+    W = GRID(GD_bb(g).UR.x - GD_bb(g).LL.x + 2 * margin, ssize);
+    H = GRID(GD_bb(g).UR.y - GD_bb(g).LL.y + 2 * margin, ssize);
     info->perim = W + H;
 
     if (Verbose > 2) {
@@ -490,16 +499,16 @@ placeGraph(int i, ginfo * info, PointSet * ps, point * place, int step,
     boxf bb = bbs[info->index];
 
     if (i == 0) {
-	W = GRID(ROUND(bb.UR.x - bb.LL.x) + 2 * margin, step);
-	H = GRID(ROUND(bb.UR.y - bb.LL.y) + 2 * margin, step);
+	W = GRID(bb.UR.x - bb.LL.x + 2 * margin, step);
+	H = GRID(bb.UR.y - bb.LL.y + 2 * margin, step);
 	if (fits(-W / 2, -H / 2, info, ps, place, step, bbs))
 	    return;
     }
 
     if (fits(0, 0, info, ps, place, step, bbs))
 	return;
-    W = ROUND(bb.UR.x - bb.LL.x);
-    H = ROUND(bb.UR.y - bb.LL.y);
+    W = ceil(bb.UR.x - bb.LL.x);
+    H = ceil(bb.UR.y - bb.LL.y);
     if (W >= H) {
 	for (bnd = 1;; bnd++) {
 	    x = 0;
@@ -556,19 +565,47 @@ void dumpp(ginfo * info, char *pfx)
 }
 #endif
 
-/* ampf;
- * Sort by height, then width
+static packval_t* userVals;
+
+/* ucmpf;
+ * Sort by user values.
+ */
+static int ucmpf(const void *X, const void *Y)
+{
+    ainfo* x = *(ainfo **) X;
+    ainfo* y = *(ainfo **) Y;
+
+    int dX = userVals[x->index];
+    int dY = userVals[y->index];
+    if (dX > dY) return 1;
+    else if (dX < dY) return -1;
+    else return 0;
+}
+
+/* acmpf;
+ * Sort by height + width
  */
 static int acmpf(const void *X, const void *Y)
 {
     ainfo* x = *(ainfo **) X;
     ainfo* y = *(ainfo **) Y;
+#if 0
     if (x->height < y->height) return 1;
     else if (x->height > y->height) return -1;
     else if (x->width < y->width) return 1;
     else if (x->width > y->width) return -1;
     else return 0;
+#endif
+    double dX = x->height + x->width; 
+    double dY = y->height + y->width; 
+    if (dX < dY) return 1;
+    else if (dX > dY) return -1;
+    else return 0;
 }
+
+#define INC(m,c,r) \
+    if (m){ c++; if (c == nc) { c = 0; r++; } } \
+    else { r++; if (r == nr) { r = 0; c++; } }
 
 /* arrayRects:
  */
@@ -576,7 +613,7 @@ static point *
 arrayRects (int ng, boxf* gs, pack_info* pinfo)
 {
     int i;
-    int nr, nc;
+    int nr = 0, nc;
     int r, c;
     ainfo *info;
     ainfo *ip;
@@ -586,9 +623,32 @@ arrayRects (int ng, boxf* gs, pack_info* pinfo)
     double v, wd, ht;
     point* places = N_NEW(ng, point);
     boxf bb;
+    int sz, rowMajor;
 
-    nc = ceil(sqrt(ng));
-    nr = (ng + (nc-1))/nc;
+    /* set up no. of rows and columns */
+    sz = pinfo->sz;
+    if (pinfo->flags & PK_COL_MAJOR) {
+	rowMajor = 0;
+	if (sz > 0) {
+	    nr = sz;
+	    nc = (ng + (nr-1))/nr;
+	}
+	else {
+	    nr = ceil(sqrt(ng));
+	    nc = (ng + (nr-1))/nr;
+	}
+    }
+    else {
+	rowMajor = 1;
+	if (sz > 0) {
+	    nc = sz;
+	    nr = (ng + (nc-1))/nc;
+	}
+	else {
+	    nc = ceil(sqrt(ng));
+	    nr = (ng + (nc-1))/nc;
+	}
+    }
     widths = N_NEW(nc+1, double);
     heights = N_NEW(nr+1, double);
 
@@ -597,13 +657,21 @@ arrayRects (int ng, boxf* gs, pack_info* pinfo)
 	bb = gs[i];
 	ip->width = bb.UR.x - bb.LL.x + pinfo->margin;
 	ip->height = bb.UR.y - bb.LL.y + pinfo->margin;
+	ip->index = i;
     }
 
     sinfo = N_NEW(ng, ainfo*);
     for (i = 0; i < ng; i++) {
 	sinfo[i] = info + i;
     }
-    qsort(sinfo, ng, sizeof(ainfo *), acmpf);
+
+    if (pinfo->vals) {
+	userVals = pinfo->vals;
+	qsort(sinfo, ng, sizeof(ainfo *), ucmpf);
+    }
+    else {
+	qsort(sinfo, ng, sizeof(ainfo *), acmpf);
+    }
 
     /* compute column widths and row heights */
     r = c = 0;
@@ -611,11 +679,7 @@ arrayRects (int ng, boxf* gs, pack_info* pinfo)
 	ip = sinfo[i];
 	widths[c] = MAX(widths[c],ip->width);
 	heights[r] = MAX(heights[r],ip->height);
-	c++;
-	if (c == nc) {
-	    c = 0;
-	    r++;
-	}
+	INC(rowMajor,c,r);
     }
 
     /* convert widths and heights to positions */
@@ -639,15 +703,11 @@ arrayRects (int ng, boxf* gs, pack_info* pinfo)
     for (i = 0; i < ng; i++, ip++) {
 	int idx;
 	ip = sinfo[i];
-	idx = ip-info;
+	idx = ip->index;
 	bb = gs[idx];
 	places[idx].x = (widths[c] + widths[c+1] - bb.UR.x - bb.LL.x)/2.0;
 	places[idx].y = (heights[r] + heights[r+1] - bb.UR.y - bb.LL.y)/2.0;
-	c++;
-	if (c == nc) {
-	    c = 0;
-	    r++;
-	}
+	INC(rowMajor,c,r);
     }
 
     free (info);
@@ -730,8 +790,10 @@ polyRects(int ng, boxf* gs, pack_info * pinfo)
  * Depends on graph fields bb, node fields pos, xsize and ysize, and
  * edge field spl.
  *
- * NOTE: fixed mode does not always work. The fixed ones get translated
+ * FIX: fixed mode does not always work. The fixed ones get translated
  * back to be centered on the origin.
+ * FIX: Check CELL and GRID macros for negative coordinates 
+ * FIX: Check width and height computation
  */
 static point*
 polyGraphs(int ng, Agraph_t ** gs, Agraph_t * root, pack_info * pinfo)
@@ -1094,6 +1156,7 @@ packSubgraphs(int ng, Agraph_t ** gs, Agraph_t * root, pack_info * info)
     return ret;
 }
 
+#if 0
 /* pack_graph:
  * Pack subgraphs followed by postprocessing.
  */
@@ -1111,21 +1174,74 @@ pack_graph(int ng, Agraph_t** gs, Agraph_t* root, boolean* fixed)
     if (ret == 0) dotneato_postprocess (root);
     return ret;
 }
+#    endif
 
-/* getPackMode;
+#define ARRAY  "array"
+#define ASPECT "aspect"
+#define SLEN(s) (sizeof(s)/sizeof(char) - 1)
+
+static char*
+chkFlags (char* p, pack_info* pinfo)
+{
+    int c, more;
+
+    if (*p != '_') return p;
+    p++;
+    more = 1;
+    while (more && (c = *p)) {
+	switch (c) {
+	case 'c' :
+	    pinfo->flags |= PK_COL_MAJOR;
+	    p++;
+	    break;
+	case 'u' :
+	    pinfo->flags |= PK_USER_VALS;
+	    p++;
+	    break;
+	default :
+	    more = 0;
+	    break;
+	}
+    }
+    return p;
+}
+
+/* getPackModeInfo;
  * Return pack_mode of graph using "packmode" attribute.
  * If not defined, return dflt
  */
-pack_mode getPackMode(Agraph_t * g, pack_mode dflt)
+pack_mode 
+getPackModeInfo(Agraph_t * g, pack_mode dflt, pack_info* pinfo)
 {
     char *p = agget(g, "packmode");
     pack_mode mode = dflt;
+    float v;
+    int i;
 
+    assert (pinfo);
+    pinfo->flags = 0;
+    pinfo->sz = 0;
+    pinfo->vals = NULL;
     if (p && *p) {
 	switch (*p) {
 	case 'a':
-	    if (streq(p, "array"))
-		mode = l_array;
+	    if (strneq(p, ARRAY, SLEN(ARRAY))) {
+		pinfo->mode = mode = l_array;
+		p += SLEN(ARRAY);
+		p = chkFlags (p, pinfo);
+		if ((sscanf (p, "%d", &i)>0) && (i > 0))
+		    pinfo->sz = i;
+	    }
+	    else if (strneq(p, ASPECT, SLEN(ASPECT))) {
+		mode = l_aspect;
+		if (pinfo) {
+		    pinfo->mode = mode;
+		    if ((sscanf (p + SLEN(ARRAY), "%f", &v)>0) && (v > 0))
+			pinfo->aspect = v;
+		    else
+			pinfo->aspect = 1;
+		}
+	    }
 	    break;
 #ifdef NOT_IMPLEMENTED
 	case 'b':
@@ -1159,7 +1275,22 @@ pack_mode getPackMode(Agraph_t * g, pack_mode dflt)
 #endif
 	}
     }
+
+    if (Verbose) {
+	fprintf (stderr, "pack info:\n");
+	fprintf (stderr, "  mode   %d\n", pinfo->mode);
+	fprintf (stderr, "  aspect %f\n", pinfo->aspect);
+	fprintf (stderr, "  size   %d\n", pinfo->sz);
+	fprintf (stderr, "  margin %d\n", pinfo->margin);
+	fprintf (stderr, "  flags  %d\n", pinfo->flags);
+    }
     return mode;
+}
+
+pack_mode 
+getPackMode(Agraph_t * g, pack_mode dflt)
+{
+  return getPackModeInfo (g, dflt, 0);
 }
 
 /* getPack;
@@ -1182,3 +1313,17 @@ int getPack(Agraph_t * g, int not_def, int dflt)
 
     return v;
 }
+
+pack_mode 
+getPackInfo(Agraph_t * g, pack_mode dflt, int dfltMargin, pack_info* pinfo)
+{
+    pack_mode pmode = getPackModeInfo(g, dflt, pinfo);
+    pinfo->margin = getPack(g, dfltMargin, dfltMargin);
+    pinfo->doSplines = 0;
+    pinfo->mode = pmode;
+    pinfo->fixed = 0;
+
+    return pmode;
+}
+
+
