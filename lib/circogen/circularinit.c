@@ -279,21 +279,17 @@ void circoLayout(Agraph_t * g)
 	} else {
 	    Agraph_t *dg = ccs[0]->root;
 	    pack_info pinfo;
-	    pack_mode pmode = getPackMode(g, l_node);
+	    getPackInfo(g, l_node, CL_OFFSET, &pinfo);
 
 	    for (i = 0; i < ncc; i++) {
 		sg = ccs[i];
 		circularLayout(sg);
 		adjustNodes(sg);
 	    }
-	    pinfo.margin = getPack(g, CL_OFFSET, CL_OFFSET);
 	    /* FIX: splines have not been calculated for dg
 	     * To use, either do splines in dg and copy to g, or
 	     * construct components of g from ccs and use that in packing.
 	     */
-	    pinfo.doSplines = 1;
-	    pinfo.mode = pmode;
-	    pinfo.fixed = 0;
 	    packSubgraphs(ncc, ccs, dg, &pinfo);
 	    for (i = 0; i < ncc; i++)
 		copyPosns(ccs[i]);
