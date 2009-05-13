@@ -38,7 +38,6 @@
 #endif
 #include "color.h"
 #include "colorprocs.h"
-
 static float dx = 0.0;
 static float dy = 0.0;
 static float dz = 0.0;
@@ -109,7 +108,7 @@ static int setpositioninfo(float* x,float* y,float* z,char* buf)
 	/*find out if 2D or 3 d, count commas*/
 	if (!buf)
 		return 0;
-	for (;ind < strlen(buf); ind=ind +1)
+	for (ind;ind < (int)strlen(buf); ind=ind +1)
 	{
 		if( buf[ind]==',')
 			commacount ++;
@@ -145,8 +144,9 @@ static void setRGBcolor(RGBColor* c,char* colorstr)
 void settvposinfo(Agraph_t* g,topview* t)
 {
     int ind;
-	float maxedgelen,len;
+	float maxedgelen,len,minedgelen;
 	maxedgelen=0;
+	minedgelen=HUGE_NUMBER;
 	/*loop nodes*/
 	for (ind=0;ind < t->Nodecount ; ind ++)
 	{
@@ -165,9 +165,13 @@ void settvposinfo(Agraph_t* g,topview* t)
 		len=(float)pow(pow((t->Edges[ind].x2-t->Edges[ind].x1),2)+pow((t->Edges[ind].y2-t->Edges[ind].y1),2),0.5);
 		if (len > maxedgelen)
 			maxedgelen=len;
+		if(len < minedgelen)
+			minedgelen=len;
 		t->Edges[ind].length=len;
 	}
 	t->maxedgelen=maxedgelen;
+	t->minedgelen=minedgelen;
+
 }
 void settvcolorinfo(Agraph_t* g,topview* t)
 {
@@ -207,6 +211,10 @@ void settvcolorinfo(Agraph_t* g,topview* t)
 				getcolorfromschema(view->colschms,t->Edges[ind].length,t->maxedgelen,&color);
 			t->Edges[ind].Color.R=color.R;	t->Edges[ind].Color.G=color.G;	t->Edges[ind].Color.B=color.B;	t->Edges[ind].Color.A=color.A;
 	}
+	/*update node size values in case node size is changed*/
+	t->init_node_size=t->minedgelen*10/GetOGLDistance(10)*atoi(agget(view->g[view->activeGraph],"nodesize"))/100.0*5.00;
+	t->init_zoom=view->zoom;
+
 }
 void update_topview(Agraph_t * g, topview * t,int init)
 {
@@ -217,22 +225,18 @@ void update_topview(Agraph_t * g, topview * t,int init)
 	set_boundaries(t);
 	set_update_required(t);
 	btnToolZoomFit_clicked(NULL,NULL);
+
 }
 
 void preparetopview(Agraph_t * g, topview * t)
 {
-    /* char *str; */
     char *d_attr1;
     char *d_attr2;
-    /* float a, b, c; */
     Agnode_t *v;
     Agedge_t *e;
     Agsym_t *sym;
     int ind, ind2, data_type_count;	//number of columns for custom view->Topview data ,IP ,HOST, etc
-	/* char buf[256]; */
-    /* RGBColor color; */
-
-	/* int maxlabelsize=0; */
+	int maxlabelsize=0;
 	float maxedgelen,minedgelen,edgelength;
 
 
@@ -336,18 +340,13 @@ void preparetopview(Agraph_t * g, topview * t)
 
 static float set_gl_dot_size(topview * t)
 {
-	static float dotsize;
+	static float sizevc;
 	if (view->active_camera==-1)
-//		dotsize = (float)GL_DOTSIZE_CONSTANT / view->zoom;
-		dotsize = 2.00;
+		sizevc = t->init_node_size /view->zoom*t->init_zoom;
 	else
-		dotsize = (float)GL_DOTSIZE_CONSTANT / view->cameras[view->active_camera]->r*(float)-1;
+		sizevc=t->init_node_size /view->cameras[view->active_camera]->r*t->init_zoom;
 
-//	dotsize=dotsize * DOT_SIZE_CORRECTION_FAC;
-	if (dotsize <=1.2)
-		dotsize=(float)1.2;
-	glPointSize((GLfloat)dotsize);
-	return dotsize;
+	return sizevc;
 
 }
 
@@ -363,7 +362,8 @@ static int begintopviewnodes(Agraph_t* g)
 	switch (view->defaultnodeshape)
 	{
 	case 0:
-		set_gl_dot_size(view->Topview);		
+		glPointSize((GLfloat)set_gl_dot_size(view->Topview));		
+//		glPointSize((GLfloat)0.00);		
 		glEnable(GL_POINT_SMOOTH);
 		glBegin(GL_POINTS);
 		break;
@@ -509,9 +509,7 @@ static int drawtopviewnodes(Agraph_t * g)
 			}
 			else if (view->defaultnodeshape==1)
 			{
-				draw_sphere(v->distorted_x - ddx,
-				v->distorted_y - ddy, v->distorted_z - ddz,0.0025);
-
+				drawCircle(v->distorted_x - ddx,v->distorted_y - ddy,dotsize,0);
 			}
 	    }
 		else
@@ -1066,9 +1064,7 @@ static void set_boundaries(topview * t)
 
 static int get_color_from_edge(topview_edge * e)
 {
-    /* RGBColor c; */
     GdkColor color;
-    /* char *color_string; */
     int return_value = 0;
     float Alpha = 0;
     GtkHScale *AlphaScale =

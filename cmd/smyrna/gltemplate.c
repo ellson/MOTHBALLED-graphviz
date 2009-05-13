@@ -225,8 +225,6 @@ gboolean expose_event(GtkWidget * widget, GdkEventExpose * event,
     GdkGLContext *glcontext = gtk_widget_get_gl_context(widget);
     GdkGLDrawable *gldrawable = gtk_widget_get_gl_drawable(widget);
 
-	if(view->flush==1)
-	{
 	/*** OpenGL BEGIN ***/
 	    if (!gdk_gl_drawable_gl_begin(gldrawable, glcontext))
 		return FALSE;
@@ -247,8 +245,6 @@ gboolean expose_event(GtkWidget * widget, GdkEventExpose * event,
 				close_graph(view,0);
 			add_graph_to_viewport_from_file(view->initFileName);
 		}
-	}
-    
 	return TRUE;
 }
 
