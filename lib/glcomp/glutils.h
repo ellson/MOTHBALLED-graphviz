@@ -28,6 +28,6 @@ int GetOGLPosRef(int x, int y, float *X, float *Y, float *Z);
 float GetOGLDistance(int l);
 int GetFixedOGLPoslocal(int x, int y, float kts, GLfloat * X, GLfloat * Y,
 		   GLfloat * Z);
-
+void linear_interplotate (float x1,float y1,float x3,float y3,float x2,float* y2);
 
 #endif

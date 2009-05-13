@@ -48,16 +48,13 @@ extern "C" {
 #ifdef GVDLL
 #define extern __declspec(dllexport)
 #else
-#define extern
-#endif
-
-/*visual studio*/
 #ifdef WIN32_DLL
 #ifndef GVC_EXPORTS
 #define extern __declspec(dllimport)
 #endif
 #endif
-/*end visual studio*/
+
+#endif
 
     extern void *zmalloc(size_t);
     extern void *zrealloc(void *, size_t, size_t, size_t);

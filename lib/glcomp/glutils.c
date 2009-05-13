@@ -181,6 +181,14 @@ int GetFixedOGLPoslocal(int x, int y, float kts, GLfloat * X, GLfloat * Y,
 	return 1;
 
 }
+void linear_interplotate (float x1,float y1,float x2,float y2,float x3,float* y3)
+{
+
+	float a,b;
+	a=(y1-y2)/(x1-x2);
+	b=y1-a*x1;
+	*y3=a*x3+b;
+}
 
 #if 0
 int glreversecamera(ViewInfo * view)
