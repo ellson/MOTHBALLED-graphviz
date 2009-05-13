@@ -70,7 +70,7 @@ smyrnaPath (char* suffix)
     char* pathSep = "\\";
 #else
 
-	assert (smyrnaDir);
+    assert (smyrnaDir);
     char* pathSep = "/";
 #endif
 
@@ -215,7 +215,7 @@ int main(int argc, char *argv[])
 	change_cursor(GDK_TOP_LEFT_ARROW);
 
 #ifndef WIN32	
-	glutInit(&argc,&argv);
+	glutInit(&argc,argv);
 #endif
 	gtk_main();
 
