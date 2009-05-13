@@ -13,6 +13,7 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+#include "topview.h"
 #include "topviewsettings.h"
 #include "gui.h"
 #include "colorprocs.h"
@@ -338,6 +339,7 @@ int load_settings_from_graph(Agraph_t * g)
 
 	set_scalebtn_widget_to_attribute("defaultnodealpha", "settingsscale1");	/*node alpha*/
 	set_scalebtn_widget_to_attribute("defaultedgealpha", "settingsscale2"); /*edge alpha*/
+	set_scalebtn_widget_to_attribute("nodesize", "nodesizescale"); /*edge alpha*/
 
 	/*font selection box */
     buf = agget(view->g[view->activeGraph], "defaultfontname");
@@ -393,9 +395,6 @@ int load_settings_from_graph(Agraph_t * g)
 	
     return 1;
 }
-
-/*burak
-917 749 6080*/
 
 
 int update_graph_from_settings(Agraph_t * g)
@@ -518,6 +517,8 @@ int update_graph_from_settings(Agraph_t * g)
 				    "settingsscale1", g);
 	get_scalebtn_widget_to_attribute("defaultedgealpha",
 				    "settingsscale2", g);
+	get_scalebtn_widget_to_attribute("nodesize",
+				    "nodesizescale", g);
 
 	get_combobox_widget_to_attribute("defaultnodeshape","settingscombobox1", g)	;
 	get_combobox_widget_to_attribute("defaultselectionmethod","settingscombobox2", g)	;
