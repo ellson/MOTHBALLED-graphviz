@@ -391,8 +391,10 @@ void change_cursor(GdkCursorType C)
     gdk_cursor_destroy(cursor);
 	return;
 }
+float GetOGLDistance(int l);
 void mTestgvpr(GtkWidget * widget, gpointer user_data)
 {
-	apply_gvpr(view->g[view->activeGraph],"c:/graphviz-ms/bin/makered.g");
-	
+//	apply_gvpr(view->g[view->activeGraph],"c:/graphviz-ms/bin/makered.g");
+	float vecdist=GetOGLDistance(10);
+	printf ("z:%f  vec:%f\n",view->zoom,vecdist);
 }
