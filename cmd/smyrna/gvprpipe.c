@@ -143,7 +143,7 @@ int cgraph_write_wrapper(void *chan, char *str)
    DWORD dwWritten; 
    BOOL bSuccess = FALSE;
  
-    bSuccess = WriteFile(SmyrnaToGvprWr, str, strlen(str), &dwWritten, NULL);
+    bSuccess = WriteFile(SmyrnaToGvprWr, str, (DWORD)strlen(str), &dwWritten, NULL);
   if ( ! bSuccess ) return 0; 
   return dwWritten;
 } 

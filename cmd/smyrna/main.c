@@ -66,10 +66,11 @@ char*
 smyrnaPath (char* suffix)
 {
     char* buf;
-    assert (smyrnaDir);
 #ifdef _WIN32
     char* pathSep = "\\";
 #else
+
+	assert (smyrnaDir);
     char* pathSep = "/";
 #endif
 
@@ -212,7 +213,10 @@ int main(int argc, char *argv[])
     create_window(glconfig, gladewidget);
 
 	change_cursor(GDK_TOP_LEFT_ARROW);
-	glutInit(&argc,argv);
+
+#ifndef WIN32	
+	glutInit(&argc,&argv);
+#endif
 	gtk_main();
 
 
@@ -222,6 +226,5 @@ int main(int argc, char *argv[])
     g_free(package_data_dir);
 #endif
     g_free(package_locale_dir);
-    clear_viewport(view);
     return 0;
 }

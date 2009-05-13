@@ -33,6 +33,8 @@
 #include "memory.h"
 #include "topviewsettings.h"
 #include "md5.h"
+#include "gvprpipe.h"
+
 
 
   /* Forward declarations */
@@ -67,7 +69,8 @@ void clear_viewport(ViewInfo * view)
 		cleartopview(view->Topview);
     if (view->graphCount) 
 		agclose(view->g[view->activeGraph]);
-	init_viewport(view);
+
+//	init_viewport(view);
 }
 static void* get_glut_font(int ind)
 {
@@ -304,6 +307,7 @@ set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
 	view->labelshowedges=atoi(get_attribute_value ("showedgelabels", view, g));
 	view->colschms=create_color_theme(atoi(get_attribute_value ("colortheme", view, g)));
 
+
 	if (view->graphCount > 0)
 		glClearColor(view->bgColor.R, view->bgColor.G, view->bgColor.B, view->bgColor.A);	//background color
 }
@@ -409,7 +413,6 @@ void init_viewport(ViewInfo * view)
 
     view->prevpanx = 0;
     view->prevpany = 0;
-
 
     view->zoom = -20;
     view->texture = 1;
@@ -1043,6 +1046,7 @@ void apply_gvpr(Agraph_t* g,char* prog)
 #ifdef WIN32	
 	Agraph_t* a=exec_gvpr(prog,g);
 #endif
+	return 1;
 }
 float interpol(float minv,float maxv,float minc,float maxc,float x)
 {

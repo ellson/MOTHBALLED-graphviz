@@ -75,6 +75,7 @@
 
 #define SPHERE_SLICE_COUNT 6
 #define DOT_SIZE_CORRECTION_FAC 0.3
+#define HUGE_NUMBER	99999999999
 
 typedef enum { nodshapedot,nodeshapecircle} node_shape;
 typedef enum { leftmousebutton,rightmousebutton,thirdmousebutton} clicked_mouse_button;
@@ -318,6 +319,9 @@ typedef struct {
 	graph_data Graphdata;
 	int maxnodedegree;
 	float maxedgelen;
+	float minedgelen;
+	float init_node_size;	//raster size of node
+	float init_zoom;
 } topview;
 
 enum {
@@ -385,6 +389,12 @@ typedef struct _fisheye_magnifier {
     int active;
     int fisheye_distortion_fac;
 } fisheye_magnifier;
+
+typedef struct
+{
+	float x1,y1,x2,y2;
+
+}line;
 
 typedef struct _ViewInfo
 {
@@ -543,9 +553,7 @@ typedef struct _ViewInfo
 	char* glade_file;
 	char* attr_file;
 	int flush;
-
-
-
+	line interpol;
 } ViewInfo;
 
 extern ViewInfo *view;
