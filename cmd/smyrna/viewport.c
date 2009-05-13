@@ -1046,7 +1046,6 @@ void apply_gvpr(Agraph_t* g,char* prog)
 #ifdef WIN32	
 	Agraph_t* a=exec_gvpr(prog,g);
 #endif
-	return 1;
 }
 float interpol(float minv,float maxv,float minc,float maxc,float x)
 {

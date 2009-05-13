@@ -30,6 +30,7 @@
 #include "selection.h"
 #include "topviewdata.h"
 #include "hier.h"
+#include "arith.h"
 #include "topfisheyeview.h"
 #ifdef WIN32
 #include "regex_win32.h"
@@ -108,7 +109,7 @@ static int setpositioninfo(float* x,float* y,float* z,char* buf)
 	/*find out if 2D or 3 d, count commas*/
 	if (!buf)
 		return 0;
-	for (ind;ind < (int)strlen(buf); ind=ind +1)
+	for (;ind < (int)strlen(buf); ind=ind +1)
 	{
 		if( buf[ind]==',')
 			commacount ++;
@@ -144,9 +145,9 @@ static void setRGBcolor(RGBColor* c,char* colorstr)
 void settvposinfo(Agraph_t* g,topview* t)
 {
     int ind;
-	float maxedgelen,len,minedgelen;
+    float maxedgelen,len,minedgelen;
 	maxedgelen=0;
-	minedgelen=HUGE_NUMBER;
+	minedgelen=MAXFLOAT;
 	/*loop nodes*/
 	for (ind=0;ind < t->Nodecount ; ind ++)
 	{
@@ -236,13 +237,12 @@ void preparetopview(Agraph_t * g, topview * t)
     Agedge_t *e;
     Agsym_t *sym;
     int ind, ind2, data_type_count;	//number of columns for custom view->Topview data ,IP ,HOST, etc
-	int maxlabelsize=0;
-	float maxedgelen,minedgelen,edgelength;
+    float maxedgelen,minedgelen,edgelength;
 
 
-	maxedgelen=0;
-	minedgelen=(float)99999999.00000;	//FIX ME if you have a giant graph or fix your graph
-	edgelength=0;
+    maxedgelen=0;
+    minedgelen=MAXFLOAT;
+    edgelength=0;
 
     ind = 0;
     ind2 = 0;

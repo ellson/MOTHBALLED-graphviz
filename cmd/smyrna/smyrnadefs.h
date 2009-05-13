@@ -75,7 +75,6 @@
 
 #define SPHERE_SLICE_COUNT 6
 #define DOT_SIZE_CORRECTION_FAC 0.3
-#define HUGE_NUMBER	99999999999
 
 typedef enum { nodshapedot,nodeshapecircle} node_shape;
 typedef enum { leftmousebutton,rightmousebutton,thirdmousebutton} clicked_mouse_button;
