@@ -25,7 +25,7 @@ extern "C" {
 #  include <config.h>
 #endif
 
-#ifdef __cplusplus
+#ifdef __dcplusplus
     enum Style { regular, invisible };
     struct vtx_data {
 	int nedges;
