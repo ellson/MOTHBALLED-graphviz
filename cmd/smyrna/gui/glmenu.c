@@ -35,7 +35,7 @@ GtkWidget *create_popup_menu(GtkWidget * drawing_area)
     menu_item = gtk_menu_item_new_with_label("Pan");
     gtk_menu_shell_append(GTK_MENU_SHELL(actions_menu), menu_item);
     g_signal_connect(G_OBJECT(menu_item), "activate",
-		     G_CALLBACK(switch_Mouse), (gpointer) mm);
+		     G_CALLBACK(switch_Mouse), (gpointer) &mm);
     gtk_widget_show(menu_item);
 /**********/
     //ZOOM
@@ -43,7 +43,7 @@ GtkWidget *create_popup_menu(GtkWidget * drawing_area)
     menu_item = gtk_menu_item_new_with_label("Zoom");
     gtk_menu_shell_append(GTK_MENU_SHELL(actions_menu), menu_item);
     g_signal_connect(G_OBJECT(menu_item), "activate",
-		     G_CALLBACK(switch_Mouse), (gpointer) mm);
+		     G_CALLBACK(switch_Mouse), (gpointer) &mm);
     gtk_widget_show(menu_item);
 /**********/
     //ROTATE
@@ -51,7 +51,7 @@ GtkWidget *create_popup_menu(GtkWidget * drawing_area)
     menu_item = gtk_menu_item_new_with_label("rotate");
     gtk_menu_shell_append(GTK_MENU_SHELL(actions_menu), menu_item);
     g_signal_connect(G_OBJECT(menu_item), "activate",
-		     G_CALLBACK(switch_Mouse), (gpointer) mm);
+		     G_CALLBACK(switch_Mouse), (gpointer) &mm);
     gtk_widget_show(menu_item);
 /**********/
 /**********/
@@ -60,7 +60,7 @@ GtkWidget *create_popup_menu(GtkWidget * drawing_area)
     menu_item = gtk_menu_item_new_with_label("select");
     gtk_menu_shell_append(GTK_MENU_SHELL(actions_menu), menu_item);
     g_signal_connect(G_OBJECT(menu_item), "activate",
-		     G_CALLBACK(switch_Mouse), (gpointer) mm);
+		     G_CALLBACK(switch_Mouse), (gpointer) &mm);
     gtk_widget_show(menu_item);
 /**********/
     //Rectangle Select
@@ -68,7 +68,7 @@ GtkWidget *create_popup_menu(GtkWidget * drawing_area)
     menu_item = gtk_menu_item_new_with_label("rect select");
     gtk_menu_shell_append(GTK_MENU_SHELL(actions_menu), menu_item);
     g_signal_connect(G_OBJECT(menu_item), "activate",
-		     G_CALLBACK(switch_Mouse), (gpointer) mm);
+		     G_CALLBACK(switch_Mouse), (gpointer) &mm);
     gtk_widget_show(menu_item);
 /**********/
 /**********/
@@ -77,7 +77,7 @@ GtkWidget *create_popup_menu(GtkWidget * drawing_area)
     menu_item = gtk_menu_item_new_with_label("rect-x select");
     gtk_menu_shell_append(GTK_MENU_SHELL(actions_menu), menu_item);
     g_signal_connect(G_OBJECT(menu_item), "activate",
-		     G_CALLBACK(switch_Mouse), (gpointer) mm);
+		     G_CALLBACK(switch_Mouse), (gpointer) &mm);
     gtk_widget_show(menu_item);
 /**********/
 /**********/
@@ -86,7 +86,7 @@ GtkWidget *create_popup_menu(GtkWidget * drawing_area)
     menu_item = gtk_menu_item_new_with_label("Move");
     gtk_menu_shell_append(GTK_MENU_SHELL(actions_menu), menu_item);
     g_signal_connect(G_OBJECT(menu_item), "activate",
-		     G_CALLBACK(switch_Mouse), (gpointer) mm);
+		     G_CALLBACK(switch_Mouse), (gpointer) &mm);
     gtk_widget_show(menu_item);
 /**********/
     //activate magnifier
@@ -94,7 +94,7 @@ GtkWidget *create_popup_menu(GtkWidget * drawing_area)
     menu_item = gtk_menu_item_new_with_label("Magnifier");
     gtk_menu_shell_append(GTK_MENU_SHELL(actions_menu), menu_item);
     g_signal_connect(G_OBJECT(menu_item), "activate",
-		     G_CALLBACK(switch_Mouse), (gpointer) mm);
+		     G_CALLBACK(switch_Mouse), (gpointer) &mm);
     gtk_widget_show(menu_item);
 /**********/
     //activate fisheye magnifier
@@ -102,7 +102,7 @@ GtkWidget *create_popup_menu(GtkWidget * drawing_area)
     menu_item = gtk_menu_item_new_with_label("Fisheye Magnifier");
     gtk_menu_shell_append(GTK_MENU_SHELL(actions_menu), menu_item);
     g_signal_connect(G_OBJECT(menu_item), "activate",
-		     G_CALLBACK(switch_Mouse), (gpointer) mm);
+		     G_CALLBACK(switch_Mouse), (gpointer) &mm);
     gtk_widget_show(menu_item);
 /**********/
     editing_menu = gtk_menu_new();
