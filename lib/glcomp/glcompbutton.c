@@ -82,7 +82,7 @@ int glCompSetRemoveButton(glCompSet * s, glCompButton * p)
 {
     int ind = 0;
     int found = 0;
-    for (ind; ind < s->buttoncount ; ind++) 
+    for (; ind < s->buttoncount ; ind++) 
 	{
 		if ((s->buttons[ind] == p) && found == 0)
 			found = 1;
@@ -190,7 +190,7 @@ int glCompDrawButton(glCompButton * p)
 	//draw caption
 	fontColor(p->font,p->fontcolor.R, p->fontcolor.G, p->fontcolor.B, p->fontcolor.A);
 	/*get the string length*/
-	fontwidth=(GLfloat)glutBitmapLength(GLUT_BITMAP_HELVETICA_12,p->caption);
+	fontwidth=(GLfloat)glutBitmapLength(GLUT_BITMAP_HELVETICA_12,(unsigned char*)p->caption);
 
 
 	fontx =
