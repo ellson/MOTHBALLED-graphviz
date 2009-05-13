@@ -181,7 +181,7 @@ static int glutfontId(fontset_t* fontset,void* glutfont)
 	int ind=0;
 	for (ind=0;ind < fontset->count;ind ++)
 	{
-		if (fontset->fonts[ind]->glutfont=glutfont)
+		if (fontset->fonts[ind]->glutfont == glutfont)
 			return ind;
 	}
 	return -1;
@@ -191,7 +191,6 @@ static int glutfontId(fontset_t* fontset,void* glutfont)
 glCompText* glut_font_init()
 {
     glCompText* font = NEW(glCompText);
-	int idx = 0;
 	font->color.R=1.00;
 	font->color.G=1.00;
 	font->color.B=1.00;
