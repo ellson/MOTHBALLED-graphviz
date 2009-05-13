@@ -132,20 +132,20 @@ static void add_edge_attr(Agraph_t * g, Agsym_t * attr, int isnew)
 Agsym_t *agattr(void *obj, char *name, char *value)
 {
     Agsym_t *rv;
-	int isnew = 1;
+    int isnew = 1;
 
     rv = agfindattr(obj, name);
     if (rv) {
 	if (strcmp(rv->value, value)) {
-		agstrfree(rv->value);
-		rv->value = agstrdup(value);
-		isnew = 0;
+	    agstrfree(rv->value);
+	    rv->value = agstrdup(value);
+	    isnew = 0;
 	}
 	else
-		return rv;
+	    return rv;
     }
-	else
-		rv = agNEWsym(agdictof(obj), name, value);
+    else
+	rv = agNEWsym(agdictof(obj), name, value);
     if (rv) {
 	switch (TAG_OF(obj)) {
 	case TAG_GRAPH:
