@@ -60,6 +60,7 @@ strict digraph template {
 		defaultnodecolor="blue"
 		defaultedgecolor="pink"
 		edgecolorattribute=""
+		nodesize="50"
 
 
 
