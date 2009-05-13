@@ -93,7 +93,8 @@ void twopi_layout(Agraph_t * g)
 	    spline_edges(g);
 	} else {
 	    pack_info pinfo;
-	    pack_mode pmode = getPackMode(g, l_node);
+	    getPackInfo (g, l_node, CL_OFFSET, &pinfo);
+	    pinfo.doSplines = 1;
 
 	    for (i = 0; i < ncc; i++) {
 		sg = ccs[i];
@@ -107,10 +108,6 @@ void twopi_layout(Agraph_t * g)
 	    }
 	    free(ND_alg(agfstnode(g)));
 	    spline_edges(g);
-	    pinfo.margin = getPack(g, CL_OFFSET, CL_OFFSET);
-	    pinfo.doSplines = 1;
-	    pinfo.mode = pmode;
-	    pinfo.fixed = 0;
 	    packSubgraphs(ncc, ccs, g, &pinfo);
 	}
 	for (i = 0; i < ncc; i++) {
