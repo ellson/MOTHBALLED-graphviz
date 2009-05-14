@@ -864,7 +864,7 @@ genroute(tripoly_t * trip, int s, int t, edge_t * e, int doPolyline)
     evs[0].x = evs[0].y = 0;
     evs[1].x = evs[1].y = 0;
 
-    if (mult == 1) {
+    if ((mult == 1) || Concentrate) {
 	poly = trip->poly;
 	for (j = 0; j < poly.pn; j++) {
 	    medges[j].a = poly.ps[j];
