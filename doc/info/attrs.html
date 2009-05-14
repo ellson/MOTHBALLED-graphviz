@@ -121,7 +121,7 @@ This field indicates which graph component uses the attribute.
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD>dot only</TD> </TR>
  <TR><TD><A NAME=a:concentrate HREF=#d:concentrate>concentrate</A>
 </TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
-</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD>dot only</TD> </TR>
+</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:constraint HREF=#d:constraint>constraint</A>
 </TD><TD>E</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">true</TD><TD></TD><TD>dot only</TD> </TR>
@@ -622,6 +622,9 @@ This field indicates which graph component uses the attribute.
 
 <DT><A NAME=d:concentrate HREF=#a:concentrate><STRONG>concentrate</STRONG></A>
 <DD>  If true, use edge concentrators.
+  This merges multiedges into a single edge and causes partially parallel
+  edges to share part of their paths. The latter feature is not yet available
+  outside of dot.
 
 <DT><A NAME=d:constraint HREF=#a:constraint><STRONG>constraint</STRONG></A>
 <DD>  If false, the edge is not used in ranking the nodes. For example,

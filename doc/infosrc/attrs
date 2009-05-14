@@ -179,8 +179,11 @@ Comments are inserted into output. Device-dependent
 :compound:G:bool:false;  dot
 If true, allow edges between clusters. (See <A HREF=#d:lhead>lhead</A>
 and <A HREF=#d:ltail>ltail</A> below.)
-:concentrate:G:bool:false;  dot
+:concentrate:G:bool:false;
 If true, use edge concentrators.
+This merges multiedges into a single edge and causes partially parallel
+edges to share part of their paths. The latter feature is not yet available
+outside of dot.
 :constraint (E_constr):E:bool:true;  dot
 If false, the edge is not used in ranking the nodes. For example,
 in the graph
