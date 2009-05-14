@@ -208,7 +208,7 @@ exec_gvpr(char* filename,Agraph_t* srcGraph)
 
     agxbinit (&xbuf, SMALLBUF, bf);
     agxbput (&xbuf, "gvpr -c -f ");
-    agxbput (&bf, filename);
+    agxbput (&xbuf, filename);
    
 #ifdef WIN32
     CreateChildProcess (agxbuse (&xbuf), SmyrnaToGvprRd, GvprToSmyrnaWr);
