@@ -37,8 +37,12 @@
 #include "geomprocs.h"
 #include "globals.h"
 #include "render.h"
+#include "pointset.h"
 
-/* #define DEBUG */
+#ifdef DEBUG
+static void emitSearchGraph (FILE* fp, sgraph* sg);
+static void emitGraph (FILE* fp, maze* mp, Agraph_t* g, route* route_list);
+#endif
 
 #define CELL(n) ((cell*)ND_alg(n))
 #define MID(a,b) (((a)+(b))/2.0)
@@ -984,7 +988,7 @@ addPEdges (channel* cp, maze* mp)
 			    dir = 1;
 		    }
 		    else if(segs[j]->prev==0) {
-			assert (0);  /* FIXME */
+			dir = 1;
 		    }
 		    else {
 			if(segs[i]->prev->comm_coord==segs[j]->prev->comm_coord)
@@ -1195,7 +1199,7 @@ static boolean swap_ends_p(edge_t * e)
     return FALSE;
 }
 
-static splineInfo sinfo = { swap_ends_p, spline_merge };
+static splineInfo sinfo = { swap_ends_p, spline_merge, 1 };
 
 void
 orthoEdges (Agraph_t* g, int useLbls)
@@ -1212,6 +1216,10 @@ orthoEdges (Agraph_t* g, int useLbls)
     epair_t* es = N_GNEW(agnedges(g), epair_t);
     cell* start;
     cell* dest;
+    PointSet* ps;
+
+    if (Concentrate) 
+	ps = newPS();
 
     mp = mkMaze (g);
     sg = mp->sg;
@@ -1220,6 +1228,18 @@ orthoEdges (Agraph_t* g, int useLbls)
     for (n = agfstnode (g); n; n = agnxtnode(g, n)) {
         for (e = agfstout(g, n); e; e = agnxtout(g,e)) {
 	    if ((Nop == 2) && ED_spl(e)) continue;
+	    if (Concentrate) {
+		int ti = e->tail->id;
+		int hi = e->head->id;
+		if (ti <= hi) {
+		    if (isInPS (ps,ti,hi)) continue;
+		    else addPS (ps,ti,hi);
+		}
+		else {
+		    if (isInPS (ps,hi,ti)) continue;
+		    else addPS (ps,hi,ti);
+		}
+	    }
 	    es[n_edges].e = e;
 	    es[n_edges].d = edgeLen (e);
 	    n_edges++;
@@ -1258,6 +1278,9 @@ orthoEdges (Agraph_t* g, int useLbls)
     assignTracks (n_edges, route_list, mp);
     /* emitGraph (stdout, mp, g, route_list); */
     attachOrthoEdges (mp, n_edges, route_list, &sinfo, es);
+
+    if (Concentrate)
+	freePS (ps);
 
     freeSGraph (sg);
     dtclose (mp->hchans);
@@ -1412,7 +1435,7 @@ emitSearchGraph (FILE* fp, sgraph* sg)
     }
     for (i = 0; i < sg->nedges; i++) {
 	ep = sg->edges+i;
-	fprintf (fp, "  %d -- %d\n", ep->v1, ep->v2);
+	fprintf (fp, "  %d -- %d[len=\"%f\"]\n", ep->v1, ep->v2, ep->weight);
     }
     fputs ("}\n", fp);
 }
