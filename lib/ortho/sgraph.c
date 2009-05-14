@@ -222,7 +222,7 @@ shortPath (sgraph* g, snode* from, snode* to)
     snode* n;
     sedge* e;
     snode* adjn;
-    int   d;
+    int d;
     int   x, y;
 
     for (x = 0; x<g->nnodes; x++) {
@@ -237,6 +237,9 @@ shortPath (sgraph* g, snode* from, snode* to)
     N_VAL(from) = 0;
     
     while ((n = PQremove())) {
+#ifdef DEBUG
+	fprintf (stderr, "process %d\n", n->index);
+#endif
 	N_VAL(n) *= -1;
 	if (n == to) break;
 	for (y=0; y<n->n_adj; y++) {
@@ -245,6 +248,9 @@ shortPath (sgraph* g, snode* from, snode* to)
 	    if (N_VAL(adjn) < 0) {
 		d = -(N_VAL(n) + E_WT(e));
 		if (N_VAL(adjn) == UNSEEN) {
+#ifdef DEBUG
+		    fprintf (stderr, "new %d (%d)\n", adjn->index, -d);
+#endif
 		    N_VAL(adjn) = d;
 		    PQ_insert(adjn);
 		    N_DAD(adjn) = n;
@@ -252,6 +258,9 @@ shortPath (sgraph* g, snode* from, snode* to)
             	}
 		else {
 		    if (N_VAL(adjn) < d) {
+#ifdef DEBUG
+			fprintf (stderr, "adjust %d (%d)\n", adjn->index, -d);
+#endif
 			PQupdate(adjn, d);
 			N_DAD(adjn) = n;
 			N_EDGE(adjn) = e;
