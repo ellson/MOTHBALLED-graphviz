@@ -16,7 +16,7 @@ AM_CPPFLAGS = \
 noinst_HEADERS = btree.h draw.h filter.h glexpose.h glmotion.h gltemplate.h \
 	hier.h materials.h selection.h smyrnadefs.h support.h topview.h \
 	topviewdata.h topviewdefs.h trackball.h tvnodes.h viewport.h \
-	topfisheyeview.h viewportcamera.h \
+	topfisheyeview.h viewportcamera.h gvprpipe.h \
 	gui/callbacks.h gui/datalistcallbacks.h gui/filterscallbacks.h \
 	gui/glmenu.h gui/gui.h gui/menucallbacks.h gui/toolboxcallbacks.h md5.h \
 	gui/topviewsettings.h gui/beacon.h
@@ -27,7 +27,7 @@ endif
 smyrna_SOURCES = btree.c draw.c filter.c glexpose.c glmotion.c gltemplate.c \
 	hier.c main.c selection.c support.c template.c topview.c topviewdata.c \
 	topfisheyeview.c trackball.c tvnodes.c viewport.c viewportcamera.c \
-    gui/beacon.c gui/callbacks.c gui/datalistcallbacks.c \
+    gvprpipe.c gui/beacon.c gui/callbacks.c gui/datalistcallbacks.c \
     gui/filterscallbacks.c gui/glmenu.c gui/gui.c gui/menucallbacks.c \
     gui/toolboxcallbacks.c gui/topviewsettings.c md5.c
 

@@ -1,12 +1,23 @@
+/* $Id$Revision:*/
+/* vim:set shiftwidth=4 ts=8: */
+
+/**********************************************************
+*      This software is part of the graphviz package      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2004 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+**********************************************************/
+
 #ifndef GVPRPIPE_H
 #define GVPRPIPE_H
-#define BUFSIZE 4096 
-#ifdef WIN32
-#include <windows.h> 
-#include <tchar.h>
-#include <stdio.h> 
-#include <strsafe.h>
+
 #include "cgraph.h"
 extern Agraph_t* exec_gvpr(char* filename,Agraph_t* srcGraph);
-#endif
+
 #endif
