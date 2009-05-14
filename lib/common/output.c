@@ -286,7 +286,7 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 #endif
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (dim3) {
-	    sprintf(buf, "%.5g,%.5g,%d", ND_coord(n).x, YDIR(ND_coord(n).y), POINTS(ND_pos(n)[2]));
+	    sprintf(buf, "%.5g,%.5g,%.5g", ND_coord(n).x, YDIR(ND_coord(n).y), POINTS(ND_pos(n)[2]));
 	} else {
 	    sprintf(buf, "%.5g,%.5g", ND_coord(n).x, YDIR(ND_coord(n).y));
 	}
