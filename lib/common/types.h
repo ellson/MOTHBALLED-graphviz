@@ -92,6 +92,7 @@ extern "C" {
     typedef struct {
 	boolean(*swapEnds) (edge_t * e);	/* Should head and tail be swapped? */
 	boolean(*splineMerge) (node_t * n);	/* Is n a node in the middle of an edge? */
+	boolean ignoreSwap;                     /* Test for swapped edges if false */
     } splineInfo;
 
     typedef struct pathend_t {

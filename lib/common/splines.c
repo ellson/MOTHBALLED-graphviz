@@ -69,7 +69,10 @@ arrow_clip(edge_t * fe, node_t * hn,
 
     for (e = fe; ED_to_orig(e); e = ED_to_orig(e));
 
-    j = info->swapEnds(e);
+    if (info->ignoreSwap)
+	j = 0;
+    else
+	j = info->swapEnds(e);
     arrow_flags(e, &sflag, &eflag);
     if (info->splineMerge(hn))
 	eflag = ARR_NONE;
@@ -249,7 +252,7 @@ clip_and_install(edge_t * fe, node_t * hn, pointf * ps, int pn,
     for (orig = fe; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
 
     /* may be a reversed flat edge */
-    if ((ND_rank(tn) == ND_rank(hn)) && (ND_order(tn) > ND_order(hn))) {
+    if (!info->ignoreSwap && (ND_rank(tn) == ND_rank(hn)) && (ND_order(tn) > ND_order(hn))) {
 	node_t *tmp;
 	tmp = hn;
 	hn = tn;
