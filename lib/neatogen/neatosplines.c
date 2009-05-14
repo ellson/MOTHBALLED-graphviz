@@ -382,7 +382,7 @@ void makeSelfArcs(path * P, edge_t * e, int stepx)
 {
     int cnt = ED_count(e);
 
-    if (cnt == 1) {
+    if ((cnt == 1) || Concentrate) {
 	edge_t *edges1[1];
 	edges1[0] = e;
 	makeSelfEdge(P, edges1, 0, 1, stepx, stepx, &sinfo);
@@ -428,7 +428,7 @@ makeStraightEdge(graph_t * g, edge_t * e, int doPolyline)
 
     p = dumb[1] = dumb[0] = add_pointf(ND_coord(n), ED_tail_port(e).p);
     q = dumb[2] = dumb[3] = add_pointf(ND_coord(head), ED_head_port(e).p);
-    if (e_cnt == 1) {
+    if ((e_cnt == 1) || Concentrate) {
 	clip_and_install(e, aghead(e), dumb, 4, &sinfo);
 	addEdgeLabels(e, p, q);
 	return;
@@ -839,6 +839,7 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 		 */
 #endif
 		cnt = ED_count(e);
+		if (Concentrate) cnt = 1; /* only do representative */
 		e0 = e;
 		for (i = 0; i < cnt; i++) {
 		    if (edgetype == ET_SPLINE)
