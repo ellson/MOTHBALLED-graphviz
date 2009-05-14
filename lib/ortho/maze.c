@@ -145,6 +145,7 @@ static Dtdisc_t hdictDisc = {
 #define HORZ(g,e) ((g->nodes + e->v1)->isVert)
 #define BIG 16384
 #define CHANSZ(w) (((w)-3)/2)
+/* #define CHANSZ(w) (w) */
 
 static void
 updateWt (cell* cp, sedge* ep, int sz)
@@ -234,6 +235,8 @@ findSVert (sgraph* g, Dt_t* cdt, pointf p, snodeitem* ditems, boolean isVert)
     return n->np;
 }
 
+/* mkMazeGraph:
+ */
 static sgraph*
 mkMazeGraph (maze* mp, boxf bb)
 {
@@ -350,6 +353,8 @@ mkMazeGraph (maze* mp, boxf bb)
     return g;
 }
 
+/* mkMaze:
+ */
 maze*
 mkMaze (graph_t* g)
 {
@@ -367,8 +372,8 @@ mkMaze (graph_t* g)
     BB.LL.x = BB.LL.y = MAXDOUBLE;
     BB.UR.x = BB.UR.y = -MAXDOUBLE;
     for (n = agfstnode (g); n; n = agnxtnode(g,n)) {
-        w2 = 36.0*ND_width(n);
-        h2 = 36.0*ND_height(n);
+        w2 = ND_xsize(n)/2.0;
+        h2 = ND_ysize(n)/2.0;
         bb.LL.x = ND_coord(n).x - w2;
         bb.UR.x = ND_coord(n).x + w2;
         bb.LL.y = ND_coord(n).y - h2;
