@@ -1851,7 +1851,7 @@ the given types.
   "edgesfirst".
 
 <DT><A NAME=k:packMode><STRONG>packMode</STRONG></A>
-<DD>"node", "clust" , "graph" , "array{_flags][%d]"
+<DD>"node", "clust" , "graph" , "array[_flags][%d]"
   <P>
   The modes "node", "clust" or "graph"
   specify that the components should be packed together tightly, using
@@ -1868,7 +1868,7 @@ the given types.
   example, neato does not support clusters, so a value of "clust" will
   have the same effect as the default "node" value.
   <P>
-  The mode "array{_flags][%d]"
+  The mode "array[_flags][%d]"
   indicates that the components should be packed at the 
   graph level into an array of graphs. By default, the components
   are in row-major order, with the number of columns roughly the

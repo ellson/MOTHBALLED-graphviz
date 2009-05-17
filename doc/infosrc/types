@@ -159,7 +159,7 @@ reasons, it may be desirable that all edges appear beneath nodes, even
 if the resulting drawing is ambiguous. This can be achieved by choosing
 "edgesfirst".
 :packMode
-"node", "clust" , "graph" , "array{_flags][%d]"
+"node", "clust" , "graph" , "array[_flags][%d]"
 <P>
 The modes "node", "clust" or "graph"
 specify that the components should be packed together tightly, using
@@ -176,7 +176,7 @@ What effect a value has also depends on the layout algorithm. For
 example, neato does not support clusters, so a value of "clust" will
 have the same effect as the default "node" value.
 <P>
-The mode "array{_flags][%d]"
+The mode "array[_flags][%d]"
 indicates that the components should be packed at the 
 graph level into an array of graphs. By default, the components
 are in row-major order, with the number of columns roughly the
