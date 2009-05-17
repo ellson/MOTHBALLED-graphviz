@@ -159,10 +159,13 @@ reasons, it may be desirable that all edges appear beneath nodes, even
 if the resulting drawing is ambiguous. This can be achieved by choosing
 "edgesfirst".
 :packMode
-"node","clust","graph"
-These specify the granularity of packing connected components when
-the <A HREF=#d:pack>pack</A> attribute is true. A value of "node" causes
-packing at the node and edge label, with no overlapping of these objects.
+"node", "clust" , "graph" , "array{_flags][%d]"
+<P>
+The modes "node", "clust" or "graph"
+specify that the components should be packed together tightly, using
+the specified granularity.
+A value of "node" causes
+packing at the node and edge level, with no overlapping of these objects.
 This produces a layout with the least area, but it also allows interleaving,
 where a node of one component may lie between two nodes in another
 component. A value of "graph" does a packing using the bounding box of the
@@ -172,6 +175,18 @@ A value of "clust" guarantees that top-level clusters are kept intact.
 What effect a value has also depends on the layout algorithm. For
 example, neato does not support clusters, so a value of "clust" will
 have the same effect as the default "node" value.
+<P>
+The mode "array{_flags][%d]"
+indicates that the components should be packed at the 
+graph level into an array of graphs. By default, the components
+are in row-major order, with the number of columns roughly the
+square root of the number of components. If the optional flags
+contains "c", then column-major order is used. Finally, if the
+optional integer suffix is used, this specifies the number of 
+columns for row-major or the number of rows for column-major.
+Thus, the mode "array_c4" indicates array packing, with 4 rows,
+starting in the upper left and going down the first column, then
+down the second column, etc., until all components are used.
 :pagedir
 "BL", "BR", "TL", "TR", "RB", "RT", "LB", "LT".
 These specify the 8 row or column major orders for traversing a

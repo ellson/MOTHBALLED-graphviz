@@ -1232,7 +1232,7 @@ This field indicates which graph component uses the attribute.
 <DT><A NAME=d:pack HREF=#a:pack><STRONG>pack</STRONG></A>
 <DD>  This is true if the value of pack is "true" (case-insensitive) or a
   non-negative integer. If true, each connected component of the graph is
-  laid out separately, and then the graphs are packed tightly.
+  laid out separately, and then the graphs are packed together.
   If pack has an integral value, this is used as the size,
   in <A HREF=#points>points</A>, of
   a margin around each part; otherwise, a default margin of 8 is used.
@@ -1244,7 +1244,7 @@ This field indicates which graph component uses the attribute.
   attribute is just used to set the margin.
 
 <DT><A NAME=d:packmode HREF=#a:packmode><STRONG>packmode</STRONG></A>
-<DD>  This indicates the granularity and method used for packing
+<DD>  This indicates how connected components should be packed
   (cf. <A HREF=#k:packMode>packMode</A>). Note that defining
   <B>packmode</B> will automatically turn on packing as though one had
   set <B>pack=true</B>.
@@ -1851,10 +1851,13 @@ the given types.
   "edgesfirst".
 
 <DT><A NAME=k:packMode><STRONG>packMode</STRONG></A>
-<DD>"node","clust","graph"
-  These specify the granularity of packing connected components when
-  the <A HREF=#d:pack>pack</A> attribute is true. A value of "node" causes
-  packing at the node and edge label, with no overlapping of these objects.
+<DD>"node", "clust" , "graph" , "array{_flags][%d]"
+  <P>
+  The modes "node", "clust" or "graph"
+  specify that the components should be packed together tightly, using
+  the specified granularity.
+  A value of "node" causes
+  packing at the node and edge level, with no overlapping of these objects.
   This produces a layout with the least area, but it also allows interleaving,
   where a node of one component may lie between two nodes in another
   component. A value of "graph" does a packing using the bounding box of the
@@ -1864,6 +1867,18 @@ the given types.
   What effect a value has also depends on the layout algorithm. For
   example, neato does not support clusters, so a value of "clust" will
   have the same effect as the default "node" value.
+  <P>
+  The mode "array{_flags][%d]"
+  indicates that the components should be packed at the 
+  graph level into an array of graphs. By default, the components
+  are in row-major order, with the number of columns roughly the
+  square root of the number of components. If the optional flags
+  contains "c", then column-major order is used. Finally, if the
+  optional integer suffix is used, this specifies the number of 
+  columns for row-major or the number of rows for column-major.
+  Thus, the mode "array_c4" indicates array packing, with 4 rows,
+  starting in the upper left and going down the first column, then
+  down the second column, etc., until all components are used.
 
 <DT><A NAME=k:pagedir><STRONG>pagedir</STRONG></A>
 <DD>"BL", "BR", "TL", "TR", "RB", "RT", "LB", "LT".

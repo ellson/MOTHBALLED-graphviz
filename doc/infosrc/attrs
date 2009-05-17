@@ -717,7 +717,7 @@ If <TT>overlap_scaling</TT> is positive, the layout is scaled by
 :pack:G:bool/int:false; notdot
 This is true if the value of pack is "true" (case-insensitive) or a
 non-negative integer. If true, each connected component of the graph is
-laid out separately, and then the graphs are packed tightly.
+laid out separately, and then the graphs are packed together.
 If pack has an integral value, this is used as the size,
 in <A HREF=#points>points</A>, of
 a margin around each part; otherwise, a default margin of 8 is used.
@@ -728,7 +728,7 @@ The granularity and method of packing is influenced by the
 For layouts which always do packing, such a twopi, the <B>pack</B>
 attribute is just used to set the margin.
 :packmode:G:packMode:node; notdot
-This indicates the granularity and method used for packing
+This indicates how connected components should be packed
 (cf. <A HREF=#k:packMode>packMode</A>). Note that defining
 <B>packmode</B> will automatically turn on packing as though one had
 set <B>pack=true</B>.
