@@ -59,9 +59,6 @@ typedef struct {
     int cnt;
 } pair_t;
 
-static int margin = 8;		/* Default margin in packing */
-static boolean doSplines = TRUE;	/* Use edges in packing */
-static pack_mode packMode = l_clust;	/* Default packing mode - use clusters */
 static int verbose = 0;
 static char **myFiles = 0;
 static int nGraphs = 0;		/* Guess as to no. of graphs */
@@ -74,14 +71,15 @@ static Agdesc_t kind;		/* type of graph */
 static int G_cnt;		/* No. of -G arguments */
 static int G_sz;		/* Storage size for -G arguments */
 static attr_t *G_args;		/* Storage for -G arguments */
+static int doPack;              /* Do packing if true */
 
 #define NEWNODE(n) ((node_t*)ND_alg(n))
-#define DOPACK     (packMode != l_undef)
 
 static char *useString =
-    "Usage: gvpack [-gnuv?] [-m<margin>] [-o<outf>] <files>\n\
+    "Usage: gvpack [-gnuv?] [-m<margin>] {-array[_rc][n]] [-o<outf>] <files>\n\
   -n          - use node granularity\n\
   -g          - use graph granularity\n\
+  -array*     - pack as array of graphs\n\
   -G<n>=<v>   - attach name/value attribute to output graph\n\
   -m<n>       - set margin to <n> points\n\
   -o<outfile> - write output to <outfile>\n\
@@ -140,16 +138,16 @@ static int setNameValue(char *arg)
     return 0;
 }
 
-/* setInt:
+/* setUInt:
  * If arg is an integer, value is stored in v
- * and functions returns 0; otherwise, returns 1.
+ * and function returns 0; otherwise, returns 1.
  */
-static int setInt(int *v, char *arg)
+static int setUInt(unsigned int *v, char *arg)
 {
     char *p;
-    int i;
+    unsigned int i;
 
-    i = (int) strtol(arg, &p, 10);
+    i = (unsigned int) strtol(arg, &p, 10);
     if (p == arg) {
 	fprintf(stderr, "Error: bad value in flag -%s - ignored\n",
 		arg - 1);
@@ -161,28 +159,46 @@ static int setInt(int *v, char *arg)
 
 /* init:
  */
-static void init(int argc, char *argv[])
+static void init(int argc, char *argv[], pack_info* pinfo)
 {
-    int c;
+    int c, len;
+    char buf[BUFSIZ];
+    char* bp;
 
     aginit();
     agnodeattr(NULL, "label", NODENAME_ESC);
-    while ((c = getopt(argc, argv, ":ngvum:o:G:?")) != -1) {
+    pinfo->mode = l_clust;
+    pinfo->margin = CL_OFFSET;
+    pinfo->doSplines = TRUE; /* Use edges in packing */
+    pinfo->fixed = 0;
+
+    while ((c = getopt(argc, argv, ":na:gvum:o:G:?")) != -1) {
 	switch (c) {
+	case 'a':
+	    len = strlen(optarg) + 2;
+	    if (len > BUFSIZ)
+		bp = N_GNEW(len, char);
+	    else
+		bp = buf;
+	    sprintf (bp, "a%s\n", optarg);
+	    parsePackModeInfo (bp, pinfo->mode, pinfo);
+	    if (bp != buf)
+		free (bp);
+	    break;
 	case 'n':
-	    packMode = l_node;
+	    pinfo->mode = l_node;
 	    break;
 	case 'g':
-	    packMode = l_graph;
+	    pinfo->mode = l_graph;
 	    break;
 	case 'm':
-	    setInt(&margin, optarg);
+	    setUInt(&pinfo->margin, optarg);
 	    break;
 	case 'o':
 	    outfp = openFile(optarg, "w");
 	    break;
 	case 'u':
-	    packMode = l_undef;
+	    pinfo->mode = l_undef;
 	    break;
 	case 'G':
 	    if (*optarg)
@@ -504,7 +520,7 @@ cloneSubg(Agraph_t * g, Agraph_t * ng, Agsym_t * G_bb, Dt_t * gnames)
     Agraph_t *nsubg;
 
     cloneGraphAttr(g, ng);
-    if (DOPACK)
+    if (doPack)
 	agxset(ng, G_bb->index, "");	/* Unset all subgraph bb */
 
     /* clone subgraphs */
@@ -610,7 +626,7 @@ static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt, GVC_t * gvc)
     GD_gvc(root) = gvc;
     initAttrs(root, gs, cnt);
     G_bb = agfindgraphattr(root, "bb");
-    if (DOPACK) assert(G_bb);
+    if (doPack) assert(G_bb);
 
     /* add command-line attributes */
     for (i = 0; i < G_cnt; i++) {
@@ -742,7 +758,7 @@ static Agraph_t **readGraphs(int *cp, GVC_t* gvc)
 	} else if (!agisstrict(g))
 	    kind = g->desc;
 #endif
-	init_graph(g, DOPACK);
+	init_graph(g, doPack);
 	gs[cnt++] = g;
     }
 
@@ -813,7 +829,9 @@ int main(int argc, char *argv[])
     pack_info pinfo;
     GVC_t * gvc;
 
-    init(argc, argv);
+    init(argc, argv, &pinfo);
+
+    doPack = (pinfo.mode != l_undef);
 
     gvc = gvNEWcontext(lt_preloaded_symbols, DEMAND_LOADING);
     gs = readGraphs(&cnt, gvc);
@@ -821,11 +839,7 @@ int main(int argc, char *argv[])
 	exit(0);
 
     /* pack graphs */
-    if (DOPACK) {
-	pinfo.margin = margin;
-	pinfo.doSplines = doSplines;
-	pinfo.mode = packMode;
-	pinfo.fixed = 0;
+    if (doPack) {
 	if (packGraphs(cnt, gs, 0, &pinfo)) {
 	    fprintf(stderr, "gvpack: packing of graphs failed.\n");
 	    exit(1);
@@ -836,7 +850,7 @@ int main(int argc, char *argv[])
     g = cloneGraph(gs, cnt, gvc);
 
     /* compute new top-level bb and set */
-    if (DOPACK) {
+    if (doPack) {
 	GD_bb(g) = compBB(gs, cnt);
 	dotneato_postprocess(g);
 	attach_attrs(g);
