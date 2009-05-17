@@ -81,6 +81,7 @@ typedef unsigned char packval_t;
     extern int getPack(Agraph_t *, int not_def, int dflt);
     extern pack_mode getPackInfo(Agraph_t * g, pack_mode dflt, int dfltMargin, pack_info*);
     extern pack_mode getPackModeInfo(Agraph_t * g, pack_mode dflt, pack_info*);
+    extern pack_mode parsePackModeInfo(char* p, pack_mode dflt, pack_info* pinfo);
 
     extern int isConnected(Agraph_t *);
     extern Agraph_t **ccomps(Agraph_t *, int *, char *);
