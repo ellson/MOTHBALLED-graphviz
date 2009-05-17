@@ -1206,71 +1206,67 @@ chkFlags (char* p, pack_info* pinfo)
     return p;
 }
 
-/* getPackModeInfo;
+/* parsePackModeInfo;
  * Return pack_mode of graph using "packmode" attribute.
  * If not defined, return dflt
  */
 pack_mode 
-getPackModeInfo(Agraph_t * g, pack_mode dflt, pack_info* pinfo)
+parsePackModeInfo(char* p, pack_mode dflt, pack_info* pinfo)
 {
-    char *p = agget(g, "packmode");
-    pack_mode mode = dflt;
     float v;
     int i;
 
     assert (pinfo);
     pinfo->flags = 0;
+    pinfo->mode = dflt;
     pinfo->sz = 0;
     pinfo->vals = NULL;
     if (p && *p) {
 	switch (*p) {
 	case 'a':
 	    if (strneq(p, ARRAY, SLEN(ARRAY))) {
-		pinfo->mode = mode = l_array;
+		pinfo->mode = l_array;
 		p += SLEN(ARRAY);
 		p = chkFlags (p, pinfo);
 		if ((sscanf (p, "%d", &i)>0) && (i > 0))
 		    pinfo->sz = i;
 	    }
 	    else if (strneq(p, ASPECT, SLEN(ASPECT))) {
-		mode = l_aspect;
-		if (pinfo) {
-		    pinfo->mode = mode;
-		    if ((sscanf (p + SLEN(ARRAY), "%f", &v)>0) && (v > 0))
-			pinfo->aspect = v;
-		    else
-			pinfo->aspect = 1;
-		}
+		pinfo->mode = l_aspect;
+		if ((sscanf (p + SLEN(ARRAY), "%f", &v)>0) && (v > 0))
+		    pinfo->aspect = v;
+		else
+		    pinfo->aspect = 1;
 	    }
 	    break;
 #ifdef NOT_IMPLEMENTED
 	case 'b':
 	    if (streq(p, "bisect"))
-		mode = l_bisect;
+		pinfo->mode = l_bisect;
 	    break;
 #endif
 	case 'c':
 	    if (streq(p, "cluster"))
-		mode = l_clust;
+		pinfo->mode = l_clust;
 	    break;
 	case 'g':
 	    if (streq(p, "graph"))
-		mode = l_graph;
+		pinfo->mode = l_graph;
 	    break;
 #ifdef NOT_IMPLEMENTED
 	case 'h':
 	    if (streq(p, "hull"))
-		mode = l_hull;
+		pinfo->mode = l_hull;
 	    break;
 #endif
 	case 'n':
 	    if (streq(p, "node"))
-		mode = l_node;
+		pinfo->mode = l_node;
 	    break;
 #ifdef NOT_IMPLEMENTED
 	case 't':
 	    if (streq(p, "tile"))
-		mode = l_tile;
+		pinfo->mode = l_tile;
 	    break;
 #endif
 	}
@@ -1284,7 +1280,17 @@ getPackModeInfo(Agraph_t * g, pack_mode dflt, pack_info* pinfo)
 	fprintf (stderr, "  margin %d\n", pinfo->margin);
 	fprintf (stderr, "  flags  %d\n", pinfo->flags);
     }
-    return mode;
+    return pinfo->mode;
+}
+
+/* getPackModeInfo;
+ * Return pack_mode of graph using "packmode" attribute.
+ * If not defined, return dflt
+ */
+pack_mode 
+getPackModeInfo(Agraph_t * g, pack_mode dflt, pack_info* pinfo)
+{
+    return parsePackModeInfo (agget(g, "packmode"), dflt, pinfo);
 }
 
 pack_mode 
