@@ -476,7 +476,7 @@ int deselect_edge(topview_edge* E)
 	
 }
 
-int select_all_nodes()
+int select_all_nodes(Agraph_t * g)
 {
     int ind = 0;
     //check if in the list
@@ -487,7 +487,7 @@ int select_all_nodes()
     return 1;
 }
 
-int select_all_edges()
+int select_all_edges(Agraph_t * g)
 {
     int ind = 0;
     //check if in the list
@@ -500,7 +500,7 @@ int select_all_edges()
 }
 
 
-int deselect_all_nodes()
+int deselect_all_nodes(Agraph_t * g)
 {
     int ind = 0;
     //check if in the list
@@ -512,7 +512,7 @@ int deselect_all_nodes()
 
 }
 
-int deselect_all_edges()
+int deselect_all_edges(Agraph_t * g)
 {
     int ind = 0;
     //check if in the list
@@ -525,16 +525,16 @@ int deselect_all_edges()
 }
 int select_all(Agraph_t * g)
 {
-    select_all_nodes();
-    select_all_edges();
+    select_all_nodes(g);
+    select_all_edges(g);
     return 1;
 
 }
 
 int deselect_all(Agraph_t * g)
 {
-    deselect_all_nodes();
-    deselect_all_edges();
+    deselect_all_nodes(g);
+    deselect_all_edges(g);
     return 1;
 }
 
