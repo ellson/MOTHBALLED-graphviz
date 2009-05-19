@@ -668,7 +668,7 @@ int init_nop(Agraph_t * g, int adjust)
     pos_edge posEdges;		/* How many edges have spline info */
     attrsym_t *G_lp = agfindgraphattr(g, "lp");
     attrsym_t *G_bb = agfindgraphattr(g, "bb");
-    int didAdjust;  /* Have nodes been moved? */
+    int didAdjust = 0;  /* Have nodes been moved? */
 
     /* If G_bb not defined, define it */
     if (!G_bb)
