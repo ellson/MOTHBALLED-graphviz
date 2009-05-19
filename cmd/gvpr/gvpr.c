@@ -44,6 +44,11 @@
 #else
 #include "compat_getopt.h"
 #endif
+#ifdef WIN32
+#include <windows.h>
+#include <iostream.h>
+#include "Shlwapi.h"
+#endif
 
 char *Info[] = {
     "gvpr",			/* Program */
@@ -175,6 +180,15 @@ static int parseArgs(char *s, int argc, char ***argv)
     return argc;
 }
 
+
+#ifdef WIN32
+#define PATHSEP '\\'
+#define LISTSEP ';'
+#else
+#define PATHSEP '/'
+#define LISTSEP ':'
+#endif
+
 /* resolve:
  * Translate -f arg parameter into a pathname.
  * If arg contains '/', return arg.
@@ -189,7 +203,11 @@ static char *resolve(char *arg)
     Sfio_t *fp;
     size_t sz;
 
+#ifdef WIN32
+    if (!PathIsRelative (arg))
+#else
     if (strchr(arg, '/'))
+#endif
 	return arg;
 
     path = getenv("GPRPATH");
@@ -200,11 +218,11 @@ static char *resolve(char *arg)
 	error(ERROR_FATAL, "Could not open buffer");
 
     while (*path && !fname) {
-	if (*path == ':') {	/* skip colons */
+	if (*path == LISTSEP) {	/* skip colons */
 	    path++;
 	    continue;
 	}
-	cp = strchr(path, ':');
+	cp = strchr(path, LISTSEP);
 	if (cp) {
 	    sz = (size_t) (cp - path);
 	    sfwrite(fp, path, sz);
@@ -213,7 +231,7 @@ static char *resolve(char *arg)
 	    sz = sfprintf(fp, path);
 	    path += sz;
 	}
-	sfputc(fp, '/');
+	sfputc(fp, PATHSEP);
 	sfprintf(fp, arg);
 	s = sfstruse(fp);
 
