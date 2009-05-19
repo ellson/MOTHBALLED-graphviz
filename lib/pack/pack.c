@@ -1323,13 +1323,14 @@ int getPack(Agraph_t * g, int not_def, int dflt)
 pack_mode 
 getPackInfo(Agraph_t * g, pack_mode dflt, int dfltMargin, pack_info* pinfo)
 {
-    pack_mode pmode = getPackModeInfo(g, dflt, pinfo);
+    assert (pinfo);
+
     pinfo->margin = getPack(g, dfltMargin, dfltMargin);
     pinfo->doSplines = 0;
-    pinfo->mode = pmode;
     pinfo->fixed = 0;
+    getPackModeInfo(g, dflt, pinfo);
 
-    return pmode;
+    return pinfo->mode;
 }
 
 
