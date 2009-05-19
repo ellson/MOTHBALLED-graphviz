@@ -20,6 +20,11 @@
  *
  */
 
+#ifdef WIN32
+#include "windows.h"
+#include "Shlwapi.h"
+#endif
+
 #include <gprstate.h>
 #include <error.h>
 #include <sfstr.h>
@@ -51,3 +56,14 @@ Gpr_t *openGPRState()
 
     return state;
 }
+int pathisrelative (char* path)
+{
+#ifdef WIN32
+	return PathIsRelative(path);
+#else
+	return 0;	/*FIX ME:code this part for UNIX*/
+#endif
+	
+
+}
+

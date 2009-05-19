@@ -21,6 +21,7 @@
  * Written by Emden Gansner
  */
 
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -43,11 +44,6 @@
 #include <getopt.h>
 #else
 #include "compat_getopt.h"
-#endif
-#ifdef WIN32
-#include <windows.h>
-#include <iostream.h>
-#include "Shlwapi.h"
 #endif
 
 char *Info[] = {
@@ -204,7 +200,7 @@ static char *resolve(char *arg)
     size_t sz;
 
 #ifdef WIN32
-    if (!PathIsRelative (arg))
+    if (!pathisrelative (arg))
 #else
     if (strchr(arg, '/'))
 #endif
