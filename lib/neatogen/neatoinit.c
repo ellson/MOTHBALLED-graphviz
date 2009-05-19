@@ -689,7 +689,7 @@ int init_nop(Agraph_t * g, int adjust)
     nop_init_graphs(g, G_lp, G_bb);
     posEdges = nop_init_edges(g);
 
-    if (adjust && Nop == 1)
+    if (adjust && (Nop == 1))
 	didAdjust = adjustNodes(g);
 
     if (didAdjust) {
