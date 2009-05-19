@@ -118,6 +118,7 @@ extern "C" {
     extern void free_label(textlabel_t *);
     extern void getdouble(graph_t * g, char *name, double *result);
     extern splines *getsplinepoints(edge_t * e);
+    extern void gv_fixLocale (int set);
     extern void gv_free_splines(edge_t * e);
     extern void gv_cleanup_edge(Agedge_t * e);
     extern void gv_cleanup_node(Agnode_t * n);
