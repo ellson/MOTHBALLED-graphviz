@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="sfio.lib ast.lib expr.lib cdt.lib gvc.lib ingraphs.lib vmalloc.lib cgraph.lib"
+				AdditionalDependencies="sfio.lib ast.lib expr.lib cdt.lib gvc.lib ingraphs.lib vmalloc.lib cgraph.lib shlwapi.lib"
 				OutputFile="c:/graphviz-ms/bin/$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="C:\gtk\lib;&quot;C:\graphviz-ms\bin&quot;"
@@ -138,7 +138,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cgraph.lib sfio.lib ast.lib expr.lib cdt.lib gvc.lib ingraphs.lib vmalloc.lib"
+				AdditionalDependencies="cgraph.lib sfio.lib ast.lib expr.lib cdt.lib gvc.lib ingraphs.lib vmalloc.lib shlwapi.lib"
 				OutputFile="c:/graphviz-ms/bin/$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="C:\graphviz-ms\bin;C:\gtk\lib"
