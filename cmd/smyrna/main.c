@@ -161,6 +161,11 @@ int main(int argc, char *argv[])
 #endif
     }
 
+	
+	glutInitWindowSize(500, 500);
+	glutInitWindowPosition(0, 0);
+	glutInit(&argc,argv);
+
     load_attributes();
 
 #ifdef G_OS_WIN32
@@ -214,9 +219,6 @@ int main(int argc, char *argv[])
 
 	change_cursor(GDK_TOP_LEFT_ARROW);
 
-#ifndef WIN32	
-	glutInit(&argc,argv);
-#endif
 	gtk_main();
 
 
