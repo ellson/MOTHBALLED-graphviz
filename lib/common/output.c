@@ -238,6 +238,7 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
     pointf ptf;
     int dim3 = (GD_odim(g) >= 3);
 
+    gv_fixLocale (1);
     e_arrows = s_arrows = 0;
     setYInvert(g);
     agxbinit(&xb, BUFSIZ, xbuffer);
@@ -398,6 +399,7 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
     
     *sp = s_arrows;
     *ep = e_arrows;
+    gv_fixLocale (0);
 }
 
 void attach_attrs(graph_t * g)

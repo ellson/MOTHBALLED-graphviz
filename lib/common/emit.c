@@ -2870,7 +2870,7 @@ extern gvdevice_callbacks_t gvdevice_callbacks;
  * if set is zero, the original locale is reset.
  * Calls to the function can nest.
  */
-static void gv_fixLocale (int set)
+void gv_fixLocale (int set)
 {
     static char* save_locale;
     static int cnt;
