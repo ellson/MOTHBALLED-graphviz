@@ -24,6 +24,7 @@
 
 #include <string.h>
 #include <ctype.h>
+#include <locale.h>
 #include "render.h"
 #include "agxbuf.h"
 #include "htmltable.h"
@@ -2860,6 +2861,35 @@ extern gvevent_key_binding_t gvevent_key_binding[];
 extern int gvevent_key_binding_size;
 extern gvdevice_callbacks_t gvdevice_callbacks;
 
+/* gv_fixLocale:
+ * Set LC_NUMERIC to "C" to get expected interpretation of %f
+ * in printf functions. Languages like postscript and dot expect
+ * floating point numbers to use a decimal point.
+ * 
+ * If set is non-zero, the "C" locale set;
+ * if set is zero, the original locale is reset.
+ * Calls to the function can nest.
+ */
+static void gv_fixLocale (int set)
+{
+    static char* save_locale;
+    static int cnt;
+
+    if (set) {
+	cnt++;
+	if (cnt == 1) {
+	    save_locale = setlocale (LC_NUMERIC, NULL);
+	    setlocale (LC_NUMERIC, "C");
+	}
+    }
+    else if (cnt > 0) {
+	cnt--;
+	if (cnt == 0) {
+	    setlocale (LC_NUMERIC, save_locale);
+	}
+    }
+}
+
 int gvRenderJobs (GVC_t * gvc, graph_t * g)
 {
     static GVJ_t *prevjob;
@@ -2876,6 +2906,7 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 
     gvc->keybindings = gvevent_key_binding;
     gvc->numkeys = gvevent_key_binding_size;
+    gv_fixLocale (1);
     for (job = gvjobs_first(gvc); job; job = gvjobs_next(gvc)) {
 	if (gvc->gvg) {
 	    job->input_filename = gvc->gvg->input_filename;
@@ -2889,12 +2920,14 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	job->layout_type = gvc->layout.type;
 	if (!GD_drawing(g)) {
 	    agerr (AGERR, "layout was not done\n");
+	    gv_fixLocale (0);
 	    return -1;
 	}
 
         job->output_lang = gvrender_select(job, job->output_langname);
         if (job->output_lang == NO_SUPPORT) {
             agerr (AGERR, "renderer for %s is unavailable\n", job->output_langname);
+	    gv_fixLocale (0);
             return -1;
         }
 #ifdef WITH_CODEGENS
@@ -2965,5 +2998,6 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
          */
 	prevjob = job;
     }
+    gv_fixLocale (0);
     return 0;
 }
