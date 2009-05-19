@@ -81,7 +81,7 @@ int add_to_pick_list(topview_node * n)
 
 
 
-int draw_node_hint_boxes()
+int draw_node_hint_boxes(void)
 {
     int ind;
     /* int fs = 12; */

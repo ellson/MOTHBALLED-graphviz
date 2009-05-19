@@ -43,13 +43,13 @@ extern int select_edge(topview_edge*);
 extern int deselect_node(topview_node*);
 extern int deselect_edge(topview_edge* );
 
-extern int select_all_nodes();
-extern int select_all_edges();
-extern int select_all();
+extern int select_all_nodes(Agraph_t*);
+extern int select_all_edges(Agraph_t*);
+extern int select_all(Agraph_t*);
 
-extern int deselect_all_nodes();
-extern int deselect_all_edges();
-extern int deselect_all();
+extern int deselect_all_nodes(Agraph_t*);
+extern int deselect_all_edges(Agraph_t*);
+extern int deselect_all(Agraph_t*);
 int point_within_sphere_with_coords(float x0, float y0, float z0, float r,float x, float y,float z);
 float distance_to_line(float ax,float ay,float bx,float by,float cx,float cy);
 

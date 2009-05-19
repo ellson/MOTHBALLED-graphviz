@@ -6,6 +6,6 @@ int pick_node(topview_node * n);
 int is_node_picked(topview_node * n);
 int remove_from_pick_list(topview_node * n);
 int add_to_pick_list(topview_node * n);
-int draw_node_hint_boxes();
+int draw_node_hint_boxes(void);
 
 #endif
