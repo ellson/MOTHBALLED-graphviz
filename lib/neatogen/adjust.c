@@ -749,6 +749,7 @@ fdpAdjust (graph_t* g)
     int flag, i;
     expand_t sep = sepFactor(g);
     pointf pad;
+    double initial_scaling;
 
     if (sep.doAdd) {
 	pad.x = PS2INCH(sep.x);
@@ -773,7 +774,8 @@ fdpAdjust (graph_t* g)
 	A = SparseMatrix_remove_diagonal(A);
     }
 
-    remove_overlap(Ndim, A, A->m, pos, sizes, 1000, -4, &flag);
+    initial_scaling = late_double(g, agfindgraphattr(g, "overlap_scaling"), -4.0, -1.e10);
+    remove_overlap(Ndim, A, A->m, pos, sizes, 1000, initial_scaling, &flag);
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	real *npos = pos + (Ndim * ND_id(n));
