@@ -18,6 +18,7 @@
 /*
  *  Compile-time and run-time interface between gpr and libexpr
  */
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -2356,5 +2357,3 @@ Agedge_t *openEdge(Agraph_t* g, Agnode_t * t, Agnode_t * h, char *key)
 	agbindrec(ep, UDATA, sizeof(edata), 0);
     return ep;
 }
-
-

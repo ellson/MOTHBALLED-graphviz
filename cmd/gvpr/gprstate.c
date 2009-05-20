@@ -56,14 +56,12 @@ Gpr_t *openGPRState()
 
     return state;
 }
+
+#ifdef WIN32
 int pathisrelative (char* path)
 {
-#ifdef WIN32
-	return PathIsRelative(path);
-#else
-	return 0;	/*FIX ME:code this part for UNIX*/
-#endif
-	
+    return PathIsRelative(path);
 
 }
+#endif
 
