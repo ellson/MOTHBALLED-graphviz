@@ -175,6 +175,10 @@ than listing the graph attribute at the top of the graph, and the
 resetting the attribute as needed in the subgraphs, one can simple defer
 the attribute definition if the graph until the appropriate subgraphs
 have been defined.
+<P>
+If an edge belongs to a cluster, its endpoints belong to that cluster.
+Thus, where you put an edge can effect a layout, as clusters are sometimes
+laid out recursively.
 <H2>Character encodings</H2>
 The DOT language assumes at least the ascii character set.
 Quoted strings, both ordinary and HTML-like, may contain non-ascii characters.
