@@ -78,7 +78,7 @@ static char *Usage = "Usage: %s [-dV?] [options]\n\
  -G[f]<h,w>    : partial grid (folded if f is used)\n\
  -h<x>         : hypercube \n\
  -k<x>         : complete \n\
- -b<x,y>       : complete binary\n\
+ -b<x,y>       : complete bipartite\n\
  -o<outfile>   : put output in <outfile> (stdout)\n\
  -p<x>         : path \n\
  -s<x>         : star\n\
