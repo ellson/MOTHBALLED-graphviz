@@ -3,10 +3,18 @@ ROOT=../..
 include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
 
-INCS =	-I. -I..
+INCS =	-I. -I$(ROOT) \
+	-I../common \
+	-I../gvc \
+	-I../ortho \
+	-I../pathplan \
+	-I../graph \
+	-I../cdt \
+	-I../gd
 
-OBJS = partition.o trapezoid.o main.o ortho.o maze.o sgraph.o fPQ.o \
-    rawgraph.o intset.o
+DEFINES = -DHAVE_CONFIG_H
+
+OBJS =  fPQ.o intset.o maze.o ortho.o partition.o rawgraph.o sgraph.o trapezoid.o
 
 libortho.a: $(OBJS)
 	$(RM) libortho.a
