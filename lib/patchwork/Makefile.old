@@ -6,6 +6,7 @@ include $(ROOT)/makearch/$(ARCH)
 INCS =	-I. -I$(ROOT) \
 	-I../common \
 	-I../neatogen \
+	-I../sparse \
 	-I../pack \
 	-I../gvc \
 	-I../fdpgen \

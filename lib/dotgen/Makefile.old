@@ -6,6 +6,7 @@ include $(ROOT)/makearch/$(ARCH)
 INCS =	-I. -I$(ROOT) \
 	-I../common \
 	-I../gvc \
+	-I../ortho \
 	-I../pathplan \
 	-I../graph \
 	-I../cdt \

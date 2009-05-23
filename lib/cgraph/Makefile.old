@@ -4,7 +4,7 @@ all:	$(LIBNAME)
 
 ROOT=../..
 
-include $(ROOT)/Config.mk.old
+include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
 
 INCS =	-I. -I../cdt -I$(ROOT)
