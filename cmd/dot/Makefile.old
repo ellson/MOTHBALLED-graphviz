@@ -12,7 +12,7 @@ INCS =  -I$(LOC_LIB)/gvc -I$(LOC_LIB)/common -I$(ROOT) -I$(LOC_LIB)/cdt \
 ALLINCS = -I$(LOC_LIB)/dotgen -I$(LOC_LIB)/neatogen -I$(LOC_LIB)/twopigen \
           -I$(LOC_LIB)/circogen -I$(LOC_LIB)/fdpgen -I$(LOC_LIB)/sfdpgen $(INCS)
 
-DEFINES = -DHAVE_CONFIG_H -DBUILTINS
+DEFINES = -DDEMAND_LOADING=0 -DHAVE_CONFIG_H -DBUILTINS
 
 XLIBS = -L$(LOC_LIB)/pathplan -lpathplan \
         -L$(LOC_LIB)/graph -lgraph \
@@ -29,12 +29,13 @@ PLUGS = -L$(LOC_PLUG)/core -lgvplugin_core \
 LIBS = -L$(LOC_LIB)/gvc -lgvc_dot_builtins $(PLUGS) \
        -L$(LOC_LIB)/common -lcommon \
        -L$(LOC_LIB)/gvc -lgvc_dot_builtins $(PLUGS) \
-       -L$(LOC_LIB)/neatogen -lneatogen \
-       -L$(LOC_LIB)/vpsc -lvpsc \
        -L$(LOC_LIB)/dotgen -ldotgen \
        -L$(LOC_LIB)/circogen -lcircogen \
        -L$(LOC_LIB)/fdpgen -lfdpgen \
        -L$(LOC_LIB)/sfdpgen -lsfdpgen \
+       -L$(LOC_LIB)/neatogen -lneatogen \
+       -L$(LOC_LIB)/ortho -lortho \
+       -L$(LOC_LIB)/vpsc -lvpsc \
        -L$(LOC_LIB)/patchwork -lpatchwork \
        -L$(LOC_LIB)/sparse -lsparse \
        -L$(LOC_LIB)/rbtree -lrbtree \
@@ -58,7 +59,7 @@ DOTLIBS = $(LOC_LIB)/common/libcommon.a \
           $(LOC_PLUG)/gd/libgvplugin_gd.a \
           $(LOC_PLUG)/pango/libgvplugin_pango.a
 
-OBJS = dot.o
+OBJS = dot.o dot_builtins.o
 
 all : dot
 
@@ -74,6 +75,9 @@ dot : $(OBJS) $(DOTLIBS)
 
 dot.o : dot.c
 	$(CPP) -c $(CCFLAGS) $(DEFINES) $(INCS) dot.c
+
+dot_builtins.o : dot_builtins.c
+	$(CPP) -c $(CCFLAGS) $(DEFINES) $(INCS) dot_builtins.c
 
 install: all
 	$(MKPATH) $(BINDIR)
