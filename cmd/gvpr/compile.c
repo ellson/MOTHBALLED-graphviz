@@ -2187,6 +2187,7 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
 
     codePhase = 1;
     if (inp->begg_stmt) {
+	symbols[0].type = T_graph;
 	tchk[V_this][1] = Y(G);
 	p->begg_stmt = compile(p->prog, inp->source, inp->begg_stmt,
 			       inp->l_beging, "_begin_g", 0, VOID);
@@ -2194,6 +2195,7 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
 
     codePhase = 2;
     if (inp->node_stmts) {
+	symbols[0].type = T_node;
 	tchk[V_this][1] = Y(V);
 	p->n_nstmts = inp->n_nstmts;
 	p->node_stmts = mkStmts(p->prog, inp->source, inp->node_stmts,
@@ -2202,6 +2204,7 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
 
     codePhase = 3;
     if (inp->edge_stmts) {
+	symbols[0].type = T_edge;
 	tchk[V_this][1] = Y(E);
 	p->n_estmts = inp->n_estmts;
 	p->edge_stmts = mkStmts(p->prog, inp->source, inp->edge_stmts,
@@ -2210,15 +2213,18 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
 
     codePhase = 4;
     if (inp->endg_stmt || endg_sfx) {
+	symbols[0].type = T_graph;
 	tchk[V_this][1] = Y(G);
 	p->endg_stmt = compile(p->prog, inp->source, inp->endg_stmt,
 			       inp->l_endg, "_end_g", endg_sfx, VOID);
     }
 
     codePhase = 5;
-    if (inp->end_stmt)
+    if (inp->end_stmt) {
+	symbols[0].type = T_obj;
 	p->end_stmt = compile(p->prog, inp->source, inp->end_stmt,
 			      inp->l_end, "_end_", 0, VOID);
+    }
     sfclose(tmps);
 #ifdef GVDLL
     setErrorLine (0);
