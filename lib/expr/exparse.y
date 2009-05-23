@@ -951,8 +951,8 @@ variable	:	ID members
               exerror("%s: is%s an array", $1->name, $1->local.pointer ? "" : " not");
 			if ($1->local.pointer && ($1->index_type > 0)) {
 				if ($2->type != $1->index_type)
-            		exerror("%s: indices must have type %s", 
-						$1->name, extypename(expr.program, $1->index_type));
+            		exerror("%s: indices must have type %s, not %s", 
+						$1->name, extypename(expr.program, $1->index_type),extypename(expr.program, $2->type));
 			}
 			if ($3) {
               n->data.variable.dyna =exnewnode(expr.program, 0, 0, 0, NiL, NiL);
