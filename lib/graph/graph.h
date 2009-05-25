@@ -214,7 +214,7 @@ extern "C" {
     extern void agseterr(agerrlevel_t);
     extern char *aglasterr(void);
     extern int agerr(agerrlevel_t level, char *fmt, ...);
-    extern void agerrorf(char *fmt, ...);
+    extern void agerrorf(const char *fmt, ...);
     extern void agwarningf(char *fmt, ...);
 
     extern char *agstrdup(char *);

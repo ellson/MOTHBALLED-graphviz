@@ -28,7 +28,7 @@ extern "C" {
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#ifndef MSWIN32
+#if !defined(MSWIN32) && !defined(WIN32)
 #include <unistd.h>
 #endif
 #endif

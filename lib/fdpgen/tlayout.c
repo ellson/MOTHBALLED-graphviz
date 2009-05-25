@@ -552,7 +552,7 @@ static pointf initPositions(graph_t * g, bport_t * pp)
     if (T_smode == INIT_RANDOM)
 	local_seed = T_seed;
     else {
-#ifdef MSWIN32
+#if defined(MSWIN32) || defined(WIN32)
 	local_seed = time(NULL);
 #else
 	local_seed = getpid() ^ time(NULL);
