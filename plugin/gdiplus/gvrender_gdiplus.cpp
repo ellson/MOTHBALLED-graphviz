@@ -34,66 +34,39 @@ extern "C" size_t gvwrite(GVJ_t *job, const unsigned char *s, unsigned int len);
 using namespace std;
 using namespace Gdiplus;
 
-
-
-static char* gdiplus_psfontResolve (PostscriptAlias* pa)
-{
-    static char buf[1024];
-    int comma=0;
-    strcpy(buf, pa->family);
-
-    ADD_ATTR(pa->weight);
-    ADD_ATTR(pa->stretch);
-    ADD_ATTR(pa->style);
-   
-    return buf;
-}
-
-
 /* Graphics for internal use, so that we can record image etc. for subsequent retrieval off the job struct */
 struct ImageGraphics: public Graphics
 {
-	GraphicsContext *context;
 	Image *image;
 	IStream *stream;
 	
-	ImageGraphics(GraphicsContext *newContext, Image *newImage, IStream *newStream):
-		Graphics(newImage), context(newContext), image(newImage), stream(newStream)
+	ImageGraphics(Image *newImage, IStream *newStream):
+		Graphics(newImage), image(newImage), stream(newStream)
 	{
 	}
-};
-
-/* RAII for GetDC/ReleaseDC */
-struct DeviceContext
-{
-	HWND hwnd;
-	HDC hdc;
-	
-	DeviceContext(HWND wnd = NULL): hwnd(wnd), hdc(GetDC(wnd))
-	{
-	}
-	
-	~DeviceContext()
-	{
-		ReleaseDC(hwnd, hdc);
-	}
-
 };
 
 static void gdiplusgen_begin_job(GVJ_t *job)
 {
+	UseGdiplus();
 	if (!job->external_context)
 		job->context = NULL;
+	else if (job->device.id == FORMAT_METAFILE)
+	{
+		/* save the passed-in context in the window field, so we can create a Metafile in the context field later on */
+		job->window = job->context;
+		*((Metafile**)job->window) = NULL;
+		job->context = NULL;
+}
 }
 
 static void gdiplusgen_end_job(GVJ_t *job)
 {
-	if (!job->external_context) {
 		Graphics *context = (Graphics *)job->context;
 		
+	if (!job->external_context) {
 		/* flush and delete the graphics */
 		ImageGraphics *imageGraphics = static_cast<ImageGraphics *>(context);
-		GraphicsContext *graphicsContext = imageGraphics->context;
 		Image *image = imageGraphics->image;
 		IStream *stream = imageGraphics->stream;
 		delete imageGraphics;
@@ -101,6 +74,7 @@ static void gdiplusgen_end_job(GVJ_t *job)
 		switch (job->device.id) {
 			case FORMAT_EMF:
 			case FORMAT_EMFPLUS:
+			case FORMAT_METAFILE:
 				break;
 			default:
 				SaveBitmapToStream(*static_cast<Bitmap *>(image), stream, job->device.id);
@@ -117,18 +91,16 @@ static void gdiplusgen_end_job(GVJ_t *job)
 		stream->Release();
 		gvwrite(job, (unsigned char*)GlobalLock(buffer), GlobalSize(buffer));
 		GlobalFree(buffer);
-			
-		/* since this is an internal job, shut down GDI+ */
-		delete graphicsContext;
 	}
+	else if (job->device.id == FORMAT_METAFILE)
+		delete context;
 }
 
 static void gdiplusgen_begin_page(GVJ_t *job)
 {
-	if (!job->external_context && !job->context) {
-		/* since this is an internal job, start up GDI+ */
-		GraphicsContext *context = new GraphicsContext();
-		
+	if (!job->context)
+	{
+		if (!job->external_context) {
 		/* allocate memory and attach stream to it */
 		HGLOBAL buffer = GlobalAlloc(GMEM_MOVEABLE, 0);
 		IStream *stream = NULL;
@@ -144,93 +116,51 @@ static void gdiplusgen_begin_page(GVJ_t *job)
 				DeviceContext().hdc,
 				RectF(0.0f, 0.0f, job->width, job->height),
 				MetafileFrameUnitPixel,
-				job->device.id == FORMAT_EMFPLUS ? EmfTypeEmfPlusOnly : EmfTypeEmfOnly);
+					job->device.id == FORMAT_EMFPLUS ? EmfTypeEmfPlusOnly : EmfTypeEmfPlusDual);
 				/* output in EMF for wider compatibility; output in EMF+ for antialiasing etc. */
 			break;
 			
+			case FORMAT_METAFILE:
+				break;
+				
 		default:
 			/* bitmap image */
 			image = new Bitmap (job->width, job->height, PixelFormat32bppARGB);
 			break;
 		}
 		
-		job->context = new ImageGraphics(context, image, stream);
+			job->context = new ImageGraphics(image, stream);
+	}
+		else if (job->device.id == FORMAT_METAFILE)
+		{
+			/* create EMF image in the job window which was set during begin job */
+			Metafile* metafile = new Metafile(DeviceContext().hdc,
+				RectF(0.0f, 0.0f, job->width, job->height),
+				MetafileFrameUnitPixel,
+				EmfTypeEmfPlusOnly);
+			*((Metafile**)job->window) = metafile;
+			job->context = new Graphics(metafile);
+		}
 	}
 	
 	/* start graphics state */
 	Graphics *context = (Graphics *)job->context;
 	context->SetSmoothingMode(SmoothingModeHighQuality);
+	context->SetTextRenderingHint(TextRenderingHintAntiAlias);
 	
 	/* set up the context transformation */
-	/* NOTE: we need to shift by height of graph and do a reflection before applying given transformations */
 	context->ResetTransform();
-	context->TranslateTransform(0, job->height);
-	context->ScaleTransform(job->scale.x, -job->scale.y);
-	context->RotateTransform(job->rotation);
-	context->TranslateTransform(job->translation.x, job->translation.y);
+
+	context->ScaleTransform(job->scale.x, job->scale.y);
+	context->RotateTransform(-job->rotation);
+	context->TranslateTransform(job->translation.x, -job->translation.y);
 }
 
-static int CALLBACK fetch_first_font(
-	const LOGFONTA *logFont,
-	const TEXTMETRICA *textMetrics,
-	DWORD fontType,
-	LPARAM lParam)
-{
-	/* save the first font we see in the font enumeration */
-	*((LOGFONTA *)lParam) = *logFont;
-	return 0;
-}
 
-static auto_ptr<Font> find_font(char *fontname, double fontsize)
-{
-	/* search for a font with this name. if we can't find it, use the generic serif instead */
-	/* NOTE: GDI font search is more comprehensive than GDI+ and will look for variants e.g. Arial Bold */
-	DeviceContext reference;
-	LOGFONTA font_to_find;
-	font_to_find.lfCharSet = ANSI_CHARSET;
-	strncpy(font_to_find.lfFaceName, fontname, sizeof(font_to_find.lfFaceName) - 1);
-	font_to_find.lfFaceName[sizeof(font_to_find.lfFaceName) - 1] = '\0';
-	font_to_find.lfPitchAndFamily = 0;
-	LOGFONTA found_font;
-	if (EnumFontFamiliesExA(reference.hdc,
-		&font_to_find,
-		fetch_first_font,
-		(LPARAM)&found_font,
-		0) == 0) {
-		found_font.lfHeight = (LONG)-fontsize;
-		found_font.lfWidth = 0;
-		return auto_ptr<Font>(new Font(reference.hdc, &found_font));
-	}
-	else
-	{
-		strncpy(font_to_find.lfFaceName,"Times New Roman", sizeof(font_to_find.lfFaceName) - 1);
-		font_to_find.lfFaceName[sizeof(font_to_find.lfFaceName) - 1] = '\0';
-		font_to_find.lfPitchAndFamily = 0;
-		if(EnumFontFamiliesExA(reference.hdc,
-			&font_to_find,
-				fetch_first_font,
-				(LPARAM)&found_font,
-		0) == 0) 
-		{
-			found_font.lfHeight = (LONG)-fontsize;
-			found_font.lfWidth = 0;
-			return auto_ptr<Font>(new Font(reference.hdc, &found_font));
-		}
-
-	}
-//	"gdiplus cannot find the default font Times New Roman."
-	return NULL;
-}
 
 static void gdiplusgen_textpara(GVJ_t *job, pointf p, textpara_t *para)
 {
-	/* convert incoming UTF8 string to wide chars */
-	/* NOTE: conversion is 1 or more UTF8 chars to 1 wide char */
-	char* fontname;
-	int wide_count = MultiByteToWideChar(CP_UTF8, 0, para->str, -1, NULL, 0);
-	if (wide_count > 1) {
-		vector<WCHAR> wide_str(wide_count);
-		MultiByteToWideChar(CP_UTF8, 0, para->str, -1, &wide_str.front(), wide_count);
+	Graphics* context = (Graphics*)job->context;
 		
 		/* adjust text position */
 		switch (para->just) {
@@ -245,31 +175,22 @@ static void gdiplusgen_textpara(GVJ_t *job, pointf p, textpara_t *para)
 			p.x -= para->width / 2.0;
 			break;
 		}
-		p.y -= para->yoffset_centerline;
+	p.y += para->yoffset_centerline + para->yoffset_layout;
 
-		Graphics *context = (Graphics *)job->context;
+	Layout* layout;
+	if (para->free_layout == &gdiplus_free_layout)
+		layout = (Layout*)para->layout;
+	else
+		layout = new Layout(para->fontname, para->fontsize, para->str);
 
-		/* reverse the reflection done in begin_page */
-		GraphicsState saved = context->Save();
-		double center = para->fontsize / 2.0;
-		context->TranslateTransform(p.x, p.y + center);
-		context->ScaleTransform(1.0, -1.0);
-
-		Gdiplus::Font* a=find_font(para->fontname, para->fontsize).get();
 		/* draw the text */
 		SolidBrush brush(Color(job->obj->pencolor.u.rgba [3], job->obj->pencolor.u.rgba [0], job->obj->pencolor.u.rgba [1], job->obj->pencolor.u.rgba [2]));
+	context->DrawString(&layout->text[0], layout->text.size(), layout->font, PointF(p.x, -p.y), GetGenericTypographic(), &brush);
+	
+	if (para->free_layout != &gdiplus_free_layout)
+		delete layout;
 
-
-#ifdef HAVE_GD_FONTCONFIG
-    if (para->postscript_alias)
-		fontname = para->postscript_alias->family;
-    else
-#endif
-	fontname = para->fontname;
-		context->DrawString(&wide_str.front(), wide_count - 1, find_font(fontname, para->fontsize).get(), PointF(0, -center), &brush);
-		context->Restore(saved);
 	}
-}
 
 
 static vector<PointF> points(pointf *A, int n)
@@ -277,7 +198,7 @@ static vector<PointF> points(pointf *A, int n)
 	/* convert Graphviz pointf (struct of double) to GDI+ PointF (struct of float) */
 	vector<PointF> newPoints;
 	for (int i = 0; i < n; ++i)
-		newPoints.push_back(PointF(A[i].x, A[i].y));
+		newPoints.push_back(PointF(A[i].x, -A[i].y));
 	return newPoints;
 }
 
@@ -303,7 +224,7 @@ static void gdiplusgen_ellipse(GVJ_t *job, pointf *A, int filled)
 	GraphicsPath path;
 	double dx = A[1].x - A[0].x;
 	double dy = A[1].y - A[0].y;
-	path.AddEllipse(RectF(A[0].x - dx, A[0].y - dy, dx * 2.0, dy * 2.0));
+	path.AddEllipse(RectF(A[0].x - dx, -A[0].y - dy, dx * 2.0, dy * 2.0));
 	
 	/* draw the path */
 	gdiplusgen_path(job, &path, filled);
@@ -375,11 +296,20 @@ static gvrender_engine_t gdiplusgen_engine = {
 };
 
 static gvrender_features_t render_features_gdiplus = {
-	GVRENDER_DOES_TRANSFORM, /* flags */
+	GVRENDER_Y_GOES_DOWN | GVRENDER_DOES_TRANSFORM, /* flags */
     4.,							/* default pad - graph units */
     NULL,						/* knowncolors */
     0,							/* sizeof knowncolors */
     RGBA_BYTE				/* color_type */
+};
+
+static gvdevice_features_t device_features_gdiplus_emf = {
+    GVDEVICE_BINARY_FORMAT
+      | GVDEVICE_DOES_TRUECOLOR
+	  | GVRENDER_NO_WHITE_BG,/* flags */
+    {0.,0.},                    /* default margin - points */
+    {0.,0.},                    /* default page width, height - points */
+    {72.,72.}                  /* dpi */
 };
 
 static gvdevice_features_t device_features_gdiplus = {
@@ -396,9 +326,10 @@ gvplugin_installed_t gvrender_gdiplus_types[] = {
 };
 
 gvplugin_installed_t gvdevice_gdiplus_types[] = {
+	{FORMAT_METAFILE, "metafile:gdiplus", 8, NULL, &device_features_gdiplus_emf},	
 	{FORMAT_BMP, "bmp:gdiplus", 8, NULL, &device_features_gdiplus},
-	{FORMAT_EMF, "emf:gdiplus", 8, NULL, &device_features_gdiplus},
-	{FORMAT_EMFPLUS, "emfplus:gdiplus", 8, NULL, &device_features_gdiplus},
+	{FORMAT_EMF, "emf:gdiplus", 8, NULL, &device_features_gdiplus_emf},
+	{FORMAT_EMFPLUS, "emfplus:gdiplus", 8, NULL, &device_features_gdiplus_emf},
 	{FORMAT_GIF, "gif:gdiplus", 8, NULL, &device_features_gdiplus},
 	{FORMAT_JPEG, "jpe:gdiplus", 8, NULL, &device_features_gdiplus},
 	{FORMAT_JPEG, "jpeg:gdiplus", 8, NULL, &device_features_gdiplus},

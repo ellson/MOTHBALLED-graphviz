@@ -17,11 +17,14 @@
 #ifndef GVPLUGIN_GDIPLUS_H
 #define GVPLUGIN_GDIPLUS_H
 
+#include <vector>
+
 #include <Windows.h>
 #include <GdiPlus.h>
 
 typedef enum {
 	FORMAT_NONE,
+	FORMAT_METAFILE,
 	FORMAT_BMP,
 	FORMAT_EMF,
 	FORMAT_EMFPLUS,
@@ -31,23 +34,41 @@ typedef enum {
 	FORMAT_TIFF
 } format_type;
 
-struct GraphicsContext
+/* RAII for GetDC/ReleaseDC */
+
+struct DeviceContext
 {
-	ULONG_PTR token;
+	HWND hwnd;
+	HDC hdc;
 	
-	GraphicsContext();
-	~GraphicsContext();
+	DeviceContext(HWND wnd = NULL): hwnd(wnd), hdc(GetDC(wnd))
+	{
+	}
+	
+	~DeviceContext()
+	{
+		ReleaseDC(hwnd, hdc);
+	}
+
+};
+
+/* textlayout etc. */
+
+struct Layout
+{
+	Gdiplus::Font* font;
+	std::vector<WCHAR> text;
+	
+	Layout(char *fontname, double fontsize, char* string);
+	~Layout();
 };
 
 static const int BYTES_PER_PIXEL = 4;		/* bytes per pixel */
 
-#define ADD_ATTR(a) \
-  if (a) { \
-        strcat(buf, comma ? " " : ", "); \
-        comma = 1; \
-        strcat(buf, a); \
-  }
+void gdiplus_free_layout(void *layout);
 
-extern void SaveBitmapToStream(Gdiplus::Bitmap &bitmap, IStream *stream, int format);
+void UseGdiplus();
+const Gdiplus::StringFormat* GetGenericTypographic();
+void SaveBitmapToStream(Gdiplus::Bitmap &bitmap, IStream *stream, int format);
 
 #endif

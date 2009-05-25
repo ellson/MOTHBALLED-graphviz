@@ -41,9 +41,6 @@ static void gdiplus_format(GVJ_t *job)
 	IStream *stream = NULL;
 	CreateStreamOnHGlobal(buffer, FALSE, &stream);	/* FALSE means don't deallocate buffer when releasing stream */
 	
-	/* since this is an internal job, start up GDI+ */
-	GraphicsContext context;
-
 	Bitmap bitmap(
 		job->width,						/* width in pixels */
 		job->height,					/* height in pixels */

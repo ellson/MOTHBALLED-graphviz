@@ -29,7 +29,8 @@ libgvplugin_gdiplus_C_la_SOURCES = \
 	gvdevice_gdiplus.cpp \
 	gvloadimage_gdiplus.cpp \
 	gvplugin_gdiplus.cpp \
-	gvrender_gdiplus.cpp
+	gvrender_gdiplus.cpp \
+	gvtextlayout_gdiplus.cpp
 
 # libtool doesn't want to run with actual Windows import libs, so we force GdiPlus.lib through to the linker
 libgvplugin_gdiplus_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@ -Wl,"$(PLATFORMSDKLIB)\GdiPlus.lib"

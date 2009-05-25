@@ -18,10 +18,8 @@
 
 #include "gvplugin_gdiplus.h"
 
-#include <vector>
-
 extern gvplugin_installed_t gvrender_gdiplus_types[];
-// extern gvplugin_installed_t gvtextlayout_gdiplus_types[];
+extern gvplugin_installed_t gvtextlayout_gdiplus_types[];
 extern gvplugin_installed_t gvloadimage_gdiplus_types[];
 extern gvplugin_installed_t gvdevice_gdiplus_types[];
 extern gvplugin_installed_t gvdevice_gdiplus_types_for_cairo[];
@@ -29,19 +27,9 @@ extern gvplugin_installed_t gvdevice_gdiplus_types_for_cairo[];
 using namespace std;
 using namespace Gdiplus;
 
-GraphicsContext::GraphicsContext()
-{
-	GdiplusStartupInput startupInput;
-	GdiplusStartup(&token, &startupInput, NULL);
-}
-
-GraphicsContext::~GraphicsContext()
-{
-	GdiplusShutdown(token);
-}
-
 /* class id corresponding to each format_type */
 static GUID format_id [] = {
+	GUID_NULL,
 	GUID_NULL,
 	ImageFormatBMP,
 	ImageFormatEMF,
@@ -51,6 +39,30 @@ static GUID format_id [] = {
 	ImageFormatPNG,
 	ImageFormatTIFF
 };
+
+static ULONG_PTR _gdiplusToken = NULL;
+
+static void UnuseGdiplus()
+{
+	GdiplusShutdown(_gdiplusToken);
+}
+
+void UseGdiplus()
+{
+	/* only startup once, and ensure we get shutdown */
+	if (!_gdiplusToken)
+	{
+		GdiplusStartupInput input;
+		GdiplusStartup(&_gdiplusToken, &input, NULL);
+		atexit(&UnuseGdiplus);
+	}
+}
+
+const Gdiplus::StringFormat* GetGenericTypographic()
+{
+	const Gdiplus::StringFormat* format = StringFormat::GenericTypographic();
+	return format;
+}
 
 void SaveBitmapToStream(Bitmap &bitmap, IStream *stream, int format)
 {
@@ -70,15 +82,12 @@ void SaveBitmapToStream(Bitmap &bitmap, IStream *stream, int format)
 
 static gvplugin_api_t apis[] = {
     {API_render, gvrender_gdiplus_types},
-  //  {API_textlayout, gvtextlayout_gdiplus_types},
+	{API_textlayout, gvtextlayout_gdiplus_types},
 	{API_loadimage, gvloadimage_gdiplus_types},
     {API_device, gvdevice_gdiplus_types},
 	{API_device, gvdevice_gdiplus_types_for_cairo},
     {(api_t)0, 0},
 };
-
-
-
 
 #ifdef WIN32_DLL /*visual studio*/
 #ifndef GVPLUGIN_GDIPLUS_EXPORTS
@@ -90,7 +99,7 @@ __declspec(dllexport) gvplugin_library_t gvplugin_gdiplus_LTX_library = { "gdipl
 #ifdef GVDLL
 __declspec(dllexport) gvplugin_library_t gvplugin_gdiplus_LTX_library = { "gdiplus", apis };
 #else
-gvplugin_library_t gvplugin_library_t gvplugin_gdiplus_LTX_library = { "gdiplus", apis };
+extern "C" gvplugin_library_t gvplugin_gdiplus_LTX_library = { "gdiplus", apis };
 #endif
 #endif
 
