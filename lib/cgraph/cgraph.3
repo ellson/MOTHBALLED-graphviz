@@ -35,18 +35,18 @@ Agsym_t;
 Agraph_t        *agopen(char *name, Agdesc_t kind, Agdisc_t *disc);
 int             agclose(Agraph_t *g);
 Agraph_t        *agread(void *channel, Agdisc_t *);
+void			agreadline(int line_no);
+void			agsetfile(char *file_name);
 Agraph_t		*agconcat(Agraph_t *g, void *channel, Agdisc_t *disc)
 int             agwrite(Agraph_t *g, void *channel);
 int				agnnodes(Agraph_t *g),agnedges(Agraph_t *g);
-void			agreadline(int line_no);
-void			agsetfile(char *file_name);
-int				agisdirected(Agraph_t * g),agisundirected(Agraph_t * g),agisstrict(Agraph_t * g);
+int				agisdirected(Agraph_t * g),agisundirected(Agraph_t * g),agisstrict(Agraph_t * g), agissimple(Agraph_t * g); 
 .SS "SUBGRAPHS"
 .P0
 Agraph_t        *agsubg(Agraph_t *g, char *name, int createflag);
 Agraph_t		*agidsubg(Agraph_t * g, unsigned long id, int cflag);
 Agraph_t        *agfstsubg(Agraph_t *g), agnxtsubg(Agraph_t *);
-Agraph_t        *agparent(Agraph_t *g),*agroot(Agraph_t *g);
+Agraph_t        *agparent(Agraph_t *g);
 int				agdelsubg(Agraph_t * g, Agraph_t * sub);	/* same as agclose() */
 .P1
 .SS "NODES"
@@ -55,24 +55,24 @@ Agnode_t        *agnode(Agraph_t *g, char *name, int createflag);
 Agnode_t        *agidnode(Agraph_t *g, ulong id, int createflag);
 Agnode_t        *agsubnode(Agraph_t *g, Agnode_t *n, int createflag);
 Agnode_t        *agfstnode(Agraph_t *g);
-Agnode_t        *agnxtnode(Agnode_t *n);
-Agnode_t        *agprvnode(Agnode_t *n);
-Agnode_t        *aglstnode(Agnode_t *n);
+Agnode_t        *agnxtnode(Agraph_t *g, Agnode_t *n);
+Agnode_t        *agprvnode(Agraph_t *g, Agnode_t *n);
+Agnode_t        *aglstnode(Agraph_t *g);
 int             agdelnode(Agraph_t *g, Agnode_t *n);
 int				agdegree(Agnode_t *n, int use_inedges, int use_outedges);
 .P1
 .SS "EDGES"
 .P0
-Agedge_t        *agedge(Agnode_t *t, Agnode_t *h, char *name, int createflag);
+Agedge_t        *agedge(Agraph_t* g, Agnode_t *t, Agnode_t *h, char *name, int createflag);
 Agedge_t		*agidedge(Agraph_t * g, Agnode_t * t, Agnode_t * h, unsigned long id, int createflag);
 Agedge_t        *agsubedge(Agraph_t *g, Agedge_t *e, int createflag);
 Agnode_t        *aghead(Agedge_t *e), *agtail(Agedge_t *e);
-Agedge_t        *agfstedge(Agnode_t *n);
-Agedge_t        *agnxtedge(Agedge_t *e, Agnode_t *n);
-Agedge_t        *agfstin(Agnode_t *n);
-Agedge_t        *agnxtin(Agedge_t *e);
-Agedge_t        *agfstout(Agnode_t *n);
-Agedge_t        *agnxtout(Agedge_t *e);
+Agedge_t        *agfstedge(Agraph_t* g, Agnode_t *n);
+Agedge_t        *agnxtedge(Agraph_t* g, Agedge_t *e, Agnode_t *n);
+Agedge_t        *agfstin(Agraph_t* g, Agnode_t *n);
+Agedge_t        *agnxtin(Agraph_t* g, Agedge_t *e);
+Agedge_t        *agfstout(Agraph_t* g, Agnode_t *n);
+Agedge_t        *agnxtout(Agraph_t* g, Agedge_t *e);
 int             agdeledge(Agraph_t *g, Agedge_t *e);
 .SS "STRING ATTRIBUTES"
 .P0
@@ -106,6 +106,16 @@ void		*agalloc(Agraph_t *g, size_t request);
 void		*agrealloc(Agraph_t *g, void *ptr, size_t oldsize, size_t newsize);
 void		agfree(Agraph_t *g, void *ptr);
 .P1
+.SS "STRINGS"
+.P0
+char		*agstrdup(Agraph_t *, char *);
+char		*agstrdup_html(Agraph_t *, char *);
+int		aghtmlstr(char *);
+char		*agstrbind(Agraph_t * g, char *);
+int		strfree(Agraph_t *, char *);
+char		*agcanonStr(char *);
+char		*agstrcanon(char *, char *);
+.P1
 .SS "GENERIC OBJECTS"
 .P0
 Agraph_t	*agraphof(void*);
@@ -113,6 +123,7 @@ Agraph_t	*agroot(void*);
 int			agcontains(Agraph_t*, void*);
 char		*agnameof(void*);
 void		agdelete(Agraph_t *g, void *obj);
+int 		agobjkind(void *obj);
 Agrec_t		*AGDATA(void *obj);
 ulong		AGID(void *obj);
 int			AGTYPE(void *obj);
@@ -213,7 +224,7 @@ multi-edge selector name) and returns it if found.
 Otherwise, if \fBcreateflag\fP is boolean true,
 a new edge is created and returned: otherwise
 a nil pointer is returned.  If the \fBname\fP 
-is \f5(char*)0\fP then an anonymous internal
+is NULL, then an anonymous internal
 value is generated. \fBagidedge\fP allows a programmer
 to create an edge by giving its unique 32-bit ID.
 \fBagfstin\fP, \fBagnxtint\fP, \fBagfstout\fP, and 
@@ -260,7 +271,7 @@ objects of the given kind. If \fBg\fP is NIL, the default is
 set for all graphs created subsequently.
 \fBagattrsym\fP is a helper function
 that looks up an attribute for a graph object given as an argument.
-\fBagnxtattr\P permits traversing the list of attributes of
+\fBagnxtattr\fP permits traversing the list of attributes of
 a given type.  If \fBNIL\fP is passed as an argument it gets
 the first attribute, otherwise it returns the next one in
 succession or returns \fBNIL\fP at the end of the list.
@@ -272,9 +283,31 @@ the cost of the string lookup).  \fBagsafeset\fP is a
 convenience function that ensures the given attribute is
 declared before setting it locally on an object.
 
-Note that Libcgraph performs its own storage management of strings.
+.SH "STRINGS"
+Libcgraph performs its own storage management of strings as 
+reference-counted strings.
 The caller does not need to dynamically allocate storage.
-
+.PP
+\fBagstrdup\fP returns a pointer to a reference-counted copy of
+the argument string, creating one if necessary. \fBagstrbind\fP
+returns a pointer to a reference-counted string if it exists, or NULL if not.
+All uses of cgraph strings need to be freed using \fBagstrfree\fP
+in order to correctly maintain the reference count.
+.PP
+\fBagcanonStr\fP returns a pointer to a version of the input string
+canonicalized for output for later re-parsing. This includes quoting
+special characters and keywords. It uses its own internal buffer, so
+the value will be lost on the next call to \fBagcanonStr\fP.
+\fBagstrcanon\fP is an unsafe version of \fBagcanonStr\fP, in which
+the application passes in a buffer as the second argument. Note that
+the buffer may not be used; if the input string is in canonical form,
+the function will just return a pointer to it.
+.PP
+The cgraph parser handles HTML-like strings. These should be 
+indistinguishable from other strings for most purposes. To create
+an HTML-like string, use \fBagstrdup_html\fP. The \fBaghtmlstr\fP
+function can be used to query if a string is an ordinary string or
+an HTML-like string.
 .SH "RECORDS"
 Uninterpreted records may be attached to graphs, subgraphs, nodes,
 and edges for efficient operations on values such as marks, weights,
@@ -387,7 +420,6 @@ if names are known to be digit strings that are directly converted into 32 bit v
 .PP
 \f5name == NULL\fP and \f5createflag == 0\fP: forbidden.
 .PP
-\f5print\fP should return 
 \f5print\fP is allowed to return a pointer to a static buffer;
 a caller must copy its value if needed past subsequent calls.
 \f5NULL\fP should be returned by ID managers that do not map names.
