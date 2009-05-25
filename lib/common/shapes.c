@@ -1326,16 +1326,12 @@ compassPort(node_t* n, boxf* bp, port* pp, char* compass, int sides, inside_t* i
     if (compass && *compass) {
 	switch (*compass++) {
 	case 'e':
-	    if (*compass)
-		rv = 1;
-	    else {
-		p.x = b.UR.x;
-		theta = 0.0;
-		constrain = TRUE;
-		defined = TRUE;
-		clip = FALSE;
-		side = sides & RIGHT;
-	    }
+	    p.x = b.UR.x;
+	    theta = 0.0;
+	    constrain = TRUE;
+	    defined = TRUE;
+	    clip = FALSE;
+	    side = sides & RIGHT;
 	    break;
 	case 's':
 	    p.y = b.LL.y;
@@ -1370,16 +1366,12 @@ compassPort(node_t* n, boxf* bp, port* pp, char* compass, int sides, inside_t* i
 	    }
 	    break;
 	case 'w':
-	    if (*compass)
-		rv = 1;
-	    else {
-		p.x = b.LL.x;
-		theta = M_PI;
-		constrain = TRUE;
-		defined = TRUE;
-		clip = FALSE;
-		side = sides & LEFT;
-	    }
+	    p.x = b.LL.x;
+	    theta = M_PI;
+	    constrain = TRUE;
+	    defined = TRUE;
+	    clip = FALSE;
+	    side = sides & LEFT;
 	    break;
 	case 'n':
 	    p.y = b.UR.y;
@@ -1821,37 +1813,12 @@ static void point_gencode(GVJ_t * job, node_t * n)
 
 static char *reclblp;
 
-static void free_field (field_t* f)
-{
-    int i;
-
-    for (i=0; i<f->n_flds; i++ ) {
-        free_field(f->fld[i]);
-    }
-
-    free(f->id);
-    free_label(f->lp);
-    free(f->fld);
-    free(f);
-}
-
-/* parse_error:
- * Clean up memory allocated in parse_reclbl, then return NULL
- */
-static field_t*
-parse_error (field_t* rv, char* port)
-{
-    free_field (rv);
-    if (port) free (port);
-    return NULL;
-}
-
 static field_t*
 parse_reclbl(node_t * n, int LR, int flag, char *text)
 {
     field_t *fp, *rv = NEW(field_t);
     char *tsp, *psp, *hstsp, *hspsp, *sp;
-    char* tmpport = NULL;
+    char port[SMALLBUF];
     int maxf, cnt, mode, wflag, ishardspace, fi;
     textlabel_t *lbl = ND_label(n);
 
@@ -1875,48 +1842,47 @@ parse_reclbl(node_t * n, int LR, int flag, char *text)
     rv->LR = LR;
     mode = 0;
     fi = 0;
-    hstsp = tsp = text;
+    hstsp = tsp = text, hspsp = psp = &port[0];
     wflag = TRUE;
     ishardspace = FALSE;
     while (wflag) {
 	switch (*reclblp) {
 	case '<':
 	    if (mode & (HASTABLE | HASPORT))
-		return parse_error(rv, tmpport);
+		return NULL;
 	    if (lbl->html) goto dotext;
 	    mode |= (HASPORT | INPORT);
 	    reclblp++;
-	    hspsp = psp = text;
 	    break;
 	case '>':
 	    if (lbl->html) goto dotext;
 	    if (!(mode & INPORT))
-		return parse_error(rv, tmpport);
-	    if (psp > text + 1 && psp - 1 != hspsp && *(psp - 1) == ' ')
-		psp--;
-	    *psp = '\000';
-	    tmpport = strdup(text);
+		return NULL;
 	    mode &= ~INPORT;
 	    reclblp++;
 	    break;
 	case '{':
 	    reclblp++;
 	    if (mode != 0 || !*reclblp)
-		return parse_error(rv, tmpport);
+		return NULL;
 	    mode = HASTABLE;
 	    if (!(rv->fld[fi++] = parse_reclbl(n, NOT(LR), FALSE, text)))
-		return parse_error(rv, tmpport);
+		return NULL;
 	    break;
 	case '}':
 	case '|':
 	case '\000':
 	    if ((!*reclblp && !flag) || (mode & INPORT))
-		return parse_error(rv, tmpport);
+		return NULL;
 	    if (!(mode & HASTABLE))
 		fp = rv->fld[fi++] = NEW(field_t);
-	    if (tmpport) {
-		fp->id = tmpport;
-		tmpport = NULL;
+	    if (mode & HASPORT) {
+		if (psp > &port[0] + 1 &&
+		    psp - 1 != hspsp && *(psp - 1) == ' ')
+		    psp--;
+		*psp = '\000';
+		fp->id = strdup(&port[0]);
+		hspsp = psp = &port[0];
 	    }
 	    if (!(mode & (HASTEXT | HASTABLE)))
 		mode |= HASTEXT, *tsp++ = ' ';
@@ -1959,7 +1925,7 @@ parse_reclbl(node_t * n, int LR, int flag, char *text)
 	default:
 dotext :
 	    if ((mode & HASTABLE) && *reclblp != ' ')
-		return parse_error(rv, tmpport);
+		return NULL;
 	    if (!(mode & (INTEXT | INPORT)) && *reclblp != ' ')
 		mode |= (INTEXT | HASTEXT);
 	    if (mode & INTEXT) {
@@ -1970,7 +1936,7 @@ dotext :
 		    hstsp = tsp - 1;
 	    } else if (mode & INPORT) {
 		if (!(*reclblp == ' ' && !ishardspace &&
-		      (psp == text || *(psp - 1) == ' ')))
+		      (psp == &port[0] || *(psp - 1) == ' ')))
 		    *psp++ = *reclblp;
 		if (ishardspace)
 		    hspsp = psp - 1;
@@ -2183,6 +2149,20 @@ static void record_init(node_t * n)
     ND_shape_info(n) = (void *) info;
 }
 
+static void free_field (field_t* f)
+{
+    int i;
+
+    for (i=0; i<f->n_flds; i++ ) {
+        free_field(f->fld[i]);
+    }
+
+    free(f->id);
+    free_label(f->lp);
+    free(f->fld);
+    free(f);
+}
+
 static void record_free(node_t * n)
 {
     field_t *p = ND_shape_info(n);
@@ -2378,7 +2358,7 @@ static void record_gencode(GVJ_t * job, node_t * n)
 static shape_desc **UserShape;
 static int N_UserShape;
 
-shape_desc *find_user_shape(char *name)
+shape_desc *find_user_shape(const char *name)
 {
     int i;
     if (UserShape) {

@@ -113,12 +113,11 @@ extern "C" {
     extern void endpath(path *, Agedge_t *, int, pathend_t *, boolean);
     extern void epsf_init(node_t * n);
     extern void epsf_free(node_t * n);
-    extern shape_desc *find_user_shape(char *);
+    extern shape_desc *find_user_shape(const char *);
     extern void free_line(textpara_t *);
     extern void free_label(textlabel_t *);
     extern void getdouble(graph_t * g, char *name, double *result);
     extern splines *getsplinepoints(edge_t * e);
-    extern void gv_fixLocale (int set);
     extern void gv_free_splines(edge_t * e);
     extern void gv_cleanup_edge(Agedge_t * e);
     extern void gv_cleanup_node(Agnode_t * n);
