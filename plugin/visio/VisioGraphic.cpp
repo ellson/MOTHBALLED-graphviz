@@ -16,6 +16,15 @@
 
 #include <algorithm>
 
+#ifdef _MSC_VER
+#include <cfloat>
+#define isfinite _finite
+#endif
+
+#ifdef __GNUC__
+#include <cmath>
+#endif
+
 #include "VisioGraphic.h"
 
 #include "gvcjob.h"
@@ -23,6 +32,8 @@
 
 namespace Visio
 {
+	using namespace std;
+	
 	static const float INCHES_PER_POINT = 1.0 / 72.0;
 	
 	Fill::Fill(unsigned char red, unsigned char green, unsigned char blue, double transparency):
@@ -199,9 +210,9 @@ namespace Visio
 		{
 			double xscale = 1.0 / (last.x - first.x);
 			double yscale = 1.0 / (last.y - first.y);
-			if (isinf(xscale))
+			if (isfinite(xscale) == 0)
 				xscale = 0.0;
-			if (isinf(yscale))
+			if (isfinite(yscale) == 0)
 				yscale = 0.0;
 				
 			gvputs(job, "<MoveTo>");
@@ -225,7 +236,7 @@ namespace Visio
 				gvprintf(job, "<Y F='Height*%f'/>", (_points[_pointCount - 1].y - first.y) * yscale);
 				
 				/* Knot[P-1] */
-				gvprintf(job, "<A>%d</A>", std::max(_pointCount - 4, 0));
+				gvprintf(job, "<A>%d</A>", max(_pointCount - 4, 0));
 				
 				/* Ctl[P-1].Weight */
 				gvputs(job, "<B>1</B>");	
@@ -237,13 +248,13 @@ namespace Visio
 				gvputs(job, "<D>1</D>");	
 				
 				/* Knot[P], Degree, XType, YType */
-				gvprintf(job, "<E F='NURBS(%d, 3, 0, 0", std::max(_pointCount - 3, 0));				
+				gvprintf(job, "<E F='NURBS(%d, 3, 0, 0", max(_pointCount - 3, 0));				
 				for (int i = 1; i < _pointCount; ++i)
 				/* Ctl[i].X, Ctl[i].Y, Knot[i], Ctl[i].Weight */
 					gvprintf(job, ", %f, %f, %d, 1",					
 							 (_points[i].x - first.x) * xscale,
 							 (_points[i].y - first.y) * yscale,
-							 std::max(i - 3, 0));	
+							 max(i - 3, 0));	
 				gvputs(job, ")'/>");
 				
 				gvputs(job, "</NURBSTo>\n");
@@ -298,9 +309,9 @@ namespace Visio
 			/* compute scale. if infinite, scale by 0 instead */
 			double xscale = 1.0 / (last.x - first.x);
 			double yscale = 1.0 / (last.y - first.y);
-			if (isinf(xscale))
+			if (isfinite(xscale) == 0)
 				xscale = 0.0;
-			if (isinf(yscale))
+			if (isfinite(yscale) == 0)
 				yscale = 0.0;
 					
 			gvputs(job, "<MoveTo>");
@@ -350,9 +361,9 @@ namespace Visio
 			/* compute scale. if infinite, scale by 0 instead */
 			double xscale = 1.0 / (last.x - first.x);
 			double yscale = 1.0 / (last.y - first.y);
-			if (isinf(xscale))
+			if (isfinite(xscale) == 0)
 				xscale = 0.0;
-			if (isinf(yscale))
+			if (isfinite(yscale) == 0)
 				yscale = 0.0;
 					
 			gvputs(job, "<MoveTo>");

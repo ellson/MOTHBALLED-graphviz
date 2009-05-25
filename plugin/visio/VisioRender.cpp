@@ -14,6 +14,15 @@
  *              AT&T Research, Florham Park NJ             *
  **********************************************************/
 
+#ifdef _MSC_VER
+#include <cfloat>
+#define isfinite _finite
+#endif
+
+#ifdef __GNUC__
+#include <cmath>
+#endif
+
 #include "VisioRender.h"
 
 #include "const.h"
@@ -23,6 +32,8 @@
 
 namespace Visio
 {
+	using namespace std;
+	
 	static const float INCHES_PER_POINT = 1.0 / 72.0;
 	static const float ZERO_ADJUST = 0.125;
 	
@@ -304,9 +315,9 @@ namespace Visio
 		/* compute scale. if infinite, scale by 0 instead */
 		double xscale = 1.0 / (outerBounds.UR.x - outerBounds.LL.x);
 		double yscale = 1.0 / (outerBounds.UR.y - outerBounds.LL.y);
-		if (isinf(xscale))
+		if (isfinite(xscale) == 0)
 			xscale = 0.0;
-		if (isinf(yscale))
+		if (isfinite(yscale) == 0)
 			yscale = 0.0;
 		
 		gvprintf(job, "<Shape ID='%d' Type='Shape'>\n", ++_shapeId);

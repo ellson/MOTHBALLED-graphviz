@@ -191,6 +191,8 @@ gvdevice_features_t device_features_vdx = {
     {72.,72.},			/* default dpi */
 };
 
+extern "C"
+{
 gvplugin_installed_t gvrender_vdx_types[] = {
     {0, "visio", 1, &vdxgen_engine, &render_features_vdx},
     {0, NULL, 0, NULL, NULL}
@@ -200,3 +202,4 @@ gvplugin_installed_t gvdevice_vdx_types[] = {
     {FORMAT_VDX, "vdx:visio", 1, NULL, &device_features_vdx},
     {0, NULL, 0, NULL, NULL}
 };
+}
