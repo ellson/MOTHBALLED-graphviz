@@ -33,6 +33,11 @@
 typedef enum { FORMAT_VML, FORMAT_VMLZ, } format_type;
 
 unsigned int  graphHeight,graphWidth;
+
+#ifndef HAVE_STRCASECMP
+extern int strcasecmp(const char *s1, const char *s2);
+#endif
+
 /*  this is a direct copy fromlib/common/labels.c  */
 static int xml_isentity(char *s)
 {

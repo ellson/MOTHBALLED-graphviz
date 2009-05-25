@@ -24,6 +24,9 @@
 #if HAVE_SYS_MMAN_H
 #include <sys/mman.h>
 #endif
+#ifdef _MSC_VER
+#include <io.h>
+#endif
 
 #include "gvplugin_loadimage.h"
 #include "agxbuf.h"

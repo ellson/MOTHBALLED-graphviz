@@ -53,6 +53,10 @@ static char *sdasharray = "5,2";
 /* SVG dot array */
 static char *sdotarray = "1,5";
 
+#ifndef HAVE_STRCASECMP
+extern int strcasecmp(const char *s1, const char *s2);
+#endif
+
 static void svg_bzptarray(GVJ_t * job, pointf * A, int n)
 {
     int i;
