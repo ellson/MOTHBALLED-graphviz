@@ -33,6 +33,10 @@
 
 #include	"const.h"
 
+#ifndef HAVE_STRCASECMP
+extern int strcasecmp(const char *s1, const char *s2);
+#endif
+
 /*
  * Define an apis array of name strings using an enumerated api_t as index.
  * The enumerated type is defined gvplugin.h.  The apis array is
@@ -293,16 +297,17 @@ gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, const char *str)
 	    continue;  /* types empty or mismatched */
  	if (dep && reqdep && strcmp(dep, reqdep))
 	    continue;  /* dependencies not empty, but mismatched */
-	if (! reqpkg)
-	    break; /* found with no packagename constraints */
-	if (strcmp(reqpkg, (*pnext)->package->name) == 0)
-	    break;  /* found with required matching packagname */
+	if (! reqpkg || strcmp(reqpkg, (*pnext)->package->name) == 0)
+	{
+		/* found with no packagename constraints, or with required matching packagname */
+    
+		if (dep && (apidep != api)) /* load dependency if needed, continue if can't find */
+			if (! (gvplugin_load(gvc, apidep, dep)))
+				continue;
+		break;
+    }
     }
     rv = *pnext;
-
-    if (dep && (apidep != api)) /* load dependency if needed */
-	if (! (gvplugin_load(gvc, apidep, dep)))
-	    rv = NULL;
 
     if (rv && rv->typeptr == NULL) {
 	library = gvplugin_library_load(gvc, rv->package->path);
@@ -462,7 +467,7 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
     Agsym_t *a;
     gvplugin_package_t *package;
     gvplugin_available_t **pnext;
-    char bufa[100], *buf1, *buf2, bufb[100], *p, *q, *t;
+    char bufa[100], *buf1, *buf2, bufb[100], *p, *q;
     int api, found;
 
 #ifndef WITH_CGRAPH
@@ -542,25 +547,11 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 	    for (pnext = &(gvc->apis[api]); *pnext; pnext = &((*pnext)->next)) {
 		if ((*pnext)->package == package) {
 		    found++;
-		    t = q = strdup((*pnext)->typestr);
+		    q = strdup((*pnext)->typestr);
 		    if ((p = strchr(q, ':'))) *p++ = '\0';
-		    /* Now p = renderer, e.g. "gd"
-		     * and q = device, e.g. "png"
-		     * or  q = imageloader, e.g. "png" */
 		    switch (api) {
 		    case API_device:
 		    case API_loadimage:
-
-		        /* hack for aliases */
-		        if (!strncmp(q,"jp",2))
-			    q = "jpeg/jpe/jpg";
-		        else if (!strncmp(q,"tif",3))
-			    q = "tiff/tif";
-		        else if (!strcmp(q,"x11") || !strcmp(q,"xlib"))
-			    q = "x11/xlib";
-		        else if (!strcmp(q,"dot") || !strcmp(q,"gv"))
-			    q = "gv/dot";
-
 		        strcpy(buf2, q);
 #ifndef WITH_CGRAPH
 		        n = agnode(ssg, bufa);
@@ -615,7 +606,7 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 		    default:
 			break;
 		    }
-		    free(t);
+		    free(q);
 		}
 	    }
 	    if (!found)
@@ -628,9 +619,9 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
     }
 
 #ifndef WITH_CGRAPH
-    ssg = agsubg(g, "output_formats");
+    ssg = agsubg(g, "o_formats");
 #else
-    ssg = agsubg(g, "output_formats", 1);
+    ssg = agsubg(g, "o_formats", 1);
 #endif
     a = agfindgraphattr(ssg, "rank");
 #ifndef WITH_CGRAPH
@@ -648,22 +639,8 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 	    buf2 = bufa + strlen(bufa);
 	    for (pnext = &(gvc->apis[api]); *pnext; pnext = &((*pnext)->next)) {
 		if ((*pnext)->package == package) {
-		    t = q = strdup((*pnext)->typestr);
+		    q = strdup((*pnext)->typestr);
 		    if ((p = strchr(q, ':'))) *p++ = '\0';
-		    /* Now p = renderer, e.g. "gd"
-		     * and q = device, e.g. "png"
-		     * or  q = imageloader, e.g. "png" */
-
-		    /* hack for aliases */
-		    if (!strncmp(q,"jp",2))
-			q = "jpeg/jpe/jpg";
-		    else if (!strncmp(q,"tif",3))
-			q = "tiff/tif";
-		    else if (!strcmp(q,"x11") || !strcmp(q,"xlib"))
-			q = "x11/xlib";
-		    else if (!strcmp(q,"dot") || !strcmp(q,"gv"))
-			q = "gv/dot";
-
 		    switch (api) {
 		    case API_device:
 		        strcpy(buf2, q);
@@ -672,7 +649,7 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 #else
 			n = agnode(g, bufa, 1);
 #endif
-		        strcpy(bufb, "output_");
+		        strcpy(bufb, "o_");
 		        strcat(bufb, q);
 			m = agfindnode(ssg, bufb);
 			if (!m) {
@@ -698,19 +675,12 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 			if (p && *p) {
 			    strcpy(bufb, "render_");
 			    strcat(bufb, p);
-			    m = agfindnode(ssg, bufb);
-			    if (!m)
 #ifndef WITH_CGRAPH
-			        m = agnode(g, bufb);
+			    m = agnode(g, bufb);
+			    agedge(g, m, n);
 #else
-			        m = agnode(g, bufb, 1);
-#endif
-			    e = agfindedge(g, m, n);
-			    if (!e)
-#ifndef WITH_CGRAPH
-			        e = agedge(g, m, n);
-#else
-			        e = agedge(g, m, n, NULL, 1);
+			    m = agnode(g, bufb, 1);
+			    agedge(g, m, n, NULL, 1);
 #endif
 			}
 			break;
@@ -721,7 +691,7 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 #else
 			n = agnode(g, bufa, 1);
 #endif
-		        strcpy(bufb, "input_");
+		        strcpy(bufb, "i_");
 		        strcat(bufb, q);
 			m = agfindnode(g, bufb);
 			if (!m) {
@@ -746,25 +716,18 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 #endif
 			strcpy(bufb, "render_");
 			strcat(bufb, p);
-			m = agfindnode(g, bufb);
-			if (!m)
 #ifndef WITH_CGRAPH
-			    m = agnode(g, bufb); 
+			m = agnode(g, bufb); 
+			agedge(g, n, m);
 #else
-			    m = agnode(g, bufb, 1); 
-#endif
-			e = agfindedge(g, n, m);
-			if (!e)
-#ifndef WITH_CGRAPH
-			    e = agedge(g, n, m);
-#else
-			    e = agedge(g, n, m, NULL, 1);
+			m = agnode(g, bufb, 1); 
+			agedge(g, n, m, NULL, 1);
 #endif
 			break;
 		    default:
 			break;
 		    }
-		    free(t);
+		    free(q);
 		}
 	    }
 	}
