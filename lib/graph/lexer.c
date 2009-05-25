@@ -510,7 +510,7 @@ char *aglasterr()
     return buf;
 }
 
-static int agerr_va(agerrlevel_t level, char *fmt, va_list args)
+static int agerr_va(agerrlevel_t level, const char *fmt, va_list args)
 {
     agerrlevel_t lvl;
 
@@ -547,7 +547,7 @@ int agerr(agerrlevel_t level, char *fmt, ...)
     return agerr_va(level, fmt, args);
 }
 
-void agerrorf(char *fmt, ...)
+void agerrorf(const char *fmt, ...)
 {
     va_list args;
 
