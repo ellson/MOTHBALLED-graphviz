@@ -32,7 +32,7 @@
 #include "gvplugin_loadimage.h"
 
 
-extern shape_desc *find_user_shape(char *);
+extern shape_desc *find_user_shape(const char *);
 
 static Dict_t *ImageDict;
 
