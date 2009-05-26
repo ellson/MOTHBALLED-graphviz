@@ -358,7 +358,6 @@ void drawtopfishnodes(topview * t)
 		if ((gg[v].active_level == 0) &&(v==t->fs->foci_nodes[0]))*/
 
 
-
 	//drawing nodes
 	glPointSize(7);
 	level=0;

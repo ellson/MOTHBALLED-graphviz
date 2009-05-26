@@ -29,4 +29,5 @@ void changetopfishfocus(topview * t, float *x, float *y,
 void refresh_old_values(topview* t);
 void get_interpolated_coords(double x0,double y0,double x1,double y1,int fr,int total_fr, double* x,double* y);
 int get_active_frame(topview* t);
+float set_gl_dot_size(topview * t);
 #endif
