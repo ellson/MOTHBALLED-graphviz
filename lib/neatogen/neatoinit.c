@@ -654,6 +654,12 @@ static void translate(Agraph_t * g, pos_edge posEdges)
  * clusters, edges and labels. If certain position information
  * is missing, init_nop will use a standard neato technique to
  * supply it.
+ *
+ * If adjust is false, init_nop does nothing but initialize all
+ * of the basic graph information. No tweaking of positions or 
+ * filling in edge splines is done.
+ *
+ * Returns 0 on success.
  */
 int init_nop(Agraph_t * g, int adjust)
 {
@@ -662,6 +668,7 @@ int init_nop(Agraph_t * g, int adjust)
     pos_edge posEdges;		/* How many edges have spline info */
     attrsym_t *G_lp = agfindgraphattr(g, "lp");
     attrsym_t *G_bb = agfindgraphattr(g, "bb");
+    int didAdjust = 0;  /* Have nodes been moved? */
 
     /* If G_bb not defined, define it */
     if (!G_bb)
@@ -682,13 +689,20 @@ int init_nop(Agraph_t * g, int adjust)
     nop_init_graphs(g, G_lp, G_bb);
     posEdges = nop_init_edges(g);
 
-    if (adjust && Nop == 1)
-	adjustNodes(g);
+    if (adjust && (Nop == 1))
+	didAdjust = adjustNodes(g);
+
+    if (didAdjust) {
+	if (GD_label(g)) GD_label(g)->set = FALSE;
+/* FIX: 
+ *   - if nodes are moved, clusters are no longer valid.
+ */
+    }
 
     /* If g does not have a good "bb" attribute or we adjusted the nodes, 
      * compute it. 
      */
-    if (!chkBB(g, G_bb) || (adjust && Nop == 1))
+    if (!chkBB(g, G_bb) || didAdjust)
 	compute_bb(g);
 
     /* At this point, all bounding boxes should be correctly defined.
@@ -731,7 +745,7 @@ static int neatoModel(graph_t * g)
     char *p = agget(g, "model");
     char c;
 
-    if (!p || (!(c = *p)))
+    if (!p || (!(c = *p)))    /* if p is NULL or "" */
 	return MODEL_SHORTPATH;
     if ((c == 'c') && streq(p, "circuit"))
 	return MODEL_CIRCUIT;
@@ -740,6 +754,20 @@ static int neatoModel(graph_t * g)
 	    return MODEL_SUBSET;
 	else if (streq(p, "shortpath"))
 	    return MODEL_SHORTPATH;
+    }
+    if ((c == 'm') && streq(p, "mds")) {
+#ifndef WITH_CGRAPH
+	if (agindex(g->root->proto->e, "len") >= 0)
+#else /* WITH_CGRAPH */
+	if (agattr(g, AGEDGE, "len", 0))
+#endif /* WITH_CGRAPH */
+	    return MODEL_MDS;
+	else {
+	    agerr(AGWARN,
+	        "edges in graph %s have no len attribute. Hence, the mds model\n", agnameof(g));
+	    agerr(AGPREV, "is inappropriate. Reverting to the shortest path model.\n");
+	    return MODEL_SHORTPATH;
+	}
     }
     agerr(AGWARN,
 	  "Unknown value %s for attribute \"model\" in graph %s - ignored\n",
@@ -1089,7 +1117,7 @@ setSeed (graph_t * G, int dflt, long* seedp)
 	long seed;
 	/* Check for seed value */
 	if (!isdigit(*(unsigned char *)p) || sscanf(p, "%ld", &seed) < 1) {
-#if defined(MSWIN32) || defined(WIN32)
+#ifdef MSWIN32
 	    seed = (unsigned) time(NULL);
 #else
 	    seed = (unsigned) getpid() ^ (unsigned) time(NULL);
@@ -1157,8 +1185,8 @@ void dumpData(graph_t * g, vtx_data * gp, int nv, int ne)
 /* majorization:
  * Solve stress using majorization.
  * Old neato attributes to incorporate:
- *  weight?
- * model will be MODE_MAJOR, MODE_HIER or MODE_IPSEP
+ *  weight
+ * mode will be MODE_MAJOR, MODE_HIER or MODE_IPSEP
  */
 static void
 majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int steps)
@@ -1309,6 +1337,27 @@ static void subset_model(Agraph_t * G, int nG)
     freeGraphData(gp);
 }
 
+/* mds_model:
+ * Assume the matrix already contains shortest path values.
+ * Use the actual lengths provided the input for edges.
+ */
+static void mds_model(graph_t * g, int nG)
+{
+    long i, j;
+    node_t *v;
+    edge_t *e;
+
+    for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
+	for (e = agfstout(g, v); e; e = agnxtout(g, e)) {
+	    i = AGID(agtail(e));
+	    j = AGID(aghead(e));
+	    if (i == j)
+		continue;
+	    GD_dist(g)[i][j] = GD_dist(g)[j][i] = GD_dist(e);
+	}
+    }
+}
+
 /* kkNeato:
  * Solve using gradient descent a la Kamada-Kawai.
  */
@@ -1328,6 +1377,9 @@ static void kkNeato(Agraph_t * g, int nG, int model)
 	    agerr(AGPREV, "the graph into connected components.\n");
 	    shortest_path(g, nG);
 	}
+    } else if (model == MODEL_MDS) {
+	shortest_path(g, nG);
+	mds_model(g, nG);
     } else
 	shortest_path(g, nG);
     initial_positions(g, nG);
@@ -1396,6 +1448,7 @@ void neato_layout(Agraph_t * g)
     int layoutMode;
     int model;
     pack_mode mode;
+    pack_info pinfo;
 
     if (Nop) {
 	int save = PSinputscale;
@@ -1413,7 +1466,7 @@ void neato_layout(Agraph_t * g)
 	neato_init_graph(g);
 	layoutMode = neatoMode(g);
 	model = neatoModel(g);
-	mode = getPackMode(g, l_undef);
+	mode = getPackModeInfo (g, l_undef, &pinfo);
 	Pack = getPack(g, -1, CL_OFFSET);
 	/* pack if just packmode defined. */
 	if (mode == l_undef) {
@@ -1422,7 +1475,7 @@ void neato_layout(Agraph_t * g)
 	     */
 	    if ((Pack < 0) && layoutMode)
 		Pack = CL_OFFSET;
-	    mode = l_node;
+	    pinfo.mode = l_node;
 	} else if (Pack < 0)
 	    Pack = CL_OFFSET;
 	if (Pack >= 0) {
@@ -1430,7 +1483,6 @@ void neato_layout(Agraph_t * g)
 	    graph_t **cc;
 	    int n_cc;
 	    int i;
-	    pack_info pinfo;
 	    boolean pin;
 
 	    cc = pccomps(g, &n_cc, cc_pfx, &pin);
@@ -1449,8 +1501,6 @@ void neato_layout(Agraph_t * g)
 		} else
 		    bp = 0;
 		pinfo.margin = Pack;
-		pinfo.doSplines = 0;
-		pinfo.mode = mode;
 		pinfo.fixed = bp;
 		packGraphs(n_cc, cc, 0, &pinfo);
 		if (bp)
