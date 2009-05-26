@@ -149,6 +149,8 @@ int main(int argc, char *argv[])
 {
     GdkGLConfig *glconfig;
     char* initFileName;
+	glutInit(&argc,argv);
+
 
     smyrnaDir = getenv ("SMYRNA_PATH");
     if (!smyrnaDir) {
