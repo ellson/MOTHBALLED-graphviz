@@ -48,5 +48,4 @@ extern void getcolorfromschema(colorschemaset* sc,float l,float maxl,RGBColor* c
  /* helper functions */
 extern int setGdkColor(GdkColor * c, char *color);
 extern char *get_attribute_value(char *attr, ViewInfo * view, Agraph_t * g);
-extern void apply_gvpr(Agraph_t* g,char* prog);
 #endif
