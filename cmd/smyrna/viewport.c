@@ -33,8 +33,6 @@
 #include "memory.h"
 #include "topviewsettings.h"
 #include "md5.h"
-#include "gvprpipe.h"
-
 
 
   /* Forward declarations */
@@ -589,49 +587,6 @@ static void clear_graph(Agraph_t * graph)
 }
 
 #endif
-/* create_xdot_for_graph:
- * Returns temp filename for output data
- * or NULL on error.
- * Calling program needs to remove file :
- *    fname = create_xdot_for_graph (...)
- *       ... use fname ...
- *    unlink (fname);
- * Uses the mkTemp function to get temp names.
- * N.B. The returned file name is a static buffer.
- *
- */
-#define FMT "%s%s -Txdot%s %s -o%s"
-
-#ifdef WIN32
-#define DOTTEMP "c:\\tmp\\_dotXXXXXX"
-#define XDOTTEMP "c:\\tmp\\_xdotXXXXXX"
-
-#define mkTemp(b,s) (_mktemp_s(b,s))
-
-#else
-#define DOTTEMP "/tmp/_dotXXXXXX"
-#define XDOTTEMP "/tmp/_xdotXXXXXX"
-
-#ifdef UNUSED
-/* mkTemp:
- * Given a template string buf of the form abcdXXXXX,
- * and its size bufsz, replace the X's by characters creating
- * a unique file name.
- * Return 0 on success, non-zero on failure.
- */
-static int
-mkTemp (char* buf, size_t bufsz)
-{
-    int rv = mkstemp (buf);
-    if (rv < 0) return -1;
-    else {
-	close (rv);
-	return 0;
-    }
-}
-#endif
-
-#endif
 
 static Agraph_t *loadGraph(char *filename)
 {
@@ -1066,15 +1021,6 @@ void please_dont_wait(void)
     gtk_widget_hide(glade_xml_get_widget(xml, "frmWait"));
 }
 
-void apply_gvpr(Agraph_t* g,char* prog)
-{
-	Agraph_t* tempg;
-	tempg=exec_gvpr(prog,g);
-	if (tempg)
-		add_graph_to_viewport(tempg);
-	else
-		printf ("gvpr failed!\n");
-}
 float interpol(float minv,float maxv,float minc,float maxc,float x)
 {
 	return ((x-minv)*(maxc-minc)/(maxv-minv)+minc);
