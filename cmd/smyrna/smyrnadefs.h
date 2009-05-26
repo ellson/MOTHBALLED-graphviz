@@ -57,8 +57,10 @@
 #define MM_FISHEYE_MAGNIFIER	21
 #define GLOBAL_Z_OFFSET			0.001
 
-#define MAX_ZOOM	-0.000033
-#define MIN_ZOOM	-1500.00000
+#define MAX_ZOOM	500
+#define MIN_ZOOM	0.005
+#define ZOOM_STEPS	100
+
 #define ZOOM_STEP	0.5
 #define DEG2RAD  G_PI/180
 
@@ -71,6 +73,7 @@
 #define NODE_CIRCLE_LIMIT	-7.3
 
 #define GL_DOTSIZE_CONSTANT -18
+#define DOUBLE_IT 10.00
 
 
 #define SPHERE_SLICE_COUNT 6
@@ -321,6 +324,7 @@ typedef struct {
 	float minedgelen;
 	float init_node_size;	//raster size of node
 	float init_zoom;
+	float fitin_zoom;
 } topview;
 
 enum {
