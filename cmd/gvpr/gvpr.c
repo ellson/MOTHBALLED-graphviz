@@ -199,7 +199,7 @@ static char *resolve(char *arg)
     Sfio_t *fp;
     size_t sz;
 
-#ifdef WIN32
+#ifdef WIN32_DLL
     if (!pathisrelative (arg))
 #else
     if (strchr(arg, '/'))
