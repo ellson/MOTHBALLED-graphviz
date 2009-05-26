@@ -329,3 +329,4 @@ gvferror
 common_init_node_opt
 getPackInfo
 getPackModeInfo
+parsePackModeInfo
