@@ -9,7 +9,8 @@
 
 gboolean redraw = FALSE;
 
-int glmotion_main(ViewInfo * v,GdkEventMotion * event,GtkWidget * widget)
+
+void glmotion_main(ViewInfo * v,GdkEventMotion * event,GtkWidget * widget)
 {
 	
 	redraw = FALSE;
@@ -55,90 +56,73 @@ int glmotion_main(ViewInfo * v,GdkEventMotion * event,GtkWidget * widget)
 	gdk_window_invalidate_rect(widget->window, &widget->allocation,
 				   FALSE);
 
-	return 1;
 }
-int glmotion_zoom(ViewInfo * v)
+void glmotion_zoom_inc(int zoomin)
 {
+	float inc_value;
+	inc_value=(float)(view->Topview->fitin_zoom * MAX_ZOOM*-1-view->Topview->fitin_zoom *MIN_ZOOM*-1)/ZOOM_STEPS;
+	if (zoomin) /*zooming in , zoom value should be decreased*/
+		graph_zoom(view->zoom-view->zoom*0.25 );
+	else
+		graph_zoom(view->zoom+view->zoom*0.25); /*zoom out*/
+	glexpose();
 
+}
+/*real zoom in out is done here, all other functions send this one what they desired, it is not guranteed,*/
+void graph_zoom(float real_zoom)
+{
+	float old_zoom;
 
+	if (view->active_camera == -1)
+		old_zoom = view->zoom;
+	else
+		old_zoom = view->cameras[view->active_camera]->r;
 
-/*		if (view->active_camera == -1) {
-			old_zoom = view->zoom;
-			real_zoom = view->zoom + dx / 10 * (view->zoom * -1 / 20);
-		}
-		else
-		{
-			old_zoom = view->cameras[view->active_camera]->r;
-			real_zoom =
-			(view->cameras[view->active_camera]->r +
-			dx / 10 * (view->cameras[view->active_camera]->r / 20)) *
-			-1;
-		}
+	if (real_zoom < view->Topview->fitin_zoom * MAX_ZOOM)
+		real_zoom = (float) view->Topview->fitin_zoom * MAX_ZOOM;
+	if (real_zoom > view->Topview->fitin_zoom *MIN_ZOOM)
+		real_zoom = (float) view->Topview->fitin_zoom *MIN_ZOOM;
+	if(view->active_camera==-1)
+		view->zoom = real_zoom;
+	else
+		view->cameras[view->active_camera]->r=real_zoom*-1;
+	/*adjust pan values*/
+	view->panx = old_zoom * view->panx / real_zoom;
+	view->pany = old_zoom * view->pany / real_zoom;
 
-		if (real_zoom > MAX_ZOOM)
-		    real_zoom = (float) MAX_ZOOM;
-		if (real_zoom < MIN_ZOOM)
-			real_zoom = (float) MIN_ZOOM;
+	/*set label to new zoom value */
+#if 0
+	xx = ((float) 100.0 - (float) 1.0) * (v->zoom -
+		     (float) MIN_ZOOM) / ((float) MAX_ZOOM - (float) MIN_ZOOM) + (float) 1.0;
+	sprintf(buf, "%i", (int) xx);
+#endif
+/*	if (v->Topview->customptr)
+		glCompLabelSetText((glCompLabel *) v->Topview->customptr, buf);*/
+}
 
-		if (view->active_camera == -1)
-		    view->zoom = real_zoom;
-		else {
-			view->cameras[view->active_camera]->r = real_zoom * -1;
-
-			}
-		view->panx = old_zoom * view->panx / real_zoom;
-		view->pany = old_zoom * view->pany / real_zoom;
-
-		x = ((float) 100.0 - (float) 1.0) * (view->zoom -
-					     (float) MIN_ZOOM) /
-			((float) MAX_ZOOM - (float) MIN_ZOOM) + (float) 1.0;
-		sprintf(buf, "%i", (int) x);
-		glCompLabelSetText((glCompLabel *) view->Topview->customptr, buf);
-		redraw = TRUE;*/
-
-
-
+void glmotion_zoom(ViewInfo * v)
+{
 
 
 
 
 	char buf[256];
 
-	float real_zoom,old_zoom,xx;
+	float real_zoom,xx;
 	if (view->active_camera == -1) {
-			old_zoom = view->zoom;
 			real_zoom = view->zoom + view->mouse.dx / 10 * (view->zoom * -1 / 20);
 	}
 	else
 	{
-		old_zoom = view->cameras[view->active_camera]->r;
 		real_zoom =
 			(view->cameras[view->active_camera]->r +
 			view->mouse.dx / 10 * (view->cameras[view->active_camera]->r / 20)) *
 			-1;
 	}
+	graph_zoom(real_zoom);
 
-	if (real_zoom > MAX_ZOOM)
-		real_zoom = (float) MAX_ZOOM;
-	if (real_zoom < MIN_ZOOM)
-		real_zoom = (float) MIN_ZOOM;
-	if(v->active_camera==-1)
-		v->zoom = real_zoom;
-	else
-		v->cameras[v->active_camera]->r=real_zoom*-1;
-	/*adjust pan values*/
-	view->panx = old_zoom * view->panx / real_zoom;
-	view->pany = old_zoom * view->pany / real_zoom;
-
-	/*set label to new zoom value */
-	xx = ((float) 100.0 - (float) 1.0) * (v->zoom -
-		     (float) MIN_ZOOM) / ((float) MAX_ZOOM - (float) MIN_ZOOM) + (float) 1.0;
-	sprintf(buf, "%i", (int) xx);
-/*	if (v->Topview->customptr)
-		glCompLabelSetText((glCompLabel *) v->Topview->customptr, buf);*/
-	return 1;
 }
-int glmotion_pan(ViewInfo * v)
+void glmotion_pan(ViewInfo * v)
 {
 		float gldx,gldy;
 		if(v->active_camera ==-1)
@@ -159,9 +143,8 @@ int glmotion_pan(ViewInfo * v)
 		}
 
 		redraw = TRUE;
-		return 1;
 }
-int glmotion_adjust_pan(ViewInfo* v,float panx,float pany)
+void glmotion_adjust_pan(ViewInfo* v,float panx,float pany)
 {
 		float gldx,gldy;
 		if(v->active_camera ==-1)
@@ -182,11 +165,9 @@ int glmotion_adjust_pan(ViewInfo* v,float panx,float pany)
 		}
 
 		redraw = TRUE;
-		return 1;
-
 
 }
-int glmotion_rotate(ViewInfo * v)
+void glmotion_rotate(ViewInfo * v)
 {
 	if(v->mouse.rotate_axis==MOUSE_ROTATE_XY)
 	{
@@ -206,6 +187,4 @@ int glmotion_rotate(ViewInfo * v)
 		v->cameras[v->active_camera]->anglez-=v->mouse.dx/7;
 		v->cameras[v->active_camera]->anglez-=v->mouse.dy/7;
 	}
-
-	return 1;
 }

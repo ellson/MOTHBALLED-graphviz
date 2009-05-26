@@ -338,7 +338,7 @@ void preparetopview(Agraph_t * g, topview * t)
 }
 
 
-static float set_gl_dot_size(topview * t)
+float set_gl_dot_size(topview * t)
 {
 	static float sizevc;
 	if (view->active_camera==-1)
@@ -363,7 +363,6 @@ static int begintopviewnodes(Agraph_t* g)
 	{
 	case 0:
 		glPointSize((GLfloat)set_gl_dot_size(view->Topview));		
-//		glPointSize((GLfloat)0.00);		
 		glEnable(GL_POINT_SMOOTH);
 		glBegin(GL_POINTS);
 		break;
@@ -1373,19 +1372,10 @@ static void menu_click_fisheye_magnifier(void *p)
 
 static void menu_click_zoom_minus(void *p)
 {
-    if ((view->zoom - (float)ZOOM_STEP) > (float)MIN_ZOOM)
-	view->zoom = view->zoom - (float)ZOOM_STEP;
-    else
-	view->zoom = (float)MIN_ZOOM;
 }
 
 static void menu_click_zoom_plus(void *p)
 {
-    if ((view->zoom + (float)ZOOM_STEP) < (float)MAX_ZOOM)
-	view->zoom = view->zoom + (float)ZOOM_STEP;
-    else
-	view->zoom = (float) MAX_ZOOM;
-
 }
 
 #ifdef UNUSED
