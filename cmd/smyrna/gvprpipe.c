@@ -18,12 +18,15 @@
 #include <stdio.h> 
 
 #ifdef WIN32
-#define BUFSIZE 4096 
 #include <windows.h> 
 #include <tchar.h>
 #include <strsafe.h>
+#else
+#include <stdlib.h>
+#include <unistd.h>
 #endif
 
+#include <viewport.h> 
 #include <const.h> 
 #include <agxbuf.h> 
 
@@ -170,8 +173,10 @@ CreateChildProcess(TCHAR* szCmdline,HANDLE g_hChildStd_IN_Rd,HANDLE g_hChildStd_
 	}
 	else 
 	{
-/*		GetExitCodeProcess( piProcInfo.hProcess,&lpExitCode);
+#if 0
+		GetExitCodeProcess( piProcInfo.hProcess,&lpExitCode);
 		if (lpExitCode==259)	/*still alive*/
+#endif
 
 	}
 }
@@ -206,14 +211,14 @@ static void createpipes()
  
 #endif
 
-Agraph_t*
-exec_gvpr(char* filename,Agraph_t* srcGraph)
+static Agraph_t*
+exec_gvpr(Agraph_t* srcGraph, char* filename)
 { 
     Agraph_t* G;
-	DWORD lpExitCode;
     unsigned char bf[SMALLBUF];
     agxbuf xbuf;
 #ifdef WIN32
+    DWORD lpExitCode;
     Agiodisc_t* xio;	
     Agiodisc_t a; 
     init_security_attr(&saAttr);
@@ -240,43 +245,107 @@ exec_gvpr(char* filename,Agraph_t* srcGraph)
 	if (lpExitCode!=259)	/*still alive?*/
     	G=NULL;
 	else
-		G = ReadFromPipe() ;
+	G = ReadFromPipe() ;
+	CloseHandle(piProcInfo.hProcess);
+	CloseHandle(piProcInfo.hThread);
 #else
     pp = popen (agxbuse (&xbuf), "r+");
     agwrite(srcGraph, pp);
     G = agread(pp, NULL) ;
     pclose (pp);
+    unlink (filename);
 #endif
-			CloseHandle(piProcInfo.hProcess);
-			CloseHandle(piProcInfo.hThread);
 
     return G; 
 } 
-/*
-	saves a gvpr file as  a temporary file ,returns file name's full path
 
-*/
-int save_gvpr_program(char* prg,char* bf)
+/* mkTemp:
+ */
+#ifdef WIN32
+
+static char*
+mkTempFile ()
 {
-    FILE *input_file=NULL;
-	char buf[512];
-	char buf2[512];
-	GetTempPath(512,buf);
-	if(!GetTempFileName( buf,"gvpr",NULL,buf2))
-		return 0;
-    input_file = fopen(buf2, "w");
-	strcpy(bf,buf2);
-	if (input_file)
-	{
-		  fprintf(input_file,"%s",prg);
-		  fclose (input_file);
-		  return 1;
-	}
-	return 0;
+    char buf[512];
+    char buf2[512];
+
+    GetTempPath(512,buf);
+    if (!GetTempFileName(buf,"gvpr",NULL,buf2))
+	return NULL;
+    return strdup (buf2);
 }
 
+#else
+#define TMP_TEMPLATE "/tmp/_gvprXXXXXX"
 
+static char*
+mkTempFile ()
+{
+    char* name = strdup (TMP_TEMPLATE);
+    
+    int rv = mkstemp (name);
+    if (rv < 0) {
+	free (name);
+	return NULL;
+    }
+    else {
+	close (rv);
+	return name;
+    }
+}
 
+#endif
 
+/*
+ * saves a gvpr file as  a temporary file,
+ * returns file name's full path or NULL on failure.
+ * Buffer is malloced, so must be freed.
+ */
+static char* 
+save_gvpr_program (char* prg)
+{
+    FILE *fp;
+    char* tmpname;
 
- 
+    tmpname = mkTempFile ();
+    fp = fopen(tmpname, "w");
+    if (fp) {
+	fputs (prg, fp);
+	fclose (fp);
+	return tmpname;
+    }
+    else {
+#ifndef WIN32
+	unlink (tmpname);
+#endif
+	free (tmpname);
+	return NULL;
+    }
+}
+
+static int 
+apply_gvpr(Agraph_t* g,char* prog)
+{
+    Agraph_t* tempg = exec_gvpr (g, prog);
+
+    if (tempg) {
+	add_graph_to_viewport(tempg);
+	return 0;
+    }
+    else {
+	fprintf (stderr, "gvpr failed!\n");
+	return 1;
+    }
+}
+
+int run_gvpr (Agraph_t* srcGraph, char* script)
+{
+    char* tmpf;
+    int rv = 1;
+
+    if ((tmpf = save_gvpr_program(script))) {
+	rv = apply_gvpr (srcGraph, tmpf);
+	free (tmpf);
+    }
+    return rv;
+}
