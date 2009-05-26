@@ -24,6 +24,8 @@
 #include <glade/glade.h>
 #include "callbacks.h"
 #include "cgraph.h"
+#include <agxbuf.h> 
+
 
 
 #define MAXIMUM_WIDGET_COUNT	97
@@ -72,9 +74,12 @@ char *get_attribute_string_value_from_widget(attribute * att);
 //GTK helpre functions
 //void Color_Widget_bg (int r, int g, int b, GtkWidget *widget);        //change background color 
 void Color_Widget_bg(char *colorstring, GtkWidget * widget);
-
-
-
+/*generic warning pop up*/
+void show_gui_warning (char* str);
+/*generic open file dialog*/
+int openfiledlg(int filtercnt,char** filters,agxbuf* xbuf);
+/*generic save file dialog*/
+int savefiledlg(int filtercnt,char** filters,agxbuf* xbuf);
 
 
 
