@@ -208,6 +208,10 @@ static rect_t walker(treenode_t *tree)
 	    r = walker(p);
 	    EXPANDBB(rr,r);
 	}
+    rr.LL.x -= 2./72.;
+    rr.LL.y -= 2./72.;
+    rr.UR.x += 2./72.;
+    rr.UR.y += 2./72.;
 	GD_bb(tree->u.subg) = rr;
     }
     return rr;
