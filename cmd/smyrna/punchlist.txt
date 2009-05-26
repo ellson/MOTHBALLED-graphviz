@@ -1,0 +1,4 @@
+- color schemes not working ?
+- graph jumps out of bounding box when entering topfish mode
+- zooming hard to control via mouse wheel - appears to 
+- make install doesn't install some share file for GUI
