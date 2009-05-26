@@ -25,6 +25,7 @@
 #include "viewport.h"
 #include "memory.h"
 
+
 static char guibuffer[BUFSIZ];	//general purpose buffer
 
 #ifdef WIN32
@@ -397,4 +398,118 @@ void load_attributes(void)
 		}
     }
 }
+void show_gui_warning (char* str)
+{
+	    Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
+							      GTK_DIALOG_MODAL,
+							      GTK_MESSAGE_WARNING,
+							      GTK_BUTTONS_OK,
+							      str);
+
+	    respond = gtk_dialog_run((GtkDialog *) Dlg);
+        gtk_object_destroy((GtkObject *) Dlg);
+}
+
+
+
+/*
+Generic Open File dialog, if a file is selected and return value is 1, else 0
+file name is copied to char* filename,which should be allocated before using the function
+*/
+int openfiledlg(int filtercnt,char** filters,agxbuf* xbuf)
+{
+    GtkWidget *dialog;
+    GtkFileFilter *filter;
+	int id,rv;
+    filter = gtk_file_filter_new();
+	if(filtercnt >= 1)
+	{
+		for (id=0;id < filtercnt; id ++)
+		{
+			gtk_file_filter_add_pattern(filter, filters[id]);
+		}
+	}
+	
+    dialog = gtk_file_chooser_dialog_new("Open File",
+					 NULL,
+					 GTK_FILE_CHOOSER_ACTION_OPEN,
+					 GTK_STOCK_CANCEL,
+					 GTK_RESPONSE_CANCEL,
+					 GTK_STOCK_OPEN,
+					 GTK_RESPONSE_ACCEPT, NULL);
+
+	if(filtercnt >= 1)
+		gtk_file_chooser_set_filter((GtkFileChooser *) dialog, filter);
+	if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) 
+	{
+	    agxbput (xbuf, gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog)));
+		rv=1;
+	}
+	else
+		rv=0;
+
+	gtk_widget_destroy(dialog);
+    gtk_widget_destroy((GtkWidget *) filter);
+	return rv;
+}
+
+int savefiledlg(int filtercnt,char** filters,agxbuf* xbuf)
+{
+    GtkWidget *dialog;
+    GtkFileFilter *filter;
+	int id,rv;
+    filter = gtk_file_filter_new();
+	if(filtercnt >= 1)
+	{
+		for (id=0;id < filtercnt; id ++)
+		{
+			gtk_file_filter_add_pattern(filter, filters[id]);
+		}
+	}
+	
+    dialog = gtk_file_chooser_dialog_new("Save File",
+					 NULL,
+					 GTK_FILE_CHOOSER_ACTION_OPEN,
+					 GTK_STOCK_CANCEL,
+					 GTK_RESPONSE_CANCEL,
+					 GTK_STOCK_OPEN,
+					 GTK_RESPONSE_ACCEPT, NULL);
+
+	if(filtercnt >= 1)
+		gtk_file_chooser_set_filter((GtkFileChooser *) dialog, filter);
+	if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) 
+	{
+	    agxbput (xbuf, gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog)));
+		rv=1;
+	}
+	else
+		rv=0;
+
+	gtk_widget_destroy(dialog);
+    gtk_widget_destroy((GtkWidget *) filter);
+	return rv;
+}
+/*
+	this function is designed to return a GtkTextView object's text in agxbuf
+	send an initialized agxbuf and a GtkTextView object
+	null termination is taken care by agxbuf
+*/
+void get_gtktextview_text(GtkTextView* w,agxbuf* xbuf)
+{
+	int charcnt;
+	GtkTextBuffer * gtkbuf;
+	GtkTextIter* startit;
+	GtkTextIter* endit;
+	startit=gtk_text_buffer_new(NULL);
+	endit=gtk_text_buffer_new(NULL);
+	gtkbuf=gtk_text_view_get_buffer(w);
+	charcnt=gtk_text_buffer_get_char_count (gtkbuf);
+	gtk_text_buffer_get_start_iter (gtkbuf,startit);
+	gtk_text_buffer_get_end_iter (gtkbuf,endit);
+
+	agxbput (xbuf,gtk_text_buffer_get_text(gtkbuf,startit,endit,0));
+}
+
+
+
 
