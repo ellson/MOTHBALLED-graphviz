@@ -704,6 +704,31 @@ int add_graph_to_viewport_from_file(char *fileName)
 	}
 
 }
+int add_graph_to_viewport(Agraph_t* graph)
+{
+    if (graph) {
+	view->graphCount = view->graphCount + 1;
+	view->g =
+	    (Agraph_t **) realloc(view->g,
+				  sizeof(Agraph_t *) * view->graphCount);
+	view->g[view->graphCount - 1] = graph;
+	view->activeGraph = view->graphCount - 1;
+	load_settings_from_graph(view->g[view->activeGraph]);
+	update_graph_from_settings(view->g[view->activeGraph]);
+    set_viewport_settings_from_template(view, view->g[view->activeGraph]);
+	update_topview(graph, view->Topview,1);
+	fill_key(view->orig_key,get_md5_key(graph));
+    expose_event(view->drawing_area, NULL, NULL);
+
+
+	return 1;
+    } else
+	{
+		return 0;
+
+	}
+
+}
 
 #if 0
 /* add_new_graph_to_viewport:
@@ -1043,7 +1068,12 @@ void please_dont_wait(void)
 
 void apply_gvpr(Agraph_t* g,char* prog)
 {
-	Agraph_t* a=exec_gvpr(prog,g);
+	Agraph_t* tempg;
+	tempg=exec_gvpr(prog,g);
+	if (tempg)
+		add_graph_to_viewport(tempg);
+	else
+		printf ("gvpr failed!\n");
 }
 float interpol(float minv,float maxv,float minc,float maxc,float x)
 {
