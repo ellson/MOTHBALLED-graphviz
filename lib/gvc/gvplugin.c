@@ -33,6 +33,10 @@
 
 #include	"const.h"
 
+#ifndef HAVE_STRCASECMP
+extern int strcasecmp(const char *s1, const char *s2);
+#endif
+
 /*
  * Define an apis array of name strings using an enumerated api_t as index.
  * The enumerated type is defined gvplugin.h.  The apis array is
@@ -293,16 +297,17 @@ gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, const char *str)
 	    continue;  /* types empty or mismatched */
  	if (dep && reqdep && strcmp(dep, reqdep))
 	    continue;  /* dependencies not empty, but mismatched */
-	if (! reqpkg)
-	    break; /* found with no packagename constraints */
-	if (strcmp(reqpkg, (*pnext)->package->name) == 0)
-	    break;  /* found with required matching packagname */
+	if (! reqpkg || strcmp(reqpkg, (*pnext)->package->name) == 0)
+	{
+		/* found with no packagename constraints, or with required matching packagname */
+    
+		if (dep && (apidep != api)) /* load dependency if needed, continue if can't find */
+			if (! (gvplugin_load(gvc, apidep, dep)))
+				continue;
+		break;
+    }
     }
     rv = *pnext;
-
-    if (dep && (apidep != api)) /* load dependency if needed */
-	if (! (gvplugin_load(gvc, apidep, dep)))
-	    rv = NULL;
 
     if (rv && rv->typeptr == NULL) {
 	library = gvplugin_library_load(gvc, rv->package->path);
