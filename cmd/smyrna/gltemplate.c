@@ -429,14 +429,15 @@ static gboolean motion_notify_event(GtkWidget * widget,
 
 	/*panning */
     if ((event->state & GDK_BUTTON1_MASK)
-	&& (view->mouse.mouse_mode == MM_PAN)) {
-	if (glmotion_main(view, event, widget))
+	&& (view->mouse.mouse_mode == MM_PAN)) 
+	{
+		glmotion_main(view, event, widget);
 	    redraw = TRUE;
     }
     /*rotating, only in 3d view */
     if ((view->active_camera >= 0) && (view->mouse.mouse_mode == MM_ROTATE)
 	&& (event->state & GDK_BUTTON1_MASK)) {
-	if (glmotion_main(view, event, widget))
+		glmotion_main(view, event, widget);
 	    redraw = TRUE;
     }
     /*zooming */
@@ -444,7 +445,7 @@ static gboolean motion_notify_event(GtkWidget * widget,
 	&& (view->mouse.mouse_mode == MM_ZOOM))
 	{
 
-		if (glmotion_main(view, event, widget))
+		glmotion_main(view, event, widget);
 		    redraw = TRUE;
 	}
 
