@@ -18,6 +18,7 @@
 #define GVPRPIPE_H
 
 #include "cgraph.h"
-extern Agraph_t* exec_gvpr(char* filename,Agraph_t* srcGraph);
+
+extern int run_gvpr(Agraph_t* srcGraph, char* script);
 
 #endif
