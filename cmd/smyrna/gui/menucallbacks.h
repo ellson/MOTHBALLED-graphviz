@@ -81,4 +81,7 @@ _BB void mTestgvpr(GtkWidget * widget, gpointer user_data);
 void change_cursor(GdkCursorType C);
 int show_close_nosavedlg(void);
 
+/*others from settings dialog*/
+_BB void on_gvprbuttonload_clicked(GtkWidget * widget, gpointer user_data);
+
 #endif

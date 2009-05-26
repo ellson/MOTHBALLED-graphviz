@@ -39,30 +39,38 @@
  */
 
 static HANDLE GvprToSmyrnaWr;
+static HANDLE GvprToSmyrnaWrErr;
 static HANDLE GvprToSmyrnaRd;
+static HANDLE GvprToSmyrnaErr;
 static HANDLE SmyrnaToGvprWr;
 static HANDLE SmyrnaToGvprRd;
 static SECURITY_ATTRIBUTES saAttr; 
+static PROCESS_INFORMATION piProcInfo; 
+
 
 /*cgraph wrappers*/
 static int cgraph_write_wrapper(void *chan, char *str)
 {
-    DWORD dwWritten; 
+    DWORD dwWritten,lpExitCode; 
     BOOL bSuccess = FALSE;
+	GetExitCodeProcess( piProcInfo.hProcess,&lpExitCode);
+	if (lpExitCode!=259)	/*still alive?*/
+    	return EOF;
+
  
     bSuccess = WriteFile(SmyrnaToGvprWr, str, (DWORD)strlen(str), &dwWritten, NULL);
-    if ( ! bSuccess ) return 0; 
-    return dwWritten;
+    if ( ! bSuccess ) return EOF; 
+    return 0;
 } 
 
 static int cgraph_read_wrapper (void* ch,char* bf,int sz)
 {
-    DWORD dwRead;
-    int ind=0;
-    ReadFile( GvprToSmyrnaRd, bf, sz, &dwRead, NULL);
-    printf("read returned value:%d\n",strlen(bf));
-    printf("%s\n",bf);
-    return dwRead;
+    DWORD dwRead,lpExitCode;
+    BOOL bSuccess = FALSE;
+	int ind=0;
+	bSuccess=ReadFile( GvprToSmyrnaRd, bf, sz, &dwRead, NULL);
+    if ( ! bSuccess ) return EOF; 
+	return dwRead;
 }
 
 /* ErrorExit:
@@ -99,6 +107,11 @@ ErrorExit(PTSTR lpszFunction)
     ExitProcess(1);
 }
 
+static int dummyflush (void *chan)
+{
+    return 1;
+}
+
 static Agraph_t*
 ReadFromPipe() 
 { 
@@ -108,6 +121,8 @@ ReadFromPipe()
     Agiodisc_t a; 
     Agdisc_t disc;
     Agraph_t* g=0;
+   DWORD lpExitCode;
+
 
     if (!CloseHandle(SmyrnaToGvprWr))
 	ErrorExit(TEXT("StdOutWr CloseHandle")); 
@@ -118,19 +133,21 @@ ReadFromPipe()
     disc.id = &AgIdDisc;
     disc.mem = &AgMemDisc;
     g=agread(NULL,&disc);	
+/*	CloseHandle(piProcInfo.hProcess);
+	CloseHandle(piProcInfo.hThread);*/
+
     return g; 
 } 
 
 static void
-CreateChildProcess(TCHAR* szCmdline,HANDLE g_hChildStd_IN_Rd,HANDLE g_hChildStd_OUT_Wr)
+CreateChildProcess(TCHAR* szCmdline,HANDLE g_hChildStd_IN_Rd,HANDLE g_hChildStd_OUT_Wr,HANDLE g_hChildStd_ERR_Wr)
 { 
-   PROCESS_INFORMATION piProcInfo; 
    STARTUPINFO siStartInfo;
    BOOL bSuccess = FALSE; 
    ZeroMemory( &piProcInfo, sizeof(PROCESS_INFORMATION) );
    ZeroMemory( &siStartInfo, sizeof(STARTUPINFO) );
    siStartInfo.cb = sizeof(STARTUPINFO); 
-   siStartInfo.hStdError = g_hChildStd_OUT_Wr;
+//   siStartInfo.hStdError = g_hChildStd_ERR_Wr;
    siStartInfo.hStdOutput = g_hChildStd_OUT_Wr;
    siStartInfo.hStdInput = g_hChildStd_IN_Rd;
    siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
@@ -145,16 +162,17 @@ CreateChildProcess(TCHAR* szCmdline,HANDLE g_hChildStd_IN_Rd,HANDLE g_hChildStd_
       NULL,          // use parent's current directory 
       &siStartInfo,  // STARTUPINFO pointer 
       &piProcInfo);  // receives PROCESS_INFORMATION 
-   
 	if ( ! bSuccess ) 
+	{
+
 		ErrorExit(TEXT("CreateProcess"));
+
+	}
 	else 
 	{
-      // Close handles to the child process and its primary thread.
-	  // Some applications might keep these handles to monitor the status
-	  // of the child process, for example. 
-		CloseHandle(piProcInfo.hProcess);
-		CloseHandle(piProcInfo.hThread);
+/*		GetExitCodeProcess( piProcInfo.hProcess,&lpExitCode);
+		if (lpExitCode==259)	/*still alive*/
+
 	}
 }
 
@@ -171,6 +189,8 @@ static void createpipes()
 		ErrorExit(TEXT("StdoutRd CreatePipe")); 
 	if ( ! SetHandleInformation(GvprToSmyrnaRd, HANDLE_FLAG_INHERIT, 0) )
 		ErrorExit(TEXT("Stdout SetHandleInformation")); 
+
+
  
 	if (! CreatePipe(&SmyrnaToGvprRd, &SmyrnaToGvprWr, &saAttr, 0)) 
 		ErrorExit(TEXT("Stdin CreatePipe")); 
@@ -182,10 +202,6 @@ static void createpipes()
 
 
 
-static int dummyflush (void *chan)
-{
-    return 1;
-}
 #else
  
 #endif
@@ -194,12 +210,12 @@ Agraph_t*
 exec_gvpr(char* filename,Agraph_t* srcGraph)
 { 
     Agraph_t* G;
+	DWORD lpExitCode;
     unsigned char bf[SMALLBUF];
     agxbuf xbuf;
 #ifdef WIN32
     Agiodisc_t* xio;	
     Agiodisc_t a; 
-
     init_security_attr(&saAttr);
     createpipes();
 #else
@@ -211,23 +227,56 @@ exec_gvpr(char* filename,Agraph_t* srcGraph)
     agxbput (&xbuf, filename);
    
 #ifdef WIN32
-    CreateChildProcess (agxbuse (&xbuf), SmyrnaToGvprRd, GvprToSmyrnaWr);
-
+    CreateChildProcess (agxbuse (&xbuf), SmyrnaToGvprRd, GvprToSmyrnaWr,GvprToSmyrnaWr);
     xio = srcGraph->clos->disc.io;
     a.afread = srcGraph->clos->disc.io->afread; 
     a.putstr = cgraph_write_wrapper;
     a.flush = xio->flush;
     srcGraph->clos->disc.io = &a;
-    agwrite(srcGraph,NULL);
+	/*we need to check if there is still a pipe to write, iif child process is still alive?*/
+	agwrite(srcGraph,NULL);
     srcGraph->clos->disc.io = xio;
-    G = ReadFromPipe() ;
+	GetExitCodeProcess( piProcInfo.hProcess,&lpExitCode);
+	if (lpExitCode!=259)	/*still alive?*/
+    	G=NULL;
+	else
+		G = ReadFromPipe() ;
 #else
     pp = popen (agxbuse (&xbuf), "r+");
     agwrite(srcGraph, pp);
     G = agread(pp, NULL) ;
     pclose (pp);
 #endif
+			CloseHandle(piProcInfo.hProcess);
+			CloseHandle(piProcInfo.hThread);
 
     return G; 
 } 
+/*
+	saves a gvpr file as  a temporary file ,returns file name's full path
+
+*/
+int save_gvpr_program(char* prg,char* bf)
+{
+    FILE *input_file=NULL;
+	char buf[512];
+	char buf2[512];
+	GetTempPath(512,buf);
+	if(!GetTempFileName( buf,"gvpr",NULL,buf2))
+		return 0;
+    input_file = fopen(buf2, "w");
+	strcpy(bf,buf2);
+	if (input_file)
+	{
+		  fprintf(input_file,"%s",prg);
+		  fclose (input_file);
+		  return 1;
+	}
+	return 0;
+}
+
+
+
+
+
  

@@ -21,6 +21,9 @@
 #include "selection.h"
 #include "topviewsettings.h"
 #include "gltemplate.h"
+#include <const.h> 
+#include <agxbuf.h> 
+
 //file
 char buf[255];
 void mNewSlot(GtkWidget * widget, gpointer user_data)
@@ -395,6 +398,99 @@ float GetOGLDistance(int l);
 void mTestgvpr(GtkWidget * widget, gpointer user_data)
 {
 //	apply_gvpr(view->g[view->activeGraph],"c:/graphviz-ms/bin/makered.g");
-	float vecdist=GetOGLDistance(10);
-	printf ("z:%f  vec:%f\n",view->zoom,vecdist);
+	int charcnt;
+	char bf[512];
+	char* bf2;
+	GtkTextBuffer * gtkbuf;
+	GtkTextIter* startit;
+	GtkTextIter* endit;
+	startit=gtk_text_buffer_new(NULL);
+	endit=gtk_text_buffer_new(NULL);
+	gtkbuf=gtk_text_view_get_buffer((GtkTextView*) glade_xml_get_widget(xml,"gvprtextinput"));
+	charcnt=gtk_text_buffer_get_char_count (gtkbuf);
+	gtk_text_buffer_get_start_iter (gtkbuf,startit);
+	gtk_text_buffer_get_end_iter (gtkbuf,endit);
+
+	bf2=gtk_text_buffer_get_text(gtkbuf,startit,endit,0);
+	if(save_gvpr_program(bf2,&bf))
+		apply_gvpr(view->g[view->activeGraph],bf);
+
 }
+
+
+
+
+
+/*
+	opens a file open dialog and load a gvpr program to gvpr script text box
+	if the current script is modified, user should be informed about it
+*/
+void on_gvprbuttonload_clicked(GtkWidget * widget, gpointer user_data)
+{
+    FILE *input_file=NULL;
+	char* str;
+	agxbuf xbuf;
+	GtkTextBuffer * gtkbuf; /*GTK buffer from glade GUI*/
+
+	char c[2];
+	agxbinit (&xbuf, SMALLBUF, NULL);
+	/*file name should be returned in xbuf*/
+	if(openfiledlg(0,NULL,&xbuf))
+	{
+		input_file = fopen(agxbuse (&xbuf), "r");
+		if (input_file)
+		{
+			
+			while(1) 
+			{ 
+				c[0] = fgetc(input_file);
+				c[1]= NULL;/*agxbuffer doesnt accept single char, probably strlen is used , FIX ME!!*/
+				if(c[0] !=EOF) 
+					agxbput (&xbuf,c);
+			    else 
+					break;     /* ...break when EOF is reached */
+			}
+			gtkbuf=gtk_text_view_get_buffer((GtkTextView*) glade_xml_get_widget(xml,"gvprtextinput"));
+			str=agxbuse (&xbuf);
+			printf ("%ds",strlen(str));
+			if(g_utf8_validate(str,-1,NULL))
+			{
+				gtk_text_buffer_set_text (gtkbuf,agxbuse (&xbuf),-1);
+			}
+			else
+			{
+				show_gui_warning ("File format is not UTF8!");
+			}
+			fclose (input_file);
+		}
+		else
+		{
+			show_gui_warning ("file couldnt be opened\n");
+
+		}
+	}
+}
+
+/*
+	opens a file open dialog and load a gvpr program to gvpr script text box
+	if the current script is modified, user should be informed about it
+*/
+void on_gvprbuttonsave_clicked(GtkWidget * widget, gpointer user_data)
+{
+    FILE *output_file=NULL;
+	char* str;
+	agxbuf xbuf;
+	GtkTextBuffer * gtkbuf; /*GTK buffer from glade GUI*/
+
+	char c[2];
+	agxbinit (&xbuf, SMALLBUF, NULL);
+	/*file name should be returned in xbuf*/
+	if(savefiledlg(0,NULL,&xbuf))
+	{
+		output_file = fopen(agxbuse (&xbuf), "w");
+
+		/*Code has not been completed for this function yet*/
+	}
+
+}
+

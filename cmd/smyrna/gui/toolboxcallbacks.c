@@ -73,20 +73,12 @@ void btnToolZoom_clicked(GtkWidget * widget, gpointer user_data)
 
 void btnToolZoomIn_clicked(GtkWidget * widget, gpointer user_data)
 {
-	view->zoom = view->zoom + (float)ZOOM_STEP*GetOGLDistance(250);
-    if (view->zoom > MAX_ZOOM)
-	view->zoom = (float) MAX_ZOOM;
-    glexpose();
-
+	glmotion_zoom_inc(1);
 }
 
 void btnToolZoomOut_clicked(GtkWidget * widget, gpointer user_data)
 {
-	view->FontSizeConst=GetOGLDistance(14);
-	view->zoom = view->zoom - (float)ZOOM_STEP*GetOGLDistance(250);
-    if (view->zoom < MIN_ZOOM)
-	view->zoom = MIN_ZOOM;
-    expose_event(view->drawing_area, NULL, NULL);
+	glmotion_zoom_inc(0);
 }
 
 void btnToolZoomFit_clicked(GtkWidget * widget, gpointer user_data)
@@ -121,20 +113,10 @@ void btnToolFit_clicked(GtkWidget * widget, gpointer user_data)
 {
 	float scx,scy,gcx,gcy,z;
 
-/*	printf ("graph boundry summary\n");
-	printf ("---------------------\n");
-	printf ("G   (%f,%f) - (%f,%f)\n",view->bdxLeft/view->zoom*-1,view->bdyBottom/view->zoom
-		*-1,view->bdxRight/view->zoom*-1,view->bdyTop/view->zoom*-1);
-	printf ("Scr (%f,%f) - (%f,%f)\n",view->clipX1 ,view->clipY1 ,view->clipX2 ,view->clipY2);
-	printf ("Old Panx:%f\n",view->panx);*/
 
 
 	(view->active_camera >=0)
 			? (z=view->cameras[view->active_camera]->r):(z=view->zoom*-1);
-
-
-
-/*	printf ("Z:%f  BDX:%f zoom * BDX :%f\n",z,(view->bdxRight/z-view->bdxLeft/z),z*(view->bdxRight/z-view->bdxLeft/z));*/
 
 
 
@@ -155,13 +137,10 @@ void btnToolFit_clicked(GtkWidget * widget, gpointer user_data)
 	}
 	else
 	{
-		/* float GDX=(view->bdxRight/z-view->bdxLeft/z); */
-		/* float SDX=(view->clipX2 -view->clipX1); */
-//		printf ("GDX:%f SDX:%f \n",GDX,SDX);
 		view->panx += (gcx-scx);
 		view->pany += (gcy-scy);
 	}
-
+	view->Topview->fitin_zoom=view->zoom;
 
 	glexpose();
 }
