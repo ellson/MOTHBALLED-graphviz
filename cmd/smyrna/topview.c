@@ -206,7 +206,7 @@ void settvcolorinfo(Agraph_t* g,topview* t)
 	for (ind=0;ind < t->Edgecount ; ind ++)
 	{
 			char* color_string = agget(t->Edges[ind].Edge, "color");
-			if (color_string) 
+			if (color_string && (*color_string != '\0')) 
 				color = GetRGBColor(color_string);
 			else	/*use color theme*/
 				getcolorfromschema(view->colschms,t->Edges[ind].length,t->maxedgelen,&color);
@@ -1121,7 +1121,7 @@ static int get_color_from_edge(topview_edge * e)
     }
 
     /*get edge's color attribute */
-	glColor4f(e->Color.R,e->Color.G,e->Color.B,1);
+	glColor4f(e->Color.R,e->Color.G,e->Color.B,Alpha*e->Color.A);
     return return_value;
 }
 
