@@ -137,6 +137,7 @@ case "${host_os}" in
 	BROWSER="xdg-open"
 	;;
   *darwin9* )
+	DARWIN=yes
 	DARWIN9=yes
 	DEFAULT_FONTPATH="~/Library/Fonts:/Library/Fonts:/Network/Library/Fonts:/System/Library/Fonts"
 	PATHSEPARATOR=":"
@@ -150,6 +151,7 @@ case "${host_os}" in
 	esac
 	;;
   *darwin* )
+	DARWIN=yes
 	DEFAULT_FONTPATH="~/Library/Fonts:/Library/Fonts:/Network/Library/Fonts:/System/Library/Fonts"
 	PATHSEPARATOR=":"
         NO_POSTSCRIPT_ALIAS=1
@@ -165,6 +167,7 @@ case "${host_os}" in
 esac
 AC_SUBST(CYGWIN)
 AC_SUBST(MINGW32)
+AC_SUBST(DARWIN)
 AC_SUBST(DARWIN9)
 AC_SUBST(EXTRA_SMYRNA_LDFLAGS)
 AC_DEFINE_UNQUOTED(DEFAULT_FONTPATH,"$DEFAULT_FONTPATH",[Path to TrueType fonts.])
