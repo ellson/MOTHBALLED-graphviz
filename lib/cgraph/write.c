@@ -574,6 +574,7 @@ static int write_body(Agraph_t * g, iochan_t * ofile)
     /* int                  has_attr; */
 
     /* has_attr = (agattrrec(g) != NIL(Agattr_t*)); */
+
     CHKRV(write_subgs(g, ofile));
     dd = agdatadict(agroot(g), FALSE);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
@@ -589,7 +590,8 @@ static int write_body(Agraph_t * g, iochan_t * ofile)
 	    if (write_edge_test(g, e))
 		CHKRV(write_edge(e, ofile, dd ? dd->dict.e : 0));
 	}
-    }
+
+	}
     return 0;
 }
 
