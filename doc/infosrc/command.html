@@ -94,7 +94,10 @@ the current executable.   e.g.  <STRONG>dot -P -Tps | lpr</STRONG>
 <DD>Set input scale to <I>scale</I>. If this value is omitted,
 72.0 is used. This number is used to convert the point coordinate
 units used in the <A HREF=attrs.html#d:pos>pos</A> attribute 
-into inches. Ignored if the <STRONG>-n</STRONG> flag is used.
+into inches, which is what is expected by neato and fdp. 
+Thus, feeding the output of a graph laid out by one program into
+neato or fdp almost always requires this flag.
+Ignored if the <STRONG>-n</STRONG> flag is used.
 <DT><STRONG>-v</STRONG>             
 <DD>Verbose mode
 <DT><STRONG>-x</STRONG>             
