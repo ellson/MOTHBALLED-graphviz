@@ -31,6 +31,7 @@ libgvplugin_neato_layout_C_la_LIBADD = \
 	$(top_builddir)/lib/neatogen/libneatogen_C.la \
 	$(top_builddir)/lib/twopigen/libtwopigen_C.la \
 	$(top_builddir)/lib/patchwork/libpatchwork_C.la \
+	$(top_builddir)/lib/osage/libosage_C.la \
 	$(top_builddir)/lib/fdpgen/libfdpgen_C.la \
 	$(top_builddir)/lib/sparse/libsparse_C.la \
 	$(top_builddir)/lib/rbtree/librbtree_C.la \
