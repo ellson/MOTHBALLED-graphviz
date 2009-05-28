@@ -1189,7 +1189,7 @@ void dumpData(graph_t * g, vtx_data * gp, int nv, int ne)
  * mode will be MODE_MAJOR, MODE_HIER or MODE_IPSEP
  */
 static void
-majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int steps)
+majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int steps, adjust_data* am)
 {
     double **coords;
     int ne;
@@ -1239,7 +1239,6 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
 #ifdef IPSEPCOLA
 	else {
             char* str;
-	    adjust_data* am;
             ipsep_options opt;
             pointf* nsize;
 	    cluster_data *cs = (cluster_data*)cluster_map(mg,g);
@@ -1261,7 +1260,6 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
                     fprintf(stderr,"Generating DiG-CoLa Edge Constraints...\n");
             }
 	    else opt.diredges = 0;
-            am = graphAdjustMode (g);
 	    if (am->mode == AM_IPSEP) {
                 opt.noverlap = 1;
                 if(Verbose)
@@ -1395,7 +1393,9 @@ static void kkNeato(Agraph_t * g, int nG, int model)
 /* neatoLayout:
  * Use stress optimization to layout a single component
  */
-void neatoLayout(Agraph_t * mg, Agraph_t * g, int layoutMode, int layoutModel)
+static void 
+neatoLayout(Agraph_t * mg, Agraph_t * g, int layoutMode, int layoutModel,
+  adjust_data* am)
 {
     int nG;
     char *str;
@@ -1410,12 +1410,8 @@ void neatoLayout(Agraph_t * mg, Agraph_t * g, int layoutMode, int layoutModel)
     nG = scan_graph_mode(g, layoutMode);
     if ((nG < 2) || (MaxIter <=0))
 	return;
-#ifdef WITH_CGRAPH
-//    if (Verbose) {
-//	fprintf(stderr, "%i\n", count_nodes(g));
-#endif /* WITH_CGRAPH */
     if (layoutMode)
-	majorization(mg, g, nG, layoutMode, layoutModel, Ndim, MaxIter);
+	majorization(mg, g, nG, layoutMode, layoutModel, Ndim, MaxIter, am);
     else
 	kkNeato(g, nG, layoutModel);
 }
@@ -1449,6 +1445,7 @@ void neato_layout(Agraph_t * g)
     int model;
     pack_mode mode;
     pack_info pinfo;
+    adjust_data am;
 
     if (Nop) {
 	int save = PSinputscale;
@@ -1465,6 +1462,7 @@ void neato_layout(Agraph_t * g)
     } else {
 	neato_init_graph(g);
 	layoutMode = neatoMode(g);
+	graphAdjustMode (g, &am, 0);
 	model = neatoModel(g);
 	mode = getPackModeInfo (g, l_undef, &pinfo);
 	Pack = getPack(g, -1, CL_OFFSET);
@@ -1490,8 +1488,8 @@ void neato_layout(Agraph_t * g)
 	    for (i = 0; i < n_cc; i++) {
 		gc = cc[i];
 		nodeInduce(gc);
-		neatoLayout(g, gc, layoutMode, model);
-		adjustNodes(gc);
+		neatoLayout(g, gc, layoutMode, model, &am);
+		removeOverlapWith(gc, &am);
 	    }
 	    if (n_cc > 1) {
 		boolean *bp;
@@ -1540,8 +1538,8 @@ void neato_layout(Agraph_t * g)
             }
 #endif
 	} else {
-	    neatoLayout(g, g, layoutMode, model);
-	    adjustNodes(g);
+	    neatoLayout(g, g, layoutMode, model, &am);
+	    removeOverlapWith(g, &am);
 	    addZ (g);
 	    spline_edges(g);
 	}

@@ -739,7 +739,7 @@ SparseMatrix makeMatrix(Agraph_t * g, int dim)
 
 #if ((defined(HAVE_GTS) || defined(HAVE_TRIANGLE)) && defined(SFDP))
 static int
-fdpAdjust (graph_t* g)
+fdpAdjust (graph_t* g, adjust_data* am)
 {
     SparseMatrix A0 = makeMatrix(g, Ndim);
     SparseMatrix A = A0;
@@ -749,7 +749,6 @@ fdpAdjust (graph_t* g)
     int flag, i;
     expand_t sep = sepFactor(g);
     pointf pad;
-    double initial_scaling;
 
     if (sep.doAdd) {
 	pad.x = PS2INCH(sep.x);
@@ -774,8 +773,7 @@ fdpAdjust (graph_t* g)
 	A = SparseMatrix_remove_diagonal(A);
     }
 
-    initial_scaling = late_double(g, agfindgraphattr(g, "overlap_scaling"), -4.0, -1.e10);
-    remove_overlap(Ndim, A, A->m, pos, sizes, 1000, initial_scaling, &flag);
+    remove_overlap(Ndim, A, A->m, pos, sizes, am->value, am->scaling, &flag);
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	real *npos = pos + (Ndim * ND_id(n));
@@ -897,73 +895,112 @@ void normalize(graph_t * g)
     }
 }
 
-static adjust_data adjustMode[] = {
-    {AM_NONE, "", ""},
-    {AM_VOR, "", "Voronoi"},
-    {AM_SCALE, "oscale", "old scaling"},
-    {AM_NSCALE, "scale", "scaling"},
-    {AM_SCALEXY, "scalexy", "x and y scaling"},
-    /* {AM_PUSH, "push", "push scan adjust"}, */
-    /* {AM_PUSHPULL, "pushpull", "push-pull scan adjust"}, */
-    {AM_ORTHO, "ortho", "orthogonal constraints"},
-    {AM_ORTHO_YX, "ortho_yx", "orthogonal constraints"},
-    {AM_ORTHOXY, "orthoxy", "xy orthogonal constraints"},
-    {AM_ORTHOYX, "orthoyx", "yx orthogonal constraints"},
-    {AM_PORTHO, "portho", "pseudo-orthogonal constraints"},
-    {AM_PORTHO_YX, "portho_yx", "pseudo-orthogonal constraints"},
-    {AM_PORTHOXY, "porthoxy", "xy pseudo-orthogonal constraints"},
-    {AM_PORTHOYX, "porthoyx", "yx pseudo-orthogonal constraints"},
-    {AM_COMPRESS, "compress", "compress"},
-    {AM_VPSC, "vpsc", "vpsc"},
-    {AM_IPSEP, "ipsep", "ipsep"},
-    {AM_PRISM, "prism", "prism"},
-    {AM_NONE, 0, 0}
+typedef struct {
+    adjust_mode mode;
+    char *attrib;
+    int len;
+    char *print;
+} lookup_t;
+
+#define STRLEN(s) ((sizeof(s)-1)/sizeof(char))
+#define ITEM(i,s,v) {i, s, STRLEN(s), v}
+
+static lookup_t adjustMode[] = {
+    ITEM(AM_NONE, "", "none"),
+    ITEM(AM_VOR, "", "Voronoi"),
+    ITEM(AM_SCALE, "oscale", "old scaling"),
+    ITEM(AM_NSCALE, "scale", "scaling"),
+    ITEM(AM_SCALEXY, "scalexy", "x and y scaling"),
+    ITEM(AM_ORTHO, "ortho", "orthogonal constraints"),
+    ITEM(AM_ORTHO_YX, "ortho_yx", "orthogonal constraints"),
+    ITEM(AM_ORTHOXY, "orthoxy", "xy orthogonal constraints"),
+    ITEM(AM_ORTHOYX, "orthoyx", "yx orthogonal constraints"),
+    ITEM(AM_PORTHO, "portho", "pseudo-orthogonal constraints"),
+    ITEM(AM_PORTHO_YX, "portho_yx", "pseudo-orthogonal constraints"),
+    ITEM(AM_PORTHOXY, "porthoxy", "xy pseudo-orthogonal constraints"),
+    ITEM(AM_PORTHOYX, "porthoyx", "yx pseudo-orthogonal constraints"),
+    ITEM(AM_COMPRESS, "compress", "compress"),
+    ITEM(AM_VPSC, "vpsc", "vpsc"),
+    ITEM(AM_IPSEP, "ipsep", "ipsep"),
+#if (HAVE_GTS || HAVE_TRIANGLE)
+    ITEM(AM_PRISM, "prism", "prism"),
+#endif
+    {AM_NONE, 0, 0, 0}
 };
+
+    
+/* setPrismValues:
+ * Initialize and set prism values
+ */
+static void
+setPrismValues (Agraph_t* g, char* s, adjust_data* dp)
+{
+    int v;
+
+    if ((sscanf (s, "%d", &v) > 0) && (v >= 0))
+	dp->value = v;
+    else
+	dp->value = 1000;
+    dp->scaling = late_double(g, agfindgraphattr(g, "overlap_scaling"), -4.0, -1.e10);
+}
 
 /* getAdjustMode:
  * Convert string value to internal value of adjustment mode.
  * Assume s != NULL.
  */
-static adjust_data *getAdjustMode(char *s)
+static adjust_data *getAdjustMode(Agraph_t* g, char *s, adjust_data* dp)
 {
-    adjust_data *ap = adjustMode + 2;
-    if (*s == '\0') return adjustMode;
-    while (ap->attrib) {
-	if (!strcasecmp(s, ap->attrib))
-	    return ap;
-	ap++;
+    lookup_t *ap = adjustMode + 2;
+    if (*s == '\0') {
+	dp->mode = adjustMode[0].mode;
+	dp->print = adjustMode[0].print;
     }
-    if (mapbool(s))
-	return adjustMode;
-    else
-	return adjustMode + 1;
+    else {
+	while (ap->attrib) {
+	    if (!strncasecmp(s, ap->attrib, ap->len)) {
+		dp->mode = ap->mode;
+		dp->print = ap->print;
+		if (ap->mode == AM_PRISM)
+		    setPrismValues (g, s + ap->len, dp);
+		break;
+	    }
+	    ap++;
+	}
+	if (ap->attrib == NULL ) {
+	    if (mapbool(s)) {
+		dp->mode = adjustMode[0].mode;
+		dp->print = adjustMode[0].print;
+	    }
+	    else {
+		dp->mode = adjustMode[1].mode;
+		dp->print = adjustMode[1].print;
+	    }
+	}
+    }
+    return dp;
 }
 
-adjust_data *graphAdjustMode(graph_t *G)
+adjust_data *graphAdjustMode(graph_t *G, adjust_data* dp, char* dflt)
 {
     char* am = agget(G, "overlap");
-    return (getAdjustMode (am ? am : ""));
+    return (getAdjustMode (G, am ? am : (dflt ? dflt : ""), dp));
 }
 
-/* removeOverlapAs:
- * Use flag value to determine if and how to remove
+/* removeOverlapWith:
+ * Use adjust_data to determine if and how to remove
  * node overlaps.
+ * Return non-zero if nodes are moved.
  */
 int 
-removeOverlapAs(graph_t * G, char* flag)
+removeOverlapWith (graph_t * G, adjust_data* am)
 {
-    /* int          userWindow = 0; */
-    int ret = 0;
-    /* extern void  scanAdjust(graph_t*, int); */
-
-    adjust_data *am;
+    int ret;
 
     if (agnnodes(G) < 2)
 	return 0;
-    if (flag == NULL)
-	return 0;
 
-    am = getAdjustMode(flag);
+    normalize(G);
+
     if (am->mode == AM_NONE)
 	return 0;
 
@@ -1000,7 +1037,7 @@ removeOverlapAs(graph_t * G, char* flag)
 	    break;
 #if ((defined(HAVE_GTS) || defined(HAVE_TRIANGLE)) && defined(SFDP))
 	case AM_PRISM:
-	    ret = fdpAdjust(G);
+	    ret = fdpAdjust(G, am);
 	    break;
 #endif
 #ifdef IPSEPCOLA
@@ -1043,12 +1080,22 @@ removeOverlapAs(graph_t * G, char* flag)
     return ret;
 }
 
-/* removeOverlap:
+/* removeOverlapAs:
+ * Use flag value to determine if and how to remove
+ * node overlaps.
  */
 int 
-removeOverlap(graph_t * G)
+removeOverlapAs(graph_t * G, char* flag)
 {
-    return (removeOverlapAs(G, agget(G, "overlap")));
+    adjust_data am;
+
+    if (agnnodes(G) < 2)
+	return 0;
+    if (flag == NULL)
+	return 0;
+
+    getAdjustMode(G, flag, &am);
+    return removeOverlapWith (G, &am);
 }
 
 /* adjustNodes:
@@ -1057,10 +1104,7 @@ removeOverlap(graph_t * G)
  */
 int adjustNodes(graph_t * G)
 {
-    if (agnnodes(G) < 2)
-	return 0;
-    normalize(G);
-    return removeOverlap (G);
+    return (removeOverlapAs(G, agget(G, "overlap")));
 }
 
 /* parseFactor:

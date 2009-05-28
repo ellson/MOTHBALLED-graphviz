@@ -438,14 +438,15 @@ void remove_overlap(int dim, SparseMatrix A, int m, real *x, real *label_sizes, 
 
  if (!label_sizes) return;
 
-  avg_label_size = 0;
-  for (i = 0; i < m; i++) avg_label_size += label_sizes[i*dim]+label_sizes[i*dim+1];
-  /*  for (i = 0; i < m; i++) avg_label_size += 2*MAX(label_sizes[i*dim],label_sizes[i*dim+1]);*/
-  avg_label_size /= m;
 
   if (initial_scaling < 0) {
+    avg_label_size = 0;
+    for (i = 0; i < m; i++) avg_label_size += label_sizes[i*dim]+label_sizes[i*dim+1];
+    /*  for (i = 0; i < m; i++) avg_label_size += 2*MAX(label_sizes[i*dim],label_sizes[i*dim+1]);*/
+    avg_label_size /= m;
     scale_to_edge_length(dim, A, x, -initial_scaling*avg_label_size);
-  } else {
+  }
+  else if (initial_scaling > 0) {
     scale_to_edge_length(dim, A, x, initial_scaling);
   }
 

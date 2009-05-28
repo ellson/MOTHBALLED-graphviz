@@ -532,7 +532,8 @@ void fdp_xLayout(graph_t * g, xparams * xpms)
     if (!ovlp || (*ovlp == '\0')) {
 	ovlp = DFLT_overlap;
     }
-    if ((cp = strchr(ovlp, ':'))) {
+    /* look for optional ":" or "number:" */
+    if ((cp = strchr(ovlp, ':')) && ((cp == ovlp) || isdigit(*ovlp))) {
       cp++;
       rest = cp;
       tries = atoi (ovlp);

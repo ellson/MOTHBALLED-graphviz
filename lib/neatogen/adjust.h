@@ -38,8 +38,9 @@ typedef enum {
 
 typedef struct {
     adjust_mode mode;
-    char *attrib;
     char *print;
+    int value;
+    double scaling;
 } adjust_data;
 
 typedef struct {
@@ -51,11 +52,11 @@ typedef struct {
     extern expand_t esepFactor(graph_t * G);
     extern int adjustNodes(graph_t * G);
     extern void normalize(graph_t * g);
-    extern int removeOverlap(graph_t * G);
     extern int removeOverlapAs(graph_t*, char*);
+    extern int removeOverlapWith(graph_t*, adjust_data*);
     extern int cAdjust(graph_t *, int);
     extern int scAdjust(graph_t *, int);
-    extern adjust_data *graphAdjustMode(graph_t *G);
+    extern adjust_data *graphAdjustMode(graph_t *G, adjust_data*, char* dflt);
     extern double *getSizes(Agraph_t * g, pointf pad);
     extern SparseMatrix makeMatrix(Agraph_t * g, int dim);
 
