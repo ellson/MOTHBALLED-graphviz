@@ -127,10 +127,16 @@ static void setRGBcolor(RGBColor* c,char* colorstr)
 {
     gvcolor_t cl;
 	/*if node has color attribute*/
-	if (colorstr != '\0') 
+	if ((colorstr != '\0') && (strlen(colorstr) > 0))
+	{
 		colorxlate(colorstr, &cl, RGBA_DOUBLE);
+		c->tag=1;	/*tag is used to identofy colros set by the graph , not smyrna*/
+	}
 	else
+	{
 		colorxlate(agget(view->g[view->activeGraph],"defaultnodecolor"), &cl, RGBA_DOUBLE);
+		c->tag=0;
+	}
 		c->R = (float) cl.u.RGBA[0];
 		c->G = (float) cl.u.RGBA[1];
 		c->B = (float) cl.u.RGBA[2];
@@ -184,33 +190,19 @@ void settvcolorinfo(Agraph_t* g,topview* t)
 	for (ind=0;ind < t->Nodecount ; ind ++)
 	{
 		setRGBcolor(&color,agget(t->Nodes[ind].Node, "color"));
-		t->Nodes[ind].Color.R = color.R;t->Nodes[ind].Color.G = color.G;t->Nodes[ind].Color.B = color.B;t->Nodes[ind].Color.A = color.A;
+		t->Nodes[ind].Color.R = color.R;t->Nodes[ind].Color.G = color.G;t->Nodes[ind].Color.B = color.B;t->Nodes[ind].Color.A = color.A;t->Edges[ind].Color.tag=color.tag;
 	}
-	if (agget(g,"edgecolorattribute"))
-	{
-		str=agget(g,"edgecolorattribute");
-		if(strlen(str) > 0)
-		{
-			t->maxedgelen=0;
-			for (ind=0;ind < t->Edgecount ; ind ++)
-			{
-				t->Edges[ind].length=atof(agget(t->Edges[ind].Edge, str));
-				if (t->Edges[ind].length > t->maxedgelen)
-					t->maxedgelen=t->Edges[ind].length;
-			}
-		}
-	}
-
-
 	/*loop edges*/
 	for (ind=0;ind < t->Edgecount ; ind ++)
 	{
 			char* color_string = agget(t->Edges[ind].Edge, "color");
-			if (color_string && (*color_string != '\0')) 
-				color = GetRGBColor(color_string);
-			else	/*use color theme*/
+			if ((color_string)&& (*color_string != '\0')) 
+				setRGBcolor(&color,color_string);
+			else{	/*use color theme*/
 				getcolorfromschema(view->colschms,t->Edges[ind].length,t->maxedgelen,&color);
-			t->Edges[ind].Color.R=color.R;	t->Edges[ind].Color.G=color.G;	t->Edges[ind].Color.B=color.B;	t->Edges[ind].Color.A=color.A;
+				color.tag=0;
+			}
+			t->Edges[ind].Color.R=color.R;	t->Edges[ind].Color.G=color.G;	t->Edges[ind].Color.B=color.B;	t->Edges[ind].Color.A=color.A;t->Edges[ind].Color.tag=color.tag;
 	}
 	/*update node size values in case node size is changed*/
 	t->init_node_size=t->minedgelen*10/GetOGLDistance(10)*atoi(agget(view->g[view->activeGraph],"nodesize"))/100.0*5.00;
@@ -1121,7 +1113,10 @@ static int get_color_from_edge(topview_edge * e)
     }
 
     /*get edge's color attribute */
-	glColor4f(e->Color.R,e->Color.G,e->Color.B,Alpha*e->Color.A);
+	if (e->Color.tag==0)
+		glColor4f(e->Color.R,e->Color.G,e->Color.B,Alpha*e->Color.A);
+	else
+		glColor4f(e->Color.R,e->Color.G,e->Color.B,e->Color.A);
     return return_value;
 }
 

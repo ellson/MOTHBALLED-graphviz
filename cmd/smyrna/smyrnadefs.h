@@ -88,6 +88,7 @@ typedef struct {
     float G;
     float B;
     float A;			//Alpha
+	int tag;	/*custom data field*/
 } RGBColor;
 
 #define MAX_BTN_CNT 50
