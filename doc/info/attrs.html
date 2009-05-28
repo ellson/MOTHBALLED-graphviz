@@ -409,6 +409,8 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:smoothing HREF=#d:smoothing>smoothing</A>
 </TD><TD>G</TD><TD><A HREF=#k:smoothType>smoothType</A>
 </TD><TD ALIGN="CENTER">"none"</TD><TD></TD><TD>sfdp only</TD> </TR>
+ <TR><TD><A NAME=a:sortv HREF=#d:sortv>sortv</A>
+</TD><TD>GCN</TD><TD>int</TD><TD ALIGN="CENTER">0</TD><TD>0</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:splines HREF=#d:splines>splines</A>
 </TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 <BR>string</TD><TD ALIGN="CENTER"></TD><TD></TD><TD></TD> </TR>
@@ -1546,6 +1548,11 @@ This field indicates which graph component uses the attribute.
 <DD>  Specifies a post-processing step used to smooth out an uneven distribution 
   of nodes.
 
+<DT><A NAME=d:sortv HREF=#a:sortv><STRONG>sortv</STRONG></A>
+<DD>  If <A HREF="#d:packmode">packmode</A> indicates an array packing, 
+  this attribute specifies an
+  insertion order among the components, with smaller values inserted first.
+
 <DT><A NAME=d:splines HREF=#a:splines><STRONG>splines</STRONG></A>
 <DD>  Controls how, and if, edges are represented. If true, edges are drawn as
   splines routed around nodes; if false, edges are drawn as line segments.
@@ -1890,6 +1897,14 @@ the given types.
   Thus, the mode "array_c4" indicates array packing, with 4 rows,
   starting in the upper left and going down the first column, then
   down the second column, etc., until all components are used.
+  <P>
+  If the optional flags contains "u", this causes the insertion
+  order of elements in the array to be determined by user-supplied
+  values. Each component can specify its sort value by a 
+  non-negative integer using the <A HREF="#d:sortv">sortv</A> attribute. 
+  Components are
+  inserted in order, starting with the one with the smallest
+  sort value. If no sort value is specified, zero is used.
 
 <DT><A NAME=k:pagedir><STRONG>pagedir</STRONG></A>
 <DD>"BL", "BR", "TL", "TR", "RB", "RT", "LB", "LT".

@@ -996,6 +996,10 @@ skew top of polygon to right; negative to left.
 :smoothing:G:smoothType:"none";  sfdp
 Specifies a post-processing step used to smooth out an uneven distribution 
 of nodes.
+:sortv:GCN:int:0:0;
+If <A HREF="#d:packmode">packmode</A> indicates an array packing, 
+this attribute specifies an
+insertion order among the components, with smaller values inserted first.
 :splines:G:bool/string;
 Controls how, and if, edges are represented. If true, edges are drawn as
 splines routed around nodes; if false, edges are drawn as line segments.

@@ -187,6 +187,14 @@ columns for row-major or the number of rows for column-major.
 Thus, the mode "array_c4" indicates array packing, with 4 rows,
 starting in the upper left and going down the first column, then
 down the second column, etc., until all components are used.
+<P>
+If the optional flags contains "u", this causes the insertion
+order of elements in the array to be determined by user-supplied
+values. Each component can specify its sort value by a 
+non-negative integer using the <A HREF="#d:sortv">sortv</A> attribute. 
+Components are
+inserted in order, starting with the one with the smallest
+sort value. If no sort value is specified, zero is used.
 :pagedir
 "BL", "BR", "TL", "TR", "RB", "RT", "LB", "LT".
 These specify the 8 row or column major orders for traversing a
