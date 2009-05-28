@@ -138,6 +138,7 @@ case "${host_os}" in
 	;;
   *darwin9* )
 	DARWIN=yes
+	AC_DEFINE_UNQUOTED(DARWIN,1,[Define for any Darwin-based OS.])
 	DARWIN9=yes
 	DEFAULT_FONTPATH="~/Library/Fonts:/Library/Fonts:/Network/Library/Fonts:/System/Library/Fonts"
 	PATHSEPARATOR=":"
@@ -152,6 +153,7 @@ case "${host_os}" in
 	;;
   *darwin* )
 	DARWIN=yes
+	AC_DEFINE_UNQUOTED(DARWIN,1,[Define for any Darwin-based OS.])
 	DEFAULT_FONTPATH="~/Library/Fonts:/Library/Fonts:/Network/Library/Fonts:/System/Library/Fonts"
 	PATHSEPARATOR=":"
         NO_POSTSCRIPT_ALIAS=1
