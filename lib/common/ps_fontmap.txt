@@ -2,7 +2,7 @@
 #define TIMES "Times"
 #else
 #define TIMES "Times New Roman"
-##endif
+#endif
 #define COURIER "Courier"
 #define HELVETICA "Helvetica"
 #define SYMBOL "Symbol"
