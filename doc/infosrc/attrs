@@ -649,9 +649,20 @@ If the value converts to "false", node overlaps are removed by a
 Voronoi-based technique.
 If the value is "scalexy", x and y are separately
 scaled to remove overlaps.
-If sfdp is available, one can set overlap=prism to use a proximity graph-
-based algorithm for overlap removal. This last is the preferred technique,
-though scale and false can work well with small graphs.
+<P>
+If sfdp is available, one can set overlap to "prism" to use a 
+proximity graph-based algorithm for overlap removal. 
+This last is the preferred technique,
+though "scale" and "false" can work well with small graphs.
+This technique starts with a
+small scaling up, controlled by the 
+<A HREF="#d:overlap_scaling"><TT>overlap_scaling</TT></A> attribute,
+which can remove a significant portion of the overlap.
+The prism option also accepts an optional non-negative integer suffix.
+This can be used to control the number of attempts made at overlap
+removal. By default, <TT>overlap="prism"</TT> is equivalent to
+<TT>overlap="prism1000"</TT>. Setting <TT>overlap="prism0"</TT>
+causes only the scaling phase to be run.
 <P>
 If the value is "compress", the layout will be scaled down as much as
 possible without introducing any overlaps, obviously assuming there are
@@ -692,10 +703,7 @@ uses <TT>overlap="9:portho"</TT>. Note that <TT>overlap="true"</TT>,
 <TT>overlap="0:true"</TT> and <TT>overlap="0:"</TT> all turn off all overlap
 removal.
 <P>
-By default, sfdp uses <TT>overlap="prism"</TT>. This is preceded by a
-small scaling up, controlled by the 
-<A HREF="#d:overlap_scaling"><TT>overlap_scaling</TT></A> attribute,
-which can remove a significant portion of the overlap.
+By default, sfdp uses <TT>overlap="prism:0"</TT>.
 <P>
 Except for the Voronoi and prism methods, all of these transforms preserve the
 orthogonal ordering of the original layout. That is, if the x coordinates
@@ -705,8 +713,8 @@ another, this relation will still hold in the transformed layout. The
 similar properties hold for the y coordinates.
 This is not quite true for the "porth*" cases. For these, orthogonal
 ordering is only preserved among nodes related by an edge.
-:overlap_scaling:G:double:-4:-1.0e10; sfdp
-When <TT>overlap=sfdp</TT>, the layout is scaled by this factor, thereby
+:overlap_scaling:G:double:-4:-1.0e10; prism
+When <TT>overlap=prism</TT>, the layout is scaled by this factor, thereby
 removing a fair amount of node overlap, and making node overlap removal
 faster and better able to retain the graph's shape.
 <P>
@@ -714,6 +722,7 @@ If <TT>overlap_scaling</TT> is negative, the layout is scaled by
 <TT>-1*overlap_scaling</TT> times the average label size.
 If <TT>overlap_scaling</TT> is positive, the layout is scaled by
 <TT>overlap_scaling</TT>.
+If <TT>overlap_scaling</TT> is zero, no scaling is done.
 :pack:G:bool/int:false; notdot
 This is true if the value of pack is "true" (case-insensitive) or a
 non-negative integer. If true, each connected component of the graph is
@@ -786,7 +795,7 @@ peripheries value is 1 and the user-defined shape will be drawn in
 a bounding rectangle. Setting <TT>peripheries=0</TT> will turn this off.
 Also, 1 is the maximum peripheries value for clusters.
 :pin:N:bool:false;   neato,fdp
-If true and the node has a pos attribute on input, neato prevents the
+If true and the node has a pos attribute on input, neato or fdp prevents the
 node from moving from the input position. This property can also be specified
 in the pos attribute itself (cf. the <A HREF=#d:point>point</A> type).
 <P>
@@ -802,10 +811,12 @@ Position of node, or spline control points.
 For nodes, the position indicates the center of the node.
 On output, the coordinates are in <A HREF=#points>points</A>.
 <P>
-In neato, fdp and sfdp, pos can be used to set the initial position of a node.
-By default, the coordinates are assumed to be in points. However, the
+In neato and fdp, pos can be used to set the initial position of a node.
+By default, the coordinates are assumed to be in inches. However, the
 <A HREF=command.html#d:s>-s</A> command line flag can be used to specify
-different units.
+different units. As the output coordinates are in points, 
+feeding the output of a graph laid out by a Graphviz program into
+neato or fdp will almost always require the -s flag.
 <P>
 When the <A HREF=command.html#d:n>-n</A> command line flag is used with
 neato, it is assumed the positions have been set by one of the layout
