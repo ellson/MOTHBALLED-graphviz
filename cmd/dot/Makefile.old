@@ -37,6 +37,7 @@ LIBS = -L$(LOC_LIB)/gvc -lgvc_dot_builtins $(PLUGS) \
        -L$(LOC_LIB)/ortho -lortho \
        -L$(LOC_LIB)/vpsc -lvpsc \
        -L$(LOC_LIB)/patchwork -lpatchwork \
+       -L$(LOC_LIB)/osage -losage \
        -L$(LOC_LIB)/sparse -lsparse \
        -L$(LOC_LIB)/rbtree -lrbtree \
        -L$(LOC_LIB)/twopigen -ltwopigen \
