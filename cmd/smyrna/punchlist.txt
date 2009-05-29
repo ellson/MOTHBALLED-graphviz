@@ -4,4 +4,4 @@
 	tries to process old events
 - make install doesn't install some share file for GUI
 - it appears there may be two copies of smyrna.glade in the source
-- node sizes may not be working
+- settings window doesn't apply until a subsequent refresh is forced by another action
