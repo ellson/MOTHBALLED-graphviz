@@ -25,10 +25,8 @@ install: libortho.a
 	$(MKPATH) $(LIBDIR)
 	$(INSTALL) libortho.a $(LIBDIR)
 #	$(SHLIB_LD) -o $(LIBDIR)/libortho.so.$(VERSION) $(OBJS)
-	$(MKPATH) $(INCDIR)
-	$(INSTALL) pathgeom.h $(INCDIR)
-	$(MKPATH) $(LIBMANDIR)
-	$(INSTALL) ortho.3 $(LIBMANDIR)
+#	$(MKPATH) $(LIBMANDIR)
+#	$(INSTALL) ortho.3 $(LIBMANDIR)
 
 clean:
 	$(RM) *.o core
