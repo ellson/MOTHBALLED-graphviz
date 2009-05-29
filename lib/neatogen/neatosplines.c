@@ -755,7 +755,7 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
     path *P = NULL;
     int useEdges = (Nop > 1);
     router_t* rtr = 0;
-    int legal;
+    int legal = 0;
 
     /* build configuration */
     if (edgetype != ET_LINE) {
