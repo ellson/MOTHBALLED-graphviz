@@ -250,6 +250,7 @@ static void
 freeChannel (Dt_t* d, channel* cp, Dtdisc_t* disc)
 {
     free_graph (cp->G);
+    free (cp->seg_list);
     free (cp);
 }
 
@@ -1282,9 +1283,6 @@ orthoEdges (Agraph_t* g, int useLbls)
     if (Concentrate)
 	freePS (ps);
 
-    freeSGraph (sg);
-    dtclose (mp->hchans);
-    dtclose (mp->vchans);
     for (i=0; i < n_edges; i++)
 	free (route_list[i].segs);
     free (route_list);

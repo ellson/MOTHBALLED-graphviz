@@ -414,5 +414,9 @@ void freeMaze (maze* mp)
     free (mp->gcells[0].sides);
     free (mp->cells);
     free (mp->gcells);
+    freeSGraph (mp->sg);
+    dtclose (mp->hchans);
+    dtclose (mp->vchans);
+    free (mp);
 }
 

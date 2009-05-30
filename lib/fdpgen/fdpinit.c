@@ -168,9 +168,7 @@ void fdp_cleanup(graph_t * g)
     node_t *n;
     edge_t *e;
 
-    n = agfstnode(g);
-    free(ND_alg(n));
-    for (; n; n = agnxtnode(g, n)) {
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    gv_cleanup_edge(e);
 	}
