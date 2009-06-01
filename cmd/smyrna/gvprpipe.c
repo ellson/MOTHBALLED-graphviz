@@ -254,10 +254,10 @@ exec_gvpr(Agraph_t* srcGraph, char* filename)
 	CloseHandle(piProcInfo.hProcess);
 	CloseHandle(piProcInfo.hThread);
 #else
-	pp = _popen (agxbuse (&xbuf), "rw");
+	pp = popen (agxbuse (&xbuf), "rw");
 	if (!pp)
 	{
-		printf ("error #:%d\n",errno);
+//		printf ("error #:%d\n",errno);
 		exit(1);
 	}
 
