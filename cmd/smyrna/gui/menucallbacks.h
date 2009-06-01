@@ -83,5 +83,6 @@ int show_close_nosavedlg(void);
 
 /*others from settings dialog*/
 _BB void on_gvprbuttonload_clicked(GtkWidget * widget, gpointer user_data);
+_BB void on_gvprbuttonsave_clicked(GtkWidget * widget, gpointer user_data);
 
 #endif

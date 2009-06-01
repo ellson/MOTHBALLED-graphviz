@@ -180,17 +180,34 @@ void settvposinfo(Agraph_t* g,topview* t)
 	t->minedgelen=minedgelen;
 
 }
+/*if object has attribute returns its value, else returns 0*/
+/*for atttribute values which has no meaning for a 0 or 1 value 0 iz returned,
+function is error safe
+*/
+static int boolAttr(char* attr,void* obj,int defv)
+{
+	char* s;	
+	s=agget(obj,attr);
+	if ((!s) || (strlen(s)==0))
+		return defv;
+	if (s[0]=='1')
+		return 1;
+	return defv;
+}
 void settvcolorinfo(Agraph_t* g,topview* t)
 {
     int ind;
 	RGBColor color;
 	/*loop nodes*/
 	/* float maxvalue=0; */
-	char* str;
 	for (ind=0;ind < t->Nodecount ; ind ++)
 	{
 		setRGBcolor(&color,agget(t->Nodes[ind].Node, "color"));
 		t->Nodes[ind].Color.R = color.R;t->Nodes[ind].Color.G = color.G;t->Nodes[ind].Color.B = color.B;t->Nodes[ind].Color.A = color.A;t->Edges[ind].Color.tag=color.tag;
+		/*while in the loop why dont we set some smyrna settings from graph? selected , highlighted , visible */
+		t->Nodes[ind].data.Selected=boolAttr("selected",t->Nodes[ind].Node,0);
+		t->Nodes[ind].data.Highlighted=boolAttr("highlighted",t->Nodes[ind].Node,0);
+		t->Nodes[ind].data.Visible=boolAttr("visible",t->Nodes[ind].Node,1);
 	}
 	/*loop edges*/
 	for (ind=0;ind < t->Edgecount ; ind ++)
@@ -203,6 +220,9 @@ void settvcolorinfo(Agraph_t* g,topview* t)
 				color.tag=0;
 			}
 			t->Edges[ind].Color.R=color.R;	t->Edges[ind].Color.G=color.G;	t->Edges[ind].Color.B=color.B;	t->Edges[ind].Color.A=color.A;t->Edges[ind].Color.tag=color.tag;
+		t->Edges[ind].data.Selected=boolAttr("selected",t->Edges[ind].Edge,0);
+		t->Edges[ind].data.Highlighted=boolAttr("highlighted",t->Edges[ind].Edge,0);
+		t->Edges[ind].data.Visible=boolAttr("visible",t->Edges[ind].Edge,1);
 	}
 	/*update node size values in case node size is changed*/
 	t->init_node_size=t->minedgelen*10/GetOGLDistance(10)*atoi(agget(view->g[view->activeGraph],"nodesize"))/100.0*5.00;
@@ -258,7 +278,6 @@ void preparetopview(Agraph_t * g, topview * t)
 
 
 	t->Edges = N_GNEW(agnedges(g), topview_edge);
-
     t->Nodes = N_GNEW(agnnodes(g), topview_node);
 	t->maxnodedegree=1;
 

@@ -281,10 +281,10 @@ void change_selected_node_attributes(Agraph_t * g, char *attrname,
 {
     int ind = 0;
     agattr(g, AGNODE, attrname, "");
-
-	for (ind = 0; ind < view->Topview->Graphdata.selectedNodesCount; ind++) 
+	for (ind = 0; ind < view->Topview->Nodecount; ind++) 
 	{
-		agset(view->Topview->Graphdata.selectedNodes[ind], attrname, attrvalue);
+		if (view->Topview->Nodes[ind].data.Selected==1)
+			agset(view->Topview->Nodes[ind].Node, attrname, attrvalue);
     }
 }
 void change_selected_edge_attributes(Agraph_t * g, char *attrname,
@@ -293,9 +293,10 @@ void change_selected_edge_attributes(Agraph_t * g, char *attrname,
     int ind = 0;
     agattr(g, AGEDGE, attrname, "");
 
-	for (ind = 0; ind < view->Topview->Graphdata.selectedEdgesCount; ind++) 
+	for (ind = 0; ind < view->Topview->Edgecount; ind++) 
 	{
-		agset(view->Topview->Graphdata.selectedEdges[ind], attrname, attrvalue);
+		if (view->Topview->Edges[ind].data.Selected==1)
+			agset(view->Topview->Edges[ind].Edge, attrname, attrvalue);
 
     }
 }
@@ -498,16 +499,14 @@ void get_gtktextview_text(GtkTextView* w,agxbuf* xbuf)
 {
 	int charcnt;
 	GtkTextBuffer * gtkbuf;
-	GtkTextIter* startit;
-	GtkTextIter* endit;
-	startit=gtk_text_buffer_new(NULL);
-	endit=gtk_text_buffer_new(NULL);
+	GtkTextIter startit;
+	GtkTextIter endit;
 	gtkbuf=gtk_text_view_get_buffer(w);
 	charcnt=gtk_text_buffer_get_char_count (gtkbuf);
-	gtk_text_buffer_get_start_iter (gtkbuf,startit);
-	gtk_text_buffer_get_end_iter (gtkbuf,endit);
+	gtk_text_buffer_get_start_iter (gtkbuf,&startit);
+	gtk_text_buffer_get_end_iter (gtkbuf,&endit);
 
-	agxbput (xbuf,gtk_text_buffer_get_text(gtkbuf,startit,endit,0));
+	agxbput (xbuf,gtk_text_buffer_get_text(gtkbuf,&startit,&endit,0));
 }
 
 

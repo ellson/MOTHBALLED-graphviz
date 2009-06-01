@@ -19,6 +19,8 @@
 #include "selection.h"
 #include "gltemplate.h"
 #include "glutils.h"
+#include "glmotion.h"
+
 
 
 void btnToolSingleSelect_clicked(GtkWidget * widget, gpointer user_data)

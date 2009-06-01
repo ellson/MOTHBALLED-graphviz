@@ -26,7 +26,6 @@ void glmotion_main(ViewInfo * v,GdkEventMotion * event,GtkWidget * widget)
 	/*zooming */
     if ((event->state & GDK_BUTTON1_MASK)&& (v->mouse.mouse_mode == MM_ZOOM))
 		glmotion_zoom(v);
-	return 1;
 
 	/*selection rect */
     if ((event->state & GDK_BUTTON1_MASK)
@@ -102,13 +101,7 @@ void graph_zoom(float real_zoom)
 
 void glmotion_zoom(ViewInfo * v)
 {
-
-
-
-
-	char buf[256];
-
-	float real_zoom,xx;
+	float real_zoom;
 	if (view->active_camera == -1) {
 			real_zoom = view->zoom + view->mouse.dx / 10 * (view->zoom * -1 / 20);
 	}

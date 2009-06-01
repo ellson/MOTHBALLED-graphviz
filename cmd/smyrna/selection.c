@@ -375,40 +375,21 @@ static int point_within_polygon(xdot_op * op)
 
 int select_node(topview_node* N)
 {
-    int ind = 0;
-    //check if in the list
-	for (ind = 0; ind < view->Topview->Graphdata.selectedNodesCount; ind++) 
-	{
-		if (view->Topview->Graphdata.selectedNodes[ind] == N)
-	    return 0;
-    }
-    //for single selections i think realloc is ok, for mass selections i ll figure out something else
-    view->Topview->Graphdata.selectedNodes =
-		RALLOC(view->Topview->Graphdata.selectedNodesCount+2,view->Topview->Graphdata.selectedNodes, topview_node*);
-	view->Topview->Graphdata.selectedNodes[view->Topview->Graphdata.selectedNodesCount] = N;
-    view->Topview->Graphdata.selectedNodesCount++;
-    
 	N->data.Selected=1;
+	if(agattr(agraphof(N->Node),AGNODE,"selected","1"))
+		return 1;
+	else 
+		return 0;
     return 1;
 }
 
 int select_edge(topview_edge* E)
 {
-    int ind = 0;
-    //check if in the list
-    for (ind = 0; ind < view->Topview->Graphdata.selectedEdgesCount;ind++) 
-	{
-		if (view->Topview->Graphdata.selectedEdges[ind] == E)
-			return 0;
-    }
-    //for single selections i think realloc is ok, for mass selections i ll figure out something else
-view->Topview->Graphdata.selectedEdges =	
-		RALLOC(view->Topview->Graphdata.selectedEdgesCount+1,view->Topview->Graphdata.selectedEdges, topview_edge*);
-	view->Topview->Graphdata.selectedEdges[view->Topview->Graphdata.selectedEdgesCount] = E;
-	view->Topview->Graphdata.selectedEdgesCount ++;
 	E->data.Selected=1;
-    return 1;
-
+	if(agattr(agraphof(E->Edge),AGEDGE,"selected","1"))
+		return 1;
+	else 
+		return 0;
 }
 static void update_cgraph_pos(topview_node* N)
 {
@@ -426,26 +407,11 @@ static void update_cgraph_pos(topview_node* N)
 
 int deselect_node(topview_node* N)
 {
-    int ind = 0;
-    int valid = 0;
-    //check if in the list
-    for (ind = 0; ind < view->Topview->Graphdata.selectedNodesCount; ind++) 
-	{
-		if (valid)
-			view->Topview->Graphdata.selectedNodes[ind-1]=view->Topview->Graphdata.selectedNodes[ind];
-		if (view->Topview->Graphdata.selectedNodes[ind] == N)
-			valid = 1;
-    }
-    //for single selections i think realloc is ok, for mass selections i ll figure out something else
-    if (valid) 
-	{
-		view->Topview->Graphdata.selectedNodes=RALLOC(view->Topview->Graphdata.selectedNodesCount-1,view->Topview->Graphdata.selectedNodes,topview_node*);
-		view->Topview->Graphdata.selectedNodesCount--;
-		N->data.Selected=0;
-		N->data.selectionflag=0;
-	}
-	/*update cgraph with pos values*/
-	update_cgraph_pos(N);
+	N->data.Selected=0;
+	if(agattr(agraphof(N->Node),AGNODE,"selected","0"))
+		return 1;
+	else 
+		return 0;
     return 1;
 
 }
@@ -453,27 +419,11 @@ int deselect_node(topview_node* N)
 
 int deselect_edge(topview_edge* E)
 {
-
-    int ind = 0;
-    int valid = 0;
-    //check if in the list
-    for (ind = 0; ind < view->Topview->Graphdata.selectedEdgesCount; ind++) 
-	{
-		if (valid)
-			view->Topview->Graphdata.selectedEdges[ind-1]=view->Topview->Graphdata.selectedEdges[ind];
-		if (view->Topview->Graphdata.selectedEdges[ind] == E)
-			valid = 1;
-    }
-    //for single selections i think realloc is ok, for mass selections i ll figure out something else
-    if (valid) 
-	{
-		view->Topview->Graphdata.selectedEdges=RALLOC(view->Topview->Graphdata.selectedEdgesCount-1,view->Topview->Graphdata.selectedEdges,topview_edge*);
-		view->Topview->Graphdata.selectedEdgesCount--;
-		E->data.Selected=0;
-		E->data.selectionflag=0;
-	}
-    return 1;
-	
+	E->data.Selected=0;
+	if(agattr(agraphof(E->Edge),AGEDGE,"selected","0"))
+		return 1;
+	else 
+		return 0;
 }
 
 int select_all_nodes(Agraph_t * g)
@@ -530,13 +480,14 @@ int select_all(Agraph_t * g)
     return 1;
 
 }
-
-int deselect_all(Agraph_t * g)
+int deselect_all(Agraph_t* g)
 {
     deselect_all_nodes(g);
     deselect_all_edges(g);
     return 1;
+
 }
+
 
 int lineintersects(float X1, float X2, float Y1, float Y2)
 {

@@ -402,16 +402,14 @@ void mTestgvpr(GtkWidget * widget, gpointer user_data)
 	int charcnt;
 	char* bf2;
 	GtkTextBuffer * gtkbuf;
-	GtkTextIter* startit;
-	GtkTextIter* endit;
-	startit=gtk_text_buffer_new(NULL);
-	endit=gtk_text_buffer_new(NULL);
+	GtkTextIter startit;
+	GtkTextIter endit;
 	gtkbuf=gtk_text_view_get_buffer((GtkTextView*) glade_xml_get_widget(xml,"gvprtextinput"));
 	charcnt=gtk_text_buffer_get_char_count (gtkbuf);
-	gtk_text_buffer_get_start_iter (gtkbuf,startit);
-	gtk_text_buffer_get_end_iter (gtkbuf,endit);
+	gtk_text_buffer_get_start_iter (gtkbuf,&startit);
+	gtk_text_buffer_get_end_iter (gtkbuf,&endit);
 
-	bf2=gtk_text_buffer_get_text(gtkbuf,startit,endit,0);
+	bf2=gtk_text_buffer_get_text(gtkbuf,&startit,&endit,0);
 	run_gvpr (view->g[view->activeGraph], bf2);
 }
 
@@ -442,9 +440,6 @@ on_gvprbuttonload_clicked(GtkWidget * widget, gpointer user_data)
 	    }
 	    gtkbuf = gtk_text_view_get_buffer((GtkTextView*) glade_xml_get_widget(xml,"gvprtextinput"));
 	    str=agxbuse (&xbuf);
-#if 0
-	    printf ("%ds",(size_t)strlen(str));
-#endif
 	    if(g_utf8_validate(str,-1,NULL)) {
 		gtk_text_buffer_set_text (gtkbuf, str, -1);
 	    }
@@ -468,15 +463,35 @@ void on_gvprbuttonsave_clicked(GtkWidget * widget, gpointer user_data)
 {
     FILE *output_file=NULL;
 	agxbuf xbuf;
+    GtkTextBuffer * gtkbuf; /*GTK buffer from glade GUI*/
+	int charcnt;
+	char* bf2;
+	GtkTextIter startit;
+	GtkTextIter endit;
+
+
 
 	agxbinit (&xbuf, SMALLBUF, NULL);
 	/*file name should be returned in xbuf*/
 	if(savefiledlg(0,NULL,&xbuf))
 	{
 		output_file = fopen(agxbuse (&xbuf), "w");
+		if (output_file)
+		{
+			gtkbuf=gtk_text_view_get_buffer((GtkTextView*) glade_xml_get_widget(xml,"gvprtextinput"));
+			charcnt=gtk_text_buffer_get_char_count (gtkbuf);
+			gtk_text_buffer_get_start_iter (gtkbuf,&startit);
+			gtk_text_buffer_get_end_iter (gtkbuf,&endit);
+			bf2=gtk_text_buffer_get_text(gtkbuf,&startit,&endit,0);
+			fprintf(output_file,"%s",bf2);
+			fclose(output_file);
+			
+		}
+
 
 		/*Code has not been completed for this function yet*/
 	}
+
 
 }
 
