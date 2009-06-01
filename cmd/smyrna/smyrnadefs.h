@@ -289,13 +289,6 @@ typedef struct _graph_data {
     float offsetx;
     float offsety;
     float offsetz;
-
-    topview_node **selectedNodes;
-    topview_edge **selectedEdges;
-
-    int selectedGraphsCount;
-    int selectedNodesCount;
-    int selectedEdgesCount;
 } graph_data;
 
 typedef struct {

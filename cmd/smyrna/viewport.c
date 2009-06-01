@@ -464,12 +464,8 @@ void init_viewport(ViewInfo * view)
     set_viewport_settings_from_template(view, view->default_attributes);
     view->dfltViewType = VT_NONE;
     view->dfltEngine = GVK_NONE;
-	view->Topview->Graphdata.selectedNodesCount=0;
 	view->Topview->Graphdata.GraphFileName=(char*)0;
 	view->Topview->Graphdata.Modified=0;
-	view->Topview->Graphdata.selectedEdges=0;
-	view->Topview->Graphdata.selectedEdgesCount=0;
-	view->Topview->Graphdata.selectedNodes=0;
 	view->colschms=NULL;
 	view->flush=1;
 
@@ -477,48 +473,6 @@ void init_viewport(ViewInfo * view)
 	//create fontset
 }
 
-
-/* load_graph_params:
- * run once right after loading graph
- */
-static void load_graph_params(Agraph_t * graph)
-{
-	view->Topview->Graphdata.Modified=0;
-	view->Topview->Graphdata.selectedEdges=NULL;
-	view->Topview->Graphdata.selectedNodes=NULL;
-	view->Topview->Graphdata.selectedEdgesCount=0;
-	view->Topview->Graphdata.selectedEdgesCount=0;
-
-
-}
-
-/* attach_object_custom_data_to_graph:
- * run once or to reset all data !! prev data is removed
- */
-#if 0
-static int attach_object_custom_data_to_graph(Agraph_t * graph)
-{
-    Agnode_t *n;
-    Agedge_t *e;
-    Agraph_t *s;
-
-    agbindrec(graph, "custom_graph_data", sizeof(custom_graph_data), FALSE);//graph custom data
-    init_object_custom_data(graph, graph);	//attach to graph itself
-    n = agfstnode(graph);
-
-    for (s = agfstsubg(graph); s; s = agnxtsubg(s))
-	init_object_custom_data(graph, s);	//attach to subgraph 
-
-    for (n = agfstnode(graph); n; n = agnxtnode(graph, n)) {
-	init_object_custom_data(graph, n);	//attach to node
-	for (e = agfstout(graph, n); e; e = agnxtout(graph, e)) {
-	    init_object_custom_data(graph, e);	//attach to edge
-	}
-    }
-    return 1;
-
-}
-#endif
 
 /* update_graph_params:
  * adds gledit params
@@ -614,7 +568,6 @@ static Agraph_t *loadGraph(char *filename)
 		fclose (input_file);
 		return 0;
     }
-	load_graph_params(g);
 	view->Topview->Graphdata.GraphFileName = strdup (filename);
 	return g;
 }

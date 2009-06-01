@@ -72,10 +72,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dot", "cmd\dot\dot.vcproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvplugin_neato_layout", "plugin\neato_layout\gvplugin_neato_layout.vcproj", "{92EA9398-9244-4DAA-8E7D-2F6BEC338CAB}"
 	ProjectSection(ProjectDependencies) = postProject
-		{C5CEB09E-79AF-4091-ACCF-D28EC3D7D90F} = {C5CEB09E-79AF-4091-ACCF-D28EC3D7D90F}
-		{8E82D6BD-74D0-48C3-887A-1754EA71DA5A} = {8E82D6BD-74D0-48C3-887A-1754EA71DA5A}
 		{AE706502-3203-4815-BF50-4D73BF96BA58} = {AE706502-3203-4815-BF50-4D73BF96BA58}
 		{15229511-9F6C-48A5-9194-660CA6492563} = {15229511-9F6C-48A5-9194-660CA6492563}
+		{C5CEB09E-79AF-4091-ACCF-D28EC3D7D90F} = {C5CEB09E-79AF-4091-ACCF-D28EC3D7D90F}
+		{8E82D6BD-74D0-48C3-887A-1754EA71DA5A} = {8E82D6BD-74D0-48C3-887A-1754EA71DA5A}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "patchwork", "lib\patchwork\gvpatchwork.vcproj", "{6BD77BDE-151D-4824-A8BC-9F067662F7AB}"
@@ -196,6 +196,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvtest", "cmd\tester\gvtest.vcproj", "{C2AA7FA3-9BB5-4319-A01D-37439E0E6830}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "osage", "lib\osage\osage.vcproj", "{8E82D6BD-74D0-48C3-887A-1754EA71DA5A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvprlib", "cmd\gvprlib\gvprlib.vcproj", "{1068DA13-0BB3-43A7-8776-6F519003EEBD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -423,6 +425,10 @@ Global
 		{8E82D6BD-74D0-48C3-887A-1754EA71DA5A}.Debug|Win32.Build.0 = Debug|Win32
 		{8E82D6BD-74D0-48C3-887A-1754EA71DA5A}.Release|Win32.ActiveCfg = Release|Win32
 		{8E82D6BD-74D0-48C3-887A-1754EA71DA5A}.Release|Win32.Build.0 = Release|Win32
+		{1068DA13-0BB3-43A7-8776-6F519003EEBD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1068DA13-0BB3-43A7-8776-6F519003EEBD}.Debug|Win32.Build.0 = Debug|Win32
+		{1068DA13-0BB3-43A7-8776-6F519003EEBD}.Release|Win32.ActiveCfg = Release|Win32
+		{1068DA13-0BB3-43A7-8776-6F519003EEBD}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
