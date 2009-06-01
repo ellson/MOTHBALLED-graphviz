@@ -16,6 +16,9 @@
 
 #include "gvprpipe.h"
 #include <stdio.h> 
+#include <stdlib.h>
+#include <glade/glade.h>
+
 
 #ifdef WIN32
 #include <windows.h> 
@@ -30,6 +33,7 @@
 #include <const.h> 
 #include <agxbuf.h> 
 
+extern GladeXML* xml;	
 #ifdef WIN32
 
 /* two pipes
@@ -68,7 +72,7 @@ static int cgraph_write_wrapper(void *chan, char *str)
 
 static int cgraph_read_wrapper (void* ch,char* bf,int sz)
 {
-    DWORD dwRead,lpExitCode;
+    DWORD dwRead;
     BOOL bSuccess = FALSE;
 	int ind=0;
 	bSuccess=ReadFile( GvprToSmyrnaRd, bf, sz, &dwRead, NULL);
@@ -124,7 +128,6 @@ ReadFromPipe()
     Agiodisc_t a; 
     Agdisc_t disc;
     Agraph_t* g=0;
-   DWORD lpExitCode;
 
 
     if (!CloseHandle(SmyrnaToGvprWr))
@@ -228,15 +231,17 @@ exec_gvpr(Agraph_t* srcGraph, char* filename)
 #endif
 
     agxbinit (&xbuf, SMALLBUF, bf);
-    agxbput (&xbuf, "gvpr -c -f ");
+	agxbput (&xbuf, "gvpr -c -f ");
     agxbput (&xbuf, filename);
+    agxbput (&xbuf, " c:/tvgraph.gv");
+	
    
 #ifdef WIN32
     CreateChildProcess (agxbuse (&xbuf), SmyrnaToGvprRd, GvprToSmyrnaWr,GvprToSmyrnaWr);
     xio = srcGraph->clos->disc.io;
     a.afread = srcGraph->clos->disc.io->afread; 
     a.putstr = cgraph_write_wrapper;
-    a.flush = xio->flush;
+    a.flush =xio->flush;
     srcGraph->clos->disc.io = &a;
 	/*we need to check if there is still a pipe to write, iif child process is still alive?*/
 	agwrite(srcGraph,NULL);
@@ -249,10 +254,16 @@ exec_gvpr(Agraph_t* srcGraph, char* filename)
 	CloseHandle(piProcInfo.hProcess);
 	CloseHandle(piProcInfo.hThread);
 #else
-    pp = popen (agxbuse (&xbuf), "r+");
+	pp = _popen (agxbuse (&xbuf), "rw");
+	if (!pp)
+	{
+		printf ("error #:%d\n",errno);
+		exit(1);
+	}
+
     agwrite(srcGraph, pp);
     G = agread(pp, NULL) ;
-    pclose (pp);
+    _pclose (pp);
     unlink (filename);
 #endif
 
@@ -270,8 +281,8 @@ mkTempFile ()
     char buf2[512];
 
     GetTempPath(512,buf);
-    if (!GetTempFileName(buf,"gvpr",NULL,buf2))
-	return NULL;
+    if (GetTempFileName(buf,"gvpr",0,buf2)==0)
+		return NULL;
     return strdup (buf2);
 }
 
@@ -323,19 +334,18 @@ save_gvpr_program (char* prg)
     }
 }
 
+extern Agraph_t* execGVPR(Agraph_t* srcG, char* prg);
 static int 
 apply_gvpr(Agraph_t* g,char* prog)
 {
-    Agraph_t* tempg = exec_gvpr (g, prog);
+    Agraph_t* tempg = execGVPR (g, prog);
 
-    if (tempg) {
-	add_graph_to_viewport(tempg);
-	return 0;
+    if ((tempg) &&(gtk_toggle_button_get_active((GtkToggleButton *) glade_xml_get_widget(xml, "GtkCheckButton"))))
+	{
+		add_graph_to_viewport(tempg);
+		return 1;
     }
-    else {
-	fprintf (stderr, "gvpr failed!\n");
 	return 1;
-    }
 }
 
 int run_gvpr (Agraph_t* srcGraph, char* script)
