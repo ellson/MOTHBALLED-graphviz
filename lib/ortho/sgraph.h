@@ -31,7 +31,7 @@ struct snode {
   struct cell* cells[2];
 
     /* edges incident on this node 
-     * -- stored as indices of the nodes vector in the graph
+     * -- stored as indices of the edges array in the graph
      */
   int* adj_edge_list;  
   int index;
