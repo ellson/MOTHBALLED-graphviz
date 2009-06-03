@@ -1,18 +1,30 @@
 #!/bin/sh
-
 # Written by: John Ellson <ellson@research.att.com>
 
-if test -z $1; then
-	f=noname.dot
-else
-	f=$1
-fi
-if ! test -f $f; then
-	if ! test -w .; then
-		echo "error: directory `pwd` is not writable"
-		exit
+error() { echo "$0: $*" >&2; exit 1; }
+
+for prog in gvim vim ""; do
+	if test -x /usr/bin/$prog; then break; fi
+	if which $prog >&/dev/null; then break; fi
+done
+
+if test -z "$prog"; then error "the editor not found"; fi
+
+default="noname.dot"
+
+if test -z "$1"; then
+	if test -s "$default"; then
+		error "$default already exists"
+	else
+		f="$default"
 	fi
-	cat >$f <<EOF
+else
+	f="$1"
+fi
+
+if ! test -f "$f"; then
+	if ! test -w .; then error "directory `pwd` is not writable"; fi
+	cat >"$f" <<EOF
 digraph G {
 	graph [layout=dot rankdir=LR]
 
@@ -28,12 +40,9 @@ digraph G {
 }
 EOF
 fi
-if ! test -w $f; then
-	echo "error: $f is not writable"
-	exit
-fi
+if ! test -w "$f"; then error "$f is not writable"; fi
 
 # dot -Txlib watches the file $f for changes using inotify()
-dot -Txlib $f &
-# open an editor on the file $f (could be any editor)
-gvim $f &
+dot -Txlib "$f" &
+# open an editor on the file $f (could be any editor; gvim &'s itself)
+exec $prog "$f"
