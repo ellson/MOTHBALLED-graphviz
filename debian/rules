@@ -64,7 +64,7 @@ configure-stamp:
 	--with-devil \
 	--with-gts \
 	--without-ortho \
-	--without-sfdp \
+	--with-sfdp \
 	--without-smyrna \
 	--disable-sharp \
 	--enable-guile \
