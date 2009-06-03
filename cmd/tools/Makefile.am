@@ -9,22 +9,20 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/pathplan \
 	-I$(top_srcdir)/lib/pack \
 	-I$(top_srcdir)/lib/neatogen \
-	-I$(top_srcdir)/lib/sparse \
+	-I$(top_srcdir)/lib/sfdpgen \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/common \
 	-I$(top_srcdir)/lib/ingraphs @EXPAT_INCLUDES@
 
 pdfdir = $(pkgdatadir)/doc/pdf
 
-noinst_HEADERS = colortbl.h convert.h mmio.h matrix_market.h graph_generator.h
-bin_PROGRAMS = gc gvcolor gxl2gv acyclic nop ccomps sccmap tred \
-	unflatten gvpack dijkstra bcomps mm2gv gvgen
-man_MANS = gc.1 gvcolor.1 gxl2gv.1 acyclic.1 nop.1 ccomps.1 sccmap.1 \
-	tred.1 unflatten.1 gvpack.1 dijkstra.1 bcomps.1 mm2gv.1 gvgen.1
-pdf_DATA = gc.1.pdf gvcolor.1.pdf gxl2gv.1.pdf acyclic.1.pdf \
-	   nop.1.pdf ccomps.1.pdf sccmap.1.pdf tred.1.pdf \
-	   unflatten.1.pdf gvpack.1.pdf dijkstra.1.pdf \
-	   bcomps.1.pdf mm2gv.1.pdf gvgen.1.pdf
+noinst_HEADERS = colortbl.h convert.h
+bin_PROGRAMS = gc gvcolor gxl2dot acyclic nop ccomps sccmap tred \
+	unflatten gvpack dijkstra bcomps mm2gv
+man_MANS = gc.1 gvcolor.1 gxl2dot.1 acyclic.1 nop.1 ccomps.1 sccmap.1 \
+	tred.1 unflatten.1 gvpack.1 dijkstra.1 bcomps.1
+pdf_DATA = gc.pdf gvcolor.pdf gxl2dot.pdf acyclic.pdf nop.pdf ccomps.pdf \
+	sccmap.pdf tred.pdf unflatten.pdf gvpack.pdf dijkstra.pdf bcomps.pdf
 
 install-data-hook:
 	(cd $(DESTDIR)$(man1dir); rm -f gv2gxl.1; $(LN_S) gxl2gv.1 gv2gxl.1;)
@@ -140,18 +138,13 @@ gvpack_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout.la
 
-gvpack.1.pdf: $(srcdir)/gvpack.1
-	- @GROFF@ -Tps -man $(srcdir)/gvpack.1 | @PS2PDF@ - - >gvpack.1.pdf
-
-mm2gv_SOURCES = mm2gv.c matrix_market.c mmio.c
+mm2gv_SOURCES = mm2dot.c matrix_market.c mmio.c
 
 mm2gv_LDADD = \
-    $(top_builddir)/lib/common/libcommon_C.la \
-	$(top_builddir)/lib/sparse/libsparse_C.la \
-	$(top_builddir)/lib/cgraph/libcgraph.la @MATH_LIBS@
+	$(top_builddir)/lib/gvc/libgvc.la \
+	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
+	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout.la
 
-mm2gv.1.pdf: mm2gv.1
-	- @GROFF@ -Tps -man mm2gv.1 | @PS2PDF@ - - >mm2gv.1.pdf
 
 dijkstra_SOURCES = dijkstra.c
 

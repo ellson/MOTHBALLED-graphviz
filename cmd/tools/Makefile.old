@@ -68,9 +68,23 @@ CCOBJS = ccomps.o
 SCCOBJS = sccmap.o
 GXLOBJS = cvtgxl.o   gv2gxl.o  gxl2gv.o
 GVPOBJS = gvpack.o gvpack_builtins.o
+MMGVOBJS = mm2dot.o matrix_market.o mmio.o
+
 BCCOBJS = bcomps.o
 MANS = acyclic.1 gvcolor.1 nop.1 tred.1 ccomps.1 gc.1 sccmap.1 \
 	unflatten.1 gxl2gv.1 gv2gxl.1 gvpack.1 bcomps.1
+
+mm2gv : $(GVPOBJS)
+	$(CPP) $(LDFLAGS) $(MMGVOBJS) $(INGLIB) $(PDNLIBS) -o $@
+
+mm2dot.o : mm2dot.c
+	$(CC) -c $(CCFLAGS) $(DEFINES) $(DNINCS) $(PINCS) mm2dot.c
+
+matrix_market.o : matrix_market.c
+	$(CC) -c $(CCFLAGS) $(DEFINES) $(DNINCS) $(PINCS) matrix_market.c
+
+mmio.o : mmio.c
+	$(CC) -c $(CCFLAGS) $(DEFINES) $(DNINCS) $(PINCS) mmio.c
 
 gvpack : $(GVPOBJS)
 	$(CPP) $(LDFLAGS) $(GVPOBJS) $(INGLIB) $(PDNLIBS) -o $@
