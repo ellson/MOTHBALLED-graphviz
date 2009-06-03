@@ -189,8 +189,13 @@ BuildRequires: librsvg2-devel
 %if %fedora >= 7
 %define DEVIL 1
 %define GDK_PIXBUF 1
+#define SMYRNA 1
+%define SFDP 1
 %define LASI 1
-BuildRequires: gd gd-devel perl-devel DevIL-devel lasi-devel
+BuildRequires: gd gd-devel perl-devel DevIL-devel
+BuildRequires: lasi-devel
+BuildRequires: gts-devel
+#BuildRequires: gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel freeglut-devel
 %endif
 %if %fedora >= 8
 %define R_LANG 1
