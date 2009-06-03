@@ -27,6 +27,7 @@
 #else
 #include <stdlib.h>
 #include <unistd.h>
+#include <errno.h>
 #endif
 
 #include <viewport.h> 
@@ -254,16 +255,15 @@ exec_gvpr(Agraph_t* srcGraph, char* filename)
 	CloseHandle(piProcInfo.hProcess);
 	CloseHandle(piProcInfo.hThread);
 #else
-	pp = popen (agxbuse (&xbuf), "rw");
-	if (!pp)
-	{
-//		printf ("error #:%d\n",errno);
-		exit(1);
-	}
+    pp = popen (agxbuse (&xbuf), "r+");
+    if (!pp) {
+	fprintf (stderr, "error #:%d\n",errno);
+	exit(1);
+    }
 
     agwrite(srcGraph, pp);
     G = agread(pp, NULL) ;
-    _pclose (pp);
+    pclose (pp);
     unlink (filename);
 #endif
 
@@ -338,7 +338,11 @@ extern Agraph_t* execGVPR(Agraph_t* srcG, char* prg);
 static int 
 apply_gvpr(Agraph_t* g,char* prog)
 {
+#ifdef WIN32
     Agraph_t* tempg = execGVPR (g, prog);
+#else
+    Agraph_t* tempg = exec_gvpr (g, prog);
+#endif
 
     if ((tempg) &&(gtk_toggle_button_get_active((GtkToggleButton *) glade_xml_get_widget(xml, "GtkCheckButton"))))
 	{
