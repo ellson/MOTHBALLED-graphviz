@@ -1,0 +1,12 @@
+*.la
+*.lo
+*.pc
+.deps
+.libs
+Makefile
+Makefile.in
+parser.[ch]
+y.output
+y.tab.[ch]
+*.pdf
+CMakeFiles CMakeTmp CMakeFiles CMakeCache.txt cmake_install.cmake
