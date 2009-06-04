@@ -59,7 +59,6 @@ void mOpenSlot(GtkWidget * widget, gpointer user_data)
 	}
 
     gtk_widget_destroy(dialog);
-    gtk_widget_destroy((GtkWidget *) filter);
 }
 
 void mSaveSlot(GtkWidget * widget, gpointer user_data)

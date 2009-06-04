@@ -82,6 +82,15 @@ void btnTVReverse_clicked_cb(GtkWidget * widget, gpointer user_data)
 void cgbTVSelect_toggled_cb(GtkWidget * widget, gpointer user_data)
 {
 }
+void cgbTVVisible_toggled_cb(GtkWidget * widget, gpointer user_data)
+{
+
+}
+void cgbTVHighlighted_toggled_cb(GtkWidget * widget,
+				     gpointer user_data)
+{
+
+}
 
 
 

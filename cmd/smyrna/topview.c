@@ -258,8 +258,6 @@ void preparetopview(Agraph_t * g, topview * t)
 
     ind = 0;
     ind2 = 0;
-    gtk_widget_hide(glade_xml_get_widget(xml, "layout6"));	//hide top panel
-//      gtk_widget_hide(glade_xml_get_widget(xml, "menubar1")); //hide menu
     data_type_count = 0;
 	d_attr1=NULL;
     d_attr1 = agget(g, "nodelabelattribute");
@@ -273,10 +271,6 @@ void preparetopview(Agraph_t * g, topview * t)
 
 
 	/*initialize node and edge array */
-	printf("# of edges:%d\n",agnedges(g));
-	printf("# of nodes:%d\n",agnnodes(g));
-
-
 	t->Edges = N_GNEW(agnedges(g), topview_edge);
     t->Nodes = N_GNEW(agnnodes(g), topview_node);
 	t->maxnodedegree=1;

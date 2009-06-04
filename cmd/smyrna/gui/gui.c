@@ -142,7 +142,6 @@ GtkComboBox *get_SelectGraph(void)
 
 	cb = (GtkComboBox *) gtk_combo_box_new_text();
 	gtk_widget_show((GtkWidget *) cb);
-	gladewidget = glade_xml_get_widget(xml, "layout6");
 	gtk_box_pack_start(GTK_BOX(gladewidget), (GtkWidget *) cb, FALSE,
 			   FALSE, 0);
 
@@ -450,7 +449,6 @@ int openfiledlg(int filtercnt,char** filters,agxbuf* xbuf)
 		rv=0;
 
 	gtk_widget_destroy(dialog);
-    gtk_widget_destroy((GtkWidget *) filter);
 	return rv;
 }
 
@@ -487,7 +485,6 @@ int savefiledlg(int filtercnt,char** filters,agxbuf* xbuf)
 		rv=0;
 
 	gtk_widget_destroy(dialog);
-    gtk_widget_destroy((GtkWidget *) filter);
 	return rv;
 }
 /*

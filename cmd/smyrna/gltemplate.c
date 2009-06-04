@@ -637,8 +637,8 @@ void create_window(GdkGLConfig * glconfig, GtkWidget * vbox)
 
     g_signal_connect(G_OBJECT(view->drawing_area), "button_press_event",
 		     G_CALLBACK(button_press_event), NULL);
-    g_signal_connect(G_OBJECT(view->drawing_area), "2button_press_event",
-		     G_CALLBACK(button_press_event), NULL);
+/*    g_signal_connect(G_OBJECT(view->drawing_area), "2button_press_event",
+		     G_CALLBACK(button_press_event), NULL);*/
 
     g_signal_connect(G_OBJECT(view->drawing_area), "button_release_event",
 		     G_CALLBACK(button_release_event), NULL);

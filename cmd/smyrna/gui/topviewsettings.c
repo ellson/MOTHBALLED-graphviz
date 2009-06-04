@@ -275,7 +275,6 @@ int load_settings_from_graph(Agraph_t * g)
 
 	set_checkbox_widget("drawnodes", "settingsChkBox5-1");
 	set_checkbox_widget("drawedges", "settingsChkBox5-2");
-	set_checkbox_widget("drawlabels", "settingsChkBox5-3");
 
 
 	/*page 2 label settings*/
@@ -341,15 +340,6 @@ int load_settings_from_graph(Agraph_t * g)
 	set_scalebtn_widget_to_attribute("defaultedgealpha", "settingsscale2"); /*edge alpha*/
 	set_scalebtn_widget_to_attribute("nodesize", "nodesizescale"); /*edge alpha*/
 
-	/*font selection box */
-    buf = agget(view->g[view->activeGraph], "defaultfontname");
-    if (!buf)
-	buf = agget(view->default_attributes, "defaultfontname");
-    if (buf)
-	gtk_font_selection_set_font_name((GtkFontSelection *)
-					 glade_xml_get_widget(xml,
-							      "settingsFontSelection"),
-					 buf);
     /*Node Shape Combo, 0:opengl dots, 1:circle ,2:box */
     buf = agget(view->g[view->activeGraph], "defaultnodeshape");
     if (!buf)
@@ -380,18 +370,6 @@ int load_settings_from_graph(Agraph_t * g)
 
 
     /*Node Shape Combo, 0:opengl dots, 1:circle ,2:box */
-    buf = agget(view->g[view->activeGraph], "defaultselectionmethod");
-    if (!buf)
-	buf = agget(view->default_attributes, "defaultselectionmethod");
-    if (buf)
-	{
-		/*select the right item in combo box */
-		gtk_combo_box_set_active((GtkComboBox *)
-				 glade_xml_get_widget(xml,
-						      "settingscombobox2"),
-				 atoi(buf));
-
-	}
 	
     return 1;
 }
@@ -405,12 +383,6 @@ int update_graph_from_settings(Agraph_t * g)
     buf = '\0';
 /*	buf=gtk_font_selection_get_font_name((GtkFontSelection*)glade_xml_get_widget(xml, "settingsFontSelection"));
 	agset(g,"defaultfontname",buf);*/
-    value =
-	gtk_combo_box_get_active((GtkComboBox *)
-				 glade_xml_get_widget(xml,
-						      "settingsFontSelection"));
-    sprintf(buf2, "%i", value);
-    agattr(g, AGRAPH, "defaultfontname", buf2);
     get_color_button_widget_to_attribute("bgcolor", "settingsColorBtn1",
 					 g);
     get_color_button_widget_to_attribute("bordercolor",
@@ -447,8 +419,6 @@ int update_graph_from_settings(Agraph_t * g)
 				     "settingsChkBox5-1", g);
     get_checkbox_widget_to_attribute("drawedges",
 				     "settingsChkBox5-2", g);
-    get_checkbox_widget_to_attribute("drawlabels",
-				     "settingsChkBox5-3", g);
 	
 	/*page 2 label settings*/
 	get_combobox_widget_to_attribute("labelglutfont","labelfont", g);
@@ -521,7 +491,6 @@ int update_graph_from_settings(Agraph_t * g)
 				    "nodesizescale", g);
 
 	get_combobox_widget_to_attribute("defaultnodeshape","settingscombobox1", g)	;
-	get_combobox_widget_to_attribute("defaultselectionmethod","settingscombobox2", g)	;
 	get_combobox_widget_to_attribute("colortheme","colorthemecb", g)	;
 
 	return 1;
