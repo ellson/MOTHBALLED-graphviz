@@ -451,6 +451,8 @@ void init_viewport(ViewInfo * view)
     view->Topview->parms.repos.distortion = 1.0;
 	/*create timer*/
 	view->timer=g_timer_new();
+	view->timer2=g_timer_new();
+
 	g_timer_stop(view->timer); 
 	view->active_frame=0;
 	view->total_frames=1500;

@@ -516,6 +516,8 @@ typedef struct _ViewInfo
 	Agraph_t* default_attributes;
 	/*timer for animations*/
 	GTimer* timer;
+	/*this timer is session timer and always active*/
+	GTimer* timer2;
 	int active_frame;
 	int total_frames;
 	int frame_length;
