@@ -393,13 +393,16 @@ static gboolean button_release_event(GtkWidget * widget,
 static gboolean
 scroll_event(GtkWidget * widget, GdkEventScroll * event, gpointer data)
 {
+	g_signal_handlers_block_by_func(G_OBJECT(view->drawing_area),scroll_event,NULL);
 	if(event->direction==0)
 	    view->mouse.dx = -30;
 	if(event->direction==1)
 	    view->mouse.dx = 30;
 	glmotion_zoom(view);
 	glexpose();
-    return TRUE;
+	g_signal_handlers_unblock_by_func(G_OBJECT(view->drawing_area),scroll_event,NULL);
+
+	return TRUE;
 }
 
 /*
