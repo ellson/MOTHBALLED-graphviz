@@ -168,7 +168,7 @@
 		  <child>
 		    <widget class="GtkMenuItem" id="mTopviewSettings">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Smyra Settings</property>
+		      <property name="label" translatable="yes">Smyrna Settings</property>
 		      <property name="use_underline">True</property>
 		      <signal name="activate" handler="mTopviewSettingsSlot"/>
 		    </widget>
