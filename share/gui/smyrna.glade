@@ -168,7 +168,7 @@
 		  <child>
 		    <widget class="GtkMenuItem" id="mTopviewSettings">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">TopviewSettings</property>
+		      <property name="label" translatable="yes">Smyra Settings</property>
 		      <property name="use_underline">True</property>
 		      <signal name="activate" handler="mTopviewSettingsSlot"/>
 		    </widget>
@@ -1282,7 +1282,7 @@
 	      <property name="width_request">79</property>
 	      <property name="height_request">25</property>
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">Higlight All</property>
+	      <property name="label" translatable="yes">Highlight All</property>
 	      <property name="use_underline">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="focus_on_click">True</property>
@@ -1299,7 +1299,7 @@
 	      <property name="width_request">100</property>
 	      <property name="height_request">25</property>
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">Unhiglight All</property>
+	      <property name="label" translatable="yes">Unhighlight All</property>
 	      <property name="use_underline">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
 	      <property name="focus_on_click">True</property>
@@ -5073,7 +5073,7 @@ Custom</property>
 	  <child>
 	    <widget class="GtkLabel" id="lllllllllllll">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">Top. Fisheye</property>
+	      <property name="label" translatable="yes">Topfish</property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">False</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -5284,7 +5284,7 @@ Custom</property>
 			<widget class="GtkButton" id="button8">
 			  <property name="visible">True</property>
 			  <property name="can_focus">True</property>
-			  <property name="label" translatable="yes">test gvpr</property>
+			  <property name="label" translatable="yes">Run gvpr</property>
 			  <property name="use_underline">True</property>
 			  <property name="relief">GTK_RELIEF_NORMAL</property>
 			  <property name="focus_on_click">True</property>
