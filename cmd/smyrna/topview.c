@@ -203,7 +203,8 @@ void settvcolorinfo(Agraph_t* g,topview* t)
 	for (ind=0;ind < t->Nodecount ; ind ++)
 	{
 		setRGBcolor(&color,agget(t->Nodes[ind].Node, "color"));
-		t->Nodes[ind].Color.R = color.R;t->Nodes[ind].Color.G = color.G;t->Nodes[ind].Color.B = color.B;t->Nodes[ind].Color.A = color.A;t->Edges[ind].Color.tag=color.tag;
+		t->Nodes[ind].Color.R = color.R;t->Nodes[ind].Color.G = color.G;t->Nodes[ind].Color.B = color.B;t->Nodes[ind].Color.A = color.A;t->Nodes[ind].Color.tag=color.tag;
+//		t->Nodes[ind].Color.R = color.R;t->Nodes[ind].Color.G = color.G;t->Nodes[ind].Color.B = 1;t->Nodes[ind].Color.A = color.A;t->Nodes[ind].Color.tag=color.tag;
 		/*while in the loop why dont we set some smyrna settings from graph? selected , highlighted , visible */
 		t->Nodes[ind].data.Selected=boolAttr("selected",t->Nodes[ind].Node,0);
 		t->Nodes[ind].data.Highlighted=boolAttr("highlighted",t->Nodes[ind].Node,0);

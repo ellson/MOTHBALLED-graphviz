@@ -344,7 +344,7 @@ apply_gvpr(Agraph_t* g,char* prog)
     Agraph_t* tempg = exec_gvpr (g, prog);
 #endif
 
-    if ((tempg) &&(gtk_toggle_button_get_active((GtkToggleButton *) glade_xml_get_widget(xml, "GtkCheckButton"))))
+    if ((tempg) &&(gtk_toggle_button_get_active((GtkToggleButton *) glade_xml_get_widget(xml, "gvprapplycb"))))
 	{
 		add_graph_to_viewport(tempg);
 		return 1;

@@ -341,41 +341,40 @@ int tv_nodes_goto_page(int page)
     tv_node *tvn;
     GtkLabel *lblTVPage;
 
-    if ((page >= 0) && page <= TV_Nodes.pagecount) {
-	if (TV_Nodes.general_purpose_flag == 1) {
-	    update_TV_data_from_gui();
-	    TV_Nodes.general_purpose_flag = 0;
+    if ((page >= 0) && page <= TV_Nodes.pagecount) 
+	{
+		if (TV_Nodes.general_purpose_flag == 1) 
+		{
+			update_TV_data_from_gui();
+			TV_Nodes.general_purpose_flag = 0;
+		}
+		TV_Nodes.activepage = page;
+		TV_Nodes.page_data_node_index =TV_Nodes.page_history[TV_Nodes.activepage];
+		TV_Nodes.page_data_index = 0;
+		TV_Nodes.firstnodeid = TV_Nodes.page_data_node_index;
+		TV_Nodes.Y = TV_Nodes.initial_Y;
+		hide_data_widgets();
+	} 
+	else
+		return 0;
+    while ((TV_Nodes.page_data_index < TV_Nodes.recordperpage)&& (TV_Nodes.page_data_node_index < view->Topview->Nodecount)) 
+	{
+		tvn = &TV_Nodes.TV_Node[TV_Nodes.page_data_index];
+		tvn->index = TV_Nodes.page_data_node_index;
+		if (view->Topview->Nodes[TV_Nodes.page_data_node_index].valid == 1) 
+		{
+			TV_Nodes.page_data_index++;
+			update_node_gui_objects(tvn);
+			TV_Nodes.Y = TV_Nodes.Y + TV_Nodes.Y_Gap;
+		}
+		TV_Nodes.page_data_node_index++;
 	}
-	TV_Nodes.activepage = page;
-	TV_Nodes.page_data_node_index =
-	    TV_Nodes.page_history[TV_Nodes.activepage];
-	TV_Nodes.page_data_index = 0;
-	TV_Nodes.firstnodeid = TV_Nodes.page_data_node_index;
-	TV_Nodes.Y = TV_Nodes.initial_Y;
-	hide_data_widgets();
-    } else
-	return 0;
-    while ((TV_Nodes.page_data_index < TV_Nodes.recordperpage)
-	   && (TV_Nodes.page_data_node_index < view->Topview->Nodecount)) {
-	tvn = &TV_Nodes.TV_Node[TV_Nodes.page_data_index];
-	tvn->index = TV_Nodes.page_data_node_index;
-	if (view->Topview->Nodes[TV_Nodes.page_data_node_index].valid == 1) {
-	    TV_Nodes.page_data_index++;
-	    update_node_gui_objects(tvn);
-	    TV_Nodes.Y = TV_Nodes.Y + TV_Nodes.Y_Gap;
-	}
-	TV_Nodes.page_data_node_index++;
-    }
     lblTVPage = (GtkLabel *) glade_xml_get_widget(xml, "lblTVPage");
     sprintf(buf, "(%i / %i)", TV_Nodes.activepage + 1,
 	    TV_Nodes.pagecount + 1);
     gtk_label_set_text(lblTVPage, buf);
     spn = (GtkSpinButton *) glade_xml_get_widget(xml, "spnTVGotopage");
     gtk_spin_button_set_value(spn, page + 1);
-
-
-
-
     return 1;
 }
 
@@ -407,7 +406,7 @@ void execute_tv_nodes(void)
     }
     //test filter
     prepare_page_history();
-    TV_Nodes.general_purpose_flag = 1;
+//    TV_Nodes.general_purpose_flag = 1;
     tv_nodes_next_page();
 }
 
@@ -573,44 +572,48 @@ int update_TV_data_from_gui(void)
     data_attr1 = agget(view->g[view->activeGraph], "DataAttribute1");
     data_attr2 = agget(view->g[view->activeGraph], "DataAttribute2");
 
-    for (i = 0; i < TV_Nodes.recordperpage; i++) {
-	index = TV_Nodes.TV_Node[i].index;
-	if (index < view->Topview->Nodecount) {
-	    // apply if selected
-	    if (gtk_toggle_button_get_active
-		((GtkToggleButton *) TV_Nodes.TV_Node[i].chkSelected)) {
-			if (!view->Topview->Nodes[index].data.Selected)
-		    select_node(&view->Topview->Nodes[index]);
-	    } else {
-		if (view->Topview->Nodes[index].data.Selected)
-		    deselect_node(&view->Topview->Nodes[index]);
-	    }
-	    // apply if Visible
-	    if (gtk_toggle_button_get_active
-		((GtkToggleButton *) TV_Nodes.TV_Node[i].chkVisible)) {
-			if (!view->Topview->Nodes[index].data.Visible)
-				view->Topview->Nodes[index].data.Visible = 1;
-	    } else {
-			if (view->Topview->Nodes[index].data.Visible)
-		     view->Topview->Nodes[index].data.Visible = 0;
-	    }
-	    // apply if Highlighted
-	    if (gtk_toggle_button_get_active
-		((GtkToggleButton *) TV_Nodes.TV_Node[i].chkHighlighted)) {
-			if (!view->Topview->Nodes[index].data.Highlighted)
-		     view->Topview->Nodes[index].data.Highlighted = 1;
-	    } else {
-		if (view->Topview->Nodes[index].data.Highlighted)
-		     view->Topview->Nodes[index].data.Highlighted = 0;
-	    }
-	    //Data1 
-	    agset((void *) view->Topview->Nodes[index].Node, data_attr1,
-		  (char *) gtk_entry_get_text(TV_Nodes.TV_Node[i].Data1));
-	    //Data2 
-	    agset(view->Topview->Nodes[index].Node, data_attr2,
-		  (char *) gtk_entry_get_text(TV_Nodes.TV_Node[i].Data2));
+    for (i = 0; i < TV_Nodes.recordperpage; i++) 
+	{
+		index = TV_Nodes.TV_Node[i].index;
+		if (index < view->Topview->Nodecount) 
+		{
+			// apply if selected
+			if (gtk_toggle_button_get_active((GtkToggleButton *) TV_Nodes.TV_Node[i].chkSelected)) 
+			{
+				if (!view->Topview->Nodes[index].data.Selected)
+					select_node(&view->Topview->Nodes[index]);
+		    }
+			else 
+			{
+				if (view->Topview->Nodes[index].data.Selected)
+					deselect_node(&view->Topview->Nodes[index]);
+		    }
+		    // apply if Visible
+			if (gtk_toggle_button_get_active((GtkToggleButton *) TV_Nodes.TV_Node[i].chkVisible)) 
+			{
+				if (!view->Topview->Nodes[index].data.Visible)
+					view->Topview->Nodes[index].data.Visible = 1;
+			}
+			else 
+			{
+				if (view->Topview->Nodes[index].data.Visible)
+				     view->Topview->Nodes[index].data.Visible = 0;
+			}
+			// apply if Highlighted
+			if (gtk_toggle_button_get_active((GtkToggleButton *) TV_Nodes.TV_Node[i].chkHighlighted)) 
+			{
+				if (!view->Topview->Nodes[index].data.Highlighted)
+					view->Topview->Nodes[index].data.Highlighted = 1;
+			} 
+			else 
+			{
+				if (view->Topview->Nodes[index].data.Highlighted)
+					view->Topview->Nodes[index].data.Highlighted = 0;
+			}
+			agset((void *) view->Topview->Nodes[index].Node, data_attr1,(char *) gtk_entry_get_text(TV_Nodes.TV_Node[i].Data1));
+			agset(view->Topview->Nodes[index].Node, data_attr2,(char *) gtk_entry_get_text(TV_Nodes.TV_Node[i].Data2));
 
-	}
+		}
     }
     return 1;
 
