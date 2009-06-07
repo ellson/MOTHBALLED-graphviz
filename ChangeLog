@@ -1,3 +1,12 @@
+June 7, 2009
+	- Preparing for 2.24.0
+	- Core:
+		- add new layout engine for large graphs: sfdp
+	- Fixed bugs:
+		1515, 1590, 1598, 1601, 1605, 1607, 1609, 1610, 1611,
+		1614, 1615, 1617, 1625, 1628, 1634, 1635, 1640, 1641,
+		1642, 1646, 1649, 1651, 1652
+	
 March 13, 2009
 	- Release 2.22.2
 		- fix for buffer overflow (present in 2.22.0 and 2.22.1)
