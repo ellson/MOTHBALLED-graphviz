@@ -1,7 +1,7 @@
 #ifdef DARWIN
 #define TIMES "Times"
 #else
-#define TIMES "Times New Roman"
+#define TIMES "Times Roman"
 #endif
 #define COURIER "Courier"
 #define HELVETICA "Helvetica"
