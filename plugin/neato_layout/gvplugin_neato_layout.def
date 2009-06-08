@@ -32,7 +32,6 @@ neato_enqueue
 neato_init_node	
 neato_layout	
 neato_set_aspect	
-neatoLayout	
 new_array	
 Plegal_arrangement	
 randompos	
