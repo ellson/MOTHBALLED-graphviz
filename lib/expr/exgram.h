@@ -204,7 +204,6 @@ extern "C" {
 
 /* exnewsubstr:
  * Generate substr node.
- * Third argument is optional.
  */
     static Exnode_t *exnewsubstr(Expr_t * p, Exnode_t * args) {
 	Exnode_t *base;
