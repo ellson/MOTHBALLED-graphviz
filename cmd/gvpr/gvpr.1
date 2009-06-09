@@ -617,8 +617,10 @@ length of \fIstr\fP, a fatal error occurs.
 returns the length of the string \fIs\fP.
 .TP
 \fBindex\fP(\fIs\fP : \fBstring\fP, \fIt\fP : \fBstring\fP) : \fBint\fP
+.TP
+\fBrindex\fP(\fIs\fP : \fBstring\fP, \fIt\fP : \fBstring\fP) : \fBint\fP
 returns the index of the character in string \fIs\fP where the leftmost
-copy of string \fIt\fP can be found, or \-1 if \fIt\fP is not a 
+(rightmost) copy of string \fIt\fP can be found, or \-1 if \fIt\fP is not a 
 substring of \fIs\fP.
 .TP
 \fBmatch\fP(\fIs\fP : \fBstring\fP, \fIp\fP : \fBstring\fP) : \fBint\fP

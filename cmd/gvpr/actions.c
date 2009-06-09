@@ -54,7 +54,7 @@ Agraph_t *sameG(void *p1, void *p2, char *fn, char *msg)
 }
 
 /* indexOf:
- * Return index of string s2 in string s1, or -1
+ * Return index of leftmost string s2 in string s1, or -1
  */
 int indexOf(char *s1, char *s2)
 {
@@ -72,6 +72,30 @@ int indexOf(char *s1, char *s2)
 	    continue;
 	if (strncmp(p, s2 + 1, len2) == 0)
 	    return ((p - s1) - 1);
+    }
+    return -1;
+}
+
+/* rindexOf:
+ * Return index of rightmost string s2 in string s1, or -1
+ */
+int rindexOf(char *s1, char *s2)
+{
+    char c1 = *s2;
+    char c;
+    char *p;
+    int len1 = strlen(s1);
+    int len2 = strlen(s2);
+
+    if (c1 == '\0')
+	return (len1);
+    p = s1 + (len1 - len2);
+    while (p >= s1) {
+	c = *p;
+	if ((c == c1) && (strncmp(p+1, s2+1, len2-1) == 0))
+	    return (p - s1);
+	else
+	    p--;
     }
     return -1;
 }

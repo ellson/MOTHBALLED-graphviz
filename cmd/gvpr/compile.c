@@ -1298,6 +1298,9 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	case F_index:
 	    v.integer = indexOf(args[0].string, args[1].string);
 	    break;
+	case F_rindex:
+	    v.integer = rindexOf(args[0].string, args[1].string);
+	    break;
 	case F_match:
 	    v.integer = match(args[0].string, args[1].string);
 	    break;
