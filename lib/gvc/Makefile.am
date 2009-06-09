@@ -38,6 +38,7 @@ pkgconfig_DATA = libgvc.pc
 man_MANS = gvc.3
 pdf_DATA = gvc.3.pdf
 
+
 libgvc_C_la_SOURCES = gvrender.c gvlayout.c gvdevice.c gvloadimage.c \
 	gvcontext.c gvjobs.c gvevent.c gvplugin.c gvconfig.c \
 	gvtextlayout.c gvusershape.c gvc.c
@@ -52,8 +53,7 @@ libgvc_C_la_LIBADD += $(top_builddir)/lib/ortho/libortho_C.la
 libgvc_C_la_DEPENDENCIES +=  $(top_builddir)/lib/ortho/libortho_C.la
 endif
 if ENABLE_LTDL
-libgvc_C_la_LIBADD += $(LIBLTDL)
-libgvc_C_la_LDADD += $(LIBLTDL_LDFLAGS)
+libgvc_C_la_LIBADD += $(LIBLTDL) $(LIBLTDL_LDFLAGS)
 libgvc_C_la_DEPENDENCIES += $(LIBLTDL)
 endif
 
