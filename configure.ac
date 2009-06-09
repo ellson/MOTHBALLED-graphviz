@@ -479,11 +479,9 @@ m4_ifdef([LT_INIT],
     ])
   use_ltdl="Yes"
   
+  AC_LIBLTDL_CONVENIENCE
   if test "x$DARWIN9" = "xyes"; then
-     AC_LIBLTDL_CONVENIENCE
-     LIBLTDL="$LIBLTDL -Wl,-unexported_symbol,_lt_*"
-  else
-     AC_LIBLTDL_CONVENIENCE
+     LIBLTDL_LDFLAGS="-Wl,-unexported_symbol,_lt_*"
   fi
 else
   use_ltdl="No (disabled)"
@@ -491,6 +489,7 @@ fi
 AM_CONDITIONAL(ENABLE_LTDL, [test "x$enable_ltdl" != "xno"])
 AC_SUBST(INCLTDL)
 AC_SUBST(LIBLTDL)
+AC_SUBST(LIBLTDL_LDFLAGS)
 m4_ifdef([LT_INIT],
     [ #code that is for Libtool 2.x
     ],
