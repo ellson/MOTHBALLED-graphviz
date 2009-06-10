@@ -61,7 +61,7 @@ configure-stamp:
 	--with-ipsepcola \
 	--with-lasi \
 	--with-rsvg \
-	--without-devil \
+	--with-devil \
 	--with-gts \
 	--without-ortho \
 	--with-sfdp \
