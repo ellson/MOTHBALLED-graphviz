@@ -155,9 +155,12 @@ semantics of these are described below.
   each node and edge. This cleans up splines labels, ND_pos, shapes
   and 0's out the A*info_t, so these have to occur last, but could be
   part of explicit xxx_cleanup_node and xxx_cleanup_edge, if desired.
-    At the end, we usually include
+    At the end, you should do
 
   if (g != g->root) memset(&(g->u), 0, sizeof(Agraphinfo_t));
+
+  This is necessary for the graph to be laid out again, as the layout
+  code assumes this structure is clean.
 
   libgvc does a final cleanup to the root graph, freeing any drawing,
   freeing its label, and zeroing out Agraphinfo_t of the root graph.
