@@ -1295,6 +1295,70 @@ fi
 AM_CONDITIONAL(WITH_PYTHON25, [test "x$use_python25" = "xYes"])
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for PYTHON26
+
+AC_ARG_ENABLE(python26,
+  [AS_HELP_STRING([--enable-python26=no],[python26 language bindings])],
+  [], [enable_python26=no])
+
+if test "x$enable_python26" != "xyes"; then
+  use_python26="No (disabled by default - for multiversion installs)"
+else
+  if test "x$use_swig" != "xYes"; then
+    use_python26="No (swig not available)"
+  else
+    if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
+      use_python26="No (swig does not support -python option)"
+    else
+      AC_CHECK_PROG(PYTHON26,python2.6,python2.6)
+      if test "x$PYTHON26" = "x"; then
+        use_python26="No (python26 not available)"
+      else
+        PYTHON26_VERSION=`$PYTHON26 -V 2>&1 | $GREP Python | cut -d ' ' -f 2`
+        if test "x$PYTHON26_VERSION" = "x"; then
+          PYTHON26=
+        else
+          PYTHON26_VERSION_MAJOR=`echo $PYTHON26_VERSION | cut -d '.' -f 1`
+          PYTHON26_VERSION_MINOR=`echo $PYTHON26_VERSION | cut -d '.' -f 2`
+          PYTHON26_VERSION_SHORT=$PYTHON26_VERSION_MAJOR.$PYTHON26_VERSION_MINOR
+          if test $PYTHON26_VERSION_MAJOR -lt 3; then
+            if test $PYTHON26_VERSION_MAJOR -lt 2; then
+	      PYTHON26=
+            else
+              if test $PYTHON26_VERSION_MINOR -lt 5; then
+	        PYTHON26=
+              fi
+            fi
+          fi
+        fi
+      fi
+      if test "x$PYTHON26" = "x"; then
+	use_python26="No (python2.6 is too old)"
+      else
+        PYTHON26_PREFIX=`$PYTHON26 -c "import sys; print sys.prefix"`
+        PYTHON26_INCLUDES=-I$PYTHON26_PREFIX/include/python$PYTHON26_VERSION_SHORT
+        PYTHON24_LIBS="-lpython$PYTHON_VERSION_SHORT"
+        PYTHON26_INSTALL_DIR="`$PYTHON26 $srcdir/config/config_python.py archsitelib`"
+        save_CPPFLAGS=$CPPFLAGS
+        CPPFLAGS="$CPPFLAGS $PYTHON26_INCLUDES"
+        AC_CHECK_HEADER(Python.h,,[
+          use_python26="No (missing header)"
+          PYTHON26=
+        ])
+        CPPFLAGS=$save_CPPFLAGS
+	if test "x$PYTHON26" != "x"; then
+	  use_python26="Yes"
+          AC_SUBST(PYTHON26_INSTALL_DIR)
+          AC_SUBST(PYTHON26_INCLUDES)
+          AC_SUBST(PYTHON26_LIBS)
+        fi
+      fi
+    fi
+  fi
+fi
+AM_CONDITIONAL(WITH_PYTHON26, [test "x$use_python26" = "xYes"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for R
 
 AC_ARG_ENABLE(r,
@@ -3142,6 +3206,7 @@ echo "  gv_python:     $use_python"
 echo "  gv_python23:   $use_python23"
 echo "  gv_python24:   $use_python24"
 echo "  gv_python25:   $use_python25"
+echo "  gv_python26:   $use_python26"
 echo "  gv_R:          $use_r"
 echo "  gv_ruby:       $use_ruby"
 echo "  gv_tcl:        $use_gv_tcl"

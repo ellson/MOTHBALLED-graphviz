@@ -155,25 +155,48 @@ gv_python.cpp: gv.i
 	$(SWIG) -c++ -python -o gv_python.cpp $(srcdir)/gv.i
 
 pkgpython23dir = $(pkglibdir)/python23
-nodist_libgv_python23_la_SOURCES = $(nodist_libgv_python_la_SOURCES)
+PYTHON23_data = gv.py
+nodist_libgv_python23_la_SOURCES = gv_python23.cpp $(PYTHON23_data)
 libgv_python23_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
 libgv_python23_la_LIBADD = $(BASELIBS) $(PYTHON23_LIBS)
 libgv_python23_la_LDFLAGS = -module -avoid-version
 libgv_python23_la_CPPFLAGS = $(BASECPPFLAGS) $(PYTHON23_INCLUDES)
+# $(PYTHON23_data): gv_python.cpp
+gv_python23.cpp: gv.i
+	$(SWIG) -c++ -python -classic -o gv_python23.cpp $(srcdir)/gv.i
 
 pkgpython24dir = $(pkglibdir)/python24
-nodist_libgv_python24_la_SOURCES = $(nodist_libgv_python_la_SOURCES)
+PYTHON24_data = gv.py
+nodist_libgv_python24_la_SOURCES = gv_python24.cpp $(PYTHON24_data)
 libgv_python24_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
 libgv_python24_la_LIBADD = $(BASELIBS) $(PYTHON24_LIBS)
 libgv_python24_la_LDFLAGS = -module -avoid-version
 libgv_python24_la_CPPFLAGS = $(BASECPPFLAGS) $(PYTHON24_INCLUDES)
+# $(PYTHON_data): gv_python.cpp
+gv_python24.cpp: gv.i
+	$(SWIG) -c++ -python -classic -o gv_python24.cpp $(srcdir)/gv.i
 
 pkgpython25dir = $(pkglibdir)/python25
-nodist_libgv_python25_la_SOURCES = $(nodist_libgv_python_la_SOURCES)
+PYTHON25_data = gv.py
+nodist_libgv_python25_la_SOURCES = gv_python25.cpp $(PYTHON25_data)
 libgv_python25_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
 libgv_python25_la_LIBADD = $(BASELIBS) $(PYTHON25_LIBS)
 libgv_python25_la_LDFLAGS = -module -avoid-version
 libgv_python25_la_CPPFLAGS = $(BASECPPFLAGS) $(PYTHON25_INCLUDES)
+# $(PYTHON_data): gv_python.cpp
+gv_python25.cpp: gv.i
+	$(SWIG) -c++ -python -o gv_python25.cpp $(srcdir)/gv.i
+
+pkgpython26dir = $(pkglibdir)/python26
+PYTHON26_data = gv.py
+nodist_libgv_python26_la_SOURCES = gv_python26.cpp $(PYTHON26_data)
+libgv_python26_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
+libgv_python26_la_LIBADD = $(BASELIBS) $(PYTHON26_LIBS)
+libgv_python26_la_LDFLAGS = -module -avoid-version
+libgv_python26_la_CPPFLAGS = $(BASECPPFLAGS) $(PYTHON26_INCLUDES)
+# $(PYTHON_data): gv_python.cpp
+gv_python26.cpp: gv.i
+	$(SWIG) -c++ -python -o gv_python26.cpp $(srcdir)/gv.i
 
 pkgRdir = $(pkglibdir)/R
 R_data = 
@@ -298,6 +321,13 @@ pdf_DATA += gv.3python.pdf
 pkgpython25_LTLIBRARIES = libgv_python25.la
 #DEVTSTS += test_python25
 endif
+if WITH_PYTHON26
+pkgpython26_DATA = $(PYTHON26_data)
+man_MANS += gv.3python
+pdf_DATA += gv.3python.pdf
+pkgpython26_LTLIBRARIES = libgv_python26.la
+#DEVTSTS += test_python26
+endif
 if WITH_R
 pkgR_DATA = $(R_data)
 man_MANS += gv.3r
@@ -395,6 +425,9 @@ endif
 if WITH_PYTHON25
 	(cd $(DESTDIR)$(pkgpython25dir); rm -f _gv.so; $(LN_S) libgv_python25.so _gv.so;)
 endif
+if WITH_PYTHON26
+	(cd $(DESTDIR)$(pkgpython26dir); rm -f _gv.so; $(LN_S) libgv_python26.so _gv.so;)
+endif
 if WITH_R
 	(cd $(DESTDIR)$(pkgRdir);   rm -f gv.so;  $(LN_S) libgv_R.so gv.so;)
 endif
@@ -413,6 +446,7 @@ uninstall-hook:
 	rm -rf $(DESTDIR)$(pkgpython23dir);
 	rm -rf $(DESTDIR)$(pkgpython24dir);
 	rm -rf $(DESTDIR)$(pkgpython25dir);
+	rm -rf $(DESTDIR)$(pkgpython26dir);
 	rm -rf $(DESTDIR)$(pkgRdir);
 	rm -rf $(DESTDIR)$(pkgrubydir);
 	rm -rf $(DESTDIR)$(pkgtcldir);
@@ -523,6 +557,7 @@ CLEANFILES = test_*/* pkgIndex.tcl \
 	gv_python23.cpp $(PYTHON23_data) gv.pyc \
 	gv_python24.cpp $(PYTHON24_data) gv.pyc \
 	gv_python25.cpp $(PYTHON25_data) gv.pyc \
+	gv_python26.cpp $(PYTHON26_data) gv.pyc \
 	gv_R.cpp $(R_data) \
 	gv_ruby.cpp $(RUBY_data) \
 	gv_tcl.cpp $(TCL_data) pkgIndex.tcl
