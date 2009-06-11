@@ -148,6 +148,12 @@ static void cleanup_subgs(graph_t * g)
 	cleanup_subgs(subg);
     }
     free (GD_clust(g));
+    if (g != agroot(g))
+#ifndef WITH_CGRAPH
+	memset(&(g->u), 0, sizeof(Agraphinfo_t));
+#else /* WITH_CGRAPH */
+	agclean(g, AGRAPH , "Agraphinfo_t");				
+#endif /* WITH_CGRAPH */
 }
 
 static void fdp_cleanup_graph(graph_t * g)
@@ -155,12 +161,6 @@ static void fdp_cleanup_graph(graph_t * g)
     cleanup_subgs(g);
     free(GD_neato_nlist(g));
     free(GD_alg(g));
-    if (g != agroot(g))
-#ifndef WITH_CGRAPH
-	memset(&(g->u), 0, sizeof(Agraphinfo_t));
-#else /* WITH_CGRAPH */
-	agclean(g, AGRAPH , "Agraphinfo_t");				
-#endif /* WITH_CGRAPH */
 }
 
 void fdp_cleanup(graph_t * g)
