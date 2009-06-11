@@ -185,7 +185,7 @@ libgv_python25_la_LDFLAGS = -module -avoid-version
 libgv_python25_la_CPPFLAGS = $(BASECPPFLAGS) $(PYTHON25_INCLUDES)
 # $(PYTHON_data): gv_python.cpp
 gv_python25.cpp: gv.i
-	$(SWIG) -c++ -python -o gv_python25.cpp $(srcdir)/gv.i
+	$(SWIG) -c++ -python -classic -o gv_python25.cpp $(srcdir)/gv.i
 
 pkgpython26dir = $(pkglibdir)/python26
 PYTHON26_data = gv.py
