@@ -3,6 +3,9 @@
 #elseifdef WIN32
 #define TIMES "Times"
 #else
+#ifdef WIN32
+#define TIMES "Times New Roman"
+#else
 #define TIMES "Times Roman"
 #endif
 #define COURIER "Courier"
