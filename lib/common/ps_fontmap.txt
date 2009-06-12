@@ -1,5 +1,7 @@
 #ifdef DARWIN
 #define TIMES "Times"
+#elseifdef WIN32
+#define TIMES "Times"
 #else
 #define TIMES "Times Roman"
 #endif
