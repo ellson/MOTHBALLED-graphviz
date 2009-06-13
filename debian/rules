@@ -77,7 +77,7 @@ configure-stamp:
 	--disable-python23 \
 	--disable-python24 \
 	--disable-python25 \
-	--enable-python26 \
+	--disable-python26 \
 	--disable-r \
 	--enable-ruby \
 	--enable-tcl \
