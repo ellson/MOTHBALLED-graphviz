@@ -2294,7 +2294,7 @@ else
     use_ming="No (ming library not available)"
   ])
 fi
-AM_CONDITIONAL(WITH_MING, [test "x$use_min" = "xYes"])
+AM_CONDITIONAL(WITH_MING, [test "x$use_ming" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for QUARTZ 
