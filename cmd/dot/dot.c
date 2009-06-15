@@ -189,6 +189,7 @@ int main(int argc, char **argv)
 	    /* Perform layout and cleanup */
 	    gvLayoutJobs(Gvc, G);  /* take layout engine from command line */
 	    gvFreeLayout(Gvc, G);
+	    agclose (G);
 	}
     }
     else if ((G = gvPluginsGraph(Gvc))) {
