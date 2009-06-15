@@ -352,7 +352,7 @@ void StressMajorizationSmoother_smooth(StressMajorizationSmoother sm, int dim, r
     }
 
     maxit = sqrt((double) m);
-    res = SparseMatrix_solve(Lw, dim, x, y, 0.01, maxit, SOLVE_METHOD_CG, &flag);
+    res = SparseMatrix_solve(Lw, dim, x, y, 0.01, (int)maxit, SOLVE_METHOD_CG, &flag);
 
     if (flag) goto RETURN;
 

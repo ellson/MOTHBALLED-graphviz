@@ -31,4 +31,4 @@ libsfdpgen_C_la_SOURCES = sfdpinit.c spring_electrical.c \
 	LinkedList.c sparse_solve.c post_process.c \
 	QuadTree.c Multilevel.c PriorityQueue.c
 
-EXTRA_DIST = Makefile.old 
+EXTRA_DIST = Makefile.old sfdp.vcproj

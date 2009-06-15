@@ -248,9 +248,9 @@ tuneControl (graph_t* g, spring_electrical_control ctrl)
 void sfdp_layout(graph_t * g)
 {
     int doAdjust;
-    sfdp_init_graph(g);
-    doAdjust = (Ndim == 2);
     adjust_data am;
+	sfdp_init_graph(g);
+    doAdjust = (Ndim == 2);
 
     if (agnnodes(g)) {
 	Agraph_t **ccs;

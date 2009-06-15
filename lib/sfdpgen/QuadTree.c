@@ -15,12 +15,11 @@
 **********************************************************/
 
 #include <assert.h>
-
 typedef double real;
-
+#include "geom.h"
+#include "arith.h"
 #include "QuadTree.h"
 #include "memory.h"
-#include "arith.h"
 #include "math.h"
 #define MALLOC gmalloc
 #define REALLOC grealloc
@@ -77,7 +76,7 @@ real* node_data_get_coord(void *d){
 
 int node_data_get_id(void *d){
   node_data nd = (node_data) d;
-  return nd->id;
+  return (int)nd->id;
 }
 
 #define node_data_get_data(d) (((node_data) (d))->data)
