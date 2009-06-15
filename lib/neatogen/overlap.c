@@ -14,6 +14,8 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+#if ((defined(HAVE_GTS) || defined(HAVE_TRIANGLE)) && defined(SFDP))
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -511,3 +513,4 @@ void remove_overlap(int dim, SparseMatrix A, int m, real *x, real *label_sizes, 
 #endif
 }
 
+#endif
