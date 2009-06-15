@@ -49,6 +49,7 @@ DOTLIBS = $(LOC_LIB)/common/libcommon.a \
           $(LOC_LIB)/dotgen/libdotgen.a \
           $(LOC_LIB)/neatogen/libneatogen.a \
           $(LOC_LIB)/fdpgen/libfdpgen.a \
+          $(LOC_LIB)/ortho/libortho.a \
           $(LOC_LIB)/sfdpgen/libsfdpgen.a \
           $(LOC_LIB)/gvc/libgvc_dot_builtins.a \
           $(LOC_LIB)/vpsc/libvpsc.a \
