@@ -183,54 +183,76 @@ void settvposinfo(Agraph_t* g,topview* t)
 	t->avgedgelength=totallen / (float) t->Edgecount;
 
 }
-/*if object has attribute returns its value, else returns 0*/
+
+/* mapbool:
+ */
+static int mapbool(char *p, int defv)
+{
+    if (p == NULL || (*p == '\0'))
+        return defv;
+    if (!strcasecmp(p, "false"))
+        return 0;
+    if (!strcasecmp(p, "true"))
+        return 1;
+    return atoi(p);
+}
+
+/* boolAttr:
+ * if object has attribute returns its value, else returns 0*/
 /*for atttribute values which has no meaning for a 0 or 1 value 0 iz returned,
 function is error safe
 */
-static int boolAttr(char* attr,void* obj,int defv)
+static int boolAttr(void* obj, Agsym_t* attr, int defv)
 {
-	char* s;	
-	s=agget(obj,attr);
-	if ((!s) || (strlen(s)==0))
-		return defv;
-	if (s[0]=='1')
-		return 1;
-	return defv;
+    if (attr == NULL) return defv;
+    else return mapbool(agxget (obj,attr), defv);
 }
+
 void settvcolorinfo(Agraph_t* g,topview* t)
 {
     int ind;
-	RGBColor color;
+    RGBColor color;
+    topview_node* np;
+    topview_edge* ep;
+    Agsym_t* sel = agattr (g, AGNODE, "selected", 0);
+    Agsym_t* hilite = agattr (g, AGNODE, "highlighted", 0);
+    Agsym_t* vis = agattr (g, AGNODE, "visible", 0);
+    Agsym_t* ecolor = agattr (g, AGEDGE, "color", 0);
+    char* color_string;
+
 	/*loop nodes*/
-	/* float maxvalue=0; */
-	for (ind=0;ind < t->Nodecount ; ind ++)
-	{
-		setRGBcolor(&color,agget(t->Nodes[ind].Node, "color"));
-		t->Nodes[ind].Color.R = color.R;t->Nodes[ind].Color.G = color.G;t->Nodes[ind].Color.B = color.B;t->Nodes[ind].Color.A = color.A;t->Nodes[ind].Color.tag=color.tag;
-//		t->Nodes[ind].Color.R = color.R;t->Nodes[ind].Color.G = color.G;t->Nodes[ind].Color.B = 1;t->Nodes[ind].Color.A = color.A;t->Nodes[ind].Color.tag=color.tag;
-		/*while in the loop why dont we set some smyrna settings from graph? selected , highlighted , visible */
-		t->Nodes[ind].data.Selected=boolAttr("selected",t->Nodes[ind].Node,0);
-		t->Nodes[ind].data.Highlighted=boolAttr("highlighted",t->Nodes[ind].Node,0);
-		t->Nodes[ind].data.Visible=boolAttr("visible",t->Nodes[ind].Node,1);
+    for (ind=0;ind < t->Nodecount ; ind ++) {
+	np = t->Nodes + ind;
+	setRGBcolor(&color,agget(np->Node, "color"));
+	np->Color = color;
+
+	/*while in the loop why dont we set some smyrna settings from graph? selected , highlighted , visible */
+	np->data.Selected = boolAttr(np->Node,sel,0);
+	np->data.Highlighted = boolAttr(np->Node,hilite,0);
+	np->data.Visible = boolAttr(np->Node,vis,1);
+    }
+
+ 	/*loop edges*/
+    sel = agattr (g, AGEDGE, "selected", 0);
+    hilite = agattr (g, AGEDGE, "highlighted", 0);
+    vis = agattr (g, AGEDGE, "visible", 0);
+    for (ind = 0;ind < t->Edgecount ; ind ++) {
+	ep = t->Edges + ind;
+	if (ecolor && (color_string = agxget(ep->Edge, ecolor)) && (*color_string != '\0')) 
+	    setRGBcolor(&color,color_string);
+	else{	/*use color theme*/
+	    getcolorfromschema(view->colschms,ep->length,t->maxedgelen,&color);
+	    color.tag = 0;
 	}
-	/*loop edges*/
-	for (ind=0;ind < t->Edgecount ; ind ++)
-	{
-			char* color_string = agget(t->Edges[ind].Edge, "color");
-			if ((color_string)&& (*color_string != '\0')) 
-				setRGBcolor(&color,color_string);
-			else{	/*use color theme*/
-				getcolorfromschema(view->colschms,t->Edges[ind].length,t->maxedgelen,&color);
-				color.tag=0;
-			}
-			t->Edges[ind].Color.R=color.R;	t->Edges[ind].Color.G=color.G;	t->Edges[ind].Color.B=color.B;	t->Edges[ind].Color.A=color.A;t->Edges[ind].Color.tag=color.tag;
-		t->Edges[ind].data.Selected=boolAttr("selected",t->Edges[ind].Edge,0);
-		t->Edges[ind].data.Highlighted=boolAttr("highlighted",t->Edges[ind].Edge,0);
-		t->Edges[ind].data.Visible=boolAttr("visible",t->Edges[ind].Edge,1);
-	}
+	ep->Color = color;
+	ep->data.Selected = boolAttr(ep->Edge,sel,0);
+	ep->data.Highlighted = boolAttr(ep->Edge,hilite,0);
+	ep->data.Visible = boolAttr(ep->Edge,vis,1);
+    }
+
 	/*update node size values in case node size is changed*/
-	t->init_node_size=t->avgedgelength*2/GetOGLDistance(2)*atoi(agget(view->g[view->activeGraph],"nodesize"))/100.0*5.00;
-	t->init_zoom=view->zoom;
+    t->init_node_size = t->avgedgelength*2/GetOGLDistance(2)*atoi(agget(view->g[view->activeGraph],"nodesize"))/100.0*5.00;
+    t->init_zoom = view->zoom;
 
 }
 void update_topview(Agraph_t * g, topview * t,int init)
@@ -468,12 +490,12 @@ static int drawtopviewnodes(Agraph_t * g)
 	     ((ind < view->Topview->Nodecount) );
 	     ind++) 
 	{
-	    if (((-view->Topview->Nodes[ind].distorted_x / view->zoom > view->clipX1)
-		 && (-view->Topview->Nodes[ind].distorted_x / view->zoom <
+	    if (((-view->Topview->Nodes[ind].distorted_x / view->zoom >= view->clipX1)
+		 && (-view->Topview->Nodes[ind].distorted_x / view->zoom <=
 		     view->clipX2)
-		 && (-view->Topview->Nodes[ind].distorted_y / view->zoom >
+		 && (-view->Topview->Nodes[ind].distorted_y / view->zoom >=
 		     view->clipY1)
-		 && (-view->Topview->Nodes[ind].distorted_y / view->zoom <
+		 && (-view->Topview->Nodes[ind].distorted_y / view->zoom <=
 		     view->clipY2))
 			 || (view->active_camera >= 0) ) {
 		float zdepth;
@@ -486,8 +508,8 @@ static int drawtopviewnodes(Agraph_t * g)
 		    continue;
 		select_topview_node(v);
 		//UPDATE view->Topview data from cgraph
-		if (v->update_required)
-		    update_topview_node_from_cgraph(v);
+		/* if (v->update_required) */
+		    /* update_topview_node_from_cgraph(v); */
 		if (v->data.Selected == 1) {
 		    glColor4f(view->selectedNodeColor.R,
 			      view->selectedNodeColor.G,
@@ -750,29 +772,28 @@ static int pick_node(topview_node * n)
     return 0;
 
 }
+
 static int draw_node_hint_boxes(void)
 {
     int ind;
-	float fs = GetOGLDistance(12);
+    float fs = GetOGLDistance(12);
+    char* lbl;
+    topview_node* n;
+    double dx, dy, dz;
 
-	for (ind = 0; ind < view->Topview->picked_node_count; ind++) {
-//	int draw_node_hintbox(GLfloat x,GLfloat y,GLfloat z,GLfloat fs,char* text)
-		draw_node_hintbox(view->Topview->picked_nodes[ind]->distorted_x,
-			  view->Topview->picked_nodes[ind]->distorted_y,
-				view->Topview->picked_nodes[ind]->distorted_z,
-			  (GLfloat) fs,agnameof(view->Topview->picked_nodes[ind]->Node)
-			  )
-			  ;
-		view->widgets->fontset->fonts[view->widgets->fontset->activefont]->fontheight=fs;
+    view->widgets->fontset->fonts[view->widgets->fontset->activefont]->fontheight=fs;
+    for (ind = 0; ind < view->Topview->picked_node_count; ind++) {
+	n = view->Topview->picked_nodes[ind];
+	lbl = agnameof(n->Node);
+	dx = n->distorted_x;
+	dy = n->distorted_y;
+	dz = n->distorted_z;
+
+	draw_node_hintbox(dx, dy, dz, (GLfloat) fs, lbl);
+
 	/*blue font color*/
-//	fontwidth=GetOGLDistance(glutBitmapLength(GLUT_BITMAP_HELVETICA_12,agnameof(view->Topview->picked_nodes[ind]->Node)));
 	glColor4f(0, 0, 1, 1);
-    glprintfglut (GLUT_BITMAP_HELVETICA_12, view->Topview->picked_nodes[ind]->distorted_x,
-					(view->Topview->picked_nodes[ind]->distorted_y+fs+fs/(GLfloat)5.0) ,
-					agnameof(view->Topview->picked_nodes[ind]->Node));
-
-
-		       
+	glprintfglut (GLUT_BITMAP_HELVETICA_12, dx,(dy+fs+fs/(GLfloat)5.0),lbl);
     }
     return 1;
 }
