@@ -14,11 +14,11 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#if ((defined(HAVE_GTS) || defined(HAVE_TRIANGLE)) && defined(SFDP))
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+
+#if ((defined(HAVE_GTS) || defined(HAVE_TRIANGLE)) && defined(SFDP))
 
 #include "SparseMatrix.h"
 #include "overlap.h"
