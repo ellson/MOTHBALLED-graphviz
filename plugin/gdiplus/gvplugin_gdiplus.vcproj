@@ -228,6 +228,10 @@
 				RelativePath=".\gvrender_gdiplus.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\gvtextlayout_gdiplus.cpp"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

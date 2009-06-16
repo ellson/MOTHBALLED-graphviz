@@ -316,6 +316,7 @@ typedef struct {
 	int maxnodedegree;
 	float maxedgelen;
 	float minedgelen;
+	float avgedgelength;
 	float init_node_size;	//raster size of node
 	float init_zoom;
 	float fitin_zoom;

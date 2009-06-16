@@ -151,9 +151,10 @@ static void setRGBcolor(RGBColor* c,char* colorstr)
 void settvposinfo(Agraph_t* g,topview* t)
 {
     int ind;
-    float maxedgelen,len,minedgelen;
+    float maxedgelen,len,minedgelen,totallen;
 	maxedgelen=0;
 	minedgelen=MAXFLOAT;
+	totallen=0;
 	/*loop nodes*/
 	for (ind=0;ind < t->Nodecount ; ind ++)
 	{
@@ -170,6 +171,7 @@ void settvposinfo(Agraph_t* g,topview* t)
 		setpositioninfo(&t->Edges[ind].x1,&t->Edges[ind].y1,&t->Edges[ind].z1,agget(t->Edges[ind].Node1->Node, "pos"));
 		setpositioninfo(&t->Edges[ind].x2,&t->Edges[ind].y2,&t->Edges[ind].z2,agget(t->Edges[ind].Node2->Node, "pos"));
 		len=(float)pow(pow((t->Edges[ind].x2-t->Edges[ind].x1),2)+pow((t->Edges[ind].y2-t->Edges[ind].y1),2),0.5);
+		totallen = totallen + len;
 		if (len > maxedgelen)
 			maxedgelen=len;
 		if(len < minedgelen)
@@ -178,6 +180,7 @@ void settvposinfo(Agraph_t* g,topview* t)
 	}
 	t->maxedgelen=maxedgelen;
 	t->minedgelen=minedgelen;
+	t->avgedgelength=totallen / (float) t->Edgecount;
 
 }
 /*if object has attribute returns its value, else returns 0*/
@@ -226,7 +229,7 @@ void settvcolorinfo(Agraph_t* g,topview* t)
 		t->Edges[ind].data.Visible=boolAttr("visible",t->Edges[ind].Edge,1);
 	}
 	/*update node size values in case node size is changed*/
-	t->init_node_size=t->minedgelen*10/GetOGLDistance(10)*atoi(agget(view->g[view->activeGraph],"nodesize"))/100.0*5.00;
+	t->init_node_size=t->avgedgelength*2/GetOGLDistance(2)*atoi(agget(view->g[view->activeGraph],"nodesize"))/100.0*5.00;
 	t->init_zoom=view->zoom;
 
 }

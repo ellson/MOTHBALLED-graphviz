@@ -53,6 +53,61 @@ static char* smyrnaDir;    /* path to directory containin smyrna data files */
 char* smyrnaGlade;
 unsigned char SmyrnaVerbose;
 
+infixtoposfic(char* infix,char* posfix,int bfsize)
+{
+	char a=NULL;
+	int ind=0;
+	int ind2=0; /*points to empty cell*/
+	int st[512];
+	int ptr=0;
+	for (ind=0;ind < strlen(infix); ind ++)
+	{
+		printf ("stack:%s\n",st);
+		printf ("posix:%s\n",posfix);
+		a=infix[ind];
+		if ((a != '(') && (a != ')') &&(a != '+') && (a != '-') && (a != '/')  &&(a != '*'))
+		{
+			posfix[ind2]=a;
+			ind2++;
+			continue;
+		}
+		if(a=='(')
+		{
+			st[ptr]=a;
+			ptr++;
+			continue;
+		}
+		if((a == '+') || (a == '-') || (a == '/')  ||(a == '*'))
+		{
+			ptr --;
+			while ((st[ptr]=='+') || (st[ptr]=='-')|| (st[ptr]=='/')|| (st[ptr]=='*'))
+			{
+				posfix[ind2]=st[ptr];
+				ind2++;
+				ptr --;
+			}
+			ptr++;
+			st[ptr]=a;
+			ptr++;
+			continue;
+		}
+		if(a==')')
+		{
+			while ((st[ptr]!= '(') )
+			{
+				posfix[ind2]=st[ptr];
+				ind2++;
+				ptr --;
+			}
+			ptr--;
+		}
+	}
+	posfix[ind2]='\0';
+}
+
+
+
+
 /* smyrnaPath:
  * Construct pathname for smyrna data file.
  * Base file name is given as suffix.

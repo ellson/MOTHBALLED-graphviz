@@ -996,12 +996,14 @@ void getcolorfromschema(colorschemaset* sc,float l,float maxl,RGBColor* c)
 		c->R=interpol(sc->s[ind-1].perc,sc->s[ind].perc,sc->s[ind-1].c.R,sc->s[ind].c.R,percl);
 		c->G=interpol(sc->s[ind-1].perc,sc->s[ind].perc,sc->s[ind-1].c.G,sc->s[ind].c.G,percl);
 		c->B=interpol(sc->s[ind-1].perc,sc->s[ind].perc,sc->s[ind-1].c.B,sc->s[ind].c.B,percl);
+		c->A=1;
 	}
 	else
 	{
 		c->R=sc->s[ind].c.R;
 		c->G=sc->s[ind].c.G;
 		c->B=sc->s[ind].c.B;
+		c->A=1;
 	}
 }
 static void set_color_theme_color(colorschemaset* sc,char** colorstr,int colorcnt,int smooth)
