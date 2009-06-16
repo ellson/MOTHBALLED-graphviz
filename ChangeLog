@@ -1,5 +1,5 @@
-June 7, 2009
-	- Preparing for 2.24.0
+June 16, 2009
+	- Release 2.24.0
 	- Core:
 		- add new layout engine for large graphs: sfdp
 	- Fixed bugs:
