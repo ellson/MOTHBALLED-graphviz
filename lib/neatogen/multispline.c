@@ -606,7 +606,7 @@ static tgraph *mkTriGraph(surface_t * sf, int maxv, pointf * pts)
 	edgei += degT(sf->neigh + 3 * i) + 1;
     }
     /* initialize variable nodes */
-    np++;
+    np = g->nodes + i;
     np->ne = 0;
     np->edges = edgei;
     np++;
