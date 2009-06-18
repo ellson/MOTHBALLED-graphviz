@@ -69,6 +69,7 @@ BuildRequires:  XFree86-devel
 BuildRequires:  /usr/include/tcl.h /usr/include/tk.h
 %endif
 %if %rhel >= 3
+%define SFDP 1
 %define IPSEPCOLA 1
 BuildRequires: fontconfig-devel tcl-devel tk-devel 
 %endif
