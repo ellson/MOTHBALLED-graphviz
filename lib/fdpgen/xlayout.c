@@ -33,6 +33,7 @@ Increase less between tries
 #include <xlayout.h>
 #include <adjust.h>
 #include <dbg.h>
+#include <ctype.h>
 
 /* Use bbox based force function */
 /* #define MS */
