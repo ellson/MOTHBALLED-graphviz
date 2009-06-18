@@ -100,6 +100,12 @@ typedef struct{
 }colorschema;
 
 typedef struct{
+	char* script;
+	char* args;
+	char* attr_name; /*attribute name to identify script in the graph*/
+}gvprscript;
+
+typedef struct{
 	int schemacount;
 	colorschema* s;
 }colorschemaset;
@@ -321,6 +327,8 @@ typedef struct {
 	float init_zoom;
 	float fitin_zoom;
 } topview;
+
+
 
 enum {
     COL_NAME = 0,
@@ -554,6 +562,9 @@ typedef struct _ViewInfo
 	char* attr_file;
 	int flush;
 	line interpol;
+	gvprscript* scripts;
+	int script_count;  /*# of scripts*/
+
 } ViewInfo;
 
 extern ViewInfo *view;

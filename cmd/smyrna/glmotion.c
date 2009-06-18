@@ -160,6 +160,11 @@ void glmotion_adjust_pan(ViewInfo* v,float panx,float pany)
 		redraw = TRUE;
 
 }
+static float mod_angle(float angle)
+{
+//	if (angle > 360)
+
+}
 void glmotion_rotate(ViewInfo * v)
 {
 	if(v->mouse.rotate_axis==MOUSE_ROTATE_XY)

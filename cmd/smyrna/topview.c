@@ -251,7 +251,8 @@ void settvcolorinfo(Agraph_t* g,topview* t)
     }
 
 	/*update node size values in case node size is changed*/
-    t->init_node_size = t->avgedgelength*2/GetOGLDistance(2)*atoi(agget(view->g[view->activeGraph],"nodesize"))/100.0*5.00;
+    t->init_node_size = 
+		t->avgedgelength*2/GetOGLDistance(2)*atoi(agget(view->g[view->activeGraph],"nodesize"))/100.0*5.00;
     t->init_zoom = view->zoom;
 
 }

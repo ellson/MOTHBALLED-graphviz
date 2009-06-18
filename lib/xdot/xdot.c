@@ -634,4 +634,3 @@ execOp (xdot_op* op,int param)
     op->drawfunc(op,param);
 }
 #endif
-

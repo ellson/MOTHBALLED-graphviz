@@ -199,6 +199,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvprlib", "cmd\gvprlib\gvpr
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sfdp", "lib\sfdpgen\sfdp.vcproj", "{443EB1A7-C634-4292-9F2D-C752BB2BF40F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rbtree", "lib\rbtree\rbtree.vcproj", "{D6CEB142-BF8E-471C-AE16-4300F2D5DEDA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -429,6 +431,10 @@ Global
 		{443EB1A7-C634-4292-9F2D-C752BB2BF40F}.Debug|Win32.Build.0 = Debug|Win32
 		{443EB1A7-C634-4292-9F2D-C752BB2BF40F}.Release|Win32.ActiveCfg = Release|Win32
 		{443EB1A7-C634-4292-9F2D-C752BB2BF40F}.Release|Win32.Build.0 = Release|Win32
+		{D6CEB142-BF8E-471C-AE16-4300F2D5DEDA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D6CEB142-BF8E-471C-AE16-4300F2D5DEDA}.Debug|Win32.Build.0 = Debug|Win32
+		{D6CEB142-BF8E-471C-AE16-4300F2D5DEDA}.Release|Win32.ActiveCfg = Release|Win32
+		{D6CEB142-BF8E-471C-AE16-4300F2D5DEDA}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

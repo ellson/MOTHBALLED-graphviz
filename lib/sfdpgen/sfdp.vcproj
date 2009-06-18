@@ -60,6 +60,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				OutputFile="c:/graphviz-ms/bin/$(ProjectName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -119,6 +120,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				OutputFile="c:/graphviz-ms/bin/$(ProjectName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"

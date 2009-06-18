@@ -32,14 +32,14 @@ int GetFixedOGLPos(int x, int y, float kts, GLfloat * X, GLfloat * Y,
 
 	glColor4f((GLfloat)0,(GLfloat)0,(GLfloat)0,(GLfloat)0.001);
 	glBegin(GL_POINTS);
-    glVertex3f((GLfloat)10.00, (GLfloat)10.00, (GLfloat)1.00);
+    glVertex3f((GLfloat)-100.00, (GLfloat)-100.00, (GLfloat)1.00);
     glEnd();
 	
 	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev(GL_PROJECTION_MATRIX, projection);
     glGetIntegerv(GL_VIEWPORT, viewport);
 
-    gluProject(10.0, 10.0, 1.00, modelview, projection, viewport, &wwinX,
+    gluProject(-100.0, -100.0, 1.00, modelview, projection, viewport, &wwinX,
 	       &wwinY, &wwinZ);
 
     winX = (float) x;
@@ -77,9 +77,9 @@ int GetOGLPosRef(int x, int y, float *X, float *Y, float *Z)
 	glColor4f((GLfloat)0,(GLfloat)0,(GLfloat)0,(GLfloat)0.001);
 
 	glBegin(GL_POINTS);
-    glVertex3f(10.00, 10.00, 0.00);
+    glVertex3f(-100.00, -100.00, 0.00);
     glEnd();
-    gluProject(10.0, 10.0, 0.00, modelview, projection, viewport, &wwinX,
+    gluProject(-100.0, -100.0, 0.00, modelview, projection, viewport, &wwinX,
 	       &wwinY, &wwinZ);
     winX = (float) x;
     winY = (float) viewport[3] - (float) y;
