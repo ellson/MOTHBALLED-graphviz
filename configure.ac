@@ -2742,11 +2742,11 @@ dnl -----------------------------------
 dnl SFDP
  
 AC_ARG_WITH(sfdp,
-  [AS_HELP_STRING([--with-sfdp=no],[sfdp layout engine])],
-  [], [with_sfdp=no])
+  [AS_HELP_STRING([--with-sfdp=yes],[sfdp layout engine])],
+  [], [with_sfdp=yes])
 
 if test "x$with_sfdp" != "xyes"; then
-  use_sfdp="No (disabled by default - experimental)"
+  use_sfdp="No (disabled)"
 else
   use_sfdp="Yes"
   AC_DEFINE_UNQUOTED(SFDP,1,[Define if you want SFDP])
