@@ -67,8 +67,6 @@ void clear_viewport(ViewInfo * view)
 		cleartopview(view->Topview);
     if (view->graphCount) 
 		agclose(view->g[view->activeGraph]);
-	if (view->script_count)
-		clear_scripts(view);
 //	init_viewport(view);
 }
 static void* get_glut_font(int ind)
