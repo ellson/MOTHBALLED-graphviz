@@ -39,6 +39,7 @@
 #endif
 #include "color.h"
 #include "colorprocs.h"
+#include <assert.h>
 static float dx = 0.0;
 static float dy = 0.0;
 static float dz = 0.0;
@@ -52,7 +53,9 @@ static int draw_topview_edge_label(topview_edge * e, float zdepth);
 static int node_visible(topview_node* n);
 static int select_topview_node(topview_node * n);
 /* static int select_topview_edge(topview_edge * e); */
+#if 0
 static int update_topview_node_from_cgraph(topview_node * Node);
+#endif
 static int get_color_from_edge(topview_edge * e);
 static int draw_node_hint_boxes(void);
 static int pick_node(topview_node * n);
@@ -97,32 +100,17 @@ static void init_element_data(element_data* d)
 	d->param=0;
 	d->TVRef=-1;
 }	
-static int setpositioninfo(float* x,float* y,float* z,char* buf)
-{
-	int ind=0;
-	int commacount=0;
-	/*zero all values*/
-	*x=0;
-	*y=0;
-	*z=0;
 
-	/*find out if 2D or 3 d, count commas*/
-	if (!buf)
-		return 0;
-	for (;ind < (int)strlen(buf); ind=ind +1)
-	{
-		if( buf[ind]==',')
-			commacount ++;
-	}
-	if (commacount == 1) /*2D no z value*/
-	{
-		sscanf(buf,"%f,%f",x,y);
-		z=0;
-	}
-	else 
-		sscanf(buf,"%f,%f,%f",x,y,z);
-	return 1;
+static void 
+setpositioninfo(float* x,float* y,float* z,char* buf)
+{
+    /*zero all values*/
+    *x=0;
+    *y=0;
+    *z=0;
+    sscanf(buf,"%f,%f,%f",x,y,z);
 }
+
 static void setRGBcolor(RGBColor* c,char* colorstr)
 {
     gvcolor_t cl;
@@ -145,42 +133,62 @@ static void setRGBcolor(RGBColor* c,char* colorstr)
 }
 
 
-
+#define DIST2(x,y) (((x)*(x))+((y)*(y)))
+#define DIST(x,y) (sqrt(DIST2(x,y)))
 
 /*update position info from cgraph*/
 void settvposinfo(Agraph_t* g,topview* t)
 {
     int ind;
     float maxedgelen,len,minedgelen,totallen;
-	maxedgelen=0;
-	minedgelen=MAXFLOAT;
-	totallen=0;
+    float xmin, xmax, ymin, ymax;
+    topview_node* np;
+    topview_edge* ep;
+    Agsym_t* poss = agattr (g, AGNODE, "pos", 0);
+    assert (poss);
+
+    maxedgelen=0;
+    xmax = ymax = -MAXFLOAT;
+    xmin = ymin = minedgelen = MAXFLOAT;
+    totallen=0;
+
+
 	/*loop nodes*/
-	for (ind=0;ind < t->Nodecount ; ind ++)
-	{
-		if (!setpositioninfo(&t->Nodes[ind].x,&t->Nodes[ind].y,&t->Nodes[ind].z,agget(t->Nodes[ind].Node, "pos")))
-			printf ("missing position information of node %s , setting to zero\n",agnameof(t->Nodes[ind].Node));
-		/*distorted coordiantes, same with original ones at the beginning*/
-		t->Nodes[ind].distorted_x = t->Nodes[ind].x;
-		t->Nodes[ind].distorted_y = t->Nodes[ind].y;
-		t->Nodes[ind].distorted_z = t->Nodes[ind].z;
-	}
+    for (ind=0;ind < t->Nodecount ; ind ++) {
+	np = t->Nodes + ind;
+	setpositioninfo(&np->x,&np->y,&np->z,agxget(np->Node, poss));
+
+	/*distorted coordiates, same with original ones at the beginning*/
+	np->distorted_x = t->Nodes[ind].x;
+	np->distorted_y = t->Nodes[ind].y;
+	np->distorted_z = t->Nodes[ind].z;
+	xmax = MAX(xmax, np->x);
+	xmin = MIN(xmin, np->x);
+	ymax = MAX(ymax, np->y);
+	ymin = MIN(ymin, np->y);
+     }
+
 	/*loop edges*/
-	for (ind=0;ind < t->Edgecount ; ind ++)
-	{
-		setpositioninfo(&t->Edges[ind].x1,&t->Edges[ind].y1,&t->Edges[ind].z1,agget(t->Edges[ind].Node1->Node, "pos"));
-		setpositioninfo(&t->Edges[ind].x2,&t->Edges[ind].y2,&t->Edges[ind].z2,agget(t->Edges[ind].Node2->Node, "pos"));
-		len=(float)pow(pow((t->Edges[ind].x2-t->Edges[ind].x1),2)+pow((t->Edges[ind].y2-t->Edges[ind].y1),2),0.5);
-		totallen = totallen + len;
-		if (len > maxedgelen)
-			maxedgelen=len;
-		if(len < minedgelen)
-			minedgelen=len;
-		t->Edges[ind].length=len;
-	}
-	t->maxedgelen=maxedgelen;
-	t->minedgelen=minedgelen;
-	t->avgedgelength=totallen / (float) t->Edgecount;
+    for (ind=0;ind < t->Edgecount ; ind ++) {
+	ep = t->Edges + ind;
+        ep->x1 = ep->Node1->x;
+        ep->y1 = ep->Node1->y;
+        ep->z1 = ep->Node1->z;
+        ep->x2 = ep->Node2->x;
+        ep->y2 = ep->Node2->y;
+        ep->z2 = ep->Node2->z;
+	len=(float)DIST(ep->x2 - ep->x1, ep->y2 - ep->y1);
+	totallen = totallen + len;
+	if (len > maxedgelen)
+	    maxedgelen=len;
+	if(len < minedgelen)
+	    minedgelen=len;
+	ep->length=len;
+    }
+
+    t->maxedgelen=maxedgelen;
+    t->minedgelen=minedgelen;
+    t->avgedgelength=totallen / (float) t->Edgecount;
 
 }
 
@@ -208,6 +216,18 @@ static int boolAttr(void* obj, Agsym_t* attr, int defv)
     else return mapbool(agxget (obj,attr), defv);
 }
 
+static int visible (void* obj, Agsym_t* vattr, Agsym_t* sattr)
+{
+    if (vattr)
+	return boolAttr (obj, vattr, 1);
+    else if (sattr) {
+	if (strcmp (agxget (obj, sattr), "invis")) return 1;
+	else return 0;
+    }
+    else
+	return 1;
+}
+
 void settvcolorinfo(Agraph_t* g,topview* t)
 {
     int ind;
@@ -217,6 +237,7 @@ void settvcolorinfo(Agraph_t* g,topview* t)
     Agsym_t* sel = agattr (g, AGNODE, "selected", 0);
     Agsym_t* hilite = agattr (g, AGNODE, "highlighted", 0);
     Agsym_t* vis = agattr (g, AGNODE, "visible", 0);
+    Agsym_t* sty = agattr (g, AGNODE, "style", 0);
     Agsym_t* ecolor = agattr (g, AGEDGE, "color", 0);
     char* color_string;
 
@@ -229,13 +250,14 @@ void settvcolorinfo(Agraph_t* g,topview* t)
 	/*while in the loop why dont we set some smyrna settings from graph? selected , highlighted , visible */
 	np->data.Selected = boolAttr(np->Node,sel,0);
 	np->data.Highlighted = boolAttr(np->Node,hilite,0);
-	np->data.Visible = boolAttr(np->Node,vis,1);
+	np->data.Visible = visible(np->Node,vis,sty);
     }
 
  	/*loop edges*/
     sel = agattr (g, AGEDGE, "selected", 0);
     hilite = agattr (g, AGEDGE, "highlighted", 0);
     vis = agattr (g, AGEDGE, "visible", 0);
+    sty = agattr (g, AGEDGE, "style", 0);
     for (ind = 0;ind < t->Edgecount ; ind ++) {
 	ep = t->Edges + ind;
 	if (ecolor && (color_string = agxget(ep->Edge, ecolor)) && (*color_string != '\0')) 
@@ -247,25 +269,30 @@ void settvcolorinfo(Agraph_t* g,topview* t)
 	ep->Color = color;
 	ep->data.Selected = boolAttr(ep->Edge,sel,0);
 	ep->data.Highlighted = boolAttr(ep->Edge,hilite,0);
-	ep->data.Visible = boolAttr(ep->Edge,vis,1);
+	ep->data.Visible = visible(ep->Edge,vis,sty);
     }
 
-	/*update node size values in case node size is changed*/
-    t->init_node_size = 
-		t->avgedgelength*2/GetOGLDistance(2)*atoi(agget(view->g[view->activeGraph],"nodesize"))/100.0*5.00;
-    t->init_zoom = view->zoom;
-
 }
+
 void update_topview(Agraph_t * g, topview * t,int init)
 {
-	if (init)
-		preparetopview(g,t);
-	settvposinfo(g,t);
-	settvcolorinfo(g,t);
-	set_boundaries(t);
-	set_update_required(t);
-	btnToolZoomFit_clicked(NULL,NULL);
 
+    if (init) {
+	float vsize;
+	int percent;
+
+	preparetopview(g,t);
+
+    	percent = atoi(agget(view->g[view->activeGraph],"nodesize"));
+	vsize = 0.05*sqrt((view->bdxRight - view->bdxLeft)*(view->bdyTop - view->bdyBottom));
+    	t->init_node_size = vsize*2/GetOGLDistance(2)*percent/100.0/sqrt(t->Nodecount);
+    	t->init_zoom = view->zoom;
+    }
+    settvposinfo(g,t);
+    settvcolorinfo(g,t);
+    set_boundaries(t);
+    set_update_required(t);
+    btnToolZoomFit_clicked(NULL,NULL);
 }
 
 void preparetopview(Agraph_t * g, topview * t)
@@ -370,9 +397,9 @@ void preparetopview(Agraph_t * g, topview * t)
 }
 
 
-float set_gl_dot_size(topview * t)
+static float set_gl_dot_size(topview * t)
 {
-	static float sizevc;
+	float sizevc;
 	if (view->active_camera==-1)
 		sizevc = t->init_node_size /view->zoom*t->init_zoom;
 	else
@@ -382,6 +409,7 @@ float set_gl_dot_size(topview * t)
 
 }
 
+#if 0
 float calcfontsize(float totaledgelength,int totallabelsize,int edgecount,int totalnodecount)
 {
 	float avglength=totaledgelength/(float)edgecount;
@@ -389,20 +417,21 @@ float calcfontsize(float totaledgelength,int totallabelsize,int edgecount,int to
 	return avglength/ avglabelsize;
 
 }
-static int begintopviewnodes(Agraph_t* g)
+#endif
+static int begintopviewnodes(Agraph_t* g, float dotsz)
 {
 	switch (view->defaultnodeshape)
 	{
 	case 0:
-		glPointSize((GLfloat)set_gl_dot_size(view->Topview));		
+		glPointSize((GLfloat)dotsz);
 		glEnable(GL_POINT_SMOOTH);
 		glBegin(GL_POINTS);
 		break;
 	case 1:
-		set_gl_dot_size(view->Topview);		
+		/* set_gl_dot_size(view->Topview); FIX - command with no effect		 */
 		break;
 	default:
-		set_gl_dot_size(view->Topview);		
+		/* set_gl_dot_size(view->Topview); FIX - command with no effect		 */
 		glBegin(GL_POINTS);
 
 	};
@@ -478,78 +507,66 @@ static int endtopviewnodes(Agraph_t* g)
 
 static int drawtopviewnodes(Agraph_t * g)
 {
-	topview_node *v;
+    topview_node *v;
     float ddx, ddy, ddz;
     int ind = 0;
-    float dotsize = 0;
-	dotsize=set_gl_dot_size(view->Topview);		//sets the size of the gl points
+    float dotsize = set_gl_dot_size(view->Topview);		//sets the size of the gl points
 
-	set_topview_options();
-	begintopviewnodes(g);
-	view->visiblenodecount=0;
-	for (ind = 0;
-	     ((ind < view->Topview->Nodecount) );
-	     ind++) 
-	{
-	    if (((-view->Topview->Nodes[ind].distorted_x / view->zoom >= view->clipX1)
-		 && (-view->Topview->Nodes[ind].distorted_x / view->zoom <=
-		     view->clipX2)
-		 && (-view->Topview->Nodes[ind].distorted_y / view->zoom >=
-		     view->clipY1)
-		 && (-view->Topview->Nodes[ind].distorted_y / view->zoom <=
-		     view->clipY2))
-			 || (view->active_camera >= 0) ) {
-		float zdepth;
-		v = &view->Topview->Nodes[ind];
-		view->visiblenodecount = view->visiblenodecount + 1;
-			if(!view->drawnodes)
-				continue;
+    set_topview_options();
+    begintopviewnodes(g, dotsize);
+    view->visiblenodecount=0;
+    for (ind = 0; ind < view->Topview->Nodecount; ind++) {
+	v = view->Topview->Nodes+ind;
+	if (((-v->distorted_x / view->zoom >= view->clipX1)
+	    && (-v->distorted_x / view->zoom <= view->clipX2)
+	    && (-v->distorted_y / view->zoom >= view->clipY1)
+	    && (-v->distorted_y / view->zoom <= view->clipY2))
+		|| (view->active_camera >= 0) ) {
+	    float zdepth;
+	    view->visiblenodecount = view->visiblenodecount + 1;
+	    if(!view->drawnodes || !node_visible(v))
+		continue;
 
-		if (!node_visible(v))
-		    continue;
-		select_topview_node(v);
+	    select_topview_node(v);
 		//UPDATE view->Topview data from cgraph
 		/* if (v->update_required) */
 		    /* update_topview_node_from_cgraph(v); */
-		if (v->data.Selected == 1) {
-		    glColor4f(view->selectedNodeColor.R,
-			      view->selectedNodeColor.G,
-			      view->selectedNodeColor.B,
-			      view->selectedNodeColor.A); 
-		    ddx = dx;
-		    ddy = dy;
-		    ddz = dz;
-		} else		//get the color from node
-		{
-		    glColor4f(v->Color.R, v->Color.G, v->Color.B,
+	    if (v->data.Selected == 1) {
+		glColor4f(view->selectedNodeColor.R,
+		      view->selectedNodeColor.G,
+		      view->selectedNodeColor.B,
+		      view->selectedNodeColor.A); 
+		ddx = dx;
+		ddy = dy;
+		ddz = dz;
+	    } 
+	    else {  //get the color from node
+		glColor4f(v->Color.R, v->Color.G, v->Color.B,
 				v->node_alpha*view->defaultnodealpha);
-		    ddx = 0;
-		    ddy = 0;
-		    ddz = 0;
-		}
-
-		if (v->distorted_x != v->x)
-		    zdepth = (float) Z_FORWARD_PLANE;
-		else
-		    zdepth = (float) Z_BACK_PLANE;
-
-			if ((view->defaultnodeshape==0))
-			{
-				glVertex3f(v->distorted_x - ddx,
-				v->distorted_y - ddy, v->distorted_z - ddz);
-			}
-			else if (view->defaultnodeshape==1)
-			{
-				drawCircle(v->distorted_x - ddx,v->distorted_y - ddy,dotsize,0);
-			}
+		ddx = 0;
+		ddy = 0;
+		ddz = 0;
 	    }
-		else
-		{
-			/* int a=1; */
-		}
 
+	    if (v->distorted_x != v->x)
+		zdepth = (float) Z_FORWARD_PLANE;
+	    else
+		zdepth = (float) Z_BACK_PLANE;
+
+	    if ((view->defaultnodeshape==0)) {
+		glVertex3f(v->distorted_x - ddx,
+				v->distorted_y - ddy, v->distorted_z - ddz);
+	    }
+	    else if (view->defaultnodeshape==1) {
+		drawCircle(v->distorted_x - ddx,v->distorted_y - ddy,dotsize,0);
+	    }
 	}
-	endtopviewnodes(g);
+	else {
+			/* int a=1; */
+	}
+
+    }
+    endtopviewnodes(g);
     return 1;
 
 }
@@ -561,68 +578,58 @@ static void drawtopviewedges(Agraph_t * g)
     float dddx, dddy, dddz;
     int ind = 0;
 
+    if (!view->drawedges)
+	return;
+
     glBegin(GL_LINES);
     set_topview_options();
-    for (ind = 0; ((ind < view->Topview->Edgecount) && view->drawedges);ind++) 
-	{
+    for (ind = 0; ind < view->Topview->Edgecount; ind++) {
+	e = view->Topview->Edges + ind;
+	if (((e->x1 / view->zoom * -1 > view->clipX1)
+	    && (e->x1 / view->zoom * -1 < view->clipX2)
+	    && (e->y1 / view->zoom * -1 > view->clipY1)
+	    && (e->y1 / view->zoom * -1 < view->clipY2))
+	      ||
+	    ((e->x2 / view->zoom * -1 > view->clipX1)
+	    && (e->x2 / view->zoom * -1 < view->clipX2)
+	    && (e->y2 / view->zoom * -1 > view->clipY1)
+	    && (e->y2 / view->zoom * -1 < view->clipY2))
+	      || (view->active_camera >= 0)) {
 
-		if (((view->Topview->Edges[ind].x1 / view->zoom * -1 >
-	      view->clipX1)
-	     && (view->Topview->Edges[ind].x1 / view->zoom * -1 <
-		 view->clipX2)
-	     && (view->Topview->Edges[ind].y1 / view->zoom * -1 >
-		 view->clipY1)
-	     && (view->Topview->Edges[ind].y1 / view->zoom * -1 <
-		 view->clipY2))
-	    ||
-	    ((view->Topview->Edges[ind].x2 / view->zoom * -1 >
-	      view->clipX1)
-	     && (view->Topview->Edges[ind].x2 / view->zoom * -1 <
-		 view->clipX2)
-	     && (view->Topview->Edges[ind].y2 / view->zoom * -1 >
-		 view->clipY1)
-	     && (view->Topview->Edges[ind].y2 / view->zoom * -1 <
-		 view->clipY2))
-	    || (view->active_camera >= 0)) {
-	    e = &view->Topview->Edges[ind];
 	    if (!get_color_from_edge(e)) 
-			continue;
+		continue;
 
 	    //select_topview_edge(e);
-		if (e->Node1->data.Selected == 1) 
-		{	//tail is selected
-			ddx = dx;
-			ddy = dy;
-			ddz = 0;
+	    if (e->Node1->data.Selected == 1) {	//tail is selected
+		ddx = dx;
+		ddy = dy;
+		ddz = 0;
 	    } 
-		else {
-			ddx = 0;
-			ddy = 0;
-			ddz = 0;
+	    else {
+		ddx = 0;
+		ddy = 0;
+		ddz = 0;
 	    }
-		if (e->Node2->data.Selected == 1) 
-		{	//head
-			dddx = dx;
-			dddy = dy;
-			dddz = 0;
+	    if (e->Node2->data.Selected == 1) {	//head
+		dddx = dx;
+		dddy = dy;
+		dddz = 0;
 	    } 
-		else 
-		{
-			dddx = 0;
-			dddy = 0;
-			dddz = 0;
+	    else {
+		dddx = 0;
+		dddy = 0;
+		dddz = 0;
 	    }
-		glVertex3f(e->Node1->distorted_x - ddx,
-				   e->Node1->distorted_y - ddy,
-				e->Node1->distorted_z - ddz);
-		glVertex3f(e->Node2->distorted_x - dddx,
-				   e->Node2->distorted_y - dddy,
-			e->Node2->distorted_z - ddz);
+	    glVertex3f(e->Node1->distorted_x - ddx,
+		e->Node1->distorted_y - ddy,
+		e->Node1->distorted_z - ddz);
+	    glVertex3f(e->Node2->distorted_x - dddx,
+		e->Node2->distorted_y - dddy,
+		e->Node2->distorted_z - ddz);
 	    
 	}
     }
     glEnd();
-
 
 }
 
@@ -816,7 +823,7 @@ static int select_topview_node(topview_node * n)
 		|| 
 		(view->mouse.button== rightmousebutton))	//single selection or right click (picking)
 	{
-		float dist=(float)pow((view->Selection.X-n->distorted_x),2)+(float)pow((view->Selection.Y-n->distorted_y),2);
+		float dist=(float)DIST2(view->Selection.X-n->distorted_x, view->Selection.Y-n->distorted_y);
 		if ((view->Selection.node_distance==-1) ||(dist < view->Selection.node_distance))
 		{
 				view->Selection.node_distance=dist;
@@ -919,6 +926,7 @@ static int select_topview_edge(topview_edge * e)
 }
 #endif
 
+#if 0
 static int update_topview_node_from_cgraph(topview_node * Node)
 {
     char *buf;
@@ -937,7 +945,7 @@ static int update_topview_node_from_cgraph(topview_node * Node)
     Node->update_required = 0;
     return 1;
 }
-
+#endif
 #if 0
 int update_topview_edge_from_cgraph(topview_edge * Edge)
 {
@@ -1005,7 +1013,8 @@ static int draw_topview_label(topview_node * v, float zdepth)
 		glColor4f(view->nodelabelcolor.R,view->nodelabelcolor.G,view->nodelabelcolor.B,view->nodelabelcolor.A);
 		buf=agget(agraphof(v->Node),"nodelabelattribute");
 		if (buf)
-			glprintfglut(view->glutfont,(v->distorted_x - ddx),(v->distorted_y - ddy),agget(v->Node,buf));
+			glprintfglut(view->glutfont,(v->distorted_x - ddx),(v->distorted_y - ddy),
+                          agget(v->Node,buf));
 		return 1;
     } else
 		return 0;
@@ -1095,16 +1104,20 @@ static void set_boundaries(topview * t)
 static int get_color_from_edge(topview_edge * e)
 {
     GdkColor color;
-    int return_value = 0;
+    int return_value = 1;
     float Alpha = 0;
     GtkHScale *AlphaScale =
 	(GtkHScale *) glade_xml_get_widget(xml, "settingsscale2");
     Alpha = (float) gtk_range_get_value((GtkRange *) AlphaScale);
 
     //check visibility;
+/*
     if ((node_visible(e->Node1))
 	&& (node_visible(e->Node2)))
-	return_value = 1;
+*/
+    /* FIX - if edge is not visible, why not return immediately? */
+    if (!e->data.Visible)
+	return_value = 0;
 
 
     /*if both head and tail nodes are selected use selection color for edges */
