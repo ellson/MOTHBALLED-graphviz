@@ -394,9 +394,7 @@ static gboolean
 scroll_event(GtkWidget * widget, GdkEventScroll * event, gpointer data)
 {
 	gdouble seconds;
-	static int callcount=0;
 
-	int fr;
 	seconds=g_timer_elapsed(view->timer2,NULL);
 	if (seconds > 0.005)
 	{
