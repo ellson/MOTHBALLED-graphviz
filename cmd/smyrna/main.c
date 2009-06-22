@@ -53,6 +53,7 @@ static char* smyrnaDir;    /* path to directory containin smyrna data files */
 char* smyrnaGlade;
 unsigned char SmyrnaVerbose;
 
+#if 0
 infixtoposfic(char* infix,char* posfix,int bfsize)
 {
 	char a=NULL;
@@ -104,9 +105,7 @@ infixtoposfic(char* infix,char* posfix,int bfsize)
 	}
 	posfix[ind2]='\0';
 }
-
-
-
+#endif
 
 /* smyrnaPath:
  * Construct pathname for smyrna data file.
