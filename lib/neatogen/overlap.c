@@ -513,4 +513,11 @@ void remove_overlap(int dim, SparseMatrix A, int m, real *x, real *label_sizes, 
 #endif
 }
 
+#else
+#include "types.h"
+#include "SparseMatrix.h"
+void remove_overlap(int dim, SparseMatrix A, int m, real *x, real *label_sizes, int ntry, real initial_scaling, int *flag)
+{
+    agerr(AGERR, "remove_overlap: Graphviz not built with triangulation library\n");
+}
 #endif
