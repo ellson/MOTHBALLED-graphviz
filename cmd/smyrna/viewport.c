@@ -582,37 +582,15 @@ static void refresh_borders(Agraph_t* g)
 
 
 /* add_graph_to_viewport_from_file:
- * returns 1 if successfull else 0
+ * returns 1 if successful else 0
  */
 int add_graph_to_viewport_from_file(char *fileName)
 {
-    //returns 1 if successfull else 0
-	Agraph_t *graph;
+    Agraph_t *graph = loadGraph(fileName);
 
-	graph = loadGraph(fileName);
-    if (graph) {
-	view->graphCount = view->graphCount + 1;
-	view->g =
-	    (Agraph_t **) realloc(view->g,
-				  sizeof(Agraph_t *) * view->graphCount);
-	view->g[view->graphCount - 1] = graph;
-	view->activeGraph = view->graphCount - 1;
-	load_settings_from_graph(view->g[view->activeGraph]);
-	update_graph_from_settings(view->g[view->activeGraph]);
-    set_viewport_settings_from_template(view, view->g[view->activeGraph]);
-	update_topview(graph, view->Topview,1);
-	fill_key(view->orig_key,get_md5_key(graph));
-    expose_event(view->drawing_area, NULL, NULL);
-
-
-	return 1;
-    } else
-	{
-		return 0;
-
-	}
-
+    return add_graph_to_viewport (graph);
 }
+
 int add_graph_to_viewport(Agraph_t* graph)
 {
     if (graph) {
@@ -624,18 +602,15 @@ int add_graph_to_viewport(Agraph_t* graph)
 	view->activeGraph = view->graphCount - 1;
 	load_settings_from_graph(view->g[view->activeGraph]);
 	update_graph_from_settings(view->g[view->activeGraph]);
-    set_viewport_settings_from_template(view, view->g[view->activeGraph]);
+	set_viewport_settings_from_template(view, view->g[view->activeGraph]);
 	update_topview(graph, view->Topview,1);
 	fill_key(view->orig_key,get_md5_key(graph));
-    expose_event(view->drawing_area, NULL, NULL);
-
-
+	expose_event(view->drawing_area, NULL, NULL);
 	return 1;
-    } else
-	{
-		return 0;
-
-	}
+    } 
+    else {
+	return 0;
+    }
 
 }
 
