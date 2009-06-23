@@ -30,10 +30,20 @@ extern GladeXML* xml;
 static void
 refreshViewport ()
 {
-    update_graph_from_settings(view->g[view->activeGraph]);
+		view->Topview->Graphdata.GraphFileName = strdup ("unnamed");
+		load_settings_from_graph(view->g[view->activeGraph]);
+		update_graph_from_settings(view->g[view->activeGraph]);
+		set_viewport_settings_from_template(view, view->g[view->activeGraph]);
+		update_topview(view->g[view->activeGraph], view->Topview,1);
+		fill_key(view->orig_key,get_md5_key(view->g[view->activeGraph]));
+		expose_event(view->drawing_area, NULL, NULL);
+/*
+	update_graph_from_settings(view->g[view->activeGraph]);
     set_viewport_settings_from_template(view, view->g[view->activeGraph]);
     settvcolorinfo(view->g[view->activeGraph],view->Topview);
-    glexpose ();
+    glexpose ();*/
+
+
 }
 
 static ssize_t outfn (void* sp, const char *buf, size_t nbyte, void* dp)

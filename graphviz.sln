@@ -195,11 +195,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvtest", "cmd\tester\gvtest
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "osage", "lib\osage\osage.vcproj", "{8E82D6BD-74D0-48C3-887A-1754EA71DA5A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvprlib", "cmd\gvprlib\gvprlib.vcproj", "{1068DA13-0BB3-43A7-8776-6F519003EEBD}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sfdp", "lib\sfdpgen\sfdp.vcproj", "{443EB1A7-C634-4292-9F2D-C752BB2BF40F}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rbtree", "lib\rbtree\rbtree.vcproj", "{D6CEB142-BF8E-471C-AE16-4300F2D5DEDA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gts", "lib\GTS\gts.vcproj", "{0DEA7FAC-4190-4B39-BEF0-1C055758FED3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvprlib", "lib\gvpr\gvprlib.vcproj", "{8C103DE9-BC35-4173-A08D-63906EC5EEFD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -423,10 +425,6 @@ Global
 		{8E82D6BD-74D0-48C3-887A-1754EA71DA5A}.Debug|Win32.Build.0 = Debug|Win32
 		{8E82D6BD-74D0-48C3-887A-1754EA71DA5A}.Release|Win32.ActiveCfg = Release|Win32
 		{8E82D6BD-74D0-48C3-887A-1754EA71DA5A}.Release|Win32.Build.0 = Release|Win32
-		{1068DA13-0BB3-43A7-8776-6F519003EEBD}.Debug|Win32.ActiveCfg = Debug|Win32
-		{1068DA13-0BB3-43A7-8776-6F519003EEBD}.Debug|Win32.Build.0 = Debug|Win32
-		{1068DA13-0BB3-43A7-8776-6F519003EEBD}.Release|Win32.ActiveCfg = Release|Win32
-		{1068DA13-0BB3-43A7-8776-6F519003EEBD}.Release|Win32.Build.0 = Release|Win32
 		{443EB1A7-C634-4292-9F2D-C752BB2BF40F}.Debug|Win32.ActiveCfg = Debug|Win32
 		{443EB1A7-C634-4292-9F2D-C752BB2BF40F}.Debug|Win32.Build.0 = Debug|Win32
 		{443EB1A7-C634-4292-9F2D-C752BB2BF40F}.Release|Win32.ActiveCfg = Release|Win32
@@ -435,6 +433,14 @@ Global
 		{D6CEB142-BF8E-471C-AE16-4300F2D5DEDA}.Debug|Win32.Build.0 = Debug|Win32
 		{D6CEB142-BF8E-471C-AE16-4300F2D5DEDA}.Release|Win32.ActiveCfg = Release|Win32
 		{D6CEB142-BF8E-471C-AE16-4300F2D5DEDA}.Release|Win32.Build.0 = Release|Win32
+		{0DEA7FAC-4190-4B39-BEF0-1C055758FED3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0DEA7FAC-4190-4B39-BEF0-1C055758FED3}.Debug|Win32.Build.0 = Debug|Win32
+		{0DEA7FAC-4190-4B39-BEF0-1C055758FED3}.Release|Win32.ActiveCfg = Release|Win32
+		{0DEA7FAC-4190-4B39-BEF0-1C055758FED3}.Release|Win32.Build.0 = Release|Win32
+		{8C103DE9-BC35-4173-A08D-63906EC5EEFD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8C103DE9-BC35-4173-A08D-63906EC5EEFD}.Debug|Win32.Build.0 = Debug|Win32
+		{8C103DE9-BC35-4173-A08D-63906EC5EEFD}.Release|Win32.ActiveCfg = Release|Win32
+		{8C103DE9-BC35-4173-A08D-63906EC5EEFD}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -564,6 +564,7 @@ typedef struct _ViewInfo
 	line interpol;
 	gvprscript* scripts;
 	int script_count;  /*# of scripts*/
+	GtkComboBox* graphComboBox;/*pointer to graph combo box at top right*/
 
 } ViewInfo;
 

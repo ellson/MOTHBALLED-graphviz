@@ -97,7 +97,7 @@ static void* get_glut_font(int ind)
 	}
 
 }
-static void fill_key(md5_byte_t* b,md5_byte_t* data)
+void fill_key(md5_byte_t* b,md5_byte_t* data)
 {
 	int ind=0;
 	for (ind=0;ind < 16;ind ++)
@@ -593,24 +593,39 @@ int add_graph_to_viewport_from_file(char *fileName)
 
 int add_graph_to_viewport(Agraph_t* graph)
 {
-    if (graph) {
-	view->graphCount = view->graphCount + 1;
-	view->g =
-	    (Agraph_t **) realloc(view->g,
-				  sizeof(Agraph_t *) * view->graphCount);
-	view->g[view->graphCount - 1] = graph;
-	view->activeGraph = view->graphCount - 1;
+    if (graph) 
+	{
+		view->graphCount = view->graphCount + 1;
+		view->g =(Agraph_t **) realloc(view->g,sizeof(Agraph_t *) * view->graphCount);
+		view->g[view->graphCount - 1] = graph;
+		view->activeGraph = view->graphCount - 1;
+		load_settings_from_graph(view->g[view->activeGraph]);
+		update_graph_from_settings(view->g[view->activeGraph]);
+		set_viewport_settings_from_template(view, view->g[view->activeGraph]);
+		update_topview(graph, view->Topview,1);
+		gtk_combo_box_append_text(view->graphComboBox,view->Topview->Graphdata.GraphFileName);
+		fill_key(view->orig_key,get_md5_key(graph));
+		expose_event(view->drawing_area, NULL, NULL);
+		return 1;
+    } 
+    else 
+	{
+		return 0;
+    }
+
+}
+void switch_graph(int graphId)
+{
+	if (graphId >= view->graphCount)
+		return;/*wrong entry*/
+	view->activeGraph = graphId;
 	load_settings_from_graph(view->g[view->activeGraph]);
 	update_graph_from_settings(view->g[view->activeGraph]);
 	set_viewport_settings_from_template(view, view->g[view->activeGraph]);
-	update_topview(graph, view->Topview,1);
-	fill_key(view->orig_key,get_md5_key(graph));
+	cleartopview(view->Topview);
+	update_topview(view->g[view->activeGraph], view->Topview,1);
+	fill_key(view->orig_key,get_md5_key(view->g[view->activeGraph]));
 	expose_event(view->drawing_area, NULL, NULL);
-	return 1;
-    } 
-    else {
-	return 0;
-    }
 
 }
 

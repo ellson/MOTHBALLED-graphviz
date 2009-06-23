@@ -295,11 +295,11 @@ void prepare_topological_fisheye(topview* t)
     view->Topview->tarColor.B = (float) cl.u.RGBA[2];
 
 
-	sscanf(agget(view->g[0],"topologicalfisheyedistortionfactor"),"%lf",&view->Topview->parms.repos.distortion);
-	sscanf(agget(view->g[0],"topologicalfisheyefinenodes"),"%d",&view->Topview->parms.level.num_fine_nodes);
-	sscanf(agget(view->g[0],"topologicalfisheyecoarseningfactor"),"%lf",&view->Topview->parms.level.coarsening_rate);
-	sscanf(agget(view->g[0],"topologicalfisheyedist2limit"),"%d",&view->Topview->parms.hier.dist2_limit);
-	sscanf(agget(view->g[0],"topologicalfisheyeanimate"),"%d",&view->Topview->animate);
+	sscanf(agget(view->g[view->activeGraph],"topologicalfisheyedistortionfactor"),"%lf",&view->Topview->parms.repos.distortion);
+	sscanf(agget(view->g[view->activeGraph],"topologicalfisheyefinenodes"),"%d",&view->Topview->parms.level.num_fine_nodes);
+	sscanf(agget(view->g[view->activeGraph],"topologicalfisheyecoarseningfactor"),"%lf",&view->Topview->parms.level.coarsening_rate);
+	sscanf(agget(view->g[view->activeGraph],"topologicalfisheyedist2limit"),"%d",&view->Topview->parms.hier.dist2_limit);
+	sscanf(agget(view->g[view->activeGraph],"topologicalfisheyeanimate"),"%d",&view->Topview->animate);
 		
 	set_active_levels(hp, fs->foci_nodes, fs->num_foci, &(t->parms.level));
 	positionAllItems(hp, fs, &(t->parms.repos));
@@ -656,11 +656,11 @@ void changetopfishfocus(topview * t, float *x, float *y,
 
 
 
-	sscanf(agget(view->g[0],"topologicalfisheyedistortionfactor"),"%lf",&view->Topview->parms.repos.distortion);
-	sscanf(agget(view->g[0],"topologicalfisheyefinenodes"),"%d",&view->Topview->parms.level.num_fine_nodes);
-	sscanf(agget(view->g[0],"topologicalfisheyecoarseningfactor"),"%lf",&view->Topview->parms.level.coarsening_rate);
-	sscanf(agget(view->g[0],"topologicalfisheyedist2limit"),"%d",&view->Topview->parms.hier.dist2_limit);
-	sscanf(agget(view->g[0],"topologicalfisheyeanimate"),"%d",&view->Topview->animate);
+	sscanf(agget(view->g[view->activeGraph],"topologicalfisheyedistortionfactor"),"%lf",&view->Topview->parms.repos.distortion);
+	sscanf(agget(view->g[view->activeGraph],"topologicalfisheyefinenodes"),"%d",&view->Topview->parms.level.num_fine_nodes);
+	sscanf(agget(view->g[view->activeGraph],"topologicalfisheyecoarseningfactor"),"%lf",&view->Topview->parms.level.coarsening_rate);
+	sscanf(agget(view->g[view->activeGraph],"topologicalfisheyedist2limit"),"%d",&view->Topview->parms.hier.dist2_limit);
+	sscanf(agget(view->g[view->activeGraph],"topologicalfisheyeanimate"),"%d",&view->Topview->animate);
 
 
 

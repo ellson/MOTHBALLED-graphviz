@@ -183,3 +183,12 @@ void write_to_console(char* text)
 	gtk_text_buffer_insert (view->consoleText,&iter,text,-1);
 	gtk_text_view_set_buffer ((GtkTextView*)glade_xml_get_widget(xml, "consoleText"),view->consoleText);
 }
+extern void switch_graph(int graphId);
+void on_btnActivateGraph_clicked(GtkWidget * widget, gpointer user_data)
+{
+	int graphId;
+	graphId=gtk_combo_box_get_active(view->graphComboBox);
+	printf ("%d\n",graphId);
+	switch_graph(graphId);
+}
+

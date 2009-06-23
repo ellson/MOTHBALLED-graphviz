@@ -154,36 +154,38 @@ void settvposinfo(Agraph_t* g,topview* t)
 
 
 	/*loop nodes*/
-    for (ind=0;ind < t->Nodecount ; ind ++) {
-	np = t->Nodes + ind;
-	setpositioninfo(&np->x,&np->y,&np->z,agxget(np->Node, poss));
+    for (ind=0;ind < t->Nodecount ; ind ++) 
+	{
+		np = t->Nodes + ind;
+		setpositioninfo(&np->x,&np->y,&np->z,agxget(np->Node, poss));
 
-	/*distorted coordiates, same with original ones at the beginning*/
-	np->distorted_x = t->Nodes[ind].x;
-	np->distorted_y = t->Nodes[ind].y;
-	np->distorted_z = t->Nodes[ind].z;
-	xmax = MAX(xmax, np->x);
-	xmin = MIN(xmin, np->x);
-	ymax = MAX(ymax, np->y);
-	ymin = MIN(ymin, np->y);
+		/*distorted coordiates, same with original ones at the beginning*/
+		np->distorted_x = t->Nodes[ind].x;
+		np->distorted_y = t->Nodes[ind].y;
+		np->distorted_z = t->Nodes[ind].z;
+		xmax = MAX(xmax, np->x);
+		xmin = MIN(xmin, np->x);
+		ymax = MAX(ymax, np->y);
+		ymin = MIN(ymin, np->y);
      }
 
 	/*loop edges*/
-    for (ind=0;ind < t->Edgecount ; ind ++) {
-	ep = t->Edges + ind;
+    for (ind=0;ind < t->Edgecount ; ind ++) 
+	{
+		ep = t->Edges + ind;
         ep->x1 = ep->Node1->x;
         ep->y1 = ep->Node1->y;
         ep->z1 = ep->Node1->z;
         ep->x2 = ep->Node2->x;
         ep->y2 = ep->Node2->y;
         ep->z2 = ep->Node2->z;
-	len=(float)DIST(ep->x2 - ep->x1, ep->y2 - ep->y1);
-	totallen = totallen + len;
-	if (len > maxedgelen)
-	    maxedgelen=len;
-	if(len < minedgelen)
-	    minedgelen=len;
-	ep->length=len;
+		len=(float)DIST(ep->x2 - ep->x1, ep->y2 - ep->y1);
+		totallen = totallen + len;
+		if (len > maxedgelen)
+			maxedgelen=len;
+		if(len < minedgelen)
+		    minedgelen=len;
+		ep->length=len;
     }
 
     t->maxedgelen=maxedgelen;
@@ -372,6 +374,8 @@ void preparetopview(Agraph_t * g, topview * t)
 	/*set some stats for topview*/
 	t->Nodecount = ind;
     t->Edgecount = ind2;
+	printf("node count:%d\n",ind);
+	printf("edge count:%d\n",ind2);
 
 
 	/*create glcomp menu system*/

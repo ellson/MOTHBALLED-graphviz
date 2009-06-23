@@ -55,8 +55,8 @@ void mOpenSlot(GtkWidget * widget, gpointer user_data)
     if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
 	char *filename;
 	filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
-	if (view->activeGraph == 0)
-		close_graph(view,0);
+/*	if (view->activeGraph == 0)
+		close_graph(view,0);*/
 	add_graph_to_viewport_from_file(filename);
 	g_free(filename);
 	}
@@ -536,9 +536,9 @@ void mTestgvpr(GtkWidget * widget, gpointer user_data)
     assert (j == argc);
 
     run_gvpr (view->g[view->activeGraph], argc, argv);
-    for (i = 1; i < argc; i++)
+/*    for (i = 1; i < argc; i++)
 	free (argv[i]);
-    free (argv);
+    free (argv);*/
 }
 
 

@@ -203,6 +203,8 @@ int main(int argc, char *argv[])
 {
     GdkGLConfig *glconfig;
     char* initFileName;
+	/*combo box to show loaded graphs*/
+	GtkComboBox *  graphComboBox;
 
     smyrnaDir = getenv ("SMYRNA_PATH");
     if (!smyrnaDir) {
@@ -263,7 +265,7 @@ int main(int argc, char *argv[])
 	gtk_gl_init(0, 0);
     /* Configure OpenGL framebuffer. */
     glconfig = configure_gl();
-    gladewidget = glade_xml_get_widget(xml, "vbox2");
+	gladewidget = glade_xml_get_widget(xml, "vbox2");
     create_window(glconfig, gladewidget);
 
 	change_cursor(GDK_TOP_LEFT_ARROW);
@@ -271,6 +273,12 @@ int main(int argc, char *argv[])
 #ifndef WIN32	
 	glutInit(&argc,argv);
 #endif
+
+	gladewidget = glade_xml_get_widget(xml, "hbox10");
+	graphComboBox=(GtkComboBox*)gtk_combo_box_new_text();
+	gtk_box_pack_end(gladewidget,graphComboBox,1,1,10);
+    gtk_widget_show(graphComboBox);
+	view->graphComboBox=graphComboBox;
 	gtk_main();
 
 
