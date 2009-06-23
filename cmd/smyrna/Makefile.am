@@ -8,6 +8,7 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/xdot \
         -I$(top_srcdir)/lib/glcomp \
         -I$(top_srcdir)/lib/topfish \
+        -I$(top_srcdir)/lib/gvpr \
         -I$(top_srcdir)/lib/common \
         -I$(top_srcdir)/lib/neatogen \
         -I$(top_srcdir)/cmd/smyrna/gui \
@@ -44,6 +45,9 @@ smyrna_LDADD = $(top_builddir)/lib/cgraph/libcgraph_C.la \
 		$(top_builddir)/lib/glcomp/libglcomp_C.la \
 		$(top_builddir)/lib/topfish/libtopfish_C.la \
 		$(top_builddir)/lib/common/libcommon_C.la \
+		$(top_builddir)/lib/gvpr/libgvpr_C.la \
+		$(top_builddir)/lib/expr/libexpr_C.la \
+		$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 		$(top_builddir)/lib/neatogen/libneatogen_C.la \
 		$(GTK_LIBS) $(GLUT_LIBS) $(GTKGLEXT_LIBS) $(GLADE_LIBS) $(EXPAT_LIBS) $(GTS_LIBS) \
 		$(EXTRA_SMYRNA_LDFLAGS)
@@ -55,6 +59,9 @@ smyrna_static_LDADD = $(top_builddir)/lib/cgraph/libcgraph_C.la \
 		$(top_builddir)/lib/glcomp/libglcomp_C.la \
 		$(top_builddir)/lib/topfish/libtopfish_C.la \
 		$(top_builddir)/lib/common/libcommon_C.la \
+		$(top_builddir)/lib/gvpr/libgvpr_C.la \
+		$(top_builddir)/lib/expr/libexpr_C.la \
+		$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 		$(top_builddir)/lib/neatogen/libneatogen_C.la \
 		$(GTK_LIBS) $(GLUT_LIBS) $(GTKGLEXT_LIBS) $(GLADE_LIBS) $(EXPAT_LIBS) $(GTS_LIBS)
 
