@@ -41,19 +41,19 @@ static void nextFile(ingraph_state * sp)
     void *rv = NULL;
     char *fname;
 
-    if (sp->Files == NULL) {
+    if (sp->u.Files == NULL) {
 	if (sp->ctr++ == 0) {
 	    rv = sp->fns->dflt;
 	}
     } else {
-	while ((fname = sp->Files[sp->ctr++])) {
+	while ((fname = sp->u.Files[sp->ctr++])) {
 	    if (*fname == '-') {
 		rv = sp->fns->dflt;
 		break;
 	    } else if ((rv = sp->fns->openf(fname)) != 0)
 		break;
 	    else {
-		fprintf(stderr, "Can't open %s\n", sp->Files[sp->ctr - 1]);
+		fprintf(stderr, "Can't open %s\n", sp->u.Files[sp->ctr - 1]);
 		sp->errors++;
 	    }
 	}
@@ -71,6 +71,11 @@ Agraph_t *nextGraph(ingraph_state * sp)
 {
     Agraph_t *g;
 
+    if (sp->ingraphs) {
+	g = (Agraph_t*)(sp->u.Graphs[sp->ctr]);
+	if (g) sp->ctr++;
+	return g;
+    }
     if (sp->fp == NULL)
 	nextFile(sp);
     g = NULL;
@@ -78,18 +83,19 @@ Agraph_t *nextGraph(ingraph_state * sp)
     while (sp->fp != NULL) {
 	if ((g = sp->fns->readf(sp->fp)) != 0)
 	    break;
-	if (sp->Files)		/* Only close if not using stdin */
+	if (sp->u.Files)	/* Only close if not using stdin */
 	    sp->fns->closef(sp->fp);
 	nextFile(sp);
     }
     return g;
 }
 
-/* newIng:
+/* new_ing:
  * Create new ingraph state. If sp is non-NULL, we
  * assume user is supplying memory.
  */
-ingraph_state *newIng(ingraph_state * sp, char **files, ingdisc * disc)
+static ingraph_state*
+new_ing(ingraph_state * sp, char **files, Agraph_t** graphs, ingdisc * disc)
 {
     if (!sp) {
 	sp = (ingraph_state *) malloc(sizeof(ingraph_state));
@@ -100,7 +106,14 @@ ingraph_state *newIng(ingraph_state * sp, char **files, ingdisc * disc)
 	sp->heap = 1;
     } else
 	sp->heap = 0;
-    sp->Files = files;
+    if (graphs) {
+	sp->ingraphs = 1;
+	sp->u.Graphs = graphs;
+    }
+    else {
+	sp->ingraphs = 0;
+	sp->u.Graphs = files;
+    }
     sp->ctr = 0;
     sp->errors = 0;
     sp->fp = NULL;
@@ -120,6 +133,22 @@ ingraph_state *newIng(ingraph_state * sp, char **files, ingdisc * disc)
     }
     *sp->fns = *disc;
     return sp;
+}
+
+ingraph_state*
+newIng(ingraph_state * sp, char **files, ingdisc * disc)
+{
+    return new_ing(sp, files, 0, disc);
+}
+
+/* newIngGraphs:
+ * Create new ingraph state using supplied graphs. If sp is non-NULL, we
+ * assume user is supplying memory.
+ */
+ingraph_state*
+newIngGraphs(ingraph_state * sp , Agraph_t** graphs, ingdisc *disc)
+{
+    return new_ing(sp, 0, graphs, disc);
 }
 
 static void *dflt_open(char *f)
@@ -159,7 +188,7 @@ ingraph_state *newIngraph(ingraph_state * sp, char **files, opengfn opf)
  */
 void closeIngraph(ingraph_state * sp)
 {
-    if (sp->Files && sp->fp)
+    if (!sp->ingraphs && sp->u.Files && sp->fp)
 	sp->fns->closef(sp->fp);
     free(sp->fns);
     if (sp->heap)
@@ -173,9 +202,12 @@ char *fileName(ingraph_state * sp)
 {
     char *fname;
 
-    if (sp->Files) {
+    if (sp->ingraphs) {
+	return "<>";
+    }
+    else if (sp->u.Files) {
 	if (sp->ctr) {
-	    fname = sp->Files[sp->ctr - 1];
+	    fname = sp->u.Files[sp->ctr - 1];
 	    if (*fname == '-')
 		return "<stdin>";
 	    else

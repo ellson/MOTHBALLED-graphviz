@@ -39,8 +39,12 @@ extern "C" {
     } ingdisc;
 
     typedef struct {
-	char **Files;
+	union {
+	    char**     Files;
+	    Agraph_t** Graphs;
+	} u;
 	int ctr;
+	int ingraphs;
 	void *fp;
 	ingdisc *fns;
 	char heap;
@@ -49,6 +53,7 @@ extern "C" {
 
     extern ingraph_state *newIngraph(ingraph_state *, char **, opengfn);
     extern ingraph_state *newIng(ingraph_state *, char **, ingdisc *);
+    extern ingraph_state *newIngGraphs(ingraph_state *, Agraph_t**, ingdisc *);
     extern void closeIngraph(ingraph_state * sp);
     extern Agraph_t *nextGraph(ingraph_state *);
     extern char *fileName(ingraph_state *);
