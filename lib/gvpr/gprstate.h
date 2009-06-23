@@ -25,6 +25,7 @@ extern "C" {
 #include "cgraph.h"
 #include "ast.h"
 #include "vmalloc.h"
+#include "expr.h"
 
     typedef enum { TV_flat, TV_ne, TV_en, 
                    TV_bfs, 
@@ -39,6 +40,9 @@ extern "C" {
 	Agraph_t *outgraph;
 	Agobj_t *curobj;
 	Sfio_t *tmp;
+	Exdisc_t *dp;
+	Exerror_f errf;
+	Exexit_f exitf;
 	char *tgtname;
 	char *infname;
 	Sfio_t *outFile;
@@ -47,16 +51,21 @@ extern "C" {
 	int name_used;
 	int argc;
 	char **argv;
+	int flags;
     } Gpr_t;
 
     typedef struct {
 	Sfio_t *outFile;
 	int argc;
 	char **argv;
+	Exerror_f errf;
+	Exexit_f exitf;
+	int flags;
     } gpr_info;
 
-    extern Gpr_t *openGPRState(void);
-    extern void initGPRState(Gpr_t *, Vmalloc_t *, gpr_info *);
+    extern Gpr_t *openGPRState(gpr_info*);
+    extern void closeGPRState(Gpr_t* state);
+    extern void initGPRState(Gpr_t *, Vmalloc_t *);
     extern int validTVT(int);
 
 #ifdef WIN32_DLL

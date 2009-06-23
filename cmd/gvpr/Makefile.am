@@ -3,10 +3,11 @@
 
 pdfdir = $(pkgdatadir)/doc/pdf
 
+
 AM_CPPFLAGS = \
-        -I$(top_srcdir) \
-        -I$(top_srcdir)/lib/expr \
-        -I$(top_builddir)/lib/expr \
+	-I$(top_srcdir) \
+	-I$(top_srcdir)/lib/expr \
+	-I$(top_builddir)/lib/expr \
 	-I$(top_srcdir)/lib/vmalloc \
 	-I$(top_srcdir)/lib/sfio \
 	-I$(top_srcdir)/lib/ast \
@@ -14,34 +15,35 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/cgraph \
 	-I$(top_srcdir)/lib/cdt
 
+if ENABLE_STATIC
+bin_PROGRAMS = gvpr gvpr_static
+else
 bin_PROGRAMS = gvpr
-noinst_PROGRAMS = mkdefs
-noinst_HEADERS = actions.h compile.h gprstate.h parse.h queue.h
+endif
+
 man_MANS = gvpr.1
 pdf_DATA = gvpr.1.pdf
 
-gvpr_SOURCES = actions.c compile.c gvpr.c gprstate.c parse.c queue.c
-
-gvpr_LDADD = \
-	$(top_builddir)/lib/vmalloc/libvmalloc_C.la \
-	$(top_builddir)/lib/sfio/libsfio_C.la \
-        $(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(top_builddir)/lib/expr/libexpr_C.la \
-	$(top_builddir)/lib/cgraph/libcgraph.la @MATH_LIBS@
-
-gvpr_DEPENDENCIES = \
-       $(top_builddir)/lib/ast/libast_C.la
-
-$(gvpr_OBJECTS): gdefs.h
-
-mkdefs_SOURCES = mkdefs.c
-
-gdefs.h: $(top_srcdir)/cmd/gvpr/gprdata mkdefs
-	./mkdefs gdefs.h < $(top_srcdir)/cmd/gvpr/gprdata
+gvpr_SOURCES = gvprmain.c
+gvpr_CPPFLAGS = $(AM_CPPFLAGS)
+gvpr_LDADD = $(top_builddir)/lib/gvpr/libgvpr.la
 
 gvpr.1.pdf: $(srcdir)/gvpr.1
 	- @GROFF@ -Tps -man $(srcdir)/gvpr.1 | @PS2PDF@ - - >gvpr.1.pdf
 
-EXTRA_DIST = $(man_MANS) $(pdf_DATA) lib Makefile.old gprdata mkdefs.c gdefs.h gvpr.vcproj
+gvpr_static_SOURCES = gvprmain.c
+gvpr_static_CPPFLAGS = $(AM_CPPFLAGS)
+gvpr_static_LDADD = \
+	$(top_builddir)/lib/gvpr/libgvpr_C.la \
+	$(top_builddir)/lib/expr/libexpr_C.la \
+	$(top_builddir)/lib/sfio/libsfio_C.la \
+	$(top_builddir)/lib/vmalloc/libvmalloc_C.la \
+	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
+	$(top_builddir)/lib/ast/libast_C.la \
+	$(top_builddir)/lib/cgraph/libcgraph_C.la \
+	$(top_builddir)/lib/cdt/libcdt_C.la \
+       	$(MATH_LIBS)
 
-DISTCLEANFILES = $(pdf_DATA) gdefs.h mkdefs
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old gvpr.vcproj
+
+DISTCLEANFILES = $(pdf_DATA)

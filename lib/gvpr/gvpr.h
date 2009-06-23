@@ -1,4 +1,4 @@
-/* $Id$ $Revision$ */
+/* $Id$Revision: */
 /* vim:set shiftwidth=4 ts=8: */
 
 /**********************************************************
@@ -18,35 +18,28 @@
 extern "C" {
 #endif
 
-#ifndef PARSE_H
-#define PARSE_H
+#ifndef GVPR_H
+#define GVPR_H
 
-    typedef enum { Begin =
-	    0, End, BeginG, EndG, Node, Edge, Eof, Error } case_t;
+#include "cgraph.h"
 
-    typedef struct _case_info {
-	int gstart;
-	char *guard;
-	int astart;
-	char *action;
-	struct _case_info *next;
-    } case_info;
+  /* If set, gvpr calls exit() on errors */
+#define GV_USE_EXIT 1    
+  /* If set, gvpr stores output graphs in gvpropts */
+#define GV_USE_OUTGRAPH 2
 
-    typedef struct {
-	char *source;
-	int l_begin, l_beging, l_end, l_endg;
-	char *begin_stmt;
-	char *begg_stmt;
-	int n_nstmts;
-	int n_estmts;
-	case_info *node_stmts;
-	case_info *edge_stmts;
-	char *endg_stmt;
-	char *end_stmt;
-    } parse_prog;
+typedef ssize_t (*gvprwr) (void*, const char *buf, size_t nbyte, void*);
 
+typedef struct {
+    Agraph_t** ingraphs;      /* NULL-terminated array of input graphs */
+    int n_outgraphs;          /* if GV_USE_OUTGRAPH set, output graphs */
+    Agraph_t** outgraphs;
+    gvprwr out;               /* write function for stdout */
+    gvprwr err;               /* write function for stderr */
+    int flags;
+} gvpropts;
 
-    extern parse_prog *parseProg(char *, int);
+    extern int gvpr (int argc, char *argv[], gvpropts* opts);
 
 #endif
 

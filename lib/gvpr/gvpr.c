@@ -36,26 +36,26 @@
 #include "ingraphs.h"
 #include "compile.h"
 #include "queue.h"
+#include "gvpr.h"
+#include "actions.h"
 #include "sfstr.h"
 #include <error.h>
 #include <string.h>
 #include <ctype.h>
-#ifdef HAVE_GETOPT_H
-#include <getopt.h>
-#else
-#include "compat_getopt.h"
-#endif
-
-char *Info[] = {
-    "gvpr",			/* Program */
-    VERSION,			/* Version */
-    BUILDDATE			/* Build Date */
-};
+#include <setjmp.h>
 
 #define DFLT_GPRPATH    "."
 
+#define GV_USE_JUMP 4
+
+static char *Info[] = {
+    "gvpr",                     /* Program */
+    VERSION,                    /* Version */
+    BUILDDATE                   /* Build Date */
+};
+
 static const char *usage =
-    ": gvpr [-o <ofile>] [-a <args>] ([-f <prog>] | 'prog') [files]\n\
+    " [-o <ofile>] [-a <args>] ([-f <prog>] | 'prog') [files]\n\
    -c         - use source graph for output\n\
    -f <pfile> - find program in file <pfile>\n\
    -i         - create node induced subgraph\n\
@@ -66,15 +66,16 @@ static const char *usage =
    -?         - print usage info\n\
 If no files are specified, stdin is used\n";
 
-struct {
-    char *cmdName;
+typedef struct {
+    char *cmdName;              /* command name */
     Sfio_t *outFile;		/* output stream; stdout default */
-    char *program;
+    char *program;              /* program source */
     int useFile;		/* true if program comes from a file */
     int compflags;
     char **inFiles;
     int argc;
     char **argv;
+    int state;                  /* > 0 : continue; <= 0 finish */
 } options;
 
 static Sfio_t *openOut(char *name)
@@ -83,7 +84,7 @@ static Sfio_t *openOut(char *name)
 
     outs = sfopen(0, name, "w");
     if (outs == 0) {
-	error(ERROR_FATAL, "could not open %s for writing", name);
+	error(ERROR_ERROR, "could not open %s for writing", name);
     }
     return outs;
 }
@@ -99,40 +100,41 @@ static Sfio_t *openOut(char *name)
  * NB. There must be white space between tokens. Otherwise, they
  * are concatenated.
  */
-static char*
-gettok (char** sp)
+static char *gettok(char **sp)
 {
-    char* s = *sp;
-    char* ws = s;
-    char* rs = s;
-    char  c;
-    char  q = '\0';  /* if non-0, in quote mode with quote char q */
+    char *s = *sp;
+    char *ws = s;
+    char *rs = s;
+    char c;
+    char q = '\0';		/* if non-0, in quote mode with quote char q */
 
-    while (isspace(*rs)) rs++;
-    if ((c = *rs) == '\0') return NULL;
+    while (isspace(*rs))
+	rs++;
+    if ((c = *rs) == '\0')
+	return NULL;
     while ((c = *rs)) {
-        if (q && (q == c)) {  /* end quote */
+	if (q && (q == c)) {	/* end quote */
 	    q = '\0';
-	}
-	else if (!q && ((c == '"') || (c == '\''))) { 
+	} else if (!q && ((c == '"') || (c == '\''))) {
 	    q = c;
-	}
-        else if (c == '\\') {
+	} else if (c == '\\') {
 	    rs++;
 	    c = *rs;
-	    if (c) *ws++ = c;
+	    if (c)
+		*ws++ = c;
 	    else {
-		error(ERROR_WARNING, 
-                  "backslash in argument followed by no character - ignored");
+		error(ERROR_WARNING,
+		      "backslash in argument followed by no character - ignored");
 		rs--;
 	    }
-	} 
-	else if (q || !isspace(c))
+	} else if (q || !isspace(c))
 	    *ws++ = c;
-	else break;
-        rs++;
+	else
+	    break;
+	rs++;
     }
-    if (*rs) rs++;
+    if (*rs)
+	rs++;
     else if (q)
 	error(ERROR_WARNING, "no closing quote for argument %s", s);
     *sp = rs;
@@ -170,7 +172,7 @@ static int parseArgs(char *s, int argc, char ***argv)
 	argc = oldcnt + cnt;
 	av = oldof(*argv, char *, argc, 0);
 	for (i = 0; i < cnt; i++)
-	    av[oldcnt+i] = strdup(args[i]);
+	    av[oldcnt + i] = strdup(args[i]);
 	*argv = av;
     }
     return argc;
@@ -189,6 +191,7 @@ static int parseArgs(char *s, int argc, char ***argv)
  * Translate -f arg parameter into a pathname.
  * If arg contains '/', return arg.
  * Else search directories in GPRPATH for arg.
+ * Return NULL on error.
  */
 static char *resolve(char *arg)
 {
@@ -200,18 +203,20 @@ static char *resolve(char *arg)
     size_t sz;
 
 #ifdef WIN32_DLL
-    if (!pathisrelative (arg))
+    if (!pathisrelative(arg))
 #else
     if (strchr(arg, '/'))
 #endif
-	return arg;
+	return strdup(arg);
 
     path = getenv("GPRPATH");
     if (!path)
 	path = DFLT_GPRPATH;
 
-    if (!(fp = sfstropen()))
-	error(ERROR_FATAL, "Could not open buffer");
+    if (!(fp = sfstropen())) {
+	error(ERROR_ERROR, "Could not open buffer");
+	return 0;
+    }
 
     while (*path && !fname) {
 	if (*path == LISTSEP) {	/* skip colons */
@@ -237,102 +242,181 @@ static char *resolve(char *arg)
     }
 
     if (!fname)
-	error(ERROR_FATAL, "Could not find file \"%s\" in GPRPATH", arg);
+	error(ERROR_ERROR, "Could not find file \"%s\" in GPRPATH", arg);
 
     sfclose(fp);
     return fname;
 }
 
+static char*
+getOptarg (int c, char** argp, int* argip, int argc, char** argv)
+{
+    char* rv; 
+    char* arg = *argp;
+    int argi = *argip;
+
+    if (*arg) {
+	rv = arg;
+	while (*arg) arg++; 
+	*argp = arg;
+    }
+    else if (argi < argc) {
+	rv = argv[argi++];
+	*argip = argi;
+    } 
+    else {
+	rv = NULL;
+	error(ERROR_WARNING, "missing argument for option -%c", c);
+    }
+    return rv;
+}
+
+/* doFlags:
+ * Process a command-line argument starting with a '-'.
+ * argi is the index of the next available item in argv[].
+ * argc has its usual meaning.
+ *
+ * return > 0 given next argi value
+ *        = 0 for exit with 0
+ *        < 0 for error
+ */
+static int
+doFlags(char* arg, int argi, int argc, char** argv, options* opts)
+{
+    int c;
+
+    while ((c = *arg++)) {
+	switch (c) {
+	case 'c':
+	    opts->compflags |= SRCOUT;
+	    break;
+	case 'C':
+	    opts->compflags |= (SRCOUT|CLONE);
+	    break;
+	case 'f':
+	    if ((optarg = getOptarg(c, &arg, &argi, argc, argv)) && (opts->program = resolve(optarg))) {
+		opts->useFile = 1;
+	    }
+	    else return -1;
+	    break;
+	case 'i':
+	    opts->compflags |= INDUCE;
+	    break;
+	case 'a':
+	    if ((optarg = getOptarg(c, &arg, &argi, argc, argv))) {
+		opts->argc = parseArgs(optarg, opts->argc, &(opts->argv));
+	    }
+	    else return -1;
+	    break;
+	case 'o':
+	    if (!(optarg = getOptarg(c, &arg, &argi, argc, argv)) && !(opts->outFile = openOut(optarg)))
+		return -1;
+	    break;
+	case 'q':
+	    setTraceLevel (ERROR_ERROR);  /* Don't emit warning messages */
+	    break;
+	case 'V':
+	    sfprintf(sfstderr, "%s version %s (%s)\n",
+		    Info[0], Info[1], Info[2]);
+	    return 0;
+	    break;
+	case '?':
+	    error(ERROR_USAGE|ERROR_WARNING, "%s", usage);
+	    return 0;
+	    break;
+	default :
+	    error(ERROR_WARNING, "option -%c unrecognized", c);
+	    break;
+	}
+    }
+    return argi;
+}
+
+static void
+freeOpts (options* opts)
+{
+    int i;
+    if (!opts) return;
+    if (opts->outFile != sfstdout)
+	sfclose (opts->outFile);
+    free (opts->inFiles);
+    if (opts->useFile)
+	free (opts->program);
+    if (opts->argc) {
+	for (i = 0; i < opts->argc; i++)
+	    free (opts->argv[i]);
+	free (opts->argv);
+    }
+    free (opts);
+}
+
 /* scanArgs:
  * Parse command line options.
  */
-static void scanArgs(int argc, char **argv)
+static options* scanArgs(int argc, char **argv, gvpropts* uopts)
 {
-    int c;
-    char *outname = 0;
+    int i, nfiles;
+    char** input_filenames;
+    char* arg;
+    options* opts = newof(0,options,1,0);
 
-    options.cmdName = argv[0];
-    options.outFile = 0;
-    options.useFile = 0;
-    options.argv = 0;
-    options.argc = 0;
-#ifdef GVDLL
-    setErrorId (options.cmdName);
-#else
-    error_info.id = options.cmdName;
-#endif
+    opts->cmdName = argv[0];
+    opts->state = 1;
+    setErrorId (opts->cmdName);
 
-    while ((c = getopt(argc, argv, ":q?Vcia:f:o:")) != -1) {
-	switch (c) {
-	case 'c':
-	    options.compflags |= SRCOUT;
-	    break;
-	case 'f':
-	    options.useFile = 1;
-	    options.program = resolve(optarg);
-	    break;
-	case 'i':
-	    options.compflags |= INDUCE;
-	    break;
-	case 'a':
-	    options.argc = parseArgs(optarg, options.argc, &options.argv);
-	    break;
-	case 'o':
-	    outname = optarg;
-	    break;
-	case 'q':
-	    setTraceLevel (ERROR_ERROR);
-	    break;
-	case 'V':
-	    fprintf(stderr, "%s version %s (%s)\n",
-		    Info[0], Info[1], Info[2]);
-	    exit(0);
-	    break;
-	case '?':
-	    if (optopt == '?') {
-		error(ERROR_USAGE, "%s", usage);
-		exit(0);
-	    } else {
-		error(ERROR_ERROR, "option -%c unrecognized", optopt);
+    /* estimate number of file names */
+    nfiles = 0;
+    for (i = 1; i < argc; i++)
+	if (argv[i] && argv[i][0] != '-')
+	    nfiles++;
+    input_filenames = newof(0,char*,nfiles + 1,0);
+
+    /* loop over arguments */
+    nfiles = 0;
+    for (i = 1; i < argc; ) {
+	arg = argv[i++];
+	if (*arg == '-') {
+	    i = doFlags (arg+1, i, argc, argv, opts);
+	    if (i <= 0) {
+		opts->state = i;
+		goto opts_done;
 	    }
-	    break;
-	case ':':
-	    error(ERROR_ERROR, "missing argument for option -%c", optopt);
-	    break;
-	}
+	} else if (arg)
+	    input_filenames[nfiles++] = arg;
     }
-    argv += optind;
-    argc -= optind;
 
     /* Handle additional semantics */
-    if (options.useFile == 0) {
-	if (argc == 0) {
-	    error(ERROR_ERROR, "No program supplied via argument or -f option");
-#ifdef GVDLL
-	    setErrorErrors (1);
-#else
-	    error_info.errors = 1;
-#endif
+    if (opts->useFile == 0) {
+	if (nfiles == 0) {
+	    error(ERROR_ERROR,
+		  "No program supplied via argument or -f option");
+	    opts->state = -1;
 	} else {
-	    options.program = *argv++;
-	    argc--;
+	    opts->program = input_filenames[0];
+	    for (i = 1; i <= nfiles; i++)
+		input_filenames[i-1] = input_filenames[i];
+	    nfiles--;
 	}
     }
-    if (argc == 0)
-	options.inFiles = 0;
+    if (nfiles == 0) {
+	opts->inFiles = 0;
+	free (input_filenames);
+	input_filenames = 0;
+    }
     else
-	options.inFiles = argv;
-    if (outname)
-	options.outFile = openOut(outname);
-    else
-	options.outFile = sfstdout;
+	opts->inFiles = input_filenames;
 
-#ifdef GVDLL
-    if (getErrorErrors ())
-#else
-    if (error_info.errors)
-#endif
-	error(ERROR_USAGE | 4, "%s", usage);
+    if (!(opts->outFile))
+	opts->outFile = sfstdout;
+
+  opts_done:
+    if (opts->state <= 0) {
+	if (opts->state < 0)
+	    error(ERROR_USAGE|ERROR_ERROR, "%s", usage);
+	free (input_filenames);
+    }
+
+    return opts;
 }
 
 static void evalEdge(Gpr_t * state, comp_prog * xprog, Agedge_t * e)
@@ -404,8 +488,8 @@ static Agnode_t *nextNode(Gpr_t * state, nodestream * nodes)
 #define PUSH(x)  (((x)->iu.integer)|=2)
 #define POP(x)  (((x)->iu.integer)&=(~2))
 
-typedef Agedge_t *(*fstedgefn_t) (Agraph_t*, Agnode_t *);
-typedef Agedge_t *(*nxttedgefn_t) (Agraph_t*, Agedge_t *, Agnode_t *);
+typedef Agedge_t *(*fstedgefn_t) (Agraph_t *, Agnode_t *);
+typedef Agedge_t *(*nxttedgefn_t) (Agraph_t *, Agedge_t *, Agnode_t *);
 
 #define PRE_VISIT 1
 #define POST_VISIT 2
@@ -417,9 +501,9 @@ typedef struct {
     unsigned char visit;
 } trav_fns;
 
-static trav_fns DFSfns = { agfstedge, agnxtedge, 1, 0};
-static trav_fns FWDfns = { agfstout, (nxttedgefn_t) agnxtout, 0, 0};
-static trav_fns REVfns = { agfstin, (nxttedgefn_t) agnxtin, 0, 0};
+static trav_fns DFSfns = { agfstedge, agnxtedge, 1, 0 };
+static trav_fns FWDfns = { agfstout, (nxttedgefn_t) agnxtout, 0, 0 };
+static trav_fns REVfns = { agfstin, (nxttedgefn_t) agnxtin, 0, 0 };
 
 static void travBFS(Gpr_t * state, comp_prog * xprog)
 {
@@ -428,7 +512,7 @@ static void travBFS(Gpr_t * state, comp_prog * xprog)
     ndata *nd;
     Agnode_t *n;
     Agedge_t *cure;
-    Agraph_t* g = state->curgraph;
+    Agraph_t *g = state->curgraph;
 
     q = mkQueue();
     nodes.oldroot = 0;
@@ -438,15 +522,17 @@ static void travBFS(Gpr_t * state, comp_prog * xprog)
 	if (MARKED(nd))
 	    continue;
 	PUSH(nd);
-	push (q,n);
+	push(q, n);
 	while ((n = pull(q))) {
 	    nd = nData(n);
 	    MARK(nd);
- 	    POP(nd);
+	    POP(nd);
 	    evalNode(state, xprog, n);
-	    for (cure = agfstedge(g, n); cure; cure = agnxtedge(g, cure, n)) {
+	    for (cure = agfstedge(g, n); cure;
+		 cure = agnxtedge(g, cure, n)) {
 		nd = nData(cure->node);
-		if (MARKED(nd)) continue;
+		if (MARKED(nd))
+		    continue;
 		evalEdge(state, xprog, cure);
 		if (!ONSTACK(nd)) {
 		    push(q, cure->node);
@@ -455,7 +541,7 @@ static void travBFS(Gpr_t * state, comp_prog * xprog)
 	    }
 	}
     }
-    freeQ (q);
+    freeQ(q);
 }
 
 static void travDFS(Gpr_t * state, comp_prog * xprog, trav_fns * fns)
@@ -493,18 +579,18 @@ static void travDFS(Gpr_t * state, comp_prog * xprog, trav_fns * fns)
 	    else
 		cure = fns->fstedge(state->curgraph, curn);
 	    if (cure) {
-		if (entry == agopp(cure))  /* skip edge used to get here */
+		if (entry == agopp(cure))	/* skip edge used to get here */
 		    continue;
 		nd = nData(cure->node);
 		if (MARKED(nd)) {
-                    /* For undirected DFS, visit an edge only if its head
-                     * is on the stack, to avoid visiting it twice.
-                     * This is no problem in directed DFS.
-                     */
+		    /* For undirected DFS, visit an edge only if its head
+		     * is on the stack, to avoid visiting it twice.
+		     * This is no problem in directed DFS.
+		     */
 		    if (fns->undirected) {
-			if (ONSTACK(nd)) evalEdge(state, xprog, cure);
-		    }
-		    else
+			if (ONSTACK(nd))
+			    evalEdge(state, xprog, cure);
+		    } else
 			evalEdge(state, xprog, cure);
 		} else {
 		    evalEdge(state, xprog, cure);
@@ -531,13 +617,13 @@ static void travDFS(Gpr_t * state, comp_prog * xprog, trav_fns * fns)
 	    }
 	}
     }
-    freeQ (stk);
+    freeQ(stk);
 }
 
 static void travNodes(Gpr_t * state, comp_prog * xprog)
 {
     Agnode_t *n;
-    Agraph_t* g = state->curgraph;
+    Agraph_t *g = state->curgraph;
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	evalNode(state, xprog, n);
     }
@@ -547,7 +633,7 @@ static void travEdges(Gpr_t * state, comp_prog * xprog)
 {
     Agnode_t *n;
     Agedge_t *e;
-    Agraph_t* g = state->curgraph;
+    Agraph_t *g = state->curgraph;
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    evalEdge(state, xprog, e);
@@ -559,7 +645,7 @@ static void travFlat(Gpr_t * state, comp_prog * xprog)
 {
     Agnode_t *n;
     Agedge_t *e;
-    Agraph_t* g = state->curgraph;
+    Agraph_t *g = state->curgraph;
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	evalNode(state, xprog, n);
 	if (xprog->n_estmts > 0) {
@@ -640,6 +726,23 @@ static void traverse(Gpr_t * state, comp_prog * xprog)
     }
 }
 
+/* addOutputGraph:
+ * Append output graph to option struct.
+ * We know uopts and state->outgraph are non-NULL.
+ */
+static void
+addOutputGraph (Gpr_t* state, gvpropts* uopts)
+{
+    Agraph_t* g = state->outgraph;
+
+    if ((agroot(g) == state->curgraph) && !uopts->ingraphs)
+	g = (Agraph_t*)clone (0, (Agobj_t *)g);
+
+    uopts->n_outgraphs++;
+    uopts->outgraphs = oldof(uopts->outgraphs,Agraph_t*,uopts->n_outgraphs,0);
+    uopts->outgraphs[uopts->n_outgraphs-1] = g;
+}
+
 static void chkClose(Agraph_t * g)
 {
     gdata *data;
@@ -666,32 +769,131 @@ static int ing_close(void *fp)
     return sfclose((Sfio_t *) fp);
 }
 
-#ifdef GVDLL
 static ingdisc ingDisc = { ing_open, ing_read, ing_close, 0 };
-#else
-static ingdisc ingDisc = { ing_open, ing_read, ing_close, &_Sfstdin };
-#endif
 
-int main(int argc, char *argv[])
+static void
+setDisc (Sfio_t* sp, Sfdisc_t* dp, gvprwr fn)
 {
-    parse_prog *prog;
+    dp->readf = 0;
+    dp->writef = (Sfwrite_f)fn;
+    dp->seekf = 0;
+    dp->exceptf = 0;
+    dp->disc = 0;
+    dp = sfdisc (sp, dp);
+}
+
+static jmp_buf jbuf;
+
+/* gvexitf:
+ * Only used if GV_USE_EXIT not set during exeval.
+ * This implies setjmp/longjmp set up.
+ */
+static void 
+gvexitf (Expr_t *handle, Exdisc_t *discipline, int v)
+{
+    longjmp (jbuf, v);
+}
+
+static int 
+gverrorf (Expr_t *handle, Exdisc_t *discipline, int level, ...)
+{
+    va_list ap;
+
+    va_start(ap, level);
+    errorv((discipline
+	    && handle) ? *((char **) handle) : (char *) handle, level, ap);
+    va_end(ap);
+
+    if (level >= ERROR_ERROR) {
+	Gpr_t *state = (Gpr_t*)(discipline->user);
+	if (state->flags & GV_USE_EXIT)
+            exit(1);
+	else if (state->flags & GV_USE_JUMP)
+	    longjmp (jbuf, 1);
+    }
+
+    return 0;
+}
+
+/* gvpr:
+ * main loop for gvpr.
+ * Return 0 on success; non-zero on error.
+ *
+ * FIX:
+ *  - close non-source/non-output graphs
+ */
+int gvpr (int argc, char *argv[], gvpropts * uopts)
+{
+    Sfdisc_t errdisc;
+    Sfdisc_t outdisc;
+    parse_prog *prog = 0;
     ingraph_state *ing;
-    comp_prog *xprog;
-    Gpr_t *state;
+    comp_prog *xprog = 0;
+    Gpr_t *state = 0;
     gpr_info info;
+    int rv = 0;
+    options* opts = 0;
+    int incoreGraphs;
 
-#ifdef GVDLL
-    ingDisc.dflt = &_Sfstdin;
-#endif
-    scanArgs(argc, argv);
+    setErrorErrors (0);
+    ingDisc.dflt = sfstdin;
+    if (uopts) {
+	if (uopts->out) setDisc (sfstdout, &outdisc, uopts->out);
+	if (uopts->err) setDisc (sfstderr, &errdisc, uopts->err);
+    }
 
-    prog = parseProg(options.program, options.useFile);
-    state = openGPRState();
-    xprog = compileProg(prog, state, options.compflags);
-    info.outFile = options.outFile;
-    info.argc = options.argc;
-    info.argv = options.argv;
-    initGPRState(state, xprog->prog->vm, &info);
+    opts = scanArgs(argc, argv, uopts);
+    if (opts->state <= 0) {
+	rv = opts->state;
+	goto finish;
+    }
+
+    prog = parseProg(opts->program, opts->useFile);
+    if (!prog) {
+	rv = 1;
+	goto finish;
+    }
+    info.outFile = opts->outFile;
+    info.argc = opts->argc;
+    info.argv = opts->argv;
+    info.errf = (Exerror_f)gverrorf;
+    if (uopts) 
+	info.flags = uopts->flags; 
+    else
+	info.flags = 0;
+    if ((uopts->flags & GV_USE_EXIT))
+	info.exitf = 0;
+    else
+	info.exitf = gvexitf;
+    state = openGPRState(&info);
+    if (!state) {
+	rv = 1;
+	goto finish;
+    }
+    xprog = compileProg(prog, state, opts->compflags);
+    if (!xprog) {
+	rv = 1;
+	goto finish;
+    }
+
+    initGPRState(state, xprog->prog->vm);
+    
+    if ((uopts->flags & GV_USE_OUTGRAPH)) {
+	uopts->outgraphs = 0;
+	uopts->n_outgraphs = 0;
+    }
+
+    if (!(uopts->flags & GV_USE_EXIT)) {
+	state->flags |= GV_USE_JUMP;
+	if ((rv = setjmp (jbuf))) {
+	    goto finish;
+	}
+    }
+
+    if (uopts && uopts->ingraphs)
+	incoreGraphs = 1;
+    else
+	incoreGraphs = 0;
 
     /* do begin */
     if (xprog->begin_stmt)
@@ -699,10 +901,17 @@ int main(int argc, char *argv[])
 
     /* if program is not null */
     if (usesGraph(xprog)) {
-	ing = newIng(0, options.inFiles, &ingDisc);
+	if (uopts && uopts->ingraphs)
+	    ing = newIngGraphs(0, uopts->ingraphs, &ingDisc);
+	else
+	    ing = newIng(0, opts->inFiles, &ingDisc);
+	
 	while ((state->curgraph = nextGraph(ing))) {
 	    state->infname = fileName(ing);
+
 	    /* begin graph */
+	    if (incoreGraphs && (opts->compflags & CLONE))
+		state->curgraph = clone (0, (Agobj_t*)(state->curgraph));
 	    state->curobj = (Agobj_t *) state->curgraph;
 	    state->tvroot = 0;
 	    if (xprog->begg_stmt)
@@ -723,24 +932,43 @@ int main(int argc, char *argv[])
 		agdelete(state->curgraph, state->target);
 
 	    /* output graph, if necessary
-             * For this, the outgraph must be defined, and either
-             * be non-empty or the -c option was used.
-             */
-	    if (state->outgraph && 
-		(agnnodes(state->outgraph) || (options.compflags & SRCOUT)))
-		    agwrite(state->outgraph, options.outFile);
+	     * For this, the outgraph must be defined, and either
+	     * be non-empty or the -c option was used.
+	     */
+	    if (state->outgraph && (agnnodes(state->outgraph)
+				    || (opts->compflags & SRCOUT))) {
+		if (uopts && (uopts->flags & GV_USE_OUTGRAPH))
+		    addOutputGraph (state, uopts);
+		else
+		    agwrite(state->outgraph, opts->outFile);
+	    }
 
-	    chkClose(state->curgraph);
+	    if (!incoreGraphs)
+		chkClose(state->curgraph);
 	    state->target = 0;
 	    state->outgraph = 0;
 	}
     }
 
-    /* do end */
+	/* do end */
     state->curgraph = 0;
     state->curobj = 0;
     if (xprog->end_stmt)
 	exeval(xprog->prog, xprog->end_stmt, state);
 
-    exit(0);
+  finish:
+    /* free all allocated resources */
+    freeParseProg (prog);
+    freeCompileProg (xprog);
+    closeGPRState(state);
+    closeIngraph (ing);
+    freeOpts (opts);
+
+    if (uopts) {
+	if (uopts->out) sfdisc (sfstdout, 0);
+	if (uopts->err) sfdisc (sfstderr, 0);
+    }
+
+    return rv;
 }
+

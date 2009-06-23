@@ -48,6 +48,9 @@
 
 #include <gdefs.h>
 
+#include "ctype.h"
+#include "trie.c"
+
 #define BITS_PER_BYTE 8
 #ifdef HAVE_INTPTR_T
 #define INT2PTR(t,v) ((t)(intptr_t)(v))
@@ -234,10 +237,9 @@ static Agobj_t *deref(Expr_t * pgm, Exnode_t * x, Exref_t * ref,
 		    x->data.variable.dyna->data.variable.dyna->data.
 		    constant.value.integer);
 	if (!ptr) {
-	    error(ERROR_FATAL, "null reference %s in expression %s.%s",
+	    exerror("null reference %s in expression %s.%s",
 		  ref->symbol->name, ref->symbol->name, deparse(pgm, x,
-								state->
-								tmp));
+								state->tmp));
 	    return ptr;
 	} else
 	    return deref(pgm, x, ref->next, (Agobj_t *) ptr, state);
@@ -260,34 +262,69 @@ static Agobj_t *deref(Expr_t * pgm, Exnode_t * x, Exref_t * ref,
 	    break;
 	case M_head:
 	    if (!objp && !(objp = state->curobj)) {
-		error(ERROR_WARNING, "Current object $ not defined");
+		exerror("Current object $ not defined");
 		return 0;
 	    }
 	    if (ISEDGE(objp))
 		return deref(pgm, x, ref->next,
 			     (Agobj_t *) AGHEAD((Agedge_t *) objp), state);
 	    else
-		error(ERROR_FATAL, "head of non-edge");
+		exerror("head of non-edge");
 	    break;
 	case M_tail:
 	    if (!objp && !(objp = state->curobj)) {
-		error(ERROR_FATAL, "Current object $ not defined");
+		exerror("Current object $ not defined");
 		return 0;
 	    }
 	    if (ISEDGE(objp))
 		return deref(pgm, x, ref->next,
 			     (Agobj_t *) AGTAIL((Agedge_t *) objp), state);
 	    else
-		error(ERROR_FATAL, "tail of non-edge %x", objp);
+		exerror("tail of non-edge %x", objp);
 	    break;
 	default:
-	    error(ERROR_WARNING, "%s : illegal reference",
+	    exerror("%s : illegal reference",
 		  ref->symbol->name);
-	    return 0;
 	    break;
 	}
     return 0;
 
+}
+
+/* assignable:
+ * Check that attribute is not a read-only, pseudo-attribute.
+ * Return 1 if okay; fatal otherwise.
+ */
+static int
+assignable (Agobj_t *objp, unsigned char* name)
+{
+    unsigned int ch;
+    int rv;
+    unsigned char* p = name;
+
+    TFA_Init();
+    while ((TFA_State >= 0) && (ch = *p)) {
+        TFA_Advance(ch & ~127 ? 127 : ch);
+        p++;
+    }
+    rv = TFA_Definition();
+    if (rv < 0) return 1;
+
+    switch (AGTYPE(objp)) {
+    case AGRAPH :
+	if (rv & Y(G))
+	    exerror("Cannot assign to pseudo-graph attribute %s", name);
+	break;
+    case AGNODE :
+	if (rv & Y(V))
+	    exerror("Cannot assign to pseudo-node attribute %s", name);
+	break;
+    default :  /* edge */
+	if (rv & Y(E))
+	    exerror("Cannot assign to pseudo-edge attribute %s", name);
+	break;
+    }
+    return 1;
 }
 
 /* setattr:
@@ -366,7 +403,7 @@ static int lookup(Expr_t * pgm, Agobj_t * objp, Exid_t * sym, Extype_t * v,
 	    if (AGTYPE(objp) == AGNODE)
 		v->integer = agdegree(agroot(objp), (Agnode_t *) objp, 1, 0);
 	    else {
-		error(ERROR_FATAL, "indegree of non-node");
+		exerror("indegree of non-node");
 		return -1;
 	    }
 	    break;
@@ -374,7 +411,7 @@ static int lookup(Expr_t * pgm, Agobj_t * objp, Exid_t * sym, Extype_t * v,
 	    if (AGTYPE(objp) == AGNODE)
 		v->integer = agdegree(agroot(objp), (Agnode_t *) objp, 0, 1);
 	    else {
-		error(ERROR_FATAL, "outdegree of non-node");
+		exerror("outdegree of non-node");
 		return -1;
 	    }
 	    break;
@@ -382,7 +419,7 @@ static int lookup(Expr_t * pgm, Agobj_t * objp, Exid_t * sym, Extype_t * v,
 	    if (AGTYPE(objp) == AGNODE)
 		v->integer = agdegree(agroot(objp), (Agnode_t *) objp, 1, 1);
 	    else {
-		error(ERROR_FATAL, "degree of non-node");
+		exerror("degree of non-node");
 		return -1;
 	    }
 	    break;
@@ -390,7 +427,7 @@ static int lookup(Expr_t * pgm, Agobj_t * objp, Exid_t * sym, Extype_t * v,
 	    if (AGTYPE(objp) == AGRAPH)
 		v->integer = PTR2INT(agparent((Agraph_t *) objp));
 	    else {
-		error(ERROR_FATAL, "parent of non-graph");
+		exerror("parent of non-graph");
 		return -1;
 	    }
 	    break;
@@ -401,7 +438,7 @@ static int lookup(Expr_t * pgm, Agobj_t * objp, Exid_t * sym, Extype_t * v,
 	    if (AGTYPE(objp) == AGRAPH)
 		v->integer = agnedges((Agraph_t *) objp);
 	    else {
-		error(ERROR_FATAL, "n_edges of non-graph");
+		exerror("n_edges of non-graph");
 		return -1;
 	    }
 	    break;
@@ -409,7 +446,7 @@ static int lookup(Expr_t * pgm, Agobj_t * objp, Exid_t * sym, Extype_t * v,
 	    if (AGTYPE(objp) == AGRAPH)
 		v->integer = agnnodes((Agraph_t *) objp);
 	    else {
-		error(ERROR_FATAL, "n_nodes of non-graph");
+		exerror("n_nodes of non-graph");
 		return -1;
 	    }
 	    break;
@@ -417,7 +454,7 @@ static int lookup(Expr_t * pgm, Agobj_t * objp, Exid_t * sym, Extype_t * v,
 	    if (AGTYPE(objp) == AGRAPH)
 		v->integer = agisdirected((Agraph_t *) objp);
 	    else {
-		error(ERROR_FATAL, "directed of non-graph");
+		exerror("directed of non-graph");
 		return -1;
 	    }
 	    break;
@@ -425,7 +462,7 @@ static int lookup(Expr_t * pgm, Agobj_t * objp, Exid_t * sym, Extype_t * v,
 	    if (AGTYPE(objp) == AGRAPH)
 		v->integer = agisstrict((Agraph_t *) objp);
 	    else {
-		error(ERROR_FATAL, "strict of non-graph");
+		exerror("strict of non-graph");
 		return -1;
 	    }
 	    break;
@@ -438,7 +475,7 @@ static int lookup(Expr_t * pgm, Agobj_t * objp, Exid_t * sym, Extype_t * v,
 	Agsym_t *gsym = agattrsym(objp, sym->name);
 	if (!gsym) {
 	    gsym = agattr(agroot(agraphof(objp)), AGTYPE(objp), sym->name, "");
-	    error(ERROR_WARNING, "Using value of uninitialized attribute \"%s\" of %s \"%s\"", sym->name, kindOf (objp), nameOf(pgm, objp));
+	    error(ERROR_WARNING, "Using value of uninitialized %s attribute \"%s\" of \"%s\"", kindOf (objp), sym->name, nameOf(pgm, objp));
 	}
 	v->string = agxget(objp, gsym);
     }
@@ -452,7 +489,8 @@ static int lookup(Expr_t * pgm, Agobj_t * objp, Exid_t * sym, Extype_t * v,
 static char *getArg(int n, Gpr_t * state)
 {
     if (n >= state->argc) {
-	error(ERROR_FATAL, "program references ARGV[%d] - undefined", n);
+	exerror("program references ARGV[%d] - undefined", n);
+	return 0;
     }
     return (state->argv[n]);
 }
@@ -502,7 +540,8 @@ toKind (char* k, char* fn)
 	kind = AGNODE;
 	break;
     default :
-	error(ERROR_FATAL, "Unknown kind \"%s\" passed to %s()", k, fn);
+	exerror("Unknown kind \"%s\" passed to %s()", k, fn);
+	kind = 0;
 	break;
     }
     return kind;
@@ -520,7 +559,8 @@ nxtAttr (Agraph_t *gp, char* k, char* name)
     if (name) {
 	sym = agattr (gp, kind, name, 0);
 	if (!sym) {
-	    error(ERROR_FATAL, "Third argument \"%s\" in nxtAttr() must be the name of an existing attribute", name); 
+	    exerror("Third argument \"%s\" in nxtAttr() must be the name of an existing attribute", name); 
+	    return "";
 	}
 	
     }
@@ -549,7 +589,7 @@ getDfltAttr (Agraph_t *gp, char* k, char* name)
 /* getval:
  * Return value associated with gpr identifier.
  */
-Extype_t
+static Extype_t
 getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
        void *env, int elt, Exdisc_t * disc)
 {
@@ -749,7 +789,8 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	case F_kindof:
 	    objp = INT2PTR(Agobj_t *, args[0].integer);
 	    if (!objp) {
-		error(ERROR_FATAL, "NULL object passed to kindOf()");
+		exerror("NULL object passed to kindOf()");
+		v.string = 0;
 	    } else switch (AGTYPE(objp)) {
 		case AGRAPH :
 		    v.string = "G";
@@ -1173,9 +1214,11 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    objp = INT2PTR(Agobj_t *, args[0].integer);
 	    name = args[1].string;
 	    if (!objp) {
-		error(ERROR_FATAL, "NULL object passed to aget()/hasAttr()");
+		exerror("NULL object passed to aget()/hasAttr()");
+		v.integer = 0;
 	    } else if (!name) {
-		error(ERROR_FATAL, "NULL name passed to aget()/hasAttr()");
+		exerror("NULL name passed to aget()/hasAttr()");
+		v.integer = 0;
 	    }
 	    else {
 	        Agsym_t *gsym = agattrsym(objp, name);
@@ -1184,7 +1227,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		else {
 		    if (!gsym) {
 	    		gsym = agattr(agroot(agraphof(objp)), AGTYPE(objp), name, "");
-	    		error(ERROR_WARNING, "Using value of uninitialized attribute \"%s\" of %s \"%s\" in aget()", name, kindOf (objp), nameOf(pgm, objp));
+	    		error(ERROR_WARNING, "Using value of %s uninitialized attribute \"%s\" of \"%s\" in aget()", kindOf (objp), name, nameOf(pgm, objp));
 		    }
 		    v.string = agxget(objp, gsym);
         	}
@@ -1242,13 +1285,15 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    if (gp) {
 		char* kind = args[1].string;
 		if (!kind) {
-		    error(ERROR_FATAL,"NULL kind passed to fstAttr()");
+		    error(ERROR_ERROR,"NULL kind passed to fstAttr()");
+		    v.string = 0;
 		}
 		else {
 		    v.string = nxtAttr (gp, kind, NULL);
         	}
 	    } else {
-		error(ERROR_FATAL, "NULL graph passed to fstAttr()");
+		exerror("NULL graph passed to fstAttr()");
+		v.string = 0;
 	    }
 	    break;
 	case F_nxtattr:
@@ -1259,10 +1304,12 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		char* kind = args[1].string;
 		char* name = args[2].string;
 		if (!name) {
-		    error(ERROR_FATAL,"NULL name passed to %s", sym->name);
+		    exerror("NULL name passed to %s", sym->name);
+		    v.string = 0;
 		}
 		else if (!kind) {
-		    error(ERROR_FATAL,"NULL kind passed to %s", sym->name);
+		    exerror("NULL kind passed to %s", sym->name);
+		    v.string = 0;
 		}
 		else if (sym->index == F_isattr) {
 		    v.integer = (agattr(gp, toKind (kind, sym->name), name, 0) != NULL);
@@ -1274,7 +1321,8 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		    v.string = getDfltAttr(gp, kind, name);
         	}
 	    } else {
-		error(ERROR_FATAL, "NULL graph passed to %s", sym->name);
+		exerror("NULL graph passed to %s", sym->name);
+		v.string = 0;
 	    }
 	    break;
 	case F_canon:
@@ -1305,7 +1353,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    v.integer = match(args[0].string, args[1].string);
 	    break;
 	default:
-	    error(ERROR_FATAL, "unknown function call: %s", sym->name);
+	    exerror("unknown function call: %s", sym->name);
 	}
 	return v;
     } else if (elt == EX_ARRAY) {
@@ -1316,7 +1364,8 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    v.string = getArg(args[0].integer, state);
 	    break;
 	default:
-	    error(ERROR_FATAL, "unknown array name: %s", sym->name);
+	    exerror("unknown array name: %s", sym->name);
+	    v.string = 0;
 	}
 	return v;
     }
@@ -1325,7 +1374,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
     if (ref) {
 	objp = deref(pgm, node, ref, 0, state);
 	if (!objp)
-	    error(ERROR_FATAL, "null reference in expression %s",
+	    exerror("null reference in expression %s",
 		  deparse(pgm, node, state->tmp));
     } else if ((sym->lex == ID) && (sym->index <= LAST_V)) {
 	switch (sym->index) {
@@ -1360,15 +1409,20 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	return v;
     } else {
 	objp = state->curobj;
-	if (!objp)
-	    error(ERROR_FATAL,
-		  "current object $ not defined as reference for %s",
+	if (!objp) {
+	    exerror("current object $ not defined as reference for %s",
 		  deparse(pgm, node, state->tmp));
+	}
     }
 
-    if (lookup(pgm, objp, sym, &v, state))
-	error(ERROR_FATAL, "in expression %s",
-	      deparse(pgm, node, state->tmp));
+    if (objp) {
+	if (lookup(pgm, objp, sym, &v, state)) {
+	    exerror("in expression %s", deparse(pgm, node, state->tmp));
+	    v.integer = 0;
+	}
+    }
+    else
+	v.integer = 0;
 
     return v;
 }
@@ -1385,7 +1439,7 @@ static char *typeName(Expr_t * pg, int op)
  * Return -1 if not allowed.
  * Assume already type correct.
  */
-int
+static int
 setval(Expr_t * pgm, Exnode_t * x, Exid_t * sym, Exref_t * ref,
        void *env, int elt, Extype_t v, Exdisc_t * disc)
 {
@@ -1399,7 +1453,7 @@ setval(Expr_t * pgm, Exnode_t * x, Exid_t * sym, Exref_t * ref,
     if (ref) {
 	objp = deref(pgm, x, ref, 0, state);
 	if (!objp) {
-	    error(ERROR_FATAL, "in expression %s.%s",
+	    exerror("in expression %s.%s",
 		  ref->symbol->name, deparse(pgm, x, state->tmp));
 	    return -1;
 	}
@@ -1439,13 +1493,14 @@ setval(Expr_t * pgm, Exnode_t * x, Exid_t * sym, Exref_t * ref,
 	return rv;
     } else {
 	objp = state->curobj;
-	if (!objp)
-	    error(ERROR_FATAL,
-		  "current object $ undefined in expression %s",
+	if (!objp) {
+	    exerror("current object $ undefined in expression %s",
 		  deparse(pgm, x, state->tmp));
+	    return -1;
+	}
     }
-
     
+    assignable (objp, (unsigned char*)(sym->name));
     return setattr(objp, sym->name, v.string);
 }
 
@@ -1570,7 +1625,7 @@ static tctype typeChkExp(Exref_t * ref, Exid_t * sym)
  * The grammar has been  altered to disallow the first 3.
  * Type check expressions; return value unused.
  */
-Extype_t
+static Extype_t
 refval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
        char *str, int elt, Exdisc_t * disc)
 {
@@ -1624,23 +1679,15 @@ refval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    break;
 	}
     } else {
-	if (!typeChkExp(ref, sym))
+	if (!typeChkExp(ref, sym)) {
+	    Gpr_t *state = (Gpr_t *) (disc->user);
 	    exerror("type error using %s",
-		    deparse(pgm, node, sfstropen()));
+		    deparse(pgm, node, state->tmp));
+	}
 	v = exzero(node->type);
     }
     return v;
 }
-
-#ifdef OLD
-static void cvtError(Exid_t * xref, char *msg)
-{
-    if (xref)
-	error(ERROR_FATAL, "%s: %s", xref->name, msg);
-    else
-	error(ERROR_FATAL, "%s", msg);
-}
-#endif
 
 /* binary:
  * Evaluate (l ex->op r) producing a value of type ex->type,
@@ -1802,9 +1849,9 @@ strToTvtype (char* s)
 	} else if (!strcmp(sfx, "prepostrev")) {
 	    rt = TV_prepostrev;
 	} else
-	    error(ERROR_FATAL, "illegal string \"%s\" for type tvtype_t", s);
+	    exerror("illegal string \"%s\" for type tvtype_t", s);
     } else
-	error(ERROR_FATAL, "illegal string \"%s\" for type tvtype_t", s);
+	exerror("illegal string \"%s\" for type tvtype_t", s);
     return rt;
 }
 
@@ -1869,22 +1916,27 @@ tvtypeToStr (int v)
  * Return -1 if conversion cannot be done, 0 otherwise.
  * If arg is > 0, conversion unnecessary; just report possibility.
  */
-int stringOf(Expr_t * prog, register Exnode_t * x, int arg)
+static int stringOf(Expr_t * prog, register Exnode_t * x, int arg)
 {
     Agobj_t *objp;
+    int rv = 0;
 
     if (arg)
 	return 0;
 
     if (x->type == T_tvtyp) {
-	x->data.constant.value.string = 
-	    tvtypeToStr (x->data.constant.value.integer);
+	if (!(x->data.constant.value.string = 
+	    tvtypeToStr (x->data.constant.value.integer)))
+	    rv = -1;
     } else {
 	objp = INT2PTR(Agobj_t *, x->data.constant.value.integer);
-	if (!objp)
+	if (!objp) {
 	    exerror("cannot generate name for NULL %s",
 		    typeName(prog, x->type));
-	x->data.constant.value.string = nameOf(prog, objp);
+	    rv = -1;
+	}
+	else
+	    x->data.constant.value.string = nameOf(prog, objp);
     }
     x->type = STRING;
     return 0;
@@ -1898,7 +1950,7 @@ int stringOf(Expr_t * prog, register Exnode_t * x, int arg)
  * Use #ifdef OLD to remove graph object conversion to strings,
  * as this seemed to dangerous.
  */
-int
+static int
 convert(Expr_t * prog, register Exnode_t * x, int type,
 	register Exid_t * xref, int arg, Exdisc_t * disc)
 {
@@ -1967,7 +2019,7 @@ convert(Expr_t * prog, register Exnode_t * x, int type,
 	else if (validTVT(x->data.constant.value.integer))
 	    ret = 0;
 	else
-	    error(ERROR_FATAL, "Integer value %d not legal for type tvtype_t",
+	    exerror("Integer value %d not legal for type tvtype_t",
 		x->data.constant.value.integer);
     }
     /* in case libexpr hands us the trivial case */
@@ -2029,25 +2081,33 @@ static Exdisc_t *initDisc(Gpr_t * state)
     Exdisc_t *dp;
 
     dp = newof(0, Exdisc_t, 1, 0);
-    if (!dp)
-	error(ERROR_FATAL,
+    if (!dp) {
+	error(ERROR_ERROR,
 	      "could not create libexp discipline: out of memory");
+	return 0;
+    }
 
     dp->version = EX_VERSION;
-    dp->flags = EX_CHARSTRING | EX_FATAL | EX_UNDECLARED;
+    dp->flags = EX_CHARSTRING | EX_UNDECLARED;
     dp->symbols = symbols;
     dp->convertf = convert;
     dp->stringof = stringOf;
     dp->binaryf = binary;
     dp->typename = typeName;
-    dp->errorf = (Exerror_f) errorf;
+    if (state->errf)
+	dp->errorf = state->errf;
+    else
+	dp->errorf = (Exerror_f) errorf;
     dp->keyf = keyval;
     dp->getf = getval;
     dp->reff = refval;
     dp->setf = setval;
     dp->matchf = matchval;
+    dp->exitf = state->exitf;
     dp->types = a2t;
     dp->user = state;
+
+    state->dp = dp;   /* dp is freed when state is freed */
 
     return dp;
 }
@@ -2059,9 +2119,10 @@ static Exdisc_t *initDisc(Gpr_t * state)
 static Exnode_t *compile(Expr_t * prog, char *src, char *input, int line,
 			 char *lbl, char *sfx, int kind)
 {
-    Exnode_t *e;
+    Exnode_t *e = 0;
     Sfio_t *sf;
     Sfio_t *prefix;
+    int rv;
 
     /* create input stream */
     if (sfx) {
@@ -2082,13 +2143,13 @@ static Exnode_t *compile(Expr_t * prog, char *src, char *input, int line,
 	line--;
     }
 
-    /* prog is set to exit on errors */
     if (!src)
 	src = "<command line>";
-    excomp(prog, src, line, 0, sf);
+    rv = excomp(prog, src, line, 0, sf);
     sfclose(sf);
 
-    e = exexpr(prog, lbl, NiL, kind);
+    if (rv >= 0 && (getErrorErrors() == 0))
+	e = exexpr(prog, lbl, NiL, kind);
 
     return e;
 }
@@ -2101,12 +2162,7 @@ static void checkGuard(Exnode_t * gp, char *src, int line)
     gp = exnoncast(gp);
     if (gp && exisAssign(gp)) {
 	if (src) {
-#ifdef GVDLL
 	    setErrorFileLine (src, line);
-#else
-	    error_info.file = src;
-	    error_info.line = line;
-#endif
 	}
 	error(ERROR_WARNING, "assignment used as bool in guard");
     }
@@ -2128,12 +2184,14 @@ static case_stmt *mkStmts(Expr_t * prog, char *src, case_info * sp,
 	    sfprintf(tmps, "%s_g%d", lbl, i);
 	    cs[i].guard = compile(prog, src, sp->guard, sp->gstart,
 				  sfstruse(tmps), 0, INTEGER);
+	    if (getErrorErrors()) break;
 	    checkGuard(cs[i].guard, src, sp->gstart);
 	}
 	if (sp->action) {
 	    sfprintf(tmps, "%s_a%d", lbl, i);
 	    cs[i].action = compile(prog, src, sp->action, sp->astart,
 				   sfstruse(tmps), 0, INTEGER);
+	    if (getErrorErrors()) break;
 	}
 	sp = sp->next;
     }
@@ -2161,7 +2219,6 @@ static char *doFlags(int flags, Sfio_t * s)
 comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
 {
     comp_prog *p;
-    Exdisc_t *dp;
     Sfio_t *tmps = sfstropen();
     char *endg_sfx = 0;
 
@@ -2169,9 +2226,11 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
     assert(BITS_PER_BYTE * sizeof(tctype) >= (1 << TBITS));
 
     p = newof(0, comp_prog, 1, 0);
-    if (!p)
-	error(ERROR_FATAL,
+    if (!p) {
+	error(ERROR_ERROR,
 	      "could not create compiled program: out of memory");
+	goto finish;
+    }
 
     if (flags) {
 	endg_sfx = doFlags(flags, tmps);
@@ -2179,13 +2238,19 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
 	    endg_sfx = 0;
     }
 
-    dp = initDisc(state);
-    p->prog = exopen(dp);
+    if (!(initDisc(state)))
+	goto finish;
+    
+    exinit();
+    if (!(p->prog = exopen(state->dp)))
+	goto finish;
 
     codePhase = 0;
     if (inp->begin_stmt) {
 	p->begin_stmt = compile(p->prog, inp->source, inp->begin_stmt,
 				inp->l_begin, 0, 0, VOID);
+	if (getErrorErrors())
+	    goto finish;
     }
 
     codePhase = 1;
@@ -2194,6 +2259,8 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
 	tchk[V_this][1] = Y(G);
 	p->begg_stmt = compile(p->prog, inp->source, inp->begg_stmt,
 			       inp->l_beging, "_begin_g", 0, VOID);
+	if (getErrorErrors())
+	    goto finish;
     }
 
     codePhase = 2;
@@ -2203,6 +2270,8 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
 	p->n_nstmts = inp->n_nstmts;
 	p->node_stmts = mkStmts(p->prog, inp->source, inp->node_stmts,
 				inp->n_nstmts, "_nd");
+	if (getErrorErrors())
+	    goto finish;
     }
 
     codePhase = 3;
@@ -2212,6 +2281,8 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
 	p->n_estmts = inp->n_estmts;
 	p->edge_stmts = mkStmts(p->prog, inp->source, inp->edge_stmts,
 				inp->n_estmts, "_eg");
+	if (getErrorErrors())
+	    goto finish;
     }
 
     codePhase = 4;
@@ -2220,6 +2291,8 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
 	tchk[V_this][1] = Y(G);
 	p->endg_stmt = compile(p->prog, inp->source, inp->endg_stmt,
 			       inp->l_endg, "_end_g", endg_sfx, VOID);
+	if (getErrorErrors())
+	    goto finish;
     }
 
     codePhase = 5;
@@ -2227,14 +2300,30 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
 	symbols[0].type = T_obj;
 	p->end_stmt = compile(p->prog, inp->source, inp->end_stmt,
 			      inp->l_end, "_end_", 0, VOID);
+	if (getErrorErrors())
+	    goto finish;
     }
+    setErrorLine (0); /* execution errors have no line numbers */
+
+    finish:
+    if (getErrorErrors()) {
+	freeCompileProg (p);
+	p = 0;
+    }
+
     sfclose(tmps);
-#ifdef GVDLL
-    setErrorLine (0);
-#else
-    error_info.line = 0;	/* execution errors have no line numbers */
-#endif
     return p;
+}
+
+void
+freeCompileProg (comp_prog *p)
+{
+    if (!p) return;
+
+    exclose (p->prog, 1);
+    free (p->node_stmts);
+    free (p->edge_stmts);
+    free (p);
 }
 
 /* walksGraph;
@@ -2312,6 +2401,10 @@ Agraph_t *openG(char *name, Agdesc_t desc)
 {
     Agraph_t *g;
 
+#ifdef GVDLL
+    gprDisc.mem = &AgMemDisc;
+    gprDisc.id = &AgIdDisc;
+#endif
     g = agopen(name, desc, &gprDisc);
     if (g)
 	agbindrec(g, UDATA, sizeof(gdata), 0);
@@ -2366,3 +2459,4 @@ Agedge_t *openEdge(Agraph_t* g, Agnode_t * t, Agnode_t * h, char *key)
 	agbindrec(ep, UDATA, sizeof(edata), 0);
     return ep;
 }
+

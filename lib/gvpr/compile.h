@@ -62,6 +62,7 @@ extern "C" {
 
 #define SRCOUT    0x1
 #define INDUCE    0x2
+#define CLONE     0x4
 
     typedef struct {
 	Expr_t *prog;
@@ -76,6 +77,7 @@ extern "C" {
     } comp_prog;
 
     extern comp_prog *compileProg(parse_prog *, Gpr_t *, int);
+    extern void freeCompileProg (comp_prog *p);
     extern int usesGraph(comp_prog *);
     extern int walksGraph(comp_prog *);
     extern Agraph_t *readG(Sfio_t * fp);

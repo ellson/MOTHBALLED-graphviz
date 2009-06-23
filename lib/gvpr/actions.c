@@ -189,7 +189,7 @@ Agobj_t *copy(Agraph_t * g, Agobj_t * obj)
     char *name = agnameof(obj);
 
     if ((kind != AGRAPH) && !g) {
-	error(ERROR_FATAL, "NULL graph with non-graph object in copy()");
+	exerror("NULL graph with non-graph object in copy()");
 	return 0;
     }
 
@@ -247,26 +247,32 @@ static Agraph_t *cloneSubg(Agraph_t * tgt, Agraph_t * g, Dt_t* emap)
 	return 0;
     for (t = agfstnode(g); t; t = agnxtnode(g, t)) {
 	newt = agnode(tgt, agnameof(t), 0);
-	if (!newt)
-	    error(ERROR_PANIC, "node %s not found in cloned graph %s",
+	if (!newt) {
+	    exerror("node %s not found in cloned graph %s",
 		  agnameof(t), agnameof(tgt));
-	agsubnode(ng, newt, 1);
+	    return 0;
+	}
+	else
+	    agsubnode(ng, newt, 1);
     }
     for (t = agfstnode(g); t; t = agnxtnode(g, t)) {
 	for (e = agfstout(g, t); e; e = agnxtout(g, e)) {
 	    newe = mapEdge (emap, e);
-	    if (!newe)
-		error(ERROR_PANIC,
-		      "edge (%s,%s)[%s] not found in cloned graph %s",
+	    if (!newe) {
+		exerror("edge (%s,%s)[%s] not found in cloned graph %s",
 		      agnameof(agtail(e)), agnameof(aghead(e)),
 		      agnameof(e), agnameof(tgt));
-	    agsubedge(ng, newe, 1);
+		return 0;
+	    }
+	    else
+		agsubedge(ng, newe, 1);
 	}
     }
     for (sg = agfstsubg(g); sg; sg = agnxtsubg(sg)) {
 	if (!cloneSubg(ng, sg, emap)) {
-	    error(ERROR_FATAL, "error cloning subgraph %s from graph %s",
+	    exerror("error cloning subgraph %s from graph %s",
 		  agnameof(sg), agnameof(g));
+	    return 0;
 	}
     }
     return ng;
@@ -306,17 +312,17 @@ static void cloneGraph(Agraph_t * tgt, Agraph_t * src)
 
     for (t = agfstnode(src); t; t = agnxtnode(src, t)) {
 	if (!copy(tgt, OBJ(t))) {
-	    error(ERROR_FATAL, "error cloning node %s from graph %s",
+	    exerror("error cloning node %s from graph %s",
 		  agnameof(t), agnameof(src));
 	}
     }
     for (t = agfstnode(src); t; t = agnxtnode(src, t)) {
 	for (e = agfstout(src, t); e; e = agnxtout(src, e)) {
 	    if (!(ne = (Agedge_t*)copy(tgt, OBJ(e)))) {
-		error(ERROR_FATAL,
-		      "error cloning edge (%s,%s)[%s] from graph %s",
+		exerror("error cloning edge (%s,%s)[%s] from graph %s",
 		      agnameof(agtail(e)), agnameof(aghead(e)),
 		      agnameof(e), agnameof(src));
+		return;
 	    }
 	    ep->key = e;
 	    ep->val = ne;
@@ -325,7 +331,7 @@ static void cloneGraph(Agraph_t * tgt, Agraph_t * src)
     }
     for (sg = agfstsubg(src); sg; sg = agnxtsubg(sg)) {
 	if (!cloneSubg(tgt, sg, emap)) {
-	    error(ERROR_FATAL, "error cloning subgraph %s from graph %s",
+	    exerror("error cloning subgraph %s from graph %s",
 		  agnameof(sg), agnameof(src));
 	}
     }
@@ -352,7 +358,7 @@ Agobj_t *clone(Agraph_t * g, Agobj_t * obj)
     char *name = agnameof(obj);
 
     if ((kind != AGRAPH) && !g) {
-	error(ERROR_FATAL, "NULL graph with non-graph object in clone()");
+	exerror("NULL graph with non-graph object in clone()");
 	return 0;
     }
 
@@ -545,12 +551,12 @@ int writeFile(Agraph_t * g, char *f)
     Sfio_t *fp;
 
     if (!f) {
-	error(ERROR_FATAL, "NULL string passed to writeG");
+	exerror("NULL string passed to writeG");
 	return 1;
     }
     fp = sfopen(0, f, "w");
     if (!fp) {
-	error(ERROR_FATAL, "Could not open %s for writing in writeG", f);
+	exerror("Could not open %s for writing in writeG", f);
 	return 1;
     }
     rv = agwrite(g, fp);
@@ -568,12 +574,12 @@ Agraph_t *readFile(char *f)
     Sfio_t *fp;
 
     if (!f) {
-	error(ERROR_FATAL, "NULL string passed to readG");
+	exerror("NULL string passed to readG");
 	return 0;
     }
     fp = sfopen(0, f, "r");
     if (!fp) {
-	error(ERROR_FATAL, "Could not open %s for reading in readG", f);
+	exerror("Could not open %s for reading in readG", f);
 	return 0;
     }
     gp = readG(fp);
@@ -615,7 +621,7 @@ int openFile(Expr_t * ex, char *fname, char *mode)
 	if (!ex->file[idx])
 	    break;
     if (idx == elementsof(ex->file)) {
-	error(ERROR_FATAL, "openF: no available descriptors");
+	exerror("openF: no available descriptors");
 	return -1;
     }
     ex->file[idx] = sfopen(0, fname, mode);
@@ -630,11 +636,11 @@ int closeFile(Expr_t * ex, int fd)
     int rv;
 
     if ((0 <= fd) && (fd <= 2)) {
-	error(ERROR_FATAL, "closeF: cannot close standard stream %d", fd);
+	exerror("closeF: cannot close standard stream %d", fd);
 	return -1;
     }
     if (!ex->file[fd]) {
-	error(ERROR_FATAL, "closeF: stream %d not open", fd);
+	exerror("closeF: stream %d not open", fd);
 	return -1;
     }
     rv = sfclose(ex->file[fd]);

@@ -3033,6 +3033,8 @@ AC_CONFIG_FILES(Makefile
 	lib/sparse/Makefile
 	lib/sfdpgen/Makefile
 	lib/osage/Makefile
+	lib/gvpr/Makefile
+	lib/gvpr/libgvpr.pc
 	lib/circogen/Makefile
 	lib/twopigen/Makefile
 	lib/patchwork/Makefile

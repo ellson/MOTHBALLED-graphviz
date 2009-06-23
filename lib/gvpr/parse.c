@@ -209,10 +209,12 @@ static case_t parseKind(Sfio_t * str)
     c = skipWS(str);
     if (c < 0)
 	return Eof;
-    if (!isalpha(c))
-	error(ERROR_FATAL,
+    if (!isalpha(c)) {
+	error(ERROR_ERROR,
 	      "expected keyword BEGIN/END/N/E...; found '%c', line %d", c,
 	      lineno);
+	return Error;
+    }
 
     kwLine = lineno;
     parseID(str, c, buf, BSIZE);
@@ -237,7 +239,7 @@ static case_t parseKind(Sfio_t * str)
 	break;
     }
     if (cs == Error)
-	error(ERROR_FATAL, "unexpected keyword \"%s\", line %d", buf,
+	error(ERROR_ERROR, "unexpected keyword \"%s\", line %d", buf,
 	      kwLine);
     return cs;
 }
@@ -247,7 +249,7 @@ static case_t parseKind(Sfio_t * str)
  * up to and including a terminating character ec
  * that is not escaped with a back quote.
  */
-static void endString(Sfio_t * ins, Sfio_t * outs, char ec)
+static int endString(Sfio_t * ins, Sfio_t * outs, char ec)
 {
     int sline = lineno;
     int c;
@@ -257,13 +259,16 @@ static void endString(Sfio_t * ins, Sfio_t * outs, char ec)
 	    sfputc(outs, c);
 	    c = sfgetc(ins);
 	}
-	if (c < 0)
-	    error(ERROR_FATAL, "unclosed string, start line %d", sline);
+	if (c < 0) {
+	    error(ERROR_ERROR, "unclosed string, start line %d", sline);
+	    return c;
+	}
 	if (c == '\n')
 	    lineno++;
 	sfputc(outs, (char) c);
     }
     sfputc(outs, c);
+    return 0;
 }
 
 /* endBracket:
@@ -290,7 +295,7 @@ static int endBracket(Sfio_t * ins, Sfio_t * outs, char bc, char ec)
 		sfputc(outs, (char) c);
 	} else if ((c == '\'') || (c == '"')) {
 	    sfputc(outs, (char) c);
-	    endString(ins, outs, c);
+	    if (endString(ins, outs, c)) return -1;
 	} else
 	    sfputc(outs, (char) c);
     }
@@ -314,11 +319,15 @@ static char *parseBracket(Sfio_t * str, Sfio_t * buf, int bc, int ec)
     }
     startLine = lineno;
     c = endBracket(str, buf, bc, ec);
-    if (c < 0)
-	error(ERROR_FATAL,
+    if (c < 0) {
+	if (!getErrorErrors())
+	    error(ERROR_ERROR,
 	      "unclosed bracket %c%c expression, start line %d", bc, ec,
 	      startLine);
-    return strdup(sfstruse(buf));
+	return 0;
+    }
+    else
+	return strdup(sfstruse(buf));
 }
 
 /* parseAction:
@@ -352,6 +361,7 @@ parseCase(Sfio_t * str, char **guard, int *gline, char **action,
 	  int *aline)
 {
     case_t kind;
+
     Sfio_t *buf = sfstropen();
 
     kind = parseKind(str);
@@ -362,13 +372,19 @@ parseCase(Sfio_t * str, char **guard, int *gline, char **action,
     case EndG:
 	*action = parseAction(str, buf);
 	*aline = startLine;
+	if (getErrorErrors ())
+	    kind = Error;
 	break;
     case Edge:
     case Node:
 	*guard = parseGuard(str, buf);
 	*gline = startLine;
-	*action = parseAction(str, buf);
-	*aline = startLine;
+	if (!getErrorErrors ()) {
+	    *action = parseAction(str, buf);
+	    *aline = startLine;
+	}
+	if (getErrorErrors ())
+	    kind = Error;
 	break;
     case Eof:
     case Error:		/* to silence warnings */
@@ -421,7 +437,7 @@ bindAction(case_t cs, char *action, int aline, char **ap, int *lp)
 	error(ERROR_WARNING, "%s with no action, line %d - ignored",
 	      caseStr(cs), kwLine);
     else if (*ap)
-	error(ERROR_FATAL, "additional %s section, line %d", caseStr(cs),
+	error(ERROR_ERROR, "additional %s section, line %d", caseStr(cs),
 	      kwLine);
     else {
 	*ap = action;
@@ -431,7 +447,6 @@ bindAction(case_t cs, char *action, int aline, char **ap, int *lp)
 
 /* parseProg:
  * Parses input into gpr sections.
- * Only returns if successful.
  */
 parse_prog *parseProg(char *input, int isFile)
 {
@@ -451,7 +466,8 @@ parse_prog *parseProg(char *input, int isFile)
 
     prog = newof(0, parse_prog, 1, 0);
     if (!prog) {
-	error(ERROR_FATAL, "parseProg: out of memory");
+	error(ERROR_ERROR, "parseProg: out of memory");
+	return 0;
     }
 
     if (isFile) {
@@ -465,9 +481,11 @@ parse_prog *parseProg(char *input, int isFile)
     str = sfopen(0, input, mode);
     if (!str) {
 	if (isFile)
-	    error(ERROR_FATAL, "could not open %s for reading", input);
+	    error(ERROR_ERROR, "could not open %s for reading", input);
 	else
-	    error(ERROR_FATAL, "parseProg : unable to create sfio stream");
+	    error(ERROR_ERROR, "parseProg : unable to create sfio stream");
+	free (prog);
+	return 0;
     }
 
     more = 1;
@@ -503,6 +521,7 @@ parse_prog *parseProg(char *input, int isFile)
 		edgelist = edgel;
 	    break;
 	case Error:		/* to silence warnings */
+	    more = 0;
 	    break;
 	}
     }
@@ -514,5 +533,37 @@ parse_prog *parseProg(char *input, int isFile)
 
     sfclose(str);
 
+    if (getErrorErrors ()) {
+	freeParseProg (prog);
+	prog = 0;
+    }
+
     return prog;
 }
+
+static void
+freeCaseList (case_info* ip)
+{
+    case_info* nxt;
+    while (ip) {
+	nxt = ip->next;
+	free (ip->guard);
+	free (ip->action);
+	free (ip);
+	ip = nxt;
+    }
+}
+
+void 
+freeParseProg (parse_prog * prog)
+{
+    if (!prog) return;
+    free (prog->begin_stmt);
+    free (prog->begg_stmt);
+    freeCaseList (prog->node_stmts);
+    freeCaseList (prog->edge_stmts);
+    free (prog->endg_stmt);
+    free (prog->end_stmt);
+    free (prog);
+}
+
