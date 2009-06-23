@@ -75,6 +75,7 @@ int run_gvpr (Agraph_t* srcGraph, int argc, char* argv[])
 	fprintf (stderr, "Error in gvpr\n");
     }
     else if (opts.n_outgraphs) {
+	refreshViewport ();
 	add_graph_to_viewport(opts.outgraphs[0]);
 	for (i = 1; i < opts.n_outgraphs; i++)
 	    agclose (opts.outgraphs[i]);
