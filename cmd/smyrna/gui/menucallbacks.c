@@ -510,7 +510,7 @@ void mTestgvpr(GtkWidget * widget, gpointer user_data)
     gtk_text_buffer_get_end_iter (gtkbuf,&endit);
     bf2 = gtk_text_buffer_get_text(gtkbuf,&startit,&endit,0);
 
-    if ((*args == '\0') && (*bf2 != '\0'))
+    if ((*args == '\0') && (*bf2 == '\0'))
 	return; 
 
     inargv = splitArgs (args, &inargc);
@@ -531,14 +531,16 @@ void mTestgvpr(GtkWidget * widget, gpointer user_data)
     for (i = 0; i < inargc; i++)
 	argv[j++] = inargv[i];
     free (inargv);
-    if (*bf2 != '\0')
-	argv[j++] = bf2;
+    if (*bf2 != '\0') {
+	argv[j++] = strdup(bf2);
+	g_free (bf2);
+    }
     assert (j == argc);
 
     run_gvpr (view->g[view->activeGraph], argc, argv);
-/*    for (i = 1; i < argc; i++)
+    for (i = 1; i < argc; i++)
 	free (argv[i]);
-    free (argv);*/
+    free (argv);
 }
 
 
