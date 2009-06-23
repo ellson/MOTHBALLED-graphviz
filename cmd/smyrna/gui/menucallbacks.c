@@ -22,8 +22,11 @@
 #include "gvprpipe.h"
 #include "topviewsettings.h"
 #include "gltemplate.h"
+#include "memory.h"
 #include <const.h> 
 #include <agxbuf.h> 
+#include <assert.h> 
+#include <ctype.h> 
 
 //file
 char buf[255];
@@ -385,31 +388,154 @@ void mHelp(GtkWidget * widget, gpointer user_data)
 void change_cursor(GdkCursorType C)
 {
 
-	GdkCursor *cursor;
-	GdkWindow * w;
-	cursor = gdk_cursor_new(C);
+    GdkCursor *cursor;
+    GdkWindow * w;
+    cursor = gdk_cursor_new(C);
     w = (GdkWindow *) glade_xml_get_widget(xml, "frmMain");
-    gdk_window_set_cursor((GdkWindow *) view->drawing_area->window,
-			  cursor);
+    gdk_window_set_cursor((GdkWindow *) view->drawing_area->window, cursor);
     gdk_cursor_destroy(cursor);
-	return;
 }
-float GetOGLDistance(int l);
+
+static const char*
+endQuote (const char* args, agxbuf* xb, char endc)
+{
+    int more = 1;
+    char c;
+
+    while (more) {
+	c = *args++;
+	if (c == endc) more = 0;
+	else if (c == '\0') {
+	    more = 0;
+	    args--;
+	}
+	else if (c == '\\') {
+	    c = *args++;
+	    if (c == '\0') args--;
+	    else agxbputc (xb,c);
+	}
+	else
+	    agxbputc (xb,c);
+    }
+    return args;
+}
+
+static const char*
+skipWS (const char* args)
+{
+    char c;
+
+    while ((c = *args)) {
+	if (isspace(c)) args++;
+	else break;
+    }
+    return args;
+}
+
+static const char*
+getTok (const char* args, agxbuf* xb)
+{
+    char c;
+    int more = 1;
+
+    args = skipWS(args);
+    if (*args == '\0') return 0;
+
+    while (more) {
+	c = *args++;
+	if (isspace(c)) more = 0;
+	else if (c == '\0') {
+	    more = 0;
+	    args--;
+	}
+	else if ((c == '"') || (c == '\'')) {
+	    args = endQuote (args, xb, c);
+	}
+	else if (c == '\\') {
+	    c = *args++;
+	    if (c == '\0') args--;
+	    else agxbputc (xb,c);
+	}
+	else
+	    agxbputc (xb,c);
+    }
+    return args;
+}
+
+static char**
+splitArgs (const char* args, int* argcp)
+{
+    char** argv;
+    int argc;
+    int asize;
+    agxbuf xbuf;
+    unsigned char buf[SMALLBUF];
+
+    if (*args == '\0') {
+	*argcp = 0;
+	return 0;
+    }
+
+    argc = 0;
+    asize = 0;
+    argv = 0;
+    agxbinit(&xbuf, SMALLBUF, buf);
+    while ((args = getTok (args, &xbuf))) {
+	if (asize <= argc) {
+	    asize += 10;
+	    argv = ALLOC(asize,argv,char*);
+	}
+	argv[argc++] = strdup(agxbuse(&xbuf));
+    }
+
+    agxbfree (&xbuf);
+    *argcp = argc;
+    return argv;
+}
+
 void mTestgvpr(GtkWidget * widget, gpointer user_data)
 {
-//	apply_gvpr(view->g[view->activeGraph],"c:/graphviz-ms/bin/makered.g");
-	int charcnt;
-	char* bf2;
-	GtkTextBuffer * gtkbuf;
-	GtkTextIter startit;
-	GtkTextIter endit;
-	gtkbuf=gtk_text_view_get_buffer((GtkTextView*) glade_xml_get_widget(xml,"gvprtextinput"));
-	charcnt=gtk_text_buffer_get_char_count (gtkbuf);
-	gtk_text_buffer_get_start_iter (gtkbuf,&startit);
-	gtk_text_buffer_get_end_iter (gtkbuf,&endit);
+    char* bf2;
+    GtkTextBuffer * gtkbuf;
+    GtkTextIter startit;
+    GtkTextIter endit;
+    const char* args;
+    int i, j, inargc, argc, writeGraph;
+    char** argv;
+    char** inargv;
 
-	bf2=gtk_text_buffer_get_text(gtkbuf,&startit,&endit,0);
-	run_gvpr (view->g[view->activeGraph], bf2);
+    args = gtk_entry_get_text ((GtkEntry *)glade_xml_get_widget(xml, "gvprargs"));
+    gtkbuf=gtk_text_view_get_buffer((GtkTextView*) glade_xml_get_widget(xml,"gvprtextinput"));
+    gtk_text_buffer_get_start_iter (gtkbuf,&startit);
+    gtk_text_buffer_get_end_iter (gtkbuf,&endit);
+    bf2 = gtk_text_buffer_get_text(gtkbuf,&startit,&endit,0);
+
+    inargv = splitArgs (args, &inargc);
+
+    argc = inargc + 1;
+    if (*bf2 != '\0') argc++;
+    if (gtk_toggle_button_get_active((GtkToggleButton *) glade_xml_get_widget(xml, "gvprapplycb"))) {
+	writeGraph = 1;
+	argc++;
+    }
+    else
+	writeGraph = 0;
+    argv = N_NEW(argc+1, char*);
+    j = 0;
+    argv[j++] = "smyrna";
+    if (writeGraph)
+	argv[j++] = strdup ("-c");
+    for (i = 0; i < inargc; i++)
+	argv[j++] = inargv[i];
+    free (inargv);
+    if (*bf2 != '\0')
+	argv[j++] = bf2;
+    assert (j == argc);
+
+    run_gvpr (view->g[view->activeGraph], argc, argv);
+    for (i = 1; i < argc; i++)
+	free (argv[i]);
+    free (argv);
 }
 
 

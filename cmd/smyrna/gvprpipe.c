@@ -17,349 +17,60 @@
 #include "gvprpipe.h"
 #include <stdio.h> 
 #include <stdlib.h>
+#include <assert.h>
 #include <glade/glade.h>
-
-
-#ifdef WIN32
-#include <windows.h> 
-#include <tchar.h>
-#include <strsafe.h>
-#else
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#endif
-
 #include <viewport.h> 
-#include <const.h> 
-#include <agxbuf.h> 
 
 extern GladeXML* xml;	
-#ifdef WIN32
 
-/* two pipes
- *  1 between smyrna and gvpr 
- *    SmyrnaToGvprIn : write end of pipe , active graph's fread uses
- *    SmyrnaToGvprROut: read end of pipe , created process' std in uses
- *  1 between gvpr and smyrna
- *    GvprToSmyrnaIn :write end of pipe, created process' stdout uses
- *    GvprToSmyrnaOut :read end of pipe, new graph's fread uses
- */
-
-static HANDLE GvprToSmyrnaWr;
-static HANDLE GvprToSmyrnaWrErr;
-static HANDLE GvprToSmyrnaRd;
-static HANDLE GvprToSmyrnaErr;
-static HANDLE SmyrnaToGvprWr;
-static HANDLE SmyrnaToGvprRd;
-static SECURITY_ATTRIBUTES saAttr; 
-static PROCESS_INFORMATION piProcInfo; 
-
-
-/*cgraph wrappers*/
-static int cgraph_write_wrapper(void *chan, char *str)
-{
-    DWORD dwWritten,lpExitCode; 
-    BOOL bSuccess = FALSE;
-	GetExitCodeProcess( piProcInfo.hProcess,&lpExitCode);
-	if (lpExitCode!=259)	/*still alive?*/
-    	return EOF;
-
- 
-    bSuccess = WriteFile(SmyrnaToGvprWr, str, (DWORD)strlen(str), &dwWritten, NULL);
-    if ( ! bSuccess ) return EOF; 
-    return 0;
-} 
-
-static int cgraph_read_wrapper (void* ch,char* bf,int sz)
-{
-    DWORD dwRead;
-    BOOL bSuccess = FALSE;
-	int ind=0;
-	bSuccess=ReadFile( GvprToSmyrnaRd, bf, sz, &dwRead, NULL);
-    if ( ! bSuccess ) return EOF; 
-	return dwRead;
-}
-
-/* ErrorExit:
- * Format a readable error message, display a message box, 
- * and exit from the application.
- */
-static void
-ErrorExit(PTSTR lpszFunction) 
-{ 
-    LPVOID lpMsgBuf;
-    LPVOID lpDisplayBuf;
-    DWORD dw = GetLastError(); 
-
-    FormatMessage(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-        FORMAT_MESSAGE_FROM_SYSTEM |
-        FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL,
-        dw,
-        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        (LPTSTR) &lpMsgBuf,
-        0, NULL );
-
-    lpDisplayBuf = (LPVOID)LocalAlloc(LMEM_ZEROINIT, 
-        (lstrlen((LPCTSTR)lpMsgBuf)+lstrlen((LPCTSTR)lpszFunction)+40)*sizeof(TCHAR)); 
-    StringCchPrintf((LPTSTR)lpDisplayBuf, 
-        LocalSize(lpDisplayBuf) / sizeof(TCHAR),
-        TEXT("%s failed with error %d: %s"), 
-        lpszFunction, dw, lpMsgBuf); 
-    MessageBox(NULL, (LPCTSTR)lpDisplayBuf, TEXT("Error"), MB_OK); 
-
-    LocalFree(lpMsgBuf);
-    LocalFree(lpDisplayBuf);
-    ExitProcess(1);
-}
-
-static int dummyflush (void *chan)
-{
-    return 1;
-}
-
-static Agraph_t*
-ReadFromPipe() 
-{ 
-    BOOL bSuccess = FALSE;
-    int totalbytes=0;
-    int ind=0;
-    Agiodisc_t a; 
-    Agdisc_t disc;
-    Agraph_t* g=0;
-
-
-    if (!CloseHandle(SmyrnaToGvprWr))
-	ErrorExit(TEXT("StdOutWr CloseHandle")); 
-
-    a.afread=cgraph_read_wrapper; 
-    a.flush=dummyflush;
-    disc.io=&a;
-    disc.id = &AgIdDisc;
-    disc.mem = &AgMemDisc;
-    g=agread(NULL,&disc);	
-/*	CloseHandle(piProcInfo.hProcess);
-	CloseHandle(piProcInfo.hThread);*/
-
-    return g; 
-} 
+#include <gvpr.h>
+#include "topview.h"
+#include "topviewsettings.h"
 
 static void
-CreateChildProcess(TCHAR* szCmdline,HANDLE g_hChildStd_IN_Rd,HANDLE g_hChildStd_OUT_Wr,HANDLE g_hChildStd_ERR_Wr)
-{ 
-   STARTUPINFO siStartInfo;
-   BOOL bSuccess = FALSE; 
-   ZeroMemory( &piProcInfo, sizeof(PROCESS_INFORMATION) );
-   ZeroMemory( &siStartInfo, sizeof(STARTUPINFO) );
-   siStartInfo.cb = sizeof(STARTUPINFO); 
-//   siStartInfo.hStdError = g_hChildStd_ERR_Wr;
-   siStartInfo.hStdOutput = g_hChildStd_OUT_Wr;
-   siStartInfo.hStdInput = g_hChildStd_IN_Rd;
-   siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
- 
-   bSuccess = CreateProcess(NULL, 
-      szCmdline,     // command line 
-      NULL,          // process security attributes 
-      NULL,          // primary thread security attributes 
-      TRUE,          // handles are inherited 
-      0,             // creation flags 
-      NULL,          // use parent's environment 
-      NULL,          // use parent's current directory 
-      &siStartInfo,  // STARTUPINFO pointer 
-      &piProcInfo);  // receives PROCESS_INFORMATION 
-	if ( ! bSuccess ) 
-	{
-
-		ErrorExit(TEXT("CreateProcess"));
-
-	}
-	else 
-	{
-#if 0
-		GetExitCodeProcess( piProcInfo.hProcess,&lpExitCode);
-		if (lpExitCode==259)	/*still alive*/
-#endif
-
-	}
+refreshViewport ()
+{
+    update_graph_from_settings(view->g[view->activeGraph]);
+    set_viewport_settings_from_template(view, view->g[view->activeGraph]);
+    settvcolorinfo(view->g[view->activeGraph],view->Topview);
+    glexpose ();
 }
 
-static void init_security_attr(SECURITY_ATTRIBUTES* Attr)
+static ssize_t outfn (void* sp, const char *buf, size_t nbyte, void* dp)
 {
-   Attr->nLength = sizeof(SECURITY_ATTRIBUTES); 
-   Attr->bInheritHandle = TRUE; 
-   Attr->lpSecurityDescriptor = NULL; 
+    return write (1, buf, nbyte);
 }
 
-static void createpipes()
+static ssize_t errfn (void* sp, const char *buf, size_t nbyte, void* dp)
 {
-	if ( ! CreatePipe(&GvprToSmyrnaRd, &GvprToSmyrnaWr, &saAttr, 0) ) 
-		ErrorExit(TEXT("StdoutRd CreatePipe")); 
-	if ( ! SetHandleInformation(GvprToSmyrnaRd, HANDLE_FLAG_INHERIT, 0) )
-		ErrorExit(TEXT("Stdout SetHandleInformation")); 
-
-
- 
-	if (! CreatePipe(&SmyrnaToGvprRd, &SmyrnaToGvprWr, &saAttr, 0)) 
-		ErrorExit(TEXT("Stdin CreatePipe")); 
- 
-	if ( ! SetHandleInformation(SmyrnaToGvprWr, HANDLE_FLAG_INHERIT, 0) )
-		ErrorExit(TEXT("Stdin SetHandleInformation")); 
-
+    return write (2, buf, nbyte);
 }
 
-
-
-#else
- 
-#endif
-
-static Agraph_t*
-exec_gvpr(Agraph_t* srcGraph, char* filename)
-{ 
-    Agraph_t* G;
-    unsigned char bf[SMALLBUF];
-    agxbuf xbuf;
-#ifdef WIN32
-    DWORD lpExitCode;
-    Agiodisc_t* xio;	
-    Agiodisc_t a; 
-    init_security_attr(&saAttr);
-    createpipes();
-#else
-    FILE* pp;
-#endif
-
-    agxbinit (&xbuf, SMALLBUF, bf);
-	agxbput (&xbuf, "gvpr -c -f ");
-    agxbput (&xbuf, filename);
-    agxbput (&xbuf, " c:/tvgraph.gv");
-	
-   
-#ifdef WIN32
-    CreateChildProcess (agxbuse (&xbuf), SmyrnaToGvprRd, GvprToSmyrnaWr,GvprToSmyrnaWr);
-    xio = srcGraph->clos->disc.io;
-    a.afread = srcGraph->clos->disc.io->afread; 
-    a.putstr = cgraph_write_wrapper;
-    a.flush =xio->flush;
-    srcGraph->clos->disc.io = &a;
-	/*we need to check if there is still a pipe to write, iif child process is still alive?*/
-	agwrite(srcGraph,NULL);
-    srcGraph->clos->disc.io = xio;
-	GetExitCodeProcess( piProcInfo.hProcess,&lpExitCode);
-	if (lpExitCode!=259)	/*still alive?*/
-    	G=NULL;
-	else
-	G = ReadFromPipe() ;
-	CloseHandle(piProcInfo.hProcess);
-	CloseHandle(piProcInfo.hThread);
-#else
-    pp = popen (agxbuse (&xbuf), "r+");
-    if (!pp) {
-	fprintf (stderr, "error #:%d\n",errno);
-	exit(1);
-    }
-
-    agwrite(srcGraph, pp);
-    G = agread(pp, NULL) ;
-    pclose (pp);
-    unlink (filename);
-#endif
-
-    return G; 
-} 
-
-/* mkTemp:
- */
-#ifdef WIN32
-
-static char*
-mkTempFile ()
+int run_gvpr (Agraph_t* srcGraph, int argc, char* argv[])
 {
-    char buf[512];
-    char buf2[512];
+    int i, rv = 1;
+    gvpropts opts;
+    Agraph_t* gs[2];
 
-    GetTempPath(512,buf);
-    if (GetTempFileName(buf,"gvpr",0,buf2)==0)
-		return NULL;
-    return strdup (buf2);
-}
-
-#else
-#define TMP_TEMPLATE "/tmp/_gvprXXXXXX"
-
-static char*
-mkTempFile ()
-{
-    char* name = strdup (TMP_TEMPLATE);
+    gs[0] = srcGraph;
+    gs[1] = 0;
+    opts.ingraphs = gs;
+    opts.out = outfn;
+    opts.err = errfn;
+    opts.flags = GV_USE_OUTGRAPH;
     
-    int rv = mkstemp (name);
-    if (rv < 0) {
-	free (name);
-	return NULL;
+    rv = gvpr (argc, argv, &opts);
+
+    if (rv) {  /* error */
+	fprintf (stderr, "Error in gvpr\n");
+    }
+    else if (opts.n_outgraphs) {
+	add_graph_to_viewport(opts.outgraphs[0]);
+	for (i = 1; i < opts.n_outgraphs; i++)
+	    agclose (opts.outgraphs[i]);
     }
     else {
-	close (rv);
-	return name;
-    }
-}
-
-#endif
-
-/*
- * saves a gvpr file as  a temporary file,
- * returns file name's full path or NULL on failure.
- * Buffer is malloced, so must be freed.
- */
-static char* 
-save_gvpr_program (char* prg)
-{
-    FILE *fp;
-    char* tmpname;
-
-    tmpname = mkTempFile ();
-    fp = fopen(tmpname, "w");
-    if (fp) {
-	fputs (prg, fp);
-	fclose (fp);
-	return tmpname;
-    }
-    else {
-#ifndef WIN32
-	unlink (tmpname);
-#endif
-	free (tmpname);
-	return NULL;
-    }
-}
-
-extern Agraph_t* execGVPR(Agraph_t* srcG, char* prg);
-static int 
-apply_gvpr(Agraph_t* g,char* prog)
-{
-#ifdef WIN32
-    Agraph_t* tempg = execGVPR (g, prog);
-#else
-    Agraph_t* tempg = exec_gvpr (g, prog);
-#endif
-
-    if ((tempg) &&(gtk_toggle_button_get_active((GtkToggleButton *) glade_xml_get_widget(xml, "gvprapplycb"))))
-	{
-		add_graph_to_viewport(tempg);
-		return 1;
-    }
-	return 1;
-}
-
-int run_gvpr (Agraph_t* srcGraph, char* script)
-{
-    char* tmpf;
-    int rv = 1;
-
-    if ((tmpf = save_gvpr_program(script))) {
-	rv = apply_gvpr (srcGraph, tmpf);
-	free (tmpf);
+	refreshViewport ();
     }
     return rv;
 }

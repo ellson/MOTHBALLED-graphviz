@@ -19,6 +19,6 @@
 
 #include "cgraph.h"
 
-extern int run_gvpr(Agraph_t* srcGraph, char* script);
+extern int run_gvpr(Agraph_t* srcGraph, int, char**);
 
 #endif
