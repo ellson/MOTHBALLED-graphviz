@@ -38,6 +38,9 @@ extern "C" {
 
 #define UNSET_ALIGN 0
 
+#define HTML_BF 1
+#define HTML_IF 2
+
     /* font information
      * If name or color is NULL, or size < 0, that attribute
      * is unspecified. 
@@ -45,8 +48,10 @@ extern "C" {
     typedef struct {
 	char*  name;
 	char*  color;
-	double size;
+        int    flags:3;
+        int    ul:1;
 	int    cnt;   /* reference count */
+	double size;
     } htmlfont_t;
 
     /* paras of text within a cell

@@ -382,6 +382,10 @@ pushFont (htmlfont_t *f)
 	    f->size = curfont->size;
 	if (!f->name && curfont->name)
 	    f->name = strdup(curfont->name);
+	if (!f->flags && curfont->flags)
+	    f->flags = curfont->flags;
+	if (!f->ul && curfont->ul)
+	    f->ul = curfont->ul;
     }
 
     ft->cfont = dupFont (f);
@@ -415,11 +419,12 @@ popFont (void)
 
 %token T_end_br T_end_img T_row T_end_row T_html T_end_html
 %token T_end_table T_end_cell T_end_font T_string T_error
+%token T_n_italic T_n_bold T_n_underline
 %token <i> T_BR T_br
 %token <img> T_IMG T_img
 %token <tbl> T_table
 %token <cell> T_cell
-%token <font> T_font
+%token <font> T_font T_italic T_bold T_underline
 
 %type <txt> fonttext
 %type <i> br  
@@ -444,14 +449,35 @@ text : text textitem
 
 textitem : string { appendFItemList(HTMLstate.str);}
          | br {appendFLineList($1);}
-         | sfont text nfont
+         | font text n_font
+         | italic text n_italic
+         | underline text n_underline
+         | bold text n_bold
          ;
 
-sfont : T_font { pushFont ($1); }
+font : T_font { pushFont ($1); }
       ;
 
-nfont : T_end_font { popFont (); }
+n_font : T_end_font { popFont (); }
       ;
+
+italic : T_italic {pushFont($1);}
+          ;
+
+n_italic : T_n_italic {popFont();}
+            ;
+
+bold : T_bold {pushFont($1);}
+          ;
+
+n_bold : T_n_bold {popFont();}
+            ;
+
+underline : T_underline {pushFont($1);}
+          ;
+
+n_underline : T_n_underline {popFont();}
+            ;
 
 br     : T_br T_end_br { $$ = $1; }
        | T_BR { $$ = $1; }
@@ -483,7 +509,10 @@ table : opt_space T_table {
       ;
 
 fonttable : table { $$ = $1; }
-          | sfont table nfont { $$=$2; }
+          | font table n_font { $$=$2; }
+          | italic table n_italic { $$=$2; }
+          | underline table n_underline { $$=$2; }
+          | bold table n_bold { $$=$2; }
           ;
 
 opt_space : string 

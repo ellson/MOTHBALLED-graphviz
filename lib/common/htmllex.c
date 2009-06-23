@@ -488,12 +488,15 @@ static htmlimg_t *mkImg(char **atts)
     return img;
 }
 
-static htmlfont_t *mkFont(char **atts)
+static htmlfont_t *mkFont(char **atts, int flags, int ul)
 {
     htmlfont_t *font = NEW(htmlfont_t);
 
     font->size = -1.0;		/* unassigned */
-    doAttrs(font, font_items, sizeof(font_items) / ISIZE, atts, "<FONT>");
+    font->flags = flags;
+    font->ul = ul;
+    if (atts)
+	doAttrs(font, font_items, sizeof(font_items) / ISIZE, atts, "<FONT>");
 
     return font;
 }
@@ -535,8 +538,17 @@ static void startElement(void *user, const char *name, char **atts)
 	htmllval.cell = mkCell(atts);
 	state.tok = T_cell;
     } else if (strcasecmp(name, "FONT") == 0) {
-	htmllval.font = mkFont(atts);
+	htmllval.font = mkFont(atts, 0, 0);
 	state.tok = T_font;
+    } else if (strcasecmp(name, "B") == 0) {
+	htmllval.font = mkFont(0, HTML_BF, 0);
+	state.tok = T_bold;
+    } else if (strcasecmp(name, "U") == 0) {
+	htmllval.font = mkFont(0, 0, 1);
+	state.tok = T_underline;
+    } else if (strcasecmp(name, "I") == 0) {
+	htmllval.font = mkFont(0, HTML_IF, 0);
+	state.tok = T_italic;
     } else if (strcasecmp(name, "BR") == 0) {
 	mkBR(atts);
 	state.tok = T_br;
@@ -565,6 +577,12 @@ static void endElement(void *user, const char *name)
 	state.tok = T_end_html;
     } else if (strcasecmp(name, "FONT") == 0) {
 	state.tok = T_end_font;
+    } else if (strcasecmp(name, "B") == 0) {
+	state.tok = T_n_bold;
+    } else if (strcasecmp(name, "U") == 0) {
+	state.tok = T_n_underline;
+    } else if (strcasecmp(name, "I") == 0) {
+	state.tok = T_n_italic;
     } else if (strcasecmp(name, "BR") == 0) {
 	if (state.tok == T_br)
 	    state.tok = T_BR;
@@ -775,6 +793,24 @@ static void printTok(int tok)
 	break;
     case T_IMG:
 	s = "T_IMG";
+	break;
+    case T_underline:
+	s = "T_underline";
+	break;
+    case T_n_underline:
+	s = "T_underline";
+	break;
+    case T_italic:
+	s = "T_italic";
+	break;
+    case T_n_italic:
+	s = "T_italic";
+	break;
+    case T_bold:
+	s = "T_bold";
+	break;
+    case T_n_bold:
+	s = "T_bold";
 	break;
     default:
 	s = "<unknown>";
