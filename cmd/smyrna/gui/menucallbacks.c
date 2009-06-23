@@ -500,31 +500,34 @@ void mTestgvpr(GtkWidget * widget, gpointer user_data)
     GtkTextIter startit;
     GtkTextIter endit;
     const char* args;
-    int i, j, inargc, argc, writeGraph;
+    int i, j, inargc, argc, cloneGraph;
     char** argv;
     char** inargv;
 
     args = gtk_entry_get_text ((GtkEntry *)glade_xml_get_widget(xml, "gvprargs"));
-    gtkbuf=gtk_text_view_get_buffer((GtkTextView*) glade_xml_get_widget(xml,"gvprtextinput"));
+    gtkbuf = gtk_text_view_get_buffer((GtkTextView*) glade_xml_get_widget(xml,"gvprtextinput"));
     gtk_text_buffer_get_start_iter (gtkbuf,&startit);
     gtk_text_buffer_get_end_iter (gtkbuf,&endit);
     bf2 = gtk_text_buffer_get_text(gtkbuf,&startit,&endit,0);
+
+    if ((*args == '\0') && (*bf2 != '\0'))
+	return; 
 
     inargv = splitArgs (args, &inargc);
 
     argc = inargc + 1;
     if (*bf2 != '\0') argc++;
     if (gtk_toggle_button_get_active((GtkToggleButton *) glade_xml_get_widget(xml, "gvprapplycb"))) {
-	writeGraph = 1;
+	cloneGraph = 1;
 	argc++;
     }
     else
-	writeGraph = 0;
+	cloneGraph = 0;
     argv = N_NEW(argc+1, char*);
     j = 0;
     argv[j++] = "smyrna";
-    if (writeGraph)
-	argv[j++] = strdup ("-c");
+    if (cloneGraph)
+	argv[j++] = strdup ("-C");
     for (i = 0; i < inargc; i++)
 	argv[j++] = inargv[i];
     free (inargv);
