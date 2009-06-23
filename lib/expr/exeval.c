@@ -873,7 +873,10 @@ static Extype_t eval(Expr_t * ex, register Exnode_t * expr, void *env)
 	return v;
     case EXIT:
 	v = eval(ex, x, env);
-	exit((int) v.integer);
+	if (ex->disc->exitf) 
+	    (*ex->disc->exitf) (ex, env, (int)v.integer);
+	else
+	    exit((int) v.integer);
 	 /*NOTREACHED*/ v.integer = -1;
 	return v;
     case IF:

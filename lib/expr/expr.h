@@ -126,6 +126,7 @@ extern "C" {
 
     typedef int (*Exerror_f) (Expr_t *, Exdisc_t *, int, const char *,
 			      ...);
+    typedef void (*Exexit_f) (Expr_t *, Exdisc_t *, int);
 
     typedef struct {		/* user defined member type       */
 	Sflong_t number;
@@ -237,6 +238,8 @@ extern "C" {
 	/* set value function           */
 	int (*matchf) (Expr_t *, Exnode_t *, const char *, Exnode_t *,
 		       const char *, void *, Exdisc_t *);
+	/* exit function           */
+	Exexit_f exitf;
 	int *types;
 	void *user;
     };
@@ -310,6 +313,7 @@ extern "C" {
     extern char *extype(int);
     extern Extype_t exzero(int);
     extern char *exopname(int);
+    extern void exinit();
     extern char *extypename(Expr_t * p, int);
     extern int exisAssign(Exnode_t *);
 

@@ -882,6 +882,14 @@ extern "C" {
     }
 
 /*
+ * clear global state of stale pointers
+ */
+
+    void
+     exinit() {
+	memset (&expr, 0, sizeof(Expr_t));
+    }
+/*
  * compile the expression in [sf]p
  */
 
