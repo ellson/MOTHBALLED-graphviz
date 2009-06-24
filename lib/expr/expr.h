@@ -313,7 +313,7 @@ extern "C" {
     extern char *extype(int);
     extern Extype_t exzero(int);
     extern char *exopname(int);
-    extern void exinit();
+    extern void exinit(void);
     extern char *extypename(Expr_t * p, int);
     extern int exisAssign(Exnode_t *);
 

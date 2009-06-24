@@ -886,7 +886,7 @@ extern "C" {
  */
 
     void
-     exinit() {
+     exinit(void) {
 	memset (&expr, 0, sizeof(Expr_t));
     }
 /*
