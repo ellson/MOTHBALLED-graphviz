@@ -15,36 +15,15 @@
 **********************************************************/
 
 #include "gvprpipe.h"
+#include "const.h"
 #include <stdio.h> 
 #include <stdlib.h>
 #include <assert.h>
 #include <glade/glade.h>
 #include <viewport.h> 
-
-extern GladeXML* xml;	
+#include <gltemplate.h> 
 
 #include <gvpr.h>
-#include "topview.h"
-#include "topviewsettings.h"
-
-static void
-refreshViewport ()
-{
-		view->Topview->Graphdata.GraphFileName = strdup ("unnamed");
-		load_settings_from_graph(view->g[view->activeGraph]);
-		update_graph_from_settings(view->g[view->activeGraph]);
-		set_viewport_settings_from_template(view, view->g[view->activeGraph]);
-		update_topview(view->g[view->activeGraph], view->Topview,1);
-		fill_key(view->orig_key,get_md5_key(view->g[view->activeGraph]));
-		expose_event(view->drawing_area, NULL, NULL);
-/*
-	update_graph_from_settings(view->g[view->activeGraph]);
-    set_viewport_settings_from_template(view, view->g[view->activeGraph]);
-    settvcolorinfo(view->g[view->activeGraph],view->Topview);
-    glexpose ();*/
-
-
-}
 
 static ssize_t outfn (void* sp, const char *buf, size_t nbyte, void* dp)
 {
@@ -61,6 +40,8 @@ int run_gvpr (Agraph_t* srcGraph, int argc, char* argv[])
     int i, rv = 1;
     gvpropts opts;
     Agraph_t* gs[2];
+    static int count;
+    char buf[SMALLBUF];
 
     gs[0] = srcGraph;
     gs[1] = 0;
@@ -75,13 +56,17 @@ int run_gvpr (Agraph_t* srcGraph, int argc, char* argv[])
 	fprintf (stderr, "Error in gvpr\n");
     }
     else if (opts.n_outgraphs) {
-	refreshViewport ();
-	add_graph_to_viewport(opts.outgraphs[0]);
-	for (i = 1; i < opts.n_outgraphs; i++)
+	refreshViewport (0);
+	sprintf (buf, "<%d>", ++count);
+	add_graph_to_viewport(opts.outgraphs[0], buf);
+	if (opts.n_outgraphs > 1)
+	    fprintf (stderr, "Warning: multiple output graphs-discarded\n"); 
+	for (i = 1; i < opts.n_outgraphs; i++) {
 	    agclose (opts.outgraphs[i]);
+	}
     }
     else {
-	refreshViewport ();
+	refreshViewport (0);
     }
     return rv;
 }
