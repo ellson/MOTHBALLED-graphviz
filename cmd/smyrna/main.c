@@ -29,6 +29,7 @@
 #include <glade/glade.h>
 #include "gui.h"
 #include "viewport.h"
+#include "support.h"
 #include "menucallbacks.h"
 #include "gltemplate.h"
 #include "memory.h"
@@ -182,10 +183,7 @@ parseArgs (int argc, char *argv[], ViewInfo* view)
     else
 	return NULL;
 }
-extern int create_font_file(char* fontdescription,char* fontfile,float gw,float gh);
 
-extern int load_png_font(char* file_name);
-extern void add_pixmap_directory (const gchar     *directory);
 #ifdef UNUSED
 static void close_cgraph(Agraph_t* g)
 {
