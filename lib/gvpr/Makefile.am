@@ -26,18 +26,18 @@ pkgconfig_DATA = libgvpr.pc
 libgvpr_C_la_SOURCES = actions.c compile.c gvpr.c gprstate.c parse.c queue.c
 $(libgvpr_C_la_OBJECTS): gdefs.h
 libgvpr_C_la_DEPENDENCIES = \
-    $(top_builddir)/lib/expr/libexpr_C.la \
-    $(top_builddir)/lib/ingraphs/libingraphs_C.la
+	$(top_builddir)/lib/expr/libexpr_C.la \
+	$(top_builddir)/lib/ingraphs/libingraphs_C.la
 
 
 libgvpr_la_LDFLAGS = -version-info $(GVPR_VERSION) -no-undefined
 libgvpr_la_SOURCES = $(libgvpr_C_la_SOURCES)
 libgvpr_la_LIBADD = $(libgvpr_C_la_LIBADD) \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-    $(top_builddir)/lib/expr/libexpr_C.la \
-    $(top_builddir)/lib/cdt/libcdt.la \
-    $(top_builddir)/lib/cgraph/libcgraph.la \
-    $(MATH_LIBS)
+	$(top_builddir)/lib/expr/libexpr_C.la \
+	$(top_builddir)/lib/cdt/libcdt.la \
+	$(top_builddir)/lib/cgraph/libcgraph.la \
+	$(MATH_LIBS)
 libgvpr_la_DEPENDENCIES = $(libgvpr_C_la_DEPENDENCIES)
 
 mkdefs_SOURCES = mkdefs.c
@@ -45,6 +45,6 @@ mkdefs_SOURCES = mkdefs.c
 gdefs.h: $(top_srcdir)/lib/gvpr/gprdata mkdefs
 	./mkdefs gdefs.h < $(top_srcdir)/lib/gvpr/gprdata
 
-EXTRA_DIST = $(man_MANS) $(pdf_DATA) lib Makefile.old gprdata mkdefs.c gdefs.h gvpr.vcproj
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old gprdata mkdefs.c gdefs.h
 
 DISTCLEANFILES = $(pdf_DATA) gdefs.h mkdefs
