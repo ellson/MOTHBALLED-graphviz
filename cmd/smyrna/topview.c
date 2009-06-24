@@ -374,9 +374,6 @@ void preparetopview(Agraph_t * g, topview * t)
 	/*set some stats for topview*/
 	t->Nodecount = ind;
     t->Edgecount = ind2;
-	printf("node count:%d\n",ind);
-	printf("edge count:%d\n",ind2);
-
 
 	/*create glcomp menu system*/
 	view->widgets =glcreate_gl_topview_menu();
