@@ -961,7 +961,7 @@ int gvpr (int argc, char *argv[], gvpropts * uopts)
     freeParseProg (prog);
     freeCompileProg (xprog);
     closeGPRState(state);
-    closeIngraph (ing);
+    if (ing) closeIngraph (ing);
     freeOpts (opts);
 
     if (uopts) {
