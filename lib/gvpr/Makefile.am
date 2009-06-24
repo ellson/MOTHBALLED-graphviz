@@ -18,12 +18,12 @@ AM_CPPFLAGS = \
 
 pkginclude_HEADERS = gvpr.h
 noinst_PROGRAMS = mkdefs
-noinst_HEADERS = actions.h compile.h gprstate.h parse.h queue.h trieFA.h
+noinst_HEADERS = actions.h compile.h gprstate.h parse.h queue.h trieFA.h trie.c
 noinst_LTLIBRARIES = libgvpr_C.la
 lib_LTLIBRARIES = libgvpr.la
 pkgconfig_DATA = libgvpr.pc
 
-libgvpr_C_la_SOURCES = actions.c compile.c gvpr.c gprstate.c parse.c queue.c trie.c
+libgvpr_C_la_SOURCES = actions.c compile.c gvpr.c gprstate.c parse.c queue.c
 $(libgvpr_C_la_OBJECTS): gdefs.h
 libgvpr_C_la_DEPENDENCIES = \
 	$(top_builddir)/lib/expr/libexpr_C.la \
@@ -45,6 +45,6 @@ mkdefs_SOURCES = mkdefs.c
 gdefs.h: $(top_srcdir)/lib/gvpr/gprdata mkdefs
 	./mkdefs gdefs.h < $(top_srcdir)/lib/gvpr/gprdata
 
-EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old gprdata mkdefs.c gdefs.h
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old gprdata mkdefs.c gdefs.h trie.c
 
 DISTCLEANFILES = $(pdf_DATA) gdefs.h mkdefs
