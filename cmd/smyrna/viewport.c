@@ -465,7 +465,7 @@ void init_viewport(ViewInfo * view)
     set_viewport_settings_from_template(view, view->default_attributes);
     view->dfltViewType = VT_NONE;
     view->dfltEngine = GVK_NONE;
-	view->Topview->Graphdata.GraphFileName=(char*)0;
+	view->Topview->Graphdata.GraphFileName = (char*)0;
 	view->Topview->Graphdata.Modified=0;
 	view->colschms=NULL;
 	view->flush=1;
@@ -569,8 +569,9 @@ static Agraph_t *loadGraph(char *filename)
 		fclose (input_file);
 		return 0;
     }
-	view->Topview->Graphdata.GraphFileName = strdup (filename);
-	return g;
+    free (view->Topview->Graphdata.GraphFileName);
+    view->Topview->Graphdata.GraphFileName = strdup (filename);
+    return g;
 }
 #ifdef UNUSED
 static void refresh_borders(Agraph_t* g)
@@ -588,45 +589,54 @@ int add_graph_to_viewport_from_file(char *fileName)
 {
     Agraph_t *graph = loadGraph(fileName);
 
-    return add_graph_to_viewport (graph);
+    return add_graph_to_viewport (graph, fileName);
 }
 
-int add_graph_to_viewport(Agraph_t* graph)
+void
+refreshViewport (int doClear)
 {
-    if (graph) 
-	{
-		view->graphCount = view->graphCount + 1;
-		view->g =(Agraph_t **) realloc(view->g,sizeof(Agraph_t *) * view->graphCount);
-		view->g[view->graphCount - 1] = graph;
-		view->activeGraph = view->graphCount - 1;
-		load_settings_from_graph(view->g[view->activeGraph]);
-		update_graph_from_settings(view->g[view->activeGraph]);
-		set_viewport_settings_from_template(view, view->g[view->activeGraph]);
-		update_topview(graph, view->Topview,1);
-		gtk_combo_box_append_text(view->graphComboBox,view->Topview->Graphdata.GraphFileName);
-		fill_key(view->orig_key,get_md5_key(graph));
-		expose_event(view->drawing_area, NULL, NULL);
-		return 1;
+    Agraph_t* graph = view->g[view->activeGraph];
+
+    load_settings_from_graph(graph);
+    update_graph_from_settings(graph);
+    set_viewport_settings_from_template(view, graph);
+    if (doClear)
+	cleartopview(view->Topview);
+    update_topview(graph, view->Topview,1);
+    fill_key(view->orig_key,get_md5_key(graph));
+    expose_event(view->drawing_area, NULL, NULL);
+}
+
+static void
+activate (int id, int doClear)
+{
+    view->activeGraph = id;
+    refreshViewport (doClear);
+}
+
+int add_graph_to_viewport(Agraph_t* graph, char* id)
+{
+    if (graph) {
+	view->graphCount = view->graphCount + 1;
+	view->g =(Agraph_t **) realloc(view->g,sizeof(Agraph_t *) * view->graphCount);
+	view->g[view->graphCount - 1] = graph;
+
+	gtk_combo_box_append_text(view->graphComboBox,id);
+
+	activate (view->graphCount - 1, 0);
+	return 1;
     } 
-    else 
-	{
-		return 0;
+    else {
+	return 0;
     }
 
 }
 void switch_graph(int graphId)
 {
-	if (graphId >= view->graphCount)
-		return;/*wrong entry*/
-	view->activeGraph = graphId;
-	load_settings_from_graph(view->g[view->activeGraph]);
-	update_graph_from_settings(view->g[view->activeGraph]);
-	set_viewport_settings_from_template(view, view->g[view->activeGraph]);
-	cleartopview(view->Topview);
-	update_topview(view->g[view->activeGraph], view->Topview,1);
-	fill_key(view->orig_key,get_md5_key(view->g[view->activeGraph]));
-	expose_event(view->drawing_area, NULL, NULL);
-
+    if (graphId >= view->graphCount)
+	return;/*wrong entry*/
+    else
+	activate (graphId, 1);
 }
 
 #if 0
