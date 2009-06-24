@@ -26,6 +26,7 @@
 void init_viewport(ViewInfo * view);
 void set_viewport_settings_from_template(ViewInfo * view, Agraph_t *);
 void clear_viewport(ViewInfo * view);
+void switch_graph(int);
 void refreshViewport (int doClear);
 int add_graph_to_viewport_from_file(char *fileName);
 int add_graph_to_viewport(Agraph_t* graph, char*);
