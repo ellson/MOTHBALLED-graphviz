@@ -83,11 +83,17 @@ void glprintfglut (void* font, GLfloat xpos, GLfloat ypos, char *bf)
 	  print_bitmap_string(font,bf);	
 }
 
+void glprintfglutz (void* font, GLfloat xpos, GLfloat ypos, GLfloat zpos, char *bf)
+{
+	glRasterPos3f(xpos,ypos,zpos+0.01);
+	  print_bitmap_string(font,bf);	
+}
 
 
-void 
-glprintf (glCompText* font, GLfloat xpos, GLfloat ypos, 
-    GLfloat width, char *bf)
+
+static void 
+glPrintf (glCompText* font, GLfloat xpos, GLfloat ypos, GLfloat zpos,
+    GLfloat width, char *bf, int usez)
 {
 
 	int vPort[4];
@@ -106,7 +112,10 @@ glprintf (glCompText* font, GLfloat xpos, GLfloat ypos,
 		return;
 	if (font->isglut)
 	{
-		glprintfglut (font->glutfont, xpos,ypos,bf);
+		if (usez)
+			glprintfglutz (font->glutfont, xpos,ypos,zpos,bf);
+		else
+			glprintfglut (font->glutfont, xpos,ypos,bf);
 		return;
 	}
 
@@ -161,7 +170,18 @@ glprintf (glCompText* font, GLfloat xpos, GLfloat ypos,
 	restore_gl_vars(font);
 }
 
+void 
+glprintf (glCompText* font, GLfloat xpos, GLfloat ypos, GLfloat width, char *bf)
+{
+	glPrintf (font, xpos, ypos, 0, width, bf, 0);
+}
 
+void 
+glprintfz (glCompText* font, GLfloat xpos, GLfloat ypos, GLfloat zpos,
+    GLfloat width, char *bf)
+{
+	glPrintf (font, xpos, ypos, zpos, width, bf, 0);
+}
 
 
 
