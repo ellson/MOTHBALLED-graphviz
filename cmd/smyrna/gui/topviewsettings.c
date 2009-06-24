@@ -377,12 +377,14 @@ int load_settings_from_graph(Agraph_t * g)
 
 int update_graph_from_settings(Agraph_t * g)
 {
+#if 0
     gchar *buf;
     int value;
     char buf2[10];
-    buf = '\0';
-/*	buf=gtk_font_selection_get_font_name((GtkFontSelection*)glade_xml_get_widget(xml, "settingsFontSelection"));
-	agset(g,"defaultfontname",buf);*/
+
+    buf=gtk_font_selection_get_font_name((GtkFontSelection*)glade_xml_get_widget(xml, "settingsFontSelection"));
+    agset(g,"defaultfontname",buf);
+#endif
     get_color_button_widget_to_attribute("bgcolor", "settingsColorBtn1",
 					 g);
     get_color_button_widget_to_attribute("bordercolor",
