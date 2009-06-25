@@ -887,7 +887,7 @@ extern "C" {
 
     void
      exinit(void) {
-	memset (&expr, 0, sizeof(Expr_t));
+	memset (&expr, 0, sizeof(Exstate_t));
     }
 /*
  * compile the expression in [sf]p
