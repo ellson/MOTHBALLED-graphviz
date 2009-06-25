@@ -15,7 +15,7 @@ INCS = -I. -I$(ROOT) -I$(LOC_INCDIR) -I$(LOC_LIB)/cgraph -I$(LOC_LIB)/cdt \
 
 DEFINES = -DHAVE_CONFIG_H -DUSE_CGRAPH
 
-OBJS = gvpr.o parse.o compile.o gprstate.o actions.o queue.o trie.o
+OBJS = gvpr.o parse.o compile.o gprstate.o actions.o queue.o
 
 
 compile.o : gdefs.h
@@ -38,7 +38,7 @@ libgvpr.a: $(OBJS)
 
 install: libgvpr.a
 	$(MKPATH) $(LIBDIR)
-	$(INSTALL) libpgvpr.a $(LIBDIR)
+	$(INSTALL) libgvpr.a $(LIBDIR)
 
 
 $(OBJS) : gdefs.h
