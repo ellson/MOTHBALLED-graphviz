@@ -396,6 +396,7 @@ void change_cursor(GdkCursorType C)
     gdk_cursor_destroy(cursor);
 }
 
+#if OLD
 static const char*
 endQuote (const char* args, agxbuf* xb, char endc)
 {
@@ -492,6 +493,7 @@ splitArgs (const char* args, int* argcp)
     *argcp = argc;
     return argv;
 }
+#endif
 
 void mTestgvpr(GtkWidget * widget, gpointer user_data)
 {
@@ -500,9 +502,12 @@ void mTestgvpr(GtkWidget * widget, gpointer user_data)
     GtkTextIter startit;
     GtkTextIter endit;
     const char* args;
-    int i, j, inargc, argc, cloneGraph;
+    int i, j, argc, cloneGraph;
     char** argv;
+#if OLD
     char** inargv;
+    int inargc;
+#endif
 
     args = gtk_entry_get_text ((GtkEntry *)glade_xml_get_widget(xml, "gvprargs"));
     gtkbuf = gtk_text_view_get_buffer((GtkTextView*) glade_xml_get_widget(xml,"gvprtextinput"));
@@ -513,9 +518,13 @@ void mTestgvpr(GtkWidget * widget, gpointer user_data)
     if ((*args == '\0') && (*bf2 == '\0'))
 	return; 
 
+#if OLD
     inargv = splitArgs (args, &inargc);
 
     argc = inargc + 1;
+#else
+    if (*args != '\0') argc += 2;
+#endif
     if (*bf2 != '\0') argc++;
     if (gtk_toggle_button_get_active((GtkToggleButton *) glade_xml_get_widget(xml, "gvprapplycb"))) {
 	cloneGraph = 1;
@@ -528,9 +537,16 @@ void mTestgvpr(GtkWidget * widget, gpointer user_data)
     argv[j++] = "smyrna";
     if (cloneGraph)
 	argv[j++] = strdup ("-C");
+#if OLD
     for (i = 0; i < inargc; i++)
 	argv[j++] = inargv[i];
     free (inargv);
+#else
+    if (*args != '\0') {
+	argv[j++] = strdup ("-a");
+	argv[j++] = strdup (args);
+    }
+#endif
     if (*bf2 != '\0') {
 	argv[j++] = strdup(bf2);
 	g_free (bf2);
