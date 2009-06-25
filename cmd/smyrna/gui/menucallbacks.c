@@ -523,6 +523,7 @@ void mTestgvpr(GtkWidget * widget, gpointer user_data)
 
     argc = inargc + 1;
 #else
+    argc = 1;
     if (*args != '\0') argc += 2;
 #endif
     if (*bf2 != '\0') argc++;
