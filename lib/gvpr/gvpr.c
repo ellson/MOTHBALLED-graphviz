@@ -827,7 +827,7 @@ int gvpr (int argc, char *argv[], gvpropts * uopts)
     Sfdisc_t errdisc;
     Sfdisc_t outdisc;
     parse_prog *prog = 0;
-    ingraph_state *ing;
+    ingraph_state *ing = 0;
     comp_prog *xprog = 0;
     Gpr_t *state = 0;
     gpr_info info;
