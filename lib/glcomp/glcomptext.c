@@ -208,7 +208,7 @@ static int glutfontId(fontset_t* fontset,void* glutfont)
 }
 
 
-glCompText* glut_font_init()
+glCompText* glut_font_init(void)
 {
     glCompText* font = NEW(glCompText);
 	font->color.R=1.00;
