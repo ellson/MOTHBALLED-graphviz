@@ -21,6 +21,7 @@ extern "C" {
 #ifndef GVPR_H
 #define GVPR_H
 
+#include "ast_common.h"
 #include "cgraph.h"
 
   /* If set, gvpr calls exit() on errors */
