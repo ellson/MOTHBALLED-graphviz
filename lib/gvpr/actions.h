@@ -46,6 +46,8 @@ extern "C" {
     extern int closeFile(Expr_t *, int);
     extern char *readLine(Expr_t *, int);
     extern char *canon(Expr_t * pgm, char *);
+    extern char *toLower(Expr_t * pgm, char *, Sfio_t*);
+    extern char *toUpper(Expr_t * pgm, char *, Sfio_t*);
     extern int deleteObj(Agraph_t * g, Agobj_t * obj);
 
 #endif

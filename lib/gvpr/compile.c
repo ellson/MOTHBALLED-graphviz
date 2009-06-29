@@ -64,9 +64,8 @@
  * Return name of object. 
  * Assumes obj !=  NULL
  */
-static char *nameOf(Expr_t * ex, Agobj_t * obj)
+static char *nameOf(Expr_t * ex, Agobj_t * obj, Sfio_t* tmps)
 {
-    Sfio_t *tmps;
     char *s;
     char *key;
     Agedge_t *e;
@@ -77,7 +76,6 @@ static char *nameOf(Expr_t * ex, Agobj_t * obj)
 	s = agnameof(obj);
 	break;
     default:			/* edge */
-	tmps = sfstropen();
 	e = (Agedge_t *) obj;
 	key = agnameof(obj);
 	sfputr(tmps, agnameof(AGTAIL(e)), -1);
@@ -92,7 +90,6 @@ static char *nameOf(Expr_t * ex, Agobj_t * obj)
 	    sfputc(tmps, ']');
 	}
 	s = exstring(ex, sfstruse(tmps));
-	sfclose(tmps);
 	break;
     }
     return s;
@@ -397,7 +394,7 @@ static int lookup(Expr_t * pgm, Agobj_t * objp, Exid_t * sym, Extype_t * v,
 	    }
 	    break;
 	case M_name:
-	    v->string = nameOf(pgm, objp);
+	    v->string = nameOf(pgm, objp, state->tmp);
 	    break;
 	case M_indegree:
 	    if (AGTYPE(objp) == AGNODE)
@@ -475,7 +472,7 @@ static int lookup(Expr_t * pgm, Agobj_t * objp, Exid_t * sym, Extype_t * v,
 	Agsym_t *gsym = agattrsym(objp, sym->name);
 	if (!gsym) {
 	    gsym = agattr(agroot(agraphof(objp)), AGTYPE(objp), sym->name, "");
-	    error(ERROR_WARNING, "Using value of uninitialized %s attribute \"%s\" of \"%s\"", kindOf (objp), sym->name, nameOf(pgm, objp));
+	    error(ERROR_WARNING, "Using value of uninitialized %s attribute \"%s\" of \"%s\"", kindOf (objp), sym->name, nameOf(pgm, objp, state->tmp));
 	}
 	v->string = agxget(objp, gsym);
     }
@@ -1227,7 +1224,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		else {
 		    if (!gsym) {
 	    		gsym = agattr(agroot(agraphof(objp)), AGTYPE(objp), name, "");
-	    		error(ERROR_WARNING, "Using value of %s uninitialized attribute \"%s\" of \"%s\" in aget()", kindOf (objp), name, nameOf(pgm, objp));
+	    		error(ERROR_WARNING, "Using value of %s uninitialized attribute \"%s\" of \"%s\" in aget()", kindOf (objp), name, nameOf(pgm, objp, state->tmp));
 		    }
 		    v.string = agxget(objp, gsym);
         	}
@@ -1327,6 +1324,12 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    break;
 	case F_canon:
 	    v.string = canon(pgm, args[0].string);
+	    break;
+	case F_tolower:
+	    v.string = toLower(pgm, args[0].string, state->tmp);
+	    break;
+	case F_toupper:
+	    v.string = toUpper(pgm, args[0].string, state->tmp);
 	    break;
 	case F_xof:
 	    v.string = xyOf(pgm, args[0].string, 1);
@@ -1916,7 +1919,7 @@ tvtypeToStr (int v)
  * Return -1 if conversion cannot be done, 0 otherwise.
  * If arg is > 0, conversion unnecessary; just report possibility.
  */
-static int stringOf(Expr_t * prog, register Exnode_t * x, int arg)
+static int stringOf(Expr_t * prog, register Exnode_t * x, int arg, Exdisc_t* disc)
 {
     Agobj_t *objp;
     int rv = 0;
@@ -1935,8 +1938,10 @@ static int stringOf(Expr_t * prog, register Exnode_t * x, int arg)
 		    typeName(prog, x->type));
 	    rv = -1;
 	}
-	else
-	    x->data.constant.value.string = nameOf(prog, objp);
+	else {
+	    Gpr_t* state = (Gpr_t *) (disc->user);
+	    x->data.constant.value.string = nameOf(prog, objp, state->tmp);
+	}
     }
     x->type = STRING;
     return 0;
@@ -2171,11 +2176,10 @@ static void checkGuard(Exnode_t * gp, char *src, int line)
 /* mkStmts:
  */
 static case_stmt *mkStmts(Expr_t * prog, char *src, case_info * sp,
-			  int cnt, char *lbl)
+			  int cnt, char *lbl, Sfio_t *tmps)
 {
     case_stmt *cs;
     int i;
-    Sfio_t *tmps = sfstropen();
 
     cs = newof(0, case_stmt, cnt, 0);
 
@@ -2196,7 +2200,6 @@ static case_stmt *mkStmts(Expr_t * prog, char *src, case_info * sp,
 	sp = sp->next;
     }
 
-    sfclose(tmps);
     return cs;
 }
 
@@ -2219,7 +2222,7 @@ static char *doFlags(int flags, Sfio_t * s)
 comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
 {
     comp_prog *p;
-    Sfio_t *tmps = sfstropen();
+    Sfio_t *tmps = state->tmp;
     char *endg_sfx = 0;
 
     /* Make sure we have enough bits for types */
@@ -2248,7 +2251,7 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
     codePhase = 0;
     if (inp->begin_stmt) {
 	p->begin_stmt = compile(p->prog, inp->source, inp->begin_stmt,
-				inp->l_begin, 0, 0, VOID);
+				inp->l_begin, 0, 0, VOIDTYPE);
 	if (getErrorErrors())
 	    goto finish;
     }
@@ -2258,7 +2261,7 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
 	symbols[0].type = T_graph;
 	tchk[V_this][1] = Y(G);
 	p->begg_stmt = compile(p->prog, inp->source, inp->begg_stmt,
-			       inp->l_beging, "_begin_g", 0, VOID);
+			       inp->l_beging, "_begin_g", 0, VOIDTYPE);
 	if (getErrorErrors())
 	    goto finish;
     }
@@ -2269,7 +2272,7 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
 	tchk[V_this][1] = Y(V);
 	p->n_nstmts = inp->n_nstmts;
 	p->node_stmts = mkStmts(p->prog, inp->source, inp->node_stmts,
-				inp->n_nstmts, "_nd");
+				inp->n_nstmts, "_nd", tmps);
 	if (getErrorErrors())
 	    goto finish;
     }
@@ -2280,7 +2283,7 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
 	tchk[V_this][1] = Y(E);
 	p->n_estmts = inp->n_estmts;
 	p->edge_stmts = mkStmts(p->prog, inp->source, inp->edge_stmts,
-				inp->n_estmts, "_eg");
+				inp->n_estmts, "_eg", tmps);
 	if (getErrorErrors())
 	    goto finish;
     }
@@ -2290,7 +2293,7 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
 	symbols[0].type = T_graph;
 	tchk[V_this][1] = Y(G);
 	p->endg_stmt = compile(p->prog, inp->source, inp->endg_stmt,
-			       inp->l_endg, "_end_g", endg_sfx, VOID);
+			       inp->l_endg, "_end_g", endg_sfx, VOIDTYPE);
 	if (getErrorErrors())
 	    goto finish;
     }
@@ -2299,7 +2302,7 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
     if (inp->end_stmt) {
 	symbols[0].type = T_obj;
 	p->end_stmt = compile(p->prog, inp->source, inp->end_stmt,
-			      inp->l_end, "_end_", 0, VOID);
+			      inp->l_end, "_end_", 0, VOIDTYPE);
 	if (getErrorErrors())
 	    goto finish;
     }
@@ -2311,7 +2314,6 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
 	p = 0;
     }
 
-    sfclose(tmps);
     return p;
 }
 

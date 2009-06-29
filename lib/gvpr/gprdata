@@ -106,6 +106,8 @@ F_hasattr   "hasAttr"      FUNCTION I|A(1,O)|A(2,S)
 F_isattr    "isAttr"       FUNCTION I|A(1,G)|A(2,S)|A(3,S)
 F_fstattr   "fstAttr"      FUNCTION S|A(1,G)|A(2,S)
 F_nxtattr   "nxtAttr"      FUNCTION S|A(1,G)|A(2,S)|A(3,S)
+F_tolower   "tolower"      FUNCTION S|A(1,S)
+F_toupper   "toupper"      FUNCTION S|A(1,S)
 C_flat      "TV_flat"      CONSTANT T_tvtyp
 C_ne        "TV_ne"        CONSTANT T_tvtyp
 C_en        "TV_en"        CONSTANT T_tvtyp

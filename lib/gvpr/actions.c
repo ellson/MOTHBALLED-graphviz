@@ -26,6 +26,7 @@
 #include "sfstr.h"
 #include <string.h>
 #include <stdio.h>
+#include <ctype.h>
 
 #define KINDS(p) ((AGTYPE(p) == AGRAPH) ? "graph" : (AGTYPE(p) == AGNODE) ? "node" : "edge")
 
@@ -704,6 +705,32 @@ int compare(Agobj_t * l, Agobj_t * r)
 	return -1;
     else
 	return 1;
+}
+
+/* toLower:
+ * Convert characters to lowercase
+ */
+char *toLower(Expr_t * pgm, char *s, Sfio_t* tmps)
+{
+    int c;
+
+    while ((c = *s++))
+	sfputc (tmps, tolower (c));
+
+    return exstring(pgm, sfstruse(tmps));
+}
+
+/* toUpper:
+ * Convert characters to uppercase
+ */
+char *toUpper(Expr_t * pgm, char *s, Sfio_t* tmps)
+{
+    int c;
+
+    while ((c = *s++))
+	sfputc (tmps, toupper (c));
+
+    return exstring(pgm, sfstruse(tmps));
 }
 
 /* canon:
