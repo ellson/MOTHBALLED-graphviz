@@ -641,7 +641,7 @@ int extoken_fn(register Expr_t * ex)
 
 		switch (exlval.id->lex) {
 		case DECLARE:
-		    if (exlval.id->index == CHAR) {
+		    if (exlval.id->index == CHARACTER) {
 			/*
 			 * `char*' === `string'
 			 * the * must immediately follow char

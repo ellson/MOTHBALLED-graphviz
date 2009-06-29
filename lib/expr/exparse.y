@@ -58,13 +58,12 @@
 
 %token	MINTOKEN
 
-%token	INT
 %token	INTEGER
 %token	UNSIGNED
-%token	CHAR
+%token	CHARACTER
 %token	FLOATING
 %token	STRING
-%token	VOID
+%token	VOIDTYPE
 
 %token  ADDRESS
 %token	ARRAY

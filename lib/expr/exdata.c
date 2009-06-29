@@ -38,7 +38,7 @@ Exid_t exbuiltin[] = {
 
     EX_ID("break", BREAK, BREAK, 0, 0),
     EX_ID("case", CASE, CASE, 0, 0),
-    EX_ID("char", DECLARE, CHAR, CHAR, 0),
+    EX_ID("char", DECLARE, CHARACTER, CHARACTER, 0),
     EX_ID("continue", CONTINUE, CONTINUE, 0, 0),
     EX_ID("default", DEFAULT, DEFAULT, 0, 0),
     EX_ID("double", DECLARE, FLOATING, FLOATING, 0),
@@ -63,7 +63,7 @@ Exid_t exbuiltin[] = {
     EX_ID("substr", SUBSTR, SUBSTR, STRING, 0),
     EX_ID("switch", SWITCH, SWITCH, 0, 0),
     EX_ID("unsigned", DECLARE, UNSIGNED, UNSIGNED, 0),
-    EX_ID("void", DECLARE, VOID, 0, 0),
+    EX_ID("void", DECLARE, VOIDTYPE, 0, 0),
     EX_ID("while", WHILE, WHILE, 0, 0),
     EX_ID({0}, 0, 0, 0, 0)
 

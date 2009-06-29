@@ -416,7 +416,7 @@ static int scformat(Sfio_t * sp, void *vp, Sffmt_t * dp)
 		    string, char, fmt->fmt.size, 0);
 	break;
     case 'c':
-	if (node->type != CHAR) {
+	if (node->type != CHARACTER) {
 	    exerror("scanf: %s: char variable address argument expected",
 		    node->data.variable.symbol->name);
 	    return -1;
@@ -740,7 +740,7 @@ xPrint(Expr_t * ex, Exnode_t * expr, Extype_t v, Exnode_t * tmp)
 {
     *tmp = *expr->data.operand.left;
     tmp->data.constant.value = v;
-    if ((*ex->disc->stringof) (ex, tmp, 0))
+    if ((*ex->disc->stringof) (ex, tmp, 0, ex->disc))
 	exerror("%s: no string representation of %s value",
 		expr->data.operand.left->data.variable.symbol->name,
 		extypename(ex, expr->data.operand.left->type));

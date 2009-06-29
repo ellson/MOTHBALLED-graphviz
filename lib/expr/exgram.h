@@ -248,7 +248,7 @@ extern "C" {
 	    exerror("cannot convert %s to STRING", extypename(p, type));
 	if (x->op != CONSTANT) {
 	    if (!BUILTIN(type)) {
-		if ((*p->disc->stringof) (p, x, 1) < 0) {
+		if ((*p->disc->stringof) (p, x, 1, p->disc) < 0) {
 		    exerror("cannot convert %s to STRING",
 			    extypename(p, type));
 		}
@@ -264,7 +264,7 @@ extern "C" {
 		}
 	    x = exnewnode(p, cvt, 0, STRING, x, 0);
 	} else if (!BUILTIN(type)) {
-	    if ((*p->disc->stringof) (p, x, 0) < 0)
+	    if ((*p->disc->stringof) (p, x, 0, p->disc) < 0)
 		exerror("cannot convert constant %s to STRING",
 			extypename(p, x->type));
 	} else
@@ -396,7 +396,7 @@ extern "C" {
 	char *s;
 	char *e;
 
-	if (x && x->type != type && type && type != VOID) {
+	if (x && x->type != type && type && type != VOIDTYPE) {
 	    if (!x->type) {
 		x->type = type;
 		return x;

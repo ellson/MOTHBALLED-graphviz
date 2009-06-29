@@ -33,7 +33,7 @@ Exnode_t *exexpr(Expr_t * ex, const char *name, Exid_t * sym, int type)
 	if (!sym)
 	    sym = name ? (Exid_t *) dtmatch(ex->symbols, name) : &ex->main;
 	if (sym && sym->lex == PROCEDURE && sym->value) {
-	    if (type != DELETE)
+	    if (type != DELETE_T)
 		return excast(ex, sym->value->data.procedure.body, type,
 			      NiL, 0);
 	    exfreenode(ex, sym->value);

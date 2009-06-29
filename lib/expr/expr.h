@@ -76,9 +76,9 @@ extern "C" {
 /* previously known as EXID, but EXID is also defined by bison in y.tab.h */
 #define EX_ID(n,l,i,t,f)	{{0},(l),(i),(t),0,(f),0,{0},n}
 
-#define DELETE		BREAK	/* exexpr() delete `type'       */
+#define DELETE_T		BREAK	/* exexpr() delete `type'       */
 
-#define INTEGRAL(t)	((t)>=INT&&(t)<=CHAR)
+#define INTEGRAL(t)	((t)>=INTEGER&&(t)<=CHARACTER)
 #define BUILTIN(t)  ((t) > MINTOKEN)
 
 /* function type mechanism
@@ -222,7 +222,7 @@ extern "C" {
 	/* binary operator function     */
 	char *(*typename) (Expr_t *, int);
 	/* application type names       */
-	int (*stringof) (Expr_t *, Exnode_t *, int);
+	int (*stringof) (Expr_t *, Exnode_t *, int, Exdisc_t *);
 	/* value to string conversion   */
 	 Extype_t(*keyf) (Expr_t *, Extype_t, int, Exdisc_t *);
 	/* dictionary key for external type objects     */
