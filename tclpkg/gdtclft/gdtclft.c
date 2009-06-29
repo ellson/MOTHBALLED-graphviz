@@ -98,6 +98,8 @@ typedef struct {
 static cmdOptions subcmdVec[] = {
     {"create", tclGdCreateCmd, 2, 2, 0, 0,
      "width height"},
+    {"createTrueColor", tclGdCreateCmd, 2, 2, 0, 0,
+     "width height"},
     {"createFromGD", tclGdCreateCmd, 1, 1, 0, 0,
      "filehandle"},
 #ifdef HAVE_LIBZ
@@ -299,6 +301,8 @@ static int tclGd_GetColor(Tcl_Interp * interp, Tcl_Obj * obj, int *color)
  *
  * gd create <width> <height>
  * 		Return a handle to a new gdImage that is width X height.
+ * gd createTrueColor <width> <height>
+ * 		Return a handle to a new trueColor gdImage that is width X height.
  * gd createFromGD <filehandle>
  * gd createFromGD2 <filehandle>
  * gd createFromGIF <filehandle>
@@ -512,6 +516,17 @@ tclGdCreateCmd(Tcl_Interp * interp, GdData * gdData,
 	if (Tcl_GetIntFromObj(interp, objv[3], &h) != TCL_OK)
 	    return TCL_ERROR;
 	im = gdImageCreate(w, h);
+	if (im == NULL) {
+	    sprintf(buf, "GD unable to allocate %d X %d image", w, h);
+	    Tcl_SetResult(interp, buf, TCL_VOLATILE);
+	    return TCL_ERROR;
+	}
+    } else if (strcmp(cmd, "createTrueColor") == 0) {
+	if (Tcl_GetIntFromObj(interp, objv[2], &w) != TCL_OK)
+	    return TCL_ERROR;
+	if (Tcl_GetIntFromObj(interp, objv[3], &h) != TCL_OK)
+	    return TCL_ERROR;
+	im = gdImageCreateTrueColor(w, h);
 	if (im == NULL) {
 	    sprintf(buf, "GD unable to allocate %d X %d image", w, h);
 	    Tcl_SetResult(interp, buf, TCL_VOLATILE);
