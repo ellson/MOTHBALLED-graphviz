@@ -129,10 +129,13 @@ of the forms:
 .IP
 .BI "END { "  action " }"
 .PP
-A program can contain at most one of each of the \fBBEGIN\fP, \fBBEG_G\fP,
+A program can contain at most one of each of the \fBBEGIN\fP, 
 \fBEND_G\fP and \fBEND\fP clauses. 
-There can be any number of \fBN\fP and \fBE\fP statements,
-the first applied to nodes, the second to edges.
+There can be any number of \fBBEG_G\fP, \fBN\fP and \fBE\fP statements,
+the first applied to graphs, the second to nodes, the third to edges.
+These are separated into blocks, a block consisting of an optional
+\fBBEG_G\fP statement and all \fBN\fP and \fBE\fP statements up to 
+the next \fBBEG_G\fP statement, if any.
 The top\(hylevel semantics of a \fBgvpr\fP program are:
 .PP
 .ta \w'\f(CWdelete array[expression]'u
@@ -140,11 +143,13 @@ The top\(hylevel semantics of a \fBgvpr\fP program are:
 .nf
 Evaluate the \fBBEGIN\fP clause, if any.
 For each input graph \fIG\fP {
-    Set \fIG\fP as the current graph and current object.
-    Evaluate the \fBBEG_G\fP clause, if any.
-    For each node and edge in \fIG\fP {
-      Set the node or edge as the current object.
-      Evaluate the \fBN\fP or \fBE\fP clauses, as appropriate.
+    For each block {
+        Set \fIG\fP as the current graph and current object.
+        Evaluate the \fBBEG_G\fP clause, if any.
+        For each node and edge in \fIG\fP {
+            Set the node or edge as the current object.
+            Evaluate the \fBN\fP or \fBE\fP clauses, as appropriate.
+        } 
     } 
     Set \fIG\fP as the current object.
     Evaluate the \fBEND_G\fP clause, if any.
@@ -162,6 +167,13 @@ If there is no predicate with an action, the action is
 performed on every node or edge, as appropriate.
 If there is no action and the predicate evaluates to true,
 the associated node or edge is added to the target graph. 
+.PP
+The blocks are evaluated in the order in which they occur.
+Within a block, the \fBN\fP clauses 
+(\fBE\fP clauses, respectively) are evaluated in the
+order in which the occur. Note, though, that within a block, 
+\fBN\fP or \fBE\fP clauses may be interlaced, depending on the
+traversal order.
 .PP
 Predicates and actions are sequences of statements in the C dialect 
 supported by the
@@ -627,6 +639,12 @@ substring of \fIs\fP.
 returns the index of the character in string \fIs\fP where the leftmost
 match of pattern \fIp\fP can be found, or \-1 if no substring of \fIs\fP
 matches \fIp\fP.
+.TP
+\fBtoupper\fP(\fIs\fP : \fBstring\fP) : \fBstring\fP
+returns a version of \fIs\fP with the alphabetic characters converted to upper-case.
+.TP
+\fBtolower\fP(\fIs\fP : \fBstring\fP) : \fBstring\fP
+returns a version of \fIs\fP with the alphabetic characters converted to lower-case.
 .TP
 \fBcanon\fP(\fIs\fP : \fBstring\fP) : \fBstring\fP
 returns a version of \fIs\fP appropriate to be used as an identifier
