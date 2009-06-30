@@ -64,14 +64,25 @@ extern "C" {
 #define INDUCE    0x2
 #define CLONE     0x4
 
+#define WALKSG    0x1
+#define BEGG      0x2
+#define ENDG      0x4
+
     typedef struct {
-	Expr_t *prog;
-	Exnode_t *begin_stmt;
 	Exnode_t *begg_stmt;
+	int walks;
 	int n_nstmts;
 	int n_estmts;
 	case_stmt *node_stmts;
 	case_stmt *edge_stmts;
+    } comp_block; 
+
+    typedef struct {
+	int flags;
+	Expr_t *prog;
+	Exnode_t *begin_stmt;
+	int n_blocks;
+	comp_block  *blocks;
 	Exnode_t *endg_stmt;
 	Exnode_t *end_stmt;
     } comp_prog;
@@ -79,7 +90,7 @@ extern "C" {
     extern comp_prog *compileProg(parse_prog *, Gpr_t *, int);
     extern void freeCompileProg (comp_prog *p);
     extern int usesGraph(comp_prog *);
-    extern int walksGraph(comp_prog *);
+    extern int walksGraph(comp_block *);
     extern Agraph_t *readG(Sfio_t * fp);
     extern Agraph_t *openG(char *name, Agdesc_t);
     extern Agraph_t *openSubg(Agraph_t * g, char *name);

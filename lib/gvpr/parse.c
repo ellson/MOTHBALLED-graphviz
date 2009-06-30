@@ -395,6 +395,27 @@ parseCase(Sfio_t * str, char **guard, int *gline, char **action,
     return kind;
 }
 
+/* addBlock:
+ * create new block and append to list;
+ * return new item as tail
+ */
+static parse_block *addBlock (parse_block * last, char *stmt, int line,
+	int n_nstmts, case_info *nodelist, int n_estmts, case_info *edgelist)
+{
+    parse_block* item = newof(0, parse_block, 1, 0);
+
+    item->l_beging = line;
+    item->begg_stmt = stmt;
+    item->n_nstmts = n_nstmts;
+    item->n_estmts = n_estmts;
+    item->node_stmts = nodelist;
+    item->edge_stmts = edgelist;
+    if (last)
+	last->next = item;
+
+    return item;
+}
+
 /* addCase:
  * create new case_info and append to list;
  * return new item as tail
@@ -456,13 +477,18 @@ parse_prog *parseProg(char *input, int isFile)
     char *guard = NULL;
     char *action = NULL;
     int more;
+    parse_block *blocklist = 0;
     case_info *edgelist = 0;
     case_info *nodelist = 0;
+    parse_block *blockl = 0;
     case_info *edgel = 0;
     case_info *nodel = 0;
+    int n_blocks = 0;
     int n_nstmts = 0;
     int n_estmts = 0;
     int line = 0, gline = 0;
+    int l_beging;
+    char *begg_stmt;
 
     prog = newof(0, parse_prog, 1, 0);
     if (!prog) {
@@ -487,7 +513,8 @@ parse_prog *parseProg(char *input, int isFile)
 	free (prog);
 	return 0;
     }
-
+    
+    begg_stmt = 0;
     more = 1;
     while (more) {
 	switch (parseCase(str, &guard, &gline, &action, &line)) {
@@ -496,8 +523,19 @@ parse_prog *parseProg(char *input, int isFile)
 		       &(prog->l_begin));
 	    break;
 	case BeginG:
-	    bindAction(BeginG, action, line, &(prog->begg_stmt),
-		       &(prog->l_beging));
+	    if (action && (begg_stmt || nodelist || edgelist)) { /* non-empty block */
+		blockl = addBlock(blockl, begg_stmt, l_beging, 
+		    n_nstmts, nodelist, n_estmts, edgelist);
+	 	if (!blocklist)
+		    blocklist = blockl;
+		n_blocks++;
+
+		/* reset values */
+		n_nstmts = n_estmts = 0;
+		edgel = nodel = edgelist = nodelist = 0;
+		begg_stmt = 0;
+	    }
+	    bindAction(BeginG, action, line, &begg_stmt, &l_beging);
 	    break;
 	case End:
 	    bindAction(End, action, line, &(prog->end_stmt),
@@ -526,10 +564,16 @@ parse_prog *parseProg(char *input, int isFile)
 	}
     }
 
-    prog->node_stmts = nodelist;
-    prog->edge_stmts = edgelist;
-    prog->n_nstmts = n_nstmts;
-    prog->n_estmts = n_estmts;
+    if (begg_stmt || nodelist || edgelist) { /* non-empty block */
+	blockl = addBlock(blockl, begg_stmt, l_beging, 
+	    n_nstmts, nodelist, n_estmts, edgelist);
+	if (!blocklist)
+	    blocklist = blockl;
+	n_blocks++;
+    }
+
+    prog->n_blocks = n_blocks;
+    prog->blocks = blocklist;
 
     sfclose(str);
 
@@ -554,14 +598,25 @@ freeCaseList (case_info* ip)
     }
 }
 
+static void
+freeBlocks (parse_block* ip)
+{
+    parse_block* nxt;
+    while (ip) {
+	nxt = ip->next;
+	free (ip->begg_stmt);
+	freeCaseList (ip->node_stmts);
+	freeCaseList (ip->edge_stmts);
+	ip = nxt;
+    }
+}
+
 void 
 freeParseProg (parse_prog * prog)
 {
     if (!prog) return;
     free (prog->begin_stmt);
-    free (prog->begg_stmt);
-    freeCaseList (prog->node_stmts);
-    freeCaseList (prog->edge_stmts);
+    freeBlocks (prog->blocks);
     free (prog->endg_stmt);
     free (prog->end_stmt);
     free (prog);

@@ -32,19 +32,25 @@ extern "C" {
 	struct _case_info *next;
     } case_info;
 
-    typedef struct {
-	char *source;
-	int l_begin, l_beging, l_end, l_endg;
-	char *begin_stmt;
+    typedef struct _parse_block {
+	int l_beging;
 	char *begg_stmt;
 	int n_nstmts;
 	int n_estmts;
 	case_info *node_stmts;
 	case_info *edge_stmts;
+	struct _parse_block *next;
+    } parse_block; 
+
+    typedef struct {
+	char *source;
+	int l_begin, l_end, l_endg;
+	char *begin_stmt;
+	int n_blocks;
+	parse_block *blocks;
 	char *endg_stmt;
 	char *end_stmt;
     } parse_prog;
-
 
     extern parse_prog *parseProg(char *, int);
     extern void freeParseProg (parse_prog *);

@@ -2203,6 +2203,59 @@ static case_stmt *mkStmts(Expr_t * prog, char *src, case_info * sp,
     return cs;
 }
 
+/* mkBlocks:
+ */
+static int mkBlock(comp_block* bp, Expr_t * prog, char *src, parse_block *inp, Sfio_t* tmps, int i)
+{
+    int rv = 0;
+
+    codePhase = 1;
+    if (inp->begg_stmt) {
+	sfprintf(tmps, "_begin_g_%d", i);
+	symbols[0].type = T_graph;
+	tchk[V_this][1] = Y(G);
+	bp->begg_stmt = compile(prog, src, inp->begg_stmt,
+			       inp->l_beging, sfstruse(tmps), 0, VOIDTYPE);
+	if (getErrorErrors())
+	    goto finishBlk;
+	rv |= BEGG;
+    }
+
+    codePhase = 2;
+    if (inp->node_stmts) {
+	symbols[0].type = T_node;
+	tchk[V_this][1] = Y(V);
+	bp->n_nstmts = inp->n_nstmts;
+	bp->node_stmts = mkStmts(prog, src, inp->node_stmts,
+				inp->n_nstmts, "_nd", tmps);
+	if (getErrorErrors())
+	    goto finishBlk;
+	bp->walks |= WALKSG;
+    }
+
+    codePhase = 3;
+    if (inp->edge_stmts) {
+	symbols[0].type = T_edge;
+	tchk[V_this][1] = Y(E);
+	bp->n_estmts = inp->n_estmts;
+	bp->edge_stmts = mkStmts(prog, src, inp->edge_stmts,
+				inp->n_estmts, "_eg", tmps);
+	if (getErrorErrors())
+	    goto finishBlk;
+	bp->walks |= WALKSG;
+    }
+
+    finishBlk:
+    if (getErrorErrors()) {
+	free (bp->node_stmts);
+	free (bp->edge_stmts);
+	bp->node_stmts = 0;
+	bp->edge_stmts = 0;
+    }
+
+    return (rv | bp->walks);
+}
+
 /* doFlags:
  * Convert command line flags to actions in END_G.
  */
@@ -2224,6 +2277,7 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
     comp_prog *p;
     Sfio_t *tmps = state->tmp;
     char *endg_sfx = 0;
+    int i, useflags = 0;
 
     /* Make sure we have enough bits for types */
     assert(BITS_PER_BYTE * sizeof(tctype) >= (1 << TBITS));
@@ -2256,37 +2310,23 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
 	    goto finish;
     }
 
-    codePhase = 1;
-    if (inp->begg_stmt) {
-	symbols[0].type = T_graph;
-	tchk[V_this][1] = Y(G);
-	p->begg_stmt = compile(p->prog, inp->source, inp->begg_stmt,
-			       inp->l_beging, "_begin_g", 0, VOIDTYPE);
-	if (getErrorErrors())
-	    goto finish;
-    }
+    if (inp->blocks) {
+	comp_block* bp;
+	parse_block* ibp = inp->blocks;
 
-    codePhase = 2;
-    if (inp->node_stmts) {
-	symbols[0].type = T_node;
-	tchk[V_this][1] = Y(V);
-	p->n_nstmts = inp->n_nstmts;
-	p->node_stmts = mkStmts(p->prog, inp->source, inp->node_stmts,
-				inp->n_nstmts, "_nd", tmps);
-	if (getErrorErrors())
-	    goto finish;
-    }
+	p->blocks = bp = newof(0, comp_block, inp->n_blocks, 0);
 
-    codePhase = 3;
-    if (inp->edge_stmts) {
-	symbols[0].type = T_edge;
-	tchk[V_this][1] = Y(E);
-	p->n_estmts = inp->n_estmts;
-	p->edge_stmts = mkStmts(p->prog, inp->source, inp->edge_stmts,
-				inp->n_estmts, "_eg", tmps);
-	if (getErrorErrors())
-	    goto finish;
+	for (i = 0; i < inp->n_blocks; bp++, i++) {
+	    useflags |= mkBlock (bp, p->prog, inp->source, ibp, tmps, i);
+	    if (getErrorErrors())
+		goto finish;
+	    else {
+		ibp = ibp->next;
+		p->n_blocks++;
+	    }
+	}
     }
+    p->flags = useflags;
 
     codePhase = 4;
     if (inp->endg_stmt || endg_sfx) {
@@ -2308,6 +2348,9 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
     }
     setErrorLine (0); /* execution errors have no line numbers */
 
+    if (p->end_stmt)
+	p->flags |= ENDG;
+
     finish:
     if (getErrorErrors()) {
 	freeCompileProg (p);
@@ -2320,20 +2363,27 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
 void
 freeCompileProg (comp_prog *p)
 {
+    comp_block* bp;
+    int i;
+
     if (!p) return;
 
     exclose (p->prog, 1);
-    free (p->node_stmts);
-    free (p->edge_stmts);
+    for (i = 0; i < p->n_blocks; i++) {
+	bp = p->blocks + i;
+	free (bp->node_stmts);
+	free (bp->edge_stmts);
+    }
+    free (p->blocks);
     free (p);
 }
 
 /* walksGraph;
- * Returns true if program actually has node or edge statements.
+ * Returns true if block actually has node or edge statements.
  */
-int walksGraph(comp_prog * p)
+int walksGraph(comp_block * p)
 {
-    return (p->n_nstmts || p->n_estmts);
+    return (p->walks);
 }
 
 /* usesGraph;
@@ -2342,7 +2392,7 @@ int walksGraph(comp_prog * p)
  */
 int usesGraph(comp_prog * p)
 {
-    return (walksGraph(p) || p->begg_stmt || p->endg_stmt);
+    return (p->flags);
 }
 
 void ptchk(void)

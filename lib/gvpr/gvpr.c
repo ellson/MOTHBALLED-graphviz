@@ -419,7 +419,7 @@ static options* scanArgs(int argc, char **argv, gvpropts* uopts)
     return opts;
 }
 
-static void evalEdge(Gpr_t * state, comp_prog * xprog, Agedge_t * e)
+static void evalEdge(Gpr_t * state, Expr_t* prog, comp_block * xprog, Agedge_t * e)
 {
     int i;
     case_stmt *cs;
@@ -429,19 +429,19 @@ static void evalEdge(Gpr_t * state, comp_prog * xprog, Agedge_t * e)
     for (i = 0; i < xprog->n_estmts; i++) {
 	cs = xprog->edge_stmts + i;
 	if (cs->guard)
-	    okay = (exeval(xprog->prog, cs->guard, state)).integer;
+	    okay = (exeval(prog, cs->guard, state)).integer;
 	else
 	    okay = 1;
 	if (okay) {
 	    if (cs->action)
-		exeval(xprog->prog, cs->action, state);
+		exeval(prog, cs->action, state);
 	    else
 		agsubedge(state->target, e, TRUE);
 	}
     }
 }
 
-static void evalNode(Gpr_t * state, comp_prog * xprog, Agnode_t * n)
+static void evalNode(Gpr_t * state, Expr_t* prog, comp_block * xprog, Agnode_t * n)
 {
     int i;
     case_stmt *cs;
@@ -451,12 +451,12 @@ static void evalNode(Gpr_t * state, comp_prog * xprog, Agnode_t * n)
     for (i = 0; i < xprog->n_nstmts; i++) {
 	cs = xprog->node_stmts + i;
 	if (cs->guard)
-	    okay = (exeval(xprog->prog, cs->guard, state)).integer;
+	    okay = (exeval(prog, cs->guard, state)).integer;
 	else
 	    okay = 1;
 	if (okay) {
 	    if (cs->action)
-		exeval(xprog->prog, cs->action, state);
+		exeval(prog, cs->action, state);
 	    else
 		agsubnode(state->target, n, TRUE);
 	}
@@ -505,7 +505,7 @@ static trav_fns DFSfns = { agfstedge, agnxtedge, 1, 0 };
 static trav_fns FWDfns = { agfstout, (nxttedgefn_t) agnxtout, 0, 0 };
 static trav_fns REVfns = { agfstin, (nxttedgefn_t) agnxtin, 0, 0 };
 
-static void travBFS(Gpr_t * state, comp_prog * xprog)
+static void travBFS(Gpr_t * state, Expr_t* prog, comp_block * xprog)
 {
     nodestream nodes;
     queue *q;
@@ -527,13 +527,13 @@ static void travBFS(Gpr_t * state, comp_prog * xprog)
 	    nd = nData(n);
 	    MARK(nd);
 	    POP(nd);
-	    evalNode(state, xprog, n);
+	    evalNode(state, prog, xprog, n);
 	    for (cure = agfstedge(g, n); cure;
 		 cure = agnxtedge(g, cure, n)) {
 		nd = nData(cure->node);
 		if (MARKED(nd))
 		    continue;
-		evalEdge(state, xprog, cure);
+		evalEdge(state, prog, xprog, cure);
 		if (!ONSTACK(nd)) {
 		    push(q, cure->node);
 		    PUSH(nd);
@@ -544,7 +544,7 @@ static void travBFS(Gpr_t * state, comp_prog * xprog)
     freeQ(q);
 }
 
-static void travDFS(Gpr_t * state, comp_prog * xprog, trav_fns * fns)
+static void travDFS(Gpr_t * state, Expr_t* prog, comp_block * xprog, trav_fns * fns)
 {
     Agnode_t *n;
     queue *stk;
@@ -571,7 +571,7 @@ static void travDFS(Gpr_t * state, comp_prog * xprog, trav_fns * fns)
 	MARK(nd);
 	PUSH(nd);
 	if (fns->visit & PRE_VISIT)
-	    evalNode(state, xprog, n);
+	    evalNode(state, prog, xprog, n);
 	more = 1;
 	while (more) {
 	    if (cure)
@@ -589,23 +589,23 @@ static void travDFS(Gpr_t * state, comp_prog * xprog, trav_fns * fns)
 		     */
 		    if (fns->undirected) {
 			if (ONSTACK(nd))
-			    evalEdge(state, xprog, cure);
+			    evalEdge(state, prog, xprog, cure);
 		    } else
-			evalEdge(state, xprog, cure);
+			evalEdge(state, prog, xprog, cure);
 		} else {
-		    evalEdge(state, xprog, cure);
+		    evalEdge(state, prog, xprog, cure);
 		    push(stk, entry);
 		    entry = cure;
 		    curn = cure->node;
 		    cure = 0;
 		    if (fns->visit & PRE_VISIT)
-			evalNode(state, xprog, curn);
+			evalNode(state, prog, xprog, curn);
 		    MARK(nd);
 		    PUSH(nd);
 		}
 	    } else {
 		if (fns->visit & POST_VISIT)
-		    evalNode(state, xprog, curn);
+		    evalNode(state, prog, xprog, curn);
 		nd = nData(curn);
 		POP(nd);
 		cure = entry;
@@ -620,37 +620,37 @@ static void travDFS(Gpr_t * state, comp_prog * xprog, trav_fns * fns)
     freeQ(stk);
 }
 
-static void travNodes(Gpr_t * state, comp_prog * xprog)
+static void travNodes(Gpr_t * state, Expr_t* prog, comp_block * xprog)
 {
     Agnode_t *n;
     Agraph_t *g = state->curgraph;
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	evalNode(state, xprog, n);
+	evalNode(state, prog, xprog, n);
     }
 }
 
-static void travEdges(Gpr_t * state, comp_prog * xprog)
+static void travEdges(Gpr_t * state, Expr_t* prog, comp_block * xprog)
 {
     Agnode_t *n;
     Agedge_t *e;
     Agraph_t *g = state->curgraph;
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    evalEdge(state, xprog, e);
+	    evalEdge(state, prog, xprog, e);
 	}
     }
 }
 
-static void travFlat(Gpr_t * state, comp_prog * xprog)
+static void travFlat(Gpr_t * state, Expr_t* prog, comp_block * xprog)
 {
     Agnode_t *n;
     Agedge_t *e;
     Agraph_t *g = state->curgraph;
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	evalNode(state, xprog, n);
+	evalNode(state, prog, xprog, n);
 	if (xprog->n_estmts > 0) {
 	    for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-		evalEdge(state, xprog, e);
+		evalEdge(state, prog, xprog, e);
 	    }
 	}
     }
@@ -658,70 +658,72 @@ static void travFlat(Gpr_t * state, comp_prog * xprog)
 
 /* traverse:
  */
-static void traverse(Gpr_t * state, comp_prog * xprog)
+static void traverse(Gpr_t * state, Expr_t* prog, comp_block * bp)
 {
     char *target;
 
-    if (state->name_used) {
-	sfprintf(state->tmp, "%s%d", state->tgtname, state->name_used);
-	target = sfstruse(state->tmp);
-    } else
-	target = state->tgtname;
-    state->name_used++;
-    state->target = openSubg(state->curgraph, target);
+    if (!state->target) {
+	if (state->name_used) {
+	    sfprintf(state->tmp, "%s%d", state->tgtname, state->name_used);
+	    target = sfstruse(state->tmp);
+	} else
+	    target = state->tgtname;
+	state->name_used++;
+	state->target = openSubg(state->curgraph, target);
+    }
     if (!state->outgraph)
 	state->outgraph = state->target;
 
     switch (state->tvt) {
     case TV_flat:
-	travFlat(state, xprog);
+	travFlat(state, prog, bp);
 	break;
     case TV_bfs:
-	travBFS(state, xprog);
+	travBFS(state, prog, bp);
 	break;
     case TV_dfs:
 	DFSfns.visit = PRE_VISIT;
-	travDFS(state, xprog, &DFSfns);
+	travDFS(state, prog, bp, &DFSfns);
 	break;
     case TV_fwd:
 	FWDfns.visit = PRE_VISIT;
-	travDFS(state, xprog, &FWDfns);
+	travDFS(state, prog, bp, &FWDfns);
 	break;
     case TV_rev:
 	REVfns.visit = PRE_VISIT;
-	travDFS(state, xprog, &REVfns);
+	travDFS(state, prog, bp, &REVfns);
 	break;
     case TV_postdfs:
 	DFSfns.visit = POST_VISIT;
-	travDFS(state, xprog, &DFSfns);
+	travDFS(state, prog, bp, &DFSfns);
 	break;
     case TV_postfwd:
 	FWDfns.visit = POST_VISIT;
-	travDFS(state, xprog, &FWDfns);
+	travDFS(state, prog, bp, &FWDfns);
 	break;
     case TV_postrev:
 	REVfns.visit = POST_VISIT | PRE_VISIT;
-	travDFS(state, xprog, &REVfns);
+	travDFS(state, prog, bp, &REVfns);
 	break;
     case TV_prepostdfs:
 	DFSfns.visit = POST_VISIT | PRE_VISIT;
-	travDFS(state, xprog, &DFSfns);
+	travDFS(state, prog, bp, &DFSfns);
 	break;
     case TV_prepostfwd:
 	FWDfns.visit = POST_VISIT | PRE_VISIT;
-	travDFS(state, xprog, &FWDfns);
+	travDFS(state, prog, bp, &FWDfns);
 	break;
     case TV_prepostrev:
 	REVfns.visit = POST_VISIT;
-	travDFS(state, xprog, &REVfns);
+	travDFS(state, prog, bp, &REVfns);
 	break;
     case TV_ne:
-	travNodes(state, xprog);
-	travEdges(state, xprog);
+	travNodes(state, prog, bp);
+	travEdges(state, prog, bp);
 	break;
     case TV_en:
-	travEdges(state, xprog);
-	travNodes(state, xprog);
+	travEdges(state, prog, bp);
+	travNodes(state, prog, bp);
 	break;
     }
 }
@@ -833,7 +835,7 @@ int gvpr (int argc, char *argv[], gvpropts * uopts)
     gpr_info info;
     int rv = 0;
     options* opts = 0;
-    int incoreGraphs;
+    int i, incoreGraphs;
 
     setErrorErrors (0);
     ingDisc.dflt = sfstdin;
@@ -909,17 +911,21 @@ int gvpr (int argc, char *argv[], gvpropts * uopts)
 	while ((state->curgraph = nextGraph(ing))) {
 	    state->infname = fileName(ing);
 
-	    /* begin graph */
-	    if (incoreGraphs && (opts->compflags & CLONE))
-		state->curgraph = clone (0, (Agobj_t*)(state->curgraph));
-	    state->curobj = (Agobj_t *) state->curgraph;
-	    state->tvroot = 0;
-	    if (xprog->begg_stmt)
-		exeval(xprog->prog, xprog->begg_stmt, state);
+	    for (i = 0; i < xprog->n_blocks; i++) {
+		comp_block* bp = xprog->blocks + i;
 
-	    /* walk graph */
-	    if (walksGraph(xprog))
-		traverse(state, xprog);
+		/* begin graph */
+		if (incoreGraphs && (opts->compflags & CLONE))
+		    state->curgraph = (Agraph_t*)clone (0, (Agobj_t*)(state->curgraph));
+		state->curobj = (Agobj_t *) state->curgraph;
+		state->tvroot = 0;
+		if (bp->begg_stmt)
+		    exeval(xprog->prog, bp->begg_stmt, state);
+
+		/* walk graph */
+		if (walksGraph(bp))
+		    traverse(state, xprog->prog, bp);
+	    }
 
 	    /* end graph */
 	    state->curobj = (Agobj_t *) state->curgraph;
