@@ -192,6 +192,8 @@ static int parseArgs(char *s, int argc, char ***argv)
  * If arg contains '/', return arg.
  * Else search directories in GPRPATH for arg.
  * Return NULL on error.
+ * 
+ * FIX - use pathinclude/pathfind
  */
 static char *resolve(char *arg)
 {
@@ -821,8 +823,12 @@ gverrorf (Expr_t *handle, Exdisc_t *discipline, int level, ...)
  * main loop for gvpr.
  * Return 0 on success; non-zero on error.
  *
- * FIX:
+ * FIX/TODO:
  *  - close non-source/non-output graphs
+ *  - flag to clone target graph?
+ *  - remove assignment in boolean warning if wrapped in ()
+ *  - supply input edge during traversal
+ *  - do automatic cast for array indices if type is known
  */
 int gvpr (int argc, char *argv[], gvpropts * uopts)
 {
