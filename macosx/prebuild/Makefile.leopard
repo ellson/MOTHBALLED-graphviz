@@ -19,7 +19,11 @@ GD_URL=http://www.libgd.org/releases/gd-2.0.36RC1.tar.gz
 PIXMAN_URL=http://cairographics.org/releases/pixman-0.15.4.tar.gz
 CAIRO_URL=http://cairographics.org/releases/cairo-1.8.8.tar.gz
 GETTEXT_URL=ftp://mirrors.kernel.org/gnu/gettext/gettext-0.17.tar.gz
-GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.21/glib-2.21.2.tar.gz
+
+# latest GLIB doesn't build
+#GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.21/glib-2.21.2.tar.gz
+GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.20/glib-2.20.1.tar.gz
+
 PANGO_URL=http://ftp.gnome.org/pub/GNOME/sources/pango/1.24/pango-1.24.4.tar.gz
 GTS_URL=http://downloads.sourceforge.net/gts/gts-0.7.6.tar.gz
 GTK_URL=http://ftp.gnome.org/pub/gnome/sources/gtk+/2.17/gtk+-2.17.2.tar.gz
@@ -505,7 +509,7 @@ $(CAIRO_DIR)/Makefile: $(PREFIX)/lib/$(PIXMAN) $(PREFIX)/lib/$(FONTCONFIG) $(PRE
 	@echo
 	@echo CONFIGURING CAIRO...
 	@echo
-	cd $(CAIRO_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG) --disable-quartz
+	cd $(CAIRO_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG)
 	
 $(CAIRO_DIR)/configure: | $(CAIRO_DIR).tar.gz
 	@echo

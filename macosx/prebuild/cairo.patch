@@ -1,36 +1,6 @@
-diff -ru cairo-1.6.4/src/cairo-quartz-font.c cairo-1.6.4.patched/src/cairo-quartz-font.c
---- cairo-1.6.4/src/cairo-quartz-font.c	2008-04-08 06:30:31.000000000 +0800
-+++ cairo-1.6.4.patched/src/cairo-quartz-font.c	2008-04-23 22:36:35.000000000 +0800
-@@ -775,6 +775,8 @@
-  *
-  * Since: 1.6
-  **/
-+
-+#if !__LP64__
- cairo_font_face_t *
- cairo_quartz_font_face_create_for_atsu_font_id (ATSUFontID font_id)
- {
-@@ -792,3 +794,4 @@
- {
-     return cairo_quartz_font_face_create_for_atsu_font_id (font_id);
- }
-+#endif
-diff -ru cairo-1.6.4/src/cairo-quartz.h cairo-1.6.4.patched/src/cairo-quartz.h
---- cairo-1.6.4/src/cairo-quartz.h	2008-04-08 06:30:31.000000000 +0800
-+++ cairo-1.6.4.patched/src/cairo-quartz.h	2008-04-23 22:37:18.000000000 +0800
-@@ -66,8 +66,10 @@
- cairo_public cairo_font_face_t *
- cairo_quartz_font_face_create_for_cgfont (CGFontRef font);
- 
-+#if !__LP64__
- cairo_public cairo_font_face_t *
- cairo_quartz_font_face_create_for_atsu_font_id (ATSUFontID font_id);
-+#endif
- 
- #endif /* CAIRO_HAS_QUARTZ_FONT */
- 
---- cairo-1.6.4/src/cairo.pc.in	2007-04-28 01:02:34.000000000 +0800
-+++ cairo-1.6.4.patched/src/cairo.pc.in	2008-05-05 17:21:57.000000000 +0800
+diff -rub cairo-1.8.8.orig/src/cairo.pc.in cairo-1.8.8/src/cairo.pc.in
+--- cairo-1.8.8.orig/src/cairo.pc.in	2008-08-31 18:32:22.000000000 -0400
++++ cairo-1.8.8/src/cairo.pc.in	2009-07-02 13:39:41.000000000 -0400
 @@ -7,7 +7,7 @@
  Description: Multi-platform 2D graphics library
  Version: @VERSION@
