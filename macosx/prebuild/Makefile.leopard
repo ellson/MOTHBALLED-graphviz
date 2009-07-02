@@ -147,7 +147,7 @@ $(PREFIX)/lib/$(JPEG): $(JPEG_DIR)/$(JPEG)
 	@echo
 	@echo INSTALLING JPEG...
 	@echo
-	$(MAKE) -C $(JPEG_DIR) install install-lib install-headers
+	$(MAKE) -C $(JPEG_DIR) install
 
 $(JPEG_DIR)/$(JPEG): $(JPEG_DIR)/Makefile
 	@echo
@@ -167,7 +167,7 @@ $(JPEG_DIR)/configure: | $(JPEG_DIR).tar.gz
 	@echo UNTARRING JPEG...
 	@echo
 	$(TAR) xzf $| 
-	ln -s jpeg-6b $(JPEG_DIR)
+	ln -s jpeg-7 $(JPEG_DIR)
 		
 $(JPEG_DIR).tar.gz:
 	@echo
