@@ -11,21 +11,21 @@ ARCHS=-arch ppc -arch i386 -arch ppc64 -arch x86_64
 # package URL
 
 PKGCONFIG_URL=http://pkgconfig.freedesktop.org/releases/pkg-config-0.23.tar.gz
-PNG_URL=http://downloads.sourceforge.net/libpng/libpng-1.2.35.tar.gz
+PNG_URL=http://downloads.sourceforge.net/libpng/libpng-1.2.37.tar.gz
 FREETYPE_URL=http://download.savannah.gnu.org/releases/freetype/freetype-2.3.9.tar.gz
-FONTCONFIG_URL=http://fontconfig.org/release/fontconfig-2.6.0.tar.gz
+FONTCONFIG_URL=http://fontconfig.org/release/fontconfig-2.7.0.tar.gz
 XFT_URL=http://xorg.freedesktop.org/releases/individual/lib/libXft-2.1.8.2.tar.gz
 GD_URL=http://www.libgd.org/releases/gd-2.0.36RC1.tar.gz
-PIXMAN_URL=http://cairographics.org/releases/pixman-0.15.2.tar.gz
-CAIRO_URL=http://cairographics.org/releases/cairo-1.8.6.tar.gz
+PIXMAN_URL=http://cairographics.org/releases/pixman-0.15.4.tar.gz
+CAIRO_URL=http://cairographics.org/releases/cairo-1.8.8.tar.gz
 GETTEXT_URL=ftp://mirrors.kernel.org/gnu/gettext/gettext-0.17.tar.gz
-GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.20/glib-2.20.1.tar.gz
-PANGO_URL=http://ftp.gnome.org/pub/GNOME/sources/pango/1.24/pango-1.24.1.tar.gz
+GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.21/glib-2.21.2.tar.gz
+PANGO_URL=http://ftp.gnome.org/pub/GNOME/sources/pango/1.24/pango-1.24.4.tar.gz
 GTS_URL=http://downloads.sourceforge.net/gts/gts-0.7.6.tar.gz
-GTK_URL=http://ftp.gnome.org/pub/gnome/sources/gtk+/2.16/gtk+-2.16.1.tar.gz
+GTK_URL=http://ftp.gnome.org/pub/gnome/sources/gtk+/2.17/gtk+-2.17.2.tar.gz
 ATK_URL=http://ftp.acc.umu.se/pub/gnome/sources/atk/1.26/atk-1.26.0.tar.gz
 TIFF_URL=ftp://ftp.remotesensing.org/pub/libtiff/tiff-4.0.0beta3.tar.gz
-JPEG_URL=http://www.ijg.org/files/jpegsrc.v6b.tar.gz
+JPEG_URL=http://www.ijg.org/files/jpegsrc.v7.tar.gz
 
 # libraries
 
