@@ -12,7 +12,7 @@ ARCHS=-arch ppc -arch i386 -arch ppc64 -arch x86_64
 
 PKGCONFIG_URL=http://pkgconfig.freedesktop.org/releases/pkg-config-0.23.tar.gz
 PNG_URL=http://downloads.sourceforge.net/libpng/libpng-1.2.37.tar.gz
-FREETYPE_URL=http://download.savannah.gnu.org/releases/freetype/freetype-2.3.9.tar.gz
+FREETYPE_URL=http://download.savannah.gnu.org/releases-noredirect/freetype/freetype-2.3.9.tar.gz
 FONTCONFIG_URL=http://fontconfig.org/release/fontconfig-2.7.0.tar.gz
 XFT_URL=http://xorg.freedesktop.org/releases/individual/lib/libXft-2.1.8.2.tar.gz
 GD_URL=http://www.libgd.org/releases/gd-2.0.36RC1.tar.gz
