@@ -2290,7 +2290,7 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
     }
 
     if (flags) {
-	endg_sfx = doFlags(flags, tmps);
+	endg_sfx = strdup (doFlags(flags, tmps));
 	if (*endg_sfx == '\0')
 	    endg_sfx = 0;
     }
@@ -2356,6 +2356,7 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
 	freeCompileProg (p);
 	p = 0;
     }
+    free (endg_sfx);
 
     return p;
 }
