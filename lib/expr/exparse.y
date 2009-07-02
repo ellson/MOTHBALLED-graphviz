@@ -78,9 +78,11 @@
 %token	ELSE
 %token	EXIT
 %token	FOR
+%token	FORR
 %token	FUNCTION
 %token	GSUB
 %token	ITERATE
+%token	ITERATER
 %token	ID
 %token	IF
 %token	LABEL
@@ -96,12 +98,14 @@
 %token	RAND
 %token	RETURN
 %token	SCANF
+%token	SPLIT
 %token	SPRINTF
 %token	SRAND
 %token	SSCANF
 %token	SUB
 %token	SUBSTR
 %token	SWITCH
+%token	UNSET
 %token	WHILE
 
 %token	F2I
@@ -132,11 +136,11 @@
 %binary	<op>	EQ	NE
 %binary	<op>	'<'	'>'	LE	GE
 %left	<op>	LS	RS
-%left	<op>	'+'	'-'
+%left	<op>	'+'	'-'     IN
 %left	<op>	'*'	'/'	'%'
-%right	<op>	'!'	'~'	UNARY
+%right	<op>	'!'	'~'	'#'	UNARY
 %right	<op>	INC	DEC
-%right	<op>	CAST
+%right	<op>	CAST    
 %left	<op>	'('
 
 %type <expr>		statement	statement_list	arg_list
@@ -147,13 +151,14 @@
 %type <expr>		formals		formal_list	formal_item
 %type <reference>	members
 %type <id>		ID		LABEL		NAME
-%type <id>		CONSTANT	ARRAY	FUNCTION	DECLARE
-%type <id>		EXIT		PRINT	PRINTF		QUERY
+%type <id>		CONSTANT	ARRAY		FUNCTION	DECLARE
+%type <id>		EXIT		PRINT		PRINTF		QUERY
 %type <id>		RAND		SRAND
-%type <id>		SPRINTF		GSUB	SUB		SUBSTR	PROCEDURE	name	dcl_name
-%type <id>		IF		WHILE		FOR
-%type <id>		BREAK		CONTINUE	print member
-%type <id>		RETURN		DYNAMIC		SWITCH
+%type <id>		SPRINTF		GSUB		SUB		SPLIT
+%type <id>		SUBSTR		PROCEDURE	name		dcl_name
+%type <id>		IF		WHILE		FOR		FORR
+%type <id>		BREAK		CONTINUE	print		member
+%type <id>		RETURN		DYNAMIC		SWITCH		UNSET
 %type <id>		SCANF		SSCANF		scan
 %type <floating>	FLOATING
 %type <integer>		INTEGER		UNSIGNED	array
@@ -297,6 +302,38 @@ statement	:	'{' statement_list '}'
 			$$ = exnewnode(expr.program, $1->index, 1, INTEGER, $5, exnewnode(expr.program, ';', 1, 0, $7, $9));
 			if ($3)
 				$$ = exnewnode(expr.program, ';', 1, INTEGER, $3, $$);
+		}
+		|	FORR '(' variable ')' statement
+		{
+			$$ = exnewnode(expr.program, ITERATER, 0, INTEGER, NiL, NiL);
+			$$->data.generate.array = $3;
+			if (!$3->data.variable.index || $3->data.variable.index->op != DYNAMIC)
+				exerror("simple index variable expected");
+			$$->data.generate.index = $3->data.variable.index->data.variable.symbol;
+			if ($3->op == ID && $$->data.generate.index->type != INTEGER)
+				exerror("integer index variable expected");
+			exfreenode(expr.program, $3->data.variable.index);
+			$3->data.variable.index = 0;
+			$$->data.generate.statement = $5;
+		}
+		|	UNSET '(' DYNAMIC ')'
+		{
+			if ($3->local.pointer == 0)
+              			exerror("cannot apply unset to non-array %s", $3->name);
+			$$ = exnewnode(expr.program, UNSET, 0, INTEGER, NiL, NiL);
+			$$->data.variable.symbol = $3;
+			$$->data.variable.index = NiL;
+		}
+		|	UNSET '(' DYNAMIC ',' expr  ')'
+		{
+			if ($3->local.pointer == 0)
+              			exerror("cannot apply unset to non-array %s", $3->name);
+			if (($3->index_type > 0) && ($5->type != $3->index_type))
+            		    exerror("%s indices must have type %s, not %s", 
+				$3->name, extypename(expr.program, $3->index_type),extypename(expr.program, $5->type));
+			$$ = exnewnode(expr.program, UNSET, 0, INTEGER, NiL, NiL);
+			$$->data.variable.symbol = $3;
+			$$->data.variable.index = $5;
 		}
 		|	WHILE '(' expr ')' statement
 		{
@@ -722,6 +759,13 @@ expr		:	'(' expr ')'
 				checkBinary(expr.program, $2, $$, 0);
 			}
 		}
+		|	'#' DYNAMIC
+		{
+			if ($2->local.pointer == 0)
+              			exerror("cannot apply '#' operator to non-array %s", $2->name);
+			$$ = exnewnode(expr.program, '#', 0, INTEGER, NiL, NiL);
+			$$->data.variable.symbol = $2;
+		}
 		|	'~' expr
 		{
 			goto iunary;
@@ -757,6 +801,14 @@ expr		:	'(' expr ')'
 		|	SUBSTR '(' args ')'
 		{
 			$$ = exnewsubstr (expr.program, $3);
+		}
+		|	SPLIT '(' expr ',' DYNAMIC ')'
+		{
+			$$ = exnewsplit (expr.program, $5, $3, NiL);
+		}
+		|	SPLIT '(' expr ',' DYNAMIC ',' expr ')'
+		{
+			$$ = exnewsplit (expr.program, $5, $3, $7);
 		}
 		|	EXIT '(' expr ')'
 		{
@@ -885,6 +937,17 @@ expr		:	'(' expr ')'
 				exerror("++ and -- invalid for string variables");
 			$$ = exnewnode(expr.program, $2, 0, $1->type, $1, NiL);
 			$$->subop = POS;
+		}
+		|	expr IN DYNAMIC
+		{
+			if ($3->local.pointer == 0)
+              			exerror("cannot apply IN to non-array %s", $3->name);
+			if (($3->index_type > 0) && ($1->type != $3->index_type))
+            		    exerror("%s indices must have type %s, not %s", 
+				$3->name, extypename(expr.program, $3->index_type),extypename(expr.program, $1->type));
+			$$ = exnewnode(expr.program, IN, 0, INTEGER, NiL, NiL);
+			$$->data.variable.symbol = $3;
+			$$->data.variable.index = $1;
 		}
 		|	DEC variable
 		{

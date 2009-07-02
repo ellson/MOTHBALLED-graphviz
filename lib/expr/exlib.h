@@ -69,6 +69,12 @@ extern "C" {
 	}		generate;	/* associative array generator	*/ \
 	struct								   \
 	{								   \
+	Exid_t*		array;		/* array 			*/ \
+	Exnode_t*	string;		/* string 			*/ \
+	Exnode_t*	seps;		/* optional separators		*/ \
+	}		split;		/* string split	*/ \
+	struct								   \
+	{								   \
 	Exnode_t*	descriptor;	/* Expr_t.file index		*/ \
 	Print_t*	args;		/* compiler printf args		*/ \
 	}		print;		/* printf			*/ \

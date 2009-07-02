@@ -45,9 +45,11 @@ Exid_t exbuiltin[] = {
     EX_ID("else", ELSE, ELSE, 0, 0),
     EX_ID("exit", EXIT, EXIT, INTEGER, 0),
     EX_ID("for", FOR, FOR, 0, 0),
+    EX_ID("forr", FORR, FORR, 0, 0),
     EX_ID("float", DECLARE, FLOATING, FLOATING, 0),
     EX_ID("gsub", GSUB, GSUB, STRING, 0),
     EX_ID("if", IF, IF, 0, 0),
+    EX_ID("in", IN, IN, 0, 0),
     EX_ID("int", DECLARE, INTEGER, INTEGER, 0),
     EX_ID("long", DECLARE, INTEGER, INTEGER, 0),
     EX_ID("print", PRINT, PRINT, INTEGER, 0),
@@ -57,6 +59,7 @@ Exid_t exbuiltin[] = {
     EX_ID("return", RETURN, RETURN, 0, 0),
     EX_ID("scanf", SCANF, SCANF, INTEGER, 0),
     EX_ID("sscanf", SSCANF, SSCANF, INTEGER, 0),
+    EX_ID("split", SPLIT, SPLIT, INTEGER, 0),
     EX_ID("sprintf", SPRINTF, SPRINTF, STRING, 0),
     EX_ID("srand", SRAND, SRAND, INTEGER, 0),
     EX_ID("sub", SUB, SUB, STRING, 0),
@@ -64,6 +67,7 @@ Exid_t exbuiltin[] = {
     EX_ID("switch", SWITCH, SWITCH, 0, 0),
     EX_ID("unsigned", DECLARE, UNSIGNED, UNSIGNED, 0),
     EX_ID("void", DECLARE, VOIDTYPE, 0, 0),
+    EX_ID("unset", UNSET, UNSET, 0, 0),
     EX_ID("while", WHILE, WHILE, 0, 0),
     EX_ID({0}, 0, 0, 0, 0)
 

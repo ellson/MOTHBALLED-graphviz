@@ -32,6 +32,7 @@
 #include "exlib.h"
 #include "exop.h"
 #include <string.h>
+#include <assert.h>
 #include <time.h>
 #ifdef WIN32
 #include <stdlib.h>
@@ -72,6 +73,51 @@ static char *lexname(int op, int subop)
     else
 	sfsprintf(b, MAXNAME, "(%d)", op);
     return b;
+}
+
+/* evaldyn:
+ * Evaluate item from array given key.
+ * Returns 1 if item existed, zero otherwise
+ * 
+ */
+static int
+evaldyn (Expr_t * ex, register Exnode_t * expr, void *env, int delete)
+{
+    Exassoc_t *b;
+    Extype_t v;
+    char buf[32];
+    Extype_t key;
+    char *keyname;
+
+    v = eval(ex, expr->data.variable.index, env);
+    if (expr->data.variable.symbol->index_type == INTEGER) {
+	if (!(b = (Exassoc_t *) dtmatch((Dt_t *) expr->data.variable.
+		symbol->local.pointer, &v))) {
+	    return 0;
+	}
+    } 
+    else {
+	int type = expr->data.variable.index->type;
+	if (type != STRING) {
+		if (!BUILTIN(type)) {
+		    key = (*ex->disc->keyf) (ex, v, type, ex->disc);
+		} else
+		    key.integer = v.integer;
+		sfsprintf(buf, sizeof(buf), "0x%I*x", sizeof(v.integer),
+			  key.integer);
+		keyname = buf;
+	} else
+		keyname = v.string;
+	if (!(b = (Exassoc_t *) dtmatch((Dt_t *) expr->data.variable.
+		symbol->local.pointer, keyname))) {
+	    return 0;
+	}
+    }
+    if (delete) {
+	dtdelete ((Dt_t*)expr->data.variable.symbol->local.pointer, b);
+	free (b);    
+    }
+    return 1;
 }
 
 /*
@@ -606,6 +652,57 @@ replace(Sfio_t * s, char *base, register char *repl, int ng, int *sub)
 
 #define MCNT(s) (sizeof(s)/(2*sizeof(int)))
 
+/* exsplit:
+ * tokenize string and store in array
+ * return number of tokens
+ */
+Extype_t
+exsplit(Expr_t * ex, register Exnode_t * expr, void *env)
+{
+    Extype_t v;
+    char *str;
+    char *seps;
+    char *tok;
+    Exassoc_t* b;
+    size_t sz;
+    Sfio_t* fp = ex->tmp;
+    int cnt = 0;
+    Dt_t* arr = (Dt_t*)expr->data.split.array->local.pointer;
+
+    str = (eval(ex, expr->data.split.string, env)).string;
+    if (expr->data.split.seps)
+	seps = (eval(ex, expr->data.string.pat, env)).string;
+    else
+	seps = " \t\n";
+
+    v.integer = 0;
+    while (*str) {
+	sz = strspn (str, seps);
+	str += sz;
+	if (*str == '\0')
+	    break;
+	sz = strcspn (str, seps);
+	assert (sz);
+	sfwrite (fp, str, sz);
+	tok = vmstrdup(ex->vc, sfstruse(fp));
+
+	if (!(b = (Exassoc_t *) dtmatch(arr, &v))) {
+	    if (!(b = newof(0, Exassoc_t, 1, 0)))
+		exerror("out of space [assoc]");
+	    b->key = v;
+	    dtinsert(arr, b);
+	}
+	b->value.string = tok;
+
+	v.integer++;
+	str += sz;
+    }
+
+    v.integer = cnt;
+    return v;
+    
+}
+
 /* exsub:
  * return string after pattern substitution
  */
@@ -854,6 +951,8 @@ static Extype_t eval(Expr_t * ex, register Exnode_t * expr, void *env)
 	return r;
     case DYNAMIC:
 	return getdyn(ex, expr, env, &assoc);
+    case SPLIT:
+	return exsplit(ex, expr, env);
     case GSUB:
 	return exsub(ex, expr, env, 1);
     case SUB:
@@ -1007,6 +1106,65 @@ static Extype_t eval(Expr_t * ex, register Exnode_t * expr, void *env)
 		    break;
 		}
 	    }
+	}
+	return v;
+    case ITERATER:
+	v.integer = 0;
+	if (expr->data.generate.array->op == DYNAMIC) {
+	    n = expr->data.generate.index->type == STRING;
+	    for (assoc =
+		 (Exassoc_t *) dtlast((Dt_t *) expr->data.generate.array->
+				       data.variable.symbol->local.
+				       pointer); assoc;
+		 assoc =
+		 (Exassoc_t *) dtprev((Dt_t *) expr->data.generate.array->
+				      data.variable.symbol->local.pointer,
+				      assoc)) {
+		v.integer++;
+		if (n)
+		    expr->data.generate.index->value->data.constant.value.
+			string = assoc->name;
+		else
+		    expr->data.generate.index->value->data.constant.value =
+			assoc->key;
+		eval(ex, expr->data.generate.statement, env);
+		if (ex->loopcount > 0
+		    && (--ex->loopcount > 0 || ex->loopop != CONTINUE)) {
+		    v.integer = 0;
+		    break;
+		}
+	    }
+	} else {
+	    r = (*ex->disc->getf) (ex, expr,
+				   expr->data.generate.array->data.
+				   variable.symbol,
+				   expr->data.generate.array->data.
+				   variable.reference, env, 0, ex->disc);
+	    for (v.integer = r.integer-1; 0 <= v.integer; v.integer--) {
+		expr->data.generate.index->value->data.constant.value.
+		    integer = v.integer;
+		eval(ex, expr->data.generate.statement, env);
+		if (ex->loopcount > 0
+		    && (--ex->loopcount > 0 || ex->loopop != CONTINUE)) {
+		    v.integer = 0;
+		    break;
+		}
+	    }
+	}
+	return v;
+    case '#':
+	v.integer = dtsize ((Dt_t*)expr->data.variable.symbol->local.pointer);
+	return v;
+    case IN:
+	v.integer = evaldyn (ex, expr, env, 0);
+	return v;
+    case UNSET:
+	if (expr->data.variable.index) {
+	    v.integer = evaldyn (ex, expr, env, 1);
+	}
+	else {
+	    dtclear ((Dt_t*)expr->data.variable.symbol->local.pointer);
+	    v.integer = 0;
 	}
 	return v;
     case CALL:

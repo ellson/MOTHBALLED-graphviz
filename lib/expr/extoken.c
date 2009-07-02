@@ -174,11 +174,17 @@ static void trace(Expr_t * ex, int lev, char *op, int c)
     case FOR:
 	s = " for";
 	break;
+    case FORR:
+	s = " forr";
+	break;
     case GSUB:
 	s = " gsub";
 	break;
     case IF:
 	s = " if";
+	break;
+    case IN:
+	s = " in";
 	break;
     case PRAGMA:
 	s = " pragma";
@@ -198,6 +204,9 @@ static void trace(Expr_t * ex, int lev, char *op, int c)
     case RETURN:
 	s = " return";
 	break;
+    case SPLIT:
+	s = " split";
+	break;
     case SPRINTF:
 	s = " sprintf";
 	break;
@@ -212,6 +221,9 @@ static void trace(Expr_t * ex, int lev, char *op, int c)
 	break;
     case SWITCH:
 	s = " switch";
+	break;
+    case UNSET:
+	s = " unset";
 	break;
     case WHILE:
 	s = " while";

@@ -264,6 +264,10 @@ static void gen(Excc_t * cc, register Exnode_t * expr)
 	}
 	sfprintf(cc->ccdisc->text, ")");
 	return;
+    case IN:
+        gen(cc, expr->data.variable.index);
+	sfprintf(cc->ccdisc->text, " in %s", expr->data.variable.symbol->name);
+	return;
     case IF:
 	sfprintf(cc->ccdisc->text, "if (");
 	gen(cc, x);
@@ -276,7 +280,11 @@ static void gen(Excc_t * cc, register Exnode_t * expr)
 	sfprintf(cc->ccdisc->text, "}\n");
 	return;
     case FOR:
-	sfprintf(cc->ccdisc->text, "for (;");
+    case FORR:
+	if (expr->op == FOR)
+		sfprintf(cc->ccdisc->text, "for (;");
+	else
+		sfprintf(cc->ccdisc->text, "forr (;");
 	gen(cc, x);
 	sfprintf(cc->ccdisc->text, ");");
 	if (expr->data.operand.left) {
@@ -335,6 +343,16 @@ static void gen(Excc_t * cc, register Exnode_t * expr)
     case SCANF:
 	scan(cc, expr);
 	return;
+    case SPLIT:
+	sfprintf(cc->ccdisc->text, "split (");
+        gen(cc, expr->data.split.string);
+	sfprintf(cc->ccdisc->text, ", %s", expr->data.split.array->name);
+        if (expr->data.split.seps) {
+	  sfprintf(cc->ccdisc->text, ",");
+          gen(cc, expr->data.split.seps);
+        }
+	sfprintf(cc->ccdisc->text, ")");
+	return;
     case SWITCH:
 	t = x->type;
 	sfprintf(cc->ccdisc->text, "{ %s %stmp_%d = ", extype(t), cc->id,
@@ -391,6 +409,14 @@ static void gen(Excc_t * cc, register Exnode_t * expr)
 	}
 	sfprintf(cc->ccdisc->text, "}");
 	return;
+    case UNSET:
+	sfprintf(cc->ccdisc->text, "unset(%s", expr->data.variable.symbol->name);
+        if (expr->data.variable.index) {
+	  sfprintf(cc->ccdisc->text, ",");
+          gen(cc, expr->data.variable.index);
+        }
+	sfprintf(cc->ccdisc->text, ")");
+	return;
     case WHILE:
 	sfprintf(cc->ccdisc->text, "while (");
 	gen(cc, x);
@@ -398,6 +424,10 @@ static void gen(Excc_t * cc, register Exnode_t * expr)
 	if (expr->data.operand.right)
 	    gen(cc, expr->data.operand.right);
 	sfprintf(cc->ccdisc->text, "}");
+	return;
+    case '#':
+	sfprintf(cc->ccdisc->text, "# %s", 
+	    expr->data.variable.symbol->name);
 	return;
     case '=':
 	sfprintf(cc->ccdisc->text, "(%s%s=", x->data.variable.symbol->name,
@@ -410,6 +440,7 @@ static void gen(Excc_t * cc, register Exnode_t * expr)
 	    if (!(x = expr->data.operand.right))
 		switch (cc->lastop = expr->data.operand.left->op) {
 		case FOR:
+		case FORR:
 		case IF:
 		case PRINTF:
 		case PRINT:
@@ -428,6 +459,7 @@ static void gen(Excc_t * cc, register Exnode_t * expr)
 	    case ';':
 		continue;
 	    case FOR:
+	    case FORR:
 	    case IF:
 	    case PRINTF:
 	    case PRINT:

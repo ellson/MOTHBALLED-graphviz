@@ -104,7 +104,23 @@ extern "C" {
 		x->data.variable.symbol->local.pointer = 0;
 	    }
 	    break;
+	case '#':
+	    if (x->data.variable.symbol->local.pointer) {
+		dtclose((Dt_t *) x->data.variable.symbol->local.pointer);
+		x->data.variable.symbol->local.pointer = 0;
+	    }
+	    break;
+	case IN:
+	case UNSET:
+	    if (x->data.variable.index)
+		exfreenode(p, x->data.variable.index);
+	    if (x->data.variable.symbol->local.pointer) {
+		dtclose((Dt_t *) x->data.variable.symbol->local.pointer);
+		x->data.variable.symbol->local.pointer = 0;
+	    }
+	    break;
 	case ITERATE:
+	case ITERATER:
 	    if (x->data.generate.statement)
 		exfreenode(p, x->data.generate.statement);
 	    break;
@@ -115,7 +131,6 @@ extern "C" {
 		vmfree(p->vm, r);
 	    }
 	    if (x->data.variable.index)
-		exfreenode(p, x->data.variable.index);
 	    break;
 	case GSUB:
 	case SUB:
@@ -124,6 +139,15 @@ extern "C" {
 	    exfreenode(p, x->data.string.pat);
 	    if (x->data.string.repl)
 		exfreenode(p, x->data.string.repl);
+	    break;
+	case SPLIT:
+	    if (x->data.split.seps)
+		exfreenode(p, x->data.split.seps);
+	    exfreenode(p, x->data.split.string);
+	    if (x->data.split.array->local.pointer) {
+		dtclose((Dt_t *) x->data.split.array->local.pointer);
+		x->data.split.array->local.pointer = 0;
+	    }
 	    break;
 	case PRINT:
 	    exfreenode(p, x->data.operand.left);
@@ -169,6 +193,34 @@ extern "C" {
 	args->data.operand.left = args->data.operand.right = 0;
 	exfreenode(p, args);
 	return left;
+    }
+
+/* exnewsplit:
+ * Generate split node.
+ * Fourth argument is optional.
+ */
+    static Exnode_t *exnewsplit(Expr_t * p, Exid_t* dyn, Exnode_t * s, Exnode_t* seps) {
+	Exnode_t *ss = 0;
+
+	if (dyn->local.pointer == 0)
+              	exerror("cannot use non-array %s in split", dyn->name);
+	if ((dyn->index_type > 0) && (dyn->index_type != INTEGER))
+            exerror("in split, array %s must have integer index type, not %s", 
+		dyn->name, extypename(p, s->type));
+	if (dyn->type != STRING)
+            exerror("in split, array %s entries must have string type, not %s", 
+		dyn->name, extypename(p, s->type));
+	if (s->type != STRING)
+            exerror("first argument to split must have string type, not %s", 
+		extypename(p, s->type));
+	if (seps && (seps->type != STRING))
+            exerror("third argument to split must have string type, not %s", 
+		extypename(p, seps->type));
+	ss = exnewnode(p, SPLIT, 0, INTEGER, NiL, NiL);
+	ss->data.split.array = dyn;
+	ss->data.split.string = s;
+	ss->data.split.seps = seps;
+	return ss;
     }
 
 /* exnewsub:
