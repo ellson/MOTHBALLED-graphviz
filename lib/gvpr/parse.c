@@ -499,6 +499,7 @@ parse_prog *parseProg(char *input, int isFile)
     if (isFile) {
 	mode = "r";
 	prog->source = input;
+	
     } else {
 	mode = "rs";
 	prog->source = 0;	/* command line */

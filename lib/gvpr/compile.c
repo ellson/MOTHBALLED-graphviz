@@ -257,6 +257,14 @@ static Agobj_t *deref(Expr_t * pgm, Exnode_t * x, Exref_t * ref,
 	    return deref(pgm, x, ref->next, (Agobj_t *) state->target,
 			 state);
 	    break;
+	case V_travedge:
+	    return deref(pgm, x, ref->next, (Agobj_t *) state->tvedge,
+			 state);
+	    break;
+	case V_travroot:
+	    return deref(pgm, x, ref->next, (Agobj_t *) state->tvroot,
+			 state);
+	    break;
 	case M_head:
 	    if (!objp && !(objp = state->curobj)) {
 		exerror("Current object $ not defined");
@@ -1176,6 +1184,12 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		v.integer = agnedges(gp);
 	    }
 	    break;
+	case F_atoi:
+	    v.integer = atoi(args[0].string);
+	    break;
+	case F_atof:
+	    v.floating = atof(args[0].string);
+	    break;
 	case F_sqrt:
 	    v.floating = sqrt(args[0].floating);
 	    break;
@@ -1328,6 +1342,9 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	case F_tolower:
 	    v.string = toLower(pgm, args[0].string, state->tmp);
 	    break;
+	case F_colorx:
+	    v.string = colorx(pgm, args[0].string, args[1].string, state->tmp);
+	    break;
 	case F_toupper:
 	    v.string = toUpper(pgm, args[0].string, state->tmp);
 	    break;
@@ -1407,6 +1424,9 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    break;
 	case V_travroot:
 	    v.integer = PTR2INT(state->tvroot);
+	    break;
+	case V_travedge:
+	    v.integer = PTR2INT(state->tvedge);
 	    break;
 	}
 	return v;

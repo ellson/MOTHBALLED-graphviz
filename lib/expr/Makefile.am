@@ -47,7 +47,7 @@ $(libexpr_C_la_OBJECTS) $(libexpr_la_OBJECTS): \
 exop.h: exparse.h
 	echo "static const char* exop[] = {" > exop.h
 	echo "	\"MINTOKEN\"," >> exop.h
-	$(SED) -e '1,/MINTOKEN/d' -e '/^[ 	]*#[ 	]*define[ 	][ 	]*[A-Z]/!d' -e 's/^[ 	]*#[ 	]*define[ 	]*\([A-Z0-9_]*\).*/	"\1",/' < exparse.h >> exop.h
+	$(SED) -e '1,/^[   ]*#[    ]*define[   ][  ]*MINTOKEN/d' -e '/MAXTOKEN/,$$d' -e '/^[ 	]*#[ 	]*define[ 	][ 	]*[A-Z]/!d' -e 's/^[ 	]*#[ 	]*define[ 	]*\([A-Z0-9_]*\).*/	"\1",/' < exparse.h >> exop.h
 	echo "};" >> exop.h
 
 exparse.c: y.tab.c 

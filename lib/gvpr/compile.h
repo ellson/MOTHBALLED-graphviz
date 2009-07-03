@@ -35,20 +35,21 @@ extern "C" {
 
     typedef struct {
 	Agrec_t h;
-	Extype_t xu;
+	/* Extype_t xu; */
 	Extype_t iu;
+	Agedge_t* ine;
     } nval_t;
 
     typedef struct {
 	Agrec_t h;
-	Extype_t xu;
-	Extype_t iu;
+	/* Extype_t xu; */
+	/* Extype_t iu; */
 	char lock;
     } gval_t;
 
     typedef struct {
 	Agrec_t h;
-	Extype_t xu;
+	/* Extype_t xu; */
     } uval_t;
 
 #define OBJ(p) ((Agobj_t*)p)

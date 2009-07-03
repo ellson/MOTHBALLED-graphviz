@@ -487,7 +487,7 @@ static Agnode_t *nextNode(Gpr_t * state, nodestream * nodes)
 #define MARKED(x)  (((x)->iu.integer)&1)
 #define MARK(x)  (((x)->iu.integer) = 1)
 #define ONSTACK(x)  (((x)->iu.integer)&2)
-#define PUSH(x)  (((x)->iu.integer)|=2)
+#define PUSH(x,e)  (((x)->iu.integer)|=2,(x)->ine=(e))
 #define POP(x)  (((x)->iu.integer)&=(~2))
 
 typedef Agedge_t *(*fstedgefn_t) (Agraph_t *, Agnode_t *);
@@ -523,12 +523,13 @@ static void travBFS(Gpr_t * state, Expr_t* prog, comp_block * xprog)
 	nd = nData(n);
 	if (MARKED(nd))
 	    continue;
-	PUSH(nd);
+	PUSH(nd, 0);
 	push(q, n);
 	while ((n = pull(q))) {
 	    nd = nData(n);
 	    MARK(nd);
 	    POP(nd);
+	    state->tvedge = nd->ine;
 	    evalNode(state, prog, xprog, n);
 	    for (cure = agfstedge(g, n); cure;
 		 cure = agnxtedge(g, cure, n)) {
@@ -538,11 +539,12 @@ static void travBFS(Gpr_t * state, Expr_t* prog, comp_block * xprog)
 		evalEdge(state, prog, xprog, cure);
 		if (!ONSTACK(nd)) {
 		    push(q, cure->node);
-		    PUSH(nd);
+		    PUSH(nd,cure);
 		}
 	    }
 	}
     }
+    state->tvedge = 0;
     freeQ(q);
 }
 
@@ -569,9 +571,9 @@ static void travDFS(Gpr_t * state, Expr_t* prog, comp_block * xprog, trav_fns * 
 	seed.in.node = 0;
 	curn = n;
 	entry = &(seed.out);
-	cure = 0;
+	state->tvedge = cure = 0;
 	MARK(nd);
-	PUSH(nd);
+	PUSH(nd,0);
 	if (fns->visit & PRE_VISIT)
 	    evalNode(state, prog, xprog, n);
 	more = 1;
@@ -597,13 +599,13 @@ static void travDFS(Gpr_t * state, Expr_t* prog, comp_block * xprog, trav_fns * 
 		} else {
 		    evalEdge(state, prog, xprog, cure);
 		    push(stk, entry);
-		    entry = cure;
+		    state->tvedge = entry = cure;
 		    curn = cure->node;
 		    cure = 0;
 		    if (fns->visit & PRE_VISIT)
 			evalNode(state, prog, xprog, curn);
 		    MARK(nd);
-		    PUSH(nd);
+		    PUSH(nd, entry);
 		}
 	    } else {
 		if (fns->visit & POST_VISIT)
@@ -612,6 +614,10 @@ static void travDFS(Gpr_t * state, Expr_t* prog, comp_block * xprog, trav_fns * 
 		POP(nd);
 		cure = entry;
 		entry = (Agedge_t *) pull(stk);
+		if (entry == &seed)
+		    state->tvedge = 0;
+		else
+		    state->tvedge = entry;
 		if (entry)
 		    curn = entry->node;
 		else
@@ -619,6 +625,7 @@ static void travDFS(Gpr_t * state, Expr_t* prog, comp_block * xprog, trav_fns * 
 	    }
 	}
     }
+    state->tvedge = 0;
     freeQ(stk);
 }
 

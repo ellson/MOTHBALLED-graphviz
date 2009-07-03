@@ -3,7 +3,7 @@
 .  ns
 .  TP \\$1
 ..
-.TH GVPR 1 "24 April 2008"
+.TH GVPR 1 "3 July 2009"
 .SH NAME
 gvpr \- graph pattern scanning and processing language
 .br
@@ -236,6 +236,7 @@ Executable statements can be one of the following:
 \fBif(\fI expression \fP)\fI statement \fR[ \fBelse\fI statement \fR]
 \fBfor(\fI expression \fP;\fI expression \fP;\fI expression \fP)\fI statement\fP
 \fBfor(\fI array \fP[\fI var \fP])\fI statement\fP
+\fBforr(\fI array \fP[\fI var \fP])\fI statement\fP
 \fBwhile(\fI expression \fP)\fI statement\fP
 \fBswitch(\fI expression \fP)\fI case statements\fP
 \fBbreak [\fI expression \fP]
@@ -246,10 +247,13 @@ Executable statements can be one of the following:
 .ST
 Items in brackets are optional.
 .PP
-In the second form of the \fBfor\fP statement, the variable \fIvar\fP
+In the second form of the \fBfor\fP statement and the \fBforr\fP statement, the variable \fIvar\fP
 is set to each value used as an index in the specified array and then
-the associated \fIstatement\fP is evaluated. Function definitions can
-only appear in the \fBBEGIN\fP clause.
+the associated \fIstatement\fP is evaluated. For numeric and string indices, the indices are 
+returned in increasing (decreasing) numeric or lexicographic order for 
+\fBfor\fP (\fBforr\fP, respectively). This can be used for sorting.
+.PP
+Function definitions can only appear in the \fBBEGIN\fP clause.
 .PP
 Expressions include the usual C expressions. 
 String comparisons using \fB==\fP and \fB!=\fP
@@ -679,6 +683,27 @@ The values are stored in the addresses following \fIfmt\fP,
 addresses having the form \fB&\fP\fIv\fP, where \fIv\fP is some declared
 variable of the correct type.
 Returns the number of items successfully scanned.
+.TP
+\fBsplit\fP(\fIs\fP : \fBstring\fP, \fIarr\fP : \fBarray\fP, \fIseps\fP : \fBstring\fP) : \fBint\fP
+.TP
+\fBsplit\fP(\fIs\fP : \fBstring\fP, \fIarr\fP : \fBarray\fP) : \fBint\fP
+.TP
+\fBtokens\fP(\fIs\fP : \fBstring\fP, \fIarr\fP : \fBarray\fP, \fIseps\fP : \fBstring\fP) : \fBint\fP
+.TP
+\fBtokens\fP(\fIs\fP : \fBstring\fP, \fIarr\fP : \fBarray\fP) : \fBint\fP
+The \fBsplit\fP function breaks the string \fIs\fP into fields, while the \fBtokens\fP function
+breaks the string into tokens. 
+A field consists of all non-separator characters between two separator characters or the beginning or
+end of the string. Thus, a field may be the empty string. A
+token is a maximal, non-empty substring not containing a separator character.
+The separator characters are those given in the \fIseps\fP argument.
+If \fIseps\fP is not provided, the default value is " \\t\\n". 
+The functions return the number of fields or tokens.
+.sp
+The fields and tokens are stored in the argument array. The array must be \fBstring\fP-valued and,
+if an index type is specified, it must be \fBint\fP. The entries are indexed by consecutive
+integers, starting at 0. Any values already stored in the array will be either overwritten, or
+still be present after the function returns.
 .SS "I/O"
 .TP
 \fBprint\fP(\fI...\fP) : \fBvoid\fP
@@ -763,6 +788,20 @@ returns the minimum of \fIy\fP and \fIx\fP.
 .TP
 \fBMAX\fP(\fIy\fP : \fBdouble\fP, \fIx\fP : \fBdouble\fP) : \fBdouble\fP
 returns the maximum of \fIy\fP and \fIx\fP.
+.SS "Associative Arrays"
+.TP
+\fB#\fP \fIarr\fP : \fBint\fP
+returns the number of elements in the array \fIarr\fP.
+.TP
+\fIidx\fP \fBin\fP \fIarr\fP : \fBint\fP
+returns 1 if a value has been set for index \fIidx\fP in the array \fIarr\fP.
+It returns 0 otherwise.
+.TP
+\fBunset\fP(\fIv\fP : \fBarray\fP, \Iidx\P) : \fBint\fP
+removes the item indexed by \fIidx\fP. It returns 1 if the item existed, 0 otherwise.
+.TP
+\fBunset\fP(\fIv\fP : \fBarray\fP) : \fBvoid\fP
+re-initializes the array.
 .SS "Miscellaneous"
 .TP
 \fBexit\fP(\fIv\fP : \fBint\fP) : \fBvoid\fP
@@ -787,6 +826,12 @@ sets a seed for the random number generator. The optional argument gives
 the seed; if it is omitted, the current time is used. The previous seed
 value is returned. \fBsrand\fP should be called before any calls to
 \fBrand\fP.
+.TP
+\fBcolorx\fP(\fIcolor\fP : \fBstring\fP, \fIfmt\fP : \fBstring\fP) : \fBstring\fP
+translates a color from one format to another. The \fIcolor\fP argument should be
+a color in one of the recognized string representations. The \fIfmt\fP value should
+be one of "RGB", "RGBA", "HSV", "HSVA", or "CMYK".
+An empty string is returned on error.
 .SH "BUILT\(hyIN VARIABLES"
 .PP
 .B gvpr
@@ -829,6 +874,11 @@ indicates the starting node for a (directed or undirected)
 depth\(hyfirst traversal of the
 graph (cf. \fB$tvtype\fP below).
 The default value is \fBNULL\fP for each input graph.
+.TP
+\fB$tvedge\fP : \fBedge_t\fP
+For BFS and DFS traversals, this is set to the edge used to arrive at the
+current node or edge. At the beginning of a traversal, or for other traversal
+types, the value is \fBNULL\fP.
 .TP
 \fB$tvtype\fP : \fBtvtype_t\fP
 indicates how \fBgvpr\fP traverses a graph. It can only take

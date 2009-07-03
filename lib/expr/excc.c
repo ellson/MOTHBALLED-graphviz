@@ -280,11 +280,7 @@ static void gen(Excc_t * cc, register Exnode_t * expr)
 	sfprintf(cc->ccdisc->text, "}\n");
 	return;
     case FOR:
-    case FORR:
-	if (expr->op == FOR)
-		sfprintf(cc->ccdisc->text, "for (;");
-	else
-		sfprintf(cc->ccdisc->text, "forr (;");
+	sfprintf(cc->ccdisc->text, "for (");
 	gen(cc, x);
 	sfprintf(cc->ccdisc->text, ");");
 	if (expr->data.operand.left) {
@@ -310,6 +306,7 @@ static void gen(Excc_t * cc, register Exnode_t * expr)
 	sfprintf(cc->ccdisc->text, "%s++", x->data.variable.symbol->name);
 	return;
     case ITERATE:
+    case ITERATER:
 	if (expr->op == DYNAMIC) {
 	    sfprintf(cc->ccdisc->text, "{ Exassoc_t* %stmp_%d;", cc->id,
 		     ++cc->tmp);
@@ -344,7 +341,11 @@ static void gen(Excc_t * cc, register Exnode_t * expr)
 	scan(cc, expr);
 	return;
     case SPLIT:
-	sfprintf(cc->ccdisc->text, "split (");
+    case TOKENS:
+	if (expr->op == SPLIT)
+	    sfprintf(cc->ccdisc->text, "split (");
+	else
+	    sfprintf(cc->ccdisc->text, "tokens (");
         gen(cc, expr->data.split.string);
 	sfprintf(cc->ccdisc->text, ", %s", expr->data.split.array->name);
         if (expr->data.split.seps) {
@@ -440,7 +441,6 @@ static void gen(Excc_t * cc, register Exnode_t * expr)
 	    if (!(x = expr->data.operand.right))
 		switch (cc->lastop = expr->data.operand.left->op) {
 		case FOR:
-		case FORR:
 		case IF:
 		case PRINTF:
 		case PRINT:
@@ -459,7 +459,6 @@ static void gen(Excc_t * cc, register Exnode_t * expr)
 	    case ';':
 		continue;
 	    case FOR:
-	    case FORR:
 	    case IF:
 	    case PRINTF:
 	    case PRINT:

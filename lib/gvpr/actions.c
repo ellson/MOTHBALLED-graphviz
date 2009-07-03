@@ -27,6 +27,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <colorprocs.h>
 
 #define KINDS(p) ((AGTYPE(p) == AGRAPH) ? "graph" : (AGTYPE(p) == AGNODE) ? "node" : "edge")
 
@@ -663,7 +664,7 @@ char *readLine(Expr_t * ex, int fd)
 
     if (fd < 0 || fd >= elementsof(ex->file) || !((sp = ex->file[fd]))) {
 	exerror("readL: %d: invalid descriptor", fd);
-	return exstring(ex, "");
+	return "";
     }
     tmps = sfstropen();
     while (((c = sfgetc(sp)) > 0) && (c != '\n'))
@@ -746,3 +747,74 @@ char *canon(Expr_t * pgm, char *arg)
 
     return p;
 }
+
+void *grealloc(void *ptr, size_t size)
+{
+    void *p = realloc(ptr, size);
+    if (p == NULL && size) {
+        fprintf(stderr, "out of memory\n");
+        abort();
+    }
+    return p;
+}
+
+/* colorx:
+ * RGB, RGBA, HSV, HSVA, CMYK
+ */
+char *colorx (Expr_t* ex, char* incolor, char* fmt, Sfio_t* fp)
+{
+    gvcolor_t color;
+    color_type_t type;
+    int rc;
+    int alpha;
+
+    if ((*fmt == '\0') || (*incolor == '\0'))
+	return "";
+    if (*fmt == 'R') {
+	type = RGBA_BYTE;
+	if (!strcmp (fmt, "RGBA")) 
+	    alpha = 1;
+	else
+	    alpha = 0;
+    }
+    else if (*fmt == 'H') {
+	type = HSVA_DOUBLE;
+	if (!strcmp (fmt, "HSVA")) 
+	    alpha = 1;
+	else
+	    alpha = 0;
+    }
+    else if (*fmt == 'C') {
+	type = CMYK_BYTE;
+    }
+    else
+	return "";
+
+    rc = colorxlate (incolor, &color, type);
+    if (rc != COLOR_OK)
+	return "";
+
+    switch (type) {
+    case HSVA_DOUBLE :
+	sfprintf (fp, ".03f .03f .03f", 
+	    color.u.HSVA[0], color.u.HSVA[1], color.u.HSVA[2]);
+	if (alpha)
+	    sfprintf (fp, " .03f", color.u.HSVA[3]);
+	break;
+    case RGBA_BYTE :
+	sfprintf (fp, "#%02x%02x%02x", 
+	    color.u.rgba[0], color.u.rgba[1], color.u.rgba[2]);
+	if (alpha)
+	    sfprintf (fp, "%02x", color.u.rgba[3]);
+	break;
+    case CMYK_BYTE :
+	sfprintf (fp, "#%02x%02x%02x%02x", 
+	    color.u.cmyk[0], color.u.cmyk[1], color.u.cmyk[2], color.u.cmyk[3]);
+	break;
+    default :
+	break;
+    }
+
+    return exstring(ex, sfstruse(fp));
+}
+

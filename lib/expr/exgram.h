@@ -140,6 +140,7 @@ extern "C" {
 	    if (x->data.string.repl)
 		exfreenode(p, x->data.string.repl);
 	    break;
+	case TOKENS:
 	case SPLIT:
 	    if (x->data.split.seps)
 		exfreenode(p, x->data.split.seps);
@@ -196,27 +197,27 @@ extern "C" {
     }
 
 /* exnewsplit:
- * Generate split node.
- * Fourth argument is optional.
+ * Generate split/tokens node.
+ * Fifth argument is optional.
  */
-    static Exnode_t *exnewsplit(Expr_t * p, Exid_t* dyn, Exnode_t * s, Exnode_t* seps) {
+    static Exnode_t *exnewsplit(Expr_t * p, int op, Exid_t* dyn, Exnode_t * s, Exnode_t* seps) {
 	Exnode_t *ss = 0;
 
 	if (dyn->local.pointer == 0)
-              	exerror("cannot use non-array %s in split", dyn->name);
+              	exerror("cannot use non-array %s in %s", dyn->name, exopname(op));
 	if ((dyn->index_type > 0) && (dyn->index_type != INTEGER))
-            exerror("in split, array %s must have integer index type, not %s", 
-		dyn->name, extypename(p, s->type));
+            exerror("in %s, array %s must have integer index type, not %s", 
+		exopname(op), dyn->name, extypename(p, s->type));
 	if (dyn->type != STRING)
-            exerror("in split, array %s entries must have string type, not %s", 
-		dyn->name, extypename(p, s->type));
+            exerror("in %s, array %s entries must have string type, not %s", 
+		exopname(op), dyn->name, extypename(p, s->type));
 	if (s->type != STRING)
-            exerror("first argument to split must have string type, not %s", 
-		extypename(p, s->type));
+            exerror("first argument to %s must have string type, not %s", 
+		exopname(op), extypename(p, s->type));
 	if (seps && (seps->type != STRING))
-            exerror("third argument to split must have string type, not %s", 
-		extypename(p, seps->type));
-	ss = exnewnode(p, SPLIT, 0, INTEGER, NiL, NiL);
+            exerror("third argument to %s must have string type, not %s", 
+		exopname(op), extypename(p, seps->type));
+	ss = exnewnode(p, op, 0, INTEGER, NiL, NiL);
 	ss->data.split.array = dyn;
 	ss->data.split.string = s;
 	ss->data.split.seps = seps;

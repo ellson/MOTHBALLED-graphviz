@@ -174,7 +174,7 @@ static void trace(Expr_t * ex, int lev, char *op, int c)
     case FOR:
 	s = " for";
 	break;
-    case FORR:
+    case ITERATER:
 	s = " forr";
 	break;
     case GSUB:
@@ -221,6 +221,9 @@ static void trace(Expr_t * ex, int lev, char *op, int c)
 	break;
     case SWITCH:
 	s = " switch";
+	break;
+    case TOKENS:
+	s = " tokens";
 	break;
     case UNSET:
 	s = " unset";

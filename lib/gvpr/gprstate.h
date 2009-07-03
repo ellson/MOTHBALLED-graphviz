@@ -48,6 +48,7 @@ extern "C" {
 	Sfio_t *outFile;
 	trav_type tvt;
 	Agnode_t *tvroot;
+	Agedge_t *tvedge;
 	int name_used;
 	int argc;
 	char **argv;

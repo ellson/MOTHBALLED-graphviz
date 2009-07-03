@@ -652,9 +652,23 @@ replace(Sfio_t * s, char *base, register char *repl, int ng, int *sub)
 
 #define MCNT(s) (sizeof(s)/(2*sizeof(int)))
 
+static void
+addItem (Dt_t* arr, Extype_t v, char* tok)
+{
+    Exassoc_t* b;
+
+    if (!(b = (Exassoc_t *) dtmatch(arr, &v))) {
+	if (!(b = newof(0, Exassoc_t, 1, 0)))
+	    exerror("out of space [assoc]");
+	b->key = v;
+	dtinsert(arr, b);
+    }
+    b->value.string = tok;
+}
+
 /* exsplit:
- * tokenize string and store in array
- * return number of tokens
+ * break string into possibly empty fields and store in array
+ * return number of fields
  */
 Extype_t
 exsplit(Expr_t * ex, register Exnode_t * expr, void *env)
@@ -663,15 +677,61 @@ exsplit(Expr_t * ex, register Exnode_t * expr, void *env)
     char *str;
     char *seps;
     char *tok;
-    Exassoc_t* b;
     size_t sz;
     Sfio_t* fp = ex->tmp;
-    int cnt = 0;
+    Dt_t* arr = (Dt_t*)expr->data.split.array->local.pointer;
+    int i;
+
+    str = (eval(ex, expr->data.split.string, env)).string;
+    if (expr->data.split.seps)
+	seps = (eval(ex, expr->data.split.seps, env)).string;
+    else
+	seps = " \t\n";
+
+    v.integer = 0;
+    while (*str) {
+	sz = strspn (str, seps);
+	for (i = 0; i < sz; i++) {
+	    addItem (arr, v, "");
+	    v.integer++;
+	}
+	str += sz;
+	if (*str == '\0') {
+	    if (v.integer == sz) {  /* only separators */
+		addItem (arr, v, "");
+		v.integer++;
+	    }
+	    break;
+	}
+	sz = strcspn (str, seps);
+	sfwrite (fp, str, sz);
+	tok = exstrdup(ex, sfstruse(fp));
+	addItem (arr, v, tok);
+	v.integer++;
+	str += sz;
+    }
+
+    return v;
+}
+
+/* extoken:
+ * tokenize string and store in array
+ * return number of tokens
+ */
+Extype_t
+extokens(Expr_t * ex, register Exnode_t * expr, void *env)
+{
+    Extype_t v;
+    char *str;
+    char *seps;
+    char *tok;
+    size_t sz;
+    Sfio_t* fp = ex->tmp;
     Dt_t* arr = (Dt_t*)expr->data.split.array->local.pointer;
 
     str = (eval(ex, expr->data.split.string, env)).string;
     if (expr->data.split.seps)
-	seps = (eval(ex, expr->data.string.pat, env)).string;
+	seps = (eval(ex, expr->data.split.seps, env)).string;
     else
 	seps = " \t\n";
 
@@ -681,26 +741,17 @@ exsplit(Expr_t * ex, register Exnode_t * expr, void *env)
 	str += sz;
 	if (*str == '\0')
 	    break;
+
 	sz = strcspn (str, seps);
 	assert (sz);
 	sfwrite (fp, str, sz);
-	tok = vmstrdup(ex->vc, sfstruse(fp));
-
-	if (!(b = (Exassoc_t *) dtmatch(arr, &v))) {
-	    if (!(b = newof(0, Exassoc_t, 1, 0)))
-		exerror("out of space [assoc]");
-	    b->key = v;
-	    dtinsert(arr, b);
-	}
-	b->value.string = tok;
-
+	tok = exstrdup(ex, sfstruse(fp));
+	addItem (arr, v, tok);
 	v.integer++;
 	str += sz;
     }
 
-    v.integer = cnt;
     return v;
-    
 }
 
 /* exsub:
@@ -953,6 +1004,8 @@ static Extype_t eval(Expr_t * ex, register Exnode_t * expr, void *env)
 	return getdyn(ex, expr, env, &assoc);
     case SPLIT:
 	return exsplit(ex, expr, env);
+    case TOKENS:
+	return extokens(ex, expr, env);
     case GSUB:
 	return exsub(ex, expr, env, 1);
     case SUB:
