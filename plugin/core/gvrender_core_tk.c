@@ -240,7 +240,6 @@ static void tkgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
             case 'n':
                 break;
             }
-            gvputs(job, " -state disabled");
             tkgen_print_tags(job);
             gvputs(job, "\n");
         }
@@ -300,7 +299,6 @@ tkgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
         if (obj->pen == PEN_DOTTED)
 	    gvputs(job, " -dash 2");
         gvputs(job, " -smooth bezier");
-        gvputs(job, " -state disabled");
         tkgen_print_tags(job);
         gvputs(job, "\n");
     }
@@ -329,7 +327,6 @@ static void tkgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
 	    gvputs(job, " -dash 5");
         if (obj->pen == PEN_DOTTED)
 	    gvputs(job, " -dash 2");
-        gvputs(job, " -state disabled");
         tkgen_print_tags(job);
         gvputs(job, "\n");
     }
@@ -349,7 +346,6 @@ static void tkgen_polyline(GVJ_t * job, pointf * A, int n)
 	    gvputs(job, " -dash 5");
         if (obj->pen == PEN_DOTTED)
 	    gvputs(job, " -dash 2");
-        gvputs(job, " -state disabled");
         tkgen_print_tags(job);
         gvputs(job, "\n");
     }
