@@ -24,7 +24,7 @@ noinst_LTLIBRARIES = libgvpr_C.la
 lib_LTLIBRARIES = libgvpr.la
 pkgconfig_DATA = libgvpr.pc
 
-libgvpr_C_la_SOURCES = actions.c compile.c gvpr.c gprstate.c parse.c queue.c ../common/colxlate.c
+libgvpr_C_la_SOURCES = actions.c compile.c gvpr.c gprstate.c parse.c queue.c 
 $(libgvpr_C_la_OBJECTS): gdefs.h
 libgvpr_C_la_DEPENDENCIES = \
 	$(top_builddir)/lib/expr/libexpr_C.la \
