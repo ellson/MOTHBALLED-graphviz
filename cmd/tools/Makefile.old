@@ -12,13 +12,14 @@ LOC_PLUG=$(ROOT)/plugin
 LOC_INCDIR=$(LOC_LIB)/include
 LOC_LIBDIR=$(LOC_LIB)/lib
 
-DEFINES = -DHAVE_CONFIG_H -DUSE_CGRAPH
+DEFINES = -DDEMAND_LOADING=0 -DHAVE_CONFIG_H -DUSE_CGRAPH
 
 INCS =  -I. -I$(ROOT) -I$(LOC_LIB)/cgraph \
         -I$(LOC_LIB)/ingraphs -I$(LOC_LIB)/cdt
 PINCS =  -I. -I$(ROOT) -I$(LOC_LIB)/graph \
         -I$(LOC_LIB)/ingraphs -I$(LOC_LIB)/cdt
 DNINCS = -I$(LOC_LIB)/pack -I$(LOC_LIB)/neatogen  \
+         -I$(LOC_LIB)/sparse \
          -I$(LOC_LIB)/gvc \
          -I$(LOC_LIB)/pathplan \
          -I$(LOC_LIB)/common -I$(LOC_LIB)
@@ -39,6 +40,8 @@ GVLIBS = -L$(LOC_LIB)/gvc -lgvc $(PLUGS) \
         -L$(LOC_LIB)/dotgen -ldotgen \
         -L$(LOC_LIB)/circogen -lcircogen \
         -L$(LOC_LIB)/fdpgen -lfdpgen \
+        -L$(LOC_LIB)/osage -losage \
+        -L$(LOC_LIB)/ortho -lortho \
         -L$(LOC_LIB)/sfdpgen -lsfdpgen \
         -L$(LOC_LIB)/patchwork -lpatchwork \
         -L$(LOC_LIB)/sparse -lsparse \
