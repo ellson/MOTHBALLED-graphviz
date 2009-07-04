@@ -18,6 +18,7 @@
 #include "render.h"
 #include "htmltable.h"
 #include "gvc.h"
+#include "agxbuf.h"
 
 static char *usageFmt =
     "Usage: %s [-Vv?] [-(GNE)name=val] [-(KTlso)<val>] <dot files>\n";
@@ -168,22 +169,23 @@ static void use_library(GVC_t *gvc, const char *name)
 }
 
 #ifdef WITH_CGRAPH
-static void global_def(char *dcl, int kind,
+static void global_def(agxbuf* xb, char *dcl, int kind,
          attrsym_t * ((*dclfun) (Agraph_t *, int kind, char *, char *)) )
 {
     char *p;
     char *rhs = "true";
 
+    agxbinit(&xb, SMALLBUF, buf);
     attrsym_t *sym;
     if ((p = strchr(dcl, '='))) {
-        *p++ = '\0';
-        rhs = p;
+	agxbput_n (xb, dcl, p-dcl);
+        rhs = p+1;
     }
-    sym = dclfun(NULL, kind, dcl, rhs);
+    sym = dclfun(NULL, kind, agxbuse (xb), rhs);
     sym->fixed = 1;
 }
 #else
-static void global_def(char *dcl,
+static void global_def(agxbuf* xb, char *dcl,
 	attrsym_t * ((*dclfun) (Agraph_t *, char *, char *)))
 {
     char *p;
@@ -191,10 +193,10 @@ static void global_def(char *dcl,
 
     attrsym_t *sym;
     if ((p = strchr(dcl, '='))) {
-	*p++ = '\0';
-	rhs = p;
+	agxbput_n (xb, dcl, p-dcl);
+        rhs = p+1;
     }
-    sym = dclfun(NULL, dcl, rhs);
+    sym = dclfun(NULL, agxbuse (xb), rhs);
     sym->fixed = 1;
 }
 #endif
@@ -229,6 +231,8 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
     char c, *rest;
     const char *val;
     int i, v, nfiles;
+    unsigned char buf[SMALLBUF];
+    agxbuf xb;
 
     /* establish if we are running in a CGI environment */
     HTTPServerEnVar = getenv("SERVER_NAME");
@@ -267,6 +271,7 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 	    nfiles++;
     gvc->input_filenames = N_NEW(nfiles + 1, char *);
     nfiles = 0;
+    agxbinit(&xb, SMALLBUF, buf);
     for (i = 1; i < argc; i++) {
 	if (argv[i] && argv[i][0] == '-') {
 	    rest = &(argv[i][2]);
@@ -274,9 +279,9 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 	    case 'G':
 		if (*rest)
 #ifdef WITH_CGRAPH
-		    global_def(rest, AGRAPH, agattr);
+		    global_def(&xb, rest, AGRAPH, agattr);
 #else
-		    global_def(rest, agraphattr);
+		    global_def(&xb, rest, agraphattr);
 #endif
 		else {
 		    fprintf(stderr, "Missing argument for -G flag\n");
@@ -286,9 +291,9 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 	    case 'N':
 		if (*rest)
 #ifdef WITH_CGRAPH
-		    global_def(rest, AGNODE,agattr);
+		    global_def(&xb, rest, AGNODE,agattr);
 #else
-		    global_def(rest, agnodeattr);
+		    global_def(&xb, rest, agnodeattr);
 #endif
 		else {
 		    fprintf(stderr, "Missing argument for -N flag\n");
@@ -298,9 +303,9 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 	    case 'E':
 		if (*rest)
 #ifdef WITH_CGRAPH
-		    global_def(rest, AGEDGE,agattr);
+		    global_def(&xb, rest, AGEDGE,agattr);
 #else
-		    global_def(rest, agedgeattr);
+		    global_def(&xb, rest, agedgeattr);
 #endif
 		else {
 		    fprintf(stderr, "Missing argument for -E flag\n");
@@ -400,6 +405,7 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 	} else if (argv[i])
 	    gvc->input_filenames[nfiles++] = argv[i];
     }
+    agxbfree (&xb);
 
     /* if no -Txxx, then set default format */
     if (!gvc->jobs || !gvc->jobs->output_langname) {
