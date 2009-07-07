@@ -2452,6 +2452,10 @@ else
       fi
     fi
   fi
+  # prevent explicit use of /usr/include as it breaks mingw cross-compiles
+  if test "x$GD_INCLUDES" = "x-I/usr/include"; then
+     GD_INCLUDES="";
+  fi
 
   if test "x$with_mylibgd" = "xno"; then
     if test "x$with_libgd" = "xyes"; then
