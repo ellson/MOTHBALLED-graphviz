@@ -36,6 +36,8 @@ using namespace Gdiplus;
 
 static void gdiplus_format(GVJ_t *job)
 {
+	UseGdiplus();
+
 	/* allocate memory and attach stream to it */
 	HGLOBAL buffer = GlobalAlloc(GMEM_MOVEABLE, 0);
 	IStream *stream = NULL;
