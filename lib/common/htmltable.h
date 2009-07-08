@@ -38,8 +38,10 @@ extern "C" {
 
 #define UNSET_ALIGN 0
 
+/* Bold, Italic, Underline */
 #define HTML_BF 1
 #define HTML_IF 2
+#define HTML_UL 4
 
     /* font information
      * If name or color is NULL, or size < 0, that attribute
@@ -48,8 +50,7 @@ extern "C" {
     typedef struct {
 	char*  name;
 	char*  color;
-        int    flags:3;
-        int    ul:1;
+        int    flags:7;  /* HTML_UL, HTML_IF, HTML_BF */
 	int    cnt;   /* reference count */
 	double size;
     } htmlfont_t;

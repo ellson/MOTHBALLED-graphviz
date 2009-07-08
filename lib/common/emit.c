@@ -861,11 +861,6 @@ static void setup_page(GVJ_t * job, graph_t * g)
     else
         EXPANDBB(job->boundingBox, job->pageBoundingBox);
 
-#ifdef WITH_CODEGENS
-    job->pageOffset.x = - job->pageSize.x * pagesArrayElem.x;
-    job->pageOffset.y = - job->pageSize.y * pagesArrayElem.y;
-#endif
-
     if (job->flags & GVDEVICE_EVENTS) {
         job->clip.LL.x = job->focus.x - job->view.x / 2.;
         job->clip.LL.y = job->focus.y - job->view.y / 2.;
@@ -1192,21 +1187,13 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
         obj->url_map_n = nump;
     }
 
-#ifdef WITH_CODEGENS
-    Obj = NODE;
-#endif
     setColorScheme (agget (n, "colorscheme"));
-    gvrender_begin_context(job);
     gvrender_begin_node(job, n);
 }
 
 static void emit_end_node(GVJ_t * job)
 {
     gvrender_end_node(job);
-    gvrender_end_context(job);
-#ifdef WITH_CODEGENS
-    Obj = NONE;
-#endif
     pop_obj_state(job);
 }
 
@@ -1704,10 +1691,6 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e, char** styles)
 	}
     }
 
-#ifdef WITH_CODEGENS
-    Obj = EDGE;
-#endif
-    gvrender_begin_context(job);
     gvrender_begin_edge(job, e);
     if (obj->url || obj->explicit_tooltip)
 	gvrender_begin_anchor(job,
@@ -1851,10 +1834,6 @@ static void emit_end_edge(GVJ_t * job)
 	0);
 
     gvrender_end_edge(job);
-    gvrender_end_context(job);
-#ifdef WITH_CODEGENS
-    Obj = NONE;
-#endif
     pop_obj_state(job);
 }
 
@@ -2260,24 +2239,17 @@ static void emit_begin_graph(GVJ_t * job, graph_t * g)
     initObjMapData (job, GD_label(g), "graph", AGID(g), g);
 #endif
 
-#ifdef WITH_CODEGENS
-    Obj = NONE;
-#endif
     gvrender_begin_graph(job, g);
 }
 
 static void emit_end_graph(GVJ_t * job, graph_t * g)
 {
     gvrender_end_graph(job);
-#ifdef WITH_CODEGENS
-    Obj = NONE;
-#endif
     pop_obj_state(job);
 }
 
 static void emit_page(GVJ_t * job, graph_t * g)
 {
-    GVC_t *gvc = job->gvc;
     obj_state_t *obj = job->obj;
     int nump = 0, flags = job->flags;
     textlabel_t *lab;
@@ -2288,7 +2260,6 @@ static void emit_page(GVJ_t * job, graph_t * g)
     gvrender_begin_page(job);
     gvrender_set_pencolor(job, DEFAULT_COLOR);
     gvrender_set_fillcolor(job, DEFAULT_FILL);
-    gvrender_set_font(job, gvc->defaultfontname, gvc->defaultfontsize);
     if ((flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS))
 	    && (obj->url || obj->explicit_tooltip)) {
 	if (flags & (GVRENDER_DOES_MAP_RECTANGLE | GVRENDER_DOES_MAP_POLYGON)) {
@@ -2482,18 +2453,12 @@ static void emit_begin_cluster(GVJ_t * job, Agraph_t * sg)
     initObjMapData (job, GD_label(sg), "graph", AGID(sg), sg);
 #endif
     
-#ifdef WITH_CODEGENS
-    Obj = CLST;
-#endif
     gvrender_begin_cluster(job, sg);
 }
 
 static void emit_end_cluster(GVJ_t * job, Agraph_t * g)
 {
     gvrender_end_cluster(job, g);
-#ifdef WITH_CODEGENS
-    Obj = NONE;
-#endif
     pop_obj_state(job);
 }
 
@@ -2521,7 +2486,6 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	obj = job->obj;
 	doAnchor = (obj->url || obj->explicit_tooltip);
 	setColorScheme (agget (sg, "colorscheme"));
-	gvrender_begin_context(job);
 	if (doAnchor && !(flags & EMIT_CLUSTERS_LAST)) {
 	    emit_map_rect(job, GD_bb(sg));
 	    gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target, obj->id);
@@ -2622,7 +2586,6 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 		    emit_edge(job, e);
 	    }
 	}
-	gvrender_end_context(job);
 	emit_end_cluster(job, g);
 	/* when drawing, lay down clusters before sub_clusters */
 	if (!(flags & EMIT_CLUSTERS_LAST))
@@ -2931,9 +2894,6 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	    gv_fixLocale (0);
             return -1;
         }
-#ifdef WITH_CODEGENS
-	Output_lang = job->output_lang;
-#endif
 
         switch (job->output_lang) {
         case VTX:

@@ -228,9 +228,7 @@ void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
 	return;
 
     gvrender_begin_label(job, LABEL_PLAIN);
-	gvrender_begin_context(job);
-	gvrender_set_pencolor(job, lp->fontcolor);
-    gvrender_set_font(job, lp->fontname, lp->fontsize);
+    gvrender_set_pencolor(job, lp->fontcolor);
 
     /* position for first para */
     switch (lp->valign) {
@@ -264,8 +262,7 @@ void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
 	p.y -= lp->u.txt.para[i].height;
     }
 
-    gvrender_end_context(job);
-	gvrender_end_label(job);
+    gvrender_end_label(job);
     obj->emit_state = old_emit_state;
 }
 

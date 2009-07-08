@@ -112,7 +112,7 @@ static void popFontInfo(htmlenv_t * env, htmlfont_t * savp)
 
 static void 
 emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
-         double halfwidth_x, char* fname, double fsize, char* fcolor, boxf b)
+         double halfwidth_x, htmlfont_t finfo, boxf b)
 {
     int i,j;
     double center_x, left_x, right_x, fsize_;
@@ -130,8 +130,7 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
 	 */
     p_.y = p.y + (b.UR.y-b.LL.y)/2.0;
 
- 	gvrender_begin_label(job, LABEL_HTML);
-    gvrender_begin_context(job);
+    gvrender_begin_label(job, LABEL_HTML);
     for(i=0; i<nparas; i++) {
 	/* set p.x to leftmost point where the line of text begins */
 	switch (paras[i].just) {
@@ -153,18 +152,17 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
 	    if (ti->font && (ti->font->size > 0))
 		fsize_ = ti->font->size;
 	    else
-	        fsize_ = fsize;
+	        fsize_ = finfo.size;
 	    if (ti->font && ti->font->name)
 		fname_ = ti->font->name;
 	    else
-	        fname_ = fname;
+	        fname_ = finfo.name;
 	    if (ti->font && ti->font->color)
 		fcolor_ = ti->font->color;
 	    else
-	        fcolor_ = fcolor;
+	        fcolor_ = finfo.color;
 
     	    gvrender_set_pencolor(job, fcolor_);
-   	    gvrender_set_font(job, fname_, fsize_);
 
 	    tl.str = ti->str;
 	    tl.fontname = fname_;
@@ -189,7 +187,6 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
 	}
     }
 
-	gvrender_end_context(job);
     gvrender_end_label(job);
 }
 
@@ -198,24 +195,16 @@ emit_html_txt(GVJ_t* job, htmltxt_t* tp, htmlenv_t* env)
 {
     double halfwidth_x;
     pointf p;
-    char *fname;
-    char *fcolor;
-    double fsize;
 
     /* make sure that there is something to do */
     if (tp->nparas < 1)
 	return;
 
-    fsize = env->finfo.size;
-    fname = env->finfo.name;
-    fcolor = env->finfo.color;
-
     halfwidth_x = ((double) (tp->box.UR.x - tp->box.LL.x)) / 2.0;
     p.x = env->pos.x + ((double) (tp->box.UR.x + tp->box.LL.x)) / 2.0;
     p.y = env->pos.y + ((double) (tp->box.UR.y + tp->box.LL.y)) / 2.0;
 
-    emit_htextparas(job, tp->nparas, tp->paras, p, halfwidth_x, fname,
-		    fsize, fcolor, tp->box);
+    emit_htextparas(job, tp->nparas, tp->paras, p, halfwidth_x, env->finfo, tp->box);
 }
 
 static void doSide(GVJ_t * job, pointf p, double wd, double ht)
@@ -243,8 +232,6 @@ static void doBorder(GVJ_t * job, char *color, int border, boxf BF)
     pointf pt;
     double wd, ht;
 
-    gvrender_begin_context(job);
-
     if (!color)
 	color = DEFAULT_COLOR;
     gvrender_set_fillcolor(job, color);
@@ -265,8 +252,6 @@ static void doBorder(GVJ_t * job, char *color, int border, boxf BF)
 	pt.y = BF.LL.y;
 	doSide(job, pt, -wd, border);
     }
-
-    gvrender_end_context(job);
 }
 
 static void doFill(GVJ_t * job, char *color, boxf BF)
@@ -483,27 +468,15 @@ allocObj (GVJ_t * job)
     switch (obj->type) {
     case NODE_OBJTYPE :
 	obj->u.n = parent->u.n;
-#ifdef WITH_CODEGENS
-	Obj = NODE;
-#endif
 	break;
     case ROOTGRAPH_OBJTYPE :
 	obj->u.g = parent->u.g;
-#ifdef WITH_CODEGENS
-	Obj = NONE;
-#endif
 	break;
     case CLUSTER_OBJTYPE :
 	obj->u.sg = parent->u.sg;
-#ifdef WITH_CODEGENS
-	Obj = CLST;
-#endif
 	break;
     case EDGE_OBJTYPE :
 	obj->u.e = parent->u.e;
-#ifdef WITH_CODEGENS
-	Obj = EDGE;
-#endif
 	break;
     }
     obj->url = parent->url;
@@ -543,7 +516,6 @@ emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t * tp)
 	htmltbl_t *tbl = lp->u.tbl;
 
 	/* set basic graphics context */
-	gvrender_begin_context(job);
 	/* Need to override line style set by node. */
 	gvrender_set_style(job, job->gvc->defaultlinestyle);
 	if (tbl->data.pencolor)
@@ -551,7 +523,6 @@ emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t * tp)
 	else
 	    gvrender_set_pencolor(job, DEFAULT_COLOR);
 	emit_html_tbl(job, tbl, &env);
-	gvrender_end_context(job);
     } else {
 	emit_html_txt(job, lp->u.txt, &env);
     }

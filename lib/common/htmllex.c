@@ -494,7 +494,6 @@ static htmlfont_t *mkFont(char **atts, int flags, int ul)
 
     font->size = -1.0;		/* unassigned */
     font->flags = flags;
-    font->ul = ul;
     if (atts)
 	doAttrs(font, font_items, sizeof(font_items) / ISIZE, atts, "<FONT>");
 
@@ -544,7 +543,7 @@ static void startElement(void *user, const char *name, char **atts)
 	htmllval.font = mkFont(0, HTML_BF, 0);
 	state.tok = T_bold;
     } else if (strcasecmp(name, "U") == 0) {
-	htmllval.font = mkFont(0, 0, 1);
+	htmllval.font = mkFont(0, HTML_UL, 1);
 	state.tok = T_underline;
     } else if (strcasecmp(name, "I") == 0) {
 	htmllval.font = mkFont(0, HTML_IF, 0);

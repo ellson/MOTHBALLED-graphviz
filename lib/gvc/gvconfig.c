@@ -61,10 +61,6 @@ static int glob (GVC_t * gvc, char*, int, int (*errfunc)(const char *, int), glo
 #include	"gvcint.h"
 #include        "gvcproc.h"
 
-#ifdef WITH_CODEGENS
-    extern codegen_t HPGL_CodeGen, MIF_CodeGen, MP_CodeGen, PIC_CodeGen, DIA_CodeGen, VTX_CodeGen;
-#endif
-
 /*
     A config for gvrender is a text file containing a
     list of plugin librariess and their capabilities using a tcl-like
@@ -446,35 +442,6 @@ static void config_rescan(GVC_t *gvc, char *config_path)
 }
 #endif
 
-#ifdef WITH_CODEGENS
-
-#define MAX_CODEGENS 100
-
-static codegen_info_t cg[MAX_CODEGENS] = {
-    {&HPGL_CodeGen, "hpgl", HPGL},
-    {&HPGL_CodeGen, "pcl", PCL},
-    {&MIF_CodeGen, "mif", MIF},
-    {&PIC_CodeGen, "pic", PIC_format},
-    {&VTX_CodeGen, "vtx", VTX},
-    {&MP_CodeGen, "mp", METAPOST},
-#ifdef HAVE_LIBZ
-    {&DIA_CodeGen, "dia", DIA},
-#endif
-    {NULL, NULL, 0}
-};
-
-codegen_info_t *first_codegen(void)
-{
-    return cg;
-}
-
-codegen_info_t *next_codegen(codegen_info_t * p)
-{
-    ++p;
-    return p;
-}
-#endif
-
 /*
   gvconfig - parse a config file and install the identified plugins
  */
@@ -494,17 +461,6 @@ void gvconfig(GVC_t * gvc, boolean rescan)
 #define MAX_SZ_CONFIG 100000
 #endif
     
-#ifdef WITH_CODEGENS
-    codegen_info_t *p;
-
-    gvplugin_package_t *package;
-
-    package = gvplugin_package_record(gvc, NULL, "cg");
-    for (p = cg; p->name; ++p)
-        gvplugin_install(gvc, API_device, p->name, 0,
-		package, (gvplugin_installed_t *) p);
-#endif
-
     /* builtins don't require LTDL */
     gvconfig_plugin_install_builtins(gvc);
    

@@ -571,7 +571,6 @@ void arrow_gen(GVJ_t * job, emit_state_t emit_state, pointf p, pointf u, double 
 
     /* Dotted and dashed styles on the arrowhead are ugly (dds) */
     /* linewidth needs to be reset */
-    gvrender_begin_context(job);
     gvrender_set_style(job, job->gvc->defaultlinestyle);
 
     /* generate arrowhead vector */
@@ -591,8 +590,6 @@ void arrow_gen(GVJ_t * job, emit_state_t emit_state, pointf p, pointf u, double 
 	    break;
         p = arrow_gen_type(job, p, u, arrowsize, penwidth, f);
     }
-
-    gvrender_end_context(job);
 
     obj->emit_state = old_emit_state;
 }

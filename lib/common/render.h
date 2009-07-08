@@ -152,13 +152,6 @@ extern "C" {
     extern void write_attributed_dot(graph_t *g, FILE *f);
     extern void write_canonical_dot(graph_t *g, FILE *f);
 
-
-
-#ifdef WITH_CODEGENS
-    extern codegen_info_t *first_codegen(void);
-    extern codegen_info_t *next_codegen(codegen_info_t * p);
-#endif
-
 #undef extern
 
 #ifdef __cplusplus

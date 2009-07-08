@@ -97,15 +97,11 @@
     extern void gvrender_end_node(GVJ_t * job);
     extern void gvrender_begin_edge(GVJ_t * job, edge_t * e);
     extern void gvrender_end_edge(GVJ_t * job);
-    extern void gvrender_begin_context(GVJ_t * job);
-    extern void gvrender_end_context(GVJ_t * job);
     extern void gvrender_begin_anchor(GVJ_t * job,
 		char *href, char *tooltip, char *target, char *id);
     extern void gvrender_end_anchor(GVJ_t * job);
     extern void gvrender_begin_label(GVJ_t * job, label_type type);
     extern void gvrender_end_label(GVJ_t * job);
-    extern void gvrender_set_font(GVJ_t * job, char *fontname,
-			double fontsize);
     extern void gvrender_textpara(GVJ_t * job, pointf p, textpara_t * para);
     extern void gvrender_set_pencolor(GVJ_t * job, char *name);
     extern void gvrender_set_penwidth(GVJ_t * job, double penwidth);

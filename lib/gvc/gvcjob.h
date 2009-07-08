@@ -366,12 +366,6 @@ extern "C" {
 	gvevent_key_binding_t *keybindings;
 	int numkeys;
 	void *keycodes;
-
-/* Must be last as separately compiled plugins are not compiled with WITH_CODEGENS */
-#ifdef WITH_CODEGENS
-	pointf	pageOffset;	/* offset for current page in graph units */
-	codegen_t *codegen;	/* current  codegen */
-#endif
     };
 
 #ifdef __cplusplus

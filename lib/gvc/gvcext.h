@@ -23,11 +23,6 @@
 extern "C" {
 #endif
 
-#ifdef WITH_CODEGENS
-    typedef struct codegen_s codegen_t;
-    typedef struct codegen_info_s codegen_info_t;
-#endif
-
 /*
  * Define an apis array of name strings using an enumerated api_t as index.
  * The enumerated type is defined here.  The apis array is

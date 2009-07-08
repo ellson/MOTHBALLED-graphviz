@@ -72,12 +72,6 @@ extern "C" {
     EXTERN char *specificItems;
     EXTERN char *Gvfilepath;	/* Path of files allowed in 'shapefile' attrib  (also ps libs) */
 
-#ifdef WITH_CODEGENS
-    EXTERN int Output_lang;	/* POSTSCRIPT, DOT, etc. */
-    EXTERN FILE *Output_file;
-    EXTERN int Obj;
-#endif
-
     EXTERN unsigned char Verbose;
     EXTERN boolean Reduce, MemTest;
     EXTERN char *HTTPServerEnVar;

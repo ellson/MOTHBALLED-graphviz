@@ -194,58 +194,6 @@ extern "C" {
     } shape_desc;
 
 #include "usershape.h"		/* usershapes needed by gvc even w/o CODEGENS */
-#ifdef WITH_CODEGENS
-
-    struct codegen_s {
-	void (*reset) (void);
-	void (*begin_job) (FILE * ofp, graph_t * g, const char **lib, char *info[], point pages);
-	void (*end_job) (void);
-	void (*begin_graph) (GVC_t * gvc, graph_t * g, box bb, point pb);
-	void (*end_graph) (void);
-	void (*begin_page) (graph_t * g, point page, double scale, int rot,
-			    point offset);
-	void (*end_page) (void);
-	void (*begin_layer) (char *layerName, int n, int nLayers);
-	void (*end_layer) (void);
-	void (*begin_cluster) (graph_t * g);
-	void (*end_cluster) (void);
-	void (*begin_nodes) (void);
-	void (*end_nodes) (void);
-	void (*begin_edges) (void);
-	void (*end_edges) (void);
-	void (*begin_node) (node_t * n);
-	void (*end_node) (void);
-	void (*begin_edge) (edge_t * e);
-	void (*end_edge) (void);
-	void (*begin_context) (void);
-	void (*end_context) (void);
-	void (*begin_anchor) (char *href, char *tooltip, char *target);
-	void (*end_anchor) (void);
-	void (*set_font) (char *fontname, double fontsize);
-	void (*textpara) (point p, textpara_t * para);
-	void (*set_pencolor) (char *name);
-	void (*set_fillcolor) (char *name);
-	void (*set_style) (char **s);
-	void (*ellipse) (point p, int rx, int ry, int filled);
-	void (*polygon) (point * A, int n, int filled);
-	void (*beziercurve) (point * A, int n, int arrow_at_start,
-			     int arrow_at_end, int filled);
-	void (*polyline) (point * A, int n);
-	boolean bezier_has_arrows;
-	void (*comment) (char *str);
-	void (*usershape) (usershape_t *us, boxf b, point * A, int sides, boolean filled);
-	void (*set_penwidth) (double penwidth);
-    };
-
-    struct codegen_info_s {
-	codegen_t *cg;		/* discovered codegen */
-	char *name;		/* output format, null for sentinel */
-	int id;			/* id of output format */
-	void *info;		/* additional info provided by discovery routine */
-	/* Quartz uses this to store the Quicktime Component */
-    };
-
-#endif
 
     typedef struct nodequeue {
 	node_t **store, **limit, **head, **tail;

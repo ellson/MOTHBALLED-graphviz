@@ -59,10 +59,6 @@ static unsigned long int crc;
 #include "logic.h"
 #include "gvio.h"
 
-#ifdef WITH_CODEGENS
-extern FILE* Output_file;
-#endif
-
 static const int PAGE_ALIGN = 4095;		/* align to a 4K boundary (less one), typical for Linux, Mac OS X and Windows memory allocation */
 
 static size_t gvwrite_no_z (GVJ_t * job, const char *s, size_t len)
@@ -150,10 +146,6 @@ void gvdevice_initialize(GVJ_t * job)
         }
         else
             job->output_file = stdout;
-
-#ifdef WITH_CODEGENS
-        Output_file = job->output_file;
-#endif
 
 #ifdef HAVE_SETMODE
 #ifdef O_BINARY
@@ -372,14 +364,6 @@ void gvdevice_finalize(GVJ_t * job)
 	    finalized_p = TRUE;
 	}
     }
-#ifdef WITH_CODEGENS
-    else {
-	codegen_t *cg = job->codegen;
-
-	if (cg && cg->reset)
-	    cg->reset();
-    }
-#endif
 
     if (! finalized_p) {
         /* if the device has no finalization then it uses file output */
