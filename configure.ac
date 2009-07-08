@@ -2452,9 +2452,16 @@ else
       fi
     fi
   fi
-  # prevent explicit use of /usr/include as it breaks mingw cross-compiles
+  # prevent explicit use of -I/usr/include as it breaks mingw cross-compiles
   if test "x$GD_INCLUDES" = "x-I/usr/include"; then
      GD_INCLUDES="";
+  fi
+  # prevent explicit use of -L/usr/lib or -L/usr/lib64, unnecessary clutter
+  if test "x$GD_LDFLAGS" = "x-L/usr/lib"; then
+     GD_LDFLAGS="";
+  fi
+  if test "x$GD_LDFLAGS" = "x-L/usr/lib64"; then
+     GD_LDFLAGS="";
   fi
 
   if test "x$with_mylibgd" = "xno"; then
