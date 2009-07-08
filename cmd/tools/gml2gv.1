@@ -1,0 +1,52 @@
+.TH GML2GV 1 "9 July 2009"
+.SH NAME
+gml2gv \- GML-DOT converter
+.SH SYNOPSIS
+.B gml2gv
+[
+.B \-?
+]
+[
+.BI -o outfile
+]
+[ 
+.I files
+]
+.br
+.SH DESCRIPTION
+.B gml2gv
+converts a graph specified in the GML format to a graph in the GV (formerly DOT) format. 
+.SH OPTIONS
+The following options are supported:
+.TP
+.B \-?
+Prints usage information and exits.
+.TP
+.BI \-o "outfile"
+Prints output to the file \fIoutfile\fP. If not given, \fBgml2gv\fP
+uses stdout.
+.TP
+.SH OPERANDS
+The following operand is supported:
+.TP 8
+.I files
+Names of files containing 1 or more graphs in GML.
+If no
+.I files
+operand is specified,
+the standard input will be used.
+.SH RETURN CODES
+Return \fB0\fP
+if there were no problems during conversion;
+and non-zero if any error occurred.
+.SH "LIMITATIONS"
+As both the graph and graphics models of GV and GML differ significantly, the
+conversion is at best approximate. In particular, it is not clear how multiedges
+are differentiated in GML, so multiedges are created in GV with no user-available
+key. Also, no attribute information is lost, in that
+any GML attributes that aren't converted to GV equivalents are retained as
+attributes in the output graph.
+.SH AUTHORS
+Emden R. Gansner <erg@research.att.com>
+.SH "SEE ALSO"
+dot(1), libcgraph(3)

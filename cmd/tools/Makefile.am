@@ -18,13 +18,13 @@ pdfdir = $(pkgdatadir)/doc/pdf
 
 noinst_HEADERS = colortbl.h convert.h mmio.h matrix_market.h graph_generator.h
 bin_PROGRAMS = gc gvcolor gxl2gv acyclic nop ccomps sccmap tred \
-	unflatten gvpack dijkstra bcomps mm2gv gvgen
+	unflatten gvpack dijkstra bcomps mm2gv gvgen gml2gv
 man_MANS = gc.1 gvcolor.1 gxl2gv.1 acyclic.1 nop.1 ccomps.1 sccmap.1 \
-	tred.1 unflatten.1 gvpack.1 dijkstra.1 bcomps.1 mm2gv.1 gvgen.1
+	tred.1 unflatten.1 gvpack.1 dijkstra.1 bcomps.1 mm2gv.1 gvgen.1 gml2gv.1
 pdf_DATA = gc.1.pdf gvcolor.1.pdf gxl2gv.1.pdf acyclic.1.pdf \
 	   nop.1.pdf ccomps.1.pdf sccmap.1.pdf tred.1.pdf \
 	   unflatten.1.pdf gvpack.1.pdf dijkstra.1.pdf \
-	   bcomps.1.pdf mm2gv.1.pdf gvgen.1.pdf
+	   bcomps.1.pdf mm2gv.1.pdf gvgen.1.pdf gml2gv.1.pdf
 
 install-data-hook:
 	(cd $(DESTDIR)$(man1dir); rm -f gv2gxl.1; $(LN_S) gxl2gv.1 gv2gxl.1;)
@@ -153,6 +153,30 @@ mm2gv_LDADD = \
 mm2gv.1.pdf: mm2gv.1
 	- @GROFF@ -Tps -man mm2gv.1 | @PS2PDF@ - - >mm2gv.1.pdf
 
+gml2gv_SOURCES = gml2gv.c gmlparse.c gmlscan.c
+
+gmlparse.c: y.tab.c
+	@SED@ "s/yy/gml/g" < y.tab.c > gmlparse.c
+
+gmlparse.h: y.tab.h
+	@SED@ "s/yy/gml/g" < y.tab.h > gmlparse.h
+
+y.tab.c y.tab.h : $(top_srcdir)/cmd/tools/gmlparse.y
+	@YACC@ -dv $(top_srcdir)/cmd/tools/gmlparse.y
+ 
+gmlscan.o gmlscan.lo : gmlscan.c gmlparse.h
+
+gmlscan.c: $(top_srcdir)/cmd/tools/gmlscan.l
+	@LEX@ -i $(top_srcdir)/cmd/tools/gmlscan.l
+	@SED@ "s/yy/gml/g" < @LEX_OUTPUT_ROOT@.c > gmlscan.c
+	rm @LEX_OUTPUT_ROOT@.c
+
+gml2gv_LDADD = \
+	$(top_builddir)/lib/cgraph/libcgraph.la @MATH_LIBS@
+
+gml2gv.1.pdf: gml2gv.1
+	- @GROFF@ -Tps -man gml2gv.1 | @PS2PDF@ - - >gml2gv.1.pdf
+
 dijkstra_SOURCES = dijkstra.c
 
 dijkstra_LDADD = \
@@ -179,4 +203,4 @@ EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old bcomps.vcproj \
 
 CLEANFILES = stamp.h
 
-DISTCLEANFILES = $(pdf_DATA)
+DISTCLEANFILES = $(pdf_DATA) gmlparse.[ch] gmlscan.c y.output y.tab.[ch]
