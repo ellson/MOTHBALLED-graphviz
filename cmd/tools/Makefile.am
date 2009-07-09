@@ -16,7 +16,8 @@ AM_CPPFLAGS = \
 
 pdfdir = $(pkgdatadir)/doc/pdf
 
-noinst_HEADERS = colortbl.h convert.h mmio.h matrix_market.h graph_generator.h
+noinst_HEADERS = colortbl.h convert.h mmio.h matrix_market.h \
+	 graph_generator.h gml2gv.h
 bin_PROGRAMS = gc gvcolor gxl2gv acyclic nop ccomps sccmap tred \
 	unflatten gvpack dijkstra bcomps mm2gv gvgen gml2gv
 man_MANS = gc.1 gvcolor.1 gxl2gv.1 acyclic.1 nop.1 ccomps.1 sccmap.1 \
@@ -153,7 +154,7 @@ mm2gv_LDADD = \
 mm2gv.1.pdf: mm2gv.1
 	- @GROFF@ -Tps -man mm2gv.1 | @PS2PDF@ - - >mm2gv.1.pdf
 
-gml2gv_SOURCES = gml2gv.c gmlparse.c gmlscan.c
+gml2gv_SOURCES = gml2gv.c gmlparse.y gmlscan.l
 
 gmlparse.c: y.tab.c
 	@SED@ "s/yy/gml/g" < y.tab.c > gmlparse.c
@@ -195,12 +196,11 @@ gvgen.1.pdf: $(srcdir)/gvgen.1
 	- @GROFF@ -Tps -man $(srcdir)/gvgen.1 | @PS2PDF@ - - >gvgen.1.pdf
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old bcomps.vcproj \
-		acyclic.vcproj bcomps.vcproj ccomps.vcproj dijkstra.vcproj \
-		gc.vcproj gv2gxl.vcproj gvcolor.vcproj gvgen.vcproj gvpack.vcproj \
-		gxl2gv.vcproj mm2gv.vcproj nop.vcproj sccmap.vcproj tred.vcproj \
-		unflatten.vcproj 
+	acyclic.vcproj bcomps.vcproj ccomps.vcproj dijkstra.vcproj gc.vcproj \
+	gv2gxl.vcproj gvcolor.vcproj gvgen.vcproj gvpack.vcproj gxl2gv.vcproj \
+	mm2gv.vcproj nop.vcproj sccmap.vcproj tred.vcproj unflatten.vcproj \
+	gmlscan.c gmlparse.c gmlparse.h y.output y.tab.c y.tab.h
 		
-
-CLEANFILES = stamp.h
+CLEANFILES = stamp.h 
 
 DISTCLEANFILES = $(pdf_DATA) gmlparse.[ch] gmlscan.c y.output y.tab.[ch]
