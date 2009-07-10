@@ -1127,8 +1127,8 @@ attachOrthoEdges (maze* mp, int n_edges, route* route_list, splineInfo *sinfo, e
 
     for (; irte < n_edges; irte++) {
 	e = es[irte].e;
-	p1 = addPoints(ND_coord(e->tail), ED_tail_port(e).p);
-	q1 = addPoints(ND_coord(e->head), ED_head_port(e).p);
+	p1 = addPoints(ND_coord(agtail(e)), ED_tail_port(e).p);
+	q1 = addPoints(ND_coord(aghead(e)), ED_head_port(e).p);
 
 	rte = route_list[irte];
 	npts = 1 + 3*rte.n;
@@ -1171,8 +1171,8 @@ attachOrthoEdges (maze* mp, int n_edges, route* route_list, splineInfo *sinfo, e
 	ispline[ipt] = ispline[ipt+1] = p;
 
 	if (Verbose > 1)
-		fprintf(stderr, "ortho %s %s\n", e->tail->name, e->head->name);
-	clip_and_install(e, e->head, ispline, npts, sinfo);
+		fprintf(stderr, "ortho %s %s\n", agnameof(agtail(e)),agnameof(aghead(e)));
+	clip_and_install(e, aghead(e), ispline, npts, sinfo);
     }
     free(ispline);
 }
@@ -1180,8 +1180,8 @@ attachOrthoEdges (maze* mp, int n_edges, route* route_list, splineInfo *sinfo, e
 static int
 edgeLen (Agedge_t* e)
 {
-    pointf p = ND_coord(e->tail);
-    pointf q = ND_coord(e->head);
+    pointf p = ND_coord(agtail(e));
+    pointf q = ND_coord(aghead(e));
     return (int)DIST2(p,q);
 }
 
@@ -1230,8 +1230,8 @@ orthoEdges (Agraph_t* g, int useLbls)
         for (e = agfstout(g, n); e; e = agnxtout(g,e)) {
 	    if ((Nop == 2) && ED_spl(e)) continue;
 	    if (Concentrate) {
-		int ti = e->tail->id;
-		int hi = e->head->id;
+		int ti = AGID(agtail(e));
+		int hi = AGID(aghead(e));
 		if (ti <= hi) {
 		    if (isInPS (ps,ti,hi)) continue;
 		    else addPS (ps,ti,hi);
@@ -1257,8 +1257,8 @@ orthoEdges (Agraph_t* g, int useLbls)
     dn = &sg->nodes[gstart+1];
     for (i = 0; i < n_edges; i++) {
 	e = es[i].e;
-        start = CELL(e->tail);
-        dest = CELL(e->head);
+        start = CELL(agtail(e));
+        dest = CELL(aghead(e));
 
 	if (start == dest)
 	    addLoop (sg, start, dn);
@@ -1358,7 +1358,7 @@ static boxf
 emitEdge (FILE* fp, Agedge_t* e, route rte, maze* m, int ix, boxf bb)
 {
   int i, x, y;
-  boxf n = CELL(e->head)->bb;
+  boxf n = CELL(aghead(e))->bb;
   segment* seg = rte.segs;
   if (seg->isVert) {
     x = vtrack(seg, m);
@@ -1389,7 +1389,7 @@ emitEdge (FILE* fp, Agedge_t* e, route rte, maze* m, int ix, boxf bb)
     fprintf (fp, "%d %d lineto\n", SC*x, SC*y);
   }
 
-  n = CELL(e->tail)->bb;
+  n = CELL(agtail(e))->bb;
   if (seg->isVert) {
     x = vtrack(seg, m);
     y = (n.UR.y + n.LL.y)/2;
