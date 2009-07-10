@@ -1351,7 +1351,7 @@ static void mds_model(graph_t * g, int nG)
 	    j = AGID(aghead(e));
 	    if (i == j)
 		continue;
-	    GD_dist(g)[i][j] = GD_dist(g)[j][i] = GD_dist(e);
+	    GD_dist(g)[i][j] = GD_dist(g)[j][i] = ED_dist(e);
 	}
     }
 }
