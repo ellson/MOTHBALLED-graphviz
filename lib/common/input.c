@@ -175,7 +175,6 @@ static void global_def(agxbuf* xb, char *dcl, int kind,
     char *p;
     char *rhs = "true";
 
-    agxbinit(&xb, SMALLBUF, buf);
     attrsym_t *sym;
     if ((p = strchr(dcl, '='))) {
 	agxbput_n (xb, dcl, p-dcl);
