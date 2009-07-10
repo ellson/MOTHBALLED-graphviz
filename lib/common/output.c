@@ -25,6 +25,22 @@
 int Y_off;           /* ymin + ymax */
 double YF_off;       /* Y_off in inches */
 
+#ifdef WITH_CGRAPH
+static int (*putstr) (void *chan, const char *str);
+
+static void agputs (const char* s, FILE* fp)
+{
+    putstr ((void*)fp, s);
+}
+static void agputc (int c, FILE* fp)
+{
+    static char buf[2] = {'\0','\0'};
+    buf[1] = c;
+    agputs (buf, fp);
+}
+
+#endif
+
 static void printstring(FILE * f, char *prefix, char *s)
 {
     if (prefix) agputs(prefix, f);
@@ -110,6 +126,9 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
     pointf pt;
     char *lbl;
 
+#ifdef WITH_CGRAPH
+    putstr = g->clos->disc.io->putstr;
+#endif
 //    setup_graph(job, g);
     setYInvert(g);
     pt = GD_bb(g).UR;
