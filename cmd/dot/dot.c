@@ -37,6 +37,7 @@ __declspec(dllimport) boolean MemTest;
 __declspec(dllimport) boolean MemTest;
 #endif
 
+#include <stdlib.h>
 #include <time.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
