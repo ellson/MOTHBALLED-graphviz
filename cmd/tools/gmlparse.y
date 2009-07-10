@@ -22,8 +22,6 @@
 #include <agxbuf.h>
 #include <assert.h>
 
-#include "gmlparse.h"
-
 #define NEW(t)       (t*)malloc(sizeof(t))
 #define N_NEW(n,t)   (t*)malloc((n)*sizeof(t))
 #define RALLOC(size,ptr,type) ((type*)realloc(ptr,(size)*sizeof(type)))
@@ -37,6 +35,8 @@ static Dt_t* L;
 static Dt_t** liststk;
 static int liststk_sz, liststk_cnt;
  
+static void free_attr (Dt_t*d, gmlattr* p, Dtdisc_t* ds); /* forward decl */
+
 static void
 free_node (Dt_t*d, gmlnode* p, Dtdisc_t* ds)
 {
@@ -50,18 +50,6 @@ free_edge (Dt_t*d, gmledge* p, Dtdisc_t* ds)
 {
     if (!p) return;
     dtclose (p->attrlist);
-    free (p);
-}
-
-static void
-free_attr (Dt_t*d, gmlattr* p, Dtdisc_t* ds)
-{
-    if (!p) return;
-    if (p->kind == LIST)
-	dtclose (p->u.lp);
-    else
-	free (p->u.value);
-    free (p->name);
     free (p);
 }
 
@@ -399,6 +387,18 @@ alistitem : NAME INTEGER { $$ = mkAttr ($1, 0, INTEGER, $2, 0); }
           ;
 
 %%
+
+static void
+free_attr (Dt_t*d, gmlattr* p, Dtdisc_t* ds)
+{
+    if (!p) return;
+    if (p->kind == LIST)
+	dtclose (p->u.lp);
+    else
+	free (p->u.value);
+    free (p->name);
+    free (p);
+}
 
 static void deparseList (Dt_t* alist, agxbuf* xb); /* forward declaration */
 
