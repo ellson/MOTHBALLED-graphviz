@@ -104,7 +104,7 @@ layout (Agraph_t* g, int depth)
 
     if (Verbose > 1) {
 	indent (depth);
-	fprintf (stderr, "layout %s\n", g->name);
+	fprintf (stderr, "layout %s\n", agnameof(g));
     }
 
     /* Lay out subclusters */
@@ -128,13 +128,18 @@ layout (Agraph_t* g, int depth)
 
         /* add user sort values if necessary */
     if ((pinfo.mode == l_array) && (pinfo.flags & PK_USER_VALS)) {
+#ifdef WITH_CGRAPH
+	cattr = agattr(root, AGRAPH, "sortv", 0);
+	vattr = agattr(root, AGNODE, "sortv", 0);
+#else
 	cattr = agfindattr(root, "sortv");
 	vattr = agfindattr(root->proto->n, "sortv");
+#endif
 	if (cattr || vattr)
 	    pinfo.vals = N_NEW(total, unsigned char);
 	else
 	    agerr (AGWARN, "Graph %s has array packing with user values but no \"sortv\" attributes are defined.",
-		g->name);
+		agnameof(g));
     }
 
     gs = N_NEW(total, boxf);
@@ -187,7 +192,7 @@ layout (Agraph_t* g, int depth)
 	    GD_bb(subg) = bb;
 	    if (Verbose > 1) {
 		indent (depth);
-		fprintf (stderr, "%s : %f %f %f %f\n", subg->name, bb.LL.x, bb.LL.y, bb.UR.x, bb.UR.y);
+		fprintf (stderr, "%s : %f %f %f %f\n", agnameof(subg), bb.LL.x, bb.LL.y, bb.UR.x, bb.UR.y);
 	    }
 	}
 	else {
@@ -195,7 +200,7 @@ layout (Agraph_t* g, int depth)
 	    ND_coord(n) = mid_pointf (bb.LL, bb.UR);
 	    if (Verbose > 1) {
 		indent (depth);
-		fprintf (stderr, "%s : %f %f\n", n->name, ND_coord(n).x, ND_coord(n).y);
+		fprintf (stderr, "%s : %f %f\n", agnameof(n), ND_coord(n).x, ND_coord(n).y);
 	    }
 	}
     }
@@ -231,7 +236,7 @@ layout (Agraph_t* g, int depth)
 
     if (Verbose > 1) {
 	indent (depth);
-	fprintf (stderr, "%s : %f %f %f %f\n", g->name, rootbb.LL.x, rootbb.LL.y, rootbb.UR.x, rootbb.UR.y);
+	fprintf (stderr, "%s : %f %f %f %f\n", agnameof(g), rootbb.LL.x, rootbb.LL.y, rootbb.UR.x, rootbb.UR.y);
     }
 
     /* Translate so that rootbb.LL is origin.
@@ -247,7 +252,7 @@ layout (Agraph_t* g, int depth)
 	    GD_bb(subg) = bb;
 	    if (Verbose > 1) {
 		indent (depth);
-		fprintf (stderr, "%s : %f %f %f %f\n", subg->name, bb.LL.x, bb.LL.y, bb.UR.x, bb.UR.y);
+		fprintf (stderr, "%s : %f %f %f %f\n", agnameof(subg), bb.LL.x, bb.LL.y, bb.UR.x, bb.UR.y);
 	    }
 	}
 	else {
@@ -255,7 +260,7 @@ layout (Agraph_t* g, int depth)
 	    ND_coord(n) = sub_pointf (ND_coord(n), rootbb.LL);
 	    if (Verbose > 1) {
 		indent (depth);
-		fprintf (stderr, "%s : %f %f\n", n->name, ND_coord(n).x, ND_coord(n).y);
+		fprintf (stderr, "%s : %f %f\n", agnameof(n), ND_coord(n).x, ND_coord(n).y);
 	    }
 	}
     }
@@ -266,7 +271,7 @@ layout (Agraph_t* g, int depth)
 
     if (Verbose > 1) {
 	indent (depth);
-	fprintf (stderr, "%s : %f %f %f %f\n", g->name, rootbb.LL.x, rootbb.LL.y, rootbb.UR.x, rootbb.UR.y);
+	fprintf (stderr, "%s : %f %f %f %f\n", agnameof(g), rootbb.LL.x, rootbb.LL.y, rootbb.UR.x, rootbb.UR.y);
     }
 
     free (gs);
@@ -284,7 +289,7 @@ reposition (Agraph_t* g, int depth)
 
     if (Verbose > 1) {
 	indent (depth);
-	fprintf (stderr, "reposition %s\n", g->name);
+	fprintf (stderr, "reposition %s\n", agnameof(g));
     }
 
     /* translate nodes in g but not in a subcluster */
@@ -296,7 +301,7 @@ reposition (Agraph_t* g, int depth)
             ND_coord(n).y += bb.LL.y;
 	    if (Verbose > 1) {
 		indent (depth);
-		fprintf (stderr, "%s : %f %f\n", n->name, ND_coord(n).x, ND_coord(n).y);
+		fprintf (stderr, "%s : %f %f\n", agnameof(n), ND_coord(n).x, ND_coord(n).y);
 	    }
         }
     }
@@ -312,7 +317,7 @@ reposition (Agraph_t* g, int depth)
             sbb.UR.y += bb.LL.y;
 	    if (Verbose > 1) {
 		indent (depth);
-		fprintf (stderr, "%s : %f %f %f %f\n", subg->name, sbb.LL.x, sbb.LL.y, sbb.UR.x, sbb.UR.y);
+		fprintf (stderr, "%s : %f %f %f %f\n", agnameof(subg), sbb.LL.x, sbb.LL.y, sbb.UR.x, sbb.UR.y);
 	    }
             GD_bb(subg) = sbb;
         }
@@ -324,9 +329,11 @@ reposition (Agraph_t* g, int depth)
 static void
 mkClusters (Agraph_t* g, clist_t* pclist, Agraph_t* parent)
 {
+#ifndef WITH_CGRAPH
     node_t*  mn;
     edge_t*  me;
     graph_t* mg;
+#endif
     graph_t* subg;
     clist_t  list;
     clist_t* clist;
@@ -338,11 +345,9 @@ mkClusters (Agraph_t* g, clist_t* pclist, Agraph_t* parent)
     else
         clist = pclist;
 
-    mg = g->meta_node->graph;
-    for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
-        mn = me->head;
-        subg = agusergraph(mn);
-        if (!strncmp(subg->name, "cluster", 7)) {
+#ifdef WITH_CGRAPH
+    for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
+        if (!strncmp(agnameof(subg), "cluster", 7)) {
 	    do_graph_label (subg);
             addCluster(clist, subg);
             mkClusters(subg, NULL, subg);
@@ -351,6 +356,21 @@ mkClusters (Agraph_t* g, clist_t* pclist, Agraph_t* parent)
             mkClusters(subg, clist, parent);
         }
     }
+#else
+    mg = g->meta_node->graph;
+    for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
+        mn = me->head;
+        subg = agusergraph(mn);
+        if (!strncmp(agnameof(subg), "cluster", 7)) {
+	    do_graph_label (subg);
+            addCluster(clist, subg);
+            mkClusters(subg, NULL, subg);
+        }
+        else {
+            mkClusters(subg, clist, parent);
+        }
+    }
+#endif
     if (pclist == NULL) {
         GD_n_cluster(g) = list.cnt;
         if (list.cnt)
