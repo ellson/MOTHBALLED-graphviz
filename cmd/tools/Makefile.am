@@ -17,7 +17,7 @@ AM_CPPFLAGS = \
 pdfdir = $(pkgdatadir)/doc/pdf
 
 noinst_HEADERS = colortbl.h convert.h mmio.h matrix_market.h \
-	 graph_generator.h gml2gv.h
+	 graph_generator.h gml2gv.h gmlparse.h
 bin_PROGRAMS = gc gvcolor gxl2gv acyclic nop ccomps sccmap tred \
 	unflatten gvpack dijkstra bcomps mm2gv gvgen gml2gv
 man_MANS = gc.1 gvcolor.1 gxl2gv.1 acyclic.1 nop.1 ccomps.1 sccmap.1 \
@@ -162,10 +162,12 @@ gmlparse.c: y.tab.c
 gmlparse.h: y.tab.h
 	@SED@ "s/yy/gml/g" < y.tab.h > gmlparse.h
 
-y.tab.c y.tab.h : $(top_srcdir)/cmd/tools/gmlparse.y
+y.tab.c y.tab.h : y.output
+
+y.output: $(top_srcdir)/cmd/tools/gmlparse.y
 	@YACC@ -dv $(top_srcdir)/cmd/tools/gmlparse.y
  
-gmlscan.o gmlscan.lo : gmlscan.c gmlparse.h
+gmlparse.o gmlparse.lo gmlscan.o gmlscan.lo : gmlscan.c gmlparse.h
 
 gmlscan.c: $(top_srcdir)/cmd/tools/gmlscan.l
 	@LEX@ -i $(top_srcdir)/cmd/tools/gmlscan.l

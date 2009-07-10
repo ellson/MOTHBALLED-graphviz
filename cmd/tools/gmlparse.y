@@ -21,6 +21,9 @@
 #include <gml2gv.h>
 #include <agxbuf.h>
 #include <assert.h>
+
+#include "gmlparse.h"
+
 #define NEW(t)       (t*)malloc(sizeof(t))
 #define N_NEW(n,t)   (t*)malloc((n)*sizeof(t))
 #define RALLOC(size,ptr,type) ((type*)realloc(ptr,(size)*sizeof(type)))
