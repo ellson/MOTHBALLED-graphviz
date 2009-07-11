@@ -82,7 +82,7 @@ Agraph_t *agopen1(Agraph_t * g)
 	AGSEQ(g) = agnextseq(par, AGRAPH);
 	dtinsert(par->g_dict, g);
     }				/* else AGSEQ=0 */
-    if (g->desc.has_attrs)
+    if (!par || par->desc.has_attrs)
 	agraphattr_init(g);
     agmethod_init(g, g);
     return g;
