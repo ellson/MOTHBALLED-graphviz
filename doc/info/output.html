@@ -322,6 +322,17 @@ and uses the HTML
 <IMG SRC="x.gif" USEMAP="#mainmap" />
 ... [content of x.map] ...
 </XMP>
+Note that the name given in the USEMAP attribute must be the same
+as the ID attribute of the MAP element. The Graphviz renderer
+uses the name of the graph as the ID. Thus, in the example above,
+where the graph's name is <T>mainmap</T>, we have <T>USEMAP="#mainmap"</T>
+in the IMG attribute, and x.map will look like
+<XMP>
+<map id="mainmap" name="mainmap">
+... 
+</map>
+</XMP>
+<P>
 <A HREF=attrs.html#d:URL>URLs</A> can be attached to the root
 graph, nodes and edges. If a node has a URL, clicking in the node
 will activate the link.
