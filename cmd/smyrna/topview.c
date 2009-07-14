@@ -57,7 +57,6 @@ static int select_topview_node(topview_node * n);
 static int update_topview_node_from_cgraph(topview_node * Node);
 #endif
 static int get_color_from_edge(topview_edge * e);
-static int draw_node_hint_boxes(void);
 static int pick_node(topview_node * n);
 
 #ifdef UNUSED
@@ -394,6 +393,8 @@ void preparetopview(Agraph_t * g, topview * t)
 	/*reset picked nodes*/
 	t->picked_node_count = 0;
     t->picked_nodes = '\0';
+	t->picked_edge_count = 0;
+    t->picked_edges = '\0';
 
 }
 
@@ -464,8 +465,10 @@ static void enddrawcycle(Agraph_t* g)
     }
     if (view->Selection.single_selected_node)	
 	{
-		if (view->mouse.button== rightmousebutton)	//right click pick mode
-			pick_node(view->Selection.single_selected_node);
+	if (view->mouse.button== rightmousebutton)
+		//right click pick mode
+		;
+	/*		pick_node(view->Selection.single_selected_node);*/
 	else 
 	{	//left click single select mode
 	    if (view->Selection.single_selected_node->data.Selected == 0) 
@@ -512,8 +515,7 @@ static int drawtopviewnodes(Agraph_t * g)
     float ddx, ddy, ddz;
     int ind = 0;
     float dotsize = set_gl_dot_size(view->Topview);		//sets the size of the gl points
-
-    set_topview_options();
+	set_topview_options();
     begintopviewnodes(g, dotsize);
     view->visiblenodecount=0;
     for (ind = 0; ind < view->Topview->Nodecount; ind++) {
@@ -528,25 +530,24 @@ static int drawtopviewnodes(Agraph_t * g)
 	    if(!view->drawnodes || !node_visible(v))
 		continue;
 
-	    select_topview_node(v);
+	    /*check for each node if it needs to be selected or picked*/
+		select_topview_node(v);
 		//UPDATE view->Topview data from cgraph
 		/* if (v->update_required) */
 		    /* update_topview_node_from_cgraph(v); */
-	    if (v->data.Selected == 1) {
-		glColor4f(view->selectedNodeColor.R,
-		      view->selectedNodeColor.G,
-		      view->selectedNodeColor.B,
-		      view->selectedNodeColor.A); 
-		ddx = dx;
-		ddy = dy;
-		ddz = dz;
+	    if (v->data.Selected == 1) 
+		{
+			glColor4f(view->selectedNodeColor.R, view->selectedNodeColor.G, view->selectedNodeColor.B, view->selectedNodeColor.A); 
+			ddx = dx;
+			ddy = dy;
+			ddz = dz;
 	    } 
-	    else {  //get the color from node
-		glColor4f(v->Color.R, v->Color.G, v->Color.B,
-				v->node_alpha*view->defaultnodealpha);
-		ddx = 0;
-		ddy = 0;
-		ddz = 0;
+	    else 
+		{  //get the color from node
+			glColor4f(v->Color.R, v->Color.G, v->Color.B,v->node_alpha*view->defaultnodealpha);
+			ddx = 0;
+			ddy = 0;
+			ddz = 0;
 	    }
 
 	    if (v->distorted_x != v->x)
@@ -641,7 +642,9 @@ static int drawtopviewlabels(Agraph_t * g)
 	topview_node *v;
 	float f;
 
-	if ((view->visiblenodecount >view->labelnumberofnodes) || (!view->labelshownodes) ||(!view->drawnodes))
+	if (
+		((view->visiblenodecount >view->labelnumberofnodes) && (view->active_camera == -1))
+		|| (!view->labelshownodes) ||(!view->drawnodes))
 		return 0;
 	if (view->Topview->maxnodedegree > 15)
 		f=15;
@@ -652,8 +655,11 @@ static int drawtopviewlabels(Agraph_t * g)
 		
 		v = &view->Topview->Nodes[ind];
 
-		if( ((float)view->visiblenodecount   > view->labelnumberofnodes * v->degree /  f) && view->labelwithdegree)
-			continue;
+		if (view->active_camera == -1)
+		{
+			if( ((float)view->visiblenodecount   > view->labelnumberofnodes * v->degree /  f) && view->labelwithdegree)
+				continue;
+		}
 		if (!node_visible(v))
 		    continue;
 	    draw_topview_label(v, 1);
@@ -711,56 +717,9 @@ void drawTopViewGraph(Agraph_t * g)
     }
 }
 
-static int is_node_picked(topview_node * n)
-{
-    int ind = 0;
-    int found = 0;
-    for (; ind < view->Topview->picked_node_count; ind++) {
-	if ((view->Topview->picked_nodes[ind] == n) && (!found))
-	    return 1;
-    }
-    return 0;
-}
 
-static int remove_from_pick_list(topview_node * n)
-{
-    int ind = 0;
-    int found = 0;
-	view->mouse.button=-1;	//reset button click to avoid extra selection and pick chekcs
- 
-	for (; ind < view->Topview->picked_node_count; ind++) {
-	if ((view->Topview->picked_nodes[ind] == n) && (!found))
-	    found = 1;
-	if ((found) && (ind < (view->Topview->picked_node_count - 1))) {
-	    view->Topview->picked_nodes[ind] =
-		view->Topview->picked_nodes[ind + 1];
-	}
-    }
-    if (found) {
-	view->Topview->picked_node_count--;
-	view->Topview->picked_nodes =
-	    realloc(view->Topview->picked_nodes,
-		    sizeof(topview_node *) *
-		    view->Topview->picked_node_count);
-	return 1;
-    }
-    return 0;
-}
 
-static int add_to_pick_list(topview_node * n)
-{
-    view->Topview->picked_node_count++;
-    view->Topview->picked_nodes =
-	realloc(view->Topview->picked_nodes,
-		sizeof(topview_node *) * view->Topview->picked_node_count);
-    view->Topview->picked_nodes[view->Topview->picked_node_count - 1] = n;
-	view->mouse.button=-1;	//reset button click to avoid extra selection and pick chekcs
-
-    return 1;
-
-}
-
-static int pick_node(topview_node * n)
+/*static int pick_node(topview_node * n)
 {
 	if (!is_node_picked(n)) 
 	{
@@ -780,51 +739,28 @@ static int pick_node(topview_node * n)
 	}
     return 0;
 
-}
+}*/
 
-static int draw_node_hint_boxes(void)
-{
-    int ind;
-    float fs = GetOGLDistance(12);
-    char* lbl;
-    topview_node* n;
-    double dx, dy, dz;
-
-    view->widgets->fontset->fonts[view->widgets->fontset->activefont]->fontheight=fs;
-    for (ind = 0; ind < view->Topview->picked_node_count; ind++) {
-	n = view->Topview->picked_nodes[ind];
-	lbl = agnameof(n->Node);
-	dx = n->distorted_x;
-	dy = n->distorted_y;
-	dz = n->distorted_z;
-
-	draw_node_hintbox(dx, dy, dz, (GLfloat) fs, lbl);
-
-	/*blue font color*/
-	glColor4f(0, 0, 1, 1);
-	glprintfglut (GLUT_BITMAP_HELVETICA_12, dx,(dy+fs+fs/(GLfloat)5.0),lbl);
-    }
-    return 1;
-}
 
 
 static int select_topview_node(topview_node * n)
 {
-/*    if (!view->Selection.Active) {
+    if (!view->Selection.Active) {
 	//implement hint box here
-		if (view->mouse.button== rightmousebutton)
+/*		if (view->mouse.button== rightmousebutton)
 		{
 			if (pick_node(n))
 				view->mouse.button = -1;
 		}
-		return 0;
-    }*/
+		return 0;*/
+    }
 	if (
 		(( view->Selection.Type == 0) && (view->Selection.Active))
 		|| 
 		(view->mouse.button== rightmousebutton))	//single selection or right click (picking)
 	{
 		float dist=(float)DIST2(view->Selection.X-n->distorted_x, view->Selection.Y-n->distorted_y);
+
 		if ((view->Selection.node_distance==-1) ||(dist < view->Selection.node_distance))
 		{
 				view->Selection.node_distance=dist;
@@ -1001,10 +937,11 @@ static int draw_topview_label(topview_node * v, float zdepth)
     float ddx = 0;
     float ddy = 0;
 	char* buf;
-	if ((v->distorted_x / view->zoom * -1 > view->clipX1)
+	char bf[256];
+	if (((v->distorted_x / view->zoom * -1 > view->clipX1)
 	&& (v->distorted_x / view->zoom * -1 < view->clipX2)
 	&& (v->distorted_y / view->zoom * -1 > view->clipY1)
-	&& (v->distorted_y / view->zoom * -1 < view->clipY2)) 
+	&& (v->distorted_y / view->zoom * -1 < view->clipY2)) || (view->active_camera >=0))
 	{
 		if (v->data.Selected == 1) 
 		{
@@ -1014,7 +951,7 @@ static int draw_topview_label(topview_node * v, float zdepth)
 		glColor4f(view->nodelabelcolor.R,view->nodelabelcolor.G,view->nodelabelcolor.B,view->nodelabelcolor.A);
 		buf=agget(agraphof(v->Node),"nodelabelattribute");
 		if (buf)
-			glprintfglut(view->glutfont,(v->distorted_x - ddx),(v->distorted_y - ddy),
+			glprintfglut(view->glutfont,(v->distorted_x - ddx),(v->distorted_y - ddy),v->distorted_z,
                           agget(v->Node,buf));
 		return 1;
     } else
@@ -1026,11 +963,13 @@ static int draw_topview_edge_label(topview_edge * e, float zdepth)
     float ddx = 0;
     float ddy = 0;
 	char* buf;
-	float x1,y1,x2,y2,x,y;
+	float x1,y1,z1,x2,y2,z2,x,y,z;
 	x1=e->Node1->distorted_x;
 	y1=e->Node1->distorted_y;
 	x2=e->Node2->distorted_x;
 	y2=e->Node2->distorted_y;
+	z1=e->Node1->distorted_z;
+	z2=e->Node2->distorted_z;
 
 
 	if ((x1 / view->zoom * -1 > view->clipX1)
@@ -1041,6 +980,7 @@ static int draw_topview_edge_label(topview_edge * e, float zdepth)
 
 		x=(x2-x1)/2.00 + x1;
 		y=(y2-y1)/2.00 + y1;
+		z=(z2-z1)/2.00 + z1;
 		if (e->data.Selected==1)
 		{
 		    ddx = dx;
@@ -1049,7 +989,7 @@ static int draw_topview_edge_label(topview_edge * e, float zdepth)
 		glColor4f(view->edgelabelcolor.R,view->edgelabelcolor.G,view->edgelabelcolor.B,view->edgelabelcolor.A);
 		buf=agget(agraphof(e->Edge),"edgelabelattribute");
 		if (buf)
-			glprintfglut(view->glutfont,x - ddx,y - ddy,agget(e->Edge,buf));
+			glprintfglut(view->glutfont,x - ddx,y - ddy,z,agget(e->Edge,buf));
 		return 1;
     } else
 		return 0;

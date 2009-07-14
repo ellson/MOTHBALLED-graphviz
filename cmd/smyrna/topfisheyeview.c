@@ -424,12 +424,12 @@ void drawtopfishnodelabels(topview* t)
 				if((v==t->fs->foci_nodes[0]) &&(focusnodes))
 				{
 					glColor4f((float)0, (float)0, (float)1, (float)1);
-					glprintfglut(GLUT_BITMAP_HELVETICA_18,gg[v].physical_x_coord,gg[v].physical_y_coord,buf);
+					glprintfglut(GLUT_BITMAP_HELVETICA_18,gg[v].physical_x_coord,gg[v].physical_y_coord,0,buf);
 				}
 				else if (finenodes)
 				{
 					glColor4f(0, 0, 0, 1);
-					glprintfglut(GLUT_BITMAP_HELVETICA_10,gg[v].physical_x_coord,gg[v].physical_y_coord,buf);
+					glprintfglut(GLUT_BITMAP_HELVETICA_10,gg[v].physical_x_coord,gg[v].physical_y_coord,0,buf);
 				}
 			}
 

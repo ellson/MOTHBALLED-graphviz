@@ -480,7 +480,7 @@ static void EmbedText(xdot_op * op, int param)
     if (param == 1)		//selected
 	fontColor(view->widgets->fontset->fonts[view->widgets->fontset->activefont],view->selectedNodeColor.R, view->selectedNodeColor.G,
 		  view->selectedNodeColor.B,1);
-	glprintf(view->widgets->fontset->fonts[view->widgets->fontset->activefont], (x - dx), (GLfloat)op->u.text.y -  dy,
+	glprintf(view->widgets->fontset->fonts[view->widgets->fontset->activefont], (x - dx), (GLfloat)op->u.text.y -  dy,(GLfloat)0,
 		   (GLfloat)op->u.text.width, op->u.text.text);
 }
 
@@ -942,6 +942,7 @@ int draw_node_hintbox_gl_line(GLfloat x,GLfloat y,GLfloat z,GLfloat fs,char* tex
 int draw_node_hintbox(GLfloat x,GLfloat y,GLfloat z,GLfloat fs,char* text)
 {
 	
+
 	glColor3f(1,1,0);
 		draw_node_hintbox_gl_polygon(x,y,z,fs,text);
 	glColor3f(0,0,1);

@@ -202,7 +202,7 @@ int glCompDrawButton(glCompButton * p)
 	     p->fontsize) / (GLfloat) 2.0 + p->pos.y + p->thickness;
 
 		
-	glprintf(p->font, fontx,fonty, fontwidth,p->caption);
+	glprintf(p->font, fontx,fonty, p->bevel,fontwidth,p->caption);
 	}
     //put glyph
     else 

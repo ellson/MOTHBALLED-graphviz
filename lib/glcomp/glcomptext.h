@@ -33,10 +33,9 @@ extern void free_font_set(fontset_t* fontset);
 extern void copy_font(glCompText* targetfont,const glCompText* sourcefont);
 extern glCompText* add_font(fontset_t* fontset,char* fontdesc);
 extern glCompText* add_glut_font(fontset_t* fontset,void* glutfont);
-extern void glprintf (glCompText*, GLfloat , GLfloat , GLfloat, char*);
-extern	void glprintfglut (void* font, GLfloat xpos, GLfloat ypos, char *bf);
-extern void glprintfz (glCompText*, GLfloat , GLfloat , GLfloat, GLfloat, char*);
-extern	void glprintfglutz (void* font, GLfloat xpos, GLfloat ypos, GLfloat, char *bf);
+extern void glprintf (glCompText*, GLfloat , GLfloat , GLfloat ,GLfloat, char*);
+
+extern	void glprintfglut (void* font, GLfloat xpos, GLfloat ypos, GLfloat zpos,char *bf);
 
 extern glCompText* font_init(void);
 extern void fontColor (glCompText* font,float r, float g, float b,float a);

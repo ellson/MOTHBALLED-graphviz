@@ -67,6 +67,9 @@ const Gdiplus::StringFormat* GetGenericTypographic()
 void SaveBitmapToStream(Bitmap &bitmap, IStream *stream, int format)
 {
 	/* search the encoders for one that matches our device id, then save the bitmap there */
+	GdiplusStartupInput gdiplusStartupInput;
+	ULONG_PTR gdiplusToken;
+	GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 	UINT encoderNum;
 	UINT encoderSize;
 	GetImageEncodersSize(&encoderNum, &encoderSize);

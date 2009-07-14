@@ -78,9 +78,7 @@ int glCompDrawLabel(glCompLabel * p)
 	p->font->fontheight=p->size;
 	fontColor(p->font,p->color.R, p->color.G, p->color.B, p->color.A);
 
-	glprintf(p->font, p->pos.x,  p->pos.y,
-		        (p->size * p->fontsizefactor *
-			      strlen(p->text)), p->text);
+	glprintf(p->font, p->pos.x,  p->pos.y,p->panel->bevel,(p->size * p->fontsizefactor *strlen(p->text)), p->text);
 	if (p->panel) {
 	    p->pos.x = p->pos.x - p->panel->pos.x;
 	    p->pos.y = p->pos.y - p->panel->pos.y;

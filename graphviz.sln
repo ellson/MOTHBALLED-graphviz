@@ -7,6 +7,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Pathplan", "lib\pathplan\Pa
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cdt", "lib\cdt\cdt.vcproj", "{83CF0498-7884-49D3-8B3C-263C5AF5FE1B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0DEA7FAC-4190-4B39-BEF0-1C055758FED3} = {0DEA7FAC-4190-4B39-BEF0-1C055758FED3}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvc", "lib\gvc.vcproj", "{15229511-9F6C-48A5-9194-660CA6492563}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -72,6 +75,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dot", "cmd\dot\dot.vcproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvplugin_neato_layout", "plugin\neato_layout\gvplugin_neato_layout.vcproj", "{92EA9398-9244-4DAA-8E7D-2F6BEC338CAB}"
 	ProjectSection(ProjectDependencies) = postProject
+		{443EB1A7-C634-4292-9F2D-C752BB2BF40F} = {443EB1A7-C634-4292-9F2D-C752BB2BF40F}
 		{AE706502-3203-4815-BF50-4D73BF96BA58} = {AE706502-3203-4815-BF50-4D73BF96BA58}
 		{15229511-9F6C-48A5-9194-660CA6492563} = {15229511-9F6C-48A5-9194-660CA6492563}
 		{C5CEB09E-79AF-4091-ACCF-D28EC3D7D90F} = {C5CEB09E-79AF-4091-ACCF-D28EC3D7D90F}

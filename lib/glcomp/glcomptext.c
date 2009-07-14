@@ -77,15 +77,9 @@ void restore_gl_vars(glCompText* f)
 		glDisable (GL_TEXTURE_2D);
 	glMatrixMode (f->glcache.matrix);
 }
-void glprintfglut (void* font, GLfloat xpos, GLfloat ypos, char *bf)
+void glprintfglut (void* font, GLfloat xpos, GLfloat ypos, GLfloat zpos,char *bf)
 {
-	glRasterPos3f(xpos,ypos,1);
-	  print_bitmap_string(font,bf);	
-}
-
-void glprintfglutz (void* font, GLfloat xpos, GLfloat ypos, GLfloat zpos, char *bf)
-{
-	glRasterPos3f(xpos,ypos,zpos+0.01);
+	glRasterPos3f(xpos,ypos,zpos+0.001);
 	  print_bitmap_string(font,bf);	
 }
 
@@ -112,10 +106,7 @@ glPrintf (glCompText* font, GLfloat xpos, GLfloat ypos, GLfloat zpos,
 		return;
 	if (font->isglut)
 	{
-		if (usez)
-			glprintfglutz (font->glutfont, xpos,ypos,zpos,bf);
-		else
-			glprintfglut (font->glutfont, xpos,ypos,bf);
+		glprintfglut (font->glutfont, xpos,ypos,zpos,bf);
 		return;
 	}
 
@@ -171,9 +162,10 @@ glPrintf (glCompText* font, GLfloat xpos, GLfloat ypos, GLfloat zpos,
 }
 
 void 
-glprintf (glCompText* font, GLfloat xpos, GLfloat ypos, GLfloat width, char *bf)
+glprintf (glCompText* font, GLfloat xpos, GLfloat ypos, GLfloat zpos,GLfloat width, char *bf)
+
 {
-	glPrintf (font, xpos, ypos, 0, width, bf, 0);
+	glPrintf (font, xpos, ypos, zpos, width, bf, 0);
 }
 
 void 

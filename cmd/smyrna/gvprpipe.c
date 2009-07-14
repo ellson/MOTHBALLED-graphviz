@@ -20,8 +20,9 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <glade/glade.h>
-#include <viewport.h> 
-#include <gltemplate.h> 
+
+//#include <viewport.h> 
+//#include <gltemplate.h> 
 
 #include <gvpr.h>
 

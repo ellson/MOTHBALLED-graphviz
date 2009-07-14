@@ -17,7 +17,9 @@
 #define SMYRNADEFS_H
 
 #ifdef WIN32
+#ifndef NO_WIN_HEADER
 #include "windows.h"
+#endif
 //#include "gltexfont.h"
 //#define       SMYRNA_GLADE "C:/Projects/graphviz2/share/gui/smyrna.glade"
 #define	SMYRNA_ATTRS "c:/graphviz-ms/graphviz2/share/gui/attrs.txt"
@@ -318,6 +320,9 @@ typedef struct {
 	int animate;
 	topview_node** picked_nodes;
 	int picked_node_count;
+	topview_edge** picked_edges;
+	int picked_edge_count;
+
 	graph_data Graphdata;
 	int maxnodedegree;
 	float maxedgelen;
@@ -346,7 +351,10 @@ typedef struct _mouse_attr {
 	float begin_x;
 	float begin_y;
 	float dx;
-	float dy;
+	float dy;	
+	float GLX;/*opengl coordiantes for right click*/
+	float GLY;
+	float GLZ;
 	mouse_rotate_axis rotate_axis;	
 	clicked_mouse_button button;
 } mouse_attr;
