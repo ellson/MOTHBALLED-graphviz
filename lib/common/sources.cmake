@@ -66,17 +66,6 @@ SET(common_base_SRCS
 	${common_SRCDIR}/emit.c
 )
 
-SET(common_codegen_SRCS
-	${common_SRCDIR}/diagen.c
-	${common_SRCDIR}/figgen.c
-	${common_SRCDIR}/hpglgen.c
-	${common_SRCDIR}/mifgen.c
-	${common_SRCDIR}/mpgen.c
-	${common_SRCDIR}/picgen.c
-	${common_SRCDIR}/vtxgen.c
-	${common_SRCDIR}/xdgen.c
-)
-
 set(common_generated_SRCS
 	${common_SRCDIR}/colortbl.h
 	${common_SRCDIR}/htmlparse.h
@@ -86,6 +75,5 @@ set(common_generated_SRCS
 
 set(common_SRCS
 	${common_base_SRCS}
-	${common_codegen_SRCS}
 	${common_generated_SRCS}
 )

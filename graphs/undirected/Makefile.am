@@ -11,9 +11,6 @@ EXTRA_DIST = $(GRAPHS)
 
 CLEANFILES = core *.gv.* *.png .xvpics/* 
 
-# CODEGEN_FORMATS = -Tdia -Thpgl -Tmif -Tmp -Tpic -Tpcl -Tvtx
-CODEGEN_FORMATS =
-
 test:
 	$(top_builddir)/cmd/dot/dot -Kneato \
 		-Tcanon -Tgv -Tplain -Tplain-ext -Txdot \
@@ -21,7 +18,7 @@ test:
 		-Tjpg -Tpdf -Tfig -Tgif -Tpng \
 		-Tps -Tps2 -Tps:lasi -Tps:cairo -Tpdf \
 		-Tsvg -Tsvg:cairo -Tsvgz -Tvrml \
-		$(CODEGEN_FORMATS) -O $(GRAPHS) 
+		-O $(GRAPHS) 
 
 #	for i in $(GRAPHS); do \
 #		echo "neato $$i"; \

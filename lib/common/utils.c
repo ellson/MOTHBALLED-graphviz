@@ -585,7 +585,7 @@ int test_toggle()
 void common_init_node_opt(node_t * n, int shape_init_flag)
 {
     char *str;
-	ND_width(n) =
+    ND_width(n) =
 	late_double(n, N_width, DEFAULT_NODEWIDTH, MIN_NODEWIDTH);
     ND_height(n) =
 	late_double(n, N_height, DEFAULT_NODEHEIGHT, MIN_NODEHEIGHT);

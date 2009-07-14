@@ -28,7 +28,7 @@ extern "C" {
 /* 
  * Terminology:
  *
- *    package         - e.g. libgvplugin_cairo.so, or table of codegen builtins.
+ *    package         - e.g. libgvplugin_cairo.so
  *       api	      - e.g. render
  *          type      - e.g. "png", "ps"
  */
@@ -36,7 +36,6 @@ extern "C" {
     typedef struct {
 	int id;         /* an id that is only unique within a package 
 			of plugins of the same api.
-			A codegen id is unique in in the set of codegens.
 			A renderer-type such as "png" in the cairo package
 			has an id that is different from the "ps" type
 			in the same package */

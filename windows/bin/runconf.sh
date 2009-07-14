@@ -46,5 +46,5 @@ do
 esac
 done
 
-echo ./configure -C --prefix=$INSTALLROOT $GDKPIXBUF --with-mylibgd --disable-swig --without-x  --without-tclsh --without-ipsepcola --with-codegens $SHAREFLAGS --with-freetype=$GTKDIR/lib $LTDLFLAGS $PANGOFLAGS
-./configure -C --prefix=$INSTALLROOT $GDKPIXBUF --with-mylibgd --disable-swig --without-x  --without-tclsh --without-ipsepcola --with-codegens $SHAREFLAGS --with-freetype=$GTKDIR/lib $LTDLFLAGS $PANGOFLAGS
+echo ./configure -C --prefix=$INSTALLROOT $GDKPIXBUF --with-mylibgd --disable-swig --without-x  --without-tclsh --without-ipsepcola $SHAREFLAGS --with-freetype=$GTKDIR/lib $LTDLFLAGS $PANGOFLAGS
+./configure -C --prefix=$INSTALLROOT $GDKPIXBUF --with-mylibgd --disable-swig --without-x  --without-tclsh --without-ipsepcola $SHAREFLAGS --with-freetype=$GTKDIR/lib $LTDLFLAGS $PANGOFLAGS

@@ -43,7 +43,7 @@ if WITH_LIBGD
 GDTCLFT = $(top_srcdir)/tclpkg/gdtclft/gdtclft.c
 endif
 
-libtcldot_la_SOURCES = tcldot.c no_builtins.c $(CODEGENS) $(GDTCLFT)
+libtcldot_la_SOURCES = tcldot.c no_builtins.c $(GDTCLFT)
 libtcldot_la_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
 libtcldot_la_LDFLAGS = -no-undefined 
 
@@ -65,7 +65,7 @@ endif
 
 libtcldot_la_LIBADD += $(LIBGEN_LIBS) $(ICONV_LIBS) $(MATH_LIBS)
 
-libtcldot_builtin_la_SOURCES = tcldot.c tcldot_builtins.c $(CODEGENS) $(GDTCLFT)
+libtcldot_builtin_la_SOURCES = tcldot.c tcldot_builtins.c $(GDTCLFT)
 libtcldot_builtin_la_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
 libtcldot_builtin_la_LDFLAGS =
 

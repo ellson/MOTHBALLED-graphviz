@@ -2,6 +2,8 @@
 *.lo
 .deps
 .libs
+gdefs.h
+mkdefs
 Makefile
 Makefile.in
 *.pdf

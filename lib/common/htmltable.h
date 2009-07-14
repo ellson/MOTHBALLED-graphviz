@@ -60,7 +60,7 @@ extern "C" {
      * This translation is done when libexpat scans the input.
      */
 	
-	/* atomic unit of text emitted using a single htmlfont_t */
+    /* atomic unit of text emitted using a single htmlfont_t */
     typedef struct {
 	char *str;
 	PostscriptAlias *postscript_alias;
@@ -70,7 +70,7 @@ extern "C" {
 	double size, yoffset_layout, yoffset_centerline;
     } textitem_t;
 	
-	/* line of textitems_t */
+    /* line of textitems_t */
     typedef struct {
 	textitem_t *items;
 	short nitems;

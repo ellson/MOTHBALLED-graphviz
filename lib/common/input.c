@@ -246,9 +246,9 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 	    gvc->common.info[1], gvc->common.info[2]);
     }
 
-    /* configure for available plugins and codegens */
-		/* needs to know if "dot -c" is set (gvc->common.config) */
-		/* must happen before trying to select any plugins */
+    /* configure for available plugins */
+    /* needs to know if "dot -c" is set (gvc->common.config) */
+    /* must happen before trying to select any plugins */
     gvconfig(gvc, gvc->common.config);
     if (gvc->common.config)
 	exit (0);

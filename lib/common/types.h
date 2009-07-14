@@ -193,7 +193,7 @@ extern "C" {
 	boolean usershape;
     } shape_desc;
 
-#include "usershape.h"		/* usershapes needed by gvc even w/o CODEGENS */
+#include "usershape.h"		/* usershapes needed by gvc */
 
     typedef struct nodequeue {
 	node_t **store, **limit, **head, **tail;

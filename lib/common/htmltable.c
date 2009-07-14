@@ -17,7 +17,7 @@
 
 /* Implementation of HTML-like tables.
  * 
- * The CodeGen graphics model, especially with integral coodinates, is
+ * The (now purged) CodeGen graphics model, especially with integral coodinates, is
  * not adequate to handle this as we would like. In particular, it is
  * difficult to handle notions of adjacency and correct rounding to pixels.
  * For example, if 2 adjacent boxes bb1.UR.x == bb2.LL.x, the rectangles
@@ -173,14 +173,9 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
 	    tl.layout = ti->layout;
 	    tl.width = ti->size;
 	    tl.height = paras[i].lfsize;
-
 	    tl.just = 'l';
+
 	    p_.x = p.x;
-#if 0
-/* or */
-	    tl.just = 'c';
-	    p_.x = p.x + (ti->size/2.0);
-#endif
 	    gvrender_textpara(job, p_, &tl);
 	    p.x += ti->size;
             ti++;

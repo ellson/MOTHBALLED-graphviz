@@ -1729,7 +1729,7 @@ int Tcldot_Init(Tcl_Interp * interp)
     /* create a GraphViz Context and pass a pointer to it in clientdata */
     gvc = gvNEWcontext(lt_preloaded_symbols, DEMAND_LOADING);
 
-    /* configure for available plugins and codegens */
+    /* configure for available plugins */
     gvconfig(gvc, FALSE);
 
 #ifndef TCLOBJ
