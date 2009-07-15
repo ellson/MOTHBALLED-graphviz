@@ -38,13 +38,6 @@
 double _statistics[10];
 #endif
 
-static void sfdp_init_node(node_t * n)
-{
-    common_init_node(n);
-    ND_pos(n) = N_NEW(GD_ndim(n->graph), double);
-    gv_nodesize(n, GD_flip(n->graph));
-}
-
 static void sfdp_init_edge(edge_t * e)
 {
     common_init_edge(e);
@@ -60,7 +53,7 @@ static void sfdp_init_node_edge(graph_t * g)
 #endif
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	sfdp_init_node(n);
+	neato_init_node(n);
 #if 0
    FIX so that user positions works with multiscale
 	user_pos(N_pos, NULL, n, nnodes); 
@@ -149,7 +142,11 @@ late_smooth (graph_t* g, Agsym_t* sym, int dflt)
     int rv;
 
     if (!sym) return dflt;
+#ifdef WITH_CGRAPH
+    s = agxget (g, sym);
+#else
     s = agxget (g, sym->index);
+#endif
     if (isdigit(*s)) {
 #if (HAVE_GTS || HAVE_TRIANGLE)
 	if ((v = atoi (s)) <= SMOOTHING_RNG)
@@ -195,7 +192,11 @@ late_quadtree_scheme (graph_t* g, Agsym_t* sym, int dflt)
     int rv;
 
     if (!sym) return dflt;
+#ifdef WITH_CGRAPH
+    s = agxget (g, sym);
+#else
     s = agxget (g, sym->index);
+#endif
     if (isdigit(*s)) {
       if ((v = atoi (s)) <= QUAD_TREE_FAST && v >= QUAD_TREE_NONE){
 	rv = v;
