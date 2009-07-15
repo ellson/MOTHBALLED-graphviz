@@ -20,11 +20,7 @@ gv::setv($N, "fontsize", "8");
 gv::setv($N, "fontname", "helvetica");
 gv::setv($E, "arrowsize", ".4");
 
-$f = fopen("/proc/modules", "r");
-while ( ! feof($f)) {
-	$rec = fgets($f);
-	if ($rec == "") break;
-
+if ($f = fopen("/proc/modules", "r")) while ($rec = fgets($f)) {
 	$matches = preg_split("/[\s]+/", $rec, -1, PREG_SPLIT_NO_EMPTY);
 	$n = gv::node($G,$matches[0]);
 	$usedbylist = preg_split("/[,]/", $matches[3], -1, PREG_SPLIT_NO_EMPTY);
