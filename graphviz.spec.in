@@ -531,15 +531,21 @@ Perl extension for graphviz.
 Group:          Applications/Multimedia
 Summary:        PHP extension for graphviz
 Requires:       graphviz = %{version}-%{release} php
+%if %{?php_zend_api}0
+Requires:       php(zend-abi) = %{php_zend_api}
+Requires:       php(api) = %{php_core_api}
+%else
+Requires:       php-api = %{php_apiver}
+%endif
 
 %description php
 PHP extension for graphviz.
 
 %files php
 %defattr(-,root,root,-)
-%dir %{_libdir}/graphviz/php
-%{_libdir}/graphviz/php/*
-%{_libdir}/php*/*
+%config(noreplace) %{_sysconfdir}/php.d/%{name}.ini
+%{_libdir}/graphviz/php/
+%{php_extdir}/gv.so
 %{_datadir}/php*/*
 %{_datadir}/graphviz/demo/*.php*
 %{_mandir}/man3/*.3php*
@@ -729,6 +735,20 @@ find %{buildroot} -type f -name "*.la" -exec rm -f {} ';'
 chmod -x %{buildroot}%{_datadir}/%{name}/lefty/*
 cp -a %{buildroot}%{_datadir}/%{name}/doc __doc
 rm -rf %{buildroot}%{_datadir}/%{name}/doc
+
+# PHP configuration file
+%{__mkdir_p} %{buildroot}%{_sysconfdir}/php.d
+%{__cat} << __EOF__ > %{buildroot}%{_sysconfdir}/php.d/%{name}.ini
+; Enable %{name} extension module
+extension=gv.so
+__EOF__
+
+%check
+%ifnarch ppc64 ppc
+# regression test, segfaults on ppc/ppc64, possible endian issues?
+cd rtest
+make rtest
+%endif
 
 %clean
 # optional regression test using the products in the build tree

@@ -23,10 +23,11 @@ gv::setv($E, "arrowsize", ".4");
 $f = fopen("/proc/modules", "r");
 while ( ! feof($f)) {
 	$rec = fgets($f);
+	if ($rec == "") break;
 
 	$matches = preg_split("/[\s]+/", $rec, -1, PREG_SPLIT_NO_EMPTY);
-	$n = gv::node($G,$matches[0:0]);
-	$usedbylist = preg_split("/[,]/", $matches[3:0], -1, PREG_SPLIT_NO_EMPTY);
+	$n = gv::node($G,$matches[0]);
+	$usedbylist = preg_split("/[,]/", $matches[3], -1, PREG_SPLIT_NO_EMPTY);
 	foreach ($usedbylist as $i => $usedby) {
 		if ($usedby != "-") {
 			gv::edge($n, gv::node($G, $usedby));
