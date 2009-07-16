@@ -180,6 +180,8 @@ static void global_def(agxbuf* xb, char *dcl, int kind,
 	agxbput_n (xb, dcl, p-dcl);
         rhs = p+1;
     }
+    else
+	agxbput (xb, dcl);
     sym = dclfun(NULL, kind, agxbuse (xb), rhs);
     sym->fixed = 1;
 }
@@ -195,6 +197,8 @@ static void global_def(agxbuf* xb, char *dcl,
 	agxbput_n (xb, dcl, p-dcl);
         rhs = p+1;
     }
+    else
+	agxbput (xb, dcl);
     sym = dclfun(NULL, agxbuse (xb), rhs);
     sym->fixed = 1;
 }
