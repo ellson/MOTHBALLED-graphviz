@@ -706,6 +706,7 @@ Agnode_t *nexttail(Agnode_t *n, Agnode_t *t)
 
     if (!n || !t)
         return NULL;
+    g = agraphof(n);
     e = agfindedge(g, t, n);
     if (!e)
         return NULL;
