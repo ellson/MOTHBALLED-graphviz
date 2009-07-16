@@ -38,8 +38,9 @@ extern "C" {
     extern Agedge_t *addEdge(Agraph_t * g, Agedge_t * e, int doAdd);
     extern Agraph_t *sameG(void *p1, void *p2, char *fn, char *msg);
     extern int compare(Agobj_t *, Agobj_t *);
-    extern int writeFile(Agraph_t *, char *);
-    extern int fwriteFile(Expr_t *, Agraph_t *, int);
+    extern int sfioWrite(Agraph_t *, Sfio_t*, Agiodisc_t*);
+    extern int writeFile(Agraph_t *, char *, Agiodisc_t*);
+    extern int fwriteFile(Expr_t *, Agraph_t *, int, Agiodisc_t*);
     extern Agraph_t *readFile(char *);
     extern Agraph_t *freadFile(Expr_t *, int);
     extern int openFile(Expr_t *, char *, char *);

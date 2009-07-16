@@ -960,7 +960,7 @@ int gvpr (int argc, char *argv[], gvpropts * uopts)
 		if (uopts && (uopts->flags & GV_USE_OUTGRAPH))
 		    addOutputGraph (state, uopts);
 		else
-		    agwrite(state->outgraph, opts->outFile);
+		    sfioWrite (state->outgraph, opts->outFile, state->dfltIO);
 	    }
 
 	    if (!incoreGraphs)

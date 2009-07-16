@@ -542,11 +542,32 @@ int deleteObj(Agraph_t * g, Agobj_t * obj)
 	return -1;
 }
 
+/* sfioWrite:
+ * If the graph is passed in from a library, its output discipline
+ * might not use sfio. In this case, we push an sfio discipline on
+ * the graph, write it, and then pop it off.
+ */
+int sfioWrite(Agraph_t * g, Sfio_t* fp, Agiodisc_t* dfltDisc)
+{
+    Agiodisc_t* saveio;
+    int rv;
+
+    if (g->clos->disc.io != dfltDisc) {
+	saveio = g->clos->disc.io;
+	g->clos->disc.io = dfltDisc;
+    }
+    rv = agwrite (g, fp);
+    if (g->clos->disc.io != dfltDisc) {
+	g->clos->disc.io = saveio;
+    }
+    return rv;
+}
+
 /* writeFile:
  * Write graph into file f.
  * Return 0 on success
  */
-int writeFile(Agraph_t * g, char *f)
+int writeFile(Agraph_t * g, char *f, Agiodisc_t* io)
 {
     int rv;
     Sfio_t *fp;
@@ -560,7 +581,7 @@ int writeFile(Agraph_t * g, char *f)
 	exerror("Could not open %s for writing in writeG", f);
 	return 1;
     }
-    rv = agwrite(g, fp);
+    rv = sfioWrite(g, fp, io);
     sfclose(fp);
     return rv;
 }
@@ -589,7 +610,7 @@ Agraph_t *readFile(char *f)
     return gp;
 }
 
-int fwriteFile(Expr_t * ex, Agraph_t * g, int fd)
+int fwriteFile(Expr_t * ex, Agraph_t * g, int fd, Agiodisc_t* io)
 {
     Sfio_t *sp;
 
@@ -598,7 +619,7 @@ int fwriteFile(Expr_t * ex, Agraph_t * g, int fd)
 	exerror("fwriteG: %d: invalid descriptor", fd);
 	return 0;
     }
-    return agwrite(g, sp);
+    return sfioWrite(g, sp, io);
 }
 
 Agraph_t *freadFile(Expr_t * ex, int fd)

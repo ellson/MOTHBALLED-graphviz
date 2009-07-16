@@ -60,6 +60,29 @@
 #define PTR2INT(v) ((Sflong_t)(v))
 #endif
 
+static int iofread(void *chan, char *buf, int bufsize)
+{
+    return read(sffileno((Sfio_t *) chan), buf, bufsize);
+}
+
+static int ioputstr(void *chan, char *str)
+{
+    return sfputr((Sfio_t *) chan, str, -1);
+}
+
+static int ioflush(void *chan)
+{
+    return sfsync((Sfio_t *) chan);
+}
+
+static Agiodisc_t gprIoDisc = { iofread, ioputstr, ioflush };
+
+#ifdef GVDLL
+static Agdisc_t gprDisc = { 0, 0, &gprIoDisc };
+#else
+static Agdisc_t gprDisc = { &AgMemDisc, &AgIdDisc, &gprIoDisc };
+#endif
+
 /* nameOf:
  * Return name of object. 
  * Assumes obj !=  NULL
@@ -1090,7 +1113,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		error(ERROR_WARNING, "NULL graph passed to write()");
 		v.integer = 1;
 	    } else
-		v.integer = agwrite(gp, state->outFile);
+		v.integer = sfioWrite (gp, state->outFile, state->dfltIO);
 	    break;
 	case F_writeg:
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
@@ -1098,7 +1121,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		error(ERROR_WARNING, "NULL graph passed to writeG()");
 		v.integer = 1;
 	    } else
-		v.integer = writeFile(gp, args[1].string);
+		v.integer = writeFile(gp, args[1].string, state->dfltIO);
 	    break;
 	case F_readg:
 	    gp = readFile(args[0].string);
@@ -1110,7 +1133,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		error(ERROR_WARNING, "NULL graph passed to fwriteG()");
 		v.integer = 1;
 	    } else
-		v.integer = fwriteFile(pgm, gp, args[1].integer);
+		v.integer = fwriteFile(pgm, gp, args[1].integer, state->dfltIO);
 	    break;
 	case F_freadg:
 	    gp = freadFile(pgm, args[0].integer);
@@ -2299,6 +2322,9 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
     char *endg_sfx = 0;
     int i, useflags = 0;
 
+    /* Initialize default io */
+    state->dfltIO = &gprIoDisc;
+
     /* Make sure we have enough bits for types */
     assert(BITS_PER_BYTE * sizeof(tctype) >= (1 << TBITS));
 
@@ -2422,29 +2448,6 @@ void ptchk(void)
     for (i = 0; i <= LAST_M; i++)
 	printf("%d: %d %d\n", i, tchk[i][0], tchk[i][1]);
 }
-
-static int iofread(void *chan, char *buf, int bufsize)
-{
-    return read(sffileno((Sfio_t *) chan), buf, bufsize);
-}
-
-static int ioputstr(void *chan, char *str)
-{
-    return sfputr((Sfio_t *) chan, str, -1);
-}
-
-static int ioflush(void *chan)
-{
-    return sfsync((Sfio_t *) chan);
-}
-
-static Agiodisc_t gprIoDisc = { iofread, ioputstr, ioflush };
-
-#ifdef GVDLL
-static Agdisc_t gprDisc = { 0, 0, &gprIoDisc };
-#else
-static Agdisc_t gprDisc = { &AgMemDisc, &AgIdDisc, &gprIoDisc };
-#endif
 
 /* readG:
  * Read graph from file and initialize
