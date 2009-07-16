@@ -735,13 +735,14 @@ find %{buildroot} -type f -name "*.la" -exec rm -f {} ';'
 chmod -x %{buildroot}%{_datadir}/%{name}/lefty/*
 cp -a %{buildroot}%{_datadir}/%{name}/doc __doc
 rm -rf %{buildroot}%{_datadir}/%{name}/doc
-
+%if 0%{?PHP}
 # PHP configuration file
 %{__mkdir_p} %{buildroot}%{_sysconfdir}/php.d
 %{__cat} << __EOF__ > %{buildroot}%{_sysconfdir}/php.d/%{name}.ini
 ; Enable %{name} extension module
 extension=gv.so
 __EOF__
+%endif
 
 %check
 %ifnarch ppc64 ppc
