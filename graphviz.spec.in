@@ -416,7 +416,7 @@ C# extension for graphviz.
 %defattr(-,root,root,-)
 %dir %{_libdir}/graphviz/sharp
 %{_libdir}/graphviz/sharp/*
-%{_mandir}/man3/*.3sharp*
+%{_mandir}/man3/*.3sharp.gz
 %endif
 
 #-- graphviz-guile rpm --------------------------------------------
@@ -433,7 +433,7 @@ Guile extension for graphviz.
 %defattr(-,root,root,-)
 %dir %{_libdir}/graphviz/guile
 %{_libdir}/graphviz/guile/*
-%{_mandir}/man3/*.3guile*
+%{_mandir}/man3/*.3guile.gz
 %endif
 
 #-- graphviz-io rpm -----------------------------------------------
@@ -450,7 +450,7 @@ Io extension for graphviz.
 %defattr(-,root,root,-)
 %dir %{_libdir}/graphviz/io
 %{_libdir}/graphviz/io/*
-%{_mandir}/man3/*.3io*
+%{_mandir}/man3/*.3io.gz
 %endif
 
 #-- graphviz-java rpm ---------------------------------------------
@@ -467,7 +467,7 @@ Java extension for graphviz.
 %defattr(-,root,root,-)
 %dir %{_libdir}/graphviz/java
 %{_libdir}/graphviz/java/*
-%{_mandir}/man3/*.3java*
+%{_mandir}/man3/*.3java.gz
 %endif
 
 #-- graphviz-lua rpm ----------------------------------------------
@@ -486,7 +486,7 @@ Lua extension for graphviz.
 %{_libdir}/graphviz/lua/*
 %{_libdir}/lua*/*
 %{_datadir}/graphviz/demo/*.lua*
-%{_mandir}/man3/*.3lua*
+%{_mandir}/man3/*.3lua.gz
 %endif
 
 #-- graphviz-ocaml rpm --------------------------------------------
@@ -503,7 +503,7 @@ Ocaml extension for graphviz.
 %defattr(-,root,root,-)
 %dir %{_libdir}/graphviz/ocaml
 %{_libdir}/graphviz/ocaml/*
-%{_mandir}/man3/*.3ocaml*
+%{_mandir}/man3/*.3ocaml.gz
 %endif
 
 #-- graphviz-perl rpm ---------------------------------------------
@@ -522,7 +522,7 @@ Perl extension for graphviz.
 %{_libdir}/graphviz/perl/*
 %{_libdir}/perl*/*
 %{_datadir}/graphviz/demo/*.pl*
-%{_mandir}/man3/*.3perl*
+%{_mandir}/man3/*.3perl.gz
 %endif
 
 #-- graphviz-php rpm ----------------------------------------------
@@ -548,7 +548,7 @@ PHP extension for graphviz.
 %{php_extdir}/gv.so
 %{_datadir}/php*/*
 %{_datadir}/graphviz/demo/*.php*
-%{_mandir}/man3/*.3php*
+%{_mandir}/man3/*.3php.gz
 %endif
 
 #-- graphviz-python rpm -------------------------------------------
@@ -567,7 +567,7 @@ Python extension for graphviz.
 %{_libdir}/graphviz/python/*
 %{_libdir}/python*/*
 %{_datadir}/graphviz/demo/*.py*
-%{_mandir}/man3/*.3python*
+%{_mandir}/man3/*.3python.gz
 %endif
 
 #-- graphviz-R rpm ---------------------------------------------
@@ -584,7 +584,7 @@ R extension for graphviz.
 %defattr(-,root,root,-)
 %dir %{_libdir}/graphviz/R
 %{_libdir}/graphviz/R/*
-%{_mandir}/man3/*.3r*
+%{_mandir}/man3/*.3r.gz
 %endif
 
 #-- graphviz-ruby rpm ---------------------------------------------
@@ -603,7 +603,7 @@ Ruby extension for graphviz.
 %{_libdir}/graphviz/ruby/*
 %{_libdir}/*ruby*/*
 %{_datadir}/graphviz/demo/*.rb*
-%{_mandir}/man3/*.3ruby*
+%{_mandir}/man3/*.3ruby.gz
 %endif
 
 #-- graphviz-tcl rpm ----------------------------------------------
@@ -623,8 +623,8 @@ Various tcl packages (extensions) for the graphviz tools.
 %{_libdir}/tcl*/*
 %{_datadir}/graphviz/demo/*.tcl*
 %{_datadir}/graphviz/demo/*_data
-%{_mandir}/man3/*.3tcl*
-%{_mandir}/man3/*.3tk*
+%{_mandir}/man3/*.3tcl.gz
+%{_mandir}/man3/*.3tk.gz
 %endif
 
 #-- graphviz-devel rpm --------------------------------------------
@@ -643,7 +643,7 @@ This package contains development files for graphviz.
 %{_includedir}/graphviz
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
-%{_mandir}/man3/*.3.*
+%{_mandir}/man3/*.3.gz
 %exclude %{_libdir}/graphviz/libgvplugin*
 %exclude %{_libdir}/graphviz/*.so
 
