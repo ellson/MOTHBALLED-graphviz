@@ -747,8 +747,9 @@ __EOF__
 %check
 %ifnarch ppc64 ppc
 # regression test, segfaults on ppc/ppc64, possible endian issues?
-cd rtest
-make rtest
+# regressions tests require ksh93 - not available on centos3
+#cd rtest
+#make rtest
 %endif
 
 %clean
