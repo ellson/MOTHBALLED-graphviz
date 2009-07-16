@@ -105,9 +105,9 @@ void twopi_layout(Agraph_t * g)
 		nodeInduce(sg);
 		circleLayout(sg, c);
 		adjustNodes(sg);
+		spline_edges(sg);
 	    }
 	    free(ND_alg(agfstnode(g)));
-	    spline_edges(g);
 	    packSubgraphs(ncc, ccs, g, &pinfo);
 	}
 	for (i = 0; i < ncc; i++) {

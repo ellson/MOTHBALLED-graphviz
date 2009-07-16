@@ -446,7 +446,7 @@ makeStraightEdge(graph_t * g, edge_t * e, int doPolyline)
         perp.x = dumb[0].y - dumb[3].y;
         perp.y = dumb[3].x - dumb[0].x;
 	l_perp = LEN(perp.x, perp.y);
-	xstep = GD_nodesep(g);
+	xstep = GD_nodesep(g->root);
 	dx = xstep * (e_cnt - 1) / 2;
 	dumb[1].x = dumb[0].x + (dx * perp.x) / l_perp;
 	dumb[1].y = dumb[0].y + (dx * perp.y) / l_perp;
@@ -819,7 +819,7 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 		    P = NEW(path);
 		    P->boxes = N_NEW(agnnodes(g) + 20 * 2 * 9, boxf);
 		}
-		makeSelfArcs(P, e, GD_nodesep(g));
+		makeSelfArcs(P, e, GD_nodesep(g->root));
 	    } else if (vconfig) { /* ET_SPLINE or ET_PLINE */
 #ifdef HAVE_GTS
 		if ((ED_count(e) > 1) || BOUNDARY_PORT(e)) {
@@ -1084,6 +1084,7 @@ static void scaleBB(graph_t * g, double xf, double yf)
 /* _neato_set_aspect;
  * Assume all bounding boxes are correct and
  * that GD_bb(g).LL is at origin.
+ * Also assume g is the root graph
  */
 static void _neato_set_aspect(graph_t * g)
 {
@@ -1173,7 +1174,9 @@ void neato_set_aspect(graph_t * g)
 {
     node_t *n;
 
-    _neato_set_aspect(g);
+	/* setting aspect ratio only makes sense on root graph */
+    if (g->root == g)
+	_neato_set_aspect(g);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	ND_coord(n).x = POINTS_PER_INCH * (ND_pos(n)[0]);
 	ND_coord(n).y = POINTS_PER_INCH * (ND_pos(n)[1]);
