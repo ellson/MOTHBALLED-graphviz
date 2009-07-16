@@ -1437,6 +1437,31 @@ static void addZ (Agraph_t* g)
     }
 }
 
+#ifdef IPSEPCOLA
+static void
+addCluster (graph_t* g)
+{
+    graph_t *subg;
+#ifndef WITH_CGRAPH
+    graph_t *mg;
+    node_t *mm, *mn;
+    edge_t *me;
+    mm = g->meta_node;
+    mg = agraphof(mm);
+    for (me = agfstout(mg, mm); me; me = agnxtout(mg, me)) {
+	mn = aghead(me);
+	subg = agusergraph(mn);
+#else
+    for (subg = agfstsubg(agroot(g)); subg; subg = agnxtsubg(subg)) {
+#endif
+	if (!strncmp(agnameof(subg), "cluster", 7)) {
+	    add_cluster(g, subg);
+	    compute_bb(subg);
+	}
+   }
+}
+#endif
+
 /* neato_layout:
  */
 void neato_layout(Agraph_t * g)
@@ -1490,6 +1515,7 @@ void neato_layout(Agraph_t * g)
 		nodeInduce(gc);
 		neatoLayout(g, gc, layoutMode, model, &am);
 		removeOverlapWith(gc, &am);
+		spline_edges(gc);
 	    }
 	    if (n_cc > 1) {
 		boolean *bp;
@@ -1506,7 +1532,6 @@ void neato_layout(Agraph_t * g)
 	    }
 	    compute_bb(g);
 	    addZ (g);
-	    spline_edges(g);
 
 	    /* cleanup and remove component subgraphs */
 	    for (i = 0; i < n_cc; i++) {
@@ -1516,26 +1541,7 @@ void neato_layout(Agraph_t * g)
 	    }
 	    free (cc);
 #ifdef IPSEPCOLA
-            {
-		graph_t *subg;
-#ifndef WITH_CGRAPH
-                graph_t *mg;
-                node_t *mm, *mn;
-                edge_t *me;
-                mm = g->meta_node;
-                mg = agraphof(mm);
-                for (me = agfstout(mg, mm); me; me = agnxtout(mg, me)) {
-                    mn = aghead(me);
-                    subg = agusergraph(mn);
-#else
-		for (subg = agfstsubg(agroot(g)); subg; subg = agnxtsubg(subg)) {
-#endif
-                    if (!strncmp(agnameof(subg), "cluster", 7)) {
-                        add_cluster(g, subg);
-                        compute_bb(subg);
-                    }
-                }
-            }
+	    addCluster (g);
 #endif
 	} else {
 	    neatoLayout(g, g, layoutMode, model, &am);
