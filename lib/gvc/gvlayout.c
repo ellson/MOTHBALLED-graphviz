@@ -65,6 +65,9 @@ int gvLayoutJobs(GVC_t * gvc, Agraph_t * g)
     char *p;
     int rc;
 
+#ifdef WITH_CGRAPH
+    agbindrec(g, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
+#endif
     GD_gvc(g) = gvc;
     if (g != agroot(g))
 	GD_gvc(agroot(g)) = gvc;
