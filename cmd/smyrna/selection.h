@@ -33,6 +33,7 @@ extern int SelectBeziers(sdot_op * op);
 extern int SelectEllipse(sdot_op * op);
 extern int SelectPolygon(sdot_op * op);
 extern int SelectPolyline(sdot_op * op);
+
 extern int SelectText(sdot_op * op);
 extern int SelectImage(sdot_op * op);
 

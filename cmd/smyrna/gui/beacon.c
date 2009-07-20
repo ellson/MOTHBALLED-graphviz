@@ -277,7 +277,6 @@ int draw_node_hint_boxes(void)
 			strcat(buf,agnameof(e->Node1->Node));
 		strcat(buf," - ");
 		strcat(buf,agnameof(e->Node2->Node));
-
 		dx = (x1+x2)/2.0;
 		dy = (y1+y2)/2.0;
 		dz = (z1+z2)/2.0;

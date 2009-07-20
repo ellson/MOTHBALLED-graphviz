@@ -50,12 +50,12 @@ static int set_color_button_widget(char *attribute, char *widget_name)
     buf = agget(view->g[view->activeGraph], attribute);
     if ((!buf) || (strcmp(buf, "") == 0))
 	buf = agget(view->default_attributes, attribute);
-    if (buf) {
-	colorxlate(buf, &cl, RGBA_DOUBLE);
-	color.red = (int) (cl.u.RGBA[0] * 65535.0);
-	color.green = (int) (cl.u.RGBA[1] * 65535.0);
-	color.blue = (int) (cl.u.RGBA[2] * 65535.0);
-//              gdk_color_parse(buf,&color);
+    if (buf) 
+	{
+		colorxlate(buf, &cl, RGBA_DOUBLE);
+		color.red = (int) (cl.u.RGBA[0] * 65535.0);
+		color.green = (int) (cl.u.RGBA[1] * 65535.0);
+		color.blue = (int) (cl.u.RGBA[2] * 65535.0);
 	gtk_color_button_set_color((GtkColorButton *)
 				   glade_xml_get_widget(xml, widget_name),
 				   &color);

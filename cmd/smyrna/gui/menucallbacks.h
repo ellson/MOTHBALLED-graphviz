@@ -28,7 +28,6 @@ _BB void mSaveAsSlot(GtkWidget * widget, gpointer user_data);
 _BB void mCloseSlot(GtkWidget * widget, gpointer user_data);
 _BB void mOptionsSlot(GtkWidget * widget, gpointer user_data);
 _BB void mQuitSlot(GtkWidget * widget, gpointer user_data);
-
 //edit
 _BB void mCutSlot(GtkWidget * widget, gpointer user_data);
 _BB void mCopySlot(GtkWidget * widget, gpointer user_data);

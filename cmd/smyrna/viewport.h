@@ -23,6 +23,7 @@
 #include "xdot.h"
 #include "cgraph.h"
 
+
 void init_viewport(ViewInfo * view);
 void set_viewport_settings_from_template(ViewInfo * view, Agraph_t *);
 void clear_viewport(ViewInfo * view);

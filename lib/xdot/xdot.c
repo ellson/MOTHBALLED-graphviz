@@ -658,8 +658,9 @@ void free_xdotset(xdot_set* s)
 {
 	int idx;
 	if (!s)
+	{
 		return ;
-
+	}
 	for (idx=0;idx < s->cnt ; idx ++)
 	{
 		if (s->obj[idx])
