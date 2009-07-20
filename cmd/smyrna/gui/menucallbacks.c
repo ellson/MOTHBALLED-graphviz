@@ -578,23 +578,27 @@ on_gvprbuttonload_clicked(GtkWidget * widget, gpointer user_data)
     agxbinit (&xbuf, SMALLBUF, xbuffer);
 
 	/*file name should be returned in xbuf*/
-    if (openfiledlg(0,NULL,&xbuf)) {
-	input_file = fopen(agxbuse (&xbuf), "r");
-	if (input_file) {
-	    while (fgets(buf, BUFSIZ, input_file)) { 
-		agxbput (&xbuf, buf);
-	    }
-	    gtkbuf = gtk_text_view_get_buffer((GtkTextView*) glade_xml_get_widget(xml,"gvprtextinput"));
-	    str=agxbuse (&xbuf);
-	    if(g_utf8_validate(str,-1,NULL)) {
-		gtk_text_buffer_set_text (gtkbuf, str, -1);
-	    }
-	    else {
-		show_gui_warning ("File format is not UTF8!");
-	    }
-	    fclose (input_file);
+    if (openfiledlg(0,NULL,&xbuf)) 
+	{
+		input_file = fopen(agxbuse (&xbuf), "r");
+		if (input_file) 
+		{
+			while (fgets(buf, BUFSIZ, input_file)) 
+				agxbput (&xbuf, buf);
+			gtkbuf = gtk_text_view_get_buffer((GtkTextView*) glade_xml_get_widget(xml,"gvprtextinput"));
+			str=agxbuse (&xbuf);
+			if(g_utf8_validate(str,-1,NULL)) 
+			{
+				gtk_text_buffer_set_text (gtkbuf, str, -1);
+			}
+			else 
+			{
+				show_gui_warning ("File format is not UTF8!");
+			}
+			fclose (input_file);
 	}
-	else {
+	else 
+	{
 	    show_gui_warning ("file couldn't be opened\n");
 	}
     }

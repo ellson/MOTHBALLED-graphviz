@@ -257,9 +257,6 @@ int draw_node_hint_boxes(void)
 		glVertex3f(x2,y2,z2);
 
 
-		/*blue font color*/
-		glprintfglut (GLUT_BITMAP_HELVETICA_12, dx,dy,dz,"[");
-		glprintfglut (GLUT_BITMAP_HELVETICA_12, dx,(dy+fs+fs/(GLfloat)5.0),dz,lbl);
     }
 	glEnd();
 	glLineWidth(0);

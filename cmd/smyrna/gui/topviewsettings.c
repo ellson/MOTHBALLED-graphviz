@@ -23,11 +23,17 @@
 
 void on_settingsOKBtn_clicked(GtkWidget * widget, gpointer user_data)
 {
+	on_settingsApplyBtn_clicked (widget,user_data);
+	gtk_widget_hide(glade_xml_get_widget(xml, "dlgSettings"));
+}
+void on_settingsApplyBtn_clicked(GtkWidget * widget, gpointer user_data)
+
+{
     update_graph_from_settings(view->g[view->activeGraph]);
     set_viewport_settings_from_template(view, view->g[view->activeGraph]);
 	settvcolorinfo(view->g[view->activeGraph],view->Topview);
-	gtk_widget_hide(glade_xml_get_widget(xml, "dlgSettings"));
 }
+
 
 void on_settingsCancelBtn_clicked(GtkWidget * widget, gpointer user_data)
 {

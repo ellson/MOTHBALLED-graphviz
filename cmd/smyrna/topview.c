@@ -762,7 +762,7 @@ void drawTopViewGraph(Agraph_t * g)
     drawtopviewedges(g);
 	drawtopviewedgelabels(g);
 	enddrawcycle(g);
-	draw_xdot_set(view->Topview->xdot_list);
+//	draw_xdot_set(view->Topview->xdot_list);
 	draw_node_hint_boxes();
     if ((view->Selection.Active > 0) && (!view->SignalBlock)) {
 	view->Selection.Active = 0;
