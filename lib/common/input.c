@@ -422,7 +422,10 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
     }
 
     /* set persistent attributes here (if not already set from command line options) */
-#ifndef WITH_CGRAPH
+#ifdef WITH_CGRAPH
+    if (!agattr(NULL, AGNODE, "label", 0))
+	agattr(NULL, AGNODE, "label", NODENAME_ESC);
+#else
     if (!(agfindnodeattr(agprotograph(), "label")))
 	agnodeattr(NULL, "label", NODENAME_ESC);
 #endif

@@ -45,6 +45,7 @@ extern "C" {
     typedef int (*bsearch_cmpf) (const void *, const void *);
 
 #ifdef WITH_CGRAPH
+#include <cgraph.h>
     typedef struct Agraph_s graph_t;
     typedef struct Agnode_s node_t;
     typedef struct Agedge_s edge_t;
@@ -269,6 +270,9 @@ extern "C" {
 typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 
     typedef struct Agraphinfo_t {
+#ifdef WITH_CGRAPH
+	Agrec_t hdr;
+#endif
 	/* to generate code */
 	layout_t *drawing;
 	textlabel_t *label;	/* if the cluster has a title */
@@ -445,6 +449,9 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #endif
 
     typedef struct Agnodeinfo_t {
+#ifdef WITH_CGRAPH
+	Agrec_t hdr;
+#endif
 	shape_desc *shape;
 	void *shape_info;
 	pointf coord;
@@ -608,6 +615,9 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #endif
 
     typedef struct Agedgeinfo_t {
+#ifdef WITH_CGRAPH
+	Agrec_t hdr;
+#endif
 	splines *spl;
 	port tail_port, head_port;
 	textlabel_t *label, *head_label, *tail_label;
