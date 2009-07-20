@@ -32,6 +32,7 @@
 #include "hier.h"
 #include "arith.h"
 #include "topfisheyeview.h"
+#include "beacon.h"
 #ifdef WIN32
 #include "regex_win32.h"
 #else
@@ -80,7 +81,8 @@ void cleartopview(topview * t)
 	/*clear nodes */
 	free (t->Nodes);
 	free (t->Edges);
-//    free(t);
+	free_xdotset(t->xdot_list);
+
 }
 static void init_element_data(element_data* d)
 {
@@ -275,6 +277,57 @@ void settvcolorinfo(Agraph_t* g,topview* t)
 
 }
 
+static xdot* parseXdotwithattr(void *p, char *attr)
+{
+    xdot *xDot;
+    if ((xDot = parseXDotF(agget(p, attr), OpFns, sizeof(sdot_op))))
+		return xDot;
+	else
+		return NULL;
+}
+
+static void parseXdotwithattrs(void *e, xdot_set* s)
+{
+	xdot *xd,*xd2;
+	int ind;
+//	xd=parseXdotwithattr(e, "_draw_");
+	xd=parseXDotF("e 54 102 27 18 c 9 -#000000ff c 9 -#000020ff ", OpFns, sizeof(sdot_op));
+	xd2=parseXdotwithattr(e, "_draw_");
+	if (xd2)
+	{
+		add_to_xdot_set(s,xd);
+		for (ind=0;ind < xd->cnt ;ind++)
+		{
+				xdot_op *op2,*op3;
+				op2=&xd->ops[ind];
+				op3=&xd2->ops[ind];
+		}
+	}
+	add_to_xdot_set(s,parseXdotwithattr(e, "_ldraw_"));
+	add_to_xdot_set(s,parseXdotwithattr(e, "_hdraw_"));
+	add_to_xdot_set(s,parseXdotwithattr(e, "_tdraw_"));
+	add_to_xdot_set(s,parseXdotwithattr(e, "_hldraw_"));
+	add_to_xdot_set(s,parseXdotwithattr(e, "_tldraw_"));
+}
+void settvxdot(Agraph_t* g,topview* t)
+{
+	/*look for xdot attributes and parse them if there is any*/
+	
+	topview_node* np;
+    topview_edge* ep;
+	int ind;
+    for (ind=0;ind < t->Nodecount ; ind ++) 
+	{
+		np=&t->Nodes[ind];
+		parseXdotwithattrs(np->Node, t->xdot_list);
+    }
+    for (ind=0;ind < t->Edgecount ; ind ++) 
+	{
+		ep=&t->Edges[ind];
+		parseXdotwithattrs(ep->Edge, t->xdot_list);
+    }
+}
+
 void update_topview(Agraph_t * g, topview * t,int init)
 {
 
@@ -288,11 +341,15 @@ void update_topview(Agraph_t * g, topview * t,int init)
 	vsize = 0.05*sqrt((view->bdxRight - view->bdxLeft)*(view->bdyTop - view->bdyBottom));
     	t->init_node_size = vsize*2/GetOGLDistance(2)*percent/100.0/sqrt(t->Nodecount);
     	t->init_zoom = view->zoom;
+		free_xdotset(view->Topview->xdot_list);
+		t->xdot_list=init_xdot_set();
     }
     settvposinfo(g,t);
     settvcolorinfo(g,t);
     set_boundaries(t);
     set_update_required(t);
+	settvxdot(view->g[view->activeGraph],view->Topview);
+	print_xdot_set(view->Topview->xdot_list);
     btnToolZoomFit_clicked(NULL,NULL);
 }
 
@@ -705,8 +762,7 @@ void drawTopViewGraph(Agraph_t * g)
     drawtopviewedges(g);
 	drawtopviewedgelabels(g);
 	enddrawcycle(g);
-
-
+	draw_xdot_set(view->Topview->xdot_list);
 	draw_node_hint_boxes();
     if ((view->Selection.Active > 0) && (!view->SignalBlock)) {
 	view->Selection.Active = 0;
@@ -937,7 +993,6 @@ static int draw_topview_label(topview_node * v, float zdepth)
     float ddx = 0;
     float ddy = 0;
 	char* buf;
-	char bf[256];
 	if (((v->distorted_x / view->zoom * -1 > view->clipX1)
 	&& (v->distorted_x / view->zoom * -1 < view->clipX2)
 	&& (v->distorted_y / view->zoom * -1 > view->clipY1)
@@ -1827,9 +1882,5 @@ void select_with_regex(char* exp)
 			}
 		}
 	}
-
-
 }
-
-
 

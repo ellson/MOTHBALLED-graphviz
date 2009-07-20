@@ -40,8 +40,7 @@ GLubyte rasters[24] = {
     0xc0, 0x00, 0xc0, 0x00, 0xc0, 0x00, 0xff, 0xc0, 0xff, 0xc0
 };
 
-static void
-DrawBezier(GLfloat * xp, GLfloat * yp, GLfloat * zp, int filled, int param)
+void DrawBezier(GLfloat * xp, GLfloat * yp, GLfloat * zp, int filled, int param)
 {
     /*copied from NEHE */
     /*Written by: David Nikdel ( ogapo@ithink.net ) */
@@ -290,7 +289,7 @@ load_raw_texture(char *file_name, int width, int height, int depth,
 
 //Draws a ellpise made out of points.
 //void DrawEllipse(xdot_point* xpoint,GLfloat xradius, GLfloat yradius,int filled)
-static void DrawEllipse(xdot_op * op, int param)
+void DrawEllipse(xdot_op * op, int param)
 {
     //to draw a circle set xradius and yradius same values
     GLfloat x, y, xradius, yradius;
@@ -381,7 +380,7 @@ static void DrawPolygon(xdot_op * op, int param)
     glEnd();
 }
 
-static void DrawPolyline(xdot_op * op, int param)
+void DrawPolyline(xdot_op * op, int param)
 {
     int i = 0;
     if (param == 0)
@@ -426,7 +425,7 @@ DrawBitmap(GLfloat bmpX, GLfloat bmpY, GLfloat bmpW, GLfloat bmpH)
 }
 #endif
 
-static void SetFillColor(xdot_op * op, int param)
+void SetFillColor(xdot_op * op, int param)
 {
     RGBColor c;
     c = GetRGBColor(op->u.color);
@@ -435,7 +434,7 @@ static void SetFillColor(xdot_op * op, int param)
     view->fillColor.B = c.B;
     view->fillColor.A = c.A;
 }
-static void SetPenColor(xdot_op * op, int param)
+void SetPenColor(xdot_op * op, int param)
 {
     RGBColor c;
     c = GetRGBColor(op->u.color);
@@ -445,7 +444,7 @@ static void SetPenColor(xdot_op * op, int param)
     view->penColor.A = c.A;
 }
 
-static void SetStyle(xdot_op * op, int param)
+void SetStyle(xdot_op * op, int param)
 {
 
 
@@ -458,12 +457,12 @@ static void SetFont(xdot_op * op, int param)
 	view->FontSize =  op->u.font.size;*/
 }
 
-static void InsertImage(xdot_op * op, int param)
+void InsertImage(xdot_op * op, int param)
 {
  //   SelectImage((sdot_op *) op);
 
 }
-static void EmbedText(xdot_op * op, int param)
+void EmbedText(xdot_op * op, int param)
 {
     GLfloat x;
 //    SelectText((sdot_op *) op);
@@ -562,7 +561,7 @@ void draw_magnifier(ViewInfo * view)
 
 }
 
-static void draw_circle(float originX, float originY, float radius)
+void draw_circle(float originX, float originY, float radius)
 {
 /* draw a circle from a bunch of short lines */
     float vectorX1, vectorY1, vectorX, vectorY, angle;
@@ -583,7 +582,7 @@ static void draw_circle(float originX, float originY, float radius)
 
 }
 
-static GLUquadric* fisheyesphere;
+GLUquadric* fisheyesphere;
 void draw_fisheye_magnifier(ViewInfo * view)
 {
     if ((view->mouse.mouse_mode == 21) && (view->mouse.mouse_down)) {

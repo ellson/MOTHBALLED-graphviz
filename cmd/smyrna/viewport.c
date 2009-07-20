@@ -436,6 +436,7 @@ void init_viewport(ViewInfo * view)
     view->Selection.Anti = 0;
     view->Topview = GNEW(topview);
     view->Topview->fs = 0;
+	view->Topview->xdot_list=NULL;
 
     /* init topfish parameters */
     view->Topview->parms.level.num_fine_nodes = 10;

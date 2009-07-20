@@ -179,7 +179,6 @@ void to3D(int x, int y, GLfloat *X, GLfloat *Y,GLfloat *Z)
 	{
 		if ((winZ[idx] > comp) && (winZ[idx] < 1))
 				comp = winZ[idx];
-		printf ("%f\n",winZ[idx]);
 	}
 	gluUnProject(winX,winY, comp,modelview, projection, viewport, &posX,
 	       &posY, &posZ);

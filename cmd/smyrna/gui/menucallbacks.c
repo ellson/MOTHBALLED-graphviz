@@ -77,7 +77,6 @@ void mSaveAsSlot(GtkWidget * widget, gpointer user_data)
 }
 void mCloseSlot(GtkWidget * widget, gpointer user_data)
 {
-	printf("mCloseSlot clicked\n");
 	if (view->activeGraph == 0)
 		close_graph(view,0);
 }

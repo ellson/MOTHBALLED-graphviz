@@ -46,6 +46,7 @@ extern RGBColor GetRGBColor(char *color);
 extern void drawBorders(ViewInfo * view);
 void drawEllipse(float xradius, float yradius,int angle1,int angle2);
 int draw_node_hintbox(GLfloat x,GLfloat y,GLfloat z,GLfloat fs,char* text);
+void DrawBezier(GLfloat * xp, GLfloat * yp, GLfloat * zp, int filled, int param);
 
 
 void draw_sphere(float x,float y,float z,float r);

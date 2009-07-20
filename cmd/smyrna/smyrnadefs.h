@@ -20,7 +20,7 @@
 #ifndef NO_WIN_HEADER
 #include "windows.h"
 #endif
-//#include "gltexfont.h"
+#include "xdot.h"
 //#define       SMYRNA_GLADE "C:/Projects/graphviz2/share/gui/smyrna.glade"
 #define	SMYRNA_ATTRS "c:/graphviz-ms/graphviz2/share/gui/attrs.txt"
 #endif
@@ -248,6 +248,7 @@ typedef struct _viewport_camera{
 } viewport_camera;
 
 
+
 typedef struct {
     Agnode_t *Node;
     /*original coordinates */
@@ -288,6 +289,7 @@ typedef struct {
     RGBColor Color;
     int update_required;
 	element_data data;
+
 } topview_edge;
 typedef struct _graph_data {
     Agrec_t h;
@@ -331,6 +333,8 @@ typedef struct {
 	float init_node_size;	//raster size of node
 	float init_zoom;
 	float fitin_zoom;
+	xdot_set* xdot_list;/*xdot attached to whole graph*/
+
 } topview;
 
 

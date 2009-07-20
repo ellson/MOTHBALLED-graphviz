@@ -311,19 +311,22 @@ parseXDotF (char* s, drawfunc_t fns[], int sz)
 
     x->cnt = 0;
     x->sz = sz;
-    while ((s = parseOp (&op, s, fns))) {
-	if (x->cnt == bufsz) {
-	    bufsz += XDBSIZE;
-	    ops = (char*)grealloc (ops, bufsz*sz);
-	} 
-	*(xdot_op*)(ops + (x->cnt*sz)) = op;
-	x->cnt++;
+    while ((s = parseOp (&op, s, fns))) 
+	{
+		if (x->cnt == bufsz) 
+		{
+			bufsz += XDBSIZE;
+			ops = (char*)grealloc (ops, bufsz*sz);
+		} 
+		*(xdot_op*)(ops + (x->cnt*sz)) = op;
+		x->cnt++;
     }
     if (x->cnt)
-	x->ops = (xdot_op*)grealloc (ops, x->cnt*sz);
-    else {
-	free (x);
-	x = 0;
+		x->ops = (xdot_op*)grealloc (ops, x->cnt*sz);
+    else
+	{
+		free (x);
+		x = 0;
     }
     return x;
 }
@@ -626,6 +629,95 @@ freeXDot (xdot* x)
     free (base);
     free (x);
 }
+static void fix_capacity(xdot_set* s)
+{
+	if (s->cnt == s->capacity)
+		s->capacity=s->capacity +	INITIAL_XDOT_CAPACITY;
+	s->obj=realloc(s->obj,(sizeof(void*))* s->capacity);
+	s->xdots=realloc (s->xdots,sizeof(xdot*)* s->capacity);
+}
+void add_to_xdot_set(xdot_set* s,xdot *x)
+{
+	int ind=0;
+	if (!x)
+		return ;
+	fix_capacity(s);
+	s->xdots[s->cnt]=x;
+	for (ind=0;ind < s->xdots[s->cnt]->cnt;ind++)
+	{
+			xdot_op* op,*op2,*op3;
+			op=&(s->xdots[s->cnt]->ops[ind]);
+			op2=&(x->ops[ind]);
+			op3=NULL;
+
+	}
+	s->cnt ++;
+
+}
+void free_xdotset(xdot_set* s)
+{
+	int idx;
+	if (!s)
+		return ;
+
+	for (idx=0;idx < s->cnt ; idx ++)
+	{
+		if (s->obj[idx])
+			free(s->obj[idx]);
+		if (s->xdots[idx])
+			freeXDot(s->xdots[idx]);
+	}
+	free (s);
+}
+
+xdot_set* init_xdot_set()
+{
+	xdot_set* rv;
+	rv=malloc(sizeof(xdot_set));
+	rv->cnt=0;
+	rv->capacity=INITIAL_XDOT_CAPACITY;
+	rv->obj=malloc (sizeof(void*)* INITIAL_XDOT_CAPACITY);
+	rv->xdots=malloc (sizeof(xdot*)* INITIAL_XDOT_CAPACITY);
+	rv->obj=NULL;
+	rv->xdots=NULL;
+
+	return rv;
+}
+void print_xdot_set(xdot_set* s)
+{
+	int ind=0;
+	printf("------------------------------------------\n");
+	printf ("# of xdots in set:%d\n",s->cnt);
+
+	for (ind=0;ind < s->cnt ; ind ++)
+	{
+		printf ("xdot id: %d count: %d",ind,s->xdots[ind]->cnt);
+
+	}
+}
+
+void draw_xdot_set(xdot_set* s)
+{
+	int ind=0;
+	int ind2=0;
+	for (ind=0;ind < s->cnt ; ind ++)
+	{
+		for (ind2=0;ind2 < s->xdots[ind]->cnt ; ind2 ++)
+		{
+			xdot_op* op;
+			op=&s->xdots[ind]->ops[ind2];
+			if(op->drawfunc)
+				op->drawfunc(op,0);
+		}
+	}
+}
+
+
+
+
+
+
+
 
 #if 0
 static void 

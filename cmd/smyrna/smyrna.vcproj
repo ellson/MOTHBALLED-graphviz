@@ -326,6 +326,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\drawxdot.c"
+				>
+			</File>
+			<File
 				RelativePath=".\filter.c"
 				>
 			</File>

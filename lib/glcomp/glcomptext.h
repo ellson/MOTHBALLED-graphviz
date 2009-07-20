@@ -11,7 +11,7 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 #ifndef GLCOMPTEXT_H
-#define GLTEXFONTH_H
+#define GLCOMPTEXT_H
 
 #include <stdlib.h>
 #include <string.h>

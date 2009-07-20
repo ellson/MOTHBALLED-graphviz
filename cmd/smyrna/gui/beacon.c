@@ -133,7 +133,6 @@ int remove_from_pick_list(topview_node * n)
 {
     int ind = 0;
     int found = 0;
-	printf("removed\n");
 	for (; ind < view->Topview->picked_node_count; ind++) {
 	if ((view->Topview->picked_nodes[ind] == n) && (!found))
 	    found = 1;
@@ -158,7 +157,6 @@ int add_to_pick_list(topview_node * n)
     view->Topview->picked_node_count++;
     view->Topview->picked_nodes =realloc(view->Topview->picked_nodes,sizeof(topview_node *) * view->Topview->picked_node_count);
     view->Topview->picked_nodes[view->Topview->picked_node_count - 1] = n;
-	printf("picked count:%d\n",view->Topview->picked_node_count);
     return 1;
 }
 
@@ -177,7 +175,6 @@ int remove_edge_from_pick_list(topview_edge * e)
 {
     int ind = 0;
     int found = 0;
-	printf("removed\n");
 	for (; ind < view->Topview->picked_edge_count; ind++) 
 	{
 		if ((view->Topview->picked_edges[ind] == e) && (!found))
@@ -201,7 +198,6 @@ int add_edge_to_pick_list(topview_edge * e)
     view->Topview->picked_edge_count++;
     view->Topview->picked_edges =realloc(view->Topview->picked_edges,sizeof(topview_edge *) * view->Topview->picked_edge_count);
     view->Topview->picked_edges[view->Topview->picked_edge_count - 1] = e;
-	printf("picked edge count:%d\n",view->Topview->picked_edge_count);
     return 1;
 }
 
@@ -270,8 +266,8 @@ int draw_node_hint_boxes(void)
 
 	for (ind = 0; ind < view->Topview->picked_edge_count; ind++) 
 	{
-		buf[0]=(char*)0;
 		float x1,x2,x3,y1,y2,y3,z1,z2,z3l;
+		buf[0]=(char*)0;
 		glColor4f(0, 1, 0, 0.5);
 		e = view->Topview->picked_edges[ind];
 			x1=e->Node1->distorted_x;
