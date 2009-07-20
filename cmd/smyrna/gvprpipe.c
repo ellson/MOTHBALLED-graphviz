@@ -43,7 +43,7 @@ static ssize_t outfn (void* sp, const char *buf, size_t nbyte, void* dp)
 
 static ssize_t errfn (void* sp, const char *buf, size_t nbyte, void* dp)
 {
-    return write (2, buf, nbyte);
+	return 0;
 }
 
 
@@ -61,7 +61,7 @@ int run_gvpr (Agraph_t* srcGraph, int argc, char* argv[])
     gs[1] = 0;
     opts.ingraphs = gs;
     opts.out = outfn;
-    opts.err = errfn;
+    opts.err = outfn;
     opts.flags = GV_USE_OUTGRAPH;
    
     rv = gvpr (argc, argv, &opts);
