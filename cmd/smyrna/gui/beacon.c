@@ -62,7 +62,7 @@ void pick_node_from_coords(float x,float y,float z)
 		}
 	}
 
-	if (closest_dif < closest_dif2 * 10)
+	if (closest_dif < closest_dif2 * 5)
 	{
 		if (sn)
 		{
@@ -211,6 +211,7 @@ int draw_node_hint_boxes(void)
 {
     int ind;
     float fs = GetOGLDistance(12);
+	float ffs;
     char* lbl;
     topview_node* n;
     topview_edge* e;
@@ -223,7 +224,9 @@ int draw_node_hint_boxes(void)
 	for (ind = 0; ind < view->Topview->picked_node_count; ind++) 
 	{
 		n = view->Topview->picked_nodes[ind];
-		lbl = agnameof(n->Node);
+		lbl = agget(n->Node,"hint");
+		if((!lbl) || (strlen(lbl)==0))
+			lbl=agnameof(n->Node);
 		dx = n->distorted_x;
 		dy = n->distorted_y;
 		dz = n->distorted_z;
@@ -233,6 +236,36 @@ int draw_node_hint_boxes(void)
 		glColor4f(0, 0, 1, 1);
 		glprintfglut (GLUT_BITMAP_HELVETICA_12, dx,dy,dz,"[");
 		glprintfglut (GLUT_BITMAP_HELVETICA_12, dx,(dy+fs+fs/(GLfloat)5.0),dz,lbl);
+//		glprintfglut (GLUT_BITMAP_HELVETICA_12, dx,(dy+fs+fs/(GLfloat)5.0),dz,"aaaaaaaa");
+//		ffs=(dy+fs+fs/(GLfloat)5.0)-GetOGLDistance(14)/view->zoom*-1;
+//		glprintfglut (GLUT_BITMAP_HELVETICA_12, dx,ffs,dz,"bbbbbbbbbb");
+
+/*	char* buf;
+	char* nc;
+	buf = malloc (sizeof(char)*512);
+	if (!bf)
+		return;
+	if (strlen(bf) > 512)
+		return;
+	strcpy(buf,bf);
+	nc=buf;
+
+	for (nc;*nc != NULL ; nc ++)
+	{
+		if (*nc == '\n')
+		{
+			int a=glutBitmapWidth(font,buf);
+			*nc=NULL;
+			glRasterPos3f(xpos,ypos,zpos+0.001);
+		    print_bitmap_string(font,buf);	
+			nc++;
+			buf=nc;
+			ypos=ypos-14.00;
+		}
+	}
+	glRasterPos3f(xpos,ypos,zpos+0.001);
+    print_bitmap_string(font,buf);	*/
+
     }
 	glLineWidth(5);
 	glColor4f(0, 1, 0, 0.5);
@@ -273,10 +306,14 @@ int draw_node_hint_boxes(void)
 			y2=e->Node2->distorted_y;
 			z1=e->Node1->distorted_z;
 			z2=e->Node2->distorted_z;
-
-			strcat(buf,agnameof(e->Node1->Node));
-		strcat(buf," - ");
-		strcat(buf,agnameof(e->Node2->Node));
+		if(agget(e->Edge,"hint"))
+			strcpy(buf,agget(e->Edge,"hint"));
+		else
+		{
+			strcpy(buf,agnameof(e->Node1->Node));
+			strcat(buf," - ");
+			strcat(buf,agnameof(e->Node2->Node));
+		}
 		dx = (x1+x2)/2.0;
 		dy = (y1+y2)/2.0;
 		dz = (z1+z2)/2.0;

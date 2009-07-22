@@ -58,7 +58,14 @@ static int select_topview_node(topview_node * n);
 static int update_topview_node_from_cgraph(topview_node * Node);
 #endif
 static int get_color_from_edge(topview_edge * e);
-//static int pick_node(topview_node * n);
+static int pick_node(topview_node * n);
+static void draw_xdot_set(xdot_set* s);
+static xdot_set* init_xdot_set();
+static void free_xdotset(xdot_set* s);
+static void add_to_xdot_set(xdot_set* s, xdot *x);
+xdot* remove_from_xdot_set (xdot_set* s);
+
+
 
 #ifdef UNUSED
 static void remove_recs()
@@ -280,7 +287,7 @@ void settvcolorinfo(Agraph_t* g,topview* t)
 static xdot* parseXdotwithattr(void *p, char *attr)
 {
     xdot *xDot;
-    if ((xDot = parseXDotF(agget(p, attr), OpFns, sizeof(sdot_op))))
+    if ((xDot = parseXDotF(agget(p, attr), OpFns, sizeof(xdot_op))))
 		return xDot;
 	else
 		return NULL;
@@ -288,21 +295,7 @@ static xdot* parseXdotwithattr(void *p, char *attr)
 
 static void parseXdotwithattrs(void *e, xdot_set* s)
 {
-	xdot *xd,*xd2;
-	int ind;
-//	xd=parseXdotwithattr(e, "_draw_");
-	xd=parseXDotF("e 54 102 27 18 c 9 -#000000ff c 9 -#000020ff ", OpFns, sizeof(sdot_op));
-	xd2=parseXdotwithattr(e, "_draw_");
-	if (xd2)
-	{
-		add_to_xdot_set(s,xd);
-		for (ind=0;ind < xd->cnt ;ind++)
-		{
-				xdot_op *op2,*op3;
-				op2=&xd->ops[ind];
-				op3=&xd2->ops[ind];
-		}
-	}
+	add_to_xdot_set(s,parseXdotwithattr(e, "_draw_"));
 	add_to_xdot_set(s,parseXdotwithattr(e, "_ldraw_"));
 	add_to_xdot_set(s,parseXdotwithattr(e, "_hdraw_"));
 	add_to_xdot_set(s,parseXdotwithattr(e, "_tdraw_"));
@@ -328,7 +321,7 @@ void settvxdot(Agraph_t* g,topview* t)
     }
 }
 
-void update_topview(Agraph_t * g, topview * t,int init)
+void update_topview(Agraph_t * g, topview * t,int init,int resetview)
 {
 
     if (init) {
@@ -349,8 +342,8 @@ void update_topview(Agraph_t * g, topview * t,int init)
     set_boundaries(t);
     set_update_required(t);
 	settvxdot(view->g[view->activeGraph],view->Topview);
-	print_xdot_set(view->Topview->xdot_list);
-    btnToolZoomFit_clicked(NULL,NULL);
+	if (resetview)
+		btnToolZoomFit_clicked(NULL,NULL);
 }
 
 void preparetopview(Agraph_t * g, topview * t)
@@ -399,6 +392,10 @@ void preparetopview(Agraph_t * g, topview * t)
 		init_element_data(&t->Nodes[ind].data);
 		t->Nodes[ind].zoom_factor = 1;
 		t->Nodes[ind].degree = agdegree(g, v, 1, 1);
+		if (agget(t->Nodes[ind].Node,"size"))	/*set node size*/
+			t->Nodes[ind].size=atof(agget(t->Nodes[ind].Node,"size"));
+		else
+			t->Nodes[ind].size=0;
 		if (t->Nodes[ind].degree > t->maxnodedegree)
 			t->maxnodedegree=t->Nodes[ind].degree;
 		view->Topview->Nodes[ind].Label=NULL;
@@ -464,6 +461,8 @@ static float set_gl_dot_size(topview * t)
 	else
 		sizevc=t->init_node_size /view->cameras[view->active_camera]->r*t->init_zoom;
 
+	if (sizevc < 1)
+		sizevc=1;
 	return sizevc;
 
 }
@@ -616,8 +615,12 @@ static int drawtopviewnodes(Agraph_t * g)
 		glVertex3f(v->distorted_x - ddx,
 				v->distorted_y - ddy, v->distorted_z - ddz);
 	    }
-	    else if (view->defaultnodeshape==1) {
-		drawCircle(v->distorted_x - ddx,v->distorted_y - ddy,dotsize,0);
+	    else if (view->defaultnodeshape==1)
+		{
+			if(v->size > 0)
+				drawCircle(v->distorted_x - ddx,v->distorted_y - ddy,v->size*dotsize,0);
+			else
+				drawCircle(v->distorted_x - ddx,v->distorted_y - ddy,dotsize,0);
 	    }
 	}
 	else {
@@ -762,7 +765,7 @@ void drawTopViewGraph(Agraph_t * g)
     drawtopviewedges(g);
 	drawtopviewedgelabels(g);
 	enddrawcycle(g);
-//	draw_xdot_set(view->Topview->xdot_list);
+	draw_xdot_set(view->Topview->xdot_list);
 	draw_node_hint_boxes();
     if ((view->Selection.Active > 0) && (!view->SignalBlock)) {
 	view->Selection.Active = 0;
@@ -1883,4 +1886,78 @@ void select_with_regex(char* exp)
 		}
 	}
 }
+
+
+
+static Dtdisc_t qDisc = {
+    offsetof(xdot,ops),
+    sizeof(xdot_op*),
+    -1,
+    NIL(Dtmake_f),
+    NIL(Dtfree_f),
+    NIL(Dtcompar_f),
+    NIL(Dthash_f),
+    NIL(Dtmemory_f),
+    NIL(Dtevent_f)
+};
+
+static xdot_set* init_xdot_set()
+{
+    xdot_set* rv;
+    rv = NEW(xdot_set);
+    rv->obj = NULL;
+    rv->xdots = dtopen (&qDisc, Dtqueue);
+
+    return rv;
+}
+
+static void add_to_xdot_set(xdot_set* s, xdot *x) 
+{
+    dtinsert (s->xdots, x);
+}
+
+static xdot* remove_from_xdot_set (xdot_set* s) 
+{
+    return (xdot*)dtdelete (s->xdots, NULL); 
+}
+
+static void free_xdotset(xdot_set* s)
+{
+    if (!s) return;
+    if (s->obj) dtclose (s->obj);
+    if (s->xdots) dtclose (s->xdots);
+    free (s);
+}
+
+static void draw_xdot_set(xdot_set* s)
+{
+    int j;
+    xdot* x;
+
+    for (x = (xdot*)dtfirst (s->xdots); x; x = (xdot*)dtnext(s->xdots, x)) 
+	{
+        xdot_op* op = x->ops;
+        for (j = 0; j < x->cnt; j++, op++) {
+            if(op->drawfunc)
+                op->drawfunc(op,0);
+        }
+    }
+}
+
+#ifdef DEBUG
+void print_xdot_set(xdot_set* s)
+{
+    xdot* x;
+    int i = 0;
+
+    fprintf (stderr, "------------------------------------------\n");
+    fprintf (stderr, "# of xdots in set:%d\n", dtsize(s->xdots));
+
+    for (x = (xdot*)dtfirst (s->xdots); x; x = (xdot*)dtnext(s->xdots, x)) {
+        fprintf (stderr, "xdot id: %d count: %d", i, x->cnt);
+        i++;
+    }
+}
+#endif
+
 

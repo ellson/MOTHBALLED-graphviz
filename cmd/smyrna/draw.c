@@ -961,4 +961,20 @@ void draw_sphere(float x,float y,float z,float r)
 	glTranslatef(-x,-y,-z);
 }
 
+void draw_xdot_set(xdot_set* s)
+{
+	int ind=0;
+	int ind2=0;
+	for (ind=0;ind < s->cnt ; ind ++)
+	{
+		for (ind2=0;ind2 < s->xdots[ind]->cnt ; ind2 ++)
+		{
+			xdot_op* op;
+			op=&s->xdots[ind]->ops[ind2];
+			if(op->drawfunc)
+				op->drawfunc(op,0);
+		}
+	}
+}
+
 

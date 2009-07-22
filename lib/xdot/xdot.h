@@ -111,10 +111,5 @@ extern xdot* parseXDot (char*);
 extern char* sprintXDot (xdot*);
 extern void fprintXDot (FILE*, xdot*);
 extern void freeXDot (xdot*);
-extern void free_xdotset(xdot_set* s);
-extern xdot_set* init_xdot_set(void);
-extern void add_to_xdot_set(xdot_set* s,xdot *x);
-extern void print_xdot_set(xdot_set* s);
-
 
 #endif

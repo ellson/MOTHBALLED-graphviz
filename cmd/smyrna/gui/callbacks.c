@@ -219,3 +219,33 @@ void frmObjectBtnCancel_clicked(GtkWidget * widget, gpointer user_data)
     gtk_widget_hide(glade_xml_get_widget(xml, "frmObject"));
 
 }
+
+/*console output widgets*/
+_BB void on_clearconsolebtn_clicked(GtkWidget * widget, gpointer user_data)
+{
+	gtk_text_buffer_set_text (gtk_text_view_get_buffer((GtkTextView*) glade_xml_get_widget(xml,"mainconsole")),"",0);
+}
+_BB void on_hideconsolebtn_clicked(GtkWidget * widget, gpointer user_data)
+{
+    gtk_widget_hide(glade_xml_get_widget(xml, "hbox11"));
+}
+
+_BB void on_consoledecbtn_clicked(GtkWidget * widget, gpointer user_data)
+{
+	int w,h;
+	gtk_widget_get_size_request((GtkTextView*) glade_xml_get_widget(xml,"scrolledwindow7"),&w,&h);
+	h=h-5;
+	gtk_widget_set_size_request(((GtkTextView*) glade_xml_get_widget(xml,"scrolledwindow7")),
+                                                         0,h);
+}
+
+_BB void on_consoleincbtn_clicked(GtkWidget * widget, gpointer user_data)
+{
+	int w,h;
+	gtk_widget_get_size_request((GtkTextView*) glade_xml_get_widget(xml,"scrolledwindow7"),&w,&h);
+	h=h+5;
+	gtk_widget_set_size_request(((GtkTextView*) glade_xml_get_widget(xml,"scrolledwindow7")),
+                                                         0,h);
+}
+
+

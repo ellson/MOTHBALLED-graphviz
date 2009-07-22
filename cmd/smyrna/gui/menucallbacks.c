@@ -170,6 +170,16 @@ void mMenuZoom(GtkWidget * widget, gpointer user_data)
 	view->mouse.mouse_mode = MM_ZOOM;
 
 }
+void mShowConsoleSlot(GtkWidget * widget, gpointer user_data)
+{
+    gtk_widget_show(glade_xml_get_widget(xml, "hbox11"));
+
+}
+void mHideConsoleSlot(GtkWidget * widget, gpointer user_data)
+{
+    gtk_widget_hide(glade_xml_get_widget(xml, "hbox11"));
+
+}
 
 
 //Graph

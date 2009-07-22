@@ -271,6 +271,7 @@ typedef struct {
     float node_alpha;
     int valid;
 	element_data data;
+	float size;
 } topview_node;
 
 typedef struct {

@@ -385,3 +385,37 @@ void scanGraph(Agraph_t * g)
 }
 #endif
 
+
+
+char* create_us_map()
+{
+	float x1,y1,x2,y2;
+	float ox1,oy1,ox2,oy2;
+	static const char filename[] = "file.txt";
+	FILE *file = fopen ( filename, "r" );
+	char line [ 128 ]; /* or other suitable maximum line size */
+	int firstline=1;
+	while ( fgets ( line, sizeof line, file ) != NULL ) /* read a line */
+	{
+		fputs ( line, stdout ); /* write the line */
+		sscanf(line,"%f %f %f %f",x1,y1,x2,y2);
+		
+		if (firstline)
+		{
+			ox1=x1;
+			oy1=y1;
+			ox2=x2;
+			oy2=y2;
+			firstline=0;
+		}
+		else if ( (x1==ox1) && (y1==oy1) && (x2==ox2) && (y2==oy2) ) /*polygon is closed here*/
+		{
+
+
+		}
+		
+
+	}
+	fclose ( file );
+	return 0;
+}

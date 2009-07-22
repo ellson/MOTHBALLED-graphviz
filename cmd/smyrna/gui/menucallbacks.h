@@ -41,6 +41,8 @@ _BB void mShowToolBoxSlot(GtkWidget * widget, gpointer user_data);
 _BB void mShowHostSelectionSlot(GtkWidget * widget, gpointer user_data);
 _BB void mMenuPan(GtkWidget * widget, gpointer user_data);
 _BB void mMenuZoom(GtkWidget * widget, gpointer user_data);
+_BB void mShowConsoleSlot(GtkWidget * widget, gpointer user_data);
+_BB void mHideConsoleSlot(GtkWidget * widget, gpointer user_data);
 
 
 //Graph

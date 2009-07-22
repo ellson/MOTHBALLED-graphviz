@@ -603,7 +603,8 @@ refreshViewport (int doClear)
     set_viewport_settings_from_template(view, graph);
     if (doClear)
 	cleartopview(view->Topview);
-    update_topview(graph, view->Topview,1);
+	
+	update_topview(graph, view->Topview,1,1);
     fill_key(view->orig_key,get_md5_key(graph));
     expose_event(view->drawing_area, NULL, NULL);
 }

@@ -67,3 +67,10 @@ _BB void frmObjectBtnCancel_clicked(GtkWidget * widget,
 
 
 _BB void attr_widgets_modifiedSlot(GtkWidget * widget, gpointer user_data);
+
+
+/*console output widgets*/
+_BB void on_clearconsolebtn_clicked(GtkWidget * widget, gpointer user_data);
+_BB void on_hideconsolebtn_clicked(GtkWidget * widget, gpointer user_data);
+_BB void on_consoledecbtn_clicked(GtkWidget * widget, gpointer user_data);
+_BB void on_consoleincbtn_clicked(GtkWidget * widget, gpointer user_data);

@@ -12,6 +12,7 @@
 **********************************************************/
 #include "glcomptext.h"
 #include "glpangofont.h"
+#include "glutils.h"
 #include "memory.h"
 #include <GL/glut.h>
 
@@ -80,7 +81,9 @@ void restore_gl_vars(glCompText* f)
 void glprintfglut (void* font, GLfloat xpos, GLfloat ypos, GLfloat zpos,char *bf)
 {
 	glRasterPos3f(xpos,ypos,zpos+0.001);
-	  print_bitmap_string(font,bf);	
+    print_bitmap_string(font,bf);	
+
+
 }
 
 

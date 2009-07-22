@@ -39,6 +39,14 @@ static ssize_t outfn (void* sp, const char *buf, size_t nbyte, void* dp)
 
 	/* insert buf to the end */
 	gtk_text_buffer_insert(gtkbuf,&endit,buf,nbyte);
+
+	gtkbuf = gtk_text_view_get_buffer((GtkTextView*) glade_xml_get_widget(xml,"mainsconsole"));
+	/*set iterator to the end of the buffer*/
+    gtk_text_buffer_get_end_iter (gtkbuf,&endit);
+
+	/* insert buf to the end */
+	gtk_text_buffer_insert(gtkbuf,&endit,buf,nbyte);
+
 	return nbyte;
 }
 
