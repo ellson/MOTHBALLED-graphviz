@@ -95,16 +95,22 @@ static void cairogen_begin_page(GVJ_t * job)
 	    cairo_destroy(cr);
         switch (job->render.id) {
         case FORMAT_PS:
+#ifdef CAIRO_HAS_PS_SURFACE
 	    surface = cairo_ps_surface_create_for_stream (writer,
 			job, job->width, job->height);
+#endif
 	    break;
         case FORMAT_PDF:
+#ifdef CAIRO_HAS_PDF_SURFACE
 	    surface = cairo_pdf_surface_create_for_stream (writer,
 			job, job->width, job->height);
+#endif
 	    break;
         case FORMAT_SVG:
+#ifdef CAIRO_HAS_SVG_SURFACE
 	    surface = cairo_svg_surface_create_for_stream (writer,
 			job, job->width, job->height);
+#endif
 	    break;
         case FORMAT_CAIRO:
         case FORMAT_PNG:
