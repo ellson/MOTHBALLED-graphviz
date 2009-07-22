@@ -671,7 +671,7 @@ void free_xdotset(xdot_set* s)
 	free (s);
 }
 
-xdot_set* init_xdot_set()
+xdot_set* init_xdot_set(void)
 {
 	xdot_set* rv;
 	rv=malloc(sizeof(xdot_set));

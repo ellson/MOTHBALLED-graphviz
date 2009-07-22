@@ -58,7 +58,7 @@ static int select_topview_node(topview_node * n);
 static int update_topview_node_from_cgraph(topview_node * Node);
 #endif
 static int get_color_from_edge(topview_edge * e);
-static int pick_node(topview_node * n);
+//static int pick_node(topview_node * n);
 
 #ifdef UNUSED
 static void remove_recs()

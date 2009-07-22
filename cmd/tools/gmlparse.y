@@ -117,7 +117,7 @@ static Dtdisc_t graphDisc = {
 };
 
 static void
-initstk ()
+initstk (void)
 {
     liststk_sz = 10;
     liststk_cnt = 0;
@@ -125,7 +125,7 @@ initstk ()
 }
 
 static void
-cleanup ()
+cleanup (void)
 {
     int i;
 
@@ -154,7 +154,7 @@ cleanup ()
 }
 
 static void
-pushAlist ()
+pushAlist (void)
 {
     Dt_t* lp = dtopen (&attrDisc, Dtqueue);
 
@@ -169,7 +169,7 @@ pushAlist ()
 }
 
 static Dt_t*
-popAlist ()
+popAlist (void)
 {
     Dt_t* lp = L;
 
@@ -182,13 +182,13 @@ popAlist ()
 }
 
 static void
-popG ()
+popG (void)
 {
     G = G->parent;
 }
 
 static void
-pushG ()
+pushG (void)
 {
     gmlgraph* g = NEW(gmlgraph);
 
@@ -206,7 +206,7 @@ pushG ()
 }
 
 static gmlnode*
-mkNode ()
+mkNode (void)
 {
     gmlnode* np = NEW(gmlnode);
     np->attrlist = dtopen (&attrDisc, Dtqueue);
@@ -215,7 +215,7 @@ mkNode ()
 }
 
 static gmledge*
-mkEdge ()
+mkEdge (void)
 {
     gmledge* ep = NEW(gmledge);
     ep->attrlist = dtopen (&attrDisc, Dtqueue);

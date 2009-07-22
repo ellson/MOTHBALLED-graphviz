@@ -20,7 +20,6 @@
 #ifndef NO_WIN_HEADER
 #include "windows.h"
 #endif
-#include "xdot.h"
 //#define       SMYRNA_GLADE "C:/Projects/graphviz2/share/gui/smyrna.glade"
 #define	SMYRNA_ATTRS "c:/graphviz-ms/graphviz2/share/gui/attrs.txt"
 #endif
@@ -30,6 +29,7 @@
 #define _BB
 #endif
 
+#include "xdot.h"
 #include <gtk/gtk.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
