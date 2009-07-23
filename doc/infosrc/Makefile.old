@@ -56,7 +56,7 @@ A2GIF= aa_box.gif aa_lbox.gif aa_rbox.gif aa_obox.gif aa_olbox.gif aa_orbox.gif\
        aa_vee.gif aa_lvee.gif aa_rvee.gif 
 
 GIF = $(SGIF) $(AGIF) $(MGIF) $(A2GIF) $(XGIF)
-DOTS = html2.dot html3.dot html4.dot
+DOTS = html2.gv html3.gv html4.gv
 HTML = attrs.html colors.html command.html lang.html output.html shapes.html \
        arrows.html
 INSTALL_FILES = $(HTML) $(DOTS) $(SGIF) $(AGIF) $(A2GIF) $(MGIF) $(XGIF) $(MJPG) $(MPNG)

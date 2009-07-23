@@ -25,6 +25,6 @@ html_DATA = attrs.html colors.html command.html \
   parallelogram.gif pentagon.gif plaintext.gif point.gif polygon.gif \
   record.gif record2.gif rect.gif rectangle.gif round.gif septagon.gif tab.gif \
   trapezium.gif triangle.gif tripleoctagon.gif sdlshapes.png \
-  html2.dot html3.dot html4.dot plugins.png
+  html2.gv html3.gv html4.gv plugins.png
 
 EXTRA_DIST = $(html_DATA)
