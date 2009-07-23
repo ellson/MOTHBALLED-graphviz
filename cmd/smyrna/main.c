@@ -210,7 +210,9 @@ int main(int argc, char *argv[])
 	gtk_gl_init(0, 0);
     /* Configure OpenGL framebuffer. */
     glconfig = configure_gl();
-	gladewidget = glade_xml_get_widget(xml, "vbox2");
+//	gladewidget = glade_xml_get_widget(xml, "vbox2");
+	gladewidget = glade_xml_get_widget(xml, "hbox11");
+
     create_window(glconfig, gladewidget);
 
 	change_cursor(GDK_TOP_LEFT_ARROW);

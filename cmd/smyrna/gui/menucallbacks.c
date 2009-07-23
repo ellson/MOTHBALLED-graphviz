@@ -172,12 +172,12 @@ void mMenuZoom(GtkWidget * widget, gpointer user_data)
 }
 void mShowConsoleSlot(GtkWidget * widget, gpointer user_data)
 {
-    gtk_widget_show(glade_xml_get_widget(xml, "hbox11"));
+    gtk_widget_show(glade_xml_get_widget(xml, "vbox13"));
 
 }
 void mHideConsoleSlot(GtkWidget * widget, gpointer user_data)
 {
-    gtk_widget_hide(glade_xml_get_widget(xml, "hbox11"));
+    gtk_widget_hide(glade_xml_get_widget(xml, "vbox13"));
 
 }
 

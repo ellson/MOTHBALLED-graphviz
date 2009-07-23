@@ -31,7 +31,9 @@ void on_settingsApplyBtn_clicked(GtkWidget * widget, gpointer user_data)
 {
     update_graph_from_settings(view->g[view->activeGraph]);
     set_viewport_settings_from_template(view, view->g[view->activeGraph]);
-	settvcolorinfo(view->g[view->activeGraph],view->Topview);
+	update_topview(view->g[view->activeGraph],view->Topview,0,0);
+/*	settvcolorinfo(view->g[view->activeGraph],view->Topview);
+	init_node_size(view->g[view->activeGraph])*/
 }
 
 

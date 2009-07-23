@@ -25,6 +25,9 @@ void pick_node_from_coords(float x,float y,float z)
 	for (ind = 0; ind < view->Topview->Nodecount; ind++) 
 	{
 		n = &view->Topview->Nodes[ind];
+		if (!n->data.Visible)
+			continue;
+
 		a = ABS(n->distorted_x - view->mouse.GLX);
 		b = ABS(n->distorted_y - view->mouse.GLY);
 		c = ABS(n->distorted_z - view->mouse.GLZ);
@@ -40,6 +43,8 @@ void pick_node_from_coords(float x,float y,float z)
 	{
 		XYZ p1,p2,p3;
 		e = &view->Topview->Edges[ind];
+		if (!e->data.Visible)
+			continue;
 
 		p1.X=e->Node1->distorted_x;
 		p1.Y=e->Node1->distorted_y;

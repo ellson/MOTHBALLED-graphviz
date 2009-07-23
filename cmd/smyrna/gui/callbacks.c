@@ -227,25 +227,25 @@ _BB void on_clearconsolebtn_clicked(GtkWidget * widget, gpointer user_data)
 }
 _BB void on_hideconsolebtn_clicked(GtkWidget * widget, gpointer user_data)
 {
-    gtk_widget_hide(glade_xml_get_widget(xml, "hbox11"));
+    gtk_widget_hide(glade_xml_get_widget(xml, "vbox13"));
 }
 
 _BB void on_consoledecbtn_clicked(GtkWidget * widget, gpointer user_data)
 {
 	int w,h;
 	gtk_widget_get_size_request((GtkTextView*) glade_xml_get_widget(xml,"scrolledwindow7"),&w,&h);
-	h=h-5;
+	w=w-5;
 	gtk_widget_set_size_request(((GtkTextView*) glade_xml_get_widget(xml,"scrolledwindow7")),
-                                                         0,h);
+                                                         w,0);
 }
 
 _BB void on_consoleincbtn_clicked(GtkWidget * widget, gpointer user_data)
 {
 	int w,h;
 	gtk_widget_get_size_request((GtkTextView*) glade_xml_get_widget(xml,"scrolledwindow7"),&w,&h);
-	h=h+5;
+	w=w+5;
 	gtk_widget_set_size_request(((GtkTextView*) glade_xml_get_widget(xml,"scrolledwindow7")),
-                                                         0,h);
+                                                         w,0);
 }
 
 

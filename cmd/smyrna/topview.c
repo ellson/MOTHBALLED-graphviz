@@ -320,28 +320,32 @@ void settvxdot(Agraph_t* g,topview* t)
 		parseXdotwithattrs(ep->Edge, t->xdot_list);
     }
 }
+float init_node_size(Agraph_t * g,topview * t)
+{
+	float vsize;
+	int percent;
+	percent = atoi(agget(g,"nodesize"));
+	if (percent == 0)
+		percent=0.000001;
+	vsize = 0.05*sqrt((view->bdxRight - view->bdxLeft)*(view->bdyTop - view->bdyBottom));
+   	t->init_node_size = vsize*2/GetOGLDistance(2)*percent/100.0/sqrt(t->Nodecount);
+   	t->init_zoom = view->zoom;
+
+}
 
 void update_topview(Agraph_t * g, topview * t,int init,int resetview)
 {
 
-    if (init) {
-	float vsize;
-	int percent;
-
-	preparetopview(g,t);
-
-    	percent = atoi(agget(view->g[view->activeGraph],"nodesize"));
-	vsize = 0.05*sqrt((view->bdxRight - view->bdxLeft)*(view->bdyTop - view->bdyBottom));
-    	t->init_node_size = vsize*2/GetOGLDistance(2)*percent/100.0/sqrt(t->Nodecount);
-    	t->init_zoom = view->zoom;
-		free_xdotset(view->Topview->xdot_list);
-		t->xdot_list=init_xdot_set();
-    }
+	if (init) 
+		preparetopview(g,t);
+	free_xdotset(view->Topview->xdot_list);
+	t->xdot_list=init_xdot_set();
     settvposinfo(g,t);
     settvcolorinfo(g,t);
     set_boundaries(t);
     set_update_required(t);
 	settvxdot(view->g[view->activeGraph],view->Topview);
+	init_node_size(g,t);
 	if (resetview)
 		btnToolZoomFit_clicked(NULL,NULL);
 }
@@ -618,9 +622,9 @@ static int drawtopviewnodes(Agraph_t * g)
 	    else if (view->defaultnodeshape==1)
 		{
 			if(v->size > 0)
-				drawCircle(v->distorted_x - ddx,v->distorted_y - ddy,v->size*dotsize,0);
+				drawCircle(v->distorted_x - ddx,v->distorted_y - ddy,v->size*view->Topview->init_node_size,0);
 			else
-				drawCircle(v->distorted_x - ddx,v->distorted_y - ddy,dotsize,0);
+				drawCircle(v->distorted_x - ddx,v->distorted_y - ddy,view->Topview->init_node_size,0);
 	    }
 	}
 	else {
