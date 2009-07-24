@@ -33,6 +33,7 @@
 #include "arith.h"
 #include "topfisheyeview.h"
 #include "beacon.h"
+#include "pointset.h"
 #ifdef WIN32
 #include "regex_win32.h"
 #else
@@ -137,9 +138,11 @@ static void setRGBcolor(RGBColor* c,char* colorstr)
 
 }
 
-
+#undef DIST2
+#undef DIST
 #define DIST2(x,y) (((x)*(x))+((y)*(y)))
 #define DIST(x,y) (sqrt(DIST2(x,y)))
+
 
 /*update position info from cgraph*/
 void settvposinfo(Agraph_t* g,topview* t)
@@ -1949,6 +1952,39 @@ static void draw_xdot_set(xdot_set* s)
                 op->drawfunc(op,0);
         }
     }
+}
+
+void setMultiedges (Agraph_t* g, char* attrname)
+{
+    Agsym_t* attr = agattr (g, AGEDGE, attrname, 0);
+    Agnode_t* n;
+    Agedge_t* e;
+    PointMap* map = newPM();
+    int tid, hid, u, v, idx;
+    char buf[128];
+
+    if (!attr)
+	attr = agattr (g, AGEDGE, attrname, "0");
+
+    for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
+	tid = AGID(n);
+	for (e = agfstout (g,  n); e; e = agnxtout (g, e)) {
+	    hid = AGID(AGHEAD(e));
+	    if (tid < hid) {
+		u = tid;
+		v = hid;
+	    }
+	    else {
+		u = hid;
+		v = tid;
+	    }
+	    idx = insertPM (map, u, v, 0);
+	    sprintf (buf, "%d", idx);
+	    agxset (e, attr, buf);
+	    updatePM (map, u, v, idx+1);
+	}
+    }
+    freePM(map);
 }
 
 #ifdef DEBUG

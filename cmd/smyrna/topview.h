@@ -35,5 +35,6 @@ void originate_distorded_coordinates(topview * t);
 float calcfontsize(float totaledgelength,int totallabelsize,int edgecount,int totalnodecount);
 void select_with_regex(char* exp);
 void settvcolorinfo(Agraph_t* g,topview* t);
+void setMultiedges (Agraph_t* g, char* attrname);
 
 #endif
