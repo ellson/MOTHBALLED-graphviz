@@ -194,6 +194,21 @@ void freePM(PointMap * ps)
     free(dp);
 }
 
+int updatePM(PointMap * pm, int x, int y, int v)
+{
+    mpair *p;
+    mpair dummy;
+    int old;
+
+    dummy.id.x = x;
+    dummy.id.y = y;
+    dummy.v = v;
+    p = dtinsert(pm, &dummy);
+    old = p->v;
+    p->v = v;
+    return old;
+}
+
 int insertPM(PointMap * pm, int x, int y, int v)
 {
     mpair *p;

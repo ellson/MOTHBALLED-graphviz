@@ -17,6 +17,9 @@
 #ifndef _POINTSET_H
 #define _POINTSET_H 1
 
+#include <cdt.h>
+#include <geom.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -50,6 +53,7 @@ extern "C" {
     extern void clearPM(PointMap *);
     extern void freePM(PointMap *);
     extern int insertPM(PointMap *, int, int, int);
+    extern int updatePM(PointMap * pm, int x, int y, int v);
 
 #undef extern
 #ifdef __cplusplus
