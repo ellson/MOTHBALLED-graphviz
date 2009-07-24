@@ -163,13 +163,6 @@ extern "C" {
 #define DT_DISC		3	/* discipline is about to be changed    */
 #define DT_METH		4	/* method is about to be changed        */
 
-/*visual studio*/
-#ifdef WIN32_DLL
-#ifndef CDT_EXPORTS
-#define extern __declspec(dllimport)
-#endif
-#endif
-/*end visual studio*/
 
 #if _BLD_cdt && defined(__EXPORT__)
 #define extern	__EXPORT__
@@ -180,7 +173,18 @@ extern "C" {
 #if !_BLD_cdt && defined(__IMPORT__)
 #define extern	__IMPORT__
 #endif
-     extern Dtmethod_t *Dtset;
+/*visual studio*/
+#ifdef WIN32_DLL
+#ifndef CDT_EXPORTS
+#define extern __declspec(dllimport)
+#else
+#define extern __declspec(dllexport)
+#endif
+#endif
+/*end visual studio*/
+
+	
+	extern Dtmethod_t *Dtset;
     extern Dtmethod_t *Dtbag;
     extern Dtmethod_t *Dtoset;
     extern Dtmethod_t *Dtobag;

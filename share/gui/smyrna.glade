@@ -4335,7 +4335,7 @@ Custom</property>
 		      <property name="digits">0</property>
 		      <property name="update_policy">GTK_UPDATE_CONTINUOUS</property>
 		      <property name="inverted">False</property>
-		      <property name="adjustment">5 1 100 0 0 0</property>
+		      <property name="adjustment">5 0 100 0 0 0</property>
 		    </widget>
 		    <packing>
 		      <property name="left_attach">1</property>
