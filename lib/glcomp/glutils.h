@@ -22,15 +22,16 @@
 #include <GL/glu.h>
 
 
+typedef struct {
+    float x, y, z;
+} point3f;
 
-
-
-int GetFixedOGLPos(int x, int y, float kts, GLfloat * X, GLfloat * Y,
-		   GLfloat * Z);
+int GetFixedOGLPos(int, int, float, GLfloat*, GLfloat*, GLfloat * Z);
 int GetOGLPosRef(int x, int y, float *X, float *Y, float *Z);
 float GetOGLDistance(int l);
-int GetFixedOGLPoslocal(int x, int y, GLfloat * X, GLfloat * Y,
-		   GLfloat * Z);
+int GetFixedOGLPoslocal(int x, int y, GLfloat * X, GLfloat * Y, GLfloat * Z);
 void to3D(int x, int y, GLfloat * X, GLfloat * Y,GLfloat * Z);
-void linear_interplotate (float x1,float y1,float x3,float y3,float x2,float* y2);
+void linear_interplotate (float,float,float,float,float,float*);
+int DistancePointLine(point3f *, point3f *, point3f *, float *);
+
 #endif

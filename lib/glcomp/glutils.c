@@ -300,11 +300,11 @@ static point sub (point p, point q)
 
 static double dot (point p, point q)
 {
-    return (p.x*p.x + p.y*p.y + p.z*p.z); }
+    return (p.x*q.x + p.y*q.y + p.z*q.z); }
 
 double len (point p)
 {
-    sqrt(dot(p,p));
+    return sqrt(dot(p,p));
 }
 
 point scale (double d, point p)
@@ -353,58 +353,52 @@ double point_to_line_dist (point a, point b, point p) {
 }
 
 
-
-typedef struct tagXYZ
+static float Magnitude(point3f *Point1, point3f *Point2 )
 {
-    float X, Y, Z;
-}
-XYZ;
+    point3f Vector;
 
-float Magnitude( XYZ *Point1, XYZ *Point2 )
-{
-    XYZ Vector;
+    Vector.x = Point2->x - Point1->x;
+    Vector.y = Point2->y - Point1->y;
+    Vector.z = Point2->z - Point1->z;
 
-    Vector.X = Point2->X - Point1->X;
-    Vector.Y = Point2->Y - Point1->Y;
-    Vector.Z = Point2->Z - Point1->Z;
-
-    return (float)sqrt( Vector.X * Vector.X + Vector.Y * Vector.Y + Vector.Z * Vector.Z );
+    return (float)sqrt( Vector.x * Vector.x + Vector.y * Vector.y + Vector.z * Vector.z );
 }
 
-int DistancePointLine( XYZ *Point, XYZ *LineStart, XYZ *LineEnd, float *Distance )
+int DistancePointLine(point3f *Point, point3f *LineStart, point3f *LineEnd, float *Distance )
 {
     float LineMag;
     float U;
-    XYZ Intersection;
+    point3f Intersection;
 
     LineMag = Magnitude( LineEnd, LineStart );
 
-    U = ( ( ( Point->X - LineStart->X ) * ( LineEnd->X - LineStart->X ) ) +
-    ( ( Point->Y - LineStart->Y ) * ( LineEnd->Y - LineStart->Y ) ) +
-    ( ( Point->Z - LineStart->Z ) * ( LineEnd->Z - LineStart->Z ) ) ) /
+    U = ( ( ( Point->x - LineStart->x ) * ( LineEnd->x - LineStart->x ) ) +
+    ( ( Point->y - LineStart->y ) * ( LineEnd->y - LineStart->y ) ) +
+    ( ( Point->z - LineStart->z ) * ( LineEnd->z - LineStart->z ) ) ) /
     ( LineMag * LineMag );
 
     if( U < 0.0f || U > 1.0f )
         return 0;   // closest point does not fall within the line segment
 
-    Intersection.X = LineStart->X + U * ( LineEnd->X - LineStart->X );
-    Intersection.Y = LineStart->Y + U * ( LineEnd->Y - LineStart->Y );
-    Intersection.Z = LineStart->Z + U * ( LineEnd->Z - LineStart->Z );
+    Intersection.x = LineStart->x + U * ( LineEnd->x - LineStart->x );
+    Intersection.y = LineStart->y + U * ( LineEnd->y - LineStart->y );
+    Intersection.z = LineStart->z + U * ( LineEnd->z - LineStart->z );
 
     *Distance = Magnitude( Point, &Intersection );
 
     return 1;
 }
 
-/*void main( void )
+#ifdef DEBUG
+void main( void )
 {
-    XYZ LineStart, LineEnd, Point;
+    point3f LineStart, LineEnd, Point;
     float Distance;
 
 
-    LineStart.X =  50.0f; LineStart.Y =   80.0f; LineStart.Z =  300.0f;
-    LineEnd.X   =  50.0f; LineEnd.Y   = -800.0f; LineEnd.Z   = 1000.0f;
-    Point.X     =  20.0f; Point.Y     = 1000.0f; Point.Z     =  400.0f;
+    LineStart.x =  50.0f; LineStart.y =   80.0f; LineStart.z =  300.0f;
+    LineEnd.x   =  50.0f; LineEnd.y   = -800.0f; LineEnd.z   = 1000.0f;
+    Point.x     =  20.0f; Point.y     = 1000.0f; Point.z     =  400.0f;
 
     if( DistancePointLine( &Point, &LineStart, &LineEnd, &Distance ) )
         printf( "closest point falls within line segment, distance = %f\n", Distance     );
@@ -412,13 +406,14 @@ int DistancePointLine( XYZ *Point, XYZ *LineStart, XYZ *LineEnd, float *Distance
         printf( "closest point does not fall within line segment\n" );
 
 
-    LineStart.X =  0.0f; LineStart.Y =   0.0f; LineStart.Z =  50.0f;
-    LineEnd.X   =  0.0f; LineEnd.Y   =   0.0f; LineEnd.Z   = -50.0f;
-    Point.X     = 10.0f; Point.Y     =  50.0f; Point.Z     =  10.0f;
+    LineStart.x =  0.0f; LineStart.y =   0.0f; LineStart.z =  50.0f;
+    LineEnd.x   =  0.0f; LineEnd.y   =   0.0f; LineEnd.z   = -50.0f;
+    Point.x     = 10.0f; Point.y     =  50.0f; Point.z     =  10.0f;
 
     if( DistancePointLine( &Point, &LineStart, &LineEnd, &Distance ) )
         printf( "closest point falls within line segment, distance = %f\n", Distance     );
     else
         printf( "closest point does not fall within line segment\n" );
-}*/
+}
+#endif
 
