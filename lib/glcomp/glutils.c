@@ -269,20 +269,16 @@ int glreversecamera(ViewInfo * view)
 #include <math.h>
 
 typedef struct {
-  double x, y, z;
-} point;
-
-
-typedef struct {
-  point u, v;
+  point3f u, v;
 } line;
+
 typedef struct {
-  point N;  /* normal */
+  point3f N;   /* normal */
   double d;  /* offset */
 } plane;
 
 
-static point add (point p, point q)
+static point3f add (point3f p, point3f q)
 {
     p.x += q.x;
     p.y += q.y;
@@ -290,7 +286,7 @@ static point add (point p, point q)
     return p;
 }
 
-static point sub (point p, point q)
+static point3f sub (point3f p, point3f q)
 {
     p.x -= q.x;
     p.y -= q.y;
@@ -298,16 +294,17 @@ static point sub (point p, point q)
     return p;
 }
 
-static double dot (point p, point q)
+static double dot (point3f p, point3f q)
 {
-    return (p.x*q.x + p.y*q.y + p.z*q.z); }
+    return (p.x*q.x + p.y*q.y + p.z*q.z); 
+}
 
-double len (point p)
+static double len (point3f p)
 {
     return sqrt(dot(p,p));
 }
 
-point scale (double d, point p)
+static point3f scale (double d, point3f p)
 {
     p.x *= d;
     p.y *= d;
@@ -315,31 +312,32 @@ point scale (double d, point p)
     return p;
 }
 
-point normalize (point p)
+static point3f normalize (point3f p)
 {
    double d = len (p);
 
    return scale (1/d, p);
 }
 
-double dist (point p, point q)
+static double dist (point3f p, point3f q)
 {
     return (len (sub (p,q)));
 }
 
-point intersect (line l, plane J)
+static point3f intersect (line l, plane J)
 {
     double t = -(J.d + dot(l.u,J.N))/dot(l.v,J.N);
     return (add(l.u, scale(t,l.v)));
 }
 
 /*
- * Given a line l determined by two points a and b, and a 3rd point p:
+ * Given a line l determined by two points a and b, and a 3rd point p,
+ * return the distance between the point and the line
  */
-double point_to_line_dist (point a, point b, point p) {
+double point_to_line_dist (point3f p, point3f a, point3f b) {
     line l;
     plane J;
-    point q;
+    point3f q;
 
     l.u = a;
     l.v = normalize (sub (b, a));
@@ -352,6 +350,7 @@ double point_to_line_dist (point a, point b, point p) {
     return (dist (p, q));
 }
 
+#ifdef UNUSED
 
 static float Magnitude(point3f *Point1, point3f *Point2 )
 {
@@ -388,6 +387,7 @@ int DistancePointLine(point3f *Point, point3f *LineStart, point3f *LineEnd, floa
 
     return 1;
 }
+#endif
 
 #ifdef DEBUG
 void main( void )

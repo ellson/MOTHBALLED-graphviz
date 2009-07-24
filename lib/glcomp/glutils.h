@@ -32,6 +32,6 @@ float GetOGLDistance(int l);
 int GetFixedOGLPoslocal(int x, int y, GLfloat * X, GLfloat * Y, GLfloat * Z);
 void to3D(int x, int y, GLfloat * X, GLfloat * Y,GLfloat * Z);
 void linear_interplotate (float,float,float,float,float,float*);
-int DistancePointLine(point3f *, point3f *, point3f *, float *);
+double point_to_line_dist(point3f p, point3f u, point3f v);
 
 #endif

@@ -71,6 +71,7 @@ void pick_node_from_coords(float x,float y,float z)
 	GLfloat closest_dif = 1000;
 	GLfloat closest_dif2 = 1000;
 	float a, b,c;
+	double d;
 	int ind;
 	sn=(topview_node*)0;
 	se=(topview_edge*)0;
@@ -110,13 +111,10 @@ void pick_node_from_coords(float x,float y,float z)
 		p3.x=view->mouse.GLX;
 		p3.y=view->mouse.GLY;
 		p3.z=view->mouse.GLZ;
-		if(DistancePointLine( &p3, &p1, &p2, &a))
-		{
-			if (a < closest_dif2 )
-			{
-				se=e;
-				closest_dif2=a;
-			}
+		d = point_to_line_dist(p3, p1, p2);
+		if (d < closest_dif2 ) {
+			se=e;
+			closest_dif2=d;
 		}
 	}
 
