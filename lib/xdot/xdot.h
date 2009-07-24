@@ -19,7 +19,6 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
-#include "cgraph.h"
 #define INITIAL_XDOT_CAPACITY 512
 
 typedef enum {
@@ -27,11 +26,11 @@ typedef enum {
 } xdot_align;
 
 typedef struct {
-    int x, y,z;		//z is constant 
+    double x, y, z;		//z is constant 
 } xdot_point;
 
 typedef struct {
-    int x, y, w, h;
+    double x, y, w, h;
 } xdot_rect;
 
 typedef struct {
@@ -40,9 +39,9 @@ typedef struct {
 } xdot_polyline;
 
 typedef struct {
-  int x, y;
+  double x, y;
   xdot_align align;
-  int width;
+  double width;
   char* text;
 } xdot_text;
 
@@ -52,7 +51,7 @@ typedef struct {
 } xdot_image;
 
 typedef struct {
-    float size;
+    double size;
     char* name;
 } xdot_font;
 
@@ -96,14 +95,6 @@ typedef struct {
     int sz;
     xdot_op* ops;
 } xdot;
-/*xdot collection*/
-typedef struct _xdot_set
-{
-	int cnt;	/*number of xdots*/
-	int capacity;
-	void** obj; /*a pointer to the original object (node edge graph) can be stored here*/
-	xdot** xdots;	/*xdot collection*/
-}xdot_set;
 
 /* ops are indexed by xop_kind */
 extern xdot* parseXDotF (char*, drawfunc_t ops[], int sz);

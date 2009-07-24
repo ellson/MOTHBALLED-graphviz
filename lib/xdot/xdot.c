@@ -25,12 +25,15 @@
 #include <time.h>
 
 static char*
-parseFloat (char* s, float* fp)
+parseReal (char* s, double* fp)
 {
-    int r, sz;
-    r = sscanf(s, "%f%n", fp, &sz);
-    assert (r == 1);
-    return (s+sz);
+    char*    p;
+    double   d;
+
+    d = strtod(s, &p);
+    assert (p != s);
+    *fp = d;
+    return (p);
 }
 
 static char*
@@ -46,7 +49,7 @@ static char*
 parsePoint (char* s, xdot_point* pp)
 {
     int r, sz;
-    r = sscanf(s, "%d %d%n", &(pp->x), &(pp->y), &sz);
+    r = sscanf(s, "%lf %lf%n", &(pp->x), &(pp->y), &sz);
     assert (r == 2);
 	pp->z = 0;
     return (s+sz);
@@ -56,7 +59,7 @@ static char*
 parseRect (char* s, xdot_rect* rp)
 {
     int r, sz;
-    r = sscanf(s, "%d %d %d %d%n", &(rp->x), &(rp->y), &(rp->w), &(rp->h), &sz);
+    r = sscanf(s, "%lf %lf %lf %lf%n", &(rp->x), &(rp->y), &(rp->w), &(rp->h), &sz);
     assert (r == 4);
     return (s+sz);
 }
@@ -101,103 +104,6 @@ parseAlign (char* s, xdot_align* ap)
     return s;
 }
 
-#ifdef OLDXDOT
-static char*
-parseOp (xdot_op* op, char* s)
-{
-    while (isspace(*s)) s++;
-    switch (*s++) {
-    case 'E' :	
-	op->kind = xd_filled_ellipse;
-	s = parseRect (s, &op->u.ellipse);
-	op->drawfunc=DrawEllipse;
-	break;
-
-	case 'e' :	
-	op->kind = xd_unfilled_ellipse;
-	s = parseRect (s, &op->u.ellipse);
-	op->drawfunc=DrawEllipse;
-	break;
-
-	case 'P' :
-	op->kind = xd_filled_polygon;
-	s = parsePolyline (s, &op->u.polygon);
-	op->drawfunc=DrawPolygon;
-	break;
-
-	case 'p' :
-	op->kind = xd_unfilled_polygon;
-	s = parsePolyline (s, &op->u.polygon);
-	op->drawfunc=DrawPolygon;
-	break;
-
-	case 'b' :
-	op->kind = xd_filled_bezier;
-	s = parsePolyline (s, &op->u.bezier);
-	op->drawfunc=DrawBeziers;
-	break;
-    
-	case 'B' :
-	op->kind = xd_unfilled_bezier;
-	s = parsePolyline (s, &op->u.bezier);
-	op->drawfunc=DrawBeziers;
-	break;
-    
-	case 'c' :
-	op->kind = xd_pen_color;
-	s = parseString (s, &op->u.color);
-	op->drawfunc=SetPenColor;
-	break;
-    
-	case 'C' :
-	op->kind = xd_fill_color;
-	s = parseString (s, &op->u.color);
-	op->drawfunc=SetFillColor;
-	break;
-    
-	case 'L' :
-	op->kind = xd_polyline;
-	s = parsePolyline (s, &op->u.polyline);
-	op->drawfunc=DrawPolyline;
-	break;
-    
-	case 'T' :
-	op->kind = xd_text;
-	s = parseInt (s, &op->u.text.x);
-	s = parseInt (s, &op->u.text.y);
-	s = parseAlign (s, &op->u.text.align);
-	s = parseInt (s, &op->u.text.width);
-	s = parseString (s, &op->u.text.text);
-	op->drawfunc=EmbedText;
-	break;
-    
-	case 'F' :
-	op->kind = xd_font;
-	s = parseFloat (s, &op->u.font.size);
-	s = parseString (s, &op->u.font.name);
-	op->drawfunc=SetFont;
-	break;
-    
-	case 'S' :
-	op->kind = xd_style;
-	s = parseString (s, &op->u.style);
-	op->drawfunc=SetStyle;
-	break;
-    
-	case 'I' :
-	op->kind = xd_image;
-	s = parseRect (s, &op->u.image.pos);
-	s = parseString (s, &op->u.image.name);
-	op->drawfunc=InsertImage;
-	break;
-    
-	default :
-	s = 0;
-	break;
-    }
-    return s;
-}
-#else
 static char*
 parseOp (xdot_op* op, char* s, drawfunc_t ops[])
 {
@@ -259,17 +165,17 @@ parseOp (xdot_op* op, char* s, drawfunc_t ops[])
     
 	case 'T' :
 	op->kind = xd_text;
-	s = parseInt (s, &op->u.text.x);
-	s = parseInt (s, &op->u.text.y);
+	s = parseReal (s, &op->u.text.x);
+	s = parseReal (s, &op->u.text.y);
 	s = parseAlign (s, &op->u.text.align);
-	s = parseInt (s, &op->u.text.width);
+	s = parseReal (s, &op->u.text.width);
 	s = parseString (s, &op->u.text.text);
 	if (ops) op->drawfunc=ops[xop_text];
 	break;
     
 	case 'F' :
 	op->kind = xd_font;
-	s = parseFloat (s, &op->u.font.size);
+	s = parseReal (s, &op->u.font.size);
 	s = parseString (s, &op->u.font.name);
 	if (ops) op->drawfunc=ops[xop_font];
 	break;
@@ -293,7 +199,6 @@ parseOp (xdot_op* op, char* s, drawfunc_t ops[])
     }
     return s;
 }
-#endif
 
 #define XDBSIZE 100
 
@@ -344,7 +249,7 @@ printRect (xdot_rect* r, pf print, void* info)
 {
     char buf[128];
 
-    sprintf (buf, " %d %d %d %d", r->x, r->y, r->w, r->h);
+    sprintf (buf, " %.06f %.06f %.06f %.06f", r->x, r->y, r->w, r->h);
     print (buf, info);
 }
 
@@ -352,12 +257,12 @@ static void
 printPolyline (xdot_polyline* p, pf print, void* info)
 {
     int i;
-    char buf[64];
+    char buf[512];
 
     sprintf (buf, " %d", p->cnt);
     print (buf, info);
     for (i = 0; i< p->cnt; i++) {
-	sprintf (buf, " %d %d", p->pts[i].x, p->pts[i].y);
+	sprintf (buf, " %.06f %.06f", p->pts[i].x, p->pts[i].y);
 	print (buf, info);
     }
 }
