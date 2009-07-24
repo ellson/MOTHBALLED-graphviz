@@ -30,12 +30,12 @@ XDOT DRAWING FUNCTIONS, maybe need to move them somewhere else
 #include "viewport.h"
 #include "topfisheyeview.h"
 
+static float globalz = 0.0;
+
+#ifdef UNUSED
 //delta values
 static float dx = 0.0;
 static float dy = 0.0;
-static float globalz = 0.0;
-
-
 
 static void set_options(sdot_op * op, int param)
 {
@@ -51,17 +51,17 @@ static void set_options(sdot_op * op, int param)
     }
 
 }
+
 static void SetFont(xdot_op * op, int param)
 {
 	//activate the right font
-/*	view->fontset->activefont=add_font(view->fontset,op->u.font.name);//load or set active font
-	view->FontSize = (int) op->u.font.size;*/
+	view->fontset->activefont=add_font(view->fontset,op->u.font.name);//load or set active font
+	view->FontSize = (int) op->u.font.size;
 }
-
 
 static void relocate_spline(sdot_op * sop, int param)
 {
-/*    Agedge_t *e;
+    Agedge_t *e;
     Agnode_t *tn;		//tail node
     Agnode_t *hn;		//head node
     int i = 0;
@@ -133,7 +133,7 @@ static void relocate_spline(sdot_op * sop, int param)
 				}
 			}
 		}
-	}*/
+	}
 }
 
 static void DrawBeziers(xdot_op * op, int param)
@@ -173,9 +173,10 @@ static void DrawBeziers(xdot_op * op, int param)
     }
     DrawBezier(tempX, tempY, tempZ, filled, param);
 }
+#endif
 
 /*function to load .raw files*/
-#if 0
+#ifdef UNUSED
 static void
 load_raw_texture(char *file_name, int width, int height, int depth,
 		 GLenum colour_type, GLenum filter_type)
@@ -320,33 +321,29 @@ void drawGraph(Agraph_t * g)
 	this function is used to cache fonts in view->fontset
 */
 
-#if 0
+#if UNUSED
 static void scanXdot(xdot * xDot, void *p)
 {
     int id;
     sdot_op *ops = (sdot_op *) (xDot->ops);
     sdot_op *op;
 
-    for (id = 0; id < xDot->cnt; id++)
-	{
-		op = ops + id;
-		op->obj = p;
-		if (op->op.kind==xd_font)
-		{
-			add_font(view->fontset,op->op.u.font.name);//load or set active font
-		}
+    for (id = 0; id < xDot->cnt; id++) {
+	op = ops + id;
+	op->obj = p;
+	if (op->op.kind==xd_font) {
+	    add_font(view->fontset,op->op.u.font.name);//load or set active font
+	}
     }
-
 }
 
 
 static void scanXdotwithattr(void *p, char *attr)
 {
     xdot *xDot;
-    if ((xDot = parseXDotF(agget(p, attr), OpFns, sizeof(sdot_op))))
-	{
-		scanXdot(xDot, p);
-		freeXDot(xDot);
+    if ((xDot = parseXDotF(agget(p, attr), OpFns, sizeof(sdot_op)))) {
+	scanXdot(xDot, p);
+	freeXDot(xDot);
     }
 }
 
@@ -387,6 +384,7 @@ void scanGraph(Agraph_t * g)
 
 
 
+#ifdef UNUSED
 char* create_us_map()
 {
 	float x1,y1,x2,y2;
@@ -398,7 +396,7 @@ char* create_us_map()
 	while ( fgets ( line, sizeof line, file ) != NULL ) /* read a line */
 	{
 		fputs ( line, stdout ); /* write the line */
-		sscanf(line,"%f %f %f %f",x1,y1,x2,y2);
+		sscanf(line,"%f %f %f %f",&x1,&y1,&x2,&y2);
 		
 		if (firstline)
 		{
@@ -419,3 +417,4 @@ char* create_us_map()
 	fclose ( file );
 	return 0;
 }
+#endif

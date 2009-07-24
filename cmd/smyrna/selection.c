@@ -343,7 +343,7 @@ static int point_within_polygon(xdot_op * op)
     int i, j, c = 0;
     int npol = op->u.polygon.cnt;
     float x, y;
-#if 0
+#ifdef UNUSED
 // FIX
     op->u.polygon.pts[i].y;
     op->u.polygon.pts[i].x;
@@ -373,58 +373,81 @@ static int point_within_polygon(xdot_op * op)
 
 //select functions
 
+static Agsym_t*
+getNodeSelectedAttr (Agraph_t* g) 
+{
+    static Agraph_t* saveg;
+    static Agsym_t* saveattr;
+
+    if (saveg != g) {
+	saveg = g;
+	if (!(saveattr = agattr(saveg,AGNODE,"selected",0))) {
+	    saveattr = agattr(saveg,AGNODE,"selected","0");
+	}
+    }
+    return saveattr;
+}
+
+static Agsym_t*
+getEdgeSelectedAttr (Agraph_t* g) 
+{
+    static Agraph_t* saveg;
+    static Agsym_t* saveattr;
+
+    if (saveg != g) {
+	saveg = g;
+	if (!(saveattr = agattr(saveg,AGEDGE,"selected",0))) {
+	    saveattr = agattr(saveg,AGEDGE,"selected","0");
+	}
+    }
+    return saveattr;
+}
+
 int select_node(topview_node* N)
 {
-	N->data.Selected=1;
-	if(agattr(agraphof(N->Node),AGNODE,"selected","1"))
-		return 1;
-	else 
-		return 0;
-    return 1;
+    Agsym_t* a = getNodeSelectedAttr(N->Node->root);
+
+    N->data.Selected=1;
+    return agxset (N->Node, a, "1");
 }
 
 int select_edge(topview_edge* E)
 {
-	E->data.Selected=1;
-	if(agattr(agraphof(E->Edge),AGEDGE,"selected","1"))
-		return 1;
-	else 
-		return 0;
+    Agsym_t* a = getEdgeSelectedAttr(aghead(E->Edge)->root);
+
+    E->data.Selected=1;
+    return agxset (E->Edge, a, "1");
 }
+
+int deselect_node(topview_node* N)
+{
+    Agsym_t* a = getNodeSelectedAttr(N->Node->root);
+    
+    N->data.Selected=0;
+    return agxset(N->Node, a, "0");
+}
+
+int deselect_edge(topview_edge* E)
+{
+    Agsym_t* a = getEdgeSelectedAttr(aghead(E->Edge)->root);
+
+    E->data.Selected=0;
+    return agxset(E->Edge, a, "0");
+}
+
+#if UNUSED
 static void update_cgraph_pos(topview_node* N)
 {
     char buf[512];
     Agsym_t* pos;
-	Agnode_t* obj=N->Node;
+    Agnode_t* obj=N->Node;
 
-    if ((AGTYPE(obj) == AGNODE) && (pos = agattrsym (obj, "pos"))) 
-	{
-		sprintf (buf, "%lf,%lf",N->distorted_x,N->distorted_y);
-		agxset(obj, pos, buf);
-	}
+    if ((pos = agattrsym (obj, "pos"))) {
+	sprintf (buf, "%lf,%lf",N->distorted_x,N->distorted_y);
+	agxset(obj, pos, buf);
+    }
 }
-
-
-int deselect_node(topview_node* N)
-{
-	N->data.Selected=0;
-	if(agattr(agraphof(N->Node),AGNODE,"selected","0"))
-		return 1;
-	else 
-		return 0;
-    return 1;
-
-}
-
-
-int deselect_edge(topview_edge* E)
-{
-	E->data.Selected=0;
-	if(agattr(agraphof(E->Edge),AGEDGE,"selected","0"))
-		return 1;
-	else 
-		return 0;
-}
+#endif
 
 int select_all_nodes(Agraph_t * g)
 {
@@ -561,7 +584,7 @@ int is_point_in_rectangle(float X, float Y, float RX, float RY, float RW,
 }
 
 
-#if 0
+#ifdef UNUSED
 static int line_intersects(float *x, float *y, float *X, float *Y)
 {
     //x,y are arrayf of float for two lines parameters theyt hold 4 points with x and y

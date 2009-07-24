@@ -2,12 +2,50 @@
 #include "viewport.h"
 #include "selection.h"
 #include "gltemplate.h"
+#include "glutils.h"
 #include "toolboxcallbacks.h"
-typedef struct tagXYZ
+
+static int remove_edge_from_pick_list(topview_edge * e)
 {
-    float X, Y, Z;
+    int ind = 0;
+    int found = 0;
+	for (; ind < view->Topview->picked_edge_count; ind++) 
+	{
+		if ((view->Topview->picked_edges[ind] == e) && (!found))
+			found = 1;
+		if ((found) && (ind < (view->Topview->picked_edge_count - 1))) 
+		{
+			view->Topview->picked_edges[ind] = view->Topview->picked_edges[ind + 1];
+		}
+    }
+    if (found) 
+	{
+		view->Topview->picked_edge_count--;
+		view->Topview->picked_edges =realloc(view->Topview->picked_edges,sizeof(topview_edge *) *view->Topview->picked_edge_count);
+		return 1;
+    }
+    return 0;
 }
-XYZ;
+
+static int add_edge_to_pick_list(topview_edge * e)
+{
+    view->Topview->picked_edge_count++;
+    view->Topview->picked_edges =realloc(view->Topview->picked_edges,sizeof(topview_edge *) * view->Topview->picked_edge_count);
+    view->Topview->picked_edges[view->Topview->picked_edge_count - 1] = e;
+    return 1;
+}
+
+static int is_edge_picked(topview_edge * e)
+{
+    int ind = 0;
+    int found = 0;
+    for (; ind < view->Topview->picked_edge_count; ind++) {
+	if ((view->Topview->picked_edges[ind] == e) && (!found))
+	    return 1;
+    }
+    return 0;
+}
+
 void pick_node_from_coords(float x,float y,float z)
 {
 	topview_node* n;
@@ -16,7 +54,6 @@ void pick_node_from_coords(float x,float y,float z)
 	topview_edge* se;/*selected edge , closest one*/
 	GLfloat closest_dif = 1000;
 	GLfloat closest_dif2 = 1000;
-	static char buf[512];
 	float a, b,c;
 	int ind;
 	sn=(topview_node*)0;
@@ -41,22 +78,22 @@ void pick_node_from_coords(float x,float y,float z)
 
 	for (ind = 0; ind < view->Topview->Edgecount; ind++) 
 	{
-		XYZ p1,p2,p3;
+		point3f p1,p2,p3;
 		e = &view->Topview->Edges[ind];
 		if (!e->data.Visible)
 			continue;
 
-		p1.X=e->Node1->distorted_x;
-		p1.Y=e->Node1->distorted_y;
-		p1.Z=e->Node1->distorted_z;
+		p1.x=e->Node1->distorted_x;
+		p1.y=e->Node1->distorted_y;
+		p1.z=e->Node1->distorted_z;
 
-		p2.X=e->Node2->distorted_x;
-		p2.Y=e->Node2->distorted_y;
-		p2.Z=e->Node2->distorted_z;
+		p2.x=e->Node2->distorted_x;
+		p2.y=e->Node2->distorted_y;
+		p2.z=e->Node2->distorted_z;
 
-		p3.X=view->mouse.GLX;
-		p3.Y=view->mouse.GLY;
-		p3.Z=view->mouse.GLZ;
+		p3.x=view->mouse.GLX;
+		p3.y=view->mouse.GLY;
+		p3.z=view->mouse.GLZ;
 		if(DistancePointLine( &p3, &p1, &p2, &a))
 		{
 			if (a < closest_dif2 )
@@ -165,47 +202,6 @@ int add_to_pick_list(topview_node * n)
     return 1;
 }
 
-int is_edge_picked(topview_edge * e)
-{
-    int ind = 0;
-    int found = 0;
-    for (; ind < view->Topview->picked_edge_count; ind++) {
-	if ((view->Topview->picked_edges[ind] == e) && (!found))
-	    return 1;
-    }
-    return 0;
-}
-
-int remove_edge_from_pick_list(topview_edge * e)
-{
-    int ind = 0;
-    int found = 0;
-	for (; ind < view->Topview->picked_edge_count; ind++) 
-	{
-		if ((view->Topview->picked_edges[ind] == e) && (!found))
-			found = 1;
-		if ((found) && (ind < (view->Topview->picked_edge_count - 1))) 
-		{
-			view->Topview->picked_edges[ind] = view->Topview->picked_edges[ind + 1];
-		}
-    }
-    if (found) 
-	{
-		view->Topview->picked_edge_count--;
-		view->Topview->picked_edges =realloc(view->Topview->picked_edges,sizeof(topview_edge *) *view->Topview->picked_edge_count);
-		return 1;
-    }
-    return 0;
-}
-
-int add_edge_to_pick_list(topview_edge * e)
-{
-    view->Topview->picked_edge_count++;
-    view->Topview->picked_edges =realloc(view->Topview->picked_edges,sizeof(topview_edge *) * view->Topview->picked_edge_count);
-    view->Topview->picked_edges[view->Topview->picked_edge_count - 1] = e;
-    return 1;
-}
-
 
 
 
@@ -216,12 +212,11 @@ int draw_node_hint_boxes(void)
 {
     int ind;
     float fs = GetOGLDistance(12);
-	float ffs;
     char* lbl;
     topview_node* n;
     topview_edge* e;
     double dx, dy, dz;
-	char buf[512];
+	char buf[512];  /* FIX!!! static buffer */
 
     view->widgets->fontset->fonts[view->widgets->fontset->activefont]->fontheight=fs;
 
@@ -245,7 +240,8 @@ int draw_node_hint_boxes(void)
 //		ffs=(dy+fs+fs/(GLfloat)5.0)-GetOGLDistance(14)/view->zoom*-1;
 //		glprintfglut (GLUT_BITMAP_HELVETICA_12, dx,ffs,dz,"bbbbbbbbbb");
 
-/*	char* buf;
+#if UNUSED
+	char* buf;
 	char* nc;
 	buf = malloc (sizeof(char)*512);
 	if (!bf)
@@ -269,7 +265,8 @@ int draw_node_hint_boxes(void)
 		}
 	}
 	glRasterPos3f(xpos,ypos,zpos+0.001);
-    print_bitmap_string(font,buf);	*/
+    print_bitmap_string(font,buf);
+#endif
 
     }
 	glLineWidth(5);
@@ -277,7 +274,7 @@ int draw_node_hint_boxes(void)
 	glBegin(GL_LINES);
 	for (ind = 0; ind < view->Topview->picked_edge_count; ind++) 
 	{
-		float x1,x2,x3,y1,y2,y3,z1,z2,z3l;
+		float x1,x2,y1,y2,z1,z2;
 		e = view->Topview->picked_edges[ind];
 			x1=e->Node1->distorted_x;
 			x2=e->Node2->distorted_x;
@@ -299,10 +296,9 @@ int draw_node_hint_boxes(void)
 	glEnd();
 	glLineWidth(0);
 
-	for (ind = 0; ind < view->Topview->picked_edge_count; ind++) 
-	{
-		float x1,x2,x3,y1,y2,y3,z1,z2,z3l;
-		buf[0]=(char*)0;
+	for (ind = 0; ind < view->Topview->picked_edge_count; ind++) {
+		float x1,x2,y1,y2,z1,z2;
+		char* s;
 		glColor4f(0, 1, 0, 0.5);
 		e = view->Topview->picked_edges[ind];
 			x1=e->Node1->distorted_x;
@@ -311,8 +307,8 @@ int draw_node_hint_boxes(void)
 			y2=e->Node2->distorted_y;
 			z1=e->Node1->distorted_z;
 			z2=e->Node2->distorted_z;
-		if(agget(e->Edge,"hint"))
-			strcpy(buf,agget(e->Edge,"hint"));
+		if ((s = agget(e->Edge,"hint")) && s[0])
+			strcpy (buf,s);
 		else
 		{
 			strcpy(buf,agnameof(e->Node1->Node));

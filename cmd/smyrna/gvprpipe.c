@@ -23,12 +23,12 @@
 #include <gtk/gtk.h>
 #include "draw.h"
 
-//#include <viewport.h> 
+#include <viewport.h> 
 //#include <gltemplate.h> 
 
 #include <gvpr.h>
 extern GladeXML *xml;			//global libglade vars
-static void append_textview(GtkTextView* textv,char* s)
+static void append_textview(GtkTextView* textv, const char* s)
 {
 
     GtkTextIter endit;
@@ -49,13 +49,12 @@ static ssize_t outfn (void* sp, const char *buf, size_t nbyte, void* dp)
 	return nbyte;
 }
 
+#ifdef UNUSED
 static ssize_t errfn (void* sp, const char *buf, size_t nbyte, void* dp)
 {
 	return 0;
 }
-
-
-
+#endif
 
 int run_gvpr (Agraph_t* srcGraph, int argc, char* argv[])
 {
@@ -77,12 +76,11 @@ int run_gvpr (Agraph_t* srcGraph, int argc, char* argv[])
     if (rv) {  /* error */
 		fprintf (stderr, "Error in gvpr\n");
     }
-    else if (opts.n_outgraphs) 
-	{
-		refreshViewport (0);
-		sprintf (buf, "<%d>", ++count);
-		if (opts.outgraphs[0] != view->g[view->activeGraph])
-			add_graph_to_viewport(opts.outgraphs[0], buf);
+    else if (opts.n_outgraphs) {
+	refreshViewport (0);
+	sprintf (buf, "<%d>", ++count);
+	if (opts.outgraphs[0] != view->g[view->activeGraph])
+	    add_graph_to_viewport(opts.outgraphs[0], buf);
 	if (opts.n_outgraphs > 1)
 	    fprintf (stderr, "Warning: multiple output graphs-discarded\n"); 
 	for (i = 1; i < opts.n_outgraphs; i++) {

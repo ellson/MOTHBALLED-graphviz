@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "gui.h"
+#include "beacon.h"
 #include "viewport.h"
 #include "topview.h"
 #include "topfisheyeview.h"
@@ -555,7 +556,7 @@ void switch_Mouse(GtkMenuItem * menuitem, int mouse_mode)
 	params:widget to shop popup , event handler to check click type and custom data
 	return value:true or false, fails (false) if listed keys (in switch) are not pressed
 */
-#if 0
+#ifdef UNUSED
 static gboolean button_press_event_popup_menu(GtkWidget * widget,
 					      GdkEventButton * event,
 					      gpointer data)
@@ -668,7 +669,7 @@ void create_window(GdkGLConfig * glconfig, GtkWidget * vbox)
 
     /* Popup menu. */
 
-#if 0
+#ifdef UNUSED
     menu = create_popup_menu(view->drawing_area);
 
     /* Signal handler */

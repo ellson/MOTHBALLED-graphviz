@@ -238,7 +238,7 @@ static void DrawBeziers(xdot_op * op, int param)
 }
 
 /*function to load .raw files*/
-#if 0
+#ifdef UNUSED
 static void
 load_raw_texture(char *file_name, int width, int height, int depth,
 		 GLenum colour_type, GLenum filter_type)
@@ -401,7 +401,7 @@ void DrawPolyline(xdot_op * op, int param)
     glEnd();
 }
 
-#if 0
+#ifdef UNUSED
 static void
 DrawBitmap(GLfloat bmpX, GLfloat bmpY, GLfloat bmpW, GLfloat bmpH)
 {
@@ -961,6 +961,7 @@ void draw_sphere(float x,float y,float z,float r)
 	glTranslatef(-x,-y,-z);
 }
 
+#ifdef UNUSED
 void draw_xdot_set(xdot_set* s)
 {
 	int ind=0;
@@ -976,5 +977,6 @@ void draw_xdot_set(xdot_set* s)
 		}
 	}
 }
+#endif
 
 

@@ -641,7 +641,7 @@ void switch_graph(int graphId)
 	activate (graphId, 1);
 }
 
-#if 0
+#ifdef UNUSED
 /* add_new_graph_to_viewport:
  * returns graph index , otherwise -1
  */
@@ -661,7 +661,7 @@ int add_new_graph_to_viewport(void)
 static md5_byte_t md5_digest[16];
 static md5_state_t pms;
 
-int append_to_md5(void *chan, char *str)
+int append_to_md5(void *chan, const char *str)
 {
 	md5_append(&pms,(unsigned char*)str,(int)strlen(str));
 	return 1;
@@ -884,7 +884,7 @@ static char *offset_spline(xdot * x, float dx, float dy, float headx,
 /* move_nodes:
  * move selected nodes 
  */
-#if 0
+#ifdef UNUSED
 void move_nodes(Agraph_t * g)
 {
     Agnode_t *obj;

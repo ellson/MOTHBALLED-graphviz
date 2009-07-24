@@ -54,18 +54,15 @@ static int draw_topview_edge_label(topview_edge * e, float zdepth);
 static int node_visible(topview_node* n);
 static int select_topview_node(topview_node * n);
 /* static int select_topview_edge(topview_edge * e); */
-#if 0
+#ifdef UNUSED
 static int update_topview_node_from_cgraph(topview_node * Node);
 #endif
 static int get_color_from_edge(topview_edge * e);
-static int pick_node(topview_node * n);
+/* static int pick_node(topview_node * n); */
 static void draw_xdot_set(xdot_set* s);
 static xdot_set* init_xdot_set();
 static void free_xdotset(xdot_set* s);
 static void add_to_xdot_set(xdot_set* s, xdot *x);
-xdot* remove_from_xdot_set (xdot_set* s);
-
-
 
 #ifdef UNUSED
 static void remove_recs()
@@ -320,7 +317,7 @@ void settvxdot(Agraph_t* g,topview* t)
 		parseXdotwithattrs(ep->Edge, t->xdot_list);
     }
 }
-float init_node_size(Agraph_t * g,topview * t)
+void init_node_size(Agraph_t * g,topview * t)
 {
 	float vsize;
 	int percent;
@@ -471,7 +468,7 @@ static float set_gl_dot_size(topview * t)
 
 }
 
-#if 0
+#ifdef UNUSED
 float calcfontsize(float totaledgelength,int totallabelsize,int edgecount,int totalnodecount)
 {
 	float avglength=totaledgelength/(float)edgecount;
@@ -879,7 +876,7 @@ static int select_topview_node(topview_node * n)
 }
 
 
-#if 0
+#ifdef UNUSED
 static int select_topview_edge(topview_edge * e)
 {
     
@@ -926,7 +923,7 @@ static int select_topview_edge(topview_edge * e)
 }
 #endif
 
-#if 0
+#ifdef UNUSED
 static int update_topview_node_from_cgraph(topview_node * Node)
 {
     char *buf;
@@ -946,7 +943,7 @@ static int update_topview_node_from_cgraph(topview_node * Node)
     return 1;
 }
 #endif
-#if 0
+#ifdef UNUSED
 int update_topview_edge_from_cgraph(topview_edge * Edge)
 {
     //for now just color , maybe i need more later
@@ -1354,7 +1351,7 @@ void originate_distorded_coordinates(topview * t)
     }
 }
 
-#if 0
+#ifdef UNUSED
 void test_callback(void)
 {
 }
@@ -1892,6 +1889,11 @@ void select_with_regex(char* exp)
 }
 
 
+struct xdot_set {
+   Dt_t* objs;         /* original graph object (node edge graph) */
+   Dt_t* xdots;        /* xdot collection */
+};
+
 
 static Dtdisc_t qDisc = {
     offsetof(xdot,ops),
@@ -1909,7 +1911,7 @@ static xdot_set* init_xdot_set()
 {
     xdot_set* rv;
     rv = NEW(xdot_set);
-    rv->obj = NULL;
+    rv->objs = NULL;
     rv->xdots = dtopen (&qDisc, Dtqueue);
 
     return rv;
@@ -1920,15 +1922,17 @@ static void add_to_xdot_set(xdot_set* s, xdot *x)
     dtinsert (s->xdots, x);
 }
 
+#ifdef UNUSED
 static xdot* remove_from_xdot_set (xdot_set* s) 
 {
     return (xdot*)dtdelete (s->xdots, NULL); 
 }
+#endif
 
 static void free_xdotset(xdot_set* s)
 {
     if (!s) return;
-    if (s->obj) dtclose (s->obj);
+    if (s->objs) dtclose (s->objs);
     if (s->xdots) dtclose (s->xdots);
     free (s);
 }
@@ -1938,11 +1942,10 @@ static void draw_xdot_set(xdot_set* s)
     int j;
     xdot* x;
 
-    for (x = (xdot*)dtfirst (s->xdots); x; x = (xdot*)dtnext(s->xdots, x)) 
-	{
+    for (x = (xdot*)dtfirst (s->xdots); x; x = (xdot*)dtnext(s->xdots, x)) {
         xdot_op* op = x->ops;
         for (j = 0; j < x->cnt; j++, op++) {
-            if(op->drawfunc)
+            if (op->drawfunc)
                 op->drawfunc(op,0);
         }
     }

@@ -166,7 +166,7 @@ void Color_Widget_bg(char *colorstring, GtkWidget * widget)
 }
 
 
-#if 0
+#ifdef UNUSED
 void Color_Widget_fg(int r, int g, int b, GtkWidget * widget)
 {
     GdkColor color;

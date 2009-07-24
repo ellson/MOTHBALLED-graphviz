@@ -147,6 +147,7 @@ typedef struct {
     char **hostregex;
 } topviewdata;
 
+typedef struct xdot_set xdot_set;
 
 //bind this to cgraph g
 /*
@@ -334,7 +335,7 @@ typedef struct {
 	float init_node_size;	//raster size of node
 	float init_zoom;
 	float fitin_zoom;
-	xdot_set* xdot_list;/*xdot attached to whole graph*/
+	xdot_set* xdot_list;    /*xdot attached to whole graph*/
 
 } topview;
 

@@ -385,7 +385,7 @@ int load_settings_from_graph(Agraph_t * g)
 
 int update_graph_from_settings(Agraph_t * g)
 {
-#if 0
+#ifdef UNUSED
     gchar *buf;
     int value;
     char buf2[10];

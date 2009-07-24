@@ -90,7 +90,7 @@ void graph_zoom(float real_zoom)
 	view->pany = old_zoom * view->pany / real_zoom;
 
 	/*set label to new zoom value */
-#if 0
+#ifdef UNUSED
 	xx = ((float) 100.0 - (float) 1.0) * (v->zoom -
 		     (float) MIN_ZOOM) / ((float) MAX_ZOOM - (float) MIN_ZOOM) + (float) 1.0;
 	sprintf(buf, "%i", (int) xx);
@@ -160,11 +160,13 @@ void glmotion_adjust_pan(ViewInfo* v,float panx,float pany)
 		redraw = TRUE;
 
 }
+#ifdef UNUSED
 static float mod_angle(float angle)
 {
 //	if (angle > 360)
 
 }
+#endif
 void glmotion_rotate(ViewInfo * v)
 {
 	if(v->mouse.rotate_axis==MOUSE_ROTATE_XY)
