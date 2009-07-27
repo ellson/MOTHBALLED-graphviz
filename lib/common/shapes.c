@@ -2494,6 +2494,17 @@ cvtPt (pointf p, int rankdir)
     return Q;
 }
 
+/* closestSide:
+ * Resolve unspecified compass-point port to best available port.
+ * At present, this finds the available side closest to the center
+ * of the other port.
+ *
+ * This could be improved:
+ *  - if other is unspecified, do them together
+ *  - if dot, bias towards bottom of one to top of another, if possible
+ *  - if line segment from port centers uses available sides, use these
+ *     or center. (This latter may require spline routing to cooperate.)
+ */
 static char* closestSide (node_t*  n, node_t* other, port* oldport)
 {
     boxf b;
@@ -2505,7 +2516,7 @@ static char* closestSide (node_t*  n, node_t* other, port* oldport)
     char* rv = NULL;
     int i, d, mind = 0;
 
-    if (sides == 0) return rv;  /* use center */
+    if ((sides == 0) || (sides == (TOP|BOTTOM|LEFT|RIGHT))) return rv;  /* use center */
 
     if (oldport->bp) {
 	b = *oldport->bp;
