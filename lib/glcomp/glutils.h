@@ -33,5 +33,6 @@ int GetFixedOGLPoslocal(int x, int y, GLfloat * X, GLfloat * Y, GLfloat * Z);
 void to3D(int x, int y, GLfloat * X, GLfloat * Y,GLfloat * Z);
 void linear_interplotate (float,float,float,float,float,float*);
 double point_to_line_dist(point3f p, point3f u, point3f v);
+double point_to_lineseg_dist (point3f p, point3f a, point3f b);
 
 #endif

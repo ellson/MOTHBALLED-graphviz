@@ -312,6 +312,16 @@ static point3f scale (double d, point3f p)
     return p;
 }
 
+static point3f blend (point3f p, point3f q, float m)
+{
+    point3f r;
+
+    r.x = p.x + m * ( q.x - p.x );
+    r.y = p.y + m * ( q.y - p.y );
+    r.z = p.z + m * ( q.z - p.z );
+    return r;
+}
+
 static point3f normalize (point3f p)
 {
    double d = len (p);
@@ -350,44 +360,32 @@ double point_to_line_dist (point3f p, point3f a, point3f b) {
     return (dist (p, q));
 }
 
-#ifdef UNUSED
 
-static float Magnitude(point3f *Point1, point3f *Point2 )
+/*
+ * Given a line segment determined by two points a and b, and a 3rd point p,
+ * return the distance between the point and the segment.
+ * If the perpendicular from p to the line a-b is outside of the segment,
+ * return the distance to the closer of a or b.
+ */
+double point_to_lineseg_dist (point3f p, point3f a, point3f b)
 {
-    point3f Vector;
-
-    Vector.x = Point2->x - Point1->x;
-    Vector.y = Point2->y - Point1->y;
-    Vector.z = Point2->z - Point1->z;
-
-    return (float)sqrt( Vector.x * Vector.x + Vector.y * Vector.y + Vector.z * Vector.z );
-}
-
-int DistancePointLine(point3f *Point, point3f *LineStart, point3f *LineEnd, float *Distance )
-{
-    float LineMag;
     float U;
-    point3f Intersection;
+    point3f q;
+    point3f ba = sub (b, a);
+    point3f pa = sub (p, a);
 
-    LineMag = Magnitude( LineEnd, LineStart );
+    U = dot (pa, ba)/dot (ba, ba);
 
-    U = ( ( ( Point->x - LineStart->x ) * ( LineEnd->x - LineStart->x ) ) +
-    ( ( Point->y - LineStart->y ) * ( LineEnd->y - LineStart->y ) ) +
-    ( ( Point->z - LineStart->z ) * ( LineEnd->z - LineStart->z ) ) ) /
-    ( LineMag * LineMag );
+    if (U > 1)
+	q = b;
+    else if (U < 0)
+	q = a;
+    else 
+	q = blend (a, b, U);
 
-    if( U < 0.0f || U > 1.0f )
-        return 0;   // closest point does not fall within the line segment
+    return dist(p, q);
 
-    Intersection.x = LineStart->x + U * ( LineEnd->x - LineStart->x );
-    Intersection.y = LineStart->y + U * ( LineEnd->y - LineStart->y );
-    Intersection.z = LineStart->z + U * ( LineEnd->z - LineStart->z );
-
-    *Distance = Magnitude( Point, &Intersection );
-
-    return 1;
 }
-#endif
 
 #ifdef DEBUG
 void main( void )
