@@ -156,13 +156,13 @@ float GetOGLDistance(int l)
 
 void to3D(int x, int y, GLfloat *X, GLfloat *Y,GLfloat *Z)
 {
-	int const WIDTH = 100;
+	int const WIDTH = 10;
 
     GLint viewport[4];
     GLdouble modelview[16];
     GLdouble projection[16];
     GLfloat winX, winY;
-	GLfloat winZ[10000];
+	GLfloat winZ[100];
     GLdouble posX, posY, posZ;
 	int idx;
 	static float comp;
@@ -186,7 +186,7 @@ void to3D(int x, int y, GLfloat *X, GLfloat *Y,GLfloat *Z)
 	*X = (GLfloat) posX;
     *Y = (GLfloat) posY;
     *Z = (GLfloat) posZ;
-//	printf ("%f %f %f\n",*X,*Y,*Z);
+	printf ("%f %f %f\n",*X,*Y,*Z);
 //    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	return ;
 	

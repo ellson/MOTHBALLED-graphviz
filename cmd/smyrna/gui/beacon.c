@@ -73,6 +73,8 @@ void pick_node_from_coords(float x,float y,float z)
 	float a, b,c;
 	double d;
 	int ind;
+	FILE* f;
+/*	f = fopen("c:/closestp.txt", "w");*/
 	sn=(topview_node*)0;
 	se=(topview_edge*)0;
 
@@ -112,13 +114,16 @@ void pick_node_from_coords(float x,float y,float z)
 		p3.y=view->mouse.GLY;
 		p3.z=view->mouse.GLZ;
 		d = point_to_line_dist(p3, p1, p2);
+/*		fprintf (f,"%.2lf  (%.2lf,%.2lf,%.2lf) (%.2lf,%.2lf,%.2lf)-(%.2lf,%.2lf,%.2lf)\n",d,p3.x,p3.y,p3.z,
+								p1.x,p1.y,p1.z,	p2.x,p2.y,p2.z);*/
+
 		if (d < closest_dif2 ) {
 			se=e;
 			closest_dif2=d;
 		}
 	}
 
-	if (closest_dif < closest_dif2 * 5)
+/*	if (closest_dif < closest_dif2 * 5)
 	{
 		if (sn)
 		{
@@ -129,7 +134,7 @@ void pick_node_from_coords(float x,float y,float z)
 		}
 	}
 	else
-	{
+	{*/
 		if (se)
 		{
 			if (!is_edge_picked(se)) 
@@ -137,7 +142,7 @@ void pick_node_from_coords(float x,float y,float z)
 			else
 				remove_edge_from_pick_list(se);
 		}
-	}
+	/*}*/
 
 }
 
@@ -243,7 +248,7 @@ int draw_node_hint_boxes(void)
 			lbl=agnameof(n->Node);
 		dx = n->distorted_x;
 		dy = n->distorted_y;
-		dz = n->distorted_z;
+		dz = n->distorted_z+0.001;
 
 
 		/*blue font color*/

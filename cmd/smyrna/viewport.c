@@ -590,7 +590,7 @@ int add_graph_to_viewport_from_file(char *fileName)
 {
     Agraph_t *graph = loadGraph(fileName);
 
-    return add_graph_to_viewport (graph, fileName);
+    return add_graph_to_viewport (graph, fileName,1);
 }
 
 void
@@ -604,7 +604,7 @@ refreshViewport (int doClear)
     if (doClear)
 	cleartopview(view->Topview);
 	
-	update_topview(graph, view->Topview,1,1);
+	update_topview(graph, view->Topview,1);
     fill_key(view->orig_key,get_md5_key(graph));
     expose_event(view->drawing_area, NULL, NULL);
 }
@@ -625,7 +625,7 @@ int add_graph_to_viewport(Agraph_t* graph, char* id)
 
 	gtk_combo_box_append_text(view->graphComboBox,id);
 
-	activate (view->graphCount - 1, 0);
+	activate (view->graphCount - 1,0);
 	return 1;
     } 
     else {
@@ -638,7 +638,7 @@ void switch_graph(int graphId)
     if (graphId >= view->graphCount)
 	return;/*wrong entry*/
     else
-	activate (graphId, 1);
+	activate (graphId, 0);
 }
 
 #ifdef UNUSED

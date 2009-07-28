@@ -156,7 +156,8 @@ HTTPServerEnVar
 Initial_dist    
 initMapData    
 inPS    
-insertPM    
+insertPM
+updatePM    
 insertPS    
 isConnected    
 isInPS    

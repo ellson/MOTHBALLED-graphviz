@@ -189,6 +189,7 @@ typedef struct _object_data	//has to be attached to every Node, Edge, Graph and 
     int selectionflag;
     int param;			//generic purpose param
     int TVRef;			//Topview reference
+	int edgeid;	/*for only edges,  > 0  multiedges*/
 
 } element_data;
 typedef struct _temp_node_record	//helper record to identofy head and tail of edges
