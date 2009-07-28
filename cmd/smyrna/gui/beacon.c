@@ -113,7 +113,7 @@ void pick_node_from_coords(float x,float y,float z)
 		p3.x=view->mouse.GLX;
 		p3.y=view->mouse.GLY;
 		p3.z=view->mouse.GLZ;
-		d = point_to_line_dist(p3, p1, p2);
+		d = point_to_lineseg_dist(p3, p1, p2);
 /*		fprintf (f,"%.2lf  (%.2lf,%.2lf,%.2lf) (%.2lf,%.2lf,%.2lf)-(%.2lf,%.2lf,%.2lf)\n",d,p3.x,p3.y,p3.z,
 								p1.x,p1.y,p1.z,	p2.x,p2.y,p2.z);*/
 
