@@ -590,7 +590,7 @@ int add_graph_to_viewport_from_file(char *fileName)
 {
     Agraph_t *graph = loadGraph(fileName);
 
-    return add_graph_to_viewport (graph, fileName,1);
+    return add_graph_to_viewport (graph, fileName);
 }
 
 void
