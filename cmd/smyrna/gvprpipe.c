@@ -28,7 +28,7 @@
 
 #include <gvpr.h>
 extern GladeXML *xml;			//global libglade vars
-static void append_textview(GtkTextView* textv, const char* s)
+static void append_textview(GtkTextView* textv, const char* s, size_t bytes)
 {
 
     GtkTextIter endit;
@@ -38,14 +38,14 @@ static void append_textview(GtkTextView* textv, const char* s)
 	/*set iterator to the end of the buffer*/
     gtk_text_buffer_get_end_iter (gtkbuf,&endit);
 	/* insert buf to the end */
-	gtk_text_buffer_insert(gtkbuf,&endit,s,-1);
+	gtk_text_buffer_insert(gtkbuf,&endit,s,bytes);
 
 }
 static ssize_t outfn (void* sp, const char *buf, size_t nbyte, void* dp)
 {
 
-	append_textview((GtkTextView*) glade_xml_get_widget(xml,"gvprtextoutput"),buf);	
-	append_textview((GtkTextView*) glade_xml_get_widget(xml,"mainconsole"),buf);	
+	append_textview((GtkTextView*) glade_xml_get_widget(xml,"gvprtextoutput"),buf,nbyte);	
+	append_textview((GtkTextView*) glade_xml_get_widget(xml,"mainconsole"),buf,nbyte);	
 	return nbyte;
 }
 

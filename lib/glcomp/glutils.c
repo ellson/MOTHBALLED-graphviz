@@ -186,7 +186,6 @@ void to3D(int x, int y, GLfloat *X, GLfloat *Y,GLfloat *Z)
 	*X = (GLfloat) posX;
     *Y = (GLfloat) posY;
     *Z = (GLfloat) posZ;
-	printf ("%f %f %f\n",*X,*Y,*Z);
 //    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	return ;
 	

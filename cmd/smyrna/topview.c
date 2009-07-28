@@ -484,14 +484,14 @@ static float set_gl_dot_size(topview * t)
 	draws multi edges , single edges
 	this function assumes     glBegin(GL_LINES) has been called 
 */
-static void draw_edge(double x1,double y1,double z1,double x2,double y2,double z2,int deg)
+static void draw_edge(double x1,double y1,double z1,double x2,double y2,double z2,int deg,topview_edge* e)
 {
 	double alpha,R,ITERANGLE;
 	double X1,Y1,X2,Y2;
 	
 	if (deg)
 	{
-		R=5;
+		R=e->length / 20.0;
 		if ((deg / 2) * 2 != deg)	/*odd*/
 			ITERANGLE=(deg)*15.00*-1;
 		else
@@ -736,7 +736,7 @@ static void drawtopviewedges(Agraph_t * g)
 		e->Node2->distorted_y - dddy,
 		e->Node2->distorted_z - ddz*/
 		draw_edge(e->Node1->distorted_x - ddx,e->Node1->distorted_y - ddy,e->Node1->distorted_z - ddz
-			, e->Node2->distorted_x - dddx,e->Node2->distorted_y - dddy,e->Node2->distorted_z - ddz,e->data.edgeid);
+			, e->Node2->distorted_x - dddx,e->Node2->distorted_y - dddy,e->Node2->distorted_z - ddz,e->data.edgeid,e);
 
 
 	    
