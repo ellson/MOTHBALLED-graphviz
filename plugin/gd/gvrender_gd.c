@@ -664,14 +664,14 @@ gvplugin_installed_t gvrender_gd_types[] = {
 gvplugin_installed_t gvdevice_gd_types2[] = {
 #ifdef HAVE_LIBGD
 #ifdef HAVE_GD_GIF
-    {FORMAT_GIF, "gif:gd", 1, NULL, &device_features_gd},
+    {FORMAT_GIF, "gif:gd", 1, NULL, &device_features_gd_tc},  /* pretend gif is truecolor because it supports transparency */
     {FORMAT_WBMP, "wbmp:gd", 1, NULL, &device_features_gd},
 #endif
 
 #ifdef HAVE_GD_JPEG
-    {FORMAT_JPEG, "jpe:gd", 1, NULL, &device_features_gd_tc},
-    {FORMAT_JPEG, "jpeg:gd", 1, NULL, &device_features_gd_tc},
-    {FORMAT_JPEG, "jpg:gd", 1, NULL, &device_features_gd_tc},
+    {FORMAT_JPEG, "jpe:gd", 1, NULL, &device_features_gd},
+    {FORMAT_JPEG, "jpeg:gd", 1, NULL, &device_features_gd},
+    {FORMAT_JPEG, "jpg:gd", 1, NULL, &device_features_gd},
 #endif
 
 #ifdef HAVE_GD_PNG
