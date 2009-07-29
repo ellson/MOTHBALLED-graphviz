@@ -345,6 +345,13 @@ void init_node_size(Agraph_t * g,topview * t)
 void update_topview(Agraph_t * g, topview * t,int init)
 {
 
+	char* info_file;
+	char* str;
+	char buf[512];
+	int BUFSIZE=512;
+	 unsigned char xbuffer[BUFSIZ];
+	FILE* f;
+
 	if (init) 
 		preparetopview(g,t);
 	free_xdotset(view->Topview->xdot_list);
@@ -355,6 +362,29 @@ void update_topview(Agraph_t * g, topview * t,int init)
     set_update_required(t);
 	settvxdot(view->g[view->activeGraph],view->Topview);
 	init_node_size(g,t);
+	/*This is a temp code , need to be removed after Xue's demo*/
+	info_file=agget(g,"demo_file");
+	if ((info_file != NULL) && (strlen(info_file)!=0))
+	{
+		int sz;
+		agxbuf xbuf;
+	    agxbinit (&xbuf,512, xbuffer);
+
+		info_file=fopen(info_file,"r");
+		if (info_file)
+		{
+				while (fgets(buf, BUFSIZ, info_file)) 
+					agxbput (&xbuf, buf);
+				agxbput (&xbuf, "");
+				str=agxbuse (&xbuf);
+				append_textview((GtkTextView*) glade_xml_get_widget(xml,"mainconsole"),str,strlen(str));	
+		}
+	}
+
+	
+
+	/*end of temp code*/
+
 	if (view->SignalBlock)
 		btnToolZoomFit_clicked(NULL,NULL);
 }
