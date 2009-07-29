@@ -68,8 +68,8 @@ void pick_node_from_coords(float x,float y,float z)
 	topview_node* sn;	/*selected node , closest node*/
 	topview_edge* e;
 	topview_edge* se;/*selected edge , closest one*/
-	GLfloat closest_dif = 1000;
-	GLfloat closest_dif2 = 1000;
+	GLfloat closest_dif = 100000000;
+	GLfloat closest_dif2 = 100000000;
 	float a, b,c;
 	double d;
 	int ind;
@@ -119,7 +119,7 @@ void pick_node_from_coords(float x,float y,float z)
 		}
 	}
 
-	if (closest_dif < closest_dif2 * 5)
+	if (closest_dif < closest_dif2 * 3)
 	{
 		if (sn)
 		{
@@ -226,6 +226,7 @@ int add_to_pick_list(topview_node * n)
 int draw_node_hint_boxes(void)
 {
     int ind;
+	float del=0.01;
     float fs = GetOGLDistance(12);
     char* lbl;
     topview_node* n;
@@ -249,8 +250,8 @@ int draw_node_hint_boxes(void)
 
 		/*blue font color*/
 		glColor4f(0, 0, 1, 1);
-		glprintfglut (GLUT_BITMAP_HELVETICA_12, dx,dy,dz,"[");
-		glprintfglut (GLUT_BITMAP_HELVETICA_12, dx,(dy+fs+fs/(GLfloat)5.0),dz,lbl);
+		glprintfglut (GLUT_BITMAP_HELVETICA_12, dx,dy,dz+del,"[");
+		glprintfglut (GLUT_BITMAP_HELVETICA_12, dx,(dy+fs+fs/(GLfloat)5.0),dz+del,lbl);
 //		glprintfglut (GLUT_BITMAP_HELVETICA_12, dx,(dy+fs+fs/(GLfloat)5.0),dz,"aaaaaaaa");
 //		ffs=(dy+fs+fs/(GLfloat)5.0)-GetOGLDistance(14)/view->zoom*-1;
 //		glprintfglut (GLUT_BITMAP_HELVETICA_12, dx,ffs,dz,"bbbbbbbbbb");
@@ -339,8 +340,8 @@ int draw_node_hint_boxes(void)
 		glColor4f(0, 0, 1, 1);
 
 		/*blue font color*/
-		glprintfglut (GLUT_BITMAP_HELVETICA_12, dx,dy,dz,"|");
-		glprintfglut (GLUT_BITMAP_HELVETICA_12, dx,(dy+fs+fs/(GLfloat)5.0),dz,buf);
+		glprintfglut (GLUT_BITMAP_HELVETICA_12, dx,dy,dz+del,"|");
+		glprintfglut (GLUT_BITMAP_HELVETICA_12, dx,(dy+fs+fs/(GLfloat)5.0),dz+del,buf);
     }
 
 
