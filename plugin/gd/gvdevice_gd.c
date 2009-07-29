@@ -61,17 +61,24 @@ static void gd_format(GVJ_t * job)
     ctx.putC = gvdevice_gd_putC;
     ctx.tell = (void*)job;    /* hide *job here */
 
+/* pick an off-white color, so that transparent backgrounds look white in jpgs */
+#define TRANSPARENT 0x7ffffffe
+
     im = gdImageCreateTrueColor(width, height);
+    gdImageColorTransparent(im, TRANSPARENT);
+    gdImageAlphaBlending(im, FALSE);
+    gdImageFilledRectangle(im, 0, 0, width, height, TRANSPARENT);
+//    gdImageAlphaBlending(im, TRUE);
     for (y = 0; y < height; y++) {
         for (x = 0; x < width; x++) {
-	    color = *data++;
+            color = *data++;
 	    /* gd's max alpha is 127 */
-	    if ((alpha = (color >> 25) & 0x7f))
-	        /* gd's alpha is transparency instead of opacity */
-	    	color = (color & 0xffffff) | ((127 - alpha) << 24);
-	    else
-		color = im->transparent;
-	    gdImageSetPixel (im, x, y, color);
+	    /*   so right-shift 25 to lose lsb of alpha */
+	    if ((alpha = (color >> 25) & 0x7f)) {
+		/* if not 100% transparent */
+		color = (color & 0xffffff) | ((0x7f - alpha) << 24);
+		gdImageSetPixel (im, x, y, color);
+	    }
 	}
     }
 
