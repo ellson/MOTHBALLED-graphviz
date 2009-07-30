@@ -1,0 +1,103 @@
+# $Id$ $Revision$
+# @configure_input@
+
+Name:    xgtk-plugin
+Summary: xgtk-plugin for graphviz
+Version: @VERSION@
+
+%define truerelease 1
+%{?distroagnostic: %define release %{truerelease}}
+%{!?distroagnostic: %define release %{truerelease}%{?dist}}
+
+Release: %{?release}
+
+Group:   Applications/Multimedia
+License: CPL
+URL:     http://www.graphviz.org/
+Source0: http://www.graphviz.org/pub/@GRAPHVIZ_SOURCES@/xgtk-plugin-@VERSION@.tar.gz
+
+BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+BuildRequires: graphviz-devel gtk2-devel
+
+Requires(post):   /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
+
+%description
+A graphviz plugin providind a gtk UI to graphviz.  
+
+# run "dot -c" to generate plugin config in %{libdir}/graphviz/config
+# (don't rely on ldconfig to find libraries since it won't
+#  help if --prefix was used to relocate binaries)
+%post
+LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
+/sbin/ldconfig
+
+# if there is no dot after everything else is done, then remove config
+%postun
+if [ $1 -eq 0 ]; then
+        rm -f $RPM_INSTALL_PREFIX0/%{_lib}/graphviz/config || :
+fi
+/sbin/ldconfig
+
+%files
+%defattr(-,root,root,-)
+%doc AUTHORS COPYING ChangeLog NEWS README
+%dir %{_libdir}/graphviz
+%{_libdir}/graphviz/*.so.*
+
+#-- building --------------------------------------------------
+
+%prep
+%setup -q
+
+%build
+# XXX ix86 only used to have -ffast-math, let's use everywhere
+%{expand: %%define optflags %{optflags} -ffast-math}
+
+# %%configure is broken in RH7.3 rpmbuild
+CFLAGS="$RPM_OPT_FLAGS" \
+./configure \
+        --prefix=%{_prefix} \
+        --bindir=%{_bindir} \
+        --libdir=%{_libdir} \
+        --includedir=%{_includedir} \
+        --datadir=%{_datadir} \
+        --mandir=%{_mandir} \
+        --with-x \
+	--disable-static \
+        --disable-dependency-tracking \
+make %{?_smp_mflags}
+
+%install
+rm -rf %{buildroot} __doc
+make DESTDIR=%{buildroot} \
+        docdir=%{buildroot}%{_docdir}/%{name} \
+        pkgconfigdir=%{_libdir}/pkgconfig \
+        install
+find %{buildroot} -type f -name "*.la" -exec rm -f {} ';'
+chmod -x %{buildroot}%{_datadir}/%{name}/lefty/*
+cp -a %{buildroot}%{_datadir}/%{name}/doc __doc
+rm -rf %{buildroot}%{_datadir}/%{name}/doc
+
+%check
+%ifnarch ppc64 ppc
+# regression test, segfaults on ppc/ppc64, possible endian issues?
+# regressions tests require ksh93 - not available on centos3
+#cd rtest
+#make rtest
+%endif
+
+%clean
+# optional regression test using the products in the build tree
+%if 0%{?rtest}
+cd rtest
+make rtest
+%endif
+# clean up temporary installation
+rm -rf %{buildroot}
+
+#-- changelog --------------------------------------------------
+
+%changelog
+* Thu Jul 30 2009 John Ellson <ellson@research.att.com>
+- new package

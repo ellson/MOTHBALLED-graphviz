@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT([gtk-plugin], [0.1], [ellson@research.att.com])
+AC_INIT([xgtk-plugin], [0.1], [ellson@research.att.com])
 AC_CONFIG_SRCDIR([src/gvplugin_gtk.c])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_HEADERS([config.h])
@@ -74,5 +74,5 @@ AC_CHECK_HEADERS([inttypes.h libintl.h stdint.h string.h unistd.h])
 
 # Checks for library functions.
 
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile xgtk-plugin.spec])
 AC_OUTPUT
