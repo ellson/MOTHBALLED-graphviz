@@ -8,8 +8,8 @@ if test -x /opt/local/bin/glibtoolize; then
 fi
 export LIBTOOLIZE
 
-echo "autogen.sh: running: $LIBTOOLIZE --copy --force --ltdl"
-$LIBTOOLIZE --copy --force --ltdl
+echo "autogen.sh: running: $LIBTOOLIZE --copy --force"
+$LIBTOOLIZE --copy --force 
 
 autoreconf -v --install --force || exit 1
 
