@@ -39,9 +39,12 @@ else
 fi
 AM_CONDITIONAL(WITH_GVC, [test "x$use_gvc" = "xYes"])
 
-# FIXME - this should be automatically obtained
-GVPLUGIN_VERSION_INFO='6:0:0'
-AC_SUBST(GVPLUGIN_VERSION_INFO)
+if test "x$use_gvc" = "xYes"; then
+    GVPLUGIN_VERSION_INFO=`pkg-config libgvc --variable=plugins`:0:0
+    AC_SUBST(GVPLUGIN_VERSION_INFO)
+    GVPLUGIN_DIR=`pkg-config libgvc --variable=libdir`/graphviz
+    AC_SUBST(GVPLUGIN_DIR)
+fi
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GTK.

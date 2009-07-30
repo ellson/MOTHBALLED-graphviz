@@ -5,7 +5,7 @@ ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = $(GVC_CFLAGS) $(GTK_CFLAGS)
 
 #override pkglibdir
-pkglibdir = $(libdir)/graphviz
+pkglibdir = @GVPLUGIN_DIR@
 
 noinst_HEADERS = support.h interface.h callbacks.h
 noinst_LTLIBRARIES = libgvplugin_gtk_C.la
