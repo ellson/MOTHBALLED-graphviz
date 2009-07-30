@@ -35,6 +35,7 @@
 #include "gvcint.h"
 #include "gvcproc.h"
 #include "gvc.h"
+#include "xdot.h"
 
 /* from common/utils.c */
 extern void *zmalloc(size_t);
@@ -89,6 +90,8 @@ int gvFreeContext(GVC_t * gvc)
 	free(gvc->config_path);
     if (gvc->input_filenames)
 	free(gvc->input_filenames);
+    if (gvc->xdots)
+	freeXDot ((xdot*)gvc->xdots);
     free(gvc);
     return (graphviz_errors + agerrors());
 }

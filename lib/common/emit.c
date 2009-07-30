@@ -29,10 +29,17 @@
 #include "agxbuf.h"
 #include "htmltable.h"
 #include "gvc.h"
+#include "xdot.h"
 
 #define P2RECT(p, pr, sx, sy) (pr[0].x = p.x - sx, pr[0].y = p.y - sy, pr[1].x = p.x + sx, pr[1].y = p.y + sy)
 #define FUZZ 3
 #define EPSILON .0001
+
+typedef struct {
+    xdot_op op;
+    boxf bb;
+    textpara_t* para;
+} exdot_op;
 
 static char *defaultlinestyle[3] = { "solid\0", "setlinewidth\0001\0", 0 };
 
@@ -819,8 +826,99 @@ static boolean write_node_test(Agraph_t * g, Agnode_t * n)
     return TRUE;
 }
 
+#define INITPTS 1000
+
+static pointf*
+copyPts (pointf* pts, int* ptsize, xdot_point* inpts, int numpts)
+{
+    int i, sz = *ptsize;
+
+    if (numpts > sz) {
+	sz = MAX(2*sz, numpts);
+	pts = RALLOC(sz, pts, pointf);
+	*ptsize = sz;
+    }
+
+    for (i = 0; i < numpts; i++) {
+	pts[i].x = inpts[i].x;
+	pts[i].y = inpts[i].y;
+    }
+
+    return pts;
+}
+
+static void emit_xdot (GVJ_t * job, xdot* xd)
+{
+    int image_warn = 1;
+    int ptsize = INITPTS;
+    pointf* pts = N_GNEW(INITPTS, pointf);
+    double fontsize;
+    char* fontname;
+    exdot_op* op;
+    int i;
+
+    op = (exdot_op*)(xd->ops);
+    for (i = 0; i < xd->cnt; i++) {
+	switch (op->op.kind) {
+	case xd_filled_ellipse :
+	case xd_unfilled_ellipse :
+    	    if (!boxf_overlap(op->bb, job->clip)) continue;
+	    pts[0].x = op->op.u.ellipse.x - op->op.u.ellipse.w;
+	    pts[0].y = op->op.u.ellipse.y - op->op.u.ellipse.h;
+	    pts[1].x = op->op.u.ellipse.w;
+	    pts[1].y = op->op.u.ellipse.h;
+	    gvrender_ellipse(job, pts, 2, op->op.kind == xd_filled_ellipse);
+	    break;
+	case xd_filled_polygon :
+	case xd_unfilled_polygon :
+    	    if (!boxf_overlap(op->bb, job->clip)) continue;
+	    pts = copyPts (pts, &ptsize, op->op.u.polygon.pts, op->op.u.polygon.cnt);
+	    gvrender_polygon(job, pts, op->op.u.polygon.cnt, op->op.kind == xd_filled_polygon);
+	    break;
+	case xd_filled_bezier :
+	case xd_unfilled_bezier :
+    	    if (!boxf_overlap(op->bb, job->clip)) continue;
+	    pts = copyPts (pts, &ptsize, op->op.u.bezier.pts, op->op.u.bezier.cnt);
+	    gvrender_beziercurve(job, pts, op->op.u.bezier.cnt, 0, 0, op->op.kind == xd_filled_bezier);
+	    break;
+	case xd_polyline :
+    	    if (!boxf_overlap(op->bb, job->clip)) continue;
+	    pts = copyPts (pts, &ptsize, op->op.u.polyline.pts, op->op.u.polyline.cnt);
+	    gvrender_polyline(job, pts, op->op.u.polyline.cnt);
+	    break;
+	case xd_text :
+    	    if (!boxf_overlap(op->bb, job->clip)) continue;
+	    pts[0].x = op->op.u.text.x;
+	    pts[0].y = op->op.u.text.y;
+	    gvrender_textpara(job, pts[0], op->para);
+	    break;
+	case xd_fill_color :
+            gvrender_set_fillcolor(job, op->op.u.color);
+	    break;
+	case xd_pen_color :
+            gvrender_set_pencolor(job, op->op.u.color);
+	    break;
+	case xd_font :
+	    fontsize = op->op.u.font.size;
+	    fontname = op->op.u.font.name;
+	    break;
+	case xd_style :
+	    break;
+	case xd_image :
+	    if (image_warn) {
+	        agerr(AGWARN, "Images unsupported in \"background\" attribute\n");
+	        image_warn = 0;
+	    }
+	    break;
+	}
+	op++;
+    }
+    free (pts);
+}
+
 static void emit_background(GVJ_t * job, graph_t *g)
 {
+    xdot* xd;
     char *str;
     
     /* if no bgcolor specified - first assume default of "white" */
@@ -838,6 +936,9 @@ static void emit_background(GVJ_t * job, graph_t *g)
         gvrender_set_pencolor(job, str);
         gvrender_box(job, job->clip, TRUE);	/* filled */
     }
+
+    if ((xd = (xdot*)job->gvc->xdots))
+	emit_xdot (job, xd);
 }
 
 static void setup_page(GVJ_t * job, graph_t * g)
@@ -1197,6 +1298,8 @@ static void emit_end_node(GVJ_t * job)
     pop_obj_state(job);
 }
 
+/* emit_node:
+ */
 static void emit_node(GVJ_t * job, node_t * n)
 {
     GVC_t *gvc = job->gvc;
@@ -1229,6 +1332,8 @@ static void emit_node(GVJ_t * job, node_t * n)
 
 	emit_begin_node(job, n);
 	ND_shape(n)->fns->codefn(job, n);
+	if (ND_xlabel(n))
+	    emit_label(job, EMIT_NXLABEL, ND_xlabel(n));
 	emit_end_node(job);
     }
 }
@@ -1516,6 +1621,10 @@ static boolean edge_in_box(edge_t *e, boxf b)
     if (lp && overlap_label(lp, b))
         return TRUE;
 
+    lp = ED_xlabel(e);
+    if (lp && overlap_label(lp, b))
+        return TRUE;
+
     return FALSE;
 }
 
@@ -1524,7 +1633,7 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e, char** styles)
     obj_state_t *obj;
     int flags = job->flags;
     char *s, buf[50];
-    textlabel_t *lab = NULL, *tlab = NULL, *hlab = NULL;
+    textlabel_t *lab = NULL, *tlab = NULL, *hlab = NULL, *xlab = NULL;
     pointf *pbs = NULL;
     int	i, nump, *pbs_n = NULL, pbs_poly_n = 0;
     char* dflt_url = NULL;
@@ -1564,11 +1673,13 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e, char** styles)
     if (flags & GVRENDER_DOES_LABELS) {
 	if ((lab = ED_label(e)))
 	    obj->label = lab->text;
-	obj->taillabel = obj->headlabel = obj->label;
+	obj->xlabel = obj->taillabel = obj->headlabel = obj->label;
 	if ((tlab = ED_tail_label(e)))
 	    obj->taillabel = tlab->text;
 	if ((hlab = ED_head_label(e)))
 	    obj->headlabel = hlab->text;
+	if ((xlab = ED_xlabel(e)))
+	    obj->xlabel = xlab->text;
     }
 
     if (flags & GVRENDER_DOES_MAPS) {
@@ -1832,6 +1943,10 @@ static void emit_end_edge(GVJ_t * job)
 	obj->explicit_tailtooltip,
 	obj->tailurl, obj->tailtooltip, obj->tailtarget, obj->id,
 	0);
+    emit_edge_label(job, ED_xlabel(e), EMIT_EXLABEL, 
+	obj->explicit_labeltooltip,
+	obj->labelurl, obj->labeltooltip, obj->labeltarget, obj->id,
+	0);
 
     gvrender_end_edge(job);
     pop_obj_state(job);
@@ -1881,11 +1996,150 @@ static void emit_edge(GVJ_t * job, edge_t * e)
     }
 }
 
+static char adjust[] = {'l', 'n', 'r'};
+
+static void
+expandBB (boxf* bb, pointf p)
+{
+    if (p.x > bb->UR.x)
+	bb->UR.x = p.x;
+    if (p.x < bb->LL.x)
+	bb->LL.x = p.x;
+    if (p.y > bb->UR.y)
+	bb->UR.y = p.y;
+    if (p.y < bb->LL.y)
+	bb->LL.y = p.y;
+}
+
+static boxf
+ptsBB (xdot_point* inpts, int numpts, boxf* bb)
+{
+    boxf opbb;
+    int i;
+
+    opbb.LL.x = opbb.UR.x = inpts->x;
+    opbb.LL.y = opbb.UR.y = inpts->y;
+    for (i = 1; i < numpts; i++) {
+	inpts++;
+	if (inpts->x < opbb.LL.x)
+	    opbb.LL.x = inpts->x;
+	else if (inpts->x > opbb.UR.x)
+	    opbb.UR.x = inpts->x;
+	if (inpts->y < opbb.LL.y)
+	    opbb.LL.y = inpts->y;
+	else if (inpts->y > opbb.UR.y)
+	    opbb.UR.y = inpts->y;
+
+    }
+    expandBB (bb, opbb.LL);
+    expandBB (bb, opbb.UR);
+    return opbb;
+}
+
+static boxf
+textBB (double x, double y, textpara_t* para)
+{
+    boxf bb;
+    double wd = para->width;
+    double ht = para->height;
+
+    switch (para->just) {
+    case 'l':
+	bb.LL.x = x;
+	bb.UR.x = bb.LL.x + wd;
+	break; 
+    case 'n':
+	bb.LL.x = x - wd/2.0; 
+	bb.UR.x = x + wd/2.0; 
+	break; 
+    case 'r':
+	bb.UR.x = x; 
+	bb.LL.x = bb.UR.x - wd;
+	break; 
+    }
+    bb.UR.y = y + para->yoffset_layout;
+    bb.LL.y = bb.UR.y - ht;
+    return bb;
+}
+
+static void
+freePara (exdot_op* op)
+{
+    if (op->op.kind == xd_text)
+	free_textpara (op->para);
+}
+
+static boxf
+xdotBB (Agraph_t* g, xdot* xd, boxf bb)
+{
+    exdot_op* op;
+    int i;
+    double fontsize;
+    char* fontname;
+    pointf pts[2];
+    pointf sz;
+    boxf bb0;
+
+    if ((bb.LL.x == bb.UR.x) && (bb.LL.y == bb.UR.y)) {
+	bb.LL.x = bb.LL.y = MAXDOUBLE;
+	bb.UR.x = bb.UR.y = -MAXDOUBLE;
+    }
+
+    op = (exdot_op*)(xd->ops);
+    for (i = 0; i < xd->cnt; i++) {
+	switch (op->op.kind) {
+	case xd_filled_ellipse :
+	case xd_unfilled_ellipse :
+	    pts[0].x = op->op.u.ellipse.x - op->op.u.ellipse.w;
+	    pts[0].y = op->op.u.ellipse.y - op->op.u.ellipse.h;
+	    pts[1].x = op->op.u.ellipse.x + op->op.u.ellipse.w;
+	    pts[1].y = op->op.u.ellipse.y + op->op.u.ellipse.h;
+	    op->bb.LL = pts[0];
+	    op->bb.UR = pts[1];
+	    expandBB (&bb, pts[0]);
+	    expandBB (&bb, pts[1]);
+	    break;
+	case xd_filled_polygon :
+	case xd_unfilled_polygon :
+	    op->bb = ptsBB (op->op.u.polygon.pts, op->op.u.polygon.cnt, &bb);
+	    break;
+	case xd_filled_bezier :
+	case xd_unfilled_bezier :
+	    op->bb = ptsBB (op->op.u.polygon.pts, op->op.u.polygon.cnt, &bb);
+	    break;
+	case xd_polyline :
+	    op->bb = ptsBB (op->op.u.polygon.pts, op->op.u.polygon.cnt, &bb);
+	    break;
+	case xd_text :
+	    op->para = NEW(textpara_t);
+	    op->para->str = strdup (op->op.u.text.text);
+	    op->para->just = adjust [op->op.u.text.align];
+	    sz = textsize (g, op->para, fontname, fontsize);
+	    bb0 = textBB (op->op.u.text.x, op->op.u.text.y, op->para);
+	    op->bb = bb0;
+	    expandBB (&bb, bb0.LL);
+	    expandBB (&bb, bb0.UR);
+	    if (!xd->freefunc)
+		xd->freefunc = (freefunc_t)freePara;
+	    break;
+	case xd_font :
+	    fontsize = op->op.u.font.size;
+	    fontname = op->op.u.font.name;
+	    break;
+	default :
+	    break;
+	}
+	op++;
+    }
+    return bb;
+}
+
 static void init_gvc(GVC_t * gvc, graph_t * g)
 {
     double xf, yf;
     char *p;
     int i;
+    char* str;
 
     gvc->g = g;
 
@@ -1930,8 +2184,27 @@ static void init_gvc(GVC_t * gvc, graph_t * g)
     if ((p = agget(g, "pagedir")) && p[0])
             gvc->pagedir = p;
 
+    /* background */
+    if (gvc->xdots) {
+	freeXDot (gvc->xdots);
+	gvc->xdots = NULL;
+    }
+    if ((str = agget(g, "_draw_")) && str[0]) {
+	xdot* xd = parseXDotF (str, NULL, sizeof (exdot_op));
+
+	if (xd)
+	    gvc->xdots = xd;
+	else {
+	    agerr(AGWARN, "Could not parse \"_draw_\" attribute in graph %s\n", agnameof(g));
+	    agerr(AGPREV, "  \"%s\"\n", str);
+	}
+    }
+
     /* bounding box */
-    gvc->bb = GD_bb(g);
+    if (gvc->xdots)
+	gvc->bb = xdotBB (g, gvc->xdots, GD_bb(g));
+    else
+	gvc->bb = GD_bb(g);
 
     /* clusters have peripheries */
 #ifndef WITH_CGRAPH
@@ -2030,15 +2303,16 @@ static void init_job_dpi(GVJ_t *job, graph_t *g)
 static void init_job_viewport(GVJ_t * job, graph_t * g)
 {
     GVC_t *gvc = job->gvc;
-    pointf UR, size, sz;
+    pointf LL, UR, size, sz;
     double X, Y, Z, x, y;
     int rv;
     Agnode_t *n;
     char *str, *nodename = NULL, *junk = NULL;
 
     UR = gvc->bb.UR;
-    job->bb.LL.x = -job->pad.x;           /* job->bb is bb of graph and padding - graph units */
-    job->bb.LL.y = -job->pad.y;
+    LL = gvc->bb.LL;
+    job->bb.LL.x = LL.x - job->pad.x;           /* job->bb is bb of graph and padding - graph units */
+    job->bb.LL.y = LL.y - job->pad.y;
     job->bb.UR.x = UR.x + job->pad.x;
     job->bb.UR.y = UR.y + job->pad.y;
     sz.x = job->bb.UR.x - job->bb.LL.x;   /* size, including padding - graph units */
@@ -2058,8 +2332,8 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     }
     
     /* default focus, in graph units = center of bb */
-    x = UR.x / 2.;
-    y = UR.y / 2.;
+    x = (LL.x + UR.x) / 2.;
+    y = (LL.y + UR.y) / 2.;
 
     /* rotate and scale bb to give default absolute size in points*/
     job->rotation = job->gvc->rotation;

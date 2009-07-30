@@ -184,7 +184,7 @@ textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *f
     return rv;
 }
 
-static void free_textpara(textpara_t * tl)
+void free_textpara(textpara_t * tl)
 {
     if (tl) {
 	if (tl->str)

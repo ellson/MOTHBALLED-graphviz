@@ -15,6 +15,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib/common \
+	-I$(top_srcdir)/lib/xdot \
 	-I$(top_srcdir)/lib/pathplan \
 	-I$(top_srcdir)/lib/$(GRAPH) \
 	-I$(top_srcdir)/lib/cdt \
@@ -60,6 +61,7 @@ endif
 libgvc_la_LDFLAGS = -version-info $(GVC_VERSION) -no-undefined
 libgvc_la_SOURCES = $(libgvc_C_la_SOURCES)
 libgvc_la_LIBADD = $(libgvc_C_la_LIBADD) \
+	$(top_builddir)/lib/xdot/libxdot.la \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
