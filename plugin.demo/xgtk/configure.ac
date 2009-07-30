@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.63])
 AC_INIT([xgtk-plugin], [0.1], [ellson@research.att.com])
-AC_CONFIG_SRCDIR([src/gvplugin_gtk.c])
+AC_CONFIG_SRCDIR([src/gvplugin_xgtk.c])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])

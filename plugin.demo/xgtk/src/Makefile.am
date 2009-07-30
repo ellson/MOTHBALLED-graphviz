@@ -13,7 +13,7 @@ pkglib_LTLIBRARIES = libgvplugin_xgtk.la
 
 libgvplugin_xgtk_C_la_SOURCES = \
 	gvplugin_xgtk.c \
-	gvdevice_gtk.c \
+	gvdevice_xgtk.c \
 	support.c \
         interface.c \
         callbacks.c 
