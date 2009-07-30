@@ -1,0 +1,13 @@
+INSTALL
+Makefile
+Makefile.in
+aclocal.m4
+autom4te.cache
+config
+config.*
+configure
+gtk-plugin-*.tar.gz
+libltdl
+libtool
+m4
+stamp-h1
