@@ -487,7 +487,7 @@ parse_prog *parseProg(char *input, int isFile)
     int n_nstmts = 0;
     int n_estmts = 0;
     int line = 0, gline = 0;
-    int l_beging=0;
+    int l_beging = 0;
     char *begg_stmt;
 
     prog = newof(0, parse_prog, 1, 0);
