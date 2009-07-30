@@ -61,25 +61,40 @@ static void gd_format(GVJ_t * job)
     ctx.putC = gvdevice_gd_putC;
     ctx.tell = (void*)job;    /* hide *job here */
 
+    im = gdImageCreateTrueColor(width, height);
+    switch (job->device.id) {
+#ifdef HAVE_GD_PNG
+    case FORMAT_PNG:
+        for (y = 0; y < height; y++) {
+            for (x = 0; x < width; x++) {
+                color = *data++;
+	        /* gd's max alpha is 127 */
+	        /*   so right-shift 25 to lose lsb of alpha */
+	        alpha = (color >> 25) & 0x7f;
+	        im->tpixels[y][x] = (color & 0xffffff) | ((0x7f - alpha) << 24);
+	    }
+        }
+        break;
+#endif
+    default:
 /* pick an off-white color, so that transparent backgrounds look white in jpgs */
 #define TRANSPARENT 0x7ffffffe
 
-    im = gdImageCreateTrueColor(width, height);
-    gdImageColorTransparent(im, TRANSPARENT);
-    gdImageAlphaBlending(im, FALSE);
-    gdImageFilledRectangle(im, 0, 0, width, height, TRANSPARENT);
-//    gdImageAlphaBlending(im, TRUE);
-    for (y = 0; y < height; y++) {
-        for (x = 0; x < width; x++) {
-            color = *data++;
-	    /* gd's max alpha is 127 */
-	    /*   so right-shift 25 to lose lsb of alpha */
-	    if ((alpha = (color >> 25) & 0x7f)) {
-		/* if not 100% transparent */
-		color = (color & 0xffffff) | ((0x7f - alpha) << 24);
-		gdImageSetPixel (im, x, y, color);
+        gdImageColorTransparent(im, TRANSPARENT);
+        gdImageAlphaBlending(im, FALSE);
+        for (y = 0; y < height; y++) {
+            for (x = 0; x < width; x++) {
+                color = *data++;
+	        /* gd's max alpha is 127 */
+	        /*   so right-shift 25 to lose lsb of alpha */
+	        if ((alpha = (color >> 25) & 0x7f) >= 0x20)
+		    /* if not > 75% transparent */
+		    im->tpixels[y][x] = (color & 0xffffff) | ((0x7f - alpha) << 24);
+	        else
+		    im->tpixels[y][x] = TRANSPARENT;
 	    }
-	}
+        }
+        break;
     }
 
     switch (job->device.id) {
@@ -108,6 +123,7 @@ static void gd_format(GVJ_t * job)
 
 #ifdef HAVE_GD_PNG
     case FORMAT_PNG:
+	gdImageSaveAlpha(im, TRUE);
 	gdImagePngCtx(im, &ctx);
         break;
 #endif
