@@ -16,11 +16,11 @@
 
 #include "gvplugin.h"
 
-extern gvplugin_installed_t gvdevice_types_gtk[];
+extern gvplugin_installed_t gvdevice_types_xgtk[];
 
 static gvplugin_api_t apis[] = {
-    {API_device, gvdevice_types_gtk},
+    {API_device, gvdevice_types_xgtk},
     {(api_t)0, 0},
 };
 
-gvplugin_library_t gvplugin_gtk_LTX_library = { "gtk", apis };
+gvplugin_library_t gvplugin_xgtk_LTX_library = { "xgtk", apis };

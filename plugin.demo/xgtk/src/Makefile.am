@@ -8,19 +8,19 @@ AM_CPPFLAGS = $(GVC_CFLAGS) $(GTK_CFLAGS)
 pkglibdir = @GVPLUGIN_DIR@
 
 noinst_HEADERS = support.h interface.h callbacks.h
-noinst_LTLIBRARIES = libgvplugin_gtk_C.la
-pkglib_LTLIBRARIES = libgvplugin_gtk.la
+noinst_LTLIBRARIES = libgvplugin_xgtk_C.la
+pkglib_LTLIBRARIES = libgvplugin_xgtk.la
 
-libgvplugin_gtk_C_la_SOURCES = \
-	gvplugin_gtk.c \
+libgvplugin_xgtk_C_la_SOURCES = \
+	gvplugin_xgtk.c \
 	gvdevice_gtk.c \
 	support.c \
         interface.c \
         callbacks.c 
 
-libgvplugin_gtk_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
-libgvplugin_gtk_la_SOURCES = $(libgvplugin_gtk_C_la_SOURCES)
-libgvplugin_gtk_la_LIBADD = $(GTK_LIBS)
+libgvplugin_xgtk_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
+libgvplugin_xgtk_la_SOURCES = $(libgvplugin_xgtk_C_la_SOURCES)
+libgvplugin_xgtk_la_LIBADD = $(GTK_LIBS)
 
 EXTRA_DIST = gtk.glade gtk.gladep 
 

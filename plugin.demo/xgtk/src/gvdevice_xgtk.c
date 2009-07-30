@@ -149,7 +149,7 @@ static void gtk_finalize(GVJ_t *firstjob)
     gtk_main();
 }
 
-static gvdevice_features_t device_features_gtk = {
+static gvdevice_features_t device_features_xgtk = {
     GVDEVICE_DOES_TRUECOLOR
 	| GVDEVICE_EVENTS,      /* flags */
     {0.,0.},                    /* default margin - points */
@@ -157,7 +157,7 @@ static gvdevice_features_t device_features_gtk = {
     {96.,96.},                  /* dpi */
 };
 
-static gvdevice_engine_t device_engine_gtk = {
+static gvdevice_engine_t device_engine_xgtk = {
     gtk_initialize,
     NULL,			/* gtk_format */
     gtk_finalize,
@@ -165,10 +165,10 @@ static gvdevice_engine_t device_engine_gtk = {
 #endif
 #endif
 
-gvplugin_installed_t gvdevice_types_gtk[] = {
+gvplugin_installed_t gvdevice_types_xgtk[] = {
 #ifdef HAVE_GTK
 #ifdef CAIRO_HAS_XLIB_SURFACE
-    {0, "gtk:cairo", 0, &device_engine_gtk, &device_features_gtk},
+    {0, "xgtk:cairo", 0, &device_engine_xgtk, &device_features_xgtk},
 #endif
 #endif
     {0, NULL, 0, NULL, NULL}
