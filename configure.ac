@@ -3044,6 +3044,7 @@ AC_CONFIG_FILES(Makefile
 	lib/gvc/Makefile
 	lib/gvc/libgvc.pc
 	lib/xdot/Makefile
+	lib/xdot/libxdot.pc
 	lib/topfish/Makefile
 	lib/glcomp/Makefile
 	macosx/Info.plist

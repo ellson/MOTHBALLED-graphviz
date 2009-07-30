@@ -26,7 +26,7 @@ typedef enum {
 } xdot_align;
 
 typedef struct {
-    double x, y, z;		//z is constant 
+    double x, y, z;
 } xdot_point;
 
 typedef struct {
@@ -73,6 +73,7 @@ typedef enum {
     
 typedef struct _xdot_op xdot_op;
 typedef void (*drawfunc_t)(xdot_op*, int);
+typedef void (*freefunc_t)(xdot_op*);
 
 struct _xdot_op {
     xdot_kind kind;
@@ -90,14 +91,18 @@ struct _xdot_op {
     drawfunc_t drawfunc;
 };
 
+#define XDOT_PARSE_ERROR 1
+
 typedef struct {
     int cnt;
     int sz;
     xdot_op* ops;
+    freefunc_t freefunc;
+    int flags;
 } xdot;
 
 /* ops are indexed by xop_kind */
-extern xdot* parseXDotF (char*, drawfunc_t ops[], int sz);
+extern xdot* parseXDotF (char*, drawfunc_t opfns[], int sz);
 extern xdot* parseXDot (char*);
 extern char* sprintXDot (xdot*);
 extern void fprintXDot (FILE*, xdot*);
