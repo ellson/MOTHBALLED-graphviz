@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT([graphviz], [0.1], [ellson@research.att.com])
+AC_INIT([gtk-plugin], [0.1], [ellson@research.att.com])
 AC_CONFIG_SRCDIR([src/gvplugin_gtk.c])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_HEADERS([config.h])
