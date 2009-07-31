@@ -1332,8 +1332,6 @@ static void emit_node(GVJ_t * job, node_t * n)
 
 	emit_begin_node(job, n);
 	ND_shape(n)->fns->codefn(job, n);
-	if (ND_xlabel(n))
-	    emit_label(job, EMIT_NXLABEL, ND_xlabel(n));
 	emit_end_node(job);
     }
 }
@@ -1621,10 +1619,6 @@ static boolean edge_in_box(edge_t *e, boxf b)
     if (lp && overlap_label(lp, b))
         return TRUE;
 
-    lp = ED_xlabel(e);
-    if (lp && overlap_label(lp, b))
-        return TRUE;
-
     return FALSE;
 }
 
@@ -1633,7 +1627,7 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e, char** styles)
     obj_state_t *obj;
     int flags = job->flags;
     char *s, buf[50];
-    textlabel_t *lab = NULL, *tlab = NULL, *hlab = NULL, *xlab = NULL;
+    textlabel_t *lab = NULL, *tlab = NULL, *hlab = NULL;
     pointf *pbs = NULL;
     int	i, nump, *pbs_n = NULL, pbs_poly_n = 0;
     char* dflt_url = NULL;
@@ -1673,13 +1667,11 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e, char** styles)
     if (flags & GVRENDER_DOES_LABELS) {
 	if ((lab = ED_label(e)))
 	    obj->label = lab->text;
-	obj->xlabel = obj->taillabel = obj->headlabel = obj->label;
+	obj->taillabel = obj->headlabel = obj->label;
 	if ((tlab = ED_tail_label(e)))
 	    obj->taillabel = tlab->text;
 	if ((hlab = ED_head_label(e)))
 	    obj->headlabel = hlab->text;
-	if ((xlab = ED_xlabel(e)))
-	    obj->xlabel = xlab->text;
     }
 
     if (flags & GVRENDER_DOES_MAPS) {
@@ -1942,10 +1934,6 @@ static void emit_end_edge(GVJ_t * job)
     emit_edge_label(job, ED_tail_label(e), EMIT_TLABEL, 
 	obj->explicit_tailtooltip,
 	obj->tailurl, obj->tailtooltip, obj->tailtarget, obj->id,
-	0);
-    emit_edge_label(job, ED_xlabel(e), EMIT_EXLABEL, 
-	obj->explicit_labeltooltip,
-	obj->labelurl, obj->labeltooltip, obj->labeltarget, obj->id,
 	0);
 
     gvrender_end_edge(job);
