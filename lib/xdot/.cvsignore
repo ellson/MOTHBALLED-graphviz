@@ -1,6 +1,7 @@
 *.la
 *.lo
 *.pc
+*3.pdf
 .deps
 .libs
 Makefile
