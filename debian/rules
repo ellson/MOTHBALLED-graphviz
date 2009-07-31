@@ -141,6 +141,7 @@ install: build
 		--override s/libpathplan$(SONAME)-dev// \
 		--override s/libcgraph$(SONAME)-dev//   \
 		--override s/libgraph$(SONAME)-dev//    \
+		--override s/libxdot$(SONAME)-dev//     \
 		--override s/libcdt$(SONAME)-dev//      \
 		--override s/libgts-0.7-5-dev/libgts-dev/ \
 		$(CURDIR)/debian/libgraphviz-dev.substvars \
