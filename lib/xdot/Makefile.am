@@ -3,7 +3,7 @@
 
 pkgconfigdir = $(libdir)/pkgconfig
 
-XDOT_VERSION="1:2:0"
+XDOT_VERSION="4:0:0"
 
 pdfdir = $(pkgdatadir)/doc/pdf
 pkginclude_HEADERS = xdot.h
