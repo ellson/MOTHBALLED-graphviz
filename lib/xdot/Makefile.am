@@ -15,12 +15,6 @@ pkgconfig_DATA = libxdot.pc
 man_MANS = xdot.3
 pdf_DATA = xdot.3.pdf
 
-#AM_CPPFLAGS = \
-#	-I$(top_srcdir) \
-#	-I$(top_srcdir)/lib/common \
-#	-I$(top_srcdir)/lib/cgraph \
-#	-I$(top_srcdir)/lib/cdt
-
 libxdot_C_la_SOURCES = xdot.c
 libxdot_la_LDFLAGS = -version-info $(XDOT_VERSION) -no-undefined
 libxdot_la_SOURCES = $(libxdot_C_la_SOURCES)
@@ -28,7 +22,7 @@ libxdot_la_SOURCES = $(libxdot_C_la_SOURCES)
 xdot.3.pdf: $(srcdir)/xdot.3
 	- @GROFF@ -Tps -man $(srcdir)/xdot.3 | @PS2PDF@ - - >xdot.3.pdf
 
-EXTRA_DIST = xdot.vcproj $(pdf_DATA)
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) xdot.vcproj
 
 DISTCLEANFILES = $(pdf_DATA)
 
