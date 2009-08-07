@@ -5,6 +5,9 @@ sccmap \- extract strongly connected components of directed graphs
 \fBsccmap\fR
 [\fB\-dsv\fR]
 [
+.BI \-o outfile
+]
+[
 .I files
 ]
 .SH DESCRIPTION
@@ -29,6 +32,10 @@ important.
 .TP
 .B \-S
 Just print the resulting graphs. No statistics are printed.
+.TP
+.BI \-o "output"
+Prints output to the file \fIoutput\fP. If not given, \fBsccmap\fP
+uses stdout.
 .TP
 .B \-v
 Generate additional statistics. In particular,

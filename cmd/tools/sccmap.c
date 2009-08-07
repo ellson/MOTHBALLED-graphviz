@@ -138,12 +138,13 @@ typedef struct {
     int N_nodes_in_nontriv_SCC;
 } sccstate;
 
-int wantDegenerateComp;
-int Silent;
-int StatsOnly;
-int Verbose;
-char *CmdName;
-char **Files;
+static int wantDegenerateComp;
+static int Silent;
+static int StatsOnly;
+static int Verbose;
+static char *CmdName;
+static char **Files;
+static FILE *outfp;		/* output; stdout by default */
 
 static void nodeInduce(Agraph_t * g, Agraph_t* map)
 {
@@ -208,7 +209,7 @@ static int visit(Agnode_t * n, Agraph_t * map, Stack * sp, sccstate * st)
 	    } while (t != n);
 	    nodeInduce(subg, map);
 	    if (!StatsOnly)
-		agwrite(subg, stdout);
+		agwrite(subg, outfp);
 	}
     }
     return min;
@@ -294,7 +295,7 @@ static void process(Agraph_t * G)
 	    visit(n, map, &stack, &state);
     freeStack(&stack);
     if (!StatsOnly)
-	agwrite(map, stdout);
+	agwrite(map, outfp);
     agclose(map);
 
     if (Verbose)
@@ -308,12 +309,31 @@ static void process(Agraph_t * G)
 
 }
 
+static FILE *openFile(char *name, char *mode)
+{
+    FILE *fp;
+    char *modestr;
+
+    fp = fopen(name, mode);
+    if (!fp) {
+	if (*mode == 'r')
+	    modestr = "reading";
+	else
+	    modestr = "writing";
+	fprintf(stderr, "gvpack: could not open file %s for %s\n",
+		name, modestr);
+	exit(1);
+    }
+    return (fp);
+}
+
 static char *useString = "Usage: %s [-sdv?] <files>\n\
-  -s - only produce statistics\n\
-  -S - silent\n\
-  -d - allow degenerate components\n\
-  -v - verbose\n\
-  -? - print usage\n\
+  -s           - only produce statistics\n\
+  -S           - silent\n\
+  -d           - allow degenerate components\n\
+  -o<outfile>  - allow degenerate components\n\
+  -v           - verbose\n\
+  -?           - print usage\n\
 If no files are specified, stdin is used\n";
 
 static void usage(int v)
@@ -327,13 +347,16 @@ static void scanArgs(int argc, char **argv)
     int c;
 
     CmdName = argv[0];
-    while ((c = getopt(argc, argv, ":sdvS?")) != EOF) {
+    while ((c = getopt(argc, argv, ":o:sdvS?")) != EOF) {
 	switch (c) {
 	case 's':
 	    StatsOnly = 1;
 	    break;
 	case 'd':
 	    wantDegenerateComp = 1;
+	    break;
+	case 'o':
+	    outfp = openFile(optarg, "w");
 	    break;
 	case 'v':
 	    Verbose = 1;
@@ -356,6 +379,8 @@ static void scanArgs(int argc, char **argv)
 
     if (argc)
 	Files = argv;
+    if (!outfp)
+	outfp = stdout;		/* stdout the default */
 }
 
 static Agraph_t *gread(FILE * fp)
