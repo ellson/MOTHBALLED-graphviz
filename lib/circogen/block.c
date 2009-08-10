@@ -59,6 +59,11 @@ void freeBlock(block_t * sp)
     free(sp);
 }
 
+int blockSize(block_t * sp)
+{
+    return agnnodes (sp->sub_graph);
+}
+
 /* appendBlock:
  * add block at end
  */

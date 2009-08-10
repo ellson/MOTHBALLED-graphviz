@@ -44,6 +44,7 @@ extern "C" {
 
     extern block_t *mkBlock(Agraph_t *);
     extern void freeBlock(block_t * sp);
+    extern int blockSize(block_t * sp);
 
     extern void initBlocklist(blocklist_t *);
     extern void appendBlock(blocklist_t * sp, block_t * sn);
