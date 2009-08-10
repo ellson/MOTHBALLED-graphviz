@@ -119,11 +119,6 @@ Agraph_t **circomps(Agraph_t * g, int *cnt)
     int i;
     Agedge_t *ep;
     Agnode_t *p;
-#ifdef USER_BLOCKS
-    Agraph_t *ssg, *ssgl, *subg;
-    Agnode_t *t;
-    Agedge_t *me;
-#endif
 
 #ifndef WITH_CGRAPH
     dg = agopen("derived", AGFLAG_STRICT);
@@ -131,23 +126,6 @@ Agraph_t **circomps(Agraph_t * g, int *cnt)
     dg = agopen("derived", Agstrictundirected,NIL(Agdisc_t *));
 #endif /* WITH_CGRAPH */
     GD_alg(g) = dg;  /* store derived graph for closing later */
-#ifdef USER_BLOCKS
-    sg = g->meta_node->graph;
-    for (me = agfstout(sg, g->meta_node); me; me = agnxtout(sg, me)) {
-	subg = agusergraph(me->head);
-
-	if (strncmp(subg->name, "block", 5) != 0)
-	    continue;
-
-	if (agnnodes(subg) == 0)
-	    continue;
-
-	n = makeDerivedNode(dg, subg->name, 0, subg);
-	for (v = agfstnode(subg); v; v = agnxtnode(subg, v)) {
-	    DNODE(v) = n;
-	}
-    }
-#endif
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
 	if (DNODE(v))
@@ -175,23 +153,6 @@ Agraph_t **circomps(Agraph_t * g, int *cnt)
     /* replace block nodes with block contents */
     for (i = 0; i < c_cnt; i++) {
 	sg = ccs[i];
-
-#ifdef USER_BLOCKS
-	for (n = agfstnode(sg); n; n = agnxtnode(sg, n)) {
-	    /* Expand block nodes, and create block subgraph in sg */
-	    if (agobjkind(ORIGN(n)) != AGNODE) {
-		ssg = ORIGG(n);
-		free(ND_alg(n));
-		agdelete(n->graph, n);
-		ssgl = agsubg(sg, ssg->name);
-		for (t = agfstnode(ssg); t; t = agnxtnode(ssg, t)) {
-		    p = makeDerivedNode(dg, t->name, 1, t);
-		    DNODE(t) = p;
-		    aginsert(ssgl, p);
-		}
-	    }
-	}
-#endif
 
 	/* add edges: since sg is a union of components, all edges
 	 * of any node should be added, except loops.
