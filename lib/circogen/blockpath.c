@@ -86,23 +86,6 @@ static Agraph_t *clone_graph(Agraph_t * ing, Agraph_t ** xg)
 	}
     }
     *xg = xclone;
-#ifdef OLD
-    clone = agopen("clone", root->kind);
-
-    for (n = agfstnode(root); n; n = agnxtnode(root, n)) {
-	cn = agnode(clone, n->name);
-	ND_alg(cn) = DATA(n);
-	BCDONE(cn) = 0;
-    }
-
-    for (n = agfstnode(root); n; n = agnxtnode(root, n)) {
-	Agnode_t *t = agnode(clone, n);
-	for (e = agfstout(root, n); e; e = agnxtout(root, e)) {
-	    Agnode_t *h = agnode(clone, agnameof(aghead(e)));
-	    agedge(clone, t, h);
-	}
-    }
-#endif
     return clone;
 }
 
