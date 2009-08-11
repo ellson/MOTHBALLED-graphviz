@@ -74,6 +74,7 @@ typedef unsigned char packval_t;
     extern point *putGraphs(int, Agraph_t **, Agraph_t *, pack_info *);
     extern int packGraphs(int, Agraph_t **, Agraph_t *, pack_info *);
     extern int packSubgraphs(int, Agraph_t **, Agraph_t *, pack_info *);
+    extern int pack_graph(int ng, Agraph_t** gs, Agraph_t* root, boolean* fixed);
 
     extern int shiftGraphs(int, Agraph_t**, point*, Agraph_t*, int);
 

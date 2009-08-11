@@ -1169,7 +1169,6 @@ packSubgraphs(int ng, Agraph_t ** gs, Agraph_t * root, pack_info * info)
     return ret;
 }
 
-#if 0
 /* pack_graph:
  * Pack subgraphs followed by postprocessing.
  */
@@ -1179,15 +1178,13 @@ pack_graph(int ng, Agraph_t** gs, Agraph_t* root, boolean* fixed)
     int ret;
     pack_info info;
 
-    info.margin = getPack (root, CL_OFFSET, CL_OFFSET);;
-    info.mode = getPackMode (root, l_graph);
+    getPackInfo(root, l_graph, CL_OFFSET, &info);
     info.doSplines = 1;
     info.fixed = fixed;
     ret = packSubgraphs(ng, gs, root, &info);
     if (ret == 0) dotneato_postprocess (root);
     return ret;
 }
-#    endif
 
 #define ARRAY  "array"
 #define ASPECT "aspect"
@@ -1309,7 +1306,8 @@ getPackModeInfo(Agraph_t * g, pack_mode dflt, pack_info* pinfo)
 pack_mode 
 getPackMode(Agraph_t * g, pack_mode dflt)
 {
-  return getPackModeInfo (g, dflt, 0);
+  pack_info info;
+  return getPackModeInfo (g, dflt, &info);
 }
 
 /* getPack;

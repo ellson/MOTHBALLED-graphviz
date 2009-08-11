@@ -1,4 +1,4 @@
-.TH LIBPACK 3 "01 MAY 2002"
+.TH LIBPACK 3 "04 APRIL 2009"
 .SH NAME
 \fBlibpack\fR \- support for connected components
 .SH SYNOPSIS
@@ -11,10 +11,14 @@
 typedef enum { l_clust, l_node, l_graph, l_array} pack_mode;
 
 typedef struct {
-    unsigned int margin;
-    boolean      doSplines;
-    pack_mode    mode;
-    boolean*     fixed;
+	float aspect;		 /* desired aspect ratio */
+	int sz;			     /* row/column size size */
+	unsigned int margin; /* margin left around objects, in points */
+	int doSplines;		 /* use splines in constructing graph shape */
+	pack_mode mode;		 /* granularity and method */
+	boolean *fixed;		 /* fixed[i] == true implies g[i] should not be moved */
+	packval_t* vals;	 /* for arrays, sort numbers */
+	int flags;       
 } pack_info;
 
 point*     putRects(int ng, boxf* bbs, pack_info* pinfo);
@@ -147,6 +151,11 @@ shifts the subgraphs to their new positions. It returns 0 on success.
 This function simply calls \fIpackGraphs\fP with the given arguments, and
 then recomputes the bounding box of the \fIroot\fP graph.
 .PP
+.SS "  int pack_graph(int ng, Agraph_t** gs, Agraph_t* root, boolean* fixed)"
+uses \fIpackSubgraphs\fP to place the individual subgraphs into a single layout
+with the parameters obtained from \fIgetPackInfo\fP. If successful, 
+\fIdotneato_postprocess\fP is called on the root graph.
+.PP
 .SS "  point* putRects (int ng, boxf* bbs, pack_info* ip)"
 \fIputRects\fP packs together a collection of rectangles into a
 single layout which avoids any overlap. It takes as input \fIng\fP 
@@ -164,17 +173,33 @@ the rectangles in \fIbbs\fP appropriately.
 .SS "Utility functions"
 The library provides several functions which can be used to tailor the
 packing based on graph attributes.
-.SS "  pack_mode getPackMode (Agraph_t* g, pack_mode dflt)"
-This function returns a \fIpack_mode\fP associated with \fIg\fP.
-If the graph attribute \fI"packmode"\fP is "cluster", it returns
+.SS "  pack_mode parsePackModeInfo(char* p, pack_mode dflt, pack_info* pinfo)"
+analyzes \fIp\fP as a string representation of pack mode, storing the
+information in \fIpinfo\fP.
+If \fIp\fP is "cluster", it returns
 \fIl_clust\fP; for "graph", it returns \fIl_graph\fP;
 for "node", it returns \fIl_node\fP;
+for "array", it returns \fIl_array\fP;
+for "aspect", it returns \fIl_aspect\fP;
 otherwise, it returns \fIdflt\fP.
+Related data is also stored in \fIpinfo\fP.
+.SS "  pack_mode getPackModeInfo(Agraph_t * g, pack_mode dflt, pack_info* pinfo)"
+This function processes the graph's \fI"packmode"\fP attribute, storing the
+information in \fIpinfo\fP. It returns \fIpinfo->mode\fP.
+The attribute is processed using \fIparsePackModeInfo\fP with \fIdflt\fP passed
+as the default argument.
+.SS "  pack_mode getPackMode (Agraph_t* g, pack_mode dflt)"
+This function returns a \fIpack_mode\fP associated with \fIg\fP.
 .SS "  int getPack (Agraph_t* g, int not_def, int dflt)"
 This function queries the graph attribute \fI"pack"\fP. If this is
 defined as a non-negative integer, the integer is returned; if it
 is defined as "true", the value \fIdflt\fP is returned; otherwise,
 the value \fInot_def\fP is returned.
+.SS "  pack_mode getPackInfo(Agraph_t * g, pack_mode dflt, int dfltMargin, pack_info* pinfo)"
+This function calls both \fIgetPackModeInfo\fP and \fIgetPack\fP, storing the
+information in \fIpinfo\fP. \fIdfltMargin\fP is used for both integer arguments 
+of \fIgetPack\fP, with the result saved as \fIpinfo->margin\fP.
+It returns \fIpinfo->mode\fP.
 .SH SEE ALSO
 .BR dot (1),
 .BR neato (1),
