@@ -295,7 +295,7 @@ int compoundEdges(graph_t * g, expand_t* pm, int edgetype)
 		for (e0 = e; e0; e0 = ED_to_virt(e0)) {
 		    ED_path(e0) =
 			getPath(e0, vconfig, 0, objl->obs, objl->cnt);
-		    makeSpline(e0, objl->obs, objl->cnt, FALSE);
+		    makeSpline(g, e0, objl->obs, objl->cnt, FALSE);
 		}
 		resetObjlist(objl);
 	    }

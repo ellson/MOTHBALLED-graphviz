@@ -1515,6 +1515,7 @@ void neato_layout(Agraph_t * g)
 		nodeInduce(gc);
 		neatoLayout(g, gc, layoutMode, model, &am);
 		removeOverlapWith(gc, &am);
+		setEdgeType (gc, ET_LINE);
 		spline_edges(gc);
 	    }
 	    if (n_cc > 1) {

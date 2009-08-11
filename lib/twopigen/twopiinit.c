@@ -105,6 +105,7 @@ void twopi_layout(Agraph_t * g)
 		nodeInduce(sg);
 		circleLayout(sg, c);
 		adjustNodes(sg);
+		setEdgeType (sg, ET_LINE);
 		spline_edges(sg);
 	    }
 	    free(ND_alg(agfstnode(g)));

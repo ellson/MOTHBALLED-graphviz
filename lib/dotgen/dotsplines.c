@@ -224,9 +224,9 @@ static void _dot_splines(graph_t * g, int normalize)
     path *P;
     spline_info_t sd;
 #ifndef WITH_CGRAPH
-    int et = EDGE_TYPE(g->root);
+    int et = EDGE_TYPE(g);
 #else /* WITH_CGRAPH */
-    int et = EDGE_TYPE(agroot(g));
+    int et = EDGE_TYPE(g);
 #endif /* WITH_CGRAPH */
 
     if (et == ET_NONE) return; 

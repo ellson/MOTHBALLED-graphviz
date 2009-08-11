@@ -757,7 +757,7 @@ router_t *mkRouter(Ppoly_t** obsp, int npoly)
  * if necessary, and adding edge labels
  */
 static void
-finishEdge (edge_t* e, Ppoly_t spl, int flip, pointf p, pointf q)
+finishEdge (graph_t* g, edge_t* e, Ppoly_t spl, int flip, pointf p, pointf q)
 {
     int j;
     pointf *spline = N_GNEW(spl.pn, pointf);
@@ -782,7 +782,7 @@ finishEdge (edge_t* e, Ppoly_t spl, int flip, pointf p, pointf q)
     clip_and_install(e, aghead(e), spline, spl.pn, &sinfo);
     free(spline);
 
-    addEdgeLabels(e, p1, q1);
+    addEdgeLabels(g, e, p1, q1);
 }
 
 #define EQPT(p,q) (((p).x==(q).x)&&((p).y==(q).y))
@@ -838,7 +838,7 @@ tweakPath (Ppoly_t poly, int s, int t, Ppolyline_t pl)
  * Return 0 on success.
  */
 static int 
-genroute(tripoly_t * trip, int s, int t, edge_t * e, int doPolyline)
+genroute(graph_t* g, tripoly_t * trip, int s, int t, edge_t * e, int doPolyline)
 {
     pointf eps[2];
     Pvector_t evs[2];
@@ -872,7 +872,7 @@ genroute(tripoly_t * trip, int s, int t, edge_t * e, int doPolyline)
 	}
 	tweakPath (poly, s, t, pl);
 	Proutespline(medges, poly.pn, pl, evs, &spl);
-	finishEdge (e, spl, aghead(e) != head, eps[0], eps[1]);
+	finishEdge (g, e, spl, aghead(e) != head, eps[0], eps[1]);
 	free(medges);
 
 	return 0;
@@ -915,7 +915,7 @@ genroute(tripoly_t * trip, int s, int t, edge_t * e, int doPolyline)
 	    tweakPath (poly, 0, pl.pn-1, mmpl);
 	    Proutespline(medges, poly.pn, mmpl, evs, &spl);
 	}
-	finishEdge (e, spl, aghead(e) != head, eps[0], eps[1]);
+	finishEdge (g, e, spl, aghead(e) != head, eps[0], eps[1]);
 
 	e = ED_to_virt(e);
     }
@@ -1296,7 +1296,7 @@ triPath(tgraph * g, int n, int v0, int v1, PQ * pq)
  * so avoid in neato spline code.
  * Return 0 on success.
  */
-int makeMultiSpline(edge_t* e, router_t * rtr, int doPolyline)
+int makeMultiSpline(graph_t* g,  edge_t* e, router_t * rtr, int doPolyline)
 {
     Ppolyline_t line = ED_path(e);
     node_t *t = agtail(e);
@@ -1338,7 +1338,7 @@ int makeMultiSpline(edge_t* e, router_t * rtr, int doPolyline)
     free(sp);
 
 	/* Generate multiple splines using polygon */
-    ret = genroute(poly, 0, idx, e, doPolyline);
+    ret = genroute(g, poly, 0, idx, e, doPolyline);
     freeTripoly (poly);
 
     resetGraph(rtr->tg, rtr->tn, ecnt);

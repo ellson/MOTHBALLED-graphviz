@@ -198,9 +198,9 @@ polylineMidpoint (splines* spl, pointf* pp, pointf* pq)
  * significantly from rp and rq, but if the spline is degenerate (e.g.,
  * the nodes overlap), we use rp and rq.
  */
-void addEdgeLabels(edge_t * e, pointf rp, pointf rq)
+void addEdgeLabels(graph_t* g, edge_t * e, pointf rp, pointf rq)
 {
-    int et = EDGE_TYPE (agroot(agraphof(aghead(e))));
+    int et = EDGE_TYPE (g);
     pointf p, q;
     pointf d;			/* midpoint of segment p-q */
     point ld;
@@ -430,7 +430,7 @@ makeStraightEdge(graph_t * g, edge_t * e, int doPolyline)
     q = dumb[2] = dumb[3] = add_pointf(ND_coord(head), ED_head_port(e).p);
     if ((e_cnt == 1) || Concentrate) {
 	clip_and_install(e, aghead(e), dumb, 4, &sinfo);
-	addEdgeLabels(e, p, q);
+	addEdgeLabels(g, e, p, q);
 	return;
     }
 
@@ -485,7 +485,7 @@ makeStraightEdge(graph_t * g, edge_t * e, int doPolyline)
 	else
 	    clip_and_install(e0, aghead(e0), dumber, 4, &sinfo);
 
-	addEdgeLabels(e0, p, q);
+	addEdgeLabels(g, e0, p, q);
 	e0 = ED_to_virt(e0);
 	dumb[1].x += del.x;
 	dumb[1].y += del.y;
@@ -672,7 +672,7 @@ getPath(edge_t * e, vconfig_t * vconfig, int chkPts, Ppoly_t ** obs,
 /* makePolyline:
  */
 static void
-makePolyline(edge_t * e)
+makePolyline(graph_t* g, edge_t * e)
 {
     Ppolyline_t spl, line = ED_path(e);
     Ppoint_t p0, q0;
@@ -683,7 +683,7 @@ makePolyline(edge_t * e)
     if (Verbose > 1)
 	fprintf(stderr, "polyline %s %s\n", agnameof(agtail(e)), agnameof(aghead(e)));
     clip_and_install(e, aghead(e), spl.ps, spl.pn, &sinfo);
-    addEdgeLabels(e, p0, q0);
+    addEdgeLabels(g, e, p0, q0);
 }
 
 /* makeSpline:
@@ -696,7 +696,7 @@ makePolyline(edge_t * e)
  * is on or inside one of the obstacles and, if so, tells the shortest path
  * computation to ignore them. 
  */
-void makeSpline(edge_t * e, Ppoly_t ** obs, int npoly, boolean chkPts)
+void makeSpline(graph_t* g, edge_t * e, Ppoly_t ** obs, int npoly, boolean chkPts)
 {
     Ppolyline_t line, spline;
     Pvector_t slopes[2];
@@ -728,7 +728,7 @@ void makeSpline(edge_t * e, Ppoly_t ** obs, int npoly, boolean chkPts)
 	fprintf(stderr, "spline %s %s\n", agnameof(agtail(e)), agnameof(aghead(e)));
     clip_and_install(e, aghead(e), spline.ps, spline.pn, &sinfo);
     free(barriers);
-    addEdgeLabels(e, p, q);
+    addEdgeLabels(g, e, p, q);
 }
 
   /* True if either head or tail has a port on its boundary */
@@ -809,7 +809,7 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 /* fprintf (stderr, "%s -- %s %d\n", agnameof(agtail(e)), agnameof(aghead(e)), ED_count(e)); */
 	    node_t *head = aghead(e);
 	    if (useEdges && ED_spl(e)) {
-		addEdgeLabels(e,
+		addEdgeLabels(g, e,
 			      add_pointf(ND_coord(n), ED_tail_port(e).p),
 			      add_pointf(ND_coord(head), ED_head_port(e).p));
 	    } 
@@ -829,7 +829,7 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 			makeStraightEdge(g, e, edgetype == ET_PLINE);
 		    else { 
 			if (!rtr) rtr = mkRouter (obs, npoly);
-			fail = makeMultiSpline(e, rtr, edgetype == ET_PLINE);
+			fail = makeMultiSpline(g, e, rtr, edgetype == ET_PLINE);
 		    } 
 		    if (!fail) continue;
 		}
@@ -843,9 +843,9 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 		e0 = e;
 		for (i = 0; i < cnt; i++) {
 		    if (edgetype == ET_SPLINE)
-			makeSpline(e0, obs, npoly, TRUE);
+			makeSpline(g, e0, obs, npoly, TRUE);
 		    else
-			makePolyline(e0);
+			makePolyline(g, e0);
 		    e0 = ED_to_virt(e0);
 		}
 	    } else {
@@ -949,7 +949,7 @@ int spline_edges1(graph_t * g, int edgetype)
  */
 void spline_edges0(graph_t * g)
 {
-    int et = EDGE_TYPE (g->root);
+    int et = EDGE_TYPE (g);
     neato_set_aspect(g);
     if (et == ET_NONE) return;
 #ifndef ORTHO
