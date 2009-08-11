@@ -183,7 +183,7 @@ static void applyDelta(block_t * sn, double x, double y, double rotate)
  * These are set and used only when a block has just 1 node.
  * And are used to give the center angle between the two extremes.
  * The parent will then be attached at PI - center angle (parent_pos).
- * If this block has no children, this is PI. Otherwise, doParent will
+ * If this block has no children, this is PI. Otherwise, positionChildren will
  * be called once with the blocks node. firstangle will be 0, with
  * succeeding angles increasing. 
  * position can always return the center angle - PI, since the block
@@ -201,37 +201,29 @@ typedef struct {
     node_t *neighbor;		/* Node connected to parent block, if any */
 } posstate;
 
-/* doParent:
- * Attach child blocks belonging to n.
- * children of n are placed in theta +/- stp->nodeAngle/2 unless
- * length = 1, in which case they go from 0 to
- * childCount*(incidentAngle + mindistAngle/2).
- * If length is 1, keeps track of minimum and maximum child angle.
+typedef struct {
+    Agnode_t* n;
+    double theta;        /* angle of node */
+    double minRadius;    /* minimum radius for child circle */
+    double maxRadius;    /* maximum radius of child blocks */
+    double diameter;     /* length of arc needed for child blocks */
+    double scale;        /* scale factor to increase minRadius to parents' children don't overlap */
+    int childCount;      /* no. of child blocks attached at n */
+} posinfo_t;
+
+/* getInfo:
+ * get size info for blocks attached to the given node.
  */
 static double
-doParent(Agraph_t * g, double theta, Agnode_t * n,
-	 int length, double min_dist, posstate * stp)
+getInfo (posinfo_t* pi, posstate * stp, double min_dist)
 {
     block_t *child;
-    double mindistance;
-    double childAngle;		/* angle of child */
-    double deltaX, deltaY;
-    double snRadius = stp->subtreeR;	/* max subtree radius */
-    double firstAngle = stp->firstAngle;
-    double lastAngle = stp->lastAngle;
-    double rotateAngle;
-    double incidentAngle;
-
-    int childCount = 0;		/* No. of blocks that are children of n */
     double maxRadius = 0;	/* Max. radius of children */
-    double childRadius;		/* Radius of circle on which children are placed */
     double diameter = 0;	/* sum of child diameters */
-    double mindistAngle;	/* angle to move min_dist at childRadius */
-    int cnt, midChild;
-    double midAngle = 0;
+    int childCount = 0;
 
     for (child = stp->cp; child; child = child->next) {
-	if (BLK_PARENT(child) == n) {
+	if (BLK_PARENT(child) == pi->n) {
 	    childCount++;
 	    if (maxRadius < child->radius) {
 		maxRadius = child->radius;
@@ -240,47 +232,85 @@ doParent(Agraph_t * g, double theta, Agnode_t * n,
 	}
     }
 
-    if (length == 1)
+    pi->diameter = diameter;
+    pi->childCount = childCount;
+    pi->minRadius = stp->radius + min_dist + maxRadius;
+    pi->maxRadius = maxRadius;
+    return maxRadius;
+}
+
+/* setInfo:
+ */
+static void
+setInfo (posinfo_t* p0, posinfo_t* p1, double delta)
+{
+    double t = (p0->diameter*p1->minRadius) + (p1->diameter*p0->minRadius);
+
+    t /= 2*delta*p0->minRadius*p1->minRadius;
+
+    if (t < 1)
+	t = 1;
+
+    if (t > p0->scale)
+	p0->scale = t;
+    if (t > p1->scale)
+	p1->scale = t;
+}
+
+/* positionChildren:
+ */
+static void
+positionChildren (Agraph_t* g, posinfo_t* pi, posstate * stp, int length, double min_dist)
+{
+    block_t *child;
+    double childAngle, childRadius, incidentAngle;
+    double mindistAngle, rotateAngle, midAngle;
+    int midChild, cnt = 0;
+    double snRadius = stp->subtreeR;	/* max subtree radius */
+    double firstAngle = stp->firstAngle;
+    double lastAngle = stp->lastAngle;
+    double d, deltaX, deltaY;
+
+    childRadius = pi->scale * pi->minRadius;
+    if (length == 1) {
 	childAngle = 0;
+	d = pi->diameter/(2*M_PI);
+	childRadius = MAX(childRadius, d);
+	d = 2*M_PI*childRadius - pi->diameter;
+	if (d > 0)
+	    min_dist += d/pi->childCount;
+    }
     else
-	childAngle = theta - stp->nodeAngle / 2;
+	childAngle = pi->theta - pi->diameter/(2 * childRadius);
 
-    childRadius = length * diameter / (2 * M_PI);
-
-    /* FIX: If the parent block stp has only 1 child, we should probably
-     * also set childRadius to mindistance. In this case, can 1 prove that
-     * childRadius < mindistance? Probably not, since we can increase length
-     * arbitrarily.
-     */
-    mindistance = stp->radius + min_dist + maxRadius;
-    if (childRadius < mindistance)
-	childRadius = mindistance;
-
-    if ((childRadius + maxRadius) > snRadius)
-	snRadius = childRadius + maxRadius;
+    if ((childRadius + pi->maxRadius) > snRadius)
+	snRadius = childRadius + pi->maxRadius;
 
     mindistAngle = min_dist / childRadius;
 
-    cnt = 0;
-    midChild = (childCount + 1) / 2;
+    midChild = (pi->childCount + 1) / 2;
     for (child = stp->cp; child; child = child->next) {
-	if (BLK_PARENT(child) != n)
+	if (BLK_PARENT(child) != pi->n)
 	    continue;
 	if (sizeNodelist(child->circle_list) <= 0)
 	    continue;
 
 	incidentAngle = child->radius / childRadius;
 	if (length == 1) {
-	    if (childAngle != 0)
-		childAngle += incidentAngle;
+	    if (childAngle != 0) {
+		if (pi->childCount == 2)
+		    childAngle = M_PI;
+		else
+		    childAngle += incidentAngle;
+	    }
 
 	    if (firstAngle < 0)
 		firstAngle = childAngle;
 
 	    lastAngle = childAngle;
 	} else {
-	    if (childCount == 1) {
-		childAngle = theta;
+	    if (pi->childCount == 1) {
+		childAngle = pi->theta;
 	    } else {
 		childAngle += incidentAngle + mindistAngle / 2;
 	    }
@@ -307,18 +337,23 @@ doParent(Agraph_t * g, double theta, Agnode_t * n,
 	    midAngle = childAngle;
     }
 
-    if ((length > 1) && (n == stp->neighbor)) {
-	PSI(n) = midAngle;
+    if ((length > 1) && (pi->n == stp->neighbor)) {
+	PSI(pi->n) = midAngle;
     }
 
     stp->subtreeR = snRadius;
     stp->firstAngle = firstAngle;
     stp->lastAngle = lastAngle;
-    return maxRadius;
 }
 
 /* position:
  * Assume childCount > 0
+ * For each node in the block with children, getInfo is called, with the
+ * information stored in the parents array.
+ * This information is used by setInfo to compute the amount of space allocated
+ * to each parent and the radius at which to place its children.
+ * Finally, positionChildren is called to do the actual positioning.
+ * If length is 1, keeps track of minimum and maximum child angle.
  */
 static double
 position(Agraph_t * g, int childCount, int length, nodelist_t * path,
@@ -327,10 +362,15 @@ position(Agraph_t * g, int childCount, int length, nodelist_t * path,
     nodelistitem_t *item;
     Agnode_t *n;
     posstate state;
-    int counter = 0;
+    int i, counter = 0;
     double maxRadius = 0.0;
     double angle;
     double theta = 0.0;
+    posinfo_t* parents = N_NEW(childCount, posinfo_t);
+    int num_parents = 0;
+    posinfo_t* next;
+    posinfo_t* curr;
+    double delta;
 
     state.cp = sn->children.first;
     state.subtreeR = sn->radius;
@@ -343,14 +383,48 @@ position(Agraph_t * g, int childCount, int length, nodelist_t * path,
     for (item = path->first; item; item = item->next) {
 	n = item->curr;
 
-	if (length != 1) {
-	    theta = counter * state.nodeAngle;
-	    counter++;
-	}
+	theta = counter * state.nodeAngle;
+	counter++;
 
-	if (ISPARENT(n))
-	    maxRadius = doParent(g, theta, n, length, min_dist, &state);
+	if (ISPARENT(n)) {
+	    parents[num_parents].n = n;
+	    parents[num_parents].theta = theta;
+	    maxRadius = getInfo (parents+num_parents, &state, min_dist);
+	    num_parents++;
+	}
     }
+
+    if (num_parents == 1)
+	parents->scale = 1.0;
+    else if (num_parents == 2) {
+	curr = parents;
+	next = parents+1;
+	delta = next->theta - curr->theta;
+        if (delta > M_PI)
+	    delta = 2*M_PI - delta;
+	setInfo (curr, next, delta);
+    }
+    else {
+	curr = parents;
+	for (i = 0; i < num_parents; i++) {
+	    if (i+1 == num_parents) {
+		next = parents;
+		delta = next->theta - curr->theta + 2*M_PI; 
+	    }
+	    else {
+		next = curr+1;
+		delta = next->theta - curr->theta; 
+	    }
+	    setInfo (curr, next, delta);
+	    curr++;
+	}
+    }
+
+    for (i = 0; i < num_parents; i++) {
+	positionChildren (g, parents + i, &state, length, min_dist);
+    }
+
+    free (parents);
 
     /* If block has only 1 child, to save space, we coalesce it with the
      * child. Instead of having final radius sn->radius + max child radius,

@@ -17,13 +17,6 @@
 
 #include "blocktree.h"
 
-static int min_value(int x, int y)
-{
-    if (x < y)
-	return x;
-    return y;
-}
-
 static void addNode(block_t * bp, Agnode_t * n)
 {
 #ifndef WITH_CGRAPH
@@ -58,131 +51,93 @@ static block_t *makeBlock(Agraph_t * g, circ_state * state)
     return bp;
 }
 
-/* dfs:
- *
- * Current scheme adds articulation point to first non-trivial child
- * block. If none exists, it will be added to its parent's block, if
- * non-trivial, or else given its own block.
- *
- * FIX:
- * This should be modified to:
- *  - allow user to specify which block gets a node, perhaps on per-node basis.
- *  - if an articulation point is not used in one of its non-trivial blocks,
- *    dummy edges should be added to preserve biconnectivity
- *  - turn on user-supplied blocks.
- *
- */
-static void dfs(Agraph_t * g, Agnode_t * n, circ_state * state, int isRoot)
+typedef struct {
+    Agedge_t *top;
+    int sz;
+} estack;
+
+static void
+push (estack* s, Agedge_t* e)
+{
+    ENEXT(e) = s->top;
+    s->top = e;
+    s->sz += 1;
+}
+
+static Agedge_t*
+pop (estack* s)
+{
+    Agedge_t *top = s->top;
+
+    if (top) {
+	assert(s->sz > 0);
+	s->top = ENEXT(top);
+	s->sz -= 1;
+    } else {
+	assert(0);
+    }
+
+    return top;
+}
+
+
+static void dfs(Agraph_t * g, Agnode_t * u, circ_state * state, int isRoot, estack* stk)
 {
     Agedge_t *e;
-    Agnode_t *curtop;
+    Agnode_t *v;
 
-    LOWVAL(n) = VAL(n) = state->orderCount++;
-
-    stackPush(state->bcstack, n);
-
-    for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
-	Agnode_t *neighbor = aghead(e);
-	if (neighbor == n)
-	    neighbor = agtail(e);
-
-	if (neighbor == PARENT(n))
-	    continue;
-
-	if (VAL(neighbor)) {
-	    LOWVAL(n) = min_value(LOWVAL(n), VAL(neighbor));
-	    continue;
+    LOWVAL(u) = VAL(u) = state->orderCount++;
+    for (e = agfstedge(g, u); e; e = agnxtedge(g, e, u)) {
+	v = aghead (e);
+	if (v == u) {
+            v = agtail(e);
+	    if (!EDGEORDER(e)) EDGEORDER(e) = -1;
 	}
-	if (!stackCheck(state->bcstack, n)) {
-	    stackPush(state->bcstack, n);
+	else {
+	    if (!EDGEORDER(e)) EDGEORDER(e) = 1;
 	}
 
-	PARENT(neighbor) = n;
-	curtop = top(state->bcstack);
-	dfs(g, neighbor, state, 0);
-
-	LOWVAL(n) = min_value(LOWVAL(n), LOWVAL(neighbor));
-	if (LOWVAL(neighbor) >= VAL(n)) {
-	    block_t *block = NULL;
-	    Agnode_t *np;
-	    if (top(state->bcstack) != curtop)
-		do {
-		    np = stackPop(state->bcstack);
-		    if (!BCDONE(np)) {
+        if (VAL(v) == 0) {
+	    PARENT(v) = u;
+            push(stk, e);
+            dfs(g, v, state, 0, stk);
+            LOWVAL(u) = MIN(LOWVAL(u), LOWVAL(v));
+            if (LOWVAL(v) >= VAL(u)) {       /* u is an articulation point */
+		block_t *block = NULL;
+		Agnode_t *np;
+		Agedge_t *ep;
+                do {
+                    ep = pop(stk);
+		    if (EDGEORDER(ep) == 1)
+			np = aghead (ep);
+		    else
+			np = agtail (ep);
+		    if (!BLOCK(np)) {
 			if (!block)
 			    block = makeBlock(g, state);
 			addNode(block, np);
 		    }
-		} while (np != n);
-	    if (block) {	/* If block != NULL, it's not empty */
-		if (isRoot && (BLOCK(n) == block))
-		    insertBlock(&state->bl, block);
-		else
-		    appendBlock(&state->bl, block);
-	    }
-	    if ((LOWVAL(n) < VAL(n)) && (!stackCheck(state->bcstack, n))) {
-		stackPush(state->bcstack, n);
-	    }
-	}
-    }
-    if ((LOWVAL(n) == VAL(n)) && !BCDONE(n)) {
-	block_t *block = makeBlock(g, state);
-	stackPop(state->bcstack);
-	addNode(block, n);
-	if (isRoot)
-	    insertBlock(&state->bl, block);
-	else
-	    appendBlock(&state->bl, block);
-    }
-}
-
-#ifdef USER_BLOCKS
-/* findUnvisited:
- * Look for unvisited node n in visited block (i.e., some nodes in
- * the block have been visited) with neighbor not in block. Note
- * that therefore neighbor is unvisited. Set neighbor's parent to n
- * and return neighbor.
- * Guaranteed blp is non-empty.
- * 
- */
-static Agnode_t *findUnvisited(blocklist_t * blp)
-{
-    Agnode_t *retn = NULL;
-  FIX:finish Agnode_t * n;
-    Agnode_t *newn;
-    graph_t *clust_subg;
-    edge_t *e;
-    block_t *bp;
-    block_t *prev = NULL;
-
-    for (bp = blp->first; prev != blp->last; bp = bp->next) {
-	prev = bp;
-	clust = bp->sub_graph;
-
-	if (DONE(bp))
-	    continue;
-	if (PARTIAL(bp)) {
-	    for (n = agfstnode(clust); n; n = agnxtnode(clust, n)) {
-		if (!VISITED(n)) {
-		    for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
-			newn = e->head;
-			if (newn == n)
-			    newn = e->tail;
-			if ((BLOCK(newn) != bp)) {
-			    retn = newn;
-			    return;
-			}
-		    }
-		    /* mark n visited */
+                } while (ep != e);
+		if (block) {	/* If block != NULL, it's not empty */
+		    if (blockSize (block) > 1)
+			addNode(block, u);
+		    if (isRoot && (BLOCK(u) == block))
+			insertBlock(&state->bl, block);
+		    else
+			appendBlock(&state->bl, block);
 		}
-	    }
-	    /* mark bp done */
-	} else {
-	}
+            }
+        } else if (PARENT(u) != v) {
+            LOWVAL(u) = MIN(LOWVAL(u), VAL(v));
+        }
     }
-    return retn;
+    if (isRoot && !BLOCK(u)) {
+	block_t *block = makeBlock(g, state);
+	addNode(block, u);
+	insertBlock(&state->bl, block);
+    }
 }
-#endif
+
 
 /* find_blocks:
  */
@@ -190,17 +145,7 @@ static void find_blocks(Agraph_t * g, circ_state * state)
 {
     Agnode_t *n;
     Agnode_t *root = NULL;
-    block_t *rootBlock = NULL;
-    blocklist_t ublks;
-#ifdef USER_BLOCKS
-    graph_t *clust_subg;
-    graph_t *mg;
-    edge_t *me;
-    node_t *mm;
-    int isRoot;
-#endif
-
-    initBlocklist(&ublks);
+    estack stk;
 
     /*      check to see if there is a node which is set to be the root
      */
@@ -215,57 +160,15 @@ static void find_blocks(Agraph_t * g, circ_state * state)
 	    }
 	}
     }
-#ifdef USER_BLOCKS
-    /* process clusters first */
-    /* by construction, all subgraphs are blocks and are non-empty */
-    mm = g->meta_node;
-    mg = mm->graph;
-    for (me = agfstout(mg, mm); me; me = agnxtout(mg, me)) {
-	block_t *block;
-
-	clust_subg = agusergraph(me->head);
-
-	isRoot = 0;
-	block = mkBlock(clust_subg);
-	/* block = makeBlock(g, state); */
-	for (n = agfstnode(clust_subg); n; n = agnxtnode(clust_subg, n)) {
-	    if (!BCDONE(n)) {	/* test not necessary if blocks disjoint */
-		SET_BCDONE(n);
-		BLOCK(n) = block;
-		if (n == root)
-		    isRoot = 1;
-	    }
-	}
-	if (isRoot) {
-	    /* Assume blocks are disjoint, so don't check if rootBlock is
-	     * already assigned.
-	     */
-	    rootBlock = block;
-	    insertBlock(&state->bl, block);
-	} else {
-	    appendBlock(&state->bl, block);
-	}
-    }
-    ublks.first = state->bl.first;
-    ublks.last = state->bl.last;
-#endif
 
     if (!root)
 	root = agfstnode(g);
-    dfs(g, root, state, !rootBlock);
+    if (Verbose)
+	fprintf (stderr, "root = %s\n", root->name);
+    stk.sz = 0;
+    stk.top = NULL;
+    dfs(g, root, state, 1, &stk);
 
-#ifdef USER_BLOCKS
-    /* If g has user-supplied blocks, it may be disconnected.
-     * We then fall into the following ugly loop.
-     * We are guaranteed !VISITED(n) and PARENT(n) has been
-     * set to a visited node.
-     */
-    if (ublks.first) {
-	while (n = findUnvisited(&ublks)) {
-	    dfs(g, n, state, 0);
-	}
-    }
-#endif
 }
 
 /* create_block_tree:

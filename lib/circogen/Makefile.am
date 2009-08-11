@@ -22,11 +22,11 @@ AM_CPPFLAGS = \
 
 noinst_HEADERS = block.h blockpath.h blocktree.h circo.h \
 	circpos.h circular.h deglist.h edgelist.h nodelist.h \
-	nodeset.h stack.h
+	nodeset.h 
 noinst_LTLIBRARIES = libcircogen_C.la
 
 libcircogen_C_la_SOURCES = circularinit.c nodelist.c block.c edgelist.c \
-	stack.c circular.c deglist.c blocktree.c blockpath.c \
+	circular.c deglist.c blocktree.c blockpath.c \
 	circpos.c nodeset.c
 
 EXTRA_DIST = Makefile.old gvcircogen.vcproj

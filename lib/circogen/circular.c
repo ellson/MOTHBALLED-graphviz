@@ -59,7 +59,6 @@ static void initGraphAttrs(Agraph_t * g, circ_state * state)
     }
     initBlocklist(&state->bl);
     state->orderCount = 1;
-    state->bcstack = mkStack();
     state->min_dist = min_dist;
     state->N_artpos = N_artpos;
     state->N_root = N_root;
@@ -74,7 +73,6 @@ static void initGraphAttrs(Agraph_t * g, circ_state * state)
 static void cleanup(block_t * root, circ_state * sp)
 {
     freeBlocktree(root);
-    freeStack(sp->bcstack);
 }
 
 /* circularLayout:

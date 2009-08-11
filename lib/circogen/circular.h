@@ -19,13 +19,11 @@
 
 #include "render.h"
 #include "block.h"
-#include "stack.h"
 
 typedef struct {
     blocklist_t bl;
     int orderCount;
     int blockCount;
-    nstack_t *bcstack;
     attrsym_t *N_artpos;
     attrsym_t *N_root;
     char *rootname;
@@ -77,12 +75,14 @@ typedef struct {
 
 typedef struct {
     int order;
+    Agedge_t* next;
 } edata;
 
 #define NDATA(n) ((ndata*)(ND_alg(n)))
 #define DNODE(n)	(NDATA(n)->dnode)
 
 #define EDGEDATA(e)  ((edata*)(ED_alg(e)))
+#define ENEXT(e)     (EDGEDATA(e)->next)
 #define EDGEORDER(e) (EDGEDATA(e)->order)
 
 #define DATA(n) ((cdata*)(ND_alg(n)))
@@ -104,28 +104,24 @@ typedef struct {
 #define PSI(n) (DATA(n)->u.f.psi)
 
 #define VISITED_F   (1 << 0)
-#define BCDONE_F    (1 << 1)
 #define ONSTACK_F   (1 << 2)
 #define PARENT_F    (1 << 3)
 #define PATH_F      (1 << 4)
 #define NEIGHBOR_F  (1 << 5)
 
 #define VISITED(n) (FLAGS(n)&VISITED_F)
-#define BCDONE(n)	 (FLAGS(n)&BCDONE_F)
 #define ONSTACK(n)	 (FLAGS(n)&ONSTACK_F)
 #define ISPARENT(n)	 (FLAGS(n)&PARENT_F)
 #define ONPATH(n)	 (FLAGS(n)&PATH_F)
 #define NEIGHBOR(n)	 (FLAGS(n)&NEIGHBOR_F)
 
 #define SET_VISITED(n) (FLAGS(n) |= VISITED_F)
-#define SET_BCDONE(n)	 (FLAGS(n) |= BCDONE_F)
 #define SET_ONSTACK(n)	 (FLAGS(n) |= ONSTACK_F)
 #define SET_PARENT(n)	 (FLAGS(n) |= PARENT_F)
 #define SET_ONPATH(n)	 (FLAGS(n) |= PATH_F)
 #define SET_NEIGHBOR(n)	 (FLAGS(n) |= NEIGHBOR_F)
 
 #define UNSET_VISITED(n) (FLAGS(n) &= ~VISITED_F)
-#define UNSET_BCDONE(n)	 (FLAGS(n) &= ~BCDONE_F)
 #define UNSET_ONSTACK(n)	 (FLAGS(n) &= ~ONSTACK_F)
 #define UNSET_NEIGHBOR(n)	 (FLAGS(n) &= ~NEIGHBOR_F)
 
