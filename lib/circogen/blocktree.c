@@ -24,7 +24,6 @@ static void addNode(block_t * bp, Agnode_t * n)
 #else /* WITH_CGRAPH */
     agsubnode(bp->sub_graph, n,1);
 #endif /* WITH_CGRAPH */
-    SET_BCDONE(n);
     BLOCK(n) = bp;
 }
 
