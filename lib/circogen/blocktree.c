@@ -163,7 +163,7 @@ static void find_blocks(Agraph_t * g, circ_state * state)
     if (!root)
 	root = agfstnode(g);
     if (Verbose)
-	fprintf (stderr, "root = %s\n", root->name);
+	fprintf (stderr, "root = %s\n", agnameof(root));
     stk.sz = 0;
     stk.top = NULL;
     dfs(g, root, state, 1, &stk);
