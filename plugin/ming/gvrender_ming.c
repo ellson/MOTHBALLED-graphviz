@@ -32,9 +32,9 @@
 
 #include <ming.h>
 
-static char *script = 
-    "createTextField(\"greet\", 0, 0, 0, 100, 100);\n"
-    "greet.text = \"Hello, world!\";\n";
+//static char *script = 
+//    "createTextField(\"greet\", 0, 0, 0, 100, 100);\n"
+//    "greet.text = \"Hello, world!\";\n";
 	
 #define SWFVERSION 6
 #define SWFCOMPRESSION 9
@@ -54,8 +54,9 @@ static void ming_begin_job(GVJ_t * job)
     SWFMovie_setRate(movie, SWFFRAMERATE);
     SWFMovie_setDimension(movie, job->width, job->height);
 
-    action = newSWFAction(script);
-    SWFMovie_add(movie, (SWFBlock)action);
+// Works, but why is it here?
+//    action = newSWFAction(script);
+//    SWFMovie_add(movie, (SWFBlock)action);
 
     job->context = (void*) movie;
 }
@@ -93,7 +94,7 @@ static void ming_end_page(GVJ_t * job)
 extern char* gvconfig_libdir(void);
 #define FONT "Bitstream_Vera_Serif.fdb"
 
-static void ming_textpara(GVJ_t * job, pointf p, textpara_t * para)
+static void ming_textpara(GVJ_t * job, pointf p, textitem_t * para)
 {
     SWFMovie movie = (SWFMovie)(job->context);
     SWFTextField textfield;
