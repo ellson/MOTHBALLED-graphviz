@@ -99,6 +99,7 @@ colors.html : colors.1 colors.n X11 brewer_colors mkcolors.awk brewer.awk
 	awk -f brewer.awk brewer_colors
 	cat colors.1 > colors.html
 	awk -f mkcolors.awk X11 >> colors.html
+	echo '<H2><A NAME="brewer">Brewer color schemes</A></H1>' >> colors.html
 	(for f in $$(cat brewerlist); do awk -f mkcolors.awk -s colortmp/$$f >> colors.html; done)
 	cat colors.n >> colors.html
 	rm -rf colortmp
