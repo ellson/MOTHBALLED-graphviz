@@ -196,6 +196,18 @@ static void tkgen_begin_graph(GVJ_t * job)
     gvprintf(job, " Pages: %d\n", job->pagesArraySize.x * job->pagesArraySize.y);
 }
 
+static int first_periphery;
+
+static void tkgen_begin_node(GVJ_t * job)
+{
+	first_periphery = 1;     /* FIXME - this is an ugly hack! */
+}
+
+static void tkgen_begin_edge(GVJ_t * job)
+{
+	first_periphery = -1;     /* FIXME - this is an ugly ugly hack!  Need this one for arrowheads. */
+}
+
 static void tkgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     obj_state_t *obj = job->obj;
@@ -263,10 +275,15 @@ static void tkgen_ellipse(GVJ_t * job, pointf * A, int filled)
         gvputs(job, " -fill ");
         if (filled)
             tkgen_print_color(job, obj->fillcolor);
-        else  /* tk ovals default to no fill, some fill
-                 is necessary else "canvas find overlapping" doesn't
-                 work as expected, use white instead */
+        else if (first_periphery)
+	    /* tk ovals default to no fill, some fill
+             * is necessary else "canvas find overlapping" doesn't
+             * work as expected, use white instead */
 	    gvputs(job, "white");
+	else 
+	    gvputs(job, "\"\"");
+	if (first_periphery == 1)
+	    first_periphery = 0;
         gvputs(job, " -width ");
         gvprintdouble(job, obj->penwidth);
         gvputs(job, " -outline ");
@@ -298,7 +315,7 @@ tkgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 	    gvputs(job, " -dash 5");
         if (obj->pen == PEN_DOTTED)
 	    gvputs(job, " -dash 2");
-        gvputs(job, " -smooth bezier");
+        gvputs(job, " -smooth bezier ");
         tkgen_print_tags(job);
         gvputs(job, "\n");
     }
@@ -313,12 +330,17 @@ static void tkgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
         gvputs(job, " create polygon ");
         gvprintpointflist(job, A, n);
         gvputs(job, " -fill ");
-        if (filled) {
-	    tkgen_print_color(job, obj->fillcolor);
-        }
-	else {
-	    gvputs(job, "white");
-	}
+        if (filled)
+            tkgen_print_color(job, obj->fillcolor);
+        else if (first_periphery)
+            /* tk polygons default to black fill, some fill
+	     * is necessary else "canvas find overlapping" doesn't
+	     * work as expected, use white instead */
+            gvputs(job, "white");
+        else
+            gvputs(job, "\"\"");
+	if (first_periphery == 1) 
+	    first_periphery = 0;
         gvputs(job, " -width ");
         gvprintdouble(job, obj->penwidth);
         gvputs(job, " -outline ");
@@ -366,15 +388,15 @@ gvrender_engine_t tkgen_engine = {
     0,				/* tkgen_end_nodes */
     0,				/* tkgen_begin_edges */
     0,				/* tkgen_end_edges */
-    0,				/* tkgen_begin_node */
+    tkgen_begin_node,
     0,				/* tkgen_end_node */
-    0,				/* tkgen_begin_edge */
+    tkgen_begin_edge,
     0,				/* tkgen_end_edge */
     0,				/* tkgen_begin_anchor */
     0,				/* tkgen_end_anchor */
     0,				/* tkgen_begin_label */
     0,				/* tkgen_end_label */
-   tkgen_textpara,
+    tkgen_textpara,
     0,				/* tkgen_resolve_color */
     tkgen_ellipse,
     tkgen_polygon,
