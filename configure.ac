@@ -183,6 +183,10 @@ AC_DEFINE_UNQUOTED(DEFAULT_DPI,$DEFAULT_DPI,Default DPI.)
 AC_DEFINE_UNQUOTED(BROWSER,"$BROWSER",[Command to open a browser on a URL])
 
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
+
+# Suppress verbose compile lines
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+
 AC_CONFIG_HEADERS([config.h])
 
 # put BUILDDATE in its own file so that only targets that use it get rebuilt
