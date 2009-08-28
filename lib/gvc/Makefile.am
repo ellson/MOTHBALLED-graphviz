@@ -15,7 +15,6 @@ pkgconfigdir = $(libdir)/pkgconfig
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib/common \
-	-I$(top_srcdir)/lib/xdot \
 	-I$(top_srcdir)/lib/pathplan \
 	-I$(top_srcdir)/lib/$(GRAPH) \
 	-I$(top_srcdir)/lib/cdt \

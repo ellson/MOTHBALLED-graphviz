@@ -233,6 +233,7 @@ extern "C" {
 	boolean landscape;
 	boolean centered;
 	ratio_t ratio_kind;
+	void* xdots;
     } layout_t;
 
 /* for "record" shapes */
@@ -459,6 +460,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	boxf bb;
 	double ht, lw, rw;
 	textlabel_t *label;
+	textlabel_t *xlabel;
 	void *alg;
 	char state;
 	unsigned char gui_state; /* Node state for GUI ops */
@@ -522,6 +524,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define ND_in(n) (((Agnodeinfo_t*)AGDATA(n))->in)
 #define ND_inleaf(n) (((Agnodeinfo_t*)AGDATA(n))->inleaf)
 #define ND_label(n) (((Agnodeinfo_t*)AGDATA(n))->label)
+#define ND_xlabel(n) (((Agnodeinfo_t*)AGDATA(n))->xlabel)
 #define ND_lim(n) (((Agnodeinfo_t*)AGDATA(n))->lim)
 #define ND_low(n) (((Agnodeinfo_t*)AGDATA(n))->low)
 #define ND_lw(n) (((Agnodeinfo_t*)AGDATA(n))->lw)
@@ -578,6 +581,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define ND_in(n) (n)->u.in
 #define ND_inleaf(n) (n)->u.inleaf
 #define ND_label(n) (n)->u.label
+#define ND_xlabel(n) (n)->u.xlabel
 #define ND_lim(n) (n)->u.lim
 #define ND_low(n) (n)->u.low
 #define ND_lw(n) (n)->u.lw
@@ -620,7 +624,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #endif
 	splines *spl;
 	port tail_port, head_port;
-	textlabel_t *label, *head_label, *tail_label;
+	textlabel_t *label, *head_label, *tail_label, *xlabel;
 	char edge_type;
 	char adjacent;          /* true for flat edge with adjacent nodes */
 	char label_ontop;
@@ -657,6 +661,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define ED_head_label(e) (((Agedgeinfo_t*)AGDATA(e))->head_label)
 #define ED_head_port(e) (((Agedgeinfo_t*)AGDATA(e))->head_port)
 #define ED_label(e) (((Agedgeinfo_t*)AGDATA(e))->label)
+#define ED_xlabel(e) (((Agedgeinfo_t*)AGDATA(e))->xlabel)
 #define ED_label_ontop(e) (((Agedgeinfo_t*)AGDATA(e))->label_ontop)
 #define ED_minlen(e) (((Agedgeinfo_t*)AGDATA(e))->minlen)
 #define ED_path(e) (((Agedgeinfo_t*)AGDATA(e))->path)
@@ -685,6 +690,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define ED_head_label(e) (e)->u.head_label
 #define ED_head_port(e) (e)->u.head_port
 #define ED_label(e) (e)->u.label
+#define ED_xlabel(e) (e)->u.xlabel
 #define ED_label_ontop(e) (e)->u.label_ontop
 #define ED_minlen(e) (e)->u.minlen
 #define ED_path(e) (e)->u.path

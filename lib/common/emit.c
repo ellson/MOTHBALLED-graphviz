@@ -41,6 +41,22 @@ typedef struct {
     textpara_t* para;
 } exdot_op;
 
+void* init_xdot (Agraph_t* g)
+{
+    char* p;
+    xdot* xd = NULL;
+
+    if ((p = agget(g, "_draw_")) && p[0]) {
+	xd = parseXDotF (p, NULL, sizeof (exdot_op));
+
+	if (!xd) {
+	    agerr(AGWARN, "Could not parse \"_draw_\" attribute in graph %s\n", agnameof(g));
+	    agerr(AGPREV, "  \"%s\"\n", p);
+	}
+    }
+    return xd;
+}
+
 static char *defaultlinestyle[3] = { "solid\0", "setlinewidth\0001\0", 0 };
 
 /* push empty graphic state for current object */
@@ -937,7 +953,7 @@ static void emit_background(GVJ_t * job, graph_t *g)
         gvrender_box(job, job->clip, TRUE);	/* filled */
     }
 
-    if ((xd = (xdot*)job->gvc->xdots))
+    if ((xd = (xdot*)GD_drawing(g)->xdots))
 	emit_xdot (job, xd);
 }
 
@@ -2057,8 +2073,7 @@ freePara (exdot_op* op)
 	free_textpara (op->para);
 }
 
-static boxf
-xdotBB (Agraph_t* g, xdot* xd, boxf bb)
+boxf xdotBB (Agraph_t* g)
 {
     exdot_op* op;
     int i;
@@ -2067,6 +2082,10 @@ xdotBB (Agraph_t* g, xdot* xd, boxf bb)
     pointf pts[2];
     pointf sz;
     boxf bb0;
+    boxf bb = GD_bb(g);
+    xdot* xd = (xdot*)GD_drawing(g)->xdots;
+
+    if (!xd) return bb;
 
     if ((bb.LL.x == bb.UR.x) && (bb.LL.y == bb.UR.y)) {
 	bb.LL.x = bb.LL.y = MAXDOUBLE;
@@ -2127,7 +2146,6 @@ static void init_gvc(GVC_t * gvc, graph_t * g)
     double xf, yf;
     char *p;
     int i;
-    char* str;
 
     gvc->g = g;
 
@@ -2172,27 +2190,9 @@ static void init_gvc(GVC_t * gvc, graph_t * g)
     if ((p = agget(g, "pagedir")) && p[0])
             gvc->pagedir = p;
 
-    /* background */
-    if (gvc->xdots) {
-	freeXDot (gvc->xdots);
-	gvc->xdots = NULL;
-    }
-    if ((str = agget(g, "_draw_")) && str[0]) {
-	xdot* xd = parseXDotF (str, NULL, sizeof (exdot_op));
-
-	if (xd)
-	    gvc->xdots = xd;
-	else {
-	    agerr(AGWARN, "Could not parse \"_draw_\" attribute in graph %s\n", agnameof(g));
-	    agerr(AGPREV, "  \"%s\"\n", str);
-	}
-    }
 
     /* bounding box */
-    if (gvc->xdots)
-	gvc->bb = xdotBB (g, gvc->xdots, GD_bb(g));
-    else
-	gvc->bb = GD_bb(g);
+    gvc->bb = GD_bb(g);
 
     /* clusters have peripheries */
 #ifndef WITH_CGRAPH

@@ -178,10 +178,12 @@
 #define GVSPLINES       1
 
 /* existence of labels */
-#define EDGE_LABEL		1
-#define HEAD_LABEL		2
-#define TAIL_LABEL		4
-#define GRAPH_LABEL		8
+#define EDGE_LABEL		(1 << 0)
+#define HEAD_LABEL		(1 << 1)
+#define TAIL_LABEL		(1 << 2)
+#define GRAPH_LABEL		(1 << 3)
+#define NODE_XLABEL		(1 << 4)
+#define EDGE_XLABEL		(1 << 5)
 
 /* type of graph label: GD_label_pos */
 #define LABEL_AT_BOTTOM	0

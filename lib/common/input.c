@@ -18,6 +18,7 @@
 #include "render.h"
 #include "htmltable.h"
 #include "gvc.h"
+#include "xdot.h"
 #include "agxbuf.h"
 
 static char *usageFmt =
@@ -748,6 +749,7 @@ void graph_init(graph_t * g, boolean use_rankdir)
     N_fontname = agfindnodeattr(g, "fontname");
     N_fontcolor = agfindnodeattr(g, "fontcolor");
     N_label = agfindnodeattr(g, "label");
+    N_xlabel = agfindnodeattr(g, "xlabel");
     N_showboxes = agfindnodeattr(g, "showboxes");
     N_penwidth = agfindnodeattr(g, "penwidth");
     /* attribs for polygon shapes */
@@ -772,6 +774,7 @@ void graph_init(graph_t * g, boolean use_rankdir)
     E_fontname = agfindedgeattr(g, "fontname");
     E_fontcolor = agfindedgeattr(g, "fontcolor");
     E_label = agfindedgeattr(g, "label");
+    E_xlabel = agfindedgeattr(g, "xlabel");
     E_label_float = agfindedgeattr(g, "labelfloat");
     /* vladimir */
     E_dir = agfindedgeattr(g, "dir");
@@ -796,10 +799,15 @@ void graph_init(graph_t * g, boolean use_rankdir)
     E_tailclip = agfindedgeattr(g, "tailclip");
     E_headclip = agfindedgeattr(g, "headclip");
     E_penwidth = agfindedgeattr(g, "penwidth");
+
+    /* background */
+    GD_drawing(g)->xdots = init_xdot (g);
 }
 
 void graph_cleanup(graph_t *g)
 {
+    if (GD_drawing(g)->xdots)
+	freeXDot ((xdot*)GD_drawing(g)->xdots);
     free(GD_drawing(g));
     GD_drawing(g) = NULL;
     free_label(GD_label(g));

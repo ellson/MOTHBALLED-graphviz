@@ -659,7 +659,8 @@ static void translate(Agraph_t * g, pos_edge posEdges)
  * of the basic graph information. No tweaking of positions or 
  * filling in edge splines is done.
  *
- * Returns 0 on success.
+ * Returns 0 on normal success, 1 if postprocess should be avoided, and -1
+ * on failure.
  */
 int init_nop(Agraph_t * g, int adjust)
 {
@@ -669,6 +670,7 @@ int init_nop(Agraph_t * g, int adjust)
     attrsym_t *G_lp = agfindgraphattr(g, "lp");
     attrsym_t *G_bb = agfindgraphattr(g, "bb");
     int didAdjust = 0;  /* Have nodes been moved? */
+    int haveBackground;
 
     /* If G_bb not defined, define it */
     if (!G_bb)
@@ -683,7 +685,7 @@ int init_nop(Agraph_t * g, int adjust)
 	if (!hasPos(np) && strncmp(agnameof(np), "cluster", 7)) {
 	    agerr(AGERR, "node %s in graph %s has no position\n",
 		  agnameof(np), agnameof(g));
-	    return 1;
+	    return -1;
 	}
     }
     nop_init_graphs(g, G_lp, G_bb);
@@ -705,10 +707,18 @@ int init_nop(Agraph_t * g, int adjust)
     if (!chkBB(g, G_bb) || didAdjust)
 	compute_bb(g);
 
+    /* Adjust bounding box for any background */
+    if (GD_drawing(g)->xdots) {
+	haveBackground = 1;
+	GD_bb(g) = xdotBB (g);
+    }
+    else
+	haveBackground = 0;
+
     /* At this point, all bounding boxes should be correctly defined.
      * If necessary, we translate the graph to the origin.
      */
-    if (adjust && (ROUND(abs(GD_bb(g).LL.x)) || ROUND(abs(GD_bb(g).LL.y))))
+    if (adjust && !haveBackground && (ROUND(abs(GD_bb(g).LL.x)) || ROUND(abs(GD_bb(g).LL.y))))
 	translate(g, posEdges);
 
     if (!adjust) {
@@ -725,7 +735,7 @@ int init_nop(Agraph_t * g, int adjust)
 	State = GVSPLINES;
 	neato_set_aspect(g);
     }
-    return 0;
+    return haveBackground;
 }
 
 static void neato_init_graph (Agraph_t * g)
@@ -1480,10 +1490,12 @@ void neato_layout(Agraph_t * g)
 	addZ (g);
 	ret = init_nop(g, 1);
 	PSinputscale = save;
-	if (ret) {
+	if (ret < 0) {
 	    agerr(AGPREV, "as required by the -n flag\n");
-	    exit(1);
+	    return;
 	}
+	else if (ret == 0)
+	    dotneato_postprocess(g);
     } else {
 	neato_init_graph(g);
 	layoutMode = neatoMode(g);
@@ -1550,6 +1562,6 @@ void neato_layout(Agraph_t * g)
 	    addZ (g);
 	    spline_edges(g);
 	}
+	dotneato_postprocess(g);
     }
-    dotneato_postprocess(g);
 }

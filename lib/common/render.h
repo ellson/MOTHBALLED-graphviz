@@ -123,6 +123,7 @@ extern "C" {
     extern void gv_free_splines(edge_t * e);
     extern void gv_cleanup_edge(Agedge_t * e);
     extern void gv_cleanup_node(Agnode_t * n);
+    extern void* init_xdot (Agraph_t* g);
     extern int initMapData (GVJ_t*, char*, char*, char*, char*, char*, void*);
     extern boolean isPolygon(node_t *);
     extern void makeSelfEdge(path * P, edge_t * edges[], int ind, int cnt,
@@ -152,6 +153,7 @@ extern "C" {
     extern void update_bb_bz(boxf *bb, pointf *cp);
     extern void write_attributed_dot(graph_t *g, FILE *f);
     extern void write_canonical_dot(graph_t *g, FILE *f);
+    extern boxf xdotBB (graph_t* g);
 
 #undef extern
 
