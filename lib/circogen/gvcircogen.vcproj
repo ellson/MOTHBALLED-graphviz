@@ -243,10 +243,6 @@
 				RelativePath=".\nodeset.c"
 				>
 			</File>
-			<File
-				RelativePath=".\stack.c"
-				>
-			</File>
 		</Filter>
 	</Files>
 	<Globals>

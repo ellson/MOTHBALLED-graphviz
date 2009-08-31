@@ -332,3 +332,4 @@ getPackInfo
 getPackModeInfo
 parsePackModeInfo
 putRects
+xdotBB
