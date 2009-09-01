@@ -730,14 +730,25 @@ int common_init_edge(edge_t * e)
     }
     /* end vladimir */
 
-    /* We still accept ports beginning with colons but this is deprecated */
+    /* We still accept ports beginning with colons but this is deprecated 
+     * That is, we allow tailport = ":abc" as well as the preferred 
+     * tailport = "abc".
+     */
     str = agget(e, TAIL_ID);
+#ifdef WITH_CGRAPH
+    /* libgraph always defines tailport/headport; libcgraph doesn't */
+    if (!str) str = "";
+#endif
     if (str && str[0])
 	ND_has_port(agtail(e)) = TRUE;
     ED_tail_port(e) = chkPort (ND_shape(agtail(e))->fns->portfn, agtail(e), str);
     if (noClip(e, E_tailclip))
 	ED_tail_port(e).clip = FALSE;
     str = agget(e, HEAD_ID);
+#ifdef WITH_CGRAPH
+    /* libgraph always defines tailport/headport; libcgraph doesn't */
+    if (!str) str = "";
+#endif
     if (str && str[0])
 	ND_has_port(aghead(e)) = TRUE;
     ED_head_port(e) = chkPort(ND_shape(aghead(e))->fns->portfn, aghead(e), str);
@@ -1274,28 +1285,28 @@ void undoClusterEdges(graph_t * g)
 /* safe_dcl:
  * Find the attribute belonging to graph g for objects like obj
  * with given name. If one does not exist, create it with the
- * supplied function fun with default value def.
+ * default value def.
  */ 
 #ifndef WITH_CGRAPH
 attrsym_t*
 safe_dcl(graph_t * g, void *obj, char *name, char *def,
          attrsym_t * (*fun) (Agraph_t *, char *, char *))
-#else /* WITH_CGRAPH */
-attrsym_t*
-safe_dcl(graph_t * g, int obj_kind, char *name, char *def)
-#endif /* WITH_CGRAPH */
 {
-#ifndef WITH_CGRAPH
     attrsym_t *a = agfindattr(obj, name);
     if (a == NULL)
 	a = fun(g, name, def);
-#else /* WITH_CGRAPH */
-	attrsym_t *a = agattr(g,obj_kind,name, NULL);
-	if (!a)	/*attribute exists*/		
-		a=agattr(g,obj_kind,name,def);
-#endif /* WITH_CGRAPH */
     return a;
 }
+#else /* WITH_CGRAPH */
+attrsym_t*
+safe_dcl(graph_t * g, int obj_kind, char *name, char *def)
+{
+    attrsym_t *a = agattr(g,obj_kind,name, NULL);
+    if (!a)	/* attribute does not exist */		
+	a = agattr(g,obj_kind,name,def);
+    return a;
+}
+#endif /* WITH_CGRAPH */
 
 static int comp_entities(const void *e1, const void *e2) {
   return strcmp(((struct entities_s *)e1)->name, ((struct entities_s *)e2)->name);
