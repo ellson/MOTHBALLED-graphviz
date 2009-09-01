@@ -36,7 +36,9 @@
 #include "ingraphs.h"
 #include "pack.h"
 
+#ifndef WITH_CGRAPH
 extern Agdict_t *agdictof(void *);
+#endif
 
 /* gvpack:
  * Input consists of graphs in dot format.
@@ -157,6 +159,24 @@ static int setUInt(unsigned int *v, char *arg)
     return 0;
 }
 
+#ifdef WITH_CGRAPH
+static Agsym_t *agraphattr(Agraph_t *g, char *name, char *value)
+{
+    return agattr(g, AGRAPH, name, value);
+}
+
+static Agsym_t *agnodeattr(Agraph_t *g, char *name, char *value)
+{
+    return agattr(g, AGNODE, name, value);
+}
+
+static Agsym_t *agedgeattr(Agraph_t *g, char *name, char *value)
+{
+    return agattr(g, AGEDGE, name, value);
+}
+
+#endif
+
 /* init:
  */
 static void init(int argc, char *argv[], pack_info* pinfo)
@@ -165,7 +185,9 @@ static void init(int argc, char *argv[], pack_info* pinfo)
     char buf[BUFSIZ];
     char* bp;
 
+#ifndef WITH_CGRAPH
     aginit();
+#endif
     agnodeattr(NULL, "label", NODENAME_ESC);
     pinfo->mode = l_clust;
     pinfo->margin = CL_OFFSET;
@@ -258,10 +280,16 @@ static void init_node_edge(Agraph_t * g)
  * libcommon. If fill is true, we use init_nop (neato -n) to
  * read in attributes relevant to the layout.
  */
-static void init_graph(Agraph_t * g, boolean fill)
+static void init_graph(Agraph_t * g, boolean fill, GVC_t* gvc)
 {
     int d;
 
+#ifdef WITH_CGRAPH
+    aginit (g, AGRAPH, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
+    aginit (g, AGNODE, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
+    aginit (g, AGEDGE, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
+#endif
+    GD_gvc(g) = gvc;
     graph_init(g, FALSE);
     d = late_int(g, agfindgraphattr(g, "dim"), 2, 2);
     if (d != 2) {
@@ -280,6 +308,26 @@ static void init_graph(Agraph_t * g, boolean fill)
  * Copy all attributes from old object to new. Assume
  * attributes have been initialized.
  */
+#ifdef WITH_CGRAPH
+static void cloneDfltAttrs(Agraph_t *old, Agraph_t *new, int kind)
+{
+    Agsym_t *a;
+
+    for (a = agnxtattr(old, kind, 0); a; a =  agnxtattr(old, kind, a)) {
+	agattr (new, kind, a->name, a->defval);
+    }
+}
+static void cloneAttrs(void *old, void *new)
+{
+    int kind = AGTYPE(old);
+    Agsym_t *a;
+    Agraph_t *g = agroot(old);
+
+    for (a = agnxtattr(g, kind, 0); a; a =  agnxtattr(g, kind, a)) {
+	agset(new, a->name, agxget(old, a));
+    }
+}
+#else
 static void cloneAttrs(void *old, void *new)
 {
     int j;
@@ -291,6 +339,7 @@ static void cloneAttrs(void *old, void *new)
 	agset(new, a->name, agxget(old, a->index));
     }
 }
+#endif
 
 /* cloneEdge:
  * Note that here, and in cloneNode and cloneCluster,
@@ -357,6 +406,28 @@ static Dtdisc_t attrdisc = {
  * objp. If the attribute has already been defined and
  * has a different default, set default to "".
  */
+#ifdef WITH_CGRAPH
+static void fillDict(Dt_t * newdict, Agraph_t* g, int kind)
+{
+    Agsym_t *a;
+    char *name;
+    char *value;
+    attr_t *rv;
+
+    for (a = agnxtattr(g,kind,0); a; a = agnxtattr(g,kind,a)) {
+	name = a->name;
+	value = a->defval;
+	rv = (attr_t *) dtmatch(newdict, name);
+	if (!rv) {
+	    rv = NEW(attr_t);
+	    rv->name = name;
+	    rv->value = value;
+	    dtinsert(newdict, rv);
+	} else if (strcmp(value, rv->value))
+	    rv->value = "";
+    }
+}
+#else
 static void fillDict(Dt_t * newdict, void *objp)
 {
     int j;
@@ -380,6 +451,7 @@ static void fillDict(Dt_t * newdict, void *objp)
 	    rv->value = "";
     }
 }
+#endif
 
 /* fillGraph:
  * Use all the name-value entries in the dictionary d to define
@@ -414,9 +486,15 @@ static void initAttrs(Agraph_t * root, Agraph_t ** gs, int cnt)
 
     for (i = 0; i < cnt; i++) {
 	g = gs[i];
+#ifdef WITH_CGRAPH
+	fillDict(g_attrs, g, AGRAPH);
+	fillDict(n_attrs, g, AGNODE);
+	fillDict(e_attrs, g, AGEDGE);
+#else
 	fillDict(g_attrs, g);
 	fillDict(n_attrs, g->proto->n);
 	fillDict(e_attrs, g->proto->e);
+#endif
     }
 
     fillGraph(root, g_attrs, agraphattr);
@@ -433,8 +511,13 @@ static void initAttrs(Agraph_t * root, Agraph_t ** gs, int cnt)
 static void cloneGraphAttr(Agraph_t * g, Agraph_t * ng)
 {
     cloneAttrs(g, ng);
+#ifdef WITH_CGRAPH
+    cloneDfltAttrs(g, ng, AGNODE);
+    cloneDfltAttrs(g, ng, AGEDGE);
+#else
     cloneAttrs(g->proto->n, ng->proto->n);
     cloneAttrs(g->proto->e, ng->proto->e);
+#endif
 }
 
 #ifdef UNIMPL
@@ -507,9 +590,11 @@ static char *xName(Dt_t * names, char *oldname)
 static void
 cloneSubg(Agraph_t * g, Agraph_t * ng, Agsym_t * G_bb, Dt_t * gnames)
 {
+#ifndef WITH_CGRAPH
     graph_t *mg;
     edge_t *me;
     node_t *mn;
+#endif
     node_t *n;
     node_t *nn;
     edge_t *e;
@@ -521,14 +606,23 @@ cloneSubg(Agraph_t * g, Agraph_t * ng, Agsym_t * G_bb, Dt_t * gnames)
 
     cloneGraphAttr(g, ng);
     if (doPack)
+#ifdef WITH_CGRAPH
+	agxset(ng, G_bb, "");	/* Unset all subgraph bb */
+#else
 	agxset(ng, G_bb->index, "");	/* Unset all subgraph bb */
+#endif
 
     /* clone subgraphs */
+#ifdef WITH_CGRAPH
+    for (subg = agfstsubg (g); subg; subg = agfstsubg (subg)) {
+	nsubg = agsubg(ng, xName(gnames, agnameof(subg)), 1);
+#else
     mg = g->meta_node->graph;
     for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
 	mn = aghead(me);
 	subg = agusergraph(mn);
 	nsubg = agsubg(ng, xName(gnames, agnameof(subg)));
+#endif
 	cloneSubg(subg, nsubg, G_bb, gnames);
 	/* if subgraphs are clusters, point to the new 
 	 * one so we can find it later.
@@ -544,7 +638,7 @@ cloneSubg(Agraph_t * g, Agraph_t * ng, Agsym_t * G_bb, Dt_t * gnames)
 	if (!agfindnode(ng, agnameof(nn)))
 	    aginsert(ng, nn);
 #else
-        agsubnode(ng, agnameof(nn), 1);
+        agsubnode(ng, nn, 1);
 #endif
     }
 
@@ -557,7 +651,12 @@ cloneSubg(Agraph_t * g, Agraph_t * ng, Agsym_t * G_bb, Dt_t * gnames)
 		continue;
 	    nt = NEWNODE(agtail(e));
 	    nh = NEWNODE(aghead(e));
+#ifndef WITH_CGRAPH
 	    ne = agedge(ng, nt, nh);
+#else
+	    ne = agedge(ng, nt, nh, NULL, 1);
+	    agbindrec (ne, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
+#endif
 	    cloneEdge(e, ne);
 	    MARK(e);
 	}
@@ -623,7 +722,6 @@ static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt, GVC_t * gvc)
 #else
     root = agopen("root", kind, &AgDefaultDisc);
 #endif
-    GD_gvc(root) = gvc;
     initAttrs(root, gs, cnt);
     G_bb = agfindgraphattr(root, "bb");
     if (doPack) assert(G_bb);
@@ -644,7 +742,7 @@ static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt, GVC_t * gvc)
     }
 
     /* do common initialization. This will handle root's label. */
-    init_graph(root, FALSE);
+    init_graph(root, FALSE, gvc);
     State = GVSPLINES;
 
     gnames = dtopen(&pairdisc, Dtoset);
@@ -668,6 +766,7 @@ static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt, GVC_t * gvc)
 	    np = agnode(root, xName(nnames, agnameof(n)));
 #else
 	    np = agnode(root, xName(nnames, agnameof(n)), 1);
+	    agbindrec (np, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
 #endif
 	    ND_alg(n) = np;
 	    cloneNode(n, np);
@@ -703,6 +802,18 @@ static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt, GVC_t * gvc)
     return root;
 }
 
+#ifdef WITH_CGRAPH
+static Agraph_t *gread(FILE * fp)
+{
+    return agread(fp, (Agdisc_t *) 0);
+}
+#else
+static Agraph_t *gread(FILE * fp)
+{
+    return agread(fp);
+}
+#endif
+
 /* readGraphs:
  * Read input, parse the graphs, use init_nop (neato -n) to
  * read in all attributes need for layout.
@@ -726,9 +837,8 @@ static Agraph_t **readGraphs(int *cp, GVC_t* gvc)
     PSinputscale = POINTS_PER_INCH;
     Nop = 2;
 
-    newIngraph(&ig, myFiles, agread);
+    newIngraph(&ig, myFiles, gread);
     while ((g = nextGraph(&ig)) != 0) {
-	GD_gvc(g) = gvc;
 	if (verbose)
 	    fprintf(stderr, "Reading graph %s\n", agnameof(g));
 	if (cnt >= sz) {
@@ -758,7 +868,7 @@ static Agraph_t **readGraphs(int *cp, GVC_t* gvc)
 	} else if (!agisstrict(g))
 	    kind = g->desc;
 #endif
-	init_graph(g, doPack);
+	init_graph(g, doPack, gvc);
 	gs[cnt++] = g;
     }
 
