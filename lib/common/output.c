@@ -226,7 +226,7 @@ static void set_record_rects(node_t * n, field_t * f, agxbuf * xb)
 	set_record_rects(n, f->fld[i], xb);
 }
 
-static void rec_attach_bb(graph_t * g)
+static void rec_attach_bb(graph_t * g, Agsym_t* bbsym)
 {
     int c;
     char buf[BUFSIZ];
@@ -234,14 +234,18 @@ static void rec_attach_bb(graph_t * g)
 
     sprintf(buf, "%.5g,%.5g,%.5g,%.5g", GD_bb(g).LL.x, YFDIR(GD_bb(g).LL.y),
 	    GD_bb(g).UR.x, YFDIR(GD_bb(g).UR.y));
-    agset(g, "bb", buf);
+#ifndef WITH_CGRAPH
+    agxset(g, bbsym->index, buf);
+#else
+    agxset(g, bbsym, buf);
+#endif
     if (GD_label(g) && GD_label(g)->text[0]) {
 	pt = GD_label(g)->pos;
 	sprintf(buf, "%.5g,%.5g", pt.x, YFDIR(pt.y));
 	agset(g, "lp", buf);
     }
     for (c = 1; c <= GD_n_cluster(g); c++)
-	rec_attach_bb(GD_clust(g)[c]);
+	rec_attach_bb(GD_clust(g)[c], bbsym);
 }
 
 void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
@@ -256,6 +260,7 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
     edge_t *e;
     pointf ptf;
     int dim3 = (GD_odim(g) >= 3);
+    Agsym_t* bbsym;
 
     gv_fixLocale (1);
     e_arrows = s_arrows = 0;
@@ -281,7 +286,7 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 	    agset(g, "lp", buf);
 	}
     }
-    safe_dcl(g, g, "bb", "", agraphattr);
+    bbsym = safe_dcl(g, g, "bb", "", agraphattr);
 #else
     safe_dcl(g, AGNODE, "pos", "");
     safe_dcl(g, AGNODE, "rects", "");
@@ -302,7 +307,7 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 	    agset(g, "lp", buf);
 	}
     }
-    safe_dcl(g, AGRAPH, "bb", "");
+    bbsym = safe_dcl(g, AGRAPH, "bb", "");
 #endif
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (dim3) {
@@ -410,7 +415,7 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 	    }
 	}
     }
-    rec_attach_bb(g);
+    rec_attach_bb(g, bbsym);
     agxbfree(&xb);
 
     if (HAS_CLUST_EDGE(g))
