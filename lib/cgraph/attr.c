@@ -143,10 +143,16 @@ Agsym_t *aglocaldictsym(Dict_t * dict, char *name)
 
 Agsym_t *agattrsym(void *obj, char *name)
 {
-    Agattr_t *data;
+	Agattr_t *data;
+	Agsym_t *rv;
+	char *arg = name;
 
     data = agattrrec((Agobj_t *) obj);
-    return (data ? agdictsym(data->dict, name) : NILsym);
+	if (data)
+		rv = agdictsym(data->dict, arg);
+	else
+		rv = NILsym;
+    return rv;
 }
 
 /* to create a graph's, node's edge's string attributes */
@@ -162,19 +168,18 @@ static int topdictsize(Agobj_t * obj)
 }
 
 /* g can be either the enclosing graph, or ProtoGraph */
-static Agrec_t *agmakeattrs(Agraph_t *g, void *obj)
+static Agrec_t *agmakeattrs(Agraph_t *context, void *obj)
 {
     int sz;
     Agattr_t *rec;
     Agsym_t *sym;
     Dict_t *datadict;
 
-    /*g = agraphof(obj);*/
     rec = agbindrec(obj, AgDataRecName, sizeof(Agattr_t), FALSE);
-    datadict = agdictof(g, AGTYPE(obj));
+    datadict = agdictof(context, AGTYPE(obj));
 	assert(datadict);
     if (rec->dict == NIL(Dict_t *)) {
-		rec->dict = agdictof(agroot(g),AGTYPE(obj));
+		rec->dict = agdictof(agroot(context),AGTYPE(obj));
 		/* don't malloc(0) */
 		sz = topdictsize(obj);
 		if (sz < MINATTR) sz = MINATTR;
@@ -344,10 +349,8 @@ void agraphattr_init(Agraph_t * g)
 
     g->desc.has_attrs = 1;
     /* dd = */ agmakedatadict(g);
-    if (!(context = agparent(g))) {
-    	if (ProtoGraph && (g != ProtoGraph)) context = ProtoGraph;
-    	else context = g;
-    }
+    if (!(context = agparent(g)))
+		context = g;
     /* attr = */ agmakeattrs(context,g);
 }
 
