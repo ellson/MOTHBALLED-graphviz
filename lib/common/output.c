@@ -35,8 +35,8 @@ static void agputs (const char* s, FILE* fp)
 static void agputc (int c, FILE* fp)
 {
     static char buf[2] = {'\0','\0'};
-    buf[1] = c;
-    agputs (buf, fp);
+    buf[0] = c;
+    putstr ((void*)fp, buf);
 }
 
 #endif
