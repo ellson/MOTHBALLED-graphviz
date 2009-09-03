@@ -42,6 +42,7 @@ extern "C" {
     extern int gvferror (FILE *stream);
     extern int gvputc(GVJ_t * job, int c);
     extern int gvputs(GVJ_t * job, const char *s);
+    extern int gvflush (GVJ_t * job);
     extern void gvprintf(GVJ_t * job, const char *format, ...);
     extern void gvprintdouble(GVJ_t * job, double num); 
     extern void gvprintpointf(GVJ_t * job, pointf p);

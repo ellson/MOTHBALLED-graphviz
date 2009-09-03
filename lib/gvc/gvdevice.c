@@ -280,13 +280,15 @@ int gvputc(GVJ_t * job, int c)
     return c;
 }
 
-static void gvdevice_flush(GVJ_t * job)
+int gvflush (GVJ_t * job)
 {
     if (job->output_file
       && ! job->external_context
       && ! job->gvc->write_fn) {
-	fflush(job->output_file);
+	return fflush(job->output_file);
     }
+    else
+	return 0;
 }
 
 static void gvdevice_close(GVJ_t * job)
@@ -308,7 +310,7 @@ void gvdevice_format(GVJ_t * job)
 
     if (gvde && gvde->format)
 	gvde->format(job);
-    gvdevice_flush(job);
+    gvflush (job);
 }
 
 void gvdevice_finalize(GVJ_t * job)
@@ -367,7 +369,7 @@ void gvdevice_finalize(GVJ_t * job)
 
     if (! finalized_p) {
         /* if the device has no finalization then it uses file output */
-	gvdevice_flush(job);
+	gvflush (job);
 	gvdevice_close(job);
     }
 }
