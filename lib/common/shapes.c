@@ -2148,6 +2148,10 @@ static void record_init(node_t * n)
     flip = NOT(GD_realflip(agraphof(n)));
     reclblp = ND_label(n)->text;
     len = strlen(reclblp);
+    /* For some forgotten reason, an empty label is parsed into a space, so
+     * we need at least two bytes in textbuf.
+     */
+    len = MAX(len,1);  
     textbuf = N_NEW(len + 1, char);
     if (!(info = parse_reclbl(n, flip, TRUE, textbuf))) {
 	agerr(AGERR, "bad label format %s\n", ND_label(n)->text);
