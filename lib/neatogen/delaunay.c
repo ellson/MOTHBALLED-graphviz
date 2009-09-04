@@ -534,7 +534,30 @@ delaunay_tri (double *x, double *y, int n, int* nedges)
     triangulate("zQNEeB", &in, &out, NULL);
 
     *nedges = out.numberofedges;
-    free(in.pointlist);
+    free (in.pointlist);
+    free (in.pointattributelist);
+    free (in.pointmarkerlist);
+    free (in.trianglearealist);
+    free (in.triangleattributelist);
+    free (in.neighborlist);
+    free (in.segmentlist);
+    free (in.segmentmarkerlist);
+    free (in.holelist);
+    free (in.regionlist);
+    free (in.edgemarkerlist);
+    free (in.normlist);
+    free (out.pointattributelist);
+    free (out.pointmarkerlist);
+    free (out.trianglearealist);
+    free (out.triangleattributelist);
+    free (out.neighborlist);
+    free (out.segmentlist);
+    free (out.segmentmarkerlist);
+    free (out.holelist);
+    free (out.regionlist);
+    free (out.edgelist);
+    free (out.edgemarkerlist);
+    free (out.normlist);
     return out.edgelist;
 }
 
