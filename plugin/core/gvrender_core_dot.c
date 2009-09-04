@@ -413,11 +413,22 @@ static void xdot_end_graph(graph_t* g)
 static void dot_end_graph(GVJ_t *job)
 {
     graph_t *g = job->obj->u.g;
+#ifdef WITH_CGRAPH
+    Agiodisc_t* io_save;
+    static Agiodisc_t io;
+
+    if (io.afread == NULL) {
+	io.afread = AgIoDisc.afread;
+	io.putstr = gvputs;
+	io.flush = gvflush;
+    }
+#endif
 
 #ifndef WITH_CGRAPH
     agsetiodisc(NULL, gvfwrite, gvferror);
 #else
-    // FIXME
+    io_save = g->clos->disc.io;
+    g->clos->disc.io = &io;
 #endif
     switch (job->render.id) {
 	case FORMAT_PLAIN:
@@ -440,7 +451,7 @@ static void dot_end_graph(GVJ_t *job)
 #ifndef WITH_CGRAPH
     agsetiodisc(NULL, NULL, NULL);
 #else
-    // FIXME
+    g->clos->disc.io = io_save;
 #endif
 }
 
