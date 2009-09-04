@@ -1181,6 +1181,7 @@ fdpSplines (graph_t * g)
 		spline_edges1(g, et);
 	    }
 	}
+	Nop = 0;
     }
     if (State < GVSPLINES)
 	spline_edges1(g, ET_LINE);
