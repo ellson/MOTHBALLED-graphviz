@@ -273,7 +273,7 @@ void OverlapSmoother_delete(OverlapSmoother sm){
 
 OverlapSmoother OverlapSmoother_new(SparseMatrix A, int m, 
 				    int dim, real lambda0, real *x, real *width, int include_original_graph, int neighborhood_only, 
-				    real *max_overlap, real *min_overlap){
+				    real *max_overlap, real *min_overlap, int shrink){
   OverlapSmoother sm;
   int i, j, k, *iw, *jw, *id, *jd, jdiag;
   SparseMatrix B;
@@ -324,7 +324,7 @@ OverlapSmoother OverlapSmoother_new(SparseMatrix A, int m,
   ideal_distance_avoid_overlap(dim, sm->Lwd, x, width, (real*) (sm->Lwd->a), max_overlap, min_overlap);
 
   /* no overlap at all! */
-  if (*max_overlap < 1){
+  if (*max_overlap < 1 && shrink){
     if (Verbose) fprintf(stderr," no overlap (overlap = %f), rescale to shrink\n", *max_overlap - 1);
     for (i = 0; i < dim*m; i++) {
       x[i] *= (*max_overlap);
@@ -428,6 +428,7 @@ void remove_overlap(int dim, SparseMatrix A, int m, real *x, real *label_sizes, 
   real avg_label_size;
   real max_overlap = 0, min_overlap = 999;
   int neighborhood_only = TRUE;
+  int shrink = 0;
  
 #ifdef TIME
   clock_t  cpu;
@@ -470,14 +471,14 @@ void remove_overlap(int dim, SparseMatrix A, int m, real *x, real *label_sizes, 
   for (i = 0; i < ntry; i++){
     if (Verbose) print_bounding_box(m, dim, x);
     sm = OverlapSmoother_new(A, m, dim, lambda, x, label_sizes, include_original_graph, neighborhood_only,
-			     &max_overlap, &min_overlap); 
+			     &max_overlap, &min_overlap, shrink); 
     if (Verbose) fprintf(stderr, "overlap removal neighbors only?= %d iter -- %d, overlap factor = %g underlap factor = %g\n", neighborhood_only, i, max_overlap - 1, min_overlap);
     if (max_overlap <= 1){
       OverlapSmoother_delete(sm);
       if (neighborhood_only == FALSE){
 	break;
       } else {
-	neighborhood_only = FALSE;
+	neighborhood_only = FALSE; shrink = 1;
 	continue;
       }
     }
