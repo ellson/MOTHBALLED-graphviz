@@ -28,19 +28,6 @@ when viewed in a PDF-viewer, e.g.,
 <STRONG>acroread</STRONG>,
 is a link to the given URL. If a URL is attached to the graph, this serves
 as a base, such that relative URLs on nodes are derived from it.
-:dia:Dia format
-Produces <A HREF="http://www.gnome.org/projects/dia/">Dia</A> output.
-:hpgl:HP-GL/2
-Produces output in the HP-GL/2 vector graphic printer language.
-:pcl:PCL
-Produces output in the PCL printer language.
-<A HREF=#d:hpgl>HP-GL</A> is a subset of
-PCL, so that PCL output is the same as HP-GL, wrapped with some initial
-and final commands to set the printer to and from HP-GL mode.
-:mif:FrameMaker MIF format
-Generates Frame Maker MIF files.
-:pic:PIC
-Outputs in PIC, the picture description language in the troff-family
 :gd/gd2:GD/GD2 formats
 Output images in the GD and GD2 format. These are the internal
 formats used by the gd library. The latter is compressed.
@@ -153,11 +140,6 @@ In general, VRML output relies on having the PNG library to produce images
 used to texture-fill the node shapes. However, if
 <A HREF=attrs.html#d:shape>shape</A><TT>=point</TT>,
 a node is drawn as a 3D sphere.
-:vtx:Visual Thought format
-Generates graph diagrams in the format for
-<A HREF="http://www.bombshellstudios.com/samples/co/vt.html">Confluents's Visual Thought</A>.
-:mp:MetaPost
-Produces <A HREF="http://cm.bell-labs.com/who/hobby/MetaPost.html">MetaPost</A> output.
 :fig:FIG
 Outputs graphs in the FIG graphics language.
 :svg/svgz:Scalable Vector Graphics
@@ -409,5 +391,3 @@ See <A HREF=#ID>Note</A>.
 Creates a <A HREF="http://www.gtk.org/">GTK</A> window and displays the output there.
 :xlib: Xlib canvas
 Creates an <A HREF="http://en.wikipedia.org/wiki/Xlib">Xlib</A> window and displays the output there.
-:tga: Truevision Targa Format (TGA)
-Produces <A HREF="http://en.wikipedia.org/wiki/Truevision_TGA">Targa</A> output.

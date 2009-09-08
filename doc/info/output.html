@@ -40,8 +40,6 @@ formats need to be interpreted in this manner.
 </TD><TD>DOT</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:cmap HREF=#d:cmap>cmap</A>
 </TD><TD>Client-side imagemap (deprecated)</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=a:dia HREF=#d:dia>dia</A>
-</TD><TD>Dia format</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:eps HREF=#d:eps>eps</A>
 </TD><TD>Encapsulated PostScript</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:fig HREF=#d:fig>fig</A>
@@ -53,8 +51,6 @@ formats need to be interpreted in this manner.
 </TD><TD>GIF</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:gtk HREF=#d:gtk>gtk</A>
 </TD><TD>GTK canvas</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=a:hpgl HREF=#d:hpgl>hpgl</A>
-</TD><TD>HP-GL/2</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:ico HREF=#d:ico>ico</A>
 </TD><TD>Icon Image File Format</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:imap HREF=#d:imap>imap</A>
@@ -69,16 +65,8 @@ formats need to be interpreted in this manner.
 <BR><A NAME=a:jpeg HREF=#d:jpeg>jpeg</A>
 <BR><A NAME=a:jpe HREF=#d:jpe>jpe</A>
 </TD><TD>JPEG</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=a:mif HREF=#d:mif>mif</A>
-</TD><TD>FrameMaker MIF format</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=a:mp HREF=#d:mp>mp</A>
-</TD><TD>MetaPost</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=a:pcl HREF=#d:pcl>pcl</A>
-</TD><TD>PCL</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:pdf HREF=#d:pdf>pdf</A>
 </TD><TD>Portable Document Format (PDF)</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=a:pic HREF=#d:pic>pic</A>
-</TD><TD>PIC</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:plain HREF=#d:plain>plain</A>
 <BR><A NAME=a:plain-ext HREF=#d:plain-ext>plain-ext</A>
 </TD><TD>Simple text format</TD> </TR>
@@ -91,8 +79,6 @@ formats need to be interpreted in this manner.
  <TR><TD ALIGN=CENTER><A NAME=a:svg HREF=#d:svg>svg</A>
 <BR><A NAME=a:svgz HREF=#d:svgz>svgz</A>
 </TD><TD>Scalable Vector Graphics</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=a:tga HREF=#d:tga>tga</A>
-</TD><TD>Truevision Targa Format (TGA)</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:tif HREF=#d:tif>tif</A>
 <BR><A NAME=a:tiff HREF=#d:tiff>tiff</A>
 </TD><TD>TIFF (Tag Image File Format)</TD> </TR>
@@ -101,8 +87,6 @@ formats need to be interpreted in this manner.
 </TD><TD>Vector Markup Language (VML)</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:vrml HREF=#d:vrml>vrml</A>
 </TD><TD>VRML</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=a:vtx HREF=#d:vtx>vtx</A>
-</TD><TD>Visual Thought format</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:wbmp HREF=#d:wbmp>wbmp</A>
 </TD><TD>Wireless BitMap format</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:xlib HREF=#d:xlib>xlib</A>
@@ -260,9 +244,6 @@ to processing by XML tools. In particular, the cmapx output is wrapped in
 <P>
 See <A HREF=#ID>Note</A>.
 
-<DT><A NAME=d:dia HREF=#a:dia><STRONG>dia</STRONG></A>
-<DD>Produces <A HREF="http://www.gnome.org/projects/dia/">Dia</A> output.
-
 <DT><A NAME=d:eps HREF=#a:eps><STRONG>eps</STRONG></A>
 <DD>Produces Encapsulated PostScript output.
 At present, this is only guaranteed to be correct for a single
@@ -282,9 +263,6 @@ formats used by the gd library. The latter is compressed.
 
 <DT><A NAME=d:gtk HREF=#a:gtk><STRONG>gtk</STRONG></A>
 <DD>Creates a <A HREF="http://www.gtk.org/">GTK</A> window and displays the output there.
-
-<DT><A NAME=d:hpgl HREF=#a:hpgl><STRONG>hpgl</STRONG></A>
-<DD>Produces output in the HP-GL/2 vector graphic printer language.
 
 <DT><A NAME=d:ico HREF=#a:ico><STRONG>ico</STRONG></A>
 <DD>Outputs images in the Windows <A HREF="http://en.wikipedia.org/wiki/ICO_(icon_image_file_format)">ICO format</A>.
@@ -379,18 +357,6 @@ node or edge name.
 ,<DT><A NAME=d:jpe HREF=#a:jpe><STRONG>jpe</STRONG></A>
 <DD>Output JPEG compressed image files.
 
-<DT><A NAME=d:mif HREF=#a:mif><STRONG>mif</STRONG></A>
-<DD>Generates Frame Maker MIF files.
-
-<DT><A NAME=d:mp HREF=#a:mp><STRONG>mp</STRONG></A>
-<DD>Produces <A HREF="http://cm.bell-labs.com/who/hobby/MetaPost.html">MetaPost</A> output.
-
-<DT><A NAME=d:pcl HREF=#a:pcl><STRONG>pcl</STRONG></A>
-<DD>Produces output in the PCL printer language.
-<A HREF=#d:hpgl>HP-GL</A> is a subset of
-PCL, so that PCL output is the same as HP-GL, wrapped with some initial
-and final commands to set the printer to and from HP-GL mode.
-
 <DT><A NAME=d:pdf HREF=#a:pdf><STRONG>pdf</STRONG></A>
 <DD>Produces <A HREF="http://www.adobe.com/devnet/pdf/">PDF</A> output.
 (This option assumes Graphviz includes the Cairo renderer.)
@@ -399,9 +365,6 @@ produce PDF-compatible PostScript, and then use a ps-to-pdf converter.
 <P>
 Note: At present, this option does not support anchors, etc. To get these
 included in your PDF output, use <A HREF="#d:ps2">ps2</A>.
-
-<DT><A NAME=d:pic HREF=#a:pic><STRONG>pic</STRONG></A>
-<DD>Outputs in PIC, the picture description language in the troff-family
 
 <DT><A NAME=d:plain HREF=#a:plain><STRONG>plain</STRONG></A>
 ,<DT><A NAME=d:plain-ext HREF=#a:plain-ext><STRONG>plain-ext</STRONG></A>
@@ -521,9 +484,6 @@ the latter in compressed format.
 <P>
 See <A HREF=#ID>Note</A>.
 
-<DT><A NAME=d:tga HREF=#a:tga><STRONG>tga</STRONG></A>
-<DD>Produces <A HREF="http://en.wikipedia.org/wiki/Truevision_TGA">Targa</A> output.
-
 <DT><A NAME=d:tif HREF=#a:tif><STRONG>tif</STRONG></A>
 ,<DT><A NAME=d:tiff HREF=#a:tiff><STRONG>tiff</STRONG></A>
 <DD>Produces <A HREF="http://www.libtiff.org/">TIFF</A> output.
@@ -547,10 +507,6 @@ In general, VRML output relies on having the PNG library to produce images
 used to texture-fill the node shapes. However, if
 <A HREF=attrs.html#d:shape>shape</A><TT>=point</TT>,
 a node is drawn as a 3D sphere.
-
-<DT><A NAME=d:vtx HREF=#a:vtx><STRONG>vtx</STRONG></A>
-<DD>Generates graph diagrams in the format for
-<A HREF="http://www.bombshellstudios.com/samples/co/vt.html">Confluents's Visual Thought</A>.
 
 <DT><A NAME=d:wbmp HREF=#a:wbmp><STRONG>wbmp</STRONG></A>
 <DD>Produces output in the Wireless BitMap (WBMP) format, optimized for
