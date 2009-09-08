@@ -365,7 +365,7 @@ static void Mcircle_hack(GVJ_t * job, node_t * n)
 }
 
 void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF, 
-			int sides, int style)
+			int sides, int style,int filled)
 {
     pointf *B, C[4], *D, p0, p1;
     double rbconst, d, dx, dy, t;
@@ -424,7 +424,7 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 
     switch (mode) {
     case ROUNDED:
-	if (style & FILLED) {
+	if (filled) {
 	    int j = 0;
 	    pointf* pts = N_GNEW(2*sides,pointf);
 	    gvrender_set_pencolor (job, fillc);
@@ -448,9 +448,9 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
     case DIAGONALS:
 	/* diagonals are weird.  rewrite someday. */
 	gvrender_set_pencolor(job, penc);
-	if (style & FILLED)
+	if (filled)
 	    gvrender_set_fillcolor(job, fillc); /* emit fill color */
-	gvrender_polygon(job, AF, sides, style & FILLED);
+	gvrender_polygon(job, AF, sides, filled);
 
 	for (seg = 0; seg < sides; seg++) {
 #ifdef NOTDEF
@@ -465,7 +465,7 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	break;
     case DOGEAR:
 	gvrender_set_pencolor(job, penc);
-	if (style & FILLED)
+	if (filled)
 	    gvrender_set_fillcolor(job, fillc); /* emit fill color */
 	/* Add the cutoff edge. */
 	D = N_NEW(sides + 1, pointf);
@@ -473,7 +473,7 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	    D[seg] = AF[seg];
 	D[0] = B[3 * (sides - 1) + 4];
 	D[sides] = B[3 * (sides - 1) + 2];
-	gvrender_polygon(job, D, sides + 1, style & FILLED);
+	gvrender_polygon(job, D, sides + 1, filled);
 	free(D);
 
 	/* Draw the inner edge. */
@@ -501,7 +501,7 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
        *
        */
 	gvrender_set_pencolor(job, penc);
-	if (style & FILLED)
+	if (filled)
 	    gvrender_set_fillcolor(job, fillc); /* emit fill color */
 	/* Add the tab edges. */
 	D = N_NEW(sides + 2, pointf);
@@ -513,7 +513,7 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	D[3].y = B[3].y + (B[3].y - B[4].y) / 3;
 	for (seg = 4; seg < sides + 2; seg++)
 	    D[seg] = AF[seg - 2];
-	gvrender_polygon(job, D, sides + 2, style & FILLED);
+	gvrender_polygon(job, D, sides + 2, filled);
 	free(D);
 
 
@@ -537,7 +537,7 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
        *
        */
       gvrender_set_pencolor(job, penc);
-      if (style & FILLED)
+      if (filled)
           gvrender_set_fillcolor(job, fillc); /* emit fill color */
       /* Add the folder edges. */
       D = N_NEW(sides + 3, pointf);
@@ -552,13 +552,13 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
       D[4].y = B[3].y;
       for (seg = 4; seg < sides + 3; seg++)
           D[seg] = AF[seg - 3];
-      gvrender_polygon(job, D, sides + 3, style & FILLED);
+      gvrender_polygon(job, D, sides + 3, filled);
       free(D);
 	break;
     case BOX3D:
 	assert(sides == 4);
 	gvrender_set_pencolor(job, penc);
-	if (style & FILLED)
+	if (filled)
 	    gvrender_set_fillcolor(job, fillc); /* emit fill color */
 	/* Adjust for the cutoff edges. */
 	D = N_NEW(sides + 2, pointf);
@@ -568,7 +568,7 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	D[3] = AF[2];
 	D[4] = B[8];
 	D[5] = B[10];
-	gvrender_polygon(job, D, sides + 2, style & FILLED);
+	gvrender_polygon(job, D, sides + 2, filled);
 	free(D);
 
 	/* Draw the inner vertices. */
@@ -584,7 +584,7 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
     case COMPONENT:
 	assert(sides == 4);
 	gvrender_set_pencolor(job, penc);
-	if (style & FILLED)
+	if (filled)
 	    gvrender_set_fillcolor(job, fillc); /* emit fill color */
 	/*
 	 * Adjust the perimeter for the protrusions.
@@ -625,7 +625,7 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 
 	D[10] = AF[2];
 	D[11] = AF[3];
-	gvrender_polygon(job, D, sides + 8, style & FILLED);
+	gvrender_polygon(job, D, sides + 8, filled);
 
 	/* Draw the internal vertices. */
 	C[0] = D[2];
@@ -650,9 +650,9 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 }
 
 static void 
-node_round_corners(GVJ_t * job, node_t* n, pointf * AF, int sides, int style)
+node_round_corners(GVJ_t * job, node_t* n, pointf * AF, int sides, int style,int filled)
 {
-    round_corners(job, findFill(n), findPen(n), AF, sides, style);
+    round_corners(job, findFill(n), findPen(n), AF, sides, style,filled);
 }
 
 /*=============================poly start=========================*/
@@ -1553,65 +1553,81 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 
     pfilled = !ND_shape(n)->usershape || streq(ND_shape(n)->name, "custom");
     /* if no boundary but filled, set boundary color to fill color */
-    if ((peripheries == 0) && filled && pfilled) {
-	char *color;
-	peripheries = 1;
-	color = findFill(n);
-	if (color[0])
-	    gvrender_set_pencolor(job, color);
+    if ((peripheries == 0) && filled && pfilled) 
+	{
+		char *color;
+		peripheries = 1;
+		color = findFill(n);
+		if (color[0])
+			gvrender_set_pencolor(job, color);
     }
     usershape_p = FALSE;
-    if (ND_shape(n)->usershape) {
-	name = ND_shape(n)->name;
-	if (streq(name, "custom"))
-	    name = agget(n, "shapefile");
+    if (ND_shape(n)->usershape) 
+	{
+		name = ND_shape(n)->name;
+		if (streq(name, "custom"))
+			name = agget(n, "shapefile");
         usershape_p = TRUE;
-    }
-    else if ((name = agget(n, "image"))) {
-	usershape_p = TRUE;
-    }
-    if (usershape_p) {  
-	/* get coords of innermost periphery */
-	for (i = 0; i < sides; i++) {
-	    P = vertices[i];
-	    AF[i].x = P.x * xsize + ND_coord(n).x;
-	    AF[i].y = P.y * ysize + ND_coord(n).y;
 	}
-	/* lay down fill first */
-	if (filled && pfilled) {
-	    if (sides <= 2) {
-		gvrender_ellipse(job, AF, sides, filled);
-		if (style & DIAGONALS) {
-		    Mcircle_hack(job, n);
+    else if ((name = agget(n, "image"))) 
+	{
+		usershape_p = TRUE;
+    }
+    if (usershape_p) 
+	{  
+		/* get coords of innermost periphery */
+		for (i = 0; i < sides; i++) {
+			P = vertices[i];
+			AF[i].x = P.x * xsize + ND_coord(n).x;
+			AF[i].y = P.y * ysize + ND_coord(n).y;
 		}
-	    } else if (style & (ROUNDED | DIAGONALS)) {
-		node_round_corners(job, n, AF, sides, style);
-	    } else {
-		gvrender_polygon(job, AF, sides, filled);
-	    }
-	}
-	gvrender_usershape(job, name, AF, sides, filled, late_string(n, N_imagescale, "false"));
-	filled = FALSE;  /* with user shapes, we have done the fill if needed */
+		/* lay down fill first */
+		if (filled && pfilled) 
+		{
+			if (sides <= 2) 
+			{
+				gvrender_ellipse(job, AF, sides, filled);
+				if (style & DIAGONALS) 
+				{
+					Mcircle_hack(job, n);
+				}
+			} 
+			else if (style & (ROUNDED | DIAGONALS)) 
+			{
+				node_round_corners(job, n, AF, sides, style,filled);
+			} else 
+			{
+				gvrender_polygon(job, AF, sides, filled);
+			}
+		}
+		gvrender_usershape(job, name, AF, sides, filled, late_string(n, N_imagescale, "false"));
+		filled = FALSE;  /* with user shapes, we have done the fill if needed */
     }
 
-    for (j = 0; j < peripheries; j++) {
-	for (i = 0; i < sides; i++) {
-	    P = vertices[i + j * sides];
-	    AF[i].x = P.x * xsize + ND_coord(n).x;
-	    AF[i].y = P.y * ysize + ND_coord(n).y;
-	}
-	if (sides <= 2) {
-	    gvrender_ellipse(job, AF, sides, filled);
-	    if (style & DIAGONALS) {
-		Mcircle_hack(job, n);
-	    }
-	} else if (SPECIAL_CORNERS(style)) {
-	    node_round_corners(job, n, AF, sides, style);
-	} else {
-	    gvrender_polygon(job, AF, sides, filled);
-	}
-	/* fill innermost periphery only */
-	filled = FALSE;
+    for (j = 0; j < peripheries; j++) 
+	{
+		for (i = 0; i < sides; i++) 
+		{
+			P = vertices[i + j * sides];
+			AF[i].x = P.x * xsize + ND_coord(n).x;
+			AF[i].y = P.y * ysize + ND_coord(n).y;
+		}
+		if (sides <= 2) 
+		{
+			gvrender_ellipse(job, AF, sides, filled);
+			if (style & DIAGONALS) 
+			{
+				Mcircle_hack(job, n);
+			}
+		} else if (SPECIAL_CORNERS(style)) 
+		{
+			node_round_corners(job, n, AF, sides, style,filled);
+		} else 
+		{
+			gvrender_polygon(job, AF, sides, filled);
+		}
+		/* fill innermost periphery only */
+		filled = FALSE;
     }
 
     emit_label(job, EMIT_NLABEL, ND_label(n));
@@ -1662,8 +1678,10 @@ static void point_init(node_t * n)
     vertices[0].x = -P.x;
     vertices[0].y = -P.y;
     vertices[1] = P;
-    if (peripheries > 1) {
-        for (j = 1, i = 2; j < peripheries; j++) {
+    if (peripheries > 1) 
+	{
+        for (j = 1, i = 2; j < peripheries; j++) 
+		{
 	    P.x += GAP;
 	    P.y += GAP;
 	    vertices[i].x = -P.x;
@@ -1851,20 +1869,22 @@ parse_reclbl(node_t * n, int LR, int flag, char *text)
     textlabel_t *lbl = ND_label(n);
 
     fp = NULL;
-    for (maxf = 1, cnt = 0, sp = reclblp; *sp; sp++) {
-	if (*sp == '\\') {
-	    sp++;
-	    if (*sp && (*sp == '{' || *sp == '}' || *sp == '|' || *sp == '\\'))
-		continue;
-	}
-	if (*sp == '{')
-	    cnt++;
-	else if (*sp == '}')
-	    cnt--;
-	else if (*sp == '|' && cnt == 0)
-	    maxf++;
-	if (cnt < 0)
-	    break;
+    for (maxf = 1, cnt = 0, sp = reclblp; *sp; sp++) 
+	{
+		if (*sp == '\\') 
+		{
+			sp++;
+			if (*sp && (*sp == '{' || *sp == '}' || *sp == '|' || *sp == '\\'))
+			continue;
+		}
+		if (*sp == '{')
+			cnt++;
+		else if (*sp == '}')
+			cnt--;
+		else if (*sp == '|' && cnt == 0)
+			maxf++;
+		if (cnt < 0)
+			break;
     }
     rv->fld = N_NEW(maxf, field_t *);
     rv->LR = LR;
@@ -1873,96 +1893,104 @@ parse_reclbl(node_t * n, int LR, int flag, char *text)
     hstsp = tsp = text;
     wflag = TRUE;
     ishardspace = FALSE;
-    while (wflag) {
-	switch (*reclblp) {
-	case '<':
-	    if (mode & (HASTABLE | HASPORT))
-		return parse_error(rv, tmpport);
-	    if (lbl->html) goto dotext;
-	    mode |= (HASPORT | INPORT);
-	    reclblp++;
-	    hspsp = psp = text;
+    while (wflag) 
+	{
+		switch (*reclblp) {
+		case '<':
+			if (mode & (HASTABLE | HASPORT))
+				return parse_error(rv, tmpport);
+			if (lbl->html) goto dotext;
+				mode |= (HASPORT | INPORT);
+			reclblp++;
+			hspsp = psp = text;
 	    break;
-	case '>':
-	    if (lbl->html) goto dotext;
-	    if (!(mode & INPORT))
-		return parse_error(rv, tmpport);
-	    if (psp > text + 1 && psp - 1 != hspsp && *(psp - 1) == ' ')
-		psp--;
-	    *psp = '\000';
-	    tmpport = strdup(text);
-	    mode &= ~INPORT;
-	    reclblp++;
+		case '>':
+			if (lbl->html) goto dotext;
+				if (!(mode & INPORT))
+					return parse_error(rv, tmpport);
+			if (psp > text + 1 && psp - 1 != hspsp && *(psp - 1) == ' ')
+			psp--;
+			*psp = '\000';
+			tmpport = strdup(text);
+			mode &= ~INPORT;
+			reclblp++;
 	    break;
-	case '{':
-	    reclblp++;
-	    if (mode != 0 || !*reclblp)
-		return parse_error(rv, tmpport);
-	    mode = HASTABLE;
-	    if (!(rv->fld[fi++] = parse_reclbl(n, NOT(LR), FALSE, text)))
-		return parse_error(rv, tmpport);
+		case '{':
+			reclblp++;
+			if (mode != 0 || !*reclblp)
+				return parse_error(rv, tmpport);
+			mode = HASTABLE;
+			if (!(rv->fld[fi++] = parse_reclbl(n, NOT(LR), FALSE, text)))
+				return parse_error(rv, tmpport);
 	    break;
-	case '}':
-	case '|':
-	case '\000':
-	    if ((!*reclblp && !flag) || (mode & INPORT))
-		return parse_error(rv, tmpport);
-	    if (!(mode & HASTABLE))
-		fp = rv->fld[fi++] = NEW(field_t);
-	    if (tmpport) {
-		fp->id = tmpport;
-		tmpport = NULL;
-	    }
-	    if (!(mode & (HASTEXT | HASTABLE)))
-		mode |= HASTEXT, *tsp++ = ' ';
-	    if (mode & HASTEXT) {
-		if (tsp > text + 1 &&
-		    tsp - 1 != hstsp && *(tsp - 1) == ' ')
-		    tsp--;
-		*tsp = '\000';
-		fp->lp = make_label((void *)n, strdup(text), (lbl->html ? LT_HTML : LT_NONE),
-			lbl->fontsize,
-			lbl->fontname,
-			lbl->fontcolor);
-		fp->LR = TRUE;
-		hstsp = tsp = text;
-	    }
-	    if (*reclblp) {
-		if (*reclblp == '}') {
-		    reclblp++;
-		    rv->n_flds = fi;
-		    return rv;
-		}
-		mode = 0;
-		reclblp++;
-	    } else
-		wflag = FALSE;
-	    break;
-	case '\\':
-	    if (*(reclblp + 1)) {
-		if (ISCTRL(*(reclblp + 1)))
-		    reclblp++;
-		else if ((*(reclblp + 1) == ' ') && !lbl->html)
-		    ishardspace = TRUE, reclblp++;
-                else {
+		case '}':
+		case '|':
+		case '\000':
+			if ((!*reclblp && !flag) || (mode & INPORT))
+				return parse_error(rv, tmpport);
+			if (!(mode & HASTABLE))
+				fp = rv->fld[fi++] = NEW(field_t);
+			if (tmpport) 
+			{
+				fp->id = tmpport;
+			tmpport = NULL;
+			}
+			if (!(mode & (HASTEXT | HASTABLE)))
+				mode |= HASTEXT, *tsp++ = ' ';
+			if (mode & HASTEXT) 
+			{
+				if (tsp > text + 1 &&
+					tsp - 1 != hstsp && *(tsp - 1) == ' ')
+				tsp--;
+				*tsp = '\000';
+				fp->lp = make_label((void *)n, strdup(text), (lbl->html ? LT_HTML : LT_NONE),
+				lbl->fontsize,
+				lbl->fontname,
+				lbl->fontcolor);
+				fp->LR = TRUE;
+				hstsp = tsp = text;
+			}
+			if (*reclblp) 
+			{
+				if (*reclblp == '}') 
+				{
+					reclblp++;
+					rv->n_flds = fi;
+					return rv;
+				}
+				mode = 0;
+				reclblp++;
+				}
+			else
+				wflag = FALSE;
+		break;
+		case '\\':
+			if (*(reclblp + 1)) 
+			{
+				if (ISCTRL(*(reclblp + 1)))
+					reclblp++;
+				else if ((*(reclblp + 1) == ' ') && !lbl->html)
+					ishardspace = TRUE, reclblp++;
+                else 
+				{
                     *tsp++ = '\\';
                     mode |= (INTEXT | HASTEXT);
                     reclblp++;
                 }
-	    }
+		    }
 	    /* falling through ... */
-	default:
-dotext :
-	    if ((mode & HASTABLE) && *reclblp != ' ')
-		return parse_error(rv, tmpport);
-	    if (!(mode & (INTEXT | INPORT)) && *reclblp != ' ')
-		mode |= (INTEXT | HASTEXT);
-	    if (mode & INTEXT) {
-		if (!(*reclblp == ' ' && !ishardspace &&
-		      *(tsp - 1) == ' ' && !lbl->html))
-		    *tsp++ = *reclblp;
-		if (ishardspace)
-		    hstsp = tsp - 1;
+		default:
+			dotext :
+				if ((mode & HASTABLE) && *reclblp != ' ')
+					return parse_error(rv, tmpport);
+				if (!(mode & (INTEXT | INPORT)) && *reclblp != ' ')
+					mode |= (INTEXT | HASTEXT);
+				if (mode & INTEXT) 
+				{
+					if (!(*reclblp == ' ' && !ishardspace &&	*(tsp - 1) == ' ' && !lbl->html))
+					*tsp++ = *reclblp;
+				if (ishardspace)
+					hstsp = tsp - 1;
 	    } else if (mode & INPORT) {
 		if (!(*reclblp == ' ' && !ishardspace &&
 		      (psp == text || *(psp - 1) == ' ')))
@@ -2153,13 +2181,13 @@ static void record_init(node_t * n)
      */
     len = MAX(len,1);  
     textbuf = N_NEW(len + 1, char);
-    if (!(info = parse_reclbl(n, flip, TRUE, textbuf))) {
-	agerr(AGERR, "bad label format %s\n", ND_label(n)->text);
-	reclblp = "\\N";
-	info = parse_reclbl(n, flip, TRUE, textbuf);
+	if (!(info = parse_reclbl(n, flip, TRUE, textbuf)))
+	{
+		agerr(AGERR, "bad label format %s\n", ND_label(n)->text);
+		reclblp = "\\N";
+		info = parse_reclbl(n, flip, TRUE, textbuf);
     }
     free(textbuf);
-
     size_reclbl(n, info);
     sz.x = POINTS(ND_width(n));
     sz.y = POINTS(ND_height(n));
@@ -2359,7 +2387,7 @@ static void record_gencode(GVJ_t * job, node_t * n)
         AF[1].y = AF[0].y;
         AF[3].x = AF[0].x;
         AF[3].y = AF[2].y;
-	node_round_corners(job, n, AF, 4, style);
+	node_round_corners(job, n, AF, 4, style,style & FILLED);
     }
     else
 	gvrender_box(job, BF, style & FILLED);

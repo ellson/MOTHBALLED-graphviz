@@ -209,6 +209,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gts", "lib\GTS\gts.vcproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvprlib", "lib\gvpr\gvprlib.vcproj", "{8C103DE9-BC35-4173-A08D-63906EC5EEFD}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fix_fc", "cmd\tools\fix_fc.vcproj", "{D5FECA8A-6476-472F-9C59-26F9678DD5CE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -404,7 +406,6 @@ Global
 		{C99C1195-2032-408B-9822-F09F49006A3C}.Release|Win32.ActiveCfg = Release|Win32
 		{C99C1195-2032-408B-9822-F09F49006A3C}.Release|Win32.Build.0 = Release|Win32
 		{13145C00-3694-4342-AFBE-4FAA7E1086BC}.Debug|Win32.ActiveCfg = Debug|Win32
-		{13145C00-3694-4342-AFBE-4FAA7E1086BC}.Debug|Win32.Build.0 = Debug|Win32
 		{13145C00-3694-4342-AFBE-4FAA7E1086BC}.Release|Win32.ActiveCfg = Release|Win32
 		{13145C00-3694-4342-AFBE-4FAA7E1086BC}.Release|Win32.Build.0 = Release|Win32
 		{3CD86498-8B4C-4018-A9BF-F9E008F376DD}.Debug|Win32.ActiveCfg = Debug|Win32
@@ -447,6 +448,10 @@ Global
 		{8C103DE9-BC35-4173-A08D-63906EC5EEFD}.Debug|Win32.Build.0 = Debug|Win32
 		{8C103DE9-BC35-4173-A08D-63906EC5EEFD}.Release|Win32.ActiveCfg = Release|Win32
 		{8C103DE9-BC35-4173-A08D-63906EC5EEFD}.Release|Win32.Build.0 = Release|Win32
+		{D5FECA8A-6476-472F-9C59-26F9678DD5CE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D5FECA8A-6476-472F-9C59-26F9678DD5CE}.Debug|Win32.Build.0 = Debug|Win32
+		{D5FECA8A-6476-472F-9C59-26F9678DD5CE}.Release|Win32.ActiveCfg = Release|Win32
+		{D5FECA8A-6476-472F-9C59-26F9678DD5CE}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

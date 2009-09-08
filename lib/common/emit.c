@@ -2816,7 +2816,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 		AF[1].y = AF[0].y;
 		AF[3].x = AF[0].x;
 		AF[3].y = AF[2].y;
-		round_corners(job, fillcolor, pencolor, AF, 4, istyle);
+		round_corners(job, fillcolor, pencolor, AF, 4, istyle,istyle & FILLED);
 	    }
 	}
 	else {
