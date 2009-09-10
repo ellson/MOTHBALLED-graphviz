@@ -533,7 +533,8 @@ We're thinking about it.
 <A name=Q16 HREF=#Q16b>
 <B>Q16b</A>. Why don't my custom GIF images appears? What is the meaning of <tt>Warning: No loadimage plugin for "gif:cairo"</tt>?</B>
 <P>
-Cairo based renderers can't import GIF. Use PNG. (Possibly, install 
+Prior to graphviz-2.25.20090911* the 
+cairo based renderers couldn't import GIF or JPG. Workarounds, use PNG images. (Possibly, install 
 Imagemagick and run "convert shape.gif shape.png". Or try <tt>-Tgif:gd</tt>.)
 <P>
 <A name=Q17 HREF=#Q17>
