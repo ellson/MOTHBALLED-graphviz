@@ -14,7 +14,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/$(GRAPH) \
 	-I$(top_srcdir)/lib/cdt \
-	$(GD_INCLUDES) $(LIBGVC_CFLAGS)
+	$(PANGOCAIRO_CFLAGS) $(GD_INCLUDES) $(LIBGVC_CFLAGS)
 
 noinst_LTLIBRARIES = libgvplugin_gd_C.la
 
@@ -40,13 +40,13 @@ libgvplugin_gd_la_LIBADD = \
 	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
 	$(top_builddir)/lib/cdt/libcdt.la \
-	@ICONV_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @MATH_LIBS@
+	@PANGOCAIRO_LIBS@ @ICONV_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @MATH_LIBS@
 AM_CPPFLAGS += -DNONDLL
 else
 libgvplugin_gd_la_LIBADD = \
 	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
-	$(top_builddir)/lib/cdt/libcdt.la @GD_LIBS@ @MATH_LIBS@
+	$(top_builddir)/lib/cdt/libcdt.la @PANGOCAIRO_LIBS@ @GD_LIBS@ @MATH_LIBS@
 endif
 libgvplugin_gd_la_DEPENDENCIES =  $(top_builddir)/lib/gvc/libgvc.la
 
