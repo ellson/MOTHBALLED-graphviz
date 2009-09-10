@@ -3,7 +3,7 @@
 <HTML><HEAD><TITLE>Graphviz FAQ 2008-06-06</TITLE>
 <META HTTP-EQUIV="content-type" CONTENT="text/html; charset=utf-8">
 </HEAD><BODY>
-<H1>Graphviz FAQ 2008-06-06</H1>
+<H1>Graphviz FAQ 2009-09-10</H1>
 
 <A HREF="mailto:gviz-bugs@research.att.com">The Graphviz Project</A>
 <p>
@@ -521,7 +521,6 @@ might already rely on.
 <P>
 <A name=Q16 HREF=#Q16>
 <B>Q16</A>. How can I get custom shapes or images in my graph?</B>
-
 <P>
 Please see the
 <A HREF="http://www.graphviz.org/Documentation/html/shapehowto.html">
@@ -531,8 +530,14 @@ custom shapes that work with dot/neato, dotty
 front end), because they don't share any universal back end structure.
 We're thinking about it.
 <P>
-<A name=Q17>
-<B>Q. Sometimes in dotty, right mouse click shows the global menu
+<A name=Q16 HREF=#Q16b>
+<B>Q16b</A>. Why don't my custom GIF images appears? What is the meaning of <tt>Warning: No loadimage plugin for "gif:cairo"</tt>?</B>
+<P>
+Cairo based renderers can't import GIF. Use PNG. (Possibly, install 
+Imagemagick and run "convert shape.gif shape.png". Or try <tt>-Tgif:gd</tt>.)
+<P>
+<A name=Q17 HREF=#Q17>
+<B>Q17. Sometimes in dotty, right mouse click shows the global menu
 but none of the items can be selected.</B>
 </A>
 <P>
