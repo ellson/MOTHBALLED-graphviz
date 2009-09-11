@@ -141,7 +141,9 @@ static void gd_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, boolean fil
     if ((im = gd_loadimage(job, us))) {
 	width = im->sx;
 	height = im->sy;
-	stride = cairo_format_stride_for_width (CAIRO_FORMAT_ARGB32, width);
+// cairo_format_stride_for_width() not available prior to cairo-1.6.4 or so (fc9)
+//stride = cairo_format_stride_for_width (CAIRO_FORMAT_ARGB32, width);
+	stride = width*4;
 	data = malloc (stride * height);
 	surface = cairo_image_surface_create_for_data (data, CAIRO_FORMAT_ARGB32,
 							width, height, stride);
