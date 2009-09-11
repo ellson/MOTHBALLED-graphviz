@@ -257,9 +257,11 @@ static gvloadimage_engine_t engine_ps = {
     gd_loadimage_ps
 };
 
+#ifdef HAVE_PANGOCAIRO
 static gvloadimage_engine_t engine_cairo = {
     gd_loadimage_cairo
 };
+#endif
 
 #endif
 
