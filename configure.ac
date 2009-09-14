@@ -1841,9 +1841,11 @@ save_LDFLAGS=$LDFLAGS
 CPPFLAGS="$CPPFLAGS $XAW_INCLUDES $X_CFLAGS"
 LDFLAGS="$LDFLAGS $X_LIBS $XAW_LIBS $XPM_LIBS $X_EXTRA_LIBS $X_PRE_LIBS $SOCKET_LIBS"
 AC_CHECK_HEADERS([X11/Intrinsic.h])
+use_lefty="Yes"
 AC_CHECK_HEADERS([X11/Xaw/Text.h],
 		 [],
 		 [with_xaw=no
+	          use_lefty="No (missing Xaw headers)"
 		  AC_MSG_WARN(Optional Xaw library not available - missing headers)],
 		 [#if HAVE_X11_INTRINSIC_H
 		  # include <X11/Intrinsic.h>
@@ -1853,6 +1855,7 @@ if test "x$with_xaw" != "xno"; then
 AC_CHECK_LIB(Xaw,main,
 	     [XAW_LIBS="$X_LIBS $XAW_LIBS -lXaw"],
 	     [with_xaw=no
+	      use_lefty="No (missing Xaw library)"
 	      AC_MSG_WARN(Optional Xaw library not available)],
 	      [$X_LIBS -lXmu -lXt -lX11 -lXext $SOCKET_LIBS])
 fi
@@ -3170,8 +3173,8 @@ echo "  neato:         Yes (always enabled)"
 echo "  fdp:           Yes (always enabled)"
 echo "  circo:         Yes (always enabled)"
 echo "  twopi:         Yes (always enabled)"
-echo "  lefty:         Yes (always enabled)"
 echo "  gvpr:          Yes (always enabled)"
+echo "  lefty:         $use_lefty"
 echo "  smyrna:        $use_smyrna"
 echo ""
 echo "plugin libraries:"
