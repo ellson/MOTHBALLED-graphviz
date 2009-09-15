@@ -1689,6 +1689,7 @@ int edgeType (char* s, int dflt)
     case 'n' :
     case 'N' :
 	if (!strcasecmp (s+1, "one")) return et;
+	if (!strcasecmp (s+1, "o")) return ET_LINE;
 	break;
     case 'o' :
     case 'O' :
@@ -1708,6 +1709,11 @@ int edgeType (char* s, int dflt)
     case 't' :
     case 'T' :
 	if (!strcasecmp (s+1, "rue"))
+	    et = ET_SPLINE;
+	break;
+    case 'y' :
+    case 'Y' :
+	if (!strcasecmp (s+1, "es"))
 	    et = ET_SPLINE;
 	break;
     }
