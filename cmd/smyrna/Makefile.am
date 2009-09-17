@@ -30,14 +30,14 @@ noinst_HEADERS = btree.h draw.h filter.h glexpose.h glmotion.h gltemplate.h \
 	topfisheyeview.h viewportcamera.h gvprpipe.h \
 	gui/callbacks.h gui/datalistcallbacks.h gui/filterscallbacks.h \
 	gui/glmenu.h gui/gui.h gui/menucallbacks.h gui/toolboxcallbacks.h md5.h \
-	gui/topviewsettings.h gui/beacon.h drawxdot.h
+	gui/topviewsettings.h gui/beacon.h drawxdot.h arcball.h
 
 smyrna_SOURCES = btree.c draw.c filter.c glexpose.c glmotion.c gltemplate.c \
 	hier.c main.c selection.c support.c template.c topview.c topviewdata.c \
 	topfisheyeview.c trackball.c tvnodes.c viewport.c viewportcamera.c \
     gvprpipe.c gui/beacon.c gui/callbacks.c gui/datalistcallbacks.c \
     gui/filterscallbacks.c gui/glmenu.c gui/gui.c gui/menucallbacks.c \
-    gui/toolboxcallbacks.c gui/topviewsettings.c md5.c drawxdot.c
+    gui/toolboxcallbacks.c gui/topviewsettings.c md5.c drawxdot.c arcball.c
 
 smyrna_LDADD = $(top_builddir)/lib/cgraph/libcgraph_C.la \
 		$(top_builddir)/lib/cdt/libcdt_C.la \

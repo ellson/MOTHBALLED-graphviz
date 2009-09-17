@@ -30,6 +30,7 @@
 #include "glcompset.h"
 #include "viewportcamera.h"
 #include "gui/menucallbacks.h"
+#include "arcball.h"
 static float begin_x = 0.0;
 static float begin_y = 0.0;
 static float dx = 0.0;
@@ -187,6 +188,10 @@ static gboolean configure_event(GtkWidget * widget,
     GdkGLDrawable *gldrawable = gtk_widget_get_gl_drawable(widget);
     view->w = widget->allocation.width;
     view->h = widget->allocation.height;
+	if (view->widgets)
+		glcompsetUpdateBorder(view->widgets, view->w, view->h);
+
+
 	/*** OpenGL BEGIN ***/
     if (!gdk_gl_drawable_gl_begin(gldrawable, glcontext))
 	return FALSE;
@@ -196,6 +201,9 @@ static gboolean configure_event(GtkWidget * widget,
     /* setup various opengl things that we need */
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
+	if (widget->allocation.width > 1)
+		init_arcBall(view->arcball,(GLfloat)view->w,(GLfloat)view->h);
+
     if (view->w > view->h) {
 	aspect = (float) view->w / (float) view->h;
 	glOrtho(-aspect * GL_VIEWPORT_FACTOR, aspect * GL_VIEWPORT_FACTOR,
@@ -299,7 +307,7 @@ static gboolean button_press_event(GtkWidget * widget,
 	}
     if (event->button == 1)	//left click
     {
-		view->prevpanx = view->panx;
+
 		view->prevpany = view->pany;
 		view->mouse.mouse_down = 1;
 		view->mouse.button = leftmousebutton;
@@ -311,6 +319,7 @@ static gboolean button_press_event(GtkWidget * widget,
 			expose_event(view->drawing_area, NULL, NULL);
 		}
     }
+	/*experimental code for arcball, init first click */
     return FALSE;
 }
 
@@ -323,7 +332,7 @@ static gboolean button_release_event(GtkWidget * widget,
 				     GdkEventButton * event, gpointer data)
 {
 	view->FontSizeConst=GetOGLDistance(14);
-
+	view->arcball->isDragging=0;
 
 	if (event->button == 1)	//left click release
     {
@@ -422,7 +431,7 @@ static gboolean motion_notify_event(GtkWidget * widget,
     /* float h = (float)widget->allocation.height; */
     float x = (float) event->x;
     float y = (float) event->y;
-
+	
 
     gboolean redraw = FALSE;
 
@@ -445,7 +454,23 @@ static gboolean motion_notify_event(GtkWidget * widget,
     /*rotating, only in 3d view */
     if ((view->active_camera >= 0) && (view->mouse.mouse_mode == MM_ROTATE)
 	&& (event->state & GDK_BUTTON1_MASK)) {
-		glmotion_main(view, event, widget);
+
+			view->arcball->MousePt.s.X = (GLfloat)x;
+			view->arcball->MousePt.s.Y = (GLfloat)y;
+
+		if (!view->arcball->isDragging)
+		{
+			arcmouseClick(view);
+			view->arcball->isDragging=1;
+
+		}
+		else
+		{
+			arcmouseDrag(view);
+
+		}
+
+//		glmotion_main(view, event, widget);
 	    redraw = TRUE;
     }
     /*zooming */

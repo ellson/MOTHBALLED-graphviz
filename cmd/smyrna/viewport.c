@@ -59,6 +59,18 @@ static int mapbool(char *p)
     return atoi(p);
 }
 #endif
+static Dtdisc_t qDisc = {
+    offsetof(xdot,ops),
+    sizeof(xdot_op*),
+    -1,
+    NIL(Dtmake_f),
+    NIL(Dtfree_f),
+    NIL(Dtcompar_f),
+    NIL(Dthash_f),
+    NIL(Dtmemory_f),
+    NIL(Dtevent_f)
+};
+
 
 void clear_viewport(ViewInfo * view)
 {
@@ -336,8 +348,6 @@ get_data_dir()
 void init_viewport(ViewInfo * view)
 {
     FILE *input_file=NULL;
-
-	
     get_data_dir();
 
     input_file = fopen(view->template_file, "rb");
@@ -470,8 +480,8 @@ void init_viewport(ViewInfo * view)
 	view->Topview->Graphdata.Modified=0;
 	view->colschms=NULL;
 	view->flush=1;
-
-
+	view->arcball=NEW(ArcBall_t);
+	/*add default camera*/
 	//create fontset
 }
 

@@ -24,13 +24,16 @@
 #include "glcomptexture.h"
 
 
-extern glCompSet* glCompSetNew(void);
+extern glCompSet* glCompSetNew( int w, int h);
 extern void glCompSetClear(glCompSet * s);
 extern int glCompSetDraw(glCompSet * s);
 extern int glCompSetHide(glCompSet * s);
 extern int glCompSetShow(glCompSet * s);
 extern int glCompSetClick(glCompSet * s, int x, int y);
 extern int glCompSetRelease(glCompSet * s, int x, int y);
+extern void glcompsetUpdateBorder(glCompSet * s, int w, int h);
+extern int glcompsetNextGroupId(glCompSet *s);
+extern int glcompsetGetGroupId(glCompSet *s);
 
 extern void glCompDrawBegin(void);
 extern void glCompDrawEnd(void);

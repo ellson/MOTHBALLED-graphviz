@@ -25,6 +25,14 @@
 typedef struct {
     float x, y, z;
 } point3f;
+typedef struct {
+  point3f u, v;
+} line;
+typedef struct {
+  point3f N;   /* normal */
+  double d;  /* offset */
+} plane;
+
 
 int GetFixedOGLPos(int, int, float, GLfloat*, GLfloat*, GLfloat * Z);
 int GetOGLPosRef(int x, int y, float *X, float *Y, float *Z);
@@ -34,5 +42,7 @@ void to3D(int x, int y, GLfloat * X, GLfloat * Y,GLfloat * Z);
 void linear_interplotate (float,float,float,float,float,float*);
 double point_to_line_dist(point3f p, point3f u, point3f v);
 double point_to_lineseg_dist (point3f p, point3f a, point3f b);
-
+int rot_spherex(plane J,double tet,point3f P,point3f* P2);
+void make_plane(point3f a,point3f b,point3f c,plane* P);
+void replacestr(char *source,char **target);
 #endif

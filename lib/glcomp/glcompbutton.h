@@ -21,7 +21,7 @@ extern int glCompSetAddButton(glCompSet * s, glCompButton * p);
 extern int glCompSetRemoveButton(glCompSet * s, glCompButton * p);
 extern int glCompDrawButton(glCompButton * p);
 extern void glCompButtonClick(glCompButton * p);
-
+extern void glCompButtonSetText(glCompButton * p,char* str);
 
 
 #endif

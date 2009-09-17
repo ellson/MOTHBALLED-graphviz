@@ -65,10 +65,6 @@ static void glCompSetGetPos(int x, int y, float *X, float *Y, float *Z)
     *Z = (float) posZ;
 }
 
-
-
-
-
 void glCompDrawBegin(void)		//pushes a gl stack 
 {
     int vPort[4];
@@ -98,6 +94,10 @@ void glCompDrawEnd(void)		//pops the gl stack
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
 }
+
+
+
+
 
 
 
@@ -153,18 +153,34 @@ int glCompSetShow(glCompSet * s)
 }
 static int glCompPointInButton(glCompButton * p, float x, float y)
 {
-    float button_x, button_y;
-    if (p->panel) {
-	button_x = p->pos.x + p->panel->pos.x;
-	button_y = p->pos.y + p->panel->pos.y;
+	int kts,kts2;
+	GLfloat tempX,tempY;
+	GLfloat h,h2;	/*container widget height*/
+	float color_fac;
+    float thickness = p->thickness;
+    float fontx, fonty;
+	GLfloat fontwidth;
+	float button_x, button_y;
+
+	if (p->orientation==1){	kts=1; h=0;}else{kts=-1; h=((glCompSet*)p->parentset)->h;}
+	if (p->panel->orientation==1){	kts2=1; h2=0;}else
+	{
+		kts2=-1; h2=((glCompSet*)p->panel->parentset)->h;
+	}
+    if (!p->visible)
+		return 0;
+    if (p->panel)
+	{
+		button_x = p->panel->pos.x + p->pos.x;
+		button_y = p->panel->pos.y*kts2*kts+h2 + p->pos.y-h;
+		if (p->panel->orientation==0)
+			button_y = button_y - p->panel->height;
     }
 
-    if ((x >= button_x) &&
-	(x <= button_x + p->width) &&
-	(y >= button_y) && (y <= button_y + p->height))
-	return 1;
+    if ((x >= button_x) &&	(x <= button_x + p->width) &&	(y >= button_y) && (y <= button_y + p->height))
+		return 1;
     else
-	return 0;
+		return 0;
 
 }
 
@@ -246,9 +262,12 @@ void glCompSetClear(glCompSet * s)
     free(s);
 }
 
-glCompSet* glCompSetNew()
+glCompSet* glCompSetNew( int w, int h)
 {
     glCompSet *s = NEW(glCompSet);
+	s->w=(GLfloat)w;
+	s->h=(GLfloat)h;
+	s->groupCount=0;
     return s;
 }
 
@@ -259,6 +278,27 @@ int glCompSetDraw(glCompSet * s)
     glCompDrawEnd();
     return 1;
 }
+
+void glcompsetUpdateBorder(glCompSet * s, int w, int h)
+{
+	if ( w > 0 && h > 0)
+	{
+		s->w=(GLfloat)w;
+		s->h=(GLfloat)h;
+	}
+}
+extern int glcompsetGetGroupId(glCompSet *s)
+{
+	return s->groupCount;
+}
+extern int glcompsetNextGroupId(glCompSet *s)
+{
+	int rv=	s->groupCount;
+	s->groupCount++;
+	return rv;
+}
+
+
 #if 0
 static void change_fonts(glCompSet * s,const texFont_t* sourcefont)
 {

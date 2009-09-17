@@ -23,6 +23,11 @@
 #include "xdot.h"
 #include "cgraph.h"
 
+void arcmouseRClick(ViewInfo* v);
+void arcmouseClick(ViewInfo* v);
+void arcmouseDrag(ViewInfo* v);
+
+
 
 void init_viewport(ViewInfo * view);
 void set_viewport_settings_from_template(ViewInfo * view, Agraph_t *);

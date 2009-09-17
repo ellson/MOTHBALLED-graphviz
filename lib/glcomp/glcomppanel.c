@@ -46,39 +46,42 @@ void glCompSetPanelText(glCompPanel * p,char* t)
 
 int glCompDrawPanel(glCompPanel * p)
 {
-    if (!p->visible)
+	int kts;
+	GLfloat h;	/*container widget height*/
+	if (p->orientation==1){	kts=1; h=0;}else{kts=-1; h=((glCompSet*)p->parentset)->h;}
+	if (!p->visible)
 	return 0;
     glColor4f(p->color.R, p->color.G, p->color.B, p->color.A);
     glBegin(GL_POLYGON);
-    glVertex3f(p->pos.x, p->pos.y, p->bevel);
-    glVertex3f(p->pos.x + p->width, p->pos.y, p->bevel);
-    glVertex3f(p->pos.x + p->width, p->pos.y + p->height, p->bevel);
-    glVertex3f(p->pos.x, p->pos.y + p->height, p->bevel);
-    glVertex3f(p->pos.x, p->pos.y, p->bevel);
+    glVertex3f(p->pos.x, (p->pos.y*kts+h), p->bevel);
+    glVertex3f(p->pos.x + p->width, (p->pos.y*kts+h), p->bevel);
+    glVertex3f(p->pos.x + p->width, (p->pos.y*kts+h) + p->height*kts, p->bevel);
+    glVertex3f(p->pos.x, (p->pos.y*kts+h) + p->height*kts, p->bevel);
+    glVertex3f(p->pos.x, (p->pos.y*kts+h), p->bevel);
     glEnd();
     glBegin(GL_LINE_STRIP);
     glColor4f(p->shadowcolor.R, p->shadowcolor.G, p->shadowcolor.B,
 	      p->color.A);
-    glVertex3f(p->pos.x, p->pos.y,
+    glVertex3f(p->pos.x, (p->pos.y*kts+h),
 	       p->bevel + (GLfloat) GLCOMPSET_BEVEL_DIFF);
-    glVertex3f(p->pos.x + p->width, p->pos.y,
+    glVertex3f(p->pos.x + p->width, (p->pos.y*kts+h),
 	       p->bevel + (GLfloat) GLCOMPSET_BEVEL_DIFF);
-    glVertex3f(p->pos.x + p->width, p->pos.y + p->height,
+    glVertex3f(p->pos.x + p->width, (p->pos.y*kts+h) + p->height*kts,
 	       p->bevel + (GLfloat) GLCOMPSET_BEVEL_DIFF);
-    glVertex3f(p->pos.x, p->pos.y + p->height,
+    glVertex3f(p->pos.x, (p->pos.y*kts+h) + p->height*kts,
 	       p->bevel + (GLfloat) GLCOMPSET_BEVEL_DIFF);
-    glVertex3f(p->pos.x, p->pos.y, p->bevel);
+    glVertex3f(p->pos.x, (p->pos.y*kts+h), p->bevel);
     glEnd();
     glLineWidth(p->shadowwidth);
     glBegin(GL_LINE_STRIP);
     glColor4f((GLfloat) p->shadowcolor.R, (GLfloat) p->shadowcolor.G,
 	      (GLfloat) p->shadowcolor.B, (GLfloat) p->shadowcolor.A);
     glVertex3f(p->pos.x + p->shadowwidth / ((GLfloat) 2.0),
-	       p->pos.y - p->shadowwidth / ((GLfloat) 2.0), p->bevel);
+	       (p->pos.y*kts+h) - p->shadowwidth / ((GLfloat) 2.0), p->bevel);
     glVertex3f(p->pos.x + p->shadowwidth / (GLfloat) 2.0 + p->width,
-	       p->pos.y - p->shadowwidth / (GLfloat) 2.0, p->bevel);
+	       (p->pos.y*kts+h) - p->shadowwidth / (GLfloat) 2.0, p->bevel);
     glVertex3f(p->pos.x + p->shadowwidth / (GLfloat) 2.0 + p->width,
-	       p->pos.y - p->shadowwidth / (GLfloat) 2.0 + p->height,
+	       (p->pos.y*kts+h) - p->shadowwidth / (GLfloat) 2.0 + p->height*kts,
 	       p->bevel);
     glEnd();
     glLineWidth(1);
@@ -125,15 +128,6 @@ int glCompSetRemovePanel(glCompSet * s, glCompPanel * p)
 int glCompPanelHide(glCompPanel * p)
 {
     int ind = 0;
-    for (ind = 0; ind < ((glCompSet *) p->parentset)->buttoncount; ind++) {
-	if (((glCompSet *) p->parentset)->buttons[ind]->panel == p)
-	    ((glCompSet *) p->parentset)->buttons[ind]->visible = 0;
-    }
-
-    for (ind = 0; ind < ((glCompSet *) p->parentset)->labelcount; ind++) {
-	if (((glCompSet *) p->parentset)->labels[ind]->panel == p)
-	    ((glCompSet *) p->parentset)->labels[ind]->visible = 0;
-    }
     p->visible = 0;
     return 1;
 
@@ -143,15 +137,6 @@ int glCompPanelHide(glCompPanel * p)
 int glCompPanelShow(glCompPanel * p)
 {
     int ind = 0;
-    for (ind = 0; ind < ((glCompSet *) p->parentset)->buttoncount; ind++) {
-	if (((glCompSet *) p->parentset)->buttons[ind]->panel == p)
-	    ((glCompSet *) p->parentset)->buttons[ind]->visible = 1;
-    }
-
-    for (ind = 0; ind < ((glCompSet *) p->parentset)->labelcount; ind++) {
-	if (((glCompSet *) p->parentset)->labels[ind]->panel == p)
-	    ((glCompSet *) p->parentset)->labels[ind]->visible = 1;
-    }
     p->visible = 1;
     return 1;
 

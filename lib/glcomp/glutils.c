@@ -267,14 +267,6 @@ int glreversecamera(ViewInfo * view)
 #endif
 #include <math.h>
 
-typedef struct {
-  point3f u, v;
-} line;
-
-typedef struct {
-  point3f N;   /* normal */
-  double d;  /* offset */
-} plane;
 
 
 static point3f add (point3f p, point3f q)
@@ -383,6 +375,50 @@ double point_to_lineseg_dist (point3f p, point3f a, point3f b)
 	q = blend (a, b, U);
 
     return dist(p, q);
+
+}
+/*
+	Calculates the parameters of a plane via given 3 points on it
+*/
+
+
+void make_plane(point3f a,point3f b,point3f c,plane* P)
+{
+	P->N.x=a.y*(b.z-c.z)+b.y*(c.z-a.z)+c.y*(a.z-b.z);//+
+	P->N.y=a.z*(b.x-c.x)+b.z*(c.x-a.x)+c.z*(a.x-b.x);//+
+	P->N.z=a.x*(b.y-c.y)+b.x*(c.y-a.y)+c.x*(a.y-b.y);//+
+	P->d=(a.x*(b.y*c.z-c.y*b.z)+b.x*(c.y*a.z-a.y*c.z)+c.x*(a.y*b.z-b.y*a.z))*-1;
+}
+void replacestr(char *source,char **target)
+{
+
+	if (*target)
+		free(*target);
+	*target =strdup(source);
+}
+/*
+	move a point on the great circle of it (spherical)
+
+*/
+
+#define G_PI    3.1415926535897932384626433832795028841971693993751
+#define DEG2RAD  G_PI/180
+int rot_spherex(plane J,double tet,point3f P,point3f* P2)
+{
+	if (tet > 0)
+	{
+		tet=5;
+		tet=DEG2RAD * tet;
+		P2->x=(float)(J.N.x * J.N.x + cos(tet) * (1-J.N.x*J.N.x))*P.x + (J.N.x*J.N.y*(1-cos(tet)) - J.N.z*sin(tet))
+			+ (J.N.z * J.N.x*(1-cos(tet)) + J.N.y * sin(tet))* P.z;
+		P2->y=(float)(J.N.x * J.N.y*(1-cos(tet)) + J.N.z*sin(tet))*P.x + (J.N.y*J.N.y + cos(tet)*(1-J.N.y * J.N.y))* P.y
+			+ (J.N.y*J.N.z*(1-cos(tet)) - J.N.x * sin(tet)) * P.z;
+		P2->z=(float)(J.N.z*J.N.x*(1-cos(tet)) - J.N.y *sin(tet))*P.x + (J.N.y*J.N.z*(1-cos(tet)) + J.N.x*sin(tet))*P.y
+			+ (J.N.z*J.N.z+cos(tet)*(1-J.N.z*J.N.z))*P.z;
+		return 1;
+	}
+	else
+		return 0;
 
 }
 

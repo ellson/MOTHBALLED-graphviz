@@ -173,6 +173,7 @@ typedef struct _glCompLabel {
     GLfloat bevel;
     glCompColor color;
     int visible;
+    void *parentset;		//parent compset
     char *text;
     GLfloat fontsizefactor;
     glCompPanel *panel;		//container panel
@@ -212,6 +213,7 @@ typedef struct {
     glCompPanel **panels;
     glCompButton **buttons;
     glCompLabel **labels;
+	int groupCount ; /*group id counter*/
 
     int panelcount;
     int buttoncount;
@@ -219,6 +221,7 @@ typedef struct {
     int active;			//0 dont draw, 1 draw
     int enabled;		//0 disabled 1 enabled(allow mouse interaction)
     GLfloat clickedX, clickedY;
+	GLfloat w,h; /*parent widget width and height , needs to be updated each time window is resized*/
 	fontset_t* fontset; /*font repository*/
 } glCompSet;
 

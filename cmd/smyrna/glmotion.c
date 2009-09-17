@@ -184,8 +184,10 @@ static float mod_angle(float angle)
 #endif
 void glmotion_rotate(ViewInfo * v)
 {
-	if(v->mouse.rotate_axis==MOUSE_ROTATE_XY)
+/*	if(v->mouse.rotate_axis==MOUSE_ROTATE_XY)
 	{
+		v->arcball
+
 		v->cameras[v->active_camera]->angley-=v->mouse.dy/7;
 		v->cameras[v->active_camera]->anglex-=v->mouse.dx/7;
 	}
@@ -201,5 +203,5 @@ void glmotion_rotate(ViewInfo * v)
 	{
 		v->cameras[v->active_camera]->anglez-=v->mouse.dx/7;
 		v->cameras[v->active_camera]->anglez-=v->mouse.dy/7;
-	}
+	}*/
 }

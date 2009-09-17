@@ -125,9 +125,7 @@ void menu_click_add_camera(void *p)
 
     c->r = view->zoom * -1;
 //      set_camera_x_y(c);
-    attach_camera_widget(view);
-
-
+//    attach_camera_widget(view);
 }
 
 int blocksignal = 0;

@@ -38,6 +38,8 @@
 #include "glcompset.h"
 #include "hier.h"
 #include "md5.h"
+#include "glutils.h"
+#include "arcball.h"
 
 #define IS_TEST_MODE_ON							0
 #define	DEFAULT_MAGNIFIER_WIDTH					300
@@ -121,6 +123,7 @@ typedef enum {
     VT_TOPFISH,
 } viewtype_t;
 
+
 typedef enum { 
     GVE_NONE = -1, 
     GVE_GRAPH,
@@ -138,6 +141,19 @@ typedef enum {
     GVK_FDP,   
     GVK_SFDP/* keep last */
 } gvk_layout;
+
+typedef struct {
+	int anglex;
+	int angley;
+	int anglez;
+} rotation;
+
+typedef struct {
+	int anglex;
+	int angley;
+	int anglez;
+} gl3DNav;
+
 
 typedef struct {
     GtkButton **gtkhostbtn;
@@ -411,11 +427,7 @@ typedef struct _fisheye_magnifier {
     int fisheye_distortion_fac;
 } fisheye_magnifier;
 
-typedef struct
-{
-	float x1,y1,x2,y2;
 
-}line;
 
 typedef struct _ViewInfo
 {
@@ -580,8 +592,13 @@ typedef struct _ViewInfo
 	gvprscript* scripts;
 	int script_count;  /*# of scripts*/
 	GtkComboBox* graphComboBox;/*pointer to graph combo box at top right*/
+	ArcBall_t* arcball;
 
 } ViewInfo;
+/*rotation steps*/
+
+
+
 
 extern ViewInfo *view;
 extern GtkMessageDialog *Dlg;
