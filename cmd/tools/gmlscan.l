@@ -1,6 +1,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 %{
+#include <stdlib.h>
 #include <gml2gv.h>
 #include <gmlparse.h>
 
