@@ -1,3 +1,6 @@
+/* vim:set shiftwidth=4 ts=8: */
+
+
 /**********************************************************
 *      This software is part of the graphviz package      *
 *                http://www.graphviz.org/                 *
@@ -15,7 +18,8 @@
 #include "glcomptext.h"
 
 
-glCompPanel *glCompPanelNew(GLfloat x, GLfloat y, GLfloat w, GLfloat h,glCompOrientation orientation)
+glCompPanel *glCompPanelNew(GLfloat x, GLfloat y, GLfloat w, GLfloat h,
+			    glCompOrientation orientation)
 {
     glCompPanel *p;
     p = malloc(sizeof(glCompPanel));
@@ -33,64 +37,72 @@ glCompPanel *glCompPanelNew(GLfloat x, GLfloat y, GLfloat w, GLfloat h,glCompOri
     p->pos.y = y;
     p->width = w;
     p->height = h;
-	p->orientation=orientation;
-	p->text=(char*)0;
+    p->orientation = orientation;
+    p->text = (char *) 0;
     p->font = font_init();
     return p;
 }
-void glCompSetPanelText(glCompPanel * p,char* t)
+void glCompSetPanelText(glCompPanel * p, char *t)
 {
-	p->text=realloc(p->text,strlen(t)+sizeof(char));
-	strcpy(p->text,t);
+    p->text = realloc(p->text, strlen(t) + sizeof(char));
+    strcpy(p->text, t);
 }
 
 int glCompDrawPanel(glCompPanel * p)
 {
-	int kts;
-	GLfloat h;	/*container widget height*/
-	if (p->orientation==1){	kts=1; h=0;}else{kts=-1; h=((glCompSet*)p->parentset)->h;}
-	if (!p->visible)
+    int kts;
+    GLfloat h;			/*container widget height */
+    if (p->orientation == 1) {
+	kts = 1;
+	h = 0;
+    } else {
+	kts = -1;
+	h = ((glCompSet *) p->parentset)->h;
+    }
+    if (!p->visible)
 	return 0;
     glColor4f(p->color.R, p->color.G, p->color.B, p->color.A);
     glBegin(GL_POLYGON);
-    glVertex3f(p->pos.x, (p->pos.y*kts+h), p->bevel);
-    glVertex3f(p->pos.x + p->width, (p->pos.y*kts+h), p->bevel);
-    glVertex3f(p->pos.x + p->width, (p->pos.y*kts+h) + p->height*kts, p->bevel);
-    glVertex3f(p->pos.x, (p->pos.y*kts+h) + p->height*kts, p->bevel);
-    glVertex3f(p->pos.x, (p->pos.y*kts+h), p->bevel);
+    glVertex3f(p->pos.x, (p->pos.y * kts + h), p->bevel);
+    glVertex3f(p->pos.x + p->width, (p->pos.y * kts + h), p->bevel);
+    glVertex3f(p->pos.x + p->width, (p->pos.y * kts + h) + p->height * kts,
+	       p->bevel);
+    glVertex3f(p->pos.x, (p->pos.y * kts + h) + p->height * kts, p->bevel);
+    glVertex3f(p->pos.x, (p->pos.y * kts + h), p->bevel);
     glEnd();
     glBegin(GL_LINE_STRIP);
     glColor4f(p->shadowcolor.R, p->shadowcolor.G, p->shadowcolor.B,
 	      p->color.A);
-    glVertex3f(p->pos.x, (p->pos.y*kts+h),
+    glVertex3f(p->pos.x, (p->pos.y * kts + h),
 	       p->bevel + (GLfloat) GLCOMPSET_BEVEL_DIFF);
-    glVertex3f(p->pos.x + p->width, (p->pos.y*kts+h),
+    glVertex3f(p->pos.x + p->width, (p->pos.y * kts + h),
 	       p->bevel + (GLfloat) GLCOMPSET_BEVEL_DIFF);
-    glVertex3f(p->pos.x + p->width, (p->pos.y*kts+h) + p->height*kts,
+    glVertex3f(p->pos.x + p->width, (p->pos.y * kts + h) + p->height * kts,
 	       p->bevel + (GLfloat) GLCOMPSET_BEVEL_DIFF);
-    glVertex3f(p->pos.x, (p->pos.y*kts+h) + p->height*kts,
+    glVertex3f(p->pos.x, (p->pos.y * kts + h) + p->height * kts,
 	       p->bevel + (GLfloat) GLCOMPSET_BEVEL_DIFF);
-    glVertex3f(p->pos.x, (p->pos.y*kts+h), p->bevel);
+    glVertex3f(p->pos.x, (p->pos.y * kts + h), p->bevel);
     glEnd();
     glLineWidth(p->shadowwidth);
     glBegin(GL_LINE_STRIP);
     glColor4f((GLfloat) p->shadowcolor.R, (GLfloat) p->shadowcolor.G,
 	      (GLfloat) p->shadowcolor.B, (GLfloat) p->shadowcolor.A);
     glVertex3f(p->pos.x + p->shadowwidth / ((GLfloat) 2.0),
-	       (p->pos.y*kts+h) - p->shadowwidth / ((GLfloat) 2.0), p->bevel);
-    glVertex3f(p->pos.x + p->shadowwidth / (GLfloat) 2.0 + p->width,
-	       (p->pos.y*kts+h) - p->shadowwidth / (GLfloat) 2.0, p->bevel);
-    glVertex3f(p->pos.x + p->shadowwidth / (GLfloat) 2.0 + p->width,
-	       (p->pos.y*kts+h) - p->shadowwidth / (GLfloat) 2.0 + p->height*kts,
+	       (p->pos.y * kts + h) - p->shadowwidth / ((GLfloat) 2.0),
 	       p->bevel);
+    glVertex3f(p->pos.x + p->shadowwidth / (GLfloat) 2.0 + p->width,
+	       (p->pos.y * kts + h) - p->shadowwidth / (GLfloat) 2.0,
+	       p->bevel);
+    glVertex3f(p->pos.x + p->shadowwidth / (GLfloat) 2.0 + p->width,
+	       (p->pos.y * kts + h) - p->shadowwidth / (GLfloat) 2.0 +
+	       p->height * kts, p->bevel);
     glEnd();
     glLineWidth(1);
-	//draw text
-	if(p->text)
-	{
+    //draw text
+    if (p->text) {
 
 
-	}
+    }
     return 1;
 }
 
@@ -100,7 +112,7 @@ int glCompSetAddPanel(glCompSet * s, glCompPanel * p)
     s->panels = realloc(s->panels, sizeof(glCompPanel *) * s->panelcount);
     s->panels[s->panelcount - 1] = p;
     p->parentset = s;
-	p->font=s->fontset->fonts[s->fontset->activefont];
+    p->font = s->fontset->fonts[s->fontset->activefont];
     return 1;
 }
 
@@ -108,10 +120,10 @@ int glCompSetRemovePanel(glCompSet * s, glCompPanel * p)
 {
     int ind = 0;
     int found = 0;
-	for (; ind < s->panelcount; ind++) {
+    for (; ind < s->panelcount; ind++) {
 	if ((s->panels[ind] == p) && found == 0)
 	    found = 1;
-	if ((found == 1)&&(ind <(s->panelcount-1)))
+	if ((found == 1) && (ind < (s->panelcount - 1)))
 	    s->panels[ind] = s->panels[ind + 1];
     }
     if (found) {
@@ -127,7 +139,7 @@ int glCompSetRemovePanel(glCompSet * s, glCompPanel * p)
 
 int glCompPanelHide(glCompPanel * p)
 {
-    int ind = 0;
+    /* int ind = 0; */
     p->visible = 0;
     return 1;
 
@@ -136,9 +148,8 @@ int glCompPanelHide(glCompPanel * p)
 
 int glCompPanelShow(glCompPanel * p)
 {
-    int ind = 0;
+    /* int ind = 0; */
     p->visible = 1;
     return 1;
 
 }
-

@@ -65,7 +65,7 @@ static void glCompSetGetPos(int x, int y, float *X, float *Y, float *Z)
     *Z = (float) posZ;
 }
 
-void glCompDrawBegin(void)		//pushes a gl stack 
+void glCompDrawBegin(void)	//pushes a gl stack 
 {
     int vPort[4];
 
@@ -87,7 +87,7 @@ void glCompDrawBegin(void)		//pushes a gl stack
 
 }
 
-void glCompDrawEnd(void)		//pops the gl stack 
+void glCompDrawEnd(void)	//pops the gl stack 
 {
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
@@ -153,34 +153,43 @@ int glCompSetShow(glCompSet * s)
 }
 static int glCompPointInButton(glCompButton * p, float x, float y)
 {
-	int kts,kts2;
-	GLfloat tempX,tempY;
-	GLfloat h,h2;	/*container widget height*/
-	float color_fac;
-    float thickness = p->thickness;
-    float fontx, fonty;
-	GLfloat fontwidth;
-	float button_x, button_y;
+    int kts, kts2;
+    /* GLfloat tempX,tempY; */
+    GLfloat h, h2;		/*container widget height */
+    /* float color_fac; */
+    /* float thickness = p->thickness; */
+    /* float fontx, fonty; */
+    /* GLfloat fontwidth; */
+    float button_x, button_y;
 
-	if (p->orientation==1){	kts=1; h=0;}else{kts=-1; h=((glCompSet*)p->parentset)->h;}
-	if (p->panel->orientation==1){	kts2=1; h2=0;}else
-	{
-		kts2=-1; h2=((glCompSet*)p->panel->parentset)->h;
-	}
+    if (p->orientation == 1) {
+	kts = 1;
+	h = 0;
+    } else {
+	kts = -1;
+	h = ((glCompSet *) p->parentset)->h;
+    }
+    if (p->panel->orientation == 1) {
+	kts2 = 1;
+	h2 = 0;
+    } else {
+	kts2 = -1;
+	h2 = ((glCompSet *) p->panel->parentset)->h;
+    }
     if (!p->visible)
-		return 0;
-    if (p->panel)
-	{
-		button_x = p->panel->pos.x + p->pos.x;
-		button_y = p->panel->pos.y*kts2*kts+h2 + p->pos.y-h;
-		if (p->panel->orientation==0)
-			button_y = button_y - p->panel->height;
+	return 0;
+    if (p->panel) {
+	button_x = p->panel->pos.x + p->pos.x;
+	button_y = p->panel->pos.y * kts2 * kts + h2 + p->pos.y - h;
+	if (p->panel->orientation == 0)
+	    button_y = button_y - p->panel->height;
     }
 
-    if ((x >= button_x) &&	(x <= button_x + p->width) &&	(y >= button_y) && (y <= button_y + p->height))
-		return 1;
+    if ((x >= button_x) && (x <= button_x + p->width) && (y >= button_y)
+	&& (y <= button_y + p->height))
+	return 1;
     else
-		return 0;
+	return 0;
 
 }
 
@@ -188,32 +197,28 @@ static int glCompPointInButton(glCompButton * p, float x, float y)
 int glCompSetClick(glCompSet * s, int x, int y)
 {
 
-    if (s) 
-	{
-		int ind = 0;
-		float X, Y, Z;
-	
-		glCompDrawBegin();
-		glCompSetGetPos(x, y, &X, &Y, &Z);
-		glCompDrawEnd();
+    if (s) {
+	int ind = 0;
+	float X, Y, Z;
+
+	glCompDrawBegin();
+	glCompSetGetPos(x, y, &X, &Y, &Z);
+	glCompDrawEnd();
 
 
-		s->clickedX = X;
-		s->clickedY = Y;
+	s->clickedX = X;
+	s->clickedY = Y;
 
-		for (ind = 0; ind < s->buttoncount; ind++) 
-		{
-			if ((s->buttons[ind]->visible) && (s->buttons[ind]->enabled)) 
-			{
-				if (glCompPointInButton(s->buttons[ind], X, Y)) 
-				{
-					if (s->buttons[ind]->groupid > -1)
-					s->buttons[ind]->status = 1;
-				}
-			}
+	for (ind = 0; ind < s->buttoncount; ind++) {
+	    if ((s->buttons[ind]->visible) && (s->buttons[ind]->enabled)) {
+		if (glCompPointInButton(s->buttons[ind], X, Y)) {
+		    if (s->buttons[ind]->groupid > -1)
+			s->buttons[ind]->status = 1;
 		}
-		return 1;
-	} else
+	    }
+	}
+	return 1;
+    } else
 	return 0;
 }
 
@@ -227,7 +232,7 @@ int glCompSetRelease(glCompSet * s, int x, int y)
 		if ((glCompPointInButton
 		     (s->buttons[ind], s->clickedX, s->clickedY))) {
 		    glCompButtonClick(s->buttons[ind]);
-			break;
+		    break;
 		}
 	    }
 	}
@@ -242,12 +247,11 @@ int glCompSetRelease(glCompSet * s, int x, int y)
 void glCompSetClear(glCompSet * s)
 {
     int ind = 0;
-    for (ind = 0; ind < s->buttoncount; ind++) 
-	{
-		/*if (s->buttons[ind]->caption)
-			free(s->buttons[ind]->caption);
-		free(s->buttons[ind]);*/
-		glCompSetRemoveButton(s, s->buttons[ind]);
+    for (ind = 0; ind < s->buttoncount; ind++) {
+	/*if (s->buttons[ind]->caption)
+	   free(s->buttons[ind]->caption);
+	   free(s->buttons[ind]); */
+	glCompSetRemoveButton(s, s->buttons[ind]);
     }
     free(s->buttons);
     for (ind = 0; ind < s->labelcount; ind++) {
@@ -262,12 +266,12 @@ void glCompSetClear(glCompSet * s)
     free(s);
 }
 
-glCompSet* glCompSetNew( int w, int h)
+glCompSet *glCompSetNew(int w, int h)
 {
     glCompSet *s = NEW(glCompSet);
-	s->w=(GLfloat)w;
-	s->h=(GLfloat)h;
-	s->groupCount=0;
+    s->w = (GLfloat) w;
+    s->h = (GLfloat) h;
+    s->groupCount = 0;
     return s;
 }
 
@@ -281,38 +285,37 @@ int glCompSetDraw(glCompSet * s)
 
 void glcompsetUpdateBorder(glCompSet * s, int w, int h)
 {
-	if ( w > 0 && h > 0)
-	{
-		s->w=(GLfloat)w;
-		s->h=(GLfloat)h;
-	}
+    if (w > 0 && h > 0) {
+	s->w = (GLfloat) w;
+	s->h = (GLfloat) h;
+    }
 }
-extern int glcompsetGetGroupId(glCompSet *s)
+extern int glcompsetGetGroupId(glCompSet * s)
 {
-	return s->groupCount;
+    return s->groupCount;
 }
-extern int glcompsetNextGroupId(glCompSet *s)
+extern int glcompsetNextGroupId(glCompSet * s)
 {
-	int rv=	s->groupCount;
-	s->groupCount++;
-	return rv;
+    int rv = s->groupCount;
+    s->groupCount++;
+    return rv;
 }
 
 
 #if 0
-static void change_fonts(glCompSet * s,const texFont_t* sourcefont)
+static void change_fonts(glCompSet * s, const texFont_t * sourcefont)
 {
     int ind;
 
     for (ind = 0; ind < s->buttoncount; ind++) {
-	copy_font((s->buttons[ind]->font),sourcefont);	
+	copy_font((s->buttons[ind]->font), sourcefont);
     }
     for (ind = 0; ind < s->labelcount; ind++) {
-	copy_font((s->labels[ind]->font),sourcefont);	
+	copy_font((s->labels[ind]->font), sourcefont);
 
     }
     for (ind = 0; ind < s->panelcount; ind++) {
-	copy_font((s->panels[ind]->font),sourcefont);	
+	copy_font((s->panels[ind]->font), sourcefont);
     }
 }
 #endif

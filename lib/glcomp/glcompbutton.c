@@ -1,3 +1,6 @@
+
+/* vim:set shiftwidth=4 ts=8: */
+
 /**********************************************************
 *      This software is part of the graphviz package      *
 *                http://www.graphviz.org/                 *
@@ -21,7 +24,8 @@
 
 glCompButton *glCompButtonNew(GLfloat x, GLfloat y, GLfloat w, GLfloat h,
 			      char *caption, char *glyphfile,
-			      int glyphwidth, int glyphheight,glCompOrientation orientation)
+			      int glyphwidth, int glyphheight,
+			      glCompOrientation orientation)
 {
     glCompButton *p;
     p = malloc(sizeof(glCompButton));
@@ -60,11 +64,11 @@ glCompButton *glCompButtonNew(GLfloat x, GLfloat y, GLfloat w, GLfloat h,
 	p->glyphheight = 0;
 	p->hasglyph = 0;
     }
-	p->orientation=orientation;
-	p->callbackfunc = '\0';
+    p->orientation = orientation;
+    p->callbackfunc = '\0';
     p->panel = '\0';
     p->customptr = '\0';
-	p->font=(glCompText*)0;
+    p->font = (glCompText *) 0;
     return p;
 }
 
@@ -76,171 +80,224 @@ int glCompSetAddButton(glCompSet * s, glCompButton * p)
 	realloc(s->buttons, sizeof(glCompButton *) * s->buttoncount);
     s->buttons[s->buttoncount - 1] = p;
     p->parentset = s;
-	p->font=s->fontset->fonts[s->fontset->activefont];
-	return 1;
+    p->font = s->fontset->fonts[s->fontset->activefont];
+    return 1;
 }
 
 int glCompSetRemoveButton(glCompSet * s, glCompButton * p)
 {
     int ind = 0;
     int found = 0;
-    for (; ind < s->buttoncount ; ind++) 
-	{
-		if ((s->buttons[ind] == p) && found == 0)
-			found = 1;
-		if ((found == 1) &&(ind <= (s->buttoncount-1)))
-			s->buttons[ind] = s->buttons[ind + 1];
+    for (; ind < s->buttoncount; ind++) {
+	if ((s->buttons[ind] == p) && found == 0)
+	    found = 1;
+	if ((found == 1) && (ind <= (s->buttoncount - 1)))
+	    s->buttons[ind] = s->buttons[ind + 1];
     }
-    if (found) 
-	{
-		free(p->caption);
-		free(p);
-		s->buttoncount--;
-		s->buttons =  realloc(s->buttons, sizeof(glCompButton *) * s->buttoncount);
+    if (found) {
+	free(p->caption);
+	free(p);
+	s->buttoncount--;
+	s->buttons =
+	    realloc(s->buttons, sizeof(glCompButton *) * s->buttoncount);
 
-		return 1;
+	return 1;
     }
     return 0;
 }
 
 int glCompDrawButton(glCompButton * p)
 {
-	int kts,kts2;
-	GLfloat tempX,tempY;
-	GLfloat h,h2;	/*container widget height*/
-	float color_fac;
+    int kts, kts2;
+    GLfloat tempX, tempY;
+    GLfloat h, h2;		/*container widget height */
+    float color_fac;
     float thickness = p->thickness;
     float fontx, fonty;
-	GLfloat fontwidth;
+    GLfloat fontwidth;
 
-	if (p->orientation==1){	kts=1; h=0;}else{kts=-1; h=((glCompSet*)p->parentset)->h;}
-	if (p->panel->orientation==1){	kts2=1; h2=0;}else
-	{
-		kts2=-1; h2=((glCompSet*)p->panel->parentset)->h;
-	}
-	if ((!p->visible) || (!p->panel->visible))
-		return 0;
-    if (p->panel)
-	{
-		tempX=p->pos.x;
-		tempY=p->pos.y;
-		p->pos.x = p->panel->pos.x + p->pos.x;
-		p->pos.y = p->panel->pos.y*kts2*kts+h2 + p->pos.y-h;
-		if (p->panel->orientation==0)
-			p->pos.y = p->pos.y - p->panel->height;
+    if (p->orientation == 1) {
+	kts = 1;
+	h = 0;
+    } else {
+	kts = -1;
+	h = ((glCompSet *) p->parentset)->h;
     }
-    if (p->status == 1) 
-	{
-		color_fac = GLCOMPSET_BUTTON_BEVEL_BRIGHTNESS;
-		glColor4f(p->color.R / (GLfloat) 1.2, p->color.G / (GLfloat) 1.2, p->color.B / (GLfloat) 1.2, p->color.A);
-		p->thickness = p->thickness / (GLfloat) 1.2;
+    if (p->panel->orientation == 1) {
+	kts2 = 1;
+	h2 = 0;
+    } else {
+	kts2 = -1;
+	h2 = ((glCompSet *) p->panel->parentset)->h;
+    }
+    if ((!p->visible) || (!p->panel->visible))
+	return 0;
+    if (p->panel) {
+	tempX = p->pos.x;
+	tempY = p->pos.y;
+	p->pos.x = p->panel->pos.x + p->pos.x;
+	p->pos.y = p->panel->pos.y * kts2 * kts + h2 + p->pos.y - h;
+	if (p->panel->orientation == 0)
+	    p->pos.y = p->pos.y - p->panel->height;
+    }
+    if (p->status == 1) {
+	color_fac = GLCOMPSET_BUTTON_BEVEL_BRIGHTNESS;
+	glColor4f(p->color.R / (GLfloat) 1.2, p->color.G / (GLfloat) 1.2,
+		  p->color.B / (GLfloat) 1.2, p->color.A);
+	p->thickness = p->thickness / (GLfloat) 1.2;
     }
 
-    else 
-	{
-		color_fac = 1 / GLCOMPSET_BUTTON_BEVEL_BRIGHTNESS;
-		glColor4f(p->color.R, p->color.G, p->color.B, p->color.A);
-		p->thickness = p->thickness * (GLfloat) 1.2;
+    else {
+	color_fac = 1 / GLCOMPSET_BUTTON_BEVEL_BRIGHTNESS;
+	glColor4f(p->color.R, p->color.G, p->color.B, p->color.A);
+	p->thickness = p->thickness * (GLfloat) 1.2;
     }
-    if (!p->hasglyph) 
-	{
-		glBegin(GL_POLYGON);
-			glVertex3f(p->pos.x + p->thickness, (p->pos.y*kts+h) + p->thickness, p->bevel);
-			glVertex3f(p->pos.x + p->width - p->thickness,(p->pos.y*kts+h) + p->thickness, p->bevel);
-			glVertex3f(p->pos.x + p->width - p->thickness,(p->pos.y*kts+h) + p->height*kts - p->thickness, p->bevel);
-			glVertex3f(p->pos.x + p->thickness,(p->pos.y*kts+h) + p->height*kts - p->thickness, p->bevel);
-			glVertex3f(p->pos.x + p->thickness, (p->pos.y*kts+h) + p->thickness,p->bevel);
-		glEnd();
-		//buttom thickness
-		glColor4f(p->color.R * color_fac, p->color.G * color_fac,p->color.B * color_fac, p->color.A);
-		glBegin(GL_POLYGON);
-			glVertex3f(p->pos.x + p->thickness, (p->pos.y*kts+h) + p->thickness,p->bevel);
-			glVertex3f(p->pos.x + p->width - p->thickness,(p->pos.y*kts+h) + p->thickness, p->bevel);
-			glVertex3f(p->pos.x + p->width, (p->pos.y*kts+h), p->bevel);
-			glVertex3f(p->pos.x, (p->pos.y*kts+h), p->bevel);
-			glVertex3f(p->pos.x + p->thickness, (p->pos.y*kts+h) + p->thickness,p->bevel);
-		glEnd();
-		//left thickness
-		glBegin(GL_POLYGON);
-			glVertex3f(p->pos.x + p->width, (p->pos.y*kts+h) + p->height*kts, p->bevel);
-			glVertex3f(p->pos.x + p->width - p->thickness,(p->pos.y*kts+h) + p->height*kts - p->thickness, p->bevel);
-			glVertex3f(p->pos.x + p->width - p->thickness,(p->pos.y*kts+h) + p->thickness, p->bevel);
-			glVertex3f(p->pos.x + p->width, (p->pos.y*kts+h), p->bevel);
-			glVertex3f(p->pos.x + p->width, (p->pos.y*kts+h) + p->height*kts, p->bevel);
-		glEnd();
-		glColor4f(p->color.R / color_fac, p->color.G / color_fac, p->color.B / color_fac, p->color.A);
-		glBegin(GL_POLYGON);
-			glVertex3f(p->pos.x + p->thickness, (p->pos.y*kts+h) + p->thickness,p->bevel);
-			glVertex3f(p->pos.x + p->thickness,(p->pos.y*kts+h) + p->height*kts - p->thickness, p->bevel);
-			glVertex3f(p->pos.x, (p->pos.y*kts+h) + p->height*kts, p->bevel);
-			glVertex3f(p->pos.x, (p->pos.y*kts+h), p->bevel);
-			glVertex3f(p->pos.x + p->thickness, (p->pos.y*kts+h) + p->thickness,p->bevel);
-		glEnd();
-		//left thickness
-		glBegin(GL_POLYGON);
-			glVertex3f(p->pos.x + p->thickness,
-			(p->pos.y*kts+h) + p->height*kts - p->thickness, p->bevel);
-			glVertex3f(p->pos.x, (p->pos.y*kts+h) + p->height*kts, p->bevel);
-			glVertex3f(p->pos.x + p->width, (p->pos.y*kts+h) + p->height*kts, p->bevel);
-			glVertex3f(p->pos.x + p->width - p->thickness,(p->pos.y*kts+h) + p->height*kts - p->thickness, p->bevel);
-			glVertex3f(p->pos.x + p->thickness,
-			(p->pos.y*kts+h) + p->height*kts - p->thickness, p->bevel);
-		glEnd();
-		//draw caption
-		fontColor(p->font,p->fontcolor.R, p->fontcolor.G, p->fontcolor.B, p->fontcolor.A);
-		/*get the string length*/
-		fontwidth=(GLfloat)glutBitmapLength(GLUT_BITMAP_HELVETICA_12,(unsigned char*)p->caption);
-		fontx =(p->width - p->thickness * (GLfloat) 2 -  fontwidth )/ (GLfloat) 2.0 + p->pos.x + p->thickness;
-		fonty =(p->height*kts - p->thickness * (GLfloat) 2 -p->fontsize) / (GLfloat) 2.0 + (p->pos.y*kts+h) + p->thickness;
-		glprintf(p->font, fontx,fonty, p->bevel,fontwidth,p->caption);
-	}
+    if (!p->hasglyph) {
+	glBegin(GL_POLYGON);
+	glVertex3f(p->pos.x + p->thickness,
+		   (p->pos.y * kts + h) + p->thickness, p->bevel);
+	glVertex3f(p->pos.x + p->width - p->thickness,
+		   (p->pos.y * kts + h) + p->thickness, p->bevel);
+	glVertex3f(p->pos.x + p->width - p->thickness,
+		   (p->pos.y * kts + h) + p->height * kts - p->thickness,
+		   p->bevel);
+	glVertex3f(p->pos.x + p->thickness,
+		   (p->pos.y * kts + h) + p->height * kts - p->thickness,
+		   p->bevel);
+	glVertex3f(p->pos.x + p->thickness,
+		   (p->pos.y * kts + h) + p->thickness, p->bevel);
+	glEnd();
+	//buttom thickness
+	glColor4f(p->color.R * color_fac, p->color.G * color_fac,
+		  p->color.B * color_fac, p->color.A);
+	glBegin(GL_POLYGON);
+	glVertex3f(p->pos.x + p->thickness,
+		   (p->pos.y * kts + h) + p->thickness, p->bevel);
+	glVertex3f(p->pos.x + p->width - p->thickness,
+		   (p->pos.y * kts + h) + p->thickness, p->bevel);
+	glVertex3f(p->pos.x + p->width, (p->pos.y * kts + h), p->bevel);
+	glVertex3f(p->pos.x, (p->pos.y * kts + h), p->bevel);
+	glVertex3f(p->pos.x + p->thickness,
+		   (p->pos.y * kts + h) + p->thickness, p->bevel);
+	glEnd();
+	//left thickness
+	glBegin(GL_POLYGON);
+	glVertex3f(p->pos.x + p->width,
+		   (p->pos.y * kts + h) + p->height * kts, p->bevel);
+	glVertex3f(p->pos.x + p->width - p->thickness,
+		   (p->pos.y * kts + h) + p->height * kts - p->thickness,
+		   p->bevel);
+	glVertex3f(p->pos.x + p->width - p->thickness,
+		   (p->pos.y * kts + h) + p->thickness, p->bevel);
+	glVertex3f(p->pos.x + p->width, (p->pos.y * kts + h), p->bevel);
+	glVertex3f(p->pos.x + p->width,
+		   (p->pos.y * kts + h) + p->height * kts, p->bevel);
+	glEnd();
+	glColor4f(p->color.R / color_fac, p->color.G / color_fac,
+		  p->color.B / color_fac, p->color.A);
+	glBegin(GL_POLYGON);
+	glVertex3f(p->pos.x + p->thickness,
+		   (p->pos.y * kts + h) + p->thickness, p->bevel);
+	glVertex3f(p->pos.x + p->thickness,
+		   (p->pos.y * kts + h) + p->height * kts - p->thickness,
+		   p->bevel);
+	glVertex3f(p->pos.x, (p->pos.y * kts + h) + p->height * kts,
+		   p->bevel);
+	glVertex3f(p->pos.x, (p->pos.y * kts + h), p->bevel);
+	glVertex3f(p->pos.x + p->thickness,
+		   (p->pos.y * kts + h) + p->thickness, p->bevel);
+	glEnd();
+	//left thickness
+	glBegin(GL_POLYGON);
+	glVertex3f(p->pos.x + p->thickness,
+		   (p->pos.y * kts + h) + p->height * kts - p->thickness,
+		   p->bevel);
+	glVertex3f(p->pos.x, (p->pos.y * kts + h) + p->height * kts,
+		   p->bevel);
+	glVertex3f(p->pos.x + p->width,
+		   (p->pos.y * kts + h) + p->height * kts, p->bevel);
+	glVertex3f(p->pos.x + p->width - p->thickness,
+		   (p->pos.y * kts + h) + p->height * kts - p->thickness,
+		   p->bevel);
+	glVertex3f(p->pos.x + p->thickness,
+		   (p->pos.y * kts + h) + p->height * kts - p->thickness,
+		   p->bevel);
+	glEnd();
+	//draw caption
+	fontColor(p->font, p->fontcolor.R, p->fontcolor.G, p->fontcolor.B,
+		  p->fontcolor.A);
+	/*get the string length */
+	fontwidth =
+	    (GLfloat) glutBitmapLength(GLUT_BITMAP_HELVETICA_12,
+				       (unsigned char *) p->caption);
+	fontx =
+	    (p->width - p->thickness * (GLfloat) 2 -
+	     fontwidth) / (GLfloat) 2.0 + p->pos.x + p->thickness;
+	fonty =
+	    (p->height * kts - p->thickness * (GLfloat) 2 -
+	     p->fontsize) / (GLfloat) 2.0 + (p->pos.y * kts + h) +
+	    p->thickness;
+	glprintf(p->font, fontx, fonty, p->bevel, fontwidth, p->caption);
+    }
     //put glyph
-    else 
-	{
-		glEnable(GL_TEXTURE_2D);
-		fontx =(p->width - p->thickness * (GLfloat) 2 - p->glyphwidth) / (GLfloat) 2.0 + p->pos.x + p->thickness;
-		fonty =(p->height*kts - p->thickness * (GLfloat) 2 - p->glyphheight) / (GLfloat) 2.0 + (p->pos.y*kts+h) + p->thickness;
-		glBindTexture(GL_TEXTURE_2D, p->glyph->id);
-		glColor4f(1, 1, 1, 1);
-		glBegin(GL_QUADS);
-			glTexCoord2d(0.0f, 1.0f);
-			glVertex3d(fontx, fonty, p->bevel + GLCOMPSET_BEVEL_DIFF);
-			glTexCoord2d(1.0f, 1.0f);
-			glVertex3d(fontx + p->glyph->w, fonty,
-			p->bevel + GLCOMPSET_BEVEL_DIFF);
-			glTexCoord2d(1.0f, 0.0f);
-			glVertex3d(fontx + p->glyph->w, fonty + p->glyph->h,
-			p->bevel + GLCOMPSET_BEVEL_DIFF);
-			glTexCoord2d(0.0f, 0.0f);
-			glVertex3d(fontx, fonty + p->glyph->h,
-			p->bevel + GLCOMPSET_BEVEL_DIFF);
-			glTexCoord2d(fontx,fonty); glVertex3d(fontx,fonty,p->bevel+GLCOMPSET_BEVEL_DIFF);
-		glEnd();
-		glDisable(GL_TEXTURE_2D);
-		if (p->status == 1) 
-		{
-			glColor4f(p->color.R * color_fac, p->color.G * color_fac,p->color.B * color_fac, p->color.A / 2);
-			glBegin(GL_POLYGON);
-				glVertex3d(fontx - p->thickness, fonty - p->thickness,p->bevel + GLCOMPSET_BEVEL_DIFF * 2);
-				glVertex3d(fontx + p->glyph->w + p->thickness,fonty - p->thickness,p->bevel + GLCOMPSET_BEVEL_DIFF * 2);
-				glVertex3d(fontx + p->glyph->w + p->thickness,fonty + p->glyph->h + p->thickness,p->bevel + GLCOMPSET_BEVEL_DIFF * 2);
-				glVertex3d(fontx - p->thickness,fonty + p->glyph->h + p->thickness,p->bevel + GLCOMPSET_BEVEL_DIFF * 2);
-			glEnd();
+    else {
+	glEnable(GL_TEXTURE_2D);
+	fontx =
+	    (p->width - p->thickness * (GLfloat) 2 -
+	     p->glyphwidth) / (GLfloat) 2.0 + p->pos.x + p->thickness;
+	fonty =
+	    (p->height * kts - p->thickness * (GLfloat) 2 -
+	     p->glyphheight) / (GLfloat) 2.0 + (p->pos.y * kts + h) +
+	    p->thickness;
+	glBindTexture(GL_TEXTURE_2D, p->glyph->id);
+	glColor4f(1, 1, 1, 1);
+	glBegin(GL_QUADS);
+	glTexCoord2d(0.0f, 1.0f);
+	glVertex3d(fontx, fonty, p->bevel + GLCOMPSET_BEVEL_DIFF);
+	glTexCoord2d(1.0f, 1.0f);
+	glVertex3d(fontx + p->glyph->w, fonty,
+		   p->bevel + GLCOMPSET_BEVEL_DIFF);
+	glTexCoord2d(1.0f, 0.0f);
+	glVertex3d(fontx + p->glyph->w, fonty + p->glyph->h,
+		   p->bevel + GLCOMPSET_BEVEL_DIFF);
+	glTexCoord2d(0.0f, 0.0f);
+	glVertex3d(fontx, fonty + p->glyph->h,
+		   p->bevel + GLCOMPSET_BEVEL_DIFF);
+	glTexCoord2d(fontx, fonty);
+	glVertex3d(fontx, fonty, p->bevel + GLCOMPSET_BEVEL_DIFF);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+	if (p->status == 1) {
+	    glColor4f(p->color.R * color_fac, p->color.G * color_fac,
+		      p->color.B * color_fac, p->color.A / 2);
+	    glBegin(GL_POLYGON);
+	    glVertex3d(fontx - p->thickness, fonty - p->thickness,
+		       p->bevel + GLCOMPSET_BEVEL_DIFF * 2);
+	    glVertex3d(fontx + p->glyph->w + p->thickness,
+		       fonty - p->thickness,
+		       p->bevel + GLCOMPSET_BEVEL_DIFF * 2);
+	    glVertex3d(fontx + p->glyph->w + p->thickness,
+		       fonty + p->glyph->h + p->thickness,
+		       p->bevel + GLCOMPSET_BEVEL_DIFF * 2);
+	    glVertex3d(fontx - p->thickness,
+		       fonty + p->glyph->h + p->thickness,
+		       p->bevel + GLCOMPSET_BEVEL_DIFF * 2);
+	    glEnd();
 
-		}
 	}
+    }
     p->thickness = thickness;
 
-    if (p->panel)
-	{
-		p->pos.x=tempX;
-		p->pos.y=tempY;
+    if (p->panel) {
+	p->pos.x = tempX;
+	p->pos.y = tempY;
     }
-	
-	return 1;
+
+    return 1;
 
 
 }
+
 void glCompButtonClick(glCompButton * p)
 {
     int ind;
@@ -267,9 +324,7 @@ void glCompButtonClick(glCompButton * p)
 
 }
 
-void glCompButtonSetText(glCompButton * p,char* str)
+void glCompButtonSetText(glCompButton * p, char *str)
 {
-	replacestr(str,&p->caption);
+    replacestr(str, &p->caption);
 }
-
-

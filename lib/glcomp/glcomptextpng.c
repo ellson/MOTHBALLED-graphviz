@@ -1,3 +1,5 @@
+/* vim:set shiftwidth=4 ts=8: */
+
 /**********************************************************
 *      This software is part of the graphviz package      *
 *                http://www.graphviz.org/                 *
@@ -16,105 +18,97 @@
 
 
 
-unsigned char *load_png_font(char* file_name,int *imageWidth,int *imageHeight)
+unsigned char *load_png_font(char *file_name, int *imageWidth,
+			     int *imageHeight)
 {
-	unsigned char *imageData = NULL;
-	unsigned char header[8];
-	int i,ii,b0,b1,b2,b3,pixeloffset;
-	long int c;
-	png_structp png_ptr;
-	png_infop info_ptr;
-	png_infop end_info;
-	png_bytepp row_pointers; //actual image data
-	int is_png=0;
-	FILE *fp = fopen(file_name, "rb");
-    if (!fp)
-    {
-        return (unsigned char*)0;
+    unsigned char *imageData = NULL;
+    unsigned char header[8];
+    int i, ii, b0, b1, b2, b3, pixeloffset;
+    long int c;
+    png_structp png_ptr;
+    png_infop info_ptr;
+    png_infop end_info;
+    png_bytepp row_pointers;	//actual image data
+    int is_png = 0;
+    FILE *fp = fopen(file_name, "rb");
+    if (!fp) {
+	return (unsigned char *) 0;
     }
     fread(header, 1, 8, fp);
     is_png = !png_sig_cmp(header, 0, 8);
-    if (!is_png)
-    {
-		printf ("glcomp error:file is not a valid PNG file\n");
-		return (unsigned char*)0;
+    if (!is_png) {
+	printf("glcomp error:file is not a valid PNG file\n");
+	return (unsigned char *) 0;
     }
 
     png_ptr = png_create_read_struct
-       (PNG_LIBPNG_VER_STRING, NULL,NULL,NULL);
-    if (!png_ptr)
-	{
-		printf ("glcomp error:file can not be read\n");
-		return (unsigned char*)0;
-	}
+	(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    if (!png_ptr) {
+	printf("glcomp error:file can not be read\n");
+	return (unsigned char *) 0;
+    }
 
     info_ptr = png_create_info_struct(png_ptr);
-    if (!info_ptr)
-    {
-        png_destroy_read_struct(&png_ptr,
-           (png_infopp)NULL, (png_infopp)NULL);
-		printf ("glcomp error:PNG file header is corrupted\n");
-		return (unsigned char*)0;
+    if (!info_ptr) {
+	png_destroy_read_struct(&png_ptr,
+				(png_infopp) NULL, (png_infopp) NULL);
+	printf("glcomp error:PNG file header is corrupted\n");
+	return (unsigned char *) 0;
     }
 
     end_info = png_create_info_struct(png_ptr);
-    if (!end_info)
-    {
-		printf ("glcomp error:PNG file header is corrupted\n");
-		png_destroy_read_struct(&png_ptr, &info_ptr,
-          (png_infopp)NULL);
-		return (unsigned char*)0;
+    if (!end_info) {
+	printf("glcomp error:PNG file header is corrupted\n");
+	png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp) NULL);
+	return (unsigned char *) 0;
     }
 
 
-	png_init_io(png_ptr, fp);
+    png_init_io(png_ptr, fp);
 
     png_set_sig_bytes(png_ptr, 8);	//pass signature bytes
-	png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL); //read real image data
+    png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);	//read real image data
 
-   row_pointers = png_malloc(png_ptr,
-	   info_ptr->height*sizeof(png_bytepp));
-   row_pointers = png_get_rows(png_ptr, info_ptr);
-	*imageWidth=info_ptr->width;
-	*imageHeight=info_ptr->height;
-	imageData=malloc(info_ptr->height*info_ptr->width);
-	c=0;
-	//decide what pixel offset to use, ro
-	pixeloffset = png_get_rowbytes(png_ptr, info_ptr)/info_ptr->width;
+    row_pointers = png_malloc(png_ptr,
+			      info_ptr->height * sizeof(png_bytepp));
+    row_pointers = png_get_rows(png_ptr, info_ptr);
+    *imageWidth = info_ptr->width;
+    *imageHeight = info_ptr->height;
+    imageData = malloc(info_ptr->height * info_ptr->width);
+    c = 0;
+    //decide what pixel offset to use, ro
+    pixeloffset = png_get_rowbytes(png_ptr, info_ptr) / info_ptr->width;
 
-	b0=-1;b1=-1;b2=-1;b3=-1;
+    b0 = -1;
+    b1 = -1;
+    b2 = -1;
+    b3 = -1;
 
-	for (i=0; i < (int)info_ptr->height; i++)
-   {
-	   for (ii=0;ii < (int)png_get_rowbytes(png_ptr, info_ptr); ii=ii+pixeloffset)	
-		{
-			imageData[c]=row_pointers[info_ptr->height-i-1][ii];
+    for (i = 0; i < (int) info_ptr->height; i++) {
+	for (ii = 0; ii < (int) png_get_rowbytes(png_ptr, info_ptr);
+	     ii = ii + pixeloffset) {
+	    imageData[c] = row_pointers[info_ptr->height - i - 1][ii];
 
-			if(
-					(b0!=row_pointers[info_ptr->height-i-1][ii])
-							||
-					(b1!=row_pointers[info_ptr->height-i-1][ii+1])
-							||
-					(b2!=row_pointers[info_ptr->height-i-1][ii+2])
-							||
-					(b3!=row_pointers[info_ptr->height-i-1][ii+3])
-					)
-			{
-				b0=row_pointers[info_ptr->height-i-1][ii];
-				b1=row_pointers[info_ptr->height-i-1][ii+1];
-				b2=row_pointers[info_ptr->height-i-1][ii+2];
-				b3=row_pointers[info_ptr->height-i-1][ii+3];
+	    if ((b0 != row_pointers[info_ptr->height - i - 1][ii])
+		|| (b1 != row_pointers[info_ptr->height - i - 1][ii + 1])
+		|| (b2 != row_pointers[info_ptr->height - i - 1][ii + 2])
+		|| (b3 != row_pointers[info_ptr->height - i - 1][ii + 3])
+		) {
+		b0 = row_pointers[info_ptr->height - i - 1][ii];
+		b1 = row_pointers[info_ptr->height - i - 1][ii + 1];
+		b2 = row_pointers[info_ptr->height - i - 1][ii + 2];
+		b3 = row_pointers[info_ptr->height - i - 1][ii + 3];
 
-			}
+	    }
 
 
-			c++;
-		}
-   }
-	//cleaning libpng mess
-	png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-	png_free(png_ptr, row_pointers);
-   return imageData;
+	    c++;
+	}
+    }
+    //cleaning libpng mess
+    png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
+    png_free(png_ptr, row_pointers);
+    return imageData;
 }
 
 
@@ -122,16 +116,16 @@ unsigned char *load_png_font(char* file_name,int *imageWidth,int *imageHeight)
 #define imageHeight 256 
 static GLubyte imageData[imageWidth][imageHeight][4];*/
 
-int glCompLoadFontPNG (char *name, int id)
+int glCompLoadFontPNG(char *name, int id)
 {
-	GLubyte *imageData = NULL;
-	int imageWidth,imageHeight,idx2,c;
-	
-//	imageData = fontGetData (s, size, imageBits);
-	imageData =load_png_font(name,&imageWidth,&imageHeight);
+    GLubyte *imageData = NULL;
+    int imageWidth, imageHeight, idx2, c;
 
-	c=0;
-	idx2=0;
+//      imageData = fontGetData (s, size, imageBits);
+    imageData = load_png_font(name, &imageWidth, &imageHeight);
+
+    c = 0;
+    idx2 = 0;
 /*	for (idx=0;idx < imageWidth*imageHeight+30000;idx=idx+1)
 		{
 			if (c!=imageData[idx])
@@ -150,26 +144,26 @@ int glCompLoadFontPNG (char *name, int id)
 		}*/
 
 
-	/* no image data */
-	if (imageData == NULL)
-		return -1;
+    /* no image data */
+    if (imageData == NULL)
+	return -1;
 
-	glBindTexture (GL_TEXTURE_2D, id);
-	glPixelStorei (GL_UNPACK_ALIGNMENT, 1);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	/* glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); */
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	/* glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); */
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-//	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE , GL_DECAL);
+    glBindTexture(GL_TEXTURE_2D, id);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    /* glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); */
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    /* glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); */
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+//      glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE , GL_DECAL);
 
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_ALPHA, imageWidth, imageHeight, 0, GL_ALPHA, GL_UNSIGNED_BYTE, imageData);
-//	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, imageWidth, imageHeight, 0,
+		 GL_ALPHA, GL_UNSIGNED_BYTE, imageData);
+//      glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
 
-	/* release data, its been uploaded */
+    /* release data, its been uploaded */
 
-	return 1;
+    return 1;
 }
-

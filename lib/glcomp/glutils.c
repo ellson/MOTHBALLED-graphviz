@@ -14,6 +14,8 @@
 **********************************************************/
 
 #include "glutils.h"
+#include "stdlib.h"
+#include "string.h"
 /* #include "glexpose.h" */
 
 /* at given depth value, tranforms 2d Window location to 3d gl coords*/
@@ -30,16 +32,16 @@ int GetFixedOGLPos(int x, int y, float kts, GLfloat * X, GLfloat * Y,
     GLfloat winX, winY;
     GLdouble posX, posY, posZ;
 
-	glColor4f((GLfloat)0,(GLfloat)0,(GLfloat)0,(GLfloat)0.001);
-	glBegin(GL_POINTS);
-    glVertex3f((GLfloat)-100.00, (GLfloat)-100.00, (GLfloat)1.00);
+    glColor4f((GLfloat) 0, (GLfloat) 0, (GLfloat) 0, (GLfloat) 0.001);
+    glBegin(GL_POINTS);
+    glVertex3f((GLfloat) - 100.00, (GLfloat) - 100.00, (GLfloat) 1.00);
     glEnd();
-	
-	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev(GL_PROJECTION_MATRIX, projection);
     glGetIntegerv(GL_VIEWPORT, viewport);
-    gluProject(-100.0, -100.0, 1.00, modelview, projection, viewport, &wwinX,
-	       &wwinY, &wwinZ);
+    gluProject(-100.0, -100.0, 1.00, modelview, projection, viewport,
+	       &wwinX, &wwinY, &wwinZ);
 
     winX = (float) x;
     winY = (float) viewport[3] - (float) y;
@@ -73,13 +75,13 @@ int GetOGLPosRef(int x, int y, float *X, float *Y, float *Z)
     glGetIntegerv(GL_VIEWPORT, viewport);
 
     //draw a point  to a not important location to get window coordinates
-	glColor4f((GLfloat)0,(GLfloat)0,(GLfloat)0,(GLfloat)0.001);
+    glColor4f((GLfloat) 0, (GLfloat) 0, (GLfloat) 0, (GLfloat) 0.001);
 
-	glBegin(GL_POINTS);
+    glBegin(GL_POINTS);
     glVertex3f(-100.00, -100.00, 0.00);
     glEnd();
-    gluProject(-100.0, -100.0, 0.00, modelview, projection, viewport, &wwinX,
-	       &wwinY, &wwinZ);
+    gluProject(-100.0, -100.0, 0.00, modelview, projection, viewport,
+	       &wwinX, &wwinY, &wwinZ);
     winX = (float) x;
     winY = (float) viewport[3] - (float) y;
     gluUnProject(winX, winY, wwinZ, modelview, projection, viewport, &posX,
@@ -89,10 +91,10 @@ int GetOGLPosRef(int x, int y, float *X, float *Y, float *Z)
     *Y = (float) posY;
     *Z = (float) posZ;
 //    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//	printf("==>(%d,%d,%d) -> (%f,%f,%f)\n",x,y,wwinZ,*X,*Y,*Z);
+//      printf("==>(%d,%d,%d) -> (%f,%f,%f)\n",x,y,wwinZ,*X,*Y,*Z);
 
 
-	return 1;
+    return 1;
 
 }
 
@@ -109,7 +111,7 @@ float GetOGLDistance(int l)
 
 
 
-	GLint viewport[4];
+    GLint viewport[4];
     GLdouble modelview[16];
     GLdouble projection[16];
     GLfloat winX, winY;
@@ -117,14 +119,14 @@ float GetOGLDistance(int l)
 
 
 
-	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev(GL_PROJECTION_MATRIX, projection);
     glGetIntegerv(GL_VIEWPORT, viewport);
 
     //draw a point  to a not important location to get window coordinates
-	glColor4f((GLfloat)0,(GLfloat)0,(GLfloat)0,(GLfloat)0.001);
+    glColor4f((GLfloat) 0, (GLfloat) 0, (GLfloat) 0, (GLfloat) 0.001);
 
-	glBegin(GL_POINTS);
+    glBegin(GL_POINTS);
     glVertex3f(10.00, 10.00, 1.00);
     glEnd();
     gluProject(10.0, 10.0, 1.00, modelview, projection, viewport, &wwinX,
@@ -142,9 +144,10 @@ float GetOGLDistance(int l)
     gluUnProject(winX, winY, wwinZ, modelview, projection, viewport,
 		 &posXX, &posYY, &posZZ);
 //    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	return ((float) (posXX - posX));
+    return ((float) (posXX - posX));
 
 }
+
 /*
 	functions def: returns opengl coordinates of firt hit object by using screen coordinates
 	x,y; 2D screen coordiantes (usually received from mouse events
@@ -154,50 +157,50 @@ float GetOGLDistance(int l)
 
 */
 
-void to3D(int x, int y, GLfloat *X, GLfloat *Y,GLfloat *Z)
+void to3D(int x, int y, GLfloat * X, GLfloat * Y, GLfloat * Z)
 {
-	int const WIDTH = 20;
+    int const WIDTH = 20;
 
     GLint viewport[4];
     GLdouble modelview[16];
     GLdouble projection[16];
     GLfloat winX, winY;
-	GLfloat winZ[400];
+    GLfloat winZ[400];
     GLdouble posX, posY, posZ;
-	int idx;
-	static float comp;
-	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+    int idx;
+    static float comp;
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev(GL_PROJECTION_MATRIX, projection);
     glGetIntegerv(GL_VIEWPORT, viewport);
 
-	winX = (float) x;
+    winX = (float) x;
     winY = (float) viewport[3] - (float) y;
 
-	glReadPixels(x-WIDTH/2.0, (int)winY-WIDTH/2.0, WIDTH, WIDTH, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
-	comp=-9999999;
-	for (idx=0;idx < WIDTH* WIDTH ; idx ++)
-	{
-		if ((winZ[idx] > comp) && (winZ[idx] < 1))
-				comp = winZ[idx];
-	}
-	gluUnProject(winX,winY, comp,modelview, projection, viewport, &posX,
-	       &posY, &posZ);
+    glReadPixels(x - WIDTH / 2.0, (int) winY - WIDTH / 2.0, WIDTH, WIDTH,
+		 GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
+    comp = -9999999;
+    for (idx = 0; idx < WIDTH * WIDTH; idx++) {
+	if ((winZ[idx] > comp) && (winZ[idx] < 1))
+	    comp = winZ[idx];
+    }
+    gluUnProject(winX, winY, comp, modelview, projection, viewport, &posX,
+		 &posY, &posZ);
 
-	*X = (GLfloat) posX;
+    *X = (GLfloat) posX;
     *Y = (GLfloat) posY;
     *Z = (GLfloat) posZ;
 //    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	return ;
-	
-	
-	
-	
+    return;
+
+
+
+
 
 }
 
 
 int GetFixedOGLPoslocal(int x, int y, GLfloat * X, GLfloat * Y,
-		   GLfloat * Z)
+			GLfloat * Z)
 {
     GLdouble wwinX;
     GLdouble wwinY;
@@ -208,60 +211,61 @@ int GetFixedOGLPoslocal(int x, int y, GLfloat * X, GLfloat * Y,
     GLdouble projection[16];
     GLfloat winX, winY;
     GLdouble posX, posY, posZ;
-	
-	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev(GL_PROJECTION_MATRIX, projection);
     glGetIntegerv(GL_VIEWPORT, viewport);
 
 
 
-	glColor4f((GLfloat)0,(GLfloat)0,(GLfloat)0,(GLfloat)0.001);
-	glBegin(GL_POINTS);
+    glColor4f((GLfloat) 0, (GLfloat) 0, (GLfloat) 0, (GLfloat) 0.001);
+    glBegin(GL_POINTS);
     glVertex3f(10.00, 10.00, 0.00);
     glEnd();
 
-	gluProject(10.0, 10.0, 1.00, modelview, projection, viewport, &wwinX,
+    gluProject(10.0, 10.0, 1.00, modelview, projection, viewport, &wwinX,
 	       &wwinY, &wwinZ);
 
     winX = (float) x;
     winY = (float) viewport[3] - (float) y;
     gluUnProject(winX, winY, wwinZ, modelview, projection, viewport, &posX,
 		 &posY, &posZ);
-	*X = (GLfloat) posX;
+    *X = (GLfloat) posX;
     *Y = (GLfloat) posY;
     *Z = (GLfloat) posZ;
 
 //    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	return 1;
+    return 1;
 
 }
-void linear_interplotate (float x1,float y1,float x2,float y2,float x3,float* y3)
+void linear_interplotate(float x1, float y1, float x2, float y2, float x3,
+			 float *y3)
 {
 
-	float a,b;
-	a=(y1-y2)/(x1-x2);
-	b=y1-a*x1;
-	*y3=a*x3+b;
+    float a, b;
+    a = (y1 - y2) / (x1 - x2);
+    b = y1 - a * x1;
+    *y3 = a * x3 + b;
 }
 
 #if 0
 int glreversecamera(ViewInfo * view)
 {
 
-	glLoadIdentity();
-	if (view->active_camera==-1)
-	{
-		gluLookAt(view->panx, view->pany, 20, view->panx,
-			view->pany, 0.0, 0.0, 1.0, 0.0);
-		glScalef(1*view->zoom*-1,1*view->zoom*-1,1*view->zoom*-1);
-	}
-	else
-	{
-		glScalef(1*view->cameras[view->active_camera]->r,1*view->cameras[view->active_camera]->r,1*view->cameras[view->active_camera]->r);
+    glLoadIdentity();
+    if (view->active_camera == -1) {
+	gluLookAt(view->panx, view->pany, 20, view->panx,
+		  view->pany, 0.0, 0.0, 1.0, 0.0);
+	glScalef(1 * view->zoom * -1, 1 * view->zoom * -1,
+		 1 * view->zoom * -1);
+    } else {
+	glScalef(1 * view->cameras[view->active_camera]->r,
+		 1 * view->cameras[view->active_camera]->r,
+		 1 * view->cameras[view->active_camera]->r);
 
-	}
+    }
 
-	return 1;
+    return 1;
 }
 
 #endif
@@ -269,7 +273,7 @@ int glreversecamera(ViewInfo * view)
 
 
 
-static point3f add (point3f p, point3f q)
+static point3f add(point3f p, point3f q)
 {
     p.x += q.x;
     p.y += q.y;
@@ -277,7 +281,7 @@ static point3f add (point3f p, point3f q)
     return p;
 }
 
-static point3f sub (point3f p, point3f q)
+static point3f sub(point3f p, point3f q)
 {
     p.x -= q.x;
     p.y -= q.y;
@@ -285,17 +289,17 @@ static point3f sub (point3f p, point3f q)
     return p;
 }
 
-static double dot (point3f p, point3f q)
+static double dot(point3f p, point3f q)
 {
-    return (p.x*q.x + p.y*q.y + p.z*q.z); 
+    return (p.x * q.x + p.y * q.y + p.z * q.z);
 }
 
-static double len (point3f p)
+static double len(point3f p)
 {
-    return sqrt(dot(p,p));
+    return sqrt(dot(p, p));
 }
 
-static point3f scale (double d, point3f p)
+static point3f scale(double d, point3f p)
 {
     p.x *= d;
     p.y *= d;
@@ -303,52 +307,53 @@ static point3f scale (double d, point3f p)
     return p;
 }
 
-static point3f blend (point3f p, point3f q, float m)
+static point3f blend(point3f p, point3f q, float m)
 {
     point3f r;
 
-    r.x = p.x + m * ( q.x - p.x );
-    r.y = p.y + m * ( q.y - p.y );
-    r.z = p.z + m * ( q.z - p.z );
+    r.x = p.x + m * (q.x - p.x);
+    r.y = p.y + m * (q.y - p.y);
+    r.z = p.z + m * (q.z - p.z);
     return r;
 }
 
-static point3f normalize (point3f p)
+static point3f normalize(point3f p)
 {
-   double d = len (p);
+    double d = len(p);
 
-   return scale (1/d, p);
+    return scale(1 / d, p);
 }
 
-static double dist (point3f p, point3f q)
+static double dist(point3f p, point3f q)
 {
-    return (len (sub (p,q)));
+    return (len(sub(p, q)));
 }
 
-static point3f intersect (line l, plane J)
+static point3f intersect(line l, plane J)
 {
-    double t = -(J.d + dot(l.u,J.N))/dot(l.v,J.N);
-    return (add(l.u, scale(t,l.v)));
+    double t = -(J.d + dot(l.u, J.N)) / dot(l.v, J.N);
+    return (add(l.u, scale(t, l.v)));
 }
 
 /*
  * Given a line l determined by two points a and b, and a 3rd point p,
  * return the distance between the point and the line
  */
-double point_to_line_dist (point3f p, point3f a, point3f b) {
+double point_to_line_dist(point3f p, point3f a, point3f b)
+{
     line l;
     plane J;
     point3f q;
 
     l.u = a;
-    l.v = normalize (sub (b, a));
+    l.v = normalize(sub(b, a));
 
     J.N = l.v;
     J.d = -dot(p, l.v);
 
-    q = intersect (l, J);
+    q = intersect(l, J);
 
-    return (dist (p, q));
+    return (dist(p, q));
 }
 
 
@@ -358,44 +363,48 @@ double point_to_line_dist (point3f p, point3f a, point3f b) {
  * If the perpendicular from p to the line a-b is outside of the segment,
  * return the distance to the closer of a or b.
  */
-double point_to_lineseg_dist (point3f p, point3f a, point3f b)
+double point_to_lineseg_dist(point3f p, point3f a, point3f b)
 {
     float U;
     point3f q;
-    point3f ba = sub (b, a);
-    point3f pa = sub (p, a);
+    point3f ba = sub(b, a);
+    point3f pa = sub(p, a);
 
-    U = dot (pa, ba)/dot (ba, ba);
+    U = dot(pa, ba) / dot(ba, ba);
 
     if (U > 1)
 	q = b;
     else if (U < 0)
 	q = a;
-    else 
-	q = blend (a, b, U);
+    else
+	q = blend(a, b, U);
 
     return dist(p, q);
 
 }
+
 /*
 	Calculates the parameters of a plane via given 3 points on it
 */
 
 
-void make_plane(point3f a,point3f b,point3f c,plane* P)
+void make_plane(point3f a, point3f b, point3f c, plane * P)
 {
-	P->N.x=a.y*(b.z-c.z)+b.y*(c.z-a.z)+c.y*(a.z-b.z);//+
-	P->N.y=a.z*(b.x-c.x)+b.z*(c.x-a.x)+c.z*(a.x-b.x);//+
-	P->N.z=a.x*(b.y-c.y)+b.x*(c.y-a.y)+c.x*(a.y-b.y);//+
-	P->d=(a.x*(b.y*c.z-c.y*b.z)+b.x*(c.y*a.z-a.y*c.z)+c.x*(a.y*b.z-b.y*a.z))*-1;
+    P->N.x = a.y * (b.z - c.z) + b.y * (c.z - a.z) + c.y * (a.z - b.z);	//+
+    P->N.y = a.z * (b.x - c.x) + b.z * (c.x - a.x) + c.z * (a.x - b.x);	//+
+    P->N.z = a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y);	//+
+    P->d =
+	(a.x * (b.y * c.z - c.y * b.z) + b.x * (c.y * a.z - a.y * c.z) +
+	 c.x * (a.y * b.z - b.y * a.z)) * -1;
 }
-void replacestr(char *source,char **target)
+void replacestr(char *source, char **target)
 {
 
-	if (*target)
-		free(*target);
-	*target =strdup(source);
+    if (*target)
+	free(*target);
+    *target = strdup(source);
 }
+
 /*
 	move a point on the great circle of it (spherical)
 
@@ -403,50 +412,73 @@ void replacestr(char *source,char **target)
 
 #define G_PI    3.1415926535897932384626433832795028841971693993751
 #define DEG2RAD  G_PI/180
-int rot_spherex(plane J,double tet,point3f P,point3f* P2)
+int rot_spherex(plane J, double tet, point3f P, point3f * P2)
 {
-	if (tet > 0)
-	{
-		tet=5;
-		tet=DEG2RAD * tet;
-		P2->x=(float)(J.N.x * J.N.x + cos(tet) * (1-J.N.x*J.N.x))*P.x + (J.N.x*J.N.y*(1-cos(tet)) - J.N.z*sin(tet))
-			+ (J.N.z * J.N.x*(1-cos(tet)) + J.N.y * sin(tet))* P.z;
-		P2->y=(float)(J.N.x * J.N.y*(1-cos(tet)) + J.N.z*sin(tet))*P.x + (J.N.y*J.N.y + cos(tet)*(1-J.N.y * J.N.y))* P.y
-			+ (J.N.y*J.N.z*(1-cos(tet)) - J.N.x * sin(tet)) * P.z;
-		P2->z=(float)(J.N.z*J.N.x*(1-cos(tet)) - J.N.y *sin(tet))*P.x + (J.N.y*J.N.z*(1-cos(tet)) + J.N.x*sin(tet))*P.y
-			+ (J.N.z*J.N.z+cos(tet)*(1-J.N.z*J.N.z))*P.z;
-		return 1;
-	}
-	else
-		return 0;
+    if (tet > 0) {
+	tet = 5;
+	tet = DEG2RAD * tet;
+	P2->x =
+	    (float) (J.N.x * J.N.x +
+		     cos(tet) * (1 - J.N.x * J.N.x)) * P.x +
+	    (J.N.x * J.N.y * (1 - cos(tet)) - J.N.z * sin(tet))
+	    + (J.N.z * J.N.x * (1 - cos(tet)) + J.N.y * sin(tet)) * P.z;
+	P2->y =
+	    (float) (J.N.x * J.N.y * (1 - cos(tet)) +
+		     J.N.z * sin(tet)) * P.x + (J.N.y * J.N.y +
+						cos(tet) * (1 -
+							    J.N.y *
+							    J.N.y)) * P.y +
+	    (J.N.y * J.N.z * (1 - cos(tet)) - J.N.x * sin(tet)) * P.z;
+	P2->z =
+	    (float) (J.N.z * J.N.x * (1 - cos(tet)) -
+		     J.N.y * sin(tet)) * P.x + (J.N.y * J.N.z * (1 -
+								 cos(tet))
+						+ J.N.x * sin(tet)) * P.y +
+	    (J.N.z * J.N.z + cos(tet) * (1 - J.N.z * J.N.z)) * P.z;
+	return 1;
+    } else
+	return 0;
 
 }
 
 #ifdef DEBUG
-void main( void )
+void main(void)
 {
     point3f LineStart, LineEnd, Point;
     float Distance;
 
 
-    LineStart.x =  50.0f; LineStart.y =   80.0f; LineStart.z =  300.0f;
-    LineEnd.x   =  50.0f; LineEnd.y   = -800.0f; LineEnd.z   = 1000.0f;
-    Point.x     =  20.0f; Point.y     = 1000.0f; Point.z     =  400.0f;
+    LineStart.x = 50.0f;
+    LineStart.y = 80.0f;
+    LineStart.z = 300.0f;
+    LineEnd.x = 50.0f;
+    LineEnd.y = -800.0f;
+    LineEnd.z = 1000.0f;
+    Point.x = 20.0f;
+    Point.y = 1000.0f;
+    Point.z = 400.0f;
 
-    if( DistancePointLine( &Point, &LineStart, &LineEnd, &Distance ) )
-        printf( "closest point falls within line segment, distance = %f\n", Distance     );
+    if (DistancePointLine(&Point, &LineStart, &LineEnd, &Distance))
+	printf("closest point falls within line segment, distance = %f\n",
+	       Distance);
     else
-        printf( "closest point does not fall within line segment\n" );
+	printf("closest point does not fall within line segment\n");
 
 
-    LineStart.x =  0.0f; LineStart.y =   0.0f; LineStart.z =  50.0f;
-    LineEnd.x   =  0.0f; LineEnd.y   =   0.0f; LineEnd.z   = -50.0f;
-    Point.x     = 10.0f; Point.y     =  50.0f; Point.z     =  10.0f;
+    LineStart.x = 0.0f;
+    LineStart.y = 0.0f;
+    LineStart.z = 50.0f;
+    LineEnd.x = 0.0f;
+    LineEnd.y = 0.0f;
+    LineEnd.z = -50.0f;
+    Point.x = 10.0f;
+    Point.y = 50.0f;
+    Point.z = 10.0f;
 
-    if( DistancePointLine( &Point, &LineStart, &LineEnd, &Distance ) )
-        printf( "closest point falls within line segment, distance = %f\n", Distance     );
+    if (DistancePointLine(&Point, &LineStart, &LineEnd, &Distance))
+	printf("closest point falls within line segment, distance = %f\n",
+	       Distance);
     else
-        printf( "closest point does not fall within line segment\n" );
+	printf("closest point does not fall within line segment\n");
 }
 #endif
-
