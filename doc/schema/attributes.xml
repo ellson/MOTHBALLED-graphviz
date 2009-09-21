@@ -1275,6 +1275,26 @@
 		</xsd:annotation>
 	</xsd:attribute>
 	
+	<xsd:attribute name="layout" type="xsd:string">
+		<xsd:annotation>
+			<xsd:documentation>
+				<html:p>
+					Specifies the name of the layout algorithm to use, such as <html:span class="val">dot</html:span>
+					or <html:span class="val">neato</html:span>. Normally, graphs should be kept independent of a type of
+					layout. In some cases, however, it can be convenient to embed the type
+					of layout desired within the graph. For example, a graph containing
+					position information from a layout might want to record what the
+					associated layout algorithm was.
+				</html:p>
+				<html:p>
+					This attribute takes precedence over 
+					the <html:a href="http://www.graphviz.org/doc/info/command.html#minusK">-K flag</html:a> 
+					or the actual command name used.
+				</html:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+	
 	<xsd:attribute name="len" type="xsd:decimal">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -2551,6 +2571,7 @@
 		<xsd:attribute ref="landscape" default="false" />
 		<xsd:attribute ref="layers" default="false" />
 		<xsd:attribute ref="layersep" default=" :	" />
+		<xsd:attribute ref="layout" />
 		<xsd:attribute ref="levelsgap" default="0.0" />
 		<xsd:attribute ref="lp" />
 		<xsd:attribute ref="margin" />
