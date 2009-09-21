@@ -78,9 +78,11 @@ int glupdatecamera(ViewInfo * view)
 	/*toggle to active camera*/
 	else
 	{
-		gluLookAt(view->cameras[view->active_camera]->targetx, view->cameras[view->active_camera]->targety, 20, view->cameras[view->active_camera]->targetx,
-		view->cameras[view->active_camera]->targety, 0.0, 0.0, 1.0, 0.0);
 		glMultMatrixf(view->arcball->Transform.M); /*arcball transformations , experimental*/
+/*		gluLookAt(view->cameras[view->active_camera]->targetx, view->cameras[view->active_camera]->targety, 20, view->cameras[view->active_camera]->targetx,
+		view->cameras[view->active_camera]->targety, 0.0, 0.0, 1.0, 0.0);*/
+		glTranslatef(-view->cameras[view->active_camera]->targetx,-view->cameras[view->active_camera]->targety,0);
+//		printf(" %f %f %f \n",view->panx,view->pany,view->
 	}
 
 	GetOGLPosRef(1, view->h - 5, &(view->clipX1), &(view->clipY1),
@@ -265,7 +267,7 @@ void drawRotatingAxis(void)
 
 		glEnd();
 		glColor4f(0,1,0,0.3);
-		gluSphere(quadratic,45,20,20);
+		gluSphere(quadratic,AL,20,20);
 		glLineWidth(1);
 		glPopMatrix();
 

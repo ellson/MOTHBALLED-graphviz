@@ -1592,10 +1592,34 @@ static void switch2D3D(void *p)
 
 	}
 }
+static viewMatrice(int n,int m,float* mtx)
+{
+	int i,i2;
+	printf ("Transformation Matrix\n");
+	i=i2=0;
+	for (i=0; i < n * m; i ++)
+	{
+/*			if (i==5)
+				printf ("tetX:%f  ",asin(mtx[i]) * RAD2DEG);	//around x , right hand notion
+			if (i==0)
+				printf ("tetZ:%f  ",asin(mtx[i]) * RAD2DEG);	//around x , right hand notion
+			if (i==5)
+				printf ("tetX:%f  ",asin(mtx[i]) * RAD2DEG);	//around x , right hand notion*/
+			printf ("%f  ",asin(mtx[i]) * RAD2DEG);	//around x , right hand notion*/
+			i2++;
+			if (i2 == m)
+			{
+				i2=0;
+				printf ("\n");
+			}
+	}
+}
 
-
-
-
+static void test_btn_callback(void* p)
+{
+//	viewMatrice (4,4,view->arcball->Transform.M);
+	viewMatrice (3,3,view->arcball->ThisRot.M);
+}
 
 static char *smyrna_icon_pan;
 static char *smyrna_icon_zoom;
@@ -1759,6 +1783,14 @@ glCompSet *glcreate_gl_topview_menu(void)
 	b->customptr = view;
     glCompSetAddButton(s, b);
     b->callbackfunc = menu_switch_to_fisheye;
+
+    b = glCompButtonNew(140, 5, 75, 25, "Test Btn", '\0', 0, 0,scientific_y);
+    b->panel = p;
+    b->groupid = 0;
+	b->customptr = view;
+    glCompSetAddButton(s, b);
+    b->callbackfunc = test_btn_callback;
+
 
 
 
