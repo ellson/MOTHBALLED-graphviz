@@ -214,11 +214,10 @@ extern bool render(Agraph_t *g, const char *format, const char *filename);
 extern bool renderchannel(Agraph_t *g, const char *format, const char *channelname);
 /*** Render to a string result */
 extern void renderresult(Agraph_t *g, const char *format, char *outdata);
-#if 0
 /*** Render a layout to a malloc'ed string, to be free'd by the caller */
 /*** (deprecated - too easy to leak memory) */
+/*** (still needed for "eval [gv::renderdata $G tk]" ) */
 extern char* renderdata(Agraph_t *g, const char *format);
-#endif
 
 
 /*** Writing graph back to file */
@@ -395,11 +394,10 @@ extern bool render(Agraph_t *g, const char *format, const char *filename);
 extern bool renderchannel(Agraph_t *g, const char *format, const char *channelname);
 /*** Render to a string result */
 extern void renderresult(Agraph_t *g, const char *format, char *outdata);
-#if 0
 /*** Render a layout to a malloc'ed string, to be free'd by the caller */
 /*** (deprecated - too easy to leak memory) */
+/*** (still needed for "eval [gv::renderdata $G tk]" ) */
 extern char* renderdata(Agraph_t *g, const char *format);
-#endif
 
 
 /*** Writing graph back to file */
