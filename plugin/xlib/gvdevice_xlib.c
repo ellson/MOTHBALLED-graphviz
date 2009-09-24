@@ -491,7 +491,6 @@ static void xlib_finalize(GVJ_t *firstjob)
     KeyCode *keycodes= firstjob->keycodes;
     int inotify_fd=0, xlib_fd, ret, events;
     fd_set rfds;
-    struct timeval timeout;
 #ifdef HAVE_SYS_INOTIFY_H
     int wd=0;
     boolean watching_p = FALSE;
@@ -531,13 +530,6 @@ static void xlib_finalize(GVJ_t *firstjob)
     for (job = firstjob; job; job = job->next_active)
 	init_window(job, dpy, scr);
 
-    ret = handle_xlib_events(firstjob, dpy);
-
-    /* FIXME - poll for initial expose event */
-    timeout.tv_sec = 0;
-    timeout.tv_usec = 10000;
-    select(0, NULL, NULL, NULL, &timeout);
-
     xlib_fd = XConnectionNumber(dpy);
 
     /* This is the event loop */
@@ -559,9 +551,11 @@ static void xlib_finalize(GVJ_t *firstjob)
 	events += ret;
         FD_SET(xlib_fd, &rfds);
 
-	if (events) 
+	if (events) {
             for (job = firstjob; job; job = job->next_active)
 	        update_display(job, dpy);
+	    XFlush(dpy);
+	}
 
 	ret = select(MAX(inotify_fd, xlib_fd)+1, &rfds, NULL, NULL, NULL);
 	if (ret < 0) {
