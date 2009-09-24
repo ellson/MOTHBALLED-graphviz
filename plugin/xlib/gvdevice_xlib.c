@@ -46,6 +46,9 @@
 #ifdef HAVE_ERRNO_H
 #include <errno.h>
 #endif
+#ifdef HAVE_FCNTL_H
+#include <fcntl.h>
+#endif
 
 #include "gvplugin_device.h"
 
@@ -372,6 +375,18 @@ static void init_window(GVJ_t *job, Display *dpy, int scr)
     XMapWindow(dpy, window->win);
 }
 
+static int handle_stdin_events(GVJ_t *job, int stdin_fd)
+{
+    int rc=0;
+
+    if (feof(stdin))
+	return -1;
+    (job->callbacks->read)(job, job->input_filename, job->layout_type);
+    
+    rc++;
+    return rc;
+}
+
 #ifdef HAVE_SYS_INOTIFY_H
 static int handle_file_events(GVJ_t *job, int inotify_fd)
 {
@@ -489,11 +504,13 @@ static void xlib_finalize(GVJ_t *firstjob)
     Display *dpy = (Display *)(firstjob->display);
     int scr = firstjob->screen;
     KeyCode *keycodes= firstjob->keycodes;
-    int inotify_fd=0, xlib_fd, ret, events;
+    int numfds, stdin_fd=0, xlib_fd, ret, events;
     fd_set rfds;
+    boolean watching_stdin_p = FALSE;
 #ifdef HAVE_SYS_INOTIFY_H
     int wd=0;
-    boolean watching_p = FALSE;
+    int inotify_fd=0;
+    boolean watching_file_p = FALSE;
     static char *dir;
     char *p, *cwd = NULL;
 
@@ -502,35 +519,44 @@ static void xlib_finalize(GVJ_t *firstjob)
 	fprintf(stderr,"inotify_init() failed\n");
 	return;
     }
-
-    /* test that we have access to the input filename */
-    if (firstjob->input_filename && firstjob->graph_index == 0) {
-
-	watching_p = TRUE;
-
-	if (firstjob->input_filename[0] != '/') {
-    	    cwd = getcwd(NULL, 0);
-	    dir = realloc(dir, strlen(cwd) + 1 + strlen(firstjob->input_filename) + 1);
-	    strcpy(dir, cwd);
-	    strcat(dir, "/");
-	    strcat(dir, firstjob->input_filename);
-	    free(cwd);
-	}
-	else {
-	    dir = realloc(dir, strlen(firstjob->input_filename) + 1);
-	    strcpy(dir, firstjob->input_filename);
-	}
-	p = strrchr(dir,'/');
-	*p = '\0';
-
-    	wd = inotify_add_watch(inotify_fd, dir, IN_MODIFY );
-    }
 #endif
+
+    numfds = xlib_fd = XConnectionNumber(dpy);
+
+    if (firstjob->input_filename) {
+        if (firstjob->graph_index == 0) {
+#ifdef HAVE_SYS_INOTIFY_H
+	    watching_file_p = TRUE;
+
+	    if (firstjob->input_filename[0] != '/') {
+    	        cwd = getcwd(NULL, 0);
+	        dir = realloc(dir, strlen(cwd) + 1 + strlen(firstjob->input_filename) + 1);
+	        strcpy(dir, cwd);
+	        strcat(dir, "/");
+	        strcat(dir, firstjob->input_filename);
+	        free(cwd);
+	    }
+	    else {
+	        dir = realloc(dir, strlen(firstjob->input_filename) + 1);
+	        strcpy(dir, firstjob->input_filename);
+	    }
+	    p = strrchr(dir,'/');
+	    *p = '\0';
+    
+    	    wd = inotify_add_watch(inotify_fd, dir, IN_MODIFY );
+
+            numfds = MAX(inotify_fd, numfds);
+#endif
+	}
+    }
+    else {
+	watching_stdin_p = TRUE;
+	stdin_fd = fcntl(STDIN_FILENO, F_DUPFD, 0);
+	numfds = MAX(stdin_fd, numfds);
+    }
 
     for (job = firstjob; job; job = job->next_active)
 	init_window(job, dpy, scr);
-
-    xlib_fd = XConnectionNumber(dpy);
 
     /* This is the event loop */
     FD_ZERO(&rfds);
@@ -538,12 +564,27 @@ static void xlib_finalize(GVJ_t *firstjob)
 	events = 0;
 
 #ifdef HAVE_SYS_INOTIFY_H
-        ret = handle_file_events(firstjob, inotify_fd);
-	if (ret < 0)
-	    break;
-	events += ret;
-        FD_SET(inotify_fd, &rfds);
+	if (watching_file_p) {
+	    if (FD_ISSET(inotify_fd, &rfds)) {
+                ret = handle_file_events(firstjob, inotify_fd);
+	        if (ret < 0)
+	            break;
+	        events += ret;
+	    }
+            FD_SET(inotify_fd, &rfds);
+	}
 #endif
+
+	if (watching_stdin_p) {
+	    if (FD_ISSET(stdin_fd, &rfds)) {
+                ret = handle_stdin_events(firstjob, stdin_fd);
+	        if (ret < 0)
+	            watching_stdin_p = FALSE;
+	        events += ret;
+	    }
+	    if (watching_stdin_p) 
+	        FD_SET(stdin_fd, &rfds);
+	}
 
 	ret = handle_xlib_events(firstjob, dpy);
 	if (ret < 0)
@@ -557,7 +598,7 @@ static void xlib_finalize(GVJ_t *firstjob)
 	    XFlush(dpy);
 	}
 
-	ret = select(MAX(inotify_fd, xlib_fd)+1, &rfds, NULL, NULL, NULL);
+	ret = select(numfds+1, &rfds, NULL, NULL, NULL);
 	if (ret < 0) {
 	    fprintf(stderr,"select() failed\n");
 	    break;
@@ -565,7 +606,7 @@ static void xlib_finalize(GVJ_t *firstjob)
     }
 
 #ifdef HAVE_SYS_INOTIFY_H
-    if (watching_p)
+    if (watching_file_p)
 	ret = inotify_rm_watch(inotify_fd, wd);
 #endif
 
