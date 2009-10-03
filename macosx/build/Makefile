@@ -45,7 +45,9 @@ Release/Graphviz.app: ../*.m ../*.h $(GV_DIR)/cmd/dot/.libs/$(DOT)
 	"$(XCODEBUILD)" -project ../graphviz.xcodeproj -configuration Release
 
 postinstall:
-	echo "/usr/local/bin/dot -c" >$@
+	echo "#!/bin/sh" >$@
+	echo >>$@
+	echo "/usr/local/bin/dot -c" >>$@
 	make -n -C ../../tclpkg install-data-hook >>$@
 	echo "arch -arch i386 -arch ppc /usr/local/bin/gv-fc-cache" >>$@
 	echo 'if test `sysctl -n hw.cpu64bit_capable` = 1; then arch -arch x86_64 -arch ppc64 /usr/local/bin/gv-fc-cache; fi' >>$@
