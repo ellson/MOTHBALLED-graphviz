@@ -94,6 +94,7 @@ extern int gvRenderJobs(GVC_t *gvc, graph_t *g);
 extern int gvFreeLayout(GVC_t *gvc, graph_t *g);
 
 /* Clean up graphviz context */
+extern void gvFinalize(GVC_t *gvc);
 extern int gvFreeContext(GVC_t *gvc);
 
 /** Add a library from your user application

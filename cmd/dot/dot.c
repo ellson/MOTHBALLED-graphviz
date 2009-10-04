@@ -62,8 +62,11 @@ static graph_t * G;
 #ifndef WIN32
 static void intr(int s)
 {
+/* if interrupted we try to produce a partial rendering before exiting */
     if (G)
 	gvRenderJobs(Gvc, G);
+/* Note that we don't call gvFinalize() so that we don't start event-driven
+ * devices like -Tgtk or -Txlib */
     exit (gvFreeContext(Gvc));
 }
 
@@ -212,5 +215,6 @@ int main(int argc, char **argv)
 	    prev = G;
 	}
     }
+    gvFinalize(Gvc);
     return (gvFreeContext(Gvc));
 }

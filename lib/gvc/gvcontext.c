@@ -64,13 +64,18 @@ GVC_t *gvNEWcontext(const lt_symlist_t *builtins, int demand_loading)
     return gvc;
 }
 
+void gvFinalize(GVC_t * gvc)
+{
+    if (gvc->active_jobs)
+	gvrender_end_job(gvc->active_jobs);
+}
+
+
 int gvFreeContext(GVC_t * gvc)
 {
     GVG_t *gvg, *gvg_next;
     gvplugin_package_t *package, *package_next;
 
-    if (gvc->active_jobs)
-	gvrender_end_job(gvc->active_jobs);
     emit_once_reset();
     gvg_next = gvc->gvgs;
     while ((gvg = gvg_next)) {

@@ -3217,7 +3217,7 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	}
 
         /* the last job, after all input graphs are processed,
-         *      is finalized from gvFreeContext()
+         *      is finalized from gvFinalize()
          */
 	prevjob = job;
     }
