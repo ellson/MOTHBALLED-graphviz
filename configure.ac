@@ -2488,7 +2488,7 @@ else
     fi
   else
     # using the internal libgd
-    use_gd="Yes [internal]"
+    use_gd="Yes (internal)"
     AC_MSG_WARN(Using internal libgd source.)
     AC_DEFINE_UNQUOTED(HAVE_GD_GIF,1,[Define if the GD library has the GD_GIF feature])
     AC_DEFINE_UNQUOTED(HAVE_LIBGD,1,[Define if either internal or external GD library is availabel])
@@ -2641,7 +2641,18 @@ AC_SUBST(PNG_LIBS)
 dnl -----------------------------------
 dnl INCLUDES and LIBS for JPEG (only with mylibgd)
 
-if test "x$with_mylibgd" = "xyes"; then
+AC_ARG_WITH(jpeg,
+  [AS_HELP_STRING([--with-jpeg=yes],[JPEG library])],
+  [], [with_jpeg=yes])
+
+if test "x$with_jpeg" != "xyes"; then
+  use_jpeg="No (disabled)"
+else
+
+if test "x$with_mylibgd" != "xyes"; then
+  use_jpeg="No (only required by internal libgd)"
+else
+
 
 save_CPPFLAGS=$CPPFLAGS
 save_LDFLAGS=$LDFLAGS
@@ -2662,16 +2673,20 @@ if test -f "$JPEG_LIBDIR/libjpeg.la"; then
 fi
 AC_CHECK_HEADER(jpeglib.h,
 	AC_CHECK_LIB(jpeg,main,
+		use_jpeg="Yes"
 		[JPEG_LIBS="$JPEG_LIBS -ljpeg"
 		AC_DEFINE_UNQUOTED(HAVE_GD_JPEG,1,[Define if the GD library has the GD_JPEG feature])
 		AC_DEFINE_UNQUOTED(HAVE_LIBJPEG,1,[Define if you have the JPEG library])],
+			use_jpeg="No (missing library)"
 			AC_MSG_WARN(Optional jpeg library not available)),
+	use_jpeg="No (missing header)"
 	AC_MSG_WARN(Optional jpeg library not available - no jpeglib.h))
 LDFLAGS=$save_LDFLAGS
 CPPFLAGS=$save_CPPFLAGS
 AC_SUBST(JPEG_INCLUDES)
 AC_SUBST(JPEG_LIBS)
 
+fi
 fi
 
 # -----------------------------------
@@ -3134,7 +3149,11 @@ else
     use_gv_tcl="Yes"
   fi
   if test "x$use_gd" != "xYes"; then
-    use_gdtclft="No (gd not available)"
+    if test "x$use_gd" == "xYes (internal)"; then
+        use_gdtclft="Yes"
+    else
+        use_gdtclft="No (gd not available)"
+    fi
   else
     use_gdtclft="Yes"
   fi
@@ -3163,6 +3182,7 @@ echo "  ipsepcola:     $use_ipsepcola"
 echo "  ltdl:          $use_ltdl"
 echo "  ortho:         $use_ortho"
 echo "  png:           $use_png"
+echo "  jpeg:          $use_jpeg"
 echo "  sfdp:          $use_sfdp"
 echo "  shared:        $use_shared"
 echo "  static:        $use_static"
