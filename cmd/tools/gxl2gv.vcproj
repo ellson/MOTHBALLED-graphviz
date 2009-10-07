@@ -40,7 +40,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;C:\gtk\lib\glib-2.0\include&quot;;&quot;C:\gtk\include\glib-2.0&quot;;&quot;C:\gtk\include\pango-1.0\&quot;;C:\gtk\include\cairo;C:\gtk\include\freetype2;C:\gtk\include;&quot;$(SolutionDir)/libltdl&quot;;&quot;$(SolutionDir)/lib/neatogen&quot;;&quot;$(SolutionDir)/lib/agutil&quot;;&quot;$(SolutionDir)/windows/lib/cdt&quot;;&quot;$(SolutionDir)/&quot;;&quot;$(SolutionDir)/lib/graph&quot;;&quot;$(SolutionDir)/lib/vpsc&quot;;&quot;$(SolutionDir)/lib/vmalloc&quot;;&quot;$(SolutionDir)/lib/twopigen&quot;;&quot;$(SolutionDir)/lib/sparse&quot;;&quot;$(SolutionDir)/lib/sfio&quot;;&quot;$(SolutionDir)/lib/sfpdpgen&quot;;&quot;$(SolutionDir)/lib/rbtree&quot;;&quot;$(SolutionDir)/lib/pathplan&quot;;&quot;$(SolutionDir)/lib/patchwork&quot;;&quot;$(SolutionDir)/lib/pack&quot;;&quot;$(SolutionDir)/lib/ortho&quot;;&quot;$(SolutionDir)/lib/inkpot&quot;;&quot;$(SolutionDir)/lib/ingraphs&quot;;&quot;$(SolutionDir)/lib/gd&quot;;&quot;$(SolutionDir)/lib/filter&quot;;&quot;$(SolutionDir)/lib/fdpgen&quot;;&quot;$(SolutionDir)/lib/expr&quot;;&quot;$(SolutionDir)/lib/dotgen&quot;;&quot;$(SolutionDir)/lib/circogen&quot;;&quot;$(SolutionDir)/lib/ast&quot;;&quot;$(SolutionDir)/lib/agraph&quot;;&quot;$(SolutionDir)/lib/common&quot;;&quot;$(SolutionDir)/lib/gvc&quot;;&quot;$(SolutionDir)/lib/cdt&quot;;&quot;$(SolutionDir)/lib/cgraph&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;MSWIN32;HAVE_CONFIG_H"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libpng.lib gtk-win32-2.0.lib asprintf.lib atk-1.0.lib bz2.lib cairo.lib charset.lib croco-0.6.lib expat.lib expatw.lib glade-2.0.lib fontconfig.lib freetype.lib gdk_pixbuf-2.0.lib gdkglext-win32-1.0.lib gdk-win32-2.0.lib glib-2.0.lib pathplan.lib gmodule-2.0.lib gobject-2.0.lib gsf-1.lib gsf-win32-1.lib gthread-2.0.lib gtkglext-win32-1.0.lib iconv.lib intl.lib jpeg.lib libexpat.lib libexpatw.lib pango-1.0.lib pangocairo-1.0.lib pangoft2-1.0.lib pangowin32-1.0.lib popt.lib rsvg-2.lib tiff.lib xml2.lib libgdkglext-win32-1.0.dll.a libgtkglext-win32-1.0.dll.a glu32.lib opengl32.lib ltdl.lib hs_regex.lib zdll.lib cdt.lib graph.lib gvc.lib circogen.lib neatogen.lib fdpgen.lib patchwork.lib sparse.lib twopigen.lib cgraph.lib ingraphs.lib $(NOINHERIT)"
+				AdditionalDependencies="expat.lib cgraph.lib ingraphs.lib cdt.lib $(NOINHERIT)"
 				OutputFile="c:/graphviz-ms/bin/$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="C:\graphviz-ms\bin;C:\gtk\lib"
