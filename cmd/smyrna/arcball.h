@@ -60,6 +60,7 @@
 
     typedef union Matrix3f_t
     {
+            GLfloat M[9];
             struct
             {
                 //column major
@@ -73,11 +74,11 @@
                 union { GLfloat M12; GLfloat ZY;             };  //ZAxis.Y
                 union { GLfloat M22; GLfloat ZZ; GLfloat SZ; };  //ZAxis.Z and Scale Z
             } s;
-            GLfloat M[9];
     } Matrix3fT;     //A single precision floating point 3 by 3 matrix. 
 
     typedef union Matrix4f_t
     {
+            GLfloat M[16];
             struct
             {
                 //column major
@@ -98,7 +99,6 @@
                 union { GLfloat M23; GLfloat TZ;             };  //Trans.Z
                 union { GLfloat M33; GLfloat TW; GLfloat SW; };  //Trans.W and Scale W
             } s;
-            GLfloat M[16];
     } Matrix4fT;     //A single precision floating point 4 by 4 matrix. 
 
 

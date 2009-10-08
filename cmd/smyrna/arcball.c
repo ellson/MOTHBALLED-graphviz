@@ -1,14 +1,8 @@
 
 #include "glcompdefs.h"
+#define ARCBALL_C
 #include "arcball.h"
 #include "smyrnadefs.h"
-
-
-
-
-
-
-
 
 void setBounds(ArcBall_t* a,GLfloat NewWidth, GLfloat NewHeight)
 {
@@ -66,24 +60,22 @@ void _mapToSphere(ArcBall_t* a,const Point2fT* NewPt, Vector3fT* NewVec)
     }
 }
 
+static Matrix4fT Transform   = {{  1.0f,  0.0f,  0.0f,  0.0f,				// NEW: Final Transform
+                             0.0f,  1.0f,  0.0f,  0.0f,
+                             0.0f,  0.0f,  1.0f,  0.0f,
+                             0.0f,  0.0f,  0.0f,  1.0f }};
+
+static Matrix3fT   LastRot     = {{  1.0f,  0.0f,  0.0f,					// NEW: Last Rotation
+                             0.0f,  1.0f,  0.0f,
+                             0.0f,  0.0f,  1.0f }};
+
+static Matrix3fT   ThisRot     = {{  1.0f,  0.0f,  0.0f,					// NEW: This Rotation
+                             0.0f,  1.0f,  0.0f,
+                             0.0f,  0.0f,  1.0f }};
+
 //Create/Destroy
 void init_arcBall(ArcBall_t* a,GLfloat NewWidth, GLfloat NewHeight)
 {
-
-	Matrix4fT   Transform   = {  1.0f,  0.0f,  0.0f,  0.0f,				// NEW: Final Transform
-                             0.0f,  1.0f,  0.0f,  0.0f,
-                             0.0f,  0.0f,  1.0f,  0.0f,
-                             0.0f,  0.0f,  0.0f,  1.0f };
-
-	Matrix3fT   LastRot     = {  1.0f,  0.0f,  0.0f,					// NEW: Last Rotation
-                             0.0f,  1.0f,  0.0f,
-                             0.0f,  0.0f,  1.0f };
-
-	Matrix3fT   ThisRot     = {  1.0f,  0.0f,  0.0f,					// NEW: This Rotation
-                             0.0f,  1.0f,  0.0f,
-                             0.0f,  0.0f,  1.0f };
-	
-	
 	a->Transform=Transform;
 	a->LastRot=LastRot;
 	a->ThisRot=ThisRot;
