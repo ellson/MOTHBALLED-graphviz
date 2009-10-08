@@ -11,8 +11,8 @@
 #include "viewportcamera.h"
 
 
-static glCompPanel *controlPanel;
-static glCompButton *rotatebutton;
+/* static glCompPanel *controlPanel; */
+/* static glCompButton *rotatebutton; */
 static glCompPanel* sel=NULL;
 static glCompButton* to3DBtn;
 static glCompButton* to2DBtn;
@@ -30,10 +30,12 @@ static void menu_click_pan(void* obj,GLfloat x,GLfloat y,glMouseButtonType t)
 
 }
 
+#ifdef UNUSED
 static void menu_click_zoom(void* obj,GLfloat x,GLfloat y,glMouseButtonType t)
 {
 	switch_Mouse(NULL,MM_ZOOM);
 }
+#endif
 
 static void menu_click_fisheye_magnifier(void* obj,GLfloat x,GLfloat y,glMouseButtonType t)
 {
@@ -138,7 +140,7 @@ static void switch2D3D(void* obj,GLfloat x,GLfloat y,glMouseButtonType t)
 
 void CBglCompMouseUp (void* obj,GLfloat x,GLfloat y,glMouseButtonType t)
 {
-	glCompMouse* m=&((glCompSet*)obj)->mouse;
+	/* glCompMouse* m=&((glCompSet*)obj)->mouse; */
 	sel->common.visible=0;
 	sel->common.pos.x=-5000;
 
@@ -176,14 +178,14 @@ void glCompMouseMove (void* obj,GLfloat x,GLfloat y)
 
 glCompSet *glcreate_gl_topview_menu(void)
 {
-	static char* icondir[512];
-	int ind=0;
+	/* static char* icondir[512]; */
+	/* int ind=0; */
 	GLfloat y=5;
 	GLfloat off=43;
 	glCompSet *s = glCompSetNew(view->w,view->h);
 	glCompPanel *p=NULL;
     glCompButton *b=NULL;
-    glCompLabel *l=NULL;
+    /* glCompLabel *l=NULL; */
 	glCompImage *i=NULL;
 	glCompColor c;
 	s->common.callbacks.click=CBglCompMouseRightClick;
@@ -336,10 +338,10 @@ int getIconsDirectory(char* bf)
 	int a=GetCurrentDirectory(512,bf);
 	if ((a > 512) || (a==0))
 		return 0;
-	return 1;
 #else
 	//code *nix implementation to retrieve the icon directory, possibly some /share dir.
-
+    /* FIXME */
 #endif
+	return 1;
 
 }

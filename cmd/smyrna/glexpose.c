@@ -62,10 +62,12 @@ glBegin(GL_QUADS);		// Draw The Cube Using quads
 
 void drawRotatingAxis(void)
 {
+#ifdef UNUSED
 	float x,y;
 	float x1,y1,z1;
 	float x2,y2,z2;
 	float R1,R2;
+#endif
 	static GLUquadricObj *quadratic=(GLUquadricObj*)0;
 	if (!quadratic)
 	{
