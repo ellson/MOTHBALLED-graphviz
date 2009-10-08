@@ -25,12 +25,7 @@
 
 // 8<--Snip here if you have your own math types/funcs-->8 
 
-//Only support assertions in debug builds
-#ifdef _DEBUG
 # include "assert.h"
-#else
-# define assert(x) { }
-#endif
 
 //Math types derived from the KempoApi tMath library
     typedef union Tuple2f_t
@@ -124,6 +119,8 @@
 
 //Math functions
 
+#ifdef ARCBALL_C
+#ifdef UNUSED
     /**
      * Sets the value of this tuple to the vector sum of itself and tuple t1.
      * @param t1  the other tuple
@@ -148,7 +145,7 @@
         NewObj->s.X -= t1->s.X;
         NewObj->s.Y -= t1->s.Y;
     }
-
+#endif
     /**
       * Sets this vector to be the vector cross product of vectors v1 and v2.
       * @param v1 the first vector
@@ -433,6 +430,7 @@
         Matrix4fSetRotationScaleFromMatrix3f(NewObj, m1);
         Matrix4fMulRotationScale(NewObj, scale);
     }
+#endif
 
 // 8<--Snip here if you have your own math types/funcs-->8 
 typedef struct _ArcBall_t 
