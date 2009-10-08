@@ -463,6 +463,12 @@ void InsertImage(xdot_op * op, int param)
 }
 void EmbedText(xdot_op * op, int param)
 {
+	/*use gl pango fonts*/
+
+
+
+
+
 #ifdef UNUSED
 	GLfloat x;
 //    SelectText((sdot_op *) op);
