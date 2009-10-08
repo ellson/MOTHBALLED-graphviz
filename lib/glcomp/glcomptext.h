@@ -30,16 +30,8 @@ extern "C" {
 #endif
 extern fontset_t* fontset_init(void);
 extern void free_font_set(fontset_t* fontset);
-extern void copy_font(glCompText* targetfont,const glCompText* sourcefont);
-extern glCompText* add_font(fontset_t* fontset,char* fontdesc);
-extern glCompText* add_glut_font(fontset_t* fontset,void* glutfont);
-extern void glprintf (glCompText*, GLfloat , GLfloat , GLfloat ,GLfloat, char*);
-
-extern	void glprintfglut (void* font, GLfloat xpos, GLfloat ypos, GLfloat zpos,char *bf);
-
-extern glCompText* font_init(void);
-extern void fontColor (glCompText* font,float r, float g, float b,float a);
-extern int glCompLoadFontPNG (char *name, int id);
+//extern void glprintf (glCompText*, GLfloat , GLfloat , GLfloat ,GLfloat, char*);
+//extern	void glprintfglut (void* font, GLfloat xpos, GLfloat ypos, GLfloat zpos,char *bf);
 
 
 #ifdef __cplusplus

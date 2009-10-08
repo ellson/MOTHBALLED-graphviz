@@ -210,6 +210,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\gui\glcompui.h"
+				>
+			</File>
+			<File
 				RelativePath=".\glexpose.h"
 				>
 			</File>
@@ -342,6 +346,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\gui\glcompui.c"
+				>
+			</File>
+			<File
 				RelativePath=".\glexpose.c"
 				>
 			</File>
@@ -407,10 +415,6 @@
 			</File>
 			<File
 				RelativePath=".\selection.c"
-				>
-			</File>
-			<File
-				RelativePath=".\support.c"
 				>
 			</File>
 			<File

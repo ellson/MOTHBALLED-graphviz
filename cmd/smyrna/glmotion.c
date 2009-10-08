@@ -82,7 +82,7 @@ void glmotion_zoom_inc(int zoomin)
 	glexpose();
 
 }
-/*real zoom in out is done here, all other functions send this one what they desired, it is not guranteed,*/
+/*real zoom in out is done here, all other functions send this one what they desire, it is not guranteed,*/
 void graph_zoom(float real_zoom)
 {
 	float old_zoom;

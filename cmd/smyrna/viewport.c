@@ -340,9 +340,9 @@ get_data_dir()
 	free(view->attr_file);
     }
 
-    view->template_file = smyrnaPath ("template.dot");
-    view->glade_file = smyrnaPath ("smyrna.glade");
-    view->attr_file = smyrnaPath ("attrs.txt");
+    view->template_file = strdup(smyrnaPath ("template.dot"));
+    view->glade_file = strdup(smyrnaPath ("smyrna.glade"));
+    view->attr_file = strdup(smyrnaPath ("attrs.txt"));
 }
 
 void init_viewport(ViewInfo * view)

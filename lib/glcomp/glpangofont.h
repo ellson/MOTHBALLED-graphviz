@@ -21,7 +21,9 @@
 
 //creates a font file with given name and font description
 //returns non-zero if fails
-int create_font_file(char* fontdescription,char* fontfile,float gw,float gh);
+unsigned char* create_pango_texture(char *fontdescription,int fontsize,char* txt,cairo_surface_t *surface,int* w,int* h);
+int create_font_file(char *fontdescription,int fs, char *fontfile, float gw,float gh);
+
 
 #endif
 

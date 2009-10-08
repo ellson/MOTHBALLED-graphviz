@@ -311,11 +311,7 @@ void load_attributes(void)
     static char* smyrna_attrs;
 
     if (!smyrna_attrs) {
-#if WIN32
-	smyrna_attrs = SMYRNA_ATTRS;
-#else
 	smyrna_attrs = smyrnaPath ("attrs.txt");
-#endif
     }
 
     //loads attributes from a text file

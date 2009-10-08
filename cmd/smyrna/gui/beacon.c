@@ -234,7 +234,7 @@ int draw_node_hint_boxes(void)
     double dx, dy, dz;
 	char buf[512];  /* FIX!!! static buffer */
 
-    view->widgets->fontset->fonts[view->widgets->fontset->activefont]->fontheight=fs;
+//    view->widgets->fontset->fonts[view->widgets->fontset->activefont]->fontheight=fs;
 
 
 	for (ind = 0; ind < view->Topview->picked_node_count; ind++) 
@@ -285,8 +285,8 @@ int draw_node_hint_boxes(void)
 #endif
 
     }
-	glLineWidth(5);
 	glColor4f(0, 1, 0, 0.5);
+	glLineWidth(2);
 	glBegin(GL_LINES);
 	for (ind = 0; ind < view->Topview->picked_edge_count; ind++) 
 	{
@@ -310,8 +310,7 @@ int draw_node_hint_boxes(void)
 
     }
 	glEnd();
-	glLineWidth(0);
-
+	glLineWidth(1);
 	for (ind = 0; ind < view->Topview->picked_edge_count; ind++) {
 		float x1,x2,y1,y2,z1,z2;
 		char* s;

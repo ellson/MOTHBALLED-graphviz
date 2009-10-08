@@ -19,11 +19,12 @@
 #ifndef GLCOMPSET_H
 #define GLCOMPSET_H
 
-#include "glcomptext.h"
-#include "glcomptextpng.h"
-#include "glcomptexture.h"
+#include "glCompFont.h"
+#include "glComptextpng.h"
 
 
+extern void glCompInitCommon(glCompObj* childObj,glCompObj* parentObj,GLfloat x ,GLfloat y);
+void glCompEmptyCommon(glCompCommon* c);
 extern glCompSet* glCompSetNew( int w, int h);
 extern void glCompSetClear(glCompSet * s);
 extern int glCompSetDraw(glCompSet * s);
@@ -34,10 +35,12 @@ extern int glCompSetRelease(glCompSet * s, int x, int y);
 extern void glcompsetUpdateBorder(glCompSet * s, int w, int h);
 extern int glcompsetNextGroupId(glCompSet *s);
 extern int glcompsetGetGroupId(glCompSet *s);
-
 extern void glCompDrawBegin(void);
 extern void glCompDrawEnd(void);
-
+extern void glCompDeleteTexture(glCompTex* t);
+extern void glCompSetAddObj(glCompSet* s ,glCompObj* obj);
+glCompObj* glCompGetObjByMouse(glCompSet* s ,glCompMouse* m,int onlyClickable);
+extern  void glCompGetObjectType(glCompObj* p);
 /*
 	change all components's fonts  in s 
 	to sourcefont

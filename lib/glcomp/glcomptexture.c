@@ -14,68 +14,154 @@
 **********************************************************/
 
 #include "glcomptexture.h"
+#include "glpangofont.h"
 
-glCompTexture *glCompCreateTextureFromRaw(char *filename, int width,
-					  int height, int wrap)
+#include "memory.h"
+
+void glCompSetRemoveTexLabel(glCompSet* s,glCompFont* t)
 {
-    glCompTexture *t;
-#ifdef _WIN32
-    BYTE *data;
-#else
-    unsigned char *data;
-#endif
-    FILE *file;
-    t = malloc(sizeof(glCompTexture));
-    glGenTextures(1, &t->id);
-
-    // allocate buffer
-    data = malloc(width * height * 3);
-    // open and read texture data
-    file = fopen(filename, "rb");
-    fread(data, width * height * 3, 1, file);
-    fclose(file);
-
-
-// select our current texture
-    glBindTexture(GL_TEXTURE_2D, t->id);
-
-    // select modulate to mix texture with color for shading
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-    // when texture area is small, bilinear filter the closest mipmap
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-		    GL_LINEAR_MIPMAP_NEAREST);
-    // when texture area is large, bilinear filter the first mipmap
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // if wrap is true, the texture wraps over at the edges (repeat)
-    //       ... false, the texture ends at the edges (clamp)
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-		    (GLfloat) wrap ? (GLfloat) GL_REPEAT : GL_CLAMP);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-		    (GLfloat) wrap ? (GLfloat) GL_REPEAT : GL_CLAMP);
-
-/*	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,GL_REPEAT );
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
-	
-	// build our texture mipmaps
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE,data);*/
-
-    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, width, height,
-		      GL_RGB, GL_UNSIGNED_BYTE, data);
-
-    // free buffer
-    free(data);
-    t->w = (float) width;
-    t->h = (float) height;
-    return t;
 }
 
-int glCompDeleteTexture(glCompTexture * t)
+
+static glCompTex* glCompSetAddNewTexture(glCompSet* s,int width,int height,unsigned char* data,int is2D)
 {
-    return 0;
+	int Er,offset,ind;
+	glCompTex* t;
+	unsigned char* tarData;
+	unsigned char* srcData;
+
+	if (!data)
+		return NULL;
+
+	Er=0;
+	t=NEW(glCompTex);
+	if (!is2D)	/*use opengl texture*/
+	{
+		glEnable(GL_TEXTURE_2D);
+		glShadeModel(GL_FLAT);
+		glEnable(GL_DEPTH_TEST);
+		glPixelStorei(GL_UNPACK_ALIGNMENT,1);
+		glGenTextures(1, &t->id); //get next id
+		if (t->id < 0 )	/*for some opengl based error , texture couldnt be created*/
+			Er=1;
+		else
+		{
+			glBindTexture(GL_TEXTURE_2D, t->id);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,width, height,0,GL_RGBA, GL_UNSIGNED_BYTE, data );
+			glDisable(GL_TEXTURE_2D);
+		}
+	}
+	if(is2D && !Er)
+	{
+		t->data=malloc (4 * width * height);
+		offset =4 ;//RGBA  mod,TO DO implement other modes 
+		/*data upside down because of pango gl coord system*/
+		for (ind=0;ind < height; ind ++)
+		{
+			srcData = data + (height - 1 -ind) * offset * width;
+			tarData = t->data+ind * offset * width;
+			memcpy(tarData,srcData,4*width);
+		}
+	}
+
+	if(Er)
+	{
+		free (data);
+		free (t);
+		return NULL;
+	}
+	t->userCount=1;
+	t->width=(GLfloat)width;
+	t->height=(GLfloat)height;
+	s->textureCount ++ ;
+	s->textures=realloc(s->textures,s->textureCount * sizeof(glCompTex*));
+	s->textures[s->textureCount-1]=t;
+	return t;
+
+
+}
+
+glCompTex* glCompSetAddNewTexImage(glCompSet* s,int width,int height,unsigned char* data,int is2D)
+{
+
+	glCompTex* t;
+	if (!data)
+		return NULL;
+	t=glCompSetAddNewTexture(s,width,height,data,is2D);
+	if (!t)
+		return NULL;
+	t->type=glTexImage;
+	return t;
+
+}
+
+
+
+
+glCompTex* glCompSetAddNewTexLabel(glCompSet* s, char* def,int fs,char* text,int is2D)
+{
+	int ind,Er,width,height;
+	int ind2=0;
+	glCompTex* t;
+	cairo_surface_t *surface=NULL;
+	unsigned char* data;
+	data=(unsigned char*)0;
+	Er=0;
+	if (!def)
+		return NULL;
+	/*first check if the same label with same font def created before
+		if it was , return its id
+	*/
+	for (ind =0 ; ind < s->textureCount ; ind ++)
+	{
+		if(s->textures[ind]->type==glTexLabel)
+		{
+			if ((strcmp(def,s->textures[ind]->def)==0)&&(s->textures[ind]->type == glTexLabel)&&(strcmp(text,s->textures[ind]->text)==0) )
+			{
+				s->textures[ind]->userCount ++;
+				return s->textures[ind];
+			}
+		}
+	}
+
+
+	data=	create_pango_texture(def,fs,text,surface,&width,&height);
+	if (!data)	/*pango error , */
+		Er=1;
+	t=glCompSetAddNewTexture(s,width,height,data,is2D);
+	if (!t) Er=1;
+    cairo_surface_destroy(surface);
+
+	if(Er)
+	{
+		free (data);
+		free (t);
+		return NULL;
+	}
+
+	t->def=strdup(def);
+	t->text=strdup(text);
+	t->type=glTexLabel;
+	return t;
+}
+
+void glCompDeleteTexture(glCompTex* t)
+{
+	if (!t)
+		return;
+	t->userCount --;
+	if (!t->userCount)
+	{
+		if (t->data)
+			free (t->data);
+		if (t->def)
+			free (t->def);
+		if (t->text)
+			free (t->text);
+		free(t); 
+	}
 }

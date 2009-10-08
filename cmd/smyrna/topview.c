@@ -13,13 +13,8 @@
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
-#include "glcomptext.h"
-#include "glcomptextpng.h"
-#include "glcompbutton.h"
-#include "glcomppanel.h"
-#include "glcomplabel.h"
+#include "glcompui.h"
 #include "gltemplate.h"
-#include "glutils.h"
 #include "topview.h"
 #include "math.h"
 #include "memory.h"
@@ -34,6 +29,7 @@
 #include "topfisheyeview.h"
 #include "beacon.h"
 #include "pointset.h"
+#include "glpangofont.h"
 #ifdef WIN32
 #include "regex_win32.h"
 #else
@@ -47,43 +43,21 @@ static float dy = 0.0;
 static float dz = 0.0;
 
    /* Forward declarations */
-glCompSet *glcreate_gl_topview_menu(void);
 static void set_boundaries(topview * t);
 static void set_topview_options(void);
 static int draw_topview_label(topview_node * v, float zdepth);
 static int draw_topview_edge_label(topview_edge * e, float zdepth);
 static int node_visible(topview_node* n);
 static int select_topview_node(topview_node * n);
-/* static int select_topview_edge(topview_edge * e); */
-#ifdef UNUSED
-static int update_topview_node_from_cgraph(topview_node * Node);
-#endif
 static int get_color_from_edge(topview_edge * e);
-/* static int pick_node(topview_node * n); */
 static void draw_xdot_set(xdot_set* s);
 static xdot_set* init_xdot_set();
 static void free_xdotset(xdot_set* s);
 static void add_to_xdot_set(xdot_set* s, xdot *x);
 
-#ifdef UNUSED
-static void remove_recs()
-{
-	Agraph_t* g;
-    Agnode_t *v;
-	if(view->activeGraph < 0)
-		return;
-	g=view->g[view->activeGraph];
-	for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
-	{
-		agdelrec(v,"temp_node_record");
-	}
-}
-#endif
 
 void cleartopview(topview * t)
 {
-	/*free attached records*/
-	/*clear nodes */
 	free (t->Nodes);
 	free (t->Edges);
 	free_xdotset(t->xdot_list);
@@ -366,14 +340,13 @@ void update_topview(Agraph_t * g, topview * t,int init)
 	info_file=agget(g,"demo_file");
 	if ((info_file != NULL) && (strlen(info_file)!=0))
 	{
-		int sz;
 		agxbuf xbuf;
 	    agxbinit (&xbuf,512, xbuffer);
 
-		info_file=fopen(info_file,"r");
+		f=fopen(info_file,"r");
 		if (info_file)
 		{
-				while (fgets(buf, BUFSIZ, info_file)) 
+				while (fgets(buf, BUFSIZ, f)) 
 					agxbput (&xbuf, buf);
 				agxbput (&xbuf, "");
 				str=agxbuse (&xbuf);
@@ -490,6 +463,7 @@ void preparetopview(Agraph_t * g, topview * t)
 
 	/*hide stupid console window*/
 	gtk_widget_hide(glade_xml_get_widget(xml, "vbox13"));
+	gtk_widget_hide(glade_xml_get_widget(xml, "hbox7"));
 
 
 }
@@ -1001,48 +975,6 @@ static int select_topview_edge(topview_edge * e)
 }
 #endif
 
-#ifdef UNUSED
-static int update_topview_node_from_cgraph(topview_node * Node)
-{
-    char *buf;
-    buf = agget(Node->Node, "color");
-    if (buf)
-	Node->Color = GetRGBColor(buf);
-/*	else
-	{
-		randomize_color(&(Node->Color),2);
-
-		Node->Color.R=view->penColor.R;
-		Node->Color.G=view->penColor.G;
-		Node->Color.B=view->penColor.B;
-		Node->Color.A=view->penColor.A;
-	}*/
-    Node->update_required = 0;
-    return 1;
-}
-#endif
-#ifdef UNUSED
-int update_topview_edge_from_cgraph(topview_edge * Edge)
-{
-    //for now just color , maybe i need more later
-    char buf[124];
-    strcpy(buf,
-	   (agget(Edge->Edge, "color") ==
-	    NULL) ? "black" : agget(Edge->Edge, "color"));
-    if (strlen(buf) > 0)
-	Edge->Color = GetRGBColor(buf);
-    else {
-	Edge->Color.R = view->penColor.R;
-	Edge->Color.G = view->penColor.G;
-	Edge->Color.B = view->penColor.B;
-	Edge->Color.A = view->penColor.A;
-    }
-    Edge->update_required = 0;
-    return 1;
-}
-#endif
-
-
 
 int set_update_required(topview * t)
 {
@@ -1271,109 +1203,6 @@ int move_TVnodes(void)
 }
 
 
-#ifdef UNUSED
-int load_host_buttons(Agraph_t * g, glCompSet * s)
-{
-    GtkLayout *layout;
-    int btncount = 0;
-    int i = 0;
-    char buf[255];
-    char *str;
-    char hostbtncaption[50];
-    char hostbtnregex[50];
-    char hostbtncolorR[50];
-    char hostbtncolorG[50];
-    char hostbtncolorB[50];
-    char hostbtncolorA[50];
-    int X = 10;
-    int Y = 25;
-    GdkColor color;
-    glCompPanel *p;
-    glCompButton *b;
-
-    layout = glade_xml_get_widget(xml, "frmHostSelectionFixed");
-    str = '\0';
-    str = agget(g, "hostbtncount");
-    if (str)
-	btncount = atoi(str);
-
-//      Graph [hostbtncaption1="AT&T",hostbtnregex1="*.ATT*",hostbtncolorR1="1",hostbtncolorG1="0",hostbtncolorB1="0",hostbtncolorA1="1"];
-
-    hostregex = N_GNEW(btncount, char **);
-    gtkhostbtn = N_GNEW(btncount, GtkButton *);
-    gtkhostcolor = N_GNEW(btncount, GtkColorButton *);
-    gtkhostbtncount = btncount;
-    if (btncount > 0) {
-	p = glCompPanelNew(25, 75, 165, 400);
-	p->data = 2;		//data panel
-	p->color.R = 0.80;
-	p->color.B = 0, 2;
-	glCompSetAddPanel(s, p);
-    }
-    for (i = 0; i < btncount; i++) {
-	sprintf(hostbtncaption, "hostbtncaption%i", i);
-	sprintf(hostbtnregex, "hostbtnregex%i", i);
-	sprintf(hostbtncolorR, "hostbtncolorR%i", i);
-	sprintf(hostbtncolorG, "hostbtncolorG%i", i);
-	sprintf(hostbtncolorB, "hostbtncolorB%i", i);
-	sprintf(hostbtncolorA, "hostbtncolorA%i", i);
-	printf("caption:%s regex:%s Color(%s,%s,%s,%s)\n",
-	       agget(g, hostbtncaption),
-	       agget(g, hostbtnregex),
-	       agget(g, hostbtncolorR),
-	       agget(g, hostbtncolorG),
-	       agget(g, hostbtncolorB), agget(g, hostbtncolorA));
-	hostregex[i] = agget(g, hostbtnregex);
-
-	b = glCompButtonNew(5, 7 + (i + 1) * 36, 150, 35,
-			    agget(g, hostbtncaption), '\0', 0, 0);
-	b->color.R = atof(agget(g, hostbtncolorR));
-	b->color.G = atof(agget(g, hostbtncolorG));
-	b->color.B = atof(agget(g, hostbtncolorB));
-	b->color.A = 1;
-	b->panel = p;
-	b->groupid = -1;
-	b->callbackfunc = glhost_button_clicked_Slot;
-	b->data = i;
-	glCompSetAddButton(s, b);
-
-	gtkhostbtn[i] =
-	    gtk_button_new_with_label(agget(g, hostbtncaption));
-	g_signal_connect((gpointer) gtkhostbtn[i], "clicked",
-			 G_CALLBACK(host_button_clicked_Slot), i);
-
-	color.blue = 65535 * atof(agget(g, hostbtncolorB));
-	color.red = 65535 * atof(agget(g, hostbtncolorR));
-	color.green = 65535 * atof(agget(g, hostbtncolorG));
-
-	gtkhostcolor[i] = gtk_color_button_new_with_color(&color);
-
-	gtk_color_button_set_alpha(gtkhostbtn[i],
-				   65535 * atof(agget(g, hostbtncolorA)));
-
-
-	gtk_layout_put(layout, gtkhostbtn[i], X, Y);
-	gtk_widget_set_size_request(gtkhostbtn[i], 200, 35);
-
-	gtk_layout_put(layout, gtkhostcolor[i], X + 225, Y);
-	gtk_widget_set_size_request(gtkhostcolor[i], 40, 35);
-
-	gtk_widget_show(gtkhostbtn[i]);
-	gtk_widget_show(gtkhostcolor[i]);
-	Y = Y + 40;
-	hostactive[i] = 0;
-    }
-    p->height = 15 + (btncount + 1) * 36;
-    for (i = 0; i < btncount; i++) {
-	prepare_nodes_for_groups(i);
-    }
-}
-
-static void on_host_alpha_change(GtkWidget * widget, gpointer user_data)
-{
-    glexpose();
-}
-#endif
 
 void local_zoom(topview * t)
 {
@@ -1429,385 +1258,6 @@ void originate_distorded_coordinates(topview * t)
     }
 }
 
-#ifdef UNUSED
-void test_callback(void)
-{
-}
-#endif
-
-static void menu_click_control(void *p)
-{
-    glCompSet *s;
-    int ind = 0;
-    s = ((glCompButton *) p)->parentset;
-    for (ind = 0; ind < s->panelcount; ind++) 
-	{
-		if (s->panels[ind]->data == 1)	//control panel
-		{
-			if (s->panels[ind]->visible)
-			{
-				glCompPanelHide(s->panels[ind]);
-				glCompButtonSetText(p,"Controls");
-			}
-			else
-			{
-				glCompPanelShow(s->panels[ind]);
-				glCompButtonSetText(p,"Hide");
-
-			}
-
-		}
-    }
-}
-
-static void menu_click_data(void *p)
-{
-    glCompSet *s;
-    int ind = 0;
-    s = ((glCompButton *) p)->parentset;
-    for (ind = 0; ind < s->panelcount; ind++) {
-	if (s->panels[ind]->data > 0)
-	    glCompPanelHide(s->panels[ind]);	//hide all panels
-	if (s->panels[ind]->data == 2)	//data panel
-	{
-	    glCompPanelShow(s->panels[ind]);
-	}
-    }
-}
-
-
-static void menu_click_pan(void *p)
-{
-	switch_Mouse(NULL,MM_PAN);
-
-}
-
-static void menu_click_zoom(void *p)
-{
-
-	switch_Mouse(NULL,MM_ZOOM);
-
-}
-
-static void menu_click_fisheye_magnifier(void *p)
-{
-    view->mouse.mouse_mode = MM_FISHEYE_MAGNIFIER;
-
-}
-
-static void menu_click_zoom_minus(void *p)
-{
-}
-
-static void menu_click_zoom_plus(void *p)
-{
-}
-
-#ifdef UNUSED
-static void menu_click_alpha_plus(void *p)
-{
-    if ((view->zoom + ZOOM_STEP) < MAX_ZOOM)
-	view->zoom = view->zoom + ZOOM_STEP;
-    else
-	view->zoom = (float) MAX_ZOOM;
-
-}
-#endif
-
-
-
-static void menu_switch_to_fisheye(void *p)
-{
-	if (!view->Topview->is_top_fisheye == 1)
-	{
-		if (!view->Topview->h) 
-		{
-			prepare_topological_fisheye(view->Topview);
-			g_timer_start(view->timer);
-		}
-		view->Topview->is_top_fisheye = 1;
-		glCompButtonSetText(p,"Normal");
-
-	}
-	else
-	{
-		view->Topview->is_top_fisheye = 0;
-		glCompButtonSetText(p,"Fisheye");
-		g_timer_stop(view->timer);
-	}
-
-
-}
-
-static void menu_click_rotate(void *p)
-{
-	switch_Mouse(NULL,MM_ROTATE);
-	view->mouse.mouse_mode = MM_ROTATE;
-}
-
-
-static void menu_click_center(void *p)
-{
-	if (view->active_camera == -1)	/*2D mode*/
-	{	
-		btnToolZoomFit_clicked(NULL,NULL);
-	}
-	else	/*there is active camera , adjust it to look at the center*/
-	{
-		view->cameras[view->active_camera]->targetx=0;
-		view->cameras[view->active_camera]->targety=0;
-		view->cameras[view->active_camera]->r=20;
-
-	}
-}
-static glCompPanel *controlPanel;
-static glCompButton *rotatebutton;
-
-static void switch2D3D(void *p)
-{
-	if (view->active_camera == -1)
-	{
-
-		if (view->camera_count == 0)
-		{
-			menu_click_add_camera(p);
-		}
-		else
-		{
-			view->active_camera = 0 ;	/*set to camera*/
-		}
-		glCompButtonSetText(p,"2D");
-		controlPanel->height +=72;
-		rotatebutton->visible=1;
-
-	}
-	else /*switch to 2d*/
-	{
-			view->active_camera = -1 ;	/*set to camera*/
-			glCompButtonSetText(p,"3D");
-
-			controlPanel->height -=72;
-			rotatebutton->visible=0;
-
-
-	}
-}
-static viewMatrice(int n,int m,float* mtx)
-{
-	int i,i2;
-	printf ("Transformation Matrix\n");
-	i=i2=0;
-	for (i=0; i < n * m; i ++)
-	{
-/*			if (i==5)
-				printf ("tetX:%f  ",asin(mtx[i]) * RAD2DEG);	//around x , right hand notion
-			if (i==0)
-				printf ("tetZ:%f  ",asin(mtx[i]) * RAD2DEG);	//around x , right hand notion
-			if (i==5)
-				printf ("tetX:%f  ",asin(mtx[i]) * RAD2DEG);	//around x , right hand notion*/
-			printf ("%f  ",asin(mtx[i]) * RAD2DEG);	//around x , right hand notion*/
-			i2++;
-			if (i2 == m)
-			{
-				i2=0;
-				printf ("\n");
-			}
-	}
-}
-
-static void test_btn_callback(void* p)
-{
-//	viewMatrice (4,4,view->arcball->Transform.M);
-	viewMatrice (3,3,view->arcball->ThisRot.M);
-}
-
-static char *smyrna_icon_pan;
-static char *smyrna_icon_zoom;
-static char *smyrna_icon_zoomplus;
-static char *smyrna_icon_zoomminus;
-static char *smyrna_icon_fisheye;
-static char *smyrna_icon_rotate;
-
-
-glCompSet *glcreate_gl_topview_menu(void)
-{
-
-	glCompSet *s = glCompSetNew(view->w,view->h);
-    glCompPanel *p;
-    glCompButton *b;
-    glCompLabel *l;
-	s->fontset=fontset_init();
-	/*add a glut font*/
-	add_glut_font(s->fontset,GLUT_BITMAP_HELVETICA_12);	
-	s->fontset->activefont=0;
-
-	/* GtkRequisition requisition; *//* What??*/
-    if (!smyrna_icon_pan) {
-#ifdef _WIN32
-	smyrna_icon_pan = "pan.raw";
-	smyrna_icon_zoom = "zoom.raw";
-	smyrna_icon_zoomplus = "zoomplus.raw";
-	smyrna_icon_zoomminus = "zoomminus.raw";
-	smyrna_icon_fisheye = "fisheye.raw";
-	smyrna_icon_rotate = "rotate.raw";
-#else
-	smyrna_icon_pan = smyrnaPath("pan.raw");
-	smyrna_icon_zoom = smyrnaPath("zoom.raw");
-	smyrna_icon_zoomplus = smyrnaPath("zoomplus.raw");
-	smyrna_icon_zoomminus = smyrnaPath("zoomminus.raw");
-	smyrna_icon_fisheye = smyrnaPath("fisheye.raw");
-	smyrna_icon_rotate = smyrnaPath("rotate.raw");
-#endif
-    }
-
-    s->panelcount = 0;
-    s->panels = '\0';
-    s->buttoncount = 0;
-    s->buttons = '\0';
-    s->labels = '\0';
-    s->labelcount = 0;
-    /*panel data 
-       0 :small bottom
-       1 :control
-       2 :data
-
-
-     */
-
-    //small panel left bottom
-    p = glCompPanelNew(25, 25, 82, 40,scientific_y);
-    p->data = 0;
-    glCompSetAddPanel(s, p);
-
-
-    b = glCompButtonNew(5, 7, 72, 25, "Controls", '\0', 0, 0,scientific_y);
-    b->panel = p;
-    b->groupid = 0;
-    b->customptr = view;
-    glCompSetAddButton(s, b);
-    b->callbackfunc = menu_click_control;
-
-
-
-    p = glCompPanelNew(25, 75, 82, 305,scientific_y);
-    p->data = 1;		//control panel
-    glCompSetAddPanel(s, p);
-	controlPanel=p;
-
-
-   //rotate
-    b = glCompButtonNew(5, 302, 72, 72, "", smyrna_icon_rotate, 72, 72,scientific_y);
-    b->groupid = 3;
-    b->customptr = view;
-	b->visible=0;
-    b->panel = p;
-    b->callbackfunc = menu_click_rotate;
-	rotatebutton=b;
-    glCompSetAddButton(s, b);
-
-	//sanity button to center the drawing and fit it in the screen
-    b = glCompButtonNew(5, 5, 72, 20, "center", '\0', 0, 0,scientific_y);
-    b->customptr = view;
-    b->panel = p;
-    b->groupid = 0;
-    b->callbackfunc = menu_click_center;
-	b->color.R=0;
-	b->color.G=1;
-	b->color.B=0;
-    glCompSetAddButton(s, b);
-
-
-
-
-    //pan button
-    b = glCompButtonNew(5, 148, 72, 72, "adasasds", smyrna_icon_pan, 72,
-			72,scientific_y);
-    b->groupid = 3;
-    b->customptr = view;
-    b->panel = p;
-    b->callbackfunc = menu_click_pan;
-    glCompSetAddButton(s, b);
-
-    //zoom
-    b = glCompButtonNew(5, 71, 72, 72, "adasasds", smyrna_icon_zoom, 72,
-			72,scientific_y);
-    b->groupid = 3;
-    b->customptr = view;
-    b->panel = p;
-    b->callbackfunc = menu_click_zoom;
-    glCompSetAddButton(s, b);
-    //zoom +
-    b = glCompButtonNew(42, 30, 36, 36, "adasasds", smyrna_icon_zoomplus,
-			36, 36,scientific_y);
-    b->groupid = 0;
-    b->customptr = view;
-    b->panel = p;
-    b->callbackfunc = menu_click_zoom_plus;
-    glCompSetAddButton(s, b);
-    //zoom -
-    b = glCompButtonNew(7, 30, 30, 36, "adasasds", smyrna_icon_zoomminus,
-			36, 36,scientific_y);
-    b->groupid = 0;
-    b->panel = p;
-    b->customptr = view;
-    b->callbackfunc = menu_click_zoom_minus;
-    glCompSetAddButton(s, b);
-
-    b = glCompButtonNew(5, 225, 72, 72, "adasasds", smyrna_icon_fisheye, 72,
-			72,scientific_y);
-    b->groupid = 3;
-    b->panel = p;
-    b->customptr = view;
-    b->callbackfunc = menu_click_fisheye_magnifier;
-    glCompSetAddButton(s, b);
-	glCompPanelHide(p);
-
-    //small panel left bottom
-    p = glCompPanelNew(5, 5, 137, 35,inverted_y);
-    p->data = 0;
-    glCompSetAddPanel(s, p);
-	
-
-
-    b = glCompButtonNew(5, 5, 50, 25, "3D", '\0', 0, 0,scientific_y);
-    b->panel = p;
-    b->groupid = 0;
-    b->customptr = view;
-    glCompSetAddButton(s, b);
-    b->callbackfunc = switch2D3D;
-
-
-    b = glCompButtonNew(57, 5, 75, 25, "Fisheye", '\0', 0, 0,scientific_y);
-    b->panel = p;
-    b->groupid = 0;
-	b->customptr = view;
-    glCompSetAddButton(s, b);
-    b->callbackfunc = menu_switch_to_fisheye;
-
-    b = glCompButtonNew(140, 5, 75, 25, "Test Btn", '\0', 0, 0,scientific_y);
-    b->panel = p;
-    b->groupid = 0;
-	b->customptr = view;
-    glCompSetAddButton(s, b);
-    b->callbackfunc = test_btn_callback;
-
-
-
-
-
-
-
-
-	
-	//3d Controls Panel
-  /*  p = glCompPanelNew(25,view->h,wid_w,wid_h);
-    p->data = 1;		
-    glCompSetAddPanel(s, p);*/
-	
-
-	return s;
-
-}
 
 #define strcaseeq(a,b)     (*(a)==*(b)&&!strcasecmp(a,b))
 
@@ -2025,20 +1475,5 @@ void setMultiedges (Agraph_t* g, char* attrname)
     freePM(map);
 }
 
-#ifdef DEBUG
-void print_xdot_set(xdot_set* s)
-{
-    xdot* x;
-    int i = 0;
-
-    fprintf (stderr, "------------------------------------------\n");
-    fprintf (stderr, "# of xdots in set:%d\n", dtsize(s->xdots));
-
-    for (x = (xdot*)dtfirst (s->xdots); x; x = (xdot*)dtnext(s->xdots, x)) {
-        fprintf (stderr, "xdot id: %d count: %d", i, x->cnt);
-        i++;
-    }
-}
-#endif
 
 

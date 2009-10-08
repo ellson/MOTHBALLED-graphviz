@@ -49,20 +49,43 @@
 #define	GLCOMPSET_BUTTON_COLOR_ALPHA	(GLfloat)0.6
 #define	GLCOMPSET_BUTTON_THICKNESS		(GLfloat)3
 #define	GLCOMPSET_BUTTON_BEVEL_BRIGHTNESS		(GLfloat)1.7
-#define GLCOMPSET_FONT_SIZE				(GLfloat)12
+#define GLCOMPSET_FONT_SIZE				(GLfloat)56
+
 #define	GLCOMPSET_BUTTON_FONT_COLOR_R		(GLfloat)0
 #define	GLCOMPSET_BUTTON_FONT_COLOR_G		(GLfloat)0
 #define	GLCOMPSET_BUTTON_FONT_COLOR_B		(GLfloat)0
 #define	GLCOMPSET_BUTTON_FONT_COLOR_ALPHA	(GLfloat)1
+
 #define GLCOMPSET_FONT_SIZE_FACTOR			(GLfloat)0.7
+
 #define	GLCOMPSET_LABEL_COLOR_R		(GLfloat)0
 #define	GLCOMPSET_LABEL_COLOR_G		(GLfloat)0
 #define	GLCOMPSET_LABEL_COLOR_B		(GLfloat)0
 #define	GLCOMPSET_LABEL_COLOR_ALPHA	(GLfloat)1
 
-#define GLCOMPSET_PANEL_BEVEL				(GLfloat)0.1
+#define	GLCOMPSET_FONT_COLOR_R		(GLfloat)0
+#define	GLCOMPSET_FONT_COLOR_G		(GLfloat)0
+#define	GLCOMPSET_FONT_COLOR_B		(GLfloat)0
+#define	GLCOMPSET_FONT_COLOR_ALPHA	(GLfloat)1
+#define GLCOMPSET_FONT_DESC  "Times Italic"
+#define GL_FONTOPTIMIZE 1
+
+
+#define GL_FONTVJUSTIFY	0
+#define GL_FONTHJUSTIFY	0
+
+
+#define DEFAULT_GLUT_FONT GLUT_BITMAP_HELVETICA_12
+
+#define GLCOMPSET_BORDERWIDTH				(GLfloat)2
+#define GLCOMPSET_PANEL_BORDERWIDTH				(GLfloat)3
+#define GLCOMPSET_BUTTON_BEVEL				(GLfloat)5
 #define	GLCOMPSET_BEVEL_DIFF				(GLfloat)0.001
 #define GLCOMPSET_DEFAULT_PAD		(GLfloat)3
+#define	GLCOMP_DEFAULT_WIDTH	(GLfloat)10
+#define	GLCOMP_DEFAULT_HEIGHT	(GLfloat)10
+
+
 
 #define FONT_MAX_LEN                1024 /* maximum chars to draw to the screen, used for buffers also */
 #define FONT_TAB_SPACE              4    /* spaces to draw for a tab, make option? */
@@ -71,81 +94,223 @@
 #define R_DPI              16
 
 
-typedef void (*callbackfunc_t) (void *component);
-typedef enum { inverted_y,scientific_y} glCompOrientation;
 
-typedef struct _glCompPoint {
-    GLfloat x, y;
+
+
+
+
+typedef enum { inverted_y,scientific_y} glCompOrientation;
+typedef enum {gluttext,pangotext} glCompFontType;
+typedef enum {glAlignNone,glAlignLeft,glAlignTop,glAlignBottom,glAlignRight,glAlignParent,glAlignCenter} glCompAlignment;
+
+typedef enum {glFontVJustifyNone,glFontVJustifyTop,glFontVJustifyBottom,glFontVJustifyCenter} glCompVJustify;
+typedef enum {glFontHJustifyNone,glFontHJustifyLeft,glFontHJustifyRight,glFontHJustifyCenter} glCompHJustify;
+typedef enum {glButtonGlyphLeft,glButtonGlyphRight,glButtonGlyphTop,glButtonGlyphBottom} glCompButtonGlyph;
+typedef enum {glBorderNone,glBorderSolid,glBorderBevel,glBorderCustom} glCompBorderType;
+
+typedef enum {glMouseDown,glMouseUp}glCompMouseStatus;
+typedef enum {glMouseLeftButton,glMouseRightButton,glMouseMiddleButton}	glMouseButtonType;
+
+typedef enum {glTexImage,glTexLabel} glCompTexType;
+typedef enum {glPanelObj,glButtonObj,glLabelObj,glImageObj}glObjType;
+
+
+/*call backs for widgets*/
+typedef void (*glcompdrawfunc_t) (void* obj);
+typedef void (*glcompclickfunc_t) (void* obj,GLfloat x,GLfloat y,glMouseButtonType t);
+typedef void (*glcompdoubleclickfunc_t) (void* obj,GLfloat x,GLfloat y,glMouseButtonType t);
+typedef void (*glcompmouseoverfunc_t) (void* obj,GLfloat x,GLfloat y);
+typedef void (*glcompmouseinfunc_t) (void* obj,GLfloat x,GLfloat y);
+typedef void (*glcompmouseoutfunc_t) (void* obj,GLfloat x,GLfloat y);
+typedef void (*glcompmousedownfunc_t) (void* obj,GLfloat x,GLfloat y,glMouseButtonType t);
+typedef void (*glcompmouseupfunc_t) (void* obj,GLfloat x,GLfloat y,glMouseButtonType t);
+typedef void (*glcompmousedragfunct_t) (void* obj,GLfloat dx,GLfloat dy,glMouseButtonType t);
+
+
+
+
+
+typedef struct _glCompAnchor {
+
+	int topAnchor; /*anchor booleans*/
+	int leftAnchor;
+	int rightAnchor;
+	int bottomAnchor;
+
+	GLfloat top; /*anchor values*/
+	GLfloat left;
+	GLfloat right;
+	GLfloat bottom;
+
+
+} glCompAnchor;
+
+typedef struct _glCompJustify
+{
+	glCompVJustify VJustify;
+	glCompHJustify HJustify;
+}glCompJustify;
+
+
+
+
+typedef struct _glCompPoint 
+{
+    GLfloat x, y,z;
 } glCompPoint;
-typedef struct {
+
+typedef struct _glCompPointI 
+{
+    int x, y;
+} glCompPointI;
+
+
+
+
+
+
+
+
+typedef struct 
+{
     GLfloat R;
     GLfloat G;
     GLfloat B;
     GLfloat A;			//Alpha
 } glCompColor;
-typedef struct {
-    unsigned int id;
-    float w, h;
-} glCompTexture;
 
-typedef struct 
+
+typedef struct _glCompRect
 {
-	int matrix;
-	int poly[2];
-	int islightingon;
-	int isblendon;
-	int isdepthon;
-	int istextureon;
-	int blendfrom;
-	int blendto;
-}fontglcache;
+	glCompPoint pos;
+	GLfloat w;
+	GLfloat h;
+}glCompRect;
+
+typedef struct _glCompTex
+{
+	int id;
+	char* def;
+	char* text;
+	float width;
+	float height;
+	glCompTexType type;
+	int userCount;
+	unsigned char* data;	/*data*/
+}glCompTex;
 
 
+
+/*opengl font*/
 typedef struct
 {
-	char* fontdesc;	//font description
+	char* fontdesc;	//font description , only used with pango fonts
 	glCompColor color;
-    float fontheight;           /* size of text, default 12 */
-    float tIncX;        /* used for texture coords, x axis amount to move */
-    float tIncY;        /* used for texture coords, y axis amount to move */
-    int blockRow;       /* characters per row */
-    int blockCol;       /* characters per col */
-    GLuint texId; /* texture id */
-	float zdepth;	//third dimension , depth of fonts
-	float  bmp[257][2]; //texture bitmaps
-	fontglcache glcache;
-	int isglut;/*use glutfont*/
-	void* glutfont;
-} glCompText;
+	glCompFontType type;
+	void* glutfont;	/*glut font pointer if used*/
+	int transparent;
+	glCompTex* tex;/* texture, if type is pangotext*/
+	int size;
+	int reference; /*if font has references to parent*/
+	glCompJustify justify;
+	int optimize;
+} glCompFont;
 
-
-typedef struct
+typedef struct _glCompCallBacks
 {
-	glCompText** fonts;
-	int count;
-	int activefont;
-	char* font_directory;	//location where the glfont files are stored
-}fontset_t;
+	glcompdrawfunc_t draw;
+	glcompclickfunc_t click;
+	glcompdoubleclickfunc_t doubleclick;
+	glcompmouseoverfunc_t mouseover;
+	glcompmouseinfunc_t mousein;
+	glcompmouseoutfunc_t mouseout;
+	glcompmousedownfunc_t mousedown;
+	glcompmouseupfunc_t mouseup;
+	glcompmousedragfunct_t mousedrag;
+
+}glCompCallBacks;
 
 
-
-typedef struct _glCompPanel {
+/*
+	common widget properties
+	also each widget has pointer to its parents common
+*/
+typedef struct _glCompCommon
+{
     glCompPoint pos;
+	glCompPoint refPos;/*calculated pos after anchors and aligns*/
     GLfloat width, height;
-    GLfloat shadowwidth;
-    GLfloat bevel;
+	GLfloat borderWidth;
+	glCompBorderType borderType;
     glCompColor color;
-    glCompColor shadowcolor;
     int enabled;
     int visible;
-    void *parentset;		//parent compset
+    void *compset;		// compset
+	void* parent;	/*parent widget*/
     int data;
-    glCompText* font;	//pointer to font to use
-	glCompOrientation orientation;
-	char* text;
+    glCompFont* font;	//pointer to font to use
+	glCompAlignment align;
+	glCompAnchor anchor;
+	int layer;	/*keep track of object order, what to draw on top*/
+	glCompCallBacks callbacks;
+	glCompCallBacks functions;
+	glCompJustify justify;
+}glCompCommon;
 
-} glCompPanel;
+/*generic image*/
+typedef struct _glCompImage 
+{
+	glObjType objType;	/*always keep this here for each drawable object*/
+	glCompCommon common;
+	glCompTex* texture;
+	char* pngFile;
+	int stretch;
+}glCompImage;
+
+
+
+
+
+/*generic panel*/
+typedef struct _glCompPanel 
+{
+	glObjType objType;	/*always keep this here for each drawable object*/
+	glCompCommon common;
+	GLfloat shadowwidth;
+    glCompColor shadowcolor;
+	char* text;
+	glCompImage* image;
+}glCompPanel;
+
+/*label*/
+typedef struct _glCompLabel 
+{
+	glObjType objType;	/*always keep this here for each drawable object*/
+	glCompCommon common;
+	int autosize; /*if 1 label sized is calculated from font*/
+    char *text;
+} glCompLabel;
+
+/*buttons*/
+typedef struct _glCompButton {
+	glObjType objType;	/*always keep this here for each drawable object*/
+	glCompCommon common;
+    GLfloat width, height;
+	glCompLabel* label;
+	int status;			//0 not pressed 1 pressed;
+    int groupid;
+	glCompImage* image;/*glyph*/
+	glCompButtonGlyph glyphPos;
+    void *customptr;		//general purpose void pointer to pass to call back
+    int data;
+
+} glCompButton;
+
+/*texture based image*/
+
+/*track bar*/
 typedef struct _glCompTrackBar {
+	glObjType objType;	/*always keep this here for each drawable object*/
 	GLfloat width,height;
 	glCompPanel* outerpanel;
 	glCompPanel* trackline;
@@ -163,66 +328,63 @@ typedef struct _glCompTrackBar {
     int visible;
     void *parentset;		//parent compset
     int data;
-    glCompText* font;	//pointer to font to use
+    glCompFont* font;	//pointer to font to use
 	glCompOrientation orientation;
 
 }glCompTrackBar;
-typedef struct _glCompLabel {
-    glCompPoint pos;
-    GLfloat size;
-    GLfloat bevel;
-    glCompColor color;
-    int visible;
-    void *parentset;		//parent compset
-    char *text;
-    GLfloat fontsizefactor;
-    glCompPanel *panel;		//container panel
-    glCompText* font;	//pointer to font to use
-	glCompOrientation orientation;
 
-} glCompLabel;
+/*glCompFont container class*/
+typedef struct
+{
+	glCompFont** fonts;
+	int count;
+	int activefont;
+	char* font_directory;	//location where the glfont files are stored
+}fontset_t;
 
-
-typedef struct _glCompButton {
-    glCompPoint pos;
-    GLfloat width, height;
-    GLfloat bevel;
-    GLfloat thickness;
-    glCompColor color;
-    glCompColor fontcolor;
-    char *caption;
-    int enabled;
-    int visible;
-    int status;			//0 not pressed 1 pressed;
-    int groupid;
-    void *parentset;		//parent compset
-    GLfloat fontsize;
-    int hasglyph;
-    glCompTexture *glyph;
-    int glyphwidth, glyphheight;
-    glCompPanel *panel;		//container panel
-    callbackfunc_t callbackfunc;	//call back for button click
-    void *customptr;		//general purpose void pointer to pass to call back
-    int data;
-    glCompText* font;	//pointer to font to use
-	glCompOrientation orientation;
-
-} glCompButton;
-
+/*object prototype*/
 typedef struct {
-    glCompPanel **panels;
+	glObjType objType;
+	glCompCommon common;
+}glCompObj;
+
+typedef struct _glCompMouse
+{
+	glCompMouseStatus status;
+	glMouseButtonType t;
+	glCompPoint pos;
+	GLfloat dragX,dragY;
+	glCompObj* clickedObj;
+	glCompCallBacks callbacks;
+	glCompCallBacks functions;
+	int down;
+
+
+}glCompMouse;
+
+
+
+/*main widget set manager*/
+typedef struct {
+	glObjType objType;	/*always keep this here for each drawable object*/
+	glCompCommon common;
+
+	glCompObj** obj;	
+	int objcnt;
+	glCompPanel **panels;
     glCompButton **buttons;
     glCompLabel **labels;
 	int groupCount ; /*group id counter*/
-
-    int panelcount;
-    int buttoncount;
-    int labelcount;
     int active;			//0 dont draw, 1 draw
     int enabled;		//0 disabled 1 enabled(allow mouse interaction)
     GLfloat clickedX, clickedY;
-	GLfloat w,h; /*parent widget width and height , needs to be updated each time window is resized*/
-	fontset_t* fontset; /*font repository*/
+
+	int textureCount;
+	glCompTex** textures;
+	glCompMouse mouse;
 } glCompSet;
+
+
+
 
 #endif

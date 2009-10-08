@@ -17,8 +17,8 @@
   includes glPanel,glCompButton,glCompCustomButton,clCompLabel,glCompStyle
 */
 
-#ifndef GLCOMPTEXTURE_H
-#define GLCOMPTEXTURE_H
+#ifndef glCompFontURE_H
+#define glCompFontURE_H
 
 #ifdef _WIN32
 #include "windows.h"
@@ -27,10 +27,6 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include "glcompdefs.h"
-
-
-
-glCompTexture *glCompCreateTextureFromRaw(char *filename, int width,
-					  int height, int wrap);
-int glCompDeleteTexture(glCompTexture * t);
+extern glCompTex* glCompSetAddNewTexImage(glCompSet* s,int width,int height,unsigned char* data,int is2D);
+extern glCompTex* glCompSetAddNewTexLabel(glCompSet* s, char* def,int fs,char* text,int is2D);
 #endif

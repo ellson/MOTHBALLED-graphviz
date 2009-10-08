@@ -19,7 +19,6 @@
 #include "glutils.h"
 #include "topview.h"
 #include "topfisheyeview.h"
-#include "glcomptext.h"
 #include "gui/toolboxcallbacks.h"
 void drawRotatingAxis(void);
 void draw_cube()
@@ -59,6 +58,56 @@ glBegin(GL_QUADS);		// Draw The Cube Using quads
   glEnd();	
 }
 
+
+
+void drawRotatingAxis(void)
+{
+	float x,y;
+	float x1,y1,z1;
+	float x2,y2,z2;
+	float R1,R2;
+	static GLUquadricObj *quadratic=(GLUquadricObj*)0;
+	if (!quadratic)
+	{
+		quadratic=gluNewQuadric();										// Create A Pointer To The Quadric Object
+		gluQuadricNormals(quadratic, GLU_SMOOTH);						// Create Smooth Normals
+//		gluQuadricTexture(quadratic, GL_TRUE);							// Create Texture Coords
+		gluQuadricDrawStyle (quadratic,GLU_LINE);
+
+
+	}
+
+	if ((view->mouse.mouse_mode == MM_ROTATE) && (view->active_camera >=0))
+	{
+		float AL=45;
+		glPushMatrix();
+		glLoadIdentity();
+		glMultMatrixf(view->arcball->Transform.M); /*arcball transformations , experimental*/
+		glLineWidth(3);
+		glBegin(GL_LINES);
+			glColor3f(1,1,0);
+	
+			glVertex3f(0,0,0);
+			glVertex3f(0,AL,0);
+
+			glVertex3f(0,0,0);
+			glVertex3f(AL,0,0);
+
+			glVertex3f(0,0,0);
+			glVertex3f(0,0,AL);
+
+		glEnd();
+		glColor4f(0,1,0,0.3);
+		gluSphere(quadratic,AL,20,20);
+		glLineWidth(1);
+		glPopMatrix();
+
+	}
+
+}
+
+
+
 /*
 	refreshes camera settings using view parameters such as pan zoom etc
 	if a camera is selected viewport is switched to 3D
@@ -67,28 +116,22 @@ glBegin(GL_QUADS);		// Draw The Cube Using quads
 */
 int glupdatecamera(ViewInfo * view)
 {
-
 	if (view->active_camera==-1)
-	{
-		gluLookAt(view->panx, view->pany, 20, view->panx,
-			view->pany, 0.0, 0.0, 1.0, 0.0);
-	}
+		glTranslatef(-view->panx,-view->pany,view->panz);
 
 
 	/*toggle to active camera*/
 	else
 	{
 		glMultMatrixf(view->arcball->Transform.M); /*arcball transformations , experimental*/
-/*		gluLookAt(view->cameras[view->active_camera]->targetx, view->cameras[view->active_camera]->targety, 20, view->cameras[view->active_camera]->targetx,
-		view->cameras[view->active_camera]->targety, 0.0, 0.0, 1.0, 0.0);*/
 		glTranslatef(-view->cameras[view->active_camera]->targetx,-view->cameras[view->active_camera]->targety,0);
-//		printf(" %f %f %f \n",view->panx,view->pany,view->
 	}
 
 	GetOGLPosRef(1, view->h - 5, &(view->clipX1), &(view->clipY1),
 		 &(view->clipZ1));
     GetOGLPosRef(view->w - 1, 1, &(view->clipX2), &(view->clipY2),
 		 &(view->clipZ2));
+
 	if (view->active_camera==-1)
 	{
 		glScalef(1/view->zoom*-1,1/view->zoom*-1,1/view->zoom*-1);
@@ -96,8 +139,8 @@ int glupdatecamera(ViewInfo * view)
 	else
 	{
 		glScalef(1/view->cameras[view->active_camera]->r,1/view->cameras[view->active_camera]->r,1/view->cameras[view->active_camera]->r);
-
 	}
+
 
 	return 1;
 }
@@ -169,13 +212,15 @@ void drawtestpoly(void)
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 //	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE , GL_DECAL);
-	glBindTexture(GL_TEXTURE_2D,view->widgets->fontset->fonts[view->widgets->fontset->activefont]->texId);
-	glColor3f(1,0,0);
-	glBegin(GL_POLYGON);
+//	glBindTexture(GL_TEXTURE_2D,view->widgets->fontset->fonts[view->widgets->fontset->activefont]->texId);
+	glBindTexture(GL_TEXTURE_2D,1);
+	glColor4f(1,1,1,1);
+	glBegin(GL_QUADS);
 		glTexCoord2f(0.0,0.0);glVertex3f(0.0,0.0,0.0);
 		glTexCoord2f(0.0,1.0);glVertex3f(0.0,256.0,0.0);
 		glTexCoord2f(1.0,1.0);glVertex3f(256.0,256.0,0.0);
 		glTexCoord2f(1.0,0.0);glVertex3f(256.0,0.0,0.0);
+		glTexCoord2f(0.0,0.0);glVertex3f(0.0,0.0,0.0);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 
@@ -227,52 +272,6 @@ int glexpose_drawgraph(ViewInfo * view)
 		return 1;
     }
 	return 0;
-}
-
-void drawRotatingAxis(void)
-{
-	float x,y;
-	float x1,y1,z1;
-	float x2,y2,z2;
-	float R1,R2;
-	static GLUquadricObj *quadratic=(GLUquadricObj*)0;
-	if (!quadratic)
-	{
-		quadratic=gluNewQuadric();										// Create A Pointer To The Quadric Object
-		gluQuadricNormals(quadratic, GLU_SMOOTH);						// Create Smooth Normals
-//		gluQuadricTexture(quadratic, GL_TRUE);							// Create Texture Coords
-		gluQuadricDrawStyle (quadratic,GLU_LINE);
-
-
-	}
-
-	if ((view->mouse.mouse_mode == MM_ROTATE) && (view->active_camera >=0))
-	{
-		float AL=45;
-		glPushMatrix();
-		glLoadIdentity();
-		glMultMatrixf(view->arcball->Transform.M); /*arcball transformations , experimental*/
-		glLineWidth(3);
-		glBegin(GL_LINES);
-			glColor3f(1,1,0);
-	
-			glVertex3f(0,0,0);
-			glVertex3f(0,AL,0);
-
-			glVertex3f(0,0,0);
-			glVertex3f(AL,0,0);
-
-			glVertex3f(0,0,0);
-			glVertex3f(0,0,AL);
-
-		glEnd();
-		glColor4f(0,1,0,0.3);
-		gluSphere(quadratic,AL,20,20);
-		glLineWidth(1);
-		glPopMatrix();
-
-	}
-
 }
 
 

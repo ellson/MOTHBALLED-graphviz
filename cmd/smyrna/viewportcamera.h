@@ -29,5 +29,6 @@ int show_camera_settings(viewport_camera* c);
 int save_camera_settings(viewport_camera* c);
 _BB void dlgcameraokbutton_clicked_cb(GtkWidget * widget, gpointer user_data);
 _BB void dlgcameracancelbutton_clicked_cb(GtkWidget * widget, gpointer user_data);
+extern void menu_click_add_camera(void *p);
 
 #endif

@@ -14,91 +14,70 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 #include "glcomppanel.h"
+#include "glCompFont.h"
+#include "glcompset.h"
 #include "glcomptexture.h"
-#include "glcomptext.h"
+#include "glutils.h"
 
 
-glCompPanel *glCompPanelNew(GLfloat x, GLfloat y, GLfloat w, GLfloat h,
-			    glCompOrientation orientation)
+glCompPanel *glCompPanelNew(glCompObj* parentObj,GLfloat x, GLfloat y, GLfloat w, GLfloat h)
 {
     glCompPanel *p;
+	glCompCommon* parent=&parentObj->common;
     p = malloc(sizeof(glCompPanel));
-    p->color.R = GLCOMPSET_PANEL_COLOR_R;
-    p->color.G = GLCOMPSET_PANEL_COLOR_G;
-    p->color.B = GLCOMPSET_PANEL_COLOR_B;
-    p->color.A = GLCOMPSET_PANEL_COLOR_ALPHA;
-    p->shadowcolor.R = GLCOMPSET_PANEL_SHADOW_COLOR_R;
+	glCompInitCommon((glCompObj*)p,parentObj,(GLfloat)x ,(GLfloat)y);
+
+	p->shadowcolor.R = GLCOMPSET_PANEL_SHADOW_COLOR_R;
     p->shadowcolor.G = GLCOMPSET_PANEL_SHADOW_COLOR_G;
     p->shadowcolor.B = GLCOMPSET_PANEL_SHADOW_COLOR_B;
     p->shadowcolor.A = GLCOMPSET_PANEL_SHADOW_COLOR_A;
     p->shadowwidth = GLCOMPSET_PANEL_SHADOW_WIDTH;
-    p->bevel = GLCOMPSET_PANEL_BEVEL;
-    p->pos.x = x;
-    p->pos.y = y;
-    p->width = w;
-    p->height = h;
-    p->orientation = orientation;
-    p->text = (char *) 0;
-    p->font = font_init();
+	p->common.borderWidth=GLCOMPSET_PANEL_BORDERWIDTH;
+
+
+	p->common.width = w;
+    p->common.height = h;
+
+	p->common.font=new_font_from_parent((glCompObj*)p,NULL);
+	p->text=(char*)0;
+	p->common.functions.draw=glCompPanelDraw;
+	p->image=(glCompImage*)0;
     return p;
 }
 void glCompSetPanelText(glCompPanel * p, char *t)
 {
-    p->text = realloc(p->text, strlen(t) + sizeof(char));
-    strcpy(p->text, t);
+	replacestr(t,&p->text);
+	glCompDeleteTexture(p->common.font->tex);
+	p->common.font->tex=glCompSetAddNewTexLabel(p->common.compset, p->common.font->fontdesc,p->common.font->size,p->text,1);
 }
 
-int glCompDrawPanel(glCompPanel * p)
+int glCompPanelDraw(glCompObj * o)
 {
-    int kts;
-    GLfloat h;			/*container widget height */
-    if (p->orientation == 1) {
-	kts = 1;
-	h = 0;
-    } else {
-	kts = -1;
-	h = ((glCompSet *) p->parentset)->h;
-    }
-    if (!p->visible)
-	return 0;
-    glColor4f(p->color.R, p->color.G, p->color.B, p->color.A);
-    glBegin(GL_POLYGON);
-    glVertex3f(p->pos.x, (p->pos.y * kts + h), p->bevel);
-    glVertex3f(p->pos.x + p->width, (p->pos.y * kts + h), p->bevel);
-    glVertex3f(p->pos.x + p->width, (p->pos.y * kts + h) + p->height * kts,
-	       p->bevel);
-    glVertex3f(p->pos.x, (p->pos.y * kts + h) + p->height * kts, p->bevel);
-    glVertex3f(p->pos.x, (p->pos.y * kts + h), p->bevel);
-    glEnd();
-    glBegin(GL_LINE_STRIP);
-    glColor4f(p->shadowcolor.R, p->shadowcolor.G, p->shadowcolor.B,
-	      p->color.A);
-    glVertex3f(p->pos.x, (p->pos.y * kts + h),
-	       p->bevel + (GLfloat) GLCOMPSET_BEVEL_DIFF);
-    glVertex3f(p->pos.x + p->width, (p->pos.y * kts + h),
-	       p->bevel + (GLfloat) GLCOMPSET_BEVEL_DIFF);
-    glVertex3f(p->pos.x + p->width, (p->pos.y * kts + h) + p->height * kts,
-	       p->bevel + (GLfloat) GLCOMPSET_BEVEL_DIFF);
-    glVertex3f(p->pos.x, (p->pos.y * kts + h) + p->height * kts,
-	       p->bevel + (GLfloat) GLCOMPSET_BEVEL_DIFF);
-    glVertex3f(p->pos.x, (p->pos.y * kts + h), p->bevel);
-    glEnd();
-    glLineWidth(p->shadowwidth);
-    glBegin(GL_LINE_STRIP);
-    glColor4f((GLfloat) p->shadowcolor.R, (GLfloat) p->shadowcolor.G,
-	      (GLfloat) p->shadowcolor.B, (GLfloat) p->shadowcolor.A);
-    glVertex3f(p->pos.x + p->shadowwidth / ((GLfloat) 2.0),
-	       (p->pos.y * kts + h) - p->shadowwidth / ((GLfloat) 2.0),
-	       p->bevel);
-    glVertex3f(p->pos.x + p->shadowwidth / (GLfloat) 2.0 + p->width,
-	       (p->pos.y * kts + h) - p->shadowwidth / (GLfloat) 2.0,
-	       p->bevel);
-    glVertex3f(p->pos.x + p->shadowwidth / (GLfloat) 2.0 + p->width,
-	       (p->pos.y * kts + h) - p->shadowwidth / (GLfloat) 2.0 +
-	       p->height * kts, p->bevel);
-    glEnd();
-    glLineWidth(1);
-    //draw text
+	glCompPanel * p;
+	glCompCommon ref;
+	glCompRect r;
+	p=(glCompPanel*)o;
+	ref=p->common;
+	glCompCalcWidget((glCompCommon*)p->common.parent,&p->common,&ref);
+	p->objType=glPanelObj;
+	//typedef enum {glPanelObj,glbuttonObj,glLabelObj,glImageObj}glObjType;
+
+
+    if (!p->common.visible)
+		return 0;
+	/*draw shadow*/
+    glColor4f((GLfloat) p->shadowcolor.R, (GLfloat) p->shadowcolor.G,(GLfloat) p->shadowcolor.B, (GLfloat) p->shadowcolor.A);
+	r.h=p->shadowwidth;	r.w=ref.width;	r.pos.x=ref.pos.x+p->shadowwidth;	r.pos.y=ref.pos.y-p->shadowwidth;	r.pos.z=-0.001;
+	glCompDrawRectangle (&r);
+	r.h=ref.height;	r.w=p->shadowwidth;	r.pos.x=ref.pos.x+ref.width;	r.pos.y=ref.pos.y-p->shadowwidth;	r.pos.z=-0.001;
+	glCompDrawRectangle (&r);
+	/*draw panel*/
+	glCompDrawRectPrism (&(ref.pos),ref.width,ref.height,p->common.borderWidth,0.01,&(ref.color),1);
+	/*draw image if there is*/
+	if (p->image)
+	{
+		p->image->common.callbacks.draw(p->image);
+	}
     if (p->text) {
 
 
@@ -106,41 +85,11 @@ int glCompDrawPanel(glCompPanel * p)
     return 1;
 }
 
-int glCompSetAddPanel(glCompSet * s, glCompPanel * p)
-{
-    s->panelcount++;
-    s->panels = realloc(s->panels, sizeof(glCompPanel *) * s->panelcount);
-    s->panels[s->panelcount - 1] = p;
-    p->parentset = s;
-    p->font = s->fontset->fonts[s->fontset->activefont];
-    return 1;
-}
-
-int glCompSetRemovePanel(glCompSet * s, glCompPanel * p)
-{
-    int ind = 0;
-    int found = 0;
-    for (; ind < s->panelcount; ind++) {
-	if ((s->panels[ind] == p) && found == 0)
-	    found = 1;
-	if ((found == 1) && (ind < (s->panelcount - 1)))
-	    s->panels[ind] = s->panels[ind + 1];
-    }
-    if (found) {
-	free(p->text);
-	free(p);
-	s->panelcount--;
-	s->panels =
-	    realloc(s->panels, sizeof(glCompPanel *) * s->panelcount);
-	return 1;
-    }
-    return 0;
-}
 
 int glCompPanelHide(glCompPanel * p)
 {
     /* int ind = 0; */
-    p->visible = 0;
+    p->common.visible = 0;
     return 1;
 
 
@@ -149,7 +98,65 @@ int glCompPanelHide(glCompPanel * p)
 int glCompPanelShow(glCompPanel * p)
 {
     /* int ind = 0; */
-    p->visible = 1;
+    p->common.visible = 1;
     return 1;
 
 }
+
+void glCompPanelClick(glCompObj * o,GLfloat x,GLfloat y,glMouseButtonType t)
+{
+	if (o->common.callbacks.click)
+		o->common.callbacks.click(o,x,y,t);	
+}
+
+void glCompPanelDoubleClick(glCompObj * obj,GLfloat x,GLfloat y,glMouseButtonType t)
+{
+	/*Put your internal code here*/
+	if (((glCompPanel*)obj)->common.callbacks.doubleclick)
+	((glCompPanel*)obj)->common.callbacks.doubleclick(obj,x,y,t);
+}
+
+void glCompPanelMouseDown(glCompObj * obj,GLfloat x,GLfloat y,glMouseButtonType t)
+{
+	/*Put your internal code here*/
+	if (((glCompPanel*)obj)->common.callbacks.mousedown)
+		((glCompPanel*)obj)->common.callbacks.mousedown(obj,x,y,t);
+}
+
+void glCompPanelMouseIn(glCompObj * obj,GLfloat x,GLfloat y)
+{
+	/*Put your internal code here*/
+	if (((glCompPanel*)obj)->common.callbacks.mousein)
+		((glCompPanel*)obj)->common.callbacks.mousein(obj,x,y);
+}
+void glCompPanelMouseOut(glCompObj * obj,GLfloat x,GLfloat y)
+{
+	/*Put your internal code here*/
+	if (((glCompPanel*)obj)->common.callbacks.mouseout)
+		((glCompPanel*)obj)->common.callbacks.mouseout(obj,x,y);
+}
+void glCompPanelMouseOver(glCompObj * obj,GLfloat x,GLfloat y)
+{
+	/*Put your internal code here*/
+	if (((glCompPanel*)obj)->common.callbacks.mouseover)
+		((glCompPanel*)obj)->common.callbacks.mouseover(obj,x,y);
+}
+void glCompPanelMouseUp(glCompObj * obj,GLfloat x,GLfloat y,glMouseButtonType t)
+{
+	/*Put your internal code here*/
+	if (((glCompPanel*)obj)->common.callbacks.mouseup)
+		((glCompPanel*)obj)->common.callbacks.mouseup(obj,x,y,t);
+}
+
+
+
+
+void glCompPanelSetText(glCompPanel * p, char *str)
+{
+//    replacestr(str, &p->text);
+}
+
+
+
+
+

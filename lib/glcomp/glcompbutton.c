@@ -15,316 +15,213 @@
 **********************************************************/
 
 #include "glcompbutton.h"
-#include "glcomptexture.h"
-#include "glcomptext.h"
+#include "glcomplabel.h"
+#include "glcompimage.h"
+#include "glCompFont.h"
 #include "glutils.h"
+#include "glcompset.h"
 #include <string.h>
 #include <GL/glut.h>
 
 
-glCompButton *glCompButtonNew(GLfloat x, GLfloat y, GLfloat w, GLfloat h,
-			      char *caption, char *glyphfile,
-			      int glyphwidth, int glyphheight,
-			      glCompOrientation orientation)
+glCompButton *glCompButtonNew(glCompObj* par,GLfloat x, GLfloat y, GLfloat w, GLfloat h,char *caption)
 {
     glCompButton *p;
+	glCompCommon* parent=&par->common;
     p = malloc(sizeof(glCompButton));
-    p->color.R = GLCOMPSET_BUTTON_COLOR_R;
-    p->color.G = GLCOMPSET_BUTTON_COLOR_G;
-    p->color.B = GLCOMPSET_BUTTON_COLOR_B;
-    p->color.A = GLCOMPSET_BUTTON_COLOR_ALPHA;
-    p->bevel = GLCOMPSET_PANEL_BEVEL + GLCOMPSET_BEVEL_DIFF;
-    p->thickness = GLCOMPSET_BUTTON_THICKNESS;
-    p->caption = strdup(caption);
-    p->pos.x = x;
-    p->pos.y = y;
-    p->width = w;
-    p->height = h;
-    p->enabled = 1;
-    p->visible = 1;
+	glCompInitCommon((glCompObj*)p,par,x,y);
+	p->objType=glButtonObj;
+	/*customize button color*/
+	p->common.color.R = GLCOMPSET_BUTTON_COLOR_R;
+    p->common.color.G = GLCOMPSET_BUTTON_COLOR_G;
+    p->common.color.B = GLCOMPSET_BUTTON_COLOR_B;
+    p->common.color.A = GLCOMPSET_BUTTON_COLOR_ALPHA;
+
+	p->common.borderType=glBorderSolid;
+
+	p->common.borderWidth= GLCOMPSET_BUTTON_BEVEL;
+
+    p->common.width = w;
+    p->common.height = h;
     p->status = 0;		//0 not pressed 1 pressed;
-    p->groupid = -1;
-    p->fontsize = GLCOMPSET_FONT_SIZE;
-    p->fontcolor.R = GLCOMPSET_BUTTON_FONT_COLOR_R;
-    p->fontcolor.G = GLCOMPSET_BUTTON_FONT_COLOR_G;
-    p->fontcolor.B = GLCOMPSET_BUTTON_FONT_COLOR_B;
-    p->fontcolor.A = GLCOMPSET_BUTTON_FONT_COLOR_ALPHA;
-    //load glyph
-    if (glyphfile) {
-
-	p->glyph =
-	    glCompCreateTextureFromRaw(glyphfile, glyphwidth, glyphheight,
-				       0);
-	p->glyphwidth = glyphwidth;
-	p->glyphheight = glyphheight;
-	p->hasglyph = 1;
-
-    } else {
-	p->glyphwidth = 0;
-	p->glyphheight = 0;
-	p->hasglyph = 0;
-    }
-    p->orientation = orientation;
-    p->callbackfunc = '\0';
-    p->panel = '\0';
+    p->groupid = 0;
+	p->common.callbacks.click = '\0';
     p->customptr = '\0';
-    p->font = (glCompText *) 0;
+	/*set event functions*/
+
+	p->common.functions.draw=glCompButtonDraw;
+
+	p->common.functions.click=glCompButtonClick;
+	p->common.functions.doubleclick=glCompButtonDoubleClick;
+	p->common.functions.mousedown=glCompButtonMouseDown;
+	p->common.functions.mousein=glCompButtonMouseIn;
+	p->common.functions.mouseout=glCompButtonMouseOut;
+	p->common.functions.mouseover=glCompButtonMouseOver;
+	p->common.functions.mouseup=glCompButtonMouseUp;
+
+	/*caption*/
+	p->common.font =new_font_from_parent((glCompObj*)p,NULL);
+	p->label=glCompLabelNew((glCompObj*)p,0,0,caption);
+	p->label->common.font->justify.VJustify=glFontVJustifyCenter;
+	p->label->common.font->justify.HJustify=glFontHJustifyCenter;
+	p->label->common.align=glAlignParent;
+	/*image*/
+	p->image=(glCompImage*)0;
+	p->glyphPos=glButtonGlyphLeft;
     return p;
 }
 
-
-int glCompSetAddButton(glCompSet * s, glCompButton * p)
+int glCompButtonAddPngGlyph(glCompButton* b,char* fileName)
 {
-    s->buttoncount++;
-    s->buttons =
-	realloc(s->buttons, sizeof(glCompButton *) * s->buttoncount);
-    s->buttons[s->buttoncount - 1] = p;
-    p->parentset = s;
-    p->font = s->fontset->fonts[s->fontset->activefont];
-    return 1;
-}
+	int rv;
+	/*delete if there is an existing image*/
+	if (b->image)
+		glCompImageDelete(b->image);
+	/*image on left for now*/
+	b->image=glCompImageNew((glCompObj*)b,0,0);
 
-int glCompSetRemoveButton(glCompSet * s, glCompButton * p)
-{
-    int ind = 0;
-    int found = 0;
-    for (; ind < s->buttoncount; ind++) {
-	if ((s->buttons[ind] == p) && found == 0)
-	    found = 1;
-	if ((found == 1) && (ind <= (s->buttoncount - 1)))
-	    s->buttons[ind] = s->buttons[ind + 1];
-    }
-    if (found) {
-	free(p->caption);
-	free(p);
-	s->buttoncount--;
-	s->buttons =
-	    realloc(s->buttons, sizeof(glCompButton *) * s->buttoncount);
+	rv= glCompImageLoadPng(b->image,fileName);
+	if (rv)
+	{
+		b->image->common.anchor.leftAnchor=1;
+		b->image->common.anchor.left=0;
 
-	return 1;
-    }
-    return 0;
-}
+		b->image->common.anchor.topAnchor=1;
+		b->image->common.anchor.top=0;
 
-int glCompDrawButton(glCompButton * p)
-{
-    int kts, kts2;
-    GLfloat tempX, tempY;
-    GLfloat h, h2;		/*container widget height */
-    float color_fac;
-    float thickness = p->thickness;
-    float fontx, fonty;
-    GLfloat fontwidth;
+		b->image->common.anchor.bottomAnchor=1;
+		b->image->common.anchor.bottom=0;
 
-    if (p->orientation == 1) {
-	kts = 1;
-	h = 0;
-    } else {
-	kts = -1;
-	h = ((glCompSet *) p->parentset)->h;
-    }
-    if (p->panel->orientation == 1) {
-	kts2 = 1;
-	h2 = 0;
-    } else {
-	kts2 = -1;
-	h2 = ((glCompSet *) p->panel->parentset)->h;
-    }
-    if ((!p->visible) || (!p->panel->visible))
-	return 0;
-    if (p->panel) {
-	tempX = p->pos.x;
-	tempY = p->pos.y;
-	p->pos.x = p->panel->pos.x + p->pos.x;
-	p->pos.y = p->panel->pos.y * kts2 * kts + h2 + p->pos.y - h;
-	if (p->panel->orientation == 0)
-	    p->pos.y = p->pos.y - p->panel->height;
-    }
-    if (p->status == 1) {
-	color_fac = GLCOMPSET_BUTTON_BEVEL_BRIGHTNESS;
-	glColor4f(p->color.R / (GLfloat) 1.2, p->color.G / (GLfloat) 1.2,
-		  p->color.B / (GLfloat) 1.2, p->color.A);
-	p->thickness = p->thickness / (GLfloat) 1.2;
-    }
+		b->label->common.anchor.leftAnchor=1;
+		b->label->common.anchor.left=b->image->common.width;
+		b->label->common.anchor.rightAnchor=1;
+		b->label->common.anchor.right=0;
 
-    else {
-	color_fac = 1 / GLCOMPSET_BUTTON_BEVEL_BRIGHTNESS;
-	glColor4f(p->color.R, p->color.G, p->color.B, p->color.A);
-	p->thickness = p->thickness * (GLfloat) 1.2;
-    }
-    if (!p->hasglyph) {
-	glBegin(GL_POLYGON);
-	glVertex3f(p->pos.x + p->thickness,
-		   (p->pos.y * kts + h) + p->thickness, p->bevel);
-	glVertex3f(p->pos.x + p->width - p->thickness,
-		   (p->pos.y * kts + h) + p->thickness, p->bevel);
-	glVertex3f(p->pos.x + p->width - p->thickness,
-		   (p->pos.y * kts + h) + p->height * kts - p->thickness,
-		   p->bevel);
-	glVertex3f(p->pos.x + p->thickness,
-		   (p->pos.y * kts + h) + p->height * kts - p->thickness,
-		   p->bevel);
-	glVertex3f(p->pos.x + p->thickness,
-		   (p->pos.y * kts + h) + p->thickness, p->bevel);
-	glEnd();
-	//buttom thickness
-	glColor4f(p->color.R * color_fac, p->color.G * color_fac,
-		  p->color.B * color_fac, p->color.A);
-	glBegin(GL_POLYGON);
-	glVertex3f(p->pos.x + p->thickness,
-		   (p->pos.y * kts + h) + p->thickness, p->bevel);
-	glVertex3f(p->pos.x + p->width - p->thickness,
-		   (p->pos.y * kts + h) + p->thickness, p->bevel);
-	glVertex3f(p->pos.x + p->width, (p->pos.y * kts + h), p->bevel);
-	glVertex3f(p->pos.x, (p->pos.y * kts + h), p->bevel);
-	glVertex3f(p->pos.x + p->thickness,
-		   (p->pos.y * kts + h) + p->thickness, p->bevel);
-	glEnd();
-	//left thickness
-	glBegin(GL_POLYGON);
-	glVertex3f(p->pos.x + p->width,
-		   (p->pos.y * kts + h) + p->height * kts, p->bevel);
-	glVertex3f(p->pos.x + p->width - p->thickness,
-		   (p->pos.y * kts + h) + p->height * kts - p->thickness,
-		   p->bevel);
-	glVertex3f(p->pos.x + p->width - p->thickness,
-		   (p->pos.y * kts + h) + p->thickness, p->bevel);
-	glVertex3f(p->pos.x + p->width, (p->pos.y * kts + h), p->bevel);
-	glVertex3f(p->pos.x + p->width,
-		   (p->pos.y * kts + h) + p->height * kts, p->bevel);
-	glEnd();
-	glColor4f(p->color.R / color_fac, p->color.G / color_fac,
-		  p->color.B / color_fac, p->color.A);
-	glBegin(GL_POLYGON);
-	glVertex3f(p->pos.x + p->thickness,
-		   (p->pos.y * kts + h) + p->thickness, p->bevel);
-	glVertex3f(p->pos.x + p->thickness,
-		   (p->pos.y * kts + h) + p->height * kts - p->thickness,
-		   p->bevel);
-	glVertex3f(p->pos.x, (p->pos.y * kts + h) + p->height * kts,
-		   p->bevel);
-	glVertex3f(p->pos.x, (p->pos.y * kts + h), p->bevel);
-	glVertex3f(p->pos.x + p->thickness,
-		   (p->pos.y * kts + h) + p->thickness, p->bevel);
-	glEnd();
-	//left thickness
-	glBegin(GL_POLYGON);
-	glVertex3f(p->pos.x + p->thickness,
-		   (p->pos.y * kts + h) + p->height * kts - p->thickness,
-		   p->bevel);
-	glVertex3f(p->pos.x, (p->pos.y * kts + h) + p->height * kts,
-		   p->bevel);
-	glVertex3f(p->pos.x + p->width,
-		   (p->pos.y * kts + h) + p->height * kts, p->bevel);
-	glVertex3f(p->pos.x + p->width - p->thickness,
-		   (p->pos.y * kts + h) + p->height * kts - p->thickness,
-		   p->bevel);
-	glVertex3f(p->pos.x + p->thickness,
-		   (p->pos.y * kts + h) + p->height * kts - p->thickness,
-		   p->bevel);
-	glEnd();
-	//draw caption
-	fontColor(p->font, p->fontcolor.R, p->fontcolor.G, p->fontcolor.B,
-		  p->fontcolor.A);
-	/*get the string length */
-	fontwidth =
-	    (GLfloat) glutBitmapLength(GLUT_BITMAP_HELVETICA_12,
-				       (unsigned char *) p->caption);
-	fontx =
-	    (p->width - p->thickness * (GLfloat) 2 -
-	     fontwidth) / (GLfloat) 2.0 + p->pos.x + p->thickness;
-	fonty =
-	    (p->height * kts - p->thickness * (GLfloat) 2 -
-	     p->fontsize) / (GLfloat) 2.0 + (p->pos.y * kts + h) +
-	    p->thickness;
-	glprintf(p->font, fontx, fonty, p->bevel, fontwidth, p->caption);
-    }
-    //put glyph
-    else {
-	glEnable(GL_TEXTURE_2D);
-	fontx =
-	    (p->width - p->thickness * (GLfloat) 2 -
-	     p->glyphwidth) / (GLfloat) 2.0 + p->pos.x + p->thickness;
-	fonty =
-	    (p->height * kts - p->thickness * (GLfloat) 2 -
-	     p->glyphheight) / (GLfloat) 2.0 + (p->pos.y * kts + h) +
-	    p->thickness;
-	glBindTexture(GL_TEXTURE_2D, p->glyph->id);
-	glColor4f(1, 1, 1, 1);
-	glBegin(GL_QUADS);
-	glTexCoord2d(0.0f, 1.0f);
-	glVertex3d(fontx, fonty, p->bevel + GLCOMPSET_BEVEL_DIFF);
-	glTexCoord2d(1.0f, 1.0f);
-	glVertex3d(fontx + p->glyph->w, fonty,
-		   p->bevel + GLCOMPSET_BEVEL_DIFF);
-	glTexCoord2d(1.0f, 0.0f);
-	glVertex3d(fontx + p->glyph->w, fonty + p->glyph->h,
-		   p->bevel + GLCOMPSET_BEVEL_DIFF);
-	glTexCoord2d(0.0f, 0.0f);
-	glVertex3d(fontx, fonty + p->glyph->h,
-		   p->bevel + GLCOMPSET_BEVEL_DIFF);
-	glTexCoord2d(fontx, fonty);
-	glVertex3d(fontx, fonty, p->bevel + GLCOMPSET_BEVEL_DIFF);
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
-	if (p->status == 1) {
-	    glColor4f(p->color.R * color_fac, p->color.G * color_fac,
-		      p->color.B * color_fac, p->color.A / 2);
-	    glBegin(GL_POLYGON);
-	    glVertex3d(fontx - p->thickness, fonty - p->thickness,
-		       p->bevel + GLCOMPSET_BEVEL_DIFF * 2);
-	    glVertex3d(fontx + p->glyph->w + p->thickness,
-		       fonty - p->thickness,
-		       p->bevel + GLCOMPSET_BEVEL_DIFF * 2);
-	    glVertex3d(fontx + p->glyph->w + p->thickness,
-		       fonty + p->glyph->h + p->thickness,
-		       p->bevel + GLCOMPSET_BEVEL_DIFF * 2);
-	    glVertex3d(fontx - p->thickness,
-		       fonty + p->glyph->h + p->thickness,
-		       p->bevel + GLCOMPSET_BEVEL_DIFF * 2);
-	    glEnd();
+		b->label->common.anchor.topAnchor=1;
+		b->label->common.anchor.top=0;
 
+		b->label->common.anchor.bottomAnchor=1;
+		b->label->common.anchor.bottom=0;
+
+		b->label->common.align=glAlignNone;
 	}
-    }
-    p->thickness = thickness;
-
-    if (p->panel) {
-	p->pos.x = tempX;
-	p->pos.y = tempY;
-    }
-
-    return 1;
-
-
+	return rv;
 }
 
-void glCompButtonClick(glCompButton * p)
+void glCompButtonHide(glCompButton * p)
+{	
+	p->common.visible=0;
+	if (p->label)
+		p->label->common.visible=0;
+	if (p->image)
+		p->image->common.visible=0;
+}
+void glCompButtonShow(glCompButton * p)
+{	
+	p->common.visible=1;
+	if (p->label)
+		p->label->common.visible=1;
+	if (p->image)
+		p->image->common.visible=1;
+}
+
+void glCompButtonDraw(glCompButton * p)
 {
-    int ind;
-    if (p->groupid > 0) {
-	for (ind = 0; ind < ((glCompSet *) p->parentset)->buttoncount;
-	     ind++) {
-	    if (((glCompSet *) p->parentset)->buttons[ind]->groupid ==
-		p->groupid)
-		((glCompSet *) p->parentset)->buttons[ind]->status = 0;
-	}
-	p->status = 1;
-    } else {
-	if (p->groupid == -1) {
-	    if (p->status == 0)
+
+	glCompCommon ref;
+	ref=p->common;
+	glCompCalcWidget((glCompCommon*)p->common.parent,&p->common,&ref);
+    if (!p->common.visible)
+		return;
+	/*draw panel*/
+	glCompDrawRectPrism (&(ref.pos),ref.width,ref.height,p->common.borderWidth,0.01,&(ref.color),!p->status);
+	if (p->label)
+		p->label->common.functions.draw(p->label);
+	if(p->image)
+		p->image->common.functions.draw((glCompObj*)p->image);
+	if (p->common.callbacks.draw)
+		p->common.callbacks.draw(p);	/*user defined drawing routines are called here.*/
+}
+
+void glCompButtonClick(glCompObj * o,GLfloat x,GLfloat y,glMouseButtonType t)
+{
+	glCompButton* p=(glCompButton*)o;
+	glCompObj* obj;
+	glCompSet* s=o->common.compset;
+	int ind=0;
+	if (p->groupid > 0)
+	{
+		for (;ind < s->objcnt;ind ++)
+		{
+			obj=s->obj[ind];
+			if (obj->objType==glButtonObj)
+			{
+				if ( ((glCompButton*)obj)->groupid == p->groupid)
+					((glCompButton*)obj)->status=0;
+			}
+		}
 		p->status = 1;
-	    else
-		p->status = 0;
-	} else
-	    p->status = 0;
+    } 
+	else 
+	{
+		if (p->groupid == -1) 
+		{
+			if (p->status == 0)
+				p->status = 1;
+			else
+				p->status = 0;
+		} 
+		else	p->status = 0;
     }
-    if (p->callbackfunc)
-	p->callbackfunc(p);
-
-
+	if (p->common.callbacks.click)
+		p->common.callbacks.click(p,x,y,t);	
 }
+
+void glCompButtonDoubleClick(glCompObj * obj,GLfloat x,GLfloat y,glMouseButtonType t)
+{
+	/*Put your internal code here*/
+	if (((glCompButton*)obj)->common.callbacks.doubleclick)
+	((glCompButton*)obj)->common.callbacks.doubleclick(obj,x,y,t);
+}
+
+void glCompButtonMouseDown(glCompObj * obj,GLfloat x,GLfloat y,glMouseButtonType t)
+{
+		/*Put your internal code here*/
+
+	((glCompButton*)obj)->status=1;
+	if (((glCompButton*)obj)->common.callbacks.mousedown)
+		((glCompButton*)obj)->common.callbacks.mousedown(obj,x,y,t);
+}
+
+void glCompButtonMouseIn(glCompObj * obj,GLfloat x,GLfloat y)
+{
+	/*Put your internal code here*/
+	if (((glCompButton*)obj)->common.callbacks.mousein)
+		((glCompButton*)obj)->common.callbacks.mousein(obj,x,y);
+}
+void glCompButtonMouseOut(glCompObj * obj,GLfloat x,GLfloat y)
+{
+	/*Put your internal code here*/
+	if (((glCompButton*)obj)->common.callbacks.mouseout)
+		((glCompButton*)obj)->common.callbacks.mouseout(obj,x,y);
+}
+void glCompButtonMouseOver(glCompObj * obj,GLfloat x,GLfloat y)
+{
+	/*Put your internal code here*/
+	if (((glCompButton*)obj)->common.callbacks.mouseover)
+		((glCompButton*)obj)->common.callbacks.mouseover(obj,x,y);
+}
+void glCompButtonMouseUp(glCompObj * obj,GLfloat x,GLfloat y,glMouseButtonType t)
+{
+	/*Put your internal code here*/
+	if (((glCompButton*)obj)->common.callbacks.mouseup)
+		((glCompButton*)obj)->common.callbacks.mouseup(obj,x,y,t);
+}
+
+
+
 
 void glCompButtonSetText(glCompButton * p, char *str)
 {
-    replacestr(str, &p->caption);
+//    replacestr(str, &p->text);
 }

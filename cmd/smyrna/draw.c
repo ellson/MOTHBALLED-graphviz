@@ -323,7 +323,6 @@ void DrawEllipse(xdot_op * op, int param)
 	filled = 0;
     }
 
-    glLineWidth(view->LineWidth);
     if (!filled)
 	glBegin(GL_LINE_LOOP);
     else
@@ -464,7 +463,8 @@ void InsertImage(xdot_op * op, int param)
 }
 void EmbedText(xdot_op * op, int param)
 {
-    GLfloat x;
+#ifdef UNUSED
+	GLfloat x;
 //    SelectText((sdot_op *) op);
     set_options((sdot_op *) op, param);
     if (op->u.text.align == 1)
@@ -481,6 +481,7 @@ void EmbedText(xdot_op * op, int param)
 		  view->selectedNodeColor.B,1);
 	glprintf(view->widgets->fontset->fonts[view->widgets->fontset->activefont], (x - dx), (GLfloat)op->u.text.y -  dy,(GLfloat)0,
 		   (GLfloat)op->u.text.width, op->u.text.text);
+#endif
 }
 
 void draw_selection_box(ViewInfo * view)
@@ -745,7 +746,7 @@ static void scanXdot(xdot * xDot, void *p)
 		op->obj = p;
 		if (op->op.kind==xd_font)
 		{
-			add_font(view->widgets->fontset,op->op.u.font.name);//load or set active font
+//			add_font(view->widgets->fontset,op->op.u.font.name,op->op.u.font.size);//load or set active font
 		}
     }
 

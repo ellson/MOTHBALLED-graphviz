@@ -16,12 +16,21 @@
 #include "glcompdefs.h"
 
 
-extern glCompButton *glCompButtonNew(GLfloat x, GLfloat y, GLfloat w, GLfloat h,char *caption, char *glyphfile,int glyphwidth, int glyphheight,glCompOrientation orientation);
-extern int glCompSetAddButton(glCompSet * s, glCompButton * p);
+glCompButton *glCompButtonNew(glCompObj* par,GLfloat x, GLfloat y, GLfloat w, GLfloat h,char *caption);
 extern int glCompSetRemoveButton(glCompSet * s, glCompButton * p);
-extern int glCompDrawButton(glCompButton * p);
-extern void glCompButtonClick(glCompButton * p);
+extern void glCompButtonDraw(glCompButton * p);
 extern void glCompButtonSetText(glCompButton * p,char* str);
+extern int glCompButtonAddPngGlyph(glCompButton* b,char* fileName);
+extern void glCompButtonClick(glCompObj * o,GLfloat x,GLfloat y,glMouseButtonType t);
+extern void glCompButtonDoubleClick(glCompObj * o,GLfloat x,GLfloat y,glMouseButtonType t);
+extern void glCompButtonMouseDown(glCompObj * o,GLfloat x,GLfloat y,glMouseButtonType t);
+extern void glCompButtonMouseIn(glCompObj * o,GLfloat x,GLfloat y);
+extern void glCompButtonMouseOut(glCompObj * o,GLfloat x,GLfloat y);
+extern void glCompButtonMouseOver(glCompObj * o,GLfloat x,GLfloat y);
+extern void glCompButtonMouseUp(glCompObj * o,GLfloat x,GLfloat y,glMouseButtonType t);
+extern void glCompButtonHide(glCompButton * p);
+extern void glCompButtonShow(glCompButton * p);
+
 
 
 #endif

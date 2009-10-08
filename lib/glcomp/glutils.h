@@ -20,6 +20,7 @@
 #endif
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include "glcompdefs.h"
 
 
 typedef struct {
@@ -42,7 +43,14 @@ void to3D(int x, int y, GLfloat * X, GLfloat * Y,GLfloat * Z);
 void linear_interplotate (float,float,float,float,float,float*);
 double point_to_line_dist(point3f p, point3f u, point3f v);
 double point_to_lineseg_dist (point3f p, point3f a, point3f b);
-int rot_spherex(plane J,double tet,point3f P,point3f* P2);
+int rot_spherex(plane J,float tet,point3f P,point3f* P2);
 void make_plane(point3f a,point3f b,point3f c,plane* P);
 void replacestr(char *source,char **target);
+extern void glCompCalcWidget(glCompCommon* parent,glCompCommon* child,glCompCommon* ref);
+extern void glCompDrawRectangle (glCompRect* r);
+extern void glCompDrawRectPrism (glCompPoint* p,GLfloat w,GLfloat h,GLfloat b,GLfloat d,glCompColor* c,int bumped);
+extern void copy_glcomp_color(glCompColor* source,glCompColor* target);
+extern void glCompSetColor(glCompColor* c);
+
+void glCompSelectionBox(glCompSet* s);
 #endif

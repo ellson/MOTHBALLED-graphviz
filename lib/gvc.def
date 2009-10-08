@@ -333,3 +333,4 @@ getPackModeInfo
 parsePackModeInfo
 putRects
 xdotBB
+gvFinalize

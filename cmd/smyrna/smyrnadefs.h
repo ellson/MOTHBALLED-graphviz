@@ -20,8 +20,6 @@
 #ifndef NO_WIN_HEADER
 #include "windows.h"
 #endif
-//#define       SMYRNA_GLADE "C:/Projects/graphviz2/share/gui/smyrna.glade"
-#define	SMYRNA_ATTRS "c:/graphviz-ms/graphviz2/share/gui/attrs.txt"
 #endif
 #ifdef	WIN32			//this  is needed on WIN32 to get libglade see the callback
 #define _BB  __declspec(dllexport)

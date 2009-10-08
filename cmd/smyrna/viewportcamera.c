@@ -140,21 +140,13 @@ void menu_click_camera_select(void *p)
 }
 
 
-void menu_click_camera_remove(void *p)
-{
-    delete_camera_from_viewport(view,
-				view->cameras[(int) ((glCompButton *) p)->
-					      data]);
-    attach_camera_widget(view);
-
-}
 void menu_click_camera_edit(void *p)
 {
     show_camera_settings(view->cameras[(int) ((glCompButton *) p)->data]
 	);
 }
 
-
+#ifdef UNUSED
 void attach_camera_widget(ViewInfo * view)
 {
 
@@ -269,6 +261,7 @@ void attach_camera_widget(ViewInfo * view)
 		b->callbackfunc = menu_click_camera_edit;
     }
 }
+#endif
 int show_camera_settings(viewport_camera * c)
 {
 

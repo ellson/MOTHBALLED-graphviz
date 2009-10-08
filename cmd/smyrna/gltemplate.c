@@ -36,6 +36,20 @@ static float begin_y = 0.0;
 static float dx = 0.0;
 static float dy = 0.0;
 
+/*mouse mode mapping funvtion from gtk to glcomp*/
+static glMouseButtonType getGlCompMouseType(int n)
+{
+	switch (n)
+	{
+		case 1:
+			  return glMouseLeftButton;
+		case 3:
+			  return glMouseRightButton;
+	}
+}
+
+
+
 /*
 	test opengl parameters, configuration.Run this function to see machine's open gl capabilities
 	params:gtk gl config class ,gtk takes care of all these tests
@@ -134,11 +148,6 @@ static void realize(GtkWidget * widget, gpointer data)
 
     static char *smyrna_font;
 
-#ifdef WIN32
-    smyrna_font = "c:/pango_font.tga";
-#else
-    smyrna_font = smyrnaPath("arial.tga");
-#endif
 
 	/*** OpenGL BEGIN ***/
     if (!gdk_gl_drawable_gl_begin(gldrawable, glcontext))
@@ -257,23 +266,6 @@ gboolean expose_event(GtkWidget * widget, GdkEventExpose * event,
 	return TRUE;
 }
 
-#ifdef UNUSED
-static gboolean key_release_event(GtkWidget * widget,
-				     GdkEventButton * event, gpointer data)
-{
-	printf ("a key is released\n");
-
-}
-
-static gboolean key_press_event(GtkWidget * widget, GdkEventKey * event,
-				gpointer data)
-{
-	printf ("a key is pressed\n");
-
-}
-#endif
-
-
 /*
 	when a mouse button is clicked this function is called
 	params:gtk opgn gl canvas , GdkEventButton object and custom data
@@ -282,15 +274,10 @@ static gboolean key_press_event(GtkWidget * widget, GdkEventKey * event,
 static gboolean button_press_event(GtkWidget * widget,
 				   GdkEventButton * event, gpointer data)
 {
-	if (view->graphCount)
-	{
-		if (glCompSetClick(view->widgets, (int) event->x, (int) event->y))
-	    expose_event(view->drawing_area, NULL, NULL);
-    }
-
     begin_x = (float) event->x;
     begin_y = (float) event->y;
-	//update mouse coordinates of view if there is left or right click
+	view->widgets->common.functions.mousedown(view->widgets,(GLfloat)event->x,(GLfloat)event->y,getGlCompMouseType(event->button));
+
 	if ((event->button == 1) || (event->button == 3))
 	{
 		GetOGLPosRef    ((int) begin_x, (int) begin_y, &(view->GLx), &(view->GLy),&(view->GLz));
@@ -319,7 +306,8 @@ static gboolean button_press_event(GtkWidget * widget,
 			expose_event(view->drawing_area, NULL, NULL);
 		}
     }
-	/*experimental code for arcball, init first click */
+	expose_event(view->drawing_area, NULL, NULL);
+
     return FALSE;
 }
 
@@ -333,14 +321,12 @@ static gboolean button_release_event(GtkWidget * widget,
 {
 	view->FontSizeConst=GetOGLDistance(14);
 	view->arcball->isDragging=0;
+	view->widgets->common.functions.mouseup(view->widgets,(GLfloat)event->x,(GLfloat)event->y,getGlCompMouseType(event->button));
+
 
 	if (event->button == 1)	//left click release
     {
-		if (glCompSetRelease(view->widgets, (int) event->x_root,(int) event->y_root))		
-		{
-			 expose_event(view->drawing_area, NULL, NULL);	
-		}
-		view->mouse.mouse_down = 0;
+   		view->mouse.mouse_down = 0;
 		if ((view->mouse.mouse_mode == MM_RECTANGULAR_SELECT)
 			|| (view->mouse.mouse_mode == MM_RECTANGULAR_X_SELECT)) 
 		{
@@ -431,9 +417,12 @@ static gboolean motion_notify_event(GtkWidget * widget,
     /* float h = (float)widget->allocation.height; */
     float x = (float) event->x;
     float y = (float) event->y;
+    gboolean redraw = FALSE;
+
+	view->widgets->common.functions.mouseover(view->widgets,(GLfloat)x,(GLfloat)y);
+
 	
 
-    gboolean redraw = FALSE;
 
 	dx = x - begin_x;
     dy = y - begin_y;

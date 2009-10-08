@@ -67,18 +67,12 @@ unsigned char SmyrnaVerbose;
 char*
 smyrnaPath (char* suffix)
 {
-    char* buf;
-#ifdef _WIN32
+	static char* buf[1024];
     char* pathSep = "\\";
-#else
-
-    assert (smyrnaDir);
-    char* pathSep = "/";
-#endif
-
-    buf = N_NEW(strlen(smyrnaDir)+strlen(suffix)+2,char);
+	assert (smyrnaDir);
+	if ((strlen(smyrnaDir)+strlen(suffix)+ strlen(suffix) + 2) > 512)
+		return NULL;
     sprintf (buf, "%s%s%s", smyrnaDir, pathSep, suffix);
-
     return buf;
 }
 
@@ -154,9 +148,11 @@ int main(int argc, char *argv[])
     smyrnaDir = getenv ("SMYRNA_PATH");
     if (!smyrnaDir) {
 #ifdef _WIN32
-	int sz = GetCurrentDirectory(0, NULL);
+	int sz = GetCurrentDirectory(0, NULL)+strlen("\\share\\graphviz\\smyrna") + 1;
 	smyrnaDir = N_NEW(sz, char);
 	GetCurrentDirectory (sz, smyrnaDir);
+	smyrnaDir[strlen(smyrnaDir)-4]=(char)0;
+	strcat(smyrnaDir,"\\share\\graphviz\\smyrna");
 #else
 	smyrnaDir = SMYRNA_PATH;
 #endif
@@ -165,12 +161,10 @@ int main(int argc, char *argv[])
     load_attributes();
 
 #ifdef G_OS_WIN32
-    package_prefix =
-	g_win32_get_package_installation_directory(NULL, NULL);
+    package_prefix =g_win32_get_package_installation_directory(NULL, NULL);
     package_data_dir = g_build_filename(package_prefix, "share", NULL);
     package_locale_dir =
 	g_build_filename(package_prefix, "share", "locale", NULL);
-    add_pixmap_directory("C:/");
 #else
     package_locale_dir = g_build_filename(smyrnaDir, "locale", NULL);
 #endif	/* # */
@@ -185,17 +179,8 @@ int main(int argc, char *argv[])
     gtk_set_locale();
     gtk_init(&argc, &argv);
     initFileName = parseArgs (argc, argv, view);
-
-#ifdef _WIN32
-#define GTKTOPVIEW_ICONSDIR "C:\\Projects\\ATT\\GTK\\GTKTest2\\GUI\\images\\"
-#endif
-    if (!(smyrnaGlade)) {
-#ifdef _WIN32
-	smyrnaGlade = view->glade_file;
-#else
-	smyrnaGlade = smyrnaPath ("smyrna.glade");
-#endif
-    }
+    if (!(smyrnaGlade)) 
+		smyrnaGlade = smyrnaPath ("smyrna.glade");
     xml = glade_xml_new(smyrnaGlade, NULL, NULL);
     gladewidget = glade_xml_get_widget(xml, "frmMain");
     gtk_widget_show(gladewidget);

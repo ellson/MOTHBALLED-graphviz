@@ -15,10 +15,23 @@
 
 #include "glcompdefs.h"
 
-extern glCompLabel *glCompLabelNew(GLfloat x, GLfloat y, GLfloat size, char *text,glCompOrientation orientation);
+
+glCompLabel *glCompLabelNew(glCompObj* par,GLfloat x, GLfloat y,char *text);
 extern int glCompSetAddLabel(glCompSet * s, glCompLabel * p);
 extern int glCompSetRemoveLabel(glCompSet * s, glCompLabel * p);
-extern int glCompDrawLabel(glCompLabel * p);
+
+
+/*events*/
+extern int glCompLabelDraw(glCompLabel * p);
+extern void glCompLabelClick(glCompObj * o,GLfloat x,GLfloat y,glMouseButtonType t);
+extern void glCompLabelDoubleClick(glCompObj * obj,GLfloat x,GLfloat y,glMouseButtonType t);
+extern void glCompLabelMouseDown(glCompObj * obj,GLfloat x,GLfloat y,glMouseButtonType t);
+extern void glCompLabelMouseIn(glCompObj * obj,GLfloat x,GLfloat y);
+extern void glCompLabelMouseOut(glCompObj * obj,GLfloat x,GLfloat y);
+extern void glCompLabelMouseOver(glCompObj * obj,GLfloat x,GLfloat y);
+extern void glCompLabelMouseUp(glCompObj * obj,GLfloat x,GLfloat y,glMouseButtonType t);
+
+
 
 
 
