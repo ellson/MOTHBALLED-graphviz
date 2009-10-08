@@ -22,6 +22,7 @@
 #include <glade/glade.h>
 #include <gtk/gtk.h>
 #include "draw.h"
+#include "gui.h"
 
 #include <viewport.h> 
 //#include <gltemplate.h> 
