@@ -58,7 +58,6 @@ static int mapbool(char *p)
 	return TRUE;
     return atoi(p);
 }
-#endif
 static Dtdisc_t qDisc = {
     offsetof(xdot,ops),
     sizeof(xdot_op*),
@@ -70,6 +69,7 @@ static Dtdisc_t qDisc = {
     NIL(Dtmemory_f),
     NIL(Dtevent_f)
 };
+#endif
 
 
 void clear_viewport(ViewInfo * view)
@@ -352,7 +352,7 @@ void init_viewport(ViewInfo * view)
 
     input_file = fopen(view->template_file, "rb");
 	if (!input_file) {
-		fprintf (stderr, "default attributes template graph file \"%s\" not found\n", "c://graphviz-ms//bin//template");
+		fprintf (stderr, "default attributes template graph file \"%s\" not found\n", view->template_file);
 		exit(-1);
     } else if (!(view->default_attributes = agread(input_file, 0))) 
 	{
