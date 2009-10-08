@@ -17,6 +17,6 @@ endif
 
 libglcomp_C_la_SOURCES = glcompbutton.c glcomplabel.c \
 	glcomppanel.c glcompset.c glcomptexture.c glcomptextpng.c\
-	glpangofont.c glutils.c glcompimage.c
+	glpangofont.c glutils.c glcompimage.c glcompmouse.c glcompfont.c            
 
 EXTRA_DIST = glcomp.vcproj
