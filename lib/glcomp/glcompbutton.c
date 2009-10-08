@@ -17,7 +17,7 @@
 #include "glcompbutton.h"
 #include "glcomplabel.h"
 #include "glcompimage.h"
-#include "glCompFont.h"
+#include "glcompfont.h"
 #include "glutils.h"
 #include "glcompset.h"
 #include <string.h>

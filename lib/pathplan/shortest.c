@@ -295,21 +295,25 @@ static void triangulate(pointnlink_t ** pnlps, int pnln)
 {
     int pnli, pnlip1, pnlip2;
 
-    if (pnln > 3) {
-	for (pnli = 0; pnli < pnln; pnli++) {
-	    pnlip1 = (pnli + 1) % pnln;
-	    pnlip2 = (pnli + 2) % pnln;
-	    if (isdiagonal(pnli, pnlip2, pnlps, pnln)) {
-		loadtriangle(pnlps[pnli], pnlps[pnlip1], pnlps[pnlip2]);
-		for (pnli = pnlip1; pnli < pnln - 1; pnli++)
-		    pnlps[pnli] = pnlps[pnli + 1];
-		triangulate(pnlps, pnln - 1);
-		return;
-	    }
-	}
-	abort();
-    } else
-	loadtriangle(pnlps[0], pnlps[1], pnlps[2]);
+	if (pnln > 3) 
+	{
+		for (pnli = 0; pnli < pnln; pnli++) 
+		{
+			pnlip1 = (pnli + 1) % pnln;
+			pnlip2 = (pnli + 2) % pnln;
+			if (isdiagonal(pnli, pnlip2, pnlps, pnln)) 
+			{
+				loadtriangle(pnlps[pnli], pnlps[pnlip1], pnlps[pnlip2]);
+				for (pnli = pnlip1; pnli < pnln - 1; pnli++)
+					pnlps[pnli] = pnlps[pnli + 1];
+				triangulate(pnlps, pnln - 1);
+				return;
+			}
+		}
+		abort();
+    } 
+	else
+		loadtriangle(pnlps[0], pnlps[1], pnlps[2]);
 }
 
 /* check if (i, i + 2) is a diagonal */
