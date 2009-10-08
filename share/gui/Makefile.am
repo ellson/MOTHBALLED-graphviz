@@ -14,7 +14,10 @@ icons = add_edge.png AntiselectRect.png AntiselectRectX.png cursor.png \
 	fisheye.raw ok.raw ok2.raw ok3.raw pan.raw zoom.raw \
 	zoomminus.raw zoomplus.raw rotate.raw \
     dot.PNG glade-3.png lcirco.png ldot.png lfdp.png lneato.png \
-    ltwopi.png selectr.png single_select.png
+    ltwopi.png selectr.png single_select.png 2D.png 3D.png center.png \
+    details.png edge.png fish.PNG fisheye.png fit.png magnifier.png mod_3D.png \
+    mod_fisheye.png move.png no_fisheye.png node.png pan.png preview.png \
+    rect_select.png rect_select2.png rotate.png zoom.png zoomin.png zoomout.png
 
 if WITH_SMYRNA
 gui_DATA = $(gui)
