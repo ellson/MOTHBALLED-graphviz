@@ -67,11 +67,15 @@ unsigned char SmyrnaVerbose;
 char*
 smyrnaPath (char* suffix)
 {
-	static char* buf[1024];
+    static char* buf[1024];
+#ifdef WIN32
     char* pathSep = "\\";
-	assert (smyrnaDir);
-	if ((strlen(smyrnaDir)+strlen(suffix)+ strlen(suffix) + 2) > 512)
-		return NULL;
+#else
+    char* pathSep = "/";
+#endif
+    assert (smyrnaDir);
+    if ((strlen(smyrnaDir)+strlen(suffix)+ strlen(suffix) + 2) > 512)
+	return NULL;
     sprintf (buf, "%s%s%s", smyrnaDir, pathSep, suffix);
     return buf;
 }
