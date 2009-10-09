@@ -1,3 +1,4 @@
+/* $Id$Revision: */
 /* vim:set shiftwidth=4 ts=8: */
 
 /**********************************************************
@@ -27,6 +28,20 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include "glcompdefs.h"
-extern glCompTex* glCompSetAddNewTexImage(glCompSet* s,int width,int height,unsigned char* data,int is2D);
-extern glCompTex* glCompSetAddNewTexLabel(glCompSet* s, char* def,int fs,char* text,int is2D);
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+    extern glCompTex *glCompSetAddNewTexImage(glCompSet * s, int width,
+					      int height,
+					      unsigned char *data,
+					      int is2D);
+    extern glCompTex *glCompSetAddNewTexLabel(glCompSet * s, char *def,
+					      int fs, char *text,
+					      int is2D);
+
+#ifdef __cplusplus
+}
+#endif
 #endif

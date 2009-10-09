@@ -1,3 +1,4 @@
+/* $Id$Revision: */
 /* vim:set shiftwidth=4 ts=8: */
 
 /**********************************************************
@@ -12,85 +13,91 @@
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
+
 #include "glcompimage.h"
 #include "glcompfont.h"
 #include "glcompset.h"
 #include "glutils.h"
 #include "glcomptexture.h"
+#include "memory.h"
 
-glCompImage *glCompImageNew(glCompObj* par,GLfloat x, GLfloat y)
+glCompImage *glCompImageNew(glCompObj * par, GLfloat x, GLfloat y)
 {
     glCompImage *p;
-    p = malloc(sizeof(glCompImage));
-	glCompInitCommon((glCompObj*)p,par,x,y);
-	p->objType=glImageObj;
-	//typedef enum {glPanelObj,glbuttonObj,glLabelObj,glImageObj}glObjType;
+    p = NEW(glCompImage);
+    glCompInitCommon((glCompObj *) p, par, x, y);
+    p->objType = glImageObj;
+    //typedef enum {glPanelObj,glbuttonObj,glLabelObj,glImageObj}glObjType;
 
-	p->objType=glImageObj;
-	p->stretch=0;
-	p->pngFile=(char*)0;
-	p->texture=NULL;
-	p->common.functions.draw=glCompImageDraw;
+    p->objType = glImageObj;
+    p->stretch = 0;
+    p->pngFile = (char *) 0;
+    p->texture = NULL;
+    p->common.functions.draw = glCompImageDraw;
     return p;
 }
-void glCompImageDelete (glCompImage* p)
-{
-	glCompEmptyCommon(&p->common);
-	if(p->pngFile)
-		free (p->pngFile);
-	if(p->texture)
-		glCompDeleteTexture(p->texture);
-	free(p);
-}
-extern unsigned char *load_png(char *file_name, int *imageWidth,int *imageHeight);
-int glCompImageLoad(glCompImage* i,unsigned char* data,int width,int height)
-{
-	if(data != NULL)	/*valid image data*/
-	{
-		glCompDeleteTexture(i->texture);
-		i->texture=glCompSetAddNewTexImage(i->common.compset,width,height,data,1);
-		if(i->texture)
-		{
-			i->common.width=width;
-			i->common.height=height;
-			return 1;
-		}
 
+void glCompImageDelete(glCompImage * p)
+{
+    glCompEmptyCommon(&p->common);
+    if (p->pngFile)
+	free(p->pngFile);
+    if (p->texture)
+	glCompDeleteTexture(p->texture);
+    free(p);
+}
+extern unsigned char *load_png(char *file_name, int *imageWidth,
+			       int *imageHeight);
+int glCompImageLoad(glCompImage * i, unsigned char *data, int width,
+		    int height)
+{
+    if (data != NULL) {		/*valid image data */
+	glCompDeleteTexture(i->texture);
+	i->texture =
+	    glCompSetAddNewTexImage(i->common.compset, width, height, data,
+				    1);
+	if (i->texture) {
+	    i->common.width = width;
+	    i->common.height = height;
+	    return 1;
 	}
-	return 0;
+
+    }
+    return 0;
 }
 
 
 
-int glCompImageLoadPng(glCompImage* i,char* pngFile)
+int glCompImageLoadPng(glCompImage * i, char *pngFile)
 {
-	int imageWidth,imageHeight;
-	unsigned char* data;
-	data=load_png(pngFile, &imageWidth, &imageHeight);
-	return glCompImageLoad(i,data,imageWidth,imageHeight);
+    int imageWidth, imageHeight;
+    unsigned char *data;
+    data = load_png(pngFile, &imageWidth, &imageHeight);
+    return glCompImageLoad(i, data, imageWidth, imageHeight);
 }
-int glCompImageLoadRaw(glCompSet * s,glCompImage* i,char* rawFile)
+int glCompImageLoadRaw(glCompSet * s, glCompImage * i, char *rawFile)
 {
-	int imageWidth,imageHeight;
-	unsigned char* data;
-	data=load_png(rawFile, &imageWidth, &imageHeight);
-	return glCompImageLoad(i,data,imageWidth,imageHeight);
+    int imageWidth, imageHeight;
+    unsigned char *data;
+    data = load_png(rawFile, &imageWidth, &imageHeight);
+    return glCompImageLoad(i, data, imageWidth, imageHeight);
 }
 
-void glCompImageDraw(void* obj)
+void glCompImageDraw(void *obj)
 {
-	glCompImage* p;
-	static glCompCommon ref;
-//	static GLfloat w,h,d;
-	p=(glCompImage*)obj;
-	ref=p->common;
-	glCompCalcWidget((glCompCommon*)p->common.parent,&p->common,&ref);
+    glCompImage *p;
+    static glCompCommon ref;
+//      static GLfloat w,h,d;
+    p = (glCompImage *) obj;
+    ref = p->common;
+    glCompCalcWidget((glCompCommon *) p->common.parent, &p->common, &ref);
     if (!p->common.visible)
-		return ;
-	if (!p->texture)
-		return;
-	glRasterPos2f(ref.pos.x,ref.pos.y);
-	glDrawPixels(p->texture->width,p->texture->height,GL_RGBA,GL_UNSIGNED_BYTE,p->texture->data);
+	return;
+    if (!p->texture)
+	return;
+    glRasterPos2f(ref.pos.x, ref.pos.y);
+    glDrawPixels(p->texture->width, p->texture->height, GL_RGBA,
+		 GL_UNSIGNED_BYTE, p->texture->data);
 
 /*	w=ref.width;
 	h=ref.height;
@@ -111,48 +118,54 @@ void glCompImageDraw(void* obj)
 
 }
 
-void glCompImageClick(glCompObj * o,GLfloat x,GLfloat y,glMouseButtonType t)
+void glCompImageClick(glCompObj * o, GLfloat x, GLfloat y,
+		      glMouseButtonType t)
 {
-	if (o->common.callbacks.click)
-		o->common.callbacks.click(o,x,y,t);	
+    if (o->common.callbacks.click)
+	o->common.callbacks.click(o, x, y, t);
 }
 
-void glCompImageDoubleClick(glCompObj * obj,GLfloat x,GLfloat y,glMouseButtonType t)
+void glCompImageDoubleClick(glCompObj * obj, GLfloat x, GLfloat y,
+			    glMouseButtonType t)
 {
-	/*Put your internal code here*/
-	if (((glCompImage*)obj)->common.callbacks.doubleclick)
-	((glCompImage*)obj)->common.callbacks.doubleclick(obj,x,y,t);
+    /*Put your internal code here */
+    if (((glCompImage *) obj)->common.callbacks.doubleclick)
+	((glCompImage *) obj)->common.callbacks.doubleclick(obj, x, y, t);
 }
 
-void glCompImageMouseDown(glCompObj * obj,GLfloat x,GLfloat y,glMouseButtonType t)
+void glCompImageMouseDown(glCompObj * obj, GLfloat x, GLfloat y,
+			  glMouseButtonType t)
 {
-	/*Put your internal code here*/
-	if (((glCompImage*)obj)->common.callbacks.mousedown)
-		((glCompImage*)obj)->common.callbacks.mousedown(obj,x,y,t);
+    /*Put your internal code here */
+    if (((glCompImage *) obj)->common.callbacks.mousedown)
+	((glCompImage *) obj)->common.callbacks.mousedown(obj, x, y, t);
 }
 
-void glCompImageMouseIn(glCompObj * obj,GLfloat x,GLfloat y)
+void glCompImageMouseIn(glCompObj * obj, GLfloat x, GLfloat y)
 {
-	/*Put your internal code here*/
-	if (((glCompImage*)obj)->common.callbacks.mousein)
-		((glCompImage*)obj)->common.callbacks.mousein(obj,x,y);
-}
-void glCompImageMouseOut(glCompObj * obj,GLfloat x,GLfloat y)
-{
-	/*Put your internal code here*/
-	if (((glCompImage*)obj)->common.callbacks.mouseout)
-		((glCompImage*)obj)->common.callbacks.mouseout(obj,x,y);
-}
-void glCompImageMouseOver(glCompObj * obj,GLfloat x,GLfloat y)
-{
-	/*Put your internal code here*/
-	if (((glCompImage*)obj)->common.callbacks.mouseover)
-		((glCompImage*)obj)->common.callbacks.mouseover(obj,x,y);
-}
-void glCompImageMouseUp(glCompObj * obj,GLfloat x,GLfloat y,glMouseButtonType t)
-{
-	/*Put your internal code here*/
-	if (((glCompImage*)obj)->common.callbacks.mouseup)
-		((glCompImage*)obj)->common.callbacks.mouseup(obj,x,y,t);
+    /*Put your internal code here */
+    if (((glCompImage *) obj)->common.callbacks.mousein)
+	((glCompImage *) obj)->common.callbacks.mousein(obj, x, y);
 }
 
+void glCompImageMouseOut(glCompObj * obj, GLfloat x, GLfloat y)
+{
+    /*Put your internal code here */
+    if (((glCompImage *) obj)->common.callbacks.mouseout)
+	((glCompImage *) obj)->common.callbacks.mouseout(obj, x, y);
+}
+
+void glCompImageMouseOver(glCompObj * obj, GLfloat x, GLfloat y)
+{
+    /*Put your internal code here */
+    if (((glCompImage *) obj)->common.callbacks.mouseover)
+	((glCompImage *) obj)->common.callbacks.mouseover(obj, x, y);
+}
+
+void glCompImageMouseUp(glCompObj * obj, GLfloat x, GLfloat y,
+			glMouseButtonType t)
+{
+    /*Put your internal code here */
+    if (((glCompImage *) obj)->common.callbacks.mouseup)
+	((glCompImage *) obj)->common.callbacks.mouseup(obj, x, y, t);
+}

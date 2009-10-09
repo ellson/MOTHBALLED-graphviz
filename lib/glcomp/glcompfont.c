@@ -1,3 +1,4 @@
+/* $Id$Revision: */
 /* vim:set shiftwidth=4 ts=8: */
 
 /**********************************************************
@@ -12,6 +13,7 @@
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
+
 #include "glcompfont.h"
 #include "glcompset.h"
 #include "glpangofont.h"
@@ -98,7 +100,7 @@ glPrintf(glCompFont * font, GLfloat xpos, GLfloat ypos, GLfloat zpos,
 	 GLfloat width, char *bf, int usez)
 {
 
-//	GLfloat size = font->size;
+//      GLfloat size = font->size;
 //    GLfloat x = xpos;
 //    GLfloat y = ypos;
 
@@ -106,10 +108,9 @@ glPrintf(glCompFont * font, GLfloat xpos, GLfloat ypos, GLfloat zpos,
     glColor4f(font->color.R, font->color.G, font->color.B, font->color.A);
     if (!font)
 	return;
-	if (font->type == gluttext)
-	{
-		glprintfglut(font->glutfont, xpos, ypos, zpos, bf);
-		return;
+    if (font->type == gluttext) {
+	glprintfglut(font->glutfont, xpos, ypos, zpos, bf);
+	return;
     }
 
 }
@@ -184,79 +185,87 @@ glCompFont *glut_font_init(void)
     return font;
 }
 
-void delete_font (glCompFont* f)
+void delete_font(glCompFont * f)
 {
-	if(f->fontdesc)
-		free (f->fontdesc);
-	if(f->tex)
-		glCompDeleteTexture(f->tex);
-	free (f);
+    if (f->fontdesc)
+	free(f->fontdesc);
+    if (f->tex)
+	glCompDeleteTexture(f->tex);
+    free(f);
 
 }
 
-glCompFont *new_font(glCompSet* s,char* text,glCompColor* c,glCompFontType type,char* fontdesc,int fs)
+glCompFont *new_font(glCompSet * s, char *text, glCompColor * c,
+		     glCompFontType type, char *fontdesc, int fs)
 {
-	glCompFont *font = NEW(glCompFont);
-	font->reference=0;
-	font->color.R=c->R;
-	font->color.G=c->G;
-	font->color.B=c->B;
-	font->color.A=c->A;
-	font->justify.VJustify=GL_FONTVJUSTIFY;
-	font->justify.HJustify=GL_FONTHJUSTIFY;
+    glCompFont *font = NEW(glCompFont);
+    font->reference = 0;
+    font->color.R = c->R;
+    font->color.G = c->G;
+    font->color.B = c->B;
+    font->color.A = c->A;
+    font->justify.VJustify = GL_FONTVJUSTIFY;
+    font->justify.HJustify = GL_FONTHJUSTIFY;
 
-	if(font->type==gluttext)
-		font->glutfont=DEFAULT_GLUT_FONT;
-	else
-		font->glutfont=(void*)0;
+    if (font->type == gluttext)
+	font->glutfont = DEFAULT_GLUT_FONT;
+    else
+	font->glutfont = (void *) 0;
 
-	font->fontdesc=fontdesc;
-	font->size=fs;
-	font->transparent=1;
-	font->optimize=GL_FONTOPTIMIZE;
-	if (text)
-		font->tex=glCompSetAddNewTexLabel(s, font->fontdesc,font->size,text,1);
+    font->fontdesc = fontdesc;
+    font->size = fs;
+    font->transparent = 1;
+    font->optimize = GL_FONTOPTIMIZE;
+    if (text)
+	font->tex =
+	    glCompSetAddNewTexLabel(s, font->fontdesc, font->size, text,
+				    1);
     return font;
 
 }
 
 
 
-glCompFont *new_font_from_parent(glCompObj* o,char* text)
+glCompFont *new_font_from_parent(glCompObj * o, char *text)
 {
-	glCompCommon* parent;
+    glCompCommon *parent;
     glCompFont *font = NEW(glCompFont);
-	parent=o->common.parent;
-	if (parent)
-	{
-		parent=o->common.parent;
-		font->reference=1;
-		font->color.R=parent->font->color.R;
-		font->color.G=parent->font->color.G;
-		font->color.B=parent->font->color.B;
-		font->color.A=parent->font->color.A;
+    parent = o->common.parent;
+    if (parent) {
+	parent = o->common.parent;
+	font->reference = 1;
+	font->color.R = parent->font->color.R;
+	font->color.G = parent->font->color.G;
+	font->color.B = parent->font->color.B;
+	font->color.A = parent->font->color.A;
 
-		font->type=parent->font->type;
-		font->glutfont=parent->font->glutfont;
-		font->fontdesc=parent->font->fontdesc;
-		font->size=parent->font->size;
-		font->transparent=parent->font->transparent;
-		font->justify.VJustify=parent->font->justify.VJustify;
-		font->justify.HJustify=parent->font->justify.HJustify;
-		font->optimize=parent->font->optimize;
-		if (text)
-		{
-			if (strlen(text))
-				font->tex=glCompSetAddNewTexLabel(parent->compset, font->fontdesc,font->size,text,1);
-		}
+	font->type = parent->font->type;
+	font->glutfont = parent->font->glutfont;
+	font->fontdesc = parent->font->fontdesc;
+	font->size = parent->font->size;
+	font->transparent = parent->font->transparent;
+	font->justify.VJustify = parent->font->justify.VJustify;
+	font->justify.HJustify = parent->font->justify.HJustify;
+	font->optimize = parent->font->optimize;
+	if (text) {
+	    if (strlen(text))
+		font->tex =
+		    glCompSetAddNewTexLabel(parent->compset,
+					    font->fontdesc, font->size,
+					    text, 1);
 	}
-	else/*no parent*/
-	{
-		glCompColor c;
-		c.R=GLCOMPSET_FONT_COLOR_R;c.G=GLCOMPSET_FONT_COLOR_G;c.B=GLCOMPSET_FONT_COLOR_B;c.A=GLCOMPSET_FONT_COLOR_ALPHA;
-		font=new_font(o->common.compset,text,&c,pangotext,GLCOMPSET_FONT_DESC,GLCOMPSET_FONT_SIZE);
-	}
-	return font;
+    } else {			/*no parent */
+
+	glCompColor c;
+	c.R = GLCOMPSET_FONT_COLOR_R;
+	c.G = GLCOMPSET_FONT_COLOR_G;
+	c.B = GLCOMPSET_FONT_COLOR_B;
+	c.A = GLCOMPSET_FONT_COLOR_ALPHA;
+	font =
+	    new_font(o->common.compset, text, &c, pangotext,
+		     GLCOMPSET_FONT_DESC, GLCOMPSET_FONT_SIZE);
+    }
+    return font;
 }
 
 
@@ -291,7 +300,7 @@ glCompFont *add_glut_font(fontset_t * fontset, void *glutfont)
 	fontset->fonts =
 	    ALLOC(fontset->count + 1, fontset->fonts, glCompFont *);
 	fontset->fonts[fontset->count] = glut_font_init();
-	fontset->fonts[fontset->count]->type=gluttext;
+	fontset->fonts[fontset->count]->type = gluttext;
 	fontset->fonts[fontset->count]->glutfont = glutfont;
 	fontset->count++;
 	return fontset->fonts[fontset->count - 1];
@@ -300,7 +309,7 @@ glCompFont *add_glut_font(fontset_t * fontset, void *glutfont)
 }
 
 
-glCompFont *add_font(fontset_t * fontset, char *fontdesc,int fs)
+glCompFont *add_font(fontset_t * fontset, char *fontdesc, int fs)
 {
     int id;
     size_t sz;
@@ -331,9 +340,9 @@ glCompFont *add_font(fontset_t * fontset, char *fontdesc,int fs)
 	    return NULL;
     } else
 	return fontset->fonts[id];*/
-	}
+    }
 
-	return NULL;
+    return NULL;
 }
 
 void free_font_set(fontset_t * fontset)
@@ -366,48 +375,48 @@ void fontColor(glCompFont * font, float r, float g, float b, float a)
     font->color.B = b;
     font->color.A = a;
 }
-void glCompRenderText(glCompFont* f,glCompObj* parentObj)
-{
-	static glCompCommon ref;
-	GLfloat x,y,z,w,h;
-	if (!f->tex)
-		return ;
-        x=0;
-	y=0;
-	w=f->tex->width;
-	h=f->tex->height;
-	ref=parentObj->common;
-	z=ref.pos.z;
-	switch (f->justify.HJustify)
-	{
-		case glFontHJustifyNone:
-		case glFontHJustifyLeft:
-			x=ref.refPos.x;
-			break;
-		case glFontHJustifyRight:
-			x=ref.refPos.x + (ref.width-f->tex->width);
-			break;
-		case glFontHJustifyCenter:
-			x=ref.refPos.x + (ref.width-f->tex->width)/(GLfloat)2.0;
-			break;
-	}
-	switch (f->justify.VJustify)
-	{
-		case glFontVJustifyNone:
-		case glFontVJustifyBottom:
-			y=ref.pos.y;
-			break;
-		case glFontVJustifyTop:
-			x=ref.refPos.y + (ref.height-f->tex->height);
-			break;
-		case glFontVJustifyCenter:
-			y=ref.refPos.y + (ref.height-f->tex->height)/(GLfloat)2.0;
-			break;
-	}
 
-	glCompSetColor(&f->color);
-	glRasterPos2f(x,y);
-	glDrawPixels(f->tex->width,f->tex->height,GL_RGBA,GL_UNSIGNED_BYTE,f->tex->data);
+void glCompRenderText(glCompFont * f, glCompObj * parentObj)
+{
+    static glCompCommon ref;
+    GLfloat x, y, z, w, h;
+    if (!f->tex)
+	return;
+    x = 0;
+    y = 0;
+    w = f->tex->width;
+    h = f->tex->height;
+    ref = parentObj->common;
+    z = ref.pos.z;
+    switch (f->justify.HJustify) {
+    case glFontHJustifyNone:
+    case glFontHJustifyLeft:
+	x = ref.refPos.x;
+	break;
+    case glFontHJustifyRight:
+	x = ref.refPos.x + (ref.width - f->tex->width);
+	break;
+    case glFontHJustifyCenter:
+	x = ref.refPos.x + (ref.width - f->tex->width) / (GLfloat) 2.0;
+	break;
+    }
+    switch (f->justify.VJustify) {
+    case glFontVJustifyNone:
+    case glFontVJustifyBottom:
+	y = ref.pos.y;
+	break;
+    case glFontVJustifyTop:
+	x = ref.refPos.y + (ref.height - f->tex->height);
+	break;
+    case glFontVJustifyCenter:
+	y = ref.refPos.y + (ref.height - f->tex->height) / (GLfloat) 2.0;
+	break;
+    }
+
+    glCompSetColor(&f->color);
+    glRasterPos2f(x, y);
+    glDrawPixels(f->tex->width, f->tex->height, GL_RGBA, GL_UNSIGNED_BYTE,
+		 f->tex->data);
 
 /*	glEnable(GL_BLEND);		// Turn Blending On
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
@@ -441,4 +450,3 @@ void glCompRenderText(glCompFont* f,glCompObj* parentObj)
 
 
 }
-

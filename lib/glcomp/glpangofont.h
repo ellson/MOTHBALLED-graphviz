@@ -1,3 +1,4 @@
+/* $Id$Revision: */
 /* vim:set shiftwidth=4 ts=8: */
 
 /**********************************************************
@@ -19,11 +20,20 @@
 #include <pango/pangocairo.h>
 #include <png.h>
 
-//creates a font file with given name and font description
-//returns non-zero if fails
-unsigned char* create_pango_texture(char *fontdescription,int fontsize,char* txt,cairo_surface_t *surface,int* w,int* h);
-int create_font_file(char *fontdescription,int fs, char *fontfile, float gw,float gh);
-
-
+#ifdef __cplusplus
+extern "C" {
 #endif
 
+//creates a font file with given name and font description
+//returns non-zero if fails
+    unsigned char *create_pango_texture(char *fontdescription,
+					int fontsize, char *txt,
+					cairo_surface_t * surface, int *w,
+					int *h);
+    int create_font_file(char *fontdescription, int fs, char *fontfile,
+			 float gw, float gh);
+
+#ifdef __cplusplus
+}
+#endif
+#endif

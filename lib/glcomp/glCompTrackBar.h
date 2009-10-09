@@ -1,3 +1,6 @@
+/* $Id$Revision: */
+/* vim:set shiftwidth=4 ts=8: */
+
 /**********************************************************
 *      This software is part of the graphviz package      *
 *                http://www.graphviz.org/                 *
@@ -14,8 +17,5 @@
 #define GLCOMPTRACKBAR_H
 
 #include "glcompdefs.h"
-
-
-
 
 #endif

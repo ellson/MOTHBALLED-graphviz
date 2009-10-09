@@ -1,3 +1,4 @@
+/* $Id$Revision: */
 /* vim:set shiftwidth=4 ts=8: */
 
 /**********************************************************
@@ -14,14 +15,13 @@
 **********************************************************/
 #include "glCompTrackBar.h"
 #include "glcomptext.h"
-
-
+#include "memory.h"
 
 glCompTrackBar *glCompTrackBarNew(GLfloat x, GLfloat y, GLfloat w,
 				  GLfloat h, glCompOrientation orientation)
 {
     glCompTrackBar *p;
-    p = malloc(sizeof(glCompTrackBar));
+    p = NEW(glCompTrackBar);
     /*default color values for a panel */
     p->color.R = GLCOMPSET_PANEL_COLOR_R;
     p->color.G = GLCOMPSET_PANEL_COLOR_G;

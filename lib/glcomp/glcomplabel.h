@@ -1,3 +1,6 @@
+/* $Id$Revision: */
+/* vim:set shiftwidth=4 ts=8: */
+
 /**********************************************************
 *      This software is part of the graphviz package      *
 *                http://www.graphviz.org/                 *
@@ -15,24 +18,31 @@
 
 #include "glcompdefs.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-glCompLabel *glCompLabelNew(glCompObj* par,GLfloat x, GLfloat y,char *text);
-extern int glCompSetAddLabel(glCompSet * s, glCompLabel * p);
-extern int glCompSetRemoveLabel(glCompSet * s, glCompLabel * p);
-
+    extern glCompLabel *glCompLabelNew(glCompObj * par, GLfloat x,
+				       GLfloat y, char *text);
+    extern int glCompSetAddLabel(glCompSet * s, glCompLabel * p);
+    extern int glCompSetRemoveLabel(glCompSet * s, glCompLabel * p);
 
 /*events*/
-extern int glCompLabelDraw(glCompLabel * p);
-extern void glCompLabelClick(glCompObj * o,GLfloat x,GLfloat y,glMouseButtonType t);
-extern void glCompLabelDoubleClick(glCompObj * obj,GLfloat x,GLfloat y,glMouseButtonType t);
-extern void glCompLabelMouseDown(glCompObj * obj,GLfloat x,GLfloat y,glMouseButtonType t);
-extern void glCompLabelMouseIn(glCompObj * obj,GLfloat x,GLfloat y);
-extern void glCompLabelMouseOut(glCompObj * obj,GLfloat x,GLfloat y);
-extern void glCompLabelMouseOver(glCompObj * obj,GLfloat x,GLfloat y);
-extern void glCompLabelMouseUp(glCompObj * obj,GLfloat x,GLfloat y,glMouseButtonType t);
+    extern int glCompLabelDraw(glCompLabel * p);
+    extern void glCompLabelClick(glCompObj * o, GLfloat x, GLfloat y,
+				 glMouseButtonType t);
+    extern void glCompLabelDoubleClick(glCompObj * obj, GLfloat x,
+				       GLfloat y, glMouseButtonType t);
+    extern void glCompLabelMouseDown(glCompObj * obj, GLfloat x, GLfloat y,
+				     glMouseButtonType t);
+    extern void glCompLabelMouseIn(glCompObj * obj, GLfloat x, GLfloat y);
+    extern void glCompLabelMouseOut(glCompObj * obj, GLfloat x, GLfloat y);
+    extern void glCompLabelMouseOver(glCompObj * obj, GLfloat x,
+				     GLfloat y);
+    extern void glCompLabelMouseUp(glCompObj * obj, GLfloat x, GLfloat y,
+				   glMouseButtonType t);
 
-
-
-
-
+#ifdef __cplusplus
+}
+#endif
 #endif

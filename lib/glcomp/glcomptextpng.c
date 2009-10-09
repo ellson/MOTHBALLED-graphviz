@@ -1,3 +1,4 @@
+/* $Id$Revision: */
 /* vim:set shiftwidth=4 ts=8: */
 
 /**********************************************************
@@ -12,31 +13,33 @@
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
+
 #include "glcompfont.h"
+#include "memory.h"
 #include <gtk/gtk.h>
 #include <png.h>
 
 unsigned char *load_png(char *filename, int *imageWidth, int *imageHeight)
 {
-	cairo_surface_t* surface;
-	cairo_format_t format;
-	int w,h;
-	unsigned char* d;
-	surface=NULL;
+    cairo_surface_t *surface;
+    cairo_format_t format;
+    int w, h;
+    unsigned char *d;
+    surface = NULL;
 
 /*	d=create_pango_texture("Arial",14,"hello world \ n hello mars",surface,&w,&h);
 	*imageWidth=w;
 	*imageHeight=h;*/
 
 
-	surface = cairo_image_surface_create_from_png(filename);
-	w=cairo_image_surface_get_width(surface);
-	h=cairo_image_surface_get_height(surface);
-	*imageWidth=w;
-	*imageHeight=h;
-    format=cairo_image_surface_get_format(surface);
-	d=cairo_image_surface_get_data (surface);
-	return d;
+    surface = cairo_image_surface_create_from_png(filename);
+    w = cairo_image_surface_get_width(surface);
+    h = cairo_image_surface_get_height(surface);
+    *imageWidth = w;
+    *imageHeight = h;
+    format = cairo_image_surface_get_format(surface);
+    d = cairo_image_surface_get_data(surface);
+    return d;
 
 
 
@@ -47,9 +50,9 @@ unsigned char *load_png(char *filename, int *imageWidth, int *imageHeight)
 unsigned char *load_raw(char *filename, int width, int height)
 {
     unsigned char *data;
-	FILE* file;
+    FILE *file;
     // allocate buffer
-    data = malloc(width * height * 3);
+    data = N_NEW(width * height * 3, unsigned char);
     // open and read texture data
     file = fopen(filename, "rb");
     fread(data, width * height * 3, 1, file);
@@ -58,7 +61,8 @@ unsigned char *load_raw(char *filename, int width, int height)
 
 
 
-unsigned char *load_png2(char *file_name, int *imageWidth,int *imageHeight)
+unsigned char *load_png2(char *file_name, int *imageWidth,
+			 int *imageHeight)
 {
     unsigned char *imageData = NULL;
     unsigned char header[8];
@@ -113,7 +117,7 @@ unsigned char *load_png2(char *file_name, int *imageWidth,int *imageHeight)
     row_pointers = png_get_rows(png_ptr, info_ptr);
     *imageWidth = info_ptr->width;
     *imageHeight = info_ptr->height;
-    imageData = malloc(info_ptr->height * info_ptr->width);
+    imageData = N_NEW(info_ptr->height * info_ptr->width, unsigned char);
     c = 0;
     //decide what pixel offset to use, ro
     pixeloffset = png_get_rowbytes(png_ptr, info_ptr) / info_ptr->width;
@@ -123,20 +127,22 @@ unsigned char *load_png2(char *file_name, int *imageWidth,int *imageHeight)
     b2 = -1;
     b3 = -1;
 
-    for (i = 0; i < (int) info_ptr->height; i++) 
-	{
-		for (ii = 0; ii < (int) png_get_rowbytes(png_ptr, info_ptr); ii = ii + pixeloffset) 
-		{
-			imageData[c] = row_pointers[info_ptr->height - i - 1][ii];
-		    if ((b0 != row_pointers[info_ptr->height - i - 1][ii])|| (b1 != row_pointers[info_ptr->height - i - 1][ii + 1])|| (b2 != row_pointers[info_ptr->height - i - 1][ii + 2])|| (b3 != row_pointers[info_ptr->height - i - 1][ii + 3])) 
-			{
-				b0 = row_pointers[info_ptr->height - i - 1][ii];
-				b1 = row_pointers[info_ptr->height - i - 1][ii + 1];
-				b2 = row_pointers[info_ptr->height - i - 1][ii + 2];
-				b3 = row_pointers[info_ptr->height - i - 1][ii + 3];
-		    }
-		    c++;
-		}
+    for (i = 0; i < (int) info_ptr->height; i++) {
+	for (ii = 0; ii < (int) png_get_rowbytes(png_ptr, info_ptr);
+	     ii = ii + pixeloffset) {
+	    imageData[c] = row_pointers[info_ptr->height - i - 1][ii];
+	    if ((b0 != row_pointers[info_ptr->height - i - 1][ii])
+		|| (b1 != row_pointers[info_ptr->height - i - 1][ii + 1])
+		|| (b2 != row_pointers[info_ptr->height - i - 1][ii + 2])
+		|| (b3 !=
+		    row_pointers[info_ptr->height - i - 1][ii + 3])) {
+		b0 = row_pointers[info_ptr->height - i - 1][ii];
+		b1 = row_pointers[info_ptr->height - i - 1][ii + 1];
+		b2 = row_pointers[info_ptr->height - i - 1][ii + 2];
+		b3 = row_pointers[info_ptr->height - i - 1][ii + 3];
+	    }
+	    c++;
+	}
     }
     //cleaning libpng mess
     png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
