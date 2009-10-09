@@ -12,7 +12,7 @@
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
-#include "glCompFont.h"
+#include "glcompfont.h"
 #include <gtk/gtk.h>
 #include <png.h>
 

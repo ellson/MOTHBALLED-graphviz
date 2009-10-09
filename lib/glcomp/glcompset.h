@@ -19,8 +19,8 @@
 #ifndef GLCOMPSET_H
 #define GLCOMPSET_H
 
-#include "glCompFont.h"
-#include "glComptextpng.h"
+#include "glcompfont.h"
+#include "glcomptextpng.h"
 
 
 extern void glCompInitCommon(glCompObj* childObj,glCompObj* parentObj,GLfloat x ,GLfloat y);

@@ -14,7 +14,7 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 #include "glcomppanel.h"
-#include "glCompFont.h"
+#include "glcompfont.h"
 #include "glcompset.h"
 #include "glcomptexture.h"
 #include "glutils.h"
