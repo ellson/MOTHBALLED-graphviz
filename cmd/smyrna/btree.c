@@ -43,7 +43,7 @@ int insert_node(btree_node * parent_n, btree_node * n)
 {
     parent_n->child_count++;
     parent_n->childs = RALLOC(parent_n->child_count, parent_n->childs,
-		btree_node *);
+			      btree_node *);
     parent_n->childs[parent_n->child_count - 1] = n;
     n->rank = parent_n->rank + 1;
     n->parent = parent_n;
@@ -67,7 +67,7 @@ int delete_node_recursive(btree_node * n)
 
 int delete_node(btree_node * n)
 {
-    btree_node* parent = n->parent;
+    btree_node *parent = n->parent;
     int i = 0;
     int child_found = 0;
     //rmeove from parent's child list
@@ -81,7 +81,8 @@ int delete_node(btree_node * n)
 		parent->childs[i] = parent->childs[i + 1];
 	}
     }
-    parent->childs = RALLOC(parent->child_count,parent->childs, btree_node *);
+    parent->childs =
+	RALLOC(parent->child_count, parent->childs, btree_node *);
     delete_node_recursive(n);
     return 1;
 }
@@ -249,11 +250,10 @@ int evaluate_filter_atom(char *string, btree_node * Nodes[], char *op)
     while (*c_cursor != '\0') {
 	if (kp_open) {
 	    if ((*c_cursor == ',') || ((*c_cursor == ']') && (!qt_open))) {
-		attrs = RALLOC(attrs_count + 1, attrs, char*);
+		attrs = RALLOC(attrs_count + 1, attrs, char *);
 		attrs[attrs_count] = strdup(buff_attr);
 		attrs_count++;
-		values =
-		    RALLOC(values_count + 1, values, char*);
+		values = RALLOC(values_count + 1, values, char *);
 		values[values_count] = strdup(buff_value);
 		values_count++;
 		buff_attr[0] = '\0';

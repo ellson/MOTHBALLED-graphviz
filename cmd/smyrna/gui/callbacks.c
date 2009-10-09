@@ -106,27 +106,27 @@ static void btn_clicked(GtkWidget * widget, gvk_layout layout)
 }
 void btn_dot_clicked(GtkWidget * widget, gpointer user_data)
 {
-    btn_clicked (widget, GVK_DOT);
+    btn_clicked(widget, GVK_DOT);
 }
 
 void btn_neato_clicked(GtkWidget * widget, gpointer user_data)
 {
-    btn_clicked (widget, GVK_NEATO);
+    btn_clicked(widget, GVK_NEATO);
 }
 
 void btn_twopi_clicked(GtkWidget * widget, gpointer user_data)
 {
-    btn_clicked (widget, GVK_TWOPI);
+    btn_clicked(widget, GVK_TWOPI);
 }
 
 void btn_circo_clicked(GtkWidget * widget, gpointer user_data)
 {
-    btn_clicked (widget, GVK_CIRCO);
+    btn_clicked(widget, GVK_CIRCO);
 }
 
 void btn_fdp_clicked(GtkWidget * widget, gpointer user_data)
 {
-    btn_clicked (widget, GVK_FDP);
+    btn_clicked(widget, GVK_FDP);
 }
 
 //test call back function delete later
@@ -192,8 +192,9 @@ void on_dlgOpenGraph_btncancel_clicked(GtkWidget * widget,
 
 void attr_widgets_modifiedSlot(GtkWidget * widget, gpointer user_data)
 {
-    attr_widgets_modified[*(int*)user_data] = 1;
-    g_print("attr changed signal..incoming data : %i\n", *(int*)user_data);
+    attr_widgets_modified[*(int *) user_data] = 1;
+    g_print("attr changed signal..incoming data : %i\n",
+	    *(int *) user_data);
 
 }
 
@@ -209,8 +210,8 @@ void frmObjectBtnOK_clicked(GtkWidget * widget, gpointer user_data)
 {
     //call function to update object values
 //    update_object_properties(frmObjectTypeIndex, frmObjectg);
-	set_update_required(view->Topview);
-	deselect_all(view->g[view->activeGraph]);
+    set_update_required(view->Topview);
+    deselect_all(view->g[view->activeGraph]);
     gtk_widget_hide(glade_xml_get_widget(xml, "frmObject"));
 }
 
@@ -223,7 +224,10 @@ void frmObjectBtnCancel_clicked(GtkWidget * widget, gpointer user_data)
 /*console output widgets*/
 _BB void on_clearconsolebtn_clicked(GtkWidget * widget, gpointer user_data)
 {
-	gtk_text_buffer_set_text (gtk_text_view_get_buffer((GtkTextView*) glade_xml_get_widget(xml,"mainconsole")),"",0);
+    gtk_text_buffer_set_text(gtk_text_view_get_buffer
+			     ((GtkTextView *)
+			      glade_xml_get_widget(xml, "mainconsole")),
+			     "", 0);
 }
 _BB void on_hideconsolebtn_clicked(GtkWidget * widget, gpointer user_data)
 {
@@ -232,20 +236,28 @@ _BB void on_hideconsolebtn_clicked(GtkWidget * widget, gpointer user_data)
 
 _BB void on_consoledecbtn_clicked(GtkWidget * widget, gpointer user_data)
 {
-	int w,h;
-	gtk_widget_get_size_request((GtkTextView*) glade_xml_get_widget(xml,"scrolledwindow7"),&w,&h);
-	w=w-5;
-	gtk_widget_set_size_request(((GtkTextView*) glade_xml_get_widget(xml,"scrolledwindow7")),
-                                                         w,0);
+    int w, h;
+    gtk_widget_get_size_request((GtkTextView *)
+				glade_xml_get_widget(xml,
+						     "scrolledwindow7"),
+				&w, &h);
+    w = w - 5;
+    gtk_widget_set_size_request(((GtkTextView *)
+				 glade_xml_get_widget(xml,
+						      "scrolledwindow7")),
+				w, 0);
 }
 
 _BB void on_consoleincbtn_clicked(GtkWidget * widget, gpointer user_data)
 {
-	int w,h;
-	gtk_widget_get_size_request((GtkTextView*) glade_xml_get_widget(xml,"scrolledwindow7"),&w,&h);
-	w=w+5;
-	gtk_widget_set_size_request(((GtkTextView*) glade_xml_get_widget(xml,"scrolledwindow7")),
-                                                         w,0);
+    int w, h;
+    gtk_widget_get_size_request((GtkTextView *)
+				glade_xml_get_widget(xml,
+						     "scrolledwindow7"),
+				&w, &h);
+    w = w + 5;
+    gtk_widget_set_size_request(((GtkTextView *)
+				 glade_xml_get_widget(xml,
+						      "scrolledwindow7")),
+				w, 0);
 }
-
-

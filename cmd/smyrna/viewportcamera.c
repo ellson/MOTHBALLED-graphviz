@@ -1,3 +1,4 @@
+/* $Id$Revision: */
 /* vim:set shiftwidth=4 ts=8: */
 
 /**********************************************************
@@ -62,21 +63,20 @@ int delete_camera_from_viewport(ViewInfo * view, viewport_camera * c)
 {
     int ind;
     int found = 0;
-    for (ind = 0; ind < view->camera_count; ind++) 
-	{
-		if ((view->cameras[ind] == c) && found == 0)
-		    found = 1;
-		if ((found == 1) && (ind < (view->camera_count - 1)))
-			view->cameras[ind] = view->cameras[ind + 1];
+    for (ind = 0; ind < view->camera_count; ind++) {
+	if ((view->cameras[ind] == c) && found == 0)
+	    found = 1;
+	if ((found == 1) && (ind < (view->camera_count - 1)))
+	    view->cameras[ind] = view->cameras[ind + 1];
     }
-    if (found) 
-	{
-		free(c);
-		view->camera_count--;
-		view->cameras =RALLOC(view->camera_count, view->cameras, viewport_camera *);
-		viewport_update_camera_indexes(view);
-		view->active_camera--;
-		return 1;
+    if (found) {
+	free(c);
+	view->camera_count--;
+	view->cameras =
+	    RALLOC(view->camera_count, view->cameras, viewport_camera *);
+	viewport_update_camera_indexes(view);
+	view->active_camera--;
+	return 1;
     }
     return 0;
 }
@@ -156,30 +156,26 @@ void attach_camera_widget(ViewInfo * view)
 
 
     int ind, ind2;
-	GLfloat x, y;
+    GLfloat x, y;
     char buf[256];
     glCompPanel *p;
     glCompButton *b;
-	glCompSet *s = view->widgets;
+    glCompSet *s = view->widgets;
     int p_height;
     /*first we need to get rid of the old menu */
-    for (ind = 0; ind < s->panelcount; ind++) 
-	{
-		if (s->panels[ind]->data == 3) 
-		{
-		    /*remove buttons in the panel */
-		    for (ind2 = 0; ind2 < s->buttoncount; ind2++) 
-			{
-				if (s->buttons[ind2]->panel == s->panels[ind]) 
-				{
-					glCompSetRemoveButton(s, s->buttons[ind2]);
-					ind2--;
-				}
-			}
-			/*remove panel itself */
-			glCompSetRemovePanel(s, s->panels[ind]);
-			break;
+    for (ind = 0; ind < s->panelcount; ind++) {
+	if (s->panels[ind]->data == 3) {
+	    /*remove buttons in the panel */
+	    for (ind2 = 0; ind2 < s->buttoncount; ind2++) {
+		if (s->buttons[ind2]->panel == s->panels[ind]) {
+		    glCompSetRemoveButton(s, s->buttons[ind2]);
+		    ind2--;
 		}
+	    }
+	    /*remove panel itself */
+	    glCompSetRemovePanel(s, s->panels[ind]);
+	    break;
+	}
     }
 
 
@@ -195,13 +191,15 @@ void attach_camera_widget(ViewInfo * view)
     /*container for camera buttons */
     p = glCompPanelNew((GLfloat) 25, (GLfloat) 75,
 		       (GLfloat) 4 * PANEL_PADDING +
-		       3 * CAMERA_BUTTON_WIDTH, (GLfloat) p_height,scientific_y);
+		       3 * CAMERA_BUTTON_WIDTH, (GLfloat) p_height,
+		       scientific_y);
     p->data = 3;
     glCompSetAddPanel(s, p);
 
     b = glCompButtonNew((GLfloat) PANEL_PADDING, (GLfloat) PANEL_PADDING,
 			(GLfloat) CAMERA_BUTTON_WIDTH,
-			(GLfloat) CAMERA_BUTTON_HEIGHT, "ADD", '\0', 0, 0,scientific_y);
+			(GLfloat) CAMERA_BUTTON_HEIGHT, "ADD", '\0', 0, 0,
+			scientific_y);
     b->panel = p;
     b->groupid = 0;
     b->customptr = view;
@@ -212,53 +210,55 @@ void attach_camera_widget(ViewInfo * view)
 			(GLfloat) CAMERA_BUTTON_WIDTH,
 			(GLfloat) PANEL_PADDING,
 			(GLfloat) CAMERA_BUTTON_WIDTH,
-			(GLfloat) CAMERA_BUTTON_HEIGHT, "2D", '\0', 0, 0,scientific_y);
+			(GLfloat) CAMERA_BUTTON_HEIGHT, "2D", '\0', 0, 0,
+			scientific_y);
     b->panel = p;
     b->groupid = 4;		//4 is assigned to all camera buttons 
     b->customptr = view;
     glCompSetAddButton(s, b);
     b->callbackfunc = menu_click_2d;
 
-    for (ind = 0; ind < view->camera_count; ind++) 
-	{
-		y = p->height - ((GLfloat) PANEL_PADDING +
-				 (GLfloat)ind * ((GLfloat) CAMERA_BUTTON_HEIGHT +
-					(GLfloat) PANEL_PADDING)) -
-			(GLfloat)CAMERA_BUTTON_HEIGHT;
-		x = PANEL_PADDING;
-		sprintf(buf, "CAM%i", ind + 1);
-		b = glCompButtonNew((GLfloat)x, (GLfloat)y, (GLfloat) CAMERA_BUTTON_WIDTH,
-				    (GLfloat) CAMERA_BUTTON_HEIGHT, buf, '\0', 0,
-				    0,scientific_y);
-		b->panel = p;
-		b->groupid = 4;		//4 is assigned to all camera buttons 
-		b->data = ind;		//assign camera id to custom data to use single call back
-		b->customptr = view;
-		glCompSetAddButton(s, b);
-		b->callbackfunc = menu_click_camera_select;
+    for (ind = 0; ind < view->camera_count; ind++) {
+	y = p->height - ((GLfloat) PANEL_PADDING +
+			 (GLfloat) ind * ((GLfloat) CAMERA_BUTTON_HEIGHT +
+					  (GLfloat) PANEL_PADDING)) -
+	    (GLfloat) CAMERA_BUTTON_HEIGHT;
+	x = PANEL_PADDING;
+	sprintf(buf, "CAM%i", ind + 1);
+	b = glCompButtonNew((GLfloat) x, (GLfloat) y,
+			    (GLfloat) CAMERA_BUTTON_WIDTH,
+			    (GLfloat) CAMERA_BUTTON_HEIGHT, buf, '\0', 0,
+			    0, scientific_y);
+	b->panel = p;
+	b->groupid = 4;		//4 is assigned to all camera buttons 
+	b->data = ind;		//assign camera id to custom data to use single call back
+	b->customptr = view;
+	glCompSetAddButton(s, b);
+	b->callbackfunc = menu_click_camera_select;
 
-		x = PANEL_PADDING * 2 + CAMERA_BUTTON_WIDTH;
-		b = glCompButtonNew((GLfloat)x,(GLfloat) y, (GLfloat) CAMERA_BUTTON_WIDTH,
+	x = PANEL_PADDING * 2 + CAMERA_BUTTON_WIDTH;
+	b = glCompButtonNew((GLfloat) x, (GLfloat) y,
+			    (GLfloat) CAMERA_BUTTON_WIDTH,
 			    (GLfloat) CAMERA_BUTTON_HEIGHT, "Remove", '\0',
-			    0, 0,scientific_y);
-		b->panel = p;
-		b->groupid = 0;
-		b->data = ind;		//assign camera id to custom data to use single call back
-		b->customptr = view;
-		glCompSetAddButton(s, b);
-		b->callbackfunc = menu_click_camera_remove;
+			    0, 0, scientific_y);
+	b->panel = p;
+	b->groupid = 0;
+	b->data = ind;		//assign camera id to custom data to use single call back
+	b->customptr = view;
+	glCompSetAddButton(s, b);
+	b->callbackfunc = menu_click_camera_remove;
 
-		x = PANEL_PADDING * 3 + CAMERA_BUTTON_WIDTH * 2;
-		b = glCompButtonNew((GLfloat) x, (GLfloat) y,
+	x = PANEL_PADDING * 3 + CAMERA_BUTTON_WIDTH * 2;
+	b = glCompButtonNew((GLfloat) x, (GLfloat) y,
 			    (GLfloat) CAMERA_BUTTON_WIDTH,
 			    (GLfloat) CAMERA_BUTTON_HEIGHT, "Edit", '\0',
-			    0, 0,scientific_y);
-		b->panel = p;
-		b->groupid = 0;
-		b->data = ind;		//assign camera id to custom data to use single call back
-		b->customptr = view;
-		glCompSetAddButton(s, b);
-		b->callbackfunc = menu_click_camera_edit;
+			    0, 0, scientific_y);
+	b->panel = p;
+	b->groupid = 0;
+	b->data = ind;		//assign camera id to custom data to use single call back
+	b->customptr = view;
+	glCompSetAddButton(s, b);
+	b->callbackfunc = menu_click_camera_edit;
     }
 }
 #endif
@@ -367,7 +367,8 @@ int save_camera_settings(viewport_camera * c)
 
 }
 
-void dlgcameraokbutton_clicked_cb(GtkWidget * widget, gpointer user_data) {
+void dlgcameraokbutton_clicked_cb(GtkWidget * widget, gpointer user_data)
+{
     gtk_widget_hide(glade_xml_get_widget(xml, "dlgCamera"));
     save_camera_settings(view->selected_camera);
 }

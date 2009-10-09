@@ -39,13 +39,13 @@ static float dy = 0.0;
 /*mouse mode mapping funvtion from gtk to glcomp*/
 static glMouseButtonType getGlCompMouseType(int n)
 {
-	switch (n)
-	{
-		case 1:
-			  return glMouseLeftButton;
-		case 3:
-			  return glMouseRightButton;
-	}
+    switch (n) {
+    case 1:
+	return glMouseLeftButton;
+    case 3:
+    default:
+	return glMouseRightButton;
+    }
 }
 
 
@@ -146,7 +146,7 @@ static void realize(GtkWidget * widget, gpointer data)
     GLfloat lmodel_ambient[] = { 0.2f, 0.2f, 0.2f, 1.0f };
     GLfloat local_view[] = { 0.0 };
 
-    static char *smyrna_font;
+    /* static char *smyrna_font; */
 
 
 	/*** OpenGL BEGIN ***/
@@ -154,8 +154,8 @@ static void realize(GtkWidget * widget, gpointer data)
 	return;
 
     glClearColor(view->bgColor.R, view->bgColor.G, view->bgColor.B, view->bgColor.A);	//background color
-	glClearDepth(1.0);
-	glClear(GL_COLOR_BUFFER_BIT);
+    glClearDepth(1.0);
+    glClear(GL_COLOR_BUFFER_BIT);
 
 
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
@@ -190,15 +190,15 @@ static void realize(GtkWidget * widget, gpointer data)
 static gboolean configure_event(GtkWidget * widget,
 				GdkEventConfigure * event, gpointer data)
 {
-	/* static int doonce=0; */
-	int vPort[4];
+    /* static int doonce=0; */
+    int vPort[4];
     float aspect;
     GdkGLContext *glcontext = gtk_widget_get_gl_context(widget);
     GdkGLDrawable *gldrawable = gtk_widget_get_gl_drawable(widget);
     view->w = widget->allocation.width;
     view->h = widget->allocation.height;
-	if (view->widgets)
-		glcompsetUpdateBorder(view->widgets, view->w, view->h);
+    if (view->widgets)
+	glcompsetUpdateBorder(view->widgets, view->w, view->h);
 
 
 	/*** OpenGL BEGIN ***/
@@ -210,8 +210,8 @@ static gboolean configure_event(GtkWidget * widget,
     /* setup various opengl things that we need */
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-	if (widget->allocation.width > 1)
-		init_arcBall(view->arcball,(GLfloat)view->w,(GLfloat)view->h);
+    if (widget->allocation.width > 1)
+	init_arcBall(view->arcball, (GLfloat) view->w, (GLfloat) view->h);
 
     if (view->w > view->h) {
 	aspect = (float) view->w / (float) view->h;
@@ -229,7 +229,7 @@ static gboolean configure_event(GtkWidget * widget,
 	/*** OpenGL END ***/
 
 
-	return TRUE;
+    return TRUE;
 }
 
 /*
@@ -244,26 +244,25 @@ gboolean expose_event(GtkWidget * widget, GdkEventExpose * event,
     GdkGLDrawable *gldrawable = gtk_widget_get_gl_drawable(widget);
 
 	/*** OpenGL BEGIN ***/
-	    if (!gdk_gl_drawable_gl_begin(gldrawable, glcontext))
-		return FALSE;
-	    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	    glLoadIdentity();
-		glexpose_main(view);	//draw all stuff
+    if (!gdk_gl_drawable_gl_begin(gldrawable, glcontext))
+	return FALSE;
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
+    glexpose_main(view);	//draw all stuff
     /* Swap buffers */
-	    if (gdk_gl_drawable_is_double_buffered(gldrawable))
-		gdk_gl_drawable_swap_buffers(gldrawable);
-	    else
-		glFlush();
-		gdk_gl_drawable_gl_end(gldrawable);
+    if (gdk_gl_drawable_is_double_buffered(gldrawable))
+	gdk_gl_drawable_swap_buffers(gldrawable);
+    else
+	glFlush();
+    gdk_gl_drawable_gl_end(gldrawable);
   /*** OpenGL END ***/
-		if (view->initFile)
-		{
-			view->initFile=0;
-			if (view->activeGraph == 0)
-				close_graph(view,0);
-			add_graph_to_viewport_from_file(view->initFileName);
-		}
-	return TRUE;
+    if (view->initFile) {
+	view->initFile = 0;
+	if (view->activeGraph == 0)
+	    close_graph(view, 0);
+	add_graph_to_viewport_from_file(view->initFileName);
+    }
+    return TRUE;
 }
 
 /*
@@ -276,37 +275,41 @@ static gboolean button_press_event(GtkWidget * widget,
 {
     begin_x = (float) event->x;
     begin_y = (float) event->y;
-	view->widgets->common.functions.mousedown(view->widgets,(GLfloat)event->x,(GLfloat)event->y,getGlCompMouseType(event->button));
+    view->widgets->common.functions.mousedown(view->widgets,
+					      (GLfloat) event->x,
+					      (GLfloat) event->y,
+					      getGlCompMouseType(event->
+								 button));
 
-	if ((event->button == 1) || (event->button == 3))
-	{
-		GetOGLPosRef    ((int) begin_x, (int) begin_y, &(view->GLx), &(view->GLy),&(view->GLz));
-			view->Selection.X = view->GLx;
-			view->Selection.Y = view->GLy;
+    if ((event->button == 1) || (event->button == 3)) {
+	GetOGLPosRef((int) begin_x, (int) begin_y, &(view->GLx),
+		     &(view->GLy), &(view->GLz));
+	view->Selection.X = view->GLx;
+	view->Selection.Y = view->GLy;
 
-	}
-	
-	if (event->button == 3)	//right click
-	{
-		view->mouse.button = rightmousebutton;
-				expose_event(view->drawing_area, NULL, NULL);
+    }
 
-	}
+    if (event->button == 3)	//right click
+    {
+	view->mouse.button = rightmousebutton;
+	expose_event(view->drawing_area, NULL, NULL);
+
+    }
     if (event->button == 1)	//left click
     {
 
-		view->prevpany = view->pany;
-		view->mouse.mouse_down = 1;
-		view->mouse.button = leftmousebutton;
-		if (view->mouse.mouse_mode == MM_SINGLE_SELECT)	//single select
-		{
-			view->Selection.Active = 1;
-			view->Selection.Type = 0;
-			view->Selection.AlreadySelected = 0;
-			expose_event(view->drawing_area, NULL, NULL);
-		}
+	view->prevpany = view->pany;
+	view->mouse.mouse_down = 1;
+	view->mouse.button = leftmousebutton;
+	if (view->mouse.mouse_mode == MM_SINGLE_SELECT)	//single select
+	{
+	    view->Selection.Active = 1;
+	    view->Selection.Type = 0;
+	    view->Selection.AlreadySelected = 0;
+	    expose_event(view->drawing_area, NULL, NULL);
+	}
     }
-	expose_event(view->drawing_area, NULL, NULL);
+    expose_event(view->drawing_area, NULL, NULL);
 
     return FALSE;
 }
@@ -319,65 +322,71 @@ static gboolean button_press_event(GtkWidget * widget,
 static gboolean button_release_event(GtkWidget * widget,
 				     GdkEventButton * event, gpointer data)
 {
-	view->FontSizeConst=GetOGLDistance(14);
-	view->arcball->isDragging=0;
-	view->widgets->common.functions.mouseup(view->widgets,(GLfloat)event->x,(GLfloat)event->y,getGlCompMouseType(event->button));
+    view->FontSizeConst = GetOGLDistance(14);
+    view->arcball->isDragging = 0;
+    view->widgets->common.functions.mouseup(view->widgets,
+					    (GLfloat) event->x,
+					    (GLfloat) event->y,
+					    getGlCompMouseType(event->
+							       button));
 
 
-	if (event->button == 1)	//left click release
+    if (event->button == 1)	//left click release
     {
-   		view->mouse.mouse_down = 0;
-		if ((view->mouse.mouse_mode == MM_RECTANGULAR_SELECT)
-			|| (view->mouse.mouse_mode == MM_RECTANGULAR_X_SELECT)) 
-		{
-			if (view->GLx <= view->GLx2)
-				view->Selection.X = view->GLx;
-			else
-				view->Selection.X = view->GLx2;
-			if (view->GLy <= view->GLy2)
-				view->Selection.Y = view->GLy;
-			else
-				view->Selection.Y = view->GLy2;
-			view->Selection.W = view->GLx2 - view->GLx;
-			if (view->Selection.W < 0)
-				view->Selection.W = view->Selection.W * -1;
-			view->Selection.H = view->GLy2 - view->GLy;
-			if (view->Selection.H < 0)
-				view->Selection.H = view->Selection.H * -1;
-			if (view->mouse.mouse_mode == 4)
-				view->Selection.Type = 1;
-			else
-				view->Selection.Type = 2;
-			view->Selection.Active = 1;
-			expose_event(view->drawing_area, NULL, NULL);
-		}
-
-		if (view->mouse.mouse_mode == MM_MOVE)
-			move_TVnodes();
-
-		if ((view->mouse.mouse_mode == MM_FISHEYE_MAGNIFIER) || (view->mouse.mouse_mode == MM_MAGNIFIER))	//fisheye mag mouse release, stop distortion
-		{
-			originate_distorded_coordinates(view->Topview);
-			expose_event(view->drawing_area, NULL, NULL);
-		}
-		if (view->mouse.mouse_mode==MM_PAN)
-			expose_event(view->drawing_area, NULL, NULL);
+	view->mouse.mouse_down = 0;
+	if ((view->mouse.mouse_mode == MM_RECTANGULAR_SELECT)
+	    || (view->mouse.mouse_mode == MM_RECTANGULAR_X_SELECT)) {
+	    if (view->GLx <= view->GLx2)
+		view->Selection.X = view->GLx;
+	    else
+		view->Selection.X = view->GLx2;
+	    if (view->GLy <= view->GLy2)
+		view->Selection.Y = view->GLy;
+	    else
+		view->Selection.Y = view->GLy2;
+	    view->Selection.W = view->GLx2 - view->GLx;
+	    if (view->Selection.W < 0)
+		view->Selection.W = view->Selection.W * -1;
+	    view->Selection.H = view->GLy2 - view->GLy;
+	    if (view->Selection.H < 0)
+		view->Selection.H = view->Selection.H * -1;
+	    if (view->mouse.mouse_mode == 4)
+		view->Selection.Type = 1;
+	    else
+		view->Selection.Type = 2;
+	    view->Selection.Active = 1;
+	    expose_event(view->drawing_area, NULL, NULL);
 	}
-    if (event->button == 3)	//right click
+
+	if (view->mouse.mouse_mode == MM_MOVE)
+	    move_TVnodes();
+
+	if ((view->mouse.mouse_mode == MM_FISHEYE_MAGNIFIER) || (view->mouse.mouse_mode == MM_MAGNIFIER))	//fisheye mag mouse release, stop distortion
 	{
-		to3D(view->mouse.mouse_X,view->mouse.mouse_Y, &view->mouse.GLX, &view->mouse.GLY,&view->mouse.GLZ);
-		pick_node_from_coords(view->mouse.GLX,view->mouse.GLY,view->mouse.GLZ);
-
-		if (view->activeGraph >= 0)
-		{
-			if(view->Topview->is_top_fisheye)
-			{
-				GetFixedOGLPoslocal((int) event->x, (int) event->y, &(view->GLx2),&(view->GLy2), &(view->GLz2));
-				changetopfishfocus(view->Topview, &view->GLx2, &view->GLy2, 0,1);
-			}
-		}
-		expose_event(view->drawing_area, NULL, NULL);
+	    originate_distorded_coordinates(view->Topview);
+	    expose_event(view->drawing_area, NULL, NULL);
 	}
+	if (view->mouse.mouse_mode == MM_PAN)
+	    expose_event(view->drawing_area, NULL, NULL);
+    }
+    if (event->button == 3)	//right click
+    {
+	to3D(view->mouse.mouse_X, view->mouse.mouse_Y, &view->mouse.GLX,
+	     &view->mouse.GLY, &view->mouse.GLZ);
+	pick_node_from_coords(view->mouse.GLX, view->mouse.GLY,
+			      view->mouse.GLZ);
+
+	if (view->activeGraph >= 0) {
+	    if (view->Topview->is_top_fisheye) {
+		GetFixedOGLPoslocal((int) event->x, (int) event->y,
+				    &(view->GLx2), &(view->GLy2),
+				    &(view->GLz2));
+		changetopfishfocus(view->Topview, &view->GLx2, &view->GLy2,
+				   0, 1);
+	    }
+	}
+	expose_event(view->drawing_area, NULL, NULL);
+    }
 
     dx = 0.0;
     dy = 0.0;
@@ -387,22 +396,21 @@ static gboolean button_release_event(GtkWidget * widget,
 static gboolean
 scroll_event(GtkWidget * widget, GdkEventScroll * event, gpointer data)
 {
-	gdouble seconds;
+    gdouble seconds;
 
-	seconds=g_timer_elapsed(view->timer2,NULL);
-	if (seconds > 0.005)
-	{
-		g_timer_stop(view->timer2);
-		if(event->direction==0)
-			view->mouse.dx=-30;
-		if(event->direction==1)
-			view->mouse.dx=+30;
-		glmotion_zoom(view);
-		glexpose();
-		g_timer_start(view->timer2);
+    seconds = g_timer_elapsed(view->timer2, NULL);
+    if (seconds > 0.005) {
+	g_timer_stop(view->timer2);
+	if (event->direction == 0)
+	    view->mouse.dx = -30;
+	if (event->direction == 1)
+	    view->mouse.dx = +30;
+	glmotion_zoom(view);
+	glexpose();
+	g_timer_start(view->timer2);
 
-	}
-	return TRUE;
+    }
+    return TRUE;
 }
 
 /*
@@ -419,57 +427,53 @@ static gboolean motion_notify_event(GtkWidget * widget,
     float y = (float) event->y;
     gboolean redraw = FALSE;
 
-	view->widgets->common.functions.mouseover(view->widgets,(GLfloat)x,(GLfloat)y);
+    view->widgets->common.functions.mouseover(view->widgets, (GLfloat) x,
+					      (GLfloat) y);
 
-	
 
 
-	dx = x - begin_x;
+
+    dx = x - begin_x;
     dy = y - begin_y;
 
     view->mouse.dx = dx;
     view->mouse.dy = dy;
 
-	view->mouse.mouse_X = x;
-	view->mouse.mouse_Y = y;
+    view->mouse.mouse_X = x;
+    view->mouse.mouse_Y = y;
 
-	/*panning */
+    /*panning */
     if ((event->state & GDK_BUTTON1_MASK)
-	&& (view->mouse.mouse_mode == MM_PAN)) 
-	{
-		glmotion_main(view, event, widget);
-	    redraw = TRUE;
+	&& (view->mouse.mouse_mode == MM_PAN)) {
+	glmotion_main(view, event, widget);
+	redraw = TRUE;
     }
     /*rotating, only in 3d view */
     if ((view->active_camera >= 0) && (view->mouse.mouse_mode == MM_ROTATE)
 	&& (event->state & GDK_BUTTON1_MASK)) {
 
-			view->arcball->MousePt.s.X = (GLfloat)x;
-			view->arcball->MousePt.s.Y = (GLfloat)y;
+	view->arcball->MousePt.s.X = (GLfloat) x;
+	view->arcball->MousePt.s.Y = (GLfloat) y;
 
-		if (!view->arcball->isDragging)
-		{
-			arcmouseClick(view);
-			view->arcball->isDragging=1;
+	if (!view->arcball->isDragging) {
+	    arcmouseClick(view);
+	    view->arcball->isDragging = 1;
 
-		}
-		else
-		{
-			arcmouseDrag(view);
+	} else {
+	    arcmouseDrag(view);
 
-		}
+	}
 
-//		glmotion_main(view, event, widget);
-	    redraw = TRUE;
+//              glmotion_main(view, event, widget);
+	redraw = TRUE;
     }
     /*zooming */
     if ((event->state & GDK_BUTTON1_MASK)
-	&& (view->mouse.mouse_mode == MM_ZOOM))
-	{
+	&& (view->mouse.mouse_mode == MM_ZOOM)) {
 
-		glmotion_main(view, event, widget);
-		    redraw = TRUE;
-	}
+	glmotion_main(view, event, widget);
+	redraw = TRUE;
+    }
 
     /*selection rect */
     if ((event->state & GDK_BUTTON1_MASK)
@@ -531,37 +535,36 @@ static gboolean key_press_event(GtkWidget * widget, GdkEventKey * event,
 */
 void switch_Mouse(GtkMenuItem * menuitem, int mouse_mode)
 {
-	switch (mouse_mode)
-	{
+    switch (mouse_mode) {
 
-	case -1:
-		change_cursor(GDK_TOP_LEFT_ARROW);
-		break;
-	case 0:
-		change_cursor(GDK_HAND2);
-		break;
-	case 1:
-		change_cursor(GDK_SIZING);
-		break;
-	case 3:
-		change_cursor(GDK_CROSS);
-		break;
-	case 4:
-		change_cursor(GDK_TCROSS);
-		break;
-	case 5:
-		change_cursor(GDK_CROSSHAIR);
-		break;
-	case 10:
-		change_cursor(GDK_FLEUR);
-		break;
-	case MM_ROTATE:
-		change_cursor(GDK_EXCHANGE);
-		break;
-	default:
-		break;
-	};
-	view->mouse.mouse_mode = mouse_mode;
+    case -1:
+	change_cursor(GDK_TOP_LEFT_ARROW);
+	break;
+    case 0:
+	change_cursor(GDK_HAND2);
+	break;
+    case 1:
+	change_cursor(GDK_SIZING);
+	break;
+    case 3:
+	change_cursor(GDK_CROSS);
+	break;
+    case 4:
+	change_cursor(GDK_TCROSS);
+	break;
+    case 5:
+	change_cursor(GDK_CROSSHAIR);
+	break;
+    case 10:
+	change_cursor(GDK_FLEUR);
+	break;
+    case MM_ROTATE:
+	change_cursor(GDK_EXCHANGE);
+	break;
+    default:
+	break;
+    };
+    view->mouse.mouse_mode = mouse_mode;
 }
 
 
@@ -644,11 +647,10 @@ void create_window(GdkGLConfig * glconfig, GtkWidget * vbox)
     gtk_widget_add_events(view->drawing_area,
 //  GDK_BUTTON_MOTION_MASK      = 1 << 4,
 			  GDK_BUTTON_MOTION_MASK |
-			   GDK_POINTER_MOTION_MASK|
-			  GDK_BUTTON_PRESS_MASK |GDK_KEY_PRESS |
+			  GDK_POINTER_MOTION_MASK |
+			  GDK_BUTTON_PRESS_MASK | GDK_KEY_PRESS |
 			  GDK_BUTTON_RELEASE_MASK |
-			  GDK_SCROLL |
-			  GDK_VISIBILITY_NOTIFY_MASK);
+			  GDK_SCROLL | GDK_VISIBILITY_NOTIFY_MASK);
 
     g_signal_connect_after(G_OBJECT(view->drawing_area), "realize",
 			   G_CALLBACK(realize), NULL);
@@ -671,7 +673,7 @@ void create_window(GdkGLConfig * glconfig, GtkWidget * vbox)
     g_signal_connect(G_OBJECT(view->drawing_area), "scroll_event",
 		     G_CALLBACK(scroll_event), NULL);
 
-	g_signal_connect(G_OBJECT(view->drawing_area), "motion_notify_event",
+    g_signal_connect(G_OBJECT(view->drawing_area), "motion_notify_event",
 		     G_CALLBACK(motion_notify_event), NULL);
 
 

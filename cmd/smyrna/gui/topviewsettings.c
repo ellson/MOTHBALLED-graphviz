@@ -1,3 +1,4 @@
+/* $Id$Revision: */
 /* vim:set shiftwidth=4 ts=8: */
 
 /**********************************************************
@@ -23,15 +24,15 @@
 
 void on_settingsOKBtn_clicked(GtkWidget * widget, gpointer user_data)
 {
-	on_settingsApplyBtn_clicked (widget,user_data);
-	gtk_widget_hide(glade_xml_get_widget(xml, "dlgSettings"));
+    on_settingsApplyBtn_clicked(widget, user_data);
+    gtk_widget_hide(glade_xml_get_widget(xml, "dlgSettings"));
 }
-void on_settingsApplyBtn_clicked(GtkWidget * widget, gpointer user_data)
 
+void on_settingsApplyBtn_clicked(GtkWidget * widget, gpointer user_data)
 {
     update_graph_from_settings(view->g[view->activeGraph]);
     set_viewport_settings_from_template(view, view->g[view->activeGraph]);
-	update_topview(view->g[view->activeGraph],view->Topview,0);
+    update_topview(view->g[view->activeGraph], view->Topview, 0);
 /*	settvcolorinfo(view->g[view->activeGraph],view->Topview);
 	init_node_size(view->g[view->activeGraph])*/
 }
@@ -52,12 +53,11 @@ static int set_color_button_widget(char *attribute, char *widget_name)
     buf = agget(view->g[view->activeGraph], attribute);
     if ((!buf) || (strcmp(buf, "") == 0))
 	buf = agget(view->default_attributes, attribute);
-    if (buf) 
-	{
-		colorxlate(buf, &cl, RGBA_DOUBLE);
-		color.red = (int) (cl.u.RGBA[0] * 65535.0);
-		color.green = (int) (cl.u.RGBA[1] * 65535.0);
-		color.blue = (int) (cl.u.RGBA[2] * 65535.0);
+    if (buf) {
+	colorxlate(buf, &cl, RGBA_DOUBLE);
+	color.red = (int) (cl.u.RGBA[0] * 65535.0);
+	color.green = (int) (cl.u.RGBA[1] * 65535.0);
+	color.blue = (int) (cl.u.RGBA[2] * 65535.0);
 	gtk_color_button_set_color((GtkColorButton *)
 				   glade_xml_get_widget(xml, widget_name),
 				   &color);
@@ -71,7 +71,7 @@ static int get_color_button_widget_to_attribute(char *attribute,
 						Agraph_t * g)
 {
     GdkColor color;
-    char *buf = N_GNEW(256,char);
+    char *buf = N_GNEW(256, char);
     gtk_color_button_get_color((GtkColorButton *)
 			       glade_xml_get_widget(xml, widget_name),
 			       &color);
@@ -83,24 +83,28 @@ static int get_color_button_widget_to_attribute(char *attribute,
     free(buf);
     return 1;
 }
-static int get_text_widget_to_attribute(char *attribute,char *widget_name,Agraph_t * g)
+static int get_text_widget_to_attribute(char *attribute, char *widget_name,
+					Agraph_t * g)
 {
     char buf[512];
-	if (strlen(attribute)> 512)
-		return 0;
-	sprintf (buf, "%s",gtk_entry_get_text ((GtkEntry *)glade_xml_get_widget(xml, widget_name)));
-	agattr(g, AGRAPH, attribute, buf);
-	return 1;
+    if (strlen(attribute) > 512)
+	return 0;
+    sprintf(buf, "%s",
+	    gtk_entry_get_text((GtkEntry *)
+			       glade_xml_get_widget(xml, widget_name)));
+    agattr(g, AGRAPH, attribute, buf);
+    return 1;
 }
-static int set_text_widget(char *attribute,	char *widget_name)
+static int set_text_widget(char *attribute, char *widget_name)
 {
-    char* buf;
+    char *buf;
     buf = agget(view->g[view->activeGraph], attribute);
     if ((!buf) || (strcmp(buf, "") == 0))
 	buf = agget(view->default_attributes, attribute);
     if (buf) {
-			gtk_entry_set_text((GtkEntry*)glade_xml_get_widget(xml,widget_name),buf);
-                                                         
+	gtk_entry_set_text((GtkEntry *)
+			   glade_xml_get_widget(xml, widget_name), buf);
+
 	return 1;
     }
     return 0;
@@ -131,11 +135,10 @@ static int get_checkbox_widget_to_attribute(char *attribute,
 {
     int value;
     char buf[100];
-    value =
-	(int) gtk_toggle_button_get_active((GtkToggleButton *)
-					   glade_xml_get_widget(xml,
-								widget_name));
-    sprintf (buf, "%d", value);
+    value = (int) gtk_toggle_button_get_active((GtkToggleButton *)
+					       glade_xml_get_widget(xml,
+								    widget_name));
+    sprintf(buf, "%d", value);
     agattr(g, AGRAPH, attribute, buf);
     return 1;
 }
@@ -161,31 +164,31 @@ static int get_spinbtn_widget_to_attribute(char *attribute,
 {
     float value;
     char buf[25];
-    value =
-	(float) gtk_spin_button_get_value((GtkSpinButton *)
-					  glade_xml_get_widget(xml,
-							       widget_name));
+    value = (float) gtk_spin_button_get_value((GtkSpinButton *)
+					      glade_xml_get_widget(xml,
+								   widget_name));
     sprintf(buf, "%f", value);
     //      agattr(
     agattr(g, AGRAPH, attribute, buf);
     return 1;
 }
 static int get_scalebtn_widget_to_attribute(char *attribute,
-			   char *widget_name, Agraph_t * g)
+					    char *widget_name,
+					    Agraph_t * g)
 {
     float value;
     char buf[25];
-    value =
-	(float) gtk_range_get_value((GtkRange *)
-					  glade_xml_get_widget(xml,
-							       widget_name));
-	sprintf(buf, "%f", value);
+    value = (float) gtk_range_get_value((GtkRange *)
+					glade_xml_get_widget(xml,
+							     widget_name));
+    sprintf(buf, "%f", value);
     //      agattr(
     agattr(g, AGRAPH, attribute, buf);
     return 1;
 }
 
-static int set_scalebtn_widget_to_attribute(char *attribute, char *widget_name)
+static int set_scalebtn_widget_to_attribute(char *attribute,
+					    char *widget_name)
 {
     char *buf;
     float value;
@@ -195,14 +198,13 @@ static int set_scalebtn_widget_to_attribute(char *attribute, char *widget_name)
     if (buf) {
 	value = (float) atof(buf);
 	gtk_range_set_value((GtkRange *)
-				  glade_xml_get_widget(xml, widget_name),
-				  value);
+			    glade_xml_get_widget(xml, widget_name), value);
 	return 1;
     }
     return 0;
 }
 
-static int set_combobox_widget(char *attribute,char *widget_name)
+static int set_combobox_widget(char *attribute, char *widget_name)
 {
     char *buf;
     int value;
@@ -210,28 +212,28 @@ static int set_combobox_widget(char *attribute,char *widget_name)
 
     if ((!buf) || (strcmp(buf, "") == 0))
 	buf = agget(view->default_attributes, attribute);
-    if (buf)
-	 {
-		value=(int) atof(buf);
-		 gtk_combo_box_set_active(
-				(GtkComboBox *)  glade_xml_get_widget(xml,widget_name),
-				(int)value);
+    if (buf) {
+	value = (int) atof(buf);
+	gtk_combo_box_set_active((GtkComboBox *)
+				 glade_xml_get_widget(xml, widget_name),
+				 (int) value);
 
-	    return 1;
-	}
+	return 1;
+    }
 
     return 0;
 }
 
-static int get_combobox_widget_to_attribute(char *attribute, char *widget_name, Agraph_t * g)
+static int get_combobox_widget_to_attribute(char *attribute,
+					    char *widget_name,
+					    Agraph_t * g)
 {
     char buf[25];
     float value;
 
-    value=(float)
+    value = (float)
 	gtk_combo_box_get_active((GtkComboBox *)
-					  glade_xml_get_widget(xml,
-						       widget_name));
+				 glade_xml_get_widget(xml, widget_name));
 
     sprintf(buf, "%f", value);
     agattr(g, AGRAPH, attribute, buf);
@@ -256,53 +258,55 @@ default values are stored in a template graph ""
 
 int load_settings_from_graph(Agraph_t * g)
 {
-	char *buf;	/*local buffer*/
-	set_color_button_widget("bgcolor", "settingsColorBtn1");
+    char *buf;			/*local buffer */
+    set_color_button_widget("bgcolor", "settingsColorBtn1");
     set_color_button_widget("bordercolor", "settingsColorBtn2");
     set_color_button_widget("gridcolor", "settingsColorBtn3");
     set_color_button_widget("highlightednodecolor", "settingsColorBtn6");
     set_color_button_widget("highlightededgecolor", "settingsColorBtn7");
     set_color_button_widget("selectednodecolor", "settingsColorBtn8");
     set_color_button_widget("selectededgecolor", "settingsColorBtn9");
-	set_color_button_widget("defaultnodecolor","DefaultNodeCbtn");
-	set_color_button_widget("defaultedgecolor","DefaultEdgeCbtn");
+    set_color_button_widget("defaultnodecolor", "DefaultNodeCbtn");
+    set_color_button_widget("defaultedgecolor", "DefaultEdgeCbtn");
 
-	set_color_button_widget("topologicaltopviewfinestcolor",
-					 "settingsColorBtn9");
-    set_color_button_widget("topologicaltopviewcoarsestcolor","settingsColorBtn9");
+    set_color_button_widget("topologicaltopviewfinestcolor",
+			    "settingsColorBtn9");
+    set_color_button_widget("topologicaltopviewcoarsestcolor",
+			    "settingsColorBtn9");
 
     set_color_button_widget("topologicalfisheyefinestcolor",
 			    "settingsColorBtn10");
     set_color_button_widget("topologicalfisheyecoarsestcolor",
 			    "settingsColorBtn11");
-	set_text_widget("topologicalfisheyelabelattribute","finenodelabelattribute");
+    set_text_widget("topologicalfisheyelabelattribute",
+		    "finenodelabelattribute");
 
 
     set_checkbox_widget("bordervisible", "settingsChkBox2");
     set_checkbox_widget("gridvisible", "settingsChkBox3");
 
-	set_checkbox_widget("drawnodes", "settingsChkBox5-1");
-	set_checkbox_widget("drawedges", "settingsChkBox5-2");
+    set_checkbox_widget("drawnodes", "settingsChkBox5-1");
+    set_checkbox_widget("drawedges", "settingsChkBox5-2");
 
 
-	/*page 2 label settings*/
-	set_combobox_widget("labelglutfont","labelfont");
+    /*page 2 label settings */
+    set_combobox_widget("labelglutfont", "labelfont");
 
-	set_color_button_widget("nodelabelcolor","nodelabelcolor");
-	set_color_button_widget("edgelabelcolor","edgelabelcolor");
-	set_text_widget("nodelabelattribute","labelnodeattribute");
-	set_text_widget("edgecolorattribute","edgecolortxt");
-
-
-	set_text_widget("edgelabelattribute","labeledgeattribute");
-	set_checkbox_widget("labelwithdegree", "labelwithdegree");
-    set_spinbtn_widget("labelnumberofnodes","labelzoomfactor");
-	set_checkbox_widget("shownodelabels", "labelshownodes");
-	set_checkbox_widget("showedgelabels", "labelshowedges");
+    set_color_button_widget("nodelabelcolor", "nodelabelcolor");
+    set_color_button_widget("edgelabelcolor", "edgelabelcolor");
+    set_text_widget("nodelabelattribute", "labelnodeattribute");
+    set_text_widget("edgecolorattribute", "edgecolortxt");
 
 
+    set_text_widget("edgelabelattribute", "labeledgeattribute");
+    set_checkbox_widget("labelwithdegree", "labelwithdegree");
+    set_spinbtn_widget("labelnumberofnodes", "labelzoomfactor");
+    set_checkbox_widget("shownodelabels", "labelshownodes");
+    set_checkbox_widget("showedgelabels", "labelshowedges");
 
-	set_checkbox_widget("usermode", "settingsChkBox10");
+
+
+    set_checkbox_widget("usermode", "settingsChkBox10");
     set_checkbox_widget("nodesizewithdegree", "settingsChkBox11");
     set_checkbox_widget("antialiasing", "settingsChkBox12");
 
@@ -318,16 +322,14 @@ int load_settings_from_graph(Agraph_t * g)
     set_checkbox_widget("topologicalfisheyelabelfocus",
 			"settingsChkBox18");
 
-    set_checkbox_widget("defaultnodeshapegl",
-			"settingsChkBox10_1");
-    set_checkbox_widget("defaultnodeshapespherical",
-			"settingsChkBox10_2");
+    set_checkbox_widget("defaultnodeshapegl", "settingsChkBox10_1");
+    set_checkbox_widget("defaultnodeshapespherical", "settingsChkBox10_2");
     set_checkbox_widget("defaultnodeshaperectangular",
 			"settingsChkBox10_3");
 
-	
-	
-	set_spinbtn_widget("defaultmagnifierwidth", "settingsspinbutton1");
+
+
+    set_spinbtn_widget("defaultmagnifierwidth", "settingsspinbutton1");
     set_spinbtn_widget("defaultmagnifierheight", "settingsspinbutton2");
     set_spinbtn_widget("defaultmagnifierkts", "settingsspinbutton3");
     set_spinbtn_widget("defaultfisheyemagnifierradius",
@@ -340,45 +342,43 @@ int load_settings_from_graph(Agraph_t * g)
 		       "settingsspinbutton7");
     set_spinbtn_widget("topologicalfisheyedistortionfactor",
 		       "settingsspinbutton8");
-	
-	/*alpha values,1 for nodes 1 for edges*/
+
+    /*alpha values,1 for nodes 1 for edges */
 
 
-	set_scalebtn_widget_to_attribute("defaultnodealpha", "settingsscale1");	/*node alpha*/
-	set_scalebtn_widget_to_attribute("defaultedgealpha", "settingsscale2"); /*edge alpha*/
-	set_scalebtn_widget_to_attribute("nodesize", "nodesizescale"); /*edge alpha*/
+    set_scalebtn_widget_to_attribute("defaultnodealpha", "settingsscale1");	/*node alpha */
+    set_scalebtn_widget_to_attribute("defaultedgealpha", "settingsscale2");	/*edge alpha */
+    set_scalebtn_widget_to_attribute("nodesize", "nodesizescale");	/*edge alpha */
 
     /*Node Shape Combo, 0:opengl dots, 1:circle ,2:box */
     buf = agget(view->g[view->activeGraph], "defaultnodeshape");
     if (!buf)
 	buf = agget(view->default_attributes, "defaultnodeshape");
-    if (buf)
-	{
-		/*select the right item in combo box */
-		gtk_combo_box_set_active((GtkComboBox *)
+    if (buf) {
+	/*select the right item in combo box */
+	gtk_combo_box_set_active((GtkComboBox *)
 				 glade_xml_get_widget(xml,
 						      "settingscombobox1"),
 				 atoi(buf));
 
-	}
-    /*Color theme*/
+    }
+    /*Color theme */
     buf = agget(view->g[view->activeGraph], "colortheme");
     if (!buf)
 	buf = agget(view->default_attributes, "colortheme");
-    if (buf)
-	{
-		/*select the right item in combo box */
-		gtk_combo_box_set_active((GtkComboBox *)
+    if (buf) {
+	/*select the right item in combo box */
+	gtk_combo_box_set_active((GtkComboBox *)
 				 glade_xml_get_widget(xml,
 						      "colorthemecb"),
 				 atoi(buf));
 
-	}
+    }
 
 
 
     /*Node Shape Combo, 0:opengl dots, 1:circle ,2:box */
-	
+
     return 1;
 }
 
@@ -390,8 +390,11 @@ int update_graph_from_settings(Agraph_t * g)
     int value;
     char buf2[10];
 
-    buf=gtk_font_selection_get_font_name((GtkFontSelection*)glade_xml_get_widget(xml, "settingsFontSelection"));
-    agset(g,"defaultfontname",buf);
+    buf =
+	gtk_font_selection_get_font_name((GtkFontSelection *)
+					 glade_xml_get_widget(xml,
+							      "settingsFontSelection"));
+    agset(g, "defaultfontname", buf);
 #endif
     get_color_button_widget_to_attribute("bgcolor", "settingsColorBtn1",
 					 g);
@@ -409,8 +412,10 @@ int update_graph_from_settings(Agraph_t * g)
 					 "settingsColorBtn9", g);
 
 
-    get_color_button_widget_to_attribute("defaultnodecolor","DefaultNodeCbtn", g);
-    get_color_button_widget_to_attribute("defaultedgecolor","DefaultEdgeCbtn", g);
+    get_color_button_widget_to_attribute("defaultnodecolor",
+					 "DefaultNodeCbtn", g);
+    get_color_button_widget_to_attribute("defaultedgecolor",
+					 "DefaultEdgeCbtn", g);
 
 
 
@@ -418,47 +423,54 @@ int update_graph_from_settings(Agraph_t * g)
 					 "settingsColorBtn10", g);
     get_color_button_widget_to_attribute("topologicalfisheyecoarsestcolor",
 					 "settingsColorBtn11", g);
-	get_text_widget_to_attribute("topologicalfisheyelabelattribute","finenodelabelattribute",g);
+    get_text_widget_to_attribute("topologicalfisheyelabelattribute",
+				 "finenodelabelattribute", g);
 
 
     get_checkbox_widget_to_attribute("bordervisible", "settingsChkBox2",
 				     g);
     get_checkbox_widget_to_attribute("gridvisible", "settingsChkBox3", g);
 
-    get_checkbox_widget_to_attribute("drawnodes",
-				     "settingsChkBox5-1", g);
-    get_checkbox_widget_to_attribute("drawedges",
-				     "settingsChkBox5-2", g);
-	
-	/*page 2 label settings*/
-	get_combobox_widget_to_attribute("labelglutfont","labelfont", g);
+    get_checkbox_widget_to_attribute("drawnodes", "settingsChkBox5-1", g);
+    get_checkbox_widget_to_attribute("drawedges", "settingsChkBox5-2", g);
 
-	get_color_button_widget_to_attribute("nodelabelcolor","nodelabelcolor", g);
-	get_color_button_widget_to_attribute("edgelabelcolor","edgelabelcolor", g);
+    /*page 2 label settings */
+    get_combobox_widget_to_attribute("labelglutfont", "labelfont", g);
 
-	get_text_widget_to_attribute("nodelabelattribute","labelnodeattribute",g);
-	get_text_widget_to_attribute("edgelabelattribute","labeledgeattribute",g);
-	
-	get_text_widget_to_attribute("edgecolorattribute","edgecolortxt",g);
+    get_color_button_widget_to_attribute("nodelabelcolor",
+					 "nodelabelcolor", g);
+    get_color_button_widget_to_attribute("edgelabelcolor",
+					 "edgelabelcolor", g);
 
-	get_checkbox_widget_to_attribute("labelwithdegree", "labelwithdegree", g);
-    get_spinbtn_widget_to_attribute("labelnumberofnodes","labelzoomfactor", g);
-	get_checkbox_widget_to_attribute("shownodelabels", "labelshownodes", g);
-	get_checkbox_widget_to_attribute("showedgelabels", "labelshowedges", g);
+    get_text_widget_to_attribute("nodelabelattribute",
+				 "labelnodeattribute", g);
+    get_text_widget_to_attribute("edgelabelattribute",
+				 "labeledgeattribute", g);
 
+    get_text_widget_to_attribute("edgecolorattribute", "edgecolortxt", g);
 
-
-
-
-
-
-
-
-	get_checkbox_widget_to_attribute("usermode", "settingsChkBox10", g);
+    get_checkbox_widget_to_attribute("labelwithdegree", "labelwithdegree",
+				     g);
+    get_spinbtn_widget_to_attribute("labelnumberofnodes",
+				    "labelzoomfactor", g);
+    get_checkbox_widget_to_attribute("shownodelabels", "labelshownodes",
+				     g);
+    get_checkbox_widget_to_attribute("showedgelabels", "labelshowedges",
+				     g);
 
 
 
-	get_checkbox_widget_to_attribute("nodesizewithdegree",
+
+
+
+
+
+
+    get_checkbox_widget_to_attribute("usermode", "settingsChkBox10", g);
+
+
+
+    get_checkbox_widget_to_attribute("nodesizewithdegree",
 				     "settingsChkBox11", g);
     get_checkbox_widget_to_attribute("antialiasing", "settingsChkBox12",
 				     g);
@@ -492,18 +504,18 @@ int update_graph_from_settings(Agraph_t * g)
 				    "settingsspinbutton7", g);
     get_spinbtn_widget_to_attribute("topologicalfisheyedistortionfactor",
 				    "settingsspinbutton8", g);
-	/*added later*/
-	get_scalebtn_widget_to_attribute("defaultnodealpha",
-				    "settingsscale1", g);
-	get_scalebtn_widget_to_attribute("defaultedgealpha",
-				    "settingsscale2", g);
-	get_scalebtn_widget_to_attribute("nodesize",
-				    "nodesizescale", g);
+    /*added later */
+    get_scalebtn_widget_to_attribute("defaultnodealpha",
+				     "settingsscale1", g);
+    get_scalebtn_widget_to_attribute("defaultedgealpha",
+				     "settingsscale2", g);
+    get_scalebtn_widget_to_attribute("nodesize", "nodesizescale", g);
 
-	get_combobox_widget_to_attribute("defaultnodeshape","settingscombobox1", g)	;
-	get_combobox_widget_to_attribute("colortheme","colorthemecb", g)	;
+    get_combobox_widget_to_attribute("defaultnodeshape",
+				     "settingscombobox1", g);
+    get_combobox_widget_to_attribute("colortheme", "colorthemecb", g);
 
-	return 1;
+    return 1;
 }
 
 int show_settings_form()
@@ -514,17 +526,17 @@ int show_settings_form()
 	gtk_widget_hide(glade_xml_get_widget(xml, "dlgSettings"));
 	gtk_widget_show(glade_xml_get_widget(xml, "dlgSettings"));
 	gtk_window_set_keep_above((GtkWindow *)
-	    glade_xml_get_widget(xml, "dlgSettings"), 1);
-    }
-    else {
+				  glade_xml_get_widget(xml, "dlgSettings"),
+				  1);
+    } else {
 	GtkMessageDialog *dlg;
-        dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
-                                                          GTK_DIALOG_MODAL,
-                                                          GTK_MESSAGE_QUESTION,
-                                                          GTK_BUTTONS_OK,
-                                                          "No active graph");
-        gtk_dialog_run((GtkDialog *) dlg);
-        gtk_widget_hide((GtkWidget *) dlg);
+	dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
+							  GTK_DIALOG_MODAL,
+							  GTK_MESSAGE_QUESTION,
+							  GTK_BUTTONS_OK,
+							  "No active graph");
+	gtk_dialog_run((GtkDialog *) dlg);
+	gtk_widget_hide((GtkWidget *) dlg);
     }
     return 1;
 }

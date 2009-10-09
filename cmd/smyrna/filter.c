@@ -34,7 +34,7 @@ int init_filters(tv_filters * filters)
 int add_filter_to_filters(tv_filters * filters, tv_filter * filter)
 {
     filters->filters =
-	RALLOC(filters->filter_count + 1, filters->filters, tv_filter*);
+	RALLOC(filters->filter_count + 1, filters->filters, tv_filter *);
     filters->filters[filters->filter_count] = filter;
     filters->filter_count++;
     return 1;

@@ -1,3 +1,4 @@
+/* $Id$Revision: */
 /* vim:set shiftwidth=4 ts=8: */
 
 /**********************************************************
@@ -20,42 +21,44 @@
 #include "topview.h"
 #include "topfisheyeview.h"
 #include "gui/toolboxcallbacks.h"
+#include "arcball.h"
+
 void drawRotatingAxis(void);
 void draw_cube()
 {
-	
-glBegin(GL_QUADS);		// Draw The Cube Using quads
-    glColor3f(0.0f,100.0f,0.0f);	// Color Blue
-    glVertex3f( 100.0f, 100.0f,-100.0f);	// Top Right Of The Quad (Top)
-    glVertex3f(-100.0f, 100.0f,-100.0f);	// Top Left Of The Quad (Top)
+
+    glBegin(GL_QUADS);		// Draw The Cube Using quads
+    glColor3f(0.0f, 100.0f, 0.0f);	// Color Blue
+    glVertex3f(100.0f, 100.0f, -100.0f);	// Top Right Of The Quad (Top)
+    glVertex3f(-100.0f, 100.0f, -100.0f);	// Top Left Of The Quad (Top)
     glVertex3f(-100.0f, 100.0f, 100.0f);	// Bottom Left Of The Quad (Top)
-    glVertex3f( 100.0f, 100.0f, 100.0f);	// Bottom Right Of The Quad (Top)
-    glColor3f(100.0f,0.5f,0.0f);	// Color Orange
-    glVertex3f( 100.0f,-100.0f, 100.0f);	// Top Right Of The Quad (Bottom)
-    glVertex3f(-100.0f,-100.0f, 100.0f);	// Top Left Of The Quad (Bottom)
-    glVertex3f(-100.0f,-100.0f,-100.0f);	// Bottom Left Of The Quad (Bottom)
-    glVertex3f( 100.0f,-100.0f,-100.0f);	// Bottom Right Of The Quad (Bottom)
-    glColor3f(100.0f,0.0f,0.0f);	// Color Red	
-    glVertex3f( 100.0f, 100.0f, 100.0f);	// Top Right Of The Quad (Front)
+    glVertex3f(100.0f, 100.0f, 100.0f);	// Bottom Right Of The Quad (Top)
+    glColor3f(100.0f, 0.5f, 0.0f);	// Color Orange
+    glVertex3f(100.0f, -100.0f, 100.0f);	// Top Right Of The Quad (Bottom)
+    glVertex3f(-100.0f, -100.0f, 100.0f);	// Top Left Of The Quad (Bottom)
+    glVertex3f(-100.0f, -100.0f, -100.0f);	// Bottom Left Of The Quad (Bottom)
+    glVertex3f(100.0f, -100.0f, -100.0f);	// Bottom Right Of The Quad (Bottom)
+    glColor3f(100.0f, 0.0f, 0.0f);	// Color Red    
+    glVertex3f(100.0f, 100.0f, 100.0f);	// Top Right Of The Quad (Front)
     glVertex3f(-100.0f, 100.0f, 100.0f);	// Top Left Of The Quad (Front)
-    glVertex3f(-100.0f,-100.0f, 100.0f);	// Bottom Left Of The Quad (Front)
-    glVertex3f( 100.0f,-100.0f, 100.0f);	// Bottom Right Of The Quad (Front)
-    glColor3f(100.0f,100.0f,0.0f);	// Color Yellow
-    glVertex3f( 100.0f,-100.0f,-100.0f);	// Top Right Of The Quad (Back)
-    glVertex3f(-100.0f,-100.0f,-100.0f);	// Top Left Of The Quad (Back)
-    glVertex3f(-100.0f, 100.0f,-100.0f);	// Bottom Left Of The Quad (Back)
-    glVertex3f( 100.0f, 100.0f,-100.0f);	// Bottom Right Of The Quad (Back)
-    glColor3f(0.0f,0.0f,100.0f);	// Color Blue
+    glVertex3f(-100.0f, -100.0f, 100.0f);	// Bottom Left Of The Quad (Front)
+    glVertex3f(100.0f, -100.0f, 100.0f);	// Bottom Right Of The Quad (Front)
+    glColor3f(100.0f, 100.0f, 0.0f);	// Color Yellow
+    glVertex3f(100.0f, -100.0f, -100.0f);	// Top Right Of The Quad (Back)
+    glVertex3f(-100.0f, -100.0f, -100.0f);	// Top Left Of The Quad (Back)
+    glVertex3f(-100.0f, 100.0f, -100.0f);	// Bottom Left Of The Quad (Back)
+    glVertex3f(100.0f, 100.0f, -100.0f);	// Bottom Right Of The Quad (Back)
+    glColor3f(0.0f, 0.0f, 100.0f);	// Color Blue
     glVertex3f(-100.0f, 100.0f, 100.0f);	// Top Right Of The Quad (Left)
-    glVertex3f(-100.0f, 100.0f,-100.0f);	// Top Left Of The Quad (Left)
-    glVertex3f(-100.0f,-100.0f,-100.0f);	// Bottom Left Of The Quad (Left)
-    glVertex3f(-100.0f,-100.0f, 100.0f);	// Bottom Right Of The Quad (Left)
-    glColor3f(100.0f,0.0f,100.0f);	// Color Violet
-    glVertex3f( 100.0f, 100.0f,-100.0f);	// Top Right Of The Quad (Right)
-    glVertex3f( 100.0f, 100.0f, 100.0f);	// Top Left Of The Quad (Right)
-    glVertex3f( 100.0f,-100.0f, 100.0f);	// Bottom Left Of The Quad (Right)
-    glVertex3f( 100.0f,-100.0f,-100.0f);	// Bottom Right Of The Quad (Right)
-  glEnd();	
+    glVertex3f(-100.0f, 100.0f, -100.0f);	// Top Left Of The Quad (Left)
+    glVertex3f(-100.0f, -100.0f, -100.0f);	// Bottom Left Of The Quad (Left)
+    glVertex3f(-100.0f, -100.0f, 100.0f);	// Bottom Right Of The Quad (Left)
+    glColor3f(100.0f, 0.0f, 100.0f);	// Color Violet
+    glVertex3f(100.0f, 100.0f, -100.0f);	// Top Right Of The Quad (Right)
+    glVertex3f(100.0f, 100.0f, 100.0f);	// Top Left Of The Quad (Right)
+    glVertex3f(100.0f, -100.0f, 100.0f);	// Bottom Left Of The Quad (Right)
+    glVertex3f(100.0f, -100.0f, -100.0f);	// Bottom Right Of The Quad (Right)
+    glEnd();
 }
 
 
@@ -63,48 +66,47 @@ glBegin(GL_QUADS);		// Draw The Cube Using quads
 void drawRotatingAxis(void)
 {
 #ifdef UNUSED
-	float x,y;
-	float x1,y1,z1;
-	float x2,y2,z2;
-	float R1,R2;
+    float x, y;
+    float x1, y1, z1;
+    float x2, y2, z2;
+    float R1, R2;
 #endif
-	static GLUquadricObj *quadratic=(GLUquadricObj*)0;
-	if (!quadratic)
-	{
-		quadratic=gluNewQuadric();										// Create A Pointer To The Quadric Object
-		gluQuadricNormals(quadratic, GLU_SMOOTH);						// Create Smooth Normals
-//		gluQuadricTexture(quadratic, GL_TRUE);							// Create Texture Coords
-		gluQuadricDrawStyle (quadratic,GLU_LINE);
+    static GLUquadricObj *quadratic = (GLUquadricObj *) 0;
+    if (!quadratic) {
+	quadratic = gluNewQuadric();	// Create A Pointer To The Quadric Object
+	gluQuadricNormals(quadratic, GLU_SMOOTH);	// Create Smooth Normals
+//              gluQuadricTexture(quadratic, GL_TRUE);                                                  // Create Texture Coords
+	gluQuadricDrawStyle(quadratic, GLU_LINE);
 
 
-	}
+    }
 
-	if ((view->mouse.mouse_mode == MM_ROTATE) && (view->active_camera >=0))
-	{
-		float AL=45;
-		glPushMatrix();
-		glLoadIdentity();
-		glMultMatrixf(view->arcball->Transform.M); /*arcball transformations , experimental*/
-		glLineWidth(3);
-		glBegin(GL_LINES);
-			glColor3f(1,1,0);
-	
-			glVertex3f(0,0,0);
-			glVertex3f(0,AL,0);
+    if ((view->mouse.mouse_mode == MM_ROTATE)
+	&& (view->active_camera >= 0)) {
+	float AL = 45;
+	glPushMatrix();
+	glLoadIdentity();
+	glMultMatrixf(view->arcball->Transform.M);	/*arcball transformations , experimental */
+	glLineWidth(3);
+	glBegin(GL_LINES);
+	glColor3f(1, 1, 0);
 
-			glVertex3f(0,0,0);
-			glVertex3f(AL,0,0);
+	glVertex3f(0, 0, 0);
+	glVertex3f(0, AL, 0);
 
-			glVertex3f(0,0,0);
-			glVertex3f(0,0,AL);
+	glVertex3f(0, 0, 0);
+	glVertex3f(AL, 0, 0);
 
-		glEnd();
-		glColor4f(0,1,0,0.3);
-		gluSphere(quadratic,AL,20,20);
-		glLineWidth(1);
-		glPopMatrix();
+	glVertex3f(0, 0, 0);
+	glVertex3f(0, 0, AL);
 
-	}
+	glEnd();
+	glColor4f(0, 1, 0, 0.3);
+	gluSphere(quadratic, AL, 20, 20);
+	glLineWidth(1);
+	glPopMatrix();
+
+    }
 
 }
 
@@ -118,33 +120,33 @@ void drawRotatingAxis(void)
 */
 int glupdatecamera(ViewInfo * view)
 {
-	if (view->active_camera==-1)
-		glTranslatef(-view->panx,-view->pany,view->panz);
+    if (view->active_camera == -1)
+	glTranslatef(-view->panx, -view->pany, view->panz);
 
 
-	/*toggle to active camera*/
-	else
-	{
-		glMultMatrixf(view->arcball->Transform.M); /*arcball transformations , experimental*/
-		glTranslatef(-view->cameras[view->active_camera]->targetx,-view->cameras[view->active_camera]->targety,0);
-	}
+    /*toggle to active camera */
+    else {
+	glMultMatrixf(view->arcball->Transform.M);	/*arcball transformations , experimental */
+	glTranslatef(-view->cameras[view->active_camera]->targetx,
+		     -view->cameras[view->active_camera]->targety, 0);
+    }
 
-	GetOGLPosRef(1, view->h - 5, &(view->clipX1), &(view->clipY1),
+    GetOGLPosRef(1, view->h - 5, &(view->clipX1), &(view->clipY1),
 		 &(view->clipZ1));
     GetOGLPosRef(view->w - 1, 1, &(view->clipX2), &(view->clipY2),
 		 &(view->clipZ2));
 
-	if (view->active_camera==-1)
-	{
-		glScalef(1/view->zoom*-1,1/view->zoom*-1,1/view->zoom*-1);
-	}
-	else
-	{
-		glScalef(1/view->cameras[view->active_camera]->r,1/view->cameras[view->active_camera]->r,1/view->cameras[view->active_camera]->r);
-	}
+    if (view->active_camera == -1) {
+	glScalef(1 / view->zoom * -1, 1 / view->zoom * -1,
+		 1 / view->zoom * -1);
+    } else {
+	glScalef(1 / view->cameras[view->active_camera]->r,
+		 1 / view->cameras[view->active_camera]->r,
+		 1 / view->cameras[view->active_camera]->r);
+    }
 
 
-	return 1;
+    return 1;
 }
 
 /*
@@ -155,36 +157,34 @@ int glupdatecamera(ViewInfo * view)
 */
 int glexpose_main(ViewInfo * view)
 {
-	static int doonce=0;
-	if (!glupdatecamera(view))
+    static int doonce = 0;
+    if (!glupdatecamera(view))
 	return 0;
 
-	if (view->activeGraph >= 0)
-	{
-		if(!doonce)
-		{
-			doonce=1;
-			btnToolZoomFit_clicked(NULL,NULL);
-			btnToolZoomFit_clicked(NULL,NULL);
-		}
+    if (view->activeGraph >= 0) {
+	if (!doonce) {
+	    doonce = 1;
+	    btnToolZoomFit_clicked(NULL, NULL);
+	    btnToolZoomFit_clicked(NULL, NULL);
 	}
+    }
 
-	glexpose_grid(view);
+    glexpose_grid(view);
     draw_fisheye_magnifier(view);
     draw_magnifier(view);
     glexpose_drawgraph(view);
     draw_selection_box(view);
     drawBorders(view);
-//	drawRotatingTools();
-//	draw_cube();
-	drawRotatingAxis();
-//		draw_stuff();
-//	test_color_pallete();
+//      drawRotatingTools();
+//      draw_cube();
+    drawRotatingAxis();
+//              draw_stuff();
+//      test_color_pallete();
 
 
 
-//	drawtestpoly();
-	/*DEBUG*/
+//      drawtestpoly();
+     /*DEBUG*/
 /*	if (view->mouse.mouse_mode == MM_PAN)
 	{
 		glBegin(GL_LINE_STRIP);
@@ -198,10 +198,7 @@ int glexpose_main(ViewInfo * view)
 
 		glEnd();
 	}*/
-
-	/*DEBUG*/
-
-	return 1;
+	 /*DEBUG*/ return 1;
 }
 
 /*
@@ -211,20 +208,25 @@ int glexpose_main(ViewInfo * view)
 */
 void drawtestpoly(void)
 {
-	glEnable(GL_TEXTURE_2D);
-	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-//	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE , GL_DECAL);
-//	glBindTexture(GL_TEXTURE_2D,view->widgets->fontset->fonts[view->widgets->fontset->activefont]->texId);
-	glBindTexture(GL_TEXTURE_2D,1);
-	glColor4f(1,1,1,1);
-	glBegin(GL_QUADS);
-		glTexCoord2f(0.0,0.0);glVertex3f(0.0,0.0,0.0);
-		glTexCoord2f(0.0,1.0);glVertex3f(0.0,256.0,0.0);
-		glTexCoord2f(1.0,1.0);glVertex3f(256.0,256.0,0.0);
-		glTexCoord2f(1.0,0.0);glVertex3f(256.0,0.0,0.0);
-		glTexCoord2f(0.0,0.0);glVertex3f(0.0,0.0,0.0);
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
+    glEnable(GL_TEXTURE_2D);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+//      glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE , GL_DECAL);
+//      glBindTexture(GL_TEXTURE_2D,view->widgets->fontset->fonts[view->widgets->fontset->activefont]->texId);
+    glBindTexture(GL_TEXTURE_2D, 1);
+    glColor4f(1, 1, 1, 1);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0, 0.0);
+    glVertex3f(0.0, 0.0, 0.0);
+    glTexCoord2f(0.0, 1.0);
+    glVertex3f(0.0, 256.0, 0.0);
+    glTexCoord2f(1.0, 1.0);
+    glVertex3f(256.0, 256.0, 0.0);
+    glTexCoord2f(1.0, 0.0);
+    glVertex3f(256.0, 0.0, 0.0);
+    glTexCoord2f(0.0, 0.0);
+    glVertex3f(0.0, 0.0, 0.0);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
 
 }
 
@@ -255,80 +257,70 @@ void glexpose_grid(ViewInfo * view)
 */
 int glexpose_drawgraph(ViewInfo * view)
 {
-    
-	if (view->activeGraph > -1) 
-	{
-//		if (GD_TopView(view->g[view->activeGraph])) 
-//		{
-			if(!view->Topview->is_top_fisheye)
-				drawTopViewGraph(view->g[view->activeGraph]);	//view->Topview style dots and straight lines
-			else 
-			{
-				drawtopologicalfisheye(view->Topview);
-			}
 
-//		}
-//		else
-//			drawGraph(view->g[view->activeGraph]);  //xdot based drawing functions
-		glCompSetDraw(view->widgets);
-		return 1;
+    if (view->activeGraph > -1) {
+//              if (GD_TopView(view->g[view->activeGraph])) 
+//              {
+	if (!view->Topview->is_top_fisheye)
+	    drawTopViewGraph(view->g[view->activeGraph]);	//view->Topview style dots and straight lines
+	else {
+	    drawtopologicalfisheye(view->Topview);
+	}
+
+//              }
+//              else
+//                      drawGraph(view->g[view->activeGraph]);  //xdot based drawing functions
+	glCompSetDraw(view->widgets);
+	return 1;
     }
-	return 0;
+    return 0;
 }
 
 
 void drawRotatingTools(void)
 {
-	float x,y;
-	float x1,y1,z1;
-	float x2,y2,z2;
-	float R1,R2;
-	if ((view->mouse.mouse_mode == MM_ROTATE) && (view->active_camera >=0))
-	{
-		R1=25;
-		R2=200;
-		glCompDrawBegin();
-		GetOGLPosRef(1, view->h - 5, &x1, &y1,&z1);
-		GetOGLPosRef(view->w - 1, 1, &x2,&y2,&z2);
-		x=(x2-x1)/(float)2.0;
-		y=(y2-y1)/(float)2.0;
-		glTranslatef(x,y,0);
-		if ((view->mouse.rotate_axis==MOUSE_ROTATE_X) || (view->mouse.rotate_axis==MOUSE_ROTATE_XY))
-		{
-			glLineWidth(2);
-			glColor4f(0,1,0,0.5);
-		}
-		else
-		{
-			glLineWidth(1);
-			glColor4f(1,0,0,0.5);
-		}
-		drawEllipse(R1,R2,90,270);
-		if ((view->mouse.rotate_axis==MOUSE_ROTATE_Y) || (view->mouse.rotate_axis==MOUSE_ROTATE_XY))
-		{
-			glLineWidth(2);
-			glColor4f(0,1,0,0.5);
-		}
-		else
-		{
-			glLineWidth(1);
-			glColor4f(1,0,0,0.5);
-		}
-		drawEllipse(R2, R1,0,180);
-		if (view->mouse.rotate_axis==MOUSE_ROTATE_Z)
-		{
-			glLineWidth(2);
-			glColor4f(0,1,0,0.5);
-		}
-		else
-		{
-			glLineWidth(1);
-			glColor4f(1,0,0,0.5);
-		}
-
-		drawEllipse(R2, R2,0,360);
-		glCompDrawEnd();
+    float x, y;
+    float x1, y1, z1;
+    float x2, y2, z2;
+    float R1, R2;
+    if ((view->mouse.mouse_mode == MM_ROTATE)
+	&& (view->active_camera >= 0)) {
+	R1 = 25;
+	R2 = 200;
+	glCompDrawBegin();
+	GetOGLPosRef(1, view->h - 5, &x1, &y1, &z1);
+	GetOGLPosRef(view->w - 1, 1, &x2, &y2, &z2);
+	x = (x2 - x1) / (float) 2.0;
+	y = (y2 - y1) / (float) 2.0;
+	glTranslatef(x, y, 0);
+	if ((view->mouse.rotate_axis == MOUSE_ROTATE_X)
+	    || (view->mouse.rotate_axis == MOUSE_ROTATE_XY)) {
+	    glLineWidth(2);
+	    glColor4f(0, 1, 0, 0.5);
+	} else {
+	    glLineWidth(1);
+	    glColor4f(1, 0, 0, 0.5);
+	}
+	drawEllipse(R1, R2, 90, 270);
+	if ((view->mouse.rotate_axis == MOUSE_ROTATE_Y)
+	    || (view->mouse.rotate_axis == MOUSE_ROTATE_XY)) {
+	    glLineWidth(2);
+	    glColor4f(0, 1, 0, 0.5);
+	} else {
+	    glLineWidth(1);
+	    glColor4f(1, 0, 0, 0.5);
+	}
+	drawEllipse(R2, R1, 0, 180);
+	if (view->mouse.rotate_axis == MOUSE_ROTATE_Z) {
+	    glLineWidth(2);
+	    glColor4f(0, 1, 0, 0.5);
+	} else {
+	    glLineWidth(1);
+	    glColor4f(1, 0, 0, 0.5);
 	}
 
-}
+	drawEllipse(R2, R2, 0, 360);
+	glCompDrawEnd();
+    }
 
+}

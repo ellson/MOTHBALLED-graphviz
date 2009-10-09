@@ -373,77 +373,75 @@ static int point_within_polygon(xdot_op * op)
 
 //select functions
 
-static Agsym_t*
-getNodeSelectedAttr (Agraph_t* g) 
+static Agsym_t *getNodeSelectedAttr(Agraph_t * g)
 {
-    static Agraph_t* saveg;
-    static Agsym_t* saveattr;
+    static Agraph_t *saveg;
+    static Agsym_t *saveattr;
 
     if (saveg != g) {
 	saveg = g;
-	if (!(saveattr = agattr(saveg,AGNODE,"selected",0))) {
-	    saveattr = agattr(saveg,AGNODE,"selected","0");
+	if (!(saveattr = agattr(saveg, AGNODE, "selected", 0))) {
+	    saveattr = agattr(saveg, AGNODE, "selected", "0");
 	}
     }
     return saveattr;
 }
 
-static Agsym_t*
-getEdgeSelectedAttr (Agraph_t* g) 
+static Agsym_t *getEdgeSelectedAttr(Agraph_t * g)
 {
-    static Agraph_t* saveg;
-    static Agsym_t* saveattr;
+    static Agraph_t *saveg;
+    static Agsym_t *saveattr;
 
     if (saveg != g) {
 	saveg = g;
-	if (!(saveattr = agattr(saveg,AGEDGE,"selected",0))) {
-	    saveattr = agattr(saveg,AGEDGE,"selected","0");
+	if (!(saveattr = agattr(saveg, AGEDGE, "selected", 0))) {
+	    saveattr = agattr(saveg, AGEDGE, "selected", "0");
 	}
     }
     return saveattr;
 }
 
-int select_node(topview_node* N)
+int select_node(topview_node * N)
 {
-    Agsym_t* a = getNodeSelectedAttr(N->Node->root);
+    Agsym_t *a = getNodeSelectedAttr(N->Node->root);
 
-    N->data.Selected=1;
-    return agxset (N->Node, a, "1");
+    N->data.Selected = 1;
+    return agxset(N->Node, a, "1");
 }
 
-int select_edge(topview_edge* E)
+int select_edge(topview_edge * E)
 {
-    Agsym_t* a = getEdgeSelectedAttr(aghead(E->Edge)->root);
+    Agsym_t *a = getEdgeSelectedAttr(aghead(E->Edge)->root);
 
-    E->data.Selected=1;
-    return agxset (E->Edge, a, "1");
+    E->data.Selected = 1;
+    return agxset(E->Edge, a, "1");
 }
 
-int deselect_node(topview_node* N)
+int deselect_node(topview_node * N)
 {
-    Agsym_t* a = getNodeSelectedAttr(N->Node->root);
-    
-    N->data.Selected=0;
+    Agsym_t *a = getNodeSelectedAttr(N->Node->root);
+
+    N->data.Selected = 0;
     return agxset(N->Node, a, "0");
 }
 
-int deselect_edge(topview_edge* E)
+int deselect_edge(topview_edge * E)
 {
-    Agsym_t* a = getEdgeSelectedAttr(aghead(E->Edge)->root);
+    Agsym_t *a = getEdgeSelectedAttr(aghead(E->Edge)->root);
 
-    E->data.Selected=0;
+    E->data.Selected = 0;
     return agxset(E->Edge, a, "0");
 }
 
 #if UNUSED
-static void update_cgraph_pos(topview_node* N)
+static void update_cgraph_pos(topview_node * N)
 {
     char buf[512];
-    Agsym_t* pos;
-    Agnode_t* obj=N->Node;
+    Agsym_t *pos;
+    Agnode_t *obj = N->Node;
 
-    if ((pos = agattrsym (obj, "pos"))) {
-	sprintf (buf, "%lf,%lf",N->distorted_x,N->distorted_y);
+    if ((pos = agattrsym(obj, "pos"))) {
+	sprintf(buf, "%lf,%lf", N->distorted_x, N->distorted_y);
 	agxset(obj, pos, buf);
     }
 }
@@ -453,9 +451,8 @@ int select_all_nodes(Agraph_t * g)
 {
     int ind = 0;
     //check if in the list
-	for (ind = 0; ind < view->Topview->Nodecount;ind ++)
-	{
-		select_node(&view->Topview->Nodes[ind]);
+    for (ind = 0; ind < view->Topview->Nodecount; ind++) {
+	select_node(&view->Topview->Nodes[ind]);
     }
     return 1;
 }
@@ -464,9 +461,8 @@ int select_all_edges(Agraph_t * g)
 {
     int ind = 0;
     //check if in the list
-	for (ind = 0; ind < view->Topview->Edgecount;ind ++)
-	{
-		select_edge(&view->Topview->Edges[ind]);
+    for (ind = 0; ind < view->Topview->Edgecount; ind++) {
+	select_edge(&view->Topview->Edges[ind]);
     }
     return 1;
 
@@ -477,9 +473,8 @@ int deselect_all_nodes(Agraph_t * g)
 {
     int ind = 0;
     //check if in the list
-	for (ind = 0; ind < view->Topview->Nodecount;ind ++)
-	{
-		deselect_node(&view->Topview->Nodes[ind]);
+    for (ind = 0; ind < view->Topview->Nodecount; ind++) {
+	deselect_node(&view->Topview->Nodes[ind]);
     }
     return 1;
 
@@ -489,13 +484,13 @@ int deselect_all_edges(Agraph_t * g)
 {
     int ind = 0;
     //check if in the list
-	for (ind = 0; ind < view->Topview->Edgecount;ind ++)
-	{
-		deselect_edge(&view->Topview->Edges[ind]);
+    for (ind = 0; ind < view->Topview->Edgecount; ind++) {
+	deselect_edge(&view->Topview->Edges[ind]);
     }
     return 1;
 
 }
+
 int select_all(Agraph_t * g)
 {
     select_all_nodes(g);
@@ -503,7 +498,8 @@ int select_all(Agraph_t * g)
     return 1;
 
 }
-int deselect_all(Agraph_t* g)
+
+int deselect_all(Agraph_t * g)
 {
     deselect_all_nodes(g);
     deselect_all_edges(g);
@@ -527,11 +523,10 @@ int lineintersects(float X1, float X2, float Y1, float Y2)
     float x, y, m, iter;
     float RX, RY, RW, RH;
     int intersects, in;
-	if (view->mouse.mouse_mode == MM_SINGLE_SELECT)
-	{
-	    RW = 10;
-	    RH = 10;
-	}
+    if (view->mouse.mouse_mode == MM_SINGLE_SELECT) {
+	RW = 10;
+	RH = 10;
+    }
 
     RX = view->Selection.X;
     RY = view->Selection.Y;
@@ -628,20 +623,21 @@ int point_within_ellips_with_coords(float ex, float ey, float ea, float eb,
     return (a <= 1);
 }
 int point_within_sphere_with_coords(float x0, float y0, float z0, float r,
-				    float x, float y,float z)
+				    float x, float y, float z)
 {
-	float rr=(x-x0)*(x-x0)+(y-y0)*(y-y0)+(z-z0)*(z-z0);
-	rr=(float)pow(rr,0.5);
-	if (rr <= r)
-		return 1;
-	return 0;
+    float rr =
+	(x - x0) * (x - x0) + (y - y0) * (y - y0) + (z - z0) * (z - z0);
+    rr = (float) pow(rr, 0.5);
+    if (rr <= r)
+	return 1;
+    return 0;
 }
-float distance_to_line(float ax,float ay,float bx,float by,float cx,float cy)
+float distance_to_line(float ax, float ay, float bx, float by, float cx,
+		       float cy)
 {
-	//this function returns the distance between a line(a-b) segment and a point(c) in 2D plane
-	return (float)sqrt(
-				pow(((by-ay)*(cx-ax)+(bx-ax)*(cy-ay)),2)
-				/
-				(  pow((bx-ax),2) + pow((by-ay),2))
-				);
+    //this function returns the distance between a line(a-b) segment and a point(c) in 2D plane
+    return (float)
+	sqrt(pow(((by - ay) * (cx - ax) + (bx - ax) * (cy - ay)), 2)
+	     / (pow((bx - ax), 2) + pow((by - ay), 2))
+	);
 }

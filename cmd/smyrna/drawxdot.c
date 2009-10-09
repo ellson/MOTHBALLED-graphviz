@@ -42,21 +42,20 @@ static void set_options(sdot_op * op, int param)
 
     if ((param == 1) && (view->mouse.mouse_mode == 10) && (view->mouse.mouse_down == 1))	//selected, if there is move, move it
     {
-		dx = view->GLx - view->GLx2;
-		dy = view->GLy - view->GLy2;
-    } else 
-	{
-		dx = 0;
-		dy = 0;
+	dx = view->GLx - view->GLx2;
+	dy = view->GLy - view->GLy2;
+    } else {
+	dx = 0;
+	dy = 0;
     }
 
 }
 
 static void SetFont(xdot_op * op, int param)
 {
-	//activate the right font
-	view->fontset->activefont=add_font(view->fontset,op->u.font.name);//load or set active font
-	view->FontSize = (int) op->u.font.size;
+    //activate the right font
+    view->fontset->activefont = add_font(view->fontset, op->u.font.name);	//load or set active font
+    view->FontSize = (int) op->u.font.size;
 }
 
 static void relocate_spline(sdot_op * sop, int param)
@@ -66,74 +65,60 @@ static void relocate_spline(sdot_op * sop, int param)
     Agnode_t *hn;		//head node
     int i = 0;
     xdot_op *op = &sop->op;
-    if (AGTYPE(sop->obj) == AGEDGE)
-	{
-		e = sop->obj;
-		tn = agtail(e);
-		hn = aghead(e);
-		if ((OD_Selected(hn) == 1) && (OD_Selected(tn) == 0))
-		{
-			set_options(sop, 1);
-			for (i = 1; i < op->u.bezier.cnt - 1; i = i + 1)
-			{
-				if ((dx != 0) || (dy != 0)) 
-				{
-					op->u.bezier.pts[i].x =
-							op->u.bezier.pts[i].x -
-								(int) (dx * (float) i /
-									(float) (op->u.bezier.cnt));
-					op->u.bezier.pts[i].y =
-								op->u.bezier.pts[i].y -
-									(int) (dy * (float) i /
-								       (float) (op->u.bezier.cnt));
-				}
-		    }
-			if ((dx != 0) || (dy != 0)) 
-			{
-				op->u.bezier.pts[op->u.bezier.cnt - 1].x =
-						op->u.bezier.pts[op->u.bezier.cnt - 1].x - (int) dx;
-				op->u.bezier.pts[op->u.bezier.cnt - 1].y =
-						op->u.bezier.pts[op->u.bezier.cnt - 1].y - (int) dy;
-			}
+    if (AGTYPE(sop->obj) == AGEDGE) {
+	e = sop->obj;
+	tn = agtail(e);
+	hn = aghead(e);
+	if ((OD_Selected(hn) == 1) && (OD_Selected(tn) == 0)) {
+	    set_options(sop, 1);
+	    for (i = 1; i < op->u.bezier.cnt - 1; i = i + 1) {
+		if ((dx != 0) || (dy != 0)) {
+		    op->u.bezier.pts[i].x =
+			op->u.bezier.pts[i].x -
+			(int) (dx * (float) i /
+			       (float) (op->u.bezier.cnt));
+		    op->u.bezier.pts[i].y =
+			op->u.bezier.pts[i].y -
+			(int) (dy * (float) i /
+			       (float) (op->u.bezier.cnt));
 		}
-		else if ((OD_Selected(hn) == 0) && (OD_Selected(tn) == 1))
-		{
-			set_options(sop, 1);
-			for (i = op->u.bezier.cnt - 1; i > 0; i = i - 1) 
-			{
-				if ((dx != 0) || (dy != 0)) 
-				{
-					op->u.bezier.pts[i].x =
-						op->u.bezier.pts[i].x -
-							(int) (dx * (float) (op->u.bezier.cnt - i) /
-											(float) (op->u.bezier.cnt));
-				op->u.bezier.pts[i].y =
-						op->u.bezier.pts[i].y -
-							(int) (dy * (float) (op->u.bezier.cnt - i) /
-								(float) (op->u.bezier.cnt));
-				}
-			}
-			if ((dx != 0) || (dy != 0)) 
-			{
-				op->u.bezier.pts[0].x = op->u.bezier.pts[0].x - (int) dx;
-				op->u.bezier.pts[0].y = op->u.bezier.pts[0].y - (int) dy;
-			}
+	    }
+	    if ((dx != 0) || (dy != 0)) {
+		op->u.bezier.pts[op->u.bezier.cnt - 1].x =
+		    op->u.bezier.pts[op->u.bezier.cnt - 1].x - (int) dx;
+		op->u.bezier.pts[op->u.bezier.cnt - 1].y =
+		    op->u.bezier.pts[op->u.bezier.cnt - 1].y - (int) dy;
+	    }
+	} else if ((OD_Selected(hn) == 0) && (OD_Selected(tn) == 1)) {
+	    set_options(sop, 1);
+	    for (i = op->u.bezier.cnt - 1; i > 0; i = i - 1) {
+		if ((dx != 0) || (dy != 0)) {
+		    op->u.bezier.pts[i].x =
+			op->u.bezier.pts[i].x -
+			(int) (dx * (float) (op->u.bezier.cnt - i) /
+			       (float) (op->u.bezier.cnt));
+		    op->u.bezier.pts[i].y =
+			op->u.bezier.pts[i].y -
+			(int) (dy * (float) (op->u.bezier.cnt - i) /
+			       (float) (op->u.bezier.cnt));
 		}
-		else if ((OD_Selected(hn) == 1) && (OD_Selected(tn) == 1)) 
-		{
-		    set_options(sop, 1);
-			for (i = 0; i < op->u.bezier.cnt; i = i + 1) 
-			{
-				if ((dx != 0) || (dy != 0)) 
-				{
-					op->u.bezier.pts[i].x =
-							op->u.bezier.pts[i].x - (int) dx;
-					op->u.bezier.pts[i].y =
-							op->u.bezier.pts[i].y - (int) dy;
-				}
-			}
+	    }
+	    if ((dx != 0) || (dy != 0)) {
+		op->u.bezier.pts[0].x = op->u.bezier.pts[0].x - (int) dx;
+		op->u.bezier.pts[0].y = op->u.bezier.pts[0].y - (int) dy;
+	    }
+	} else if ((OD_Selected(hn) == 1) && (OD_Selected(tn) == 1)) {
+	    set_options(sop, 1);
+	    for (i = 0; i < op->u.bezier.cnt; i = i + 1) {
+		if ((dx != 0) || (dy != 0)) {
+		    op->u.bezier.pts[i].x =
+			op->u.bezier.pts[i].x - (int) dx;
+		    op->u.bezier.pts[i].y =
+			op->u.bezier.pts[i].y - (int) dy;
 		}
+	    }
 	}
+    }
 }
 
 static void DrawBeziers(xdot_op * op, int param)
@@ -231,18 +216,17 @@ static void drawXdot(xdot * xDot, int param, void *p)
     int id;
     sdot_op *ops = (sdot_op *) (xDot->ops);
     sdot_op *op;
-	//to avoid the overlapping , z is slightly increased for each xdot of a particular object
-	if (AGTYPE(p)==AGEDGE)
-		globalz=1;	
-	else
-		globalz=0;	
+    //to avoid the overlapping , z is slightly increased for each xdot of a particular object
+    if (AGTYPE(p) == AGEDGE)
+	globalz = 1;
+    else
+	globalz = 0;
 
-	for (id = 0; id < xDot->cnt; id++)
-	{
-		globalz +=  GLOBAL_Z_OFFSET;
-		op = ops + id;
-		op->obj = p;
-		op->op.drawfunc(&(op->op), param);
+    for (id = 0; id < xDot->cnt; id++) {
+	globalz += GLOBAL_Z_OFFSET;
+	op = ops + id;
+	op->obj = p;
+	op->op.drawfunc(&(op->op), param);
     }
 }
 
@@ -251,10 +235,9 @@ static void drawXdot(xdot * xDot, int param, void *p)
 static void drawXdotwithattr(void *p, char *attr, int param)
 {
     xdot *xDot;
-    if ((xDot = parseXDotF(agget(p, attr), OpFns, sizeof(sdot_op))))
-	{
-		drawXdot(xDot, param, p);
-		freeXDot(xDot);
+    if ((xDot = parseXDotF(agget(p, attr), OpFns, sizeof(sdot_op)))) {
+	drawXdot(xDot, param, p);
+	freeXDot(xDot);
     }
 }
 
@@ -276,42 +259,38 @@ void drawGraph(Agraph_t * g)
     Agedge_t *e;
     Agraph_t *s;
     int param = 0;
-	for (s = agfstsubg(g); s; s = agnxtsubg(s))
-	{
+    for (s = agfstsubg(g); s; s = agnxtsubg(s)) {
 /*		OD_SelFlag(s) = 0;
 		if (OD_Selected(s) == 1)
 			param = 1;
 		else*/
-		    param = 0;
-		drawXdotwithattrs(s, param);
+	param = 0;
+	drawXdotwithattrs(s, param);
     }
 
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
-	{
+    for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
 /*		if (OD_Selected(v) == 1)
 			param = 1;
 		else*/
-			param = 0;
-//		OD_SelFlag(v) = 0;
-		drawXdotwithattr(v, "_draw_", param); //draw primitives
-		drawXdotwithattr(v, "_ldraw_", param);//label drawing
-		for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
-		{
+	param = 0;
+//              OD_SelFlag(v) = 0;
+	drawXdotwithattr(v, "_draw_", param);	//draw primitives
+	drawXdotwithattr(v, "_ldraw_", param);	//label drawing
+	for (e = agfstout(g, v); e; e = agnxtout(g, e)) {
 /*			OD_SelFlag(e) = 0;
 			if (OD_Selected(e) == 1)
 				param = 1;
 			else*/
-				param = 0;
-		    drawXdotwithattrs(e, param);
-		}
+	    param = 0;
+	    drawXdotwithattrs(e, param);
+	}
     }
-    if ((view->Selection.Active > 0) && (!view->SignalBlock)) 
-	{
-		view->Selection.Active = 0;
-		drawGraph(g);
-		view->SignalBlock = 1;
-		glexpose();
-		view->SignalBlock = 0;
+    if ((view->Selection.Active > 0) && (!view->SignalBlock)) {
+	view->Selection.Active = 0;
+	drawGraph(g);
+	view->SignalBlock = 1;
+	glexpose();
+	view->SignalBlock = 0;
     }
 
 }
@@ -331,8 +310,8 @@ static void scanXdot(xdot * xDot, void *p)
     for (id = 0; id < xDot->cnt; id++) {
 	op = ops + id;
 	op->obj = p;
-	if (op->op.kind==xd_font) {
-	    add_font(view->fontset,op->op.u.font.name);//load or set active font
+	if (op->op.kind == xd_font) {
+	    add_font(view->fontset, op->op.u.font.name);	//load or set active font
 	}
     }
 }
@@ -369,14 +348,12 @@ void scanGraph(Agraph_t * g)
 {
     Agnode_t *v;
     Agedge_t *e;
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
-	{
-		scanXdotwithattr(v, "_draw_"); 
-		scanXdotwithattr(v, "_ldraw_");
-		for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
-		{
-	      scanXdotwithattrs(e);
-		}
+    for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
+	scanXdotwithattr(v, "_draw_");
+	scanXdotwithattr(v, "_ldraw_");
+	for (e = agfstout(g, v); e; e = agnxtout(g, e)) {
+	    scanXdotwithattrs(e);
+	}
     }
 
 }
@@ -385,36 +362,32 @@ void scanGraph(Agraph_t * g)
 
 
 #ifdef UNUSED
-char* create_us_map()
+char *create_us_map()
 {
-	float x1,y1,x2,y2;
-	float ox1,oy1,ox2,oy2;
-	static const char filename[] = "file.txt";
-	FILE *file = fopen ( filename, "r" );
-	char line [ 128 ]; /* or other suitable maximum line size */
-	int firstline=1;
-	while ( fgets ( line, sizeof line, file ) != NULL ) /* read a line */
-	{
-		fputs ( line, stdout ); /* write the line */
-		sscanf(line,"%f %f %f %f",&x1,&y1,&x2,&y2);
-		
-		if (firstline)
-		{
-			ox1=x1;
-			oy1=y1;
-			ox2=x2;
-			oy2=y2;
-			firstline=0;
-		}
-		else if ( (x1==ox1) && (y1==oy1) && (x2==ox2) && (y2==oy2) ) /*polygon is closed here*/
-		{
+    float x1, y1, x2, y2;
+    float ox1, oy1, ox2, oy2;
+    static const char filename[] = "file.txt";
+    FILE *file = fopen(filename, "r");
+    char line[128];		/* or other suitable maximum line size */
+    int firstline = 1;
+    while (fgets(line, sizeof line, file) != NULL) {	/* read a line */
+	fputs(line, stdout);	/* write the line */
+	sscanf(line, "%f %f %f %f", &x1, &y1, &x2, &y2);
 
+	if (firstline) {
+	    ox1 = x1;
+	    oy1 = y1;
+	    ox2 = x2;
+	    oy2 = y2;
+	    firstline = 0;
+	} else if ((x1 == ox1) && (y1 == oy1) && (x2 == ox2) && (y2 == oy2)) {	/*polygon is closed here */
 
-		}
-		
 
 	}
-	fclose ( file );
-	return 0;
+
+
+    }
+    fclose(file);
+    return 0;
 }
 #endif

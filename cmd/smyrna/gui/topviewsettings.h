@@ -18,12 +18,22 @@
 
 #include "smyrnadefs.h"
 
-_BB void on_settingsOKBtn_clicked(GtkWidget * widget, gpointer user_data);
-_BB void on_settingsCancelBtn_clicked(GtkWidget * widget,gpointer user_data);
-_BB void on_settingsApplyBtn_clicked(GtkWidget * widget, gpointer user_data);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-extern int load_settings_from_graph(Agraph_t * g);
-extern int update_graph_from_settings(Agraph_t * g);
-extern int show_settings_form();
+    _BB void on_settingsOKBtn_clicked(GtkWidget * widget,
+				      gpointer user_data);
+    _BB void on_settingsCancelBtn_clicked(GtkWidget * widget,
+					  gpointer user_data);
+    _BB void on_settingsApplyBtn_clicked(GtkWidget * widget,
+					 gpointer user_data);
 
+    extern int load_settings_from_graph(Agraph_t * g);
+    extern int update_graph_from_settings(Agraph_t * g);
+    extern int show_settings_form();
+
+#ifdef __cplusplus
+}				/* end extern "C" */
+#endif
 #endif

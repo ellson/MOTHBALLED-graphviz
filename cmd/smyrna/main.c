@@ -1,4 +1,4 @@
-/* $Id$ $Revision$ */
+/* $Id$Revision: */
 /* vim:set shiftwidth=4 ts=8: */
 
 /**********************************************************
@@ -50,8 +50,8 @@ gchar *package_prefix;
 gchar *package_data_dir;
 #endif
 gchar *package_locale_dir;
-static char* smyrnaDir;    /* path to directory containin smyrna data files */
-char* smyrnaGlade;
+static char *smyrnaDir;		/* path to directory containin smyrna data files */
+char *smyrnaGlade;
 unsigned char SmyrnaVerbose;
 
 
@@ -64,31 +64,30 @@ unsigned char SmyrnaVerbose;
  * it later.
  * Returns NULL on error.
  */
-char*
-smyrnaPath (char* suffix)
+char *smyrnaPath(char *suffix)
 {
     static int buflen;
-    static char* buf;
+    static char *buf;
     static int baselen;
     int slen;
 #ifdef WIN32
-    char* pathSep = "\\";
+    char *pathSep = "\\";
 #else
-    char* pathSep = "/";
+    char *pathSep = "/";
 #endif
-    assert (smyrnaDir);
+    assert(smyrnaDir);
 
     if (!buf) {
-	baselen = strlen (smyrnaDir) + 2;
+	baselen = strlen(smyrnaDir) + 2;
 	buflen = baselen + 100;
-	buf = N_NEW(buflen,char);
+	buf = N_NEW(buflen, char);
     }
-    slen = strlen (suffix);
+    slen = strlen(suffix);
     if (baselen + slen > buflen) {
 	buflen = baselen + slen;
-	buf = realloc (buf, buflen);
+	buf = realloc(buf, buflen);
     }
-    sprintf (buf, "%s%s%s", smyrnaDir, pathSep, suffix);
+    sprintf(buf, "%s%s%s", smyrnaDir, pathSep, suffix);
     return buf;
 }
 
@@ -106,8 +105,7 @@ static void usage(int v)
 }
 
 
-static char*
-parseArgs (int argc, char *argv[], ViewInfo* view)
+static char *parseArgs(int argc, char *argv[], ViewInfo * view)
 {
     unsigned int c;
 
@@ -117,39 +115,39 @@ parseArgs (int argc, char *argv[], ViewInfo* view)
 	    SmyrnaVerbose = 1;
 	    break;
 	case 't':
-	    view->dfltViewType = VT_TOPVIEW; 
+	    view->dfltViewType = VT_TOPVIEW;
 	    break;
 	case 'x':
-	    view->dfltViewType = VT_XDOT; 
+	    view->dfltViewType = VT_XDOT;
 	    break;
 	case 'K':
-	    view->dfltEngine = s2layout (optarg);
+	    view->dfltEngine = s2layout(optarg);
 	    break;
 	case '?':
 	    if (optopt == '?')
 		usage(0);
 	    else
-		fprintf(stderr, "smyrna: option -%c unrecognized - ignored\n",
+		fprintf(stderr,
+			"smyrna: option -%c unrecognized - ignored\n",
 			optopt);
 	    break;
 	}
     }
 
     if (optind < argc)
-	 return argv[optind];
+	return argv[optind];
     else
 	return NULL;
 }
 
 #ifdef UNUSED
-static void close_cgraph(Agraph_t* g)
+static void close_cgraph(Agraph_t * g)
 {
-	Agnode_t *v;
-	for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
-	{
-		agdelrec(v, "temp_node_record");
-	}
-	agclose(g);
+    Agnode_t *v;
+    for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
+	agdelrec(v, "temp_node_record");
+    }
+    agclose(g);
 }
 
 #endif
@@ -157,18 +155,21 @@ static void close_cgraph(Agraph_t* g)
 int main(int argc, char *argv[])
 {
     GdkGLConfig *glconfig;
-    char* initFileName;
-	/*combo box to show loaded graphs*/
-	GtkComboBox *  graphComboBox;
+    char *initFileName;
+    /*combo box to show loaded graphs */
+    GtkComboBox *graphComboBox;
 
-    smyrnaDir = getenv ("SMYRNA_PATH");
+    smyrnaDir = getenv("SMYRNA_PATH");
     if (!smyrnaDir) {
 #ifdef _WIN32
-	int sz = GetCurrentDirectory(0, NULL)+strlen("\\share\\graphviz\\smyrna") + 1;
+	int sz =
+	    GetCurrentDirectory(0,
+				NULL) +
+	    strlen("\\share\\graphviz\\smyrna") + 1;
 	smyrnaDir = N_NEW(sz, char);
-	GetCurrentDirectory (sz, smyrnaDir);
-	smyrnaDir[strlen(smyrnaDir)-4]=(char)0;
-	strcat(smyrnaDir,"\\share\\graphviz\\smyrna");
+	GetCurrentDirectory(sz, smyrnaDir);
+	smyrnaDir[strlen(smyrnaDir) - 4] = (char) 0;
+	strcat(smyrnaDir, "\\share\\graphviz\\smyrna");
 #else
 	smyrnaDir = SMYRNA_PATH;
 #endif
@@ -177,13 +178,14 @@ int main(int argc, char *argv[])
     load_attributes();
 
 #ifdef G_OS_WIN32
-    package_prefix =g_win32_get_package_installation_directory(NULL, NULL);
+    package_prefix =
+	g_win32_get_package_installation_directory(NULL, NULL);
     package_data_dir = g_build_filename(package_prefix, "share", NULL);
     package_locale_dir =
 	g_build_filename(package_prefix, "share", "locale", NULL);
 #else
     package_locale_dir = g_build_filename(smyrnaDir, "locale", NULL);
-#endif	/* # */
+#endif				/* # */
 #ifdef ENABLE_NLS
     bindtextdomain(GETTEXT_PACKAGE, package_locale_dir);
     bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
@@ -194,40 +196,39 @@ int main(int argc, char *argv[])
     init_viewport(view);
     gtk_set_locale();
     gtk_init(&argc, &argv);
-    initFileName = parseArgs (argc, argv, view);
-    if (!(smyrnaGlade)) 
-		smyrnaGlade = smyrnaPath ("smyrna.glade");
+    initFileName = parseArgs(argc, argv, view);
+    if (!(smyrnaGlade))
+	smyrnaGlade = smyrnaPath("smyrna.glade");
     xml = glade_xml_new(smyrnaGlade, NULL, NULL);
     gladewidget = glade_xml_get_widget(xml, "frmMain");
     gtk_widget_show(gladewidget);
     g_signal_connect((gpointer) gladewidget, "destroy",
 		     G_CALLBACK(mQuitSlot), NULL);
     glade_xml_signal_autoconnect(xml);
-    if (initFileName)
-	{
-		view->initFile=1;
-		view->initFileName=strdup(initFileName);
-	}
-	gtk_gl_init(0, 0);
+    if (initFileName) {
+	view->initFile = 1;
+	view->initFileName = strdup(initFileName);
+    }
+    gtk_gl_init(0, 0);
     /* Configure OpenGL framebuffer. */
     glconfig = configure_gl();
-//	gladewidget = glade_xml_get_widget(xml, "vbox2");
-	gladewidget = glade_xml_get_widget(xml, "hbox11");
+//      gladewidget = glade_xml_get_widget(xml, "vbox2");
+    gladewidget = glade_xml_get_widget(xml, "hbox11");
 
     create_window(glconfig, gladewidget);
 
-	change_cursor(GDK_TOP_LEFT_ARROW);
+    change_cursor(GDK_TOP_LEFT_ARROW);
 
-#ifndef WIN32	
-	glutInit(&argc,argv);
+#ifndef WIN32
+    glutInit(&argc, argv);
 #endif
 
-	gladewidget = glade_xml_get_widget(xml, "hbox10");
-	graphComboBox=(GtkComboBox*)gtk_combo_box_new_text();
-	gtk_box_pack_end(gladewidget,graphComboBox,1,1,10);
+    gladewidget = glade_xml_get_widget(xml, "hbox10");
+    graphComboBox = (GtkComboBox *) gtk_combo_box_new_text();
+    gtk_box_pack_end(gladewidget, graphComboBox, 1, 1, 10);
     gtk_widget_show(graphComboBox);
-	view->graphComboBox=graphComboBox;
-	gtk_main();
+    view->graphComboBox = graphComboBox;
+    gtk_main();
 
 
 

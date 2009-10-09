@@ -17,5 +17,14 @@
 #ifndef GLCOMPUI_H
 #define GLCOMPUI_H
 #include "smyrnadefs.h"
-extern glCompSet *glcreate_gl_topview_menu(void);
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+    extern glCompSet *glcreate_gl_topview_menu(void);
+
+#ifdef __cplusplus
+}				/* end extern "C" */
+#endif
 #endif

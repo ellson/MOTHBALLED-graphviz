@@ -36,11 +36,12 @@ static float globalz = 0.0;
 
 GLubyte rasters[24] = {
     0xc0, 0x00, 0xc0, 0x00, 0xc0, 0x00, 0xc0, 0x00, 0xc0, 0x00, 0xff, 0x00,
-	0xff, 0x00,
+    0xff, 0x00,
     0xc0, 0x00, 0xc0, 0x00, 0xc0, 0x00, 0xff, 0xc0, 0xff, 0xc0
 };
 
-void DrawBezier(GLfloat * xp, GLfloat * yp, GLfloat * zp, int filled, int param)
+void DrawBezier(GLfloat * xp, GLfloat * yp, GLfloat * zp, int filled,
+		int param)
 {
     /*copied from NEHE */
     /*Written by: David Nikdel ( ogapo@ithink.net ) */
@@ -98,7 +99,7 @@ void DrawBezier(GLfloat * xp, GLfloat * yp, GLfloat * zp, int filled, int param)
 	Z = Az * a * a * a + Bz * 3 * a * a * b + Cz * 3 * a * b * b +
 	    Dz * b * b * b;
 	// Draw the line from point to point (assuming OGL is set up properly)
-	glVertex3d(X, Y, Z+globalz);
+	glVertex3d(X, Y, Z + globalz);
 	// Change the variable
 	a -= 0.05;
 	b = 1.0 - a;
@@ -112,12 +113,11 @@ static void set_options(sdot_op * op, int param)
 
     if ((param == 1) && (view->mouse.mouse_mode == 10) && (view->mouse.mouse_down == 1))	//selected, if there is move, move it
     {
-		dx = view->GLx - view->GLx2;
-		dy = view->GLy - view->GLy2;
-    } else 
-	{
-		dx = 0;
-		dy = 0;
+	dx = view->GLx - view->GLx2;
+	dy = view->GLy - view->GLy2;
+    } else {
+	dx = 0;
+	dy = 0;
     }
 
 }
@@ -331,7 +331,7 @@ void DrawEllipse(xdot_op * op, int param)
 	//convert degrees into radians
 	float degInRad = (float) (i * DEG2RAD);
 	glVertex3f((GLfloat) (x + cos(degInRad) * xradius),
-		   (GLfloat) (y + sin(degInRad) * yradius),globalz);
+		   (GLfloat) (y + sin(degInRad) * yradius), globalz);
     }
     glEnd();
 }
@@ -373,9 +373,9 @@ static void DrawPolygon(xdot_op * op, int param)
     for (i = 0; i < op->u.polygon.cnt; i = i + 1) {
 	glVertex3f((GLfloat) op->u.polygon.pts[i].x - dx,
 		   (GLfloat) op->u.polygon.pts[i].y - dy,
-		   (GLfloat) op->u.polygon.pts[i].z+globalz);
+		   (GLfloat) op->u.polygon.pts[i].z + globalz);
     }
-    glVertex3f((GLfloat) op->u.polygon.pts[0].x - dx, (GLfloat) op->u.polygon.pts[0].y - dy, (GLfloat) op->u.polygon.pts[0].z+globalz);	//close the polygon
+    glVertex3f((GLfloat) op->u.polygon.pts[0].x - dx, (GLfloat) op->u.polygon.pts[0].y - dy, (GLfloat) op->u.polygon.pts[0].z + globalz);	//close the polygon
     glEnd();
 }
 
@@ -395,7 +395,7 @@ void DrawPolyline(xdot_op * op, int param)
     for (i = 0; i < op->u.polyline.cnt; i = i + 1) {
 	glVertex3f((GLfloat) op->u.polyline.pts[i].x - dx,
 		   (GLfloat) op->u.polyline.pts[i].y - dy,
-		   (GLfloat) op->u.polyline.pts[i].z+globalz);
+		   (GLfloat) op->u.polyline.pts[i].z + globalz);
     }
     glEnd();
 }
@@ -451,26 +451,26 @@ void SetStyle(xdot_op * op, int param)
 
 static void SetFont(xdot_op * op, int param)
 {
-	//activate the right font
+    //activate the right font
 /*	view->widgets->fontset->activefont=add_font(view->widgets->fontset,op->u.font.name);//load or set active font
 	view->FontSize =  op->u.font.size;*/
 }
 
 void InsertImage(xdot_op * op, int param)
 {
- //   SelectImage((sdot_op *) op);
+    //   SelectImage((sdot_op *) op);
 
 }
 void EmbedText(xdot_op * op, int param)
 {
-	/*use gl pango fonts*/
+    /*use gl pango fonts */
 
 
 
 
 
 #ifdef UNUSED
-	GLfloat x;
+    GLfloat x;
 //    SelectText((sdot_op *) op);
     set_options((sdot_op *) op, param);
     if (op->u.text.align == 1)
@@ -479,14 +479,21 @@ void EmbedText(xdot_op * op, int param)
 	x = (GLfloat) op->u.text.x;
     if (op->u.text.align == -1)
 	x = (GLfloat) op->u.text.x + op->u.text.width;
-	view->widgets->fontset->fonts[view->widgets->fontset->activefont]->fontheight=view->FontSize;
+    view->widgets->fontset->fonts[view->widgets->fontset->activefont]->
+	fontheight = view->FontSize;
     if (param == 0)
-	fontColor(view->widgets->fontset->fonts[view->widgets->fontset->activefont],view->penColor.R, view->penColor.G, view->penColor.B,1);
+	fontColor(view->widgets->fontset->
+		  fonts[view->widgets->fontset->activefont],
+		  view->penColor.R, view->penColor.G, view->penColor.B, 1);
     if (param == 1)		//selected
-	fontColor(view->widgets->fontset->fonts[view->widgets->fontset->activefont],view->selectedNodeColor.R, view->selectedNodeColor.G,
-		  view->selectedNodeColor.B,1);
-	glprintf(view->widgets->fontset->fonts[view->widgets->fontset->activefont], (x - dx), (GLfloat)op->u.text.y -  dy,(GLfloat)0,
-		   (GLfloat)op->u.text.width, op->u.text.text);
+	fontColor(view->widgets->fontset->
+		  fonts[view->widgets->fontset->activefont],
+		  view->selectedNodeColor.R, view->selectedNodeColor.G,
+		  view->selectedNodeColor.B, 1);
+    glprintf(view->widgets->fontset->
+	     fonts[view->widgets->fontset->activefont], (x - dx),
+	     (GLfloat) op->u.text.y - dy, (GLfloat) 0,
+	     (GLfloat) op->u.text.width, op->u.text.text);
 #endif
 }
 
@@ -504,15 +511,15 @@ void draw_selection_box(ViewInfo * view)
 	}
 	glBegin(GL_LINE_STRIP);
 	glVertex3f((GLfloat) view->GLx, (GLfloat) view->GLy,
-		   (GLfloat) 0.001+globalz);
+		   (GLfloat) 0.001 + globalz);
 	glVertex3f((GLfloat) view->GLx, (GLfloat) view->GLy2,
-		   (GLfloat) 0.001+globalz);
+		   (GLfloat) 0.001 + globalz);
 	glVertex3f((GLfloat) view->GLx2, (GLfloat) view->GLy2,
-		   (GLfloat) 0.001+globalz);
+		   (GLfloat) 0.001 + globalz);
 	glVertex3f((GLfloat) view->GLx2, (GLfloat) view->GLy,
-		   (GLfloat) 0.001+globalz);
+		   (GLfloat) 0.001 + globalz);
 	glVertex3f((GLfloat) view->GLx, (GLfloat) view->GLy,
-		   (GLfloat) 0.001+globalz);
+		   (GLfloat) 0.001 + globalz);
 	glEnd();
 	if (view->mouse.mouse_mode == 5)
 	    glDisable(GL_LINE_STIPPLE);
@@ -530,7 +537,7 @@ void draw_magnifier(ViewInfo * view)
 	//converting screen pixel distaances to GL distances
 	view->mg.GLwidth = GetOGLDistance(view->mg.width) / (float) 2.0;
 	view->mg.GLheight = GetOGLDistance(view->mg.height) / (float) 2.0;
-	GetOGLPosRef((int)view->mouse.mouse_X, (int)view->mouse.mouse_Y, &mg_x, &mg_y, &mg_z);	//retrieving mouse coords as GL coordinates
+	GetOGLPosRef((int) view->mouse.mouse_X, (int) view->mouse.mouse_Y, &mg_x, &mg_y, &mg_z);	//retrieving mouse coords as GL coordinates
 	view->mg.x = mg_x;
 	view->mg.y = mg_y;
 	glLineWidth(4);
@@ -580,7 +587,7 @@ void draw_circle(float originX, float originY, float radius)
 	 angle += (float) 0.1) {
 	vectorX = originX + radius * (float) sin(angle);
 	vectorY = originY + radius * (float) cos(angle);
-	glVertex3d(vectorX1, vectorY1,globalz);
+	glVertex3d(vectorX1, vectorY1, globalz);
 	vectorY1 = vectorY;
 	vectorX1 = vectorX;
     }
@@ -589,7 +596,7 @@ void draw_circle(float originX, float originY, float radius)
 
 }
 
-GLUquadric* fisheyesphere;
+GLUquadric *fisheyesphere;
 void draw_fisheye_magnifier(ViewInfo * view)
 {
     if ((view->mouse.mouse_mode == 21) && (view->mouse.mouse_down)) {
@@ -597,25 +604,28 @@ void draw_fisheye_magnifier(ViewInfo * view)
 	GLfloat mg_x, mg_y, mg_z;
 	a = GetOGLDistance((int) view->fmg.constantR);
 	view->fmg.R = (int) a;
-	GetOGLPosRef((int)view->mouse.mouse_X, (int)view->mouse.mouse_Y, &mg_x,
-		     &mg_y, &mg_z);
+	GetOGLPosRef((int) view->mouse.mouse_X, (int) view->mouse.mouse_Y,
+		     &mg_x, &mg_y, &mg_z);
 	glColor4f((GLfloat) 0.3, (GLfloat) 0.1, (GLfloat) 0.8,
 		  (GLfloat) 1);
-	if (((view->fmg.x != mg_x) || (view->fmg.y != mg_y))&&(view->active_camera==-1)) {
-		fisheye_polar(mg_x, mg_y, view->Topview);
+	if (((view->fmg.x != mg_x) || (view->fmg.y != mg_y))
+	    && (view->active_camera == -1)) {
+	    fisheye_polar(mg_x, mg_y, view->Topview);
 	    draw_circle(mg_x, mg_y, a);
 	}
-	if (((view->fmg.x != mg_x) || (view->fmg.y != mg_y))&&(view->active_camera>-1)) {
-		fisheye_spherical(mg_x, mg_y,0.00,view->Topview);
+	if (((view->fmg.x != mg_x) || (view->fmg.y != mg_y))
+	    && (view->active_camera > -1)) {
+	    fisheye_spherical(mg_x, mg_y, 0.00, view->Topview);
 
 
-		if(!fisheyesphere)
-			fisheyesphere=gluNewQuadric();
-		gluQuadricDrawStyle ( fisheyesphere, GLU_LINE );
-		glColor4f((GLfloat) 0.3, (GLfloat) 0.1, (GLfloat) 0.8,(GLfloat)0.05);
-		glTranslatef(mg_x,mg_y,0);
-		gluSphere(fisheyesphere,a,30,30);
-		glTranslatef(-mg_x,-mg_y,0);
+	    if (!fisheyesphere)
+		fisheyesphere = gluNewQuadric();
+	    gluQuadricDrawStyle(fisheyesphere, GLU_LINE);
+	    glColor4f((GLfloat) 0.3, (GLfloat) 0.1, (GLfloat) 0.8,
+		      (GLfloat) 0.05);
+	    glTranslatef(mg_x, mg_y, 0);
+	    gluSphere(fisheyesphere, a, 30, 30);
+	    glTranslatef(-mg_x, -mg_y, 0);
 	}
 
 
@@ -628,7 +638,8 @@ void draw_fisheye_magnifier(ViewInfo * view)
 void drawBorders(ViewInfo * view)
 {
     if (view->bdVisible) {
-		glColor4f(view->borderColor.R,view->borderColor.B,view->borderColor.G,view->borderColor.A);
+	glColor4f(view->borderColor.R, view->borderColor.B,
+		  view->borderColor.G, view->borderColor.A);
 	glLineWidth(2);
 	glBegin(GL_LINE_STRIP);
 	glVertex2d(view->bdxLeft, view->bdyBottom);
@@ -678,12 +689,12 @@ static void drawXdotwithattr(void *p, char *attr, int param)
 
 static void drawXdotwithattrs(void *e, int param)
 {
- /*   drawXdotwithattr(e, "_draw_", param);
-    drawXdotwithattr(e, "_ldraw_", param);
-    drawXdotwithattr(e, "_hdraw_", param);
-    drawXdotwithattr(e, "_tdraw_", param);
-    drawXdotwithattr(e, "_hldraw_", param);
-    drawXdotwithattr(e, "_tldraw_", param);*/
+    /*   drawXdotwithattr(e, "_draw_", param);
+       drawXdotwithattr(e, "_ldraw_", param);
+       drawXdotwithattr(e, "_hdraw_", param);
+       drawXdotwithattr(e, "_tdraw_", param);
+       drawXdotwithattr(e, "_hldraw_", param);
+       drawXdotwithattr(e, "_tldraw_", param); */
 }
 #endif
 
@@ -746,14 +757,12 @@ static void scanXdot(xdot * xDot, void *p)
     sdot_op *ops = (sdot_op *) (xDot->ops);
     sdot_op *op;
 
-    for (id = 0; id < xDot->cnt; id++)
-	{
-		op = ops + id;
-		op->obj = p;
-		if (op->op.kind==xd_font)
-		{
-//			add_font(view->widgets->fontset,op->op.u.font.name,op->op.u.font.size);//load or set active font
-		}
+    for (id = 0; id < xDot->cnt; id++) {
+	op = ops + id;
+	op->obj = p;
+	if (op->op.kind == xd_font) {
+//                      add_font(view->widgets->fontset,op->op.u.font.name,op->op.u.font.size);//load or set active font
+	}
     }
 
 }
@@ -762,10 +771,9 @@ static void scanXdot(xdot * xDot, void *p)
 static void scanXdotwithattr(void *p, char *attr)
 {
     xdot *xDot;
-    if ((xDot = parseXDotF(agget(p, attr), OpFns, sizeof(sdot_op))))
-	{
-		scanXdot(xDot, p);
-		freeXDot(xDot);
+    if ((xDot = parseXDotF(agget(p, attr), OpFns, sizeof(sdot_op)))) {
+	scanXdot(xDot, p);
+	freeXDot(xDot);
     }
 }
 
@@ -790,14 +798,12 @@ void scanGraph(Agraph_t * g)
 {
     Agnode_t *v;
     Agedge_t *e;
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
-	{
-		scanXdotwithattr(v, "_draw_"); 
-		scanXdotwithattr(v, "_ldraw_");
-		for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
-		{
-	      scanXdotwithattrs(e);
-		}
+    for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
+	scanXdotwithattr(v, "_draw_");
+	scanXdotwithattr(v, "_ldraw_");
+	for (e = agfstout(g, v); e; e = agnxtout(g, e)) {
+	    scanXdotwithattrs(e);
+	}
     }
 
 }
@@ -829,7 +835,7 @@ void drawCircle(float x, float y, float radius, float zdepth)
 	float degInRad = (float) (i * DEG2RAD);
 	glVertex3f((GLfloat) (x + cos(degInRad) * radius),
 		   (GLfloat) (y + sin(degInRad) * radius),
-		   (GLfloat) zdepth+globalz);
+		   (GLfloat) zdepth + globalz);
     }
 
     glEnd();
@@ -852,138 +858,142 @@ RGBColor GetRGBColor(char *color)
 {
     gvcolor_t cl;
     RGBColor c;
-    if (color != '\0') 
-	{
-		colorxlate(color, &cl, RGBA_DOUBLE);
-		c.R = (float) cl.u.RGBA[0];
-		c.G = (float) cl.u.RGBA[1];
-		c.B = (float) cl.u.RGBA[2];
-		c.A = (float) cl.u.RGBA[3];
-    } else 
-	{
-		c.R = view->penColor.R;
-		c.G = view->penColor.G;
-		c.B = view->penColor.B;
-		c.A = view->penColor.A;
+    if (color != '\0') {
+	colorxlate(color, &cl, RGBA_DOUBLE);
+	c.R = (float) cl.u.RGBA[0];
+	c.G = (float) cl.u.RGBA[1];
+	c.B = (float) cl.u.RGBA[2];
+	c.A = (float) cl.u.RGBA[3];
+    } else {
+	c.R = view->penColor.R;
+	c.G = view->penColor.G;
+	c.B = view->penColor.B;
+	c.A = view->penColor.A;
     }
     return c;
 }
-void drawEllipse(float xradius, float yradius,int angle1,int angle2)
+void drawEllipse(float xradius, float yradius, int angle1, int angle2)
 {
-	int i;
-	glBegin(GL_LINE_STRIP);
+    int i;
+    glBegin(GL_LINE_STRIP);
 
-   for (i=angle1; i<=angle2; i++)
-   {
-      //convert degrees into radians
-      float degInRad = (float)i*(float)DEG2RAD;
-      glVertex3f((GLfloat)(cos(degInRad)*xradius),(GLfloat)(sin(degInRad)*yradius),globalz);
-   }
- 
-   glEnd();
+    for (i = angle1; i <= angle2; i++) {
+	//convert degrees into radians
+	float degInRad = (float) i * (float) DEG2RAD;
+	glVertex3f((GLfloat) (cos(degInRad) * xradius),
+		   (GLfloat) (sin(degInRad) * yradius), globalz);
+    }
+
+    glEnd();
 }
-int draw_node_hintbox_gl_polygon(GLfloat x,GLfloat y,GLfloat z,GLfloat fs,char* text)
-
+int draw_node_hintbox_gl_polygon(GLfloat x, GLfloat y, GLfloat z,
+				 GLfloat fs, char *text)
 {
 
 
-	GLfloat X,Y,Z,pad;
-	pad=fs/(GLfloat)5.0;
-	X=x;Y=y;Z=z+(GLfloat)0.0005;
-	glBegin(GL_POLYGON);
-	glVertex3f(X,Y,Z);
-	Y=Y + fs;
-	glVertex3f(X,Y,Z);
-	X=X+fs;
-	glVertex3f(X,Y,Z);
-	X=x;y=y;
-	glVertex3f(X,Y,Z);
-	glEnd();
+    GLfloat X, Y, Z, pad;
+    pad = fs / (GLfloat) 5.0;
+    X = x;
+    Y = y;
+    Z = z + (GLfloat) 0.0005;
+    glBegin(GL_POLYGON);
+    glVertex3f(X, Y, Z);
+    Y = Y + fs;
+    glVertex3f(X, Y, Z);
+    X = X + fs;
+    glVertex3f(X, Y, Z);
+    X = x;
+    y = y;
+    glVertex3f(X, Y, Z);
+    glEnd();
 
-	X=x;Y=y+fs;
-	glBegin(GL_POLYGON);
-	glVertex3f(X,Y,Z);
-	X=x;Y=Y+fs+2*pad;
-	glVertex3f(X,Y,Z);
-	X=x+strlen(text)*fs/(GLfloat)2.0+(GLfloat)2.0*pad;
-	glVertex3f(X,Y,Z);
-	Y=y+fs;
-	glVertex3f(X,Y,Z);
-	X=x;
-	glVertex3f(X,Y,Z);
-	glEnd();
-
-
-	return 1;
-
-}
-int draw_node_hintbox_gl_line(GLfloat x,GLfloat y,GLfloat z,GLfloat fs,char* text)
-{
+    X = x;
+    Y = y + fs;
+    glBegin(GL_POLYGON);
+    glVertex3f(X, Y, Z);
+    X = x;
+    Y = Y + fs + 2 * pad;
+    glVertex3f(X, Y, Z);
+    X = x + strlen(text) * fs / (GLfloat) 2.0 + (GLfloat) 2.0 *pad;
+    glVertex3f(X, Y, Z);
+    Y = y + fs;
+    glVertex3f(X, Y, Z);
+    X = x;
+    glVertex3f(X, Y, Z);
+    glEnd();
 
 
-	GLfloat X,Y,Z,pad;
-	pad=fs/(GLfloat)5.0;
-	X=x;Y=y;Z=z+(GLfloat)0.001;
-	glBegin(GL_LINE_STRIP);
-	glVertex3f(X,Y,Z);
-	Y=Y + 2*fs+2*pad;
-	glVertex3f(X,Y,Z);
-	X=X+2*pad+strlen(text)*fs/(GLfloat)2.0;
-	glVertex3f(X,Y,Z);
-	Y=y+fs;
-	glVertex3f(X,Y,Z);
-	X=x+fs;
-	glVertex3f(X,Y,Z);
-	X=x;Y=y;
-	glVertex3f(X,Y,Z);
-	glEnd();
-
-
-
-	return 1;
+    return 1;
 
 }
-
-
-int draw_node_hintbox(GLfloat x,GLfloat y,GLfloat z,GLfloat fs,char* text)
+int draw_node_hintbox_gl_line(GLfloat x, GLfloat y, GLfloat z, GLfloat fs,
+			      char *text)
 {
-	
 
-	glColor3f(1,1,0);
-		draw_node_hintbox_gl_polygon(x,y,z,fs,text);
-	glColor3f(0,0,1);
-		draw_node_hintbox_gl_line(x,y,z,fs,text);
-	return 1;
+
+    GLfloat X, Y, Z, pad;
+    pad = fs / (GLfloat) 5.0;
+    X = x;
+    Y = y;
+    Z = z + (GLfloat) 0.001;
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(X, Y, Z);
+    Y = Y + 2 * fs + 2 * pad;
+    glVertex3f(X, Y, Z);
+    X = X + 2 * pad + strlen(text) * fs / (GLfloat) 2.0;
+    glVertex3f(X, Y, Z);
+    Y = y + fs;
+    glVertex3f(X, Y, Z);
+    X = x + fs;
+    glVertex3f(X, Y, Z);
+    X = x;
+    Y = y;
+    glVertex3f(X, Y, Z);
+    glEnd();
+
+
+
+    return 1;
 
 }
 
-static GLUquadric* sphere;
-void draw_sphere(float x,float y,float z,float r)
+
+int draw_node_hintbox(GLfloat x, GLfloat y, GLfloat z, GLfloat fs,
+		      char *text)
 {
-	if(!sphere)
-			fisheyesphere=gluNewQuadric();
-	gluQuadricDrawStyle ( fisheyesphere, GLU_FILL );
-	glTranslatef(x,y,z);
-	gluSphere(fisheyesphere,r,SPHERE_SLICE_COUNT,SPHERE_SLICE_COUNT);
-	glTranslatef(-x,-y,-z);
+
+
+    glColor3f(1, 1, 0);
+    draw_node_hintbox_gl_polygon(x, y, z, fs, text);
+    glColor3f(0, 0, 1);
+    draw_node_hintbox_gl_line(x, y, z, fs, text);
+    return 1;
+
+}
+
+static GLUquadric *sphere;
+void draw_sphere(float x, float y, float z, float r)
+{
+    if (!sphere)
+	fisheyesphere = gluNewQuadric();
+    gluQuadricDrawStyle(fisheyesphere, GLU_FILL);
+    glTranslatef(x, y, z);
+    gluSphere(fisheyesphere, r, SPHERE_SLICE_COUNT, SPHERE_SLICE_COUNT);
+    glTranslatef(-x, -y, -z);
 }
 
 #ifdef UNUSED
-void draw_xdot_set(xdot_set* s)
+void draw_xdot_set(xdot_set * s)
 {
-	int ind=0;
-	int ind2=0;
-	for (ind=0;ind < s->cnt ; ind ++)
-	{
-		for (ind2=0;ind2 < s->xdots[ind]->cnt ; ind2 ++)
-		{
-			xdot_op* op;
-			op=&s->xdots[ind]->ops[ind2];
-			if(op->drawfunc)
-				op->drawfunc(op,0);
-		}
+    int ind = 0;
+    int ind2 = 0;
+    for (ind = 0; ind < s->cnt; ind++) {
+	for (ind2 = 0; ind2 < s->xdots[ind]->cnt; ind2++) {
+	    xdot_op *op;
+	    op = &s->xdots[ind]->ops[ind2];
+	    if (op->drawfunc)
+		op->drawfunc(op, 0);
 	}
+    }
 }
 #endif
-
-

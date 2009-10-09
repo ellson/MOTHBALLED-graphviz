@@ -29,9 +29,8 @@ void btnTVFilter_clicked_cb(GtkWidget * widget, gpointer user_data)
 
 //      gtk_dialog_set_response_sensitive   (glade_xml_get_widget(xml, "dlgOpenGraph"),1,1);
 //      gtk_dialog_set_response_sensitive   (glade_xml_get_widget(xml, "dlgOpenGraph"),2,1);
-    respond =
-	gtk_dialog_run((GtkDialog *)
-		       glade_xml_get_widget(xml, "dlgTVFilter"));
+    respond = gtk_dialog_run((GtkDialog *)
+			     glade_xml_get_widget(xml, "dlgTVFilter"));
 //      respond=gtk_dialog_run (glade_xml_get_widget(xml, "dlgFilters"));
     gtk_widget_hide(glade_xml_get_widget(xml, "dlgTVFilter"));
     if (respond == 1)
@@ -86,8 +85,7 @@ void cgbTVVisible_toggled_cb(GtkWidget * widget, gpointer user_data)
 {
 
 }
-void cgbTVHighlighted_toggled_cb(GtkWidget * widget,
-				     gpointer user_data)
+void cgbTVHighlighted_toggled_cb(GtkWidget * widget, gpointer user_data)
 {
 
 }
@@ -173,7 +171,8 @@ void btnTVHideAll_clicked_cb(GtkWidget * widget, gpointer user_data)
 {
     tv_hide_all();
 }
+
 void btnTVSaveAs_clicked_cb(GtkWidget * widget, gpointer user_data)
 {
-	tv_save_as();
+    tv_save_as();
 }

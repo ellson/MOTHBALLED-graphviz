@@ -1,3 +1,4 @@
+/* $Id$Revision: */
 /* vim:set shiftwidth=4 ts=8: */
 
 /**********************************************************
@@ -66,11 +67,11 @@ scale_coords(double *x_coords, double *y_coords, int n,
     }
 }
 
-void positionAllItems(Hierarchy * hp, focus_t * fs, reposition_t* parms)
+void positionAllItems(Hierarchy * hp, focus_t * fs, reposition_t * parms)
 {
     int i;
     int interval = 20;
-    int counter = 0; /* no. of active nodes */
+    int counter = 0;		/* no. of active nodes */
     double *x_coords = N_NEW(hp->nvtxs[0], double);
     double *y_coords = N_NEW(hp->nvtxs[0], double);
     int max_level = hp->nlevels - 1;	// coarsest level
@@ -93,20 +94,23 @@ void positionAllItems(Hierarchy * hp, focus_t * fs, reposition_t* parms)
     height *= parms->graphSize / 100.0;
     if (fs->num_foci == 0) {
 	if (parms->rescale == Scale)
-	    scale_coords(x_coords, y_coords, counter, width, height, margin);
+	    scale_coords(x_coords, y_coords, counter, width, height,
+			 margin);
     } else
 	switch (parms->rescale) {
 	case Polar:
 	    rescale_layout_polar(x_coords, y_coords, fs->x_foci,
 				 fs->y_foci, fs->num_foci, counter,
-				 interval, width, height, margin, distortion);
+				 interval, width, height, margin,
+				 distortion);
 	    break;
 	case Rectilinear:
 	    rescale_layout(x_coords, y_coords, counter, interval,
 			   width, height, margin, distortion);
 	    break;
 	case Scale:
-	    scale_coords(x_coords, y_coords, counter, width, height, margin);
+	    scale_coords(x_coords, y_coords, counter, width, height,
+			 margin);
 	    break;
 	case NoRescale:
 	    break;
@@ -124,51 +128,50 @@ void positionAllItems(Hierarchy * hp, focus_t * fs, reposition_t* parms)
 }
 
 #ifdef DEBUG
-static void
-dumpG (int nn, v_data * graph)
+static void dumpG(int nn, v_data * graph)
 {
     int i, j;
-    for (i=0; i < nn; i++) {
- 	fprintf (stderr, "[%d]", i);
-	for (j=1; j < graph->nedges; j++)
- 	    fprintf (stderr, " %d", graph->edges[j]);
- 	fprintf (stderr, "\n");
+    for (i = 0; i < nn; i++) {
+	fprintf(stderr, "[%d]", i);
+	for (j = 1; j < graph->nedges; j++)
+	    fprintf(stderr, " %d", graph->edges[j]);
+	fprintf(stderr, "\n");
 	graph++;
     }
 }
 
-static void
-dumpEG (int nn, ex_vtx_data * graph)
+static void dumpEG(int nn, ex_vtx_data * graph)
 {
     int i, j;
-    for (i=0; i < nn; i++) {
-        fprintf (stderr, "[%d](%d,%d,%d)(%f,%f)", i, graph->size, graph->active_level,
-           graph->globalIndex, graph->x_coord, graph->y_coord);
-        for (j=1; j < graph->nedges; j++)
-            fprintf (stderr, " %d", graph->edges[j]);
-        fprintf (stderr, "\n");
-        graph++;
+    for (i = 0; i < nn; i++) {
+	fprintf(stderr, "[%d](%d,%d,%d)(%f,%f)", i, graph->size,
+		graph->active_level, graph->globalIndex, graph->x_coord,
+		graph->y_coord);
+	for (j = 1; j < graph->nedges; j++)
+	    fprintf(stderr, " %d", graph->edges[j]);
+	fprintf(stderr, "\n");
+	graph++;
     }
 }
 
-static void
-dumpHier (Hierarchy* hier)
+static void dumpHier(Hierarchy * hier)
 {
     int i;
 
     for (i = 0; i < hier->nlevels; i++) {
-        fprintf (stderr, "level [%d] %d %d \n", i, hier->nvtxs[i], hier->nedges[i]);
-        fprintf (stderr, "graph\n");
-        dumpG (hier->nvtxs[i], hier->graphs[0]);
-        fprintf (stderr, "geom_graph\n");
-        dumpEG (hier->nvtxs[i], hier->geom_graphs[0]);
+	fprintf(stderr, "level [%d] %d %d \n", i, hier->nvtxs[i],
+		hier->nedges[i]);
+	fprintf(stderr, "graph\n");
+	dumpG(hier->nvtxs[i], hier->graphs[0]);
+	fprintf(stderr, "geom_graph\n");
+	dumpEG(hier->nvtxs[i], hier->geom_graphs[0]);
     }
 }
 
 #endif
 
 Hierarchy *makeHier(int nn, int ne, v_data * graph, double *x_coords,
-		    double *y_coords, hierparms_t* parms)
+		    double *y_coords, hierparms_t * parms)
 {
     v_data *delaunay;
     ex_vtx_data *geom_graph;
@@ -209,10 +212,10 @@ focus_t *initFocus(int ncnt)
     return fs;
 }
 
-void freeFocus(focus_t* fs)
+void freeFocus(focus_t * fs)
 {
-    free (fs->foci_nodes);
-    free (fs->x_foci);
-    free (fs->y_foci);
-    free (fs);
+    free(fs->foci_nodes);
+    free(fs->x_foci);
+    free(fs->y_foci);
+    free(fs);
 }

@@ -17,5 +17,14 @@
 #define GLMENU_H
 
 #include "viewport.h"
-GtkWidget *create_popup_menu(GtkWidget * drawing_area);
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+    GtkWidget *create_popup_menu(GtkWidget * drawing_area);
+
+#ifdef __cplusplus
+}				/* end extern "C" */
+#endif
 #endif

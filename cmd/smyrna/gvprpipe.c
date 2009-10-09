@@ -16,7 +16,7 @@
 
 #include "gvprpipe.h"
 #include "const.h"
-#include <stdio.h> 
+#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <glade/glade.h>
@@ -24,31 +24,34 @@
 #include "draw.h"
 #include "gui.h"
 
-#include <viewport.h> 
+#include <viewport.h>
 //#include <gltemplate.h> 
 
 #include <gvpr.h>
-extern GladeXML *xml;			//global libglade vars
-static ssize_t outfn (void* sp, const char *buf, size_t nbyte, void* dp)
+extern GladeXML *xml;		//global libglade vars
+static ssize_t outfn(void *sp, const char *buf, size_t nbyte, void *dp)
 {
 
-	append_textview((GtkTextView*) glade_xml_get_widget(xml,"gvprtextoutput"),buf,nbyte);	
-	append_textview((GtkTextView*) glade_xml_get_widget(xml,"mainconsole"),buf,nbyte);	
-	return nbyte;
+    append_textview((GtkTextView *)
+		    glade_xml_get_widget(xml, "gvprtextoutput"), buf,
+		    nbyte);
+    append_textview((GtkTextView *)
+		    glade_xml_get_widget(xml, "mainconsole"), buf, nbyte);
+    return nbyte;
 }
 
 #ifdef UNUSED
-static ssize_t errfn (void* sp, const char *buf, size_t nbyte, void* dp)
+static ssize_t errfn(void *sp, const char *buf, size_t nbyte, void *dp)
 {
-	return 0;
+    return 0;
 }
 #endif
 
-int run_gvpr (Agraph_t* srcGraph, int argc, char* argv[])
+int run_gvpr(Agraph_t * srcGraph, int argc, char *argv[])
 {
     int i, rv = 1;
     gvpropts opts;
-    Agraph_t* gs[2];
+    Agraph_t *gs[2];
     static int count;
     char buf[SMALLBUF];
 
@@ -58,25 +61,23 @@ int run_gvpr (Agraph_t* srcGraph, int argc, char* argv[])
     opts.out = outfn;
     opts.err = outfn;
     opts.flags = GV_USE_OUTGRAPH;
-   
-    rv = gvpr (argc, argv, &opts);
 
-    if (rv) {  /* error */
-		fprintf (stderr, "Error in gvpr\n");
-    }
-    else if (opts.n_outgraphs) {
-	refreshViewport (0);
-	sprintf (buf, "<%d>", ++count);
+    rv = gvpr(argc, argv, &opts);
+
+    if (rv) {			/* error */
+	fprintf(stderr, "Error in gvpr\n");
+    } else if (opts.n_outgraphs) {
+	refreshViewport(0);
+	sprintf(buf, "<%d>", ++count);
 	if (opts.outgraphs[0] != view->g[view->activeGraph])
 	    add_graph_to_viewport(opts.outgraphs[0], buf);
 	if (opts.n_outgraphs > 1)
-	    fprintf (stderr, "Warning: multiple output graphs-discarded\n"); 
+	    fprintf(stderr, "Warning: multiple output graphs-discarded\n");
 	for (i = 1; i < opts.n_outgraphs; i++) {
-	    agclose (opts.outgraphs[i]);
+	    agclose(opts.outgraphs[i]);
 	}
-    }
-    else {
-	refreshViewport (0);
+    } else {
+	refreshViewport(0);
     }
     return rv;
 }

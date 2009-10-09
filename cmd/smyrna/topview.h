@@ -24,17 +24,25 @@
 #define _BB
 #endif
 
-void cleartopview(topview * t);
-void preparetopview(Agraph_t * g, topview * t);
-void update_topview(Agraph_t * g, topview * t,int init);
-void drawTopViewGraph(Agraph_t * g);
-int set_update_required(topview * t);
-int move_TVnodes(void);
-void local_zoom(topview * t);
-void originate_distorded_coordinates(topview * t);
-float calcfontsize(float totaledgelength,int totallabelsize,int edgecount,int totalnodecount);
-void select_with_regex(char* exp);
-void settvcolorinfo(Agraph_t* g,topview* t);
-void setMultiedges (Agraph_t* g, char* attrname);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
+    void cleartopview(topview * t);
+    void preparetopview(Agraph_t * g, topview * t);
+    void update_topview(Agraph_t * g, topview * t, int init);
+    void drawTopViewGraph(Agraph_t * g);
+    int set_update_required(topview * t);
+    int move_TVnodes(void);
+    void local_zoom(topview * t);
+    void originate_distorded_coordinates(topview * t);
+    float calcfontsize(float totaledgelength, int totallabelsize,
+		       int edgecount, int totalnodecount);
+    void select_with_regex(char *exp);
+    void settvcolorinfo(Agraph_t * g, topview * t);
+    void setMultiedges(Agraph_t * g, char *attrname);
+
+#ifdef __cplusplus
+}				/* end extern "C" */
+#endif
 #endif

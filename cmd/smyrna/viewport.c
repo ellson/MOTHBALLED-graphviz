@@ -33,12 +33,13 @@
 #include "memory.h"
 #include "topviewsettings.h"
 #include "md5.h"
+#include "arcball.h"
 
 
   /* Forward declarations */
 #ifdef UNUSED
 static int init_object_custom_data(Agraph_t * graph, void *obj);
-static void refresh_borders(Agraph_t* g);
+static void refresh_borders(Agraph_t * g);
 #endif
 
 #define countof( array ) ( sizeof( array )/sizeof( array[0] ) )
@@ -59,8 +60,8 @@ static int mapbool(char *p)
     return atoi(p);
 }
 static Dtdisc_t qDisc = {
-    offsetof(xdot,ops),
-    sizeof(xdot_op*),
+    offsetof(xdot, ops),
+    sizeof(xdot_op *),
     -1,
     NIL(Dtmake_f),
     NIL(Dtfree_f),
@@ -75,96 +76,90 @@ static Dtdisc_t qDisc = {
 void clear_viewport(ViewInfo * view)
 {
     /*free topview if there is one */
-    if (view->activeGraph >= 0) 
-		cleartopview(view->Topview);
-    if (view->graphCount) 
-		agclose(view->g[view->activeGraph]);
-//	init_viewport(view);
+    if (view->activeGraph >= 0)
+	cleartopview(view->Topview);
+    if (view->graphCount)
+	agclose(view->g[view->activeGraph]);
+//      init_viewport(view);
 }
-static void* get_glut_font(int ind)
+static void *get_glut_font(int ind)
 {
 
-	switch (ind)
-	{
-	case 0:
-		return GLUT_BITMAP_9_BY_15;
-		break;
-	case 1:
-		return GLUT_BITMAP_8_BY_13;
-		break;
-	case 2:
-		return GLUT_BITMAP_TIMES_ROMAN_10;
-		break;
-	case 3:
-		return GLUT_BITMAP_HELVETICA_10;
-		break;
-	case 4:
-		return GLUT_BITMAP_HELVETICA_12;
-		break;
-	case 5:
-		return GLUT_BITMAP_HELVETICA_18;
-		break;
-	default:
-		return GLUT_BITMAP_TIMES_ROMAN_10;
-	}
-
-}
-void fill_key(md5_byte_t* b,md5_byte_t* data)
-{
-	int ind=0;
-	for (ind=0;ind < 16;ind ++)
-	{
-		b[ind]=data[ind];
-	}
-
-}
-static int compare_keys(md5_byte_t* b1,md5_byte_t* b2)
-{
-	/*1 keys are equal*/
-	/*0 not equal*/
-
-	int ind=0;
-	int eq=1;
-	for (ind=0;ind < 16;ind ++)
-	{
-		if (b1[ind] != b2[ind])
-		{
-			eq=0;
-		}
-	}
-	return eq;
-}
-
-
-int close_graph(ViewInfo * view,int graphid)
-{
-	if (view->activeGraph < 0)
-		return 1;
-	fill_key(view->final_key,get_md5_key(view->g[graphid]));
-	if (!compare_keys(view->final_key,view->orig_key))
-		view->Topview->Graphdata.Modified=1;
-	if (view->Topview->Graphdata.Modified)
-	{
-		switch (show_close_nosavedlg())
-		{
-			case 0:	/*save and close*/
-				save_graph();
-				clear_viewport(view);
-				return 1;
-				break;
-			case 1:/*dont save but close*/
-				clear_viewport(view);
-				return 1;
-				break;
-			case 2:/*cancel do nothing*/
-				return 0;
-				break;
-			default:
-				break;
-		}
+    switch (ind) {
+    case 0:
+	return GLUT_BITMAP_9_BY_15;
+	break;
+    case 1:
+	return GLUT_BITMAP_8_BY_13;
+	break;
+    case 2:
+	return GLUT_BITMAP_TIMES_ROMAN_10;
+	break;
+    case 3:
+	return GLUT_BITMAP_HELVETICA_10;
+	break;
+    case 4:
+	return GLUT_BITMAP_HELVETICA_12;
+	break;
+    case 5:
+	return GLUT_BITMAP_HELVETICA_18;
+	break;
+    default:
+	return GLUT_BITMAP_TIMES_ROMAN_10;
     }
-	clear_viewport(view);
+
+}
+void fill_key(md5_byte_t * b, md5_byte_t * data)
+{
+    int ind = 0;
+    for (ind = 0; ind < 16; ind++) {
+	b[ind] = data[ind];
+    }
+
+}
+static int compare_keys(md5_byte_t * b1, md5_byte_t * b2)
+{
+    /*1 keys are equal */
+    /*0 not equal */
+
+    int ind = 0;
+    int eq = 1;
+    for (ind = 0; ind < 16; ind++) {
+	if (b1[ind] != b2[ind]) {
+	    eq = 0;
+	}
+    }
+    return eq;
+}
+
+
+int close_graph(ViewInfo * view, int graphid)
+{
+    if (view->activeGraph < 0)
 	return 1;
+    fill_key(view->final_key, get_md5_key(view->g[graphid]));
+    if (!compare_keys(view->final_key, view->orig_key))
+	view->Topview->Graphdata.Modified = 1;
+    if (view->Topview->Graphdata.Modified) {
+	switch (show_close_nosavedlg()) {
+	case 0:		/*save and close */
+	    save_graph();
+	    clear_viewport(view);
+	    return 1;
+	    break;
+	case 1:		/*dont save but close */
+	    clear_viewport(view);
+	    return 1;
+	    break;
+	case 2:		/*cancel do nothing */
+	    return 0;
+	    break;
+	default:
+	    break;
+	}
+    }
+    clear_viewport(view);
+    return 1;
 
 }
 
@@ -177,13 +172,12 @@ char *get_attribute_value(char *attr, ViewInfo * view, Agraph_t * g)
     return buf;
 }
 
-void
-set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
+void set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
 {
     gvcolor_t cl;
     char *buf;
-     colorxlate(get_attribute_value("bordercolor", view, g), &cl,
-		RGBA_DOUBLE);
+    colorxlate(get_attribute_value("bordercolor", view, g), &cl,
+	       RGBA_DOUBLE);
     view->borderColor.R = (float) cl.u.RGBA[0];
     view->borderColor.G = (float) cl.u.RGBA[1];
     view->borderColor.B = (float) cl.u.RGBA[2];
@@ -191,8 +185,7 @@ set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
     view->borderColor.A =
 	(float) atof(get_attribute_value("bordercoloralpha", view, g));
 
-    view->bdVisible =
-	 atoi(get_attribute_value("bordervisible", view, g));
+    view->bdVisible = atoi(get_attribute_value("bordervisible", view, g));
 
     buf = get_attribute_value("gridcolor", view, g);
     colorxlate(buf, &cl, RGBA_DOUBLE);
@@ -206,12 +199,14 @@ set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
 				  get_attribute_value("gridsize", view,
 						      g));
 
-	view->defaultnodeshape=atoi(buf=get_attribute_value("defaultnodeshape", view,g));
-	/* view->Selection.PickingType=atoi(buf=get_attribute_value("defaultselectionmethod", view,g)); */
+    view->defaultnodeshape = atoi(buf =
+				  get_attribute_value("defaultnodeshape",
+						      view, g));
+    /* view->Selection.PickingType=atoi(buf=get_attribute_value("defaultselectionmethod", view,g)); */
 
 
-	
-	view->gridVisible = atoi(get_attribute_value("gridvisible", view, g));
+
+    view->gridVisible = atoi(get_attribute_value("gridvisible", view, g));
 
     //mouse mode=pan
 
@@ -221,7 +216,7 @@ set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
     view->bgColor.R = (float) cl.u.RGBA[0];
     view->bgColor.G = (float) cl.u.RGBA[1];
     view->bgColor.B = (float) cl.u.RGBA[2];
-    view->bgColor.A = (float)1;
+    view->bgColor.A = (float) 1;
 
     //selected nodes are drawn with this color
     colorxlate(get_attribute_value("selectednodecolor", view, g), &cl,
@@ -229,8 +224,7 @@ set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
     view->selectedNodeColor.R = (float) cl.u.RGBA[0];
     view->selectedNodeColor.G = (float) cl.u.RGBA[1];
     view->selectedNodeColor.B = (float) cl.u.RGBA[2];
-    view->selectedNodeColor.A =
-	(float)
+    view->selectedNodeColor.A = (float)
 	atof(get_attribute_value("selectednodecoloralpha", view, g));
     //selected edge are drawn with this color
     colorxlate(get_attribute_value("selectededgecolor", view, g), &cl,
@@ -238,8 +232,7 @@ set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
     view->selectedEdgeColor.R = (float) cl.u.RGBA[0];
     view->selectedEdgeColor.G = (float) cl.u.RGBA[1];
     view->selectedEdgeColor.B = (float) cl.u.RGBA[2];
-    view->selectedEdgeColor.A =
-	(float)
+    view->selectedEdgeColor.A = (float)
 	atof(get_attribute_value("selectededgecoloralpha", view, g));
 
     colorxlate(get_attribute_value("highlightednodecolor", view, g), &cl,
@@ -247,8 +240,7 @@ set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
     view->highlightedNodeColor.R = (float) cl.u.RGBA[0];
     view->highlightedNodeColor.G = (float) cl.u.RGBA[1];
     view->highlightedNodeColor.B = (float) cl.u.RGBA[2];
-    view->highlightedNodeColor.A =
-	(float)
+    view->highlightedNodeColor.A = (float)
 	atof(get_attribute_value("highlightednodecoloralpha", view, g));
 
     buf = agget(g, "highlightededgecolor");
@@ -257,15 +249,12 @@ set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
     view->highlightedEdgeColor.R = (float) cl.u.RGBA[0];
     view->highlightedEdgeColor.G = (float) cl.u.RGBA[1];
     view->highlightedEdgeColor.B = (float) cl.u.RGBA[2];
-    view->highlightedEdgeColor.A =
-	(float)
+    view->highlightedEdgeColor.A = (float)
 	atof(get_attribute_value("highlightededgecoloralpha", view, g));
-	view->defaultnodealpha =
-	(float)
+    view->defaultnodealpha = (float)
 	atof(get_attribute_value("defaultnodealpha", view, g));
 
-	view->defaultedgealpha =
-	(float)
+    view->defaultedgealpha = (float)
 	atof(get_attribute_value("defaultedgealpha", view, g));
 
 
@@ -273,7 +262,8 @@ set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
     /*default line width */
     view->LineWidth =
 	(float) atof(get_attribute_value("defaultlinewidth", view, g));
-    view->FontSize = (float)atof(get_attribute_value("defaultfontsize", view, g));
+    view->FontSize =
+	(float) atof(get_attribute_value("defaultfontsize", view, g));
 
     view->topviewusermode = atoi(get_attribute_value("usermode", view, g));
     get_attribute_value("defaultmagnifierwidth", view, g);
@@ -292,47 +282,55 @@ set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
     view->fmg.fisheye_distortion_fac =
 	atoi(get_attribute_value
 	     ("defaultfisheyemagnifierdistort", view, g));
-    view->drawnodes=
-	atoi(get_attribute_value ("drawnodes", view, g));
-    view->drawedges=
-	atoi(get_attribute_value ("drawedges", view, g));
-    view->drawlabels=atoi(get_attribute_value ("drawlabels", view, g));
-	view->FontSizeConst=0; //this will be calculated later in topview.c while calculating optimum font size
+    view->drawnodes = atoi(get_attribute_value("drawnodes", view, g));
+    view->drawedges = atoi(get_attribute_value("drawedges", view, g));
+    view->drawlabels = atoi(get_attribute_value("drawlabels", view, g));
+    view->FontSizeConst = 0;	//this will be calculated later in topview.c while calculating optimum font size
 
-	view->glutfont=get_glut_font(atoi(get_attribute_value ("labelglutfont", view, g)));
-	colorxlate(get_attribute_value("nodelabelcolor", view, g), &cl,RGBA_DOUBLE);
-	view->nodelabelcolor.R=(float)cl.u.RGBA[0]; 
-	view->nodelabelcolor.G=(float) cl.u.RGBA[1];
-	view->nodelabelcolor.B=(float) cl.u.RGBA[2];
-	view->nodelabelcolor.A=	(float)atof(get_attribute_value("defaultnodealpha", view, g));
-	colorxlate(get_attribute_value("edgelabelcolor", view, g), &cl,RGBA_DOUBLE);
-	view->edgelabelcolor.R=(float) cl.u.RGBA[0];
-	view->edgelabelcolor.G=(float) cl.u.RGBA[1];
-	view->edgelabelcolor.B=(float) cl.u.RGBA[2];
-	view->edgelabelcolor.A=	(float)atof(get_attribute_value("defaultedgealpha", view, g));
-	view->labelwithdegree=atoi(get_attribute_value ("labelwithdegree", view, g));
-	view->labelnumberofnodes=atof(get_attribute_value ("labelnumberofnodes", view, g));
-	view->labelshownodes=atoi(get_attribute_value ("shownodelabels", view, g));
-	view->labelshowedges=atoi(get_attribute_value ("showedgelabels", view, g));
-	view->colschms=create_color_theme(atoi(get_attribute_value ("colortheme", view, g)));
+    view->glutfont =
+	get_glut_font(atoi(get_attribute_value("labelglutfont", view, g)));
+    colorxlate(get_attribute_value("nodelabelcolor", view, g), &cl,
+	       RGBA_DOUBLE);
+    view->nodelabelcolor.R = (float) cl.u.RGBA[0];
+    view->nodelabelcolor.G = (float) cl.u.RGBA[1];
+    view->nodelabelcolor.B = (float) cl.u.RGBA[2];
+    view->nodelabelcolor.A =
+	(float) atof(get_attribute_value("defaultnodealpha", view, g));
+    colorxlate(get_attribute_value("edgelabelcolor", view, g), &cl,
+	       RGBA_DOUBLE);
+    view->edgelabelcolor.R = (float) cl.u.RGBA[0];
+    view->edgelabelcolor.G = (float) cl.u.RGBA[1];
+    view->edgelabelcolor.B = (float) cl.u.RGBA[2];
+    view->edgelabelcolor.A =
+	(float) atof(get_attribute_value("defaultedgealpha", view, g));
+    view->labelwithdegree =
+	atoi(get_attribute_value("labelwithdegree", view, g));
+    view->labelnumberofnodes =
+	atof(get_attribute_value("labelnumberofnodes", view, g));
+    view->labelshownodes =
+	atoi(get_attribute_value("shownodelabels", view, g));
+    view->labelshowedges =
+	atoi(get_attribute_value("showedgelabels", view, g));
+    view->colschms =
+	create_color_theme(atoi
+			   (get_attribute_value("colortheme", view, g)));
 
 
-	if (view->graphCount > 0)
-		glClearColor(view->bgColor.R, view->bgColor.G, view->bgColor.B, view->bgColor.A);	//background color
+    if (view->graphCount > 0)
+	glClearColor(view->bgColor.R, view->bgColor.G, view->bgColor.B, view->bgColor.A);	//background color
 }
 
-static gboolean gl_main_expose(gpointer data) {
-	if (view->activeGraph >= 0)
-	{
-		if(view->Topview->animate==1)
-			expose_event(view->drawing_area, NULL, NULL);
-		return 1;
-	}
+static gboolean gl_main_expose(gpointer data)
+{
+    if (view->activeGraph >= 0) {
+	if (view->Topview->animate == 1)
+	    expose_event(view->drawing_area, NULL, NULL);
 	return 1;
+    }
+    return 1;
 }
 
-static void 
-get_data_dir()
+static void get_data_dir()
 {
     if (view->template_file) {
 	free(view->template_file);
@@ -340,31 +338,33 @@ get_data_dir()
 	free(view->attr_file);
     }
 
-    view->template_file = strdup(smyrnaPath ("template.dot"));
-    view->glade_file = strdup(smyrnaPath ("smyrna.glade"));
-    view->attr_file = strdup(smyrnaPath ("attrs.txt"));
+    view->template_file = strdup(smyrnaPath("template.dot"));
+    view->glade_file = strdup(smyrnaPath("smyrna.glade"));
+    view->attr_file = strdup(smyrnaPath("attrs.txt"));
 }
 
 void init_viewport(ViewInfo * view)
 {
-    FILE *input_file=NULL;
+    FILE *input_file = NULL;
     get_data_dir();
 
     input_file = fopen(view->template_file, "rb");
-	if (!input_file) {
-		fprintf (stderr, "default attributes template graph file \"%s\" not found\n", view->template_file);
-		exit(-1);
-    } else if (!(view->default_attributes = agread(input_file, 0))) 
-	{
-		fprintf (stderr, "could not load default attributes template graph file \"%s\"\n", view->template_file);
-		exit(-1);
+    if (!input_file) {
+	fprintf(stderr,
+		"default attributes template graph file \"%s\" not found\n",
+		view->template_file);
+	exit(-1);
+    } else if (!(view->default_attributes = agread(input_file, 0))) {
+	fprintf(stderr,
+		"could not load default attributes template graph file \"%s\"\n",
+		view->template_file);
+	exit(-1);
     }
-
-	//init graphs
+    //init graphs
     view->g = NULL;		//no graph, gl screen should check it
     view->graphCount = 0;	//and disable interactivity if count is zero
 
-	view->bdxLeft = 0;
+    view->bdxLeft = 0;
     view->bdxRight = 500;
     view->bdyBottom = 0;
     view->bdyTop = 500;
@@ -435,7 +435,7 @@ void init_viewport(ViewInfo * view)
     view->fmg.constantR = DEFAULT_FISHEYE_MAGNIFIER_RADIUS;
     view->fmg.active = 0;
     view->mouse.mouse_down = 0;
-	view->mouse.pick=0;
+    view->mouse.pick = 0;
     view->activeGraph = -1;
     view->SignalBlock = 0;
     view->Selection.Active = 0;
@@ -446,7 +446,7 @@ void init_viewport(ViewInfo * view)
     view->Selection.Anti = 0;
     view->Topview = GNEW(topview);
     view->Topview->fs = 0;
-	view->Topview->xdot_list=NULL;
+    view->Topview->xdot_list = NULL;
 
     /* init topfish parameters */
     view->Topview->parms.level.num_fine_nodes = 10;
@@ -454,35 +454,38 @@ void init_viewport(ViewInfo * view)
     view->Topview->parms.hier.dist2_limit = 1;
     view->Topview->parms.hier.min_nvtxs = 20;
     view->Topview->parms.repos.rescale = Polar;
-    view->Topview->parms.repos.width =(int) (view->bdxRight-view->bdxLeft);
-    view->Topview->parms.repos.height =(int) (view->bdyTop-view->bdyBottom);
+    view->Topview->parms.repos.width =
+	(int) (view->bdxRight - view->bdxLeft);
+    view->Topview->parms.repos.height =
+	(int) (view->bdyTop - view->bdyBottom);
     view->Topview->parms.repos.margin = 0;
     view->Topview->parms.repos.graphSize = 100;
     view->Topview->parms.repos.distortion = 1.0;
-	/*create timer*/
-	view->timer=g_timer_new();
-	view->timer2=g_timer_new();
+    /*create timer */
+    view->timer = g_timer_new();
+    view->timer2 = g_timer_new();
 
-	g_timer_stop(view->timer); 
-	view->active_frame=0;
-	view->total_frames=1500;
-	view->frame_length=1;
-	/*add a call back to the main()*/
-	g_timeout_add_full((gint)G_PRIORITY_DEFAULT,(guint)100,gl_main_expose,NULL,NULL);
-	view->cameras='\0';;
-	view->camera_count=0;
-	view->active_camera=-1;
+    g_timer_stop(view->timer);
+    view->active_frame = 0;
+    view->total_frames = 1500;
+    view->frame_length = 1;
+    /*add a call back to the main() */
+    g_timeout_add_full((gint) G_PRIORITY_DEFAULT, (guint) 100,
+		       gl_main_expose, NULL, NULL);
+    view->cameras = '\0';;
+    view->camera_count = 0;
+    view->active_camera = -1;
 
     set_viewport_settings_from_template(view, view->default_attributes);
     view->dfltViewType = VT_NONE;
     view->dfltEngine = GVK_NONE;
-	view->Topview->Graphdata.GraphFileName = (char*)0;
-	view->Topview->Graphdata.Modified=0;
-	view->colschms=NULL;
-	view->flush=1;
-	view->arcball=NEW(ArcBall_t);
-	/*add default camera*/
-	//create fontset
+    view->Topview->Graphdata.GraphFileName = (char *) 0;
+    view->Topview->Graphdata.Modified = 0;
+    view->colschms = NULL;
+    view->flush = 1;
+    view->arcball = NEW(ArcBall_t);
+    /*add default camera */
+    //create fontset
 }
 
 
@@ -492,13 +495,14 @@ void init_viewport(ViewInfo * view)
  */
 static void update_graph_params(Agraph_t * graph)
 {
-	agattr(graph, AGRAPH, "GraphFileName",view->Topview->Graphdata.GraphFileName);
+    agattr(graph, AGRAPH, "GraphFileName",
+	   view->Topview->Graphdata.GraphFileName);
 }
 
 #ifdef UNUSED
 /* clear_object_xdot:
  * clear single object's xdot info
- */ 
+ */
 static int clear_object_xdot(void *obj)
 {
     if (obj) {
@@ -558,36 +562,35 @@ static Agraph_t *loadGraph(char *filename)
 {
     Agraph_t *g;
     FILE *input_file;
-	/* char* bf; */
-	/* char buf[512]; */
-    if (!(input_file = fopen(filename, "r")))
-	{
-		g_print("Cannot open %s\n", filename);
-		return 0;
+    /* char* bf; */
+    /* char buf[512]; */
+    if (!(input_file = fopen(filename, "r"))) {
+	g_print("Cannot open %s\n", filename);
+	return 0;
     }
-    if (!(g = agread(input_file, NIL(Agdisc_t *)))) 
-	{
-		g_print("Cannot read graph in  %s\n", filename);
-		fclose (input_file);
-		return 0;
+    if (!(g = agread(input_file, NIL(Agdisc_t *)))) {
+	g_print("Cannot read graph in  %s\n", filename);
+	fclose(input_file);
+	return 0;
     }
 
-	/* If no position info, run layout with -Txdot
-         */
-	if (!agattr(g, AGNODE, "pos", NULL)) 
-	{
-		g_print("There is no position info in %s\n", filename);
-		fclose (input_file);
-		return 0;
+    /* If no position info, run layout with -Txdot
+     */
+    if (!agattr(g, AGNODE, "pos", NULL)) {
+	g_print("There is no position info in %s\n", filename);
+	fclose(input_file);
+	return 0;
     }
-    free (view->Topview->Graphdata.GraphFileName);
-    view->Topview->Graphdata.GraphFileName = strdup (filename);
+    free(view->Topview->Graphdata.GraphFileName);
+    view->Topview->Graphdata.GraphFileName = strdup(filename);
     return g;
 }
+
 #ifdef UNUSED
-static void refresh_borders(Agraph_t* g)
+static void refresh_borders(Agraph_t * g)
 {
-		sscanf(agget(g,"bb"),"%f,%f,%f,%f",&(view->bdxLeft),&(view->bdyBottom),&(view->bdxRight),&(view->bdyTop));	
+    sscanf(agget(g, "bb"), "%f,%f,%f,%f", &(view->bdxLeft),
+	   &(view->bdyBottom), &(view->bdxRight), &(view->bdyTop));
 }
 #endif
 
@@ -600,45 +603,44 @@ int add_graph_to_viewport_from_file(char *fileName)
 {
     Agraph_t *graph = loadGraph(fileName);
 
-    return add_graph_to_viewport (graph, fileName);
+    return add_graph_to_viewport(graph, fileName);
 }
 
-void
-refreshViewport (int doClear)
+void refreshViewport(int doClear)
 {
-    Agraph_t* graph = view->g[view->activeGraph];
+    Agraph_t *graph = view->g[view->activeGraph];
 
     load_settings_from_graph(graph);
     update_graph_from_settings(graph);
     set_viewport_settings_from_template(view, graph);
     if (doClear)
 	cleartopview(view->Topview);
-	
-	update_topview(graph, view->Topview,1);
-    fill_key(view->orig_key,get_md5_key(graph));
+
+    update_topview(graph, view->Topview, 1);
+    fill_key(view->orig_key, get_md5_key(graph));
     expose_event(view->drawing_area, NULL, NULL);
 }
 
-static void
-activate (int id, int doClear)
+static void activate(int id, int doClear)
 {
     view->activeGraph = id;
-    refreshViewport (doClear);
+    refreshViewport(doClear);
 }
 
-int add_graph_to_viewport(Agraph_t* graph, char* id)
+int add_graph_to_viewport(Agraph_t * graph, char *id)
 {
     if (graph) {
 	view->graphCount = view->graphCount + 1;
-	view->g =(Agraph_t **) realloc(view->g,sizeof(Agraph_t *) * view->graphCount);
+	view->g =
+	    (Agraph_t **) realloc(view->g,
+				  sizeof(Agraph_t *) * view->graphCount);
 	view->g[view->graphCount - 1] = graph;
 
-	gtk_combo_box_append_text(view->graphComboBox,id);
+	gtk_combo_box_append_text(view->graphComboBox, id);
 
-	activate (view->graphCount - 1,0);
+	activate(view->graphCount - 1, 0);
 	return 1;
-    } 
-    else {
+    } else {
 	return 0;
     }
 
@@ -646,9 +648,9 @@ int add_graph_to_viewport(Agraph_t* graph, char* id)
 void switch_graph(int graphId)
 {
     if (graphId >= view->graphCount)
-	return;/*wrong entry*/
+	return;			/*wrong entry */
     else
-	activate (graphId, 0);
+	activate(graphId, 0);
 }
 
 #ifdef UNUSED
@@ -673,30 +675,30 @@ static md5_state_t pms;
 
 int append_to_md5(void *chan, const char *str)
 {
-	md5_append(&pms,(unsigned char*)str,(int)strlen(str));
-	return 1;
+    md5_append(&pms, (unsigned char *) str, (int) strlen(str));
+    return 1;
 
 }
-int flush_md5 (void *chan)
+int flush_md5(void *chan)
 {
-	md5_finish(&pms,md5_digest);
-	return 1;
+    md5_finish(&pms, md5_digest);
+    return 1;
 }
 
 
-md5_byte_t* get_md5_key(Agraph_t* graph)
+md5_byte_t *get_md5_key(Agraph_t * graph)
 {
-	Agiodisc_t* xio;	
-	Agiodisc_t a; 
-	xio=graph->clos->disc.io;
-	a.afread=graph->clos->disc.io->afread; 
-	a.putstr=append_to_md5;
-	a.flush=flush_md5;
-	graph->clos->disc.io=&a;
-	md5_init(&pms);
-	agwrite(graph,NULL);
-	graph->clos->disc.io=xio;
-	return md5_digest;
+    Agiodisc_t *xio;
+    Agiodisc_t a;
+    xio = graph->clos->disc.io;
+    a.afread = graph->clos->disc.io->afread;
+    a.putstr = append_to_md5;
+    a.flush = flush_md5;
+    graph->clos->disc.io = &a;
+    md5_init(&pms);
+    agwrite(graph, NULL);
+    graph->clos->disc.io = xio;
+    return md5_digest;
 }
 
 /* save_graph_with_file_name:
@@ -704,8 +706,8 @@ md5_byte_t* get_md5_key(Agraph_t* graph)
  */
 int save_graph_with_file_name(Agraph_t * graph, char *fileName)
 {
-	
-	FILE *output_file;
+
+    FILE *output_file;
     update_graph_params(graph);
     if (fileName)
 	output_file = fopen(fileName, "w");
@@ -718,7 +720,7 @@ int save_graph_with_file_name(Agraph_t * graph, char *fileName)
     if (output_file == NULL) {
 	g_print("Cannot create file \n");
 	return 0;
-    } 
+    }
 
     if (agwrite(graph, (void *) output_file)) {
 	g_print("%s successfully saved \n", fileName);
@@ -736,13 +738,13 @@ int save_graph(void)
     if (view->activeGraph > -1) {
 	//check if active graph has a file name
 	if (view->Topview->Graphdata.GraphFileName) {
-	    return save_graph_with_file_name(
-			view->g[view->activeGraph],
-			view->Topview->Graphdata.GraphFileName);
+	    return save_graph_with_file_name(view->g[view->activeGraph],
+					     view->Topview->Graphdata.
+					     GraphFileName);
 	} else
 	    return save_as_graph();
     }
-	fill_key(view->orig_key,get_md5_key(view->g[view->activeGraph]));
+    fill_key(view->orig_key, get_md5_key(view->g[view->activeGraph]));
     return 1;
 
 }
@@ -788,18 +790,18 @@ int save_as_graph(void)
  */
 
 /* move_node:
- */ 
+ */
 void movenode(void *obj, float dx, float dy)
 {
     char buf[512];
     double x, y;
-    Agsym_t* pos;
+    Agsym_t *pos;
 
-    if ((AGTYPE(obj) == AGNODE) && (pos = agattrsym (obj, "pos"))) {
-	sscanf (agxget (obj, pos), "%lf,%lf", &x, &y);
-	sprintf (buf, "%lf,%lf", x - dx, y - dy);
+    if ((AGTYPE(obj) == AGNODE) && (pos = agattrsym(obj, "pos"))) {
+	sscanf(agxget(obj, pos), "%lf,%lf", &x, &y);
+	sprintf(buf, "%lf,%lf", x - dx, y - dy);
 	agxset(obj, pos, buf);
-	}
+    }
 }
 
 #ifdef UNUSED
@@ -952,7 +954,8 @@ void move_nodes(Agraph_t * g)
     }
 }
 #endif
-int setGdkColor(GdkColor * c, char *color) {
+int setGdkColor(GdkColor * c, char *color)
+{
     gvcolor_t cl;
     if (color != '\0') {
 	colorxlate(color, &cl, RGBA_DOUBLE);
@@ -965,7 +968,8 @@ int setGdkColor(GdkColor * c, char *color) {
 
 }
 
-void glexpose(void) {
+void glexpose(void)
+{
     expose_event(view->drawing_area, NULL, NULL);
 }
 
@@ -978,8 +982,7 @@ void please_wait(void)
     gtk_widget_hide(glade_xml_get_widget(xml, "frmWait"));
     gtk_widget_show(glade_xml_get_widget(xml, "frmWait"));
     gtk_window_set_keep_above((GtkWindow *)
-			      glade_xml_get_widget(xml,
-						   "frmWait"), 1);
+			      glade_xml_get_widget(xml, "frmWait"), 1);
 
 }
 void please_dont_wait(void)
@@ -987,52 +990,55 @@ void please_dont_wait(void)
     gtk_widget_hide(glade_xml_get_widget(xml, "frmWait"));
 }
 
-float interpol(float minv,float maxv,float minc,float maxc,float x)
+float interpol(float minv, float maxv, float minc, float maxc, float x)
 {
-	return ((x-minv)*(maxc-minc)/(maxv-minv)+minc);
+    return ((x - minv) * (maxc - minc) / (maxv - minv) + minc);
 }
-void getcolorfromschema(colorschemaset* sc,float l,float maxl,RGBColor* c)
+void getcolorfromschema(colorschemaset * sc, float l, float maxl,
+			RGBColor * c)
 {
-	int ind;
-	/* float cuml=0.00; */
-	float percl=l/maxl*100.00;
-	for (ind=0;ind < sc->schemacount;ind ++)
-	{
-		if (percl < sc->s[ind].perc)
-			break;
-	}
+    int ind;
+    /* float cuml=0.00; */
+    float percl = l / maxl * 100.00;
+    for (ind = 0; ind < sc->schemacount; ind++) {
+	if (percl < sc->s[ind].perc)
+	    break;
+    }
 
-	if (sc->s[ind].smooth)
-	{
-		c->R=interpol(sc->s[ind-1].perc,sc->s[ind].perc,sc->s[ind-1].c.R,sc->s[ind].c.R,percl);
-		c->G=interpol(sc->s[ind-1].perc,sc->s[ind].perc,sc->s[ind-1].c.G,sc->s[ind].c.G,percl);
-		c->B=interpol(sc->s[ind-1].perc,sc->s[ind].perc,sc->s[ind-1].c.B,sc->s[ind].c.B,percl);
-		c->A=1;
-	}
-	else
-	{
-		c->R=sc->s[ind].c.R;
-		c->G=sc->s[ind].c.G;
-		c->B=sc->s[ind].c.B;
-		c->A=1;
-	}
+    if (sc->s[ind].smooth) {
+	c->R =
+	    interpol(sc->s[ind - 1].perc, sc->s[ind].perc,
+		     sc->s[ind - 1].c.R, sc->s[ind].c.R, percl);
+	c->G =
+	    interpol(sc->s[ind - 1].perc, sc->s[ind].perc,
+		     sc->s[ind - 1].c.G, sc->s[ind].c.G, percl);
+	c->B =
+	    interpol(sc->s[ind - 1].perc, sc->s[ind].perc,
+		     sc->s[ind - 1].c.B, sc->s[ind].c.B, percl);
+	c->A = 1;
+    } else {
+	c->R = sc->s[ind].c.R;
+	c->G = sc->s[ind].c.G;
+	c->B = sc->s[ind].c.B;
+	c->A = 1;
+    }
 }
-static void set_color_theme_color(colorschemaset* sc,char** colorstr,int colorcnt,int smooth)
+static void set_color_theme_color(colorschemaset * sc, char **colorstr,
+				  int colorcnt, int smooth)
 {
-	int ind=0;
+    int ind = 0;
     gvcolor_t cl;
-	float av_perc;
-	av_perc=100.00/(float)(colorcnt-1);
-	for (; ind < colorcnt; ind ++)
-	{
-		colorxlate(colorstr[ind], &cl,RGBA_DOUBLE);
-		sc->s[ind].c.R=cl.u.RGBA[0];
-		sc->s[ind].c.G=cl.u.RGBA[1];
-		sc->s[ind].c.B=cl.u.RGBA[2];
-		sc->s[ind].c.A=cl.u.RGBA[3];
-		sc->s[ind].perc=ind*av_perc;
-		sc->s[ind].smooth=smooth;
-	}
+    float av_perc;
+    av_perc = 100.00 / (float) (colorcnt - 1);
+    for (; ind < colorcnt; ind++) {
+	colorxlate(colorstr[ind], &cl, RGBA_DOUBLE);
+	sc->s[ind].c.R = cl.u.RGBA[0];
+	sc->s[ind].c.G = cl.u.RGBA[1];
+	sc->s[ind].c.B = cl.u.RGBA[2];
+	sc->s[ind].c.A = cl.u.RGBA[3];
+	sc->s[ind].perc = ind * av_perc;
+	sc->s[ind].smooth = smooth;
+    }
 
 
 
@@ -1052,87 +1058,85 @@ typedef struct{
 	colorschema* s;
 }colorschemaset; */
 
-void clear_color_theme (colorschemaset* cs)
+void clear_color_theme(colorschemaset * cs)
 {
-	free(cs->s);
-	free(cs);
+    free(cs->s);
+    free(cs);
 }
 
 
 
-colorschemaset* create_color_theme(int themeid)
+colorschemaset *create_color_theme(int themeid)
 {
-	char **colors;
-	colorschemaset* s=malloc(sizeof(colorschemaset));
+    char **colors;
+    colorschemaset *s = malloc(sizeof(colorschemaset));
 
-	if (view->colschms)
-		clear_color_theme (view->colschms);
-	s->schemacount=4;
-	s->s=malloc(sizeof(colorschema)*4);
-
-
-	colors=malloc(sizeof(char*)*4);
+    if (view->colschms)
+	clear_color_theme(view->colschms);
+    s->schemacount = 4;
+    s->s = malloc(sizeof(colorschema) * 4);
 
 
-	switch (themeid)
-	{
-		case 0:		//deep blue
+    colors = malloc(sizeof(char *) * 4);
 
-			colors[0]=strdup("#C8CBED");
-			colors[1]=strdup("#9297D3");
-			colors[2]=strdup("#blue");
-			colors[3]=strdup("#2C2E41");
-			set_color_theme_color(s,colors,s->schemacount,1);
-			break;
-		case 1:		//all pastel
-			colors[0]=strdup("#EBBE29");
-			colors[1]=strdup("#D58C4A");
-			colors[2]=strdup("#74AE09");
-			colors[3]=strdup("#893C49");
-			set_color_theme_color(s,colors,s->schemacount,1);
-			break;
-		case 2:		//magma
-			colors[0]=strdup("#E0061E");
-			colors[1]=strdup("#F0F143");
-			colors[2]=strdup("#95192B");
-			colors[3]=strdup("#EB712F");
-			set_color_theme_color(s,colors,s->schemacount,1);
-			break;
-		case 3:		//rain forest
-			colors[0]=strdup("#1E6A10");
-			colors[1]=strdup("#2ABE0E");
-			colors[2]=strdup("#AEDD39");
-			colors[3]=strdup("#5EE88B");
-			set_color_theme_color(s,colors,s->schemacount,1);
-			break;
-	}
-	free (colors[0]);
-	free (colors[1]);
-	free (colors[2]);
-	free (colors[3]);
-	free (colors);
-	return s;
+
+    switch (themeid) {
+    case 0:			//deep blue
+
+	colors[0] = strdup("#C8CBED");
+	colors[1] = strdup("#9297D3");
+	colors[2] = strdup("#blue");
+	colors[3] = strdup("#2C2E41");
+	set_color_theme_color(s, colors, s->schemacount, 1);
+	break;
+    case 1:			//all pastel
+	colors[0] = strdup("#EBBE29");
+	colors[1] = strdup("#D58C4A");
+	colors[2] = strdup("#74AE09");
+	colors[3] = strdup("#893C49");
+	set_color_theme_color(s, colors, s->schemacount, 1);
+	break;
+    case 2:			//magma
+	colors[0] = strdup("#E0061E");
+	colors[1] = strdup("#F0F143");
+	colors[2] = strdup("#95192B");
+	colors[3] = strdup("#EB712F");
+	set_color_theme_color(s, colors, s->schemacount, 1);
+	break;
+    case 3:			//rain forest
+	colors[0] = strdup("#1E6A10");
+	colors[1] = strdup("#2ABE0E");
+	colors[2] = strdup("#AEDD39");
+	colors[3] = strdup("#5EE88B");
+	set_color_theme_color(s, colors, s->schemacount, 1);
+	break;
+    }
+    free(colors[0]);
+    free(colors[1]);
+    free(colors[2]);
+    free(colors[3]);
+    free(colors);
+    return s;
 }
 
 
 void test_color_pallete()
 {
-	int ind=0;
-	float xGAP=5;
-	float yGAP=80;
-	float x=50;
-	float y=50;
-	RGBColor c;
-	for (ind=0;ind < 350;ind ++)
-	{
-		getcolorfromschema(view->colschms,ind,350,&c);
-		x=ind*xGAP;
-		glBegin(GL_POLYGON);
-		glColor3f(c.R,c.G,c.B);
-			glVertex3f(x,y,0.0);
-			glVertex3f(x+xGAP,y,0.0);
-			glVertex3f(x+xGAP,y+yGAP,0.0);
-			glVertex3f(x,y+yGAP,0.0);
-		glEnd();
-	}
+    int ind = 0;
+    float xGAP = 5;
+    float yGAP = 80;
+    float x = 50;
+    float y = 50;
+    RGBColor c;
+    for (ind = 0; ind < 350; ind++) {
+	getcolorfromschema(view->colschms, ind, 350, &c);
+	x = ind * xGAP;
+	glBegin(GL_POLYGON);
+	glColor3f(c.R, c.G, c.B);
+	glVertex3f(x, y, 0.0);
+	glVertex3f(x + xGAP, y, 0.0);
+	glVertex3f(x + xGAP, y + yGAP, 0.0);
+	glVertex3f(x, y + yGAP, 0.0);
+	glEnd();
+    }
 }

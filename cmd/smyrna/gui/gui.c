@@ -196,11 +196,10 @@ int update_graph_properties(Agraph_t * graph)	//updates graph from gui
 	 view->Topview->Graphdata.GraphFileName) != 0) {
 
 
-	if ((file =
-	     fopen(gtk_entry_get_text
-		   ((GtkEntry *)
-		    glade_xml_get_widget(xml, "entryGraphFileName")),
-		   "r"))) {
+	if ((file = fopen(gtk_entry_get_text((GtkEntry *)
+					     glade_xml_get_widget(xml,
+								  "entryGraphFileName")),
+			  "r"))) {
 	    fclose(file);
 	    Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
 							      GTK_DIALOG_MODAL,
@@ -214,11 +213,10 @@ int update_graph_properties(Agraph_t * graph)	//updates graph from gui
 		return 0;
 	}
 	//now check if filename is legal, try to open it to write
-	if ((file =
-	     fopen(gtk_entry_get_text
-		   ((GtkEntry *)
-		    glade_xml_get_widget(xml, "entryGraphFileName")),
-		   "w")))
+	if ((file = fopen(gtk_entry_get_text((GtkEntry *)
+					     glade_xml_get_widget(xml,
+								  "entryGraphFileName")),
+			  "w")))
 	    fclose(file);
 	else {
 	    Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
@@ -236,10 +234,9 @@ int update_graph_properties(Agraph_t * graph)	//updates graph from gui
 
     }
 
-
     //if it comes so far graph deserves new values
 
-	view->Topview->Graphdata.GraphFileName =
+    view->Topview->Graphdata.GraphFileName =
 	(char *) gtk_entry_get_text((GtkEntry *)
 				    glade_xml_get_widget(xml,
 							 "entryGraphFileName"));
@@ -251,27 +248,31 @@ int update_graph_properties(Agraph_t * graph)	//updates graph from gui
 char *get_attribute_string_value_from_widget(attribute * att)
 {
     GdkColor color;
-    switch (att->Type)
-	{
-	    case 'F':
-			sprintf(guibuffer, "%f",gtk_spin_button_get_value((GtkSpinButton *) att->attrWidget));
-			return guibuffer;
-		break;
-		case 'C':
-			gtk_color_button_get_color((GtkColorButton *) att->attrWidget,&color);
-			sprintf(guibuffer, "#%x%x%x", color.red / 255, color.green / 255,color.blue / 255);
-			return guibuffer;
-			break;
-		default:
-			strcpy(guibuffer,gtk_entry_get_text((GtkEntry *) att->attrWidget));
-			return guibuffer;
+    switch (att->Type) {
+    case 'F':
+	sprintf(guibuffer, "%f",
+		gtk_spin_button_get_value((GtkSpinButton *) att->
+					  attrWidget));
+	return guibuffer;
+	break;
+    case 'C':
+	gtk_color_button_get_color((GtkColorButton *) att->attrWidget,
+				   &color);
+	sprintf(guibuffer, "#%x%x%x", color.red / 255, color.green / 255,
+		color.blue / 255);
+	return guibuffer;
+	break;
+    default:
+	strcpy(guibuffer,
+	       gtk_entry_get_text((GtkEntry *) att->attrWidget));
+	return guibuffer;
     }
 }
 void change_selected_graph_attributes(Agraph_t * g, char *attrname,
 				      char *attrvalue)
 {
     agattr(g, AGRAPH, attrname, "");
-	agset(view->g[view->activeGraph],attrname,attrvalue);
+    agset(view->g[view->activeGraph], attrname, attrvalue);
 
 
 }
@@ -280,10 +281,9 @@ void change_selected_node_attributes(Agraph_t * g, char *attrname,
 {
     int ind = 0;
     agattr(g, AGNODE, attrname, "");
-	for (ind = 0; ind < view->Topview->Nodecount; ind++) 
-	{
-		if (view->Topview->Nodes[ind].data.Selected==1)
-			agset(view->Topview->Nodes[ind].Node, attrname, attrvalue);
+    for (ind = 0; ind < view->Topview->Nodecount; ind++) {
+	if (view->Topview->Nodes[ind].data.Selected == 1)
+	    agset(view->Topview->Nodes[ind].Node, attrname, attrvalue);
     }
 }
 void change_selected_edge_attributes(Agraph_t * g, char *attrname,
@@ -292,10 +292,9 @@ void change_selected_edge_attributes(Agraph_t * g, char *attrname,
     int ind = 0;
     agattr(g, AGEDGE, attrname, "");
 
-	for (ind = 0; ind < view->Topview->Edgecount; ind++) 
-	{
-		if (view->Topview->Edges[ind].data.Selected==1)
-			agset(view->Topview->Edges[ind].Edge, attrname, attrvalue);
+    for (ind = 0; ind < view->Topview->Edgecount; ind++) {
+	if (view->Topview->Edges[ind].data.Selected == 1)
+	    agset(view->Topview->Edges[ind].Edge, attrname, attrvalue);
 
     }
 }
@@ -308,102 +307,94 @@ void load_attributes(void)
     char *pch;
     int ind = 0;
     int attrcount = 0;
-    static char* smyrna_attrs;
+    static char *smyrna_attrs;
 
     if (!smyrna_attrs) {
-	smyrna_attrs = smyrnaPath ("attrs.txt");
+	smyrna_attrs = smyrnaPath("attrs.txt");
     }
-
     //loads attributes from a text file
     file = fopen(smyrna_attrs, "r");
-    if (file != NULL) 
-	{
-		while (fgets(line, sizeof line, file) != NULL) 
-		{
-		    pch = strtok(line, ",");
-			ind = 0;
-			while (pch != NULL)
-			{
-				ss = strdup(pch);
-	//                              ABRemove(&ss,'\"');
-	//                              ABRemove(&ss,' ');
-				pch = strtok(NULL, ",");
-				switch (ind) 
-				{
-				case 0:
-				    attr[attrcount].Type = ss[0];
-					break;
-				case 1:	
-					attr[attrcount].Name = strdup(ss);
-					break;
-				case 2:
-					attr[attrcount].Default = strdup(ss);
-					break;
-				case 3:
-				    if (strstr(ss, "ANY_ELEMENT")) 
-					{
-						attr[attrcount].ApplyTo[GVE_GRAPH] = 1;
-						attr[attrcount].ApplyTo[GVE_CLUSTER] = 1;
-						attr[attrcount].ApplyTo[GVE_NODE] = 1;
-						attr[attrcount].ApplyTo[GVE_EDGE] = 1;
-					} 
-					else 
-					{
-						attr[attrcount].ApplyTo[GVE_GRAPH] =
-								strstr(ss, "GRAPH") ? 1 : 0;
-						attr[attrcount].ApplyTo[GVE_CLUSTER] =
-								strstr(ss, "CLUSTER") ? 1 : 0;
-						attr[attrcount].ApplyTo[GVE_NODE] =
-								strstr(ss, "NODE") ? 1 : 0;
-						attr[attrcount].ApplyTo[GVE_EDGE] =
-								strstr(ss, "EDGE") ? 1 : 0;
-					}
-					break;
-				case 4:
-					if (strstr(ss, "ALL_ENGINES")) 
-					{
-						attr[attrcount].Engine[GVK_DOT] = 1;
-						attr[attrcount].Engine[GVK_NEATO] = 1;
-						attr[attrcount].Engine[GVK_TWOPI] = 1;
-						attr[attrcount].Engine[GVK_CIRCO] = 1;
-						attr[attrcount].Engine[GVK_FDP] = 1;
-					}
-					else 
-					{
-						attr[attrcount].Engine[GVK_DOT] =
-								strstr(ss, "DOT") ? 1 : 0;
-						attr[attrcount].Engine[GVK_NEATO] =
-								strstr(ss, "NEATO") ? 1 : 0;
-						attr[attrcount].Engine[GVK_TWOPI] =
-								strstr(ss, "TWOPI") ? 1 : 0;
-						attr[attrcount].Engine[GVK_CIRCO] =
-								strstr(ss, "CIRCO") ? 1 : 0;
-						attr[attrcount].Engine[GVK_FDP] =
-								strstr(ss, "FDP") ? 1 : 0;
-					}
-					break;
-				default:
-					attr[attrcount].ComboValues =RALLOC(attr[attrcount].ComboValuesCount, attr[attrcount].ComboValues, char*);
-					attr[attrcount].ComboValues[attr[attrcount].ComboValuesCount] =	strdup(ss);
-					attr[attrcount].ComboValuesCount++;
-					break;
-				}
-				ind++;
-			}
-			attrcount++;
+    if (file != NULL) {
+	while (fgets(line, sizeof line, file) != NULL) {
+	    pch = strtok(line, ",");
+	    ind = 0;
+	    while (pch != NULL) {
+		ss = strdup(pch);
+		//                              ABRemove(&ss,'\"');
+		//                              ABRemove(&ss,' ');
+		pch = strtok(NULL, ",");
+		switch (ind) {
+		case 0:
+		    attr[attrcount].Type = ss[0];
+		    break;
+		case 1:
+		    attr[attrcount].Name = strdup(ss);
+		    break;
+		case 2:
+		    attr[attrcount].Default = strdup(ss);
+		    break;
+		case 3:
+		    if (strstr(ss, "ANY_ELEMENT")) {
+			attr[attrcount].ApplyTo[GVE_GRAPH] = 1;
+			attr[attrcount].ApplyTo[GVE_CLUSTER] = 1;
+			attr[attrcount].ApplyTo[GVE_NODE] = 1;
+			attr[attrcount].ApplyTo[GVE_EDGE] = 1;
+		    } else {
+			attr[attrcount].ApplyTo[GVE_GRAPH] =
+			    strstr(ss, "GRAPH") ? 1 : 0;
+			attr[attrcount].ApplyTo[GVE_CLUSTER] =
+			    strstr(ss, "CLUSTER") ? 1 : 0;
+			attr[attrcount].ApplyTo[GVE_NODE] =
+			    strstr(ss, "NODE") ? 1 : 0;
+			attr[attrcount].ApplyTo[GVE_EDGE] =
+			    strstr(ss, "EDGE") ? 1 : 0;
+		    }
+		    break;
+		case 4:
+		    if (strstr(ss, "ALL_ENGINES")) {
+			attr[attrcount].Engine[GVK_DOT] = 1;
+			attr[attrcount].Engine[GVK_NEATO] = 1;
+			attr[attrcount].Engine[GVK_TWOPI] = 1;
+			attr[attrcount].Engine[GVK_CIRCO] = 1;
+			attr[attrcount].Engine[GVK_FDP] = 1;
+		    } else {
+			attr[attrcount].Engine[GVK_DOT] =
+			    strstr(ss, "DOT") ? 1 : 0;
+			attr[attrcount].Engine[GVK_NEATO] =
+			    strstr(ss, "NEATO") ? 1 : 0;
+			attr[attrcount].Engine[GVK_TWOPI] =
+			    strstr(ss, "TWOPI") ? 1 : 0;
+			attr[attrcount].Engine[GVK_CIRCO] =
+			    strstr(ss, "CIRCO") ? 1 : 0;
+			attr[attrcount].Engine[GVK_FDP] =
+			    strstr(ss, "FDP") ? 1 : 0;
+		    }
+		    break;
+		default:
+		    attr[attrcount].ComboValues =
+			RALLOC(attr[attrcount].ComboValuesCount,
+			       attr[attrcount].ComboValues, char *);
+		    attr[attrcount].ComboValues[attr[attrcount].
+						ComboValuesCount] =
+			strdup(ss);
+		    attr[attrcount].ComboValuesCount++;
+		    break;
 		}
+		ind++;
+	    }
+	    attrcount++;
+	}
     }
 }
-void show_gui_warning (char* str)
+void show_gui_warning(char *str)
 {
-	    Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
-							      GTK_DIALOG_MODAL,
-							      GTK_MESSAGE_WARNING,
-							      GTK_BUTTONS_OK,
-							      str);
+    Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
+						      GTK_DIALOG_MODAL,
+						      GTK_MESSAGE_WARNING,
+						      GTK_BUTTONS_OK, str);
 
-	    respond = gtk_dialog_run((GtkDialog *) Dlg);
-        gtk_object_destroy((GtkObject *) Dlg);
+    respond = gtk_dialog_run((GtkDialog *) Dlg);
+    gtk_object_destroy((GtkObject *) Dlg);
 }
 
 
@@ -412,20 +403,18 @@ void show_gui_warning (char* str)
 Generic Open File dialog, if a file is selected and return value is 1, else 0
 file name is copied to char* filename,which should be allocated before using the function
 */
-int openfiledlg(int filtercnt,char** filters,agxbuf* xbuf)
+int openfiledlg(int filtercnt, char **filters, agxbuf * xbuf)
 {
     GtkWidget *dialog;
     GtkFileFilter *filter;
-	int id,rv;
+    int id, rv;
     filter = gtk_file_filter_new();
-	if(filtercnt >= 1)
-	{
-		for (id=0;id < filtercnt; id ++)
-		{
-			gtk_file_filter_add_pattern(filter, filters[id]);
-		}
+    if (filtercnt >= 1) {
+	for (id = 0; id < filtercnt; id++) {
+	    gtk_file_filter_add_pattern(filter, filters[id]);
 	}
-	
+    }
+
     dialog = gtk_file_chooser_dialog_new("Open File",
 					 NULL,
 					 GTK_FILE_CHOOSER_ACTION_OPEN,
@@ -434,34 +423,31 @@ int openfiledlg(int filtercnt,char** filters,agxbuf* xbuf)
 					 GTK_STOCK_OPEN,
 					 GTK_RESPONSE_ACCEPT, NULL);
 
-	if(filtercnt >= 1)
-		gtk_file_chooser_set_filter((GtkFileChooser *) dialog, filter);
-	if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) 
-	{
-	    agxbput (xbuf, gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog)));
-		rv=1;
-	}
-	else
-		rv=0;
+    if (filtercnt >= 1)
+	gtk_file_chooser_set_filter((GtkFileChooser *) dialog, filter);
+    if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
+	agxbput(xbuf,
+		gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog)));
+	rv = 1;
+    } else
+	rv = 0;
 
-	gtk_widget_destroy(dialog);
-	return rv;
+    gtk_widget_destroy(dialog);
+    return rv;
 }
 
-int savefiledlg(int filtercnt,char** filters,agxbuf* xbuf)
+int savefiledlg(int filtercnt, char **filters, agxbuf * xbuf)
 {
     GtkWidget *dialog;
     GtkFileFilter *filter;
-	int id,rv;
+    int id, rv;
     filter = gtk_file_filter_new();
-	if(filtercnt >= 1)
-	{
-		for (id=0;id < filtercnt; id ++)
-		{
-			gtk_file_filter_add_pattern(filter, filters[id]);
-		}
+    if (filtercnt >= 1) {
+	for (id = 0; id < filtercnt; id++) {
+	    gtk_file_filter_add_pattern(filter, filters[id]);
 	}
-	
+    }
+
     dialog = gtk_file_chooser_dialog_new("Save File",
 					 NULL,
 					 GTK_FILE_CHOOSER_ACTION_OPEN,
@@ -470,51 +456,49 @@ int savefiledlg(int filtercnt,char** filters,agxbuf* xbuf)
 					 GTK_STOCK_OPEN,
 					 GTK_RESPONSE_ACCEPT, NULL);
 
-	if(filtercnt >= 1)
-		gtk_file_chooser_set_filter((GtkFileChooser *) dialog, filter);
-	if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) 
-	{
-	    agxbput (xbuf, gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog)));
-		rv=1;
-	}
-	else
-		rv=0;
+    if (filtercnt >= 1)
+	gtk_file_chooser_set_filter((GtkFileChooser *) dialog, filter);
+    if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
+	agxbput(xbuf,
+		gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog)));
+	rv = 1;
+    } else
+	rv = 0;
 
-	gtk_widget_destroy(dialog);
-	return rv;
+    gtk_widget_destroy(dialog);
+    return rv;
 }
+
 /*
 	this function is designed to return a GtkTextView object's text in agxbuf
 	send an initialized agxbuf and a GtkTextView object
 	null termination is taken care by agxbuf
 */
-void get_gtktextview_text(GtkTextView* w,agxbuf* xbuf)
+void get_gtktextview_text(GtkTextView * w, agxbuf * xbuf)
 {
-	int charcnt;
-	GtkTextBuffer * gtkbuf;
-	GtkTextIter startit;
-	GtkTextIter endit;
-	gtkbuf=gtk_text_view_get_buffer(w);
-	charcnt=gtk_text_buffer_get_char_count (gtkbuf);
-	gtk_text_buffer_get_start_iter (gtkbuf,&startit);
-	gtk_text_buffer_get_end_iter (gtkbuf,&endit);
+    int charcnt;
+    GtkTextBuffer *gtkbuf;
+    GtkTextIter startit;
+    GtkTextIter endit;
+    gtkbuf = gtk_text_view_get_buffer(w);
+    charcnt = gtk_text_buffer_get_char_count(gtkbuf);
+    gtk_text_buffer_get_start_iter(gtkbuf, &startit);
+    gtk_text_buffer_get_end_iter(gtkbuf, &endit);
 
-	agxbput (xbuf,gtk_text_buffer_get_text(gtkbuf,&startit,&endit,0));
+    agxbput(xbuf, gtk_text_buffer_get_text(gtkbuf, &startit, &endit, 0));
 }
 
 
-void append_textview(GtkTextView* textv, const char* s, size_t bytes)
+void append_textview(GtkTextView * textv, const char *s, size_t bytes)
 {
 
     GtkTextIter endit;
-    GtkTextBuffer * gtkbuf;
-	/*get text view buffer*/
-	gtkbuf = gtk_text_view_get_buffer(textv);
-	/*set iterator to the end of the buffer*/
-    gtk_text_buffer_get_end_iter (gtkbuf,&endit);
-	/* insert buf to the end */
-	gtk_text_buffer_insert(gtkbuf,&endit,s,bytes);
+    GtkTextBuffer *gtkbuf;
+    /*get text view buffer */
+    gtkbuf = gtk_text_view_get_buffer(textv);
+    /*set iterator to the end of the buffer */
+    gtk_text_buffer_get_end_iter(gtkbuf, &endit);
+    /* insert buf to the end */
+    gtk_text_buffer_insert(gtkbuf, &endit, s, bytes);
 
 }
-
-

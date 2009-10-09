@@ -23,10 +23,10 @@
 #include "topviewsettings.h"
 #include "gltemplate.h"
 #include "memory.h"
-#include <const.h> 
-#include <agxbuf.h> 
-#include <assert.h> 
-#include <ctype.h> 
+#include <const.h>
+#include <agxbuf.h>
+#include <assert.h>
+#include <ctype.h>
 
 //file
 char buf[255];
@@ -38,7 +38,7 @@ void mOpenSlot(GtkWidget * widget, gpointer user_data)
 {
     GtkWidget *dialog;
     GtkFileFilter *filter;
-	int i=0;
+    int i = 0;
 
     filter = gtk_file_filter_new();
     gtk_file_filter_add_pattern(filter, "*.gv");
@@ -58,13 +58,13 @@ void mOpenSlot(GtkWidget * widget, gpointer user_data)
 /*	if (view->activeGraph == 0)
 		close_graph(view,0);*/
 
-	i=view->SignalBlock;
-	view->SignalBlock=1;
+	i = view->SignalBlock;
+	view->SignalBlock = 1;
 	add_graph_to_viewport_from_file(filename);
 	g_free(filename);
-	view->SignalBlock=i;
+	view->SignalBlock = i;
 
-	}
+    }
 
     gtk_widget_destroy(dialog);
 }
@@ -80,10 +80,11 @@ void mSaveAsSlot(GtkWidget * widget, gpointer user_data)
 {
     save_as_graph();		//save with prompt
 }
+
 void mCloseSlot(GtkWidget * widget, gpointer user_data)
 {
-	if (view->activeGraph == 0)
-		close_graph(view,0);
+    if (view->activeGraph == 0)
+	close_graph(view, 0);
 }
 
 void mOptionsSlot(GtkWidget * widget, gpointer user_data)
@@ -92,29 +93,30 @@ void mOptionsSlot(GtkWidget * widget, gpointer user_data)
 
 void mQuitSlot(GtkWidget * widget, gpointer user_data)
 {
-	if (close_graph(view,view->activeGraph));
-		gtk_main_quit();
+    if (close_graph(view, view->activeGraph));
+    gtk_main_quit();
 }
 
 int show_close_nosavedlg(void)
 {
-  GtkWidget *dialog;
-  char buf[512];
-  int rv;	/*return value*/
-  sprintf(buf,"%s has been modified. Do you want to save it before closing?",view->Topview->Graphdata.GraphFileName);
-  dialog = gtk_message_dialog_new(NULL,
-            GTK_DIALOG_MODAL,
-            GTK_MESSAGE_QUESTION,
-            GTK_BUTTONS_NONE,
-            buf);
+    GtkWidget *dialog;
+    char buf[512];
+    int rv;			/*return value */
+    sprintf(buf,
+	    "%s has been modified. Do you want to save it before closing?",
+	    view->Topview->Graphdata.GraphFileName);
+    dialog =
+	gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL,
+			       GTK_MESSAGE_QUESTION, GTK_BUTTONS_NONE,
+			       buf);
 
-  gtk_window_set_title(GTK_WINDOW(dialog), "Smyrna Warning");
-  gtk_dialog_add_button((GtkDialog*)dialog,"Yes",0);
-  gtk_dialog_add_button((GtkDialog*)dialog,"No",1);
-  gtk_dialog_add_button((GtkDialog*)dialog,"Cancel",2);
-  rv=gtk_dialog_run(GTK_DIALOG(dialog));
-  gtk_widget_destroy(dialog);
-  return rv;
+    gtk_window_set_title(GTK_WINDOW(dialog), "Smyrna Warning");
+    gtk_dialog_add_button((GtkDialog *) dialog, "Yes", 0);
+    gtk_dialog_add_button((GtkDialog *) dialog, "No", 1);
+    gtk_dialog_add_button((GtkDialog *) dialog, "Cancel", 2);
+    rv = gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+    return rv;
 }
 
 
@@ -147,10 +149,12 @@ void mShowToolBoxSlot(GtkWidget * widget, gpointer user_data)
 {
 
 
-if(!gtk_widget_set_gl_capability    (glade_xml_get_widget(xml, "glfixed"), configure_gl(),gtk_widget_get_gl_context(view->drawing_area),0,0))
+    if (!gtk_widget_set_gl_capability
+	(glade_xml_get_widget(xml, "glfixed"), configure_gl(),
+	 gtk_widget_get_gl_context(view->drawing_area), 0, 0))
 	printf("glwidget creation failed \n");
 
-	
+
 
 }
 
@@ -167,19 +171,22 @@ void mShowHostSelectionSlot(GtkWidget * widget, gpointer user_data)
 
 void mMenuPan(GtkWidget * widget, gpointer user_data)
 {
-	view->mouse.mouse_mode = MM_PAN;
+    view->mouse.mouse_mode = MM_PAN;
 
 }
+
 void mMenuZoom(GtkWidget * widget, gpointer user_data)
 {
-	view->mouse.mouse_mode = MM_ZOOM;
+    view->mouse.mouse_mode = MM_ZOOM;
 
 }
+
 void mShowConsoleSlot(GtkWidget * widget, gpointer user_data)
 {
     gtk_widget_show(glade_xml_get_widget(xml, "vbox13"));
 
 }
+
 void mHideConsoleSlot(GtkWidget * widget, gpointer user_data)
 {
     gtk_widget_hide(glade_xml_get_widget(xml, "vbox13"));
@@ -218,9 +225,9 @@ void mGraphPropertiesSlot(GtkWidget * widget, gpointer user_data)
 					  glade_xml_get_widget(xml,
 							       "dlgOpenGraph"),
 					  2, 1);
-	respond =
-	    gtk_dialog_run((GtkDialog *)
-			   glade_xml_get_widget(xml, "dlgOpenGraph"));
+	respond = gtk_dialog_run((GtkDialog *)
+				 glade_xml_get_widget(xml,
+						      "dlgOpenGraph"));
 	//need to hide the dialog , again freaking GTK!!!!
 	gtk_widget_hide(glade_xml_get_widget(xml, "dlgOpenGraph"));
     }
@@ -228,57 +235,61 @@ void mGraphPropertiesSlot(GtkWidget * widget, gpointer user_data)
 
 void mNodeFindSlot(GtkWidget * widget, gpointer user_data)
 {
-	if(view->activeGraph !=-1)
-	{
-	
-		gtk_dialog_set_response_sensitive((GtkDialog *)
-						  glade_xml_get_widget(xml,
-								       "findDialog"),
-						  1, 1);
-		gtk_dialog_set_response_sensitive((GtkDialog *)
-						  glade_xml_get_widget(xml,
-								       "findDialog"),
-						  2, 1);
+    if (view->activeGraph != -1) {
 
-	
-		respond =
-			gtk_dialog_run((GtkDialog *)
-				   glade_xml_get_widget(xml, "findDialog"));
+	gtk_dialog_set_response_sensitive((GtkDialog *)
+					  glade_xml_get_widget(xml,
+							       "findDialog"),
+					  1, 1);
+	gtk_dialog_set_response_sensitive((GtkDialog *)
+					  glade_xml_get_widget(xml,
+							       "findDialog"),
+					  2, 1);
 
-		gtk_widget_hide(glade_xml_get_widget(xml, "findDialog"));
-		if (respond ==1)
-			select_with_regex((gchar*)
-			gtk_entry_get_text((GtkEntry*) glade_xml_get_widget(xml,"findText"))
-				);
-	}
+
+	respond = gtk_dialog_run((GtkDialog *)
+				 glade_xml_get_widget(xml, "findDialog"));
+
+	gtk_widget_hide(glade_xml_get_widget(xml, "findDialog"));
+	if (respond == 1)
+	    select_with_regex((gchar *)
+			      gtk_entry_get_text((GtkEntry *)
+						 glade_xml_get_widget(xml,
+								      "findText"))
+		);
+    }
 
 }
 
 
 static void mPropertiesSlot(gve_element element)
 {
-	if (view->activeGraph >=0 )
+    if (view->activeGraph >= 0)
 	gtk_widget_hide(glade_xml_get_widget(xml, "frmObject"));
-	gtk_widget_show(glade_xml_get_widget(xml, "frmObject"));
-//	load_object_properties(element, view->g[view->activeGraph]);
+    gtk_widget_show(glade_xml_get_widget(xml, "frmObject"));
+//      load_object_properties(element, view->g[view->activeGraph]);
 }
+
 void mClusterPropertiesSlot(GtkWidget * widget, gpointer user_data)
 {
-    mPropertiesSlot (GVE_CLUSTER);
+    mPropertiesSlot(GVE_CLUSTER);
 }
+
 void mNodePropertiesSlot(GtkWidget * widget, gpointer user_data)
 {
-    mPropertiesSlot (GVE_NODE);
+    mPropertiesSlot(GVE_NODE);
 }
+
 void mEdgePropertiesSlot(GtkWidget * widget, gpointer user_data)
 {
-    mPropertiesSlot (GVE_EDGE);
+    mPropertiesSlot(GVE_EDGE);
 }
 
 void mShowCodeSlot(GtkWidget * widget, gpointer user_data)
 {
 }
-static void mSlot (GtkWidget * widget, gpointer user_data, gvk_layout layout, int doCursor)
+static void mSlot(GtkWidget * widget, gpointer user_data,
+		  gvk_layout layout, int doCursor)
 {
     /* GdkCursor *cursor; */
     /* GdkWindow *w; */
@@ -292,39 +303,39 @@ static void mSlot (GtkWidget * widget, gpointer user_data, gvk_layout layout, in
     if (respond == GTK_RESPONSE_YES)
 	do_graph_layout(view->g[view->activeGraph], layout, 0);
     gtk_object_destroy((GtkObject *) Dlg);*/
-	return;
+    return;
 
 
 }
 
 void mDotSlot(GtkWidget * widget, gpointer user_data)
 {
-    mSlot (widget, user_data, GVK_DOT, 1);
+    mSlot(widget, user_data, GVK_DOT, 1);
 }
 
 void mNeatoSlot(GtkWidget * widget, gpointer user_data)
 {
-    mSlot (widget, user_data, GVK_NEATO, 0);
+    mSlot(widget, user_data, GVK_NEATO, 0);
 }
 
 void mTwopiSlot(GtkWidget * widget, gpointer user_data)
 {
-    mSlot (widget, user_data, GVK_TWOPI, 0);
+    mSlot(widget, user_data, GVK_TWOPI, 0);
 }
 
 void mCircoSlot(GtkWidget * widget, gpointer user_data)
 {
-    mSlot (widget, user_data, GVK_CIRCO, 0);
+    mSlot(widget, user_data, GVK_CIRCO, 0);
 }
 
 void mFdpSlot(GtkWidget * widget, gpointer user_data)
 {
-    mSlot (widget, user_data, GVK_FDP, 0);
+    mSlot(widget, user_data, GVK_FDP, 0);
 }
 
 void mSfdpSlot(GtkWidget * widget, gpointer user_data)
 {
-    mSlot (widget, user_data, GVK_SFDP, 0);
+    mSlot(widget, user_data, GVK_SFDP, 0);
 }
 
 
@@ -403,84 +414,85 @@ void change_cursor(GdkCursorType C)
 {
 
     GdkCursor *cursor;
-    GdkWindow * w;
+    GdkWindow *w;
     cursor = gdk_cursor_new(C);
     w = (GdkWindow *) glade_xml_get_widget(xml, "frmMain");
-    gdk_window_set_cursor((GdkWindow *) view->drawing_area->window, cursor);
+    gdk_window_set_cursor((GdkWindow *) view->drawing_area->window,
+			  cursor);
     gdk_cursor_destroy(cursor);
 }
 
 #if OLD
-static const char*
-endQuote (const char* args, agxbuf* xb, char endc)
+static const char *endQuote(const char *args, agxbuf * xb, char endc)
 {
     int more = 1;
     char c;
 
     while (more) {
 	c = *args++;
-	if (c == endc) more = 0;
+	if (c == endc)
+	    more = 0;
 	else if (c == '\0') {
 	    more = 0;
 	    args--;
-	}
-	else if (c == '\\') {
+	} else if (c == '\\') {
 	    c = *args++;
-	    if (c == '\0') args--;
-	    else agxbputc (xb,c);
-	}
-	else
-	    agxbputc (xb,c);
+	    if (c == '\0')
+		args--;
+	    else
+		agxbputc(xb, c);
+	} else
+	    agxbputc(xb, c);
     }
     return args;
 }
 
-static const char*
-skipWS (const char* args)
+static const char *skipWS(const char *args)
 {
     char c;
 
     while ((c = *args)) {
-	if (isspace(c)) args++;
-	else break;
+	if (isspace(c))
+	    args++;
+	else
+	    break;
     }
     return args;
 }
 
-static const char*
-getTok (const char* args, agxbuf* xb)
+static const char *getTok(const char *args, agxbuf * xb)
 {
     char c;
     int more = 1;
 
     args = skipWS(args);
-    if (*args == '\0') return 0;
+    if (*args == '\0')
+	return 0;
 
     while (more) {
 	c = *args++;
-	if (isspace(c)) more = 0;
+	if (isspace(c))
+	    more = 0;
 	else if (c == '\0') {
 	    more = 0;
 	    args--;
-	}
-	else if ((c == '"') || (c == '\'')) {
-	    args = endQuote (args, xb, c);
-	}
-	else if (c == '\\') {
+	} else if ((c == '"') || (c == '\'')) {
+	    args = endQuote(args, xb, c);
+	} else if (c == '\\') {
 	    c = *args++;
-	    if (c == '\0') args--;
-	    else agxbputc (xb,c);
-	}
-	else
-	    agxbputc (xb,c);
+	    if (c == '\0')
+		args--;
+	    else
+		agxbputc(xb, c);
+	} else
+	    agxbputc(xb, c);
     }
     return args;
 }
 
-static char**
-splitArgs (const char* args, int* argcp)
+static char **splitArgs(const char *args, int *argcp)
 {
-    char** argv;
+    char **argv;
     int argc;
     int asize;
     agxbuf xbuf;
@@ -495,15 +507,15 @@ splitArgs (const char* args, int* argcp)
     asize = 0;
     argv = 0;
     agxbinit(&xbuf, SMALLBUF, buf);
-    while ((args = getTok (args, &xbuf))) {
+    while ((args = getTok(args, &xbuf))) {
 	if (asize <= argc) {
 	    asize += 10;
-	    argv = ALLOC(asize,argv,char*);
+	    argv = ALLOC(asize, argv, char *);
 	}
 	argv[argc++] = strdup(agxbuse(&xbuf));
     }
 
-    agxbfree (&xbuf);
+    agxbfree(&xbuf);
     *argcp = argc;
     return argv;
 }
@@ -511,67 +523,74 @@ splitArgs (const char* args, int* argcp)
 
 void mTestgvpr(GtkWidget * widget, gpointer user_data)
 {
-    char* bf2;
-    GtkTextBuffer * gtkbuf;
+    char *bf2;
+    GtkTextBuffer *gtkbuf;
     GtkTextIter startit;
     GtkTextIter endit;
-    const char* args;
+    const char *args;
     int i, j, argc, cloneGraph;
-    char** argv;
+    char **argv;
 #if OLD
-    char** inargv;
+    char **inargv;
     int inargc;
 #endif
 
-    args = gtk_entry_get_text ((GtkEntry *)glade_xml_get_widget(xml, "gvprargs"));
-    gtkbuf = gtk_text_view_get_buffer((GtkTextView*) glade_xml_get_widget(xml,"gvprtextinput"));
-    gtk_text_buffer_get_start_iter (gtkbuf,&startit);
-    gtk_text_buffer_get_end_iter (gtkbuf,&endit);
-    bf2 = gtk_text_buffer_get_text(gtkbuf,&startit,&endit,0);
+    args =
+	gtk_entry_get_text((GtkEntry *)
+			   glade_xml_get_widget(xml, "gvprargs"));
+    gtkbuf =
+	gtk_text_view_get_buffer((GtkTextView *)
+				 glade_xml_get_widget(xml,
+						      "gvprtextinput"));
+    gtk_text_buffer_get_start_iter(gtkbuf, &startit);
+    gtk_text_buffer_get_end_iter(gtkbuf, &endit);
+    bf2 = gtk_text_buffer_get_text(gtkbuf, &startit, &endit, 0);
 
     if ((*args == '\0') && (*bf2 == '\0'))
-	return; 
+	return;
 
 #if OLD
-    inargv = splitArgs (args, &inargc);
+    inargv = splitArgs(args, &inargc);
 
     argc = inargc + 1;
 #else
     argc = 1;
-    if (*args != '\0') argc += 2;
+    if (*args != '\0')
+	argc += 2;
 #endif
-    if (*bf2 != '\0') argc++;
-    if (gtk_toggle_button_get_active((GtkToggleButton *) glade_xml_get_widget(xml, "gvprapplycb"))) {
+    if (*bf2 != '\0')
+	argc++;
+    if (gtk_toggle_button_get_active
+	((GtkToggleButton *) glade_xml_get_widget(xml, "gvprapplycb"))) {
 	cloneGraph = 1;
 	argc++;
-    }
-    else
+    } else
 	cloneGraph = 0;
-    argv = N_NEW(argc+1, char*);
+    argv = N_NEW(argc + 1, char *);
     j = 0;
     argv[j++] = "smyrna";
     if (cloneGraph)
-	argv[j++] = strdup ("-C");
+	argv[j++] = strdup("-C");
 #if OLD
     for (i = 0; i < inargc; i++)
 	argv[j++] = inargv[i];
-    free (inargv);
+    free(inargv);
 #else
     if (*args != '\0') {
-	argv[j++] = strdup ("-a");
-	argv[j++] = strdup (args);
+	argv[j++] = strdup("-a");
+	argv[j++] = strdup(args);
     }
 #endif
     if (*bf2 != '\0') {
 	argv[j++] = strdup(bf2);
-	g_free (bf2);
+	g_free(bf2);
     }
-    assert (j == argc);
+    assert(j == argc);
 
-    run_gvpr (view->g[view->activeGraph], argc, argv);
+    run_gvpr(view->g[view->activeGraph], argc, argv);
     for (i = 1; i < argc; i++)
-	free (argv[i]);
-    free (argv);
+	free(argv[i]);
+    free(argv);
 }
 
 
@@ -579,45 +598,40 @@ void mTestgvpr(GtkWidget * widget, gpointer user_data)
    opens a file open dialog and load a gvpr program to gvpr script text box
    if the current script is modified, user should be informed about it
 */
-void 
-on_gvprbuttonload_clicked(GtkWidget * widget, gpointer user_data)
+void on_gvprbuttonload_clicked(GtkWidget * widget, gpointer user_data)
 {
-    FILE *input_file=NULL;
-    char* str;
+    FILE *input_file = NULL;
+    char *str;
     agxbuf xbuf;
-    GtkTextBuffer * gtkbuf; /*GTK buffer from glade GUI*/
+    GtkTextBuffer *gtkbuf;	/*GTK buffer from glade GUI */
 
     char buf[BUFSIZ];
     unsigned char xbuffer[BUFSIZ];
 
-    agxbinit (&xbuf, SMALLBUF, xbuffer);
+    agxbinit(&xbuf, SMALLBUF, xbuffer);
 
-	/*file name should be returned in xbuf*/
-    if (openfiledlg(0,NULL,&xbuf)) 
-	{
-		input_file = fopen(agxbuse (&xbuf), "r");
-		if (input_file) 
-		{
-			while (fgets(buf, BUFSIZ, input_file)) 
-				agxbput (&xbuf, buf);
-			gtkbuf = gtk_text_view_get_buffer((GtkTextView*) glade_xml_get_widget(xml,"gvprtextinput"));
-			str=agxbuse (&xbuf);
-			if(g_utf8_validate(str,-1,NULL)) 
-			{
-				gtk_text_buffer_set_text (gtkbuf, str, -1);
-			}
-			else 
-			{
-				show_gui_warning ("File format is not UTF8!");
-			}
-			fclose (input_file);
-	}
-	else 
-	{
-	    show_gui_warning ("file couldn't be opened\n");
+    /*file name should be returned in xbuf */
+    if (openfiledlg(0, NULL, &xbuf)) {
+	input_file = fopen(agxbuse(&xbuf), "r");
+	if (input_file) {
+	    while (fgets(buf, BUFSIZ, input_file))
+		agxbput(&xbuf, buf);
+	    gtkbuf =
+		gtk_text_view_get_buffer((GtkTextView *)
+					 glade_xml_get_widget(xml,
+							      "gvprtextinput"));
+	    str = agxbuse(&xbuf);
+	    if (g_utf8_validate(str, -1, NULL)) {
+		gtk_text_buffer_set_text(gtkbuf, str, -1);
+	    } else {
+		show_gui_warning("File format is not UTF8!");
+	    }
+	    fclose(input_file);
+	} else {
+	    show_gui_warning("file couldn't be opened\n");
 	}
     }
-    agxbfree (&xbuf);
+    agxbfree(&xbuf);
 }
 
 /*
@@ -626,37 +640,37 @@ on_gvprbuttonload_clicked(GtkWidget * widget, gpointer user_data)
 */
 void on_gvprbuttonsave_clicked(GtkWidget * widget, gpointer user_data)
 {
-    FILE *output_file=NULL;
-	agxbuf xbuf;
-    GtkTextBuffer * gtkbuf; /*GTK buffer from glade GUI*/
-	int charcnt;
-	char* bf2;
-	GtkTextIter startit;
-	GtkTextIter endit;
+    FILE *output_file = NULL;
+    agxbuf xbuf;
+    GtkTextBuffer *gtkbuf;	/*GTK buffer from glade GUI */
+    int charcnt;
+    char *bf2;
+    GtkTextIter startit;
+    GtkTextIter endit;
 
 
 
-	agxbinit (&xbuf, SMALLBUF, NULL);
-	/*file name should be returned in xbuf*/
-	if(savefiledlg(0,NULL,&xbuf))
-	{
-		output_file = fopen(agxbuse (&xbuf), "w");
-		if (output_file)
-		{
-			gtkbuf=gtk_text_view_get_buffer((GtkTextView*) glade_xml_get_widget(xml,"gvprtextinput"));
-			charcnt=gtk_text_buffer_get_char_count (gtkbuf);
-			gtk_text_buffer_get_start_iter (gtkbuf,&startit);
-			gtk_text_buffer_get_end_iter (gtkbuf,&endit);
-			bf2=gtk_text_buffer_get_text(gtkbuf,&startit,&endit,0);
-			fprintf(output_file,"%s",bf2);
-			fclose(output_file);
-			
-		}
+    agxbinit(&xbuf, SMALLBUF, NULL);
+    /*file name should be returned in xbuf */
+    if (savefiledlg(0, NULL, &xbuf)) {
+	output_file = fopen(agxbuse(&xbuf), "w");
+	if (output_file) {
+	    gtkbuf =
+		gtk_text_view_get_buffer((GtkTextView *)
+					 glade_xml_get_widget(xml,
+							      "gvprtextinput"));
+	    charcnt = gtk_text_buffer_get_char_count(gtkbuf);
+	    gtk_text_buffer_get_start_iter(gtkbuf, &startit);
+	    gtk_text_buffer_get_end_iter(gtkbuf, &endit);
+	    bf2 = gtk_text_buffer_get_text(gtkbuf, &startit, &endit, 0);
+	    fprintf(output_file, "%s", bf2);
+	    fclose(output_file);
 
-
-		/*Code has not been completed for this function yet*/
 	}
 
 
-}
+	/*Code has not been completed for this function yet */
+    }
 
+
+}
