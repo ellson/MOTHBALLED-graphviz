@@ -98,9 +98,9 @@ glPrintf(glCompFont * font, GLfloat xpos, GLfloat ypos, GLfloat zpos,
 	 GLfloat width, char *bf, int usez)
 {
 
-	GLfloat size = font->size;
-    GLfloat x = xpos;
-    GLfloat y = ypos;
+//	GLfloat size = font->size;
+//    GLfloat x = xpos;
+//    GLfloat y = ypos;
 
     //set the color
     glColor4f(font->color.R, font->color.G, font->color.B, font->color.A);
@@ -372,6 +372,8 @@ void glCompRenderText(glCompFont* f,glCompObj* parentObj)
 	GLfloat x,y,z,w,h;
 	if (!f->tex)
 		return ;
+        x=0;
+	y=0;
 	w=f->tex->width;
 	h=f->tex->height;
 	ref=parentObj->common;

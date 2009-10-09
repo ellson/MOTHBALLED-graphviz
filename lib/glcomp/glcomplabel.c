@@ -21,7 +21,7 @@
 glCompLabel *glCompLabelNew(glCompObj* par,GLfloat x, GLfloat y,char *text)
 {
     glCompLabel *p;
-	glCompCommon* parent=&par->common;
+//	glCompCommon* parent=&par->common;
 	p = malloc(sizeof(glCompLabel));
 	glCompInitCommon((glCompObj*)p,par,x,y);
 	p->objType=glLabelObj;

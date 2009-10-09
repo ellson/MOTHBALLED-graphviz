@@ -48,7 +48,8 @@ int glCompImageLoad(glCompImage* i,unsigned char* data,int width,int height)
 	if(data != NULL)	/*valid image data*/
 	{
 		glCompDeleteTexture(i->texture);
-		if(i->texture=glCompSetAddNewTexImage(i->common.compset,width,height,data,1))
+		i->texture=glCompSetAddNewTexImage(i->common.compset,width,height,data,1);
+		if(i->texture)
 		{
 			i->common.width=width;
 			i->common.height=height;
@@ -80,7 +81,7 @@ void glCompImageDraw(void* obj)
 {
 	glCompImage* p;
 	static glCompCommon ref;
-	static GLfloat w,h,d;
+//	static GLfloat w,h,d;
 	p=(glCompImage*)obj;
 	ref=p->common;
 	glCompCalcWidget((glCompCommon*)p->common.parent,&p->common,&ref);

@@ -114,19 +114,19 @@ typedef enum {glMouseLeftButton,glMouseRightButton,glMouseMiddleButton}	glMouseB
 typedef enum {glTexImage,glTexLabel} glCompTexType;
 typedef enum {glPanelObj,glButtonObj,glLabelObj,glImageObj}glObjType;
 
+typedef struct _glCompButton glCompButton;
+typedef struct _glCompObj glCompObj;
 
 /*call backs for widgets*/
-typedef void (*glcompdrawfunc_t) (void* obj);
-typedef void (*glcompclickfunc_t) (void* obj,GLfloat x,GLfloat y,glMouseButtonType t);
-typedef void (*glcompdoubleclickfunc_t) (void* obj,GLfloat x,GLfloat y,glMouseButtonType t);
-typedef void (*glcompmouseoverfunc_t) (void* obj,GLfloat x,GLfloat y);
-typedef void (*glcompmouseinfunc_t) (void* obj,GLfloat x,GLfloat y);
-typedef void (*glcompmouseoutfunc_t) (void* obj,GLfloat x,GLfloat y);
-typedef void (*glcompmousedownfunc_t) (void* obj,GLfloat x,GLfloat y,glMouseButtonType t);
-typedef void (*glcompmouseupfunc_t) (void* obj,GLfloat x,GLfloat y,glMouseButtonType t);
-typedef void (*glcompmousedragfunct_t) (void* obj,GLfloat dx,GLfloat dy,glMouseButtonType t);
-
-
+typedef void (*glcompdrawfunc_t) (glCompButton* obj);
+typedef void (*glcompclickfunc_t) (glCompObj* obj,GLfloat x,GLfloat y,glMouseButtonType t);
+typedef void (*glcompdoubleclickfunc_t) (glCompObj* obj,GLfloat x,GLfloat y,glMouseButtonType t);
+typedef void (*glcompmouseoverfunc_t) (glCompObj* obj,GLfloat x,GLfloat y);
+typedef void (*glcompmouseinfunc_t) (glCompObj* obj,GLfloat x,GLfloat y);
+typedef void (*glcompmouseoutfunc_t) (glCompObj* obj,GLfloat x,GLfloat y);
+typedef void (*glcompmousedownfunc_t) (glCompObj* obj,GLfloat x,GLfloat y,glMouseButtonType t);
+typedef void (*glcompmouseupfunc_t) (glCompObj* obj,GLfloat x,GLfloat y,glMouseButtonType t);
+typedef void (*glcompmousedragfunct_t) (glCompObj* obj,GLfloat dx,GLfloat dy,glMouseButtonType t);
 
 
 
@@ -189,7 +189,7 @@ typedef struct _glCompRect
 
 typedef struct _glCompTex
 {
-	int id;
+	GLuint id;
 	char* def;
 	char* text;
 	float width;
@@ -292,7 +292,8 @@ typedef struct _glCompLabel
 } glCompLabel;
 
 /*buttons*/
-typedef struct _glCompButton {
+struct _glCompButton
+{
 	glObjType objType;	/*always keep this here for each drawable object*/
 	glCompCommon common;
     GLfloat width, height;
@@ -304,7 +305,7 @@ typedef struct _glCompButton {
     void *customptr;		//general purpose void pointer to pass to call back
     int data;
 
-} glCompButton;
+};
 
 /*texture based image*/
 
@@ -343,10 +344,11 @@ typedef struct
 }fontset_t;
 
 /*object prototype*/
-typedef struct {
+struct _glCompObj
+{
 	glObjType objType;
 	glCompCommon common;
-}glCompObj;
+};
 
 typedef struct _glCompMouse
 {

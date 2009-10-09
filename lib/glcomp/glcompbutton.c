@@ -27,7 +27,7 @@
 glCompButton *glCompButtonNew(glCompObj* par,GLfloat x, GLfloat y, GLfloat w, GLfloat h,char *caption)
 {
     glCompButton *p;
-	glCompCommon* parent=&par->common;
+//	glCompCommon* parent=&par->common;
     p = malloc(sizeof(glCompButton));
 	glCompInitCommon((glCompObj*)p,par,x,y);
 	p->objType=glButtonObj;
@@ -137,8 +137,8 @@ void glCompButtonDraw(glCompButton * p)
 	glCompDrawRectPrism (&(ref.pos),ref.width,ref.height,p->common.borderWidth,0.01,&(ref.color),!p->status);
 	if (p->label)
 		p->label->common.functions.draw(p->label);
-	if(p->image)
-		p->image->common.functions.draw((glCompObj*)p->image);
+	if (p->image)
+		p->image->common.functions.draw(p->image);
 	if (p->common.callbacks.draw)
 		p->common.callbacks.draw(p);	/*user defined drawing routines are called here.*/
 }
@@ -174,7 +174,7 @@ void glCompButtonClick(glCompObj * o,GLfloat x,GLfloat y,glMouseButtonType t)
 		else	p->status = 0;
     }
 	if (p->common.callbacks.click)
-		p->common.callbacks.click(p,x,y,t);	
+		p->common.callbacks.click((glCompObj*)p,x,y,t);	
 }
 
 void glCompButtonDoubleClick(glCompObj * obj,GLfloat x,GLfloat y,glMouseButtonType t)

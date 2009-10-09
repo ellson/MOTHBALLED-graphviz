@@ -159,11 +159,11 @@ int create_font_file(char *fontdescription,int fs, char *fontfile, float gw,floa
 unsigned char* create_pango_texture(char *fontdescription,int fontsize,char* txt,cairo_surface_t *surface,int* w,int* h)
 {
 
-    char buf[] = " ";
-    int ncolumns = 16;
-    int counter = 0;
-    int X = 0;
-    int Y = 0;
+//    char buf[] = " ";
+//    int ncolumns = 16;
+//    int counter = 0;
+//    int X = 0;
+//    int Y = 0;
     cairo_t *cr;
     PangoLayout *layout;
     double width, height;

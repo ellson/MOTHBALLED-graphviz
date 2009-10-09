@@ -542,6 +542,9 @@ void glCompCalcWidget(glCompCommon* parent,glCompCommon* child,glCompCommon* ref
 			ref->width=parent->width-2*borderWidth;;
 			ref->height=parent->height-2*borderWidth;
 			break;
+		case glAlignCenter:
+		case glAlignNone:
+			break;
 	}
 	if(child->align == glAlignNone)	// No alignment , chekc anchors
 	{
@@ -563,10 +566,16 @@ void glCompCalcWidget(glCompCommon* parent,glCompCommon* child,glCompCommon* ref
 	child->width=ref->width;
 	child->height=ref->height;
 }
+
+#if 0
+// compiler reports this function is not used
+
 static void glCompVertex(glCompPoint* p)
 {
 	glVertex3f(p->x,p->y,p->z);
 }
+#endif
+
 static void glCompQuadVertex(glCompPoint* p0,glCompPoint* p1,glCompPoint* p2,glCompPoint* p3)
 {
 	glVertex3f(p0->x,p0->y,p0->z);

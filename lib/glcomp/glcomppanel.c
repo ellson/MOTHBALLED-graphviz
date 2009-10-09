@@ -23,7 +23,7 @@
 glCompPanel *glCompPanelNew(glCompObj* parentObj,GLfloat x, GLfloat y, GLfloat w, GLfloat h)
 {
     glCompPanel *p;
-	glCompCommon* parent=&parentObj->common;
+//	glCompCommon* parent=&parentObj->common;
     p = malloc(sizeof(glCompPanel));
 	glCompInitCommon((glCompObj*)p,parentObj,(GLfloat)x ,(GLfloat)y);
 

@@ -50,17 +50,19 @@ void glCompGetObjectType(glCompObj* p)
 	}
 
 }
+
 static int glCompPointInObject(glCompObj* p, float x, float y)
 {
 	return ((x > p->common.refPos.x) && (x < p->common.refPos.x + p->common.width) && 	(y > p->common.refPos.y) &&	(y < p->common.refPos.y + p->common.height));
 }
+
 glCompObj* glCompGetObjByMouse(glCompSet* s ,glCompMouse* m,int onlyClickable)
 {
-	int ind=0;
+	int ind;
 	glCompObj* rv=NULL;
 	if (!s || !m)
 		return NULL;
-	for (ind ; ind < s->objcnt ; ind ++)
+	for (ind=0 ; ind < s->objcnt ; ind ++)
 	{
 		if ((s->obj[ind]->common.visible)&&(glCompPointInObject(s->obj[ind],m->pos.x,m->pos.y)))
 		{	
@@ -252,6 +254,10 @@ void glCompSetAddObj(glCompSet* s ,glCompObj* obj)
     s->obj[s->objcnt - 1] = obj;
 	obj->common.compset=s;
 }
+
+#if 0 
+// compiler reports this function is not used.
+
 //converts screen location to opengl coordinates
 static void glCompSetGetPos(int x, int y, float *X, float *Y, float *Z)
 {
@@ -284,6 +290,7 @@ static void glCompSetGetPos(int x, int y, float *X, float *Y, float *Z)
     *Y = (float) posY;
     *Z = (float) posZ;
 }
+#endif
 
 void glCompDrawBegin(void)	//pushes a gl stack 
 {
