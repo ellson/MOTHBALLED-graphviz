@@ -118,7 +118,7 @@ typedef struct _glCompButton glCompButton;
 typedef struct _glCompObj glCompObj;
 
 /*call backs for widgets*/
-typedef void (*glcompdrawfunc_t) (glCompButton* obj);
+typedef void (*glcompdrawfunc_t) (void* obj);
 typedef void (*glcompclickfunc_t) (glCompObj* obj,GLfloat x,GLfloat y,glMouseButtonType t);
 typedef void (*glcompdoubleclickfunc_t) (glCompObj* obj,GLfloat x,GLfloat y,glMouseButtonType t);
 typedef void (*glcompmouseoverfunc_t) (glCompObj* obj,GLfloat x,GLfloat y);

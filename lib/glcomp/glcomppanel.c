@@ -76,7 +76,7 @@ int glCompPanelDraw(glCompObj * o)
 	/*draw image if there is*/
 	if (p->image)
 	{
-		p->image->common.callbacks.draw(p->image);
+		p->image->common.callbacks.draw((void*)p->image);
 	}
     if (p->text) {
 

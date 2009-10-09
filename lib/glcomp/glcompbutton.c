@@ -136,11 +136,11 @@ void glCompButtonDraw(glCompButton * p)
 	/*draw panel*/
 	glCompDrawRectPrism (&(ref.pos),ref.width,ref.height,p->common.borderWidth,0.01,&(ref.color),!p->status);
 	if (p->label)
-		p->label->common.functions.draw(p->label);
+		p->label->common.functions.draw((void*)p->label);
 	if (p->image)
-		p->image->common.functions.draw(p->image);
+		p->image->common.functions.draw((void*)p->image);
 	if (p->common.callbacks.draw)
-		p->common.callbacks.draw(p);	/*user defined drawing routines are called here.*/
+		p->common.callbacks.draw((void*)p);	/*user defined drawing routines are called here.*/
 }
 
 void glCompButtonClick(glCompObj * o,GLfloat x,GLfloat y,glMouseButtonType t)
