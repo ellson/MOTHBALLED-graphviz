@@ -261,25 +261,35 @@ static char *parseOp(xdot_op * op, char *s, drawfunc_t ops[], int* error)
 
 #define XDBSIZE 100
 
-xdot *parseXDotF(char *s, drawfunc_t fns[], int sz)
+/* parseXDotFOn:
+ * Parse and append additional xops onto a given xdot object.
+ * Assume x != NULL.
+ * Return x.
+ */ 
+xdot *parseXDotFOn (char *s, drawfunc_t fns[], xdot* x)
 {
-    xdot *x;
     xdot_op op;
     char *ops;
-    int oldsz, bufsz = XDBSIZE;
+    int oldsz, bufsz;
     int error;
+    int initcnt, sz;
 
-    if (!s)
-	return NULL;
-    x = NEW(xdot);
-    if (sz <= sizeof(xdot_op))
-	sz = sizeof(xdot_op);
-    ops = (char *) calloc(XDBSIZE, sz);
+    if (!s || !x)
+	return x;
 
-    x->cnt = 0;
-    x->flags = 0;
-    x->freefunc = 0;
-    x->sz = sz;
+    initcnt = x->cnt;
+    sz = x->sz;
+    if (initcnt == 0) {
+	bufsz = XDBSIZE;
+	ops = (char *) calloc(XDBSIZE, sz);
+    }
+    else {
+	ops = (char*)(x->ops);
+	bufsz = initcnt + XDBSIZE;
+	ops = (char *) realloc(ops, bufsz * sz);
+	memset(ops + (initcnt*sz), '\0', (bufsz - initcnt)*sz);
+    }
+
     while ((s = parseOp(&op, s, fns, &error))) {
 	if (x->cnt == bufsz) {
 	    oldsz = bufsz;
@@ -290,14 +300,36 @@ xdot *parseXDotF(char *s, drawfunc_t fns[], int sz)
 	*(xdot_op *) (ops + (x->cnt * sz)) = op;
 	x->cnt++;
     }
+    if (error)
+	x->flags |= XDOT_PARSE_ERROR;
     if (x->cnt) {
 	x->ops = (xdot_op *) realloc(ops, x->cnt * sz);
-	if (error)
-	    x->flags |= XDOT_PARSE_ERROR;
     }
     else {
+	free (ops);
+    }
+
+    return x;
+
+}
+
+xdot *parseXDotF(char *s, drawfunc_t fns[], int sz)
+{
+    xdot *x;
+
+    if (!s)
+	return NULL;
+    x = NEW(xdot);
+    if (sz <= sizeof(xdot_op))
+	sz = sizeof(xdot_op);
+
+    /* cnt, freefunc, ops, flags zeroed by NEW */
+    x->sz = sz;
+
+    x = parseXDotFOn (s, fns, x);
+    if (x->cnt == 0) {
 	free(x);
-	x = 0;
+	x = NULL;
     }
     return x;
 }

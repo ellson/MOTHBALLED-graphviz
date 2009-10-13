@@ -103,6 +103,7 @@ typedef struct {
 
 /* ops are indexed by xop_kind */
 extern xdot* parseXDotF (char*, drawfunc_t opfns[], int sz);
+extern xdot* parseXDotFOn (char*, drawfunc_t opfns[], xdot*);
 extern xdot* parseXDot (char*);
 extern char* sprintXDot (xdot*);
 extern void fprintXDot (FILE*, xdot*);
