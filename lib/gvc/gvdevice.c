@@ -159,9 +159,9 @@ void gvdevice_initialize(GVJ_t * job)
 #ifdef HAVE_LIBZ
 	z_stream *z = &z_strm;
 
-	z->zalloc = (alloc_func)0;
-	z->zfree = (free_func)0;
-	z->opaque = (voidpf)0;
+	z->zalloc = 0;
+	z->zfree = 0;
+	z->opaque = 0;
 	z->next_in = NULL;
 	z->next_out = NULL;
 	z->avail_in = 0;
