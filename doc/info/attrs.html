@@ -328,7 +328,7 @@ This field indicates which graph component uses the attribute.
 </TD><TD>G</TD><TD>double<BR><A HREF=#k:pointf>pointf</A>
 </TD><TD ALIGN="CENTER">0.0555 (4 points)</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:page HREF=#d:page>page</A>
-</TD><TD>G</TD><TD><A HREF=#k:pointf>pointf</A>
+</TD><TD>G</TD><TD>double<BR><A HREF=#k:pointf>pointf</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:pagedir HREF=#d:pagedir>pagedir</A>
 </TD><TD>G</TD><TD><A HREF=#k:pagedir>pagedir</A>
@@ -402,7 +402,7 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:sides HREF=#d:sides>sides</A>
 </TD><TD>N</TD><TD>int</TD><TD ALIGN="CENTER">4</TD><TD>0</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:size HREF=#d:size>size</A>
-</TD><TD>G</TD><TD><A HREF=#k:pointf>pointf</A>
+</TD><TD>G</TD><TD>double<BR><A HREF=#k:pointf>pointf</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:skew HREF=#d:skew>skew</A>
 </TD><TD>N</TD><TD>double</TD><TD ALIGN="CENTER">0.0</TD><TD>-100.0</TD><TD></TD> </TR>
@@ -1272,7 +1272,10 @@ This field indicates which graph component uses the attribute.
   the boundary of the drawn region.
 
 <DT><A NAME=d:page HREF=#a:page><STRONG>page</STRONG></A>
-<DD>  Width and height of output pages, in inches. If this is set and is
+<DD>  Width and height of output pages, in inches. If only a single value
+  is given, this is used for both the width and height.
+  <P>
+  If this is set and is
   smaller than the size of the layout, a rectangular array of pages of
   the specified page size is overlaid on the layout, with origins
   aligned in the lower-left corner, thereby partitioning the layout
@@ -1528,7 +1531,11 @@ This field indicates which graph component uses the attribute.
 
 <DT><A NAME=d:size HREF=#a:size><STRONG>size</STRONG></A>
 <DD>  Maximum width and height of drawing, in inches.
-  If defined and the drawing is too large, the drawing is uniformly
+  If only a single number is given, this is used for both the width
+  and the height.
+  <P>
+  If defined and the drawing is larger than the given size, 
+  the drawing is uniformly
   scaled down so that it fits within the given size.
   <P>
   If <TT>size</TT> ends in an exclamation point (<TT>!</TT>),

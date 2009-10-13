@@ -751,8 +751,11 @@ drawing and will be filled with the background color, if appropriate.
 Normally, a small pad is used for aesthetic reasons, especially when
 a background color is used, to avoid having nodes and edges abutting
 the boundary of the drawn region.
-:page:G:pointf;
-Width and height of output pages, in inches. If this is set and is
+:page:G:double/pointf;
+Width and height of output pages, in inches. If only a single value
+is given, this is used for both the width and height.
+<P>
+If this is set and is
 smaller than the size of the layout, a rectangular array of pages of
 the specified page size is overlaid on the layout, with origins
 aligned in the lower-left corner, thereby partitioning the layout
@@ -977,9 +980,13 @@ Print guide boxes in PostScript at the beginning of
 routesplines if 1, or at the end if 2. (Debugging)
 :sides:N:int:4:0;
 Number of sides if <A HREF=#d:shape><B>shape</B></A>=polygon.
-:size:G:pointf;
+:size:G:double/pointf;
 Maximum width and height of drawing, in inches.
-If defined and the drawing is too large, the drawing is uniformly
+If only a single number is given, this is used for both the width
+and the height.
+<P>
+If defined and the drawing is larger than the given size, 
+the drawing is uniformly
 scaled down so that it fits within the given size.
 <P>
 If <TT>size</TT> ends in an exclamation point (<TT>!</TT>),

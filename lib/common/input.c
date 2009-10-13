@@ -433,7 +433,8 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 }
 
 /* getdoubles2ptf:
- * converts a graph attribute to floating graph units (POINTS).
+ * converts a graph attribute in inches to a pointf in points.
+ * If only one number is given, it is used for both x and y.
  * Returns true if the attribute ends in '!'.
  */
 static boolean getdoubles2ptf(graph_t * g, char *name, pointf * result)
@@ -451,6 +452,14 @@ static boolean getdoubles2ptf(graph_t * g, char *name, pointf * result)
 	    result->y = POINTS(yf);
 	    if (c == '!')
 		rv = TRUE;
+	}
+	else {
+	    c = '\0';
+	    i = sscanf(p, "%lf%c", &xf, &c);
+	    if ((i > 0) && (xf > 0)) {
+		`result->y = result->x = POINTS(xf);
+		if (c == '!') rv = TRUE;
+	    }
 	}
     }
     return rv;
