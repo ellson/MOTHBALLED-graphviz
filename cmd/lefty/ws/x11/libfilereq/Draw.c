@@ -44,6 +44,7 @@
  */
 
 #include <stdio.h>
+#include <stdint.h>
 #include "SFinternal.h"
 #include "xstat.h"
 #include <X11/StringDefs.h>
@@ -58,14 +59,6 @@
 #undef ABS
 #endif
 #define ABS(x) (((x) < 0) ? (-(x)) : (x))
-
-#ifdef HAVE_INTPTR_T
-#define INT2PTR(t,v) ((t)(intptr_t)(v))
-#define PTR2INT(v) ((Sflong_t)(intptr_t)(v))
-#else
-#define INT2PTR(t,v) ((t)(v))
-#define PTR2INT(v) ((Sflong_t)(v))
-#endif
 
 typedef struct {
     char *fontname;
