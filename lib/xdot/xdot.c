@@ -18,8 +18,8 @@
 #include <string.h>
 #include <ctype.h>
 
-#define NEW(t)           (t*)malloc(sizeof(t))
-#define N_NEW(n,t)       (t*)malloc((n)*sizeof(t))
+#define NEW(t)           (t*)calloc(1, sizeof(t))
+#define N_NEW(n,t)       (t*)calloc((n),sizeof(t))
 
 /* the parse functions should return NULL on error */
 static char *parseReal(char *s, double *fp)
