@@ -501,16 +501,27 @@ proc zoomupdate {c} {
                 set font [$c itemcget $i -font]
                 if {!$fontsize} {
                         set text [$c itemcget $i -text]
-                        set fontsize [lindex $font 1]
+                        if {[llength $font] < 2} {
+                                #new font API
+                                set fontsize [font actual $font -size]
+                        } {
+                                #old font API
+                                set fontsize [lindex $font 1]
+                        }
                         $c addtag _f$fontsize withtag $i
                         $c addtag _t$text withtag $i
                 }
                 # scale font
                 set newsize [expr {int($fontsize * $data(zdepth))}]
                 if {abs($newsize) >= 4} {
-                        $c itemconfigure $i \
-                                -font [lreplace $font 1 1 $newsize] \
-                                -text $text
+                        if {[llength $font] < 2} {
+                                #new font api
+                                font configure $font -size $newsize
+                        } {
+                                #old font api
+                                lreplace $font 1 1 $newsize
+                        }
+			$c itemconfigure $i -font $font -text $text
                 } {
                         # suppress text if too small
                         $c itemconfigure $i -text {}
