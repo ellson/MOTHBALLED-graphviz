@@ -263,22 +263,30 @@ static char *parseOp(xdot_op * op, char *s, drawfunc_t ops[], int* error)
 
 /* parseXDotFOn:
  * Parse and append additional xops onto a given xdot object.
- * Assume x != NULL.
  * Return x.
  */ 
-xdot *parseXDotFOn (char *s, drawfunc_t fns[], xdot* x)
+xdot *parseXDotFOn (char *s, drawfunc_t fns[], int sz, xdot* x)
 {
     xdot_op op;
     char *ops;
     int oldsz, bufsz;
     int error;
-    int initcnt, sz;
+    int initcnt;
 
-    if (!s || !x)
+    if (!s)
 	return x;
 
+    if (!x) {
+	x = NEW(xdot);
+	if (sz <= sizeof(xdot_op))
+	    sz = sizeof(xdot_op);
+
+	/* cnt, freefunc, ops, flags zeroed by NEW */
+	x->sz = sz;
+    }
     initcnt = x->cnt;
     sz = x->sz;
+
     if (initcnt == 0) {
 	bufsz = XDBSIZE;
 	ops = (char *) calloc(XDBSIZE, sz);
@@ -307,6 +315,8 @@ xdot *parseXDotFOn (char *s, drawfunc_t fns[], xdot* x)
     }
     else {
 	free (ops);
+	free (x);
+	x = NULL;
     }
 
     return x;
@@ -315,23 +325,7 @@ xdot *parseXDotFOn (char *s, drawfunc_t fns[], xdot* x)
 
 xdot *parseXDotF(char *s, drawfunc_t fns[], int sz)
 {
-    xdot *x;
-
-    if (!s)
-	return NULL;
-    x = NEW(xdot);
-    if (sz <= sizeof(xdot_op))
-	sz = sizeof(xdot_op);
-
-    /* cnt, freefunc, ops, flags zeroed by NEW */
-    x->sz = sz;
-
-    x = parseXDotFOn (s, fns, x);
-    if (x->cnt == 0) {
-	free(x);
-	x = NULL;
-    }
-    return x;
+    return parseXDotFOn (s, fns, sz, NULL);
 }
 
 xdot *parseXDot(char *s)
