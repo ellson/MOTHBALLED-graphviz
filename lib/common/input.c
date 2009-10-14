@@ -457,7 +457,7 @@ static boolean getdoubles2ptf(graph_t * g, char *name, pointf * result)
 	    c = '\0';
 	    i = sscanf(p, "%lf%c", &xf, &c);
 	    if ((i > 0) && (xf > 0)) {
-		`result->y = result->x = POINTS(xf);
+		result->y = result->x = POINTS(xf);
 		if (c == '!') rv = TRUE;
 	    }
 	}
