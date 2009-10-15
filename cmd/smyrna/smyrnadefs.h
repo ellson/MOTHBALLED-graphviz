@@ -93,18 +93,23 @@ extern "C" {
     typedef enum { MOUSE_ROTATE_X, MOUSE_ROTATE_Y, MOUSE_ROTATE_XY,
 	    MOUSE_ROTATE_Z } mouse_rotate_axis;
 
-    typedef struct {
-	float R;
-	float G;
-	float B;
-	float A;		//Alpha
-	int tag;		/*custom data field */
-    } RGBColor;
+
+    typedef struct 
+	{
+		xdot_op op;
+		void *obj;
+		glCompFont* font;
+		int size;
+		int layer;
+
+    } sdot_op;	
+	
+	
 
 #define MAX_BTN_CNT 50
     typedef struct {
 	float perc;
-	RGBColor c;
+	glCompColor c;
 	int smooth;
 
     } colorschema;
@@ -273,49 +278,49 @@ extern "C" {
 
 
 
-    typedef struct {
-	Agnode_t *Node;
-	/*original coordinates */
-	float x;
-	float y;
-	float z;
-	/*coordinates to draw */
-	float distorted_x;
-	float distorted_y;
-	float distorted_z;
-	float zoom_factor;
-	int in_fish_eye;	//boolean value if to apply fisheye
-	RGBColor Color;
-	RGBColor GroupColor;
-	int GroupIndex;		//default -1;
-	int update_required;
-	char *Label;
-	char *Label2;
-	int degree;
-	float node_alpha;
-	int valid;
-	element_data data;
-	float size;
+    typedef struct 
+	{
+		Agnode_t *Node;
+		/*original coordinates */
+		float x;
+		float y;
+		float z;
+		/*coordinates to draw */
+		float distorted_x;
+		float distorted_y;
+		float distorted_z;
+		float zoom_factor;
+		int in_fish_eye;	//boolean value if to apply fisheye
+		glCompColor Color;
+		glCompColor GroupColor;
+		int GroupIndex;		//default -1;
+		char *Label;
+		char *Label2;
+		int degree;
+		float node_alpha;
+		int valid;
+		element_data data;
+		float size;
+		xdot* xDot;
     } topview_node;
 
-    typedef struct {
-//    topview_node *Tnode;              //Tail node
-//    topview_node *Hnode;              //Tail node
-	Agedge_t *Edge;		//edge itself
-	float x1;
-	float y1;
-	float z1;
-	float x2;
-	float y2;
-	float z2;
-	float length;
-	topview_node *Node1;	//Tail
-	topview_node *Node2;	//Head
-	RGBColor Color;
-	int update_required;
-	element_data data;
-
+    typedef struct 
+	{
+		Agedge_t *Edge;		//edge itself
+		float x1;
+		float y1;
+		float z1;
+		float x2;
+		float y2;
+		float z2;
+		float length;
+		topview_node *Node1;	//Tail
+		topview_node *Node2;	//Head
+		glCompColor Color;
+		element_data data;
+		xdot* xDot;
     } topview_edge;
+
     typedef struct _graph_data {
 	Agrec_t h;
 	char *GraphFileName;
@@ -358,7 +363,8 @@ extern "C" {
 	float init_node_size;	//raster size of node
 	float init_zoom;
 	float fitin_zoom;
-	xdot_set *xdot_list;	/*xdot attached to whole graph */
+	xdot* xDot;
+	float global_z;
 
     } topview;
 
@@ -409,7 +415,7 @@ extern "C" {
 	float X, Y, W, H;	//selection boundries
 	int Anti;		//subtract selections if 1
 	int AlreadySelected;	//for single selections to avoid selecting more than one object
-	RGBColor SelectionColor;
+	glCompColor SelectionColor;
 	float node_distance;	//to get the closest node , this value is updated for each node, distance between selection coords and node coords, smallest gets to be selected
 	topview_node *single_selected_node;	//pointer to selected node in a single node/edge selection cycle,after each node loop this value is checked and if it is in the limits that node is selected or deselected
 	//before the node/edge loop this value is nulled
@@ -449,23 +455,23 @@ extern "C" {
 	float clipX1, clipX2, clipY1, clipY2, clipZ1, clipZ2;
 
 	/*background color */
-	RGBColor bgColor;
+	glCompColor bgColor;
 	/*default pen color */
-	RGBColor penColor;
+	glCompColor penColor;
 	/*default fill color */
-	RGBColor fillColor;
+	glCompColor fillColor;
 	/*highlighted Node Color */
-	RGBColor highlightedNodeColor;
+	glCompColor highlightedNodeColor;
 	/*highlighted Edge Color */
-	RGBColor highlightedEdgeColor;
+	glCompColor highlightedEdgeColor;
 	/*grid color */
-	RGBColor gridColor;	//grid color
+	glCompColor gridColor;	//grid color
 	/*border color */
-	RGBColor borderColor;
+	glCompColor borderColor;
 	/*selected node color */
-	RGBColor selectedNodeColor;
+	glCompColor selectedNodeColor;
 	/*selected edge color */
-	RGBColor selectedEdgeColor;
+	glCompColor selectedEdgeColor;
 	/*default node alpha */
 	float defaultnodealpha;
 	/*default edge alpha */

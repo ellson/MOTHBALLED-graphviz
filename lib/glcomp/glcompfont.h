@@ -46,13 +46,12 @@ extern "C" {
     extern void fontColor(glCompFont * font, float r, float g, float b,
 			  float a);
     extern int glCompLoadFontPNG(char *name, int id);
-    extern glCompFont *new_font(glCompSet * s, char *text, glCompColor * c,
-				glCompFontType type, char *fontdesc,
-				int fs);
+	extern glCompFont *new_font(glCompSet * s, char *text, glCompColor * c,glCompFontType type, char *fontdesc, int fs,int is2D);
     extern glCompFont *new_font_from_parent(glCompObj * o, char *text);
     extern void delete_font(glCompFont * f);
-    extern void glCompRenderText(glCompFont * f, glCompObj * parentObj);
-
+	extern void glCompDrawText(glCompFont * f,GLfloat x,GLfloat y);
+	extern void glCompRenderText(glCompFont * f, glCompObj * parentObj);
+	extern void glCompDrawText3D(glCompFont * f,GLfloat x,GLfloat y,GLfloat z,GLfloat w,GLfloat h);
 
 #ifdef __cplusplus
 }

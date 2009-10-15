@@ -208,9 +208,6 @@ void frmObject_set_scroll(GtkWidget * widget, gpointer user_data)
 
 void frmObjectBtnOK_clicked(GtkWidget * widget, gpointer user_data)
 {
-    //call function to update object values
-//    update_object_properties(frmObjectTypeIndex, frmObjectg);
-    set_update_required(view->Topview);
     deselect_all(view->g[view->activeGraph]);
     gtk_widget_hide(glade_xml_get_widget(xml, "frmObject"));
 }

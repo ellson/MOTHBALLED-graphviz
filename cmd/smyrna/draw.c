@@ -32,7 +32,7 @@ XDOT DRAWING FUNCTIONS, maybe need to move them somewhere else
 //delta values
 static float dx = 0.0;
 static float dy = 0.0;
-static float globalz = 0.0;
+#define LAYER_DIFF 0.001
 
 GLubyte rasters[24] = {
     0xc0, 0x00, 0xc0, 0x00, 0xc0, 0x00, 0xc0, 0x00, 0xc0, 0x00, 0xff, 0x00,
@@ -99,7 +99,7 @@ void DrawBezier(GLfloat * xp, GLfloat * yp, GLfloat * zp, int filled,
 	Z = Az * a * a * a + Bz * 3 * a * a * b + Cz * 3 * a * b * b +
 	    Dz * b * b * b;
 	// Draw the line from point to point (assuming OGL is set up properly)
-	glVertex3d(X, Y, Z + globalz);
+	glVertex3d(X, Y, Z + view->Topview->global_z);
 	// Change the variable
 	a -= 0.05;
 	b = 1.0 - a;
@@ -199,16 +199,20 @@ static void relocate_spline(sdot_op * sop, int param)
 	}*/
 }
 
-static void DrawBeziers(xdot_op * op, int param)
+static void DrawBeziers(sdot_op* o, int param)
 {
     //SEND ALL CONTROL POINTS IN 3D ARRAYS
 
-    GLfloat tempX[4];
+	GLfloat tempX[4];
     GLfloat tempY[4];
     GLfloat tempZ[4];
     int temp = 0;
     int filled;
     int i = 0;
+	static xdot_op * op;
+	op=&o->op;
+	view->Topview->global_z=view->Topview->global_z+o->layer*LAYER_DIFF;
+
 //    SelectBeziers((sdot_op *) op);
     relocate_spline((sdot_op *) op, param);
     if (op->kind == xd_filled_bezier)
@@ -237,64 +241,18 @@ static void DrawBeziers(xdot_op * op, int param)
     DrawBezier(tempX, tempY, tempZ, filled, param);
 }
 
-/*function to load .raw files*/
-#ifdef UNUSED
-static void
-load_raw_texture(char *file_name, int width, int height, int depth,
-		 GLenum colour_type, GLenum filter_type)
-{
-    //Line 3 creates a pointer to an (as yet unallocated) array of gl unsigned bytes - 
-    //this will store our image until we've passed it to opengl.  Line 4 stores the file pointer, don't worry about that. 
-    GLubyte *raw_bitmap;
-    FILE *file;
-
-    //The if statement from line 6-10 opens the file and reports an error if it doesn't exist.   
-
-    if ((file = fopen(file_name, "rb")) == NULL) {
-	printf("File Not Found : %s\n", file_name);
-	exit(1);
-    }
-    //Line 11 allocates the correct number of bytes for the size and depth of the image.  Remember, our image depth will usually be 3 -- one 'channel' each for red, green and blue values.   
-    //Lines 13-18 check if the memory was allocated correctly and quit the program if there was a problem. 
-
-    raw_bitmap = N_GNEW(width * height * depth, GLubyte);
-
-    if (raw_bitmap == NULL) {
-	printf("Cannot allocate memory for texture\n");
-	fclose(file);
-	exit(1);
-    }
-    //Line 19 reads the required number of bytes from the file and places them into our glubyte array.  Line 20 closes the close as it isn't required anymore.   
-    fread(raw_bitmap, width * height * depth, 1, file);
-    fclose(file);
-
-    //Lines 22-25 set the texture's mapping type and environment settings.  GL_TEXTURE_MAG_FILTER and GL_TEXTURE_MIN_FILTER are enumerands that let us change the way in which opengl magnifies and minifies the texture.  If we passed GL_LINEAR to the function, our texture would be interpolated using bilinear filtering (in other words, it'd appear smoothed).  If we passed GL_NEAREST then no smoothing would occur.  By passing GL_MODULATE to the texture environment function, we tell opengl to blend the texture with the base colour of the object.  Had we specified GL_DECAL or GL_REPLACE then the base colour (and therefore our lighting effect) would be replaced purely with the colours of the texture. 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter_type);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter_type);
-
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-    //Line 27 passes the image to opengl using the function gluBuild2DMipmaps.
-    //Read a graphics book for a description of mipmaps.
-    //This function will also resize the texture map if it doesn't conform 
-    //to the opengl restriction of height and width values being a power of 2.   
-    gluBuild2DMipmaps(GL_TEXTURE_2D, colour_type, width, height,
-		      colour_type, GL_UNSIGNED_BYTE, raw_bitmap);
-
-    //We don't need our texture in the temporary array anymore as it has been passed to opengl.
-    //We use the standard C library call 'free' to return the allocated memory.  
-    free(raw_bitmap);
-}
-#endif
 
 //Draws a ellpise made out of points.
 //void DrawEllipse(xdot_point* xpoint,GLfloat xradius, GLfloat yradius,int filled)
-void DrawEllipse(xdot_op * op, int param)
+void DrawEllipse(sdot_op*  o, int param)
 {
     //to draw a circle set xradius and yradius same values
     GLfloat x, y, xradius, yradius;
     int i = 0;
     int filled;
+	static xdot_op * op;
+	op=&o->op;
+	view->Topview->global_z=view->Topview->global_z+o->layer*LAYER_DIFF;
     set_options((sdot_op *) op, param);
     x = op->u.ellipse.x - dx;
     y = op->u.ellipse.y - dy;
@@ -331,17 +289,21 @@ void DrawEllipse(xdot_op * op, int param)
 	//convert degrees into radians
 	float degInRad = (float) (i * DEG2RAD);
 	glVertex3f((GLfloat) (x + cos(degInRad) * xradius),
-		   (GLfloat) (y + sin(degInRad) * yradius), globalz);
+		   (GLfloat) (y + sin(degInRad) * yradius), view->Topview->global_z);
     }
     glEnd();
 }
 
-static void DrawPolygon(xdot_op * op, int param)
+extern void DrawPolygon(sdot_op * o, int param)
 //void DrawPolygon(xdot_point* xpoint,int count, int filled)
 {
     int i = 0;
     int filled;
-    //SelectPolygon((sdot_op *) op);
+	static xdot_op * op;
+	op=&o->op;
+	view->Topview->global_z=view->Topview->global_z+o->layer*LAYER_DIFF;
+
+	//SelectPolygon((sdot_op *) op);
     set_options((sdot_op *) op, param);
 
     if (op->kind == xd_filled_polygon) {
@@ -373,15 +335,19 @@ static void DrawPolygon(xdot_op * op, int param)
     for (i = 0; i < op->u.polygon.cnt; i = i + 1) {
 	glVertex3f((GLfloat) op->u.polygon.pts[i].x - dx,
 		   (GLfloat) op->u.polygon.pts[i].y - dy,
-		   (GLfloat) op->u.polygon.pts[i].z + globalz);
+		   (GLfloat) op->u.polygon.pts[i].z + view->Topview->global_z);
     }
-    glVertex3f((GLfloat) op->u.polygon.pts[0].x - dx, (GLfloat) op->u.polygon.pts[0].y - dy, (GLfloat) op->u.polygon.pts[0].z + globalz);	//close the polygon
+    glVertex3f((GLfloat) op->u.polygon.pts[0].x - dx, (GLfloat) op->u.polygon.pts[0].y - dy, (GLfloat) op->u.polygon.pts[0].z + view->Topview->global_z);	//close the polygon
     glEnd();
 }
 
-void DrawPolyline(xdot_op * op, int param)
+void DrawPolyline(sdot_op* o, int param)
 {
     int i = 0;
+	static xdot_op * op;
+	op=&o->op;
+	view->Topview->global_z=view->Topview->global_z+o->layer*LAYER_DIFF;
+
     if (param == 0)
 	glColor4f(view->penColor.R, view->penColor.G, view->penColor.B,
 		  view->penColor.A);
@@ -395,106 +361,85 @@ void DrawPolyline(xdot_op * op, int param)
     for (i = 0; i < op->u.polyline.cnt; i = i + 1) {
 	glVertex3f((GLfloat) op->u.polyline.pts[i].x - dx,
 		   (GLfloat) op->u.polyline.pts[i].y - dy,
-		   (GLfloat) op->u.polyline.pts[i].z + globalz);
+		   (GLfloat) op->u.polyline.pts[i].z + view->Topview->global_z);
     }
     glEnd();
 }
 
-#ifdef UNUSED
-static void
-DrawBitmap(GLfloat bmpX, GLfloat bmpY, GLfloat bmpW, GLfloat bmpH)
+void SetFillColor(sdot_op*  o, int param)
 {
-    if (view->texture)
-	glEnable(GL_TEXTURE_2D);
-    else
-	glDisable(GL_TEXTURE_2D);
-/*	glRasterPos2d(bmpX,bmpY);
-	  glBitmap( bmpW,bmpH,0.0,0.0,0.0,0.0, 1); */
-    glBegin(GL_QUADS);
-    glTexCoord2d(bmpX, bmpY);
-    glVertex2d(bmpX, bmpY);
-    glTexCoord2d(bmpX + bmpW, bmpY);
-    glVertex2d(bmpX + bmpW, bmpY);
-    glTexCoord2d(bmpX + bmpW, bmpY + bmpH);
-    glVertex2d(bmpX + bmpW, bmpY + bmpH);
-    glTexCoord2d(bmpX, bmpY + bmpH);
-    glVertex2d(bmpX, bmpY + bmpH);
-    glEnd();
-    glDisable(GL_TEXTURE_2D);
-}
-#endif
-
-void SetFillColor(xdot_op * op, int param)
-{
-    RGBColor c;
-    c = GetRGBColor(op->u.color);
+	glCompColor c;
+	static xdot_op * op;
+	op=&o->op;
+    c = GetglCompColor(op->u.color);
     view->fillColor.R = c.R;
     view->fillColor.G = c.G;
     view->fillColor.B = c.B;
     view->fillColor.A = c.A;
 }
-void SetPenColor(xdot_op * op, int param)
+void SetPenColor(sdot_op* o, int param)
 {
-    RGBColor c;
-    c = GetRGBColor(op->u.color);
+    glCompColor c;
+	static xdot_op * op;
+	op=&o->op;
+    c = GetglCompColor(op->u.color);
     view->penColor.R = c.R;
     view->penColor.G = c.G;
     view->penColor.B = c.B;
     view->penColor.A = c.A;
 }
 
-void SetStyle(xdot_op * op, int param)
+void SetStyle(sdot_op* o, int param)
 {
+	static xdot_op * op;
+	op=&o->op;
 
 
 }
 
-static void SetFont(xdot_op * op, int param)
+static sdot_op * font_op;
+
+void SetFont(sdot_op * o, int param)
 {
-    //activate the right font
-/*	view->widgets->fontset->activefont=add_font(view->widgets->fontset,op->u.font.name);//load or set active font
-	view->FontSize =  op->u.font.size;*/
+	font_op=o;
 }
 
-void InsertImage(xdot_op * op, int param)
+void InsertImage(sdot_op * o, int param)
 {
-    //   SelectImage((sdot_op *) op);
-
 }
-void EmbedText(xdot_op * op, int param)
+void EmbedText(sdot_op* o, int param)
 {
-    /*use gl pango fonts */
+	GLfloat x,y;
+	glColor4f(view->penColor.R,view->penColor.G,view->penColor.B,view->penColor.A);
+	view->Topview->global_z=view->Topview->global_z+o->layer*LAYER_DIFF+0.05;
+	switch (o->op.u.text.align)
+	{
+		case xd_left:
+			x=o->op.u.text.x ;
+			break;
+		case xd_center:
+			x=o->op.u.text.x - o->op.u.text.width / 2.0;
+			break;
+		case xd_right:
+			x=o->op.u.text.x - o->op.u.text.width;
+			break;
+
+	}
+	y=o->op.u.text.y;
+	if (o->font)
+		glCompDrawText3D(o->font,x,y,view->Topview->global_z,o->op.u.text.width,font_op->op.u.font.size);
+	else
+	{
+		o->font=new_font(
+		view->widgets,
+		o->op.u.text.text,
+		&view->penColor,
+		pangotext,
+		font_op->op.u.font.name,font_op->op.u.font.size,0);
+		//new_font(glCompSet * s, char *text, glCompColor * c, glCompFontType type, char *fontdesc, int fs)*/
 
 
-
-
-
-#ifdef UNUSED
-    GLfloat x;
-//    SelectText((sdot_op *) op);
-    set_options((sdot_op *) op, param);
-    if (op->u.text.align == 1)
-	x = (GLfloat) op->u.text.x - (GLfloat) (op->u.text.width / 2.0);
-    if (op->u.text.align == 0)
-	x = (GLfloat) op->u.text.x;
-    if (op->u.text.align == -1)
-	x = (GLfloat) op->u.text.x + op->u.text.width;
-    view->widgets->fontset->fonts[view->widgets->fontset->activefont]->
-	fontheight = view->FontSize;
-    if (param == 0)
-	fontColor(view->widgets->fontset->
-		  fonts[view->widgets->fontset->activefont],
-		  view->penColor.R, view->penColor.G, view->penColor.B, 1);
-    if (param == 1)		//selected
-	fontColor(view->widgets->fontset->
-		  fonts[view->widgets->fontset->activefont],
-		  view->selectedNodeColor.R, view->selectedNodeColor.G,
-		  view->selectedNodeColor.B, 1);
-    glprintf(view->widgets->fontset->
-	     fonts[view->widgets->fontset->activefont], (x - dx),
-	     (GLfloat) op->u.text.y - dy, (GLfloat) 0,
-	     (GLfloat) op->u.text.width, op->u.text.text);
-#endif
+	}
 }
 
 void draw_selection_box(ViewInfo * view)
@@ -511,15 +456,15 @@ void draw_selection_box(ViewInfo * view)
 	}
 	glBegin(GL_LINE_STRIP);
 	glVertex3f((GLfloat) view->GLx, (GLfloat) view->GLy,
-		   (GLfloat) 0.001 + globalz);
+		   (GLfloat) 0.001 + view->Topview->global_z);
 	glVertex3f((GLfloat) view->GLx, (GLfloat) view->GLy2,
-		   (GLfloat) 0.001 + globalz);
+		   (GLfloat) 0.001 + view->Topview->global_z);
 	glVertex3f((GLfloat) view->GLx2, (GLfloat) view->GLy2,
-		   (GLfloat) 0.001 + globalz);
+		   (GLfloat) 0.001 + view->Topview->global_z);
 	glVertex3f((GLfloat) view->GLx2, (GLfloat) view->GLy,
-		   (GLfloat) 0.001 + globalz);
+		   (GLfloat) 0.001 + view->Topview->global_z);
 	glVertex3f((GLfloat) view->GLx, (GLfloat) view->GLy,
-		   (GLfloat) 0.001 + globalz);
+		   (GLfloat) 0.001 + view->Topview->global_z);
 	glEnd();
 	if (view->mouse.mouse_mode == 5)
 	    glDisable(GL_LINE_STIPPLE);
@@ -587,7 +532,7 @@ void draw_circle(float originX, float originY, float radius)
 	 angle += (float) 0.1) {
 	vectorX = originX + radius * (float) sin(angle);
 	vectorY = originY + radius * (float) cos(angle);
-	glVertex3d(vectorX1, vectorY1, globalz);
+	glVertex3d(vectorX1, vectorY1, view->Topview->global_z);
 	vectorY1 = vectorY;
 	vectorX1 = vectorX;
     }
@@ -659,13 +604,13 @@ void drawBorders(ViewInfo * view)
     sdot_op *op;
 	//to avoid the overlapping , z is slightly increased for each xdot of a particular object
 	if (AGTYPE(p)==AGEDGE)
-		globalz=1;	
+		view->Topview->global_z=1;	
 	else
-		globalz=0;	
+		view->Topview->global_z=0;	
 
 	for (id = 0; id < xDot->cnt; id++)
 	{
-		globalz +=  (float)GLOBAL_Z_OFFSET;
+		view->Topview->global_z +=  (float)GLOBAL_Z_OFFSET;
 		op = ops + id;
 		op->obj = p;
 		op->op.drawfunc(&(op->op), param);
@@ -760,9 +705,9 @@ static void scanXdot(xdot * xDot, void *p)
     for (id = 0; id < xDot->cnt; id++) {
 	op = ops + id;
 	op->obj = p;
-	if (op->op.kind == xd_font) {
+/*	if (op->op->kind == xd_font) {
 //                      add_font(view->widgets->fontset,op->op.u.font.name,op->op.u.font.size);//load or set active font
-	}
+	}*/
     }
 
 }
@@ -807,7 +752,7 @@ void scanGraph(Agraph_t * g)
     }
 
 }
-int randomize_color(RGBColor * c, int brightness)
+int randomize_color(glCompColor * c, int brightness)
 {
     float R, B, G;
     float add;
@@ -835,7 +780,7 @@ void drawCircle(float x, float y, float radius, float zdepth)
 	float degInRad = (float) (i * DEG2RAD);
 	glVertex3f((GLfloat) (x + cos(degInRad) * radius),
 		   (GLfloat) (y + sin(degInRad) * radius),
-		   (GLfloat) zdepth + globalz);
+		   (GLfloat) zdepth + view->Topview->global_z);
     }
 
     glEnd();
@@ -854,10 +799,10 @@ drawfunc_t OpFns[] = {
     InsertImage,
 };
 
-RGBColor GetRGBColor(char *color)
+glCompColor GetglCompColor(char *color)
 {
     gvcolor_t cl;
-    RGBColor c;
+    glCompColor c;
     if (color != '\0') {
 	colorxlate(color, &cl, RGBA_DOUBLE);
 	c.R = (float) cl.u.RGBA[0];
@@ -881,7 +826,7 @@ void drawEllipse(float xradius, float yradius, int angle1, int angle2)
 	//convert degrees into radians
 	float degInRad = (float) i * (float) DEG2RAD;
 	glVertex3f((GLfloat) (cos(degInRad) * xradius),
-		   (GLfloat) (sin(degInRad) * yradius), globalz);
+		   (GLfloat) (sin(degInRad) * yradius), view->Topview->global_z);
     }
 
     glEnd();

@@ -32,7 +32,6 @@ extern "C" {
     void preparetopview(Agraph_t * g, topview * t);
     void update_topview(Agraph_t * g, topview * t, int init);
     void drawTopViewGraph(Agraph_t * g);
-    int set_update_required(topview * t);
     int move_TVnodes(void);
     void local_zoom(topview * t);
     void originate_distorded_coordinates(topview * t);

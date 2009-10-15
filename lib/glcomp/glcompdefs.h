@@ -185,6 +185,7 @@ extern "C" {
 	GLfloat G;
 	GLfloat B;
 	GLfloat A;		//Alpha
+	int tag;
     } glCompColor;
 
 
@@ -218,6 +219,7 @@ extern "C" {
 	int size;
 	int reference;		/*if font has references to parent */
 	glCompJustify justify;
+	int is2D;
 	int optimize;
     } glCompFont;
 

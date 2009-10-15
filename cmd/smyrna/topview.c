@@ -50,17 +50,15 @@ static int draw_topview_edge_label(topview_edge * e, float zdepth);
 static int node_visible(topview_node * n);
 static int select_topview_node(topview_node * n);
 static int get_color_from_edge(topview_edge * e);
-static void draw_xdot_set(xdot_set * s);
-static xdot_set *init_xdot_set();
-static void free_xdotset(xdot_set * s);
-static void add_to_xdot_set(xdot_set * s, xdot * x);
+static void draw_tv_xdot(topview* t);
+static void draw_xdot(xdot* x,float base_z);
+
 
 
 void cleartopview(topview * t)
 {
     free(t->Nodes);
     free(t->Edges);
-    free_xdotset(t->xdot_list);
 
 }
 static void init_element_data(element_data * d)
@@ -90,7 +88,7 @@ static void setpositioninfo(float *x, float *y, float *z, char *buf)
     sscanf(buf, "%f,%f,%f", x, y, z);
 }
 
-static void setRGBcolor(RGBColor * c, char *colorstr)
+static void setglCompColor(glCompColor * c, char *colorstr)
 {
     gvcolor_t cl;
     /*if node has color attribute */
@@ -214,7 +212,7 @@ static int visible(void *obj, Agsym_t * vattr, Agsym_t * sattr)
 void settvcolorinfo(Agraph_t * g, topview * t)
 {
     int ind;
-    RGBColor color;
+    glCompColor color;
     topview_node *np;
     topview_edge *ep;
     Agsym_t *sel = agattr(g, AGNODE, "selected", 0);
@@ -228,7 +226,7 @@ void settvcolorinfo(Agraph_t * g, topview * t)
     /*loop nodes */
     for (ind = 0; ind < t->Nodecount; ind++) {
 	np = t->Nodes + ind;
-	setRGBcolor(&color, agget(np->Node, "color"));
+	setglCompColor(&color, agget(np->Node, "color"));
 	np->Color = color;
 
 	/*while in the loop why dont we set some smyrna settings from graph? selected , highlighted , visible */
@@ -249,7 +247,7 @@ void settvcolorinfo(Agraph_t * g, topview * t)
 	ep = t->Edges + ind;
 	if (ecolor && (color_string = agxget(ep->Edge, ecolor))
 	    && (*color_string != '\0'))
-	    setRGBcolor(&color, color_string);
+	    setglCompColor(&color, color_string);
 	else {			/*use color theme */
 	    getcolorfromschema(view->colschms, ep->length, t->maxedgelen,
 			       &color);
@@ -267,21 +265,35 @@ void settvcolorinfo(Agraph_t * g, topview * t)
 
 static xdot *parseXdotwithattr(void *p, char *attr)
 {
-    xdot *xDot;
-    if ((xDot = parseXDotF(agget(p, attr), OpFns, sizeof(xdot_op))))
+	int ind=0;
+	xdot *xDot;
+	xdot_op* x_op;
+	sdot_op* s_op;
+    xDot = parseXDotF(agget(p, attr), OpFns, sizeof(sdot_op));
+	if (!xDot)
+			return NULL;
+	for (ind ; ind < xDot->cnt; ind ++)
+	{
+		x_op=&(xDot->ops[ind]);
+		s_op=(sdot_op*)x_op;
+		s_op->font=NULL;
+		s_op->layer=ind;
+	}
 	return xDot;
-    else
-	return NULL;
 }
 
-static void parseXdotwithattrs(void *e, xdot_set * s)
+static xdot* parseXdotwithattrs(void *e)
 {
-    add_to_xdot_set(s, parseXdotwithattr(e, "_draw_"));
-    add_to_xdot_set(s, parseXdotwithattr(e, "_ldraw_"));
-    add_to_xdot_set(s, parseXdotwithattr(e, "_hdraw_"));
-    add_to_xdot_set(s, parseXdotwithattr(e, "_tdraw_"));
-    add_to_xdot_set(s, parseXdotwithattr(e, "_hldraw_"));
-    add_to_xdot_set(s, parseXdotwithattr(e, "_tldraw_"));
+	
+	xdot* xDot=NULL;
+	xDot=parseXDotFOn (agget(e,"_draw_" ), OpFns,sizeof(sdot_op), xDot);
+	xDot=parseXDotFOn (agget(e,"_ldraw_" ), OpFns,sizeof(sdot_op), xDot);
+	xDot=parseXDotFOn (agget(e,"_hdraw_" ), OpFns,sizeof(sdot_op), xDot);
+	xDot=parseXDotFOn (agget(e,"_tdraw_" ), OpFns,sizeof(sdot_op), xDot);
+	xDot=parseXDotFOn (agget(e,"_hldraw_" ), OpFns,sizeof(sdot_op), xDot);
+	xDot=parseXDotFOn (agget(e,"_tldraw_" ), OpFns,sizeof(sdot_op), xDot);
+	return xDot;
+
 }
 
 void settvxdot(Agraph_t * g, topview * t)
@@ -291,13 +303,16 @@ void settvxdot(Agraph_t * g, topview * t)
     topview_node *np;
     topview_edge *ep;
     int ind;
-    for (ind = 0; ind < t->Nodecount; ind++) {
-	np = &t->Nodes[ind];
-	parseXdotwithattrs(np->Node, t->xdot_list);
+	t->xDot=parseXdotwithattrs(view->g[view->activeGraph]);
+	for (ind = 0; ind < t->Nodecount; ind++) 
+	{
+		np = &t->Nodes[ind];
+		np->xDot=parseXdotwithattrs(np->Node);
     }
-    for (ind = 0; ind < t->Edgecount; ind++) {
-	ep = &t->Edges[ind];
-	parseXdotwithattrs(ep->Edge, t->xdot_list);
+    for (ind = 0; ind < t->Edgecount; ind++) 
+	{
+		ep = &t->Edges[ind];
+		ep->xDot=parseXdotwithattrs(ep->Edge);
     }
 }
 void init_node_size(Agraph_t * g, topview * t)
@@ -329,12 +344,9 @@ void update_topview(Agraph_t * g, topview * t, int init)
 
     if (init)
 	preparetopview(g, t);
-    free_xdotset(view->Topview->xdot_list);
-    t->xdot_list = init_xdot_set();
     settvposinfo(g, t);
     settvcolorinfo(g, t);
     set_boundaries(t);
-    set_update_required(t);
     settvxdot(view->g[view->activeGraph], view->Topview);
     init_node_size(g, t);
     /*This is a temp code , need to be removed after Xue's demo */
@@ -810,7 +822,7 @@ void drawTopViewGraph(Agraph_t * g)
     drawtopviewedges(g);
     drawtopviewedgelabels(g);
     enddrawcycle(g);
-    draw_xdot_set(view->Topview->xdot_list);
+	draw_tv_xdot(view->Topview);
     draw_node_hint_boxes();
     if ((view->Selection.Active > 0) && (!view->SignalBlock)) {
 	view->Selection.Active = 0;
@@ -898,7 +910,7 @@ static int select_topview_node(topview_node * n)
     float X, Y, W, H;		//selection boundries
     int Anti;			//subtract selections if 1
     int AlreadySelected;	//for single selections to avoid selecting more than one object
-    RGBColor SelectionColor;
+    glCompColor SelectionColor;
 */
 
 
@@ -963,22 +975,6 @@ static int select_topview_edge(topview_edge * e)
 #endif
 
 
-int set_update_required(topview * t)
-{
-    int i = 0;
-    int ilimit;
-    ilimit = (t->Nodecount > t->Edgecount) ? t->Nodecount : t->Edgecount;
-
-    for (i = 0; i < ilimit; i++) {
-	if (t->Nodecount > i)
-
-	    t->Nodes[i].update_required = 1;
-	if (t->Edgecount > i)
-	    t->Edges[i].update_required = 1;
-    }
-    return 1;
-
-}
 
 float calculate_font_size(topview_node * v)
 {
@@ -1362,70 +1358,37 @@ void select_with_regex(char *exp)
 }
 
 
-struct xdot_set {
-    Dt_t *objs;			/* original graph object (node edge graph) */
-    Dt_t *xdots;		/* xdot collection */
-};
-
-
-static Dtdisc_t qDisc = {
-    offsetof(xdot, ops),
-    sizeof(xdot_op *),
-    -1,
-    NIL(Dtmake_f),
-    NIL(Dtfree_f),
-    NIL(Dtcompar_f),
-    NIL(Dthash_f),
-    NIL(Dtmemory_f),
-    NIL(Dtevent_f)
-};
-
-static xdot_set *init_xdot_set()
+static void draw_xdot(xdot* x,float base_z)
 {
-    xdot_set *rv;
-    rv = NEW(xdot_set);
-    rv->objs = NULL;
-    rv->xdots = dtopen(&qDisc, Dtqueue);
+	int i;
+	sdot_op *op;
+	if (!x)
+		return;
 
-    return rv;
+	view->Topview->global_z=base_z;
+
+	op=(sdot_op*)x->ops;
+	for (i=0; i < x->cnt; i++,op++)
+	{
+		if(op->op.drawfunc)
+			op->op.drawfunc(&op->op,0);
+	}
+
+
 }
 
-static void add_to_xdot_set(xdot_set * s, xdot * x)
-{
-    dtinsert(s->xdots, x);
-}
 
-#ifdef UNUSED
-static xdot *remove_from_xdot_set(xdot_set * s)
-{
-    return (xdot *) dtdelete(s->xdots, NULL);
-}
-#endif
-
-static void free_xdotset(xdot_set * s)
-{
-    if (!s)
-	return;
-    if (s->objs)
-	dtclose(s->objs);
-    if (s->xdots)
-	dtclose(s->xdots);
-    free(s);
-}
-
-static void draw_xdot_set(xdot_set * s)
+static void draw_tv_xdot(topview* t)
 {
     int j;
-    xdot *x;
-
-    for (x = (xdot *) dtfirst(s->xdots); x;
-	 x = (xdot *) dtnext(s->xdots, x)) {
-	xdot_op *op = x->ops;
-	for (j = 0; j < x->cnt; j++, op++) {
-	    if (op->drawfunc)
-		op->drawfunc(op, 0);
-	}
-    }
+	float basez=0;
+	draw_xdot(t->xDot,basez);
+	basez= basez+0.01;
+	for (j=0; j < t->Nodecount; j++)
+		draw_xdot(t->Nodes[j].xDot,basez);
+	basez = basez+0.001;
+	for (j=0; j < t->Edgecount; j++)
+		draw_xdot(t->Edges[j].xDot,basez);
 }
 
 void setMultiedges(Agraph_t * g, char *attrname)

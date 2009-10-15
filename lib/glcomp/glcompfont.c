@@ -195,8 +195,7 @@ void delete_font(glCompFont * f)
 
 }
 
-glCompFont *new_font(glCompSet * s, char *text, glCompColor * c,
-		     glCompFontType type, char *fontdesc, int fs)
+glCompFont *new_font(glCompSet * s, char *text, glCompColor * c,glCompFontType type, char *fontdesc, int fs,int is2D)
 {
     glCompFont *font = NEW(glCompFont);
     font->reference = 0;
@@ -219,7 +218,7 @@ glCompFont *new_font(glCompSet * s, char *text, glCompColor * c,
     if (text)
 	font->tex =
 	    glCompSetAddNewTexLabel(s, font->fontdesc, font->size, text,
-				    1);
+				    is2D);
     return font;
 
 }
@@ -247,12 +246,13 @@ glCompFont *new_font_from_parent(glCompObj * o, char *text)
 	font->justify.VJustify = parent->font->justify.VJustify;
 	font->justify.HJustify = parent->font->justify.HJustify;
 	font->optimize = parent->font->optimize;
+	font->is2D=parent->font->is2D;
 	if (text) {
 	    if (strlen(text))
 		font->tex =
 		    glCompSetAddNewTexLabel(parent->compset,
 					    font->fontdesc, font->size,
-					    text, 1);
+					    text, parent->font->is2D);
 	}
     } else {			/*no parent */
 
@@ -263,7 +263,7 @@ glCompFont *new_font_from_parent(glCompObj * o, char *text)
 	c.A = GLCOMPSET_FONT_COLOR_ALPHA;
 	font =
 	    new_font(o->common.compset, text, &c, pangotext,
-		     GLCOMPSET_FONT_DESC, GLCOMPSET_FONT_SIZE);
+		     GLCOMPSET_FONT_DESC, GLCOMPSET_FONT_SIZE,1);
     }
     return font;
 }
@@ -376,6 +376,35 @@ void fontColor(glCompFont * font, float r, float g, float b, float a)
     font->color.A = a;
 }
 
+
+/*texture base 3d text rendering*/
+void glCompDrawText3D(glCompFont * f,GLfloat x,GLfloat y,GLfloat z,GLfloat w,GLfloat h)
+{
+	glEnable(GL_BLEND);		// Turn Blending On
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glBindTexture(GL_TEXTURE_2D,f->tex->id);
+	glBegin(GL_QUADS);
+		glTexCoord2d(0.0f, 1.0f);glVertex3d(x,y,z);
+		glTexCoord2d(1.0f, 1.0f);glVertex3d(x+w,y,z);
+		glTexCoord2d(1.0f, 0.0f);glVertex3d(x+w,y+h,z);
+		glTexCoord2d(0.0f, 0.0f);glVertex3d(x,y+h,z);
+	glEnd();
+
+	glDisable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+
+}
+/*bitmap base 2D text rendering */
+void glCompDrawText(glCompFont * f,GLfloat x,GLfloat y)
+{
+    glRasterPos2f(x, y);
+    glDrawPixels(f->tex->width, f->tex->height, GL_RGBA, GL_UNSIGNED_BYTE,
+		 f->tex->data);
+}
+
+/*text rendering functions, depends on a globject to retrieve stats*/
 void glCompRenderText(glCompFont * f, glCompObj * parentObj)
 {
     static glCompCommon ref;
@@ -412,41 +441,9 @@ void glCompRenderText(glCompFont * f, glCompObj * parentObj)
 	y = ref.refPos.y + (ref.height - f->tex->height) / (GLfloat) 2.0;
 	break;
     }
+	z=ref.refPos.z;
 
     glCompSetColor(&f->color);
-    glRasterPos2f(x, y);
-    glDrawPixels(f->tex->width, f->tex->height, GL_RGBA, GL_UNSIGNED_BYTE,
-		 f->tex->data);
-
-/*	glEnable(GL_BLEND);		// Turn Blending On
-	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_TEXTURE_2D);
-	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glBindTexture(GL_TEXTURE_2D,f->tex->id);
-	glBegin(GL_QUADS);
-		glTexCoord2d(0.0f, 1.0f);glVertex3d(x,y,z);
-		glTexCoord2d(1.0f, 1.0f);glVertex3d(x+w,y,z);
-		glTexCoord2d(1.0f, 0.0f);glVertex3d(x+w,y+h,z);
-		glTexCoord2d(0.0f, 0.0f);glVertex3d(x,y+h,z);
-	glEnd();
-
-	glDisable(GL_TEXTURE_2D);
-    glEnable(GL_BLEND);*/
-
-/*
-		glEnable(GL_BLEND);		// Turn Blending On
-		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_TEXTURE_2D);
-		glColor4f( p->fontColor.R, p->fontColor.G, p->fontColor.B, p->fontColor.A);
-		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		glBindTexture(GL_TEXTURE_2D,((glCompSet*) (p->parentset))->texLabels[p->OGLtexture]->id);
-		glBegin(GL_QUADS);
-			glTexCoord2d(0.0f, 1.0f);glVertex3d(p->pos.x,p->pos.y,GLCOMPSET_BEVEL_DIFF);
-			glTexCoord2d(1.0f, 1.0f);glVertex3d(p->pos.x+w,p->pos.y,GLCOMPSET_BEVEL_DIFF);
-			glTexCoord2d(1.0f, 0.0f);glVertex3d(p->pos.x+w,p->pos.y+h,GLCOMPSET_BEVEL_DIFF);
-			glTexCoord2d(0.0f, 0.0f);glVertex3d(p->pos.x,p->pos.y+h,GLCOMPSET_BEVEL_DIFF);
-		glEnd();
-*/
-
+		glCompDrawText(f,x,y);
 
 }

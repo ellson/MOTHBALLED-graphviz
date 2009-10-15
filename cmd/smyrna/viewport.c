@@ -446,7 +446,7 @@ void init_viewport(ViewInfo * view)
     view->Selection.Anti = 0;
     view->Topview = GNEW(topview);
     view->Topview->fs = 0;
-    view->Topview->xdot_list = NULL;
+    view->Topview->xDot=NULL;
 
     /* init topfish parameters */
     view->Topview->parms.level.num_fine_nodes = 10;
@@ -995,7 +995,7 @@ float interpol(float minv, float maxv, float minc, float maxc, float x)
     return ((x - minv) * (maxc - minc) / (maxv - minv) + minc);
 }
 void getcolorfromschema(colorschemaset * sc, float l, float maxl,
-			RGBColor * c)
+			glCompColor * c)
 {
     int ind;
     /* float cuml=0.00; */
@@ -1048,7 +1048,7 @@ static void set_color_theme_color(colorschemaset * sc, char **colorstr,
 
 /*typedef struct{
 	float perc;
-	RGBColor c;
+	glCompColor c;
 	int smooth;
 
 }colorschema;
@@ -1127,7 +1127,7 @@ void test_color_pallete()
     float yGAP = 80;
     float x = 50;
     float y = 50;
-    RGBColor c;
+    glCompColor c;
     for (ind = 0; ind < 350; ind++) {
 	getcolorfromschema(view->colschms, ind, 350, &c);
 	x = ind * xGAP;

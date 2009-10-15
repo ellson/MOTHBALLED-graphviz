@@ -50,7 +50,7 @@ extern "C" {
     void fill_key(md5_byte_t * b, md5_byte_t * data);
     colorschemaset *create_color_theme(int themeid);
     extern void getcolorfromschema(colorschemaset * sc, float l,
-				   float maxl, RGBColor * c);
+				   float maxl, glCompColor * c);
 
 
     /* helper functions */
