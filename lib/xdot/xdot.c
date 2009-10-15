@@ -19,7 +19,7 @@
 #include <ctype.h>
 
 #define NEW(t)           (t*)calloc(1, sizeof(t))
-#define N_NEW(n,t)       (t*)calloc((n),sizeof(t))
+#define N_NEW(n,t)       (t*)malloc((n)*sizeof(t))
 
 /* the parse functions should return NULL on error */
 static char *parseReal(char *s, double *fp)
@@ -41,7 +41,7 @@ static char *parseInt(char *s, int *ip)
     if (r != 1) return 0;
     else return (s + sz);
 }
-
+#ifdef UNUSED
 static char *parsePoint(char *s, xdot_point * pp)
 {
     int r, sz;
@@ -50,6 +50,7 @@ static char *parsePoint(char *s, xdot_point * pp)
     pp->z = 0;
     return (s + sz);
 }
+#endif
 
 static char *parseRect(char *s, xdot_rect * rp)
 {
@@ -64,17 +65,29 @@ static char *parsePolyline(char *s, xdot_polyline * pp)
 {
     int i;
     xdot_point *pts;
+    xdot_point *ps;
+    char* endp;
 
     s = parseInt(s, &i);
     if (!s) return s;
-    pts = N_NEW(i, xdot_point);
+    pts = ps = N_NEW(i, xdot_point);
     pp->cnt = i;
     for (i = 0; i < pp->cnt; i++) {
-	s = parsePoint(s, pts + i);
-	if (!s) {
+	ps->x = strtod (s, &endp);
+	if (s == endp) {
 	    free (pts);
 	    return 0;
 	}
+	else
+	    s = endp;
+	ps->y = strtod (s, &endp);
+	if (s == endp) {
+	    free (pts);
+	    return 0;
+	}
+	else
+	    s = endp;
+	ps++;
     }
     pp->pts = pts;
     return s;
