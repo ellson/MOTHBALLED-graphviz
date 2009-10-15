@@ -47,7 +47,7 @@ extern "C" {
 	void draw_sphere(float x, float y, float z, float r);
 
 	/*xdot drawing functions*/
-	extern  void DrawBeziers(sdot_op* o, int param);
+	extern void DrawBeziers(sdot_op* o, int param);
 	extern void DrawEllipse(sdot_op * op, int param);
 	extern void DrawPolygon(sdot_op * op, int param);
 	extern void DrawPolyline(sdot_op * op, int param);

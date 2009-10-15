@@ -199,7 +199,7 @@ static void relocate_spline(sdot_op * sop, int param)
 	}*/
 }
 
-static void DrawBeziers(sdot_op* o, int param)
+void DrawBeziers(sdot_op* o, int param)
 {
     //SEND ALL CONTROL POINTS IN 3D ARRAYS
 
