@@ -272,8 +272,12 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
     N_width = safe_dcl(g, g->proto->n, "width", "", agnodeattr);
     N_height = safe_dcl(g, g->proto->n, "height", "", agnodeattr);
     safe_dcl(g, g->proto->e, "pos", "", agedgeattr);
+    if (GD_has_labels(g) & NODE_XLABEL)
+	safe_dcl(g, g->proto->n, "xlp", "", agnodeattr);
     if (GD_has_labels(g) & EDGE_LABEL)
 	safe_dcl(g, g->proto->e, "lp", "", agedgeattr);
+    if (GD_has_labels(g) & EDGE_XLABEL)
+	safe_dcl(g, g->proto->e, "xlp", "", agedgeattr);
     if (GD_has_labels(g) & HEAD_LABEL)
 	safe_dcl(g, g->proto->e, "head_lp", "", agedgeattr);
     if (GD_has_labels(g) & TAIL_LABEL)
@@ -293,8 +297,12 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
     N_width = safe_dcl(g, AGNODE, "width", "");
     N_height = safe_dcl(g, AGNODE, "height", "");
     safe_dcl(g, AGEDGE, "pos", "");
+    if (GD_has_labels(g) & NODE_XLABEL)
+	safe_dcl(g, AGNODE, "xlp", "");
     if (GD_has_labels(g) & EDGE_LABEL)
 	safe_dcl(g, AGEDGE, "lp", "");
+    if (GD_has_labels(g) & EDGE_XLABEL)
+	safe_dcl(g, AGEDGE, "xlp", "");
     if (GD_has_labels(g) & HEAD_LABEL)
 	safe_dcl(g, AGEDGE, "head_lp", "");
     if (GD_has_labels(g) & TAIL_LABEL)
@@ -326,6 +334,11 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 	sprintf(buf, "%.5g", PS2INCH(ND_lw(n) + ND_rw(n)));
 	agxset(n, N_width, buf);
 #endif
+	if (ND_xlabel(n)) {
+	    ptf = ND_xlabel(n)->pos;
+	    sprintf(buf, "%.5g,%.5g", ptf.x, YFDIR(ptf.y));
+	    agset(n, "xlp", buf);
+	}
 	if (strcmp(ND_shape(n)->name, "record") == 0) {
 	    set_record_rects(n, ND_shape_info(n), &xb);
 	    agxbpop(&xb);	/* get rid of last space */
@@ -401,6 +414,11 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 		    ptf = ED_label(e)->pos;
 		    sprintf(buf, "%.5g,%.5g", ptf.x, YFDIR(ptf.y));
 		    agset(e, "lp", buf);
+		}
+		if (ED_xlabel(e)) {
+		    ptf = ED_xlabel(e)->pos;
+		    sprintf(buf, "%.5g,%.5g", ptf.x, YFDIR(ptf.y));
+		    agset(e, "xlp", buf);
 		}
 		if (ED_head_label(e)) {
 		    ptf = ED_head_label(e)->pos;

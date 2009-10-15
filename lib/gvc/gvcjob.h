@@ -179,11 +179,13 @@ extern "C" {
 
     typedef enum {ROOTGRAPH_OBJTYPE, CLUSTER_OBJTYPE, NODE_OBJTYPE, EDGE_OBJTYPE} obj_type;
 
-    /* See comment in gvrender_core_dot.c */
+    /* If this enum is changed, the implementation of xbuf and xbufs in
+     * gvrender_core_dot.c will probably need to be changed.
+     */
     typedef enum {
 	EMIT_GDRAW, EMIT_CDRAW, EMIT_TDRAW, EMIT_HDRAW, 
-	EMIT_GLABEL, EMIT_CLABEL, EMIT_TLABEL, EMIT_HLABEL,
-	EMIT_NDRAW, EMIT_EDRAW, EMIT_NLABEL, EMIT_ELABEL,  
+	EMIT_GLABEL, EMIT_CLABEL, EMIT_TLABEL, EMIT_HLABEL, 
+	EMIT_NDRAW, EMIT_EDRAW, EMIT_NLABEL, EMIT_ELABEL,
     } emit_state_t;
 
     typedef struct obj_state_s obj_state_t;
@@ -211,6 +213,7 @@ extern "C" {
 
 	/* fully substituted text strings */
 	char *label;
+	char *xlabel;
 	char *taillabel;
 	char *headlabel; 
 

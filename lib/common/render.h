@@ -98,6 +98,7 @@ extern "C" {
     extern void dotneato_args_initialize(GVC_t * gvc, int, char **);
     extern void dotneato_usage(int);
     extern void dotneato_postprocess(Agraph_t *);
+    extern void gv_postprocess(Agraph_t *, int);
     extern void dotneato_set_margins(GVC_t * gvc, Agraph_t *);
     extern void dotneato_write(GVC_t * gvc, graph_t *g);
     extern void dotneato_write_one(GVC_t * gvc, graph_t *g);

@@ -586,8 +586,15 @@ int test_toggle()
     return Tflag;
 }
 
+struct fontinfo {
+    double fontsize;
+    char *fontname;
+    char *fontcolor;
+};
+
 void common_init_node_opt(node_t * n, int shape_init_flag)
 {
+    struct fontinfo fi;
     char *str;
     ND_width(n) =
 	late_double(n, N_width, DEFAULT_NODEWIDTH, MIN_NODEWIDTH);
@@ -600,11 +607,22 @@ void common_init_node_opt(node_t * n, int shape_init_flag)
 #else
     str = agxget(n, N_label);
 #endif
+    fi.fontsize = late_double(n, N_fontsize, DEFAULT_FONTSIZE, MIN_FONTSIZE);
+    fi.fontname = late_nnstring(n, N_fontname, DEFAULT_FONTNAME);
+    fi.fontcolor = late_nnstring(n, N_fontcolor, DEFAULT_COLOR);
     ND_label(n) = make_label((void*)n, str,
 	        ((aghtmlstr(str) ? LT_HTML : LT_NONE) | ( (shapeOf(n) == SH_RECORD) ? LT_RECD : LT_NONE)),
-		late_double(n, N_fontsize, DEFAULT_FONTSIZE, MIN_FONTSIZE),
-		late_nnstring(n, N_fontname, DEFAULT_FONTNAME),
-		late_nnstring(n, N_fontcolor, DEFAULT_COLOR));
+		fi.fontsize, fi.fontname, fi.fontcolor);
+#ifndef WITH_CGRAPH
+    if (N_xlabel && (str = agxget(n, N_xlabel->index)) && (str[0])) {
+#else
+    if (N_xlabel && (str = agxget(e, N_xlabel)) && (str[0])) {
+#endif
+	ND_xlabel(n) = make_label((void*)n, str, (aghtmlstr(str) ? LT_HTML : LT_NONE),
+				fi.fontsize, fi.fontname, fi.fontcolor);
+	GD_has_labels(agraphof(n)) |= NODE_XLABEL;
+    }
+
     ND_showboxes(n) = late_int(n, N_showboxes, 0, 0);
     if (shape_init_flag) ND_shape(n)->fns->initfn(n);
 }
@@ -612,12 +630,6 @@ void common_init_node_opt(node_t * n, int shape_init_flag)
 void common_init_node(node_t * n) {
     common_init_node_opt(n,TRUE);
 }
-
-struct fontinfo {
-    double fontsize;
-    char *fontname;
-    char *fontcolor;
-};
 
 static void initFontEdgeAttr(edge_t * e, struct fontinfo *fi)
 {
@@ -707,6 +719,18 @@ int common_init_edge(edge_t * e)
 	GD_has_labels(sg) |= EDGE_LABEL;
 	ED_label_ontop(e) =
 	    mapbool(late_string(e, E_label_float, "false"));
+    }
+
+#ifndef WITH_CGRAPH
+    if (E_xlabel && (str = agxget(e, E_xlabel->index)) && (str[0])) {
+#else
+    if (E_xlabel && (str = agxget(e, E_xlabel)) && (str[0])) {
+#endif
+	if (!fi.fontname)
+	    initFontEdgeAttr(e, &fi);
+	ED_xlabel(e) = make_label((void*)e, str, (aghtmlstr(str) ? LT_HTML : LT_NONE),
+				fi.fontsize, fi.fontname, fi.fontcolor);
+	GD_has_labels(sg) |= EDGE_XLABEL;
     }
 
 
@@ -1815,6 +1839,9 @@ void gv_cleanup_edge(edge_t * e)
 {
     gv_free_splines(e);
     free_label(ED_label(e));
+    free_label(ED_xlabel(e));
+    free_label(ED_head_label(e));
+    free_label(ED_tail_label(e));
 #ifndef WITH_CGRAPH
     memset(&(e->u), 0, sizeof(Agedgeinfo_t));
 #else /* WITH_CGRAPH */
@@ -1829,6 +1856,7 @@ void gv_cleanup_node(node_t * n)
     if (ND_shape(n))
         ND_shape(n)->fns->freefn(n);
     free_label(ND_label(n));
+    free_label(ND_xlabel(n));
 #ifndef WITH_CGRAPH
     memset(&(n->u), 0, sizeof(Agnodeinfo_t));
 #else /* WITH_CGRAPH */
