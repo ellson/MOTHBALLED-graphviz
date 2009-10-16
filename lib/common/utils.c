@@ -65,30 +65,6 @@ node_t *dequeue(nodequeue * q)
     return n;
 }
 
-#ifndef WITH_CGRAPH
-/* returns index of an attribute if bound, else -1 */
-int late_attr(void *obj, char *name)
-#else /* WITH_CGRAPH */
-/* returns index of an attribute if bound, else NULL */
-attrsym_t* late_attr(void *obj, char *name)
-#endif /* WITH_CGRAPH */
-{
-    attrsym_t *a;
-#ifndef WITH_CGRAPH
-    if ((a = agfindattr(obj, name)) != 0)
-	return a->index;
-#else /* WITH_CGRAPH */
-    if ((a = agget(obj, name)) != 0)
-	return a;
-#endif /* WITH_CGRAPH */
-    else
-#ifndef WITH_CGRAPH
-	return -1;
-#else /* WITH_CGRAPH */
-	return NULL;
-#endif /* WITH_CGRAPH */
-}
-
 int late_int(void *obj, attrsym_t * attr, int def, int low)
 {
     char *p;
@@ -616,7 +592,7 @@ void common_init_node_opt(node_t * n, int shape_init_flag)
 #ifndef WITH_CGRAPH
     if (N_xlabel && (str = agxget(n, N_xlabel->index)) && (str[0])) {
 #else
-    if (N_xlabel && (str = agxget(e, N_xlabel)) && (str[0])) {
+    if (N_xlabel && (str = agxget(n, N_xlabel)) && (str[0])) {
 #endif
 	ND_xlabel(n) = make_label((void*)n, str, (aghtmlstr(str) ? LT_HTML : LT_NONE),
 				fi.fontsize, fi.fontname, fi.fontcolor);

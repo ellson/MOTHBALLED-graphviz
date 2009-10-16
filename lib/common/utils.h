@@ -61,14 +61,11 @@ extern "C" {
     extern void undoClusterEdges(graph_t * g);
 	extern void common_init_node_opt(node_t * n, int shape_init_flag);
 #ifndef WITH_CGRAPH
-    extern int late_attr(void *, char *);
     extern attrsym_t* safe_dcl(graph_t*, void*, char*, char*,
              attrsym_t * (*fun) (Agraph_t *, char *, char *));
 #else
-    extern attrsym_t* late_attr(void *obj, char *name);
     extern attrsym_t* safe_dcl(graph_t * g, int obj_kind, char *name, char *def);
 #endif
-
 
     extern int late_int(void *, Agsym_t *, int, int);
     extern double late_double(void *, Agsym_t *, double, double);
