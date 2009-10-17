@@ -9,7 +9,7 @@ AM_CPPFLAGS = \
 if WITH_SMYRNA
 noinst_HEADERS = glcompbutton.h glcompdefs.h glcomplabel.h \
 	glcomppanel.h glcompset.h glcomptexture.h \
-	glpangofont.h glcomptextpng.h\
+	glpangofont.h glcomptextpng.h glcompfont.h \
 	glutils.h glcompimage.h
 
 noinst_LTLIBRARIES = libglcomp_C.la
