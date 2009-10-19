@@ -264,7 +264,7 @@ static void gen(Excc_t * cc, register Exnode_t * expr)
 	}
 	sfprintf(cc->ccdisc->text, ")");
 	return;
-    case IN:
+    case IN_OP:
         gen(cc, expr->data.variable.index);
 	sfprintf(cc->ccdisc->text, " in %s", expr->data.variable.symbol->name);
 	return;

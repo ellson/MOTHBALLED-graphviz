@@ -183,7 +183,7 @@ static void trace(Expr_t * ex, int lev, char *op, int c)
     case IF:
 	s = " if";
 	break;
-    case IN:
+    case IN_OP:
 	s = " in";
 	break;
     case PRAGMA:

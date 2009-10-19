@@ -110,7 +110,7 @@ extern "C" {
 		x->data.variable.symbol->local.pointer = 0;
 	    }
 	    break;
-	case IN:
+	case IN_OP:
 	case UNSET:
 	    if (x->data.variable.index)
 		exfreenode(p, x->data.variable.index);

@@ -136,7 +136,7 @@
 %binary	<op>	EQ	NE
 %binary	<op>	'<'	'>'	LE	GE
 %left	<op>	LS	RS
-%left	<op>	'+'	'-'     IN
+%left	<op>	'+'	'-'     IN_OP
 %left	<op>	'*'	'/'	'%'
 %right	<op>	'!'	'~'	'#'	UNARY
 %right	<op>	INC	DEC
@@ -939,14 +939,14 @@ expr		:	'(' expr ')'
 			$$ = exnewnode(expr.program, $2, 0, $1->type, $1, NiL);
 			$$->subop = POS;
 		}
-		|	expr IN DYNAMIC
+		|	expr IN_OP DYNAMIC
 		{
 			if ($3->local.pointer == 0)
               			exerror("cannot apply IN to non-array %s", $3->name);
 			if (($3->index_type > 0) && ($1->type != $3->index_type))
             		    exerror("%s indices must have type %s, not %s", 
 				$3->name, extypename(expr.program, $3->index_type),extypename(expr.program, $1->type));
-			$$ = exnewnode(expr.program, IN, 0, INTEGER, NiL, NiL);
+			$$ = exnewnode(expr.program, IN_OP, 0, INTEGER, NiL, NiL);
 			$$->data.variable.symbol = $3;
 			$$->data.variable.index = $1;
 		}

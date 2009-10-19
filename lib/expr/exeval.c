@@ -1208,7 +1208,7 @@ static Extype_t eval(Expr_t * ex, register Exnode_t * expr, void *env)
     case '#':
 	v.integer = dtsize ((Dt_t*)expr->data.variable.symbol->local.pointer);
 	return v;
-    case IN:
+    case IN_OP:
 	v.integer = evaldyn (ex, expr, env, 0);
 	return v;
     case UNSET:

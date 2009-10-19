@@ -49,7 +49,7 @@ Exid_t exbuiltin[] = {
     EX_ID("float", DECLARE, FLOATING, FLOATING, 0),
     EX_ID("gsub", GSUB, GSUB, STRING, 0),
     EX_ID("if", IF, IF, 0, 0),
-    EX_ID("in", IN, IN, 0, 0),
+    EX_ID("in", IN_OP, IN_OP, 0, 0),
     EX_ID("int", DECLARE, INTEGER, INTEGER, 0),
     EX_ID("long", DECLARE, INTEGER, INTEGER, 0),
     EX_ID("print", PRINT, PRINT, INTEGER, 0),
