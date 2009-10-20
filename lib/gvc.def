@@ -162,7 +162,6 @@ insertPS
 isConnected    
 isInPS    
 isPolygon    
-late_attr    
 late_bool    
 late_double    
 late_int    
@@ -334,3 +333,4 @@ parsePackModeInfo
 putRects
 xdotBB
 gvFinalize
+gv_postprocess
