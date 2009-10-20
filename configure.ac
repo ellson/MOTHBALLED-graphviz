@@ -965,13 +965,13 @@ else
             use_perl="No (missing header)"
   	    PERL=
           ])
-#	  save_LDFLAGS=$LDFLAGS
-#	  LDFLAGS="$LDFLAGS $PERL_LIBS"
-#          AC_CHECK_LIB(perl,main,,[
-#            use_perl="No (missing library)"
-#            PERL=
-#          ])
-#	  LDFLAGS=$save_LDFLAGS
+	  save_LDFLAGS=$LDFLAGS
+	  LDFLAGS="$LDFLAGS $PERL_LIBS"
+          AC_CHECK_LIB(perl,main,,[
+            use_perl="No (missing library)"
+            PERL=
+          ])
+	  LDFLAGS=$save_LDFLAGS
 	  CPPFLAGS=$save_CPPFLAGS
 	fi
         if test "x$PERL" != "x"; then
