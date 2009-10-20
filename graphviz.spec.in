@@ -97,7 +97,7 @@ BuildRequires: gts-devel
 %define PHP 1
 %define MYLIBGD 1
 %define GDK_PIXBUF 1
-BuildRequires: gd gd-devel perl-devel php-devel
+BuildRequires: gd gd-devel perl-devel php-devel perl-libs
 %endif
 %endif
 
@@ -141,7 +141,7 @@ BuildRequires: librsvg2-devel
 %if %att_rhel >= 6
 %define PHP 1
 %define GDK_PIXBUF 1
-BuildRequires: gd gd-devel perl-devel php-devel
+BuildRequires: gd gd-devel perl-devel php-devel perl-libs
 %endif
 %endif
 
@@ -201,7 +201,7 @@ BuildRequires: gts-devel
 %endif
 %if %fedora >= 8
 %define R_LANG 1
-BuildRequires: R-devel swig >= 1.3.33
+BuildRequires: R-devel swig >= 1.3.33 perl-libs
 #
 # packaging is ok, but code is not ready for distribution
 #
@@ -274,7 +274,7 @@ BuildRequires: freeglut-devel gts-devel
 %endif
 %if %att_fedora >= 8
 %define R_LANG 1
-BuildRequires: R-devel swig >= 1.3.33
+BuildRequires: R-devel swig >= 1.3.33 perl-libs
 #define GLITZ 1
 # BuildRequires: glitz-devel
 %endif
