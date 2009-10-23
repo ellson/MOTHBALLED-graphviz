@@ -259,8 +259,10 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 	exit (0);
 
     i = gvlayout_select(gvc, gvc->common.cmdname);
-    if (i == NO_SUPPORT)
-	gvlayout_select(gvc, "dot");
+    if (i == NO_SUPPORT) {
+	fprintf(stderr, "There is no layout engine support for \"%s\"\n", gvc->common.cmdname);
+	exit(1);
+    }
 
     /* feed the globals */
     Verbose = gvc->common.verbose;
