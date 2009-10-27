@@ -65,7 +65,7 @@ configure-stamp:
 	--with-gts \
 	--without-ortho \
 	--with-sfdp \
-	--without-smyrna \
+	--with-smyrna \
 	--disable-sharp \
 	--enable-guile \
 	--disable-java \
