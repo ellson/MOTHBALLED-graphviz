@@ -262,7 +262,10 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
     if (i == NO_SUPPORT) {
 	fprintf(stderr, "There is no layout engine support for \"%s\"\n", gvc->common.cmdname);
         if (streq(gvc->common.cmdname, "dot")) {
-	   fprintf(stderr, "Perhaps \"dot -c\" needs to be run by root to register the plugins?\n");
+	    fprintf(stderr, "Perhaps \"dot -c\" needs to be run (with installer's privileges) to register the plugins?\n");
+	}
+	else {
+	    fprintf(stderr, "Use one of:%s\n", gvplugin_list(gvc, API_layout, val));
 	}
 	exit(1);
     }
@@ -344,9 +347,15 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
                 }
                 v = gvlayout_select(gvc, val);
                 if (v == NO_SUPPORT) {
-                    fprintf(stderr, "Layout type: \"%s\" not recognized. Use one of:%s\n",
-                        val, gvplugin_list(gvc, API_layout, val));
-                    exit(1);
+	            fprintf(stderr, "There is no layout engine support for \"%s\"\n", val);
+                    if (streq(val, "dot")) {
+                        fprintf(stderr, "Perhaps \"dot -c\" needs to be run (with installer's privileges) to register the plugins?\n");
+                    }
+		    else {
+                        fprintf(stderr, "Use one of:%s\n",
+				gvplugin_list(gvc, API_layout, val));
+		    }
+		    exit(1);
                 }
 		break;
 	    case 'P':
