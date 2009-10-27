@@ -92,10 +92,12 @@ BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel gtk2-devel
 BuildRequires: librsvg2-devel
 %define SFDP 1
 BuildRequires: gts-devel
+%define SMYRNA 1
+BuildRequires: gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel freeglut-devel
 %endif
 %if %rhel >= 6
 %define PHP 1
-%define MYLIBGD 1
+%define MYLIBGD 0
 %define GDK_PIXBUF 1
 BuildRequires: gd gd-devel perl-devel php-devel perl-libs
 %endif
@@ -191,23 +193,18 @@ BuildRequires: librsvg2-devel
 %if %fedora >= 7
 %define DEVIL 1
 %define GDK_PIXBUF 1
-#define SMYRNA 1
 %define SFDP 1
 %define LASI 1
 BuildRequires: gd gd-devel perl-devel DevIL-devel
 BuildRequires: lasi-devel
 BuildRequires: gts-devel
-#BuildRequires: gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel freeglut-devel
 %endif
 %if %fedora >= 8
 %define R_LANG 1
 BuildRequires: R-devel swig >= 1.3.33 perl-libs
-#
-# packaging is ok, but code is not ready for distribution
-#
-#define SMYRNA 1
-# BuildRequires: gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel
-# BuildREquires: freeglut-devel gts-devel
+%define SMYRNA 1
+BuildRequires: gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel
+BuildREquires: freeglut-devel gts-devel
 #define GLITZ 1
 # BuildRequires: glitz-devel
 %endif
