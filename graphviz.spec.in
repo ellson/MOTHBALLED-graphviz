@@ -338,7 +338,6 @@ fi
 %endif
 %if 0%{?SMYRNA}
 %{_datadir}/graphviz/smyrna
-%{_datadir}/graphviz/examples
 %endif
 
 #-- graphviz-gd rpm --------------------------------------------------
@@ -669,6 +668,9 @@ Some demo graphs for graphviz.
 %defattr(-,root,root,-)
 %dir %{_datadir}/graphviz
 %{_datadir}/graphviz/graphs
+%if 0%{?SMYRNA}
+%{_datadir}/graphviz/examples
+%endif
 
 #-- graphviz-doc rpm ----------------------------------------------
 %package doc
