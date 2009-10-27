@@ -93,13 +93,16 @@ BuildRequires: librsvg2-devel
 %define SFDP 1
 BuildRequires: gts-devel
 %define SMYRNA 1
-BuildRequires: gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel freeglut-devel
+BuildRequires: gtkglarea2-devel gtkglext-devel freeglut-devel
 %endif
 %if %rhel >= 6
 %define PHP 1
+BuildRequires: php-devel
 %define MYLIBGD 0
+BuildRequires: gd gd-devel
 %define GDK_PIXBUF 1
-BuildRequires: gd gd-devel perl-devel php-devel perl-libs
+%define PERL 1
+BuildRequires: perl-devel perl-libs
 %endif
 %endif
 
@@ -131,19 +134,23 @@ BuildRequires: perl ruby ruby-devel guile-devel python python-devel
 %endif
 %if %att_rhel >= 5
 %define JAVA 1
-%define PANGOCAIRO 1
-%define RSVG 1
-%define SMYRNA 1
-BuildRequires: gtkglarea2-devel gtkglext-devel libglade2-devel
-BuildRequires: freeglut-devel gts-devel
 BuildRequires: libtool-ltdl libtool-ltdl-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel java-devel
+%define PANGOCAIRO 1
 BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel gtk2-devel
+%define RSVG 1
 BuildRequires: librsvg2-devel
 %endif
 %if %att_rhel >= 6
 %define PHP 1
+BuildRequires: php-devel
+%define PERL 1
+BuildRequires: perl-devel perl-libs
 %define GDK_PIXBUF 1
-BuildRequires: gd gd-devel perl-devel php-devel perl-libs
+%define MYLIBGD 0
+BuildRequires: gd gd-devel
+%define SMYRNA 1
+BuildRequires: gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel
+BuildRequires: freeglut-devel gts-devel
 %endif
 %endif
 
@@ -191,20 +198,23 @@ BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel lua-devel gtk2-devel
 BuildRequires: librsvg2-devel
 %endif
 %if %fedora >= 7
+%define PERL 1
+BuildRequires: perl-devel
+%define MYLIBGD 0
+BuildRequires: gd gd-devel
 %define DEVIL 1
+BuildRequires: DevIL-devel
 %define GDK_PIXBUF 1
 %define SFDP 1
-%define LASI 1
-BuildRequires: gd gd-devel perl-devel DevIL-devel
-BuildRequires: lasi-devel
 BuildRequires: gts-devel
+%define LASI 1
+BuildRequires: lasi-devel
 %endif
 %if %fedora >= 8
 %define R_LANG 1
 BuildRequires: R-devel swig >= 1.3.33 perl-libs
 %define SMYRNA 1
-BuildRequires: gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel
-BuildREquires: freeglut-devel gts-devel
+BuildRequires: gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel freeglut-devel
 #define GLITZ 1
 # BuildRequires: glitz-devel
 %endif
@@ -262,16 +272,16 @@ BuildRequires: librsvg2-devel
 %if %att_fedora >= 7
 %define DEVIL 1
 %define GDK_PIXBUF 1
-%define SMYRNA 1
 %define SFDP 1
 %define LASI 1
 BuildRequires: gd gd-devel perl-devel DevIL-devel lasi-devel
-BuildRequires: gtkglarea2-devel gtkglext-devel libglade2-devel 
-BuildRequires: freeglut-devel gts-devel
 %endif
 %if %att_fedora >= 8
 %define R_LANG 1
 BuildRequires: R-devel swig >= 1.3.33 perl-libs
+%define SMYRNA 1
+BuildRequires: gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel
+BuildRequires: freeglut-devel gts-devel
 #define GLITZ 1
 # BuildRequires: glitz-devel
 %endif
