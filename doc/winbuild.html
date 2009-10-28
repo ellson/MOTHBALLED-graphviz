@@ -61,11 +61,11 @@ export LDFLAGS="-L$GTKDIR/lib -no-undefined"
 export FONTCONFIG_CFLAGS=-I$GTKDIR/include/
 export FONTCONFIG_LIBS="-L$FONTCONFIGLIBDIR -lfontconfig"
 export FREETYPE2_CFLAGS=-I$FREETYPEINCLUDEDIR
-export FREETYPE2_LIBS="-L$FREETYPELIBDIR
+export FREETYPE2_LIBS=-L$FREETYPELIBDIR
 export PKG_CONFIG=$GTKDIR/bin/pkg-config
 export PKG_CONFIG_PATH=$GTKDIR/lib/pkgconfig
 
-export PANGOFLAGS="--with-fontconfig --with-fontconfiglibdir$FONTCONFIGLIBDIR --with-fontconfigincludedir=$FONTCONFIGINCLUDEDIR --with-pangocairo"
+export PANGOFLAGS="--with-fontconfig --with-fontconfiglibdir=$FONTCONFIGLIBDIR --with-fontconfigincludedir=$FONTCONFIGINCLUDEDIR --with-pangocairo"
 
 </PRE>
 </CODE>
