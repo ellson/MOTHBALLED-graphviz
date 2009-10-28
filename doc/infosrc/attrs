@@ -475,20 +475,22 @@ else the label is centered.
 Note that a subgraph inherits attributes from its parent. Thus, if
 the root graph sets <B>labeljust</B> to "l", the subgraph inherits
 this value.
-:labelloc:GC:string:"t"(clusters)/"b"(root graphs);
-Top/bottom placement of graph and cluster labels.
-If the attribute is "t", place label at the top;
-if the attribute is "b", place label at the bottom.
+:labelloc:NGC:string:"t"(clusters)/"b"(root graphs)/"c"(nodes);
+Vertical placement of labels for nodes, root graphs and clusters.
+<P>
+For graphs and clusters, only "t" and "b" are allowed, corresponding
+to placement at the top and bottom, respectively.
 By default, root
 graph labels go on the bottom and cluster labels go on the top.
 Note that a subgraph inherits attributes from its parent. Thus, if
 the root graph sets <B>labelloc</B> to "b", the subgraph inherits
 this value.
-:labelloc:N:string:"c"(clusters);
-Vertical placement of node label. By default, if the height of a node
-is larger than the height of its label, the label is vertically centered.
+<P>
+For nodes, this attribute is used only when the height of the node
+is larger than the height of its label. 
 If <TT>labelloc</TT> is set to "t", "c", or "b", the label is aligned
 with the top, centered, or aligned with the bottom of the node, respectively.
+In the default case, the label is vertically centered.
 :labeltarget:E:escString:<none>;   map,svg
 If the edge has a <A HREF=#d:URL>URL</A> or <A HREF=#d:labelURL>labelURL</A>
 attribute, this attribute determines which window of the
