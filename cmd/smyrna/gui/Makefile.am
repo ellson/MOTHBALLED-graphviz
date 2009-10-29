@@ -25,4 +25,4 @@ noinst_LTLIBRARIES = libgui_C.la
 endif
 
 libgui_C_la_SOURCES = callbacks.c datalistcallbacks.c filterscallbacks.c \
-	gui.c menucallbacks.c toolboxcallbacks.c beacon.c
+	gui.c menucallbacks.c toolboxcallbacks.c beacon.c frmobjectui.c glcompui.c
