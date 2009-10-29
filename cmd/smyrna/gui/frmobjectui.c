@@ -27,10 +27,22 @@
 #include "frmobjectui.h"
 
 static attr_t* binarySearch( attr_list* l, char* searchKey);
-
+static int get_object_type()
+{
+	if(gtk_toggle_button_get_active((GtkToggleButton*)glade_xml_get_widget(xml, "attrRB0")))
+		return AGRAPH;
+	if(gtk_toggle_button_get_active((GtkToggleButton*)glade_xml_get_widget(xml, "attrRB1")))
+		return AGNODE;
+	if(gtk_toggle_button_get_active((GtkToggleButton*)glade_xml_get_widget(xml, "attrRB2")))
+		return AGEDGE;
+	return -1;
+}
 void free_attr(attr_t* at)
 {
-	free(at->defVal);
+	free(at->defValG);
+	free(at->defValN);
+	free(at->defValE);
+
 	free(at->name);
 	free(at);
 }
@@ -39,10 +51,15 @@ void free_attr(attr_t* at)
 attr_t* new_attr()
 {
 	attr_t* attr=malloc(sizeof(attr_t));
-	attr->defVal=(char*)0;
+	attr->defValG=(char*)0;
+	attr->defValN=(char*)0;
+	attr->defValE=(char*)0;
 	attr->name=(char*)0;
 	attr->value=(char*)0;
 	attr->propagate=0;
+	attr->objType[0]=0;
+	attr->objType[1]=0;
+	attr->objType[2]=0;
 	return attr;
 }
 
@@ -50,8 +67,22 @@ attr_t* new_attr()
 attr_t* new_attr_with_ref(Agsym_t * sym)
 {
 	attr_t* attr=new_attr();
-	attr->defVal=strdup(sym->defval);
 	attr->name=strdup(sym->name);
+	switch (sym->kind)
+	{	
+	case AGRAPH:
+		attr->objType[0]=1;
+		attr->defValG=strdup(sym->defval);
+		break;
+	case AGNODE:
+		attr->objType[1]=1;
+		attr->defValN=strdup(sym->defval);
+		break;
+	case AGEDGE:
+		attr->objType[2]=1;
+		attr->defValE=strdup(sym->defval);
+		break;
+	}
 	return attr;
 }
 
@@ -60,7 +91,9 @@ attr_t* new_attr_ref(attr_t* refAttr)
 {
 	attr_t* attr=malloc(sizeof(attr_t));
 	*attr=*refAttr;
-	attr->defVal=strdup(refAttr->defVal);
+	attr->defValG=strdup(refAttr->defValG);
+	attr->defValN=strdup(refAttr->defValN);
+	attr->defValE=strdup(refAttr->defValE);
 	attr->name=strdup(refAttr->name);
 	if (refAttr->value)
 		attr->value=strdup(refAttr->value);
@@ -133,7 +166,7 @@ attr_list* attr_list_new(Agraph_t * g,int with_widgets )
 			  GDK_SCROLL | GDK_VISIBILITY_NOTIFY_MASK);
 
 			gtk_widget_show((GtkWidget*)l->fLabels[id]);
-			gtk_fixed_put((GtkFixed*)glade_xml_get_widget(xml, "fixed6"),(GtkWidget*)l->fLabels[id],10,48+id * 13);
+			gtk_fixed_put((GtkFixed*)glade_xml_get_widget(xml, "fixed6"),(GtkWidget*)l->fLabels[id],10,110+id * 13);
 		}
 	}
 	return l;
@@ -142,7 +175,10 @@ void print_attr_list(attr_list* l)
 {
 	int id=0;
 	for (id;id < l->attr_count; id ++)
-		printf ("%d  %s %s %d%d%d%d\n",l->attributes[id]->index,l->attributes[id]->name,l->attributes[id]->defVal,l->attributes[id]->objType[0],l->attributes[id]->objType[1],l->attributes[id]->objType[2],l->attributes[id]->objType[3]);
+	{
+		printf ("%d  %s (%d %d %d) \n",l->attributes[id]->index,l->attributes[id]->name,l->attributes[id]->objType[0],l->attributes[id]->objType[1],l->attributes[id]->objType[2]);
+		printf ("defG:%s defN:%s defE:%s\n",l->attributes[id]->defValG,l->attributes[id]->defValN,l->attributes[id]->defValE);
+	}
 }
 
 int attr_compare (const void * a, const void * b)
@@ -201,12 +237,17 @@ static void object_type_helper(char* a,int* t)
 	if (strcmp(a,"GRAPH")==0)
 		t[0]=1;
 	if (strcmp(a,"CLUSTER")==0)
-		t[1]=1;
+		t[0]=1;
 	if (strcmp(a,"NODE")==0)
-		t[2]=1;
+		t[1]=1;
 	if (strcmp(a,"EDGE")==0)
-		t[3]=1;
-
+		t[2]=1;
+	if (strcmp(a,"ANY_ELEMENT")==0)
+	{
+		t[0]=1;
+		t[1]=1;
+		t[2]=1;
+	}
 }
 
 static void set_attr_object_type(char* str,int* t)
@@ -215,7 +256,7 @@ static void set_attr_object_type(char* str,int* t)
 	char* a;
 	a=strtok(str," ");
 	object_type_helper(a,t);
-	while (a=strtok(NULL,","))
+	while (a=strtok(NULL," or "))
 		object_type_helper(a,t);
 
 }
@@ -280,6 +321,8 @@ void create_filtered_list(char* prefix,attr_list* sl,attr_list* tl)
 	int res;
 	char buf[512];
 	attr_t* at;
+	int objKind=get_object_type();
+
 	if (strlen(prefix)==0)
 		return;
 	/*locate first occurance*/
@@ -301,9 +344,9 @@ void create_filtered_list(char* prefix,attr_list* sl,attr_list* tl)
 	{
 		at=sl->attributes[at->index + 1];
 		strncpy ( buf, at->name, strlen(prefix));
-		buf[strlen(prefix)]='\0';;
+		buf[strlen(prefix)]='\0';
 		res=stricmp(prefix,buf);
-		if(res == 0)
+		if((res == 0) && (at->objType[objKind]==1))
 			attr_list_add(tl,new_attr_ref(at));
 	}
 }
@@ -334,12 +377,10 @@ void filter_attributes(char* prefix,topview* t)
 	gtk_widget_set_sensitive(glade_xml_get_widget(xml, "txtDefValue"),1);
 	gtk_widget_show(glade_xml_get_widget(xml, "attrAddBtn"));
 	gtk_widget_hide(glade_xml_get_widget(xml, "attrApplyBtn"));
-	gtk_widget_show(glade_xml_get_widget(xml, "vbox15"));
 
 
 	if(strlen(prefix)==0)
 	{
-		gtk_widget_hide(glade_xml_get_widget(xml, "vbox15"));
 		gtk_widget_hide(glade_xml_get_widget(xml, "attrAddBtn"));
 		gtk_widget_hide(glade_xml_get_widget(xml, "attrApplyBtn"));
 		gtk_widget_hide(glade_xml_get_widget(xml, "attrAddBtn"));
@@ -352,12 +393,17 @@ void filter_attributes(char* prefix,topview* t)
 	{
 		if( stricmp(prefix,fl->attributes[ind]->name)==0)/*an existing attribute*/
 		{
-			gtk_entry_set_text((GtkEntry*)glade_xml_get_widget(xml, "txtDefValue"),fl->attributes[0]->defVal);
+	
+			if(get_object_type()==AGRAPH)
+				gtk_entry_set_text((GtkEntry*)glade_xml_get_widget(xml, "txtDefValue"),fl->attributes[0]->defValG);
+			if(get_object_type()==AGNODE)
+				gtk_entry_set_text((GtkEntry*)glade_xml_get_widget(xml, "txtDefValue"),fl->attributes[0]->defValN);
+			if(get_object_type()==AGEDGE)
+				gtk_entry_set_text((GtkEntry*)glade_xml_get_widget(xml, "txtDefValue"),fl->attributes[0]->defValE);
 			gtk_entry_set_text((GtkEntry*)glade_xml_get_widget(xml, "txtValue"),agget(view->g[view->activeGraph],prefix));
 			gtk_widget_set_sensitive(glade_xml_get_widget(xml, "txtDefValue"),0);
 			gtk_widget_hide(glade_xml_get_widget(xml, "attrAddBtn"));
 			gtk_widget_show(glade_xml_get_widget(xml, "attrApplyBtn"));
-			gtk_widget_hide(glade_xml_get_widget(xml, "vbox15"));
 
 			break;
 
@@ -414,13 +460,14 @@ _BB void on_attrApplyBtn_clicked (GtkWidget * widget, gpointer user_data)
 		}
 	}
 }
+_BB on_attrRB0_clicked (GtkWidget * widget, gpointer user_data)
+{
+	filter_attributes((char*)
+		gtk_entry_get_text((GtkEntry*)glade_xml_get_widget(xml, "txtAttr")),view->Topview);
 
+}
 _BB void on_attrProg_toggled (GtkWidget * widget, gpointer user_data)
 {
-	Agraph_t* g;
-	g=view->g[view->activeGraph];
-	agattr(g,AGNODE,"testattr","def value");
-	agset (view->Topview->Nodes[0].Node,"testattr","different value");
 	printf ("%s \n",agget (view->Topview->Nodes[5].Node,"testattr"));
 
 }
@@ -438,6 +485,8 @@ _BB void on_attrAddBtn_clicked (GtkWidget * widget, gpointer user_data)
 	char* attr_name;
 	char* value;
 	char* defValue;
+	static int objKind;
+
 
 	int prog;
 	topview* t;
@@ -445,6 +494,8 @@ _BB void on_attrAddBtn_clicked (GtkWidget * widget, gpointer user_data)
 	topview_edge* e;
 	Agraph_t* g;
 	attr_t* attr;
+	objKind=get_object_type();
+
 
 	/*values to be applied to selected objects*/
 	attr_name=(char*)gtk_entry_get_text((GtkEntry*)glade_xml_get_widget(xml, "txtAttr"));
@@ -453,48 +504,75 @@ _BB void on_attrAddBtn_clicked (GtkWidget * widget, gpointer user_data)
 	prog=gtk_toggle_button_get_active((GtkToggleButton*)glade_xml_get_widget(xml, "attrProg"));
 	g=view->g[view->activeGraph];
 	t=view->Topview;
-	/*nodes*/
-	for (ind;ind < view->Topview->Nodecount; ind ++)
+	attr=
+	/*try to find first*/
+	attr=binarySearch(t->attributes,attr_name);
+	if(!attr)
 	{
-		n=&t->Nodes[ind];
-		if (n->data.Selected)
-		{
-			cnt++;
-			if (cnt==1)
-			{
-				agattr(g, AGNODE, attr_name,defValue);
-				break;
-
-			}
-
-		}
+		attr=new_attr();
+		attr->index=0;
+		attr->name=strdup(attr_name);
+		attr->type=attr_alpha;
+		attr->value=strdup("");
+		attr->widget=NULL;
+		attr_list_add(t->attributes,attr);
 	}
-	cnt=0;
-	/*edges*/
-	for (ind;ind < view->Topview->Edgecount; ind ++)
-	{
-		e=&t->Edges[ind];
-		if (e->data.Selected)
-		{
-			cnt++;
-			if (cnt==1)
-			{
-				agattr(g, AGEDGE, attr_name,defValue);
-				break;
-			}
-		}
-	}
-
-	attr=new_attr();
-	attr->defVal=strdup("");
-	attr->index=0;
-	attr->name=strdup(attr_name);
 	attr->propagate=0;
-	attr->type=attr_alpha;
-	attr->value=strdup("");
-	attr->widget=NULL;
-	attr_list_add(t->attributes,attr);
+
+	if (objKind==AGRAPH)
+	{
+		agattr(g, AGRAPH, attr_name,defValue);
+		attr->defValG=strdup(defValue);
+		attr->objType[0]=1;
+	}
+
+	/*nodes*/
+	if (objKind==AGNODE)
+	{
+		for (ind;ind < view->Topview->Nodecount; ind ++)
+		{
+			n=&t->Nodes[ind];
+			if (n->data.Selected)
+			{
+				cnt++;
+				if (cnt==1)
+				{
+					agattr(g, AGNODE, attr_name,defValue);
+					break;
+				}
+	
+			}
+		}
+		attr->defValN=strdup(defValue);
+		attr->objType[1]=1;
+
+
+
+	}
+	if (objKind==AGEDGE)
+	{
+	
+		cnt=0;
+		/*edges*/
+		for (ind;ind < view->Topview->Edgecount; ind ++)
+		{
+			e=&t->Edges[ind];
+			if (e->data.Selected)
+			{
+				cnt++;
+				if (cnt==1)
+				{
+					agattr(g, AGEDGE, attr_name,defValue);
+					break;
+				}
+			}
+		}
+		attr->defValE=strdup(defValue);
+		attr->objType[2]=1;
+
+	}
 	filter_attributes(attr_name,view->Topview);
+
 
 }
 
@@ -533,7 +611,9 @@ attr_list* load_attr_list(Agraph_t* g)
 						attr->name=strdup(a);
 						break;
 					case 1: /**/
-						attr->defVal=strdup(a);
+						attr->defValG=strdup(a);
+						attr->defValN=strdup(a);
+						attr->defValE=strdup(a);
 						break;
 					case 2: /**/
 						set_attr_object_type(a,attr->objType);
@@ -576,6 +656,7 @@ attr_list* load_attr_list(Agraph_t* g)
 		}
 	}
 
+	print_attr_list(l);
 	return l;
 }
 

@@ -105,9 +105,11 @@ typedef struct {
 	int index;
 	char* name;
 	char* value;
-	char* defVal;
+	char* defValG;
+	char* defValN;
+	char* defValE;
 	attr_data_type type;
-	int objType[4];
+	int objType[3];
 	GtkWidget* widget;
 	int propagate;
 }attr_t;
