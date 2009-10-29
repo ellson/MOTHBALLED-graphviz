@@ -15,6 +15,7 @@
 **********************************************************/
 
 #include <stdio.h>
+#include <strings.h>
 #include "compat.h"
 #include <stdlib.h>
 #include "gui.h"
@@ -142,7 +143,7 @@ attr_list* attr_list_new(Agraph_t * g,int with_widgets )
 	l->with_widgets=with_widgets;
 	/*create filter widgets*/
 
-			gtk_widget_add_events(glade_xml_get_widget(xml, "frmObject"),
+/*			gtk_widget_add_events(glade_xml_get_widget(xml, "frmObject"),
 			//  GDK_BUTTON_MOTION_MASK      = 1 << 4,
 			  GDK_BUTTON_MOTION_MASK |
 			  GDK_POINTER_MOTION_MASK |
@@ -150,7 +151,7 @@ attr_list* attr_list_new(Agraph_t * g,int with_widgets )
 			  GDK_BUTTON_RELEASE_MASK |
 			  GDK_SCROLL | GDK_VISIBILITY_NOTIFY_MASK);
 
-    g_signal_connect((gpointer)glade_xml_get_widget(xml, "frmObject"), "motion_notify_event",  G_CALLBACK(attr_label_motion), NULL);
+    g_signal_connect((gpointer)glade_xml_get_widget(xml, "frmObject"), "motion_notify_event",  G_CALLBACK(attr_label_motion), NULL);*/
 	if(with_widgets)
 	{
 		for (id ; id < MAX_FILTERED_ATTR_COUNT ; id ++)
@@ -185,7 +186,7 @@ int attr_compare (const void * a, const void * b)
 {
 	attr_t* a1=*(attr_t**)a;
 	attr_t* a2=*(attr_t**)b;
-	return stricmp(a1->name,a2->name);
+	return strcasecmp(a1->name,a2->name);
 }
 
 static void attr_list_sort(attr_list* l)
@@ -269,7 +270,7 @@ static attr_t* binarySearch( attr_list* l, char* searchKey)
 
    while ( low <= high ) {
       middle = ( low + high ) / 2;
-	  res=stricmp(searchKey,l->attributes[middle]->name);
+	  res=strcasecmp(searchKey,l->attributes[middle]->name);
 	  if ( res==0) {
          return l->attributes[middle];
       } 
@@ -298,7 +299,7 @@ static attr_t* pBinarySearch( attr_list* l, char* searchKey)
       middle = ( low + high ) / 2;
 	   strncpy ( buf, l->attributes[middle]->name, strlen(searchKey));
 		buf[strlen(searchKey)]='\0';
-	  res=stricmp(searchKey,buf);
+	  res=strcasecmp(searchKey,buf);
 	  if ( res==0) {
          return l->attributes[middle];
       } 
@@ -337,7 +338,7 @@ void create_filtered_list(char* prefix,attr_list* sl,attr_list* tl)
 		at=sl->attributes[at->index - 1];
 		strncpy ( buf, at->name, strlen(prefix));
 		buf[strlen(prefix)]='\0';;
-		res=stricmp(prefix,buf);
+		res=strcasecmp(prefix,buf);
 	}
 	res=0;
 	while((at->index <sl->attr_count) && (res == 0))
@@ -345,7 +346,7 @@ void create_filtered_list(char* prefix,attr_list* sl,attr_list* tl)
 		at=sl->attributes[at->index + 1];
 		strncpy ( buf, at->name, strlen(prefix));
 		buf[strlen(prefix)]='\0';
-		res=stricmp(prefix,buf);
+		res=strcasecmp(prefix,buf);
 		if((res == 0) && (at->objType[objKind]==1))
 			attr_list_add(tl,new_attr_ref(at));
 	}
@@ -391,7 +392,7 @@ void filter_attributes(char* prefix,topview* t)
 
 	for (ind=0;ind < fl->attr_count;ind++)
 	{
-		if( stricmp(prefix,fl->attributes[ind]->name)==0)/*an existing attribute*/
+		if( strcasecmp(prefix,fl->attributes[ind]->name)==0)/*an existing attribute*/
 		{
 	
 			if(get_object_type()==AGRAPH)
