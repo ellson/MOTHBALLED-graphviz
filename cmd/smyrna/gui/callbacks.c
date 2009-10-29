@@ -234,12 +234,12 @@ _BB void on_hideconsolebtn_clicked(GtkWidget * widget, gpointer user_data)
 _BB void on_consoledecbtn_clicked(GtkWidget * widget, gpointer user_data)
 {
     int w, h;
-    gtk_widget_get_size_request((GtkTextView *)
+    gtk_widget_get_size_request((GtkWidget*)
 				glade_xml_get_widget(xml,
 						     "scrolledwindow7"),
 				&w, &h);
     w = w - 5;
-    gtk_widget_set_size_request(((GtkTextView *)
+    gtk_widget_set_size_request(((GtkWidget*)
 				 glade_xml_get_widget(xml,
 						      "scrolledwindow7")),
 				w, 0);
@@ -248,12 +248,12 @@ _BB void on_consoledecbtn_clicked(GtkWidget * widget, gpointer user_data)
 _BB void on_consoleincbtn_clicked(GtkWidget * widget, gpointer user_data)
 {
     int w, h;
-    gtk_widget_get_size_request((GtkTextView *)
+    gtk_widget_get_size_request((GtkWidget*)
 				glade_xml_get_widget(xml,
 						     "scrolledwindow7"),
 				&w, &h);
     w = w + 5;
-    gtk_widget_set_size_request(((GtkTextView *)
+    gtk_widget_set_size_request(((GtkWidget*)
 				 glade_xml_get_widget(xml,
 						      "scrolledwindow7")),
 				w, 0);

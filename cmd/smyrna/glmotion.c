@@ -93,18 +93,18 @@ void graph_zoom(float real_zoom)
     float old_zoom;
 
     if (view->active_camera == -1)
-	old_zoom = view->zoom;
+		old_zoom = view->zoom;
     else
-	old_zoom = view->cameras[view->active_camera]->r;
+		old_zoom = view->cameras[view->active_camera]->r;
 
     if (real_zoom < view->Topview->fitin_zoom * MAX_ZOOM)
-	real_zoom = (float) view->Topview->fitin_zoom * MAX_ZOOM;
+		real_zoom = (float) view->Topview->fitin_zoom * MAX_ZOOM;
     if (real_zoom > view->Topview->fitin_zoom * MIN_ZOOM)
-	real_zoom = (float) view->Topview->fitin_zoom * MIN_ZOOM;
+		real_zoom = (float) view->Topview->fitin_zoom * MIN_ZOOM;
     if (view->active_camera == -1)
-	view->zoom = real_zoom;
+		view->zoom = real_zoom;
     else
-	view->cameras[view->active_camera]->r = real_zoom * -1;
+		view->cameras[view->active_camera]->r = real_zoom * -1;
     /*adjust pan values */
     view->panx = old_zoom * view->panx / real_zoom;
     view->pany = old_zoom * view->pany / real_zoom;

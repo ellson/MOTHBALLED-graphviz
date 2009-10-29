@@ -25,6 +25,7 @@
 #include "topfisheyeview.h"
 #include "toolboxcallbacks.h"
 #include "viewportcamera.h"
+#include "frmobjectui.h"
 
 
 /* static glCompPanel *controlPanel; */
@@ -169,6 +170,11 @@ void CBglCompMouseRightClick(void *obj, GLfloat x, GLfloat y,
     }
 }
 
+void attrList(void *obj, GLfloat x, GLfloat y, glMouseButtonType t)
+{
+	showAttrsWidget(view->Topview);
+}
+
 
 
 
@@ -231,7 +237,7 @@ glCompSet *glcreate_gl_topview_menu(void)
     rotateBtn = b;
 
 
-    p = glCompPanelNew((glCompObj *) p, 1, 25, 80, 225);
+    p = glCompPanelNew((glCompObj *) p, 1, 25, 80, 255);
     p->common.align = glAlignTop;
     p->common.data = 0;
     p->common.borderWidth = 1;
@@ -243,7 +249,16 @@ glCompSet *glcreate_gl_topview_menu(void)
     c.A = 1.6;
 
     y = 1;
+
     b = glCompButtonNew((glCompObj *) p, 1, y, 42, 42, "");
+    glCompButtonAddPngGlyph(b, smyrnaPath("details.png"));
+    b->common.callbacks.click = attrList;
+    copy_glcomp_color(&c, &b->common.color);
+
+	
+    y = y + off;
+	
+	b = glCompButtonNew((glCompObj *) p, 1, y, 42, 42, "");
     glCompButtonAddPngGlyph(b, smyrnaPath("zoomin.png"));
     b->groupid = 0;
     b->common.callbacks.click = menu_click_zoom_plus;
@@ -272,7 +287,10 @@ glCompSet *glcreate_gl_topview_menu(void)
     copy_glcomp_color(&c, &b->common.color);
 
 
-    y = y + off;
+
+	
+	
+	y = y + off;
 
 
     b = glCompButtonNew((glCompObj *) p, 1, y, 42, 42, "");
@@ -288,6 +306,7 @@ glCompSet *glcreate_gl_topview_menu(void)
     glCompButtonHide(b);
     copy_glcomp_color(&c, &b->common.color);
     to2DBtn = b;
+
 
 
 
@@ -327,7 +346,9 @@ glCompSet *glcreate_gl_topview_menu(void)
     toNormal = b;
 
 
-    p = glCompPanelNew((glCompObj *) p, 25, 0, 52, 110);
+
+	
+	p = glCompPanelNew((glCompObj *) p, 25, 0, 52, 110);
     p->common.align = glAlignTop;
     p->common.data = 0;
     p->common.color.A = 0;

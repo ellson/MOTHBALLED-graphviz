@@ -58,6 +58,7 @@ static void draw_xdot(xdot* x,float base_z);
 void cleartopview(topview * t)
 {
     free(t->Nodes);
+	free_attr_list(t->attributes);
     free(t->Edges);
 
 }
@@ -475,8 +476,9 @@ void preparetopview(Agraph_t * g, topview * t)
     /*hide stupid console window */
     gtk_widget_hide(glade_xml_get_widget(xml, "vbox13"));
     gtk_widget_hide(glade_xml_get_widget(xml, "hbox7"));
-
-
+	/*create attribute list*/
+	t->attributes=load_attr_list(view->g[view->activeGraph]);
+	t->filtered_attr_list=NULL;
 }
 
 

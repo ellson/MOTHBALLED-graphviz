@@ -346,6 +346,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\gui\frmobjectui.c"
+				>
+			</File>
+			<File
 				RelativePath=".\gui\glcompui.c"
 				>
 			</File>

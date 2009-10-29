@@ -42,7 +42,14 @@
 extern "C" {
 #endif
 
-    typedef struct _ArcBall_t ArcBall_t;
+
+#ifdef	WIN32			//this is needed on WIN32 to get libglade see the callback
+#define _BB  __declspec(dllexport)
+#else
+#define _BB
+#endif
+
+typedef struct _ArcBall_t ArcBall_t;
 
 #define IS_TEST_MODE_ON							0
 #define	DEFAULT_MAGNIFIER_WIDTH					300
@@ -86,6 +93,34 @@ extern "C" {
 
 #define SPHERE_SLICE_COUNT 6
 #define DOT_SIZE_CORRECTION_FAC 0.3
+
+
+#define EXPAND_CAPACITY_VALUE 50
+#define DEFAULT_ATTR_LIST_CAPACITY 100
+#define MAX_FILTERED_ATTR_COUNT 50
+
+typedef enum {attr_alpha,attr_float,attr_int,attr_bool,attr_drowdown,attr_color} attr_data_type;
+
+typedef struct {
+	int index;
+	char* name;
+	char* value;
+	char* defVal;
+	attr_data_type type;
+	int objType[4];
+	GtkWidget* widget;
+	int propagate;
+}attr_t;
+
+typedef struct
+{
+	int attr_count;
+	int capacity;
+	attr_t** attributes;
+	GtkLabel* fLabels[MAX_FILTERED_ATTR_COUNT];
+	int with_widgets;
+}attr_list;
+
 
     typedef enum { nodshapedot, nodeshapecircle } node_shape;
     typedef enum { leftmousebutton, rightmousebutton,
@@ -365,6 +400,8 @@ extern "C" {
 	float fitin_zoom;
 	xdot* xDot;
 	float global_z;
+	attr_list* attributes;/*attribute list*/
+	attr_list* filtered_attr_list;
 
     } topview;
 

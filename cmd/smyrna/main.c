@@ -34,6 +34,7 @@
 #include "gltemplate.h"
 #include "memory.h"
 #include "gvprpipe.h"
+#include "frmobjectui.h"
 #ifdef ENABLE_NLS
 #include "libintl.h"
 #endif
@@ -159,6 +160,8 @@ int main(int argc, char *argv[])
     /*combo box to show loaded graphs */
     GtkComboBox *graphComboBox;
 
+
+
     smyrnaDir = getenv("SMYRNA_PATH");
     if (!smyrnaDir) {
 #ifdef _WIN32
@@ -174,7 +177,6 @@ int main(int argc, char *argv[])
 	smyrnaDir = SMYRNA_PATH;
 #endif
     }
-
     load_attributes();
 
 #ifdef G_OS_WIN32
@@ -200,6 +202,7 @@ int main(int argc, char *argv[])
     if (!(smyrnaGlade))
 	smyrnaGlade = smyrnaPath("smyrna.glade");
     xml = glade_xml_new(smyrnaGlade, NULL, NULL);
+
     gladewidget = glade_xml_get_widget(xml, "frmMain");
     gtk_widget_show(gladewidget);
     g_signal_connect((gpointer) gladewidget, "destroy",
