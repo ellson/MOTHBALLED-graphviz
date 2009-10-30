@@ -196,6 +196,20 @@ static void place_root_label(graph_t * g, pointf d)
 static void 
 addXLabels (Agraph_t* g)
 {
+    textlabel_t* lp;
+    pointf p, pp;
+    Agnode_t* n;
+
+    for (n = agfstnode(g); n; n = agnxtnode(g,n)) {
+	lp = ND_xlabel(n);
+	if (!lp) continue;
+	p = ND_coord(n);
+	
+	pp.y = p.y;
+	pp.x += p.x + ND_rw(n) + lp->dimen.x/2.0; 
+	lp->pos = pp;
+	lp->set = 1;
+    }
 }
 
 /* dotneato_postprocess:
