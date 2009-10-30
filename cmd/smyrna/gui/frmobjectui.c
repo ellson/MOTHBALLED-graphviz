@@ -35,6 +35,10 @@
 #endif
 
 static attr_t* binarySearch( attr_list* l, char* searchKey);
+static int sel_node;
+static int sel_edge;
+static int sel_graph;
+
 static char* safestrdup(char* src)
 {
 	if (!src)
@@ -372,8 +376,12 @@ void filter_attributes(char* prefix,topview* t)
 {
 
 	int ind=0;
+	int tmp;
+
 	attr_list* l=t->attributes;
 	attr_list* fl=t->filtered_attr_list;
+	int objKind=get_object_type();
+
 	if (fl)
 		free_attr_list(fl);
 	fl=attr_list_new(NULL,0);
@@ -426,6 +434,9 @@ void filter_attributes(char* prefix,topview* t)
 
 		}
 	}
+
+	tmp=(((objKind==AGNODE) &&(sel_node))		  ||			((objKind==AGEDGE) &&(sel_edge))			||			((objKind==AGRAPH) &&(sel_graph)));
+		gtk_widget_set_sensitive(glade_xml_get_widget(xml, "txtValue"),tmp);
 }
 /*asttribute text changed call back*/
 
@@ -712,9 +723,14 @@ static void set_header_text()
 			edgeCnt++;
 		}
 	}
+		sel_node=nodeCnt;
+		sel_edge=edgeCnt;
+		sel_graph=1;
+	
 	sprintf(buf,"%d Nodes and %d edges selected",nodeCnt,edgeCnt);
 	gtk_label_set_text((GtkLabel*)glade_xml_get_widget(xml, "label124"),buf);
 	gtk_entry_set_text((GtkEntry*)glade_xml_get_widget(xml, "txtAttr"),"");
+
 
 }
 
