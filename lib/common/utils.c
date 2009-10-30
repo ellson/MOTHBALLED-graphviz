@@ -76,7 +76,7 @@ int late_int(void *obj, attrsym_t * attr, int def, int low)
 #else /* WITH_CGRAPH */
     p = agxget(obj, attr);
 #endif /* WITH_CGRAPH */
-    if (p[0] == '\0')
+    if (!p || p[0] == '\0')
 	return def;
     if ((rv = atoi(p)) < low)
 	rv = low;
@@ -85,30 +85,18 @@ int late_int(void *obj, attrsym_t * attr, int def, int low)
 
 double late_double(void *obj, attrsym_t * attr, double def, double low)
 {
-#ifndef WITH_CGRAPH
     char *p;
-#else /* WITH_CGRAPH */
-    char *p=NULL;
-#endif /* WITH_CGRAPH */
     double rv;
 
-    if (attr == NULL)
+    if (!attr || !obj)
 	return def;
 #ifndef WITH_CGRAPH
     p = agxget(obj, attr->index);
-#else /* WITH_CGRAPH */
-	if(!obj)
-		return def;
-	p = agxget(obj, attr);
-    if (!p)
-		return def;
+#else  /* WITH_CGRAPH */
+    p = agxget(obj, attr);
 #endif /* WITH_CGRAPH */
-    if (p[0] == '\0')
+    if (!p || p[0] == '\0')
 	return def;
-#ifdef WITH_CGRAPH
-	if (!obj)
-		return def;
-#endif /* WITH_CGRAPH */
     if ((rv = atof(p)) < low)
 	rv = low;
     return rv;
@@ -116,11 +104,7 @@ double late_double(void *obj, attrsym_t * attr, double def, double low)
 
 char *late_string(void *obj, attrsym_t * attr, char *def)
 {
-#ifndef WITH_CGRAPH
-    if (attr == NULL)
-#else /* WITH_CGRAPH */
-	if ((attr == NULL) || (obj==NULL))
-#endif /* WITH_CGRAPH */
+    if (!attr || !obj)
 	return def;
 #ifndef WITH_CGRAPH
     return agxget(obj, attr->index);
@@ -132,12 +116,7 @@ char *late_string(void *obj, attrsym_t * attr, char *def)
 char *late_nnstring(void *obj, attrsym_t * attr, char *def)
 {
     char *rv = late_string(obj, attr, def);
-#ifndef WITH_CGRAPH
-    if (rv[0] == '\0')
-#else /* WITH_CGRAPH */
-	
-	if ((!rv)||(rv[0] == '\0'))
-#endif /* WITH_CGRAPH */
+    if (!rv || (rv[0] == '\0'))
 	rv = def;
     return rv;
 }
