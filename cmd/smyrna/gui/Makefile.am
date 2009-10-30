@@ -18,11 +18,13 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/cmd/smyrna \
 	$(GTK_CFLAGS) $(GTKGL_CFLAGS) $(GTKGLEXT_CFLAGS) $(GLADE_CFLAGS) $(FREETYPE2_CFLAGS)
 
-noinst_HEADERS = callbacks.h datalistcallbacks.h filterscallbacks.h gui.h \
-	menucallbacks.h toolboxcallbacks.h beacon.h
+noinst_HEADERS = callbacks.h datalistcallbacks.h filterscallbacks.h \
+	gui.h menucallbacks.h toolboxcallbacks.h beacon.h frmobjectui.h \
+	glcompui.h
 if WITH_SMYRNA
 noinst_LTLIBRARIES = libgui_C.la
 endif
 
 libgui_C_la_SOURCES = callbacks.c datalistcallbacks.c filterscallbacks.c \
-	gui.c menucallbacks.c toolboxcallbacks.c beacon.c frmobjectui.c glcompui.c
+	gui.c menucallbacks.c toolboxcallbacks.c beacon.c frmobjectui.c \
+	glcompui.c
