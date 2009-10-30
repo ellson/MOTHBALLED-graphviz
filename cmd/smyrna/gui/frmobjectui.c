@@ -15,7 +15,7 @@
 **********************************************************/
 
 #include <stdio.h>
-#include <strings.h>
+
 #include "compat.h"
 #include <stdlib.h>
 #include "gui.h"
@@ -27,7 +27,21 @@
 #include "memory.h"
 #include "frmobjectui.h"
 
+#ifdef WIN32
+#define STRCASECMP stricmp
+#else
+#include <strings.h>
+#define STRCASECMP strcasecmp
+#endif
+
 static attr_t* binarySearch( attr_list* l, char* searchKey);
+static char* safestrdup(char* src)
+{
+	if (!src)
+		return NULL;
+	else
+		return strdup(src);
+}
 static int get_object_type()
 {
 	if(gtk_toggle_button_get_active((GtkToggleButton*)glade_xml_get_widget(xml, "attrRB0")))
@@ -68,36 +82,38 @@ attr_t* new_attr()
 attr_t* new_attr_with_ref(Agsym_t * sym)
 {
 	attr_t* attr=new_attr();
-	attr->name=strdup(sym->name);
+	attr->name=safestrdup(sym->name);
 	switch (sym->kind)
 	{	
 	case AGRAPH:
 		attr->objType[0]=1;
-		attr->defValG=strdup(sym->defval);
+		if(sym->defval)
+			attr->defValG=safestrdup(sym->defval);
 		break;
 	case AGNODE:
 		attr->objType[1]=1;
-		attr->defValN=strdup(sym->defval);
+		if(sym->defval)
+			attr->defValN=safestrdup(sym->defval);
 		break;
 	case AGEDGE:
 		attr->objType[2]=1;
-		attr->defValE=strdup(sym->defval);
+		if(sym->defval)
+			attr->defValE=safestrdup(sym->defval);
 		break;
 	}
 	return attr;
 }
 
-
 attr_t* new_attr_ref(attr_t* refAttr)
 {
 	attr_t* attr=malloc(sizeof(attr_t));
 	*attr=*refAttr;
-	attr->defValG=strdup(refAttr->defValG);
-	attr->defValN=strdup(refAttr->defValN);
-	attr->defValE=strdup(refAttr->defValE);
-	attr->name=strdup(refAttr->name);
+	attr->defValG=safestrdup(refAttr->defValG);
+	attr->defValN=safestrdup(refAttr->defValN);
+	attr->defValE=safestrdup(refAttr->defValE);
+	attr->name=safestrdup(refAttr->name);
 	if (refAttr->value)
-		attr->value=strdup(refAttr->value);
+		attr->value=safestrdup(refAttr->value);
 	return attr;
 }
 
@@ -186,7 +202,7 @@ int attr_compare (const void * a, const void * b)
 {
 	attr_t* a1=*(attr_t**)a;
 	attr_t* a2=*(attr_t**)b;
-	return strcasecmp(a1->name,a2->name);
+	return STRCASECMP(a1->name,a2->name);
 }
 
 static void attr_list_sort(attr_list* l)
@@ -270,7 +286,7 @@ static attr_t* binarySearch( attr_list* l, char* searchKey)
 
    while ( low <= high ) {
       middle = ( low + high ) / 2;
-	  res=strcasecmp(searchKey,l->attributes[middle]->name);
+	  res=STRCASECMP(searchKey,l->attributes[middle]->name);
 	  if ( res==0) {
          return l->attributes[middle];
       } 
@@ -299,7 +315,7 @@ static attr_t* pBinarySearch( attr_list* l, char* searchKey)
       middle = ( low + high ) / 2;
 	   strncpy ( buf, l->attributes[middle]->name, strlen(searchKey));
 		buf[strlen(searchKey)]='\0';
-	  res=strcasecmp(searchKey,buf);
+	  res=STRCASECMP(searchKey,buf);
 	  if ( res==0) {
          return l->attributes[middle];
       } 
@@ -338,7 +354,7 @@ void create_filtered_list(char* prefix,attr_list* sl,attr_list* tl)
 		at=sl->attributes[at->index - 1];
 		strncpy ( buf, at->name, strlen(prefix));
 		buf[strlen(prefix)]='\0';;
-		res=strcasecmp(prefix,buf);
+		res=STRCASECMP(prefix,buf);
 	}
 	res=0;
 	while((at->index <sl->attr_count) && (res == 0))
@@ -346,7 +362,7 @@ void create_filtered_list(char* prefix,attr_list* sl,attr_list* tl)
 		at=sl->attributes[at->index + 1];
 		strncpy ( buf, at->name, strlen(prefix));
 		buf[strlen(prefix)]='\0';
-		res=strcasecmp(prefix,buf);
+		res=STRCASECMP(prefix,buf);
 		if((res == 0) && (at->objType[objKind]==1))
 			attr_list_add(tl,new_attr_ref(at));
 	}
@@ -392,7 +408,7 @@ void filter_attributes(char* prefix,topview* t)
 
 	for (ind=0;ind < fl->attr_count;ind++)
 	{
-		if( strcasecmp(prefix,fl->attributes[ind]->name)==0)/*an existing attribute*/
+		if( STRCASECMP(prefix,fl->attributes[ind]->name)==0)/*an existing attribute*/
 		{
 	
 			if(get_object_type()==AGRAPH)
@@ -512,9 +528,9 @@ _BB void on_attrAddBtn_clicked (GtkWidget * widget, gpointer user_data)
 	{
 		attr=new_attr();
 		attr->index=0;
-		attr->name=strdup(attr_name);
+		attr->name=safestrdup(attr_name);
 		attr->type=attr_alpha;
-		attr->value=strdup("");
+		attr->value=safestrdup("");
 		attr->widget=NULL;
 		attr_list_add(t->attributes,attr);
 	}
@@ -523,7 +539,7 @@ _BB void on_attrAddBtn_clicked (GtkWidget * widget, gpointer user_data)
 	if (objKind==AGRAPH)
 	{
 		agattr(g, AGRAPH, attr_name,defValue);
-		attr->defValG=strdup(defValue);
+		attr->defValG=safestrdup(defValue);
 		attr->objType[0]=1;
 	}
 
@@ -544,7 +560,7 @@ _BB void on_attrAddBtn_clicked (GtkWidget * widget, gpointer user_data)
 	
 			}
 		}
-		attr->defValN=strdup(defValue);
+		attr->defValN=safestrdup(defValue);
 		attr->objType[1]=1;
 
 
@@ -568,7 +584,7 @@ _BB void on_attrAddBtn_clicked (GtkWidget * widget, gpointer user_data)
 				}
 			}
 		}
-		attr->defValE=strdup(defValue);
+		attr->defValE=safestrdup(defValue);
 		attr->objType[2]=1;
 
 	}
@@ -609,12 +625,12 @@ attr_list* load_attr_list(Agraph_t* g)
 				switch (idx)
 				{
 					case 0: /**/
-						attr->name=strdup(a);
+						attr->name=safestrdup(a);
 						break;
 					case 1: /**/
-						attr->defValG=strdup(a);
-						attr->defValN=strdup(a);
-						attr->defValE=strdup(a);
+						attr->defValG=safestrdup(a);
+						attr->defValN=safestrdup(a);
+						attr->defValE=safestrdup(a);
 						break;
 					case 2: /**/
 						set_attr_object_type(a,attr->objType);
@@ -720,7 +736,7 @@ void showAttrsWidget(topview* t)
 static char guibuffer[BUFSIZ];	//general purpose buffer
 
 #ifdef WIN32
-extern int strcasecmp(const char *s1, const char *s2);
+extern int STRCASECMP(const char *s1, const char *s2);
 extern int strncasecmp(const char *s1, const char *s2, unsigned int n);
 #endif
 
@@ -903,7 +919,7 @@ int update_graph_properties(Agraph_t * graph)	//updates graph from gui
 	{
 		if (graph != view->g[id]) 
 		{
-			if (strcasecmp(gtk_entry_get_text ((GtkEntry *)glade_xml_get_widget(xml, "entryGraphName")),
+			if (STRCASECMP(gtk_entry_get_text ((GtkEntry *)glade_xml_get_widget(xml, "entryGraphName")),
 		 GD_GraphName(view->g[id])) ==
 				0) {
 					Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
@@ -921,7 +937,7 @@ int update_graph_properties(Agraph_t * graph)	//updates graph from gui
     }
 
     //check if file is changed
-    if (strcasecmp
+    if (STRCASECMP
 	(gtk_entry_get_text
 	 ((GtkEntry *) glade_xml_get_widget(xml, "entryGraphFileName")),
 	 GD_GraphFileName(graph)) != 0) {
@@ -1297,7 +1313,7 @@ void load_attributes()
 	    pch = strtok(line, ",");
 	    ind = 0;
 	    while (pch != NULL) {
-		ss = strdup(pch);
+		ss = safestrdup(pch);
 //                              ABRemove(&ss,'\"');
 //                              ABRemove(&ss,' ');
 		pch = strtok(NULL, ",");
@@ -1306,10 +1322,10 @@ void load_attributes()
 		    attr[attrcount].Type = ss[0];
 		    break;
 		case 1:
-		    attr[attrcount].Name = strdup(ss);
+		    attr[attrcount].Name = safestrdup(ss);
 		    break;
 		case 2:
-		    attr[attrcount].Default = strdup(ss);
+		    attr[attrcount].Default = safestrdup(ss);
 		    break;
 		case 3:
 		    if (strstr(ss, "ANY_ELEMENT")) {
@@ -1354,7 +1370,7 @@ void load_attributes()
 				attr[attrcount].ComboValues, char*);
 		    attr[attrcount].ComboValues[attr[attrcount].
 						ComboValuesCount] =
-			strdup(ss);
+			safestrdup(ss);
 		    attr[attrcount].ComboValuesCount++;
 		    break;
 		}
