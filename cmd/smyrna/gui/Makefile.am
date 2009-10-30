@@ -13,6 +13,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/cdt \
 	-I$(top_srcdir)/lib/glcomp \
 	-I$(top_srcdir)/lib/utilities \
+	-I$(top_srcdir)/lib/neaotgen \
 	-I$(top_srcdir)/lib/topfish \
 	-I$(top_srcdir)/cmd/smyrna/gui \
 	-I$(top_srcdir)/cmd/smyrna \
