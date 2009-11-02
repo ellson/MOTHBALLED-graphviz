@@ -164,9 +164,10 @@ void CBglCompMouseUp(void *obj, GLfloat x, GLfloat y, glMouseButtonType t)
 void CBglCompMouseRightClick(void *obj, GLfloat x, GLfloat y,
 			     glMouseButtonType t)
 {
-    if (t == glMouseRightButton) {
-	GLfloat X, Y, Z = 0;
-	to3D((int) x, (int) y, &X, &Y, &Z);
+    if (t == glMouseRightButton) 
+	{
+		GLfloat X, Y, Z = 0;
+		to3D((int) x, (int) y, &X, &Y, &Z);
     }
 }
 
