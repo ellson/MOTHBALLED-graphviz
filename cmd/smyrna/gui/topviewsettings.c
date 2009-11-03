@@ -86,13 +86,11 @@ static int get_color_button_widget_to_attribute(char *attribute,
 static int get_text_widget_to_attribute(char *attribute, char *widget_name,
 					Agraph_t * g)
 {
-    char buf[512];
     if (strlen(attribute) > 512)
 	return 0;
-    sprintf(buf, "%s",
+    agattr(g, AGRAPH, attribute, 
 	    gtk_entry_get_text((GtkEntry *)
 			       glade_xml_get_widget(xml, widget_name)));
-    agattr(g, AGRAPH, attribute, buf);
     return 1;
 }
 static int set_text_widget(char *attribute, char *widget_name)
