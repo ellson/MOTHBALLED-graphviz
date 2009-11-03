@@ -1,3 +1,19 @@
+/* $Id$Revision: */
+/* vim:set shiftwidth=4 ts=8: */
+
+/**********************************************************
+*      This software is part of the graphviz package      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2004 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+**********************************************************/
+
 #include "appmouse.h"
 #include "topfisheyeview.h"
 #include "arcball.h"
@@ -58,7 +74,7 @@ static void appmouse_up(ViewInfo* v,int x,int y)
 }
 static void appmouse_drag(ViewInfo* v,int x,int y)
 {
-    static float x1,y1,x2,y2;
+    static float x2,y2;
     v->mouse.pos.x=x;
     v->mouse.pos.y=y;
     GetFixedOGLPos((float) x,y,v->GLDepth, &v->mouse.GLpos.x,&v->mouse.GLpos.y,&v->mouse.GLpos.z);

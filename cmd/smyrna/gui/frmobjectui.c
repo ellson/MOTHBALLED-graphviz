@@ -124,8 +124,8 @@ attr_t* new_attr_ref(attr_t* refAttr)
 
 static void reset_attr_list_widgets(attr_list* l)
 {
-	int id=0;
-	for (id;id < MAX_FILTERED_ATTR_COUNT ;id ++)
+	int id;
+	for (id=0;id < MAX_FILTERED_ATTR_COUNT ;id ++)
 	{
 		gtk_label_set_text(l->fLabels[id],"");
 	}
@@ -135,8 +135,8 @@ static void reset_attr_list_widgets(attr_list* l)
 
 static void free_attr_list_widgets(attr_list* l)
 {
-	int id=0;
-	for (id;id < MAX_FILTERED_ATTR_COUNT ;id ++)
+	int id;
+	for (id=0;id < MAX_FILTERED_ATTR_COUNT ;id ++)
 	{
 		gtk_object_destroy((GtkObject*)l->fLabels[id]);
 	}
@@ -145,8 +145,8 @@ static void free_attr_list_widgets(attr_list* l)
 
 void free_attr_list(attr_list* l)
 {
-	int id=0;
-	for (id;id < l->attr_count; id ++)
+	int id;
+	for (id=0;id < l->attr_count; id ++)
 	{
 		free_attr(l->attributes[id]);
 	}
@@ -156,7 +156,7 @@ void free_attr_list(attr_list* l)
 }
 attr_list* attr_list_new(Agraph_t * g,int with_widgets )
 {
-	int id=0;
+	int id;
 	attr_list* l=malloc(sizeof(attr_list));
 	l->attr_count=0;
 	l->capacity=DEFAULT_ATTR_LIST_CAPACITY;
@@ -175,7 +175,7 @@ attr_list* attr_list_new(Agraph_t * g,int with_widgets )
     g_signal_connect((gpointer)glade_xml_get_widget(xml, "frmObject"), "motion_notify_event",  G_CALLBACK(attr_label_motion), NULL);*/
 	if(with_widgets)
 	{
-		for (id ; id < MAX_FILTERED_ATTR_COUNT ; id ++)
+		for (id=0 ; id < MAX_FILTERED_ATTR_COUNT ; id ++)
 		{
 			l->fLabels[id]=(GtkLabel*)gtk_label_new(""); 
 
@@ -196,8 +196,8 @@ attr_list* attr_list_new(Agraph_t * g,int with_widgets )
 }
 void print_attr_list(attr_list* l)
 {
-	int id=0;
-	for (id;id < l->attr_count; id ++)
+	int id;
+	for (id=0;id < l->attr_count; id ++)
 	{
 		printf ("%d  %s (%d %d %d) \n",l->attributes[id]->index,l->attributes[id]->name,l->attributes[id]->objType[0],l->attributes[id]->objType[1],l->attributes[id]->objType[2]);
 		printf ("defG:%s defN:%s defE:%s\n",l->attributes[id]->defValG,l->attributes[id]->defValN,l->attributes[id]->defValE);
@@ -219,7 +219,7 @@ static void attr_list_sort(attr_list* l)
 
 void attr_list_add(attr_list* l,attr_t* a)
 {
-	int id=0;
+	int id;
 	if ( (!l) || (!a))
 		return;
 	l->attr_count ++ ;
@@ -232,7 +232,7 @@ void attr_list_add(attr_list* l,attr_t* a)
 	if (l->attr_count > 1)
 		attr_list_sort(l);
 	/*update indices*/
-	for (id;id < l->attr_count; id ++)
+	for (id=0;id < l->attr_count; id ++)
 		l->attributes[id]->index=id;
 
 
@@ -279,7 +279,7 @@ static void set_attr_object_type(char* str,int* t)
 	char* a;
 	a=strtok(str," ");
 	object_type_helper(a,t);
-	while (a=strtok(NULL," or "))
+	while ((a=strtok(NULL," or ")))
 		object_type_helper(a,t);
 
 }
@@ -379,7 +379,7 @@ void filter_attributes(char* prefix,topview* t)
 //void filter_attributes(char* prefix, attr_list* l)
 {
 
-	int ind=0;
+	int ind;
 	int tmp;
 
 	attr_list* l=t->attributes;
@@ -391,7 +391,7 @@ void filter_attributes(char* prefix,topview* t)
 	fl=attr_list_new(NULL,0);
 	reset_attr_list_widgets(l);
 	create_filtered_list(prefix,l,fl);
-	for (ind;ind < fl->attr_count; ind ++)
+	for (ind=0;ind < fl->attr_count; ind ++)
 	{
 		gtk_label_set_text(l->fLabels[ind],fl->attributes[ind]->name);
 	}
@@ -460,8 +460,7 @@ _BB void on_txtAttr_changed(GtkWidget * widget, gpointer user_data)
 
 _BB void on_attrApplyBtn_clicked (GtkWidget * widget, gpointer user_data)
 {
-	int ind=0;
-	int cnt=0;
+	int ind;
 	char* attr_name;
 	char* value;
 	char* def_val;
@@ -494,9 +493,8 @@ _BB void on_attrApplyBtn_clicked (GtkWidget * widget, gpointer user_data)
 	if(objKind==AGRAPH)
 			agset(g,attr_name,value);
 	/*nodes*/
-	if(objKind==AGNODE)
-	{
-		for (ind;ind < view->Topview->Nodecount; ind ++)
+	else if(objKind==AGNODE) {
+		for (ind=0;ind < view->Topview->Nodecount; ind ++)
 		{
 			n=&t->Nodes[ind];
 			if (n->data.Selected)
@@ -506,18 +504,20 @@ _BB void on_attrApplyBtn_clicked (GtkWidget * widget, gpointer user_data)
 		}
 	}
 	/*edges*/
-	if(objKind==AGEDGE)
-	{
+	else if(objKind==AGEDGE) {
 
-		for (ind;ind < view->Topview->Edgecount; ind ++)
+		for (ind=0;ind < view->Topview->Edgecount; ind ++)
 		{
 			e=&t->Edges[ind];
 			if (e->data.Selected)
 				agset(e->Edge,attr_name,value);
 		}
 	}
+	else
+	    fprintf (stderr, "on_attrApplyBtn_clicked: unknown object kind %d\n",
+		objKind);
 }
-_BB on_attrRB0_clicked (GtkWidget * widget, gpointer user_data)
+_BB void on_attrRB0_clicked (GtkWidget * widget, gpointer user_data)
 {
 	filter_attributes((char*)
 		gtk_entry_get_text((GtkEntry*)glade_xml_get_widget(xml, "txtAttr")),view->Topview);
@@ -531,13 +531,15 @@ _BB void on_attrProg_toggled (GtkWidget * widget, gpointer user_data)
 
 _BB void attr_label_motion(GtkWidget * widget,GdkEventMotion * event, gpointer data)
 {
+#ifdef UNUSED
     float x = (float) event->x;
     float y = (float) event->y;
-//	printf ("%f %f \n",x,y);
+    printf ("%f %f \n",x,y);
+#endif
 }
 _BB void on_attrAddBtn_clicked (GtkWidget * widget, gpointer user_data)
 {
-	int ind=0;
+	int ind;
 	int cnt=0;
 	char* attr_name;
 	char* value;
@@ -575,17 +577,15 @@ _BB void on_attrAddBtn_clicked (GtkWidget * widget, gpointer user_data)
 	}
 	attr->propagate=0;
 
-	if (objKind==AGRAPH)
-	{
+	if (objKind==AGRAPH) {
 		agattr(g, AGRAPH, attr_name,defValue);
 		attr->defValG=safestrdup(defValue);
 		attr->objType[0]=1;
 	}
 
 	/*nodes*/
-	if (objKind==AGNODE)
-	{
-		for (ind;ind < view->Topview->Nodecount; ind ++)
+	else if (objKind==AGNODE) {
+		for (ind=0;ind < view->Topview->Nodecount; ind ++)
 		{
 			n=&t->Nodes[ind];
 			if (n->data.Selected)
@@ -605,12 +605,11 @@ _BB void on_attrAddBtn_clicked (GtkWidget * widget, gpointer user_data)
 
 
 	}
-	if (objKind==AGEDGE)
-	{
+	else if (objKind==AGEDGE) {
 	
 		cnt=0;
 		/*edges*/
-		for (ind;ind < view->Topview->Edgecount; ind ++)
+		for (ind=0;ind < view->Topview->Edgecount; ind ++)
 		{
 			e=&t->Edges[ind];
 			if (e->data.Selected)
@@ -627,8 +626,10 @@ _BB void on_attrAddBtn_clicked (GtkWidget * widget, gpointer user_data)
 		attr->objType[2]=1;
 
 	}
+	else
+	    fprintf (stderr, "on_attrAddBtn_clicked: unknown object kind %d\n",
+		objKind);
 	filter_attributes(attr_name,view->Topview);
-
 
 }
 
@@ -657,7 +658,7 @@ attr_list* load_attr_list(Agraph_t* g)
 			a=strtok(line,",");
 			attr->index=i;
 			attr->type=get_attr_data_type(a[0]);
-			while (a=strtok(NULL,","))
+			while ((a=strtok(NULL,",")))
 			{
 					/*C,(0)color, (1)black, (2)EDGE Or NODE Or CLUSTER, (3)ALL_ENGINES*/
 
@@ -721,7 +722,7 @@ static void set_header_text()
 	int nodeCnt;
 	int edgeCnt;
 	static char buf[512];
-	int ind=0;
+	int ind;
 
 	topview* t;
 	topview_node* n;
@@ -734,7 +735,7 @@ static void set_header_text()
 	t=view->Topview;
 
 
-	for (ind;ind < view->Topview->Nodecount; ind ++)
+	for (ind=0;ind < view->Topview->Nodecount; ind ++)
 	{
 		n=&t->Nodes[ind];
 		if (n->data.Selected)
@@ -742,7 +743,7 @@ static void set_header_text()
 			nodeCnt++;
 		}
 	}
-	for (ind;ind < view->Topview->Edgecount; ind ++)
+	for (ind=0;ind < view->Topview->Edgecount; ind ++)
 	{
 		e=&t->Edges[ind];
 		if (e->data.Selected)

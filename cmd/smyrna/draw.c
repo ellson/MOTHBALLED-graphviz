@@ -787,16 +787,16 @@ void drawCircle(float x, float y, float radius, float zdepth)
 }
 
 drawfunc_t OpFns[] = {
-    DrawEllipse,
-    DrawPolygon,
-    DrawBeziers,
-    DrawPolyline,
-    EmbedText,
-    SetFillColor,
-    SetPenColor,
-    SetFont,
-    SetStyle,
-    InsertImage,
+    (drawfunc_t)DrawEllipse,
+    (drawfunc_t)DrawPolygon,
+    (drawfunc_t)DrawBeziers,
+    (drawfunc_t)DrawPolyline,
+    (drawfunc_t)EmbedText,
+    (drawfunc_t)SetFillColor,
+    (drawfunc_t)SetPenColor,
+    (drawfunc_t)SetFont,
+    (drawfunc_t)SetStyle,
+    (drawfunc_t)InsertImage,
 };
 
 glCompColor GetglCompColor(char *color)

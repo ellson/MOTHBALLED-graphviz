@@ -265,16 +265,17 @@ void settvcolorinfo(Agraph_t * g, topview * t)
 
 }
 
+#if UNUSED
 static xdot *parseXdotwithattr(void *p, char *attr)
 {
-	int ind=0;
+	int ind;
 	xdot *xDot;
 	xdot_op* x_op;
 	sdot_op* s_op;
     xDot = parseXDotF(agget(p, attr), OpFns, sizeof(sdot_op));
 	if (!xDot)
 			return NULL;
-	for (ind ; ind < xDot->cnt; ind ++)
+	for (ind = 0 ; ind < xDot->cnt; ind ++)
 	{
 		x_op=&(xDot->ops[ind]);
 		s_op=(sdot_op*)x_op;
@@ -283,6 +284,7 @@ static xdot *parseXdotwithattr(void *p, char *attr)
 	}
 	return xDot;
 }
+#endif
 
 static xdot* parseXdotwithattrs(void *e)
 {
