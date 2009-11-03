@@ -340,7 +340,8 @@ static gboolean motion_notify_event(GtkWidget * widget,
     float y = (float) event->y;
 
     gboolean redraw = FALSE;
-    view->widgets->common.functions.mouseover((glCompObj*)view->widgets, (GLfloat) x,(GLfloat) y);
+    if (view->widgets)
+	view->widgets->common.functions.mouseover((glCompObj*)view->widgets, (GLfloat) x,(GLfloat) y);
 
     dx = x - begin_x;
     dy = y - begin_y;
