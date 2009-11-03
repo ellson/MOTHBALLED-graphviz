@@ -299,9 +299,9 @@ static gboolean button_release_event(GtkWidget * widget,
 
 
     if (event->button == 1)	//left click release
-	appmouse_left_click_up(view,(int) event->x,(int) event->x);
+	appmouse_left_click_up(view,(int) event->x,(int) event->y);
     if (event->button == 3)	//right click
-	appmouse_right_click_up(view,(int) event->x,(int) event->x);
+	appmouse_right_click_up(view,(int) event->x,(int) event->y);
     expose_event(view->drawing_area, NULL, NULL);
     dx = 0.0;
     dy = 0.0;

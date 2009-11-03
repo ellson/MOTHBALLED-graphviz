@@ -1119,8 +1119,10 @@ static int get_color_from_edge(topview_edge * e)
 	return_value = 0;
 
 
-    /*if both head and tail nodes are selected use selection color for edges */
-    if ((e->Node1->data.Selected) || (e->Node2->data.Selected)) {
+        /*if both head and tail nodes are selected use selection color for edges */
+    if(e->data.Selected)
+//    if ((e->Node1->data.Selected) || (e->Node2->data.Selected)) 
+    {
 	glColor4f(view->selectedEdgeColor.R, view->selectedEdgeColor.G,
 		  view->selectedEdgeColor.B, view->selectedEdgeColor.A);
 	return return_value;

@@ -19,6 +19,8 @@
 #include "arcball.h"
 #include "topview.h"
 #include "glmotion.h"
+#include "beacon.h"
+
 
     static float prevX=0;
     static float prevY=0;
@@ -41,7 +43,8 @@ static void appmouse_left_click(ViewInfo* v,int x,int y)
 }
 static void appmouse_right_click(ViewInfo* v,int x,int y)
 {
-
+    
+    pick_node_from_coords(view->mouse.GLfinalPos.x,view->mouse.GLfinalPos.y,view->mouse.GLfinalPos.z);
 }
 
 
@@ -50,7 +53,12 @@ static void appmouse_down(ViewInfo* v,int x,int y)
     v->mouse.down=1;
     v->mouse.initPos.x=x;
     v->mouse.initPos.y=y;
+    v->mouse.pos.x=x;
+    v->mouse.pos.y=y;
+
     GetFixedOGLPos((float) x,y, v->GLDepth,&v->mouse.GLinitPos.x,&v->mouse.GLinitPos.y,&v->mouse.GLinitPos.z);
+    GetFixedOGLPos((float) x,y,v->GLDepth, &v->mouse.GLpos.x,&v->mouse.GLpos.y,&v->mouse.GLpos.z);
+
     prevX=0;
     prevY=0;
 

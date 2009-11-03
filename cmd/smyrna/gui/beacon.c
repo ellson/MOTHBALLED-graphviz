@@ -39,6 +39,7 @@ static int remove_edge_from_pick_list(topview_edge * e)
 	    realloc(view->Topview->picked_edges,
 		    sizeof(topview_edge *) *
 		    view->Topview->picked_edge_count);
+	deselect_edge(e);
 	return 1;
     }
     return 0;
@@ -51,6 +52,7 @@ static int add_edge_to_pick_list(topview_edge * e)
 	realloc(view->Topview->picked_edges,
 		sizeof(topview_edge *) * view->Topview->picked_edge_count);
     view->Topview->picked_edges[view->Topview->picked_edge_count - 1] = e;
+    select_edge(e);
     return 1;
 }
 
@@ -199,6 +201,7 @@ int remove_from_pick_list(topview_node * n)
 	    realloc(view->Topview->picked_nodes,
 		    sizeof(topview_node *) *
 		    view->Topview->picked_node_count);
+	deselect_node(n);
 	return 1;
     }
     return 0;
@@ -211,6 +214,7 @@ int add_to_pick_list(topview_node * n)
 	realloc(view->Topview->picked_nodes,
 		sizeof(topview_node *) * view->Topview->picked_node_count);
     view->Topview->picked_nodes[view->Topview->picked_node_count - 1] = n;
+    select_node(n);
     return 1;
 }
 
@@ -282,7 +286,7 @@ int draw_node_hint_boxes(void)
     }
     glColor4f(0, 1, 0, 0.5);
     glLineWidth(2);
-    glBegin(GL_LINES);
+/*    glBegin(GL_LINES);
     for (ind = 0; ind < view->Topview->picked_edge_count; ind++) {
 	float x1, x2, y1, y2, z1, z2;
 	e = view->Topview->picked_edges[ind];
@@ -303,7 +307,7 @@ int draw_node_hint_boxes(void)
 
 
     }
-    glEnd();
+    glEnd();*/
     glLineWidth(1);
     for (ind = 0; ind < view->Topview->picked_edge_count; ind++) {
 	float x1, x2, y1, y2, z1, z2;
