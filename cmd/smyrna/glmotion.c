@@ -51,20 +51,20 @@ void glmotion_main(ViewInfo * v, GdkEventMotion * event,
 	&& ((v->mouse.mouse_mode == MM_RECTANGULAR_SELECT)
 	    || (v->mouse.mouse_mode == 5))) {
 	GetFixedOGLPos((int) event->x, (int) event->y, v->GLDepth,
-		       &(v->GLx2), &(v->GLy2), &(v->GLz2));
+		       &(v->mouse.GLfinalPos.x), &(v->mouse.GLfinalPos.y), &(v->mouse.GLfinalPos.z));
 	redraw = TRUE;
     }
     if ((event->state & GDK_BUTTON1_MASK)
 	&& (v->mouse.mouse_mode == MM_MOVE)) {
 	GetFixedOGLPos((int) event->x, (int) event->y, v->GLDepth,
-		       &(v->GLx2), &(v->GLy2), &(v->GLz2));
+		       &(v->mouse.GLfinalPos.x), &(v->mouse.GLfinalPos.y), &(v->mouse.GLfinalPos.z));
 	redraw = TRUE;
     }
     if ((event->state & GDK_BUTTON1_MASK)
 	&& ((v->mouse.mouse_mode == MM_MAGNIFIER)
 	    || (v->mouse.mouse_mode == MM_FISHEYE_MAGNIFIER))) {
-	v->mouse.mouse_X = (float) event->x;
-	v->mouse.mouse_Y = (float) event->y;
+	v->mouse.pos.x = (float) event->x;
+	v->mouse.pos.y = (float) event->y;
 	redraw = TRUE;
     }
 
@@ -125,11 +125,11 @@ void glmotion_zoom(ViewInfo * v)
     float real_zoom;
     if (view->active_camera == -1) {
 	real_zoom =
-	    view->zoom + view->mouse.dx / 10 * (view->zoom * -1 / 20);
+	    view->zoom + view->mouse.dragX / 10 * (view->zoom * -1 / 20);
     } else {
 	real_zoom =
 	    (view->cameras[view->active_camera]->r +
-	     view->mouse.dx / 10 * (view->cameras[view->active_camera]->r /
+	     view->mouse.dragX / 10 * (view->cameras[view->active_camera]->r /
 				    20)) * -1;
     }
     graph_zoom(real_zoom);
@@ -140,16 +140,18 @@ void glmotion_pan(ViewInfo * v)
 {
     float gldx, gldy;
     if (v->active_camera == -1) {
-	gldx = GetOGLDistance((int) v->mouse.dx) / v->zoom * -1;
-	gldy = GetOGLDistance((int) v->mouse.dy) / v->zoom * -1;
+	gldx = GetOGLDistance((int) v->mouse.dragX) / v->zoom * -1;
+	gldy = GetOGLDistance((int) v->mouse.dragY) / v->zoom * -1;
 	v->panx = v->panx - gldx;
 	v->pany = v->pany + gldy;
+/*	v->panx = v->panx - v->mouse.dragX / v->zoom * -1;;
+	v->pany = v->pany + v->mouse.dragY/ v->zoom * -1;*/
     } else {
 	gldx =
-	    GetOGLDistance((int) v->mouse.dx) /
+	    GetOGLDistance((int) v->mouse.dragX) /
 	    v->cameras[v->active_camera]->r;
 	gldy =
-	    GetOGLDistance((int) v->mouse.dy) /
+	    GetOGLDistance((int) v->mouse.dragY) /
 	    v->cameras[v->active_camera]->r;
 	v->cameras[v->active_camera]->x -= gldx;
 	v->cameras[v->active_camera]->y -= gldy;
@@ -196,11 +198,11 @@ void glmotion_rotate(ViewInfo * v)
 		v->arcball
 
 		v->cameras[v->active_camera]->angley-=v->mouse.dy/7;
-		v->cameras[v->active_camera]->anglex-=v->mouse.dx/7;
+		v->cameras[v->active_camera]->anglex-=v->mouse.dragX/7;
 	}
 	if(v->mouse.rotate_axis==MOUSE_ROTATE_Y)
 	{
-		v->cameras[v->active_camera]->anglex-=v->mouse.dx/7;
+		v->cameras[v->active_camera]->anglex-=v->mouse.dragX/7;
 	}
 	if(v->mouse.rotate_axis==MOUSE_ROTATE_X)
 	{
@@ -208,7 +210,7 @@ void glmotion_rotate(ViewInfo * v)
 	}
 	if(v->mouse.rotate_axis==MOUSE_ROTATE_Z)
 	{
-		v->cameras[v->active_camera]->anglez-=v->mouse.dx/7;
+		v->cameras[v->active_camera]->anglez-=v->mouse.dragX/7;
 		v->cameras[v->active_camera]->anglez-=v->mouse.dy/7;
 	}*/
 }

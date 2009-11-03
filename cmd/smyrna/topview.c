@@ -38,6 +38,7 @@
 #include "color.h"
 #include "colorprocs.h"
 #include <assert.h>
+#include "frmobjectui.h"
 static float dx = 0.0;
 static float dy = 0.0;
 static float dz = 0.0;
@@ -565,7 +566,7 @@ static int begintopviewnodes(Agraph_t * g, float dotsz)
 static void enddrawcycle(Agraph_t * g)
 {
     if (view->Selection.single_selected_edge) {
-	if (!(view->mouse.button == rightmousebutton))	//right click pick mode
+	if (!(view->mouse.t == rightmousebutton))	//right click pick mode
 	{			//left click single select mode
 	    if (view->Selection.single_selected_edge->data.Selected == 0) {
 		view->Selection.single_selected_edge->data.Selected = 1;
@@ -578,7 +579,7 @@ static void enddrawcycle(Agraph_t * g)
 	/* return 1; */
     }
     if (view->Selection.single_selected_node) {
-	if (view->mouse.button == rightmousebutton)
+	if (view->mouse.t == rightmousebutton)
 	    //right click pick mode
 	    ;
 	/*              pick_node(view->Selection.single_selected_node); */
@@ -873,7 +874,7 @@ static int select_topview_node(topview_node * n)
 		return 0;*/
     }
     if (((view->Selection.Type == 0) && (view->Selection.Active))
-	|| (view->mouse.button == rightmousebutton))	//single selection or right click (picking)
+	|| (view->mouse.t == rightmousebutton))	//single selection or right click (picking)
     {
 	float dist =
 	    (float) DIST2(view->Selection.X - n->distorted_x,
@@ -1056,10 +1057,10 @@ static int draw_topview_edge_label(topview_edge * e, float zdepth)
 static void set_topview_options(void)
 {
 
-    if ((view->mouse.mouse_mode == 10) && (view->mouse.mouse_down == 1))	//selected, if there is move move it, experimental
+    if ((view->mouse.mouse_mode == 10) && (view->mouse.down == 1))	//selected, if there is move move it, experimental
     {
-	dx = view->GLx - view->GLx2;
-	dy = view->GLy - view->GLy2;
+	dx = view->mouse.GLinitPos.x - view->mouse.GLfinalPos.x;
+	dy = view->mouse.GLinitPos.y - view->mouse.GLfinalPos.y;
     } else {
 	dx = 0;
 	dy = 0;

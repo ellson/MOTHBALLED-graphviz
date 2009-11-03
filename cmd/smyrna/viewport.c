@@ -418,8 +418,6 @@ void init_viewport(ViewInfo * view)
     view->pany = 0;
     view->panz = 0;
 
-    view->prevpanx = 0;
-    view->prevpany = 0;
 
     view->zoom = -20;
     view->texture = 1;
@@ -434,8 +432,7 @@ void init_viewport(ViewInfo * view)
     view->mg.kts = DEFAULT_MAGNIFIER_KTS;
     view->fmg.constantR = DEFAULT_FISHEYE_MAGNIFIER_RADIUS;
     view->fmg.active = 0;
-    view->mouse.mouse_down = 0;
-    view->mouse.pick = 0;
+    view->mouse.down = 0;
     view->activeGraph = -1;
     view->SignalBlock = 0;
     view->Selection.Active = 0;

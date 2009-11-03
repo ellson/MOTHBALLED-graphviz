@@ -76,6 +76,7 @@ extern "C" {
 //GTK helpre functions
 //void Color_Widget_bg (int r, int g, int b, GtkWidget *widget);        //change background color 
     void Color_Widget_bg(char *colorstring, GtkWidget * widget);
+	void Color_Widget(char *colorstring, GtkWidget * widget);
 /*generic warning pop up*/
     void show_gui_warning(char *str);
 /*generic open file dialog*/

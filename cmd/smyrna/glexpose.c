@@ -276,7 +276,7 @@ int glexpose_drawgraph(ViewInfo * view)
     return 0;
 }
 
-
+/*
 void drawRotatingTools(void)
 {
     float x, y;
@@ -324,3 +324,4 @@ void drawRotatingTools(void)
     }
 
 }
+*/

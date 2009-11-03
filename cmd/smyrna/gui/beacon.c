@@ -84,9 +84,9 @@ void pick_node_from_coords(float x, float y, float z)
 	if (!n->data.Visible)
 	    continue;
 
-	a = ABS(n->distorted_x - view->mouse.GLX);
-	b = ABS(n->distorted_y - view->mouse.GLY);
-	c = ABS(n->distorted_z - view->mouse.GLZ);
+	a = ABS(n->distorted_x - view->mouse.GLpos.x);
+	b = ABS(n->distorted_y - view->mouse.GLpos.y);
+	c = ABS(n->distorted_z - view->mouse.GLpos.z);
 	a = (float) pow((a * a + b * b + c * c), (float) 0.5);
 	if (a < closest_dif) {
 	    sn = n;
@@ -108,9 +108,9 @@ void pick_node_from_coords(float x, float y, float z)
 	p2.y = e->Node2->distorted_y;
 	p2.z = e->Node2->distorted_z;
 
-	p3.x = view->mouse.GLX;
-	p3.y = view->mouse.GLY;
-	p3.z = view->mouse.GLZ;
+	p3.x = view->mouse.GLpos.x;
+	p3.y = view->mouse.GLpos.y;
+	p3.z = view->mouse.GLpos.z;
 	d = point_to_lineseg_dist(p3, p1, p2);
 
 	if (d < closest_dif2) {
@@ -148,8 +148,8 @@ void pick_node_from_coords(float x, float y, float z)
     static int closest_dif = 3;
 	static char buf[512];
 	float a, b;
-	a = ABS(n->distorted_x - view->mouse.GLX);
-    b = ABS(n->distorted_y - view->mouse.GLY);
+	a = ABS(n->distorted_x - view->mouse.GLpos.x);
+    b = ABS(n->distorted_y - view->mouse.GLpos.y);
     a = (float) pow((a * a + b * b), (float) 0.5);
     if (a < closest_dif) {
 	if (!is_node_picked(n)) {

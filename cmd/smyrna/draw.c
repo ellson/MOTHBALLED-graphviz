@@ -111,10 +111,10 @@ void DrawBezier(GLfloat * xp, GLfloat * yp, GLfloat * zp, int filled,
 static void set_options(sdot_op * op, int param)
 {
 
-    if ((param == 1) && (view->mouse.mouse_mode == 10) && (view->mouse.mouse_down == 1))	//selected, if there is move, move it
+    if ((param == 1) && (view->mouse.mouse_mode == 10) && (view->mouse.down == 1))	//selected, if there is move, move it
     {
-	dx = view->GLx - view->GLx2;
-	dy = view->GLy - view->GLy2;
+	dx = view->mouse.GLinitPos.x-view->mouse.GLfinalPos.x;
+	dy = view->mouse.GLinitPos.y-view->mouse.GLfinalPos.y;
     } else {
 	dx = 0;
 	dy = 0;
@@ -445,7 +445,7 @@ void EmbedText(sdot_op* o, int param)
 void draw_selection_box(ViewInfo * view)
 {
     if (((view->mouse.mouse_mode == 4) || (view->mouse.mouse_mode == 5))
-	&& view->mouse.mouse_down) {
+	&& view->mouse.down) {
 	glColor4f(view->Selection.SelectionColor.R,
 		  view->Selection.SelectionColor.G,
 		  view->Selection.SelectionColor.B,
@@ -455,15 +455,15 @@ void draw_selection_box(ViewInfo * view)
 	    glLineStipple(1, 15);
 	}
 	glBegin(GL_LINE_STRIP);
-	glVertex3f((GLfloat) view->GLx, (GLfloat) view->GLy,
+	glVertex3f((GLfloat) view->mouse.GLinitPos.x, (GLfloat) view->mouse.GLinitPos.y,
 		   (GLfloat) 0.001 + view->Topview->global_z);
-	glVertex3f((GLfloat) view->GLx, (GLfloat) view->GLy2,
+	glVertex3f((GLfloat) view->mouse.GLinitPos.x, (GLfloat) view->mouse.GLfinalPos.y,
 		   (GLfloat) 0.001 + view->Topview->global_z);
-	glVertex3f((GLfloat) view->GLx2, (GLfloat) view->GLy2,
+	glVertex3f((GLfloat) view->mouse.GLfinalPos.x, (GLfloat) view->mouse.GLfinalPos.y,
 		   (GLfloat) 0.001 + view->Topview->global_z);
-	glVertex3f((GLfloat) view->GLx2, (GLfloat) view->GLy,
+	glVertex3f((GLfloat) view->mouse.GLfinalPos.x, (GLfloat) view->mouse.GLinitPos.y,
 		   (GLfloat) 0.001 + view->Topview->global_z);
-	glVertex3f((GLfloat) view->GLx, (GLfloat) view->GLy,
+	glVertex3f((GLfloat) view->mouse.GLinitPos.x, (GLfloat) view->mouse.GLinitPos.y,
 		   (GLfloat) 0.001 + view->Topview->global_z);
 	glEnd();
 	if (view->mouse.mouse_mode == 5)
@@ -476,13 +476,13 @@ void draw_magnifier(ViewInfo * view)
 {
 
     if ((view->mouse.mouse_mode == MM_MAGNIFIER)
-	&& (view->mouse.mouse_down)) {
+	&& (view->mouse.down)) {
 
 	GLfloat mg_x, mg_y, mg_z;
 	//converting screen pixel distaances to GL distances
 	view->mg.GLwidth = GetOGLDistance(view->mg.width) / (float) 2.0;
 	view->mg.GLheight = GetOGLDistance(view->mg.height) / (float) 2.0;
-	GetOGLPosRef((int) view->mouse.mouse_X, (int) view->mouse.mouse_Y, &mg_x, &mg_y, &mg_z);	//retrieving mouse coords as GL coordinates
+	GetOGLPosRef((int) view->mouse.pos.x, (int) view->mouse.pos.y, &mg_x, &mg_y, &mg_z);	//retrieving mouse coords as GL coordinates
 	view->mg.x = mg_x;
 	view->mg.y = mg_y;
 	glLineWidth(4);
@@ -544,12 +544,12 @@ void draw_circle(float originX, float originY, float radius)
 GLUquadric *fisheyesphere;
 void draw_fisheye_magnifier(ViewInfo * view)
 {
-    if ((view->mouse.mouse_mode == 21) && (view->mouse.mouse_down)) {
+    if ((view->mouse.mouse_mode == 21) && (view->mouse.down)) {
 	float a;
 	GLfloat mg_x, mg_y, mg_z;
 	a = GetOGLDistance((int) view->fmg.constantR);
 	view->fmg.R = (int) a;
-	GetOGLPosRef((int) view->mouse.mouse_X, (int) view->mouse.mouse_Y,
+	GetOGLPosRef((int) view->mouse.pos.x, (int) view->mouse.pos.y,
 		     &mg_x, &mg_y, &mg_z);
 	glColor4f((GLfloat) 0.3, (GLfloat) 0.1, (GLfloat) 0.8,
 		  (GLfloat) 1);

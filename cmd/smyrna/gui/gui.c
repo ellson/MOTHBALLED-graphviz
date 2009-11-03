@@ -156,6 +156,22 @@ GtkComboBox *get_SelectGraph(void)
 	return cbSelectGraph;
 }
 
+void Color_Widget(char *colorstring, GtkWidget * widget)
+{
+  GtkRcStyle *rc_style;
+  GdkColor color;
+
+  gdk_color_parse (colorstring, &color);
+
+
+  rc_style = gtk_rc_style_new ();
+  /* Set foreground (fg) color in normal state to red */
+  rc_style->fg[GTK_STATE_NORMAL] = color;
+  rc_style->color_flags[GTK_STATE_NORMAL] |= GTK_RC_FG;
+
+  gtk_widget_modify_style (widget, rc_style);
+  gtk_rc_style_unref (rc_style);
+}
 
 void Color_Widget_bg(char *colorstring, GtkWidget * widget)
 {

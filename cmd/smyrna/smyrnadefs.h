@@ -416,7 +416,7 @@ typedef struct
     };
 
 
-    typedef struct _mouse_attr {
+/*    typedef struct _mouse_attr {
 	int mouse_down;
 	int mouse_mode;
 	int pick;
@@ -426,12 +426,12 @@ typedef struct
 	float begin_y;
 	float dx;
 	float dy;
-	float GLX;		/*opengl coordiantes for right click */
-	float GLY;
-	float GLZ;
+	float GLX;	
+	float GLpos.y;
+	float GLpos.z;
 	mouse_rotate_axis rotate_axis;
 	clicked_mouse_button button;
-    } mouse_attr;
+    } mouse_attr;*/
 
 
 
@@ -485,9 +485,6 @@ typedef struct
 	float panx;
 	float pany;
 	float panz;
-	float prevpanx;
-	float prevpany;
-	float prevpanz;
 	float zoom;
 
 	/*clipping coordinates, to avoid unnecesarry rendering */
@@ -545,11 +542,6 @@ typedef struct
 	/*reserved , not being used yet */
 	GEunit unit;		//default pixels :0  
 
-	/*variable to hold mouse coordinates temporarily */
-	float GLx, GLy, GLz;
-	/*this is second  set of mouse coordinates holder for, it is needed to draw a rectangle with mouse */
-	float GLx2, GLy2, GLz2;
-
 	/*screen window size in 2d */
 	int w, h;
 	/*graph pointer to hold loaded graphs */
@@ -565,7 +557,8 @@ typedef struct
 	float GLDepth;
 
 	/*stores the info about status of mouse,pressed? what button ? where? */
-	mouse_attr mouse;
+//	mouse_attr mouse;
+	glCompMouse mouse;
 
 	/*selection object,refer to smyrnadefs.h for more info */
 	selection Selection;

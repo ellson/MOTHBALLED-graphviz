@@ -186,7 +186,8 @@ void glCompMouseMove(void *obj, GLfloat x, GLfloat y)
     sel->common.visible = 1;
 
 
-    if ((m->down) && (m->t == glMouseRightButton)) {
+    if ((m->down) && (m->t == glMouseRightButton)) 
+    {
 	sel->common.pos.x = m->pos.x - m->dragX;
 	sel->common.pos.y = m->pos.y - m->dragY;
 	sel->common.width = m->dragX;
