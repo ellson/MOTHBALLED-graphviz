@@ -192,18 +192,12 @@ unsigned char *create_pango_texture(char *fontdescription, int fontsize,
     //draw the text
     pango_cairo_show_layout(cr, layout);
 
-    output_file = fopen("c:/graphviz-ms/test_folder/test.png", "wb+");
-    if (output_file) {
-	cairo_surface_write_to_png_stream(surface, writer, output_file);
-
-    }
 
 
     *w = (int) width;
     *h = (int) height;
     g_object_unref(layout);
     cairo_destroy(cr);
-    fclose(output_file);
 
     return cairo_image_surface_get_data(surface);
 }
