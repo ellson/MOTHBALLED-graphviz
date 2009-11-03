@@ -171,7 +171,6 @@ unsigned char *create_pango_texture(char *fontdescription, int fontsize,
     cairo_t *cr;
     PangoLayout *layout;
     double width, height;
-    FILE *output_file;
 
     layout =
 	get_pango_layout(txt, fontdescription, fontsize, &width, &height);
