@@ -188,7 +188,7 @@ attr_list* attr_list_new(Agraph_t * g,int with_widgets )
 			  GDK_SCROLL | GDK_VISIBILITY_NOTIFY_MASK);
 
 			gtk_widget_show((GtkWidget*)l->fLabels[id]);
-			Color_Widget("blue",(GtkWidget*)l->fLabels[id]);
+			Color_Widget_bg("blue",(GtkWidget*)l->fLabels[id]);
 			gtk_fixed_put((GtkFixed*)glade_xml_get_widget(xml, "fixed6"),(GtkWidget*)l->fLabels[id],10,110+id * 13);
 		}
 	}
