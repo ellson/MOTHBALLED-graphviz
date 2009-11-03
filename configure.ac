@@ -2487,7 +2487,7 @@ else
 	  use_gd="Yes"
         ],[
           AC_MSG_WARN(Optional GD library not available)
-          use_gd="No (gd library found)"
+          use_gd="No (library not found)"
         ], $GD_LIBS)
       fi
       LDFLAGS=$save_LDFLAGS
