@@ -232,7 +232,7 @@ graph_t *gvPluginsGraph(GVC_t *gvc)
 
 void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 {
-    char c, *rest;
+    char c, *rest, *layout;
     const char *val;
     int i, v, nfiles;
     unsigned char buf[SMALLBUF];
@@ -258,15 +258,16 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
     if (gvc->common.config)
 	exit (0);
 
-    i = gvlayout_select(gvc, gvc->common.cmdname);
+    layout = gvc->common.cmdname;
+    if (streq(layout, "dot_static") || streq(layout, "dot_builtins"))
+        layout = "dot";
+    i = gvlayout_select(gvc, layout);
     if (i == NO_SUPPORT) {
-	fprintf(stderr, "There is no layout engine support for \"%s\"\n", gvc->common.cmdname);
-        if (streq(gvc->common.cmdname, "dot")) {
-	    fprintf(stderr, "Perhaps \"dot -c\" needs to be run (with installer's privileges) to register the plugins?\n");
-	}
-	else {
-	    fprintf(stderr, "Use one of:%s\n", gvplugin_list(gvc, API_layout, val));
-	}
+	fprintf(stderr, "There is no layout engine support for \"%s\"\n", layout);
+        if (streq(layout, "dot"))
+	    fprintf(stderr, "Perhaps \"%s -c\" needs to be run (with installer's privileges) to register the plugins?\n", gvc->common.cmdname);
+	else 
+	    fprintf(stderr, "Use one of:%s\n", gvplugin_list(gvc, API_layout, ""));
 	exit(1);
     }
 
