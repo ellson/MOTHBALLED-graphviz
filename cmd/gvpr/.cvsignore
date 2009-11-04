@@ -6,6 +6,7 @@ Makefile
 Makefile.in
 gdefs.h
 gvpr
+gvpr_static
 mkdefs
 *.pdf
 CMakeFiles CMakeTmp CMakeFiles CMakeCache.txt cmake_install.cmake
