@@ -259,13 +259,16 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 	exit (0);
 
     layout = gvc->common.cmdname;
-    if (streq(layout, "dot_static") || streq(layout, "dot_builtins"))
+    if (streq(layout, "dot_static")
+	    || streq(layout, "dot_builtins")
+	    || streq(layout, "")   /* when run as a process from Gvedit on Windows */
+	)
         layout = "dot";
     i = gvlayout_select(gvc, layout);
     if (i == NO_SUPPORT) {
 	fprintf(stderr, "There is no layout engine support for \"%s\"\n", layout);
         if (streq(layout, "dot"))
-	    fprintf(stderr, "Perhaps \"%s -c\" needs to be run (with installer's privileges) to register the plugins?\n", gvc->common.cmdname);
+	    fprintf(stderr, "Perhaps \"dot -c\" needs to be run (with installer's privileges) to register the plugins?\n");
 	else 
 	    fprintf(stderr, "Use one of:%s\n", gvplugin_list(gvc, API_layout, ""));
 	exit(1);
