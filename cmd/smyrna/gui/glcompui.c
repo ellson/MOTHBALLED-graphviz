@@ -31,6 +31,7 @@
 /* static glCompPanel *controlPanel; */
 /* static glCompButton *rotatebutton; */
 static glCompPanel *sel = NULL;
+static  glCompLabel *selLabel=NULL;
 static glCompButton *to3DBtn;
 static glCompButton *to2DBtn;
 static glCompButton *rotateBtn;
@@ -44,7 +45,6 @@ static glCompButton *panBtn;
 static void menu_click_pan(void *obj, GLfloat x, GLfloat y,
 			   glMouseButtonType t)
 {
-    switch_Mouse(NULL, MM_PAN);
 
 }
 
@@ -56,11 +56,6 @@ static void menu_click_zoom(void *obj, GLfloat x, GLfloat y,
 }
 #endif
 
-static void menu_click_fisheye_magnifier(void *obj, GLfloat x, GLfloat y,
-					 glMouseButtonType t)
-{
-    view->mouse.mouse_mode = MM_FISHEYE_MAGNIFIER;
-}
 
 static void menu_click_zoom_minus(void *obj, GLfloat x, GLfloat y,
 				  glMouseButtonType t)
@@ -99,12 +94,6 @@ static void menu_switch_to_fisheye(void *obj, GLfloat x, GLfloat y,
     }
 }
 
-static void menu_click_rotate(void *obj, GLfloat x, GLfloat y,
-			      glMouseButtonType t)
-{
-    switch_Mouse(NULL, MM_ROTATE);
-    view->mouse.mouse_mode = MM_ROTATE;
-}
 
 
 static void menu_click_center(void *obj, GLfloat x, GLfloat y,
@@ -134,14 +123,12 @@ static void switch2D3D(void *obj, GLfloat x, GLfloat y,
 	    }
 	    glCompButtonShow(to2DBtn);
 	    glCompButtonHide(to3DBtn);
-	    glCompButtonShow(rotateBtn);
 	    img3D->common.visible = 1;
 	} else {		/*switch to 2d */
 
 	    view->active_camera = -1;	/*set to camera */
 	    glCompButtonShow(to3DBtn);
 	    glCompButtonHide(to2DBtn);
-	    glCompButtonHide(rotateBtn);
 	    panBtn->common.callbacks.click(panBtn, (GLfloat) 0,
 					   (GLfloat) 0,
 					   (glMouseButtonType) 0);
@@ -224,19 +211,9 @@ glCompSet *glcreate_gl_topview_menu(void)
     b->groupid = 1;
     y = y + off;
 
-    b = glCompButtonNew((glCompObj *) p, 1, y, 42, 42, "");
-    glCompButtonAddPngGlyph(b, smyrnaPath("magnifier.png"));
-    b->common.callbacks.click = menu_click_fisheye_magnifier;
-    b->groupid = 1;
 
     y = y + off;
 
-    b = glCompButtonNew((glCompObj *) p, 1, y, 42, 42, "");
-    glCompButtonAddPngGlyph(b, smyrnaPath("rotate.png"));
-    b->groupid = 1;
-    b->common.callbacks.click = menu_click_rotate;
-    glCompButtonHide(b);
-    rotateBtn = b;
 
 
     p = glCompPanelNew((glCompObj *) p, 1, 25, 80, 255);
@@ -323,7 +300,6 @@ glCompSet *glcreate_gl_topview_menu(void)
     p->common.color.A = 0.2;
     p->common.visible = 0;
     sel = p;
-
     s->common.callbacks.mouseover = glCompMouseMove;
     s->common.callbacks.mouseup = CBglCompMouseUp;
 

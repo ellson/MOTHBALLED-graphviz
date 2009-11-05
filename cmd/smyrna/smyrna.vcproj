@@ -222,10 +222,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\gui\glmenu.h"
-				>
-			</File>
-			<File
 				RelativePath=".\glmotion.h"
 				>
 			</File>
@@ -363,10 +359,6 @@
 			</File>
 			<File
 				RelativePath=".\glexpose.c"
-				>
-			</File>
-			<File
-				RelativePath=".\gui\glmenu.c"
 				>
 			</File>
 			<File

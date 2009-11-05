@@ -169,17 +169,6 @@ void mShowHostSelectionSlot(GtkWidget * widget, gpointer user_data)
 
 }
 
-void mMenuPan(GtkWidget * widget, gpointer user_data)
-{
-    view->mouse.mouse_mode = MM_PAN;
-
-}
-
-void mMenuZoom(GtkWidget * widget, gpointer user_data)
-{
-    view->mouse.mouse_mode = MM_ZOOM;
-
-}
 
 void mShowConsoleSlot(GtkWidget * widget, gpointer user_data)
 {
@@ -384,20 +373,6 @@ void mUnselectAllClustersSlot(GtkWidget * widget, gpointer user_data)
 //    deselect_all_graphs(view->g[view->activeGraph]);
 }
 
-void mSingleSelectSlot(GtkWidget * widget, gpointer user_data)
-{
-    view->mouse.mouse_mode = MM_SINGLE_SELECT;
-}
-
-void mSelectAreaSlot(GtkWidget * widget, gpointer user_data)
-{
-    view->mouse.mouse_mode = MM_RECTANGULAR_SELECT;
-}
-
-void mSelectAreaXSlot(GtkWidget * widget, gpointer user_data)
-{
-    view->mouse.mouse_mode = MM_RECTANGULAR_X_SELECT;
-}
 
 //help
 void mAbout(GtkWidget * widget, gpointer user_data)

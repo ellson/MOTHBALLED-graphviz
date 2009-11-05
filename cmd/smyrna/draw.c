@@ -28,6 +28,7 @@ XDOT DRAWING FUNCTIONS, maybe need to move them somewhere else
 #include "xdot.h"
 #include "viewport.h"
 #include "topfisheyeview.h"
+#include "appmouse.h"
 
 //delta values
 static float dx = 0.0;
@@ -111,7 +112,8 @@ void DrawBezier(GLfloat * xp, GLfloat * yp, GLfloat * zp, int filled,
 static void set_options(sdot_op * op, int param)
 {
 
-    if ((param == 1) && (view->mouse.mouse_mode == 10) && (view->mouse.down == 1))	//selected, if there is move, move it
+    int a=get_mode(view);
+    if ((param == 1) && (a == 10) && (view->mouse.down == 1))	//selected, if there is move, move it
     {
 	dx = view->mouse.GLinitPos.x-view->mouse.GLfinalPos.x;
 	dy = view->mouse.GLinitPos.y-view->mouse.GLfinalPos.y;
@@ -444,7 +446,7 @@ void EmbedText(sdot_op* o, int param)
 
 void draw_selection_box(ViewInfo * view)
 {
-    if (((view->mouse.mouse_mode == 4) || (view->mouse.mouse_mode == 5))
+/*    if (((view->mouse.mouse_mode == 4) || (view->mouse.mouse_mode == 5))
 	&& view->mouse.down) {
 	glColor4f(view->Selection.SelectionColor.R,
 		  view->Selection.SelectionColor.G,
@@ -469,13 +471,13 @@ void draw_selection_box(ViewInfo * view)
 	if (view->mouse.mouse_mode == 5)
 	    glDisable(GL_LINE_STIPPLE);
 
-    }
+    }*/
 }
 
 void draw_magnifier(ViewInfo * view)
 {
 
-    if ((view->mouse.mouse_mode == MM_MAGNIFIER)
+    if ((get_mode(view) == MM_MAGNIFIER)
 	&& (view->mouse.down)) {
 
 	GLfloat mg_x, mg_y, mg_z;
@@ -544,7 +546,9 @@ void draw_circle(float originX, float originY, float radius)
 GLUquadric *fisheyesphere;
 void draw_fisheye_magnifier(ViewInfo * view)
 {
-    if ((view->mouse.mouse_mode == 21) && (view->mouse.down)) {
+    if (get_mode(view)==MM_FISHEYE_MAGNIFIER)
+
+    {
 	float a;
 	GLfloat mg_x, mg_y, mg_z;
 	a = GetOGLDistance((int) view->fmg.constantR);
@@ -587,11 +591,11 @@ void drawBorders(ViewInfo * view)
 		  view->borderColor.G, view->borderColor.A);
 	glLineWidth(2);
 	glBegin(GL_LINE_STRIP);
-	glVertex2d(view->bdxLeft, view->bdyBottom);
-	glVertex2d(view->bdxRight, view->bdyBottom);
-	glVertex2d(view->bdxRight, view->bdyTop);
-	glVertex2d(view->bdxLeft, view->bdyTop);
-	glVertex2d(view->bdxLeft, view->bdyBottom);
+	glVertex3d(view->bdxLeft, view->bdyBottom,0);
+	glVertex3d(view->bdxRight, view->bdyBottom,0);
+	glVertex3d(view->bdxRight, view->bdyTop,0);
+	glVertex3d(view->bdxLeft, view->bdyTop,0);
+	glVertex3d(view->bdxLeft, view->bdyBottom,0);
 	glEnd();
 	glLineWidth(1);
     }

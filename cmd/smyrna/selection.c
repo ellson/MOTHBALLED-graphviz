@@ -523,11 +523,6 @@ int lineintersects(float X1, float X2, float Y1, float Y2)
     float x, y, m, iter;
     float RX, RY, RW, RH;
     int intersects, in;
-    if (view->mouse.mouse_mode == MM_SINGLE_SELECT) {
-	RW = 10;
-	RH = 10;
-    }
-
     RX = view->Selection.X;
     RY = view->Selection.Y;
     if ((is_point_in_rectangle(X1, Y1, RX, RY, RW, RH))
@@ -577,6 +572,128 @@ int is_point_in_rectangle(float X, float Y, float RX, float RY, float RW,
 
 
 }
+
+
+
+static int select_topview_node(topview_node * n)
+{
+    static float x1,y1,x2,y2,x,y;
+    static int sel_type=0;  /*0:select all , 1:only nodes 2:only edges*/
+    x=n->distorted_x;
+    y=n->distorted_y;
+    if(view->mouse.GLfinalPos.x > view->mouse.GLinitPos.x)
+    {
+        x1=view->mouse.GLinitPos.x;
+	x2=view->mouse.GLfinalPos.x;
+    }
+    else
+    {
+        x2=view->mouse.GLinitPos.x;
+	x1=view->mouse.GLfinalPos.x;
+
+    }
+    if(view->mouse.GLfinalPos.y > view->mouse.GLinitPos.y)
+    {
+        y1=view->mouse.GLinitPos.y;
+	y2=view->mouse.GLfinalPos.y;
+    }
+    else
+    {
+        y2=view->mouse.GLinitPos.y;
+	y1=view->mouse.GLfinalPos.y;
+    }
+    if(is_point_in_rectangle(x,y,x1,y1,x2-x1,y2-y1))
+    {
+        agset(n->Node,"selected","1");
+	n->data.Selected=1;
+    }
+}
+
+static int select_topview_edge(topview_edge* e)
+{
+    static float x1,y1,x2,y2,n1x,n1y,n2x,n2y;
+    static int sel_type=0;  /*0:select all , 1:only nodes 2:only edges*/
+    n1x=e->Node1->distorted_x;
+    n1y=e->Node1->distorted_y;
+    n2x=e->Node2->distorted_x;
+    n2y=e->Node2->distorted_y;
+    if(view->mouse.GLfinalPos.x > view->mouse.GLinitPos.x)
+    {
+        x1=view->mouse.GLinitPos.x;
+	x2=view->mouse.GLfinalPos.x;
+    }
+    else
+    {
+        x2=view->mouse.GLinitPos.x;
+	x1=view->mouse.GLfinalPos.x;
+
+    }
+    if(view->mouse.GLfinalPos.y > view->mouse.GLinitPos.y)
+    {
+        y1=view->mouse.GLinitPos.y;
+	y2=view->mouse.GLfinalPos.y;
+    }
+    else
+    {
+        y2=view->mouse.GLinitPos.y;
+	y1=view->mouse.GLfinalPos.y;
+    }
+    if((is_point_in_rectangle(n1x,n1y,x1,y1,x2-x1,y2-y1))
+	&&
+	(is_point_in_rectangle(n2x,n2y,x1,y1,x2-x1,y2-y1)) )
+    {
+	agset(e->Edge,"selected","1");
+	e->data.Selected=1;
+    }
+}
+
+static void node_rectangle_select(ViewInfo* v)
+{
+    int ind;
+    topview_node* n;
+   
+    for (ind = 0; ind < v->Topview->Nodecount; ind++) 
+    {
+	n = v->Topview->Nodes + ind;
+	select_topview_node(n);
+    }
+
+}
+static void edge_rectangle_select(ViewInfo* v)
+{
+    int ind;
+    topview_edge* e;
+   
+    for (ind = 0; ind < v->Topview->Edgecount; ind++) 
+    {
+	e = v->Topview->Edges + ind;
+	select_topview_edge(e);
+    }
+
+}
+void rectangle_select(ViewInfo* v)
+{
+    node_rectangle_select(v);
+    edge_rectangle_select(v);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #ifdef UNUSED

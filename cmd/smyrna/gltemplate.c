@@ -307,6 +307,19 @@ static gboolean button_release_event(GtkWidget * widget,
     dy = 0.0;
     return FALSE;
 }
+static gboolean key_press_event(GtkWidget * widget, GdkEventKey * event, gpointer data)
+{
+    view->keymap.down=1;
+    view->keymap.keyVal=event->keyval;
+//    printf ("key is pressed:%d\n",event->keyval);
+
+}
+static gboolean key_release_event(GtkWidget * widget, GdkEventKey * event, gpointer data)
+{
+ //   printf ("key is released:%d\n",event->keyval);
+    view->keymap.down=0;
+}
+
 
 static gboolean
 scroll_event(GtkWidget * widget, GdkEventScroll * event, gpointer data)
@@ -345,12 +358,9 @@ static gboolean motion_notify_event(GtkWidget * widget,
 
     dx = x - begin_x;
     dy = y - begin_y;
-
     view->mouse.dragX = dx;
     view->mouse.dragY = dy;
-
-
-    if((view->mouse.t==glMouseLeftButton) && (view->mouse.down))
+    if((view->mouse.t==glMouseLeftButton) && (view->mouse.down)  )
     {
 	appmouse_left_drag(view,(int)event->x,(int)event->y);
 	redraw = TRUE;
@@ -393,45 +403,6 @@ static gboolean key_press_event(GtkWidget * widget, GdkEventKey * event,
     return TRUE;
 }
 #endif
-
-/*
-	call back for mouse mode changes,
-	params:GtkMenuItem is not used, mouse_mode is the new mouse_mode
-	return value:none
-*/
-void switch_Mouse(GtkMenuItem * menuitem, int mouse_mode)
-{
-    switch (mouse_mode) {
-
-    case -1:
-	change_cursor(GDK_TOP_LEFT_ARROW);
-	break;
-    case 0:
-	change_cursor(GDK_HAND2);
-	break;
-    case 1:
-	change_cursor(GDK_SIZING);
-	break;
-    case 3:
-	change_cursor(GDK_CROSS);
-	break;
-    case 4:
-	change_cursor(GDK_TCROSS);
-	break;
-    case 5:
-	change_cursor(GDK_CROSSHAIR);
-	break;
-    case 10:
-	change_cursor(GDK_FLEUR);
-	break;
-    case MM_ROTATE:
-	change_cursor(GDK_EXCHANGE);
-	break;
-    default:
-	break;
-    };
-    view->mouse.mouse_mode = mouse_mode;
-}
 
 
 /*
@@ -516,7 +487,7 @@ void create_window(GdkGLConfig * glconfig, GtkWidget * vbox)
 			  GDK_POINTER_MOTION_MASK |
 			  GDK_BUTTON_PRESS_MASK | GDK_KEY_PRESS |
 			  GDK_BUTTON_RELEASE_MASK |
-			  GDK_SCROLL | GDK_VISIBILITY_NOTIFY_MASK);
+			  GDK_SCROLL | GDK_VISIBILITY_NOTIFY_MASK |  GDK_KEY_PRESS_MASK	| GDK_KEY_RELEASE_MASK	);
 
     g_signal_connect_after(G_OBJECT(view->drawing_area), "realize",
 			   G_CALLBACK(realize), NULL);
@@ -530,12 +501,9 @@ void create_window(GdkGLConfig * glconfig, GtkWidget * vbox)
 /*    g_signal_connect(G_OBJECT(view->drawing_area), "2button_press_event",
 		     G_CALLBACK(button_press_event), NULL);*/
 
-    g_signal_connect(G_OBJECT(view->drawing_area), "button_release_event",
-		     G_CALLBACK(button_release_event), NULL);
-    g_signal_connect(G_OBJECT(view->drawing_area), "key_release_event",
-		     G_CALLBACK(button_release_event), NULL);
-    g_signal_connect(G_OBJECT(view->drawing_area), "key_press_event",
-		     G_CALLBACK(button_release_event), NULL);
+    g_signal_connect(G_OBJECT(view->drawing_area), "button_release_event",G_CALLBACK(button_release_event), NULL);
+    g_signal_connect(G_OBJECT(view->drawing_area), "key_release_event", G_CALLBACK(key_release_event), NULL);
+    g_signal_connect(G_OBJECT(view->drawing_area), "key_press_event", G_CALLBACK(key_press_event), NULL);
     g_signal_connect(G_OBJECT(view->drawing_area), "scroll_event",
 		     G_CALLBACK(scroll_event), NULL);
 
@@ -543,11 +511,26 @@ void create_window(GdkGLConfig * glconfig, GtkWidget * vbox)
 		     G_CALLBACK(motion_notify_event), NULL);
 
 
+//gtk_accel_group_connect (GTK_ACCEL_GROUP (mainw->accel_group), GDK_Page_Up, GDK_CONTROL_MASK, 0, g_cclosure_new (G_CALLBACK (prevclip_callback),NULL,NULL));
 
 
     gtk_box_pack_start(GTK_BOX(vbox), view->drawing_area, TRUE, TRUE, 0);
 
     gtk_widget_show(view->drawing_area);
+
+
+
+    gtk_widget_add_events(glade_xml_get_widget(xml, "frmMain"),
+			  GDK_BUTTON_MOTION_MASK |
+			  GDK_POINTER_MOTION_MASK |
+			  GDK_BUTTON_PRESS_MASK | GDK_KEY_PRESS |
+			  GDK_BUTTON_RELEASE_MASK |
+			  GDK_SCROLL | GDK_VISIBILITY_NOTIFY_MASK |  GDK_KEY_PRESS_MASK	| GDK_KEY_RELEASE_MASK	);
+
+
+    g_signal_connect(G_OBJECT(glade_xml_get_widget(xml, "frmMain")), "key_release_event", G_CALLBACK(key_release_event), NULL);
+    g_signal_connect(G_OBJECT(glade_xml_get_widget(xml, "frmMain")), "key_press_event", G_CALLBACK(key_press_event), NULL);
+
 
     /* Popup menu. */
 

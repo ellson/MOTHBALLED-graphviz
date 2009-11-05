@@ -69,6 +69,13 @@ typedef struct _ArcBall_t ArcBall_t;
 #define MM_MOVE					10
 #define MM_MAGNIFIER			20
 #define MM_FISHEYE_MAGNIFIER	21
+
+#define B_LSHIFT	    65505
+#define B_RSHIFT	    65506
+#define B_LCTRL		    65507
+#define B_RCTRL		    65508
+
+
 #define GLOBAL_Z_OFFSET			0.001
 
 #define MAX_ZOOM	500
@@ -100,6 +107,14 @@ typedef struct _ArcBall_t ArcBall_t;
 #define MAX_FILTERED_ATTR_COUNT 50
 
 typedef enum {attr_alpha,attr_float,attr_int,attr_bool,attr_drowdown,attr_color} attr_data_type;
+
+
+typedef struct{
+    int keyVal;
+    int down;
+}keymap_t;
+
+
 
 typedef struct {
 	int index;
@@ -636,6 +651,7 @@ typedef struct
 	int script_count;	/*# of scripts */
 	GtkComboBox *graphComboBox;	/*pointer to graph combo box at top right */
 	ArcBall_t *arcball;
+	keymap_t keymap;
 
     } ViewInfo;
 /*rotation steps*/

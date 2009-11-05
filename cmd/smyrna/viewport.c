@@ -386,7 +386,6 @@ void init_viewport(ViewInfo * view)
     view->gridVisible = 0;	//show grids in light gray
 
     //mouse mode=pan
-    view->mouse.mouse_mode = 0;
     //pen color
     view->penColor.R = 0;
     view->penColor.G = 0;
@@ -481,6 +480,7 @@ void init_viewport(ViewInfo * view)
     view->colschms = NULL;
     view->flush = 1;
     view->arcball = NEW(ArcBall_t);
+    view->keymap.down=0;
     /*add default camera */
     //create fontset
 }

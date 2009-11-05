@@ -364,7 +364,6 @@ extern "C" {
 	glCompCallBacks callbacks;
 	glCompCallBacks functions;
 	int down;
-	int mouse_mode;	/*some data value to store custom defined mouse modes*/
 
 
     } glCompMouse;

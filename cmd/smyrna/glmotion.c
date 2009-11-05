@@ -30,44 +30,31 @@ void glmotion_main(ViewInfo * v, GdkEventMotion * event,
 		   GtkWidget * widget)
 {
 
+    int a=get_mode(v);
     redraw = FALSE;
-    view->FontSizeConst = GetOGLDistance(14);
     /*panning */
-    if ((event->state & GDK_BUTTON1_MASK)
-	&& (v->mouse.mouse_mode == MM_PAN))
+    if (a == MM_PAN)
 	glmotion_pan(v);
-
     /*rotating, only in 3d v */
-    if ((v->active_camera >= 0) && (v->mouse.mouse_mode == MM_ROTATE))
+    if (a == MM_ROTATE)
 	glmotion_rotate(v);
 
     /*zooming */
-    if ((event->state & GDK_BUTTON1_MASK)
-	&& (v->mouse.mouse_mode == MM_ZOOM))
+    if (a == MM_ZOOM)
 	glmotion_zoom(v);
-
     /*selection rect */
-    if ((event->state & GDK_BUTTON1_MASK)
-	&& ((v->mouse.mouse_mode == MM_RECTANGULAR_SELECT)
-	    || (v->mouse.mouse_mode == 5))) {
+    if ((a == MM_RECTANGULAR_SELECT) || (a == 5)) 
+    {
 	GetFixedOGLPos((int) event->x, (int) event->y, v->GLDepth,
 		       &(v->mouse.GLfinalPos.x), &(v->mouse.GLfinalPos.y), &(v->mouse.GLfinalPos.z));
 	redraw = TRUE;
     }
-    if ((event->state & GDK_BUTTON1_MASK)
-	&& (v->mouse.mouse_mode == MM_MOVE)) {
+    if (a == MM_MOVE) 
+    {
 	GetFixedOGLPos((int) event->x, (int) event->y, v->GLDepth,
 		       &(v->mouse.GLfinalPos.x), &(v->mouse.GLfinalPos.y), &(v->mouse.GLfinalPos.z));
 	redraw = TRUE;
     }
-    if ((event->state & GDK_BUTTON1_MASK)
-	&& ((v->mouse.mouse_mode == MM_MAGNIFIER)
-	    || (v->mouse.mouse_mode == MM_FISHEYE_MAGNIFIER))) {
-	v->mouse.pos.x = (float) event->x;
-	v->mouse.pos.y = (float) event->y;
-	redraw = TRUE;
-    }
-
     if (redraw)
 	gdk_window_invalidate_rect(widget->window, &widget->allocation,
 				   FALSE);

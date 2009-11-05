@@ -62,6 +62,8 @@ extern "C" {
     float distance_to_line(float ax, float ay, float bx, float by,
 			   float cx, float cy);
 
+    extern void rectangle_select(ViewInfo* v);
+
 #ifdef __cplusplus
 }				/* end extern "C" */
 #endif

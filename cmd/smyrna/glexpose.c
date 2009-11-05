@@ -65,13 +65,12 @@ void draw_cube()
 
 void drawRotatingAxis(void)
 {
-#ifdef UNUSED
-    float x, y;
-    float x1, y1, z1;
-    float x2, y2, z2;
-    float R1, R2;
-#endif
     static GLUquadricObj *quadratic = (GLUquadricObj *) 0;
+	float AL = 45;
+
+    if (get_mode(view) != MM_ROTATE)
+	    return;
+
     if (!quadratic) {
 	quadratic = gluNewQuadric();	// Create A Pointer To The Quadric Object
 	gluQuadricNormals(quadratic, GLU_SMOOTH);	// Create Smooth Normals
@@ -81,9 +80,6 @@ void drawRotatingAxis(void)
 
     }
 
-    if ((view->mouse.mouse_mode == MM_ROTATE)
-	&& (view->active_camera >= 0)) {
-	float AL = 45;
 	glPushMatrix();
 	glLoadIdentity();
 	glMultMatrixf(view->arcball->Transform.M);	/*arcball transformations , experimental */
@@ -106,7 +102,6 @@ void drawRotatingAxis(void)
 	glLineWidth(1);
 	glPopMatrix();
 
-    }
 
 }
 
@@ -173,7 +168,6 @@ int glexpose_main(ViewInfo * view)
     draw_fisheye_magnifier(view);
     draw_magnifier(view);
     glexpose_drawgraph(view);
-    draw_selection_box(view);
     drawBorders(view);
 //      drawRotatingTools();
 //      draw_cube();

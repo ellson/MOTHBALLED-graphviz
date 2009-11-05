@@ -642,7 +642,6 @@ static int drawtopviewnodes(Agraph_t * g)
 		continue;
 
 	    /*check for each node if it needs to be selected or picked */
-	    select_topview_node(v);
 	    //UPDATE view->Topview data from cgraph
 	    /* if (v->update_required) */
 	    /* update_topview_node_from_cgraph(v); */
@@ -864,77 +863,6 @@ void drawTopViewGraph(Agraph_t * g)
 
 
 
-static int select_topview_node(topview_node * n)
-{
-    if (!view->Selection.Active) {
-	//implement hint box here
-/*		if (view->mouse.button== rightmousebutton)
-		{
-			if (pick_node(n))
-				view->mouse.button = -1;
-		}
-		return 0;*/
-    }
-    if (((view->Selection.Type == 0) && (view->Selection.Active))
-	|| (view->mouse.t == rightmousebutton))	//single selection or right click (picking)
-    {
-	float dist =
-	    (float) DIST2(view->Selection.X - n->distorted_x,
-			  view->Selection.Y - n->distorted_y);
-
-	if ((view->Selection.node_distance == -1)
-	    || (dist < view->Selection.node_distance)) {
-	    view->Selection.node_distance = dist;
-	    view->Selection.single_selected_node = n;
-	}
-
-	return 0;
-
-/*		if (OD_Selected(n->Node) == 0)
-		{
-			OD_Selected(n->Node) = 1;
-			select_object(view->g[view->activeGraph], n->Node);
-	    } else {
-			OD_Selected(n->Node) = 1;
-			deselect_object(view->g[view->activeGraph], n->Node);
-	    }
-	    break;*/
-
-    }
-    if (view->Selection.Active == 0)
-	return 0;
-    if (is_point_in_rectangle
-	(n->x, n->y, view->Selection.X, view->Selection.Y,
-	 view->Selection.W, view->Selection.H)) {
-
-	switch (view->Selection.Type) {
-
-/*
-	int Active;			//0 there is no selection need to be applied
-    char Type;			//0     single selection , 1 rectangle , 2 rectangleX 
-    float X, Y, W, H;		//selection boundries
-    int Anti;			//subtract selections if 1
-    int AlreadySelected;	//for single selections to avoid selecting more than one object
-    glCompColor SelectionColor;
-*/
-
-
-	case 1:
-	case 2:
-	    if (view->Selection.Anti == 0) {
-		select_node(n);
-		view->Selection.AlreadySelected = 1;
-	    } else {
-
-		deselect_node(n);
-		view->Selection.AlreadySelected = 1;
-	    }
-	    break;
-
-	}
-    }
-    return 1;
-}
 
 
 #ifdef UNUSED
@@ -1059,7 +987,8 @@ static int draw_topview_edge_label(topview_edge * e, float zdepth)
 static void set_topview_options(void)
 {
 
-    if ((view->mouse.mouse_mode == 10) && (view->mouse.down == 1))	//selected, if there is move move it, experimental
+    int a=get_mode(view);
+    if ((a == 10) && (view->mouse.down == 1))	//selected, if there is move move it, experimental
     {
 	dx = view->mouse.GLinitPos.x - view->mouse.GLfinalPos.x;
 	dy = view->mouse.GLinitPos.y - view->mouse.GLfinalPos.y;
@@ -1127,15 +1056,6 @@ static int get_color_from_edge(topview_edge * e)
 		  view->selectedEdgeColor.B, view->selectedEdgeColor.A);
 	return return_value;
     }
-    /*if both head and tail nodes are highlighted use edge highlight color */
-    if ((e->Node1->data.Highlighted)
-	&& (e->Node2->data.Highlighted)) {
-	glColor4f(view->highlightedEdgeColor.R,
-		  view->highlightedEdgeColor.G,
-		  view->highlightedEdgeColor.B,
-		  view->highlightedEdgeColor.A);
-	return return_value;
-    }
     /*edge maybe in a group and group may be selected, then use groups's color example:ATT hosts */
     if ((e->Node1->GroupIndex >= 0) || (e->Node2->GroupIndex >= 0)) {
 	if (view->Topview->TopviewData->hostactive[e->Node1->GroupIndex] ==
@@ -1181,13 +1101,24 @@ static int node_visible(topview_node * n)
 
 int move_TVnodes(void)
 {
+    float delX,delY;
     topview_node *v;
+    static flag=0;
     int ind = 0;
+    if (!flag)
+    {
+//	printf ("dragx:%f dragy:%f\n",view->mouse.dragX,view->mouse.dragY);
+	flag=1;
+	return;
+    }
+
+    delX = GetOGLDistance((int) view->mouse.dragX);
+    delY = GetOGLDistance((int) view->mouse.dragY);
     for (ind = 0; ind < view->Topview->Nodecount; ind++) {
 	v = &view->Topview->Nodes[ind];
 	if (v->data.Selected) {
-	    v->distorted_x = v->distorted_x - dx;
-	    v->distorted_y = v->distorted_y - dy;
+	    v->distorted_x = v->distorted_x + delX;
+	    v->distorted_y = v->distorted_y - delY;
 	}
     }
     return 1;

@@ -27,35 +27,29 @@ void btnToolSingleSelect_clicked(GtkWidget * widget, gpointer user_data)
 {
     deselect_all(view->g[view->activeGraph]);
     //gtk_toggle_tool_button_set_active   ((GtkToggleToolButton*)widget,1);
-    switch_Mouse(NULL, 3);
 }
 
 void btnToolRectSelect_clicked(GtkWidget * widget, gpointer user_data)
 {
 
     deselect_all(view->g[view->activeGraph]);
-    view->Selection.Anti = 0;
-    switch_Mouse(NULL, 4);
 }
 
 void btnToolRectXSelect_clicked(GtkWidget * widget, gpointer user_data)
 {
     deselect_all(view->g[view->activeGraph]);
     view->Selection.Anti = 0;
-    switch_Mouse(NULL, 5);
 }
 
 void btnToolAntiRectSelect_clicked(GtkWidget * widget, gpointer user_data)
 {
     view->Selection.Anti = 1;
-    switch_Mouse(NULL, 4);
 
 }
 
 void btnToolAntiRectXSelect_clicked(GtkWidget * widget, gpointer user_data)
 {
     view->Selection.Anti = 1;
-    switch_Mouse(NULL, 5);
 
 }
 
@@ -64,13 +58,11 @@ void btnToolPan_clicked(GtkWidget * widget, gpointer user_data)
 {
 
 
-    switch_Mouse(NULL, 0);
 
 }
 
 void btnToolZoom_clicked(GtkWidget * widget, gpointer user_data)
 {
-    switch_Mouse(NULL, 1);
 }
 
 void btnToolZoomIn_clicked(GtkWidget * widget, gpointer user_data)
@@ -157,7 +149,6 @@ void btnToolFit_clicked(GtkWidget * widget, gpointer user_data)
 
 void btnToolMove_clicked(GtkWidget * widget, gpointer user_data)
 {
-    switch_Mouse(NULL, 10);
 }
 
 void btnToolAddNode_clicked(GtkWidget * widget, gpointer user_data)
@@ -180,7 +171,6 @@ void btnToolFindEdge_clicked(GtkWidget * widget, gpointer user_data)
 }
 void btnToolCursor_clicked(GtkWidget * widget, gpointer user_data)
 {
-    switch_Mouse(NULL, -1);
 }
 void write_to_console(char *text)
 {
