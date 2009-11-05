@@ -45,7 +45,7 @@ static glCompButton *panBtn;
 static void menu_click_pan(void *obj, GLfloat x, GLfloat y,
 			   glMouseButtonType t)
 {
-
+        deselect_all(view->g[view->activeGraph]);
 }
 
 #ifdef UNUSED
@@ -208,7 +208,6 @@ glCompSet *glcreate_gl_topview_menu(void)
     b->common.callbacks.click = menu_click_pan;
     panBtn = b;
 
-    b->groupid = 1;
     y = y + off;
 
 

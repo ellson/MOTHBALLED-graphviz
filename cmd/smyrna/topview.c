@@ -650,9 +650,6 @@ static int drawtopviewnodes(Agraph_t * g)
 			  view->selectedNodeColor.G,
 			  view->selectedNodeColor.B,
 			  view->selectedNodeColor.A);
-		ddx = dx;
-		ddy = dy;
-		ddz = dz;
 	    } else {		//get the color from node
 		glColor4f(v->Color.R, v->Color.G, v->Color.B,
 			  v->node_alpha * view->defaultnodealpha);
@@ -738,12 +735,12 @@ static void drawtopviewedges(Agraph_t * g)
 	       e->Node2->distorted_x - dddx,
 	       e->Node2->distorted_y - dddy,
 	       e->Node2->distorted_z - ddz */
-	    draw_edge(e->Node1->distorted_x - ddx,
-		      e->Node1->distorted_y - ddy,
-		      e->Node1->distorted_z - ddz,
-		      e->Node2->distorted_x - dddx,
-		      e->Node2->distorted_y - dddy,
-		      e->Node2->distorted_z - ddz, e->data.edgeid, e);
+	    draw_edge(e->Node1->distorted_x ,
+		      e->Node1->distorted_y ,
+		      e->Node1->distorted_z ,
+		      e->Node2->distorted_x ,
+		      e->Node2->distorted_y ,
+		      e->Node2->distorted_z , e->data.edgeid, e);
 
 
 
@@ -1119,6 +1116,8 @@ int move_TVnodes(void)
 	if (v->data.Selected) {
 	    v->distorted_x = v->distorted_x + delX;
 	    v->distorted_y = v->distorted_y - delY;
+	    v->x = v->x + delX;
+	    v->y = v->y - delY;
 	}
     }
     return 1;
