@@ -37,8 +37,8 @@ static void appmouse_left_click(ViewInfo* v,int x,int y)
 }
 static void appmouse_right_click(ViewInfo* v,int x,int y)
 {
-    
-    pick_node_from_coords(view->mouse.GLfinalPos.x,view->mouse.GLfinalPos.y,view->mouse.GLfinalPos.z);
+    if (!view->Topview->is_top_fisheye) 
+        pick_node_from_coords(view->mouse.GLfinalPos.x,view->mouse.GLfinalPos.y,view->mouse.GLfinalPos.z);
 }
 
 
@@ -181,7 +181,7 @@ void appmouse_right_click_up(ViewInfo* v,int x,int y)
 	if (view->activeGraph >= 0) 
 	{
 	    if (view->Topview->is_top_fisheye) 
-		changetopfishfocus(view->Topview,&view->mouse.pos.x,&view->mouse.pos.y,  0, 1);
+		changetopfishfocus(view->Topview,&view->mouse.GLpos.x,&view->mouse.GLpos.y,  0, 1);
 	    else    /*single right click*/
 /*	pick_node_from_coords(view->mouse.GLpos.x, view->mouse.GLpos.y,
 			      view->mouse.GLpos.z);*/
