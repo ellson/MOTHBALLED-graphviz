@@ -43,7 +43,9 @@
 #include <string.h>
 #include <ctype.h>
 #include <setjmp.h>
-#include "getopt.h"
+#ifdef HAVE_GETOPT_H
+#include <getopt.h>
+#endif
 
 #define DFLT_GPRPATH    "."
 
