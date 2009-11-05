@@ -36,12 +36,13 @@ static Dt_t** liststk;
 static int liststk_sz, liststk_cnt;
  
 static void free_attr (Dt_t*d, gmlattr* p, Dtdisc_t* ds); /* forward decl */
+static char* sortToStr (int sort);    /* forward decl */
 
 static void
 free_node (Dt_t*d, gmlnode* p, Dtdisc_t* ds)
 {
     if (!p) return;
-    dtclose (p->attrlist);
+    if (p->attrlist) dtclose (p->attrlist);
     free (p);
 }
 
@@ -49,7 +50,7 @@ static void
 free_edge (Dt_t*d, gmledge* p, Dtdisc_t* ds)
 {
     if (!p) return;
-    dtclose (p->attrlist);
+    if (p->attrlist) dtclose (p->attrlist);
     free (p);
 }
 
@@ -230,6 +231,8 @@ mkAttr (char* name, int sort, int kind, char* str, Dt_t* list)
     gmlattr* gp = NEW(gmlattr);
 
     assert (name || sort);
+    if (!name)
+	name = strdup (sortToStr (sort));
     gp->sort = sort;
     gp->kind = kind;
     gp->name = name;
@@ -323,6 +326,7 @@ glistitem : node { dtinsert (G->nodelist, $1); }
 		    YYABORT;
 		}
 	  }
+          | ID INTEGER {/* FIX */} 
           | alistitem { dtinsert (G->attrlist, $1); }
           ;
 
@@ -378,6 +382,7 @@ alistitem : NAME INTEGER { $$ = mkAttr ($1, 0, INTEGER, $2, 0); }
           | OUTLINEWIDTH INTEGER  { $$ = mkAttr (0, OUTLINEWIDTH, INTEGER, $2, 0); }
           | WIDTH INTEGER  { $$ = mkAttr (0, OUTLINEWIDTH, INTEGER, $2, 0); }
           | STYLE STRING  { $$ = mkAttr (0, STYLE, STRING, $2, 0); }
+          | STYLE attrlist  { $$ = mkAttr (0, STYLE, LIST, 0, $2); }
           | LINE attrlist  { $$ = mkAttr (0, LINE, LIST, 0, $2); }
           | POINT attrlist  { $$ = mkAttr (0, POINT, LIST, 0, $2); }
           | TEXT STRING  { $$ = mkAttr (0, TEXT, STRING, $2, 0); }
@@ -392,7 +397,7 @@ static void
 free_attr (Dt_t*d, gmlattr* p, Dtdisc_t* ds)
 {
     if (!p) return;
-    if (p->kind == LIST)
+    if ((p->kind == LIST) && p->u.lp)
 	dtclose (p->u.lp);
     else
 	free (p->u.value);
@@ -429,7 +434,7 @@ deparseList (Dt_t* alist, agxbuf* xb)
     gmlattr* ap;
 
     agxbput (xb, "[ "); 
-    for (ap = dtfirst(alist); ap; ap = dtnext (alist, ap)) {
+    if (alist) for (ap = dtfirst(alist); ap; ap = dtnext (alist, ap)) {
 	deparseAttr (ap, xb);
 	agxbputc (xb, ' ');
     }
@@ -457,6 +462,9 @@ addNodeLabelGraphics (Agnode_t* np, Dt_t* alist, agxbuf* xb, agxbuf* unk)
 {
     gmlattr* ap;
     int cnt = 0;
+
+    if (!alist)
+	return;
 
     for (ap = dtfirst(alist); ap; ap = dtnext (alist, ap)) {
 	if (ap->sort == TEXT) {
@@ -497,6 +505,9 @@ addEdgeLabelGraphics (Agedge_t* ep, Dt_t* alist, agxbuf* xb, agxbuf* unk)
     char* x = "0";
     char* y = "0";
     int cnt = 0;
+
+    if (!alist)
+	return;
 
     for (ap = dtfirst(alist); ap; ap = dtnext (alist, ap)) {
 	if (ap->sort == TEXT) {
@@ -808,4 +819,99 @@ gml_to_gv (FILE* fp, int cnt, int* errors)
 
     return g;
 }
+
+static char*
+sortToStr (int sort)
+{
+    char* s;
+
+    switch (sort) {
+    case GRAPH : 
+	s = "graph"; break;
+    case NODE : 
+	s = "node"; break;
+    case EDGE : 
+	s = "edge"; break;
+    case DIRECTED : 
+	s = "directed"; break;
+    case ID : 
+	s = "id"; break;
+    case SOURCE : 
+	s = "source"; break;
+    case TARGET : 
+	s = "target"; break;
+    case XVAL : 
+	s = "xval"; break;
+    case YVAL : 
+	s = "yval"; break;
+    case WVAL : 
+	s = "wval"; break;
+    case HVAL : 
+	s = "hval"; break;
+    case LABEL : 
+	s = "label"; break;
+    case GRAPHICS : 
+	s = "graphics"; break;
+    case LABELGRAPHICS : 
+	s = "labelGraphics"; break;
+    case TYPE : 
+	s = "type"; break;
+    case FILL : 
+	s = "fill"; break;
+    case OUTLINE : 
+	s = "outline"; break;
+    case OUTLINESTYLE : 
+	s = "outlineStyle"; break;
+    case OUTLINEWIDTH : 
+	s = "outlineWidth"; break;
+    case WIDTH : 
+	s = "width"; break;
+    case STYLE : 
+	s = "style"; break;
+    case LINE : 
+	s = "line"; break;
+    case POINT : 
+	s = "point"; break;
+    case TEXT : 
+	s = "text"; break;
+    case FONTSIZE : 
+	s = "fontSize"; break;
+    case FONTNAME : 
+	s = "fontName"; break;
+    case COLOR : 
+	s = "color"; break;
+    case INTEGER : 
+	s = "integer"; break;
+    case REAL : 
+	s = "real"; break;
+    case STRING : 
+	s = "string"; break;
+    case NAME : 
+	s = "name"; break;
+    case LIST : 
+	s = "list"; break;
+    case '[' : 
+	s = "["; break;
+    case ']' : 
+	s = "]"; break;
+    default : 
+	s = NULL;break;
+    }
+
+    return s;
+}
+
+#if 0
+int gmllex ()
+{
+    int tok = _gmllex();
+    char* s = sortToStr (tok);
+
+    if (s)
+        fprintf (stderr, "token = %s\n", s);
+    else
+        fprintf (stderr, "token = <%d>\n", tok);
+    return tok;
+}
+#endif
 

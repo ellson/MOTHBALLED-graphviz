@@ -66,7 +66,7 @@ DIGIT     [0-9]
 L_INT     [-+]?{DIGIT}+
 MANTISSA  E[-+]?{DIGIT}
 L_REAL    [-+]?{DIGIT}*\.{DIGIT}*{MANTISSA}?
-L_ID      [a-zA-Z][a-zA-Z0-9]*
+L_ID      [a-zA-Z_][_a-zA-Z0-9]*
 %x qstring
 %%
 {GRAPH_EOF_TOKEN}           return(EOF);
