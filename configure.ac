@@ -282,6 +282,8 @@ AM_PROG_CC_C_O
 AC_PROG_CXX
 AC_PROG_OBJC
 
+AC_C_INLINE
+
 # Workaround for native compilers
 #  HP  : http://bugs.gnome.org/db/31/3163.html
 #  DEC : Enable NaN/Inf
