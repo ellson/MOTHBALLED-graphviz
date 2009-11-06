@@ -875,7 +875,7 @@ else
 *** Lua (>=5.0) headers and/or libraries could not be found in your system.
 *** Try to install liblua, liblualib and liblua-dev with your software package manager.
 *** Graphviz will be built without Lua support.])
-          use_lua="No ($not_found lua)"
+          use_lua="No (lua compiling/linking failed)"
         else
 	  use_lua="Yes"
           AC_SUBST(LUA_INCLUDES)
@@ -2384,7 +2384,7 @@ else
       AC_PATH_PROG(GDLIB_CONFIG,gdlib-config)
       if test -n "$GDLIB_CONFIG"; then
         GD_INCLUDES=`$GDLIB_CONFIG --includes`
-        GD_LDFLAGS=`$GDLIB_CONFIG --ldflags`
+        GD_LDFLAGS=`$GDLIB_CONFIG --ldflags | sed 's/-xarch=386 //'`
         GD_LIBS=`$GDLIB_CONFIG --libs`
         GD_MAJORVERSION=`$GDLIB_CONFIG --majorversion`
         GD_MINORVERSION=`$GDLIB_CONFIG --minorversion`
