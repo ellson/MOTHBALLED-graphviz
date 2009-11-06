@@ -311,6 +311,7 @@ static gboolean key_press_event(GtkWidget * widget, GdkEventKey * event, gpointe
 {
     view->keymap.down=1;
     view->keymap.keyVal=event->keyval;
+
 //    printf ("key is pressed:%d\n",event->keyval);
 
 }
@@ -318,6 +319,8 @@ static gboolean key_release_event(GtkWidget * widget, GdkEventKey * event, gpoin
 {
  //   printf ("key is released:%d\n",event->keyval);
     view->keymap.down=0;
+    originate_distorded_coordinates(view->Topview);
+
 }
 
 
