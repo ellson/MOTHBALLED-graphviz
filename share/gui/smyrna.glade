@@ -44,15 +44,6 @@
 		<widget class="GtkMenu" id="menuitem1_menu">
 
 		  <child>
-		    <widget class="GtkImageMenuItem" id="mNew">
-		      <property name="visible">True</property>
-		      <property name="label">gtk-new</property>
-		      <property name="use_stock">True</property>
-		      <signal name="activate" handler="mNewSlot"/>
-		    </widget>
-		  </child>
-
-		  <child>
 		    <widget class="GtkImageMenuItem" id="mOpen">
 		      <property name="visible">True</property>
 		      <property name="label">gtk-open</property>
@@ -76,15 +67,6 @@
 		      <property name="label">gtk-save-as</property>
 		      <property name="use_stock">True</property>
 		      <signal name="activate" handler="mSaveAsSlot"/>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkMenuItem" id="mOptions">
-		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Options</property>
-		      <property name="use_underline">True</property>
-		      <signal name="activate" handler="mOptionsSlot"/>
 		    </widget>
 		  </child>
 
@@ -117,56 +99,29 @@
 		<widget class="GtkMenu" id="menuitem2_menu">
 
 		  <child>
-		    <widget class="GtkImageMenuItem" id="mCut">
-		      <property name="visible">True</property>
-		      <property name="label">gtk-cut</property>
-		      <property name="use_stock">True</property>
-		      <signal name="activate" handler="mCutSlot"/>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkImageMenuItem" id="mCopy">
-		      <property name="visible">True</property>
-		      <property name="label">gtk-copy</property>
-		      <property name="use_stock">True</property>
-		      <signal name="activate" handler="mCopySlot"/>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkImageMenuItem" id="mPaste">
-		      <property name="visible">True</property>
-		      <property name="label">gtk-paste</property>
-		      <property name="use_stock">True</property>
-		      <signal name="activate" handler="mPasteSlot"/>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkImageMenuItem" id="mDelete">
-		      <property name="visible">True</property>
-		      <property name="label">gtk-delete</property>
-		      <property name="use_stock">True</property>
-		      <signal name="activate" handler="mDeleteSlot"/>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkImageMenuItem" id="mNodeFind">
-		      <property name="visible">True</property>
-		      <property name="label">gtk-find</property>
-		      <property name="use_stock">True</property>
-		      <signal name="activate" handler="mNodeFindSlot"/>
-		    </widget>
-		  </child>
-
-		  <child>
 		    <widget class="GtkMenuItem" id="mTopviewSettings">
 		      <property name="visible">True</property>
 		      <property name="label" translatable="yes">Smyrna Settings</property>
 		      <property name="use_underline">True</property>
 		      <signal name="activate" handler="mTopviewSettingsSlot"/>
+		    </widget>
+		  </child>
+
+		  <child>
+		    <widget class="GtkMenuItem" id="mAttributes">
+		      <property name="visible">True</property>
+		      <property name="label" translatable="yes">Attributes</property>
+		      <property name="use_underline">True</property>
+		      <signal name="activate" handler="mAttributesSlot" last_modification_time="Fri, 06 Nov 2009 17:03:12 GMT"/>
+		    </widget>
+		  </child>
+
+		  <child>
+		    <widget class="GtkMenuItem" id="node_list1">
+		      <property name="visible">True</property>
+		      <property name="label" translatable="yes">Node List</property>
+		      <property name="use_underline">True</property>
+		      <signal name="activate" handler="mNodeListSlot" last_modification_time="Fri, 06 Nov 2009 17:02:05 GMT"/>
 		    </widget>
 		  </child>
 		</widget>
@@ -184,24 +139,6 @@
 		<widget class="GtkMenu" id="menuitem3_menu">
 
 		  <child>
-		    <widget class="GtkMenuItem" id="menuitem15">
-		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">ToolBox</property>
-		      <property name="use_underline">True</property>
-		      <signal name="activate" handler="mShowToolBoxSlot"/>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkMenuItem" id="menuitem18">
-		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Host Selection Menu</property>
-		      <property name="use_underline">True</property>
-		      <signal name="activate" handler="mShowHostSelectionSlot"/>
-		    </widget>
-		  </child>
-
-		  <child>
 		    <widget class="GtkMenuItem" id="show_console1">
 		      <property name="visible">True</property>
 		      <property name="label" translatable="yes">Show Console</property>
@@ -216,100 +153,6 @@
 		      <property name="label" translatable="yes">Hide Console</property>
 		      <property name="use_underline">True</property>
 		      <signal name="activate" handler="mHideConsoleSlot" last_modification_time="Wed, 22 Jul 2009 16:17:32 GMT"/>
-		    </widget>
-		  </child>
-		</widget>
-	      </child>
-	    </widget>
-	  </child>
-
-	  <child>
-	    <widget class="GtkMenuItem" id="menuitem5">
-	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">_Graph</property>
-	      <property name="use_underline">True</property>
-
-	      <child>
-		<widget class="GtkMenu" id="menuitem5_menu">
-
-		  <child>
-		    <widget class="GtkMenuItem" id="mNodeList">
-		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Node List</property>
-		      <property name="use_underline">True</property>
-		      <signal name="activate" handler="mNodeListSlot"/>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkMenuItem" id="menuitem16">
-		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">New Node</property>
-		      <property name="use_underline">True</property>
-		      <signal name="activate" handler="mNewNodeSlot"/>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkMenuItem" id="mNewEdge">
-		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">New Edge</property>
-		      <property name="use_underline">True</property>
-		      <signal name="activate" handler="mNewEdgeSlot"/>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkMenuItem" id="mNewCluster">
-		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">New Cluster</property>
-		      <property name="use_underline">True</property>
-		      <signal name="activate" handler="mNewClusterSlot"/>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkMenuItem" id="mGraphProperties">
-		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Graph Properties</property>
-		      <property name="use_underline">True</property>
-		      <signal name="activate" handler="mGraphPropertiesSlot"/>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkMenuItem" id="menuitem13">
-		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Cluster Properties</property>
-		      <property name="use_underline">True</property>
-		      <signal name="activate" handler="mClusterPropertiesSlot"/>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkMenuItem" id="mObjectProperties">
-		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Node Properties</property>
-		      <property name="use_underline">True</property>
-		      <signal name="activate" handler="mNodePropertiesSlot"/>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkMenuItem" id="menuitem14">
-		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Edge Properties</property>
-		      <property name="use_underline">True</property>
-		      <signal name="activate" handler="mEdgePropertiesSlot"/>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkMenuItem" id="mShowCode">
-		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Show Code</property>
-		      <property name="use_underline">True</property>
-		      <signal name="activate" handler="mShowCodeSlot"/>
 		    </widget>
 		  </child>
 		</widget>
@@ -395,33 +238,6 @@
 		      <property name="label" translatable="yes">Unselect All Clusters</property>
 		      <property name="use_underline">True</property>
 		      <signal name="activate" handler="mUnselectAllClustersSlot"/>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkMenuItem" id="menuitem17">
-		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Select Single</property>
-		      <property name="use_underline">True</property>
-		      <signal name="activate" handler="mSingleSelectSlot"/>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkMenuItem" id="mSelectArea">
-		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Select Area </property>
-		      <property name="use_underline">True</property>
-		      <signal name="activate" handler="mSelectAreaSlot"/>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkMenuItem" id="mSelectAreax">
-		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Select Area x</property>
-		      <property name="use_underline">True</property>
-		      <signal name="activate" handler="mSelectAreaXSlot"/>
 		    </widget>
 		  </child>
 		</widget>
