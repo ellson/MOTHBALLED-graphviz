@@ -78,14 +78,14 @@ static FILE *openFile(char *name, char *mode)
 }
 
 
-static char *useString = "Usage: nop [-p?] <files>\n\
+static char *useString = "Usage: %s [-p?] <files>\n\
   -o<file>  : output to <file> (stdout)\n\
   -? - print usage\n\
 If no files are specified, stdin is used\n";
 
 static void usage(int v)
 {
-    printf(useString);
+    printf(useString, CmdName);
     exit(v);
 }
 
