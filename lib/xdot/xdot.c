@@ -1,3 +1,4 @@
+/* $Id$Revision: */
 /* vim:set shiftwidth=4 ts=8: */
 
 /**********************************************************
@@ -19,7 +20,7 @@
 #include <ctype.h>
 
 #define NEW(t)           (t*)calloc(1, sizeof(t))
-#define N_NEW(n,t)       (t*)malloc((n)*sizeof(t))
+#define N_NEW(n,t)       (t*)calloc((n), sizeof(t))
 
 /* the parse functions should return NULL on error */
 static char *parseReal(char *s, double *fp)
@@ -87,6 +88,7 @@ static char *parsePolyline(char *s, xdot_polyline * pp)
 	}
 	else
 	    s = endp;
+	ps->z = 0;
 	ps++;
     }
     pp->pts = pts;
