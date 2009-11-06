@@ -476,9 +476,6 @@ void preparetopview(Agraph_t * g, topview * t)
     t->picked_edge_count = 0;
     t->picked_edges = '\0';
 
-    /*hide stupid console window */
-    gtk_widget_hide(glade_xml_get_widget(xml, "vbox13"));
-    gtk_widget_hide(glade_xml_get_widget(xml, "hbox7"));
 	/*create attribute list*/
 	t->attributes=load_attr_list(view->g[view->activeGraph]);
 	t->filtered_attr_list=NULL;
@@ -663,17 +660,17 @@ static int drawtopviewnodes(Agraph_t * g)
 		zdepth = (float) Z_BACK_PLANE;
 
 	    if ((view->defaultnodeshape == 0)) {
-		glVertex3f(v->distorted_x - ddx,
-			   v->distorted_y - ddy, v->distorted_z - ddz);
+		glVertex3f(v->distorted_x,
+			   v->distorted_y, v->distorted_z);
 	    } else if (view->defaultnodeshape == 1) {
 		if (v->size > 0)
-		    drawCircle(v->distorted_x - ddx, v->distorted_y - ddy,
+		    drawCircle(v->distorted_x , v->distorted_y ,
 			       v->size * view->Topview->init_node_size,
-			       v->distorted_z - ddz);
+			       v->distorted_z );
 		else
-		    drawCircle(v->distorted_x - ddx, v->distorted_y - ddy,
+		    drawCircle(v->distorted_x , v->distorted_y,
 			       view->Topview->init_node_size,
-			       v->distorted_z - ddz);
+			       v->distorted_z);
 	    }
 	} else {
 	    /* int a=1; */
@@ -823,7 +820,7 @@ void drawTopViewGraph(Agraph_t * g)
     drawtopviewedges(g);
     drawtopviewedgelabels(g);
     enddrawcycle(g);
-	draw_tv_xdot(view->Topview);
+    draw_tv_xdot(view->Topview);
     draw_node_hint_boxes();
     if ((view->Selection.Active > 0) && (!view->SignalBlock)) {
 	view->Selection.Active = 0;
@@ -1318,7 +1315,7 @@ static void draw_xdot(xdot* x,float base_z)
 static void draw_tv_xdot(topview* t)
 {
     int j;
-	float basez=0;
+    float basez=0;
 	draw_xdot(t->xDot,basez);
 	basez= basez+0.01;
 	for (j=0; j < t->Nodecount; j++)

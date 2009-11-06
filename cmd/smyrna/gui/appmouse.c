@@ -63,88 +63,40 @@ static void appmouse_down(ViewInfo* v,int x,int y)
 }
 static void appmouse_up(ViewInfo* v,int x,int y)
 {
-       v->mouse.down=0;
-       v->mouse.finalPos.x=x;
-       v->mouse.finalPos.y=y;
-        view->mouse.dragX = 0;
-	view->mouse.dragY = 0;
 
-       GetFixedOGLPos((float) x,y,v->GLDepth, &v->mouse.GLfinalPos.x,&v->mouse.GLfinalPos.y,&v->mouse.GLfinalPos.z);
-	if(singleclick(v))
-	{
-	   if (v->mouse.t==glMouseLeftButton)
-	       appmouse_left_click(v,x,y);
-	   if (v->mouse.t==glMouseRightButton)
-	       appmouse_right_click(v,x,y);
-       }
+    int a;
+    v->mouse.down=0;
+    v->mouse.finalPos.x=x;
+    v->mouse.finalPos.y=y;
+    view->mouse.dragX = 0;
+    view->mouse.dragY = 0;
+    a=get_mode(v);
+    GetFixedOGLPos((float) x,y,v->GLDepth, &v->mouse.GLfinalPos.x,&v->mouse.GLfinalPos.y,&v->mouse.GLfinalPos.z);
+    if(singleclick(v))
+    {
+	if (v->mouse.t==glMouseLeftButton)
+	    appmouse_left_click(v,x,y);
+	if (v->mouse.t==glMouseRightButton)
+	    appmouse_right_click(v,x,y);
+    }
+    if ((a== MM_FISHEYE_MAGNIFIER) || (a == MM_MAGNIFIER))	//fisheye mag mouse release, stop distortion
+        originate_distorded_coordinates(v->Topview);
+
+
 
 }
 static void appmouse_drag(ViewInfo* v,int x,int y)
 {
     static float x2,y2;
+    int a=get_mode(v);
     v->mouse.pos.x=x;
     v->mouse.pos.y=y;
     GetFixedOGLPos((float) x,y,v->GLDepth, &v->mouse.GLpos.x,&v->mouse.GLpos.y,&v->mouse.GLpos.z);
     x2=v->mouse.GLpos.x;
     y2=v->mouse.GLpos.y;
-//    v->mouse.dragX=x2-prevX;
-//    v->mouse.dragY=y2-prevY;
 
     prevX=x2;
     prevY=y2;
-//    printf ("(%f,%f)->(%f,%f) : %f  %f \n",v->mouse.pos.x,v->mouse.GLinitPos.y,v->mouse.GLfinalPos.x,v->mouse.GLfinalPos.y,v->mouse.dragX,v->mouse.dragY);
-
-}
-
-void appmouse_left_click_down(ViewInfo* v,int x,int y)
-{
-       v->mouse.t=glMouseLeftButton;
-       appmouse_down(v,x,y);
-
-
-}
-int get_mode(ViewInfo* v)
-{
-/*#define MM_PAN					0
-#define MM_ZOOM					1
-#define MM_ROTATE				2
-#define MM_SINGLE_SELECT		3
-#define MM_RECTANGULAR_SELECT	4
-#define MM_RECTANGULAR_X_SELECT	5
-#define MM_MOVE					10
-#define MM_MAGNIFIER			20
-#define MM_FISHEYE_MAGNIFIER	21*/
-
-
-    if ((view->mouse.t==glMouseLeftButton)&&(view->keymap.down) && (view->keymap.keyVal == B_LSHIFT/*left shift*/) && (view->active_camera==-1))
-	return MM_FISHEYE_MAGNIFIER;
-    if ((view->mouse.t==glMouseLeftButton)&&(view->keymap.down) && (view->keymap.keyVal == B_LSHIFT/*left shift*/) && (view->active_camera>-1))
-	return MM_ROTATE;
-    if ((view->mouse.t==glMouseLeftButton)&&(view->keymap.down) && (view->keymap.keyVal == B_LCTRL/*left CTRL*/)) 
-	return MM_MOVE;
-    if ((view->mouse.t==glMouseLeftButton)&&(view->mouse.down) ) 
-	return MM_PAN;
-
-
-
-
-}
-void appmouse_left_click_up(ViewInfo* v,int x,int y)
-{
-	int a=get_mode(v);
-    appmouse_up(v,x,y);
-/*	if (v->mouse.mouse_mode == MM_MOVE)
-	    move_TVnodes();*/
-	if ((a== MM_FISHEYE_MAGNIFIER) || (a == MM_MAGNIFIER))	//fisheye mag mouse release, stop distortion
-	    originate_distorded_coordinates(v->Topview);
-
-
-}
-void appmouse_left_drag(ViewInfo* v,int x,int y)
-{
-    int a=get_mode(v);
-    appmouse_drag(v,x,y);
-
     if (a==MM_ROTATE)
 
     {
@@ -161,6 +113,33 @@ void appmouse_left_drag(ViewInfo* v,int x,int y)
 	glmotion_pan(v);
     if (a==MM_MOVE)
         move_TVnodes();
+
+    if(a==MM_RECTANGULAR_SELECT)
+    {
+
+    }
+
+
+}
+
+void appmouse_left_click_down(ViewInfo* v,int x,int y)
+{
+       v->mouse.t=glMouseLeftButton;
+       appmouse_down(v,x,y);
+
+
+}
+void appmouse_left_click_up(ViewInfo* v,int x,int y)
+{
+	int a=get_mode(v);
+    appmouse_up(v,x,y);
+/*	if (v->mouse.mouse_mode == MM_MOVE)
+	    move_TVnodes();*/
+}
+void appmouse_left_drag(ViewInfo* v,int x,int y)
+{
+    appmouse_drag(v,x,y);
+
 
 
 }

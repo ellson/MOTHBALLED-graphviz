@@ -198,7 +198,7 @@ glCompSet *glcreate_gl_topview_menu(void)
     glCompColor c;
     s->common.callbacks.click = CBglCompMouseRightClick;
 
-    p = glCompPanelNew((glCompObj *) s, 25, 25, 53, 47);
+    p = glCompPanelNew((glCompObj *) s, 25, 25, 51, 47);
     p->common.align = glAlignLeft;
     p->common.data = 0;
 
@@ -210,12 +210,37 @@ glCompSet *glcreate_gl_topview_menu(void)
 
     y = y + off;
 
+    /*switch to fisheye */
+    b = glCompButtonNew((glCompObj *) p, 1, y, 42, 42, "");
+    glCompButtonAddPngGlyph(b, smyrnaPath("fisheye.png"));
+    b->common.callbacks.click = menu_switch_to_fisheye;
+    toFisheye = b;
 
-    y = y + off;
+
+    /*switch to normal mode */
+    b = glCompButtonNew((glCompObj *) p, 1, y, 42, 42, "");
+    glCompButtonAddPngGlyph(b, smyrnaPath("no_fisheye.png"));
+    b->common.callbacks.click = menu_switch_to_fisheye;
+    b->common.visible = 0;
+    toNormal = b;
+
+    y=y+off;
+    b = glCompButtonNew((glCompObj *) p, 1, y, 42, 42, "");
+    glCompButtonAddPngGlyph(b, smyrnaPath("3D.png"));
+    b->common.callbacks.click = switch2D3D;
+    to3DBtn = b;
+
+
+    b = glCompButtonNew((glCompObj *) p, 1, y, 42, 42, "");
+    glCompButtonAddPngGlyph(b, smyrnaPath("2D.png"));
+    b->common.callbacks.click = switch2D3D;
+    glCompButtonHide(b);
+    to2DBtn = b;
 
 
 
-    p = glCompPanelNew((glCompObj *) p, 1, 25, 80, 255);
+
+    p = glCompPanelNew((glCompObj *) p, 1, 325, 80, 180);
     p->common.align = glAlignTop;
     p->common.data = 0;
     p->common.borderWidth = 1;
@@ -240,7 +265,6 @@ glCompSet *glcreate_gl_topview_menu(void)
     glCompButtonAddPngGlyph(b, smyrnaPath("zoomin.png"));
     b->groupid = 0;
     b->common.callbacks.click = menu_click_zoom_plus;
-
     copy_glcomp_color(&c, &b->common.color);
     y = y + off;
 
@@ -248,12 +272,6 @@ glCompSet *glcreate_gl_topview_menu(void)
     b = glCompButtonNew((glCompObj *) p, 1, y, 42, 42, "");
     glCompButtonAddPngGlyph(b, smyrnaPath("zoomout.png"));
     b->common.callbacks.click = menu_click_zoom_minus;
-
-    y = y + off;
-    copy_glcomp_color(&c, &b->common.color);
-
-    b = glCompButtonNew((glCompObj *) p, 1, y, 42, 42, "");
-    glCompButtonAddPngGlyph(b, smyrnaPath("fit.png"));
     copy_glcomp_color(&c, &b->common.color);
 
     y = y + off;
@@ -268,22 +286,7 @@ glCompSet *glcreate_gl_topview_menu(void)
 
 	
 	
-	y = y + off;
 
-
-    b = glCompButtonNew((glCompObj *) p, 1, y, 42, 42, "");
-    glCompButtonAddPngGlyph(b, smyrnaPath("3D.png"));
-    b->common.callbacks.click = switch2D3D;
-    copy_glcomp_color(&c, &b->common.color);
-    to3DBtn = b;
-
-
-    b = glCompButtonNew((glCompObj *) p, 1, y, 42, 42, "");
-    glCompButtonAddPngGlyph(b, smyrnaPath("2D.png"));
-    b->common.callbacks.click = switch2D3D;
-    glCompButtonHide(b);
-    copy_glcomp_color(&c, &b->common.color);
-    to2DBtn = b;
 
 
 
@@ -308,19 +311,6 @@ glCompSet *glcreate_gl_topview_menu(void)
     p->common.data = 0;
     p->common.color.A = 0;
 
-    /*switch to fisheye */
-    b = glCompButtonNew((glCompObj *) p, 2, 1, 42, 42, "");
-    glCompButtonAddPngGlyph(b, smyrnaPath("fisheye.png"));
-    b->common.callbacks.click = menu_switch_to_fisheye;
-    toFisheye = b;
-
-
-    /*switch to normal mode */
-    b = glCompButtonNew((glCompObj *) p, 2, 1, 42, 42, "");
-    glCompButtonAddPngGlyph(b, smyrnaPath("no_fisheye.png"));
-    b->common.callbacks.click = menu_switch_to_fisheye;
-    b->common.visible = 0;
-    toNormal = b;
 
 
 

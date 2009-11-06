@@ -163,6 +163,8 @@ int glexpose_main(ViewInfo * view)
 	    btnToolZoomFit_clicked(NULL, NULL);
 	}
     }
+    else
+	return;
 
     glexpose_grid(view);
     draw_fisheye_magnifier(view);

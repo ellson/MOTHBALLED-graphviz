@@ -218,6 +218,10 @@ int main(int argc, char *argv[])
 //      gladewidget = glade_xml_get_widget(xml, "vbox2");
     gladewidget = glade_xml_get_widget(xml, "hbox11");
 
+    gtk_widget_hide(glade_xml_get_widget(xml, "vbox13"));
+    gtk_widget_hide(glade_xml_get_widget(xml, "hbox7"));
+
+
     create_window(glconfig, gladewidget);
 
     change_cursor(GDK_TOP_LEFT_ARROW);

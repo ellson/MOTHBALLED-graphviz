@@ -238,6 +238,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\hotkeymap.h"
+				>
+			</File>
+			<File
 				RelativePath=".\materials.h"
 				>
 			</File>
@@ -395,6 +399,10 @@
 			</File>
 			<File
 				RelativePath=".\hier.c"
+				>
+			</File>
+			<File
+				RelativePath=".\hotkeymap.c"
 				>
 			</File>
 			<File
