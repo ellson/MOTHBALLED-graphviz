@@ -39,6 +39,7 @@
 #include "colorprocs.h"
 #include <assert.h>
 #include "frmobjectui.h"
+#include "hotkeymap.h"
 static float dx = 0.0;
 static float dy = 0.0;
 static float dz = 0.0;
@@ -1097,13 +1098,13 @@ int move_TVnodes(void)
 {
     float delX,delY;
     topview_node *v;
-    static flag=0;
+    static int flag=0;
     int ind = 0;
     if (!flag)
     {
 //	printf ("dragx:%f dragy:%f\n",view->mouse.dragX,view->mouse.dragY);
 	flag=1;
-	return;
+	return 0;
     }
 
     delX = GetOGLDistance((int) view->mouse.dragX);

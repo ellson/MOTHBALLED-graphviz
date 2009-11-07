@@ -330,7 +330,7 @@ static gboolean gl_main_expose(gpointer data)
     return 1;
 }
 
-static void get_data_dir()
+static void get_data_dir(void)
 {
     if (view->template_file) {
 	free(view->template_file);
@@ -1117,7 +1117,7 @@ colorschemaset *create_color_theme(int themeid)
 }
 
 
-void test_color_pallete()
+void test_color_pallete(void)
 {
     int ind = 0;
     float xGAP = 5;

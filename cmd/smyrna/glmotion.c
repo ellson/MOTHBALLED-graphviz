@@ -22,6 +22,7 @@
 #include "draw.h"
 #include "topview.h"
 #include "glutils.h"
+#include "hotkeymap.h"
 
 gboolean redraw = FALSE;
 

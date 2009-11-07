@@ -33,7 +33,6 @@
 extern attr_list* attr_list_new(Agraph_t * g,int with_widgets );
 extern void attr_list_add(attr_list* l,attr_t* a);
 extern void free_attr_list(attr_list* l);
-extern attr_list* load_attr_list();
 extern void filter_attributes(char* prefix,topview* t);
 
 _BB void on_txtAttr_changed(GtkWidget * widget, gpointer user_data);

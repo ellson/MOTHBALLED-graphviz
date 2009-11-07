@@ -133,7 +133,7 @@ int print_children(btree_node * n)
 
 }
 
-int sample_tree()
+int sample_tree(void)
 {
     btree_node *root;
     btree_node *n;
@@ -179,7 +179,7 @@ btree_node *tree_from_filter_string(char *filter_string)
     char *b_cursor = 0;
     char *c_cursor;
     char op = '\0';
-    char last_char;
+    char last_char = '\0';
     root = new_node("R", "", 0, 0);
     cursor = root;
     c_cursor = filter_string;

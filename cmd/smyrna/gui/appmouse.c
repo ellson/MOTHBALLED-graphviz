@@ -20,6 +20,8 @@
 #include "topview.h"
 #include "glmotion.h"
 #include "beacon.h"
+#include "hotkeymap.h"
+#include "selection.h"
 
 
     static float prevX=0;

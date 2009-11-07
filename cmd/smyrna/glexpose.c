@@ -22,6 +22,7 @@
 #include "topfisheyeview.h"
 #include "gui/toolboxcallbacks.h"
 #include "arcball.h"
+#include "hotkeymap.h"
 
 void drawRotatingAxis(void);
 void draw_cube()
@@ -164,7 +165,7 @@ int glexpose_main(ViewInfo * view)
 	}
     }
     else
-	return;
+	return 0;
 
     glexpose_grid(view);
     draw_fisheye_magnifier(view);

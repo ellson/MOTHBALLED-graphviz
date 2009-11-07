@@ -34,4 +34,5 @@ int get_mode(ViewInfo* v)
     if ((view->mouse.t==MOUSE_BUTTON_2)&&(view->mouse.down) ) 
 	return MM_RECTANGULAR_SELECT;
 
+    return 0;
 }

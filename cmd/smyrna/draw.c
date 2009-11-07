@@ -29,6 +29,7 @@ XDOT DRAWING FUNCTIONS, maybe need to move them somewhere else
 #include "viewport.h"
 #include "topfisheyeview.h"
 #include "appmouse.h"
+#include "hotkeymap.h"
 
 //delta values
 static float dx = 0.0;

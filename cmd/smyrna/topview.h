@@ -23,18 +23,18 @@
 extern "C" {
 #endif
 
-    void cleartopview(topview * t);
-    void preparetopview(Agraph_t * g, topview * t);
-    void update_topview(Agraph_t * g, topview * t, int init);
-    void drawTopViewGraph(Agraph_t * g);
-    int move_TVnodes(void);
-    void local_zoom(topview * t);
-    void originate_distorded_coordinates(topview * t);
-    float calcfontsize(float totaledgelength, int totallabelsize,
+    extern void cleartopview(topview * t);
+    extern void preparetopview(Agraph_t * g, topview * t);
+    extern void update_topview(Agraph_t * g, topview * t, int init);
+    extern void drawTopViewGraph(Agraph_t * g);
+    extern int move_TVnodes(void);
+    extern void local_zoom(topview * t);
+    extern void originate_distorded_coordinates(topview * t);
+    extern float calcfontsize(float totaledgelength, int totallabelsize,
 		       int edgecount, int totalnodecount);
-    void select_with_regex(char *exp);
-    void settvcolorinfo(Agraph_t * g, topview * t);
-    void setMultiedges(Agraph_t * g, char *attrname);
+    extern void select_with_regex(char *exp);
+    extern void settvcolorinfo(Agraph_t * g, topview * t);
+    extern void setMultiedges(Agraph_t * g, char *attrname);
 
 #ifdef __cplusplus
 }				/* end extern "C" */

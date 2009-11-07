@@ -47,7 +47,7 @@ static char* safestrdup(char* src)
 	else
 		return strdup(src);
 }
-static int get_object_type()
+static int get_object_type(void)
 {
 	if(gtk_toggle_button_get_active((GtkToggleButton*)glade_xml_get_widget(xml, "attrRB0")))
 		return AGRAPH;
@@ -68,7 +68,7 @@ void free_attr(attr_t* at)
 }
 
 
-attr_t* new_attr()
+attr_t* new_attr(void)
 {
 	attr_t* attr=malloc(sizeof(attr_t));
 	attr->defValG=(char*)0;
@@ -717,7 +717,7 @@ attr_list* load_attr_list(Agraph_t* g)
 }
 
 /**/
-static void set_header_text()
+static void set_header_text(void)
 {
 	int nodeCnt;
 	int edgeCnt;
