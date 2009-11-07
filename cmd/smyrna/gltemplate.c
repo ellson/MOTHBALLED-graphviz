@@ -24,7 +24,6 @@
 #include "glutils.h"
 #include "glexpose.h"
 #include "glmotion.h"
-#include "glmenu.h"
 #include "selection.h"
 #include "glcompset.h"
 #include "viewportcamera.h"
