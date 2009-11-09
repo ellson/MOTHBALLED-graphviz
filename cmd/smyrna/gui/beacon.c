@@ -206,6 +206,29 @@ int remove_from_pick_list(topview_node * n)
     }
     return 0;
 }
+static void print_node(topview_node * n)
+{
+    int ind=0;
+    char* val;
+    attr_list* l=view->Topview->attributes;
+    printf("Node Summary\n",);
+    printf("-------------\n",);
+    printf("name: %s\n",agnameof(n->Node));
+    for (;ind < l->attr_count;ind ++)
+    {
+	if(l->attributes[ind]->propagate)
+	{
+	    val=agget(n->Node,l->attributes[ind]->name);
+	    if (val)
+	    {
+		printf("%s: %s\n",l->attributes[ind]->name,val);
+
+	    }
+	}
+    }
+    printf("-------------\n",);
+
+}
 
 int add_to_pick_list(topview_node * n)
 {
@@ -215,6 +238,8 @@ int add_to_pick_list(topview_node * n)
 		sizeof(topview_node *) * view->Topview->picked_node_count);
     view->Topview->picked_nodes[view->Topview->picked_node_count - 1] = n;
     select_node(n);
+    print_node( n);	
+
     return 1;
 }
 
