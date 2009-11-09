@@ -3,7 +3,7 @@
 #
 
 guidir = $(pkgdatadir)/smyrna
-gui = smyrna.glade attrs.txt arial.tga template.dot
+gui = smyrna.glade attrs.txt arial.tga template.dot mouse_actions.txt
 iconsdir = $(pkgdatadir)/smyrna
 icons = add_edge.png AntiselectRect.png AntiselectRectX.png cursor.png \
 	deletE_edge.png delete_node.png find_edge.png find_node.png \
