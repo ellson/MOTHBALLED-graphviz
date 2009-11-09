@@ -34,6 +34,8 @@
 #include "topviewsettings.h"
 #include "md5.h"
 #include "arcball.h"
+#include "hotkeymap.h"
+
 
 
   /* Forward declarations */
@@ -481,6 +483,8 @@ void init_viewport(ViewInfo * view)
     view->flush = 1;
     view->arcball = NEW(ArcBall_t);
     view->keymap.down=0;
+    load_mouse_actions (NULL,view);
+
     /*add default camera */
     //create fontset
 }

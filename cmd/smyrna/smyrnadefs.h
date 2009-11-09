@@ -69,6 +69,7 @@ typedef struct _ArcBall_t ArcBall_t;
 #define MM_MOVE					10
 #define MM_MAGNIFIER			20
 #define MM_FISHEYE_MAGNIFIER	21
+#define MM_FISHEYE_PICK		22  /*fisheye select foci point*/
 
 
 
@@ -103,6 +104,7 @@ typedef struct _ArcBall_t ArcBall_t;
 #define MAX_FILTERED_ATTR_COUNT 50
 
 typedef enum {attr_alpha,attr_float,attr_int,attr_bool,attr_drowdown,attr_color} attr_data_type;
+typedef enum {smyrna_all,smyrna_2D,smyrna_3D,smyrna_fisheye,smyrna_all_but_fisheye} smyrna_view_mode;
 
 
 typedef struct{
@@ -244,6 +246,17 @@ typedef struct
 
 
     typedef enum { GEpixels, GEinches, GEmm } GEunit;
+
+
+    typedef struct 
+    {
+	int index;
+	int action;
+	int hotkey;
+	glMouseButtonType type;
+	int drag;
+	smyrna_view_mode mode;
+    }mouse_action_t;
 
     typedef struct _object_data	//has to be attached to every Node, Edge, Graph and cluster
     {
@@ -648,6 +661,8 @@ typedef struct
 	GtkComboBox *graphComboBox;	/*pointer to graph combo box at top right */
 	ArcBall_t *arcball;
 	keymap_t keymap;
+	mouse_action_t* mouse_actions;	/*customizable moouse interraction list*/
+	int mouse_action_count;
 
     } ViewInfo;
 /*rotation steps*/

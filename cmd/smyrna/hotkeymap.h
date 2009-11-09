@@ -40,9 +40,10 @@
 
 
 
-
+extern void load_mouse_actions (char* modefile,ViewInfo* v);
 
 extern int get_mode(ViewInfo* v);
+
 
 
 
