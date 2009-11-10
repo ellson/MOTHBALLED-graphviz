@@ -211,8 +211,8 @@ static void print_node(topview_node * n)
     int ind=0;
     char* val;
     attr_list* l=view->Topview->attributes;
-    printf("Node Summary\n",);
-    printf("-------------\n",);
+    printf("Node Summary\n");
+    printf("-------------\n");
     printf("name: %s\n",agnameof(n->Node));
     for (;ind < l->attr_count;ind ++)
     {
@@ -226,7 +226,7 @@ static void print_node(topview_node * n)
 	    }
 	}
     }
-    printf("-------------\n",);
+    printf("-------------\n");
 
 }
 
