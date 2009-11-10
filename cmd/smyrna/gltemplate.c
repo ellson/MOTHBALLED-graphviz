@@ -41,9 +41,13 @@ static glMouseButtonType getGlCompMouseType(int n)
     switch (n) {
     case 1:
 	return glMouseLeftButton;
+    case 2:
+	return glMouseMiddleButton;
     case 3:
-    default:
 	return glMouseRightButton;
+
+    default:
+	return glMouseLeftButton;
     }
 }
 
@@ -280,6 +284,9 @@ static gboolean button_press_event(GtkWidget * widget,
 
     if (event->button == 3)	//right click
 	appmouse_right_click_down(view,(int) event->x,(int) event->y);
+    if (event->button == 2)	//middle click
+	appmouse_middle_click_down(view,(int) event->x,(int) event->y);
+
     expose_event(view->drawing_area, NULL, NULL);
     return FALSE;
 }
@@ -301,9 +308,13 @@ static gboolean button_release_event(GtkWidget * widget,
 	appmouse_left_click_up(view,(int) event->x,(int) event->y);
     if (event->button == 3)	//right click
 	appmouse_right_click_up(view,(int) event->x,(int) event->y);
+    if (event->button == 2)	//right click
+	appmouse_middle_click_up(view,(int) event->x,(int) event->y);
+
     expose_event(view->drawing_area, NULL, NULL);
     dx = 0.0;
     dy = 0.0;
+
     return FALSE;
 }
 static gboolean key_press_event(GtkWidget * widget, GdkEventKey * event, gpointer data)
@@ -311,7 +322,6 @@ static gboolean key_press_event(GtkWidget * widget, GdkEventKey * event, gpointe
     view->keymap.down=1;
     view->keymap.keyVal=event->keyval;
 
-//    printf ("key is pressed:%d\n",event->keyval);
 
 }
 static gboolean key_release_event(GtkWidget * widget, GdkEventKey * event, gpointer data)
@@ -372,6 +382,11 @@ static gboolean motion_notify_event(GtkWidget * widget,
     if((view->mouse.t==glMouseRightButton) && (view->mouse.down))
     {
 	appmouse_right_drag(view,(int)event->x,(int)event->y);
+	redraw = TRUE;
+    }
+    if((view->mouse.t==glMouseMiddleButton) && (view->mouse.down))
+    {
+	appmouse_middle_drag(view,(int)event->x,(int)event->y);
 	redraw = TRUE;
     }
 

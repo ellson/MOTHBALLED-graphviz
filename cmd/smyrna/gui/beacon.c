@@ -1,4 +1,3 @@
-/* $Id$Revision: */
 /* vim:set shiftwidth=4 ts=8: */
 
 /**********************************************************
@@ -221,7 +220,7 @@ static void print_node(topview_node * n)
 	    val=agget(n->Node,l->attributes[ind]->name);
 	    if (val)
 	    {
-		printf("%s: %s\n",l->attributes[ind]->name,val);
+		printf("%s:%s\n",l->attributes[ind]->name,val);
 
 	    }
 	}

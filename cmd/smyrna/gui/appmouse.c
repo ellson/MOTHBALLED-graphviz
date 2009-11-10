@@ -107,8 +107,8 @@ static void appmouse_down(ViewInfo* v,int x,int y)
     prevX=0;
     prevY=0;
 
-
-
+    view->Selection.X = view->mouse.GLpos.x;
+    view->Selection.Y = view->mouse.GLpos.y;
 }
 static void appmouse_up(ViewInfo* v,int x,int y)
 {
@@ -172,8 +172,6 @@ void appmouse_right_click_down(ViewInfo* v,int x,int y)
     v->mouse.t=glMouseRightButton;
     appmouse_down(v,x,y);
 
-    view->Selection.X = view->mouse.GLpos.x;
-    view->Selection.Y = view->mouse.GLpos.y;
 
 }
 void appmouse_right_click_up(ViewInfo* v,int x,int y)
@@ -189,4 +187,22 @@ void appmouse_right_drag(ViewInfo* v,int x,int y)
 }
 
 
+void appmouse_middle_click_down(ViewInfo* v,int x,int y)
+{
+    v->mouse.t=glMouseMiddleButton;
+    appmouse_down(v,x,y);
+
+
+}
+void appmouse_middle_click_up(ViewInfo* v,int x,int y)
+{
+    appmouse_up(v,x,y);
+ 
+}
+void appmouse_middle_drag(ViewInfo* v,int x,int y)
+{
+        
+    appmouse_drag(v,x,y);
+
+}
 
