@@ -230,7 +230,7 @@ int main(int argc, char *argv[])
     glutInit(&argc, argv);
 #endif
 
-    gladewidget = glade_xml_get_widget(xml, "hbox10");
+    gladewidget = glade_xml_get_widget(xml, "hbox13");
     graphComboBox = (GtkComboBox *) gtk_combo_box_new_text();
     gtk_box_pack_end((GtkBox*)gladewidget, (GtkWidget*)graphComboBox, 1, 1, 10);
     gtk_widget_show((GtkWidget*)graphComboBox);

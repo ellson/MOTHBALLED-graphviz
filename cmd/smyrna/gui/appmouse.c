@@ -155,7 +155,6 @@ void appmouse_left_click_down(ViewInfo* v,int x,int y)
 }
 void appmouse_left_click_up(ViewInfo* v,int x,int y)
 {
-	int a=get_mode(v);
     appmouse_up(v,x,y);
 /*	if (v->mouse.mouse_mode == MM_MOVE)
 	    move_TVnodes();*/

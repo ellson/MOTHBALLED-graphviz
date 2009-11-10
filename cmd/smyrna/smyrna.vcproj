@@ -360,6 +360,14 @@
 			<File
 				RelativePath=".\gui\glcompui.c"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						WarningLevel="4"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\glexpose.c"

@@ -42,7 +42,6 @@
 #include "hotkeymap.h"
 static float dx = 0.0;
 static float dy = 0.0;
-static float dz = 0.0;
 
    /* Forward declarations */
 static void set_boundaries(topview * t);
@@ -50,7 +49,6 @@ static void set_topview_options(void);
 static int draw_topview_label(topview_node * v, float zdepth);
 static int draw_topview_edge_label(topview_edge * e, float zdepth);
 static int node_visible(topview_node * n);
-static int select_topview_node(topview_node * n);
 static int get_color_from_edge(topview_edge * e);
 static void draw_tv_xdot(topview* t);
 static void draw_xdot(xdot* x,float base_z);

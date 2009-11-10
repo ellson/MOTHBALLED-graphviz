@@ -580,7 +580,6 @@ int is_point_in_rectangle(float X, float Y, float RX, float RY, float RW,
 static void select_topview_node(topview_node * n)
 {
     static float x1,y1,x2,y2,x,y;
-    static int sel_type=0;  /*0:select all , 1:only nodes 2:only edges*/
     x=n->distorted_x;
     y=n->distorted_y;
     if(view->mouse.GLfinalPos.x > view->mouse.GLinitPos.x)
@@ -614,7 +613,6 @@ static void select_topview_node(topview_node * n)
 static void select_topview_edge(topview_edge* e)
 {
     static float x1,y1,x2,y2,n1x,n1y,n2x,n2y;
-    static int sel_type=0;  /*0:select all , 1:only nodes 2:only edges*/
     n1x=e->Node1->distorted_x;
     n1y=e->Node1->distorted_y;
     n2x=e->Node2->distorted_x;

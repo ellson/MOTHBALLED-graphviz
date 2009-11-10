@@ -94,7 +94,6 @@ void load_mouse_actions (char* modefile,ViewInfo* v)
 #define MM_MAGNIFIER			20
 #define MM_FISHEYE_MAGNIFIER	21*/
     /*file parsing is temporarrily not available*/
-    int ind=0;
     int i=0;
     FILE* file;
     char line[BUFSIZ];

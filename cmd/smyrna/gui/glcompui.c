@@ -32,10 +32,8 @@
 /* static glCompPanel *controlPanel; */
 /* static glCompButton *rotatebutton; */
 static glCompPanel *sel = NULL;
-static  glCompLabel *selLabel=NULL;
 static glCompButton *to3DBtn;
 static glCompButton *to2DBtn;
-static glCompButton *rotateBtn;
 static glCompButton *toFisheye;
 static glCompButton *toNormal;
 static glCompImage *imgFisheye;
@@ -43,7 +41,7 @@ static glCompImage *img3D;
 static glCompButton *panBtn;
 
 
-static void menu_click_pan(void *obj, GLfloat x, GLfloat y,
+static void menu_click_pan(glCompObj *obj, GLfloat x, GLfloat y,
 			   glMouseButtonType t)
 {
         deselect_all(view->g[view->activeGraph]);
@@ -58,19 +56,19 @@ static void menu_click_zoom(void *obj, GLfloat x, GLfloat y,
 #endif
 
 
-static void menu_click_zoom_minus(void *obj, GLfloat x, GLfloat y,
+static void menu_click_zoom_minus(glCompObj *obj, GLfloat x, GLfloat y,
 				  glMouseButtonType t)
 {
     glmotion_zoom_inc(0);
 }
 
-static void menu_click_zoom_plus(void *obj, GLfloat x, GLfloat y,
+static void menu_click_zoom_plus(glCompObj *obj, GLfloat x, GLfloat y,
 				 glMouseButtonType t)
 {
     glmotion_zoom_inc(1);
 }
 
-static void menu_switch_to_fisheye(void *obj, GLfloat x, GLfloat y,
+static void menu_switch_to_fisheye(glCompObj *obj, GLfloat x, GLfloat y,
 				   glMouseButtonType t)
 {
     if (!view->Topview->is_top_fisheye == 1) {
@@ -97,7 +95,7 @@ static void menu_switch_to_fisheye(void *obj, GLfloat x, GLfloat y,
 
 
 
-static void menu_click_center(void *obj, GLfloat x, GLfloat y,
+static void menu_click_center(glCompObj *obj, GLfloat x, GLfloat y,
 			      glMouseButtonType t)
 {
     if (view->active_camera == -1) {	/*2D mode */
@@ -110,7 +108,7 @@ static void menu_click_center(void *obj, GLfloat x, GLfloat y,
 
     }
 }
-static void switch2D3D(void *obj, GLfloat x, GLfloat y,
+static void switch2D3D(glCompObj *obj, GLfloat x, GLfloat y,
 		       glMouseButtonType t)
 {
     if (t == glMouseLeftButton) {
@@ -141,7 +139,7 @@ static void switch2D3D(void *obj, GLfloat x, GLfloat y,
 }
 
 
-void CBglCompMouseUp(void *obj, GLfloat x, GLfloat y, glMouseButtonType t)
+void CBglCompMouseUp(glCompObj *obj, GLfloat x, GLfloat y, glMouseButtonType t)
 {
     /* glCompMouse* m=&((glCompSet*)obj)->mouse; */
     sel->common.visible = 0;
@@ -149,7 +147,8 @@ void CBglCompMouseUp(void *obj, GLfloat x, GLfloat y, glMouseButtonType t)
 
 }
 
-void CBglCompMouseRightClick(void *obj, GLfloat x, GLfloat y,
+
+void CBglCompMouseRightClick(glCompObj *obj, GLfloat x, GLfloat y,
 			     glMouseButtonType t)
 {
     if (t == glMouseRightButton) 
@@ -159,7 +158,7 @@ void CBglCompMouseRightClick(void *obj, GLfloat x, GLfloat y,
     }
 }
 
-void attrList(void *obj, GLfloat x, GLfloat y, glMouseButtonType t)
+void attrList(glCompObj *obj, GLfloat x, GLfloat y, glMouseButtonType t)
 {
 	showAttrsWidget(view->Topview);
 }
@@ -167,7 +166,7 @@ void attrList(void *obj, GLfloat x, GLfloat y, glMouseButtonType t)
 
 
 
-void glCompMouseMove(void *obj, GLfloat x, GLfloat y)
+void glCompMouseMove(glCompObj *obj, GLfloat x, GLfloat y)
 {
     glCompMouse *m = &((glCompSet *) obj)->mouse;
 
