@@ -39,7 +39,7 @@ static glCompButton *rotateBtn;
 static glCompButton *toFisheye;
 static glCompButton *toNormal;
 static glCompImage *imgFisheye;
-static glCompButton *img3D;
+static glCompImage *img3D;
 static glCompButton *panBtn;
 
 
@@ -130,7 +130,7 @@ static void switch2D3D(void *obj, GLfloat x, GLfloat y,
 	    view->active_camera = -1;	/*set to camera */
 	    glCompButtonShow(to3DBtn);
 	    glCompButtonHide(to2DBtn);
-	    panBtn->common.callbacks.click(panBtn, (GLfloat) 0,
+	    panBtn->common.callbacks.click((glCompObj*)panBtn, (GLfloat) 0,
 					   (GLfloat) 0,
 					   (glMouseButtonType) 0);
 	    img3D->common.visible = 0;

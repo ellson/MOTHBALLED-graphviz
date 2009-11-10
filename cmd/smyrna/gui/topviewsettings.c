@@ -89,7 +89,7 @@ static int get_text_widget_to_attribute(char *attribute, char *widget_name,
     if (strlen(attribute) > 512)
 	return 0;
     agattr(g, AGRAPH, attribute, 
-	    gtk_entry_get_text((GtkEntry *)
+	    (char*)gtk_entry_get_text((GtkEntry *)
 			       glade_xml_get_widget(xml, widget_name)));
     return 1;
 }

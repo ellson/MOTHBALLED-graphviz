@@ -45,6 +45,7 @@ int static get_button(const char* s)
 	return B_RCTRL;
     if (strcmp(s,"0")==0)
 	return 0;
+    return 0;
 
 }
 int static get_view_mode(const char* s)

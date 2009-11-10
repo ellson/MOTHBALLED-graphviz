@@ -37,7 +37,7 @@ static ssize_t outfn(void *sp, const char *buf, size_t nbyte, void *dp)
 		    nbyte);
     append_textview((GtkTextView *)
 		    glade_xml_get_widget(xml, "mainconsole"), buf, nbyte);
-    return nbyte;
+    return (ssize_t)nbyte;
 }
 
 #ifdef UNUSED

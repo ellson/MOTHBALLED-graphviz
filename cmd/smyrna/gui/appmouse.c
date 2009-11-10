@@ -26,7 +26,7 @@
 
     static float prevX=0;
     static float prevY=0;
-static int apply_actions(ViewInfo* v,int x,int y)
+static void apply_actions(ViewInfo* v,int x,int y)
 {
     int a;
     a=get_mode(v);

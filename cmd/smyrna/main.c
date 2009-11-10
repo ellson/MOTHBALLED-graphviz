@@ -79,11 +79,11 @@ char *smyrnaPath(char *suffix)
     assert(smyrnaDir);
 
     if (!buf) {
-	baselen = strlen(smyrnaDir) + 2;
+	baselen = (int)strlen(smyrnaDir) + 2;
 	buflen = baselen + 100;
 	buf = N_NEW(buflen, char);
     }
-    slen = strlen(suffix);
+    slen = (int)strlen(suffix);
     if (baselen + slen > buflen) {
 	buflen = baselen + slen;
 	buf = realloc(buf, buflen);
@@ -232,8 +232,8 @@ int main(int argc, char *argv[])
 
     gladewidget = glade_xml_get_widget(xml, "hbox10");
     graphComboBox = (GtkComboBox *) gtk_combo_box_new_text();
-    gtk_box_pack_end(gladewidget, graphComboBox, 1, 1, 10);
-    gtk_widget_show(graphComboBox);
+    gtk_box_pack_end((GtkBox*)gladewidget, (GtkWidget*)graphComboBox, 1, 1, 10);
+    gtk_widget_show((GtkWidget*)graphComboBox);
     view->graphComboBox = graphComboBox;
     gtk_main();
 

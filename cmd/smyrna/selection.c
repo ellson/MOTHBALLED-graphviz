@@ -525,6 +525,8 @@ int lineintersects(float X1, float X2, float Y1, float Y2)
     int intersects, in;
     RX = view->Selection.X;
     RY = view->Selection.Y;
+    RH=view->Selection.H;
+    RW=view->Selection.W;
     if ((is_point_in_rectangle(X1, Y1, RX, RY, RW, RH))
 	&& (is_point_in_rectangle(X2, Y2, RX, RY, RW, RH)))
 	return 1;
@@ -575,7 +577,7 @@ int is_point_in_rectangle(float X, float Y, float RX, float RY, float RW,
 
 
 
-static int select_topview_node(topview_node * n)
+static void select_topview_node(topview_node * n)
 {
     static float x1,y1,x2,y2,x,y;
     static int sel_type=0;  /*0:select all , 1:only nodes 2:only edges*/
@@ -609,7 +611,7 @@ static int select_topview_node(topview_node * n)
     }
 }
 
-static int select_topview_edge(topview_edge* e)
+static void select_topview_edge(topview_edge* e)
 {
     static float x1,y1,x2,y2,n1x,n1y,n2x,n2y;
     static int sel_type=0;  /*0:select all , 1:only nodes 2:only edges*/
