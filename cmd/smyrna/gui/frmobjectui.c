@@ -27,6 +27,8 @@
 #include "memory.h"
 #include "frmobjectui.h"
 #include <assert.h>
+#include "sfstr.h"
+
 
 #ifdef WIN32
 #define STRCASECMP stricmp
@@ -409,7 +411,9 @@ void filter_attributes(char* prefix,topview* t)
 	gtk_widget_set_sensitive(glade_xml_get_widget(xml, "txtDefValue"),1);
 	gtk_widget_show(glade_xml_get_widget(xml, "attrAddBtn"));
 	gtk_widget_hide(glade_xml_get_widget(xml, "attrApplyBtn"));
+	gtk_widget_hide(glade_xml_get_widget(xml, "attrSearchBtn"));
 	gtk_toggle_button_set_active ((GtkToggleButton*)glade_xml_get_widget(xml, "attrProg"),0);
+
 
 
 
@@ -417,6 +421,7 @@ void filter_attributes(char* prefix,topview* t)
 	{
 		gtk_widget_hide(glade_xml_get_widget(xml, "attrAddBtn"));
 		gtk_widget_hide(glade_xml_get_widget(xml, "attrApplyBtn"));
+		gtk_widget_hide(glade_xml_get_widget(xml, "attrSearchBtn"));
 		gtk_widget_hide(glade_xml_get_widget(xml, "attrAddBtn"));
 		gtk_widget_hide(glade_xml_get_widget(xml, "txtValue"));
 		gtk_widget_hide(glade_xml_get_widget(xml, "txtDefValue"));
@@ -441,14 +446,15 @@ void filter_attributes(char* prefix,topview* t)
 			gtk_widget_set_sensitive(glade_xml_get_widget(xml, "txtDefValue"),0);
 			gtk_widget_hide(glade_xml_get_widget(xml, "attrAddBtn"));
 			gtk_widget_show(glade_xml_get_widget(xml, "attrApplyBtn"));
+			gtk_widget_show(glade_xml_get_widget(xml, "attrSearchBtn"));
 			gtk_toggle_button_set_active ((GtkToggleButton*)glade_xml_get_widget(xml, "attrProg"),fl->attributes[0]->propagate);
 			break;
 
 		}
 	}
 
-	tmp=(((objKind==AGNODE) &&(sel_node))		  ||			((objKind==AGEDGE) &&(sel_edge))			||			((objKind==AGRAPH) &&(sel_graph)));
-		gtk_widget_set_sensitive(glade_xml_get_widget(xml, "txtValue"),tmp);
+	tmp=(((objKind==AGNODE) &&(sel_node)) ||((objKind==AGEDGE) &&(sel_edge))||((objKind==AGRAPH) &&(sel_graph)));
+		gtk_widget_set_sensitive(glade_xml_get_widget(xml, "attrApplyBtn"),tmp);
 }
 /*asttribute text changed call back*/
 
@@ -457,6 +463,7 @@ _BB void on_txtAttr_changed(GtkWidget * widget, gpointer user_data)
 //	printf ("attr text has been changed to %s \n",gtk_entry_get_text((GtkEntry*)widget));
 	filter_attributes((char*)gtk_entry_get_text((GtkEntry*)widget),view->Topview);
 }
+
 
 _BB void on_attrApplyBtn_clicked (GtkWidget * widget, gpointer user_data)
 {
@@ -686,33 +693,45 @@ attr_list* load_attr_list(Agraph_t* g)
 	sym=NULL;
     while ((sym = agnxtattr(g,AGRAPH, sym)))
 	{
-		if(!binarySearch( l, sym->name))
+		attr=binarySearch(l, sym->name);
+		if (attr)
+		    attr->objType[0]=1;
+		else
 		{
-			attr=new_attr_with_ref(sym);
-			attr_list_add(l,attr);
-
+		    attr=new_attr_with_ref(sym);
+    		    attr_list_add(l,attr);
 		}
 	}
 	sym=NULL;
 	while ((sym = agnxtattr(g,AGNODE, sym)))
 	{
-		if(!binarySearch(l, sym->name))
+	    
+	        attr=binarySearch(l, sym->name);
+		if (attr)
 		{
-			attr=new_attr_with_ref(sym);
-			attr_list_add(l,attr);
+		    attr->objType[1]=1;
 
 		}
+		else
+		{
+		    attr=new_attr_with_ref(sym);
+    		    attr_list_add(l,attr);
+		}
+
 	}
 	sym=NULL;
 	while ((sym = agnxtattr(g,AGEDGE, sym)))
 	{
-		if(!binarySearch(l, sym->name))
+
+		attr=binarySearch(l, sym->name);
+		if (attr)
+		    attr->objType[2]=1;
+		else
 		{
-			attr=new_attr_with_ref(sym);
-			attr_list_add(l,attr);
+		    attr=new_attr_with_ref(sym);
+    		    attr_list_add(l,attr);
 		}
 	}
-
 	return l;
 }
 
@@ -775,6 +794,51 @@ void showAttrsWidget(topview* t)
 
 
 }
+static void gvpr_select(char* attr,char* regex_str,int objType)
+{
+    
+    static Sfio_t *sf;
+    char *bf2;
+    int i, j, argc;
+    char **argv;
+
+    if (!sf)
+	sf= sfstropen();
+
+    if (objType==AGNODE)
+	sfprintf (sf,"N[%s==\"%s\"]{selected = \"1\"}",attr,regex_str);
+    if (objType==AGEDGE)
+	sfprintf (sf,"E[%s==\"%s\"]{selected = \"1\"}",attr,regex_str);
+
+
+
+    bf2 =sfstruse(sf);
+
+    argc = 1;
+    if (*bf2 != '\0')
+	argc++;
+    argv = N_NEW(argc + 1, char *);
+    j = 0;
+    argv[j++] = "smyrna";
+    argv[j++] = strdup(bf2);
+
+    run_gvpr(view->g[view->activeGraph], j, argv);
+    for (i = 1; i < argc; i++)
+	free(argv[i]);
+    free(argv);
+    set_header_text();
+}
+
+
+_BB void on_attrSearchBtn_clicked (GtkWidget * widget, gpointer user_data)
+{
+    
+    char *attr=(char*)gtk_entry_get_text((GtkEntry*)glade_xml_get_widget(xml, "txtAttr"));
+    char* regex_str=(char*)gtk_entry_get_text((GtkEntry*)glade_xml_get_widget(xml, "txtValue"));
+    gvpr_select(attr,regex_str,get_object_type());
+
+}
+
 
 
 #if 0

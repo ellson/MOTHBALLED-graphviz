@@ -496,6 +496,8 @@ static char **splitArgs(const char *args, int *argcp)
 }
 #endif
 
+
+
 void mTestgvpr(GtkWidget * widget, gpointer user_data)
 {
     char *bf2;
@@ -561,6 +563,9 @@ void mTestgvpr(GtkWidget * widget, gpointer user_data)
 	g_free(bf2);
     }
     assert(j == argc);
+    for (i = 0; i < j; i++)
+	printf("%s ",argv[i]);
+
 
     run_gvpr(view->g[view->activeGraph], argc, argv);
     for (i = 1; i < argc; i++)

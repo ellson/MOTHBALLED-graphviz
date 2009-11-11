@@ -19,6 +19,9 @@
 #include "gltemplate.h"
 #include "glutils.h"
 #include "toolboxcallbacks.h"
+#include "sfstr.h"
+
+static void print_object(void* obj);
 
 static int remove_edge_from_pick_list(topview_edge * e)
 {
@@ -52,6 +55,8 @@ static int add_edge_to_pick_list(topview_edge * e)
 		sizeof(topview_edge *) * view->Topview->picked_edge_count);
     view->Topview->picked_edges[view->Topview->picked_edge_count - 1] = e;
     select_edge(e);
+    print_object((void*) e->Edge);	
+
     return 1;
 }
 
@@ -205,27 +210,60 @@ int remove_from_pick_list(topview_node * n)
     }
     return 0;
 }
-static void print_node(topview_node * n)
+
+/*
+You can then use sf as you would FILE* for writing, but using sfio functions. For example,
+
+  sfprintf(sf, "<unknown (%d)>", op);
+
+You can write to your heart's content; sfio will take care of memory. 
+When you are ready to use the
+string, call
+
+  char* ptr = sfstruse(sf);
+
+This adds a '\0'-byte at the end and returns a pointer to the beginning of the buffer. This also resets the write pointer, so you can use sf over again. Note, therefore, that this means you don't want to call sfstruse(sf) twice, as the second time will put a '\0' at the beginning of the buffer.
+
+Once you have ptr set, you can use it to insert the character string into the console window.
+
+To clean up, call
+
+  sfclose (sf);
+
+This codes requires the vmalloc, ast, and sfio libraries, but these are already being loaded because gvpr needs them.
+*/
+
+static void print_object(void* obj)
 {
+    static Sfio_t *sf;
     int ind=0;
     char* val;
+    char* str;
     attr_list* l=view->Topview->attributes;
-    printf("Node Summary\n");
-    printf("-------------\n");
-    printf("name: %s\n",agnameof(n->Node));
+    if (!sf)
+		sf= sfstropen();
+    if(AGTYPE(obj)==AGNODE)
+	sfprintf(sf,"Node Summary\n");
+    if(AGTYPE(obj)==AGEDGE)
+	sfprintf(sf,"Edge Summary\n");
+    sfprintf(sf,"-------------\n");
+    sfprintf(sf,"name: %s\n",agnameof(obj));
     for (;ind < l->attr_count;ind ++)
     {
 	if(l->attributes[ind]->propagate)
 	{
-	    val=agget(n->Node,l->attributes[ind]->name);
+	    val=agget(obj,l->attributes[ind]->name);
 	    if (val)
 	    {
-		printf("%s:%s\n",l->attributes[ind]->name,val);
+		sfprintf(sf,"%s:%s\n",l->attributes[ind]->name,val);
 
 	    }
 	}
     }
-    printf("-------------\n");
+    sfprintf(sf,"-------------\n");
+    str=sfstruse(sf);
+    append_textview((GtkTextView *)glade_xml_get_widget(xml, "mainconsole"), str, strlen(str));
+
 
 }
 
@@ -237,8 +275,7 @@ int add_to_pick_list(topview_node * n)
 		sizeof(topview_node *) * view->Topview->picked_node_count);
     view->Topview->picked_nodes[view->Topview->picked_node_count - 1] = n;
     select_node(n);
-    print_node( n);	
-
+    print_object((void*) n->Node);	
     return 1;
 }
 
