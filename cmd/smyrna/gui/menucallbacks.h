@@ -24,7 +24,7 @@ extern "C" {
 #endif
 
 //file
-    _BB void mNewSlot(GtkWidget * widget, gpointer user_data);
+    _BB void mAttributesSlot(GtkWidget * widget, gpointer user_data);
     _BB void mOpenSlot(GtkWidget * widget, gpointer user_data);
     _BB void mSaveSlot(GtkWidget * widget, gpointer user_data);
     _BB void mSaveAsSlot(GtkWidget * widget, gpointer user_data);

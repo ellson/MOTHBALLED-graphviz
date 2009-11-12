@@ -223,6 +223,7 @@ void settvcolorinfo(Agraph_t * g, topview * t)
     Agsym_t *ecolor = agattr(g, AGEDGE, "color", 0);
     Agsym_t *edgeid = agattr(g, AGEDGE, "edgeid", 0);
     char *color_string;
+    char* tempStr;
 
     /*loop nodes */
     for (ind = 0; ind < t->Nodecount; ind++) {
@@ -234,6 +235,16 @@ void settvcolorinfo(Agraph_t * g, topview * t)
 	np->data.Selected = boolAttr(np->Node, sel, 0);
 	np->data.Highlighted = boolAttr(np->Node, hilite, 0);
 	np->data.Visible = visible(np->Node, vis, sty);
+	tempStr=agget(t->Nodes[ind].Node, "size");
+	if(tempStr)
+	{
+	    if (strlen(tempStr) > 0)	/*set node size */
+		t->Nodes[ind].size = atof(tempStr);
+	}
+	if (t->Nodes[ind].degree > t->maxnodedegree)
+	    t->maxnodedegree = t->Nodes[ind].degree;
+
+
     }
 
     /*loop edges */
@@ -247,7 +258,7 @@ void settvcolorinfo(Agraph_t * g, topview * t)
     for (ind = 0; ind < t->Edgecount; ind++) {
 	ep = t->Edges + ind;
 	if (ecolor && (color_string = agxget(ep->Edge, ecolor))
-	    && (*color_string != '\0'))
+	    && (*color_string != '\0')&& (strlen(color_string)>0))
 	    setglCompColor(&color, color_string);
 	else {			/*use color theme */
 	    getcolorfromschema(view->colschms, ep->length, t->maxedgelen,
@@ -331,6 +342,8 @@ void init_node_size(Agraph_t * g, topview * t)
     t->init_node_size =
 	vsize * 2 / GetOGLDistance(2) * percent / 100.0 /
 	sqrt(t->Nodecount);
+    if (t->init_node_size < 1)
+	t->init_node_size=1;
     t->init_zoom = view->zoom;
 
 }
@@ -423,12 +436,7 @@ void preparetopview(Agraph_t * g, topview * t)
 	init_element_data(&t->Nodes[ind].data);
 	t->Nodes[ind].zoom_factor = 1;
 	t->Nodes[ind].degree = agdegree(g, v, 1, 1);
-	if (agget(t->Nodes[ind].Node, "size"))	/*set node size */
-	    t->Nodes[ind].size = atof(agget(t->Nodes[ind].Node, "size"));
-	else
-	    t->Nodes[ind].size = 0;
-	if (t->Nodes[ind].degree > t->maxnodedegree)
-	    t->maxnodedegree = t->Nodes[ind].degree;
+	t->Nodes[ind].size=0;
 	view->Topview->Nodes[ind].Label = NULL;
 
 	t->Nodes[ind].node_alpha = 1;

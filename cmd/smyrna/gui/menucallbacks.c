@@ -27,11 +27,13 @@
 #include <agxbuf.h>
 #include <assert.h>
 #include <ctype.h>
+#include  "frmobjectui.h"
 
 //file
 char buf[255];
-void mNewSlot(GtkWidget * widget, gpointer user_data)
+void mAttributesSlot(GtkWidget * widget, gpointer user_data)
 {
+    showAttrsWidget(view->Topview);
 }
 
 void mOpenSlot(GtkWidget * widget, gpointer user_data)
@@ -563,8 +565,6 @@ void mTestgvpr(GtkWidget * widget, gpointer user_data)
 	g_free(bf2);
     }
     assert(j == argc);
-    for (i = 0; i < j; i++)
-	printf("%s ",argv[i]);
 
 
     run_gvpr(view->g[view->activeGraph], argc, argv);
