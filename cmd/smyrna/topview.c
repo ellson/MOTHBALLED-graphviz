@@ -65,17 +65,13 @@ void cleartopview(topview * t)
 static void init_element_data(element_data * d)
 {
 
-    d->Highlighted = 0;
     d->Layer = 0;
     d->Visible = 1;
-    d->Highlighted = 0;
     d->Selected = 0;
-    d->Preselected = 0;
     d->NumDataCount = 0;
     d->NumData = (float *) 0;
     d->StrDataCount = 0;
     d->StrData = (char **) 0;
-    d->selectionflag = 0;
     d->param = 0;
     d->TVRef = -1;
 }
@@ -92,6 +88,7 @@ static void setpositioninfo(float *x, float *y, float *z, char *buf)
 static void setglCompColor(glCompColor * c, char *colorstr)
 {
     gvcolor_t cl;
+    float A=1;
     /*if node has color attribute */
     if ((colorstr != '\0') && (strlen(colorstr) > 0)) {
 	colorxlate(colorstr, &cl, RGBA_DOUBLE);
@@ -99,13 +96,15 @@ static void setglCompColor(glCompColor * c, char *colorstr)
     } else {
 	colorxlate(agget(view->g[view->activeGraph], "defaultnodecolor"),
 		   &cl, RGBA_DOUBLE);
+	
 	c->tag = 0;
+	A= view->defaultnodealpha;
     }
     c->R = (float) cl.u.RGBA[0];
     c->G = (float) cl.u.RGBA[1];
     c->B = (float) cl.u.RGBA[2];
-    c->A = (float) cl.u.RGBA[3];
-
+    c->A = (float) cl.u.RGBA[3]*A;
+ 
 }
 
 #undef DIST2
@@ -233,7 +232,6 @@ void settvcolorinfo(Agraph_t * g, topview * t)
 
 	/*while in the loop why dont we set some smyrna settings from graph? selected , highlighted , visible */
 	np->data.Selected = boolAttr(np->Node, sel, 0);
-	np->data.Highlighted = boolAttr(np->Node, hilite, 0);
 	np->data.Visible = visible(np->Node, vis, sty);
 	tempStr=agget(t->Nodes[ind].Node, "size");
 	if(tempStr)
@@ -268,33 +266,12 @@ void settvcolorinfo(Agraph_t * g, topview * t)
 	ep->data.edgeid = boolAttr(ep->Edge, edgeid, 0);
 	ep->Color = color;
 	ep->data.Selected = boolAttr(ep->Edge, sel, 0);
-	ep->data.Highlighted = boolAttr(ep->Edge, hilite, 0);
 	ep->data.Visible = visible(ep->Edge, vis, sty);
 
     }
 
 }
 
-#if UNUSED
-static xdot *parseXdotwithattr(void *p, char *attr)
-{
-	int ind;
-	xdot *xDot;
-	xdot_op* x_op;
-	sdot_op* s_op;
-    xDot = parseXDotF(agget(p, attr), OpFns, sizeof(sdot_op));
-	if (!xDot)
-			return NULL;
-	for (ind = 0 ; ind < xDot->cnt; ind ++)
-	{
-		x_op=&(xDot->ops[ind]);
-		s_op=(sdot_op*)x_op;
-		s_op->font=NULL;
-		s_op->layer=ind;
-	}
-	return xDot;
-}
-#endif
 
 static xdot* parseXdotwithattrs(void *e)
 {
@@ -398,7 +375,7 @@ void preparetopview(Agraph_t * g, topview * t)
     Agnode_t *v;
     Agedge_t *e;
     Agsym_t *sym;
-    int ind, ind2, data_type_count;	//number of columns for custom view->Topview data ,IP ,HOST, etc
+    int ind, ind2, data_type_count;
     float maxedgelen, minedgelen, edgelength;
 
 
@@ -429,7 +406,6 @@ void preparetopview(Agraph_t * g, topview * t)
 	//bind temp record;
 	agbindrec(v, "temp_node_record", sizeof(temp_node_record), TRUE);	//graph custom data
 	/*initialize group index, -1 means no group */
-	t->Nodes[ind].GroupIndex = -1;
 	t->Nodes[ind].Node = v;
 	t->Nodes[ind].data.TVRef = ind;
 	((temp_node_record *) AGDATA(v))->TVref = ind;
@@ -656,7 +632,7 @@ static int drawtopviewnodes(Agraph_t * g)
 			  view->selectedNodeColor.A);
 	    } else {		//get the color from node
 		glColor4f(v->Color.R, v->Color.G, v->Color.B,
-			  v->node_alpha * view->defaultnodealpha);
+			  v->node_alpha);
 		ddx = 0;
 		ddy = 0;
 		ddz = 0;
@@ -1057,35 +1033,6 @@ static int get_color_from_edge(topview_edge * e)
 		  view->selectedEdgeColor.B, view->selectedEdgeColor.A);
 	return return_value;
     }
-    /*edge maybe in a group and group may be selected, then use groups's color example:ATT hosts */
-    if ((e->Node1->GroupIndex >= 0) || (e->Node2->GroupIndex >= 0)) {
-	if (view->Topview->TopviewData->hostactive[e->Node1->GroupIndex] ==
-	    1) {
-	    gtk_color_button_get_color(view->Topview->TopviewData->
-				       gtkhostcolor[e->Node1->GroupIndex],
-				       &color);
-	    glColor4f((GLfloat) color.red / (GLfloat) 65535.0,
-		      (GLfloat) color.green / (GLfloat) 65535.0,
-		      (GLfloat) color.blue / (GLfloat) 65535.0,
-		      (GLfloat) 1);
-	    return return_value;
-	} else {
-	    if (view->Topview->TopviewData->
-		hostactive[e->Node2->GroupIndex] == 1) {
-		gtk_color_button_get_color(view->Topview->TopviewData->
-					   gtkhostcolor[e->Node2->
-							GroupIndex],
-					   &color);
-		glColor4f((GLfloat) color.red / (GLfloat) 65535.0,
-			  (GLfloat) color.green / (GLfloat) 65535.0,
-			  (GLfloat) color.blue / (GLfloat) 65535.0,
-			  (GLfloat) 1);
-		return return_value;
-	    }
-	}
-
-    }
-
     /*get edge's color attribute */
     if (e->Color.tag == 0)
 	glColor4f(e->Color.R, e->Color.G, e->Color.B, Alpha * e->Color.A);

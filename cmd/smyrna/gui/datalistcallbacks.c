@@ -151,16 +151,6 @@ void btnTVUnselectAll_clicked_cb(GtkWidget * widget, gpointer user_data)
     tv_unselect_all();
 }
 
-void btnTVHighlightAll_clicked_cb(GtkWidget * widget, gpointer user_data)
-{
-    tv_highligh_all();
-}
-
-void btnTVUnhighlightAll_clicked_cb(GtkWidget * widget, gpointer user_data)
-{
-    tv_unhighligh_all();
-}
-
 
 void btnTVShowAll_clicked_cb(GtkWidget * widget, gpointer user_data)
 {

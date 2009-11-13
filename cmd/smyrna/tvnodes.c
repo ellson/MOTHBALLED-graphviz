@@ -185,11 +185,6 @@ int validate_node(tv_node * TV_Node)
 	if (strlen(TV_Nodes.filter.filter_string) > 0)
 	    valid = evaluate_expresions(TV_Node, n);
 	//if show only highlighted 
-	if (TV_Nodes.filter.highlighted >= 0) {
-	    if (view->Topview->Nodes[TV_Node->index].data.Highlighted !=
-		TV_Nodes.filter.highlighted)
-		valid = 0;
-	}
 	//if show only visibles
 	if (TV_Nodes.filter.visible >= 0) {
 	    if (view->Topview->Nodes[TV_Node->index].data.Visible !=
@@ -260,10 +255,6 @@ static int update_node_gui_objects(tv_node * TV_Node)
 		       LOCATION_X_CHKHIGHLIGHTED, TV_Nodes.Y);
     }
     gtk_widget_show((GtkWidget *) TV_Node->chkHighlighted);
-    gtk_toggle_button_set_active((GtkToggleButton *) TV_Node->
-				 chkHighlighted,
-				 view->Topview->Nodes[TV_Node->index].data.
-				 Highlighted);
 
 
     //NAME
@@ -593,15 +584,6 @@ int update_TV_data_from_gui(void)
 		if (view->Topview->Nodes[index].data.Visible)
 		    view->Topview->Nodes[index].data.Visible = 0;
 	    }
-	    // apply if Highlighted
-	    if (gtk_toggle_button_get_active
-		((GtkToggleButton *) TV_Nodes.TV_Node[i].chkHighlighted)) {
-		if (!view->Topview->Nodes[index].data.Highlighted)
-		    view->Topview->Nodes[index].data.Highlighted = 1;
-	    } else {
-		if (view->Topview->Nodes[index].data.Highlighted)
-		    view->Topview->Nodes[index].data.Highlighted = 0;
-	    }
 	    agset((void *) view->Topview->Nodes[index].Node, data_attr1,
 		  (char *) gtk_entry_get_text(TV_Nodes.TV_Node[i].Data1));
 	    agset(view->Topview->Nodes[index].Node, data_attr2,
@@ -714,36 +696,7 @@ int tv_unselect_all()
 
 }
 
-int tv_highligh_all(void)
-{
-    tv_node tvn;
-    int i;
-    for (i = 0; i < view->Topview->Nodecount; i++) {
-	tvn.index = i;
-	if (cache_validate_node(&tvn)) {
-	    view->Topview->Nodes[i].data.Highlighted = 1;
-	}
-    }
-    apply_filter_from_gui();
-    return 1;
 
-
-}
-
-int tv_unhighligh_all(void)
-{
-    tv_node tvn;
-    int i;
-    for (i = 0; i < view->Topview->Nodecount; i++) {
-	tvn.index = i;
-	if (cache_validate_node(&tvn)) {
-	    view->Topview->Nodes[i].data.Highlighted = 0;
-	}
-    }
-    apply_filter_from_gui();
-    return 1;
-
-}
 
 int tv_show_all(void)
 {

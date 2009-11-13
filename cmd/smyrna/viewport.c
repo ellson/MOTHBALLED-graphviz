@@ -170,7 +170,7 @@ char *get_attribute_value(char *attr, ViewInfo * view, Agraph_t * g)
     char *buf;
     buf = agget(g, attr);
     if ((!buf) || (*buf == '\0'))
-	buf = agget(view->default_attributes, attr);
+	buf = agget(view->systemGraphs.def_attrs, attr);
     return buf;
 }
 
@@ -348,6 +348,7 @@ static void get_data_dir(void)
 void init_viewport(ViewInfo * view)
 {
     FILE *input_file = NULL;
+    FILE *input_file2 = NULL;
     get_data_dir();
 
     input_file = fopen(view->template_file, "rb");
@@ -356,10 +357,23 @@ void init_viewport(ViewInfo * view)
 		"default attributes template graph file \"%s\" not found\n",
 		view->template_file);
 	exit(-1);
-    } else if (!(view->default_attributes = agread(input_file, 0))) {
+    } else if (!(view->systemGraphs.def_attrs = agread(input_file, 0))) {
 	fprintf(stderr,
 		"could not load default attributes template graph file \"%s\"\n",
 		view->template_file);
+	exit(-1);
+    }
+    printf ("%s\n",smyrnaPath("attr_widgets.dot"));
+    input_file2 = fopen(smyrnaPath("attr_widgets.dot"), "rb");
+    if (!input_file2) 
+    {
+	fprintf(stderr,	"default attributes template graph file \"%s\" not found\n",smyrnaPath("attr_widgets.dot"));
+	exit(-1);
+
+    }
+    else if (!(view->systemGraphs.attrs_widgets = agread(input_file2, 0))) 
+    {
+	fprintf(stderr,"could not load default attribute widgets graph file \"%s\"\n",smyrnaPath("attr_widgets.dot"));
 	exit(-1);
     }
     //init graphs
@@ -473,8 +487,7 @@ void init_viewport(ViewInfo * view)
     view->cameras = '\0';;
     view->camera_count = 0;
     view->active_camera = -1;
-
-    set_viewport_settings_from_template(view, view->default_attributes);
+    set_viewport_settings_from_template(view, view->systemGraphs.def_attrs);
     view->dfltViewType = VT_NONE;
     view->dfltEngine = GVK_NONE;
     view->Topview->Graphdata.GraphFileName = (char *) 0;

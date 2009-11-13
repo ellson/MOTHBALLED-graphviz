@@ -266,15 +266,11 @@ typedef struct
 	int ObjType;
 	int Layer;
 	int Visible;
-	int Locked;
-	int Highlighted;
 	int Selected;
-	int Preselected;
 	int NumDataCount;
 	float *NumData;
 	int StrDataCount;
 	char **StrData;
-	int selectionflag;
 	int param;		//generic purpose param
 	int TVRef;		//Topview reference
 	int edgeid;		/*for only edges,  > 0  multiedges */
@@ -353,8 +349,6 @@ typedef struct
 		float zoom_factor;
 		int in_fish_eye;	//boolean value if to apply fisheye
 		glCompColor Color;
-		glCompColor GroupColor;
-		int GroupIndex;		//default -1;
 		char *Label;
 		char *Label2;
 		int degree;
@@ -501,10 +495,14 @@ typedef struct
 	int active;
 	int fisheye_distortion_fac;
     } fisheye_magnifier;
-
+    typedef struct{
+    Agraph_t *def_attrs;
+    Agraph_t *attrs_widgets;
+    }systemgraphs;
 
 
     typedef struct _ViewInfo {
+	systemgraphs systemGraphs;
 	/*view variables */
 	float panx;
 	float pany;
@@ -616,7 +614,6 @@ typedef struct
 
 	/*Topview data structure, refer topview.h for more info */
 	topview *Topview;
-	Agraph_t *default_attributes;
 	/*timer for animations */
 	GTimer *timer;
 	/*this timer is session timer and always active */
@@ -651,8 +648,9 @@ typedef struct
 	char *initFileName;	//file name from command line
 	int initFile;
 	colorschemaset *colschms;
-	char *template_file;
 	char *glade_file;
+	char* temp;
+	char *template_file;
 	char *attr_file;
 	int flush;
 	line interpol;
