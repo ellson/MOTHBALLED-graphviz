@@ -56,6 +56,7 @@ unsigned char *load_raw(char *filename, int width, int height)
     // open and read texture data
     file = fopen(filename, "rb");
     fread(data, width * height * 3, 1, file);
+    fclose (file);
     return data;
 }
 
@@ -80,6 +81,7 @@ unsigned char *load_png2(char *file_name, int *imageWidth,
     fread(header, 1, 8, fp);
     is_png = !png_sig_cmp(header, 0, 8);
     if (!is_png) {
+	fclose (fp);
 	printf("glcomp error:file is not a valid PNG file\n");
 	return (unsigned char *) 0;
     }
@@ -87,6 +89,7 @@ unsigned char *load_png2(char *file_name, int *imageWidth,
     png_ptr = png_create_read_struct
 	(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (!png_ptr) {
+	fclose (fp);
 	printf("glcomp error:file can not be read\n");
 	return (unsigned char *) 0;
     }
@@ -95,6 +98,7 @@ unsigned char *load_png2(char *file_name, int *imageWidth,
     if (!info_ptr) {
 	png_destroy_read_struct(&png_ptr,
 				(png_infopp) NULL, (png_infopp) NULL);
+	fclose (fp);
 	printf("glcomp error:PNG file header is corrupted\n");
 	return (unsigned char *) 0;
     }
@@ -102,6 +106,7 @@ unsigned char *load_png2(char *file_name, int *imageWidth,
     end_info = png_create_info_struct(png_ptr);
     if (!end_info) {
 	printf("glcomp error:PNG file header is corrupted\n");
+	fclose (fp);
 	png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp) NULL);
 	return (unsigned char *) 0;
     }
@@ -147,6 +152,8 @@ unsigned char *load_png2(char *file_name, int *imageWidth,
     //cleaning libpng mess
     png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
     png_free(png_ptr, row_pointers);
+
+    fclose (fp);
     return imageData;
 }
 
