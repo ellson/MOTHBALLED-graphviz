@@ -100,8 +100,7 @@ void load_mouse_actions (char* modefile,ViewInfo* v)
     char* a;
     char* action_file = smyrnaPath ("mouse_actions.txt");
     file = fopen(action_file, "r");
-    if (file != NULL) 
-	{
+    if (file != NULL) {
 		int ind=0;
 		while (fgets(line, BUFSIZ, file) != NULL) 
 		{
@@ -139,20 +138,9 @@ void load_mouse_actions (char* modefile,ViewInfo* v)
 			}
 			ind++;
 		}
+		fclose (file);
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
+    free (action_file);
 
 
 /*
@@ -220,10 +208,6 @@ void load_mouse_actions (char* modefile,ViewInfo* v)
     v->mouse_actions[ind].type=glMouseRightButton;
 */
 }
-
-
-
-
 
 
 int get_mode(ViewInfo* v)

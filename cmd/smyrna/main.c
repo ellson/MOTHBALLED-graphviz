@@ -67,8 +67,7 @@ unsigned char SmyrnaVerbose;
  */
 char *smyrnaPath(char *suffix)
 {
-    static int buflen;
-    static char *buf;
+    char *buf;
     static int baselen;
     int slen;
 #ifdef WIN32
@@ -78,16 +77,11 @@ char *smyrnaPath(char *suffix)
 #endif
     assert(smyrnaDir);
 
-    if (!buf) {
+    if (baselen == 0) {
 	baselen = (int)strlen(smyrnaDir) + 2;
-	buflen = baselen + 100;
-	buf = N_NEW(buflen, char);
     }
     slen = (int)strlen(suffix);
-    if (baselen + slen > buflen) {
-	buflen = baselen + slen;
-	buf = realloc(buf, buflen);
-    }
+    buf = N_NEW(baselen+slen, char);
     sprintf(buf, "%s%s%s", smyrnaDir, pathSep, suffix);
     return buf;
 }

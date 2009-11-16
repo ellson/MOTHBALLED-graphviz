@@ -538,7 +538,9 @@ int create_save_subgraph_from_filter(char *filename)
     }
 
     if ((outputfile = fopen(filename, "w"))) {
-	if (agwrite(subg, outputfile)) {
+	int ret = agwrite(subg, outputfile);
+	fclose (outputfile);
+	if (ret) {
 	    agdelsubg(view->g[view->activeGraph], subg);
 	    return 1;
 	} else {

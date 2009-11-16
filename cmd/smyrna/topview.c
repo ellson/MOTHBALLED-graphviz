@@ -327,7 +327,6 @@ void init_node_size(Agraph_t * g, topview * t)
 
 void update_topview(Agraph_t * g, topview * t, int init)
 {
-
     char *info_file;
     char *str;
     char buf[512];
@@ -343,6 +342,7 @@ void update_topview(Agraph_t * g, topview * t, int init)
     settvxdot(view->g[view->activeGraph], view->Topview);
     init_node_size(g, t);
     /*This is a temp code , need to be removed after Xue's demo */
+#if UNUSED
     info_file = agget(g, "demo_file");
     if ((info_file != NULL) && (strlen(info_file) != 0)) {
 	agxbuf xbuf;
@@ -362,6 +362,7 @@ void update_topview(Agraph_t * g, topview * t, int init)
 
 
     /*end of temp code */
+#endif
 
     if (view->SignalBlock)
 	btnToolZoomFit_clicked(NULL, NULL);

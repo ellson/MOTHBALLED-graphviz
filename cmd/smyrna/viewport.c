@@ -350,6 +350,7 @@ void init_viewport(ViewInfo * view)
     FILE *input_file = NULL;
     FILE *input_file2 = NULL;
     get_data_dir();
+    static char* path;
 
     input_file = fopen(view->template_file, "rb");
     if (!input_file) {
@@ -357,22 +358,28 @@ void init_viewport(ViewInfo * view)
 		"default attributes template graph file \"%s\" not found\n",
 		view->template_file);
 	exit(-1);
-    } else if (!(view->systemGraphs.def_attrs = agread(input_file, 0))) {
+    } 
+    view->systemGraphs.def_attrs = agread(input_file, 0);
+    fclose (input_file);
+
+    if (!view->systemGraphs.def_attrs) {
 	fprintf(stderr,
 		"could not load default attributes template graph file \"%s\"\n",
 		view->template_file);
 	exit(-1);
     }
-    printf ("%s\n",smyrnaPath("attr_widgets.dot"));
-    input_file2 = fopen(smyrnaPath("attr_widgets.dot"), "rb");
-    if (!input_file2) 
-    {
+    if (!path)
+	path = smyrnaPath("attr_widgets.dot");
+    printf ("%s\n", path);
+    input_file2 = fopen(path, "rb");
+    if (!input_file2) {
 	fprintf(stderr,	"default attributes template graph file \"%s\" not found\n",smyrnaPath("attr_widgets.dot"));
 	exit(-1);
 
     }
-    else if (!(view->systemGraphs.attrs_widgets = agread(input_file2, 0))) 
-    {
+    view->systemGraphs.attrs_widgets = agread(input_file2, 0);
+    fclose (input_file2);
+    if (!(view->systemGraphs.attrs_widgets )) {
 	fprintf(stderr,"could not load default attribute widgets graph file \"%s\"\n",smyrnaPath("attr_widgets.dot"));
 	exit(-1);
     }
@@ -582,9 +589,10 @@ static Agraph_t *loadGraph(char *filename)
 	g_print("Cannot open %s\n", filename);
 	return 0;
     }
-    if (!(g = agread(input_file, NIL(Agdisc_t *)))) {
+    g = agread(input_file, NIL(Agdisc_t *));
+    fclose (input_file);
+    if (!g) {
 	g_print("Cannot read graph in  %s\n", filename);
-	fclose(input_file);
 	return 0;
     }
 
@@ -592,7 +600,6 @@ static Agraph_t *loadGraph(char *filename)
      */
     if (!agattr(g, AGNODE, "pos", NULL)) {
 	g_print("There is no position info in %s\n", filename);
-	fclose(input_file);
 	return 0;
     }
     free(view->Topview->Graphdata.GraphFileName);
@@ -720,7 +727,7 @@ md5_byte_t *get_md5_key(Agraph_t * graph)
  */
 int save_graph_with_file_name(Agraph_t * graph, char *fileName)
 {
-
+    int ret;
     FILE *output_file;
     update_graph_params(graph);
     if (fileName)
@@ -736,7 +743,9 @@ int save_graph_with_file_name(Agraph_t * graph, char *fileName)
 	return 0;
     }
 
-    if (agwrite(graph, (void *) output_file)) {
+    ret = agwrite(graph, (void *) output_file);
+    fclose (output_file);
+    if (ret) {
 	g_print("%s successfully saved \n", fileName);
 	return 1;
     }

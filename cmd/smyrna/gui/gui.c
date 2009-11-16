@@ -400,6 +400,7 @@ void load_attributes(void)
 	    }
 	    attrcount++;
 	}
+	fclose (file);
     }
 }
 void show_gui_warning(char *str)

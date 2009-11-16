@@ -647,16 +647,15 @@ attr_list* load_attr_list(Agraph_t* g)
 	FILE *file;
 	Agsym_t* sym;	/*cgraph atttribute*/
     char line[BUFSIZ];
-	char* smyrna_attrs = smyrnaPath ("attrs.txt");
+    static char* smyrna_attrs;
 	char* a;
 	
-	g=view->g[view->activeGraph];
-	file = fopen(smyrna_attrs, "r");
-
-	l=attr_list_new(NULL,1);
-
-    if (file != NULL) 
-	{
+    if (!smyrna_attrs)
+	smyrna_attrs = smyrnaPath ("attrs.txt");
+    g=view->g[view->activeGraph];
+    l=attr_list_new(NULL,1);
+    file = fopen(smyrna_attrs, "r");
+    if (file != NULL) {
 		int i=0;
 		while (fgets(line, BUFSIZ, file) != NULL) 
 		{
@@ -689,10 +688,10 @@ attr_list* load_attr_list(Agraph_t* g)
 			attr_list_add(l,attr);
 
 		}
-	}
-	sym=NULL;
-    while ((sym = agnxtattr(g,AGRAPH, sym)))
-	{
+	fclose (file);
+    }
+    sym=NULL;
+    while ((sym = agnxtattr(g,AGRAPH, sym))) {
 		attr=binarySearch(l, sym->name);
 		if (attr)
 		    attr->objType[0]=1;
@@ -701,7 +700,7 @@ attr_list* load_attr_list(Agraph_t* g)
 		    attr=new_attr_with_ref(sym);
     		    attr_list_add(l,attr);
 		}
-	}
+    }
 	sym=NULL;
 	while ((sym = agnxtattr(g,AGNODE, sym)))
 	{
@@ -1394,10 +1393,6 @@ void change_selected_edge_attributes(Agraph_t * g, char *attrname,
     }
 }
 
-
-
-
-
 void load_attributes()
 {
     FILE *file;
@@ -1488,6 +1483,7 @@ void load_attributes()
 	    }
 	    attrcount++;
 	}
+	fclose (file);
     }
 }
 
