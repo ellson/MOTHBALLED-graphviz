@@ -1551,6 +1551,9 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 #ifdef ALTERNATIVE_STRESS_CALC
     double mat_stress;
 #endif
+#ifdef NONCORE
+    FILE* fp = NULL;
+#endif
 
 	/*************************************************
 	** Computation of full, dense, unrestricted k-D ** 
@@ -1704,6 +1707,7 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 	fp = fopen(FILENAME, "wb");
 	fwrite(lap2, sizeof(float), lap_length, fp);
 	fclose(fp);
+	fp = NULL;
     }
 #endif
 
@@ -1884,6 +1888,11 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 #endif /* WITH_CGRAPH */
 	}
     }
+#ifdef NONCORE
+    if (fp)
+	fclose (fp);
+#endif
+
     free(coords[0]);
     free(coords);
 
