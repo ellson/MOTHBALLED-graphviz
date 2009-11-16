@@ -581,6 +581,8 @@ graph_t *gvNextInputGraph(GVC_t *gvc)
 	    gvg_init(gvc, g, fn, gidx++);
 	    break;
 	}
+	if (fp != stdin)
+	    fclose (fp);
 	fp = NULL;
 	gidx = 0;
     }
