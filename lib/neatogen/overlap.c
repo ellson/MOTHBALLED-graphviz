@@ -507,6 +507,7 @@ void remove_overlap(int dim, SparseMatrix A, int m, real *x, real *label_sizes, 
   {FILE*fp;
   fp = fopen("/tmp/m","w");
   if (A) export_embedding(fp, dim, A, x, label_sizes);
+  fclose(fp);
   }
 #endif
 #ifdef TIME

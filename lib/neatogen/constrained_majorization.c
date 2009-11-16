@@ -301,6 +301,7 @@ stress_majorization_with_hierarchy(
 		fp = fopen(FILENAME, "wb");
 		fwrite(lap2, sizeof(float), lap_length, fp);
 		fclose(fp);
+		fp = NULL;
 	}
 #endif
 		
@@ -481,6 +482,8 @@ stress_majorization_with_hierarchy(
 		free (lap1); 
 #ifdef NONCORE
 	}
+	if (fp)
+	    fclose (fp);
 #endif
 
 	free (ordering); 
