@@ -87,6 +87,7 @@ static void mp_cat_libfile(FILE * ofp, const char **arglib, const char **stdlib)
 		while ((bp = Fgets(fp)))
 		    fputs(bp, ofp);
 		fputc('\n', ofp); /* append a newline just in case */
+		fclose (fp);
 	    } else
 		agerr(AGWARN, "can't open library file %s\n", p);
 	}

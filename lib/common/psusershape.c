@@ -88,14 +88,14 @@ static usershape_t *user_init(const char *str)
 	fseek(fp, 0, SEEK_SET);
 	rc = fread(contents, statbuf.st_size, 1, fp);
 	contents[statbuf.st_size] = '\0';
-	fclose(fp);
 	dtinsert(EPSF_contents, us);
 	us->must_inline = must_inline;
-	return us;
     } else {
 	agerr(AGWARN, "BoundingBox not found in epsf file %s\n", str);
-	return NULL;
+	us = NULL;
     }
+    fclose(fp);
+    return us;
 }
 
 void epsf_init(node_t * n)
@@ -167,6 +167,7 @@ void cat_libfile(GVJ_t * job, const char **arglib, const char **stdlib)
                 while ((bp = Fgets(fp)))
                     gvputs(job, bp);
                 gvputs(job, "\n"); /* append a newline just in case */
+		fclose (fp);
             } else
                 agerr(AGWARN, "can't open library file %s\n", p);
         }

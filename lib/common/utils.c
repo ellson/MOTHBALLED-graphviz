@@ -1846,6 +1846,7 @@ void fix_fc(void)
 
     if((fp = fopen("fix-fc.exe", "r")) == NULL)
 	    return ;
+    fclose (fp);
     if (!system ("fix-fc.exe")) {
 	system ("del fix_fc.exe");
 	system ("dot -c");	//run dot -c once too since we already run things :)
