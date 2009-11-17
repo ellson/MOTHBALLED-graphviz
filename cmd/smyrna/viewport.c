@@ -504,7 +504,11 @@ void init_viewport(ViewInfo * view)
     view->arcball = NEW(ArcBall_t);
     view->keymap.down=0;
     load_mouse_actions (NULL,view);
-
+    view->refresh.color=1;
+    view->refresh.pos=1;
+    view->refresh.selection=1;
+    view->refresh.visibility=1;
+    view->refresh.nodesize=1;
     /*add default camera */
     //create fontset
 }

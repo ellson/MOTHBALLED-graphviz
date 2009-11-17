@@ -225,27 +225,16 @@ typedef struct
     } topviewdata;
 
     typedef struct xdot_set xdot_set;
-
-//bind this to cgraph g
-/*
-#define GD_data(g) ((custom_graph_data*)AGDATA(g))
-#define GD_TopView(g) (GD_data(g)->TopView)
-#define GD_Engine(g) (GD_data(g)->Engine)
-#define GD_GraphFileName(g) (GD_data(g)->GraphFileName)
-#define GD_GraphName(g) (GD_data(g)->GraphName)
-#define GD_AlwaysShow(g) (GD_data(g)->AlwaysShow)
-#define GD_Locked(g) (GD_data(g)->Locked)
-#define GD_Modified(g) (GD_data(g)->Modified)
-#define GD_selectedGraphs(g) (GD_data(g)->selectedGraphs)
-#define GD_selectedGraphsCount(g) (GD_data(g)->selectedGraphsCount)
-#define GD_selectedNodesCount(g) (GD_data(g)->selectedNodesCount)
-#define GD_selectedNodes(g) (GD_data(g)->selectedNodes)
-#define GD_selectedEdgesCount(g) (GD_data(g)->selectedEdgesCount)
-#define GD_selectedEdges(g) (GD_data(g)->selectedEdges)
-*/
-
-
     typedef enum { GEpixels, GEinches, GEmm } GEunit;
+    typedef struct {
+	int color;
+	int pos;
+	int selection;
+	int visibility;
+	int nodesize;
+
+
+    }refresh_filter;
 
 
     typedef struct 
@@ -661,6 +650,7 @@ typedef struct
 	keymap_t keymap;
 	mouse_action_t* mouse_actions;	/*customizable moouse interraction list*/
 	int mouse_action_count;
+	refresh_filter refresh;
 
     } ViewInfo;
 /*rotation steps*/

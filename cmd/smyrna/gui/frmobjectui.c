@@ -465,6 +465,23 @@ _BB void on_txtAttr_changed(GtkWidget * widget, gpointer user_data)
 }
 
 
+static void set_refresh_filters(ViewInfo* v,int type,char* name)
+{
+    if (STRCASECMP(name,"pos")==0)
+	v->refresh.pos=1;
+    if (STRCASECMP(name,"color")==0)
+	v->refresh.color=1;
+    if ((STRCASECMP(name,"size")==0) &&(type==AGNODE))
+	v->refresh.nodesize=1;
+    if (STRCASECMP(name,"selected")==0)
+	v->refresh.selection=1;
+    if (STRCASECMP(name,"visible")==0)
+	v->refresh.visibility=1;
+
+}
+
+
+
 _BB void on_attrApplyBtn_clicked (GtkWidget * widget, gpointer user_data)
 {
 	int ind;
@@ -523,6 +540,7 @@ _BB void on_attrApplyBtn_clicked (GtkWidget * widget, gpointer user_data)
 	else
 	    fprintf (stderr, "on_attrApplyBtn_clicked: unknown object kind %d\n",
 		objKind);
+	set_refresh_filters(view,objKind,attr_name);
 }
 _BB void on_attrRB0_clicked (GtkWidget * widget, gpointer user_data)
 {

@@ -2382,6 +2382,7 @@ Rain Forest</property>
 		      <property name="add_tearoffs">False</property>
 		      <property name="has_frame">True</property>
 		      <property name="focus_on_click">True</property>
+		      <signal name="changed" handler="color_change_request" last_modification_time="Tue, 17 Nov 2009 19:03:10 GMT"/>
 		    </widget>
 		    <packing>
 		      <property name="left_attach">1</property>
@@ -2446,6 +2447,7 @@ Rain Forest</property>
 		      <property name="has_frame">True</property>
 		      <property name="invisible_char">*</property>
 		      <property name="activates_default">False</property>
+		      <signal name="changed" handler="color_change_request" last_modification_time="Tue, 17 Nov 2009 19:03:56 GMT"/>
 		    </widget>
 		    <packing>
 		      <property name="left_attach">1</property>

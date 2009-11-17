@@ -22,6 +22,11 @@
 #include "topview.h"
 #include "memory.h"
 
+void color_change_request(GtkWidget * widget, gpointer user_data)
+{
+    view->refresh.color=1;
+}
+
 void on_settingsOKBtn_clicked(GtkWidget * widget, gpointer user_data)
 {
     on_settingsApplyBtn_clicked(widget, user_data);

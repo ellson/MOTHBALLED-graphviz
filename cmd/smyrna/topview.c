@@ -81,12 +81,12 @@ static void setpositioninfo(float *x, float *y, float *z, char *buf)
 
     /*zero all values */
     char* a;
-
-
+    static char bf[512];
+    strcpy(bf,buf);
     *x = 0;
     *y = 0;
     *z = 0;
-    a=strtok(buf,",");
+    a=strtok(bf,",");
     if(a)
     *x=atof(a);
     a=strtok(NULL,",");
@@ -130,61 +130,6 @@ static void setglCompColor(glCompColor * c, char *colorstr)
 
 
 /*update position info from cgraph*/
-void settvposinfo(Agraph_t * g, topview * t)
-{
-    int ind;
-    float maxedgelen, len, minedgelen, totallen;
-    float xmin, xmax, ymin, ymax;
-    topview_node *np;
-    topview_edge *ep;
-    Agsym_t *poss = agattr(g, AGNODE, "pos", 0);
-    assert(poss);
-
-    maxedgelen = 0;
-    xmax = ymax = -MAXFLOAT;
-    xmin = ymin = minedgelen = MAXFLOAT;
-    totallen = 0;
-
-
-    /*loop nodes */
-    for (ind = 0; ind < t->Nodecount; ind++) {
-	np = t->Nodes + ind;
-	setpositioninfo(&np->x, &np->y, &np->z, agxget(np->Node, poss));
-
-	/*distorted coordiates, same with original ones at the beginning */
-	np->distorted_x = t->Nodes[ind].x;
-	np->distorted_y = t->Nodes[ind].y;
-	np->distorted_z = t->Nodes[ind].z;
-	xmax = MAX(xmax, np->x);
-	xmin = MIN(xmin, np->x);
-	ymax = MAX(ymax, np->y);
-	ymin = MIN(ymin, np->y);
-    }
-
-    /*loop edges */
-    for (ind = 0; ind < t->Edgecount; ind++) {
-	ep = t->Edges + ind;
-	ep->x1 = ep->Node1->x;
-	ep->y1 = ep->Node1->y;
-	ep->z1 = ep->Node1->z;
-	ep->x2 = ep->Node2->x;
-	ep->y2 = ep->Node2->y;
-	ep->z2 = ep->Node2->z;
-	len = (float) DIST(ep->x2 - ep->x1, ep->y2 - ep->y1);
-	totallen = totallen + len;
-	if (len > maxedgelen)
-	    maxedgelen = len;
-	if (len < minedgelen)
-	    minedgelen = len;
-	ep->length = len;
-    }
-
-    t->maxedgelen = maxedgelen;
-    t->minedgelen = minedgelen;
-    t->avgedgelength = totallen / (float) t->Edgecount;
-
-}
-
 
 /* mapbool:
  */
@@ -225,66 +170,132 @@ static int visible(void *obj, Agsym_t * vattr, Agsym_t * sattr)
 	return 1;
 }
 
+static int needs_refresh(ViewInfo* v)
+{
+    return ((view->refresh.color) || (view->refresh.nodesize) || (view->refresh.pos) || (view->refresh.selection) || (view->refresh.visibility));
+}
+
+
+
+
 void settvcolorinfo(Agraph_t * g, topview * t)
 {
+    float maxedgelen, len, minedgelen, totallen;
+    float xmin, xmax, ymin, ymax;
     int ind;
     glCompColor color;
+    char *color_string;
+    char* tempStr;
     topview_node *np;
     topview_edge *ep;
     Agsym_t *sel = agattr(g, AGNODE, "selected", 0);
-    Agsym_t *hilite = agattr(g, AGNODE, "highlighted", 0);
     Agsym_t *vis = agattr(g, AGNODE, "visible", 0);
     Agsym_t *sty = agattr(g, AGNODE, "style", 0);
     Agsym_t *ecolor = agattr(g, AGEDGE, "color", 0);
     Agsym_t *edgeid = agattr(g, AGEDGE, "edgeid", 0);
-    char *color_string;
-    char* tempStr;
+    Agsym_t *poss = agattr(g, AGNODE, "pos", 0);
+    int setpos=1;
+    assert(poss);
+    maxedgelen = 0;
+    xmax = ymax = -MAXFLOAT;
+    xmin = ymin = minedgelen = MAXFLOAT;
+    totallen = 0;
+    if (!needs_refresh(view))
+	return;
 
     /*loop nodes */
-    for (ind = 0; ind < t->Nodecount; ind++) {
+    for (ind = 0; ind < t->Nodecount; ind++) 
+    {
 	np = t->Nodes + ind;
-	setglCompColor(&color, agget(np->Node, "color"));
-	np->Color = color;
+	if(view->refresh.color)
+	{
+	    setglCompColor(&color, agget(np->Node, "color"));
+	    np->Color = color;
+	}
 
 	/*while in the loop why dont we set some smyrna settings from graph? selected , highlighted , visible */
-	np->data.Selected = boolAttr(np->Node, sel, 0);
-	np->data.Visible = visible(np->Node, vis, sty);
-	tempStr=agget(t->Nodes[ind].Node, "size");
-	if(tempStr)
+	if(view->refresh.selection)
+	    np->data.Selected = boolAttr(np->Node, sel, 0);
+	if(view->refresh.visibility)
+		np->data.Visible = visible(np->Node, vis, sty);
+	if(view->refresh.nodesize)
 	{
-	    if (strlen(tempStr) > 0)	/*set node size */
-		t->Nodes[ind].size = atof(tempStr);
+		tempStr=agget(t->Nodes[ind].Node, "size");
+	    if(tempStr)
+	    {
+		if (strlen(tempStr) > 0)	/*set node size */
+		    t->Nodes[ind].size = atof(tempStr);
+	    }
 	}
 	if (t->Nodes[ind].degree > t->maxnodedegree)
 	    t->maxnodedegree = t->Nodes[ind].degree;
 
 
+	if(view->refresh.pos)
+	{
+		setpositioninfo(&np->x, &np->y, &np->z, agxget(np->Node, poss));
+		/*distorted coordiates, same with original ones at the beginning */
+		np->distorted_x = np->x;
+		np->distorted_y = np->y;
+		np->distorted_z = np->z;
+		xmax = MAX(xmax, np->x);
+		xmin = MIN(xmin, np->x);
+		ymax = MAX(ymax, np->y);
+		ymin = MIN(ymin, np->y);
+	}
     }
 
     /*loop edges */
     sel = agattr(g, AGEDGE, "selected", 0);
-    hilite = agattr(g, AGEDGE, "highlighted", 0);
     vis = agattr(g, AGEDGE, "visible", 0);
     sty = agattr(g, AGEDGE, "style", 0);
     setMultiedges(g, "edgeid");
     edgeid = agattr(g, AGEDGE, "edgeid", 0);
     /*set multi edges */
-    for (ind = 0; ind < t->Edgecount; ind++) {
+    for (ind = 0; ind < t->Edgecount; ind++) 
+    {
 	ep = t->Edges + ind;
-	if (ecolor && (color_string = agxget(ep->Edge, ecolor))
-	    && (*color_string != '\0')&& (strlen(color_string)>0))
-	    setglCompColor(&color, color_string);
-	else {			/*use color theme */
-	    getcolorfromschema(view->colschms, ep->length, t->maxedgelen,
-			       &color);
-	    color.tag = 0;
+    	if(view->refresh.color)
+	{
+		if (ecolor && (color_string = agxget(ep->Edge, ecolor))
+    		    && (*color_string != '\0')&& (strlen(color_string)>0))
+			setglCompColor(&color, color_string);
+		else {			/*use color theme */
+		    getcolorfromschema(view->colschms, ep->length, t->maxedgelen,&color);
+		    color.tag = 0;}
+		ep->Color = color;
+
 	}
 	ep->data.edgeid = boolAttr(ep->Edge, edgeid, 0);
-	ep->Color = color;
-	ep->data.Selected = boolAttr(ep->Edge, sel, 0);
-	ep->data.Visible = visible(ep->Edge, vis, sty);
+    	if(view->refresh.selection)
+	    ep->data.Selected = boolAttr(ep->Edge, sel, 0);
+	if(view->refresh.visibility)
+	    ep->data.Visible = visible(ep->Edge, vis, sty);
 
+	if(view->refresh.pos)
+	{
+	    ep->x1 = ep->Node1->x;
+	    ep->y1 = ep->Node1->y;
+	    ep->z1 = ep->Node1->z;
+	    ep->x2 = ep->Node2->x;
+	    ep->y2 = ep->Node2->y;
+	    ep->z2 = ep->Node2->z;
+	    len = (float) DIST(ep->x2 - ep->x1, ep->y2 - ep->y1);
+	    totallen = totallen + len;
+	    if (len > maxedgelen)
+		    maxedgelen = len;
+	    if (len < minedgelen)
+    	        minedgelen = len;
+	    ep->length = len;
+	}
     }
+	if(view->refresh.pos)
+	{
+	    t->maxedgelen = maxedgelen;
+	    t->minedgelen = minedgelen;
+	    t->avgedgelength = totallen / (float) t->Edgecount;
+	}
+
 
 }
 
@@ -341,6 +352,15 @@ void init_node_size(Agraph_t * g, topview * t)
 
 }
 
+static void reset_refresh(ViewInfo* v)
+{
+    v->refresh.color=0;
+    v->refresh.nodesize=0;
+    v->refresh.pos=0;
+    v->refresh.selection=0;
+    v->refresh.visibility=0;
+
+}
 void update_topview(Agraph_t * g, topview * t, int init)
 {
     char *info_file;
@@ -352,11 +372,18 @@ void update_topview(Agraph_t * g, topview * t, int init)
 
     if (init)
 	preparetopview(g, t);
-    settvposinfo(g, t);
     settvcolorinfo(g, t);
     set_boundaries(t);
     settvxdot(view->g[view->activeGraph], view->Topview);
     init_node_size(g, t);
+    reset_refresh(view);
+    if (init)/*one time call to calculate right colors*/
+    {
+	view->refresh.color=1;
+	settvcolorinfo(g, t);
+        reset_refresh(view);
+    }
+
     /*This is a temp code , need to be removed after Xue's demo */
 #if UNUSED
     info_file = agget(g, "demo_file");
