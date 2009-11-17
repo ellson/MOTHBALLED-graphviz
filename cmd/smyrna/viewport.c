@@ -349,8 +349,8 @@ void init_viewport(ViewInfo * view)
 {
     FILE *input_file = NULL;
     FILE *input_file2 = NULL;
-    get_data_dir();
     static char* path;
+    get_data_dir();
 
     input_file = fopen(view->template_file, "rb");
     if (!input_file) {

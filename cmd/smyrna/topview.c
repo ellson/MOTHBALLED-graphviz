@@ -78,11 +78,27 @@ static void init_element_data(element_data * d)
 
 static void setpositioninfo(float *x, float *y, float *z, char *buf)
 {
+
     /*zero all values */
+    char* a;
+
+
     *x = 0;
     *y = 0;
     *z = 0;
-    sscanf(buf, "%f,%f,%f", x, y, z);
+    a=strtok(buf,",");
+    if(a)
+    *x=atof(a);
+    a=strtok(NULL,",");
+    if(a)
+    *y=atof(a);
+    a=strtok(NULL,",");
+    if(a)
+	*z=atof(a);
+
+
+
+//    sscanf(buf, "%f,%f,%f", x, y, z);
 }
 
 static void setglCompColor(glCompColor * c, char *colorstr)
