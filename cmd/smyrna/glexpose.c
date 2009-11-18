@@ -126,7 +126,12 @@ int glupdatecamera(ViewInfo * view)
 	glTranslatef(-view->cameras[view->active_camera]->targetx,
 		     -view->cameras[view->active_camera]->targety, 0);
     }
-
+    view->clipX1=0;
+    view->clipX2=0;
+    view->clipY1=0;
+    view->clipY2=0;
+    view->clipZ1=0;
+    view->clipZ2=0;
     GetOGLPosRef(1, view->h - 5, &(view->clipX1), &(view->clipY1),
 		 &(view->clipZ1));
     GetOGLPosRef(view->w - 1, 1, &(view->clipX2), &(view->clipY2),

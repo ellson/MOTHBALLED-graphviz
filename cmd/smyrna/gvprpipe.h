@@ -22,8 +22,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+    extern int run_gvpr(Agraph_t * srcGraph, int argc, char *argv[]);
 
-    extern int run_gvpr(Agraph_t * srcGraph, int, char **);
 
 #ifdef __cplusplus
 }				/* end extern "C" */

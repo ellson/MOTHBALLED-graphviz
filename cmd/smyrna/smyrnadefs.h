@@ -164,11 +164,18 @@ typedef struct
 
     } colorschema;
 
+    typedef enum { gvpr_no_arg,gvpr_obj_arg,gvpr_string_arg,gvpr_sel_node_arg,gvpr_sel_edge_arg} gvpr_arg_type;
+
     typedef struct {
+	char* def;
 	char *script;
 	char *args;
 	char *attr_name;	/*attribute name to identify script in the graph */
+	void* obj;
+	gvpr_arg_type arg_type;
     } gvprscript;
+    //_on_click="(gvpr_no_arg)N{node.color="red"){N.color="blue"}";
+
 
     typedef struct {
 	int schemacount;

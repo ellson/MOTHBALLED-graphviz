@@ -255,23 +255,6 @@ void settvcolorinfo(Agraph_t * g, topview * t)
     for (ind = 0; ind < t->Edgecount; ind++) 
     {
 	ep = t->Edges + ind;
-    	if(view->refresh.color)
-	{
-		if (ecolor && (color_string = agxget(ep->Edge, ecolor))
-    		    && (*color_string != '\0')&& (strlen(color_string)>0))
-			setglCompColor(&color, color_string);
-		else {			/*use color theme */
-		    getcolorfromschema(view->colschms, ep->length, t->maxedgelen,&color);
-		    color.tag = 0;}
-		ep->Color = color;
-
-	}
-	ep->data.edgeid = boolAttr(ep->Edge, edgeid, 0);
-    	if(view->refresh.selection)
-	    ep->data.Selected = boolAttr(ep->Edge, sel, 0);
-	if(view->refresh.visibility)
-	    ep->data.Visible = visible(ep->Edge, vis, sty);
-
 	if(view->refresh.pos)
 	{
 	    ep->x1 = ep->Node1->x;
@@ -288,6 +271,24 @@ void settvcolorinfo(Agraph_t * g, topview * t)
     	        minedgelen = len;
 	    ep->length = len;
 	}
+
+	if(view->refresh.color)
+	{
+		if (ecolor && (color_string = agxget(ep->Edge, ecolor))
+    		    && (*color_string != '\0')&& (strlen(color_string)>0))
+			setglCompColor(&color, color_string);
+		else {			/*use color theme */
+		    getcolorfromschema(view->colschms, ep->length, t->maxedgelen,&color);
+		    color.tag = 0;}
+		ep->Color = color;
+
+	}
+	ep->data.edgeid = boolAttr(ep->Edge, edgeid, 0);
+    	if(view->refresh.selection)
+	    ep->data.Selected = boolAttr(ep->Edge, sel, 0);
+	if(view->refresh.visibility)
+	    ep->data.Visible = visible(ep->Edge, vis, sty);
+
     }
 	if(view->refresh.pos)
 	{
@@ -344,12 +345,12 @@ void init_node_size(Agraph_t * g, topview * t)
 	0.05 * sqrt((view->bdxRight - view->bdxLeft) *
 		    (view->bdyTop - view->bdyBottom));
     t->init_node_size =
-	vsize * 2 / GetOGLDistance(2) * percent / 100.0 /
+	vsize * 2 / percent / 100.0 /
 	sqrt(t->Nodecount);
     if (t->init_node_size < 1)
 	t->init_node_size=1;
-    t->init_zoom = view->zoom;
-
+//    t->init_zoom = view->zoom;
+    t->init_zoom=-20;
 }
 
 static void reset_refresh(ViewInfo* v)
@@ -375,14 +376,17 @@ void update_topview(Agraph_t * g, topview * t, int init)
     settvcolorinfo(g, t);
     set_boundaries(t);
     settvxdot(view->g[view->activeGraph], view->Topview);
-    init_node_size(g, t);
     reset_refresh(view);
     if (init)/*one time call to calculate right colors*/
     {
 	view->refresh.color=1;
+	view->refresh.pos=1;
 	settvcolorinfo(g, t);
         reset_refresh(view);
+        set_boundaries(t);
     }
+       init_node_size(g, t);
+
 
     /*This is a temp code , need to be removed after Xue's demo */
 #if UNUSED
