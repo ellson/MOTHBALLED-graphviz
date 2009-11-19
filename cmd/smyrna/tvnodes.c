@@ -141,51 +141,6 @@ int validate_node(tv_node * TV_Node)
 
     if (TV_Nodes.filtered) {
 	int valid = 1;
-	if ((MP_Flag == 1) || (!n)) {
-	    n = tree_from_filter_string(TV_Nodes.filter.filter_string);
-	    MP_Flag = 0;
-	    buf =
-		agget(view->Topview->Nodes[TV_Node->index].Node,
-		      data_attr1);
-	    if (buf) {
-		if (strcmp(TV_Nodes.filter.min_data1, buf))
-		    valid = 0;
-	    }
-	}
-	if (data_attr1 && strlen(TV_Nodes.filter.max_data1)
-	    && agget(view->Topview->Nodes[TV_Node->index].Node,
-		     data_attr1)) {
-	    if (strcmp
-		(agget
-		 (view->Topview->Nodes[TV_Node->index].Node, data_attr1),
-		 TV_Nodes.filter.min_data1))
-		valid = 0;
-	}
-	//string data checks attr2
-	if (data_attr2 && strlen(TV_Nodes.filter.min_data2)
-	    && agget(view->Topview->Nodes[TV_Node->index].Node,
-		     data_attr2)) {
-	    if (strcmp
-		(TV_Nodes.filter.min_data2,
-		 agget(view->Topview->Nodes[TV_Node->index].Node,
-		       data_attr2)))
-		valid = 0;
-	}
-	if (data_attr2 && strlen(TV_Nodes.filter.max_data2)
-	    && agget(view->Topview->Nodes[TV_Node->index].Node,
-		     data_attr2)) {
-
-	    if (strcmp
-		(agget
-		 (view->Topview->Nodes[TV_Node->index].Node, data_attr2),
-		 TV_Nodes.filter.min_data2))
-		valid = 0;
-
-	}
-	if (strlen(TV_Nodes.filter.filter_string) > 0)
-	    valid = evaluate_expresions(TV_Node, n);
-	//if show only highlighted 
-	//if show only visibles
 	if (TV_Nodes.filter.visible >= 0) {
 	    if (view->Topview->Nodes[TV_Node->index].data.Visible !=
 		TV_Nodes.filter.visible)
