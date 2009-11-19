@@ -18,6 +18,8 @@ digraph smyrna_attr_widgets
     graph[check_box_gridvisible="settingsChkBox3"];
     graph[check_box_drawnodes="settingsChkBox5-1"];
     graph[check_box_drawedges="settingsChkBox5-2"];
+    graph[check_box_edgesselectable="chkboxEdgeSelect"];
+    graph[check_box_nodesselectable="chkboxNodeSelect"];
     graph[combobox_labelglutfont="labelfont"];
     graph[combobox_defaultnodeshape="settingscombobox1"];
     graph[combobox_colortheme="colorthemecb"];

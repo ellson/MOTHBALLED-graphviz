@@ -673,8 +673,12 @@ static void edge_rectangle_select(ViewInfo* v)
 }
 void rectangle_select(ViewInfo* v)
 {
-    node_rectangle_select(v);
-    edge_rectangle_select(v);
+    int selnodes=atoi(agget(view->g[view->activeGraph],"nodesselectable"));
+    int seledges=atoi(agget(view->g[view->activeGraph],"edgesselectable"));
+    if(selnodes)
+	node_rectangle_select(v);
+    if(seledges)
+        edge_rectangle_select(v);
 }
 
 

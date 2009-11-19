@@ -71,6 +71,7 @@ static int is_edge_picked(topview_edge * e)
     return 0;
 }
 
+
 void pick_node_from_coords(float x, float y, float z)
 {
     topview_node *n;
@@ -82,6 +83,8 @@ void pick_node_from_coords(float x, float y, float z)
     float a, b, c;
     double d;
     int ind;
+    int selnodes=atoi(agget(view->g[view->activeGraph],"nodesselectable"));
+    int seledges=atoi(agget(view->g[view->activeGraph],"edgesselectable"));
     sn = (topview_node *) 0;
     se = (topview_edge *) 0;
 
@@ -89,10 +92,11 @@ void pick_node_from_coords(float x, float y, float z)
 
 
 
-    for (ind = 0; ind < view->Topview->Nodecount; ind++) {
+    for (ind = 0;( (selnodes)&&(ind < view->Topview->Nodecount)); ind++) {
 	n = &view->Topview->Nodes[ind];
-	if (!n->data.Visible)
-	    continue;
+	if (!select_node)
+	    break;
+
 
 	a = ABS(n->distorted_x - view->mouse.GLpos.x);
 	b = ABS(n->distorted_y - view->mouse.GLpos.y);
@@ -104,7 +108,7 @@ void pick_node_from_coords(float x, float y, float z)
 	}
     }
 
-    for (ind = 0; ind < view->Topview->Edgecount; ind++) {
+    for (ind = 0; ((seledges)&&(ind < view->Topview->Edgecount)); ind++) {
 	point3f p1, p2, p3;
 	e = &view->Topview->Edges[ind];
 	if (!e->data.Visible)
@@ -129,7 +133,8 @@ void pick_node_from_coords(float x, float y, float z)
 	}
     }
 
-    if (closest_dif < closest_dif2 * 3) {
+    if ((closest_dif < closest_dif2 * 3) ) 
+    {
 	if (sn) {
 	    if (!is_node_picked(sn))
 		add_to_pick_list(sn);

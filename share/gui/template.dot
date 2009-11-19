@@ -61,8 +61,8 @@ strict digraph template {
 		defaultedgecolor="pink"
 		edgecolorattribute=""
 		nodesize="50"
-
-
+		nodesselectable="1"
+		edgesselectable="1"
 
 	];
 
