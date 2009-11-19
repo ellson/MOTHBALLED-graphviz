@@ -119,7 +119,7 @@ static void setglCompColor(glCompColor * c, char *colorstr)
     c->R = (float) cl.u.RGBA[0];
     c->G = (float) cl.u.RGBA[1];
     c->B = (float) cl.u.RGBA[2];
-    c->A = (float) cl.u.RGBA[3]*A;
+    c->A = (float) cl.u.RGBA[3]*view->defaultnodealpha;
  
 }
 
@@ -220,12 +220,14 @@ void settvcolorinfo(Agraph_t * g, topview * t)
 		np->data.Visible = visible(np->Node, vis, sty);
 	if(view->refresh.nodesize)
 	{
-		tempStr=agget(t->Nodes[ind].Node, "size");
+	    t->Nodes[ind].size = 0;
+	    tempStr=agget(t->Nodes[ind].Node, "size");
 	    if(tempStr)
 	    {
 		if (strlen(tempStr) > 0)	/*set node size */
 		    t->Nodes[ind].size = atof(tempStr);
 	    }
+
 	}
 	if (t->Nodes[ind].degree > t->maxnodedegree)
 	    t->maxnodedegree = t->Nodes[ind].degree;
@@ -344,14 +346,33 @@ void init_node_size(Agraph_t * g, topview * t)
     vsize =
 	0.05 * sqrt((view->bdxRight - view->bdxLeft) *
 		    (view->bdyTop - view->bdyBottom));
+    t->init_node_size =	vsize * 2  * percent / 100.0 /
+	sqrt(t->Nodecount);
+/*    if (t->init_node_size < 1)
+	t->init_node_size=1;*/
+//    t->init_zoom = view->zoom;
+    t->init_zoom = -20;
+
+}
+
+void _init_node_size(Agraph_t * g, topview * t)
+{
+    float vsize;
+    int percent;
+    percent = atoi(agget(g, "nodesize"));
+    if (percent == 0)
+	percent = 0.000001;
+    vsize =
+	0.05 * sqrt((view->bdxRight - view->bdxLeft) *
+		    (view->bdyTop - view->bdyBottom));
     t->init_node_size =
-	vsize * 2 / percent / 100.0 /
+	vsize * 2 / GetOGLDistance(2) * percent / 100.0 /
 	sqrt(t->Nodecount);
     if (t->init_node_size < 1)
 	t->init_node_size=1;
-//    t->init_zoom = view->zoom;
-    t->init_zoom=-20;
+    t->init_zoom = view->zoom;
 }
+
 
 static void reset_refresh(ViewInfo* v)
 {
@@ -680,7 +701,7 @@ static int drawtopviewnodes(Agraph_t * g)
 			  view->selectedNodeColor.A);
 	    } else {		//get the color from node
 		glColor4f(v->Color.R, v->Color.G, v->Color.B,
-			  v->node_alpha);
+			  v->Color.A);
 		ddx = 0;
 		ddy = 0;
 		ddz = 0;

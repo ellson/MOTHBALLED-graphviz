@@ -85,6 +85,10 @@ void pick_node_from_coords(float x, float y, float z)
     sn = (topview_node *) 0;
     se = (topview_edge *) 0;
 
+    
+
+
+
     for (ind = 0; ind < view->Topview->Nodecount; ind++) {
 	n = &view->Topview->Nodes[ind];
 	if (!n->data.Visible)

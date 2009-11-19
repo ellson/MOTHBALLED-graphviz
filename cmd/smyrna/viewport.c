@@ -634,7 +634,11 @@ int add_graph_to_viewport_from_file(char *fileName)
 void refreshViewport(int doClear)
 {
     Agraph_t *graph = view->g[view->activeGraph];
-
+    view->refresh.color=1;
+    view->refresh.nodesize=1;
+    view->refresh.pos=1;
+    view->refresh.selection=1;
+    view->refresh.visibility=1;
     load_settings_from_graph(graph);
     update_graph_from_settings(graph);
     set_viewport_settings_from_template(view, graph);
