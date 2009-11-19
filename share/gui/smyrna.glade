@@ -3356,7 +3356,8 @@ GLUT_BITMAP_HELVETICA_18
 		      <property name="digits">1</property>
 		      <property name="update_policy">GTK_UPDATE_CONTINUOUS</property>
 		      <property name="inverted">False</property>
-		      <property name="adjustment">1 0 1 0.01 0 0</property>
+		      <property name="adjustment">1 0 1 0.00999999977648 0 0</property>
+		      <signal name="value_changed" handler="color_change_request" last_modification_time="Thu, 19 Nov 2009 17:09:07 GMT"/>
 		    </widget>
 		    <packing>
 		      <property name="left_attach">1</property>
@@ -3505,6 +3506,7 @@ Custom</property>
 		      <property name="update_policy">GTK_UPDATE_CONTINUOUS</property>
 		      <property name="inverted">False</property>
 		      <property name="adjustment">5 0 100 0 0 0</property>
+		      <signal name="value_changed" handler="size_change_request" last_modification_time="Thu, 19 Nov 2009 16:56:12 GMT"/>
 		    </widget>
 		    <packing>
 		      <property name="left_attach">1</property>
