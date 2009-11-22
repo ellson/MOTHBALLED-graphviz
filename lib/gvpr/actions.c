@@ -383,11 +383,13 @@ Agobj_t *clone(Agraph_t * g, Agobj_t * obj)
 
     switch (kind) {
     case AGNODE:		/* same as copy node */
+	name = agnameof(obj);
 	nobj = (Agobj_t *) openNode(g, name);
 	if (nobj)
 	    copyAttr(obj, nobj);
 	break;
     case AGRAPH:
+	name = agnameof(obj);
 	if (g)
 	    nobj = (Agobj_t *) openSubg(g, name);
 	else
@@ -401,6 +403,7 @@ Agobj_t *clone(Agraph_t * g, Agobj_t * obj)
 	e = (Agedge_t *) obj;
 	t = (Agnode_t *) clone(g, OBJ(agtail(e)));
 	h = (Agnode_t *) clone(g, OBJ(aghead(e)));
+	name = agnameof (AGMKOUT(e));
 	nobj = (Agobj_t *) openEdge(g, t, h, name);
 	if (nobj)
 	    copyAttr(obj, nobj);
