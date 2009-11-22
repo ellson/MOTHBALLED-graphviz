@@ -187,7 +187,7 @@ Agobj_t *copy(Agraph_t * g, Agobj_t * obj)
     Agnode_t *h;
     Agnode_t *t;
     int kind = AGTYPE(obj);
-    char *name = agnameof(obj);
+    char *name;
 
     if ((kind != AGRAPH) && !g) {
 	exerror("NULL graph with non-graph object in copy()");
@@ -196,18 +196,22 @@ Agobj_t *copy(Agraph_t * g, Agobj_t * obj)
 
     switch (kind) {
     case AGNODE:
+	name = agnameof(obj);
 	nobj = (Agobj_t *) openNode(g, name);
 	break;
     case AGRAPH:
+	name = agnameof(obj);
 	if (g)
 	    nobj = (Agobj_t *) openSubg(g, name);
 	else
 	    nobj = (Agobj_t *) openG(name, ((Agraph_t *) obj)->desc);
 	break;
-    case AGEDGE:
+    case AGINEDGE:
+    case AGOUTEDGE:
 	e = (Agedge_t *) obj;
 	t = openNode(g, agnameof(agtail(e)));
 	h = openNode(g, agnameof(aghead(e)));
+	name = agnameof (AGMKOUT(e));
 	nobj = (Agobj_t *) openEdge(g, t, h, name);
 	break;
     }
@@ -242,6 +246,7 @@ static Agraph_t *cloneSubg(Agraph_t * tgt, Agraph_t * g, Dt_t* emap)
     Agnode_t *newt;
     Agedge_t *e;
     Agedge_t *newe;
+    char* name;
 
     ng = (Agraph_t *) (copy(tgt, OBJ(g)));
     if (!ng)
@@ -260,9 +265,15 @@ static Agraph_t *cloneSubg(Agraph_t * tgt, Agraph_t * g, Dt_t* emap)
 	for (e = agfstout(g, t); e; e = agnxtout(g, e)) {
 	    newe = mapEdge (emap, e);
 	    if (!newe) {
-		exerror("edge (%s,%s)[%s] not found in cloned graph %s",
+		name = agnameof(AGMKOUT(e));
+		if (name)
+		    exerror("edge (%s,%s)[%s] not found in cloned graph %s",
 		      agnameof(agtail(e)), agnameof(aghead(e)),
-		      agnameof(e), agnameof(tgt));
+		      name, agnameof(tgt));
+		else
+		    exerror("edge (%s,%s) not found in cloned graph %s",
+		      agnameof(agtail(e)), agnameof(aghead(e)),
+		      agnameof(tgt));
 		return 0;
 	    }
 	    else
@@ -307,6 +318,7 @@ static void cloneGraph(Agraph_t * tgt, Agraph_t * src)
     Agedge_t *ne;
     Agnode_t *t;
     Agraph_t *sg;
+    char* name;
     Dt_t* emap = dtopen (&edgepair, Dtoset);
     edgepair_t* data = (edgepair_t*)malloc(sizeof(edgepair_t)*agnedges(src));
     edgepair_t* ep = data;
@@ -320,9 +332,15 @@ static void cloneGraph(Agraph_t * tgt, Agraph_t * src)
     for (t = agfstnode(src); t; t = agnxtnode(src, t)) {
 	for (e = agfstout(src, t); e; e = agnxtout(src, e)) {
 	    if (!(ne = (Agedge_t*)copy(tgt, OBJ(e)))) {
-		exerror("error cloning edge (%s,%s)[%s] from graph %s",
+		name = agnameof(AGMKOUT(e));
+		if (name)
+		    exerror("error cloning edge (%s,%s)[%s] from graph %s",
 		      agnameof(agtail(e)), agnameof(aghead(e)),
-		      agnameof(e), agnameof(src));
+		      name, agnameof(src));
+		else
+		    exerror("error cloning edge (%s,%s) from graph %s",
+		      agnameof(agtail(e)), agnameof(aghead(e)),
+		      agnameof(src));
 		return;
 	    }
 	    ep->key = e;
@@ -356,7 +374,7 @@ Agobj_t *clone(Agraph_t * g, Agobj_t * obj)
     Agnode_t *h;
     Agnode_t *t;
     int kind = AGTYPE(obj);
-    char *name = agnameof(obj);
+    char *name;
 
     if ((kind != AGRAPH) && !g) {
 	exerror("NULL graph with non-graph object in clone()");
@@ -378,7 +396,8 @@ Agobj_t *clone(Agraph_t * g, Agobj_t * obj)
 	    copyAttr(obj, nobj);
 	cloneGraph((Agraph_t *) nobj, (Agraph_t *) obj);
 	break;
-    case AGEDGE:
+    case AGINEDGE:
+    case AGOUTEDGE:
 	e = (Agedge_t *) obj;
 	t = (Agnode_t *) clone(g, OBJ(agtail(e)));
 	h = (Agnode_t *) clone(g, OBJ(aghead(e)));
