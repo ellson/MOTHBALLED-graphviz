@@ -490,6 +490,8 @@ parse_prog *parseProg(char *input, int isFile)
     int l_beging = 0;
     char *begg_stmt;
 
+    
+    lineno = col0 = startLine = kwLine = 1;
     prog = newof(0, parse_prog, 1, 0);
     if (!prog) {
 	error(ERROR_ERROR, "parseProg: out of memory");
