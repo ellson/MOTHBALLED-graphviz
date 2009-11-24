@@ -2,6 +2,7 @@ Features:
 Undo
 Non-simple background polygons
 Menu label indicating active graph
+Specify selection by path or polyline
 
 Multiple views
 GUI for canned gvpr programs
@@ -12,6 +13,7 @@ Mechanism for semantic zoom
   add more detail
 
 Bugs: 
+
 Labels don't appear when alpha colors are enabled 
 Edges should not disappear when node is off screen ?
 Re-fix 3D navigation
