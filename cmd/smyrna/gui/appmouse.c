@@ -38,8 +38,9 @@ static void apply_actions(ViewInfo* v,int x,int y)
 	if (!view->arcball->isDragging) {
 	    arcmouseClick(view);
         view->arcball->isDragging = 1;
-	} else 
-		    arcmouseDrag(view);
+	}
+	else 
+            arcmouseDrag(view);
 	return;
     }
     if (a==MM_PAN)
@@ -65,8 +66,8 @@ static void apply_actions(ViewInfo* v,int x,int y)
 	{
 	    if (view->Topview->is_top_fisheye) 
 		changetopfishfocus(view->Topview,&view->mouse.GLpos.x,&view->mouse.GLpos.y,  0, 1);
-	    else    /*single right click*/
-		/*	pick_node_from_coords(view->mouse.GLpos.x, view->mouse.GLpos.y,view->mouse.GLpos.z);*/
+	    else    //single right click
+		//	pick_node_from_coords(view->mouse.GLpos.x, view->mouse.GLpos.y,view->mouse.GLpos.z);
 
 	    {;}
 
@@ -131,6 +132,8 @@ static void appmouse_up(ViewInfo* v,int x,int y)
     apply_actions(v,x,y);
     view->mouse.dragX = 0;
     view->mouse.dragY = 0;
+    view->arcball->isDragging=0;
+
 
 }
 static void appmouse_drag(ViewInfo* v,int x,int y)
@@ -144,6 +147,7 @@ static void appmouse_drag(ViewInfo* v,int x,int y)
     prevX=x2;
     prevY=y2;
     apply_actions(v,x,y);
+
 }
 
 void appmouse_left_click_down(ViewInfo* v,int x,int y)
