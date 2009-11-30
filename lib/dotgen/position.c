@@ -61,7 +61,7 @@ dumpNS (graph_t * g)
 static void
 largeMinlen (double l)
 {
-    agerr (AGERR, "Edge length %d larger than maximum %u allowed.\nCheck for overwide node(s).\n", l, USHRT_MAX); 
+    agerr (AGERR, "Edge length %f larger than maximum %u allowed.\nCheck for overwide node(s).\n", l, USHRT_MAX); 
     exit (1);
 }
 
@@ -521,7 +521,13 @@ static void compress_graph(graph_t * g)
 	x = p.x;
     else
 	x = p.y;
-    make_aux_edge(GD_ln(g), GD_rn(g), (int) x, 1000);
+
+    /* Guard against huge size attribute since max. edge length is USHRT_MAX
+     * A warning might be called for. Also, one could check that the graph
+     * already fits GD_drawing(g)->size and return immediately.
+     */
+    x = MIN(x,USHRT_MAX); 
+    make_aux_edge(GD_ln(g), GD_rn(g), x, 1000);
 }
 
 static void create_aux_edges(graph_t * g)
