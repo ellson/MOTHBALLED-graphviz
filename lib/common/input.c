@@ -261,6 +261,7 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
     layout = gvc->common.cmdname;
     if (streq(layout, "dot_static")
 	    || streq(layout, "dot_builtins")
+	    || streq(layout, "lt-dot_builtins")
 	    || streq(layout, "")   /* when run as a process from Gvedit on Windows */
 	)
         layout = "dot";
