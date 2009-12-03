@@ -205,13 +205,15 @@ glCompFont *new_font(glCompSet * s, char *text, glCompColor * c,glCompFontType t
     font->color.A = c->A;
     font->justify.VJustify = GL_FONTVJUSTIFY;
     font->justify.HJustify = GL_FONTHJUSTIFY;
+    font->type=type;
+    font->is2D=is2D;
 
     if (font->type == gluttext)
 	font->glutfont = DEFAULT_GLUT_FONT;
     else
 	font->glutfont = (void *) 0;
 
-    font->fontdesc = fontdesc;
+    font->fontdesc = strdup(fontdesc);
     font->size = fs;
     font->transparent = 1;
     font->optimize = GL_FONTOPTIMIZE;
@@ -240,7 +242,7 @@ glCompFont *new_font_from_parent(glCompObj * o, char *text)
 
 	font->type = parent->font->type;
 	font->glutfont = parent->font->glutfont;
-	font->fontdesc = parent->font->fontdesc;
+	font->fontdesc = strdup(parent->font->fontdesc);
 	font->size = parent->font->size;
 	font->transparent = parent->font->transparent;
 	font->justify.VJustify = parent->font->justify.VJustify;

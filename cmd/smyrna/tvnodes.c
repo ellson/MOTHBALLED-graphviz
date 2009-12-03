@@ -132,7 +132,6 @@ int validate_node(tv_node * TV_Node)
     static btree_node *n = 0;
     char *data_attr1;
     char *data_attr2;
-    char *buf;
 //              n=tree_from_filter_string("([IP=\"^10.*\",min=\"0\",max=\"0\"])");
     // get attributes from graph
     data_attr1 = agget(view->g[view->activeGraph], "DataAttribute1");

@@ -63,6 +63,7 @@ extern "C" {
     extern void glCompSetColor(glCompColor * c);
 
     void glCompSelectionBox(glCompSet * s);
+    extern int lines_intersect (glCompPoint* a, glCompPoint* b, glCompPoint* c, glCompPoint* d);
 
 #ifdef __cplusplus
 }

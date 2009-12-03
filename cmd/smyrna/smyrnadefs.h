@@ -658,6 +658,7 @@ typedef struct
 	mouse_action_t* mouse_actions;	/*customizable moouse interraction list*/
 	int mouse_action_count;
 	refresh_filter refresh;
+	int edgerendertype;
 
     } ViewInfo;
 /*rotation steps*/

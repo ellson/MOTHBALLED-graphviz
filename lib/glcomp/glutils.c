@@ -161,6 +161,7 @@ float GetOGLDistance(int l)
 
 void to3D(int x, int y, GLfloat * X, GLfloat * Y, GLfloat * Z)
 {
+
     int const WIDTH = 20;
 
     GLint viewport[4];
@@ -171,6 +172,7 @@ void to3D(int x, int y, GLfloat * X, GLfloat * Y, GLfloat * Z)
     GLdouble posX, posY, posZ;
     int idx;
     static float comp;
+
     glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev(GL_PROJECTION_MATRIX, projection);
     glGetIntegerv(GL_VIEWPORT, viewport);
@@ -680,6 +682,29 @@ void copy_glcomp_color(glCompColor * source, glCompColor * target)
 
 }
 
+
+double area2(glCompPoint * p1p, glCompPoint * p2p, glCompPoint * p3p) 
+{
+    double d;
+
+    d = ((p1p->y - p2p->y) * (p3p->x - p2p->x)) -
+        ((p3p->y - p2p->y) * (p1p->x - p2p->x));
+    return d;
+}
+
+
+enum {ISCCW, ISON, ISCW};  /* counterclockwise; collinear; clockwise */ 
+int sideOf (glCompPoint * p1p, glCompPoint * p2p, glCompPoint * p3p) {
+    double d = area2 (p1p,p2p,p3p);
+    if (d < 0) return ISCCW;
+    else if (d > 0) return ISCW;
+    else return ISON;
+}
+
+int lines_intersect (glCompPoint* a, glCompPoint* b, glCompPoint* c, glCompPoint* d) 
+{
+  return ((sideOf(a,b,c) != sideOf(a,b,d)) && (sideOf(c,d,a) != sideOf(c,d,b))); 
+}
 
 
 

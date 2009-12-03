@@ -24,7 +24,8 @@
 #include <gtk/gtk.h>
 #include "draw.h"
 #include "gui.h"
-
+#include "topviewsettings.h"
+#include "topview.h"
 #include <viewport.h>
 //#include <gltemplate.h> 
 
@@ -52,7 +53,7 @@ extern GladeXML *xml;		//global libglade vars
 gvprscript* scr_from_string(char* str,void* obj)
 {
 
-
+    return NULL;
 }
 
 

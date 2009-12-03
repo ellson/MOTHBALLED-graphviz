@@ -172,7 +172,6 @@ static void realize(GtkWidget * widget, gpointer data)
 // glEnable (GL_LIGHT0);
 //  glEnable (GL_AUTO_NORMAL);
 //  glEnable (GL_NORMALIZE);
-    glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDepthFunc(GL_LESS);
@@ -276,6 +275,8 @@ gboolean expose_event(GtkWidget * widget, GdkEventExpose * event,
 static gboolean button_press_event(GtkWidget * widget,
 				   GdkEventButton * event, gpointer data)
 {
+    Agraph_t* g=view->g[view->activeGraph];
+
     begin_x = (float) event->x;
     begin_y = (float) event->y;
     view->widgets->common.functions.mousedown((glCompObj*)view->widgets,(GLfloat) event->x,(GLfloat) event->y,getGlCompMouseType(event->button));
@@ -288,6 +289,7 @@ static gboolean button_press_event(GtkWidget * widget,
 	appmouse_middle_click_down(view,(int) event->x,(int) event->y);
 
     expose_event(view->drawing_area, NULL, NULL);
+
     return FALSE;
 }
 

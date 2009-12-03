@@ -28,6 +28,8 @@
 #include "frmobjectui.h"
 #include <assert.h>
 #include "sfstr.h"
+#include "gvprpipe.h"
+
 
 
 #ifdef WIN32

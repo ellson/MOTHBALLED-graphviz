@@ -56,7 +56,7 @@ extern "C" {
 #define	GLCOMPSET_BUTTON_COLOR_ALPHA	(GLfloat)0.6
 #define	GLCOMPSET_BUTTON_THICKNESS		(GLfloat)3
 #define	GLCOMPSET_BUTTON_BEVEL_BRIGHTNESS		(GLfloat)1.7
-#define GLCOMPSET_FONT_SIZE				(GLfloat)56
+#define GLCOMPSET_FONT_SIZE				(GLfloat)14
 
 #define	GLCOMPSET_BUTTON_FONT_COLOR_R		(GLfloat)0
 #define	GLCOMPSET_BUTTON_FONT_COLOR_G		(GLfloat)0
@@ -203,6 +203,7 @@ extern "C" {
 	float height;
 	glCompTexType type;
 	int userCount;
+	int fontSize;
 	unsigned char *data;	/*data */
     } glCompTex;
 
@@ -291,6 +292,7 @@ extern "C" {
 	glCompCommon common;
 	int autosize;		/*if 1 label sized is calculated from font */
 	char *text;
+	int transparent;
     } glCompLabel;
 
 /*buttons*/

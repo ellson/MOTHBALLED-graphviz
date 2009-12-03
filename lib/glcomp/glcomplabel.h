@@ -42,6 +42,10 @@ extern "C" {
     extern void glCompLabelMouseUp(glCompObj * obj, GLfloat x, GLfloat y,
 				   glMouseButtonType t);
 
+    extern void glCompLabelSetText(glCompLabel * p, char *text);
+    extern void glCompLabelSetFontSize(glCompLabel * p, int size);
+    extern void glCompLabelSetFontName(glCompLabel * p, char* fontName);
+
 #ifdef __cplusplus
 }
 #endif

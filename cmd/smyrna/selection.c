@@ -680,6 +680,63 @@ void rectangle_select(ViewInfo* v)
     if(seledges)
         edge_rectangle_select(v);
 }
+int linesegmentsintersects(float X1, float X2, float Y1, float Y2)
+{
+    //line segment
+    //X1,Y1 point 1
+    //X2,Y3 point 2
+    //rectangle
+    //RX,RY lower left corner of rectangle
+    //RW width of rectangle
+    //RH height of ractangle
+    //returns 1 if line segment is completely in the rect
+    //0 if they intersect
+    //-1 if completely out
+    float x, y, m, iter;
+    float RX, RY, RW, RH;
+    int intersects, in;
+    RX = view->Selection.X;
+    RY = view->Selection.Y;
+    RH=view->Selection.H;
+    RW=view->Selection.W;
+    if ((is_point_in_rectangle(X1, Y1, RX, RY, RW, RH))
+	&& (is_point_in_rectangle(X2, Y2, RX, RY, RW, RH)))
+	return 1;
+    if ((is_point_in_rectangle(X1, Y1, RX, RY, RW, RH))
+	|| (is_point_in_rectangle(X2, Y2, RX, RY, RW, RH)))
+	return 0;
+    //to be absolute or not to be one
+    if (X1 > X2) {
+	x = X2;
+	y = Y2;
+	X2 = X1;
+	Y2 = Y1;
+	X1 = x;
+	Y1 = y;
+    }
+    x = X1;
+    //iter
+    iter = RW / (float) SELECTION_SEGMENT_DIVIDER;
+    m = (Y2 - Y1) / (X2 - X1);
+
+    in = 1;
+    intersects = 0;
+    while (x <= X2) {
+	x = x + iter;
+	y = Y1 + m * (x - X1);
+	if (!is_point_in_rectangle(x, y, RX, RY, RW, RH))
+	    in = 0;
+	else
+	    intersects = 1;
+
+    }
+    if (in == 1)
+	return 1;
+    if (intersects == 1)
+	return 0;
+    return -1;
+}
+
 
 
 

@@ -94,8 +94,8 @@ void pick_node_from_coords(float x, float y, float z)
 
     for (ind = 0;( (selnodes)&&(ind < view->Topview->Nodecount)); ind++) {
 	n = &view->Topview->Nodes[ind];
-	if (!select_node)
-	    break;
+/*	if (!select_node(n))
+	    break;*/
 
 
 	a = ABS(n->distorted_x - view->mouse.GLpos.x);

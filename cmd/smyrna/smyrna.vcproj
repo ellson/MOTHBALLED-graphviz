@@ -365,7 +365,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						WarningLevel="4"
+						WarningLevel="3"
 					/>
 				</FileConfiguration>
 			</File>

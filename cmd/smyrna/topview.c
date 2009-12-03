@@ -385,12 +385,6 @@ static void reset_refresh(ViewInfo* v)
 }
 void update_topview(Agraph_t * g, topview * t, int init)
 {
-    char *info_file;
-    char *str;
-    char buf[512];
-    /* int BUFSIZE = 512; */
-    unsigned char xbuffer[BUFSIZ];
-    FILE *f;
 
     if (init)
 	preparetopview(g, t);
@@ -732,6 +726,56 @@ static int drawtopviewnodes(Agraph_t * g)
     return 1;
 
 }
+static int edgevisible(topview_edge* e)
+{
+    static float x1,y1,x2,y2;
+    static glCompPoint a;
+    static glCompPoint b;
+    static glCompPoint c;
+    static glCompPoint d;
+
+    x1=e->x1/ view->zoom * -1;
+    x2=e->y1/ view->zoom * -1;
+    y1=e->y1/ view->zoom * -1;
+    y2=e->y2/ view->zoom * -1;
+
+    if (
+	    ((x1> view->clipX1) && (x1 < view->clipX2) && (y1 > view->clipY1) && (y1 < view->clipY2))
+		    || 
+	    ((x2 > view->clipX1)&& (x2< view->clipX2)&& (y2 > view->clipY1)	&& (y2 < view->clipY2))
+	    	    || 
+	    (view->active_camera >= 0)
+    
+       )	
+	    return 1;
+    if(view->edgerendertype == 0)
+    {
+	a.x=x1;a.y=y1;a.z=0;
+	b.x=x2;b.y=y2;b.z=0;
+	c.x=view->clipX1;c.y=view->clipY1;c.z=0;
+	c.x=view->clipX1;c.y=view->clipY2;c.z=0;
+	if(lines_intersect (&a, &b, &c,&d))
+	    return 1;
+	c.x=view->clipX2;c.y=view->clipY1;c.z=0;
+	c.x=view->clipX2;c.y=view->clipY2;c.z=0;
+	if(lines_intersect (&a, &b, &c,&d))
+	    return 1;
+	c.x=view->clipX1;c.y=view->clipY1;c.z=0;
+	c.x=view->clipX2;c.y=view->clipY1;c.z=0;
+	if(lines_intersect (&a, &b, &c,&d))
+	    return 1;
+	c.x=view->clipX1;c.y=view->clipY2;c.z=0;
+	c.x=view->clipX2;c.y=view->clipY2;c.z=0;
+	if(lines_intersect (&a, &b, &c,&d))
+	    return 1;
+	return 0;
+
+    }
+    return 0;
+
+
+
+}
 
 static void drawtopviewedges(Agraph_t * g)
 {
@@ -743,21 +787,13 @@ static void drawtopviewedges(Agraph_t * g)
 	return;
     glBegin(GL_LINES);
     set_topview_options();
-    for (ind = 0; ind < view->Topview->Edgecount; ind++) {
+    for (ind = 0; ind < view->Topview->Edgecount; ind++) 
+    {
 	e = view->Topview->Edges + ind;
-	if (((e->x1 / view->zoom * -1 > view->clipX1)
-	     && (e->x1 / view->zoom * -1 < view->clipX2)
-	     && (e->y1 / view->zoom * -1 > view->clipY1)
-	     && (e->y1 / view->zoom * -1 < view->clipY2))
-	    || ((e->x2 / view->zoom * -1 > view->clipX1)
-		&& (e->x2 / view->zoom * -1 < view->clipX2)
-		&& (e->y2 / view->zoom * -1 > view->clipY1)
-		&& (e->y2 / view->zoom * -1 < view->clipY2))
-	    || (view->active_camera >= 0)) {
-
+	if(edgevisible(e))
+	{
 	    if (!get_color_from_edge(e))
 		continue;
-
 	    //select_topview_edge(e);
 	    if (e->Node1->data.Selected == 1) {	//tail is selected
 		ddx = dx;
@@ -868,9 +904,11 @@ static int drawtopviewedgelabels(Agraph_t * g)
 void drawTopViewGraph(Agraph_t * g)
 {
     
-    glEnable (GL_BLEND);
+/*    glEnable (GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_DEPTH_TEST);*/
+
+//    glDisable(GL_DEPTH_TEST);
     drawtopviewnodes(g);
     drawtopviewlabels(g);
     drawtopviewedges(g);
@@ -878,6 +916,9 @@ void drawTopViewGraph(Agraph_t * g)
     enddrawcycle(g);
     draw_tv_xdot(view->Topview);
     draw_node_hint_boxes();
+//    glEnable(GL_DEPTH_TEST);
+
+
     if ((view->Selection.Active > 0) && (!view->SignalBlock)) {
 	view->Selection.Active = 0;
 	drawTopViewGraph(g);
@@ -885,6 +926,7 @@ void drawTopViewGraph(Agraph_t * g)
 	glexpose();
 	view->SignalBlock = 0;
     }
+
 }
 
 
@@ -1081,7 +1123,6 @@ static void set_boundaries(topview * t)
 
 static int get_color_from_edge(topview_edge * e)
 {
-    GdkColor color;
     int return_value = 1;
     float Alpha = 0;
     GtkHScale *AlphaScale =

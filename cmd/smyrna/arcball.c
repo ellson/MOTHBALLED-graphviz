@@ -161,6 +161,7 @@ void arcmouseClick(ViewInfo * v)
     view->arcball->isDragging = 1;	// Prepare For Dragging
     view->arcball->LastRot = view->arcball->ThisRot;	// Set Last Static Rotation To Last Dynamic One
     click(view->arcball, &view->arcball->MousePt);
+//    printf ("arcmouse click \n");
 
 }
 

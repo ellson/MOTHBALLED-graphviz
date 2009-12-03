@@ -316,6 +316,7 @@ void set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
     view->colschms =
 	create_color_theme(atoi
 			   (get_attribute_value("colortheme", view, g)));
+    view->edgerendertype=atoi(get_attribute_value("edgerender", view, g));
 
 
     if (view->graphCount > 0)
@@ -351,7 +352,6 @@ void init_viewport(ViewInfo * view)
     FILE *input_file2 = NULL;
     static char* path;
     get_data_dir();
-
     input_file = fopen(view->template_file, "rb");
     if (!input_file) {
 	fprintf(stderr,
@@ -370,7 +370,7 @@ void init_viewport(ViewInfo * view)
     }
     if (!path)
 	path = smyrnaPath("attr_widgets.dot");
-    printf ("%s\n", path);
+//    printf ("%s\n", path);
     input_file2 = fopen(path, "rb");
     if (!input_file2) {
 	fprintf(stderr,	"default attributes template graph file \"%s\" not found\n",smyrnaPath("attr_widgets.dot"));
@@ -509,6 +509,7 @@ void init_viewport(ViewInfo * view)
     view->refresh.selection=1;
     view->refresh.visibility=1;
     view->refresh.nodesize=1;
+    view->edgerendertype=0;
     /*add default camera */
     //create fontset
 }

@@ -213,6 +213,9 @@ int main(int argc, char *argv[])
     gladewidget = glade_xml_get_widget(xml, "hbox11");
 
     gtk_widget_hide(glade_xml_get_widget(xml, "vbox13"));
+    gtk_window_set_deletable ((GtkWindow*)glade_xml_get_widget(xml, "dlgSettings"),0);
+    gtk_window_set_deletable ((GtkWindow*)glade_xml_get_widget(xml, "dlgTVFilter"),0);
+    gtk_window_set_deletable ((GtkWindow*)glade_xml_get_widget(xml, "frmTVNodes"),0);
 
 
     create_window(glconfig, gladewidget);

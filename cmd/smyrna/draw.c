@@ -245,7 +245,7 @@ void DrawBeziers(sdot_op* o, int param)
 }
 
 
-//Draws a ellpise made out of points.
+//Draws an ellpise made out of points.
 //void DrawEllipse(xdot_point* xpoint,GLfloat xradius, GLfloat yradius,int filled)
 void DrawEllipse(sdot_op*  o, int param)
 {
@@ -592,11 +592,11 @@ void drawBorders(ViewInfo * view)
 		  view->borderColor.G, view->borderColor.A);
 	glLineWidth(2);
 	glBegin(GL_LINE_STRIP);
-	glVertex3d(view->bdxLeft, view->bdyBottom,0);
-	glVertex3d(view->bdxRight, view->bdyBottom,0);
-	glVertex3d(view->bdxRight, view->bdyTop,0);
-	glVertex3d(view->bdxLeft, view->bdyTop,0);
-	glVertex3d(view->bdxLeft, view->bdyBottom,0);
+	glVertex3d(view->bdxLeft, view->bdyBottom,-0.001);
+	glVertex3d(view->bdxRight, view->bdyBottom,-0.001);
+	glVertex3d(view->bdxRight, view->bdyTop,-0.001);
+	glVertex3d(view->bdxLeft, view->bdyTop,-0.001);
+	glVertex3d(view->bdxLeft, view->bdyBottom,-0.001);
 	glEnd();
 	glLineWidth(1);
     }

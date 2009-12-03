@@ -45,6 +45,11 @@ void on_settingsApplyBtn_clicked(GtkWidget * widget, gpointer user_data)
 /*	settvcolorinfo(view->g[view->activeGraph],view->Topview);
 	init_node_size(view->g[view->activeGraph])*/
 }
+void on_dlgSettings_close (GtkWidget * widget, gpointer user_data)
+{
+    printf ("setting window is being closed\n");
+}
+
 
 
 void on_settingsCancelBtn_clicked(GtkWidget * widget, gpointer user_data)

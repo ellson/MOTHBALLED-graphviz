@@ -195,10 +195,11 @@ glCompSet *glcreate_gl_topview_menu(void)
     glCompButton *b = NULL;
     /* glCompLabel *l=NULL; */
     glCompImage *i = NULL;
+    glCompLabel* l;
     glCompColor c;
     s->common.callbacks.click = CBglCompMouseRightClick;
 
-    p = glCompPanelNew((glCompObj *) s, 25, 25, 51, 47);
+    p = glCompPanelNew((glCompObj *) s, 25, 25, 45, 47);
     p->common.align = glAlignLeft;
     p->common.data = 0;
 
@@ -240,7 +241,7 @@ glCompSet *glcreate_gl_topview_menu(void)
 
 
 
-    p = glCompPanelNew((glCompObj *) p, 1, 325, 80, 180);
+    p = glCompPanelNew((glCompObj *) p, 1, 325, 45, 180);
     p->common.align = glAlignTop;
     p->common.data = 0;
     p->common.borderWidth = 1;
@@ -330,7 +331,12 @@ glCompSet *glcreate_gl_topview_menu(void)
     glCompImageLoadPng(i, smyrnaPath("mod_3D.png"));
     img3D = i;
     i->common.visible = 0;
+    l=glCompLabelNew((glCompObj *)s,100,5,view->Topview->Graphdata.GraphFileName);
+    glCompLabelSetFontSize(l,24);
     return s;
+
+
+
 }
 
 int getIconsDirectory(char *bf)

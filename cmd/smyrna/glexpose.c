@@ -175,8 +175,8 @@ int glexpose_main(ViewInfo * view)
     glexpose_grid(view);
     draw_fisheye_magnifier(view);
     draw_magnifier(view);
-    glexpose_drawgraph(view);
     drawBorders(view);
+    glexpose_drawgraph(view);
 //      drawRotatingTools();
 //      draw_cube();
     drawRotatingAxis();

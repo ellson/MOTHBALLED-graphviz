@@ -28,10 +28,11 @@ glCompLabel *glCompLabelNew(glCompObj * par, GLfloat x, GLfloat y,
     p = NEW(glCompLabel);
     glCompInitCommon((glCompObj *) p, par, x, y);
     p->objType = glLabelObj;
+    p->transparent=1;
     //typedef enum {glPanelObj,glbuttonObj,glLabelObj,glImageObj}glObjType;
 
     p->text = strdup(text);
-    p->common.font = new_font_from_parent(par, text);
+    p->common.font = new_font_from_parent((glCompObj*)p, text);
     p->common.functions.draw = glCompLabelDraw;
 
     return p;
@@ -44,23 +45,49 @@ int glCompLabelDraw(glCompLabel * p)
     ref = p->common;
     glCompCalcWidget((glCompCommon *) p->common.parent, &p->common, &ref);
     /*draw background */
-    glCompSetColor(&p->common.color);
-    glBegin(GL_QUADS);
-    glVertex3d(ref.refPos.x, ref.refPos.y, ref.refPos.z);
-    glVertex3d(ref.refPos.x + ref.width, ref.refPos.y, ref.refPos.z);
-    glVertex3d(ref.refPos.x + ref.width, ref.refPos.y + ref.height,
-	       ref.refPos.z);
-    glVertex3d(ref.refPos.x, ref.refPos.y + ref.height, ref.refPos.z);
-    glEnd();
+    if(!p->transparent)
+    {
+	glCompSetColor(&p->common.color);
+	glBegin(GL_QUADS);
+	glVertex3d(ref.refPos.x, ref.refPos.y, ref.refPos.z);
+	glVertex3d(ref.refPos.x + ref.width, ref.refPos.y, ref.refPos.z);
+	glVertex3d(ref.refPos.x + ref.width, ref.refPos.y + ref.height,
+	           ref.refPos.z);
+	glVertex3d(ref.refPos.x, ref.refPos.y + ref.height, ref.refPos.z);
+	glEnd();
+    }
     glCompRenderText(p->common.font, (glCompObj *) p);
     return 1;
 
 }
-int glCompLabelSetText(glCompLabel * p, char *text)
+static void update_font(glCompLabel * p,char* text,char* desc,int fs)
 {
-    free(p->text);
+
+    glCompFont* temp=p->common.font;
+    p->common.font=new_font(p->common.compset,text,&p->common.color,temp->type,desc,fs,temp->is2D);
+    if(temp)
+	delete_font(temp);
+    if(p->text)
+	free(p->text);
     p->text = strdup(text);
-    return 1;
+
+
+}
+
+void glCompLabelSetText(glCompLabel * p, char *text)
+{
+    glCompFont* temp=p->common.font;
+    update_font(p,text,temp->fontdesc,temp->size);
+}
+void glCompLabelSetFontSize(glCompLabel * p, int size)
+{
+    glCompFont* temp=p->common.font;
+    update_font(p,p->text,temp->fontdesc,size);
+}
+void glCompLabelSetFontName(glCompLabel * p, char* fontName)
+{
+    glCompFont* temp=p->common.font;
+    update_font(p,p->text,fontName,temp->size);
 }
 
 
