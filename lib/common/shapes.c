@@ -70,6 +70,7 @@ static polygon_t p_circle = { TRUE, 1, 1, 0., 0., 0. };
 static polygon_t p_egg = { FALSE, 1, 1, 0., -.3, 0. };
 static polygon_t p_triangle = { FALSE, 1, 3, 0., 0., 0. };
 static polygon_t p_box = { FALSE, 1, 4, 0., 0., 0. };
+static polygon_t p_square = { TRUE, 1, 4, 0., 0., 0. };
 static polygon_t p_plaintext = { FALSE, 0, 4, 0., 0., 0. };
 static polygon_t p_diamond = { FALSE, 1, 4, 45., 0., 0. };
 static polygon_t p_trapezium = { FALSE, 1, 4, 0., -.4, 0. };
@@ -188,6 +189,7 @@ static shape_desc Shapes[] = {	/* first entry is default for no such shape */
     {"component", &poly_fns, &p_component},
     {"rect", &poly_fns, &p_box},
     {"rectangle", &poly_fns, &p_box},
+    {"square", &poly_fns, &p_square},
     {"doublecircle", &poly_fns, &p_doublecircle},
     {"doubleoctagon", &poly_fns, &p_doubleoctagon},
     {"tripleoctagon", &poly_fns, &p_tripleoctagon},
@@ -2429,10 +2431,14 @@ static shape_desc *user_shape(char *name)
     p = UserShape[i] = NEW(shape_desc);
     *p = Shapes[0];
     p->name = strdup(name);
-    p->usershape = TRUE;
-    if (Lib == NULL && ! streq(name, "custom"))
+    if (Lib == NULL && ! streq(name, "custom")) {
 	agerr(AGWARN, "using %s for unknown shape %s\n", Shapes[0].name,
 	      p->name);
+        p->usershape = FALSE;
+   } 
+   else {
+        p->usershape = TRUE;
+   }
     return p;
 }
 
