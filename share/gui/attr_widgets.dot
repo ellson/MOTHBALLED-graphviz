@@ -55,4 +55,5 @@ digraph smyrna_attr_widgets
     graph[scale_button_defaultnodealpha="settingsscale1"];
     graph[scale_button_defaultedgealpha="settingsscale2"];
     graph[scale_button_nodesize="nodesizescale"];
+    graph[combobox_edgerender="edgerendercb"];
 }

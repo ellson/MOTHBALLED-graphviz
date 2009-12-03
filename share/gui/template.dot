@@ -52,17 +52,18 @@ strict digraph template {
 		edgelabelcolor="#8ce61d"
 		nodelabelattribute="name"
 		edgelabelattribute="name"
-		labelwithdegree="1"
-		labelnumberofnodes="23.45"
+		labelwithdegree="0"
+		labelnumberofnodes="45"
 		shownodelabels="1"
 		showedgelabels="1"
 		colortheme="1"
 		defaultnodecolor="blue"
-		defaultedgecolor="pink"
+		defaultedgecolor="purple"
 		edgecolorattribute=""
 		nodesize="50"
 		nodesselectable="1"
 		edgesselectable="1"
+		edgerender="0"
 
 	];
 
