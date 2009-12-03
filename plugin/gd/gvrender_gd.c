@@ -23,6 +23,12 @@
 #endif
 #include <stdlib.h>
 #include <stddef.h>
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+#ifdef HAVE_INTTYPES_H
+#include <inttypes.h>
+#endif
 #include <string.h>
 #include <fcntl.h>
 
@@ -72,8 +78,7 @@ static void gdgen_resolve_color(GVJ_t * job, gvcolor_t * color)
 
 static int white, black, transparent, basecolor;
 
-#define GD_XMAX 32767
-#define GD_YMAX 32767
+#define GD_XYMAX INT32_MAX
 
 static void gdgen_begin_page(GVJ_t * job)
 {
@@ -102,14 +107,13 @@ static void gdgen_begin_page(GVJ_t * job)
 	    fprintf(stderr, "%s: using existing GD image\n", job->common->cmdname);
 	im = (gdImagePtr) (job->context);
     } else {
-        if (job->width >= GD_XMAX || job->height >= GD_YMAX) {
-	    double scale = MIN((double)GD_XMAX / job->width,
-		(double)GD_YMAX / job->height);
+        if (job->width * job->height >= GD_XYMAX) {
+	    double scale = sqrt(GD_XYMAX / (job->width * job->height));
 	    job->width *= scale;
 	    job->height *= scale;
 	    job->zoom *= scale;
 	    fprintf(stderr,
-		"%s: graph is too large for bitmap. Scaling by %g to fit\n",
+		"%s: graph is too large for gd-renderer bitmaps. Scaling by %g to fit\n",
 		job->common->cmdname, scale);
 	}
 	if (truecolor_p) {

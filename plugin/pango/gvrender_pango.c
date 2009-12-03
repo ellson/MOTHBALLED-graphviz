@@ -123,7 +123,7 @@ static void cairogen_begin_page(GVJ_t * job)
 		job->scale.x *= scale;
 		job->scale.y *= scale;
                 fprintf(stderr,
-                        "%s: graph is too large for bitmap. Scaling by %g to fit\n", 
+                        "%s: graph is too large for cairo-renderer bitmaps. Scaling by %g to fit\n", 
                         job->common->cmdname, scale);
 	    }
 	    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
