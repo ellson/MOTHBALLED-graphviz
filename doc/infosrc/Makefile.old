@@ -37,7 +37,8 @@ SGIF = Mcircle.gif Mdiamond.gif Msquare.gif box.gif \
       invhouse.gif invtrapezium.gif invtriangle.gif none.gif \
       octagon.gif parallelogram.gif plaintext.gif \
       point.gif polygon.gif trapezium.gif triangle.gif \
-      tripleoctagon.gif pentagon.gif septagon.gif rect.gif rectangle.gif
+      tripleoctagon.gif pentagon.gif septagon.gif rect.gif \
+      rectangle.gif square.gif
 
 AGIF = a_normal.gif a_inv.gif a_dot.gif a_invdot.gif a_odot.gif \
        a_invodot.gif a_none.gif \
