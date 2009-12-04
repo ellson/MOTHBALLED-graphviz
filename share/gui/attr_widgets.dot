@@ -3,8 +3,6 @@ digraph smyrna_attr_widgets
     graph[color_button_bgcolor="settingsColorBtn1"];
     graph[color_button_bordercolor="settingsColorBtn2"];
     graph[color_button_gridcolor="settingsColorBtn3"];
-    graph[color_button_highlightednodecolor="settingsColorBtn6"];
-    graph[color_button_highlightededgecolor="settingsColorBtn7"];
     graph[color_button_selectednodecolor="settingsColorBtn8"];
     graph[color_button_selectededgecolor="settingsColorBtn9"];
     graph[color_button_defaultnodecolor="DefaultNodeCbtn"];
@@ -33,7 +31,6 @@ digraph smyrna_attr_widgets
     graph[check_box_shownodelabels="labelshownodes"];
     graph[check_box_showedgelabels="labelshowedges"];
     graph[check_box_usermode="settingsChkBox10"];
-    graph[check_box_nodesizewithdegree="settingsChkBox11"];
     graph[check_box_antialiasing="settingsChkBox12"];
     graph[check_box_topologicalfisheyedist2limit="settingsChkBox13"];
     graph[check_box_topologicalfisheyeanimate="settingsChkBox14"];
@@ -41,12 +38,6 @@ digraph smyrna_attr_widgets
     graph[check_box_topologicalfisheyecolornodes="settingsChkBox16"];
     graph[check_box_topologicalfisheyecoloredges="settingsChkBox17"];
     graph[check_box_topologicalfisheyelabelfocus="settingsChkBox18"];
-    graph[check_box_defaultnodeshapegl="settingsChkBox10_1"];
-    graph[check_box_defaultnodeshapespherical="settingsChkBox10_2"];
-    graph[check_box_defaultnodeshaperectangular="settingsChkBox10_3"];
-    graph[spin_button_defaultmagnifierwidth="settingsspinbutton1"];
-    graph[spin_button_defaultmagnifierheight="settingsspinbutton2"];
-    graph[spin_button_defaultmagnifierkts="settingsspinbutton3"];
     graph[spin_button_defaultfisheyemagnifierradius="settingsspinbutton4"];
     graph[spin_button_defaultfisheyemagnifierdistort="settingsspinbutton5"];
     graph[spin_button_topologicalfisheyefinenodes="settingsspinbutton6"];
