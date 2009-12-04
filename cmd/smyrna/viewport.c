@@ -667,7 +667,7 @@ int add_graph_to_viewport(Agraph_t * graph, char *id)
 	view->g[view->graphCount - 1] = graph;
 
 	gtk_combo_box_append_text(view->graphComboBox, id);
-
+	gtk_combo_box_set_active(view->graphComboBox,view->graphCount-1);
 	activate(view->graphCount - 1, 0);
 	return 1;
     } else {

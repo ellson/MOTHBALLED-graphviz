@@ -411,6 +411,7 @@ double ptToLine2 (pointf a, pointf b, pointf p)
  */
 int line_intersect (pointf a, pointf b, pointf c, pointf d, pointf* p)
 {
+
     pointf mv = sub_pointf(b,a);
     pointf lv = sub_pointf(d,c);
     pointf ln = perp (lv);

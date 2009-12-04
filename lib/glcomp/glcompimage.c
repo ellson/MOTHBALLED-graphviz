@@ -95,7 +95,9 @@ void glCompImageDraw(void *obj)
 	return;
     if (!p->texture)
 	return;
+
     glRasterPos2f(ref.pos.x, ref.pos.y);
+//    glPixelZoom(2,2);
     glDrawPixels(p->texture->width, p->texture->height, GL_RGBA,
 		 GL_UNSIGNED_BYTE, p->texture->data);
 
