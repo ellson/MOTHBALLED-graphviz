@@ -476,8 +476,8 @@ makeStraightEdge(graph_t * g, edge_t * e, int doPolyline)
 
 	    line.pn = 4;
 	    line.ps = pts;
-	    for (i=0; i < 4; i++) {
-		pts[i] = dumber[i];
+	    for (j=0; j < 4; j++) {
+		pts[j] = dumber[j];
 	    }
 	    make_polyline (line, &spl);
 	    clip_and_install(e0, aghead(e0), spl.ps, spl.pn, &sinfo);
