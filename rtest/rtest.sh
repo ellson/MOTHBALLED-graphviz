@@ -37,6 +37,7 @@ TESTNAME=   # name of test
 GRAPH=      # graph specification
 IDX=
 typeset -i i j SUBTESTCNT
+typeset -i CRASH_CNT DIFF_CNT
 typeset -i LINECNT=0
 typeset -A TESTTYPES
 typeset ALG[10]
@@ -154,6 +155,7 @@ function doDiff
       if [[ $? != 0 ]]
       then
           print -u 2 "Test $1:$2 : == Failed == $OUTFILE"
+          (( DIFF_CNT+=1 ))
       fi
       ;;
     svg )
@@ -163,6 +165,7 @@ function doDiff
       if [[ $? != 0 ]]
       then
           print -u 2 "Test $1:$2 : == Failed == $OUTFILE"
+          (( DIFF_CNT+=1 ))
       fi
       ;;
     png )
@@ -176,6 +179,7 @@ function doDiff
 	  echo "<img src=\"new_$OUTFILE\" width=\"192\" height=\"192\">" >>$OUTHTML/index.html
 	  echo "<img src=\"dif_$OUTFILE\" width=\"192\" height=\"192\">" >>$OUTHTML/index.html
           print -u 2 "Test $1:$2 : == Failed == $OUTFILE"
+          (( DIFF_CNT+=1 ))
       else
 	  rm $OUTHTML/dif_$OUTFILE
       fi
@@ -185,6 +189,7 @@ function doDiff
       if [[ $? != 0 ]]
       then
           print -u 2 "Test $1:$2 : == Failed == $OUTFILE"
+          (( DIFF_CNT+=1 ))
       fi
       ;;
     esac
@@ -276,7 +281,9 @@ function doTest
 
     if [[ $RVAL != 0 || ! -s $OUTPATH ]]
     then
+      (( CRASH_CNT+=1 ))
       print -u 2 "Test $TESTNAME:$i : == Layout failed =="
+      print -u 2 "  $testcmd"
     elif [[ -s errout ]]
     then
       cat errout
@@ -381,3 +388,4 @@ while readTest
 do
   doTest
 done
+print -u 2 "Layout failures: $CRASH_CNT Changes: $DIFF_CNT"
