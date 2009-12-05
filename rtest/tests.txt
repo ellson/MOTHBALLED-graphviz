@@ -67,7 +67,7 @@ dot ps
 
 pslib
 =
-dot ps -lgraphs/sdl
+dot ps -lgraphs/sdl.ps
 
 user_shapes
 =
@@ -232,7 +232,7 @@ dot gv -Gsplines=polyline
 
 neatosplines
 overlap.gv
-neato gv -Goverlap=false -Gsplines=splines
+neato gv -Goverlap=false -Gsplines
 neato gv -Goverlap=false -Gsplines=polyline
 #neato gv -Goverlap=false -Gsplines=ortho
 
