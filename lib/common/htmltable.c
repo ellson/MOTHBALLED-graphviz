@@ -1169,7 +1169,7 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
             x += minc[cp->col + c];
 	ED_minlen(e) = x;
 	/* ED_minlen(e) = cp->data.box.UR.x; */
-#ifdef DEBUG
+#if (DEBUG==2)
 	fprintf(stderr, "col edge %s -> %s %d\n", t->name, h->name,
 		ED_minlen(e));
 #endif
@@ -1188,7 +1188,7 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
             y += minr[cp->row + r];
 	ED_minlen(e) = y;
 	/* ED_minlen(e) = cp->data.box.UR.y; */
-#ifdef DEBUG
+#if (DEBUG==2)
 	fprintf(stderr, "row edge %s -> %s %d\n", agnameof(t), agnameof(h),
 		ED_minlen(e));
 #endif
