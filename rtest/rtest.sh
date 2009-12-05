@@ -343,6 +343,8 @@ shift $((OPTIND-1))
 
 # Check environment and initialize
 
+if [[ $NOOP != 1 ]]
+then
 if [[ ! -d "$REFDIR" ]]
 then
   print -u 2 "Test data directory $REFDIR does not exist"
@@ -370,6 +372,7 @@ if [[ ! -x $DIFFIMG ]]
 then
   print -u 2 "$DIFFIMG program is not executable"
   exit 1
+fi
 fi
 
 
