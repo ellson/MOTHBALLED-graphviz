@@ -35,6 +35,7 @@ static unsigned char Comment_start;
 static unsigned char Start_html_string;
 int Line_number;
 static char *InputFile;
+static int agmaxerr;
 
 static void
 storeFileName (char* fname, int len)
@@ -86,6 +87,7 @@ void aglexinit(FILE * fp, gets_f mygets)
 	TokenBuf = N_NEW(LineBufSize, char);
     }
     AG.fgets (AG.linebuf, 0, fp);	/* reset mygets */
+    AG.syntax_errors = 0;
 }
 
 #define ISSPACE(c) ((c != 0) && ((isspace(c) || iscntrl(c))))
@@ -490,6 +492,11 @@ void agseterr(agerrlevel_t lvl)
     agerrlevel = lvl;
 }
 
+int agerrors(void)
+{
+    return MAX(agmaxerr, AG.syntax_errors);
+}
+
 char *aglasterr()
 {
     long endpos;
@@ -517,6 +524,7 @@ static int agerr_va(agerrlevel_t level, const char *fmt, va_list args)
     lvl = (level == AGPREV ? agerrno : (level == AGMAX) ? AGERR : level);
 
     agerrno = lvl;
+    agmaxerr = MAX(agmaxerr, agerrno);
     if (lvl >= agerrlevel) {
 	if (level != AGPREV)
 	    fprintf(stderr, "%s: ",

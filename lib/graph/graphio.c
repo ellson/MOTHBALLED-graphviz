@@ -91,11 +91,6 @@ Agraph_t *agread_usergets(FILE * fp, gets_f usergets)
     return AG.parsed_g;
 }
 
-int agerrors(void)
-{
-    return AG.syntax_errors;
-}
-
 static int
 _is_number_char(char c)
 {
