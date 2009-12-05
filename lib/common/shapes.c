@@ -42,14 +42,15 @@ static void poly_init(node_t * n);
 static void poly_free(node_t * n);
 static port poly_port(node_t * n, char *portname, char *);
 static boolean poly_inside(inside_t * inside_context, pointf p);
-static int poly_path(node_t* n, port* p, int side, boxf rv[], int *kptr);
+static int poly_path(node_t * n, port * p, int side, boxf rv[], int *kptr);
 static void poly_gencode(GVJ_t * job, node_t * n);
 
 static void record_init(node_t * n);
 static void record_free(node_t * n);
 static port record_port(node_t * n, char *portname, char *);
 static boolean record_inside(inside_t * inside_context, pointf p);
-static int record_path(node_t* n, port* p, int side, boxf rv[], int *kptr);
+static int record_path(node_t * n, port * p, int side, boxf rv[],
+		       int *kptr);
 static void record_gencode(GVJ_t * job, node_t * n);
 
 static void point_init(node_t * n);
@@ -248,7 +249,7 @@ void pencolor(GVJ_t * job, node_t * n)
 }
 
 static
-char* findPen(node_t * n)
+char *findPen(node_t * n)
 {
     char *color;
 
@@ -260,7 +261,7 @@ char* findPen(node_t * n)
 }
 
 static
-char *findFillDflt(node_t * n, char* dflt)
+char *findFillDflt(node_t * n, char *dflt)
 {
     char *color;
 
@@ -276,9 +277,9 @@ char *findFillDflt(node_t * n, char* dflt)
 }
 
 static
-char *findFill (node_t * n)
+char *findFill(node_t * n)
 {
-    return (findFillDflt (n, DEFAULT_FILL));
+    return (findFillDflt(n, DEFAULT_FILL));
 }
 
 static char **checkStyle(node_t * n, int *flagp)
@@ -300,23 +301,23 @@ static char **checkStyle(node_t * n, int *flagp)
 		pp++;
 	    } else if (streq(p, "rounded")) {
 		istyle |= ROUNDED;
-		qp = pp; /* remove rounded from list passed to renderer */
+		qp = pp;	/* remove rounded from list passed to renderer */
 		do {
 		    qp++;
-		    *(qp-1) = *qp;
+		    *(qp - 1) = *qp;
 		} while (*qp);
 	    } else if (streq(p, "diagonals")) {
 		istyle |= DIAGONALS;
-		qp = pp; /* remove diagonals from list passed to renderer */
+		qp = pp;	/* remove diagonals from list passed to renderer */
 		do {
 		    qp++;
-		    *(qp-1) = *qp;
+		    *(qp - 1) = *qp;
 		} while (*qp);
 	    } else if (streq(p, "invis")) {
 		istyle |= INVISIBLE;
 		pp++;
-	    }
-	    else pp++;
+	    } else
+		pp++;
 	}
     }
     if ((poly = ND_shape(n)->polygon))
@@ -336,12 +337,12 @@ static int stylenode(GVJ_t * job, node_t * n)
 	gvrender_set_style(job, pstyle);
 
 #ifndef WITH_CGRAPH
-    if (N_penwidth && ((s=agxget(n, N_penwidth->index)) && s[0])) {
+    if (N_penwidth && ((s = agxget(n, N_penwidth->index)) && s[0])) {
 #else
-    if (N_penwidth && ((s=agxget(n, N_penwidth)) && s[0])) {
+    if (N_penwidth && ((s = agxget(n, N_penwidth)) && s[0])) {
 #endif
-        penwidth = late_double(n, N_penwidth, 1.0, 0.0);
-        gvrender_set_penwidth(job, penwidth);
+	penwidth = late_double(n, N_penwidth, 1.0, 0.0);
+	gvrender_set_penwidth(job, penwidth);
     }
 
     return istyle;
@@ -355,7 +356,7 @@ static void Mcircle_hack(GVJ_t * job, node_t * n)
     y = .7500;
     x = .6614;			/* x^2 + y^2 = 1.0 */
     p.y = y * ND_ht(n) / 2.0;
-    p.x = ND_rw(n) * x;	/* assume node is symmetric */
+    p.x = ND_rw(n) * x;		/* assume node is symmetric */
 
     AF[0] = add_pointf(p, ND_coord(n));
     AF[1].y = AF[0].y;
@@ -366,8 +367,8 @@ static void Mcircle_hack(GVJ_t * job, node_t * n)
     gvrender_polyline(job, AF, 2);
 }
 
-void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF, 
-			int sides, int style,int filled)
+void round_corners(GVJ_t * job, char *fillc, char *penc, pointf * AF,
+		   int sides, int style, int filled)
 {
     pointf *B, C[4], *D, p0, p1;
     double rbconst, d, dx, dy, t;
@@ -395,7 +396,7 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	dx = p1.x - p0.x;
 	dy = p1.y - p0.y;
 	d = sqrt(dx * dx + dy * dy);
-	rbconst = MIN(rbconst, d/3.0);
+	rbconst = MIN(rbconst, d / 3.0);
     }
     for (seg = 0; seg < sides; seg++) {
 	p0 = AF[seg];
@@ -408,9 +409,9 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	d = sqrt(dx * dx + dy * dy);
 	t = rbconst / d;
 	if (style & (BOX3D | COMPONENT))
-		t /= 3;
+	    t /= 3;
 	else if (style & DOGEAR)
-		t /= 2;
+	    t /= 2;
 	if (mode != ROUNDED)
 	    B[i++] = p0;
 	if (mode == ROUNDED)
@@ -428,30 +429,32 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
     case ROUNDED:
 	if (filled) {
 	    int j = 0;
-	    pointf* pts = N_GNEW(2*sides,pointf);
-	    gvrender_set_pencolor (job, fillc);
-	    gvrender_set_fillcolor (job, fillc);
+	    pointf *pts = N_GNEW(2 * sides, pointf);
+	    gvrender_set_pencolor(job, fillc);
+	    gvrender_set_fillcolor(job, fillc);
 	    for (seg = 0; seg < sides; seg++) {
 		pts[j++] = B[4 * seg + 1];
 		pts[j++] = B[4 * seg + 2];
 	    }
-	    gvrender_polygon(job, pts, 2*sides, TRUE);
-	    free (pts);
+	    gvrender_polygon(job, pts, 2 * sides, TRUE);
+	    free(pts);
 	    for (seg = 0; seg < sides; seg++) {
-		gvrender_beziercurve(job, B + 4 * seg + 2, 4, FALSE, FALSE, TRUE);
+		gvrender_beziercurve(job, B + 4 * seg + 2, 4, FALSE, FALSE,
+				     TRUE);
 	    }
 	}
 	gvrender_set_pencolor(job, penc);
 	for (seg = 0; seg < sides; seg++) {
 	    gvrender_polyline(job, B + 4 * seg + 1, 2);
-	    gvrender_beziercurve(job, B + 4 * seg + 2, 4, FALSE, FALSE, FALSE);
+	    gvrender_beziercurve(job, B + 4 * seg + 2, 4, FALSE, FALSE,
+				 FALSE);
 	}
 	break;
     case DIAGONALS:
 	/* diagonals are weird.  rewrite someday. */
 	gvrender_set_pencolor(job, penc);
 	if (filled)
-	    gvrender_set_fillcolor(job, fillc); /* emit fill color */
+	    gvrender_set_fillcolor(job, fillc);	/* emit fill color */
 	gvrender_polygon(job, AF, sides, filled);
 
 	for (seg = 0; seg < sides; seg++) {
@@ -468,7 +471,7 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
     case DOGEAR:
 	gvrender_set_pencolor(job, penc);
 	if (filled)
-	    gvrender_set_fillcolor(job, fillc); /* emit fill color */
+	    gvrender_set_fillcolor(job, fillc);	/* emit fill color */
 	/* Add the cutoff edge. */
 	D = N_NEW(sides + 1, pointf);
 	for (seg = 1; seg < sides; seg++)
@@ -489,22 +492,22 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	gvrender_polyline(job, C, 2);
 	break;
     case TAB:
-      /*
-       * Adjust the perimeter for the protrusions.
-       *
-       *  D[3] +--+ D[2]
-       *       |  |          B[1]
-       *  B[3] +  +----------+--+ AF[0]=B[0]=D[0]
-       *       |  B[2]=D[1]     |
-       *  B[4] +                |
-       *       |                |
-       *  B[5] +                |
-       *       +----------------+
-       *
-       */
+	/*
+	 * Adjust the perimeter for the protrusions.
+	 *
+	 *  D[3] +--+ D[2]
+	 *       |  |          B[1]
+	 *  B[3] +  +----------+--+ AF[0]=B[0]=D[0]
+	 *       |  B[2]=D[1]     |
+	 *  B[4] +                |
+	 *       |                |
+	 *  B[5] +                |
+	 *       +----------------+
+	 *
+	 */
 	gvrender_set_pencolor(job, penc);
 	if (filled)
-	    gvrender_set_fillcolor(job, fillc); /* emit fill color */
+	    gvrender_set_fillcolor(job, fillc);	/* emit fill color */
 	/* Add the tab edges. */
 	D = N_NEW(sides + 2, pointf);
 	D[0] = AF[0];
@@ -523,45 +526,45 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	C[0] = B[3];
 	C[1] = B[2];
 	gvrender_polyline(job, C, 2);
-      break;
+	break;
     case FOLDER:
-      /*
-       * Adjust the perimeter for the protrusions.
-       *
-       *            D[2] +----+ D[1]
-       *  B[3]=         /      \
-       *  D[4] +--+----+     +  + AF[0]=B[0]=D[0]
-       *       |  B[2] D[3] B[1]|
-       *  B[4] +                |
-       *       |                |
-       *  B[5] +                |
-       *       +----------------+
-       *
-       */
-      gvrender_set_pencolor(job, penc);
-      if (filled)
-          gvrender_set_fillcolor(job, fillc); /* emit fill color */
-      /* Add the folder edges. */
-      D = N_NEW(sides + 3, pointf);
-      D[0] = AF[0];
-      D[1].x = AF[0].x - (AF[0].x - B[1].x) / 4;
-      D[1].y = AF[0].y + (B[3].y - B[4].y) / 3;
-      D[2].x = AF[0].x - 2 * (AF[0].x - B[1].x);
-      D[2].y = D[1].y;
-      D[3].x = AF[0].x - 2.25 * (AF[0].x - B[1].x);
-      D[3].y = B[3].y;
-      D[4].x = B[3].x;
-      D[4].y = B[3].y;
-      for (seg = 4; seg < sides + 3; seg++)
-          D[seg] = AF[seg - 3];
-      gvrender_polygon(job, D, sides + 3, filled);
-      free(D);
+	/*
+	 * Adjust the perimeter for the protrusions.
+	 *
+	 *            D[2] +----+ D[1]
+	 *  B[3]=         /      \
+	 *  D[4] +--+----+     +  + AF[0]=B[0]=D[0]
+	 *       |  B[2] D[3] B[1]|
+	 *  B[4] +                |
+	 *       |                |
+	 *  B[5] +                |
+	 *       +----------------+
+	 *
+	 */
+	gvrender_set_pencolor(job, penc);
+	if (filled)
+	    gvrender_set_fillcolor(job, fillc);	/* emit fill color */
+	/* Add the folder edges. */
+	D = N_NEW(sides + 3, pointf);
+	D[0] = AF[0];
+	D[1].x = AF[0].x - (AF[0].x - B[1].x) / 4;
+	D[1].y = AF[0].y + (B[3].y - B[4].y) / 3;
+	D[2].x = AF[0].x - 2 * (AF[0].x - B[1].x);
+	D[2].y = D[1].y;
+	D[3].x = AF[0].x - 2.25 * (AF[0].x - B[1].x);
+	D[3].y = B[3].y;
+	D[4].x = B[3].x;
+	D[4].y = B[3].y;
+	for (seg = 4; seg < sides + 3; seg++)
+	    D[seg] = AF[seg - 3];
+	gvrender_polygon(job, D, sides + 3, filled);
+	free(D);
 	break;
     case BOX3D:
 	assert(sides == 4);
 	gvrender_set_pencolor(job, penc);
 	if (filled)
-	    gvrender_set_fillcolor(job, fillc); /* emit fill color */
+	    gvrender_set_fillcolor(job, fillc);	/* emit fill color */
 	/* Adjust for the cutoff edges. */
 	D = N_NEW(sides + 2, pointf);
 	D[0] = AF[0];
@@ -587,7 +590,7 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	assert(sides == 4);
 	gvrender_set_pencolor(job, penc);
 	if (filled)
-	    gvrender_set_fillcolor(job, fillc); /* emit fill color */
+	    gvrender_set_fillcolor(job, fillc);	/* emit fill color */
 	/*
 	 * Adjust the perimeter for the protrusions.
 	 *
@@ -651,10 +654,11 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
     free(B);
 }
 
-static void 
-node_round_corners(GVJ_t * job, node_t* n, pointf * AF, int sides, int style,int filled)
+static void
+node_round_corners(GVJ_t * job, node_t * n, pointf * AF, int sides,
+		   int style, int filled)
 {
-    round_corners(job, findFill(n), findPen(n), AF, sides, style,filled);
+    round_corners(job, findFill(n), findPen(n), AF, sides, style, filled);
 }
 
 /*=============================poly start=========================*/
@@ -757,8 +761,10 @@ static void poly_init(node_t * n)
 	/* padding */
 	if ((p = agget(n, "margin"))) {
 	    i = sscanf(p, "%lf,%lf", &marginx, &marginy);
-	    if (marginx < 0) marginx = 0;
-	    if (marginy < 0) marginy = 0;
+	    if (marginx < 0)
+		marginx = 0;
+	    if (marginy < 0)
+		marginy = 0;
 	    if (i > 0) {
 		dimen.x += 2 * POINTS(marginx);
 		if (i > 1)
@@ -779,10 +785,10 @@ static void poly_init(node_t * n)
 
     imagesize.x = imagesize.y = 0;
     if (ND_shape(n)->usershape) {
-	    /* custom requires a shapefile
-             * not custom is an adaptable user shape such as a postscript
-             * function.
-             */
+	/* custom requires a shapefile
+	 * not custom is an adaptable user shape such as a postscript
+	 * function.
+	 */
 	if (streq(ND_shape(n)->name, "custom")) {
 	    sfile = agget(n, "shapefile");
 	    imagesize = gvusershape_size(agraphof(n), sfile);
@@ -790,26 +796,23 @@ static void poly_init(node_t * n)
 		agerr(AGWARN,
 		      "No or improper shapefile=\"%s\" for node \"%s\"\n",
 		      (sfile ? sfile : "<nil>"), agnameof(n));
-	    	imagesize.x = imagesize.y = 0;
-	    }
-	    else {
+		imagesize.x = imagesize.y = 0;
+	    } else {
 		GD_has_images(agraphof(n)) = TRUE;
-	        imagesize.x += 2; /* some fixed padding */
-	        imagesize.y += 2;
+		imagesize.x += 2;	/* some fixed padding */
+		imagesize.y += 2;
 	    }
 	}
-    }
-    else  if ((sfile = agget(n, "image")) && (*sfile != '\0')) {
+    } else if ((sfile = agget(n, "image")) && (*sfile != '\0')) {
 	imagesize = gvusershape_size(agraphof(n), sfile);
 	if ((imagesize.x == -1) && (imagesize.y == -1)) {
-            agerr(AGWARN,
-                "No or improper image=\"%s\" for node \"%s\"\n",
-                (sfile ? sfile : "<nil>"), agnameof(n));
-            imagesize.x = imagesize.y = 0;
-        }
-	else {
-            GD_has_images(agraphof(n)) = TRUE;
-	    imagesize.x += 2; /* some fixed padding */
+	    agerr(AGWARN,
+		  "No or improper image=\"%s\" for node \"%s\"\n",
+		  (sfile ? sfile : "<nil>"), agnameof(n));
+	    imagesize.x = imagesize.y = 0;
+	} else {
+	    GD_has_images(agraphof(n)) = TRUE;
+	    imagesize.x += 2;	/* some fixed padding */
 	    imagesize.y += 2;
 	}
     }
@@ -827,27 +830,26 @@ static void poly_init(node_t * n)
     /* extra sizing depends on if label is centered vertically */
     p = agget(n, "labelloc");
     if (p && (p[0] == 't' || p[0] == 'b'))
-    	ND_label(n)->valign = p[0];
-    else 
-    	ND_label(n)->valign = 'c';
+	ND_label(n)->valign = p[0];
+    else
+	ND_label(n)->valign = 'c';
 
     isBox = (sides == 4 && (ROUND(orientation) % 90) == 0
-	       && distortion == 0. && skew == 0.);
+	     && distortion == 0. && skew == 0.);
     if (isBox) {
 	/* for regular boxes the fit should be exact */
     } else {
 	/* for all other shapes, compute a smallest ellipse
-         * containing bb centered on the origin, and then pad for that.
-         * We assume the ellipse is defined by a scaling up of bb.
-         */
+	 * containing bb centered on the origin, and then pad for that.
+	 * We assume the ellipse is defined by a scaling up of bb.
+	 */
 	temp = bb.y * SQRT2;
 	if (height > temp && ND_label(n)->valign == 'c') {
 	    /* if there is height to spare
 	     * and the label is centered vertically
 	     * then just pad x in proportion to the spare height */
 	    bb.x *= sqrt(1. / (1. - SQR(bb.y / height)));
-	}
-	else {
+	} else {
 	    bb.x *= SQRT2;
 	    bb.y = temp;
 	}
@@ -857,7 +859,7 @@ static void poly_init(node_t * n)
 	    bb.x /= temp;
 	    bb.y /= temp;
 	    /* FIXME - for odd-sided polygons, e.g. triangles, there
-	    would be a better fit with some vertical adjustment of the shape */
+	       would be a better fit with some vertical adjustment of the shape */
 	}
 #endif
     }
@@ -873,8 +875,7 @@ static void poly_init(node_t * n)
 		  agnameof(n), agnameof(agraphof(n)));
 	bb.x = width;
 	bb.y = height;
-    }
-    else {
+    } else {
 	bb.x = width = MAX(width, bb.x);
 	bb.y = height = MAX(height, bb.y);
     }
@@ -889,12 +890,11 @@ static void poly_init(node_t * n)
     /* Compute space available for label.  Provides the justification borders */
     if (!mapbool(late_string(n, N_nojustify, "false"))) {
 	if (isBox)
-            temp = bb.x;
+	    temp = bb.x;
 	else
-            temp = bb.x*sqrt(1.0 - SQR(dimen.y)/SQR(bb.y));
+	    temp = bb.x * sqrt(1.0 - SQR(dimen.y) / SQR(bb.y));
 	ND_label(n)->space.x = temp;
-    }
-    else
+    } else
 	ND_label(n)->space.x = dimen.x;
 
     temp = bb.y - min_bb.y;
@@ -915,14 +915,14 @@ static void poly_init(node_t * n)
 	vertices[1] = P;
 	if (peripheries > 1) {
 	    for (j = 1, i = 2; j < peripheries; j++) {
-	        P.x += GAP;
-	        P.y += GAP;
-                vertices[i].x = -P.x;
-                vertices[i].y = -P.y;
-	        i++;
-                vertices[i].x = P.x;
-                vertices[i].y = P.y;
-	        i++;
+		P.x += GAP;
+		P.y += GAP;
+		vertices[i].x = -P.x;
+		vertices[i].y = -P.y;
+		i++;
+		vertices[i].x = P.x;
+		vertices[i].y = P.y;
+		i++;
 	    }
 	    bb.x = 2. * P.x;
 	    bb.y = 2. * P.y;
@@ -1063,7 +1063,7 @@ static boolean poly_inside(inside_t * inside_context, pointf p)
     boxf *bp = inside_context->s.bp;
     node_t *n = inside_context->s.n;
 
-    P = ccwrotatepf(p, 90*GD_rankdir(agraphof(n)));
+    P = ccwrotatepf(p, 90 * GD_rankdir(agraphof(n)));
 
     /* Quick test if port rectangle is target */
     if (bp) {
@@ -1146,7 +1146,7 @@ static boolean poly_inside(inside_t * inside_context, pointf p)
  * side gives preferred side of bounding box for last node.
  * Return actual side. Returning 0 indicates nothing done.
  */
-static int poly_path(node_t* n, port* p, int side, boxf rv[], int *kptr)
+static int poly_path(node_t * n, port * p, int side, boxf rv[], int *kptr)
 {
     side = 0;
 
@@ -1158,7 +1158,7 @@ static int poly_path(node_t* n, port* p, int side, boxf rv[], int *kptr)
 
 /* invflip_side:
  */
-static int invflip_side (int side, int rankdir)
+static int invflip_side(int side, int rankdir)
 {
     switch (rankdir) {
     case RANKDIR_TB:
@@ -1213,13 +1213,13 @@ static int invflip_side (int side, int rankdir)
 
 /* invflip_angle:
  */
-static double invflip_angle (double angle, int rankdir)
+static double invflip_angle(double angle, int rankdir)
 {
     switch (rankdir) {
     case RANKDIR_TB:
 	break;
     case RANKDIR_BT:
-	angle *= -1; 
+	angle *= -1;
 	break;
     case RANKDIR_LR:
 	angle -= M_PI * 0.5;
@@ -1252,18 +1252,17 @@ static double invflip_angle (double angle, int rankdir)
  * return it.
  * Assumes ictxt and ictxt->n are non-NULL.
  */
-static pointf 
-compassPoint(inside_t* ictxt, double y, double x)
+static pointf compassPoint(inside_t * ictxt, double y, double x)
 {
-    pointf curve[4];  /* bezier control points for a straight line */
-    node_t* n = ictxt->s.n;
+    pointf curve[4];		/* bezier control points for a straight line */
+    node_t *n = ictxt->s.n;
 
     curve[0].x = 0;
     curve[0].y = 0;
-    curve[1].x = x/3;
-    curve[1].y = y/3;
-    curve[2].x = 2*x/3;
-    curve[2].y = 2*y/3;
+    curve[1].x = x / 3;
+    curve[1].y = y / 3;
+    curve[2].x = 2 * x / 3;
+    curve[2].y = 2 * y / 3;
     curve[3].x = x;
     curve[3].y = y;
 
@@ -1287,8 +1286,9 @@ compassPoint(inside_t* ictxt, double y, double x)
  * FIX: For purposes, of rankdir=BT or RL, this assumes nodes are up-down
  * symmetric, left-right symmetric, and convex.
  */
-static int 
-compassPort(node_t* n, boxf* bp, port* pp, char* compass, int sides, inside_t* ictxt)
+static int
+compassPort(node_t * n, boxf * bp, port * pp, char *compass, int sides,
+	    inside_t * ictxt)
 {
     boxf b;
     pointf p, ctr;
@@ -1342,21 +1342,25 @@ compassPort(node_t* n, boxf* bp, port* pp, char* compass, int sides, inside_t* i
 	    case '\0':
 		theta = -M_PI * 0.5;
 		defined = TRUE;
-	        side = sides & BOTTOM;
+		side = sides & BOTTOM;
 		break;
 	    case 'e':
 		theta = -M_PI * 0.25;
 		defined = TRUE;
-		if (ictxt) p = compassPoint (ictxt, -INT_MAX, INT_MAX);
-		else p.x = b.UR.x;
-	        side = sides & (BOTTOM | RIGHT);
+		if (ictxt)
+		    p = compassPoint(ictxt, -INT_MAX, INT_MAX);
+		else
+		    p.x = b.UR.x;
+		side = sides & (BOTTOM | RIGHT);
 		break;
 	    case 'w':
 		theta = -M_PI * 0.75;
 		defined = TRUE;
-		if (ictxt) p = compassPoint (ictxt, -INT_MAX, -INT_MAX);
-		else p.x = b.LL.x;
-	        side = sides & (BOTTOM | LEFT);
+		if (ictxt)
+		    p = compassPoint(ictxt, -INT_MAX, -INT_MAX);
+		else
+		    p.x = b.LL.x;
+		side = sides & (BOTTOM | LEFT);
 		break;
 	    default:
 		p.y = ctr.y;
@@ -1386,21 +1390,25 @@ compassPort(node_t* n, boxf* bp, port* pp, char* compass, int sides, inside_t* i
 	    case '\0':
 		defined = TRUE;
 		theta = M_PI * 0.5;
-	        side = sides & TOP;
+		side = sides & TOP;
 		break;
 	    case 'e':
 		defined = TRUE;
 		theta = M_PI * 0.25;
-		if (ictxt) p = compassPoint (ictxt, INT_MAX, INT_MAX);
-		else p.x = b.UR.x;
-	        side = sides & (TOP | RIGHT);
+		if (ictxt)
+		    p = compassPoint(ictxt, INT_MAX, INT_MAX);
+		else
+		    p.x = b.UR.x;
+		side = sides & (TOP | RIGHT);
 		break;
 	    case 'w':
 		defined = TRUE;
 		theta = M_PI * 0.75;
-		if (ictxt) p = compassPoint (ictxt, INT_MAX, -INT_MAX);
-		else p.x = b.LL.x;
-	        side = sides & (TOP | LEFT);
+		if (ictxt)
+		    p = compassPoint(ictxt, INT_MAX, -INT_MAX);
+		else
+		    p.x = b.LL.x;
+		side = sides & (TOP | LEFT);
 		break;
 	    default:
 		p.y = ctr.y;
@@ -1421,19 +1429,22 @@ compassPort(node_t* n, boxf* bp, port* pp, char* compass, int sides, inside_t* i
 	    break;
 	}
     }
-    p = cwrotatepf(p, 90*GD_rankdir(agraphof(n)));
-    if (dyna) pp->side = side;
-    else pp->side = invflip_side(side, GD_rankdir(agraphof(n)));
+    p = cwrotatepf(p, 90 * GD_rankdir(agraphof(n)));
+    if (dyna)
+	pp->side = side;
+    else
+	pp->side = invflip_side(side, GD_rankdir(agraphof(n)));
     pp->bp = bp;
     PF2P(p, pp->p);
     pp->theta = invflip_angle(theta, GD_rankdir(agraphof(n)));
     if ((p.x == 0) && (p.y == 0))
-	pp->order = MC_SCALE/2;
+	pp->order = MC_SCALE / 2;
     else {
 	/* compute angle with 0 at north pole, increasing CCW */
-	double angle = atan2(p.y,p.x) + 1.5*M_PI;
-	if (angle >= 2*M_PI) angle -= 2*M_PI;
-	pp->order = (int)((MC_SCALE * angle) / (2*M_PI));
+	double angle = atan2(p.y, p.x) + 1.5 * M_PI;
+	if (angle >= 2 * M_PI)
+	    angle -= 2 * M_PI;
+	pp->order = (int) ((MC_SCALE * angle) / (2 * M_PI));
     }
     pp->constrained = constrain;
     pp->defined = defined;
@@ -1446,26 +1457,26 @@ static port poly_port(node_t * n, char *portname, char *compass)
 {
     port rv;
     boxf *bp;
-    int  sides;    /* bitmap of which sides the port lies along */
+    int sides;			/* bitmap of which sides the port lies along */
 
     if (portname[0] == '\0')
 	return Center;
 
     if (compass == NULL)
 	compass = "_";
-    sides = BOTTOM | RIGHT | TOP | LEFT; 
+    sides = BOTTOM | RIGHT | TOP | LEFT;
     if ((ND_label(n)->html) && (bp = html_port(n, portname, &sides))) {
 	if (compassPort(n, bp, &rv, compass, sides, NULL)) {
 	    agerr(AGWARN,
-		"node %s, port %s, unrecognized compass point '%s' - ignored\n",
-		      agnameof(n), portname, compass);
+		  "node %s, port %s, unrecognized compass point '%s' - ignored\n",
+		  agnameof(n), portname, compass);
 	}
-    } 
-    else {
-	inside_t* ictxtp;
-	inside_t  ictxt;
+    } else {
+	inside_t *ictxtp;
+	inside_t ictxt;
 
-	if (IS_BOX(n)) ictxtp = NULL;
+	if (IS_BOX(n))
+	    ictxtp = NULL;
 	else {
 	    ictxt.s.n = n;
 	    ictxt.s.bp = NULL;
@@ -1490,13 +1501,14 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     static int A_size;
     boolean filled;
     boolean usershape_p;
-    boolean pfilled; /* true if fill not handled by user shape */
+    boolean pfilled;		/* true if fill not handled by user shape */
     char *color, *name;
     int doMap = (obj->url || obj->explicit_tooltip);
 
     if (doMap && !(job->flags & EMIT_CLUSTERS_LAST))
 	gvrender_begin_anchor(job,
-		obj->url, obj->tooltip, obj->target, obj->id);
+			      obj->url, obj->tooltip, obj->target,
+			      obj->id);
 
     poly = (polygon_t *) ND_shape_info(n);
     vertices = poly->vertices;
@@ -1516,128 +1528,118 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     style = stylenode(job, n);
 
     if (ND_gui_state(n) & GUI_STATE_ACTIVE) {
-        color = late_nnstring(n, N_activepencolor, DEFAULT_ACTIVEPENCOLOR);
-        gvrender_set_pencolor(job, color);
-        color = late_nnstring(n, N_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
-        gvrender_set_fillcolor(job, color);
+	color = late_nnstring(n, N_activepencolor, DEFAULT_ACTIVEPENCOLOR);
+	gvrender_set_pencolor(job, color);
+	color =
+	    late_nnstring(n, N_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
+	gvrender_set_fillcolor(job, color);
 	filled = TRUE;
-    }
-    else if (ND_gui_state(n) & GUI_STATE_SELECTED) {
-        color = late_nnstring(n, N_selectedpencolor, DEFAULT_SELECTEDPENCOLOR);
-        gvrender_set_pencolor(job, color);
-        color = late_nnstring(n, N_selectedfillcolor, DEFAULT_SELECTEDFILLCOLOR);
-        gvrender_set_fillcolor(job, color);
+    } else if (ND_gui_state(n) & GUI_STATE_SELECTED) {
+	color =
+	    late_nnstring(n, N_selectedpencolor, DEFAULT_SELECTEDPENCOLOR);
+	gvrender_set_pencolor(job, color);
+	color =
+	    late_nnstring(n, N_selectedfillcolor,
+			  DEFAULT_SELECTEDFILLCOLOR);
+	gvrender_set_fillcolor(job, color);
 	filled = TRUE;
-    }
-    else if (ND_gui_state(n) & GUI_STATE_DELETED) {
-        color = late_nnstring(n, N_deletedpencolor, DEFAULT_DELETEDPENCOLOR);
-        gvrender_set_pencolor(job, color);
-        color = late_nnstring(n, N_deletedfillcolor, DEFAULT_DELETEDFILLCOLOR);
-        gvrender_set_fillcolor(job, color);
+    } else if (ND_gui_state(n) & GUI_STATE_DELETED) {
+	color =
+	    late_nnstring(n, N_deletedpencolor, DEFAULT_DELETEDPENCOLOR);
+	gvrender_set_pencolor(job, color);
+	color =
+	    late_nnstring(n, N_deletedfillcolor, DEFAULT_DELETEDFILLCOLOR);
+	gvrender_set_fillcolor(job, color);
 	filled = TRUE;
-    }
-    else if (ND_gui_state(n) & GUI_STATE_VISITED) {
-        color = late_nnstring(n, N_visitedpencolor, DEFAULT_VISITEDPENCOLOR);
-        gvrender_set_pencolor(job, color);
-        color = late_nnstring(n, N_visitedfillcolor, DEFAULT_VISITEDFILLCOLOR);
-        gvrender_set_fillcolor(job, color);
+    } else if (ND_gui_state(n) & GUI_STATE_VISITED) {
+	color =
+	    late_nnstring(n, N_visitedpencolor, DEFAULT_VISITEDPENCOLOR);
+	gvrender_set_pencolor(job, color);
+	color =
+	    late_nnstring(n, N_visitedfillcolor, DEFAULT_VISITEDFILLCOLOR);
+	gvrender_set_fillcolor(job, color);
 	filled = TRUE;
-    }
-    else {
-        if (style & FILLED) {
-	    gvrender_set_fillcolor(job, findFill(n)); /* emit fill color */
+    } else {
+	if (style & FILLED) {
+	    gvrender_set_fillcolor(job, findFill(n));	/* emit fill color */
 	    filled = TRUE;
-        } else {
+	} else {
 	    filled = FALSE;
-        }
-        pencolor(job, n);	/* emit pen color */
+	}
+	pencolor(job, n);	/* emit pen color */
     }
 
-    pfilled = !ND_shape(n)->usershape || streq(ND_shape(n)->name, "custom");
+    pfilled = !ND_shape(n)->usershape
+	|| streq(ND_shape(n)->name, "custom");
     /* if no boundary but filled, set boundary color to fill color */
-    if ((peripheries == 0) && filled && pfilled) 
-	{
-		char *color;
-		peripheries = 1;
-		color = findFill(n);
-		if (color[0])
-			gvrender_set_pencolor(job, color);
+    if ((peripheries == 0) && filled && pfilled) {
+	char *color;
+	peripheries = 1;
+	color = findFill(n);
+	if (color[0])
+	    gvrender_set_pencolor(job, color);
     }
     usershape_p = FALSE;
-    if (ND_shape(n)->usershape) 
-	{
-		name = ND_shape(n)->name;
-		if (streq(name, "custom"))
-			name = agget(n, "shapefile");
-        usershape_p = TRUE;
-	}
-    else if ((name = agget(n, "image"))) 
-	{
-		usershape_p = TRUE;
+    if (ND_shape(n)->usershape) {
+	name = ND_shape(n)->name;
+	if (streq(name, "custom"))
+	    name = agget(n, "shapefile");
+	usershape_p = TRUE;
+    } else if ((name = agget(n, "image"))) {
+	usershape_p = TRUE;
     }
-    if (usershape_p) 
-	{  
-		/* get coords of innermost periphery */
-		for (i = 0; i < sides; i++) {
-			P = vertices[i];
-			AF[i].x = P.x * xsize + ND_coord(n).x;
-			AF[i].y = P.y * ysize + ND_coord(n).y;
+    if (usershape_p) {
+	/* get coords of innermost periphery */
+	for (i = 0; i < sides; i++) {
+	    P = vertices[i];
+	    AF[i].x = P.x * xsize + ND_coord(n).x;
+	    AF[i].y = P.y * ysize + ND_coord(n).y;
+	}
+	/* lay down fill first */
+	if (filled && pfilled) {
+	    if (sides <= 2) {
+		gvrender_ellipse(job, AF, sides, filled);
+		if (style & DIAGONALS) {
+		    Mcircle_hack(job, n);
 		}
-		/* lay down fill first */
-		if (filled && pfilled) 
-		{
-			if (sides <= 2) 
-			{
-				gvrender_ellipse(job, AF, sides, filled);
-				if (style & DIAGONALS) 
-				{
-					Mcircle_hack(job, n);
-				}
-			} 
-			else if (style & (ROUNDED | DIAGONALS)) 
-			{
-				node_round_corners(job, n, AF, sides, style,filled);
-			} else 
-			{
-				gvrender_polygon(job, AF, sides, filled);
-			}
-		}
-		gvrender_usershape(job, name, AF, sides, filled, late_string(n, N_imagescale, "false"));
-		filled = FALSE;  /* with user shapes, we have done the fill if needed */
+	    } else if (style & (ROUNDED | DIAGONALS)) {
+		node_round_corners(job, n, AF, sides, style, filled);
+	    } else {
+		gvrender_polygon(job, AF, sides, filled);
+	    }
+	}
+	gvrender_usershape(job, name, AF, sides, filled,
+			   late_string(n, N_imagescale, "false"));
+	filled = FALSE;		/* with user shapes, we have done the fill if needed */
     }
 
-    for (j = 0; j < peripheries; j++) 
-	{
-		for (i = 0; i < sides; i++) 
-		{
-			P = vertices[i + j * sides];
-			AF[i].x = P.x * xsize + ND_coord(n).x;
-			AF[i].y = P.y * ysize + ND_coord(n).y;
-		}
-		if (sides <= 2) 
-		{
-			gvrender_ellipse(job, AF, sides, filled);
-			if (style & DIAGONALS) 
-			{
-				Mcircle_hack(job, n);
-			}
-		} else if (SPECIAL_CORNERS(style)) 
-		{
-			node_round_corners(job, n, AF, sides, style,filled);
-		} else 
-		{
-			gvrender_polygon(job, AF, sides, filled);
-		}
-		/* fill innermost periphery only */
-		filled = FALSE;
+    for (j = 0; j < peripheries; j++) {
+	for (i = 0; i < sides; i++) {
+	    P = vertices[i + j * sides];
+	    AF[i].x = P.x * xsize + ND_coord(n).x;
+	    AF[i].y = P.y * ysize + ND_coord(n).y;
+	}
+	if (sides <= 2) {
+	    gvrender_ellipse(job, AF, sides, filled);
+	    if (style & DIAGONALS) {
+		Mcircle_hack(job, n);
+	    }
+	} else if (SPECIAL_CORNERS(style)) {
+	    node_round_corners(job, n, AF, sides, style, filled);
+	} else {
+	    gvrender_polygon(job, AF, sides, filled);
+	}
+	/* fill innermost periphery only */
+	filled = FALSE;
     }
 
     emit_label(job, EMIT_NLABEL, ND_label(n));
     if (doMap) {
 	if (job->flags & EMIT_CLUSTERS_LAST)
 	    gvrender_begin_anchor(job,
-		obj->url, obj->tooltip, obj->target, obj->id);
-        gvrender_end_anchor(job);
+				  obj->url, obj->tooltip, obj->target,
+				  obj->id);
+	gvrender_end_anchor(job);
     }
 }
 
@@ -1664,26 +1666,26 @@ static void point_init(node_t * n)
      */
     w = late_double(n, N_width, MAXDOUBLE, MIN_POINT);
     h = late_double(n, N_height, MAXDOUBLE, MIN_POINT);
-    w = MIN(w,h);
-    if ((w == MAXDOUBLE) && (h == MAXDOUBLE)) /* neither defined */
+    w = MIN(w, h);
+    if ((w == MAXDOUBLE) && (h == MAXDOUBLE))	/* neither defined */
 	ND_width(n) = ND_height(n) = DEF_POINT;
     else
 	ND_width(n) = ND_height(n) = w;
 
-    sz = ND_width(n)*POINTS_PER_INCH; 
+    sz = ND_width(n) * POINTS_PER_INCH;
     peripheries = late_int(n, N_peripheries, peripheries, 0);
-    if (peripheries < 1) outp = 1;
-    else outp = peripheries;
+    if (peripheries < 1)
+	outp = 1;
+    else
+	outp = peripheries;
     sides = 2;
     vertices = N_NEW(outp * sides, pointf);
     P.y = P.x = sz / 2.;
     vertices[0].x = -P.x;
     vertices[0].y = -P.y;
     vertices[1] = P;
-    if (peripheries > 1) 
-	{
-        for (j = 1, i = 2; j < peripheries; j++) 
-		{
+    if (peripheries > 1) {
+	for (j = 1, i = 2; j < peripheries; j++) {
 	    P.x += GAP;
 	    P.y += GAP;
 	    vertices[i].x = -P.x;
@@ -1693,7 +1695,7 @@ static void point_init(node_t * n)
 	    vertices[i].y = P.y;
 	    i++;
 	}
-        sz = 2. * P.x;
+	sz = 2. * P.x;
     }
     poly->regular = 1;
     poly->peripheries = peripheries;
@@ -1707,25 +1709,25 @@ static void point_init(node_t * n)
     ND_shape_info(n) = (void *) poly;
 }
 
-static boolean 
-point_inside(inside_t* inside_context, pointf p)
+static boolean point_inside(inside_t * inside_context, pointf p)
 {
     static node_t *lastn;	/* last node argument */
     static double radius;
     pointf P;
     node_t *n = inside_context->s.n;
 
-    P = ccwrotatepf(p, 90*GD_rankdir(agraphof(n)));
+    P = ccwrotatepf(p, 90 * GD_rankdir(agraphof(n)));
 
     if (n != lastn) {
-        int outp;
-        polygon_t *poly = (polygon_t *) ND_shape_info(n);
+	int outp;
+	polygon_t *poly = (polygon_t *) ND_shape_info(n);
 
 	/* index to outer-periphery */
-	outp = 2*(poly->peripheries - 1);
-	if (outp < 0) outp = 0;
+	outp = 2 * (poly->peripheries - 1);
+	if (outp < 0)
+	    outp = 0;
 
-	radius = poly->vertices[outp+1].x;
+	radius = poly->vertices[outp + 1].x;
 	lastn = n;
     }
 
@@ -1750,7 +1752,8 @@ static void point_gencode(GVJ_t * job, node_t * n)
 
     if (doMap && !(job->flags & EMIT_CLUSTERS_LAST))
 	gvrender_begin_anchor(job,
-		obj->url, obj->tooltip, obj->target, obj->id);
+			      obj->url, obj->tooltip, obj->target,
+			      obj->id);
 
     poly = (polygon_t *) ND_shape_info(n);
     vertices = poly->vertices;
@@ -1763,38 +1766,42 @@ static void point_gencode(GVJ_t * job, node_t * n)
 
     checkStyle(n, &style);
     if (style & INVISIBLE)
-        gvrender_set_style(job, point_style);
+	gvrender_set_style(job, point_style);
     else
-        gvrender_set_style(job, &point_style[1]);
+	gvrender_set_style(job, &point_style[1]);
 
     if (ND_gui_state(n) & GUI_STATE_ACTIVE) {
-        color = late_nnstring(n, N_activepencolor, DEFAULT_ACTIVEPENCOLOR);
-        gvrender_set_pencolor(job, color);
-        color = late_nnstring(n, N_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
-        gvrender_set_fillcolor(job, color);
-    }
-    else if (ND_gui_state(n) & GUI_STATE_SELECTED) {
-        color = late_nnstring(n, N_selectedpencolor, DEFAULT_SELECTEDPENCOLOR);
-        gvrender_set_pencolor(job, color);
-        color = late_nnstring(n, N_selectedfillcolor, DEFAULT_SELECTEDFILLCOLOR);
-        gvrender_set_fillcolor(job, color);
-    }
-    else if (ND_gui_state(n) & GUI_STATE_DELETED) {
-        color = late_nnstring(n, N_deletedpencolor, DEFAULT_DELETEDPENCOLOR);
-        gvrender_set_pencolor(job, color);
-        color = late_nnstring(n, N_deletedfillcolor, DEFAULT_DELETEDFILLCOLOR);
-        gvrender_set_fillcolor(job, color);
-    }
-    else if (ND_gui_state(n) & GUI_STATE_VISITED) {
-        color = late_nnstring(n, N_visitedpencolor, DEFAULT_VISITEDPENCOLOR);
-        gvrender_set_pencolor(job, color);
-        color = late_nnstring(n, N_visitedfillcolor, DEFAULT_VISITEDFILLCOLOR);
-        gvrender_set_fillcolor(job, color);
-    }
-    else {
-        color = findFillDflt (n, "black");
-	gvrender_set_fillcolor(job, color); /* emit fill color */
-        pencolor(job, n);	/* emit pen color */
+	color = late_nnstring(n, N_activepencolor, DEFAULT_ACTIVEPENCOLOR);
+	gvrender_set_pencolor(job, color);
+	color =
+	    late_nnstring(n, N_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
+	gvrender_set_fillcolor(job, color);
+    } else if (ND_gui_state(n) & GUI_STATE_SELECTED) {
+	color =
+	    late_nnstring(n, N_selectedpencolor, DEFAULT_SELECTEDPENCOLOR);
+	gvrender_set_pencolor(job, color);
+	color =
+	    late_nnstring(n, N_selectedfillcolor,
+			  DEFAULT_SELECTEDFILLCOLOR);
+	gvrender_set_fillcolor(job, color);
+    } else if (ND_gui_state(n) & GUI_STATE_DELETED) {
+	color =
+	    late_nnstring(n, N_deletedpencolor, DEFAULT_DELETEDPENCOLOR);
+	gvrender_set_pencolor(job, color);
+	color =
+	    late_nnstring(n, N_deletedfillcolor, DEFAULT_DELETEDFILLCOLOR);
+	gvrender_set_fillcolor(job, color);
+    } else if (ND_gui_state(n) & GUI_STATE_VISITED) {
+	color =
+	    late_nnstring(n, N_visitedpencolor, DEFAULT_VISITEDPENCOLOR);
+	gvrender_set_pencolor(job, color);
+	color =
+	    late_nnstring(n, N_visitedfillcolor, DEFAULT_VISITEDFILLCOLOR);
+	gvrender_set_fillcolor(job, color);
+    } else {
+	color = findFillDflt(n, "black");
+	gvrender_set_fillcolor(job, color);	/* emit fill color */
+	pencolor(job, n);	/* emit pen color */
     }
     filled = TRUE;
 
@@ -1819,8 +1826,9 @@ static void point_gencode(GVJ_t * job, node_t * n)
     if (doMap) {
 	if (job->flags & EMIT_CLUSTERS_LAST)
 	    gvrender_begin_anchor(job,
-		obj->url, obj->tooltip, obj->target, obj->id);
-        gvrender_end_anchor(job);
+				  obj->url, obj->tooltip, obj->target,
+				  obj->id);
+	gvrender_end_anchor(job);
     }
 }
 
@@ -1836,12 +1844,12 @@ static void point_gencode(GVJ_t * job, node_t * n)
 
 static char *reclblp;
 
-static void free_field (field_t* f)
+static void free_field(field_t * f)
 {
     int i;
 
-    for (i=0; i<f->n_flds; i++ ) {
-        free_field(f->fld[i]);
+    for (i = 0; i < f->n_flds; i++) {
+	free_field(f->fld[i]);
     }
 
     free(f->id);
@@ -1853,40 +1861,38 @@ static void free_field (field_t* f)
 /* parse_error:
  * Clean up memory allocated in parse_reclbl, then return NULL
  */
-static field_t*
-parse_error (field_t* rv, char* port)
+static field_t *parse_error(field_t * rv, char *port)
 {
-    free_field (rv);
-    if (port) free (port);
+    free_field(rv);
+    if (port)
+	free(port);
     return NULL;
 }
 
-static field_t*
-parse_reclbl(node_t * n, int LR, int flag, char *text)
+static field_t *parse_reclbl(node_t * n, int LR, int flag, char *text)
 {
     field_t *fp, *rv = NEW(field_t);
     char *tsp, *psp, *hstsp, *hspsp, *sp;
-    char* tmpport = NULL;
+    char *tmpport = NULL;
     int maxf, cnt, mode, wflag, ishardspace, fi;
     textlabel_t *lbl = ND_label(n);
 
     fp = NULL;
-    for (maxf = 1, cnt = 0, sp = reclblp; *sp; sp++) 
-	{
-		if (*sp == '\\') 
-		{
-			sp++;
-			if (*sp && (*sp == '{' || *sp == '}' || *sp == '|' || *sp == '\\'))
-			continue;
-		}
-		if (*sp == '{')
-			cnt++;
-		else if (*sp == '}')
-			cnt--;
-		else if (*sp == '|' && cnt == 0)
-			maxf++;
-		if (cnt < 0)
-			break;
+    for (maxf = 1, cnt = 0, sp = reclblp; *sp; sp++) {
+	if (*sp == '\\') {
+	    sp++;
+	    if (*sp
+		&& (*sp == '{' || *sp == '}' || *sp == '|' || *sp == '\\'))
+		continue;
+	}
+	if (*sp == '{')
+	    cnt++;
+	else if (*sp == '}')
+	    cnt--;
+	else if (*sp == '|' && cnt == 0)
+	    maxf++;
+	if (cnt < 0)
+	    break;
     }
     rv->fld = N_NEW(maxf, field_t *);
     rv->LR = LR;
@@ -1895,104 +1901,100 @@ parse_reclbl(node_t * n, int LR, int flag, char *text)
     hstsp = tsp = text;
     wflag = TRUE;
     ishardspace = FALSE;
-    while (wflag) 
-	{
-		switch (*reclblp) {
-		case '<':
-			if (mode & (HASTABLE | HASPORT))
-				return parse_error(rv, tmpport);
-			if (lbl->html) goto dotext;
-				mode |= (HASPORT | INPORT);
-			reclblp++;
-			hspsp = psp = text;
+    while (wflag) {
+	switch (*reclblp) {
+	case '<':
+	    if (mode & (HASTABLE | HASPORT))
+		return parse_error(rv, tmpport);
+	    if (lbl->html)
+		goto dotext;
+	    mode |= (HASPORT | INPORT);
+	    reclblp++;
+	    hspsp = psp = text;
 	    break;
-		case '>':
-			if (lbl->html) goto dotext;
-				if (!(mode & INPORT))
-					return parse_error(rv, tmpport);
-			if (psp > text + 1 && psp - 1 != hspsp && *(psp - 1) == ' ')
-			psp--;
-			*psp = '\000';
-			tmpport = strdup(text);
-			mode &= ~INPORT;
-			reclblp++;
+	case '>':
+	    if (lbl->html)
+		goto dotext;
+	    if (!(mode & INPORT))
+		return parse_error(rv, tmpport);
+	    if (psp > text + 1 && psp - 1 != hspsp && *(psp - 1) == ' ')
+		psp--;
+	    *psp = '\000';
+	    tmpport = strdup(text);
+	    mode &= ~INPORT;
+	    reclblp++;
 	    break;
-		case '{':
-			reclblp++;
-			if (mode != 0 || !*reclblp)
-				return parse_error(rv, tmpport);
-			mode = HASTABLE;
-			if (!(rv->fld[fi++] = parse_reclbl(n, NOT(LR), FALSE, text)))
-				return parse_error(rv, tmpport);
+	case '{':
+	    reclblp++;
+	    if (mode != 0 || !*reclblp)
+		return parse_error(rv, tmpport);
+	    mode = HASTABLE;
+	    if (!(rv->fld[fi++] = parse_reclbl(n, NOT(LR), FALSE, text)))
+		return parse_error(rv, tmpport);
 	    break;
-		case '}':
-		case '|':
-		case '\000':
-			if ((!*reclblp && !flag) || (mode & INPORT))
-				return parse_error(rv, tmpport);
-			if (!(mode & HASTABLE))
-				fp = rv->fld[fi++] = NEW(field_t);
-			if (tmpport) 
-			{
-				fp->id = tmpport;
-			tmpport = NULL;
-			}
-			if (!(mode & (HASTEXT | HASTABLE)))
-				mode |= HASTEXT, *tsp++ = ' ';
-			if (mode & HASTEXT) 
-			{
-				if (tsp > text + 1 &&
-					tsp - 1 != hstsp && *(tsp - 1) == ' ')
-				tsp--;
-				*tsp = '\000';
-				fp->lp = make_label((void *)n, strdup(text), (lbl->html ? LT_HTML : LT_NONE),
-				lbl->fontsize,
-				lbl->fontname,
-				lbl->fontcolor);
-				fp->LR = TRUE;
-				hstsp = tsp = text;
-			}
-			if (*reclblp) 
-			{
-				if (*reclblp == '}') 
-				{
-					reclblp++;
-					rv->n_flds = fi;
-					return rv;
-				}
-				mode = 0;
-				reclblp++;
-				}
-			else
-				wflag = FALSE;
-		break;
-		case '\\':
-			if (*(reclblp + 1)) 
-			{
-				if (ISCTRL(*(reclblp + 1)))
-					reclblp++;
-				else if ((*(reclblp + 1) == ' ') && !lbl->html)
-					ishardspace = TRUE, reclblp++;
-                else 
-				{
-                    *tsp++ = '\\';
-                    mode |= (INTEXT | HASTEXT);
-                    reclblp++;
-                }
-		    }
+	case '}':
+	case '|':
+	case '\000':
+	    if ((!*reclblp && !flag) || (mode & INPORT))
+		return parse_error(rv, tmpport);
+	    if (!(mode & HASTABLE))
+		fp = rv->fld[fi++] = NEW(field_t);
+	    if (tmpport) {
+		fp->id = tmpport;
+		tmpport = NULL;
+	    }
+	    if (!(mode & (HASTEXT | HASTABLE)))
+		mode |= HASTEXT, *tsp++ = ' ';
+	    if (mode & HASTEXT) {
+		if (tsp > text + 1 &&
+		    tsp - 1 != hstsp && *(tsp - 1) == ' ')
+		    tsp--;
+		*tsp = '\000';
+		fp->lp =
+		    make_label((void *) n, strdup(text),
+			       (lbl->html ? LT_HTML : LT_NONE),
+			       lbl->fontsize, lbl->fontname,
+			       lbl->fontcolor);
+		fp->LR = TRUE;
+		hstsp = tsp = text;
+	    }
+	    if (*reclblp) {
+		if (*reclblp == '}') {
+		    reclblp++;
+		    rv->n_flds = fi;
+		    return rv;
+		}
+		mode = 0;
+		reclblp++;
+	    } else
+		wflag = FALSE;
+	    break;
+	case '\\':
+	    if (*(reclblp + 1)) {
+		if (ISCTRL(*(reclblp + 1)))
+		    reclblp++;
+		else if ((*(reclblp + 1) == ' ') && !lbl->html)
+		    ishardspace = TRUE, reclblp++;
+		else {
+		    *tsp++ = '\\';
+		    mode |= (INTEXT | HASTEXT);
+		    reclblp++;
+		}
+	    }
 	    /* falling through ... */
-		default:
-			dotext :
-				if ((mode & HASTABLE) && *reclblp != ' ')
-					return parse_error(rv, tmpport);
-				if (!(mode & (INTEXT | INPORT)) && *reclblp != ' ')
-					mode |= (INTEXT | HASTEXT);
-				if (mode & INTEXT) 
-				{
-					if (!(*reclblp == ' ' && !ishardspace &&	*(tsp - 1) == ' ' && !lbl->html))
-					*tsp++ = *reclblp;
-				if (ishardspace)
-					hstsp = tsp - 1;
+	default:
+	  dotext:
+	    if ((mode & HASTABLE) && *reclblp != ' ')
+		return parse_error(rv, tmpport);
+	    if (!(mode & (INTEXT | INPORT)) && *reclblp != ' ')
+		mode |= (INTEXT | HASTEXT);
+	    if (mode & INTEXT) {
+		if (!
+		    (*reclblp == ' ' && !ishardspace && *(tsp - 1) == ' '
+		     && !lbl->html))
+		    *tsp++ = *reclblp;
+		if (ishardspace)
+		    hstsp = tsp - 1;
 	    } else if (mode & INPORT) {
 		if (!(*reclblp == ' ' && !ishardspace &&
 		      (psp == text || *(psp - 1) == ' ')))
@@ -2110,22 +2112,27 @@ static void pos_reclbl(field_t * f, pointf ul, int sides)
 	if (sides) {
 	    if (f->LR) {
 		if (i == 0) {
-		    if (i == last) mask = TOP | BOTTOM | RIGHT | LEFT;
-		    else mask = TOP | BOTTOM | LEFT;
-		}
-		else if (i == last) mask = TOP | BOTTOM | RIGHT;
-		else mask = TOP | BOTTOM;
-	    }
-	    else {
+		    if (i == last)
+			mask = TOP | BOTTOM | RIGHT | LEFT;
+		    else
+			mask = TOP | BOTTOM | LEFT;
+		} else if (i == last)
+		    mask = TOP | BOTTOM | RIGHT;
+		else
+		    mask = TOP | BOTTOM;
+	    } else {
 		if (i == 0) {
-		    if (i == last) mask = TOP | BOTTOM | RIGHT | LEFT;
-		    else mask = TOP | RIGHT | LEFT;
-		}
-		else if (i == last) mask = LEFT | BOTTOM | RIGHT;
-		else mask = LEFT | RIGHT;
+		    if (i == last)
+			mask = TOP | BOTTOM | RIGHT | LEFT;
+		    else
+			mask = TOP | RIGHT | LEFT;
+		} else if (i == last)
+		    mask = LEFT | BOTTOM | RIGHT;
+		else
+		    mask = LEFT | RIGHT;
 	    }
-	}
-	else mask = 0;
+	} else
+	    mask = 0;
 	pos_reclbl(f->fld[i], ul, sides & mask);
 	if (f->LR)
 	    ul.x = ul.x + f->fld[i]->size.x;
@@ -2144,7 +2151,8 @@ static void indent(int l)
 
 static void prbox(boxf b)
 {
-    fprintf(stderr, "((%.5g,%.5g),(%.5g,%.5g))\n", b.LL.x, b.LL.y, b.UR.x, b.UR.y);
+    fprintf(stderr, "((%.5g,%.5g),(%.5g,%.5g))\n", b.LL.x, b.LL.y, b.UR.x,
+	    b.UR.y);
 }
 
 static void dumpL(field_t * info, int level)
@@ -2172,7 +2180,7 @@ static void record_init(node_t * n)
     pointf ul, sz;
     int flip, len;
     char *textbuf;		/* temp buffer for storing labels */
-    int sides = BOTTOM | RIGHT | TOP | LEFT; 
+    int sides = BOTTOM | RIGHT | TOP | LEFT;
 
     /* Always use rankdir to determine how records are laid out */
     flip = NOT(GD_realflip(agraphof(n)));
@@ -2181,13 +2189,12 @@ static void record_init(node_t * n)
     /* For some forgotten reason, an empty label is parsed into a space, so
      * we need at least two bytes in textbuf.
      */
-    len = MAX(len,1);  
+    len = MAX(len, 1);
     textbuf = N_NEW(len + 1, char);
-	if (!(info = parse_reclbl(n, flip, TRUE, textbuf)))
-	{
-		agerr(AGERR, "bad label format %s\n", ND_label(n)->text);
-		reclblp = "\\N";
-		info = parse_reclbl(n, flip, TRUE, textbuf);
+    if (!(info = parse_reclbl(n, flip, TRUE, textbuf))) {
+	agerr(AGERR, "bad label format %s\n", ND_label(n)->text);
+	reclblp = "\\N";
+	info = parse_reclbl(n, flip, TRUE, textbuf);
     }
     free(textbuf);
     size_reclbl(n, info);
@@ -2204,11 +2211,11 @@ static void record_init(node_t * n)
 	sz.y = MAX(info->size.y, sz.y);
     }
     resize_reclbl(info, sz, mapbool(late_string(n, N_nojustify, "false")));
-    ul = pointfof(-sz.x / 2., sz.y / 2.);          /* FIXME - is this still true:    suspected to introduce ronding error - see Kluge below */
+    ul = pointfof(-sz.x / 2., sz.y / 2.);	/* FIXME - is this still true:    suspected to introduce ronding error - see Kluge below */
     pos_reclbl(info, ul, sides);
     ND_width(n) = PS2INCH(info->size.x);
-    ND_height(n) = PS2INCH(info->size.y + 1);   /* Kluge!!  +1 to fix rounding diff between layout and rendering 
-							otherwise we can get -1 coords in output */
+    ND_height(n) = PS2INCH(info->size.y + 1);	/* Kluge!!  +1 to fix rounding diff between layout and rendering 
+						   otherwise we can get -1 coords in output */
     ND_shape_info(n) = (void *) info;
 }
 
@@ -2216,7 +2223,7 @@ static void record_free(node_t * n)
 {
     field_t *p = ND_shape_info(n);
 
-    free_field (p);
+    free_field(p);
 }
 
 static field_t *map_rec_port(field_t * f, char *str)
@@ -2240,22 +2247,21 @@ static port record_port(node_t * n, char *portname, char *compass)
     field_t *f;
     field_t *subf;
     port rv;
-    int  sides;    /* bitmap of which sides the port lies along */
+    int sides;			/* bitmap of which sides the port lies along */
 
     if (portname[0] == '\0')
 	return Center;
-    sides = BOTTOM | RIGHT | TOP | LEFT; 
+    sides = BOTTOM | RIGHT | TOP | LEFT;
     if (compass == NULL)
 	compass = "_";
     f = (field_t *) ND_shape_info(n);
     if ((subf = map_rec_port(f, portname))) {
 	if (compassPort(n, &subf->b, &rv, compass, subf->sides, NULL)) {
 	    agerr(AGWARN,
-	      "node %s, port %s, unrecognized compass point '%s' - ignored\n",
-	      agnameof(n), portname, compass);
+		  "node %s, port %s, unrecognized compass point '%s' - ignored\n",
+		  agnameof(n), portname, compass);
 	}
-    }
-    else if (compassPort(n, &f->b, &rv, portname, sides, NULL)) {
+    } else if (compassPort(n, &f->b, &rv, portname, sides, NULL)) {
 	unrecognized(n, portname);
     }
 
@@ -2266,8 +2272,7 @@ static port record_port(node_t * n, char *portname, char *compass)
  * Note that this does not handle Mrecords correctly. It assumes 
  * everything is a rectangle.
  */
-static boolean
-record_inside(inside_t * inside_context, pointf p)
+static boolean record_inside(inside_t * inside_context, pointf p)
 {
 
     field_t *fld0;
@@ -2276,13 +2281,13 @@ record_inside(inside_t * inside_context, pointf p)
     boxf bbox;
 
     /* convert point to node coordinate system */
-    p = ccwrotatepf(p, 90*GD_rankdir(agraphof(n)));
+    p = ccwrotatepf(p, 90 * GD_rankdir(agraphof(n)));
 
     if (bp == NULL) {
 	fld0 = (field_t *) ND_shape_info(n);
 	bbox = fld0->b;
-    }
-    else bbox = *bp;
+    } else
+	bbox = *bp;
 
     return INSIDE(p, bbox);
 }
@@ -2291,13 +2296,15 @@ record_inside(inside_t * inside_context, pointf p)
  * Generate box path from port to border.
  * See poly_path for constraints.
  */
-static int record_path(node_t* n, port* prt, int side, boxf rv[], int *kptr)
+static int record_path(node_t * n, port * prt, int side, boxf rv[],
+		       int *kptr)
 {
     int i, ls, rs;
     pointf p;
     field_t *info;
 
-    if (!prt->defined) return 0;
+    if (!prt->defined)
+	return 0;
     p = prt->p;
     info = (field_t *) ND_shape_info(n);
 
@@ -2334,7 +2341,7 @@ static void gen_fields(GVJ_t * job, node_t * n, field_t * f)
     if (f->lp) {
 	f->lp->pos = add_pointf(mid_pointf(f->b.LL, f->b.UR), ND_coord(n));
 	emit_label(job, EMIT_NLABEL, f->lp);
-        pencolor(job, n);
+	pencolor(job, n);
     }
 
     coord = ND_coord(n);
@@ -2372,35 +2379,36 @@ static void record_gencode(GVJ_t * job, node_t * n)
     BF.LL.y += ND_coord(n).y;
     BF.UR.x += ND_coord(n).x;
     BF.UR.y += ND_coord(n).y;
-    
+
     if (doMap && !(job->flags & EMIT_CLUSTERS_LAST))
-        gvrender_begin_anchor(job,
-		obj->url, obj->tooltip, obj->target, obj->id);
+	gvrender_begin_anchor(job,
+			      obj->url, obj->tooltip, obj->target,
+			      obj->id);
     style = stylenode(job, n);
     pencolor(job, n);
     if (style & FILLED)
-	gvrender_set_fillcolor(job, findFill(n)); /* emit fill color */
+	gvrender_set_fillcolor(job, findFill(n));	/* emit fill color */
     if (streq(ND_shape(n)->name, "Mrecord"))
 	style |= ROUNDED;
     if (SPECIAL_CORNERS(style)) {
-        AF[0] = BF.LL;
-        AF[2] = BF.UR;
-        AF[1].x = AF[2].x;
-        AF[1].y = AF[0].y;
-        AF[3].x = AF[0].x;
-        AF[3].y = AF[2].y;
-	node_round_corners(job, n, AF, 4, style,style & FILLED);
-    }
-    else
+	AF[0] = BF.LL;
+	AF[2] = BF.UR;
+	AF[1].x = AF[2].x;
+	AF[1].y = AF[0].y;
+	AF[3].x = AF[0].x;
+	AF[3].y = AF[2].y;
+	node_round_corners(job, n, AF, 4, style, style & FILLED);
+    } else
 	gvrender_box(job, BF, style & FILLED);
 
     gen_fields(job, n, f);
 
     if (doMap) {
 	if (job->flags & EMIT_CLUSTERS_LAST)
-            gvrender_begin_anchor(job,
-		obj->url, obj->tooltip, obj->target, obj->id);
-        gvrender_end_anchor(job);
+	    gvrender_begin_anchor(job,
+				  obj->url, obj->tooltip, obj->target,
+				  obj->id);
+	gvrender_end_anchor(job);
     }
 }
 
@@ -2431,14 +2439,13 @@ static shape_desc *user_shape(char *name)
     p = UserShape[i] = NEW(shape_desc);
     *p = Shapes[0];
     p->name = strdup(name);
-    if (Lib == NULL && ! streq(name, "custom")) {
+    if (Lib == NULL && !streq(name, "custom")) {
 	agerr(AGWARN, "using %s for unknown shape %s\n", Shapes[0].name,
 	      p->name);
-        p->usershape = FALSE;
-   } 
-   else {
-        p->usershape = TRUE;
-   }
+	p->usershape = FALSE;
+    } else {
+	p->usershape = TRUE;
+    }
     return p;
 }
 
@@ -2449,9 +2456,9 @@ shape_desc *bind_shape(char *name, node_t * np)
 
     str = safefile(agget(np, "shapefile"));
     /* If shapefile is defined and not epsf, set shape = custom */
-    if (str && ! streq(name, "epsf"))
+    if (str && !streq(name, "epsf"))
 	name = "custom";
-    if (! streq(name, "custom")) {
+    if (!streq(name, "custom")) {
 	for (ptr = Shapes; ptr->name; ptr++) {
 	    if (streq(ptr->name, name)) {
 		rv = ptr;
@@ -2470,9 +2477,10 @@ static boolean epsf_inside(inside_t * inside_context, pointf p)
     double x2;
     node_t *n = inside_context->s.n;
 
-    P = ccwrotatepf(p, 90*GD_rankdir(agraphof(n)));
+    P = ccwrotatepf(p, 90 * GD_rankdir(agraphof(n)));
     x2 = ND_ht(n) / 2;
-    return ((P.y >= -x2) && (P.y <= x2) && (P.x >= -ND_lw(n)) && (P.x <= ND_rw(n)));
+    return ((P.y >= -x2) && (P.y <= x2) && (P.x >= -ND_lw(n))
+	    && (P.x <= ND_rw(n)));
 }
 
 static void epsf_gencode(GVJ_t * job, node_t * n)
@@ -2487,7 +2495,8 @@ static void epsf_gencode(GVJ_t * job, node_t * n)
 
     if (doMap && !(job->flags & EMIT_CLUSTERS_LAST))
 	gvrender_begin_anchor(job,
-		obj->url, obj->tooltip, obj->target, obj->id);
+			      obj->url, obj->tooltip, obj->target,
+			      obj->id);
     if (desc)
 	fprintf(job->output_file,
 		"%.5g %.5g translate newpath user_shape_%d\n",
@@ -2499,32 +2508,32 @@ static void epsf_gencode(GVJ_t * job, node_t * n)
     if (doMap) {
 	if (job->flags & EMIT_CLUSTERS_LAST)
 	    gvrender_begin_anchor(job,
-		obj->url, obj->tooltip, obj->target, obj->id);
-        gvrender_end_anchor(job);
+				  obj->url, obj->tooltip, obj->target,
+				  obj->id);
+	gvrender_end_anchor(job);
     }
 }
 
-static char* side_port[] = {"s", "e", "n", "w"};
+static char *side_port[] = { "s", "e", "n", "w" };
 
-static point
-cvtPt (pointf p, int rankdir)
+static point cvtPt(pointf p, int rankdir)
 {
-    pointf q = {0, 0};
+    pointf q = { 0, 0 };
     point Q;
 
     switch (rankdir) {
-    case RANKDIR_TB :
+    case RANKDIR_TB:
 	q = p;
 	break;
-    case RANKDIR_BT :
+    case RANKDIR_BT:
 	q.x = p.x;
 	q.y = -p.y;
 	break;
-    case RANKDIR_LR :
+    case RANKDIR_LR:
 	q.y = p.x;
 	q.x = -p.y;
 	break;
-    case RANKDIR_RL :
+    case RANKDIR_RL:
 	q.y = p.x;
 	q.x = p.y;
 	break;
@@ -2544,18 +2553,19 @@ cvtPt (pointf p, int rankdir)
  *  - if line segment from port centers uses available sides, use these
  *     or center. (This latter may require spline routing to cooperate.)
  */
-static char* closestSide (node_t*  n, node_t* other, port* oldport)
+static char *closestSide(node_t * n, node_t * other, port * oldport)
 {
     boxf b;
     int rkd = GD_rankdir(agraphof(n)->root);
-    point p = {0, 0};
-    point pt = cvtPt (ND_coord(n), rkd);
-    point opt = cvtPt (ND_coord(other), rkd);
+    point p = { 0, 0 };
+    point pt = cvtPt(ND_coord(n), rkd);
+    point opt = cvtPt(ND_coord(other), rkd);
     int sides = oldport->side;
-    char* rv = NULL;
+    char *rv = NULL;
     int i, d, mind = 0;
 
-    if ((sides == 0) || (sides == (TOP|BOTTOM|LEFT|RIGHT))) return rv;  /* use center */
+    if ((sides == 0) || (sides == (TOP | BOTTOM | LEFT | RIGHT)))
+	return rv;		/* use center */
 
     if (oldport->bp) {
 	b = *oldport->bp;
@@ -2572,29 +2582,30 @@ static char* closestSide (node_t*  n, node_t* other, port* oldport)
 	    b.LL.x = -b.UR.x;
 	}
     }
-    
+
     for (i = 0; i < 4; i++) {
-	if ((sides & (1<<i)) == 0) continue;
+	if ((sides & (1 << i)) == 0)
+	    continue;
 	switch (i) {
-	case 0 :
+	case 0:
 	    p.y = b.LL.y;
-	    p.x = (b.LL.x + b.UR.x)/2;
+	    p.x = (b.LL.x + b.UR.x) / 2;
 	    break;
-	case 1 :
+	case 1:
 	    p.x = b.UR.x;
-	    p.y = (b.LL.y + b.UR.y)/2;
+	    p.y = (b.LL.y + b.UR.y) / 2;
 	    break;
-	case 2 :
+	case 2:
 	    p.y = b.UR.y;
-	    p.x = (b.LL.x + b.UR.x)/2;
+	    p.x = (b.LL.x + b.UR.x) / 2;
 	    break;
-	case 3 :
+	case 3:
 	    p.x = b.LL.x;
-	    p.y = (b.LL.y + b.UR.y)/2;
+	    p.y = (b.LL.y + b.UR.y) / 2;
 	    break;
 	}
-	p.x  += pt.x;
-	p.y  += pt.y;
+	p.x += pt.x;
+	p.y += pt.y;
 	d = DIST2(p, opt);
 	if (!rv || (d < mind)) {
 	    mind = d;
@@ -2604,23 +2615,22 @@ static char* closestSide (node_t*  n, node_t* other, port* oldport)
     return rv;
 }
 
-port 
-resolvePort(node_t*  n, node_t* other, port* oldport)
+port resolvePort(node_t * n, node_t * other, port * oldport)
 {
     port rv;
-    char* compass = closestSide (n, other, oldport);  
+    char *compass = closestSide(n, other, oldport);
 
     compassPort(n, oldport->bp, &rv, compass, oldport->side, NULL);
 
     return rv;
 }
 
-void
-resolvePorts (edge_t* e)
+void resolvePorts(edge_t * e)
 {
-    if (ED_tail_port(e).dyna) 
-	ED_tail_port(e) = resolvePort(agtail(e), aghead(e), &ED_tail_port(e));
-    if (ED_head_port(e).dyna) 
-	ED_head_port(e) = resolvePort(aghead(e), agtail(e), &ED_head_port(e));
+    if (ED_tail_port(e).dyna)
+	ED_tail_port(e) =
+	    resolvePort(agtail(e), aghead(e), &ED_tail_port(e));
+    if (ED_head_port(e).dyna)
+	ED_head_port(e) =
+	    resolvePort(aghead(e), agtail(e), &ED_head_port(e));
 }
-
