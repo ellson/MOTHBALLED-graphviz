@@ -277,6 +277,9 @@ function doTest
     if [[ $RVAL != 0 || ! -s $OUTPATH ]]
     then
       print -u 2 "Test $TESTNAME:$i : == Layout failed =="
+    elif [[ -s errout ]]
+    then
+      cat errout
     elif [[ $GENERATE == 1 ]]
     then
       continue
