@@ -145,6 +145,7 @@ static boolean gvplugin_activate(GVC_t * gvc, api_t api,
     while (*pnext) {
 	if ( (strcasecmp(typestr, (*pnext)->typestr) == 0)
 	  && (strcasecmp(name, (*pnext)->package->name) == 0)
+	  && ((*pnext)->package->path != 0)
 	  && (strcasecmp(path, (*pnext)->package->path) == 0)) {
 	    (*pnext)->typeptr = typeptr;
 	    return TRUE;
