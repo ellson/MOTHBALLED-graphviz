@@ -39,6 +39,14 @@
 #ifdef HAVE_LIBGD
 #include "gd.h"
 
+#ifndef INT32_MAX
+#define INT32_MAX              (2147483647)
+#endif
+#ifndef UINT32_MAX
+#define UINT32_MAX             (4294967295U)
+#endif
+
+
 typedef enum {
 	FORMAT_GIF,
 	FORMAT_JPEG,
