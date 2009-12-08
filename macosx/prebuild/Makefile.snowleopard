@@ -6,7 +6,7 @@ TAR=tar
 
 PREFIX=$(HOME)/FIX/leopard
 
-ARCHS=-arch ppc -arch i386 -arch ppc64 -arch x86_64
+ARCHS=-arch ppc -arch i386 -arch x86_64
 
 # package URL
 
@@ -23,11 +23,11 @@ GETTEXT_URL=ftp://mirrors.kernel.org/gnu/gettext/gettext-0.17.tar.gz
 # GLIB 2.21 doesn't build
 #GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.21/glib-2.21.2.tar.gz
 # GLIB 2.20 was OK
-#GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.20/glib-2.20.1.tar.gz
-# GLIB 2.23 ?
-GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.23/glib-2.23.0.tar.gz
+GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.20/glib-2.20.1.tar.gz
+# GLIB 2.23 doesn't build
+#GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.23/glib-2.23.0.tar.gz
 
-PANGO_URL=http://ftp.gnome.org/pub/GNOME/sources/pango/1.26/pango-1.26.1.tar.gz
+PANGO_URL=http://ftp.gnome.org/pub/GNOME/sources/pango/1.24/pango-1.24.4.tar.gz
 GTS_URL=http://downloads.sourceforge.net/gts/gts-0.7.6.tar.gz
 GTK_URL=http://ftp.gnome.org/pub/gnome/sources/gtk+/2.19/gtk+-2.19.1.tar.gz
 ATK_URL=http://ftp.acc.umu.se/pub/gnome/sources/atk/1.29/atk-1.29.3.tar.gz
@@ -407,11 +407,6 @@ $(GLIB_DIR)/Makefile: $(PREFIX)/lib/$(INTL) | $(PREFIX)/bin/$(PKGCONFIG) $(GLIB_
 	cp config.h config.i386.h && \
 	cp glibconfig.h glibconfig.i386.h && \
 	cp darwin.cache darwinian.cache && \
-	echo --- PPC64 PASS --- && \
-	./configure --cache-file=darwinian.cache --build=$$BUILD --host=powerpc-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch ppc64 -I$(PREFIX)/include" LDFLAGS="-arch ppc64 -L$(PREFIX)/lib" && \
-	cp config.h config.ppc64.h && \
-	cp glibconfig.h glibconfig.ppc64.h && \
-	cp darwin.cache darwinian.cache && \
 	echo --- X86_64 PASS --- && \
 	./configure --cache-file=darwinian.cache --build=$$BUILD --host=x86_64-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch x86_64 -I$(PREFIX)/include" LDFLAGS="-arch x86_64 -L$(PREFIX)/lib" && \
 	cp config.h config.x86_64.h && \
@@ -424,8 +419,6 @@ $(GLIB_DIR)/Makefile: $(PREFIX)/lib/$(INTL) | $(PREFIX)/bin/$(PKGCONFIG) $(GLIB_
 	cat config.ppc.h >>config.h && \
 	echo "#elif defined(__i386__)" >>config.h && \
 	cat config.i386.h >>config.h && \
-	echo "#elif defined(__ppc64__)" >>config.h && \
-	cat config.ppc64.h >>config.h && \
 	echo "#elif defined(__x86_64__)" >>config.h && \
 	cat config.x86_64.h >>config.h && \
 	echo "#endif" >>config.h && \
@@ -434,8 +427,6 @@ $(GLIB_DIR)/Makefile: $(PREFIX)/lib/$(INTL) | $(PREFIX)/bin/$(PKGCONFIG) $(GLIB_
 	cat glibconfig.ppc.h >>glibconfig.h && \
 	echo "#elif defined(__i386__)" >>glibconfig.h && \
 	cat glibconfig.i386.h >>glibconfig.h && \
-	echo "#elif defined(__ppc64__)" >>glibconfig.h && \
-	cat glibconfig.ppc64.h >>glibconfig.h && \
 	echo "#elif defined(__x86_64__)" >>glibconfig.h && \
 	cat glibconfig.x86_64.h >>glibconfig.h && \
 	echo "#endif" >>glibconfig.h && \
@@ -590,7 +581,8 @@ $(PIXMAN_DIR)/configure: | $(PIXMAN_DIR).tar.gz
 	@echo
 	@echo UNTARRING PIXMAN...
 	@echo
-	$(TAR) xzf $| && (cd $(PIXMAN_DIR); patch -p1 <../pixman.patch)
+#	$(TAR) xzf $| && (cd $(PIXMAN_DIR); patch -p1 <../pixman.patch)
+	$(TAR) xzf $|
 	
 $(PIXMAN_DIR).tar.gz:
 	@echo
