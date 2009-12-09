@@ -3,6 +3,7 @@ Undo
 Non-simple background polygons
 Menu label indicating active graph
 Specify selection by path or polyline
+Allow user control of max. node size
 
 Multiple views
 GUI for canned gvpr programs
@@ -20,9 +21,3 @@ Re-fix 3D navigation
 Clean up apply buttons - which are necessary?
 Make sure all buttons do something or remove them
 Trap "window close" on Smyrna Settings widget, or fix problem
-(Mac) Fix GTK messages:
-(smyrna:17334): Gtk-CRITICAL **: gtk_color_button_set_color: assertion `GTK_IS_COLOR_BUTTON (color_button)' failed
-
-(smyrna:17334): Gtk-CRITICAL **: gtk_toggle_button_get_active: assertion `GTK_IS_TOGGLE_BUTTON (toggle_button)' failed
-
-(smyrna:17334): Gtk-WARNING **: Unable to find default local directory monitor type
