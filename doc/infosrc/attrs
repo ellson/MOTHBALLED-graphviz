@@ -80,14 +80,16 @@ Also note that, if active areas of two edges overlap, it is unspecified
 which area dominates.
 :arrowhead:E:arrowType:normal;
 Style of arrowhead on the head node of an edge.
-See also the <A HREF=#d:dir>dir</A> attribute,
-and a <A HREF=#h:undir_note>limitation</A>.
+This will only appear if the <A HREF=#d:dir>dir</A> attribute
+is "forward" or "both".
+See the <A HREF=#h:undir_note>limitation</A>.
 :arrowsize (E_arrowsz):E:double:1.0:0.0;
 Multiplicative scale factor for arrowheads.
 :arrowtail:E:arrowType:normal;
 Style of arrowhead on the tail node of an edge.
-See also the <A HREF=#d:dir>dir</A> attribute,
-and a <A HREF=#h:undir_note>limitation</A>.
+This will only appear if the <A HREF=#d:dir>dir</A> attribute
+is "back" or "both".
+See the <A HREF=#h:undir_note>limitation</A>.
 :aspect:G:aspectType; dot
 Target aspect ratio (width of the layout divided by the height)
 of the graph drawing. If unset, dot minimizes the total edge length.

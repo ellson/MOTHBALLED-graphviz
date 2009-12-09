@@ -107,6 +107,11 @@ For an edge <CODE>T -> H;</CODE>
   <TR><TD>"both"<TD><IMG SRC="both.gif">
       <TD>"none"<TD><IMG SRC="nohead.gif"></TR>
   </TABLE>
+That is, a glyph is drawn at the head end of an edge if and only
+if dirType is "forward" or "both";
+a glyph is drawn at the tail end of an edge if and only
+if dirType is "back" or "both";
+<P>
 For undirected edges <CODE>T -- H;</CODE>, one of the nodes, usually
 the righthand one, is treated as the head for the purpose of
 interpreting "forward" and "back".

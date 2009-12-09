@@ -510,16 +510,18 @@ This field indicates which graph component uses the attribute.
 
 <DT><A NAME=d:arrowhead HREF=#a:arrowhead><STRONG>arrowhead</STRONG></A>
 <DD>  Style of arrowhead on the head node of an edge.
-  See also the <A HREF=#d:dir>dir</A> attribute,
-  and a <A HREF=#h:undir_note>limitation</A>.
+  This will only appear if the <A HREF=#d:dir>dir</A> attribute
+  is "forward" or "both".
+  See the <A HREF=#h:undir_note>limitation</A>.
 
 <DT><A NAME=d:arrowsize HREF=#a:arrowsize><STRONG>arrowsize</STRONG></A>
 <DD>  Multiplicative scale factor for arrowheads.
 
 <DT><A NAME=d:arrowtail HREF=#a:arrowtail><STRONG>arrowtail</STRONG></A>
 <DD>  Style of arrowhead on the tail node of an edge.
-  See also the <A HREF=#d:dir>dir</A> attribute,
-  and a <A HREF=#h:undir_note>limitation</A>.
+  This will only appear if the <A HREF=#d:dir>dir</A> attribute
+  is "back" or "both".
+  See the <A HREF=#h:undir_note>limitation</A>.
 
 <DT><A NAME=d:aspect HREF=#a:aspect><STRONG>aspect</STRONG></A>
 <DD>  Target aspect ratio (width of the layout divided by the height)
@@ -1817,6 +1819,11 @@ the given types.
     <TR><TD>"both"<TD><IMG SRC="both.gif">
         <TD>"none"<TD><IMG SRC="nohead.gif"></TR>
     </TABLE>
+  That is, a glyph is drawn at the head end of an edge if and only
+  if dirType is "forward" or "both";
+  a glyph is drawn at the tail end of an edge if and only
+  if dirType is "back" or "both";
+  <P>
   For undirected edges <CODE>T -- H;</CODE>, one of the nodes, usually
   the righthand one, is treated as the head for the purpose of
   interpreting "forward" and "back".
