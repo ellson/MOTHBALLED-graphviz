@@ -1,3 +1,12 @@
+# $Id$Revision$
+## Process this file with automake to produce Makefile.in
+
+pdfdir = $(pkgdatadir)/doc/pdf
+man = smyrna.1
+pdf = smyrna.1.pdf
+man_MANS = $(man)
+pdf_DATA = $(pdf)
+
 AM_CPPFLAGS = \
 	-DSMYRNA_PATH=\""$(pkgdatadir)/smyrna"\" \
         -I$(top_srcdir) \
@@ -68,4 +77,10 @@ smyrna_static_LDADD = $(top_builddir)/lib/cgraph/libcgraph_C.la \
 		$(top_builddir)/lib/neatogen/libneatogen_C.la \
 		$(GTK_LIBS) $(GLUT_LIBS) $(GTKGLEXT_LIBS) $(GLADE_LIBS) $(EXPAT_LIBS) $(GTS_LIBS)
 
+smyrna.1.pdf: $(srcdir)/smyrna.1
+	- @GROFF@ -Tps -man $(srcdir)/smyrna.1 | @PS2PDF@ - - >smyrna.1.pdf
+
 EXTRA_DIST = smyrna.vcproj
+
+DISTCLEANFILES = $(pdf)
+
