@@ -86,10 +86,7 @@ char *smyrnaPath(char *suffix)
     return buf;
 }
 
-static char *useString = "Usage: smyrn [-txv?] [-K<engine>] <file>\n\
-  -n         - use TopView mode\n\
-  -e         - use XDOT mode\n\
-  -K<engine> - layout graph using <engine>\n\
+static char *useString = "Usage: smyrns [-v?] <file>\n\
   -v         - verbose\n\
   -?         - print usage\n";
 
@@ -109,6 +106,7 @@ static char *parseArgs(int argc, char *argv[], ViewInfo * view)
 	case 'v':
 	    SmyrnaVerbose = 1;
 	    break;
+#if 0
 	case 't':
 	    view->dfltViewType = VT_TOPVIEW;
 	    break;
@@ -118,6 +116,7 @@ static char *parseArgs(int argc, char *argv[], ViewInfo * view)
 	case 'K':
 	    view->dfltEngine = s2layout(optarg);
 	    break;
+#endif
 	case '?':
 	    if (optopt == '?')
 		usage(0);
