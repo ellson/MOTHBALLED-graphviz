@@ -711,7 +711,7 @@ static void poly_init(node_t * n)
     double orientation, distortion, skew;
     double sectorangle, sidelength, skewdist, gdistortion, gskew;
     double angle, sinx, cosx, xmax, ymax, scalex, scaley;
-    double width, height, marginx, marginy;
+    double width, height, marginx, marginy, spacex;
     int regular, peripheries, sides;
     int i, j, isBox, outp;
     polygon_t *poly = NEW(polygon_t);
@@ -776,6 +776,8 @@ static void poly_init(node_t * n)
 	} else
 	    PAD(dimen);
     }
+    spacex = dimen.x - ND_label(n)->dimen.x;
+
     /* quantization */
     if ((temp = GD_drawing(agraphof(n))->quantum) > 0.0) {
 	temp = POINTS(temp);
@@ -893,9 +895,11 @@ static void poly_init(node_t * n)
 	    temp = bb.x;
 	else
 	    temp = bb.x * sqrt(1.0 - SQR(dimen.y) / SQR(bb.y));
-	ND_label(n)->space.x = temp;
-    } else
-	ND_label(n)->space.x = dimen.x;
+    } else {
+	temp = dimen.x;
+    }
+    ND_label(n)->space.x = temp - spacex;
+
 
     temp = bb.y - min_bb.y;
     if (dimen.y < imagesize.y)
@@ -1872,7 +1876,7 @@ static field_t *parse_error(field_t * rv, char *port)
 static field_t *parse_reclbl(node_t * n, int LR, int flag, char *text)
 {
     field_t *fp, *rv = NEW(field_t);
-    char *tsp, *psp, *hstsp, *hspsp, *sp;
+    char *tsp, *psp=NULL, *hstsp, *hspsp=NULL, *sp;
     char *tmpport = NULL;
     int maxf, cnt, mode, wflag, ishardspace, fi;
     textlabel_t *lbl = ND_label(n);
