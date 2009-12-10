@@ -80,7 +80,7 @@ smyrna_static_LDADD = $(top_builddir)/lib/cgraph/libcgraph_C.la \
 smyrna.1.pdf: $(srcdir)/smyrna.1
 	- @GROFF@ -Tps -man $(srcdir)/smyrna.1 | @PS2PDF@ - - >smyrna.1.pdf
 
-EXTRA_DIST = smyrna.vcproj
+EXTRA_DIST = smyrna.vcproj $(man) $(pdf)
 
 DISTCLEANFILES = $(pdf)
 
