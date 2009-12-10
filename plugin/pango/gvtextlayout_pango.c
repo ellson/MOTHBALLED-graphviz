@@ -188,7 +188,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 
     textlayout_scale = POINTS_PER_INCH / (FONT_DPI * PANGO_SCALE);
     para->width = ROUND(logical_rect.width * textlayout_scale);
-    para->height = ROUND(logical_rect.height * textlayout_scale);
+    para->height = ROUND(logical_rect.height * textlayout_scale+1);
 
     /* The y offset from baseline to 0,0 of the bitmap representation */
     iter = pango_layout_get_iter (layout);
