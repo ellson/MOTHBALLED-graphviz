@@ -10,6 +10,7 @@ December 10, 2009
         - gvpr converted to a library; additional array handling and
           text processing functions added; language extended to allow 
           multiple BEG_G/N/E blocks. 
+        - allow background images specified via xdot
 	- Ports added/dropped from nightly builds:
 	  (The dropped ports could probably be re-added if there was demand.)
 		- added MacOSX SnowLeopard  (multiarch:  i386/x86_64/ppc)
