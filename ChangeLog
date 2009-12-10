@@ -1,16 +1,16 @@
 December 10, 2009
 	- Release 2.26.0
-	- Core:
+	- Core features:
 		- added: "smyrna" - a new opengl-based viewer for large graphs
 		- added: rudimentary "gml2gv", "gv2gml" converters
 		- extended support for various image formats in node images
 		- removed vestiges of codegens, now all putput formats supported
- 		  through plugins.  Dropped some output formats for which
+		  through plugins.  Dropped some output formats for which
 		  plugins have not been developed: -Tdia, -Tmif
-        - gvpr converted to a library; additional array handling and
-          text processing functions added; language extended to allow 
-          multiple BEG_G/N/E blocks. 
-        - allow background images specified via xdot
+		- gvpr converted to a library; additional array handling and
+		  text processing functions added; language extended to allow 
+		  multiple BEG_G/N/E blocks. 
+		- allow background images specified via xdot
 	- Ports added/dropped from nightly builds:
 	  (The dropped ports could probably be re-added if there was demand.)
 		- added MacOSX SnowLeopard  (multiarch:  i386/x86_64/ppc)
