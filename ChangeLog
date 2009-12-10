@@ -2,11 +2,14 @@ December 10, 2009
 	- Release 2.26.0
 	- Core:
 		- added: "smyrna" - a new opengl-based viewer for large graphs
-		- added: "gml2gv", "gv2gml" converters
+		- added: rudimentary "gml2gv", "gv2gml" converters
 		- extended support for various image formats in node images
 		- removed vestiges of codegens, now all putput formats supported
  		  through plugins.  Dropped some output formats for which
 		  plugins have not been developed: -Tdia, -Tmif
+        - gvpr converted to a library; additional array handling and
+          text processing functions added; language extended to allow 
+          multiple BEG_G/N/E blocks. 
 	- Ports added/dropped from nightly builds:
 	  (The dropped ports could probably be re-added if there was demand.)
 		- added MacOSX SnowLeopard  (multiarch:  i386/x86_64/ppc)
@@ -17,13 +20,16 @@ December 10, 2009
 		- dropped RHEL 3 (i386, x86_64, ia64)
 		- dropped Ubuntu 8 (i386)
 	- Fixed bugs:
-		1683, 1713, 1718, 1720, 1747, 1759, 1770, 1776, 1786,
-		1799, 1816, 1827,
+		1683, 1713, 1718, 1720, 1738, 1747, 1759, 1770, 1776, 1786,
+		1799, 1816, 1827
 
 June 16, 2009
 	- Release 2.24.0
 	- Core:
 		- add new layout engine for large graphs: sfdp
+		- add new layout engine for nested graphs: osage
+        - pack library extended to handle array-based packing modes
+          using array bounds, aspect ratio, user-controlled sorting, etc. 
 	- Fixed bugs:
 		1515, 1590, 1598, 1601, 1605, 1607, 1609, 1610, 1611,
 		1614, 1615, 1617, 1625, 1628, 1634, 1635, 1640, 1641,
