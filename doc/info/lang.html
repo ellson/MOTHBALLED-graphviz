@@ -119,12 +119,16 @@ An <I>ID</I> is one of the following:
 <MENU>
 <LI> Any string of alphabetic (<TT>[a-zA-Z\200-\377]</TT>) characters, underscores (<TT>'_'</TT>) or
 digits (<TT>[0-9]</TT>), not beginning with a digit;
-<LI> a number [<tt>-</tt>]<sup>?</sup>(<tt>.</tt>[<tt>0</tt>-<tt>9</tt>]<sup>+</sup>  | [<tt>0</tt>-<tt>9</tt>]<sup>+</sup>(<tt>.</tt>[<tt>0</tt>-<tt>9</tt>]<sup>*</sup>)<sup>?</sup> ); 
+<LI> a numeral [<tt>-</tt>]<sup>?</sup>(<tt>.</tt>[<tt>0</tt>-<tt>9</tt>]<sup>+</sup>  | [<tt>0</tt>-<tt>9</tt>]<sup>+</sup>(<tt>.</tt>[<tt>0</tt>-<tt>9</tt>]<sup>*</sup>)<sup>?</sup> ); 
 <LI> any double-quoted string (&quot;...&quot;) possibly containing escaped 
 quotes (\&quot;)<SUP>1</SUP>;
 <LI> an <A NAME=html>HTML string</A> (&lt;...&gt;).
 </MENU>
-Note that in HTML strings, angle
+An ID is just a string; the lack of quote characters in the first two
+forms is just for simplicity. There is no semantic difference between
+<TT>abc_2</TT> and <TT>"abc_2"</TT>, or between <TT>2.34</TT> and 
+<TT>"2.34"</TT>. Obviously, to use a keyword as an ID, it must be quoted.
+Note that, in HTML strings, angle
 brackets must occur in matched pairs, and unescaped newlines are allowed.
 In addition, the content must be legal XML, so that the special XML
 escape sequences for &quot;, &amp;, &lt;, and &gt; may be necessary
@@ -155,7 +159,35 @@ backslash immediately preceding a newline character. In addition,
 double-quoted strings can be concatenated using a '+' operator.
 As HTML strings can contain newline characters, they do not support the
 concatenation operator.
-<H2>Semantic Notes</H2>
+<H2>Subgraphs and Clusters</H2>
+Subgraphs play three roles in Graphviz. First, a subgraph can be used to 
+represent graph structure, indicating that certain nodes and edges should 
+be grouped together. This is the usual role for subgraphs 
+and typically specifies semantic information about the graph components. 
+<P>
+In the second role, a subgraph can provide a context for setting attributes.
+For example, a subgraph could specify that blue 
+is the default color for all nodes defined in it. 
+In the context of 
+graph drawing, a more interesting example is: 
+<PRE>
+subgraph { 
+rank = same; A; B; C; 
+} 
+</PRE>
+This (anonymous) subgraph specifies that the nodes A, B and C 
+should all be placed on the same rank if drawn using dot. 
+<P>
+The third role for subgraphs directly involves how the graph
+will be laid out by certain layout engines. If the name of 
+the subgraph begins with <TT>cluster</TT>, Graphviz notes the subgraph as 
+a special <I>cluster</I> subgraph. If supported, the layout engine will 
+do the layout so that the nodes belonging to the cluster are drawn together, 
+with the entire drawing of the cluster contained within a bounding rectangle. 
+Note that, for good and bad, cluster subgraphs are not part of the
+DOT language, but solely a syntactic convention adhered to by
+certain of the layout engines.
+<H2>Lexical and Semantic Notes</H2>
 If a default attribute is
 defined using a <B>node</B>,  <B>edge</B>, or  <B>graph</B> statement,
 or by an attribute assignment not attached to a node or edge, any object of the
@@ -179,6 +211,12 @@ have been defined.
 If an edge belongs to a cluster, its endpoints belong to that cluster.
 Thus, where you put an edge can effect a layout, as clusters are sometimes
 laid out recursively.
+<P>
+There are certain restrictions on subgraphs and clusters. First, at
+present, the names of a graph and it subgraphs share the same namespace.
+Thus, each subgraph must have a unique name. Second, although nodes
+can belong to any number of subgraphs, it is assumed clusters form
+a strict hierarchy when viewed as subsets of nodes and edges.
 <H2>Character encodings</H2>
 The DOT language assumes at least the ascii character set.
 Quoted strings, both ordinary and HTML-like, may contain non-ascii characters.
