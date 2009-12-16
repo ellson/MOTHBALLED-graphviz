@@ -334,3 +334,4 @@ putRects
 xdotBB
 gvFinalize
 gv_postprocess
+gvRenderContext
