@@ -298,6 +298,7 @@ void sfdp_layout(graph_t * g)
 		nodeInduce(sg);
 		sfdpLayout(sg, ctrl, pad);
 		if (doAdjust) removeOverlapWith(sg, &am);
+		setEdgeType(sg, ET_LINE);
 		spline_edges(sg);
 	    }
 	    packSubgraphs(ncc, ccs, g, &pinfo);
