@@ -263,7 +263,11 @@ void sfdp_layout(graph_t * g)
 	spring_electrical_control ctrl = spring_electrical_control_new();
 
 	tuneControl (g, ctrl);
+#if (HAVE_GTS || HAVE_TRIANGLE)
 	graphAdjustMode(g, &am, "prism0");
+#else
+	graphAdjustMode(g, &am, 0);
+#endif
 
 	if ((am.mode == AM_PRISM) && doAdjust) {
 	    doAdjust = 0;  /* overlap removal done in sfpd */
