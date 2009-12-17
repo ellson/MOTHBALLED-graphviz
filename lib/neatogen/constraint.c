@@ -832,7 +832,7 @@ static pointf *mkOverlapSet(info * nl, int nn, int *cntp)
 		pointf pt;
 		if (cnt == sz) {
 		    sz += nn;
-		    S = realloc(S, sizeof(pointf) * (sz + 1));
+		    S = RALLOC(sz + 1, S, pointf);
 		}
 		if (p->pos.x == q->pos.x)
 		    pt.x = HUGE_VAL;
@@ -855,7 +855,7 @@ static pointf *mkOverlapSet(info * nl, int nn, int *cntp)
 	p++;
     }
 
-    S = realloc(S, sizeof(pointf) * (cnt + 1));
+    S = RALLOC(cnt + 1, S, pointf);
     *cntp = cnt;
     return S;
 }
