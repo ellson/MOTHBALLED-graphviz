@@ -2,11 +2,13 @@
 \usepackage{graphicx}
 \usepackage{times}
 \pagestyle{myheadings}
-\author{Emden Gansner and Eleftherios Koutsofios and Stephen North}
+\addtolength{\topmargin}{-0.75in}
+\author{Emden R. Gansner and Eleftherios Koutsofios and Stephen North}
 \def\dot{{\it dot}}
 \def\dag{{\it dag}}
 \def\DOT{{\it DOT}}
-\newcommand{\lastedited}{January 26, 2006}
+\def\graphviz{{\it Graphviz}}
+\newcommand{\lastedited}{December 22, 2009}
 \date{\lastedited}
 \newcommand{\mymark}{{\it dot} User's Manual, \lastedited \hfil }
 \markboth{\mymark}{\mymark}
@@ -25,7 +27,7 @@ for placing nodes and edge splines, edge labels,
 cluster layouts; and an underlying file language for
 stream-oriented graph tools.
 Below is a reduced module dependency graph of an SML-NJ compiler
-that took 0.98 seconds of user time on a 1.4 Ghz AMD Athlon.
+that took 0.23 seconds of user time on a 3 GHz Intel Xeon.
 
 \vspace*{.25in}
 \centerline{
@@ -35,11 +37,13 @@ that took 0.98 seconds of user time on a 1.4 Ghz AMD Athlon.
 
 \newpage
 \section{Basic Graph Drawing}
+\dot\ draws directed graphs. It reads attributed graph text files and
+writes drawings, either as graph files or in a graphics format
+such as GIF, PNG, SVG, PDF, or PostScript.
+
 
 \if 0
-{\bf The attributes z and quantum are not described, though they
-appear in the tables. The original document describes the edge id
-attribute. As far as I can tell, this isn't implemented.
+{\bf 
 All details are here and up-to-date.
 The question is which, if any, should be removed,
 and should the document structure be changed. Some of the
@@ -47,15 +51,9 @@ appendices might belong in the main body, and parts of the main
 body (e.g., the attribute tables and command line information) 
 might be better in the appendix. Maybe the Node and Edge Placement
 section should appear before Drawing Size and Spacing.
-The figures should probably be regenerated using dot, and we might
-want to redo the timing for the abstract figure.}
 \fi
 
-\dot\ draws directed graphs. It reads attributed graph text files and
-writes drawings, either as graph files or in a graphics format
-such as GIF, PNG, SVG or PostScript (which can be converted to PDF).
-
-\dot\ draws a graph in four main phases.
+\dot\ draws graphs in four main phases.
 Knowing this helps you to understand what kind of
 layouts \dot\ makes and how you can control them.
 The layout procedure used by \dot\ relies on the graph
@@ -76,7 +74,7 @@ We refer the reader to \cite{gknv:methods}
 for a thorough explanation of \dot's algorithms.
 
 \dot\ accepts input in the \DOT\ language (cf. Appendix~\ref{grammar}). 
-This language describes three kinds of objects:
+This language describes three main kinds of objects:
 graphs, nodes, and edges.
 The main (outermost) graph can be directed
 ({\tt digraph}) or undirected {\tt graph}.
@@ -141,7 +139,7 @@ some layout attributes.  In the listing of Figure~\ref{fig:graph2},
 line 2 sets the graph's {\tt size} to {\tt 4,4}
 (in inches).
 This attribute controls the size of the drawing; if the drawing is
-too large, it is scaled as necessary to fit.
+too large, it is scaled uniformly as necessary to fit.
 
 Node or edge attributes are set off in square brackets.
 In line 3, the node \verb"main" is assigned shape \verb"box".
@@ -188,8 +186,14 @@ The node {\tt compare} inherits these values.
 
 \section{Drawing Attributes}
 
-The complete list of attributes that affect graph drawing
-is summarized in Tables~\ref{tab:nattr}, \ref{tab:eattr} and \ref{tab:gattr}.
+The main attributes that affect graph drawing
+are summarized in Appendices~\ref{sec:node_attr}, 
+\ref{sec:edge_attr} and \ref{sec:graph_attr}.
+For more attributes and a more complete description of the attributes, you
+should refer to the \graphviz\ web site, specifically
+\begin{center}
+{\tt www.graphviz.org/doc/info/attrs.html}
+\end{center}
 
 \subsection{Node Shapes}
 \label{sect:shape}
@@ -198,7 +202,7 @@ Nodes are drawn, by default, with {\tt shape=ellipse}, {\tt width=.75},
 {\tt height=.5} and labeled by the node name.
 Other common shapes include {\tt box}, {\tt circle}, {\tt record} 
 and {\tt plaintext}.
-A complete list of node shapes is given in Appendix~\ref{app:shapes}.
+A list of the main node shapes is given in Appendix~\ref{app:shapes}.
 The node shape {\tt plaintext} is of particularly interest in
 that it draws a node without any outline, an important convention
 in some kinds of diagrams. In cases where the graph structure is of
@@ -283,7 +287,7 @@ The first string in a {\it boxLabel} gives a name to the field,
 and serves as a port name for the box (cf. Section~\ref{sect:ports}).
 The second string is used as a label for the field; 
 it may contain the same escape sequences as multi-line 
-labels (cf. Section~\ref{sect:labels}.
+labels (cf. Section~\ref{sect:labels}).
 The example of Figures~\ref{fig:record} and \ref{fig:recorddrawing}
 illustrates the use and some properties of records.
 
@@ -355,11 +359,11 @@ are portable; {\tt AvanteGarde\-DemiOblique} isn't.
 
 For bitmap output, such as GIF or JPG, \dot\ relies on having these
 fonts available during layout. Most precompiled installations of
-Graphviz use the fontconfig library for matching font names to
+\graphviz\ use the fontconfig library for matching font names to
 available fontfiles. fontconfig comes with a set of utilities for
 showing matches and installing fonts. Please refer to the fontconfig
-documentation, or the external Graphviz FontFAQ or for further details.
-If Graphviz is built without fontconfig (which usually means you
+documentation, or the external \graphviz\ FontFAQ or for further details.
+If \graphviz\ is built without fontconfig (which usually means you
 compiled it from source code on your own), the {\tt fontpath} attribute
 can specify a list of directories\footnote{For Unix-based systems, this is
 a concatenated list of pathnames, separated by colons. For Windows-based
@@ -391,140 +395,64 @@ the angle the edge makes incident with the node.
 The latter sets a multiplicative scaling factor to adjust the distance
 that the label is from the node.
 
-\begin{table}[p]
-\begin{tabular}[t]{|l|l|p{3.0in}|} \hline
-Name & Default & Values \\ \hline
-%{\tt bottomlabel} & & auxiliary label for nodes of {\tt shape} M* \\
-{\tt color} & {\tt black} & node shape color \\
-{\tt comment} & & any string (format-dependent) \\
-{\tt distortion} & {\tt 0.0} & node distortion for {\tt shape=polygon} \\
-{\tt fillcolor} & {\tt lightgrey/black} & node fill color \\
-{\tt fixedsize} & false & label text has no affect on node size \\
-{\tt fontcolor} & {\tt black} & type face color \\
-{\tt fontname} & {\tt Times-Roman} & font family \\
-{\tt fontsize} & {\tt 14} & point size of label \\
-{\tt group} &  & name of node's group \\
-{\tt height} & {\tt .5} & height in inches \\
-{\tt label} & node name & any string \\
-{\tt layer} & overlay range & {\tt all}, {\it id} or {\it id:id} \\
-{\tt orientation} & {\tt 0.0} & node rotation angle \\
-{\tt peripheries} & {\tt shape-dependent} & number of node boundaries \\
-{\tt regular} & false & force polygon to be regular \\
-{\tt shape} & {\tt ellipse} & node shape; see Section~\ref{sect:shape} and
-Appendix~\ref{app:shapes}\\
-{\tt shapefile} & & external EPSF or SVG custom shape file\\
-{\tt sides} & {\tt 4} & number of sides for {\tt shape=polygon} \\
-{\tt skew} & {\tt 0.0} & skewing of node for {\tt shape=polygon} \\
-{\tt style} & & graphics options, e.g. {\tt bold, dotted, filled};
-cf. Section~\ref{sect:style} \\ 
-%{\tt toplabel} & & auxiliary label for nodes of {\tt shape} M* \\
-{\tt URL} & & URL associated with node (format-dependent) \\
-{\tt width} & {\tt .75} & width in inches \\
-{\tt z} & {\tt 0.0} & z coordinate for VRML output \\
-\hline
-\end{tabular}
-\caption{Node attributes}
-\label{tab:nattr}
-\end{table}
 
-\begin{table}[p]
-\begin{tabular}[t]{|l|l|p{3.5in}|} \hline
-Name & Default & Values \\ \hline
-{\tt arrowhead} & normal & style of arrowhead at head end \\
-{\tt arrowsize} & {\tt 1.0} & scaling factor for arrowheads \\
-{\tt arrowtail} & normal & style of arrowhead at tail end \\
-{\tt color} & {\tt black} & edge stroke color \\
-{\tt comment} & & any string (format-dependent) \\
-{\tt constraint} & true & use edge to affect node ranking \\
-{\tt decorate} & & if set, draws a line connecting labels with their edges \\
-{\tt dir} & {\tt forward} & {\tt forward}, {\tt back}, {\tt both}, or {\tt none} \\ 
-{\tt fontcolor} & {\tt black} & type face color \\
-{\tt fontname} & {\tt Times-Roman} & font family \\
-{\tt fontsize} & {\tt 14} & point size of label \\
-{\tt headlabel} & & label placed near head of edge \\
-{\tt headport} & & {\tt n,ne,e,se,s,sw,w,nw}\\
-{\tt headURL} & & URL attached to head label if output format is {\tt ismap} \\
-{\tt label} & & edge label \\
-{\tt labelangle} & {\tt -25.0} & angle in degrees which head or tail label
-is rotated off edge \\
-{\tt labeldistance} & {\tt 1.0} & scaling factor for distance of head or tail label from node \\
-{\tt labelfloat} & false & lessen constraints on edge label placement \\
-{\tt labelfontcolor} & {\tt black} & type face color for head and tail labels\\
-{\tt labelfontname} & {\tt Times-Roman} & font family for head and tail labels\\
-{\tt labelfontsize} & {\tt 14} & point size for head and tail labels \\
-{\tt layer} & overlay range & {\tt all}, {\it id} or {\it id:id} \\
-{\tt lhead} & & name of cluster to use as head of edge \\
-{\tt ltail} & & name of cluster to use as tail of edge \\
-{\tt minlen} & {\tt 1} & minimum rank distance between head and tail \\
-{\tt samehead} & & tag for head node; edge heads with the same tag are merged onto
-the same port \\
-{\tt sametail} & & tag for tail node; edge tails with the same tag are merged onto
-the same port \\
-{\tt style} & & graphics options, e.g. {\tt bold, dotted, filled}; cf.
-Section~\ref{sect:style} \\ 
-{\tt taillabel} & & label placed near tail of edge \\
-{\tt tailport} & & {\tt n,ne,e,se,s,sw,w,nw}\\
-{\tt tailURL} & & URL attached to tail label if output format is {\tt ismap} \\
-{\tt weight} & {\tt 1} & integer cost of stretching an edge \\
-\hline
-\end{tabular}
-\caption{Edge attributes}
-\label{tab:eattr}
-\end{table}
 
-\begin{table}[p]\footnotesize
-\begin{tabular}[t]{|l|l|p{3.5in}|} \hline
-Name & Default & Values \\ \hline
-{\tt bgcolor} &  & background color for drawing, plus initial fill color \\
-{\tt center} & false & center drawing on {\tt page} \\ 
-{\tt clusterrank} & {\tt local} & may be {\tt global} or {\tt none} \\
-{\tt color} & {\tt black} & for clusters, outline color, and fill color
-if {\tt fillcolor} not defined \\
-{\tt comment} & & any string (format-dependent) \\
-{\tt compound} & false & allow edges between clusters \\
-{\tt concentrate} & false & enables edge concentrators  \\ 
-{\tt fillcolor} & {\tt black} & cluster fill color \\
-{\tt fontcolor} & {\tt black} & type face color \\ 
-{\tt fontname} & {\tt Times-Roman} & font family \\
-{\tt fontpath} &  & list of directories to search for fonts \\
-{\tt fontsize} & {\tt 14} & point size of label \\
-{\tt label} & & any string \\
-{\tt labeljust} & centered & "l" and "r" for left- and right-justified 
-cluster labels, respectively \\
-{\tt labelloc} & top & "t" and "b" for top- and bottom-justified cluster 
-labels, respectively \\
-{\tt layers} & & {\it id:id:id...} \\
-{\tt margin} & {\tt .5} & margin included in {\tt page}, inches \\
-{\tt mclimit} & {\tt 1.0} & scale factor for mincross iterations \\
-{\tt nodesep} & {\tt .25} & separation between nodes, in inches. \\
-{\tt nslimit} & & if set to {\it f}, bounds network simplex iterations by {\it (f)(number of nodes)} when setting x-coordinates \\ 
-{\tt nslimit1} & & if set to {\it f}, bounds network simplex iterations by {\it (f)(number of nodes)} when ranking nodes \\ 
-{\tt ordering} & & if {\tt out} out edge order is preserved \\
-{\tt orientation} & {\tt portrait} & if {\tt rotate} is not used and the value
-is {\tt landscape}, use landscape orientation \\
-{\tt page} & & unit of pagination, {\it e.g.} {\tt "8.5,11"} \\
-{\tt pagedir} & {\tt BL} & traversal order of pages \\
-{\tt quantum} &  & if {\tt quantum} > 0.0, node label dimensions will be 
-rounded to integral multiples of {\tt quantum} \\
-{\tt rank} & & {\tt same}, {\tt min}, {\tt max}, {\tt source} or {\tt sink} \\
-{\tt rankdir} & {\tt TB} & {\tt LR} (left to right) or {\tt TB} (top to bottom) \\
-{\tt ranksep} & {\tt .75} & separation between ranks, in inches. \\
-{\tt ratio} & & approximate aspect ratio desired, {\tt fill} or {\tt auto} \\
-{\tt remincross} & & if true and there are multiple clusters, re-run crossing
-minimization \\
-{\tt rotate} & & If 90, set orientation to landscape \\
-{\tt samplepoints} & {\tt 8} & number of points used to represent ellipses
-and circles on output (cf.  Appendix~\ref{sect:output} \\
-{\tt searchsize} & {\tt 30} & maximum edges with negative cut values to
-check when looking for a minimum one during network simplex \\
-{\tt size} & & maximum drawing size, in inches \\
-{\tt style} & & graphics options, e.g. {\tt filled} for clusters \\
-{\tt URL} & & URL associated with graph (format-dependent) \\
-\hline
-\end{tabular}
-\caption{Graph attributes}
-\label{tab:gattr}
-\end{table}
+\subsection{HTML-like Labels}
+\label{sect:html}
+In order to allow a richer collection of attributes at a finer
+granularity, \dot\ accepts HTML-like labels using HTML syntax.
+These are specified using strings that are delimited by
+$< \ldots >$ rather than double-quotes. Within these delimiters,
+the string must follow the lexical, quoting, and syntactic 
+conventions of HTML. 
+
+By using the \verb"<TABLE>" element, these labels can be viewed
+as an extension of and replacement for \verb"shape=record". With
+these, one can alter colors and fonts at the box level, and include
+images. 
+The \verb"PORT" attribute of a \verb"<TD>" element
+provides a port name for the cell (cf. Section~\ref{sect:ports}).
+
+Although HTML-like labels are just a special type of label attribute,
+one frequently uses them as though they were a new type of node
+shape similar to records. Thus, when these are used, one often
+sees \verb"shape=none" and \verb"margin=0". 
+Also note that, as a label, these can be used with edges and
+graphs as well as nodes.
+
+Figures~\ref{fig:htmluse} and \ref{fig:html}
+give an example of the use of HTML-like labels.
+
+\begin{figure}[p]\footnotesize
+\begin{verbatim}
+ 1:  digraph html {
+ 2:      abc [shape=none, margin=0, label=<
+ 3:  <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+ 4:    <TR><TD ROWSPAN="3"><FONT COLOR="red">hello</FONT><BR/>world</TD>
+ 5:        <TD COLSPAN="3">b</TD>
+ 6:        <TD ROWSPAN="3" BGCOLOR="lightgrey">g</TD>
+ 7:        <TD ROWSPAN="3">h</TD>
+ 8:    </TR>
+ 9:    <TR><TD>c</TD>
+10:        <TD PORT="here">d</TD>
+11:        <TD>e</TD>
+12:    </TR>
+13:    <TR><TD COLSPAN="3">f</TD>
+14:    </TR> 
+15:  </TABLE>>]; 
+16:  }
+\end{verbatim}
+\caption{HTML-like labels}
+\label{fig:htmluse}
+\end{figure}
+
+\begin{figure}[p]
+	\centerline {
+		\includegraphics{html}
+	}
+    \caption{Drawing of HTML-like labels}
+    \label{fig:html}
+\end{figure}
 
 \subsection{Graphics Styles}
 \label{sect:style}
@@ -931,35 +859,47 @@ A node port is a point where edges can attach to a node.
 (When an edge is not attached to a port, it is aimed at the node's center
 and the edge is clipped at the node's boundary.)
 
-Simple ports can be specified by using the {\tt headport}
-and {\tt tailport} attributes. These can be assigned one of the
+There are two types of ports. Ports based on the
 8 compass points {\tt "n"}, {\tt "ne"}, {\tt "e"}, {\tt "se"}, 
-{\tt "s"}, {\tt "sw"}, {\tt "w"} or  {\tt "nw"}. The end of the
+{\tt "s"}, {\tt "sw"}, {\tt "w"} or  {\tt "nw"} can be specified
+for any node. The end of the
 node will then be aimed at that position on the node. Thus, if
-{\tt tailport=se}, the edge will connect to the tail node at
+{\tt se} port is specified, the edge will connect to the node at
 its southeast ``corner''.
 
-Nodes with a {\tt record} shape use the record structure to define ports.
-As noted above,
-this shape represents a record as recursive lists of boxes. If
-a box defines a port name, by using the construct
-{\tt < {\it port\_name} > }  in the box label,
-the center of the box can be used a port. 
+In addition, nodes with a {\tt record} shape can use the 
+record structure to define ports, while HTML-like labels
+with tables can make any cell a port using the
+\verb"PORT" attribute of a \verb"<TD>" element.
+If a record box or table cell defines a port name, 
+an edge can use that port name
+to indicate that it should be aimed at
+the center of the box. 
 (By default, the edge is clipped to the box's boundary.)
-This is done by modifying the node name with the
-port name, using the syntax {\tt {\it node\_name}:{\it port\_name}}, 
-as part of an edge declaration. 
+
+There are also two ways to specify ports. One way is to use 
+an edge's {\tt headport} and {\tt tailport} attributes, e.g.
+\begin{verbatim}
+  a -> b [tailport=se]
+\end{verbatim}
+Alternatively, the portname can be used to modify the node name as part of the
+edge declaration using the syntax {\tt {\it node\_name}:{\it port\_name}}.
+Thus, another way to handle the example given above would be
+\begin{verbatim}
+  a -> b:se
+\end{verbatim}
+
+Since a record box has its own corners, one can add a compass point
+port to record name port. Thus, the edge
+\begin{verbatim}
+  a -> b:f0:se
+\end{verbatim}
+will attach to the southeast corner of the box in record node {\tt b}
+whose port name is {\tt f0}.
+
 Figure~\ref{fig:tree} illustrates the declaration and use of
 port names in record nodes, with the resulting drawing shown
 in Figure \ref{fig:treedrawing}.
-
-{\bf DISCLAIMER: At present, simple ports don't work as advertised, even when
-they should. There is also the case where we might not want them to work,
-e.g., when the tailport=n and the headport=s. Finally, in theory, dot
-should be able to allow both types of ports on an edge, since the notions
-are orthogonal. There is still the question as to whether the two syntaxes
-could be combined, i.e., treat the compass points as reserved port names,
-and allow nodename:portname:compassname.}
 
 \begin{figure}[p]\footnotesize
 \begin{verbatim}
@@ -1254,6 +1194,7 @@ layout attributes appended.
 for {\it format} are:
 
 \begin{description}
+\item[{\tt bmp}] Windoes bitMap format.
 \item[{\tt canon}]
 Prettyprint input; no layout is done.
 \item[{\tt dot}] 
@@ -1263,19 +1204,11 @@ attributes, cf. Appendix~\ref{sect:output}.
 \item[{\tt gd}] GD format. This is the internal format used by the GD Graphics
 Library. An alternate format is {\tt gd2}.
 \item[{\tt gif}] GIF output.
-\item[{\tt hpgl}] HP-GL/2 vector graphic printer language for HP wide bed
-plotters.
 \item[{\tt imap}] Produces map files for server-side image 
 maps. This can be combined with a graphical form of the output, e.g., using
 {\tt -Tgif} or {\tt -Tjpg}, in web pages to attach links to nodes and edges. 
-The format {\tt ismap} is a predecessor of the {\tt imap} format.
-\item[{\tt cmap}] Produces HTML map files for client-side image maps.
-\item[{\tt mif}] FrameMaker MIF format. In this format, graphs can be
-loaded into FrameMaker and edited manually. MIF is limited to 8 basic colors.
-\item[{\tt mp}] MetaPost output.
-\item[{\tt pcl}] PCL-5 output for HP laser writers.
+\item[{\tt cmapx}] Produces HTML map files for client-side image maps.
 \item[{\tt pdf}] Adobe PDF via the Cairo library. We have seen problems when embedding into other documents. Instead, use -Tps2 as described below.
-\item[{\tt pic}] PIC output.
 \item[{\tt plain}] Simple, line-based ASCII format. Appendix~\ref{app:plain}
 describes this output. An alternate format is {\tt plain-ext}, which 
 provides port names on the head and tail nodes of edges.
@@ -1286,7 +1219,6 @@ a document. (Use ps2pdf; epstopdf doesn't handle \verb"%%BoundingBox: (atend)".)
 \item[{\tt svg}] SVG output. The alternate form {\tt svgz} produces
 compressed SVG.
 \item[{\tt vrml}] VRML output.
-\item[{\tt vtx}] VTX format for r Confluents's Visual Thought. 
 \item[{\tt wbmp}] Wireless BitMap (WBMP) format.
 \end{description}
 
@@ -1315,17 +1247,17 @@ In the top-level graph heading, a graph may be declared a
 and multi-edges; they are ignored in the input file.
 
 Nodes, edges and graphs may have a {\tt URL} attribute. In certain
-output formats ({\tt ps2}, {\tt imap}, {\tt ismap}, {\tt cmap}, or {\tt svg}), 
+output formats ({\tt ps2}, {\tt imap}, {\tt cmapx}, or {\tt svg}), 
 this information is integrated in the output 
 so that nodes, edges and clusters become active links
 when displayed with the appropriate tools. Typically, URLs attached to
 top-level graphs serve as base URLs, supporting relative URLs on
-components. When the output format is {\tt imap}, or {\tt cmap},
+components. When the output format is {\tt imap}, or {\tt cmapx},
 a similar processing
 takes place with the {\tt headURL} and {\tt tailURL} attributes.
 
-For certain formats ({\tt ps}, {\tt fig}, {\tt mif}, {\tt mp}, 
-{\tt vtx} or {\tt svg}), {\tt comment} attributes can be used to
+For certain formats ({\tt ps}, {\tt fig} 
+or {\tt svg}), {\tt comment} attributes can be used to
 embed human-readable notations in the output.
 
 \section{Conclusions}
@@ -1343,17 +1275,211 @@ about graph drawing algorithms and programming.
 The graph library uses Phong's splay tree dictionary library.
 Also, the users of \dag, the predecessor of \dot, 
 gave us many good suggestions.
-Guy Jacobson and and Randy Hackbarth reviewed earlier
+Guy Jacobson and Randy Hackbarth reviewed earlier
 drafts of this manual, and Emden contributed substantially to the
 current revision.  John Ellson wrote the generalized polygon
 shape and spent considerable effort to make it robust and efficient.
 He also wrote the GIF and ISMAP generators and other tools
-to bring {\it graphviz} to the web.
+to bring \graphviz\ to the web.
 
 \clearpage
 \bibliography{graphdraw} 
 
 \appendix
+\clearpage
+\section{Principal Node Attributes}
+\label{sec:node_attr}
+%\begin{table}[p]
+\begin{tabular}[t]{|l|l|p{3.0in}|} \hline
+Name & Default & Values \\ \hline
+%{\tt bottomlabel} & & auxiliary label for nodes of {\tt shape} M* \\
+{\tt color} & {\tt black} & node shape color \\
+{\tt colorscheme} & X11 & scheme for interpreting color names \\
+{\tt comment} & & any string (format-dependent) \\
+{\tt distortion} & {\tt 0.0} & node distortion for {\tt shape=polygon} \\
+{\tt fillcolor} & {\tt lightgrey/black} & node fill color \\
+{\tt fixedsize} & false & label text has no affect on node size \\
+{\tt fontcolor} & {\tt black} & type face color \\
+{\tt fontname} & {\tt Times-Roman} & font family \\
+{\tt fontsize} & {\tt 14} & point size of label \\
+{\tt group} &  & name of node's horizontal alignment group \\
+{\tt height} & {\tt .5} & minimum height in inches \\
+{\tt id} & & any string (user-defined output object tags) \\
+{\tt image} & & image file name \\
+{\tt imagescale} & false & true, width, height, both \\
+{\tt label} & node name & any string \\
+{\tt labelloc} & c & node label vertical alignment \\
+{\tt layer} & overlay range & {\tt all}, {\it id} or {\it id:id} \\
+{\tt margin} & 0.11,0.55 & space around label \\
+{\tt nojustify} & false & if true, justify to label, not node \\
+{\tt orientation} & {\tt 0.0} & node rotation angle \\
+{\tt penwidth} & 1.0 & width of pen for drawing boundaries, in points \\
+{\tt peripheries} & {\tt shape-dependent} & number of node boundaries \\
+{\tt regular} & false & force polygon to be regular \\
+{\tt samplepoints} & 8 or 20 & number vertices to convert circle or ellipse \\
+{\tt shape} & {\tt ellipse} & node shape; see Section~\ref{sect:shape} and
+Appendix~\ref{app:shapes}\\
+% {\tt shapefile} & & (deprecated, shape file)\\
+{\tt sides} & {\tt 4} & number of sides for {\tt shape=polygon} \\
+{\tt skew} & {\tt 0.0} & skewing of node for {\tt shape=polygon} \\
+{\tt style} & & graphics options, e.g. {\tt bold, dotted, filled};
+cf. Section~\ref{sect:style} \\ 
+{\tt target} & & if URL is set, determines browser window for URL \\
+{\tt tooltip} & label & tooltip annotation \\
+%{\tt toplabel} & & auxiliary label for nodes of {\tt shape} M* \\
+{\tt URL} & & URL associated with node (format-dependent) \\
+{\tt width} & {\tt .75} & minimum width in inches \\
+\hline
+\end{tabular}
+%\caption{Node attributes}
+%\label{tab:nattr}
+%\end{table}
+
+%\clearpage
+\section{Principal Edge Attributes}
+\label{sec:edge_attr}
+%\begin{table}[p]
+{\footnotesize
+\begin{tabular}[t]{|l|l|p{3.5in}|} \hline
+Name & Default & Values \\ \hline
+{\tt arrowhead} & normal & style of arrowhead at head end \\
+{\tt arrowsize} & {\tt 1.0} & scaling factor for arrowheads \\
+{\tt arrowtail} & normal & style of arrowhead at tail end \\
+{\tt color} & {\tt black} & edge stroke color \\
+{\tt colorscheme} & X11 & scheme for interpreting color names \\
+{\tt comment} & & any string (format-dependent) \\
+{\tt constraint} & true & use edge to affect node ranking \\
+{\tt decorate} & & if set, draws a line connecting labels with their edges \\
+{\tt dir} & {\tt forward} & {\tt forward}, {\tt back}, {\tt both}, or {\tt none} \\ 
+{\tt edgeURL} & & URL attached to non-label part of edge \\
+{\tt edgehref} & & synonym for edgeURL \\
+{\tt edgetarget} & & if URL is set, determines browser window for URL \\
+{\tt edgetooltip} & label & tooltip annotation for non-label part of edge \\
+{\tt fontcolor} & {\tt black} & type face color \\
+{\tt fontname} & {\tt Times-Roman} & font family \\
+{\tt fontsize} & {\tt 14} & point size of label \\
+{\tt headclip} & true & if false, edge is not clipped to head node boundary \\
+{\tt headhref} & & synonym for headURL \\
+{\tt headlabel} & & label placed near head of edge \\
+{\tt headport} & & {\tt n,ne,e,se,s,sw,w,nw}\\
+{\tt headtarget} & & if headURL is set, determines browser window for URL \\
+{\tt headtooltip} & label & tooltip annotation near head of edge \\
+{\tt headURL} & & URL attached to head label \\
+{\tt href} & & alias for URL \\
+{\tt id} & & any string (user-defined output object tags) \\
+{\tt label} & & edge label \\
+{\tt labelangle} & {\tt -25.0} & angle in degrees which head or tail label
+is rotated off edge \\
+{\tt labeldistance} & {\tt 1.0} & scaling factor for distance of head or tail label from node \\
+{\tt labelfloat} & false & lessen constraints on edge label placement \\
+{\tt labelfontcolor} & {\tt black} & type face color for head and tail labels\\
+{\tt labelfontname} & {\tt Times-Roman} & font family for head and tail labels\\
+{\tt labelfontsize} & {\tt 14} & point size for head and tail labels \\
+{\tt labelhref} & & synonym for labelURL \\
+{\tt labelURL} & & URL for label, overrides edge URL \\
+{\tt labeltarget} & & if URL or labelURL is set, determines browser window for URL \\
+{\tt labeltooltip} & label & tooltip annotation near label \\
+{\tt layer} & overlay range & {\tt all}, {\it id} or {\it id:id} \\
+{\tt lhead} & & name of cluster to use as head of edge \\
+{\tt ltail} & & name of cluster to use as tail of edge \\
+{\tt minlen} & {\tt 1} & minimum rank distance between head and tail \\
+{\tt penwidth} & 1.0 & width of pen for drawing edge stroke, in points \\
+{\tt samehead} & & tag for head node; edge heads with the same tag are merged onto
+the same port \\
+{\tt sametail} & & tag for tail node; edge tails with the same tag are merged onto
+the same port \\
+{\tt style} & & graphics options, e.g. {\tt bold, dotted, filled}; cf.
+Section~\ref{sect:style} \\ 
+{\tt tailclip} & true & if false, edge is not clipped to tail node boundary \\
+{\tt tailhref} & & synonym for tailURL \\
+{\tt taillabel} & & label placed near tail of edge \\
+{\tt tailport} & & {\tt n,ne,e,se,s,sw,w,nw}\\
+{\tt tailtarget} & & if tailURL is set, determines browser window for URL \\
+{\tt tailtooltip} & label & tooltip annotation near tail of edge \\
+{\tt tailURL} & & URL attached to tail label \\
+{\tt target} & & if URL is set, determines browser window for URL \\
+{\tt tooltip} & label & tooltip annotation \\
+{\tt weight} & {\tt 1} & integer cost of stretching an edge \\
+\hline
+\end{tabular}
+%\caption{Edge attributes}
+%\label{tab:eattr}
+%\end{table}
+}
+
+%\clearpage
+\section{Principal Graph Attributes}
+\label{sec:graph_attr}
+
+%\begin{table}[p]
+{\footnotesize
+\begin{tabular}[t]{|l|l|p{3.5in}|} \hline
+Name & Default & Values \\ \hline
+{\tt aspect} &  & controls aspect ratio adjustment \\
+{\tt bgcolor} &  & background color for drawing, plus initial fill color \\
+{\tt center} & false & center drawing on {\tt page} \\ 
+{\tt clusterrank} & {\tt local} & may be {\tt global} or {\tt none} \\
+{\tt color} & {\tt black} & for clusters, outline color, and fill color
+if {\tt fillcolor} not defined \\
+{\tt colorscheme} & X11 & scheme for interpreting color names \\
+{\tt comment} & & any string (format-dependent) \\
+{\tt compound} & false & allow edges between clusters \\
+{\tt concentrate} & false & enables edge concentrators  \\ 
+{\tt dpi} & 96 & dots per inch for image output \\
+{\tt fillcolor} & {\tt black} & cluster fill color \\
+{\tt fontcolor} & {\tt black} & type face color \\ 
+{\tt fontname} & {\tt Times-Roman} & font family \\
+{\tt fontnames} & & {\tt svg}, {\tt ps}, {\tt gd} (SVG only) \\
+{\tt fontpath} &  & list of directories to search for fonts \\
+{\tt fontsize} & {\tt 14} & point size of label \\
+{\tt id} & & any string (user-defined output object tags) \\
+{\tt label} & & any string \\
+{\tt labeljust} & centered & "l" and "r" for left- and right-justified 
+cluster labels, respectively \\
+{\tt labelloc} & top & "t" and "b" for top- and bottom-justified cluster 
+labels, respectively \\
+{\tt landscape} & & if true, means orientation=landscape \\
+{\tt layers} & & {\it id:id:id...} \\
+{\tt layersep} & : & specifies separator character to split {\tt layers} \\
+{\tt margin} & {\tt .5} & margin included in {\tt page}, inches \\
+{\tt mindist} & {\tt 1.0} & minimum separation between all nodes (not dot)\\
+{\tt nodesep} & {\tt .25} & separation between nodes, in inches. \\
+{\tt nojustify} & false & if true, justify to label, not graph \\
+{\tt ordering} & & if {\tt out} out edge order is preserved \\
+{\tt orientation} & {\tt portrait} & if {\tt rotate} is not used and the value
+is {\tt landscape}, use landscape orientation \\
+{\tt outputorder} & breadthfirst & or nodesfirst, edgesfirst \\
+{\tt page} & & unit of pagination, {\it e.g.} {\tt "8.5,11"} \\
+{\tt pagedir} & {\tt BL} & traversal order of pages \\
+{\tt pencolor} & black & color for drawing cluster boundaries \\
+{\tt penwidth} & 1.0 & width of pen for drawing boundaries, in points \\
+{\tt peripheries} & 1 & number of cluster boundaries \\
+{\tt rank} & & {\tt same}, {\tt min}, {\tt max}, {\tt source} or {\tt sink} \\
+{\tt rankdir} & {\tt TB} & {\tt LR} (left to right) or {\tt TB} (top to bottom) \\
+{\tt ranksep} & {\tt .75} & separation between ranks, in inches. \\
+{\tt ratio} & & approximate aspect ratio desired, {\tt fill} or {\tt auto} \\
+minimization \\
+{\tt rotate} & & If 90, set orientation to landscape \\
+{\tt samplepoints} & {\tt 8} & number of points used to represent ellipses
+and circles on output (cf.  Appendix~\ref{sect:output} \\
+{\tt searchsize} & {\tt 30} & maximum edges with negative cut values to
+check when looking for a minimum one during network simplex \\
+{\tt size} & & maximum drawing size, in inches \\
+{\tt splines} & & draw edges as splines, polylines, lines \\
+{\tt style} & & graphics options, e.g. {\tt filled} for clusters \\
+{\tt stylesheet} & & pathname or URL to XML style sheet for SVG \\
+{\tt target} & & if URL is set, determines browser window for URL \\
+{\tt tooltip} & label & tooltip annotation for cluster \\
+{\tt truecolor} &  & if set, force 24 bit or indexed color in image output \\
+{\tt viewport} &  & clipping window on output \\
+{\tt URL} & & URL associated with graph (format-dependent) \\
+\hline
+\end{tabular}
+%\caption{Graph attributes}
+%\label{tab:gattr}
+%\end{table}
+}
+
 \clearpage
 \section{Graph File Grammar}
 \label{grammar}
@@ -1560,9 +1686,15 @@ starting from 1, and every element must be a 3-element array which can
 interpreted as a color coordinate.  The adventurous may
 learn further from reading {\dot}'s PostScript output.
 
-% \clearpage  % why does this create a blank page here?
+\clearpage  % why does this create a blank page here?
 \section{Node Shapes}
 \label{app:shapes}
+These are the principal node shapes. A more complete description of
+node shapes can be found at the web site
+\begin{center}
+{\tt www.graphviz.org/doc/info/shapes.html}
+\end{center}
+%\vspace{0.15in}
 \begin{center}
 \begin{tabular}{cccc}\footnotesize
 \includegraphics{box} & \includegraphics{polygon} & \includegraphics{ellipse} & \includegraphics{circle} \\
@@ -1575,9 +1707,9 @@ diamond & trapezium & parallelogram & house \\
 hexagon & octagon & doublecircle & doubleoctagon  \\
 \includegraphics{tripleoctagon} & \includegraphics{invtriangle} & \includegraphics{invtrapezium} & \includegraphics{invhouse} \\
 tripleoctagon & invtriangle & invtrapezium & invhouse \\
-\includegraphics{Mdiamond} & \includegraphics{Msquare} & \includegraphics{Mcircle} & \\
-Mdiamond & Msquare & Mcircle & \\
-\includegraphics{record} &  \includegraphics{Mrecord} & & \\
+\includegraphics{Mdiamond} & \includegraphics{Msquare} & \includegraphics{Mcircle} & \includegraphics{none} \\
+Mdiamond & Msquare & Mcircle & none \\
+\includegraphics[scale=0.5]{record} &  \includegraphics[scale=0.5]{Mrecord} & & \\
 record  & Mrecord & & \\
 \end{tabular}
 \end{center}
@@ -1585,20 +1717,33 @@ record  & Mrecord & & \\
 \clearpage
 \section{Arrowhead Types}
 \label{app:arrows}
+These are some of the main arrowhead types. A more complete description of
+these shapes can be found at the web site
+\begin{center}
+{\tt www.graphviz.org/doc/info/arrows.html}
+\end{center}
 \begin{center}
 \begin{tabular}{ccc}
 \includegraphics{normal} & \includegraphics{dot} & \includegraphics{odot} \\
 normal & dot & odot \\
 \includegraphics{inv} & \includegraphics{invdot} & \includegraphics{invodot} \\
 inv & invdot & invodot \\
-\includegraphics{none} & & \\
-none & & \\
+\includegraphics{crow} & \includegraphics{tee} & \includegraphics{vee} \\
+crow & tee & vee \\
+\includegraphics{diamond} & \includegraphics{no_arrow} & \\
+diamond & none & \\
 \end{tabular}
 \end{center}
 
 \clearpage
 \section{Color Names}
 \label{app:colors}
+Here are some basic color names. More information about colors
+can be found at
+\begin{center}
+{\tt www.graphviz.org/doc/info/colors.html} \\
+{\tt www.graphviz.org/doc/info/attrs.html\#k:color}
+\end{center}
 {\footnotesize
 \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}llll}
 {\bf Whites} & {\bf  Reds} & {\bf  Yellows} & turquoise[1-4] \cr

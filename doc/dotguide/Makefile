@@ -2,7 +2,7 @@ SHAPEFILES = \
     Mcircle.pdf Mdiamond.pdf Mrecord.pdf Msquare.pdf \
     box.pdf circle.pdf diamond.pdf doublecircle.pdf \
     doubleoctagon.pdf egg.pdf ellipse.pdf hexagon.pdf \
-    house.pdf invhouse.pdf invtrapezium.pdf invtriangle.pdf \
+    house.pdf invhouse.pdf invtrapezium.pdf invtriangle.pdf none.pdf \
     octagon.pdf parallelogram.pdf plaintext.pdf point.pdf \
     polygon.pdf record.pdf record.pdf trapezium.pdf \
     triangle.pdf tripleoctagon.pdf \
@@ -10,7 +10,8 @@ SHAPEFILES = \
 ARROWHEADFILES = \
     normal.pdf dot.pdf odot.pdf \
     inv.pdf invdot.pdf invodot.pdf \
-    none.pdf
+    crow.pdf vee.pdf tee.pdf \
+    no_arrow.pdf diamond.pdf
 
 GRAPHFILES =  \
         asde91.pdf \
@@ -20,6 +21,7 @@ GRAPHFILES =  \
         fsm.pdf \
         graph1.pdf \
         graph2.pdf \
+        html.pdf \
         hashtable.pdf \
         poly.pdf \
 	recordex.pdf \
