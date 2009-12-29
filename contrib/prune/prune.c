@@ -42,7 +42,7 @@ typedef struct strattr_s {
     char *v;
 } strattr_t;
 
-void remove_child(Agraph_t * graph, Agnode_t * node);
+int remove_child(Agraph_t * graph, Agnode_t * node);
 void help_message(const char *progname);
 
 generic_list_t *addattr(generic_list_t * l, char *a);
@@ -179,8 +179,8 @@ int main(int argc, char **argv)
 			if (verbose == 1)
 			    fprintf(stderr, "Processing descendant: %s\n",
 				    agnameof(aghead(edge)));
-			remove_child(graph, aghead(edge));
-			agdelete(graph, edge);
+			if (!remove_child(graph, aghead(edge)))
+			    agdelete(graph, edge);
 		    }
 		}
 		UNMARK(node);	/* Unmark so that it can be removed in later passes */
@@ -209,21 +209,21 @@ int main(int argc, char **argv)
     exit(EXIT_SUCCESS);
 }
 
-void remove_child(Agraph_t * graph, Agnode_t * node)
+int remove_child(Agraph_t * graph, Agnode_t * node)
 {
     Agedge_t *edge;
     Agedge_t *nexte;
 
     /* Avoid cycles */
     if MARKED
-	(node) return;
+	(node) return 0;
     MARK(node);
 
     /* Skip nodes with more than one parent */
     edge = agfstin(graph, node);
     if (edge && (agnxtin(graph, edge) != NULL)) {
 	UNMARK(node);
-	return;
+	return 0;
     }
 
     /* recursively remove children */
@@ -233,13 +233,13 @@ void remove_child(Agraph_t * graph, Agnode_t * node)
 	    if (verbose)
 		fprintf(stderr, "Processing descendant: %s\n",
 			agnameof(aghead(edge)));
-	    remove_child(graph, aghead(edge));
-	    agdeledge(graph, edge);
+	    if (!remove_child(graph, aghead(edge)))
+		agdeledge(graph, edge);
 	}
     }
 
     agdelnode(graph, node);
-    return;
+    return 1;
 }
 
 void help_message(const char *progname)
