@@ -68,6 +68,7 @@ static void sfdp_init_node_edge(graph_t * g)
 static void sfdp_init_graph(Agraph_t * g)
 {
     int outdim;
+    int temp;
 
     setEdgeType(g, ET_LINE);
     outdim = late_int(g, agfindgraphattr(g, "dimen"), 2, 2);
