@@ -440,6 +440,7 @@
 #define PATHSEPARATOR ":"
 
 /* Define if you want SFDP */
+#define SFDP 1
 /* #undef SFDP */
 
 /* Define if you want SMYRNA */
