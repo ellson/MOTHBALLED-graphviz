@@ -112,6 +112,9 @@ if dirType is "back" or "both";
 For undirected edges <CODE>T -- H;</CODE>, one of the nodes, usually
 the righthand one, is treated as the head for the purpose of
 interpreting "forward" and "back".
+:doubleList
+A colon-separated list of doubles: <I>d</I>(:<I>d</I>)*
+ where each <I>d</I> is a double.
 :escString
 string allowing escape sequences which are replaced according
 to the context.

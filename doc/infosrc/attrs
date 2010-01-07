@@ -604,6 +604,12 @@ model to compute the distances. This tends to emphasize clusters. If
 edge length to be the number of nodes that are neighbors of exactly one
 of the end points, and then calculates the shortest paths. This helps
 to separate nodes with high degree.
+<P>
+For more control of distances, one can use <TT>model=mds</TT>. In this
+case, the <A HREF=#d:len>len</A> of an edge is used as the ideal distance
+between its vertices. A shortest path calculation is only used for
+pairs of nodes not connected by an edge. Thus, by supplying a complete
+graph, the input can specify all of the relevant distances.
 :mosek:G:bool:false;    neato
 If Graphviz is built with MOSEK defined, mode=ipsep and mosek=true,
 the Mosek software (www.mosek.com) is use to solve the ipsep constraints.
@@ -858,14 +864,19 @@ from left to right. By default, graphs are laid out from top to bottom.
 <P>
 This attribute also has a side-effect in determining how record nodes
 are interpreted. See <A HREF="shapes.html#record">record shapes</A>.
-:ranksep:G:double:0.5(dot)/1.0(twopi):0.02;   dot,twopi
+:ranksep:G:double/doubleList:0.5(dot)/1.0(twopi):0.02;   dot,twopi
 In dot, this gives the desired rank separation, in inches. This is
 the minimum vertical distance between the bottom of the nodes in one
 rank and the tops of nodes in the next. If the value
 contains "equally", the centers of all ranks are spaced equally apart.
 Note that both
 settings are possible, e.g., ranksep = "1.2 equally".
-In twopi, specifies radial separation of concentric circles.
+<P>
+In twopi, this attribute specifies the radial separation of concentric circles.
+For twopi, <TT>ranksep</TT> can also be a list of doubles. The first double specifies
+the radius of the inner circle; the second double specifies the increase in
+radius from the first circle to the second; etc. If there are more circles than
+numbers, the last number is used as the increment for the remainder.
 :ratio:G:double/string;
 Sets the aspect ratio (drawing height/drawing width) for the drawing.
 Note that this is adjusted before

@@ -358,7 +358,8 @@ This field indicates which graph component uses the attribute.
 </TD><TD>G</TD><TD><A HREF=#k:rankdir>rankdir</A>
 </TD><TD ALIGN="CENTER">TB</TD><TD></TD><TD>dot only</TD> </TR>
  <TR><TD><A NAME=a:ranksep HREF=#d:ranksep>ranksep</A>
-</TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.5(dot)<BR>1.0(twopi)</TD><TD>0.02</TD><TD>twopi, dot only</TD> </TR>
+</TD><TD>G</TD><TD>double<BR><A HREF=#k:doubleList>doubleList</A>
+</TD><TD ALIGN="CENTER">0.5(dot)<BR>1.0(twopi)</TD><TD>0.02</TD><TD>twopi, dot only</TD> </TR>
  <TR><TD><A NAME=a:ratio HREF=#d:ratio>ratio</A>
 </TD><TD>G</TD><TD>double<BR>string</TD><TD ALIGN="CENTER"></TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:rects HREF=#d:rects>rects</A>
@@ -1105,6 +1106,12 @@ This field indicates which graph component uses the attribute.
   edge length to be the number of nodes that are neighbors of exactly one
   of the end points, and then calculates the shortest paths. This helps
   to separate nodes with high degree.
+  <P>
+  For more control of distances, one can use <TT>model=mds</TT>. In this
+  case, the <A HREF=#d:len>len</A> of an edge is used as the ideal distance
+  between its vertices. A shortest path calculation is only used for
+  pairs of nodes not connected by an edge. Thus, by supplying a complete
+  graph, the input can specify all of the relevant distances.
 
 <DT><A NAME=d:mosek HREF=#a:mosek><STRONG>mosek</STRONG></A>
 <DD>  If Graphviz is built with MOSEK defined, mode=ipsep and mosek=true,
@@ -1393,7 +1400,12 @@ This field indicates which graph component uses the attribute.
   contains "equally", the centers of all ranks are spaced equally apart.
   Note that both
   settings are possible, e.g., ranksep = "1.2 equally".
-  In twopi, specifies radial separation of concentric circles.
+  <P>
+  In twopi, this attribute specifies the radial separation of concentric circles.
+  For twopi, <TT>ranksep</TT> can also be a list of doubles. The first double specifies
+  the radius of the inner circle; the second double specifies the increase in
+  radius from the first circle to the second; etc. If there are more circles than
+  numbers, the last number is used as the increment for the remainder.
 
 <DT><A NAME=d:ratio HREF=#a:ratio><STRONG>ratio</STRONG></A>
 <DD>  Sets the aspect ratio (drawing height/drawing width) for the drawing.
@@ -1824,6 +1836,10 @@ the given types.
   For undirected edges <CODE>T -- H;</CODE>, one of the nodes, usually
   the righthand one, is treated as the head for the purpose of
   interpreting "forward" and "back".
+
+<DT><A NAME=k:doubleList><STRONG>doubleList</STRONG></A>
+<DD>A colon-separated list of doubles: <I>d</I>(:<I>d</I>)*
+   where each <I>d</I> is a double.
 
 <DT><A NAME=k:escString><STRONG>escString</STRONG></A>
 <DD>string allowing escape sequences which are replaced according
