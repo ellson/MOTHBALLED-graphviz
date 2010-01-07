@@ -16,6 +16,8 @@
 
 
 #include    "circle.h"
+#include    <ctype.h>
+#include    <stdlib.h>
 #define DEF_RANKSEP 1.00
 #define UNSET 10.00
 
@@ -251,32 +253,67 @@ static void setPositions(Agraph_t * sg, Agnode_t * center)
     setChildPositions(sg, center);
 }
 
-static void setAbsolutePos(Agraph_t * g)
+/* getRankseps:
+ * Return array of doubles of size maxrank+1 containing the radius of each
+ * rank.  Position 0 always contains 0. Use the colon-separated list of 
+ * doubles provided by ranksep to get the deltas for each additional rank.
+ * If not enough values are provided, the last value is repeated.
+ * If the ranksep attribute is not provided, use DEF_RANKSEP for all values. 
+ */ 
+static double*
+getRankseps (Agraph_t* g, int maxrank)
 {
     char *p;
-    Agnode_t *n;
-    double xf;
-    double hyp;
+    char *endp;
+    char c;
+    int i, rk = 1;
+    double* ranks = N_NEW(maxrank+1, double);
+    double xf = 0, delx, d;
 
-    p = late_string(g, agfindgraphattr(g->root, "ranksep"), NULL);
-    if (p) {
-	if (sscanf(p, "%lf", &xf) == 0)
-	    xf = DEF_RANKSEP;
-	else {
-	    if (xf < MIN_RANKSEP)
-		xf = MIN_RANKSEP;
+    if ((p = late_string(g, agfindgraphattr(g->root, "ranksep"), NULL))) {
+	while ((rk <= maxrank) && ((d = strtod (p, &endp)) > 0)) {
+	    delx = MAX(d, MIN_RANKSEP);
+	    xf += delx;
+	    ranks[rk++] = xf;
+	    p = endp;
+	    while ((c = *p) && (isspace(c) || (c == ':')))
+		p++;
 	}
-    } else
-	xf = DEF_RANKSEP;
-    if (Verbose)
-	fprintf(stderr, "Rank separation = %f\n", xf);
+    }
+    else {
+	delx = DEF_RANKSEP;
+    }
+
+    for (i = rk; i <= maxrank; i++) {
+	xf += delx;
+	ranks[i] = xf;
+    }
+
+    return ranks;
+}
+
+static void setAbsolutePos(Agraph_t * g, int maxrank)
+{
+    Agnode_t *n;
+    double hyp;
+    double* ranksep;
+    int i;
+
+    ranksep = getRankseps (g, maxrank);
+    if (Verbose) {
+	fputs ("Rank separation = ", stderr);
+	for (i = 0; i <= maxrank; i++)
+	    fprintf (stderr, "%.03lf ", ranksep[i]);
+	fputs ("\n", stderr);
+    }
 
     /* Convert circular to cartesian coordinates */
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	hyp = xf * (SCENTER(n));
+	hyp = ranksep[SCENTER(n)];
 	ND_pos(n)[0] = hyp * cos(THETA(n));
 	ND_pos(n)[1] = hyp * sin(THETA(n));
     }
+    free (ranksep);
 }
 
 #if 0				/* not used */
@@ -307,7 +344,7 @@ static void dumpGraph(Agraph_t * g)
  */
 void circleLayout(Agraph_t * sg, Agnode_t * center)
 {
-    /* int maxNStepsToCenter; */
+    int maxNStepsToCenter;
 
     if (agnnodes(sg) == 1) {
 	Agnode_t *n = agfstnode(sg);
@@ -323,8 +360,7 @@ void circleLayout(Agraph_t * sg, Agnode_t * center)
     if (Verbose)
 	fprintf(stderr, "root = %s\n", agnameof(center));
 
-    /* maxNStepsToCenter = setParentNodes(sg,center); */
-    setParentNodes(sg, center);
+    maxNStepsToCenter = setParentNodes(sg,center);
 
     setSubtreeSize(sg);
 
@@ -332,6 +368,6 @@ void circleLayout(Agraph_t * sg, Agnode_t * center)
 
     setPositions(sg, center);
 
-    setAbsolutePos(sg);
+    setAbsolutePos(sg, maxNStepsToCenter);
     /* dumpGraph (sg); */
 }
