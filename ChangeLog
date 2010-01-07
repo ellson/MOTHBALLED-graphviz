@@ -1,3 +1,6 @@
+January 7, 2010
+    - Allow ranksep to specify multiple radial differences in twopi
+    - Allow the user to specify all pairwise distances in neato with model=mds
 December 10, 2009
 	- Release 2.26.0
 	- Core features:
