@@ -167,9 +167,6 @@ static graph_t *create_test_graph(void)
 int main(int argc, char **argv)
 {
     graph_t *prev = NULL;
-#ifdef WIN32	/*fix fontconfig configuration file*/
-	fix_fc();
-#endif
 #ifndef WITH_CGRAPH
 
 #endif /* WITH_CGRAPH */
