@@ -1,6 +1,5 @@
 digraph G {
-  rankdir=LR;
-  T [shape=point];
-  H [label=""];
-  T -> H [arrowsize=1.5,arrowhead=diamond];
+ node [style=filled,shape=diamond];
+ node [label=""];
+ box;
 }
