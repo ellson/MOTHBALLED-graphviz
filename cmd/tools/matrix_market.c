@@ -17,7 +17,8 @@
 #include "SparseMatrix.h"
 #include "mmio.h"
 #include "matrix_market.h"
-#include "render.h"
+#include "memory.h"
+#include "assert.h"
 #define MALLOC gmalloc
 #define REALLOC grealloc
 #define FREE free

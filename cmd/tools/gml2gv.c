@@ -106,7 +106,8 @@ static void initargs(int argc, char **argv)
     int c;
 
     CmdName = cmdName(argv[0]);
-    while ((c = getopt(argc, argv, ":gdo:?")) != -1) {
+    opterr = 0;
+    while ((c = getopt(argc, argv, ":gdo:")) != -1) {
 	switch (c) {
 	case 'o':
 	    outFile = openFile(optarg, "w");

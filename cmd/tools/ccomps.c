@@ -132,7 +132,8 @@ static void init(int argc, char *argv[])
 {
     int c;
 
-    while ((c = getopt(argc, argv, ":zo:xCX:nsv?")) != -1) {
+    opterr = 0;
+    while ((c = getopt(argc, argv, ":zo:xCX:nsv")) != -1) {
 	switch (c) {
 	case 'o':
 	    outfile = optarg;

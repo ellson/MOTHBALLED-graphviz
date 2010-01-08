@@ -385,7 +385,8 @@ static void init(int argc, char **argv, parms_t* p)
     int c;
 
     cmd = argv[0];
-    while ((c = getopt(argc, argv, ":o:u?")) != -1) {
+    opterr = 0;
+    while ((c = getopt(argc, argv, ":o:u")) != -1) {
 	switch (c) {
 	case 'o':
 	    p->outf = openF (optarg, "w");

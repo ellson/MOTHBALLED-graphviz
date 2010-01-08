@@ -194,7 +194,8 @@ static void init(int argc, char *argv[], pack_info* pinfo)
     pinfo->doSplines = TRUE; /* Use edges in packing */
     pinfo->fixed = 0;
 
-    while ((c = getopt(argc, argv, ":na:gvum:o:G:?")) != -1) {
+    opterr = 0;
+    while ((c = getopt(argc, argv, ":na:gvum:o:G:")) != -1) {
 	switch (c) {
 	case 'a':
 	    len = strlen(optarg) + 2;

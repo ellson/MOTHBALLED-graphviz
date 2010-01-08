@@ -138,8 +138,8 @@ static void init(int argc, char *argv[])
     int c;
 
     cmd = argv[0];
-
-    while ((c = getopt(argc, argv, ":vno:?")) != -1)
+    opterr = 0;
+    while ((c = getopt(argc, argv, ":vno:")) != -1)
 	switch (c) {
 	case 'o':
 	    outFile = openFile(optarg, "w");

@@ -175,7 +175,7 @@ static char* setFold(char *s, opts_t* opts)
     return next;
 }
 
-static char *optList = ":c:C:dg:G:h:k:b:o:p:s:S:t:T:Vw:?";
+static char *optList = ":c:C:dg:G:h:k:b:o:p:s:S:t:T:Vw:";
 
 static GraphType init(int argc, char *argv[], opts_t* opts)
 {
@@ -183,6 +183,7 @@ static GraphType init(int argc, char *argv[], opts_t* opts)
     GraphType graphType = unknown;
 
     cmd = argv[0];
+    opterr = 0;
     while ((c = getopt(argc, argv, optList)) != -1) {
 	switch (c) {
 	case 'c':

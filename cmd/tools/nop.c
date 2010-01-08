@@ -50,7 +50,8 @@ static void init(int argc, char *argv[])
 {
     int c;
 
-    while ((c = getopt(argc, argv, ":p?")) != -1) {
+    opterr = 0;
+    while ((c = getopt(argc, argv, ":p")) != -1) {
 	switch (c) {
 	case 'p':
 	    chkOnly = 1;

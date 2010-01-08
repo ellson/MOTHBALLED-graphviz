@@ -96,7 +96,8 @@ static void init(int argc, char *argv[])
 {
     int c;
 
-    while ((c = getopt(argc, argv, ":?")) != -1) {
+    opterr = 0;
+    while ((c = getopt(argc, argv, ":")) != -1) {
 	switch (c) {
 	case '?':
 	    if (optopt == '?')

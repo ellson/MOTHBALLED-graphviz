@@ -94,7 +94,8 @@ static void init(int argc, char *argv[])
 {
     unsigned int c;
 
-    while ((c = getopt(argc, argv, ":necCaDUrsv?")) != -1) {
+    opterr = 0;
+    while ((c = getopt(argc, argv, ":necCaDUrsv")) != -1) {
 	switch (c) {
 	case 'e':
 	    flags |= EDGES;
