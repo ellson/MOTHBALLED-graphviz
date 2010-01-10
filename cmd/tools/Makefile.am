@@ -19,7 +19,7 @@ pdfdir = $(pkgdatadir)/doc/pdf
 noinst_HEADERS = colortbl.h convert.h mmio.h matrix_market.h \
 	 graph_generator.h gml2gv.h gmlparse.h
 bin_PROGRAMS = gc gvcolor gxl2gv acyclic nop ccomps sccmap tred \
-	unflatten gvpack dijkstra bcomps mm2gv gvgen gml2gv gv2gml
+	unflatten gvpack dijkstra bcomps mm2gv gvgen gml2gv
 man_MANS = gc.1 gvcolor.1 gxl2gv.1 acyclic.1 nop.1 ccomps.1 sccmap.1 \
 	tred.1 unflatten.1 gvpack.1 dijkstra.1 bcomps.1 mm2gv.1 gvgen.1 gml2gv.1
 pdf_DATA = gc.1.pdf gvcolor.1.pdf gxl2gv.1.pdf acyclic.1.pdf \
@@ -179,12 +179,6 @@ gml2gv_LDADD = \
 
 gml2gv.1.pdf: gml2gv.1
 	- @GROFF@ -Tps -man gml2gv.1 | @PS2PDF@ - - >gml2gv.1.pdf
-
-gv2gml_SOURCES = gv2gml.c
-
-gv2gml_LDADD = \
-	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(top_builddir)/lib/cgraph/libcgraph.la
 
 dijkstra_SOURCES = dijkstra.c
 
