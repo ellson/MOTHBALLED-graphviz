@@ -1,5 +1,9 @@
 graphviz (@VERSION@-1) intrepid; urgency=low
 
+  * libcgraph API bump ->5
+
+ -- John Ellson <ellson@research.att.com>  Tue, 19 Jan 2010 09:07:00 -0400
+
   * Enabled "--with-sfdp"  new layout engine
 
  -- John Ellson <ellson@research.att.com>  Tue, 2 Jun 2009 22:38:00 -0400
