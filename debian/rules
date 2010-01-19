@@ -13,6 +13,7 @@ export DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
 UPSTREAM_VERSION  = $(shell dpkg-parsechangelog | perl -ne 'print $$1 if /^Version: (.*?)-(.*)$$/')
 SONAME            = 4
+CGRAPH_SONAME     = 5
 
 OCAMLABI          = $(shell ocamlc -version)
 OCAML_PACKAGE     = $(CURDIR)/debian/libgv-ocaml
@@ -139,7 +140,7 @@ install: build
 	# their respective packages, otherwise the symlinks are broken
 	d-devlibdeps \
 		--override s/libpathplan$(SONAME)-dev// \
-		--override s/libcgraph$(SONAME)-dev//   \
+		--override s/libcgraph$(CGRAPH_SONAME)-dev//   \
 		--override s/libgraph$(SONAME)-dev//    \
 		--override s/libxdot$(SONAME)-dev//     \
 		--override s/libcdt$(SONAME)-dev//      \
