@@ -15,7 +15,7 @@
 **********************************************************/
 
 #include <stdio.h>
-#include <cgraph.h>
+#include <graphviz/cgraph.h>
 
 static void prstats(Agraph_t * g, int verbose);
 static void do_it(Agraph_t * g, int dostat);

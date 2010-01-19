@@ -324,6 +324,9 @@ Records are created and managed by Libcgraph. A programmer must
 explicitly attach them to the objects in a graph, either to
 individual objects one at a time via \fBagbindrec\fP, or to
 all the objects of the same class in a graph via \fBaginit\fP.
+(Note that for graphs, aginit is applied recursively to the
+graph and its subgraphs if rec_size is negative (of the
+actual rec_size.))
 The \fBname\fP argument a record distinguishes various types of records,
 and is programmer defined (Libcgraph reserves the prefix \fB_ag\fR).
 If size is 0, the call to \fBagbindrec\fP is simply a lookup.
