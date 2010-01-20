@@ -1310,7 +1310,7 @@ getPackMode(Agraph_t * g, pack_mode dflt)
   return getPackModeInfo (g, dflt, &info);
 }
 
-/* getPack;
+/* getPack:
  * Return "pack" attribute of g.
  * If not defined or negative, return not_def.
  * If defined but not specified, return dflt.
