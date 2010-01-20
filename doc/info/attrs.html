@@ -1411,6 +1411,8 @@ This field indicates which graph component uses the attribute.
 <DD>  Sets the aspect ratio (drawing height/drawing width) for the drawing.
   Note that this is adjusted before
   the <A HREF=#d:size><B>size</B></A> attribute constraints are enforced.
+  In addition, the calculations usually ignore the node sizes, so the
+  final drawing size may only approximate what is desired.
   <P>
   If <B>ratio</B> is numeric, it is taken as the desired aspect ratio.
   Then, if the actual aspect ratio is less than the desired ratio,
@@ -1421,6 +1423,18 @@ This field indicates which graph component uses the attribute.
   If <B>ratio</B> = "fill" and the <A HREF=#d:size><B>size</B></A>
   attribute is set, node positions are scaled, separately in both x
   and y, so that the final drawing exactly fills the specified size.
+  If both <A HREF=#d:size><B>size</B></A> values exceed the width
+  and height of the drawing, then both coordinate values of each
+  node are scaled up accordingly. However, if either size dimension
+  is smaller than the corresponding dimension in the drawing, one
+  dimension is scaled up so that the final drawing has the same aspect
+  ratio as specified by <A HREF=#d:size><B>size</B></A>. 
+  Then, when rendered, the layout will be
+  scaled down uniformly in both dimensions to fit the given
+  <A HREF=#d:size><B>size</B></A>, which may cause nodes and text
+  to shrink as well. This may not be what the user
+  wants, but it avoids the hard problem of how to reposition the
+  nodes in an acceptable fashion to reduce the drawing size.
   <P>
   If <B>ratio</B> = "compress" and the <A HREF=#d:size><B>size</B></A>
   attribute is set, dot attempts to compress the initial layout to fit
