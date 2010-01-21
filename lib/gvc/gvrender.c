@@ -118,23 +118,23 @@ void gvrender_begin_job(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
-    gvdevice_initialize(job);
     if (gvre) {
         if (gvre->begin_job)
 	    gvre->begin_job(job);
     }
+    gvdevice_initialize(job);
 }
 
 void gvrender_end_job(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
+    gvdevice_finalize(job);
     if (gvre) {
        	if (gvre->end_job)
 	    gvre->end_job(job);
     }
     job->gvc->common.lib = NULL;    /* FIXME - minimally this doesn't belong here */
-    gvdevice_finalize(job);
 }
 
 /* font modifiers */

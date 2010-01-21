@@ -77,22 +77,34 @@ writer (void *closure, const unsigned char *data, unsigned int length)
     return CAIRO_STATUS_WRITE_ERROR;
 }
 
+static void cairogen_begin_job(GVJ_t * job)
+{
+    if (job->external_context && job->context)
+        cairo_save((cairo_t *) job->context);
+}
+
+static void cairogen_end_job(GVJ_t * job)
+{
+    cairo_t *cr = (cairo_t *) job->context;
+    
+    if (job->external_context)
+        cairo_restore(cr);
+    else {
+	cairo_destroy(cr);
+        job->context = NULL;
+    }
+}
+
 #define CAIRO_XMAX 32767
 #define CAIRO_YMAX 32767
 
 static void cairogen_begin_page(GVJ_t * job)
 {
-    cairo_t *cr = NULL;
+    cairo_t *cr = (cairo_t *) job->context;
     cairo_surface_t *surface;
     cairo_status_t status;
 
-    if (job->context) 
-	cr = (cairo_t *) job->context;
-    if (job->external_context && cr)
-        cairo_save(cr);
-    else {
-	if (cr)
-	    cairo_destroy(cr);
+    if (cr == NULL) {
         switch (job->render.id) {
         case FORMAT_PS:
 #ifdef CAIRO_HAS_PS_SURFACE
@@ -142,7 +154,6 @@ static void cairogen_begin_page(GVJ_t * job)
 			job->common->cmdname,
 			cairo_status_to_string(status));
 		cairo_surface_destroy (surface);
-		job->context = NULL;
 		return;
 	}
         cr = cairo_create(surface);
@@ -179,8 +190,6 @@ static void cairogen_end_page(GVJ_t * job)
     case FORMAT_SVG:
 	cairo_show_page(cr);
 	surface = cairo_surface_reference(cairo_get_target(cr));
-	cairo_destroy(cr);
-	job->context = NULL;
 	cairo_surface_finish(surface);
 	status = cairo_surface_status(surface);
 	cairo_surface_destroy(surface);
@@ -195,9 +204,6 @@ static void cairogen_end_page(GVJ_t * job)
 	break;
        	/* formatting will be done by gvdevice_format() */
     }
-
-    if (job->external_context)
-	cairo_restore(cr);
 }
 
 static void cairogen_textpara(GVJ_t * job, pointf p, textpara_t * para)
@@ -334,8 +340,8 @@ cairogen_polyline(GVJ_t * job, pointf * A, int n)
 }
 
 static gvrender_engine_t cairogen_engine = {
-    0,				/* cairogen_begin_job */
-    0,				/* cairogen_end_job */
+    cairogen_begin_job,
+    cairogen_end_job,
     0,				/* cairogen_begin_graph */
     0,				/* cairogen_end_graph */
     0,				/* cairogen_begin_layer */
