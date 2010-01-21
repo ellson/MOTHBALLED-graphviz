@@ -297,6 +297,52 @@ libraries. Once these have been installed,
 the standard build using configure and make works fine. The only caveat
 is that sometimes, an incompatible, non-GNU tool is picked up 
 rather than the needed GNU version. 
+<P>
+Compiling Smyrna for OS X, Snow Leopard (Amanda Stent)
+<p>
+<b>Xcode</b>:<br>
+First if you updated from Leopard you have to reinstall developer tools.  No getting around it, I tried, you just have to do it.
+<p>
+<b>Macports</b>:<br>
+Then you have to uninstall and clean up the Macports ports, all of them.  Take the opportunity to reinstall Macports itself.  There are migration instructions on the web, but it's a little hairier than they make it out to be because some of the links (e.g. hs-ports) will not be there and you will have to get over those hurdles manually.
+<p>
+Briefly, to do a clean install of macports do:
+<pre>
+sudo port -f uninstall installed
+sudo port clean --work --archive all
+and then new macports
+and then sudo port install the things you need now
+and possibly sudo port selfupdate and sudo port upgrade outdated at the end
+</pre>
+
+Then you have to install all the tools needed for Smyrna, glut, glade, etc., and all their dependencies.  This takes days.
+<P>
+Now macports doesn't do glut separately.  It's sneaky because if you say install glut, something will happen, but actually glut now comes with mesa.  This will mess up your head. (The real meat of glut is part of the mesa package - ed.)
+<P>
+<b>Graphviz</b>:<br>
+Then you get your graphviz and you configure with --with-smyrna.  I used the following:
+<pre>
+configure --with-smyrna --with-glutincludedir=/opt/local/var/macports/software/mesa/7.6.1_1+hw_render/opt/local/include --with-glutlibdir=/opt/local/var/macports/software/mesa/7.6.1_1+hw_render/opt/local/lib --prefix=/usr/local/share/graphviz
+</pre>
+
+(I use<br>
+<pre>
+configure --with-smyrna --with-glutincludedir=/opt/local/include  --with-glutlibdir=/opt/local/lib
+</pre>
+ - ed.)
+<p>
+
+On the webs they say to use -framework commandline option to gcc; however I couldn't figure out how to make this work with the makefile and configure file for graphviz.
+<p>
+Now, I got to a certain point and it grumbled about permissions and refused to go any further.  So you may have to chmod in the source directory.
+<p>
+And I got to the point where it was building gv_perl.cpp and it refused to go any further.  I got around this eventually by changing the call to XS to XSPROTO, thus obviating the need for XSUB.h (what does it do for you?  nothing!).
+<p>
+And then it said it was done but when I went to run it it wouldn't start due to some missing template.dot so then you make clean, and make install again because by now you are confused as well.
+<p>
+And then it should work!
+<p>
+By the way making by sneakily cd'ing into the macosx folder and using the makefile labeled with your OS *does not work*.
 
 <h2>GNU style building</h2>
 
