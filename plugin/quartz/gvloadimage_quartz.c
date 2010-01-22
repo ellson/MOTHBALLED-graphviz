@@ -22,10 +22,6 @@
 #include <stddef.h>
 #include <string.h>
 
-#include <CGDataProvider.h>
-#include <CGImage.h>
-#include <CGGLContext.h>
-
 #include "gvplugin_loadimage.h"
 
 #include "gvplugin_quartz.h"

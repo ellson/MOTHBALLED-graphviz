@@ -21,19 +21,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <CGContext.h>
-#include <CGPDFContext.h>
-
 #include "gvplugin_device.h"
 #include "gvplugin_render.h"
 #include "graph.h"
 
 #include "gvplugin_quartz.h"
-
-#ifndef CGFLOAT_DEFINED
-/* nowhere defined, for Carbon Emacs the same work-around */
-typedef float CGFloat;
-#endif
 
 static CGFloat dashed[] = {6.0};
 static CGFloat dotted[] = {2.0, 6.0};
