@@ -1,6 +1,11 @@
-January 7, 2010
-    - Allow ranksep to specify multiple radial differences in twopi
-    - Allow the user to specify all pairwise distances in neato with model=mds
+January 19, 2010
+	- Release 2.26.1
+	- libcgraph.so   version bumped from 4 to 5 due to API changes
+	- Allow ranksep to specify multiple radial differences in twopi
+	- Allow the user to specify all pairwise distances in neato with
+	- Fixed bugs: 1280, 1409, 1567, 1583, 1624, 1631, 1655, 1708, 1709,
+	1727, 1784, 1792, 1798, 1800, 1813, 1814, 1830, 1831, 1833, 1836, 1839
+model=mds
 December 10, 2009
 	- Release 2.26.0
 	- Core features:
