@@ -94,7 +94,7 @@ static void ming_end_page(GVJ_t * job)
 extern char* gvconfig_libdir(void);
 #define FONT "Bitstream_Vera_Serif.fdb"
 
-static void ming_textpara(GVJ_t * job, pointf p, textitem_t * para)
+static void ming_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     SWFMovie movie = (SWFMovie)(job->context);
     SWFTextField textfield;

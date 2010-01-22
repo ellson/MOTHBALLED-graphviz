@@ -17,7 +17,10 @@
 #ifndef GVPLUGIN_QUARTZ_H
 #define GVPLUGIN_QUARTZ_H
 
-#include <Availability.h>
+#include <CoreGraphics.h>
+#include <CGDataConsumer.h>
+#include <CGFont.h>
+#include <AvailabilityMacros.h>
 
 #if defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
 #include <ApplicationServices/ApplicationServices.h>
