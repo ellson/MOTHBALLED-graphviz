@@ -10,9 +10,9 @@ dnl                       even => stable series
 dnl For the micro number: 0 => in-progress development (from cvs)
 dnl                       timestamp => tar-file snapshot or release
 m4_define(graphviz_version_major, 2)
-m4_define(graphviz_version_minor, 26)
+m4_define(graphviz_version_minor, 27)
 #NB: the next line gets changed to a date/time string for development releases
-m4_define(graphviz_version_micro, 3)
+m4_define(graphviz_version_micro, 0)
 
 AC_INIT([graphviz],[graphviz_version_major.graphviz_version_minor.graphviz_version_micro],[http://www.graphviz.org/])
 
