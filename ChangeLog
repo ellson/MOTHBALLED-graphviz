@@ -1,5 +1,5 @@
-January 21, 2010
-	- Release 2.26.2
+January 26, 2010
+	- Release 2.26.3
 	- libcgraph.so   version bumped from 4 to 5 due to API changes
 	- Allow ranksep to specify multiple radial differences in twopi
 	- Allow the user to specify all pairwise distances in neato with
