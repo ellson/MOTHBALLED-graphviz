@@ -872,6 +872,7 @@ static void emit_xdot (GVJ_t * job, xdot* xd)
     char* fontname;
     exdot_op* op;
     int i;
+    char** styles = 0;
 
     op = (exdot_op*)(xd->ops);
     for (i = 0; i < xd->cnt; i++) {
@@ -919,6 +920,8 @@ static void emit_xdot (GVJ_t * job, xdot* xd)
 	    fontname = op->op.u.font.name;
 	    break;
 	case xd_style :
+	    styles = parse_style (op->op.u.style);
+            gvrender_set_style (job, styles);
 	    break;
 	case xd_image :
 	    if (image_warn) {
@@ -929,6 +932,8 @@ static void emit_xdot (GVJ_t * job, xdot* xd)
 	}
 	op++;
     }
+    if (styles)
+	gvrender_set_style(job, job->gvc->defaultlinestyle);
     free (pts);
 }
 
@@ -2921,7 +2926,7 @@ static void cleanup(void)
 #endif
 
 /* parse_style:
- * This is one of the worse internal designs in graphviz.
+ * This is one of the worst internal designs in graphviz.
  * The use of '\0' characters within strings seems cute but it
  * makes all of the standard functions useless if not dangerous.
  * Plus the function uses static memory for both the array and
