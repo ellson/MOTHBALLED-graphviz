@@ -134,7 +134,7 @@ static int chkNum(void) {
   if (!isdigit(c) && (c != '.')) {  /* c is letter */
 	char	buf[BUFSIZ];
 	sprintf(buf,"syntax error - badly formed number '%s' in line %d\n",yytext,line_num);
-    strcat (buf, "splits into two name tokens");
+    strcat (buf, "splits into two name tokens\n");
 	agerr(AGWARN,buf);
     return 1;
   }
