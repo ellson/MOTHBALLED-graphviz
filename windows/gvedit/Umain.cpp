@@ -8,7 +8,6 @@
 #include "Application.h"
 #include "USettings.h"
 #include "UAbout.h"
-#include "cgraph.h"
 #include "UPreProcess.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)

@@ -19,10 +19,11 @@ __fastcall TfrmPre::TfrmPre(TComponent* Owner)
 {
 }
 //---------------------------------------------------------------------------
+extern AnsiString getIniFile();
 void __fastcall TfrmPre::FormShow(TObject *Sender)
 {
         TIniFile *ini;
-        AnsiString FileName=ExtractFilePath( Application->ExeName)+"Settings.ini" ;
+        AnsiString FileName=getIniFile() ;
         if(FileExists(FileName))
         {
                 ini = new TIniFile(FileName);

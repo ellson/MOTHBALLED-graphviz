@@ -100,15 +100,14 @@ object frmSettings: TfrmSettings
       Style = csDropDownList
       Anchors = [akLeft, akTop, akRight]
       ItemHeight = 13
-      ItemIndex = 0
       TabOrder = 0
-      Text = 'dot'
       Items.Strings = (
         'dot'
         'neato'
         'twopi'
         'circo'
-        'fdp')
+        'fdp'
+        'sfdp')
     end
     object Edit1: TEdit
       Left = 111

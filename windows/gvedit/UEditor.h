@@ -75,6 +75,7 @@ bool TfrmEditor::SwitchToPreview()
         Panel2->Visible=false;
         Timer1->Enabled=true;
         Image1->Picture=NULL;
+        return true;
 }
 
 bool TfrmEditor::ChangeFileName(AnsiString NewFileName,bool newfile)
@@ -103,8 +104,7 @@ bool TfrmEditor::SaveAs()
                 catch(...)
                 {;}
         }
-        else
-                return false;
+        return false;
 
 }
 bool TfrmEditor::Save()

@@ -64,6 +64,9 @@ static void update_font(glCompLabel * p,char* text,char* desc,int fs)
 {
 
     glCompFont* temp=p->common.font;
+    if (strlen(text) >512)
+	return ;
+
     p->common.font=new_font(p->common.compset,text,&p->common.color,temp->type,desc,fs,temp->is2D);
     if(temp)
 	delete_font(temp);

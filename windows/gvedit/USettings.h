@@ -118,7 +118,7 @@ bool TfrmSettings::LoadAttrs(AnsiString Engine,AnsiString Scope)
         }
         ComboBox4->ItemIndex=0;
 
-
+         return true;
 
 }
 bool TfrmSettings::DeleteIniKeys(TComboBox* A)
@@ -142,6 +142,7 @@ bool TfrmSettings::DeleteIniKeys(TComboBox* A)
                 }
                 A->Items->Strings[ind]=data2;
         }
+        return true;
 
 }
 

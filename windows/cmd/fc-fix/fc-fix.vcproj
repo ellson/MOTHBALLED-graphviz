@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="fc-fix"
+	Name="fontconfig_fix"
 	ProjectGUID="{0DEA6915-263C-4570-B25C-E0A449894D45}"
 	RootNamespace="fc-fix"
 	Keyword="Win32Proj"
@@ -19,7 +19,8 @@
 			Name="Debug|Win32"
 			OutputDirectory="Debug"
 			IntermediateDirectory="Debug"
-			ConfigurationType="1"
+			ConfigurationType="2"
+			CharacterSet="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -39,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;WIN32_DLL;FC_FIX_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -59,7 +60,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="msi.lib"
+				OutputFile="c:/graphviz-ms/bin/$(ProjectName).dll"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="C:\Program Files\Microsoft Platform SDK for Windows XP SP2\Lib"
+				IgnoreDefaultLibraryNames=""
+				ModuleDefinitionFile=""
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -93,7 +99,7 @@
 			Name="Release|Win32"
 			OutputDirectory="Release"
 			IntermediateDirectory="Release"
-			ConfigurationType="1"
+			ConfigurationType="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -112,7 +118,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;WIN32_DLL;FC_FIX_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -130,8 +136,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="c:/graphviz-ms/bin/$(ProjectName).exe"
+				AdditionalDependencies="Msi.lib"
+				OutputFile="y:/$(ProjectName).dll"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="C:\Program Files\Microsoft Platform SDK for Windows XP SP2\Lib"
+				ModuleDefinitionFile=""
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"

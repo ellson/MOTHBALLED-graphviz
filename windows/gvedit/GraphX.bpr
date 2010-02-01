@@ -104,9 +104,6 @@ ProductName=
 ProductVersion=1.0.0.0
 Comments=
 
-[Excluded Packages]
-c:\program files\borland\cbuilder6\Projects\Bpl\TMSUnicodeDEC6.bpl=TMS Unicode Component Pack
-
 [HistoryLists\hlIncludePath]
 Count=5
 Item0=C:\MyProjects\access;cgraph;C:\Program Files\Borland\CBuilder6\Projects;C:\Projects\ATT\GraphvizEditor;$(BCB)\include;$(BCB)\include\vcl;C:\Projects\ATT\GTK\GTKTest2\lib\cdt

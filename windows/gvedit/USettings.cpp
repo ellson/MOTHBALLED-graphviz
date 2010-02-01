@@ -43,10 +43,6 @@ __fastcall TfrmSettings::TfrmSettings(TComponent* Owner)
 int TfrmSettings::Init(bool silent)
 {
 
-        DeleteFile(ExtractFilePath(Application->ExeName)+"__temp.dot");
-        DeleteFile(ExtractFilePath(Application->ExeName)+"__temp2.dot");
-        DeleteFile(ExtractFilePath(Application->ExeName)+"__temp.jpg");
-
         int Engine;
         AnsiString OutputFile;
         int OutputType;
@@ -91,6 +87,7 @@ int TfrmSettings::Init(bool silent)
 
         }
     }
+    return -1;
 }
 
 void __fastcall TfrmSettings::Button6Click(TObject *Sender)
@@ -132,6 +129,28 @@ void __fastcall TfrmSettings::BitBtn2Click(TObject *Sender)
 
 }
 //---------------------------------------------------------------------------
+AnsiString getIniFile()
+{
+        char bf[5012];
+        SHGetSpecialFolderPath(NULL,bf,CSIDL_LOCAL_APPDATA,1);
+        AnsiString rv=AnsiString(bf);
+        rv=rv+"\\Settings.ini";
+        if(!FileExists(rv))/*create content of the ini file as first time*/
+        {
+                TStringList* sl=new TStringList();
+                sl->Add("[Settings]");
+                sl->Add("Layout=0");
+                sl->Add("Output=6");
+                sl->Add("Preview=1");
+                sl->Add("InitialDir1=C:\\");
+                sl->Add("InitialDir2=C:\\");
+                sl->Add("InitialDir3=C:\\");
+                sl->Add("binPath=C:\\Program Files\\Graphviz2.26\\bin\\");
+                sl->Add("init=1");
+                sl->SaveToFile(rv);
+        }
+        return rv;
+}
 
 void __fastcall TfrmSettings::FormCreate(TObject *Sender)
 {
@@ -139,7 +158,7 @@ void __fastcall TfrmSettings::FormCreate(TObject *Sender)
         //load Graphviz bin Folder
 
         AnsiString binPath;
-        AnsiString FileName=ExtractFilePath( Application->ExeName)+"Settings.ini" ;
+        AnsiString FileName=getIniFile();
         TIniFile *ini;
         ini = new TIniFile(FileName);
         preprocflag=false;
@@ -175,36 +194,7 @@ void __fastcall TfrmSettings::FormCreate(TObject *Sender)
                 SD2->InitialDir=ini->ReadString( "Settings", "InitialDir2", "");
                 OD1->InitialDir=ini->ReadString( "Settings", "InitialDir3", "");
         }
-        //fix graphviz fontconfig file
-        AnsiString path= ExtractFilePath(Application->ExeName);
-        path=StringReplace(path,"\\bin","\\etc\\fonts",TReplaceFlags () << rfReplaceAll);
-        path=path+"fonts.conf";
-        if(!ini->ReadBool("Settings","init",false))
-        {
-                if(FileExists(path))
-                {
-
-       		        char a[512];
-        		char bf[512];
-	        	char fontFolder[512];
-                           LPITEMIDLIST pidl;
-                    if (SHGetSpecialFolderLocation(Handle,CSIDL_FONTS,&pidl) == NOERROR)
-                    {
-                        SHGetPathFromIDList(pidl,fontFolder)  ;
-                        Memo2->Lines->LoadFromFile(path);
-                        Memo2->Text=StringReplace(Memo2->Text,"#WINDOWSFONTDIR#",AnsiString(fontFolder),TReplaceFlags () << rfReplaceAll);
-                        Memo2->Lines->SaveToFile(path);
-                        ini->WriteBool("Settings","init",true);
-                    }
-                }
-        }
         delete ini;
-
-
-
-
-
-
 }
 //---------------------------------------------------------------------------
 
@@ -369,6 +359,7 @@ bool runproc(AnsiString szExeName,AnsiString szCommandLine,AnsiString tempFile,A
                         DeleteFile(tempFile);
                    delete tmpString;
         }
+        return true;
 }
 
 void __fastcall TfrmSettings::Button3Click(TObject *Sender)
@@ -505,7 +496,7 @@ bool preproc()
 
 
         TIniFile *ini;
-        AnsiString FileName=ExtractFilePath( Application->ExeName)+"Settings.ini" ;
+        AnsiString FileName=getIniFile() ;
         preprocflag=false;
         if(FileExists(FileName))
         {
@@ -637,8 +628,9 @@ BOOL CreateChildProcess()
    {
       CloseHandle(piProcInfo.hProcess);
       CloseHandle(piProcInfo.hThread);
-      return bFuncRetn;
    }
+   return bFuncRetn;
+
 }
 
 VOID WriteToPipe(VOID)

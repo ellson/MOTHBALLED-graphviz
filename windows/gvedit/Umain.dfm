@@ -1,9 +1,9 @@
 object frmMain: TfrmMain
-  Left = 457
-  Top = 111
+  Left = 283
+  Top = 153
   Width = 1138
   Height = 855
-  Caption = 'GVedit v:0.99 beta'
+  Caption = 'GVedit v:1.01 '
   Color = clGray
   DefaultMonitor = dmPrimary
   Font.Charset = DEFAULT_CHARSET
