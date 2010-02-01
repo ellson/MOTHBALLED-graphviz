@@ -275,7 +275,10 @@ gboolean expose_event(GtkWidget * widget, GdkEventExpose * event,
 static gboolean button_press_event(GtkWidget * widget,
 				   GdkEventButton * event, gpointer data)
 {
-    Agraph_t* g=view->g[view->activeGraph];
+    Agraph_t* g;
+
+    if (view->g == 0) return FALSE;
+    g=view->g[view->activeGraph];
 
     begin_x = (float) event->x;
     begin_y = (float) event->y;
@@ -301,6 +304,7 @@ static gboolean button_press_event(GtkWidget * widget,
 static gboolean button_release_event(GtkWidget * widget,
 				     GdkEventButton * event, gpointer data)
 {
+    if (view->widgets == 0) return FALSE;
     view->FontSizeConst = GetOGLDistance(14);
     view->arcball->isDragging = 0;
     view->widgets->common.functions.mouseup((glCompObj*)view->widgets,(GLfloat) event->x,(GLfloat) event->y,getGlCompMouseType(event->button));
