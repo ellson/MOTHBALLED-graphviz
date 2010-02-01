@@ -23,6 +23,7 @@
 #include "gui/toolboxcallbacks.h"
 #include "arcball.h"
 #include "hotkeymap.h"
+#include "polytess.h"
 
 void drawRotatingAxis(void);
 void draw_cube()
@@ -182,9 +183,6 @@ int glexpose_main(ViewInfo * view)
     drawRotatingAxis();
 //              draw_stuff();
 //      test_color_pallete();
-
-
-
 //      drawtestpoly();
      /*DEBUG*/
 /*	if (view->mouse.mouse_mode == MM_PAN)
@@ -263,7 +261,7 @@ int glexpose_drawgraph(ViewInfo * view)
     if (view->activeGraph > -1) {
 //              if (GD_TopView(view->g[view->activeGraph])) 
 //              {
-	if (!view->Topview->is_top_fisheye)
+	if (!view->Topview->fisheyeParams.active)
 	    drawTopViewGraph(view->g[view->activeGraph]);	//view->Topview style dots and straight lines
 	else {
 	    drawtopologicalfisheye(view->Topview);

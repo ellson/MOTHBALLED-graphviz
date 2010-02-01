@@ -230,7 +230,7 @@ int get_mode(ViewInfo* v)
     view_mode=smyrna_2D;
     if (v->active_camera >= 0 )
 	view_mode=smyrna_3D;
-    if(v->Topview->is_top_fisheye)
+    if(v->Topview->fisheyeParams.active)
 	view_mode=smyrna_fisheye;
     
 

@@ -52,6 +52,9 @@ static int node_visible(topview_node * n);
 static int get_color_from_edge(topview_edge * e);
 static void draw_tv_xdot(topview* t);
 static void draw_xdot(xdot* x,float base_z);
+static int drawtopviewnodes(Agraph_t * g);
+static void drawtopviewedges(Agraph_t * g);
+void tesstest();
 
 
 
@@ -319,8 +322,9 @@ static xdot* parseXdotwithattrs(void *e)
 
 void settvxdot(Agraph_t * g, topview * t)
 {
-    /*look for xdot attributes and parse them if there is any */
-
+    /*
+    look for xdot attributes and parse them if there is any 
+    */
     topview_node *np;
     topview_edge *ep;
     int ind;
@@ -383,11 +387,30 @@ static void reset_refresh(ViewInfo* v)
     v->refresh.visibility=0;
 
 }
+
+
+static create_DL()
+{
+    Agraph_t* g=view->g[view->activeGraph];
+    glNewList(1,GL_COMPILE); 
+      drawtopviewnodes(g);
+        drawtopviewlabels(g);
+	drawtopviewedges(g);
+	drawtopviewedgelabels(g);
+/*	renderNodes(g);
+	renderEdges(g);*/
+    glEndList();
+
+}
+
 void update_topview(Agraph_t * g, topview * t, int init)
 {
 
     if (init)
+    {
 	preparetopview(g, t);
+	t->xdotId=-1;
+    }
     settvcolorinfo(g, t);
     set_boundaries(t);
     settvxdot(view->g[view->activeGraph], view->Topview);
@@ -428,6 +451,8 @@ void update_topview(Agraph_t * g, topview * t, int init)
 
     if (view->SignalBlock)
 	btnToolZoomFit_clicked(NULL, NULL);
+//    create_DL();
+
 }
 
 
@@ -510,11 +535,11 @@ void preparetopview(Agraph_t * g, topview * t)
     /*for grouped data , group data viewing buttons extension */
 //      load_host_buttons(t, g, view->widgets);
     /*set topologilca fisheye to NULL */
-    t->h = '\0';
+    t->fisheyeParams.h = '\0';
     if (view->dfltViewType == VT_TOPFISH)
-	t->is_top_fisheye = 1;
+	t->fisheyeParams.active = 1;
     else
-	t->is_top_fisheye = 0;
+	t->fisheyeParams.active = 0;
 
     /*reset picked nodes */
     t->picked_node_count = 0;
@@ -674,11 +699,13 @@ static int drawtopviewnodes(Agraph_t * g)
     view->visiblenodecount = 0;
     for (ind = 0; ind < view->Topview->Nodecount; ind++) {
 	v = view->Topview->Nodes + ind;
-	if (((-v->distorted_x / view->zoom >= view->clipX1)
+/*	if (((-v->distorted_x / view->zoom >= view->clipX1)
 	     && (-v->distorted_x / view->zoom <= view->clipX2)
 	     && (-v->distorted_y / view->zoom >= view->clipY1)
 	     && (-v->distorted_y / view->zoom <= view->clipY2))
-	    || (view->active_camera >= 0)) {
+	    || (view->active_camera >= 0))*/
+	    if(1)
+	    {
 	    float zdepth;
 	    view->visiblenodecount = view->visiblenodecount + 1;
 	    if (!view->drawnodes || !node_visible(v))
@@ -733,6 +760,7 @@ static int edgevisible(topview_edge* e)
     static glCompPoint b;
     static glCompPoint c;
     static glCompPoint d;
+    return 1;
 
     x1=e->x1/ view->zoom * -1;
     x2=e->y1/ view->zoom * -1;
@@ -909,13 +937,15 @@ void drawTopViewGraph(Agraph_t * g)
     glDisable(GL_DEPTH_TEST);*/
 
 //    glDisable(GL_DEPTH_TEST);
+//    glCallList (1);
     drawtopviewnodes(g);
     drawtopviewlabels(g);
     drawtopviewedges(g);
     drawtopviewedgelabels(g);
     enddrawcycle(g);
     draw_tv_xdot(view->Topview);
-    draw_node_hint_boxes();
+  //  draw_node_hint_boxes();
+//    tesstest();
 //    glEnable(GL_DEPTH_TEST);
 
 
@@ -1382,15 +1412,59 @@ static void draw_xdot(xdot* x,float base_z)
 
 static void draw_tv_xdot(topview* t)
 {
+
+/*    glNewList(1,GL_COMPILE); 
+      drawtopviewnodes(g);
+        drawtopviewlabels(g);
+	drawtopviewedges(g);
+	drawtopviewedgelabels(g);
+	renderNodes(g);
+	renderEdges(g);*/
+
     int j;
     float basez=0;
+
+    if(t->xdotId==-1)
+    {
+	t->xdotId=glGenLists(1);
+	glNewList(1,GL_COMPILE); 
+	glNewList(t->xdotId,GL_COMPILE);
+    	    draw_xdot(t->xDot,basez);
+	    basez= basez+0.01;
+	    for (j=0; j < t->Nodecount; j++)
+	    {
+		    draw_xdot(t->Nodes[j].xDot,basez);
+		    basez = basez+0.001;
+	    }
+	    for (j=0; j < t->Edgecount; j++)
+	    {
+		    draw_xdot(t->Edges[j].xDot,basez);
+
+	    }
+    	glEndList();
+    }
+    else
+	glCallList(t->xdotId);
+
+/*    if((t->xDot)&&(t->xDot->ops->kind ==xd_font))
+    {
 	draw_xdot(t->xDot,basez);
 	basez= basez+0.01;
-	for (j=0; j < t->Nodecount; j++)
-		draw_xdot(t->Nodes[j].xDot,basez);
-	basez = basez+0.001;
-	for (j=0; j < t->Edgecount; j++)
-		draw_xdot(t->Edges[j].xDot,basez);
+    }
+    for (j=0; j < t->Nodecount; j++)
+    {
+	if(t->Nodes[j].xDot->ops->kind==xd_font)
+	{
+	    draw_xdot(t->Nodes[j].xDot,basez);
+	    basez = basez+0.001;
+	}
+    }
+    for (j=0; j < t->Edgecount; j++)
+    {
+	if(t->Edges[j].xDot->ops->kind==xd_font)
+	    draw_xdot(t->Edges[j].xDot,basez);
+    }*/
+
 }
 
 void setMultiedges(Agraph_t * g, char *attrname)
@@ -1423,4 +1497,81 @@ void setMultiedges(Agraph_t * g, char *attrname)
 	}
     }
     freePM(map);
+}
+void CALLBACK tessBeginCB(GLenum which)
+{
+    glBegin(which);
+}
+
+
+
+void CALLBACK tessEndCB()
+{
+    glEnd();
+}
+void errorCallback(GLenum errorCode)
+{
+   const GLubyte *estring;
+
+   estring = gluErrorString(errorCode);
+   fprintf (stderr, "Tessellation Error: %s\n", estring);
+   exit (0);
+}
+
+void tesstest()
+{
+
+    static GLUtesselator *tobj;
+
+
+    GLdouble rect[4][3] = {0.0, 0.0, 0.0,
+                          200.0, 50.0, 0.0,
+                          200.0, 200.0, 0.0,
+                          0, 0, 0.0};
+   GLdouble tri[3][3] = {0.0, 0.0, 0.0,
+                         125.0, 175.0, 0.0,
+                         175.0, 0.0, 0.0};
+   GLdouble star[5][6] = {250.0, 50.0, 0.0, 1.0, 0.0, 1.0,
+                          325.0, 200.0, 0.0, 1.0, 1.0, 0.0,
+                          400.0, 50.0, 0.0, 0.0, 1.0, 1.0,
+                          250.0, 150.0, 0.0, 1.0, 0.0, 0.0,
+                          400.0, 150.0, 0.0, 0.0, 1.0, 0.0};
+
+    if(!tobj)
+	tobj=gluNewTess(); // create a tessellator
+    if(!tobj) return;  // failed to create tessellation object, return 0
+
+//   gluTessCallback(tobj, GLU_TESS_VERTEX,(GLvoid (*) ()) &glVertex3dv);
+
+    gluTessCallback(tobj, GLU_TESS_BEGIN, (void (CALLBACK *)())tessBeginCB);
+    gluTessCallback(tobj, GLU_TESS_END, (void (CALLBACK *)())tessEndCB);
+
+
+   glShadeModel(GL_FLAT);
+   gluTessBeginPolygon(tobj, NULL);
+      gluTessBeginContour(tobj);
+         gluTessVertex(tobj, rect[0], rect[0]);
+         gluTessVertex(tobj, rect[1], rect[1]);
+         gluTessVertex(tobj, rect[2], rect[2]);
+         gluTessVertex(tobj, rect[3], rect[3]);
+      gluTessEndContour(tobj);
+      gluTessBeginContour(tobj);
+         gluTessVertex(tobj, tri[0], tri[0]);
+         gluTessVertex(tobj, tri[1], tri[1]);
+         gluTessVertex(tobj, tri[2], tri[2]);
+      gluTessEndContour(tobj);
+   gluTessEndPolygon(tobj);
+
+   glShadeModel(GL_SMOOTH);
+   gluTessProperty(tobj, GLU_TESS_WINDING_RULE,
+                   GLU_TESS_WINDING_POSITIVE);
+   gluTessBeginPolygon(tobj, NULL);
+      gluTessBeginContour(tobj);
+         gluTessVertex(tobj, star[0], star[0]);
+         gluTessVertex(tobj, star[1], star[1]);
+         gluTessVertex(tobj, star[2], star[2]);
+         gluTessVertex(tobj, star[3], star[3]);
+         gluTessVertex(tobj, star[4], star[4]);
+      gluTessEndContour(tobj);
+   gluTessEndPolygon(tobj);
 }

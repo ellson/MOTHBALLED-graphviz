@@ -71,19 +71,20 @@ static void menu_click_zoom_plus(glCompObj *obj, GLfloat x, GLfloat y,
 static void menu_switch_to_fisheye(glCompObj *obj, GLfloat x, GLfloat y,
 				   glMouseButtonType t)
 {
-    if (!view->Topview->is_top_fisheye == 1) {
-	if (!view->Topview->h) {
+    if (!view->Topview->fisheyeParams.active)
+	{
+	    if (!view->Topview->fisheyeParams.h) {
 	    prepare_topological_fisheye(view->Topview);
 	    g_timer_start(view->timer);
 	}
-	view->Topview->is_top_fisheye = 1;
+	view->Topview->fisheyeParams.active = 1;
 	glCompButtonShow(toNormal);
 	glCompButtonHide(toFisheye);
 	imgFisheye->common.visible = 1;
 
 
     } else {
-	view->Topview->is_top_fisheye = 0;
+	view->Topview->fisheyeParams.active = 0;
 	g_timer_stop(view->timer);
 	glCompButtonHide(toNormal);
 	glCompButtonShow(toFisheye);
@@ -331,8 +332,8 @@ glCompSet *glcreate_gl_topview_menu(void)
     glCompImageLoadPng(i, smyrnaPath("mod_3D.png"));
     img3D = i;
     i->common.visible = 0;
-    l=glCompLabelNew((glCompObj *)s,100,5,view->Topview->Graphdata.GraphFileName);
-    glCompLabelSetFontSize(l,24);
+/*    l=glCompLabelNew((glCompObj *)s,100,5,view->Topview->Graphdata.GraphFileName);
+    glCompLabelSetFontSize(l,24);*/
     return s;
 
 

@@ -64,7 +64,7 @@ static void apply_actions(ViewInfo* v,int x,int y)
 
 	if (view->activeGraph >= 0) 
 	{
-	    if (view->Topview->is_top_fisheye) 
+	    if (view->Topview->fisheyeParams.active) 
 		changetopfishfocus(view->Topview,&view->mouse.GLpos.x,&view->mouse.GLpos.y,  0, 1);
 	    else    //single right click
 		//	pick_node_from_coords(view->mouse.GLpos.x, view->mouse.GLpos.y,view->mouse.GLpos.z);

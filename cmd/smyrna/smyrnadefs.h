@@ -42,6 +42,8 @@
 extern "C" {
 #endif
 
+#define WITH_CGRAPH 1
+
 
 #ifdef	WIN32			//this is needed on WIN32 to get libglade see the callback
 #define _BB  __declspec(dllexport)
@@ -151,6 +153,7 @@ typedef struct
 		glCompFont* font;
 		int size;
 		int layer;
+		int listId;/*opengl list id*/
 
     } sdot_op;	
 	
@@ -387,20 +390,20 @@ typedef struct
 	topview_edge *Edges;
 	int Nodecount;
 	int Edgecount;
-	int limits[4];
 	topviewdata *TopviewData;
 	void *customptr;
-	Hierarchy *h;
-	glCompColor srcColor;	//fine node colors of topfisheye
-	glCompColor tarColor;	//supernode colors of fisheye
-	int is_top_fisheye;	//1 draw hierarchy 0 draw regular topview
-	focus_t *fs;
 	struct {
+	    int active;	//1 draw hierarchy 0 draw regular topview
 	    reposition_t repos;
 	    levelparms_t level;
 	    hierparms_t hier;
-	} parms;
-	int animate;
+	    Hierarchy *h;
+	    int animate;
+	    glCompColor srcColor;	//fine node colors of topfisheye
+	    glCompColor tarColor;	//supernode colors of fisheye
+	    focus_t *fs;
+    	} fisheyeParams;
+
 	topview_node **picked_nodes;
 	int picked_node_count;
 	topview_edge **picked_edges;
@@ -418,6 +421,7 @@ typedef struct
 	float global_z;
 	attr_list* attributes;/*attribute list*/
 	attr_list* filtered_attr_list;
+	int xdotId;
 
     } topview;
 

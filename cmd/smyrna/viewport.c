@@ -326,7 +326,7 @@ void set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
 static gboolean gl_main_expose(gpointer data)
 {
     if (view->activeGraph >= 0) {
-	if (view->Topview->animate == 1)
+	if (view->Topview->fisheyeParams.animate == 1)
 	    expose_event(view->drawing_area, NULL, NULL);
 	return 1;
     }
@@ -464,22 +464,22 @@ void init_viewport(ViewInfo * view)
     view->Selection.SelectionColor.A = 1;
     view->Selection.Anti = 0;
     view->Topview = GNEW(topview);
-    view->Topview->fs = 0;
+    view->Topview->fisheyeParams.fs = 0;
     view->Topview->xDot=NULL;
 
     /* init topfish parameters */
-    view->Topview->parms.level.num_fine_nodes = 10;
-    view->Topview->parms.level.coarsening_rate = 2.5;
-    view->Topview->parms.hier.dist2_limit = 1;
-    view->Topview->parms.hier.min_nvtxs = 20;
-    view->Topview->parms.repos.rescale = Polar;
-    view->Topview->parms.repos.width =
+    view->Topview->fisheyeParams.level.num_fine_nodes = 10;
+    view->Topview->fisheyeParams.level.coarsening_rate = 2.5;
+    view->Topview->fisheyeParams.hier.dist2_limit = 1;
+    view->Topview->fisheyeParams.hier.min_nvtxs = 20;
+    view->Topview->fisheyeParams.repos.rescale = Polar;
+    view->Topview->fisheyeParams.repos.width =
 	(int) (view->bdxRight - view->bdxLeft);
-    view->Topview->parms.repos.height =
+    view->Topview->fisheyeParams.repos.height =
 	(int) (view->bdyTop - view->bdyBottom);
-    view->Topview->parms.repos.margin = 0;
-    view->Topview->parms.repos.graphSize = 100;
-    view->Topview->parms.repos.distortion = 1.0;
+    view->Topview->fisheyeParams.repos.margin = 0;
+    view->Topview->fisheyeParams.repos.graphSize = 100;
+    view->Topview->fisheyeParams.repos.distortion = 1.0;
     /*create timer */
     view->timer = g_timer_new();
     view->timer2 = g_timer_new();
@@ -767,7 +767,8 @@ int save_graph_with_file_name(Agraph_t * graph, char *fileName)
 int save_graph(void)
 {
     //check if there is an active graph
-    if (view->activeGraph > -1) {
+    if (view->activeGraph > -1) 
+    {
 	//check if active graph has a file name
 	if (view->Topview->Graphdata.GraphFileName) {
 	    return save_graph_with_file_name(view->g[view->activeGraph],
@@ -775,8 +776,8 @@ int save_graph(void)
 					     GraphFileName);
 	} else
 	    return save_as_graph();
+        fill_key(view->orig_key, get_md5_key(view->g[view->activeGraph]));
     }
-    fill_key(view->orig_key, get_md5_key(view->g[view->activeGraph]));
     return 1;
 
 }

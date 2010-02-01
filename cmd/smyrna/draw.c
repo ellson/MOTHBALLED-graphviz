@@ -30,6 +30,7 @@ XDOT DRAWING FUNCTIONS, maybe need to move them somewhere else
 #include "topfisheyeview.h"
 #include "appmouse.h"
 #include "hotkeymap.h"
+#include "polytess.h"
 
 //delta values
 static float dx = 0.0;
@@ -331,6 +332,8 @@ extern void DrawPolygon(sdot_op * o, int param)
 
     }
     glLineWidth(view->LineWidth);
+    drawTessPolygon(o);
+/*
     if (!filled)
 	glBegin(GL_LINE_STRIP);
     else
@@ -341,8 +344,20 @@ extern void DrawPolygon(sdot_op * o, int param)
 		   (GLfloat) op->u.polygon.pts[i].z + view->Topview->global_z);
     }
     glVertex3f((GLfloat) op->u.polygon.pts[0].x - dx, (GLfloat) op->u.polygon.pts[0].y - dy, (GLfloat) op->u.polygon.pts[0].z + view->Topview->global_z);	//close the polygon
-    glEnd();
+    glEnd();*/
 }
+
+
+extern void DrawPolygon2(sdot_op * o, int param)
+
+{
+    drawTessPolygon(o);
+}
+
+
+
+
+
 
 void DrawPolyline(sdot_op* o, int param)
 {

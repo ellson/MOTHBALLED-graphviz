@@ -434,7 +434,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\polytess.c"
+				>
+			</File>
+			<File
 				RelativePath=".\selection.c"
+				>
+			</File>
+			<File
+				RelativePath=".\smyrna_utils.c"
 				>
 			</File>
 			<File
@@ -455,6 +463,10 @@
 			</File>
 			<File
 				RelativePath=".\topviewdata.c"
+				>
+			</File>
+			<File
+				RelativePath=".\topviewfuncs.c"
 				>
 			</File>
 			<File
