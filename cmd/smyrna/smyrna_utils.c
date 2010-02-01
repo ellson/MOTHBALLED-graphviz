@@ -1,5 +1,20 @@
+/* $Id$Revision: */
+/* vim:set shiftwidth=4 ts=8: */
+
+/**********************************************************
+*      This software is part of the graphviz package      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2004 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+**********************************************************/
 #include "smyrna_utils.h"
-static boolean mapbool(char *p)
+static int mapbool(char *p)
 {
     if (p == NULL)
 	return FALSE;
@@ -14,6 +29,7 @@ static boolean mapbool(char *p)
     return atoi(p);
 }
 
+#if 0
 static int late_int(void *obj,Agsym_t* attr, int def, int low)
 {
     char *p;
@@ -43,13 +59,6 @@ static double late_double(void *obj, Agsym_t* attr, double def, double low)
     return rv;
 }
 
-static char* late_string(void *obj, Agsym_t * attr, char *def)
-{
-    if (!attr || !obj)
-	return def;
-    return agxget(obj, attr);
-}
-
 static char *late_nnstring(void *obj, Agsym_t * attr, char *def)
 {
     char *rv = late_string(obj, attr, def);
@@ -58,7 +67,16 @@ static char *late_nnstring(void *obj, Agsym_t * attr, char *def)
     return rv;
 }
 
-static boolean late_bool(void *obj, Agsym_t * attr, int def)
+#endif
+
+static char* late_string(void *obj, Agsym_t * attr, char *def)
+{
+    if (!attr || !obj)
+	return def;
+    return agxget(obj, attr);
+}
+
+static int late_bool(void *obj, Agsym_t * attr, int def)
 {
     if (attr == NULL)
 	return def;
@@ -119,13 +137,16 @@ void setColor(glCompColor* c,GLfloat R,GLfloat G,GLfloat B,GLfloat A)
     c->B=B;
     c->A=A;
 }
+
+#if 0
 static float interpol(float minv, float maxv, float minc, float maxc, float x)
 {
     return ((x - minv) * (maxc - minc) / (maxv - minv) + minc);
 }
 
 
-/*void getcolorfromschema(colorschemaset * sc, float l, float maxl,glCompColor * c)
+void 
+getcolorfromschema(colorschemaset * sc, float l, float maxl,glCompColor * c)
 {
     int ind;
     float percl = l / maxl * 100.00;
@@ -151,4 +172,5 @@ static float interpol(float minv, float maxv, float minc, float maxc, float x)
 	c->B = sc->s[ind].c.B;
 	c->A = 1;
     }
-}*/
+}
+#endif

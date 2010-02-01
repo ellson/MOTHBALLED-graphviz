@@ -197,7 +197,7 @@ void settvcolorinfo(Agraph_t * g, topview * t)
     Agsym_t *ecolor = agattr(g, AGEDGE, "color", 0);
     Agsym_t *edgeid = agattr(g, AGEDGE, "edgeid", 0);
     Agsym_t *poss = agattr(g, AGNODE, "pos", 0);
-    int setpos=1;
+    /* int setpos=1; */
     assert(poss);
     maxedgelen = 0;
     xmax = ymax = -MAXFLOAT;
@@ -228,7 +228,7 @@ void settvcolorinfo(Agraph_t * g, topview * t)
 	    if(tempStr)
 	    {
 		if (strlen(tempStr) > 0)	/*set node size */
-		    t->Nodes[ind].size = atof(tempStr);
+		    t->Nodes[ind].size = 0.01*atof(tempStr);
 	    }
 
 	}
@@ -388,8 +388,75 @@ static void reset_refresh(ViewInfo* v)
 
 }
 
+static int drawtopviewlabels(Agraph_t * g)
+{
+    //drawing labels
+    int ind = 0;
+    topview_node *v;
+    float f;
 
-static create_DL()
+    if (((view->visiblenodecount > view->labelnumberofnodes)
+	 && (view->active_camera == -1))
+	|| (!view->labelshownodes) || (!view->drawnodes))
+	return 0;
+    if (view->Topview->maxnodedegree > 15)
+	f = 15;
+    else
+	f = view->Topview->maxnodedegree;
+    for (ind = 0; ind < view->Topview->Nodecount; ind++) {
+
+	v = &view->Topview->Nodes[ind];
+
+	if (view->active_camera == -1) {
+	    if (((float) view->visiblenodecount >
+		 view->labelnumberofnodes * v->degree / f)
+		&& view->labelwithdegree)
+		continue;
+	}
+	if (!node_visible(v))
+	    continue;
+	draw_topview_label(v, 1);
+    }
+    return 1;
+}
+
+static int drawtopviewedgelabels(Agraph_t * g)
+{
+    //drawing labels
+    int ind = 0;
+    topview_edge *e;
+    float f;
+
+    if ((view->visiblenodecount > view->labelnumberofnodes)
+	|| (!view->labelshowedges))
+	return 0;
+    if (view->Topview->maxnodedegree > 15)
+	f = 15;
+    else
+	f = view->Topview->maxnodedegree;
+    for (ind = 0; ind < view->Topview->Edgecount; ind++) {
+
+	e = &view->Topview->Edges[ind];
+
+	if ((((float) view->visiblenodecount >
+	      view->labelnumberofnodes * e->Node1->degree / f)
+	     && view->labelwithdegree)
+	    &&
+	    (((float) view->visiblenodecount >
+	      view->labelnumberofnodes * e->Node2->degree / f)
+	     && view->labelwithdegree)
+	    )
+	    continue;
+	if ((!node_visible(e->Node1)) && (!node_visible(e->Node2)))
+	    continue;
+	draw_topview_edge_label(e, 0.001);
+    }
+    return 1;
+}
+
+
+#if 0
+static void create_DL()
 {
     Agraph_t* g=view->g[view->activeGraph];
     glNewList(1,GL_COMPILE); 
@@ -402,6 +469,7 @@ static create_DL()
     glEndList();
 
 }
+#endif
 
 void update_topview(Agraph_t * g, topview * t, int init)
 {
@@ -863,78 +931,12 @@ static void drawtopviewedges(Agraph_t * g)
 
 }
 
-static int drawtopviewlabels(Agraph_t * g)
-{
-    //drawing labels
-    int ind = 0;
-    topview_node *v;
-    float f;
-
-    if (((view->visiblenodecount > view->labelnumberofnodes)
-	 && (view->active_camera == -1))
-	|| (!view->labelshownodes) || (!view->drawnodes))
-	return 0;
-    if (view->Topview->maxnodedegree > 15)
-	f = 15;
-    else
-	f = view->Topview->maxnodedegree;
-    for (ind = 0; ind < view->Topview->Nodecount; ind++) {
-
-	v = &view->Topview->Nodes[ind];
-
-	if (view->active_camera == -1) {
-	    if (((float) view->visiblenodecount >
-		 view->labelnumberofnodes * v->degree / f)
-		&& view->labelwithdegree)
-		continue;
-	}
-	if (!node_visible(v))
-	    continue;
-	draw_topview_label(v, 1);
-    }
-    return 1;
-}
-static int drawtopviewedgelabels(Agraph_t * g)
-{
-    //drawing labels
-    int ind = 0;
-    topview_edge *e;
-    float f;
-
-    if ((view->visiblenodecount > view->labelnumberofnodes)
-	|| (!view->labelshowedges))
-	return 0;
-    if (view->Topview->maxnodedegree > 15)
-	f = 15;
-    else
-	f = view->Topview->maxnodedegree;
-    for (ind = 0; ind < view->Topview->Edgecount; ind++) {
-
-	e = &view->Topview->Edges[ind];
-
-	if ((((float) view->visiblenodecount >
-	      view->labelnumberofnodes * e->Node1->degree / f)
-	     && view->labelwithdegree)
-	    &&
-	    (((float) view->visiblenodecount >
-	      view->labelnumberofnodes * e->Node2->degree / f)
-	     && view->labelwithdegree)
-	    )
-	    continue;
-	if ((!node_visible(e->Node1)) && (!node_visible(e->Node2)))
-	    continue;
-	draw_topview_edge_label(e, 0.001);
-    }
-    return 1;
-}
-
 
 void drawTopViewGraph(Agraph_t * g)
 {
-    
-/*    glEnable (GL_BLEND);
+    glEnable (GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDisable(GL_DEPTH_TEST);*/
+    glDisable(GL_DEPTH_TEST);
 
 //    glDisable(GL_DEPTH_TEST);
 //    glCallList (1);
@@ -1498,14 +1500,15 @@ void setMultiedges(Agraph_t * g, char *attrname)
     }
     freePM(map);
 }
-void CALLBACK tessBeginCB(GLenum which)
+
+void tessBeginCB(GLenum which)
 {
     glBegin(which);
 }
 
 
 
-void CALLBACK tessEndCB()
+void tessEndCB()
 {
     glEnd();
 }
@@ -1518,6 +1521,7 @@ void errorCallback(GLenum errorCode)
    exit (0);
 }
 
+#if 0
 void tesstest()
 {
 
@@ -1543,8 +1547,8 @@ void tesstest()
 
 //   gluTessCallback(tobj, GLU_TESS_VERTEX,(GLvoid (*) ()) &glVertex3dv);
 
-    gluTessCallback(tobj, GLU_TESS_BEGIN, (void (CALLBACK *)())tessBeginCB);
-    gluTessCallback(tobj, GLU_TESS_END, (void (CALLBACK *)())tessEndCB);
+    gluTessCallback(tobj, GLU_TESS_BEGIN, (void (*)())tessBeginCB);
+    gluTessCallback(tobj, GLU_TESS_END, (void (*)())tessEndCB);
 
 
    glShadeModel(GL_FLAT);
@@ -1575,3 +1579,4 @@ void tesstest()
       gluTessEndContour(tobj);
    gluTessEndPolygon(tobj);
 }
+#endif

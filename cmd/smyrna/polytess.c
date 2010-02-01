@@ -1,7 +1,22 @@
+/* $Id$Revision: */
+/* vim:set shiftwidth=4 ts=8: */
+
+/**********************************************************
+*      This software is part of the graphviz package      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2004 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+**********************************************************/
 #include "polytess.h"
 #include "xdot.h"
-tessPoly TP;
 
+#if 0
 GLdouble star[5][3] = { 0.6f,  -0.1f, 0.0f,
                         1.35f, 1.4f, 0.0f,
                         2.1f,  -0.1f, 0.0f,
@@ -75,7 +90,8 @@ GLdouble complex[25][3] = { 0.0f, 0.0f, 0.0f,
 
 
 
-void CALLBACK combineCallback(GLdouble coords[3], GLdouble *vertex_data[4],GLfloat weight[4], GLdouble **dataOut)
+#endif
+void combineCallback(GLdouble coords[3], GLdouble *vertex_data[4],GLfloat weight[4], GLdouble **dataOut)
 {
     GLdouble *vertex;
     int i;
@@ -95,7 +111,7 @@ void CALLBACK combineCallback(GLdouble coords[3], GLdouble *vertex_data[4],GLflo
     *dataOut = vertex;
 }
 
-void CALLBACK vertexCallback(GLvoid *vertex)
+void vertexCallback(GLvoid *vertex)
 {
     GLdouble *ptr;
     ptr = (GLdouble *) vertex;
@@ -131,12 +147,12 @@ static int Render_Contour2(GLUtesselator *tobj,sdot_op* p)
 {
     GLdouble** d;
     int x=0;
-    int y=0;
+    /* int y=0; */
 
     d=(GLdouble**) malloc(sizeof(GLdouble)* p->op.u.polygon.cnt);
     for (x=0;x < p->op.u.polygon.cnt; x++)
     {
-	GLdouble temp;
+	/* GLdouble temp; */
 	d[x]=(GLdouble*)(malloc(sizeof(GLdouble)*3));
 	d[x][0]=p->op.u.polygon.pts[x].x;
 	d[x][1]=p->op.u.polygon.pts[x].y;
@@ -159,6 +175,7 @@ static int Render_Contour2(GLUtesselator *tobj,sdot_op* p)
     return(1);
 
 }
+#if 0
 static int Render_Contour(GLUtesselator *tobj, GLdouble obj_data[][3],int cnt)
 {
 
@@ -167,13 +184,13 @@ static int Render_Contour(GLUtesselator *tobj, GLdouble obj_data[][3],int cnt)
 //    GLdouble d[1][3];
     static GLdouble**d;
     int x=0;
-    int y=0;
+    /* int y=0; */
     if (!d)
     {
 	d=(GLdouble**) malloc(sizeof(GLdouble)* cnt);
 	for (x=0;x < cnt; x++)
 	{
-	    GLdouble temp;
+	    /* GLdouble temp; */
 	    d[x]=(GLdouble*)(malloc(sizeof(GLdouble)*3));
 	    d[x][0]=obj_data[x][0];
 	    d[x][1]=obj_data[x][1];
@@ -207,11 +224,7 @@ static int Render_Contour(GLUtesselator *tobj, GLdouble obj_data[][3],int cnt)
     return(1);
 
 }
-
-
-
-
-
+#endif
 
 static int Begin_Polygon(GLUtesselator *tobj)
 {
@@ -245,6 +258,7 @@ static int freeTes(GLUtesselator *tobj)
 }
 int drawTessPolygon(sdot_op* p)
 {
+    static tessPoly TP;
     if (!TP.tobj)
     {
 	TP.tobj=Init();
