@@ -847,6 +847,14 @@ This field indicates which graph component uses the attribute.
   requires more height to fit, the node's height will be increased to
   contain the label. Note also that, if the output format is dot, the
   value given to <B>height</B> will be the final value.
+  <P>
+  If the node shape is regular, the width and height are made identical.
+  In this case, if either the width or the height is set explicitly,
+  that value is used.
+  In this case, if both the width or the height are set explicitly,
+  the maximum of the two values is used.
+  If neither is set explicitly, the minimum of the two default values
+  is used.
 
 <DT><A NAME=d:href HREF=#a:href><STRONG>href</STRONG></A>
 <DD>  Synonym for <A HREF=#d:URL>URL</A>.
@@ -1462,7 +1470,8 @@ This field indicates which graph component uses the attribute.
 <DD>  Rectangles for fields of records, <A HREF=#points>in points</A>.
 
 <DT><A NAME=d:regular HREF=#a:regular><STRONG>regular</STRONG></A>
-<DD>  If true, force polygon to be regular.
+<DD>  If true, force polygon to be regular, i.e., the vertices of the
+  polygon will lie on a circle whose center is the center of the node.
 
 <DT><A NAME=d:remincross HREF=#a:remincross><STRONG>remincross</STRONG></A>
 <DD>  If true and there are multiple clusters, run cross
@@ -1711,6 +1720,14 @@ This field indicates which graph component uses the attribute.
   requires more width to fit, the node's width will be increased to
   contain the label. Note also that, if the output format is dot, the
   value given to <B>width</B> will be the final value.
+  <P>
+  If the node shape is regular, the width and height are made identical.
+  In this case, if either the width or the height is set explicitly,
+  that value is used.
+  In this case, if both the width or the height are set explicitly,
+  the maximum of the two values is used.
+  If neither is set explicitly, the minimum of the two default values
+  is used.
 
 <DT><A NAME=d:z HREF=#a:z><STRONG>z</STRONG></A>
 <DD>  <B>Deprecated:</B>Use <A HREF=#d:pos><B>pos</B></A> attribute, along

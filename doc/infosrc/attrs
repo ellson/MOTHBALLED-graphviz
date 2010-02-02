@@ -374,6 +374,14 @@ will be the final height of the node. Otherwise, if the node label
 requires more height to fit, the node's height will be increased to
 contain the label. Note also that, if the output format is dot, the
 value given to <B>height</B> will be the final value.
+<P>
+If the node shape is regular, the width and height are made identical.
+In this case, if either the width or the height is set explicitly,
+that value is used.
+In this case, if both the width or the height are set explicitly,
+the maximum of the two values is used.
+If neither is set explicitly, the minimum of the two default values
+is used.
 :href:E:escString:"";  map,ps,svg
 Synonym for <A HREF=#d:URL>URL</A>.
 :id:GNE:lblString:"";  map,ps,svg
@@ -930,7 +938,8 @@ new size. This feature only works in dot.
 :rects:N:rect; write
 Rectangles for fields of records, <A HREF=#points>in points</A>.
 :regular:N:bool:false;
-If true, force polygon to be regular.
+If true, force polygon to be regular, i.e., the vertices of the
+polygon will lie on a circle whose center is the center of the node.
 :remincross:G:bool:false;  dot
 If true and there are multiple clusters, run cross
 minimization a second time.
@@ -1148,6 +1157,14 @@ will be the final width of the node. Otherwise, if the node label
 requires more width to fit, the node's width will be increased to
 contain the label. Note also that, if the output format is dot, the
 value given to <B>width</B> will be the final value.
+<P>
+If the node shape is regular, the width and height are made identical.
+In this case, if either the width or the height is set explicitly,
+that value is used.
+In this case, if both the width or the height are set explicitly,
+the maximum of the two values is used.
+If neither is set explicitly, the minimum of the two default values
+is used.
 :z:N:double:0.0:-MAXFLOAT/-1000;
 <B>Deprecated:</B>Use <A HREF=#d:pos><B>pos</B></A> attribute, along
 with <A HREF=#d:dimen><B>dimen</B></A> and/or <A HREF=#d:dim><B>dim</B></A>
