@@ -1456,7 +1456,7 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
     bezier bz;
     splines offspl, tmpspl;
     pointf pf0, pf1, pf2 = { 0, 0 }, pf3, *offlist, *tmplist;
-    double arrowsize, numc2;
+    double arrowsize, numc2, penwidth=job->obj->penwidth;
     char* p;
 
 #define SEP 2.0
@@ -1572,7 +1572,7 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 		    }
 		}
 		arrow_gen(job, EMIT_TDRAW, bz.sp, bz.list[0],
-			arrowsize, job->obj->penwidth, bz.sflag);
+			arrowsize, penwidth, bz.sflag);
 	    }
 	    if (bz.eflag) {
 		if (color != headcolor) {
@@ -1583,7 +1583,7 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 		    }
 		}
 		arrow_gen(job, EMIT_HDRAW, bz.ep, bz.list[bz.size - 1],
-			arrowsize, job->obj->penwidth, bz.eflag);
+			arrowsize, penwidth, bz.eflag);
 	    }
 	    free(colors);
 	    for (i = 0; i < offspl.size; i++) {
@@ -1610,17 +1610,18 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 		} else {
 		    gvrender_beziercurve(job, bz.list, bz.size, FALSE,
 					 FALSE, FALSE);
+                    /* arrow_gen resets the job style  (How?  FIXME)
+                     * If we have more splines to do, restore the old one.
+                     * Use local copy of penwidth to work around reset.
+                     */
 		    if (bz.sflag) {
 			arrow_gen(job, EMIT_TDRAW, bz.sp, bz.list[0],
-				arrowsize, job->obj->penwidth, bz.sflag);
+				arrowsize, penwidth, bz.sflag);
 		    }
 		    if (bz.eflag) {
 			arrow_gen(job, EMIT_HDRAW, bz.ep, bz.list[bz.size - 1],
-				arrowsize, job->obj->penwidth, bz.eflag);
+				arrowsize, penwidth, bz.eflag);
 		    }
-                    /* arrow_gen resets the job style 
-                     * If we have more splines to do, restore the old one.
-                     */
 		    if ((ED_spl(e)->size>1) && (bz.sflag||bz.eflag) && styles) 
 			gvrender_set_style(job, styles);
 		}
