@@ -54,11 +54,11 @@ configure-stamp:
 	--with-pangocairo \
 	--with-x \
 	--with-gdk-pixbuf \
-	--without-ghostscript \
-	--without-gtk \
-	--without-gtkgl \
-	--without-gtkglext \
-	--without-glade \
+	--with-ghostscript \
+	--with-gtk \
+	--with-gtkgl \
+	--with-gtkglext \
+	--with-glade \
 	--with-ipsepcola \
 	--with-lasi \
 	--with-rsvg \
