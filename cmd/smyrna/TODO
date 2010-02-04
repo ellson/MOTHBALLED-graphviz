@@ -4,6 +4,8 @@ Non-simple background polygons
 Menu label indicating active graph
 Specify selection by path or polyline
 Allow user control of max. node size
+Set focus on a node
+  "Find node whose name is abc"
 
 Multiple views
 GUI for canned gvpr programs
@@ -18,6 +20,5 @@ Bugs:
 Labels don't appear when alpha colors are enabled 
 Edges should not disappear when node is off screen ?
 Re-fix 3D navigation
-Clean up apply buttons - which are necessary?
 Make sure all buttons do something or remove them
 Trap "window close" on Smyrna Settings widget, or fix problem
