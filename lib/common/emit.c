@@ -941,18 +941,23 @@ static void emit_background(GVJ_t * job, graph_t *g)
 {
     xdot* xd;
     char *str;
+    int dfltColor;
     
     /* if no bgcolor specified - first assume default of "white" */
-    if (! ((str = agget(g, "bgcolor")) && str[0]))
+    if (! ((str = agget(g, "bgcolor")) && str[0])) {
 	str = "white";
+	dfltColor = 1;
+    }
+    else
+	dfltColor = 0;
 
     /* if device has no truecolor support, change "transparent" to "white" */
     if (! (job->flags & GVDEVICE_DOES_TRUECOLOR) && (streq(str, "transparent")))
 	str = "white";
 
-    /* except for "tranparent" on truecolor, or "white" on (assumed) white paper, paint background */
+    /* except for "tranparent" on truecolor, or default "white" on (assumed) white paper, paint background */
     if (!(   ((job->flags & GVDEVICE_DOES_TRUECOLOR) && streq(str, "transparent"))
-          || ((job->flags & GVRENDER_NO_WHITE_BG) && streq(str, "white")))) {
+          || ((job->flags & GVRENDER_NO_WHITE_BG) && dfltColor))) {
         gvrender_set_fillcolor(job, str);
         gvrender_set_pencolor(job, str);
         gvrender_box(job, job->clip, TRUE);	/* filled */
