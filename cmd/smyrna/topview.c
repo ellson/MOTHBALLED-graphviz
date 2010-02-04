@@ -934,9 +934,11 @@ static void drawtopviewedges(Agraph_t * g)
 
 void drawTopViewGraph(Agraph_t * g)
 {
+/*
     glEnable (GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_DEPTH_TEST);
+*/
 
 //    glDisable(GL_DEPTH_TEST);
 //    glCallList (1);
