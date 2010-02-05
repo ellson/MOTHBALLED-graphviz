@@ -1347,6 +1347,8 @@ makeLineEdge(edge_t* fe, pointf* points, node_t** hp)
     return pn;
 }
 
+#define NUMPTS 2000
+
 /* make_regular_edge:
  */
 static void
@@ -1359,9 +1361,18 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
     pathend_t tend, hend;
     boxf b;
     int boxn, sl, si, smode, i, j, dx, pn, hackflag, longedge;
-    pointf pointfs[1000], pointfs2[1000];
+    static pointf* pointfs;
+    static pointf* pointfs2;
+    static int numpts;
+    static int numpts2;
     int pointn;
 
+    if (!pointfs) {
+	pointfs = N_GNEW(NUMPTS, pointf);
+   	pointfs2 = N_GNEW(NUMPTS, pointf);
+	numpts = NUMPTS;
+	numpts2 = NUMPTS;
+    }
     sl = 0;
     e = edges[ind];
     g = agraphof(agtail(e));
@@ -1468,6 +1479,14 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
 	    }
 	    if (pn == 0)
 	        return;
+	
+	    if (pointn + pn > numpts) {
+                /* This should be enough to include 3 extra points added by
+                 * straight_path below.
+                 */
+		numpts = 2*(pointn+pn); 
+		pointfs = RALLOC(numpts, pointfs, pointf);
+	    }
 	    for (i = 0; i < pn; i++) {
 		pointfs[pointn++] = ps[i];
 	    }
@@ -1511,6 +1530,10 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
         }
 	if (pn == 0)
 	    return;
+	if (pointn + pn > numpts) {
+	    numpts = 2*(pointn+pn); 
+	    pointfs = RALLOC(numpts, pointfs, pointf);
+	}
 	for (i = 0; i < pn; i++) {
 	    pointfs[pointn++] = ps[i];
 	}
@@ -1527,6 +1550,11 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
     dx = sp->Multisep * (cnt - 1) / 2;
     for (i = 1; i < pointn - 1; i++)
 	pointfs[i].x -= dx;
+
+    if (numpts > numpts2) {
+	numpts2 = numpts; 
+	pointfs2 = RALLOC(numpts2, pointfs2, pointf);
+    }
     for (i = 0; i < pointn; i++)
 	pointfs2[i] = pointfs[i];
     clip_and_install(fe, hn, pointfs2, pointn, &sinfo);
