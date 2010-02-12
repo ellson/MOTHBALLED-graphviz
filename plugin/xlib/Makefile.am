@@ -34,7 +34,7 @@ man_MANS = vimdot.1
 pdf_DATA = vimdot.1.pdf
 
 vimdot.1.pdf: $(srcdir)/vimdot.1
-        - $(GROFF) -Tps -man $(srcdir)/dot.1 | $(PS2PDF) - - >vimdot.1.pdf
+	- $(GROFF) -Tps -man $(srcdir)/dot.1 | $(PS2PDF) - - >vimdot.1.pdf
 
 libgvplugin_xlib_C_la_SOURCES = \
 	gvplugin_xlib.c \
