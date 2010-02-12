@@ -7,3 +7,4 @@ Makefile.in
 CMakeFiles
 *.cmake
 vimdot
+*.pdf

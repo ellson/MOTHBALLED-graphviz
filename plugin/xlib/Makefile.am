@@ -7,6 +7,8 @@ else
 GRAPH = graph
 endif
 
+pdfdir = $(pkgdatadir)/doc/pdf
+
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib/common \
@@ -28,6 +30,12 @@ bin_SCRIPTS = vimdot
 endif
 endif
 
+man_MANS = vimdot.1
+pdf_DATA = vimdot.1.pdf
+
+vimdot.1.pdf: $(srcdir)/vimdot.1
+        - $(GROFF) -Tps -man $(srcdir)/dot.1 | $(PS2PDF) - - >vimdot.1.pdf
+
 libgvplugin_xlib_C_la_SOURCES = \
 	gvplugin_xlib.c \
 	gvdevice_xlib.c
@@ -48,7 +56,6 @@ vimdot: $(top_srcdir)/plugin/xlib/vimdot.sh
 	cp $(top_srcdir)/plugin/xlib/vimdot.sh vimdot
 	chmod +x vimdot
 
-EXTRA_DIST = vimdot.sh
+EXTRA_DIST = vimdot.sh vimdot.1 vimdot.1.pdf
 
-DISTCLEANFILES = vimdot
-
+DISTCLEANFILES = vimdot vimdot.1.pdf
