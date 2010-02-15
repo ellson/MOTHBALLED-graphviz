@@ -400,41 +400,41 @@ Agedge_t *agsubedge(Agraph_t * g, Agedge_t * e, int cflag)
 /* edge comparison.  OBJTYPE(e) == 0 means ID is a wildcard. */
 int agedgeidcmpf(Dict_t * d, void *arg_e0, void *arg_e1, Dtdisc_t * disc)
 {
-    int rv;
+    long v;
     Agedge_t *e0, *e1;
 
     NOTUSED(d);
     e0 = arg_e0;
     e1 = arg_e1;
     NOTUSED(disc);
-    rv = AGID(e0->node) - AGID(e1->node);
-    if (rv == 0) {		/* same node */
+    v = AGID(e0->node) - AGID(e1->node);
+    if (v == 0) {		/* same node */
 	if ((AGTYPE(e0) == 0) || (AGTYPE(e1) == 0))
-	    rv = 0;
+	    v = 0;
 	else
-	    rv = AGID(e0) - AGID(e1);
+	    v = AGID(e0) - AGID(e1);
     }
-    return rv;
+    return ((v==0)?0:(v<0?-1:1));
 }
 
 /* edge comparison.  OBJTYPE(e) == 0 means ID is a wildcard. */
 int agedgeseqcmpf(Dict_t * d, void *arg_e0, void *arg_e1, Dtdisc_t * disc)
 {
-    int rv;
+    long v;
     Agedge_t *e0, *e1;
 
     NOTUSED(d);
     e0 = arg_e0;
     e1 = arg_e1;
     NOTUSED(disc);
-    rv = AGID(e0->node) - AGID(e1->node);
-    if (rv == 0) {		/* same node */
+    v = AGID(e0->node) - AGID(e1->node);
+    if (v == 0) {		/* same node */
 	if ((AGTYPE(e0) == 0) || (AGTYPE(e1) == 0))
-	    rv = 0;
+	    v = 0;
 	else
-	    rv = AGSEQ(e0) - AGSEQ(e1);
+	    v = AGSEQ(e0) - AGSEQ(e1);
     }
-    return rv;
+    return ((v==0)?0:(v<0?-1:1));
 }
 
 Dtdisc_t Ag_mainedge_seq_disc = {
