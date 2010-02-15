@@ -735,10 +735,5 @@ void freeSmGraph(Agraph_t * g,topview* t)
 {
     return ;
 }
-void move_TVnodes()
-{
-    return;
-}
-
 
 
