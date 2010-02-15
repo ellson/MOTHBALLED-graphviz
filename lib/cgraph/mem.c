@@ -35,7 +35,7 @@ static void *memalloc(void *heap, size_t request)
 {
     void *rv;
     rv = vmalloc((Vmalloc_t *) heap, request);
-    memset(rv, 0, request);
+    if (rv) memset(rv, 0, request);
     return rv;
 }
 

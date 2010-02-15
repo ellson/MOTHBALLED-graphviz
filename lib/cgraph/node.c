@@ -49,7 +49,7 @@ Agnode_t *agnxtnode(Agraph_t * g, Agnode_t * n)
 {
     Agsubnode_t *sn;
     sn = agsubrep(g, n);
-    sn = ((Agsubnode_t *) dtnext(g->n_seq, sn));
+    if (sn) sn = ((Agsubnode_t *) dtnext(g->n_seq, sn));
     return sn ? sn->node : NILnode;
 }
 
@@ -64,7 +64,7 @@ Agnode_t *agprvnode(Agraph_t * g, Agnode_t * n)
 {
     Agsubnode_t *sn;
     sn = agsubrep(g, n);
-    sn = ((Agsubnode_t *) dtprev(g->n_seq, sn));
+    if (sn) sn = ((Agsubnode_t *) dtprev(g->n_seq, sn));
     return sn ? sn->node : NILnode;
 }
 
@@ -90,11 +90,17 @@ static Agnode_t *newnode(Agraph_t * g, unsigned long id, unsigned long seq)
 static void installnode(Agraph_t * g, Agnode_t * n)
 {
     Agsubnode_t *sn;
+    int osize;
+
+    assert(dtsize(g->n_id) == dtsize(g->n_seq));
+    osize = dtsize(g->n_id);
     if (g == agroot(g)) sn = &(n->mainsub);
     else sn = agalloc(g, sizeof(Agsubnode_t));
     sn->node = n;
     dtinsert(g->n_id, sn);
     dtinsert(g->n_seq, sn);
+    assert(dtsize(g->n_id) == dtsize(g->n_seq));
+    assert(dtsize(g->n_id) == osize + 1);
 }
 
 static void installnodetoroot(Agraph_t * g, Agnode_t * n)
@@ -158,6 +164,7 @@ Agnode_t *agnode(Agraph_t * g, char *name, int cflag)
 	n = newnode(g, id, agnextseq(g, AGNODE));
 	installnodetoroot(g, n);
 	initnode(g, n);
+	assert(agsubrep(g,n));
 	return n;
     }
 
@@ -264,18 +271,22 @@ Agnode_t *agsubnode(Agraph_t * g, Agnode_t * n0, int cflag)
 
 int agsubnodeidcmpf(Dict_t * d, void *arg0, void *arg1, Dtdisc_t * disc)
 {
+    long	v;
     Agsubnode_t *sn0, *sn1;
     sn0 = (Agsubnode_t *) arg0;
     sn1 = (Agsubnode_t *) arg1;
-    return (AGID(sn0->node) - AGID(sn1->node));
+    v = (AGID(sn0->node) - AGID(sn1->node));
+    return ((v==0)?0:(v<0?-1:1));
 }
 
 int agsubnodeseqcmpf(Dict_t * d, void *arg0, void *arg1, Dtdisc_t * disc)
 {
     Agsubnode_t *sn0, *sn1;
+    long	v;
     sn0 = (Agsubnode_t *) arg0;
     sn1 = (Agsubnode_t *) arg1;
-    return (AGSEQ(sn0->node) - AGSEQ(sn1->node));
+    v = (AGSEQ(sn0->node) - AGSEQ(sn1->node));
+    return ((v==0)?0:(v<0?-1:1));
 }
 
 Dtdisc_t Ag_subnode_id_disc = {

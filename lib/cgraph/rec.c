@@ -203,7 +203,7 @@ void aginit(Agraph_t * g, int kind, char *rec_name, int rec_size, int mtf)
     Agnode_t *n;
     Agedge_t *e;
     Agraph_t *s;
-	int		 rec;
+	int		 rec;	/* if recursive on subgraphs */
 
 	rec = (rec_size < 0);
 	if (rec) rec_size = -rec_size;

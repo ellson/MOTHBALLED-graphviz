@@ -31,9 +31,11 @@ Agedge_t *agfstout(Agraph_t * g, Agnode_t * n)
     Agedge_t *e = NILedge;
 
     sn = agsubrep(g, n);
-    dtrestore(g->e_seq, sn->out_seq);
-    e = (Agedge_t *) dtfirst(g->e_seq);
-    sn->out_seq = dtextract(g->e_seq);
+    if (sn) {
+		dtrestore(g->e_seq, sn->out_seq);
+		e = (Agedge_t *) dtfirst(g->e_seq);
+		sn->out_seq = dtextract(g->e_seq);
+	}
     return e;
 }
 
@@ -42,13 +44,15 @@ Agedge_t *agnxtout(Agraph_t * g, Agedge_t * e)
 {
     Agnode_t *n;
     Agsubnode_t *sn;
-    Agedge_t *f;
+    Agedge_t *f = NILedge;
 
     n = AGTAIL(e);
     sn = agsubrep(g, n);
-    dtrestore(g->e_seq, sn->out_seq);
-    f = (Agedge_t *) dtnext(g->e_seq, e);
-    sn->out_seq = dtextract(g->e_seq);
+    if (sn) {
+		dtrestore(g->e_seq, sn->out_seq);
+		f = (Agedge_t *) dtnext(g->e_seq, e);
+		sn->out_seq = dtextract(g->e_seq);
+	}
     return f;
 }
 
@@ -58,9 +62,11 @@ Agedge_t *agfstin(Agraph_t * g, Agnode_t * n)
     Agedge_t *e = NILedge;
 
     sn = agsubrep(g, n);
-    dtrestore(g->e_seq, sn->in_seq);
-    e = (Agedge_t *) dtfirst(g->e_seq);
-    sn->in_seq = dtextract(g->e_seq);
+	if (sn) {
+		dtrestore(g->e_seq, sn->in_seq);
+		e = (Agedge_t *) dtfirst(g->e_seq);
+		sn->in_seq = dtextract(g->e_seq);
+	}
     return e;
 }
 
@@ -68,14 +74,16 @@ Agedge_t *agnxtin(Agraph_t * g, Agedge_t * e)
 {
     Agnode_t *n;
     Agsubnode_t *sn;
-    Agedge_t *f;
+    Agedge_t *f = NILedge;
 
     n = AGHEAD(e);
     sn = agsubrep(g, n);
-    dtrestore(g->e_seq, sn->in_seq);
-    f = (Agedge_t *) dtnext(g->e_seq, e);
-    sn->in_seq = dtextract(g->e_seq);
-    return f;
+	if (sn) {
+		dtrestore(g->e_seq, sn->in_seq);
+		f = (Agedge_t *) dtnext(g->e_seq, e);
+		sn->in_seq = dtextract(g->e_seq);
+	}
+	return f;
 }
 
 Agedge_t *agfstedge(Agraph_t * g, Agnode_t * n)
@@ -167,8 +175,10 @@ static void ins(Dict_t * d, Dtlink_t ** set, Agedge_t * e)
 
 static void del(Dict_t * d, Dtlink_t ** set, Agedge_t * e)
 {
+    void *x;
     dtrestore(d, *set);
-    dtdelete(d, e);
+    x = dtdelete(d, e);
+    assert(x);
     *set = dtextract(d);
 }
 
