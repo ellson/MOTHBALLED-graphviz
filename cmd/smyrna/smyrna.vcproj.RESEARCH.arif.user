@@ -11,7 +11,7 @@
 			<DebugSettings
 				Command="$(TargetPath)"
 				WorkingDirectory="C:\graphviz-ms\bin"
-				CommandArguments="c:/4elt.dot"
+				CommandArguments=""
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"
