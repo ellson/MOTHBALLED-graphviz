@@ -808,7 +808,7 @@ void showAttrsWidget(topview* t)
     gtk_widget_show(glade_xml_get_widget(xml, "dlgSettings"));
 	gtk_notebook_set_current_page (
 		(GtkNotebook*)glade_xml_get_widget(xml, "notebook3"),ATTR_NOTEBOOK_IDX);
-	set_header_text();
+//	set_header_text();
 	filter_attributes("",view->Topview);
 
 

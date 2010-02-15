@@ -123,7 +123,7 @@ int run_gvpr(Agraph_t * srcGraph, int argc, char *argv[])
     { 
 	set_refresh(view,argv[1]);
         update_graph_from_settings(srcGraph);
-	update_topview(srcGraph, view->Topview, 0);
+//	update_topview(srcGraph, view->Topview, 0);
     }
     return rv;
 }

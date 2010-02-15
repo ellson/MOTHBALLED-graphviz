@@ -22,6 +22,8 @@
 #include "beacon.h"
 #include "hotkeymap.h"
 #include "selection.h"
+#include "selectionfuncs.h"
+#include "topviewfuncs.h"
 
 
     static float prevX=0;
@@ -53,11 +55,14 @@ static void apply_actions(ViewInfo* v,int x,int y)
     if(a==MM_RECTANGULAR_SELECT)
     {
 	if (!view->mouse.down)
-	    rectangle_select(v);
+//	    rectangle_select(v);
+	    pick_objects_rect(view->g[view->activeGraph]) ;
     }
 
-    if (a==MM_SINGLE_SELECT) 
-        pick_node_from_coords(view->mouse.GLfinalPos.x,view->mouse.GLfinalPos.y,view->mouse.GLfinalPos.z);
+    if (a==MM_SINGLE_SELECT)
+    {
+	pick_object_xyz(view->g[view->activeGraph],view->Topview,view->mouse.GLfinalPos.x,view->mouse.GLfinalPos.y,view->mouse.GLfinalPos.z);
+    }
 
     if (a==MM_FISHEYE_PICK) 
     {
@@ -127,8 +132,6 @@ static void appmouse_up(ViewInfo* v,int x,int y)
 	if (v->mouse.t==glMouseRightButton)
 	    appmouse_right_click(v,x,y);
     }
-    if ((a== MM_FISHEYE_MAGNIFIER) || (a == MM_MAGNIFIER))	//fisheye mag mouse release, stop distortion
-        originate_distorded_coordinates(v->Topview);
     apply_actions(v,x,y);
     view->mouse.dragX = 0;
     view->mouse.dragY = 0;

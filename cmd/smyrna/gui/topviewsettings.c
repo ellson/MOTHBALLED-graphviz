@@ -41,9 +41,10 @@ void on_settingsApplyBtn_clicked(GtkWidget * widget, gpointer user_data)
 {
     update_graph_from_settings(view->g[view->activeGraph]);
     set_viewport_settings_from_template(view, view->g[view->activeGraph]);
-    update_topview(view->g[view->activeGraph], view->Topview, 0);
+//    update_topview(view->g[view->activeGraph], view->Topview, 0);
 /*	settvcolorinfo(view->g[view->activeGraph],view->Topview);
 	init_node_size(view->g[view->activeGraph])*/
+    updateSmGraph(view->g[view->activeGraph],view->Topview);
 }
 void on_dlgSettings_close (GtkWidget * widget, gpointer user_data)
 {
@@ -263,13 +264,13 @@ static int get_combobox_widget_to_attribute(char *attribute,
     float value;
         attribute=attribute +9;
 
-
     value = (float)
 	gtk_combo_box_get_active((GtkComboBox *)
 				 glade_xml_get_widget(xml, widget_name));
 
     sprintf(buf, "%f", value);
     agattr(g, AGRAPH, attribute, buf);
+    printf ("%s %f \n",attribute,value);
     return 1;
 
 

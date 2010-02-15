@@ -109,7 +109,7 @@ void pick_node_from_coords(float x, float y, float z)
     }
 
     for (ind = 0; ((seledges)&&(ind < view->Topview->Edgecount)); ind++) {
-	point3f p1, p2, p3;
+	glCompPoint p1, p2, p3;
 	e = &view->Topview->Edges[ind];
 	if (!e->data.Visible)
 	    continue;

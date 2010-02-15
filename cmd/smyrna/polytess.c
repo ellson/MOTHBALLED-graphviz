@@ -126,10 +126,10 @@ static GLUtesselator* Init()
     // Create a new tessellation object 
     GLUtesselator* tobj = gluNewTess(); 
     // Set callback functions
-    gluTessCallback(tobj, GLU_TESS_VERTEX, &vertexCallback);
+    gluTessCallback(tobj, GLU_TESS_VERTEX, (void*)&vertexCallback);
     gluTessCallback(tobj, GLU_TESS_BEGIN, &glBegin);
     gluTessCallback(tobj, GLU_TESS_END, &glEnd);
-    gluTessCallback(tobj, GLU_TESS_COMBINE,&combineCallback);
+    gluTessCallback(tobj, GLU_TESS_COMBINE,(void*)&combineCallback);
     return tobj;
 }
 

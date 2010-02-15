@@ -444,9 +444,7 @@ void EmbedText(sdot_op* o, int param)
 
 	}
 	y=o->op.u.text.y;
-	if (o->font)
-		glCompDrawText3D(o->font,x,y,view->Topview->global_z,o->op.u.text.width,font_op->op.u.font.size);
-	else
+	if (!o->font)
 	{
 		o->font=new_font(
 		view->widgets,
@@ -455,9 +453,9 @@ void EmbedText(sdot_op* o, int param)
 		pangotext,
 		font_op->op.u.font.name,font_op->op.u.font.size,0);
 		//new_font(glCompSet * s, char *text, glCompColor * c, glCompFontType type, char *fontdesc, int fs)*/
-
-
 	}
+	glCompDrawText3D(o->font,x,y,view->Topview->global_z,o->op.u.text.width,font_op->op.u.font.size);
+
 }
 
 void draw_selection_box(ViewInfo * view)
@@ -504,7 +502,7 @@ void draw_magnifier(ViewInfo * view)
 	view->mg.x = mg_x;
 	view->mg.y = mg_y;
 	glLineWidth(4);
-	local_zoom(view->Topview);
+//	local_zoom(view->Topview);
 	//drawing the magnifier borders
 	glBegin(GL_LINE_STRIP);
 	glColor4f((GLfloat) 0.3, (GLfloat) 0.1, (GLfloat) 0.8,
@@ -796,7 +794,7 @@ void drawCircle(float x, float y, float radius, float zdepth)
     if (radius < 0.3)
 	radius = (float) 0.4;
     glBegin(GL_POLYGON);
-    for (i = 0; i < 360; i = i + 10) {
+    for (i = 0; i < 360; i = i + 36) {
 	float degInRad = (float) (i * DEG2RAD);
 	glVertex3f((GLfloat) (x + cos(degInRad) * radius),
 		   (GLfloat) (y + sin(degInRad) * radius),

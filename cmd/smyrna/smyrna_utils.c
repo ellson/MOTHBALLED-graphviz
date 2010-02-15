@@ -137,6 +137,28 @@ void setColor(glCompColor* c,GLfloat R,GLfloat G,GLfloat B,GLfloat A)
     c->B=B;
     c->A=A;
 }
+glCompPoint getPointFromStr(char* str)
+{
+
+    glCompPoint p;
+    char* a;
+    static char bf[512];
+    strcpy(bf,str);
+    p.x=0;
+    p.y=0;
+    p.z=0;
+    a=strtok(bf,",");
+    if(a)
+	p.x=atof(a);
+    a=strtok(NULL,",");
+    if(a)
+	p.y=atof(a);
+    a=strtok(NULL,",");
+    if(a)
+	p.z=atof(a);
+    return p;
+}
+
 
 #if 0
 static float interpol(float minv, float maxv, float minc, float maxc, float x)

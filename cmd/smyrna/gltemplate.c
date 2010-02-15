@@ -337,7 +337,6 @@ static gboolean key_release_event(GtkWidget * widget, GdkEventKey * event, gpoin
  //   printf ("key is released:%d\n",event->keyval);
     view->keymap.down=0;
     view->keymap.keyVal=0;
-    originate_distorded_coordinates(view->Topview);
         return FALSE;
 
 

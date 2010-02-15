@@ -262,7 +262,8 @@ int glexpose_drawgraph(ViewInfo * view)
 //              if (GD_TopView(view->g[view->activeGraph])) 
 //              {
 	if (!view->Topview->fisheyeParams.active)
-	    drawTopViewGraph(view->g[view->activeGraph]);	//view->Topview style dots and straight lines
+//	    drawTopViewGraph(view->g[view->activeGraph]);	//view->Topview style dots and straight lines
+	    renderSmGraph(view->g[view->activeGraph],view->Topview);	    
 	else {
 	    drawtopologicalfisheye(view->Topview);
 	}

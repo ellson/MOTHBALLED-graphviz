@@ -227,12 +227,18 @@ typedef struct
 
 
     typedef struct {
-	GtkButton **gtkhostbtn;
-	int gtkhostbtncount;
-	GtkColorButton **gtkhostcolor;
-	int hostactive[MAX_BTN_CNT];	//temporary static, convert to dynamic,realloc
-	char **hostregex;
+
+	    int a;
     } topviewdata;
+    typedef struct
+    {
+	int node_id;
+	int edge_id;
+	int selnode_id;
+	int seledge_id;
+	int nodelabel_id;
+	int edgelabel_id;
+    }topviewcache;
 
     typedef struct xdot_set xdot_set;
     typedef enum { GEpixels, GEinches, GEmm } GEunit;
@@ -385,6 +391,26 @@ typedef struct
 	float offsetz;
     } graph_data;
 
+
+
+    typedef struct{
+        Agrec_t h;
+        glCompPoint A;
+	float size;
+	int selected;
+	int visible;
+	int printLabel;
+    }nodeRec;
+    typedef struct{
+	Agrec_t h;
+	glCompPoint posTail;
+	glCompPoint posHead;
+	int selected;
+	int visible;
+	int printLabel;
+    }edgeRec;
+
+
     typedef struct {
 	topview_node *Nodes;
 	topview_edge *Edges;
@@ -421,7 +447,10 @@ typedef struct
 	float global_z;
 	attr_list* attributes;/*attribute list*/
 	attr_list* filtered_attr_list;
+
+	topviewcache cache;
 	int xdotId;
+
 
     } topview;
 
@@ -624,7 +653,6 @@ typedef struct
 	/*lately added */
 	int drawnodes;
 	int drawedges;
-	int drawlabels;
 	int drawnodelabels;
 	int drawedgelabels;
 

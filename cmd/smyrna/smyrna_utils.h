@@ -27,5 +27,6 @@ extern float getAttrFloat(Agraph_t* g,void* obj,char* attr_name,float def);
 extern char* getAttrStr(Agraph_t* g,void* obj,char* attr_name,char* def);
 extern void setColor(glCompColor* c,GLfloat R,GLfloat G,GLfloat B,GLfloat A);
 extern void getcolorfromschema(colorschemaset * sc, float l, float maxl,glCompColor * c);
+extern glCompPoint getPointFromStr(char* str);
 
 #endif

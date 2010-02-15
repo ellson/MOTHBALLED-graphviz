@@ -188,7 +188,9 @@ void mHideConsoleSlot(GtkWidget * widget, gpointer user_data)
 //Graph
 void mNodeListSlot(GtkWidget * widget, gpointer user_data)
 {
-    execute_tv_nodes();
+    gtk_widget_show(glade_xml_get_widget(xml, "ListForm"));
+
+//    execute_tv_nodes();
 }
 
 void mNewNodeSlot(GtkWidget * widget, gpointer user_data)
@@ -226,29 +228,6 @@ void mGraphPropertiesSlot(GtkWidget * widget, gpointer user_data)
 
 void mNodeFindSlot(GtkWidget * widget, gpointer user_data)
 {
-    if (view->activeGraph != -1) {
-
-	gtk_dialog_set_response_sensitive((GtkDialog *)
-					  glade_xml_get_widget(xml,
-							       "findDialog"),
-					  1, 1);
-	gtk_dialog_set_response_sensitive((GtkDialog *)
-					  glade_xml_get_widget(xml,
-							       "findDialog"),
-					  2, 1);
-
-
-	respond = gtk_dialog_run((GtkDialog *)
-				 glade_xml_get_widget(xml, "findDialog"));
-
-	gtk_widget_hide(glade_xml_get_widget(xml, "findDialog"));
-	if (respond == 1)
-	    select_with_regex((gchar *)
-			      gtk_entry_get_text((GtkEntry *)
-						 glade_xml_get_widget(xml,
-								      "findText"))
-		);
-    }
 
 }
 

@@ -31,8 +31,6 @@ extern "C" {
     extern int point_within_ellips_with_coords(float ex, float ey,
 					       float ea, float eb,
 					       float px, float py);
-    extern int is_point_in_rectangle(float X, float Y, float RX, float RY,
-				     float RW, float RH);
 
     extern int SelectBeziers(sdot_op * op);
     extern int SelectEllipse(sdot_op * op);

@@ -279,7 +279,7 @@ int glreversecamera(ViewInfo * view)
 
 
 
-static point3f add(point3f p, point3f q)
+static glCompPoint add(glCompPoint p, glCompPoint q)
 {
     p.x += q.x;
     p.y += q.y;
@@ -287,7 +287,7 @@ static point3f add(point3f p, point3f q)
     return p;
 }
 
-static point3f sub(point3f p, point3f q)
+static glCompPoint sub(glCompPoint p, glCompPoint q)
 {
     p.x -= q.x;
     p.y -= q.y;
@@ -295,17 +295,17 @@ static point3f sub(point3f p, point3f q)
     return p;
 }
 
-static double dot(point3f p, point3f q)
+static double dot(glCompPoint p, glCompPoint q)
 {
     return (p.x * q.x + p.y * q.y + p.z * q.z);
 }
 
-static double len(point3f p)
+static double len(glCompPoint p)
 {
     return sqrt(dot(p, p));
 }
 
-static point3f scale(double d, point3f p)
+static glCompPoint scale(double d, glCompPoint p)
 {
     p.x *= (float) d;
     p.y *= (float) d;
@@ -313,9 +313,9 @@ static point3f scale(double d, point3f p)
     return p;
 }
 
-static point3f blend(point3f p, point3f q, float m)
+static glCompPoint blend(glCompPoint p, glCompPoint q, float m)
 {
-    point3f r;
+    glCompPoint r;
 
     r.x = p.x + m * (q.x - p.x);
     r.y = p.y + m * (q.y - p.y);
@@ -323,19 +323,19 @@ static point3f blend(point3f p, point3f q, float m)
     return r;
 }
 
-static point3f normalize(point3f p)
+static glCompPoint normalize(glCompPoint p)
 {
     double d = len(p);
 
     return scale(1 / d, p);
 }
 
-static double dist(point3f p, point3f q)
+static double dist(glCompPoint p, glCompPoint q)
 {
     return (len(sub(p, q)));
 }
 
-static point3f intersect(line l, plane J)
+static glCompPoint intersect(line l, plane J)
 {
     double t = -(J.d + dot(l.u, J.N)) / dot(l.v, J.N);
     return (add(l.u, scale(t, l.v)));
@@ -345,11 +345,11 @@ static point3f intersect(line l, plane J)
  * Given a line l determined by two points a and b, and a 3rd point p,
  * return the distance between the point and the line
  */
-double point_to_line_dist(point3f p, point3f a, point3f b)
+double point_to_line_dist(glCompPoint p, glCompPoint a, glCompPoint b)
 {
     line l;
     plane J;
-    point3f q;
+    glCompPoint q;
 
     l.u = a;
     l.v = normalize(sub(b, a));
@@ -369,12 +369,12 @@ double point_to_line_dist(point3f p, point3f a, point3f b)
  * If the perpendicular from p to the line a-b is outside of the segment,
  * return the distance to the closer of a or b.
  */
-double point_to_lineseg_dist(point3f p, point3f a, point3f b)
+double point_to_lineseg_dist(glCompPoint p, glCompPoint a, glCompPoint b)
 {
     float U;
-    point3f q;
-    point3f ba = sub(b, a);
-    point3f pa = sub(p, a);
+    glCompPoint q;
+    glCompPoint ba = sub(b, a);
+    glCompPoint pa = sub(p, a);
 
     U = (float) (dot(pa, ba) / dot(ba, ba));
 
@@ -394,7 +394,7 @@ double point_to_lineseg_dist(point3f p, point3f a, point3f b)
 */
 
 
-void make_plane(point3f a, point3f b, point3f c, plane * P)
+void make_plane(glCompPoint a, glCompPoint b, glCompPoint c, plane * P)
 {
     P->N.x = a.y * (b.z - c.z) + b.y * (c.z - a.z) + c.y * (a.z - b.z);	//+
     P->N.y = a.z * (b.x - c.x) + b.z * (c.x - a.x) + c.z * (a.x - b.x);	//+
@@ -418,7 +418,7 @@ void replacestr(char *source, char **target)
 
 #define G_PI    3.1415926535897932384626433832795028841971693993751
 #define DEG2RAD  G_PI/180
-int rot_spherex(plane J, float tet, point3f P, point3f * P2)
+int rot_spherex(plane J, float tet, glCompPoint P, glCompPoint * P2)
 {
     if (tet > 0) {
 	tet = 5;
@@ -705,6 +705,24 @@ int lines_intersect (glCompPoint* a, glCompPoint* b, glCompPoint* c, glCompPoint
 {
   return ((sideOf(a,b,c) != sideOf(a,b,d)) && (sideOf(c,d,a) != sideOf(c,d,b))); 
 }
+GLfloat distBetweenPts(glCompPoint A,glCompPoint B,float R)
+{
+    GLfloat rv=0;	
+    rv=(A.x-B.x)*(A.x-B.x) + (A.y-B.y)*(A.y-B.y) +(A.z-B.z)*(A.z-B.z);
+    rv=sqrt(rv);
+    if (rv <=R)
+	return 0;
+    return rv;
+}
+
+int is_point_in_rectangle(float X, float Y, float RX, float RY, float RW,float RH)
+{
+    if ((X >= RX) && (X <= (RX + RW)) && (Y >= RY) && (Y <= (RY + RH)))
+	return 1;
+    else
+	return 0;
+}
+
 
 
 
@@ -713,7 +731,7 @@ int lines_intersect (glCompPoint* a, glCompPoint* b, glCompPoint* c, glCompPoint
 #ifdef DEBUG
 void main(void)
 {
-    point3f LineStart, LineEnd, Point;
+    glCompPoint LineStart, LineEnd, Point;
     float Distance;
 
 

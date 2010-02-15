@@ -335,3 +335,4 @@ xdotBB
 gvFinalize
 gv_postprocess
 gvRenderContext
+gvflush

@@ -29,13 +29,10 @@ extern "C" {
 #endif
 
     typedef struct {
-	float x, y, z;
-    } point3f;
-    typedef struct {
-	point3f u, v;
+	glCompPoint u, v;
     } line;
     typedef struct {
-	point3f N;		/* normal */
+	glCompPoint N;		/* normal */
 	double d;		/* offset */
     } plane;
 
@@ -47,10 +44,10 @@ extern "C" {
 			    GLfloat * Z);
     void to3D(int x, int y, GLfloat * X, GLfloat * Y, GLfloat * Z);
     void linear_interplotate(float, float, float, float, float, float *);
-    double point_to_line_dist(point3f p, point3f u, point3f v);
-    double point_to_lineseg_dist(point3f p, point3f a, point3f b);
-    int rot_spherex(plane J, float tet, point3f P, point3f * P2);
-    void make_plane(point3f a, point3f b, point3f c, plane * P);
+    double point_to_line_dist(glCompPoint p, glCompPoint u, glCompPoint v);
+    double point_to_lineseg_dist(glCompPoint p, glCompPoint a, glCompPoint b);
+    int rot_spherex(plane J, float tet, glCompPoint P, glCompPoint * P2);
+    void make_plane(glCompPoint a, glCompPoint b, glCompPoint c, plane * P);
     void replacestr(char *source, char **target);
     extern void glCompCalcWidget(glCompCommon * parent,
 				 glCompCommon * child, glCompCommon * ref);
@@ -64,6 +61,8 @@ extern "C" {
 
     void glCompSelectionBox(glCompSet * s);
     extern int lines_intersect (glCompPoint* a, glCompPoint* b, glCompPoint* c, glCompPoint* d);
+    extern GLfloat distBetweenPts(glCompPoint A,glCompPoint B,float R);
+    extern int is_point_in_rectangle(float X, float Y, float RX, float RY, float RW,float RH);
 
 #ifdef __cplusplus
 }

@@ -25,31 +25,6 @@ tv_nodes TV_Nodes;
 static char buf[255];
 int MP_Flag = 0;
 
-#ifdef UNUSED
-static
-void clear_tv_filter(tv_filter * TV_Filter)
-{
-    TV_Filter->highlighted = -1;
-    TV_Filter->visible = -1;
-    TV_Filter->min_data1 = NULL;
-    TV_Filter->max_data1 = NULL;
-    TV_Filter->min_data2 = NULL;
-    TV_Filter->max_data2 = NULL;
-
-    TV_Nodes.filtered = 0;
-
-}
-
-static
-tv_filter *create_tv_filter(void)
-{
-    tv_filter *f;
-    f = NEW(tv_filter);
-    clear_tv_filter(f);
-    return f;
-}
-#endif
-
 static
 void init_tv_nodes(tv_nodes * TV_Nodes)
 {
@@ -102,29 +77,6 @@ set_filter(tv_filter * TV_Filter, char *MinData1, char *MaxData1,
     return 1;
 }
 
-#ifdef UNUSED
-static
-int reverse_selection(void)
-{
-    int i = 0;
-    for (i; i < view->Topview->Nodecount; i++) {
-	if (OD_Selected(view->Topview->Nodes[i].Node))
-	    deselect_node(view->g[view->activeGraph],
-			  view->Topview->Nodes[i].Node);
-	else
-	    select_node(view->g[view->activeGraph],
-			view->Topview->Nodes[i].Node);
-    }
-    for (i = 0; i < view->Topview->Edgecount; i++) {
-	if (OD_Selected(view->Topview->Edges[i].Edge))
-	    deselect_edge(view->g[view->activeGraph],
-			  view->Topview->Edges[i].Edge);
-	else
-	    select_edge(view->g[view->activeGraph],
-			view->Topview->Edges[i].Edge);
-    }
-}
-#endif
 
 static
 int validate_node(tv_node * TV_Node)

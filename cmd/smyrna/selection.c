@@ -564,16 +564,6 @@ int lineintersects(float X1, float X2, float Y1, float Y2)
 	return 0;
     return -1;
 }
-int is_point_in_rectangle(float X, float Y, float RX, float RY, float RW,
-			  float RH)
-{
-    if ((X >= RX) && (X <= (RX + RW)) && (Y >= RY) && (Y <= (RY + RH)))
-	return 1;
-    else
-	return 0;
-
-
-}
 
 
 
@@ -757,38 +747,6 @@ int linesegmentsintersects(float X1, float X2, float Y1, float Y2)
 
 
 
-#ifdef UNUSED
-static int line_intersects(float *x, float *y, float *X, float *Y)
-{
-    //x,y are arrayf of float for two lines parameters theyt hold 4 points with x and y
-    //limitx and limity are float arrays with two points, thse points are the end points of the second line
-    //X,Y are the variables to put intersection point coordinates in
-    pointf pA, pB, pC, pD, pX;
-    pA.x = x[0];
-    pA.y = y[0];
-    pB.x = x[1];
-    pB.y = y[1];
-    pC.x = x[2];
-    pC.y = y[2];
-    pD.x = x[3];
-    pD.y = y[3];
-
-    if (seg_intersect(pA, pB, pC, pD, &pX)) {
-	*X = (float) pX.x;
-	*Y = (float) pX.y;
-	if ((pX.x >= x[2] - 0.01) && (pX.x < x[3] + 0.01) &&
-	    (pX.y >= y[2] - 0.01) && (pX.x < y[3] + 0.01)) {
-	    return 1;
-
-	}
-	return 0;
-
-    } else
-	return 0;
-
-}
-
-#endif
 int point_within_ellips_with_coords(float ex, float ey, float ea, float eb,
 				    float px, float py)
 {

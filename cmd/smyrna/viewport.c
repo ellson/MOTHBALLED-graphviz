@@ -35,6 +35,7 @@
 #include "md5.h"
 #include "arcball.h"
 #include "hotkeymap.h"
+#include "topviewfuncs.h"
 
 
 
@@ -79,7 +80,9 @@ void clear_viewport(ViewInfo * view)
 {
     /*free topview if there is one */
     if (view->activeGraph >= 0)
-	cleartopview(view->Topview);
+    {
+	freeSmGraph(view->g[view->activeGraph],view->Topview);
+    }
     if (view->graphCount)
 	agclose(view->g[view->activeGraph]);
 //      init_viewport(view);
@@ -286,7 +289,9 @@ void set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
 	     ("defaultfisheyemagnifierdistort", view, g));
     view->drawnodes = atoi(get_attribute_value("drawnodes", view, g));
     view->drawedges = atoi(get_attribute_value("drawedges", view, g));
-    view->drawlabels = atoi(get_attribute_value("drawlabels", view, g));
+    view->drawnodelabels=atoi(get_attribute_value("labelshownodes", view, g));
+    view->drawedgelabels=atoi(get_attribute_value("labelshowedges", view, g));
+
     view->FontSizeConst = 0;	//this will be calculated later in topview.c while calculating optimum font size
 
     view->glutfont =
@@ -643,10 +648,9 @@ void refreshViewport(int doClear)
     load_settings_from_graph(graph);
     update_graph_from_settings(graph);
     set_viewport_settings_from_template(view, graph);
-    if (doClear)
-	cleartopview(view->Topview);
+    view->Topview=initSmGraph(graph);
 
-    update_topview(graph, view->Topview, 1);
+//    update_topview(graph, view->Topview, 1);
     fill_key(view->orig_key, get_md5_key(graph));
     expose_event(view->drawing_area, NULL, NULL);
 }

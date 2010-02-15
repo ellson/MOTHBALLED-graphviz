@@ -254,6 +254,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\selectionfuncs.h"
+				>
+			</File>
+			<File
 				RelativePath=".\smyrnadefs.h"
 				>
 			</File>
@@ -442,6 +446,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\selectionfuncs.c"
+				>
+			</File>
+			<File
 				RelativePath=".\smyrna_utils.c"
 				>
 			</File>
@@ -455,10 +463,6 @@
 			</File>
 			<File
 				RelativePath=".\topfisheyeview.c"
-				>
-			</File>
-			<File
-				RelativePath=".\topview.c"
 				>
 			</File>
 			<File

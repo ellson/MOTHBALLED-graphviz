@@ -469,7 +469,7 @@ int main(int argc, char *argv[])
 {
     Agraph_t *g = 0;
     SparseMatrix A = NULL;
-    int dim;
+    int dim=0;
     parms_t pv;
 
     /* ======================= set parameters ==================== */
