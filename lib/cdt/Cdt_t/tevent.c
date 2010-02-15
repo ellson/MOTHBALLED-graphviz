@@ -1,61 +1,67 @@
-/* $Id$ $Revision$ */
-/* vim:set shiftwidth=4 ts=8: */
-
-/**********************************************************
-*      This software is part of the graphviz package      *
-*                http://www.graphviz.org/                 *
-*                                                         *
-*            Copyright (c) 1994-2004 AT&T Corp.           *
-*                and is licensed under the                *
-*            Common Public License, Version 1.0           *
-*                      by AT&T Corp.                      *
-*                                                         *
-*        Information and Software Systems Research        *
-*              AT&T Research, Florham Park NJ             *
-**********************************************************/
-
 #include	"dttest.h"
 
+static int Pevent;
 static int Event;
+static int Hinit;
 
 #if __STD_C
-static int event(Dt_t * dt, int type, Void_t * obj, Dtdisc_t * disc)
+static int event(Dt_t* dt, int type, Void_t* obj, Dtdisc_t* disc)
 #else
 static int event(dt, type, obj, disc)
-Dt_t *dt;
-int type;
-Void_t *obj;
-Dtdisc_t *disc;
+Dt_t*		dt;
+int		type;
+Void_t* 	obj;
+Dtdisc_t* 	disc;
 #endif
 {
-    Event = type;
-    return 0;
+	Pevent = Event;
+	Event = type;
+
+	if(type == DT_HASHSIZE)
+	{	Hinit += 1;
+		*(ssize_t*)obj = 1024;
+		return 1;
+	}
+
+	return 0;
 }
 
-Dtdisc_t Disc = { 0, sizeof(int), -1,
-    newint, NIL(Dtfree_f), compare, hashint,
-    NIL(Dtmemory_f), event
-};
+Dtdisc_t Disc =
+	{ 0, sizeof(long), -1,
+	  newint, NIL(Dtfree_f), compare, hashint,
+	  NIL(Dtmemory_f), event
+	};
 
 main()
 {
-    Dt_t *dt;
+	Dt_t		*dt;
+	long		k;
 
-    if (!(dt = dtopen(&Disc, Dtset)))
-	terror("Opening Dtset");
-    if (Event != DT_OPEN)
-	terror("No open event");
-    dtmethod(dt, Dtorder);
-    if (Event != DT_METH)
-	terror("No meth event");
+	if(!(dt = dtopen(&Disc,Dtset)) )
+		terror("Opening Dtset");
+	if(Pevent != DT_OPEN && Event != DT_ENDOPEN)
+		terror("No open event");
 
-    dtdisc(dt, &Disc, 0);
-    if (Event != DT_DISC)
-	terror("No disc event");
+	dtmethod(dt,Dtoset);
+	if(Event != DT_METH)
+		terror("No meth event");
 
-    dtclose(dt);
-    if (Event != DT_CLOSE)
-	terror("No close event");
+	dtdisc(dt,&Disc,0);
+	if(Event != DT_DISC)
+		terror("No disc event");
 
-    return 0;
+	dtclose(dt);
+	if(Pevent != DT_CLOSE && Event != DT_ENDCLOSE)
+		terror("No close event");
+
+	if(!(dt = dtopen(&Disc,Dtset)) )
+		terror("Opening Dtset");
+
+	Pevent = Event = 0;
+	for(k = 1; k <= 3000; ++k)
+		dtinsert(dt, (Void_t*)k);
+	if(Hinit != 1)
+		terror("Wrong number of hash table events");
+
+	return 0;
 }

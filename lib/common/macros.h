@@ -21,6 +21,10 @@
 #define NOTUSED(var) (void) var
 #endif
 
+#ifndef NIL
+#define NIL(type)  ((type)0)
+#endif
+
 #define isPinned(n)     (ND_pinned(n) == P_PIN)
 #define hasPos(n)       (ND_pinned(n) > 0)
 #define isFixed(n)      (ND_pinned(n) > P_SET)

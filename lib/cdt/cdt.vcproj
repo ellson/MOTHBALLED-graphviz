@@ -259,6 +259,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\dttreeset.c"
+				>
+			</File>
+			<File
 				RelativePath=".\dtview.c"
 				>
 			</File>

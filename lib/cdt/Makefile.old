@@ -13,10 +13,10 @@ DEFINES= $(CCMODE) -I. $(CXFLAGS)
 
 HDRS =	cdt.h dthdr.h
 SRCS =	dtclose.c dtdisc.c dtflatten.c dthash.c dtmethod.c dtopen.c dtsize.c \
-	dtextract.c dtrestore.c dtlist.c dtstat.c dttree.c dtview.c \
+	dtextract.c dtrestore.c dtlist.c dtstat.c dttree.c dttreeset.c dtview.c \
 	dtrenew.c dtwalk.c dtstrhash.c
 OBJS =	dtclose.o dtdisc.o dtflatten.o dthash.o dtmethod.o dtopen.o dtsize.o \
-	dtextract.o dtrestore.o dtlist.o dtstat.o dttree.o dtview.o \
+	dtextract.o dtrestore.o dtlist.o dtstat.o dttree.o dttreeset.o dtview.o \
 	dtrenew.o dtwalk.o dtstrhash.o
 SRC_P=	Cdt_p/tsearch.c Cdt_p/hsearch.c
 OBJ_P=	tsearch.o hsearch.o

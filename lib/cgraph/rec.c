@@ -205,10 +205,10 @@ void aginit(Agraph_t * g, int kind, char *rec_name, int rec_size, int mtf)
     Agraph_t *s;
 	int		 rec;
 
-    switch (kind) {
-    case AGRAPH:
 	rec = (rec_size < 0);
 	if (rec) rec_size = -rec_size;
+    switch (kind) {
+    case AGRAPH:
 	agbindrec(g, rec_name, rec_size, mtf);
 	if (rec)
 		for (s = agfstsubg(g); s; s = agnxtsubg(s))

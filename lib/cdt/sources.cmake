@@ -20,6 +20,7 @@ SET(cdt_SRCS
 	${cdt_SRCDIR}/dtstat.c
 	${cdt_SRCDIR}/dtstrhash.c
 	${cdt_SRCDIR}/dttree.c
+	${cdt_SRCDIR}/dttreeset.c
 	${cdt_SRCDIR}/dtview.c
 	${cdt_SRCDIR}/dtwalk.c
 )
