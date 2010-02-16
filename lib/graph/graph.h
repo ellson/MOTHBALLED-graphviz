@@ -144,11 +144,10 @@ extern "C" {
 
 #endif
 /*end visual studio*/
-    extern int testDLL(char* data);
     extern char *agstrcanon(char *, char *);
     extern char *agcanonical(char *);
     extern char *agcanon(char *);
-//    extern int aghtmlstr(char *s);
+    extern int aghtmlstr(char *s);
     extern char *agget(void *, char *);
     extern char *agxget(void *, int);
     extern int agset(void *, char *, char *);
@@ -221,7 +220,7 @@ extern "C" {
     extern void agwarningf(char *fmt, ...);
 
     extern char *agstrdup(char *);
-//    extern char *agstrdup_html(char *s);
+    extern char *agstrdup_html(char *s);
     extern void agstrfree(char *);
 
     typedef enum { AGNODE = 1, AGEDGE, AGGRAPH } agobjkind_t;
