@@ -29,6 +29,9 @@
 #endif
 #include <string.h>
 
+#define NEW(t)           (t*)malloc(sizeof(t))
+#define N_NEW(n,t)       (t*)malloc((n)*sizeof(t))
+
 #include "cgraph.h"
 #include "cghdr.h"
 typedef struct {
@@ -149,28 +152,98 @@ static void init(int argc, char *argv[])
     outfile = stdout;
 }
 
+typedef struct blk_t {
+    Agnode_t **data;
+    Agnode_t **endp;
+    struct blk_t *prev;
+    struct blk_t *next;
+} blk_t;
+
+typedef struct {
+    blk_t *fstblk;
+    blk_t *curblk;
+    Agnode_t **curp;
+} stk_t;
+
+
+#define SMALLBUF 1024
+#define BIGBUF 1000000
+
+static Agnode_t *base[SMALLBUF];
+static blk_t Blk;
+static stk_t Stk;
+
+static void initStk()
+{
+    Blk.data = base;
+    Blk.endp = Blk.data + SMALLBUF;
+    Stk.curblk = Stk.fstblk = &Blk;
+    Stk.curp = Stk.curblk->data;
+}
+
+static void push(Agnode_t * np)
+{
+    if (Stk.curp == Stk.curblk->endp) {
+	if (Stk.curblk->next == NULL) {
+	    blk_t *bp = NEW(blk_t);
+	    if (bp == 0) {
+		fprintf(stderr, "gc: Out of memory\n");
+		exit(1);
+	    }
+	    bp->prev = Stk.curblk;
+	    bp->next = NULL;
+	    bp->data = N_NEW(BIGBUF, Agnode_t *);
+	    if (bp->data == 0) {
+		fprintf(stderr, "gc: Out of memory\n");
+		exit(1);
+	    }
+	    bp->endp = bp->data + BIGBUF;
+	    Stk.curblk->next = bp;
+	}
+	Stk.curblk = Stk.curblk->next;
+	Stk.curp = Stk.curblk->data;
+    }
+    ND_dfs_mark(np) = -1;
+    *Stk.curp++ = np;
+}
+
+static Agnode_t *pop()
+{
+    if (Stk.curp == Stk.curblk->data) {
+	if (Stk.curblk == Stk.fstblk)
+	    return 0;
+	Stk.curblk = Stk.curblk->prev;
+	Stk.curp = Stk.curblk->endp;
+    }
+    Stk.curp--;
+    return *Stk.curp;
+}
+
 static void cc_dfs(Agraph_t * g, Agnode_t * n)
 {
     Agedge_t *e;
     Agnode_t *nxt;
 
-    ND_dfs_mark(n) = 1;
-    for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
-	if (n == agtail(e))
-	    nxt = aghead(e);
-	else
-	    nxt = agtail(e);
-	if (ND_dfs_mark(nxt) == 0)
-	    cc_dfs(g, nxt);
+    push(n);
+    while ((n = pop())) {
+	ND_dfs_mark(n) = 1;
+	for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
+	    if (n == agtail(e))
+		nxt = aghead(e);
+	    else
+		nxt = agtail(e);
+	    if (ND_dfs_mark(nxt) == 0)
+		push(nxt);
+	}
     }
 }
 
-static void cntCluster (Agraph_t * g, Agobj_t* sg, void* arg)
+static void cntCluster(Agraph_t * g, Agobj_t * sg, void *arg)
 {
-    char* sgname = agnameof ((Agraph_t*)sg);
+    char *sgname = agnameof((Agraph_t *) sg);
 
     if (strncmp(sgname, "cluster", 7) == 0)
-	*(int*)(arg) += 1;
+	*(int *) (arg) += 1;
 }
 
 static int cc_decompose(Agraph_t * g)
@@ -262,14 +335,14 @@ static int eval(Agraph_t * g, int root)
 
     if ((flags & CL) && root) {
 	cl_count = 0;
-	agapply (g, (Agobj_t *)g, cntCluster, &cl_count, 0);
+	agapply(g, (Agobj_t *) g, cntCluster, &cl_count, 0);
     }
 
     emit(g, root, cl_count);
 
     if (recurse) {
 	n_indent++;
-	for (subg = agfstsubg (g); subg; subg = agnxtsubg (subg))
+	for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg))
 	    eval(subg, 0);
 	n_indent--;
     }
@@ -284,19 +357,25 @@ static Agraph_t *gread(FILE * fp)
 int main(int argc, char *argv[])
 {
     Agraph_t *g;
+    Agraph_t *prev = NULL;
     ingraph_state ig;
     int rv = 0;
 
     init(argc, argv);
     newIngraph(&ig, Files, gread);
 
+    if (flags & CC)
+	initStk();
+
     while ((g = nextGraph(&ig)) != 0) {
+	if (prev)
+	    agclose(g);
+	prev = g;
 	fname = fileName(&ig);
 	if (verbose)
 	    fprintf(stderr, "Process graph %s in file %s\n", agnameof(g),
 		    fname);
 	rv |= eval(g, 1);
-	agclose(g);
     }
 
     if (n_graphs > 1)
