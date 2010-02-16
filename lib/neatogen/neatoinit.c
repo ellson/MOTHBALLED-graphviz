@@ -1521,16 +1521,16 @@ void neato_layout(Agraph_t * g)
 
 	    cc = pccomps(g, &n_cc, cc_pfx, &pin);
 
-	    for (i = 0; i < n_cc; i++) {
-		gc = cc[i];
-		nodeInduce(gc);
-		neatoLayout(g, gc, layoutMode, model, &am);
-		removeOverlapWith(gc, &am);
-		setEdgeType (gc, ET_LINE);
-		spline_edges(gc);
-	    }
 	    if (n_cc > 1) {
 		boolean *bp;
+		for (i = 0; i < n_cc; i++) {
+		    gc = cc[i];
+		    nodeInduce(gc);
+		    neatoLayout(g, gc, layoutMode, model, &am);
+		    removeOverlapWith(gc, &am);
+		    setEdgeType (gc, ET_LINE);
+		    spline_edges(gc);
+		}
 		if (pin) {
 		    bp = N_NEW(n_cc, boolean);
 		    bp[0] = TRUE;
@@ -1542,6 +1542,11 @@ void neato_layout(Agraph_t * g)
 		packGraphs(n_cc, cc, g, &pinfo);
 		if (bp)
 		    free(bp);
+	    }
+	    else {
+		neatoLayout(g, g, layoutMode, model, &am);
+		removeOverlapWith(g, &am);
+		spline_edges(g);
 	    }
 	    compute_bb(g);
 	    addZ (g);
