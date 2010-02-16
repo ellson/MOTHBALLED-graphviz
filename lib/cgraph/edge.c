@@ -161,8 +161,11 @@ Agsubnode_t *agsubrep(Agraph_t * g, Agnode_t * n)
 {
     Agsubnode_t *sn, template;
 
-    template.node = n;
-    sn = dtsearch(g->n_id, &template);
+	if (g == n->root) sn = &(n->mainsub);
+	else {
+			template.node = n;
+			sn = dtsearch(g->n_id, &template);
+	}
     return sn;
 }
 
