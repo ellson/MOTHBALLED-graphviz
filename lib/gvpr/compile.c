@@ -100,7 +100,7 @@ static char *nameOf(Expr_t * ex, Agobj_t * obj, Sfio_t* tmps)
 	break;
     default:			/* edge */
 	e = (Agedge_t *) obj;
-	key = agnameof(AGMKOUT(obj));
+	key = agnameof(AGMKOUT(e));
 	sfputr(tmps, agnameof(AGTAIL(e)), -1);
 	if (agisdirected(agraphof(e)))
 	    sfputr(tmps, "->", -1);
