@@ -8,10 +8,29 @@
 
 #define CDT_VERSION	20050420L
 
-#if _PACKAGE_ast
-#include	<ast_std.h>
+#ifndef Void_t
+#define Void_t		void
+#endif
+
+#ifndef _ARG_
+#define _ARG_(x)	x
+#endif
+
+#include <stddef.h>	/* size_t */
+
+#ifndef _BEGIN_EXTERNS_
+#define _BEGIN_EXTERNS_
+#endif
+#ifndef _END_EXTERNS_
+#define _END_EXTERNS_
+#endif
+
+#if !_DLL_BLD && _dll_import
+#define __EXTERN__(T,obj)       extern T obj; T* _imp__ ## obj = &obj
+#define __DEFINE__(T,obj,val)   T obj = val; T* _imp__ ## obj = &obj
 #else
-#include	<ast_common.h>
+#define __EXTERN__(T,obj)       extern T obj
+#define __DEFINE__(T,obj,val)   T obj = val
 #endif
 
 typedef struct _dtlink_s	Dtlink_t;
@@ -22,12 +41,12 @@ typedef struct _dtdata_s	Dtdata_t;
 typedef struct _dt_s		Dt_t;
 typedef struct _dt_s		Dict_t;	/* for libdict compatibility */
 typedef struct _dtstat_s	Dtstat_t;
+typedef Void_t*			(*Dtmemory_f)_ARG_((Dt_t*,Void_t*,size_t,Dtdisc_t*));
 typedef Void_t*			(*Dtsearch_f)_ARG_((Dt_t*,Void_t*,int));
 typedef Void_t* 		(*Dtmake_f)_ARG_((Dt_t*,Void_t*,Dtdisc_t*));
 typedef void 			(*Dtfree_f)_ARG_((Dt_t*,Void_t*,Dtdisc_t*));
 typedef int			(*Dtcompar_f)_ARG_((Dt_t*,Void_t*,Void_t*,Dtdisc_t*));
 typedef unsigned int		(*Dthash_f)_ARG_((Dt_t*,Void_t*,Dtdisc_t*));
-typedef Void_t*			(*Dtmemory_f)_ARG_((Dt_t*,Void_t*,size_t,Dtdisc_t*));
 typedef int			(*Dtevent_f)_ARG_((Dt_t*,int,Void_t*,Dtdisc_t*));
 
 struct _dtlink_s
