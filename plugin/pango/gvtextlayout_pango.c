@@ -1,4 +1,4 @@
-  /* $Id$ $Revision$ */
+/* $Id$ $Revision$ */
 /* vim:set shiftwidth=4 ts=8: */
 
 /*********************************************************
@@ -37,6 +37,7 @@ static char* pango_psfontResolve (PostscriptAlias* pa)
 {
     static char buf[1024];
     strcpy(buf, pa->family);
+    strcat(buf, ",");
     if (pa->weight) {
         strcat(buf, " ");
         strcat(buf, pa->weight);
