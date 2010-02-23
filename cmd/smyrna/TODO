@@ -1,11 +1,10 @@
 Features:
 Undo
-Non-simple background polygons
-Menu label indicating active graph
 Specify selection by path or polyline
 Allow user control of max. node size
 Set focus on a node
   "Find node whose name is abc"
+File browser should return to previously used directory
 
 Multiple views
 GUI for canned gvpr programs
@@ -17,8 +16,18 @@ Mechanism for semantic zoom
 
 Bugs: 
 
+Show labels when picked
+Erase labels when unselected
+Catch window kill button for node list
+Use full disk when picking nodes
+Fix problem with using alpha and losing pick 
+Why is smyrna so slow to shut down?
+Save As doesn't work
+alpha on edges not really working - not translucent
+
 Labels don't appear when alpha colors are enabled 
 Edges should not disappear when node is off screen ?
-Re-fix 3D navigation
 Make sure all buttons do something or remove them
 Trap "window close" on Smyrna Settings widget, or fix problem
+
+
