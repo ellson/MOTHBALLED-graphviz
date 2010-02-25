@@ -46,7 +46,7 @@
 #include "pathutil.h"
 
 extern shape_kind shapeOf(node_t *);
-
+extern pointf gvrender_ptf(GVJ_t *job, pointf p);
 extern pointf Bezier(pointf * V, int degree, double t, pointf * Left, pointf * Right);
 
 typedef enum { FORMAT_VRML, } format_type;
@@ -289,8 +289,8 @@ static void vrml_begin_edge(GVJ_t *job)
 static void
 finishSegment (GVJ_t *job, edge_t *e)
 {
-    pointf p0 = ND_coord(agtail(e));
-    pointf p1 = ND_coord(aghead(e));
+    pointf p0 = gvrender_ptf(job, ND_coord(agtail(e)));
+    pointf p1 = gvrender_ptf(job, ND_coord(aghead(e)));
     double o_x, o_y, o_z;
     double x, y, y0, z, theta;
 
@@ -460,19 +460,37 @@ doSegment (GVJ_t *job, pointf* A, pointf p0, double z0, pointf p1, double z1)
     gvputs(job,   "    }\n");
 }
 
+/* nearTail:
+ * Given a point a and edge e, return true if a is closer to the
+ * tail of e than the head.
+ */
+static int
+nearTail (GVJ_t* job, pointf a, Agedge_t* e)
+{
+    pointf tp = gvrender_ptf(job, ND_coord(agtail(e)));
+    pointf hp = gvrender_ptf(job, ND_coord(aghead(e)));
+
+    return (DIST2(a, tp) < DIST2(a, hp));
+}
+
+    /* this is gruesome, but how else can we get z coord */
+#define GETZ(jp,op,p,e) (nearTail(jp,p,e)?op->tail_z:op->head_z) 
+
 static void
 vrml_bezier(GVJ_t *job, pointf * A, int n, int arrow_at_start, int arrow_at_end, int filled)
 {
     obj_state_t *obj = job->obj;
     edge_t *e = obj->u.e;
-    double fstz = obj->tail_z, sndz = obj->head_z;
+    double fstz, sndz;
     pointf p1, V[4];
     int i, j, step;
 
     assert(e);
 
+    fstz = Fstz = obj->tail_z; 
+    sndz = Sndz = obj->head_z;
     if (straight(A,n)) {
-	doSegment (job, A, ND_coord(agtail(e)),Fstz,ND_coord(aghead(e)),Sndz);
+	doSegment (job, A, gvrender_ptf(job, ND_coord(agtail(e))),Fstz,gvrender_ptf(job, ND_coord(aghead(e))),Sndz);
 	return;
     }
 
@@ -525,7 +543,7 @@ static void doArrowhead (GVJ_t *job, pointf * A)
     y = (CylHt + ht)/2.0;
 
     gvputs(job,   "Transform {\n");
-    if (DIST2(A[1], ND_coord(agtail(e))) < DIST2(A[1], ND_coord(aghead(e)))) {
+    if (nearTail (job, A[1], e)) {
 	TailHt = ht;
 	gvprintf(job, "  translation 0 %.3f 0\n", -y);
 	gvprintf(job, "  rotation 0 0 1 %.3f\n", M_PI);
@@ -641,11 +659,7 @@ static void vrml_polygon(GVJ_t *job, pointf * A, int np, int filled)
 	    atan2((A[0].y + A[2].y) / 2.0 - A[1].y,
 		  (A[0].x + A[2].x) / 2.0 - A[1].x) + M_PI / 2.0;
 
-	/* this is gruesome, but how else can we get z coord */
-	if (DIST2(p, ND_coord(agtail(e))) < DIST2(p, ND_coord(aghead(e))))
-	    z = obj->tail_z;
-	else
-	    z = obj->head_z;
+	z = GETZ(job,obj,p,e);
 
 	/* FIXME: arrow vector ought to follow z coord of bezier */
 	gvputs(job,   "Transform {\n");
@@ -770,11 +784,7 @@ static void vrml_ellipse(GVJ_t * job, pointf * A, int filled)
 	break;
     case EDGE_OBJTYPE:
 	e = obj->u.e;
-	/* this is gruesome, but how else can we get z coord */
-	if (DIST2(A[0], ND_coord(agtail(e))) < DIST2(A[0], ND_coord(aghead(e))))
-	    z = obj->tail_z;
-	else
-	    z = obj->head_z;
+	z = GETZ(job,obj,A[0],e);
 
 	gvputs(job,   "Transform {\n");
 	gvprintf(job, "  translation %.3f %.3f %.3f\n", A[0].x, A[0].y, z);
@@ -823,7 +833,7 @@ static gvrender_engine_t vrml_engine = {
 
 static gvrender_features_t render_features_vrml = {
     GVRENDER_DOES_Z, 		/* flags */
-    4.,                         /* default pad - graph units */
+    0.,                         /* default pad - graph units */
     NULL,                       /* knowncolors */
     0,                          /* sizeof knowncolors */
     RGBA_BYTE,                  /* color_type */
