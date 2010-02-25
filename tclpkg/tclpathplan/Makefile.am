@@ -22,7 +22,7 @@ libtclplan_la_LDFLAGS = -no-undefined
 libtclplan_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
-	$(top_builddir)/lib/pathplan/libpathplan.la
+	$(top_builddir)/lib/pathplan/libpathplan.la $(MATH_LIBS)
 
 if WITH_TCL
 all-local: pkgIndex.tcl

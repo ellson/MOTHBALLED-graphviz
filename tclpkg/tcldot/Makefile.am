@@ -49,6 +49,9 @@ libtcldot_la_LDFLAGS = -no-undefined
 
 libtcldot_la_LIBADD = $(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
+	$(top_builddir)/lib/cdt/libcdt.la \
+	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
+	$(top_builddir)/lib/pathplan/libpathplan_C.la \
 	$(top_builddir)/lib/gvc/libgvc.la 
 
 libtcldot_la_DEPENDENCIES =  $(top_builddir)/lib/gvc/libgvc.la
@@ -81,7 +84,7 @@ libtcldot_builtin_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la $(GTS_LIBS)
 
 if WITH_PANGOCAIRO
-libtcldot_builtin_la_LIBADD += $(top_builddir)/plugin/pango/libgvplugin_pango_C.la $(PANGOCAIRO_LIBS)
+libtcldot_builtin_la_LIBADD += $(top_builddir)/plugin/pango/libgvplugin_pango_C.la $(PANGOCAIRO_LIBS) $(PANGOFT2_LIBS)
 endif
 
 if WITH_LIBGD

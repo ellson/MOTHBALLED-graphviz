@@ -42,7 +42,7 @@ libgvplugin_xlib_C_la_SOURCES = \
 
 libgvplugin_xlib_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_xlib_la_SOURCES = $(libgvplugin_xlib_C_la_SOURCES)
-libgvplugin_xlib_la_LIBADD = @PANGOCAIRO_LIBS@ @X_LIBS@ -lX11 @SOCKET_LIBS@ @MATH_LIBS@
+libgvplugin_xlib_la_LIBADD = @PANGOCAIRO_LIBS@ $(X11_LIBS) $(XRENDER_LIBS) @SOCKET_LIBS@ @MATH_LIBS@
 
 if WITH_WIN32
 libgvplugin_xlib_la_LDFLAGS += -no-undefined

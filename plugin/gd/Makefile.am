@@ -40,6 +40,7 @@ libgvplugin_gd_la_LIBADD = \
 	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
 	$(top_builddir)/lib/cdt/libcdt.la \
+	$(top_builddir)/lib/cdt/libpathplan.la \
 	@PANGOCAIRO_LIBS@ @ICONV_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @MATH_LIBS@
 AM_CPPFLAGS += -DNONDLL
 else

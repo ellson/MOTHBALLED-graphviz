@@ -160,8 +160,8 @@ case "${host_os}" in
 	BROWSER="open"
 	AC_DEFINE_UNQUOTED(DARWIN_DYLIB,"$DARWIN_DYLIB",[Define for Darwin-style shared library names.])
 	;;
-  * ) # This sucks!  Whatever happened to standards for file system layout?
-	DEFAULT_FONTPATH="/usr/share/fonts/default/Type1:/usr/X11R6/lib/X11/fonts/TrueType:/usr/X11R6/lib/X11/fonts/truetype:/usr/X11R6/lib/X11/fonts/TTF:/usr/share/fonts/TrueType:/usr/share/fonts/truetype:/usr/openwin/lib/X11/fonts/TrueType:/usr/X11R6/lib/X11/fonts/Type1:/usr/common/share/fonts/ttf";
+  * ) # This sucks!  Whatever happened to standards for file system layout?   (Good job its no longer used unless fontconfig is unavailable.)
+	DEFAULT_FONTPATH="/usr/share/fonts/sun/TrueType:/usr/share/fonts/TrueType:/usr/X11/lib/X11/fonts/TrueType:/usr/share/fonts/sun/Type1:/usr/openwin/lib/X11/fonts/Type1:/usr/share/fonts/X11/Type1:/usr/share/fonts/default/Type1:/usr/X11R6/lib/X11/fonts/TrueType:/usr/X11R6/lib/X11/fonts/truetype:/usr/X11R6/lib/X11/fonts/TTF:/usr/share/fonts/truetype:/usr/openwin/lib/X11/fonts/TrueType:/usr/X11R6/lib/X11/fonts/Type1:/usr/common/share/fonts/ttf";
 	PATHSEPARATOR=":"
         NO_POSTSCRIPT_ALIAS=0
 	BROWSER="xdg-open"
@@ -544,6 +544,8 @@ if test "x$no_x" = "xyes"; then
   X_SUBDIRS=""
 else
   use_xlib="Yes"
+  PKG_CHECK_MODULES(X11, [x11])
+  PKG_CHECK_MODULES(XRENDER, [xrender])
 fi
 AM_CONDITIONAL(WITH_X, [test "x$use_xlib" = "xYes"])
 
@@ -790,7 +792,7 @@ else
            LDFLAGS="$LDFLAGS -L$lua_lib"
         fi
     
-        if test "x$LUA_INCLUDES" = "x" -o "x$LUA_LIBS" = "x" ; then
+        if test "x$LUA_INCLUDES" = "x" -a "x$LUA_LIBS" = "x" ; then
             PKGCONFIG=""
             AC_CHECK_PROGS(PKGCONFIG, pkg-config)
             if test "x$PKGCONFIG" != "x"; then
@@ -2002,7 +2004,8 @@ AM_CONDITIONAL(WITH_PANGOCAIRO, [test "x$use_pangocairo" = "xYes"])
 # see if pango uses a fontconfig/freetype2 backend
 if test "x$use_pangocairo" = "xYes"; then
     save_LIBS=$LIBS
-    LIBS="$LIBS $PANGOCAIRO_LIBS"
+    PKG_CHECK_MODULES(PANGOFT2, [pangoft2])
+    LIBS="$LIBS $PANGOCAIRO_LIBS $PANGOFT2_LIBS"
     AC_CHECK_FUNCS([pango_fc_font_lock_face pango_fc_font_unlock_face])
     LIBS=$save_LIBS
 fi
