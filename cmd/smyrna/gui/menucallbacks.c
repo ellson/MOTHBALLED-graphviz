@@ -18,7 +18,7 @@
 #include "viewport.h"
 #include "topview.h"
 #include "tvnodes.h"
-#include "selection.h"
+
 #include "gvprpipe.h"
 #include "topviewsettings.h"
 #include "gltemplate.h"
@@ -310,52 +310,6 @@ void mSfdpSlot(GtkWidget * widget, gpointer user_data)
 
 
 
-//select
-void mSelectAllSlot(GtkWidget * widget, gpointer user_data)
-{
-    select_all(view->g[view->activeGraph]);
-}
-
-
-void mUnselectAllSlot(GtkWidget * widget, gpointer user_data)
-{
-    deselect_all(view->g[view->activeGraph]);
-}
-
-void mSelectAllNodesSlot(GtkWidget * widget, gpointer user_data)
-{
-    select_all_nodes(view->g[view->activeGraph]);
-}
-
-void mSelectAllEdgesSlot(GtkWidget * widget, gpointer user_data)
-{
-    select_all_edges(view->g[view->activeGraph]);
-}
-
-void mSelectAllClustersSlot(GtkWidget * widget, gpointer user_data)
-{
-    //select_all_graphs(view->g[view->activeGraph]);
-}
-
-
-void mUnselectAllNodesSlot(GtkWidget * widget, gpointer user_data)
-{
-    deselect_all_nodes(view->g[view->activeGraph]);
-}
-
-void mUnselectAllEdgesSlot(GtkWidget * widget, gpointer user_data)
-{
-    deselect_all_edges(view->g[view->activeGraph]);
-}
-
-
-void mUnselectAllClustersSlot(GtkWidget * widget, gpointer user_data)
-{
-//    deselect_all_graphs(view->g[view->activeGraph]);
-}
-
-
-//help
 void mAbout(GtkWidget * widget, gpointer user_data)
 {
 }

@@ -462,12 +462,6 @@ void init_viewport(ViewInfo * view)
     view->mouse.down = 0;
     view->activeGraph = -1;
     view->SignalBlock = 0;
-    view->Selection.Active = 0;
-    view->Selection.SelectionColor.R = 0.5;
-    view->Selection.SelectionColor.G = (float) 0.2;
-    view->Selection.SelectionColor.B = 1;
-    view->Selection.SelectionColor.A = 1;
-    view->Selection.Anti = 0;
     view->Topview = GNEW(topview);
     view->Topview->fisheyeParams.fs = 0;
     view->Topview->xDot=NULL;
@@ -612,7 +606,7 @@ static Agraph_t *loadGraph(char *filename)
 	g_print("There is no position info in %s\n", filename);
 	return 0;
     }
-    free(view->Topview->Graphdata.GraphFileName);
+//    free(view->Topview->Graphdata.GraphFileName);
     view->Topview->Graphdata.GraphFileName = strdup(filename);
     return g;
 }

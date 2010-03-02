@@ -326,15 +326,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\gui\beacon.c"
-				>
-			</File>
-			<File
 				RelativePath=".\btree.c"
-				>
-			</File>
-			<File
-				RelativePath=".\gui\callbacks.c"
 				>
 			</File>
 			<File
@@ -439,10 +431,6 @@
 			</File>
 			<File
 				RelativePath=".\polytess.c"
-				>
-			</File>
-			<File
-				RelativePath=".\selection.c"
 				>
 			</File>
 			<File

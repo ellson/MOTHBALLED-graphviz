@@ -25,7 +25,7 @@
 #include "topfisheyeview.h"
 #include "toolboxcallbacks.h"
 #include "viewportcamera.h"
-#include "selection.h"
+
 #include "frmobjectui.h"
 
 

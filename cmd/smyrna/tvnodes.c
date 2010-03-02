@@ -18,7 +18,7 @@
 #include "tvnodes.h"
 #include "btree.h"
 #include "viewport.h"
-#include "selection.h"
+
 #include "memory.h"
 
 tv_nodes TV_Nodes;
@@ -463,7 +463,7 @@ int create_save_subgraph_from_filter(char *filename)
 
 int update_TV_data_from_gui(void)
 {
-    int i;
+/*    int i;
     int index = 0;
     char *data_attr1;
     char *data_attr2;
@@ -498,7 +498,7 @@ int update_TV_data_from_gui(void)
 		  (char *) gtk_entry_get_text(TV_Nodes.TV_Node[i].Data2));
 
 	}
-    }
+    }*/
     return 1;
 
 
@@ -575,7 +575,7 @@ static int cache_validate_node(tv_node * tvn)
 int tv_select_all(void)
 {
 
-    tv_node tvn;
+/*    tv_node tvn;
     int i;
     for (i = 0; i < view->Topview->Nodecount; i++) {
 	tvn.index = i;
@@ -584,13 +584,13 @@ int tv_select_all(void)
 	}
     }
     apply_filter_from_gui();
-    return 1;
+    return 1;*/
 
 }
 
 int tv_unselect_all()
 {
-
+/*
     tv_node tvn;
     int i;
     for (i = 0; i < view->Topview->Nodecount; i++) {
@@ -600,7 +600,7 @@ int tv_unselect_all()
 	}
     }
     apply_filter_from_gui();
-    return 1;
+    return 1;*/
 
 }
 

@@ -15,6 +15,10 @@ int static get_mouse_mode(const char* s)
 	return MM_RECTANGULAR_SELECT;
     if (strcmp(s,"MM_RECTANGULAR_X_SELECT")==0)
 	return MM_RECTANGULAR_X_SELECT;
+
+    if (strcmp(s,"MM_POLYGON_SELECT")==0)
+	return MM_POLYGON_SELECT;
+
     if (strcmp(s,"MM_MOVE")==0)
 	return MM_MOVE;
     if (strcmp(s,"MM_MOVE")==0)

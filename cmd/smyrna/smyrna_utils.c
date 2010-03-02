@@ -196,3 +196,64 @@ getcolorfromschema(colorschemaset * sc, float l, float maxl,glCompColor * c)
     }
 }
 #endif
+
+int point_within_ellips_with_coords(float ex, float ey, float ea, float eb,
+				    float px, float py)
+{
+
+    float dx, dy;
+    float a;
+    dx = px - ex;
+    dy = py - ey;
+    a = (dx * dx) / (ea * ea) + (dy * dy) / (eb * eb);
+    return (a <= 1);
+}
+int point_within_sphere_with_coords(float x0, float y0, float z0, float r,
+				    float x, float y, float z)
+{
+    float rr =
+	(x - x0) * (x - x0) + (y - y0) * (y - y0) + (z - z0) * (z - z0);
+    rr = (float) pow(rr, 0.5);
+    if (rr <= r)
+	return 1;
+    return 0;
+}
+float distance_to_line(float ax, float ay, float bx, float by, float cx,
+		       float cy)
+{
+    //this function returns the distance between a line(a-b) segment and a point(c) in 2D plane
+    return (float)
+	sqrt(pow(((by - ay) * (cx - ax) + (bx - ax) * (cy - ay)), 2)
+	     / (pow((bx - ax), 2) + pow((by - ay), 2))
+	);
+}
+
+int _point_in_polygon(int npol, float *xp, float *yp, float x, float y)
+{
+    int i, j, c = 0;
+      for (i = 0, j = npol-1; i < npol; j = i++) {
+        if ((((yp[i] <= y) && (y < yp[j])) ||
+             ((yp[j] <= y) && (y < yp[i]))) &&
+            (x < (xp[j] - xp[i]) * (y - yp[i]) / (yp[j] - yp[i]) + xp[i]))
+          c = !c;
+      }
+      return c;
+    }
+
+
+int point_in_polygon(glCompPoly* selPoly,glCompPoint p)
+{
+    int npol=selPoly->cnt;
+
+    int i, j, c = 0;
+      for (i = 0, j = npol-1; i < npol; j = i++) 
+      {
+        if ((((selPoly->pts[i].y <= p.y) && (p.y < selPoly->pts[j].y)) ||
+             ((selPoly->pts[j].y <= p.y) && (p.y < selPoly->pts[i].y))) &&
+            (p.x < (selPoly->pts[j].x - selPoly->pts[i].x) * (p.y - selPoly->pts[i].y) / (selPoly->pts[j].y - selPoly->pts[i].y) + selPoly->pts[i].x))
+          c = !c;
+      }
+      return c;
+    }
+
+

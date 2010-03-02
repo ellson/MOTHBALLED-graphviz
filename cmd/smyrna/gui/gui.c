@@ -100,40 +100,6 @@ void object_properties_graph_init(void)	//customize window for Graph , this show
 }
 
 
-void graph_properties_init(int newgraph)	//initialize little open graph dialog
-{
-    //newgraph 0 : open graph mode
-    //newgraph 1 : new graph mode
-
-
-    gint result = 0;
-    xml = glade_xml_new(smyrnaGlade, NULL, NULL);
-    gladewidget = glade_xml_get_widget(xml, "entryGraphFileName");
-
-    //signals
-    //OK
-    gladewidget = glade_xml_get_widget(xml, "btnOK");
-
-
-    g_signal_connect((gpointer) gladewidget, "clicked",
-		     G_CALLBACK(dlgOpenGraph_OK_Clicked), &newgraph);
-
-
-
-    if (newgraph) {
-	gladewidget = glade_xml_get_widget(xml, "entryGraphName");
-	gtk_entry_set_text((GtkEntry *) gladewidget, "Untitled");
-	gladewidget = glade_xml_get_widget(xml, "entryGraphFileName");
-	gtk_entry_set_text((GtkEntry *) gladewidget, "Untitled.dot");
-    } else {
-	gladewidget = glade_xml_get_widget(xml, "entryGraphName");
-	gtk_entry_set_text((GtkEntry *) gladewidget, "");
-	gladewidget = glade_xml_get_widget(xml, "entryGraphFileName");
-	gtk_entry_set_text((GtkEntry *) gladewidget, "");
-    }
-    gladewidget = glade_xml_get_widget(xml, "dlgOpenGraph");
-    result = gtk_dialog_run(GTK_DIALOG(gladewidget));
-}
 
 GtkComboBox *get_SelectGraph(void)
 {

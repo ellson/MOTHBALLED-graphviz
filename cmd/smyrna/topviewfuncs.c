@@ -140,16 +140,11 @@ int object_color(void* obj,glCompColor* c)
     objType=AGTYPE(obj);
 
     if(objType==AGEDGE)
-	Alpha=getAttrFloat(g,obj,"defaultedgealpha",1);
+	Alpha=getAttrFloat(g,agraphof(obj),"defaultedgealpha",1);
     if(objType==AGNODE)
-	Alpha=getAttrFloat(g,obj,"defaultnodealpha",1);
+	Alpha=getAttrFloat(g,agraphof(obj),"defaultnodealpha",1);
     if(!getAttrBool(g,obj,"visible",1))
 	return 0;
-    if(getAttrBool(g,obj,"selected",0))
-    {
-	setColor(c,view->selectedEdgeColor.R, view->selectedEdgeColor.G,view->selectedEdgeColor.B, view->selectedEdgeColor.A);
-	return return_value;
-    }
     /*get edge's color attribute */
     bf=getAttrStr(g,obj,"color",NULL);
     if((bf)&&(strlen(bf)>0))
@@ -173,6 +168,7 @@ int object_color(void* obj,glCompColor* c)
 	    c->B=cl.u.RGBA[2];
 	    c->A=cl.u.RGBA[3];
 	}
+	c->A=c->A*Alpha;
 
     }
     return return_value;
@@ -237,7 +233,7 @@ void renderSelectedNodes(Agraph_t * g)
 	if(!((nodeRec*)(aggetrec(v,"nodeRec",0)))->selected);
 	    continue;
 	x=parseXdotwithattrs(v);
-	draw_xdot(x,0);
+	draw_xdot(x,-1);
 	if(x)
 	    freeXDot (x);
     }
@@ -247,7 +243,7 @@ void renderSelectedNodes(Agraph_t * g)
     {
 	if(!((nodeRec*)(aggetrec(v,"nodeRec",0)))->selected)
 	    continue;
-	glColor4f(1,0,0,1);	    
+	glColor4f(view->selectedEdgeColor.R, view->selectedNodeColor.G,view->selectedNodeColor.B, view->selectedNodeColor.A);
 	pos=((nodeRec*)(aggetrec(v,"nodeRec",0)))->A;
 	nodeSize=((nodeRec*)(aggetrec(v,"nodeRec",0)))->size;
 
@@ -275,11 +271,10 @@ void renderNodes(Agraph_t * g)
     static int defaultNodeShape=0;
     static GLfloat nodeSize=0;
     static glCompColor c;
-    static xdot * x;
+    xdot * x;
 
 
-    if(!defaultNodeShape)
-	defaultNodeShape=getAttrBool(g,g,"defaultnodeshape",0);
+    defaultNodeShape=getAttrBool(g,g,"defaultnodeshape",0);
     if(!pos_attr)
 	pos_attr=agattr(g, AGNODE,"pos",0);
     if(!size_attr)
@@ -287,20 +282,27 @@ void renderNodes(Agraph_t * g)
     if(!selected_attr)
 	selected_attr=agattr(g, AGNODE,"selected",0);
 
-    if(defaultNodeShape==0)
-	glBegin(GL_POINTS);
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
     {
 	    if(!object_color(v,&c))
 		continue;
 	    x=parseXdotwithattrs(v);
-	    draw_xdot(x,0);
+	    draw_xdot(x,-0.1);
 
 
 	    if(x)
 		freeXDot (x);
     }
+
+
+
+    if(defaultNodeShape==0)
+	glBegin(GL_POINTS);
+
+
+
+
 
 
 
@@ -319,7 +321,6 @@ void renderNodes(Agraph_t * g)
 	if(l_int(v, selected_attr,0))
 	{
 	    ((nodeRec*)(aggetrec(v,"nodeRec",0)))->selected=1;
-	    continue;
 	}
 	glColor4f(c.R,c.G,c.B,c.A);	    
 	pos=getPointFromStr(agxget(v, pos_attr));
@@ -422,10 +423,6 @@ void renderEdges(Agraph_t * g)
 	    }
 	    else
 		((edgeRec*)(aggetrec(e,"edgeRec",0)))->visible=1;
-
-	    if(((edgeRec*)(aggetrec(e,"edgeRec",0)))->selected)
-		continue;
-
 	    x=parseXdotwithattrs(e);
 	    draw_xdot(x,0);
 
@@ -549,14 +546,22 @@ void renderEdgeLabels(Agraph_t * g)
 static xdot *parseXdotwithattrs(void *e)
 {
 	
-	xdot* xDot=NULL;
-	xDot=parseXDotFOn (agget(e,"_draw_" ), OpFns,sizeof(sdot_op), xDot);
-	xDot=parseXDotFOn (agget(e,"_ldraw_" ), OpFns,sizeof(sdot_op), xDot);
-	xDot=parseXDotFOn (agget(e,"_hdraw_" ), OpFns,sizeof(sdot_op), xDot);
-	xDot=parseXDotFOn (agget(e,"_tdraw_" ), OpFns,sizeof(sdot_op), xDot);
-	xDot=parseXDotFOn (agget(e,"_hldraw_" ), OpFns,sizeof(sdot_op), xDot);
-	xDot=parseXDotFOn (agget(e,"_tldraw_" ), OpFns,sizeof(sdot_op), xDot);
-	return xDot;
+    int cnt=0;
+    xdot* xDot=NULL;
+    xDot=parseXDotFOn (agget(e,"_draw_" ), OpFns,sizeof(sdot_op), xDot);
+    xDot=parseXDotFOn (agget(e,"_ldraw_" ), OpFns,sizeof(sdot_op), xDot);
+    xDot=parseXDotFOn (agget(e,"_hdraw_" ), OpFns,sizeof(sdot_op), xDot);
+    xDot=parseXDotFOn (agget(e,"_tdraw_" ), OpFns,sizeof(sdot_op), xDot);
+    xDot=parseXDotFOn (agget(e,"_hldraw_" ), OpFns,sizeof(sdot_op), xDot);
+    xDot=parseXDotFOn (agget(e,"_tldraw_" ), OpFns,sizeof(sdot_op), xDot);
+    if(xDot)
+    {
+	for (cnt=0;cnt < xDot->cnt ; cnt++)
+	{
+	    ((sdot_op*)(xDot->ops))[cnt].obj=e;
+        }
+    }
+    return xDot;
 
 }
 
@@ -641,8 +646,8 @@ void updateSmGraph(Agraph_t * g,topview* t)
     t->picked_edge_count = 0;
     t->picked_edges = '\0';
     t->global_z=0;
-
-
+    t->selPoly.cnt=0;
+    t->selPoly.pts=NULL;
 
     if(!t)
 	return ;

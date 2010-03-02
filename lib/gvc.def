@@ -336,3 +336,4 @@ gvFinalize
 gv_postprocess
 gvRenderContext
 gvflush
+gvrender_ptf

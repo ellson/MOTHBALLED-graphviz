@@ -34,7 +34,7 @@ static void select_node(Agraph_t* g,Agnode_t*  obj,int reverse)
 	{
             agxset(obj,sel_attr,"0");
 	    ((nodeRec*)(aggetrec(obj,"nodeRec",0)))->selected=0;
-	    ((edgeRec*)(aggetrec(obj,"nodeRec",0)))->printLabel=0;
+	    ((nodeRec*)(aggetrec(obj,"nodeRec",0)))->printLabel=0;
 
 
 	}
@@ -176,8 +176,6 @@ void pick_object_xyz(Agraph_t* g,topview* t,GLfloat x,GLfloat y,GLfloat z)
 	cacheSelectedEdges(g,t);
 	((edgeRec*)(aggetrec(a,"edgeRec",0)))->printLabel=1;
     }
-
-
 }
 void pick_objects_rect(Agraph_t* g) 
 {
@@ -212,4 +210,83 @@ void pick_objects_rect(Agraph_t* g)
     cacheSelectedEdges(g,view->Topview);
 }
 
+
+
+void deselect_all(Agraph_t* g)
+{
+    static Agnode_t *v;
+    static Agedge_t *e;
+    static Agsym_t* nsel_attr=(Agsym_t*)0;
+    static Agsym_t* esel_attr=(Agsym_t*)0;
+    if(!nsel_attr)
+	nsel_attr=agattr(g, AGNODE,"selected","0");
+    if(!esel_attr)
+	esel_attr=agattr(g, AGEDGE,"selected","0");
+    for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
+    {
+	agxset(v,nsel_attr,"0");
+	((nodeRec*)(aggetrec(v,"nodeRec",0)))->selected=0;
+	((edgeRec*)(aggetrec(v,"nodeRec",0)))->printLabel=0;
+
+	for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
+	{
+	    agxset(e,esel_attr,"0");
+	    ((edgeRec*)(aggetrec(e,"edgeRec",0)))->selected=0;
+	    ((edgeRec*)(aggetrec(e,"edgeRec",0)))->printLabel=0;
+	}
+    }
+    cacheSelectedNodes(g,view->Topview);
+    cacheSelectedEdges(g,view->Topview);
+
+}
+void clear_selpoly(glCompPoly* sp)
+{
+    sp->pts=realloc(sp->pts,0);
+    sp->cnt=0;
+}
+static int close_poly(glCompPoly* selPoly,glCompPoint pt)
+{
+    int i=0;
+    float EPS=GetOGLDistance(3);
+    if (selPoly->cnt < 2)
+	return 0;
+    if(
+	( (selPoly->pts[0].x-pt.x) < EPS) &&
+	( (selPoly->pts[0].y-pt.y) < EPS))
+	return 1;
+    return 0;
+}
+
+
+static void select_polygon (Agraph_t* g,glCompPoly* selPoly)
+{
+    static Agnode_t *v;
+    static glCompPoint posN;
+     
+     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
+    {
+	posN=((nodeRec*)(aggetrec(v,"nodeRec",0)))->A;
+	if(point_in_polygon(selPoly,posN))
+	    select_node(g,v,0);
+    }
+    cacheSelectedNodes(g,view->Topview);
+}
+
+
+void add_selpoly(Agraph_t* g,glCompPoly* selPoly,glCompPoint pt)
+{
+    if(!close_poly(selPoly,pt))
+    {
+	selPoly->cnt ++;
+	selPoly->pts=realloc(selPoly->pts,sizeof(glCompPoint)*selPoly->cnt);
+	selPoly->pts[selPoly->cnt-1].x=pt.x;
+	selPoly->pts[selPoly->cnt-1].y=pt.y;
+	selPoly->pts[selPoly->cnt-1].z=0;
+    }
+    else
+    {
+	select_polygon (g,selPoly);
+	clear_selpoly(selPoly);	
+    }
+}
 

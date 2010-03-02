@@ -72,6 +72,7 @@ typedef struct _ArcBall_t ArcBall_t;
 #define MM_MAGNIFIER			20
 #define MM_FISHEYE_MAGNIFIER	21
 #define MM_FISHEYE_PICK		22  /*fisheye select foci point*/
+#define MM_POLYGON_SELECT   30
 
 
 
@@ -146,6 +147,12 @@ typedef struct
 	    MOUSE_ROTATE_Z } mouse_rotate_axis;
 
 
+    typedef struct
+    {
+	unsigned char *data;
+	int w;
+	int h;
+    }image_data;
     typedef struct 
 	{
 		xdot_op op;
@@ -154,7 +161,7 @@ typedef struct
 		int size;
 		int layer;
 		int listId;/*opengl list id*/
-
+		image_data iData;
     } sdot_op;	
 	
 	
@@ -450,6 +457,8 @@ typedef struct
 
 	topviewcache cache;
 	int xdotId;
+	glCompPoly selPoly;
+
 
 
     } topview;
@@ -494,7 +503,7 @@ typedef struct
 
     } attribute;
 
-    typedef struct _selection {
+/*    typedef struct _selection {
 	int Active;		//0 there is no selection need to be applied
 	char Type;		//0     single selection , 1 rectangle , 2 rectangleX 
 	int PickingType;	//0 normal, union,2 subtract 3 intersection
@@ -507,7 +516,7 @@ typedef struct
 	//before the node/edge loop this value is nulled
 	topview_edge *single_selected_edge;	//pointer to selected/picked edge
 
-    } selection;
+    } selection;*/
     typedef struct _magnifier {
 	float x, y;
 	float kts;		//zoom X
@@ -612,7 +621,7 @@ typedef struct
 	glCompMouse mouse;
 
 	/*selection object,refer to smyrnadefs.h for more info */
-	selection Selection;
+//	selection Selection;
 
 	/*rectangular magnifier object */
 	magnifier mg;

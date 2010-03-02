@@ -178,7 +178,10 @@ extern "C" {
     typedef struct _glCompPointI {
 	int x, y;
     } glCompPointI;
-
+    typedef struct {
+	int cnt;
+	glCompPoint* pts;
+    }glCompPoly;
 
     typedef struct {
 	GLfloat R;
@@ -186,6 +189,7 @@ extern "C" {
 	GLfloat B;
 	GLfloat A;		//Alpha
 	int tag;
+	int test;
     } glCompColor;
 
 

@@ -16,59 +16,14 @@
 
 #include "toolboxcallbacks.h"
 #include "viewport.h"
-#include "selection.h"
+
 #include "gltemplate.h"
 #include "glutils.h"
 #include "glmotion.h"
 
 
 
-void btnToolSingleSelect_clicked(GtkWidget * widget, gpointer user_data)
-{
-    deselect_all(view->g[view->activeGraph]);
-    //gtk_toggle_tool_button_set_active   ((GtkToggleToolButton*)widget,1);
-}
 
-void btnToolRectSelect_clicked(GtkWidget * widget, gpointer user_data)
-{
-
-    deselect_all(view->g[view->activeGraph]);
-}
-
-void btnToolRectXSelect_clicked(GtkWidget * widget, gpointer user_data)
-{
-    deselect_all(view->g[view->activeGraph]);
-    view->Selection.Anti = 0;
-}
-
-void btnToolAntiRectSelect_clicked(GtkWidget * widget, gpointer user_data)
-{
-    view->Selection.Anti = 1;
-
-}
-
-void btnToolAntiRectXSelect_clicked(GtkWidget * widget, gpointer user_data)
-{
-    view->Selection.Anti = 1;
-
-}
-
-
-void btnToolPan_clicked(GtkWidget * widget, gpointer user_data)
-{
-
-
-
-}
-
-void btnToolZoom_clicked(GtkWidget * widget, gpointer user_data)
-{
-}
-
-void btnToolZoomIn_clicked(GtkWidget * widget, gpointer user_data)
-{
-    glmotion_zoom_inc(1);
-}
 
 void btnToolZoomOut_clicked(GtkWidget * widget, gpointer user_data)
 {

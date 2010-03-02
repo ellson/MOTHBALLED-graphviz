@@ -22,7 +22,7 @@
 #include "viewport.h"
 #include "viewportcamera.h"
 #include "draw.h"
-#include "selection.h"
+
 #include "assert.h"
 #include "hier.h"
 #include "topfisheyeview.h"

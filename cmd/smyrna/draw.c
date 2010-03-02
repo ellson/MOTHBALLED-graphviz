@@ -24,7 +24,7 @@ XDOT DRAWING FUNCTIONS, maybe need to move them somewhere else
 #include "colorprocs.h"
 #include "glutils.h"
 #include "math.h"
-#include "selection.h"
+
 #include "xdot.h"
 #include "viewport.h"
 #include "topfisheyeview.h"
@@ -422,8 +422,27 @@ void SetFont(sdot_op * o, int param)
 	font_op=o;
 }
 
+/*for now we only support png files in 2d space, no image rotation*/
 void InsertImage(sdot_op * o, int param)
 {
+
+
+    float w,h,x,y;
+    if(!o->obj)
+	return;
+    w=atof(agget(o->obj,"width"))*72;
+    h=atof(agget(o->obj,"height"))*72;
+
+    if(!o->iData.data)
+	o->iData.data = load_png(o->op.u.image.name, &o->iData.w, &o->iData.h);    
+    x=o->op.u.image.pos.x;
+    y=o->op.u.image.pos.y;
+    x=x+(o->iData.w-w)/2.0;
+    y=y+(o->iData.h-h)/2.0;
+ //   glRasterPos3f(x,y,5);
+    glRasterPos3f(20,20,0);
+    if(o->iData.data)
+	glDrawPixels(o->iData.w,o->iData.h,GL_RGBA,GL_UNSIGNED_BYTE,o->iData.data);
 }
 void EmbedText(sdot_op* o, int param)
 {
@@ -943,6 +962,23 @@ void draw_sphere(float x, float y, float z, float r)
     glTranslatef(x, y, z);
     gluSphere(fisheyesphere, r, SPHERE_SLICE_COUNT, SPHERE_SLICE_COUNT);
     glTranslatef(-x, -y, -z);
+}
+
+void draw_selpoly(glCompPoly* selPoly)
+{
+    int i=0;
+/*    glColor4f(view->gridColor.R, view->gridColor.G, view->gridColor.B,
+		  view->gridColor.A);*/
+    glDisable(GL_DEPTH_TEST);
+    glColor4f(1,0,0,1);
+    glBegin(GL_LINE_STRIP);
+    for (i;i <  selPoly->cnt ; i++)
+    {
+	glVertex3f(selPoly->pts[i].x,selPoly->pts[i].y,selPoly->pts[i].z);
+    }
+    glEnd();
+    glEnable(GL_DEPTH_TEST);
+
 }
 
 #ifdef UNUSED

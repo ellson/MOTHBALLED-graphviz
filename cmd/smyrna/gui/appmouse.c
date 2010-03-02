@@ -21,7 +21,7 @@
 #include "glmotion.h"
 #include "beacon.h"
 #include "hotkeymap.h"
-#include "selection.h"
+
 #include "selectionfuncs.h"
 #include "topviewfuncs.h"
 
@@ -50,7 +50,10 @@ static void apply_actions(ViewInfo* v,int x,int y)
 	glmotion_pan(v);
     }
     if (a==MM_MOVE)
-        move_TVnodes();
+    {
+//        move_TVnodes();
+	;
+    }
 
     if(a==MM_RECTANGULAR_SELECT)
     {
@@ -58,6 +61,12 @@ static void apply_actions(ViewInfo* v,int x,int y)
 //	    rectangle_select(v);
 	    pick_objects_rect(view->g[view->activeGraph]) ;
     }
+
+    if(a==MM_POLYGON_SELECT)
+    {
+	add_selpoly(view->g[view->activeGraph],&view->Topview->selPoly,view->mouse.GLfinalPos);
+    }
+
 
     if (a==MM_SINGLE_SELECT)
     {
@@ -113,8 +122,8 @@ static void appmouse_down(ViewInfo* v,int x,int y)
     prevX=0;
     prevY=0;
 
-    view->Selection.X = view->mouse.GLpos.x;
-    view->Selection.Y = view->mouse.GLpos.y;
+/*    view->Selection.X = view->mouse.GLpos.x;
+    view->Selection.Y = view->mouse.GLpos.y;*/
 }
 static void appmouse_up(ViewInfo* v,int x,int y)
 {

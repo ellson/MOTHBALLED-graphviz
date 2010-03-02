@@ -25,7 +25,7 @@ XDOT DRAWING FUNCTIONS, maybe need to move them somewhere else
 #include "colorprocs.h"
 #include "glutils.h"
 #include "math.h"
-#include "selection.h"
+
 #include "xdot.h"
 #include "viewport.h"
 #include "topfisheyeview.h"
@@ -252,48 +252,6 @@ static void drawXdotwithattrs(void *e, int param)
 }
 
 
-
-void drawGraph(Agraph_t * g)
-{
-    Agnode_t *v;
-    Agedge_t *e;
-    Agraph_t *s;
-    int param = 0;
-    for (s = agfstsubg(g); s; s = agnxtsubg(s)) {
-/*		OD_SelFlag(s) = 0;
-		if (OD_Selected(s) == 1)
-			param = 1;
-		else*/
-	param = 0;
-	drawXdotwithattrs(s, param);
-    }
-
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
-/*		if (OD_Selected(v) == 1)
-			param = 1;
-		else*/
-	param = 0;
-//              OD_SelFlag(v) = 0;
-	drawXdotwithattr(v, "_draw_", param);	//draw primitives
-	drawXdotwithattr(v, "_ldraw_", param);	//label drawing
-	for (e = agfstout(g, v); e; e = agnxtout(g, e)) {
-/*			OD_SelFlag(e) = 0;
-			if (OD_Selected(e) == 1)
-				param = 1;
-			else*/
-	    param = 0;
-	    drawXdotwithattrs(e, param);
-	}
-    }
-    if ((view->Selection.Active > 0) && (!view->SignalBlock)) {
-	view->Selection.Active = 0;
-	drawGraph(g);
-	view->SignalBlock = 1;
-	glexpose();
-	view->SignalBlock = 0;
-    }
-
-}
 
 
 /*
