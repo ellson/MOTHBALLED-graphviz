@@ -154,16 +154,19 @@ void glCompButtonClick(glCompObj * o, GLfloat x, GLfloat y,
     glCompObj *obj;
     glCompSet *s = o->common.compset;
     int ind = 0;
-    if (p->groupid > 0) {
+    ((glCompButton *) o)->status=((glCompButton *) o)->refStatus ;
+    if (p->groupid > 0) 
+    {
 	for (; ind < s->objcnt; ind++) {
 	    obj = s->obj[ind];
-	    if (obj->objType == glButtonObj) {
+	    if ((obj->objType == glButtonObj)&&(obj!=o)) {
 		if (((glCompButton *) obj)->groupid == p->groupid)
 		    ((glCompButton *) obj)->status = 0;
 	    }
 	}
 	p->status = 1;
-    } else {
+    }
+    else {
 	if (p->groupid == -1) {
 	    if (p->status == 0)
 		p->status = 1;
@@ -189,6 +192,8 @@ void glCompButtonMouseDown(glCompObj * obj, GLfloat x, GLfloat y,
 {
     /*Put your internal code here */
 
+    
+    ((glCompButton *) obj)->refStatus = ((glCompButton *) obj)->status;
     ((glCompButton *) obj)->status = 1;
     if (((glCompButton *) obj)->common.callbacks.mousedown)
 	((glCompButton *) obj)->common.callbacks.mousedown(obj, x, y, t);
@@ -219,6 +224,7 @@ void glCompButtonMouseUp(glCompObj * obj, GLfloat x, GLfloat y,
 			 glMouseButtonType t)
 {
     /*Put your internal code here */
+
     if (((glCompButton *) obj)->common.callbacks.mouseup)
 	((glCompButton *) obj)->common.callbacks.mouseup(obj, x, y, t);
 }

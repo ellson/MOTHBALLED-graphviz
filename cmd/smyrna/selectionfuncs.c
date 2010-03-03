@@ -88,17 +88,21 @@ static void pick_objects_in_rect(Agraph_t* g,GLfloat x1,GLfloat y1,GLfloat x2,GL
      
      for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
     {
-	posN=((nodeRec*)(aggetrec(v,"nodeRec",0)))->A;
-	if(is_point_in_rectangle(posN.x,posN.y,x1,y1,x2-x1,y2-y1))
-	    select_node(g,v,0);
-	for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
+	if(view->Topview->sel.selectNodes==1)
 	{
-	    posT=((edgeRec*)(aggetrec(e,"edgeRec",0)))->posTail;
-	    posH=((edgeRec*)(aggetrec(e,"edgeRec",0)))->posHead;
-    	    if(is_point_in_rectangle(posT.x,posT.y,x1,y1,x2-x1,y2-y1))
-		if(is_point_in_rectangle(posH.x,posH.y,x1,y1,x2-x1,y2-y1))
-		    select_edge(g,e,0);
+	    posN=((nodeRec*)(aggetrec(v,"nodeRec",0)))->A;
+	    if(is_point_in_rectangle(posN.x,posN.y,x1,y1,x2-x1,y2-y1))
+		select_node(g,v,0);
 	}
+	if(view->Topview->sel.selectEdges==1)
+		for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
+	    {
+		posT=((edgeRec*)(aggetrec(e,"edgeRec",0)))->posTail;
+		posH=((edgeRec*)(aggetrec(e,"edgeRec",0)))->posHead;
+    		if(is_point_in_rectangle(posT.x,posT.y,x1,y1,x2-x1,y2-y1))
+		    if(is_point_in_rectangle(posH.x,posH.y,x1,y1,x2-x1,y2-y1))
+			select_edge(g,e,0);
+	    }
     }
 }
 

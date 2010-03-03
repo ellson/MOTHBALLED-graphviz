@@ -307,6 +307,7 @@ extern "C" {
 	GLfloat width, height;
 	glCompLabel *label;
 	int status;		//0 not pressed 1 pressed;
+	int refStatus;		//0 not pressed 1 pressed;
 	int groupid;
 	glCompImage *image;	/*glyph */
 	glCompButtonGlyph glyphPos;

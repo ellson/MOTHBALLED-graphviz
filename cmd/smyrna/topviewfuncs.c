@@ -646,8 +646,8 @@ void updateSmGraph(Agraph_t * g,topview* t)
     t->picked_edge_count = 0;
     t->picked_edges = '\0';
     t->global_z=0;
-    t->selPoly.cnt=0;
-    t->selPoly.pts=NULL;
+    t->sel.selPoly.cnt=0;
+    t->sel.selPoly.pts=NULL;
 
     if(!t)
 	return ;
@@ -684,6 +684,7 @@ topview* initSmGraph(Agraph_t * g)
 {
     topview* rv=(topview*)malloc(sizeof(topview));
     rv->maxnodedegree = 1;
+
         
     /*create glcomp menu system */
     view->widgets = glcreate_gl_topview_menu();
@@ -703,6 +704,9 @@ topview* initSmGraph(Agraph_t * g)
     rv->cache.selnode_id=-1;
     rv->cache.edge_id=-1;
     rv->cache.seledge_id=-1;
+    rv->sel.selectEdges=0;
+    rv->sel.selectNodes=1;
+
     updateSmGraph(g,rv);
     return rv;
 }

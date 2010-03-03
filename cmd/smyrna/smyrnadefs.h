@@ -295,22 +295,6 @@ typedef struct
 	int TVref;		//topview data structure reference
     } temp_node_record;
 
-/*#define OD_ID(p) (((custom_object_data*)AGDATA(p))->ID)
-#define OD_ObjName(p) (((custom_object_data*)AGDATA(p))->ObjName)
-#define OD_ObjType(p) (((custom_object_data*)AGDATA(p))->ObjType)
-#define OD_Layer(p) (((custom_object_data*)AGDATA(p))->Layer)
-#define OD_Visible(p) (p->data.Visible)
-#define OD_Locked(p) (((custom_object_data*)AGDATA(p))->Locked)
-#define OD_Highlighted(p) (((custom_object_data*)AGDATA(p))->Highlighted)
-#define OD_NumDataCount(p) (((custom_object_data*)AGDATA(p))->NumDataCount)
-#define OD_NumData(p) (((custom_object_data*)AGDATA(p))->NumData)
-#define OD_StrDataCount(p) (((custom_object_data*)AGDATA(p))->StrDataCount)
-#define OD_StrData(p) (((custom_object_data*)AGDATA(p))->StrData)
-#define OD_Selected(p) (((custom_object_data*)AGDATA(p))->Selected)
-#define OD_Preselected(p) (((custom_object_data*)AGDATA(p))->Preselected)
-#define OD_SelFlag(p) (((custom_object_data*)AGDATA(p))->selectionflag)
-#define OD_TVRef(p) (((custom_object_data*)AGDATA(p))->TVRef)*/
-
 #define OD_Visible(p) (p.data.Visible)
 #define OD_Locked(p) (p.data.Locked)
 #define OD_Highlighted(p) (p.data.Highlighted)
@@ -417,6 +401,11 @@ typedef struct
 	int printLabel;
     }edgeRec;
 
+    typedef struct _selection {
+	glCompPoly selPoly;
+	int selectNodes;
+	int selectEdges;
+    } selection;
 
     typedef struct {
 	topview_node *Nodes;
@@ -457,10 +446,8 @@ typedef struct
 
 	topviewcache cache;
 	int xdotId;
-	glCompPoly selPoly;
-
-
-
+	selection sel;
+	
     } topview;
 
 
@@ -503,20 +490,6 @@ typedef struct
 
     } attribute;
 
-/*    typedef struct _selection {
-	int Active;		//0 there is no selection need to be applied
-	char Type;		//0     single selection , 1 rectangle , 2 rectangleX 
-	int PickingType;	//0 normal, union,2 subtract 3 intersection
-	float X, Y, W, H;	//selection boundries
-	int Anti;		//subtract selections if 1
-	int AlreadySelected;	//for single selections to avoid selecting more than one object
-	glCompColor SelectionColor;
-	float node_distance;	//to get the closest node , this value is updated for each node, distance between selection coords and node coords, smallest gets to be selected
-	topview_node *single_selected_node;	//pointer to selected node in a single node/edge selection cycle,after each node loop this value is checked and if it is in the limits that node is selected or deselected
-	//before the node/edge loop this value is nulled
-	topview_edge *single_selected_edge;	//pointer to selected/picked edge
-
-    } selection;*/
     typedef struct _magnifier {
 	float x, y;
 	float kts;		//zoom X

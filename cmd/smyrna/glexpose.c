@@ -181,7 +181,7 @@ int glexpose_main(ViewInfo * view)
 //      drawRotatingTools();
 //      draw_cube();
     drawRotatingAxis();
-    draw_selpoly(&view->Topview->selPoly);
+    draw_selpoly(&view->Topview->sel.selPoly);
 //              draw_stuff();
 //      test_color_pallete();
 //      drawtestpoly();

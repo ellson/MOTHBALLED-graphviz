@@ -65,7 +65,7 @@ static void apply_actions(ViewInfo* v,int x,int y)
 
     if(a==MM_POLYGON_SELECT)
     {
-	add_selpoly(view->g[view->activeGraph],&view->Topview->selPoly,view->mouse.GLfinalPos);
+	add_selpoly(view->g[view->activeGraph],&view->Topview->sel.selPoly,view->mouse.GLfinalPos);
     }
 
 
@@ -231,7 +231,7 @@ void appmouse_key_release(ViewInfo* v,int key)
     int action=get_key_action(v,key);
     if(lastAction==MM_POLYGON_SELECT)
     {
-	clear_selpoly(&view->Topview->selPoly);	
+	clear_selpoly(&view->Topview->sel.selPoly);	
 	glexpose();
     }
     v->keymap.down=0;

@@ -183,6 +183,22 @@ void glCompMouseMove(glCompObj *obj, GLfloat x, GLfloat y)
 	glexpose();
     }
 }
+void selectedges(glCompObj *obj, GLfloat x, GLfloat y)
+{
+    if(view->Topview->sel.selectEdges==0)
+	view->Topview->sel.selectEdges=1;
+    else
+	view->Topview->sel.selectEdges=0;
+
+}
+void selectnodes(glCompObj *obj, GLfloat x, GLfloat y)
+{
+    if(view->Topview->sel.selectNodes==0)
+	view->Topview->sel.selectNodes=1;
+    else
+	view->Topview->sel.selectNodes=0;
+
+}
 
 
 glCompSet *glcreate_gl_topview_menu(void)
@@ -239,6 +255,16 @@ glCompSet *glcreate_gl_topview_menu(void)
     glCompButtonHide(b);
     to2DBtn = b;
 
+    y=y+off;
+    b = glCompButtonNew((glCompObj *) p, 1, y, 42, 42, "N");
+    b->common.callbacks.click = selectnodes;
+    b->groupid=-1;
+    b->status=1;
+
+    y=y+off;
+    b = glCompButtonNew((glCompObj *) p, 1, y, 42, 42, "E");
+    b->common.callbacks.click = selectedges;
+    b->groupid=-1;
 
 
 
@@ -317,7 +343,7 @@ glCompSet *glcreate_gl_topview_menu(void)
 
 
 	
-	p = glCompPanelNew((glCompObj *) p, 25, 0, 52, 110);
+    p = glCompPanelNew((glCompObj *) p, 25, 0, 52, 110);
     p->common.align = glAlignTop;
     p->common.data = 0;
     p->common.color.A = 0;

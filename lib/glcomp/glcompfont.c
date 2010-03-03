@@ -399,11 +399,28 @@ void glCompDrawText3D(glCompFont * f,GLfloat x,GLfloat y,GLfloat z,GLfloat w,GLf
 
 }
 /*bitmap base 2D text rendering */
+static void change_fontC(unsigned char* d,int w,int h,glCompColor* c)
+{
+    int size=w*h*4;
+    int ind=0;
+    for (ind;ind <=size; ind=ind+4)
+    {
+	if(d[ind+3] != 0)
+	{
+	    d[ind]=c->R*255;
+	    d[ind+1]=c->G*255;
+	    d[ind+2]=c->B*255;
+	    d[ind+3]=c->A*255;
+	}
+    }
+}
+
+
 void glCompDrawText(glCompFont * f,GLfloat x,GLfloat y)
 {
+    change_fontC(f->tex->data,f->tex->width,f->tex->height,&f->color);
     glRasterPos2f(x, y);
-    glDrawPixels(f->tex->width, f->tex->height, GL_RGBA, GL_UNSIGNED_BYTE,
-		 f->tex->data);
+    glDrawPixels(f->tex->width, f->tex->height, GL_RGBA, GL_UNSIGNED_BYTE,  f->tex->data);
 }
 
 /*text rendering functions, depends on a globject to retrieve stats*/
@@ -419,7 +436,8 @@ void glCompRenderText(glCompFont * f, glCompObj * parentObj)
     h = f->tex->height;
     ref = parentObj->common;
     z = ref.pos.z;
-    switch (f->justify.HJustify) {
+    switch (f->justify.HJustify) 
+    {
     case glFontHJustifyNone:
     case glFontHJustifyLeft:
 	x = ref.refPos.x;
