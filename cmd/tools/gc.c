@@ -369,7 +369,7 @@ int main(int argc, char *argv[])
 
     while ((g = nextGraph(&ig)) != 0) {
 	if (prev)
-	    agclose(g);
+	    agclose(prev);
 	prev = g;
 	fname = fileName(&ig);
 	if (verbose)
