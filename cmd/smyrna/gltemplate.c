@@ -325,20 +325,17 @@ static gboolean button_release_event(GtkWidget * widget,
 }
 static gboolean key_press_event(GtkWidget * widget, GdkEventKey * event, gpointer data)
 {
-    view->keymap.down=1;
-    view->keymap.keyVal=event->keyval;
-        return FALSE;
+    appmouse_key_press(view,event->keyval);
+    return FALSE;
+
 
 
 
 }
 static gboolean key_release_event(GtkWidget * widget, GdkEventKey * event, gpointer data)
 {
- //   printf ("key is released:%d\n",event->keyval);
-    view->keymap.down=0;
-    view->keymap.keyVal=0;
-        return FALSE;
-
+    appmouse_key_release(view,event->keyval);
+    return FALSE;
 
 }
 
@@ -382,6 +379,8 @@ static gboolean motion_notify_event(GtkWidget * widget,
     dy = y - begin_y;
     view->mouse.dragX = dx;
     view->mouse.dragY = dy;
+    appmouse_move(view,(int)event->x,(int)event->y);
+
     if((view->mouse.t==glMouseLeftButton) && (view->mouse.down)  )
     {
 	appmouse_left_drag(view,(int)event->x,(int)event->y);
@@ -398,6 +397,8 @@ static gboolean motion_notify_event(GtkWidget * widget,
 	appmouse_middle_drag(view,(int)event->x,(int)event->y);
 	redraw = TRUE;
     }
+    if(view->Topview->selPoly.cnt > 0)
+	redraw=TRUE;
 
 
 

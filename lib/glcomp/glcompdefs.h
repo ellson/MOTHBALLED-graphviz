@@ -180,6 +180,7 @@ extern "C" {
     } glCompPointI;
     typedef struct {
 	int cnt;
+	int hotKey;
 	glCompPoint* pts;
     }glCompPoly;
 

@@ -977,7 +977,15 @@ void draw_selpoly(glCompPoly* selPoly)
 	glVertex3f(selPoly->pts[i].x,selPoly->pts[i].y,selPoly->pts[i].z);
     }
     glEnd();
+    if(selPoly->cnt >0)
+    {
+        glBegin(GL_LINE_STRIP);
+	glVertex3f(selPoly->pts[selPoly->cnt-1].x,selPoly->pts[selPoly->cnt-1].y,selPoly->pts[selPoly->cnt-1].z);
+	glVertex3f(view->mouse.GLpos.x,view->mouse.GLpos.y,0);
+	glEnd();
+    }
     glEnable(GL_DEPTH_TEST);
+
 
 }
 

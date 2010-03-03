@@ -28,6 +28,7 @@
 
     static float prevX=0;
     static float prevY=0;
+    static int lastAction;
 static void apply_actions(ViewInfo* v,int x,int y)
 {
     int a;
@@ -88,6 +89,7 @@ static void apply_actions(ViewInfo* v,int x,int y)
 
 	}
     }
+    lastAction=a;
 
 
 
@@ -220,4 +222,25 @@ void appmouse_middle_drag(ViewInfo* v,int x,int y)
     appmouse_drag(v,x,y);
 
 }
+void appmouse_move(ViewInfo* v,int x,int y)
+{
+    to3D( x,y, &v->mouse.GLpos.x,&v->mouse.GLpos.y,&v->mouse.GLpos.z);
+}
+void appmouse_key_release(ViewInfo* v,int key)
+{
+    int action=get_key_action(v,key);
+    if(lastAction==MM_POLYGON_SELECT)
+    {
+	clear_selpoly(&view->Topview->selPoly);	
+	glexpose();
+    }
+    v->keymap.down=0;
+    v->keymap.keyVal=0;
+}
+void appmouse_key_press(ViewInfo* v,int key)
+{
+    v->keymap.down=1;
+    v->keymap.keyVal=key;
+}
+
 
