@@ -17,6 +17,7 @@
 %{
 #include <stdlib.h>
 #include <stddef.h>
+#include <string.h>
 #include <arith.h>
 #include <gml2gv.h>
 #include <agxbuf.h>
