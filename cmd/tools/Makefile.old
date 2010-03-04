@@ -1,5 +1,5 @@
-ALL_BIN = gc gvcolor acyclic nop ccomps sccmap tred unflatten gxl2dot \
-          gv2gxl dijkstra gvpack bcomps
+ALL_BIN = gc gvcolor acyclic nop ccomps sccmap tred unflatten gxl2gv \
+          gv2gxl dijkstra gvpack bcomps mm2gv gml2gv gvgen
 ALL = $(ALL_BIN) gv2gxl.1
 
 all : $(ALL)
@@ -35,6 +35,7 @@ PLUGS = -L$(LOC_PLUG)/neato_layout -lgvplugin_neato_layout \
 GVLIBS = -L$(LOC_LIB)/gvc -lgvc $(PLUGS) \
         -L$(LOC_LIB)/common -lcommon \
         -L$(LOC_LIB)/gvc -lgvc $(PLUGS) \
+        -L$(LOC_LIB)/xdot -lxdot \
         -L$(LOC_LIB)/neatogen -lneatogen \
         -L$(LOC_LIB)/vpsc -lvpsc \
         -L$(LOC_LIB)/dotgen -ldotgen \
@@ -132,6 +133,24 @@ gc : $(GCOBJS)
 
 bcomps : $(BCCOBJS)
 	$(CSLD) $(LDFLAGS) $(BCCOBJS) $(INGLIB) $(LIBS) -o $@
+
+gml2gv : gml2gv.o
+	$(CSLD) $(LDFLAGS) dijkstra.o $(INGLIB) $(ALIBS) -o $@
+
+gml2gv.o : gml2gv.c
+	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $(EXPAT_INC) gml2gv.c
+
+gvgen : gvgen.o
+	$(CSLD) $(LDFLAGS) dijkstra.o $(INGLIB) $(ALIBS) -o $@
+
+gvgen.o : gvgen.c
+	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $(EXPAT_INC) gvgen.c
+
+mm2gv : mm2gv.o
+	$(CSLD) $(LDFLAGS) dijkstra.o $(INGLIB) $(ALIBS) -o $@
+
+mm2gv.o : mm2gv.c
+	$(CC) -c $(CCFLAGS) $(DEFINES) $(DNINCS) $(INCS) mm2gv.c
 
 gv2gxl.1: gxl2gv.1
 	$(RM) -f $@
