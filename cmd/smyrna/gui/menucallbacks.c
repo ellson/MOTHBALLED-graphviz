@@ -16,7 +16,7 @@
 
 #include "menucallbacks.h"
 #include "viewport.h"
-#include "topview.h"
+/* #include "topview.h" */
 #include "tvnodes.h"
 
 #include "gvprpipe.h"

@@ -15,7 +15,7 @@
 **********************************************************/
 #include "glcompui.h"
 #include "gltemplate.h"
-#include "topview.h"
+/* #include "topview.h" */
 #include "math.h"
 #include "memory.h"
 #include "btree.h"
@@ -223,13 +223,11 @@ void settvcolorinfo(Agraph_t * g, topview * t)
 		np->data.Visible = visible(np->Node, vis, sty);
 	if(view->refresh.nodesize)
 	{
-	    t->Nodes[ind].size = 0;
-	    tempStr=agget(t->Nodes[ind].Node, "size");
-	    if(tempStr)
-	    {
-		if (strlen(tempStr) > 0)	/*set node size */
-		    t->Nodes[ind].size = 0.01*atof(tempStr);
+	    if ((tempStr=agget(t->Nodes[ind].Node, "size")) && *tempStr) { /*set node size */
+		t->Nodes[ind].size = atof(tempStr);
 	    }
+	    else
+		t->Nodes[ind].size = 0;
 
 	}
 	if (t->Nodes[ind].degree > t->maxnodedegree)

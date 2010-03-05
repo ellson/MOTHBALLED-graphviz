@@ -25,7 +25,7 @@
 #include "draw.h"
 #include "gui.h"
 #include "topviewsettings.h"
-#include "topview.h"
+/* #include "topview.h" */
 #include <viewport.h>
 //#include <gltemplate.h> 
 

@@ -21,7 +21,7 @@ XDOT DRAWING FUNCTIONS, maybe need to move them somewhere else
 */
 #include "draw.h"
 #include "drawxdot.h"
-#include "topview.h"
+/* #include "topview.h" */
 #include "colorprocs.h"
 #include "glutils.h"
 #include "math.h"
@@ -30,7 +30,7 @@ XDOT DRAWING FUNCTIONS, maybe need to move them somewhere else
 #include "viewport.h"
 #include "topfisheyeview.h"
 
-static float globalz = 0.0;
+/* static float globalz = 0.0; */
 
 #ifdef UNUSED
 //delta values
@@ -211,6 +211,7 @@ load_raw_texture(char *file_name, int width, int height, int depth,
 #endif
 
 
+#if 0
 static void drawXdot(xdot * xDot, int param, void *p)
 {
     int id;
@@ -250,7 +251,7 @@ static void drawXdotwithattrs(void *e, int param)
     drawXdotwithattr(e, "_hldraw_", param);
     drawXdotwithattr(e, "_tldraw_", param);
 }
-
+#endif
 
 
 

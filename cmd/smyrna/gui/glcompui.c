@@ -25,6 +25,7 @@
 #include "topfisheyeview.h"
 #include "toolboxcallbacks.h"
 #include "viewportcamera.h"
+#include "selectionfuncs.h"
 
 #include "frmobjectui.h"
 
@@ -212,7 +213,7 @@ glCompSet *glcreate_gl_topview_menu(void)
     glCompButton *b = NULL;
     /* glCompLabel *l=NULL; */
     glCompImage *i = NULL;
-    glCompLabel* l;
+    /* glCompLabel* l; */
     glCompColor c;
     s->common.callbacks.click = CBglCompMouseRightClick;
 

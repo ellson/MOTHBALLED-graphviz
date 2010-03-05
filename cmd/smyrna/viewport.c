@@ -27,7 +27,7 @@
 #include "gui.h"
 #include "menucallbacks.h"
 #include "string.h"
-#include "topview.h"
+/* #include "topview.h" */
 #include "gltemplate.h"
 #include "colorprocs.h"
 #include "memory.h"

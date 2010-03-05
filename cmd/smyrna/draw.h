@@ -46,6 +46,7 @@ extern "C" {
 			  char *text);
 	void draw_sphere(float x, float y, float z, float r);
 
+    void draw_selpoly(glCompPoly* selPoly);
 	/*xdot drawing functions*/
 	extern void DrawBeziers(sdot_op* o, int param);
 	extern void DrawEllipse(sdot_op * op, int param);

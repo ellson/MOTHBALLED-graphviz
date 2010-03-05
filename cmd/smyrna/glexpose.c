@@ -16,9 +16,8 @@
 
 #include "glexpose.h"
 #include "draw.h"
-#include "topview.h"
+#include "topviewfuncs.h"
 #include "glutils.h"
-#include "topview.h"
 #include "topfisheyeview.h"
 #include "gui/toolboxcallbacks.h"
 #include "arcball.h"

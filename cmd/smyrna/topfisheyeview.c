@@ -22,6 +22,7 @@
 #include "viewport.h"
 #include "viewportcamera.h"
 #include "draw.h"
+#include "smyrna_utils.h"
 
 #include "assert.h"
 #include "hier.h"

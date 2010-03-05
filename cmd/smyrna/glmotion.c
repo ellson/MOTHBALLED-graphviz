@@ -20,7 +20,7 @@
 #include <gtk/gtkgl.h>
 #include <gdk/gdkcursor.h>
 #include "draw.h"
-#include "topview.h"
+/* #include "topview.h" */
 #include "glutils.h"
 #include "hotkeymap.h"
 

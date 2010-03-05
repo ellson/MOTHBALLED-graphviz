@@ -20,7 +20,7 @@ XDOT DRAWING FUNCTIONS, maybe need to move them somewhere else
 		for now keep them at the bottom
 */
 #include "draw.h"
-#include "topview.h"
+/* #include "topview.h" */
 #include "colorprocs.h"
 #include "glutils.h"
 #include "math.h"
@@ -301,7 +301,6 @@ void DrawEllipse(sdot_op*  o, int param)
 extern void DrawPolygon(sdot_op * o, int param)
 //void DrawPolygon(xdot_point* xpoint,int count, int filled)
 {
-    int i = 0;
     int filled;
 	static xdot_op * op;
 	op=&o->op;
@@ -966,13 +965,13 @@ void draw_sphere(float x, float y, float z, float r)
 
 void draw_selpoly(glCompPoly* selPoly)
 {
-    int i=0;
+    int i;
 /*    glColor4f(view->gridColor.R, view->gridColor.G, view->gridColor.B,
 		  view->gridColor.A);*/
     glDisable(GL_DEPTH_TEST);
     glColor4f(1,0,0,1);
     glBegin(GL_LINE_STRIP);
-    for (i;i <  selPoly->cnt ; i++)
+    for (i = 0;i <  selPoly->cnt ; i++)
     {
 	glVertex3f(selPoly->pts[i].x,selPoly->pts[i].y,selPoly->pts[i].z);
     }

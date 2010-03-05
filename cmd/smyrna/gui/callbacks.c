@@ -21,7 +21,7 @@
 #include <gtk/gtk.h>
 #include "callbacks.h"
 #include "viewport.h"
-#include "topview.h"
+/* #include "topview.h" */
 #include "selection.h"
 #include "memory.h"
 

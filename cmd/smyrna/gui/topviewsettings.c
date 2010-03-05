@@ -14,12 +14,11 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#include "topview.h"
+#include "topviewfuncs.h"
 #include "topviewsettings.h"
 #include "gui.h"
 #include "colorprocs.h"
 #include "viewport.h"
-#include "topview.h"
 #include "memory.h"
 
 void color_change_request(GtkWidget * widget, gpointer user_data)

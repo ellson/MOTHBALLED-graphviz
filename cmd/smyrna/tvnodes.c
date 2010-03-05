@@ -14,7 +14,7 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#include "topview.h"
+/* #include "topview.h" */
 #include "tvnodes.h"
 #include "btree.h"
 #include "viewport.h"
@@ -81,7 +81,7 @@ set_filter(tv_filter * TV_Filter, char *MinData1, char *MaxData1,
 static
 int validate_node(tv_node * TV_Node)
 {
-    static btree_node *n = 0;
+    /* static btree_node *n = 0; */
     char *data_attr1;
     char *data_attr2;
 //              n=tree_from_filter_string("([IP=\"^10.*\",min=\"0\",max=\"0\"])");
@@ -584,7 +584,8 @@ int tv_select_all(void)
 	}
     }
     apply_filter_from_gui();
-    return 1;*/
+*/
+    return 1;
 
 }
 
@@ -600,8 +601,9 @@ int tv_unselect_all()
 	}
     }
     apply_filter_from_gui();
-    return 1;*/
+*/
 
+    return 1;
 }
 
 

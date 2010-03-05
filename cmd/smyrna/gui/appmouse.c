@@ -17,7 +17,7 @@
 #include "appmouse.h"
 #include "topfisheyeview.h"
 #include "arcball.h"
-#include "topview.h"
+/* #include "topview.h" */
 #include "glmotion.h"
 #include "beacon.h"
 #include "hotkeymap.h"
@@ -228,7 +228,7 @@ void appmouse_move(ViewInfo* v,int x,int y)
 }
 void appmouse_key_release(ViewInfo* v,int key)
 {
-    int action=get_key_action(v,key);
+    /* int action=get_key_action(v,key); */
     if(lastAction==MM_POLYGON_SELECT)
     {
 	clear_selpoly(&view->Topview->sel.selPoly);	

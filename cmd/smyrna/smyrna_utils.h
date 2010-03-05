@@ -30,4 +30,11 @@ extern void getcolorfromschema(colorschemaset * sc, float l, float maxl,glCompCo
 extern glCompPoint getPointFromStr(char* str);
 extern float distance_to_line(float ax, float ay, float bx, float by, float cx,float cy);
 extern int point_in_polygon(glCompPoly* selPoly,glCompPoint p);
+extern int point_within_ellips_with_coords(float ex, float ey,
+					       float ea, float eb,
+					       float px, float py);
+extern int point_within_sphere_with_coords(float x0, float y0, float z0,
+					float r, float x, float y,
+					float z);
+
 #endif

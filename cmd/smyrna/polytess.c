@@ -135,12 +135,12 @@ static int Render_Contour2(GLUtesselator *tobj,sdot_op* p)
 {
     GLdouble** d;
     int x=0;
-    int y=0;
+    /* int y=0; */
 
     d=(GLdouble**) malloc(sizeof(GLdouble)* p->op.u.polygon.cnt);
     for (x=0;x < p->op.u.polygon.cnt; x++)
     {
-	GLdouble temp;
+	/* GLdouble temp; */
 	d[x]=(GLdouble*)(malloc(sizeof(GLdouble)*3));
 	d[x][0]=p->op.u.polygon.pts[x].x;
 	d[x][1]=p->op.u.polygon.pts[x].y;
@@ -171,13 +171,13 @@ static int Render_Contour(GLUtesselator *tobj, GLdouble obj_data[][3],int cnt)
 //    GLdouble d[1][3];
     static GLdouble**d;
     int x=0;
-    int y=0;
+    /* int y=0; */
     if (!d)
     {
 	d=(GLdouble**) malloc(sizeof(GLdouble)* cnt);
 	for (x=0;x < cnt; x++)
 	{
-	    GLdouble temp;
+	    /* GLdouble temp; */
 	    d[x]=(GLdouble*)(malloc(sizeof(GLdouble)*3));
 	    d[x][0]=obj_data[x][0];
 	    d[x][1]=obj_data[x][1];

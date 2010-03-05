@@ -504,7 +504,7 @@ void renderEdgeLabels(Agraph_t * g)
     static glCompPoint posH;
     static Agsym_t* data_attr=(Agsym_t*)0;
     static Agsym_t* l_color_attr=(Agsym_t*)0;
-    static GLfloat nodeSize=0;
+    /* static GLfloat nodeSize=0; */
     static glCompColor c;
     GLfloat x,y,z;
 

@@ -22,7 +22,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+#if 0
     extern void cleartopview(topview * t);
     extern void preparetopview(Agraph_t * g, topview * t);
     extern void update_topview(Agraph_t * g, topview * t, int init);
@@ -35,7 +35,7 @@ extern "C" {
     extern void select_with_regex(char *exp);
     extern void settvcolorinfo(Agraph_t * g, topview * t);
     extern void setMultiedges(Agraph_t * g, char *attrname);
-
+#endif
 #ifdef __cplusplus
 }				/* end extern "C" */
 #endif
