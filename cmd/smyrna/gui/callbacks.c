@@ -22,7 +22,7 @@
 #include "callbacks.h"
 #include "viewport.h"
 /* #include "topview.h" */
-#include "selection.h"
+#include "selectionfuncs.h"
 #include "memory.h"
 
 //Menu Items 

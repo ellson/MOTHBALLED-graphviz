@@ -19,7 +19,7 @@
 #include "arcball.h"
 /* #include "topview.h" */
 #include "glmotion.h"
-#include "beacon.h"
+/* #include "beacon.h" */
 #include "hotkeymap.h"
 
 #include "selectionfuncs.h"

@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "gui.h"
-#include "beacon.h"
+/* #include "beacon.h" */
 #include "viewport.h"
 /* #include "topview.h" */
 #include "gltemplate.h"
