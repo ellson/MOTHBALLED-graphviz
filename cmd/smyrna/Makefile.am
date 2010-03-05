@@ -36,22 +36,24 @@ endif
 endif
 
 noinst_HEADERS = btree.h draw.h filter.h glexpose.h glmotion.h gltemplate.h \
-	hier.h materials.h smyrnadefs.h support.h \
+	hier.h materials.h smyrnadefs.h support.h topview.h selection.h \
 	topviewdata.h topviewdefs.h trackball.h tvnodes.h viewport.h hotkeymap.h \
 	topfisheyeview.h viewportcamera.h gvprpipe.h md5.h drawxdot.h arcball.h \
-	selectionfuncs.h topviewfuncs.h \
+	selectionfuncs.h topviewfuncs.h polytess.h smyrna_utils.h \
 	gui/callbacks.h gui/datalistcallbacks.h gui/filterscallbacks.h \
 	gui/frmobjectui.h gui/glcompui.h gui/gui.h gui/menucallbacks.h \
-	gui/toolboxcallbacks.h gui/topviewsettings.h gui/appmouse.h polytess.h smyrna_utils.h
+	gui/toolboxcallbacks.h gui/topviewsettings.h gui/appmouse.h \
+	gui/beacon.h
 
 smyrna_SOURCES = btree.c draw.c filter.c glexpose.c glmotion.c gltemplate.c \
-	hier.c main.c support.c template.c topviewdata.c \
+	hier.c main.c support.c template.c topviewdata.c selection.c \
 	topfisheyeview.c trackball.c tvnodes.c viewport.c viewportcamera.c \
-	selectionfuncs.c topviewfuncs.c \
+	selectionfuncs.c topviewfuncs.c topview.c polytess.c smyrna_utils.c \
 	gvprpipe.c md5.c drawxdot.c arcball.c hotkeymap.c \
 	gui/callbacks.c gui/datalistcallbacks.c gui/filterscallbacks.c \
 	gui/frmobjectui.c gui/glcompui.c gui/gui.c gui/menucallbacks.c \
-	gui/toolboxcallbacks.c gui/topviewsettings.c gui/appmouse.c polytess.c smyrna_utils.c
+	gui/toolboxcallbacks.c gui/topviewsettings.c gui/appmouse.c \
+	gui/beacon.c
 
 smyrna_LDADD = $(top_builddir)/lib/cgraph/libcgraph_C.la \
 		$(top_builddir)/lib/cdt/libcdt_C.la \
