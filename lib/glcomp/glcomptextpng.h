@@ -13,3 +13,5 @@
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
+
+unsigned char *load_png(char *filename, int *imageWidth, int *imageHeight);
