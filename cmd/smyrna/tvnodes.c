@@ -370,7 +370,9 @@ grid* update_colums(grid* g,char* str)
     add_column(g,"ID",0,G_TYPE_STRING);
     add_column(g,"Name",0,G_TYPE_STRING);
     add_column(g,"visible",0,G_TYPE_BOOLEAN);
-
+    if(!str)
+	return g;
+    
     a=strtok(str,",");
     add_column(g,a,1,G_TYPE_STRING);
     while ((a=strtok(NULL,",")))
@@ -384,10 +386,12 @@ void setup_tree (Agraph_t* g)
     G_TYPE_INT:
     G_TYPE_BOOLEAN:
     */
-    char buf[]="IP,HOST,DATA3,COLOR,FALAN,FILAN";
+    static char* buf=NULL;
     static GtkTreeStore *store=NULL;
     static GtkTreeView *tree=NULL;
     grid* gr=NULL;
+    buf=agget(g,"datacolumns");
+
 //    tree=(GtkTreeView *) glade_xml_get_widget(xml, "treeview1");
     gr=update_colums(gr,buf);
     tree=update_tree (tree,gr);

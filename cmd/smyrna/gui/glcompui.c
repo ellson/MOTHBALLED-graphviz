@@ -203,6 +203,35 @@ void selectnodes(glCompObj *obj, GLfloat x, GLfloat y)
 }
 
 
+void testContainer(glCompSet *s)
+{
+
+    glCompPanel* p;
+    glCompLabel *l=NULL;
+
+    p = glCompPanelNew((glCompObj *) s, 100, 100, 500, 500);
+    p = glCompPanelNew((glCompObj *) p, 0, 0, 480, 480);
+    p->common.anchor.leftAnchor=1;
+    p->common.anchor.bottomAnchor=1;
+    p->common.anchor.topAnchor=1;
+    p->common.anchor.rightAnchor=1;
+
+
+    p->common.anchor.left=10;
+    p->common.anchor.bottom=50;
+    p->common.anchor.top=10;
+    p->common.anchor.right=10;
+
+
+
+
+
+
+
+}
+
+
+
 glCompSet *glcreate_gl_topview_menu(void)
 {
     /* static char* icondir[512]; */
@@ -362,6 +391,8 @@ glCompSet *glcreate_gl_topview_menu(void)
     i->common.visible = 0;
 /*    l=glCompLabelNew((glCompObj *)s,100,5,view->Topview->Graphdata.GraphFileName);
     glCompLabelSetFontSize(l,24);*/
+
+//    testContainer(s);
     return s;
 
 

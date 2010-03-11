@@ -188,8 +188,10 @@ void mHideConsoleSlot(GtkWidget * widget, gpointer user_data)
 //Graph
 void mNodeListSlot(GtkWidget * widget, gpointer user_data)
 {
-    gtk_widget_show(glade_xml_get_widget(xml, "ListForm"));
-    execute_tv_nodes();
+	gtk_widget_show(glade_xml_get_widget(xml, "frmTVNodes"));
+	setup_tree (view->g[view->activeGraph]);
+
+
 }
 
 void mNewNodeSlot(GtkWidget * widget, gpointer user_data)
