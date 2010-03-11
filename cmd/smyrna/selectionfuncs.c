@@ -91,7 +91,9 @@ static void pick_objects_in_rect(Agraph_t* g,GLfloat x1,GLfloat y1,GLfloat x2,GL
 	if(view->Topview->sel.selectNodes==1)
 	{
 	    posN=((nodeRec*)(aggetrec(v,"nodeRec",0)))->A;
-	    if(is_point_in_rectangle(posN.x,posN.y,x1,y1,x2-x1,y2-y1))
+	    if(!((nodeRec*)(aggetrec(v,"nodeRec",0)))->visible)
+		continue;
+	    if(is_point_in_rectangle(posN.x,posN.y,x1,y1,x2-x1,y2-y1) )
 		select_node(g,v,0);
 	}
 	if(view->Topview->sel.selectEdges==1)
@@ -134,6 +136,8 @@ static void* pick_object(Agraph_t* g,glCompPoint p)
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
     {
+	if(!((nodeRec*)(aggetrec(v,"nodeRec",0)))->visible)
+	    continue;
 	posN=((nodeRec*)(aggetrec(v,"nodeRec",0)))->A;
 	nodeSize=(GLfloat)l_float(v, size_attr,0);
 	if (nodeSize > 0)

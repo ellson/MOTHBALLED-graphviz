@@ -432,6 +432,12 @@ void renderEdges(Agraph_t * g)
     {
 	for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
 	{
+	    if(
+	    (((nodeRec*)(aggetrec(agtail(e),"nodeRec",0)))->visible==0)
+		    ||
+	    (((nodeRec*)(aggetrec(aghead(e),"nodeRec",0)))->visible==0))
+		continue;
+
 	    if(!object_color(e,&c))
 	    {
 		((edgeRec*)(aggetrec(e,"edgeRec",0)))->visible=0;
@@ -456,6 +462,12 @@ void renderEdges(Agraph_t * g)
     {
 	for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
 	{
+	    if(
+	    (((nodeRec*)(aggetrec(agtail(e),"nodeRec",0)))->visible==0)
+		    ||
+	    (((nodeRec*)(aggetrec(aghead(e),"nodeRec",0)))->visible==0))
+		continue;
+
 	    if(!object_color(e,&c))
 		continue;
 	    if(((edgeRec*)(aggetrec(e,"edgeRec",0)))->selected)

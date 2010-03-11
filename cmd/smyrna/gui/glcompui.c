@@ -199,6 +199,7 @@ void selectnodes(glCompObj *obj, GLfloat x, GLfloat y)
     else
 	view->Topview->sel.selectNodes=0;
 
+
 }
 
 

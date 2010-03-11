@@ -418,7 +418,7 @@ static void change_fontC(unsigned char* d,int w,int h,glCompColor* c)
 
 void glCompDrawText(glCompFont * f,GLfloat x,GLfloat y)
 {
-    change_fontC(f->tex->data,f->tex->width,f->tex->height,&f->color);
+//    change_fontC(f->tex->data,f->tex->width,f->tex->height,&f->color);
     glRasterPos2f(x, y);
     glDrawPixels(f->tex->width, f->tex->height, GL_RGBA, GL_UNSIGNED_BYTE,  f->tex->data);
 }

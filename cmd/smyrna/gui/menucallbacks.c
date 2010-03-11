@@ -189,8 +189,7 @@ void mHideConsoleSlot(GtkWidget * widget, gpointer user_data)
 void mNodeListSlot(GtkWidget * widget, gpointer user_data)
 {
     gtk_widget_show(glade_xml_get_widget(xml, "ListForm"));
-
-//    execute_tv_nodes();
+    execute_tv_nodes();
 }
 
 void mNewNodeSlot(GtkWidget * widget, gpointer user_data)

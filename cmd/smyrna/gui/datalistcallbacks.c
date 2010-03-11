@@ -23,20 +23,6 @@ void btnTVEdit_clicked_cb(GtkWidget * widget, gpointer user_data)
 void btnTVDelete_clicked_cb(GtkWidget * widget, gpointer user_data)
 {
 }
-void btnTVFilter_clicked_cb(GtkWidget * widget, gpointer user_data)
-{
-    int respond;
-
-//      gtk_dialog_set_response_sensitive   (glade_xml_get_widget(xml, "dlgOpenGraph"),1,1);
-//      gtk_dialog_set_response_sensitive   (glade_xml_get_widget(xml, "dlgOpenGraph"),2,1);
-    respond = gtk_dialog_run((GtkDialog *)
-			     glade_xml_get_widget(xml, "dlgTVFilter"));
-//      respond=gtk_dialog_run (glade_xml_get_widget(xml, "dlgFilters"));
-    gtk_widget_hide(glade_xml_get_widget(xml, "dlgTVFilter"));
-    if (respond == 1)
-	apply_filter_from_gui();
-}
-
 void btnTVFirst_clicked_cb(GtkWidget * widget, gpointer user_data)
 {
     tv_nodes_first_page();
@@ -71,7 +57,6 @@ void btnTVCancel_clicked_cb(GtkWidget * widget, gpointer user_data)
 }
 void btnTVOK_clicked_cb(GtkWidget * widget, gpointer user_data)
 {
-    update_TV_data_from_gui();
     gtk_widget_hide(glade_xml_get_widget(xml, "frmTVNodes"));
 }
 
@@ -106,39 +91,6 @@ void btnTVFilterApply_clicked_cb(GtkWidget * widget, gpointer user_data)
 			glade_xml_get_widget(xml, "dlgTVFilter"),
 			GTK_RESPONSE_OK);
 
-}
-
-void btnTVFilterClear_clicked_cb(GtkWidget * widget, gpointer user_data)
-{
-    gtk_entry_set_text((GtkEntry *)
-		       glade_xml_get_widget(xml, "edtTVFilterMinData1"),
-		       "");
-    gtk_entry_set_text((GtkEntry *)
-		       glade_xml_get_widget(xml, "edtTVFilterMaxData1"),
-		       "");
-    gtk_entry_set_text((GtkEntry *)
-		       glade_xml_get_widget(xml, "edtTVFilterMinData2"),
-		       "");
-    gtk_entry_set_text((GtkEntry *)
-		       glade_xml_get_widget(xml, "edtTVFilterMaxData2"),
-		       "");
-    gtk_entry_set_text((GtkEntry *)
-		       glade_xml_get_widget(xml, "edtTVFilterString"), "");
-
-
-    gtk_toggle_button_set_active((GtkToggleButton *)
-				 glade_xml_get_widget(xml,
-						      "rbTVFilterHigh1"),
-				 1);
-    gtk_toggle_button_set_active((GtkToggleButton *)
-				 glade_xml_get_widget(xml,
-						      "rbTVFilterSel1"),
-				 1);
-    gtk_toggle_button_set_active((GtkToggleButton *)
-				 glade_xml_get_widget(xml,
-						      "rbTVFilterVisible1"),
-				 1);
-    apply_filter_from_gui();
 }
 
 void btnTVSelectAll_clicked_cb(GtkWidget * widget, gpointer user_data)
