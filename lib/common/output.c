@@ -22,7 +22,7 @@
 #define YDIR(y) (Y_invert ? (Y_off - (y)) : (y))
 #define YFDIR(y) (Y_invert ? (YF_off - (y)) : (y))
 
-int Y_off;           /* ymin + ymax */
+double Y_off;        /* ymin + ymax */
 double YF_off;       /* Y_off in inches */
 
 #ifdef WITH_CGRAPH
@@ -80,7 +80,7 @@ static void printpoint(FILE * f, pointf p)
 static void setYInvert(graph_t * g)
 {
     if (Y_invert) {
-	Y_off = ROUND(GD_bb(g).UR.y + GD_bb(g).LL.y);
+	Y_off = GD_bb(g).UR.y + GD_bb(g).LL.y;
 	YF_off = PS2INCH(Y_off);
     }
 }
@@ -217,9 +217,9 @@ static void set_record_rects(node_t * n, field_t * f, agxbuf * xb)
     if (f->n_flds == 0) {
 	sprintf(buf, "%.5g,%.5g,%.5g,%.5g ",
 		f->b.LL.x + ND_coord(n).x,
-		YFDIR(f->b.LL.y + ND_coord(n).y),
+		YDIR(f->b.LL.y + ND_coord(n).y),
 		f->b.UR.x + ND_coord(n).x,
-		YFDIR(f->b.UR.y + ND_coord(n).y));
+		YDIR(f->b.UR.y + ND_coord(n).y));
 	agxbput(xb, buf);
     }
     for (i = 0; i < f->n_flds; i++)
@@ -232,8 +232,8 @@ static void rec_attach_bb(graph_t * g, Agsym_t* bbsym)
     char buf[BUFSIZ];
     pointf pt;
 
-    sprintf(buf, "%.5g,%.5g,%.5g,%.5g", GD_bb(g).LL.x, YFDIR(GD_bb(g).LL.y),
-	    GD_bb(g).UR.x, YFDIR(GD_bb(g).UR.y));
+    sprintf(buf, "%.5g,%.5g,%.5g,%.5g", GD_bb(g).LL.x, YDIR(GD_bb(g).LL.y),
+	    GD_bb(g).UR.x, YDIR(GD_bb(g).UR.y));
 #ifndef WITH_CGRAPH
     agxset(g, bbsym->index, buf);
 #else
@@ -241,7 +241,7 @@ static void rec_attach_bb(graph_t * g, Agsym_t* bbsym)
 #endif
     if (GD_label(g) && GD_label(g)->text[0]) {
 	pt = GD_label(g)->pos;
-	sprintf(buf, "%.5g,%.5g", pt.x, YFDIR(pt.y));
+	sprintf(buf, "%.5g,%.5g", pt.x, YDIR(pt.y));
 	agset(g, "lp", buf);
     }
     for (c = 1; c <= GD_n_cluster(g); c++)
@@ -286,7 +286,7 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 	safe_dcl(g, g, "lp", "", agraphattr);
 	if (GD_label(g)->text[0]) {
 	    ptf = GD_label(g)->pos;
-	    sprintf(buf, "%.5g,%.5g", ptf.x, YFDIR(ptf.y));
+	    sprintf(buf, "%.5g,%.5g", ptf.x, YDIR(ptf.y));
 	    agset(g, "lp", buf);
 	}
     }
@@ -311,7 +311,7 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 	safe_dcl(g, AGRAPH, "lp", "");
 	if (GD_label(g)->text[0]) {
 	    ptf = GD_label(g)->pos;
-	    sprintf(buf, "%.5g,%.5g", ptf.x, YFDIR(ptf.y));
+	    sprintf(buf, "%.5g,%.5g", ptf.x, YDIR(ptf.y));
 	    agset(g, "lp", buf);
 	}
     }
@@ -336,7 +336,7 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 #endif
 	if (ND_xlabel(n)) {
 	    ptf = ND_xlabel(n)->pos;
-	    sprintf(buf, "%.5g,%.5g", ptf.x, YFDIR(ptf.y));
+	    sprintf(buf, "%.5g,%.5g", ptf.x, YDIR(ptf.y));
 	    agset(n, "xlp", buf);
 	}
 	if (strcmp(ND_shape(n)->name, "record") == 0) {
@@ -391,38 +391,38 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 			s_arrows = 1;
 			sprintf(buf, "s,%.5g,%.5g ",
 				ED_spl(e)->list[i].sp.x,
-				YFDIR(ED_spl(e)->list[i].sp.y));
+				YDIR(ED_spl(e)->list[i].sp.y));
 			agxbput(&xb, buf);
 		    }
 		    if (ED_spl(e)->list[i].eflag) {
 			e_arrows = 1;
 			sprintf(buf, "e,%.5g,%.5g ",
 				ED_spl(e)->list[i].ep.x,
-				YFDIR(ED_spl(e)->list[i].ep.y));
+				YDIR(ED_spl(e)->list[i].ep.y));
 			agxbput(&xb, buf);
 		    }
 		    for (j = 0; j < ED_spl(e)->list[i].size; j++) {
 			if (j > 0)
 			    agxbputc(&xb, ' ');
 			ptf = ED_spl(e)->list[i].list[j];
-			sprintf(buf, "%.5g,%.5g", ptf.x, YFDIR(ptf.y));
+			sprintf(buf, "%.5g,%.5g", ptf.x, YDIR(ptf.y));
 			agxbput(&xb, buf);
 		    }
 		}
 		agset(e, "pos", agxbuse(&xb));
 		if (ED_label(e)) {
 		    ptf = ED_label(e)->pos;
-		    sprintf(buf, "%.5g,%.5g", ptf.x, YFDIR(ptf.y));
+		    sprintf(buf, "%.5g,%.5g", ptf.x, YDIR(ptf.y));
 		    agset(e, "lp", buf);
 		}
 		if (ED_xlabel(e)) {
 		    ptf = ED_xlabel(e)->pos;
-		    sprintf(buf, "%.5g,%.5g", ptf.x, YFDIR(ptf.y));
+		    sprintf(buf, "%.5g,%.5g", ptf.x, YDIR(ptf.y));
 		    agset(e, "xlp", buf);
 		}
 		if (ED_head_label(e)) {
 		    ptf = ED_head_label(e)->pos;
-		    sprintf(buf, "%.5g,%.5g", ptf.x, YFDIR(ptf.y));
+		    sprintf(buf, "%.5g,%.5g", ptf.x, YDIR(ptf.y));
 		    agset(e, "head_lp", buf);
 		}
 		if (ED_tail_label(e)) {
@@ -453,7 +453,7 @@ void attach_attrs(graph_t * g)
 void output_point(agxbuf *xbuf, pointf p)
 {
     char buf[BUFSIZ];
-    sprintf(buf, "%d %d ", ROUND(p.x), YDIR(ROUND(p.y)));
+    sprintf(buf, "%d %d ", ROUND(p.x), ROUND(YDIR(p.y)));
     agxbput(xbuf, buf);
 }
 
