@@ -237,10 +237,21 @@ void renderSelectedNodes(Agraph_t * g)
         static glCompPoint pos;
 
 
+    static Agsym_t* l_color_attr=(Agsym_t*)0;
+    static glCompColor c;
+
+
+
+
+
     static int defaultNodeShape=0;
     static GLfloat nodeSize=0;
-    if(!defaultNodeShape)
-	defaultNodeShape=getAttrBool(g,g,"defaultnodeshape",0);
+    if(!l_color_attr)
+	l_color_attr=agattr(g, AGRAPH,"nodelabelcolor",0);
+    glCompColorxlate(&c,agxget(g,l_color_attr));
+
+
+    defaultNodeShape=getAttrBool(g,g,"defaultnodeshape",0);
     if(defaultNodeShape==0)
 	glBegin(GL_POINTS);
 
@@ -269,7 +280,10 @@ void renderSelectedNodes(Agraph_t * g)
 
 	    drawCircle(pos.x,pos.y,nodeSize,pos.z+0.001);
 	if(((nodeRec*)(aggetrec(v,"nodeRec",0)))->printLabel==1)
-            glprintfglut(view->glutfont,pos.x+nodeSize,pos.y+nodeSize,pos.z,agnameof(v));
+	{
+	    glColor4f(c.R, c.G,c.B, c.A);
+	    glprintfglut(view->glutfont,pos.x+nodeSize,pos.y+nodeSize,pos.z,agnameof(v));
+	}
 
     }
     if(defaultNodeShape==0)
@@ -347,9 +361,9 @@ void renderNodes(Agraph_t * g)
 	((nodeRec*)(aggetrec(v,"nodeRec",0)))->A=pos;
 
         if (nodeSize > 0)
-	    nodeSize=nodeSize*view->Topview->init_node_size;
+	    nodeSize=nodeSize*view->nodeScale;
 	else
-	    nodeSize=view->Topview->init_node_size;
+	    nodeSize=view->nodeScale;
 	if(defaultNodeShape==0)
 	    nodeSize=1;
 	((nodeRec*)(aggetrec(v,"nodeRec",0)))->size=nodeSize;
@@ -517,10 +531,6 @@ void renderNodeLabels(Agraph_t * g)
 	pos=((nodeRec*)(aggetrec(v,"nodeRec",0)))->A;
 	nodeSize=((nodeRec*)(aggetrec(v,"nodeRec",0)))->size;
 	glColor4f(c.R,c.G,c.B,c.A);
-        if (nodeSize > 0)
-	    nodeSize=nodeSize*view->Topview->init_node_size;
-	else
-	    nodeSize=view->Topview->init_node_size;
 	if(!data_attr)
             glprintfglut(view->glutfont,pos.x+nodeSize,pos.y+nodeSize,pos.z,agnameof(v));
 	else
@@ -702,7 +712,7 @@ void updateSmGraph(Agraph_t * g,topview* t)
 
     set_boundaries(g,t);
     t->avgedgelength = totalELength / t->Edgecount;
-    t->init_node_size=init_node_size(g, t);
+//    t->init_node_size=init_node_size(g, t);
     view->Topview=t;
     cacheNodes(g,t);
     cacheEdges(g,t);
@@ -743,8 +753,10 @@ void initSmGraph(Agraph_t * g,topview* rv)
 void renderSmGraph(Agraph_t * g,topview* t)
 {
 
+
     if(view->drawnodes)
     {
+	glPointSize(view->nodeScale*t->fitin_zoom/view->zoom);
 	glCallList(t->cache.node_id);
         glCallList(t->cache.selnode_id);
         if(view->drawnodelabels)

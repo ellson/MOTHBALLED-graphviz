@@ -437,7 +437,6 @@ typedef struct
 	float maxedgelen;
 	float minedgelen;
 	float avgedgelength;
-	float init_node_size;	//raster size of node
 	float init_zoom;
 	float fitin_zoom;
 	xdot* xDot;
@@ -674,6 +673,7 @@ typedef struct
 	int mouse_action_count;
 	refresh_filter refresh;
 	int edgerendertype;
+	float nodeScale;
 
     } ViewInfo;
 /*rotation steps*/

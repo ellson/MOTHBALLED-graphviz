@@ -120,6 +120,7 @@ static void* pick_object(Agraph_t* g,glCompPoint p)
      static glCompPoint posT;
      static glCompPoint posH;
      static glCompPoint posN;
+    int defaultNodeShape;
      float dist=999999999;
      static GLfloat nd=0; /*node distance to point*/
      static GLfloat ed=0; /*edge distance to point*/
@@ -128,22 +129,27 @@ static void* pick_object(Agraph_t* g,glCompPoint p)
      nd=0; /*node distance to point*/
      ed=0; /*edge distance to point*/
 
+     defaultNodeShape=getAttrBool(g,g,"defaultnodeshape",0);
+
     if(!size_attr)
 	size_attr=agattr(g, AGNODE,"size",0);
 
     if(!pos_attr)
 	pos_attr=agattr(g, AGNODE,"pos",0);
 
+    if(defaultNodeShape==0)
+        nodeSize=GetOGLDistance(view->nodeScale*view->Topview->fitin_zoom/view->zoom);
+
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
     {
 	if(!((nodeRec*)(aggetrec(v,"nodeRec",0)))->visible)
 	    continue;
 	posN=((nodeRec*)(aggetrec(v,"nodeRec",0)))->A;
-	nodeSize=(GLfloat)l_float(v, size_attr,0);
-	if (nodeSize > 0)
-    	    nodeSize=nodeSize * view->Topview->init_node_size;
-        else
-	    nodeSize=view->Topview->init_node_size;
+	if(defaultNodeShape==1)
+	{
+	    nodeSize=((nodeRec*)(aggetrec(v,"nodeRec",0)))->size;
+	}
+
 	nd=distBetweenPts(posN,p,nodeSize);
 	if( nd < dist )
 	{
