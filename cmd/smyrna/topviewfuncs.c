@@ -288,6 +288,7 @@ void renderNodes(Agraph_t * g)
     static GLfloat nodeSize=0;
     static glCompColor c;
     xdot * x;
+    int ind;
 
 
     defaultNodeShape=getAttrBool(g,g,"defaultnodeshape",0);
@@ -321,10 +322,11 @@ void renderNodes(Agraph_t * g)
 
 
 
-
+    ind=0;
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
     {
+	    ((nodeRec*)(aggetrec(v,"nodeRec",0)))->TVref=ind;
 	if(!object_color(v,&c))
 	{
 	    ((nodeRec*)(aggetrec(v,"nodeRec",0)))->visible=0;
@@ -355,6 +357,7 @@ void renderNodes(Agraph_t * g)
 	    glVertex3f(pos.x,pos.y,pos.z);
 	else if (defaultNodeShape == 1) 
 	    drawCircle(pos.x,pos.y,nodeSize,pos.z);
+    ind++;
     }
     if(defaultNodeShape==0)
 	glEnd();
@@ -708,9 +711,8 @@ void updateSmGraph(Agraph_t * g,topview* t)
     cacheNodeLabels(g,t);
     cacheEdgeLabels(g,t);
 }
-topview* initSmGraph(Agraph_t * g)
+void initSmGraph(Agraph_t * g,topview* rv)
 {
-    topview* rv=(topview*)malloc(sizeof(topview));
     rv->maxnodedegree = 1;
 
         
@@ -736,7 +738,6 @@ topview* initSmGraph(Agraph_t * g)
     rv->sel.selectNodes=1;
 
     updateSmGraph(g,rv);
-    return rv;
 }
 
 void renderSmGraph(Agraph_t * g,topview* t)

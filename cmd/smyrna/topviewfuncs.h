@@ -23,7 +23,7 @@
 extern "C" {
 #endif
 extern void pick_object_xyz(Agraph_t* g,topview* t,GLfloat x,GLfloat y,GLfloat z) ;
-extern topview* initSmGraph(Agraph_t * g);
+extern void initSmGraph(Agraph_t * g,topview* rv);
 extern void updateSmGraph(Agraph_t * g,topview* t);
 extern void renderSmGraph(Agraph_t * g,topview* t);
 extern void freeSmGraph(Agraph_t * g,topview* t);

@@ -185,7 +185,63 @@ void fisheye_spherical(double x_focus, double y_focus, double z_focus,
     }
 }
 
-static v_data *makeGraph(topview * tv, int *nedges)
+static v_data *makeGraph(Agraph_t* gg, int *nedges)
+{
+    int i;
+    int ne = agnedges(gg);
+    int nv = agnnodes(gg);
+    v_data *graph = N_NEW(nv, v_data);
+    int *edges = N_NEW(2 * ne + nv, int);	/* reserve space for self loops */
+    float *ewgts = N_NEW(2 * ne + nv, float);
+    Agnode_t *np;
+    Agedge_t *ep;
+    Agraph_t *g = NULL;
+    int i_nedges;
+    ne = 0;
+    i=0;
+//    for (i = 0; i < nv; i++) {
+    for (np = agfstnode(gg); np; np = agnxtnode(gg, np)) 
+    {
+	graph[i].edges = edges++;	/* reserve space for the self loop */
+	graph[i].ewgts = ewgts++;
+#ifdef STYLES
+	graph[i].styles = NULL;
+#endif
+	i_nedges = 1;		/* one for the self */
+
+	if (!g)
+	    g = agraphof(np);
+	for (ep = agfstedge(g, np); ep; ep = agnxtedge(g, ep, np)) 
+	{
+	    Agnode_t *vp;
+	    Agnode_t *tp = agtail(ep);
+	    Agnode_t *hp = aghead(ep);
+	    assert(hp != tp);
+	    /* FIX: handle multiedges */
+	    vp = (tp == np ? hp : tp);
+	    ne++;
+	    i_nedges++;
+//	    *edges++ = ((temp_node_record *) AGDATA(vp))->TVref;
+	    *edges++ =((nodeRec*)(aggetrec(vp,"nodeRec",0)))->TVref;
+	    *ewgts++ = 1;
+
+	}
+
+	graph[i].nedges = i_nedges;
+	graph[i].edges[0] = i;
+	graph[i].ewgts[0] = 1 - i_nedges;
+	i++;
+    }
+    ne /= 2;			/* each edge counted twice */
+    *nedges = ne;
+    return graph;
+}
+
+
+
+
+
+static v_data *makeGraph_old(topview * tv, int *nedges)
 {
     int i;
     int ne = tv->Edgecount;	/* upper bound */
@@ -210,7 +266,8 @@ static v_data *makeGraph(topview * tv, int *nedges)
 	np = tv->Nodes[i].Node;
 	if (!g)
 	    g = agraphof(np);
-	for (ep = agfstedge(g, np); ep; ep = agnxtedge(g, ep, np)) {
+	for (ep = agfstedge(g, np); ep; ep = agnxtedge(g, ep, np)) 
+	{
 	    Agnode_t *vp;
 	    Agnode_t *tp = agtail(ep);
 	    Agnode_t *hp = aghead(ep);
@@ -243,7 +300,7 @@ static v_data *makeGraph(topview * tv, int *nedges)
  * freeGraph (graph);
  * fs = initFocus (topview->Nodecount); // create focus set
  */
-void prepare_topological_fisheye(topview * t)
+void prepare_topological_fisheye(Agraph_t* g,topview * t)
 {
     double *x_coords = N_NEW(t->Nodecount, double);	// initial x coordinates
     double *y_coords = N_NEW(t->Nodecount, double);	// initial y coordinates
@@ -254,24 +311,27 @@ void prepare_topological_fisheye(topview * t)
     int cur_level = 0;
     Hierarchy *hp;
     ex_vtx_data *gg;
-    topview_node *np;
     gvcolor_t cl;
+    Agnode_t *np;
 
-    v_data *graph = makeGraph(t, &ne);
+    v_data *graph = makeGraph(g, &ne);
 
 //      t->fisheyeParams.animate=1;   //turn the animation on
-    for (i = 0, np = t->Nodes; i < t->Nodecount; i++, np++) {
-	x_coords[i] = np->x;
-	y_coords[i] = np->y;
+    i=0;
+    for (np = agfstnode(g); np; np = agnxtnode(g, np)) 
+    {
+	x_coords[i]=((nodeRec*)(aggetrec(np,"nodeRec",0)))->A.x;
+	y_coords[i]=((nodeRec*)(aggetrec(np,"nodeRec",0)))->A.y;
+	i++;
     }
     hp = t->fisheyeParams.h =
-	makeHier(t->Nodecount, ne, graph, x_coords, y_coords,
+	makeHier(agnnodes(g), ne, graph, x_coords, y_coords,
 		 &(t->fisheyeParams.hier));
     freeGraph(graph);
     free(x_coords);
     free(y_coords);
 
-    fs = t->fisheyeParams.fs = initFocus(t->Nodecount);	// create focus set
+    fs = t->fisheyeParams.fs = initFocus(agnnodes(g));	// create focus set
     gg = hp->geom_graphs[0];
 
     closest_fine_node = 0;	/* first node */
@@ -539,8 +599,8 @@ void drawtopologicalfisheye(topview * t)
     get_active_frame(t);
     drawtopfishnodes(t);
     drawtopfishedges(t);
-    if (!t->fisheyeParams.animate)
-	drawtopfishnodelabels(t);
+/*    if (!t->fisheyeParams.animate)
+	drawtopfishnodelabels(t);*/
 
 }
 

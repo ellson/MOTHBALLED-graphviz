@@ -26,7 +26,6 @@ extern "C" {
     void fisheye_polar(double x_focus, double y_focus, topview * t);
     void fisheye_spherical(double x_focus, double y_focus, double z_focus,
 			   topview * t);
-    void prepare_topological_fisheye(topview *);
     void drawtopologicalfisheye(topview * t);
     void drawtopologicalfisheye2(topview * t);
     void changetopfishfocus(topview * t, float *x, float *y,
@@ -36,6 +35,7 @@ extern "C" {
 				 double y1, int fr, int total_fr,
 				 double *x, double *y);
     int get_active_frame(topview * t);
+    void prepare_topological_fisheye(Agraph_t* g,topview * t);
 
 #ifdef __cplusplus
 }				/* end extern "C" */

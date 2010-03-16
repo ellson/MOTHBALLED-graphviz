@@ -642,7 +642,7 @@ void refreshViewport(int doClear)
     load_settings_from_graph(graph);
     update_graph_from_settings(graph);
     set_viewport_settings_from_template(view, graph);
-    view->Topview=initSmGraph(graph);
+    initSmGraph(graph,view->Topview);
 
 //    update_topview(graph, view->Topview, 1);
     fill_key(view->orig_key, get_md5_key(graph));

@@ -391,6 +391,7 @@ typedef struct
 	int selected;
 	int visible;
 	int printLabel;
+	int TVref;
     }nodeRec;
     typedef struct{
 	Agrec_t h;

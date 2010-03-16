@@ -75,7 +75,7 @@ static void menu_switch_to_fisheye(glCompObj *obj, GLfloat x, GLfloat y,
     if (!view->Topview->fisheyeParams.active)
 	{
 	    if (!view->Topview->fisheyeParams.h) {
-	    prepare_topological_fisheye(view->Topview);
+		prepare_topological_fisheye(view->g[view->activeGraph],view->Topview);
 	    g_timer_start(view->timer);
 	}
 	view->Topview->fisheyeParams.active = 1;
