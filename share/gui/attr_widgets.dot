@@ -28,8 +28,8 @@ digraph smyrna_attr_widgets
     graph[text_box_edgelabelattribute="labeledgeattribute"];
     graph[check_box_labelwithdegree="labelwithdegree"];
     graph[spin_button_labelnumberofnodes="labelzoomfactor"];
-    graph[check_box_shownodelabels="labelshownodes"];
-    graph[check_box_showedgelabels="labelshowedges"];
+    graph[check_box_labelshownodes="labelshownodes"];
+    graph[check_box_labelshowedges="labelshowedges"];
     graph[check_box_usermode="settingsChkBox10"];
     graph[check_box_antialiasing="settingsChkBox12"];
     graph[check_box_topologicalfisheyedist2limit="settingsChkBox13"];
