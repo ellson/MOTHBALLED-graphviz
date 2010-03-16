@@ -315,9 +315,9 @@ void set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
     view->labelnumberofnodes =
 	atof(get_attribute_value("labelnumberofnodes", view, g));
     view->labelshownodes =
-	atoi(get_attribute_value("shownodelabels", view, g));
+	atoi(get_attribute_value("labelshownodes", view, g));
     view->labelshowedges =
-	atoi(get_attribute_value("showedgelabels", view, g));
+	atoi(get_attribute_value("labelshowedges", view, g));
     view->colschms =
 	create_color_theme(atoi
 			   (get_attribute_value("colortheme", view, g)));
