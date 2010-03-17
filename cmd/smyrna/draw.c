@@ -619,8 +619,8 @@ void draw_fisheye_magnifier(ViewInfo * view)
 void drawBorders(ViewInfo * view)
 {
     if (view->bdVisible) {
-	glColor4f(view->borderColor.R, view->borderColor.B,
-		  view->borderColor.G, view->borderColor.A);
+	glColor4f(view->borderColor.R, view->borderColor.G,
+		  view->borderColor.B, view->borderColor.A);
 	glLineWidth(2);
 	glBegin(GL_LINE_STRIP);
 	glVertex3d(view->bdxLeft, view->bdyBottom,-0.001);
