@@ -428,7 +428,6 @@ void drawtopfishnodes(topview * t)
     tarColor.B = view->Topview->fisheyeParams.tarColor.B;
 
 
-    glEnable(GL_POINT_SMOOTH);	/*turn this off to make points look square */
     //draw focused node little bigger than others
 /*		ex_vtx_data *gg = hp->geom_graphs[0];
 		if ((gg[v].active_level == 0) &&(v==t->fisheyeParams.fs->foci_nodes[0]))*/
@@ -590,7 +589,6 @@ void drawtopfishedges(topview * t)
 	}
     }
     glEnd();
-    glDisable(GL_POINT_SMOOTH);
 
 }
 

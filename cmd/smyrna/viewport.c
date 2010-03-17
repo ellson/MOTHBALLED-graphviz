@@ -183,6 +183,7 @@ void set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
     char *buf;
     colorxlate(get_attribute_value("bordercolor", view, g), &cl,
 	       RGBA_DOUBLE);
+    glEnable(GL_POINT_SMOOTH);
     view->borderColor.R = (float) cl.u.RGBA[0];
     view->borderColor.G = (float) cl.u.RGBA[1];
     view->borderColor.B = (float) cl.u.RGBA[2];
