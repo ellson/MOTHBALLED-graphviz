@@ -271,7 +271,7 @@ void renderSelectedNodes(Agraph_t * g)
     {
 	if(!((nodeRec*)(aggetrec(v,"nodeRec",0)))->selected)
 	    continue;
-	glColor4f(view->selectedEdgeColor.R, view->selectedNodeColor.G,view->selectedNodeColor.B, view->selectedNodeColor.A);
+	glColor4f(view->selectedNodeColor.R, view->selectedNodeColor.G,view->selectedNodeColor.B, view->selectedNodeColor.A);
 	pos=((nodeRec*)(aggetrec(v,"nodeRec",0)))->A;
 	nodeSize=((nodeRec*)(aggetrec(v,"nodeRec",0)))->size;
 
