@@ -110,6 +110,18 @@ int getAttrBool(Agraph_t* g,void* obj,char* attr_name,int def)
     attr = agattr(g, AGTYPE(obj), attr_name,0);
     return late_bool(obj, attr,def);
 }
+/* Differs from getAttrBool in that a value of "" returns def */
+int getAttrBool1(Agraph_t* g,void* obj,char* attr_name,int def)
+{
+    Agsym_t* attr;
+    char* s;
+    if ((attr = agattr(g, AGTYPE(obj), attr_name,0))) {
+	s = agxget (obj, attr);
+	if (*s) return mapbool(s);
+	else return def;
+    }
+    else return def;
+}
 int getAttrInt(Agraph_t* g,void* obj,char* attr_name,int def)
 {
     Agsym_t* attr;

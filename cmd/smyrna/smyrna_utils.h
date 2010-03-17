@@ -22,6 +22,7 @@
 extern int l_int(void *obj, Agsym_t * attr, int def);
 extern float l_float(void *obj, Agsym_t * attr, float def);
 extern int getAttrBool(Agraph_t* g,void* obj,char* attr_name,int def);
+extern int getAttrBool1(Agraph_t* g,void* obj,char* attr_name,int def);
 extern int getAttrInt(Agraph_t* g,void* obj,char* attr_name,int def);
 extern float getAttrFloat(Agraph_t* g,void* obj,char* attr_name,float def);
 extern char* getAttrStr(Agraph_t* g,void* obj,char* attr_name,char* def);

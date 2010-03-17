@@ -159,9 +159,10 @@ int object_color(void* obj,glCompColor* c)
 	Alpha=getAttrFloat(g,agraphof(obj),"defaultedgealpha",1);
     if(objType==AGNODE)
 	Alpha=getAttrFloat(g,agraphof(obj),"defaultnodealpha",1);
-    if(!getAttrBool(g,obj,"visible",1))
+    if(!getAttrBool1(g,obj,"visible",1))
 	return 0;
     /*get edge's color attribute */
+    setColorScheme (agget (obj, "colorscheme"));
     bf=getAttrStr(g,obj,"color",NULL);
     if((bf)&&(strlen(bf)>0))
     {
@@ -753,6 +754,7 @@ void initSmGraph(Agraph_t * g,topview* rv)
 void renderSmGraph(Agraph_t * g,topview* t)
 {
 
+    glEnable(GL_POINT_SMOOTH);
 
     if(view->drawnodes)
     {
