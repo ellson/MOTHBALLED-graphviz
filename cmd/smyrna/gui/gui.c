@@ -250,6 +250,7 @@ char *get_attribute_string_value_from_widget(attribute * att)
 	return guibuffer;
     }
 }
+#if UNUSED
 void change_selected_graph_attributes(Agraph_t * g, char *attrname,
 				      char *attrvalue)
 {
@@ -262,24 +263,31 @@ void change_selected_node_attributes(Agraph_t * g, char *attrname,
 				     char *attrvalue)
 {
     int ind = 0;
-    agattr(g, AGNODE, attrname, "");
+    Agsym_t* ap = agattr(g, AGNODE, attrname, NULL);
+
+    if (!ap)
+	ap = agattr(g, AGNODE, attrname, "");
+	
     for (ind = 0; ind < view->Topview->Nodecount; ind++) {
 	if (view->Topview->Nodes[ind].data.Selected == 1)
-	    agset(view->Topview->Nodes[ind].Node, attrname, attrvalue);
+	    agxset(view->Topview->Nodes[ind].Node, ap, attrvalue);
     }
 }
 void change_selected_edge_attributes(Agraph_t * g, char *attrname,
 				     char *attrvalue)
 {
     int ind = 0;
-    agattr(g, AGEDGE, attrname, "");
+    Agsym_t* ap = agattr(g, AGEDGE, attrname, NULL);
 
+    if (!ap)
+	ap = agattr(g, AGEDGE, attrname, "");
+	
     for (ind = 0; ind < view->Topview->Edgecount; ind++) {
 	if (view->Topview->Edges[ind].data.Selected == 1)
-	    agset(view->Topview->Edges[ind].Edge, attrname, attrvalue);
-
+	    agxset(view->Topview->Edges[ind].Edge, ap, attrvalue);
     }
 }
+#endif
 
 void load_attributes(void)
 {

@@ -269,7 +269,7 @@ static int get_combobox_widget_to_attribute(char *attribute,
 
     sprintf(buf, "%f", value);
     agattr(g, AGRAPH, attribute, buf);
-    printf ("%s %f \n",attribute,value);
+    /* printf ("%s %f \n",attribute,value); */
     return 1;
 
 
@@ -296,6 +296,32 @@ int load_settings_from_graph(Agraph_t * g)
     return 1;
 }
 
+/* graphRecord:
+ * add graphRec to graph if necessary.
+ * update fields of graphRec.
+ * We assume the graph has attributes nodelabelattribute, edgelabelattribute,
+ * nodelabelcolor and edgelabelcolor from template.dot.
+ * We assume nodes have pos attributes. 
+ */
+static void
+graphRecord (Agraph_t* g)
+{
+    agbindrec(g, "graphRec", sizeof(graphRec), 1);
+
+    GG_nodelabelcolor(g) = agattr (g, AGRAPH, "nodelabelcolor", 0);
+    GG_edgelabelcolor(g) = agattr (g, AGRAPH, "edgelabelcolor", 0);
+
+    GN_pos(g) = agattr (g, AGNODE, "pos", 0);
+    GN_size(g) = agattr (g, AGNODE, "size", 0);
+    GN_visible(g) = agattr (g, AGNODE, "visible", 0);
+    GN_selected(g) = agattr (g, AGNODE, "selected", 0);
+    GN_labelattribute(g) = agattr (g, AGNODE, agget(g,"nodelabelattribute"), 0);
+
+    GE_visible(g) = agattr (g, AGEDGE, "visible", 0);
+    GE_selected(g) = agattr (g, AGEDGE, "selected", 0);
+    GE_labelattribute(g) = agattr (g, AGEDGE, agget(g,"edgelabelattribute"), 0);
+}
+
 
 int update_graph_from_settings(Agraph_t * g)
 {
@@ -314,9 +340,8 @@ int update_graph_from_settings(Agraph_t * g)
 	   get_spinbtn_widget_to_attribute(sym->name, agget(view->systemGraphs.attrs_widgets,sym->name),g);
 	if(strncmp (sym->name,"scale_button",strlen("scale_button"))==0)
 	   get_scalebtn_widget_to_attribute(sym->name, agget(view->systemGraphs.attrs_widgets,sym->name),g);
-
-
     }
+    graphRecord(g);
 
     return 1;
 }

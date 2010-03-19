@@ -222,7 +222,7 @@ static v_data *makeGraph(Agraph_t* gg, int *nedges)
 	    ne++;
 	    i_nedges++;
 //	    *edges++ = ((temp_node_record *) AGDATA(vp))->TVref;
-	    *edges++ =((nodeRec*)(aggetrec(vp,"nodeRec",0)))->TVref;
+	    *edges++ = ND_TVref(vp);
 	    *ewgts++ = 1;
 
 	}
@@ -320,8 +320,8 @@ void prepare_topological_fisheye(Agraph_t* g,topview * t)
     i=0;
     for (np = agfstnode(g); np; np = agnxtnode(g, np)) 
     {
-	x_coords[i]=((nodeRec*)(aggetrec(np,"nodeRec",0)))->A.x;
-	y_coords[i]=((nodeRec*)(aggetrec(np,"nodeRec",0)))->A.y;
+	x_coords[i]=ND_A(np).x;
+	y_coords[i]=ND_A(np).y;
 	i++;
     }
     hp = t->fisheyeParams.h =

@@ -183,7 +183,7 @@ void set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
     char *buf;
     colorxlate(get_attribute_value("bordercolor", view, g), &cl,
 	       RGBA_DOUBLE);
-    glEnable(GL_POINT_SMOOTH);
+    /* glEnable(GL_POINT_SMOOTH); */
     view->borderColor.R = (float) cl.u.RGBA[0];
     view->borderColor.G = (float) cl.u.RGBA[1];
     view->borderColor.B = (float) cl.u.RGBA[2];
@@ -605,7 +605,8 @@ static Agraph_t *loadGraph(char *filename)
     /* If no position info, run layout with -Txdot
      */
     if (!agattr(g, AGNODE, "pos", NULL)) {
-	g_print("There is no position info in %s\n", filename);
+	g_print("There is no position info in graph %s in %s\n", agnameof(g), filename);
+	agclose (g);
 	return 0;
     }
 //    free(view->Topview->Graphdata.GraphFileName);

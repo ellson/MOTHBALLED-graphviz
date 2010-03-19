@@ -1,3 +1,19 @@
+/* $Id$Revision: */
+/* vim:set shiftwidth=4 ts=8: */
+
+/**********************************************************
+*      This software is part of the graphviz package      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2004 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+**********************************************************/
+
 #include "polytess.h"
 #include "xdot.h"
 tessPoly TP;
@@ -163,6 +179,8 @@ static int Render_Contour2(GLUtesselator *tobj,sdot_op* p)
     return(1);
 
 }
+
+#if UNUSED
 static int Render_Contour(GLUtesselator *tobj, GLdouble obj_data[][3],int cnt)
 {
 
@@ -174,7 +192,7 @@ static int Render_Contour(GLUtesselator *tobj, GLdouble obj_data[][3],int cnt)
     /* int y=0; */
     if (!d)
     {
-	d=(GLdouble**) malloc(sizeof(GLdouble)* cnt);
+	d = (GLdouble**) malloc(sizeof(GLdouble)* cnt);
 	for (x=0;x < cnt; x++)
 	{
 	    /* GLdouble temp; */
@@ -211,6 +229,7 @@ static int Render_Contour(GLUtesselator *tobj, GLdouble obj_data[][3],int cnt)
     return(1);
 
 }
+#endif
 
 
 

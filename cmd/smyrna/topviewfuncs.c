@@ -25,21 +25,36 @@
 #include "glutils.h"
 #include "selectionfuncs.h"
 
-#define WITH_CGRAPH 1
-static xdot *parseXdotwithattrs(void *e);
-static Agsym_t* pos_attr=(Agsym_t*)0;
+static xdot *parseXdotwithattrs(void *e)
+{
+	
+    int cnt=0;
+    xdot* xDot=NULL;
+    xDot=parseXDotFOn (agget(e,"_draw_" ), OpFns,sizeof(sdot_op), xDot);
+    xDot=parseXDotFOn (agget(e,"_ldraw_" ), OpFns,sizeof(sdot_op), xDot);
+    xDot=parseXDotFOn (agget(e,"_hdraw_" ), OpFns,sizeof(sdot_op), xDot);
+    xDot=parseXDotFOn (agget(e,"_tdraw_" ), OpFns,sizeof(sdot_op), xDot);
+    xDot=parseXDotFOn (agget(e,"_hldraw_" ), OpFns,sizeof(sdot_op), xDot);
+    xDot=parseXDotFOn (agget(e,"_tldraw_" ), OpFns,sizeof(sdot_op), xDot);
+    if(xDot)
+    {
+	for (cnt=0;cnt < xDot->cnt ; cnt++)
+	{
+	    ((sdot_op*)(xDot->ops))[cnt].obj=e;
+        }
+    }
+    return xDot;
 
-
-
+}
 
 static void set_boundaries(Agraph_t * g, topview * t)
 {
     Agnode_t *v;
-    static glCompPoint pos;
+    Agsym_t* pos_attr = GN_pos(g);
+    glCompPoint pos;
     float left, right, top, bottom;
     int id=0;
-    if(!pos_attr)
-	pos_attr=agattr(g, AGNODE,"pos",0);
+
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
     {
 	pos=getPointFromStr(agxget(v, pos_attr));
@@ -67,11 +82,9 @@ static void set_boundaries(Agraph_t * g, topview * t)
 
     view->bdzTop = 0;
     view->bdzBottom = 0;
-
-
-
 }
 
+#if UNUSED
 static float init_node_size(Agraph_t * g, topview * t)
 {
     float vsize;
@@ -92,7 +105,7 @@ static float init_node_size(Agraph_t * g, topview * t)
     return  sz;
 
 }
-
+#endif
 
 
 static void draw_xdot(xdot* x,float base_z)
@@ -136,7 +149,7 @@ static GLfloat getEdgeLength(Agedge_t *  edge)
 }
 static void glCompColorxlate(glCompColor* c,char* str)
 {
-        static gvcolor_t cl;
+        gvcolor_t cl;
 	colorxlate(str, &cl, RGBA_DOUBLE);
 	c->R=cl.u.RGBA[0];
 	c->G=cl.u.RGBA[1];
@@ -144,23 +157,44 @@ static void glCompColorxlate(glCompColor* c,char* str)
 	c->A=cl.u.RGBA[3];
 }
 
+/* If the "visible" attribute is not set or "", return true
+ * else evaluate as boolean
+ */
+int visible(Agsym_t* attr, void* obj)
+{
+    char* s;
+
+    if (attr) {
+	s = agxget (obj, attr);
+	if (*s) return mapbool(s);
+	else return 1;
+    }
+    else return 1;
+}
 int object_color(void* obj,glCompColor* c)
 {
-    static gvcolor_t cl;
+    gvcolor_t cl;
     Agraph_t* g=view->g[view->activeGraph];
+    Agraph_t* objg=agraphof(obj);
     int return_value = 1;
     int objType;
     float Alpha = 1;
     char* bf;
+    Agsym_t* vis;
 
     objType=AGTYPE(obj);
 
-    if(objType==AGEDGE)
-	Alpha=getAttrFloat(g,agraphof(obj),"defaultedgealpha",1);
-    if(objType==AGNODE)
-	Alpha=getAttrFloat(g,agraphof(obj),"defaultnodealpha",1);
-    if(!getAttrBool1(g,obj,"visible",1))
+    if(objType==AGEDGE) {
+	Alpha=getAttrFloat(g,objg,"defaultedgealpha",1);
+	vis = GE_visible (objg);
+    }
+    if(objType==AGNODE) {
+	Alpha=getAttrFloat(g,objg,"defaultnodealpha",1);
+	vis = GN_visible (objg);
+    }
+    if (!visible(vis,obj))
 	return 0;
+
     /*get edge's color attribute */
     setColorScheme (agget (obj, "colorscheme"));
     bf=getAttrStr(g,obj,"color",NULL);
@@ -234,23 +268,14 @@ static void draw_edge(glCompPoint* posT,glCompPoint* posH, GLfloat length,int de
 void renderSelectedNodes(Agraph_t * g)
 {
     Agnode_t *v;
-    static xdot * x;
-        static glCompPoint pos;
+    xdot * x;
+    glCompPoint pos;
+    Agsym_t* l_color_attr = GG_nodelabelcolor(g);
+    glCompColor c;
+    int defaultNodeShape;
+    GLfloat nodeSize;
 
-
-    static Agsym_t* l_color_attr=(Agsym_t*)0;
-    static glCompColor c;
-
-
-
-
-
-    static int defaultNodeShape=0;
-    static GLfloat nodeSize=0;
-    if(!l_color_attr)
-	l_color_attr=agattr(g, AGRAPH,"nodelabelcolor",0);
     glCompColorxlate(&c,agxget(g,l_color_attr));
-
 
     defaultNodeShape=getAttrBool(g,g,"defaultnodeshape",0);
     if(defaultNodeShape==0)
@@ -258,7 +283,7 @@ void renderSelectedNodes(Agraph_t * g)
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
     {
-	if(!((nodeRec*)(aggetrec(v,"nodeRec",0)))->selected);
+	if(!ND_selected(v));
 	    continue;
 	x=parseXdotwithattrs(v);
 	draw_xdot(x,-1);
@@ -266,21 +291,20 @@ void renderSelectedNodes(Agraph_t * g)
 	    freeXDot (x);
     }
 
-
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
     {
-	if(!((nodeRec*)(aggetrec(v,"nodeRec",0)))->selected)
+	if(!ND_selected(v))
 	    continue;
 	glColor4f(view->selectedNodeColor.R, view->selectedNodeColor.G,view->selectedNodeColor.B, view->selectedNodeColor.A);
-	pos=((nodeRec*)(aggetrec(v,"nodeRec",0)))->A;
-	nodeSize=((nodeRec*)(aggetrec(v,"nodeRec",0)))->size;
+	pos = ND_A(v);
+	nodeSize = ND_size(v);
 
 	if (defaultNodeShape == 0) 
 	    glVertex3f(pos.x,pos.y,pos.z+0.001);
 	else if (defaultNodeShape == 1) 
 
 	    drawCircle(pos.x,pos.y,nodeSize,pos.z+0.001);
-	if(((nodeRec*)(aggetrec(v,"nodeRec",0)))->printLabel==1)
+	if (ND_printLabel(v)==1)
 	{
 	    glColor4f(c.R, c.G,c.B, c.A);
 	    glprintfglut(view->glutfont,pos.x+nodeSize,pos.y+nodeSize,pos.z,agnameof(v));
@@ -296,24 +320,17 @@ void renderSelectedNodes(Agraph_t * g)
 void renderNodes(Agraph_t * g)
 {
     Agnode_t *v;
-    static glCompPoint pos;
-    static Agsym_t* size_attr=(Agsym_t*)0;
-    static Agsym_t* selected_attr=(Agsym_t*)0;
-    static int defaultNodeShape=0;
-    static GLfloat nodeSize=0;
-    static glCompColor c;
+    glCompPoint pos;
+    Agsym_t* pos_attr = GN_pos(g);
+    Agsym_t* size_attr = GN_size(g);
+    Agsym_t* selected_attr = GN_selected(g);
+    int defaultNodeShape;
+    GLfloat nodeSize;
+    glCompColor c;
     xdot * x;
     int ind;
 
-
     defaultNodeShape=getAttrBool(g,g,"defaultnodeshape",0);
-    if(!pos_attr)
-	pos_attr=agattr(g, AGNODE,"pos",0);
-    if(!size_attr)
-	size_attr=agattr(g, AGNODE,"size",0);
-    if(!selected_attr)
-	selected_attr=agattr(g, AGNODE,"selected",0);
-
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
     {
@@ -322,44 +339,35 @@ void renderNodes(Agraph_t * g)
 	    x=parseXdotwithattrs(v);
 	    draw_xdot(x,-0.1);
 
-
 	    if(x)
 		freeXDot (x);
     }
 
-
-
     if(defaultNodeShape==0)
 	glBegin(GL_POINTS);
-
-
-
-
-
 
     ind=0;
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
     {
-	    ((nodeRec*)(aggetrec(v,"nodeRec",0)))->TVref=ind;
+	ND_TVref(v) = ind;
 	if(!object_color(v,&c))
 	{
-	    ((nodeRec*)(aggetrec(v,"nodeRec",0)))->visible=0;
+	    ND_visible(v) = 0;
 	    continue;
 	}
 	else
-	    ((nodeRec*)(aggetrec(v,"nodeRec",0)))->visible=1;
-
+	    ND_visible(v) = 1;
 
 	if(l_int(v, selected_attr,0))
 	{
-	    ((nodeRec*)(aggetrec(v,"nodeRec",0)))->selected=1;
+	    ND_selected(v) = 1;
 	}
 	glColor4f(c.R,c.G,c.B,c.A);	    
 	pos=getPointFromStr(agxget(v, pos_attr));
 	nodeSize=(GLfloat)l_float(v, size_attr,0);
 
-	((nodeRec*)(aggetrec(v,"nodeRec",0)))->A=pos;
+	ND_A(v) = pos;
 
         if (nodeSize > 0)
 	    nodeSize=nodeSize*view->nodeScale;
@@ -367,7 +375,7 @@ void renderNodes(Agraph_t * g)
 	    nodeSize=view->nodeScale;
 	if(defaultNodeShape==0)
 	    nodeSize=1;
-	((nodeRec*)(aggetrec(v,"nodeRec",0)))->size=nodeSize;
+	ND_size(v) = nodeSize;
 	if (defaultNodeShape == 0) 
 	    glVertex3f(pos.x,pos.y,pos.z);
 	else if (defaultNodeShape == 1) 
@@ -384,17 +392,17 @@ void renderSelectedEdges(Agraph_t * g)
 
     Agedge_t *e;
     Agnode_t *v;
-    static xdot * x;
-    static glCompPoint posT;	/*Tail position*/
-    static glCompPoint posH;	/*Head position*/
-    static glCompColor c;
+    xdot * x;
+    glCompPoint posT;	/*Tail position*/
+    glCompPoint posH;	/*Head position*/
+    glCompColor c;
     /*xdots tend to be drawn as background shapes,that is why they are being rendered before edges*/
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
     {
 	for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
 	{
-	    if(!((edgeRec*)(aggetrec(e,"edgeRec",0)))->selected)
+	    if(!ED_selected(e))
 		continue;
 	    if(!object_color(e,&c))
 		continue;
@@ -414,14 +422,14 @@ void renderSelectedEdges(Agraph_t * g)
     {
 	for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
 	{
-	    if(!((edgeRec*)(aggetrec(e,"edgeRec",0)))->selected)
+	    if(!ED_selected(e))
 		continue;
 
 	    if(!object_color(e,&c))
 		continue;
 	    glColor4f(1,0,0,1);	    
-	    posT=((edgeRec*)(aggetrec(e,"edgeRec",0)))->posTail;
-	    posH=((edgeRec*)(aggetrec(e,"edgeRec",0)))->posHead;
+	    posT = ED_posTail(e);
+	    posH = ED_posHead(e);
 	    posT.z +=0.01;
 	    posH.z +=0.01;
 	    draw_edge(&posT,&posH,getEdgeLength(e),0);
@@ -435,34 +443,29 @@ void renderSelectedEdges(Agraph_t * g)
 
 void renderEdges(Agraph_t * g)
 {
-
     Agedge_t *e;
     Agnode_t *v;
-    static xdot * x;
-    static glCompPoint posT;	/*Tail position*/
-    static glCompPoint posH;	/*Head position*/
-    static glCompColor c;
-    if(!pos_attr)
-	pos_attr=agattr(g, AGNODE,"pos",0);
+    Agsym_t* pos_attr = GN_pos(g);
+    xdot * x;
+    glCompPoint posT;	/*Tail position*/
+    glCompPoint posH;	/*Head position*/
+    glCompColor c;
     /*xdots tend to be drawn as background shapes,that is why they are being rendered before edges*/
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
     {
 	for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
 	{
-	    if(
-	    (((nodeRec*)(aggetrec(agtail(e),"nodeRec",0)))->visible==0)
-		    ||
-	    (((nodeRec*)(aggetrec(aghead(e),"nodeRec",0)))->visible==0))
+	    if ((ND_visible(agtail(e))==0) || (ND_visible(aghead(e))==0))
 		continue;
 
 	    if(!object_color(e,&c))
 	    {
-		((edgeRec*)(aggetrec(e,"edgeRec",0)))->visible=0;
+		ED_visible(e) = 0;
 		continue;
 	    }
 	    else
-		((edgeRec*)(aggetrec(e,"edgeRec",0)))->visible=1;
+		ED_visible(e) = 1;
 	    x=parseXdotwithattrs(e);
 	    draw_xdot(x,0);
 
@@ -472,32 +475,24 @@ void renderEdges(Agraph_t * g)
 	}
     }
 
-
-
-
     glBegin(GL_LINES);
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
     {
 	for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
 	{
-	    if(
-	    (((nodeRec*)(aggetrec(agtail(e),"nodeRec",0)))->visible==0)
-		    ||
-	    (((nodeRec*)(aggetrec(aghead(e),"nodeRec",0)))->visible==0))
+	    if ((ND_visible(agtail(e))==0) || (ND_visible(aghead(e))==0))
 		continue;
 
 	    if(!object_color(e,&c))
 		continue;
-	    if(((edgeRec*)(aggetrec(e,"edgeRec",0)))->selected)
+	    if(ED_selected(e))
 		continue;
 	    glColor4f(c.R,c.G,c.B,c.A);	    
 	    posT=getPointFromStr(agxget(agtail(e), pos_attr));
 	    posH=getPointFromStr(agxget(aghead(e), pos_attr));
 	    draw_edge(&posT,&posH,getEdgeLength(e),0);
-    	    ((edgeRec*)(aggetrec(e,"edgeRec",0)))->posTail=posT;
-	    ((edgeRec*)(aggetrec(e,"edgeRec",0)))->posHead=posH;
-
-
+	    ED_posTail(e) = posT;
+	    ED_posHead(e) = posH;
 	}
     }
     glEnd();
@@ -506,31 +501,23 @@ void renderEdges(Agraph_t * g)
 void renderNodeLabels(Agraph_t * g)
 {
     Agnode_t *v;
-    static glCompPoint pos;
-    static Agsym_t* data_attr=(Agsym_t*)0;
-    static Agsym_t* l_color_attr=(Agsym_t*)0;
-    static GLfloat nodeSize=0;
-    static glCompColor c;
-    if(!data_attr)
-	data_attr=agattr(g, AGNODE,agget(g, "nodelabelattribute"),0);
-    if(!l_color_attr)
-	l_color_attr=agattr(g, AGRAPH,"nodelabelcolor",0);
-
-
-
+    glCompPoint pos;
+    Agsym_t* data_attr = GN_labelattribute(g);
+    Agsym_t* l_color_attr = GG_nodelabelcolor(g);
+    GLfloat nodeSize;
+    glCompColor c;
 
     glCompColorxlate(&c,agxget(g,l_color_attr));
 
-
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
     {
-	 if(((nodeRec*)(aggetrec(v,"nodeRec",0)))->visible==0)
+	 if(ND_visible(v)==0)
 	    continue;
-	 if(((nodeRec*)(aggetrec(v,"nodeRec",0)))->selected==1)
+	 if(ND_selected(v)==1)
 	    continue;
 
-	pos=((nodeRec*)(aggetrec(v,"nodeRec",0)))->A;
-	nodeSize=((nodeRec*)(aggetrec(v,"nodeRec",0)))->size;
+	pos = ND_A(v);
+	nodeSize = ND_size(v);
 	glColor4f(c.R,c.G,c.B,c.A);
 	if(!data_attr)
             glprintfglut(view->glutfont,pos.x+nodeSize,pos.y+nodeSize,pos.z,agnameof(v));
@@ -538,26 +525,21 @@ void renderNodeLabels(Agraph_t * g)
 	    glprintfglut(view->glutfont,pos.x+nodeSize,pos.y+nodeSize,pos.z,agxget(v,data_attr));
     }
 }
+
 void renderEdgeLabels(Agraph_t * g)
 {
     Agedge_t *e;
     Agnode_t *v;
-    static glCompPoint posT;
-    static glCompPoint posH;
-    static Agsym_t* data_attr=(Agsym_t*)0;
-    static Agsym_t* l_color_attr=(Agsym_t*)0;
-    /* static GLfloat nodeSize=0; */
-    static glCompColor c;
+    glCompPoint posT;
+    glCompPoint posH;
+    Agsym_t* data_attr = GE_labelattribute(g);
+    Agsym_t* l_color_attr = GG_edgelabelcolor(g);
+    glCompColor c;
     GLfloat x,y,z;
-
-    if(!data_attr)
-	data_attr=agattr(g, AGNODE,agget(g, "edgelabelattribute"),0);
-    if(!l_color_attr)
-	l_color_attr=agattr(g, AGRAPH,"edgelabelcolor",0);
 
     glCompColorxlate(&c,agxget(g,l_color_attr));
 
-    if(!data_attr)
+    if(!data_attr || !l_color_attr)
 	return;
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
@@ -565,11 +547,11 @@ void renderEdgeLabels(Agraph_t * g)
 	for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
 	{
 
-	    if(((edgeRec*)(aggetrec(v,"nodeRec",0)))->visible==0)
+	    if (ND_visible(v)==0)
 		continue;
 
-	    posT=((edgeRec*)(aggetrec(e,"edgeRec",0)))->posTail;
-	    posH=((edgeRec*)(aggetrec(e,"edgeRec",0)))->posHead;
+	    posT = ED_posTail(e);
+	    posH = ED_posHead(e);
 	    glColor4f(c.R,c.G,c.B,c.A);
 	    x=posH.x+(posT.x-posH.x)/2;
 	    y=posH.y+(posT.y-posH.y)/2;
@@ -584,28 +566,6 @@ void renderEdgeLabels(Agraph_t * g)
 
 
 
-
-static xdot *parseXdotwithattrs(void *e)
-{
-	
-    int cnt=0;
-    xdot* xDot=NULL;
-    xDot=parseXDotFOn (agget(e,"_draw_" ), OpFns,sizeof(sdot_op), xDot);
-    xDot=parseXDotFOn (agget(e,"_ldraw_" ), OpFns,sizeof(sdot_op), xDot);
-    xDot=parseXDotFOn (agget(e,"_hdraw_" ), OpFns,sizeof(sdot_op), xDot);
-    xDot=parseXDotFOn (agget(e,"_tdraw_" ), OpFns,sizeof(sdot_op), xDot);
-    xDot=parseXDotFOn (agget(e,"_hldraw_" ), OpFns,sizeof(sdot_op), xDot);
-    xDot=parseXDotFOn (agget(e,"_tldraw_" ), OpFns,sizeof(sdot_op), xDot);
-    if(xDot)
-    {
-	for (cnt=0;cnt < xDot->cnt ; cnt++)
-	{
-	    ((sdot_op*)(xDot->ops))[cnt].obj=e;
-        }
-    }
-    return xDot;
-
-}
 
 void cacheNodes(Agraph_t * g,topview* t)
 {

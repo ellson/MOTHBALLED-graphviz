@@ -393,6 +393,14 @@ typedef struct
 	int printLabel;
 	int TVref;
     }nodeRec;
+#define NREC(n) ((nodeRec*)(aggetrec(n,"nodeRec",0)))
+#define ND_visible(n) (NREC(n)->visible)
+#define ND_selected(n) (NREC(n)->selected)
+#define ND_printLabel(n) (NREC(n)->printLabel)
+#define ND_A(n) (NREC(n)->A)
+#define ND_size(n) (NREC(n)->size)
+#define ND_TVref(n) (NREC(n)->TVref)
+
     typedef struct{
 	Agrec_t h;
 	glCompPoint posTail;
@@ -401,6 +409,37 @@ typedef struct
 	int visible;
 	int printLabel;
     }edgeRec;
+#define EREC(e) ((edgeRec*)(aggetrec(e,"edgeRec",0)))
+#define ED_visible(e) (EREC(e)->visible)
+#define ED_selected(e) (EREC(e)->selected)
+#define ED_printLabel(e) (EREC(e)->printLabel)
+#define ED_posTail(e) (EREC(e)->posTail)
+#define ED_posHead(e) (EREC(e)->posHead)
+
+    typedef struct{
+	Agrec_t h;
+	Agsym_t* N_pos;
+	Agsym_t* N_size;
+	Agsym_t* N_visible;
+	Agsym_t* N_selected;
+	Agsym_t* G_nodelabelcolor;
+	Agsym_t* N_labelattribute;
+	Agsym_t* E_visible;
+	Agsym_t* E_selected;
+	Agsym_t* G_edgelabelcolor;
+	Agsym_t* E_labelattribute;
+    } graphRec;
+#define GREC(g) ((graphRec*)(AGDATA(g)))
+#define GN_pos(g) (GREC(g)->N_pos)
+#define GN_size(g) (GREC(g)->N_size)
+#define GN_visible(g) (GREC(g)->N_visible)
+#define GN_selected(g) (GREC(g)->N_selected)
+#define GG_nodelabelcolor(g) (GREC(g)->G_nodelabelcolor)
+#define GN_labelattribute(g) (GREC(g)->N_labelattribute)
+#define GE_visible(g) (GREC(g)->E_visible)
+#define GE_selected(g) (GREC(g)->E_selected)
+#define GG_edgelabelcolor(g) (GREC(g)->G_edgelabelcolor)
+#define GE_labelattribute(g) (GREC(g)->E_labelattribute)
 
     typedef struct _selection {
 	glCompPoly selPoly;

@@ -35,23 +35,23 @@ bin_PROGRAMS += smyrna_static
 endif
 endif
 
-noinst_HEADERS = arcball.h btree.h draw.h drawxdot.h filter.h glexpose.h \
+noinst_HEADERS = arcball.h btree.h draw.h filter.h glexpose.h \
 	glmotion.h gltemplate.h gui/appmouse.h gui/callbacks.h \
 	hotkeymap.h materials.h md5.h polytess.h selectionfuncs.h \
 	smyrna_utils.h smyrnadefs.h support.h topfisheyeview.h \
 	topviewdata.h topviewdefs.h topviewfuncs.h trackball.h tvnodes.h \
 	viewport.h viewportcamera.h  \
-	gui/datalistcallbacks.h gui/filterscallbacks.h gui/frmobjectui.h \
+	gui/datalistcallbacks.h gui/frmobjectui.h \
 	gui/glcompui.h gui/gui.h gui/menucallbacks.h \
 	gui/toolboxcallbacks.h gui/topviewsettings.h gvprpipe.h hier.h
 
-smyrna_SOURCES = arcball.c btree.c draw.c drawxdot.c filter.c glexpose.c \
+smyrna_SOURCES = arcball.c btree.c draw.c filter.c glexpose.c \
 	glmotion.c gltemplate.c gui/appmouse.c gui/callbacks.c \
 	gvprpipe.c hier.c hotkeymap.c main.c md5.c polytess.c \
-	selectionfuncs.c smyrna_utils.c support.c template.c topfisheyeview.c \
+	selectionfuncs.c smyrna_utils.c support.c topfisheyeview.c \
 	topviewdata.c topviewfuncs.c trackball.c tvnodes.c \
 	viewport.c viewportcamera.c \
-	gui/datalistcallbacks.c gui/filterscallbacks.c gui/frmobjectui.c \
+	gui/datalistcallbacks.c gui/frmobjectui.c \
 	gui/glcompui.c gui/gui.c gui/menucallbacks.c \
 	gui/toolboxcallbacks.c gui/topviewsettings.c
 

@@ -119,13 +119,11 @@ int print_tree(btree_node * root)
 int print_children(btree_node * n)
 {
     int i = 0;
-    static int prev_rank = 0;
     if (n->node_type == 2)
 	printf("      %*s=%s(%i)\n", n->rank * 5 + 1, n->attr_name,
 	       n->regex, n->rank);
     else
 	printf("%*s %c(%i)\n", n->rank * 5 + 1, "", n->op, n->rank);
-    prev_rank = n->rank;
     for (i = 0; i < n->child_count; i++) 
     {
 	print_children(n->childs[i]);

@@ -19,7 +19,6 @@
 #include "btree.h"
 #include "viewport.h"
 #include "topviewfuncs.h"
-
 #include "memory.h"
 
 typedef struct{
@@ -72,25 +71,24 @@ int create_save_subgraph_from_filter(char *filename)
 
 static void set_visibility(Agraph_t* g,int visibility)
 {
-
     Agnode_t *v;
-    static char bf1[2];
-    static char* bf2;
-    static Agsym_t* visible_attr=(Agsym_t*)0;
-    static Agsym_t* selected_attr=(Agsym_t*)0;
-    if(!visible_attr)
-	visible_attr=agattr(g, AGNODE,"visible","1");
-    if(!selected_attr)
-	selected_attr=agattr(g, AGNODE,"selected",0);
+    char bf1[2];
+    char* bf2;
+    Agsym_t* visible_attr = GN_visible(g);
+    Agsym_t* selected_attr = GN_selected(g);
+
+    if (!visible_attr)
+	visible_attr = GN_visible(g) = agattr(g, AGNODE,"visible","1");
+    if (!selected_attr)
+	return;
     sprintf(bf1,"%d",visibility);
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
     {
 	bf2=agxget(v,selected_attr);
-	if((!bf2) || (strcmp(bf2,"0")==0))
+	if((*bf2 == '\0') || (strcmp(bf2,"0")==0))
 		continue;
 	agxset(v,visible_attr,bf1);
     }
-
 }
 
 int tv_show_all(void)
@@ -172,6 +170,7 @@ static void create_toggle_column(char* Title,GtkTreeView* tree,int asso,int edit
     gtk_tree_view_column_set_resizable  (column,1);
 
 }
+#ifdef UNUSED
 static int boolStrMap(char* str)
 {
     if (strcmp(str,"1") ||strcmp(str,"true")|| strcmp(str,"TRUE") || strcmp(str,"True"))
@@ -180,7 +179,7 @@ static int boolStrMap(char* str)
 
 }
 
-
+#endif
 
 
 
@@ -297,7 +296,7 @@ GtkTreeView* update_tree (GtkTreeView *tree,grid* g)
     int id=0;
     if(tree!=NULL)
     {
-        while(column=gtk_tree_view_get_column(tree,0))	/*clear all columns*/
+        while ((column=gtk_tree_view_get_column(tree,0)))  /*clear all columns*/
 	    gtk_tree_view_remove_column(tree,column);
 	store=(GtkTreeStore*)gtk_tree_view_get_model(tree);
     }
@@ -386,14 +385,10 @@ void setup_tree (Agraph_t* g)
     G_TYPE_INT:
     G_TYPE_BOOLEAN:
     */
-    static char* buf=NULL;
-    static GtkTreeStore *store=NULL;
-    static GtkTreeView *tree=NULL;
-    grid* gr=NULL;
-    buf=agget(g,"datacolumns");
+    char* buf = agget(g,"datacolumns");
+    grid* gr = update_colums(NULL,buf);
+    static GtkTreeView *tree;
 
-//    tree=(GtkTreeView *) glade_xml_get_widget(xml, "treeview1");
-    gr=update_colums(gr,buf);
     tree=update_tree (tree,gr);
     populate_data(g,gr);
 }
