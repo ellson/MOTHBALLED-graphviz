@@ -246,7 +246,6 @@ Database Class:	\\fB\\$3\\fR
 	...
 	.c create line ... \-smooth spline ...
 	.c create polygon ... \-smooth spline ...
-.fo
 .BE
 .SH INTRODUCTION
 .PP
@@ -281,7 +280,7 @@ the curve is guaranteed to intersect the first point, and every third point afte
 .TP 3
 -
 each segment of the curve shares endpoints with the adjacent segments,
-but is otherwise independant of them.  
+but is otherwise independent of them.  
 .TP 3
 -
 the curve is guaranteed to be tangential to a line between n and n+1 at 

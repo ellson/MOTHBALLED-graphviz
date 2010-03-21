@@ -15,7 +15,7 @@
 .SH "NAME"
 \fBlibcgraph\fR \- abstract graph library
 .SH "SYNOPSIS"
-."ta .75i 1.5i 2.25i 3i 3.75i 4.5i 5.25i 6i
+.\"ta .75i 1.5i 2.25i 3i 3.75i 4.5i 5.25i 6i
 .PP
 .nf
 .P0
@@ -204,7 +204,7 @@ pointer is returned.
 by a unique 32-bit ID.
 \fBagsubnode\fP performs a similar operation on
 an existing node and a subgraph.
-.Pp
+.PP
 \fBagfstnode\fP and \fBagnxtnode\fP scan node lists.
 \fBagprvnode\fP and \fPaglstnode\fP are symmetric but scan backward.
 The default sequence is order of creation (object timestamp.)
@@ -214,10 +214,10 @@ The default sequence is order of creation (object timestamp.)
 An abstract edge has two endpoint nodes called tail and head
 where the all outedges of the same node have it as the tail
 value and similarly all inedges have it as the head.
-In an undirected graph, head and tail are interchangable.
+In an undirected graph, head and tail are interchangeable.
 If a graph has multi-edges between the same pair of nodes,
 the edge's string name behaves as a secondary key.
-.Pp
+.PP
 \fBagedge\fP searches in a graph of subgraph for an
 edge between the given endpoints (with an optional
 multi-edge selector name) and returns it if found.

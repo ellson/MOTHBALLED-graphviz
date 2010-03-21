@@ -1,6 +1,4 @@
 .TH gdtclft 3tcl "Tcl Extensions"
-.HS gdtclft tcl
-.BS
 .SH NAME
 gdtclft \- render images in various bitmap formats (GD, GD2, GIF, JPEG, PNG, WBMP, XBM)
 .SH DESCRIPTION
