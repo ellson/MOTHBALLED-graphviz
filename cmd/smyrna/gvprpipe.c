@@ -99,6 +99,7 @@ int run_gvpr(Agraph_t * srcGraph, int argc, char *argv[])
 
     gs[0] = srcGraph;
     gs[1] = 0;
+    memset (&opts, 0, sizeof(opts));
     opts.ingraphs = gs;
     opts.out = outfn;
     opts.err = outfn;
