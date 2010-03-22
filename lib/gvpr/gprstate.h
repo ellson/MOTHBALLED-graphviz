@@ -26,6 +26,7 @@ extern "C" {
 #include "ast.h"
 #include "vmalloc.h"
 #include "expr.h"
+#include "gvpr.h"
 
     typedef enum { TV_flat, TV_ne, TV_en, 
                    TV_bfs, 
@@ -54,6 +55,8 @@ extern "C" {
 	int argc;
 	char **argv;
 	int flags;
+	gvprbinding* bindings;
+	int n_bindings;
     } Gpr_t;
 
     typedef struct {
@@ -66,6 +69,8 @@ extern "C" {
     } gpr_info;
 
     extern Gpr_t *openGPRState(gpr_info*);
+    extern void addBindings(Gpr_t* state, gvprbinding*);
+    extern gvprbinding* findBinding(Gpr_t* state, char*);
     extern void closeGPRState(Gpr_t* state);
     extern void initGPRState(Gpr_t *, Vmalloc_t *);
     extern int validTVT(int);

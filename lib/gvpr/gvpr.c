@@ -888,6 +888,8 @@ int gvpr (int argc, char *argv[], gvpropts * uopts)
 	rv = 1;
 	goto finish;
     }
+    if (uopts->bindings)
+	addBindings (state, uopts->bindings);
     xprog = compileProg(prog, state, opts->compflags);
     if (!xprog) {
 	rv = 1;

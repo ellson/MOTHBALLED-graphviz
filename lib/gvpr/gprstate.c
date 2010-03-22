@@ -66,6 +66,68 @@ Gpr_t *openGPRState(gpr_info* info)
     return state;
 }
 
+
+static int
+bindingcmpf (const void *key, const void *ip)
+{
+    return strcmp (((gvprbinding*)key)->name, ((gvprbinding*)ip)->name);
+}
+
+/* findBinding:
+ */
+gvprbinding* 
+findBinding (Gpr_t* state, char* fname)
+{
+    gvprbinding key;
+    gvprbinding* bp;
+
+    if (!state->bindings) {
+	error(ERROR_ERROR,"call(\"%s\") failed: no bindings", fname);
+	return NULL;
+    }
+    if (!fname) {
+	error(ERROR_ERROR,"NULL function name for call()");
+	return NULL;
+    }
+
+    key.name = fname;
+    bp = (gvprbinding*)bsearch(&key, state->bindings, state->n_bindings, sizeof(gvprbinding), bindingcmpf); 
+    if (!bp)
+	error(ERROR_ERROR, "No binding for \"%s\" in call()", fname);
+    return bp;
+}
+
+/* addBindings:
+ * Validate input, sort lexicographically, and attach
+ */
+void addBindings (Gpr_t* state, gvprbinding* bindings)
+{
+    int n = 0;
+    gvprbinding* bp = bindings;
+    gvprbinding* buf;
+    gvprbinding* bufp;
+
+    while (bp && bp->name) {
+	if (bp->fn) n++;
+	bp++;
+    }
+
+    if (n == 0) return;
+    bufp = buf = newof(0, gvprbinding, n, 0);
+    bp = bindings;
+    while (bp->name) {
+        if (bp->fn) {
+	    *bufp = *bp;
+	    bufp++;
+	}
+	bp++;
+    }
+    qsort (buf, n, sizeof(gvprbinding), bindingcmpf);
+
+    state->bindings = buf;
+    state->n_bindings = n;
+}
+
 void closeGPRState(Gpr_t* state)
 {
     if (!state) return;

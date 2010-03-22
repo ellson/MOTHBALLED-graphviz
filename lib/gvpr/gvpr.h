@@ -30,6 +30,11 @@ extern "C" {
 #define GV_USE_OUTGRAPH 2
 
 typedef ssize_t (*gvprwr) (void*, const char *buf, size_t nbyte, void*);
+typedef int (*gvpruserfn) (char *);
+typedef struct {
+    char* name;
+    gvpruserfn fn;
+} gvprbinding;
 
 typedef struct {
     Agraph_t** ingraphs;      /* NULL-terminated array of input graphs */
@@ -38,6 +43,7 @@ typedef struct {
     gvprwr out;               /* write function for stdout */
     gvprwr err;               /* write function for stderr */
     int flags;
+    gvprbinding* bindings;    /* array of bindings, terminated with {NULL,NULL} */
 } gvpropts;
 
     extern int gvpr (int argc, char *argv[], gvpropts* opts);

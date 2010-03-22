@@ -112,6 +112,7 @@ F_toupper   "toupper"      FUNCTION S|A(1,S)
 F_atoi      "atoi"         FUNCTION I|A(1,S)
 F_atof      "atof"         FUNCTION F|A(1,S)
 F_colorx    "colorx"       FUNCTION S|A(1,S)|A(2,S)
+F_call      "call"         FUNCTION I|A(1,S)|A(2,S)
 C_flat      "TV_flat"      CONSTANT T_tvtyp
 C_ne        "TV_ne"        CONSTANT T_tvtyp
 C_en        "TV_en"        CONSTANT T_tvtyp

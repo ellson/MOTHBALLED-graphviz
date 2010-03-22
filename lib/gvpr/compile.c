@@ -65,7 +65,7 @@ static int iofread(void *chan, char *buf, int bufsize)
     return read(sffileno((Sfio_t *) chan), buf, bufsize);
 }
 
-static int ioputstr(void *chan, char *str)
+static int ioputstr(void *chan, const char *str)
 {
     return sfputr((Sfio_t *) chan, str, -1);
 }
@@ -632,6 +632,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
     Agnode_t *hp;
     Agedge_t *ep;
     char* name;
+    gvprbinding* bp;
 
     assert(sym->lex != CONSTANT);
     if (elt == EX_CALL) {
@@ -1394,6 +1395,12 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    break;
 	case F_match:
 	    v.integer = match(args[0].string, args[1].string);
+	    break;
+	case F_call:
+	    if ((bp = findBinding (state, args[0].string)))
+		v.integer = (bp->fn)(args[1].string);
+	    else
+		v.integer = -1;
 	    break;
 	default:
 	    exerror("unknown function call: %s", sym->name);
