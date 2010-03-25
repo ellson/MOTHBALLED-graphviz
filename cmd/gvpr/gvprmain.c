@@ -83,6 +83,7 @@ main (int argc, char* argv[])
     opts.out = outfn;
     opts.err = errfn;
     opts.flags = GV_USE_OUTGRAPH;
+    opts.bindings = 0;
     
     rv = gvpr (argc, argv, &opts);
 
@@ -104,6 +105,8 @@ main (int argc, char* argv[])
     opts.out = 0;
     opts.err = 0;
     opts.flags = GV_USE_EXIT;
+    opts.bindings = 0;
+    
     
     return gvpr (argc, argv, &opts);
 }
