@@ -555,7 +555,6 @@ delaunay_tri (double *x, double *y, int n, int* nedges)
     free (out.segmentmarkerlist);
     free (out.holelist);
     free (out.regionlist);
-    free (out.edgelist);
     free (out.edgemarkerlist);
     free (out.normlist);
     return out.edgelist;
