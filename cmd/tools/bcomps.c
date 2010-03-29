@@ -102,14 +102,17 @@ static char *blockName(char *gname, int d)
     static int bufsz;
     int sz;
 
-    sz = strlen(gname) + 32;
+    sz = strlen(gname) + 128;
     if (sz > bufsz) {
 	if (buf)
 	    free(buf);
 	buf = (char *) malloc(sz);
     }
 
-    sprintf(buf, "%s_bcc_%d", gname, d);
+    if (*gname == '%') /* anonymous graph */
+	sprintf(buf, "_%s_bcc_%d", gname, d);
+    else
+	sprintf(buf, "%s_bcc_%d", gname, d);
     return buf;
 }
 
