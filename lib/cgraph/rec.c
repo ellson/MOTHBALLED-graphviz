@@ -198,21 +198,22 @@ void agclean(Agraph_t * g, char *graphdata, char *nodedata, char *edgedata)
 }
 #endif
 
-void aginit(Agraph_t * g, int kind, char *rec_name, int rec_size, int mtf)
+void aginit(Agraph_t * g, int kind, char *rec_name, int arg_rec_size, int mtf)
 {
     Agnode_t *n;
     Agedge_t *e;
     Agraph_t *s;
-	int		 rec;	/* if recursive on subgraphs */
+	int		 rec_size;
+	int		 recur;	/* if recursive on subgraphs */
 
-	rec = (rec_size < 0);
-	if (rec) rec_size = -rec_size;
+	if (arg_rec_size < 0) {recur = 1; rec_size = -arg_rec_size;}
+	else {recur = 0; rec_size= arg_rec_size;}
     switch (kind) {
     case AGRAPH:
 	agbindrec(g, rec_name, rec_size, mtf);
-	if (rec)
+	if (recur)
 		for (s = agfstsubg(g); s; s = agnxtsubg(s))
-			aginit(s,kind,rec_name,rec_size,mtf);
+			aginit(s,kind,rec_name,arg_rec_size,mtf);
 	break;
     case AGNODE:
     case AGOUTEDGE:
