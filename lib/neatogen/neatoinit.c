@@ -1494,7 +1494,7 @@ void neato_layout(Agraph_t * g)
 	    agerr(AGPREV, "as required by the -n flag\n");
 	    return;
 	}
-	else gv_postprocess(g, ret);
+	else gv_postprocess(g, !ret);
     } else {
 	neato_init_graph(g);
 	layoutMode = neatoMode(g);

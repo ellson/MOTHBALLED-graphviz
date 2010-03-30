@@ -219,14 +219,12 @@ addXLabels (Agraph_t* g)
  * Assumes the boxes of all clusters have been computed.
  * When done, the bounding box of g has LL at origin.
  */
-void gv_postprocess(Agraph_t *g, int addXLabelsOnly)
+void gv_postprocess(Agraph_t *g, int allowTranslation)
 {
     double diff;
     pointf dimen = {0., 0.};
 
     addXLabels (g);
-    if (addXLabelsOnly)
-	return;
 
     Rankdir = GD_rankdir(g);
     Flip = GD_flip(g);
@@ -235,6 +233,7 @@ void gv_postprocess(Agraph_t *g, int addXLabelsOnly)
     else
 	place_graph_label(g);
 
+	/* Add space for graph label if necessary */
     if (GD_label(g) && !GD_label(g)->set) {
 	dimen = GD_label(g)->dimen;
 	PAD(dimen);
@@ -272,21 +271,23 @@ void gv_postprocess(Agraph_t *g, int addXLabelsOnly)
 	    }
 	}
     }
-    switch (Rankdir) {
-    case RANKDIR_TB:
-	Offset = GD_bb(g).LL;
-	break;
-    case RANKDIR_LR:
-	Offset = pointfof(-GD_bb(g).UR.y, GD_bb(g).LL.x);
-	break;
-    case RANKDIR_BT:
-	Offset = pointfof(GD_bb(g).LL.x, -GD_bb(g).UR.y);
-	break;
-    case RANKDIR_RL:
-	Offset = pointfof(GD_bb(g).LL.y, GD_bb(g).LL.x);
-	break;
+    if (allowTranslation) {
+	switch (Rankdir) {
+	case RANKDIR_TB:
+	    Offset = GD_bb(g).LL;
+	    break;
+	case RANKDIR_LR:
+	    Offset = pointfof(-GD_bb(g).UR.y, GD_bb(g).LL.x);
+	    break;
+	case RANKDIR_BT:
+	    Offset = pointfof(GD_bb(g).LL.x, -GD_bb(g).UR.y);
+	    break;
+	case RANKDIR_RL:
+	    Offset = pointfof(GD_bb(g).LL.y, GD_bb(g).LL.x);
+	    break;
+	}
+	translate_drawing(g);
     }
-    translate_drawing(g);
     if (GD_label(g) && !GD_label(g)->set)
 	place_root_label(g, dimen);
 
