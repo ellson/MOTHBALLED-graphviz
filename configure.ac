@@ -464,30 +464,29 @@ AC_REPLACE_FUNCS([strcasecmp strncasecmp])
 dnl -----------------------------------
 dnl libtool ltdl on-demand plugin loading
 
-m4_ifdef([LT_INIT],
-    [ #code that is for Libtool 2.x
-AM_PROG_LIBTOOL
-    ],
-    [ #code that is for 1.5.x
-    ])
+LT_INIT([dlopen])
+LT_CONFIG_LTDL_DIR([libltdl])
+LTDL_INIT
+
 AC_ARG_ENABLE(ltdl,
   [AS_HELP_STRING([--enable-ltdl],[support on-demand plugin loading])])
 if test "x$enable_ltdl" != "xno"; then
   AC_DEFINE(ENABLE_LTDL,1,[Define if you want on-demand plugin loading])
-  AC_LIBTOOL_DLOPEN
-m4_ifdef([LT_INIT],
-    [ #code that is for Libtool 2.x
-  LT_CONFIG_LTDL_DIR([libltdl])
-  LTDL_INIT
-    ],
-    [ #code that is for 1.5.x
-  AC_CONFIG_SUBDIRS([libltdl])
-    ])
   use_ltdl="Yes"
-  
-  AC_LIBLTDL_CONVENIENCE
-  if test "x$DARWIN9" = "xyes"; then
-     LIBLTDL_LDFLAGS="-Wl,-unexported_symbol,_lt_*"
+  # The lt_dladvise_init symbol was added with libtool-2.2
+  if test "x$with_included_ltdl" != "xyes"; then
+    save_CFLAGS="$CFLAGS"
+    save_LDFLAGS="$LDFLAGS"
+    CFLAGS="$CFLAGS $LTDLINCL"
+    LDFLAGS="$LDFLAGS $LIBLTDL"
+    AC_CHECK_LIB([ltdl], [lt_dladvise_init], [],
+	[AC_MSG_ERROR([installed libltdl is too old])])
+    LDFLAGS="$save_LDFLAGS"
+    CFLAGS="$save_CFLAGS"
+  else
+    if test "x$DARWIN9" = "xyes"; then
+      LIBLTDL_LDFLAGS="-Wl,-unexported_symbol,_lt_*"
+    fi
   fi
 else
   use_ltdl="No (disabled)"
@@ -496,12 +495,7 @@ AM_CONDITIONAL(ENABLE_LTDL, [test "x$enable_ltdl" != "xno"])
 AC_SUBST(INCLTDL)
 AC_SUBST(LIBLTDL)
 AC_SUBST(LIBLTDL_LDFLAGS)
-m4_ifdef([LT_INIT],
-    [ #code that is for Libtool 2.x
-    ],
-    [ #code that is for 1.5.x
-AM_PROG_LIBTOOL
-    ])
+
 
 # Checks for libraries.
 #AC_CHECK_LIB([ICE], [main])
