@@ -80,6 +80,20 @@ pop (estack* s)
 }
 
 
+/* dfs:
+ *
+ * Current scheme adds articulation point to first non-trivial child
+ * block. If none exists, it will be added to its parent's block, if
+ * non-trivial, or else given its own block.
+ *
+ * FIX:
+ * This should be modified to:
+ *  - allow user to specify which block gets a node, perhaps on per-node basis.
+ *  - if an articulation point is not used in one of its non-trivial blocks,
+ *    dummy edges should be added to preserve biconnectivity
+ *  - turn on user-supplied blocks.
+ *  - Post-process to move articulation point to largest block
+ */
 static void dfs(Agraph_t * g, Agnode_t * u, circ_state * state, int isRoot, estack* stk)
 {
     Agedge_t *e;
@@ -96,7 +110,7 @@ static void dfs(Agraph_t * g, Agnode_t * u, circ_state * state, int isRoot, esta
 	    if (!EDGEORDER(e)) EDGEORDER(e) = 1;
 	}
 
-        if (VAL(v) == 0) {
+        if (VAL(v) == 0) {   /* Since VAL(root) == 0, it gets treated as artificial cut point */
 	    PARENT(v) = u;
             push(stk, e);
             dfs(g, v, state, 0, stk);
@@ -118,7 +132,7 @@ static void dfs(Agraph_t * g, Agnode_t * u, circ_state * state, int isRoot, esta
 		    }
                 } while (ep != e);
 		if (block) {	/* If block != NULL, it's not empty */
-		    if (blockSize (block) > 1)
+		    if (!BLOCK(u) && blockSize (block) > 1)
 			addNode(block, u);
 		    if (isRoot && (BLOCK(u) == block))
 			insertBlock(&state->bl, block);
