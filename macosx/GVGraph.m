@@ -74,6 +74,10 @@ extern char *gvplugin_list(GVC_t * gvc, api_t api, const char *str);
 			}
 			
 			_graph = agread(file);
+			if (!_graph) {
+				[self autorelease];
+				return nil;
+			}
 			fclose(file);
 		}
 		else {
