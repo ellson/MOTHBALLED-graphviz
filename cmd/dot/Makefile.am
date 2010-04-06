@@ -32,13 +32,11 @@ if ENABLE_LTDL
 if ENABLE_STATIC
 bin_PROGRAMS = dot dot_static
 else
-bin_PROGRAMS = dot_builtins
-bin_PROGRAMS = dot
+bin_PROGRAMS = dot dot_builtins
 endif
 else
 if ENABLE_STATIC
-bin_PROGRAMS = dot_builtins
-bin_PROGRAMS = dot_static
+bin_PROGRAMS = dot_static dot_builtins
 else
 bin_PROGRAMS = dot_builtins
 endif
