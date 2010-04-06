@@ -1350,6 +1350,10 @@ compassPort(node_t * n, boxf * bp, port * pp, char *compass, int sides,
 	    case '\0':
 		theta = -M_PI * 0.5;
 		defined = TRUE;
+                if (ictxt)
+                    p = compassPoint(ictxt, -INT_MAX, ctr.x);
+                else
+                    p.x = ctr.x;
 		side = sides & BOTTOM;
 		break;
 	    case 'e':
@@ -1398,6 +1402,10 @@ compassPort(node_t * n, boxf * bp, port * pp, char *compass, int sides,
 	    case '\0':
 		defined = TRUE;
 		theta = M_PI * 0.5;
+                if (ictxt)
+                    p = compassPoint(ictxt, INT_MAX, ctr.x);
+                else
+                    p.x = ctr.x;
 		side = sides & TOP;
 		break;
 	    case 'e':
