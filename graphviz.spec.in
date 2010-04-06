@@ -321,6 +321,7 @@ fi
 %doc AUTHORS COPYING ChangeLog NEWS README
 %{_bindir}/*
 %exclude %{_bindir}/diffimg
+%exclude %{_bindir}/dot_builtins
 %dir %{_libdir}/graphviz
 %{_libdir}/*.so.*
 %{_libdir}/graphviz/*.so.*
