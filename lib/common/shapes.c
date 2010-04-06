@@ -221,6 +221,7 @@ static double quant(double val, double q)
     return i * q;
 }
 
+/* test if both p0 and p1 are on the same side of the line L0,L1 */
 static int same_side(pointf p0, pointf p1, pointf L0, pointf L1)
 {
     int s0, s1;
@@ -1119,27 +1120,30 @@ static boolean poly_inside(inside_t * inside_context, pointf p)
 	return (hypot(P.x / box_URx, P.y / box_URy) < 1.);
 
     /* use fast test in case we are converging on a segment */
-    i = last % sides;		/*in case last left over from larger polygon */
+    i = last % sides;		/* in case last left over from larger polygon */
     i1 = (i + 1) % sides;
     Q = vertex[i + outp];
     R = vertex[i1 + outp];
-    if (!(same_side(P, O, Q, R)))
+    if (!(same_side(P, O, Q, R)))   /* false if outside the segment's face */
 	return FALSE;
-    if ((s = same_side(P, Q, R, O)) && (same_side(P, R, O, Q)))
+    /* else inside the segment face... */
+    if ((s = same_side(P, Q, R, O)) && (same_side(P, R, O, Q))) /* true if between the segment's sides */
 	return TRUE;
-    for (j = 1; j < sides; j++) {
-	if (s) {
+    /* else maybe in another segment */
+    for (j = 1; j < sides; j++) { /* iterate over remaining segments */
+	if (s) { /* clockwise */
 	    i = i1;
 	    i1 = (i + 1) % sides;
-	} else {
+	} else { /* counter clockwise */
 	    i1 = i;
 	    i = (i + sides - 1) % sides;
 	}
-	if (!(same_side(P, O, vertex[i + outp], vertex[i1 + outp]))) {
+	if (!(same_side(P, O, vertex[i + outp], vertex[i1 + outp]))) { /* false if outside any other segment's face */
 	    last = i;
 	    return FALSE;
 	}
     }
+    /* inside all segments' faces */
     last = i;			/* in case next edge is to same side */
     return TRUE;
 }
