@@ -125,6 +125,7 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
     bezier bz;
     pointf pt;
     char *lbl;
+    char* fillcolor;
 
 #ifdef WITH_CGRAPH
     putstr = g->clos->disc.io->putstr;
@@ -155,7 +156,10 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
 	printstring(f, " ", late_nnstring(n, N_style, "solid"));
 	printstring(f, " ", ND_shape(n)->name);
 	printstring(f, " ", late_nnstring(n, N_color, DEFAULT_COLOR));
-	printstring(f, " ", late_nnstring(n, N_fillcolor, DEFAULT_FILL));
+	fillcolor = late_nnstring(n, N_fillcolor, "");
+        if (fillcolor[0] == '\0')
+	    fillcolor = late_nnstring(n, N_color, DEFAULT_FILL);
+	printstring(f, " ", fillcolor);
 	agputc('\n', f);
     }
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
