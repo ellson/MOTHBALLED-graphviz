@@ -304,7 +304,7 @@ void gv_postprocess(Agraph_t *g, int allowTranslation)
 
 void dotneato_postprocess(Agraph_t * g)
 {
-    gv_postprocess (g, 0);
+    gv_postprocess (g, 1);
 }
 
 /* place_flip_graph_label:
