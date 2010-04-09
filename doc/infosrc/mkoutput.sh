@@ -101,5 +101,4 @@ do
 done
 print "</DL>\n<HR>"
 
-print "</BODY>\n</HTML>"
 exit 0
