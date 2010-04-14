@@ -244,7 +244,7 @@ static int set_combobox_widget(char *attribute, char *widget_name)
     if ((!buf) || (strcmp(buf, "") == 0))
 	buf = agget(view->systemGraphs.def_attrs, attribute);
     if (buf) {
-	value = (int) atof(buf);
+	value = (int) atoi(buf);
 	gtk_combo_box_set_active((GtkComboBox *)
 				 glade_xml_get_widget(xml, widget_name),
 				 (int) value);
@@ -260,14 +260,15 @@ static int get_combobox_widget_to_attribute(char *attribute,
 					    Agraph_t * g)
 {
     char buf[25];
-    float value;
-        attribute=attribute +9;
+    int value;
 
-    value = (float)
+    attribute=attribute +9;
+
+    value = (int)
 	gtk_combo_box_get_active((GtkComboBox *)
 				 glade_xml_get_widget(xml, widget_name));
 
-    sprintf(buf, "%f", value);
+    sprintf(buf, "%d", value);
     agattr(g, AGRAPH, attribute, buf);
     /* printf ("%s %f \n",attribute,value); */
     return 1;
