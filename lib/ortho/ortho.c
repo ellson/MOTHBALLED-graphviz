@@ -1117,7 +1117,7 @@ static void
 attachOrthoEdges (maze* mp, int n_edges, route* route_list, splineInfo *sinfo, epair_t es[])
 {
     int irte = 0;
-    int i, ipt, npts;;
+    int i, ipt, npts;
     pointf* ispline = 0;
     int splsz = 0;
     pointf p, p1, q1;
