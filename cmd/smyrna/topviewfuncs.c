@@ -307,7 +307,7 @@ void renderSelectedNodes(Agraph_t * g)
 	if (ND_printLabel(v)==1)
 	{
 	    glColor4f(c.R, c.G,c.B, c.A);
-	    glprintfglut(view->glutfont,pos.x+nodeSize,pos.y+nodeSize,pos.z,agnameof(v));
+	    glprintfglut(view->glutfont,pos.x,pos.y,pos.z,agnameof(v));
 	}
 
     }
@@ -525,9 +525,9 @@ void renderNodeLabels(Agraph_t * g)
 	nodeSize = ND_size(v);
 	glColor4f(c.R,c.G,c.B,c.A);
 	if(!data_attr)
-            glprintfglut(view->glutfont,pos.x+nodeSize,pos.y+nodeSize,pos.z,agnameof(v));
+            glprintfglut(view->glutfont,pos.x,pos.y,pos.z,agnameof(v));
 	else
-	    glprintfglut(view->glutfont,pos.x+nodeSize,pos.y+nodeSize,pos.z,agxget(v,data_attr));
+	    glprintfglut(view->glutfont,pos.x,pos.y,pos.z,agxget(v,data_attr));
     }
 }
 
