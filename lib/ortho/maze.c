@@ -235,6 +235,22 @@ findSVert (sgraph* g, Dt_t* cdt, pointf p, snodeitem* ditems, boolean isVert)
     return n->np;
 }
 
+void
+chkSgraph (sgraph* g)
+{
+  int j, i;
+  snode* np;
+
+  for (i = 0; i < g->nnodes; i++) {
+    np = g->nodes+i;
+    if (!np->cells[0]) fprintf (stderr, "failed at node %d[0]\n", i); 
+    assert (np->cells[0]);
+    if (!np->cells[1]) fprintf (stderr, "failed at node %d[1]\n", i); 
+    assert (np->cells[1]);
+  }
+    
+}
+
 /* mkMazeGraph:
  */
 static sgraph*
@@ -296,9 +312,11 @@ mkMazeGraph (maze* mp, boxf bb)
     for (i = 0; i < mp->ngcells; i++) {
 	cell* cp = mp->gcells+i;
         pointf pt; 
+	snodeitem* np;
+
 	cp->sides = sides+nsides;
         pt = cp->bb.LL;
-	snodeitem* np = dtmatch (hdict, &pt);
+	np = dtmatch (hdict, &pt);
 	for (; np && np->p.x < cp->bb.UR.x; np = dtnext (hdict, np)) {
 	    cp->sides[cp->nsides++] = np->np;
 	    np->np->cells[1] = cp;
@@ -348,6 +366,7 @@ mkMazeGraph (maze* mp, boxf bb)
     dtclose (hdict);
     free (ditems);
 
+chkSgraph (g);
     /* save core graph state */
     gsave(g);
     return g;
