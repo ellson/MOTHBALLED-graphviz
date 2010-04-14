@@ -1,10 +1,9 @@
 Features:
 Undo
-Specify selection by path or polyline
 Allow user control of max. node size
 Set focus on a node
   "Find node whose name is abc"
-File browser should return to previously used directory
+=>File browser should return to previously used directory
 
 Multiple views
 GUI for canned gvpr programs
@@ -22,8 +21,6 @@ Catch window kill button for node list
 Use full disk when picking nodes
 Fix problem with using alpha and losing pick 
 Why is smyrna so slow to shut down?
-Save As doesn't work
-alpha on edges not really working - not translucent
 
 Labels don't appear when alpha colors are enabled 
 Edges should not disappear when node is off screen ?
