@@ -330,8 +330,13 @@ void renderNodes(Agraph_t * g)
     xdot * x;
     int ind;
 
-    defaultNodeShape=getAttrBool(g,g,"defaultnodeshape",0);
+    defaultNodeShape=getAttrInt(g,g,"defaultnodeshape",0);
 
+    x=parseXdotwithattrs(g);
+    if (x) {
+	draw_xdot(x,-0.2);
+	freeXDot (x);
+    }
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
     {
 	    if(!object_color(v,&c))
