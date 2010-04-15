@@ -650,9 +650,18 @@ cloneGraph (graph_t* g)
 #endif /* WITH_CGRAPH */
     }
 
-#ifdef WITH_CGRAPH
-
+#ifndef WITH_CGRAPH
+    if (!agfindattr(auxg->proto->e, "headport"))
+	agedgeattr (auxg, "headport", "");
+    if (!agfindattr(auxg->proto->e, "tailport"))
+	agedgeattr (auxg, "tailport", "");
+#else /* WITH_CGRAPH */
+    if (!agattr(auxg,AGEDGE, "headport", NULL))
+	agattr(auxg,AGEDGE, "headport", "");
+    if (!agattr(auxg,AGEDGE, "tailport", NULL))
+	agattr(auxg,AGEDGE, "tailport", "");
 #endif /* WITH_CGRAPH */
+
     attr_state.E_constr = E_constr;
     attr_state.E_samehead = E_samehead;
     attr_state.E_sametail = E_sametail;
@@ -736,8 +745,16 @@ cloneEdge (graph_t* g, node_t* tn, node_t* hn, edge_t* orig)
 #else /* WITH_CGRAPH */
     edge_t* e = agedge(g, tn, hn,NULL,1);
 #endif /* WITH_CGRAPH */
-    for (; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
+    /* for (; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig)); */
     agcopyattr (orig, e);
+/*
+    if (orig->tail != ND_alg(tn)) {
+	char* hdport = agget (orig, HEAD_ID);
+	char* tlport = agget (orig, TAIL_ID);
+	agset (e, TAIL_ID, (hdport ? hdport : ""));
+	agset (e, HEAD_ID, (tlport ? tlport : ""));
+    }
+*/
 
     return e;
 }
@@ -860,12 +877,13 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0,
     auxh = cloneNode(auxg, hn, GD_flip(g)); 
     for (i = 0; i < cnt; i++) {
 	e = edges[ind + i];
+	for (; ED_edge_type(e) != NORMAL; e = ED_to_orig(e));
 	if (agtail(e) == tn)
 	    auxe = cloneEdge (auxg, auxt, auxh, e);
 	else
 	    auxe = cloneEdge (auxg, auxh, auxt, e);
 	ED_alg(e) = auxe;
-	if (!hvye && !ED_tail_port(e0).defined && !ED_head_port(e0).defined) {
+	if (!hvye && !ED_tail_port(e).defined && !ED_head_port(e).defined) {
 	    hvye = auxe;
 	    ED_alg(hvye) = e;
 	}
@@ -922,6 +940,7 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0,
 	bezier* bz;
 
 	e = edges[ind + i];
+	for (; ED_edge_type(e) != NORMAL; e = ED_to_orig(e));
 	auxe = (edge_t*)ED_alg(e);
 	if ((auxe == hvye) & !ED_alg(auxe)) continue; /* pseudo-edge */
 	auxbz = ED_spl(auxe)->list;
