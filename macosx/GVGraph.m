@@ -19,6 +19,8 @@
 #import "GVGraphArguments.h"
 #import "GVGraphDefaultAttributes.h"
 
+NSString *const GVGraphvizErrorDomain = @"GVGraphvizErrorDomain";
+
 extern double PSinputscale;
 
 static GVC_t *_graphContext = nil;
@@ -75,6 +77,8 @@ extern char *gvplugin_list(GVC_t * gvc, api_t api, const char *str);
 			
 			_graph = agread(file);
 			if (!_graph) {
+				if (outError)
+					*outError = [NSError errorWithDomain:GVGraphvizErrorDomain code:GVFileParseError userInfo:nil];
 				[self autorelease];
 				return nil;
 			}
@@ -93,6 +97,12 @@ extern char *gvplugin_list(GVC_t * gvc, api_t api, const char *str);
 			[memory appendBytes:&nullByte length:1];
 			
 			_graph = agmemread((char*)[memory bytes]);
+			if (!_graph) {
+				if (outError)
+					*outError = [NSError errorWithDomain:GVGraphvizErrorDomain code:GVFileParseError userInfo:nil];
+				[self autorelease];
+				return nil;
+			}
 		}
 
 		_freeLastLayout = NO;

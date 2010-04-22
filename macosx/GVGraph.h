@@ -52,3 +52,10 @@
 - (void)dealloc;
 
 @end
+
+extern NSString *const GVGraphvizErrorDomain;
+
+enum {
+	GVNoError,
+	GVFileParseError
+};
