@@ -540,9 +540,10 @@ else
   use_xlib="Yes"
 #no x11.pc on centos4
 #  PKG_CHECK_MODULES(X11, [x11])
-  PKG_CHECK_MODULES(XRENDER, [xrender])
+  PKG_CHECK_MODULES(XRENDER, [xrender],HAVE_XRENDER="yes" ,HAVE_XRENDER="no")
 fi
 AM_CONDITIONAL(WITH_X, [test "x$use_xlib" = "xYes"])
+AM_CONDITIONAL(WITH_XRENDER, [test "x$,HAVE_XRENDER" = "xyes"])
 
 dnl -----------------------------------
 dnl check for SWIG - needed for script-language bindings
@@ -1937,16 +1938,20 @@ AC_ARG_WITH(ghostscript,
 if test "x$with_ghostscript" != "xyes"; then
   use_ghostscript="No (disabled)"
 else
-  AC_CHECK_HEADER(ghostscript/iapi.h, GS_CFLAGS="",use_ghostscript="No (missing headers)")
-  if test "x$use_ghostscript" = "x"; then
-    AC_CHECK_LIB(gs, main, GS_LIBS="-lgs", use_ghostscript="No (missing lib)")
-    if test "x$use_ghostscript" = "x"; then
-      use_ghostscript="Yes"
-      AC_DEFINE_UNQUOTED(HAVE_GS,1,
-        [Define if you have the gs library])
-      AC_SUBST(GS_CFLAGS)
-      AC_SUBST(GS_LIBS)
-    fi
+  if test "x$HAVE_XRENDER" != "xyes"; then
+    use_ghostscript="No (missing Xrender)"
+  else
+      AC_CHECK_HEADER(ghostscript/iapi.h, GS_CFLAGS="",use_ghostscript="No (missing headers)")
+      if test "x$use_ghostscript" = "x"; then
+        AC_CHECK_LIB(gs, main, GS_LIBS="-lgs", use_ghostscript="No (missing lib)")
+        if test "x$use_ghostscript" = "x"; then
+          use_ghostscript="Yes"
+          AC_DEFINE_UNQUOTED(HAVE_GS,1,
+            [Define if you have the gs library])
+          AC_SUBST(GS_CFLAGS)
+          AC_SUBST(GS_LIBS)
+        fi
+     fi
   fi
 fi
 AM_CONDITIONAL(WITH_GS, [test "x$use_ghostscript" = "xYes"])
