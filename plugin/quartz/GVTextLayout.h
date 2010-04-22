@@ -22,13 +22,10 @@
 	NSString* _text;
 }
 
-@property (readonly, nonatomic) UIFont* font;
-@property (readonly, nonatomic) NSString* text;
-@property (readonly, nonatomic) CGSize size;
-
 - (id)initWithFontName:(char*)fontName fontSize:(CGFloat)fontSize text:(char*)text;
 
-- (void)drawAtPoint:(CGPoint)point inContext:(CGContextRef)context;
+- (void)sizeUpWidth:(double*)width height:(double*)height yoffset:(double*)yoffset;
+- (void)drawInContext:(CGContextRef)context atPosition:(CGPoint)position;
 
 - (void)dealloc;
 

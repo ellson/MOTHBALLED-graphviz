@@ -22,7 +22,7 @@
 
 #include "gvplugin_quartz.h"
 
-#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 1040 && defined(HAVE_PANGOCAIRO)
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040 && defined(HAVE_PANGOCAIRO)
 
 const void *memory_data_consumer_get_byte_pointer(void *info)
 {

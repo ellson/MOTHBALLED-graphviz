@@ -26,23 +26,23 @@
 
 #include "gvplugin_quartz.h"
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 20000
+#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
 
 #import "GVTextLayout.h"
 
-boolean quartz_textlayout(textpara_t *para, char **fontpath)
+void *quartz_new_layout(char* fontname, double fontsize, char* text)
 {
-	GVTextLayout* layout = [[GVTextLayout alloc] initWithFontName:para->fontname fontSize:para->fontsize text:para->str];
-	CGSize size = layout.size;
-	
-	para->layout = layout;
-	para->free_layout = &quartz_free_layout;
-	para->width = size.width;
-	para->height = size.height;
-	para->yoffset_layout = layout.font.ascender;
-	para->yoffset_centerline = 0;
-	
-	return TRUE;
+	return [[GVTextLayout alloc] initWithFontName:fontname fontSize:fontsize text:text];
+}
+
+void quartz_size_layout(void *layout, double* width, double* height, double* yoffset_layout)
+{
+	[(GVTextLayout*)layout sizeUpWidth:width height:height yoffset:yoffset_layout];
+}
+
+void quartz_draw_layout(void *layout, CGContextRef context, CGPoint position)
+{
+	[(GVTextLayout*)layout drawInContext:context atPosition:position];	
 }
 
 void quartz_free_layout(void *layout)
@@ -50,47 +50,9 @@ void quartz_free_layout(void *layout)
 	[(GVTextLayout*)layout release];
 }
 
-void quartzgen_textpara(GVJ_t *job, pointf p, textpara_t *para)
-{
-	CGContextRef context = (CGContextRef)job->context;
-
-	/* adjust text position */
-	switch (para->just) {
-		case 'r':
-			p.x -= para->width;
-			break;
-		case 'l':
-			p.x -= 0.0;
-			break;
-		case 'n':
-		default:
-			p.x -= para->width / 2.0;
-			break;
-		}
-	p.y += para->yoffset_centerline;
-	
-	GVTextLayout* layout;
-	if (para->free_layout == &quartz_free_layout)
-		layout = (GVTextLayout*)para->layout;
-	else
-		layout = [[GVTextLayout alloc] initWithFontName:para->fontname fontSize:para->fontsize text:para->str];
-		
-	CGContextSaveGState(context);
-	CGContextScaleCTM(context, 1.0, -1.0);
-	CGContextSetRGBFillColor(context, job->obj->pencolor.u.RGBA [0], job->obj->pencolor.u.RGBA [1], job->obj->pencolor.u.RGBA [2], job->obj->pencolor.u.RGBA [3]);
-	[layout drawAtPoint:CGPointMake(p.x, -p.y - para->yoffset_layout) inContext:context];
-	CGContextRestoreGState(context);
-	
-	if (para->free_layout != &quartz_free_layout)
-		[layout release];
-}
-
 static NSString* _defaultFontName = @"TimesNewRomanPSMT";
 
 @implementation GVTextLayout
-
-@synthesize font = _font;
-@synthesize text = _text;
 
 - (id)initWithFontName:(char*)fontName fontSize:(CGFloat)fontSize text:(char*)text
 {
@@ -107,6 +69,16 @@ static NSString* _defaultFontName = @"TimesNewRomanPSMT";
 	return self;
 }
 
+- (void)sizeUpWidth:(double*)width height:(double*)height yoffset:(double*)yoffset
+{
+	CGSize size = [_text sizeWithFont:_font];
+	CGFloat ascender = _font.ascender;
+	
+	*width = size.width;
+	*height = size.height;
+	*yoffset = ascender;
+}
+
 - (void)drawAtPoint:(CGPoint)point inContext:(CGContextRef)context
 {
 	UIGraphicsPushContext(context);
@@ -114,9 +86,11 @@ static NSString* _defaultFontName = @"TimesNewRomanPSMT";
 	UIGraphicsPopContext();
 }
 
-- (CGSize)size
+- (void)drawInContext:(CGContextRef)context atPosition:(CGPoint)position
 {
-	return [_text sizeWithFont:_font];
+	UIGraphicsPushContext(context);
+	[_text drawAtPoint:position withFont:_font];
+	UIGraphicsPopContext();	
 }
 
 - (void)dealloc

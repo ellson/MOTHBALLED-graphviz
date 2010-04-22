@@ -23,11 +23,12 @@ extern gvplugin_installed_t gvtextlayout_quartz_types;
 extern gvplugin_installed_t gvloadimage_quartz_types;
 extern gvplugin_installed_t gvdevice_quartz_types;
 
-#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 1040
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040
 extern gvplugin_installed_t gvdevice_quartz_types_for_cairo;
 
 /* Uniform Type Identifiers corresponding to each format_type */
 CFStringRef format_uti [] = {
+	NULL,
 	NULL,
 	CFSTR("com.microsoft.bmp"),
 	CFSTR("com.ilm.openexr-image"),
@@ -61,7 +62,7 @@ static gvplugin_api_t apis[] = {
 	{API_textlayout, &gvtextlayout_quartz_types},
 	{API_loadimage, &gvloadimage_quartz_types},
 	{API_device, &gvdevice_quartz_types},
-#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 1040 && defined(HAVE_PANGOCAIRO)
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040 && defined(HAVE_PANGOCAIRO)
     {API_device, &gvdevice_quartz_types_for_cairo},
 #endif
     {(api_t)0, 0},

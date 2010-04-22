@@ -21,6 +21,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
+#include <mach/mach_host.h>
+#include <sys/mman.h>
+#endif
+
 #include "gvplugin_device.h"
 #include "gvplugin_render.h"
 #include "graph.h"
@@ -57,7 +62,7 @@ static void quartzgen_end_job(GVJ_t *job)
 		case FORMAT_CGIMAGE:
 			break;
 			
-#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 1040
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040
 		default:	/* bitmap formats */
 			{
 				/* create an image destination */
@@ -84,7 +89,14 @@ static void quartzgen_end_job(GVJ_t *job)
 	{
 		/* create an image and save it where the window field is, which was set to the passed-in context at begin job */
 		*((CGImageRef*)job->window) = CGBitmapContextCreateImage(context);
+#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
+		void* context_data = CGBitmapContextGetData(context);
+		size_t context_datalen = CGBitmapContextGetBytesPerRow(context) * CGBitmapContextGetHeight(context);
+#endif
 		CGContextRelease(context);
+#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
+		munmap(context_data, context_datalen);
+#endif
 	}
 }
 
@@ -133,16 +145,60 @@ static void quartzgen_begin_page(GVJ_t *job)
 		
 		default: /* bitmap formats */
 			{	
+				size_t bytes_per_row = (job->width * BYTES_PER_PIXEL + BYTE_ALIGN) & ~BYTE_ALIGN;
+				
+				void* buffer = NULL;
+				
+#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
+				
+				/* iPhoneOS has no swap files for memory, so if we're short of memory we need to make our own temp scratch file to back it */
+				
+				size_t buffer_size = job->height * bytes_per_row;
+				mach_msg_type_number_t vm_info_size = HOST_VM_INFO_COUNT;
+				vm_statistics_data_t vm_info;
+				
+				if (host_statistics(mach_host_self(), HOST_VM_INFO, (host_info_t)&vm_info, &vm_info_size) != KERN_SUCCESS
+					|| buffer_size * 2 > vm_info.free_count * vm_page_size)
+				{
+					FILE* temp_file = tmpfile();
+					if (temp_file)
+					{
+						int temp_file_descriptor = fileno(temp_file);
+						if (temp_file_descriptor >= 0 && ftruncate(temp_file_descriptor, buffer_size) == 0)
+						{
+							buffer = mmap(
+								NULL,
+								buffer_size,
+								PROT_READ | PROT_WRITE,
+								MAP_FILE | MAP_SHARED,
+								temp_file_descriptor,
+								0);
+							if (buffer == (void*)-1)
+								buffer = NULL;
+						}
+						fclose(temp_file);
+					}
+				}
+				if (!buffer)
+					buffer = mmap(
+						NULL,
+						buffer_size,
+						PROT_READ | PROT_WRITE,
+						MAP_ANON| MAP_SHARED,
+						-1,
+						0);				
+#endif				
+				
 				/* create a true color bitmap for drawing into */
 				CGColorSpaceRef color_space = CGColorSpaceCreateDeviceRGB();
 				job->context = CGBitmapContextCreate(
-					NULL,														/* data: let Quartz take care of memory management */
-					job->width,													/* width in pixels */
-					job->height,												/* height in pixels */
-					BITS_PER_COMPONENT,											/* bits per component */
-					(job->width * BYTES_PER_PIXEL + BYTE_ALIGN) & ~BYTE_ALIGN,	/* bytes per row: align to 16 byte boundary */
-					color_space,												/* color space: device RGB */
-					kCGImageAlphaPremultipliedFirst								/* bitmap info: premul ARGB has best support in OS X */
+					buffer,							/* data: MacOSX lets system allocate, iPhoneOS use manual memory mapping */
+					job->width,						/* width in pixels */
+					job->height,					/* height in pixels */
+					BITS_PER_COMPONENT,				/* bits per component */
+					bytes_per_row,					/* bytes per row: align to 16 byte boundary */
+					color_space,					/* color space: device RGB */
+					kCGImageAlphaPremultipliedFirst	/* bitmap info: premul ARGB has best support in OS X */
 				);
 				job->imagedata = CGBitmapContextGetData((CGContextRef)job->context);
 				
@@ -226,6 +282,47 @@ static void quartzgen_path(GVJ_t *job, int filled)
 	
 	/* draw the path */
 	CGContextDrawPath(context, filled ? kCGPathFillStroke : kCGPathStroke);
+}
+
+void quartzgen_textpara(GVJ_t *job, pointf p, textpara_t *para)
+{
+	CGContextRef context = (CGContextRef)job->context;
+	
+	/* adjust text position */
+	switch (para->just) {
+		case 'r':
+			p.x -= para->width;
+			break;
+		case 'l':
+			p.x -= 0.0;
+			break;
+		case 'n':
+		default:
+			p.x -= para->width / 2.0;
+			break;
+	}
+	p.y += para->yoffset_centerline;
+	
+	void* layout;
+	if (para->free_layout == &quartz_free_layout)
+		layout = para->layout;
+	else
+		layout = quartz_new_layout(para->fontname, para->fontsize, para->str);
+	
+#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
+	CGContextSaveGState(context);
+	CGContextScaleCTM(context, 1.0, -1.0);
+	p.y = -p.y - para->yoffset_layout;
+#endif
+	CGContextSetRGBFillColor(context, job->obj->pencolor.u.RGBA[0], job->obj->pencolor.u.RGBA[1], job->obj->pencolor.u.RGBA[2], job->obj->pencolor.u.RGBA[3]);
+	quartz_draw_layout(layout, context, CGPointMake(p.x, p.y));
+	
+#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
+	CGContextRestoreGState(context);
+#endif
+
+	if (para->free_layout != &quartz_free_layout)
+		quartz_free_layout(layout);
 }
 
 static void quartzgen_ellipse(GVJ_t *job, pointf *A, int filled)
@@ -325,7 +422,7 @@ static gvrender_features_t render_features_quartz = {
     RGBA_DOUBLE				/* color_type */
 };
 
-#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 1040 || __IPHONE_OS_VERSION_MIN_REQUIRED >= 20000
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040 || __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
 static gvdevice_features_t device_features_quartz = {
     GVDEVICE_BINARY_FORMAT
       | GVDEVICE_DOES_TRUECOLOR,/* flags */
@@ -352,10 +449,10 @@ gvplugin_installed_t gvrender_quartz_types[] = {
 
 gvplugin_installed_t gvdevice_quartz_types[] = {
 	{FORMAT_PDF, "pdf:quartz", 8, NULL, &device_features_quartz_paged},
-#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 1040 || __IPHONE_OS_VERSION_MIN_REQUIRED >= 20000
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040 || __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
 	{FORMAT_CGIMAGE, "cgimage:quartz", 8, NULL, &device_features_quartz},
 #endif
-#if __MAC_OS_X_VERSION_MIN_REQUIRED >= 1040
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040
 	{FORMAT_BMP, "bmp:quartz", 8, NULL, &device_features_quartz},
 	{FORMAT_GIF, "gif:quartz", 8, NULL, &device_features_quartz},
 	{FORMAT_EXR, "exr:quartz", 8, NULL, &device_features_quartz},
