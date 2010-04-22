@@ -612,11 +612,14 @@ static void init_layering(GVC_t * gvc, graph_t * g)
     char *str;
 
     /* free layer strings and pointers from previous graph */
-    if (gvc->layers)
-	free(gvc->layers);
-    if (gvc->layerIDs)
-	free(gvc->layerIDs);
-
+    if (gvc->layers) {
+		free(gvc->layers);
+		gvc->layers = NULL;
+	}
+    if (gvc->layerIDs) {
+		free(gvc->layerIDs);
+		gvc->layerIDs = NULL;
+	}
     if ((str = agget(g, "layers")) != 0) {
 	gvc->numLayers = parse_layers(gvc, g, str);
     } else {
