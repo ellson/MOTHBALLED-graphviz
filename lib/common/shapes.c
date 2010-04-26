@@ -974,6 +974,15 @@ static void poly_init(node_t * n)
 
 	    /* store result in array of points */
 	    vertices[i] = P;
+	    if (isBox) { /* enforce exact symmetry of box */
+		vertices[1].x = -P.x;
+		vertices[1].y = P.y;
+		vertices[2].x = -P.x;
+		vertices[2].y = -P.y;
+		vertices[3].x = P.x;
+		vertices[3].y = -P.y;
+		break;
+	    }
 	}
 
 	/* apply minimum dimensions */
