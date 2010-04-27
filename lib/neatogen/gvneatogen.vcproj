@@ -1,11 +1,12 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="neatogen"
 	ProjectGUID="{C5CEB09E-79AF-4091-ACCF-D28EC3D7D90F}"
 	RootNamespace="gvneatogen"
 	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
