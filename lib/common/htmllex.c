@@ -715,7 +715,7 @@ static char *findNext(char *s, agxbuf* xb)
 	} else
 	    t++;
     } else {
-	rc = agxbputc(xb, *s);
+	t = s;
 	while ((c = *t) && (c != '<')) {
 	    if ((c == '&') && (*(t+1) != '#')) {
 		t = scanEntity(t + 1, xb);
