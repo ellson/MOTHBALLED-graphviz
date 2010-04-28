@@ -7,12 +7,12 @@ LOC_LIB = $(ROOT)/lib
 LOC_PLUG=$(ROOT)/plugin
 
 INCS =  -I$(LOC_LIB)/gvc -I$(LOC_LIB)/common -I$(ROOT) -I$(LOC_LIB)/cdt \
-        -I$(LOC_LIB)/pathplan -I$(LOC_LIB)/gd -I$(LOC_LIB)/graph
+        -I$(LOC_LIB)/pathplan -I$(LOC_LIB)/gd -I$(LOC_LIB)/graph -I$(LOC_LIB)/pack
 
 ALLINCS = -I$(LOC_LIB)/dotgen -I$(LOC_LIB)/neatogen -I$(LOC_LIB)/twopigen \
           -I$(LOC_LIB)/circogen -I$(LOC_LIB)/fdpgen -I$(LOC_LIB)/sfdpgen $(INCS)
 
-DEFINES = -DDEMAND_LOADING=0 -DHAVE_CONFIG_H -DBUILTINS
+DEFINES = -DDEMAND_LOADING=0 -DHAVE_CONFIG_H
 
 XLIBS = -L$(LOC_LIB)/pathplan -lpathplan \
         -L$(LOC_LIB)/graph -lgraph \
@@ -29,6 +29,7 @@ PLUGS = -L$(LOC_PLUG)/core -lgvplugin_core \
 LIBS = -L$(LOC_LIB)/gvc -lgvc_dot_builtins $(PLUGS) \
        -L$(LOC_LIB)/common -lcommon \
        -L$(LOC_LIB)/gvc -lgvc_dot_builtins $(PLUGS) \
+       -L$(LOC_LIB)/xdot -lxdot \
        -L$(LOC_LIB)/dotgen -ldotgen \
        -L$(LOC_LIB)/circogen -lcircogen \
        -L$(LOC_LIB)/fdpgen -lfdpgen \
@@ -64,12 +65,6 @@ DOTLIBS = $(LOC_LIB)/common/libcommon.a \
 OBJS = dot.o dot_builtins.o
 
 all : dot
-
-renew :
-	(D=`date`; echo "#define BUILDDATE \"$$D\"" > ../../builddate.h)
-	$(CPP) -c $(CCFLAGS) $(DEFINES) $(INCS) dot.c
-	$(CPP) $(LDFLAGS) $(OBJS) $(LIBS) -o /tmp/dot
-	mv /tmp/dot dot
 
 dot : $(OBJS) $(DOTLIBS)
 	$(CPP) $(LDFLAGS) $(OBJS) $(LIBS) -o /tmp/dot
