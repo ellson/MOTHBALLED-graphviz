@@ -281,6 +281,10 @@ raySegIntersect(pointf v, pointf w, pointf a, pointf b, pointf * p)
 	return 0;
 }
 
+#ifdef DEBUG
+#include <psdbg.c>
+#endif
+
 /* triPoint:
  * Given the triangle vertex v, and point w so that v->w points
  * into the polygon, return where the ray v->w intersects the
@@ -299,14 +303,15 @@ triPoint(tripoly_t * trip, int vx, pointf v, pointf w, pointf * ip)
 	    return 0;
     }
 #ifdef DEBUG
-    fprintf(stderr, "%%Failure in triPoint\n");
-    fprintf(stderr, "0 0 1 setrgbcolor\n");
-    drawLine(v, w);
+    psInit();
+    psComment ("Failure in triPoint");
+    psColor("0 0 1");
+    psSeg (v, w);
     for (tp = trip->triMap[vx]; tp; tp = tp->nxttri) {
-	drawTri(v, trip->poly.ps[tp->v.i], trip->poly.ps[tp->v.j]);
+	psTri(v, trip->poly.ps[tp->v.i], trip->poly.ps[tp->v.j]);
     }
+    psOut(stderr);
 #endif
-
     return 1;
 }
 
@@ -335,7 +340,7 @@ static int ctrlPtIdx(pointf v, Ppoly_t * polys)
  * The first point will aways be v.
  * The rest are positioned equally spaced with maximum spacing SEP.
  * In addition, they all lie within the polygon trip->poly.
- * Parameter s gives the index after which a vertex likes on the
+ * Parameter s gives the index after which a vertex lies on the
  * opposite side. This is necessary to get the "curvature" of the
  * path correct.
  */
@@ -357,11 +362,13 @@ static pointf *mkCtrlPts(int s, int mult, pointf prev, pointf v,
     cosTheta = cos(theta);
     w.x = v.x + 100 * cosTheta;
     w.y = v.y + 100 * sinTheta;
-    if ((idx > s) && (wind(prev, v, w) != 1)) {
-	sinTheta *= -1;
-	cosTheta *= -1;
-	w.x = v.x + 100 * cosTheta;
-	w.y = v.y + 100 * sinTheta;
+    if (idx > s) {
+	if (wind(prev, v, w) != 1) {
+	    sinTheta *= -1;
+	    cosTheta *= -1;
+	    w.x = v.x + 100 * cosTheta;
+	    w.y = v.y + 100 * sinTheta;
+	}
     } else if (wind(prev, v, w) != -1) {
 	sinTheta *= -1;
 	cosTheta *= -1;
@@ -642,7 +649,19 @@ void freeRouter(router_t * rtr)
 }
 
 #ifdef DEBUG
-#include <psdbg.c>
+static void
+prTriPoly (tripoly_t *poly, int si, int ei)
+{
+    FILE* fp = fopen ("dumppoly","w");
+    
+    psInit();
+    psPoly (&(poly->poly));
+    psPoint (poly->poly.ps[si]);
+    psPoint (poly->poly.ps[ei]);
+    psOut(fp);
+    fclose(fp);
+}
+
 static void
 prTriGraph (router_t* rtr, int n)
 {
@@ -662,6 +681,7 @@ prTriGraph (router_t* rtr, int n)
         psTxt (buf, nodes[i].ctr);
     }
     for (i=rtr->tn;i < n; i++) {
+	sprintf (buf, "%d", i);
         psTxt (buf, nodes[i].ctr);
     }
     psColor ("1 0 0");
@@ -1335,6 +1355,7 @@ int makeMultiSpline(graph_t* g,  edge_t* e, router_t * rtr, int doPolyline)
 
 	/* Use path of triangles to generate guiding polygon */
     poly = mkPoly(rtr, sp, h_id, t_id, h_p, t_p, &idx);
+
     free(sp);
 
 	/* Generate multiple splines using polygon */
