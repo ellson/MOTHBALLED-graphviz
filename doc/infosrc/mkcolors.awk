@@ -21,11 +21,13 @@ BEGIN {
     singleRow = 1;
   }
   else {
-    name = ARGV[1];
+    name = "";
     singleRow = 0;
   }
-  sub(".*/","",name);
-  printf ("%s color scheme<BR>\n", name);
+  if (length(name) > 0) {
+    sub(".*/","",name);
+    printf ("%s color scheme<BR>\n", name);
+  }
   printf ("<table border=1 align=center>\n");
 }
 {

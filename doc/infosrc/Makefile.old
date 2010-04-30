@@ -10,7 +10,7 @@
 # The main product are 7 web pages:
 #    arrows.html  - arrow_grammar
 #    attrs.html   - attrs, types
-#    colors.html  - X11 brewer_colors
+#    colors.html  - color_names svgcolor_names brewer_colors
 #    command.html - raw HTML
 #    lang.html    - grammar
 #    output.html  - outputs
@@ -95,13 +95,17 @@ attrs.html : attrs.1 attrs types mkattrs.sh mktypes.sh
 	./mkattrs.sh < attrs >> attrs.html
 	./mktypes.sh < types >> attrs.html
 
-colors.html : colors.1 colors.n X11 brewer_colors mkcolors.awk brewer.awk
+colors.html : colors.1 colors.n ../../lib/common/color_names ../../lib/common/svgcolor_names ../../lib/common/brewer_colors mkcolors.awk brewer.awk svg.awk
 	mkdir -p colortmp
-	awk -f brewer.awk brewer_colors
+	awk -f brewer.awk ../../lib/common/brewer_colors
 	cat colors.1 > colors.html
-	awk -f mkcolors.awk X11 >> colors.html
-	echo '<H2><A NAME="brewer">Brewer color schemes</A></H1>' >> colors.html
-	(for f in $$(cat brewerlist); do awk -f mkcolors.awk -s colortmp/$$f >> colors.html; done)
+	awk -f mkcolors.awk ../../lib/common/color_names >> colors.html
+	echo '<H2><A NAME="svg">The SVG color scheme</A></H2>' >> colors.html
+	awk -f svg.awk ../../lib/common/svgcolor_names > svg
+	awk -f mkcolors.awk svg >> colors.html
+	rm -rf svg
+	echo '<H2><A NAME="brewer">Brewer color schemes</A></H2>' >> colors.html
+	(for f in $$(ls colortmp); do awk -f mkcolors.awk -s colortmp/$$f >> colors.html; done)
 	cat colors.n >> colors.html
 	rm -rf colortmp
 
@@ -170,10 +174,10 @@ distclean : clean
 EXTRA_DIST = $(XGIF) mklang.y mkarrows.sh mkattrs.sh mkshapes.sh \
              mktypes.sh mkarrowtbl.sh mkoutput.sh mkshhtml.sh \
 	         ps_to_jpg.sh ps_to_png.sh arrow_grammar grammar html_grammar \
-             shapelist attrs.1 colors.1 brewerlist colors.n \
+             shapelist attrs.1 colors.1 colors.n \
              output.1 output.2 html.1 html.2 html1.dot html.3 \
              shapes.1 shapes.2 shapes.3 lang.1 lang.2 arrows.1 arrows.2 \
-             brewer.awk brewer_colors m kcolors.awk sz.awk \
+             brewer.awk mkcolors.awk svg.awk sz.awk \
              colorlist.dot html1.dot html4.dot round.dot constraint.dot \
              html2.dot mrecord.dot sdlshapes.dot fill.dot html3.dot record.dot \
              attrs types X11 outputs eqn.gif plugins.gv
