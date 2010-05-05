@@ -882,35 +882,40 @@ static void emit_xdot (GVJ_t * job, xdot* xd)
 	switch (op->op.kind) {
 	case xd_filled_ellipse :
 	case xd_unfilled_ellipse :
-    	    if (!boxf_overlap(op->bb, job->clip)) continue;
-	    pts[0].x = op->op.u.ellipse.x - op->op.u.ellipse.w;
-	    pts[0].y = op->op.u.ellipse.y - op->op.u.ellipse.h;
-	    pts[1].x = op->op.u.ellipse.w;
-	    pts[1].y = op->op.u.ellipse.h;
-	    gvrender_ellipse(job, pts, 2, op->op.kind == xd_filled_ellipse);
+    	    if (boxf_overlap(op->bb, job->clip)) {
+		pts[0].x = op->op.u.ellipse.x - op->op.u.ellipse.w;
+		pts[0].y = op->op.u.ellipse.y - op->op.u.ellipse.h;
+		pts[1].x = op->op.u.ellipse.w;
+		pts[1].y = op->op.u.ellipse.h;
+		gvrender_ellipse(job, pts, 2, op->op.kind == xd_filled_ellipse);
+	    }
 	    break;
 	case xd_filled_polygon :
 	case xd_unfilled_polygon :
-    	    if (!boxf_overlap(op->bb, job->clip)) continue;
-	    pts = copyPts (pts, &ptsize, op->op.u.polygon.pts, op->op.u.polygon.cnt);
-	    gvrender_polygon(job, pts, op->op.u.polygon.cnt, op->op.kind == xd_filled_polygon);
+    	    if (boxf_overlap(op->bb, job->clip)) {
+		pts = copyPts (pts, &ptsize, op->op.u.polygon.pts, op->op.u.polygon.cnt);
+		gvrender_polygon(job, pts, op->op.u.polygon.cnt, op->op.kind == xd_filled_polygon);
+	    }
 	    break;
 	case xd_filled_bezier :
 	case xd_unfilled_bezier :
-    	    if (!boxf_overlap(op->bb, job->clip)) continue;
-	    pts = copyPts (pts, &ptsize, op->op.u.bezier.pts, op->op.u.bezier.cnt);
-	    gvrender_beziercurve(job, pts, op->op.u.bezier.cnt, 0, 0, op->op.kind == xd_filled_bezier);
+    	    if (boxf_overlap(op->bb, job->clip)) {
+		pts = copyPts (pts, &ptsize, op->op.u.bezier.pts, op->op.u.bezier.cnt);
+		gvrender_beziercurve(job, pts, op->op.u.bezier.cnt, 0, 0, op->op.kind == xd_filled_bezier);
+	    }
 	    break;
 	case xd_polyline :
-    	    if (!boxf_overlap(op->bb, job->clip)) continue;
-	    pts = copyPts (pts, &ptsize, op->op.u.polyline.pts, op->op.u.polyline.cnt);
-	    gvrender_polyline(job, pts, op->op.u.polyline.cnt);
+    	    if (boxf_overlap(op->bb, job->clip)) {
+		pts = copyPts (pts, &ptsize, op->op.u.polyline.pts, op->op.u.polyline.cnt);
+		gvrender_polyline(job, pts, op->op.u.polyline.cnt);
+	    }
 	    break;
 	case xd_text :
-    	    if (!boxf_overlap(op->bb, job->clip)) continue;
-	    pts[0].x = op->op.u.text.x;
-	    pts[0].y = op->op.u.text.y;
-	    gvrender_textpara(job, pts[0], op->para);
+    	    if (boxf_overlap(op->bb, job->clip)) {
+		pts[0].x = op->op.u.text.x;
+		pts[0].y = op->op.u.text.y;
+		gvrender_textpara(job, pts[0], op->para);
+	    }
 	    break;
 	case xd_fill_color :
             gvrender_set_fillcolor(job, op->op.u.color);
@@ -2339,9 +2344,9 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     Z = 1.0;
     if (GD_drawing(g)->size.x > 0.001 && GD_drawing(g)->size.y > 0.001) { /* graph size was given by user... */
 	size = GD_drawing(g)->size;
-	if ((size.x < sz.x) || (size.y < sz.y) /* drawing is too big (in either axi) ... */
+	if ((size.x < sz.x) || (size.y < sz.y) /* drawing is too big (in either axis) ... */
 	    || ((GD_drawing(g)->filled) /* or ratio=filled requested and ... */
-		&& (size.x > sz.x) && (size.y > sz.y))) /* drawing is too small (in both axis) ... */
+		&& (size.x > sz.x) && (size.y > sz.y))) /* drawing is too small (in both axes) ... */
 	    Z = MIN(size.x/sz.x, size.y/sz.y);
     }
     
