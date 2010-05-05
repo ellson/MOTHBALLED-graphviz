@@ -94,8 +94,8 @@ struct _xdot_op {
 #define XDOT_PARSE_ERROR 1
 
 typedef struct {
-    int cnt;
-    int sz;
+    int cnt;  /* no. of xdot ops */
+    int sz;   /* sizeof structure containing xdot_op as first field */
     xdot_op* ops;
     freefunc_t freefunc;
     int flags;
