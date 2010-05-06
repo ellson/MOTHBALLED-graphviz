@@ -304,24 +304,44 @@ char *Fgets(FILE * fp)
 
 /* safefile:
  * Check to make sure it is okay to read in files.
- * For normal uses, it is a no-op.
- * If the application has set HTTPServerEnVar, this indicates
- * it is web-active. In this case, it requires that the Gvfilepath
- * variable be set. This gives the legal directory
- * from which files may be read. The filename returned is thus
+ * For normal uses, it is a no-op, and returns the input.
+ * It returns NULL if the filename is trivial.
+ *
+ * If the application has set the SERVER_NAME environment variable, 
+ * this indicates it is web-active. In this case, it requires that the GV_FILE_PATH
+ * environment variable be set. This gives the legal directories
+ * from which files may be read. safefile then derives the rightmost component
+ * of filename, where components are separated by a slash, backslash or colon, 
+ * It then checks for the existence of a file consisting of a directory from 
+ * GV_FILE_PATH followed by the rightmost component of filename. It returns the
+ * first such found, or NULL otherwise.
+ * The filename returned is thus
  * Gvfilepath concatenated with the last component of filename,
- * where a component is determined by a slack, backslash or colon
+ * where a component is determined by a slash, backslash or colon
  * character.  
- * If the argument contains one of these characters, the user is
+ *
+ * If filename contains multiple components, the user is
  * warned, once, that everything to the left is ignored.
- * As coded now, Gvfilepath must end in a slash character, or
- * equivalent.
- * Returns NULL if the argument is trivial.
+ *
+ * N.B. safefile uses a fixed buffer, so functions using it should use the
+ * value immediately or make a copy.
  */
+#ifdef WIN32
+#define DIRSEP "\\"
+#define PATHSEP ";"
+#else
+#define DIRSEP "/"
+#define PATHSEP ":"
+#endif
+
 const char *safefile(const char *filename)
 {
     static boolean onetime = TRUE;
+    static boolean firsttime = TRUE;
     static char *safefilename = NULL;
+    static int maxdirlen;
+    static char** dirs;
+    char** dp;
     const char *str, *p;
 
     if (!filename || !filename[0])
@@ -335,21 +355,26 @@ const char *safefile(const char *filename)
 	if (!Gvfilepath) {
 	    if (onetime) {
 		agerr(AGWARN,
-		      "file loading is disabled because the environment contains: %s\n"
-		      "and there is no GV_FILE_PATH variable.\n",
+		      "file loading is disabled because the environment contains SERVER_NAME=\"%s\"n"
+		      "and there is no GV_FILE_PATH variable set.\n",
 		      HTTPServerEnVar);
 		onetime = FALSE;
 	    }
 	    return NULL;
 	}
+	if (firsttime) {
+	    int cnt = 0;
+	    char* s = strdup (Gvfilepath);
+	    char* dir;
+	    for (dir = strtok (s, PATHSEP); dir; dir = strtok (NULL, PATHSEP)) {
+		dirs = ALLOC (cnt+2,dirs,char*);
+		dirs[cnt++] = dir;
+		maxdirlen = MAX(maxdirlen, strlen (dir));
+	    }
+	    dirs[cnt] = NULL;
+	    firsttime = FALSE;
+	}
 
-	/* allocate a buffer that we are sure is big enough
-         * +1 for null character.
-         */
-	safefilename = realloc(safefilename,
-			       (strlen(Gvfilepath) + strlen(filename) + 1));
-
-	strcpy(safefilename, Gvfilepath);
 	str = filename;
 	if ((p = strrchr(str, '/')))
 	    str = ++p;
@@ -357,20 +382,31 @@ const char *safefile(const char *filename)
 	    str = ++p;
 	if ((p = strrchr(str, ':')))
 	    str = ++p;
-	strcat(safefilename, str);
 
 	if (onetime && str != filename) {
 	    agerr(AGWARN, "Path provided to file: \"%s\" has been ignored"
-		  " because files are only permitted to be loaded from the \"%s\""
-		  " directory when running in an http server.\n", filename,
-		  Gvfilepath);
+		  " because files are only permitted to be loaded from the directories in \"%s\""
+		  " when running in an http server.\n", filename, Gvfilepath);
 	    onetime = FALSE;
 	}
 
-	return safefilename;
+	/* allocate a buffer that we are sure is big enough
+         * +1 for null character.
+         * +1 for directory separator character.
+         */
+	safefilename = realloc(safefilename,
+			       (maxdirlen + strlen(str) + 2));
+
+	for (dp = dirs; *dp; dp++) {
+	    sprintf (safefilename, "%s%s%s", *dp, DIRSEP, str);
+	    if (access (safefilename, R_OK) == 0)
+		return safefilename;
+	}
+	return NULL;
     }
-    /* else, not in server, use original filename without modification. */
-    return filename;
+	/* else, not in server, use original filename without modification. */
+    else
+	return filename;
 }
 
 int maptoken(char *p, char **name, int *val)

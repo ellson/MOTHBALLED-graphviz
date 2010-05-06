@@ -152,13 +152,19 @@ which restricts access to image files. See
 <DT><A NAME=d:GV_FILE_PATH><STRONG>GV_FILE_PATH</STRONG></A>
 <DD>
 If <A HREF=d:SERVER_NAME>SERVER_NAME</A> is defined, image files are
-restricted to the directory specified by <TT>GV_FILE_PATH</TT>.
+restricted to exist in one of the directories specified by <TT>GV_FILE_PATH</TT>.
+This last is a list of directory pathnames, separated by semicolons in Windows or
+by colons otherwise.
 Note that sometimes, when using one of the layout programs in a web
 script, it is not enough to use an export command but rather the
 variables should be set when the command is run, for example,<BR>
 <CODE>
-SERVER_NAME=xxx GV_FILE_PATH="images/" dot -Tpng -o x.png x.dot
+SERVER_NAME=xxx GV_FILE_PATH="images:etc/images:/usr/share/images" dot -Tpng -o x.png x.dot
 </CODE>
+<P>
+Note that the image files must really reside in one of the specified directories. If the
+image file is specified as an absolute or relative pathname, a warning is given and only
+the base name is used.
 <DT><A NAME=d:GVBINDIR><STRONG>GVBINDIR</STRONG></A>
 <DD>
 Indicates which directory contains the Graphviz config file and

@@ -118,7 +118,7 @@ void epsf_init(node_t * n)
 	desc->offset.x = -us->x - (dx) / 2;
 	desc->offset.y = -us->y - (dy) / 2;
     } else
-	agerr(AGWARN, "shapefile not set for epsf node %s\n", agnameof(n));
+	agerr(AGWARN, "shapefile not set or not found for epsf node %s\n", agnameof(n));
 }
 
 void epsf_free(node_t * n)
@@ -142,7 +142,7 @@ void epsf_free(node_t * n)
 void cat_libfile(GVJ_t * job, const char **arglib, const char **stdlib)
 {
     FILE *fp;
-    const char **s, *bp, *p;
+    const char **s, *bp, *p, *path;
     int i;
     boolean use_stdlib = TRUE;
 
@@ -162,14 +162,17 @@ void cat_libfile(GVJ_t * job, const char **arglib, const char **stdlib)
         for (i = 0; (p = arglib[i]) != 0; i++) {
             if (*p == '\0')
                 continue;       /* ignore empty string */
-            p = safefile(p);    /* make sure filename is okay */
-            if ((fp = fopen(p, "r"))) {
+            path = safefile(p);    /* make sure filename is okay */
+	    if (!path) {
+		agerr(AGWARN, "can't find library file %s\n", p);
+	    }
+            else if ((fp = fopen(path, "r"))) {
                 while ((bp = Fgets(fp)))
                     gvputs(job, bp);
                 gvputs(job, "\n"); /* append a newline just in case */
 		fclose (fp);
             } else
-                agerr(AGWARN, "can't open library file %s\n", p);
+                agerr(AGWARN, "can't open library file %s\n", path);
         }
     }
 }

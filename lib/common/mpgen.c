@@ -62,7 +62,7 @@ static void mp_reset(void)
 static void mp_cat_libfile(FILE * ofp, const char **arglib, const char **stdlib)
 {
     FILE *fp;
-    const char **s, *bp, *p;
+    const char **s, *bp, *p, *path;
     int i;
     boolean use_stdlib = TRUE;
 
@@ -82,14 +82,17 @@ static void mp_cat_libfile(FILE * ofp, const char **arglib, const char **stdlib)
 	for (i = 0; (p = arglib[i]) != 0; i++) {
 	    if (*p == '\0')
 		continue;	/* ignore empty string */
-	    p = safefile(p);	/* make sure filename is okay */
-	    if ((fp = fopen(p, "r"))) {
+	    path = safefile(p);	/* make sure filename is okay */
+	    if (!path) {
+		agerr(AGWARN, "can't find library file %s\n", p);
+	    }
+	    else if ((fp = fopen(path, "r"))) {
 		while ((bp = Fgets(fp)))
 		    fputs(bp, ofp);
 		fputc('\n', ofp); /* append a newline just in case */
 		fclose (fp);
 	    } else
-		agerr(AGWARN, "can't open library file %s\n", p);
+		agerr(AGWARN, "can't open library file %s\n", path);
 	}
     }
 }
