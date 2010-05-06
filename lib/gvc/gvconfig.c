@@ -267,6 +267,7 @@ char * gvconfig_libdir(GVC_t * gvc)
 {
     static char line[BSZ];
     static char *libdir;
+    static boolean dirShown = 0; 
     char *path, *tmp;
     FILE *f;
 
@@ -323,9 +324,10 @@ char * gvconfig_libdir(GVC_t * gvc)
 	    }
 #endif
 	}
-	if (gvc->common.verbose > 1) 
-	    fprintf (stderr, "libdir = \"%s\"\n",
-		(libdir ? libdir : "<null>"));
+    }
+    if (gvc->common.verbose && !dirShown) {
+	fprintf (stderr, "libdir = \"%s\"\n", (libdir ? libdir : "<null>"));
+	dirShown = 1;
     }
     return libdir;
 }
