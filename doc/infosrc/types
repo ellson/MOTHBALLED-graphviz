@@ -320,6 +320,10 @@ main types of shapes :
 <A HREF=shapes.html#polygon>polygon-based</A>,
 <A HREF=shapes.html#record>record-based</A> and
 <A HREF=shapes.html#epsf>user-defined</A>.
+The record-based shape has largely been superseded and greatly generalized
+by <A HREF=shapes.html#html>HTML-like labels</A>. 
+That is, instead of using <TT>shape=record</TT>, one might
+consider using <TT>shape=none</TT> and an HTML-like label.
 :startType
 has the syntax <TT>[<I>style</I>][<I>seed</I>]</TT>.
 <P>
