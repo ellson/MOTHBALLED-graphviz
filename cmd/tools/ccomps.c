@@ -29,6 +29,7 @@
 #include "cgraph.h"
 
 #define N_NEW(n,t)       (t*)malloc((n)*sizeof(t))
+#define NEW(t)           (t*)malloc(sizeof(t))
 
 typedef struct {
     Agrec_t h;
@@ -70,6 +71,7 @@ typedef struct {
 #define SILENT   2
 #define EXTRACT  3
 
+char* Cmd;
 char **Files;
 int verbose;
 int printMode = INTERNAL;
@@ -132,6 +134,7 @@ static void init(int argc, char *argv[])
 {
     int c;
 
+    Cmd = argv[0];
     opterr = 0;
     while ((c = getopt(argc, argv, ":zo:xCX:nsv")) != -1) {
 	switch (c) {
@@ -200,19 +203,90 @@ static void init(int argc, char *argv[])
 	Files = argv;
 }
 
-static int dfs(Agraph_t * g, Agnode_t * n, Agraph_t * out, int cnt)
+typedef struct blk_t {
+    Agnode_t **data;
+    Agnode_t **endp;
+    struct blk_t *prev;
+    struct blk_t *next;
+} blk_t;
+
+typedef struct {
+    blk_t *fstblk;
+    blk_t *curblk;
+    Agnode_t **curp;
+} stk_t;
+
+
+#define SMALLBUF 1024
+#define BIGBUF 1000000
+
+static Agnode_t *base[SMALLBUF];
+static blk_t Blk;
+static stk_t Stk;
+
+static void initStk()
+{
+    Blk.data = base;
+    Blk.endp = Blk.data + SMALLBUF;
+    Stk.curblk = Stk.fstblk = &Blk;
+    Stk.curp = Stk.curblk->data;
+}
+
+static void push(Agnode_t * np)
+{
+    if (Stk.curp == Stk.curblk->endp) {
+	if (Stk.curblk->next == NULL) {
+	    blk_t *bp = NEW(blk_t);
+	    if (bp == 0) {
+		fprintf(stderr, "gc: Out of memory\n");
+		exit(1);
+	    }
+	    bp->prev = Stk.curblk;
+	    bp->next = NULL;
+	    bp->data = N_NEW(BIGBUF, Agnode_t *);
+	    if (bp->data == 0) {
+		fprintf(stderr, "%s: Out of memory\n", Cmd);
+		exit(1);
+	    }
+	    bp->endp = bp->data + BIGBUF;
+	    Stk.curblk->next = bp;
+	}
+	Stk.curblk = Stk.curblk->next;
+	Stk.curp = Stk.curblk->data;
+    }
+    ND_mark(np) = -1;
+    *Stk.curp++ = np;
+}
+
+static Agnode_t *pop()
+{
+    if (Stk.curp == Stk.curblk->data) {
+	if (Stk.curblk == Stk.fstblk)
+	    return 0;
+	Stk.curblk = Stk.curblk->prev;
+	Stk.curp = Stk.curblk->endp;
+    }
+    Stk.curp--;
+    return *Stk.curp;
+}
+
+static int dfs(Agraph_t * g, Agnode_t * n, Agraph_t * out)
 {
     Agedge_t *e;
     Agnode_t *other;
+    int cnt = 0;
 
-    ND_mark(n) = 1;
-    cnt++;
-    agsubnode(out, n, 1);
-    for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
-	if ((other = agtail(e)) == n)
-	    other = aghead(e);
-	if (ND_mark(other) == 0)
-	    cnt = dfs(g, other, out, cnt);
+    push(n);
+    while ((n = pop())) {
+	ND_mark(n) = 1;
+	cnt++;
+	agsubnode(out, n, 1);
+	for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
+	    if ((other = agtail(e)) == n)
+		other = aghead(e);
+	    if (ND_mark(other) == 0)
+		push (other);
+	}
     }
     return cnt;
 }
@@ -525,7 +599,7 @@ static int processClusters(Agraph_t * g)
 	aginit(out, AGRAPH, "graphinfo", sizeof(Agraphinfo_t), TRUE);
 	GD_cc_subg(out) = 1;
 	dn = ND_dn(n);
-	n_cnt = dfs(dg, dn, dout, 0);
+	n_cnt = dfs(dg, dn, dout);
 	unionNodes(dout, out);
 	e_cnt = nodeInduce(out, out->root);
 	if (doAll)
@@ -546,7 +620,7 @@ static int processClusters(Agraph_t * g)
 	out = agsubg(g, name, 1);
 	aginit(out, AGRAPH, "graphinfo", sizeof(Agraphinfo_t), TRUE);
 	GD_cc_subg(out) = 1;
-	n_cnt = dfs(dg, dn, dout, 0);
+	n_cnt = dfs(dg, dn, dout);
 	unionNodes(dout, out);
 	e_cnt = nodeInduce(out, out->root);
 	if (printMode == EXTERNAL) {
@@ -613,6 +687,7 @@ static int process(Agraph_t * g)
 
     aginit(g, AGNODE, "nodeinfo", sizeof(Agnodeinfo_t), TRUE);
     bindGraphinfo (g);
+    initStk();
 
     if (useClusters)
 	return processClusters(g);
@@ -630,7 +705,7 @@ static int process(Agraph_t * g)
 	out = agsubg(g, name, 1);
 	aginit(out, AGRAPH, "graphinfo", sizeof(Agraphinfo_t), TRUE);
 	GD_cc_subg(out) = 1;
-	n_cnt = dfs(g, n, out, 0);
+	n_cnt = dfs(g, n, out);
 	e_cnt = nodeInduce(out, out->root);
 	if (doAll)
 	    subGInduce(g, out);
@@ -649,7 +724,7 @@ static int process(Agraph_t * g)
 	out = agsubg(g, name, 1);
 	aginit(out, AGRAPH, "graphinfo", sizeof(Agraphinfo_t), TRUE);
 	GD_cc_subg(out) = 1;
-	n_cnt = dfs(g, n, out, 0);
+	n_cnt = dfs(g, n, out);
 	e_cnt = nodeInduce(out, out->root);
 	if (printMode == EXTERNAL) {
 	    if (doAll)
