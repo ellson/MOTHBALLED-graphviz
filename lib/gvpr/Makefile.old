@@ -10,7 +10,7 @@ LOC_LIB=$(ROOT)/lib
 LOC_INCDIR=$(LOC_LIB)/include
 LOC_LIBDIR=$(LOC_LIB)/lib
 
-INCS = -I. -I$(ROOT) -I$(LOC_INCDIR) -I$(LOC_LIB)/cgraph -I$(LOC_LIB)/cdt \
+INCS = -I. -I$(ROOT) -I$(LOC_INCDIR) -I$(LOC_LIB)/common -I$(LOC_LIB)/cgraph -I$(LOC_LIB)/cdt \
     -I$(LOC_LIB)/expr -I$(LOC_LIB)/ast -I$(LOC_LIB)/sfio -I$(LOC_LIB)/vmalloc -I$(LOC_LIB)/ingraphs
 
 DEFINES = -DHAVE_CONFIG_H -DUSE_CGRAPH

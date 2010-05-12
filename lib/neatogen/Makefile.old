@@ -30,7 +30,7 @@ POBJS = quad_prog_vpsc.o constrained_majorization_ipsep.o mosek_quad_solve.o
 OBJS = adjust.o circuit.o edges.o geometry.o heap.o hedges.o \
        info.o neatoinit.o legal.o lu.o matinv.o memory.o poly.o \
        printvis.o site.o solve.o neatosplines.o stuff.o voronoi.o \
-       overlap.o delaunay.o call_tri.o \
+       overlap.o delaunay.o call_tri.o multispline.o \
        $(NOBJS) $(POBJS) constraint.o
 
 libneatogen.a : $(OBJS)

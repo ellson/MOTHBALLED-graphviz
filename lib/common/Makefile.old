@@ -7,8 +7,9 @@ INCS =  -I. \
         -I$(ROOT) \
         -I../cdt \
 	-I../pack \
+	-I../xdot \
 	-I../fdpgen \
-        -I../pathplan \
+    -I../pathplan \
 	-I../gd \
 	-I../graph \
 	-I../gvc \
