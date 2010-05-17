@@ -1125,7 +1125,7 @@ The output model will use the input model when possible.
 Use of color palettes results in less memory usage during creation of the
 bitmaps and smaller output files.
 <P>
-Usually, the only time it is necessary to specify the truetype model
+Usually, the only time it is necessary to specify the truecolor model
 is if the graph uses more than 256 colors.
 However, if one uses <A HREF=#d:bgcolor>bgcolor</A>=transparent with
 a color palette, font
