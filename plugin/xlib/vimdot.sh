@@ -5,7 +5,7 @@ error() { echo "$0: $*" >&2; exit 1; }
 
 for prog in gvim vim ""; do
 	if test -x /usr/bin/$prog; then break; fi
-	if which $prog >&/dev/null; then break; fi
+	if which $prog >/dev/null 2>&1; then break; fi
 done
 
 if test -z "$prog"; then error "the editor not found"; fi
