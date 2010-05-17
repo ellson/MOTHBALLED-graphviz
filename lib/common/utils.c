@@ -20,6 +20,7 @@
 #include "entities.h"
 #include "logic.h"
 #include "gvc.h"
+#include "ltdl/lt_system.h"
 
 #ifndef WIN32
 #include <unistd.h>
