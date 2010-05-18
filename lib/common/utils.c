@@ -23,7 +23,7 @@
 
 
 #ifdef WIN32
-#include "ltdl/lt_system.h"
+#include "libltdl/lt_system.h"
 #endif
 #ifndef WIN32
 #include <unistd.h>
