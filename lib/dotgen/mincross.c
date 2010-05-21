@@ -1154,7 +1154,7 @@ static void flat_reorder(graph_t * g)
 	    for (j = 0; j < ND_flat_in(v).size; j++) {
 		flat_e = ND_flat_in(v).list[j];
 		if ((ED_weight(flat_e) > 0)
-		    && (inside_cluster(g, aghead(flat_e))))
+		    && (inside_cluster(g, agtail(flat_e))))
 		    local_in_cnt++;
 	    }
 	    for (j = 0; j < ND_flat_out(v).size; j++) {
