@@ -39,8 +39,12 @@ extern "C" {
  */
     typedef enum { l_undef, l_clust, l_node, l_graph, l_array, l_aspect } pack_mode;
 
-#define PK_COL_MAJOR 1
-#define PK_USER_VALS 2
+#define PK_COL_MAJOR   (1 << 0)
+#define PK_USER_VALS   (1 << 1)
+#define PK_LEFT_ALIGN  (1 << 2)
+#define PK_RIGHT_ALIGN (1 << 3)
+#define PK_TOP_ALIGN   (1 << 4)
+#define PK_BOT_ALIGN   (1 << 5)
 
 typedef unsigned char packval_t;
 

@@ -1,4 +1,4 @@
-.TH GVPACK 1 "8 April 2003"
+.TH GVPACK 1 "27 May 2010"
 .SH NAME
 gvpack \- merge and pack disjoint graphs
 .SH SYNOPSIS
@@ -8,6 +8,9 @@ gvpack \- merge and pack disjoint graphs
 ]
 [
 .BI \-m margin
+]
+[
+.B \-array\fI[_flags][n]\fP
 ]
 [
 .BI \-o outfile
@@ -39,6 +42,22 @@ The following options are supported:
 .B \-g
 Combines the graphs at the graph level. This uses more space, but prevents
 parts of one graph from occurring between parts of another. 
+.TP
+.BI \-array\fI[_flags][n]\fP
+Combines the graphs at the graph level, placing them in an array.
+By default, the layout is done in row-major order. The number of columns
+used is roughly the square root of the number of graphs. If the optional
+integer \fIn\fP is supplied, this indicates the number of columns to use.
+.TP 
+
+If optional flags are supplied, these consist of an underscore followed
+by any of the letters "c", "t", "b", "l", "r" or "u".
+If "c" is supplied, the graphs are packed in column-major order, in which
+case a final integer specifies the number of rows.
+The flags "t", "b", "l", "r" indicate that components are aligned
+along the top, bottom, left or right, respectively.
+The "u" flag indicates that the insertion order is based on the
+\fIsortv\fP attribute attached to each graph.
 .TP
 .BI \-G "name\fB=\fPvalue"
 Specifies attributes to be added to the resulting union graph. For

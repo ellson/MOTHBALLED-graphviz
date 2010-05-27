@@ -705,8 +705,18 @@ arrayRects (int ng, boxf* gs, pack_info* pinfo)
 	ip = sinfo[i];
 	idx = ip->index;
 	bb = gs[idx];
-	places[idx].x = (widths[c] + widths[c+1] - bb.UR.x - bb.LL.x)/2.0;
-	places[idx].y = (heights[r] + heights[r+1] - bb.UR.y - bb.LL.y)/2.0;
+	if (pinfo->flags & PK_LEFT_ALIGN)
+	    places[idx].x = widths[c];
+	else if (pinfo->flags & PK_RIGHT_ALIGN)
+	    places[idx].x = widths[c+1] - (bb.UR.x - bb.LL.x);
+	else
+	    places[idx].x = (widths[c] + widths[c+1] - bb.UR.x - bb.LL.x)/2.0;
+	if (pinfo->flags & PK_TOP_ALIGN)
+	    places[idx].y = heights[r] - (bb.UR.y - bb.LL.y);
+	else if (pinfo->flags & PK_BOT_ALIGN)
+	    places[idx].y = heights[r+1];
+	else
+	    places[idx].y = (heights[r] + heights[r+1] - bb.UR.y - bb.LL.y)/2.0;
 	INC(rowMajor,c,r);
     }
 
@@ -1206,6 +1216,22 @@ chkFlags (char* p, pack_info* pinfo)
 	    break;
 	case 'u' :
 	    pinfo->flags |= PK_USER_VALS;
+	    p++;
+	    break;
+	case 't' :
+	    pinfo->flags |= PK_TOP_ALIGN;
+	    p++;
+	    break;
+	case 'b' :
+	    pinfo->flags |= PK_BOT_ALIGN;
+	    p++;
+	    break;
+	case 'l' :
+	    pinfo->flags |= PK_LEFT_ALIGN;
+	    p++;
+	    break;
+	case 'r' :
+	    pinfo->flags |= PK_RIGHT_ALIGN;
 	    p++;
 	    break;
 	default :
