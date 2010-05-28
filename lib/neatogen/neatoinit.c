@@ -317,6 +317,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
     bezier *newspl;
     int more = 1;
     int stype, etype;
+    static boolean warned;
 
 #ifndef WITH_CGRAPH
     pos = agxget(e, E_pos->index);
@@ -350,6 +351,14 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 	n = npts;
 	if ((n < 4) || (n % 3 != 1)) {
 	    gv_free_splines(e);
+	    if (!warned) {
+		warned = 1;
+#ifndef WITH_CGRAPH
+		agerr(AGWARN, "pos attribute for edge (%s,%s) doesn't have 3n+1 points\n", e->tail->name, e->head->name);
+#else
+		agerr(AGWARN, "pos attribute for edge (%s,%s) doesn't have 3n+1 points\n", agnameof(agtail(e)), agnameof(aghead(e)));
+#endif
+	    }
 	    return 0;
 	}
 	ps = ALLOC(n, 0, pointf);
@@ -357,6 +366,14 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 	while (n) {
 	    i = sscanf(pos, "%lf,%lf%n", &x, &y, &nc);
 	    if (i < 2) {
+		if (!warned) {
+		    warned = 1;
+#ifndef WITH_CGRAPH
+		    agerr(AGWARN, "syntax error in pos attribute for edge (%s,%s)\n", e->tail->name, e->head->name);
+#else
+		    agerr(AGWARN, "syntax error in pos attribute for edge (%s,%s)\n", agnameof(agtail(e)), agnameof(aghead(e)));
+#endif
+		}
 		free(ps);
 		gv_free_splines(e);
 		return 0;
