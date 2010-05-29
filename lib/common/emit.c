@@ -2406,21 +2406,15 @@ fprintf(stderr, "view=%g,%g, zoom=%g, focus=%g,%g\n",
 #endif
 }
 
-static void emit_colors(GVJ_t * job, graph_t * g)
+static void emit_cluster_colors(GVJ_t * job, graph_t * g)
 {
     graph_t *sg;
-    node_t *n;
-    edge_t *e;
     int c;
-    char *str, *colors;
+    char *str;
 
-    gvrender_set_fillcolor(job, DEFAULT_FILL);
-    if (((str = agget(g, "bgcolor")) != 0) && str[0])
-	gvrender_set_fillcolor(job, str);
-    if (((str = agget(g, "fontcolor")) != 0) && str[0])
-	gvrender_set_pencolor(job, str);
     for (c = 1; c <= GD_n_cluster(g); c++) {
 	sg = GD_clust(g)[c];
+	emit_cluster_colors(job, sg);
 	if (((str = agget(sg, "color")) != 0) && str[0])
 	    gvrender_set_pencolor(job, str);
 	if (((str = agget(sg, "fillcolor")) != 0) && str[0])
@@ -2428,6 +2422,20 @@ static void emit_colors(GVJ_t * job, graph_t * g)
 	if (((str = agget(sg, "fontcolor")) != 0) && str[0])
 	    gvrender_set_pencolor(job, str);
     }
+}
+
+static void emit_colors(GVJ_t * job, graph_t * g)
+{
+    node_t *n;
+    edge_t *e;
+    char *str, *colors;
+
+    gvrender_set_fillcolor(job, DEFAULT_FILL);
+    if (((str = agget(g, "bgcolor")) != 0) && str[0])
+	gvrender_set_fillcolor(job, str);
+    if (((str = agget(g, "fontcolor")) != 0) && str[0])
+	gvrender_set_pencolor(job, str);
+    emit_cluster_colors(job, g);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (((str = agget(n, "color")) != 0) && str[0])
 	    gvrender_set_pencolor(job, str);
