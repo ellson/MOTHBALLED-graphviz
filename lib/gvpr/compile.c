@@ -1521,7 +1521,7 @@ setval(Expr_t * pgm, Exnode_t * x, Exid_t * sym, Exref_t * ref,
 		state->tvt = (trav_type) iv;
 	    else
 		error(1, "unexpected value %d assigned to %s : ignored",
-		      iv, typeName(pgm, V_travtype));
+		      iv, typeName(pgm, T_tvtyp));
 	    break;
 	case V_travroot:
 	    np = INT2PTR(Agnode_t *, v.integer);
