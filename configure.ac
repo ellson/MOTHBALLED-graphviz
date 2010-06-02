@@ -2898,6 +2898,8 @@ AM_CONDITIONAL(WITH_IPSEPCOLA, [test "x$use_ipsepcola" = "xYes"])
 # -----------------------------------
 # Special checks
 
+save_LIBS=$LIBS
+LIBS="$LIBS $MATH_LIBS"
 AC_MSG_CHECKING(if have working sincos())
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 	#include <stdio.h>
@@ -2906,11 +2908,13 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 	extern void sincos(double x, double *s, double *c);
 	int main () {
 		double sinx=0.0, cosx=1.0;
-		sincos(PI/2.0,&sinx,&cosx);
-		assert(sinx>0.9999999);
-		assert(sinx<1.0000001);
-		assert(cosx<0.0000001);
-		assert(cosx>(-0.0000001));
+                int i;
+                /* try to convince clever compilers not to optize this away! */
+                for (i=2; i<4; i++) {sincos(PI/(double)i,&sinx,&cosx);}
+		assert(sinx>0.8660253);
+		assert(sinx<0.8660255);
+		assert(cosx<0.5000001);
+		assert(cosx>0.4999999);
 		return 0;
 	}
 	]])],[AC_MSG_RESULT(yes)
@@ -2918,6 +2922,7 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 	],[AC_MSG_RESULT(no)
 	],[AC_MSG_RESULT(no - assumed because cross-compiling)
 	])
+LIBS=$save_LIBS
 
 # -----------------------------------
 AC_MSG_CHECKING(if FILE struct contains _cnt)
