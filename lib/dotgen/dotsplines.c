@@ -945,18 +945,10 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0,
 	if ((auxe == hvye) & !ED_alg(auxe)) continue; /* pseudo-edge */
 	auxbz = ED_spl(auxe)->list;
 	bz = new_spline(e, auxbz->size);
-	if (GD_flip(g)) {
-	    bz->sflag = auxbz->eflag;
-	    bz->sp = transformf(auxbz->ep, del, 1);
-	    bz->eflag = auxbz->sflag;
-	    bz->ep = transformf(auxbz->sp, del, 1);
-	}
-	else {
-	    bz->sflag = auxbz->sflag;
-	    bz->sp = transformf(auxbz->sp, del, 0);
-	    bz->eflag = auxbz->eflag;
-	    bz->ep = transformf(auxbz->ep, del, 0);
-	}
+	bz->sflag = auxbz->sflag;
+	bz->sp = transformf(auxbz->sp, del, GD_flip(g));
+	bz->eflag = auxbz->eflag;
+	bz->ep = transformf(auxbz->ep, del, GD_flip(g));
 	for (j = 0; j <  auxbz->size; ) {
 	    pointf cp[4];
 	    cp[0] = bz->list[j] = transformf(auxbz->list[j], del, GD_flip(g));
