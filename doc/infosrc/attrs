@@ -150,7 +150,7 @@ At present, the modes "global" and "none"
 appear to be identical, both turning off the special cluster processing.
 :color:ENC:color/colorList:black;
 Basic drawing color for graphics, not text. For the latter, use the
-<A HREF=#d.fontcolor>fontcolor</A> attribute.
+<A HREF=#d:fontcolor>fontcolor</A> attribute.
 <P>
 For edges, the value
 can either be a single color or a <A HREF=#k:colorList>colorList</A>.
@@ -818,7 +818,7 @@ Also, 1 is the maximum peripheries value for clusters.
 :pin:N:bool:false;   neato,fdp
 If true and the node has a pos attribute on input, neato or fdp prevents the
 node from moving from the input position. This property can also be specified
-in the pos attribute itself (cf. the <A HREF=#d:point>point</A> type).
+in the pos attribute itself (cf. the <A HREF=#k:point>point</A> type).
 <P>
 <B>Note:</B> Due to an artifact of the implementation, final coordinates
 are translated to the origin. Thus, if you look at the output coordinates

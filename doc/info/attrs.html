@@ -588,7 +588,7 @@ This field indicates which graph component uses the attribute.
 
 <DT><A NAME=d:color HREF=#a:color><STRONG>color</STRONG></A>
 <DD>  Basic drawing color for graphics, not text. For the latter, use the
-  <A HREF=#d.fontcolor>fontcolor</A> attribute.
+  <A HREF=#d:fontcolor>fontcolor</A> attribute.
   <P>
   For edges, the value
   can either be a single color or a <A HREF=#k:colorList>colorList</A>.
@@ -1341,7 +1341,7 @@ This field indicates which graph component uses the attribute.
 <DT><A NAME=d:pin HREF=#a:pin><STRONG>pin</STRONG></A>
 <DD>  If true and the node has a pos attribute on input, neato or fdp prevents the
   node from moving from the input position. This property can also be specified
-  in the pos attribute itself (cf. the <A HREF=#d:point>point</A> type).
+  in the pos attribute itself (cf. the <A HREF=#k:point>point</A> type).
   <P>
   <B>Note:</B> Due to an artifact of the implementation, final coordinates
   are translated to the origin. Thus, if you look at the output coordinates
@@ -2015,8 +2015,8 @@ the given types.
   <P>
   <P>
   This attribute can be attached to an edge using the
-  <A HREF=#k:headport>headport</A> and
-  <A HREF=#k:tailport>tailport</A> attributes, or as part of the
+  <A HREF=#d:headport>headport</A> and
+  <A HREF=#d:tailport>tailport</A> attributes, or as part of the
   edge description as in
   <CENTER>
   <TT>node1:port1 -> node2:port5:nw;</TT>

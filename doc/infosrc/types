@@ -246,8 +246,8 @@ If no compass point is used with a portname, the default value is "_".
 <P>
 <P>
 This attribute can be attached to an edge using the
-<A HREF=#k:headport>headport</A> and
-<A HREF=#k:tailport>tailport</A> attributes, or as part of the
+<A HREF=#d:headport>headport</A> and
+<A HREF=#d:tailport>tailport</A> attributes, or as part of the
 edge description as in
 <CENTER>
 <TT>node1:port1 -> node2:port5:nw;</TT>
