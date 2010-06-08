@@ -43,7 +43,7 @@ static int is_a_strong_cluster(graph_t *g)
 {
 	char	*str;
 	str = agget(g,"compact");
-	return mapbool((str),FALSE);
+	return mapbool((str),TRUE);
 }
 
 static int rankset_kind(graph_t *g)
@@ -168,6 +168,7 @@ static int is_internal_to_cluster(edge_t *e)
 	ch = ND_cluster(aghead(e));
 	if (ct == ch) return TRUE;
 	par = dot_lca(ct,ch);
+	if (par == agroot(par)) return FALSE;
 	if ((par == ct) || (par == ch)) return TRUE;
 	return FALSE;
 }
@@ -259,24 +260,41 @@ static void compile_edges(graph_t *ug, graph_t *Xg)
 	}
 }
 
+static char *synthname(Agraph_t *g, char *prefix, char *suffix)
+{
+	char *rv = agalloc(g,strlen(prefix) + strlen(suffix) + 1);
+	strcpy(rv,prefix);
+	strcat(rv,suffix);
+	return rv;
+}
+
 static void compile_clusters(graph_t *g, graph_t *Xg)
 {
 	node_t		*n;
 	node_t		*rep, *top = 0, *bot = 0;
 	edge_t		*e;
 	graph_t		*sub;
+	char		*sname;
 
 	if (is_a_cluster(g) && is_a_strong_cluster(g)) {
 		for (n = agfstnode(g); n; n = agnxtnode(g,n)) {
 			if (agfstin(g,n) == NILedge) {
 				rep = ND_rep(find(n));
-				if (!top) top = agnode(Xg,"\177top",TRUE);
-				agedge(Xg,top,rep,(char*)0,TRUE);
+				if (!top) {
+					sname = synthname(g,agnameof(g),"_top\177");
+					top = agnode(Xg,sname,TRUE);
+					agedge(Xg,top,rep,(char*)0,TRUE);
+					agfree(g,sname);
+				}
 			}
 			if (agfstout(g,n) == NILedge) {
 				rep = ND_rep(find(n));
-				if (!bot) bot = agnode(Xg,"\177bot",TRUE);
-				agedge(Xg,rep,bot,(char*)0,TRUE);
+				if (!bot) {
+					sname = synthname(g,agnameof(g),"_bottom\177");
+					bot = agnode(Xg,sname,TRUE);
+					agedge(Xg,rep,bot,(char*)0,TRUE);
+					agfree(g,sname);
+				}
 			}
 		}
 		if (top && bot) {
@@ -389,4 +407,8 @@ static void aaa(graph_t *g)
 void printgraph(Agraph_t *g) {
 	aaa(g);
 	agwrite(g,stderr);
+}
+
+int nd_rank(Agnode_t *n) {
+	return ND_rank(n);
 }
