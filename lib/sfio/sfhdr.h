@@ -732,7 +732,7 @@ extern "C" {
 #define _SFOPENWR(f)	((f)->endw = ((f)->flags&(SF_MTSAFE|SF_LINE)) ? (f)->data : (f)->endb)
 #define _SFOPEN(f)	((f)->mode == SF_READ  ? _SFOPENRD(f) : \
 			 (f)->mode == SF_WRITE ? _SFOPENWR(f) : \
-			 ((f)->endr = (f)->endr = (f)->data) )
+			 ((f)->endw = (f)->endr = (f)->data) )
 #define SFOPEN(f,l)	(void)((l) ? 0 : \
 				((f)->mode &= ~(SF_LOCK|SF_RC|SF_RV), _SFOPEN(f), 0) )
 
