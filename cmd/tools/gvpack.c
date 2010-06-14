@@ -300,8 +300,17 @@ static void init_graph(Agraph_t * g, boolean fill, GVC_t* gvc)
     }
     Ndim = GD_ndim(g) = 2;
     init_node_edge(g);
-    if (fill && init_nop(g, 0)) {
-	exit(1);
+    if (fill) {
+	int ret = init_nop(g,0);
+	if (ret) {
+	    if (ret < 0)
+		fprintf(stderr, "Error loading layout info from graph %s\n",
+		    g->name);
+	    else if (ret > 0)
+		fprintf(stderr, "gvpack does not support backgrounds as found in graph %s\n",
+		    g->name);
+	    exit(1);
+	}
     }
 }
 
