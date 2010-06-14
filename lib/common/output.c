@@ -323,11 +323,19 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 #endif
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (dim3) {
+	    int k;
+
 	    sprintf(buf, "%.5g,%.5g,%.5g", ND_coord(n).x, YDIR(ND_coord(n).y), POINTS_PER_INCH*(ND_pos(n)[2]));
+	    agxbput (&xb, buf);
+	    for (k = 3; k < GD_odim(g); k++) {
+		sprintf(buf, ",%.5g", POINTS_PER_INCH*(ND_pos(n)[k]));
+		agxbput (&xb, buf);
+	    }
+	    agset(n, "pos", agxbuse(&xb));
 	} else {
 	    sprintf(buf, "%.5g,%.5g", ND_coord(n).x, YDIR(ND_coord(n).y));
+	    agset(n, "pos", buf);
 	}
-	agset(n, "pos", buf);
 	sprintf(buf, "%.5g", PS2INCH(ND_ht(n)));
 #ifndef WITH_CGRAPH
 	agxset(n, N_height->index, buf);
