@@ -83,11 +83,13 @@ char *path = 0;
 int sufcnt = 0;
 int sorted = 0;
 int sortIndex = 0;
+int sortFinal;
 int x_index = -1;
+int x_final = -1;  /* require 0 <= x_index <= x_final or x_final= -1 */ 
 char *x_node;
 
 static char *useString =
-    "Usage: ccomps [-svnCx?] [-X[#]v] [-o<out template>] <files>\n\
+    "Usage: ccomps [-svnCx?] [-X[#]s[-f]] [-o<out template>] <files>\n\
   -s - silent\n\
   -x - external\n\
   -X - extract component\n\
@@ -133,6 +135,7 @@ static int isCluster(Agraph_t * g)
 static void init(int argc, char *argv[])
 {
     int c;
+    char* endp;
 
     Cmd = argv[0];
     opterr = 0;
@@ -158,8 +161,26 @@ static void init(int argc, char *argv[])
 	    if (*optarg == '#') {
 		char *p = optarg + 1;
 		if (isdigit(*p)) {
-		    x_index = atoi(p);
+		    x_index = (int)strtol (p, &endp, 10);
 		    printMode = EXTRACT;
+		    if (*endp == '-') {
+			p = endp + 1;
+			if (isdigit(*p)) {
+			    x_final = atoi (p);
+			    if (x_final < x_index) {
+				printMode = INTERNAL;
+				fprintf(stderr,
+				    "ccomps: final index %d < start index %d in -X%s flag - ignored\n",
+				    x_final, x_index, optarg);
+			    }
+			}
+			else if (*p) {
+			    printMode = INTERNAL;
+			    fprintf(stderr,
+				"ccomps: number expected in -X%s flag - ignored\n",
+				optarg);
+			}
+		    }
 		} else
 		    fprintf(stderr,
 			    "ccomps: number expected in -X%s flag - ignored\n",
@@ -191,6 +212,7 @@ static void init(int argc, char *argv[])
 	if ((printMode == EXTRACT) && (x_index >= 0)) {
 	    printMode = INTERNAL;
 	    sortIndex = x_index;
+	    sortFinal = x_final;
 	}
 	else if (printMode == EXTERNAL) {
 	    sortIndex = -1;
@@ -540,7 +562,7 @@ printSorted (Agraph_t* root, int c_cnt)
 {
     Agraph_t** ccs = N_NEW(c_cnt, Agraph_t*);
     Agraph_t* subg;
-    int i = 0;
+    int i = 0, endi;
 
     for (subg = agfstsubg(root); subg; subg = agnxtsubg(subg)) {
 	if (GD_cc_subg(subg))
@@ -556,10 +578,16 @@ printSorted (Agraph_t* root, int c_cnt)
 		sortIndex, agnameof(root));
 	    return;
 	}
-	subg = ccs[sortIndex];
-	if (doAll)
-	    subGInduce(root, subg);
-	gwrite(subg);
+	if (sortFinal >= sortIndex)
+	    endi = sortFinal;
+	else
+	    endi = c_cnt-1;
+        for (i = sortIndex; i <= endi ; i++) {
+	    subg = ccs[i];
+	    if (doAll)
+		subGInduce(root, subg);
+	    gwrite(subg);
+	}
     }
     else for (i = 0; i < c_cnt; i++) {
 	subg = ccs[i];
@@ -582,6 +610,7 @@ static int processClusters(Agraph_t * g)
     Agnode_t *n;
     Agraph_t *dout;
     Agnode_t *dn;
+    int extracted = 0;
 
     dg = deriveGraph(g);
 
@@ -628,11 +657,13 @@ static int processClusters(Agraph_t * g)
 		subGInduce(g, out);
 	    gwrite(out);
 	} else if (printMode == EXTRACT) {
-	    if (x_index == c_cnt) {
+	    if (x_index <= c_cnt) {
+		extracted = 1;
 		if (doAll)
 		    subGInduce(g, out);
 		gwrite(out);
-		return 0;
+		if (c_cnt == x_final)
+		    return 0;
 	    }
 	}
 	if (printMode != INTERNAL)
@@ -643,7 +674,7 @@ static int processClusters(Agraph_t * g)
 		    c_cnt, n_cnt, e_cnt);
 	c_cnt++;
     }
-    if (printMode == EXTRACT) {
+    if ((printMode == EXTRACT) && !extracted)  {
 	fprintf(stderr,
 		"ccomps: component %d not found in graph %s - ignored\n",
 		x_index, agnameof(g));
@@ -684,6 +715,7 @@ static int process(Agraph_t * g)
     char *name;
     Agraph_t *out;
     Agnode_t *n;
+    int extracted = 0;
 
     aginit(g, AGNODE, "nodeinfo", sizeof(Agnodeinfo_t), TRUE);
     bindGraphinfo (g);
@@ -731,11 +763,13 @@ static int process(Agraph_t * g)
 		subGInduce(g, out);
 	    gwrite(out);
 	} else if (printMode == EXTRACT) {
-	    if (x_index == c_cnt) {
+	    if (x_index <= c_cnt) {
+		extracted = 1;
 		if (doAll)
 		    subGInduce(g, out);
 		gwrite(out);
-		return 0;
+		if (c_cnt == x_final)
+		    return 0;
 	    }
 	}
 	if (printMode != INTERNAL)
@@ -745,7 +779,7 @@ static int process(Agraph_t * g)
 		    c_cnt, n_cnt, e_cnt);
 	c_cnt++;
     }
-    if (printMode == EXTRACT) {
+    if ((printMode == EXTRACT) && !extracted) {
 	fprintf(stderr,
 		"ccomps: component %d not found in graph %s - ignored\n",
 		x_index, agnameof(g));

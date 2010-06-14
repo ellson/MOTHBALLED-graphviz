@@ -7,7 +7,7 @@ ccomps \- connected components filter for graphs
 .B \-sxvnzC?
 ]
 [
-.BI -X [#]v
+.BI -X [#]s[-f]
 ]
 [
 .BI -o outfile
@@ -34,7 +34,7 @@ Counts of nodes, edges and connected components are printed.
 .TP
 .B \-z
 Sort components by size, with the largest first. This is only
-effective if either \fB-x\fP or \fB-X#v\fP is present.
+effective if either \fB-x\fP or \fB-X#\fP is present.
 Thus, \fB-zX#0\fP will cause the largest component to be printed.
 .TP
 .B \-C
@@ -57,8 +57,17 @@ edges.
 Prints only the component containing the node \fInode_name\fP,
 if any.
 .TP
-.BI \-X# " index"
-Prints only component number \fIindex\fP, if any, starting at 0.
+.BI \-X# " start"
+.TP
+.BI \-X# " start-"
+.TP
+.BI \-X# " start-last"
+Prints only components in the given range. In the first form, only
+the component whose index is \fIstart\fP, if any, is printed.
+In the second form, each component whose index is at least \fIstart\fP
+is printed. In the last form, only those components whose indices are
+in the range \fB[\fP\fIIstart\fP\fB,\fP\fIlast\fP\fB]\fP are printed.
+Thus, the flag \fB-x\fP is equivalent to \fB-X#0-\fP.
 .TP
 .BI \-o " outfile"
 If specified, each graph will be written to a different file
