@@ -648,6 +648,9 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    if (gp) {
 		gp = openSubg(gp, args[1].string);
 		v.integer = PTR2INT(gp);
+	    } else {
+		error(ERROR_WARNING, "NULL graph passed to subg()");
+		v.integer = 0;
 	    }
 	    break;
 	case F_issubg:
@@ -1089,6 +1092,16 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    } else
 		v.integer = PTR2INT(clone(gp, objp));
 	    break;
+	case F_cloneG:
+	    gp = INT2PTR(Agraph_t *, args[0].integer);
+	    if (gp) {
+		gp = cloneG(gp, args[1].string);
+		v.integer = PTR2INT(gp);
+	    } else {
+		error(ERROR_WARNING, "NULL graph passed to cloneG()");
+		v.integer = 0;
+	    }
+	    break;
 	case F_copya:
 	    objp = INT2PTR(Agobj_t *, args[0].integer);
 	    objp1 = INT2PTR(Agobj_t *, args[1].integer);
@@ -1368,6 +1381,17 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    break;
 	case F_colorx:
 	    v.string = colorx(pgm, args[0].string, args[1].string, state->tmp);
+	    break;
+	case F_strcmp:
+	    if (args[0].string) {
+		if (args[1].string)
+		    v.integer = strcmp(args[0].string,args[1].string);
+		else
+		    v.integer = -1; 
+	    } else if (args[1].string)
+		v.integer = 1; 
+	    else
+		v.integer = 0; 
 	    break;
 	case F_toupper:
 	    v.string = toUpper(pgm, args[0].string, state->tmp);

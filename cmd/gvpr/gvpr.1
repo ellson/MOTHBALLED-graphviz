@@ -198,11 +198,7 @@ Besides these base types, the only other supported type expressions
 are (associative) arrays. 
 .PP
 Constants follow C syntax, but strings may be quoted with either
-\fB"..."\fP or \fB'...'\fP. In certain contexts, string values are
-interpreted as patterns for the purpose of regular expression matching.
-Patterns use
-.IR ksh (1)
-file match pattern syntax.
+\fB"..."\fP or \fB'...'\fP.
 \fBgvpr\fP accepts C++ comments as well as cpp\(hytype comments.
 For the latter, if a line begins with a '#' character, the rest of
 the line is ignored.
@@ -257,9 +253,16 @@ Function definitions can only appear in the \fBBEGIN\fP clause.
 .PP
 Expressions include the usual C expressions. 
 String comparisons using \fB==\fP and \fB!=\fP
-treat the right hand operand as a pattern.
+treat the right hand operand as a pattern
+for the purpose of regular expression matching.
+Patterns use
+.IR ksh (1)
+file match pattern syntax.
+(For simple string equality, use the \fBstrcmp\fP function.
+.PP
 \fBgvpr\fP will attempt to use an expression as a string or numeric value 
-as appropriate.
+as appropriate. Both C-like casts and function templates will cause
+conversions to be performed, if possible.
 .PP
 Expressions of graphical type (i.e., \fBgraph_t, node_t,
 edge_t, obj_t\fP) may be followed by a field reference in the
@@ -491,6 +494,10 @@ If \fIx\fP is a graph or subgraph, it is closed unless \fIx\fP is locked.
 \fBisIn\fP(\fIg\fP : \fBgraph_t\fP, \fIx\fP : \fBobj_t\fP) : \fBint\fP
 returns true if \fIx\fP is in subgraph \fIg\fP.
 .TP
+\fBcloneG\fP(\fIg\fP : \fBgraph_t\fP, \fIs\fP : \fBstring\fP) : \fBgraph_t\fP
+creates a clone of graph \fIg\fP with name of \fIs\fP.
+If \fIs\fP is "", the created graph has the same name as \fIg\fP.
+.TP
 \fBclone\fP(\fIg\fP : \fBgraph_t\fP, \fIx\fP : \fBobj_t\fP) : \fBobj_t\fP
 creates a clone of object \fIx\fP in graph \fIg\fP.
 In particular, the new object has the same name/value attributes
@@ -501,7 +508,8 @@ If an edge is cloned, both endpoints are implicitly cloned.
 If a graph is cloned, all nodes, edges and subgraphs are implicitly
 cloned.
 If \fIx\fP is a graph, \fIg\fP may be \fBNULL\fP, in which case the cloned
-object will be a new root graph.
+object will be a new root graph. In this case, the call is equivalent
+to \fBcloneG(\fP\fIx\fP\fB,"")\fP.
 .TP
 \fBcopy\fP(\fIg\fP : \fBgraph_t\fP, \fIx\fP : \fBobj_t\fP) : \fBobj_t\fP
 creates a copy of object \fIx\fP in graph \fIg\fP,
@@ -629,8 +637,9 @@ the length of \fIstr\fP, a fatal error occurs. Similarly, in the second
 case, if \fIlen\fP is negative or \fIidx\fP + \fIlen\fP is greater than the
 length of \fIstr\fP, a fatal error occurs.
 .TP
-\fBlength\fP(\fIs\fP : \fBstring\fP) : \fBint\fP
-returns the length of the string \fIs\fP.
+\fBstrcmp\fP(\fIs1\fP : \fBstring\fP, \fIs2\fP : \fBstring\fP) : \fBint\fP
+provides the standard C function
+.IR strcmp (3).
 .TP
 \fBindex\fP(\fIs\fP : \fBstring\fP, \fIt\fP : \fBstring\fP) : \fBint\fP
 .TP

@@ -26,6 +26,7 @@ extern "C" {
 
     extern void nodeInduce(Agraph_t * selected);
     extern Agobj_t *clone(Agraph_t * g, Agobj_t * obj);
+    extern Agraph_t *cloneG(Agraph_t * g, char* name);
     extern Agobj_t *copy(Agraph_t * g, Agobj_t * obj);
     extern int copyAttr(Agobj_t * obj, Agobj_t * obj1);
     extern int indexOf(char *s1, char *s2);

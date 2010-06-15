@@ -137,7 +137,7 @@ void nodeInduce(Agraph_t * selected)
     }
 }
 
-/* copyAttr;
+/* copyAttr:
  * Copy attributes from src to tgt. Overrides currently
  * defined values.
  * FIX: we should probably use the default value of the source
@@ -359,6 +359,22 @@ static void cloneGraph(Agraph_t * tgt, Agraph_t * src)
     free (data);
 }
 
+/* cloneG:
+ */
+Agraph_t *cloneG(Agraph_t * g, char* name)
+{
+    Agraph_t* ng;
+
+    if (!name || (*name == '\0'))
+	name = agnameof (g);
+    ng = openG(name, g->desc);
+    if (ng) {
+	copyAttr((Agobj_t*)g, (Agobj_t*)ng);
+	cloneGraph(ng, g);
+    }
+    return ng;
+}
+
 /* clone:
  * Create new object of type AGTYPE(obj) with all of its
  * attributes and substructure.
@@ -394,9 +410,10 @@ Agobj_t *clone(Agraph_t * g, Agobj_t * obj)
 	    nobj = (Agobj_t *) openSubg(g, name);
 	else
 	    nobj = (Agobj_t *) openG(name, ((Agraph_t *) obj)->desc);
-	if (nobj)
+	if (nobj) {
 	    copyAttr(obj, nobj);
-	cloneGraph((Agraph_t *) nobj, (Agraph_t *) obj);
+	    cloneGraph((Agraph_t *) nobj, (Agraph_t *) obj);
+	}
 	break;
     case AGINEDGE:
     case AGOUTEDGE:
