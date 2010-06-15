@@ -424,7 +424,7 @@ static options* scanArgs(int argc, char **argv, gvpropts* uopts)
     return opts;
 }
 
-static void evalEdge(Gpr_t * state, Expr_t* prog, comp_block * xprog, Agedge_t * e)
+static Agobj_t* evalEdge(Gpr_t * state, Expr_t* prog, comp_block * xprog, Agedge_t * e)
 {
     int i;
     case_stmt *cs;
@@ -444,9 +444,10 @@ static void evalEdge(Gpr_t * state, Expr_t* prog, comp_block * xprog, Agedge_t *
 		agsubedge(state->target, e, TRUE);
 	}
     }
+    return state->curobj;
 }
 
-static void evalNode(Gpr_t * state, Expr_t* prog, comp_block * xprog, Agnode_t * n)
+static Agobj_t* evalNode(Gpr_t * state, Expr_t* prog, comp_block * xprog, Agnode_t * n)
 {
     int i;
     case_stmt *cs;
@@ -466,6 +467,7 @@ static void evalNode(Gpr_t * state, Expr_t* prog, comp_block * xprog, Agnode_t *
 		agsubnode(state->target, n, TRUE);
 	}
     }
+    return (state->curobj);
 }
 
 typedef struct {
@@ -517,6 +519,7 @@ static void travBFS(Gpr_t * state, Expr_t* prog, comp_block * xprog)
     ndata *nd;
     Agnode_t *n;
     Agedge_t *cure;
+    Agedge_t *nxte;
     Agraph_t *g = state->curgraph;
 
     q = mkQueue();
@@ -533,13 +536,13 @@ static void travBFS(Gpr_t * state, Expr_t* prog, comp_block * xprog)
 	    MARK(nd);
 	    POP(nd);
 	    state->tvedge = nd->ine;
-	    evalNode(state, prog, xprog, n);
-	    for (cure = agfstedge(g, n); cure;
-		 cure = agnxtedge(g, cure, n)) {
+	    if (!evalNode(state, prog, xprog, n)) continue;
+	    for (cure = agfstedge(g, n); cure; cure = nxte) {
+		nxte = agnxtedge(g, cure, n);
 		nd = nData(cure->node);
 		if (MARKED(nd))
 		    continue;
-		evalEdge(state, prog, xprog, cure);
+		if (!evalEdge(state, prog, xprog, cure)) continue;
 		if (!ONSTACK(nd)) {
 		    push(q, cure->node);
 		    PUSH(nd,cure);
@@ -635,8 +638,10 @@ static void travDFS(Gpr_t * state, Expr_t* prog, comp_block * xprog, trav_fns * 
 static void travNodes(Gpr_t * state, Expr_t* prog, comp_block * xprog)
 {
     Agnode_t *n;
+    Agnode_t *next;
     Agraph_t *g = state->curgraph;
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+    for (n = agfstnode(g); n; n = next) {
+	next =  agnxtnode(g, n);
 	evalNode(state, prog, xprog, n);
     }
 }
@@ -644,10 +649,14 @@ static void travNodes(Gpr_t * state, Expr_t* prog, comp_block * xprog)
 static void travEdges(Gpr_t * state, Expr_t* prog, comp_block * xprog)
 {
     Agnode_t *n;
+    Agnode_t *next;
     Agedge_t *e;
+    Agedge_t *nexte;
     Agraph_t *g = state->curgraph;
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+    for (n = agfstnode(g); n; n = next) {
+	next = agnxtnode(g, n);
+	for (e = agfstout(g, n); e; e = nexte) {
+	    nexte = agnxtout(g, e);
 	    evalEdge(state, prog, xprog, e);
 	}
     }
@@ -656,12 +665,16 @@ static void travEdges(Gpr_t * state, Expr_t* prog, comp_block * xprog)
 static void travFlat(Gpr_t * state, Expr_t* prog, comp_block * xprog)
 {
     Agnode_t *n;
+    Agnode_t *next;
     Agedge_t *e;
+    Agedge_t *nexte;
     Agraph_t *g = state->curgraph;
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	evalNode(state, prog, xprog, n);
+    for (n = agfstnode(g); n; n = next) {
+	next =  agnxtnode(g, n);
+	if (!evalNode(state, prog, xprog, n)) continue;
 	if (xprog->n_estmts > 0) {
-	    for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+	    for (e = agfstout(g, n); e; e = nexte) {
+		nexte = agnxtout(g, e);
 		evalEdge(state, prog, xprog, e);
 	    }
 	}

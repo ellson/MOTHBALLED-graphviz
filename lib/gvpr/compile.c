@@ -1192,6 +1192,9 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    } else if (objp == (Agobj_t *) (state->target)) {
 		error(ERROR_WARNING, "cannot delete target graph $T");
 		v.integer = 1;
+	    } else if (objp == state->curobj) {
+		if (!(v.integer = deleteObj(gp, objp)))
+		    state->curobj = NULL;
 	    } else
 		v.integer = deleteObj(gp, objp);
 	    break;
