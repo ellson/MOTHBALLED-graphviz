@@ -1073,10 +1073,20 @@ Computes the degrees of nodes with edges.
 Colon\(hyseparated list of directories to be searched to find
 the file specified by the \-f option.
 .SH BUGS AND WARNINGS
+Scripts should be careful deleting nodes during \fBN{}\fP and \fBE{}\fp
+blocks using BFS and DFS traversals as these rely on stacks and queues of
+nodes. 
+.PP
 When the program is given as a command line argument, the usual
 shell interpretation takes place, which may affect some of the
 special names in \fBgvpr\fP. To avoid this, it is best to wrap the
 program in single quotes.
+.PP
+If string constants contain pattern metacharacters that you want to
+escape to avoid pattern matching, two backslashes will probably be
+necessary, as a single backslash will be lost when the string is
+originally scanned. Usually, it is simpler to use \fBstrcmp\fP to
+avoid pattern matching.
 .PP
 As of 24 April 2008, \fBgvpr\fP switched to using a new, underlying
 graph library, which uses the simpler model that there is only one
