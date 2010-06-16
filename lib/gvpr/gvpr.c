@@ -620,7 +620,7 @@ static void travDFS(Gpr_t * state, Expr_t* prog, comp_block * xprog, trav_fns * 
 		POP(nd);
 		cure = entry;
 		entry = (Agedge_t *) pull(stk);
-		if (entry == &seed)
+		if (entry == &(seed.out))
 		    state->tvedge = 0;
 		else
 		    state->tvedge = entry;
@@ -681,9 +681,25 @@ static void travFlat(Gpr_t * state, Expr_t* prog, comp_block * xprog)
     }
 }
 
-/* traverse:
+/* doCleanup:
+ * Reset node traversal data
  */
-static void traverse(Gpr_t * state, Expr_t* prog, comp_block * bp)
+static void doCleanup (Agraph_t* g)
+{
+    Agnode_t *n;
+    ndata *nd;
+
+    for (n = agfstnode(g); n; n =  agnxtnode(g, n)) {
+	nd = nData(n);
+	nd->ine = NULL;
+	nd->iu.integer = 0;
+    }
+}
+
+/* traverse:
+ * return 1 if traversal requires cleanup
+ */
+static int traverse(Gpr_t * state, Expr_t* prog, comp_block * bp, int cleanup)
 {
     char *target;
 
@@ -704,43 +720,63 @@ static void traverse(Gpr_t * state, Expr_t* prog, comp_block * bp)
 	travFlat(state, prog, bp);
 	break;
     case TV_bfs:
+	if (cleanup) doCleanup (state->curgraph);
 	travBFS(state, prog, bp);
+	cleanup = 1;
 	break;
     case TV_dfs:
+	if (cleanup) doCleanup (state->curgraph);
 	DFSfns.visit = PRE_VISIT;
 	travDFS(state, prog, bp, &DFSfns);
+	cleanup = 1;
 	break;
     case TV_fwd:
+	if (cleanup) doCleanup (state->curgraph);
 	FWDfns.visit = PRE_VISIT;
 	travDFS(state, prog, bp, &FWDfns);
+	cleanup = 1;
 	break;
     case TV_rev:
+	if (cleanup) doCleanup (state->curgraph);
 	REVfns.visit = PRE_VISIT;
 	travDFS(state, prog, bp, &REVfns);
+	cleanup = 1;
 	break;
     case TV_postdfs:
+	if (cleanup) doCleanup (state->curgraph);
 	DFSfns.visit = POST_VISIT;
 	travDFS(state, prog, bp, &DFSfns);
+	cleanup = 1;
 	break;
     case TV_postfwd:
+	if (cleanup) doCleanup (state->curgraph);
 	FWDfns.visit = POST_VISIT;
 	travDFS(state, prog, bp, &FWDfns);
+	cleanup = 1;
 	break;
     case TV_postrev:
+	if (cleanup) doCleanup (state->curgraph);
 	REVfns.visit = POST_VISIT | PRE_VISIT;
 	travDFS(state, prog, bp, &REVfns);
+	cleanup = 1;
 	break;
     case TV_prepostdfs:
+	if (cleanup) doCleanup (state->curgraph);
 	DFSfns.visit = POST_VISIT | PRE_VISIT;
 	travDFS(state, prog, bp, &DFSfns);
+	cleanup = 1;
 	break;
     case TV_prepostfwd:
+	if (cleanup) doCleanup (state->curgraph);
 	FWDfns.visit = POST_VISIT | PRE_VISIT;
 	travDFS(state, prog, bp, &FWDfns);
+	cleanup = 1;
 	break;
     case TV_prepostrev:
+	if (cleanup) doCleanup (state->curgraph);
 	REVfns.visit = POST_VISIT;
 	travDFS(state, prog, bp, &REVfns);
+	cleanup = 1;
 	break;
     case TV_ne:
 	travNodes(state, prog, bp);
@@ -751,6 +787,7 @@ static void traverse(Gpr_t * state, Expr_t* prog, comp_block * bp)
 	travNodes(state, prog, bp);
 	break;
     }
+    return cleanup;
 }
 
 /* addOutputGraph:
@@ -864,7 +901,7 @@ int gvpr (int argc, char *argv[], gvpropts * uopts)
     gpr_info info;
     int rv = 0;
     options* opts = 0;
-    int i, incoreGraphs;
+    int cleanup, i, incoreGraphs;
 
     setErrorErrors (0);
     ingDisc.dflt = sfstdin;
@@ -941,6 +978,7 @@ int gvpr (int argc, char *argv[], gvpropts * uopts)
 	
 	while ((state->curgraph = nextGraph(ing))) {
 	    state->infname = fileName(ing);
+	    cleanup = 0;
 
 	    for (i = 0; i < xprog->n_blocks; i++) {
 		comp_block* bp = xprog->blocks + i;
@@ -954,8 +992,9 @@ int gvpr (int argc, char *argv[], gvpropts * uopts)
 		    exeval(xprog->prog, bp->begg_stmt, state);
 
 		/* walk graph */
-		if (walksGraph(bp))
-		    traverse(state, xprog->prog, bp);
+		if (walksGraph(bp)) {
+		    cleanup = traverse(state, xprog->prog, bp, cleanup);
+		}
 	    }
 
 	    /* end graph */

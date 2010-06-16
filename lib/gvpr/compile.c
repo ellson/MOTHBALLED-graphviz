@@ -2285,6 +2285,7 @@ static case_stmt *mkStmts(Expr_t * prog, char *src, case_info * sp,
 static int mkBlock(comp_block* bp, Expr_t * prog, char *src, parse_block *inp, Sfio_t* tmps, int i)
 {
     int rv = 0;
+    char label[BUFSIZ];
 
     codePhase = 1;
     if (inp->begg_stmt) {
@@ -2303,8 +2304,9 @@ static int mkBlock(comp_block* bp, Expr_t * prog, char *src, parse_block *inp, S
 	symbols[0].type = T_node;
 	tchk[V_this][1] = Y(V);
 	bp->n_nstmts = inp->n_nstmts;
+	sprintf (label, "_nd%d", i);
 	bp->node_stmts = mkStmts(prog, src, inp->node_stmts,
-				inp->n_nstmts, "_nd", tmps);
+				inp->n_nstmts, label, tmps);
 	if (getErrorErrors())
 	    goto finishBlk;
 	bp->walks |= WALKSG;
@@ -2315,8 +2317,9 @@ static int mkBlock(comp_block* bp, Expr_t * prog, char *src, parse_block *inp, S
 	symbols[0].type = T_edge;
 	tchk[V_this][1] = Y(E);
 	bp->n_estmts = inp->n_estmts;
+	sprintf (label, "_eg%d", i);
 	bp->edge_stmts = mkStmts(prog, src, inp->edge_stmts,
-				inp->n_estmts, "_eg", tmps);
+				inp->n_estmts, label, tmps);
 	if (getErrorErrors())
 	    goto finishBlk;
 	bp->walks |= WALKSG;
