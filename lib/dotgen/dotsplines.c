@@ -1098,7 +1098,8 @@ make_flat_bottom_edges(spline_info_t* sp, path * P, edge_t ** edges, int
 	ind, int cnt, edge_t* e, int splines)
 {
     node_t *tn, *hn;
-    int j, i, stepx, stepy, vspace, r;
+    int j, i, r;
+    double stepx, stepy, vspace;
     rank_t* nextr;
     int pn;
     pointf *ps;
@@ -1117,7 +1118,7 @@ make_flat_bottom_edges(spline_info_t* sp, path * P, edge_t ** edges, int
     else {
 	vspace = GD_ranksep(g);
     }
-    stepx = sp->Multisep / (cnt+1); 
+    stepx = ((double)(sp->Multisep)) / (cnt+1); 
     stepy = vspace / (cnt+1);
 
     makeBottomFlatEnd (sp, P, tn, e, &tend, TRUE);
@@ -1174,7 +1175,8 @@ make_flat_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt, i
 {
     node_t *tn, *hn;
     edge_t fwdedge, *e;
-    int j, i, stepx, stepy, vspace, r;
+    int j, i, r;
+    double stepx, stepy, vspace;
     int tside, hside, pn;
     pointf *ps;
     pathend_t tend, hend;
@@ -1223,7 +1225,7 @@ make_flat_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt, i
     else {
 	vspace = GD_ranksep(g);
     }
-    stepx = sp->Multisep / (cnt+1); 
+    stepx = ((double)sp->Multisep) / (cnt+1); 
     stepy = vspace / (cnt+1);
 
     makeFlatEnd (sp, P, tn, e, &tend, TRUE);
