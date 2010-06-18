@@ -197,8 +197,8 @@ static void abomination(graph_t * g)
     GD_rank(g) = rptr + 1;
     for (r = GD_maxrank(g); r >= 0; r--)
 	GD_rank(g)[r] = GD_rank(g)[r - 1];
-    GD_rank(g)[r].n = GD_rank(g)[0].an = 0;
-    GD_rank(g)[r].v = GD_rank(g)[0].av = N_NEW(2, node_t *);
+    GD_rank(g)[r].n = GD_rank(g)[r].an = 0;
+    GD_rank(g)[r].v = GD_rank(g)[r].av = N_NEW(2, node_t *);
     GD_rank(g)[r].flat = NULL;
     GD_rank(g)[r].ht1 = GD_rank(g)[r].ht2 = 1;
     GD_rank(g)[r].pht1 = GD_rank(g)[r].pht2 = 1;

@@ -2101,7 +2101,7 @@ static void
 freePara (exdot_op* op)
 {
     if (op->op.kind == xd_text)
-	free_textpara (op->para);
+	free_textpara (op->para, 1);
 }
 
 boxf xdotBB (Agraph_t* g)

@@ -150,12 +150,17 @@ dot_cleanup_graph(graph_t * g)
 	GD_cluster_was_collapsed(clust) = FALSE;
 	dot_cleanup(clust);
     }
+    if (GD_clust(g)) free (GD_clust(g));
+    if (GD_rankleader(g)) free (GD_rankleader(g));
 
     free_list(GD_comp(g));
-    if ((g == agroot(g)) && GD_rank(g)) {
+    if (GD_rank(g)) {
 	for (i = GD_minrank(g); i <= GD_maxrank(g); i++)
-	    free(GD_rank(g)[i].v);
-	free(GD_rank(g));
+	    free(GD_rank(g)[i].av);
+	if (GD_minrank(g) == -1)
+	    free(GD_rank(g)-1);
+	else
+	    free(GD_rank(g));
     }
     if (g != agroot(g)) 
 #ifndef WITH_CGRAPH

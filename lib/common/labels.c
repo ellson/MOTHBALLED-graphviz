@@ -184,15 +184,27 @@ textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *f
     return rv;
 }
 
-void free_textpara(textpara_t * tl)
+/* free_textpara:
+ * Free resources related to textpara_t.
+ * tl is an array of cnt textpara_t's.
+ * It is also assumed that the text stored in the str field
+ * is all stored in one large buffer shared by all of the textpara_t,
+ * so only the first one needs to free its tlp->str.
+ */
+void free_textpara(textpara_t * tl, int cnt)
 {
-    if (tl) {
-	if (tl->str)
-	    free(tl->str);
-	if (tl->layout && tl->free_layout)
-	    tl->free_layout (tl->layout);
-	free(tl);
+    int i;
+    textpara_t* tlp = tl;
+
+    if (!tl) return;
+    for (i = 0; i < cnt; i++) { 
+	if ((i == 0) && tlp->str)
+	    free(tlp->str);
+	if (tlp->layout && tlp->free_layout)
+	    tlp->free_layout (tlp->layout);
+	tlp++;
     }
+    free(tl);
 }
 
 void free_label(textlabel_t * p)
@@ -202,7 +214,7 @@ void free_label(textlabel_t * p)
 	if (p->html) {
 	    free_html_label(p->u.html, 1);
 	} else {
-	    free_textpara(p->u.txt.para);
+	    free_textpara(p->u.txt.para, p->u.txt.nparas);
 	}
 	free(p);
     }
