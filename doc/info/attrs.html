@@ -268,11 +268,15 @@ This field indicates which graph component uses the attribute.
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.0</TD><TD></TD><TD>neato only</TD> </TR>
  <TR><TD><A NAME=a:lhead HREF=#d:lhead>lhead</A>
 </TD><TD>E</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>dot only</TD> </TR>
+ <TR><TD><A NAME=a:lheight HREF=#d:lheight>lheight</A>
+</TD><TD>GC</TD><TD>double</TD><TD ALIGN="CENTER"></TD><TD></TD><TD>write only</TD> </TR>
  <TR><TD><A NAME=a:lp HREF=#d:lp>lp</A>
 </TD><TD>EGC</TD><TD><A HREF=#k:point>point</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD>write only</TD> </TR>
  <TR><TD><A NAME=a:ltail HREF=#d:ltail>ltail</A>
 </TD><TD>E</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>dot only</TD> </TR>
+ <TR><TD><A NAME=a:lwidth HREF=#d:lwidth>lwidth</A>
+</TD><TD>GC</TD><TD>double</TD><TD ALIGN="CENTER"></TD><TD></TD><TD>write only</TD> </TR>
  <TR><TD><A NAME=a:margin HREF=#d:margin>margin</A>
 </TD><TD>NG</TD><TD>double<BR><A HREF=#k:pointf>pointf</A>
 </TD><TD ALIGN="CENTER">&#60;device-dependent&#62;</TD><TD></TD><TD></TD> </TR>
@@ -1055,6 +1059,9 @@ This field indicates which graph component uses the attribute.
   the edge is clipped to the boundary of the cluster.
   See <A HREF=#h:undir_note>limitation</A>.
 
+<DT><A NAME=d:lheight HREF=#a:lheight><STRONG>lheight</STRONG></A>
+<DD>  Height of graph or cluster label, in inches.
+
 <DT><A NAME=d:lp HREF=#a:lp><STRONG>lp</STRONG></A>
 <DD>  Label position, <A HREF=#points>in points</A>.
   The position indicates the center of the label.
@@ -1065,6 +1072,9 @@ This field indicates which graph component uses the attribute.
   containing the real tail,
   the edge is clipped to the boundary of the cluster.
   See <A HREF=#h:undir_note>limitation</A>.
+
+<DT><A NAME=d:lwidth HREF=#a:lwidth><STRONG>lwidth</STRONG></A>
+<DD>  Width of graph or cluster label, in inches.
 
 <DT><A NAME=d:margin HREF=#a:margin><STRONG>margin</STRONG></A>
 <DD>  For graphs, this sets x and y margins of canvas, in inches. If the margin

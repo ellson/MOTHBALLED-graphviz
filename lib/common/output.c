@@ -247,6 +247,11 @@ static void rec_attach_bb(graph_t * g, Agsym_t* bbsym)
 	pt = GD_label(g)->pos;
 	sprintf(buf, "%.5g,%.5g", pt.x, YDIR(pt.y));
 	agset(g, "lp", buf);
+	pt = GD_label(g)->dimen;
+	sprintf(buf, "%.2f", PS2INCH(pt.x));
+	agset (g, "lwidth", buf);
+	sprintf(buf, "%.2f", PS2INCH(pt.y));
+	agset (g, "lheight", buf);
     }
     for (c = 1; c <= GD_n_cluster(g); c++)
 	rec_attach_bb(GD_clust(g)[c], bbsym);
@@ -288,10 +293,17 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 	safe_dcl(g, g->proto->e, "tail_lp", "", agedgeattr);
     if (GD_label(g)) {
 	safe_dcl(g, g, "lp", "", agraphattr);
+	safe_dcl(g, g, "lwidth", "", agraphattr);
+	safe_dcl(g, g, "lheight", "", agraphattr);
 	if (GD_label(g)->text[0]) {
 	    ptf = GD_label(g)->pos;
 	    sprintf(buf, "%.5g,%.5g", ptf.x, YDIR(ptf.y));
 	    agset(g, "lp", buf);
+	    ptf = GD_label(g)->dimen;
+	    sprintf(buf, "%.2f", PS2INCH(ptf.x));
+	    agset(g, "lwidth", buf);
+	    sprintf(buf, "%.2f", PS2INCH(ptf.y));
+	    agset(g, "lheight", buf);
 	}
     }
     bbsym = safe_dcl(g, g, "bb", "", agraphattr);
@@ -313,10 +325,17 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 	safe_dcl(g, AGEDGE, "tail_lp", "");
     if (GD_label(g)) {
 	safe_dcl(g, AGRAPH, "lp", "");
+	safe_dcl(g, AGRAPH, "lwidth", "");
+	safe_dcl(g, AGRAPH, "lheight", "");
 	if (GD_label(g)->text[0]) {
 	    ptf = GD_label(g)->pos;
 	    sprintf(buf, "%.5g,%.5g", ptf.x, YDIR(ptf.y));
 	    agset(g, "lp", buf);
+	    ptf = GD_label(g)->dimen;
+	    sprintf(buf, "%.2f", PS2INCH(ptf.x));
+	    agset(g, "lwidth", buf);
+	    sprintf(buf, "%.2f", PS2INCH(ptf.y));
+	    agset(g, "lheight", buf);
 	}
     }
     bbsym = safe_dcl(g, AGRAPH, "bb", "");

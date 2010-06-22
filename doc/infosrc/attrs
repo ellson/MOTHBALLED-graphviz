@@ -561,6 +561,8 @@ if <B>lhead</B> is defined and is the name of a cluster containing
 the real head,
 the edge is clipped to the boundary of the cluster.
 See <A HREF=#h:undir_note>limitation</A>.
+:lheight:GC:double; write
+Height of graph or cluster label, in inches.
 :lp:EGC:point; write
 Label position, <A HREF=#points>in points</A>.
 The position indicates the center of the label.
@@ -570,6 +572,8 @@ if <B>ltail</B> is defined and is the name of a cluster
 containing the real tail,
 the edge is clipped to the boundary of the cluster.
 See <A HREF=#h:undir_note>limitation</A>.
+:lwidth:GC:double; write
+Width of graph or cluster label, in inches.
 :margin:NG:double/pointf:<device-dependent>;
 For graphs, this sets x and y margins of canvas, in inches. If the margin
 is a single double, both margins are set equal to the given value.
