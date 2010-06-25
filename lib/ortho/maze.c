@@ -19,6 +19,8 @@
 #include "config.h"
 #endif
 
+#define DEBUG
+
 #include <stddef.h>
 #include <maze.h>
 #include <partition.h>
@@ -145,6 +147,7 @@ static Dtdisc_t hdictDisc = {
 #define HORZ(g,e) ((g->nodes + e->v1)->isVert)
 #define BIG 16384
 #define CHANSZ(w) (((w)-3)/2)
+#define IS_SMALL(v) (CHANSZ(v) < 2)
 /* #define CHANSZ(w) (w) */
 
 static void
@@ -178,11 +181,69 @@ updateWts (sgraph* g, cell* cp, sedge* ep)
 	e = cp->edges[i];
 	if (!BEND(g,e)) break;
 	updateWt (cp, e, minsz);
-    }
+}
 
     for (; i < cp->nedges; i++) {
 	e = cp->edges[i];
 	if (isBend || (e == ep)) updateWt (cp, e, (HORZ(g,e)?hsz:vsz));
+    }
+}
+
+/* markSmall:
+ * cp corresponds to a real node. If it is small, its associated cells should
+ * be marked as usable.
+ */
+static void
+markSmall (cell* cp, sgraph* g)
+{
+    int i;
+    snode* onp;
+    cell* ocp;
+
+    if (IS_SMALL(cp->bb.UR.y-cp->bb.LL.y)) {
+	for (i = 0; i < cp->nsides; i++) {
+	    onp = cp->sides[i];
+	    if (!onp->isVert) continue;
+	    if (onp->cells[0] == cp) {  /* onp on the right of cp */
+		ocp = onp->cells[1];
+		ocp->flags |= MZ_SMALLV;
+		while ((onp = ocp->sides[M_RIGHT]) && !IsNode(onp->cells[1])) {
+		    ocp = onp->cells[1];
+		    ocp->flags |= MZ_SMALLV;
+		}
+	    }
+	    else {                      /* onp on the left of cp */
+		ocp = onp->cells[0];
+		ocp->flags |= MZ_SMALLV;
+		while ((onp = ocp->sides[M_LEFT]) && !IsNode(onp->cells[0])) {
+		    ocp = onp->cells[0];
+		    ocp->flags |= MZ_SMALLV;
+		}
+	    }
+	}
+    }
+
+    if (IS_SMALL(cp->bb.UR.x-cp->bb.LL.x)) {
+	for (i = 0; i < cp->nsides; i++) {
+	    onp = cp->sides[i];
+	    if (onp->isVert) continue;
+	    if (onp->cells[0] == cp) {  /* onp on the top of cp */
+		ocp = onp->cells[1];
+		ocp->flags |= MZ_SMALLH;
+		while ((onp = ocp->sides[M_TOP]) && !IsNode(onp->cells[1])) {
+		    ocp = onp->cells[1];
+		    ocp->flags |= MZ_SMALLH;
+		}
+	    }
+	    else {                      /* onp on the bottom of cp */
+		ocp = onp->cells[0];
+		ocp->flags |= MZ_SMALLH;
+		while ((onp = ocp->sides[M_BOTTOM]) && !IsNode(onp->cells[0])) {
+		    ocp = onp->cells[0];
+		    ocp->flags |= MZ_SMALLH;
+		}
+	    }
+	}
     }
 }
 
@@ -194,11 +255,14 @@ createSEdges (cell* cp, sgraph* g)
     double vwt = delta*(bb.UR.y-bb.LL.y);
     double wt = (hwt + vwt)/2.0 + mu;
     
-    if (CHANSZ(bb.UR.y-bb.LL.y) < 2) {
+    /* We automatically make small channels have high cost to guide routes to
+     * more spacious channels.
+     */
+    if (IS_SMALL(bb.UR.y-bb.LL.y) && !IsSmallV(cp)) {
 	hwt = BIG;
 	wt = BIG;
     }
-    if (CHANSZ(bb.UR.x-bb.LL.x) < 2) {
+    if (IS_SMALL(bb.UR.x-bb.LL.x) && !IsSmallH(cp)) {
 	vwt = BIG;
 	wt = BIG;
     }
@@ -235,10 +299,10 @@ findSVert (sgraph* g, Dt_t* cdt, pointf p, snodeitem* ditems, boolean isVert)
     return n->np;
 }
 
-void
+static void
 chkSgraph (sgraph* g)
 {
-  int j, i;
+  int i;
   snode* np;
 
   for (i = 0; i < g->nnodes; i++) {
@@ -344,6 +408,14 @@ mkMazeGraph (maze* mp, boxf bb)
     }
     RALLOC (nsides, sides, snode*);
 
+    /* Mark cells that are small because of a small node, not because of the close
+     * alignment of two rectangles.
+     */
+    for (i = 0; i < mp->ngcells; i++) {
+	cell* cp = mp->gcells+i;
+	markSmall (cp, g);
+    }
+
     /* Set index of two dummy nodes used for real nodes */
     g->nodes[g->nnodes].index = g->nnodes;
     g->nodes[g->nnodes+1].index = g->nnodes+1;
@@ -392,7 +464,9 @@ mkMaze (graph_t* g)
     BB.UR.x = BB.UR.y = -MAXDOUBLE;
     for (n = agfstnode (g); n; n = agnxtnode(g,n)) {
         w2 = ND_xsize(n)/2.0;
+	if (w2 < 1) w2 = 1;
         h2 = ND_ysize(n)/2.0;
+	if (h2 < 1) h2 = 1;
         bb.LL.x = ND_coord(n).x - w2;
         bb.UR.x = ND_coord(n).x + w2;
         bb.LL.y = ND_coord(n).y - h2;
@@ -414,7 +488,7 @@ mkMaze (graph_t* g)
     rects = partition (mp->gcells, mp->ngcells, &nrect, BB);
 
 #ifdef DEBUG
-    psdump (mp->gcells, mp->ngcells, BB, rects, nrect);
+    if (odb_flags & ODB_MAZE) psdump (mp->gcells, mp->ngcells, BB, rects, nrect);
 #endif
     mp->cells = N_NEW(nrect, cell);
     mp->ncells = nrect;

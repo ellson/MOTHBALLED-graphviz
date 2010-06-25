@@ -18,10 +18,10 @@
 /* TODO:
  * In dot, prefer bottom or top routing
  * In general, prefer closest side to closest side routing.
- * Fix arrowheads
- * Ports/compass points
+ * >Fix arrowheads
  * Edge labels
  * Loops
+ * Ports/compass points
  * Weights on edges in nodes
  * Edge concentrators?
  */
@@ -30,6 +30,7 @@
 #include "config.h"
 #endif
 
+#define DEBUG
 #include <stddef.h>
 #include <maze.h>
 #include "fPQ.h"
@@ -42,6 +43,7 @@
 #ifdef DEBUG
 static void emitSearchGraph (FILE* fp, sgraph* sg);
 static void emitGraph (FILE* fp, maze* mp, Agraph_t* g, route* route_list);
+int odb_flags;
 #endif
 
 #define CELL(n) ((cell*)ND_alg(n))
@@ -443,13 +445,41 @@ assignSegs (int nrtes, route* route_list, maze* mp)
 }
 
 /* addLoop:
- * Add temporary nodes to sgraph corresponding to cell cp, represented
- * by np.
+ * Add two temporary nodes to sgraph corresponding to two ends of a loop at cell cp, i
+ * represented by dp and sp.
  */
 static void
-addLoop (sgraph* sg, cell* cp, snode* np)
+addLoop (sgraph* sg, cell* cp, snode* dp, snode* sp)
 {
+    int i;
+    int onTop;
+    pointf midp = midPt (cp);
+
+    for (i = 0; i < cp->nsides; i++) {
+	cell* ocp;
+	pointf p;
+	double wt;
+	snode* onp = cp->sides[i];
+
+	if (onp->isVert) continue;
+	if (onp->cells[0] == cp) {
+	    onTop = 1;
+	    ocp = onp->cells[1];
+	}
+	else {
+	    onTop = 0;
+	    ocp = onp->cells[0];
+	}
+	p = sidePt (onp, ocp);
+	wt = abs(p.x - midp.x) +  abs(p.y - midp.y);
+	if (onTop)
+	    createSEdge (sg, sp, onp, 0);  /* FIX weight */
+	else
+	    createSEdge (sg, dp, onp, 0);  /* FIX weight */
+    }
+    sg->nnodes += 2;
 }
+
 /* addNodeEdges:
  * Add temporary node to sgraph corresponding to cell cp, represented
  * by np.
@@ -458,17 +488,19 @@ static void
 addNodeEdges (sgraph* sg, cell* cp, snode* np)
 {
     int i;
+    pointf midp = midPt (cp);
+
     for (i = 0; i < cp->nsides; i++) {
 	snode* onp = cp->sides[i];
 	cell* ocp;
-	pointf midp, p;
+	pointf p;
 	double wt;
+
 	if (onp->cells[0] == cp)
 	    ocp = onp->cells[1];
 	else
 	    ocp = onp->cells[0];
 	p = sidePt (onp, ocp);
-	midp = midPt (cp);
 	wt = abs(p.x - midp.x) +  abs(p.y - midp.y);
 	createSEdge (sg, np, onp, 0);  /* FIX weight */
     }
@@ -552,7 +584,7 @@ assignTrackNo (Dt_t* chans)
 	    cp = (channel*)l2;
 	    if (cp->cnt) {
 #ifdef DEBUG
-/* dumpChanG (cp, ((chanItem*)l1)->v); */
+    if (odb_flags & ODB_CHANG) dumpChanG (cp, ((chanItem*)l1)->v);
 #endif
 		top_sort (cp->G);
 		for (k=0;k<cp->cnt;k++)
@@ -1076,10 +1108,6 @@ assignTracks (int nrtes, route* route_list, maze* mp)
     assignTrackNo (mp->vchans);
 }
 
-#ifdef DEBUG
-static void emitGraph (FILE* fp, maze* mp, Agraph_t* g, route* route_list);
-#endif
-
 static double
 vtrack (segment* seg, maze* m)
 {
@@ -1222,8 +1250,36 @@ orthoEdges (Agraph_t* g, int useLbls)
     if (Concentrate) 
 	ps = newPS();
 
+#ifdef DEBUG
+    {
+	char* s = agget(g, "odb");
+        char c;
+	odb_flags = 0;
+	if (s && (*s != '\0')) {
+	    while ((c = *s++)) {
+		switch (c) {
+		case 'c' :
+		    odb_flags |= ODB_CHANG; 
+		    break;
+		case 'm' :
+		    odb_flags |= ODB_MAZE; 
+		    break;
+		case 'r' :
+		    odb_flags |= ODB_ROUTE; 
+		    break;
+		case 's' :
+		    odb_flags |= ODB_SGRAPH; 
+		    break;
+		}
+	    }
+	}
+    }
+#endif
     mp = mkMaze (g);
     sg = mp->sg;
+#ifdef DEBUG
+    if (odb_flags & ODB_SGRAPH) emitSearchGraph (stderr, sg);
+#endif
 
     n_edges = 0;
     for (n = agfstnode (g); n; n = agnxtnode(g, n)) {
@@ -1261,7 +1317,7 @@ orthoEdges (Agraph_t* g, int useLbls)
         dest = CELL(aghead(e));
 
 	if (start == dest)
-	    addLoop (sg, start, dn);
+	    addLoop (sg, start, dn, sn);
 	else {
        	    addNodeEdges (sg, dest, dn);
 	    addNodeEdges (sg, start, sn);
@@ -1277,7 +1333,9 @@ orthoEdges (Agraph_t* g, int useLbls)
     mp->vchans = extractVChans (mp);
     assignSegs (n_edges, route_list, mp);
     assignTracks (n_edges, route_list, mp);
-    /* emitGraph (stdout, mp, g, route_list); */
+#ifdef DEBUG
+    if (odb_flags & ODB_ROUTE) emitGraph (stderr, mp, g, route_list);
+#endif
     attachOrthoEdges (mp, n_edges, route_list, &sinfo, es);
 
     if (Concentrate)
@@ -1456,7 +1514,7 @@ emitGraph (FILE* fp, maze* mp, Agraph_t* g, route* route_list)
     fputs ("0 0 1 setrgbcolor\n", fp);
     for (i = 0; i < mp->ngcells; i++) {
       bb = mp->gcells[i].bb;
-      printf ("%f %f %f %f node\n", bb.LL.x, bb.LL.y, bb.UR.x, bb.UR.y);
+      fprintf (fp, "%f %f %f %f node\n", bb.LL.x, bb.LL.y, bb.UR.x, bb.UR.y);
     }
 
     i = 0;
@@ -1470,7 +1528,7 @@ emitGraph (FILE* fp, maze* mp, Agraph_t* g, route* route_list)
     fputs ("0.8 0.8 0.8 setrgbcolor\n", fp);
     for (i = 0; i < mp->ncells; i++) {
       bb = mp->cells[i].bb;
-      printf ("%f %f %f %f cell\n", bb.LL.x, bb.LL.y, bb.UR.x, bb.UR.y);
+      fprintf (fp, "%f %f %f %f cell\n", bb.LL.x, bb.LL.y, bb.UR.x, bb.UR.y);
       absbb.LL.x = MIN(absbb.LL.x, bb.LL.x);
       absbb.LL.y = MIN(absbb.LL.y, bb.LL.y);
       absbb.UR.x = MAX(absbb.UR.x, bb.UR.x);
