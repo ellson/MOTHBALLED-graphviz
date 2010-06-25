@@ -208,6 +208,26 @@ static void edge_normalize(graph_t * g)
     }
 }
 
+/* resetRW:
+ * In position, each node has its rw stored in mval and,
+ * if a node is part of a loop, rw may be increased to
+ * reflect the loops and associated labels. We restore
+ * the original value here. 
+ */
+static void
+resetRW (graph_t * g)
+{
+    node_t* n;
+
+    for (n = agfstnode(g); n; n = agnxtnode(g,n)) {
+	if (ND_other(n).list) {
+	    double tmp = ND_rw(n);
+	    ND_rw(n) = ND_mval(n);
+	    ND_mval(n) = tmp;
+	}
+    }
+}
+
 /* _dot_splines:
  * Main spline routing code.
  * The normalize parameter allows this function to be called by the
@@ -232,6 +252,7 @@ static void _dot_splines(graph_t * g, int normalize)
     if (et == ET_NONE) return; 
 #ifdef ORTHO
     if (et == ET_ORTHO) {
+	resetRW (g);
 	orthoEdges (g, 0);
 	goto finish;
     } 
