@@ -78,12 +78,12 @@ arrow_clip(edge_t * fe, node_t * hn,
 	eflag = ARR_NONE;
     if (info->splineMerge(agtail(fe)))
 	sflag = ARR_NONE;
+    /* swap the two ends */
     if (j) {
 	i = sflag;
 	sflag = eflag;
 	eflag = i;
     }
-    /* swap the two ends */
     if (sflag)
 	*startp =
 	    arrowStartClip(e, ps, *startp, *endp, spl, sflag);
