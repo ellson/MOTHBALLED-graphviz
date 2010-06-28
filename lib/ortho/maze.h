@@ -61,9 +61,10 @@ extern void freeMaze (maze*);
 void updateWts (sgraph* g, cell* cp, sedge* ep);
 #ifdef DEBUG
 extern int odb_flags;
-#define ODB_MAZE   1
-#define ODB_SGRAPH 2
-#define ODB_ROUTE  4
-#define ODB_CHANG  8
+#define ODB_MAZE    1
+#define ODB_SGRAPH  2
+#define ODB_ROUTE   4
+#define ODB_CHANG   8
+#define ODB_IGRAPH 16
 #endif
 #endif

@@ -40,9 +40,14 @@
 #include "render.h"
 #include "pointset.h"
 
+typedef struct {
+    int d;
+    Agedge_t* e;
+} epair_t;
+
 #ifdef DEBUG
 static void emitSearchGraph (FILE* fp, sgraph* sg);
-static void emitGraph (FILE* fp, maze* mp, Agraph_t* g, route* route_list);
+static void emitGraph (FILE* fp, maze* mp, int n_edges, route* route_list, epair_t[]);
 int odb_flags;
 #endif
 
@@ -1128,11 +1133,6 @@ htrack (segment* seg, maze* m)
   return lo + f*(hi-lo);
 }
 
-typedef struct {
-    int d;
-    Agedge_t* e;
-} epair_t;
-
 static pointf
 addPoints(pointf p0, pointf p1)
 {
@@ -1228,7 +1228,7 @@ static boolean swap_ends_p(edge_t * e)
     return FALSE;
 }
 
-static splineInfo sinfo = { swap_ends_p, spline_merge, 1 };
+static splineInfo sinfo = { swap_ends_p, spline_merge, 1, 1 };
 
 void
 orthoEdges (Agraph_t* g, int useLbls)
@@ -1259,16 +1259,19 @@ orthoEdges (Agraph_t* g, int useLbls)
 	    while ((c = *s++)) {
 		switch (c) {
 		case 'c' :
-		    odb_flags |= ODB_CHANG; 
+		    odb_flags |= ODB_CHANG;     // emit channel graph 
+		    break;
+		case 'i' :
+		    odb_flags |= (ODB_SGRAPH|ODB_IGRAPH);  // emit search graphs
 		    break;
 		case 'm' :
-		    odb_flags |= ODB_MAZE; 
+		    odb_flags |= ODB_MAZE;      // emit maze
 		    break;
 		case 'r' :
-		    odb_flags |= ODB_ROUTE; 
+		    odb_flags |= ODB_ROUTE;     // emit routes in maze
 		    break;
 		case 's' :
-		    odb_flags |= ODB_SGRAPH; 
+		    odb_flags |= ODB_SGRAPH;    // emit search graph 
 		    break;
 		}
 	    }
@@ -1312,6 +1315,9 @@ orthoEdges (Agraph_t* g, int useLbls)
     sn = &sg->nodes[gstart];
     dn = &sg->nodes[gstart+1];
     for (i = 0; i < n_edges; i++) {
+#ifdef DEBUG
+	if ((i > 0) && (odb_flags & ODB_IGRAPH)) emitSearchGraph (stderr, sg);
+#endif
 	e = es[i].e;
         start = CELL(agtail(e));
         dest = CELL(aghead(e));
@@ -1334,7 +1340,7 @@ orthoEdges (Agraph_t* g, int useLbls)
     assignSegs (n_edges, route_list, mp);
     assignTracks (n_edges, route_list, mp);
 #ifdef DEBUG
-    if (odb_flags & ODB_ROUTE) emitGraph (stderr, mp, g, route_list);
+    if (odb_flags & ODB_ROUTE) emitGraph (stderr, mp, n_edges, route_list, es);
 #endif
     attachOrthoEdges (mp, n_edges, route_list, &sinfo, es);
 
@@ -1415,54 +1421,54 @@ coordOf (cell* cp, snode* np)
 static boxf
 emitEdge (FILE* fp, Agedge_t* e, route rte, maze* m, int ix, boxf bb)
 {
-  int i, x, y;
-  boxf n = CELL(aghead(e))->bb;
-  segment* seg = rte.segs;
-  if (seg->isVert) {
-    x = vtrack(seg, m);
-    y = (n.UR.y + n.LL.y)/2;
-  }
-  else {
-    y = htrack(seg, m);
-    x = (n.UR.x + n.LL.x)/2;
-  }
-  bb.LL.x = MIN(bb.LL.x, SC*x);
-  bb.LL.y = MIN(bb.LL.y, SC*y);
-  bb.UR.x = MAX(bb.UR.x, SC*x);
-  bb.UR.y = MAX(bb.UR.y, SC*y);
-  fprintf (fp, "newpath %d %d moveto\n", SC*x, SC*y);
-
-  for (i = 1;i<rte.n;i++) {
-    seg = rte.segs+i;
+    int i, x, y;
+    boxf n = CELL(agtail(e))->bb;
+    segment* seg = rte.segs;
     if (seg->isVert) {
-      x = vtrack(seg, m);
+	x = vtrack(seg, m);
+	y = (n.UR.y + n.LL.y)/2;
     }
     else {
-      y = htrack(seg, m);
+	y = htrack(seg, m);
+	x = (n.UR.x + n.LL.x)/2;
     }
     bb.LL.x = MIN(bb.LL.x, SC*x);
     bb.LL.y = MIN(bb.LL.y, SC*y);
     bb.UR.x = MAX(bb.UR.x, SC*x);
     bb.UR.y = MAX(bb.UR.y, SC*y);
-    fprintf (fp, "%d %d lineto\n", SC*x, SC*y);
-  }
+    fprintf (fp, "newpath %d %d moveto\n", SC*x, SC*y);
 
-  n = CELL(agtail(e))->bb;
-  if (seg->isVert) {
-    x = vtrack(seg, m);
-    y = (n.UR.y + n.LL.y)/2;
-  }
-  else {
-    y = htrack(seg, m);
-    x = (n.LL.x + n.UR.x)/2;
-  }
-  bb.LL.x = MIN(bb.LL.x, SC*x);
-  bb.LL.y = MIN(bb.LL.y, SC*y);
-  bb.UR.x = MAX(bb.UR.x, SC*x);
-  bb.UR.y = MAX(bb.UR.y, SC*y);
-  fprintf (fp, "%d %d lineto stroke\n", SC*x, SC*y);
+    for (i = 1;i<rte.n;i++) {
+	seg = rte.segs+i;
+	if (seg->isVert) {
+	    x = vtrack(seg, m);
+	}
+	else {
+	    y = htrack(seg, m);
+	}
+	bb.LL.x = MIN(bb.LL.x, SC*x);
+	bb.LL.y = MIN(bb.LL.y, SC*y);
+	bb.UR.x = MAX(bb.UR.x, SC*x);
+	bb.UR.y = MAX(bb.UR.y, SC*y);
+	fprintf (fp, "%d %d lineto\n", SC*x, SC*y);
+    }
 
-  return bb;
+    n = CELL(aghead(e))->bb;
+    if (seg->isVert) {
+	x = vtrack(seg, m);
+	y = (n.UR.y + n.LL.y)/2;
+    }
+    else {
+	y = htrack(seg, m);
+	x = (n.LL.x + n.UR.x)/2;
+    }
+    bb.LL.x = MIN(bb.LL.x, SC*x);
+    bb.LL.y = MIN(bb.LL.y, SC*y);
+    bb.UR.x = MAX(bb.UR.x, SC*x);
+    bb.UR.y = MAX(bb.UR.y, SC*y);
+    fprintf (fp, "%d %d lineto stroke\n", SC*x, SC*y);
+
+    return bb;
 }
 
 static void
@@ -1497,13 +1503,11 @@ emitSearchGraph (FILE* fp, sgraph* sg)
 }
 
 static void
-emitGraph (FILE* fp, maze* mp, Agraph_t* g, route* route_list)
+emitGraph (FILE* fp, maze* mp, int n_edges, route* route_list, epair_t es[])
 {
-  int i;
-  boxf bb, absbb;
-  box bbox;
-  Agnode_t* n;
-  Agedge_t* e;
+    int i;
+    boxf bb, absbb;
+    box bbox;
 
     absbb.LL.x = absbb.LL.y = MAXDOUBLE;
     absbb.UR.x = absbb.UR.y = -MAXDOUBLE;
@@ -1517,12 +1521,8 @@ emitGraph (FILE* fp, maze* mp, Agraph_t* g, route* route_list)
       fprintf (fp, "%f %f %f %f node\n", bb.LL.x, bb.LL.y, bb.UR.x, bb.UR.y);
     }
 
-    i = 0;
-    for (n = agfstnode (g); n; n = agnxtnode(g, n)) {
-        for (e = agfstout(g, n); e; e = agnxtout(g,e)) {
-	    absbb = emitEdge (fp, e, route_list[i], mp, i, absbb);
-	    i++;
-	}
+    for (i = 0; i < n_edges; i++) {
+	absbb = emitEdge (fp, es[i].e, route_list[i], mp, i, absbb);
     }
     
     fputs ("0.8 0.8 0.8 setrgbcolor\n", fp);
@@ -1535,10 +1535,10 @@ emitGraph (FILE* fp, maze* mp, Agraph_t* g, route* route_list)
       absbb.UR.y = MAX(absbb.UR.y, bb.UR.y);
     }
 
-  bbox.LL.x = absbb.LL.x + TRANS;
-  bbox.LL.y = absbb.LL.y + TRANS;
-  bbox.UR.x = absbb.UR.x + TRANS;
-  bbox.UR.y = absbb.UR.y + TRANS;
-  fprintf (fp, epilog2, bbox.LL.x, bbox.LL.y,  bbox.UR.x, bbox.UR.y);
+    bbox.LL.x = absbb.LL.x + TRANS;
+    bbox.LL.y = absbb.LL.y + TRANS;
+    bbox.UR.x = absbb.UR.x + TRANS;
+    bbox.UR.y = absbb.UR.y + TRANS;
+    fprintf (fp, epilog2, bbox.LL.x, bbox.LL.y,  bbox.UR.x, bbox.UR.y);
 }
 #endif

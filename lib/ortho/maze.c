@@ -150,6 +150,11 @@ static Dtdisc_t hdictDisc = {
 #define IS_SMALL(v) (CHANSZ(v) < 2)
 /* #define CHANSZ(w) (w) */
 
+/* updateWt:
+ * At present, we use a step function. When a bound is reached, the weight
+ * becomes huge. We might consider bumping up the weight more gradually, the
+ * thinner the channel, the faster the weight rises.
+ */
 static void
 updateWt (cell* cp, sedge* ep, int sz)
 {
