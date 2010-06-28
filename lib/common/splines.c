@@ -84,12 +84,18 @@ arrow_clip(edge_t * fe, node_t * hn,
 	sflag = eflag;
 	eflag = i;
     }
-    if (sflag)
-	*startp =
-	    arrowStartClip(e, ps, *startp, *endp, spl, sflag);
-    if (eflag)
-	*endp =
-	    arrowEndClip(e, ps, *startp, *endp, spl, eflag);
+    if (info->isOrtho) {
+	if (eflag || sflag)
+	    arrowOrthoClip(e, ps, *startp, *endp, spl, sflag, eflag);
+    }
+    else {
+	if (sflag)
+	    *startp =
+		arrowStartClip(e, ps, *startp, *endp, spl, sflag);
+	if (eflag)
+	    *endp =
+		arrowEndClip(e, ps, *startp, *endp, spl, eflag);
+    }
 }
 
 /* bezier_clip

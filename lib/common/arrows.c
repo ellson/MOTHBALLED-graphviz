@@ -305,6 +305,81 @@ int arrowStartClip(edge_t* e, pointf * ps, int startp,
     return startp;
 }
 
+/* arrowOrthoClip:
+ * For orthogonal routing, we know each Bezier of spl is a horizontal or vertical
+ * line segment. We need to guarantee the B-spline stays this way. At present, we shrink
+ * the arrows if necessary to fit the last segment at either end. Alternatively, we could
+ * maintain the arrow size by dropping the 3 points of spl, and adding a new spl encoding
+ * the arrow, something "ex_0,y_0 x_1,y_1 x_1,y_1 x_1,y_1 x_1,y_1", when the last line
+ * segment is x_1,y_1 x_2,y_2 x_3,y_3 x_0,y_0. With a good deal more work, we could guarantee
+ * that the truncated spl clips to the arrow shape.
+ */
+void arrowOrthoClip(edge_t* e, pointf* ps, int startp, int endp, bezier* spl, int sflag, int eflag)
+{
+    pointf p, q, r;
+    double d, tlen, hlen, maxd;
+
+    if (sflag && eflag && (endp == startp)) { /* handle special case of two arrows on a single segment */
+	tlen = arrow_length (e, sflag);
+	hlen = arrow_length (e, eflag);
+        d = DIST(ps[endp], ps[endp + 3]);
+	if (hlen + tlen < d) {
+	    spl->eflag = eflag, spl->ep = ps[endp + 3];
+	}
+	else {
+	}
+	return;
+    }
+    if (eflag) {
+	hlen = arrow_length(e, eflag);
+	p = ps[endp];
+	q = ps[endp+3];
+        d = DIST(p, q);
+	maxd = 0.9*d;
+	if (hlen >= maxd) {   /* arrow too long */
+	    hlen = maxd;
+	}
+	if (p.y == q.y) { /* horz segment */
+	    r.y = p.y;
+	    if (p.x < q.x) r.x = q.x - hlen;
+	    else r.x = q.x + hlen;
+	}
+	else {            /* vert segment */
+	    r.x = p.x;
+	    if (p.y < q.y) r.y = q.y - hlen;
+	    else r.y = q.y + hlen;
+	}
+	ps[endp + 1] = p;
+	ps[endp + 2] = ps[endp + 3] = r;
+	spl->eflag = eflag;
+	spl->ep = q;
+    }
+    if (sflag) {
+	tlen = arrow_length(e, sflag);
+	p = ps[startp];
+	q = ps[startp+3];
+        d = DIST(p, q);
+	maxd = 0.9*d;
+	if (tlen >= maxd) {   /* arrow too long */
+	    tlen = maxd;
+	}
+	if (p.y == q.y) { /* horz segment */
+	    r.y = p.y;
+	    if (p.x < q.x) r.x = p.x + tlen;
+	    else r.x = p.x - hlen;
+	}
+	else {            /* vert segment */
+	    r.x = p.x;
+	    if (p.y < q.y) r.y = p.y + hlen;
+	    else r.y = p.y - hlen;
+	}
+	ps[startp] = ps[startp + 1] = r;
+	ps[startp + 2] = q;
+	spl->sflag = sflag;
+	spl->sp = p;
+    }
+}
+
 static void arrow_type_normal(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag)
 {
     pointf q, v, a[5];

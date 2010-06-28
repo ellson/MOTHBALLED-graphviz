@@ -82,6 +82,7 @@ extern "C" {
     extern double arrow_length(edge_t * e, int flag);
     extern int arrowEndClip(edge_t*, pointf*, int, int , bezier*, int eflag);
     extern int arrowStartClip(edge_t*, pointf* ps, int, int, bezier*, int sflag);
+    extern void arrowOrthoClip(edge_t*, pointf* ps, int, int, bezier*, int sflag, int eflag);
     extern void beginpath(path *, Agedge_t *, int, pathend_t *, boolean);
     extern void bezier_clip(inside_t * inside_context,
 			    boolean(*insidefn) (inside_t * inside_context,
