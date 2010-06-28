@@ -316,18 +316,44 @@ int arrowStartClip(edge_t* e, pointf * ps, int startp,
  */
 void arrowOrthoClip(edge_t* e, pointf* ps, int startp, int endp, bezier* spl, int sflag, int eflag)
 {
-    pointf p, q, r;
+    pointf p, q, r, s, t;
     double d, tlen, hlen, maxd;
 
     if (sflag && eflag && (endp == startp)) { /* handle special case of two arrows on a single segment */
+	p = ps[endp];
+	q = ps[endp+3];
 	tlen = arrow_length (e, sflag);
 	hlen = arrow_length (e, eflag);
-        d = DIST(ps[endp], ps[endp + 3]);
-	if (hlen + tlen < d) {
-	    spl->eflag = eflag, spl->ep = ps[endp + 3];
+        d = DIST(p, q);
+	if (hlen + tlen >= d) {
+	    hlen = tlen = d/3.0;
 	}
-	else {
+	if (p.y == q.y) { /* horz segment */
+	    s.y = t.y = p.y;
+	    if (p.x < q.x) {
+		t.x = q.x - hlen;
+		s.x = p.x + tlen;
+	    }
+	    else {
+		t.x = q.x + hlen;
+		s.x = p.x - tlen;
+	    }
 	}
+	else {            /* vert segment */
+	    s.x = t.x = p.x;
+	    if (p.y < q.y) {
+		t.y = q.y - hlen;
+		s.y = p.y + tlen;
+	    }
+	    else {
+		t.y = q.y + hlen;
+		s.y = p.y - tlen;
+	    }
+	}
+	ps[endp] = ps[endp + 1] = s;
+	ps[endp + 2] = ps[endp + 3] = t;
+	spl->eflag = eflag, spl->ep = p;
+	spl->sflag = sflag, spl->ep = q;
 	return;
     }
     if (eflag) {
