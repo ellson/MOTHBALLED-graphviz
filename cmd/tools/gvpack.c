@@ -276,6 +276,10 @@ static void init_node_edge(Agraph_t * g)
     }
 }
 
+#ifndef WITH_CGRAPH
+#define agnameof(g) ((g)->name)
+#endif
+
 /* init_graph:
  * Initialize attributes. We always do the minimum required by
  * libcommon. If fill is true, we use init_nop (neato -n) to
@@ -305,10 +309,10 @@ static void init_graph(Agraph_t * g, boolean fill, GVC_t* gvc)
 	if (ret) {
 	    if (ret < 0)
 		fprintf(stderr, "Error loading layout info from graph %s\n",
-		    g->name);
+		    agnameof(g));
 	    else if (ret > 0)
 		fprintf(stderr, "gvpack does not support backgrounds as found in graph %s\n",
-		    g->name);
+		    agnameof(g));
 	    exit(1);
 	}
     }
