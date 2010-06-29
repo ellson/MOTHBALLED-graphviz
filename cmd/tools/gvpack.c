@@ -276,10 +276,6 @@ static void init_node_edge(Agraph_t * g)
     }
 }
 
-#ifndef WITH_CGRAPH
-#define agnameof(g) ((g)->name)
-#endif
-
 /* init_graph:
  * Initialize attributes. We always do the minimum required by
  * libcommon. If fill is true, we use init_nop (neato -n) to
