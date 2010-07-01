@@ -268,6 +268,7 @@ static void draw_edge(glCompPoint* posT,glCompPoint* posH, GLfloat length,int de
 void renderSelectedNodes(Agraph_t * g)
 {
     Agnode_t *v;
+    Agsym_t* data_attr = GN_labelattribute(g);
     xdot * x;
     glCompPoint pos;
     Agsym_t* l_color_attr = GG_nodelabelcolor(g);
@@ -302,17 +303,23 @@ void renderSelectedNodes(Agraph_t * g)
 	if (defaultNodeShape == 0) 
 	    glVertex3f(pos.x,pos.y,pos.z+0.001);
 	else if (defaultNodeShape == 1) 
-
 	    drawCircle(pos.x,pos.y,nodeSize,pos.z+0.001);
-	if (ND_printLabel(v)==1)
-	{
-	    glColor4f(c.R, c.G,c.B, c.A);
-	    glprintfglut(view->glutfont,pos.x,pos.y,pos.z,agnameof(v));
-	}
-
     }
     if(defaultNodeShape==0)
 	glEnd();
+    for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
+    {
+	if(!ND_selected(v))
+	    continue;
+	if (ND_printLabel(v)==1)
+	{
+	    glColor4f(c.R, c.G,c.B, c.A);
+	    if(!data_attr)
+        	glprintfglut(view->glutfont,pos.x,pos.y,pos.z+0.002,agnameof(v));
+	    else
+		glprintfglut(view->glutfont,pos.x,pos.y,pos.z+0.002,agxget(v,data_attr));
+	}
+    }
 }
 
 
