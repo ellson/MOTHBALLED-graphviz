@@ -305,6 +305,12 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	graph_t **clust;	/* clusters are in clust[1..n_cluster] !!! */
 	node_t *nlist;
 	rank_t *rank;
+#ifdef WITH_CGRAPH
+	graph_t *parent;        /* containing cluster (not parent subgraph) */
+	int level;		/* cluster nesting level (not node level!) */
+	node_t	*minrep, *maxrep;	/* set leaders for min and max rank */
+#endif
+
 	/* fast graph node list */
 	nlist_t comp;
 	/* connected components */
@@ -315,13 +321,16 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 
 	/* various flags */
 	boolean has_flat_edges;
+#ifdef WITH_CGRAPH
+	boolean has_sourcerank;
+	boolean has_sinkrank;
+#endif
 	unsigned char	showboxes;
 	boolean cluster_was_collapsed;
 	fontname_kind fontnames;		/* to override mangling in SVG */
 
 	int nodesep, ranksep;
 	node_t *ln, *rn;	/* left, right nodes of bounding box */
-
 
 	/* for clusters */
 	node_t *leader, **rankleader;
@@ -335,7 +344,8 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
     } Agraphinfo_t;
 
 #ifdef WITH_CGRAPH
-#define GD_u(g)(((Agraphinfo_t*)AGDATA(g)))
+#define GD_parent(g) (((Agraphinfo_t*)AGDATA(g))->parent)
+#define GD_level(g) (((Agraphinfo_t*)AGDATA(g))->level)
 #define GD_drawing(g) (((Agraphinfo_t*)AGDATA(g))->drawing)
 #define GD_bb(g) (((Agraphinfo_t*)AGDATA(g))->bb)
 #define GD_gvc(g) (((Agraphinfo_t*)AGDATA(g))->gvc)
@@ -355,6 +365,8 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define GD_has_labels(g) (((Agraphinfo_t*)AGDATA(g))->has_labels)
 #define GD_has_images(g) (((Agraphinfo_t*)AGDATA(g))->has_images)
 #define GD_has_flat_edges(g) (((Agraphinfo_t*)AGDATA(g))->has_flat_edges)
+#define GD_has_sourcerank(g)	(((Agraphinfo_t*)AGDATA(g))->has_sourcerank)
+#define GD_has_sinkrank(g)	(((Agraphinfo_t*)AGDATA(g))->has_sinkrank)
 #define GD_ht1(g) (((Agraphinfo_t*)AGDATA(g))->ht1)
 #define GD_ht2(g) (((Agraphinfo_t*)AGDATA(g))->ht2)
 #define GD_inleaf(g) (((Agraphinfo_t*)AGDATA(g))->inleaf)
@@ -371,6 +383,8 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define GD_maxset(g) (((Agraphinfo_t*)AGDATA(g))->maxset)
 #define GD_minrank(g) (((Agraphinfo_t*)AGDATA(g))->minrank)
 #define GD_minset(g) (((Agraphinfo_t*)AGDATA(g))->minset)
+#define GD_minrep(g) (((Agraphinfo_t*)AGDATA(g))->minrep)
+#define GD_maxrep(g) (((Agraphinfo_t*)AGDATA(g))->maxrep)
 #define GD_move(g) (((Agraphinfo_t*)AGDATA(g))->move)
 #define GD_n_cluster(g) (((Agraphinfo_t*)AGDATA(g))->n_cluster)
 #define GD_n_nodes(g) (((Agraphinfo_t*)AGDATA(g))->n_nodes)
@@ -476,6 +490,10 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #ifndef NEATO_ONLY
 	unsigned char showboxes;
 	boolean  has_port;
+#ifdef WITH_CGRAPH
+	node_t* rep;
+	node_t *set;
+#endif
 
 	/* fast graph */
 	char node_type, mark, onstack;
@@ -509,6 +527,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define ND_id(n) (((Agnodeinfo_t*)AGDATA(n))->id)
 #define ND_alg(n) (((Agnodeinfo_t*)AGDATA(n))->alg)
 #define ND_UF_parent(n) (((Agnodeinfo_t*)AGDATA(n))->UF_parent)
+#define ND_set(n) (((Agnodeinfo_t*)AGDATA(n))->set)
 #define ND_UF_size(n) (((Agnodeinfo_t*)AGDATA(n))->UF_size)
 #define ND_bb(n) (((Agnodeinfo_t*)AGDATA(n))->bb)
 #define ND_clust(n) (((Agnodeinfo_t*)AGDATA(n))->clust)
@@ -518,6 +537,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define ND_flat_out(n) (((Agnodeinfo_t*)AGDATA(n))->flat_out)
 #define ND_gui_state(n) (((Agnodeinfo_t*)AGDATA(n))->gui_state)
 #define ND_has_port(n) (((Agnodeinfo_t*)AGDATA(n))->has_port)
+#define ND_rep(n) (((Agnodeinfo_t*)AGDATA(n))->rep)
 #define ND_heapindex(n) (((Agnodeinfo_t*)AGDATA(n))->heapindex)
 #define ND_height(n) (((Agnodeinfo_t*)AGDATA(n))->height)
 #define ND_hops(n) (((Agnodeinfo_t*)AGDATA(n))->hops)
@@ -642,7 +662,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	unsigned char showboxes;
 	boolean conc_opp_flag;
 	short xpenalty;
-	int weight;
+	float weight;
 	int cutvalue, tree_index;
 	short count;
 	unsigned short minlen;
