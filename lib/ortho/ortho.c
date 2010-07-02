@@ -18,10 +18,9 @@
 /* TODO:
  * In dot, prefer bottom or top routing
  * In general, prefer closest side to closest side routing.
- * >Fix arrowheads
  * Edge labels
- * Loops
  * Ports/compass points
+ * ordering attribute
  * Weights on edges in nodes
  * Edge concentrators?
  */
@@ -1142,7 +1141,7 @@ addPoints(pointf p0, pointf p1)
 }
 
 static void
-attachOrthoEdges (maze* mp, int n_edges, route* route_list, splineInfo *sinfo, epair_t es[])
+attachOrthoEdges (Agraph_t* g, maze* mp, int n_edges, route* route_list, splineInfo *sinfo, epair_t es[], int doLbls)
 {
     int irte = 0;
     int i, ipt, npts;
@@ -1152,6 +1151,7 @@ attachOrthoEdges (maze* mp, int n_edges, route* route_list, splineInfo *sinfo, e
     route rte;
     segment* seg;
     Agedge_t* e;
+    textlabel_t* lbl;
 
     for (; irte < n_edges; irte++) {
 	e = es[irte].e;
@@ -1201,6 +1201,8 @@ attachOrthoEdges (maze* mp, int n_edges, route* route_list, splineInfo *sinfo, e
 	if (Verbose > 1)
 		fprintf(stderr, "ortho %s %s\n", agnameof(agtail(e)),agnameof(aghead(e)));
 	clip_and_install(e, aghead(e), ispline, npts, sinfo);
+	if (doLbls && (lbl = ED_label(e)) && !lbl->set)
+	    addEdgeLabels(g, e, p1, q1);
     }
     free(ispline);
 }
@@ -1230,8 +1232,13 @@ static boolean swap_ends_p(edge_t * e)
 
 static splineInfo sinfo = { swap_ends_p, spline_merge, 1, 1 };
 
+/* orthoEdges:
+ * For edges without position information, construct an orthogonal routing.
+ * If doLbls is true, use edge label info when available to guide routing, 
+ * and set label pos for those edges for which this info is not available.
+ */
 void
-orthoEdges (Agraph_t* g, int useLbls)
+orthoEdges (Agraph_t* g, int doLbls)
 {
     sgraph* sg;
     maze* mp;
@@ -1246,6 +1253,7 @@ orthoEdges (Agraph_t* g, int useLbls)
     cell* start;
     cell* dest;
     PointSet* ps;
+    textlabel_t* lbl;
 
     if (Concentrate) 
 	ps = newPS();
@@ -1278,7 +1286,7 @@ orthoEdges (Agraph_t* g, int useLbls)
 	}
     }
 #endif
-    mp = mkMaze (g);
+    mp = mkMaze (g, doLbls);
     sg = mp->sg;
 #ifdef DEBUG
     if (odb_flags & ODB_SGRAPH) emitSearchGraph (stderr, sg);
@@ -1322,13 +1330,17 @@ orthoEdges (Agraph_t* g, int useLbls)
         start = CELL(agtail(e));
         dest = CELL(aghead(e));
 
-	if (start == dest)
-	    addLoop (sg, start, dn, sn);
-	else {
-       	    addNodeEdges (sg, dest, dn);
-	    addNodeEdges (sg, start, sn);
+	if (doLbls && (lbl = ED_label(e)) && lbl->set) {
 	}
-       	shortPath (sg, dn, sn);
+	else {
+	    if (start == dest)
+		addLoop (sg, start, dn, sn);
+	    else {
+       		addNodeEdges (sg, dest, dn);
+		addNodeEdges (sg, start, sn);
+	    }
+       	    shortPath (sg, dn, sn);
+	}
 	    
        	route_list[i] = convertSPtoRoute(sg, sn, dn);
        	reset (sg);
@@ -1342,7 +1354,7 @@ orthoEdges (Agraph_t* g, int useLbls)
 #ifdef DEBUG
     if (odb_flags & ODB_ROUTE) emitGraph (stderr, mp, n_edges, route_list, es);
 #endif
-    attachOrthoEdges (mp, n_edges, route_list, &sinfo, es);
+    attachOrthoEdges (g, mp, n_edges, route_list, &sinfo, es, doLbls);
 
     if (Concentrate)
 	freePS (ps);

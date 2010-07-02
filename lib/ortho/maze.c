@@ -452,7 +452,7 @@ chkSgraph (g);
 /* mkMaze:
  */
 maze*
-mkMaze (graph_t* g)
+mkMaze (graph_t* g, int doLbls)
 {
     node_t* n;
     maze* mp = NEW(maze);
@@ -484,6 +484,9 @@ mkMaze (graph_t* g)
 	cp->flags |= MZ_ISNODE;
         ND_alg(n) = cp;
 	cp++;
+    }
+
+    if (doLbls) {
     }
 
     BB.LL.x -= MARGIN;

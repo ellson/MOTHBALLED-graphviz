@@ -56,7 +56,7 @@ typedef struct {
   Dt_t* vchans;
 } maze;
 
-extern maze* mkMaze (graph_t*);
+extern maze* mkMaze (graph_t*, int);
 extern void freeMaze (maze*);
 void updateWts (sgraph* g, cell* cp, sedge* ep);
 #ifdef DEBUG
