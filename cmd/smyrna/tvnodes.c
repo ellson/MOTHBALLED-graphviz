@@ -31,23 +31,24 @@ typedef struct
     int count;
     gridCol** columns;
     GtkTreeStore *store;
-
+    char* flds;
 }grid;
 
 /*
 	call this function to create a subgraph from filtered nodes and maybe edges
 */
 
-int create_save_subgraph_from_filter(char *filename)
+static int create_save_subgraph_from_filter(char *filename)
 {
-
-    int i = 0;
     Agraph_t *subg = agsubg(view->g[view->activeGraph], "temp", 1);
     FILE *outputfile;
-    for (i = 0; i < view->Topview->Nodecount; i++) {
-	if (view->Topview->Nodes[i].valid == 1) {
-	    agsubnode(subg, view->Topview->Nodes[i].Node, 1);
-	}
+    Agnode_t* v;
+    Agraph_t* g;
+
+    g = view->g[view->activeGraph];
+    for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
+	if (ND_selected(v))
+	    agsubnode(subg, v, 1);
     }
 
     if ((outputfile = fopen(filename, "w"))) {
@@ -181,9 +182,7 @@ static int boolStrMap(char* str)
 
 #endif
 
-
-
-void populate_data(Agraph_t* g,grid* grid)
+static void populate_data(Agraph_t* g,grid* grid)
 {
     Agnode_t *v;
     int id=0;
@@ -199,11 +198,8 @@ void populate_data(Agraph_t* g,grid* grid)
 	value=(GValue*)malloc(sizeof(GValue));*/
     value=g_value_init (value,G_TYPE_STRING);
 
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
-    {
-	bf=agget(v,"selected");
-	if((!bf) || (strcmp(bf,"0")==0))
-	continue;
+    for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
+	if (!ND_selected(v)) continue;
 	gtk_tree_store_append (grid->store, &iter, NULL);
 
 	for (id=1;id < grid->count;id ++)
@@ -242,16 +238,9 @@ void populate_data(Agraph_t* g,grid* grid)
         }
 
     }
-
 }
 
-
-
-
-
-
-
-GtkTreeStore* update_tree_store(GtkTreeStore* store,int ncolumns,GType *types)
+static GtkTreeStore* update_tree_store(GtkTreeStore* store,int ncolumns,GType *types)
 {
     if ((ncolumns ==0) || (types==NULL))
 	return NULL;
@@ -284,9 +273,6 @@ static void create_column(gridCol* c,GtkTreeView *tree,int id)
     }
 }
 
-
-
-
 GtkTreeView* update_tree (GtkTreeView *tree,grid* g)
 {
 
@@ -294,26 +280,24 @@ GtkTreeView* update_tree (GtkTreeView *tree,grid* g)
     GtkTreeViewColumn* column;
     GType *types;
     int id=0;
-    if(tree!=NULL)
-    {
+
+    if(tree) {
         while ((column=gtk_tree_view_get_column(tree,0)))  /*clear all columns*/
 	    gtk_tree_view_remove_column(tree,column);
 	store=(GtkTreeStore*)gtk_tree_view_get_model(tree);
     }
-    else
-    {
+    else {
 	tree=(GtkTreeView*)gtk_tree_view_new();
         gtk_widget_show((GtkWidget*)tree);
 
 	gtk_container_add((GtkContainer*)glade_xml_get_widget(xml, "scrolledwindow9"),(GtkWidget*)tree);
 
     }
-    if(g->count > 0)
-    {
-	types=(GType*)malloc(g->count*sizeof(GType));
+    if(g->count > 0) {
+	types=N_NEW(g->count, GType);
 	for (id=0;id < g->count;id++)
 	    types[id]=g->columns[id]->type;
-        store=update_tree_store(store,g->count,types);
+        store=update_tree_store(g->store,g->count,types);
         gtk_tree_view_set_model(tree,(GtkTreeModel*)store);
 	/*insert columns*/
 	for (id=0;id < g->count;id ++)
@@ -321,51 +305,52 @@ GtkTreeView* update_tree (GtkTreeView *tree,grid* g)
     }
     g->store=store;
     return tree;
-
-
 }
+
 static void add_column(grid* g,char* name,int editable,GType g_type)
 {
+    if (*name == '\0') return;
     g->columns=(gridCol**)realloc(g->columns,sizeof(gridCol*)*(g->count+1));
-    g->columns[g->count]=(gridCol*)malloc(sizeof(gridCol));
+    g->columns[g->count] = NEW(gridCol);
     g->columns[g->count]->editable=editable;
     g->columns[g->count]->name=strdup(name);
     g->columns[g->count]->type=g_type;
     g->count++;
 }
-static void clear_grid(grid* g)
+
+static void clear_grid(grid* g, char* flds)
 {
     int id=0;
-    if (g->count >0)
-    {
-        for (id=0;id < g->count ; id++)
-	{
+    if (g->count) {
+        for (id=0;id < g->count ; id++) {
 	    free(g->columns[id]->name);
 	    free (g->columns[id]);
 	}
-	
     }
-
+    free (g->columns);
+    g->columns = 0;
+    g->flds=flds;
 }
-static grid* initGrid()
+
+static grid* initGrid(char* flds)
 {
-    grid* gr;
-    gr=(grid*)malloc(sizeof(grid));
+    grid* gr = NEW(grid);
     gr->columns=NULL;
     gr->count=0;
+    gr->flds=flds;
     return gr;
 }
 
-
-
-grid* update_colums(grid* g,char* str)
+static grid* update_colums(grid* g,char* str)
 {
     /*free memory for existing c*/
     char* a;
-    if(g)
-        clear_grid(g);
+    if(g) {
+	if (g->flds != str) clear_grid(g, str);
+	else return g;
+    }
     else
-	g=initGrid();
+	g=initGrid(str);
     add_column(g,"ID",0,G_TYPE_STRING);
     add_column(g,"Name",0,G_TYPE_STRING);
     add_column(g,"visible",0,G_TYPE_BOOLEAN);
@@ -378,6 +363,7 @@ grid* update_colums(grid* g,char* str)
         add_column(g,a,1,G_TYPE_STRING);
     return g;
 }
+
 void setup_tree (Agraph_t* g)
 {
     /*
@@ -385,10 +371,11 @@ void setup_tree (Agraph_t* g)
     G_TYPE_INT:
     G_TYPE_BOOLEAN:
     */
-    char* buf = agget(g,"datacolumns");
-    grid* gr = update_colums(NULL,buf);
     static GtkTreeView *tree;
+    static grid* gr;
+    char* buf = agget(g,"datacolumns");
 
+    gr = update_colums(gr,buf);
     tree=update_tree (tree,gr);
     populate_data(g,gr);
 }

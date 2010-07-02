@@ -103,6 +103,7 @@ extern "C" {
 	int initialized;
 	int general_purpose_flag;	//dont forget to to set it back
     } tv_nodes;
+/*
     extern tv_nodes TV_Nodes;
 
 
@@ -127,6 +128,7 @@ extern "C" {
     int tv_unselect_all(void);
     int tv_highligh_all(void);
     int tv_unhighligh_all(void);
+*/
     int tv_show_all(void);
     int tv_hide_all(void);
     int tv_save_as(void);

@@ -39,134 +39,134 @@
 #define STRCASECMP strcasecmp
 #endif
 
-static attr_t* binarySearch( attr_list* l, char* searchKey);
+static attr_t *binarySearch(attr_list * l, char *searchKey);
 static int sel_node;
 static int sel_edge;
 static int sel_graph;
 
-static char* safestrdup(char* src)
+static char *safestrdup(char *src)
 {
-	if (!src)
-		return NULL;
-	else
-		return strdup(src);
+    if (!src)
+	return NULL;
+    else
+	return strdup(src);
 }
 static int get_object_type(void)
 {
-	if(gtk_toggle_button_get_active((GtkToggleButton*)glade_xml_get_widget(xml, "attrRB0")))
-		return AGRAPH;
-	if(gtk_toggle_button_get_active((GtkToggleButton*)glade_xml_get_widget(xml, "attrRB1")))
-		return AGNODE;
-	if(gtk_toggle_button_get_active((GtkToggleButton*)glade_xml_get_widget(xml, "attrRB2")))
-		return AGEDGE;
-	return -1;
-}
-void free_attr(attr_t* at)
-{
-	free(at->defValG);
-	free(at->defValN);
-	free(at->defValE);
-
-	free(at->name);
-	free(at);
+    if (gtk_toggle_button_get_active
+	((GtkToggleButton *) glade_xml_get_widget(xml, "attrRB0")))
+	return AGRAPH;
+    if (gtk_toggle_button_get_active
+	((GtkToggleButton *) glade_xml_get_widget(xml, "attrRB1")))
+	return AGNODE;
+    if (gtk_toggle_button_get_active
+	((GtkToggleButton *) glade_xml_get_widget(xml, "attrRB2")))
+	return AGEDGE;
+    return -1;
 }
 
-
-attr_t* new_attr(void)
+void free_attr(attr_t * at)
 {
-	attr_t* attr=malloc(sizeof(attr_t));
-	attr->defValG=(char*)0;
-	attr->defValN=(char*)0;
-	attr->defValE=(char*)0;
-	attr->name=(char*)0;
-	attr->value=(char*)0;
-	attr->propagate=0;
-	attr->objType[0]=0;
-	attr->objType[1]=0;
-	attr->objType[2]=0;
-	return attr;
+    free(at->defValG);
+    free(at->defValN);
+    free(at->defValE);
+
+    free(at->name);
+    free(at);
 }
 
 
-attr_t* new_attr_with_ref(Agsym_t * sym)
+attr_t *new_attr(void)
 {
-	attr_t* attr=new_attr();
-	attr->name=safestrdup(sym->name);
-	switch (sym->kind)
-	{	
-	case AGRAPH:
-		attr->objType[0]=1;
-		if(sym->defval)
-			attr->defValG=safestrdup(sym->defval);
-		break;
-	case AGNODE:
-		attr->objType[1]=1;
-		if(sym->defval)
-			attr->defValN=safestrdup(sym->defval);
-		break;
-	case AGEDGE:
-		attr->objType[2]=1;
-		if(sym->defval)
-			attr->defValE=safestrdup(sym->defval);
-		break;
-	}
-	return attr;
-}
-
-attr_t* new_attr_ref(attr_t* refAttr)
-{
-	attr_t* attr=malloc(sizeof(attr_t));
-	*attr=*refAttr;
-	attr->defValG=safestrdup(refAttr->defValG);
-	attr->defValN=safestrdup(refAttr->defValN);
-	attr->defValE=safestrdup(refAttr->defValE);
-	attr->name=safestrdup(refAttr->name);
-	if (refAttr->value)
-		attr->value=safestrdup(refAttr->value);
-	return attr;
-}
-
-static void reset_attr_list_widgets(attr_list* l)
-{
-	int id;
-	for (id=0;id < MAX_FILTERED_ATTR_COUNT ;id ++)
-	{
-		gtk_label_set_text(l->fLabels[id],"");
-	}
+    attr_t *attr = malloc(sizeof(attr_t));
+    attr->defValG = (char *) 0;
+    attr->defValN = (char *) 0;
+    attr->defValE = (char *) 0;
+    attr->name = (char *) 0;
+    attr->value = (char *) 0;
+    attr->propagate = 0;
+    attr->objType[0] = 0;
+    attr->objType[1] = 0;
+    attr->objType[2] = 0;
+    return attr;
 }
 
 
-
-static void free_attr_list_widgets(attr_list* l)
+attr_t *new_attr_with_ref(Agsym_t * sym)
 {
-	int id;
-	for (id=0;id < MAX_FILTERED_ATTR_COUNT ;id ++)
-	{
-		gtk_object_destroy((GtkObject*)l->fLabels[id]);
-	}
+    attr_t *attr = new_attr();
+    attr->name = safestrdup(sym->name);
+    switch (sym->kind) {
+    case AGRAPH:
+	attr->objType[0] = 1;
+	if (sym->defval)
+	    attr->defValG = safestrdup(sym->defval);
+	break;
+    case AGNODE:
+	attr->objType[1] = 1;
+	if (sym->defval)
+	    attr->defValN = safestrdup(sym->defval);
+	break;
+    case AGEDGE:
+	attr->objType[2] = 1;
+	if (sym->defval)
+	    attr->defValE = safestrdup(sym->defval);
+	break;
+    }
+    return attr;
+}
+
+attr_t *new_attr_ref(attr_t * refAttr)
+{
+    attr_t *attr = malloc(sizeof(attr_t));
+    *attr = *refAttr;
+    attr->defValG = safestrdup(refAttr->defValG);
+    attr->defValN = safestrdup(refAttr->defValN);
+    attr->defValE = safestrdup(refAttr->defValE);
+    attr->name = safestrdup(refAttr->name);
+    if (refAttr->value)
+	attr->value = safestrdup(refAttr->value);
+    return attr;
+}
+
+static void reset_attr_list_widgets(attr_list * l)
+{
+    int id;
+    for (id = 0; id < MAX_FILTERED_ATTR_COUNT; id++) {
+	gtk_label_set_text(l->fLabels[id], "");
+    }
 }
 
 
-void free_attr_list(attr_list* l)
+
+static void free_attr_list_widgets(attr_list * l)
 {
-	int id;
-	for (id=0;id < l->attr_count; id ++)
-	{
-		free_attr(l->attributes[id]);
-	}
-	if (l->with_widgets)
-		free_attr_list_widgets(l);
-	free(l);
+    int id;
+    for (id = 0; id < MAX_FILTERED_ATTR_COUNT; id++) {
+	gtk_object_destroy((GtkObject *) l->fLabels[id]);
+    }
 }
-attr_list* attr_list_new(Agraph_t * g,int with_widgets )
+
+
+void free_attr_list(attr_list * l)
 {
-	int id;
-	attr_list* l=malloc(sizeof(attr_list));
-	l->attr_count=0;
-	l->capacity=DEFAULT_ATTR_LIST_CAPACITY;
-	l->attributes=malloc(DEFAULT_ATTR_LIST_CAPACITY * sizeof(attr_t*));
-	l->with_widgets=with_widgets;
-	/*create filter widgets*/
+    int id;
+    for (id = 0; id < l->attr_count; id++) {
+	free_attr(l->attributes[id]);
+    }
+    if (l->with_widgets)
+	free_attr_list_widgets(l);
+    free(l);
+}
+attr_list *attr_list_new(Agraph_t * g, int with_widgets)
+{
+    int id;
+    attr_list *l = malloc(sizeof(attr_list));
+    l->attr_count = 0;
+    l->capacity = DEFAULT_ATTR_LIST_CAPACITY;
+    l->attributes = malloc(DEFAULT_ATTR_LIST_CAPACITY * sizeof(attr_t *));
+    l->with_widgets = with_widgets;
+    /*create filter widgets */
 
 /*			gtk_widget_add_events(glade_xml_get_widget(xml, "frmObject"),
 			//  GDK_BUTTON_MOTION_MASK      = 1 << 4,
@@ -177,67 +177,70 @@ attr_list* attr_list_new(Agraph_t * g,int with_widgets )
 			  GDK_SCROLL | GDK_VISIBILITY_NOTIFY_MASK);
 
     g_signal_connect((gpointer)glade_xml_get_widget(xml, "frmObject"), "motion_notify_event",  G_CALLBACK(attr_label_motion), NULL);*/
-	if(with_widgets)
-	{
-		for (id=0 ; id < MAX_FILTERED_ATTR_COUNT ; id ++)
-		{
-			l->fLabels[id]=(GtkLabel*)gtk_label_new(""); 
+    if (with_widgets) {
+	for (id = 0; id < MAX_FILTERED_ATTR_COUNT; id++) {
+	    l->fLabels[id] = (GtkLabel *) gtk_label_new("");
 
-			gtk_widget_add_events((GtkWidget*)l->fLabels[id],
-			//  GDK_BUTTON_MOTION_MASK      = 1 << 4,
-			  GDK_BUTTON_MOTION_MASK |
-			  GDK_POINTER_MOTION_MASK |
-			  GDK_BUTTON_PRESS_MASK | GDK_KEY_PRESS |
-			  GDK_BUTTON_RELEASE_MASK |
-			  GDK_SCROLL | GDK_VISIBILITY_NOTIFY_MASK);
+	    gtk_widget_add_events((GtkWidget *) l->fLabels[id],
+				  //  GDK_BUTTON_MOTION_MASK      = 1 << 4,
+				  GDK_BUTTON_MOTION_MASK |
+				  GDK_POINTER_MOTION_MASK |
+				  GDK_BUTTON_PRESS_MASK | GDK_KEY_PRESS |
+				  GDK_BUTTON_RELEASE_MASK |
+				  GDK_SCROLL | GDK_VISIBILITY_NOTIFY_MASK);
 
-			gtk_widget_show((GtkWidget*)l->fLabels[id]);
-			Color_Widget_bg("blue",(GtkWidget*)l->fLabels[id]);
-			gtk_fixed_put((GtkFixed*)glade_xml_get_widget(xml, "fixed6"),(GtkWidget*)l->fLabels[id],10,110+id * 13);
-		}
+	    gtk_widget_show((GtkWidget *) l->fLabels[id]);
+	    Color_Widget_bg("blue", (GtkWidget *) l->fLabels[id]);
+	    gtk_fixed_put((GtkFixed *) glade_xml_get_widget(xml, "fixed6"),
+			  (GtkWidget *) l->fLabels[id], 10, 110 + id * 13);
 	}
-	return l;
-}
-void print_attr_list(attr_list* l)
-{
-	int id;
-	for (id=0;id < l->attr_count; id ++)
-	{
-		printf ("%d  %s (%d %d %d) \n",l->attributes[id]->index,l->attributes[id]->name,l->attributes[id]->objType[0],l->attributes[id]->objType[1],l->attributes[id]->objType[2]);
-		printf ("defG:%s defN:%s defE:%s\n",l->attributes[id]->defValG,l->attributes[id]->defValN,l->attributes[id]->defValE);
-	}
+    }
+    return l;
 }
 
-int attr_compare (const void * a, const void * b)
+void print_attr_list(attr_list * l)
 {
-	attr_t* a1=*(attr_t**)a;
-	attr_t* a2=*(attr_t**)b;
-	return STRCASECMP(a1->name,a2->name);
+    int id;
+    for (id = 0; id < l->attr_count; id++) {
+	printf("%d  %s (%d %d %d) \n", l->attributes[id]->index,
+	       l->attributes[id]->name, l->attributes[id]->objType[0],
+	       l->attributes[id]->objType[1],
+	       l->attributes[id]->objType[2]);
+	printf("defG:%s defN:%s defE:%s\n", l->attributes[id]->defValG,
+	       l->attributes[id]->defValN, l->attributes[id]->defValE);
+    }
 }
 
-static void attr_list_sort(attr_list* l)
+int attr_compare(const void *a, const void *b)
 {
-  qsort (l->attributes, l->attr_count,sizeof(attr_t*), attr_compare);
+    attr_t *a1 = *(attr_t **) a;
+    attr_t *a2 = *(attr_t **) b;
+    return STRCASECMP(a1->name, a2->name);
+}
+
+static void attr_list_sort(attr_list * l)
+{
+    qsort(l->attributes, l->attr_count, sizeof(attr_t *), attr_compare);
 
 }
 
-void attr_list_add(attr_list* l,attr_t* a)
+void attr_list_add(attr_list * l, attr_t * a)
 {
-	int id;
-	if ( (!l) || (!a))
-		return;
-	l->attr_count ++ ;
-	if (l->attr_count == l->capacity)
-	{
-		l->capacity = l->capacity + EXPAND_CAPACITY_VALUE;
-		l->attributes=realloc (l->attributes,l->capacity * sizeof(attr_t*));
-	}
-	l->attributes[l->attr_count-1]=a;
-	if (l->attr_count > 1)
-		attr_list_sort(l);
-	/*update indices*/
-	for (id=0;id < l->attr_count; id ++)
-		l->attributes[id]->index=id;
+    int id;
+    if ((!l) || (!a))
+	return;
+    l->attr_count++;
+    if (l->attr_count == l->capacity) {
+	l->capacity = l->capacity + EXPAND_CAPACITY_VALUE;
+	l->attributes =
+	    realloc(l->attributes, l->capacity * sizeof(attr_t *));
+    }
+    l->attributes[l->attr_count - 1] = a;
+    if (l->attr_count > 1)
+	attr_list_sort(l);
+    /*update indices */
+    for (id = 0; id < l->attr_count; id++)
+	l->attributes[id]->index = id;
 
 
 
@@ -245,68 +248,69 @@ void attr_list_add(attr_list* l,attr_t* a)
 static attr_data_type get_attr_data_type(char c)
 {
 //typedef enum {attr_alpha,attr_float,attr_int,attr_bool,attr_drowdown,attr_color} attr_data_type;
-	switch (c)
-	{
-		case 'A':
-			return attr_alpha;break;
-		case 'F':
-			return attr_float;break;
-		case 'B':
-			return attr_bool;break;
-		case 'I':
-			return attr_int;break;
-	}
+    switch (c) {
+    case 'A':
 	return attr_alpha;
+	break;
+    case 'F':
+	return attr_float;
+	break;
+    case 'B':
+	return attr_bool;
+	break;
+    case 'I':
+	return attr_int;
+	break;
+    }
+    return attr_alpha;
 
 }
-static void object_type_helper(char* a,int* t)
+static void object_type_helper(char *a, int *t)
 {
-	if (strcmp(a,"GRAPH")==0)
-		t[0]=1;
-	if (strcmp(a,"CLUSTER")==0)
-		t[0]=1;
-	if (strcmp(a,"NODE")==0)
-		t[1]=1;
-	if (strcmp(a,"EDGE")==0)
-		t[2]=1;
-	if (strcmp(a,"ANY_ELEMENT")==0)
-	{
-		t[0]=1;
-		t[1]=1;
-		t[2]=1;
+    if (strcmp(a, "GRAPH") == 0)
+	t[0] = 1;
+    if (strcmp(a, "CLUSTER") == 0)
+	t[0] = 1;
+    if (strcmp(a, "NODE") == 0)
+	t[1] = 1;
+    if (strcmp(a, "EDGE") == 0)
+	t[2] = 1;
+    if (strcmp(a, "ANY_ELEMENT") == 0) {
+	t[0] = 1;
+	t[1] = 1;
+	t[2] = 1;
+    }
+}
+
+static void set_attr_object_type(char *str, int *t)
+{
+
+    char *a;
+    a = strtok(str, " ");
+    object_type_helper(a, t);
+    while ((a = strtok(NULL, " or ")))
+	object_type_helper(a, t);
+
+}
+
+static attr_t *binarySearch(attr_list * l, char *searchKey)
+{
+    int middle, low, high, res;
+    low = 0;
+    high = l->attr_count - 1;
+
+    while (low <= high) {
+	middle = (low + high) / 2;
+	res = STRCASECMP(searchKey, l->attributes[middle]->name);
+	if (res == 0) {
+	    return l->attributes[middle];
+	} else if (res < 0) {
+	    high = middle - 1;
+	} else {
+	    low = middle + 1;
 	}
-}
-
-static void set_attr_object_type(char* str,int* t)
-{
-	
-	char* a;
-	a=strtok(str," ");
-	object_type_helper(a,t);
-	while ((a=strtok(NULL," or ")))
-		object_type_helper(a,t);
-
-}
-
-static attr_t* binarySearch( attr_list* l, char* searchKey)
-{
-	int middle,low,high,res;
-   low=0;
-   high=l->attr_count-1;
-
-   while ( low <= high ) {
-      middle = ( low + high ) / 2;
-	  res=STRCASECMP(searchKey,l->attributes[middle]->name);
-	  if ( res==0) {
-         return l->attributes[middle];
-      } 
-	  else if 		( res < 0  ) {
-         high = middle - 1;
-      } else {
-         low = middle + 1;
-      }
-   }
-   return  NULL;
+    }
+    return NULL;
 }
 
 
@@ -314,524 +318,483 @@ static attr_t* binarySearch( attr_list* l, char* searchKey)
 
 
 
-static attr_t* pBinarySearch( attr_list* l, char* searchKey)
+static attr_t *pBinarySearch(attr_list * l, char *searchKey)
 {
-	char buf[512];
-	int middle,low,high,res;
-   low=0;
-   high=l->attr_count-1;
+    char buf[512];
+    int middle, low, high, res;
+    low = 0;
+    high = l->attr_count - 1;
 
-   while ( low <= high ) {
-      middle = ( low + high ) / 2;
-	   strncpy ( buf, l->attributes[middle]->name, strlen(searchKey));
-		buf[strlen(searchKey)]='\0';
-	  res=STRCASECMP(searchKey,buf);
-	  if ( res==0) {
-         return l->attributes[middle];
-      } 
-//	  else if 		( searchKey < b[ middle ] ) {
-	  else if 		( res < 0  ) {
-         high = middle - 1;
-      } else {
-         low = middle + 1;
-      }
-   }
-   return  NULL;
-
-}
-
-
-
-
-
-
-void create_filtered_list(char* prefix,attr_list* sl,attr_list* tl)
-{
-	int res;
-	char buf[512];
-	attr_t* at;
-	int objKind=get_object_type();
-
-	if (strlen(prefix)==0)
-		return;
-	/*locate first occurance*/
-	at= pBinarySearch( sl, prefix);
-	if (!at)
-		return;
-
-	res=0;
-	/*go backward to get the first*/
-	while((at->index > 0) && (res == 0))
-	{
-		at=sl->attributes[at->index - 1];
-		strncpy ( buf, at->name, strlen(prefix));
-		buf[strlen(prefix)]='\0';;
-		res=STRCASECMP(prefix,buf);
+    while (low <= high) {
+	middle = (low + high) / 2;
+	strncpy(buf, l->attributes[middle]->name, strlen(searchKey));
+	buf[strlen(searchKey)] = '\0';
+	res = STRCASECMP(searchKey, buf);
+	if (res == 0) {
+	    return l->attributes[middle];
 	}
-	res=0;
-	while((at->index <sl->attr_count) && (res == 0))
-	{
-		at=sl->attributes[at->index + 1];
-		strncpy ( buf, at->name, strlen(prefix));
-		buf[strlen(prefix)]='\0';
-		res=STRCASECMP(prefix,buf);
-		if((res == 0) && (at->objType[objKind]==1))
-			attr_list_add(tl,new_attr_ref(at));
+//        else if               ( searchKey < b[ middle ] ) {
+	else if (res < 0) {
+	    high = middle - 1;
+	} else {
+	    low = middle + 1;
 	}
+    }
+    return NULL;
+
 }
-void filter_attributes(char* prefix,topview* t)
+
+
+
+
+
+
+void create_filtered_list(char *prefix, attr_list * sl, attr_list * tl)
+{
+    int res;
+    char buf[512];
+    attr_t *at;
+    int objKind = get_object_type();
+
+    if (strlen(prefix) == 0)
+	return;
+    /*locate first occurance */
+    at = pBinarySearch(sl, prefix);
+    if (!at)
+	return;
+
+    res = 0;
+    /*go backward to get the first */
+    while ((at->index > 0) && (res == 0)) {
+	at = sl->attributes[at->index - 1];
+	strncpy(buf, at->name, strlen(prefix));
+	buf[strlen(prefix)] = '\0';;
+	res = STRCASECMP(prefix, buf);
+    }
+    res = 0;
+    while ((at->index < sl->attr_count) && (res == 0)) {
+	at = sl->attributes[at->index + 1];
+	strncpy(buf, at->name, strlen(prefix));
+	buf[strlen(prefix)] = '\0';
+	res = STRCASECMP(prefix, buf);
+	if ((res == 0) && (at->objType[objKind] == 1))
+	    attr_list_add(tl, new_attr_ref(at));
+    }
+}
+void filter_attributes(char *prefix, topview * t)
 //void filter_attributes(char* prefix, attr_list* l)
 {
 
-	int ind;
-	int tmp;
+    int ind;
+    int tmp;
 
-	attr_list* l=t->attributes;
-	attr_list* fl=t->filtered_attr_list;
-	int objKind=get_object_type();
+    attr_list *l = t->attributes;
+    attr_list *fl = t->filtered_attr_list;
+    int objKind = get_object_type();
 
-	if (fl)
-		free_attr_list(fl);
-	fl=attr_list_new(NULL,0);
-	reset_attr_list_widgets(l);
-	create_filtered_list(prefix,l,fl);
-	for (ind=0;ind < fl->attr_count; ind ++)
-	{
-		gtk_label_set_text(l->fLabels[ind],fl->attributes[ind]->name);
-	}
+    if (fl)
+	free_attr_list(fl);
+    fl = attr_list_new(NULL, 0);
+    reset_attr_list_widgets(l);
+    create_filtered_list(prefix, l, fl);
+    for (ind = 0; ind < fl->attr_count; ind++) {
+	gtk_label_set_text(l->fLabels[ind], fl->attributes[ind]->name);
+    }
 
-	Color_Widget_bg("white",glade_xml_get_widget(xml, "txtAttr"));
-	if (fl->attr_count==0)
-		Color_Widget_bg("red",glade_xml_get_widget(xml, "txtAttr"));
-	/*a new attribute can be entered*/
+    Color_Widget_bg("white", glade_xml_get_widget(xml, "txtAttr"));
+    if (fl->attr_count == 0)
+	Color_Widget_bg("red", glade_xml_get_widget(xml, "txtAttr"));
+    /*a new attribute can be entered */
 
-	gtk_widget_show(glade_xml_get_widget(xml, "txtValue"));
-	gtk_widget_show(glade_xml_get_widget(xml, "txtDefValue"));
+    gtk_widget_show(glade_xml_get_widget(xml, "txtValue"));
+    gtk_widget_show(glade_xml_get_widget(xml, "txtDefValue"));
 
-	gtk_entry_set_text((GtkEntry*)glade_xml_get_widget(xml, "txtDefValue"),"");
-	gtk_entry_set_text((GtkEntry*)glade_xml_get_widget(xml, "txtValue"),"");
-	gtk_widget_set_sensitive(glade_xml_get_widget(xml, "txtDefValue"),1);
-	gtk_widget_show(glade_xml_get_widget(xml, "attrAddBtn"));
+    gtk_entry_set_text((GtkEntry *)
+		       glade_xml_get_widget(xml, "txtDefValue"), "");
+    gtk_entry_set_text((GtkEntry *) glade_xml_get_widget(xml, "txtValue"),
+		       "");
+    gtk_widget_set_sensitive(glade_xml_get_widget(xml, "txtDefValue"), 1);
+    gtk_widget_show(glade_xml_get_widget(xml, "attrAddBtn"));
+    gtk_widget_hide(glade_xml_get_widget(xml, "attrApplyBtn"));
+    gtk_widget_hide(glade_xml_get_widget(xml, "attrSearchBtn"));
+    gtk_toggle_button_set_active((GtkToggleButton *)
+				 glade_xml_get_widget(xml, "attrProg"), 0);
+
+
+
+
+    if (strlen(prefix) == 0) {
+	gtk_widget_hide(glade_xml_get_widget(xml, "attrAddBtn"));
 	gtk_widget_hide(glade_xml_get_widget(xml, "attrApplyBtn"));
 	gtk_widget_hide(glade_xml_get_widget(xml, "attrSearchBtn"));
-	gtk_toggle_button_set_active ((GtkToggleButton*)glade_xml_get_widget(xml, "attrProg"),0);
+	gtk_widget_hide(glade_xml_get_widget(xml, "attrAddBtn"));
+	gtk_widget_hide(glade_xml_get_widget(xml, "txtValue"));
+	gtk_widget_hide(glade_xml_get_widget(xml, "txtDefValue"));
+	Color_Widget_bg("white", glade_xml_get_widget(xml, "txtAttr"));
+    }
 
 
+    for (ind = 0; ind < fl->attr_count; ind++) {
+	if (STRCASECMP(prefix, fl->attributes[ind]->name) == 0) {	/*an existing attribute */
 
+	    Color_Widget_bg("green", glade_xml_get_widget(xml, "txtAttr"));
 
-	if(strlen(prefix)==0)
-	{
-		gtk_widget_hide(glade_xml_get_widget(xml, "attrAddBtn"));
-		gtk_widget_hide(glade_xml_get_widget(xml, "attrApplyBtn"));
-		gtk_widget_hide(glade_xml_get_widget(xml, "attrSearchBtn"));
-		gtk_widget_hide(glade_xml_get_widget(xml, "attrAddBtn"));
-		gtk_widget_hide(glade_xml_get_widget(xml, "txtValue"));
-		gtk_widget_hide(glade_xml_get_widget(xml, "txtDefValue"));
-		Color_Widget_bg("white",glade_xml_get_widget(xml, "txtAttr"));
+	    if (get_object_type() == AGRAPH)
+		gtk_entry_set_text((GtkEntry *)
+				   glade_xml_get_widget(xml,
+							"txtDefValue"),
+				   fl->attributes[0]->defValG);
+	    if (get_object_type() == AGNODE)
+		gtk_entry_set_text((GtkEntry *)
+				   glade_xml_get_widget(xml,
+							"txtDefValue"),
+				   fl->attributes[0]->defValN);
+	    if (get_object_type() == AGEDGE)
+		gtk_entry_set_text((GtkEntry *)
+				   glade_xml_get_widget(xml,
+							"txtDefValue"),
+				   fl->attributes[0]->defValE);
+//                      gtk_entry_set_text((GtkEntry*)glade_xml_get_widget(xml, "txtValue"),agget(view->g[view->activeGraph],prefix));
+	    gtk_widget_set_sensitive(glade_xml_get_widget
+				     (xml, "txtDefValue"), 0);
+	    gtk_widget_hide(glade_xml_get_widget(xml, "attrAddBtn"));
+	    gtk_widget_show(glade_xml_get_widget(xml, "attrApplyBtn"));
+	    gtk_widget_show(glade_xml_get_widget(xml, "attrSearchBtn"));
+	    gtk_toggle_button_set_active((GtkToggleButton *)
+					 glade_xml_get_widget(xml,
+							      "attrProg"),
+					 fl->attributes[0]->propagate);
+	    break;
+
 	}
-	
+    }
 
-	for (ind=0;ind < fl->attr_count;ind++)
-	{
-		if( STRCASECMP(prefix,fl->attributes[ind]->name)==0)/*an existing attribute*/
-		{
-	
-			Color_Widget_bg("green",glade_xml_get_widget(xml, "txtAttr"));
-
-			if(get_object_type()==AGRAPH)
-				gtk_entry_set_text((GtkEntry*)glade_xml_get_widget(xml, "txtDefValue"),fl->attributes[0]->defValG);
-			if(get_object_type()==AGNODE)
-				gtk_entry_set_text((GtkEntry*)glade_xml_get_widget(xml, "txtDefValue"),fl->attributes[0]->defValN);
-			if(get_object_type()==AGEDGE)
-				gtk_entry_set_text((GtkEntry*)glade_xml_get_widget(xml, "txtDefValue"),fl->attributes[0]->defValE);
-//			gtk_entry_set_text((GtkEntry*)glade_xml_get_widget(xml, "txtValue"),agget(view->g[view->activeGraph],prefix));
-			gtk_widget_set_sensitive(glade_xml_get_widget(xml, "txtDefValue"),0);
-			gtk_widget_hide(glade_xml_get_widget(xml, "attrAddBtn"));
-			gtk_widget_show(glade_xml_get_widget(xml, "attrApplyBtn"));
-			gtk_widget_show(glade_xml_get_widget(xml, "attrSearchBtn"));
-			gtk_toggle_button_set_active ((GtkToggleButton*)glade_xml_get_widget(xml, "attrProg"),fl->attributes[0]->propagate);
-			break;
-
-		}
-	}
-
-	tmp=(((objKind==AGNODE) &&(sel_node)) ||((objKind==AGEDGE) &&(sel_edge))||((objKind==AGRAPH) &&(sel_graph)));
-		gtk_widget_set_sensitive(glade_xml_get_widget(xml, "attrApplyBtn"),tmp);
+    tmp = (((objKind == AGNODE) && (sel_node))
+	   || ((objKind == AGEDGE) && (sel_edge)) || ((objKind == AGRAPH)
+						      && (sel_graph)));
+    gtk_widget_set_sensitive(glade_xml_get_widget(xml, "attrApplyBtn"),
+			     tmp);
 }
+
 /*asttribute text changed call back*/
 
 _BB void on_txtAttr_changed(GtkWidget * widget, gpointer user_data)
 {
-//	printf ("attr text has been changed to %s \n",gtk_entry_get_text((GtkEntry*)widget));
-	filter_attributes((char*)gtk_entry_get_text((GtkEntry*)widget),view->Topview);
+//      printf ("attr text has been changed to %s \n",gtk_entry_get_text((GtkEntry*)widget));
+    filter_attributes((char *) gtk_entry_get_text((GtkEntry *) widget),
+		      view->Topview);
 }
 
 
-static void set_refresh_filters(ViewInfo* v,int type,char* name)
+static void set_refresh_filters(ViewInfo * v, int type, char *name)
 {
-    if (STRCASECMP(name,"pos")==0)
-	v->refresh.pos=1;
-    if (STRCASECMP(name,"color")==0)
-	v->refresh.color=1;
-    if ((STRCASECMP(name,"size")==0) &&(type==AGNODE))
-	v->refresh.nodesize=1;
-    if (STRCASECMP(name,"selected")==0)
-	v->refresh.selection=1;
-    if (STRCASECMP(name,"visible")==0)
-	v->refresh.visibility=1;
+    if (STRCASECMP(name, "pos") == 0)
+	v->refresh.pos = 1;
+    if (STRCASECMP(name, "color") == 0)
+	v->refresh.color = 1;
+    if ((STRCASECMP(name, "size") == 0) && (type == AGNODE))
+	v->refresh.nodesize = 1;
+    if (STRCASECMP(name, "selected") == 0)
+	v->refresh.selection = 1;
+    if (STRCASECMP(name, "visible") == 0)
+	v->refresh.visibility = 1;
 
 }
 
-
-
-_BB void on_attrApplyBtn_clicked (GtkWidget * widget, gpointer user_data)
+_BB void on_attrApplyBtn_clicked(GtkWidget * widget, gpointer user_data)
 {
-	int ind;
-	char* attr_name;
-	char* value;
-	char* def_val;
-	int prog;
-	topview* t;
-	topview_node* n;
-	topview_edge* e;
-	Agraph_t* g;
-	int objKind;
-	Agsym_t* sym;
-	attr_t* attr;
+    char *attr_name;
+    char *value;
+    char *def_val;
+    int prog;
+    topview *t;
+    Agnode_t *v;
+    Agedge_t *e;
+    Agraph_t *g;
+    int objKind;
+    Agsym_t *sym;
+    attr_t *attr;
 
-
-
-	/*values to be applied to selected objects*/
-	attr_name=(char*)gtk_entry_get_text((GtkEntry*)glade_xml_get_widget(xml, "txtAttr"));
-	def_val=(char*)gtk_entry_get_text((GtkEntry*)glade_xml_get_widget(xml, "txtDefValue"));
-	value=(char*)gtk_entry_get_text((GtkEntry*)glade_xml_get_widget(xml, "txtValue"));
-	prog=gtk_toggle_button_get_active((GtkToggleButton*)glade_xml_get_widget(xml, "attrProg"));
-	g=view->g[view->activeGraph];
-	t=view->Topview;
-	objKind=get_object_type();
-	attr=binarySearch(view->Topview->attributes,attr_name);
-	assert(attr);
-	attr->propagate=prog;
-	sym=agattr(g,objKind,attr_name,(char*)0);
-	if (!sym)	/*it shouldnt be null, just in case it is null*/
-		agattr(g,objKind,attr_name,def_val);
-	/*graph*/
-	if(objKind==AGRAPH)
-			agset(g,attr_name,value);
-	/*nodes*/
-	else if(objKind==AGNODE) {
-		for (ind=0;ind < view->Topview->Nodecount; ind ++)
-		{
-			n=&t->Nodes[ind];
-			if (n->data.Selected)
-			{
-					agset(n->Node,attr_name,value);
-			}
-		}
+    /*values to be applied to selected objects */
+    attr_name =
+	(char *) gtk_entry_get_text((GtkEntry *)
+				    glade_xml_get_widget(xml, "txtAttr"));
+    def_val =
+	(char *) gtk_entry_get_text((GtkEntry *)
+				    glade_xml_get_widget(xml,
+							 "txtDefValue"));
+    value =
+	(char *) gtk_entry_get_text((GtkEntry *)
+				    glade_xml_get_widget(xml, "txtValue"));
+    prog =
+	gtk_toggle_button_get_active((GtkToggleButton *)
+				     glade_xml_get_widget(xml,
+							  "attrProg"));
+    g = view->g[view->activeGraph];
+    t = view->Topview;
+    objKind = get_object_type();
+    attr = binarySearch(view->Topview->attributes, attr_name);
+    assert(attr);
+    attr->propagate = prog;
+    sym = agattr(g, objKind, attr_name, (char *) 0);
+    if (!sym)			/*it shouldnt be null, just in case it is null */
+	sym = agattr(g, objKind, attr_name, def_val);
+    /*graph */
+    if (objKind == AGRAPH)
+	agset(g, attr_name, value);
+    /*nodes */
+    else if (objKind == AGNODE) {
+	for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
+	    if (ND_selected(v))
+		agxset(v, sym, value);
 	}
-	/*edges*/
-	else if(objKind==AGEDGE) {
-
-		for (ind=0;ind < view->Topview->Edgecount; ind ++)
-		{
-			e=&t->Edges[ind];
-			if (e->data.Selected)
-				agset(e->Edge,attr_name,value);
-		}
+    }
+    /*edges */
+    else if (objKind == AGEDGE) {
+	for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
+	    for (e = agfstout(g, v); e; e = agnxtout(g, e)) {
+		if (ED_selected(e))
+		    agxset(e, sym, value);
+	    }
 	}
-	else
-	    fprintf (stderr, "on_attrApplyBtn_clicked: unknown object kind %d\n",
-		objKind);
-	set_refresh_filters(view,objKind,attr_name);
+    } else
+	fprintf(stderr,
+	    "on_attrApplyBtn_clicked: unknown object kind %d\n",
+	    objKind);
+    set_refresh_filters(view, objKind, attr_name);
 }
-_BB void on_attrRB0_clicked (GtkWidget * widget, gpointer user_data)
+
+_BB void on_attrRB0_clicked(GtkWidget * widget, gpointer user_data)
 {
-	filter_attributes((char*)
-		gtk_entry_get_text((GtkEntry*)glade_xml_get_widget(xml, "txtAttr")),view->Topview);
+    filter_attributes((char *)
+		      gtk_entry_get_text((GtkEntry *)
+					 glade_xml_get_widget(xml,
+							      "txtAttr")),
+		      view->Topview);
 
 }
-_BB void on_attrProg_toggled (GtkWidget * widget, gpointer user_data)
+_BB void on_attrProg_toggled(GtkWidget * widget, gpointer user_data)
 {
-	printf ("%s \n",agget (view->Topview->Nodes[5].Node,"testattr"));
-
+  /* FIX */
 }
 
-_BB void attr_label_motion(GtkWidget * widget,GdkEventMotion * event, gpointer data)
+_BB void attr_label_motion(GtkWidget * widget, GdkEventMotion * event,
+			   gpointer data)
 {
 #ifdef UNUSED
     float x = (float) event->x;
     float y = (float) event->y;
-    printf ("%f %f \n",x,y);
+    printf("%f %f \n", x, y);
 #endif
 }
-_BB void on_attrAddBtn_clicked (GtkWidget * widget, gpointer user_data)
+_BB void on_attrAddBtn_clicked(GtkWidget * widget, gpointer user_data)
 {
-	int ind;
-	int cnt=0;
-	char* attr_name;
-	char* value;
-	char* defValue;
-	static int objKind;
+    char *attr_name;
+    char *value;
+    char *defValue;
+    int objKind;
+    int prog;
+    topview *t;
+    Agraph_t *g;
+    attr_t *attr;
+    objKind = get_object_type();
 
+    /*values to be applied to selected objects */
+    attr_name =
+	(char *) gtk_entry_get_text((GtkEntry *)
+				    glade_xml_get_widget(xml, "txtAttr"));
+    value =
+	(char *) gtk_entry_get_text((GtkEntry *)
+				    glade_xml_get_widget(xml, "txtValue"));
+    defValue =
+	(char *) gtk_entry_get_text((GtkEntry *)
+				    glade_xml_get_widget(xml,
+							 "txtDefValue"));
+    prog =
+	gtk_toggle_button_get_active((GtkToggleButton *)
+				     glade_xml_get_widget(xml,
+							  "attrProg"));
+    g = view->g[view->activeGraph];
+    t = view->Topview;
+    /*try to find first */
+    attr = binarySearch(t->attributes, attr_name);
+    if (!attr) {
+	attr = new_attr();
+	attr->index = 0;
+	attr->name = safestrdup(attr_name);
+	attr->type = attr_alpha;
+	attr->value = safestrdup("");
+	attr->widget = NULL;
+	attr_list_add(t->attributes, attr);
+    }
+    attr->propagate = 0;
 
-	int prog;
-	topview* t;
-	topview_node* n;
-	topview_edge* e;
-	Agraph_t* g;
-	attr_t* attr;
-	objKind=get_object_type();
+    if (objKind == AGRAPH) {
+	agattr(g, AGRAPH, attr_name, defValue);
+	attr->defValG = safestrdup(defValue);
+	attr->objType[0] = 1;
+    }
 
-
-	/*values to be applied to selected objects*/
-	attr_name=(char*)gtk_entry_get_text((GtkEntry*)glade_xml_get_widget(xml, "txtAttr"));
-	value=(char*)gtk_entry_get_text((GtkEntry*)glade_xml_get_widget(xml, "txtValue"));
-	defValue=(char*)gtk_entry_get_text((GtkEntry*)glade_xml_get_widget(xml, "txtDefValue"));
-	prog=gtk_toggle_button_get_active((GtkToggleButton*)glade_xml_get_widget(xml, "attrProg"));
-	g=view->g[view->activeGraph];
-	t=view->Topview;
-	/*try to find first*/
-	attr=binarySearch(t->attributes,attr_name);
-	if(!attr)
-	{
-		attr=new_attr();
-		attr->index=0;
-		attr->name=safestrdup(attr_name);
-		attr->type=attr_alpha;
-		attr->value=safestrdup("");
-		attr->widget=NULL;
-		attr_list_add(t->attributes,attr);
-	}
-	attr->propagate=0;
-
-	if (objKind==AGRAPH) {
-		agattr(g, AGRAPH, attr_name,defValue);
-		attr->defValG=safestrdup(defValue);
-		attr->objType[0]=1;
-	}
-
-	/*nodes*/
-	else if (objKind==AGNODE) {
-		for (ind=0;ind < view->Topview->Nodecount; ind ++)
-		{
-			n=&t->Nodes[ind];
-			if (n->data.Selected)
-			{
-				cnt++;
-				if (cnt==1)
-				{
-					agattr(g, AGNODE, attr_name,defValue);
-					break;
-				}
-	
-			}
-		}
-		attr->defValN=safestrdup(defValue);
-		attr->objType[1]=1;
-
-
-
-	}
-	else if (objKind==AGEDGE) {
-	
-		cnt=0;
-		/*edges*/
-		for (ind=0;ind < view->Topview->Edgecount; ind ++)
-		{
-			e=&t->Edges[ind];
-			if (e->data.Selected)
-			{
-				cnt++;
-				if (cnt==1)
-				{
-					agattr(g, AGEDGE, attr_name,defValue);
-					break;
-				}
-			}
-		}
-		attr->defValE=safestrdup(defValue);
-		attr->objType[2]=1;
-
-	}
-	else
-	    fprintf (stderr, "on_attrAddBtn_clicked: unknown object kind %d\n",
+    /*nodes */
+    else if (objKind == AGNODE) {
+	agattr(g, AGNODE, attr_name, defValue);
+	attr->defValN = safestrdup(defValue);
+	attr->objType[1] = 1;
+    } else if (objKind == AGEDGE) {
+	agattr(g, AGEDGE, attr_name, defValue);
+	attr->defValE = safestrdup(defValue);
+	attr->objType[2] = 1;
+    } else
+	fprintf(stderr, "on_attrAddBtn_clicked: unknown object kind %d\n",
 		objKind);
-	filter_attributes(attr_name,view->Topview);
+    filter_attributes(attr_name, view->Topview);
 
 }
 
-attr_list* load_attr_list(Agraph_t* g)
+attr_list *load_attr_list(Agraph_t * g)
 {
-	attr_t* attr;
-	attr_list* l;
-	FILE *file;
-	Agsym_t* sym;	/*cgraph atttribute*/
+    attr_t *attr;
+    attr_list *l;
+    FILE *file;
+    Agsym_t *sym;		/*cgraph atttribute */
     char line[BUFSIZ];
-    static char* smyrna_attrs;
-	char* a;
-	
+    static char *smyrna_attrs;
+    char *a;
+
     if (!smyrna_attrs)
-	smyrna_attrs = smyrnaPath ("attrs.txt");
-    g=view->g[view->activeGraph];
-    l=attr_list_new(NULL,1);
+	smyrna_attrs = smyrnaPath("attrs.txt");
+    g = view->g[view->activeGraph];
+    l = attr_list_new(NULL, 1);
     file = fopen(smyrna_attrs, "r");
     if (file != NULL) {
-		int i=0;
-		while (fgets(line, BUFSIZ, file) != NULL) 
-		{
-			int idx=0;
-			attr=new_attr();
-			a=strtok(line,",");
-			attr->index=i;
-			attr->type=get_attr_data_type(a[0]);
-			while ((a=strtok(NULL,",")))
-			{
-					/*C,(0)color, (1)black, (2)EDGE Or NODE Or CLUSTER, (3)ALL_ENGINES*/
+	int i = 0;
+	while (fgets(line, BUFSIZ, file) != NULL) {
+	    int idx = 0;
+	    attr = new_attr();
+	    a = strtok(line, ",");
+	    attr->index = i;
+	    attr->type = get_attr_data_type(a[0]);
+	    while ((a = strtok(NULL, ","))) {
+		/*C,(0)color, (1)black, (2)EDGE Or NODE Or CLUSTER, (3)ALL_ENGINES */
 
-				switch (idx)
-				{
-					case 0: /**/
-						attr->name=safestrdup(a);
-						break;
-					case 1: /**/
-						attr->defValG=safestrdup(a);
-						attr->defValN=safestrdup(a);
-						attr->defValE=safestrdup(a);
-						break;
-					case 2: /**/
-						set_attr_object_type(a,attr->objType);
-						break;
-				}
-				idx ++;
-			}
-			i++;
-			attr_list_add(l,attr);
-
+		switch (idx) {
+		case 0:
+		    /**/ attr->name = safestrdup(a);
+		    break;
+		case 1:
+		    /**/ attr->defValG = safestrdup(a);
+		    attr->defValN = safestrdup(a);
+		    attr->defValE = safestrdup(a);
+		    break;
+		case 2:
+		    /**/ set_attr_object_type(a, attr->objType);
+		    break;
 		}
-	fclose (file);
-    }
-    sym=NULL;
-    while ((sym = agnxtattr(g,AGRAPH, sym))) {
-		attr=binarySearch(l, sym->name);
-		if (attr)
-		    attr->objType[0]=1;
-		else
-		{
-		    attr=new_attr_with_ref(sym);
-    		    attr_list_add(l,attr);
-		}
-    }
-	sym=NULL;
-	while ((sym = agnxtattr(g,AGNODE, sym)))
-	{
-	    
-	        attr=binarySearch(l, sym->name);
-		if (attr)
-		{
-		    attr->objType[1]=1;
-
-		}
-		else
-		{
-		    attr=new_attr_with_ref(sym);
-    		    attr_list_add(l,attr);
-		}
+		idx++;
+	    }
+	    i++;
+	    attr_list_add(l, attr);
 
 	}
-	sym=NULL;
-	while ((sym = agnxtattr(g,AGEDGE, sym)))
-	{
-
-		attr=binarySearch(l, sym->name);
-		if (attr)
-		    attr->objType[2]=1;
-		else
-		{
-		    attr=new_attr_with_ref(sym);
-    		    attr_list_add(l,attr);
-		}
+	fclose(file);
+    }
+    sym = NULL;
+    while ((sym = agnxtattr(g, AGRAPH, sym))) {
+	attr = binarySearch(l, sym->name);
+	if (attr)
+	    attr->objType[0] = 1;
+	else {
+	    attr = new_attr_with_ref(sym);
+	    attr_list_add(l, attr);
 	}
-	return l;
+    }
+    sym = NULL;
+    while ((sym = agnxtattr(g, AGNODE, sym))) {
+
+	attr = binarySearch(l, sym->name);
+	if (attr) {
+	    attr->objType[1] = 1;
+
+	} else {
+	    attr = new_attr_with_ref(sym);
+	    attr_list_add(l, attr);
+	}
+
+    }
+    sym = NULL;
+    while ((sym = agnxtattr(g, AGEDGE, sym))) {
+
+	attr = binarySearch(l, sym->name);
+	if (attr)
+	    attr->objType[2] = 1;
+	else {
+	    attr = new_attr_with_ref(sym);
+	    attr_list_add(l, attr);
+	}
+    }
+    return l;
 }
 
-/**/
-static void set_header_text(void)
+ /**/ static void set_header_text(void)
 {
-	int nodeCnt;
-	int edgeCnt;
-	static char buf[512];
-	int ind;
+    int nodeCnt = 0;
+    int edgeCnt = 0;
+    static char buf[512];
+    Agedge_t* ep;
+    Agnode_t* v;
+    Agraph_t* g;
 
-	topview* t;
-	topview_node* n;
-	topview_edge* e;
-	
-
-	
-	nodeCnt=0;
-	edgeCnt=0;
-	t=view->Topview;
-
-
-	for (ind=0;ind < view->Topview->Nodecount; ind ++)
-	{
-		n=&t->Nodes[ind];
-		if (n->data.Selected)
-		{
-			nodeCnt++;
-		}
+    g = view->g[view->activeGraph];
+    for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
+	if (ND_selected(v))
+	    nodeCnt++;
+	for (ep = agfstout(g, v); ep; ep = agnxtout(g, ep)) {
+	    if (ND_selected(v))
+		edgeCnt++;
 	}
-	for (ind=0;ind < view->Topview->Edgecount; ind ++)
-	{
-		e=&t->Edges[ind];
-		if (e->data.Selected)
-		{
-			edgeCnt++;
-		}
-	}
-		sel_node=nodeCnt;
-		sel_edge=edgeCnt;
-		sel_graph=1;
-	
-	sprintf(buf,"%d Nodes and %d edges selected",nodeCnt,edgeCnt);
-	gtk_label_set_text((GtkLabel*)glade_xml_get_widget(xml, "label124"),buf);
-	gtk_entry_set_text((GtkEntry*)glade_xml_get_widget(xml, "txtAttr"),"");
-	Color_Widget_bg("white",glade_xml_get_widget(xml, "fixed6"));
+    }
+    sel_node = nodeCnt;
+    sel_edge = edgeCnt;
+    sel_graph = 1;
 
-
-
+    sprintf(buf, "%d Nodes and %d edges selected", nodeCnt, edgeCnt);
+    gtk_label_set_text((GtkLabel *) glade_xml_get_widget(xml, "label124"),
+		       buf);
+    gtk_entry_set_text((GtkEntry *) glade_xml_get_widget(xml, "txtAttr"),
+		       "");
+    Color_Widget_bg("white", glade_xml_get_widget(xml, "fixed6"));
 }
 
-void showAttrsWidget(topview* t)
+void showAttrsWidget(topview * t)
 {
     gtk_widget_hide(glade_xml_get_widget(xml, "dlgSettings"));
     gtk_widget_show(glade_xml_get_widget(xml, "dlgSettings"));
-	gtk_notebook_set_current_page (
-		(GtkNotebook*)glade_xml_get_widget(xml, "notebook3"),ATTR_NOTEBOOK_IDX);
-//	set_header_text();
-	filter_attributes("",view->Topview);
-
-
+    gtk_notebook_set_current_page((GtkNotebook *)
+				  glade_xml_get_widget(xml, "notebook3"),
+				  ATTR_NOTEBOOK_IDX);
+    set_header_text();
+    filter_attributes("", view->Topview);
 }
-static void gvpr_select(char* attr,char* regex_str,int objType)
+
+static void gvpr_select(char *attr, char *regex_str, int objType)
 {
-    
+
     static Sfio_t *sf;
     char *bf2;
     int i, j, argc;
     char **argv;
 
     if (!sf)
-	sf= sfstropen();
+	sf = sfstropen();
 
-    if (objType==AGNODE)
-	sfprintf (sf,"N[%s==\"%s\"]{selected = \"1\"}",attr,regex_str);
-    if (objType==AGEDGE)
-	sfprintf (sf,"E[%s==\"%s\"]{selected = \"1\"}",attr,regex_str);
+    if (objType == AGNODE)
+	sfprintf(sf, "N[%s==\"%s\"]{selected = \"1\"}", attr, regex_str);
+    if (objType == AGEDGE)
+	sfprintf(sf, "E[%s==\"%s\"]{selected = \"1\"}", attr, regex_str);
 
 
 
-    bf2 =sfstruse(sf);
+    bf2 = sfstruse(sf);
 
     argc = 1;
     if (*bf2 != '\0')
@@ -849,12 +812,16 @@ static void gvpr_select(char* attr,char* regex_str,int objType)
 }
 
 
-_BB void on_attrSearchBtn_clicked (GtkWidget * widget, gpointer user_data)
+_BB void on_attrSearchBtn_clicked(GtkWidget * widget, gpointer user_data)
 {
-    
-    char *attr=(char*)gtk_entry_get_text((GtkEntry*)glade_xml_get_widget(xml, "txtAttr"));
-    char* regex_str=(char*)gtk_entry_get_text((GtkEntry*)glade_xml_get_widget(xml, "txtValue"));
-    gvpr_select(attr,regex_str,get_object_type());
+
+    char *attr =
+	(char *) gtk_entry_get_text((GtkEntry *)
+				    glade_xml_get_widget(xml, "txtAttr"));
+    char *regex_str =
+	(char *) gtk_entry_get_text((GtkEntry *)
+				    glade_xml_get_widget(xml, "txtValue"));
+    gvpr_select(attr, regex_str, get_object_type());
 
 }
 
@@ -1026,7 +993,7 @@ void load_graph_properties(Agraph_t * graph)
 		       GD_GraphFileName(graph));
     gtk_combo_box_set_active((GtkComboBox *)
 			     glade_xml_get_widget(xml, "cbLayout"),
-			    GD_Engine(graph));
+			     GD_Engine(graph));
     gtk_toggle_button_set_active((GtkToggleButton *)
 				 glade_xml_get_widget(xml, "chkVisible"),
 				 GD_AlwaysShow(graph));
@@ -1044,18 +1011,19 @@ int update_graph_properties(Agraph_t * graph)	//updates graph from gui
     int respond = 0;
     int id = 0;
     //check the graph name  should not be duplicated graph names
-    for (id = 0; id < view->graphCount; id++) 
-	{
-		if (graph != view->g[id]) 
-		{
-			if (STRCASECMP(gtk_entry_get_text ((GtkEntry *)glade_xml_get_widget(xml, "entryGraphName")),
-		 GD_GraphName(view->g[id])) ==
-				0) {
-					Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
-							  GTK_DIALOG_MODAL,
-								  GTK_MESSAGE_WARNING,
-								  GTK_BUTTONS_OK,
-								  "There is another graph with this name!");
+    for (id = 0; id < view->graphCount; id++) {
+	if (graph != view->g[id]) {
+	    if (STRCASECMP
+		(gtk_entry_get_text
+		 ((GtkEntry *)
+		  glade_xml_get_widget(xml, "entryGraphName")),
+		 GD_GraphName(view->g[id])) == 0) {
+		Dlg =
+		    (GtkMessageDialog *) gtk_message_dialog_new(NULL,
+								GTK_DIALOG_MODAL,
+								GTK_MESSAGE_WARNING,
+								GTK_BUTTONS_OK,
+								"There is another graph with this name!");
 		respond = gtk_dialog_run((GtkDialog *) Dlg);
 		gtk_object_destroy((GtkObject *) Dlg);
 		return 0;
@@ -1072,11 +1040,10 @@ int update_graph_properties(Agraph_t * graph)	//updates graph from gui
 	 GD_GraphFileName(graph)) != 0) {
 
 
-	if ((file =
-	     fopen(gtk_entry_get_text
-		   ((GtkEntry *)
-		    glade_xml_get_widget(xml, "entryGraphFileName")),
-		   "r"))) {
+	if ((file = fopen(gtk_entry_get_text((GtkEntry *)
+					     glade_xml_get_widget(xml,
+								  "entryGraphFileName")),
+			  "r"))) {
 	    fclose(file);
 	    Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
 							      GTK_DIALOG_MODAL,
@@ -1090,11 +1057,10 @@ int update_graph_properties(Agraph_t * graph)	//updates graph from gui
 		return 0;
 	}
 	//now check if filename is legal, try to open it to write
-	if ((file =
-	     fopen(gtk_entry_get_text
-		   ((GtkEntry *)
-		    glade_xml_get_widget(xml, "entryGraphFileName")),
-		   "w")))
+	if ((file = fopen(gtk_entry_get_text((GtkEntry *)
+					     glade_xml_get_widget(xml,
+								  "entryGraphFileName")),
+			  "w")))
 	    fclose(file);
 	else {
 	    Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
@@ -1112,35 +1078,33 @@ int update_graph_properties(Agraph_t * graph)	//updates graph from gui
 
     }
 
-
     //if it comes so far graph deserves new values
 
-    GD_GraphName(graph) =
-	(char *) gtk_entry_get_text((GtkEntry *)
-				    glade_xml_get_widget(xml,
-							 "entryGraphName"));
-    GD_GraphFileName(graph) =
-	(char *) gtk_entry_get_text((GtkEntry *)
-				    glade_xml_get_widget(xml,
-							 "entryGraphFileName"));
+    GD_GraphName(graph) = (char *) gtk_entry_get_text((GtkEntry *)
+						      glade_xml_get_widget
+						      (xml,
+						       "entryGraphName"));
+    GD_GraphFileName(graph) = (char *) gtk_entry_get_text((GtkEntry *)
+							  glade_xml_get_widget
+							  (xml,
+							   "entryGraphFileName"));
 
-    GD_AlwaysShow(graph) =
-	gtk_toggle_button_get_active((GtkToggleButton *)
-				     glade_xml_get_widget(xml,
-							  "chkVisible"));
-    GD_Locked(graph) =
-	gtk_toggle_button_get_active((GtkToggleButton *)
-				     glade_xml_get_widget(xml,
-							  "chkLocked"));
-    GD_TopView(graph) =
-	gtk_toggle_button_get_active((GtkToggleButton *)
-				     glade_xml_get_widget(xml,
-							  "chkTopView"));
+    GD_AlwaysShow(graph) = gtk_toggle_button_get_active((GtkToggleButton *)
+							glade_xml_get_widget
+							(xml,
+							 "chkVisible"));
+    GD_Locked(graph) = gtk_toggle_button_get_active((GtkToggleButton *)
+						    glade_xml_get_widget
+						    (xml, "chkLocked"));
+    GD_TopView(graph) = gtk_toggle_button_get_active((GtkToggleButton *)
+						     glade_xml_get_widget
+						     (xml, "chkTopView"));
 
 
     //check if the engine has been changed, if so do new layout
     if (GD_Engine(graph) != gtk_combo_box_get_active((GtkComboBox *)
-				 glade_xml_get_widget(xml, "cbLayout"))) {
+						     glade_xml_get_widget
+						     (xml, "cbLayout"))) {
 	Dlg =
 	    (GtkMessageDialog *) gtk_message_dialog_new(NULL,
 							GTK_DIALOG_MODAL,
@@ -1149,10 +1113,10 @@ int update_graph_properties(Agraph_t * graph)	//updates graph from gui
 							"You have changed the layout of the graph,this will change the graph layout\n all your position changes will be lost\n Are you sure?");
 	respond = gtk_dialog_run((GtkDialog *) Dlg);
 	if (respond == GTK_RESPONSE_YES)
-	    do_graph_layout(graph,
-			    gtk_combo_box_get_active((GtkComboBox *)
-						     glade_xml_get_widget
-						     (xml, "cbLayout")),
+	    do_graph_layout(graph, gtk_combo_box_get_active((GtkComboBox *)
+							    glade_xml_get_widget
+							    (xml,
+							     "cbLayout")),
 			    0);
 	gtk_object_destroy((GtkObject *) Dlg);
     }
@@ -1186,194 +1150,245 @@ int load_object_properties(gve_element typeIndex, Agraph_t * g)	//load  from obj
     //according to object type (typeIndex) set the reference object
     switch (typeIndex)		//typeindex 0 means new object
     {
-		case GVE_CLUSTER:			//graph  sub graph (cluster)
-			obj = GD_selectedGraphs(g)[0];
-		break;
-		case GVE_NODE:			//Node
-			obj = GD_selectedNodes(g)[0];
-		break;
-		case GVE_EDGE:			//Edge
-			obj = GD_selectedEdges(g)[0];
-		break;
-		default :
-		break;
+    case GVE_CLUSTER:		//graph  sub graph (cluster)
+	obj = GD_selectedGraphs(g)[0];
+	break;
+    case GVE_NODE:		//Node
+	obj = GD_selectedNodes(g)[0];
+	break;
+    case GVE_EDGE:		//Edge
+	obj = GD_selectedEdges(g)[0];
+	break;
+    default:
+	break;
     }
     for (widgetcounter = 0; widgetcounter < MAXIMUM_WIDGET_COUNT;
-	 widgetcounter++)
-	{
+	 widgetcounter++) {
 	//create the labels and widget here
-		attr[widgetcounter].ComboValuesCount = 0;
-		attr[widgetcounter].ComboValues = '\0';
+	attr[widgetcounter].ComboValuesCount = 0;
+	attr[widgetcounter].ComboValues = '\0';
 
-		if (!AttrWidgets[widgetcounter]) 
-		{
-			AttrLabels[widgetcounter] =
-			gtk_label_new(attr[widgetcounter].Name);
-			switch (attr[widgetcounter].Type) 
-			{
-				case 'F':		//float
-					AttrWidgets[widgetcounter] =
-					gtk_spin_button_new_with_range(0, 100, 0.001);
-					g_signal_connect((gpointer) AttrWidgets[widgetcounter],"value-changed", G_CALLBACK(attr_widgets_modifiedSlot),(gpointer) widgetcounter);
+	if (!AttrWidgets[widgetcounter]) {
+	    AttrLabels[widgetcounter] =
+		gtk_label_new(attr[widgetcounter].Name);
+	    switch (attr[widgetcounter].Type) {
+	    case 'F':		//float
+		AttrWidgets[widgetcounter] =
+		    gtk_spin_button_new_with_range(0, 100, 0.001);
+		g_signal_connect((gpointer) AttrWidgets[widgetcounter],
+				 "value-changed",
+				 G_CALLBACK(attr_widgets_modifiedSlot),
+				 (gpointer) widgetcounter);
 
-				break;
-				case 'C':		//color box
-					AttrWidgets[widgetcounter] = gtk_color_button_new();
-					gtk_widget_set_size_request(AttrWidgets[widgetcounter], 50, 23);
-					g_signal_connect((gpointer) AttrWidgets[widgetcounter],"color-set",G_CALLBACK(attr_widgets_modifiedSlot),(gpointer) widgetcounter);
+		break;
+	    case 'C':		//color box
+		AttrWidgets[widgetcounter] = gtk_color_button_new();
+		gtk_widget_set_size_request(AttrWidgets[widgetcounter], 50,
+					    23);
+		g_signal_connect((gpointer) AttrWidgets[widgetcounter],
+				 "color-set",
+				 G_CALLBACK(attr_widgets_modifiedSlot),
+				 (gpointer) widgetcounter);
 
-				break;
-				default:		//alphanumreric         GTK Entry
-					AttrWidgets[widgetcounter] = gtk_entry_new();
-					gtk_widget_set_size_request(AttrWidgets[widgetcounter],130, 23);
-					g_signal_connect((gpointer) AttrWidgets[widgetcounter], "changed", G_CALLBACK(attr_widgets_modifiedSlot),(gpointer) widgetcounter);
-				break;
-		    }
-		    attr[widgetcounter].attrWidget = AttrWidgets[widgetcounter];
-		}
-		//locate widget on the GtkLayout* layout
-		if (attr[widgetcounter].ApplyTo[typeIndex] == 1) 
-		{
-			gtk_layout_put(layout, AttrWidgets[widgetcounter], X, Y);
-			gtk_layout_put(layout, AttrLabels[widgetcounter], X - 80, Y);
-			gtk_widget_show(AttrWidgets[widgetcounter]);
-			gtk_widget_show(AttrLabels[widgetcounter]);
-			Y = Y + Yinc;
-			switch (attr[widgetcounter].Type) 
-			{
-				case 'F':
-					if (agget(obj, attr[widgetcounter].Name))
-						gtk_spin_button_set_value((GtkSpinButton *)	AttrWidgets[widgetcounter],atof(agget(obj,attr[widgetcounter].Name)));
-					else
-					    gtk_spin_button_set_value((GtkSpinButton *)AttrWidgets[widgetcounter],atof(attr[widgetcounter].Default));
-				break;
-				case 'C':
-					if (agget(obj, attr[widgetcounter].Name))
-						setGdkColor(&color,	agget(obj, attr[widgetcounter].Name));
-					else
-						setGdkColor(&color, attr[widgetcounter].Default);
-
-					gtk_color_button_set_color((GtkColorButton *)AttrWidgets[widgetcounter],&color);
-				break;
-				default:
-					if (agget(obj, attr[widgetcounter].Name))
-						gtk_entry_set_text((GtkEntry *)AttrWidgets[widgetcounter],agget(obj,attr[widgetcounter].Name));
-					else
-						gtk_entry_set_text((GtkEntry *)AttrWidgets[widgetcounter],attr[widgetcounter].Default);
-			}
-			gtk_widget_show(AttrWidgets[widgetcounter]);
-			gtk_widget_show(AttrLabels[widgetcounter]);
-		}
-		else 
-		{
-			gtk_widget_hide(AttrWidgets[widgetcounter]);
-			gtk_widget_hide(AttrLabels[widgetcounter]);
-		}
-		if (Y > widget_per_page * Yinc) 
-		{
-			X = 320;
-			Y = OriginalY;
-		}
-		attr_widgets_modified[widgetcounter] = 0;	//set to unmodified
+		break;
+	    default:		//alphanumreric         GTK Entry
+		AttrWidgets[widgetcounter] = gtk_entry_new();
+		gtk_widget_set_size_request(AttrWidgets[widgetcounter],
+					    130, 23);
+		g_signal_connect((gpointer) AttrWidgets[widgetcounter],
+				 "changed",
+				 G_CALLBACK(attr_widgets_modifiedSlot),
+				 (gpointer) widgetcounter);
+		break;
+	    }
+	    attr[widgetcounter].attrWidget = AttrWidgets[widgetcounter];
 	}
+	//locate widget on the GtkLayout* layout
+	if (attr[widgetcounter].ApplyTo[typeIndex] == 1) {
+	    gtk_layout_put(layout, AttrWidgets[widgetcounter], X, Y);
+	    gtk_layout_put(layout, AttrLabels[widgetcounter], X - 80, Y);
+	    gtk_widget_show(AttrWidgets[widgetcounter]);
+	    gtk_widget_show(AttrLabels[widgetcounter]);
+	    Y = Y + Yinc;
+	    switch (attr[widgetcounter].Type) {
+	    case 'F':
+		if (agget(obj, attr[widgetcounter].Name))
+		    gtk_spin_button_set_value((GtkSpinButton *)
+					      AttrWidgets[widgetcounter],
+					      atof(agget
+						   (obj,
+						    attr[widgetcounter].
+						    Name)));
+		else
+		    gtk_spin_button_set_value((GtkSpinButton *)
+					      AttrWidgets[widgetcounter],
+					      atof(attr[widgetcounter].
+						   Default));
+		break;
+	    case 'C':
+		if (agget(obj, attr[widgetcounter].Name))
+		    setGdkColor(&color,
+				agget(obj, attr[widgetcounter].Name));
+		else
+		    setGdkColor(&color, attr[widgetcounter].Default);
+
+		gtk_color_button_set_color((GtkColorButton *)
+					   AttrWidgets[widgetcounter],
+					   &color);
+		break;
+	    default:
+		if (agget(obj, attr[widgetcounter].Name))
+		    gtk_entry_set_text((GtkEntry *)
+				       AttrWidgets[widgetcounter],
+				       agget(obj,
+					     attr[widgetcounter].Name));
+		else
+		    gtk_entry_set_text((GtkEntry *)
+				       AttrWidgets[widgetcounter],
+				       attr[widgetcounter].Default);
+	    }
+	    gtk_widget_show(AttrWidgets[widgetcounter]);
+	    gtk_widget_show(AttrLabels[widgetcounter]);
+	} else {
+	    gtk_widget_hide(AttrWidgets[widgetcounter]);
+	    gtk_widget_hide(AttrLabels[widgetcounter]);
+	}
+	if (Y > widget_per_page * Yinc) {
+	    X = 320;
+	    Y = OriginalY;
+	}
+	attr_widgets_modified[widgetcounter] = 0;	//set to unmodified
+    }
 
 
     //first part, common attributes
     sprintf(buf, "%i", OD_ID(obj));
-    gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(xml, "objEntryName"),OD_ObjName(obj));
-	gtk_entry_set_text((GtkEntry *)glade_xml_get_widget(xml, "objEntryLabel"),agnameof(obj));
-    gtk_toggle_button_set_active((GtkToggleButton *)glade_xml_get_widget(xml,"frmObjectchkVisible"),OD_Visible(obj));
-    gtk_toggle_button_set_active((GtkToggleButton *)glade_xml_get_widget(xml,"frmObjectchkLocked"),OD_Locked(obj));
-	gtk_toggle_button_set_active((GtkToggleButton *)glade_xml_get_widget(xml,"frmObjectchkHighlighted"),OD_Highlighted(obj));
+    gtk_entry_set_text((GtkEntry *)
+		       glade_xml_get_widget(xml, "objEntryName"),
+		       OD_ObjName(obj));
+    gtk_entry_set_text((GtkEntry *)
+		       glade_xml_get_widget(xml, "objEntryLabel"),
+		       agnameof(obj));
+    gtk_toggle_button_set_active((GtkToggleButton *)
+				 glade_xml_get_widget(xml,
+						      "frmObjectchkVisible"),
+				 OD_Visible(obj));
+    gtk_toggle_button_set_active((GtkToggleButton *)
+				 glade_xml_get_widget(xml,
+						      "frmObjectchkLocked"),
+				 OD_Locked(obj));
+    gtk_toggle_button_set_active((GtkToggleButton *)
+				 glade_xml_get_widget(xml,
+						      "frmObjectchkHighlighted"),
+				 OD_Highlighted(obj));
     //get the position info // show only one item is selected
     if (((GD_selectedNodesCount(g) == 1) && (typeIndex == GVE_NODE))
 	|| ((GD_selectedEdgesCount(g) == 1) && (typeIndex == GVE_EDGE))
-	|| ((GD_selectedGraphsCount(g) == 1) && (typeIndex == GVE_EDGE))) 
+	|| ((GD_selectedGraphsCount(g) == 1) && (typeIndex == GVE_EDGE))) {
+	sprintf(line, "%s", agget(obj, "pos"));
+	a = (float) atof(strtok(line, ","));
+	b = (float) atof(strtok(NULL, ","));
+	gtk_spin_button_set_value((GtkSpinButton *)
+				  glade_xml_get_widget(xml,
+						       "frmObjectPosX"),
+				  a);
+	gtk_spin_button_set_value((GtkSpinButton *)
+				  glade_xml_get_widget(xml,
+						       "frmObjectPosY"),
+				  b);
+	gtk_spin_button_set_value((GtkSpinButton *)
+				  glade_xml_get_widget(xml,
+						       "frmObjectPosZ"),
+				  0);
+	gtk_widget_show(glade_xml_get_widget(xml, "frmObjectPosX"));
+	gtk_widget_show(glade_xml_get_widget(xml, "frmObjectPosY"));
+	gtk_widget_show(glade_xml_get_widget(xml, "frmObjectPosZ"));
+	gtk_widget_show(glade_xml_get_widget(xml, "frmObjectlabel3"));
+	gtk_label_set_text((GtkLabel *)
+			   glade_xml_get_widget(xml, "frmObjectPosLabelX"),
+			   "X:");
+    } else {
+	gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectPosX"));
+	gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectPosY"));
+	gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectPosZ"));
+	gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectlabel3"));
+	gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectPosLabelY"));
+	gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectPosLabelZ"));
+	switch (typeIndex)	//typeindex 0 means new object
 	{
-		sprintf(line, "%s", agget(obj, "pos"));
-		a = (float) atof(strtok(line, ","));
-		b = (float) atof(strtok(NULL, ","));
-		gtk_spin_button_set_value((GtkSpinButton *)glade_xml_get_widget(xml,"frmObjectPosX"),a);
-		gtk_spin_button_set_value((GtkSpinButton *)glade_xml_get_widget(xml,"frmObjectPosY"),b);
-		gtk_spin_button_set_value((GtkSpinButton *)glade_xml_get_widget(xml,"frmObjectPosZ"),0);
-		gtk_widget_show(glade_xml_get_widget(xml, "frmObjectPosX"));
-		gtk_widget_show(glade_xml_get_widget(xml, "frmObjectPosY"));
-		gtk_widget_show(glade_xml_get_widget(xml, "frmObjectPosZ"));
-		gtk_widget_show(glade_xml_get_widget(xml, "frmObjectlabel3"));
-		gtk_label_set_text((GtkLabel *)glade_xml_get_widget(xml, "frmObjectPosLabelX"),"X:");
-    }
-	else 
-	{
-		gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectPosX"));
-		gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectPosY"));
-		gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectPosZ"));
-		gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectlabel3"));
-		gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectPosLabelY"));
-		gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectPosLabelZ"));
-		switch (typeIndex)	//typeindex 0 means new object
-		{
-			case GVE_CLUSTER:		//graph  sub graph (cluster)
-				gtk_label_set_text((GtkLabel *)glade_xml_get_widget(xml,"frmObjectPosLabelX"),"Changes that you make will be applied to all selected clusters");
-			break;
-			case GVE_NODE:		//Node
-				gtk_label_set_text((GtkLabel *)glade_xml_get_widget(xml,"frmObjectPosLabelX"),"Changes that you make will be applied to all selected nodes!");
-		    break;
-			case GVE_EDGE:		//Edge
-				gtk_label_set_text((GtkLabel *)glade_xml_get_widget(xml,"frmObjectPosLabelX"),"Changes that you make will be applied to all selected edges!");
-		    break;
-			default :
-				break;
-		}
+	case GVE_CLUSTER:	//graph  sub graph (cluster)
+	    gtk_label_set_text((GtkLabel *)
+			       glade_xml_get_widget(xml,
+						    "frmObjectPosLabelX"),
+			       "Changes that you make will be applied to all selected clusters");
+	    break;
+	case GVE_NODE:		//Node
+	    gtk_label_set_text((GtkLabel *)
+			       glade_xml_get_widget(xml,
+						    "frmObjectPosLabelX"),
+			       "Changes that you make will be applied to all selected nodes!");
+	    break;
+	case GVE_EDGE:		//Edge
+	    gtk_label_set_text((GtkLabel *)
+			       glade_xml_get_widget(xml,
+						    "frmObjectPosLabelX"),
+			       "Changes that you make will be applied to all selected edges!");
+	    break;
+	default:
+	    break;
 	}
+    }
     return 1;
 }
 void update_object_properties(int typeIndex, Agraph_t * g)	//updates objects from gui(node ,edge, cluster)
 {
     int ind = 0;
-    for (ind = 0; ind < widgetcounter; ind++) 
-	{
-		//if widget has been changed
-		if (attr_widgets_modified[ind] == 1)
-		{
-			switch (typeIndex)	//typeindex 0 means new object
-			{
-				case GVE_CLUSTER:		//graph  sub graph (cluster)
-					change_selected_graph_attributes(g, attr[ind].Name,
-							 get_attribute_string_value_from_widget
-							 (&attr[ind]));
-				break;
-				case GVE_NODE:		//Node
-					change_selected_node_attributes(g, attr[ind].Name,
-							get_attribute_string_value_from_widget
-							(&attr[ind]));
-				break;
-				case GVE_EDGE:		//Edge
-					change_selected_edge_attributes(g, attr[ind].Name,
-								get_attribute_string_value_from_widget
-								(&attr[ind]));
-				break;
-			}
-		}
-
+    for (ind = 0; ind < widgetcounter; ind++) {
+	//if widget has been changed
+	if (attr_widgets_modified[ind] == 1) {
+	    switch (typeIndex)	//typeindex 0 means new object
+	    {
+	    case GVE_CLUSTER:	//graph  sub graph (cluster)
+		change_selected_graph_attributes(g, attr[ind].Name,
+						 get_attribute_string_value_from_widget
+						 (&attr[ind]));
+		break;
+	    case GVE_NODE:	//Node
+		change_selected_node_attributes(g, attr[ind].Name,
+						get_attribute_string_value_from_widget
+						(&attr[ind]));
+		break;
+	    case GVE_EDGE:	//Edge
+		change_selected_edge_attributes(g, attr[ind].Name,
+						get_attribute_string_value_from_widget
+						(&attr[ind]));
+		break;
+	    }
 	}
+
+    }
 }
 char *get_attribute_string_value_from_widget(attribute * att)
 {
     GdkColor color;
-    switch (att->Type)
-	{
-	    case 'F':
-			sprintf(guibuffer, "%f",gtk_spin_button_get_value((GtkSpinButton *) att->attrWidget));
-			return guibuffer;
-		break;
-		case 'C':
-			gtk_color_button_get_color((GtkColorButton *) att->attrWidget,&color);
-			sprintf(guibuffer, "#%x%x%x", color.red / 255, color.green / 255,color.blue / 255);
-			return guibuffer;
-			break;
-		default:
-			strcpy(guibuffer,gtk_entry_get_text((GtkEntry *) att->attrWidget));
-			return guibuffer;
+    switch (att->Type) {
+    case 'F':
+	sprintf(guibuffer, "%f",
+		gtk_spin_button_get_value((GtkSpinButton *) att->
+					  attrWidget));
+	return guibuffer;
+	break;
+    case 'C':
+	gtk_color_button_get_color((GtkColorButton *) att->attrWidget,
+				   &color);
+	sprintf(guibuffer, "#%x%x%x", color.red / 255, color.green / 255,
+		color.blue / 255);
+	return guibuffer;
+	break;
+    default:
+	strcpy(guibuffer,
+	       gtk_entry_get_text((GtkEntry *) att->attrWidget));
+	return guibuffer;
     }
 }
 void change_selected_graph_attributes(Agraph_t * g, char *attrname,
@@ -1382,9 +1397,8 @@ void change_selected_graph_attributes(Agraph_t * g, char *attrname,
     int ind = 0;
     agattr(g, AGRAPH, attrname, "");
 
-    for (ind = 0; ind < GD_selectedGraphsCount(g); ind++) 
-	{
-		agset(GD_selectedGraphs(g)[ind], attrname, attrvalue);
+    for (ind = 0; ind < GD_selectedGraphsCount(g); ind++) {
+	agset(GD_selectedGraphs(g)[ind], attrname, attrvalue);
     }
 
 
@@ -1395,9 +1409,8 @@ void change_selected_node_attributes(Agraph_t * g, char *attrname,
     int ind = 0;
     agattr(g, AGNODE, attrname, "");
 
-    for (ind = 0; ind < GD_selectedNodesCount(g); ind++) 
-	{
-		agset(GD_selectedNodes(g)[ind], attrname, attrvalue);
+    for (ind = 0; ind < GD_selectedNodesCount(g); ind++) {
+	agset(GD_selectedNodes(g)[ind], attrname, attrvalue);
     }
 }
 void change_selected_edge_attributes(Agraph_t * g, char *attrname,
@@ -1406,9 +1419,8 @@ void change_selected_edge_attributes(Agraph_t * g, char *attrname,
     int ind = 0;
     agattr(g, AGEDGE, attrname, "");
 
-    for (ind = 0; ind < GD_selectedEdgesCount(g); ind++) 
-	{
-		agset(GD_selectedEdges(g)[ind], attrname, attrvalue);
+    for (ind = 0; ind < GD_selectedEdgesCount(g); ind++) {
+	agset(GD_selectedEdges(g)[ind], attrname, attrvalue);
 
     }
 }
@@ -1421,16 +1433,15 @@ void load_attributes()
     char *pch;
     int ind = 0;
     int attrcount = 0;
-    static char* smyrna_attrs;
+    static char *smyrna_attrs;
 
     if (!smyrna_attrs) {
 #if WIN32
 	smyrna_attrs = SMYRNA_ATTRS;
 #else
-	smyrna_attrs = smyrnaPath ("attrs.txt");
+	smyrna_attrs = smyrnaPath("attrs.txt");
 #endif
     }
-
     //loads attributes from a text file
     file = fopen(smyrna_attrs, "r");
     if (file != NULL) {
@@ -1491,8 +1502,8 @@ void load_attributes()
 		    break;
 		default:
 		    attr[attrcount].ComboValues =
-			RALLOC(attr[attrcount].ComboValuesCount, 
-				attr[attrcount].ComboValues, char*);
+			RALLOC(attr[attrcount].ComboValuesCount,
+			       attr[attrcount].ComboValues, char *);
 		    attr[attrcount].ComboValues[attr[attrcount].
 						ComboValuesCount] =
 			safestrdup(ss);
@@ -1503,7 +1514,7 @@ void load_attributes()
 	    }
 	    attrcount++;
 	}
-	fclose (file);
+	fclose(file);
     }
 }
 
