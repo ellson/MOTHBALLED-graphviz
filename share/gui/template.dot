@@ -59,7 +59,7 @@ strict digraph template {
 		defaultnodecolor="blue"
 		defaultedgecolor="purple"
 		edgecolorattribute=""
-		nodesize="50"
+		nodesize="5"
 		nodesselectable="1"
 		edgesselectable="1"
 		edgerender="0"
