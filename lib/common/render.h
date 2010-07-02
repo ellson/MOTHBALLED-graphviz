@@ -135,6 +135,8 @@ extern "C" {
     extern char **parse_style(char *s);
     extern void place_graph_label(Agraph_t *);
     extern void place_portlabel(edge_t * e, boolean head_p);
+    extern void makePortLabels(edge_t * e);
+    extern void addEdgeLabels(graph_t* g, edge_t * e, pointf rp, pointf rq);
     extern void pop_obj_state(GVJ_t *job);
     extern obj_state_t* push_obj_state(GVJ_t *job);
     extern int rank(graph_t * g, int balance, int maxiter);
