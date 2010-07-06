@@ -36,13 +36,13 @@
   # Canonical machine
 MACH=$(uname -s).$(uname -m)
   # Default location of graphviz tree
-DFLTROOT=/home/erg/src/gviz/build/$ARCH
+DFLTROOT=/Users/north/src/graphviz2
   # Quiet diff : usually diff -q
-QDIFF="/usr/common/gnu/bin/gdiff -q"
-  # Root of ommon libraries and fonts
-COMMON=/home/ellson/FIX/$MACH
+QDIFF="diff -q"
+  # Root of common libraries and fonts
+COMMON=/opt/local
   # Source of tclsh8.4
-TCLDIR=/home/ellson/FIX/$MACH/bin
+TCLDIR=/opt/local/bin
 
 TESTDIR=${TESTDIR:=.}
 GRAPHDIR=$TESTDIR/graphs    # directory where .gv test files are kept
@@ -306,9 +306,9 @@ then
   exit 1
 fi
 
-export TCLLIBPATH=$INSTALLROOT/lib
+export TCLLIBPATH=$INSTALLROOT/lib/graphviz/tcl
 PATH=$BINDIR:$TCLDIR:$PATH
-echo doit: BINDIR=$BINDIR ARCHDIR=$ARCHDIR ARCHTYPE=$ARCHTYPE
+echo doit: BINDIR=$BINDIR ARCHDIR=$ARCHDIR ARCHTYPE=$ARCHTYPE TCLLIBPATH=$TCLLIBPATH
 if [[ -n "$SHOWENV" ]]
 then
   exit
