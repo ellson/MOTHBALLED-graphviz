@@ -14,9 +14,7 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-/* #include "topview.h" */
 #include "tvnodes.h"
-#include "btree.h"
 #include "viewport.h"
 #include "topviewfuncs.h"
 #include "memory.h"
@@ -320,7 +318,7 @@ static void add_column(grid* g,char* name,int editable,GType g_type)
 
 static void clear_grid(grid* g, char* flds)
 {
-    int id=0;
+    int id;
     if (g->count) {
         for (id=0;id < g->count ; id++) {
 	    free(g->columns[id]->name);
@@ -328,6 +326,7 @@ static void clear_grid(grid* g, char* flds)
 	}
     }
     free (g->columns);
+    g->count = 0;
     g->columns = 0;
     g->flds=flds;
 }
@@ -341,9 +340,9 @@ static grid* initGrid(char* flds)
     return gr;
 }
 
-static grid* update_colums(grid* g,char* str)
+static grid* update_columns(grid* g,char* str)
 {
-    /*free memory for existing c*/
+    /*free existing memory if necessary */
     char* a;
     if(g) {
 	if (g->flds != str) clear_grid(g, str);
@@ -375,7 +374,7 @@ void setup_tree (Agraph_t* g)
     static grid* gr;
     char* buf = agget(g,"datacolumns");
 
-    gr = update_colums(gr,buf);
+    gr = update_columns(gr,buf);
     tree=update_tree (tree,gr);
     populate_data(g,gr);
 }

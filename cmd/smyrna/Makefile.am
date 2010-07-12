@@ -35,7 +35,7 @@ bin_PROGRAMS += smyrna_static
 endif
 endif
 
-noinst_HEADERS = arcball.h draw.h glexpose.h btree.h \
+noinst_HEADERS = arcball.h draw.h glexpose.h \
 	glmotion.h gltemplate.h gui/appmouse.h gui/callbacks.h \
 	hotkeymap.h materials.h md5.h polytess.h selectionfuncs.h \
 	smyrna_utils.h smyrnadefs.h support.h topfisheyeview.h \
