@@ -22,7 +22,6 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/topfish \
         -I$(top_srcdir)/lib/gvpr \
         -I$(top_srcdir)/lib/common \
-        -I$(top_srcdir)/cmd/smyrna \
         -I$(top_srcdir)/cmd/smyrna/gui \
 	$(GTK_CFLAGS) $(GLUT_CFLAGS) $(GTKGLEXT_CFLAGS) $(GLADE_CFLAGS) $(FREETYPE2_CFLAGS) $(FONTCONFIG_CFLAGS) $(GTS_CFLAGS)
 
@@ -36,7 +35,7 @@ bin_PROGRAMS += smyrna_static
 endif
 endif
 
-noinst_HEADERS = arcball.h draw.h glexpose.h \
+noinst_HEADERS = arcball.h draw.h glexpose.h btree.h \
 	glmotion.h gltemplate.h gui/appmouse.h gui/callbacks.h \
 	hotkeymap.h materials.h md5.h polytess.h selectionfuncs.h \
 	smyrna_utils.h smyrnadefs.h support.h topfisheyeview.h \
