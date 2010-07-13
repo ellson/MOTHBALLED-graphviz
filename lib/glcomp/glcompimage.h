@@ -26,8 +26,8 @@ extern "C" {
 				       GLfloat y);
     extern void glCompImageDelete(glCompImage * p);
     extern int glCompImageLoad(glCompImage * i, unsigned char *data,
-			       int width, int height);
-    extern int glCompImageLoadPng(glCompImage * i, char *pngFile);
+			       int width, int height,int is2D);
+    extern int glCompImageLoadPng(glCompImage * i, char *pngFile,int is2D);
     extern void glCompImageDraw(void *obj);
     extern void glCompImageClick(glCompObj * o, GLfloat x, GLfloat y,
 				 glMouseButtonType t);

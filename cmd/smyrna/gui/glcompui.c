@@ -381,18 +381,16 @@ glCompSet *glcreate_gl_topview_menu(void)
     p->shadowwidth = 0;
 
     i = glCompImageNew((glCompObj *) p, 0, 0);
-    glCompImageLoadPng(i, smyrnaPath("mod_fisheye.png"));
+    glCompImageLoadPng(i, smyrnaPath("mod_fisheye.png"),1);
     imgFisheye = i;
     i->common.visible = 0;
 
     i = glCompImageNew((glCompObj *) p, 0, 52);
-    glCompImageLoadPng(i, smyrnaPath("mod_3D.png"));
+    glCompImageLoadPng(i, smyrnaPath("mod_3D.png"),1);
     img3D = i;
     i->common.visible = 0;
-/*    l=glCompLabelNew((glCompObj *)s,100,5,view->Topview->Graphdata.GraphFileName);
-    glCompLabelSetFontSize(l,24);*/
+    
 
-//    testContainer(s);
     return s;
 
 

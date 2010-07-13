@@ -2,7 +2,7 @@
 <VisualStudioUserFile
 	ProjectType="Visual C++"
 	Version="9.00"
-	ShowAllFiles="true"
+	ShowAllFiles="false"
 	>
 	<Configurations>
 		<Configuration
@@ -15,7 +15,7 @@
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"
-				RemoteMachine="YEHUDA"
+				RemoteMachine="DT-BYUNG"
 				RemoteCommand=""
 				HttpUrl=""
 				PDBPath=""
@@ -38,19 +38,19 @@
 			>
 			<DebugSettings
 				Command="$(TargetPath)"
-				WorkingDirectory="C:\graphviz-ms\bin"
-				CommandArguments="c:/4elt.dot"
+				WorkingDirectory=""
+				CommandArguments=""
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"
-				RemoteMachine="YEHUDA"
+				RemoteMachine="DT-BYUNG"
 				RemoteCommand=""
 				HttpUrl=""
 				PDBPath=""
 				SQLDebugging=""
 				Environment=""
 				EnvironmentMerge="true"
-				DebuggerFlavor="0"
+				DebuggerFlavor=""
 				MPIRunCommand=""
 				MPIRunArguments=""
 				MPIRunWorkingDirectory=""

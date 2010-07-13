@@ -49,13 +49,13 @@ void glCompImageDelete(glCompImage * p)
 extern unsigned char *load_png(char *file_name, int *imageWidth,
 			       int *imageHeight);
 int glCompImageLoad(glCompImage * i, unsigned char *data, int width,
-		    int height)
+		    int height,int is2D)
 {
     if (data != NULL) {		/*valid image data */
 	glCompDeleteTexture(i->texture);
 	i->texture =
 	    glCompSetAddNewTexImage(i->common.compset, width, height, data,
-				    1);
+				    is2D);
 	if (i->texture) {
 	    i->common.width = width;
 	    i->common.height = height;
@@ -68,26 +68,26 @@ int glCompImageLoad(glCompImage * i, unsigned char *data, int width,
 
 
 
-int glCompImageLoadPng(glCompImage * i, char *pngFile)
+int glCompImageLoadPng(glCompImage * i, char *pngFile,int is2D)
 {
     int imageWidth, imageHeight;
     unsigned char *data;
     data = load_png(pngFile, &imageWidth, &imageHeight);
-    return glCompImageLoad(i, data, imageWidth, imageHeight);
+    return glCompImageLoad(i, data, imageWidth, imageHeight,is2D);
 }
-int glCompImageLoadRaw(glCompSet * s, glCompImage * i, char *rawFile)
+int glCompImageLoadRaw(glCompSet * s, glCompImage * i, char *rawFile,int is2D)
 {
     int imageWidth, imageHeight;
     unsigned char *data;
     data = load_png(rawFile, &imageWidth, &imageHeight);
-    return glCompImageLoad(i, data, imageWidth, imageHeight);
+    return glCompImageLoad(i, data, imageWidth, imageHeight,is2D);
 }
 
 void glCompImageDraw(void *obj)
 {
     glCompImage *p;
     static glCompCommon ref;
-//      static GLfloat w,h,d;
+    static GLfloat w,h,d;
     p = (glCompImage *) obj;
     ref = p->common;
     glCompCalcWidget((glCompCommon *) p->common.parent, &p->common, &ref);
@@ -96,15 +96,18 @@ void glCompImageDraw(void *obj)
     if (!p->texture)
 	return;
 
-    glRasterPos2f(ref.pos.x, ref.pos.y);
-//    glPixelZoom(2,2);
-    glDrawPixels(p->texture->width, p->texture->height, GL_RGBA,
-		 GL_UNSIGNED_BYTE, p->texture->data);
+    if(p->texture->id <=0)
+    {
+	glRasterPos2f(ref.pos.x, ref.pos.y);
+	glDrawPixels(p->texture->width, p->texture->height, GL_RGBA,GL_UNSIGNED_BYTE, p->texture->data);
+    }
+    else
+    {
 
-/*	w=ref.width;
+	w=ref.width;
 	h=ref.height;
 	d=(GLfloat)p->common.layer* (GLfloat)GLCOMPSET_BEVEL_DIFF;
-    glDisable(GL_BLEND);
+	glDisable(GL_BLEND);
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 	glBindTexture(GL_TEXTURE_2D,p->texture->id);
@@ -115,8 +118,10 @@ void glCompImageDraw(void *obj)
 		glTexCoord2d(0.0f, 0.0f);glVertex3d(ref.pos.x,ref.pos.y+h,d);
 	glEnd();
 
+
 	glDisable(GL_TEXTURE_2D);
-    glEnable(GL_BLEND);*/
+	glEnable(GL_BLEND);
+    }
 
 }
 

@@ -78,10 +78,13 @@ static glCompTex *glCompSetAddNewTexture(glCompSet * s, int width,
     t->userCount = 1;
     t->width = (GLfloat) width;
     t->height = (GLfloat) height;
-    s->textureCount++;
-    s->textures =
+    if(s)
+    {
+	s->textureCount++;
+	s->textures =
 	realloc(s->textures, s->textureCount * sizeof(glCompTex *));
-    s->textures[s->textureCount - 1] = t;
+	s->textures[s->textureCount - 1] = t;
+    }
     return t;
 
 

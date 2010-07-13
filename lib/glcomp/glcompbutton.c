@@ -82,7 +82,7 @@ int glCompButtonAddPngGlyph(glCompButton * b, char *fileName)
     /*image on left for now */
     b->image = glCompImageNew((glCompObj *) b, 0, 0);
 
-    rv = glCompImageLoadPng(b->image, fileName);
+    rv = glCompImageLoadPng(b->image, fileName,1);
     if (rv) {
 	b->image->common.anchor.leftAnchor = 1;
 	b->image->common.anchor.left = 0;

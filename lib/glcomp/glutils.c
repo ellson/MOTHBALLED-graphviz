@@ -506,6 +506,12 @@ void glCompCalcWidget(glCompCommon * parent, glCompCommon * child,
     GLfloat borderWidth;
     ref->height = child->height;
     ref->width = child->width;
+    if(!parent)
+    {
+	child->refPos.x = child->pos.x;
+	child->refPos.y = child->pos.y;
+	return;
+    }
     if (parent->borderType == glBorderNone)
 	borderWidth = 0;
     else

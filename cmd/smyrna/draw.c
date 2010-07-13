@@ -31,6 +31,8 @@ XDOT DRAWING FUNCTIONS, maybe need to move them somewhere else
 #include "appmouse.h"
 #include "hotkeymap.h"
 #include "polytess.h"
+#include "glcompimage.h"
+
 
 //delta values
 static float dx = 0.0;
@@ -426,22 +428,24 @@ void InsertImage(sdot_op * o, int param)
 {
 
 
-    float w,h,x,y;
+    float w,h,x,y,X,Y,Z;
+    glCompImage *i;
+
     if(!o->obj)
 	return;
-    w=atof(agget(o->obj,"width"))*72;
-    h=atof(agget(o->obj,"height"))*72;
 
     if(!o->iData.data)
+    {
 	o->iData.data = load_png(o->op.u.image.name, &o->iData.w, &o->iData.h);    
-    x=o->op.u.image.pos.x;
-    y=o->op.u.image.pos.y;
-    x=x+(o->iData.w-w)/2.0;
-    y=y+(o->iData.h-h)/2.0;
- //   glRasterPos3f(x,y,5);
-    glRasterPos3f(20,20,0);
-    if(o->iData.data)
-	glDrawPixels(o->iData.w,o->iData.h,GL_RGBA,GL_UNSIGNED_BYTE,o->iData.data);
+	x=o->op.u.image.pos.x;
+	y=o->op.u.image.pos.y;
+	i = glCompImageNew(NULL, x, y);
+	glCompImageLoadPng(i, o->op.u.image.name,0);
+	i->common.functions.draw(i);
+
+    }
+
+
 }
 void EmbedText(sdot_op* o, int param)
 {

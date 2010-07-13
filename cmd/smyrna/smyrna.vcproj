@@ -337,15 +337,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\drawxdot.c"
-				>
-			</File>
-			<File
 				RelativePath=".\filter.c"
-				>
-			</File>
-			<File
-				RelativePath=".\gui\filterscallbacks.c"
 				>
 			</File>
 			<File
@@ -438,10 +430,6 @@
 			</File>
 			<File
 				RelativePath=".\smyrna_utils.c"
-				>
-			</File>
-			<File
-				RelativePath=".\template.c"
 				>
 			</File>
 			<File
