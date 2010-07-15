@@ -1307,10 +1307,10 @@ char *colorx (Expr_t* ex, char* incolor, char* fmt, Sfio_t* fp)
 
     switch (type) {
     case HSVA_DOUBLE :
-	sfprintf (fp, ".03f .03f .03f", 
+	sfprintf (fp, "%.03f %.03f %.03f", 
 	    color.u.HSVA[0], color.u.HSVA[1], color.u.HSVA[2]);
 	if (alpha)
-	    sfprintf (fp, " .03f", color.u.HSVA[3]);
+	    sfprintf (fp, " %.03f", color.u.HSVA[3]);
 	break;
     case RGBA_BYTE :
 	sfprintf (fp, "#%02x%02x%02x", 
