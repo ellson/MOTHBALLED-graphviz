@@ -9,14 +9,14 @@ Multiple views
 GUI for canned gvpr programs
 Additional edge attributes : dash/dotted, width
 Multiedges
+Select in 3D
 Mechanism for semantic zoom
   separate overlapping nodes
   add more detail
+alpha, node size in topfish
 
 Bugs: 
 
-Show labels when picked
-Erase labels when unselected
 Catch window kill button for node list
 Use full disk when picking nodes
 Fix problem with using alpha and losing pick 
