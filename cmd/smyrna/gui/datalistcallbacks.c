@@ -75,5 +75,10 @@ void btnTVHideAll_clicked_cb(GtkWidget * widget, gpointer user_data)
 
 void btnTVSaveAs_clicked_cb(GtkWidget * widget, gpointer user_data)
 {
-    tv_save_as();
+    tv_save_as(0);
+}
+
+void btnTVSaveWith_clicked_cb(GtkWidget * widget, gpointer user_data)
+{
+    tv_save_as(1);
 }

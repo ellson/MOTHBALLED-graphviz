@@ -426,8 +426,6 @@ void SetFont(sdot_op * o, int param)
 /*for now we only support png files in 2d space, no image rotation*/
 void InsertImage(sdot_op * o, int param)
 {
-
-
     float w,h,x,y,X,Y,Z;
     glCompImage *i;
 
@@ -442,11 +440,9 @@ void InsertImage(sdot_op * o, int param)
 	i = glCompImageNew(NULL, x, y);
 	glCompImageLoadPng(i, o->op.u.image.name,0);
 	i->common.functions.draw(i);
-
     }
-
-
 }
+
 void EmbedText(sdot_op* o, int param)
 {
 	GLfloat x,y;

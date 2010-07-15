@@ -131,7 +131,7 @@ extern "C" {
 */
     int tv_show_all(void);
     int tv_hide_all(void);
-    int tv_save_as(void);
+    int tv_save_as(int);
     void setup_tree (Agraph_t* g);
 
 #ifdef __cplusplus
