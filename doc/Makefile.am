@@ -4,7 +4,7 @@
 # SUBDIRS = dot neato lefty dotty info
 SUBDIRS = info schema
 
-pdf = dotguide.pdf dottyguide.pdf leftyguide.pdf neatoguide.pdf libguide/libguide.pdf
+pdf = dotguide.pdf dottyguide.pdf leftyguide.pdf neatoguide.pdf libguide/libguide.pdf smyrna/smyrna.pdf
 html = build.html FAQ.html index.html winbuild.html pspdf.png char.html Gdtclft2.2.5.example.png todo.html
 txt = Dot.ref latex_suggestions.txt fontfaq.txt addingLayout.txt
 
