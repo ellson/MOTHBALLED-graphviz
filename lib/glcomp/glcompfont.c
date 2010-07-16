@@ -22,7 +22,7 @@
 #include "memory.h"
 #include <GL/glut.h>
 
-void print_bitmap_string(void *font, char *s)
+static void print_bitmap_string(void *font, char *s)
 {
     if (s && strlen(s)) {
 	while (*s) {
@@ -33,6 +33,7 @@ void print_bitmap_string(void *font, char *s)
     }
 }
 
+#if 0
 void init_gl_vars(glCompFont * f)
 {
 
@@ -84,6 +85,7 @@ void restore_gl_vars(glCompFont * f)
 	glDisable(GL_TEXTURE_2D);
     glMatrixMode(f->glcache.matrix);*/
 }
+#endif
 void glprintfglut(void *font, GLfloat xpos, GLfloat ypos, GLfloat zpos,
 		  char *bf)
 {
@@ -93,8 +95,7 @@ void glprintfglut(void *font, GLfloat xpos, GLfloat ypos, GLfloat zpos,
 
 }
 
-
-
+#if 0
 static void
 glPrintf(glCompFont * font, GLfloat xpos, GLfloat ypos, GLfloat zpos,
 	 GLfloat width, char *bf, int usez)
@@ -129,8 +130,6 @@ glprintfz(glCompFont * font, GLfloat xpos, GLfloat ypos, GLfloat zpos,
     glPrintf(font, xpos, ypos, zpos, width, bf, 0);
 }
 
-
-
 static int fontId(fontset_t * fontset, char *fontdesc)
 {
     int ind = 0;
@@ -152,7 +151,7 @@ static int glutfontId(fontset_t * fontset, void *glutfont)
 }
 
 
-glCompFont *glut_font_init(void)
+static glCompFont *glut_font_init(void)
 {
     glCompFont *font = NEW(glCompFont);
     font->color.R = 1.00;
@@ -185,7 +184,8 @@ glCompFont *glut_font_init(void)
     return font;
 }
 
-void delete_font(glCompFont * f)
+#endif
+void glDeleteFont(glCompFont * f)
 {
     if (f->fontdesc)
 	free(f->fontdesc);
@@ -195,7 +195,7 @@ void delete_font(glCompFont * f)
 
 }
 
-glCompFont *new_font(glCompSet * s, char *text, glCompColor * c,glCompFontType type, char *fontdesc, int fs,int is2D)
+glCompFont *glNewFont (glCompSet * s, char *text, glCompColor * c,glCompFontType type, char *fontdesc, int fs,int is2D)
 {
     glCompFont *font = (glCompFont*) malloc(sizeof(glCompFont));
     font->reference = 0;
@@ -227,7 +227,7 @@ glCompFont *new_font(glCompSet * s, char *text, glCompColor * c,glCompFontType t
 
 
 
-glCompFont *new_font_from_parent(glCompObj * o, char *text)
+glCompFont *glNewFontFromParent(glCompObj * o, char *text)
 {
     glCompCommon *parent;
     glCompFont *font = NEW(glCompFont);
@@ -264,13 +264,13 @@ glCompFont *new_font_from_parent(glCompObj * o, char *text)
 	c.B = GLCOMPSET_FONT_COLOR_B;
 	c.A = GLCOMPSET_FONT_COLOR_ALPHA;
 	font =
-	    new_font(o->common.compset, text, &c, pangotext,
+	    glNewFont (o->common.compset, text, &c, pangotext,
 		     GLCOMPSET_FONT_DESC, GLCOMPSET_FONT_SIZE,1);
     }
     return font;
 }
 
-
+#if 0
 
 #ifndef _WIN32
 #define TMPTEMP "/tmp/_sfXXXX"
@@ -324,7 +324,7 @@ glCompFont *add_font(fontset_t * fontset, char *fontdesc, int fs)
 	    fontpath = ALLOC(fontpathsz, fontpath, char);
 	}
 /*	sprintf(fontpath, "%s/%s.png", fontset->font_directory, fontdesc);
-	if (create_font_file(fontdesc,fs, fontpath, (float) 32, (float) 32) ==
+	if (glCompCreateFontFile(fontdesc,fs, fontpath, (float) 32, (float) 32) ==
 	    0) {
 	    fontset->fonts =
 		ALLOC(fontset->count + 1, fontset->fonts, glCompFont *);
@@ -377,7 +377,7 @@ void fontColor(glCompFont * font, float r, float g, float b, float a)
     font->color.B = b;
     font->color.A = a;
 }
-
+#endif
 
 /*texture base 3d text rendering*/
 void glCompDrawText3D(glCompFont * f,GLfloat x,GLfloat y,GLfloat z,GLfloat w,GLfloat h)
@@ -398,12 +398,13 @@ void glCompDrawText3D(glCompFont * f,GLfloat x,GLfloat y,GLfloat z,GLfloat w,GLf
     glEnable(GL_BLEND);
 
 }
+#if 0
 /*bitmap base 2D text rendering */
 static void change_fontC(unsigned char* d,int w,int h,glCompColor* c)
 {
     int size=w*h*4;
     int ind=0;
-    for (ind;ind <=size; ind=ind+4)
+    for (;ind <=size; ind=ind+4)
     {
 	if(d[ind+3] != 0)
 	{
@@ -414,7 +415,7 @@ static void change_fontC(unsigned char* d,int w,int h,glCompColor* c)
 	}
     }
 }
-
+#endif
 
 void glCompDrawText(glCompFont * f,GLfloat x,GLfloat y)
 {
@@ -467,3 +468,63 @@ void glCompRenderText(glCompFont * f, glCompObj * parentObj)
 		glCompDrawText(f,x,y);
 
 }
+
+#if 0
+#define imageWidth 256
+#define imageHeight 256 
+static GLubyte imageData[imageWidth][imageHeight][4];
+#endif
+
+#if 0
+int glCompLoadFontPNG(char *name, int id)
+{
+    GLubyte *imageData = NULL;
+    int imageWidth, imageHeight, idx2, c;
+
+//      imageData = fontGetData (s, size, imageBits);
+    imageData = glCompLoadPng (name, &imageWidth, &imageHeight);
+
+    c = 0;
+    idx2 = 0;
+/*	for (idx=0;idx < imageWidth*imageHeight+30000;idx=idx+1)
+		{
+			if (c!=imageData[idx])
+			{
+				c=imageData[idx];
+				printf ("%i) %i \n ",idx2,imageData[idx]);
+			}
+
+			idx2++;
+			c=((((idx&0x8)==0)^((idx2&0x8))==0))*255;
+				imageData[idx][idx2][0] = c;
+				imageData[idx][idx2][1] = c;
+				imageData[idx][idx2][2] = c;
+				imageData[idx][idx2][3] = 255;
+
+		}*/
+
+
+    /* no image data */
+    if (imageData == NULL)
+	return -1;
+
+    glBindTexture(GL_TEXTURE_2D, id);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    /* glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); */
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    /* glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); */
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+//      glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE , GL_DECAL);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, imageWidth, imageHeight, 0,
+		 GL_ALPHA, GL_UNSIGNED_BYTE, imageData);
+//      glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
+
+    /* release data, its been uploaded */
+
+    return 1;
+}
+#endif

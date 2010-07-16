@@ -32,8 +32,8 @@ glCompLabel *glCompLabelNew(glCompObj * par, GLfloat x, GLfloat y,
     //typedef enum {glPanelObj,glbuttonObj,glLabelObj,glImageObj}glObjType;
 
     p->text = strdup(text);
-    p->common.font = new_font_from_parent((glCompObj*)p, text);
-    p->common.functions.draw = glCompLabelDraw;
+    p->common.font = glNewFontFromParent ((glCompObj*)p, text);
+    p->common.functions.draw = (glcompdrawfunc_t)glCompLabelDraw;
 
     return p;
 }
@@ -67,9 +67,9 @@ static void update_font(glCompLabel * p,char* text,char* desc,int fs)
     if (strlen(text) >512)
 	return ;
 
-    p->common.font=new_font(p->common.compset,text,&p->common.color,temp->type,desc,fs,temp->is2D);
+    p->common.font=glNewFont (p->common.compset,text,&p->common.color,temp->type,desc,fs,temp->is2D);
     if(temp)
-	delete_font(temp);
+	glDeleteFont(temp);
     if(p->text)
 	free(p->text);
     p->text = strdup(text);

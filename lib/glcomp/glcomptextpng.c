@@ -19,7 +19,7 @@
 #include <gtk/gtk.h>
 #include <png.h>
 
-unsigned char *load_png(char *filename, int *imageWidth, int *imageHeight)
+unsigned char *glCompLoadPng (char *filename, int *imageWidth, int *imageHeight)
 {
     cairo_surface_t *surface;
     cairo_format_t format;
@@ -27,12 +27,8 @@ unsigned char *load_png(char *filename, int *imageWidth, int *imageHeight)
     unsigned char *d;
     surface = NULL;
 
-/*	d=create_pango_texture("Arial",14,"hello world \ n hello mars",surface,&w,&h);
-	*imageWidth=w;
-	*imageHeight=h;*/
-
-
     surface = cairo_image_surface_create_from_png(filename);
+    if (!surface) return 0;
     w = cairo_image_surface_get_width(surface);
     h = cairo_image_surface_get_height(surface);
     *imageWidth = w;
@@ -40,12 +36,9 @@ unsigned char *load_png(char *filename, int *imageWidth, int *imageHeight)
     format = cairo_image_surface_get_format(surface);
     d = cairo_image_surface_get_data(surface);
     return d;
-
-
-
-
 }
 
+#if 0
 
 unsigned char *load_raw(char *filename, int width, int height)
 {
@@ -59,8 +52,6 @@ unsigned char *load_raw(char *filename, int width, int height)
     fclose (file);
     return data;
 }
-
-
 
 unsigned char *load_png2(char *file_name, int *imageWidth,
 			 int *imageHeight)
@@ -156,60 +147,6 @@ unsigned char *load_png2(char *file_name, int *imageWidth,
     fclose (fp);
     return imageData;
 }
+#endif
 
 
-/*#define imageWidth 256
-#define imageHeight 256 
-static GLubyte imageData[imageWidth][imageHeight][4];*/
-
-int glCompLoadFontPNG(char *name, int id)
-{
-    GLubyte *imageData = NULL;
-    int imageWidth, imageHeight, idx2, c;
-
-//      imageData = fontGetData (s, size, imageBits);
-    imageData = load_png(name, &imageWidth, &imageHeight);
-
-    c = 0;
-    idx2 = 0;
-/*	for (idx=0;idx < imageWidth*imageHeight+30000;idx=idx+1)
-		{
-			if (c!=imageData[idx])
-			{
-				c=imageData[idx];
-				printf ("%i) %i \n ",idx2,imageData[idx]);
-			}
-
-			idx2++;
-			c=((((idx&0x8)==0)^((idx2&0x8))==0))*255;
-				imageData[idx][idx2][0] = c;
-				imageData[idx][idx2][1] = c;
-				imageData[idx][idx2][2] = c;
-				imageData[idx][idx2][3] = 255;
-
-		}*/
-
-
-    /* no image data */
-    if (imageData == NULL)
-	return -1;
-
-    glBindTexture(GL_TEXTURE_2D, id);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    /* glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); */
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    /* glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); */
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-//      glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE , GL_DECAL);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, imageWidth, imageHeight, 0,
-		 GL_ALPHA, GL_UNSIGNED_BYTE, imageData);
-//      glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
-
-    /* release data, its been uploaded */
-
-    return 1;
-}

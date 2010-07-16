@@ -43,7 +43,6 @@ extern "C" {
     extern int glcompsetGetGroupId(glCompSet * s);
     extern void glCompDrawBegin(void);
     extern void glCompDrawEnd(void);
-    extern void glCompDeleteTexture(glCompTex * t);
     extern void glCompSetAddObj(glCompSet * s, glCompObj * obj);
     glCompObj *glCompGetObjByMouse(glCompSet * s, glCompMouse * m,
 				   int onlyClickable);

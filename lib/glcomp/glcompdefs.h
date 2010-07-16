@@ -273,13 +273,10 @@ extern "C" {
 	glObjType objType;	/*always keep this here for each drawable object */
 	glCompCommon common;
 	glCompTex *texture;
-	char *pngFile;
+	GLfloat width, height;  /* width and height in world coords */
+	/* char *pngFile; */
 	int stretch;
     } glCompImage;
-
-
-
-
 
 /*generic panel*/
     typedef struct _glCompPanel {

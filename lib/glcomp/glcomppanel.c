@@ -41,9 +41,9 @@ glCompPanel *glCompPanelNew(glCompObj * parentObj, GLfloat x, GLfloat y,
     p->common.width = w;
     p->common.height = h;
 
-    p->common.font = new_font_from_parent((glCompObj *) p, NULL);
+    p->common.font = glNewFontFromParent((glCompObj *) p, NULL);
     p->text = (char *) 0;
-    p->common.functions.draw = glCompPanelDraw;
+    p->common.functions.draw = (glcompdrawfunc_t)glCompPanelDraw;
     p->image = (glCompImage *) 0;
     return p;
 }
@@ -171,9 +171,10 @@ void glCompPanelMouseUp(glCompObj * obj, GLfloat x, GLfloat y,
 }
 
 
-
+#if 0
 
 void glCompPanelSetText(glCompPanel * p, char *str)
 {
 //    replacestr(str, &p->text);
 }
+#endif

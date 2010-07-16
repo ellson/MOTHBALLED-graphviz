@@ -51,7 +51,7 @@ glCompButton *glCompButtonNew(glCompObj * par, GLfloat x, GLfloat y,
     p->customptr = '\0';
     /*set event functions */
 
-    p->common.functions.draw = glCompButtonDraw;
+    p->common.functions.draw = (glcompdrawfunc_t)glCompButtonDraw;
 
     p->common.functions.click = glCompButtonClick;
     p->common.functions.doubleclick = glCompButtonDoubleClick;
@@ -62,7 +62,7 @@ glCompButton *glCompButtonNew(glCompObj * par, GLfloat x, GLfloat y,
     p->common.functions.mouseup = glCompButtonMouseUp;
 
     /*caption */
-    p->common.font = new_font_from_parent((glCompObj *) p, NULL);
+    p->common.font = glNewFontFromParent ((glCompObj *) p, NULL);
     p->label = glCompLabelNew((glCompObj *) p, 0, 0, caption);
     p->label->common.font->justify.VJustify = glFontVJustifyCenter;
     p->label->common.font->justify.HJustify = glFontHJustifyCenter;

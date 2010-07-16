@@ -43,11 +43,14 @@ extern "C" {
     int GetFixedOGLPoslocal(int x, int y, GLfloat * X, GLfloat * Y,
 			    GLfloat * Z);
     void to3D(int x, int y, GLfloat * X, GLfloat * Y, GLfloat * Z);
-    void linear_interplotate(float, float, float, float, float, float *);
-    double point_to_line_dist(glCompPoint p, glCompPoint u, glCompPoint v);
     double point_to_lineseg_dist(glCompPoint p, glCompPoint a, glCompPoint b);
+#if 0
+    void linear_interpolate(float, float, float, float, float, float *);
+    double point_to_line_dist(glCompPoint p, glCompPoint u, glCompPoint v);
     int rot_spherex(plane J, float tet, glCompPoint P, glCompPoint * P2);
     void make_plane(glCompPoint a, glCompPoint b, glCompPoint c, plane * P);
+    int lines_intersect (glCompPoint* a, glCompPoint* b, glCompPoint* c, glCompPoint* d);
+#endif
     void replacestr(char *source, char **target);
     extern void glCompCalcWidget(glCompCommon * parent,
 				 glCompCommon * child, glCompCommon * ref);
@@ -60,7 +63,6 @@ extern "C" {
     extern void glCompSetColor(glCompColor * c);
 
     void glCompSelectionBox(glCompSet * s);
-    extern int lines_intersect (glCompPoint* a, glCompPoint* b, glCompPoint* c, glCompPoint* d);
     extern GLfloat distBetweenPts(glCompPoint A,glCompPoint B,float R);
     extern int is_point_in_rectangle(float X, float Y, float RX, float RY, float RW,float RH);
 

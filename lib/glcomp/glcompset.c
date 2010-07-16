@@ -174,7 +174,7 @@ static void glCompSetMouseUp(void *obj, GLfloat x, GLfloat y,
 
 
 
-extern void glCompInitCommon(glCompObj * childObj, glCompObj * parentObj,
+void glCompInitCommon(glCompObj * childObj, glCompObj * parentObj,
 			     GLfloat x, GLfloat y)
 {
     glCompCommon *c;
@@ -236,12 +236,12 @@ extern void glCompInitCommon(glCompObj * childObj, glCompObj * parentObj,
 	c->layer = 0;
 	c->pos.z = 0;
     }
-    c->font = new_font_from_parent(childObj, NULL);
+    c->font = glNewFontFromParent(childObj, NULL);
 }
 
 void glCompEmptyCommon(glCompCommon * c)
 {
-    delete_font(c->font);
+    glDeleteFont(c->font);
 }
 glCompSet *glCompSetNew(int w, int h)
 {
@@ -255,11 +255,11 @@ glCompSet *glCompSetNew(int w, int h)
     s->obj = (glCompObj **) 0;
     s->textureCount = 0;
     s->textures = (glCompTex **) 0;
-    s->common.font = new_font_from_parent((glCompObj *) s, NULL);
+    s->common.font = glNewFontFromParent((glCompObj *) s, NULL);
     s->common.compset = (glCompSet *) s;
-    s->common.functions.mouseover = glCompMouseMove;
-    s->common.functions.mousedown = glCompSetMouseDown;
-    s->common.functions.mouseup = glCompSetMouseUp;
+    s->common.functions.mouseover = (glcompmouseoverfunc_t)glCompMouseMove;
+    s->common.functions.mousedown = (glcompmousedownfunc_t)glCompSetMouseDown;
+    s->common.functions.mouseup = (glcompmouseupfunc_t)glCompSetMouseUp;
     glCompMouseInit(&s->mouse);
     return s;
 }
@@ -342,19 +342,6 @@ void glCompDrawEnd(void)	//pops the gl stack
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void glCompSetClear(glCompSet * s)
 {

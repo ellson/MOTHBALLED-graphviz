@@ -31,23 +31,46 @@ glCompImage *glCompImageNew(glCompObj * par, GLfloat x, GLfloat y)
 
     p->objType = glImageObj;
     p->stretch = 0;
+#if 0
     p->pngFile = (char *) 0;
+#endif
     p->texture = NULL;
     p->common.functions.draw = glCompImageDraw;
+    return p;
+}
+
+/* glCompImageNewFile:
+ * Creates image from given input file.
+ * At present, we assume png input.
+ * Return 0 on failure.
+ */
+glCompImage *glCompImageNewFile (glCompObj * par, GLfloat x, GLfloat y, char* imgfile, int is2D)
+{
+    int imageWidth, imageHeight;
+    unsigned char *data = glCompLoadPng (imgfile, &imageWidth, &imageHeight);
+    glCompImage *p;
+
+    if (!data) return NULL;
+    p = glCompImageNew (par, x, y);
+    if (!glCompImageLoad (p, data, imageWidth, imageHeight, is2D)) {
+	glCompImageDelete (p);
+	return NULL;
+    }
     return p;
 }
 
 void glCompImageDelete(glCompImage * p)
 {
     glCompEmptyCommon(&p->common);
+#if 0
     if (p->pngFile)
 	free(p->pngFile);
+#endif
     if (p->texture)
 	glCompDeleteTexture(p->texture);
     free(p);
 }
-extern unsigned char *load_png(char *file_name, int *imageWidth,
-			       int *imageHeight);
+
 int glCompImageLoad(glCompImage * i, unsigned char *data, int width,
 		    int height,int is2D)
 {
@@ -72,24 +95,26 @@ int glCompImageLoadPng(glCompImage * i, char *pngFile,int is2D)
 {
     int imageWidth, imageHeight;
     unsigned char *data;
-    data = load_png(pngFile, &imageWidth, &imageHeight);
+    data = glCompLoadPng (pngFile, &imageWidth, &imageHeight);
     return glCompImageLoad(i, data, imageWidth, imageHeight,is2D);
 }
+
+#if 0
 int glCompImageLoadRaw(glCompSet * s, glCompImage * i, char *rawFile,int is2D)
 {
     int imageWidth, imageHeight;
     unsigned char *data;
-    data = load_png(rawFile, &imageWidth, &imageHeight);
+    data = glCompLoadPng (rawFile, &imageWidth, &imageHeight);
     return glCompImageLoad(i, data, imageWidth, imageHeight,is2D);
 }
+#endif
 
 void glCompImageDraw(void *obj)
 {
-    glCompImage *p;
-    static glCompCommon ref;
-    static GLfloat w,h,d;
-    p = (glCompImage *) obj;
-    ref = p->common;
+    glCompImage *p = (glCompImage *) obj;
+    glCompCommon ref = p->common;
+    GLfloat w,h,d;
+
     glCompCalcWidget((glCompCommon *) p->common.parent, &p->common, &ref);
     if (!p->common.visible)
 	return;
@@ -103,9 +128,12 @@ void glCompImageDraw(void *obj)
     }
     else
     {
-
+#if 0
 	w=ref.width;
 	h=ref.height;
+#endif
+	w = p->width;
+	h = p->height;
 	d=(GLfloat)p->common.layer* (GLfloat)GLCOMPSET_BEVEL_DIFF;
 	glDisable(GL_BLEND);
 	glEnable(GL_TEXTURE_2D);

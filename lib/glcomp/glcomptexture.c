@@ -19,10 +19,11 @@
 
 #include "memory.h"
 
+#if 0
 void glCompSetRemoveTexLabel(glCompSet * s, glCompFont * t)
 {
 }
-
+#endif
 
 static glCompTex *glCompSetAddNewTexture(glCompSet * s, int width,
 					 int height, unsigned char *data,
@@ -60,7 +61,7 @@ static glCompTex *glCompSetAddNewTexture(glCompSet * s, int width,
 	}
     }
     if (is2D && !Er) {
-	t->data = N_NEW(4 * width * height, char);
+	t->data = N_NEW(4 * width * height, unsigned char);
 	offset = 4;		//RGBA  mod,TO DO implement other modes 
 	/*data upside down because of pango gl coord system */
 	for (ind = 0; ind < height; ind++) {
@@ -136,7 +137,7 @@ glCompTex *glCompSetAddNewTexLabel(glCompSet * s, char *def, int fs,
     }
 
 
-    data = create_pango_texture(def, fs, text, surface, &width, &height);
+    data = glCompCreatePangoTexture(def, fs, text, surface, &width, &height);
     if (!data)			/*pango error , */
 	Er = 1;
     t = glCompSetAddNewTexture(s, width, height, data, is2D,fs);

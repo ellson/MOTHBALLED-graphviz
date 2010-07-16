@@ -244,7 +244,8 @@ int GetFixedOGLPoslocal(int x, int y, GLfloat * X, GLfloat * Y,
     return 1;
 
 }
-void linear_interplotate(float x1, float y1, float x2, float y2, float x3,
+#if 0
+void linear_interpolate(float x1, float y1, float x2, float y2, float x3,
 			 float *y3)
 {
 
@@ -254,7 +255,6 @@ void linear_interplotate(float x1, float y1, float x2, float y2, float x3,
     *y3 = a * x3 + b;
 }
 
-#if 0
 int glreversecamera(ViewInfo * view)
 {
 
@@ -279,6 +279,7 @@ int glreversecamera(ViewInfo * view)
 
 
 
+#if 0
 static glCompPoint add(glCompPoint p, glCompPoint q)
 {
     p.x += q.x;
@@ -286,6 +287,7 @@ static glCompPoint add(glCompPoint p, glCompPoint q)
     p.z += q.z;
     return p;
 }
+#endif
 
 static glCompPoint sub(glCompPoint p, glCompPoint q)
 {
@@ -305,6 +307,7 @@ static double len(glCompPoint p)
     return sqrt(dot(p, p));
 }
 
+#if 0
 static glCompPoint scale(double d, glCompPoint p)
 {
     p.x *= (float) d;
@@ -312,6 +315,7 @@ static glCompPoint scale(double d, glCompPoint p)
     p.z *= (float) d;
     return p;
 }
+#endif
 
 static glCompPoint blend(glCompPoint p, glCompPoint q, float m)
 {
@@ -323,16 +327,17 @@ static glCompPoint blend(glCompPoint p, glCompPoint q, float m)
     return r;
 }
 
+static double dist(glCompPoint p, glCompPoint q)
+{
+    return (len(sub(p, q)));
+}
+
+#if 0
 static glCompPoint normalize(glCompPoint p)
 {
     double d = len(p);
 
     return scale(1 / d, p);
-}
-
-static double dist(glCompPoint p, glCompPoint q)
-{
-    return (len(sub(p, q)));
 }
 
 static glCompPoint intersect(line l, plane J)
@@ -361,6 +366,7 @@ double point_to_line_dist(glCompPoint p, glCompPoint a, glCompPoint b)
 
     return (dist(p, q));
 }
+#endif
 
 
 /*
@@ -389,10 +395,10 @@ double point_to_lineseg_dist(glCompPoint p, glCompPoint a, glCompPoint b)
 
 }
 
+#if 0
 /*
 	Calculates the parameters of a plane via given 3 points on it
 */
-
 
 void make_plane(glCompPoint a, glCompPoint b, glCompPoint c, plane * P)
 {
@@ -403,6 +409,7 @@ void make_plane(glCompPoint a, glCompPoint b, glCompPoint c, plane * P)
 	(a.x * (b.y * c.z - c.y * b.z) + b.x * (c.y * a.z - a.y * c.z) +
 	 c.x * (a.y * b.z - b.y * a.z)) * -1;
 }
+#endif
 void replacestr(char *source, char **target)
 {
 
@@ -411,6 +418,7 @@ void replacestr(char *source, char **target)
     *target = strdup(source);
 }
 
+#if 0
 /*
 	move a point on the great circle of it (spherical)
 
@@ -454,6 +462,7 @@ int rot_spherex(plane J, float tet, glCompPoint P, glCompPoint * P2)
 	return 0;
 
 }
+#endif
 
 void glCompSelectionBox(glCompSet * s)
 {
@@ -688,8 +697,8 @@ void copy_glcomp_color(glCompColor * source, glCompColor * target)
 
 }
 
-
-double area2(glCompPoint * p1p, glCompPoint * p2p, glCompPoint * p3p) 
+#if 0
+static double area2(glCompPoint * p1p, glCompPoint * p2p, glCompPoint * p3p) 
 {
     double d;
 
@@ -700,7 +709,7 @@ double area2(glCompPoint * p1p, glCompPoint * p2p, glCompPoint * p3p)
 
 
 enum {ISCCW, ISON, ISCW};  /* counterclockwise; collinear; clockwise */ 
-int sideOf (glCompPoint * p1p, glCompPoint * p2p, glCompPoint * p3p) {
+static int sideOf (glCompPoint * p1p, glCompPoint * p2p, glCompPoint * p3p) {
     double d = area2 (p1p,p2p,p3p);
     if (d < 0) return ISCCW;
     else if (d > 0) return ISCW;
@@ -711,6 +720,7 @@ int lines_intersect (glCompPoint* a, glCompPoint* b, glCompPoint* c, glCompPoint
 {
   return ((sideOf(a,b,c) != sideOf(a,b,d)) && (sideOf(c,d,a) != sideOf(c,d,b))); 
 }
+#endif
 GLfloat distBetweenPts(glCompPoint A,glCompPoint B,float R)
 {
     GLfloat rv=0;	

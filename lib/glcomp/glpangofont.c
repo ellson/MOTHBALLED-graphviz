@@ -93,7 +93,7 @@ writer(void *closure, const unsigned char *data, unsigned int length)
     return CAIRO_STATUS_WRITE_ERROR;
 }
 
-int create_font_file(char *fontdescription, int fs, char *fontfile,
+int glCompCreateFontFile(char *fontdescription, int fs, char *fontfile,
 		     float gw, float gh)
 {
 
@@ -158,7 +158,7 @@ int create_font_file(char *fontdescription, int fs, char *fontfile,
 }
 
 
-unsigned char *create_pango_texture(char *fontdescription, int fontsize,
+unsigned char *glCompCreatePangoTexture(char *fontdescription, int fontsize,
 				    char *txt, cairo_surface_t * surface,
 				    int *w, int *h)
 {

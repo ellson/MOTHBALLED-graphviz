@@ -26,11 +26,11 @@ extern "C" {
 
 //creates a font file with given name and font description
 //returns non-zero if fails
-    unsigned char *create_pango_texture(char *fontdescription,
+    unsigned char *glCompCreatePangoTexture(char *fontdescription,
 					int fontsize, char *txt,
 					cairo_surface_t * surface, int *w,
 					int *h);
-    int create_font_file(char *fontdescription, int fs, char *fontfile,
+    int glCompCreateFontFile(char *fontdescription, int fs, char *fontfile,
 			 float gw, float gh);
 
 #ifdef __cplusplus

@@ -14,4 +14,4 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-unsigned char *load_png(char *filename, int *imageWidth, int *imageHeight);
+unsigned char *glCompLoadPng (char *filename, int *imageWidth, int *imageHeight);

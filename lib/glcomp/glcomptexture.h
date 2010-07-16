@@ -41,6 +41,7 @@ extern "C" {
 					      int fs, char *text,
 					      int is2D);
 
+    extern void glCompDeleteTexture(glCompTex * t);
 #ifdef __cplusplus
 }
 #endif
