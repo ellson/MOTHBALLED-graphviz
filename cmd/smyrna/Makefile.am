@@ -38,7 +38,7 @@ endif
 noinst_HEADERS = arcball.h draw.h glexpose.h \
 	glmotion.h gltemplate.h gui/appmouse.h gui/callbacks.h \
 	hotkeymap.h materials.h md5.h polytess.h selectionfuncs.h \
-	smyrna_utils.h smyrnadefs.h support.h topfisheyeview.h \
+	smyrna_utils.h smyrnadefs.h topfisheyeview.h \
 	topviewdefs.h topviewfuncs.h trackball.h tvnodes.h \
 	viewport.h viewportcamera.h  \
 	gui/datalistcallbacks.h gui/frmobjectui.h \
@@ -48,7 +48,7 @@ noinst_HEADERS = arcball.h draw.h glexpose.h \
 smyrna_SOURCES = arcball.c draw.c glexpose.c \
 	glmotion.c gltemplate.c gui/appmouse.c gui/callbacks.c \
 	gvprpipe.c hier.c hotkeymap.c main.c md5.c polytess.c \
-	selectionfuncs.c smyrna_utils.c support.c topfisheyeview.c \
+	selectionfuncs.c smyrna_utils.c topfisheyeview.c \
 	topviewfuncs.c trackball.c  tvnodes.c \
 	viewport.c viewportcamera.c \
 	gui/datalistcallbacks.c gui/frmobjectui.c \
