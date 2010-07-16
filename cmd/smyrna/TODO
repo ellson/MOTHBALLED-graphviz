@@ -4,6 +4,7 @@ Allow user control of max. node size
 Set focus on a node
   "Find node whose name is abc"
 =>File browser should return to previously used directory
+Re-add "Select all nodes/edges" operations?
 
 Multiple views
 GUI for canned gvpr programs
