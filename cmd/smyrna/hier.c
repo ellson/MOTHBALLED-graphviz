@@ -212,6 +212,7 @@ focus_t *initFocus(int ncnt)
     return fs;
 }
 
+#ifdef UNUSED
 void freeFocus(focus_t * fs)
 {
     free(fs->foci_nodes);
@@ -219,3 +220,4 @@ void freeFocus(focus_t * fs)
     free(fs->y_foci);
     free(fs);
 }
+#endif

@@ -95,7 +95,7 @@ GLdouble complex[25][3] = { 0.0f, 0.0f, 0.0f,
 #ifndef WIN32
 #define CALLBACK 
 #endif
-void CALLBACK combineCallback(GLdouble coords[3], GLdouble *vertex_data[4],GLfloat weight[4], GLdouble **dataOut)
+static void CALLBACK combineCallback(GLdouble coords[3], GLdouble *vertex_data[4],GLfloat weight[4], GLdouble **dataOut)
 {
     GLdouble *vertex;
     int i;
@@ -115,15 +115,13 @@ void CALLBACK combineCallback(GLdouble coords[3], GLdouble *vertex_data[4],GLflo
     *dataOut = vertex;
 }
 
-void CALLBACK vertexCallback(GLvoid *vertex)
+static void CALLBACK vertexCallback(GLvoid *vertex)
 {
     GLdouble *ptr;
     ptr = (GLdouble *) vertex;
     glVertex3dv((GLdouble *) ptr);
 
 }
-
-
 
 static GLUtesselator* Init()
 {
@@ -183,20 +181,16 @@ static int Render_Contour2(GLUtesselator *tobj,sdot_op* p)
 #if UNUSED
 static int Render_Contour(GLUtesselator *tobj, GLdouble obj_data[][3],int cnt)
 {
-
-
-
 //    GLdouble d[1][3];
-    static GLdouble**d;
+    static GLdouble** d;
     int x=0;
     /* int y=0; */
-    if (!d)
-    {
-	d = (GLdouble**) malloc(sizeof(GLdouble)* cnt);
+    if (!d) {
+	d = N_NEW(cnt,GLdouble*);
 	for (x=0;x < cnt; x++)
 	{
 	    /* GLdouble temp; */
-	    d[x]=(GLdouble*)(malloc(sizeof(GLdouble)*3));
+	    d[x] = N_NEW3,GLdouble);
 	    d[x][0]=obj_data[x][0];
 	    d[x][1]=obj_data[x][1];
 	    d[x][2]=obj_data[x][2];
@@ -260,12 +254,15 @@ static int End_Contour(GLUtesselator *tobj)
 
 }
 
+#if 0
 static int freeTes(GLUtesselator *tobj)
 {
     gluDeleteTess(tobj);
     return(1);
 
 }
+#endif
+
 int drawTessPolygon(sdot_op* p)
 {
     if (!TP.tobj)

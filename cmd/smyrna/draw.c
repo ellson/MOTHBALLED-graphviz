@@ -45,7 +45,7 @@ GLubyte rasters[24] = {
     0xc0, 0x00, 0xc0, 0x00, 0xc0, 0x00, 0xff, 0xc0, 0xff, 0xc0
 };
 
-void DrawBezier(GLfloat * xp, GLfloat * yp, GLfloat * zp, int filled,
+static void DrawBezier(GLfloat * xp, GLfloat * yp, GLfloat * zp, int filled,
 		int param)
 {
     /*copied from NEHE */
@@ -205,7 +205,7 @@ static void relocate_spline(sdot_op * sop, int param)
 	}*/
 }
 
-void DrawBeziers(sdot_op* o, int param)
+static void DrawBeziers(sdot_op* o, int param)
 {
     //SEND ALL CONTROL POINTS IN 3D ARRAYS
 
@@ -215,9 +215,8 @@ void DrawBeziers(sdot_op* o, int param)
     int temp = 0;
     int filled;
     int i = 0;
-	static xdot_op * op;
-	op=&o->op;
-	view->Topview->global_z=view->Topview->global_z+o->layer*LAYER_DIFF;
+    xdot_op *  op=&o->op;
+    view->Topview->global_z=view->Topview->global_z+o->layer*LAYER_DIFF;
 
 //    SelectBeziers((sdot_op *) op);
     relocate_spline((sdot_op *) op, param);
@@ -250,15 +249,14 @@ void DrawBeziers(sdot_op* o, int param)
 
 //Draws an ellpise made out of points.
 //void DrawEllipse(xdot_point* xpoint,GLfloat xradius, GLfloat yradius,int filled)
-void DrawEllipse(sdot_op*  o, int param)
+static void DrawEllipse(sdot_op*  o, int param)
 {
     //to draw a circle set xradius and yradius same values
     GLfloat x, y, xradius, yradius;
     int i = 0;
     int filled;
-	static xdot_op * op;
-	op=&o->op;
-	view->Topview->global_z=view->Topview->global_z+o->layer*LAYER_DIFF;
+    xdot_op * op=&o->op;
+    view->Topview->global_z=view->Topview->global_z+o->layer*LAYER_DIFF;
     set_options((sdot_op *) op, param);
     x = op->u.ellipse.x - dx;
     y = op->u.ellipse.y - dy;
@@ -300,13 +298,12 @@ void DrawEllipse(sdot_op*  o, int param)
     glEnd();
 }
 
-extern void DrawPolygon(sdot_op * o, int param)
+static void DrawPolygon(sdot_op * o, int param)
 //void DrawPolygon(xdot_point* xpoint,int count, int filled)
 {
     int filled;
-	static xdot_op * op;
-	op=&o->op;
-	view->Topview->global_z=view->Topview->global_z+o->layer*LAYER_DIFF;
+    xdot_op *  op=&o->op;
+    view->Topview->global_z=view->Topview->global_z+o->layer*LAYER_DIFF;
 
 	//SelectPolygon((sdot_op *) op);
     set_options((sdot_op *) op, param);
@@ -349,23 +346,18 @@ extern void DrawPolygon(sdot_op * o, int param)
 }
 
 
-extern void DrawPolygon2(sdot_op * o, int param)
-
+#if 0
+static void DrawPolygon2(sdot_op * o, int param)
 {
     drawTessPolygon(o);
 }
+#endif
 
-
-
-
-
-
-void DrawPolyline(sdot_op* o, int param)
+static void DrawPolyline(sdot_op* o, int param)
 {
     int i = 0;
-	static xdot_op * op;
-	op=&o->op;
-	view->Topview->global_z=view->Topview->global_z+o->layer*LAYER_DIFF;
+    xdot_op * op=&o->op;
+    view->Topview->global_z=view->Topview->global_z+o->layer*LAYER_DIFF;
 
     if (param == 0)
 	glColor4f(view->penColor.R, view->penColor.G, view->penColor.B,
@@ -385,22 +377,37 @@ void DrawPolyline(sdot_op* o, int param)
     glEnd();
 }
 
-void SetFillColor(sdot_op*  o, int param)
+static glCompColor GetglCompColor(char *color)
 {
-	glCompColor c;
-	static xdot_op * op;
-	op=&o->op;
-    c = GetglCompColor(op->u.color);
+    gvcolor_t cl;
+    glCompColor c;
+    if (color != '\0') {
+	colorxlate(color, &cl, RGBA_DOUBLE);
+	c.R = (float) cl.u.RGBA[0];
+	c.G = (float) cl.u.RGBA[1];
+	c.B = (float) cl.u.RGBA[2];
+	c.A = (float) cl.u.RGBA[3];
+    } else {
+	c.R = view->penColor.R;
+	c.G = view->penColor.G;
+	c.B = view->penColor.B;
+	c.A = view->penColor.A;
+    }
+    return c;
+}
+static void SetFillColor(sdot_op*  o, int param)
+{
+    xdot_op * op=&o->op;
+    glCompColor c = GetglCompColor(op->u.color);
     view->fillColor.R = c.R;
     view->fillColor.G = c.G;
     view->fillColor.B = c.B;
     view->fillColor.A = c.A;
 }
-void SetPenColor(sdot_op* o, int param)
+static void SetPenColor(sdot_op* o, int param)
 {
     glCompColor c;
-	static xdot_op * op;
-	op=&o->op;
+    xdot_op * op=&o->op;
     c = GetglCompColor(op->u.color);
     view->penColor.R = c.R;
     view->penColor.G = c.G;
@@ -408,42 +415,42 @@ void SetPenColor(sdot_op* o, int param)
     view->penColor.A = c.A;
 }
 
-void SetStyle(sdot_op* o, int param)
+static void SetStyle(sdot_op* o, int param)
 {
-	static xdot_op * op;
-	op=&o->op;
-
-
+  /* xdot_op * op=&o->op; */
 }
 
 static sdot_op * font_op;
 
-void SetFont(sdot_op * o, int param)
+static void SetFont(sdot_op * o, int param)
 {
 	font_op=o;
 }
 
 /*for now we only support png files in 2d space, no image rotation*/
-void InsertImage(sdot_op * o, int param)
+static void InsertImage(sdot_op * o, int param)
 {
-    float w,h,x,y,X,Y,Z;
+    float x,y;
     glCompImage *i;
 
     if(!o->obj)
 	return;
 
-    if(!o->iData.data)
-    {
-	o->iData.data = load_png(o->op.u.image.name, &o->iData.w, &o->iData.h);    
-	x=o->op.u.image.pos.x;
-	y=o->op.u.image.pos.y;
-	i = glCompImageNew(NULL, x, y);
-	glCompImageLoadPng(i, o->op.u.image.name,0);
+    if(!o->img) {
+	x = o->op.u.image.pos.x;
+	y = o->op.u.image.pos.y;
+	i = o->img = glCompImageNewFile (NULL, x, y, o->op.u.image.name, 0);
+	if (!o->img) {
+	    fprintf (stderr, "Could not open file \"%s\" to read image.\n", o->op.u.image.name);
+	    return;
+	}
+	i->width = o->op.u.image.pos.w;
+	i->height = o->op.u.image.pos.h;
 	i->common.functions.draw(i);
     }
 }
 
-void EmbedText(sdot_op* o, int param)
+static void EmbedText(sdot_op* o, int param)
 {
 	GLfloat x,y;
 	glColor4f(view->penColor.R,view->penColor.G,view->penColor.B,view->penColor.A);
@@ -464,18 +471,19 @@ void EmbedText(sdot_op* o, int param)
 	y=o->op.u.text.y;
 	if (!o->font)
 	{
-		o->font=new_font(
+		o->font=glNewFont(
 		view->widgets,
 		o->op.u.text.text,
 		&view->penColor,
 		pangotext,
 		font_op->op.u.font.name,font_op->op.u.font.size,0);
-		//new_font(glCompSet * s, char *text, glCompColor * c, glCompFontType type, char *fontdesc, int fs)*/
+		//glNewFont(glCompSet * s, char *text, glCompColor * c, glCompFontType type, char *fontdesc, int fs)*/
 	}
 	glCompDrawText3D(o->font,x,y,view->Topview->global_z,o->op.u.text.width,font_op->op.u.font.size);
 
 }
 
+#if 0
 void draw_selection_box(ViewInfo * view)
 {
 /*    if (((view->mouse.mouse_mode == 4) || (view->mouse.mouse_mode == 5))
@@ -505,6 +513,7 @@ void draw_selection_box(ViewInfo * view)
 
     }*/
 }
+#endif
 
 void draw_magnifier(ViewInfo * view)
 {
@@ -554,7 +563,7 @@ void draw_magnifier(ViewInfo * view)
 
 }
 
-void draw_circle(float originX, float originY, float radius)
+static void draw_circle(float originX, float originY, float radius)
 {
 /* draw a circle from a bunch of short lines */
     float vectorX1, vectorY1, vectorX, vectorY, angle;
@@ -680,8 +689,8 @@ static void drawXdotwithattrs(void *e, int param)
 #endif
 
 
-
-/*void drawGraph(Agraph_t * g)
+#if 0
+void drawGraph(Agraph_t * g)
 {
     Agnode_t *v;
     Agedge_t *e;
@@ -725,8 +734,10 @@ static void drawXdotwithattrs(void *e, int param)
 		view->SignalBlock = 0;
     }
 
-}*/
+}
+#endif
 
+#if 0
 
 /*
 	this function is used to cache fonts in view->fontset
@@ -747,7 +758,6 @@ static void scanXdot(xdot * xDot, void *p)
     }
 
 }
-
 
 static void scanXdotwithattr(void *p, char *attr)
 {
@@ -774,8 +784,7 @@ static void scanXdotwithattrs(void *e)
 	iterate in nodes and edges to cache fonts, run this once or whenever a new font is added to the graph
 */
 
-
-void scanGraph(Agraph_t * g)
+static void scanGraph(Agraph_t * g)
 {
     Agnode_t *v;
     Agedge_t *e;
@@ -804,6 +813,7 @@ int randomize_color(glCompColor * c, int brightness)
     c->B = B;
     return 1;
 }
+#endif
 
 
 void drawCircle(float x, float y, float radius, float zdepth)
@@ -835,24 +845,6 @@ drawfunc_t OpFns[] = {
     (drawfunc_t)InsertImage,
 };
 
-glCompColor GetglCompColor(char *color)
-{
-    gvcolor_t cl;
-    glCompColor c;
-    if (color != '\0') {
-	colorxlate(color, &cl, RGBA_DOUBLE);
-	c.R = (float) cl.u.RGBA[0];
-	c.G = (float) cl.u.RGBA[1];
-	c.B = (float) cl.u.RGBA[2];
-	c.A = (float) cl.u.RGBA[3];
-    } else {
-	c.R = view->penColor.R;
-	c.G = view->penColor.G;
-	c.B = view->penColor.B;
-	c.A = view->penColor.A;
-    }
-    return c;
-}
 void drawEllipse(float xradius, float yradius, int angle1, int angle2)
 {
     int i;
@@ -867,6 +859,8 @@ void drawEllipse(float xradius, float yradius, int angle1, int angle2)
 
     glEnd();
 }
+
+#if 0
 int draw_node_hintbox_gl_polygon(GLfloat x, GLfloat y, GLfloat z,
 				 GLfloat fs, char *text)
 {
@@ -951,7 +945,9 @@ int draw_node_hintbox(GLfloat x, GLfloat y, GLfloat z, GLfloat fs,
     return 1;
 
 }
+#endif
 
+#if 0
 static GLUquadric *sphere;
 void draw_sphere(float x, float y, float z, float r)
 {
@@ -962,6 +958,7 @@ void draw_sphere(float x, float y, float z, float r)
     gluSphere(fisheyesphere, r, SPHERE_SLICE_COUNT, SPHERE_SLICE_COUNT);
     glTranslatef(-x, -y, -z);
 }
+#endif
 
 void draw_selpoly(glCompPoly* selPoly)
 {

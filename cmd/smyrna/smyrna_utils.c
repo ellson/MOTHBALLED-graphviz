@@ -218,6 +218,7 @@ int point_within_sphere_with_coords(float x0, float y0, float z0, float r,
 	return 1;
     return 0;
 }
+#if 0
 float distance_to_line(float ax, float ay, float bx, float by, float cx,
 		       float cy)
 {
@@ -238,7 +239,8 @@ int _point_in_polygon(int npol, float *xp, float *yp, float x, float y)
           c = !c;
       }
       return c;
-    }
+}
+#endif
 
 
 int point_in_polygon(glCompPoly* selPoly,glCompPoint p)

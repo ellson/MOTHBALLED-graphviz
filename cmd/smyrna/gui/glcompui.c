@@ -198,16 +198,11 @@ void selectnodes(glCompObj *obj, GLfloat x, GLfloat y)
 	view->Topview->sel.selectNodes=1;
     else
 	view->Topview->sel.selectNodes=0;
-
-
 }
-
 
 void testContainer(glCompSet *s)
 {
-
     glCompPanel* p;
-    glCompLabel *l=NULL;
 
     p = glCompPanelNew((glCompObj *) s, 100, 100, 500, 500);
     p = glCompPanelNew((glCompObj *) p, 0, 0, 480, 480);
@@ -221,13 +216,6 @@ void testContainer(glCompSet *s)
     p->common.anchor.bottom=50;
     p->common.anchor.top=10;
     p->common.anchor.right=10;
-
-
-
-
-
-
-
 }
 
 
@@ -288,16 +276,14 @@ glCompSet *glcreate_gl_topview_menu(void)
 
     y=y+off;
     b = glCompButtonNew((glCompObj *) p, 1, y, 42, 42, "N");
-    b->common.callbacks.click = selectnodes;
+    b->common.callbacks.click = (glcompclickfunc_t)selectnodes;
     b->groupid=-1;
     b->status=1;
 
     y=y+off;
     b = glCompButtonNew((glCompObj *) p, 1, y, 42, 42, "E");
-    b->common.callbacks.click = selectedges;
+    b->common.callbacks.click = (glcompclickfunc_t)selectedges;
     b->groupid=-1;
-
-
 
     p = glCompPanelNew((glCompObj *) p, 1, 325, 45, 180);
     p->common.align = glAlignTop;

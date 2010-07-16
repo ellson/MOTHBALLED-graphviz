@@ -24,8 +24,8 @@
 #include "hotkeymap.h"
 #include "polytess.h"
 
-void drawRotatingAxis(void);
-void draw_cube()
+#if 0
+static void draw_cube()
 {
 
     glBegin(GL_QUADS);		// Draw The Cube Using quads
@@ -61,13 +61,12 @@ void draw_cube()
     glVertex3f(100.0f, -100.0f, -100.0f);	// Bottom Right Of The Quad (Right)
     glEnd();
 }
+#endif
 
-
-
-void drawRotatingAxis(void)
+static void drawRotatingAxis(void)
 {
-    static GLUquadricObj *quadratic = (GLUquadricObj *) 0;
-	float AL = 45;
+    static GLUquadricObj *quadratic;
+    float AL = 45;
 
     if (get_mode(view) != MM_ROTATE)
 	    return;
@@ -114,7 +113,7 @@ void drawRotatingAxis(void)
 	params:ViewInfo	, global view variable defined in viewport.c
 	return value:always 1
 */
-int glupdatecamera(ViewInfo * view)
+static int glupdatecamera(ViewInfo * view)
 {
     if (view->active_camera == -1)
 	glTranslatef(-view->panx, -view->pany, view->panz);
@@ -150,6 +149,106 @@ int glupdatecamera(ViewInfo * view)
     return 1;
 }
 
+#if 0
+static void drawtestpoly(void)
+{
+    glEnable(GL_TEXTURE_2D);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+//      glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE , GL_DECAL);
+//      glBindTexture(GL_TEXTURE_2D,view->widgets->fontset->fonts[view->widgets->fontset->activefont]->texId);
+    glBindTexture(GL_TEXTURE_2D, 1);
+    glColor4f(1, 1, 1, 1);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0, 0.0);
+    glVertex3f(0.0, 0.0, 0.0);
+    glTexCoord2f(0.0, 1.0);
+    glVertex3f(0.0, 256.0, 0.0);
+    glTexCoord2f(1.0, 1.0);
+    glVertex3f(256.0, 256.0, 0.0);
+    glTexCoord2f(1.0, 0.0);
+    glVertex3f(256.0, 0.0, 0.0);
+    glTexCoord2f(0.0, 0.0);
+    glVertex3f(0.0, 0.0, 0.0);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+
+}
+#endif
+
+/*
+	draws grid (little dots , with no use)
+	params:ViewInfo	, global view variable defined in viewport.c
+	return value:none
+*/
+static void glexpose_grid(ViewInfo * view)
+{
+    //drawing grids
+    float x, y;
+    if (view->gridVisible) {
+	glPointSize(1);
+	glBegin(GL_POINTS);
+	glColor4f(view->gridColor.R, view->gridColor.G, view->gridColor.B,
+		  view->gridColor.A);
+	for (x = view->bdxLeft; x <= view->bdxRight;
+	     x = x + view->gridSize) {
+	    for (y = view->bdyBottom; y <= view->bdyTop;
+		 y = y + view->gridSize) {
+		glVertex3f(x, y, 0);
+	    }
+	}
+	glEnd();
+    }
+}
+
+/*
+	draws active graph depending on graph type
+	params:ViewInfo	, global view variable defined in viewport.c
+	return value:1 if there is a graph to draw else 0 
+*/
+static int glexpose_drawgraph(ViewInfo * view)
+{
+
+    if (view->activeGraph > -1) {
+//              if (GD_TopView(view->g[view->activeGraph])) 
+//              {
+	if (!view->Topview->fisheyeParams.active)
+//	    drawTopViewGraph(view->g[view->activeGraph]);	//view->Topview style dots and straight lines
+	    renderSmGraph(view->g[view->activeGraph],view->Topview);	    
+	else {
+	    drawtopologicalfisheye(view->Topview);
+	}
+
+//              }
+//              else
+//                      drawGraph(view->g[view->activeGraph]);  //xdot based drawing functions
+	glCompSetDraw(view->widgets);
+	return 1;
+    }
+    return 0;
+}
+
+#if 0
+static void test_color_pallete(void)
+{
+    int ind = 0;
+    float xGAP = 5;
+    float yGAP = 80;
+    float x = 50;
+    float y = 50;
+    glCompColor c;
+    for (ind = 0; ind < 350; ind++) {
+	getcolorfromschema(view->colschms, ind, 350, &c);
+	x = ind * xGAP;
+	glBegin(GL_POLYGON);
+	glColor3f(c.R, c.G, c.B);
+	glVertex3f(x, y, 0.0);
+	glVertex3f(x + xGAP, y, 0.0);
+	glVertex3f(x + xGAP, y + yGAP, 0.0);
+	glVertex3f(x, y + yGAP, 0.0);
+	glEnd();
+    }
+}
+#endif
 /*
 	main gl expose ,any time sreen needs to be redrawn, this function is called by gltemplate
 	,all drawings are initialized in this function
@@ -199,82 +298,6 @@ int glexpose_main(ViewInfo * view)
 		glEnd();
 	}*/
 	 /*DEBUG*/ return 1;
-}
-
-/*
-	draws grid (little dots , with no use)
-	params:ViewInfo	, global view variable defined in viewport.c
-	return value:none
-*/
-void drawtestpoly(void)
-{
-    glEnable(GL_TEXTURE_2D);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-//      glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE , GL_DECAL);
-//      glBindTexture(GL_TEXTURE_2D,view->widgets->fontset->fonts[view->widgets->fontset->activefont]->texId);
-    glBindTexture(GL_TEXTURE_2D, 1);
-    glColor4f(1, 1, 1, 1);
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0, 0.0);
-    glVertex3f(0.0, 0.0, 0.0);
-    glTexCoord2f(0.0, 1.0);
-    glVertex3f(0.0, 256.0, 0.0);
-    glTexCoord2f(1.0, 1.0);
-    glVertex3f(256.0, 256.0, 0.0);
-    glTexCoord2f(1.0, 0.0);
-    glVertex3f(256.0, 0.0, 0.0);
-    glTexCoord2f(0.0, 0.0);
-    glVertex3f(0.0, 0.0, 0.0);
-    glEnd();
-    glDisable(GL_TEXTURE_2D);
-
-}
-
-void glexpose_grid(ViewInfo * view)
-{
-    //drawing grids
-    float x, y;
-    if (view->gridVisible) {
-	glPointSize(1);
-	glBegin(GL_POINTS);
-	glColor4f(view->gridColor.R, view->gridColor.G, view->gridColor.B,
-		  view->gridColor.A);
-	for (x = view->bdxLeft; x <= view->bdxRight;
-	     x = x + view->gridSize) {
-	    for (y = view->bdyBottom; y <= view->bdyTop;
-		 y = y + view->gridSize) {
-		glVertex3f(x, y, 0);
-	    }
-	}
-	glEnd();
-    }
-}
-
-/*
-	draws active graph depending on graph type
-	params:ViewInfo	, global view variable defined in viewport.c
-	return value:1 if there is a graph to draw else 0 
-*/
-int glexpose_drawgraph(ViewInfo * view)
-{
-
-    if (view->activeGraph > -1) {
-//              if (GD_TopView(view->g[view->activeGraph])) 
-//              {
-	if (!view->Topview->fisheyeParams.active)
-//	    drawTopViewGraph(view->g[view->activeGraph]);	//view->Topview style dots and straight lines
-	    renderSmGraph(view->g[view->activeGraph],view->Topview);	    
-	else {
-	    drawtopologicalfisheye(view->Topview);
-	}
-
-//              }
-//              else
-//                      drawGraph(view->g[view->activeGraph]);  //xdot based drawing functions
-	glCompSetDraw(view->widgets);
-	return 1;
-    }
-    return 0;
 }
 
 /*

@@ -154,14 +154,15 @@ typedef struct
 	int h;
     }image_data;
     typedef struct 
-	{
-		xdot_op op;
-		void *obj;
-		glCompFont* font;
-		int size;
-		int layer;
-		int listId;/*opengl list id*/
-		image_data iData;
+    {
+	xdot_op op;
+	void *obj;
+	glCompFont* font;
+	int size;
+	int layer;
+	int listId;/*opengl list id*/
+	glCompImage* img;
+	/* image_data iData; */
     } sdot_op;	
 	
 	

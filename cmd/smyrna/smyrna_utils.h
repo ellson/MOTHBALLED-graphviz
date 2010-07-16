@@ -29,7 +29,9 @@ extern char* getAttrStr(Agraph_t* g,void* obj,char* attr_name,char* def);
 extern void setColor(glCompColor* c,GLfloat R,GLfloat G,GLfloat B,GLfloat A);
 extern void getcolorfromschema(colorschemaset * sc, float l, float maxl,glCompColor * c);
 extern glCompPoint getPointFromStr(char* str);
+#if 0
 extern float distance_to_line(float ax, float ay, float bx, float by, float cx,float cy);
+#endif
 extern int point_in_polygon(glCompPoly* selPoly,glCompPoint p);
 extern int point_within_ellips_with_coords(float ex, float ey,
 					       float ea, float eb,

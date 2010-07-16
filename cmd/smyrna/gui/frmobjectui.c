@@ -573,6 +573,10 @@ _BB void on_attrRB0_clicked(GtkWidget * widget, gpointer user_data)
 		      view->Topview);
 
 }
+
+/* This is the action attached to the publish button on the attributes
+ * window. What should happen?
+ */
 _BB void on_attrProg_toggled(GtkWidget * widget, gpointer user_data)
 {
   /* FIX */
@@ -739,7 +743,7 @@ attr_list *load_attr_list(Agraph_t * g)
 {
     int nodeCnt = 0;
     int edgeCnt = 0;
-    static char buf[512];
+    char buf[512];
     Agedge_t* ep;
     Agnode_t* v;
     Agraph_t* g;

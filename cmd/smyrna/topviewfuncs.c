@@ -160,7 +160,7 @@ static void glCompColorxlate(glCompColor* c,char* str)
 /* If the "visible" attribute is not set or "", return true
  * else evaluate as boolean
  */
-int visible(Agsym_t* attr, void* obj)
+static int visible(Agsym_t* attr, void* obj)
 {
     char* s;
 
@@ -171,7 +171,7 @@ int visible(Agsym_t* attr, void* obj)
     }
     else return 1;
 }
-int object_color(void* obj,glCompColor* c)
+static int object_color(void* obj,glCompColor* c)
 {
     gvcolor_t cl;
     Agraph_t* g=view->g[view->activeGraph];
@@ -265,7 +265,7 @@ static void draw_edge(glCompPoint* posT,glCompPoint* posH, GLfloat length,int de
     }
 
 }
-void renderSelectedNodes(Agraph_t * g)
+static void renderSelectedNodes(Agraph_t * g)
 {
     Agnode_t *v;
     Agsym_t* data_attr = GN_labelattribute(g);
@@ -324,7 +324,7 @@ void renderSelectedNodes(Agraph_t * g)
 
 
 
-void renderNodes(Agraph_t * g)
+static void renderNodes(Agraph_t * g)
 {
     Agnode_t *v;
     glCompPoint pos;
@@ -399,7 +399,7 @@ void renderNodes(Agraph_t * g)
 }
 
 
-void renderSelectedEdges(Agraph_t * g)
+static void renderSelectedEdges(Agraph_t * g)
 {
 
     Agedge_t *e;
@@ -453,7 +453,7 @@ void renderSelectedEdges(Agraph_t * g)
 
 
 
-void renderEdges(Agraph_t * g)
+static void renderEdges(Agraph_t * g)
 {
     Agedge_t *e;
     Agnode_t *v;
@@ -510,7 +510,7 @@ void renderEdges(Agraph_t * g)
     glEnd();
 }
 
-void renderNodeLabels(Agraph_t * g)
+static void renderNodeLabels(Agraph_t * g)
 {
     Agnode_t *v;
     glCompPoint pos;
@@ -538,7 +538,7 @@ void renderNodeLabels(Agraph_t * g)
     }
 }
 
-void renderEdgeLabels(Agraph_t * g)
+static void renderEdgeLabels(Agraph_t * g)
 {
     Agedge_t *e;
     Agnode_t *v;
@@ -578,8 +578,7 @@ void renderEdgeLabels(Agraph_t * g)
 
 
 
-
-void cacheNodes(Agraph_t * g,topview* t)
+static void cacheNodes(Agraph_t * g,topview* t)
 {
     if(t->cache.node_id!=-1)	/*clean existing cache*/
 	glDeleteLists(t->cache.node_id,1);
@@ -592,7 +591,7 @@ void cacheNodes(Agraph_t * g,topview* t)
 
 
 }
-void cacheEdges(Agraph_t * g,topview* t)
+static void cacheEdges(Agraph_t * g,topview* t)
 {
     if(t->cache.edge_id!=-1)	/*clean existing cache*/
 	glDeleteLists(t->cache.edge_id,1);
@@ -623,7 +622,7 @@ void cacheSelectedNodes(Agraph_t * g,topview* t)
     renderSelectedNodes(g);
     glEndList();
 }
-void cacheNodeLabels(Agraph_t * g,topview* t)
+static void cacheNodeLabels(Agraph_t * g,topview* t)
 {
     if(t->cache.nodelabel_id!=-1)	/*clean existing cache*/
 	glDeleteLists(t->cache.nodelabel_id,1);
@@ -632,7 +631,7 @@ void cacheNodeLabels(Agraph_t * g,topview* t)
     renderNodeLabels(g);
     glEndList();
 }
-void cacheEdgeLabels(Agraph_t * g,topview* t)
+static void cacheEdgeLabels(Agraph_t * g,topview* t)
 {
     if(t->cache.edgelabel_id!=-1)	/*clean existing cache*/
 	glDeleteLists(t->cache.edgelabel_id,1);

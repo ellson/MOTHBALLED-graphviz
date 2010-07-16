@@ -240,7 +240,7 @@ static v_data *makeGraph(Agraph_t* gg, int *nedges)
 
 
 
-
+#if 0
 static v_data *makeGraph_old(topview * tv, int *nedges)
 {
     int i;
@@ -288,7 +288,24 @@ static v_data *makeGraph_old(topview * tv, int *nedges)
     *nedges = ne;
     return graph;
 }
+#endif
 
+static void refresh_old_values(topview * t)
+{
+    int level, v;
+    Hierarchy *hp = t->fisheyeParams.h;
+    for (level = 0; level < hp->nlevels; level++) {
+	for (v = 0; v < hp->nvtxs[level]; v++) {
+	    ex_vtx_data *gg = hp->geom_graphs[level];
+	    /* v_data *g = hp->graphs[level]; */
+	    /* double x0,y0; */
+	    gg[v].old_physical_x_coord = gg[v].physical_x_coord;
+	    gg[v].old_physical_y_coord = gg[v].physical_y_coord;
+	    gg[v].old_active_level = gg[v].active_level;
+	}
+    }
+
+}
 
 /* To use:
  * double* x_coords; // initial x coordinates
@@ -387,6 +404,7 @@ void prepare_topological_fisheye(Agraph_t* g,topview * t)
 
 }
 
+#if 0
 /*
 	draws all level 0 nodes and edges, during animation
 */
@@ -411,8 +429,9 @@ void printalllevels(topview * t)
     }
     glEnd();
 }
+#endif
 
-void drawtopfishnodes(topview * t)
+static void drawtopfishnodes(topview * t)
 {
     glCompColor srcColor;
     glCompColor tarColor;
@@ -473,7 +492,8 @@ void drawtopfishnodes(topview * t)
 
 }
 
-void drawtopfishnodelabels(topview * t)
+#if 0
+static void drawtopfishnodelabels(topview * t)
 {
     int v, finenodes, focusnodes;
     char buf[512];
@@ -517,7 +537,8 @@ void drawtopfishnodelabels(topview * t)
     }
 
 }
-void drawtopfishedges(topview * t)
+#endif
+static void drawtopfishedges(topview * t)
 {
     glCompColor srcColor;
     glCompColor tarColor;
@@ -592,6 +613,29 @@ void drawtopfishedges(topview * t)
 
 }
 
+static int get_active_frame(topview * t)
+{
+    gulong microseconds;
+    gdouble seconds;
+    int fr;
+    seconds = g_timer_elapsed(view->timer, &microseconds);
+    fr = (int) (seconds / ((double) view->frame_length / (double) 1000));
+    if (fr < view->total_frames) {
+
+	if (fr == view->active_frame)
+	    return 0;
+	else {
+	    view->active_frame = fr;
+	    return 1;
+	}
+    } else {
+	g_timer_stop(view->timer);
+	view->Topview->fisheyeParams.animate = 0;
+	return 0;
+    }
+
+}
+
 void drawtopologicalfisheye(topview * t)
 {
     get_active_frame(t);
@@ -602,6 +646,12 @@ void drawtopologicalfisheye(topview * t)
 
 }
 
+static void get_interpolated_coords(double x0, double y0, double x1, double y1,
+			     int fr, int total_fr, double *x, double *y)
+{
+    *x = x0 + (x1 - x0) / (double) total_fr *(double) (fr + 1);
+    *y = y0 + (y1 - y0) / (double) total_fr *(double) (fr + 1);
+}
 
 int get_temp_coords(topview * t, int level, int v, double *coord_x,
 		    double *coord_y)
@@ -677,6 +727,7 @@ int get_temp_coords(topview * t, int level, int v, double *coord_x,
  *  positionAllItems(hierarchy, fs, parms)
  */
 
+#if 0
 void infotopfisheye(topview * t, float *x, float *y, float *z)
 {
 
@@ -690,7 +741,7 @@ void infotopfisheye(topview * t, float *x, float *y, float *z)
 /*		hp->geom_graphs[0][closest_fine_node].x_coord;
 	    hp->geom_graphs[0][closest_fine_node].y_coord;*/
 }
-
+#endif
 
 
 
@@ -770,51 +821,7 @@ void changetopfishfocus(topview * t, float *x, float *y,
     }
 
 }
-void refresh_old_values(topview * t)
-{
-    int level, v;
-    Hierarchy *hp = t->fisheyeParams.h;
-    for (level = 0; level < hp->nlevels; level++) {
-	for (v = 0; v < hp->nvtxs[level]; v++) {
-	    ex_vtx_data *gg = hp->geom_graphs[level];
-	    /* v_data *g = hp->graphs[level]; */
-	    /* double x0,y0; */
-	    gg[v].old_physical_x_coord = gg[v].physical_x_coord;
-	    gg[v].old_physical_y_coord = gg[v].physical_y_coord;
-	    gg[v].old_active_level = gg[v].active_level;
-	}
-    }
 
-}
-void get_interpolated_coords(double x0, double y0, double x1, double y1,
-			     int fr, int total_fr, double *x, double *y)
-{
-    *x = x0 + (x1 - x0) / (double) total_fr *(double) (fr + 1);
-    *y = y0 + (y1 - y0) / (double) total_fr *(double) (fr + 1);
-}
-
-int get_active_frame(topview * t)
-{
-    gulong microseconds;
-    gdouble seconds;
-    int fr;
-    seconds = g_timer_elapsed(view->timer, &microseconds);
-    fr = (int) (seconds / ((double) view->frame_length / (double) 1000));
-    if (fr < view->total_frames) {
-
-	if (fr == view->active_frame)
-	    return 0;
-	else {
-	    view->active_frame = fr;
-	    return 1;
-	}
-    } else {
-	g_timer_stop(view->timer);
-	view->Topview->fisheyeParams.animate = 0;
-	return 0;
-    }
-
-}
 
 
 #ifdef UNUSED

@@ -52,13 +52,34 @@ static glMouseButtonType getGlCompMouseType(int n)
 }
 
 
+/*
+	test single opengl parameter, all visual , it doesnt return a value
+	params:gtk gl config class , attribute name and id,if boolean expected send is_boolean true
+	return value:none
+*/
+void print_gl_config_attrib(GdkGLConfig * glconfig,
+			    const gchar * attrib_str,
+			    int attrib, gboolean is_boolean)
+{
+    int value;
+
+    g_print("%s = ", attrib_str);
+    if (gdk_gl_config_get_attrib(glconfig, attrib, &value)) {
+	if (is_boolean)
+	    g_print("%s\n", value == TRUE ? "TRUE" : "FALSE");
+	else
+	    g_print("%d\n", value);
+    } else
+	g_print("*** Cannot get %s attribute value\n", attrib_str);
+}
+
 
 /*
 	test opengl parameters, configuration.Run this function to see machine's open gl capabilities
 	params:gtk gl config class ,gtk takes care of all these tests
 	return value:none
 */
-void examine_gl_config_attrib(GdkGLConfig * glconfig)
+static void examine_gl_config_attrib(GdkGLConfig * glconfig)
 {
     g_print("\nOpenGL visual configurations :\n\n");
     g_print("gdk_gl_config_is_rgba (glconfig) = %s\n",
@@ -107,27 +128,6 @@ void examine_gl_config_attrib(GdkGLConfig * glconfig)
     print_gl_config_attrib(glconfig, "GDK_GL_ACCUM_ALPHA_SIZE",
 			   GDK_GL_ACCUM_ALPHA_SIZE, FALSE);
     g_print("\n");
-}
-
-/*
-	test single opengl parameter, all visual , it doesnt return a value
-	params:gtk gl config class , attribute name and id,if boolean expected send is_boolean true
-	return value:none
-*/
-void print_gl_config_attrib(GdkGLConfig * glconfig,
-			    const gchar * attrib_str,
-			    int attrib, gboolean is_boolean)
-{
-    int value;
-
-    g_print("%s = ", attrib_str);
-    if (gdk_gl_config_get_attrib(glconfig, attrib, &value)) {
-	if (is_boolean)
-	    g_print("%s\n", value == TRUE ? "TRUE" : "FALSE");
-	else
-	    g_print("%d\n", value);
-    } else
-	g_print("*** Cannot get %s attribute value\n", attrib_str);
 }
 
 /*

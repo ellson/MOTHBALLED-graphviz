@@ -18,6 +18,7 @@
 
 #include "support.h"
 
+#if 0
 GtkWidget *lookup_widget(GtkWidget * widget, const gchar * widget_name)
 {
     GtkWidget *parent, *found_widget;
@@ -42,11 +43,13 @@ GtkWidget *lookup_widget(GtkWidget * widget, const gchar * widget_name)
 	g_warning("Widget not found: %s", widget_name);
     return found_widget;
 }
+#endif
 
 static GList *pixmaps_directories = NULL;
 
+#if 0
 /* Use this function to set the directory containing installed pixmaps. */
-void add_pixmap_directory(const gchar * directory)
+static void add_pixmap_directory(const gchar * directory)
 {
     pixmaps_directories = g_list_prepend(pixmaps_directories,
 					 g_strdup(directory));
@@ -117,7 +120,9 @@ GdkPixbuf *create_pixbuf(const gchar * filename)
     g_free(pathname);
     return pixbuf;
 }
+#endif
 
+#if 0
 /* This is used to set ATK action descriptions. */
 void
 glade_set_atk_action_description(AtkAction * action,
@@ -134,3 +139,4 @@ glade_set_atk_action_description(AtkAction * action,
 	    atk_action_set_description(action, i, description);
     }
 }
+#endif

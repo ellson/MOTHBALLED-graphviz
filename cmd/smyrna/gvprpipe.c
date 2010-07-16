@@ -50,12 +50,13 @@ extern GladeXML *xml;		//global libglade vars
 
 }*/
 
+#if 0
 gvprscript* scr_from_string(char* str,void* obj)
 {
 
     return NULL;
 }
-
+#endif
 
 
 static ssize_t outfn(void *sp, const char *buf, size_t nbyte, void *dp)

@@ -26,7 +26,7 @@
 
 gboolean redraw = FALSE;
 
-
+#if 0
 void glmotion_main(ViewInfo * v, GdkEventMotion * event,
 		   GtkWidget * widget)
 {
@@ -61,22 +61,9 @@ void glmotion_main(ViewInfo * v, GdkEventMotion * event,
 				   FALSE);
 
 }
-void glmotion_zoom_inc(int zoomin)
-{
-    float inc_value;
-    inc_value =
-	(float) (view->Topview->fitin_zoom * MAX_ZOOM * -1 -
-		 view->Topview->fitin_zoom * MIN_ZOOM * -1) / ZOOM_STEPS;
-    if (zoomin)			/*zooming in , zoom value should be decreased */
-	graph_zoom(view->zoom - view->zoom * 0.25);
-    else
-	graph_zoom(view->zoom + view->zoom * 0.25);	/*zoom out */
-    glexpose();
-
-}
-
+#endif
 /*real zoom in out is done here, all other functions send this one what they desire, it is not guranteed,*/
-void graph_zoom(float real_zoom)
+static void graph_zoom(float real_zoom)
 {
     float old_zoom;
 
@@ -106,6 +93,20 @@ void graph_zoom(float real_zoom)
 #endif
 /*	if (v->Topview->customptr)
 		glCompLabelSetText((glCompLabel *) v->Topview->customptr, buf);*/
+}
+
+void glmotion_zoom_inc(int zoomin)
+{
+    float inc_value;
+    inc_value =
+	(float) (view->Topview->fitin_zoom * MAX_ZOOM * -1 -
+		 view->Topview->fitin_zoom * MIN_ZOOM * -1) / ZOOM_STEPS;
+    if (zoomin)			/*zooming in , zoom value should be decreased */
+	graph_zoom(view->zoom - view->zoom * 0.25);
+    else
+	graph_zoom(view->zoom + view->zoom * 0.25);	/*zoom out */
+    glexpose();
+
 }
 
 void glmotion_zoom(ViewInfo * v)
@@ -149,6 +150,7 @@ void glmotion_pan(ViewInfo * v)
 
     redraw = TRUE;
 }
+#if 0
 void glmotion_adjust_pan(ViewInfo * v, float panx, float pany)
 {
     float gldx, gldy;
@@ -171,6 +173,7 @@ void glmotion_adjust_pan(ViewInfo * v, float panx, float pany)
     redraw = TRUE;
 
 }
+#endif
 
 #ifdef UNUSED
 static float mod_angle(float angle)
@@ -179,6 +182,7 @@ static float mod_angle(float angle)
 
 }
 #endif
+#if 0
 void glmotion_rotate(ViewInfo * v)
 {
 /*	if(v->mouse.rotate_axis==MOUSE_ROTATE_XY)
@@ -202,3 +206,4 @@ void glmotion_rotate(ViewInfo * v)
 		v->cameras[v->active_camera]->anglez-=v->mouse.dy/7;
 	}*/
 }
+#endif

@@ -36,7 +36,7 @@ static void viewport_update_camera_indexes(ViewInfo * view)
     }
 }
 
-viewport_camera *add_camera_to_viewport(ViewInfo * view)
+static viewport_camera *add_camera_to_viewport(ViewInfo * view)
 {
     view->camera_count++;
     view->cameras =
@@ -47,7 +47,8 @@ viewport_camera *add_camera_to_viewport(ViewInfo * view)
     return view->cameras[view->camera_count - 1];
 }
 
-void set_camera_x_y(viewport_camera * c)
+#if 0
+static void set_camera_x_y(viewport_camera * c)
 {
 /*    c->x =
 	c->r * cos((float) DEG2RAD * c->anglexy) * sin((float) DEG2RAD *
@@ -58,7 +59,6 @@ void set_camera_x_y(viewport_camera * c)
 	view->pany;
     c->z = c->r * cos(DEG2RAD * c->anglexyz);*/
 }
-
 int delete_camera_from_viewport(ViewInfo * view, viewport_camera * c)
 {
     int ind;
@@ -80,6 +80,8 @@ int delete_camera_from_viewport(ViewInfo * view, viewport_camera * c)
     }
     return 0;
 }
+#endif
+#if 0
 int activate_viewport_camera(ViewInfo * view, int cam_index)
 {
     if (cam_index < view->camera_count) {
@@ -88,7 +90,6 @@ int activate_viewport_camera(ViewInfo * view, int cam_index)
     } else
 	return 0;
 }
-
 int refresh_viewport_camera(ViewInfo * view)
 {
     if (view->active_camera >= 0) {
@@ -101,6 +102,7 @@ int refresh_viewport_camera(ViewInfo * view)
     } else
 	return 0;
 }
+#endif
 
 void menu_click_add_camera(void *p)
 {
@@ -128,25 +130,84 @@ void menu_click_add_camera(void *p)
 //    attach_camera_widget(view);
 }
 
-int blocksignal = 0;
-void menu_click_2d(void *p)
+#ifdef UNUSED
+static int blocksignal = 0;
+static void menu_click_2d(void *p)
 {
     view->active_camera = -1;
 }
 
-void menu_click_camera_select(void *p)
+static void menu_click_camera_select(void *p)
 {
     view->active_camera = ((glCompButton *) p)->data;
 }
 
+static int show_camera_settings(viewport_camera * c)
+{
 
-void menu_click_camera_edit(void *p)
+    char buf[50];
+    sprintf(buf, "Camera:%i", c->index);
+    gtk_label_set_text((GtkLabel *)
+		       glade_xml_get_widget(xml, "dlgcameralabel1"), buf);
+    gtk_spin_button_set_value((GtkSpinButton *)
+			      glade_xml_get_widget(xml,
+						   "dlgcameraspinbutton1"),
+			      c->x);
+    gtk_spin_button_set_value((GtkSpinButton *)
+			      glade_xml_get_widget(xml,
+						   "dlgcameraspinbutton2"),
+			      c->y);
+    gtk_spin_button_set_value((GtkSpinButton *)
+			      glade_xml_get_widget(xml,
+						   "dlgcameraspinbutton3"),
+			      c->z);
+    gtk_spin_button_set_value((GtkSpinButton *)
+			      glade_xml_get_widget(xml,
+						   "dlgcameraspinbutton4"),
+			      c->targetx);
+    gtk_spin_button_set_value((GtkSpinButton *)
+			      glade_xml_get_widget(xml,
+						   "dlgcameraspinbutton5"),
+			      c->targety);
+    gtk_spin_button_set_value((GtkSpinButton *)
+			      glade_xml_get_widget(xml,
+						   "dlgcameraspinbutton6"),
+			      c->targetz);
+
+
+    gtk_spin_button_set_value((GtkSpinButton *)
+			      glade_xml_get_widget(xml,
+						   "dlgcameraspinbutton7"),
+			      c->camera_vectorx * 360.0);
+    gtk_spin_button_set_value((GtkSpinButton *)
+			      glade_xml_get_widget(xml,
+						   "dlgcameraspinbutton8"),
+			      c->camera_vectory * 360.0);
+    gtk_spin_button_set_value((GtkSpinButton *)
+			      glade_xml_get_widget(xml,
+						   "dlgcameraspinbutton9"),
+			      c->camera_vectorz * 360.0);
+
+
+
+
+
+    gtk_widget_hide(glade_xml_get_widget(xml, "dlgCamera"));
+    gtk_widget_show(glade_xml_get_widget(xml, "dlgCamera"));
+    gtk_window_set_keep_above((GtkWindow *)
+			      glade_xml_get_widget(xml, "dlgCamera"), 1);
+    view->selected_camera = c;
+    return 1;
+
+
+}
+
+static void menu_click_camera_edit(void *p)
 {
     show_camera_settings(view->cameras[(int) ((glCompButton *) p)->data]
 	);
 }
 
-#ifdef UNUSED
 void attach_camera_widget(ViewInfo * view)
 {
 
@@ -262,66 +323,7 @@ void attach_camera_widget(ViewInfo * view)
     }
 }
 #endif
-int show_camera_settings(viewport_camera * c)
-{
-
-    char buf[50];
-    sprintf(buf, "Camera:%i", c->index);
-    gtk_label_set_text((GtkLabel *)
-		       glade_xml_get_widget(xml, "dlgcameralabel1"), buf);
-    gtk_spin_button_set_value((GtkSpinButton *)
-			      glade_xml_get_widget(xml,
-						   "dlgcameraspinbutton1"),
-			      c->x);
-    gtk_spin_button_set_value((GtkSpinButton *)
-			      glade_xml_get_widget(xml,
-						   "dlgcameraspinbutton2"),
-			      c->y);
-    gtk_spin_button_set_value((GtkSpinButton *)
-			      glade_xml_get_widget(xml,
-						   "dlgcameraspinbutton3"),
-			      c->z);
-    gtk_spin_button_set_value((GtkSpinButton *)
-			      glade_xml_get_widget(xml,
-						   "dlgcameraspinbutton4"),
-			      c->targetx);
-    gtk_spin_button_set_value((GtkSpinButton *)
-			      glade_xml_get_widget(xml,
-						   "dlgcameraspinbutton5"),
-			      c->targety);
-    gtk_spin_button_set_value((GtkSpinButton *)
-			      glade_xml_get_widget(xml,
-						   "dlgcameraspinbutton6"),
-			      c->targetz);
-
-
-    gtk_spin_button_set_value((GtkSpinButton *)
-			      glade_xml_get_widget(xml,
-						   "dlgcameraspinbutton7"),
-			      c->camera_vectorx * 360.0);
-    gtk_spin_button_set_value((GtkSpinButton *)
-			      glade_xml_get_widget(xml,
-						   "dlgcameraspinbutton8"),
-			      c->camera_vectory * 360.0);
-    gtk_spin_button_set_value((GtkSpinButton *)
-			      glade_xml_get_widget(xml,
-						   "dlgcameraspinbutton9"),
-			      c->camera_vectorz * 360.0);
-
-
-
-
-
-    gtk_widget_hide(glade_xml_get_widget(xml, "dlgCamera"));
-    gtk_widget_show(glade_xml_get_widget(xml, "dlgCamera"));
-    gtk_window_set_keep_above((GtkWindow *)
-			      glade_xml_get_widget(xml, "dlgCamera"), 1);
-    view->selected_camera = c;
-    return 1;
-
-
-}
-
+#if 0
 int save_camera_settings(viewport_camera * c)
 {
     c->x = (float) gtk_spin_button_get_value((GtkSpinButton *)
@@ -377,3 +379,4 @@ void dlgcameracancelbutton_clicked_cb
     (GtkWidget * widget, gpointer user_data) {
     gtk_widget_hide(glade_xml_get_widget(xml, "dlgCamera"));
 }
+#endif

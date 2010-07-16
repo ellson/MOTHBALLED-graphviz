@@ -23,13 +23,13 @@
 extern "C" {
 #endif
 
-    int glupdatecamera(ViewInfo * v);
+    /* int glupdatecamera(ViewInfo * v); */
     int glexpose_main(ViewInfo * v);
-    void glexpose_grid(ViewInfo * v);
-    int glexpose_drawgraph(ViewInfo * view);
+    /* void glexpose_grid(ViewInfo * v); */
+    /* int glexpose_drawgraph(ViewInfo * view); */
     void drawRotatingTools(void);
-    void drawtestpoly(void);
-    void draw_cube(void);
+    /* void drawtestpoly(void); */
+    /* void draw_cube(void); */
 
 #ifdef __cplusplus
 }				/* end extern "C" */

@@ -38,12 +38,14 @@
 #include "topviewfuncs.h"
 
 
-
   /* Forward declarations */
 #ifdef UNUSED
 static int init_object_custom_data(Agraph_t * graph, void *obj);
 static void refresh_borders(Agraph_t * g);
 #endif
+
+static colorschemaset *create_color_theme(int themeid);
+static md5_byte_t *get_md5_key(Agraph_t * graph);
 
 #define countof( array ) ( sizeof( array )/sizeof( array[0] ) )
 
@@ -76,7 +78,7 @@ static Dtdisc_t qDisc = {
 #endif
 
 
-void clear_viewport(ViewInfo * view)
+static void clear_viewport(ViewInfo * view)
 {
     /*free topview if there is one */
     if (view->activeGraph >= 0)
@@ -114,7 +116,7 @@ static void *get_glut_font(int ind)
     }
 
 }
-void fill_key(md5_byte_t * b, md5_byte_t * data)
+static void fill_key(md5_byte_t * b, md5_byte_t * data)
 {
     int ind = 0;
     for (ind = 0; ind < 16; ind++) {
@@ -705,20 +707,20 @@ int add_new_graph_to_viewport(void)
 static md5_byte_t md5_digest[16];
 static md5_state_t pms;
 
-int append_to_md5(void *chan, const char *str)
+static int append_to_md5(void *chan, const char *str)
 {
     md5_append(&pms, (unsigned char *) str, (int) strlen(str));
     return 1;
 
 }
-int flush_md5(void *chan)
+static int flush_md5(void *chan)
 {
     md5_finish(&pms, md5_digest);
     return 1;
 }
 
 
-md5_byte_t *get_md5_key(Agraph_t * graph)
+static md5_byte_t *get_md5_key(Agraph_t * graph)
 {
     Agiodisc_t *xio;
     Agiodisc_t a;
@@ -820,13 +822,10 @@ int save_as_graph(void)
 }
 
 
-/* init_object_custom_data:
- * creates a custom_object_data
- */
-
+#ifdef UNUSED
 /* move_node:
  */
-void movenode(void *obj, float dx, float dy)
+static void movenode(void *obj, float dx, float dy)
 {
     char buf[512];
     double x, y;
@@ -839,7 +838,6 @@ void movenode(void *obj, float dx, float dy)
     }
 }
 
-#ifdef UNUSED
 static char *move_xdot(void *obj, xdot * x, int dx, int dy, int dz)
 {
     int i = 0;
@@ -1008,6 +1006,7 @@ void glexpose(void)
     expose_event(view->drawing_area, NULL, NULL);
 }
 
+#if 0
 /*following code does not do what i like it to do*/
 /*I liked to have a please wait window on the screen all i got was the outer borders of the window
 GTK requires a custom widget expose function 
@@ -1024,6 +1023,7 @@ void please_dont_wait(void)
 {
     gtk_widget_hide(glade_xml_get_widget(xml, "frmWait"));
 }
+#endif
 
 float interpol(float minv, float maxv, float minc, float maxc, float x)
 {
@@ -1093,15 +1093,13 @@ typedef struct{
 	colorschema* s;
 }colorschemaset; */
 
-void clear_color_theme(colorschemaset * cs)
+static void clear_color_theme(colorschemaset * cs)
 {
     free(cs->s);
     free(cs);
 }
 
-
-
-colorschemaset *create_color_theme(int themeid)
+static colorschemaset *create_color_theme(int themeid)
 {
     char **colors;
     colorschemaset *s = malloc(sizeof(colorschemaset));
@@ -1154,24 +1152,3 @@ colorschemaset *create_color_theme(int themeid)
     return s;
 }
 
-
-void test_color_pallete(void)
-{
-    int ind = 0;
-    float xGAP = 5;
-    float yGAP = 80;
-    float x = 50;
-    float y = 50;
-    glCompColor c;
-    for (ind = 0; ind < 350; ind++) {
-	getcolorfromschema(view->colschms, ind, 350, &c);
-	x = ind * xGAP;
-	glBegin(GL_POLYGON);
-	glColor3f(c.R, c.G, c.B);
-	glVertex3f(x, y, 0.0);
-	glVertex3f(x + xGAP, y, 0.0);
-	glVertex3f(x + xGAP, y + yGAP, 0.0);
-	glVertex3f(x, y + yGAP, 0.0);
-	glEnd();
-    }
-}
