@@ -213,7 +213,6 @@ int main(int argc, char *argv[])
 
     gtk_widget_hide(glade_xml_get_widget(xml, "vbox13"));
     gtk_window_set_deletable ((GtkWindow*)glade_xml_get_widget(xml, "dlgSettings"),0);
-    gtk_window_set_deletable ((GtkWindow*)glade_xml_get_widget(xml, "dlgTVFilter"),0);
     gtk_window_set_deletable ((GtkWindow*)glade_xml_get_widget(xml, "frmTVNodes"),0);
 
 
