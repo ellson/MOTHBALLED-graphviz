@@ -484,6 +484,7 @@ void init_viewport(ViewInfo * view)
     /*create timer */
     view->timer = g_timer_new();
     view->timer2 = g_timer_new();
+    view->timer3 = g_timer_new();
 
     g_timer_stop(view->timer);
     view->active_frame = 0;

@@ -668,6 +668,8 @@ typedef struct
 	GTimer *timer;
 	/*this timer is session timer and always active */
 	GTimer *timer2;
+	/*general purpose timer */
+	GTimer *timer3;
 	int active_frame;
 	int total_frames;
 	int frame_length;

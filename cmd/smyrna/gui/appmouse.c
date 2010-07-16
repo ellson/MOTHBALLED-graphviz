@@ -36,15 +36,29 @@ static void apply_actions(ViewInfo* v,int x,int y)
     if (a==MM_ROTATE)
 
     {
-	view->arcball->MousePt.s.X = (GLfloat) x;
-	view->arcball->MousePt.s.Y = (GLfloat) y;
-	if (!view->arcball->isDragging) {
-	    arcmouseClick(view);
-        view->arcball->isDragging = 1;
+
+
+	gdouble seconds;
+	seconds = g_timer_elapsed(view->timer3, NULL);
+	if (seconds > 1) {
+	    g_timer_stop(view->timer2);
+		view->arcball->MousePt.s.X = (GLfloat) x;
+		view->arcball->MousePt.s.Y = (GLfloat) y;
+		if (!view->arcball->isDragging) {
+		    arcmouseClick(view);
+		view->arcball->isDragging = 1;
+		}
+		else 
+		    arcmouseDrag(view);
+	    g_timer_start(view->timer2);
 	}
-	else 
-            arcmouseDrag(view);
+
+
 	return;
+
+
+
+
     }
     if (a==MM_PAN)
     {
