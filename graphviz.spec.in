@@ -81,7 +81,7 @@ BuildRequires: xorg-x11-devel
 %define RUBY 1
 %define GUILE 1
 %define PYTHON 1
-BuildRequires: perl ruby ruby-devel guile-devel python python-devel
+BuildRequires: perl perl-ExtUtils-Embed ruby ruby-devel guile-devel python python-devel
 %endif
 %if %rhel >= 5
 %define JAVA 1

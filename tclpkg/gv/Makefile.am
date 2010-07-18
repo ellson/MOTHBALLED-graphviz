@@ -121,12 +121,16 @@ gv.cmxa: gv.cmx
 gv.a:	gv.cmxa
 
 pkgperldir = $(pkglibdir)/perl
+PERL        ?= perl
+PERL_CC      = $(shell $(PERL) -MExtUtils::Embed -e ccopts)
+PERL_LD      = $(shell $(PERL) -MExtUtils::Embed -e ldopts)
+VENDOR_ARCH  = $(shell $(PERL) -MConfig -e 'print $$Config{installvendorarch};')
 PERL_data = gv.pm
 nodist_libgv_perl_la_SOURCES = gv_perl.cpp $(PERL_data)
 libgv_perl_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
 libgv_perl_la_LIBADD = $(BASELIBS) $(PERL_LIBS)
-libgv_perl_la_LDFLAGS = -module -avoid-version
-libgv_perl_la_CPPFLAGS = $(BASECPPFLAGS) $(PERL_INCLUDES)
+libgv_perl_la_LDFLAGS = -module -avoid-version $(PERL_LD)
+libgv_perl_la_CPPFLAGS = $(BASECPPFLAGS) $(PERL_CC)
 $(PERL_data): gv_perl.cpp
 gv_perl.cpp: gv.i
 	$(SWIG) -c++ -perl -o gv_perl.cpp $(srcdir)/gv.i
