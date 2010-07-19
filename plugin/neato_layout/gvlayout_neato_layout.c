@@ -31,6 +31,28 @@
 /* FIXME - globals.h is needed for Nop */
 #include "globals.h"
 
+
+#ifdef WIN32 //*dependencies
+#ifdef WITH_CGRAPH
+    #pragma comment( lib, "cgraph.lib" )
+#else
+    #pragma comment( lib, "graph.lib" )
+#endif
+    #pragma comment( lib, "gvc.lib" )
+    #pragma comment( lib, "pathplan.lib" )
+    #pragma comment( lib, "neatogen.lib" )
+    #pragma comment( lib, "circogen.lib" )
+    #pragma comment( lib, "twopigen.lib" )
+    #pragma comment( lib, "fdpgen.lib" )
+    #pragma comment( lib, "sparse.lib" )
+    #pragma comment( lib, "cdt.lib" )
+    #pragma comment( lib, "gts.lib" )
+    #pragma comment( lib, "glib-2.0.lib" )
+    #pragma comment( lib, "vpsc.lib" )
+    #pragma comment( lib, "patchwork.lib" )
+#endif
+
+
 typedef enum { LAYOUT_NEATO,
 		LAYOUT_FDP,
 		LAYOUT_SFDP,

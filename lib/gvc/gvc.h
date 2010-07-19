@@ -97,10 +97,19 @@ extern int gvFreeLayout(GVC_t *gvc, graph_t *g);
 extern void gvFinalize(GVC_t *gvc);
 extern int gvFreeContext(GVC_t *gvc);
 
+
+
+
+
+
 /** Add a library from your user application
  * @param gvc Graphviz context to add library to
  * @param lib library to add
  */
+
+
+
+
 extern void gvAddLibrary(GVC_t *gvc, gvplugin_library_t *lib);
 
 #undef extern

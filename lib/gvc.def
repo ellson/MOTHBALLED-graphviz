@@ -337,3 +337,6 @@ gv_postprocess
 gvRenderContext
 gvflush
 gvrender_ptf
+setColorScheme
+makePortLabels
+addEdgeLabels

@@ -19,6 +19,8 @@
  * Written by Emden R. Gansner
  */
 
+
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -39,6 +41,24 @@
 #ifndef WITH_CGRAPH
 extern Agdict_t *agdictof(void *);
 #endif
+
+
+#ifdef WIN32 /*dependencies*/
+#ifdef WITH_CGRAPH
+    #pragma comment( lib, "cgraph.lib" )
+#else
+    #pragma comment( lib, "graph.lib" )
+#endif
+    #pragma comment( lib, "gvc.lib" )
+    #pragma comment( lib, "ingraphs.lib" )
+    #pragma comment( lib, "neatogen.lib" )
+    #pragma comment( lib, "pathplan.lib" )
+    #pragma comment( lib, "vpsc.lib" )
+    #pragma comment( lib, "sparse.lib" )
+    #pragma comment( lib, "gts.lib" )
+    #pragma comment( lib, "glib.lib" )
+#endif
+
 
 /* gvpack:
  * Input consists of graphs in dot format.

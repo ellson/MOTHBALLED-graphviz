@@ -23,6 +23,11 @@
 #include "config.h"
 #endif
 
+#ifdef WIN32 /*dependencies*/
+    #pragma comment( lib, "cgraph.lib" )
+    #pragma comment( lib, "ingraphs.lib" )
+#endif
+
 #include <stdio.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>

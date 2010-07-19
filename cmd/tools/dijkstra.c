@@ -14,6 +14,13 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+#ifdef WIN32 /*dependencies*/
+    #pragma comment( lib, "cgraph.lib" )
+    #pragma comment( lib, "ingraphs.lib" )
+    #pragma comment( lib, "cdt.lib" )
+
+#endif
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif

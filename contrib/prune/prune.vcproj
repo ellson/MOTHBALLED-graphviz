@@ -61,7 +61,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cgraph.lib ingraphs.lib"
 				OutputFile="c:/graphviz-ms/bin/$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="C:\graphviz-ms\bin"
@@ -135,7 +134,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cgraph.lib ingraphs.lib"
 				OutputFile="c:/graphviz-ms/bin/$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="C:\graphviz-ms\bin;C:\gtk\lib"

@@ -46,6 +46,15 @@ typedef enum {
 	FORMAT_XDOT
 } format_type;
 
+#ifdef WIN32 /*dependencies*/
+#ifdef WITH_CGRAPH
+    #pragma comment( lib, "cgraph.lib" )
+#else
+    #pragma comment( lib, "graph.lib" )
+#endif
+    #pragma comment( lib, "gvc.lib" )
+//    #pragma comment( lib, "ingraphs.lib" )
+#endif
 
 #define XDOTVERSION "1.2"
 

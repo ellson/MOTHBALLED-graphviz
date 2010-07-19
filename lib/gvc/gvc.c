@@ -26,6 +26,21 @@
 #include "gvconfig.h"
 #include "gvio.h"
 
+#ifdef WIN32 /*dependencies*/
+#ifdef WITH_CGRAPH
+    #pragma comment( lib, "cgraph.lib" )
+#else
+    #pragma comment( lib, "graph.lib" )
+#endif
+    #pragma comment( lib, "cdt.lib" )
+    #pragma comment( lib, "ltdl.lib" )
+    #pragma comment( lib, "xml2.lib" )
+    #pragma comment( lib, "expat.lib" )
+    #pragma comment( lib, "regex_win32.lib" )
+    #pragma comment( lib, "zdll.lib" )
+#endif
+
+
 GVC_t *gvContext(void)
 {
     GVC_t *gvc;

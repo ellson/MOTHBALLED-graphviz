@@ -93,10 +93,12 @@ mkMCGraph (Agraph_t* g)
     Agedge_t* e;
     Agedge_t* newe;
     Agraph_t* sg;
+    edgepair_t* data;
+    edgepair_t* ep;
     Agraph_t* newg = agopen (agnameof(g), g->desc, 0);
     Dt_t* emap = dtopen (&edgepair, Dtoset);;
-    edgepair_t* data = N_NEW(agnedges(g), edgepair_t);
-    edgepair_t* ep = data;
+    data = N_NEW(agnedges(g), edgepair_t);
+    ep = data;
 
     for (t = agfstnode(g); t; t = agnxtnode(g, t)) {
 	newt = mkMCNode (newg, STDNODE, agnameof(t));

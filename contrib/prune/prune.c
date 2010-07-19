@@ -36,6 +36,13 @@
 #include "ingraphs.h"
 #include "generic_list.h"
 
+
+#ifdef WIN32 //*dependencies
+    #pragma comment( lib, "cgraph.lib" )
+    #pragma comment( lib, "ingraphs.lib" )
+#endif
+
+
 /* structure to hold an attribute specified on the commandline */
 typedef struct strattr_s {
     char *n;

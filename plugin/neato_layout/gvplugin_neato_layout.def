@@ -1,6 +1,5 @@
 LIBRARY	"gvplugin_neato_layout"
 EXPORTS
-addEdgeLabels	
 allow_edits	
 checkStart	
 choose_node	

@@ -673,7 +673,6 @@ void graph_init(graph_t * g, boolean use_rankdir)
     static char *fontnamenames[] = {"gd","ps","svg", NULL};
     static int fontnamecodes[] = {NATIVEFONTS,PSFONTS,SVGFONTS,-1};
     int rankdir;
-
     GD_drawing(g) = NEW(layout_t);
 
     /* set this up fairly early in case any string sizes are needed */

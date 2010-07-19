@@ -34,6 +34,9 @@ extern gvplugin_installed_t gvrender_vml_types[];
 
 extern gvplugin_installed_t gvloadimage_core_types[];
 
+
+
+
 static gvplugin_api_t apis[] = {
     {API_device, gvdevice_dot_types},
     {API_device, gvdevice_fig_types},

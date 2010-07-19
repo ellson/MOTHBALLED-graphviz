@@ -18,6 +18,26 @@
 #include "config.h"
 #endif
 
+
+#ifdef WIN32 /*dependencies*/
+#ifdef WITH_CGRAPH
+    #pragma comment( lib, "cgraph.lib" )
+#else
+    #pragma comment( lib, "graph.lib" )
+#endif
+    #pragma comment( lib, "libpng.lib" )
+    #pragma comment( lib, "gd.lib" )
+    #pragma comment( lib, "cairo.lib" )
+    #pragma comment( lib, "fontconfig.lib" )
+    #pragma comment( lib, "gvc.lib" )
+    #pragma comment( lib, "freetype.lib" )
+    #pragma comment( lib, "iconv.lib" )
+    #pragma comment( lib, "jpeg.lib" )
+    #pragma comment( lib, "zdll.lib" )
+    #pragma comment( lib, "pathplan.lib" )
+#endif
+
+
 #include "gvplugin_device.h"
 #include "gvio.h"
 

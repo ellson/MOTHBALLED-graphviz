@@ -35,6 +35,13 @@ __declspec(dllimport) boolean MemTest;
 
 #ifdef WIN32_DLL
 __declspec(dllimport) boolean MemTest;
+/*gvc.lib cgraph.lib*/
+#ifdef WITH_CGRAPH
+    #pragma comment( lib, "cgraph.lib" )
+#else
+    #pragma comment( lib, "graph.lib" )
+#endif
+    #pragma comment( lib, "gvc.lib" )
 #endif
 
 #include <stdlib.h>
