@@ -1509,6 +1509,9 @@ parseSegs (char* clrs, int nseg)
 
     for (cnum = 0, color = strtok(colors, ":"); color; cnum++, color = strtok(0, ":")) {
 	if (cnum == nseg-1) {
+	    char* p = strchr (color, ',');
+	    if (p)
+		*p = '\0';
 	    segs[cnum].color = color;
 	    segs[cnum].t = 1.0;
 	}
