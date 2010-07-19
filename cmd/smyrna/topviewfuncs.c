@@ -392,7 +392,7 @@ static void renderNodes(Agraph_t * g)
 	    glVertex3f(pos.x,pos.y,pos.z);
 	else if (defaultNodeShape == 1) 
 	    drawCircle(pos.x,pos.y,nodeSize,pos.z);
-    ind++;
+	ind++;
     }
     if(defaultNodeShape==0)
 	glEnd();
@@ -737,7 +737,6 @@ void renderSmGraph(Agraph_t * g,topview* t)
 	    if(view->zoom*-1 <	t->fitin_zoom /(float)view->labelnumberofnodes*-1) 
 		glCallList(t->cache.nodelabel_id);
 	}
-
     }
 
     if(view->drawedges)
@@ -751,7 +750,6 @@ void renderSmGraph(Agraph_t * g,topview* t)
 
 	}
     }
-
 }
 
 void freeSmGraph(Agraph_t * g,topview* t)
