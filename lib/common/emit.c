@@ -1460,9 +1460,212 @@ static char* default_pencolor(char *pencolor, char *deflt)
     return buf;
 }
 
+typedef struct {
+    char* color;
+    float t;
+} colorseg_t;
+ 
+static void
+freeSegs (colorseg_t* segs)
+{
+    free (segs->color);
+    free (segs);
+}
+
+/* getSegLen:
+ * Find comma in s, replace with '\0'.
+ * Convert remainder to float v and verify prev_v < v < 1.
+ * Return 0 on failure
+ */
+static float getSegLen (char* s, float prev_v)
+{
+    char* p = strchr (s, ',');
+    char* endp;
+    float v;
+
+    if (!p) return 0;
+    *p++ = '\0';
+    v = strtof (p, &endp);
+    if ((endp != p) && (prev_v < v) && (v < 1))
+	return v;
+    else
+	return 0; 
+}
+
+/* parseSegs:
+ * Parse string of form color,float:color,float:...:color,float:color
+ * where the floats are positive, < 1, and monotonically increasing.
+ * Store the values in an array of colorseg_t's and return the array.
+ * Return NULL on error.
+ */
+static colorseg_t*
+parseSegs (char* clrs, int nseg)
+{
+    char* colors = strdup (clrs);
+    colorseg_t* segs = N_NEW(nseg+1,colorseg_t);
+    char* color;
+    int cnum;
+    float v, prev_v = 0;
+
+    for (cnum = 0, color = strtok(colors, ":"); color; cnum++, color = strtok(0, ":")) {
+	if (cnum == nseg-1) {
+	    segs[cnum].color = color;
+	    segs[cnum].t = 1.0;
+	}
+	else if ((v = getSegLen (color, prev_v)) != 0) {
+	    segs[cnum].color = color;
+	    segs[cnum].t = (v - prev_v)/(1.0 - prev_v);
+	    prev_v = v;
+	}
+	else {
+	    agerr (AGERR, "Invalid color spec \"%s\"", clrs);
+	    if (cnum == 0)
+		free (colors);
+	    freeSegs (segs);
+	    return NULL;
+	}
+    }
+    
+    return segs;
+}
+
+/* approxLen:
+ */
+static double approxLen (pointf* pts)
+{
+    double d = DIST(pts[0],pts[1]);
+    d += DIST(pts[1],pts[2]);
+    d += DIST(pts[2],pts[3]);
+    return d;
+}
+ 
+/* splitBSpline:
+ * Given B-spline bz and 0 < t < 1, split bz so that left corresponds to
+ * the fraction t of the arc length. The new parts are store in left and right.
+ * The caller needs to free the allocated points.
+ *
+ * In the current implementation, we find the Bezier that should contain t by
+ * treating the control points as a polyline.
+ * We then split that Bezier.
+ */
+static void splitBSpline (bezier* bz, float t, bezier* left, bezier* right)
+{
+    int i, j, k, cnt = (bz->size - 1)/3;
+    double* lens;
+    double last, len, sum;
+    pointf* pts;
+    float r;
+
+    if (cnt == 1) {
+	left->size = 4;
+	left->list = N_NEW(4, pointf);
+	right->size = 4;
+	right->list = N_NEW(4, pointf);
+	Bezier (bz->list, 3, t, left->list, right->list);
+	return;
+    }
+    
+    lens = N_NEW(cnt, double);
+    sum = 0;
+    pts = bz->list;
+    for (i = 0; i < cnt; i++) {
+	lens[i] = approxLen (pts);
+	sum += lens[i];
+	pts += 3;
+    }
+    len = t*sum;
+    sum = 0;
+    for (i = 0; i < cnt; i++) {
+	sum += lens[i];
+	if (sum >= len)
+	    break;
+    }
+
+    left->size = 3*(i+1) + 1;
+    left->list = N_NEW(left->size,pointf);
+    right->size = 3*(cnt-i) + 1;
+    right->list = N_NEW(right->size,pointf);
+    for (j = 0; j < left->size; j++)
+	left->list[j] = bz->list[j];
+    k = j - 4;
+    for (j = 0; j < right->size; j++)
+	right->list[j] = bz->list[k++];
+
+    last = lens[i];
+    r = (len - (sum - last))/last;
+    Bezier (bz->list + 3*i, 3, r, left->list + 3*i, right->list);
+
+    free (lens);
+}
+
+/* multicolor:
+ * Draw an edge as a sequence of colors.
+ * Not sure how to handle multiple B-splines, so do a naive
+ * implementation.
+ * Return non-zero if color spec is incorrect
+ */
+static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int num, double arrowsize, double penwidth)
+{ 
+    bezier bz;
+    bezier bz0, bz_l, bz_r;
+    int i;
+    colorseg_t* segs = parseSegs (colors, num);
+    colorseg_t* s;
+    char* endcolor;
+
+    if (segs == NULL) {
+	Agraph_t* g = e->tail->graph;
+	agerr (AGPREV, "in edge %s%s%s\n", agnameof(e->tail), (AG_IS_DIRECTED(g)?" -> ":" -- "), agnameof(e->head));
+	return 1;
+    }
+
+    for (i = 0; i < ED_spl(e)->size; i++) {
+	bz = ED_spl(e)->list[i];
+	for (s = segs; s->color; s++) {
+    	    gvrender_set_pencolor(job, s->color);
+	    if (s == segs) {
+		splitBSpline (&bz, s->t, &bz_l, &bz_r);
+		gvrender_beziercurve(job, bz_l.list, bz_l.size, FALSE, FALSE, FALSE);
+		free (bz_l.list);
+	    }
+	    else if (s->t < 1.0) {
+		bz0 = bz_r;
+		splitBSpline (&bz0, s->t, &bz_l, &bz_r);
+		free (bz0.list);
+		gvrender_beziercurve(job, bz_l.list, bz_l.size, FALSE, bz.eflag, FALSE);
+		free (bz_l.list);
+	    }
+	    else {
+		endcolor = s->color;
+		gvrender_beziercurve(job, bz_r.list, bz_r.size, FALSE, FALSE, FALSE);
+		free (bz_r.list);
+	    }
+		
+	}
+                /* arrow_gen resets the job style  (How?  FIXME)
+                 * If we have more splines to do, restore the old one.
+                 * Use local copy of penwidth to work around reset.
+                 */
+	if (bz.sflag) {
+    	    gvrender_set_pencolor(job, segs->color);
+    	    gvrender_set_fillcolor(job, segs->color);
+	    arrow_gen(job, EMIT_TDRAW, bz.sp, bz.list[0], arrowsize, penwidth, bz.sflag);
+	}
+	if (bz.eflag) {
+    	    gvrender_set_pencolor(job, endcolor);
+    	    gvrender_set_fillcolor(job, endcolor);
+	    arrow_gen(job, EMIT_HDRAW, bz.ep, bz.list[bz.size - 1], arrowsize, penwidth, bz.eflag);
+	}
+	if ((ED_spl(e)->size>1) && (bz.sflag||bz.eflag) && styles) 
+	    gvrender_set_style(job, styles);
+    }
+    freeSegs (segs);
+    return 0;
+}
+
 static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 {
-    int i, j, cnum, numc = 0;
+    int i, j, cnum, numc = 0, numcomma = 0;
     char *color, *pencolor, *fillcolor;
     char *headcolor, *tailcolor, *lastcolor;
     char *colors = NULL;
@@ -1480,9 +1683,20 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 	color = late_string(e, E_color, "");
 
 	/* need to know how many colors separated by ':' */
-	for (p = color; *p; p++)
+	for (p = color; *p; p++) {
 	    if (*p == ':')
 		numc++;
+	    else if (*p == ',')
+		numcomma++;
+	}
+
+	if (numcomma && numc) {
+	    if (multicolor (job, e, styles, color, numc+1, arrowsize, penwidth)) {
+		color = DEFAULT_COLOR;
+	    }
+	    else
+		return;
+	}
 
 	fillcolor = pencolor = color;
 	if (ED_gui_state(e) & GUI_STATE_ACTIVE) {
