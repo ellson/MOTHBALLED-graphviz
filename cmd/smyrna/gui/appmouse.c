@@ -29,85 +29,60 @@
 static float prevX=0;
 static float prevY=0;
 static int lastAction;
+
 static void apply_actions(ViewInfo* v,int x,int y)
 {
     int a;
-    a=get_mode(v);
-    if (a==MM_ROTATE)
+    gdouble seconds;
 
-    {
-
-
-	gdouble seconds;
+    switch ((a=get_mode(v))) {
+    case MM_ROTATE :
 	seconds = g_timer_elapsed(view->timer3, NULL);
-	if (seconds > 1) {
-	    g_timer_stop(view->timer2);
+	if (seconds > 0.1) {
+	    g_timer_stop(view->timer3);
 		view->arcball->MousePt.s.X = (GLfloat) x;
 		view->arcball->MousePt.s.Y = (GLfloat) y;
 		if (!view->arcball->isDragging) {
 		    arcmouseClick(view);
-		view->arcball->isDragging = 1;
+		    view->arcball->isDragging = 1;
 		}
 		else 
 		    arcmouseDrag(view);
-	    g_timer_start(view->timer2);
+	    g_timer_start(view->timer3);
 	}
-
-
 	return;
-
-
-
-
-    }
-    if (a==MM_PAN)
-    {
+	break;
+    case MM_PAN :
 	glmotion_pan(v);
-    }
-    if (a==MM_MOVE)
-    {
-//        move_TVnodes();
-	;
-    }
-
-    if(a==MM_RECTANGULAR_SELECT)
-    {
-	if (!view->mouse.down)
+	break;
+    case MM_MOVE :
+        /* move_TVnodes(); */
+	break;
+    case MM_RECTANGULAR_SELECT :
+	if (!view->mouse.down) {
 //	    rectangle_select(v);
 	    pick_objects_rect(view->g[view->activeGraph]) ;
-    }
-
-    if(a==MM_POLYGON_SELECT)
-    {
+	}
+	break;
+    case MM_POLYGON_SELECT :
 	add_selpoly(view->g[view->activeGraph],&view->Topview->sel.selPoly,view->mouse.GLfinalPos);
-    }
-
-
-    if (a==MM_SINGLE_SELECT)
-    {
+	break;
+    case MM_SINGLE_SELECT :
 	pick_object_xyz(view->g[view->activeGraph],view->Topview,view->mouse.GLfinalPos.x,view->mouse.GLfinalPos.y,view->mouse.GLfinalPos.z);
-    }
-
-    if (a==MM_FISHEYE_PICK) 
-    {
-
-	if (view->activeGraph >= 0) 
-	{
+	break;
+    case MM_FISHEYE_PICK :
+	if (view->activeGraph >= 0) {
 	    if (view->Topview->fisheyeParams.active) 
 		changetopfishfocus(view->Topview,&view->mouse.GLpos.x,&view->mouse.GLpos.y,  0, 1);
+#if 0
 	    else    //single right click
-		//	pick_node_from_coords(view->mouse.GLpos.x, view->mouse.GLpos.y,view->mouse.GLpos.z);
-
-	    {;}
-
+		pick_node_from_coords(view->mouse.GLpos.x, view->mouse.GLpos.y,view->mouse.GLpos.z);
+#endif
 
 	}
+	break;
     }
     lastAction=a;
-
-
-
-
 }
 
 static int singleclick(ViewInfo* v)
@@ -144,11 +119,11 @@ static void appmouse_down(ViewInfo* v,int x,int y)
 static void appmouse_up(ViewInfo* v,int x,int y)
 {
 
-    int a;
+    /* int a; */
     v->mouse.down=0;
     v->mouse.finalPos.x=x;
     v->mouse.finalPos.y=y;
-    a=get_mode(v);
+    /* a=get_mode(v); */
     to3D(x,y, &v->mouse.GLfinalPos.x,&v->mouse.GLfinalPos.y,&v->mouse.GLfinalPos.z);
     if(singleclick(v))
     {
