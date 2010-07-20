@@ -44,12 +44,14 @@ BuildRequires: /bin/ksh bison m4 flex swig tk tcl >= 8.3 freetype-devel >= 2
 
 #-- Red Hat Enterprise Linux (also Centos) specific Build Requirements --------------------
 %if 0%{?rhel}
+%if %rhel == 4
+BuildRequires: xorg-x11-devel
 %if %rhel >= 4
-BuildRequires: fontconfig-devel xorg-x11-devel
+BuildRequires: fontconfig-devel
 %define TCL 1
 BuildRequires: tcl-devel tk-devel 
-%define PERL 1
-BuildRequires: perl perl-ExtUtils-Embed
+# define PERL 1
+# BuildRequires: perl perl-ExtUtils-Embed
 %define RUBY 1
 BuildRequires: ruby ruby-devel
 %define GUILE 1
@@ -59,8 +61,8 @@ BuildRequires: python python-devel
 %define IPSEPCOLA 1
 %endif
 %if %rhel >= 5
+BuildRequires: xorg-x11-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel
 BuildRequires: libtool-ltdl libtool-ltdl-devel
-BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel
 %define JAVA 1
 BuildRequires: java-devel
 %define PANGOCAIRO 1
