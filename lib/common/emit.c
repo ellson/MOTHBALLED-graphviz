@@ -1494,7 +1494,12 @@ static float getSegLen (char* s, float prev_v)
 	return -1;
     }
     *p++ = '\0';
-    v = strtof (p, &endp);
+#ifndef WIN32
+    v = strtod (p, &endp);
+#else
+    v =(float) strtod (p, &endp);
+#endif
+
     if (endp != p) {  /* scanned something */
 	if ((prev_v < v) && (v < 1))
 	    return v;
@@ -1638,8 +1643,14 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
     char* endcolor;
 
     if (segs == NULL) {
+#ifndef WITH_CGRAPH
 	Agraph_t* g = e->tail->graph;
 	agerr (AGPREV, "in edge %s%s%s\n", agnameof(e->tail), (AG_IS_DIRECTED(g)?" -> ":" -- "), agnameof(e->head));
+#else
+	Agraph_t* g = agraphof(agtail(e));
+	agerr (AGPREV, "in edge %s%s%s\n", agnameof(agtail(e)), (agisdirected(g)?" -> ":" -- "), agnameof(aghead(e)));
+
+#endif
 	return 1;
     }
 
