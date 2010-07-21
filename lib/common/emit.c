@@ -1483,23 +1483,18 @@ freeSegs (colorsegs_t* segs)
  * Return 0 for 0-length prefix, i.e., prev_v is also 0.
  * Return -1 on failure
  */
-static float getSegLen (char* s, float prev_v)
+static double getSegLen (char* s, double prev_v)
 {
     char* p = strchr (s, ',');
     char* endp;
-    float v;
+    double v;
 
     if (!p) {
 	agerr (AGERR, "No comma in color spec \"%s\" in color attribute ", s);
 	return -1;
     }
     *p++ = '\0';
-#ifndef WIN32
     v = strtod (p, &endp);
-#else
-    v =(float) strtod (p, &endp);
-#endif
-
     if (endp != p) {  /* scanned something */
 	if ((prev_v < v) && (v < 1))
 	    return v;
@@ -1524,7 +1519,7 @@ parseSegs (char* clrs, int nseg)
     char* colors = strdup (clrs);
     char* color;
     int cnum = 0;
-    float v, prev_v = 0;
+    double v, prev_v = 0;
 
     segs->base = colors; 
     segs->segs = s = N_NEW(nseg+1,colorseg_t);
