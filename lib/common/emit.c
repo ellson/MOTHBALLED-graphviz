@@ -1464,18 +1464,24 @@ typedef struct {
     char* color;
     float t;
 } colorseg_t;
+typedef struct {
+    char* base;
+    colorseg_t* segs;
+} colorsegs_t;
  
 static void
-freeSegs (colorseg_t* segs)
+freeSegs (colorsegs_t* segs)
 {
-    free (segs->color);
+    free (segs->base);
+    free (segs->segs);
     free (segs);
 }
 
 /* getSegLen:
  * Find comma in s, replace with '\0'.
  * Convert remainder to float v and verify prev_v < v < 1.
- * Return 0 on failure
+ * Return 0 for 0-length prefix, i.e., prev_v is also 0.
+ * Return -1 on failure
  */
 static float getSegLen (char* s, float prev_v)
 {
@@ -1483,13 +1489,20 @@ static float getSegLen (char* s, float prev_v)
     char* endp;
     float v;
 
-    if (!p) return 0;
+    if (!p) {
+	agerr (AGERR, "No comma in color spec \"%s\" in color attribute ", s);
+	return -1;
+    }
     *p++ = '\0';
     v = strtof (p, &endp);
-    if ((endp != p) && (prev_v < v) && (v < 1))
-	return v;
-    else
-	return 0; 
+    if (endp != p) {  /* scanned something */
+	if ((prev_v < v) && (v < 1))
+	    return v;
+	else if ((v == 0) && (prev_v == 0))
+	    return 0;
+    }
+    agerr (AGERR, "Illegal length value in \"%s,%s\" color segment ", s, p);
+    return -1;
 }
 
 /* parseSegs:
@@ -1498,37 +1511,45 @@ static float getSegLen (char* s, float prev_v)
  * Store the values in an array of colorseg_t's and return the array.
  * Return NULL on error.
  */
-static colorseg_t*
+static colorsegs_t*
 parseSegs (char* clrs, int nseg)
 {
+    colorsegs_t* segs = NEW(colorsegs_t);
+    colorseg_t* s = N_NEW(nseg+1,colorseg_t);
     char* colors = strdup (clrs);
-    colorseg_t* segs = N_NEW(nseg+1,colorseg_t);
     char* color;
-    int cnum;
+    int cnum = 0;
     float v, prev_v = 0;
 
-    for (cnum = 0, color = strtok(colors, ":"); color; cnum++, color = strtok(0, ":")) {
+    segs->base = colors; 
+    segs->segs = s = N_NEW(nseg+1,colorseg_t);
+    for (color = strtok(colors, ":"); color; color = strtok(0, ":")) {
 	if (cnum == nseg-1) {
 	    char* p = strchr (color, ',');
 	    if (p)
 		*p = '\0';
-	    segs[cnum].color = color;
-	    segs[cnum].t = 1.0;
+	    s[cnum].color = color;
+	    s[cnum++].t = 1.0;
 	}
-	else if ((v = getSegLen (color, prev_v)) != 0) {
-	    segs[cnum].color = color;
-	    segs[cnum].t = (v - prev_v)/(1.0 - prev_v);
+	else if ((v = getSegLen (color, prev_v)) > 0) {
+	    s[cnum].color = color;
+	    s[cnum++].t = (v - prev_v)/(1.0 - prev_v);
 	    prev_v = v;
 	}
+	else if (v == 0) {
+	    agerr (AGWARN, "0-length in color spec \"%s\"\n", clrs);
+	    nseg--;
+	}
 	else {
-	    agerr (AGERR, "Invalid color spec \"%s\"", clrs);
-	    if (cnum == 0)
-		free (colors);
 	    freeSegs (segs);
 	    return NULL;
 	}
     }
     
+    if (cnum == 0) {
+	freeSegs (segs);
+	segs = NULL;
+    }
     return segs;
 }
 
@@ -1612,7 +1633,7 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
     bezier bz;
     bezier bz0, bz_l, bz_r;
     int i;
-    colorseg_t* segs = parseSegs (colors, num);
+    colorsegs_t* segs = parseSegs (colors, num);
     colorseg_t* s;
     char* endcolor;
 
@@ -1624,9 +1645,9 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
 
     for (i = 0; i < ED_spl(e)->size; i++) {
 	bz = ED_spl(e)->list[i];
-	for (s = segs; s->color; s++) {
+	for (s = segs->segs; s->color; s++) {
     	    gvrender_set_pencolor(job, s->color);
-	    if (s == segs) {
+	    if (s == segs->segs) {
 		splitBSpline (&bz, s->t, &bz_l, &bz_r);
 		gvrender_beziercurve(job, bz_l.list, bz_l.size, FALSE, FALSE, FALSE);
 		free (bz_l.list);
@@ -1650,8 +1671,8 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
                  * Use local copy of penwidth to work around reset.
                  */
 	if (bz.sflag) {
-    	    gvrender_set_pencolor(job, segs->color);
-    	    gvrender_set_fillcolor(job, segs->color);
+    	    gvrender_set_pencolor(job, segs->segs->color);
+    	    gvrender_set_fillcolor(job, segs->segs->color);
 	    arrow_gen(job, EMIT_TDRAW, bz.sp, bz.list[0], arrowsize, penwidth, bz.sflag);
 	}
 	if (bz.eflag) {
@@ -1662,7 +1683,7 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
 	if ((ED_spl(e)->size>1) && (bz.sflag||bz.eflag) && styles) 
 	    gvrender_set_style(job, styles);
     }
-    freeSegs (segs);
+    free (segs);
     return 0;
 }
 
