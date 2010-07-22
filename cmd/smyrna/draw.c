@@ -472,12 +472,7 @@ static void EmbedText(sdot_op* o, int param)
 	y=o->op.u.text.y;
 	if (!o->font)
 	{
-<<<<<<< draw.c
-
 		o->font=glNewFont(
-=======
-		o->font=glNewFont(
->>>>>>> 1.61
 		view->widgets,
 		o->op.u.text.text,
 		&view->penColor,
