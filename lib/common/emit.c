@@ -1479,8 +1479,7 @@ freeSegs (colorsegs_t* segs)
 
 /* getSegLen:
  * Find comma in s, replace with '\0'.
- * Convert remainder to float v and verify prev_v < v < 1.
- * Return 0 for 0-length prefix, i.e., prev_v is also 0.
+ * Convert remainder to float v and verify prev_v <= v <= 1.
  * Return -1 on failure
  */
 static double getSegLen (char* s, double prev_v)
@@ -1496,10 +1495,8 @@ static double getSegLen (char* s, double prev_v)
     *p++ = '\0';
     v = strtod (p, &endp);
     if (endp != p) {  /* scanned something */
-	if ((prev_v < v) && (v < 1))
+	if ((prev_v <= v) && (v <= 1))
 	    return v;
-	else if ((v == 0) && (prev_v == 0))
-	    return 0;
     }
     agerr (AGERR, "Illegal length value in \"%s,%s\" color segment ", s, p);
     return -1;
@@ -1507,12 +1504,13 @@ static double getSegLen (char* s, double prev_v)
 
 /* parseSegs:
  * Parse string of form color,float:color,float:...:color,float:color
- * where the floats are positive, < 1, and monotonically increasing.
- * Store the values in an array of colorseg_t's and return the array.
- * Return NULL on error.
+ * where the floats are nonnegative, <= 1, and increasing.
+ * We allow equality, discarding the later values.
+ * Store the values in an array of colorseg_t's and return the array in psegs.
+ * Return >0 on error.
  */
-static colorsegs_t*
-parseSegs (char* clrs, int nseg)
+static int
+parseSegs (char* clrs, int nseg, colorsegs_t** psegs)
 {
     colorsegs_t* segs = NEW(colorsegs_t);
     colorseg_t* s = N_NEW(nseg+1,colorseg_t);
@@ -1520,37 +1518,50 @@ parseSegs (char* clrs, int nseg)
     char* color;
     int cnum = 0;
     double v, prev_v = 0;
+    int doWarn = 1;
+    int rval = 0;
 
-    segs->base = colors; 
+    segs->base = colors;
     segs->segs = s = N_NEW(nseg+1,colorseg_t);
     for (color = strtok(colors, ":"); color; color = strtok(0, ":")) {
 	if (cnum == nseg-1) {
-	    char* p = strchr (color, ',');
-	    if (p)
-		*p = '\0';
-	    s[cnum].color = color;
-	    s[cnum++].t = 1.0;
+	    if (prev_v < 1) {
+		char* p = strchr (color, ',');
+		if (p)   /* mask optional length */
+		    *p = '\0';
+		s[cnum].color = color;
+		s[cnum++].t = 1.0;
+	    }
 	}
 	else if ((v = getSegLen (color, prev_v)) > 0) {
-	    s[cnum].color = color;
-	    s[cnum++].t = (v - prev_v)/(1.0 - prev_v);
-	    prev_v = v;
-	}
-	else if (v == 0) {
-	    agerr (AGWARN, "0-length in color spec \"%s\"\n", clrs);
-	    nseg--;
+	    if (prev_v < v) {
+		s[cnum].color = color;
+		s[cnum++].t = (v - prev_v)/(1.0 - prev_v);
+		prev_v = v;
+	    }
+	    else {
+		nseg--;
+		if (doWarn) {
+		    agerr (AGWARN, "0-length in color spec \"%s\"\n", clrs);
+		    doWarn = 0;
+		    rval = 1;
+		}
+	    }
 	}
 	else {
 	    freeSegs (segs);
-	    return NULL;
+	    return 1;
 	}
     }
     
     if (cnum == 0) {
 	freeSegs (segs);
 	segs = NULL;
+	rval = 1;
     }
-    return segs;
+    else	
+	*psegs = segs;
+    return rval;
 }
 
 /* approxLen:
@@ -1633,11 +1644,11 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
     bezier bz;
     bezier bz0, bz_l, bz_r;
     int i;
-    colorsegs_t* segs = parseSegs (colors, num);
+    colorsegs_t* segs;
     colorseg_t* s;
     char* endcolor;
 
-    if (segs == NULL) {
+    if (parseSegs (colors, num, &segs)) {
 #ifndef WITH_CGRAPH
 	Agraph_t* g = e->tail->graph;
 	agerr (AGPREV, "in edge %s%s%s\n", agnameof(e->tail), (AG_IS_DIRECTED(g)?" -> ":" -- "), agnameof(e->head));
@@ -1662,7 +1673,7 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
 		bz0 = bz_r;
 		splitBSpline (&bz0, s->t, &bz_l, &bz_r);
 		free (bz0.list);
-		gvrender_beziercurve(job, bz_l.list, bz_l.size, FALSE, bz.eflag, FALSE);
+		gvrender_beziercurve(job, bz_l.list, bz_l.size, FALSE, FALSE, FALSE);
 		free (bz_l.list);
 	    }
 	    else {
