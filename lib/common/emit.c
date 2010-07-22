@@ -1498,7 +1498,6 @@ static double getSegLen (char* s, double prev_v)
 	if ((prev_v <= v) && (v <= 1))
 	    return v;
     }
-    agerr (AGERR, "Illegal length value in \"%s,%s\" color segment ", s, p);
     return -1;
 }
 
@@ -1507,7 +1506,10 @@ static double getSegLen (char* s, double prev_v)
  * where the floats are nonnegative, <= 1, and increasing.
  * We allow equality, discarding the later values.
  * Store the values in an array of colorseg_t's and return the array in psegs.
- * Return >0 on error.
+ *  0 => okay
+ *  1 => error without message 
+ *  2 => error with message 
+ *  3 => warning message
  */
 static int
 parseSegs (char* clrs, int nseg, colorsegs_t** psegs)
@@ -1518,7 +1520,7 @@ parseSegs (char* clrs, int nseg, colorsegs_t** psegs)
     char* color;
     int cnum = 0;
     double v, prev_v = 0;
-    int doWarn = 1;
+    static int doWarn = 1;
     int rval = 0;
 
     segs->base = colors;
@@ -1533,7 +1535,7 @@ parseSegs (char* clrs, int nseg, colorsegs_t** psegs)
 		s[cnum++].t = 1.0;
 	    }
 	}
-	else if ((v = getSegLen (color, prev_v)) > 0) {
+	else if ((v = getSegLen (color, prev_v)) >= 0) {
 	    if (prev_v < v) {
 		s[cnum].color = color;
 		s[cnum++].t = (v - prev_v)/(1.0 - prev_v);
@@ -1544,13 +1546,19 @@ parseSegs (char* clrs, int nseg, colorsegs_t** psegs)
 		if (doWarn) {
 		    agerr (AGWARN, "0-length in color spec \"%s\"\n", clrs);
 		    doWarn = 0;
-		    rval = 1;
+		    rval = 3;
 		}
 	    }
 	}
 	else {
+	    if (doWarn) {
+		agerr (AGERR, "Illegal length value in \"%s\" color attribute ", clrs);
+		doWarn = 0;
+		rval = 2;
+	    }
+	    else rval = 1;
 	    freeSegs (segs);
-	    return 1;
+	    return rval;
 	}
     }
     
@@ -1643,12 +1651,13 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
 { 
     bezier bz;
     bezier bz0, bz_l, bz_r;
-    int i;
+    int i, rv;
     colorsegs_t* segs;
     colorseg_t* s;
     char* endcolor;
 
-    if (parseSegs (colors, num, &segs)) {
+    rv = parseSegs (colors, num, &segs);
+    if (rv > 1) {
 #ifndef WITH_CGRAPH
 	Agraph_t* g = e->tail->graph;
 	agerr (AGPREV, "in edge %s%s%s\n", agnameof(e->tail), (AG_IS_DIRECTED(g)?" -> ":" -- "), agnameof(e->head));
@@ -1657,8 +1666,12 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
 	agerr (AGPREV, "in edge %s%s%s\n", agnameof(agtail(e)), (agisdirected(g)?" -> ":" -- "), agnameof(aghead(e)));
 
 #endif
-	return 1;
+	if (rv == 2)
+	    return 1;
     }
+    else if (rv == 1)
+	return 1;
+    
 
     for (i = 0; i < ED_spl(e)->size; i++) {
 	bz = ED_spl(e)->list[i];
