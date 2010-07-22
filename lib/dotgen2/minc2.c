@@ -21,7 +21,6 @@
 
 /* #include "transpose.h" */
 /* #include "stdio.h" */
-
 #ifdef DEBUG_CAIRO
 static void drawMatrix(mcGraph * mcG, char *fileName, char *label);
 #define DOC_HEIGHT  1600
@@ -791,7 +790,11 @@ static mcGraph *createMatrixIn(Agraph_t * g)
 	addAdjEdges(v);
     id = countAllX(mcG);
 #ifdef DEBUG
+    #ifdef WIN32
+    dumpGraph (mcG, "c:/temp/before.gv");
+    #else
     dumpGraph (mcG, "before.gv");
+    #endif
 #endif
     transposeAllL2H(mcG);
     id = countAllX(mcG);

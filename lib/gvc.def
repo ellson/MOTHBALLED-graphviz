@@ -75,7 +75,7 @@ E_tailclip
 E_taillabel    
 E_visitedfillcolor    
 E_visitedpencolor    
-E_weight    
+E_weight   
 edgeType    
 elapsed_sec    
 emit_clusters    
@@ -340,3 +340,5 @@ gvrender_ptf
 setColorScheme
 makePortLabels
 addEdgeLabels
+is_a_cluster
+mapBool

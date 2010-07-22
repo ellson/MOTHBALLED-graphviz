@@ -56,7 +56,11 @@ extern Agdict_t *agdictof(void *);
     #pragma comment( lib, "vpsc.lib" )
     #pragma comment( lib, "sparse.lib" )
     #pragma comment( lib, "gts.lib" )
-    #pragma comment( lib, "glib.lib" )
+    #pragma comment( lib, "glib-2.0.lib" )
+    #pragma comment( lib, "cdt.lib" )
+    #pragma comment( lib, "gvplugin_neato_layout.lib" )
+
+
 #endif
 
 

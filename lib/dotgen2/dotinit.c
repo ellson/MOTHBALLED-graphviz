@@ -15,7 +15,6 @@
 **********************************************************/
 
 #include "dot2.h"
-
 #define DEBUG
 #ifdef DEBUG
 static void attach_attributes(graph_t *g)
