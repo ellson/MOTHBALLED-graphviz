@@ -16,6 +16,7 @@
 
 #include "dot2.h"
 #include "utils.h"
+#include "arith.h"
 
 #define	BACKWARD_PENALTY	1000
 #define STRONG_CLUSTER_WEIGHT   1000

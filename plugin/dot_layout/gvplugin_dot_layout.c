@@ -30,18 +30,7 @@ __declspec(dllimport) gvplugin_library_t gvplugin_dot_layout_LTX_library = { "do
 __declspec(dllexport) gvplugin_library_t gvplugin_dot_layout_LTX_library = { "dot_layout", apis };
 #endif
 #endif
-#ifdef WIN32 /*dependencies*/
 
-#ifdef WITH_CGRAPH
-    #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "dotgen2.lib" )
-#else
-    #pragma comment( lib, "graph.lib" )
-    #pragma comment( lib, "dotgen.lib" )
-#endif
-    #pragma comment( lib, "gvc.lib" )
-    #pragma comment( lib, "ingraphs.lib" )
-#endif
 
 
 /*end visual studio*/

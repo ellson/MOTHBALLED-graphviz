@@ -175,6 +175,7 @@ static void realize(GtkWidget * widget, gpointer data)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDepthFunc(GL_LESS);
+    glDisable(GL_DEPTH);
 //  glEnable(GL_LINE_SMOOTH);
 
     gdk_gl_drawable_gl_end(gldrawable);

@@ -23,13 +23,41 @@
 
 typedef enum { LAYOUT_DOT, } layout_type;
 
-extern void dot_layout(graph_t * g);
-extern void dot_cleanup(graph_t * g);
+#ifdef WIN32 /*dependencies*/
+    #pragma comment( lib, "gvc.lib" )
+    #pragma comment( lib, "ingraphs.lib" )
+    #pragma comment( lib, "cdt.lib" )
 
-gvlayout_engine_t dotgen_engine = {
+
+#ifdef WITH_CGRAPH
+    #pragma comment( lib, "cgraph.lib" )
+    #pragma comment( lib, "dotgen2.lib" )
+    extern void dot2_layout(graph_t * g);
+    extern void dot2_cleanup(graph_t * g);
+
+    gvlayout_engine_t dotgen_engine = {
+    dot2_layout,
+    dot2_cleanup,
+    };
+
+
+#else
+    #pragma comment( lib, "graph.lib" )
+    #pragma comment( lib, "dotgen.lib" )
+    extern void dot_layout(graph_t * g);
+    extern void dot_cleanup(graph_t * g);
+
+    gvlayout_engine_t dotgen_engine = {
     dot_layout,
     dot_cleanup,
-};
+    };
+
+#endif
+
+#endif
+
+
+
 
 gvlayout_features_t dotgen_features = {
     LAYOUT_USES_RANKDIR,

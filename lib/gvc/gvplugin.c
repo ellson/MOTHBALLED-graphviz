@@ -384,7 +384,11 @@ char *gvplugin_list(GVC_t * gvc, api_t api, const char *str)
 	return NULL;
 
     /* does str have a :path modifier? */
+#ifdef WIN32
+    s = _strdup(str);
+#else
     s = strdup(str);
+#endif
     p = strchr(s, ':');
     if (p)
 	*p++ = '\0';
