@@ -27,6 +27,7 @@ typedef enum { LAYOUT_DOT, } layout_type;
     #pragma comment( lib, "gvc.lib" )
     #pragma comment( lib, "ingraphs.lib" )
     #pragma comment( lib, "cdt.lib" )
+#endif
 
 
 #ifdef WITH_CGRAPH
@@ -54,7 +55,6 @@ typedef enum { LAYOUT_DOT, } layout_type;
 
 #endif
 
-#endif
 
 
 
