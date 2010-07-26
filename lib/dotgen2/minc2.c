@@ -19,6 +19,9 @@
 #include "minc.h"
 #include "groups.h"
 
+#define MARK(v)		(ND_mark(v))
+
+
 /* #include "transpose.h" */
 /* #include "stdio.h" */
 #ifdef DEBUG_CAIRO
@@ -31,14 +34,17 @@ static void drawMatrix(mcGraph * mcG, char *fileName, char *label);
 static void dumpGraph (mcGraph* mcG, char* fname);
 #endif
 
+static void _transpose(mcGraph * mcG, int reverse);
+static void fast_node(graph_t * g, Agnode_t * n);
+
 static int MAGIC_NUMBER = 4;
 
 static int higher_cross(mcNode * v, mcNode * w)
 {
     mcEdge *e;
     mcEdge *e2;
-    float x1, xx1;
-    float x2, xx2;
+    double x1, xx1;
+    double x2, xx2;
     int idx, idx2;
     int cnt = 0;
     for (idx = 0; idx < v->high_edgs_cnt; idx++) {
@@ -52,9 +58,9 @@ static int higher_cross(mcNode * v, mcNode * w)
 	    xx2 = e2->higherPort.p.x + e2->higherN->order;
 	    if (((x1 < x2) && (xx1 > xx2)) || ((x2 < x1) && (xx2 > xx1))) {
 		if (e->penalty > e2->penalty)
-		    cnt = cnt + e->penalty;
+		    cnt = cnt + (int)e->penalty;
 		else
-		    cnt = cnt + e2->penalty;
+		    cnt = cnt + (int)e2->penalty;
 	    }
 	}
     }
@@ -66,8 +72,8 @@ static int lower_cross(mcNode * v, mcNode * w)
 
     mcEdge *e;
     mcEdge *e2;
-    float x1, xx1;
-    float x2, xx2;
+    double x1, xx1;
+    double x2, xx2;
     int idx, idx2;
     int cnt = 0;
     for (idx = 0; idx < v->low_edgs_cnt; idx++) {
@@ -81,9 +87,9 @@ static int lower_cross(mcNode * v, mcNode * w)
 	    xx2 = e2->higherPort.p.x + e2->higherN->order;
 	    if (((x1 < x2) && (xx1 > xx2)) || ((x2 < x1) && (xx2 > xx1))) {
 		if (e->penalty > e2->penalty)
-		    cnt = cnt + e->penalty;
+		    cnt = cnt +(int) e->penalty;
 		else
-		    cnt = cnt + e2->penalty;
+		    cnt = cnt + (int)e2->penalty;
 	    }
 	}
     }
@@ -631,6 +637,11 @@ static void install_node(Agnode_t * n, mcGraph * mcg)
     mcn = initMcNode(n);
     addToLevel(mcn, mcg);
     cnt++;
+#ifdef _DEBUG
+    printf ("%s\n",agnameof(n));
+
+#endif
+
 }
 
 Agnode_t *nodeByName(Agraph_t * g, char *name)
@@ -753,9 +764,10 @@ static int transposeAllH2L(mcGraph * mcG)
     return cnt;
 }
 
-
+void decompose(graph_t * g, int pass);
 static mcGraph *createMatrixIn(Agraph_t * g)
 {
+#define ARRAY_SZ 37    
     Agedge_t *e;
     Agnode_t *v;
     Agnode_t *v0;
@@ -763,9 +775,87 @@ static mcGraph *createMatrixIn(Agraph_t * g)
     Agnode_t *head;
     mcGraph *mcG;
     int id = 0;
+    char* nodes[]= 
+{
+    "d0",
+"e1",
+"e2",
+"f0",
+"f1",
+"g0",
+"a1",
+"b1",
+"b2",
+"c2",
+"c5",
+"c8",
+"c3",
+"c4",
+"c6",
+"c7",
+"d2",
+"d4",
+"d6",
+"d5",
+"e3",
+"e4",
+"e5",
+"e6",
+"e8",
+"e7",
+"f4",
+"f2",
+"f3",
+"f5",
+"a0",
+"b0",
+"c0",
+"c1",
+"d1",
+"d3",
+"e0" };
+    GD_nlist(g)=(node_t*)malloc(sizeof(node_t)*agnnodes(g));
+    GD_nlist(g)=NULL;
+    for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
+    {
+	printf ("%s\n",agnameof(v));
+	fast_node(g,v);
+    }
+    decompose(g,1);
+    for (v = GD_nlist(g); v; v = ND_next(v)) 
+    {
+	printf ("_%s\n",agnameof(v));
+    }
     b = new_queue(agnnodes(g));
     mcG = newMcGraph(g);
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
+
+
+    for (v = GD_nlist(g); v; v = ND_next(v)) 
+    {
+	if ((inEdgeCnt(v, g) == 0) && (MND_inBucket(v) != 1)) {
+	    enqueue(b, v);
+	    MND_inBucket(v) = 1;
+
+	    while ((v0 = dequeue(b))) {
+		if (Verbose)
+		    fprintf(stderr, "installing %s\n", agnameof(v0));
+		install_node(v0, mcG);
+		for (e = agfstout(g, v0); e; e = agnxtout(g, e)) {
+		    head = aghead(e);
+		    if ((MND_inBucket(head) != 1)) {
+			enqueue(b, head);
+			MND_inBucket(head) = 1;
+		    }
+		}
+	    }
+
+	}
+
+
+    }
+    
+
+/*    for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
 	if ((inEdgeCnt(v, g) == 0) && (MND_inBucket(v) != 1)) {
 	    enqueue(b, v);
 	    MND_inBucket(v) = 1;
@@ -785,6 +875,12 @@ static mcGraph *createMatrixIn(Agraph_t * g)
 
 	}
     }
+
+*/
+/*    for (id=0;id < ARRAY_SZ; id++)
+    {
+	install_node(nodeByName(g,nodes[id]),mcG);
+    }*/
     free_queue (b); 
     for (v = agfstnode(g); v; v = agnxtnode(g, v))
 	addAdjEdges(v);
@@ -796,7 +892,19 @@ static mcGraph *createMatrixIn(Agraph_t * g)
     dumpGraph (mcG, "before.gv");
     #endif
 #endif
-    transposeAllL2H(mcG);
+    _transpose(mcG, 0);
+//    transposeAllL2H(mcG);
+
+
+#ifdef DEBUG
+    #ifdef WIN32
+    dumpGraph (mcG, "c:/temp/after_trans.gv");
+    #else
+    dumpGraph (mcG, "after_trans.gv");
+    #endif
+#endif
+
+
     id = countAllX(mcG);
 
     return mcG;
@@ -882,9 +990,9 @@ static int nodeMedian(mcNode * n, int lowToHigh)
     for (id = 0; id < ps; id++) {
 	e = edges[id];
 	if (lowToHigh)
-	    P[id] = e->lowerN->order;
+	    P[id] = (int)e->lowerN->order;
 	else
-	    P[id] = e->higherN->order;
+	    P[id] = (int)e->higherN->order;
     };
     qsort(P, ps, sizeof(int), int_cmp);
     if (ps == 0)
@@ -967,7 +1075,7 @@ static void normalizeLevel(mcLevel * l)
     mcNode *n;
     for (id = 0; id < l->nodecnt; id++) {
 	n = l->nodes[id];
-	n->order = id;
+	n->order = (float)id;
     }
 
 }
@@ -979,8 +1087,8 @@ static void reSetNodePos(mcGraph * mcG, mcLevel * l, int lowToHigh)
     float order2;
     for (id = 0; id < l->nodecnt; id++) {
 	n = l->nodes[id];
-	order = nodeMedian(n, lowToHigh);
-	order2 = nodeMedian(n, (lowToHigh + 1) % 2);
+	order = (float)nodeMedian(n, lowToHigh);
+	order2 = (float)nodeMedian(n, (lowToHigh + 1) % 2);
 	if (order == -1)
 	    order = n->order;
 	if (order2 == -1)
@@ -1025,6 +1133,11 @@ static void loadOrders(mcGraph * mcg, int cacheId)
 	    n->order = n->prevOrder[cacheId];
 	}
     }
+    for (idx = 0; idx < mcg->lvl_cnt; idx++) {
+	l = mcg->lvls[idx];
+	reOrderLevel(l);
+	normalizeLevel(l);
+    }
 }
 
 static void wMedianLevel(mcLevel * l, mcGraph * mg, int lowToHigh)
@@ -1064,8 +1177,6 @@ static void dumbcross(mcGraph * mcG, int pass)
 		wMedianLevel(l, mcG, lowToHigh);
 	    }
 	    cnt = countAllX(mcG);
-	    transposeAllL2H(mcG);
-	    cnt = countAllX(mcG);
 	    if (cnt < best) {
 		best = cnt;
 		cacheOrders(mcG, 0);
@@ -1080,7 +1191,6 @@ static void dumbcross(mcGraph * mcG, int pass)
 		l = mcG->lvls[idx];
 		wMedianLevel(l, mcG, lowToHigh);
 	    }
-	    transposeAllL2H(mcG);
 	    cnt = countAllX(mcG);
 	    if (cnt < best) {
 		best = cnt;
@@ -1189,16 +1299,15 @@ static void mincross(mcGraph * mcG)
 	MAGIC_NUMBER = id;
 	dumbcross(mcG, 10);
     }
-    for (id = 0; id < 10; id++) {
-	transposeAllL2H(mcG);
-	transposeAllH2L(mcG);
-    }
+
+    dumpGraph (mcG, "c:/temp/before_final_trans.gv");
+    _transpose(mcG,0);
     fprintf(stderr,"after transpose final count %d...\n", countAllX(mcG));
 #ifdef DEBUG_CAIRO
     drawMatrix(mcG, "after.png", "after mincross");
 #endif
 #ifdef DEBUG
-    dumpGraph (mcG, "after.gv");
+    dumpGraph (mcG, "c:/temp/after.gv");
 #endif
 }
 
@@ -1206,14 +1315,6 @@ Agraph_t *dot2_mincross (Agraph_t * srcGraph)
 {
     mcGraph *mcG;
     Agraph_t *g = mkMCGraph (srcGraph);
-//    readOrders(srcGraph);
-
-/*
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
-	fprintf(stderr,"order:%d  rank:%d\n",MND_order(v),MND_rank(v));
-    }
-*/
-
     graphGroups(g);
     if (agattr(srcGraph, AGEDGE, "label", (char *) 0)) {
 	double_ranks(g);
@@ -1433,3 +1534,150 @@ static void drawMatrix(mcGraph * mcG, char *fileName, char *label)
     fclose(output_file);
 }
 #endif
+
+static void exchange(mcNode* v, mcNode* w)
+{
+    
+    int vi, wi;
+    vi=(int)v->order;
+    wi=(int)w->order;
+    v->order=(float)wi;
+    w->order=(float)vi;
+//	reOrderLevel((mcLevel*)v->level);
+
+}
+
+static int in_cross(mcNode* v, mcNode* w)
+{
+    register mcEdge* e1, *e2;
+    register int inv, cross = 0, t;
+    int id,id2;
+
+    for (id=0;id < w->low_edgs_cnt; id++)
+    {
+	register int cnt;		
+	e2=w->low_edgs[id];
+	cnt=(int)e2->penalty;
+	inv =(int) e2->lowerN->order;
+	for (id2=0;id2 < v->low_edgs_cnt; id2++)
+	{
+	    e1=v->low_edgs[id2];
+	    t =(int)e1->lowerN->order-inv;
+	    if ((t > 0)
+		|| ((t == 0)
+		&& ( ED_tail_port(e1->lowerN->node).p.x > ED_tail_port(e2->lowerN->node).p.x)))
+		    
+		    cross += (int)e1->penalty * cnt;
+	}
+    }
+    return cross;
+}
+static int out_cross(mcNode* v, mcNode* w)
+{
+    register mcEdge* e1, *e2;
+    register int inv, cross = 0, t;
+    int id,id2;
+
+    for (id=0;id < w->high_edgs_cnt; id++)
+    {
+	register int cnt;		
+	e2=w->high_edgs[id];
+	cnt=(int)e2->penalty;
+	inv = (int)e2->higherN->order;
+	for (id2=0;id2 < v->high_edgs_cnt; id2++)
+	{
+	    e1=v->high_edgs[id2];
+	    t =(int)e1->higherN->order-inv;
+	    if ((t > 0)
+		|| ((t == 0)
+		&& ( ED_head_port(e1->higherN->node).p.x > ED_head_port(e2->higherN->node).p.x)))
+		    
+		    cross +=(int) e1->penalty * cnt;
+	}
+    }
+    return cross;
+}
+
+
+
+static int transpose_step(mcGraph* mcG, int r, int reverse)
+{
+    int i, c0, c1, rv;
+    mcNode *v,*w;
+    mcLevel* l= mcG->lvls[r];
+
+    rv = 0;
+    l->candidate=FALSE;
+
+    for (i = 0; i <l->nodecnt-1;i++) {
+	v=l->nodes[i];
+	w=l->nodes[i+1];
+	assert(v->order < w->order);
+	/*if (left2right(mcG, v, w))
+	    continue;*/
+	c0 = c1 = 0;
+	if (r > 0) {
+	    c0 += in_cross(v, w);
+	    c1 += in_cross(w, v);
+	}
+	if (mcG->lvl_cnt > (r+1)) 
+	{
+	    c0 += out_cross(v, w);
+	    c1 += out_cross(w, v);
+	}
+	if ((c1 < c0) || ((c0 > 0) && reverse && (c1 == c0))) 
+	{
+	    exchange(v, w);
+	    rv += (c0 - c1);
+	    l->candidate=TRUE;
+	    if (r > 0) 
+		mcG->lvls[r-1]->candidate=TRUE;
+	    if (r < mcG->lvl_cnt-1) 
+		mcG->lvls[r+1]->candidate = TRUE;
+	}
+    }
+    reOrderLevel( mcG->lvls[r]);
+    return rv;
+}
+
+
+static void _transpose(mcGraph * mcG, int reverse)
+{
+    int r, delta;
+
+    for (r = 0; r <= mcG->lvl_cnt-1;r++)
+	mcG->lvls[r]->candidate= TRUE;
+    do {
+	delta = 0;
+#ifdef NOTDEF
+	/* don't run both the upward and downward passes- they cancel. 
+	   i tried making it depend on whether an odd or even pass, 
+	   but that didn't help. */
+	for (r = GD_maxrank(g); r >= GD_minrank(g); r--)
+	    if (GD_rank(g)[r].candidate)
+		delta += transpose_step(g, r, reverse);
+#endif
+	for (r = 0; r <= mcG->lvl_cnt-1;r++)
+        {
+	    if (mcG->lvls[r]->candidate) 
+	    {
+		delta += transpose_step(mcG, r, reverse);
+	    }
+	}
+	/*} while (delta > ncross(g)*(1.0 - Convergence)); */
+    } while (delta >= 1);
+}
+
+
+
+
+static void fast_node(graph_t * g, Agnode_t * n)
+{
+   ND_next(n) = GD_nlist(g);
+    if (ND_next(n))
+	ND_prev(ND_next(n)) = n;
+    GD_nlist(g) = n;
+    ND_prev(n) = NULL;
+    assert(n != ND_next(n));
+}
+
