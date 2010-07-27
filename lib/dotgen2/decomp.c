@@ -22,8 +22,7 @@
  * but any virtual nodes discovered are also included in the
  * component.
  */
-#include "types.h"
-#include "memory.h"
+#include "dot2.h"
 
 static Agraph_t *G;
 static Agnode_t *Last_node;
