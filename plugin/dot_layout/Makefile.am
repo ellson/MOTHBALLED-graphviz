@@ -27,8 +27,13 @@ endif
 libgvplugin_dot_layout_C_la_SOURCES = \
 	gvplugin_dot_layout.c \
 	gvlayout_dot_layout.c
+if WITH_CGRAPH
 libgvplugin_dot_layout_C_la_LIBADD = \
-	$(top_builddir)/lib/dotgen/libdotgen_C.la
+	$(top_builddir)/lib/dotgen2/libdotgen2_C.la
+else
+libgvplugin_dot_layout_C_la_LIBADD = \
+	$(top_builddir)/lib/dotgen/libdotgen_C.la 
+endif
 
 libgvplugin_dot_layout_la_LDFLAGS = -version-info $(GVPLUGIN_VERSION_INFO)
 libgvplugin_dot_layout_la_SOURCES = $(libgvplugin_dot_layout_C_la_SOURCES)
