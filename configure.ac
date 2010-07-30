@@ -3064,6 +3064,7 @@ AC_CONFIG_FILES(Makefile
 	lib/sfio/Sfio_f/Makefile
 	lib/vmalloc/Makefile
 	lib/dotgen/Makefile
+	lib/dotgen2/Makefile
 	lib/neatogen/Makefile
 	lib/fdpgen/Makefile
 	lib/sparse/Makefile
