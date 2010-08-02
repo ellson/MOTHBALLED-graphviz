@@ -441,6 +441,8 @@ typedef struct
 #define GE_selected(g) (GREC(g)->E_selected)
 #define GG_edgelabelcolor(g) (GREC(g)->G_edgelabelcolor)
 #define GE_labelattribute(g) (GREC(g)->E_labelattribute)
+#define GUI_WINDOWED   0
+#define GUI_FULLSCREEN    1
 
     typedef struct _selection {
 	glCompPoly selPoly;
@@ -716,6 +718,7 @@ typedef struct
 	refresh_filter refresh;
 	int edgerendertype;
 	float nodeScale;
+	int guiMode;
 
     } ViewInfo;
 /*rotation steps*/

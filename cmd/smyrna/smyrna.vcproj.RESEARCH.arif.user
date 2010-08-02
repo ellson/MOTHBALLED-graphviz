@@ -2,7 +2,7 @@
 <VisualStudioUserFile
 	ProjectType="Visual C++"
 	Version="9.00"
-	ShowAllFiles="false"
+	ShowAllFiles="true"
 	>
 	<Configurations>
 		<Configuration
@@ -11,7 +11,7 @@
 			<DebugSettings
 				Command="$(TargetPath)"
 				WorkingDirectory="C:\graphviz-ms\bin"
-				CommandArguments="c:\4elt.dot"
+				CommandArguments="-f c:\4elt.dot"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"

@@ -24,7 +24,6 @@
 #include "hotkeymap.h"
 #include "polytess.h"
 
-#if 0
 static void draw_cube()
 {
 
@@ -61,7 +60,6 @@ static void draw_cube()
     glVertex3f(100.0f, -100.0f, -100.0f);	// Bottom Right Of The Quad (Right)
     glEnd();
 }
-#endif
 
 static void drawRotatingAxis(void)
 {
@@ -261,6 +259,9 @@ int glexpose_main(ViewInfo * view)
     if (!glupdatecamera(view))
 	return 0;
 
+      draw_cube();
+
+
     if (view->activeGraph >= 0) {
 	if (!doonce) {
 	    doonce = 1;
@@ -277,7 +278,6 @@ int glexpose_main(ViewInfo * view)
     drawBorders(view);
     glexpose_drawgraph(view);
 //      drawRotatingTools();
-//      draw_cube();
     drawRotatingAxis();
     draw_selpoly(&view->Topview->sel.selPoly);
 //              draw_stuff();

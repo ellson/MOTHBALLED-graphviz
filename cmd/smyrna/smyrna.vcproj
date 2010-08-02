@@ -377,6 +377,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\glutrender.c"
+				>
+			</File>
+			<File
 				RelativePath=".\gui\gui.c"
 				>
 			</File>

@@ -39,6 +39,7 @@
 #include "libintl.h"
 #endif
 #include <assert.h>
+#include "glutrender.h"
 
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
@@ -101,7 +102,7 @@ static char *parseArgs(int argc, char *argv[], ViewInfo * view)
 {
     unsigned int c;
 
-    while ((c = getopt(argc, argv, ":K:txv?")) != -1) {
+    while ((c = getopt(argc, argv, ":K:txvf?")) != -1) {
 	switch (c) {
 	case 'v':
 	    SmyrnaVerbose = 1;
@@ -117,6 +118,10 @@ static char *parseArgs(int argc, char *argv[], ViewInfo * view)
 	    view->dfltEngine = s2layout(optarg);
 	    break;
 #endif
+	case 'f':
+	    view->guiMode=GUI_FULLSCREEN;
+	    break;
+
 	case '?':
 	    if (optopt == '?')
 		usage(0);
@@ -145,13 +150,75 @@ static void close_cgraph(Agraph_t * g)
 }
 
 #endif
+void display() 
+{
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   glLoadIdentity();
+   glexpose_main(view);
+   glutSwapBuffers();
+
+}
+static void glutMode()
+{
+    glutInitWindowSize(512,512);
+    glutInitDisplayMode ( GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+    glutCreateWindow("The glut hello world program");
+    glutDisplayFunc(display);
+  
+    glutMainLoop(); // Infinite event loop
+}
+
+
+static void windowedMode(int argc, char *argv[])
+{
+    GdkGLConfig *glconfig;
+    /*combo box to show loaded graphs */
+    GtkComboBox *graphComboBox;
+
+    gtk_set_locale();
+    gtk_init(&argc, &argv);
+    if (!(smyrnaGlade))
+	smyrnaGlade = smyrnaPath("smyrna.glade");
+    xml = glade_xml_new(smyrnaGlade, NULL, NULL);
+
+    gladewidget = glade_xml_get_widget(xml, "frmMain");
+    gtk_widget_show(gladewidget);
+    g_signal_connect((gpointer) gladewidget, "destroy",
+		     G_CALLBACK(mQuitSlot), NULL);
+    glade_xml_signal_autoconnect(xml);
+    gtk_gl_init(0, 0);
+    /* Configure OpenGL framebuffer. */
+    glconfig = configure_gl();
+//      gladewidget = glade_xml_get_widget(xml, "vbox2");
+    gladewidget = glade_xml_get_widget(xml, "hbox11");
+
+    gtk_widget_hide(glade_xml_get_widget(xml, "vbox13"));
+    gtk_window_set_deletable ((GtkWindow*)glade_xml_get_widget(xml, "dlgSettings"),0);
+    gtk_window_set_deletable ((GtkWindow*)glade_xml_get_widget(xml, "frmTVNodes"),0);
+    create_window(glconfig, gladewidget);
+    change_cursor(GDK_TOP_LEFT_ARROW);
+
+#ifndef WIN32
+    glutInit(&argc, argv);
+#endif
+
+    gladewidget = glade_xml_get_widget(xml, "hbox13");
+    graphComboBox = (GtkComboBox *) gtk_combo_box_new_text();
+    gtk_box_pack_end((GtkBox*)gladewidget, (GtkWidget*)graphComboBox, 1, 1, 10);
+    gtk_widget_show((GtkWidget*)graphComboBox);
+    view->graphComboBox = graphComboBox;
+
+    if(view->guiMode==GUI_FULLSCREEN)
+	gtk_window_fullscreen(glade_xml_get_widget(xml, "frmMain"));
+    gtk_main();
+}
+
+
+
 
 int main(int argc, char *argv[])
 {
-    GdkGLConfig *glconfig;
     char *initFileName;
-    /*combo box to show loaded graphs */
-    GtkComboBox *graphComboBox;
 
 
 
@@ -187,52 +254,16 @@ int main(int argc, char *argv[])
     textdomain(GETTEXT_PACKAGE);
 #endif
     view = NEW(ViewInfo);
-
     init_viewport(view);
-    gtk_set_locale();
-    gtk_init(&argc, &argv);
-    initFileName = parseArgs(argc, argv, view);
-    if (!(smyrnaGlade))
-	smyrnaGlade = smyrnaPath("smyrna.glade");
-    xml = glade_xml_new(smyrnaGlade, NULL, NULL);
-
-    gladewidget = glade_xml_get_widget(xml, "frmMain");
-    gtk_widget_show(gladewidget);
-    g_signal_connect((gpointer) gladewidget, "destroy",
-		     G_CALLBACK(mQuitSlot), NULL);
-    glade_xml_signal_autoconnect(xml);
-    if (initFileName) {
-	view->initFile = 1;
-	view->initFileName = strdup(initFileName);
-    }
-    gtk_gl_init(0, 0);
-    /* Configure OpenGL framebuffer. */
-    glconfig = configure_gl();
-//      gladewidget = glade_xml_get_widget(xml, "vbox2");
-    gladewidget = glade_xml_get_widget(xml, "hbox11");
-
-    gtk_widget_hide(glade_xml_get_widget(xml, "vbox13"));
-    gtk_window_set_deletable ((GtkWindow*)glade_xml_get_widget(xml, "dlgSettings"),0);
-    gtk_window_set_deletable ((GtkWindow*)glade_xml_get_widget(xml, "frmTVNodes"),0);
-
-
-    create_window(glconfig, gladewidget);
-
-    change_cursor(GDK_TOP_LEFT_ARROW);
-
+    view->initFileName = parseArgs(argc, argv, view);
+    if(view->initFileName)
+	view->initFile=1;
 #ifndef WIN32
     glutInit(&argc, argv);
 #endif
-
-    gladewidget = glade_xml_get_widget(xml, "hbox13");
-    graphComboBox = (GtkComboBox *) gtk_combo_box_new_text();
-    gtk_box_pack_end((GtkBox*)gladewidget, (GtkWidget*)graphComboBox, 1, 1, 10);
-    gtk_widget_show((GtkWidget*)graphComboBox);
-    view->graphComboBox = graphComboBox;
-    gtk_main();
-
-
-
+    windowedMode(argc, argv);
+//    view->guiMode=GUI_GLUT;
+	sm_glutinit(800,600,0);
 #ifdef G_OS_WIN32
     g_free(package_prefix);
     g_free(package_data_dir);

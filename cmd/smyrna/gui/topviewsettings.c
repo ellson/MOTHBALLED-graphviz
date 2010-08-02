@@ -278,51 +278,24 @@ static int get_combobox_widget_to_attribute(char *attribute,
 int load_settings_from_graph(Agraph_t * g)
 {
     Agsym_t* sym=NULL;
-    while ((sym = agnxtattr(view->systemGraphs.attrs_widgets,AGRAPH, sym)))
-    {
-	if(strncmp (sym->name,"color_button",strlen("color_button"))==0)
-	    set_color_button_widget(sym->name, agget(view->systemGraphs.attrs_widgets,sym->name));
-	if(strncmp (sym->name,"check_box",strlen("check_box"))==0)
-	   set_checkbox_widget(sym->name, agget(view->systemGraphs.attrs_widgets,sym->name));
-	if(strncmp (sym->name,"text_box",strlen("text_box"))==0)
-	   set_text_widget(sym->name, agget(view->systemGraphs.attrs_widgets,sym->name));
-	if(strncmp (sym->name,"combobox",strlen("combobox"))==0)
-	   set_combobox_widget(sym->name, agget(view->systemGraphs.attrs_widgets,sym->name));
-	if(strncmp (sym->name,"spin_button",strlen("spin_button"))==0)
-	   set_spinbtn_widget(sym->name, agget(view->systemGraphs.attrs_widgets,sym->name));
-	if(strncmp (sym->name,"scale_button",strlen("scale_button"))==0)
-	   set_scalebtn_widget_to_attribute(sym->name, agget(view->systemGraphs.attrs_widgets,sym->name));
-
-    }
+	while ((sym = agnxtattr(view->systemGraphs.attrs_widgets,AGRAPH, sym)))
+	{
+	    if(strncmp (sym->name,"color_button",strlen("color_button"))==0)
+		set_color_button_widget(sym->name, agget(view->systemGraphs.attrs_widgets,sym->name));
+	    if(strncmp (sym->name,"check_box",strlen("check_box"))==0)
+		set_checkbox_widget(sym->name, agget(view->systemGraphs.attrs_widgets,sym->name));
+    	    if(strncmp (sym->name,"text_box",strlen("text_box"))==0)
+		set_text_widget(sym->name, agget(view->systemGraphs.attrs_widgets,sym->name));
+	    if(strncmp (sym->name,"combobox",strlen("combobox"))==0)
+		set_combobox_widget(sym->name, agget(view->systemGraphs.attrs_widgets,sym->name));
+	    if(strncmp (sym->name,"spin_button",strlen("spin_button"))==0)
+		set_spinbtn_widget(sym->name, agget(view->systemGraphs.attrs_widgets,sym->name));
+	    if(strncmp (sym->name,"scale_button",strlen("scale_button"))==0)
+		set_scalebtn_widget_to_attribute(sym->name, agget(view->systemGraphs.attrs_widgets,sym->name));
+	}
     return 1;
+	  /*P.S:   if I can find a way too make gtk windows get along with glut window this might be possible*/
 }
-
-/* graphRecord:
- * add graphRec to graph if necessary.
- * update fields of graphRec.
- * We assume the graph has attributes nodelabelattribute, edgelabelattribute,
- * nodelabelcolor and edgelabelcolor from template.dot.
- * We assume nodes have pos attributes. 
- */
-static void
-graphRecord (Agraph_t* g)
-{
-    agbindrec(g, "graphRec", sizeof(graphRec), 1);
-
-    GG_nodelabelcolor(g) = agattr (g, AGRAPH, "nodelabelcolor", 0);
-    GG_edgelabelcolor(g) = agattr (g, AGRAPH, "edgelabelcolor", 0);
-
-    GN_pos(g) = agattr (g, AGNODE, "pos", 0);
-    GN_size(g) = agattr (g, AGNODE, "size", 0);
-    GN_visible(g) = agattr (g, AGNODE, "visible", 0);
-    GN_selected(g) = agattr (g, AGNODE, "selected", 0);
-    GN_labelattribute(g) = agattr (g, AGNODE, agget(g,"nodelabelattribute"), 0);
-
-    GE_visible(g) = agattr (g, AGEDGE, "visible", 0);
-    GE_selected(g) = agattr (g, AGEDGE, "selected", 0);
-    GE_labelattribute(g) = agattr (g, AGEDGE, agget(g,"edgelabelattribute"), 0);
-}
-
 
 int update_graph_from_settings(Agraph_t * g)
 {
@@ -342,7 +315,6 @@ int update_graph_from_settings(Agraph_t * g)
 	if(strncmp (sym->name,"scale_button",strlen("scale_button"))==0)
 	   get_scalebtn_widget_to_attribute(sym->name, agget(view->systemGraphs.attrs_widgets,sym->name),g);
     }
-    graphRecord(g);
 
     return 1;
 }

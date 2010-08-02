@@ -47,6 +47,7 @@ static void refresh_borders(Agraph_t * g);
 static colorschemaset *create_color_theme(int themeid);
 static md5_byte_t *get_md5_key(Agraph_t * graph);
 
+
 #define countof( array ) ( sizeof( array )/sizeof( array[0] ) )
 
 ViewInfo *view;
@@ -292,6 +293,8 @@ void set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
 	     ("defaultfisheyemagnifierdistort", view, g));
     view->drawnodes = atoi(get_attribute_value("drawnodes", view, g));
     view->drawedges = atoi(get_attribute_value("drawedges", view, g));
+    view->drawnodes=1;
+    view->drawedges=1;
     view->drawnodelabels=atoi(get_attribute_value("labelshownodes", view, g));
     view->drawedgelabels=atoi(get_attribute_value("labelshowedges", view, g));
     view->nodeScale=atof(get_attribute_value("nodesize", view, g))*.30;
@@ -514,8 +517,8 @@ void init_viewport(ViewInfo * view)
     view->refresh.visibility=1;
     view->refresh.nodesize=1;
     view->edgerendertype=0;
-    /*add default camera */
-    //create fontset
+    if(view->guiMode!=GUI_FULLSCREEN)
+	view->guiMode=GUI_WINDOWED;
 }
 
 
@@ -637,6 +640,35 @@ int add_graph_to_viewport_from_file(char *fileName)
     return add_graph_to_viewport(graph, fileName);
 }
 
+
+/* graphRecord:
+ * add graphRec to graph if necessary.
+ * update fields of graphRec.
+ * We assume the graph has attributes nodelabelattribute, edgelabelattribute,
+ * nodelabelcolor and edgelabelcolor from template.dot.
+ * We assume nodes have pos attributes. 
+ */
+static void
+graphRecord (Agraph_t* g)
+{
+    agbindrec(g, "graphRec", sizeof(graphRec), 1);
+
+    GG_nodelabelcolor(g) = agattr (g, AGRAPH, "nodelabelcolor", 0);
+    GG_edgelabelcolor(g) = agattr (g, AGRAPH, "edgelabelcolor", 0);
+
+    GN_pos(g) = agattr (g, AGNODE, "pos", 0);
+    GN_size(g) = agattr (g, AGNODE, "size", 0);
+    GN_visible(g) = agattr (g, AGNODE, "visible", 0);
+    GN_selected(g) = agattr (g, AGNODE, "selected", 0);
+    GN_labelattribute(g) = agattr (g, AGNODE, agget(g,"nodelabelattribute"), 0);
+
+    GE_visible(g) = agattr (g, AGEDGE, "visible", 0);
+    GE_selected(g) = agattr (g, AGEDGE, "selected", 0);
+    GE_labelattribute(g) = agattr (g, AGEDGE, agget(g,"edgelabelattribute"), 0);
+}
+
+
+
 void refreshViewport(int doClear)
 {
     Agraph_t *graph = view->g[view->activeGraph];
@@ -648,6 +680,7 @@ void refreshViewport(int doClear)
     load_settings_from_graph(graph);
     update_graph_from_settings(graph);
     set_viewport_settings_from_template(view, graph);
+    graphRecord(graph);
     initSmGraph(graph,view->Topview);
 
 //    update_topview(graph, view->Topview, 1);
