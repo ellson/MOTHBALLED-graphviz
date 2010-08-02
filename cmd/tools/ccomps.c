@@ -181,6 +181,8 @@ static void init(int argc, char *argv[])
 				optarg);
 			}
 		    }
+		    else
+			x_final = x_index;
 		} else
 		    fprintf(stderr,
 			    "ccomps: number expected in -X%s flag - ignored\n",
