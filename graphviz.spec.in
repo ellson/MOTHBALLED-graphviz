@@ -77,7 +77,7 @@ BuildRequires: libglade2-devel gtkglarea2-devel gtkglext-devel freeglut-devel
 %endif
 %if %rhel >= 6
 %define PERL 1
-BuildRequires: perl-devel perl-libs
+BuildRequires: perl-devel perl-libs perl-ExtUtils-Embed
 %define PHP 1
 BuildRequires: php-devel
 %define MYLIBGD 0
@@ -95,7 +95,7 @@ BuildRequires: libtool-ltdl libtool-ltdl-devel
 %define TCL 1
 BuildRequires: tcl-devel tk-devel 
 %define PERL 1
-BuildRequires: perl-devel
+BuildRequires: perl-devel perl-ExtUtils-Embed
 %define RUBY 1
 BuildRequires: ruby ruby-devel
 %define GUILE 1
