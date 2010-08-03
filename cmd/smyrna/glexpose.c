@@ -259,7 +259,7 @@ int glexpose_main(ViewInfo * view)
     if (!glupdatecamera(view))
 	return 0;
 
-      draw_cube();
+//      draw_cube();
 
 
     if (view->activeGraph >= 0) {

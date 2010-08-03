@@ -427,6 +427,7 @@ typedef struct
 	Agsym_t* N_labelattribute;
 	Agsym_t* E_visible;
 	Agsym_t* E_selected;
+	Agsym_t* E_pos;
 	Agsym_t* G_edgelabelcolor;
 	Agsym_t* E_labelattribute;
     } graphRec;
@@ -437,10 +438,12 @@ typedef struct
 #define GN_selected(g) (GREC(g)->N_selected)
 #define GG_nodelabelcolor(g) (GREC(g)->G_nodelabelcolor)
 #define GN_labelattribute(g) (GREC(g)->N_labelattribute)
+#define GE_pos(g) (GREC(g)->E_pos)
 #define GE_visible(g) (GREC(g)->E_visible)
 #define GE_selected(g) (GREC(g)->E_selected)
 #define GG_edgelabelcolor(g) (GREC(g)->G_edgelabelcolor)
 #define GE_labelattribute(g) (GREC(g)->E_labelattribute)
+
 #define GUI_WINDOWED   0
 #define GUI_FULLSCREEN    1
 

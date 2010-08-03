@@ -449,15 +449,50 @@ static void renderSelectedEdges(Agraph_t * g)
     }
     glEnd();
 }
+static int removeChar(char* str,char r)
+{
+    char* ptr=str;
+    int rv=0;
+    while (*ptr!='\0')
+    {
+	if(*ptr == r)
+	{
+	    *ptr=' ';
+	    rv++;
+	}
 
+	ptr++;
+    }
+    return rv;
+}
 
+char* pos_to_xdot(char* xdots,char* buf)
+{
+/*
+"e,227.75,177.25 186.27,218.73 196.2,208.8 209.32,195.68 220.44,184.56", 
+"B 4 186 219 196 209 209 196 220 185 ", _hdraw_="S 5 -solid c 9 -#000000ff C 9 -#000000ff P 3 223 187 228 177 218 182 ";*/
+    char* pt;
+    int spaceCnt=0;
+    strcpy(buf,xdots);
+    pt=buf;
+    while ((spaceCnt == 0) && (*pt!='\0'))
+    {
+	if(*pt==' ')
+	    spaceCnt++;
+	pt++;
+    }
+    return pt;
+}
 
 
 static void renderEdges(Agraph_t * g)
 {
+    char Buf[1024];
+    char posBuf[1024];
     Agedge_t *e;
     Agnode_t *v;
     Agsym_t* pos_attr = GN_pos(g);
+    Agsym_t* pos_attr_e = GE_pos(g);
     xdot * x;
     glCompPoint posT;	/*Tail position*/
     glCompPoint posH;	/*Head position*/
@@ -499,12 +534,27 @@ static void renderEdges(Agraph_t * g)
 		continue;
 	    if(ED_selected(e))
 		continue;
-	    glColor4f(c.R,c.G,c.B,c.A);	    
-	    posT=getPointFromStr(agxget(agtail(e), pos_attr));
-	    posH=getPointFromStr(agxget(aghead(e), pos_attr));
-	    draw_edge(&posT,&posH,getEdgeLength(e),0);
-	    ED_posTail(e) = posT;
-	    ED_posHead(e) = posH;
+	    glColor4f(c.R,c.G,c.B,c.A);	   
+	    if(!pos_attr_e)
+	    {
+		posT=getPointFromStr(agxget(agtail(e), pos_attr));
+		posH=getPointFromStr(agxget(aghead(e), pos_attr));
+		draw_edge(&posT,&posH,getEdgeLength(e),0);
+		ED_posTail(e) = posT;
+		ED_posHead(e) = posH;
+	    }
+	    else/*NOT IMPLEMENTED YET*/
+	    {
+		int pCount=0;
+		char* bf;
+		bf=pos_to_xdot(agxget(e,pos_attr_e),Buf);
+		pCount=removeChar(bf,',');
+		sprintf(posBuf,"B %d %s ",pCount,bf);
+		x=parseXDotFOn (posBuf, OpFns,sizeof(sdot_op), NULL);
+		draw_xdot(x,0);
+	        if(x)
+		    freeXDot (x);
+	    }
 	}
     }
     glEnd();

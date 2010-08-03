@@ -662,6 +662,7 @@ graphRecord (Agraph_t* g)
     GN_selected(g) = agattr (g, AGNODE, "selected", 0);
     GN_labelattribute(g) = agattr (g, AGNODE, agget(g,"nodelabelattribute"), 0);
 
+    GE_pos(g)=agattr(g,AGEDGE,"pos",0);
     GE_visible(g) = agattr (g, AGEDGE, "visible", 0);
     GE_selected(g) = agattr (g, AGEDGE, "selected", 0);
     GE_labelattribute(g) = agattr (g, AGEDGE, agget(g,"edgelabelattribute"), 0);
