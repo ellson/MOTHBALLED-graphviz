@@ -39,6 +39,7 @@
 #include "libintl.h"
 #endif
 #include <assert.h>
+#include "glexpose.h"
 #include "glutrender.h"
 
 #ifdef HAVE_GETOPT_H
@@ -158,6 +159,7 @@ void display()
    glutSwapBuffers();
 
 }
+#if UNUSED
 static void glutMode()
 {
     glutInitWindowSize(512,512);
@@ -167,7 +169,7 @@ static void glutMode()
   
     glutMainLoop(); // Infinite event loop
 }
-
+#endif
 
 static void windowedMode(int argc, char *argv[])
 {
@@ -218,10 +220,6 @@ static void windowedMode(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-    char *initFileName;
-
-
-
     smyrnaDir = getenv("SMYRNA_PATH");
     if (!smyrnaDir) {
 #ifdef _WIN32
