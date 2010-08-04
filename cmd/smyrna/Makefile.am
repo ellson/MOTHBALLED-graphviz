@@ -43,7 +43,7 @@ noinst_HEADERS = arcball.h draw.h glexpose.h \
 	viewport.h viewportcamera.h support.h \
 	gui/datalistcallbacks.h gui/frmobjectui.h \
 	gui/glcompui.h gui/gui.h gui/menucallbacks.h \
-	gui/toolboxcallbacks.h gui/topviewsettings.h gvprpipe.h hier.h
+	gui/toolboxcallbacks.h gui/topviewsettings.h gvprpipe.h hier.h glutrender.h
 
 smyrna_SOURCES = arcball.c draw.c glexpose.c \
 	glmotion.c gltemplate.c gui/appmouse.c gui/callbacks.c \
@@ -53,7 +53,7 @@ smyrna_SOURCES = arcball.c draw.c glexpose.c \
 	viewport.c viewportcamera.c \
 	gui/datalistcallbacks.c gui/frmobjectui.c \
 	gui/glcompui.c gui/gui.c gui/menucallbacks.c \
-	gui/toolboxcallbacks.c gui/topviewsettings.c
+	gui/toolboxcallbacks.c gui/topviewsettings.c glutrender.c
 
 smyrna_LDADD = $(top_builddir)/lib/cgraph/libcgraph_C.la \
 		$(top_builddir)/lib/cdt/libcdt_C.la \
