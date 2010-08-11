@@ -663,6 +663,15 @@ returns a version of \fIs\fP with the alphabetic characters converted to lower-c
 returns a version of \fIs\fP appropriate to be used as an identifier
 in a dot file.
 .TP
+\fBhtml\fP(\fIg\fP : \fBgraph_t\fP, \fIs\fP : \fBstring\fP) : \fBstring\fP
+returns a ``magic'' version  of \fIs\fP as an HTML string. This will typically be
+used to attach an HTML-like label to a graph object. Note that the returned string
+lives in \fIg\fP. In particular, it will be freed when \fIg\fP is closed, and to
+act as an HTML string, it has to be used with an object of \fIg\fP. In addition,
+note that the
+angle bracket quotes should not be part of \fIs\fP. These will be added if 
+\fIg\fP is written in concrete DOT format.
+.TP
 \fBxOf\fP(\fIs\fP : \fBstring\fP) : \fBstring\fP
 returns the string "\fIx\fP" if \fIs\fP has the form "\fIx\fP,\fIy\fP", 
 where both \fIx\fP and \fIy\fP are numeric.
@@ -1073,7 +1082,7 @@ Computes the degrees of nodes with edges.
 Colon\(hyseparated list of directories to be searched to find
 the file specified by the \-f option.
 .SH BUGS AND WARNINGS
-Scripts should be careful deleting nodes during \fBN{}\fP and \fBE{}\fp
+Scripts should be careful deleting nodes during \fBN{}\fP and \fBE{}\fP
 blocks using BFS and DFS traversals as these rely on stacks and queues of
 nodes. 
 .PP

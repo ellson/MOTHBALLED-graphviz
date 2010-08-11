@@ -793,6 +793,14 @@ char *toUpper(Expr_t * pgm, char *s, Sfio_t* tmps)
     return exstring(pgm, sfstruse(tmps));
 }
 
+/* toHtml:
+ * Create a string marked as HTML
+ */
+char *toHtml(Agraph_t* g, char *arg)
+{
+    return agstrdup_html (g, arg);
+}
+
 /* canon:
  * Canonicalize a string for printing.
  */
@@ -806,6 +814,7 @@ char *canon(Expr_t * pgm, char *arg)
 
     return p;
 }
+
 #include <stdlib.h>
 #ifdef WIN32
 #include "compat.h"
