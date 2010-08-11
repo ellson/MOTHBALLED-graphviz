@@ -534,7 +534,7 @@ static void renderEdges(Agraph_t * g)
 		continue;
 	    if(ED_selected(e))
 		continue;
-	    glColor4f(c.R,c.G,c.B,c.A);	   
+	    glColor4f(c.R,c.G,c.B,1);	   
 	    if(!pos_attr_e)
 	    {
 		posT=getPointFromStr(agxget(agtail(e), pos_attr));
@@ -736,20 +736,22 @@ void updateSmGraph(Agraph_t * g,topview* t)
     t->avgedgelength = totalELength / t->Edgecount;
 //    t->init_node_size=init_node_size(g, t);
     view->Topview=t;
-    cacheNodes(g,t);
+
+
+    /*render nodes once to get set some attributes set,THIS IS A HACK, FIX IT*/
+    renderNodes(g);
     cacheEdges(g,t);
-    cacheSelectedNodes(g,t);
     cacheSelectedEdges(g,t);
-    cacheNodeLabels(g,t);
+    cacheNodes(g,t);
+    cacheSelectedNodes(g,t);
     cacheEdgeLabels(g,t);
+    cacheNodeLabels(g,t);
 }
 void initSmGraph(Agraph_t * g,topview* rv)
 {
     rv->maxnodedegree = 1;
 
         
-    /*create glcomp menu system */
-    view->widgets = glcreate_gl_topview_menu();
 
     /*create attribute list*/
     rv->attributes=load_attr_list(view->g[view->activeGraph]);
@@ -774,20 +776,16 @@ void initSmGraph(Agraph_t * g,topview* rv)
 
 void renderSmGraph(Agraph_t * g,topview* t)
 {
+    /*
+	we like to have blending affect where node and edge  overlap
+	to achive this depth test should be turned off.
+    */
 
     glEnable(GL_POINT_SMOOTH);
-
-    if(view->drawnodes)
-    {
-	glPointSize(view->nodeScale*t->fitin_zoom/view->zoom);
-	glCallList(t->cache.node_id);
-        glCallList(t->cache.selnode_id);
-        if(view->drawnodelabels)
-	{
-	    if(view->zoom*-1 <	t->fitin_zoom /(float)view->labelnumberofnodes*-1) 
-		glCallList(t->cache.nodelabel_id);
-	}
-    }
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc (GL_ALWAYS);
+    glEnable(GL_DEPTH);
+//    glDepthMask(0);
 
     if(view->drawedges)
     {
@@ -800,6 +798,18 @@ void renderSmGraph(Agraph_t * g,topview* t)
 
 	}
     }
+    if(view->drawnodes)
+    {
+	glPointSize(view->nodeScale*t->fitin_zoom/view->zoom);
+	glCallList(t->cache.node_id);
+        glCallList(t->cache.selnode_id);
+        if(view->drawnodelabels)
+	{
+	    if(view->zoom*-1 <	t->fitin_zoom /(float)view->labelnumberofnodes*-1) 
+		glCallList(t->cache.nodelabel_id);
+	}
+    }
+
 }
 
 void freeSmGraph(Agraph_t * g,topview* t)

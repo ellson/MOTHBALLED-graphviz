@@ -13,7 +13,6 @@
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
-
 #include "glexpose.h"
 #include "draw.h"
 #include "topviewfuncs.h"
@@ -24,21 +23,117 @@
 #include "hotkeymap.h"
 #include "polytess.h"
 
-static void draw_cube()
+int texture[3];
+static int Status=0;									// Status Indicator
+
+void LoadGLTextures()									// Load Bitmaps And Convert To Textures
+{
+	int imageWidth,imageHeight;
+
+	unsigned char *data = glCompLoadPng ("c:/graphviz-ms/bin/Data/Crate.png", &imageWidth, &imageHeight);
+
+	if (!data)
+	{
+	    printf ("Data/Crate.bmp could not be located\n");
+	    exit(-1);
+	}
+	// Load The Bitmap, Check For Errors, If Bitmap's Not Found Quit
+	glGenTextures(3, &texture[0]);					// Create Three Textures
+
+		// Create Nearest Filtered Texture
+		glBindTexture(GL_TEXTURE_2D, texture[0]);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, imageWidth,imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+		// Create Linear Filtered Texture
+		glBindTexture(GL_TEXTURE_2D, texture[1]);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, imageWidth,imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
+		// Create MipMapped Texture
+		glBindTexture(GL_TEXTURE_2D, texture[2]);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_NEAREST);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, 3, imageWidth,imageHeight, GL_RGBA, GL_UNSIGNED_BYTE,data);
+	Status=1;									// Set The Status To TRUE
+}
+
+
+
+void draw_cube_tex()
 {
 
+
+    glRotatef(45,1,1,1);
+    glEnable(GL_TEXTURE_2D); // Enable Texture Mapping
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
+    if(!Status)
+	LoadGLTextures();
+    if(!Status)
+	return;
+    glBindTexture(GL_TEXTURE_2D,texture[1]);
+	glBegin(GL_QUADS);
+		// Front Face
+		glColor4f(1, 1, 1,1);	// Color Blue
+
+		glNormal3f( 0.0f, 0.0f, 1.0f);
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(-100.0f, -100.0f,  100.0f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f( 100.0f, -100.0f,  100.0f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f( 100.0f,  100.0f,  100.0f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f(-100.0f,  100.0f,  100.0f);
+		// Back Face
+		glNormal3f( 0.0f, 0.0f,-1.0f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f(-100.0f, -100.0f, -100.0f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f(-100.0f,  100.0f, -100.0f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f( 100.0f,  100.0f, -100.0f);
+		glTexCoord2f(0.0f, 0.0f); glVertex3f( 100.0f, -100.0f, -100.0f);
+		// Top Face
+		glNormal3f( 0.0f, 1.0f, 0.0f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f(-100.0f,  100.0f, -100.0f);
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(-100.0f,  100.0f,  100.0f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f( 100.0f,  100.0f,  100.0f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f( 100.0f,  100.0f, -100.0f);
+		// Bottom Face
+		glNormal3f( 0.0f,-1.0f, 0.0f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f(-100.0f, -100.0f, -100.0f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f( 100.0f, -100.0f, -100.0f);
+		glTexCoord2f(0.0f, 0.0f); glVertex3f( 100.0f, -100.0f,  100.0f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f(-100.0f, -100.0f,  100.0f);
+		// Right face
+		glNormal3f( 1.0f, 0.0f, 0.0f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f( 100.0f, -100.0f, -100.0f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f( 100.0f,  100.0f, -100.0f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f( 100.0f,  100.0f,  100.0f);
+		glTexCoord2f(0.0f, 0.0f); glVertex3f( 100.0f, -100.0f,  100.0f);
+		// Left Face
+		glNormal3f(-1.0f, 0.0f, 0.0f);
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(-100.0f, -100.0f, -100.0f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f(-100.0f, -100.0f,  100.0f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f(-100.0f,  100.0f,  100.0f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f(-100.0f,  100.0f, -100.0f);
+	glEnd();
+    glDisable(GL_TEXTURE_2D);		    // Enable Texture Mapping
+
+
+
+}
+static void draw_cube()
+{
+    glRotatef(30,1,1,1);
     glBegin(GL_QUADS);		// Draw The Cube Using quads
-    glColor3f(0.0f, 100.0f, 0.0f);	// Color Blue
+    glColor4f(0.0f, 100.0f, 0.0f,0.5);	// Color Blue
     glVertex3f(100.0f, 100.0f, -100.0f);	// Top Right Of The Quad (Top)
     glVertex3f(-100.0f, 100.0f, -100.0f);	// Top Left Of The Quad (Top)
     glVertex3f(-100.0f, 100.0f, 100.0f);	// Bottom Left Of The Quad (Top)
     glVertex3f(100.0f, 100.0f, 100.0f);	// Bottom Right Of The Quad (Top)
-    glColor3f(100.0f, 0.5f, 0.0f);	// Color Orange
+    glColor4f(100.0f, 0.5f, 0.0f,0.5);	// Color Orange
     glVertex3f(100.0f, -100.0f, 100.0f);	// Top Right Of The Quad (Bottom)
     glVertex3f(-100.0f, -100.0f, 100.0f);	// Top Left Of The Quad (Bottom)
     glVertex3f(-100.0f, -100.0f, -100.0f);	// Bottom Left Of The Quad (Bottom)
     glVertex3f(100.0f, -100.0f, -100.0f);	// Bottom Right Of The Quad (Bottom)
-    glColor3f(100.0f, 0.0f, 0.0f);	// Color Red    
+    glColor4f(100.0f, 0.0f, 0.0f,0.5);	// Color Red    
     glVertex3f(100.0f, 100.0f, 100.0f);	// Top Right Of The Quad (Front)
     glVertex3f(-100.0f, 100.0f, 100.0f);	// Top Left Of The Quad (Front)
     glVertex3f(-100.0f, -100.0f, 100.0f);	// Bottom Left Of The Quad (Front)
@@ -219,7 +314,6 @@ static int glexpose_drawgraph(ViewInfo * view)
 //              }
 //              else
 //                      drawGraph(view->g[view->activeGraph]);  //xdot based drawing functions
-	glCompSetDraw(view->widgets);
 	return 1;
     }
     return 0;
@@ -259,7 +353,9 @@ int glexpose_main(ViewInfo * view)
     if (!glupdatecamera(view))
 	return 0;
 
-//      draw_cube();
+//    glEnable(GL_DEPTH_TEST);
+//    draw_cube();
+//    draw_cube_tex();
 
 
     if (view->activeGraph >= 0) {
@@ -272,14 +368,17 @@ int glexpose_main(ViewInfo * view)
     else
 	return 0;
 
+
+
     glexpose_grid(view);
     draw_fisheye_magnifier(view);
     draw_magnifier(view);
     drawBorders(view);
     glexpose_drawgraph(view);
-//      drawRotatingTools();
     drawRotatingAxis();
     draw_selpoly(&view->Topview->sel.selPoly);
+    glCompSetDraw(view->widgets);
+
 //              draw_stuff();
 //      test_color_pallete();
 //      drawtestpoly();

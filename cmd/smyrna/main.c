@@ -56,6 +56,7 @@ gchar *package_locale_dir;
 static char *smyrnaDir;		/* path to directory containin smyrna data files */
 char *smyrnaGlade;
 unsigned char SmyrnaVerbose;
+int width,height;/*glut window size*/
 
 
 /* smyrnaPath:
@@ -103,7 +104,7 @@ static char *parseArgs(int argc, char *argv[], ViewInfo * view)
 {
     unsigned int c;
 
-    while ((c = getopt(argc, argv, ":K:txvf?")) != -1) {
+    while ((c = getopt(argc, argv, ":Kf:txv?")) != -1) {
 	switch (c) {
 	case 'v':
 	    SmyrnaVerbose = 1;
@@ -121,6 +122,7 @@ static char *parseArgs(int argc, char *argv[], ViewInfo * view)
 #endif
 	case 'f':
 	    view->guiMode=GUI_FULLSCREEN;
+	    view->optArg=strdup(optarg);
 	    break;
 
 	case '?':
@@ -210,9 +212,8 @@ static void windowedMode(int argc, char *argv[])
     gtk_widget_show((GtkWidget*)graphComboBox);
     view->graphComboBox = graphComboBox;
 
-    if(view->guiMode==GUI_FULLSCREEN)
-	gtk_window_fullscreen(glade_xml_get_widget(xml, "frmMain"));
-    gtk_main();
+    if(view->guiMode!=GUI_FULLSCREEN)
+	gtk_main();
 }
 
 
@@ -259,9 +260,11 @@ int main(int argc, char *argv[])
 #ifndef WIN32
     glutInit(&argc, argv);
 #endif
-    windowedMode(argc, argv);
-//    view->guiMode=GUI_GLUT;
-	sm_glutinit(800,600,0);
+
+    if(view->guiMode==GUI_FULLSCREEN)
+	cb_glutinit(0,0,800,600,32,75,1,&argc,argv,view->optArg);
+    else
+	windowedMode(argc, argv);
 #ifdef G_OS_WIN32
     g_free(package_prefix);
     g_free(package_data_dir);

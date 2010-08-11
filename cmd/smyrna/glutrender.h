@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-    void sm_glutinit(int w,int h,int full);
+    int cb_glutinit(int x,int y,int w,int h, int bits,int s_rate,int fullscreen,int* argcp, char *argv[],char* optArg);
 
 #ifdef __cplusplus
 }				/* end extern "C" */

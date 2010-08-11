@@ -293,8 +293,6 @@ void set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
 	     ("defaultfisheyemagnifierdistort", view, g));
     view->drawnodes = atoi(get_attribute_value("drawnodes", view, g));
     view->drawedges = atoi(get_attribute_value("drawedges", view, g));
-    view->drawnodes=1;
-    view->drawedges=1;
     view->drawnodelabels=atoi(get_attribute_value("labelshownodes", view, g));
     view->drawedgelabels=atoi(get_attribute_value("labelshowedges", view, g));
     view->nodeScale=atof(get_attribute_value("nodesize", view, g))*.30;
@@ -519,6 +517,10 @@ void init_viewport(ViewInfo * view)
     view->edgerendertype=0;
     if(view->guiMode!=GUI_FULLSCREEN)
 	view->guiMode=GUI_WINDOWED;
+
+    /*create glcomp menu system */
+    view->widgets = glcreate_gl_topview_menu();
+
 }
 
 
@@ -679,7 +681,9 @@ void refreshViewport(int doClear)
     view->refresh.selection=1;
     view->refresh.visibility=1;
     load_settings_from_graph(graph);
-    update_graph_from_settings(graph);
+
+    if(view->guiMode!=GUI_FULLSCREEN)
+	update_graph_from_settings(graph);
     set_viewport_settings_from_template(view, graph);
     graphRecord(graph);
     initSmGraph(graph,view->Topview);

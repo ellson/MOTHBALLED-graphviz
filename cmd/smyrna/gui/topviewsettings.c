@@ -56,6 +56,10 @@ void on_settingsCancelBtn_clicked(GtkWidget * widget, gpointer user_data)
 {
     gtk_widget_hide(glade_xml_get_widget(xml, "dlgSettings"));
 }
+void copy_attr(Agraph_t* destG,char* attr,Agraph_t* g)
+{
+    agattr(g,AGRAPH,attr,agget(destG,attr));
+}
 
 
 static int set_color_button_widget(char *attribute, char *widget_name)
@@ -67,7 +71,10 @@ static int set_color_button_widget(char *attribute, char *widget_name)
     attribute=attribute +13;
     buf = agget(view->g[view->activeGraph], attribute);
     if ((!buf) || (strcmp(buf, "") == 0))
+    {
 	buf = agget(view->systemGraphs.def_attrs, attribute);
+	copy_attr(view->systemGraphs.def_attrs, attribute,view->g[view->activeGraph]);
+    }
     if (buf) {
 	colorxlate(buf, &cl, RGBA_DOUBLE);
 	color.red = (int) (cl.u.RGBA[0] * 65535.0);
@@ -119,7 +126,11 @@ static int set_text_widget(char *attribute, char *widget_name)
 
     buf = agget(view->g[view->activeGraph], attribute);
     if ((!buf) || (strcmp(buf, "") == 0))
+    {
 	buf = agget(view->systemGraphs.def_attrs, attribute);
+	copy_attr(view->systemGraphs.def_attrs, attribute,view->g[view->activeGraph]);
+    }
+
     if (buf) {
 	gtk_entry_set_text((GtkEntry *)
 			   glade_xml_get_widget(xml, widget_name), buf);
@@ -136,7 +147,12 @@ static int set_checkbox_widget(char *attribute, char *widget_name)
 
     buf = agget(view->g[view->activeGraph], attribute);
     if ((!buf) || (strcmp(buf, "") == 0))
+    {
 	buf = agget(view->systemGraphs.def_attrs, attribute);
+	copy_attr(view->systemGraphs.def_attrs, attribute,view->g[view->activeGraph]);
+    }
+
+
     if (buf) {
 	value = atoi(buf);
 	gtk_toggle_button_set_active((GtkToggleButton *)
@@ -163,7 +179,7 @@ static int get_checkbox_widget_to_attribute(char *attribute,
 								    widget_name));
     sprintf(buf, "%d", value);
     agattr(g, AGRAPH, attribute, buf);
-    return 1;
+   return 1;
 }
 
 static int set_spinbtn_widget(char *attribute, char *widget_name)
@@ -174,7 +190,10 @@ static int set_spinbtn_widget(char *attribute, char *widget_name)
 
     buf = agget(view->g[view->activeGraph], attribute);
     if ((!buf) || (strcmp(buf, "") == 0))
+    {
 	buf = agget(view->systemGraphs.def_attrs, attribute);
+	copy_attr(view->systemGraphs.def_attrs, attribute,view->g[view->activeGraph]);
+    }
     if (buf) {
 	value = (float) atof(buf);
 	gtk_spin_button_set_value((GtkSpinButton *)
@@ -225,7 +244,11 @@ static int set_scalebtn_widget_to_attribute(char *attribute,
     buf = agget(view->g[view->activeGraph], attribute);
 
     if ((!buf) || (strcmp(buf, "") == 0))
+    {
 	buf = agget(view->systemGraphs.def_attrs, attribute);
+	copy_attr(view->systemGraphs.def_attrs, attribute,view->g[view->activeGraph]);
+
+    }
     if (buf) {
 	value = (float) atof(buf);
 	gtk_range_set_value((GtkRange *)
@@ -242,7 +265,10 @@ static int set_combobox_widget(char *attribute, char *widget_name)
     attribute=attribute +9;
     buf = agget(view->g[view->activeGraph], attribute);
     if ((!buf) || (strcmp(buf, "") == 0))
+    {
 	buf = agget(view->systemGraphs.def_attrs, attribute);
+	copy_attr(view->systemGraphs.def_attrs, attribute,view->g[view->activeGraph]);
+    }
     if (buf) {
 	value = (int) atoi(buf);
 	gtk_combo_box_set_active((GtkComboBox *)
@@ -292,9 +318,9 @@ int load_settings_from_graph(Agraph_t * g)
 		set_spinbtn_widget(sym->name, agget(view->systemGraphs.attrs_widgets,sym->name));
 	    if(strncmp (sym->name,"scale_button",strlen("scale_button"))==0)
 		set_scalebtn_widget_to_attribute(sym->name, agget(view->systemGraphs.attrs_widgets,sym->name));
+
 	}
     return 1;
-	  /*P.S:   if I can find a way too make gtk windows get along with glut window this might be possible*/
 }
 
 int update_graph_from_settings(Agraph_t * g)

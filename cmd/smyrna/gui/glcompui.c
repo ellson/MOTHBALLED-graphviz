@@ -42,7 +42,7 @@ static glCompImage *img3D;
 static glCompButton *panBtn;
 
 
-static void menu_click_pan(glCompObj *obj, GLfloat x, GLfloat y,
+void menu_click_pan(glCompObj *obj, GLfloat x, GLfloat y,
 			   glMouseButtonType t)
 {
         deselect_all(view->g[view->activeGraph]);
@@ -57,13 +57,13 @@ static void menu_click_zoom(void *obj, GLfloat x, GLfloat y,
 #endif
 
 
-static void menu_click_zoom_minus(glCompObj *obj, GLfloat x, GLfloat y,
+void menu_click_zoom_minus(glCompObj *obj, GLfloat x, GLfloat y,
 				  glMouseButtonType t)
 {
     glmotion_zoom_inc(0);
 }
 
-static void menu_click_zoom_plus(glCompObj *obj, GLfloat x, GLfloat y,
+void menu_click_zoom_plus(glCompObj *obj, GLfloat x, GLfloat y,
 				 glMouseButtonType t)
 {
     glmotion_zoom_inc(1);
@@ -97,7 +97,7 @@ static void menu_switch_to_fisheye(glCompObj *obj, GLfloat x, GLfloat y,
 
 
 
-static void menu_click_center(glCompObj *obj, GLfloat x, GLfloat y,
+void menu_click_center(glCompObj *obj, GLfloat x, GLfloat y,
 			      glMouseButtonType t)
 {
     if (view->active_camera == -1) {	/*2D mode */
@@ -110,7 +110,7 @@ static void menu_click_center(glCompObj *obj, GLfloat x, GLfloat y,
 
     }
 }
-static void switch2D3D(glCompObj *obj, GLfloat x, GLfloat y,
+void switch2D3D(glCompObj *obj, GLfloat x, GLfloat y,
 		       glMouseButtonType t)
 {
     if (t == glMouseLeftButton) {

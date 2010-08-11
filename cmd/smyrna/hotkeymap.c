@@ -53,17 +53,35 @@ int static get_mouse_mode(const char *s)
 
 int static get_button(const char *s)
 {
+    if(view->guiMode != GUI_FULLSCREEN)
+    {
+	if (strcmp(s, "B_LSHIFT") == 0)
+	    return B_LSHIFT;
+	if (strcmp(s, "B_RSHIFT") == 0)
+	    return B_RSHIFT;
+	if (strcmp(s, "B_LCTRL") == 0)
+	    return B_LCTRL;
+	if (strcmp(s, "B_RCTRL") == 0)
+	    return B_RCTRL;
+	if (strcmp(s, "0") == 0)
+	    return 0;
+    }
+    else
+    {
+		int mod = glutGetModifiers();
+		if (mod == GLUT_ACTIVE_ALT)
 
-    if (strcmp(s, "B_LSHIFT") == 0)
-	return B_LSHIFT;
-    if (strcmp(s, "B_RSHIFT") == 0)
-	return B_RSHIFT;
-    if (strcmp(s, "B_LCTRL") == 0)
-	return B_LCTRL;
-    if (strcmp(s, "B_RCTRL") == 0)
-	return B_RCTRL;
-    if (strcmp(s, "0") == 0)
-	return 0;
+	if (strcmp(s, "B_LSHIFT") == 0)
+	    return GLUT_ACTIVE_SHIFT;
+	if (strcmp(s, "B_RSHIFT") == 0)
+	    return GLUT_ACTIVE_SHIFT;
+	if (strcmp(s, "B_LCTRL") == 0)
+	    return GLUT_ACTIVE_CTRL;
+	if (strcmp(s, "B_RCTRL") == 0)
+	    return GLUT_ACTIVE_CTRL;
+	if (strcmp(s, "0") == 0)
+	    return 0;
+    }
     return 0;
 
 }

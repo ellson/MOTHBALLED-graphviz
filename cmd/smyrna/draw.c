@@ -966,7 +966,6 @@ void draw_selpoly(glCompPoly* selPoly)
     int i;
 /*    glColor4f(view->gridColor.R, view->gridColor.G, view->gridColor.B,
 		  view->gridColor.A);*/
-    glDisable(GL_DEPTH_TEST);
     glColor4f(1,0,0,1);
     glBegin(GL_LINE_STRIP);
     for (i = 0;i <  selPoly->cnt ; i++)
@@ -981,9 +980,6 @@ void draw_selpoly(glCompPoly* selPoly)
 	glVertex3f(view->mouse.GLpos.x,view->mouse.GLpos.y,0);
 	glEnd();
     }
-    glEnable(GL_DEPTH_TEST);
-
-
 }
 
 #ifdef UNUSED

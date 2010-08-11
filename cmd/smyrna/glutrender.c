@@ -21,6 +21,7 @@
 #include "glexpose.h"
 
 
+
     /*call backs */
 
 static float begin_x = 0.0;
@@ -45,7 +46,7 @@ static glMouseButtonType getGlCompMouseType(int n)
 }
 
 
-void cb_glutreshape(int width, int height)
+void cb_reshape(int width, int height)
 {
     /* static int doonce=0; */
     int vPort[4];
@@ -73,15 +74,17 @@ void cb_glutreshape(int width, int height)
     }
 
     glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 	/*** OpenGL END ***/
 
 }
-void cb_glutdisplay()
+void cb_display(void )
 {
+//    glClearColor(view->bgColor.R, view->bgColor.G, view->bgColor.B, view->bgColor.A);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClearColor(view->bgColor.R, view->bgColor.G, view->bgColor.B, view->bgColor.A);
     glLoadIdentity();
     glexpose_main(view);	//draw all stuff
+//    draw_cube_tex();
     glutSwapBuffers();
     if (view->initFile) {
 	view->initFile = 0;
@@ -124,7 +127,7 @@ void cb_mouseclick(int button, int state,int x, int y)
 	dx = 0.0;
 	dy = 0.0;
     }
-    cb_glutdisplay();
+    cb_display();
 
 }
 void cb_mouseover(int x,int y)/*no mouse click only mouse pointer moving on context*/
@@ -138,7 +141,7 @@ void cb_mouseover(int x,int y)/*no mouse click only mouse pointer moving on cont
 
 
 }
-void cb_mouseover2(int X,int Y)/*mouse moving witha button clicked (dragging)*/
+void cb_drag(int X,int Y)/*mouse moving witha button clicked (dragging)*/
 {
 
     float x = (float) X;
@@ -161,63 +164,163 @@ void cb_mouseover2(int X,int Y)/*mouse moving witha button clicked (dragging)*/
 	appmouse_middle_drag(view,x,y);
     begin_x = x;
     begin_y = y;
-    cb_glutdisplay();
+    cb_display();
 
 }
-
-
-void sm_glutinit(int w,int h,int full)
+void cb_mouseentry(int state)
 {
-    glutInitWindowSize(512,512);
- glutInitDisplayMode(GLUT_DOUBLE|GLUT_DEPTH|GLUT_RGBA|GLUT_ALPHA|GLUT_STENCIL);
+    if(state==GLUT_LEFT)
+    {
+	//TODO when mouse leaves the scene (which might be impossible in full screen modes with one monitor	
+    }
+    else // GLUT_ENTERED
+    {
+	//TODO mouse is back in scene 
+    }
 
-
-//    glutInitDisplayMode ( GLUT_RGBA | GLUT_DOUBLE);
-    glutCreateWindow("The glut hello world program");
-    glutDisplayFunc(cb_glutdisplay);
-    glutReshapeFunc(cb_glutreshape);
-    glutMouseFunc(cb_mouseclick);
-    glutMotionFunc(cb_mouseover2);
-    glutFullScreen();
-
-    glClearColor(view->bgColor.R, view->bgColor.G, view->bgColor.B, view->bgColor.A);	//background color
-    glClearDepth(1.0);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-
-    glFrontFace(GL_CW);
-// glEnable (GL_LIGHTING);
-// glEnable (GL_LIGHT0);
-//  glEnable (GL_AUTO_NORMAL);
-//  glEnable (GL_NORMALIZE);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDepthFunc(GL_LESS);
-    glDisable(GL_DEPTH);
-//  glEnable(GL_LINE_SMOOTH);
-
-
-
-/*    *   7.1 glutDisplayFunc
-    * 7.2 glutOverlayDisplayFunc
-    * 7.3 glutReshapeFunc
-    * 7.4 glutKeyboardFunc
-    * 7.5 glutMouseFunc
-    * 7.6 glutMotionFunc, glutPassiveMotionFunc
-    * 7.7 glutVisibilityFunc
-    * 7.8 glutEntryFunc
-    * 7.9 glutSpecialFunc
-    * 7.10 glutSpaceballMotionFunc
-    * 7.11 glutSpaceballRotateFunc
-    * 7.12 glutSpaceballButtonFunc
-    * 7.13 glutButtonBoxFunc
-    * 7.14 glutDialsFunc
-    * 7.15 glutTabletMotionFunc
-    * 7.16 glutTabletButtonFunc
-    * 7.17 glutMenuStatusFunc
-    * 7.18 glutIdleFunc
-    * 7.19 glutTimerFunc 
- */
-    glutMainLoop(); // Infinite event loop
 }
+void cb_keyboard(unsigned char key,int x, int y)
+{
+    if (key==27)    /*ESC*/
+	exit (1);
+    if(key=='3')
+	switch2D3D(NULL, 0, 0,glMouseLeftButton);
+    if(key=='c')
+        menu_click_center(NULL, 0, 0,glMouseLeftButton);
+
+    if(key=='+')
+        menu_click_zoom_plus(NULL, 0, 0,glMouseLeftButton);
+    if(key=='-')
+        menu_click_zoom_minus(NULL, 0, 0,glMouseLeftButton);
+    if(key=='p')
+        menu_click_pan(NULL, 0, 0,glMouseLeftButton);
+    
+
+    appmouse_key_press(view,key);
+}
+void cb_keyboard_up(unsigned char key,int x, int y)
+{
+    appmouse_key_release(view,key);;
+}
+
+
+void cb_special_key(int key, int x, int y)
+{
+    if(key==GLUT_KEY_F1)
+    {
+	printf("Currently help is not available\n");
+    }
+    appmouse_key_press(view,key);
+
+}
+void cb_special_key_up(int key, int x, int y)
+{
+    if(key==GLUT_KEY_F1)
+    {
+	printf("Currently help is not available\n");
+    }
+    appmouse_key_release(view,key);
+
+}
+
+static int cb_game_mode(char* optArg)
+{
+    
+    glutGameModeString(optArg);
+    if (glutGameModeGet(GLUT_GAME_MODE_POSSIBLE)) 
+    {
+    	glutEnterGameMode();
+	return 1;
+
+    }
+    else 
+    {
+	printf("smyrna cannot initialize requested screen resolution and rate!\n");
+	exit(-1);
+
+    }
+
+}
+static int cb_windowed_mode(int w,int h)
+{
+  glutInitWindowSize(w, h);
+  glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_ACCUM | GLUT_DOUBLE);
+  glutCreateWindow("smyrna");
+  return 1;
+    
+}
+
+int cb_glutinit(int x,int y,int w,int h, int bits,int s_rate,int fullscreen,int* argcp, char *argv[],char* optArg)
+{
+    /*
+    x,y:window position , unless in full screen mode
+    w,h: width and height of the window in pixels
+    bits: display color bit count
+    s_rate: for full screen mode this value represents refresh rate in hertz
+    fullscreen: if it will be a fullscreen window,
+    argcp argv: main function's parameters, required for glutinit
+    */
+
+
+
+    glutInit(argcp,argv); //this is required by some OS.
+
+//    glutInitDisplayMode( GLUT_ALPHA | GLUT_DOUBLE | GLUT_RGBA);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+	// The Type Of Depth Testing To Do
+/*	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glShadeModel(GL_SMOOTH);*/
+        glDisable(GL_DEPTH);
+	glClearDepth(1.0f);		// Depth Buffer Setup
+	glEnable(GL_DEPTH_TEST);							// Enables Depth Testing
+	glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To 
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
+
+
+    if (fullscreen)
+	cb_game_mode(optArg);
+    else    //well, use gtk then
+    {	
+	cb_windowed_mode(w,h);
+
+    }
+
+    /*register callbacks here*/
+    glutDisplayFunc(cb_display);
+    glutReshapeFunc(cb_reshape);
+    glutKeyboardFunc(cb_keyboard);
+    glutKeyboardUpFunc( cb_keyboard_up);
+    glutMouseFunc(cb_mouseclick);
+    glutMotionFunc(cb_drag);
+    glutPassiveMotionFunc(cb_mouseover);
+    glutVisibilityFunc(NULL);
+    glutEntryFunc(cb_mouseentry);//if mouse pointer left or entered the scene
+    glutSpecialFunc(cb_special_key);
+    glutSpecialUpFunc(cb_special_key_up);
+
+    //Attach extra call backs if needed in the future
+/*  glutOverlayDisplayFunc
+    glutSpaceballMotionFunc
+    glutSpaceballRotateFunc
+    glutSpaceballButtonFunc
+    glutButtonBoxFunc
+    glutDialsFunc
+    glutTabletMotionFunc
+    glutTabletButtonFunc
+    glutMenuStatusFunc
+    glutIdleFunc
+    glutTimerFunc 
+*/
+
+
+    //pass control to glut
+    cb_reshape(w,h);
+    glutMainLoop ();
+
+
+    return 0; //we should never reach here
+
+}
+
 

@@ -34,8 +34,10 @@ static void apply_actions(ViewInfo* v,int x,int y)
 {
     int a;
     gdouble seconds;
-
-    switch ((a=get_mode(v))) {
+    a=get_mode(v);
+    if((a==MM_PAN) && (view->guiMode==GUI_FULLSCREEN) &&((v->active_camera >= 0)))
+	a=MM_ROTATE;	
+    switch (a) {
     case MM_ROTATE :
 	seconds = g_timer_elapsed(view->timer3, NULL);
 	if (seconds > 0.1) {

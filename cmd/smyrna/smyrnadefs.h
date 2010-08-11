@@ -722,6 +722,7 @@ typedef struct
 	int edgerendertype;
 	float nodeScale;
 	int guiMode;
+	char* optArg;
 
     } ViewInfo;
 /*rotation steps*/
