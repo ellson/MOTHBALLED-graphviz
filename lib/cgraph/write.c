@@ -60,6 +60,8 @@ static int strcasecmp(const char *s1, const char *s2)
 }
 #endif
 
+#define is_number_char(c) (isdigit(c) || ((c) == '.'))
+
 /* _agstrcanon:
  * Canonicalize ordinary strings. 
  * Assumes buf is large enough to hold output.
@@ -71,6 +73,7 @@ static char *_agstrcanon(char *arg, char *buf)
     int cnt = 0;
     int needs_quotes = FALSE;
     int maybe_num;
+    int backslash_pending = FALSE;
     static const char *tokenlist[]	/* must agree with scan.l */
 	= { "node", "edge", "strict", "graph", "digraph", "subgraph",
 	NIL(char *)
@@ -83,7 +86,7 @@ static char *_agstrcanon(char *arg, char *buf)
     p = buf;
     *p++ = '\"';
     uc = *(unsigned char *) s++;
-    maybe_num = (isdigit(uc) || (uc == '.'));
+    maybe_num = is_number_char(uc);
     while (uc) {
 	if (uc == '\"') {
 	    *p++ = '\\';
@@ -91,17 +94,28 @@ static char *_agstrcanon(char *arg, char *buf)
 	} else {
 	    if (!ISALNUM(uc))
 		needs_quotes = TRUE;
-	    else if (maybe_num && (!isdigit(uc) && (uc != '.')))
+	    else if (maybe_num && !is_number_char(uc))
 		needs_quotes = TRUE;
 	}
 	*p++ = (char) uc;
 	uc = *(unsigned char *) s++;
 	cnt++;
-	if (cnt >= MAX_OUTPUTLINE) {
-	    *p++ = '\\';
-	    *p++ = '\n';
-	    needs_quotes = TRUE;
+	
+        if (uc && backslash_pending && !((is_number_char(p[-1]) || isalpha(p[-1])) && (is_number_char(uc) || isalpha(uc)))) {
+            *p++ = '\\';
+            *p++ = '\n';
+            needs_quotes = TRUE;
+            backslash_pending = FALSE;
 	    cnt = 0;
+        } else if (uc && (cnt >= MAX_OUTPUTLINE)) {
+            if (!((is_number_char(p[-1]) || isalpha(p[-1])) && (is_number_char(uc) || isalpha(uc)))) {
+	        *p++ = '\\';
+    	        *p++ = '\n';
+	        needs_quotes = TRUE;
+		cnt = 0;
+            } else {
+                backslash_pending = TRUE;
+            }
 	}
     }
     *p++ = '\"';

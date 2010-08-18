@@ -183,7 +183,7 @@ ID		({NAME}|{NUMBER})
 <qstring>["]			BEGIN(INITIAL); endstr(); return (T_qatom);
 <qstring>[\\]["]		addstr ("\"");
 <qstring>[\\][\n]		line_num++; /* ignore escaped newlines */
-<qstring>([^"\\]*|[\\].)	addstr(yytext);
+<qstring>([^"\\]*|[\\])		addstr(yytext);
 [<]						BEGIN(hstring); html_nest = 1; beginstr();
 <hstring>[>]			html_nest--; if (html_nest) addstr(yytext); else {BEGIN(INITIAL); endstr_html(); return (T_qatom);}
 <hstring>[<]			html_nest++; addstr(yytext);
