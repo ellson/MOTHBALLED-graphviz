@@ -45,23 +45,22 @@ GLubyte rasters[24] = {
     0xc0, 0x00, 0xc0, 0x00, 0xc0, 0x00, 0xff, 0xc0, 0xff, 0xc0
 };
 
-static void DrawBezier(GLfloat * xp, GLfloat * yp, GLfloat * zp, int filled,
-		int param)
+static void DrawBezier(xdot_point* pts, int filled, int param)
 {
     /*copied from NEHE */
     /*Written by: David Nikdel ( ogapo@ithink.net ) */
-    double Ax = xp[0];
-    double Ay = yp[0];
-    double Az = zp[0];
-    double Bx = xp[1];
-    double By = yp[1];
-    double Bz = zp[1];
-    double Cx = xp[2];
-    double Cy = yp[2];
-    double Cz = zp[2];
-    double Dx = xp[3];
-    double Dy = yp[3];
-    double Dz = zp[3];
+    double Ax = pts[0].x;
+    double Ay = pts[0].y;
+    double Az = pts[0].z;
+    double Bx = pts[1].x;
+    double By = pts[1].y;
+    double Bz = pts[1].z;
+    double Cx = pts[2].x;
+    double Cy = pts[2].y;
+    double Cz = pts[2].z;
+    double Dx = pts[3].x;
+    double Dy = pts[3].y;
+    double Dz = pts[3].z;
     double X;
     double Y;
     double Z;
@@ -76,7 +75,7 @@ static void DrawBezier(GLfloat * xp, GLfloat * yp, GLfloat * zp, int filled,
 	if (param == 0)
 	    glColor4f(view->penColor.R, view->penColor.G, view->penColor.B,
 		      view->penColor.A);
-	if (param == 1)		//selected
+	else if (param == 1)		//selected
 	    glColor4f(view->selectedNodeColor.R, view->selectedNodeColor.G,
 		      view->selectedNodeColor.B,
 		      view->selectedNodeColor.A);
@@ -85,7 +84,7 @@ static void DrawBezier(GLfloat * xp, GLfloat * yp, GLfloat * zp, int filled,
 	if (param == 0)
 	    glColor4f(view->fillColor.R, view->fillColor.G,
 		      view->fillColor.B, view->penColor.A);
-	if (param == 1)		//selected
+	else if (param == 1)		//selected
 	    glColor4f(view->selectedNodeColor.R, view->selectedNodeColor.G,
 		      view->selectedNodeColor.B,
 		      view->selectedNodeColor.A);
@@ -128,9 +127,10 @@ static void set_options(sdot_op * op, int param)
 
 }
 
+#if 0
 static void relocate_spline(sdot_op * sop, int param)
 {
-/*    Agedge_t *e;
+    Agedge_t *e;
     Agnode_t *tn;		//tail node
     Agnode_t *hn;		//head node
     int i = 0;
@@ -202,50 +202,34 @@ static void relocate_spline(sdot_op * sop, int param)
 				}
 			}
 		}
-	}*/
+	}
 }
+#endif
 
 static void DrawBeziers(sdot_op* o, int param)
 {
-    //SEND ALL CONTROL POINTS IN 3D ARRAYS
-
-	GLfloat tempX[4];
+    GLfloat tempX[4];
     GLfloat tempY[4];
     GLfloat tempZ[4];
     int temp = 0;
     int filled;
     int i = 0;
     xdot_op *  op=&o->op;
-    view->Topview->global_z=view->Topview->global_z+o->layer*LAYER_DIFF;
+    xdot_point* ps = op->u.bezier.pts;
+    view->Topview->global_z = view->Topview->global_z + o->layer*LAYER_DIFF;
 
-//    SelectBeziers((sdot_op *) op);
-    relocate_spline((sdot_op *) op, param);
+    /* SelectBeziers((sdot_op *) op); */
+    /* relocate_spline((sdot_op *) op, param); */
     if (op->kind == xd_filled_bezier)
 	filled = 1;
     else
 	filled = 0;
 
-    for (i = 0; i < op->u.bezier.cnt; i = i + 1) {
-	if (temp == 4) {
-	    DrawBezier(tempX, tempY, tempZ, filled, param);
-	    tempX[0] = (GLfloat) op->u.bezier.pts[i - 1].x;
-	    tempY[0] = (GLfloat) op->u.bezier.pts[i - 1].y;
-	    tempZ[0] = (GLfloat) op->u.bezier.pts[i - 1].z;
-	    temp = 1;
-	    tempX[temp] = (GLfloat) op->u.bezier.pts[i].x;
-	    tempY[temp] = (GLfloat) op->u.bezier.pts[i].y;
-	    tempZ[temp] = (GLfloat) op->u.bezier.pts[i].z;
-	    temp = temp + 1;
-	} else {
-	    tempX[temp] = (GLfloat) op->u.bezier.pts[i].x;
-	    tempY[temp] = (GLfloat) op->u.bezier.pts[i].y;
-	    tempZ[temp] = (GLfloat) op->u.bezier.pts[i].z;
-	    temp = temp + 1;
-	}
+    for (i = 1; i < op->u.bezier.cnt; i += 3) {
+	DrawBezier(ps, filled, param);
+	ps += 3;
     }
-    DrawBezier(tempX, tempY, tempZ, filled, param);
 }
-
 
 //Draws an ellpise made out of points.
 //void DrawEllipse(xdot_point* xpoint,GLfloat xradius, GLfloat yradius,int filled)
