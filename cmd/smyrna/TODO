@@ -5,6 +5,7 @@ Set focus on a node
   "Find node whose name is abc"
 =>File browser should return to previously used directory
 Re-add "Select all nodes/edges" operations?
+edge positions should be handled by smyrna if available
 
 Multiple views
 GUI for canned gvpr programs
@@ -20,7 +21,6 @@ Bugs:
 
 Catch window kill button for node list
 Use full disk when picking nodes
-Fix problem with using alpha and losing pick 
 Why is smyrna so slow to shut down?
 
 Labels don't appear when alpha colors are enabled 
