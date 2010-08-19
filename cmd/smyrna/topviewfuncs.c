@@ -655,13 +655,12 @@ static void renderEdges(Agraph_t * g)
 	    x=parseXdotwithattrs(e);
 	    draw_xdot(x,0);
 
-
 	    if(x)
 		freeXDot (x);
 	}
     }
 
-    glBegin(GL_LINES);
+    if (drawSegs) glBegin(GL_LINES);
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
     {
 	for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
@@ -690,7 +689,7 @@ static void renderEdges(Agraph_t * g)
 	    }
 	}
     }
-    glEnd();
+    if (drawSegs) glEnd();
 }
 
 static void renderNodeLabels(Agraph_t * g)
