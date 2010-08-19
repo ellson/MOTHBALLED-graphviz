@@ -90,6 +90,7 @@ char *smyrnaPath(char *suffix)
 }
 
 static char *useString = "Usage: smyrns [-v?] <file>\n\
+  -f<WxH:bits@rate>         - full-screen mode\n\
   -v         - verbose\n\
   -?         - print usage\n";
 
@@ -257,9 +258,6 @@ int main(int argc, char *argv[])
     view->initFileName = parseArgs(argc, argv, view);
     if(view->initFileName)
 	view->initFile=1;
-#ifndef WIN32
-    glutInit(&argc, argv);
-#endif
 
     if(view->guiMode==GUI_FULLSCREEN)
 	cb_glutinit(0,0,800,600,32,75,1,&argc,argv,view->optArg);
