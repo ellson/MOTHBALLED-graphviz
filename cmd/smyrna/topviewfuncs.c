@@ -24,6 +24,8 @@
 #include "xdot.h"
 #include "glutils.h"
 #include "selectionfuncs.h"
+#include "memory.h"
+#include <ctype.h>
 
 static xdot *parseXdotwithattrs(void *e)
 {
@@ -449,46 +451,182 @@ static void renderSelectedEdges(Agraph_t * g)
     }
     glEnd();
 }
-static int removeChar(char* str,char r)
+
+/* skipWS:
+ * Skip whitespace
+ */
+static char* skipWS (char* p)
 {
-    char* ptr=str;
-    int rv=0;
-    while (*ptr!='\0')
-    {
-	if(*ptr == r)
-	{
-	    *ptr=' ';
-	    rv++;
+    while (isspace(*p)) p++;
+    return p;
+}
+
+/* skipNWS:
+ * Skip non-whitespace
+ */
+static char* skipNWS (char* p)
+{
+    while (*p && !isspace(*p)) p++;
+    return p;
+}
+
+/* readPoint:
+ * Parse x,y[,z] and store in pt.
+ * If z is not specified, set to 0.
+ * Return pointer to next character after reading the point.
+ * Return NULL on error.
+ */
+static char* readPoint (char* p, xdot_point* pt)
+{
+    char* endp;
+
+    pt->z = 0;
+    pt->x = strtod (p, &endp);
+    if (p == endp) {
+	return 0;
+    }
+    else
+	p = endp;
+    if (*p == ',') p++;
+    else return 0;
+
+    pt->y = strtod (p, &endp);
+    if (p == endp) {
+	return 0;
+    }
+    else
+	p = endp;
+    if ((*p == ' ') || (*p == '\0')) return p;
+    else if (*p == ',') p++;
+    else return 0;
+
+    pt->z = strtod (p, &endp);
+    if (p == endp) {
+	return 0;
+    }
+    else
+	return endp;
+}
+
+/* countPoints:
+ * count number of points in pos attribute; store in cntp;
+ * check for e and s points; store if found and increment number of
+ * points by 3 for each.
+ * return start of point list (skip over e and s points).
+ * return NULL on failure
+ */
+static char* countPoints (char* pos, int* have_sp, xdot_point* sp, int* have_ep, xdot_point* ep, int* cntp)
+{
+    int cnt = 0;
+    char* p;
+
+    pos = skipWS (pos);
+    if (*pos == 's') {
+	if ((pos = readPoint (pos+2, sp))) {
+	    *have_sp = 1;
+	    cnt += 3;
 	}
-
-	ptr++;
+	else
+	    return 0;
     }
-    return rv;
+    else
+	*have_sp = 0;
+
+    pos = skipWS (pos);
+    if (*pos == 'e') {
+	if ((pos = readPoint (pos+2, ep))) {
+	    *have_ep = 1;
+	    cnt += 3;
+	}
+	else
+	    return 0;
+    }
+    else
+	*have_ep = 0;
+
+    p = pos = skipWS (pos);
+
+    while (*p) {
+	cnt++;
+	p = skipNWS (p);
+	p = skipWS (p);
+    }
+    *cntp = cnt;
+
+    return pos;
 }
 
-char* pos_to_xdot(char* xdots,char* buf)
+/* storePoints:
+ * read comma-separated list of points
+ * and store them in ps
+ * Assumes enough storage is available.
+ * return -1 on error
+ */
+static int storePoints (char* pos, xdot_point* ps)
 {
-/*
-"e,227.75,177.25 186.27,218.73 196.2,208.8 209.32,195.68 220.44,184.56", 
-"B 4 186 219 196 209 209 196 220 185 ", _hdraw_="S 5 -solid c 9 -#000000ff C 9 -#000000ff P 3 223 187 228 177 218 182 ";*/
-    char* pt;
-    int spaceCnt=0;
-    strcpy(buf,xdots);
-    pt=buf;
-    while ((spaceCnt == 0) && (*pt!='\0'))
-    {
-	if(*pt==' ')
-	    spaceCnt++;
-	pt++;
+    
+    while (*pos) {
+	if ((pos = readPoint (pos, ps))) {
+	    ps++;
+	    pos = skipWS(pos);
+	}
+	else
+	    return -1;
     }
-    return pt;
+    return 0;
 }
 
+/* makeXDotSpline:
+ * Generate an xdot representation of an edge's pos attribute
+ */
+static xdot* makeXDotSpline (char* pos)
+{
+    xdot_point s, e;
+    int v, have_s, have_e, cnt;
+    int sz = sizeof(sdot_op);
+    xdot* xd;
+    xdot_op* op;
+    xdot_point* pts;
+
+    if (*pos == '\0') return NULL;
+
+    pos = countPoints (pos, &have_s, &s, &have_e, &e, &cnt);
+    if (pos == 0) return NULL;
+
+    pts = N_NEW(cnt,xdot_point);
+    if (have_s) {
+	v = storePoints (pos, pts+3);
+	pts[0] = pts[1] = s;
+	pts[2] = pts[3];
+    }
+    else
+	v = storePoints (pos, pts);
+    if (v) {
+	free (pts);
+	return NULL;
+    }
+
+    if (have_e) {
+	pts[cnt-1] = pts[cnt-2] = e;
+	pts[cnt-3] = pts[cnt-4];
+    }
+
+    op = (xdot_op*)N_NEW(sz,char);
+    op->kind = xd_unfilled_bezier;
+    op->drawfunc = OpFns[xop_bezier];
+    op->u.bezier.cnt = cnt; 
+    op->u.bezier.pts = pts; 
+
+    xd = NEW(xdot);
+    xd->cnt = 1;
+    xd->sz = sz;
+    xd->ops = op;
+
+    return xd;
+}
 
 static void renderEdges(Agraph_t * g)
 {
-    char Buf[1024];
-    char posBuf[1024];
     Agedge_t *e;
     Agnode_t *v;
     Agsym_t* pos_attr = GN_pos(g);
@@ -497,6 +635,7 @@ static void renderEdges(Agraph_t * g)
     glCompPoint posT;	/*Tail position*/
     glCompPoint posH;	/*Head position*/
     glCompColor c;
+    int drawSegs = !(pos_attr_e && view->drawSplines);
     /*xdots tend to be drawn as background shapes,that is why they are being rendered before edges*/
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
@@ -535,25 +674,19 @@ static void renderEdges(Agraph_t * g)
 	    if(ED_selected(e))
 		continue;
 	    glColor4f(c.R,c.G,c.B,1);	   
-	    if(!pos_attr_e)
-	    {
+	    if (drawSegs) {
 		posT=getPointFromStr(agxget(agtail(e), pos_attr));
 		posH=getPointFromStr(agxget(aghead(e), pos_attr));
 		draw_edge(&posT,&posH,getEdgeLength(e),0);
 		ED_posTail(e) = posT;
 		ED_posHead(e) = posH;
 	    }
-	    else/*NOT IMPLEMENTED YET*/
-	    {
-		int pCount=0;
-		char* bf;
-		bf=pos_to_xdot(agxget(e,pos_attr_e),Buf);
-		pCount=removeChar(bf,',');
-		sprintf(posBuf,"B %d %s ",pCount,bf);
-		x=parseXDotFOn (posBuf, OpFns,sizeof(sdot_op), NULL);
-		draw_xdot(x,0);
-	        if(x)
+	    else {
+		x = makeXDotSpline (agxget(e,pos_attr_e));
+		if (x) {
+		    draw_xdot(x,0);
 		    freeXDot (x);
+		}
 	    }
 	}
     }

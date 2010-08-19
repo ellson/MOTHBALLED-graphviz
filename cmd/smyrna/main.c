@@ -91,6 +91,7 @@ char *smyrnaPath(char *suffix)
 
 static char *useString = "Usage: smyrns [-v?] <file>\n\
   -f<WxH:bits@rate>         - full-screen mode\n\
+  -e         - draw edges as splines if available\n\
   -v         - verbose\n\
   -?         - print usage\n";
 
@@ -105,8 +106,11 @@ static char *parseArgs(int argc, char *argv[], ViewInfo * view)
 {
     unsigned int c;
 
-    while ((c = getopt(argc, argv, ":Kf:txv?")) != -1) {
+    while ((c = getopt(argc, argv, ":eKf:txv?")) != -1) {
 	switch (c) {
+	case 'e':
+	    view->drawSplines = 1;
+	    break;
 	case 'v':
 	    SmyrnaVerbose = 1;
 	    break;

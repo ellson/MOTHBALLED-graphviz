@@ -704,6 +704,7 @@ typedef struct
 	md5_byte_t final_key[16];	/*md5 result right before graph is saved */
 	char *initFileName;	//file name from command line
 	int initFile;
+	int drawSplines;
 	colorschemaset *colschms;
 	char *glade_file;
 	char* temp;
