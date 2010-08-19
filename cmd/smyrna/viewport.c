@@ -1067,6 +1067,7 @@ float interpol(float minv, float maxv, float minc, float maxc, float x)
 {
     return ((x - minv) * (maxc - minc) / (maxv - minv) + minc);
 }
+
 void getcolorfromschema(colorschemaset * sc, float l, float maxl,
 			glCompColor * c)
 {
@@ -1096,14 +1097,18 @@ void getcolorfromschema(colorschemaset * sc, float l, float maxl,
 	c->A = 1;
     }
 }
-static void set_color_theme_color(colorschemaset * sc, char **colorstr,
-				  int colorcnt, int smooth)
+
+/* set_color_theme_color:
+ * Convert colors as strings to RGB
+ */
+static void set_color_theme_color(colorschemaset * sc, char **colorstr, int smooth)
 {
-    int ind = 0;
+    int ind;
+    int colorcnt = sc->schemacount;
     gvcolor_t cl;
     float av_perc;
     av_perc = 100.00 / (float) (colorcnt - 1);
-    for (; ind < colorcnt; ind++) {
+    for (ind = 0; ind < colorcnt; ind++) {
 	colorxlate(colorstr[ind], &cl, RGBA_DOUBLE);
 	sc->s[ind].c.R = cl.u.RGBA[0];
 	sc->s[ind].c.G = cl.u.RGBA[1];
@@ -1112,24 +1117,7 @@ static void set_color_theme_color(colorschemaset * sc, char **colorstr,
 	sc->s[ind].perc = ind * av_perc;
 	sc->s[ind].smooth = smooth;
     }
-
-
-
-
-
 }
-
-/*typedef struct{
-	float perc;
-	glCompColor c;
-	int smooth;
-
-}colorschema;
-
-typedef struct{
-	int schemacount;
-	colorschema* s;
-}colorschemaset; */
 
 static void clear_color_theme(colorschemaset * cs)
 {
@@ -1137,56 +1125,48 @@ static void clear_color_theme(colorschemaset * cs)
     free(cs);
 }
 
+static char *deep_blue[] = {
+    "#C8CBED", "#9297D3", "#0000FF", "#2C2E41"
+};
+static char *pastel[] = {
+    "#EBBE29", "#D58C4A", "#74AE09", "#893C49"
+};
+static char *magma[] = {
+    "#E0061E", "#F0F143", "#95192B", "#EB712F"
+};
+static char *rain_forest[] = {
+    "#1E6A10", "#2ABE0E", "#AEDD39", "#5EE88B"
+};
+#define CSZ(x) (sizeof(x)/sizeof(char*))
+typedef struct {
+    int cnt;
+    char **colors;
+} colordata;
+static colordata palette[] = {
+    {CSZ(deep_blue), deep_blue},
+    {CSZ(pastel), pastel},
+    {CSZ(magma), magma},
+    {CSZ(rain_forest), rain_forest},
+};
+#define NUM_SCHEMES (sizeof(palette)/sizeof(colordata))
+
 static colorschemaset *create_color_theme(int themeid)
 {
-    char **colors;
-    colorschemaset *s = malloc(sizeof(colorschemaset));
+    colorschemaset *s;
 
+    if ((themeid < 0) || (NUM_SCHEMES <= themeid)) {
+	fprintf (stderr, "colorschemaset: illegal themeid %d\n", themeid);
+	return view->colschms;
+    }
+
+    s = NEW(colorschemaset);
     if (view->colschms)
 	clear_color_theme(view->colschms);
-    s->schemacount = 4;
-    s->s = malloc(sizeof(colorschema) * 4);
 
+    s->schemacount = palette[themeid].cnt;
+    s->s = N_NEW(s->schemacount,colorschema);
+    set_color_theme_color(s, palette[themeid].colors, 1);
 
-    colors = malloc(sizeof(char *) * 4);
-
-
-    switch (themeid) {
-    case 0:			//deep blue
-
-	colors[0] = strdup("#C8CBED");
-	colors[1] = strdup("#9297D3");
-	colors[2] = strdup("#blue");
-	colors[3] = strdup("#2C2E41");
-	set_color_theme_color(s, colors, s->schemacount, 1);
-	break;
-    case 1:			//all pastel
-	colors[0] = strdup("#EBBE29");
-	colors[1] = strdup("#D58C4A");
-	colors[2] = strdup("#74AE09");
-	colors[3] = strdup("#893C49");
-	set_color_theme_color(s, colors, s->schemacount, 1);
-	break;
-    case 2:			//magma
-	colors[0] = strdup("#E0061E");
-	colors[1] = strdup("#F0F143");
-	colors[2] = strdup("#95192B");
-	colors[3] = strdup("#EB712F");
-	set_color_theme_color(s, colors, s->schemacount, 1);
-	break;
-    case 3:			//rain forest
-	colors[0] = strdup("#1E6A10");
-	colors[1] = strdup("#2ABE0E");
-	colors[2] = strdup("#AEDD39");
-	colors[3] = strdup("#5EE88B");
-	set_color_theme_color(s, colors, s->schemacount, 1);
-	break;
-    }
-    free(colors[0]);
-    free(colors[1]);
-    free(colors[2]);
-    free(colors[3]);
-    free(colors);
     return s;
 }
 
