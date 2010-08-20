@@ -228,6 +228,34 @@ resetRW (graph_t * g)
     }
 }
 
+/* setEdgeLabelPos:
+ * Set edge label position information for regular and non-adjacent flat edges.
+ * Dot has allocated space and position for these labels. This info will be
+ * used when routing orthogonal edges.
+ */
+static void
+setEdgeLabelPos (graph_t * g)
+{
+    node_t* n;
+    textlabel_t* l;
+
+    /* place regular edge labels */
+    for (n = GD_nlist(g); n; n = ND_next(n)) {
+	if (ND_node_type(n) == VIRTUAL) {
+	    if (ND_alg(n)) {   // label of non-adjacent flat edge
+		edge_t* fe = (edge_t*)ND_alg(n);
+		assert ((l = ED_label(fe)));
+		l->pos = ND_coord(n);
+		l->set = TRUE;
+	    }
+	    else if ((l = ND_label(n))) {// label of regular edge
+		place_vnlabel(n);
+	    }
+	    updateBB(g, l);
+	}
+    }
+}
+
 /* _dot_splines:
  * Main spline routing code.
  * The normalize parameter allows this function to be called by the
@@ -253,7 +281,12 @@ static void _dot_splines(graph_t * g, int normalize)
 #ifdef ORTHO
     if (et == ET_ORTHO) {
 	resetRW (g);
-	orthoEdges (g, 0);
+	if (GD_has_labels(g) & EDGE_LABEL) {
+	    setEdgeLabelPos (g);
+	    orthoEdges (g, 1);
+	}
+	else
+	    orthoEdges (g, 0);
 	goto finish;
     } 
 #endif
@@ -287,6 +320,7 @@ static void _dot_splines(graph_t * g, int normalize)
 		edge_t* fe = (edge_t*)ND_alg(n);
 		assert (ED_label(fe));
 		ED_label(fe)->pos = ND_coord(n);
+		ED_label(fe)->set = TRUE;
 	    }
 	    if ((ND_node_type(n) != NORMAL) &&
 		(sinfo.splineMerge(n) == FALSE))
@@ -491,6 +525,7 @@ place_vnlabel(node_t * n)
     width = GD_flip(agraphof(n)) ? dimen.y : dimen.x;
     ED_label(e)->pos.x = ND_coord(n).x + width / 2.0;
     ED_label(e)->pos.y = ND_coord(n).y;
+    ED_label(e)->set = TRUE;
 }
 
 static void 
@@ -985,6 +1020,7 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0,
         }
 	if (ED_label(e)) {
 	    ED_label(e)->pos = transformf(ED_label(auxe)->pos, del, GD_flip(g));
+	    ED_label(e)->set = TRUE;
 	    updateBB(g, ED_label(e));
 	}
     }
@@ -1053,6 +1089,7 @@ make_flat_labeled_edge(spline_info_t* sp, path* P, edge_t* e, int et)
     for (f = ED_to_virt(e); ED_to_virt(f); f = ED_to_virt(f));
     ln = agtail(f);
     ED_label(e)->pos = ND_coord(ln);
+    ED_label(e)->set = TRUE;
 
     if (et == ET_LINE) {
 	pointf startp, endp, lp;
