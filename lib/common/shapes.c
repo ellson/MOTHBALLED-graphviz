@@ -891,7 +891,7 @@ static void poly_init(node_t * n)
     }
 
     /* Compute space available for label.  Provides the justification borders */
-    if (!mapbool(late_string(n, N_nojustify, "false"))) {
+    if (!mapbool(late_string(n, N_nojustify, "false")) && (dimen.y < bb.y)) {
 	if (isBox)
 	    temp = bb.x;
 	else
