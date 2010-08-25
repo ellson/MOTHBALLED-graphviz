@@ -436,8 +436,10 @@ boolean mapBool(char *p, boolean dflt)
 	return TRUE;
     if (!strcasecmp(p, "yes"))
 	return TRUE;
-    return atoi(p);
-    
+    if (isdigit(*p))
+	return atoi(p);
+    else
+	return dflt;
 }
 
 boolean mapbool(char *p)
