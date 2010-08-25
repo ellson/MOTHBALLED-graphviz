@@ -922,8 +922,10 @@ static lookup_t adjustMode[] = {
     ITEM(AM_COMPRESS, "compress", "compress"),
     ITEM(AM_VPSC, "vpsc", "vpsc"),
     ITEM(AM_IPSEP, "ipsep", "ipsep"),
-#if (HAVE_GTS || HAVE_TRIANGLE)
+#if ((defined(HAVE_GTS) || defined(HAVE_TRIANGLE)) && defined(SFDP))
     ITEM(AM_PRISM, "prism", "prism"),
+#else
+    ITEM(AM_PRISM, "prism", 0),
 #endif
     {AM_NONE, 0, 0, 0}
 };
@@ -958,6 +960,10 @@ static adjust_data *getAdjustMode(Agraph_t* g, char *s, adjust_data* dp)
     else {
 	while (ap->attrib) {
 	    if (!strncasecmp(s, ap->attrib, ap->len)) {
+		if (ap->print == NULL) {
+		    agerr (AGWARN, "Overlap value \"%s\" unknown - ignored\n", ap->attrib);
+		    ap = &adjustMode[0];
+		}
 		dp->mode = ap->mode;
 		dp->print = ap->print;
 		if (ap->mode == AM_PRISM)
