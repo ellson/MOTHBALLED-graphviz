@@ -625,18 +625,13 @@ static xdot* makeXDotSpline (char* pos)
     return xd;
 }
 
-static void renderEdges(Agraph_t * g)
+typedef void (*edgefn) (Agraph_t *, Agedge_t*, glCompColor);
+
+static void renderEdgesFn (Agraph_t * g, edgefn ef, int skipSelected)
 {
     Agedge_t *e;
     Agnode_t *v;
-    Agsym_t* pos_attr = GN_pos(g);
-    Agsym_t* pos_attr_e = GE_pos(g);
-    xdot * x;
-    glCompPoint posT;	/*Tail position*/
-    glCompPoint posH;	/*Head position*/
     glCompColor c;
-    int drawSegs = !(pos_attr_e && view->drawSplines);
-    /*xdots tend to be drawn as background shapes,that is why they are being rendered before edges*/
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
     {
@@ -652,44 +647,65 @@ static void renderEdges(Agraph_t * g)
 	    }
 	    else
 		ED_visible(e) = 1;
-	    x=parseXdotwithattrs(e);
-	    draw_xdot(x,0);
+	    if (ED_selected(e) && skipSelected)
+		continue;
 
-	    if(x)
-		freeXDot (x);
+	    ef (g, e, c);
 	}
     }
+}
 
-    if (drawSegs) glBegin(GL_LINES);
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
-    {
-	for (e = agfstout(g, v); e; e = agnxtout(g, e)) 
-	{
-	    if ((ND_visible(agtail(e))==0) || (ND_visible(aghead(e))==0))
-		continue;
+static void edge_xdot (Agraph_t* g, Agedge_t* e, glCompColor c)
+{
+    xdot * x;
+    x=parseXdotwithattrs(e);
+    draw_xdot(x,0);
+    if(x)
+	freeXDot (x);
+}
 
-	    if(!object_color(e,&c))
-		continue;
-	    if(ED_selected(e))
-		continue;
-	    glColor4f(c.R,c.G,c.B,1);	   
-	    if (drawSegs) {
-		posT=getPointFromStr(agxget(agtail(e), pos_attr));
-		posH=getPointFromStr(agxget(aghead(e), pos_attr));
-		draw_edge(&posT,&posH,getEdgeLength(e),0);
-		ED_posTail(e) = posT;
-		ED_posHead(e) = posH;
-	    }
-	    else {
-		x = makeXDotSpline (agxget(e,pos_attr_e));
-		if (x) {
-		    draw_xdot(x,0);
-		    freeXDot (x);
-		}
-	    }
-	}
+static void edge_seg (Agraph_t* g, Agedge_t* e, glCompColor c)
+{
+    Agsym_t* pos_attr = GN_pos(g);
+    glCompPoint posT;	/*Tail position*/
+    glCompPoint posH;	/*Head position*/
+
+    glColor4f(c.R,c.G,c.B,1);	   
+    posT=getPointFromStr(agxget(agtail(e), pos_attr));
+    posH=getPointFromStr(agxget(aghead(e), pos_attr));
+    draw_edge(&posT,&posH,getEdgeLength(e),0);
+    ED_posTail(e) = posT;
+    ED_posHead(e) = posH;
+}
+
+static void edge_spline (Agraph_t* g, Agedge_t* e, glCompColor c)
+{
+    Agsym_t* pos_attr_e = GE_pos(g);
+    xdot * x;
+
+    glColor4f(c.R,c.G,c.B,1);	   
+    x = makeXDotSpline (agxget(e,pos_attr_e));
+    if (x) {
+	draw_xdot(x,0);
+	freeXDot (x);
     }
-    if (drawSegs) glEnd();
+}
+
+static void renderEdges(Agraph_t * g)
+{
+    Agsym_t* pos_attr_e = GE_pos(g);
+    int drawSegs = !(pos_attr_e && view->drawSplines);
+    /*xdots tend to be drawn as background shapes,that is why they are being rendered before edges*/
+
+    renderEdgesFn (g, edge_xdot, 0);
+
+    if (drawSegs) {
+	glBegin(GL_LINES);
+	renderEdgesFn (g, edge_seg, 1);
+	glEnd();
+    }
+    else
+	renderEdgesFn (g, edge_spline, 1);
 }
 
 static void renderNodeLabels(Agraph_t * g)
@@ -915,7 +931,7 @@ void renderSmGraph(Agraph_t * g,topview* t)
 
     glEnable(GL_POINT_SMOOTH);
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc (GL_ALWAYS);
+    /* glDepthFunc (GL_ALWAYS); */
     glEnable(GL_DEPTH);
 //    glDepthMask(0);
 
