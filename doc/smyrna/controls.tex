@@ -23,17 +23,20 @@ main \smyrna\ window.
  As open and hide are mutually exclusive, this menu should
 be made dynamic, or the control should be done as a toggle.
 \end{comment}
+The {\tt View} menu also lets you open the Node List widget, which 
+gives information about the currently selected nodes.
+This is considered in detail in Section~\ref{sec:nodelist}.
 The {\tt Help} menu provides access to information about using \smyrna\ {\bf but at
 present does nothing}.
-The {\tt Select} menu provides shortcuts for selecting and unselecting large parts
-of the the graph, such as all nodes.
+%The {\tt Select} menu provides shortcuts for selecting and unselecting large parts
+%of the the graph, such as all nodes.
 
-The {\tt Edit} menu consists of the three items: {\bf Smyrna Settings}, {\bf Attributes},
-and {\bf Node List}. The first activates the \smyrna\ Settings Widget described in
-Section~\ref{sec:settings}. The second is identical, except it guarantees that that
-widget is on the Attributes tab (Section~\ref{sec:attr}). 
-The last instantiates the Node List widget, which is
-considered in Section~\ref{sec:nodelist}.
+The {\tt Edit} menu consists of two items: {\bf Smyrna Settings} and {\bf Attributes}.
+The first activates the \smyrna\ Settings Widget described in
+Section~\ref{sec:settings}. This widget provides access to the parameters controlling
+\smyrna's behavior, as well as providing some high-level manipulation of the graph.
+The second provides a short-hand access to the Attributes tab (Section~\ref{sec:attr})
+of the Settings Widget. 
 
 On the right of the menu bar are controls for handling the loaded graphs.
 The currently active graph is shown. The names of all available graphs are provided in the
@@ -335,7 +338,7 @@ If the current text fully matches a known attribute,
 the background color of the {\tt Attribute Name} field will appear in green. 
 In the example shown in Figure~\ref{fig:attr3}, the shape attribute has been
 recognized and the default value is shown. 
-In addition, you will see two additional buttons: {\tt Apply} and {\tt Search}.
+In addition, you will see three additional buttons: {\tt Apply}, {\tt Apply All} and {\tt Search}.
 
 \begin{figure}[ht]
 \begin{center}
@@ -347,8 +350,12 @@ In addition, you will see two additional buttons: {\tt Apply} and {\tt Search}.
 
 The {\tt Apply} button is used to replace the attribute values of selected objects of the 
 specified object type. In our example, we have chosen the {\tt shape} attribute, 
-and have specified a value of {\tt box} in Value field. If we then click the {\tt Apply},
+and have specified a value of {\tt box} in the Value field. If we then click the {\tt Apply},
 \smyrna\ will set the shape value of all selected nodes to the given value.
+Note that if no objects have been selected, the {\tt Apply} button will not be active.
+
+The {\tt Apply All} button is identical to the {\tt Apply} button except that the
+attribute change is performed on all objects, not just the selected ones.
 
 The {\tt Search} button is used to select objects of the specified object type based on
 attribute values specified by regular expressions.
@@ -407,4 +414,4 @@ The widget provides four buttons that can sometimes be useful in this context. T
 interesting enough that you wish to view it off-line. By clicking the {\tt Save} button, you can save
 the nodes as a separate graph. The {\tt Save with Edges} button, the graph saved with the selected nodes
 and all edges in the original graph between two selected nodes. The {\tt Hide All} button will make all of 
-the selected nodes invisible; the {\tt Hide All} button makes them all visible.
+the selected nodes invisible; the {\tt Show All} button makes them all visible.
