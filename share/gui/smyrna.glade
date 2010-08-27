@@ -648,7 +648,7 @@
 		  <property name="update_policy">GTK_UPDATE_ALWAYS</property>
 		  <property name="snap_to_ticks">False</property>
 		  <property name="wrap">False</property>
-		  <property name="adjustment">0 0 1000000 1 10 10</property>
+		  <property name="adjustment">0 0 1000000 1 10 0</property>
 		</widget>
 		<packing>
 		  <property name="x">410</property>
@@ -1652,7 +1652,7 @@ GLUT_BITMAP_HELVETICA_18
 		      <property name="update_policy">GTK_UPDATE_ALWAYS</property>
 		      <property name="snap_to_ticks">False</property>
 		      <property name="wrap">False</property>
-		      <property name="adjustment">10 0 15000 1 50 50</property>
+		      <property name="adjustment">10 0 100 1 50 0</property>
 		    </widget>
 		    <packing>
 		      <property name="left_attach">1</property>
@@ -2427,7 +2427,7 @@ Custom</property>
 		      <property name="update_policy">GTK_UPDATE_ALWAYS</property>
 		      <property name="snap_to_ticks">False</property>
 		      <property name="wrap">False</property>
-		      <property name="adjustment">3 0 5000 1 50 10</property>
+		      <property name="adjustment">3 0 5000 1 50 0</property>
 		    </widget>
 		    <packing>
 		      <property name="left_attach">1</property>
@@ -2449,7 +2449,7 @@ Custom</property>
 		      <property name="update_policy">GTK_UPDATE_ALWAYS</property>
 		      <property name="snap_to_ticks">False</property>
 		      <property name="wrap">False</property>
-		      <property name="adjustment">3 0 5000 1 50 10</property>
+		      <property name="adjustment">3 0 5000 1 50 0</property>
 		    </widget>
 		    <packing>
 		      <property name="left_attach">1</property>
@@ -2525,7 +2525,7 @@ Custom</property>
 		      <property name="update_policy">GTK_UPDATE_ALWAYS</property>
 		      <property name="snap_to_ticks">False</property>
 		      <property name="wrap">False</property>
-		      <property name="adjustment">2 2 20 1 50 10</property>
+		      <property name="adjustment">2 2 20 1 50 0</property>
 		    </widget>
 		    <packing>
 		      <property name="left_attach">1</property>
@@ -2668,7 +2668,7 @@ Custom</property>
 		      <property name="update_policy">GTK_UPDATE_ALWAYS</property>
 		      <property name="snap_to_ticks">False</property>
 		      <property name="wrap">False</property>
-		      <property name="adjustment">5 0 5000 1 50 10</property>
+		      <property name="adjustment">5 0 5000 1 50 0</property>
 		    </widget>
 		    <packing>
 		      <property name="left_attach">1</property>
@@ -2688,7 +2688,7 @@ Custom</property>
 		      <property name="update_policy">GTK_UPDATE_ALWAYS</property>
 		      <property name="snap_to_ticks">False</property>
 		      <property name="wrap">False</property>
-		      <property name="adjustment">4 0 5000 1 50 10</property>
+		      <property name="adjustment">4 0 5000 1 50 0</property>
 		    </widget>
 		    <packing>
 		      <property name="left_attach">1</property>
@@ -2826,7 +2826,7 @@ Custom</property>
 			  <property name="update_policy">GTK_UPDATE_ALWAYS</property>
 			  <property name="snap_to_ticks">False</property>
 			  <property name="wrap">False</property>
-			  <property name="adjustment">0 0 9999999 1 10 10</property>
+			  <property name="adjustment">0 0 9999999 1 10 0</property>
 			</widget>
 			<packing>
 			  <property name="left_attach">1</property>
@@ -2874,7 +2874,7 @@ Custom</property>
 			  <property name="update_policy">GTK_UPDATE_ALWAYS</property>
 			  <property name="snap_to_ticks">False</property>
 			  <property name="wrap">False</property>
-			  <property name="adjustment">0 0 9999999 0.1 10 10</property>
+			  <property name="adjustment">0 0 9999999 0.1 10 0</property>
 			</widget>
 			<packing>
 			  <property name="left_attach">1</property>
@@ -2894,7 +2894,7 @@ Custom</property>
 			  <property name="update_policy">GTK_UPDATE_ALWAYS</property>
 			  <property name="snap_to_ticks">False</property>
 			  <property name="wrap">False</property>
-			  <property name="adjustment">0 0 9999999 0.1 10 10</property>
+			  <property name="adjustment">0 0 9999999 0.1 10 0</property>
 			</widget>
 			<packing>
 			  <property name="left_attach">1</property>
