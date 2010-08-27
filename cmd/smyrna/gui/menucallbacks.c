@@ -160,6 +160,7 @@ void mShowToolBoxSlot(GtkWidget * widget, gpointer user_data)
 
 }
 
+#if 0
 void mShowHostSelectionSlot(GtkWidget * widget, gpointer user_data)
 {
 
@@ -170,20 +171,35 @@ void mShowHostSelectionSlot(GtkWidget * widget, gpointer user_data)
 						   "frmHostSelection"), 1);
 
 }
-
+#endif
 
 void mShowConsoleSlot(GtkWidget * widget, gpointer user_data)
 {
-    gtk_widget_show(glade_xml_get_widget(xml, "vbox13"));
+    static int state = 0;  // off by default
+    static GtkMenuItem* menui;
 
+    if (menui == NULL)
+	menui = (GtkMenuItem*)glade_xml_get_widget(xml, "show_console1");
+
+    if (state) {
+	gtk_widget_hide(glade_xml_get_widget(xml, "vbox13"));
+	gtk_menu_item_set_label (menui, "Show Console");
+	state = 0;
+    }
+    else {
+	gtk_widget_show(glade_xml_get_widget(xml, "vbox13"));
+	gtk_menu_item_set_label (menui, "Hide Console");
+	state = 1;
+    }
 }
 
+#if 0
 void mHideConsoleSlot(GtkWidget * widget, gpointer user_data)
 {
     gtk_widget_hide(glade_xml_get_widget(xml, "vbox13"));
 
 }
-
+#endif
 
 //Graph
 void mNodeListSlot(GtkWidget * widget, gpointer user_data)

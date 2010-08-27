@@ -416,6 +416,7 @@ void filter_attributes(char *prefix, topview * t)
     gtk_widget_set_sensitive(glade_xml_get_widget(xml, "txtDefValue"), 1);
     gtk_widget_show(glade_xml_get_widget(xml, "attrAddBtn"));
     gtk_widget_hide(glade_xml_get_widget(xml, "attrApplyBtn"));
+    gtk_widget_hide(glade_xml_get_widget(xml, "attrApplyAllBtn"));
     gtk_widget_hide(glade_xml_get_widget(xml, "attrSearchBtn"));
     gtk_toggle_button_set_active((GtkToggleButton *)
 				 glade_xml_get_widget(xml, "attrProg"), 0);
@@ -426,6 +427,7 @@ void filter_attributes(char *prefix, topview * t)
     if (strlen(prefix) == 0) {
 	gtk_widget_hide(glade_xml_get_widget(xml, "attrAddBtn"));
 	gtk_widget_hide(glade_xml_get_widget(xml, "attrApplyBtn"));
+	gtk_widget_hide(glade_xml_get_widget(xml, "attrApplyAllBtn"));
 	gtk_widget_hide(glade_xml_get_widget(xml, "attrSearchBtn"));
 	gtk_widget_hide(glade_xml_get_widget(xml, "attrAddBtn"));
 	gtk_widget_hide(glade_xml_get_widget(xml, "txtValue"));
@@ -459,6 +461,7 @@ void filter_attributes(char *prefix, topview * t)
 				     (xml, "txtDefValue"), 0);
 	    gtk_widget_hide(glade_xml_get_widget(xml, "attrAddBtn"));
 	    gtk_widget_show(glade_xml_get_widget(xml, "attrApplyBtn"));
+	    gtk_widget_show(glade_xml_get_widget(xml, "attrApplyAllBtn"));
 	    gtk_widget_show(glade_xml_get_widget(xml, "attrSearchBtn"));
 	    gtk_toggle_button_set_active((GtkToggleButton *)
 					 glade_xml_get_widget(xml,
@@ -501,7 +504,7 @@ static void set_refresh_filters(ViewInfo * v, int type, char *name)
 
 }
 
-_BB void on_attrApplyBtn_clicked(GtkWidget * widget, gpointer user_data)
+static void doApply (GtkWidget * widget, int doAll)
 {
     char *attr_name;
     char *value;
@@ -545,7 +548,7 @@ _BB void on_attrApplyBtn_clicked(GtkWidget * widget, gpointer user_data)
     /*nodes */
     else if (objKind == AGNODE) {
 	for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
-	    if (ND_selected(v))
+	    if (doAll || ND_selected(v))
 		agxset(v, sym, value);
 	}
     }
@@ -553,7 +556,7 @@ _BB void on_attrApplyBtn_clicked(GtkWidget * widget, gpointer user_data)
     else if (objKind == AGEDGE) {
 	for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
 	    for (e = agfstout(g, v); e; e = agnxtout(g, e)) {
-		if (ED_selected(e))
+		if (doAll || ED_selected(e))
 		    agxset(e, sym, value);
 	    }
 	}
@@ -562,6 +565,16 @@ _BB void on_attrApplyBtn_clicked(GtkWidget * widget, gpointer user_data)
 	    "on_attrApplyBtn_clicked: unknown object kind %d\n",
 	    objKind);
     set_refresh_filters(view, objKind, attr_name);
+}
+
+_BB void on_attrApplyBtn_clicked(GtkWidget * widget, gpointer user_data)
+{
+    doApply (widget, 0);
+}
+
+_BB void on_attrApplyAllBtn_clicked(GtkWidget * widget, gpointer user_data)
+{
+    doApply (widget, 1);
 }
 
 _BB void on_attrRB0_clicked(GtkWidget * widget, gpointer user_data)
