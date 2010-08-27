@@ -95,8 +95,11 @@ static void svg_grstyle(GVJ_t * job, int filled)
     obj_state_t *obj = job->obj;
 
     gvputs(job, " fill=\"");
-    if (filled)
+    if (filled) {
 	svg_print_color(job, obj->fillcolor);
+	if (obj->fillcolor.type == RGBA_BYTE && obj->fillcolor.u.rgba[3] > 0 && obj->fillcolor.u.rgba[3] < 255 )
+	    gvprintf(job, "\" fill-opacity=\"%f", ((float)obj->fillcolor.u.rgba[3]/255.0));
+    }
     else
 	gvputs(job, "none");
     gvputs(job, "\" stroke=\"");
@@ -108,6 +111,9 @@ static void svg_grstyle(GVJ_t * job, int filled)
     } else if (obj->pen == PEN_DOTTED) {
 	gvprintf(job, "\" stroke-dasharray=\"%s", sdotarray);
     }
+    if (obj->pencolor.type == RGBA_BYTE && obj->pencolor.u.rgba[3] > 0 && obj->pencolor.u.rgba[3] < 255)
+	gvprintf(job, "\" stroke-opacity=\"%f", ((float)obj->fillcolor.u.rgba[3]/255.0));
+
     gvputs(job, "\"");
 }
 
