@@ -47,10 +47,9 @@ void on_settingsApplyBtn_clicked(GtkWidget * widget, gpointer user_data)
 }
 void on_dlgSettings_close (GtkWidget * widget, gpointer user_data)
 {
-    printf ("setting window is being closed\n");
+    gtk_widget_hide(glade_xml_get_widget(xml, "dlgSettings"));
+    /* printf ("setting window is being closed\n"); */
 }
-
-
 
 void on_settingsCancelBtn_clicked(GtkWidget * widget, gpointer user_data)
 {
