@@ -19,6 +19,7 @@
 #include "smyrnadefs.h"
 #include "cgraph.h"
 
+extern char *xml_string(char *s);
 extern int l_int(void *obj, Agsym_t * attr, int def);
 extern float l_float(void *obj, Agsym_t * attr, float def);
 extern int mapbool(char *p);

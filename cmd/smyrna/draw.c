@@ -458,7 +458,7 @@ static void EmbedText(sdot_op* o, int param)
 	{
 		o->font=glNewFont(
 		view->widgets,
-		o->op.u.text.text,
+		xml_string (o->op.u.text.text),
 		&view->penColor,
 		pangotext,
 		font_op->op.u.font.name,font_op->op.u.font.size,0);

@@ -14,6 +14,13 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 #include "smyrna_utils.h"
+#include "memory.h"
+/* many of these functions are available in libcommon.
+ * We cannot use those because dependencies cause a great
+ * deal of libcommon to be brought in, which complicates
+ * and makes possible conflicts as some parts of libcommon
+ * rely on not using libcgraph.
+ */
 int mapbool(char *p)
 {
     if (p == NULL)
@@ -29,6 +36,100 @@ int mapbool(char *p)
     return atoi(p);
 }
 
+/* return true if *s points to &[A-Za-z]*;      (e.g. &Ccedil; )
+ *                          or &#[0-9]*;        (e.g. &#38; )
+ *                          or &#x[0-9a-fA-F]*; (e.g. &#x6C34; )
+ */
+static int xml_isentity(char *s)
+{
+    s++;			/* already known to be '&' */
+    if (*s == '#') {
+	s++;
+	if (*s == 'x' || *s == 'X') {
+	    s++;
+	    while ((*s >= '0' && *s <= '9')
+		   || (*s >= 'a' && *s <= 'f')
+		   || (*s >= 'A' && *s <= 'F'))
+		s++;
+	} else {
+	    while (*s >= '0' && *s <= '9')
+		s++;
+	}
+    } else {
+	while ((*s >= 'a' && *s <= 'z')
+	       || (*s >= 'A' && *s <= 'Z'))
+	    s++;
+    }
+    if (*s == ';')
+	return 1;
+    return 0;
+}
+
+char *xml_string(char *s)
+{
+    static char *buf = NULL;
+    static int bufsize = 0;
+    char *p, *sub, *prev = NULL;
+    int len, pos = 0;
+
+    if (!buf) {
+	bufsize = 64;
+	buf = N_NEW(bufsize, char);
+    }
+
+    p = buf;
+    while (s && *s) {
+	if (pos > (bufsize - 8)) {
+	    bufsize *= 2;
+	    buf = realloc(buf, bufsize);
+	    p = buf + pos;
+	}
+	/* escape '&' only if not part of a legal entity sequence */
+	if (*s == '&' && !(xml_isentity(s))) {
+	    sub = "&amp;";
+	    len = 5;
+	}
+	/* '<' '>' are safe to substitute even if string is already UTF-8 coded
+	 * since UTF-8 strings won't contain '<' or '>' */
+	else if (*s == '<') {
+	    sub = "&lt;";
+	    len = 4;
+	}
+	else if (*s == '>') {
+	    sub = "&gt;";
+	    len = 4;
+	}
+	else if (*s == '-') {	/* can't be used in xml comment strings */
+	    sub = "&#45;";
+	    len = 5;
+	}
+	else if (*s == ' ' && prev && *prev == ' ') {
+	    /* substitute 2nd and subsequent spaces with required_spaces */
+	    sub = "&#160;";  /* inkscape doesn't recognise &nbsp; */
+	    len = 6;
+	}
+	else if (*s == '"') {
+	    sub = "&quot;";
+	    len = 6;
+	}
+	else if (*s == '\'') {
+	    sub = "&#39;";
+	    len = 5;
+	}
+	else {
+	    sub = s;
+	    len = 1;
+	}
+	while (len--) {
+	    *p++ = *sub++;
+	    pos++;
+	}
+	prev = s;
+	s++;
+    }
+    *p = '\0';
+    return buf;
+}
 #if 0
 static int late_int(void *obj,Agsym_t* attr, int def, int low)
 {
