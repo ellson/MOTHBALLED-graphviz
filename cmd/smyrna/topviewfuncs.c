@@ -19,7 +19,6 @@
 #include "smyrna_utils.h"
 #include "colorprocs.h"
 #include "draw.h"
-#include "glcompui.h"
 #include "frmobjectui.h"
 #include "xdot.h"
 #include "glutils.h"
