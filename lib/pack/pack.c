@@ -1311,9 +1311,9 @@ parsePackModeInfo(char* p, pack_mode dflt, pack_info* pinfo)
     if (Verbose) {
 	fprintf (stderr, "pack info:\n");
 	fprintf (stderr, "  mode   %d\n", pinfo->mode);
-	fprintf (stderr, "  aspect %f\n", pinfo->aspect);
+	if (pinfo->mode == l_aspect)
+	    fprintf (stderr, "  aspect %f\n", pinfo->aspect);
 	fprintf (stderr, "  size   %d\n", pinfo->sz);
-	fprintf (stderr, "  margin %d\n", pinfo->margin);
 	fprintf (stderr, "  flags  %d\n", pinfo->flags);
     }
     return pinfo->mode;
@@ -1363,6 +1363,9 @@ getPackInfo(Agraph_t * g, pack_mode dflt, int dfltMargin, pack_info* pinfo)
     assert (pinfo);
 
     pinfo->margin = getPack(g, dfltMargin, dfltMargin);
+    if (Verbose) {
+	fprintf (stderr, "  margin %d\n", pinfo->margin);
+    }
     pinfo->doSplines = 0;
     pinfo->fixed = 0;
     getPackModeInfo(g, dflt, pinfo);
