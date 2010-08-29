@@ -22,6 +22,7 @@ XDOT DRAWING FUNCTIONS, maybe need to move them somewhere else
 #include "draw.h"
 /* #include "topview.h" */
 #include "colorprocs.h"
+#include "smyrna_utils.h"
 #include "glutils.h"
 #include "math.h"
 
@@ -208,10 +209,10 @@ static void relocate_spline(sdot_op * sop, int param)
 
 static void DrawBeziers(sdot_op* o, int param)
 {
-    GLfloat tempX[4];
-    GLfloat tempY[4];
-    GLfloat tempZ[4];
-    int temp = 0;
+    /* GLfloat tempX[4]; */
+    /* GLfloat tempY[4]; */
+    /* GLfloat tempZ[4]; */
+    /* int temp = 0; */
     int filled;
     int i = 0;
     xdot_op *  op=&o->op;
