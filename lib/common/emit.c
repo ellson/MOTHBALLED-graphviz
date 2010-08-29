@@ -2494,13 +2494,8 @@ static void init_gvc(GVC_t * gvc, graph_t * g)
     gvc->bb = GD_bb(g);
 
     /* clusters have peripheries */
-#ifndef WITH_CGRAPH
-    G_peripheries = agfindattr(g, "peripheries");
-    G_penwidth = agfindattr(g, "penwidth");
-#else
-    G_peripheries = agattr(g, AGRAPH,"peripheries", NULL);
-    G_penwidth = agattr(g, AGRAPH,"penwidth", NULL);
-#endif
+    G_peripheries = agfindgraphattr(g, "peripheries");
+    G_penwidth = agfindgraphattr(g, "penwidth");
 
     /* default font */
 #ifndef WITH_CGRAPH
