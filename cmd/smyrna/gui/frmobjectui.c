@@ -806,7 +806,7 @@ static void gvpr_select(char *attr, char *regex_str, int objType)
 
     if (objType == AGNODE)
 	sfprintf(sf, "N[%s==\"%s\"]{selected = \"1\"}", attr, regex_str);
-    if (objType == AGEDGE)
+    else if (objType == AGEDGE)
 	sfprintf(sf, "E[%s==\"%s\"]{selected = \"1\"}", attr, regex_str);
 
 

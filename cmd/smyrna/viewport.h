@@ -53,6 +53,7 @@ extern "C" {
     void move_nodes(Agraph_t * g);
     extern void getcolorfromschema(colorschemaset * sc, float l,
 				   float maxl, glCompColor * c);
+    void updateRecord (Agraph_t* g);
 
 
     /* helper functions */

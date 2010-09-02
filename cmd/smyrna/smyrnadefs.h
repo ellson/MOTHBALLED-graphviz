@@ -171,7 +171,6 @@ typedef struct
     typedef struct {
 	float perc;
 	glCompColor c;
-	int smooth;
 
     } colorschema;
 
@@ -189,11 +188,10 @@ typedef struct
 
 
     typedef struct {
-	int schemacount;
+	int schemacount;       /* number of colors */
+	int smooth;            /* if true, interpolate */
 	colorschema *s;
     } colorschemaset;
-
-
 
     typedef enum {
 	VT_NONE,

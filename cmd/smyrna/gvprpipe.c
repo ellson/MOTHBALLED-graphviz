@@ -75,7 +75,6 @@ static ssize_t errfn(void *sp, const char *buf, size_t nbyte, void *dp)
 {
     return 0;
 }
-#endif
 static void set_refresh(ViewInfo* v,char* script)
 {
     if(strstr(script,"pos"))
@@ -89,6 +88,7 @@ static void set_refresh(ViewInfo* v,char* script)
     if(strstr(script,"selected"))
 	v->refresh.selection=1;
 }
+#endif
 
 int run_gvpr(Agraph_t * srcGraph, int argc, char *argv[])
 {
@@ -123,7 +123,8 @@ int run_gvpr(Agraph_t * srcGraph, int argc, char *argv[])
 	}
     } else 
     { 
-	set_refresh(view,argv[1]);
+	/* set_refresh(view,argv[1]); */
+	updateRecord (srcGraph);
         update_graph_from_settings(srcGraph);
 //	update_topview(srcGraph, view->Topview, 0);
     }

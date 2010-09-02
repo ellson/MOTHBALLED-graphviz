@@ -172,6 +172,7 @@ static int visible(Agsym_t* attr, void* obj)
     }
     else return 1;
 }
+
 static int object_color(void* obj,glCompColor* c)
 {
     gvcolor_t cl;
@@ -189,24 +190,22 @@ static int object_color(void* obj,glCompColor* c)
 	Alpha=getAttrFloat(g,objg,"defaultedgealpha",1);
 	vis = GE_visible (objg);
     }
-    if(objType==AGNODE) {
+    else if(objType==AGNODE) {
 	Alpha=getAttrFloat(g,objg,"defaultnodealpha",1);
 	vis = GN_visible (objg);
     }
     if (!visible(vis,obj))
 	return 0;
 
-    /*get edge's color attribute */
     setColorScheme (agget (obj, "colorscheme"));
-    bf=getAttrStr(g,obj,"color",NULL);
-    if((bf)&&(strlen(bf)>0))
-    {
+    /*get objects's color attribute */
+    bf = getAttrStr(g,obj,"color",NULL);
+    if(bf && (*bf)) {
 	colorxlate(bf, &cl, RGBA_DOUBLE);
-	c->R=cl.u.RGBA[0];
-	c->G=cl.u.RGBA[1];
-	c->B=cl.u.RGBA[2];
-	c->A=cl.u.RGBA[3];
-
+	c->R = cl.u.RGBA[0];
+	c->G = cl.u.RGBA[1];
+	c->B = cl.u.RGBA[2];
+	c->A = cl.u.RGBA[3]*Alpha;
     }
     else
     {
@@ -215,18 +214,16 @@ static int object_color(void* obj,glCompColor* c)
 	else
 	{
 	    colorxlate(agget(g, "defaultnodecolor"),&cl, RGBA_DOUBLE);
-		c->R=cl.u.RGBA[0];
-	    c->G=cl.u.RGBA[1];
-	    c->B=cl.u.RGBA[2];
-	    c->A=cl.u.RGBA[3];
+		c->R = cl.u.RGBA[0];
+	    c->G = cl.u.RGBA[1];
+	    c->B = cl.u.RGBA[2];
+	    c->A = cl.u.RGBA[3];
 	}
-	c->A=c->A*Alpha;
+	c->A = c->A*Alpha;
 
     }
     return return_value;
 }
-
-
 
 
 /*
@@ -426,9 +423,6 @@ static void renderSelectedEdges(Agraph_t * g)
 		freeXDot (x);
 	}
     }
-
-
-
 
     glBegin(GL_LINES);
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) 
@@ -639,8 +633,7 @@ static void renderEdgesFn (Agraph_t * g, edgefn ef, int skipSelected)
 	    if ((ND_visible(agtail(e))==0) || (ND_visible(aghead(e))==0))
 		continue;
 
-	    if(!object_color(e,&c))
-	    {
+	    if(!object_color(e,&c)) {
 		ED_visible(e) = 0;
 		continue;
 	    }
@@ -669,7 +662,7 @@ static void edge_seg (Agraph_t* g, Agedge_t* e, glCompColor c)
     glCompPoint posT;	/*Tail position*/
     glCompPoint posH;	/*Head position*/
 
-    glColor4f(c.R,c.G,c.B,1);	   
+    glColor4f(c.R,c.G,c.B,c.A);	   
     posT=getPointFromStr(agxget(agtail(e), pos_attr));
     posH=getPointFromStr(agxget(aghead(e), pos_attr));
     draw_edge(&posT,&posH,getEdgeLength(e),0);
@@ -682,7 +675,7 @@ static void edge_spline (Agraph_t* g, Agedge_t* e, glCompColor c)
     Agsym_t* pos_attr_e = GE_pos(g);
     xdot * x;
 
-    glColor4f(c.R,c.G,c.B,1);	   
+    glColor4f(c.R,c.G,c.B,c.A);	   
     x = makeXDotSpline (agxget(e,pos_attr_e));
     if (x) {
 	draw_xdot(x,0);

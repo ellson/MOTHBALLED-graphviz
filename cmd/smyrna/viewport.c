@@ -643,6 +643,19 @@ int add_graph_to_viewport_from_file(char *fileName)
     return add_graph_to_viewport(graph, fileName);
 }
 
+/* updateRecord:
+ * Update fields which may be added dynamically.
+ */
+void updateRecord (Agraph_t* g)
+{
+    GN_size(g) = agattr (g, AGNODE, "size", 0);
+    GN_visible(g) = agattr (g, AGNODE, "visible", 0);
+    GN_selected(g) = agattr (g, AGNODE, "selected", 0);
+
+    GE_pos(g)=agattr(g,AGEDGE,"pos",0);
+    GE_visible(g) = agattr (g, AGEDGE, "visible", 0);
+    GE_selected(g) = agattr (g, AGEDGE, "selected", 0);
+}
 
 /* graphRecord:
  * add graphRec to graph if necessary.
@@ -650,6 +663,7 @@ int add_graph_to_viewport_from_file(char *fileName)
  * We assume the graph has attributes nodelabelattribute, edgelabelattribute,
  * nodelabelcolor and edgelabelcolor from template.dot.
  * We assume nodes have pos attributes. 
+ * Only size, visible, selected and edge pos may or may not be defined.
  */
 static void
 graphRecord (Agraph_t* g)
@@ -660,18 +674,12 @@ graphRecord (Agraph_t* g)
     GG_edgelabelcolor(g) = agattr (g, AGRAPH, "edgelabelcolor", 0);
 
     GN_pos(g) = agattr (g, AGNODE, "pos", 0);
-    GN_size(g) = agattr (g, AGNODE, "size", 0);
-    GN_visible(g) = agattr (g, AGNODE, "visible", 0);
-    GN_selected(g) = agattr (g, AGNODE, "selected", 0);
     GN_labelattribute(g) = agattr (g, AGNODE, agget(g,"nodelabelattribute"), 0);
 
-    GE_pos(g)=agattr(g,AGEDGE,"pos",0);
-    GE_visible(g) = agattr (g, AGEDGE, "visible", 0);
-    GE_selected(g) = agattr (g, AGEDGE, "selected", 0);
     GE_labelattribute(g) = agattr (g, AGEDGE, agget(g,"edgelabelattribute"), 0);
+
+    updateRecord (g);
 }
-
-
 
 void refreshViewport(int doClear)
 {
@@ -1073,14 +1081,14 @@ void getcolorfromschema(colorschemaset * sc, float l, float maxl,
 			glCompColor * c)
 {
     int ind;
-    /* float cuml=0.00; */
-    float percl = l / maxl * 100.00;
-    for (ind = 0; ind < sc->schemacount; ind++) {
-	if (percl < sc->s[ind].perc)
-	    break;
-    }
+    float percl = l / maxl;
 
-    if (sc->s[ind].smooth) {
+    if (sc->smooth) {
+	/* For smooth schemas, s[0].perc = 0, so we start with ind=1 */
+	for (ind = 1; ind < sc->schemacount-1; ind++) {
+	    if (percl < sc->s[ind].perc)
+		break;
+	}
 	c->R =
 	    interpol(sc->s[ind - 1].perc, sc->s[ind].perc,
 		     sc->s[ind - 1].c.R, sc->s[ind].c.R, percl);
@@ -1090,13 +1098,18 @@ void getcolorfromschema(colorschemaset * sc, float l, float maxl,
 	c->B =
 	    interpol(sc->s[ind - 1].perc, sc->s[ind].perc,
 		     sc->s[ind - 1].c.B, sc->s[ind].c.B, percl);
-	c->A = 1;
-    } else {
+    }
+    else {
+	for (ind = 0; ind < sc->schemacount-1; ind++) {
+	    if (percl < sc->s[ind].perc)
+		break;
+	}
 	c->R = sc->s[ind].c.R;
 	c->G = sc->s[ind].c.G;
 	c->B = sc->s[ind].c.B;
-	c->A = 1;
     }
+
+    c->A = 1;
 }
 
 /* set_color_theme_color:
@@ -1108,15 +1121,29 @@ static void set_color_theme_color(colorschemaset * sc, char **colorstr, int smoo
     int colorcnt = sc->schemacount;
     gvcolor_t cl;
     float av_perc;
-    av_perc = 100.00 / (float) (colorcnt - 1);
-    for (ind = 0; ind < colorcnt; ind++) {
-	colorxlate(colorstr[ind], &cl, RGBA_DOUBLE);
-	sc->s[ind].c.R = cl.u.RGBA[0];
-	sc->s[ind].c.G = cl.u.RGBA[1];
-	sc->s[ind].c.B = cl.u.RGBA[2];
-	sc->s[ind].c.A = cl.u.RGBA[3];
-	sc->s[ind].perc = ind * av_perc;
-	sc->s[ind].smooth = smooth;
+
+    sc->smooth = smooth;
+    if (smooth) {
+	av_perc = 1.0 / (float) (colorcnt-1);
+	for (ind = 0; ind < colorcnt; ind++) {
+	    colorxlate(colorstr[ind], &cl, RGBA_DOUBLE);
+	    sc->s[ind].c.R = cl.u.RGBA[0];
+	    sc->s[ind].c.G = cl.u.RGBA[1];
+	    sc->s[ind].c.B = cl.u.RGBA[2];
+	    sc->s[ind].c.A = cl.u.RGBA[3];
+	    sc->s[ind].perc = ind * av_perc;
+	}
+    }
+    else {
+	av_perc = 1.0 / (float) (colorcnt);
+	for (ind = 0; ind < colorcnt; ind++) {
+	    colorxlate(colorstr[ind], &cl, RGBA_DOUBLE);
+	    sc->s[ind].c.R = cl.u.RGBA[0];
+	    sc->s[ind].c.G = cl.u.RGBA[1];
+	    sc->s[ind].c.B = cl.u.RGBA[2];
+	    sc->s[ind].c.A = cl.u.RGBA[3];
+	    sc->s[ind].perc = (ind+1) * av_perc;
+	}
     }
 }
 
