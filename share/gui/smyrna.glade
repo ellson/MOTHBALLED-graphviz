@@ -444,6 +444,7 @@
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
   <property name="urgency_hint">False</property>
+  <signal name="delete_event" handler="on_TVNodes_close" last_modification_time="Thu, 03 Dec 2009 16:39:12 GMT"/>
 
   <child>
     <widget class="GtkVBox" id="vbox3">

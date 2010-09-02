@@ -43,7 +43,7 @@ strict digraph template {
 		drawedges="1",
 		labelshownodes="0",
 		labelshowedges="0",
-		defaultnodealpha="0.8",
+		defaultnodealpha="1",
 		defaultedgealpha="0.5",
 		defaultnodeshape="0",
 		defaultselectionmethod="2"
