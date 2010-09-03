@@ -263,10 +263,29 @@ static void draw_edge(glCompPoint* posT,glCompPoint* posH, GLfloat length,int de
     }
 
 }
+
+static char* labelOf (Agraph_t* g, Agnode_t* v)
+{
+    char* lbl;
+    char* s;
+
+    Agsym_t* data_attr = GN_labelattribute(g);
+    if (data_attr)
+	s = agxget (v, data_attr);
+    else
+	s = agxget (g, GG_labelattribute(g));
+    if ((*s == '\0') || !strcmp (s, "name"))
+	lbl = agnameof (v);
+    else {
+	lbl = agget (v, s);
+	if (!lbl) lbl = "";
+    }
+    return lbl;
+}
+
 static void renderSelectedNodes(Agraph_t * g)
 {
     Agnode_t *v;
-    Agsym_t* data_attr = GN_labelattribute(g);
     xdot * x;
     glCompPoint pos;
     Agsym_t* l_color_attr = GG_nodelabelcolor(g);
@@ -311,11 +330,9 @@ static void renderSelectedNodes(Agraph_t * g)
 	    continue;
 	if (ND_printLabel(v)==1)
 	{
+	    pos = ND_A(v);
 	    glColor4f(c.R, c.G,c.B, c.A);
-	    if(!data_attr)
-        	glprintfglut(view->glutfont,pos.x,pos.y,pos.z+0.002,agnameof(v));
-	    else
-		glprintfglut(view->glutfont,pos.x,pos.y,pos.z+0.002,agxget(v,data_attr));
+            glprintfglut(view->glutfont,pos.x,pos.y,pos.z+0.002,labelOf(g,v));
 	}
     }
 }

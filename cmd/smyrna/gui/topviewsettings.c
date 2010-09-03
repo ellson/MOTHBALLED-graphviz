@@ -40,9 +40,11 @@ void on_settingsApplyBtn_clicked(GtkWidget * widget, gpointer user_data)
 {
     update_graph_from_settings(view->g[view->activeGraph]);
     set_viewport_settings_from_template(view, view->g[view->activeGraph]);
-//    update_topview(view->g[view->activeGraph], view->Topview, 0);
-/*	settvcolorinfo(view->g[view->activeGraph],view->Topview);
-	init_node_size(view->g[view->activeGraph])*/
+#if 0
+    update_topview(view->g[view->activeGraph], view->Topview, 0);
+    settvcolorinfo(view->g[view->activeGraph],view->Topview);
+    init_node_size(view->g[view->activeGraph]);
+#endif
     updateSmGraph(view->g[view->activeGraph],view->Topview);
 }
 void on_dlgSettings_close (GtkWidget * widget, gpointer user_data)
@@ -303,8 +305,7 @@ static int get_combobox_widget_to_attribute(char *attribute,
 int load_settings_from_graph(Agraph_t * g)
 {
     Agsym_t* sym=NULL;
-	while ((sym = agnxtattr(view->systemGraphs.attrs_widgets,AGRAPH, sym)))
-	{
+    while ((sym = agnxtattr(view->systemGraphs.attrs_widgets,AGRAPH, sym))) {
 	    if(strncmp (sym->name,"color_button",strlen("color_button"))==0)
 		set_color_button_widget(sym->name, agget(view->systemGraphs.attrs_widgets,sym->name));
 	    if(strncmp (sym->name,"check_box",strlen("check_box"))==0)
