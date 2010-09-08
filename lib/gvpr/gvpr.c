@@ -710,6 +710,12 @@ static int traverse(Gpr_t * state, Expr_t* prog, comp_block * bp, int cleanup)
 	} else
 	    target = state->tgtname;
 	state->name_used++;
+	/* make sure target subgraph does not exist */
+	while (agsubg (state->curgraph, target, 0)) {
+	    state->name_used++;
+	    sfprintf(state->tmp, "%s%d", state->tgtname, state->name_used);
+	    target = sfstruse(state->tmp);
+	}
 	state->target = openSubg(state->curgraph, target);
     }
     if (!state->outgraph)

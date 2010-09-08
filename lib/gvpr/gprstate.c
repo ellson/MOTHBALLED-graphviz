@@ -29,6 +29,8 @@
 #include <error.h>
 #include <sfstr.h>
 
+static int name_used;
+
 int validTVT(int c)
 {
     return ((TV_flat <= c) && (c <= TV_prepostrev));
@@ -55,6 +57,7 @@ Gpr_t *openGPRState(gpr_info* info)
     }
 
     state->tvt = TV_flat;
+    state->name_used = name_used;
     state->tvroot = 0;
     state->tvedge = 0;
     state->outFile = info->outFile;
@@ -131,6 +134,7 @@ void addBindings (Gpr_t* state, gvprbinding* bindings)
 void closeGPRState(Gpr_t* state)
 {
     if (!state) return;
+    name_used = state->name_used;
     if (state->tmp)
 	sfclose (state->tmp);
     free (state->dp);
