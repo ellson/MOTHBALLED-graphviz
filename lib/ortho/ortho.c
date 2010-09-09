@@ -1197,7 +1197,7 @@ attachOrthoEdges (Agraph_t* g, maze* mp, int n_edges, route* route_list, splineI
 	}
 	ispline[ipt] = ispline[ipt+1] = p;
 	if (Verbose > 1)
-		fprintf(stderr, "ortho %s %s\n", agnameof(agtail(e)),agnameof(aghead(e)));
+	    fprintf(stderr, "ortho %s %s\n", agnameof(agtail(e)),agnameof(aghead(e)));
 	clip_and_install(e, aghead(e), ispline, npts, sinfo);
 	if (doLbls && (lbl = ED_label(e)) && !lbl->set)
 	    addEdgeLabels(g, e, p1, q1);

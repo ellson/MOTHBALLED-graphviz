@@ -29,6 +29,10 @@
 #include <memory.h>
 #include <trap.h>
 
+#ifdef WIN32
+#define log2(x)  (log(x)/log(2))
+#endif
+
 /* Node types */
 
 #define T_X     1
@@ -1023,12 +1027,7 @@ static int math_logstar_n(int n)
   double v;
 
   for (i = 0, v = (double) n; v >= 1; i++)
-#ifndef WIN32
       v = log2(v);
-#else
-      v = log(v)/log(2);
-
-#endif
 
   return (i - 1);
 }
@@ -1039,13 +1038,7 @@ static int math_N(int n, int h)
   double v;
 
   for (i = 0, v = (int) n; i < h; i++)
-#ifndef WIN32
       v = log2(v);
-#else
-      v = log(v)/log(2);
-
-#endif
-
 
   return (int) ceil((double) 1.0*n/v);
 }
