@@ -170,6 +170,7 @@ static graph_t *create_test_graph(void)
     }
     return g;
 }
+
 int main(int argc, char **argv)
 {
     graph_t *prev = NULL;
