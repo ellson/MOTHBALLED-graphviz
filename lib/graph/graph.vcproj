@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libpng.lib gtk-win32-2.0.lib asprintf.lib atk-1.0.lib bz2.lib cairo.lib charset.lib croco-0.6.lib expat.lib expatw.lib glade-2.0.lib fontconfig.lib freetype.lib gdk_pixbuf-2.0.lib gdkglext-win32-1.0.lib gdk-win32-2.0.lib glib-2.0.lib gmodule-2.0.lib gobject-2.0.lib gsf-1.lib gsf-win32-1.lib gthread-2.0.lib gtkglext-win32-1.0.lib iconv.lib intl.lib jpeg.lib libexpat.lib libexpatw.lib pango-1.0.lib pangocairo-1.0.lib pangoft2-1.0.lib pangowin32-1.0.lib popt.lib rsvg-2.lib tiff.lib xml2.lib libgdkglext-win32-1.0.dll.a libgtkglext-win32-1.0.dll.a glu32.lib opengl32.lib ltdl.lib hs_regex.lib zdll.lib cdt.lib $(NOINHERIT)"
+				AdditionalDependencies="libpng.lib gtk-win32-2.0.lib asprintf.lib atk-1.0.lib bz2.lib cairo.lib charset.lib croco-0.6.lib expat.lib expatw.lib glade-2.0.lib fontconfig.lib freetype.lib gdk_pixbuf-2.0.lib gdkglext-win32-1.0.lib gdk-win32-2.0.lib glib-2.0.lib gmodule-2.0.lib gobject-2.0.lib gsf-1.lib gsf-win32-1.lib gthread-2.0.lib gtkglext-win32-1.0.lib iconv.lib intl.lib jpeg.lib libexpat.lib libexpatw.lib pango-1.0.lib pangocairo-1.0.lib pangoft2-1.0.lib pangowin32-1.0.lib popt.lib rsvg-2.lib tiff.lib xml2.lib libgdkglext-win32-1.0.dll.a libgtkglext-win32-1.0.dll.a glu32.lib opengl32.lib ltdl.lib zdll.lib cdt.lib $(NOINHERIT)"
 				OutputFile="c:/graphviz-ms/bin/$(ProjectName).dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="C:\graphviz-ms\bin;C:\gtk\lib"
@@ -136,7 +136,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libpng.lib gtk-win32-2.0.lib asprintf.lib atk-1.0.lib bz2.lib cairo.lib charset.lib croco-0.6.lib expat.lib expatw.lib glade-2.0.lib fontconfig.lib freetype.lib gdk_pixbuf-2.0.lib gdkglext-win32-1.0.lib gdk-win32-2.0.lib glib-2.0.lib gmodule-2.0.lib gobject-2.0.lib gsf-1.lib gsf-win32-1.lib gthread-2.0.lib gtkglext-win32-1.0.lib iconv.lib intl.lib jpeg.lib libexpat.lib libexpatw.lib pango-1.0.lib pangocairo-1.0.lib pangoft2-1.0.lib pangowin32-1.0.lib popt.lib rsvg-2.lib tiff.lib xml2.lib libgdkglext-win32-1.0.dll.a libgtkglext-win32-1.0.dll.a glu32.lib opengl32.lib ltdl.lib hs_regex.lib zdll.lib cdt.lib $(NOINHERIT)"
+				AdditionalDependencies="libpng.lib gtk-win32-2.0.lib asprintf.lib atk-1.0.lib bz2.lib cairo.lib charset.lib croco-0.6.lib expat.lib expatw.lib glade-2.0.lib fontconfig.lib freetype.lib gdk_pixbuf-2.0.lib gdkglext-win32-1.0.lib gdk-win32-2.0.lib glib-2.0.lib gmodule-2.0.lib gobject-2.0.lib gsf-1.lib gsf-win32-1.lib gthread-2.0.lib gtkglext-win32-1.0.lib iconv.lib intl.lib jpeg.lib libexpat.lib libexpatw.lib pango-1.0.lib pangocairo-1.0.lib pangoft2-1.0.lib pangowin32-1.0.lib popt.lib rsvg-2.lib tiff.lib xml2.lib libgdkglext-win32-1.0.dll.a libgtkglext-win32-1.0.dll.a glu32.lib opengl32.lib ltdl.lib zdll.lib cdt.lib $(NOINHERIT)"
 				OutputFile="c:/graphviz-ms/bin/$(ProjectName).dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="C:\graphviz-ms\bin;C:\gtk\lib"

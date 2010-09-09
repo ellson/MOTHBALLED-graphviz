@@ -435,6 +435,7 @@
 
 /* Define if you want ORTHO */
 /* #undef ORTHO */
+#define ORTHO 1
 
 /* Path separator character. */
 #define PATHSEPARATOR ":"

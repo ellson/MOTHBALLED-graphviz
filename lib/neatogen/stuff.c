@@ -27,15 +27,7 @@
 #endif
 
 static double Epsilon2;
-#ifndef HAVE_DRAND48
-double drand48(void)
-{
-    double d;
-    d = rand();
-    d = d / RAND_MAX;
-    return d;
-}
-#endif
+
 
 double fpow32(double x)
 {

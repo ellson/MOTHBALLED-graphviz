@@ -170,12 +170,10 @@ static graph_t *create_test_graph(void)
     }
     return g;
 }
-
 int main(int argc, char **argv)
 {
     graph_t *prev = NULL;
 #ifndef WITH_CGRAPH
-
 #endif /* WITH_CGRAPH */
 
     Gvc = gvContextPlugins(lt_preloaded_symbols, DEMAND_LOADING);

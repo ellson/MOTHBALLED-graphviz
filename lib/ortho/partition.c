@@ -43,6 +43,16 @@
 #define CROSS_SINE(v0, v1) ((v0).x * (v1).y - (v1).x * (v0).y)
 #define LENGTH(v0) (sqrt((v0).x * (v0).x + (v0).y * (v0).y))
 
+#ifndef HAVE_SRAND48
+#define srand48 srand
+#endif
+#ifdef WIN32
+extern double drand48(void);
+#endif
+
+
+
+
 typedef struct {
   int vnum;
   int next;         /* Circularly linked list  */
@@ -152,7 +162,8 @@ generateRandomOrdering(int n, int* permute)
     for (i = 0; i <= n; i++) permute[i] = i;
 
     for (i = 1; i <= n; i++) {
-	j = i + drand48() * (n + 1 - i);
+	double tempa=drand48();
+	j = i + tempa * (n + 1 - i);
 	if (j != i) {
 	    tmp = permute[i];
 	    permute [i] = permute[j];

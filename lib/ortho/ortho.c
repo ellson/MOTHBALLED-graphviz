@@ -38,7 +38,6 @@
 #include "globals.h"
 #include "render.h"
 #include "pointset.h"
-
 typedef struct {
     int d;
     Agedge_t* e;
@@ -1197,7 +1196,6 @@ attachOrthoEdges (Agraph_t* g, maze* mp, int n_edges, route* route_list, splineI
 		p.x = q1.x;
 	}
 	ispline[ipt] = ispline[ipt+1] = p;
-
 	if (Verbose > 1)
 		fprintf(stderr, "ortho %s %s\n", agnameof(agtail(e)),agnameof(aghead(e)));
 	clip_and_install(e, aghead(e), ispline, npts, sinfo);

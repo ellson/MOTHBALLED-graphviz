@@ -1023,7 +1023,12 @@ static int math_logstar_n(int n)
   double v;
 
   for (i = 0, v = (double) n; v >= 1; i++)
-    v = log2(v);
+#ifndef WIN32
+      v = log2(v);
+#else
+      v = log(v)/log(2);
+
+#endif
 
   return (i - 1);
 }
@@ -1034,7 +1039,13 @@ static int math_N(int n, int h)
   double v;
 
   for (i = 0, v = (int) n; i < h; i++)
-    v = log2(v);
+#ifndef WIN32
+      v = log2(v);
+#else
+      v = log(v)/log(2);
+
+#endif
+
 
   return (int) ceil((double) 1.0*n/v);
 }

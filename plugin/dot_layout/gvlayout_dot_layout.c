@@ -27,6 +27,8 @@ typedef enum { LAYOUT_DOT, } layout_type;
     #pragma comment( lib, "gvc.lib" )
     #pragma comment( lib, "ingraphs.lib" )
     #pragma comment( lib, "cdt.lib" )
+    #pragma comment( lib, "gvortho.lib" )
+
 #endif
 
 

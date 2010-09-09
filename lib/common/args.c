@@ -135,6 +135,9 @@ config_extra_args(GVC_t *gvc, int argc, char** argv)
     }
   }
   *p = 0;
+  gvc->common.verbose=0;
+  Verbose=0;
+
   return cnt;
 }
 

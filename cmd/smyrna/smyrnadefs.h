@@ -422,14 +422,12 @@ typedef struct
 	Agsym_t* N_visible;
 	Agsym_t* N_selected;
 	Agsym_t* G_nodelabelcolor;
-	Agsym_t* GN_labelattribute;
 	Agsym_t* N_labelattribute;
 	Agsym_t* E_visible;
 	Agsym_t* E_selected;
 	Agsym_t* E_pos;
 	Agsym_t* G_edgelabelcolor;
 	Agsym_t* E_labelattribute;
-	Agsym_t* GE_labelattribute;
     } graphRec;
 #define GREC(g) ((graphRec*)(AGDATA(g)))
 #define GN_pos(g) (GREC(g)->N_pos)
@@ -438,13 +436,11 @@ typedef struct
 #define GN_selected(g) (GREC(g)->N_selected)
 #define GG_nodelabelcolor(g) (GREC(g)->G_nodelabelcolor)
 #define GN_labelattribute(g) (GREC(g)->N_labelattribute)
-#define GG_labelattribute(g) (GREC(g)->GN_labelattribute)
 #define GE_pos(g) (GREC(g)->E_pos)
 #define GE_visible(g) (GREC(g)->E_visible)
 #define GE_selected(g) (GREC(g)->E_selected)
 #define GG_edgelabelcolor(g) (GREC(g)->G_edgelabelcolor)
 #define GE_labelattribute(g) (GREC(g)->E_labelattribute)
-#define GG_elabelattribute(g) (GREC(g)->GE_labelattribute)
 
 #define GUI_WINDOWED   0
 #define GUI_FULLSCREEN    1

@@ -1789,7 +1789,7 @@ void setEdgeType (graph_t* g, int dflt)
 
 
 #include <string.h>
-#include <ctype.h>
+//#include <ctype.h>
 
 
 int strcasecmp(const char *s1, const char *s2)
@@ -1810,7 +1810,7 @@ int strcasecmp(const char *s1, const char *s2)
 #ifndef WIN32_STATIC
 #ifndef HAVE_STRNCASECMP
 #include <string.h>
-#include <ctype.h>
+//#include <ctype.h>
 
 int strncasecmp(const char *s1, const char *s2, unsigned int n)
 {
@@ -1904,5 +1904,15 @@ void fix_fc(void)
 	system ("del fix-fc.exe");
 	system ("dot -c");	//run dot -c once too since we already run things :)
     }
+}
+#endif
+
+#ifndef HAVE_DRAND48
+double drand48(void)
+{
+    double d;
+    d = rand();
+    d = d / RAND_MAX;
+    return d;
 }
 #endif

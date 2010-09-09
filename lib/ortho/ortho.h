@@ -19,5 +19,4 @@
 #include <render.h>
 
 void orthoEdges (Agraph_t* g, int useLbls);
-
 #endif

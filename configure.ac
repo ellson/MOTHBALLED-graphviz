@@ -12,7 +12,7 @@ dnl                       timestamp => tar-file snapshot or release
 m4_define(graphviz_version_major, 2)
 m4_define(graphviz_version_minor, 27)
 #NB: the next line gets changed to a date/time string for development releases
-m4_define(graphviz_version_micro, 0)
+m4_define(graphviz_version_micro, 20100903.0445)
 
 AC_INIT([graphviz],[graphviz_version_major.graphviz_version_minor.graphviz_version_micro],[http://www.graphviz.org/])
 
@@ -23,7 +23,7 @@ AC_SUBST(GRAPHVIZ_VERSION_MAJOR)
 AC_SUBST(GRAPHVIZ_VERSION_MINOR)
 AC_SUBST(GRAPHVIZ_VERSION_MICRO)
 
-VERSION_DATE=`date -u +%Y%m%d.%H%M`
+VERSION_DATE=20100903.0445
 AC_SUBST(VERSION_DATE)
 
 #NB: "development" on the next line gets changed to "stable" when building a release

@@ -112,7 +112,7 @@ static void svg_grstyle(GVJ_t * job, int filled)
 	gvprintf(job, "\" stroke-dasharray=\"%s", sdotarray);
     }
     if (obj->pencolor.type == RGBA_BYTE && obj->pencolor.u.rgba[3] > 0 && obj->pencolor.u.rgba[3] < 255)
-	gvprintf(job, "\" stroke-opacity=\"%f", ((float)obj->pencolor.u.rgba[3]/255.0));
+	gvprintf(job, "\" stroke-opacity=\"%f", ((float)obj->fillcolor.u.rgba[3]/255.0));
 
     gvputs(job, "\"");
 }

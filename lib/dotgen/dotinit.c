@@ -258,6 +258,8 @@ void dot_layout(Agraph_t * g)
     aspect_t* asp;
 
     setEdgeType (g, ET_SPLINE);
+    Verbose=0;
+
     asp = setAspect (g, &aspect);
 
     dot_init_node_edge(g);
