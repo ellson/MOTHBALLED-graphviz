@@ -651,10 +651,12 @@ void updateRecord (Agraph_t* g)
     GN_size(g) = agattr (g, AGNODE, "size", 0);
     GN_visible(g) = agattr (g, AGNODE, "visible", 0);
     GN_selected(g) = agattr (g, AGNODE, "selected", 0);
+    GN_labelattribute(g) = agattr (g, AGNODE, "nodelabelattribute", 0);
 
     GE_pos(g)=agattr(g,AGEDGE,"pos",0);
     GE_visible(g) = agattr (g, AGEDGE, "visible", 0);
     GE_selected(g) = agattr (g, AGEDGE, "selected", 0);
+    GE_labelattribute(g) = agattr (g, AGEDGE, "edgelabelattribute", 0);
 }
 
 /* graphRecord:
@@ -672,11 +674,11 @@ graphRecord (Agraph_t* g)
 
     GG_nodelabelcolor(g) = agattr (g, AGRAPH, "nodelabelcolor", 0);
     GG_edgelabelcolor(g) = agattr (g, AGRAPH, "edgelabelcolor", 0);
+    GG_labelattribute(g) = agattr (g, AGRAPH, "nodelabelattribute", 0);
+    GG_elabelattribute(g) = agattr (g, AGRAPH, "edgelabelattribute", 0);
 
     GN_pos(g) = agattr (g, AGNODE, "pos", 0);
-    GN_labelattribute(g) = agattr (g, AGNODE, agget(g,"nodelabelattribute"), 0);
 
-    GE_labelattribute(g) = agattr (g, AGEDGE, agget(g,"edgelabelattribute"), 0);
 
     updateRecord (g);
 }
