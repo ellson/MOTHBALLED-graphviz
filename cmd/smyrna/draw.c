@@ -501,6 +501,7 @@ void draw_selection_box(ViewInfo * view)
 }
 #endif
 
+#if 0
 void draw_magnifier(ViewInfo * view)
 {
 
@@ -573,9 +574,7 @@ static void draw_circle(float originX, float originY, float radius)
 GLUquadric *fisheyesphere;
 void draw_fisheye_magnifier(ViewInfo * view)
 {
-    if (get_mode(view)==MM_FISHEYE_MAGNIFIER)
-
-    {
+    if (get_mode(view)==MM_FISHEYE_MAGNIFIER) {
 	float a;
 	GLfloat mg_x, mg_y, mg_z;
 	a = GetOGLDistance((int) view->fmg.constantR);
@@ -584,32 +583,27 @@ void draw_fisheye_magnifier(ViewInfo * view)
 		     &mg_x, &mg_y, &mg_z);
 	glColor4f((GLfloat) 0.3, (GLfloat) 0.1, (GLfloat) 0.8,
 		  (GLfloat) 1);
-	if (((view->fmg.x != mg_x) || (view->fmg.y != mg_y))
-	    && (view->active_camera == -1)) {
-	    fisheye_polar(mg_x, mg_y, view->Topview);
-	    draw_circle(mg_x, mg_y, a);
+	if ((view->fmg.x != mg_x) || (view->fmg.y != mg_y)) {
+	    if (view->active_camera == -1) {
+		/* fisheye_polar(mg_x, mg_y, view->Topview); */
+		draw_circle(mg_x, mg_y, a);
+	    }
+	    else {
+		/* fisheye_spherical(mg_x, mg_y, 0.00, view->Topview); */
+		if (!fisheyesphere)
+		    fisheyesphere = gluNewQuadric();
+		gluQuadricDrawStyle(fisheyesphere, GLU_LINE);
+		glColor4f((GLfloat) 0.3, (GLfloat) 0.1, (GLfloat) 0.8, (GLfloat) 0.05);
+		glTranslatef(mg_x, mg_y, 0);
+		gluSphere(fisheyesphere, a, 30, 30);
+		glTranslatef(-mg_x, -mg_y, 0);
+	    }
+	    view->fmg.x = mg_x;
+	    view->fmg.y = mg_y;
 	}
-	if (((view->fmg.x != mg_x) || (view->fmg.y != mg_y))
-	    && (view->active_camera > -1)) {
-	    fisheye_spherical(mg_x, mg_y, 0.00, view->Topview);
-
-
-	    if (!fisheyesphere)
-		fisheyesphere = gluNewQuadric();
-	    gluQuadricDrawStyle(fisheyesphere, GLU_LINE);
-	    glColor4f((GLfloat) 0.3, (GLfloat) 0.1, (GLfloat) 0.8,
-		      (GLfloat) 0.05);
-	    glTranslatef(mg_x, mg_y, 0);
-	    gluSphere(fisheyesphere, a, 30, 30);
-	    glTranslatef(-mg_x, -mg_y, 0);
-	}
-
-
-	view->fmg.x = mg_x;
-	view->fmg.y = mg_y;
-
     }
 }
+#endif
 
 void drawBorders(ViewInfo * view)
 {

@@ -61,6 +61,7 @@ static void color_interpolation(glCompColor srcColor, glCompColor tarColor,
 	 (float) levelcount * srcColor.B) / (float) levelcount;
 }
 
+#ifdef UNUSED
 static double dist(double x1, double y1, double x2, double y2)
 {
     return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
@@ -71,10 +72,19 @@ static double dist3d(double x1, double y1, double z1, double x2, double y2,
     return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) +
 		(z1 - z2) * (z1 - z2));
 }
+#endif
 
 #ifdef UNUSED
 static void drawtopologicalfisheyestatic(topview * t);
 #endif
+
+#ifdef UNUSED
+
+The code below now longer works. First, t->Nodes == NULL, since
+we now rely on the libgraph graph for data. Second, the code that
+drew the distorted view was left out of the move from topview.c
+to topviewfuncs.c. The magnifiers were cute but not particularly
+useful, so we leave the feature out for now.
 
 static double G(double x)
 {
@@ -184,6 +194,7 @@ void fisheye_spherical(double x_focus, double y_focus, double z_focus,
 	}
     }
 }
+#endif
 
 static v_data *makeGraph(Agraph_t* gg, int *nedges)
 {

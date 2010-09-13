@@ -61,7 +61,7 @@ void LoadGLTextures()									// Load Bitmaps And Convert To Textures
 }
 
 
-
+#if UNUSED
 void draw_cube_tex()
 {
 
@@ -155,6 +155,7 @@ static void draw_cube()
     glVertex3f(100.0f, -100.0f, -100.0f);	// Bottom Right Of The Quad (Right)
     glEnd();
 }
+#endif
 
 static void drawRotatingAxis(void)
 {
@@ -371,8 +372,10 @@ int glexpose_main(ViewInfo * view)
 
 
     glexpose_grid(view);
+#if UNUSED
     draw_fisheye_magnifier(view);
     draw_magnifier(view);
+#endif
     drawBorders(view);
     glexpose_drawgraph(view);
     drawRotatingAxis();
