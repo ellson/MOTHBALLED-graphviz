@@ -141,7 +141,7 @@ void switch2D3D(glCompObj *obj, GLfloat x, GLfloat y,
 }
 
 
-void CBglCompMouseUp(glCompObj *obj, GLfloat x, GLfloat y, glMouseButtonType t)
+static void CBglCompMouseUp(glCompObj *obj, GLfloat x, GLfloat y, glMouseButtonType t)
 {
     /* glCompMouse* m=&((glCompSet*)obj)->mouse; */
     sel->common.visible = 0;
@@ -150,7 +150,7 @@ void CBglCompMouseUp(glCompObj *obj, GLfloat x, GLfloat y, glMouseButtonType t)
 }
 
 
-void CBglCompMouseRightClick(glCompObj *obj, GLfloat x, GLfloat y,
+static void CBglCompMouseRightClick(glCompObj *obj, GLfloat x, GLfloat y,
 			     glMouseButtonType t)
 {
     if (t == glMouseRightButton) 
@@ -160,15 +160,12 @@ void CBglCompMouseRightClick(glCompObj *obj, GLfloat x, GLfloat y,
     }
 }
 
-void attrList(glCompObj *obj, GLfloat x, GLfloat y, glMouseButtonType t)
+static void attrList(glCompObj *obj, GLfloat x, GLfloat y, glMouseButtonType t)
 {
 	showAttrsWidget(view->Topview);
 }
 
-
-
-
-void glCompMouseMove(glCompObj *obj, GLfloat x, GLfloat y)
+static void glCompMouseMove(glCompObj *obj, GLfloat x, GLfloat y)
 {
     glCompMouse *m = &((glCompSet *) obj)->mouse;
 
@@ -184,7 +181,7 @@ void glCompMouseMove(glCompObj *obj, GLfloat x, GLfloat y)
 	glexpose();
     }
 }
-void selectedges(glCompObj *obj, GLfloat x, GLfloat y)
+static void selectedges(glCompObj *obj, GLfloat x, GLfloat y)
 {
     if(view->Topview->sel.selectEdges==0)
 	view->Topview->sel.selectEdges=1;
@@ -192,7 +189,7 @@ void selectedges(glCompObj *obj, GLfloat x, GLfloat y)
 	view->Topview->sel.selectEdges=0;
 
 }
-void selectnodes(glCompObj *obj, GLfloat x, GLfloat y)
+static void selectnodes(glCompObj *obj, GLfloat x, GLfloat y)
 {
     if(view->Topview->sel.selectNodes==0)
 	view->Topview->sel.selectNodes=1;
@@ -200,6 +197,7 @@ void selectnodes(glCompObj *obj, GLfloat x, GLfloat y)
 	view->Topview->sel.selectNodes=0;
 }
 
+#if 0
 void testContainer(glCompSet *s)
 {
     glCompPanel* p;
@@ -217,7 +215,7 @@ void testContainer(glCompSet *s)
     p->common.anchor.top=10;
     p->common.anchor.right=10;
 }
-
+#endif
 
 
 glCompSet *glcreate_gl_topview_menu(void)
@@ -383,6 +381,7 @@ glCompSet *glcreate_gl_topview_menu(void)
 
 }
 
+#if 0
 int getIconsDirectory(char *bf)
 {
 #ifdef WIN32
@@ -396,3 +395,4 @@ int getIconsDirectory(char *bf)
     return 1;
 
 }
+#endif

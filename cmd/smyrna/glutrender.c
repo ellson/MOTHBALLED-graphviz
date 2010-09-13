@@ -19,8 +19,7 @@
 #include "arcball.h"
 #include "appmouse.h"
 #include "glexpose.h"
-
-
+#include "glcompui.h"
 
     /*call backs */
 
