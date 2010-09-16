@@ -2848,11 +2848,11 @@ dnl -----------------------------------
 dnl ORTHO 
 
 AC_ARG_WITH(ortho,
-  [AS_HELP_STRING([--with-ortho=no],[ORTHO features in neato layout engine])],
-  [], [with_ortho=no])
+  [AS_HELP_STRING([--with-ortho=yes],[ORTHO features in neato layout engine])],
+  [], [with_ortho=yes])
 
 if test "x$with_ortho" != "xyes"; then
-  use_ortho="No (disabled by default - experimental)"
+  use_ortho="No (disabled)"
 else
   use_ortho="Yes"
   AC_DEFINE_UNQUOTED(ORTHO,1,[Define if you want ORTHO])
