@@ -24,10 +24,10 @@ extern "C" {
 #endif
 
     typedef struct {
-	int nStepsToLeaf;
-	int subtreeSize;
-	int nChildren;
-	int nStepsToCenter;
+	unsigned long nStepsToLeaf;
+	unsigned long subtreeSize;
+	unsigned long nChildren;
+	unsigned long nStepsToCenter;
 	node_t *parent;
 	double span;
 	double theta;
