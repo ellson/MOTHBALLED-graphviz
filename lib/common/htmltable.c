@@ -1350,6 +1350,31 @@ static void pos_html_cell(htmlcell_t * cp, boxf pos, int sides)
     if (cp->child.kind == HTML_TBL) {
 	pos_html_tbl(cp->child.u.tbl, cbox, sides);
     } else if (cp->child.kind == HTML_IMAGE) {
+	/* Note that alignment trumps scaling */
+	oldsz = cp->child.u.img->box.UR;
+	delx = (cbox.UR.x - cbox.LL.x) - oldsz.x;
+	if (delx > 0) {
+	    switch (cp->data.flags & HALIGN_MASK) {
+	    case HALIGN_LEFT:
+		cbox.UR.x -= delx;
+		break;
+	    case HALIGN_RIGHT:
+		cbox.LL.x += delx;
+		break;
+	    }
+	}
+
+	dely = (cbox.UR.y - cbox.LL.y) - oldsz.y;
+	if (dely > 0) {
+	    switch (cp->data.flags & VALIGN_MASK) {
+	    case VALIGN_BOTTOM:
+		cbox.UR.y -= dely;
+		break;
+	    case VALIGN_TOP:
+		cbox.LL.y += dely;
+		break;
+	    }
+	}
 	pos_html_img(cp->child.u.img, cbox);
     } else {
 	char dfltalign;
