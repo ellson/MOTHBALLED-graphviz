@@ -1841,9 +1841,11 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 	/* Invariant: old_stress > 0. In theory, old_stress >= new_stress
 	 * but we use fabs in case of numerical error.
 	 */
-	converged =
-	    (((fabs(old_stress - new_stress) / old_stress) < Epsilon)
-	     || (new_stress < Epsilon));
+	{
+	    double diff = old_stress - new_stress;
+	    double change = ABS(diff);
+	    converged = (((change / old_stress) < Epsilon) || (new_stress < Epsilon));
+	}
 	old_stress = new_stress;
 
 	for (k = 0; k < dim; k++) {
