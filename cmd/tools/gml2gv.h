@@ -43,4 +43,4 @@ extern void gmllexeof(void);
 extern void gmlerror(char *);
 extern int gmlerrors(void);
 extern void initgmlscan (FILE*);
-extern Agraph_t* gml_to_gv (FILE*, int, int*);
+extern Agraph_t* gml_to_gv (char*, FILE*, int, int*);

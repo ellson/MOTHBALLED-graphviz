@@ -1,10 +1,13 @@
-.TH GML2GV 1 "9 July 2009"
+.TH GML2GV 1 "30 September 2010"
 .SH NAME
 gml2gv \- GML-DOT converter
 .SH SYNOPSIS
 .B gml2gv
 [
-.B \-?
+.B \-?v
+]
+[
+.BI -g gname
 ]
 [
 .BI -o outfile
@@ -19,8 +22,16 @@ converts a graph specified in the GML format to a graph in the GV (formerly DOT)
 .SH OPTIONS
 The following options are supported:
 .TP
+.B \-v
+Turns on verbose mode
+.TP
 .B \-?
 Prints usage information and exits.
+.TP
+.BI \-g "gname"
+The string \fIgname\fP is used as the name of the generated graph.
+If multiple graphs are generated, subsequent graphs use the name
+\fIgname\fP appended with an integer.
 .TP
 .BI \-o "outfile"
 Prints output to the file \fIoutfile\fP. If not given, \fBgml2gv\fP

@@ -31,6 +31,10 @@
 #include "compat_getopt.h"
 #endif
 
+#define N_NEW(n,t)       (t*)malloc((n)*sizeof(t))
+
+static int Verbose;
+static char* gname = "";
 static FILE *outFile;
 static char *CmdName;
 static char **Files;
@@ -79,9 +83,11 @@ static FILE *openFile(char *name, char *mode)
 }
 
 
-static char *useString = "Usage: %s [-p?] <files>\n\
+static char *useString = "Usage: %s [-v?] [-g<name>] [-o<file>] <files>\n\
+  -g<name>  : use <name> as template for graph names\n\
+  -v        : verbose mode\n\
   -o<file>  : output to <file> (stdout)\n\
-  -? - print usage\n\
+  -?        : print usage\n\
 If no files are specified, stdin is used\n";
 
 static void usage(int v)
@@ -108,8 +114,14 @@ static void initargs(int argc, char **argv)
 
     CmdName = cmdName(argv[0]);
     opterr = 0;
-    while ((c = getopt(argc, argv, ":gdo:")) != -1) {
+    while ((c = getopt(argc, argv, ":g:vo:")) != -1) {
 	switch (c) {
+	case 'g':
+	    gname = optarg;
+	    break;
+	case 'v':
+	    Verbose = 1;
+	    break;
 	case 'o':
 	    outFile = openFile(optarg, "w");
 	    break;
@@ -133,25 +145,48 @@ static void initargs(int argc, char **argv)
 	outFile = stdout;
 }
 
+static char*
+nameOf (char* name, int cnt)
+{
+    static char* buf = 0;
+
+    if (*name == '\0')
+	return name;
+    if (cnt) {
+	if (!buf)
+	    buf = N_NEW (strlen(name)+32,char);  /* 32 to handle any integer plus null byte */
+	sprintf (buf, "%s%d", name, cnt);
+	return buf;
+    }
+    else
+	return name;
+}
+
 int main(int argc, char **argv)
 {
     Agraph_t *G;
     Agraph_t *prev = 0;
     FILE *inFile;
-    int cnt, rv;
+    int gcnt, cnt, rv;
 
     rv = 0;
+    gcnt = 0;
     initargs(argc, argv);
     while ((inFile = getFile())) {
 	cnt = 0;
-	while ((G = gml_to_gv(inFile, cnt, &rv))) {
+	while ((G = gml_to_gv(nameOf(gname, gcnt), inFile, cnt, &rv))) {
 	    cnt++;
+	    gcnt++;
 	    if (prev)
 		agclose(prev);
 	    prev = G;
+	    if (Verbose) 
+		fprintf (stderr, "%s: %d nodes %d edges\n",
+		    agnameof (G), agnnodes(G), agnedges(G));
 	    agwrite(G, outFile);
 	    fflush(outFile);
 	}
     }
     exit(rv);
 }
+

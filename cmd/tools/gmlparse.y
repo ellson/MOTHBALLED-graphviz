@@ -732,7 +732,7 @@ addAttrs (Agobj_t* obj, Dt_t* alist, agxbuf* xb, agxbuf* unk)
 }
 
 static Agraph_t*
-mkGraph (gmlgraph* G, Agraph_t* parent, agxbuf* xb, agxbuf* unk)
+mkGraph (gmlgraph* G, Agraph_t* parent, char* name, agxbuf* xb, agxbuf* unk)
 {
     Agraph_t* g;
     Agnode_t* n;
@@ -746,9 +746,9 @@ mkGraph (gmlgraph* G, Agraph_t* parent, agxbuf* xb, agxbuf* unk)
 	g = agsubg (parent, NULL, 1);
     }
     else if (G->directed >= 1)
-	g = agopen ("", Agdirected, 0);
+	g = agopen (name, Agdirected, 0);
     else
-	g = agopen ("", Agundirected, 0);
+	g = agopen (name, Agundirected, 0);
 
     if (!parent && L) {
 	addAttrs ((Agobj_t*)g, L, xb, unk);
@@ -777,7 +777,7 @@ mkGraph (gmlgraph* G, Agraph_t* parent, agxbuf* xb, agxbuf* unk)
 	addAttrs ((Agobj_t*)e, ep->attrlist, xb, unk);
     }
     for (gp = dtfirst(G->graphlist); gp; gp = dtnext (G->graphlist, gp)) {
-	mkGraph (gp, g, xb, unk);
+	mkGraph (gp, g, NULL, xb, unk);
     }
 
     addAttrs ((Agobj_t*)g, G->attrlist, xb, unk);
@@ -786,7 +786,7 @@ mkGraph (gmlgraph* G, Agraph_t* parent, agxbuf* xb, agxbuf* unk)
 }
 
 Agraph_t*
-gml_to_gv (FILE* fp, int cnt, int* errors)
+gml_to_gv (char* name, FILE* fp, int cnt, int* errors)
 {
     Agraph_t* g;
     agxbuf xb;
@@ -812,7 +812,7 @@ gml_to_gv (FILE* fp, int cnt, int* errors)
     else {
 	agxbinit (&xb, BUFSIZ, buf);
 	agxbinit (&unk, BUFSIZ, unknownb);
-	g = mkGraph (G, NULL, &xb, &unk);
+	g = mkGraph (G, name, NULL, &xb, &unk);
 	agxbfree (&xb);
     }
 
