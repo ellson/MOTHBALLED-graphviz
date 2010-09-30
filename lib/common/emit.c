@@ -2112,11 +2112,15 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e, char** styles)
 }
 
 static void
-emit_edge_label(GVJ_t* job, textlabel_t* lbl, int lkind, int explicit,
+emit_edge_label(GVJ_t* job, textlabel_t* lbl, emit_state_t lkind, int explicit,
     char* url, char* tooltip, char* target, char *id, splines* spl)
 {
     int flags = job->flags;
+    emit_state_t old_emit_state;
+
     if (lbl == NULL) return;
+    old_emit_state = job->obj->emit_state;
+    job->obj->emit_state = lkind;
     if ((url || explicit) && !(flags & EMIT_CLUSTERS_LAST)) {
 	map_label(job, lbl);
 	gvrender_begin_anchor(job, url, tooltip, target, id);
@@ -2130,6 +2134,7 @@ emit_edge_label(GVJ_t* job, textlabel_t* lbl, int lkind, int explicit,
 	}
 	gvrender_end_anchor(job);
     }
+    job->obj->emit_state = old_emit_state;
 }
 
 /* nodeIntersect:
