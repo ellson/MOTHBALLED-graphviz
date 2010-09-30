@@ -494,6 +494,7 @@ int main(int argc, char *argv[])
 
     A = SparseMatrix_import_matrix_market(pv.inf, FORMAT_CSR);
     if (!A) {
+	fprintf (stderr, "Unable to read input file \"%s\"\n", pv.infile); 
 	usage(1);
     }
 
