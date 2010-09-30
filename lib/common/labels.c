@@ -232,6 +232,7 @@ void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
 
     if (lp->html) {
 	emit_html_label(job, lp->u.html, lp);
+	obj->emit_state = old_emit_state;
 	return;
     }
 
