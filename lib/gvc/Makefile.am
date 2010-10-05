@@ -18,8 +18,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/pathplan \
 	-I$(top_srcdir)/lib/$(GRAPH) \
 	-I$(top_srcdir)/lib/cdt \
-	$(INCLTDL) -I$(top_srcdir)/libltdl \
-	-DGVLIBDIR=\"$(pkglibdir)\"
+	$(INCLTDL) -DGVLIBDIR=\"$(pkglibdir)\"
 
 if WITH_WIN32
 AM_CFLAGS = -D_BLD_gvc=1
