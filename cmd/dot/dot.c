@@ -134,6 +134,7 @@ static graph_t *create_test_graph(void)
 
     Agnode_t *node[NUMNODES];
     Agraph_t *g;
+    Agraph_t *sg;
     int j, k;
     char name[10];
 
@@ -168,6 +169,10 @@ static graph_t *create_test_graph(void)
 #endif /* WITH_CGRAPH */
 	}
     }
+
+    sg = agsubg (g, "cluster1");
+    aginsert (sg, node[0]);
+
     return g;
 }
 
