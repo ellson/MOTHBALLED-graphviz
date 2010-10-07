@@ -144,6 +144,14 @@
 			  <signal name="activate" handler="mShowConsoleSlot" last_modification_time="Wed, 22 Jul 2009 16:17:32 GMT"/>
 			</widget>
 		      </child>
+		      <child>
+			<widget class="GtkMenuItem" id="hide_console1">
+			  <property name="visible">False</property>
+			  <property name="label" translatable="yes">Hide Console</property>
+			  <property name="use_underline">True</property>
+			  <signal name="activate" handler="mShowConsoleSlot" last_modification_time="Wed, 22 Jul 2009 16:17:32 GMT"/>
+			</widget>
+		      </child>
 
 		      <child>
 			<widget class="GtkMenuItem" id="view_selected_nodes1">

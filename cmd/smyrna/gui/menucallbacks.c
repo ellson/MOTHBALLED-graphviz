@@ -182,13 +182,15 @@ void mShowConsoleSlot(GtkWidget * widget, gpointer user_data)
 	menui = (GtkMenuItem*)glade_xml_get_widget(xml, "show_console1");
 
     if (state) {
-	gtk_widget_hide(glade_xml_get_widget(xml, "vbox13"));
-	gtk_menu_item_set_label (menui, "Show Console");
+	gtk_widget_hide (glade_xml_get_widget(xml, "vbox13"));
+	gtk_widget_show (glade_xml_get_widget(xml, "show_console1"));
+	gtk_widget_hide (glade_xml_get_widget(xml, "hide_console1")); 
 	state = 0;
     }
     else {
-	gtk_widget_show(glade_xml_get_widget(xml, "vbox13"));
-	gtk_menu_item_set_label (menui, "Hide Console");
+	gtk_widget_show (glade_xml_get_widget(xml, "vbox13"));
+	gtk_widget_hide (glade_xml_get_widget(xml, "show_console1"));
+	gtk_widget_show (glade_xml_get_widget(xml, "hide_console1")); 
 	state = 1;
     }
 }
