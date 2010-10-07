@@ -78,6 +78,10 @@ BuildRequires: gts-devel
 BuildRequires: libglade2-devel gtkglarea2-devel gtkglext-devel freeglut-devel
 %endif
 %if %rhel >= 6
+%define LUA 1
+BuildRequires: lua-devel
+%define OCAML 1
+BuildRequires: ocaml
 %define PERL 1
 BuildRequires: perl-devel perl-libs perl-ExtUtils-Embed
 %define PHP 1
@@ -85,6 +89,8 @@ BuildRequires: php-devel
 %define MYLIBGD 0
 BuildRequires: gd gd-devel
 %define GDK_PIXBUF 1
+%define GHOSTSCRIPT 1
+BuildRequires: ghostscript-devel
 %endif
 %endif
 
