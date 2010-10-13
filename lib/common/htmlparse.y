@@ -382,8 +382,8 @@ pushFont (htmlfont_t *f)
 	    f->size = curfont->size;
 	if (!f->name && curfont->name)
 	    f->name = strdup(curfont->name);
-	if (!f->flags && curfont->flags)
-	    f->flags = curfont->flags;
+	if (curfont->flags)
+	    f->flags |= curfont->flags;
     }
 
     ft->cfont = dupFont (f);
