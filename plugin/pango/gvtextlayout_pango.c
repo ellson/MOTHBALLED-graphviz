@@ -28,6 +28,8 @@
 #include <pango/pangofc-font.h>
 #endif
 
+#define N_NEW(n,t)      (t*)malloc((n)*sizeof(t))
+
 static void pango_free_layout (void *layout)
 {
     g_object_unref((PangoLayout*)layout);
@@ -55,6 +57,11 @@ static char* pango_psfontResolve (PostscriptAlias* pa)
 
 #define FONT_DPI 96.
 
+#define ENABLE_PANGO_MARKUP
+#ifdef ENABLE_PANGO_MARKUP
+#define FULL_MARKUP "<span weight=\"bold\" style=\"italic\" underline=\"single\"></span>"
+#endif
+
 static boolean pango_textlayout(textpara_t * para, char **fontpath)
 {
     static char buf[1024];  /* returned in fontpath, only good until next call */
@@ -67,10 +74,11 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     PangoLayout *layout;
     PangoRectangle logical_rect;
     PangoLayoutIter* iter;
-	cairo_font_options_t* options;
+    cairo_font_options_t* options;
 #ifdef ENABLE_PANGO_MARKUP
     PangoAttrList *attrs;
     GError *error = NULL;
+    int flags;
 #endif
     char *text;
     double textlayout_scale;
@@ -165,8 +173,32 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     }
 
 #ifdef ENABLE_PANGO_MARKUP
-    if (! pango_parse_markup (para->str, -1, 0, &attrs, &text, NULL, &error))
-	die(error->message);
+    if ((para->font) && (flags = para->font->flags)) {
+	char* markup = N_NEW(strlen(para->str) + sizeof(FULL_MARKUP), char);
+	strcpy(markup,"<span");
+
+	if (flags & HTML_BF)
+	    strcat(markup," weight=\"bold\"");
+	if (flags & HTML_IF)
+	    strcat(markup," style=\"italic\"");
+	if (flags & HTML_UL)
+	    strcat(markup," underline=\"single\"");
+
+	strcat (markup,">");
+	strcat (markup,para->str);
+	strcat (markup,"</span>");
+
+	if (!pango_parse_markup (markup, -1, 0, &attrs, &text, NULL, &error)) {
+	    fprintf (stderr, "Error - pango_parse_markup: %s\n", error->message);
+	    text = para->str;
+	    attrs = NULL;
+	}
+	free (markup);
+    }
+    else {
+	text = para->str;
+	attrs = NULL;
+    }
 #else
     text = para->str;
 #endif
@@ -178,7 +210,8 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     pango_layout_set_text (layout, text, -1);
     pango_layout_set_font_description (layout, desc);
 #ifdef ENABLE_PANGO_MARKUP
-    pango_layout_set_attributes (layout, attrs);
+    if (attrs)
+	pango_layout_set_attributes (layout, attrs);
 #endif
 
     pango_layout_get_extents (layout, NULL, &logical_rect);
