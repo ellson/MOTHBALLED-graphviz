@@ -119,7 +119,7 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
     char *fname_ , *fcolor_;
     textpara_t tl;
     pointf p_ = {0.0, 0.0};
-    textitem_t* ti;
+    textpara_t* ti;
 	
     center_x = p.x;
     left_x = center_x - halfwidth_x;
@@ -549,7 +549,7 @@ void free_html_data(htmldata_t * dp)
 void free_html_text(htmltxt_t* t)
 {
     htextpara_t *tl;
-    textitem_t *ti;
+    textpara_t *ti;
     int i, j;
 
     if (!t) return;
@@ -762,13 +762,21 @@ size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
     int i, j, w, width;
     char *fname;
     textpara_t lp;
+    htmlfont_t lhf;
 
+    lp.font = &lhf;
     for (i = 0; i < ftxt->nparas; i++) {
 	width = w = 0;
 	mxfsize = 0;
 	for (j = 0; j < ftxt->paras[i].nitems; j++) {
 	    lp.str = strdup_and_subst_obj (ftxt->paras[i].items[j].str, env->obj);
 	    if (ftxt->paras[i].items[j].font) {
+		if(ftxt->paras[i].items[j].font->flags)
+		    lp.font->flags = ftxt->paras[i].items[j].font->flags;
+		else if(env->finfo.flags > 0)
+		    lp.font->flags = env->finfo.flags;
+		else
+		    lp.font->flags = 0;
 		if (ftxt->paras[i].items[j].font->size > 0)
 		    fsize = ftxt->paras[i].items[j].font->size;
 		else

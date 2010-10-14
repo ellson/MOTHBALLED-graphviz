@@ -38,41 +38,14 @@ extern "C" {
 
 #define UNSET_ALIGN 0
 
-/* Bold, Italic, Underline */
-#define HTML_BF 1
-#define HTML_IF 2
-#define HTML_UL 4
-
-    /* font information
-     * If name or color is NULL, or size < 0, that attribute
-     * is unspecified. 
-     */
-    typedef struct {
-	char*  name;
-	char*  color;
-        int    flags:7;  /* HTML_UL, HTML_IF, HTML_BF */
-	int    cnt;   /* reference count */
-	double size;
-    } htmlfont_t;
-
     /* paras of text within a cell
      * NOTE: As required, the str field in para is utf-8.
      * This translation is done when libexpat scans the input.
      */
 	
-    /* atomic unit of text emitted using a single htmlfont_t */
+    /* line of textpara_t's */
     typedef struct {
-	char *str;
-	PostscriptAlias *postscript_alias;
-	void *layout;
-	void (*free_layout) (void *layout);
-	htmlfont_t *font;
-	double size, yoffset_layout, yoffset_centerline;
-    } textitem_t;
-	
-    /* line of textitems_t */
-    typedef struct {
-	textitem_t *items;
+	textpara_t *items;
 	short nitems;
 	char just;
 	double size;   /* width of para */

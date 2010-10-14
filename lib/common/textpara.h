@@ -21,6 +21,23 @@
 extern "C" {
 #endif
 
+/* Bold, Italic, Underline */
+#define HTML_BF 1
+#define HTML_IF 2
+#define HTML_UL 4
+
+    /* font information
+     * If name or color is NULL, or size < 0, that attribute
+     * is unspecified. 
+     */
+    typedef struct {
+	char*  name;
+	char*  color;
+        int    flags:7;  /* HTML_UL, HTML_IF, HTML_BF */
+	int    cnt;   /* reference count */
+	double size;
+    } htmlfont_t;
+
     typedef struct _PostscriptAlias {
         char* name;
         char* family;
@@ -33,14 +50,18 @@ extern "C" {
 	char* svg_font_style;
     } PostscriptAlias;
 
-    typedef struct textpara_t {
+    /* atomic unit of text emitted using a single htmlfont_t */
+    typedef struct {
 	char *str;      /* stored in utf-8 */
-	char *fontname; 
-	PostscriptAlias *postscript_alias; 
+	PostscriptAlias *postscript_alias;
 	void *layout;
 	void (*free_layout) (void *layout);   /* FIXME - this is ugly */
-	double fontsize, width, height, yoffset_layout, yoffset_centerline;
-	char just;	/* 'l' 'n' 'r' */
+	htmlfont_t *font;
+	char *fontname; /* FIXME - use htmlfont_t */
+	double fontsize; /* FIXME - use htmlfont_t */
+	double size, yoffset_layout, yoffset_centerline;
+	double width, height; /* FIXME */
+	char just;	/* 'l' 'n' 'r' */ /* FIXME */
     } textpara_t;
 
 #ifdef __cplusplus

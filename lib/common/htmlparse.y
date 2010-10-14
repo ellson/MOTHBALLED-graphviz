@@ -115,7 +115,7 @@ static Dtdisc_t cellDisc = {
 
 typedef struct {
     Dtlink_t    link;
-    textitem_t  ti;
+    textpara_t  ti;
 } fitem;
 
 typedef struct {
@@ -136,7 +136,7 @@ free_fitem(Dt_t* d, fitem* p, Dtdisc_t* ds)
 static void 
 free_fpara(Dt_t* d, fpara* p, Dtdisc_t* ds)
 {
-    textitem_t* ti;
+    textpara_t* ti;
 
     if (p->lp.nitems) {
 	int i;
@@ -213,7 +213,7 @@ appendFLineList (int v)
     ln->lp.just = v;
     if (cnt) {
         int i = 0;
-	ln->lp.items = N_NEW(cnt, textitem_t); 
+	ln->lp.items = N_NEW(cnt, textpara_t);
 
 	fi = (fitem*)dtflatten(ilist);
 	for (; fi; fi = (fitem*)dtlink(fitemList,(Dtlink_t*)fi)) {
