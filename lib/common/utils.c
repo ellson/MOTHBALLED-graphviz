@@ -21,13 +21,13 @@
 #include "logic.h"
 #include "gvc.h"
 
-
 #ifdef WIN32
 #include "libltdl/lt_system.h"
 #endif
 #ifndef WIN32
 #include <unistd.h>
 #endif
+#include <ctype.h>
 
 /*
  *  a queue of nodes
