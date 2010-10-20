@@ -318,7 +318,7 @@ static int rowspanfn(htmlcell_t * p, char *v)
 	agerr(AGWARN, "ROWSPAN value cannot be 0 - ignored\n");
 	return 1;
     }
-    p->rspan = (unsigned char) u;
+    p->rspan = (unsigned short) u;
     return 0;
 }
 
@@ -332,7 +332,7 @@ static int colspanfn(htmlcell_t * p, char *v)
 	agerr(AGWARN, "COLSPAN value cannot be 0 - ignored\n");
 	return 1;
     }
-    p->cspan = (unsigned char) u;
+    p->cspan = (unsigned short) u;
     return 0;
 }
 
