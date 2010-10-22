@@ -150,7 +150,11 @@ void gvdevice_initialize(GVJ_t * job)
 #ifdef HAVE_SETMODE
 #ifdef O_BINARY
         if (job->flags & GVDEVICE_BINARY_FORMAT)
-            setmode(fileno(job->output_file), O_BINARY);
+#ifdef WIN32
+		_setmode(fileno(job->output_file), O_BINARY);
+#else
+		setmode(fileno(job->output_file), O_BINARY);
+#endif			
 #endif
 #endif
     }
