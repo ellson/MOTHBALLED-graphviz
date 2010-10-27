@@ -80,7 +80,9 @@ __declspec(dllexport) lt_symlist_t lt_preloaded_symbols[];
 #if defined(GVDLL)
 	__declspec(dllexport) lt_symlist_t lt_preloaded_symbols[];
 #else
+#if !defined(LTDL_H)
 	extern lt_symlist_t lt_preloaded_symbols[];
+#endif
 #endif
 #endif
 
