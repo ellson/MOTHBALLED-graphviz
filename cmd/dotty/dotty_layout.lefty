@@ -72,14 +72,14 @@ dotty.protogt.finishlayout = function (gt) {
         dotty.releaselserver (gt.lserver, lpt.fd, 'bad');
         if (gt.layoutpending == 2) {
             dotty.message (0, concat ('giving up on ', gt.lserver));
-            if ((fd = openio ('file', 'dottybug.dot', 'w+')) >= 0) {
+            if ((fd = openio ('file', 'dottybug.gv', 'w+')) >= 0) {
                 writegraph (fd, gt.graph, 0);
                 closeio (fd);
                 dotty.message (
                     0, concat ('graph that causes ', gt.lserver)
                 );
                 dotty.message (
-                    0, 'to fail has been saved in file dottybug.dot'
+                    0, 'to fail has been saved in file dottybug.gv'
                 );
                 dotty.message (
                     0, 'please fill out a bug report at'

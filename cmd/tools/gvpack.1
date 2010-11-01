@@ -98,9 +98,9 @@ returns
 if there were no problems, and non\(hyzero otherwise.
 .SH EXAMPLES
 .EX
-ccomps \-x abc.dot | dot | gvpack | neato \-s \-n2 \-Tps
+ccomps \-x abc.gv | dot | gvpack | neato \-s \-n2 \-Tps
 .EE
-This pipeline decomposes the graph in \fIabc.dot\fP into its
+This pipeline decomposes the graph in \fIabc.gv\fP into its
 connected components, lays out each using \fBdot\fP, packs them all together
 again, and produces the final drawing in PostScript. Of course, 
 there is nothing to prevent one from using different layouts for

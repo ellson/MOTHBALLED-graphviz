@@ -6,7 +6,7 @@
 # usage example:
 #
 #
-# ./dot -Tpng -o example.png -Tcmapx -o example.cmapx < example.dot
+# ./dot -Tpng -o example.png -Tcmapx -o example.cmapx < example.gv
 # ./cmap_tester.tcl example | xv -
 
 
