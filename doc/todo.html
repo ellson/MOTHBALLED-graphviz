@@ -1,10 +1,10 @@
 <html>
 <head>
-<title>Graphviz todo list 30-January-2009</title>
+<title>Graphviz todo list 1-November-2010</title>
 </head>
 <body bgcolor=#ffffff>
 
-<h1>Graphviz todo list 30-January-2009</h1>
+<h1>Graphviz todo list 1-November-2010</h1>
 <P>
 The 4 categories give a rough time as to when a task should be done, 
 and reflect an assessment of the task's ease multiplied by its importance. 
@@ -32,16 +32,14 @@ JCE - Extend attribute set for line styles
 JCE - Allow arrowheads in the middle of edges
 JCE - Support single, uniform font descriptors &#224; la pango
 ?   - Move generic node adjustment and spline routing out of neato
-ERG - New text labels with font elements &lt;B&gt;, &lt;I&gt;, &lt;TT&gt;, etc. (support via fontconfig or egregious hacks)
 AB  - smyrna
-	1 Design incl. 3D navigation, multiple graphs and viewports. Avoid modes.
-	2 Stable GUI. 3D mouse.
+	1 QT
+	2 Widget library. Plugins. Printing.
 	3 Full dotty replacement incl. history, checkpoints, scripting, undo.
-	4 Widget library. Plugins. Printing.
-	5 QT
-	6 General editor
+	4 General editor
 YH/ERG - Clusters in sfdp
 YH/ERG - Fixed nodes in sfdp
+ERG - Finish orthogonal edges (edge labels in dot; ports)
 </pre>
 <hr align=left width=66>
 <H2>Category 2</H2>
@@ -63,6 +61,7 @@ forming a bipartite graph, return splines to bundle the edges together)
 exposed port sides. Perhaps extend compass points to S, N, E, W to
 mean anywhere along that side.
 ? - Tabular layout in rows and columns in dot (swim lanes)
+      Crossing minimization with some nodes in columns
 ? - Enable arbitrary depth clusters in neato using IPSEP
 ? - Allow mixed edge types within the same graph
 
@@ -72,6 +71,7 @@ mean anywhere along that side.
 <pre>
 Generic label placement, with and without modifying graph layout.
 Support for compound graphs.
+Allow varied layouts within clusters - recursion
 Spline router improvement (Gordon's improvements, alpha adjustments, fewer
   inflection points)
 Fast incremental hierarchical layout
@@ -80,22 +80,23 @@ Graph language improvements
   local name spaces
   subclassing
 Shapes - new parallelogram shape where angle is fixed for varying text
-Orthogonal layouts.
+True orthogonal layouts.
 Support rank=min/max within the context of a cluster
 </pre>
-<H2>General R&D directions</H2>
+<H2>General R&D problems</H2>
 <pre>
 Incremental layouts
-Dot with orthogonal, coalesced edges (e.g., <A  HREF=http://upload.wikimedia.org/wikipedia/en/thumb/7/74/Uml_diagram.svg/700px-Uml_diagram.svg.png>this</A>)
+Dot with orthogonal, coalesced edges (e.g., <A HREF=http://upload.wikimedia.org/wikipedia/commons/7/74/Uml_diagram.svg>this</A>)
+Generalizing the above, support for hyperedges
 Constraint-based layouts
 Display of large-graphs (hair ball problem)
  - relaxing constraining edges 
  - edge bundles
+ - other
 Venn diagrams 
 Integration of geographic info - maps
 Aspect ratio in dot with clusters
 Dot with fixed width
-Crossing minimization with some nodes in columns
 Adjust graph to allow no edge-node overlap with line segment edges
 </pre>
 <H2>Done</H2>
@@ -111,6 +112,10 @@ ERG - Better aspect ratio in dot
 ERG - New orthogonal routing code
 JCE - use floats not ints where appropriate
 YH - Filters for Matrix Market
+ERG - New text labels with font elements &lt;B&gt;, &lt;I&gt;, &lt;TT&gt;, etc. (support via fontconfig or egregious hacks)
+AB  - smyrna
+	1 Design incl. 3D navigation, multiple graphs and viewports. Avoid modes.
+	2 Stable GUI. 3D mouse.
 </pre>
 <H2>Retired</H2>
 <pre>
