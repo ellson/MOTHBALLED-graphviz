@@ -1,7 +1,7 @@
 /*
 The command line is
 
-  dot -Tps -Grankdir=LR states.dot > states.ps
+  dot -Tps -Grankdir=LR states.gv > states.ps
 
 and the file is:
 */
