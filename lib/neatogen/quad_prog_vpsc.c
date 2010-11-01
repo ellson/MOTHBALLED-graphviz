@@ -113,7 +113,10 @@ constrained_majorization_vpsc(CMajEnvVPSC * e, float *b, float *place,
 	    }
 	    denominator -= r * g[i];
 	}
-	alpha = numerator / denominator;
+	if (denominator != 0)
+	    alpha = numerator / denominator;
+	else
+	    alpha = 1.0;
 	for (i = 0; i < n; i++) {
 	    place[i] -= alpha * g[i];
 	}
