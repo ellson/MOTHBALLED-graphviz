@@ -14,6 +14,13 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+/* Note that, with the call to gvParseArgs(), this application assumes that
+ * a known layout algorithm is going to be specified. This can be done either
+ * using argv[0] or requiring the user to run this code with a -K flag specifying
+ * which layout to use. In the former case, after this program has been built as
+ * 'demo', you will need to rename it as one of the installed layout engines such
+ * as dot, neato, sfdp, etc. 
+ */
 #include <gvc.h>
 
 int main(int argc, char **argv)
@@ -21,7 +28,6 @@ int main(int argc, char **argv)
     Agraph_t *g;
     Agnode_t *n, *m;
     Agedge_t *e;
-    Agsym_t *a;
     GVC_t *gvc;
 
     /* set up a graphviz context */
