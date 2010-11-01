@@ -1182,13 +1182,13 @@ int checkStart(graph_t * G, int nG, int dflt)
     return init;
 }
 
-#ifdef UNUSED
+#ifdef DEBUG_COLA
 void dumpData(graph_t * g, vtx_data * gp, int nv, int ne)
 {
     node_t *v;
     int i, j, n;
 
-    fprintf(stderr, "n %d e %d\n", nv, ne);
+    fprintf(stderr, "#nodes %d #edges %d\n", nv, ne);
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
 	fprintf(stderr, "\"%s\" %d\n", agnameof(v), ND_id(v));
     }
@@ -1199,13 +1199,65 @@ void dumpData(graph_t * g, vtx_data * gp, int nv, int ne)
 	    fprintf(stderr, "  %3d", gp[i].edges[j]);
 	}
 	fputs("\n", stderr);
-	if (gp[i].ewgts)
+	if (gp[i].ewgts) {
+	    fputs("  ewgts", stderr);
 	    for (j = 0; j < n; j++) {
 		fprintf(stderr, "  %3f", gp[i].ewgts[j]);
 	    }
+	    fputs("\n", stderr);
+	}
+	if (gp[i].eweights) {
+	    fputs("  eweights", stderr);
+	    for (j = 0; j < n; j++) {
+		fprintf(stderr, "  %3f", gp[i].eweights[j]);
+	    }
+	    fputs("\n", stderr);
+	}
+	if (gp[i].edists) {
+	    fputs("  edists", stderr);
+	    for (j = 0; j < n; j++) {
+		fprintf(stderr, "  %3f", gp[i].edists[j]);
+	    }
+	    fputs("\n", stderr);
+	}
 	fputs("\n", stderr);
 
     }
+}
+void dumpClusterData (cluster_data* dp)
+{
+  int i, j, sz;
+
+  fprintf (stderr, "nvars %d nclusters %d ntoplevel %d\n", dp->nvars, dp->nclusters, dp->ntoplevel);
+  fprintf (stderr, "Clusters:\n");
+  for (i = 0; i < dp->nclusters; i++) {
+    sz = dp->clustersizes[i];
+    fprintf (stderr, "  [%d] %d vars\n", i, sz);
+    for (j = 0; j < sz; j++)
+      fprintf (stderr, "  %d", dp->clusters[i][j]);
+    fprintf (stderr, "\n");
+  }
+    
+
+  fprintf (stderr, "Toplevel:\n");
+  for (i = 0; i < dp->ntoplevel; i++)
+    fprintf (stderr, "  %d\n", dp->toplevel[i]);
+
+  fprintf (stderr, "Boxes:\n");
+  for (i = 0; i < dp->nclusters; i++) {
+    boxf bb = dp->bb[i];
+    fprintf (stderr, "  (%f,%f) (%f,%f)\n", bb.LL.x, bb.LL.y, bb.UR.x, bb.UR.y);
+  }
+}
+void dumpOpts (ipsep_options* opp, int nv)
+{
+  int i;
+
+  fprintf (stderr, "diredges %d edge_gap %f noverlap %d gap (%f,%f)\n", opp->diredges, opp->edge_gap, opp->noverlap, opp->gap.x, opp->gap.y);
+  for (i = 0; i < nv; i++)
+    fprintf (stderr, "  (%f,%f)\n", opp->nsize[i].x, opp->nsize[i].y);
+  if (opp->clusters)
+    dumpClusterData (opp->clusters);
 }
 #endif
 
@@ -1319,6 +1371,17 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
                 nsize[i].y = ND_height(v);
             }
 
+#ifdef DEBUG_COLA
+	    fprintf (stderr, "nv %d ne %d Ndim %d model %d MaxIter %d\n", nv, ne, Ndim, model, MaxIter);
+	    fprintf (stderr, "Nodes:\n");
+	    for (i = 0; i < nv; i++) {
+		fprintf (stderr, "  %s (%f,%f)\n", nodes[i]->name, coords[0][i],  coords[1][i]);
+	    }
+	    fprintf (stderr, "\n");
+	    dumpData(g, gp, nv, ne);
+	    fprintf (stderr, "\n");
+	    dumpOpts (&opt, nv);
+#endif
             stress_majorization_cola(gp, nv, ne, coords, nodes, Ndim, model, MaxIter, &opt);
 	    freeClusterData(cs);
 	    free (nsize);
