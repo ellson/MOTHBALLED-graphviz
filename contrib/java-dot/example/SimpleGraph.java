@@ -25,7 +25,7 @@ public class SimpleGraph
   public static void main (String [] args)
   {
     DotGraph dot = new DotGraph ("Sample Graph", // Graph Title
-                                 "sample.dot", // Output file name
+                                 "sample.gv", // Output file name
                                  GRAPH_DEFAULT, // Graph (default) attributes
                                  NODE_DEFAULT, // node defaults
                                  EDGE_DEFAULT); // edge defaults

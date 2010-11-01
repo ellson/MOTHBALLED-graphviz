@@ -57,7 +57,7 @@ is a string of the form
 
 .SH EXAMPLES
 An input graph
-.I test.dot
+.I test.gv
 of the form
 .PP
 	digraph DG {
@@ -77,7 +77,7 @@ of the form
 
 , processed by the command
 .PP
-	prune \-n B test.dot
+	prune \-n B test.gv
 .PP
 would produce the following output (the actual code might be formatted
 in a slightly different way).
@@ -92,7 +92,7 @@ in a slightly different way).
 .br
 
 Another input graph
-.I test.dot
+.I test.gv
 of the form
 .PP
 	digraph DG {
@@ -120,7 +120,7 @@ to
 .I E
 ), processed by the command
 .PP
-	prune \-n B \-N color=red test.dot
+	prune \-n B \-N color=red test.gv
 .PP
 results in
 .PP

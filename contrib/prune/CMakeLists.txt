@@ -68,6 +68,6 @@ INSTALL_FILES( FILES
 #.1.pdf:
 #	groff -Tps -man $< | ps2pdf - - >$@
 #
-#EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old Makefile.orig README test.dot
+#EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old Makefile.orig README test.gv
 #
 #DISTCLEANFILES = $(pdf_DATA)

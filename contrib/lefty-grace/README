@@ -21,7 +21,7 @@ Enhancements to the dotty interface:
   figured out how to encode/restore fold info to/from the graph file)
 - Added save prompt for current graph on 'load graph' menu selection
 - Rudimentary "hyperlink" - click on node and select "load subgraph"
-  from the menu to load and display ./{nodename}.dot graph.  Can
+  from the menu to load and display ./{nodename}.gv graph.  Can
   navigate back to immediate parent thru menu selection.
   '+' also goes to parent, '-' to subgraph of a node.  Was not able to
   store parent information in graph spec file, so a graph has to be 

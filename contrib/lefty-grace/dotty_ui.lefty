@@ -292,7 +292,7 @@ dotty.protogt.actions.node = [
          gt.savegraph (gt, gt.name, gt.type, 1);
 
          pname = gt.name;
-         fname = concat (obj.name, '.dot');
+         fname = concat (obj.name, '.gv');
          ngt = dotty.protogt.creategraph (null);
          ngt.graphattr.parent = pname;
 

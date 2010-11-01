@@ -14,10 +14,10 @@
 # The output type must be one of dot's output types.  The server
 # returns a layout of the requested type as an HTTP stream.  The dot
 # output type is mapped to an appropriate MIME type.
-# For example, if yourhost.company.com/unix.dot is a dot graph file, try
-# webdot.cgi http://yourhost.company.com/unix.dot.dot.ps
-# webdot.cgi http://yourhost.company.com/unix.dot.neato.gif
-# webdot.cgi http://yourhost.company.com/unix.dot.twopi.pdf
+# For example, if yourhost.company.com/unix.gv is a dot graph file, try
+# webdot.cgi http://yourhost.company.com/unix.gv.dot.ps
+# webdot.cgi http://yourhost.company.com/unix.gv.neato.gif
+# webdot.cgi http://yourhost.company.com/unix.gv.twopi.pdf
 #
 # More details:
 # PDF and EPSI files are made by postprocessors.

@@ -1,9 +1,9 @@
 #!perl -w
 
-# dotmcl.pl <factor> <in.dot> <out.dot>
+# dotmcl.pl <factor> <in.gv> <out.gv>
 #   <factor>  the bigger, the more clusters (values from 1.2 to 3.0)
-#   <in.dot>  dot in file to clusterize
-#   <out.dot> dot out file with clusters added
+#   <in.gv>  dot in file to clusterize
+#   <out.gv> dot out file with clusters added
 # Vladimir Alexiev <vladimir@worklogic.com>
 
 # This quick hack takes a dot graph description file, adds clusters using the
