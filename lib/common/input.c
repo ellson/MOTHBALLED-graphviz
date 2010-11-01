@@ -237,6 +237,7 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
     int i, v, nfiles;
     unsigned char buf[SMALLBUF];
     agxbuf xb;
+    int Kflag = 0;
 
     /* establish if we are running in a CGI environment */
     HTTPServerEnVar = getenv("SERVER_NAME");
@@ -257,24 +258,6 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
     gvconfig(gvc, gvc->common.config);
     if (gvc->common.config)
 	exit (0);
-
-    layout = gvc->common.cmdname;
-    if (streq(layout, "dot_static")
-	    || streq(layout, "dot_builtins")
-	    || streq(layout, "lt-dot")
-	    || streq(layout, "lt-dot_builtins")
-	    || streq(layout, "")   /* when run as a process from Gvedit on Windows */
-	)
-        layout = "dot";
-    i = gvlayout_select(gvc, layout);
-    if (i == NO_SUPPORT) {
-	fprintf(stderr, "There is no layout engine support for \"%s\"\n", layout);
-        if (streq(layout, "dot"))
-	    fprintf(stderr, "Perhaps \"dot -c\" needs to be run (with installer's privileges) to register the plugins?\n");
-	else 
-	    fprintf(stderr, "Use one of:%s\n", gvplugin_list(gvc, API_layout, ""));
-	exit(1);
-    }
 
     /* feed the globals */
     Verbose = gvc->common.verbose;
@@ -363,6 +346,7 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		    }
 		    exit(1);
                 }
+		Kflag = 1;
 		break;
 	    case 'P':
 		P_graph = gvplugin_graph(gvc);
@@ -430,6 +414,27 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 	    gvc->input_filenames[nfiles++] = argv[i];
     }
     agxbfree (&xb);
+
+    /* if no -K, use cmd name to set layout type */
+    if (!Kflag) {
+	layout = gvc->common.cmdname;
+	if (streq(layout, "dot_static")
+	    || streq(layout, "dot_builtins")
+	    || streq(layout, "lt-dot")
+	    || streq(layout, "lt-dot_builtins")
+	    || streq(layout, "")   /* when run as a process from Gvedit on Windows */
+	)
+            layout = "dot";
+	i = gvlayout_select(gvc, layout);
+	if (i == NO_SUPPORT) {
+	    fprintf(stderr, "There is no layout engine support for \"%s\"\n", layout);
+            if (streq(layout, "dot"))
+		fprintf(stderr, "Perhaps \"dot -c\" needs to be run (with installer's privileges) to register the plugins?\n");
+	    else 
+		fprintf(stderr, "Use one of:%s\n", gvplugin_list(gvc, API_layout, ""));
+	    exit(1);
+	}
+    }
 
     /* if no -Txxx, then set default format */
     if (!gvc->jobs || !gvc->jobs->output_langname) {
