@@ -10,7 +10,7 @@ done
 
 if test -z "$prog"; then error "the editor not found"; fi
 
-default="noname.dot"
+default="noname.gv"
 
 if test -z "$1"; then
 	if test -s "$default"; then

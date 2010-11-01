@@ -163,7 +163,7 @@ static void pic_set_style(GVJ_t *job, char **s)
             p++;
         p++;
         while (*p) {
-            if (!strcmp(line, "setlinewidth")) {        /* a hack to handle the user-defined (PS) style spec in proc3d.dot */
+            if (!strcmp(line, "setlinewidth")) {        /* a hack to handle the user-defined (PS) style spec in proc3d.gv */
                 long n = atol(p);
 
                 sprintf(buf,

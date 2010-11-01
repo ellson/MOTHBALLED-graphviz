@@ -405,7 +405,7 @@ static void vml_textpara(GVJ_t * job, pointf p, textpara_t * para)
     /* text "y" was too high
      * Graphviz uses "baseline", VML seems to use bottom of descenders - so we fudge a little
      * (heuristics - based on eyeballs)  */
-    if (para->fontsize <12.){ /*     see graphs/directed/arrows.dot  */
+    if (para->fontsize <12.){ /*     see graphs/directed/arrows.gv  */
       p1.y+=1.4+para->fontsize/5; /* adjust by approx. descender */
       p2.y+=1.4+para->fontsize/5; /* adjust by approx. descender */
     }else{
