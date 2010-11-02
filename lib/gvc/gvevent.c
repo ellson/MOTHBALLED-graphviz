@@ -674,7 +674,7 @@ static void gvevent_read (GVJ_t * job, const char *filename, const char *layout)
 #else /* WITH_CGRAPH */
 	g = agopen("G", Agdirected, NIL(Agdisc_t *));
 #endif /* WITH_CGRAPH */
-	job->output_filename = "new.dot";
+	job->output_filename = "new.gv";
     }
     else {
 	f = fopen(filename, "r");

@@ -98,8 +98,8 @@ static void auto_output_filename(GVJ_t *job)
     else
         gidx[0] = '\0';
     if (!(fn = job->input_filename))
-        fn = "noname.dot";
-    len = strlen(fn)                    /* typically "something.dot" */
+        fn = "noname.gv";
+    len = strlen(fn)                    /* typically "something.gv" */
         + strlen(gidx)                  /* "", ".2", ".3", ".4", ... */
         + 1                             /* "." */
         + strlen(job->output_langname)  /* e.g. "png" */
