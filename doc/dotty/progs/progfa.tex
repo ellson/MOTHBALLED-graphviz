@@ -24,7 +24,7 @@ fa.main = function () {
 
     gnvt = dotty.createviewandgraph (null, 'file', fa.protogt, fa.protovt);
     gt = gnvt.gt;
-    gt.loadgraph (gt, 'fa.dot', 'file', fa.protogt.graph, 1);
+    gt.loadgraph (gt, 'fa.gv', 'file', fa.protogt.graph, 1);
     fa.currstate = gt.graph.nodes[gt.graph.nodedict['start']];
     fa.loadtrans ('fa.trans');
     fa.setcurrcolor (gt, fa.currstate);

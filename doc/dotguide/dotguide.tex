@@ -8,7 +8,7 @@
 \def\dag{{\it dag}}
 \def\DOT{{\it DOT}}
 \def\graphviz{{\it Graphviz}}
-\newcommand{\lastedited}{December 22, 2009}
+\newcommand{\lastedited}{November 2, 2010}
 \date{\lastedited}
 \newcommand{\mymark}{{\it dot} User's Manual, \lastedited \hfil }
 \markboth{\mymark}{\mymark}
@@ -121,9 +121,9 @@ A node is created when its name first appears in the file.
 An edge is created when nodes are joined by the edge operator \verb"->".
 In the example, line 2 makes edges from {\it main} to {\it parse},
 and from {\it parse} to {\it execute}.
-Running \dot\ on this file (call it \verb"graph1.dot")
+Running \dot\ on this file (call it \verb"graph1.gv")
 \begin{verbatim}
-    $ dot -Tps graph1.dot -o graph1.ps
+    $ dot -Tps graph1.gv -o graph1.ps
 \end{verbatim}
 yields the drawing of Figure~\ref{fig:drawing1}.
 The command line option \verb"-Tps" selects PostScript (EPSF) output. 
@@ -493,7 +493,7 @@ the following line in a file \verb"lib.ps".
 \end{verbatim}
 Use the \verb"-l" command line option to load this file.
 \begin{verbatim}
-    dot -Tps -l lib.ps file.dot -o file.ps
+    dot -Tps -l lib.ps file.gv -o file.ps
 \end{verbatim}
 
 The {\tt style} attribute controls miscellaneous graphics features of 

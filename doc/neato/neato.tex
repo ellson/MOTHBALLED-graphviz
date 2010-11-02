@@ -122,11 +122,11 @@ encode many-to-many dependencies.
 \begin{figure}[h]
 \begin{minipage}[b]{2in}
 \begin{verbatim}
-$ cat example.dot
+$ cat example.gv
 graph G {
     n0 -- n1 -- n2 -- n3 -- n0;
 }
-$ neato -Tps example.dot -o example.ps
+$ neato -Tps example.gv -o example.ps
 
 
 \end{verbatim}
@@ -213,7 +213,7 @@ generator. The layout is different for each seed, but still deterministic.
 If the value is not a number, the process ID or current time is used.
 Each run potentially yields a different drawing.  For example:
 \begin{verbatim}
-$ neato -Tps -Gstart=rand file.dot > file.ps
+$ neato -Tps -Gstart=rand file.gv > file.ps
 \end{verbatim}
 
 \subsection{Termination Threshold}
@@ -231,9 +231,9 @@ $\epsilon$ is set in the graph's \verb"epsilon" variable.
 You can also directly limit the number of iterations.
 It is convenient to do this on the command line:
 \begin{verbatim}
-$ neato -Tps -Gepsilon=.001 small.dot -o small.ps
-$ neato -Tps -Gepsilon=1.5 big.dot -o big.ps
-$ neato -Tps -Gmaxiter=1000 big.dot -o big.ps
+$ neato -Tps -Gepsilon=.001 small.gv -o small.ps
+$ neato -Tps -Gepsilon=1.5 big.gv -o big.ps
+$ neato -Tps -Gmaxiter=1000 big.gv -o big.ps
 \end{verbatim}
 
 \subsection{Edge Lengths and Weights}

@@ -65,7 +65,7 @@ a graphical form of the output, e.g. in JPEG or GIF format, to attach
 links to nodes and edges. For example, to create a server-side map
 given the dot file
 <PRE>
-/* x.dot */
+/* x.gv */
 digraph mainmap {
   URL="http://www.research.att.com/base.html";
   command [URL="http://www.research.att.com/command.html"];
@@ -74,7 +74,7 @@ digraph mainmap {
 </PRE>
 one would process the graph and generate two output files:
 <PRE>
-dot -Timap -ox.map -Tgif -ox.gif x.dot
+dot -Timap -ox.map -Tgif -ox.gif x.gv
 </PRE>
 and then refer to it in a web page:
 <XMP>
@@ -82,7 +82,7 @@ and then refer to it in a web page:
 </XMP>
 For client-side maps, one again generates two output files:
 <PRE>
-dot -Tcmapx -ox.map -Tgif -ox.gif x.dot
+dot -Tcmapx -ox.map -Tgif -ox.gif x.gv
 </PRE>
 and uses the HTML
 <XMP>
