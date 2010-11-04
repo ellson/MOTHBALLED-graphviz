@@ -33,8 +33,7 @@ libpack_C_la_SOURCES = ccomps.c pack.c
 pack.3.pdf: $(srcdir)/pack.3
 	- @GROFF@ -Tps -man $(srcdir)/pack.3 | @PS2PDF@ - - >pack.3.pdf
 
-EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old ptest.c
 
 DISTCLEANFILES = $(pdf_DATA)
 
-EXTRA_DIST = pack.3 Makefile.old ptest.c
