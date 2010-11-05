@@ -788,6 +788,7 @@ size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
 	    } else {
 		fsize = env->finfo.size;
 		fname = env->finfo.name;
+		lp.font->flags = 0;
 	    }
 	    sz = textsize(g, &lp, fname, fsize);
 	    free (ftxt->paras[i].items[j].str);
