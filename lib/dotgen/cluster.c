@@ -351,7 +351,7 @@ void expand_cluster(graph_t * subg)
 void mark_clusters(graph_t * g)
 {
     int c;
-    node_t *n, *vn;
+    node_t *n, *nn, *vn;
     edge_t *orig, *e;
     graph_t *clust;
 
@@ -364,11 +364,13 @@ void mark_clusters(graph_t * g)
 
     for (c = 1; c <= GD_n_cluster(g); c++) {
 	clust = GD_clust(g)[c];
-	for (n = agfstnode(clust); n; n = agnxtnode(clust, n)) {
+	for (n = agfstnode(clust); n; n = nn) {
+		nn = agnxtnode(clust,n);
 	    if (ND_ranktype(n) != NORMAL) {
 		agerr(AGWARN,
-		      "%s was already in a rankset, ignored in cluster %s\n",
+		      "%s was already in a rankset, deleted from cluster %s\n",
 		      agnameof(n), agnameof(g));
+		agdelete(clust,n);
 		continue;
 	    }
 	    UF_setname(n, GD_leader(clust));
