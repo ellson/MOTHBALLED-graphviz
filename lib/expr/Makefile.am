@@ -19,8 +19,8 @@ noinst_LTLIBRARIES = libexpr_C.la
 
 ### expr.h includes ast.h and vmalloc.h which we don't install
 #lib_LTLIBRARIES = libexpr.la
-#man_MANS = expr.3
-#pdf_DATA = expr.3.pdf
+man_MANS = expr.3
+pdf_DATA = expr.3.pdf
 #pkgconfig_DATA = libexpr.pc
 
 #### -no-undefined breaks Mac OS/X builds.
