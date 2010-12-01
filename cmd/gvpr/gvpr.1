@@ -177,7 +177,7 @@ traversal order.
 .PP
 Predicates and actions are sequences of statements in the C dialect 
 supported by the
-.IR libexpr (3)
+.IR expr (3)
 library.
 The only difference between predicates and actions is that the former
 must have a type that may interpreted as either true or false.
@@ -1076,6 +1076,37 @@ END_G {
 .DT
 .PP
 Computes the degrees of nodes with edges.
+.PP
+.ta \w'\f(CWdelete array[expression]'u
+.RS
+.nf
+\fBBEGIN {
+  int i, indent;
+  int seen[string];
+  void prInd (int cnt) {
+    for (i = 0; i < cnt; i++) printf ("  ");
+  }
+}
+BEG_G {
+
+   $tvtype = TV_prepostfwd;
+   $tvroot = node($,ARGV[0]);
+}
+N {
+  if (seen[$.name]) indent--;
+  else {
+    prInd(indent);
+      print ($.name);
+    seen[$.name] = 1;
+    indent++;
+  }
+}\fP
+.fi
+.RE
+.DT
+.PP
+Prints the depth-first traversal of the graph, starting
+with the node whose name is \fBARGV[0]\fP, as an indented list.
 .SH ENVIRONMENT
 .TP
 .B GPRPATH
@@ -1134,4 +1165,4 @@ and the confusion between '=' and '=='.
 Emden R. Gansner <erg@research.att.com>
 .SH "SEE ALSO"
 .PP
-awk(1), gc(1), dot(1), nop(1), libexpr(3), libcgraph(3)
+awk(1), gc(1), dot(1), nop(1), expr(3), cgraph(3)
