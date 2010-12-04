@@ -1355,6 +1355,70 @@ fi
 AM_CONDITIONAL(WITH_PYTHON26, [test "x$use_python26" = "xYes"])
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for PYTHON27
+
+AC_ARG_ENABLE(python27,
+  [AS_HELP_STRING([--enable-python27=no],[python27 language bindings])],
+  [], [enable_python27=no])
+
+if test "x$enable_python27" != "xyes"; then
+  use_python27="No (disabled by default - for multiversion installs)"
+else
+  if test "x$use_swig" != "xYes"; then
+    use_python27="No (swig not available)"
+  else
+    if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
+      use_python27="No (swig does not support -python option)"
+    else
+      AC_CHECK_PROG(PYTHON27,python2.7,python2.7)
+      if test "x$PYTHON27" = "x"; then
+        use_python27="No (python27 not available)"
+      else
+        PYTHON27_VERSION=`$PYTHON27 -V 2>&1 | $GREP Python | cut -d ' ' -f 2`
+        if test "x$PYTHON27_VERSION" = "x"; then
+          PYTHON27=
+        else
+          PYTHON27_VERSION_MAJOR=`echo $PYTHON27_VERSION | cut -d '.' -f 1`
+          PYTHON27_VERSION_MINOR=`echo $PYTHON27_VERSION | cut -d '.' -f 2`
+          PYTHON27_VERSION_SHORT=$PYTHON27_VERSION_MAJOR.$PYTHON27_VERSION_MINOR
+          if test $PYTHON27_VERSION_MAJOR -lt 3; then
+            if test $PYTHON27_VERSION_MAJOR -lt 2; then
+	      PYTHON27=
+            else
+              if test $PYTHON27_VERSION_MINOR -lt 5; then
+	        PYTHON27=
+              fi
+            fi
+          fi
+        fi
+      fi
+      if test "x$PYTHON27" = "x"; then
+	use_python27="No (python2.7 is too old)"
+      else
+        PYTHON27_PREFIX=`$PYTHON27 -c "import sys; print sys.prefix"`
+        PYTHON27_INCLUDES=-I$PYTHON27_PREFIX/include/python$PYTHON27_VERSION_SHORT
+        PYTHON24_LIBS="-lpython$PYTHON_VERSION_SHORT"
+        PYTHON27_INSTALL_DIR="`$PYTHON27 $srcdir/config/config_python.py archsitelib`"
+        save_CPPFLAGS=$CPPFLAGS
+        CPPFLAGS="$CPPFLAGS $PYTHON27_INCLUDES"
+        AC_CHECK_HEADER(Python.h,,[
+          use_python27="No (missing header)"
+          PYTHON27=
+        ])
+        CPPFLAGS=$save_CPPFLAGS
+	if test "x$PYTHON27" != "x"; then
+	  use_python27="Yes"
+          AC_SUBST(PYTHON27_INSTALL_DIR)
+          AC_SUBST(PYTHON27_INCLUDES)
+          AC_SUBST(PYTHON27_LIBS)
+        fi
+      fi
+    fi
+  fi
+fi
+AM_CONDITIONAL(WITH_PYTHON27, [test "x$use_python27" = "xYes"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for R
 
 AC_ARG_ENABLE(r,
@@ -3251,6 +3315,7 @@ echo "  gv_python23:   $use_python23"
 echo "  gv_python24:   $use_python24"
 echo "  gv_python25:   $use_python25"
 echo "  gv_python26:   $use_python26"
+echo "  gv_python27:   $use_python27"
 echo "  gv_R:          $use_r"
 echo "  gv_ruby:       $use_ruby"
 echo "  gv_tcl:        $use_gv_tcl"

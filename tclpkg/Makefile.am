@@ -13,6 +13,8 @@ pkgpythondir = $(pkglibdir)/python
 pkgpython23dir = $(pkglibdir)/python23
 pkgpython24dir = $(pkglibdir)/python24
 pkgpython25dir = $(pkglibdir)/python25
+pkgpython26dir = $(pkglibdir)/python26
+pkgpython27dir = $(pkglibdir)/python27
 pkgRdir = $(pkglibdir)/R
 pkgrubydir = $(pkglibdir)/ruby
 pkgtcldir = $(pkglibdir)/tcl
@@ -117,6 +119,28 @@ if WITH_PYTHON25
 		echo "Skipping system installation of python25 binding."; \
 	fi
 endif
+if WITH_PYTHON26
+	-mkdir -p $(DESTDIR)@PYTHON26_INSTALL_DIR@;
+	if test -w $(DESTDIR)@PYTHON26_INSTALL_DIR@; then \
+		(cd $(DESTDIR)@PYTHON26_INSTALL_DIR@; \
+			$(LN_S) -f $(pkgpython26dir)/libgv_python26.so _gv.so; \
+			$(LN_S) -f $(pkgpython26dir)/gv.py gv.py;) \
+	else \
+		echo "Warning: @PYTHON26_INSTALL_DIR@ is not writable."; \
+		echo "Skipping system installation of python26 binding."; \
+	fi
+endif
+if WITH_PYTHON27
+	-mkdir -p $(DESTDIR)@PYTHON27_INSTALL_DIR@;
+	if test -w $(DESTDIR)@PYTHON27_INSTALL_DIR@; then \
+		(cd $(DESTDIR)@PYTHON27_INSTALL_DIR@; \
+			$(LN_S) -f $(pkgpython27dir)/libgv_python27.so _gv.so; \
+			$(LN_S) -f $(pkgpython27dir)/gv.py gv.py;) \
+	else \
+		echo "Warning: @PYTHON27_INSTALL_DIR@ is not writable."; \
+		echo "Skipping system installation of python27 binding."; \
+	fi
+endif
 if WITH_RUBY
 	-mkdir -p $(DESTDIR)@RUBY_INSTALL_DIR@;
 	if test -w $(DESTDIR)@RUBY_INSTALL_DIR@; then \
@@ -160,6 +184,10 @@ uninstall-hook:
 	-rm -rf $(DESTDIR)@PYTHON24_INSTALL_DIR@/_gv.so $(DESTDIR)@PYTHON_INSTALL_DIR@/gv.py;
 	rm -rf $(DESTDIR)$(pkgpython25dir);
 	-rm -rf $(DESTDIR)@PYTHON25_INSTALL_DIR@/_gv.so $(DESTDIR)@PYTHON_INSTALL_DIR@/gv.py;
+	rm -rf $(DESTDIR)$(pkgpython26dir);
+	-rm -rf $(DESTDIR)@PYTHON26_INSTALL_DIR@/_gv.so $(DESTDIR)@PYTHON_INSTALL_DIR@/gv.py;
+	rm -rf $(DESTDIR)$(pkgpython27dir);
+	-rm -rf $(DESTDIR)@PYTHON27_INSTALL_DIR@/_gv.so $(DESTDIR)@PYTHON_INSTALL_DIR@/gv.py;
 	rm -rf $(DESTDIR)$(pkgRdir);
 	rm -rf $(DESTDIR)$(pkgrubydir);
 	-rm -rf $(DESTDIR)@RUBY_INSTALL_DIR@/gv.so;

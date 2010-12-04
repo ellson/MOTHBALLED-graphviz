@@ -202,6 +202,17 @@ libgv_python26_la_CPPFLAGS = $(BASECPPFLAGS) $(PYTHON26_INCLUDES)
 gv_python26.cpp: gv.i
 	$(SWIG) -c++ -python -o gv_python26.cpp $(srcdir)/gv.i
 
+pkgpython27dir = $(pkglibdir)/python27
+PYTHON27_data = gv.py
+nodist_libgv_python27_la_SOURCES = gv_python27.cpp $(PYTHON27_data)
+libgv_python27_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
+libgv_python27_la_LIBADD = $(BASELIBS) $(PYTHON27_LIBS)
+libgv_python27_la_LDFLAGS = -module -avoid-version
+libgv_python27_la_CPPFLAGS = $(BASECPPFLAGS) $(PYTHON27_INCLUDES)
+# $(PYTHON_data): gv_python.cpp
+gv_python27.cpp: gv.i
+	$(SWIG) -c++ -python -o gv_python27.cpp $(srcdir)/gv.i
+
 pkgRdir = $(pkglibdir)/R
 R_data = 
 nodist_libgv_R_la_SOURCES = gv_R.cpp $(R_data)
@@ -299,41 +310,48 @@ DEVTSTS += test_php
 endif
 if WITH_PYTHON
 pkgpython_DATA = $(PYTHON_data)
-gv_3python_man = gv.3python
-gv_3python_pdf = gv.3python.pdf
+py_mans ?= gv.3python
+py_data ?= gv.3python.pdf
 pkgpython_LTLIBRARIES = libgv_python.la
 DEVTSTS += test_python
 endif
 if WITH_PYTHON23
 pkgpython23_DATA = $(PYTHON23_data)
-gv_3python_man = gv.3python
-gv_3python_pdf = gv.3python.pdf
+py_mans ?= gv.3python
+py_data ?= gv.3python.pdf
 pkgpython23_LTLIBRARIES = libgv_python23.la
 #DEVTSTS += test_python23
 endif
 if WITH_PYTHON24
 pkgpython24_DATA = $(PYTHON24_data)
-gv_3python_man = gv.3python
-gv_3python_pdf = gv.3python.pdf
+py_mans ?= gv.3python
+py_data ?= gv.3python.pdf
 pkgpython24_LTLIBRARIES = libgv_python24.la
 #DEVTSTS += test_python24
 endif
 if WITH_PYTHON25
 pkgpython25_DATA = $(PYTHON25_data)
-gv_3python_man = gv.3python
-gv_3python_pdf = gv.3python.pdf
+py_mans ?= gv.3python
+py_data ?= gv.3python.pdf
 pkgpython25_LTLIBRARIES = libgv_python25.la
 #DEVTSTS += test_python25
 endif
 if WITH_PYTHON26
 pkgpython26_DATA = $(PYTHON26_data)
-gv_3python_man = gv.3python
-gv_3python_pdf = gv.3python.pdf
+py_mans ?= gv.3python
+py_data ?= gv.3python.pdf
 pkgpython26_LTLIBRARIES = libgv_python26.la
 #DEVTSTS += test_python26
 endif
-man_MANS += $(gv_3python_man)
-pdf_DATA += $(gv_3python_pdf)
+if WITH_PYTHON27
+pkgpython27_DATA = $(PYTHON27_data)
+py_mans ?= gv.3python
+py_data ?= gv.3python.pdf
+pkgpython27_LTLIBRARIES = libgv_python27.la
+#DEVTSTS += test_python27
+endif
+man_MANS += $(py_mans)
+pdf_DATA += $(py_data)
 if WITH_R
 pkgR_DATA = $(R_data)
 man_MANS += gv.3r
@@ -354,6 +372,9 @@ man_MANS += gv.3tcl
 pdf_DATA += gv.3tcl.pdf
 pkgtcl_LTLIBRARIES = libgv_tcl.la
 DEVTSTS += test_tcl
+
+man_MANS += $(py_mans)
+pdf_DATA += $(py_data)
 
 all-local: pkgIndex.tcl
 
@@ -434,6 +455,9 @@ endif
 if WITH_PYTHON26
 	(cd $(DESTDIR)$(pkgpython26dir); rm -f _gv.so; $(LN_S) libgv_python26.so _gv.so;)
 endif
+if WITH_PYTHON27
+	(cd $(DESTDIR)$(pkgpython27dir); rm -f _gv.so; $(LN_S) libgv_python27.so _gv.so;)
+endif
 if WITH_R
 	(cd $(DESTDIR)$(pkgRdir);   rm -f gv.so;  $(LN_S) libgv_R.so gv.so;)
 endif
@@ -453,6 +477,7 @@ uninstall-hook:
 	rm -rf $(DESTDIR)$(pkgpython24dir);
 	rm -rf $(DESTDIR)$(pkgpython25dir);
 	rm -rf $(DESTDIR)$(pkgpython26dir);
+	rm -rf $(DESTDIR)$(pkgpython27dir);
 	rm -rf $(DESTDIR)$(pkgRdir);
 	rm -rf $(DESTDIR)$(pkgrubydir);
 	rm -rf $(DESTDIR)$(pkgtcldir);
@@ -564,6 +589,7 @@ CLEANFILES = test_*/* pkgIndex.tcl \
 	gv_python24.cpp $(PYTHON24_data) gv.pyc \
 	gv_python25.cpp $(PYTHON25_data) gv.pyc \
 	gv_python26.cpp $(PYTHON26_data) gv.pyc \
+	gv_python27.cpp $(PYTHON27_data) gv.pyc \
 	gv_R.cpp $(R_data) \
 	gv_ruby.cpp $(RUBY_data) \
 	gv_tcl.cpp $(TCL_data) pkgIndex.tcl
