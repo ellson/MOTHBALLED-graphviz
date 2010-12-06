@@ -373,9 +373,6 @@ pdf_DATA += gv.3tcl.pdf
 pkgtcl_LTLIBRARIES = libgv_tcl.la
 DEVTSTS += test_tcl
 
-man_MANS += $(py_mans)
-pdf_DATA += $(py_data)
-
 all-local: pkgIndex.tcl
 
 pkgIndex.tcl: libgv_tcl.la
