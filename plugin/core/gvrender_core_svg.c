@@ -282,21 +282,32 @@ svg_begin_anchor(GVJ_t * job, char *href, char *tooltip, char *target, char *id)
     /* the svg spec implies this can be omitted: http://www.w3.org/TR/SVG/linking.html#Links */
     gvputs(job, " xlink:type=\"simple\"");
 #endif
-    if (href && href[0])
-	gvprintf(job, " xlink:href=\"%s\"", xml_url_string(href));
+    if (href && href[0]) {
+	gvputs(job, " xlink:href=\"");
+	gvputs(job, xml_url_string(href));
+	gvputs(job, "\"");
+    }
 #if 0
     /* linking to itself, just so that it can have a xlink:link in the anchor, seems wrong.
      * it changes the behavior in browsers, the link apears in the bottom information bar
      */
     else {
         assert (id && id[0]); /* there should always be an id available */
-	gvprintf(job, " xlink:href=\"#%s\"", xml_url_string(id));
+	gvputs(job, " xlink:href=\"#");
+        gvputs(job, xml_url_string(href));
+        gvputs(job, "\"");
     }
 #endif
-    if (tooltip && tooltip[0])
-	gvprintf(job, " xlink:title=\"%s\"", xml_string(tooltip));
-    if (target && target[0])
-	gvprintf(job, " target=\"%s\"", xml_string(target));
+    if (tooltip && tooltip[0]) {
+        gvputs(job, " xlink:title=\"");
+	gvputs(job, xml_string(tooltip));
+	gvputs(job, "\"");
+    }
+    if (target && target[0]) {
+	gvputs(job, " target=\"");
+	gvputs(job, xml_string(target));
+	gvputs(job, "\"");
+    }
     gvputs(job, ">\n");
 }
 
