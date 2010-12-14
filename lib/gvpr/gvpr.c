@@ -314,7 +314,7 @@ doFlags(char* arg, int argi, int argc, char** argv, options* opts)
 	    else return -1;
 	    break;
 	case 'o':
-	    if (!(optarg = getOptarg(c, &arg, &argi, argc, argv)) && !(opts->outFile = openOut(optarg)))
+	    if (!(optarg = getOptarg(c, &arg, &argi, argc, argv)) || !(opts->outFile = openOut(optarg)))
 		return -1;
 	    break;
 	case 'q':
