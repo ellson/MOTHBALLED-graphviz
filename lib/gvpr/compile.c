@@ -2282,6 +2282,16 @@ static case_stmt *mkStmts(Expr_t * prog, char *src, case_info * sp,
 	    cs[i].action = compile(prog, src, sp->action, sp->astart,
 				   sfstruse(tmps), 0, INTEGER);
 	    if (getErrorErrors()) break;
+	    /* If no error but no compiled action, the input action must
+	     * have been essentially an empty block, which should be
+	     * considered different from a missing block. So, compile a
+	     * trivial block.
+	     */
+	    if (!cs[i].action) {
+		sfprintf(tmps, "%s__a%d", lbl, i);
+		cs[i].action = compile(prog, src, "1", sp->astart,
+				   sfstruse(tmps), 0, INTEGER);
+	    }
 	}
 	sp = sp->next;
     }
