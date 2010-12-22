@@ -373,6 +373,9 @@ char *strdup_and_subst_obj(char *str, void *obj)
 	    case 'L':
 		newlen += l_len;
 		break; 
+	    case '\\':
+		newlen += 1;
+		break; 
 	    default:  /* leave other escape sequences unmodified, e.g. \n \l \r */
 		newlen += 2;
 	    }
@@ -416,6 +419,9 @@ char *strdup_and_subst_obj(char *str, void *obj)
 		break;
 	    case 'L':
 		for (t = l_str; (*p = *t++); p++);
+		break;
+	    case '\\':
+		*p++ = '\\';
 		break;
 	    default:  /* leave other escape sequences unmodified, e.g. \n \l \r */
 		*p++ = '\\';
