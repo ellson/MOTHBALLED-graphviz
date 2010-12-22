@@ -812,7 +812,7 @@ gml_to_gv (char* name, FILE* fp, int cnt, int* errors)
     else {
 	agxbinit (&xb, BUFSIZ, buf);
 	agxbinit (&unk, BUFSIZ, unknownb);
-	g = mkGraph (G, name, NULL, &xb, &unk);
+	g = mkGraph (G, NULL, name, &xb, &unk);
 	agxbfree (&xb);
     }
 
