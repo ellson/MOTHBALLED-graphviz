@@ -289,6 +289,7 @@ char *strdup_and_subst_obj(char *str, void *obj)
 	h_len = 2, t_len = 2, l_len = 2,
 	tp_len = 0, hp_len = 0;
     int newlen = 0;
+    int isEdge = 0;
     textlabel_t *tl;
     port pt;
 
@@ -319,6 +320,7 @@ char *strdup_and_subst_obj(char *str, void *obj)
 	    }
 	    break;
 	case AGEDGE:
+	    isEdge = 1;
 	    g_str = agnameof(agroot(agraphof(agtail(((edge_t *)obj)))));
 	    g_len = strlen(g_str);
 	    t_str = agnameof(agtail(((edge_t *)obj)));
@@ -392,16 +394,18 @@ char *strdup_and_subst_obj(char *str, void *obj)
 		for (t = n_str; (*p = *t++); p++);
 		break;
 	    case 'E':
-		for (t = t_str; (*p = *t++); p++);
-		if (tp_len) {
-		    *p++ = ':';
-		    for (t = tp_str; (*p = *t++); p++);
-		}
-		for (t = e_str; (*p = *t++); p++);
-		for (t = h_str; (*p = *t++); p++);
-		if (hp_len) {
-		    *p++ = ':';
-		    for (t = hp_str; (*p = *t++); p++);
+		if (isEdge) {
+		    for (t = t_str; (*p = *t++); p++);
+		    if (tp_len) {
+			*p++ = ':';
+			for (t = tp_str; (*p = *t++); p++);
+		    }
+		    for (t = e_str; (*p = *t++); p++);
+		    for (t = h_str; (*p = *t++); p++);
+		    if (hp_len) {
+			*p++ = ':';
+			for (t = hp_str; (*p = *t++); p++);
+		    }
 		}
 		break;
 	    case 'T':
