@@ -129,13 +129,13 @@ _agstrcanon (char* arg, char* buf)
 	*p++ = (char) uc;
 	uc = *(unsigned char *) s++;
 	cnt++;
-        if (uc && backslash_pending && !((_is_number_char(p[-1]) || isalpha(p[-1])) && (_is_number_char(uc) || isalpha(uc)))) {
+        if (uc && backslash_pending && !((_is_number_char(p[-1]) || isalpha(p[-1]) || (p[-1] == '\\')) && (_is_number_char(uc) || isalpha(uc)))) {
             *p++ = '\\';
             *p++ = '\n';
             has_special = TRUE;
             backslash_pending = FALSE;
         } else if (uc && cnt % SMALLBUF == 0) {
-            if (!((_is_number_char(p[-1]) || isalpha(p[-1])) && (_is_number_char(uc) || isalpha(uc)))) {
+            if (!((_is_number_char(p[-1]) || isalpha(p[-1]) || (p[-1] == '\\')) && (_is_number_char(uc) || isalpha(uc)))) {
 	        *p++ = '\\';
     	        *p++ = '\n';
 	        has_special = TRUE;

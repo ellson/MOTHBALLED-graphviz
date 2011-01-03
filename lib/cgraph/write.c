@@ -101,14 +101,14 @@ static char *_agstrcanon(char *arg, char *buf)
 	uc = *(unsigned char *) s++;
 	cnt++;
 	
-        if (uc && backslash_pending && !((is_number_char(p[-1]) || isalpha(p[-1])) && (is_number_char(uc) || isalpha(uc)))) {
+        if (uc && backslash_pending && !((is_number_char(p[-1]) || isalpha(p[-1]) || (p[-1] == '\\')) && (is_number_char(uc) || isalpha(uc)))) {
             *p++ = '\\';
             *p++ = '\n';
             needs_quotes = TRUE;
             backslash_pending = FALSE;
 	    cnt = 0;
         } else if (uc && (cnt >= MAX_OUTPUTLINE)) {
-            if (!((is_number_char(p[-1]) || isalpha(p[-1])) && (is_number_char(uc) || isalpha(uc)))) {
+            if (!((is_number_char(p[-1]) || isalpha(p[-1]) || (p[-1] == '\\')) && (is_number_char(uc) || isalpha(uc)))) {
 	        *p++ = '\\';
     	        *p++ = '\n';
 	        needs_quotes = TRUE;
