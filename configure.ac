@@ -1803,7 +1803,7 @@ else
   AC_ARG_WITH(expatlibdir,
     [AS_HELP_STRING([--with-expatlibdir=DIR],[use EXPAT libraries from DIR])],
     [EXPAT_LIBDIR="$withval"])
-  if test "$EXPAT_LIBDIR" != "/usr/lib$LIBPOSTFIX"; then
+  if test "$EXPAT_LIBDIR" != "/usr/lib"; then
 	  EXPAT_LIBS="-L$EXPAT_LIBDIR"
 	  LDFLAGS="$LDFLAGS $EXPAT_LIBS"
   fi
