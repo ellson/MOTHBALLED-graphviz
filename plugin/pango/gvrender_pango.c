@@ -200,6 +200,10 @@ static void cairogen_end_page(GVJ_t * job)
     case FORMAT_CAIRO:
     default:
         surface = cairo_get_target(cr);
+        if (cairo_image_surface_get_width(surface) == 0 || cairo_image_surface_get_height(surface) == 0) {
+	    /* apparently cairo never allocates a surface if nothing was ever written to it */
+	    fprintf(stderr, "ERROR: cairo surface has zero area, this may indicate some problem during rendering shapes.\n");
+	}
 	job->imagedata = (char *)(cairo_image_surface_get_data(surface));	
 	break;
        	/* formatting will be done by gvdevice_format() */
@@ -260,14 +264,17 @@ static void cairogen_ellipse(GVJ_t * job, pointf * A, int filled)
     cairogen_set_penstyle(job, cr);
 
     cairo_get_matrix(cr, &matrix);
-    cairo_translate(cr, A[0].x, -A[0].y);
 
     rx = A[1].x - A[0].x;
     ry = A[1].y - A[0].y;
-    cairo_scale(cr, 1, ry / rx);
-    cairo_move_to(cr, rx, 0);
-    cairo_arc(cr, 0, 0, rx, 0, 2 * M_PI);
-    cairo_close_path(cr);
+
+#define RMIN 0.01
+if (rx < RMIN) rx = RMIN;
+if (ry < RMIN) ry = RMIN;
+
+    cairo_translate(cr, A[0].x, -A[0].y);
+    cairo_scale(cr, rx, ry);
+    cairo_arc(cr, 0., 0., 1., 0., 2 * M_PI);
 
     cairo_set_matrix(cr, &matrix);
 

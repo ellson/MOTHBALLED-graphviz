@@ -85,17 +85,15 @@ static void gd_format(GVJ_t * job)
     switch (job->device.id) {
 #ifdef HAVE_GD_PNG
     case FORMAT_PNG:
-	if (data) {
-            for (y = 0; y < height; y++) {
-                for (x = 0; x < width; x++) {
-                    color = *data++;
-	            /* gd's max alpha is 127 */
-	            /*   so right-shift 25 to lose lsb of alpha */
-	            alpha = (color >> 25) & 0x7f;
-	            im->tpixels[y][x] = (color & 0xffffff) | ((0x7f - alpha) << 24);
-	        }
-            }
-	}
+        for (y = 0; y < height; y++) {
+            for (x = 0; x < width; x++) {
+                color = *data++;
+	        /* gd's max alpha is 127 */
+	        /*   so right-shift 25 to lose lsb of alpha */
+	        alpha = (color >> 25) & 0x7f;
+	        im->tpixels[y][x] = (color & 0xffffff) | ((0x7f - alpha) << 24);
+	    }
+        }
         break;
 #endif
     default:
@@ -104,20 +102,18 @@ static void gd_format(GVJ_t * job)
 
         gdImageColorTransparent(im, TRANSPARENT);
         gdImageAlphaBlending(im, FALSE);
-	if (data) {
-            for (y = 0; y < height; y++) {
-                for (x = 0; x < width; x++) {
-                    color = *data++;
-	            /* gd's max alpha is 127 */
-	            /*   so right-shift 25 to lose lsb of alpha */
-	            if ((alpha = (color >> 25) & 0x7f) >= 0x20)
-		        /* if not > 75% transparent */
-		        im->tpixels[y][x] = (color & 0xffffff) | ((0x7f - alpha) << 24);
-	            else
-		        im->tpixels[y][x] = TRANSPARENT;
-	        }
-            }
-	}
+        for (y = 0; y < height; y++) {
+            for (x = 0; x < width; x++) {
+                color = *data++;
+	        /* gd's max alpha is 127 */
+	        /*   so right-shift 25 to lose lsb of alpha */
+	        if ((alpha = (color >> 25) & 0x7f) >= 0x20)
+		    /* if not > 75% transparent */
+		    im->tpixels[y][x] = (color & 0xffffff) | ((0x7f - alpha) << 24);
+	        else
+		    im->tpixels[y][x] = TRANSPARENT;
+	    }
+        }
         break;
     }
 
