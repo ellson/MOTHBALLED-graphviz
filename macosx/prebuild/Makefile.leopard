@@ -432,7 +432,7 @@ $(GLIB_DIR)/configure: | $(GLIB_DIR).tar.gz
 	@echo
 	@echo CONFIGURING GLIB...
 	@echo
-	$(TAR) xzf $| && (cd $(GLIB_DIR); patch -p1 <../glib.patch)
+	$(TAR) xzf $| && (cd $(GLIB_DIR); patch -p1 <../glib.leopard.patch)
 	
 $(GLIB_DIR).tar.gz:
 	@echo
