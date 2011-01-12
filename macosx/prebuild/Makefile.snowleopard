@@ -12,10 +12,6 @@ ARCHS=-arch ppc -arch i386 -arch x86_64
 
 include Makefile-packages.incl
 
-# GLIB 2.27 doesn't build
-# GLIB 2.20 was OK
-GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.20/glib-2.20.1.tar.gz
-
 # libraries
 
 PKGCONFIG=pkg-config
@@ -342,8 +338,8 @@ $(PANGO_DIR).tar.gz:
 #
 # patch to fix libiconv_open absent in 64-bit
 # run configure + make once to create glib-genmarshal for cross-building support
-# run configure once for each architecture, capturing config.h and glibconfig.h
-# run configure again for Universal Binary, recomposing config.h and glibconfig.h from captured versions
+# run configure once for each architecture, capturing config.h and glib/glibconfig.h
+# run configure again for Universal Binary, recomposing config.h and glib/glibconfig.h from captured versions
 
 $(PREFIX)/lib/$(GLIB): $(GLIB_DIR)/glib/$(GLIB)
 	@echo
@@ -373,26 +369,30 @@ $(GLIB_DIR)/Makefile: $(PREFIX)/lib/$(INTL) | $(PREFIX)/bin/$(PKGCONFIG) $(GLIB_
 	echo "ac_cv_func_posix_getgrgid_r=yes" >>darwin.cache && \
 	echo "ac_cv_func_vsnprintf_c99=yes" >>darwin.cache && \
 	echo "ac_cv_func_printf_unix98=yes" >>darwin.cache && \
-	PATH=$(PREFIX)/bin:gobject:$$PATH && \
+	PATH=$(PREFIX)/bin:gobject:gio:$$PATH && \
 	echo --- GLIB-GENMARSHAL PASS --- && \
 	./configure $(BASE_CONFIG) CFLAGS="-I$(PREFIX)/include" LDFLAGS="-L$(PREFIX)/lib" && \
 	$(MAKE) -C glib && \
+	$(MAKE) -C gthread && \
+	$(MAKE) -C gobject && \
+	$(MAKE) -C gmodule && \
+	$(MAKE) -C gio && \
 	$(MAKE) -C gobject glib-genmarshal && \
 	cp darwin.cache darwinian.cache && \
 	echo --- PPC PASS --- && \
 	./configure --cache-file=darwinian.cache --build=$$BUILD --host=powerpc-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch ppc -I$(PREFIX)/include" LDFLAGS="-arch ppc -L$(PREFIX)/lib" && \
 	cp config.h config.ppc.h && \
-	cp glibconfig.h glibconfig.ppc.h && \
+	cp glib/glibconfig.h glib/glibconfig.ppc.h && \
 	cp darwin.cache darwinian.cache && \
 	echo --- I386 PASS --- && \
 	./configure --cache-file=darwinian.cache --build=$$BUILD --host=i686-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch i386 -I$(PREFIX)/include" LDFLAGS="-arch i386 -L$(PREFIX)/lib" && \
 	cp config.h config.i386.h && \
-	cp glibconfig.h glibconfig.i386.h && \
+	cp glib/glibconfig.h glib/glibconfig.i386.h && \
 	cp darwin.cache darwinian.cache && \
 	echo --- X86_64 PASS --- && \
 	./configure --cache-file=darwinian.cache --build=$$BUILD --host=x86_64-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch x86_64 -I$(PREFIX)/include" LDFLAGS="-arch x86_64 -L$(PREFIX)/lib" && \
 	cp config.h config.x86_64.h && \
-	cp glibconfig.h glibconfig.x86_64.h && \
+	cp glib/glibconfig.h glib/glibconfig.x86_64.h && \
 	cp darwin.cache darwinian.cache && \
 	echo --- UNIVERSAL BINARY PASS --- && \
 	./configure $(BASE_CONFIG) CFLAGS="-O2 $(ARCHS) -I$(PREFIX)/include" LDFLAGS="$(ARCHS) -L$(PREFIX)/lib" && \
@@ -404,14 +404,14 @@ $(GLIB_DIR)/Makefile: $(PREFIX)/lib/$(INTL) | $(PREFIX)/bin/$(PKGCONFIG) $(GLIB_
 	echo "#elif defined(__x86_64__)" >>config.h && \
 	cat config.x86_64.h >>config.h && \
 	echo "#endif" >>config.h && \
-	rm glibconfig.h && \
-	echo "#if defined(__ppc__)" >>glibconfig.h && \
-	cat glibconfig.ppc.h >>glibconfig.h && \
-	echo "#elif defined(__i386__)" >>glibconfig.h && \
-	cat glibconfig.i386.h >>glibconfig.h && \
-	echo "#elif defined(__x86_64__)" >>glibconfig.h && \
-	cat glibconfig.x86_64.h >>glibconfig.h && \
-	echo "#endif" >>glibconfig.h && \
+	rm glib/glibconfig.h && \
+	echo "#if defined(__ppc__)" >>glib/glibconfig.h && \
+	cat glib/glibconfig.ppc.h >>glib/glibconfig.h && \
+	echo "#elif defined(__i386__)" >>glib/glibconfig.h && \
+	cat glib/glibconfig.i386.h >>glib/glibconfig.h && \
+	echo "#elif defined(__x86_64__)" >>glib/glibconfig.h && \
+	cat glib/glibconfig.x86_64.h >>glib/glibconfig.h && \
+	echo "#endif" >>glib/glibconfig.h && \
 	touch stamp-gc-h && \
 	$(MAKE) clean
 	
