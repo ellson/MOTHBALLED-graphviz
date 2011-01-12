@@ -66,6 +66,8 @@ BuildRequires: python python-devel
 %if %rhel >= 5
 BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel
 BuildRequires: libtool-ltdl libtool-ltdl-devel
+%define PHP 1
+BuildRequires: php-devel
 %define JAVA 1
 BuildRequires: java-devel
 %define PANGOCAIRO 1
@@ -84,8 +86,6 @@ BuildRequires: lua-devel
 BuildRequires: ocaml
 %define PERL 1
 BuildRequires: perl-devel perl-libs perl-ExtUtils-Embed
-%define PHP 1
-BuildRequires: php-devel
 %define MYLIBGD 0
 BuildRequires: gd gd-devel
 %define GDK_PIXBUF 1
