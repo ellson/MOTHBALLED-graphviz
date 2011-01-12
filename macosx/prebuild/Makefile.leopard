@@ -6,7 +6,7 @@ TAR=tar
 
 PREFIX=$(HOME)/FIX/leopard
 
-ARCHS=-arch ppc -arch i386 -arch x86_64
+ARCHS=-arch ppc -arch i386 -arch ppc64 -arch x86_64
 
 # package URL
 
