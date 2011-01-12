@@ -10,29 +10,7 @@ ARCHS=-arch ppc -arch i386 -arch x86_64
 
 # package URL
 
-PKGCONFIG_URL=http://pkgconfig.freedesktop.org/releases/pkg-config-0.23.tar.gz
-PNG_URL=http://downloads.sourceforge.net/libpng/libpng-1.2.41.tar.gz
-FREETYPE_URL=http://download.savannah.gnu.org/releases-noredirect/freetype/freetype-2.3.11.tar.gz
-FONTCONFIG_URL=http://fontconfig.org/release/fontconfig-2.8.0.tar.gz
-XFT_URL=http://xorg.freedesktop.org/releases/individual/lib/libXft-2.1.14.tar.gz
-GD_URL=http://www.libgd.org/releases/gd-2.0.36RC1.tar.gz
-PIXMAN_URL=http://cairographics.org/releases/pixman-0.17.2.tar.gz
-CAIRO_URL=http://cairographics.org/releases/cairo-1.8.8.tar.gz
-GETTEXT_URL=ftp://mirrors.kernel.org/gnu/gettext/gettext-0.17.tar.gz
-
-# GLIB 2.21 doesn't build
-#GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.21/glib-2.21.2.tar.gz
-# GLIB 2.20 was OK
-GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.20/glib-2.20.1.tar.gz
-# GLIB 2.23 doesn't build
-#GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.23/glib-2.23.0.tar.gz
-
-PANGO_URL=http://ftp.gnome.org/pub/GNOME/sources/pango/1.24/pango-1.24.4.tar.gz
-GTS_URL=http://downloads.sourceforge.net/gts/gts-0.7.6.tar.gz
-GTK_URL=http://ftp.gnome.org/pub/gnome/sources/gtk+/2.19/gtk+-2.19.1.tar.gz
-ATK_URL=http://ftp.acc.umu.se/pub/gnome/sources/atk/1.29/atk-1.29.3.tar.gz
-TIFF_URL=ftp://ftp.remotesensing.org/pub/libtiff/tiff-4.0.0beta5.tar.gz
-JPEG_URL=http://www.ijg.org/files/jpegsrc.v7.tar.gz
+include Makefile-packages.incl
 
 # libraries
 
@@ -42,7 +20,7 @@ FONTCONFIG=libfontconfig.la
 XFT=libXft.la
 GD=libgd.la
 PIXMAN=libpixman-1.la
-PNG=libpng.la
+PNG=libpng15.la
 CAIRO=libcairo.la
 INTL=libintl.la
 GLIB=libglib-2.0.la
