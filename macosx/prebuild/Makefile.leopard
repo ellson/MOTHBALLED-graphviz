@@ -17,7 +17,7 @@ include Makefile-packages.incl
 GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.20/glib-2.20.1.tar.gz
 
 # CAIRO 1.10.2 doesn't build
-# CAIRO 1.8.8 was OK
+# CAIRO 1.8.10 was OK
 CAIRO_URL=http://cairographics.org/releases/cairo-1.8.8.tar.gz
 
 # libraries
