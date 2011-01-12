@@ -393,6 +393,11 @@ $(GLIB_DIR)/Makefile: $(PREFIX)/lib/$(INTL) | $(PREFIX)/bin/$(PKGCONFIG) $(GLIB_
 	cp config.h config.i386.h && \
 	cp glibconfig.h glibconfig.i386.h && \
 	cp darwin.cache darwinian.cache && \
+	echo --- PPC64 PASS --- && \
+	./configure --cache-file=darwinian.cache --build=$$BUILD --host=powerpc-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch ppc64 -I$(PREFIX)/include" LDFLAGS="-arch ppc64 -L$(PREFIX)/lib" && \
+	cp config.h config.ppc64.h && \
+	cp glibconfig.h glibconfig.ppc64.h && \
+	cp darwin.cache darwinian.cache && \
 	echo --- X86_64 PASS --- && \
 	./configure --cache-file=darwinian.cache --build=$$BUILD --host=x86_64-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch x86_64 -I$(PREFIX)/include" LDFLAGS="-arch x86_64 -L$(PREFIX)/lib" && \
 	cp config.h config.x86_64.h && \
@@ -405,6 +410,8 @@ $(GLIB_DIR)/Makefile: $(PREFIX)/lib/$(INTL) | $(PREFIX)/bin/$(PKGCONFIG) $(GLIB_
 	cat config.ppc.h >>config.h && \
 	echo "#elif defined(__i386__)" >>config.h && \
 	cat config.i386.h >>config.h && \
+	echo "#elif defined(__ppc64__)" >>config.h && \
+	cat config.ppc64.h >>config.h && \
 	echo "#elif defined(__x86_64__)" >>config.h && \
 	cat config.x86_64.h >>config.h && \
 	echo "#endif" >>config.h && \
@@ -413,6 +420,8 @@ $(GLIB_DIR)/Makefile: $(PREFIX)/lib/$(INTL) | $(PREFIX)/bin/$(PKGCONFIG) $(GLIB_
 	cat glibconfig.ppc.h >>glibconfig.h && \
 	echo "#elif defined(__i386__)" >>glibconfig.h && \
 	cat glibconfig.i386.h >>glibconfig.h && \
+	echo "#elif defined(__ppc64__)" >>glibconfig.h && \
+	cat glibconfig.ppc64.h >>glibconfig.h && \
 	echo "#elif defined(__x86_64__)" >>glibconfig.h && \
 	cat glibconfig.x86_64.h >>glibconfig.h && \
 	echo "#endif" >>glibconfig.h && \
