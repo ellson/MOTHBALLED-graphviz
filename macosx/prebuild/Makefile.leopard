@@ -6,30 +6,19 @@ TAR=tar
 
 PREFIX=$(HOME)/FIX/leopard
 
-ARCHS=-arch ppc -arch i386 -arch ppc64 -arch x86_64
+ARCHS=-arch ppc -arch i386 -arch x86_64
 
 # package URL
 
-PKGCONFIG_URL=http://pkgconfig.freedesktop.org/releases/pkg-config-0.23.tar.gz
-PNG_URL=http://downloads.sourceforge.net/libpng/libpng-1.2.37.tar.gz
-FREETYPE_URL=http://download.savannah.gnu.org/releases-noredirect/freetype/freetype-2.3.9.tar.gz
-FONTCONFIG_URL=http://fontconfig.org/release/fontconfig-2.7.0.tar.gz
-XFT_URL=http://xorg.freedesktop.org/releases/individual/lib/libXft-2.1.8.2.tar.gz
-GD_URL=http://www.libgd.org/releases/gd-2.0.36RC1.tar.gz
-PIXMAN_URL=http://cairographics.org/releases/pixman-0.15.4.tar.gz
-CAIRO_URL=http://cairographics.org/releases/cairo-1.8.8.tar.gz
-GETTEXT_URL=ftp://mirrors.kernel.org/gnu/gettext/gettext-0.17.tar.gz
+include Makefile-packages.incl
 
-# latest GLIB doesn't build
-#GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.21/glib-2.21.2.tar.gz
+# GLIB 2.27.3 doesn't build
+# GLIB 2.20 was OK
 GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.20/glib-2.20.1.tar.gz
 
-PANGO_URL=http://ftp.gnome.org/pub/GNOME/sources/pango/1.24/pango-1.24.4.tar.gz
-GTS_URL=http://downloads.sourceforge.net/gts/gts-0.7.6.tar.gz
-GTK_URL=http://ftp.gnome.org/pub/gnome/sources/gtk+/2.17/gtk+-2.17.2.tar.gz
-ATK_URL=http://ftp.acc.umu.se/pub/gnome/sources/atk/1.26/atk-1.26.0.tar.gz
-TIFF_URL=ftp://ftp.remotesensing.org/pub/libtiff/tiff-4.0.0beta3.tar.gz
-JPEG_URL=http://www.ijg.org/files/jpegsrc.v7.tar.gz
+# CAIRO 1.10.2 doesn't build
+# CAIRO 1.8.8 was OK
+CAIRO_URL=http://cairographics.org/releases/cairo-1.8.8.tar.gz
 
 # libraries
 
@@ -39,7 +28,7 @@ FONTCONFIG=libfontconfig.la
 XFT=libXft.la
 GD=libgd.la
 PIXMAN=libpixman-1.la
-PNG=libpng.la
+PNG=libpng15.la
 CAIRO=libcairo.la
 INTL=libintl.la
 GLIB=libglib-2.0.la
@@ -167,7 +156,7 @@ $(JPEG_DIR)/configure: | $(JPEG_DIR).tar.gz
 	@echo UNTARRING JPEG...
 	@echo
 	$(TAR) xzf $| 
-	ln -s jpeg-7 $(JPEG_DIR)
+	ln -s jpeg-8b $(JPEG_DIR)
 		
 $(JPEG_DIR).tar.gz:
 	@echo
@@ -404,11 +393,6 @@ $(GLIB_DIR)/Makefile: $(PREFIX)/lib/$(INTL) | $(PREFIX)/bin/$(PKGCONFIG) $(GLIB_
 	cp config.h config.i386.h && \
 	cp glibconfig.h glibconfig.i386.h && \
 	cp darwin.cache darwinian.cache && \
-	echo --- PPC64 PASS --- && \
-	./configure --cache-file=darwinian.cache --build=$$BUILD --host=powerpc-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch ppc64 -I$(PREFIX)/include" LDFLAGS="-arch ppc64 -L$(PREFIX)/lib" && \
-	cp config.h config.ppc64.h && \
-	cp glibconfig.h glibconfig.ppc64.h && \
-	cp darwin.cache darwinian.cache && \
 	echo --- X86_64 PASS --- && \
 	./configure --cache-file=darwinian.cache --build=$$BUILD --host=x86_64-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch x86_64 -I$(PREFIX)/include" LDFLAGS="-arch x86_64 -L$(PREFIX)/lib" && \
 	cp config.h config.x86_64.h && \
@@ -421,8 +405,6 @@ $(GLIB_DIR)/Makefile: $(PREFIX)/lib/$(INTL) | $(PREFIX)/bin/$(PKGCONFIG) $(GLIB_
 	cat config.ppc.h >>config.h && \
 	echo "#elif defined(__i386__)" >>config.h && \
 	cat config.i386.h >>config.h && \
-	echo "#elif defined(__ppc64__)" >>config.h && \
-	cat config.ppc64.h >>config.h && \
 	echo "#elif defined(__x86_64__)" >>config.h && \
 	cat config.x86_64.h >>config.h && \
 	echo "#endif" >>config.h && \
@@ -431,8 +413,6 @@ $(GLIB_DIR)/Makefile: $(PREFIX)/lib/$(INTL) | $(PREFIX)/bin/$(PKGCONFIG) $(GLIB_
 	cat glibconfig.ppc.h >>glibconfig.h && \
 	echo "#elif defined(__i386__)" >>glibconfig.h && \
 	cat glibconfig.i386.h >>glibconfig.h && \
-	echo "#elif defined(__ppc64__)" >>glibconfig.h && \
-	cat glibconfig.ppc64.h >>glibconfig.h && \
 	echo "#elif defined(__x86_64__)" >>glibconfig.h && \
 	cat glibconfig.x86_64.h >>glibconfig.h && \
 	echo "#endif" >>glibconfig.h && \
@@ -587,7 +567,8 @@ $(PIXMAN_DIR)/configure: | $(PIXMAN_DIR).tar.gz
 	@echo
 	@echo UNTARRING PIXMAN...
 	@echo
-	$(TAR) xzf $| && (cd $(PIXMAN_DIR); patch -p1 <../pixman.patch)
+#	$(TAR) xzf $| && (cd $(PIXMAN_DIR); patch -p1 <../pixman.patch)
+	$(TAR) xzf $|
 	
 $(PIXMAN_DIR).tar.gz:
 	@echo

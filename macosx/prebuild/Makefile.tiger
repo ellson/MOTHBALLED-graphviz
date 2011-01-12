@@ -11,19 +11,7 @@ ARCHS=-arch i386
 
 # package URL
 
-PKGCONFIG_URL=http://pkgconfig.freedesktop.org/releases/pkg-config-0.23.tar.gz
-FONTCONFIG_URL=http://fontconfig.org/release/fontconfig-2.6.0.tar.gz
-XFT_URL=http://xorg.freedesktop.org/releases/individual/lib/libXft-2.1.8.2.tar.gz
-LIBPNG_URL=http://prdownloads.sourceforge.net/libpng/libpng-1.2.31.tar.gz
-GD_URL=http://www.libgd.org/releases/gd-2.0.35.tar.gz
-FREETYPE_URL=http://download.savannah.gnu.org/releases/freetype/freetype-2.3.7.tar.gz
-PIXMAN_URL=http://cairographics.org/releases/pixman-0.13.2.tar.gz
-CAIRO_URL=http://cairographics.org/releases/cairo-1.8.6.tar.gz
-LIBICONV_URL=http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.12.tar.gz
-GETTEXT_URL=ftp://mirrors.kernel.org/gnu/gettext/gettext-0.17.tar.gz
-GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.18/glib-2.18.2.tar.gz
-PANGO_URL=http://ftp.gnome.org/pub/GNOME/sources/pango/1.22/pango-1.22.4.tar.gz
-LIBXML2_URL=ftp://xmlsoft.org/libxml2/libxml2-2.7.2.tar.gz
+include Makefile-packages.incl
 
 # libraries
 
@@ -44,7 +32,7 @@ PANGO=libpango-1.0.la
 # directories
 dirname=$(basename $(basename $(notdir $(1))))
 PKGCONFIG_DIR=$(call dirname, $(PKGCONFIG_URL))
-LIBPNG_DIR=$(call dirname, $(LIBPNG_URL))
+LIBPNG_DIR=$(call dirname, $(PNG_URL))
 FREETYPE_DIR=$(call dirname, $(FREETYPE_URL))
 FONTCONFIG_DIR=$(call dirname, $(FONTCONFIG_URL))
 XFT_DIR=$(call dirname, $(XFT_URL))

@@ -12,6 +12,10 @@ ARCHS=-arch ppc -arch i386 -arch x86_64
 
 include Makefile-packages.incl
 
+# GLIB 2.27 doesn't build
+# GLIB 2.20 was OK
+GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.20/glib-2.20.1.tar.gz
+
 # libraries
 
 PKGCONFIG=pkg-config
