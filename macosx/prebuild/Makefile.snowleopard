@@ -148,7 +148,7 @@ $(JPEG_DIR)/configure: | $(JPEG_DIR).tar.gz
 	@echo UNTARRING JPEG...
 	@echo
 	$(TAR) xzf $| 
-	ln -s jpeg-7 $(JPEG_DIR)
+	ln -s jpeg-8b $(JPEG_DIR)
 		
 $(JPEG_DIR).tar.gz:
 	@echo
