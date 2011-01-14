@@ -199,7 +199,12 @@ int Pshortestpath(Ppoly_t * polyp, Ppoint_t * eps, Ppolyline_t * output)
     /* mark the strip of triangles from eps[0] to eps[1] */
     if (!marktripath(ftrii, ltrii)) {
 	prerror("cannot find triangle path");
-	abort();
+	/* a straight line is better than failing */
+	growops(2);
+	output->pn = 2;
+	ops[0] = eps[0], ops[1] = eps[1];
+	output->ps = ops;
+	return 0;
     }
 
     /* if endpoints in same triangle, use a single line */
@@ -310,7 +315,7 @@ static void triangulate(pointnlink_t ** pnlps, int pnln)
 				return;
 			}
 		}
-		abort();
+		prerror("triangulation failed");
     } 
 	else
 		loadtriangle(pnlps[0], pnlps[1], pnlps[2]);
