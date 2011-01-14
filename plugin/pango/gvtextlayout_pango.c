@@ -75,6 +75,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     PangoRectangle logical_rect;
     PangoLayoutIter* iter;
     cairo_font_options_t* options;
+    PangoFont *font;
 #ifdef ENABLE_PANGO_MARKUP
     PangoAttrList *attrs;
     GError *error = NULL;
@@ -111,11 +112,9 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
         /* all text layout is done at a scale of 96ppi */
         pango_font_description_set_size (desc, (gint)(fontsize * PANGO_SCALE));
 
-        if (fontpath) {  /* -v support */
-	    PangoFont *font;
+        if (fontpath && (font = pango_font_map_load_font(fontmap, context, desc))) {  /* -v support */
 	    const char *fontclass;
 
-            font = pango_font_map_load_font(fontmap, context, desc);
 	    fontclass = G_OBJECT_CLASS_NAME(G_OBJECT_GET_CLASS(font));
 
 	    buf[0] = '\0';
