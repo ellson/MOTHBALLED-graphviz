@@ -274,6 +274,7 @@ if (ry < RMIN) ry = RMIN;
 
     cairo_translate(cr, A[0].x, -A[0].y);
     cairo_scale(cr, rx, ry);
+    cairo_move_to(cr, 1., 0.);
     cairo_arc(cr, 0., 0., 1., 0., 2 * M_PI);
 
     cairo_set_matrix(cr, &matrix);
