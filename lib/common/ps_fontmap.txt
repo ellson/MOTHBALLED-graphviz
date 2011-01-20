@@ -3,7 +3,7 @@
 #elif defined(WIN32)
 #define TIMES "Times New Roman"
 #else
-#define TIMES "Times Roman"
+#define TIMES "Times"
 #endif
 #define COURIER "Courier"
 #define HELVETICA "Helvetica"
