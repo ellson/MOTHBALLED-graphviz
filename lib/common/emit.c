@@ -693,7 +693,7 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     margin = job->margin;
 
     /* determine pagination */
-    if (gvc->graph_sets_pageSize) {
+    if (gvc->graph_sets_pageSize && (job->flags & GVDEVICE_DOES_PAGES)) {
 	/* page was set by user */
 
         /* determine size of page for image */
