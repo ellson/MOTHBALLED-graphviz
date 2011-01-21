@@ -206,9 +206,13 @@ pointf textsize(graph_t *g, textpara_t * para, char *fontname, double fontsize)
     if (! gvtextlayout(GD_gvc(g), para, fp))
 	estimate_textlayout(g, para, fp);
 
-    if (fp)
-	fprintf(stderr, "fontname: \"%s\" resolved to: %s\n",
+    if (fp) {
+	if (fontpath)
+	    fprintf(stderr, "fontname: \"%s\" resolved to: %s\n",
 		    para->fontname, fontpath);
+	else
+	    fprintf(stderr, "fontname: unable to resolve \"%s\"\n", para->fontname);
+    }
 
     size.x = para->width;
     size.y = para->height;
