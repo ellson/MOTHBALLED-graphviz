@@ -674,15 +674,9 @@ Determines if and how node overlaps should be removed. Nodes are first
 enlarged using the <A HREF=#d:sep><B>sep</B></A> attribute.
 If "true" , overlaps are retained.
 If the value is "scale", overlaps are removed by uniformly scaling in x and y.
-If the value converts to "false", node overlaps are removed by a
-Voronoi-based technique.
-If the value is "scalexy", x and y are separately
-scaled to remove overlaps.
-<P>
-If sfdp is available, one can set overlap to "prism" to use a 
-proximity graph-based algorithm for overlap removal. 
-This is the preferred technique,
-though "scale" and "false" can work well with small graphs.
+If the value converts to "false", and it is available, Prism, a proximity graph-based algorithm, is
+used to remove node overlaps.
+This can also be invoked explicitly with "overlap=prism".
 This technique starts with a
 small scaling up, controlled by the 
 <A HREF="#d:overlap_scaling"><TT>overlap_scaling</TT></A> attribute,
@@ -692,6 +686,12 @@ This can be used to control the number of attempts made at overlap
 removal. By default, <TT>overlap="prism"</TT> is equivalent to
 <TT>overlap="prism1000"</TT>. Setting <TT>overlap="prism0"</TT>
 causes only the scaling phase to be run.
+<P>
+If Prism is not available, or the version of Graphviz is earlier than 2.28, "overlap=false"
+uses a Voronoi-based technique.
+<P>
+If the value is "scalexy", x and y are separately
+scaled to remove overlaps.
 <P>
 If the value is "compress", the layout will be scaled down as much as
 possible without introducing any overlaps, obviously assuming there are
@@ -723,12 +723,12 @@ incorporated into the layout algorithm itself.
 N.B. At present, this only supports one level of clustering.
 <P>
 Except for fdp and sfdp, the layouts assume <TT>overlap="true"</TT> as the default.
-Fdp first uses a number of passes using built-in, force-directed technique
-to remove overlaps. Thus, fdp accepts <B>overlap</B> with an integer
+Fdp first uses a number of passes using a built-in, force-directed technique
+to try to remove overlaps. Thus, fdp accepts <B>overlap</B> with an integer
 prefix followed by a colon, specifying the number of tries. If there is
 no prefix, no initial tries will be performed. If there is nothing following
 a colon, none of the above methods will be attempted. By default, fdp
-uses <TT>overlap="9:portho"</TT>. Note that <TT>overlap="true"</TT>,
+uses <TT>overlap="9:prism"</TT>. Note that <TT>overlap="true"</TT>,
 <TT>overlap="0:true"</TT> and <TT>overlap="0:"</TT> all turn off all overlap
 removal.
 <P>
