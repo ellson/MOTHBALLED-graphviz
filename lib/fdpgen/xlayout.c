@@ -43,7 +43,7 @@ Increase less between tries
 /* #define ORIG      */
 #define BOX	/* Use bbox to determine overlap, else use circles */
 
-#define DFLT_overlap   "9:portho"    /* default overlap value */
+#define DFLT_overlap   "9:prism"    /* default overlap value */
 
 #define WD2(n) (X_marg.doAdd ? (ND_width(n)/2.0 + X_marg.x): ND_width(n)*X_marg.x/2.0)
 #define HT2(n) (X_marg.doAdd ? (ND_height(n)/2.0 + X_marg.y): ND_height(n)*X_marg.y/2.0)
