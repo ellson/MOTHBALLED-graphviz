@@ -101,6 +101,18 @@ typedef struct {
     int flags;
 } xdot;
 
+typedef struct {
+    int cnt;  /* no. of xdot ops */
+    int n_ellipse;
+    int n_polygon;
+    int n_polygon_pts;
+    int n_polyline;
+    int n_polyline_pts;
+    int n_bezier;
+    int n_bezier_pts;
+    int n_text;
+} xdot_stats;
+
 /* ops are indexed by xop_kind */
 extern xdot* parseXDotF (char*, drawfunc_t opfns[], int sz);
 extern xdot* parseXDotFOn (char*, drawfunc_t opfns[], int sz, xdot*);
@@ -108,5 +120,6 @@ extern xdot* parseXDot (char*);
 extern char* sprintXDot (xdot*);
 extern void fprintXDot (FILE*, xdot*);
 extern void freeXDot (xdot*);
+extern int statXDot (xdot*, xdot_stats*);
 
 #endif

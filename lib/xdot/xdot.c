@@ -37,11 +37,21 @@ static char *parseReal(char *s, double *fp)
 
 static char *parseInt(char *s, int *ip)
 {
-    int r, sz;
+    char* endp;
+
+#ifdef UNUSED
     r = sscanf(s, "%d%n", ip, &sz);
     if (r != 1) return 0;
     else return (s + sz);
+#endif
+
+    *ip = (int)strtol (s, &endp, 10);
+    if (s == endp)
+	return 0;
+    else
+	return endp;
 }
+
 #ifdef UNUSED
 static char *parsePoint(char *s, xdot_point * pp)
 {
@@ -55,11 +65,40 @@ static char *parsePoint(char *s, xdot_point * pp)
 
 static char *parseRect(char *s, xdot_rect * rp)
 {
+    char* endp;
+#ifdef UNUSED
     int r, sz;
     r = sscanf(s, "%lf %lf %lf %lf%n", &(rp->x), &(rp->y), &(rp->w),
 	       &(rp->h), &sz);
     if (r != 4) return 0;
     else return (s + sz);
+#endif
+
+    rp->x = strtod (s, &endp);
+    if (s == endp)
+	return 0;
+    else
+	s = endp;
+
+    rp->y = strtod (s, &endp);
+    if (s == endp)
+	return 0;
+    else
+	s = endp;
+
+    rp->w = strtod (s, &endp);
+    if (s == endp)
+	return 0;
+    else
+	s = endp;
+
+    rp->y = strtod (s, &endp);
+    if (s == endp)
+	return 0;
+    else
+	s = endp;
+
+    return s;
 }
 
 static char *parsePolyline(char *s, xdot_polyline * pp)
@@ -629,6 +668,48 @@ void freeXDot (xdot * x)
     }
     free(base);
     free(x);
+}
+
+int statXDot (xdot* x, xdot_stats* sp)
+{
+    int i;
+    xdot_op *op;
+    char *base;
+
+    if (!x || !sp) return 1;
+    memset(sp, 0, sizeof(xdot_stats));
+    sp->cnt = x->cnt;
+    base = (char *) (x->ops);
+    for (i = 0; i < x->cnt; i++) {
+	op = (xdot_op *) (base + i * x->sz);
+ 	switch (op->kind) {
+	case xd_filled_ellipse:
+	case xd_unfilled_ellipse:
+	    sp->n_ellipse++;
+	    break;
+	case xd_filled_polygon:
+	case xd_unfilled_polygon:
+	    sp->n_polygon++;
+	    sp->n_polygon_pts += op->u.polygon.cnt;
+	    break;
+	case xd_filled_bezier:
+	case xd_unfilled_bezier:
+	    sp->n_bezier++;
+	    sp->n_bezier_pts += op->u.bezier.cnt;
+	    break;
+	case xd_polyline:
+	    sp->n_polyline++;
+	    sp->n_polyline_pts += op->u.polyline.cnt;
+	    break;
+	case xd_text:
+	    sp->n_text++;
+	    break;
+	default :
+	    break;
+	}
+    }
+    
+    return 0;
 }
 
 #if 0

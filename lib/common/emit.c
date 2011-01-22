@@ -47,12 +47,30 @@ void* init_xdot (Agraph_t* g)
     xdot* xd = NULL;
 
     if ((p = agget(g, "_draw_")) && p[0]) {
+#ifdef DEBUG
+	if (Verbose) {
+	    start_timer();
+	}
+#endif
 	xd = parseXDotF (p, NULL, sizeof (exdot_op));
 
 	if (!xd) {
 	    agerr(AGWARN, "Could not parse \"_draw_\" attribute in graph %s\n", agnameof(g));
 	    agerr(AGPREV, "  \"%s\"\n", p);
 	}
+#ifdef DEBUG
+	if (Verbose) {
+	    xdot_stats stats;
+	    double et = elapsed_sec();
+	    statXDot (xd, &stats);
+	    fprintf (stderr, "%d ops %.2f sec\n", stats.cnt, et);
+	    fprintf (stderr, "%d polygons %d points\n", stats.n_polygon, stats.n_polygon_pts);
+	    fprintf (stderr, "%d polylines %d points\n", stats.n_polyline, stats.n_polyline_pts);
+	    fprintf (stderr, "%d beziers %d points\n", stats.n_bezier, stats.n_bezier_pts);
+	    fprintf (stderr, "%d ellipses\n", stats.n_ellipse);
+	    fprintf (stderr, "%d texts\n", stats.n_text);
+	}
+#endif
     }
     return xd;
 }
