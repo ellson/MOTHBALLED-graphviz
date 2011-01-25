@@ -1,18 +1,15 @@
 /* $Id$Revision: */
 /* vim:set shiftwidth=4 ts=8: */
 
-/**********************************************************
-*      This software is part of the graphviz package      *
-*                http://www.graphviz.org/                 *
-*                                                         *
-*            Copyright (c) 1994-2004 AT&T Corp.           *
-*                and is licensed under the                *
-*            Common Public License, Version 1.0           *
-*                      by AT&T Corp.                      *
-*                                                         *
-*        Information and Software Systems Research        *
-*              AT&T Research, Florham Park NJ             *
-**********************************************************/
+/*************************************************************************
+ * Copyright (c) 2011 AT&T Intellectual Property 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: See CVS logs. Details at http://www.graphviz.org/
+ *************************************************************************/
 
 #include "dot2.h"
 #include "utils.h"
@@ -1013,16 +1010,16 @@ static int nodeMedian(mcNode * n, int lowToHigh)
 /*
 12. procedure median_value(v,adj_rank)
 13. P = adj_position(v,adj_rank);
-14. m = ú Pú /2;
-15. if ú Pú = 0 then
+14. m = Ãº PÃº /2;
+15. if Ãº PÃº = 0 then
 16. return -1.0;
-17. elseif ú Pú mod 2 == 1 then
+17. elseif Ãº PÃº mod 2 == 1 then
 18. return P[m];
-19. elseif ú Pú = 2 then
+19. elseif Ãº PÃº = 2 then
 20. return (P[0] + P[1])/2;
 21. else
 22. left = P[m-1] - P[0];
-23. right = P[ú Pú -1] - P[m];
+23. right = P[Ãº PÃº -1] - P[m];
 24. return (P[m-1]*right + P[m]*left)/(left+right);
 25. endif
 26. end
