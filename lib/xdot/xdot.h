@@ -108,6 +108,10 @@ typedef struct {
     int n_bezier;
     int n_bezier_pts;
     int n_text;
+    int n_font;
+    int n_style;
+    int n_color;
+    int n_image;
 } xdot_stats;
 
 /* ops are indexed by xop_kind */

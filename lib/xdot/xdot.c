@@ -701,6 +701,19 @@ int statXDot (xdot* x, xdot_stats* sp)
 	case xd_text:
 	    sp->n_text++;
 	    break;
+	case xd_image:
+	    sp->n_image++;
+	    break;
+	case xd_fill_color:
+	case xd_pen_color:
+	    sp->n_color++;
+	    break;
+        case xd_font:
+	    sp->n_font++;
+	    break;
+	case xd_style:
+	    sp->n_style++;
+	    break;
 	default :
 	    break;
 	}
