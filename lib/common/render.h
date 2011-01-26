@@ -101,6 +101,7 @@ extern "C" {
     extern void dotneato_write(GVC_t * gvc, graph_t *g);
     extern void dotneato_write_one(GVC_t * gvc, graph_t *g);
     extern void emit_clusters(GVJ_t * job, Agraph_t * g, int flags);
+    extern char* getObjId (GVJ_t* job, void* obj, agxbuf* xb);
     /* extern void emit_begin_edge(GVJ_t * job, edge_t * e, char**); */
     /* extern void emit_end_edge(GVJ_t * job); */
     extern void emit_graph(GVJ_t * job, graph_t * g);

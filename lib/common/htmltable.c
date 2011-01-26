@@ -47,12 +47,15 @@ typedef struct {
     void *obj;
     graph_t *g;
     char* imgscale;
+    char* objid;
+    boolean objid_set;
 } htmlenv_t;
 
 typedef struct {
     char *url; 
     char *tooltip;
     char *target;
+    char *id;
     boolean explicit_tooltip;
     point LL;
     point UR;
@@ -258,24 +261,46 @@ static void doFill(GVJ_t * job, char *color, boxf BF)
  * Initialize fields in job->obj pertaining to anchors.
  * In particular, this also sets the output rectangle.
  * If there is something to do, close current anchor if
- * necesary, start the anchor and returns 1.
+ * necessary, start the anchor and returns 1.
  * Otherwise, it returns 0.
  *
  * FIX: Should we provide a tooltip if none is set, as is done
  * for nodes, edges, etc. ?
  */
 static int
-initAnchor (GVJ_t* job, htmldata_t* data, boxf b, htmlmap_data_t* save,
+initAnchor (GVJ_t* job, htmlenv_t* env, htmldata_t* data, boxf b, htmlmap_data_t* save,
     int closePrev)
 {
     obj_state_t *obj = job->obj;
     int changed;
+    char* id;
+    static int anchorId;
+    int internalId = 0;
+    agxbuf xb;
+    char intbuf[30];  /* hold 64-bit decimal integer */
+    unsigned char buf[SMALLBUF];
 
     save->url = obj->url; 
     save->tooltip = obj->tooltip;
     save->target = obj->target;
+    save->id = obj->id;
     save->explicit_tooltip = obj->explicit_tooltip;
-    changed = initMapData (job, NULL, data->href, data->title, data->target, "\\N", obj->u.g);
+    id = data->id;
+    if (!id || !*id) { /* no external id, so use the internal one */
+	agxbinit(&xb, SMALLBUF, buf);
+	if (!env->objid) {
+	    env->objid = strdup (getObjId (job, obj->u.n, &xb));
+	    env->objid_set = 1;
+	}
+	agxbput (&xb, env->objid);
+	sprintf (intbuf, "_%d", anchorId++);
+	agxbput (&xb, intbuf);
+	id = agxbuse (&xb);
+	internalId = 1;
+    }
+    changed = initMapData (job, NULL, data->href, data->title, data->target, id, obj->u.g);
+    if (internalId)
+	agxbfree (&xb);
 
     if (changed) {
 	if (closePrev && (save->url || save->explicit_tooltip))
@@ -313,6 +338,7 @@ endAnchor (GVJ_t* job, htmlmap_data_t* save, int openPrev)
     RESET(url);
     RESET(tooltip);
     RESET(target);
+    RESET(id);
     obj->explicit_tooltip = save->explicit_tooltip;
     if (openPrev && (obj->url || obj->explicit_tooltip))
 	gvrender_begin_anchor(job,
@@ -342,7 +368,7 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
     pts.UR.y += pos.y;
 
     if (doAnchor && !(job->flags & EMIT_CLUSTERS_LAST))
-	anchor = initAnchor(job, &tbl->data, pts, &saved, 1);
+	anchor = initAnchor(job, env, &tbl->data, pts, &saved, 1);
     else
 	anchor = 0;
 
@@ -361,7 +387,7 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
 	endAnchor (job, &saved, 1);
 
     if (doAnchor && (job->flags & EMIT_CLUSTERS_LAST)) {
-	if (initAnchor(job, &tbl->data, pts, &saved, 0))
+	if (initAnchor(job, env, &tbl->data, pts, &saved, 0))
 	    endAnchor (job, &saved, 0);
     }
 
@@ -414,7 +440,7 @@ emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
     pts.UR.y += pos.y;
 
     if (doAnchor && !(job->flags & EMIT_CLUSTERS_LAST))
-	inAnchor = initAnchor(job, &cp->data, pts, &saved, 1);
+	inAnchor = initAnchor(job, env, &cp->data, pts, &saved, 1);
     else
 	inAnchor = 0;
 
@@ -436,7 +462,7 @@ emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
 	endAnchor (job, &saved, 1);
 
     if (doAnchor && (job->flags & EMIT_CLUSTERS_LAST)) {
-	if (initAnchor(job, &cp->data, pts, &saved, 0))
+	if (initAnchor(job, env, &cp->data, pts, &saved, 0))
 	    endAnchor (job, &saved, 0);
     }
 }
@@ -485,6 +511,7 @@ freeObj (GVJ_t * job)
     obj->url = NULL;
     obj->tooltip = NULL;
     obj->target = NULL;
+    obj->id = NULL;
     pop_obj_state(job);
 }
 
@@ -502,6 +529,8 @@ emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t * tp)
     env.finfo.size = tp->fontsize;
     env.finfo.size = tp->fontsize;
     env.imgscale = agget (job->obj->u.n, "imagescale");
+    env.objid = job->obj->id;
+    env.objid_set = 0;
     if ((env.imgscale == NULL) || (env.imgscale[0] == '\0'))
 	env.imgscale = "false";
     if (lp->kind == HTML_TBL) {
@@ -518,6 +547,8 @@ emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t * tp)
     } else {
 	emit_html_txt(job, lp->u.txt, &env);
     }
+    if (env.objid_set)
+	free (env.objid);
     freeObj (job);
 }
 
@@ -538,6 +569,7 @@ void free_html_data(htmldata_t * dp)
     free(dp->href);
     free(dp->port);
     free(dp->target);
+    free(dp->id);
     free(dp->title);
     free(dp->bgcolor);
     free(dp->pencolor);

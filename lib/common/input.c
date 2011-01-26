@@ -834,12 +834,19 @@ void graph_init(graph_t * g, boolean use_rankdir)
 
     /* background */
     GD_drawing(g)->xdots = init_xdot (g);
+
+    /* initialize id, if any */
+
+    if ((p = agget(g, "id")) && *p)
+	GD_drawing(g)->id = strdup_and_subst_obj(p, g);
 }
 
 void graph_cleanup(graph_t *g)
 {
     if (GD_drawing(g)->xdots)
 	freeXDot ((xdot*)GD_drawing(g)->xdots);
+    if (GD_drawing(g)->id)
+	free (GD_drawing(g)->id);
     free(GD_drawing(g));
     GD_drawing(g) = NULL;
     free_label(GD_label(g));

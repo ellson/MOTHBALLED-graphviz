@@ -44,6 +44,7 @@ void* init_xdot (Agraph_t* g)
     xdot* xd = NULL;
 
     if ((p = agget(g, "_draw_")) && p[0]) {
+#define DEBUG 1
 #ifdef DEBUG
 	if (Verbose) {
 	    start_timer();
@@ -169,25 +170,75 @@ initMapData (GVJ_t* job, char* lbl, char* url, char* tooltip, char* target, char
     return assigned;
 }
 
+/* genObjId:
+ * Use id of root graph if any, plus kind and internal id of object
+ */
+char*
+getObjId (GVJ_t* job, void* obj, agxbuf* xb)
+{
+    char* id;
+    graph_t* root = job->gvc->g;
+    char* gid = GD_drawing(root)->id;
+    long idnum;
+    char* pfx;
+    char buf[30]; /* large enough for decimal 64-bit int */
+
+    id = agget(obj, "id");
+    if (id && *id)
+	return id;
+
+    switch (agobjkind(obj)) {
+#ifndef WITH_CGRAPH
+    case AGGRAPH:
+	idnum = ((graph_t*)obj)->meta_node->id;
+#else
+    case AGRAPH:
+	idnum = AGID((graph_t*)obj);
+#endif
+	pfx = "graph";
+	break;
+    case AGNODE:
+        idnum = AGID((node_t*)obj);
+	pfx = "node";
+	break;
+    case AGEDGE:
+        idnum = AGID((edge_t*)obj);
+	pfx = "edge";
+	break;
+    }
+
+    if (gid) {
+	agxbput (xb, gid);
+	agxbputc (xb, '_');
+    }
+    agxbput (xb, pfx);
+    sprintf (buf, "%ld", idnum);
+    agxbput (xb, buf);
+
+    return agxbuse(xb);
+}
+
 static void
-initObjMapData (GVJ_t* job, textlabel_t *lab, char *otyp, long int idnum, void* gobj)
+initObjMapData (GVJ_t* job, textlabel_t *lab, void* gobj)
 {
     char* lbl;
     char* url = agget(gobj, "href");
     char* tooltip = agget(gobj, "tooltip");
     char* target = agget(gobj, "target");
-    char* id = agget(gobj, "id");
-    char buf[50];
+    char* id;
+    unsigned char buf[SMALLBUF];
+    agxbuf xb;
+
+    agxbinit(&xb, SMALLBUF, buf);
 
     if (lab) lbl = lab->text;
     else lbl = NULL;
     if (!url || !*url)  /* try URL as an alias for href */
 	url = agget(gobj, "URL");
-    if (!id || !*id) { /* no external id, so use the internal one */
-	sprintf(buf, "%s%ld", otyp, idnum);
-	id = buf;
-    }
+    id = getObjId (job, gobj, &xb);
     initMapData (job, lbl, url, tooltip, target, id, gobj);
+
+    agxbfree(&xb);
 }
 
 static void map_point(GVJ_t *job, pointf pf)
@@ -1217,7 +1268,7 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
 	else
             obj->z = 0.0;
     }
-    initObjMapData (job, ND_label(n), "node", AGID(n), n);
+    initObjMapData (job, ND_label(n), n);
     if ((flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS))
            && (obj->url || obj->explicit_tooltip)) {
 
@@ -1950,7 +2001,7 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e, char** styles)
 {
     obj_state_t *obj;
     int flags = job->flags;
-    char *s, buf[50];
+    char *s;
     textlabel_t *lab = NULL, *tlab = NULL, *hlab = NULL;
     pointf *pbs = NULL;
     int	i, nump, *pbs_n = NULL, pbs_poly_n = 0;
@@ -2001,16 +2052,14 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e, char** styles)
     }
 
     if (flags & GVRENDER_DOES_MAPS) {
-        s = agget(e, "id");
-        if (!s || !*s) { /* no external id, so use the internal one */
-#ifndef WITH_CGRAPH
-	    sprintf(buf,"edge%d", AGID(e));
-#else
-	    sprintf(buf,"edge%ld", AGID(e));
-#endif
-	    s = buf;
-        }
+	agxbuf xb;
+	unsigned char xbuf[SMALLBUF];
+
+	agxbinit(&xb, SMALLBUF, xbuf);
+	s = getObjId (job, e, &xb);
 	obj->id = strdup_and_subst_obj(s, (void*)e);
+	agxbfree(&xb);
+
         if (((s = agget(e, "href")) && s[0]) || ((s = agget(e, "URL")) && s[0]))
             dflt_url = strdup_and_subst_obj(s, (void*)e);
 	if (((s = agget(e, "edgehref")) && s[0]) || ((s = agget(e, "edgeURL")) && s[0]))
@@ -2840,11 +2889,7 @@ static void emit_begin_graph(GVJ_t * job, graph_t * g)
     obj->u.g = g;
     obj->emit_state = EMIT_GDRAW;
 
-#ifndef WITH_CGRAPH
-    initObjMapData (job, GD_label(g), "graph", g->meta_node->id, g);
-#else
-    initObjMapData (job, GD_label(g), "graph", AGID(g), g);
-#endif
+    initObjMapData (job, GD_label(g), g);
 
     gvrender_begin_graph(job, g);
 }
@@ -3054,11 +3099,7 @@ static void emit_begin_cluster(GVJ_t * job, Agraph_t * sg)
     obj->u.sg = sg;
     obj->emit_state = EMIT_CDRAW;
 
-#ifndef WITH_CGRAPH
-    initObjMapData (job, GD_label(sg), "graph", sg->meta_node->id, sg);
-#else
-    initObjMapData (job, GD_label(sg), "graph", AGID(sg), sg);
-#endif
+    initObjMapData (job, GD_label(sg), sg);
     
     gvrender_begin_cluster(job, sg);
 }

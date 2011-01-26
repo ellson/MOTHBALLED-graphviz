@@ -141,6 +141,12 @@ static int targetfn(htmldata_t * p, char *v)
     return 0;
 }
 
+static int idfn(htmldata_t * p, char *v)
+{
+    p->id = strdup(v);
+    return 0;
+}
+
 /* doInt:
  * Scan v for integral value. Check that
  * the value is >= min and <= max. Return value in ul.
@@ -396,6 +402,7 @@ static attr_item tbl_items[] = {
     {"fixedsize", (attrFn) fixedsizefn},
     {"height", (attrFn) heightfn},
     {"href", (attrFn) hreffn},
+    {"id", (attrFn) idfn},
     {"port", (attrFn) portfn},
     {"target", (attrFn) targetfn},
     {"title", (attrFn) titlefn},
@@ -416,6 +423,7 @@ static attr_item cell_items[] = {
     {"fixedsize", (attrFn) fixedsizefn},
     {"height", (attrFn) heightfn},
     {"href", (attrFn) hreffn},
+    {"id", (attrFn) idfn},
     {"port", (attrFn) portfn},
     {"rowspan", (attrFn) rowspanfn},
     {"target", (attrFn) targetfn},

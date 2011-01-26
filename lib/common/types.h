@@ -232,6 +232,7 @@ extern "C" {
 	boolean centered;
 	ratio_t ratio_kind;
 	void* xdots;
+	char* id;
     } layout_t;
 
 /* for "record" shapes */

@@ -66,6 +66,7 @@ extern "C" {
 	char *port;
 	char *target;
 	char *title;
+	char *id;
 	char *bgcolor;
 	char *pencolor;
 	signed char space;
