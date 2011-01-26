@@ -1,14 +1,15 @@
 /* $Id$ $Revision$ */
 /* vim:set shiftwidth=4 ts=8: */
-/*
- This software is part of the graphviz package
- Copyright (c) 1995-2004 AT&T Corp.
- Licensed under the Common Public License, Version 1.0 (the "License")
- Any use, reproduction or distribution of this software constitutes
- acceptance of the License.  A copy of the License is available at:
-     http://www.research.att.com/sw/license/cpl-1.0.html
- (with md5 checksum 201a9e4ba08a96f5d9677315d8ce1463)
-*/
+
+/*************************************************************************
+ * Copyright (c) 2011 AT&T Intellectual Property 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: See CVS logs. Details at http://www.graphviz.org/
+ *************************************************************************/
 
 /* File - TrieFA.ins.c
  *
