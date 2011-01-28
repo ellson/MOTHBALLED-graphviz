@@ -1287,6 +1287,7 @@ orthoEdges (Agraph_t* g, int doLbls)
     if (odb_flags & ODB_SGRAPH) emitSearchGraph (stderr, sg);
 #endif
 
+    /* store edges to be routed in es, along with their lengths */
     n_edges = 0;
     for (n = agfstnode (g); n; n = agnxtnode(g, n)) {
         for (e = agfstout(g, n); e; e = agnxtout(g,e)) {
