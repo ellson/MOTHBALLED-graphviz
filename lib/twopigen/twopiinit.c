@@ -65,14 +65,21 @@ void twopi_layout(Agraph_t * g)
 {
     Agnode_t *ctr = 0;
     char *s;
+    int setRoot = 0;
 
     twopi_init_graph(g);
     s = agget(g, "root");
-    if (s && (*s != '\0')) {
-	ctr = agfindnode(g, s);
-	if (!ctr) {
-	    agerr(AGWARN, "specified root node \"%s\" was not found.", s);
-	    agerr(AGPREV, "Using default calculation for root node\n");
+    if ((s = agget(g, "root"))) {
+	if (*s) {
+	    ctr = agfindnode(g, s);
+	    if (!ctr) {
+		agerr(AGWARN, "specified root node \"%s\" was not found.", s);
+		agerr(AGPREV, "Using default calculation for root node\n");
+		setRoot = 1;
+	    }
+	}
+	else {
+	    setRoot = 1;
 	}
     }
     if (agnnodes(g)) {
@@ -84,7 +91,9 @@ void twopi_layout(Agraph_t * g)
 
 	ccs = ccomps(g, &ncc, 0);
 	if (ncc == 1) {
-	    circleLayout(g, ctr);
+	    c = circleLayout(g, ctr);
+	    if (setRoot && !ctr)
+		ctr = c;
 	    free(ND_alg(agfstnode(g)));
 	    adjustNodes(g);
 	    spline_edges(g);
@@ -100,7 +109,9 @@ void twopi_layout(Agraph_t * g)
 		else
 		    c = 0;
 		nodeInduce(sg);
-		circleLayout(sg, c);
+		c = circleLayout(sg, c);
+	        if (setRoot && !ctr)
+		    ctr = c;
 		adjustNodes(sg);
 		setEdgeType (sg, ET_LINE);
 		spline_edges(sg);
@@ -113,6 +124,8 @@ void twopi_layout(Agraph_t * g)
 	}
 	free(ccs);
     }
+    if (setRoot)
+	agset (g, "root", agnameof (ctr)); 
     dotneato_postprocess(g);
 
 }

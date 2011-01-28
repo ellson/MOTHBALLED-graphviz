@@ -339,7 +339,7 @@ static void dumpGraph(Agraph_t * g)
  *  Also, if center != 0, we are guaranteed that center is
  *  in the graph.
  */
-void circleLayout(Agraph_t * sg, Agnode_t * center)
+Agnode_t* circleLayout(Agraph_t * sg, Agnode_t * center)
 {
     int maxNStepsToCenter;
 
@@ -347,7 +347,7 @@ void circleLayout(Agraph_t * sg, Agnode_t * center)
 	Agnode_t *n = agfstnode(sg);
 	ND_pos(n)[0] = 0;
 	ND_pos(n)[1] = 0;
-	return;
+	return center;
     }
 
     initLayout(sg);
@@ -367,4 +367,5 @@ void circleLayout(Agraph_t * sg, Agnode_t * center)
 
     setAbsolutePos(sg, maxNStepsToCenter);
     /* dumpGraph (sg); */
+    return center;
 }
