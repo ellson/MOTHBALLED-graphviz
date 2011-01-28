@@ -381,7 +381,7 @@ This field indicates which graph component uses the attribute.
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">96.0<BR>0.0</TD><TD></TD><TD>svg, bitmap output only</TD> </TR>
  <TR><TD><A NAME=a:root HREF=#d:root>root</A>
 </TD><TD>GN</TD><TD>string<BR><A HREF=#k:bool>bool</A>
-</TD><TD ALIGN="CENTER">""(graphs)<BR>false(nodes)</TD><TD></TD><TD>circo, twopi only</TD> </TR>
+</TD><TD ALIGN="CENTER">&#60;none&#62;(graphs)<BR>false(nodes)</TD><TD></TD><TD>circo, twopi only</TD> </TR>
  <TR><TD><A NAME=a:rotate HREF=#d:rotate>rotate</A>
 </TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">0</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:samehead HREF=#d:samehead>samehead</A>
@@ -1516,6 +1516,9 @@ This field indicates which graph component uses the attribute.
   the node will be central in the drawing of its connected component.
   If not defined,
   twopi will pick a most central node, and circo will pick a random node.
+  <P>
+  If the root attribute is defined as the empty string, twopi will reset it
+  to name of the node picked as the root node.
 
 <DT><A NAME=d:rotate HREF=#a:rotate><STRONG>rotate</STRONG></A>
 <DD>  If 90, set drawing orientation to landscape.

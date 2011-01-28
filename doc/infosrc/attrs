@@ -965,7 +965,7 @@ force directed model. Values larger than 1 tend to reduce
 the warping effect at the expense of less clustering.
 :resolution:G:double:96.0/0.0;  bitmap,svg
 This is a synonym for the <A HREF=#d:dpi>dpi</A> attribute.
-:root:GN:string/bool:""(graphs)/false(nodes);  twopi,circo
+:root:GN:string/bool:<none>(graphs)/false(nodes);  twopi,circo
 This specifies nodes to be used as the center of the
 layout and the root of the generated spanning tree. As a graph attribute,
 this gives the name of the node. As a node attribute (circo only), it
@@ -974,6 +974,9 @@ this will actually be the central node. In circo, the block containing
 the node will be central in the drawing of its connected component.
 If not defined,
 twopi will pick a most central node, and circo will pick a random node.
+<P>
+If the root attribute is defined as the empty string, twopi will reset it
+to name of the node picked as the root node.
 :rotate:G:int:0;
 If 90, set drawing orientation to landscape.
 :samehead:E:string:"";  dot
