@@ -48,7 +48,7 @@ static void map_output_shape (GVJ_t *job, map_shape_t map_shape, pointf * AF, in
         switch (map_shape) {
         case MAP_RECTANGLE:
 	    /* Y_GOES_DOWN so need UL to LR */
-            gvprintf(job, "rect %s %d,%d %d,%d\n", url,
+            gvprintf(job, "rect %s %d,%d,%d,%d\n", url,
                 A[0].x, A[1].y, A[1].x, A[0].y);
             break;
         case MAP_CIRCLE:
@@ -57,8 +57,9 @@ static void map_output_shape (GVJ_t *job, map_shape_t map_shape, pointf * AF, in
             break;
         case MAP_POLYGON:
             gvprintf(job, "poly %s", url);
-            for (i = 0; i < nump; i++)
-                gvprintf(job, " %d,%d", A[i].x, A[i].y);
+            gvprintf(job, " %d,%d", A[0].x, A[0].y);
+            for (i = 1; i < nump; i++)
+                gvprintf(job, ",%d,%d", A[i].x, A[i].y);
             gvputs(job, "\n");
             break;
         default:
@@ -137,7 +138,7 @@ static void map_output_shape (GVJ_t *job, map_shape_t map_shape, pointf * AF, in
         case MAP_POLYGON:
             gvprintf(job, "%d,%d", A[0].x, A[0].y);
             for (i = 1; i < nump; i++)
-                gvprintf(job, " %d,%d", A[i].x, A[i].y);
+                gvprintf(job, ",%d,%d", A[i].x, A[i].y);
             break;
         default:
             break;
