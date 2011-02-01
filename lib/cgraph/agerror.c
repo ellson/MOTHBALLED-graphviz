@@ -37,7 +37,7 @@ char *aglasterr()
     fflush(agerrout);
     endpos = ftell(agerrout);
     len = endpos - aglast;
-    buf = malloc(len + 1);
+    buf = (char*)malloc(len + 1);
     fseek(agerrout, aglast, SEEK_SET);
     fread(buf, sizeof(char), len, agerrout);
     buf[len] = '\0';

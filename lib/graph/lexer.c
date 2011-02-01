@@ -247,8 +247,8 @@ static char *lex_gets(void)
 	/* make sure there is room for at least another SMALLBUF worth */
 	if (curlen + SMALLBUF >= LineBufSize) {
 	    LineBufSize += BUFSIZ;
-	    AG.linebuf = realloc(AG.linebuf, LineBufSize);
-	    TokenBuf = realloc(TokenBuf, LineBufSize);
+	    AG.linebuf = (char*)realloc(AG.linebuf, LineBufSize);
+	    TokenBuf = (char*)realloc(TokenBuf, LineBufSize);
 	}
 
 	/* off by one so we can back up in LineBuf */
@@ -505,7 +505,7 @@ char *aglasterr()
     fflush(agerrout);
     endpos = ftell(agerrout);
     len = endpos - aglast;
-    buf = malloc(len + 1);
+    buf = (char*)malloc(len + 1);
     fseek(agerrout, aglast, SEEK_SET);
     fread(buf, sizeof(char), len, agerrout);
     buf[len] = '\0';

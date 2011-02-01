@@ -226,9 +226,9 @@ static char *getoutputbuffer(char *str)
     req = MAX(2 * strlen(str) + 2, BUFSIZ);
     if (req > len) {
 	if (rv)
-	    rv = realloc(rv, req);
+	    rv = (char*)realloc(rv, req);
 	else
-	    rv = malloc(req);
+	    rv = (char*)malloc(req);
 	len = req;
     }
     return rv;

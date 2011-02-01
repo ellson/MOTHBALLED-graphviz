@@ -412,13 +412,13 @@ void aginsert(Agraph_t * g, void *obj)
 {
     switch (TAG_OF(obj)) {
     case TAG_NODE:
-	agINSnode(g, obj);
+	agINSnode(g, (Agnode_t*)obj);
 	break;
     case TAG_EDGE:
-	agINSedge(g, obj);
+	agINSedge(g, (Agedge_t*)obj);
 	break;
     case TAG_GRAPH:
-	agINSgraph(g, obj);
+	agINSgraph(g, (Agraph_t*)obj);
 	break;
     }
 }
@@ -427,13 +427,13 @@ void agdelete(Agraph_t * g, void *obj)
 {
     switch (TAG_OF(obj)) {
     case TAG_NODE:
-	agDELnode(g, obj);
+	agDELnode(g, (Agnode_t*)obj);
 	break;
     case TAG_EDGE:
-	agDELedge(g, obj);
+	agDELedge(g, (Agedge_t*)obj);
 	break;
     case TAG_GRAPH:
-	agclose(obj);
+	agclose((Agraph_t*)obj);
 	break;
     }
 }

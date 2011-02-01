@@ -54,7 +54,7 @@ int agxbmore(agxbuf * xb, unsigned int ssz)
 	nsize = size + ssz;
     cnt = xb->ptr - xb->buf;
     if (xb->dyna) {
-	nbuf = realloc(xb->buf, nsize);
+	nbuf = (unsigned char*)realloc(xb->buf, nsize);
     } else {
 	nbuf = N_GNEW(nsize, unsigned char);
 	memcpy(nbuf, xb->buf, cnt);
