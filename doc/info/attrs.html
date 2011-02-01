@@ -307,7 +307,7 @@ This field indicates which graph component uses the attribute.
 <BR><A NAME=a:nslimit1 HREF=#d:nslimit1>nslimit1</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER"></TD><TD></TD><TD>dot only</TD> </TR>
  <TR><TD><A NAME=a:ordering HREF=#d:ordering>ordering</A>
-</TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>dot only</TD> </TR>
+</TD><TD>GN</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>dot only</TD> </TR>
  <TR><TD><A NAME=a:orientation HREF=#d:orientation>orientation</A>
 </TD><TD>N</TD><TD>double</TD><TD ALIGN="CENTER">0.0</TD><TD>360.0</TD><TD></TD> </TR>
  <TR><TD><A NAME=aa:orientation HREF=#dd:orientation>orientation</A>
@@ -1177,11 +1177,18 @@ This field indicates which graph component uses the attribute.
   otherwise,  # iterations = MAXINT.
 
 <DT><A NAME=d:ordering HREF=#a:ordering><STRONG>ordering</STRONG></A>
-<DD>  If "out" for a graph G, and n is a node in G, then edges n->* appear
-  left-to-right in the same order in which they are defined.
-  If "in", the edges *->n appear
-  left-to-right in the same order in which they are defined for all
-  nodes n.
+<DD>  If the value of the attribute is "out", then
+  the outedges of a node, that is, edges with the node as its tail node,
+  must appear
+  left-to-right in the same order in which they are defined in
+  the input.
+  If the value of the attribute is "in", then
+  the inedges of a node must appear
+  left-to-right in the same order in which they are defined in
+  the input.
+  If defined as a graph or subgraph attribute, the value is applied to all nodes
+  in the graph or subgraph. Note that the graph attribute takes
+  precedence over the node attribute.
 
 <DT><A NAME=d:orientation HREF=#a:orientation><STRONG>orientation</STRONG></A>
 <DD>  Angle, in degrees, used to rotate polygon node shapes. For any number of polygon sides, 0 degrees rotation results in a flat base.

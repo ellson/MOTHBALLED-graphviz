@@ -661,12 +661,19 @@ network simplex applications. <B>nslimit</B> is used in
 computing node x coordinates, <B>nslimit1</B> for ranking nodes.
 If defined, # iterations =  <B>nslimit(1)</B> * # nodes;
 otherwise,  # iterations = MAXINT.
-:ordering:G:string:""; dot
-If "out" for a graph G, and n is a node in G, then edges n->* appear
-left-to-right in the same order in which they are defined.
-If "in", the edges *->n appear
-left-to-right in the same order in which they are defined for all
-nodes n.
+:ordering:GN:string:""; dot
+If the value of the attribute is "out", then
+the outedges of a node, that is, edges with the node as its tail node,
+must appear
+left-to-right in the same order in which they are defined in
+the input.
+If the value of the attribute is "in", then
+the inedges of a node must appear
+left-to-right in the same order in which they are defined in
+the input.
+If defined as a graph or subgraph attribute, the value is applied to all nodes
+in the graph or subgraph. Note that the graph attribute takes
+precedence over the node attribute.
 :orientation:N:double:0.0:360.0;
 Angle, in degrees, used to rotate polygon node shapes. For any number of polygon sides, 0 degrees rotation results in a flat base.
 :orientation:G:string:"";
