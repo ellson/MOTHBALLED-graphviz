@@ -272,7 +272,9 @@ collapse_sets(graph_t *rg, graph_t *g)
 {
     int c;
     graph_t  *subg;
+#ifdef OBSOLETE
     node_t *n;
+#endif
 
 #ifndef WITH_CGRAPH
     graph_t *mg;
@@ -294,10 +296,14 @@ collapse_sets(graph_t *rg, graph_t *g)
 	}
 	else collapse_sets(rg, subg);
 
+#ifdef OBSOLETE
+ Collapsing leaves is currently obsolete
+
 	/* mark nodes with ordered edges so their leaves are not collapsed */
 	if (agget(subg, "ordering"))
 	    for (n = agfstnode(subg); n; n = agnxtnode(subg, n))
 		ND_order(n) = 1;
+#endif
     }
 }
 

@@ -94,7 +94,7 @@ extern "C" {
 	*G_selectedpencolor, *G_selectedfillcolor,
 	*G_visitedpencolor, *G_visitedfillcolor,
 	*G_deletedpencolor, *G_deletedfillcolor,
-	*G_peripheries, *G_penwidth;
+	*G_ordering, *G_peripheries, *G_penwidth;
     EXTERN attrsym_t
 	*N_height, *N_width, *N_shape, *N_color, *N_fillcolor,
 	*N_activepencolor, *N_activefillcolor,
@@ -103,7 +103,7 @@ extern "C" {
 	*N_deletedpencolor, *N_deletedfillcolor,
 	*N_fontsize, *N_fontname, *N_fontcolor,
 	*N_label, *N_xlabel, *N_nojustify, *N_style, *N_showboxes,
-	*N_sides, *N_peripheries, *N_orientation,
+	*N_sides, *N_peripheries, *N_ordering, *N_orientation,
 	*N_skew, *N_distortion, *N_fixed, *N_imagescale, *N_layer,
 	*N_group, *N_comment, *N_vertices, *N_z,
 	*N_penwidth;

@@ -144,57 +144,89 @@ static int betweenclust(edge_t * e)
     return (ND_clust(agtail(e)) != ND_clust(aghead(e)));
 }
 
-static void do_ordering(graph_t * g, int outflag)
+static void do_ordering_node (graph_t * g, node_t* n, int outflag)
 {
     int i, ne;
-    node_t *n, *u, *v;
+    node_t *u, *v;
     edge_t *e, *f, *fe;
     edge_t **sortlist = TE_list;
 
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	if (ND_clust(n))
-	    continue;
+    if (ND_clust(n))
+	return;
+    if (outflag) {
+	for (i = ne = 0; (e = ND_out(n).list[i]); i++)
+	    if (!betweenclust(e))
+		sortlist[ne++] = e;
+    } else {
+	for (i = ne = 0; (e = ND_in(n).list[i]); i++)
+	    if (!betweenclust(e))
+		sortlist[ne++] = e;
+    }
+    if (ne <= 1)
+	return;
+    /* write null terminator at end of list.
+       requires +1 in TE_list alloccation */
+    sortlist[ne] = 0;
+    qsort(sortlist, ne, sizeof(sortlist[0]), (qsort_cmpf) edgeidcmpf);
+    for (ne = 1; (f = sortlist[ne]); ne++) {
+	e = sortlist[ne - 1];
 	if (outflag) {
-	    for (i = ne = 0; (e = ND_out(n).list[i]); i++)
-		if (!betweenclust(e))
-		    sortlist[ne++] = e;
+	    u = aghead(e);
+	    v = aghead(f);
 	} else {
-	    for (i = ne = 0; (e = ND_in(n).list[i]); i++)
-		if (!betweenclust(e))
-		    sortlist[ne++] = e;
+	    u = agtail(e);
+	    v = agtail(f);
 	}
-	if (ne <= 1)
-	    continue;
-	/* write null terminator at end of list.
-	   requires +1 in TE_list alloccation */
-	sortlist[ne] = 0;
-	qsort(sortlist, ne, sizeof(sortlist[0]), (qsort_cmpf) edgeidcmpf);
-	for (ne = 1; (f = sortlist[ne]); ne++) {
-	    e = sortlist[ne - 1];
-	    if (outflag) {
-		u = aghead(e);
-		v = aghead(f);
-	    } else {
-		u = agtail(e);
-		v = agtail(f);
-	    }
-	    if (find_flat_edge(u, v))
-		continue;
-	    fe = new_virtual_edge(u, v, NULL);
-	    ED_edge_type(fe) = FLATORDER;
-	    flat_edge(g, fe);
+	if (find_flat_edge(u, v))
+	    return;
+	fe = new_virtual_edge(u, v, NULL);
+	ED_edge_type(fe) = FLATORDER;
+	flat_edge(g, fe);
+    }
+}
+
+static void do_ordering(graph_t * g, int outflag)
+{
+    /* Order all nodes in graph */
+    node_t *n;
+
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	do_ordering_node (g, n, outflag);
+    }
+}
+
+static void do_ordering_for_nodes(graph_t * g)
+{
+    /* Order nodes which have the "ordered" attribute */
+    node_t *n;
+    const char *ordering;
+
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	if ((ordering = late_string(n, N_ordering, NULL))) {
+	    if (streq(ordering, "out"))
+		do_ordering_node(g, n, TRUE);
+	    else if (streq(ordering, "in"))
+		do_ordering_node(g, n, FALSE);
+	    else if (ordering[0])
+		agerr(AGERR, "ordering '%s' not recognized for node '%s'.\n", ordering, agnameof(n));
 	}
     }
 }
 
 /* ordered_edges:
  * handle case where graph specifies edge ordering
+ * If the graph does not have an ordering attribute, we then
+ * check for nodes having the attribute.
+ * Note that, in this implementation, the value of G_ordering
+ * dominates the value of N_ordering.
  */
 static void ordered_edges(graph_t * g)
 {
     char *ordering;
 
-    if ((ordering = agget(g, "ordering"))) {
+    if (!G_ordering && !N_ordering)
+	return;
+    if ((ordering = late_string(g, G_ordering, NULL))) {
 	if (streq(ordering, "out"))
 	    do_ordering(g, TRUE);
 	else if (streq(ordering, "in"))
@@ -204,8 +236,9 @@ static void ordered_edges(graph_t * g)
     }
     else
     {
-	/* search meta-graph to find subgraphs that may be ordered */
+	if (N_ordering) do_ordering_for_nodes (g);
 #ifndef WITH_CGRAPH
+	/* search meta-graph to find subgraphs that may be ordered */
 	graph_t *mg, *subg;
 	node_t *mm, *mn;
 	edge_t *me;

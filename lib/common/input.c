@@ -770,6 +770,8 @@ void graph_init(graph_t * g, boolean use_rankdir)
 
     Initial_dist = MYHUGE;
 
+    G_ordering = agfindgraphattr(g, "ordering");
+
     /* initialize nodes */
     N_height = agfindnodeattr(g, "height");
     N_width = agfindnodeattr(g, "width");
@@ -784,6 +786,7 @@ void graph_init(graph_t * g, boolean use_rankdir)
     N_xlabel = agfindnodeattr(g, "xlabel");
     N_showboxes = agfindnodeattr(g, "showboxes");
     N_penwidth = agfindnodeattr(g, "penwidth");
+    N_ordering = agfindnodeattr(g, "ordering");
     /* attribs for polygon shapes */
     N_sides = agfindnodeattr(g, "sides");
     N_peripheries = agfindnodeattr(g, "peripheries");
