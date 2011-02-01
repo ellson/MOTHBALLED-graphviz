@@ -715,10 +715,12 @@ int init_nop(Agraph_t * g, int adjust)
  */
     }
 
+#if 0
     /* If g does not have a good "bb" attribute or we adjusted the nodes, 
      * compute it. 
      */
     if (!chkBB(g, G_bb) || didAdjust)
+#endif
 	compute_bb(g);
 
     /* Adjust bounding box for any background */
