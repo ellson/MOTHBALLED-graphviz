@@ -104,6 +104,7 @@ G_activefillcolor
 G_activepencolor    
 G_deletedfillcolor    
 G_deletedpencolor    
+G_ordering    
 G_penwidth    
 G_peripheries    
 G_selectedfillcolor    
@@ -229,6 +230,7 @@ N_imagescale
 N_label    
 N_layer    
 N_nojustify    
+N_ordering    
 N_orientation    
 N_penwidth    
 N_peripheries    
