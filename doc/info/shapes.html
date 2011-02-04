@@ -477,6 +477,7 @@ Attribute values must appear in double quotes.
   HREF="<I>value</I>"
   ID="<I>value</I>"
   PORT="<I>portName</I>"
+  STYLE="ROUNDED"
   TARGET="<I>value</I>"
   TITLE="<I>value</I>"
   TOOLTIP="<I>value</I>"
@@ -748,6 +749,14 @@ Note that if the software is used as a web server, file system access
 to images is more restricted. See <A HREF="command.html#d:GV_FILE_PATH">GV_FILE_PATH</A>
 and <A HREF="command.html#d:SERVER_NAME">SERVER_NAME</A>.
 </BLOCKQUOTE>
+
+<P>
+<B><I><FONT SIZE=-1>STYLE</FONT> </I></B>
+<BLOCKQUOTE>
+specifies style characteristics of the table. At present, the only
+legal value is "ROUNDED", which causes the table to have rounded corners.
+This probably works best if the outmost cells have no borders, or there CELL_SPACING
+is sufficiently large.
 
 <B><I><FONT SIZE=-1>TARGET="value"</FONT></I></B>
 <BLOCKQUOTE>
