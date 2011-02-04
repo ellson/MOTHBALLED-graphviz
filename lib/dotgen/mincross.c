@@ -236,7 +236,6 @@ static void ordered_edges(graph_t * g)
     }
     else
     {
-	if (N_ordering) do_ordering_for_nodes (g);
 #ifndef WITH_CGRAPH
 	/* search meta-graph to find subgraphs that may be ordered */
 	graph_t *mg, *subg;
@@ -248,15 +247,16 @@ static void ordered_edges(graph_t * g)
 	for (me = agfstout(mg, mm); me; me = agnxtout(mg, me)) {
 	    mn = me->head;
 	    subg = agusergraph(mn);
-	    /* clusters are processed by seperate calls to ordered_edges */
 #else /* WITH_CGRAPH */
 	graph_t *subg;
 
 	for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
 #endif /* WITH_CGRAPH */
+	    /* clusters are processed by separate calls to ordered_edges */
 	    if (!is_cluster(subg))
 		ordered_edges(subg);
 	}
+	if (N_ordering) do_ordering_for_nodes (g);
     }
 }
 
