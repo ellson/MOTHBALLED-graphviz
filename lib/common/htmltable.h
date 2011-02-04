@@ -105,6 +105,7 @@ extern "C" {
 	int rc;			/* number of rows */
 	int cc;			/* number of columns */
 	htmlfont_t *font;	/* font info */
+	unsigned char style;
     };
 
     struct htmllabel_t {

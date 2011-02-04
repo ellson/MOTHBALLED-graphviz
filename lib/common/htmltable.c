@@ -372,11 +372,25 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
     else
 	anchor = 0;
 
-    if (tbl->data.bgcolor)
-	doFill(job, tbl->data.bgcolor, pts);
+    if (tbl->style & ROUNDED) {
+	pointf AF[4];
+	char* color = (tbl->data.pencolor ? tbl->data.pencolor : DEFAULT_COLOR);
+	AF[0] = pts.LL;
+	AF[2] = pts.UR;
+	AF[1].x = AF[2].x;
+	AF[1].y = AF[0].y;
+	AF[3].x = AF[0].x;
+	AF[3].y = AF[2].y;
+	round_corners (job, tbl->data.bgcolor, color, AF, 4, tbl->style,
+	    (tbl->data.bgcolor != NULL));
+    }
+    else {
+	if (tbl->data.bgcolor)
+	    doFill(job, tbl->data.bgcolor, pts);
 
-    if (tbl->data.border)
-	doBorder(job, tbl->data.pencolor, tbl->data.border, pts);
+	if (tbl->data.border)
+	    doBorder(job, tbl->data.pencolor, tbl->data.border, pts);
+    }
 
     while (*cells) {
 	emit_html_cell(job, *cells, env);

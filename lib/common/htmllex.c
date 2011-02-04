@@ -135,6 +135,19 @@ static int portfn(htmldata_t * p, char *v)
     return 0;
 }
 
+static int stylefn(htmltbl_t * p, char *v)
+{
+    int rv = 0;
+    char c = toupper(*v);
+    if ((c == 'R') && !strcasecmp(v + 1, "OUNDED"))
+	p->style = ROUNDED;
+    else {
+	agerr(AGWARN, "Illegal value %s for STYLE - ignored\n", v);
+	rv = 1;
+    }
+    return rv;
+}
+
 static int targetfn(htmldata_t * p, char *v)
 {
     p->target = strdup(v);
@@ -404,6 +417,7 @@ static attr_item tbl_items[] = {
     {"href", (attrFn) hreffn},
     {"id", (attrFn) idfn},
     {"port", (attrFn) portfn},
+    {"style", (attrFn) stylefn},
     {"target", (attrFn) targetfn},
     {"title", (attrFn) titlefn},
     {"tooltip", (attrFn) titlefn},
