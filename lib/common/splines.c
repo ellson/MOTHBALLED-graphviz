@@ -485,7 +485,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	boxf b0, b = endp->nb;
 	edge_t* orig;
 	if (side & TOP) {
-	    b.LL.y = MIN(b.LL.y,P->end.p.y);
+	    b.LL.y = MIN(b.LL.y,P->start.p.y);
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
 	}
@@ -613,7 +613,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    b.LL.y = MIN(b.LL.y,P->end.p.y);
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    P->start.p.y += 1;
+	    P->end.p.y += 1;
 	}
 	else if (side & BOTTOM) {
 	    endp->sidemask = BOTTOM;
@@ -653,7 +653,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    b.LL.y = P->end.p.y;
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    P->start.p.x -= 1;
+	    P->end.p.x -= 1;
 	}
 	else {
 	    endp->sidemask = RIGHT;
@@ -662,7 +662,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    b.LL.y = P->end.p.y;
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    P->start.p.x -= 1;
+	    P->end.p.x += 1;
 	}
 	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
 	if (n == aghead(orig))
@@ -674,41 +674,14 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
     }
 
     if ((et == FLATEDGE) && ((side = ED_head_port(e).side))) {
-	edge_t* orig;
 	boxf b0, b = endp->nb;
-	switch (side) {
-	case LEFT:
-	    b.UR.x = P->end.p.x;
-	    if (endp->sidemask == TOP) {
-		b.UR.y = ND_coord(n).y + ND_ht(n)/2;
-		b.LL.y = P->end.p.y;
-	    }
-	    else {
-		b.LL.y = ND_coord(n).y - ND_ht(n)/2;
-		b.UR.y = P->end.p.y;
-	    }
-	    endp->boxes[0] = b;
-	    endp->boxn = 1;
-	    break;
-	case RIGHT:
-	    b.LL.x = P->end.p.x-1;
-	    if (endp->sidemask == TOP) {
-		b.UR.y = ND_coord(n).y + ND_ht(n)/2;
-		b.LL.y = P->end.p.y-1;
-	    }
-	    else {
-		b.LL.y = ND_coord(n).y - ND_ht(n)/2;
-		b.UR.y = P->end.p.y;
-	    }
-	    endp->boxes[0] = b;
-	    endp->boxn = 1;
-	    break;
-	case TOP:
+	edge_t* orig;
+	if (side & TOP) {
 	    b.LL.y = MIN(b.LL.y,P->end.p.y);
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    break;
-	case BOTTOM:
+	}
+	else if (side & BOTTOM) {
 	    if (endp->sidemask == TOP) {
 		b0.LL.x = b.LL.x-1;
 		b0.UR.y = ND_coord(n).y - ND_ht(n)/2;
@@ -727,7 +700,32 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		endp->boxes[0] = b;
 		endp->boxn = 1;
 	    }
-	    break;
+	}
+	else if (side & LEFT) {
+	    b.UR.x = P->end.p.x+1;
+	    if (endp->sidemask == TOP) {
+		b.UR.y = ND_coord(n).y + ND_ht(n)/2;
+		b.LL.y = P->end.p.y-1;
+	    }
+	    else {
+		b.LL.y = ND_coord(n).y - ND_ht(n)/2;
+		b.UR.y = P->end.p.y+1;
+	    }
+	    endp->boxes[0] = b;
+	    endp->boxn = 1;
+	}
+	else {
+	    b.LL.x = P->end.p.x-1;
+	    if (endp->sidemask == TOP) {
+		b.UR.y = ND_coord(n).y + ND_ht(n)/2;
+		b.LL.y = P->end.p.y-1;
+	    }
+	    else {
+		b.LL.y = ND_coord(n).y - ND_ht(n)/2;
+		b.UR.y = P->end.p.y;
+	    }
+	    endp->boxes[0] = b;
+	    endp->boxn = 1;
 	}
 	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
 	if (n == aghead(orig))
@@ -746,6 +744,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
     else {
 	endp->boxes[0] = endp->nb;
 	endp->boxn = 1;
+
 	switch (et) {
 	case SELFEDGE:
 	    /* offset of -1 is symmetric w.r.t. beginpath() 
@@ -757,14 +756,14 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    break;
 	case FLATEDGE:
 	    if (endp->sidemask == TOP)
-		endp->boxes[0].LL.y = P->start.p.y;
+		endp->boxes[0].LL.y = P->end.p.y;
 	    else
-		endp->boxes[0].UR.y = P->start.p.y;
+		endp->boxes[0].UR.y = P->end.p.y;
 	    break;
 	case REGULAREDGE:
 	    endp->boxes[0].LL.y = P->end.p.y;
 	    endp->sidemask = TOP;
-	    P->start.p.y += 1;
+	    P->end.p.y += 1;
 	    break;
 	}
     }
