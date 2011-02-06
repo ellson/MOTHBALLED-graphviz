@@ -144,6 +144,7 @@ extern "C" {
     extern void routesplinesinit(void);
     extern pointf *routesplines(path *, int *);
     extern void routesplinesterm(void);
+    extern pointf* simpleSplineRoute (pointf, pointf, Ppoly_t, int*, int);
     extern pointf *routepolylines(path* pp, int* npoints);
     extern int selfRightSpace (edge_t* e);
     extern void setup_graph(GVC_t * gvc, graph_t * g);

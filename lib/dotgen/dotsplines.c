@@ -826,6 +826,209 @@ transformf (pointf p, pointf del, int flip)
     return add_pointf(p, del);
 }
 
+/* edgelblcmpfn:
+ * lexicographically order edges by
+ *  - has label
+ *  - label is wider
+ *  - label is higher
+ */
+static int edgelblcmpfn(edge_t** ptr0, edge_t** ptr1)
+{
+    edge_t *e0, *e1;
+    pointf sz0, sz1;
+
+    e0 = (edge_t *) * ptr0;
+    e1 = (edge_t *) * ptr1;
+
+    if (ED_label(e0)) {
+	if (ED_label(e1)) {
+	    sz0 = ED_label(e0)->dimen;
+	    sz1 = ED_label(e1)->dimen;
+	    if (sz0.x > sz1.x) return -1;
+	    else if (sz0.x < sz1.x) return 1;
+	    else if (sz0.y > sz1.y) return -1;
+	    else if (sz0.y < sz1.y) return 1;
+	    else return 0;
+	}
+	else
+	    return -1;
+    }
+    else if (ED_label(e1)) {
+ 	return 1;
+    }
+    else
+ 	return 0;
+}
+
+#define LBL_SPACE  6  /* space between labels, in points */
+
+/* makeSimpleFlatLabels:
+ * This handles the second simplest case for flat edges between
+ * two adjacent nodes. We still invoke a dot on a rotated problem
+ * to handle edges with ports. This usually works, but fails for
+ * records because of their weird nature.
+ */
+static void
+makeSimpleFlatLabels (node_t* tn, node_t* hn, edge_t** edges, int ind, int cnt, int et, int n_lbls)
+{
+    pointf *ps;
+    Ppoly_t poly;
+    int pn;
+    edge_t* e = edges[ind];
+    pointf points[10], tp, hp;
+    int i, pointn;
+    double leftend, rightend, ctrx, ctry, miny, maxy;
+    double uminx, umaxx;
+    double lminx, lmaxx;
+
+    edge_t** earray = N_NEW(cnt, edge_t*);
+
+    for (i = 0; i < cnt; i++) {
+	earray[i] = edges[ind + i];
+    }
+
+    qsort (earray, cnt, sizeof(edge_t*), (qsort_cmpf) edgelblcmpfn);
+
+    tp = add_pointf(ND_coord(tn), ED_tail_port(e).p);
+    hp = add_pointf(ND_coord(hn), ED_head_port(e).p);
+
+    leftend = tp.x+ND_rw(tn);
+    rightend = hp.x-ND_lw(hn);
+    ctrx = (leftend + rightend)/2.0;
+    
+    /* do first edge */
+    pointn = 0;
+    points[pointn++] = tp;
+    points[pointn++] = tp;
+    points[pointn++] = hp;
+    points[pointn++] = hp;
+#ifndef WITH_CGRAPH
+    clip_and_install(e, e->head, points, pointn, &sinfo);
+#else /* WITH_CGRAPH */
+    clip_and_install(e, aghead(e), points, pointn, &sinfo);
+#endif /* WITH_CGRAPH */
+    ED_label(e)->pos.x = ctrx;
+    ED_label(e)->pos.y = tp.y + (ED_label(e)->dimen.y+LBL_SPACE)/2.0;
+    ED_label(e)->set = TRUE;
+
+    miny = tp.y + LBL_SPACE/2.0;
+    maxy = miny + ED_label(e)->dimen.y;
+    uminx = ctrx - (ED_label(e)->dimen.x)/2.0;
+    umaxx = ctrx + (ED_label(e)->dimen.x)/2.0;
+
+    for (i = 1; i < n_lbls; i++) {
+	e = edges[ind + i];
+	if (i%2) {  /* down */
+	    if (i == 1) {
+		lminx = ctrx - (ED_label(e)->dimen.x)/2.0;
+		lmaxx = ctrx + (ED_label(e)->dimen.x)/2.0;
+	    }
+	    miny -= LBL_SPACE + ED_label(e)->dimen.y;
+	    points[0] = tp;
+	    points[1].x = tp.x;
+	    points[1].y = miny - LBL_SPACE;
+	    points[2].x = hp.x;
+	    points[2].y = points[1].y;
+	    points[3] = hp;
+	    points[4].x = lmaxx;
+	    points[4].y = hp.y;
+	    points[5].x = lmaxx;
+	    points[5].y = miny;
+	    points[6].x = lminx;
+	    points[6].y = miny;
+	    points[7].x = lminx;
+	    points[7].y = tp.y;
+	    ctry = miny + (ED_label(e)->dimen.y)/2.0;
+	}
+	else {   /* up */
+	    points[0] = tp;
+	    points[1].x = uminx;
+	    points[1].y = tp.y;
+	    points[2].x = uminx;
+	    points[2].y = maxy;
+	    points[3].x = umaxx;
+	    points[3].y = maxy;
+	    points[4].x = umaxx;
+	    points[4].y = hp.y;
+	    points[5].x = hp.x;
+	    points[5].y = hp.y;
+	    points[6].x = hp.x;
+	    points[6].y = maxy + LBL_SPACE;
+	    points[7].x = tp.x;
+	    points[7].y = maxy + LBL_SPACE;
+	    ctry =  maxy + (ED_label(e)->dimen.y)/2.0 + LBL_SPACE;
+	    maxy += ED_label(e)->dimen.y + LBL_SPACE;
+	}
+	poly.pn = 8;
+	poly.ps = (Ppoint_t*)points;
+	ps = simpleSplineRoute (tp, hp, poly, &pn, et == ET_PLINE);
+	if (pn == 0) return;
+	ED_label(e)->pos.x = ctrx;
+	ED_label(e)->pos.y = ctry;
+	ED_label(e)->set = TRUE;
+#ifndef WITH_CGRAPH
+	clip_and_install(e, e->head, ps, pn, &sinfo);
+#else /* WITH_CGRAPH */
+	clip_and_install(e, aghead(e), ps, pn, &sinfo);
+#endif /* WITH_CGRAPH */
+    }
+
+    /* edges with no labels */
+    for (; i < cnt; i++) {
+	e = edges[ind + i];
+	if (i%2) {  /* down */
+	    if (i == 1) {
+		lminx = (2*leftend + rightend)/3.0;
+		lmaxx = (leftend + 2*rightend)/3.0;
+	    }
+	    miny -= LBL_SPACE;
+	    points[0] = tp;
+	    points[1].x = tp.x;
+	    points[1].y = miny - LBL_SPACE;
+	    points[2].x = hp.x;
+	    points[2].y = points[1].y;
+	    points[3] = hp;
+	    points[4].x = lmaxx;
+	    points[4].y = hp.y;
+	    points[5].x = lmaxx;
+	    points[5].y = miny;
+	    points[6].x = lminx;
+	    points[6].y = miny;
+	    points[7].x = lminx;
+	    points[7].y = tp.y;
+	}
+	else {   /* up */
+	    points[0] = tp;
+	    points[1].x = uminx;
+	    points[1].y = tp.y;
+	    points[2].x = uminx;
+	    points[2].y = maxy;
+	    points[3].x = umaxx;
+	    points[3].y = maxy;
+	    points[4].x = umaxx;
+	    points[4].y = hp.y;
+	    points[5].x = hp.x;
+	    points[5].y = hp.y;
+	    points[6].x = hp.x;
+	    points[6].y = maxy + LBL_SPACE;
+	    points[7].x = tp.x;
+	    points[7].y = maxy + LBL_SPACE;
+	    maxy += + LBL_SPACE;
+	}
+	poly.pn = 8;
+	poly.ps = (Ppoint_t*)points;
+	ps = simpleSplineRoute (tp, hp, poly, &pn, et == ET_PLINE);
+	if (pn == 0) return;
+#ifndef WITH_CGRAPH
+	clip_and_install(e, e->head, ps, pn, &sinfo);
+#else /* WITH_CGRAPH */
+	clip_and_install(e, aghead(e), ps, pn, &sinfo);
+#endif /* WITH_CGRAPH */
+    }
+   
+    free (earray);
+}
+
 /* makeSimpleFlat:
  */
 static void
@@ -875,6 +1078,7 @@ makeSimpleFlat (node_t* tn, node_t* hn, edge_t** edges, int ind, int cnt, int et
 /* make_flat_adj_edges:
  * In the simple case, with no labels or ports, this creates a simple
  * spindle of splines.
+ * If there are only labels, cobble something together.
  * Otherwise, we run dot recursively on the 2 nodes and the edges, 
  * essentially using rankdir=LR, to get the needed spline info.
  */
@@ -903,9 +1107,15 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0,
 	if (ED_tail_port(e).defined || ED_head_port(e).defined) ports = 1;
     }
 
-    /* flat edges without ports and labels can go straight left to right */
-    if ((labels == 0) && (ports == 0)) {
-	makeSimpleFlat (tn, hn, edges, ind, cnt, et);
+    if (ports == 0) {
+	/* flat edges without ports and labels can go straight left to right */
+	if (labels == 0) {
+	    makeSimpleFlat (tn, hn, edges, ind, cnt, et);
+	}
+	/* flat edges without ports but with labels take more work */
+	else {
+	    makeSimpleFlatLabels (tn, hn, edges, ind, cnt, et, labels);
+	}
 	return;
     }
 

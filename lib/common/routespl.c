@@ -220,6 +220,62 @@ static int debugleveln(edge_t* realedge, int i)
 }
 #endif  /* DEBUG */
 
+
+
+/* simpleSplineRoute:
+ * Given a simple (ccw) polygon, route an edge from tp to hp.
+ */
+pointf*
+simpleSplineRoute (pointf tp, pointf hp, Ppoly_t poly, int* n_spl_pts,
+    int polyline)
+{
+    Ppolyline_t pl, spl;
+    Ppoint_t eps[2];
+    Pvector_t evs[2];
+    int i;
+
+    eps[0] = (Ppoint_t)tp;
+    eps[1] = (Ppoint_t)hp;
+    if (Pshortestpath(&poly, eps, &pl) == -1)
+        return NULL;
+
+    if (polyline)
+	make_polyline (pl, &spl);
+    else {
+	if (poly.pn > edgen) {
+	    edges = ALLOC(poly.pn, edges, Pedge_t);
+	    edgen = poly.pn;
+	}
+	for (i = 0; i < poly.pn; i++) {
+	    edges[i].a = poly.ps[i];
+	    edges[i].b = poly.ps[(i + 1) % poly.pn];
+	}
+#if 0
+	if (pp->start.constrained) {
+	    evs[0].x = cos(pp->start.theta);
+	    evs[0].y = sin(pp->start.theta);
+	} else
+#endif
+	    evs[0].x = evs[0].y = 0;
+#if 0
+	if (pp->end.constrained) {
+	    evs[1].x = -cos(pp->end.theta);
+	    evs[1].y = -sin(pp->end.theta);
+	} else
+#endif
+	    evs[1].x = evs[1].y = 0;
+	if (Proutespline(edges, poly.pn, pl, evs, &spl) == -1)
+            return NULL;
+    }
+
+    mkspacep(spl.pn);
+    for (i = 0; i < spl.pn; i++) {
+        ps[i] = spl.ps[i];
+    }
+    *n_spl_pts = spl.pn;
+    return ps;
+}
+
 /* routesplinesinit:
  * Data initialized once until matching call to routeplineterm
  * Allows recursive calls to dot
