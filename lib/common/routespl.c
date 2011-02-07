@@ -236,8 +236,8 @@ simpleSplineRoute (pointf tp, pointf hp, Ppoly_t poly, int* n_spl_pts,
 
     eps[0].x = tp.x;
     eps[0].y = tp.y;
-    eps[1].x = tp.x;
-    eps[1].y = tp.y;
+    eps[1].x = hp.x;
+    eps[1].y = hp.y;
     if (Pshortestpath(&poly, eps, &pl) == -1)
         return NULL;
 
