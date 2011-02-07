@@ -293,6 +293,7 @@ shape_clip
 shapeOf    
 Show_boxes    
 Show_cnt    
+simpleSplineRoute
 sizeOf    
 specificFlags    
 specificItems    
