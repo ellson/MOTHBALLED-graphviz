@@ -36,9 +36,11 @@ static void twopi_init_node_edge(graph_t * g)
     node_t *n;
     edge_t *e;
     int i = 0;
-    rdata* alg = N_NEW(agnnodes(g), rdata);
+    int n_nodes = agnnodes(g);
+    rdata* alg;
 
-    GD_neato_nlist(g) = N_NEW(agnnodes(g) + 1, node_t *);
+    alg = N_NEW(n_nodes, rdata);
+    GD_neato_nlist(g) = N_NEW(n_nodes + 1, node_t *);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	neato_init_node(n);
 	ND_alg(n) = alg + i;
@@ -66,6 +68,8 @@ void twopi_layout(Agraph_t * g)
     Agnode_t *ctr = 0;
     char *s;
     int setRoot = 0;
+
+    if (agnnodes(g) == 0) return;
 
     twopi_init_graph(g);
     s = agget(g, "root");
@@ -147,6 +151,7 @@ void twopi_cleanup(graph_t * g)
     edge_t *e;
 
     n = agfstnode (g);
+    if (!n) return; /* empty graph */
     free (ND_alg(n));
     for (; n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
