@@ -26,6 +26,8 @@
 #include "gvplugin_device.h"
 #include "gvio.h"
 
+#include "gvplugin_pango.h"
+
 #ifdef HAVE_PANGOCAIRO
 #include <pango/pangocairo.h>
 
@@ -38,9 +40,6 @@ typedef enum {
     } format_type;
 
 #define ARRAY_SIZE(A) (sizeof(A)/sizeof(A[0]))
-
-/* FIXME - FONT_DPI also defined in gvtextlayout_pango.c - need shared header */
-#define FONT_DPI 96.
 
 static double dashed[] = {6.};
 static int dashed_len = ARRAY_SIZE(dashed);

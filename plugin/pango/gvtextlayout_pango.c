@@ -19,6 +19,8 @@
 #include <string.h>
 #include "gvplugin_textlayout.h"
 
+#include "gvplugin_pango.h"
+
 #ifdef HAVE_PANGOCAIRO
 #include <pango/pangocairo.h>
 #ifdef HAVE_PANGO_FC_FONT_LOCK_FACE
@@ -52,8 +54,6 @@ static char* pango_psfontResolve (PostscriptAlias* pa)
     return buf;
 }
 
-#define FONT_DPI 96.
-
 #define ENABLE_PANGO_MARKUP
 #ifdef ENABLE_PANGO_MARKUP
 #define FULL_MARKUP "<span weight=\"bold\" style=\"italic\" underline=\"single\"></span>"
@@ -83,9 +83,9 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 
     if (!context) {
 	fontmap = pango_cairo_font_map_get_default();
-	pango_cairo_font_map_set_resolution(PANGO_CAIRO_FONT_MAP(fontmap),96.);
+	pango_cairo_font_map_set_resolution(PANGO_CAIRO_FONT_MAP(fontmap),FONT_DPI);
 	context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP(fontmap));
-	pango_cairo_context_set_resolution(context,96.);
+	pango_cairo_context_set_resolution(context,FONT_DPI);
 	options=cairo_font_options_create();
 	cairo_font_options_set_antialias(options,CAIRO_ANTIALIAS_GRAY);
 	cairo_font_options_set_hint_style(options,CAIRO_HINT_STYLE_FULL);
@@ -108,7 +108,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	    fnt = fontname;
 
 	desc = pango_font_description_from_string(fnt);
-        /* all text layout is done at a scale of 96ppi */
+        /* all text layout is done at a scale of FONT_DPI (nominaly 96.) */
         pango_font_description_set_size (desc, (gint)(fontsize * PANGO_SCALE));
 
         if (fontpath && (font = pango_font_map_load_font(fontmap, context, desc))) {  /* -v support */
