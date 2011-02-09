@@ -21,6 +21,49 @@ array set LANGS {
 		USAGE {
 		}
 	}
+	go {
+		TYPES {
+			{Agraph_t* g} graph_handle
+			{Agraph_t* sg} subgraph_handle
+			{Agnode_t* n} node_handle
+			{Agnode_t* t} tail_node_handle
+			{Agnode_t* h} head_node_handle
+			{Agedge_t* e} edge_handle
+			{Agsym_t* a} attr_handle
+			{char* gne} type
+			{char* name} name
+			{char* tname} tail_name
+			{char* hname} head_name
+			{char* attr} attr_name
+			{char* val} attr_value
+			{const char* filename} filename
+			{char* engine} engine
+			{char* string} string
+			{char** outdata} outdata
+			{char* format} format
+			{FILE* f} channel
+			{void** data} data_handle
+			Agraph_t* graph_handle
+			Agnode_t* node_handle
+			Agedge_t* edge_handle
+			Agsym_t* attribute_handle
+			char* string
+			{const char*} string
+			char** outdata
+			FILE* channel
+			bool bool
+			int int
+			void** data_handle
+			void {}
+		}
+		SYNTAX {
+			gv.  (  {, }   {);}
+		}
+		SYNOPSIS {
+		}
+		USAGE {
+		}
+	}
 	guile {
 		TYPES {
 			{Agraph_t* g} graph_handle

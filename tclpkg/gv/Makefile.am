@@ -39,6 +39,17 @@ $(SHARP_data): gv_sharp.cpp
 gv_sharp.cpp: gv.i
 	$(SWIG) -c++ -csharp -namespace gv -o gv_sharp.cpp $(srcdir)/gv.i
 
+pkggodir = $(pkglibdir)/go
+GO_data = 
+nodist_libgv_go_la_SOURCES = gv_go.cpp $(GO_data)
+libgv_go_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
+libgv_go_la_LIBADD = $(BASELIBS) $(GO_LIBS)
+libgv_go_la_LDFLAGS = -module -avoid-version
+libgv_go_la_CPPFLAGS = $(BASECPPFLAGS) $(GO_INCLUDES)
+$(GO_data): gv_go.cpp
+gv_go.cpp: gv.i
+	$(SWIG) -c++ -go -o gv_go.cpp $(srcdir)/gv.i
+
 pkgguiledir = $(pkglibdir)/guile
 GUILE_data = 
 nodist_libgv_guile_la_SOURCES = gv_guile.cpp $(GUILE_data)
@@ -259,6 +270,13 @@ pdf_DATA += gv.3sharp.pdf
 pkgsharp_LTLIBRARIES = libgv_sharp.la
 DEVTSTS += test_sharp
 endif
+if WITH_GO
+pkggo_DATA = $(GO_data)
+man_MANS += gv.3go
+pdf_DATA += gv.3go.pdf
+pkggo_LTLIBRARIES = libgv_go.la
+DEVTSTS += test_go
+endif
 if WITH_GUILE
 pkgguile_DATA = $(GUILE_data)
 man_MANS += gv.3guile
@@ -380,10 +398,10 @@ pkgIndex.tcl: libgv_tcl.la
 endif
 endif
 
-man = gv.3sharp gv.3guile gv.3io gv.3java gv.3lua gv.3ocaml \
+man = gv.3sharp gv.3go gv.3guile gv.3io gv.3java gv.3lua gv.3ocaml \
 	gv.3perl gv.3php gv.3python gv.3r gv.3ruby gv.3tcl
 
-pdf = gv.3sharp.pdf gv.3guile.pdf gv.3io.pdf gv.3java.pdf gv.3lua.pdf \
+pdf = gv.3sharp.pdf gv.3go.pdf gv.3guile.pdf gv.3io.pdf gv.3java.pdf gv.3lua.pdf \
       gv.3ocaml.pdf gv.3perl.pdf gv.3php.pdf gv.3python.pdf gv.3r.pdf \
       gv.3ruby.pdf gv.3tcl.pdf
 
@@ -393,6 +411,9 @@ $(man): gv.i gv_doc_writer.tcl gv_doc_template.tcl gv_doc_langs.tcl
 
 gv.3sharp.pdf: gv.3sharp
 	- $(GROFF) -Tps -man gv.3sharp | $(PS2PDF) - - >gv.3sharp.pdf
+
+gv.3go.pdf: gv.3go
+	- $(GROFF) -Tps -man gv.3go | $(PS2PDF) - - >gv.3go.pdf
 
 gv.3guile.pdf: gv.3guile
 	- $(GROFF) -Tps -man gv.3guile | $(PS2PDF) - - >gv.3guile.pdf
@@ -464,6 +485,7 @@ endif
 
 uninstall-hook:
 	rm -rf $(DESTDIR)$(pkgsharpdir);
+	rm -rf $(DESTDIR)$(pkggodir);
 	rm -rf $(DESTDIR)$(pkgguiledir);
 	rm -rf $(DESTDIR)$(pkgiodir);
 	rm -rf $(DESTDIR)$(pkgjavadir);
@@ -489,6 +511,14 @@ test_sharp: libgv_sharp.la
 		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.cs .; \
 		$(SHARP) *.cs -out:test.exe; \
 		mono test.exe)
+
+.PHONY: test_go
+test_go: libgv_go.la
+	-(mkdir -p test_go; cd test_go; \
+		ln -fs ../.libs/libgv_go.so libgv.so; \
+		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.go .; \
+		$(GO) *.go
+		LD_LIBRARY_PATH=. go test)
 
 .PHONY: test_guile
 test_guile: libgv_guile.la
@@ -574,6 +604,7 @@ EXTRA_DIST = $(man) $(pdf) gv_doc_*.tcl
 
 CLEANFILES = test_*/* pkgIndex.tcl \
 	gv_sharp.cpp $(SHARP_data) \
+	gv_go.cpp $(GO_data) \
 	gv_guile.cpp $(GUILE_data) \
 	gv_io.cpp $(IO_data) \
 	gv_java.cpp $(JAVA_data) \

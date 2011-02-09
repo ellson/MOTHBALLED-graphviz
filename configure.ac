@@ -613,6 +613,50 @@ fi
 AM_CONDITIONAL(WITH_SHARP, [test "x$use_sharp" = "xYes"])
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for GO
+
+AC_ARG_ENABLE(go,
+  [AS_HELP_STRING([--enable-go=no],[go language bindings])],
+  [], [enable_go=no])
+
+if test "x$enable_go" != "xyes"; then
+  use_go="No (disabled by default - experimental)"
+else
+  if test "x$use_swig" != "xYes"; then
+    use_go="No (swig not available)"
+  else
+    if test `$SWIG -help 2>&1 | $GREP -c '\-go* *- Generate'` = 0 ; then
+      use_go="No (swig does not support -go option)"
+    else
+      AC_CHECK_PROG(GO,6g,8g)
+      if test "x$GO" = "x"; then
+        use_go="No (GO compiler not available)"
+      else
+        GO_INCLUDES=
+#        GO_INSTALL_DIR="/usr/lib${LIBPOSTFIX}/go/modules"
+#        GO_INSTALL_DATADIR="/usr/share/go"
+        GO_LIBS=
+#        save_CPPFLAGS=$CPPFLAGS
+#        CPPFLAGS="$CPPFLAGS $GO_INCLUDES"
+#        AC_CHECK_HEADER(go.h,,[
+#          use_go="No (missing header)"
+#          GO=
+#        ])
+#        CPPFLAGS=$save_CPPFLAGS
+	if test "x$GO" != "x"; then
+	  use_go="Yes"
+#          AC_SUBST(GO_INSTALL_DATADIR)
+#          AC_SUBST(GO_INSTALL_DIR)
+          AC_SUBST(GO_INCLUDES)
+          AC_SUBST(GO_LIBS)
+        fi
+      fi
+    fi
+  fi
+fi
+AM_CONDITIONAL(WITH_GO, [test "x$use_go" = "xYes"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for GUILE
 
 AC_ARG_ENABLE(guile,
@@ -3303,6 +3347,7 @@ echo "  xlib:          $use_xlib"
 echo ""
 echo "language extensions:"
 echo "  gv_sharp:      $use_sharp"
+echo "  gv_go:         $use_go"
 echo "  gv_guile:      $use_guile"
 echo "  gv_io:         $use_io"
 echo "  gv_java:       $use_java"

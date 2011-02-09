@@ -2,6 +2,7 @@
 ## Process this file with automake to produce Makefile.in
 
 pkgsharpdir = $(pkglibdir)/sharp
+pkggodir = $(pkglibdir)/go
 pkgguiledir = $(pkglibdir)/guile
 pkgiodir = $(pkglibdir)/io
 pkgjavadir = $(pkglibdir)/java
@@ -166,6 +167,7 @@ endif
 #     has installed a system copy
 uninstall-hook:
 	rm -rf $(DESTDIR)$(pkgsharpdir);
+	rm -rf $(DESTDIR)$(pkggodir);
 	rm -rf $(DESTDIR)$(pkgguiledir);
 	rm -rf $(DESTDIR)$(pkgiodir);
 	rm -rf $(DESTDIR)$(pkgjavadir);
