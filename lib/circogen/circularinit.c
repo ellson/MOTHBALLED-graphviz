@@ -280,6 +280,7 @@ void circo_cleanup(graph_t * g)
 
     closeDerivedGraph((graph_t*)GD_alg(g));	/* delete derived graph */
 
+    free (ND_alg(n));
     for (; n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    gv_cleanup_edge(e);
