@@ -19,8 +19,6 @@
 #include <string.h>
 #include "gvplugin_textlayout.h"
 
-#include "gvplugin_pango.h"
-
 #ifdef HAVE_PANGOCAIRO
 #include <pango/pangocairo.h>
 #ifdef HAVE_PANGO_FC_FONT_LOCK_FACE
@@ -54,6 +52,8 @@ static char* pango_psfontResolve (PostscriptAlias* pa)
     return buf;
 }
 
+#define FONT_DPI 96.
+
 #define ENABLE_PANGO_MARKUP
 #ifdef ENABLE_PANGO_MARKUP
 #define FULL_MARKUP "<span weight=\"bold\" style=\"italic\" underline=\"single\"></span>"
@@ -85,7 +85,6 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	fontmap = pango_cairo_font_map_get_default();
 	pango_cairo_font_map_set_resolution(PANGO_CAIRO_FONT_MAP(fontmap),FONT_DPI);
 	context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP(fontmap));
-	pango_cairo_context_set_resolution(context,FONT_DPI);
 	options=cairo_font_options_create();
 	cairo_font_options_set_antialias(options,CAIRO_ANTIALIAS_GRAY);
 	cairo_font_options_set_hint_style(options,CAIRO_HINT_STYLE_FULL);
@@ -218,13 +217,13 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     if (logical_rect.width == 0)
 	logical_rect.height = 0;
 
-    textlayout_scale = FONT_DPI / (POINTS_PER_INCH * PANGO_SCALE);
+    textlayout_scale = POINTS_PER_INCH / (FONT_DPI * PANGO_SCALE);
     para->width = (int)(logical_rect.width * textlayout_scale + 1);    /* round up so that width/height are never too small */
     para->height = (int)(logical_rect.height * textlayout_scale + 1);
 
     /* The y offset from baseline to 0,0 of the bitmap representation */
     iter = pango_layout_get_iter (layout);
-    para->yoffset_layout = pango_layout_iter_get_baseline (iter) * POINTS_PER_INCH/(FONT_DPI * PANGO_SCALE);
+    para->yoffset_layout = pango_layout_iter_get_baseline (iter) * textlayout_scale;
 
     /* The distance below midline for y centering of text strings */
     para->yoffset_centerline = 0.10 * para->fontsize;
