@@ -231,7 +231,7 @@ static void cairogen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 
     cairo_move_to (cr, p.x, -p.y);
     cairo_save(cr);
-    cairo_scale(cr, POINTS_PER_INCH / FONT_DPI, POINTS_PER_INCH / FONT_DPI);
+    cairo_scale(cr, FONT_DPI / POINTS_PER_INCH, FONT_DPI / POINTS_PER_INCH);
     pango_cairo_show_layout(cr, (PangoLayout*)(para->layout));
     cairo_restore(cr);
 }
