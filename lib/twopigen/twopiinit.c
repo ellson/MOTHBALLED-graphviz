@@ -146,7 +146,9 @@ void twopi_cleanup(graph_t * g)
     node_t *n;
     edge_t *e;
 
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+    n = agfstnode (g);
+    free (ND_alg(n));
+    for (; n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    gv_cleanup_edge(e);
 	}
