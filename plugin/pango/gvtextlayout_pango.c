@@ -211,7 +211,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	pango_layout_set_attributes (layout, attrs);
 #endif
 
-    pango_layout_get_pixel_extents (layout, NULL, &logical_rect);
+    pango_layout_get_extents (layout, NULL, &logical_rect);
 
     /* if pango doesn't like the font then it sets width=0 but height = garbage */
     if (logical_rect.width == 0)
