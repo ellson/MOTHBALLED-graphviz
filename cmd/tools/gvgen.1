@@ -46,6 +46,12 @@ gvgen \- generate graphs
 .BI -w n
 ]
 [
+.BI -n prefix
+]
+[
+.BI -N name
+]
+[
 .BI -o outfile
 ]
 .SH DESCRIPTION
@@ -116,6 +122,14 @@ This will have \fIx*y\fP vertices and
 .BI \-w " n"
 Generate a path on \fIn\fP vertices.
 This will have \fIn-1\fP edges.
+.TP
+.BI \-n " prefix"
+Normally, integers are used as node names. If \fIprefix\fP is specified,
+this will be prepended to the integer to create the name.
+.TP
+.BI \-N " name"
+Use \fIname\fP as the name of the graph.
+By default, the graph is anonymous.
 .TP
 .BI \-o " outfile"
 If specified, the generated graph is written into the file

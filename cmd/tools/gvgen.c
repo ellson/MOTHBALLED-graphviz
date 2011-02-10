@@ -51,6 +51,8 @@ typedef struct {
     int foldVal;
     int directed;
     FILE *outfile;
+    char* pfx;
+    char* name;
 } opts_t;
 
 static char *cmd;
@@ -81,6 +83,8 @@ static char *Usage = "Usage: %s [-dV?] [options]\n\
  -h<x>         : hypercube \n\
  -k<x>         : complete \n\
  -b<x,y>       : complete bipartite\n\
+ -n<prefix>    : use <prefix> in node names (\"\")\n\
+ -N<name>      : use <name> for the graph (\"\")\n\
  -o<outfile>   : put output in <outfile> (stdout)\n\
  -p<x>         : path \n\
  -s<x>         : star\n\
@@ -177,7 +181,7 @@ static char* setFold(char *s, opts_t* opts)
     return next;
 }
 
-static char *optList = ":c:C:dg:G:h:k:b:o:p:s:S:t:T:Vw:";
+static char *optList = ":n:N:c:C:dg:G:h:k:b:o:p:s:S:t:T:Vw:";
 
 static GraphType init(int argc, char *argv[], opts_t* opts)
 {
@@ -223,6 +227,12 @@ static GraphType init(int argc, char *argv[], opts_t* opts)
 	    graphType = completeb;
 	    if (setTwo(optarg, opts))
 		errexit(c);
+	    break;
+	case 'n':
+	    opts->pfx = optarg;
+	    break;
+	case 'N':
+	    opts->name = optarg;
 	    break;
 	case 'o':
 	    opts->outfile = openFile(optarg, "w");
@@ -287,24 +297,27 @@ static opts_t opts;
 static void dirfn (int t, int h)
 {
     if (h > 0)
-	fprintf (opts.outfile, "  %d -> %d\n", t, h);
+	fprintf (opts.outfile, "  %s%d -> %s%d\n", opts.pfx, t, opts.pfx, h);
     else
-	fprintf (opts.outfile, "  %d\n", t);
+	fprintf (opts.outfile, "  %s%d\n", opts.pfx, t);
 }
 
 static void undirfn (int t, int h)
 {
     if (h > 0)
-	fprintf (opts.outfile, "  %d -- %d\n", t, h);
+	fprintf (opts.outfile, "  %s%d -- %s%d\n", opts.pfx, t, opts.pfx, h);
     else
-	fprintf (opts.outfile, "  %d\n", t);
+	fprintf (opts.outfile, "  %s%d\n", opts.pfx, t);
 }
 
 int main(int argc, char *argv[])
 {
-    GraphType graphType = init(argc, argv, &opts);
+    GraphType graphType;
     edgefn ef;
 
+    opts.pfx = "";
+    opts.name = "";
+    graphType = init(argc, argv, &opts);
     if (opts.directed) {
 	fprintf(opts.outfile, "digraph {\n");
 	ef = dirfn;
