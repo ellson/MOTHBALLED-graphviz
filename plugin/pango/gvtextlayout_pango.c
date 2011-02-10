@@ -82,7 +82,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     double textlayout_scale;
 
     if (!context) {
-	fontmap = pango_cairo_font_map_get_default();
+	fontmap = pango_cairo_font_map_new();
 	pango_cairo_font_map_set_resolution(PANGO_CAIRO_FONT_MAP(fontmap),FONT_DPI);
 	context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP(fontmap));
 	options=cairo_font_options_create();
@@ -211,7 +211,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	pango_layout_set_attributes (layout, attrs);
 #endif
 
-    pango_layout_get_extents (layout, NULL, &logical_rect);
+    pango_layout_get_pixel_extents (layout, NULL, &logical_rect);
 
     /* if pango doesn't like the font then it sets width=0 but height = garbage */
     if (logical_rect.width == 0)
