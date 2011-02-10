@@ -16,6 +16,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/cdt \
 	$(PANGOCAIRO_CFLAGS) $(FREETYPE2_CFLAGS) $(LIBGVC_CFLAGS)
 
+noinst_HEADERS = gvplugin_pango.h
+
 if WITH_PANGOCAIRO
 noinst_LTLIBRARIES = libgvplugin_pango_C.la
 if WITH_WIN32
