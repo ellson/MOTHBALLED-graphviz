@@ -33,6 +33,12 @@ made by
 which runs as a separate process that communicates with
 .B lefty
 through pipes.
+
+If the input graph contains xdot attributes,
+.B dotty
+will use that to display the graph. Otherwise, it runs
+.B dot
+to obtain layout information.
 .SH USAGE
 The file name is optional. If present, the graph contained in that file is
 displayed in the
@@ -42,8 +48,10 @@ window.
 .TP
 .B -V
 Prints the version.
+.SH BUGS
+The lefty parser does not accept anonymous graphs.
 .SH SEE ALSO
-dot(1), lefty(1)
+dot(1), lefty(1), lneato(1), xdot(3)
 .br
 .I dotty
 user guide.

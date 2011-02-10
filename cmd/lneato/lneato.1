@@ -33,6 +33,12 @@ made by
 which runs as a separate process that communicates with
 .B lefty
 through pipes.
+
+If the input graph contains xdot attributes,
+.B lneato
+will use that to display the graph. Otherwise, it runs
+.B neato
+to obtain layout information.
 .SH USAGE
 The file name is optional. If present, the graph contained in that file is
 displayed in the
@@ -43,7 +49,7 @@ window.
 .B -V
 Prints the version.
 .SH SEE ALSO
-neato(1), lefty(1), dotty(1),
+neato(1), lefty(1), dotty(1), xdot(3),
 .br
 .I dotty
 user guide.
