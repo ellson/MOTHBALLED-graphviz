@@ -17,7 +17,7 @@ static void draw_text(cairo_t *cr, char *text, char *font_family, double font_si
 	static PangoContext *context;
 	PangoLayout *layout;
 	PangoFontDescription *desc;
-	PangoRectangle logical_rect;
+	PangoRectangle logical_rect, ink_rect;
 	PangoLayoutIter* iter;
 	PangoFont* font;
 	cairo_font_options_t* options;
@@ -51,16 +51,26 @@ static void draw_text(cairo_t *cr, char *text, char *font_family, double font_si
 	pango_layout_set_font_description(layout,desc);
 	pango_font_description_free(desc);
 
+	/* draw text  - black */
 	cairo_set_source_rgb(cr,0.0,0.0,0.0);
 	pango_cairo_show_layout(cr,layout);
 	
+	/* draw logical_rect - purple */
+	pango_layout_get_extents (layout, &ink_rect, &logical_rect);
 	cairo_set_source_rgb(cr,1.0,0.0,1.0);
-	pango_layout_get_extents (layout, NULL, &logical_rect);
 	cairo_rectangle(cr,
 		logical_rect.x/PANGO_SCALE, logical_rect.y/PANGO_SCALE,
 		logical_rect.width/PANGO_SCALE, logical_rect.height/PANGO_SCALE);
 	cairo_stroke(cr);
 
+	/* draw ink_rect - green */
+	cairo_set_source_rgb(cr,0.0,1.0,0.0);
+	cairo_rectangle(cr,
+		ink_rect.x/PANGO_SCALE, ink_rect.y/PANGO_SCALE,
+		ink_rect.width/PANGO_SCALE, ink_rect.height/PANGO_SCALE);
+	cairo_stroke(cr);
+
+	/* draw baseline - red */
 	cairo_set_source_rgb(cr,1.0,0.0,0.0);
 	iter = pango_layout_get_iter(layout);
 	cairo_move_to(cr,logical_rect.y/PANGO_SCALE, pango_layout_iter_get_baseline (iter) / PANGO_SCALE);
@@ -102,7 +112,7 @@ main (int argc, char *argv[])
 	surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32,WIDTH,HEIGHT);
 	cr = cairo_create(surface);
 
-	/* draw axis */
+	/* draw axis - turquoise */
 	cairo_set_source_rgb(cr,0.0,1.0,1.0);
 	cairo_move_to(cr,WIDTH/10,0);
 	cairo_rel_line_to(cr,0,HEIGHT);
