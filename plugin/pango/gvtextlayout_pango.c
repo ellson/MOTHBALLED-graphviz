@@ -83,7 +83,6 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 
     if (!context) {
 	fontmap = pango_cairo_font_map_new();
-	pango_cairo_font_map_set_resolution(PANGO_CAIRO_FONT_MAP(fontmap),FONT_DPI);
 	context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP(fontmap));
 	options=cairo_font_options_create();
 	cairo_font_options_set_antialias(options,CAIRO_ANTIALIAS_GRAY);
@@ -91,6 +90,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	cairo_font_options_set_hint_metrics(options,CAIRO_HINT_METRICS_ON);
 	cairo_font_options_set_subpixel_order(options,CAIRO_SUBPIXEL_ORDER_BGR);
 	pango_cairo_context_set_font_options(context, options);
+	pango_cairo_context_set_resolution(context, FONT_DPI);
 	cairo_font_options_destroy(options);
 	g_object_unref(fontmap);
     }
