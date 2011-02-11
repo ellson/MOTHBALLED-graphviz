@@ -60,15 +60,15 @@ static void draw_text(cairo_t *cr, char *text, char *font_family, double font_si
 
 	cairo_set_source_rgb(cr,1.0,0.0,1.0);
 	cairo_rectangle(cr,
-		logical_rect.x/PANGO_SCALE, logical_rect.y/PANGO_SCALE,
-		logical_rect.width/PANGO_SCALE, logical_rect.height/PANGO_SCALE);
+		logical_rect.x / PANGO_SCALE, logical_rect.y / PANGO_SCALE,
+		logical_rect.width / PANGO_SCALE, logical_rect.height / PANGO_SCALE);
 	cairo_stroke(cr);
 
 	/* draw ink_rect - green */
 	cairo_set_source_rgb(cr,0.0,1.0,0.0);
 	cairo_rectangle(cr,
-		ink_rect.x/PANGO_SCALE, ink_rect.y/PANGO_SCALE,
-		ink_rect.width/PANGO_SCALE, ink_rect.height/PANGO_SCALE);
+		ink_rect.x / PANGO_SCALE, ink_rect.y / PANGO_SCALE,
+		ink_rect.width / PANGO_SCALE, ink_rect.height / PANGO_SCALE);
 	cairo_stroke(cr);
 
 	/* draw baseline - red */
@@ -76,8 +76,8 @@ static void draw_text(cairo_t *cr, char *text, char *font_family, double font_si
 	iter = pango_layout_get_iter(layout);
 	baseline = pango_layout_iter_get_baseline (iter);
 
-	cairo_move_to(cr,logical_rect.y/PANGO_SCALE, baseline / PANGO_SCALE);
-	cairo_rel_line_to(cr,logical_rect.width/PANGO_SCALE, 0);
+	cairo_move_to(cr,logical_rect.x / PANGO_SCALE, baseline / PANGO_SCALE);
+	cairo_rel_line_to(cr,logical_rect.width / PANGO_SCALE, 0);
 	cairo_stroke(cr);
 
 	/* draw ascent - yellow */
@@ -85,17 +85,17 @@ static void draw_text(cairo_t *cr, char *text, char *font_family, double font_si
 	fontmetrics = pango_context_get_metrics(context, NULL, NULL);
 
 	ascent = pango_font_metrics_get_ascent(fontmetrics);
-#if 0  /* I don't understand this value */
-	cairo_move_to(cr,logical_rect.y/PANGO_SCALE, (baseline - ascent) / PANGO_SCALE);
-	cairo_rel_line_to(cr,logical_rect.width/PANGO_SCALE, 0);
+#if 1  /* I don't understand this value  - needs some partial scaling by fontsize */
+	cairo_move_to(cr,logical_rect.x / PANGO_SCALE, (baseline - ascent) / PANGO_SCALE);
+	cairo_rel_line_to(cr,logical_rect.width / PANGO_SCALE, 0);
 	cairo_stroke(cr);
 #endif
 
 	/* draw descent - yellow */
 	descent = pango_font_metrics_get_descent(fontmetrics);
-#if 0  /* I don't understand this value */
-	cairo_move_to(cr,logical_rect.y/PANGO_SCALE, (baseline + descent) / PANGO_SCALE);
-	cairo_rel_line_to(cr,logical_rect.width/PANGO_SCALE, 0);
+#if 1  /* I don't understand this value - needs some partial scaling by fontsize  */
+	cairo_move_to(cr,logical_rect.x / PANGO_SCALE, (baseline + descent) / PANGO_SCALE);
+	cairo_rel_line_to(cr,logical_rect.width / PANGO_SCALE, 0);
 	cairo_stroke(cr);
 #endif
 
