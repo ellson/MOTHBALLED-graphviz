@@ -16,6 +16,7 @@ static void draw_text(cairo_t *cr, char *text, char *font_family, double font_si
 	PangoLayout *layout;
 	PangoFontDescription *desc;
 	PangoRectangle logical_rect, ink_rect;
+	PangoRectangle pixel_logical_rect, pixel_ink_rect;
 	PangoLayoutIter *iter;
 	PangoFont *font;
 	PangoFontMetrics *fontmetrics;
@@ -71,6 +72,16 @@ static void draw_text(cairo_t *cr, char *text, char *font_family, double font_si
 		ink_rect.width / PANGO_SCALE, ink_rect.height / PANGO_SCALE);
 	cairo_stroke(cr);
 
+	/* draw pixel logical_rect - blue */
+	pango_layout_get_pixel_extents (layout, &pixel_ink_rect, &pixel_logical_rect);
+#if 0 /* results in same rect as non-pixel extents */
+	cairo_set_source_rgb(cr,0.0,0.0,1.0);
+	cairo_rectangle(cr,
+		pixel_logical_rect.x, pixel_logical_rect.y,
+		pixel_logical_rect.width, pixel_logical_rect.height);
+	cairo_stroke(cr);
+#endif
+
 	/* draw baseline - red */
 	cairo_set_source_rgb(cr,1.0,0.0,0.0);
 	iter = pango_layout_get_iter(layout);
@@ -85,16 +96,17 @@ static void draw_text(cairo_t *cr, char *text, char *font_family, double font_si
 	fontmetrics = pango_context_get_metrics(context, NULL, NULL);
 
 	ascent = pango_font_metrics_get_ascent(fontmetrics);
-#if 1  /* I don't understand this value  - needs some partial scaling by fontsize */
-	cairo_move_to(cr,logical_rect.x / PANGO_SCALE, (baseline - ascent) / PANGO_SCALE);
+#if 1  /* I don't understand this value  - needs some partial scaling by font_size */
+#define magic (font_size / 16)
+	cairo_move_to(cr,logical_rect.x / PANGO_SCALE, (baseline - magic * ascent) / PANGO_SCALE);
 	cairo_rel_line_to(cr,logical_rect.width / PANGO_SCALE, 0);
 	cairo_stroke(cr);
 #endif
 
 	/* draw descent - yellow */
 	descent = pango_font_metrics_get_descent(fontmetrics);
-#if 1  /* I don't understand this value - needs some partial scaling by fontsize  */
-	cairo_move_to(cr,logical_rect.x / PANGO_SCALE, (baseline + descent) / PANGO_SCALE);
+#if 1  /* I don't understand this value - needs some partial scaling by font_size  */
+	cairo_move_to(cr,logical_rect.x / PANGO_SCALE, (baseline + magic * descent) / PANGO_SCALE);
 	cairo_rel_line_to(cr,logical_rect.width / PANGO_SCALE, 0);
 	cairo_stroke(cr);
 #endif
