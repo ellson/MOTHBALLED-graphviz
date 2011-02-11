@@ -70,7 +70,6 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     char *fnt, *psfnt = NULL;
     PangoLayout *layout;
     PangoRectangle logical_rect;
-    PangoLayoutIter* iter;
     cairo_font_options_t* options;
     PangoFont *font;
 #ifdef ENABLE_PANGO_MARKUP
@@ -222,13 +221,11 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     para->height = (int)(logical_rect.height * textlayout_scale + 1);
 
     /* The y offset from baseline to 0,0 of the bitmap representation */
-    iter = pango_layout_get_iter (layout);
-    para->yoffset_layout = pango_layout_iter_get_baseline (iter) * textlayout_scale;
+    para->yoffset_layout = pango_layout_get_baseline (layout) * textlayout_scale;
 
     /* The distance below midline for y centering of text strings */
     para->yoffset_centerline = 0.10 * para->fontsize;
 
-    pango_layout_iter_free (iter);
     if (logical_rect.width == 0)
 	return FALSE;
     return TRUE;

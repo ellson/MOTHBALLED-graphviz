@@ -17,7 +17,6 @@ static void draw_text(cairo_t *cr, char *text, char *font_family, double font_si
 	PangoFontDescription *desc;
 	PangoRectangle logical_rect, ink_rect;
 	PangoRectangle pixel_logical_rect, pixel_ink_rect;
-	PangoLayoutIter *iter;
 	PangoFont *font;
 	PangoFontMetrics *fontmetrics;
 	cairo_font_options_t *options;
@@ -39,6 +38,7 @@ static void draw_text(cairo_t *cr, char *text, char *font_family, double font_si
 	}
 	
 	layout = pango_layout_new(context);
+	pango_layout_set_spacing(layout,0);
 	pango_layout_set_text(layout,text,-1);
 	desc = pango_font_description_from_string(font_family);
 	pango_font_description_set_size (desc, (gint)(font_size * PANGO_SCALE));
@@ -84,9 +84,7 @@ static void draw_text(cairo_t *cr, char *text, char *font_family, double font_si
 
 	/* draw baseline - red */
 	cairo_set_source_rgb(cr,1.0,0.0,0.0);
-	iter = pango_layout_get_iter(layout);
-	baseline = pango_layout_iter_get_baseline (iter);
-
+	baseline = pango_layout_get_baseline (layout);
 	cairo_move_to(cr,logical_rect.x / PANGO_SCALE, baseline / PANGO_SCALE);
 	cairo_rel_line_to(cr,logical_rect.width / PANGO_SCALE, 0);
 	cairo_stroke(cr);
