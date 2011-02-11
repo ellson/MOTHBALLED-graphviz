@@ -485,7 +485,7 @@ $(CAIRO_DIR)/Makefile: $(PREFIX)/lib/$(PIXMAN) $(PREFIX)/lib/$(FONTCONFIG) $(PRE
 	@echo
 	@echo CONFIGURING CAIRO...
 	@echo
-	cd $(CAIRO_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG)
+	cd $(CAIRO_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG)  --enable-quartz --enable-quartz-font --enable-quartz-image
 	
 $(CAIRO_DIR)/configure: | $(CAIRO_DIR).tar.gz
 	@echo
