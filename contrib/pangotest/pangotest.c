@@ -9,8 +9,6 @@
 #define DEFAULT_FONT_SIZE 16.
 #define DEFAULT_TEXT "ABCgjpqyXYZ"
 #define FONT_DPI 96
-#define PANGO_SCALE 1024
-
 
 static void draw_text(cairo_t *cr, char *text, char *font_family, double font_size){
  	static PangoFontMap *fontmap;
@@ -18,10 +16,12 @@ static void draw_text(cairo_t *cr, char *text, char *font_family, double font_si
 	PangoLayout *layout;
 	PangoFontDescription *desc;
 	PangoRectangle logical_rect, ink_rect;
-	PangoLayoutIter* iter;
-	PangoFont* font;
-	cairo_font_options_t* options;
+	PangoLayoutIter *iter;
+	PangoFont *font;
+	PangoFontMetrics *fontmetrics;
+	cairo_font_options_t *options;
 	const char *fontclass, *fontdesc;
+	int baseline, ascent, descent;
 
 	if (!context) {
 		fontmap = pango_cairo_font_map_new();
@@ -33,6 +33,7 @@ static void draw_text(cairo_t *cr, char *text, char *font_family, double font_si
 		cairo_font_options_set_hint_metrics(options,CAIRO_HINT_METRICS_ON);
 		cairo_font_options_set_subpixel_order(options,CAIRO_SUBPIXEL_ORDER_BGR);
 		pango_cairo_context_set_font_options(context, options);
+//		pango_cairo_context_set_resolution(context, FONT_DPI);
 		cairo_font_options_destroy(options);
 		g_object_unref(fontmap);
 	}
@@ -57,6 +58,7 @@ static void draw_text(cairo_t *cr, char *text, char *font_family, double font_si
 	
 	/* draw logical_rect - purple */
 	pango_layout_get_extents (layout, &ink_rect, &logical_rect);
+
 	cairo_set_source_rgb(cr,1.0,0.0,1.0);
 	cairo_rectangle(cr,
 		logical_rect.x/PANGO_SCALE, logical_rect.y/PANGO_SCALE,
@@ -73,9 +75,32 @@ static void draw_text(cairo_t *cr, char *text, char *font_family, double font_si
 	/* draw baseline - red */
 	cairo_set_source_rgb(cr,1.0,0.0,0.0);
 	iter = pango_layout_get_iter(layout);
-	cairo_move_to(cr,logical_rect.y/PANGO_SCALE, pango_layout_iter_get_baseline (iter) / PANGO_SCALE);
+	baseline = pango_layout_iter_get_baseline (iter);
+
+	cairo_move_to(cr,logical_rect.y/PANGO_SCALE, baseline / PANGO_SCALE);
 	cairo_rel_line_to(cr,logical_rect.width/PANGO_SCALE, 0);
 	cairo_stroke(cr);
+
+	/* draw ascent - yellow */
+	cairo_set_source_rgb(cr,1.0,1.0,0.0);
+	fontmetrics = pango_context_get_metrics(context, NULL, NULL);
+
+	ascent = pango_font_metrics_get_ascent(fontmetrics);
+#if 0  /* I don't understand this value */
+	cairo_move_to(cr,logical_rect.y/PANGO_SCALE, (baseline - ascent) / PANGO_SCALE);
+	cairo_rel_line_to(cr,logical_rect.width/PANGO_SCALE, 0);
+	cairo_stroke(cr);
+#endif
+
+	/* draw descent - yellow */
+	descent = pango_font_metrics_get_descent(fontmetrics);
+#if 0  /* I don't understand this value */
+	cairo_move_to(cr,logical_rect.y/PANGO_SCALE, (baseline + descent) / PANGO_SCALE);
+	cairo_rel_line_to(cr,logical_rect.width/PANGO_SCALE, 0);
+	cairo_stroke(cr);
+#endif
+
+	pango_font_metrics_unref(fontmetrics);
 
 	g_object_unref(layout);
 }
