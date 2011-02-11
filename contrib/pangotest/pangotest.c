@@ -96,8 +96,9 @@ static void draw_text(cairo_t *cr, char *text, char *font_family, double font_si
 	fontmetrics = pango_context_get_metrics(context, NULL, NULL);
 
 	ascent = pango_font_metrics_get_ascent(fontmetrics);
-#if 1  /* I don't understand this value  - needs some partial scaling by font_size */
-#define magic (font_size / 16)
+#if 0  /* I don't understand this value  - needs some partial scaling by font_size */
+/* magic didn't work - not portable across font backends */
+#define magic (font_size / 16) 
 	cairo_move_to(cr,logical_rect.x / PANGO_SCALE, (baseline - magic * ascent) / PANGO_SCALE);
 	cairo_rel_line_to(cr,logical_rect.width / PANGO_SCALE, 0);
 	cairo_stroke(cr);
@@ -105,7 +106,7 @@ static void draw_text(cairo_t *cr, char *text, char *font_family, double font_si
 
 	/* draw descent - yellow */
 	descent = pango_font_metrics_get_descent(fontmetrics);
-#if 1  /* I don't understand this value - needs some partial scaling by font_size  */
+#if 0  /* I don't understand this value - needs some partial scaling by font_size  */
 	cairo_move_to(cr,logical_rect.x / PANGO_SCALE, (baseline + magic * descent) / PANGO_SCALE);
 	cairo_rel_line_to(cr,logical_rect.width / PANGO_SCALE, 0);
 	cairo_stroke(cr);
