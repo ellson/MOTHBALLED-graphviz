@@ -227,7 +227,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
      * Use an assumed height based on the point size.
      */
 
-    para->height = (int)(para->fontsize * 1.3);
+    para->height = (int)(para->fontsize * 1.2 + .5);
 
     /* The y offset from baseline to 0,0 of the bitmap representation */
     para->yoffset_layout = pango_layout_get_baseline (layout) * textlayout_scale;
