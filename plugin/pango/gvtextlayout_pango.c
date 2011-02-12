@@ -220,6 +220,17 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     para->width = (int)(logical_rect.width * textlayout_scale + 1);    /* round up so that width/height are never too small */
     para->height = (int)(logical_rect.height * textlayout_scale + 1);
 
+#ifdef ENABLE_PANGO_MARKUP
+    /* FIXME  -- Horrible kluge !!! */
+
+    /* For now we are using pango for single line blocks only.
+     * The logical_rect.height seems to be too high from the font metrics on some platforms.
+     * Use an assumed height based on the point size.
+     */
+
+    para->height = (int)(para->fontsize * 1.3);
+#endif
+
     /* The y offset from baseline to 0,0 of the bitmap representation */
     para->yoffset_layout = pango_layout_get_baseline (layout) * textlayout_scale;
 
