@@ -227,13 +227,13 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
      * Use an assumed height based on the point size.
      */
 
-    para->height = (int)(para->fontsize * 1.2 + .5);
+    para->height = (int)(para->fontsize * 1.1 + .5);
 
     /* The y offset from baseline to 0,0 of the bitmap representation */
     para->yoffset_layout = pango_layout_get_baseline (layout) * textlayout_scale;
 
     /* The distance below midline for y centering of text strings */
-    para->yoffset_centerline = 0.10 * para->fontsize;
+    para->yoffset_centerline = 0.2 * para->fontsize;
 
     if (logical_rect.width == 0)
 	return FALSE;
