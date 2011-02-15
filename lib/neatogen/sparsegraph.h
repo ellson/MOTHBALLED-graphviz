@@ -33,7 +33,7 @@ extern "C" {
     };
 
     typedef int DistType;	/* must be signed!! */
-
+#if 0
     inline double max(double x, double y) {
 	if (x >= y)
 	    return x;
@@ -59,6 +59,7 @@ extern "C" {
 	else
 	    return y;
     }
+#endif
 
     struct Point {
 	double x;
