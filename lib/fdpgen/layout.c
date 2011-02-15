@@ -536,8 +536,9 @@ static graph_t *deriveGraph(graph_t * g, layout_info * infop)
 	    ND_id(dn) = id++;
 	    ND_width(dn) = ND_width(n);
 	    ND_height(dn) = ND_height(n);
-	    ND_xsize(dn) = ND_xsize(n);
-	    ND_ysize(dn) = ND_ysize(n);
+	    ND_lw(dn) = ND_lw(n);
+	    ND_rw(dn) = ND_rw(n);
+	    ND_ht(dn) = ND_ht(n);
 	    ND_shape(dn) = ND_shape(n);
 	    ND_shape_info(dn) = ND_shape_info(n);
 	    if (ND_pinned(n)) {
@@ -841,7 +842,7 @@ setClustNodes(graph_t* root)
     pointf ctr;
     node_t *n;
     double w, h;
-    int h2, w2, h_i;
+    double h2, w2;
     pointf *vertices;
 
     for (n = agfstnode(root); n; n = agnxtnode(root, n)) {
@@ -853,16 +854,16 @@ setClustNodes(graph_t* root)
 	h = bb.UR.y - bb.LL.y;
 	ctr.x = w / 2.0;
 	ctr.y = h / 2.0;
-	w2 = POINTS(w / 2.0);
-	h2 = POINTS(h / 2.0);
-	h_i = POINTS(h);
+	w2 = INCH2PS(w / 2.0);
+	h2 = INCH2PS(h / 2.0);
+	h = INCH2PS(h);
 	ND_pos(n)[0] = ctr.x;
 	ND_pos(n)[1] = ctr.y;
 	ND_width(n) = w;
 	ND_height(n) = h;
-	ND_xsize(n) = POINTS(w);
+	/* ND_xsize(n) = POINTS(w); */
 	ND_lw(n) = ND_rw(n) = w2;
-	ND_ht(n) = ND_ysize(n) = h_i;
+	ND_ht(n) = h;
 
 	vertices = ((polygon_t *) ND_shape_info(n))->vertices;
 	vertices[0].x = ND_rw(n);
@@ -945,8 +946,8 @@ setClustNodes(graph_t* root)
 		ND_height(n) = BB(sg).UR.y;
 		pt.x = POINTS_PER_INCH * BB(sg).UR.x;
 		pt.y = POINTS_PER_INCH * BB(sg).UR.y;
-		ND_xsize(n) = pt.x;
-		ND_ysize(n) = pt.y;
+		ND_rw(n) = ND_lw(n) = pt.x/2;
+		ND_ht(n) = pt.y;
 	    } else if (IS_PORT(n))
 		agdelete(cg, n);	/* remove ports from component */
 	}

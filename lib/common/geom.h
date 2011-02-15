@@ -68,6 +68,7 @@ typedef struct { pointf LL, UR; } boxf;
 #define POINTS_PER_MM		((double)POINTS_PER_INCH * 0.0393700787)
 
 #define POINTS(a_inches)	(ROUND((a_inches)*POINTS_PER_INCH))
+#define INCH2PS(a_inches)	((a_inches)*(double)POINTS_PER_INCH)
 #define PS2INCH(a_points)	((a_points)/(double)POINTS_PER_INCH)
 
 #define P2PF(p,pf)		((pf).x = (p).x,(pf).y = (p).y)

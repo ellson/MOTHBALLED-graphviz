@@ -481,7 +481,6 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 
 #ifndef DOT_ONLY
 	unsigned char pinned;
-	short xsize, ysize;
 	int id, heapindex, hops;
 	double *pos, dist;
 #endif
@@ -576,8 +575,8 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define ND_tree_out(n) (((Agnodeinfo_t*)AGDATA(n))->tree_out)
 #define ND_weight_class(n) (((Agnodeinfo_t*)AGDATA(n))->weight_class)
 #define ND_width(n) (((Agnodeinfo_t*)AGDATA(n))->width)
-#define ND_xsize(n) (((Agnodeinfo_t*)AGDATA(n))->xsize)
-#define ND_ysize(n) (((Agnodeinfo_t*)AGDATA(n))->ysize)
+#define ND_xsize(n) (ND_lw(n)+ND_rw(n))
+#define ND_ysize(n) (ND_ht(n))
 
 #else
 
@@ -633,8 +632,8 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define ND_tree_out(n) (n)->u.tree_out
 #define ND_weight_class(n) (n)->u.weight_class
 #define ND_width(n) (n)->u.width
-#define ND_xsize(n) (n)->u.xsize
-#define ND_ysize(n) (n)->u.ysize
+#define ND_xsize(n) (ND_lw(n)+ND_rw(n))
+#define ND_ysize(n) (ND_ht(n))
 #endif
 
     typedef struct Agedgeinfo_t {

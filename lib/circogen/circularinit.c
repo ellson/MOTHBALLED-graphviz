@@ -89,8 +89,10 @@ static node_t *makeDerivedNode(graph_t * dg, char *name, int isNode,
     ND_alg(n) = (void *) NEW(cdata);
     if (isNode) {
 	ND_pos(n) = N_NEW(Ndim, double);
+#if 0
 	ND_xsize(n) = ND_xsize((node_t *) orig);
 	ND_ysize(n) = ND_ysize((node_t *) orig);
+#endif
 	ORIGN(n) = (node_t *) orig;
     } else
 	ORIGG(n) = (graph_t *) orig;

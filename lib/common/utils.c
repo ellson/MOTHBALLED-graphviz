@@ -852,8 +852,8 @@ void compute_bb(graph_t * g)
     bb.UR = pointfof(-INT_MAX, -INT_MAX);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	ptf = coord(n);
-	s2.x = ND_xsize(n) / 2. + 1;
-	s2.y = ND_ysize(n) / 2. + 1;
+	s2.x = ND_xsize(n) / 2.0;
+	s2.y = ND_ysize(n) / 2.0;
 	b.LL = sub_pointf(ptf, s2);
 	b.UR = add_pointf(ptf, s2);
 
@@ -1872,17 +1872,17 @@ void gv_cleanup_node(node_t * n)
 
 void gv_nodesize(node_t * n, boolean flip)
 {
-    int w;
+    double w;
 
     if (flip) {
-        w = ND_xsize(n) = POINTS(ND_height(n));
+        w = INCH2PS(ND_height(n));
         ND_lw(n) = ND_rw(n) = w / 2;
-        ND_ht(n) = ND_ysize(n) = POINTS(ND_width(n));
+        ND_ht(n) = INCH2PS(ND_width(n));
     } 
     else {
-        w = ND_xsize(n) = POINTS(ND_width(n));
+        w = INCH2PS(ND_width(n));
         ND_lw(n) = ND_rw(n) = w / 2;
-        ND_ht(n) = ND_ysize(n) = POINTS(ND_height(n));
+        ND_ht(n) = INCH2PS(ND_height(n));
     }
 }
 
