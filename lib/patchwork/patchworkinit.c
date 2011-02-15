@@ -1,3 +1,4 @@
+/* $Id$Revision: */
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
@@ -9,7 +10,6 @@
  *
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
-
 
 #include    "patchwork.h"
 #include    "adjust.h"
@@ -108,16 +108,12 @@ mkClusters (graph_t * g, clist_t* pclist, graph_t* parent)
 static void patchwork_init_node(node_t * n)
 {
     agset(n,"shape","box");
-    common_init_node_opt(n,FALSE);
-    /* gv_nodesize(n, GD_flip(agraphof(n))); */
-    /* ND_pos(n) = ALLOC(GD_ndim(agraphof(n)), 0, double); */
+    /* common_init_node_opt(n,FALSE); */
 }
 
 static void patchwork_init_edge(edge_t * e)
 {
     /* common_init_edge(e); */
-
-    ED_factor(e) = late_double(e, E_weight, 1.0, 0.0);
 }
 
 static void patchwork_init_node_edge(graph_t * g)
@@ -140,7 +136,7 @@ static void patchwork_init_node_edge(graph_t * g)
     }
 }
 
-void patchwork_init_graph(graph_t * g)
+static void patchwork_init_graph(graph_t * g)
 {
 #ifndef WITH_CGRAPH
     N_shape = agnodeattr(g, "shape", "box");
@@ -152,6 +148,21 @@ void patchwork_init_graph(graph_t * g)
     Ndim = GD_ndim(g) = 2;	/* The algorithm only makes sense in 2D */
     mkClusters(g, NULL, g);
     patchwork_init_node_edge(g);
+}
+
+/* patchwork_layout:
+ * The current version makes no use of edges, neither for a notion of connectivity
+ * nor during drawing.
+ */
+void patchwork_layout(Agraph_t *g)
+{
+    if (agnnodes(g) == 0) return;
+
+    patchwork_init_graph(g);
+
+    patchworkLayout (g);
+
+    dotneato_postprocess(g);
 }
 
 static void patchwork_cleanup_graph(graph_t * g)
@@ -170,7 +181,10 @@ void patchwork_cleanup(graph_t * g)
     node_t *n;
     edge_t *e;
 
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+    n = agfstnode(g);
+    if (!n) return;
+    free (ND_alg(n));
+    for (; n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    gv_cleanup_edge(e);
 	}

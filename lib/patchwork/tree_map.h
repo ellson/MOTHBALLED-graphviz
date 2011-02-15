@@ -11,28 +11,18 @@
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
 
-#ifndef PATCHWORK_H
-#define PATCHWORK_H
+#ifndef TREE_MAP_H
+#define TREE_MAP_H
 
-#include "render.h"
-#include "fdp.h"
+#include <SparseMatrix.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+typedef struct rectangle_struct {
+  real x[2];/* center */
+  real size[2]; /* total width/height*/
+} rectangle;
 
-    typedef struct {
-	graph_t *parent;
-    } rdata;
+extern rectangle* tree_map(int n, real *area, rectangle fillrec);
 
-#define RDATA(n) ((rdata*)(ND_alg(n)))
-#define SPARENT(n) (RDATA(n)->parent)
+extern rectangle rectangle_new(real x, real y, real width, real height);
 
-extern void patchwork_layout(Agraph_t * g);
-extern void patchwork_cleanup(Agraph_t * g);
-extern void patchworkLayout(Agraph_t *g);
-
-#ifdef __cplusplus
-}
-#endif
 #endif
