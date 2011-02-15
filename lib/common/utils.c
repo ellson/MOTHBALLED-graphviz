@@ -592,7 +592,7 @@ struct fontinfo {
     char *fontcolor;
 };
 
-void common_init_node_opt(node_t * n, int shape_init_flag)
+void common_init_node(node_t * n)
 {
     struct fontinfo fi;
     char *str;
@@ -624,11 +624,7 @@ void common_init_node_opt(node_t * n, int shape_init_flag)
     }
 
     ND_showboxes(n) = late_int(n, N_showboxes, 0, 0);
-    if (shape_init_flag) ND_shape(n)->fns->initfn(n);
-}
-
-void common_init_node(node_t * n) {
-    common_init_node_opt(n,TRUE);
+    ND_shape(n)->fns->initfn(n);
 }
 
 static void initFontEdgeAttr(edge_t * e, struct fontinfo *fi)
