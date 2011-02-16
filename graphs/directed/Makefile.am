@@ -7,9 +7,10 @@ GRAPHS = KW91.gv Latin1.gv NaN.gv abstract.gv alf.gv arrows.gv \
 	grammar.gv hashtable.gv honda-tokoro.gv jcctree.gv jsort.gv \
 	ldbxtried.gv longflat.gv mike.gv nhg.gv oldarrows.gv \
 	pgram.gv pm2way.gv pmpipe.gv polypoly.gv proc3d.gv psfonttest.gv \
-	record2.gv records.gv rowe.gv russian.gv sdh.gv shells.gv states.gv \
-	structs.gv table.gv train11.gv trapeziumlr.gv tree.gv triedds.gv \
-	try.gv unix.gv unix2.gv viewfile.gv world.gv switch.gv
+	record2.gv records.gv rowe.gv japanese.gv russian.gv sdh.gv \
+	shells.gv states.gv structs.gv table.gv train11.gv \
+	trapeziumlr.gv tree.gv triedds.gv try.gv unix.gv unix2.gv \
+	viewfile.gv world.gv switch.gv
 
 graphdir = $(pkgdatadir)/graphs
 directeddir = $(graphdir)/directed
