@@ -40,9 +40,9 @@ typeset -i i j SUBTESTCNT
 typeset -i CRASH_CNT DIFF_CNT
 typeset -i LINECNT=0
 typeset -A TESTTYPES
-typeset ALG[10]
-typeset FMT[10]
-typeset FLAGS[10]
+typeset -a ALG
+typeset -a FMT
+typeset -a FLAGS
 TMPINFILE=tmp$$.gv
 TMPFILE1=tmpnew$$
 TMPFILE2=tmpref$$
