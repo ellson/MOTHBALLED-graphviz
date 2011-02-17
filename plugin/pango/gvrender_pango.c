@@ -198,7 +198,9 @@ static void cairogen_end_page(GVJ_t * job)
         surface = cairo_get_target(cr);
         if (cairo_image_surface_get_width(surface) == 0 || cairo_image_surface_get_height(surface) == 0) {
 	    /* apparently cairo never allocates a surface if nothing was ever written to it */
+/* but suppress this error message since a zero area surface seems to happen during normal operations, particular in -Tx11
 	    fprintf(stderr, "ERROR: cairo surface has zero area, this may indicate some problem during rendering shapes.\n");
+ - jce */
 	}
 	job->imagedata = (char *)(cairo_image_surface_get_data(surface));	
 	break;
