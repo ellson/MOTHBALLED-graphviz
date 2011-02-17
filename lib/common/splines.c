@@ -382,8 +382,12 @@ void add_box(path * P, boxf b)
  *
  * The extra space provided by FUDGE-2 prevents the edge from getting
  * too close the side of the node.
+ *
+ * The HT2 macro is needed because dot calculates ht2 and ht1 of ranks using
+ * integers.
  */
 #define FUDGE 2
+#define HT2(n) ((ROUND(ND_ht(n))+1)/2)
 
 void
 beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
@@ -422,13 +426,13 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    endp->sidemask = TOP;
 	    if (P->start.p.x < ND_coord(n).x) { /* go left */
 		b0.LL.x = b.LL.x - 1;
-		/* b0.LL.y = ND_coord(n).y + ND_ht(n)/2; */
+		/* b0.LL.y = ND_coord(n).y + HT2(n); */
 		b0.LL.y = P->start.p.y;
 		b0.UR.x = b.UR.x;
-		b0.UR.y = ND_coord(n).y + ND_ht(n)/2 + GD_ranksep(agraphof(n))/2;
+		b0.UR.y = ND_coord(n).y + HT2(n) + GD_ranksep(agraphof(n))/2;
 		b.UR.x = ND_coord(n).x - ND_lw(n) - (FUDGE-2);
 		b.UR.y = b0.LL.y;
-		b.LL.y = ND_coord(n).y - ND_ht(n)/2;
+		b.LL.y = ND_coord(n).y - HT2(n);
 		b.LL.x -= 1;
 		endp->boxes[0] = b0;
 		endp->boxes[1] = b;
@@ -436,12 +440,12 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    else {
 		b0.LL.x = b.LL.x;
 		b0.LL.y = P->start.p.y;
-		/* b0.LL.y = ND_coord(n).y + ND_ht(n)/2; */
+		/* b0.LL.y = ND_coord(n).y + HT2(n); */
 		b0.UR.x = b.UR.x+1;
-		b0.UR.y = ND_coord(n).y + ND_ht(n)/2 + GD_ranksep(agraphof(n))/2;
+		b0.UR.y = ND_coord(n).y + HT2(n) + GD_ranksep(agraphof(n))/2;
 		b.LL.x = ND_coord(n).x + ND_rw(n) + (FUDGE-2);
 		b.UR.y = b0.LL.y;
-		b.LL.y = ND_coord(n).y - ND_ht(n)/2;
+		b.LL.y = ND_coord(n).y - HT2(n);
 		b.UR.x += 1;
 		endp->boxes[0] = b0;
 		endp->boxes[1] = b;
@@ -459,7 +463,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	else if (side & LEFT) {
 	    endp->sidemask = LEFT;
 	    b.UR.x = P->start.p.x;
-	    b.LL.y = ND_coord(n).y - ND_ht(n)/2;
+	    b.LL.y = ND_coord(n).y - HT2(n);
 	    b.UR.y = P->start.p.y;
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
@@ -468,7 +472,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	else {
 	    endp->sidemask = RIGHT;
 	    b.LL.x = P->start.p.x;
-	    b.LL.y = ND_coord(n).y - ND_ht(n)/2;
+	    b.LL.y = ND_coord(n).y - HT2(n);
 	    b.UR.y = P->start.p.y;
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
@@ -491,13 +495,13 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	}
 	else if (side & BOTTOM) {
 	    if (endp->sidemask == TOP) {
-		b0.UR.y = ND_coord(n).y - ND_ht(n)/2;
+		b0.UR.y = ND_coord(n).y - HT2(n);
 		b0.UR.x = b.UR.x+1;
 		b0.LL.x = P->start.p.x;
 		b0.LL.y = b0.UR.y - GD_ranksep(agraphof(n))/2;
 		b.LL.x = ND_coord(n).x + ND_rw(n) + (FUDGE-2);
 		b.LL.y = b0.UR.y;
-		b.UR.y = ND_coord(n).y + ND_ht(n)/2;
+		b.UR.y = ND_coord(n).y + HT2(n);
 		b.UR.x += 1;
 		endp->boxes[0] = b0;
 		endp->boxes[1] = b;
@@ -512,11 +516,11 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	else if (side & LEFT) {
 	    b.UR.x = P->start.p.x+1;
 	    if (endp->sidemask == TOP) {
-		b.UR.y = ND_coord(n).y + ND_ht(n)/2;
+		b.UR.y = ND_coord(n).y + HT2(n);
 		b.LL.y = P->start.p.y-1;
 	    }
 	    else {
-		b.LL.y = ND_coord(n).y - ND_ht(n)/2;
+		b.LL.y = ND_coord(n).y - HT2(n);
 		b.UR.y = P->start.p.y+1;
 	    }
 	    endp->boxes[0] = b;
@@ -525,11 +529,11 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	else {
 	    b.LL.x = P->start.p.x;
 	    if (endp->sidemask == TOP) {
-		b.UR.y = ND_coord(n).y + ND_ht(n)/2;
+		b.UR.y = ND_coord(n).y + HT2(n);
 		b.LL.y = P->start.p.y;
 	    }
 	    else {
-		b.LL.y = ND_coord(n).y - ND_ht(n)/2;
+		b.LL.y = ND_coord(n).y - HT2(n);
 		b.UR.y = P->start.p.y+1;
 	    }
 	    endp->boxes[0] = b;
@@ -619,13 +623,13 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    endp->sidemask = BOTTOM;
 	    if (P->end.p.x < ND_coord(n).x) { /* go left */
 		b0.LL.x = b.LL.x-1;
-		/* b0.UR.y = ND_coord(n).y - ND_ht(n)/2; */
+		/* b0.UR.y = ND_coord(n).y - HT2(n); */
 		b0.UR.y = P->end.p.y;
 		b0.UR.x = b.UR.x;
-		b0.LL.y = ND_coord(n).y - ND_ht(n)/2 - GD_ranksep(agraphof(n))/2;
+		b0.LL.y = ND_coord(n).y - HT2(n) - GD_ranksep(agraphof(n))/2;
 		b.UR.x = ND_coord(n).x - ND_lw(n) - (FUDGE-2);
 		b.LL.y = b0.UR.y;
-		b.UR.y = ND_coord(n).y + ND_ht(n)/2;
+		b.UR.y = ND_coord(n).y + HT2(n);
 		b.LL.x -= 1;
 		endp->boxes[0] = b0;
 		endp->boxes[1] = b;
@@ -633,12 +637,12 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    else {
 		b0.LL.x = b.LL.x;
 		b0.UR.y = P->end.p.y;
-		/* b0.UR.y = ND_coord(n).y - ND_ht(n)/2; */
+		/* b0.UR.y = ND_coord(n).y - HT2(n); */
 		b0.UR.x = b.UR.x+1;
-		b0.LL.y = ND_coord(n).y - ND_ht(n)/2 - GD_ranksep(agraphof(n))/2;
+		b0.LL.y = ND_coord(n).y - HT2(n) - GD_ranksep(agraphof(n))/2;
 		b.LL.x = ND_coord(n).x + ND_rw(n) + (FUDGE-2);
 		b.LL.y = b0.UR.y;
-		b.UR.y = ND_coord(n).y + ND_ht(n)/2;
+		b.UR.y = ND_coord(n).y + HT2(n);
 		b.UR.x += 1;
 		endp->boxes[0] = b0;
 		endp->boxes[1] = b;
@@ -649,7 +653,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	else if (side & LEFT) {
 	    endp->sidemask = LEFT;
 	    b.UR.x = P->end.p.x;
-	    b.UR.y = ND_coord(n).y + ND_ht(n)/2;
+	    b.UR.y = ND_coord(n).y + HT2(n);
 	    b.LL.y = P->end.p.y;
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
@@ -658,7 +662,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	else {
 	    endp->sidemask = RIGHT;
 	    b.LL.x = P->end.p.x;
-	    b.UR.y = ND_coord(n).y + ND_ht(n)/2;
+	    b.UR.y = ND_coord(n).y + HT2(n);
 	    b.LL.y = P->end.p.y;
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
@@ -684,12 +688,12 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	else if (side & BOTTOM) {
 	    if (endp->sidemask == TOP) {
 		b0.LL.x = b.LL.x-1;
-		b0.UR.y = ND_coord(n).y - ND_ht(n)/2;
+		b0.UR.y = ND_coord(n).y - HT2(n);
 		b0.UR.x = P->end.p.x;
 		b0.LL.y = b0.UR.y - GD_ranksep(agraphof(n))/2;
 		b.UR.x = ND_coord(n).x - ND_lw(n) - 2;
 		b.LL.y = b0.UR.y;
-		b.UR.y = ND_coord(n).y + ND_ht(n)/2;
+		b.UR.y = ND_coord(n).y + HT2(n);
 		b.LL.x -= 1;
 		endp->boxes[0] = b0;
 		endp->boxes[1] = b;
@@ -704,11 +708,11 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	else if (side & LEFT) {
 	    b.UR.x = P->end.p.x+1;
 	    if (endp->sidemask == TOP) {
-		b.UR.y = ND_coord(n).y + ND_ht(n)/2;
+		b.UR.y = ND_coord(n).y + HT2(n);
 		b.LL.y = P->end.p.y-1;
 	    }
 	    else {
-		b.LL.y = ND_coord(n).y - ND_ht(n)/2;
+		b.LL.y = ND_coord(n).y - HT2(n);
 		b.UR.y = P->end.p.y+1;
 	    }
 	    endp->boxes[0] = b;
@@ -717,11 +721,11 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	else {
 	    b.LL.x = P->end.p.x-1;
 	    if (endp->sidemask == TOP) {
-		b.UR.y = ND_coord(n).y + ND_ht(n)/2;
+		b.UR.y = ND_coord(n).y + HT2(n);
 		b.LL.y = P->end.p.y-1;
 	    }
 	    else {
-		b.LL.y = ND_coord(n).y - ND_ht(n)/2;
+		b.LL.y = ND_coord(n).y - HT2(n);
 		b.UR.y = P->end.p.y;
 	    }
 	    endp->boxes[0] = b;
