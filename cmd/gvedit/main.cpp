@@ -38,9 +38,21 @@
 **
 ****************************************************************************/
 
+#include "windows.h"
 #include <QApplication>
 
 #include "mainwindow.h"
+
+#ifdef WIN32_DLL
+__declspec(dllimport) boolean MemTest;
+/*gvc.lib cgraph.lib*/
+#ifdef WITH_CGRAPH
+    #pragma comment( lib, "cgraph.lib" )
+#else
+    #pragma comment( lib, "graph.lib" )
+#endif
+    #pragma comment( lib, "gvc.lib" )
+#endif
 
 int main(int argc, char *argv[])
 {

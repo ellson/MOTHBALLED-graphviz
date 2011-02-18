@@ -42,6 +42,8 @@
 #define MDICHILD_H
 
 #include <QTextEdit>
+#include "imageviewer.h"
+class MainWindow;
 
 class MdiChild : public QTextEdit
 {
@@ -57,7 +59,15 @@ public:
     bool saveFile(const QString &fileName);
     QString userFriendlyCurrentFile();
     QString currentFile() { return curFile; }
-
+    int layoutIdx;
+    int renderIdx;
+    QString outputFile;
+    bool preview;
+    bool applyCairo;
+    QString attributes;
+    ImageViewer* previewFrm;
+    MainWindow* parentFrm;
+    void loadPreview(QString fileName);
 protected:
     void closeEvent(QCloseEvent *event);
 

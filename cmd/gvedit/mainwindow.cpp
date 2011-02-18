@@ -42,6 +42,8 @@
 
 #include "mainwindow.h"
 #include "mdichild.h"
+#include "csettings.h"
+
 
 MainWindow::MainWindow()
 {
@@ -54,6 +56,8 @@ MainWindow::MainWindow()
     windowMapper = new QSignalMapper(this);
     connect(windowMapper, SIGNAL(mapped(QWidget*)),
             this, SLOT(setActiveSubWindow(QWidget*)));
+
+    frmSettings= new CFrmSettings();
 
     createActions();
     createMenus();
@@ -149,6 +153,16 @@ void MainWindow::about()
                "document interface applications using Qt."));
 }
 
+
+void MainWindow::settings()
+{
+    frmSettings->showSettings(activeMdiChild());
+
+}
+
+
+
+
 void MainWindow::updateMenus()
 {
     bool hasMdiChild = (activeMdiChild() != 0);
@@ -186,28 +200,32 @@ void MainWindow::updateWindowMenu()
     separatorAct->setVisible(!windows.isEmpty());
 
     for (int i = 0; i < windows.size(); ++i) {
-        MdiChild *child = qobject_cast<MdiChild *>(windows.at(i)->widget());
-
-        QString text;
-        if (i < 9) {
-            text = tr("&%1 %2").arg(i + 1)
+	if (typeid(windows.at(i)->widget()).name()=="MdiChild")
+	{
+	    MdiChild *child = qobject_cast<MdiChild *>(windows.at(i)->widget());
+            QString text;
+	    if (i < 9) {
+	        text = tr("&%1 %2").arg(i + 1)
                                .arg(child->userFriendlyCurrentFile());
-        } else {
-            text = tr("%1 %2").arg(i + 1)
-                              .arg(child->userFriendlyCurrentFile());
-        }
-        QAction *action  = windowMenu->addAction(text);
-        action->setCheckable(true);
-        action ->setChecked(child == activeMdiChild());
-        connect(action, SIGNAL(triggered()), windowMapper, SLOT(map()));
-        windowMapper->setMapping(action, windows.at(i));
+	    } else {
+		text = tr("%1 %2").arg(i + 1)
+		                  .arg(child->userFriendlyCurrentFile());
+	    }
+	    QAction *action  = windowMenu->addAction(text);
+	    action->setCheckable(true);
+	    action ->setChecked(child == activeMdiChild());
+	    connect(action, SIGNAL(triggered()), windowMapper, SLOT(map()));
+	    windowMapper->setMapping(action, windows.at(i));
+	}
     }
 }
 
 MdiChild *MainWindow::createMdiChild()
 {
     MdiChild *child = new MdiChild;
+    child->parentFrm=this;
     mdiArea->addSubWindow(child);
+    
 
     connect(child, SIGNAL(copyAvailable(bool)),
             cutAct, SLOT(setEnabled(bool)));
@@ -305,6 +323,19 @@ void MainWindow::createActions()
     aboutQtAct = new QAction(tr("About &Qt"), this);
     aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
     connect(aboutQtAct, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+
+
+    settingsAct = new QAction(tr("Settings"), this);
+    settingsAct->setStatusTip(tr("Show Graphviz Settings"));
+    connect(settingsAct, SIGNAL(triggered()), this, SLOT(settings()));
+
+
+
+    layoutAct = new QAction(QIcon(":/images/cut.png"),tr("Layout"), this);
+    layoutAct->setStatusTip(tr("Layout the active graph"));
+    connect(layoutAct, SIGNAL(triggered()), this, SLOT(about()));
+
+
 }
 
 void MainWindow::createMenus()
@@ -323,6 +354,10 @@ void MainWindow::createMenus()
     editMenu->addAction(cutAct);
     editMenu->addAction(copyAct);
     editMenu->addAction(pasteAct);
+
+    graphMenu =  menuBar()->addMenu (tr("&Graph"));
+    graphMenu->addAction(settingsAct);
+    graphMenu->addAction(layoutAct);
 
     windowMenu = menuBar()->addMenu(tr("&Window"));
     updateWindowMenu();
@@ -346,6 +381,11 @@ void MainWindow::createToolBars()
     editToolBar->addAction(cutAct);
     editToolBar->addAction(copyAct);
     editToolBar->addAction(pasteAct);
+
+    graphToolBar = addToolBar(tr("Graph"));
+    graphToolBar->addAction(settingsAct);
+    graphToolBar->addAction(layoutAct);
+
 }
 
 void MainWindow::createStatusBar()

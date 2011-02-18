@@ -201,6 +201,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\ui\settings.ui"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

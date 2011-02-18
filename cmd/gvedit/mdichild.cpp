@@ -41,11 +41,17 @@
 #include <QtGui>
 
 #include "mdichild.h"
+#include "mainwindow.h"
 
 MdiChild::MdiChild()
 {
     setAttribute(Qt::WA_DeleteOnClose);
     isUntitled = true;
+    layoutIdx=0;
+    renderIdx=0;
+    preview=true;
+    applyCairo=false;
+    previewFrm=NULL;
 }
 
 void MdiChild::newFile()
@@ -173,3 +179,16 @@ QString MdiChild::strippedName(const QString &fullFileName)
 {
     return QFileInfo(fullFileName).fileName();
 }
+
+void MdiChild::loadPreview(QString fileName)
+{
+    if (!this->previewFrm)
+    {
+	previewFrm=new ImageViewer();
+	parentFrm->mdiArea->addSubWindow(previewFrm);
+    }
+    previewFrm->open(fileName);
+    previewFrm->show();
+
+}
+

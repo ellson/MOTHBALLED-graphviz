@@ -2,7 +2,7 @@
 <VisualStudioUserFile
 	ProjectType="Visual C++"
 	Version="9.00"
-	ShowAllFiles="false"
+	ShowAllFiles="true"
 	>
 	<Configurations>
 		<Configuration
@@ -20,7 +20,7 @@
 				HttpUrl=""
 				PDBPath=""
 				SQLDebugging=""
-				Environment="PATH=$(QTDIR)\bin;$(PATH)"
+				Environment="PATH=$(QTDIR)\bin;&quot;$(QTDIR)\bin;$(PATH)"
 				EnvironmentMerge="true"
 				DebuggerFlavor=""
 				MPIRunCommand=""
@@ -48,7 +48,7 @@
 				HttpUrl=""
 				PDBPath=""
 				SQLDebugging=""
-				Environment="PATH=$(QTDIR)\bin;$(PATH)"
+				Environment="PATH=$(QTDIR)\bin;&quot;$(QTDIR)\bin;$(PATH)"
 				EnvironmentMerge="true"
 				DebuggerFlavor=""
 				MPIRunCommand=""
