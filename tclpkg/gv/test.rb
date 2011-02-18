@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-require 'gv'
+require './gv'
 
 g = Gv.digraph("G")
 print(Gv.setv(g, "aaa", "xxx"), "\n")
