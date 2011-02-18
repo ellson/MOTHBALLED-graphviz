@@ -5,7 +5,7 @@ CONFIG = Config::MAKEFILE_CONFIG
 
 case ARGV[0]
 when "INCLUDES"
-    puts "#{Config::expand(CONFIG['rubyhdrdir'])} -I#{Config::expand(CONFIG['rubyhdrdir'])}/#{Config::expand(CONFIG['arch'])}"
+    puts Config::expand(CONFIG["archdir"])
 when "lib"
     puts Config::expand(CONFIG["libdir"])
 when "archsitelib"
