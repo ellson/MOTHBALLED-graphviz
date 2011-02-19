@@ -209,12 +209,14 @@ extern "C" {
     extern int      agcopyattr(void *, void *);	
 
     typedef enum { AGWARN, AGERR, AGMAX, AGPREV } agerrlevel_t;
+    typedef int (*agusererrf) (char*);
     extern agerrlevel_t agerrno;
     extern void agseterr(agerrlevel_t);
     extern char *aglasterr(void);
     extern int agerr(agerrlevel_t level, char *fmt, ...);
     extern void agerrorf(const char *fmt, ...);
     extern void agwarningf(char *fmt, ...);
+    extern agusererrf agseterrf(agusererrf);
 
     extern char *agstrdup(char *);
     extern char *agstrdup_html(char *s);

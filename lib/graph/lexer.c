@@ -13,6 +13,7 @@
 
 
 #include <stdarg.h>
+#include <stdlib.h>
 #include "libgraph.h"
 #include "parser.h"
 #include "triefa.cP"
@@ -483,6 +484,15 @@ agerrlevel_t agerrno;		/* Last error */
 static agerrlevel_t agerrlevel = AGWARN;	/* Report errors >= agerrlevel */
 static long aglast;		/* Last message */
 static FILE *agerrout;		/* Message file */
+static agusererrf usererrf;     /* User-set error function */
+
+agusererrf 
+agseterrf (agusererrf newf)
+{
+    agusererrf oldf = usererrf;
+    usererrf = newf;
+    return oldf;
+}
 
 void agseterr(agerrlevel_t lvl)
 {
@@ -514,23 +524,75 @@ char *aglasterr()
     return buf;
 }
 
+static void
+userout (agerrlevel_t level, const char *fmt, va_list args)
+{
+    static char* buf;
+    static int bufsz = 1024;
+    char* np;
+    int n;
+
+    if (!buf) {
+	buf = (char*)malloc(bufsz);
+	if (!buf) {
+	    fputs("userout: could not allocate memory\n", stderr );
+	    return;
+	}
+    }
+
+    if (level != AGPREV) {
+	usererrf ((level == AGERR) ? "Error" : "Warning");
+	usererrf (": ");
+    }
+
+    while (1) {
+	n = vsnprintf(buf, bufsz, fmt, args);
+	if ((n > -1) && (n < bufsz)) {
+	    usererrf (buf);
+	    break;
+	}
+	bufsz = MAX(bufsz*2,n+1);
+	if ((np = (char*)realloc(buf, bufsz)) == NULL) {
+	    fputs("userout: could not allocate memory\n", stderr );
+	    return;
+	}
+    }
+    va_end(args);
+}
+
+/* agerr_va:
+ * Main error reporting function
+ */
 static int agerr_va(agerrlevel_t level, const char *fmt, va_list args)
 {
     agerrlevel_t lvl;
 
+    /* Use previous error level if continuation message;
+     * Convert AGMAX to AGERROR;
+     * else use input level
+     */
     lvl = (level == AGPREV ? agerrno : (level == AGMAX) ? AGERR : level);
 
+    /* store this error level and maximum error level used */
     agerrno = lvl;
     agmaxerr = MAX(agmaxerr, agerrno);
+
+    /* We report all messages whose level is bigger than the user set agerrlevel
+     * Setting agerrlevel to AGMAX turns off immediate error reporting.
+     */
     if (lvl >= agerrlevel) {
-	if (level != AGPREV)
-	    fprintf(stderr, "%s: ",
-		    (level == AGERR) ? "Error" : "Warning");
-	vfprintf(stderr, fmt, args);
-	va_end(args);
+	if (usererrf)
+	    userout (level, fmt, args);
+	else {
+	    if (level != AGPREV)
+		fprintf(stderr, "%s: ", (level == AGERR) ? "Error" : "Warning");
+	    vfprintf(stderr, fmt, args);
+	    va_end(args);
+	}
 	return 0;
     }
 
+    /* If error is not immediately reported, store in log file */
     if (!agerrout) {
 	agerrout = tmpfile();
 	if (!agerrout)
@@ -544,6 +606,9 @@ static int agerr_va(agerrlevel_t level, const char *fmt, va_list args)
     return 0;
 }
 
+/* agerr:
+ * Varargs function for reporting errors with level argument
+ */
 int agerr(agerrlevel_t level, char *fmt, ...)
 {
     va_list args;
@@ -552,6 +617,9 @@ int agerr(agerrlevel_t level, char *fmt, ...)
     return agerr_va(level, fmt, args);
 }
 
+/* agerrorf:
+ * Varargs function for reporting errors
+ */
 void agerrorf(const char *fmt, ...)
 {
     va_list args;
@@ -560,6 +628,9 @@ void agerrorf(const char *fmt, ...)
     agerr_va(AGERR, fmt, args);
 }
 
+/* agwarningf:
+ * Varargs function for reporting warnings
+ */
 void agwarningf(char *fmt, ...)
 {
     va_list args;

@@ -128,6 +128,19 @@ Agrec_t		*AGDATA(void *obj);
 ulong		AGID(void *obj);
 int			AGTYPE(void *obj);
 .P1
+.SS "ERROR REPORTING"
+.P0
+typedef enum { AGWARN, AGERR, AGMAX, AGPREV } agerrlevel_t;
+typedef int (*agusererrf) (char*);
+agerrlevel_t agerrno;
+agerrlevel_t agseterr(agerrlevel_t);
+char *aglasterr(void);
+int agerr(agerrlevel_t level, char *fmt, ...);
+void agerrorf(char *fmt, ...);
+void agwarningf(char *fmt, ...);
+int agerrors(void);
+agusererrf agseterrf(agusererrf);
+.P1
 .SH "DESCRIPTION"
 Libcgraph supports graph programming by maintaining graphs in memory
 and reading and writing graph files.
@@ -140,7 +153,7 @@ All of Libcgraph's global symbols have the prefix \fBag\fR (case varying).
 .PP
 A ``main'' or ``root'' graph defines a namespace for a collection of
 graph objects (subgraphs, nodes, edges) and their attributes.
-Objects may be named by unique strings or by 32-bit IDs.
+Objects may be named by unique strings or by integer IDs.
 .PP
 \fBagopen\fP creates a new graph with the given name and kind.
 (Graph kinds are \fBAgdirected\fP, \fBAgundirected\fP,
@@ -191,7 +204,7 @@ a graph can be deleted by atomically freeing its entire heap
 without scanning each individual node and edge.
 .SH "NODES"
 A node is created by giving a unique string name or
-programmer defined 32-bit ID, and is represented by a
+programmer defined integer ID, and is represented by a
 unique internal object. (Node equality can checked
 by pointer comparison.)
 .PP
@@ -201,7 +214,7 @@ If not found, if \fBcreateflag\fP is boolean true
 a new node is created and returned, otherwise a nil
 pointer is returned.
 \fBagidnode\fP allows a programmer to specify the node
-by a unique 32-bit ID.
+by a unique integer ID.
 \fBagsubnode\fP performs a similar operation on
 an existing node and a subgraph.
 .PP
@@ -226,7 +239,7 @@ a new edge is created and returned: otherwise
 a nil pointer is returned.  If the \fBname\fP 
 is NULL, then an anonymous internal
 value is generated. \fBagidedge\fP allows a programmer
-to create an edge by giving its unique 32-bit ID.
+to create an edge by giving its unique integer ID.
 \fBagfstin\fP, \fBagnxtint\fP, \fBagfstout\fP, and 
 \fBagnxtout\fP visit directed in- and out- edge lists,
 and ordinarily apply only in directed graphs.
@@ -314,12 +327,14 @@ and edges for efficient operations on values such as marks, weights,
 counts, and pointers needed by algorithms.  Application programmers
 define the fields of these records, but they must be declared with
 a common header as shown below.
+.PP
 .P0
 typedef struct Agrec_s {
     Agrec_t		header;
     /* programmer-defined fields follow */
 } Agrec_t;
 .P1
+.PP
 Records are created and managed by Libcgraph. A programmer must
 explicitly attach them to the objects in a graph, either to
 individual objects one at a time via \fBagbindrec\fP, or to
@@ -359,6 +374,7 @@ from other functions also using the move-to-front convention.
 Programmer-defined disciplines customize certain resources-
 ID namespace, memory, and I/O - needed by Libcgraph.
 A discipline struct (or NIL) is passed at graph creation time.
+.PP
 .P0
 struct Agdisc_s {			/* user's discipline */
 	Agmemdisc_t			*mem;
@@ -366,11 +382,12 @@ struct Agdisc_s {			/* user's discipline */
 	Agiodisc_t			*io;
 } ;
 .P1
+.PP
 A default discipline is supplied when NIL is given for
 any of these fields.
 
 An ID allocator discipline allows a client to control assignment
-of IDs (uninterpreted 32-bit values) to objects, and possibly how
+of IDs (uninterpreted integer values) to objects, and possibly how
 they are mapped to and from strings.
 
 .P0
@@ -383,26 +400,26 @@ struct Agiddisc_s {		/* object ID allocator */
 	void	(*close)(void *state);
 } ;
 .P1
-
-\f5open\fP permits the ID discipline to initialize any data
+.PP
+\fIopen\fP permits the ID discipline to initialize any data
 structures that maintains per individual graph.
 Its return value is then passed as the first argument to
 all subsequent ID manager calls.
-
-\f5alloc\fP informs the ID manager that Libcgraph is attempting
+.PP
+\fIalloc\fP informs the ID manager that Libcgraph is attempting
 to create an object with a specific ID that was given by a client.
 The ID manager should return TRUE (nonzero) if the ID can be
 allocated, or FALSE (which aborts the operation).
-
-\f5free\fP is called to inform the ID manager that the
+.PP
+\fIfree\fP is called to inform the ID manager that the
 object labeled with the given ID is about to go out of existence.
-
-\f5map\fP is called to create or look-up IDs by string name
+.PP
+\fImap\fP is called to create or look-up IDs by string name
 (if supported by the ID manager).  Returning TRUE (nonzero)
 in all cases means that the request succeeded (with a valid
 ID stored through \f5result\fP.  There are four cases:
 .PP
-\f5name != NULL\fP and \f5createflag == 1\fP:
+\fIname != NULL\fP and \f5createflag == 1\fP:
 This requests mapping a string (e.g. a name in a graph file) into a new ID.
 If the ID manager can comply, then it stores the result and returns TRUE.
 It is then also responsible for being able to \f5print\fP the ID again
@@ -419,7 +436,7 @@ This is a namespace probe.  If the name was previously mapped into
 an allocated ID by the ID manager, then the manager must return this ID.
 Otherwise, the ID manager may either return FALSE, or may store
 any unallocated ID into result. (This is convenient, for example,
-if names are known to be digit strings that are directly converted into 32 bit values.)
+if names are known to be digit strings that are directly converted into integer values.)
 .PP
 \f5name == NULL\fP and \f5createflag == 0\fP: forbidden.
 .PP
@@ -448,6 +465,64 @@ struct Agmemdisc_s {	/* memory allocator */
 } ;
 .P1
 
+.P0
+.SH "GENERIC OBJECTS"
+\fBagroot\fP takes any graph object (graph, subgraph, node, edge) and returns
+the root graph in which it lives. \fBagraphof\fP does the same, except it 
+is the identity function on graphs and subgraphs. Note that there is no 
+function to return the least subgraph containing an object, in part because 
+this is not well-defined as nodes and edges may be in incomparable subgraphs.
+.PP
+\fBagcontains(\fIg\fP,\fIobj\fP)\fP returns non-zero if \fIobj\fP is a member 
+of (sub)graph \fIg\fP. \fBagdelete(\fIg\fP,\fIobj\fP)\fP is equivalent 
+to \fBagclose\fP, \fBagdelnode\fP, and \fBagclose\fP for \fIobj\fP being a 
+graph, node or edge, respectively. It returns -1 if \fIobj\fP does not 
+belong to \fIg\fP.
+.PP
+\fBagnameof\fP returns a string descriptor for the object. It returns the name
+of the node or graph, and the key of an edge. 
+\fBagobjkind\fP is a synonym for \fBAGTYPE\fP.
+.PP
+\fBAGDATA\fP, \fBAGID\fP, and \fBAGTYPE\fP are macros returning the specified
+fields of the argument object. The first is described in the \fBRECORDS\fP
+section above. The second returns the unique integer ID associated with
+the object. The last returns \fBAGRAPH\fP, \fBAGNODE\fP, and \fBAGEDGE\fP
+depending on the type of the object.
+
+typedef int (*agusererrf) (char*);
+agusererrf agseterrf(agusererrf);
+.SH "ERROR REPORTING"
+The library provides a variety of mechanisms to control the reporting
+of errors and warnings. At present, there are basically two types of
+messages: warnings and errors. A message is only written if its
+type has higher priority than a programmer-controlled minimum, which is
+\fBAGWARN\fP by default. The programmer can set this value using
+\fBagseterr\fP, which returns the previous value. Calling
+\fBagseterr(AGMAX)\fP turns off the writing of messages. 
+.PP
+The function \fBagerr\fP if the main entry point for reporting an
+anomaly. The first argument indicates the type of message. Usually,
+the first argument in \fBAGWARN\fP or \fBAGERR\fP to indicate warnings
+and errors, respectively. Sometimes additional context information is
+only available in functions calling the function where the error is
+actually caught. In this case, the calling function can indicate that
+it is continuing the current error by using \fBAGPREV\fP as the first
+argument. The remaining arguments to \fBagerr\fP are the same as
+the arguments to \fBprintf\fP. 
+.PP
+The functions \fBagwarningf\fP and \fBagerrorf\fP are shorthand for
+\fBagerr(AGERR,...)\fP and \fBagerr(AGWARN,...)\fP, respectively.
+.PP
+Some applications desire to directly control the writing of messages.
+Such an application can use the function \fBagseterrf\fP to register
+the function that the library should call to actually write the message.
+The previous error function is returned. By default, the message is
+written to \fBstderr\fP.
+.PP
+Errors not written are stored in a log file. The last recorded error
+can be retreived by calling \fBaglasterr\fP.
+.PP
+The function \fBagerrors\fP returns non-zero if errors have been reported. 
 .SH "EXAMPLE PROGRAM"
 .P0
 #include <graphviz/cgraph.h>

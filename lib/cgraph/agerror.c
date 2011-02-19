@@ -14,16 +14,28 @@
 #include <stdio.h>
 #include <cghdr.h>
 
-agerrlevel_t agerrno;		/* Last error */
+#define MAX(a,b)	((a)>(b)?(a):(b))
+static agerrlevel_t agerrno;		/* Last error level */
 static agerrlevel_t agerrlevel = AGWARN;	/* Report errors >= agerrlevel */
 static int agerrcnt;
 
 static long aglast;		/* Last message */
 static FILE *agerrout;		/* Message file */
+static agusererrf usererrf;     /* User-set error function */
 
-void agseterr(agerrlevel_t lvl)
+agusererrf
+agseterrf (agusererrf newf)
 {
+    agusererrf oldf = usererrf;
+    usererrf = newf;
+    return oldf;
+}
+
+agerrlevel_t agseterr(agerrlevel_t lvl)
+{
+    agerrlevel_t oldv = agerrlevel;
     agerrlevel = lvl;
+    return oldv;
 }
 
 char *aglasterr()
@@ -46,20 +58,71 @@ char *aglasterr()
     return buf;
 }
 
+/* userout:
+ * Report messages using a user-supplied write function 
+ */
+static void
+userout (agerrlevel_t level, const char *fmt, va_list args)
+{
+    static char* buf;
+    static int bufsz = 1024;
+    char* np;
+    int n;
+
+    if (!buf) {
+	buf = (char*)malloc(bufsz);
+	if (!buf) {
+	    fputs("userout: could not allocate memory\n", stderr );
+	    return;
+	}
+    }
+
+    if (level != AGPREV) {
+	usererrf ((level == AGERR) ? "Error" : "Warning");
+	usererrf (": ");
+    }
+
+    while (1) {
+	n = vsnprintf(buf, bufsz, fmt, args);
+	if ((n > -1) && (n < bufsz)) {
+	    usererrf (buf);
+	    break;
+	}
+	bufsz = MAX(bufsz*2,n+1);
+	if ((np = (char*)realloc(buf, bufsz)) == NULL) {
+	    fputs("userout: could not allocate memory\n", stderr );
+	    return;
+	}
+    }
+    va_end(args);
+}
+
 static int agerr_va(agerrlevel_t level, char *fmt, va_list args)
 {
     agerrlevel_t lvl;
 
+    /* Use previous error level if continuation message;
+     * Convert AGMAX to AGERROR;
+     * else use input level
+     */
     lvl = (level == AGPREV ? agerrno : (level == AGMAX) ? AGERR : level);
 
-	agerrcnt++;
+    agerrcnt++;
+    /* store this error level */
     agerrno = lvl;
+
+    /* We report all messages whose level is bigger than the user set agerrlevel
+     * Setting agerrlevel to AGMAX turns off immediate error reporting.
+     */
     if (lvl >= agerrlevel) {
-	if (level != AGPREV)
-	    fprintf(stderr, "%s: ",
-		    (level == AGERR) ? "Error" : "Warning");
-	vfprintf(stderr, fmt, args);
-	va_end(args);
+	if (usererrf)
+	    userout (level, fmt, args);
+	else {
+	    if (level != AGPREV)
+		fprintf(stderr, "%s: ", (level == AGERR) ? "Error" : "Warning");
+	    vfprintf(stderr, fmt, args);
+	    va_end(args);
+	}
 	return 0;
     }
 

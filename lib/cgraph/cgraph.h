@@ -388,13 +388,14 @@ extern void aginternalmapclearlocalnames(Agraph_t * g);
 
 /* error handling */
 typedef enum { AGWARN, AGERR, AGMAX, AGPREV } agerrlevel_t;
-extern agerrlevel_t agerrno;
-extern void agseterr(agerrlevel_t);
+typedef int (*agusererrf) (char*);
+extern agerrlevel_t agseterr(agerrlevel_t);
 extern char *aglasterr(void);
 extern int agerr(agerrlevel_t level, char *fmt, ...);
 extern void agerrorf(char *fmt, ...);
 extern void agwarningf(char *fmt, ...);
 extern int agerrors(void);
+extern agusererrf agseterrf(agusererrf);
 
 /* data access macros */
 /* this assumes that e[0] is out and e[1] is inedge, see edgepair in edge.c  */
