@@ -4,7 +4,7 @@ CURL=curl
 MAKE=make
 TAR=tar
 
-PREFIX=$(HOME)/FIX/leopard
+PREFIX=$(HOME)/FIX/Darwin.i386
 
 ARCHS=-arch ppc -arch i386 -arch x86_64
 
@@ -12,9 +12,13 @@ ARCHS=-arch ppc -arch i386 -arch x86_64
 
 include Makefile-packages.incl
 
-# libraries
-
+# bins
+AUTOCONF=autoconf
+AUTOMAKE=automake
+LIBTOOL=libtoolize
 PKGCONFIG=pkg-config
+
+# libs
 FREETYPE=libfreetype.la
 FONTCONFIG=libfontconfig.la
 XFT=libXft.la
@@ -33,6 +37,9 @@ JPEG=libjpeg.a
 
 # directories
 dirname=$(basename $(basename $(notdir $(1))))
+AUTOCONF_DIR=$(call dirname, $(AUTOCONF_URL))
+AUTOMAKE_DIR=$(call dirname, $(AUTOMAKE_URL))
+LIBTOOL_DIR=$(call dirname, $(LIBTOOL_URL))
 PKGCONFIG_DIR=$(call dirname, $(PKGCONFIG_URL))
 FREETYPE_DIR=$(call dirname, $(FREETYPE_URL))
 FONTCONFIG_DIR=$(call dirname, $(FONTCONFIG_URL))
@@ -64,7 +71,9 @@ JPEG_DIR=$(call dirname, $(JPEG_URL))
 BASE_CONFIG=--prefix=$(PREFIX) --disable-dependency-tracking --enable-static=yes --enable-shared=no PKG_CONFIG="$(PREFIX)/bin/pkg-config" PKG_CONFIG_PATH="$(PREFIX)/lib/pkgconfig:/usr/X11/lib/pkgconfig"
 FLAG_CONFIG=CFLAGS="-O2 $(ARCHS) -I$(PREFIX)/include" LDFLAGS="$(ARCHS) -L$(PREFIX)/lib -framework CoreFoundation -framework CoreServices" 
 
-install: $(PREFIX)/lib/$(PANGO) $(PREFIX)/lib/$(GD) $(PREFIX)/lib/$(GTS)
+install: install-bins install-libs
+install-bins: $(PREFIX)/bin/$(AUTOCONF) $(PREFIX)/bin/$(AUTOMAKE) $(PREFIX)/bin/$(LIBTOOL) $(PREFIX)/bin/$(PKGCONFIG)
+install-libs: $(PREFIX)/lib/$(PANGO) $(PREFIX)/lib/$(GD) $(PREFIX)/lib/$(GTS)
 
 # gtk dropped, unable to build....
 # $(PREFIX)/lib/$(GTK)
@@ -710,7 +719,7 @@ $(FONTCONFIG_DIR)/Makefile: $(PREFIX)/lib/$(FREETYPE) | $(PREFIX)/bin/$(PKGCONFI
 	@echo
 	@echo CONFIGURING FONTCONFIG...
 	@echo
-	cd $(FONTCONFIG_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG) --with-confdir="/usr/X11/lib/X11/fontconfig" --with-cache-dir="/usr/X11/var/cache/fontconfig" 
+	cd $(FONTCONFIG_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG) --with-confdir="$(PREFIX)/etc/fontconfig" --with-cache-dir="$(PREFIX)/var/cache/fontconfig" 
 	
 $(FONTCONFIG_DIR)/configure: | $(FONTCONFIG_DIR).tar.gz
 	@echo
@@ -723,6 +732,114 @@ $(FONTCONFIG_DIR).tar.gz:
 	@echo TRANSFERRING FONTCONFIG...
 	@echo
 	$(CURL) --remote-name --location $(FONTCONFIG_URL) || rm -f $(FONTCONFIG_DIR).tar.gz
+
+#
+# autoconf
+#
+# only needed during build, don't need Universal Binary
+
+$(PREFIX)/bin/$(AUTOCONF): $(AUTOCONF_DIR)/$(AUTOCONF)
+	@echo
+	@echo INSTALLING AUTOCONF...
+	@echo
+	$(MAKE) -C $(AUTOCONF_DIR) install
+	
+$(AUTOCONF_DIR)/$(AUTOCONF): $(AUTOCONF_DIR)/Makefile
+	@echo
+	@echo MAKING AUTOCONF...
+	@echo
+	if [[ -e $@ ]]; then $(MAKE) -C $(AUTOCONF_DIR) clean; fi && \
+	$(MAKE) -C $(AUTOCONF_DIR)
+	
+$(AUTOCONF_DIR)/Makefile: | $(AUTOCONF_DIR)/configure
+	@echo
+	@echo CONFIGURING AUTOCONF...
+	@echo
+	cd $(AUTOCONF_DIR) && ./configure --prefix=$(PREFIX) --disable-dependency-tracking
+	
+$(AUTOCONF_DIR)/configure: | $(AUTOCONF_DIR).tar.gz
+	@echo
+	@echo UNTARRING AUTOCONF...
+	@echo
+	$(TAR) xzf $|
+	
+$(AUTOCONF_DIR).tar.gz:
+	@echo
+	@echo TRANSFERRING AUTOCONF...
+	@echo
+	$(CURL) --remote-name --location $(AUTOCONF_URL) || rm -f $(AUTOCONF_DIR).tar.gz
+
+#
+# automake
+#
+# only needed during build, don't need Universal Binary
+
+$(PREFIX)/bin/$(AUTOMAKE): $(AUTOMAKE_DIR)/$(AUTOMAKE)
+	@echo
+	@echo INSTALLING AUTOMAKE...
+	@echo
+	$(MAKE) -C $(AUTOMAKE_DIR) install
+	
+$(AUTOMAKE_DIR)/$(AUTOMAKE): $(AUTOMAKE_DIR)/Makefile
+	@echo
+	@echo MAKING AUTOMAKE...
+	@echo
+	if [[ -e $@ ]]; then $(MAKE) -C $(AUTOMAKE_DIR) clean; fi && \
+	$(MAKE) -C $(AUTOMAKE_DIR)
+	
+$(AUTOMAKE_DIR)/Makefile: | $(AUTOMAKE_DIR)/configure
+	@echo
+	@echo CONFIGURING AUTOMAKE...
+	@echo
+	cd $(AUTOMAKE_DIR) && ./configure --prefix=$(PREFIX) --disable-dependency-tracking
+	
+$(AUTOMAKE_DIR)/configure: | $(AUTOMAKE_DIR).tar.gz
+	@echo
+	@echo UNTARRING AUTOMAKE...
+	@echo
+	$(TAR) xzf $|
+	
+$(AUTOMAKE_DIR).tar.gz:
+	@echo
+	@echo TRANSFERRING AUTOMAKE...
+	@echo
+	$(CURL) --remote-name --location $(AUTOMAKE_URL) || rm -f $(AUTOMAKE_DIR).tar.gz
+
+#
+# libtool
+#
+# only needed during build, don't need Universal Binary
+
+$(PREFIX)/bin/$(LIBTOOL): $(LIBTOOL_DIR)/$(LIBTOOL)
+	@echo
+	@echo INSTALLING LIBTOOL...
+	@echo
+	$(MAKE) -C $(LIBTOOL_DIR) install
+	
+$(LIBTOOL_DIR)/$(LIBTOOL): $(LIBTOOL_DIR)/Makefile
+	@echo
+	@echo MAKING LIBTOOL...
+	@echo
+	if [[ -e $@ ]]; then $(MAKE) -C $(LIBTOOL_DIR) clean; fi && \
+	$(MAKE) -C $(LIBTOOL_DIR)
+	
+$(LIBTOOL_DIR)/Makefile: | $(LIBTOOL_DIR)/configure
+	@echo
+	@echo CONFIGURING LIBTOOL...
+	@echo
+	cd $(LIBTOOL_DIR) && ./configure --prefix=$(PREFIX) --disable-dependency-tracking
+	
+$(LIBTOOL_DIR)/configure: | $(LIBTOOL_DIR).tar.gz
+	@echo
+	@echo UNTARRING LIBTOOL...
+	@echo
+	$(TAR) xzf $|
+	
+$(LIBTOOL_DIR).tar.gz:
+	@echo
+	@echo TRANSFERRING LIBTOOL...
+	@echo
+	$(CURL) --remote-name --location $(LIBTOOL_URL) || rm -f $(LIBTOOL_DIR).tar.gz
 
 #
 # pkgconfig

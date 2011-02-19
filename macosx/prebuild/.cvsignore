@@ -1,3 +1,5 @@
+autoconf-*
+automake-*
 atk-*
 cairo-*
 fontconfig-*
@@ -10,6 +12,7 @@ gts-*
 libXft-*
 libiconv-*
 libpng-*
+libtool-*
 jpeg*
 pango-*
 pixman-*
