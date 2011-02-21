@@ -111,15 +111,20 @@ int gvrender_features(GVJ_t * job)
     return features;
 }
 
-void gvrender_begin_job(GVJ_t * job)
+/* gvrender_begin_job:
+ * Return 0 on success
+ */
+int gvrender_begin_job(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
-    gvdevice_initialize(job);
+    if (gvdevice_initialize(job))
+	return 1;
     if (gvre) {
         if (gvre->begin_job)
 	    gvre->begin_job(job);
     }
+    return 0;
 }
 
 void gvrender_end_job(GVJ_t * job)

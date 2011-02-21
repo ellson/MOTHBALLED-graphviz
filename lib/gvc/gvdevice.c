@@ -23,6 +23,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef HAVE_ERRNO_H
+#include <errno.h>
+#endif
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -120,7 +123,10 @@ static void auto_output_filename(GVJ_t *job)
     job->output_filename = buf;
 }
 
-void gvdevice_initialize(GVJ_t * job)
+/* gvdevice_initialize:
+ * Return 0 on success, non-zero on failure
+ */
+int gvdevice_initialize(GVJ_t * job)
 {
     gvdevice_engine_t *gvde = job->device.engine;
     GVC_t *gvc = job->gvc;
@@ -137,8 +143,10 @@ void gvdevice_initialize(GVJ_t * job)
         if (job->output_filename) {
             job->output_file = fopen(job->output_filename, "w");
             if (job->output_file == NULL) {
-                perror(job->output_filename);
-                exit(1);
+		(job->common->errorfn) ("Could not open \"%s\" for writing : %s\n", 
+		    job->output_filename, strerror(errno));
+                /* perror(job->output_filename); */
+                return(1);
             }
         }
         else
@@ -171,14 +179,15 @@ void gvdevice_initialize(GVJ_t * job)
 
 	if (deflateInit2(z, Z_DEFAULT_COMPRESSION, Z_DEFLATED, -MAX_WBITS, MAX_MEM_LEVEL, Z_DEFAULT_STRATEGY) != Z_OK) {
 	    (job->common->errorfn) ("Error initializing for deflation\n");
-	    exit(1);
+	    return(1);
 	}
 	gvwrite_no_z(job, z_file_header, sizeof(z_file_header));
 #else
 	(job->common->errorfn) ("No libz support.\n");
-	exit(1);
+	return(1);
 #endif
     }
+    return 0;
 }
 
 size_t gvwrite (GVJ_t * job, const char *s, size_t len)

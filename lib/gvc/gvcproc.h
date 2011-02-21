@@ -65,7 +65,7 @@
     extern usershape_t *gvusershape_find(char *name);
 
 /* device */
-    extern void gvdevice_initialize(GVJ_t * job);
+    extern int gvdevice_initialize(GVJ_t * job);
     extern void gvdevice_format(GVJ_t * job);
     extern void gvdevice_finalize(GVJ_t * job);
 
@@ -74,7 +74,7 @@
     extern pointf gvrender_ptf(GVJ_t *job, pointf p);
     extern pointf* gvrender_ptf_A(GVJ_t *job, pointf *af, pointf *AF, int n);
 
-    extern void gvrender_begin_job(GVJ_t * job);
+    extern int gvrender_begin_job(GVJ_t * job);
     extern void gvrender_end_job(GVJ_t * job);
     extern int gvrender_select(GVJ_t * job, const char *lang);
     extern int gvrender_features(GVJ_t * job);

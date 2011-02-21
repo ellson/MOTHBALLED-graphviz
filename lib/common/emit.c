@@ -3580,8 +3580,9 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	    job->output_file = prevjob->output_file;  /* FIXME - this is dumb ! */
 	}
 	else {
+	    if (gvrender_begin_job(job))
+		continue;
 	    gvc->active_jobs = job;   /* first job of new list */
-	    gvrender_begin_job(job);
 	}
 	job->next_active = NULL;      /* terminate active list */
 	job->callbacks = &gvdevice_callbacks;
