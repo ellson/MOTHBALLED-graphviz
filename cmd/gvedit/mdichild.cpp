@@ -122,7 +122,8 @@ bool MdiChild::saveFile(const QString &fileName)
 
     QTextStream out(&file);
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    out << toPlainText();
+//    out << toPlainText();
+    out << toPlainText().toUtf8().constData();
     QApplication::restoreOverrideCursor();
 
     setCurrentFile(fileName);
@@ -185,6 +186,7 @@ void MdiChild::loadPreview(QString fileName)
     if (!this->previewFrm)
     {
 	previewFrm=new ImageViewer();
+	previewFrm->graphWindow=this;
 	parentFrm->mdiArea->addSubWindow(previewFrm);
     }
     previewFrm->open(fileName);

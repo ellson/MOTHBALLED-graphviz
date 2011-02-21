@@ -43,14 +43,47 @@
 #include "mainwindow.h"
 #include "mdichild.h"
 #include "csettings.h"
+#include "graph.h"
+QTextEdit* globTextEdit;
+int errorPipe(char* errMsg)
+{
+    globTextEdit->setText(globTextEdit->toPlainText()+QString(errMsg));
+    return 0;
+}
+
 
 
 MainWindow::MainWindow()
 {
-    mdiArea = new QMdiArea;
-    mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    setCentralWidget(mdiArea);
+
+        QWidget* centralwidget = new QWidget(this);
+        centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
+        QVBoxLayout* verticalLayout_2 = new QVBoxLayout(centralwidget);
+        verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
+        QVBoxLayout* verticalLayout = new QVBoxLayout();
+        verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
+        mdiArea = new QMdiArea(centralwidget);
+        mdiArea->setObjectName(QString::fromUtf8("mdiArea"));
+
+        verticalLayout->addWidget(mdiArea);
+
+        QTextEdit* textEdit = new QTextEdit(centralwidget);
+        textEdit->setObjectName(QString::fromUtf8("textEdit"));
+        textEdit->setMinimumSize(QSize(0, 80));
+        textEdit->setMaximumSize(QSize(16777215, 120));
+	globTextEdit=textEdit;
+	agseterrf(errorPipe);
+        verticalLayout->addWidget(textEdit);
+
+
+        verticalLayout_2->addLayout(verticalLayout);
+
+       setCentralWidget(centralwidget);
+
+
+
+
+
     connect(mdiArea, SIGNAL(subWindowActivated(QMdiSubWindow*)),
             this, SLOT(updateMenus()));
     windowMapper = new QSignalMapper(this);
@@ -67,7 +100,9 @@ MainWindow::MainWindow()
 
     readSettings();
 
-    setWindowTitle(tr("MDI"));
+    setWindowTitle(tr("GVEdit For Graphviz ver:1.01"));
+    this->resize(1024,900);
+    this->move(0,0);
     setUnifiedTitleAndToolBarOnMac(true);
 }
 
@@ -200,7 +235,7 @@ void MainWindow::updateWindowMenu()
     separatorAct->setVisible(!windows.isEmpty());
 
     for (int i = 0; i < windows.size(); ++i) {
-	if (typeid(windows.at(i)->widget()).name()=="MdiChild")
+	if (windows.at(i)->widget()->inherits("MdiChild"))
 	{
 	    MdiChild *child = qobject_cast<MdiChild *>(windows.at(i)->widget());
             QString text;
@@ -224,9 +259,9 @@ MdiChild *MainWindow::createMdiChild()
 {
     MdiChild *child = new MdiChild;
     child->parentFrm=this;
-    mdiArea->addSubWindow(child);
-    
-
+    QMdiSubWindow* s=mdiArea->addSubWindow(child);
+    s->resize(800,600);
+    s->move(mdiArea->subWindowList().count()*5,mdiArea->subWindowList().count()*5);
     connect(child, SIGNAL(copyAvailable(bool)),
             cutAct, SLOT(setEnabled(bool)));
     connect(child, SIGNAL(copyAvailable(bool)),
@@ -412,7 +447,13 @@ void MainWindow::writeSettings()
 MdiChild *MainWindow::activeMdiChild()
 {
     if (QMdiSubWindow *activeSubWindow = mdiArea->activeSubWindow())
-        return qobject_cast<MdiChild *>(activeSubWindow->widget());
+    {
+	if(activeSubWindow->widget()->inherits("MdiChild"))
+	    return qobject_cast<MdiChild *>(activeSubWindow->widget());
+        else
+	    return qobject_cast <ImageViewer *> (activeSubWindow->widget())->graphWindow;
+
+    }
     return 0;
 }
 
@@ -421,9 +462,23 @@ QMdiSubWindow *MainWindow::findMdiChild(const QString &fileName)
     QString canonicalFilePath = QFileInfo(fileName).canonicalFilePath();
 
     foreach (QMdiSubWindow *window, mdiArea->subWindowList()) {
-        MdiChild *mdiChild = qobject_cast<MdiChild *>(window->widget());
-        if (mdiChild->currentFile() == canonicalFilePath)
-            return window;
+	if (window->widget()->inherits("MdiChild"))
+	{
+
+	    MdiChild *mdiChild = qobject_cast<MdiChild *>(window->widget());
+	    if (mdiChild->currentFile() == canonicalFilePath)
+		return window;
+	}
+	else
+	{
+
+	    MdiChild *mdiChild = qobject_cast<ImageViewer *>(window->widget())->graphWindow;
+	    if (mdiChild->currentFile() == canonicalFilePath)
+		return window;
+	}
+
+
+
     }
     return 0;
 }
