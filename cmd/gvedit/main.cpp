@@ -38,7 +38,9 @@
 **
 ****************************************************************************/
 
+#ifdef WIN32_DLL
 #include "windows.h"
+#endif
 #include <QApplication>
 
 #include "mainwindow.h"
