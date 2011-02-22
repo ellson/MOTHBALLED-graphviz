@@ -30,6 +30,7 @@ endif
 libgvplugin_pango_C_la_SOURCES = \
 	gvplugin_pango.c \
 	gvrender_pango.c \
+	gvgetfontlist_pango.c \
 	gvtextlayout_pango.c \
 	gvloadimage_pango.c
 

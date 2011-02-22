@@ -21,6 +21,7 @@
 
 #ifdef HAVE_PANGOCAIRO
 #include <pango/pangocairo.h>
+#include "gvgetfontlist.h"
 #ifdef HAVE_PANGO_FC_FONT_LOCK_FACE
 #include <pango/pangofc-font.h>
 #endif
@@ -67,6 +68,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     static PangoFontDescription *desc;
     static char *fontname;
     static double fontsize;
+    static gv_font_map gv_fmap[MAX_GV_PS_FONTS];
     char *fnt, *psfnt = NULL;
     PangoLayout *layout;
     PangoRectangle logical_rect;
@@ -82,6 +84,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 
     if (!context) {
 	fontmap = pango_cairo_font_map_new();
+	get_font_mapping(fontmap,gv_fmap);
 	context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP(fontmap));
 	options=cairo_font_options_create();
 	cairo_font_options_set_antialias(options,CAIRO_ANTIALIAS_GRAY);
@@ -100,7 +103,9 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	pango_font_description_free (desc);
 
 	if (para->postscript_alias) {
-	    psfnt = fnt = pango_psfontResolve (para->postscript_alias);
+	    psfnt = fnt = gv_fmap[para->postscript_alias->xfig_code].gv_font;
+	    if(psfnt == NULL)
+		psfnt = fnt = pango_psfontResolve (para->postscript_alias);
 	}
 	else
 	    fnt = fontname;
