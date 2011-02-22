@@ -983,6 +983,8 @@ static adjust_data *getAdjustMode(Agraph_t* g, char *s, adjust_data* dp)
 		dp->mode = adjustMode[1].mode;
 		dp->print = adjustMode[1].print;
 	    }
+	    if (dp->mode == AM_PRISM)
+		setPrismValues (g, "", dp);
 	}
     }
     return dp;
