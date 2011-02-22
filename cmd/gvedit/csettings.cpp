@@ -163,6 +163,10 @@ bool CFrmSettings::createLayout()
     int _pos=graphData.indexOf(tr("{"));
     graphData.replace(_pos,1,"{"+WIDGET(QTextEdit,teAttributes)->toPlainText());
 
+      /* Reset line number and file name;
+       * If known, might want to use real name
+       */
+    agsetfile("<gvedit>");
     graph=agread_usergets(reinterpret_cast<FILE*>(this),(gets_f)graph_reader);
     if(!graph)
 	return false;
