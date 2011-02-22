@@ -12,7 +12,7 @@ class MdiChild;
 #endif
 
 #include "gvc.h"
-#include "gvio.h"
+/* #include "gvio.h" */
 
 
 class CFrmSettings : public QDialog
