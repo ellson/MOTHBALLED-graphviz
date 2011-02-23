@@ -44,15 +44,52 @@
 #include "mdichild.h"
 #include "csettings.h"
 #include "graph.h"
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include	<string.h>
+
+#include        "memory.h"
+#include        "types.h"
+#include        "gvplugin.h"
+#include        "gvcjob.h"
+#include        "gvcint.h"
+#include        "gvcproc.h"
 QTextEdit* globTextEdit;
 int errorPipe(char* errMsg)
 {
     globTextEdit->setText(globTextEdit->toPlainText()+QString(errMsg));
     return 0;
 }
+void LoadLayouts(QComboBox* cb)
+{
+    char val[]="casdadasd";
+    Agraph_t* g = agopen("g", AGDIGRAPH);
+    aginit();
+    GVC_t* gvc=gvContext();
 
-
-
+    QStringList sl= QString(gvplugin_list(gvc, API_layout, val)).trimmed().split(" ");
+    cb->clear();
+    for (int id=0;id < sl.count(); id ++)
+    {
+	cb->addItem(sl[id]);
+    };
+    gvFreeLayout(gvc, g);
+}void LoadRenderers(QComboBox* cb)
+{
+    char val[]="casdadasd";
+    Agraph_t* g = agopen("g", AGDIGRAPH);
+    GVC_t* gvc=gvContext();
+    QStringList sl= QString(gvplugin_list(gvc, API_device, val)).trimmed().split(" ");
+    cb->clear();
+    for (int id=0;id < sl.count(); id ++)
+    {
+	cb->addItem(sl[id]);
+    };
+    gvFreeLayout(gvc, g);
+    
+}
 MainWindow::MainWindow()
 {
 
@@ -104,6 +141,9 @@ MainWindow::MainWindow()
     this->resize(1024,900);
     this->move(0,0);
     setUnifiedTitleAndToolBarOnMac(true);
+//    (QComboBox*)frmSettings->findChild<QComboBox*>("cbLayout")
+    LoadLayouts((QComboBox*)frmSettings->findChild<QComboBox*>("cbLayout"));
+    LoadRenderers((QComboBox*)frmSettings->findChild<QComboBox*>("cbExtension"));
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

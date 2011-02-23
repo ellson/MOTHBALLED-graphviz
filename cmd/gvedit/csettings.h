@@ -12,7 +12,8 @@ class MdiChild;
 #endif
 
 #include "gvc.h"
-/* #include "gvio.h" */
+#define WIDGET(t,f)  ((t*)findChild<t *>(#f))
+
 
 
 class CFrmSettings : public QDialog

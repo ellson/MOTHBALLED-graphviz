@@ -4,7 +4,6 @@
 #include <QtGui>
 #include "mdichild.h"
 
-#define WIDGET(t,f)  ((t*)findChild<t *>(#f))
 
 QString stripFileExtension(QString fileName)
 {
