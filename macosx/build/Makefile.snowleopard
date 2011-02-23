@@ -37,6 +37,8 @@ usr/local/bin/$(DOT): $(GV_DIR)/cmd/dot/.libs/$(DOT)
 	@echo INSTALLING GRAPHVIZ...
 	@echo
 	$(MAKE) DESTDIR=$(CURDIR) -C $(GV_DIR) install-strip
+	rm -rf usr/local/lib/*.la
+	rm -rf usr/local/lib/graphviz/*.la
 	rm -rf usr/local/lib/graphviz/tcl/libtcldot_builtin.*
 	cp $(PREFIX)/bin/fc-cache usr/local/bin/gv-fc-cache
 	

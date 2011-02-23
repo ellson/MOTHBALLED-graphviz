@@ -138,6 +138,7 @@ $(PREFIX)/lib/$(JPEG): $(JPEG_DIR)/$(JPEG)
 	@echo INSTALLING JPEG...
 	@echo
 	$(MAKE) -C $(JPEG_DIR) install
+	rm -f $(PREFIX)/lib/*.la
 
 $(JPEG_DIR)/$(JPEG): $(JPEG_DIR)/Makefile
 	@echo
@@ -174,6 +175,7 @@ $(PREFIX)/lib/$(TIFF): $(TIFF_DIR)/libtiff/$(TIFF)
 	@echo INSTALLING TIFF...
 	@echo
 	$(MAKE) -C $(TIFF_DIR) install
+	rm -f $(PREFIX)/lib/*.la
 
 $(TIFF_DIR)/libtiff/$(TIFF): $(TIFF_DIR)/Makefile
 	@echo
@@ -209,6 +211,7 @@ $(PREFIX)/lib/$(ATK): $(ATK_DIR)/atk/$(ATK)
 	@echo INSTALLING ATK...
 	@echo
 	$(MAKE) -C $(ATK_DIR) install
+	rm -f $(PREFIX)/lib/*.la
 
 $(ATK_DIR)/atk/$(ATK): $(ATK_DIR)/Makefile
 	@echo
@@ -244,6 +247,7 @@ $(PREFIX)/lib/$(GTK): $(GTK_DIR)/gtk/$(GTK)
 	@echo INSTALLING GTK...
 	@echo
 	$(MAKE) -C $(GTK_DIR) install
+	rm -f $(PREFIX)/lib/*.la
 
 $(GTK_DIR)/gtk/$(GTK): $(GTK_DIR)/Makefile
 	@echo
@@ -279,6 +283,7 @@ $(PREFIX)/lib/$(GTS): $(GTS_DIR)/src/$(GTS)
 	@echo INSTALLING GTS...
 	@echo
 	$(MAKE) -C $(GTS_DIR) install
+	rm -f $(PREFIX)/lib/*.la
 
 $(GTS_DIR)/src/$(GTS): $(GTS_DIR)/Makefile
 	@echo
@@ -316,6 +321,7 @@ $(PREFIX)/lib/$(PANGO): $(PANGO_DIR)/pango/$(PANGO)
 	@echo INSTALLING PANGO...
 	@echo
 	$(MAKE) -C $(PANGO_DIR) install
+	rm -f $(PREFIX)/lib/*.la
 
 $(PANGO_DIR)/pango/$(PANGO): $(PANGO_DIR)/Makefile
 	@echo
@@ -355,6 +361,7 @@ $(PREFIX)/lib/$(GLIB): $(GLIB_DIR)/glib/$(GLIB)
 	@echo INSTALLING GLIB...
 	@echo
 	$(MAKE) -C $(GLIB_DIR) install
+	rm -f $(PREFIX)/lib/*.la
 	
 $(GLIB_DIR)/glib/$(GLIB): $(GLIB_DIR)/Makefile
 	@echo
@@ -445,6 +452,7 @@ $(PREFIX)/lib/$(INTL): $(GETTEXT_DIR)/gettext-runtime/intl/$(INTL)
 	@echo INSTALLING GETTEXT...
 	@echo
 	$(MAKE) -C $(GETTEXT_DIR) install
+	rm -f $(PREFIX)/lib/*.la
 	
 $(GETTEXT_DIR)/gettext-runtime/intl/$(INTL): $(GETTEXT_DIR)/Makefile
 	@echo
@@ -482,6 +490,7 @@ $(PREFIX)/lib/$(CAIRO): $(CAIRO_DIR)/src/$(CAIRO)
 	@echo INSTALLING CAIRO...
 	@echo
 	$(MAKE) -C $(CAIRO_DIR) install
+	rm -f $(PREFIX)/lib/*.la
 	
 $(CAIRO_DIR)/src/$(CAIRO): $(CAIRO_DIR)/Makefile
 	@echo
@@ -517,6 +526,7 @@ $(PREFIX)/lib/$(PNG): $(PNG_DIR)/$(PNG)
 	@echo INSTALLING PNG...
 	@echo
 	$(MAKE) -C $(PNG_DIR) install
+	rm -f $(PREFIX)/lib/*.la
 	
 $(PNG_DIR)/$(PNG): $(PNG_DIR)/Makefile
 	@echo
@@ -554,6 +564,7 @@ $(PREFIX)/lib/$(PIXMAN): $(PIXMAN_DIR)/pixman/$(PIXMAN)
 	@echo INSTALLING PIXMAN...
 	@echo
 	$(MAKE) -C $(PIXMAN_DIR) install
+	rm -f $(PREFIX)/lib/*.la
 	
 $(PIXMAN_DIR)/pixman/$(PIXMAN): $(PIXMAN_DIR)/Makefile
 	@echo
@@ -590,6 +601,7 @@ $(PREFIX)/lib/$(GD): $(GD_DIR)/$(GD)
 	@echo INSTALLING GD...
 	@echo
 	$(MAKE) -C $(GD_DIR) install
+	rm -f $(PREFIX)/lib/*.la
 	
 $(GD_DIR)/$(GD): $(GD_DIR)/Makefile
 	@echo
@@ -602,7 +614,7 @@ $(GD_DIR)/Makefile: $(PREFIX)/lib/$(FONTCONFIG) $(PREFIX)/lib/$(PNG) $(PREFIX)/l
 	@echo
 	@echo CONFIGURING GD...
 	@echo
-	cd $(GD_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG) LIBS="-liconv -lexpat" --with-fontconfig=$(PREFIX)
+	cd $(GD_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG) LIBS="-liconv -lexpat" --with-fontconfig=$(PREFIX) --with-png=$(PREFIX)
 	
 $(GD_DIR)/configure: | $(GD_DIR).tar.gz
 	@echo
@@ -625,6 +637,7 @@ $(PREFIX)/lib/$(FREETYPE): $(FREETYPE_DIR)/objs/$(FREETYPE)
 	@echo INSTALLING FREETYPE...
 	@echo
 	$(MAKE) -C $(FREETYPE_DIR) install
+	rm -f $(PREFIX)/lib/*.la
 	
 $(FREETYPE_DIR)/objs/$(FREETYPE): $(FREETYPE_DIR)/Makefile
 	@echo
@@ -660,6 +673,7 @@ $(PREFIX)/lib/$(XFT): $(XFT_DIR)/src/$(XFT)
 	@echo INSTALLING XFT...
 	@echo
 	$(MAKE) -C $(XFT_DIR) install
+	rm -f $(PREFIX)/lib/*.la
 	
 $(XFT_DIR)/src/$(XFT): $(XFT_DIR)/Makefile
 	@echo
@@ -707,6 +721,7 @@ $(PREFIX)/lib/$(FONTCONFIG): $(FONTCONFIG_DIR)/src/$(FONTCONFIG)
 	$(MAKE) -C $(FONTCONFIG_DIR)/fc-cat install
 	$(MAKE) -C $(FONTCONFIG_DIR)/fc-list install
 	$(MAKE) -C $(FONTCONFIG_DIR)/fc-match install
+	rm -f $(PREFIX)/lib/*.la
 	
 $(FONTCONFIG_DIR)/src/$(FONTCONFIG): $(FONTCONFIG_DIR)/Makefile
 	@echo
@@ -743,6 +758,7 @@ $(PREFIX)/bin/$(AUTOCONF): $(AUTOCONF_DIR)/$(AUTOCONF)
 	@echo INSTALLING AUTOCONF...
 	@echo
 	$(MAKE) -C $(AUTOCONF_DIR) install
+	rm -f $(PREFIX)/lib/*.la
 	
 $(AUTOCONF_DIR)/$(AUTOCONF): $(AUTOCONF_DIR)/Makefile
 	@echo
@@ -779,6 +795,7 @@ $(PREFIX)/bin/$(AUTOMAKE): $(AUTOMAKE_DIR)/$(AUTOMAKE)
 	@echo INSTALLING AUTOMAKE...
 	@echo
 	$(MAKE) -C $(AUTOMAKE_DIR) install
+	rm -f $(PREFIX)/lib/*.la
 	
 $(AUTOMAKE_DIR)/$(AUTOMAKE): $(AUTOMAKE_DIR)/Makefile
 	@echo
@@ -815,6 +832,7 @@ $(PREFIX)/bin/$(LIBTOOL): $(LIBTOOL_DIR)/$(LIBTOOL)
 	@echo INSTALLING LIBTOOL...
 	@echo
 	$(MAKE) -C $(LIBTOOL_DIR) install
+	rm -f $(PREFIX)/lib/*.la
 	
 $(LIBTOOL_DIR)/$(LIBTOOL): $(LIBTOOL_DIR)/Makefile
 	@echo
@@ -851,6 +869,7 @@ $(PREFIX)/bin/$(PKGCONFIG): $(PKGCONFIG_DIR)/$(PKGCONFIG)
 	@echo INSTALLING PKGCONFIG...
 	@echo
 	$(MAKE) -C $(PKGCONFIG_DIR) install
+	rm -f $(PREFIX)/lib/*.la
 	
 $(PKGCONFIG_DIR)/$(PKGCONFIG): $(PKGCONFIG_DIR)/Makefile
 	@echo
