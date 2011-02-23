@@ -152,6 +152,10 @@
 				RelativePath=".\patchwork.h"
 				>
 			</File>
+			<File
+				RelativePath=".\tree_map.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -170,6 +174,10 @@
 			</File>
 			<File
 				RelativePath=".\patchworkinit.c"
+				>
+			</File>
+			<File
+				RelativePath=".\tree_map.c"
 				>
 			</File>
 		</Filter>
