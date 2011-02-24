@@ -104,7 +104,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 
 	if (para->postscript_alias) {
 	    psfnt = fnt = gv_fmap[para->postscript_alias->xfig_code].gv_font;
-	    if(psfnt == NULL)
+	    if(!psfnt || (*psfnt == '\0'))
 		psfnt = fnt = pango_psfontResolve (para->postscript_alias);
 	}
 	else
