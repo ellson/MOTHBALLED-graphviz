@@ -1,6 +1,10 @@
+/*
+Core structures of mdi windowing code is either inspired or directly copied from Nokia Corporation's QT Toolkit examples.
+These examples are published under the terms of the BSD
+*/
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef CMAINWINDOW_H
+#define CMAINWINDOW_H
 
 #include <QMainWindow>
 #include "ui_settings.h"
@@ -15,55 +19,52 @@ class QMdiSubWindow;
 class QSignalMapper;
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow
+class CMainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    MainWindow();
+    CMainWindow();
     QMdiArea *mdiArea;
 
+private slots:
+    void slotSettings();
+    void slotNew();
+    void slotOpen();
+    void slotSave();
+    void slotSaveAs();
+    void slotCut();
+    void slotCopy();
+    void slotPaste();
+    void slotAbout();
+    void slotRefreshMenus();
+    MdiChild *createMdiChild();
+    void activateChild(QWidget *window);
 protected:
     void closeEvent(QCloseEvent *event);
 
-private slots:
-    void newFile();
-    void open();
-    void save();
-    void saveAs();
-    void cut();
-    void copy();
-    void paste();
-    void about();
-    void updateMenus();
-    void updateWindowMenu();
-    MdiChild *createMdiChild();
-    void switchLayoutDirection();
-    void setActiveSubWindow(QWidget *window);
-    void settings();
 
 private:
-    void createActions();
-    void createMenus();
-    void createToolBars();
-    void createStatusBar();
+    void actions();
+    void menus();
+    void updateMenus();
+    void updateWindowMenu();
+    void updateFileMenu();
+    void toolBars();
     void readSettings();
     void writeSettings();
+    void loadPlugins();
     MdiChild *activeMdiChild();
     QMdiSubWindow *findMdiChild(const QString &fileName);
-
     QSignalMapper *windowMapper;
 
 
 
-    QMenu *fileMenu;
-    QMenu *editMenu;
-    QMenu *graphMenu;
-    QMenu *windowMenu;
-    QMenu *helpMenu;
-    QToolBar *fileToolBar;
-    QToolBar *editToolBar;
-    QToolBar *graphToolBar;
+
+    QToolBar *tbFile;
+    QToolBar *tbEdit;
+    QToolBar *tbGraph;
+
     QAction *newAct;
     QAction *openAct;
     QAction *saveAct;
@@ -85,8 +86,14 @@ private:
     QAction *settingsAct;
     QAction *layoutAct;
 
-
     CFrmSettings* frmSettings;
+    //menus
+    QMenu *mFile;
+    QMenu *mEdit;
+    QMenu *mGraph;
+    QMenu *mWindow;
+    QMenu *mHelp;
+
 };
 
 #endif

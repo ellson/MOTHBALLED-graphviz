@@ -43,7 +43,7 @@
 
 #include <QTextEdit>
 #include "imageviewer.h"
-class MainWindow;
+class CMainWindow;
 
 class MdiChild : public QTextEdit
 {
@@ -66,7 +66,7 @@ public:
     bool applyCairo;
     QString attributes;
     ImageViewer* previewFrm;
-    MainWindow* parentFrm;
+    CMainWindow* parentFrm;
     void loadPreview(QString fileName);
 protected:
     void closeEvent(QCloseEvent *event);

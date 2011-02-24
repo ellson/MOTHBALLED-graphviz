@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
     Q_INIT_RESOURCE(mdi);
 
     QApplication app(argc, argv);
-    MainWindow mainWin;
+    CMainWindow mainWin;
     mainWin.show();
     return app.exec();
 }
