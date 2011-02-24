@@ -1,0 +1,10 @@
+#! /bin/bash
+
+dir="/home/dperry/graphviz2/doc/info"
+cat ${dir}/lang.html | sed -e /"DOCTYPE HTML"/,/"BODY BGCOLOR"/d -e /"The DOT Language<\/H1>"/d \
+-e /"<\/BODY>"/d -e /"<\/HTML>"/d | \
+sed -e s/"attrs.html"/"attrs"/g  -e s/"a:"/"a"/g  \
+-e s/"http:\/\/www.graphviz.org\/doc\/char.html\">"/"\/doc\/char.html\" target=\"_blank\">"/g \
+> lang_db
+
+

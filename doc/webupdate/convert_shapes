@@ -1,0 +1,13 @@
+#! /bin/bash
+
+dir="/home/dperry/graphviz2/doc/info"
+cat ${dir}/shapes.html | sed -e /"DOCTYPE HTML"/,/"BODY BGCOLOR"/d -e /"Node Shapes<\/H1>"/d \
+-e /"<\/BODY>"/d -e /"<\/HTML>"/d | \
+sed -e s/"attrs.html"/"attrs"/g  -e s/"a:"/"a"/g -e s/"d:"/"d"/g -e s/"k:"/"k"/g \
+-e s/"http:\/\/www.graphviz.org\/doc\/char.html\">"/"\/doc\/char.html\" target=\"_blank\">"/g \
+-e s/"A HREF=html"/"A HREF=\/doc\/info\/html"/g \
+-e s/"<A HREF=shapes.html"/"<A HREF="/g \
+-e s/'SRC='/'SRC=\/doc\/info\/'/g \
+> shapes_db
+
+

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+#start construction of the sql stored procedure
+echo -n "call update_html('" ;
+#dump content of converted file and escape single quotes with backslash
+echo -n "testing";
+cat $1 | sed -e "s/[\\']/\\\'/g"; 
+#insert the title of the page being inserted as the second argument to the stored procedure
+case $1 in
+	arrows_db) echo -n "','Arrow Shapes";;
+	attrs_db) echo -n "','attrs";;
+	colors_db) echo -n "','Color Names";;
+	command_db) echo -n "','Command-line Invocation";;
+	lang_db) echo -n "','The DOT Language";;
+	output_db) echo -n "','Output Formats";;
+	shapes_db) echo -n "','Node Shapes";;
+	*)	echo -n "unkown option";exit 1;;
+esac
+echo "');" ;
+
+#pipe output to
+#mysql -u root -ppassword -D drupal
+

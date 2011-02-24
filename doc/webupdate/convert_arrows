@@ -1,0 +1,6 @@
+#! /bin/bash
+
+dir="/home/dperry/graphviz2/doc/info"
+cat ${dir}/arrows.html | sed -e /"DOCTYPE HTML"/,/"BODY BGCOLOR"/d -e /"Arrow Shapes<\/H1>"/d -e /"<\/BODY>"/d -e /"<\/HTML>"/d | \
+sed -e s/'SRC=\"'/'SRC=\"\/doc\/info\/'/g  > arrows_db
+
