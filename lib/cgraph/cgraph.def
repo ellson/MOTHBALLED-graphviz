@@ -48,7 +48,6 @@ agedgeattr_init
 agedgeidcmpf	
 agedgeseqcmpf	
 agerr	
-agerrno	
 agerrorf	
 agerrors	
 agfindnode_by_id	
