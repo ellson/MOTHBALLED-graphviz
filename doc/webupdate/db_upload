@@ -3,7 +3,7 @@
 #start construction of the sql stored procedure
 echo -n "call update_html('" ;
 #dump content of converted file and escape single quotes with backslash
-echo -n "testing";
+#echo -n "testing";
 cat $1 | sed -e "s/[\\']/\\\'/g"; 
 #insert the title of the page being inserted as the second argument to the stored procedure
 case $1 in
