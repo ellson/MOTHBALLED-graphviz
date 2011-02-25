@@ -1,9 +1,0 @@
-#! /bin/bash
-
-for doc in arrows attrs colors command lang output shapes
-do
-	./convert_${doc}; ./db_upload ${doc}_db | mysql -u root -pgraphviz2011 -D graphviz;
-	rm ${doc}_db
-done
-
-
