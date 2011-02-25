@@ -12,7 +12,6 @@ class MdiChild;
 #endif
 
 #include "gvc.h"
-#define WIDGET(t,f)  ((t*)findChild<t *>(#f))
 
 
 
@@ -36,6 +35,7 @@ private slots:
     void newSlot();
     void openSlot();
     void saveSlot();
+    void scopeChangedSlot(int);
 private:
     //Actions
     Agraph_t* graph;

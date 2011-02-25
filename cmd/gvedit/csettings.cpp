@@ -2,9 +2,51 @@
 #include "qmessagebox.h"
 #include "qfiledialog.h"
 #include <QtGui>
+#include <qfile.h>
 #include "mdichild.h"
+#include "string.h"
+#define WIDGET(t,f)  ((t*)findChild<t *>(#f))
 
 
+bool loadAttrs(const QString fileName,QComboBox* cbNameG,QComboBox* cbNameN,QComboBox* cbNameE)
+{
+    QStringList lines;
+    QFile file(fileName);
+    if ( file.open(QIODevice::ReadOnly ) ) {
+        QTextStream stream( &file );
+        QString line;
+        int i = 1;
+        while ( !stream.atEnd() ) {
+            line = stream.readLine(); // line of text excluding '\n'
+	    if(line.left(1)==":")
+	    {
+		QString attrName;
+		QStringList sl= line.split(":");
+		for (int id=0;id < sl.count(); id ++)
+		{
+		    if(id==1)
+			attrName=sl[id];
+		    if(id==2)
+		    {
+			if(sl[id].contains("G"))
+			    cbNameG->addItem(attrName);
+			if(sl[id].contains("N"))
+			    cbNameN->addItem(attrName);
+			if(sl[id].contains("E"))
+			    cbNameE->addItem(attrName);
+		    }
+		    printf ("%s\n",sl[id].constData());
+		};
+	    }
+        }
+        file.close();
+    }
+    return false;
+
+
+
+
+}
 QString stripFileExtension(QString fileName)
 {
     int idx;
@@ -44,6 +86,10 @@ CFrmSettings::CFrmSettings()
     connect(WIDGET(QPushButton,pbSave),SIGNAL(clicked()),this,SLOT(saveSlot()));
     connect(WIDGET(QPushButton,btnOK),SIGNAL(clicked()),this,SLOT(okSlot()));
     connect(WIDGET(QPushButton,pbOut),SIGNAL(clicked()),this,SLOT(outputSlot()));
+    connect(WIDGET(QComboBox,cbScope),SIGNAL(currentIndexChanged(int)),this,SLOT(scopeChangedSlot(int)));
+
+
+    loadAttrs("c:/graphviz-ms/bin/attrs.txt",WIDGET(QComboBox,cbNameG),WIDGET(QComboBox,cbNameN),WIDGET(QComboBox,cbNameE));
 }
 
 void CFrmSettings::outputSlot()
@@ -53,10 +99,28 @@ void CFrmSettings::outputSlot()
  if (!fileName.isEmpty())
      WIDGET(QLineEdit,leOutput)->setText(fileName);
 }
+void CFrmSettings::scopeChangedSlot(int id)
+{
+    WIDGET(QComboBox,cbNameG)->setVisible(id==0);
+    WIDGET(QComboBox,cbNameN)->setVisible(id==1);
+    WIDGET(QComboBox,cbNameE)->setVisible(id==2);
+}
 void CFrmSettings::addSlot()
 {
     QString _scope=WIDGET (QComboBox,cbScope)->currentText();
-    QString _name=WIDGET  (QComboBox,cbName)->currentText();
+    QString _name;
+    switch (WIDGET  (QComboBox,cbScope)->currentIndex())
+    {
+    case 0:
+	_name=WIDGET  (QComboBox,cbNameG)->currentText();
+	break;
+    case 1:
+	_name=WIDGET  (QComboBox,cbNameN)->currentText();
+	break;
+    case 2:
+	_name=WIDGET  (QComboBox,cbNameE)->currentText();
+	break;
+    }
     QString _value=WIDGET(QLineEdit,leValue)->text();
 
     if (_value.trimmed().length() == 0)
@@ -213,8 +277,6 @@ void CFrmSettings::refreshContent()
 	WIDGET(QLineEdit,leOutput)->setText(stripFileExtension(activeWindow->currentFile())+  "."+WIDGET(QComboBox,cbExtension)->currentText());
 
     WIDGET(QTextEdit,teAttributes)->setText(activeWindow->attributes);
-    WIDGET(QCheckBox,chbPreview)->setChecked(activeWindow->preview);
-    WIDGET(QCheckBox,chbCairo)->setChecked(activeWindow->applyCairo);
 
     WIDGET(QLineEdit,leValue)->setText("");
 
@@ -224,11 +286,8 @@ void CFrmSettings::saveContent()
 {
     activeWindow->layoutIdx=WIDGET(QComboBox,cbLayout)->currentIndex();
     activeWindow->renderIdx=WIDGET(QComboBox,cbExtension)->currentIndex();
-
     activeWindow->outputFile=WIDGET(QLineEdit,leOutput)->text();
     activeWindow->attributes=WIDGET(QTextEdit,teAttributes)->toPlainText();
-    activeWindow->preview= WIDGET(QCheckBox,chbPreview)->isChecked();
-    activeWindow->applyCairo= WIDGET(QCheckBox,chbCairo)->isChecked();
 }
 int CFrmSettings::drawGraph()
 {

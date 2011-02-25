@@ -84,7 +84,7 @@ CMainWindow::CMainWindow()
             this, SLOT(slotRefreshMenus()));
     windowMapper = new QSignalMapper(this);
     connect(windowMapper, SIGNAL(mapped(QWidget*)),
-            this, SLOT(setActiveSubWindow(QWidget*)));
+            this, SLOT(activateChild(QWidget*)));
 
     frmSettings= new CFrmSettings();
 
@@ -392,7 +392,7 @@ void CMainWindow::actions()
 
     layoutAct = new QAction(QIcon(":/images/cut.png"),tr("Layout"), this);
     layoutAct->setStatusTip(tr("Layout the active graph"));
-    connect(layoutAct, SIGNAL(triggered()), this, SLOT(about()));
+    connect(layoutAct, SIGNAL(triggered()), this, SLOT(slotAbout()));
 
 
 }
@@ -503,7 +503,7 @@ QMdiSubWindow *CMainWindow::findMdiChild(const QString &fileName)
     return 0;
 }
 
-void CMainWindow::setActiveSubWindow(QWidget *window)
+void CMainWindow::activateChild(QWidget *window)
 {
     if (!window)
         return;

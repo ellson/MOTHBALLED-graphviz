@@ -2,7 +2,7 @@
 <VisualStudioUserFile
 	ProjectType="Visual C++"
 	Version="9.00"
-	ShowAllFiles="true"
+	ShowAllFiles="false"
 	>
 	<Configurations>
 		<Configuration
@@ -10,7 +10,7 @@
 			>
 			<DebugSettings
 				Command="$(TargetPath)"
-				WorkingDirectory=""
+				WorkingDirectory="C:\graphviz-ms\bin"
 				CommandArguments=""
 				Attach="false"
 				DebuggerType="3"
@@ -22,7 +22,7 @@
 				SQLDebugging=""
 				Environment="PATH=$(QTDIR)\bin;&quot;$(QTDIR)\bin;$(PATH)"
 				EnvironmentMerge="true"
-				DebuggerFlavor=""
+				DebuggerFlavor="0"
 				MPIRunCommand=""
 				MPIRunArguments=""
 				MPIRunWorkingDirectory=""
