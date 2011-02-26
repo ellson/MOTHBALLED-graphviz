@@ -94,10 +94,18 @@ extern int gvFreeLayout(GVC_t *gvc, graph_t *g);
 extern void gvFinalize(GVC_t *gvc);
 extern int gvFreeContext(GVC_t *gvc);
 
-
-
-
-
+/* Return list of plugins of type kind.
+ * kind would normally be "render" "layout" "textlayout" "device" "loadimage"
+ * The size of the list is stored in sz.
+ * The caller is responsible for freeing the storage. This involves
+ * freeing each item, then the list.
+ * Returns NULL on error, or if there are no plugins.
+ * In the former case, sz is unchanged; in the latter, sz = 0.
+ *
+ * At present, the str argument is unused, but may be used to modify
+ * the search as in gvplugin_list above.
+ */
+extern char** gvPluginList (GVC_t *gvc, char* kind, int* sz, char*);
 
 /** Add a library from your user application
  * @param gvc Graphviz context to add library to

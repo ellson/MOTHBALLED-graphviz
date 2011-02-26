@@ -48,6 +48,10 @@ extern int gvFreeLayout(GVC_t *gvc, graph_t *g);
 /* Clean up graphviz context */
 extern int gvFreeContext(GVC_t *gvc);
 
+/* Inquire about available plugins */
+/* See comment in gvc.h            */
+extern char** gvPluginList(GVC_t *gvc, char* kind, int* cnt, char*);
+
 \fP
 .fi
 .SH DESCRIPTION

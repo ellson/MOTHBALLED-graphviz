@@ -20,6 +20,7 @@
 #include	<ltdl.h>
 #endif
 
+#include	<agxbuf.h>
 #include        "memory.h"
 #include        "types.h"
 #include        "gvplugin.h"
@@ -345,40 +346,26 @@ gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, const char *str)
     return rv;
 }
 
-/* string buffer management
-	- FIXME - must have 20 solutions for this same thing */
-static char *append_buf(char sep, const char *str, boolean new)
-{
-    static char *buf;
-    static int bufsz, pos;
-    int len;
-    char *p;
-
-    if (new)
-	pos = 0;
-    len = strlen(str) + 1;
-    if (bufsz < (pos + len + 1)) {
-	bufsz += 4 * len;
-	buf = grealloc(buf, bufsz);
-    }
-    p = buf + pos;
-    *p++ = sep;
-    strcpy(p, str);
-    pos += len;
-    return buf;
-}
-
-/* assemble a string list of available plugins */
+/* assemble a string list of available plugins 
+ * non-re-entrant as character store is shared
+ */
 char *gvplugin_list(GVC_t * gvc, api_t api, const char *str)
 {
+    static int first = 1;
     gvplugin_available_t **pnext, **plugin;
-    char *buf = NULL;
+    char *bp;
     char *s, *p, *q, *typestr_last;
     boolean new = TRUE;
+    static agxbuf xb;
 
     /* check for valid apis[] index */
     if (api < 0)
 	return NULL;
+
+    if (first) {
+	agxbinit(&xb, 0, 0);
+	first = 0;
+    }
 
     /* does str have a :path modifier? */
 #ifdef WIN32
@@ -402,8 +389,8 @@ char *gvplugin_list(GVC_t * gvc, api_t api, const char *str)
 	    /* list only the matching type, or all types if s is an empty string */
 	    if (!s[0] || strcasecmp(s, q) == 0) {
 		/* list each member of the matching type as "type:path" */
-		append_buf(' ', (*pnext)->typestr, new);
-		buf = append_buf(':', (*pnext)->package->name, FALSE);
+		agxbputc(&xb,' '); agxbput(&xb, (*pnext)->typestr);
+		agxbputc(&xb,':'); agxbput(&xb, (*pnext)->package->name);
 		new = FALSE;
 	    }
 	    free(q);
@@ -420,7 +407,7 @@ char *gvplugin_list(GVC_t * gvc, api_t api, const char *str)
 		*p++ = '\0';
 	    if (!typestr_last || strcasecmp(typestr_last, q) != 0) {
 		/* list it as "type"  i.e. w/o ":path" */
-		buf = append_buf(' ', q, new);
+		agxbputc(&xb,' '); agxbput(&xb, q);
 		new = FALSE;
 	    }
 	    if(!typestr_last)
@@ -430,9 +417,59 @@ char *gvplugin_list(GVC_t * gvc, api_t api, const char *str)
 	if(!typestr_last)
 	    free(typestr_last);
     }
-    if (!buf)
-	buf = "";
-    return buf;
+    if (new)
+	bp = "";
+    else
+	bp = agxbuse(&xb);
+    return bp;
+}
+
+/* gvPluginList:
+ * Return list of plugins of type kind.
+ * The size of the list is stored in sz.
+ * The caller is responsible for freeing the storage. This involves
+ * freeing each item, then the list.
+ * Returns NULL on error, or if there are no plugins.
+ * In the former case, sz is unchanged; in the latter, sz = 0.
+ *
+ * At present, the str argument is unused, but may be used to modify
+ * the search as in gvplugin_list above.
+ */
+char **gvPluginList(GVC_t * gvc, char* kind, int* sz, const char *str)
+{
+    int api;
+    gvplugin_available_t **pnext, **plugin;
+    int cnt = 0;    
+    char** list = NULL;
+    char *p, *q, *typestr_last;
+
+    if (!kind) return NULL;
+    for (api = 0; api < ARRAY_SIZE(api_names); api++) {
+	if (!strcasecmp(kind,api_names[api]))
+	    break;
+    }
+    if (api == ARRAY_SIZE(api_names)) {
+        agerr(AGERR, "unrecognized api name \"%s\"\n", kind);
+	return NULL;
+    }
+
+    /* point to the beginning of the linked list of plugins for this api */
+    plugin = &(gvc->apis[api]);
+    typestr_last = NULL;
+    for (pnext = plugin; *pnext; pnext = &((*pnext)->next)) {
+	    /* list only one instance of type */
+	q = strdup((*pnext)->typestr);
+	if ((p = strchr(q, ':')))
+	    *p++ = '\0';
+	if (!typestr_last || strcasecmp(typestr_last, q) != 0) {
+	    list = RALLOC(cnt+1,list,char*);
+	    list[cnt++] = q;
+	}
+	typestr_last = q;
+    }
+
+    *sz = cnt;
+    return list;
 }
 
 void gvplugin_write_status(GVC_t * gvc)
