@@ -459,7 +459,7 @@ AC_CHECK_FUNCS([lrand48 drand48 srand48 setmode setenv getenv \
 	strtoul strtoll strtoull uname memset nl_langinfo pow sqrt \
 	strchr strdup strerror strstr _NSGetEnviron])
 
-AC_REPLACE_FUNCS([strcasecmp strncasecmp])
+AC_REPLACE_FUNCS([strcasecmp strncasecmp strcasestr])
 
 dnl -----------------------------------
 dnl libtool ltdl on-demand plugin loading
