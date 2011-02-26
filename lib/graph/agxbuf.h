@@ -38,12 +38,12 @@ extern "C" {
 /* agxbput_n:
  * Append string s of length n into xb
  */
-    extern int agxbput_n(agxbuf * xb, char *s, unsigned int n);
+    extern int agxbput_n(agxbuf * xb, const char *s, unsigned int n);
 
 /* agxbput:
  * Append string s into xb
  */
-    extern int agxbput(agxbuf * xb, char *s);
+    extern int agxbput(agxbuf * xb, const char *s);
 
 /* agxbfree:
  * Free any malloced resources.

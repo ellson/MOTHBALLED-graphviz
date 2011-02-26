@@ -69,7 +69,7 @@ int agxbmore(agxbuf * xb, unsigned int ssz)
 /* agxbput_n:
  * Append string s of length n onto xb
  */
-int agxbput_n(agxbuf * xb, char *s, unsigned int ssz)
+int agxbput_n(agxbuf * xb, const char *s, unsigned int ssz)
 {
     if (xb->ptr + ssz > xb->eptr)
 	agxbmore(xb, ssz);
@@ -81,7 +81,7 @@ int agxbput_n(agxbuf * xb, char *s, unsigned int ssz)
 /* agxbput:
  * Append string s into xb
  */
-int agxbput(agxbuf * xb, char *s)
+int agxbput(agxbuf * xb, const char *s)
 {
     unsigned int ssz = strlen(s);
 
