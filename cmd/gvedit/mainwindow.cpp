@@ -1,3 +1,16 @@
+/* $Id$Revision: */
+/* vim:set shiftwidth=4 ts=8: */
+
+/*************************************************************************
+ * Copyright (c) 2011 AT&T Intellectual Property
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: See CVS logs. Details at http://www.graphviz.org/
+ *************************************************************************/
+
 #include <QtGui>
 #include "mainwindow.h"
 #include "mdichild.h"
@@ -9,46 +22,33 @@
 
 #include	<string.h>
 
-#include        "memory.h"
-#include        "types.h"
-#include        "gvplugin.h"
-#include        "gvcjob.h"
-#include        "gvcint.h"
-#include        "gvcproc.h"
 QTextEdit* globTextEdit;
-int errorPipe(char* errMsg)
+
+static int errorPipe(char* errMsg)
 {
     globTextEdit->setText(globTextEdit->toPlainText()+QString(errMsg));
     return 0;
 }
-void LoadLayouts(QComboBox* cb)
-{
-    char val[]="casdadasd";
-    Agraph_t* g = agopen("g", AGDIGRAPH);
-    aginit();
-    GVC_t* gvc=gvContext();
 
-    QStringList sl= QString(gvplugin_list(gvc, API_layout, val)).trimmed().split(" ");
-    cb->clear();
-    for (int id=0;id < sl.count(); id ++)
-    {
-	cb->addItem(sl[id]);
-    };
-    gvFreeLayout(gvc, g);
-}void LoadRenderers(QComboBox* cb)
+static void freeList (char** lp, int count)
 {
-    char val[]="casdadasd";
-    Agraph_t* g = agopen("g", AGDIGRAPH);
-    GVC_t* gvc=gvContext();
-    QStringList sl= QString(gvplugin_list(gvc, API_device, val)).trimmed().split(" ");
-    cb->clear();
-    for (int id=0;id < sl.count(); id ++)
-    {
-	cb->addItem(sl[id]);
-    };
-    gvFreeLayout(gvc, g);
-    
+    for (int i = 0; i < count; i++)
+	free (lp[i]);
+    free (lp);
 }
+
+static void LoadPlugins (QComboBox* cb, GVC_t* gvc, char* kind)
+{
+    int count;
+    char** lp = gvPluginList(gvc, kind, &count, NULL);
+    cb->clear();
+    for (int id=0;id < count; id++)
+    {
+	cb->addItem(QString(lp[id]));
+    };
+    freeList (lp, count);
+}
+
 CMainWindow::CMainWindow()
 {
 
@@ -101,8 +101,10 @@ CMainWindow::CMainWindow()
     this->move(0,0);
     setUnifiedTitleAndToolBarOnMac(true);
 //    (QComboBox*)frmSettings->findChild<QComboBox*>("cbLayout")
-    LoadLayouts((QComboBox*)frmSettings->findChild<QComboBox*>("cbLayout"));
-    LoadRenderers((QComboBox*)frmSettings->findChild<QComboBox*>("cbExtension"));
+    QComboBox* cb = (QComboBox*)frmSettings->findChild<QComboBox*>("cbLayout");
+    LoadPlugins(cb,  frmSettings->gvc, "layout");
+    cb = (QComboBox*)frmSettings->findChild<QComboBox*>("cbExtension");
+    LoadPlugins(cb, frmSettings->gvc, "device");
     statusBar()->showMessage(tr("Ready"));
 }
 
