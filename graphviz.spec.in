@@ -395,7 +395,7 @@ Perl extension for graphviz.
 Group:          Applications/Multimedia
 Summary:        PHP extension for graphviz
 Requires:       graphviz = %{version}-%{release} php
-%if %{?php_zend_api}0
+%if 0%{?php_zend_api}
 Requires:       php(zend-abi) = %{php_zend_api}
 Requires:       php(api) = %{php_core_api}
 %else
