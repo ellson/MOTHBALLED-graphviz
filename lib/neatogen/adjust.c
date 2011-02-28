@@ -655,19 +655,38 @@ static void updateGraph(Agraph_t * graph)
     }
 }
 
+#define ELS "|edgelabel|"
+#define ELSN (sizeof(ELS)-1)
+  /* Return true if node name starts with ELS */
+#define IS_LNODE(n) (!strncmp(agnameof(n),ELS,ELSN))
+
 /* getSizes:
  * Set up array of half sizes in inches.
  */
-double *getSizes(Agraph_t * g, pointf pad)
+double *getSizes(Agraph_t * g, pointf pad, int* n_elabels, int** elabels)
 {
     Agnode_t *n;
     real *sizes = N_GNEW(2 * agnnodes(g), real);
-    int i;
+    int i, nedge_nodes;
+    int* elabs;
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	if (elabels && IS_LNODE(n)) nedge_nodes++;
+
 	i = ND_id(n);
 	sizes[i * 2] = ND_width(n) * .5 + pad.x;
 	sizes[i * 2 + 1] = ND_height(n) * .5 + pad.y;
+    }
+
+    if (elabels && nedge_nodes) {
+	elabs = N_GNEW(nedge_nodes, int);
+	nedge_nodes = 0;
+	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	    if (IS_LNODE(n))
+		elabs[nedge_nodes++] = ND_id(n);
+	}
+	*elabels = elabs;
+	*n_elabels = nedge_nodes;
     }
 
     return sizes;
@@ -677,7 +696,7 @@ double *getSizes(Agraph_t * g, pointf pad)
  * Assumes g is connected and simple, i.e., we can have a->b and b->a
  * but not a->b and a->b
  */
-SparseMatrix makeMatrix(Agraph_t * g, int dim)
+SparseMatrix makeMatrix(Agraph_t* g, int dim, SparseMatrix *D)
 {
     SparseMatrix A = 0;
     Agnode_t *n;
@@ -691,6 +710,8 @@ SparseMatrix makeMatrix(Agraph_t * g, int dim)
     real *val;
     real v;
     int type = MATRIX_TYPE_REAL;
+    Agsym_t* symD = NULL;
+    real* valD = NULL;
 
     if (!g)
 	return NULL;
@@ -707,6 +728,11 @@ SparseMatrix makeMatrix(Agraph_t * g, int dim)
     val = N_GNEW(nedges, real);
 
     sym = agfindedgeattr(g, "weight");
+    if (D) {
+	symD = agfindedgeattr(g, "len");
+	valD = N_NEW(nedges, real);
+    }
+
     i = 0;
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	row = ND_id(n);
@@ -720,6 +746,14 @@ SparseMatrix makeMatrix(Agraph_t * g, int dim)
 #endif
 		v = 1;
 	    val[i] = v;
+	/* edge length */
+	    if (symD) {
+#ifndef WITH_CGRAPH
+#else
+		if (sscanf (agxget (e, symD->index), "%lf", &v) != 1) v = 1;
+#endif
+		valD[i] = v;
+	    }
 	    i++;
 	}
     }
@@ -727,9 +761,12 @@ SparseMatrix makeMatrix(Agraph_t * g, int dim)
     A = SparseMatrix_from_coordinate_arrays(nedges, nnodes, nnodes, I, J,
 					    val, type);
 
+    if (D) *D = SparseMatrix_from_coordinate_arrays(nedges, nnodes, nnodes, I, J, valD, type);
+
     free(I);
     free(J);
     free(val);
+    if (valD) free (valD);
 
     return A;
 }
@@ -738,7 +775,7 @@ SparseMatrix makeMatrix(Agraph_t * g, int dim)
 static int
 fdpAdjust (graph_t* g, adjust_data* am)
 {
-    SparseMatrix A0 = makeMatrix(g, Ndim);
+    SparseMatrix A0 = makeMatrix(g, Ndim, NULL);
     SparseMatrix A = A0;
     real *sizes;
     real *pos = N_NEW(Ndim * agnnodes(g), real);
@@ -754,7 +791,7 @@ fdpAdjust (graph_t* g, adjust_data* am)
 	pad.x = PS2INCH(DFLT_MARGIN);
 	pad.y = PS2INCH(DFLT_MARGIN);
     }
-    sizes = getSizes(g, pad);
+    sizes = getSizes(g, pad, NULL, NULL);
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	real* npos = pos + (Ndim * ND_id(n));
@@ -770,7 +807,8 @@ fdpAdjust (graph_t* g, adjust_data* am)
 	A = SparseMatrix_remove_diagonal(A);
     }
 
-    remove_overlap(Ndim, A, A->m, pos, sizes, am->value, am->scaling, &flag);
+    remove_overlap(Ndim, A, pos, sizes, am->value, am->scaling, 
+	ELSCHEME_NONE, 0, NULL, NULL, &flag);
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	real *npos = pos + (Ndim * ND_id(n));

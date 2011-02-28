@@ -469,6 +469,17 @@ mkSurface (double *x, double *y, int n, int* segs, int nsegs)
     return sf;
 }
 
+int* 
+get_triangles (double *x, int n, int* tris)
+{
+    int* trilist = NULL;
+
+    if (n <= 2) return NULL;
+    agerr (AGERR, "get_triangles not yet implemented using GTS library\n");
+
+    return trilist;
+}
+
 void 
 freeSurface (surface_t* s)
 {
@@ -480,6 +491,74 @@ freeSurface (surface_t* s)
 #define TRILIBRARY
 #include "triangle.c"
 #include "assert.h"
+
+int*
+get_triangles (double *x, int n, int* tris)
+{
+    struct triangulateio in, mid, vorout;
+
+    if (n <= 2) return NULL;
+
+    in.numberofpoints = n;
+    in.numberofpointattributes = 0;
+    in.pointlist = (REAL *) N_GNEW(in.numberofpoints * 2, REAL);
+
+    for (i = 0; i < n; i++){
+	in.pointlist[i*2] = x[i*2];
+	in.pointlist[i*2 + 1] = x[i*2 + 1];
+    }
+    in.pointattributelist = NULL;
+    in.pointmarkerlist = NULL;
+    in.numberofsegments = 0;
+    in.numberofholes = 0;
+    in.numberofregions = 0;
+    in.regionlist = NULL;
+    mid.pointlist = (REAL *) NULL;            /* Not needed if -N switch used. */
+    mid.pointattributelist = (REAL *) NULL;
+    mid.pointmarkerlist = (int *) NULL; /* Not needed if -N or -B switch used. */
+    mid.trianglelist = (int *) NULL;          /* Not needed if -E switch used. */
+    mid.triangleattributelist = (REAL *) NULL;
+    mid.neighborlist = (int *) NULL;         /* Needed only if -n switch used. */
+    mid.segmentlist = (int *) NULL;
+    mid.segmentmarkerlist = (int *) NULL;
+    mid.edgelist = (int *) NULL;             /* Needed only if -e switch used. */
+    mid.edgemarkerlist = (int *) NULL;   /* Needed if -e used and -B not used. */
+    vorout.pointlist = (REAL *) NULL;        /* Needed only if -v switch used. */
+    vorout.pointattributelist = (REAL *) NULL;
+    vorout.edgelist = (int *) NULL;          /* Needed only if -v switch used. */
+    vorout.normlist = (REAL *) NULL;         /* Needed only if -v switch used. */
+
+    /* Triangulate the points.  Switches are chosen to read and write a  */
+    /*   PSLG (p), preserve the convex hull (c), number everything from  */
+    /*   zero (z), assign a regional attribute to each element (A), and  */
+    /*   produce an edge list (e), a Voronoi diagram (v), and a triangle */
+    /*   neighbor list (n).                                              */
+
+    triangulate("Qenv", &in, &mid, &vorout);
+    assert (mid.numberofcorners == 3);
+
+    *tris = mid.numberoftriangles;
+    
+    FREE(in.pointlist);
+    FREE(in.pointattributelist);
+    FREE(in.pointmarkerlist);
+    FREE(in.regionlist);
+    FREE(mid.pointlist);
+    FREE(mid.pointattributelist);
+    FREE(mid.pointmarkerlist);
+    FREE(mid.triangleattributelist);
+    FREE(mid.neighborlist);
+    FREE(mid.segmentlist);
+    FREE(mid.segmentmarkerlist);
+    FREE(mid.edgelist);
+    FREE(mid.edgemarkerlist);
+    FREE(vorout.pointlist);
+    FREE(vorout.pointattributelist);
+    FREE(vorout.edgelist);
+    FREE(vorout.normlist);
+
+    return mid.trianglelist;
+}
 
 // maybe it should be replaced by RNG - relative neigborhood graph, or by GG - gabriel graph
 int* 
@@ -609,6 +688,11 @@ freeSurface (surface_t* s)
 }
 #else
 static char* err = "Graphviz built without any triangulation library\n";
+int* get_triangles (double *x, int n, int* tris)
+{
+    agerr(AGERR, "get_triangles: %s\n", err);
+    return 0;
+}
 v_data *delaunay_triangulation(double *x, double *y, int n)
 {
     agerr(AGERR, "delaunay_triangulation: %s\n", err);

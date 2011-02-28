@@ -25,21 +25,6 @@
 #include "memory.h"
 #include "globals.h"
 #include <time.h>
-#define MALLOC gmalloc
-#define REALLOC grealloc
-#define FREE free
-#define MEMCPY memcpy
-
-#define MACHINEACC 1.0e-16
-
-#ifndef SMOOTHER
-#include "post_process.h"
-
-typedef  StressMajorizationSmoother OverlapSmoother;
-
-#define OverlapSmoother_struct StressMajorizationSmoother_struct
-
-#endif
 
 static void ideal_distance_avoid_overlap(int dim, SparseMatrix A, real *x, real *width, real *ideal_distance, real *tmax, real *tmin){
   /*  if (x1>x2 && y1 > y2) we want either x1 + t (x1-x2) - x2 > (width1+width2), or y1 + t (y1-y2) - y2 > (height1+height2),
@@ -218,7 +203,7 @@ static SparseMatrix get_overlap_graph(int dim, int n, real *x, real *width){
 #endif
 
       assert(treey->nil != newNode);
-      while (((newNode = TreePredecessor(treey, newNode)) != treey->nil) && ((scan_point *)newNode->key)->node != k){
+      while ((newNode) && ((newNode = TreePredecessor(treey, newNode)) != treey->nil) && ((scan_point *)newNode->key)->node != k){
 	neighbor = (((scan_point *)newNode->key)->node)%n;
 	A = SparseMatrix_coordinate_form_add_entries(A, 1, &neighbor, &k, &one);
 #ifdef DEBUG_RBTREE
@@ -232,7 +217,7 @@ static SparseMatrix get_overlap_graph(int dim, int n, real *x, real *width){
       treey->PrintKey(newNode0->key);
 #endif
 
-      RBDelete(treey,newNode0);
+      if (newNode0) RBDelete(treey,newNode0);
       if (newNode != treey->nil && newNode != newNode0) {
 
 #ifdef DEBUG_RBTREE
@@ -240,7 +225,7 @@ static SparseMatrix get_overlap_graph(int dim, int n, real *x, real *width){
 	treey->PrintKey(newNode->key)
 #endif
 
-	RBDelete(treey,newNode);
+	if (newNode0) RBDelete(treey,newNode);
       }
     }
   }
@@ -262,15 +247,38 @@ static SparseMatrix get_overlap_graph(int dim, int n, real *x, real *width){
 /* ============================== label overlap smoother ==================*/
 
 
-void OverlapSmoother_delete(OverlapSmoother sm){
+static void relative_position_constraints_delete(void *d){
+  relative_position_constraints data;
+  if (!d) return;
+  data = (relative_position_constraints) d;
+  if (data->irn) FREE(data->irn);
+  if (data->jcn) FREE(data->jcn);
+  if (data->val) FREE(data->val);
+  /* other stuff inside relative_position_constraints is assed back to the user hence no need to deallocator*/
+  FREE(d);
+}
 
-  StressMajorizationSmoother_delete(sm);
+static relative_position_constraints relative_position_constraints_new(SparseMatrix A_constr, int edge_labeling_scheme, int n_constr_nodes, int *constr_nodes){
+    relative_position_constraints data;
+    assert(A_constr);
+    data = MALLOC(sizeof(struct relative_position_constraints_struct));
+    data->constr_penalty = 1;
+    data->edge_labeling_scheme = edge_labeling_scheme;
+    data->n_constr_nodes = n_constr_nodes;
+    data->constr_nodes = constr_nodes;
+    data->A_constr = A_constr;
+    data->irn = NULL;
+    data->jcn = NULL;
+    data->val = NULL;
 
+    return data;
 }
 
 OverlapSmoother OverlapSmoother_new(SparseMatrix A, int m, 
 				    int dim, real lambda0, real *x, real *width, int include_original_graph, int neighborhood_only, 
-				    real *max_overlap, real *min_overlap, int shrink){
+				    real *max_overlap, real *min_overlap,
+				    int edge_labeling_scheme, int n_constr_nodes, int *constr_nodes, SparseMatrix A_constr, int shrink
+				    ){
   OverlapSmoother sm;
   int i, j, k, *iw, *jw, *id, *jd, jdiag;
   SparseMatrix B;
@@ -278,9 +286,16 @@ OverlapSmoother OverlapSmoother_new(SparseMatrix A, int m,
 
   assert((!A) || SparseMatrix_is_symmetric(A, FALSE));
 
-  assert((!A) || m == A->m);
+  sm = GNEW(struct OverlapSmoother_struct);
+  sm->scheme = SM_SCHEME_NORMAL;
+  if (constr_nodes && n_constr_nodes > 0 && edge_labeling_scheme != ELSCHEME_NONE){
+    sm->scheme = SM_SCHEME_NORMAL_ELABEL;
+    sm->data = relative_position_constraints_new(A_constr, edge_labeling_scheme, n_constr_nodes, constr_nodes);
+    sm->data_deallocator = relative_position_constraints_delete;
+  } else {
+    sm->data = NULL;
+  }
 
-  sm = N_GNEW(1, struct OverlapSmoother_struct);
   lambda = sm->lambda = N_GNEW(m,real);
   for (i = 0; i < m; i++) sm->lambda[i] = lambda0;
   
@@ -344,9 +359,11 @@ OverlapSmoother OverlapSmoother_new(SparseMatrix A, int m,
 	continue;
       }
       if (d[j] > 0){/* those edges that needs expansion */
-	w[j] = 100/d[j]/d[j];
+	w[j] = -100/d[j]/d[j];
+	/*w[j] = 100/d[j]/d[j];*/
       } else {/* those that needs shrinking is set to negative in ideal_distance_avoid_overlap */
-	w[j] = 1/d[j]/d[j];
+	/*w[j] = 1/d[j]/d[j];*/
+	w[j] = -1/d[j]/d[j];
 	d[j] = -d[j];
       }
       dist = d[j];
@@ -366,16 +383,23 @@ OverlapSmoother OverlapSmoother_new(SparseMatrix A, int m,
   return sm;
 }
 
-void OverlapSmoother_smooth(OverlapSmoother sm, int dim, real *x){
+void OverlapSmoother_delete(OverlapSmoother sm){
+
+  StressMajorizationSmoother_delete(sm);
+
+}
+
+real OverlapSmoother_smooth(OverlapSmoother sm, int dim, real *x){
   int maxit_sm = 1;/* only using 1 iteration of stress majorization 
 		      is found to give better results and save time! */
-  StressMajorizationSmoother_smooth(sm, dim, x, maxit_sm);
+  real res = StressMajorizationSmoother_smooth(sm, dim, x, maxit_sm, 0.001);
 #ifdef DEBUG
   {FILE *fp;
   fp = fopen("/tmp/222","w");
   export_embedding(fp, dim, sm->Lwd, x, NULL);
   fclose(fp);}
 #endif
+  return res;
 }
 
 /*================================= end OverlapSmoother =============*/
@@ -417,16 +441,36 @@ static void print_bounding_box(int n, int dim, real *x){
   FREE(xmax);
 }
 
+static int check_convergence(real max_overlap, real res, int has_penalty_terms, real epsilon){
+  if (!has_penalty_terms) return (max_overlap <= 1);
+  return res < epsilon;
+}
 
-void remove_overlap(int dim, SparseMatrix A, int m, real *x, real *label_sizes, int ntry, real initial_scaling, int *flag){
+void remove_overlap(int dim, SparseMatrix A, real *x, real *label_sizes, int ntry, real initial_scaling, 
+		    int edge_labeling_scheme, int n_constr_nodes, int *constr_nodes, SparseMatrix A_constr, int *flag){
+  /* 
+     edge_labeling_scheme: if ELSCHEME_NONE, n_constr_nodes/constr_nodes/A_constr are not used
+
+     n_constr_nodes: number of nodes that has constraints, these are nodes that is
+     .               constrained to be close to the average of its neighbors.
+     constr_nodes: a list of nodes that need to be constrained. If NULL, unused.
+     A_constr: neighbors of node i are in the row i of this matrix. i needs to sit
+     .         in between these neighbors as much as possible. this must not be NULL
+     .         if constr_nodes != NULL.
+
+  */
+
   real lambda = 0.00;
   OverlapSmoother sm;
   int include_original_graph = 0, i;
-  real avg_label_size;
+  real LARGE = 100000;
+  real avg_label_size, res = LARGE;
   real max_overlap = 0, min_overlap = 999;
   int neighborhood_only = TRUE;
+  int has_penalty_terms = FALSE;
+  real epsilon = 0.005;
   int shrink = 0;
- 
+
 #ifdef TIME
   clock_t  cpu;
 #endif
@@ -435,21 +479,19 @@ void remove_overlap(int dim, SparseMatrix A, int m, real *x, real *label_sizes, 
   cpu = clock();
 #endif
 
- if (!label_sizes) return;
-
+  if (!label_sizes) return;
 
   if (initial_scaling < 0) {
     avg_label_size = 0;
-    for (i = 0; i < m; i++) avg_label_size += label_sizes[i*dim]+label_sizes[i*dim+1];
-    /*  for (i = 0; i < m; i++) avg_label_size += 2*MAX(label_sizes[i*dim],label_sizes[i*dim+1]);*/
-    avg_label_size /= m;
+    for (i = 0; i < A->m; i++) avg_label_size += label_sizes[i*dim]+label_sizes[i*dim+1];
+    /*  for (i = 0; i < A->m; i++) avg_label_size += 2*MAX(label_sizes[i*dim],label_sizes[i*dim+1]);*/
+    avg_label_size /= A->m;
     scale_to_edge_length(dim, A, x, -initial_scaling*avg_label_size);
-  }
-  else if (initial_scaling > 0) {
+  } else if (initial_scaling > 0){
     scale_to_edge_length(dim, A, x, initial_scaling);
   }
 
- if (!ntry) return;
+  if (!ntry) return;
 
   *flag = 0;
 
@@ -457,34 +499,58 @@ void remove_overlap(int dim, SparseMatrix A, int m, real *x, real *label_sizes, 
   _statistics[0] = _statistics[1] = 0.;
   {FILE*fp;
   fp = fopen("x1","w");
-  for (i = 0; i < m; i++){
+  for (i = 0; i < A->m; i++){
     fprintf(fp, "%f %f\n",x[i*2],x[i*2+1]);
   }
   fclose(fp);
   }
 #endif
 
+#ifdef ANIMATE
+  {FILE*fp;
+    fp = fopen("/tmp/m","wa");
+    fprintf(fp,"{");
+#endif
 
+  has_penalty_terms = (edge_labeling_scheme != ELSCHEME_NONE && n_constr_nodes > 0);
   for (i = 0; i < ntry; i++){
-    if (Verbose) print_bounding_box(m, dim, x);
-    sm = OverlapSmoother_new(A, m, dim, lambda, x, label_sizes, include_original_graph, neighborhood_only,
-			     &max_overlap, &min_overlap, shrink); 
+    if (Verbose) print_bounding_box(A->m, dim, x);
+    sm = OverlapSmoother_new(A, A->m, dim, lambda, x, label_sizes, include_original_graph, neighborhood_only,
+			     &max_overlap, &min_overlap, edge_labeling_scheme, n_constr_nodes, constr_nodes, A_constr, shrink); 
     if (Verbose) fprintf(stderr, "overlap removal neighbors only?= %d iter -- %d, overlap factor = %g underlap factor = %g\n", neighborhood_only, i, max_overlap - 1, min_overlap);
-    if (max_overlap <= 1){
+    if (check_convergence(max_overlap, res, has_penalty_terms, epsilon)){
+    
       OverlapSmoother_delete(sm);
       if (neighborhood_only == FALSE){
 	break;
       } else {
+	res = LARGE;
 	neighborhood_only = FALSE; shrink = 1;
 	continue;
       }
     }
     
-    OverlapSmoother_smooth(sm, dim, x);
-
-
-
+    res = OverlapSmoother_smooth(sm, dim, x);
+    if (Verbose) fprintf(stderr,"res = %f\n",res);
+#ifdef ANIMATE
+    if (i != 0) fprintf(fp,",");
+    export_embedding(fp, dim, A, x, label_sizes);
+#endif
     OverlapSmoother_delete(sm);
+  }
+  if (Verbose) 
+    fprintf(stderr, "overlap removal neighbors only?= %d iter -- %d, overlap factor = %g underlap factor = %g\n", neighborhood_only, i, max_overlap - 1, min_overlap);
+
+#ifdef ANIMATE
+  fprintf(fp,"}");
+    fclose(fp);
+  }
+#endif
+
+  if (has_penalty_terms){
+    /* now do without penalty */
+    remove_overlap(dim, A, x, label_sizes, ntry, 0.,
+		   ELSCHEME_NONE, 0, NULL, NULL, flag);
   }
 
 #ifdef DEBUG
@@ -493,7 +559,7 @@ void remove_overlap(int dim, SparseMatrix A, int m, real *x, real *label_sizes, 
 
   {FILE*fp;
   fp = fopen("x2","w");
-  for (i = 0; i < m; i++){
+  for (i = 0; i < A->m; i++){
     fprintf(fp, "%f %f\n",x[i*2],x[i*2+1]);
   }
   fclose(fp);
