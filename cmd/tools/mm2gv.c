@@ -15,8 +15,9 @@
 #include "config.h"
 #endif
 
+#define STANDALONE
 #include "cgraph.h"
-#include "arith.h"
+/* #include "arith.h" */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -36,8 +37,6 @@
 #define FREE free
 #define test_flag(a, flag) ((a)&(flag))
 #define real double
-#define NEW(t)       (t*)MALLOC(sizeof(t))
-#define N_NEW(n,t)   (t*)MALLOC((n)*sizeof(t))
 #define BUFS         1024
 
 #ifdef WIN32 //*dependencies
@@ -56,18 +55,6 @@ typedef struct {
 #define ND_id(n)  (((Agnodeinfo_t*)(n->base.data))->id)
 
 static char *cmd;
-
-static real distance(real * x, int dim, int i, int j)
-{
-    int k;
-    real dist = 0.;
-    for (k = 0; k < dim; k++)
-	dist +=
-	    (x[i * dim + k] - x[j * dim + k]) * (x[i * dim + k] -
-						 x[j * dim + k]);
-    dist = sqrt(dist);
-    return dist;
-}
 
 static real Hue2RGB(real v1, real v2, real H)
 {
@@ -243,20 +230,6 @@ SparseMatrix_import_dot(Agraph_t * g, int dim, real ** label_sizes,
     return A;
 }
 #endif
-
-static char *strip_dir(char *s)
-{
-    int i, first = TRUE;
-    for (i = strlen(s); i >= 0; i--) {
-	if (first && s[i] == '.') {	/* get rid of .mtx */
-	    s[i] = '\0';
-	    first = FALSE;
-	}
-	if (s[i] == '/')
-	    return (char *) &(s[i + 1]);
-    }
-    return s;
-}
 
 static Agraph_t *makeDotGraph(SparseMatrix A, char *name, int dim,
 			      real * x, int with_color, int with_label, int with_val)
@@ -495,7 +468,7 @@ int main(int argc, char *argv[])
 	usage(1);
     }
 
-    A = SparseMatrix_to_square_matrix(A);
+    A = SparseMatrix_to_square_matrix(A, BIPARTITE_PATTERN_UNSYM);
 
     if (!A) {
 	fprintf(stderr, "cannot import from file %s\n", pv.infile);
