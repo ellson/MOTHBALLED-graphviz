@@ -15,7 +15,7 @@ Version: @VERSION@
 Release: %{?release}
 
 Group:   Applications/Multimedia
-License: CPL
+License: EPL
 URL:     http://www.graphviz.org/
 Source0: http://www.graphviz.org/pub/@GRAPHVIZ_SOURCES@/graphviz-@VERSION@.tar.gz
 
