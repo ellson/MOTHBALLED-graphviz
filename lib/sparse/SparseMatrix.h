@@ -1,3 +1,4 @@
+/* $Id$Revision: */
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
@@ -11,17 +12,15 @@
  *************************************************************************/
 #ifndef SPARSEMATRIX_H
 #define  SPARSEMATRIX_H
-#define set_flag(a, flag) ((a)=((a)|(flag)))
-#define test_flag(a, flag) ((a)&(flag))
-#define clear_flag(a, flag) ((a) &=(~(flag)))
 
+#include <general.h>
 #include <stdio.h>
-typedef double real;
 
 #define SYMMETRY_EPSILON 0.0000001
 enum {FORMAT_CSC, FORMAT_CSR, FORMAT_COORD};
 enum {UNMASKED = -10};
 enum {MATRIX_PATTERN_SYMMETRIC = 1<<0, MATRIX_SYMMETRIC = 1<<1, MATRIX_SKEW = 1<<2, MATRIX_HERMITIAN = 1<<3, MATRIX_UNDIRECTED = 1<<4};
+enum {BIPARTITE_RECT = 0, BIPARTITE_PATTERN_UNSYM, BIPARTITE_UNSYM, BIPARTITE_ALWAYS};
 
 struct SparseMatrix_struct {
   int m; /* row dimension */
@@ -61,10 +60,11 @@ void SparseMatrix_delete(SparseMatrix A);
 
 SparseMatrix SparseMatrix_add(SparseMatrix A, SparseMatrix B);
 SparseMatrix SparseMatrix_multiply(SparseMatrix A, SparseMatrix B);
+SparseMatrix SparseMatrix_multiply3(SparseMatrix A, SparseMatrix B, SparseMatrix C);
 
 /* For complex matrix:
    if what_to_sum = SUM_REPEATED_REAL_PART, we find entries {i,j,x + i y} and sum the x's if {i,j,Round(y)} are the same
-   if what_to_sum = SUM_REPEATED_REAL_PART, we find entries {i,j,x + i y} and sum the y's if {i,j,Round(x)} are the same
+   if what_to_sum = SUM_REPEATED_IMAGINARY_PART, we find entries {i,j,x + i y} and sum the y's if {i,j,Round(x)} are the same
    For other matrix, what_to_sum = SUM_REPEATED_REAL_PART is the same as what_to_sum = SUM_REPEATED_IMAGINARY_PART
    or what_to_sum = SUM_REPEATED_ALL
 */
@@ -74,6 +74,7 @@ SparseMatrix SparseMatrix_coordinate_form_add_entries(SparseMatrix A, int nentri
 int SparseMatrix_is_symmetric(SparseMatrix A, int test_pattern_symmetry_only);
 SparseMatrix SparseMatrix_transpose(SparseMatrix A);
 SparseMatrix SparseMatrix_symmetrize(SparseMatrix A, int pattern_symmetric_only);
+SparseMatrix SparseMatrix_symmetrize_nodiag(SparseMatrix A, int pattern_symmetric_only);
 void SparseMatrix_multiply_vector(SparseMatrix A, real *v, real **res, int transposed);/* if v = NULL, v is assumed to be {1,1,...,1}*/
 SparseMatrix SparseMatrix_remove_diagonal(SparseMatrix A);
 SparseMatrix SparseMatrix_remove_upper(SparseMatrix A);/* remove diag and upper diag */
@@ -82,6 +83,7 @@ SparseMatrix SparseMatrix_get_real_adjacency_matrix_symmetrized(SparseMatrix A);
 SparseMatrix SparseMatrix_normalize_to_rowsum1(SparseMatrix A);/* for real only! */
 void SparseMatrix_multiply_dense(SparseMatrix A, int ATranspose, real *v, int vTransposed, real **res, int res_transpose, int dim);
 SparseMatrix SparseMatrix_apply_fun(SparseMatrix A, double (*fun)(double x));/* for real only! */
+SparseMatrix SparseMatrix_apply_fun_general(SparseMatrix A, void (*fun)(int i, int j, int n, double *x));/* for real and complex (n=2) */
 SparseMatrix SparseMatrix_copy(SparseMatrix A);
 int SparseMatrix_has_diagonal(SparseMatrix A);
 SparseMatrix SparseMatrix_normalize_by_row(SparseMatrix A);/* divide by max of each row */
@@ -90,14 +92,34 @@ SparseMatrix SparseMatrix_scaled_by_vector(SparseMatrix A, real *v, int apply_to
 SparseMatrix SparseMatrix_multiply_by_scaler(SparseMatrix A, real s);
 SparseMatrix SparseMatrix_make_undirected(SparseMatrix A);/* make it strictly low diag only, and set flag to undirected */
 int SparseMatrix_connectedQ(SparseMatrix A);
-int SparseMatrix_pseudo_diameter_only(SparseMatrix A);
-int SparseMatrix_pseudo_diameter(SparseMatrix A0, int root, int aggressive, int *end1, int *end2, int *connectedQ); /* assume unit edge length, unsymmetric matrix ill be symmetrized */
+real SparseMatrix_pseudo_diameter_only(SparseMatrix A);
+real SparseMatrix_pseudo_diameter_weighted(SparseMatrix A0, int root, int aggressive, int *end1, int *end2, int *connectedQ); /* assume real distances, unsymmetric matrix ill be symmetrized */
+real SparseMatrix_pseudo_diameter_unweighted(SparseMatrix A0, int root, int aggressive, int *end1, int *end2, int *connectedQ); /* assume unit edge length, unsymmetric matrix ill be symmetrized */
 void SparseMatrix_level_sets(SparseMatrix A, int root, int *nlevel, int **levelset_ptr, int **levelset, int **mask, int reintialize_mask);
 void SparseMatrix_weakly_connected_components(SparseMatrix A0, int *ncomp, int **comps, int **comps_ptr);
 void SparseMatrix_decompose_to_supervariables(SparseMatrix A, int *ncluster, int **cluster, int **clusterp);
+SparseMatrix SparseMatrix_get_submatrix(SparseMatrix A, int nrow, int ncol, int *rindices, int *cindices);
+SparseMatrix SparseMatrix_exclude_submatrix(SparseMatrix A, int nrow, int ncol, int *rindices, int *cindices);
 
 SparseMatrix SparseMatrix_get_augmented(SparseMatrix A);
-SparseMatrix SparseMatrix_to_square_matrix(SparseMatrix A);
+
+/* bipartite_options:
+   BIPARTITE_RECT -- turn rectangular matrix into square), 
+   BIPARTITE_PATTERN_UNSYM -- pattern unsummetric as bipartite
+   BIPARTITE_UNSYM -- unsymmetric as square
+   BIPARTITE_ALWAYS -- always as square
+*/
+SparseMatrix SparseMatrix_to_square_matrix(SparseMatrix A, int bipartite_options);
+
+SparseMatrix SparseMatrix_largest_component(SparseMatrix A);
+
+SparseMatrix SparseMatrix_delete_empty_columns(SparseMatrix A, int **new2old, int *nnew, int inplace);
+
+SparseMatrix SparseMatrix_sort(SparseMatrix A);
+
+SparseMatrix SparseMatrix_set_entries_to_real_one(SparseMatrix A);
+
+SparseMatrix SparseMatrix_complement(SparseMatrix A, int undirected);
 
 #define SparseMatrix_set_undirected(A) set_flag((A)->property, MATRIX_UNDIRECTED)
 #define SparseMatrix_set_symmetric(A) set_flag((A)->property, MATRIX_SYMMETRIC)
