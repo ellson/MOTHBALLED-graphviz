@@ -30,10 +30,8 @@
 #include <ctype.h>
 #include <spring_electrical.h>
 #include <overlap.h>
-
-#ifdef DEBUG
-double _statistics[10];
-#endif
+#include <uniform_stress.h>
+#include <stress_model.h>
 
 static void sfdp_init_edge(edge_t * e)
 {
@@ -65,7 +63,6 @@ static void sfdp_init_node_edge(graph_t * g)
 static void sfdp_init_graph(Agraph_t * g)
 {
     int outdim;
-    int temp;
 
     setEdgeType(g, ET_LINE);
     outdim = late_int(g, agfindgraphattr(g, "dimen"), 2, 2);
@@ -86,17 +83,13 @@ static real *getPos(Agraph_t * g, spring_electrical_control ctrl)
     if (agfindnodeattr(g, "pos") == NULL)
 	return pos;
 
-    ctrl->posSet = N_NEW(agnnodes(g), char);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	i = ND_id(n);
 	if (hasPos(n)) {
 	    for (ix = 0; ix < Ndim; ix++) {
 		pos[i * Ndim + ix] = ND_pos(n)[ix];
 	    }
-	    ctrl->posSet[i] = 1;
 	}
-	else
-	    ctrl->posSet[i] = 0;
     }
 
     return pos;
@@ -109,15 +102,40 @@ static void sfdpLayout(graph_t * g, spring_electrical_control ctrl,
     real *pos;
     Agnode_t *n;
     int flag, i;
+    int n_edge_label_nodes = 0, *edge_label_nodes = NULL;
+    SparseMatrix D = NULL;
+    SparseMatrix A;
 
-    SparseMatrix A = makeMatrix(g, Ndim);
-    if (ctrl->overlap >= 0)
-	sizes = getSizes(g, pad);
+    if (ctrl->method == METHOD_SPRING_MAXENT) /* maxent can work with distance matrix */
+	A = makeMatrix(g, Ndim, &D);
+    else
+	A = makeMatrix(g, Ndim, NULL);
+
+    if (ctrl->overlap >= 0) {
+	if (ctrl->edge_labeling_scheme > 0)
+	    sizes = getSizes(g, pad, &n_edge_label_nodes, &edge_label_nodes);
+	else
+	    sizes = getSizes(g, pad, NULL, NULL);
+    }
     else
 	sizes = NULL;
     pos = getPos(g, ctrl);
 
-    multilevel_spring_electrical_embedding(Ndim, A, ctrl, NULL, sizes, pos, &flag);
+    switch (ctrl->method) {
+    case METHOD_SPRING_ELECTRICAL:
+    case METHOD_SPRING_MAXENT:
+	multilevel_spring_electrical_embedding(Ndim, A, D, ctrl, NULL, sizes, pos, n_edge_label_nodes, edge_label_nodes, &flag);
+	break;
+    case METHOD_UNIFORM_STRESS:
+	uniform_stress(Ndim, A, pos, &flag);
+	break;
+    case METHOD_STRESS:{
+	int maxit = 1000;
+	real tol = 0.001;
+	stress_model(Ndim, A, &pos, maxit, tol, &flag);
+	}
+	break;
+    }
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	real *npos = pos + (Ndim * ND_id(n));
@@ -128,8 +146,47 @@ static void sfdpLayout(graph_t * g, spring_electrical_control ctrl,
 
     free(sizes);
     free(pos);
-    free(ctrl->posSet);
     SparseMatrix_delete (A);
+    if (D) SparseMatrix_delete (D);
+    if (edge_label_nodes) FREE(edge_label_nodes);
+}
+
+static int
+late_mode (graph_t* g, Agsym_t* sym, int dflt)
+{
+    char* s;
+    int v;
+    int rv;
+
+    if (!sym) return dflt;
+#ifdef WITH_CGRAPH
+    s = agxget (g, sym);
+#else
+    s = agxget (g, sym->index);
+#endif
+    if (isdigit(*s)) {
+	if ((v = atoi (s)) <= METHOD_UNIFORM_STRESS)
+	    rv = v;
+	else
+	    rv = dflt;
+    }
+    else if (isalpha(*s)) {
+	if (!strcasecmp(s, "spring"))
+	    rv = METHOD_SPRING_ELECTRICAL;
+	else if (!strcasecmp(s, "maxent"))
+	    rv = METHOD_SPRING_MAXENT;
+	else if (!strcasecmp(s, "stress"))
+	    rv = METHOD_STRESS;
+	else if (!strcasecmp(s, "uniform"))
+	    rv = METHOD_UNIFORM_STRESS;
+	else {
+	    agerr (AGWARN, "Unknown value \"%s\" for mode attribute\n", s);
+	    rv = dflt;
+	}
+    }
+    else
+	rv = dflt;
+    return rv;
 }
 
 static int
@@ -242,13 +299,20 @@ tuneControl (graph_t* g, spring_electrical_control ctrl)
     ctrl->multilevels = late_int(g, agfindgraphattr(g, "levels"), INT_MAX, 0);
     ctrl->smoothing = late_smooth(g, agfindgraphattr(g, "smoothing"), SMOOTHING_NONE);
     ctrl->tscheme = late_quadtree_scheme(g, agfindgraphattr(g, "quadtree"), QUAD_TREE_NORMAL);
+    ctrl->method = late_mode(g, agfindgraphattr(g, "quadtree"), METHOD_SPRING_ELECTRICAL);
+    ctrl->rotation = late_double(g, agfindgraphattr(g, "rotation"), 0.0, -MAXDOUBLE);
+    ctrl->edge_labeling_scheme = late_int(g, agfindgraphattr(g, "label_scheme"), 0, 0);
+    if (ctrl->edge_labeling_scheme > 4) {
+	agerr (AGWARN, "label_scheme = %d > 4 : ignoring\n", ctrl->edge_labeling_scheme);
+	ctrl->edge_labeling_scheme = 0;
+    }
 }
 
 void sfdp_layout(graph_t * g)
 {
     int doAdjust;
     adjust_data am;
-	sfdp_init_graph(g);
+    sfdp_init_graph(g);
     doAdjust = (Ndim == 2);
 
     if (agnnodes(g)) {

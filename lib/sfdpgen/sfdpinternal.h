@@ -16,9 +16,5 @@
 
 #include <sfdp.h>
 
-#ifdef DEBUG
-extern double _statistics[10];
-#endif
-
 #endif
  

@@ -22,8 +22,10 @@ struct SingleLinkedList_struct {
 };
 
 SingleLinkedList SingleLinkedList_new(void *data);
+SingleLinkedList SingleLinkedList_new_int(int i);
 void SingleLinkedList_delete(SingleLinkedList head, void (*linklist_deallocator)(void*));
 SingleLinkedList SingleLinkedList_prepend(SingleLinkedList l, void *data);
+SingleLinkedList SingleLinkedList_prepend_int(SingleLinkedList l, int i);
 
 void* SingleLinkedList_get_data(SingleLinkedList l);
 

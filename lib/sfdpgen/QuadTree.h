@@ -15,7 +15,7 @@
 #define QUAD_TREE_H
 
 #include "LinkedList.h"
-#include "sfdpinternal.h"
+/* #include "sfdpinternal.h" */
 #include <stdio.h>
 
 typedef struct QuadTree_struct *QuadTree;
@@ -54,5 +54,10 @@ real point_distance(real *p1, real *p2, int dim);
 void QuadTree_get_supernodes(QuadTree qt, real bh, real *point, int nodeid, int *nsuper, 
 			     int *nsupermax, real **center, real **supernode_wgts, real **distances, real *counts, int *flag);
 
-void QuadTree_get_repulvice_force(QuadTree qt, real *force, real *x, real bh, real p, real KP, real *counts, int *flag);
+void QuadTree_get_repulsive_force(QuadTree qt, real *force, real *x, real bh, real p, real KP, real *counts, int *flag);
+
+/* find the nearest point and put in ymin, index in imin and distance in min */
+void QuadTree_get_nearest(QuadTree qt, real *x, real *ymin, int *imin, real *min, int *flag);
+
+
 #endif

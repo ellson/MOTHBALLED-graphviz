@@ -21,6 +21,7 @@ AM_CPPFLAGS = \
 
 noinst_HEADERS = sfdpinternal.h spring_electrical.h \
 	LinkedList.h sparse_solve.h post_process.h \
+	stress_model.h uniform_stress.h \
 	QuadTree.h Multilevel.h sfdp.h PriorityQueue.h 
 
 if WITH_SFDP
@@ -29,6 +30,7 @@ endif
 
 libsfdpgen_C_la_SOURCES = sfdpinit.c spring_electrical.c \
 	LinkedList.c sparse_solve.c post_process.c \
+	stress_model.c uniform_stress.c \
 	QuadTree.c Multilevel.c PriorityQueue.c
 
 EXTRA_DIST = Makefile.old sfdp.vcproj

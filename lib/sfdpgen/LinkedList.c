@@ -28,6 +28,14 @@ SingleLinkedList SingleLinkedList_new(void *data){
   return head;
 }
 
+SingleLinkedList SingleLinkedList_new_int(int i){
+  int *data;
+  data = malloc(sizeof(int));
+  data[0] = i;
+  return SingleLinkedList_new((void*) data);
+}
+  
+
 void SingleLinkedList_delete(SingleLinkedList head,  void (*linklist_deallocator)(void*)){
   SingleLinkedList next;
 
@@ -46,6 +54,13 @@ SingleLinkedList SingleLinkedList_prepend(SingleLinkedList l, void *data){
   SingleLinkedList head = SingleLinkedList_new(data);
   head->next = l;
   return head;
+}
+
+SingleLinkedList SingleLinkedList_prepend_int(SingleLinkedList l, int i){
+  int *data;
+  data = malloc(sizeof(int));
+  data[0] = i;
+  return SingleLinkedList_prepend(l, (void*) data);
 }
 
 void* SingleLinkedList_get_data(SingleLinkedList l){
