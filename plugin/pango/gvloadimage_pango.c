@@ -30,6 +30,7 @@
     #pragma comment( lib, "pangocairo-1.0.lib" )
     #pragma comment( lib, "cairo.lib" )
     #pragma comment( lib, "gobject-2.0.lib" )
+    #pragma comment( lib, "graph.lib" )
 #endif
 
 
