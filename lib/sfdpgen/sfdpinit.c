@@ -299,7 +299,7 @@ tuneControl (graph_t* g, spring_electrical_control ctrl)
     ctrl->multilevels = late_int(g, agfindgraphattr(g, "levels"), INT_MAX, 0);
     ctrl->smoothing = late_smooth(g, agfindgraphattr(g, "smoothing"), SMOOTHING_NONE);
     ctrl->tscheme = late_quadtree_scheme(g, agfindgraphattr(g, "quadtree"), QUAD_TREE_NORMAL);
-    ctrl->method = late_mode(g, agfindgraphattr(g, "quadtree"), METHOD_SPRING_ELECTRICAL);
+    ctrl->method = late_mode(g, agfindgraphattr(g, "mode"), METHOD_SPRING_ELECTRICAL);
     ctrl->rotation = late_double(g, agfindgraphattr(g, "rotation"), 0.0, -MAXDOUBLE);
     ctrl->edge_labeling_scheme = late_int(g, agfindgraphattr(g, "label_scheme"), 0, 0);
     if (ctrl->edge_labeling_scheme > 4) {
