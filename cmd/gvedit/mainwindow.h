@@ -42,6 +42,7 @@ public:
 
 private slots:
     void slotSettings();
+    void slotRun();
     void slotNew();
     void slotOpen();
     void slotSave();

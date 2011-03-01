@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'settings.ui'
 **
-** Created: Fri Feb 25 14:25:48 2011
+** Created: Tue Mar 1 14:00:08 2011
 **      by: Qt User Interface Compiler version 4.7.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -50,7 +50,7 @@ public:
     QLineEdit *leOutput;
     QPushButton *pbOut;
     QFrame *frame_2;
-    QWidget *widget;
+    QWidget *layoutWidget1;
     QHBoxLayout *horizontalLayout_7;
     QVBoxLayout *verticalLayout_2;
     QHBoxLayout *horizontalLayout_5;
@@ -68,7 +68,7 @@ public:
     QSpacerItem *verticalSpacer;
     QPushButton *pushButton_4;
     QFrame *frame_3;
-    QWidget *layoutWidget1;
+    QWidget *layoutWidget2;
     QVBoxLayout *verticalLayout_4;
     QTextEdit *teAttributes;
     QHBoxLayout *horizontalLayout_10;
@@ -78,7 +78,7 @@ public:
     QPushButton *pbSave;
     QSpacerItem *horizontalSpacer_3;
     QHBoxLayout *horizontalLayout_9;
-    QPushButton *pbCancel;
+    QPushButton *btnCancel;
     QPushButton *btnOK;
 
     void setupUi(QDialog *Dialog)
@@ -178,42 +178,42 @@ public:
         frame_2->setGeometry(QRect(0, 150, 401, 61));
         frame_2->setFrameShape(QFrame::StyledPanel);
         frame_2->setFrameShadow(QFrame::Raised);
-        widget = new QWidget(frame_2);
-        widget->setObjectName(QString::fromUtf8("widget"));
-        widget->setGeometry(QRect(2, 0, 391, 61));
-        horizontalLayout_7 = new QHBoxLayout(widget);
+        layoutWidget1 = new QWidget(frame_2);
+        layoutWidget1->setObjectName(QString::fromUtf8("layoutWidget1"));
+        layoutWidget1->setGeometry(QRect(2, 0, 436, 62));
+        horizontalLayout_7 = new QHBoxLayout(layoutWidget1);
         horizontalLayout_7->setObjectName(QString::fromUtf8("horizontalLayout_7"));
         horizontalLayout_7->setContentsMargins(0, 0, 0, 0);
         verticalLayout_2 = new QVBoxLayout();
         verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
         horizontalLayout_5 = new QHBoxLayout();
         horizontalLayout_5->setObjectName(QString::fromUtf8("horizontalLayout_5"));
-        label_5 = new QLabel(widget);
+        label_5 = new QLabel(layoutWidget1);
         label_5->setObjectName(QString::fromUtf8("label_5"));
 
         horizontalLayout_5->addWidget(label_5);
 
-        cbScope = new QComboBox(widget);
+        cbScope = new QComboBox(layoutWidget1);
         cbScope->setObjectName(QString::fromUtf8("cbScope"));
 
         horizontalLayout_5->addWidget(cbScope);
 
-        label_6 = new QLabel(widget);
+        label_6 = new QLabel(layoutWidget1);
         label_6->setObjectName(QString::fromUtf8("label_6"));
 
         horizontalLayout_5->addWidget(label_6);
 
-        cbNameG = new QComboBox(widget);
+        cbNameG = new QComboBox(layoutWidget1);
         cbNameG->setObjectName(QString::fromUtf8("cbNameG"));
 
         horizontalLayout_5->addWidget(cbNameG);
 
-        cbNameN = new QComboBox(widget);
+        cbNameN = new QComboBox(layoutWidget1);
         cbNameN->setObjectName(QString::fromUtf8("cbNameN"));
 
         horizontalLayout_5->addWidget(cbNameN);
 
-        cbNameE = new QComboBox(widget);
+        cbNameE = new QComboBox(layoutWidget1);
         cbNameE->setObjectName(QString::fromUtf8("cbNameE"));
 
         horizontalLayout_5->addWidget(cbNameE);
@@ -223,14 +223,14 @@ public:
 
         horizontalLayout_6 = new QHBoxLayout();
         horizontalLayout_6->setObjectName(QString::fromUtf8("horizontalLayout_6"));
-        label_7 = new QLabel(widget);
+        label_7 = new QLabel(layoutWidget1);
         label_7->setObjectName(QString::fromUtf8("label_7"));
         label_7->setMinimumSize(QSize(40, 0));
         label_7->setMaximumSize(QSize(47, 16777215));
 
         horizontalLayout_6->addWidget(label_7);
 
-        leValue = new QLineEdit(widget);
+        leValue = new QLineEdit(layoutWidget1);
         leValue->setObjectName(QString::fromUtf8("leValue"));
 
         horizontalLayout_6->addWidget(leValue);
@@ -243,7 +243,7 @@ public:
 
         verticalLayout_3 = new QVBoxLayout();
         verticalLayout_3->setObjectName(QString::fromUtf8("verticalLayout_3"));
-        pbAdd = new QPushButton(widget);
+        pbAdd = new QPushButton(layoutWidget1);
         pbAdd->setObjectName(QString::fromUtf8("pbAdd"));
         pbAdd->setMinimumSize(QSize(75, 0));
 
@@ -253,7 +253,7 @@ public:
 
         verticalLayout_3->addItem(verticalSpacer);
 
-        pushButton_4 = new QPushButton(widget);
+        pushButton_4 = new QPushButton(layoutWidget1);
         pushButton_4->setObjectName(QString::fromUtf8("pushButton_4"));
         pushButton_4->setMinimumSize(QSize(75, 0));
 
@@ -267,13 +267,13 @@ public:
         frame_3->setGeometry(QRect(0, 210, 401, 301));
         frame_3->setFrameShape(QFrame::StyledPanel);
         frame_3->setFrameShadow(QFrame::Raised);
-        layoutWidget1 = new QWidget(frame_3);
-        layoutWidget1->setObjectName(QString::fromUtf8("layoutWidget1"));
-        layoutWidget1->setGeometry(QRect(7, 6, 391, 291));
-        verticalLayout_4 = new QVBoxLayout(layoutWidget1);
+        layoutWidget2 = new QWidget(frame_3);
+        layoutWidget2->setObjectName(QString::fromUtf8("layoutWidget2"));
+        layoutWidget2->setGeometry(QRect(7, 6, 391, 291));
+        verticalLayout_4 = new QVBoxLayout(layoutWidget2);
         verticalLayout_4->setObjectName(QString::fromUtf8("verticalLayout_4"));
         verticalLayout_4->setContentsMargins(0, 0, 0, 0);
-        teAttributes = new QTextEdit(layoutWidget1);
+        teAttributes = new QTextEdit(layoutWidget2);
         teAttributes->setObjectName(QString::fromUtf8("teAttributes"));
 
         verticalLayout_4->addWidget(teAttributes);
@@ -282,21 +282,21 @@ public:
         horizontalLayout_10->setObjectName(QString::fromUtf8("horizontalLayout_10"));
         horizontalLayout_8 = new QHBoxLayout();
         horizontalLayout_8->setObjectName(QString::fromUtf8("horizontalLayout_8"));
-        pbNew = new QPushButton(layoutWidget1);
+        pbNew = new QPushButton(layoutWidget2);
         pbNew->setObjectName(QString::fromUtf8("pbNew"));
         pbNew->setMinimumSize(QSize(40, 0));
         pbNew->setMaximumSize(QSize(40, 16777215));
 
         horizontalLayout_8->addWidget(pbNew);
 
-        pbOpen = new QPushButton(layoutWidget1);
+        pbOpen = new QPushButton(layoutWidget2);
         pbOpen->setObjectName(QString::fromUtf8("pbOpen"));
         pbOpen->setMinimumSize(QSize(40, 0));
         pbOpen->setMaximumSize(QSize(40, 16777215));
 
         horizontalLayout_8->addWidget(pbOpen);
 
-        pbSave = new QPushButton(layoutWidget1);
+        pbSave = new QPushButton(layoutWidget2);
         pbSave->setObjectName(QString::fromUtf8("pbSave"));
         pbSave->setMinimumSize(QSize(40, 0));
         pbSave->setMaximumSize(QSize(40, 16777215));
@@ -312,12 +312,12 @@ public:
 
         horizontalLayout_9 = new QHBoxLayout();
         horizontalLayout_9->setObjectName(QString::fromUtf8("horizontalLayout_9"));
-        pbCancel = new QPushButton(layoutWidget1);
-        pbCancel->setObjectName(QString::fromUtf8("pbCancel"));
+        btnCancel = new QPushButton(layoutWidget2);
+        btnCancel->setObjectName(QString::fromUtf8("btnCancel"));
 
-        horizontalLayout_9->addWidget(pbCancel);
+        horizontalLayout_9->addWidget(btnCancel);
 
-        btnOK = new QPushButton(layoutWidget1);
+        btnOK = new QPushButton(layoutWidget2);
         btnOK->setObjectName(QString::fromUtf8("btnOK"));
 
         horizontalLayout_9->addWidget(btnOK);
@@ -377,7 +377,7 @@ public:
         pbNew->setText(QApplication::translate("Dialog", "clear", 0, QApplication::UnicodeUTF8));
         pbOpen->setText(QApplication::translate("Dialog", "load", 0, QApplication::UnicodeUTF8));
         pbSave->setText(QApplication::translate("Dialog", "save", 0, QApplication::UnicodeUTF8));
-        pbCancel->setText(QApplication::translate("Dialog", "Cancel", 0, QApplication::UnicodeUTF8));
+        btnCancel->setText(QApplication::translate("Dialog", "Cancel", 0, QApplication::UnicodeUTF8));
         btnOK->setText(QApplication::translate("Dialog", "OK", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 

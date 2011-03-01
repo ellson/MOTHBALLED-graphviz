@@ -42,6 +42,8 @@ public:
     ImageViewer* previewFrm;
     CMainWindow* parentFrm;
     void loadPreview(QString fileName);
+    bool firstTime();
+    bool settingsSet;
 protected:
     void closeEvent(QCloseEvent *event);
 

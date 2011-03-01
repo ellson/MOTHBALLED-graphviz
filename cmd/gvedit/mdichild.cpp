@@ -26,6 +26,7 @@ MdiChild::MdiChild()
     preview=true;
     applyCairo=false;
     previewFrm=NULL;
+    settingsSet=false;
 }
 
 void MdiChild::newFile()
@@ -166,5 +167,9 @@ void MdiChild::loadPreview(QString fileName)
     previewFrm->open(fileName);
     previewFrm->show();
 
+}
+bool MdiChild::firstTime()
+{
+    return settingsSet;
 }
 

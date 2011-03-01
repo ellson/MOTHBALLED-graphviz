@@ -196,6 +196,15 @@ void CMainWindow::slotSettings()
     frmSettings->showSettings(activeMdiChild());
 
 }
+void CMainWindow::slotRun()
+{
+    if((activeMdiChild()) && (!activeMdiChild()->firstTime()))
+	frmSettings->runSettings(activeMdiChild());
+    if((activeMdiChild()) && (activeMdiChild()->firstTime()))
+	frmSettings->showSettings(activeMdiChild());
+
+
+}
 
 void CMainWindow::updateFileMenu()
 {
@@ -386,15 +395,15 @@ void CMainWindow::actions()
     connect(aboutQtAct, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
 
-    settingsAct = new QAction(tr("Settings"), this);
+    settingsAct = new QAction(QIcon(":/images/settings.png"),tr("Settings"), this);
     settingsAct->setStatusTip(tr("Show Graphviz Settings"));
     connect(settingsAct, SIGNAL(triggered()), this, SLOT(slotSettings()));
 
 
 
-    layoutAct = new QAction(QIcon(":/images/cut.png"),tr("Layout"), this);
+    layoutAct = new QAction(QIcon(":/images/run.png"),tr("Layout"), this);
     layoutAct->setStatusTip(tr("Layout the active graph"));
-    connect(layoutAct, SIGNAL(triggered()), this, SLOT(slotAbout()));
+    connect(layoutAct, SIGNAL(triggered()), this, SLOT(slotRun()));
 
 
 }

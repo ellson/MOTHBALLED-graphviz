@@ -264,13 +264,13 @@
    <property name="frameShadow">
     <enum>QFrame::Raised</enum>
    </property>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>2</x>
       <y>0</y>
-      <width>391</width>
-      <height>61</height>
+      <width>436</width>
+      <height>62</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_7">
@@ -503,7 +503,7 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_9">
          <item>
-          <widget class="QPushButton" name="pbCancel">
+          <widget class="QPushButton" name="btnCancel">
            <property name="text">
             <string>Cancel</string>
            </property>

@@ -74,11 +74,30 @@ QString stripFileExtension(QString fileName)
 
 char* graph_reader( char * str, int num, FILE * stream ) //helper function to load / parse graphs from tstring
 {
+    if (num==0)
+	return str;
+    char bf[36000];
+    char* ptr;
+    int l=0;
     CFrmSettings* s=reinterpret_cast<CFrmSettings*>(stream); //as ugly as it gets :)
-    if (s->cur >= strlen(s->graphData.toUtf8().constData()))
+    if(s->cur >=strlen(s->graphData.toUtf8().constData()))
 	return NULL;
-    strcpy(str,(char*)s->graphData.mid(s->cur,num).toUtf8().constData());
-    s->cur=s->cur+num;
+    strcpy(bf,(char*)s->graphData.mid(s->cur,num).toUtf8().constData());
+    ptr=strchr(bf,'\n');
+    if((ptr) && ((ptr - bf) < num))
+    {
+	l=ptr - bf;
+    }
+    else
+    {
+	if(strlen(bf) > (num-1))
+	    l=num-1;
+	else
+	    l=strlen(bf);
+    }
+    strncpy(str,bf,l);
+    str[l]=(char*)0;
+    s->cur=s->cur+l+1;
     return str;
 
 }
@@ -98,6 +117,7 @@ CFrmSettings::CFrmSettings()
     connect(WIDGET(QPushButton,pbOpen),SIGNAL(clicked()),this,SLOT(openSlot()));
     connect(WIDGET(QPushButton,pbSave),SIGNAL(clicked()),this,SLOT(saveSlot()));
     connect(WIDGET(QPushButton,btnOK),SIGNAL(clicked()),this,SLOT(okSlot()));
+    connect(WIDGET(QPushButton,btnCancel),SIGNAL(clicked()),this,SLOT(cancelSlot()));
     connect(WIDGET(QPushButton,pbOut),SIGNAL(clicked()),this,SLOT(outputSlot()));
     connect(WIDGET(QComboBox,cbScope),SIGNAL(currentIndexChanged(int)),this,SLOT(scopeChangedSlot(int)));
 
@@ -155,7 +175,10 @@ void CFrmSettings::addSlot()
     }
 }
 void CFrmSettings::helpSlot(){}
-void CFrmSettings::cancelSlot(){}
+void CFrmSettings::cancelSlot()
+{
+    this->reject();
+}
 void CFrmSettings::okSlot()
 {
     saveContent();
@@ -243,6 +266,7 @@ bool CFrmSettings::createLayout()
        * If known, might want to use real name
        */
     agsetfile("<gvedit>");
+    cur=0;
     graph=agread_usergets(reinterpret_cast<FILE*>(this),(gets_f)graph_reader);
     if(!graph)
 	return false;
@@ -306,6 +330,7 @@ int CFrmSettings::drawGraph()
 {
 	    createLayout();
 	    renderLayout();
+	    getActiveWindow()->settingsSet=false;
 	    return QDialog::Accepted;
 
 }

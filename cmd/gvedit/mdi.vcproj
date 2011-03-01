@@ -548,7 +548,7 @@
 						Name="VCCustomBuildTool"
 						Description="Rcc&apos;ing $(InputFileName)..."
 						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;$(InputName)&quot; -no-compress &quot;$(InputPath)&quot; -o .\GeneratedFiles\qrc_$(InputName).cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(InputPath);.\images\copy.png;.\images\cut.png;.\images\new.png;.\images\open.png;.\images\paste.png;.\images\save.png"
+						AdditionalDependencies="$(InputPath);.\images\copy.png;.\images\cut.png;.\images\new.png;.\images\open.png;.\images\paste.png;.\images\save.png;.\images\run.png;.\images\settings.png"
 						Outputs=".\GeneratedFiles\qrc_$(InputName).cpp"
 					/>
 				</FileConfiguration>
@@ -559,7 +559,7 @@
 						Name="VCCustomBuildTool"
 						Description="Rcc&apos;ing $(InputFileName)..."
 						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;$(InputName)&quot; -no-compress &quot;$(InputPath)&quot; -o .\GeneratedFiles\qrc_$(InputName).cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(InputPath);.\images\copy.png;.\images\cut.png;.\images\new.png;.\images\open.png;.\images\paste.png;.\images\save.png"
+						AdditionalDependencies="$(InputPath);.\images\copy.png;.\images\cut.png;.\images\new.png;.\images\open.png;.\images\paste.png;.\images\save.png;.\images\run.png;.\images\settings.png"
 						Outputs=".\GeneratedFiles\qrc_$(InputName).cpp"
 					/>
 				</FileConfiguration>
@@ -625,7 +625,47 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\images\run.png"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath=".\images\save.png"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\images\settings.png"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -659,7 +699,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Uic&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;.\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;"
+						CommandLine="&quot;$(QTDIR)\bin\uic.exe&quot; -o &quot;.\ui_$(InputName).h&quot; &quot;$(InputPath)&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="$(QTDIR)\bin\uic.exe"
 						Outputs="&quot;.\ui_$(InputName).h&quot;"
 					/>
