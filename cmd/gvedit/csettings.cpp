@@ -76,28 +76,21 @@ char* graph_reader( char * str, int num, FILE * stream ) //helper function to lo
 {
     if (num==0)
 	return str;
-    char bf[36000];
     char* ptr;
     int l=0;
     CFrmSettings* s=reinterpret_cast<CFrmSettings*>(stream); //as ugly as it gets :)
     if(s->cur >=strlen(s->graphData.toUtf8().constData()))
 	return NULL;
-    strcpy(bf,(char*)s->graphData.mid(s->cur,num).toUtf8().constData());
-    ptr=strchr(bf,'\n');
-    if((ptr) && ((ptr - bf) < num))
-    {
-	l=ptr - bf;
+    strcpy(str,(char*)s->graphData.mid(s->cur,num-1).toUtf8().constData());
+    ptr = strchr(str,'\n');
+    if (ptr) {
+	ptr++;
+	*ptr = '\0';
+	l = ptr - str;
     }
     else
-    {
-	if(strlen(bf) > (num-1))
-	    l=num-1;
-	else
-	    l=strlen(bf);
-    }
-    strncpy(str,bf,l);
-    str[l]=(char*)0;
-    s->cur=s->cur+l+1;
+	l=strlen (str);
+    s->cur += l;
     return str;
 
 }
@@ -105,8 +98,6 @@ char* graph_reader( char * str, int num, FILE * stream ) //helper function to lo
 
 CFrmSettings::CFrmSettings()
 {
-
-    aginit();
     this->gvc=gvContext();
     Ui_Dialog tempDia;
     tempDia.setupUi(this);
