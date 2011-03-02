@@ -125,16 +125,8 @@ void CMainWindow::slotNew()
     child->show();
 }
 
-void CMainWindow::slotOpen()
+void CMainWindow::addFile (QString fileName)
 {
-    QStringList filters;
-     filters << "*.cpp" << "*.cxx" << "*.cc";
-
-    QFileDialog fd;
-//    fd.setProxyModel(new FileFilterProxyModel());
-    fd.setNameFilter("XML (*.xml)");
-   QString fileName =fd.getOpenFileName(this);
-//    QFileDialog::getOpenFileName(this);
     if (!fileName.isEmpty()) {
         QMdiSubWindow *existing = findMdiChild(fileName);
         if (existing) {
@@ -150,6 +142,20 @@ void CMainWindow::slotOpen()
             child->close();
         }
     }
+}
+
+void CMainWindow::slotOpen()
+{
+    QStringList filters;
+     filters << "*.cpp" << "*.cxx" << "*.cc";
+
+    QFileDialog fd;
+//    fd.setProxyModel(new FileFilterProxyModel());
+    fd.setNameFilter("XML (*.xml)");
+   QString fileName =fd.getOpenFileName(this);
+//    QFileDialog::getOpenFileName(this);
+
+    addFile (fileName);
 }
 
 void CMainWindow::slotSave()

@@ -30,12 +30,64 @@ __declspec(dllimport) boolean MemTest;
     #pragma comment( lib, "gvc.lib" )
 #endif
 
+static char* cmd;
+
+extern int Verbose;
+
+static char *useString =
+    "Usage: gvedit [-v?] <files>\n\
+  -v - verbose\n\
+  -? - print usage\n";
+
+static void usage(int v)
+{
+    printf(useString);
+    exit(v);
+}
+
+static char **parseArgs(int argc, char *argv[])
+{
+    int c;
+
+    cmd = argv[0];
+    while ((c = getopt(argc, argv, ":v?")) != -1) {
+	switch (c) {
+	case 'v':
+	    Verbose = 1;
+	    break;
+	case '?':
+	    if (optopt == '?')
+		usage(0);
+	    else
+		fprintf(stderr,
+			"%s : option -%c unrecognized - ignored\n",
+			cmd, optopt);
+	    break;
+	}
+    }
+
+    argv += optind;
+    argc -= optind;
+
+    if (argc)
+	return argv;
+    else
+	return NULL;
+}
+
 int main(int argc, char *argv[])
 {
+
     Q_INIT_RESOURCE(mdi);
 
     QApplication app(argc, argv);
+    char** files = parseArgs (argc, argv);
     CMainWindow mainWin;
+    if (files)
+	while (*files) {
+	    mainWin.addFile (QString(*files));
+	    files++;
+	}
     mainWin.show();
     return app.exec();
 }
