@@ -20,6 +20,11 @@
 #include "string.h"
 #define WIDGET(t,f)  ((t*)findChild<t *>(#f))
 
+typedef struct {
+    const char* data;
+    int len;
+    int cur;
+} rdr_t;
 
 bool loadAttrs(const QString fileName,QComboBox* cbNameG,QComboBox* cbNameN,QComboBox* cbNameE)
 {
@@ -28,7 +33,6 @@ bool loadAttrs(const QString fileName,QComboBox* cbNameG,QComboBox* cbNameN,QCom
     if ( file.open(QIODevice::ReadOnly ) ) {
         QTextStream stream( &file );
         QString line;
-        int i = 1;
         while ( !stream.atEnd() ) {
             line = stream.readLine(); // line of text excluding '\n'
 	    if(line.left(1)==":")
@@ -76,23 +80,23 @@ char* graph_reader( char * str, int num, FILE * stream ) //helper function to lo
 {
     if (num==0)
 	return str;
-    char* ptr;
-    int l=0;
-    CFrmSettings* s=reinterpret_cast<CFrmSettings*>(stream); //as ugly as it gets :)
-    if(s->cur >=strlen(s->graphData.toUtf8().constData()))
+    const char* ptr;
+    char* optr;
+    char c;
+    int l;
+    rdr_t* s = (rdr_t*)stream;
+    if(s->cur >= s->len)
 	return NULL;
-    strcpy(str,(char*)s->graphData.mid(s->cur,num-1).toUtf8().constData());
-    ptr = strchr(str,'\n');
-    if (ptr) {
-	ptr++;
-	*ptr = '\0';
-	l = ptr - str;
-    }
-    else
-	l=strlen (str);
+    l = 0;
+    ptr = s->data + s->cur;
+    optr = str;
+    do {
+	*optr++ = c = *ptr++;
+	l++;
+    } while (c && (c != '\n') && (l < num-1));
+    *optr = '\0';
     s->cur += l;
     return str;
-
 }
 
 
@@ -238,7 +242,6 @@ QString CFrmSettings::buildOutputFile(QString _fileName)
 void CFrmSettings::addAttribute(QString _scope,QString _name,QString _value){}
 bool CFrmSettings::loadGraph(MdiChild* m)
 {
-    cur=0;
     if(graph)
 	agclose(graph);
     graphData.clear();
@@ -249,6 +252,7 @@ bool CFrmSettings::loadGraph(MdiChild* m)
 }
 bool CFrmSettings::createLayout()
 {
+    rdr_t rdr;
     //first attach attributes to graph
     int _pos=graphData.indexOf(tr("{"));
     graphData.replace(_pos,1,"{"+WIDGET(QTextEdit,teAttributes)->toPlainText());
@@ -257,8 +261,12 @@ bool CFrmSettings::createLayout()
        * If known, might want to use real name
        */
     agsetfile("<gvedit>");
-    cur=0;
-    graph=agread_usergets(reinterpret_cast<FILE*>(this),(gets_f)graph_reader);
+    QByteArray bytes = graphData.toUtf8();
+    rdr.data = bytes.constData();
+    rdr.len = strlen(rdr.data);
+    rdr.cur = 0;
+    graph = agread_usergets((FILE*)&rdr,(gets_f)graph_reader);
+    /* graph=agread_usergets(reinterpret_cast<FILE*>(this),(gets_f)graph_reader); */
     if(!graph)
 	return false;
     Agraph_t* G=this->graph;

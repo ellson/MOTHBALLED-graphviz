@@ -26,8 +26,6 @@ class MdiChild;
 
 #include "gvc.h"
 
-
-
 class CFrmSettings : public QDialog
 {
         Q_OBJECT
@@ -35,7 +33,6 @@ public:
     CFrmSettings();
     int runSettings(MdiChild* m);
     int showSettings(MdiChild* m);
-    int cur;
     int drawGraph();
     MdiChild* getActiveWindow();
     QString graphData;
@@ -73,8 +70,6 @@ private:
     bool loadGraph(MdiChild* m);
     bool createLayout();
     bool renderLayout();
-
-
 };
 
 #endif
