@@ -131,11 +131,11 @@ int gvRender(GVC_t *gvc, graph_t *g, const char *format, FILE *out)
     job->output_file = out;
     if (out == NULL)
 	job->flags |= OUTPUT_NOT_REQUIRED;
-    gvRenderJobs(gvc, g);
+    rc = gvRenderJobs(gvc, g);
     gvrender_end_job(job);
     gvjobs_delete(gvc);
 
-    return 0;
+    return rc;
 }
 
 /* Render layout in a specified format to an open FILE */
@@ -161,12 +161,12 @@ int gvRenderFilename(GVC_t *gvc, graph_t *g, const char *format, const char *fil
 	return -1;
     }
     gvjobs_output_filename(gvc, filename);
-    gvRenderJobs(gvc, g);
+    rc = gvRenderJobs(gvc, g);
     gvrender_end_job(job);
     gvdevice_finalize(job);
     gvjobs_delete(gvc);
 
-    return 0;
+    return rc;
 }
 
 /* Render layout in a specified format to an external context */
@@ -192,16 +192,15 @@ int gvRenderContext(GVC_t *gvc, graph_t *g, const char *format, void *context)
 		return -1;
     }
 	
-	job->context = context;
-	job->external_context = TRUE;
+    job->context = context;
+    job->external_context = TRUE;
 	
-    gvRenderJobs(gvc, g);
+    rc = gvRenderJobs(gvc, g);
     gvrender_end_job(job);
     gvdevice_finalize(job);
-    
-	gvjobs_delete(gvc);
+    gvjobs_delete(gvc);
 	
-    return 0;
+    return rc;
 }
 
 /* Render layout in a specified format to a malloc'ed string */
@@ -239,14 +238,16 @@ int gvRenderData(GVC_t *gvc, graph_t *g, const char *format, char **result, unsi
     job->output_data_allocated = OUTPUT_DATA_INITIAL_ALLOCATION;
     job->output_data_position = 0;
 
-    gvRenderJobs(gvc, g);
+    rc = gvRenderJobs(gvc, g);
     gvrender_end_job(job);
 
-    *result = job->output_data;
-    *length = job->output_data_position;
+    if (rc == 0) {
+	*result = job->output_data;
+	*length = job->output_data_position;
+    }
     gvjobs_delete(gvc);
 
-    return 0;
+    return rc;
 }
 
 
