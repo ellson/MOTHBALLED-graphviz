@@ -504,6 +504,13 @@ int agerrors(void)
     return MAX(agmaxerr, AG.syntax_errors);
 }
 
+int agreseterrors(void)
+{
+    int rc = MAX(agmaxerr, AG.syntax_errors);
+    agmaxerr = 0;
+    return rc;
+}
+
 char *aglasterr()
 {
     long endpos;

@@ -170,6 +170,7 @@ extern "C" {
     extern int agputc(int c, FILE *fp);
     extern int agwrite(Agraph_t *, FILE *);
     extern int agerrors(void);
+    extern int agreseterrors(void);
     extern Agraph_t *agprotograph(void);
     extern Agnode_t *agprotonode(Agraph_t *);
     extern Agedge_t *agprotoedge(Agraph_t *);
