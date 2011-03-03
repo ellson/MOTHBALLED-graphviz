@@ -3223,19 +3223,20 @@ AC_CONFIG_FILES(Makefile
 	cmd/dot/Makefile
 	cmd/tools/Makefile
 	cmd/gvpr/Makefile
-        cmd/lefty/ws/x11/libfilereq/Makefile
-        cmd/lefty/ws/x11/Makefile
-        cmd/lefty/ws/mswin32/Makefile
-        cmd/lefty/ws/Makefile
-        cmd/lefty/os/unix/Makefile
-        cmd/lefty/os/mswin32/Makefile
-        cmd/lefty/os/Makefile
-        cmd/lefty/dot2l/Makefile
-        cmd/lefty/examples/Makefile
-        cmd/lefty/Makefile
-        cmd/lneato/Makefile
-        cmd/dotty/Makefile
-        cmd/smyrna/Makefile
+    cmd/lefty/ws/x11/libfilereq/Makefile
+    cmd/lefty/ws/x11/Makefile
+    cmd/lefty/ws/mswin32/Makefile
+    cmd/lefty/ws/Makefile
+    cmd/lefty/os/unix/Makefile
+    cmd/lefty/os/mswin32/Makefile
+    cmd/lefty/os/Makefile
+    cmd/lefty/dot2l/Makefile
+    cmd/lefty/examples/Makefile
+    cmd/lefty/Makefile
+    cmd/lneato/Makefile
+    cmd/dotty/Makefile
+    cmd/smyrna/Makefile
+    cmd/gvmap/Makefile
 	tclpkg/Makefile
 	tclpkg/tclstubs/Makefile
 	tclpkg/tkstubs/Makefile
@@ -3323,6 +3324,7 @@ echo "  fdp:           Yes (always enabled)"
 echo "  circo:         Yes (always enabled)"
 echo "  twopi:         Yes (always enabled)"
 echo "  gvpr:          Yes (always enabled)"
+echo "  gvmap:         Yes (always enabled)"
 echo "  lefty:         $use_lefty"
 echo "  smyrna:        $use_smyrna"
 echo ""
