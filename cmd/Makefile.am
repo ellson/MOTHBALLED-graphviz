@@ -1,6 +1,6 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = dot tools gvpr lefty lneato dotty smyrna
+SUBDIRS = dot tools gvpr lefty lneato dotty smyrna gvmap
 
 EXTRA_DIST = Makefile.old
