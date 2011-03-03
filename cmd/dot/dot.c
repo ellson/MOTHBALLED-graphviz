@@ -176,6 +176,7 @@ static graph_t *create_test_graph(void)
 int main(int argc, char **argv)
 {
     graph_t *prev = NULL;
+    int rc = 0;
 #ifndef WITH_CGRAPH
 #endif /* WITH_CGRAPH */
 
@@ -217,9 +218,10 @@ int main(int argc, char **argv)
 	    }
 	    gvLayoutJobs(Gvc, G);  /* take layout engine from command line */
 	    gvRenderJobs(Gvc, G);
+	    rc = MAX(rc,agreseterrors());
 	    prev = G;
 	}
     }
     gvFinalize(Gvc);
-    return (gvFreeContext(Gvc));
+    return (MAX(rv,gvFreeContext(Gvc));
 }
