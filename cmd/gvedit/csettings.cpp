@@ -332,12 +332,16 @@ void CFrmSettings::saveContent()
 }
 int CFrmSettings::drawGraph()
 {
+    int rc;
     if (createLayout() && renderLayout()) {
 	getActiveWindow()->settingsSet=false;
-	return QDialog::Accepted;
+	rc = QDialog::Accepted;
     }
     else
-	return QDialog::Accepted;
+	rc = QDialog::Accepted;
+    agreseterrors ();
+
+    return rc;
 	/* return QDialog::Rejected; */
 }
 
