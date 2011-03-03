@@ -223,5 +223,5 @@ int main(int argc, char **argv)
 	}
     }
     gvFinalize(Gvc);
-    return (MAX(rv,gvFreeContext(Gvc));
+    return (MAX(rc,gvFreeContext(Gvc)));
 }
