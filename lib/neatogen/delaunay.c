@@ -136,9 +136,18 @@ destroy (GtsVertex* v)
 }
 
 /* tri:
+ * Main entry point to using GTS for triangulation.
+ * Input is npt points with x and y coordinates stored either separately
+ * in x[] and y[] (sepArr != 0) or consecutively in x[] (sepArr == 0).
+ * Optionally, the input can include nsegs line segments, whose endpoint
+ * indices are supplied in segs[2*i] and segs[2*i+1] yielding a constrained
+ * triangulation.
+ *
+ * The return value is the corresponding gts surface, which can be queries for
+ * the triangles and line segments composing the triangulation.
  */
 static GtsSurface*
-tri(double *x, double *y, int npt, int *segs, int nsegs)
+tri(double *x, double *y, int npt, int *segs, int nsegs, int sepArr)
 {
     int i;
     GtsSurface *surface;
@@ -150,11 +159,21 @@ tri(double *x, double *y, int npt, int *segs, int nsegs)
     GtsVertexClass *vcl = (GtsVertexClass *) g_vertex_class();
     GtsEdgeClass *ecl = GTS_EDGE_CLASS (gts_constraint_class ());
 
-    for (i = 0; i < npt; i++) {
-	GVertex *p = (GVertex *) gts_vertex_new(vcl, x[i], y[i], 0);
-	p->idx = i;
-	vertices[i] = p;
+    if (sepArr) {
+	for (i = 0; i < npt; i++) {
+	    GVertex *p = (GVertex *) gts_vertex_new(vcl, x[i], y[i], 0);
+	    p->idx = i;
+	    vertices[i] = p;
+	}
     }
+    else {
+	for (i = 0; i < npt; i++) {
+	    GVertex *p = (GVertex *) gts_vertex_new(vcl, x[2*i], x[2*i+1], 0);
+	    p->idx = i;
+	    vertices[i] = p;
+	}
+    }
+
     /* N.B. Edges need to be created here, presumably before the
      * the vertices are added to the face. In particular, they cannot
      * be added created and added vi gts_delaunay_add_constraint() below.
@@ -250,7 +269,7 @@ static void add_edge (GtsSegment * e, v_data* delaunay)
 v_data *delaunay_triangulation(double *x, double *y, int n)
 {
     v_data *delaunay;
-    GtsSurface* s = tri(x, y, n, NULL, 0);
+    GtsSurface* s = tri(x, y, n, NULL, 0, 1);
     int i, nedges;
     int* edges;
     estats stats;
@@ -329,7 +348,7 @@ vcmp (int* a, int* b)
  */
 int *delaunay_tri(double *x, double *y, int n, int* pnedges)
 {
-    GtsSurface* s = tri(x, y, n, NULL, 0);
+    GtsSurface* s = tri(x, y, n, NULL, 0, 1);
     int nedges;
     int* edges;
     estats stats;
@@ -424,10 +443,29 @@ static void addFace (GFace* f, fstate* es)
 	neigh[i] = -1;
 }
 
+static void addTri (GFace* f, fstate* es)
+{
+    int myid = f->idx;
+    int* ip = es->faces + 3*myid;
+    GtsVertex *v1, *v2, *v3;
+
+    gts_triangle_vertices (&f->v.triangle, &v1, &v2, &v3);
+    *ip++ = ((GVertex*)(v1))->idx;
+    *ip++ = ((GVertex*)(v2))->idx;
+    *ip++ = ((GVertex*)(v3))->idx;
+}
+
+/* mkSurface:
+ * Given n points whose coordinates are in x[] and y[], and nsegs line
+ * segments whose end point indices are given in segs, return a surface
+ * corresponding the constrained Delaunay triangulation.
+ * The surface records the line segments, the triangles, and the neighboring
+ * triangles.
+ */
 surface_t* 
 mkSurface (double *x, double *y, int n, int* segs, int nsegs)
 {
-    GtsSurface* s = tri(x, y, n, segs, nsegs);
+    GtsSurface* s = tri(x, y, n, segs, nsegs, 1);
     estats stats;
     estate state;
     fstate statf;
@@ -469,15 +507,33 @@ mkSurface (double *x, double *y, int n, int* segs, int nsegs)
     return sf;
 }
 
+/* get_triangles:
+ * Given n points whose coordinates are stored as (x[2*i],x[2*i+1]),
+ * compute a Delaunay triangulation of the points.
+ * The number of triangles in the triangulation is returned in tris.
+ * The return value t is an array of 3*(*tris) integers,
+ * with triangle i having points whose indices are t[3*i], t[3*i+1] and t[3*i+2].
+ */
 int* 
 get_triangles (double *x, int n, int* tris)
 {
-    int* trilist = NULL;
+    GtsSurface* s;
+    int nfaces = 0;
+    fstate statf;
 
     if (n <= 2) return NULL;
-    agerr (AGERR, "get_triangles not yet implemented using GTS library\n");
 
-    return trilist;
+    s = tri(x, NULL, n, NULL, 0, 0);
+    if (!s) return NULL;
+
+    gts_surface_foreach_face (s, (GtsFunc) cntFace, &nfaces);
+    statf.faces = N_GNEW(3 * nfaces, int);
+    gts_surface_foreach_face (s, (GtsFunc) addTri, &statf);
+
+    gts_object_destroy (GTS_OBJECT (s));
+
+    *tris = nfaces;
+    return statf.faces;
 }
 
 void 
