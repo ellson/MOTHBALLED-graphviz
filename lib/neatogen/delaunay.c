@@ -547,11 +547,13 @@ freeSurface (surface_t* s)
 #define TRILIBRARY
 #include "triangle.c"
 #include "assert.h"
+#include "general.h"
 
 int*
 get_triangles (double *x, int n, int* tris)
 {
     struct triangulateio in, mid, vorout;
+    int i;
 
     if (n <= 2) return NULL;
 

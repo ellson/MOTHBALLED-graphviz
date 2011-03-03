@@ -38,23 +38,9 @@
 #ifdef STANDALONE
 #define MALLOC malloc
 #define REALLOC realloc
-#else
-#define MALLOC gmalloc
-#define REALLOC grealloc
-#endif
-#define FREE free
-#define MEMCPY memcpy
 
-#ifdef STANDALONE
 #define N_NEW(n,t)   (t*)malloc((n)*sizeof(t))
 #define NEW(t)       (t*)malloc(sizeof(t))
-#endif
-
-#ifndef DEBUG
-#define NDEBUG /* switch off assert*/
-#endif
-
-#ifdef STANDALONE
 #define MAX(a,b) ((a)>(b)?(a):b)
 #define MIN(a,b) ((a)<(b)?(a):b)
 #define ABS(a) (((a)>0)?(a):(-(a)))
@@ -69,22 +55,35 @@
 #endif
 #define FALSE 0
 
+#define MAXINT 1<<30
+#define PI 3.14159
+
+#define POINTS(inch) 72*(inch)
+
+typedef unsigned int boolean;
+
 extern int Verbose;
+
+#else
+#define MALLOC gmalloc
+#define REALLOC grealloc
 #endif    /* STANDALONE */
+
+#define FREE free
+#define MEMCPY memcpy
+
+#ifndef DEBUG
+#define NDEBUG /* switch off assert*/
+#endif
 
 #ifdef DEBUG
 extern double _statistics[10];
 #endif
 
-int irand(int n);
-real drand();
-int *random_permutation(int n);/* random permutation of 0 to n-1 */
+extern int irand(int n);
+extern real drand(void);
+extern int *random_permutation(int n);/* random permutation of 0 to n-1 */
 
-#ifdef STANDALONE
-#define MAXINT 1<<30
-#endif
-
-#define PI 3.14159
 
 real* vector_subtract_to(int n, real *x, real *y);
 
@@ -111,12 +110,6 @@ void vector_sort_int(int n, int *v, int ascending);
 void vector_print(char *s, int n, real *x);
 
 #define MACHINEACC 1.0e-16
-
-#ifdef STANDALONE
-#define POINTS(inch) 72*(inch)
-
-typedef unsigned int boolean;
-#endif    /* STANDALONE */
 
 int excute_system_command3(char *s1, char *s2, char *s3);
 int excute_system_command(char *s1, char *s2);

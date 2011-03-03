@@ -1828,7 +1828,7 @@ int make_map_internal(int exclude_random, int include_OK_points,
     for (i = 0; i < *nrandom; i++){
 
       for (j = 0; j < dim2; j++){
-	point[j] = xmin[j] + (xmax[j] - xmin[j])*drand(0);
+	point[j] = xmin[j] + (xmax[j] - xmin[j])*drand();
       }
       
       QuadTree_get_nearest(qt, point, ymin, &imin, &min, flag);
@@ -2216,7 +2216,7 @@ int make_map_from_rectangle_groups(int exclude_random, int include_OK_points,
 	add_point(&N, igrp, &X, &nmax, point, &groups);
 	for (k = 0; k < nadded[0] - 1; k++){
 	  point[0] += h[0];
-	  point[1] = p1 + (0.5-drand(0))*delta[1];
+	  point[1] = p1 + (0.5-drand())*delta[1];
 	  add_point(&N, igrp, &X, &nmax, point, &groups);
 	}
 	
@@ -2226,7 +2226,7 @@ int make_map_from_rectangle_groups(int exclude_random, int include_OK_points,
 	add_point(&N, igrp, &X, &nmax, point, &groups);
 	for (k = 0; k < nadded[0] - 1; k++){
 	  point[0] -= h[0];
-	  point[1] = p1 + (0.5-drand(0))*delta[1];
+	  point[1] = p1 + (0.5-drand())*delta[1];
 	  add_point(&N, igrp, &X, &nmax, point, &groups);
 	}
       }
@@ -2238,7 +2238,7 @@ int make_map_from_rectangle_groups(int exclude_random, int include_OK_points,
 	point[1] = x[i*dim+1] - sizes[i*dim + 1]/2;
 	add_point(&N, igrp, &X, &nmax, point, &groups);
 	for (k = 0; k < nadded[1] - 1; k++){
-	  point[0] = p0 + (0.5-drand(0))*delta[0];
+	  point[0] = p0 + (0.5-drand())*delta[0];
 	  point[1] += h[1];
 	  add_point(&N, igrp, &X, &nmax, point, &groups);
 	}
@@ -2248,7 +2248,7 @@ int make_map_from_rectangle_groups(int exclude_random, int include_OK_points,
 	point[1] = x[i*dim+1] + sizes[i*dim + 1]/2;
 	add_point(&N, igrp, &X, &nmax, point, &groups);
 	for (k = 0; k < nadded[1] - 1; k++){
-	  point[0] = p0 + (0.5-drand(0))*delta[0];
+	  point[0] = p0 + (0.5-drand())*delta[0];
 	  point[1] -= h[1];
 	  add_point(&N, igrp, &X, &nmax, point, &groups);
 	}	

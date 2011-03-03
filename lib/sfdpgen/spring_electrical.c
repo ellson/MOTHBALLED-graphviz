@@ -26,6 +26,8 @@
 #include <string.h>
 #include <time.h>
 
+#define PI M_PI
+
 spring_electrical_control spring_electrical_control_new(){
   spring_electrical_control ctrl;
   ctrl = MALLOC(sizeof(struct spring_electrical_control_struct));

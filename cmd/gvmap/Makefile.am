@@ -32,7 +32,7 @@ gvmap_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(top_builddir)/lib/common/libcommon_C.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
-	$(GTS_LIBS)
+	$(GTS_LIBS) -lm
 
 gvmap.1.pdf: $(srcdir)/gvmap.1
 	- @GROFF@ -Tps -man $(srcdir)/gvmap.1 | @PS2PDF@ - - >gvmap.1.pdf
