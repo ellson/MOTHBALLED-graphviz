@@ -1,0 +1,32 @@
+.de TQ
+.  br
+.  ns
+.  TP \\$1
+..
+.TH GVMAP 1 "3 March 2011"
+.SH NAME
+gvmap \- geographical map create from graphs
+.SH SYNOPSIS
+.B gvmap
+[\fB\-ekov?\fP]
+[
+.I options
+]
+[
+.BI \-o
+.I outfile
+]
+[ 
+.I files
+]
+.SH DESCRIPTION
+.B gvmap
+takes as input a graph in DOT format with node position and size
+information, and produces a rendering of the graph as a geographic-style map.
+.SH AUTHOR
+Yifan Hu <yifanhu@research.att.com>
+.SH "SEE ALSO"
+.PP
+sfdp(1), neato(1), gvpr(1)
+.PP
+E. R. Gansner, Y. Hu, S. G. Kobourov, "GMap: Visualizing graphs and clusters as maps," Proc. Pacific Vis. 2010, pp. 201\(hy208.
