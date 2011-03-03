@@ -204,7 +204,7 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:height HREF=#d:height>height</A>
 </TD><TD>N</TD><TD>double</TD><TD ALIGN="CENTER">0.5</TD><TD>0.02</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:href HREF=#d:href>href</A>
-</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
+</TD><TD>GCNE</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, postscript, map only</TD> </TR>
  <TR><TD><A NAME=a:id HREF=#d:id>id</A>
 </TD><TD>GNE</TD><TD><A HREF=#k:escString>escString</A>
@@ -220,6 +220,8 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:labelURL HREF=#d:labelURL>labelURL</A>
 </TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
+ <TR><TD><A NAME=a:label_scheme HREF=#d:label_scheme>label_scheme</A>
+</TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">0</TD><TD>0</TD><TD>sfdp only</TD> </TR>
  <TR><TD><A NAME=a:labelangle HREF=#d:labelangle>labelangle</A>
 </TD><TD>E</TD><TD>double</TD><TD ALIGN="CENTER">-25.0</TD><TD>-180.0</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:labeldistance HREF=#d:labeldistance>labeldistance</A>
@@ -289,9 +291,9 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:minlen HREF=#d:minlen>minlen</A>
 </TD><TD>E</TD><TD>int</TD><TD ALIGN="CENTER">1</TD><TD>0</TD><TD>dot only</TD> </TR>
  <TR><TD><A NAME=a:mode HREF=#d:mode>mode</A>
-</TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">"major"</TD><TD></TD><TD>neato only</TD> </TR>
+</TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">major<BR>spring</TD><TD></TD><TD>sfdp, neato only</TD> </TR>
  <TR><TD><A NAME=a:model HREF=#d:model>model</A>
-</TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">"shortpath"</TD><TD></TD><TD>neato only</TD> </TR>
+</TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">shortpath</TD><TD></TD><TD>neato only</TD> </TR>
  <TR><TD><A NAME=a:mosek HREF=#d:mosek>mosek</A>
 </TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD>neato only</TD> </TR>
@@ -352,7 +354,7 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:quadtree HREF=#d:quadtree>quadtree</A>
 </TD><TD>G</TD><TD><A HREF=#k:quadType>quadType</A>
 <BR><A HREF=#k:bool>bool</A>
-</TD><TD ALIGN="CENTER">"normal"</TD><TD></TD><TD>sfdp only</TD> </TR>
+</TD><TD ALIGN="CENTER">normal</TD><TD></TD><TD>sfdp only</TD> </TR>
  <TR><TD><A NAME=a:quantum HREF=#d:quantum>quantum</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.0</TD><TD>0.0</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:rank HREF=#d:rank>rank</A>
@@ -384,6 +386,8 @@ This field indicates which graph component uses the attribute.
 </TD><TD ALIGN="CENTER">&#60;none&#62;(graphs)<BR>false(nodes)</TD><TD></TD><TD>circo, twopi only</TD> </TR>
  <TR><TD><A NAME=a:rotate HREF=#d:rotate>rotate</A>
 </TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">0</TD><TD></TD><TD></TD> </TR>
+ <TR><TD><A NAME=a:rotation HREF=#d:rotation>rotation</A>
+</TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0</TD><TD></TD><TD>sfdp only</TD> </TR>
  <TR><TD><A NAME=a:samehead HREF=#d:samehead>samehead</A>
 </TD><TD>E</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>dot only</TD> </TR>
  <TR><TD><A NAME=a:sametail HREF=#d:sametail>sametail</A>
@@ -937,6 +941,15 @@ This field indicates which graph component uses the attribute.
   of an edge. This value overrides any <A HREF=#d:URL>URL</A>
   defined for the edge.
 
+<DT><A NAME=d:label_scheme HREF=#a:label_scheme><STRONG>label_scheme</STRONG></A>
+<DD>  The value indicates
+  whether to treat a node whose name has the form |edgelabel|* as a special node representing an edge label. 
+  The default (0) produces no effect.
+  If the attribute is set to 1, sfdp uses a penalty-based method to make that kind of node close to the 
+  center of its neighbor. With a value of 2, sfdp uses a penalty-based method to make that kind of node 
+  close to the old center of its neighbor. Finally, a value of 3 invokes a two-step process of overlap 
+  removal and straightening.
+
 <DT><A NAME=d:labelangle HREF=#a:labelangle><STRONG>labelangle</STRONG></A>
 <DD>  This, along with <A HREF=#d:labeldistance>labeldistance</A>, determine
   where the
@@ -1111,17 +1124,22 @@ This field indicates which graph component uses the attribute.
 <DD>  Minimum edge length (rank difference between head and tail).
 
 <DT><A NAME=d:mode HREF=#a:mode><STRONG>mode</STRONG></A>
-<DD>  Technique for optimizing the layout. If <B>mode</B> is <TT>"major"</TT>,
+<DD>  Technique for optimizing the layout. For neato, if <B>mode</B> is <TT>"major"</TT>,
   neato uses stress majorization. If <B>mode</B> is <TT>"KK"</TT>,
   neato uses a version of the gradient descent method. The only advantage
   to the latter technique is that it is sometimes appreciably faster for
   small (number of nodes < 100) graphs. A significant disadvantage is that
   it may cycle.
   <P>
-  There are two new, experimental modes in neato, "hier", which adds a top-down
+  There are two experimental modes in neato, "hier", which adds a top-down
   directionality similar to the layout used in dot, and "ipsep", which
   allows the graph to specify minimum vertical and horizontal distances
   between nodes. (See the <A HREF=#d:sep>sep</A> attribute.)
+  <P>
+  For sfdp, the default <B>mode</B> is <TT>"spring"</TT>, which corresponds to using
+  a spring-electrical model. Setting <B>mode</B> to <TT>"maxent"</TT> causes a similar
+  model to be run but one that also takes into account edge lengths specified by a the
+  <TT>"len"</TT> attribute.
 
 <DT><A NAME=d:model HREF=#a:model><STRONG>model</STRONG></A>
 <DD>  This value specifies how the distance matrix is computed for the input
@@ -1529,6 +1547,9 @@ This field indicates which graph component uses the attribute.
 
 <DT><A NAME=d:rotate HREF=#a:rotate><STRONG>rotate</STRONG></A>
 <DD>  If 90, set drawing orientation to landscape.
+
+<DT><A NAME=d:rotation HREF=#a:rotation><STRONG>rotation</STRONG></A>
+<DD>  Causes the final layout to be rotated counter-clockwise by the specified number of degrees.
 
 <DT><A NAME=d:samehead HREF=#a:samehead><STRONG>samehead</STRONG></A>
 <DD>  Edges with the same head and the same <B>samehead</B> value are aimed

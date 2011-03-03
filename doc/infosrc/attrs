@@ -389,7 +389,7 @@ In this case, if both the width or the height are set explicitly,
 the maximum of the two values is used.
 If neither is set explicitly, the minimum of the two default values
 is used.
-:href:E:escString:"";  map,ps,svg
+:href:GCNE:escString:"";  map,ps,svg
 Synonym for <A HREF=#d:URL>URL</A>.
 :id:GNE:escString:"";  map,ps,svg
 Allows the graph author to provide an id for graph objects which is to be included in the output.
@@ -525,6 +525,14 @@ If undefined, the value of the <A HREF=#d:target>target</A> is used.
 Tooltip annotation attached to label of an edge.
 This is used only if the edge has a <A HREF=#d:URL>URL</A>
 or <A HREF=#d:labelURL>labelURL</A> attribute.
+:label_scheme:G:int:0:0;  sfdp
+The value indicates
+whether to treat a node whose name has the form |edgelabel|* as a special node representing an edge label. 
+The default (0) produces no effect.
+If the attribute is set to 1, sfdp uses a penalty-based method to make that kind of node close to the 
+center of its neighbor. With a value of 2, sfdp uses a penalty-based method to make that kind of node 
+close to the old center of its neighbor. Finally, a value of 3 invokes a two-step process of overlap 
+removal and straightening.
 :landscape:G:bool:false;
 If true, the graph is rendered in landscape mode. Synonymous with
 <A HREF=#d:rotate><TT>rotate=90</TT></A> or
@@ -603,19 +611,24 @@ maximum number of iterations in each pass.
 Specifies the minimum separation between all nodes.
 :minlen:E:int:1:0;  dot
 Minimum edge length (rank difference between head and tail).
-:mode:G:string:"major";  neato
-Technique for optimizing the layout. If <B>mode</B> is <TT>"major"</TT>,
+:mode:G:string:major/spring;  neato,sfdp
+Technique for optimizing the layout. For neato, if <B>mode</B> is <TT>"major"</TT>,
 neato uses stress majorization. If <B>mode</B> is <TT>"KK"</TT>,
 neato uses a version of the gradient descent method. The only advantage
 to the latter technique is that it is sometimes appreciably faster for
 small (number of nodes < 100) graphs. A significant disadvantage is that
 it may cycle.
 <P>
-There are two new, experimental modes in neato, "hier", which adds a top-down
+There are two experimental modes in neato, "hier", which adds a top-down
 directionality similar to the layout used in dot, and "ipsep", which
 allows the graph to specify minimum vertical and horizontal distances
 between nodes. (See the <A HREF=#d:sep>sep</A> attribute.)
-:model:G:string:"shortpath";  neato
+<P>
+For sfdp, the default <B>mode</B> is <TT>"spring"</TT>, which corresponds to using
+a spring-electrical model. Setting <B>mode</B> to <TT>"maxent"</TT> causes a similar
+model to be run but one that also takes into account edge lengths specified by a the
+<TT>"len"</TT> attribute.
+:model:G:string:shortpath;  neato
 This value specifies how the distance matrix is computed for the input
 graph. The distance matrix specifies the ideal distance between every
 pair of nodes. neato attemps to find a layout which best achieves
@@ -867,7 +880,7 @@ neato, it is assumed the positions have been set by one of the layout
 programs, and are therefore in points. Thus, <TT>neato -n</TT> can accept
 input correctly without requiring a <TT>-s</TT> flag and, in fact,
 ignores any such flag.
-:quadtree:G:quadType/bool:"normal";  sfdp
+:quadtree:G:quadType/bool:normal;  sfdp
 Quadtree scheme to use.
 <P>
 A TRUE bool value corresponds to "normal";
@@ -986,6 +999,8 @@ If the root attribute is defined as the empty string, twopi will reset it
 to name of the node picked as the root node.
 :rotate:G:int:0;
 If 90, set drawing orientation to landscape.
+:rotation:G:double:0;   sfdp
+Causes the final layout to be rotated counter-clockwise by the specified number of degrees.
 :samehead:E:string:"";  dot
 Edges with the same head and the same <B>samehead</B> value are aimed
 at the same point on the head.
