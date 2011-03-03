@@ -118,7 +118,7 @@ CFrmSettings::CFrmSettings()
     scopeChangedSlot(0);
 
 
-    loadAttrs("c:/graphviz-ms/bin/attrs.txt",WIDGET(QComboBox,cbNameG),WIDGET(QComboBox,cbNameN),WIDGET(QComboBox,cbNameE));
+    loadAttrs("./attrs.txt",WIDGET(QComboBox,cbNameG),WIDGET(QComboBox,cbNameN),WIDGET(QComboBox,cbNameE));
 }
 
 void CFrmSettings::outputSlot()
