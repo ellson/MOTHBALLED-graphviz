@@ -395,6 +395,7 @@ extern int agerr(agerrlevel_t level, char *fmt, ...);
 extern void agerrorf(char *fmt, ...);
 extern void agwarningf(char *fmt, ...);
 extern int agerrors(void);
+extern int agreseterrors(void);
 extern agusererrf agseterrf(agusererrf);
 
 /* data access macros */

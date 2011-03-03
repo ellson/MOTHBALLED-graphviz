@@ -164,3 +164,11 @@ void agwarningf(char *fmt, ...)
 }
 
 int agerrors() { return agerrcnt; }
+
+int agreseterrors() 
+{ 
+    int rc = agerrcnt;
+    agerrcnt = 0;
+    return rc; 
+}
+
