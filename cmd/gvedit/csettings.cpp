@@ -18,6 +18,7 @@
 #include <qfile.h>
 #include "mdichild.h"
 #include "string.h"
+#include "mainwindow.h"
 #define WIDGET(t,f)  ((t*)findChild<t *>(#f))
 
 typedef struct {
@@ -52,7 +53,6 @@ bool loadAttrs(const QString fileName,QComboBox* cbNameG,QComboBox* cbNameN,QCom
 			if(sl[id].contains("E"))
 			    cbNameE->addItem(attrName);
 		    }
-		    printf ("%s\n",sl[id].constData());
 		};
 	    }
         }
@@ -115,6 +115,7 @@ CFrmSettings::CFrmSettings()
     connect(WIDGET(QPushButton,btnCancel),SIGNAL(clicked()),this,SLOT(cancelSlot()));
     connect(WIDGET(QPushButton,pbOut),SIGNAL(clicked()),this,SLOT(outputSlot()));
     connect(WIDGET(QComboBox,cbScope),SIGNAL(currentIndexChanged(int)),this,SLOT(scopeChangedSlot(int)));
+    scopeChangedSlot(0);
 
 
     loadAttrs("c:/graphviz-ms/bin/attrs.txt",WIDGET(QComboBox,cbNameG),WIDGET(QComboBox,cbNameN),WIDGET(QComboBox,cbNameE));
@@ -286,10 +287,18 @@ bool CFrmSettings::renderLayout()
 	_fileName=stripFileExtension(_fileName);
 	_fileName=_fileName+"."+WIDGET(QComboBox,cbExtension)->currentText();
 	int rv=gvRenderFilename(gvc,graph,(char*)WIDGET(QComboBox,cbExtension)->currentText().toUtf8().constData(),(char*)_fileName.toUtf8().constData());
-	this->getActiveWindow()->loadPreview(_fileName);
 	if(rv)
-	    this->getActiveWindow()->loadPreview(_fileName);
-	return rv;
+	    return false;
+
+	if(getActiveWindow()->previewFrm)
+	{
+	    getActiveWindow()->parentFrm->mdiArea->removeSubWindow(getActiveWindow()->previewFrm->subWindowRef);
+	    delete getActiveWindow()->previewFrm;
+	    getActiveWindow()->previewFrm=NULL;
+
+	}
+	this->getActiveWindow()->loadPreview(_fileName);
+	return true;
 
     }
     return false;

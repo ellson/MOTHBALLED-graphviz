@@ -36,6 +36,7 @@ class ImageViewer : public QMainWindow
 public:
     ImageViewer();
     MdiChild* graphWindow;
+    QMdiSubWindow* subWindowRef; //reference to its wrapping sub window
 public slots:
     void open(QString fileName);
     void print();
@@ -73,9 +74,12 @@ private:
     QAction *aboutAct;
     QAction *aboutQtAct;
 
-/*    QMenu *fileMenu;
+//    QMenu *fileMenu;
     QMenu *viewMenu;
-    QMenu *helpMenu;*/
+//    QMenu *helpMenu;
+	protected:
+        void closeEvent(QCloseEvent *event);
+
 };
 //! [0]
 

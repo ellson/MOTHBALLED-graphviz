@@ -16,8 +16,14 @@
 #include "windows.h"
 #endif
 #include <QApplication>
-
 #include "mainwindow.h"
+
+#ifdef HAVE_GETOPT_H
+#include <getopt.h>
+#else
+#include "compat_getopt.h"
+#endif
+
 
 #ifdef WIN32_DLL
 __declspec(dllimport) boolean MemTest;
@@ -26,13 +32,15 @@ __declspec(dllimport) boolean MemTest;
     #pragma comment( lib, "cgraph.lib" )
 #else
     #pragma comment( lib, "graph.lib" )
+    #pragma comment( lib, "ingraphs.lib" )
+
 #endif
     #pragma comment( lib, "gvc.lib" )
 #endif
 
 static char* cmd;
 
-extern int Verbose;
+int Verbose;
 
 static char *useString =
     "Usage: gvedit [-v?] <files>\n\

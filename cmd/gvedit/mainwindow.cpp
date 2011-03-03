@@ -12,6 +12,7 @@
  *************************************************************************/
 
 #include <QtGui>
+#include <qframe>
 #include "mainwindow.h"
 #include "mdichild.h"
 #include "csettings.h"
@@ -69,10 +70,19 @@ CMainWindow::CMainWindow()
 	globTextEdit=textEdit;
 	agseterrf(errorPipe);
         verticalLayout->addWidget(textEdit);
-
+	QFrame *fr=new QFrame(centralwidget);
+	verticalLayout->addWidget(fr);
 
         verticalLayout_2->addLayout(verticalLayout);
-
+	QPushButton* logNewBtn=new QPushButton(QIcon(":/images/new.png"),"",fr);
+	QPushButton* logSaveBtn=new QPushButton(QIcon(":/images/save.png"),"",fr);
+	QHBoxLayout* consoleLayout = new QHBoxLayout();
+	consoleLayout->addWidget(logNewBtn);
+	connect(logNewBtn,SIGNAL(clicked()),this,SLOT(slotNewLog()));
+	connect(logSaveBtn,SIGNAL(clicked()),this,SLOT(slotSaveLog()));
+	consoleLayout->addWidget(logSaveBtn);
+	consoleLayout->addStretch();
+	fr->setLayout(consoleLayout);
        setCentralWidget(centralwidget);
 
 
@@ -190,9 +200,9 @@ void CMainWindow::slotPaste()
 
 void CMainWindow::slotAbout()
 {
-   QMessageBox::about(this, tr("About MDI"),
-            tr("The <b>MDI</b> example demonstrates how to write multiple "
-               "document interface applications using Qt."));
+   QMessageBox::about(this, tr("About GVEdit\n"),
+            tr("<b>GVEdit</b> Graph File Editor For Graphviz\n"
+	    "Version:1.01"));
 }
 
 
@@ -207,6 +217,43 @@ void CMainWindow::slotRun()
 	frmSettings->runSettings(activeMdiChild());
     if((activeMdiChild()) && (activeMdiChild()->firstTime()))
 	frmSettings->showSettings(activeMdiChild());
+
+
+}
+void CMainWindow::slotNewLog()
+{
+    globTextEdit->clear();
+}
+void CMainWindow::slotSaveLog()
+{
+
+    if(globTextEdit->toPlainText().trimmed().length()==0)
+    {
+	QMessageBox::warning(this, tr("GvEdit"),tr("Nothing to save!"),QMessageBox::Ok,QMessageBox::Ok);
+	return;
+
+
+    }
+
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Open File"),
+                                                "/",
+                                                 tr("Text File(*.*)"));
+ if (!fileName.isEmpty())
+ {
+
+    QFile file(fileName);
+    if (!file.open(QFile::WriteOnly | QFile::Text)) {
+        QMessageBox::warning(this, tr("MDI"),
+                             tr("Cannot write file %1:\n%2.")
+                             .arg(fileName)
+                             .arg(file.errorString()));
+        return;
+    }
+
+    QTextStream out(&file);
+    out << globTextEdit->toPlainText();
+    return;
+ }
 
 
 }
@@ -395,20 +442,21 @@ void CMainWindow::actions()
     aboutAct->setStatusTip(tr("Show the application's About box"));
     connect(aboutAct, SIGNAL(triggered()), this, SLOT(slotAbout()));
 
-    aboutQtAct = new QAction(tr("About &Qt"), this);
-    aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
-    connect(aboutQtAct, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
 
     settingsAct = new QAction(QIcon(":/images/settings.png"),tr("Settings"), this);
     settingsAct->setStatusTip(tr("Show Graphviz Settings"));
     connect(settingsAct, SIGNAL(triggered()), this, SLOT(slotSettings()));
+    settingsAct->setShortcut(QKeySequence(Qt::SHIFT + Qt::Key_F5));
+
 
 
 
     layoutAct = new QAction(QIcon(":/images/run.png"),tr("Layout"), this);
     layoutAct->setStatusTip(tr("Layout the active graph"));
     connect(layoutAct, SIGNAL(triggered()), this, SLOT(slotRun()));
+    layoutAct->setShortcut(QKeySequence(Qt::Key_F5));
+
 
 
 }
@@ -418,6 +466,7 @@ void CMainWindow::menus()
     mFile = menuBar()->addMenu(tr("&File"));
     mEdit = menuBar()->addMenu(tr("&Edit"));
     mWindow = menuBar()->addMenu(tr("&Window"));
+    mGraph =  menuBar()->addMenu (tr("&Graph"));
     mHelp = menuBar()->addMenu(tr("&Help"));
 
 
@@ -433,7 +482,6 @@ void CMainWindow::menus()
     mEdit->addAction(copyAct);
     mEdit->addAction(pasteAct);
 
-    mGraph =  menuBar()->addMenu (tr("&Graph"));
     mGraph->addAction(settingsAct);
     mGraph->addAction(layoutAct);
     mGraph->addSeparator();
@@ -442,7 +490,6 @@ void CMainWindow::menus()
     updateWindowMenu();
     connect(mWindow, SIGNAL(aboutToShow()), this, SLOT(slotRefreshMenus()));
     mHelp->addAction(aboutAct);
-    mHelp->addAction(aboutQtAct);
 }
 
 void CMainWindow::toolBars()
@@ -529,3 +576,4 @@ void CMainWindow::loadPlugins()
 {
 
 }
+

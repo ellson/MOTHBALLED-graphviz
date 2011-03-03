@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'settings.ui'
 **
-** Created: Tue Mar 1 14:00:08 2011
+** Created: Thu Mar 3 11:30:17 2011
 **      by: Qt User Interface Compiler version 4.7.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -85,7 +85,14 @@ public:
     {
         if (Dialog->objectName().isEmpty())
             Dialog->setObjectName(QString::fromUtf8("Dialog"));
-        Dialog->resize(403, 512);
+        Dialog->resize(404, 512);
+        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(Dialog->sizePolicy().hasHeightForWidth());
+        Dialog->setSizePolicy(sizePolicy);
+        Dialog->setMinimumSize(QSize(404, 512));
+        Dialog->setMaximumSize(QSize(404, 512));
         actionCSettingsOK = new QAction(Dialog);
         actionCSettingsOK->setObjectName(QString::fromUtf8("actionCSettingsOK"));
         frame = new QFrame(Dialog);
@@ -180,7 +187,7 @@ public:
         frame_2->setFrameShadow(QFrame::Raised);
         layoutWidget1 = new QWidget(frame_2);
         layoutWidget1->setObjectName(QString::fromUtf8("layoutWidget1"));
-        layoutWidget1->setGeometry(QRect(2, 0, 436, 62));
+        layoutWidget1->setGeometry(QRect(2, 0, 401, 62));
         horizontalLayout_7 = new QHBoxLayout(layoutWidget1);
         horizontalLayout_7->setObjectName(QString::fromUtf8("horizontalLayout_7"));
         horizontalLayout_7->setContentsMargins(0, 0, 0, 0);

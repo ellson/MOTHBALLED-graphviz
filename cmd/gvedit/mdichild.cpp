@@ -162,7 +162,12 @@ void MdiChild::loadPreview(QString fileName)
     {
 	previewFrm=new ImageViewer();
 	previewFrm->graphWindow=this;
-	parentFrm->mdiArea->addSubWindow(previewFrm);
+	QMdiSubWindow* s=parentFrm->mdiArea->addSubWindow(previewFrm);
+
+	s->resize(600,400);
+	s->move(parentFrm->mdiArea->subWindowList().count()*5,parentFrm->mdiArea->subWindowList().count()*5);
+	previewFrm->subWindowRef=s;
+
     }
     previewFrm->open(fileName);
     previewFrm->show();

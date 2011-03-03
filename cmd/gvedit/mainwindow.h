@@ -40,7 +40,6 @@ public:
     CMainWindow();
     QMdiArea *mdiArea;
     void addFile (QString fileName);
-
 private slots:
     void slotSettings();
     void slotRun();
@@ -53,6 +52,8 @@ private slots:
     void slotPaste();
     void slotAbout();
     void slotRefreshMenus();
+    void slotNewLog();
+    void slotSaveLog();
     MdiChild *createMdiChild();
     void activateChild(QWidget *window);
 protected:
@@ -96,7 +97,6 @@ private:
     QAction *previousAct;
     QAction *separatorAct;
     QAction *aboutAct;
-    QAction *aboutQtAct;
 
     QAction *settingsAct;
     QAction *layoutAct;
