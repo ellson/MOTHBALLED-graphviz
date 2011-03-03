@@ -269,6 +269,11 @@ bool CFrmSettings::createLayout()
     /* graph=agread_usergets(reinterpret_cast<FILE*>(this),(gets_f)graph_reader); */
     if(!graph)
 	return false;
+    if (agerrors()) {
+	agclose (graph);
+	graph = NULL;
+	return false;
+    }
     Agraph_t* G=this->graph;
     gvLayout (gvc, G, (char*)WIDGET(QComboBox,cbLayout)->currentText().toUtf8().constData()); /* library function */
     return true;
@@ -327,12 +332,15 @@ void CFrmSettings::saveContent()
 }
 int CFrmSettings::drawGraph()
 {
-	    createLayout();
-	    renderLayout();
-	    getActiveWindow()->settingsSet=false;
-	    return QDialog::Accepted;
-
+    if (createLayout() && renderLayout()) {
+	getActiveWindow()->settingsSet=false;
+	return QDialog::Accepted;
+    }
+    else
+	return QDialog::Accepted;
+	/* return QDialog::Rejected; */
 }
+
 int CFrmSettings::runSettings(MdiChild* m)
 {
     if ((m) && (m==getActiveWindow()))
