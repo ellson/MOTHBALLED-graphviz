@@ -39,7 +39,7 @@ ImageViewer::ImageViewer()
 //! [0]
 
 //! [1]
-void ImageViewer::open(QString fileName)
+bool ImageViewer::open(QString fileName)
 //! [1] //! [2]
 {
     if (!fileName.isEmpty()) {
@@ -47,7 +47,7 @@ void ImageViewer::open(QString fileName)
         if (image.isNull()) {
             QMessageBox::information(this, tr("GVEdit"),
                                      tr("Image Format of %1 is not supported.").arg(fileName));
-            return;
+            return false;
         }
         imageLabel->setPixmap(QPixmap::fromImage(image));
         scaleFactor = 1.0;
@@ -57,6 +57,7 @@ void ImageViewer::open(QString fileName)
         if (!fitToWindowAct->isChecked())
             imageLabel->adjustSize();
     }
+    return true;
 }
 void ImageViewer::print()
 {

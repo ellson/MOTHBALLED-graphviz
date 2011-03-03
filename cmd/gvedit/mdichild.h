@@ -41,7 +41,7 @@ public:
     QString attributes;
     ImageViewer* previewFrm;
     CMainWindow* parentFrm;
-    void loadPreview(QString fileName);
+    bool loadPreview(QString fileName);
     bool firstTime();
     bool settingsSet;
 protected:

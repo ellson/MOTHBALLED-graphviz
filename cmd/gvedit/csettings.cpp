@@ -10,7 +10,9 @@
  *
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
-
+#ifdef WIN32
+#include "windows.h"
+#endif
 #include "csettings.h"
 #include "qmessagebox.h"
 #include "qfiledialog.h"
@@ -20,7 +22,6 @@
 #include "string.h"
 #include "mainwindow.h"
 #define WIDGET(t,f)  ((t*)findChild<t *>(#f))
-
 typedef struct {
     const char* data;
     int len;
@@ -279,6 +280,32 @@ bool CFrmSettings::createLayout()
     gvLayout (gvc, G, (char*)WIDGET(QComboBox,cbLayout)->currentText().toUtf8().constData()); /* library function */
     return true;
 }
+QString buildTempFile()
+{
+    bool good=true;
+    const DWORD BUFSIZE=512;
+    const DWORD PREFIXSIZE=32;
+    char lpPathBuffer[BUFSIZE];
+    UINT uUnique;
+    char szTempName[512];
+    HCRYPTPROV hProv;
+    char prefix [3]; 
+//    CryptGenRandom(hProv, 3, prefix);
+
+    if (! GetTempFileName(lpPathBuffer, // directory for temp files
+    "AAA", // temp file name prefix, cast from bytes to a string
+    0, // create unique name
+    szTempName)) // buffer for name
+    {
+	good=false; //Handle the error condition
+    }
+    QString rv;
+    GetTempFileName(NULL,"abc",0,szTempName);
+    rv.append(szTempName);
+    rv.append(".jpg");
+    return rv;
+}
+
 bool CFrmSettings::renderLayout()
 {
     if(graph)
@@ -297,7 +324,12 @@ bool CFrmSettings::renderLayout()
 	    getActiveWindow()->previewFrm=NULL;
 
 	}
-	this->getActiveWindow()->loadPreview(_fileName);
+	if(!this->getActiveWindow()->loadPreview(_fileName));//create preview
+	{
+	    QString prevFile(buildTempFile());
+	    gvRenderFilename(gvc,graph,(char*)WIDGET(QComboBox,cbExtension)->currentText().toUtf8().constData(),(char*)_fileName.toUtf8().constData());
+	}
+
 	return true;
 
     }

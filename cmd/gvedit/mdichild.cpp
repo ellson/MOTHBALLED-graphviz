@@ -156,7 +156,7 @@ QString MdiChild::strippedName(const QString &fullFileName)
     return QFileInfo(fullFileName).fileName();
 }
 
-void MdiChild::loadPreview(QString fileName)
+bool MdiChild::loadPreview(QString fileName)
 {
     if (!this->previewFrm)
     {
@@ -169,8 +169,10 @@ void MdiChild::loadPreview(QString fileName)
 	previewFrm->subWindowRef=s;
 
     }
-    previewFrm->open(fileName);
-    previewFrm->show();
+    bool rv=previewFrm->open(fileName);
+    if(rv)
+	previewFrm->show();
+    return rv;
 
 }
 bool MdiChild::firstTime()
