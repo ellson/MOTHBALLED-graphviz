@@ -24,7 +24,7 @@
 
 QTextEdit* globTextEdit;
 
-static int errorPipe(char* errMsg)
+int errorPipe(char* errMsg)
 {
     globTextEdit->setText(globTextEdit->toPlainText()+QString(errMsg));
     return 0;
@@ -272,6 +272,8 @@ void CMainWindow::updateFileMenu()
 	nextAct->setEnabled(false);
 	previousAct->setEnabled(false);
 	separatorAct->setVisible(false);
+	settingsAct->setEnabled(false);
+	layoutAct->setEnabled(false);
     }
     else
     {
@@ -285,6 +287,9 @@ void CMainWindow::updateFileMenu()
 	nextAct->setEnabled(true);
 	previousAct->setEnabled(true);
 	separatorAct->setVisible(true);
+	settingsAct->setEnabled(true);
+	layoutAct->setEnabled(true);
+
 	if(activeMdiChild()->textCursor().hasSelection())
 	{
 	    cutAct->setEnabled(true);

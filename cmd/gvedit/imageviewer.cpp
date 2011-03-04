@@ -15,6 +15,7 @@
 #include "imageviewer.h"
 #include "mdichild.h"
 
+extern int errorPipe(char* errMsg);
 
 
 //! [0]
@@ -45,8 +46,6 @@ bool ImageViewer::open(QString fileName)
     if (!fileName.isEmpty()) {
         QImage image(fileName);
         if (image.isNull()) {
-            QMessageBox::information(this, tr("GVEdit"),
-                                     tr("Image Format of %1 is not supported.").arg(fileName));
             return false;
         }
         imageLabel->setPixmap(QPixmap::fromImage(image));

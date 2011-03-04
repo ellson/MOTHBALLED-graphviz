@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'settings.ui'
 **
-** Created: Thu Mar 3 14:08:58 2011
+** Created: Fri Mar 4 11:01:22 2011
 **      by: Qt User Interface Compiler version 4.7.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -66,7 +66,7 @@ public:
     QVBoxLayout *verticalLayout_3;
     QPushButton *pbAdd;
     QSpacerItem *verticalSpacer;
-    QPushButton *pushButton_4;
+    QPushButton *pbHelp;
     QFrame *frame_3;
     QWidget *layoutWidget2;
     QVBoxLayout *verticalLayout_4;
@@ -187,7 +187,7 @@ public:
         frame_2->setFrameShadow(QFrame::Raised);
         layoutWidget1 = new QWidget(frame_2);
         layoutWidget1->setObjectName(QString::fromUtf8("layoutWidget1"));
-        layoutWidget1->setGeometry(QRect(2, 0, 401, 62));
+        layoutWidget1->setGeometry(QRect(2, 0, 436, 62));
         horizontalLayout_7 = new QHBoxLayout(layoutWidget1);
         horizontalLayout_7->setObjectName(QString::fromUtf8("horizontalLayout_7"));
         horizontalLayout_7->setContentsMargins(0, 0, 0, 0);
@@ -260,11 +260,11 @@ public:
 
         verticalLayout_3->addItem(verticalSpacer);
 
-        pushButton_4 = new QPushButton(layoutWidget1);
-        pushButton_4->setObjectName(QString::fromUtf8("pushButton_4"));
-        pushButton_4->setMinimumSize(QSize(75, 0));
+        pbHelp = new QPushButton(layoutWidget1);
+        pbHelp->setObjectName(QString::fromUtf8("pbHelp"));
+        pbHelp->setMinimumSize(QSize(75, 0));
 
-        verticalLayout_3->addWidget(pushButton_4);
+        verticalLayout_3->addWidget(pbHelp);
 
 
         horizontalLayout_7->addLayout(verticalLayout_3);
@@ -380,7 +380,7 @@ public:
         label_6->setText(QApplication::translate("Dialog", "Name", 0, QApplication::UnicodeUTF8));
         label_7->setText(QApplication::translate("Dialog", "Value", 0, QApplication::UnicodeUTF8));
         pbAdd->setText(QApplication::translate("Dialog", "Add", 0, QApplication::UnicodeUTF8));
-        pushButton_4->setText(QApplication::translate("Dialog", "Help", 0, QApplication::UnicodeUTF8));
+        pbHelp->setText(QApplication::translate("Dialog", "Help", 0, QApplication::UnicodeUTF8));
         pbNew->setText(QApplication::translate("Dialog", "clear", 0, QApplication::UnicodeUTF8));
         pbOpen->setText(QApplication::translate("Dialog", "load", 0, QApplication::UnicodeUTF8));
         pbSave->setText(QApplication::translate("Dialog", "save", 0, QApplication::UnicodeUTF8));

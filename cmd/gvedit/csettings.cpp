@@ -115,6 +115,8 @@ CFrmSettings::CFrmSettings()
     connect(WIDGET(QPushButton,btnOK),SIGNAL(clicked()),this,SLOT(okSlot()));
     connect(WIDGET(QPushButton,btnCancel),SIGNAL(clicked()),this,SLOT(cancelSlot()));
     connect(WIDGET(QPushButton,pbOut),SIGNAL(clicked()),this,SLOT(outputSlot()));
+    connect(WIDGET(QPushButton,pbHelp),SIGNAL(clicked()),this,SLOT(helpSlot()));
+
     connect(WIDGET(QComboBox,cbScope),SIGNAL(currentIndexChanged(int)),this,SLOT(scopeChangedSlot(int)));
     scopeChangedSlot(0);
 
@@ -171,7 +173,15 @@ void CFrmSettings::addSlot()
 	}
     }
 }
-void CFrmSettings::helpSlot(){}
+void CFrmSettings::helpSlot()
+{
+#ifdef WIN32
+    ShellExecute(0, "open", "http://www.graphviz.org/doc/info/attrs.html", 0, 0, 1);
+#else
+//UNIX imp, (EMDEN)
+#endif
+
+}
 void CFrmSettings::cancelSlot()
 {
     this->reject();
@@ -282,26 +292,35 @@ bool CFrmSettings::createLayout()
 }
 QString buildTempFile()
 {
-    bool good=true;
-    const DWORD BUFSIZE=512;
-    const DWORD PREFIXSIZE=32;
-    char lpPathBuffer[BUFSIZE];
-    UINT uUnique;
-    char szTempName[512];
-    HCRYPTPROV hProv;
-    char prefix [3]; 
-//    CryptGenRandom(hProv, 3, prefix);
+#ifdef WIN32
 
-    if (! GetTempFileName(lpPathBuffer, // directory for temp files
-    "AAA", // temp file name prefix, cast from bytes to a string
-    0, // create unique name
-    szTempName)) // buffer for name
-    {
-	good=false; //Handle the error condition
-    }
+    DWORD dwRetVal = 0;
+    UINT uRetVal   = 0;
+
+
+    TCHAR szTempFileName[MAX_PATH];  
+    TCHAR lpTempPathBuffer[MAX_PATH];
+     //  Gets the temp path env string (no guarantee it's a valid path).
+    dwRetVal = GetTempPath(MAX_PATH,          // length of the buffer
+                           lpTempPathBuffer); // buffer for path 
+    if (dwRetVal > MAX_PATH || (dwRetVal == 0))
+	exit(2020);
+
+    //  Generates a temporary file name. 
+    uRetVal = GetTempFileName(lpTempPathBuffer, // directory for tmp files
+                              TEXT("DEMO"),     // temp file name prefix 
+                              0,                // create unique name 
+                              szTempFileName);  // buffer for name 
+    if (uRetVal == 0)
+	exit(-2021);
+    ShellExecute(0, "open", "http://www.microsoft.com", 0, 0, 1);
+
+#else
+    //UNIX implementation here(EMDEN)
+
+#endif
     QString rv;
-    GetTempFileName(NULL,"abc",0,szTempName);
-    rv.append(szTempName);
+    rv.append(szTempFileName);
     rv.append(".jpg");
     return rv;
 }
@@ -327,7 +346,11 @@ bool CFrmSettings::renderLayout()
 	if(!this->getActiveWindow()->loadPreview(_fileName));//create preview
 	{
 	    QString prevFile(buildTempFile());
-	    gvRenderFilename(gvc,graph,(char*)WIDGET(QComboBox,cbExtension)->currentText().toUtf8().constData(),(char*)_fileName.toUtf8().constData());
+	    gvRenderFilename(gvc,graph,"jpg",(char*)prevFile.toUtf8().constData());
+	    if(!this->getActiveWindow()->loadPreview(prevFile))
+		QMessageBox::information(this, tr("GVEdit"),
+					tr("Preview file can not be opened."));
+
 	}
 
 	return true;
