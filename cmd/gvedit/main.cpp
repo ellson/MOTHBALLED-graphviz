@@ -36,6 +36,12 @@ __declspec(dllimport) boolean MemTest;
 #else
     #pragma comment( lib, "graph.lib" )
     #pragma comment( lib, "ingraphs.lib" )
+    #pragma comment( lib, "gvc.lib" )
+    #pragma comment( lib, "glib-2.0.lib" )
+    #pragma comment( lib, "pango-1.0.lib" )
+    #pragma comment( lib, "pangocairo-1.0.lib" )
+    #pragma comment( lib, "cairo.lib" )
+    #pragma comment( lib, "gobject-2.0.lib" )
 
 #endif
     #pragma comment( lib, "gvc.lib" )
