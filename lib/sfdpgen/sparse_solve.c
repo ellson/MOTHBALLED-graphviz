@@ -35,7 +35,7 @@ void Operator_uniform_stress_matmul_delete(Operator o){
 }
 
 real *Operator_uniform_stress_matmul_apply(Operator o, real *x, real *y){
-  struct uniform_stress_matmul_data *d = (struct uniform_stress_matmul_data*) (o->data);;
+  struct uniform_stress_matmul_data *d = (struct uniform_stress_matmul_data*) (o->data);
   SparseMatrix A = d->A;
   real alpha = d->alpha;
   real xsum = 0.;
