@@ -173,16 +173,10 @@ static graph_t *create_test_graph(void)
     return g;
 }
 
-static int max (int a, int b)
-{
-    if (a > b) return a;
-    else return b;
-}
-
 int main(int argc, char **argv)
 {
     graph_t *prev = NULL;
-    int rc = 0;
+    int r, rc = 0;
 #ifndef WITH_CGRAPH
 #endif /* WITH_CGRAPH */
 
@@ -224,11 +218,14 @@ int main(int argc, char **argv)
 	    }
 	    gvLayoutJobs(Gvc, G);  /* take layout engine from command line */
 	    gvRenderJobs(Gvc, G);
-	    rc = max(rc,agreseterrors());
+	    r = agreseterrors();
+	    rc = MAX(rc,r);
 	    prev = G;
 	}
     }
     gvFinalize(Gvc);
     
-    return (max(rc,gvFreeContext(Gvc)));
+
+    r = gvFreeContext(Gvc);
+    return (MAX(rc,r));
 }
