@@ -196,6 +196,14 @@
 				RelativePath=".\spring_electrical.c"
 				>
 			</File>
+			<File
+				RelativePath=".\stress_model.c"
+				>
+			</File>
+			<File
+				RelativePath=".\uniform_stress.c"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

@@ -5,6 +5,7 @@
 #include "stress_model.h"
 
 void stress_model(int dim, SparseMatrix B, real **x, int maxit_sm, real tol, int *flag){
+  int m;
   SparseStressMajorizationSmoother sm;
   real lambda = 0;
   /*int maxit_sm = 1000, i; tol = 0.001*/
@@ -22,7 +23,7 @@ void stress_model(int dim, SparseMatrix B, real **x, int maxit_sm, real tol, int
   A = SparseMatrix_remove_diagonal(A);
 
   *flag = 0;
-  int m = A->m;
+  m = A->m;
   if (!x) {
     *x = MALLOC(sizeof(real)*m*dim);
     srand(123);
