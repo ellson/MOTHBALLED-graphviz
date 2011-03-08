@@ -535,3 +535,38 @@ gv_font_map* get_font_mapping(PangoFontMap * fontmap)
 	printFontMap (gv_fmap, ps_fontnames_sz);
     return gv_fmap;
 }
+
+/* Returns a list of the fonts that are available for use
+
+*/
+
+void get_font_list(char **fonts[], int *cnt){
+
+PangoFontMap *fontmap;
+availfont_t *gv_af_p;
+int j, i;
+char **fontlist;
+fontlist = N_NEW(GV_FONT_LIST_SIZE,char *);
+fontmap = pango_cairo_font_map_new();
+gv_af_p = gv_get_ps_fontlist(fontmap);	// get the available installed fonts
+g_object_unref(fontmap);
+/* load array with available font names */
+i=0;
+for (j = 0; j < GV_FONT_LIST_SIZE; j++) {
+	*(fontlist + j) = 0;
+	if ((gv_af_p[j].faces == 0) || (gv_af_p[j].fontname == NULL)) {
+	    continue;
+	}
+	*(fontlist + i++) = strdup(gv_af_p[j].fontname);
+}
+/* Free unused array elements */
+for(j=i;j<GV_FONT_LIST_SIZE;j++){
+    free(*(fontlist + j));
+}
+/* Free available fonts structure */
+gv_flist_free_af(gv_af_p);
+
+*cnt = i;
+*fonts = fontlist;
+return;
+}
