@@ -48,6 +48,53 @@ static void LoadPlugins (QComboBox* cb, GVC_t* gvc, char* kind)
     };
     freeList (lp, count);
 }
+void CMainWindow::createConsole()
+{
+    QDockWidget *dock = new QDockWidget(tr("Output Console"), this);
+    QTextEdit* textEdit = new QTextEdit(dock);
+
+    dock->setAllowedAreas(Qt::BottomDockWidgetArea| Qt::TopDockWidgetArea);
+    dock->setWidget(textEdit);
+    addDockWidget(Qt::BottomDockWidgetArea, dock);
+    QVBoxLayout* vL= new QVBoxLayout(dock);
+    dock->setLayout(vL);
+
+    textEdit->setObjectName(QString::fromUtf8("textEdit"));
+/*    textEdit->setMinimumSize(QSize(0, 80));
+    textEdit->setMaximumSize(QSize(16777215, 120));*/
+    globTextEdit=textEdit;
+    agseterrf(errorPipe);
+
+    vL->addWidget(textEdit);
+    vL->setContentsMargins(1,1,1,1);
+
+    QFrame *fr=new QFrame(dock);
+    vL->addWidget(fr);
+
+    QPushButton* logNewBtn=new QPushButton(QIcon(":/images/new.png"),"",fr);
+    QPushButton* logSaveBtn=new QPushButton(QIcon(":/images/save.png"),"",fr);
+    QHBoxLayout* consoleLayout = new QHBoxLayout();
+    consoleLayout->addWidget(logNewBtn);
+    connect(logNewBtn,SIGNAL(clicked()),this,SLOT(slotNewLog()));
+    connect(logSaveBtn,SIGNAL(clicked()),this,SLOT(slotSaveLog()));
+    consoleLayout->addWidget(logSaveBtn);
+    consoleLayout->addStretch();
+
+    consoleLayout->setContentsMargins(1,1,1,1);;
+    consoleLayout->setContentsMargins(1,1,1,1);
+
+    fr->setLayout(consoleLayout);
+
+    QFrame *mainFrame=new QFrame(dock);
+    mainFrame->setLayout(vL);
+
+
+    dock->setWidget(mainFrame);
+
+}
+
+
+
 
 CMainWindow::CMainWindow()
 {
@@ -62,28 +109,14 @@ CMainWindow::CMainWindow()
         mdiArea->setObjectName(QString::fromUtf8("mdiArea"));
 
         verticalLayout->addWidget(mdiArea);
-
-        QTextEdit* textEdit = new QTextEdit(centralwidget);
-        textEdit->setObjectName(QString::fromUtf8("textEdit"));
-        textEdit->setMinimumSize(QSize(0, 80));
-        textEdit->setMaximumSize(QSize(16777215, 120));
-	globTextEdit=textEdit;
-	agseterrf(errorPipe);
-        verticalLayout->addWidget(textEdit);
-	QFrame *fr=new QFrame(centralwidget);
-	verticalLayout->addWidget(fr);
-
+	verticalLayout_2->setContentsMargins(1,1,1,1);
         verticalLayout_2->addLayout(verticalLayout);
-	QPushButton* logNewBtn=new QPushButton(QIcon(":/images/new.png"),"",fr);
-	QPushButton* logSaveBtn=new QPushButton(QIcon(":/images/save.png"),"",fr);
-	QHBoxLayout* consoleLayout = new QHBoxLayout();
-	consoleLayout->addWidget(logNewBtn);
-	connect(logNewBtn,SIGNAL(clicked()),this,SLOT(slotNewLog()));
-	connect(logSaveBtn,SIGNAL(clicked()),this,SLOT(slotSaveLog()));
-	consoleLayout->addWidget(logSaveBtn);
-	consoleLayout->addStretch();
-	fr->setLayout(consoleLayout);
        setCentralWidget(centralwidget);
+	centralwidget->layout()->setContentsMargins(1,1,1,1);
+	prevChild=NULL;
+
+	createConsole();
+
 
 
 
@@ -208,11 +241,30 @@ void CMainWindow::slotAbout()
 
 void CMainWindow::slotSettings()
 {
+    if(prevChild !=activeMdiChild())
+    {
+	QString msg;
+	msg.append("working on ");
+	msg.append(activeMdiChild()->currentFile());
+	msg.append("\n");
+	errorPipe((char*)msg.toAscii().constData());
+	prevChild=activeMdiChild();
+    }
     frmSettings->showSettings(activeMdiChild());
 
 }
 void CMainWindow::slotRun()
 {
+
+    if(prevChild !=activeMdiChild())
+    {
+	QString msg;
+	msg.append("working on ");
+	msg.append(activeMdiChild()->currentFile());
+	msg.append("\n");
+	errorPipe((char*)msg.toAscii().constData());
+	prevChild=activeMdiChild();
+    }
     if((activeMdiChild()) && (!activeMdiChild()->firstTime()))
 	frmSettings->runSettings(activeMdiChild());
     if((activeMdiChild()) && (activeMdiChild()->firstTime()))

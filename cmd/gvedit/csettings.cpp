@@ -114,6 +114,7 @@ CFrmSettings::CFrmSettings()
     tempDia.setupUi(this);
     graph=NULL;
 
+
     connect(WIDGET(QPushButton,pbAdd),SIGNAL(clicked()),this,SLOT(addSlot()));
     connect(WIDGET(QPushButton,pbNew),SIGNAL(clicked()),this,SLOT(newSlot()));
     connect(WIDGET(QPushButton,pbOpen),SIGNAL(clicked()),this,SLOT(openSlot()));
@@ -323,9 +324,11 @@ bool CFrmSettings::renderLayout()
 	{
 	    QString prevFile(buildTempFile());
 	    gvRenderFilename(gvc,graph,"jpg",(char*)prevFile.toUtf8().constData());
-	    if(!this->getActiveWindow()->loadPreview(prevFile))
+	    this->getActiveWindow()->loadPreview(prevFile);
+
+/*	    if(!this->getActiveWindow()->loadPreview(prevFile))
 		QMessageBox::information(this, tr("GVEdit"),
-					tr("Preview file can not be opened."));
+					tr("Preview file can not be opened."));*/
 
 	}
 

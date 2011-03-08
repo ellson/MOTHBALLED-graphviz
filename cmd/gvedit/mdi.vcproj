@@ -137,8 +137,8 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="-Zm200 -w34100 -w34189"
 				Optimization="2"
-				AdditionalIncludeDirectories="&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include&quot;;&quot;$(QTDIR)\include\ActiveQt&quot;;debug;..\..\..\..\Qt\4.7.0\mkspecs\default;.\GeneratedFiles;..\..\lib\common;..\..\lib\pathplan;..\..\lib\cdt;..\..\lib\graph;..\..\lib\gvc"
-				PreprocessorDefinitions="QT_NO_DEBUG;NDEBUG;_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_DLL;QT_GUI_LIB;QT_CORE_LIB;QT_THREAD_SUPPORT"
+				AdditionalIncludeDirectories="&quot;C:\graphviz-ms\graphviz3\plugin\pango&quot;;C:\gtk\include\cairo;&quot;C:\gtk\lib\glib-2.0\include&quot;;&quot;C:\gtk\include\glib-2.0&quot;;&quot;C:\gtk\include\pango-1.0&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include&quot;;&quot;$(QTDIR)\include\ActiveQt&quot;;debug;..\..\..\..\Qt\4.7.0\mkspecs\default;.\GeneratedFiles;..\..\lib\common;..\..\lib\pathplan;..\..\lib\cdt;..\..\lib\graph;&quot;$(SolutionDir)/&quot;;..\..\lib\gvc"
+				PreprocessorDefinitions="QT_NO_DEBUG;NDEBUG;_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_DLL;QT_GUI_LIB;QT_CORE_LIB;QT_THREAD_SUPPORT;HAVE_GETOPT_H;WIN32_DLL"
 				GeneratePreprocessedFile="0"
 				ExceptionHandling="1"
 				RuntimeLibrary="2"
@@ -166,11 +166,11 @@
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
 				AdditionalOptions="&quot;/MANIFESTDEPENDENCY:type=&apos;win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos; processorArchitecture=&apos;*&apos;&quot;"
-				AdditionalDependencies="qtmain.lib QtGuid4.lib QtCored4.lib gvc.lib graph.lib"
+				AdditionalDependencies="qtmain.lib QtGui4.lib QtCore4.lib gvc.lib graph.lib"
 				OutputFile="c:/graphviz-ms/bin/$(ProjectName).exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;C:\graphviz-ms\bin&quot;;&quot;$(QTDIR)\lib&quot;"
+				AdditionalLibraryDirectories="&quot;C:\graphviz-ms\bin&quot;;&quot;$(QTDIR)\lib&quot;;C:\gtk\lib"
 				GenerateDebugInformation="false"
 				ProgramDatabaseFile=""
 				SubSystem="2"
@@ -213,10 +213,6 @@
 			</File>
 			<File
 				RelativePath=".\csettings.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\dwight.cpp"
 				>
 			</File>
 			<File
@@ -265,7 +261,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DQT_NO_DEBUG -DNDEBUG -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT  &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\debug&quot; &quot;-I.\..\..\..\..\Qt\4.7.0\mkspecs\default&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I.\..\..\lib\common&quot; &quot;-I.\..\..\lib\pathplan&quot; &quot;-I.\..\..\lib\cdt&quot; &quot;-I.\..\..\lib\graph&quot; &quot;-I.\..\..\lib\gvc&quot; &quot;.\csettings.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DQT_NO_DEBUG -DNDEBUG -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -DHAVE_GETOPT_H -DWIN32_DLL  &quot;-IC:\graphviz-ms\graphviz3\plugin\pango&quot; &quot;-IC:\gtk\include\cairo&quot; &quot;-IC:\gtk\lib\glib-2.0\include&quot; &quot;-IC:\gtk\include\glib-2.0&quot; &quot;-IC:\gtk\include\pango-1.0&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\debug&quot; &quot;-I.\..\..\..\..\Qt\4.7.0\mkspecs\default&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I.\..\..\lib\common&quot; &quot;-I.\..\..\lib\pathplan&quot; &quot;-I.\..\..\lib\cdt&quot; &quot;-I.\..\..\lib\graph&quot; &quot;-I$(SolutionDir)\.&quot; &quot;-I.\..\..\lib\gvc&quot; &quot;.\csettings.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -291,7 +287,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DQT_NO_DEBUG -DNDEBUG -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT  &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\debug&quot; &quot;-I.\..\..\..\..\Qt\4.7.0\mkspecs\default&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I.\..\..\lib\common&quot; &quot;-I.\..\..\lib\pathplan&quot; &quot;-I.\..\..\lib\cdt&quot; &quot;-I.\..\..\lib\graph&quot; &quot;-I.\..\..\lib\gvc&quot; &quot;.\imageviewer.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DQT_NO_DEBUG -DNDEBUG -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -DHAVE_GETOPT_H -DWIN32_DLL  &quot;-IC:\graphviz-ms\graphviz3\plugin\pango&quot; &quot;-IC:\gtk\include\cairo&quot; &quot;-IC:\gtk\lib\glib-2.0\include&quot; &quot;-IC:\gtk\include\glib-2.0&quot; &quot;-IC:\gtk\include\pango-1.0&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\debug&quot; &quot;-I.\..\..\..\..\Qt\4.7.0\mkspecs\default&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I.\..\..\lib\common&quot; &quot;-I.\..\..\lib\pathplan&quot; &quot;-I.\..\..\lib\cdt&quot; &quot;-I.\..\..\lib\graph&quot; &quot;-I$(SolutionDir)\.&quot; &quot;-I.\..\..\lib\gvc&quot; &quot;.\imageviewer.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -317,7 +313,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DQT_NO_DEBUG -DNDEBUG -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT  &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\debug&quot; &quot;-I.\..\..\..\..\Qt\4.7.0\mkspecs\default&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I.\..\..\lib\common&quot; &quot;-I.\..\..\lib\pathplan&quot; &quot;-I.\..\..\lib\cdt&quot; &quot;-I.\..\..\lib\graph&quot; &quot;-I.\..\..\lib\gvc&quot; &quot;mainwindow.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DQT_NO_DEBUG -DNDEBUG -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -DHAVE_GETOPT_H -DWIN32_DLL  &quot;-IC:\graphviz-ms\graphviz3\plugin\pango&quot; &quot;-IC:\gtk\include\cairo&quot; &quot;-IC:\gtk\lib\glib-2.0\include&quot; &quot;-IC:\gtk\include\glib-2.0&quot; &quot;-IC:\gtk\include\pango-1.0&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\debug&quot; &quot;-I.\..\..\..\..\Qt\4.7.0\mkspecs\default&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I.\..\..\lib\common&quot; &quot;-I.\..\..\lib\pathplan&quot; &quot;-I.\..\..\lib\cdt&quot; &quot;-I.\..\..\lib\graph&quot; &quot;-I$(SolutionDir)\.&quot; &quot;-I.\..\..\lib\gvc&quot; &quot;mainwindow.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
@@ -343,7 +339,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Moc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DQT_NO_DEBUG -DNDEBUG -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT  &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\debug&quot; &quot;-I.\..\..\..\..\Qt\4.7.0\mkspecs\default&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I.\..\..\lib\common&quot; &quot;-I.\..\..\lib\pathplan&quot; &quot;-I.\..\..\lib\cdt&quot; &quot;-I.\..\..\lib\graph&quot; &quot;-I.\..\..\lib\gvc&quot; &quot;mdichild.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DQT_NO_DEBUG -DNDEBUG -D_WINDOWS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT -DHAVE_GETOPT_H -DWIN32_DLL  &quot;-IC:\graphviz-ms\graphviz3\plugin\pango&quot; &quot;-IC:\gtk\include\cairo&quot; &quot;-IC:\gtk\lib\glib-2.0\include&quot; &quot;-IC:\gtk\include\glib-2.0&quot; &quot;-IC:\gtk\include\pango-1.0&quot; &quot;-I$(QTDIR)\include\QtCore&quot; &quot;-I$(QTDIR)\include\QtGui&quot; &quot;-I$(QTDIR)\include&quot; &quot;-I$(QTDIR)\include\ActiveQt&quot; &quot;-I.\debug&quot; &quot;-I.\..\..\..\..\Qt\4.7.0\mkspecs\default&quot; &quot;-I.\GeneratedFiles&quot; &quot;-I.\..\..\lib\common&quot; &quot;-I.\..\..\lib\pathplan&quot; &quot;-I.\..\..\lib\cdt&quot; &quot;-I.\..\..\lib\graph&quot; &quot;-I$(SolutionDir)\.&quot; &quot;-I.\..\..\lib\gvc&quot; &quot;mdichild.h&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
 						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
 						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>

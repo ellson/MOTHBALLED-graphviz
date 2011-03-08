@@ -60,7 +60,9 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 
+
 private:
+    void createConsole();
     void actions();
     void menus();
     void updateMenus();
@@ -71,6 +73,7 @@ private:
     void writeSettings();
     void loadPlugins();
     MdiChild *activeMdiChild();
+    MdiChild* prevChild;
     QMdiSubWindow *findMdiChild(const QString &fileName);
     QSignalMapper *windowMapper;
 

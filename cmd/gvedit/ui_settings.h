@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'settings.ui'
 **
-** Created: Fri Mar 4 14:17:36 2011
+** Created: Mon Mar 7 14:55:34 2011
 **      by: Qt User Interface Compiler version 4.7.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -187,7 +187,7 @@ public:
         frame_2->setFrameShadow(QFrame::Raised);
         layoutWidget1 = new QWidget(frame_2);
         layoutWidget1->setObjectName(QString::fromUtf8("layoutWidget1"));
-        layoutWidget1->setGeometry(QRect(2, 0, 436, 62));
+        layoutWidget1->setGeometry(QRect(2, 0, 391, 62));
         horizontalLayout_7 = new QHBoxLayout(layoutWidget1);
         horizontalLayout_7->setObjectName(QString::fromUtf8("horizontalLayout_7"));
         horizontalLayout_7->setContentsMargins(0, 0, 0, 0);

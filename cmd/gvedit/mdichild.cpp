@@ -34,7 +34,7 @@ void MdiChild::newFile()
     static int sequenceNumber = 1;
 
     isUntitled = true;
-    curFile = tr("document%1.txt").arg(sequenceNumber++);
+    curFile = tr("graph%1.gv").arg(sequenceNumber++);
     setWindowTitle(curFile + "[*]");
 
     connect(document(), SIGNAL(contentsChanged()),
