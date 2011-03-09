@@ -257,6 +257,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\gvc\regex_win32.h"
+				>
+			</File>
+			<File
 				RelativePath=".\common\render.h"
 				>
 			</File>
@@ -418,6 +422,10 @@
 			</File>
 			<File
 				RelativePath=".\common\psusershape.c"
+				>
+			</File>
+			<File
+				RelativePath=".\gvc\regex_win32.c"
 				>
 			</File>
 			<File
