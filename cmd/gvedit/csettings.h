@@ -60,8 +60,6 @@ private:
     QAction* openAct;
     QAction* saveAct;
     //METHODS
-    QString buildOutputFile(QString _fileName);
-    void addAttribute(QString _scope,QString _name,QString _value);
     bool loadLayouts();
     bool loadRenderers();
     void refreshContent();

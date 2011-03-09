@@ -21,7 +21,6 @@
 #include "mdichild.h"
 #include "string.h"
 #include "mainwindow.h"
-#include "dwight.h"
 #include <QTemporaryFile>
 
 
@@ -248,12 +247,6 @@ void CFrmSettings::saveSlot(){
 
 }
 
-QString CFrmSettings::buildOutputFile(QString _fileName)
-{
-    return QString("sfsdfdf");
-}
-
-void CFrmSettings::addAttribute(QString _scope,QString _name,QString _value){}
 bool CFrmSettings::loadGraph(MdiChild* m)
 {
     if(graph)
