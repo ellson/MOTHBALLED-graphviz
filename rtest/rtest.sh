@@ -308,10 +308,18 @@ function doTest
 
 trap 'rm -f $TMPFILE1 $TMPFILE2 $TMPINFILE errout; exit' 0 1 2 3 15
 
-Usage='rtest [-gvn]\n
+Usage='rtest [-gvn] [TESTFILE]\n
  -g : generate test data\n
  -v : verbose\n
  -n : print test'
+
+PARM_NUM=${#*}
+shift ${PARM_NUM}-1
+TEMPTESTFILE=$1
+if [[ -r $TEMPTESTFILE ]]
+then
+	TESTFILE=$TEMPTESTFILE
+fi
 
 while getopts :gnv c
 do
