@@ -1790,7 +1790,6 @@ int make_map_internal(int exclude_random, int include_OK_points,
   }
   graph = NULL;
 
-  fprintf(stderr,"margin=%f\n",bounding_box_margin[0]);
 
   /* generate random points for lake/sea effect */
   if (*nrandom != 0){
