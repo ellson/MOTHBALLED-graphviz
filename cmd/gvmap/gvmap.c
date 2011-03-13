@@ -65,7 +65,6 @@ typedef struct {
     char **infiles; 
     FILE* outfile;
     int dim;
-    int rawData;
     real shore_depth_tol;
     int nrandom; 
     int show_points; 
@@ -139,7 +138,8 @@ int string_split(char *s, char sp, char ***ss0, int *ntokens0){
 }
 
 static char* usestr =
-"    -a k - average number of artificial points added along the bounding box of the labels. (10)\n\
+"   where graphfile must contain node positions, and width/height of each node. No overlap between nodes should be present. Acceptable options are: \n\
+    -a k - average number of artificial points added along the bounding box of the labels. (10)\n\
     -b v - polygon line width, with v < 0 for no line. (0)\n\
     -c v - polygon color scheme (1)\n\
        0 : no polygons\n\
@@ -232,7 +232,6 @@ init(int argc, char **argv, params_t* pm)
   pm->outfile = NULL;
   pm->nrandom = -1;
   pm->dim = 2;
-  pm->rawData = 0;
   pm->shore_depth_tol = 0;
   pm->highlight_cluster = 0;
   pm->plotedges = 0;
@@ -292,9 +291,6 @@ init(int argc, char **argv, params_t* pm)
       } else {
         usage(cmd,1);
       }
-      break;
-     case 'f':
-        pm->rawData = 1;
       break;
      case 'r':
       if ((sscanf(optarg,"%d",&r) > 0)){
@@ -412,57 +408,6 @@ static void add_return(char *s){
   }
 }
 
-static int read_data(int n, int dim, int k, FILE *fp, real *x, real *width, int *grouping, char **labels, float *fsz,
-	  float *rgb_r, float *rgb_g, float *rgb_b){
-  char **fields;
-  int nfields;
-  char buf[100000];
-  int i, nz = 0, len;
-  char s;
-
-  /* x|y|width|height|group|label|fontsize|rgbcolor|*/
-
-  for (i = 0; i < n; i++){
-    while ((s = buf[nz++] = fgetc(fp)) != '\n' && s != EOF);
-    buf[nz] = '\0';
-    if (nz < 1) break;
-
-    if (string_split(buf, '|', &fields, &nfields)) return 1;
-    assert(nfields >= k);
-
-    sscanf(fields[0], "%lf", &(x[i*dim]));
-    sscanf(fields[1], "%lf", &(x[i*dim+1]));
-    sscanf(fields[2], "%lf", &(width[i*dim]));
-    sscanf(fields[3], "%lf", &(width[i*dim+1]));
-    sscanf(fields[4], "%d", &(grouping[i]));
-    labels[i] = MALLOC(sizeof(char*)*(strlen(fields[5])+1));
-    strcpy(labels[i], fields[5]);
-    add_return(labels[i]);
-
-    sscanf(fields[6], "%f", &(fsz[i]));
-    /*fields[7] is of the form RGBColor[x, y, z]*/
-    len = strlen(fields[7]);
-    fields[7][len-1] = ',';
-    if (len < 10) {
-      fprintf(stderr,"line %d is funny, check you data! I am assign black color\n", i+2);
-      rgb_r[grouping[i]]=rgb_g[grouping[i]]=rgb_b[grouping[i]] = 0.;
-    } else {
-      strcpy(buf, fields[7]+9);
-      if (string_split(buf, ',', &fields, &nfields)) return 1;
-      
-      sscanf(fields[0], "%f", &(rgb_r[grouping[i]]));
-      sscanf(fields[1], "%f", &(rgb_g[grouping[i]]));
-      sscanf(fields[2], "%f", &(rgb_b[grouping[i]]));
-    }
-    if (s == EOF){
-      break;
-    }
-    nz = 0;
-  }
-
-  
-  return 0;
-}
 
 #if 0
 static void get_graph_node_attribute(Agraph_t* g, char *tag, char *format, size_t len, void *x_default_val, int *nn, void *x, int *flag){
@@ -677,69 +622,6 @@ makeMap (SparseMatrix graph, int n, real* x, real* width, int* grouping,
   FREE(polys_groups);
 }
 
-static void doRawData (FILE* fp, params_t* pm)
-{
-  real* x;
-  real* width;
-  int dim = pm->dim;
-  char** labels = NULL;
-  int* grouping;
-  float* rgb_r;
-  float* rgb_g;
-  float* rgb_b;
-  float* fsz;
-  int ierr, n, nentries;
-
-  ierr = fscanf(fp, "%d\t%d\n",&n, &nentries);
-  if (nentries == 8) {
-    /* x|y|width|height|group|label|fontsize|rgbcolor|*/
-    labels = MALLOC(sizeof(char*)*n);
-  }
-  x = N_NEW(dim*n, real);
-  width = N_NEW(dim*n, real);
-  grouping = N_NEW(n,int);
-  rgb_r = N_NEW(MAX_GRPS,float);
-  rgb_g = N_NEW(MAX_GRPS,float);
-  rgb_b = N_NEW(MAX_GRPS,float);
-  fsz = N_NEW(n,float);
-    
-  read_data(n, dim, nentries, fp, x, width, grouping, labels, fsz, rgb_r, rgb_g, rgb_b);
-
-  makeMap (NULL, n, x, width, grouping, labels, fsz, rgb_r, rgb_g, rgb_b, pm, NULL);
-
-  free (x);
-  free (width);
-  free (grouping);
-  free (rgb_r);
-  free (rgb_g);
-  free (rgb_b);
-  free (fsz);
-  if (labels) free (labels);
-      
-}
-
-static void mapFromRaw (params_t* pm)
-{
-  char* fname;
-  FILE* fp;
-    
-  if (pm->infiles[0] == NULL)
-    doRawData (stdin, pm);
-  else {
-    int i = 0;
-    while ((fname = pm->infiles[i])) { 
-      fp = fopen(fname, "r");
-      if (!fp) {
-        fprintf (stderr, "%s: could not open %s for reading\n", pm->cmd, fname);
-      }
-      else {
-        doRawData (fp, pm);
-        fclose(fp);
-      }
-      i++;
-    }
-  }
-}
 
 static void mapFromGraph (Agraph_t* g, params_t* pm)
 {
@@ -773,15 +655,11 @@ int main(int argc, char *argv[])
 
   init(argc, argv, &pm);
 
-  if (pm.rawData) 
-    mapFromRaw (&pm);
-  else {
-    newIngraph (&ig, pm.infiles, gread);
-    while ((g = nextGraph (&ig)) != 0) {
-      if (prevg) agclose (prevg);
-      mapFromGraph (g, &pm);
-      prevg = g;
-    }
+  newIngraph (&ig, pm.infiles, gread);
+  while ((g = nextGraph (&ig)) != 0) {
+    if (prevg) agclose (prevg);
+    mapFromGraph (g, &pm);
+    prevg = g;
   }
 
   return 0; 
