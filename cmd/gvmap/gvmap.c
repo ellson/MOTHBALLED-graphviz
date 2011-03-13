@@ -139,7 +139,7 @@ int string_split(char *s, char sp, char ***ss0, int *ntokens0){
 
 static char* usestr =
 "   where graphfile must contain node positions, and width/height of each node. No overlap between nodes should be present. Acceptable options are: \n\
-    -a k - average number of artificial points added along the bounding box of the labels. (10)\n\
+    -a k - average number of artificial points added along the bounding box of the labels. If < 0, a suitable value is selected automatically. (-1)\n\
     -b v - polygon line width, with v < 0 for no line. (0)\n\
     -c v - polygon color scheme (1)\n\
        0 : no polygons\n\
@@ -243,7 +243,7 @@ init(int argc, char **argv, params_t* pm)
   pm->bg_color = NULL;
   pm->improve_contiguity_n = 0;
   pm->whatout = OUT_DOT;
-  pm->nart = 10;
+  pm->nart = -1;
   pm->color_optimize = 1;
   pm->maxcluster = 0;
   pm->nedgep = 0;
@@ -324,7 +324,7 @@ init(int argc, char **argv, params_t* pm)
       pm->color_optimize = 0;
       break;
     case 'a':
-      if ((sscanf(optarg,"%d",&r) > 0) && r >= 0){
+      if ((sscanf(optarg,"%d",&r) > 0)){
 	    pm->nart = r;
       } else {
 	    usage(cmd,1);
@@ -395,19 +395,6 @@ init(int argc, char **argv, params_t* pm)
   if (!pm->outfile)
     pm->outfile = stdout;
 }
-
-static void add_return(char *s){
-  /* replace "\\n" by "\n" (return) */
-  int i, j, len =strlen(s);
-  for (i = 0; i < strlen(s); i++){
-    if (s[i] == '\\' && i < len - 1 && s[i+1] == 'n'){
-      s[i] = '\n';
-      for (j = i+1; j < len - 1; j++) s[j] = s[j+1];
-      s[len - 1] = '\0'; len--;
-    }
-  }
-}
-
 
 #if 0
 static void get_graph_node_attribute(Agraph_t* g, char *tag, char *format, size_t len, void *x_default_val, int *nn, void *x, int *flag){

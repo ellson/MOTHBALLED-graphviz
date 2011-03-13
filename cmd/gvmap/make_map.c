@@ -2137,6 +2137,9 @@ int make_map_from_rectangle_groups(int exclude_random, int include_OK_points,
   SparseMatrix graph = graph0;
   real bbox[4];
 
+  if (K < 0){
+    K = (int) 10/(1+n/400.);/* 0 if n > 3600*/
+  }
   *nart = 0;
   if (Verbose){
     int maxgp = grouping[0];
