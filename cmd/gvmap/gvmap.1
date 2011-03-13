@@ -5,7 +5,7 @@
 ..
 .TH GVMAP 1 "3 March 2011"
 .SH NAME
-gvmap \- geographical map create from graphs
+gvmap \- find clusters and create a geographical map highlighting clusters.
 .SH SYNOPSIS
 .B gvmap
 [\fB\-ekov?\fP]
@@ -21,8 +21,26 @@ gvmap \- geographical map create from graphs
 ]
 .SH DESCRIPTION
 .B gvmap
-takes as input a graph in DOT format with node position and size
-information, and produces a rendering of the graph as a geographic-style map.
+takes as input a graph in DOT forma, find node clusters and produces a rendering of the graph as a geographic-style map, with clusters highlighted, in xdot format.
+.P
+Input graph must have node position and width/height information defined, and node overlap removed.
+.SH OPTIONS
+The following options are supported:
+.TP
+.BI \-a k
+The integer k speficies average number of artificial points added along the bounding box of the labels. Such artificial points are added to avoid country boundary to cut through the boundary box of the labels. Computing time is proportioal to k hence for large graphs, a small value of k is suggested. If k = -1, a suitable value of k is automatically selected based on graph size. (-1)
+.TP
+.BI \-e
+If speficied, edges will be included in the final output.
+.BI \-s d 
+The real number d speficied the depth of the shore in points. If 0, the depth is selected automatically. (0)
+
+.SH EXAMPLES
+.PP
+Given a graph foo.gv, one way to generate a layout and highlight the cluster is to first select a layout engine with a suitable overlap removal method, then feed the output to gvmap, and render finally to a graphics format. E.g., the following create a map with edges in semi-transparent light gray andnodes laid-out using sfdp
+.PP
+sfdp -Goverlap=prism foo.gv | gvmap -e | neato -n2  -Ecolor="#55555522" -Tpng > foo.png
+
 .SH AUTHOR
 Yifan Hu <yifanhu@research.att.com>
 .SH "SEE ALSO"
