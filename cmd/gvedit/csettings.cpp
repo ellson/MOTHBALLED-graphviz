@@ -316,7 +316,7 @@ bool CFrmSettings::renderLayout()
 	if(!this->getActiveWindow()->loadPreview(_fileName));//create preview
 	{
 	    QString prevFile(buildTempFile());
-	    gvRenderFilename(gvc,graph,"jpg",(char*)prevFile.toUtf8().constData());
+	    gvRenderFilename(gvc,graph,"png",(char*)prevFile.toUtf8().constData());
 	    this->getActiveWindow()->loadPreview(prevFile);
 
 /*	    if(!this->getActiveWindow()->loadPreview(prevFile))
