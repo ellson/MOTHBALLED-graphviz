@@ -148,6 +148,8 @@ CMainWindow::CMainWindow()
     cb = (QComboBox*)frmSettings->findChild<QComboBox*>("cbExtension");
     LoadPlugins(cb, frmSettings->gvc, "device");
     statusBar()->showMessage(tr("Ready"));
+    setWindowIcon(QIcon(":/images/icon.png"));
+
 }
 
 void CMainWindow::closeEvent(QCloseEvent *event)

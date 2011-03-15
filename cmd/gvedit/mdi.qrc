@@ -8,5 +8,6 @@
         <file>images/save.png</file>
         <file>images/run.png</file>
         <file>images/settings.png</file>
+        <file>images/icon.png</file>
     </qresource>
 </RCC>

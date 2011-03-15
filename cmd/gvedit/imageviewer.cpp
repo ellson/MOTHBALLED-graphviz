@@ -37,7 +37,7 @@ ImageViewer::ImageViewer()
     setWindowTitle(tr(""));
     resize(800, 600);
 
-    setWindowIcon(QIcon(":/images/new.png"));
+    setWindowIcon(QIcon(":/images/icon.png"));
 
 }
 //! [0]

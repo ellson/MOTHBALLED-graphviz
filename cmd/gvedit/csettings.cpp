@@ -128,6 +128,7 @@ CFrmSettings::CFrmSettings()
 
 
     loadAttrs("./attrs.txt",WIDGET(QComboBox,cbNameG),WIDGET(QComboBox,cbNameN),WIDGET(QComboBox,cbNameE));
+    setWindowIcon(QIcon(":/images/icon.png"));
 }
 
 void CFrmSettings::outputSlot()

@@ -539,6 +539,26 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\images\icon.png"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="mdi.qrc"
 				>
 				<FileConfiguration
@@ -548,7 +568,7 @@
 						Name="VCCustomBuildTool"
 						Description="Rcc&apos;ing $(InputFileName)..."
 						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;$(InputName)&quot; -no-compress &quot;$(InputPath)&quot; -o .\GeneratedFiles\qrc_$(InputName).cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(InputPath);.\images\copy.png;.\images\cut.png;.\images\new.png;.\images\open.png;.\images\paste.png;.\images\save.png;.\images\run.png;.\images\settings.png"
+						AdditionalDependencies="$(InputPath);.\images\copy.png;.\images\cut.png;.\images\new.png;.\images\open.png;.\images\paste.png;.\images\save.png;.\images\run.png;.\images\settings.png;.\images\icon.png"
 						Outputs=".\GeneratedFiles\qrc_$(InputName).cpp"
 					/>
 				</FileConfiguration>
@@ -559,7 +579,7 @@
 						Name="VCCustomBuildTool"
 						Description="Rcc&apos;ing $(InputFileName)..."
 						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;$(InputName)&quot; -no-compress &quot;$(InputPath)&quot; -o .\GeneratedFiles\qrc_$(InputName).cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(InputPath);.\images\copy.png;.\images\cut.png;.\images\new.png;.\images\open.png;.\images\paste.png;.\images\save.png;.\images\run.png;.\images\settings.png"
+						AdditionalDependencies="$(InputPath);.\images\copy.png;.\images\cut.png;.\images\new.png;.\images\open.png;.\images\paste.png;.\images\save.png;.\images\run.png;.\images\settings.png;.\images\icon.png"
 						Outputs=".\GeneratedFiles\qrc_$(InputName).cpp"
 					/>
 				</FileConfiguration>
