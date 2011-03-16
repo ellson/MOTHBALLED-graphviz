@@ -60,28 +60,32 @@ void *grealloc(void *ptr, size_t size)
 
 #endif
 
+static char* usestr =
+"    -C k - generate no more than k clusters (0)\n\
+       0 : no limit\n\
+    -c k - use clustering method k (0)\n\
+       0 : use modularity\n\
+       1 : use modularity quality\n\
+    -v   - verbose mode\n\
+    -?   - print usage\n";
 
 static void usage(char* cmd, int eval)
 {
     fprintf(stderr, "Usage: %s <options> graphfile\n", cmd);
-    fprintf(stderr, "-C k: generate no more than k clusters. This only apply if clustering is not specified in the dot file. The specified number of cluster k is only indicative and may not be realisable. k >=0, Default is 0: no limit on number of clusters.\n");
-    fprintf(stderr,"-v for verbose\n");
-    fprintf(stderr,"-c k: use clustering method k. 0 (default) uses the mudularity, 1 used the modularity quality\n");
-    fprintf(stderr,"\n");
+    fputs (usestr, stderr);
     exit(eval);
 }
 
 
-static void init(int *argc, char **argv[], char **infile, int *maxcluster, int *clustering_method){
-  char* cmd = (*argv)[0];
+static void init(int argc, char *argv[], char **infiles[], int *maxcluster, int *clustering_method){
+  char* cmd = argv[0];
   unsigned int c;
 
   *maxcluster = 0;
   Verbose = 0;
 
-  *infile = NULL;
   *clustering_method =  CLUSTERING_MODULARITY;
-  while ((c = getopt(*argc, *argv, ":vC:c:")) != -1) {
+  while ((c = getopt(argc, argv, ":vC:c:")) != -1) {
     switch (c) {
     case 'c':
       if (!((sscanf(optarg,"%d", clustering_method) > 0) && *clustering_method >= 0)){
@@ -110,10 +114,12 @@ static void init(int *argc, char **argv[], char **infile, int *maxcluster, int *
     }
   }
 
-  (*argv) += optind;
-  (*argc) -= optind;
-  if (*argc)
-    *infile = (*argv)[0];
+  argv += optind;
+  argc -= optind;
+  if (argc)
+    *infiles = argv;
+  else
+    *infiles = NULL;
 }
 
 
@@ -133,14 +139,14 @@ void clusterGraph (Agraph_t* g, int maxcluster, int clustering_method){
 int main(int argc, char *argv[])
 {
   Agraph_t *g = 0, *prevg = 0;
-  char *infile;
+  char** infiles;
   int maxcluster;
   int clustering_method;
   ingraph_state ig;
 
-  init(&argc, &argv, &infile, &maxcluster, &clustering_method);
+  init(argc, argv, &infiles, &maxcluster, &clustering_method);
 
-  newIngraph (&ig, &infile, gread);
+  newIngraph (&ig, infiles, gread);
 
   while ((g = nextGraph (&ig)) != 0) {
     if (prevg) agclose (prevg);
