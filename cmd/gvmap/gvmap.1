@@ -21,26 +21,37 @@ gvmap \- find clusters and create a geographical map highlighting clusters.
 ]
 .SH DESCRIPTION
 .B gvmap
-takes as input a graph in DOT format, find node clusters and produces a rendering of the graph as a geographic-style map, with clusters highlighted, in xdot format.
+takes as input a graph in DOT format, finds node clusters and produces a rendering of the graph as a geographic-style map, with clusters highlighted, in xdot format.
 .P
-Input graph must have node position and width/height information defined, and node overlap removed.
+The input graph must have node positions and width/height information defined, 
+and nodes must not overlap.
 .SH OPTIONS
 The following options are supported:
 .TP
 .BI \-a " k"
-The integer k speficies average number of artificial points added along the bounding box of the labels. Such artificial points are added to avoid country boundary to cut through the boundary box of the labels. Computing time is proportioal to k hence for large graphs, a small value of k is suggested. If k = -1, a suitable value of k is automatically selected based on graph size. By default k = -1.
+The integer k speficies the average number of artificial points added along 
+the bounding box of the labels. Such artificial points are added to avoid 
+a country boundary cutting through the boundary box of the labels. Computing 
+time is proportioal to k; hence, for large graphs, a small value of k is 
+suggested. If k = -1, a suitable value of k is automatically selected based on 
+the graph size. By default k = -1.
 .TP
 .BI \-e
 If speficied, edges will be included in the final output.
 .TP
 .BI \-s " d" 
-The real number d speficied the depth of the shore in points. If 0, the depth is selected automatically. By default d = 0.
+The real number d speficies the depth of the shore in points. If 0, the depth is selected automatically. By default d = 0.
 
 .SH EXAMPLES
 .PP
-Given a graph foo.gv, one way to generate a layout and highlight the cluster is to first select a layout engine with a suitable overlap removal method, then feed the output to gvmap, and render finally to a graphics format. E.g., the following create a map with edges in semi-transparent light gray and nodes laid-out using sfdp
+Given a graph foo.gv, one way to generate a layout and highlight the clusters 
+is to first select a layout engine with a suitable overlap removal method, then 
+feed the output to gvmap, and finally render the map using specific graphics 
+format. For example, the following pipeline
+creates a map with edges in semi-transparent light gray and nodes laid 
+out using sfdp:
 .PP
-sfdp -Goverlap=prism foo.gv | gvmap -e | neato -n2  -Ecolor="#55555522" -Tpng > foo.png
+sfdp -Goverlap=prism foo.gv | gvmap -e | neato -n2 -Ecolor="#55555522" -Tpng > foo.png
 
 .SH AUTHOR
 Yifan Hu <yifanhu@research.att.com>
