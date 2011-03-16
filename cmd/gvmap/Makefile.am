@@ -15,7 +15,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/ingraphs \
 	-I$(top_srcdir)/lib/cdt
 
-bin_PROGRAMS = gvmap
+bin_PROGRAMS = gvmap cluster
 
 noinst_HEADERS = make_map.h power.h country_graph_coloring.h DotIO.h \
 	colorutil.h color_palette.h mq.h clustering.h
@@ -23,8 +23,24 @@ noinst_HEADERS = make_map.h power.h country_graph_coloring.h DotIO.h \
 gvmap_SOURCES = gvmap.c make_map.c power.c country_graph_coloring.c DotIO.c \
 	colorutil.c mq.c clustering.c
 
+cluster_SOURCES = cluster.c make_map.c power.c country_graph_coloring.c DotIO.c \
+	colorutil.c mq.c clustering.c 
+
 gvmap_CPPFLAGS = $(AM_CPPFLAGS)
+
+cluster_CPPFLAGS = $(AM_CPPFLAGS) -g
+
 gvmap_LDADD = \
+	$(top_builddir)/lib/sfdpgen/libsfdpgen_C.la \
+	$(top_builddir)/lib/neatogen/libneatogen_C.la \
+	$(top_builddir)/lib/sparse/libsparse_C.la \
+	$(top_builddir)/lib/rbtree/librbtree_C.la \
+	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
+	$(top_builddir)/lib/common/libcommon_C.la \
+	$(top_builddir)/lib/cgraph/libcgraph.la \
+	$(GTS_LIBS) -lm
+
+cluster_LDADD = \
 	$(top_builddir)/lib/sfdpgen/libsfdpgen_C.la \
 	$(top_builddir)/lib/neatogen/libneatogen_C.la \
 	$(top_builddir)/lib/sparse/libsparse_C.la \
@@ -36,6 +52,9 @@ gvmap_LDADD = \
 
 gvmap.1.pdf: $(srcdir)/gvmap.1
 	- @GROFF@ -Tps -man $(srcdir)/gvmap.1 | @PS2PDF@ - - >gvmap.1.pdf
+
+clustering.1.pdf: $(srcdir)/clustering.1
+	- @GROFF@ -Tps -man $(srcdir)/clustering.1 | @PS2PDF@ - - >clustering.1.pdf
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) # gvmap.vcproj
 
