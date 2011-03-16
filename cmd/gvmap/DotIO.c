@@ -807,6 +807,98 @@ SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim
   return A;
 }
 
+void attached_clustering(Agraph_t* g, int maxcluster, int clustering_scheme){
+  SparseMatrix A = 0;
+  Agnode_t* n;
+  Agedge_t* e;
+  Agsym_t *sym, *clust_sym;
+  int nnodes;
+  int nedges;
+  int i, row,nc;
+  int* I;
+  int* J;
+  real* val;
+  real v;
+  int type = MATRIX_TYPE_REAL;
+  char scluster[100];
+
+
+  int *clusters;
+
+
+  
+  if (!g) return;
+  nnodes = agnnodes (g);
+  nedges = agnedges (g);
+  
+  /* Assign node ids */
+  i = 0;
+  for (n = agfstnode (g); n; n = agnxtnode (g, n))
+    ND_id(n) = i++;
+  
+  /* form matrix */  
+  I = N_NEW(nedges, int);
+  J = N_NEW(nedges, int);
+  val = N_NEW(nedges, real);
+  
+  sym = agattr(g, AGEDGE, "weight", NULL);
+  clust_sym = agattr(g, AGNODE, "cluster", NULL);
+
+  i = 0;
+  for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
+    row = ND_id(n);
+    for (e = agfstout (g, n); e; e = agnxtout (g, e)) {
+      I[i] = row;
+      J[i] = ND_id(aghead(e));
+      if (sym) {
+        if (sscanf (agxget(e,sym), "%lf", &v) != 1)
+          v = 1;
+      }
+      else
+        v = 1;
+      val[i] = v;
+      i++;
+    }
+  }
+  A = SparseMatrix_from_coordinate_arrays(nedges, nnodes, nnodes, I, J, val, type);
+
+  clusters = MALLOC(sizeof(int)*nnodes);
+
+  {
+    int use_value = TRUE, flag = 0;
+    real modularity;
+    if (!clust_sym) clust_sym = agattr(g,AGNODE,"cluster","-1");
+    
+    if (clustering_scheme == CLUSTERING_MQ){
+      mq_clustering(A, FALSE, maxcluster, use_value,
+		    &nc, &clusters, &modularity, &flag);
+    } else if (clustering_scheme == CLUSTERING_MODULARITY){ 
+      modularity_clustering(A, FALSE, maxcluster, use_value,
+			    &nc, &clusters, &modularity, &flag);
+    } else {
+      assert(0);
+    }
+    for (i = 0; i < nnodes; i++) (clusters)[i]++;/* make into 1 based */
+    for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
+      i = ND_id(n);
+      sprintf(scluster,"%d",(clusters)[i]);
+      agxset(n,clust_sym,scluster);
+    }
+    if (Verbose){
+      fprintf(stderr," no complement clustering info in dot file, using modularity clustering. Modularity = %f, ncluster=%d\n",modularity, nc);
+    }
+  }
+
+  FREE(I);
+  FREE(J);
+  FREE(val);
+  FREE(clusters);
+
+  SparseMatrix_delete(A);
+
+}
+
+
 
 void initDotIO (Agraph_t *g)
 {

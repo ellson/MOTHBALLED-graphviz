@@ -32,4 +32,6 @@ char * hue2rgb(real hue, char *color);
 SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim, int *nn, real **label_sizes, real ** areas, real **x, int **clusters, float **rgb_r,  float **rgb_g,  float **rgb_b,  float **fsz, char ***labels, int default_color_scheme, int clustering_scheme);
 
 void Dot_SetClusterColor(Agraph_t* g, float *rgb_r,  float *rgb_g,  float *rgb_b, int *clustering);
+void attached_clustering(Agraph_t* g, int maxcluster, int clustering_scheme);
+
 #endif
