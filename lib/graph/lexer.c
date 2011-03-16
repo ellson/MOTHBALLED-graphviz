@@ -133,9 +133,9 @@ static char *skip_wscomments(char *pp)
 }
 
 /* scan an unquoted token and return the position after its terminator */
-static char *scan_token(char *p, char *token)
+static char *scan_token(unsigned char *p, unsigned char *token)
 {
-    char *q;
+    unsigned char *q;
 
     q = token;
     if (p == '\0')
