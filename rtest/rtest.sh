@@ -31,6 +31,7 @@ VERBOSE=               # If set, give verbose output
 NOOP=                  # If set, just print list of tests
 DOT=../cmd/dot/dot_builtins # build tree version with a builtin set of plugins
 		       # should be $(top_builddir)/cmd/dot/dot_static
+DOT=/Users/erg/bin/dot
 DIFFIMG=../contrib/diffimg/diffimg # build tree version
 
 TESTNAME=   # name of test
@@ -313,14 +314,6 @@ Usage='rtest [-gvn] [TESTFILE]\n
  -v : verbose\n
  -n : print test'
 
-PARM_NUM=${#*}
-shift ${PARM_NUM}-1
-TEMPTESTFILE=$1
-if [[ -r $TEMPTESTFILE ]]
-then
-	TESTFILE=$TEMPTESTFILE
-fi
-
 while getopts :gnv c
 do
   case $c in
@@ -355,6 +348,17 @@ do
   esac
 done
 shift $((OPTIND-1))
+
+if [[ $# > 0 ]]
+then
+  if [[ -r $1 ]]
+  then
+    TESTFILE=$1
+  else
+    print -u 2 "Test file $1 does not exist"
+    exit 1
+  fi
+fi
 
 # Check environment and initialize
 
