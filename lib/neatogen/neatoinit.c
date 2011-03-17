@@ -705,7 +705,12 @@ int init_nop(Agraph_t * g, int adjust)
     nop_init_graphs(g, G_lp, G_bb);
     posEdges = nop_init_edges(g);
 
-    if (adjust && (Nop == 1))
+    if (GD_drawing(g)->xdots)
+	haveBackground = 1;
+    else
+	haveBackground = 0;
+
+    if (adjust && (Nop == 1) && !haveBackground)
 	didAdjust = adjustNodes(g);
 
     if (didAdjust) {
@@ -724,12 +729,8 @@ int init_nop(Agraph_t * g, int adjust)
 	compute_bb(g);
 
     /* Adjust bounding box for any background */
-    if (GD_drawing(g)->xdots) {
-	haveBackground = 1;
+    if (haveBackground)
 	GD_bb(g) = xdotBB (g);
-    }
-    else
-	haveBackground = 0;
 
     /* At this point, all bounding boxes should be correctly defined.
      * If necessary, we translate the graph to the origin.
