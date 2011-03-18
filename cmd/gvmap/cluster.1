@@ -10,10 +10,10 @@ cluster \- find clusters in a graph and augment the graph with this information.
 .B cluster
 [\fB\-v?\fP]
 [
-.I options
+.BI \-C k
 ]
 [
-.BI \-o
+.B \-o
 .I outfile
 ]
 [ 
@@ -21,12 +21,25 @@ cluster \- find clusters in a graph and augment the graph with this information.
 ]
 .SH DESCRIPTION
 .B cluster
-takes as input a graph in DOT format, find node clusters and augment the graph with this information. 
+takes as input a graph in DOT format, finds node clusters and augments 
+the graph with this information. 
+The clusters are specified by the "cluster" attribute attached to nodes; cluster
+values are non-negative integers.
 .B cluster
-attempt to maximize the modularity of the clustering.
-If edge "weight" is defined, this will be used in computing the clustering.
+attempts to maximize the modularity of the clustering.
+If the edge attribute "weight" is defined, this will be used in 
+computing the clustering.
 .SH OPTIONS
 The following options are supported:
+.TP
+.BI \-C k 
+specifies that no more than \fIk\fP clusters should be generated.
+The specified number of clusters \fIk\fP is only a suggestion and may not be realisable. 
+If \fIk == 0\fP, the default, there is no limit on the number of clusters.
+.TP
+.BI \-o outfile 
+Specifies that output should go into the file \fIoutfile\fP. By default,
+\fIstdout\fP is used.
 .TP
 .BI \-v 
 Verbose mode.
