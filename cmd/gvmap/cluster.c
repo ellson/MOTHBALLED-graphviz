@@ -34,6 +34,13 @@ enum {POINTS_ALL = 1, POINTS_LABEL, POINTS_RANDOM};
 enum {maxlen = 10000000};
 enum {MAX_GRPS = 10000};
 
+typedef struct {
+  FILE* outfp;
+  char** infiles;
+  int maxcluster;
+  int clustering_method;
+} opts_t;
+
 #if 0
 void *gmalloc(size_t nbytes)
 {
@@ -66,6 +73,7 @@ static char* usestr =
     -c k - use clustering method k (0)\n\
        0 : use modularity\n\
        1 : use modularity quality\n\
+    -o <outfile> - output file (stdout)\n\
     -v   - verbose mode\n\
     -?   - print usage\n";
 
@@ -76,28 +84,50 @@ static void usage(char* cmd, int eval)
     exit(eval);
 }
 
+static FILE *openFile(char *name, char *mode, char* cmd)
+{
+    FILE *fp;
+    char *modestr;
 
-static void init(int argc, char *argv[], char **infiles[], int *maxcluster, int *clustering_method){
+    fp = fopen(name, mode);
+    if (!fp) {
+	if (*mode == 'r')
+	    modestr = "reading";
+	else
+	    modestr = "writing";
+	fprintf(stderr, "%s: could not open file %s for %s\n",
+		cmd, name, modestr);
+	exit(-1);
+    }
+    return (fp);
+}
+
+static void init(int argc, char *argv[], opts_t* opts) {
   char* cmd = argv[0];
   unsigned int c;
+  int v;
 
-  *maxcluster = 0;
+  opts->maxcluster = 0;
+  opts->outfp = stdout;
   Verbose = 0;
 
-  *clustering_method =  CLUSTERING_MODULARITY;
-  while ((c = getopt(argc, argv, ":vC:c:")) != -1) {
+  opts->clustering_method =  CLUSTERING_MODULARITY;
+  while ((c = getopt(argc, argv, ":vC:c:o:")) != -1) {
     switch (c) {
     case 'c':
-      if (!((sscanf(optarg,"%d", clustering_method) > 0) && *clustering_method >= 0)){
+      if ((sscanf(optarg,"%d", &v) == 0) || (v < 0)) {
 	usage(cmd,1);
       }
-
+      else opts->clustering_method = v;
       break;
     case 'C':
-      if (!((sscanf(optarg,"%d",maxcluster) > 0) && *maxcluster >= 0)){
+      if ((sscanf(optarg,"%d",&v) == 0) || (v < 0)) {
 	usage(cmd,1);
       }
-
+      else opts->maxcluster = v;
+      break;
+    case 'o':
+      opts->outfp = openFile(optarg, "w", cmd);
       break;
     case 'v':
       Verbose = 1;
@@ -117,12 +147,10 @@ static void init(int argc, char *argv[], char **infiles[], int *maxcluster, int 
   argv += optind;
   argc -= optind;
   if (argc)
-    *infiles = argv;
+    opts->infiles = argv;
   else
-    *infiles = NULL;
+    opts->infiles = NULL;
 }
-
-
 
 static Agraph_t *gread(FILE * fp)
 {
@@ -139,19 +167,17 @@ void clusterGraph (Agraph_t* g, int maxcluster, int clustering_method){
 int main(int argc, char *argv[])
 {
   Agraph_t *g = 0, *prevg = 0;
-  char** infiles;
-  int maxcluster;
-  int clustering_method;
   ingraph_state ig;
+  opts_t opts;
 
-  init(argc, argv, &infiles, &maxcluster, &clustering_method);
+  init(argc, argv, &opts);
 
-  newIngraph (&ig, infiles, gread);
+  newIngraph (&ig, opts.infiles, gread);
 
   while ((g = nextGraph (&ig)) != 0) {
     if (prevg) agclose (prevg);
-    clusterGraph (g, maxcluster, clustering_method);
-    agwrite(g, stdout);
+    clusterGraph (g, opts.maxcluster, opts.clustering_method);
+    agwrite(g, opts.outfp);
     prevg = g;
   }
 
