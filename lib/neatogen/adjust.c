@@ -1001,8 +1001,8 @@ static adjust_data *getAdjustMode(Agraph_t* g, char *s, adjust_data* dp)
 	while (ap->attrib) {
 	    if (!strncasecmp(s, ap->attrib, ap->len)) {
 		if (ap->print == NULL) {
-		    agerr (AGWARN, "Overlap value \"%s\" unknown - ignored\n", ap->attrib);
-		    ap = &adjustMode[0];
+		    agerr (AGWARN, "Overlap value \"%s\" unsupported - ignored\n", ap->attrib);
+		    ap = &adjustMode[1];
 		}
 		dp->mode = ap->mode;
 		dp->print = ap->print;
