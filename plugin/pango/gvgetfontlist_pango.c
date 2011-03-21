@@ -531,8 +531,10 @@ gv_font_map* get_font_mapping(PangoFontMap * fontmap)
     gv_flist_free_af(gv_af_p);
     agxbfree(&xb);
     agxbfree(&xb2);
+#ifndef WIN32
     if (Verbose > 1)
 	printFontMap (gv_fmap, ps_fontnames_sz);
+#endif
     return gv_fmap;
 }
 
