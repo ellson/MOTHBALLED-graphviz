@@ -168,7 +168,8 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
 	    tl.fontname = fname_;
 	    tl.fontsize = fsize_;
 	    tl.yoffset_layout = ti->yoffset_layout;
-	    tl.yoffset_centerline = ti->yoffset_centerline;
+	    /* tl.yoffset_centerline = ti->yoffset_centerline; */
+	    tl.yoffset_centerline = 1;
 	    tl.postscript_alias = ti->postscript_alias;
 	    tl.layout = ti->layout;
 	    tl.width = ti->size;
@@ -802,11 +803,12 @@ size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
     char *fname;
     textpara_t lp;
     htmlfont_t lhf;
+    double maxoffset;
 
     lp.font = &lhf;
     for (i = 0; i < ftxt->nparas; i++) {
 	width = w = 0;
-	mxfsize = 0;
+	maxoffset = mxfsize = 0;
 	for (j = 0; j < ftxt->paras[i].nitems; j++) {
 	    lp.str = strdup_and_subst_obj (ftxt->paras[i].items[j].str, env->obj);
 	    if (ftxt->paras[i].items[j].font) {
@@ -840,8 +842,10 @@ size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
 	    ftxt->paras[i].items[j].free_layout = lp.free_layout;
 	    width += sz.x;
 	    mxfsize = MAX(fsize, mxfsize);
+	    maxoffset = MAX(lp.yoffset_centerline, maxoffset);
 	}
-	lsize = mxfsize * LINESPACING;
+	/* lsize = mxfsize * LINESPACING; */
+	lsize = mxfsize;
 	ftxt->paras[i].size = (double) width;
 	    /* ysize - curbline is the distance from the previous
 	     * baseline to the bottom of the previous line.
@@ -849,7 +853,8 @@ size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
 	     * be 5/6 of the max. font size. Thus, lfsize gives the
 	     * distance from the previous baseline to the new one.
 	     */
-	ftxt->paras[i].lfsize = 5*mxfsize/6 + ysize - curbline;
+	/* ftxt->paras[i].lfsize = 5*mxfsize/6 + ysize - curbline; */
+	ftxt->paras[i].lfsize = mxfsize + ysize - curbline - maxoffset;
 	curbline += ftxt->paras[i].lfsize;
 	xsize = MAX(width, xsize);
 	ysize += lsize;
