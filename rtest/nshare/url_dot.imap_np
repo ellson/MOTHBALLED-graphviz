@@ -1,26 +1,14 @@
 base referer
 default http://www.graphviz.org/doc/info/output.html
-rect http://www.graphviz.org/doc/info/lang.html 288,5 363,53
-rect http://www.graphviz.org/doc/info/colors.html 33,163 97,197
-rect http://www.graphviz.org/doc/info/output.html 5,148 125,212
-rect lang->colors 288,36 296,44
-rect lang->colors 87,147 95,155
-rect http://www.graphviz.org/doc/info/command.html 259,156 392,204
-rect http://www.graphviz.org/doc/info/shapes.html 321,49 329,57
-rect http://www.graphviz.org/doc/info/shapes.html 321,152 329,160
-rect headurl 343,45 351,53
-rect headurl 435,153 443,161
-rect headurl 422,133 453,155
-rect G name 149,156 235,204
-rect tailurl 505,49 513,57
-rect tailurl 459,153 467,161
-rect tailurl 483,51 514,74
-rect labelurl 520,49 528,57
-rect labelurl 540,152 548,160
-rect garf 531,78 562,101
-rect tailURL 643,49 651,57
-rect headURL 643,152 651,160
-rect garf 646,78 677,101
-rect headURL 615,133 689,155
-rect tailURL 611,54 672,77
-rect http://www.graphviz.org/doc/info/arrows.html 139,112 403,215
+rect http://www.graphviz.org/doc/info/lang.html 281,5 353,53
+rect http://www.graphviz.org/doc/info/colors.html 33,157 97,193
+rect http://www.graphviz.org/doc/info/output.html 5,142 125,208
+rect http://www.graphviz.org/doc/info/command.html 255,151 379,199
+rect headsize 410,129 439,149
+rect G name 150,151 231,199
+rect tailsize 472,51 502,71
+rect garf 520,78 551,98
+rect garf 632,78 663,98
+rect headURL 602,128 674,148
+rect tailURL 596,56 657,76
+rect http://www.graphviz.org/doc/info/arrows.html 139,109 391,209
