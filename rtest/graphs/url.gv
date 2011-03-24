@@ -22,8 +22,8 @@ label=<<table href="http://www.graphviz.org/doc/info/colors.html"><tr><td BGCOLO
   lang ->  command [ URL="http://www.graphviz.org/doc/info/shapes.html" 
   ]
   lang -> colors [ URL="\E" edgetooltip=self ]
-  lang -> size [ URL="headurl" edgetooltip=headurl headlabel=size headULR=headsize]
-  word -> size [ URL="tailurl" taillabel=size tailULR=tailsize]
+  lang -> size [ URL="headurl" edgetooltip=headurl headlabel=size headURL=headsize]
+  word -> size [ URL="tailurl" taillabel=size tailURL=tailsize]
   word -> garf [ URL="labelurl" label=garf labelURL=garf]
   line -> all [ 
     URL="labelurl" 
