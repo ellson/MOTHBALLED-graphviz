@@ -888,15 +888,19 @@ static void poly_init(node_t * n)
     }
 
     /* Compute space available for label.  Provides the justification borders */
-    if (!mapbool(late_string(n, N_nojustify, "false")) && (dimen.y < bb.y)) {
-	if (isBox)
-	    temp = bb.x;
-	else
+    if (!mapbool(late_string(n, N_nojustify, "false"))) {
+	if (isBox) {
+	    ND_label(n)->space.x = MAX(dimen.x,bb.x) - spacex;
+	}
+	else if (dimen.y < bb.y) {
 	    temp = bb.x * sqrt(1.0 - SQR(dimen.y) / SQR(bb.y));
+	    ND_label(n)->space.x = MAX(dimen.x,temp) - spacex;
+        }
+	else
+	    ND_label(n)->space.x = dimen.x - spacex;
     } else {
-	temp = dimen.x;
+	ND_label(n)->space.x = dimen.x - spacex;
     }
-    ND_label(n)->space.x = temp - spacex;
 
 
     temp = bb.y - min_bb.y;
