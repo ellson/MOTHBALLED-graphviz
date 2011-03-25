@@ -38,7 +38,7 @@ TESTNAME=   # name of test
 GRAPH=      # graph specification
 IDX=
 typeset -i i j SUBTESTCNT
-typeset -i CRASH_CNT DIFF_CNT
+typeset -i CRASH_CNT DIFF_CNT TOT_CNT
 typeset -i LINECNT=0
 typeset -A TESTTYPES
 typeset -a ALG
@@ -261,6 +261,7 @@ function doTest
 
   for ((i=0;i<SUBTESTCNT;i++))
   do
+    (( TOT_CNT+=1 ))
     genOutname $TESTNAME ${ALG[$i]} ${FMT[$i]}
     OUTPATH=$OUTDIR/$OUTFILE
     KFLAGS=${ALG[$i]}
@@ -400,4 +401,4 @@ while readTest
 do
   doTest
 done
-print -u 2 "Layout failures: $CRASH_CNT Changes: $DIFF_CNT"
+print -u 2 "No. tests: $TOT_CNT Layout failures: $CRASH_CNT Changes: $DIFF_CNT"
