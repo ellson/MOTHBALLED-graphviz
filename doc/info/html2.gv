@@ -30,7 +30,7 @@ digraph G {
   ]
 
   subgraph { rank=same b c }
-  a:here -> b:there [arrowtail = diamond]
+  a:here -> b:there [dir=both arrowtail = diamond]
   c -> b
   d [shape=triangle]
   d -> c [label=<
