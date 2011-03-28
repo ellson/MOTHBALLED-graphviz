@@ -37,10 +37,23 @@ static void freeList (char** lp, int count)
     free (lp);
 }
 
-static void LoadPlugins (QComboBox* cb, GVC_t* gvc, char* kind)
+static void LoadPlugins (QComboBox* cb, GVC_t* gvc, char* kind, char* prefer)
 {
     int count;
     char** lp = gvPluginList(gvc, kind, &count, NULL);
+
+    /* If available, set prefer as first choice */
+    for (int id=0;id < count; id++) {
+	if (!strcmp(prefer,lp[id])) {
+	    if (id != 0) {
+		char* tmp = lp[0];
+		lp[0] = lp[id];
+		lp[id] = tmp;
+	    }
+	    break;
+	}
+    }
+
     cb->clear();
     for (int id=0;id < count; id++)
     {
@@ -48,6 +61,7 @@ static void LoadPlugins (QComboBox* cb, GVC_t* gvc, char* kind)
     };
     freeList (lp, count);
 }
+
 void CMainWindow::createConsole()
 {
     QDockWidget *dock = new QDockWidget(tr("Output Console"), this);
@@ -144,9 +158,9 @@ CMainWindow::CMainWindow()
     setUnifiedTitleAndToolBarOnMac(true);
 //    (QComboBox*)frmSettings->findChild<QComboBox*>("cbLayout")
     QComboBox* cb = (QComboBox*)frmSettings->findChild<QComboBox*>("cbLayout");
-    LoadPlugins(cb,  frmSettings->gvc, "layout");
+    LoadPlugins(cb,  frmSettings->gvc, "layout", "dot");
     cb = (QComboBox*)frmSettings->findChild<QComboBox*>("cbExtension");
-    LoadPlugins(cb, frmSettings->gvc, "device");
+    LoadPlugins(cb, frmSettings->gvc, "device", "png");
     statusBar()->showMessage(tr("Ready"));
     setWindowIcon(QIcon(":/images/icon.png"));
 
