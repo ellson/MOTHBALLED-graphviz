@@ -370,9 +370,11 @@ char *strdup_and_subst_obj(char *str, void *obj)
 	    case 'L':
 		newlen += l_len;
 		break; 
+#ifdef ESCAPE_BACKSLASH
 	    case '\\':
 		newlen += 1;
 		break; 
+#endif
 	    default:  /* leave other escape sequences unmodified, e.g. \n \l \r */
 		newlen += 2;
 	    }
@@ -417,9 +419,11 @@ char *strdup_and_subst_obj(char *str, void *obj)
 	    case 'L':
 		for (t = l_str; (*p = *t++); p++);
 		break;
+#ifdef ESCAPE_BACKSLASH
 	    case '\\':
 		*p++ = '\\';
 		break;
+#endif
 	    default:  /* leave other escape sequences unmodified, e.g. \n \l \r */
 		*p++ = '\\';
 		*p++ = c;
