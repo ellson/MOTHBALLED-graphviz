@@ -345,3 +345,4 @@ addEdgeLabels
 is_a_cluster
 mapBool
 drand48
+gvPluginList
