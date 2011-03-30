@@ -325,6 +325,11 @@ can describe multiple lines of variously aligned text as provided by ordinary
 label can specify a table similar to those provided by HTML,
 with different graphical attributes at each level.
 <P>
+As <A HREF=lang.html#html>HTML strings</A> are processed like HTML input, any use of
+the &quot;, &amp;, &lt;, and &gt; characters in literal text or in attribute values
+need to be replaced by the corresponding escape sequence. For example, if you want to
+use  &amp; in an <TT>href</TT> value, this should be represented as  &amp;amp;.
+<P>
 <B>NOTE:</B> The features and syntax supported by these labels are
 modeled on HTML. However, there are many aspects that are relevant
 to Graphviz labels that are not in HTML and, conversely, HTML allows
@@ -337,7 +342,7 @@ Although HTML labels are not, strictly speaking, a shape, they can be
 viewed as a generalization of the record shapes described above. 
 In particular, if a node has set its 
 <A HREF=attrs.html#k:shape><TT>shape</TT></A>
-attribute to <TT>plaintext</TT>, the HTML label will be the node's
+attribute to <TT>none</TT> or <TT>plaintext</TT>, the HTML label will be the node's
 shape. On the other hand, if the node has any other shape (except 
 <TT>point</TT>), the HTML label will be embedded within the node the
 same way an ordinary label would be.
