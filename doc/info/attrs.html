@@ -394,6 +394,9 @@ This field indicates which graph component uses the attribute.
 </TD><TD>E</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>dot only</TD> </TR>
  <TR><TD><A NAME=a:samplepoints HREF=#d:samplepoints>samplepoints</A>
 </TD><TD>N</TD><TD>int</TD><TD ALIGN="CENTER">8(output)<BR>20(overlap and image maps)</TD><TD></TD><TD></TD> </TR>
+ <TR><TD><A NAME=a:scale HREF=#d:scale>scale</A>
+</TD><TD>G</TD><TD>double<BR><A HREF=#k:pointf>pointf</A>
+</TD><TD ALIGN="CENTER"></TD><TD></TD><TD>twopi only</TD> </TR>
  <TR><TD><A NAME=a:searchsize HREF=#d:searchsize>searchsize</A>
 </TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">30</TD><TD></TD><TD>dot only</TD> </TR>
  <TR><TD><A NAME=a:sep HREF=#d:sep>sep</A>
@@ -1567,6 +1570,11 @@ This field indicates which graph component uses the attribute.
   the number of points used for a node whose shape is a circle or ellipse.
   It plays the same role in neato, when adjusting the layout to avoid
   overlapping nodes, and in image maps.
+
+<DT><A NAME=d:scale HREF=#a:scale><STRONG>scale</STRONG></A>
+<DD>  If set, after the initial layout, twopi will scale the layout by the given factors.
+  The scaling uses the root node of each component as the center of the scaling.
+  If only a single number is given, this is used for both factors.
 
 <DT><A NAME=d:searchsize HREF=#a:searchsize><STRONG>searchsize</STRONG></A>
 <DD>  During network simplex, maximum number of edges with negative cut values
