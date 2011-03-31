@@ -2,8 +2,8 @@
 ## Process this file with automake to produce Makefile.in
 
 pdfdir = $(pkgdatadir)/doc/pdf
-man_MANS = gvmap.1 cluster.1
-pdf_DATA = gvmap.1.pdf cluster.1.pdf
+man_MANS = gvmap.1 cluster.1 gvmap.sh.1
+pdf_DATA = gvmap.1.pdf cluster.1.pdf gvmap.sh.1.pdf
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
@@ -55,6 +55,9 @@ gvmap.1.pdf: $(srcdir)/gvmap.1
 
 cluster.1.pdf: $(srcdir)/cluster.1
 	- @GROFF@ -Tps -man $(srcdir)/cluster.1 | @PS2PDF@ - - >cluster.1.pdf
+
+gvmap.sh.1.pdf: $(srcdir)/gvmap.sh.1
+	- @GROFF@ -Tps -man $(srcdir)/gvmap.sh.1 | @PS2PDF@ - - >gvmap.sh.1.pdf
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) # gvmap.vcproj
 

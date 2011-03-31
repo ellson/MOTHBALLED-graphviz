@@ -8,7 +8,7 @@
 gvmap \- find clusters and create a geographical map highlighting clusters.
 .SH SYNOPSIS
 .B gvmap
-[\fB\-ekov?\fP]
+[\fB\-ekv?\fP]
 [
 .I options
 ]
@@ -29,18 +29,24 @@ and nodes must not overlap.
 The following options are supported:
 .TP
 .BI \-a " k"
-The integer k speficies the average number of artificial points added along 
+The integer k specifies the average number of artificial points added along 
 the bounding box of the labels. Such artificial points are added to avoid 
 a country boundary cutting through the boundary box of the labels. Computing 
-time is proportioal to k; hence, for large graphs, a small value of k is 
+time is proportional to k; hence, for large graphs, a small value of k is 
 suggested. If k = -1, a suitable value of k is automatically selected based on 
 the graph size. By default k = -1.
 .TP
 .BI \-e
-If speficied, edges will be included in the final output.
+If specified, edges will be included in the final output.
+.TP
+.BI \-k
+Increases randonesss of boundary
 .TP
 .BI \-s " d" 
-The real number d speficies the depth of the shore in points. If 0, the depth is selected automatically. By default d = 0.
+The real number d specifies the depth of the shore in points. If 0, the depth is selected automatically. By default d = 0.
+.TP
+.BI \-v
+Set verbose mode.
 
 .SH EXAMPLES
 .PP
@@ -51,12 +57,17 @@ format. For example, the following pipeline
 creates a map with edges in semi-transparent light gray and nodes laid 
 out using sfdp:
 .PP
-sfdp -Goverlap=prism foo.gv | gvmap -e | neato -n2 -Ecolor="#55555522" -Tpng > foo.png
+sfdp -Goverlap=prism foo.gv | gvmap -e | neato -n2 -Ecolor=#55555522 -Tpng > foo.png
+.PP
+The shell script gvmap.sh provides a shorthand for such pipelines. For example, the
+above pipeline can be achieved using
+.PP
+gvmap.sh -Ae -Ecolor=#55555522 -Tpng foo.gv > foo.png
 
 .SH AUTHOR
 Yifan Hu <yifanhu@research.att.com>
 .SH "SEE ALSO"
 .PP
-sfdp(1), neato(1), gvpr(1)
+gvmap.sh(1), sfdp(1), neato(1), gvpr(1)
 .PP
 E. R. Gansner, Y. Hu, S. G. Kobourov, "GMap: Visualizing graphs and clusters as maps," Proc. Pacific Vis. 2010, pp. 201\(hy208.
