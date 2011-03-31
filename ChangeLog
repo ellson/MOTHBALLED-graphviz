@@ -1,3 +1,22 @@
+	- Add gvmap, cluster and gvmap.sh
+	- Add patchwork supporting squarified tree maps
+	- Add ordering as a node attribute
+	- Fix problems with font resolution
+	- Fix problems with text placement
+	- Fix twopi to set root attribute
+	- Make available layouts and formats available via the API
+	- Fix error message system so that an application can capture the messages
+	- New Qt-based version of gvedit
+	- New attributes and features for sfdp
+	- gvgen now allows the user to specify graph name and node name template
+	- Make overlap=false denote overlap=prism
+	- More efficient xdot library
+	- HTML-like labels provide ID
+	- Fixed bugs:
+		1480 2044 2129 2139 2157 2113
+March 31, 2011
+	- Add many new gvpr scripts to release package
+	- Add scale attribute to twopi
 October 14, 2010
 	- Add <B>,<I>,<U> to html strings
 February 15, 2010
