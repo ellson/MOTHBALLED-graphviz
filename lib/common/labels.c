@@ -16,6 +16,8 @@
 #include "htmltable.h"
 #include <limits.h>
 
+static char *strdup_and_subst_obj0 (char *str, void *obj, int escBackslash);
+
 static void storeline(graph_t *g, textlabel_t *lp, char *line, char terminator)
 {
     pointf size;
@@ -165,7 +167,10 @@ textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *f
     }
     else {
         assert(kind == LT_NONE);
-	rv->text = strdup_and_subst_obj(str, obj);
+	/* This call just processes the graph object based escape sequences. The formatting escape
+         * sequences (\n, \l, \r) are processed in make_simple_label. That call also replaces \\ with \.
+         */
+	rv->text = strdup_and_subst_obj0(str, obj, 0);
         switch (rv->charset) {
 	case CHAR_LATIN1:
 	    s = latin1ToUTF8(rv->text);
@@ -276,7 +281,13 @@ void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
     obj->emit_state = old_emit_state;
 }
 
-char *strdup_and_subst_obj(char *str, void *obj)
+/* strdup_and_subst_obj0:
+ * Replace various escape sequences with the name of the associated
+ * graph object. A double backslash \\ can be used to avoid a replacement.
+ * If escBackslash is true, convert \\ to \; else leave alone. All other dyads 
+ * of the form \. are passed through unchanged.
+ */
+static char *strdup_and_subst_obj0 (char *str, void *obj, int escBackslash)
 {
     char c, *s, *p, *t, *newstr;
     char *tp_str = "", *hp_str = "";
@@ -370,11 +381,12 @@ char *strdup_and_subst_obj(char *str, void *obj)
 	    case 'L':
 		newlen += l_len;
 		break; 
-#ifdef ESCAPE_BACKSLASH
 	    case '\\':
-		newlen += 1;
-		break; 
-#endif
+		if (escBackslash) {
+		    newlen += 1;
+		    break; 
+		}
+		/* Fall through */
 	    default:  /* leave other escape sequences unmodified, e.g. \n \l \r */
 		newlen += 2;
 	    }
@@ -419,11 +431,12 @@ char *strdup_and_subst_obj(char *str, void *obj)
 	    case 'L':
 		for (t = l_str; (*p = *t++); p++);
 		break;
-#ifdef ESCAPE_BACKSLASH
 	    case '\\':
-		*p++ = '\\';
-		break;
-#endif
+		if (escBackslash) {
+		    *p++ = '\\';
+		    break; 
+		}
+		/* Fall through */
 	    default:  /* leave other escape sequences unmodified, e.g. \n \l \r */
 		*p++ = '\\';
 		*p++ = c;
@@ -435,6 +448,14 @@ char *strdup_and_subst_obj(char *str, void *obj)
     }
     *p++ = '\0';
     return newstr;
+}
+
+/* strdup_and_subst_obj:
+ * Processes graph object escape sequences; also collapses \\ to \.
+ */
+char *strdup_and_subst_obj(char *str, void *obj)
+{
+    return strdup_and_subst_obj0 (str, obj, 1);
 }
 
 /* return true if *s points to &[A-Za-z]*;      (e.g. &Ccedil; )
