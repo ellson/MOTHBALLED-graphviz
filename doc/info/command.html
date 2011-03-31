@@ -23,14 +23,14 @@ If no input files are supplied, the program reads from <STRONG>stdin</STRONG>.
 <DT><A NAME=minusK><STRONG>-K</STRONG></A><I>layout</I>
 <DD>Specifies which default layout algorithm to use, overriding the default from the command name. For example, running
 <TT>dot -Kneato</TT> is equivalent to running <TT>neato</TT>.
-<DT><A NAME=d:T><STRONG>-T</STRONG></A><I>format</I>[:<I>renderer</I>[:<I>formatter</I>]]       
-<DD>Set output language to one of the <A HREF=output.html>supported formats</A>.
-By default, <A HREF=output.html#d:dot>attributed dot</A> is produced.
+<DT><A NAME=dT><STRONG>-T</STRONG></A><I>format</I>[:<I>renderer</I>[:<I>formatter</I>]]       
+<DD>Set output language to one of the <A HREF=/content/output-formats>supported formats</A>.
+By default, <A HREF=/content/output-formats#ddot>attributed dot</A> is produced.
 <P>
 Depending on how Graphviz was built, there may be multiple renderers for
 generating a particular output format, and multiple formatters for 
 creating the final output. For example, a typical installation
-can produce <A HREF="http://www.graphviz.org/doc/info/output.html#d:png">PNG</A>
+can produce <A HREF="http://www.graphviz.org/content/output-formats#dpng">PNG</A>
 output using either the Cairo or GD library. The desired rendering engine
 can be specified after a colon. If there are multiple formatting engines
 available, the desired one can be specified in a similar fashion after
@@ -55,16 +55,16 @@ beginning of output.
 whose content will be included in the preamble after the standard preamble.
 If <I>library</I> is the empty string <TT>""</TT>, the standard preamble
 is not emitted.
-<DT><A NAME=d:n><STRONG>-n</STRONG>[<I>num</I>]</A>      
+<DT><A NAME=dn><STRONG>-n</STRONG>[<I>num</I>]</A>      
 <DD>Sets no-op flag in <STRONG>neato</STRONG>. 
 If set, <STRONG>neato</STRONG> assumes nodes have already been 
-positioned and all nodes have a <A HREF=attrs.html#d:pos>pos</A>
+positioned and all nodes have a <A HREF=/content/attrs#dpos>pos</A>
 attribute giving
 the positions. It then performs an optional adjustment to remove node-node
 overlap, depending on the value of the 
-<A HREF=attrs.html#d:overlap>overlap</A> attribute, computes the edge 
+<A HREF=/content/attrs#doverlap>overlap</A> attribute, computes the edge 
 layouts, depending on the value of the 
-<A HREF=attrs.html#d:splines>splines</A> attribute, and
+<A HREF=/content/attrs#dsplines>splines</A> attribute, and
 emits the graph in the appropriate format. If <I>num</I> is supplied,
 the following actions occur:
 <DL>
@@ -73,10 +73,10 @@ the following actions occur:
 <DT><I>num</I> > 1
 <DD>Use node positions as specified, with no adjustment to
 remove node-node overlaps, and use any edge layouts already specified
-by the <A HREF=attrs.html#d:pos>pos</A> attribute. <STRONG>neato</STRONG>
+by the <A HREF=/content/attrs#dpos>pos</A> attribute. <STRONG>neato</STRONG>
 computes an edge layout for any edge that does not have a <B>pos</B> attribute.
 As usual, edge layout is guided by the 
-<A HREF=attrs.html#d:splines>splines</A> attribute.
+<A HREF=/content/attrs#dsplines>splines</A> attribute.
 </DL>
 <DT><STRONG>-o</STRONG><I>outfile</I>    
 <DD>Write output to file <I>outfile</I>. By default, output goes to
@@ -90,10 +90,10 @@ flags.
 the current executable.   e.g.  <STRONG>dot -P -Tps | lpr</STRONG>
 <DT><STRONG>-q</STRONG>
 <DD>Suppress warning messages.
-<DT><A NAME=d:s><STRONG>-s</STRONG></A>[<I>scale</I>]
+<DT><A NAME=ds><STRONG>-s</STRONG></A>[<I>scale</I>]
 <DD>Set input scale to <I>scale</I>. If this value is omitted,
 72.0 is used. This number is used to convert the point coordinate
-units used in the <A HREF=attrs.html#d:pos>pos</A> attribute 
+units used in the <A HREF=/content/attrs#dpos>pos</A> attribute 
 into inches, which is what is expected by neato and fdp. 
 Thus, feeding the output of a graph laid out by one program into
 neato or fdp almost always requires this flag.
@@ -106,10 +106,10 @@ This removes uninteresting graph structure and produces a less cluttered
 drawing.
 <DT><STRONG>-y</STRONG>             
 <DD>By default, the coordinate system used in generic output formats, 
-such as <A HREF=output.html#d:dot>attributed dot</A>,
-<A HREF=output.html#d:xdot>extended dot</A>,
-<A HREF=output.html#d:plain>plain</A> and
-<A HREF=output.html#d:plain-ext>plain-ext</A>,
+such as <A HREF=/content/output-formats#ddot>attributed dot</A>,
+<A HREF=/content/output-formats#dxdot>extended dot</A>,
+<A HREF=/content/output-formats#dplain>plain</A> and
+<A HREF=/content/output-formats#dplain-ext>plain-ext</A>,
 is the standard cartesian system with the origin in the lower left corner, 
 and with increasing y coordinates as points move from bottom to top.
 If the <CODE>-y</CODE> flag is used, the coordinate system is inverted,
@@ -137,21 +137,21 @@ output, the graph will have these attributes.
 <DT><STRONG>GDFONTPATH</STRONG>
 <DD>
 List of pathnames giving directories which a program should search for fonts.
-Overridden by <A HREF=#d:DOTFONTPATH>DOTFONTPATH</A>.
+Overridden by <A HREF=#dDOTFONTPATH>DOTFONTPATH</A>.
 <IT>Used only if Graphviz is not built with the <TT>fontconfig</TT> library</IT>
-<DT><A NAME=d:DOTFONTPATH><STRONG>DOTFONTPATH</STRONG></A>
+<DT><A NAME=dDOTFONTPATH><STRONG>DOTFONTPATH</STRONG></A>
 <DD>
 List of pathnames giving directories which a program should search for fonts.
-Overridden by <A HREF=attrs.html#d:fontpath><STRONG>fontpath</STRONG></A>.
+Overridden by <A HREF=/content/attrs#dfontpath><STRONG>fontpath</STRONG></A>.
 <IT>Used only if Graphviz is not built with the <TT>fontconfig</TT> library</IT>
-<DT><A NAME=d:SERVER_NAME><STRONG>SERVER_NAME</STRONG></A>
+<DT><A NAME=dSERVER_NAME><STRONG>SERVER_NAME</STRONG></A>
 <DD>
 If defined, this indicates that the software is running as a web application,
 which restricts access to image files. See 
-<A HREF=#d:GV_FILE_PATH>GV_FILE_PATH</A>.
-<DT><A NAME=d:GV_FILE_PATH><STRONG>GV_FILE_PATH</STRONG></A>
+<A HREF=#dGV_FILE_PATH>GV_FILE_PATH</A>.
+<DT><A NAME=dGV_FILE_PATH><STRONG>GV_FILE_PATH</STRONG></A>
 <DD>
-If <A HREF=#d:SERVER_NAME>SERVER_NAME</A> is defined, image files are
+If <A HREF=#dSERVER_NAME>SERVER_NAME</A> is defined, image files are
 restricted to exist in one of the directories specified by <TT>GV_FILE_PATH</TT>.
 This last is a list of directory pathnames, separated by semicolons in Windows or
 by colons otherwise.
@@ -165,7 +165,7 @@ SERVER_NAME=xxx GV_FILE_PATH="images:etc/images:/usr/share/images" dot -Tpng -o 
 Note that the image files must really reside in one of the specified directories. If the
 image file is specified as an absolute or relative pathname, a warning is given and only
 the base name is used.
-<DT><A NAME=d:GVBINDIR><STRONG>GVBINDIR</STRONG></A>
+<DT><A NAME=dGVBINDIR><STRONG>GVBINDIR</STRONG></A>
 <DD>
 Indicates which directory contains the Graphviz config file and
 plug-in libraries. If it is defined, the value overrides any other
