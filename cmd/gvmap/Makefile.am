@@ -15,7 +15,9 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/ingraphs \
 	-I$(top_srcdir)/lib/cdt
 
-bin_PROGRAMS = gvmap cluster
+bin_PROGRAMS = gvmap cluster 
+
+dist_bin_SCRIPTS = gvmap.sh
 
 noinst_HEADERS = make_map.h power.h country_graph_coloring.h DotIO.h \
 	colorutil.h color_palette.h mq.h clustering.h
@@ -49,6 +51,8 @@ cluster_LDADD = \
 	$(top_builddir)/lib/common/libcommon_C.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(GTS_LIBS) -lm
+
+gvmap.sh :
 
 gvmap.1.pdf: $(srcdir)/gvmap.1
 	- @GROFF@ -Tps -man $(srcdir)/gvmap.1 | @PS2PDF@ - - >gvmap.1.pdf
