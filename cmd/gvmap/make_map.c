@@ -2183,8 +2183,12 @@ int make_map_from_rectangle_groups(int exclude_random, int include_OK_points,
     if (shore_depth_tol < 0) {
       shore_depth_tol = -(shore_depth_tol)*avgsz;
     } else if (shore_depth_tol == 0){
+      real area;
       get_boundingbox(n, dim, x, sizes, bbox);
-      shore_depth_tol = MIN(bbox[1] - bbox[0], bbox[3] - bbox[2])*0.05;
+      //shore_depth_tol = MIN(bbox[1] - bbox[0], bbox[3] - bbox[2])*0.05;
+      area = (bbox[1] - bbox[0])*(bbox[3] - bbox[2]);
+      shore_depth_tol = sqrt(area/(real) n); 
+      if (Verbose) fprintf(stderr,"setting shore length ======%f\n",shore_depth_tol);
     } else {
       /*
       get_boundingbox(n, dim, x, sizes, bbox);
