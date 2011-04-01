@@ -141,7 +141,7 @@ static char* usestr =
 "   where graphfile must contain node positions, and width/height of each node. No overlap between nodes should be present. Acceptable options are: \n\
     -a k - average number of artificial points added along the bounding box of the labels. If < 0, a suitable value is selected automatically. (-1)\n\
     -b v - polygon line width, with v < 0 for no line. (0)\n\
-    -c v - polygon color scheme (1)\n\
+    -c k - polygon color scheme (1)\n\
        0 : no polygons\n\
        1 : pastel\n\
        2 : blue to yellow\n\
@@ -154,26 +154,27 @@ static char* usestr =
     -d s - seed used to calculate Fielder vector for optimal coloring\n\
     -C k - generate at most k clusters. (0)\n\
     -e   - show edges\n\
-    -g c - bounding box color. If not specified, bounding box is not drawn.\n\
-    -k   - increase randonesss of boundary\n\
-    -l s - specify label\n\
-    -m v - bounding box margin. If 0, auto assigned (0)\n\
-    -h k - number of artificial points added maintain bridge between endpoints (0)\n\
-    -o <file> - put output in <file> (stdout)\n\
+    -g c - bounding box color. If not specified, a bounding box is not drawn.\n\
+    -k   - increase randomesss of boundary\n\
+    -r k - number of random points k used to define sea and lake boundaries. If 0, auto assigned. (0)\n\
+    -s v - depth of the sea and lake shores in points. If 0, auto assigned. (0)\n\
+    -O   - do NOT do color assignment optimization that maximizes color difference between neighboring countries\n\
+    -v   - verbose\n\
+    -z c - polygon line color (black)\n";
+
+/* 
+
+    -t n - improve contiguity up to n times. (0)\n\
     -p k - show points. (0)\n\
        0 : no points\n\
        1 : all points\n\
        2 : label points\n\
        3 : random/artificial points\n\
-    -r v - number of points. If 0, auto assigned. (0)\n\
-    -s d - depth of the shore in points. If 0, auto assigned. (0)\n\
-    -t n - improve contiguity up to n times. (0)\n\
-    -O   - do NOT to optimize color differences\n\
-    -v   - verbose\n\
-    -z c - polygon line color (black)\n";
-
-/*
-    -q f - output format (3)\n\
+    -o <file> - put output in <file> (stdout)\n\
+    -h k - number of artificial points added maintain bridge between endpoints (0)\n\
+    -l s - specify label\n\
+    -m v - bounding box margin. If 0, auto assigned (0)\n\
+   -q f - output format (3)\n\
        0 : Mathematica\n\
        1 : PostScript\n\
        2 : country map\n\
