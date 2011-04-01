@@ -158,6 +158,7 @@ static char* usestr =
     -k   - increase randomesss of boundary\n\
     -r k - number of random points k used to define sea and lake boundaries. If 0, auto assigned. (0)\n\
     -s v - depth of the sea and lake shores in points. If 0, auto assigned. (0)\n\
+    -o <file> - put output in <file> (stdout)\n\
     -O   - do NOT do color assignment optimization that maximizes color difference between neighboring countries\n\
     -v   - verbose\n\
     -z c - polygon line color (black)\n";
@@ -170,7 +171,6 @@ static char* usestr =
        1 : all points\n\
        2 : label points\n\
        3 : random/artificial points\n\
-    -o <file> - put output in <file> (stdout)\n\
     -h k - number of artificial points added maintain bridge between endpoints (0)\n\
     -l s - specify label\n\
     -m v - bounding box margin. If 0, auto assigned (0)\n\
