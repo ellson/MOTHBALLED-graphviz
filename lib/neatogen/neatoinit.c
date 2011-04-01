@@ -435,7 +435,7 @@ static pos_edge nop_init_edges(Agraph_t * g)
     int nedges = 0;
     attrsym_t *E_pos;
 
-    if (agnedges(g)) == 0)
+    if (agnedges(g) == 0)
 	return AllEdges;
 
     E_pos = agfindedgeattr(g, "pos");
