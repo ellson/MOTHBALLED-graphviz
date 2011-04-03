@@ -3237,6 +3237,9 @@ AC_CONFIG_FILES(Makefile
     cmd/dotty/Makefile
     cmd/smyrna/Makefile
     cmd/gvmap/Makefile
+	cmd/gvedit/Makefile
+	cmd/gvedit/ui/Makefile
+	cmd/gvedit/images/Makefile
 	tclpkg/Makefile
 	tclpkg/tclstubs/Makefile
 	tclpkg/tkstubs/Makefile
