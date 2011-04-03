@@ -1,2 +1,6 @@
 Makefile.in
 Makefile
+qMakefile
+moc_*
+qrc_mdi.cpp
+gvedit

@@ -12,7 +12,7 @@
  *************************************************************************/
 
 #include <QtGui>
-#include <qframe>
+#include <qframe.h>
 #include "mainwindow.h"
 #include "mdichild.h"
 #include "csettings.h"

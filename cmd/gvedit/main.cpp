@@ -18,6 +18,7 @@
 #ifdef WIN32_DLL
 #include "windows.h"
 #endif
+#include <stdio.h>
 #include <QApplication>
 #include "mainwindow.h"
 
