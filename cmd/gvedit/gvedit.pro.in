@@ -1,5 +1,5 @@
 
-DEFINES += HAVE_CONFIG_H GVEDIT_DATADIR=@datadir@/graphviz/gvedit
+DEFINES += HAVE_CONFIG_H GVEDIT_DATADIR=@datarootdir@/graphviz/gvedit
 LIBS += -L@libdir@ -lgvc -lgraph -lcdt
 INCLUDEPATH += \
 	/usr/include/Qt \
