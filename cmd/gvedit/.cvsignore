@@ -3,4 +3,6 @@ Makefile
 qMakefile
 moc_*
 qrc_mdi.cpp
+gvedit.pro
 gvedit
+.deps

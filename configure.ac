@@ -2411,6 +2411,28 @@ fi
 AM_CONDITIONAL(WITH_MING, [test "x$use_ming" = "xYes"])
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for QT
+
+AC_ARG_WITH(qt,
+  [AS_HELP_STRING([--with-qt=yes],[Qt features])],
+  [], [with_qt=yes])
+
+if test "x$with_qt" != "xyes"; then
+  use_qt="No (disabled)"
+else
+  PKG_CHECK_MODULES(QT, [Qt],[
+    use_qt="Yes"
+    AC_DEFINE_UNQUOTED(HAVE_QT,1,
+      [Define if you have Qt])
+    AC_SUBST(QT_CFLAGS)
+    AC_SUBST(QT_LIBS)
+  ],[
+    use_qt="No (Qt not available)"
+  ])
+fi
+AM_CONDITIONAL(WITH_QT, [test "x$use_qt" = "xYes"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for QUARTZ 
 
 AC_ARG_WITH(quartz,
@@ -3223,20 +3245,20 @@ AC_CONFIG_FILES(Makefile
 	cmd/dot/Makefile
 	cmd/tools/Makefile
 	cmd/gvpr/Makefile
-    cmd/lefty/ws/x11/libfilereq/Makefile
-    cmd/lefty/ws/x11/Makefile
-    cmd/lefty/ws/mswin32/Makefile
-    cmd/lefty/ws/Makefile
-    cmd/lefty/os/unix/Makefile
-    cmd/lefty/os/mswin32/Makefile
-    cmd/lefty/os/Makefile
-    cmd/lefty/dot2l/Makefile
-    cmd/lefty/examples/Makefile
-    cmd/lefty/Makefile
-    cmd/lneato/Makefile
-    cmd/dotty/Makefile
-    cmd/smyrna/Makefile
-    cmd/gvmap/Makefile
+	cmd/lefty/ws/x11/libfilereq/Makefile
+	cmd/lefty/ws/x11/Makefile
+	cmd/lefty/ws/mswin32/Makefile
+	cmd/lefty/ws/Makefile
+	cmd/lefty/os/unix/Makefile
+	cmd/lefty/os/mswin32/Makefile
+	cmd/lefty/os/Makefile
+	cmd/lefty/dot2l/Makefile
+	cmd/lefty/examples/Makefile
+	cmd/lefty/Makefile
+	cmd/lneato/Makefile
+	cmd/dotty/Makefile
+	cmd/smyrna/Makefile
+	cmd/gvmap/Makefile
 	cmd/gvedit/Makefile
 	cmd/gvedit/gvedit.pro
 	cmd/gvedit/ui/Makefile
@@ -3350,6 +3372,7 @@ echo "  quartz:        $use_quartz"
 echo "  rsvg:          $use_rsvg"
 echo "  visio:         $use_visio"
 echo "  xlib:          $use_xlib"
+echo "  qt:            $use_qt"
 echo ""
 echo "language extensions:"
 echo "  gv_sharp:      $use_sharp"
