@@ -7,9 +7,6 @@ LIBS += \
         -lexpat -lz -lltdl
 
 INCLUDEPATH += \
-	/usr/include/Qt \
-	/usr/include/QtCore \
-	/usr/include/QtGui \
 	../../lib/gvc \
 	../../lib/common \
 	../../lib/pathplan \
