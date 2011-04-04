@@ -76,8 +76,8 @@ BuildRequires: librsvg2-devel
 BuildRequires: gts-devel
 %define SMYRNA 1
 BuildRequires: libglade2-devel gtkglarea2-devel gtkglext-devel freeglut-devel
-%define _QT 1
-BuildRequires: qt-devel
+# define _QT 1
+# BuildRequires: qt-devel
 %endif
 %if %rhel >= 6
 %define LUA 1
