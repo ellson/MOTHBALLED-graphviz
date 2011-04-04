@@ -2420,6 +2420,9 @@ AC_ARG_WITH(qt,
 if test "x$with_qt" != "xyes"; then
   use_qt="No (disabled)"
 else
+
+  AC_CHECK_PROGS(QMAKE,qmake qmake-qt4,false)
+
   PKG_CHECK_MODULES(QT, [QtCore],[
     use_qt="Yes"
     AC_DEFINE_UNQUOTED(HAVE_QT,1,

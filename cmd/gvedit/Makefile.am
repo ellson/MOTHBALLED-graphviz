@@ -15,7 +15,7 @@ gvedit_SOURCES = main.cpp csettings.cpp mainwindow.cpp imageviewer.cpp mdichild.
 noinst_HEADERS = csettings.h imageviewer.h mainwindow.h mdichild.h ui_settings.h 
 
 qMakefile: gvedit.pro
-	qmake-qt4 -o qMakefile gvedit.pro
+	$(QMAKE) -o qMakefile gvedit.pro
 
 gvedit: main.cpp csettings.cpp mainwindow.cpp imageviewer.cpp mdichild.cpp qMakefile
 	$(MAKE) -f qMakefile prefix=${prefix} exec_prefix=${exec_prefix} top_builddir=$(top_builddir)
