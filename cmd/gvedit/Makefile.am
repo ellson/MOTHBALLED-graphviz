@@ -3,11 +3,12 @@
 
 SUBDIRS = ui images
 
-bin_PROGRAMS = gvedit
-
 gveditdir = $(pkgdatadir)/gvedit
 
+if WITH_QT
+bin_PROGRAMS = gvedit
 gvedit_DATA = attrs.txt
+endif
 
 gvedit_SOURCES = main.cpp csettings.cpp mainwindow.cpp imageviewer.cpp mdichild.cpp
 
