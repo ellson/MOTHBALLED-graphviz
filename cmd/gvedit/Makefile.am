@@ -24,7 +24,6 @@ attrs.txt: $(top_srcdir)/doc/infosrc/attrs
 	cp $(top_srcdir)/doc/infosrc/attrs attrs.txt
 
 EXTRA_DIST = \
-	gvedit.pro.in gvedit.ncb gvedit.sln gvedit.vcproj gvedit.vcproj.user \
-	mdi.qrc vc90.idb vc90.pdb
+	gvedit.pro.in mdi.qrc
 
 DISTCLEAN = attrs.txt
