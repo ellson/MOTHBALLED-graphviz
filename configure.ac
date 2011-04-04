@@ -2420,7 +2420,7 @@ AC_ARG_WITH(qt,
 if test "x$with_qt" != "xyes"; then
   use_qt="No (disabled)"
 else
-  PKG_CHECK_MODULES(QT, [Qt],[
+  PKG_CHECK_MODULES(QT, [QtCore],[
     use_qt="Yes"
     AC_DEFINE_UNQUOTED(HAVE_QT,1,
       [Define if you have Qt])
