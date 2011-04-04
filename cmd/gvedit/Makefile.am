@@ -23,13 +23,13 @@ qMakefile: gvedit.pro
 
 gvedit: main.cpp csettings.cpp mainwindow.cpp imageviewer.cpp mdichild.cpp qMakefile
 	$(MAKE) -f qMakefile prefix=${prefix} exec_prefix=${exec_prefix} top_builddir=$(top_builddir)
-	-ln gvedit.app/Contents/MacOS/gvedit .
+	- $(LN_S) gvedit.app/Contents/MacOS/gvedit .
 
 attrs.txt: $(top_srcdir)/doc/infosrc/attrs
 	cp $(top_srcdir)/doc/infosrc/attrs attrs.txt
 
 gvedit.1.pdf: $(srcdir)/gvedit.1
-	- @GROFF@ -Tps -man $(srcdir)/gvedit.1 | @PS2PDF@ - - >gvedit.1.pdf
+	- $(GROFF) -Tps -man $(srcdir)/gvedit.1 | @PS2PDF@ - - >gvedit.1.pdf
 
 EXTRA_DIST = gvedit.pro.in mdi.qrc $(man_MANS) $(pdf_DATA)
 	
