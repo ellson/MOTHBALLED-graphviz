@@ -6,3 +6,4 @@ qrc_mdi.cpp
 gvedit.pro
 gvedit
 .deps
+attrs.txt
