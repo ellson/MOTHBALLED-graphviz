@@ -18,7 +18,7 @@ qMakefile: gvedit.pro
 	qmake-qt4 -o qMakefile gvedit.pro
 
 gvedit: main.cpp csettings.cpp mainwindow.cpp imageviewer.cpp mdichild.cpp qMakefile
-	$(MAKE) -f qMakefile prefix=${prefix} exec_prefix=${exec_prefix}
+	$(MAKE) -f qMakefile prefix=${prefix} exec_prefix=${exec_prefix} top_builddir=$(top_builddir)
 
 attrs.txt: $(top_srcdir)/doc/infosrc/attrs
 	cp $(top_srcdir)/doc/infosrc/attrs attrs.txt
