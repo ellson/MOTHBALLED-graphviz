@@ -50,7 +50,7 @@ __declspec(dllimport) boolean MemTest;
 
 static char* cmd;
 
-int Verbose;
+extern int Verbose;
 
 static char *useString =
     "Usage: gvedit [-v?] <files>\n\
