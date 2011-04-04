@@ -32,7 +32,7 @@ Prefix: /usr
 # Available features are:
 #    SHARP GHOSTSCRIPT GUILE _IO JAVA LUA OCAML ORTHO PERL PHP
 #    PYTHON RUBY R_LANG TCL IPSEPCOLA MYLIBGD PANGOCAIRO RSVG
-#    GLITZ SMYRNA DEVIL MING GDK_PIXBUF QT
+#    GLITZ SMYRNA DEVIL MING GDK_PIXBUF _QT
 
 # SuSE uses a different mechanism to generate BuildRequires
 # norootforbuild
@@ -114,7 +114,7 @@ BuildRequires: python python-devel
 BuildRequires: java-devel
 %define PHP 1
 BuildRequires: php-devel
-%define QT 1
+%define _QT 1
 BuildRequires: qt-devel
 %ifnarch ppc64
 %define SHARP 1
@@ -181,7 +181,9 @@ fi
 %{_bindir}/*
 %exclude %{_bindir}/diffimg
 %exclude %{_bindir}/dot_builtins
+%if 0%{?_QT}
 %exclude %{_bindir}/gvedit
+%endif
 %dir %{_libdir}/graphviz
 %{_libdir}/*.so.*
 %{_libdir}/graphviz/*.so.*
@@ -270,17 +272,19 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %endif
 
 #-- graphviz-qt rpm --------------------------------------------------
-%if 0%{?QT}
+%if 0%{?_QT}
 %package qt
 Group:            Applications/Multimedia
-Summary:          Graphviz applications using QT
+Summary:          Graphviz applications using _QT
 Requires:         graphviz = %{version}-%{release}
 
 %description qt
-Graphviz applications using QT - currently just gvedit
+Graphviz applications using _QT - currently just gvedit
 
 %files qt
+%defattr(-,root,root,-)
 %{_bindir}/gvedit
+%dir %{_datadir}/graphviz/gvedit
 %{_datadir}/graphviz/gvedit/*
 # %{_mandir}/man1/gvedit.1*
 %endif
@@ -605,9 +609,8 @@ CFLAGS="$RPM_OPT_FLAGS" \
 	--with%{!?IPSEPCOLA:out}-ipsepcola \
 	--with%{!?LASI:out}-lasi \
 	--with%{!?MING:out}-ming \
-	--with%{!?QT:out}-qt \
+	--with%{!?_QT:out}-qt \
 	--with%{!?PANGOCAIRO:out}-pangocairo \
-	--with%{!?QT:out}-qt \
 	--with%{!?RSVG:out}-rsvg \
 	--with%{!?ORTHO:out}-ortho \
 	--with%{!?SFDP:out}-sfdp \

@@ -16,4 +16,4 @@ pdf_DATA = $(pdf)
 html_DATA = $(html)
 txt_DATA = $(txt)
 
-EXTRA_DIST = $(txt) $(pdf) $(html) schema/*.xml schema/*.xslt libguide/libguide.pdf
+EXTRA_DIST = $(txt) $(pdf) $(html) schema/*.xml schema/*.xslt libguide/libguide.pdf infosrc/*
