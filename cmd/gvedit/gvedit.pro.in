@@ -1,9 +1,9 @@
 
 DEFINES += HAVE_CONFIG_H GVEDIT_DATADIR=@datarootdir@/graphviz/gvedit
 LIBS += \
-        -L$(top_builddir)/lib/gvc/.libs -lgvc_C \
-        -L$(top_builddir)/lib/graph/.libs -lgraph_C \
-        -L$(top_builddir)/lib/cdt/.libs -lcdt_C \
+        -L$(top_builddir)/lib/gvc/.libs -lgvc \
+        -L$(top_builddir)/lib/graph/.libs -lgraph \
+        -L$(top_builddir)/lib/cdt/.libs -lcdt \
         -lexpat -lz -lltdl
 
 INCLUDEPATH += \
