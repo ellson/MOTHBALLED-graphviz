@@ -567,6 +567,12 @@ static void startElement(void *user, const char *name, char **atts)
     } else if (strcasecmp(name, "I") == 0) {
 	htmllval.font = mkFont(0, HTML_IF, 0);
 	state.tok = T_italic;
+    } else if (strcasecmp(name, "SUP") == 0) {
+	htmllval.font = mkFont(0, HTML_SUP, 0);
+	state.tok = T_sup;
+    } else if (strcasecmp(name, "SUB") == 0) {
+	htmllval.font = mkFont(0, HTML_SUB, 0);
+	state.tok = T_sub;
     } else if (strcasecmp(name, "BR") == 0) {
 	mkBR(atts);
 	state.tok = T_br;
@@ -601,6 +607,10 @@ static void endElement(void *user, const char *name)
 	state.tok = T_n_underline;
     } else if (strcasecmp(name, "I") == 0) {
 	state.tok = T_n_italic;
+    } else if (strcasecmp(name, "SUP") == 0) {
+	state.tok = T_n_sup;
+    } else if (strcasecmp(name, "SUB") == 0) {
+	state.tok = T_n_sub;
     } else if (strcasecmp(name, "BR") == 0) {
 	if (state.tok == T_br)
 	    state.tok = T_BR;

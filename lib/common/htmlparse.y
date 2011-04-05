@@ -414,12 +414,12 @@ popFont (void)
 
 %token T_end_br T_end_img T_row T_end_row T_html T_end_html
 %token T_end_table T_end_cell T_end_font T_string T_error
-%token T_n_italic T_n_bold T_n_underline
+%token T_n_italic T_n_bold T_n_underline T_n_sup T_n_sub
 %token <i> T_BR T_br
 %token <img> T_IMG T_img
 %token <tbl> T_table
 %token <cell> T_cell
-%token <font> T_font T_italic T_bold T_underline
+%token <font> T_font T_italic T_bold T_underline T_sup T_sub
 
 %type <txt> fonttext
 %type <i> br  
@@ -448,6 +448,8 @@ textitem : string { appendFItemList(HTMLstate.str);}
          | italic text n_italic
          | underline text n_underline
          | bold text n_bold
+         | sup text n_sup
+         | sub text n_sub
          ;
 
 font : T_font { pushFont ($1); }
@@ -472,6 +474,18 @@ underline : T_underline {pushFont($1);}
           ;
 
 n_underline : T_n_underline {popFont();}
+            ;
+
+sup : T_sup {pushFont($1);}
+          ;
+
+n_sup : T_n_sup {popFont();}
+            ;
+
+sub : T_sub {pushFont($1);}
+          ;
+
+n_sub : T_n_sub {popFont();}
             ;
 
 br     : T_br T_end_br { $$ = $1; }

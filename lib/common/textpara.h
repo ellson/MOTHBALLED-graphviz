@@ -22,6 +22,8 @@ extern "C" {
 #define HTML_BF 1
 #define HTML_IF 2
 #define HTML_UL 4
+#define HTML_SUP 8
+#define HTML_SUB 16
 
     /* font information
      * If name or color is NULL, or size < 0, that attribute
