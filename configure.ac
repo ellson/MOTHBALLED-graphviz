@@ -2423,15 +2423,19 @@ else
 
   AC_CHECK_PROGS(QMAKE,qmake qmake-qt4,false)
 
-  PKG_CHECK_MODULES(QT, [QtCore],[
-    use_qt="Yes"
-    AC_DEFINE_UNQUOTED(HAVE_QT,1,
-      [Define if you have Qt])
-    AC_SUBST(QT_CFLAGS)
-    AC_SUBST(QT_LIBS)
-  ],[
-    use_qt="No (Qt not available)"
-  ])
+  if test "$(QMAKE)" = "false"; then
+     use_qt="No (qmake not found)"
+  else
+    PKG_CHECK_MODULES(QT, [QtCore],[
+      use_qt="Yes"
+      AC_DEFINE_UNQUOTED(HAVE_QT,1,
+        [Define if you have Qt])
+      AC_SUBST(QT_CFLAGS)
+      AC_SUBST(QT_LIBS)
+    ],[
+      use_qt="No (QtCore not available)"
+    ])
+  fi
 fi
 AM_CONDITIONAL(WITH_QT, [test "x$use_qt" = "xYes"])
 
