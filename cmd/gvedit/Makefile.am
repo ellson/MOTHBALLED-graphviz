@@ -23,7 +23,7 @@ qMakefile: gvedit.pro
 
 gvedit: main.cpp csettings.cpp mainwindow.cpp imageviewer.cpp mdichild.cpp qMakefile
 	$(MAKE) -f qMakefile prefix=${prefix} exec_prefix=${exec_prefix} top_builddir=$(top_builddir)
-	- $(LN_S) gvedit.app/Contents/MacOS/gvedit .
+	- $(LN_S) -f gvedit.app/Contents/MacOS/gvedit .
 
 attrs.txt: $(top_srcdir)/doc/infosrc/attrs
 	cp $(top_srcdir)/doc/infosrc/attrs attrs.txt
