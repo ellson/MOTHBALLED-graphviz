@@ -57,7 +57,7 @@ static char* pango_psfontResolve (PostscriptAlias* pa)
 
 #define ENABLE_PANGO_MARKUP
 #ifdef ENABLE_PANGO_MARKUP
-#define FULL_MARKUP "<span weight=\"bold\" style=\"italic\" underline=\"single\"></span>"
+#define FULL_MARKUP "<span weight=\"bold\" style=\"italic\" underline=\"single\"><sup><sub></sub></sup></span>"
 #endif
 
 static boolean pango_textlayout(textpara_t * para, char **fontpath)
@@ -184,11 +184,21 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	    strcat(markup," style=\"italic\"");
 	if (flags & HTML_UL)
 	    strcat(markup," underline=\"single\"");
-
 	strcat (markup,">");
-	strcat (markup,para->str);
-	strcat (markup,"</span>");
 
+	if (flags & HTML_SUP)
+	    strcat(markup,"<sup>");
+	if (flags & HTML_SUB)
+	    strcat(markup,"<sub>");
+
+	strcat (markup,para->str);
+
+	if (flags & HTML_SUB)
+	    strcat(markup,"</sub>");
+	if (flags & HTML_SUP)
+	    strcat(markup,"</sup>");
+
+	strcat (markup,"</span>");
 	if (!pango_parse_markup (markup, -1, 0, &attrs, &text, NULL, &error)) {
 	    fprintf (stderr, "Error - pango_parse_markup: %s\n", error->message);
 	    text = para->str;
