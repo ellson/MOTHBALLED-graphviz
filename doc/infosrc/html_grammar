@@ -1,6 +1,6 @@
 label    =  text | table
 text     = textitem | text textitem
-textitem = string | T_&lt;BR/&gt; | T_&lt;FONT&gt; text T_&lt;/FONT&gt; | T_&lt;I&gt; text T_&lt;/I&gt; | T_&lt;B&gt; text T_&lt;/B&gt; | T_&lt;U&gt; text T_&lt;/U&gt;
+textitem = string | T_&lt;BR/&gt; | T_&lt;FONT&gt; text T_&lt;/FONT&gt; | T_&lt;I&gt; text T_&lt;/I&gt; | T_&lt;B&gt; text T_&lt;/B&gt; | T_&lt;U&gt; text T_&lt;/U&gt | T_&lt;SUB&gt; text T_&lt;/SUB&gt |T_&lt;SUP&gt; text T_&lt;/SUP&gt
 table =  [ T_&lt;FONT&gt; ] T_&lt;TABLE&gt; rows T_&lt;/TABLE&gt; [ T_&lt;/FONT&gt; ]
 rows = row | rows row
 row = T_&lt;TR&gt; cells T_&lt;/TR&gt;
