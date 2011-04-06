@@ -1746,7 +1746,7 @@ void printTbl(htmltbl_t * tbl, int ind)
 {
     htmlcell_t **cells = tbl->u.n.cells;
     indent(ind);
-    fprintf(stderr, "tbl (%x) %d %d ", tbl, tbl->cc, tbl->rc);
+    fprintf(stderr, "tbl (%p) %d %d ", tbl, tbl->cc, tbl->rc);
     printData(&tbl->data);
     fputs("\n", stderr);
     while (*cells)
