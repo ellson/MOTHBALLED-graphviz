@@ -41,21 +41,20 @@ gvedit_LDADD = \
 	$(QTCORE_LIBS) \
 	$(EXPAT_LIBS) $(Z_LIBS) 
 
-gvedit_SOURCES = main.cpp csettings.cpp mainwindow.cpp imageviewer.cpp mdichild.cpp \
-	moc_csettings.cpp moc_imageviewer.cpp moc_mainwindow.cpp moc_mdichild.cpp qrc_mdi.cpp
-
 noinst_HEADERS = csettings.h imageviewer.h mainwindow.h mdichild.h ui_settings.h 
 
 BUILT_SOURCES = moc_csettings.cpp moc_imageviewer.cpp moc_mainwindow.cpp moc_mdichild.cpp qrc_mdi.cpp
 
+gvedit_SOURCES = main.cpp csettings.cpp mainwindow.cpp imageviewer.cpp mdichild.cpp $(BUILT_SOURCES)
+
 $(BUILT_SOURCES): mocables
+
+.PHONY: mocables
+mocables: qMakefile
+	$(MAKE) -f qMakefile prefix=${prefix} exec_prefix=${exec_prefix} mocables compiler_rcc_make_all
 
 qMakefile: gvedit.pro
 	$(QMAKE) -o qMakefile gvedit.pro
-
-.PHONY: mocables
-mocables: main.cpp csettings.cpp mainwindow.cpp imageviewer.cpp mdichild.cpp qMakefile
-	$(MAKE) -f qMakefile prefix=${prefix} exec_prefix=${exec_prefix} mocables compiler_rcc_make_all
 
 attrs.txt: $(top_srcdir)/doc/infosrc/attrs
 	cp $(top_srcdir)/doc/infosrc/attrs attrs.txt
