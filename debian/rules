@@ -64,7 +64,7 @@ configure-stamp:
 	--with-rsvg \
 	--with-devil \
 	--with-gts \
-	--without-ortho \
+	--with-ortho \
 	--with-sfdp \
 	--with-smyrna \
 	--disable-sharp \
