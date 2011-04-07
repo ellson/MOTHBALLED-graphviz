@@ -121,10 +121,6 @@ void ImageViewer::about()
 }
 void ImageViewer::createActions()
 {
-    openAct = new QAction(tr("&Open..."), this);
-    openAct->setShortcut(tr("Ctrl+O"));
-    connect(openAct, SIGNAL(triggered()), this, SLOT(open()));
-
     printAct = new QAction(tr("&Print..."), this);
     printAct->setShortcut(tr("Ctrl+P"));
     printAct->setEnabled(false);
@@ -165,7 +161,6 @@ void ImageViewer::createMenus()
 {
     
 /*    fileMenu = new QMenu(tr("&File"), this);
-    fileMenu->addAction(openAct);
     fileMenu->addAction(printAct);
     fileMenu->addSeparator();
     fileMenu->addAction(exitAct);*/
