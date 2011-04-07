@@ -51,6 +51,7 @@ $(MOCABLES): mocables
 
 .PHONY: mocables
 mocables: qMakefile
+	rm -f $(MOCABLES) # don't use distributed mocables poss from diff version of Qt
 	$(MAKE) -f qMakefile prefix=${prefix} exec_prefix=${exec_prefix} mocables compiler_rcc_make_all
 
 qMakefile: gvedit.pro
