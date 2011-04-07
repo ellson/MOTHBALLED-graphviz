@@ -43,11 +43,11 @@ gvedit_LDADD = \
 
 noinst_HEADERS = csettings.h imageviewer.h mainwindow.h mdichild.h ui_settings.h 
 
-BUILT_SOURCES = moc_csettings.cpp moc_imageviewer.cpp moc_mainwindow.cpp moc_mdichild.cpp qrc_mdi.cpp
+MOCABLES = moc_csettings.cpp moc_imageviewer.cpp moc_mainwindow.cpp moc_mdichild.cpp qrc_mdi.cpp
 
-gvedit_SOURCES = main.cpp csettings.cpp mainwindow.cpp imageviewer.cpp mdichild.cpp $(BUILT_SOURCES)
+gvedit_SOURCES = main.cpp csettings.cpp mainwindow.cpp imageviewer.cpp mdichild.cpp $(MOCABLES)
 
-$(BUILT_SOURCES): mocables
+$(MOCABLES): mocables
 
 .PHONY: mocables
 mocables: qMakefile
