@@ -2421,7 +2421,7 @@ if test "x$with_qt" != "xyes"; then
   use_qt="No (disabled)"
 else
 
-  AC_CHECK_PROGS(QMAKE,qmake qmake-qt4,false)
+  AC_CHECK_PROGS(QMAKE,qmake-qt4 qmake-qt3 qmake,false)
   if test "$(QMAKE)" != "false"; then
     PKG_CHECK_MODULES(QTCORE, [QtCore],[
       PKG_CHECK_MODULES(QTGUI, [QtGui],[
