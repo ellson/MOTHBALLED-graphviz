@@ -33,7 +33,7 @@ gvedit_CPPFLAGS = \
 	$(QTCORE_CFLAGS) \
 	-DDEMAND_LOADING=1 \
 	-DHAVE_CONFIG_H \
-	-DGVEDIT_DATADIR=$(pkgdatadir)/gvedit
+	-DGVEDIT_DATADIR=\""$(pkgdatadir)/gvedit"\"
 
 gvedit_LDADD = \
 	$(top_builddir)/lib/gvc/libgvc.la \
