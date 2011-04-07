@@ -20,6 +20,8 @@
 #endif
 #include <stdio.h>
 #include <QApplication>
+#include <QFile>
+/* #include <QTextStream> */
 #include "mainwindow.h"
 
 #ifdef HAVE_GETOPT_H
@@ -52,6 +54,8 @@ static char* cmd;
 
 extern int Verbose;
 
+QTextStream errout (stderr, QIODevice::WriteOnly);
+
 static char *useString =
     "Usage: gvedit [-v?] <files>\n\
   -v - verbose\n\
@@ -77,9 +81,7 @@ static char **parseArgs(int argc, char *argv[])
 	    if (optopt == '?')
 		usage(0);
 	    else
-		fprintf(stderr,
-			"%s : option -%c unrecognized - ignored\n",
-			cmd, optopt);
+		errout << cmd << " : option -" << ((char)optopt) << " unrecognized - ignored\n" << flush;
 	    break;
 	}
     }
@@ -95,8 +97,8 @@ static char **parseArgs(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-
     Q_INIT_RESOURCE(mdi);
+    int ret;
 
     QApplication app(argc, argv);
     char** files = parseArgs (argc, argv);
@@ -107,5 +109,6 @@ int main(int argc, char *argv[])
 	    files++;
 	}
     mainWin.show();
-    return app.exec();
+    ret = app.exec();
+    return ret;
 }

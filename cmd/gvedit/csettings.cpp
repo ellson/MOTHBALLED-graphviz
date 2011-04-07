@@ -23,9 +23,6 @@
 #include "mainwindow.h"
 #include <QTemporaryFile>
 
-
-
-
 #define WIDGET(t,f)  ((t*)findChild<t *>(#f))
 typedef struct {
     const char* data;
@@ -64,12 +61,13 @@ bool loadAttrs(const QString fileName,QComboBox* cbNameG,QComboBox* cbNameN,QCom
         }
         file.close();
     }
+    else {
+	 errout << "Could not open attribute name file \"" << fileName << "\" for reading\n" << flush;
+    }
+
     return false;
-
-
-
-
 }
+
 QString stripFileExtension(QString fileName)
 {
     int idx;
@@ -108,11 +106,13 @@ char* graph_reader( char * str, int num, FILE * stream ) //helper function to lo
 
 CFrmSettings::CFrmSettings()
 {
-    this->gvc=gvContext();
+    this->gvc = gvContext();
     Ui_Dialog tempDia;
     tempDia.setupUi(this);
-    graph=NULL;
-
+    graph = NULL;
+#ifndef WIN32
+    QString pfx (GVEDIT_DATADIR);
+#endif
 
     connect(WIDGET(QPushButton,pbAdd),SIGNAL(clicked()),this,SLOT(addSlot()));
     connect(WIDGET(QPushButton,pbNew),SIGNAL(clicked()),this,SLOT(newSlot()));
@@ -127,13 +127,17 @@ CFrmSettings::CFrmSettings()
     scopeChangedSlot(0);
 
 
+#ifdef WIN32
     loadAttrs("./attrs.txt",WIDGET(QComboBox,cbNameG),WIDGET(QComboBox,cbNameN),WIDGET(QComboBox,cbNameE));
+#else
+    loadAttrs(pfx + "/attrs.txt",WIDGET(QComboBox,cbNameG),WIDGET(QComboBox,cbNameN),WIDGET(QComboBox,cbNameE));
+#endif
     setWindowIcon(QIcon(":/images/icon.png"));
 }
 
 void CFrmSettings::outputSlot()
 {
-    QString _filter="Output File(*."+WIDGET(QComboBox,cbExtension)->currentText()+")";
+    QString _filter = "Output File(*."+WIDGET(QComboBox,cbExtension)->currentText()+")";
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Graph As.."),"/",_filter);
  if (!fileName.isEmpty())
      WIDGET(QLineEdit,leOutput)->setText(fileName);

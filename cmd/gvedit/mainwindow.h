@@ -20,7 +20,10 @@ These examples are published under the terms of the BSD
 #define CMAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTextStream>
 #include "ui_settings.h"
+
+extern QTextStream errout;
 
 class MdiChild;
 class CFrmSettings;
