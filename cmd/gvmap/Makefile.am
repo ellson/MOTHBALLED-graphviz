@@ -15,9 +15,10 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/ingraphs \
 	-I$(top_srcdir)/lib/cdt
 
+if WITH_SFDP
 bin_PROGRAMS = gvmap cluster 
-
 dist_bin_SCRIPTS = gvmap.sh
+endif
 
 noinst_HEADERS = make_map.h power.h country_graph_coloring.h DotIO.h \
 	colorutil.h color_palette.h mq.h clustering.h
