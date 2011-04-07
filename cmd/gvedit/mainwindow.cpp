@@ -462,7 +462,9 @@ void CMainWindow::actions()
     saveAsAct->setStatusTip(tr("Save the document under a new name"));
     connect(saveAsAct, SIGNAL(triggered()), this, SLOT(slotSaveAs()));
     exitAct = new QAction(tr("E&xit"), this);
+#if (QT_VERSION >= QT_VERSION_CHECK(4, 6, 0))
     exitAct->setShortcuts(QKeySequence::Quit);
+#endif
     exitAct->setStatusTip(tr("Exit the application"));
     connect(exitAct, SIGNAL(triggered()), qApp, SLOT(closeAllWindows()));
     cutAct = new QAction(QIcon(":/images/cut.png"), tr("Cu&t"), this);
