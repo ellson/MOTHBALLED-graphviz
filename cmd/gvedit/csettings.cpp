@@ -110,9 +110,23 @@ CFrmSettings::CFrmSettings()
     Ui_Dialog tempDia;
     tempDia.setupUi(this);
     graph = NULL;
-#ifndef WIN32
-    QString pfx (GVEDIT_DATADIR);
+    activeWindow = NULL;
+    QString path;
+    char* s = getenv("GVEDIT_PATH");
+
+    if (s)
+	path = s;
+    else {
+#ifdef WIN32
+	path = QDir::currentPath ();               // For example, "C:Program Files\graphviz2.28\bin"
+	int p = path.index ('\\', -1);
+	assert (p >= 0);
+	path.truncate (p+1);                       // "C:Program Files\graphviz2.28\"
+	path.append ("share\\graphviz\\gvedit");   // "C:Program Files\graphviz2.28\share\graphviz\gvedit"
+#else
+	path = GVEDIT_DATADIR;
 #endif
+    }
 
     connect(WIDGET(QPushButton,pbAdd),SIGNAL(clicked()),this,SLOT(addSlot()));
     connect(WIDGET(QPushButton,pbNew),SIGNAL(clicked()),this,SLOT(newSlot()));
@@ -127,11 +141,7 @@ CFrmSettings::CFrmSettings()
     scopeChangedSlot(0);
 
 
-#ifdef WIN32
-    loadAttrs("./attrs.txt",WIDGET(QComboBox,cbNameG),WIDGET(QComboBox,cbNameN),WIDGET(QComboBox,cbNameE));
-#else
-    loadAttrs(pfx + "/attrs.txt",WIDGET(QComboBox,cbNameG),WIDGET(QComboBox,cbNameN),WIDGET(QComboBox,cbNameE));
-#endif
+    loadAttrs(path + "/attrs.txt",WIDGET(QComboBox,cbNameG),WIDGET(QComboBox,cbNameN),WIDGET(QComboBox,cbNameE));
     setWindowIcon(QIcon(":/images/icon.png"));
 }
 
