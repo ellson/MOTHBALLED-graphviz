@@ -64,14 +64,14 @@ static void LoadPlugins (QComboBox* cb, GVC_t* gvc, char* kind, char* prefer)
 
 void CMainWindow::createConsole()
 {
-    QDockWidget *dock = new QDockWidget(tr("Output Console"), this);
+    QDockWidget *dock = new QDockWidget(tr("Output Console"), NULL);
     QTextEdit* textEdit = new QTextEdit(dock);
 
     dock->setAllowedAreas(Qt::BottomDockWidgetArea| Qt::TopDockWidgetArea);
-    dock->setWidget(textEdit);
+//    dock->setWidget(textEdit);
     addDockWidget(Qt::BottomDockWidgetArea, dock);
-    QVBoxLayout* vL= new QVBoxLayout(dock);
-    dock->setLayout(vL);
+    QVBoxLayout* vL= new QVBoxLayout();
+
 
     textEdit->setObjectName(QString::fromUtf8("textEdit"));
 /*    textEdit->setMinimumSize(QSize(0, 80));
