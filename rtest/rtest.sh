@@ -31,7 +31,6 @@ VERBOSE=               # If set, give verbose output
 NOOP=                  # If set, just print list of tests
 DOT=../cmd/dot/dot_builtins # build tree version with a builtin set of plugins
 		       # should be $(top_builddir)/cmd/dot/dot_static
-DOT=/Users/erg/bin/dot
 DIFFIMG=../contrib/diffimg/diffimg # build tree version
 
 TESTNAME=   # name of test
