@@ -112,21 +112,13 @@ CFrmSettings::CFrmSettings()
     graph = NULL;
     activeWindow = NULL;
     QString path;
+#ifndef WIN32
     char* s = getenv("GVEDIT_PATH");
-
     if (s)
 	path = s;
-    else {
-#ifdef WIN32
-	path = QDir::currentPath ();               // For example, "C:Program Files\graphviz2.28\bin"
-	int p = path.index ('\\', -1);
-	assert (p >= 0);
-	path.truncate (p+1);                       // "C:Program Files\graphviz2.28\"
-	path.append ("share\\graphviz\\gvedit");   // "C:Program Files\graphviz2.28\share\graphviz\gvedit"
-#else
+    else 
 	path = GVEDIT_DATADIR;
 #endif
-    }
 
     connect(WIDGET(QPushButton,pbAdd),SIGNAL(clicked()),this,SLOT(addSlot()));
     connect(WIDGET(QPushButton,pbNew),SIGNAL(clicked()),this,SLOT(newSlot()));
@@ -141,7 +133,11 @@ CFrmSettings::CFrmSettings()
     scopeChangedSlot(0);
 
 
+#ifndef WIN32
     loadAttrs(path + "/attrs.txt",WIDGET(QComboBox,cbNameG),WIDGET(QComboBox,cbNameN),WIDGET(QComboBox,cbNameE));
+#else
+    loadAttrs("../share/graphviz/gvedit/attributes.txt",WIDGET(QComboBox,cbNameG),WIDGET(QComboBox,cbNameN),WIDGET(QComboBox,cbNameE));
+#endif
     setWindowIcon(QIcon(":/images/icon.png"));
 }
 
