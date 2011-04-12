@@ -333,7 +333,7 @@ static char *useString = "Usage: %s [-sdv?] <files>\n\
   -s           - only produce statistics\n\
   -S           - silent\n\
   -d           - allow degenerate components\n\
-  -o<outfile>  - allow degenerate components\n\
+  -o<outfile>  - write to <outfile> (stdout)\n\
   -v           - verbose\n\
   -?           - print usage\n\
 If no files are specified, stdin is used\n";
