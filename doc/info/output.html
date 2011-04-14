@@ -11,122 +11,122 @@
 <H1 align=CENTER>Output Formats</H1>
 <HR>
 The output format is specified with the <STRONG>-T</STRONG><I>lang</I>
-flag on the <A HREF=/content/command-line-invocation>command line</A>, where <I>lang</I>
+flag on the <A HREF=command.html>command line</A>, where <I>lang</I>
 is one of the parameters listed below.
 <P>
 The formats actually available in a given Graphviz system depend on
 how the system was built and the presence of additional libraries.
 To see what formats <b>dot</b> supports, run <TT>dot -T?</TT>.
-See the <A HREF=/content/command-line-invocation#dT> description of the -T</A>
+See the <A HREF=command.html#d:T> description of the -T</A>
 flag for additional information.
 <P>
 Note that the internal coordinate system has the origin
 in the lower left corner.
 Thus, positions in the
-<A HREF=#dcanon>canon</A>,
-<A HREF=#ddot>dot</A>,
-<A HREF=#dxdot>xdot</A>,
-<A HREF=#dplain>plain</A>, and
-<A HREF=#dplain-ext>plain-ext</A>
+<A HREF=#d:canon>canon</A>,
+<A HREF=#d:dot>dot</A>,
+<A HREF=#d:xdot>xdot</A>,
+<A HREF=#d:plain>plain</A>, and
+<A HREF=#d:plain-ext>plain-ext</A>
 formats need to be interpreted in this manner.
 <P>
 <TABLE ALIGN=CENTER>
 <TR><TH>Command-line<BR>parameter</TH><TH>Format</TH></TR>
- <TR><TD ALIGN=CENTER><A NAME=abmp HREF=#dbmp>bmp</A>
+ <TR><TD ALIGN=CENTER><A NAME=a:bmp HREF=#d:bmp>bmp</A>
 </TD><TD>Windows Bitmap Format</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=acanon HREF=#dcanon>canon</A>
-<BR><A NAME=adot HREF=#ddot>dot</A>
-<BR><A NAME=axdot HREF=#dxdot>xdot</A>
+ <TR><TD ALIGN=CENTER><A NAME=a:canon HREF=#d:canon>canon</A>
+<BR><A NAME=a:dot HREF=#d:dot>dot</A>
+<BR><A NAME=a:xdot HREF=#d:xdot>xdot</A>
 </TD><TD>DOT</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=acmap HREF=#dcmap>cmap</A>
+ <TR><TD ALIGN=CENTER><A NAME=a:cmap HREF=#d:cmap>cmap</A>
 </TD><TD>Client-side imagemap (deprecated)</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=aeps HREF=#deps>eps</A>
+ <TR><TD ALIGN=CENTER><A NAME=a:eps HREF=#d:eps>eps</A>
 </TD><TD>Encapsulated PostScript</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=afig HREF=#dfig>fig</A>
+ <TR><TD ALIGN=CENTER><A NAME=a:fig HREF=#d:fig>fig</A>
 </TD><TD>FIG</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=agd HREF=#dgd>gd</A>
-<BR><A NAME=agd2 HREF=#dgd2>gd2</A>
+ <TR><TD ALIGN=CENTER><A NAME=a:gd HREF=#d:gd>gd</A>
+<BR><A NAME=a:gd2 HREF=#d:gd2>gd2</A>
 </TD><TD>GD/GD2 formats</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=agif HREF=#dgif>gif</A>
+ <TR><TD ALIGN=CENTER><A NAME=a:gif HREF=#d:gif>gif</A>
 </TD><TD>GIF</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=agtk HREF=#dgtk>gtk</A>
+ <TR><TD ALIGN=CENTER><A NAME=a:gtk HREF=#d:gtk>gtk</A>
 </TD><TD>GTK canvas</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=aico HREF=#dico>ico</A>
+ <TR><TD ALIGN=CENTER><A NAME=a:ico HREF=#d:ico>ico</A>
 </TD><TD>Icon Image File Format</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=aimap HREF=#dimap>imap</A>
-<BR><A NAME=acmapx HREF=#dcmapx>cmapx</A>
+ <TR><TD ALIGN=CENTER><A NAME=a:imap HREF=#d:imap>imap</A>
+<BR><A NAME=a:cmapx HREF=#d:cmapx>cmapx</A>
 </TD><TD>Server-side and client-side imagemaps</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=aimap_np HREF=#dimap_np>imap_np</A>
-<BR><A NAME=acmapx_np HREF=#dcmapx_np>cmapx_np</A>
+ <TR><TD ALIGN=CENTER><A NAME=a:imap_np HREF=#d:imap_np>imap_np</A>
+<BR><A NAME=a:cmapx_np HREF=#d:cmapx_np>cmapx_np</A>
 </TD><TD>Server-side and client-side imagemaps</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=aismap HREF=#dismap>ismap</A>
+ <TR><TD ALIGN=CENTER><A NAME=a:ismap HREF=#d:ismap>ismap</A>
 </TD><TD>Server-side imagemap (deprecated)</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=ajpg HREF=#djpg>jpg</A>
-<BR><A NAME=ajpeg HREF=#djpeg>jpeg</A>
-<BR><A NAME=ajpe HREF=#djpe>jpe</A>
+ <TR><TD ALIGN=CENTER><A NAME=a:jpg HREF=#d:jpg>jpg</A>
+<BR><A NAME=a:jpeg HREF=#d:jpeg>jpeg</A>
+<BR><A NAME=a:jpe HREF=#d:jpe>jpe</A>
 </TD><TD>JPEG</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=apdf HREF=#dpdf>pdf</A>
+ <TR><TD ALIGN=CENTER><A NAME=a:pdf HREF=#d:pdf>pdf</A>
 </TD><TD>Portable Document Format (PDF)</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=aplain HREF=#dplain>plain</A>
-<BR><A NAME=aplain-ext HREF=#dplain-ext>plain-ext</A>
+ <TR><TD ALIGN=CENTER><A NAME=a:plain HREF=#d:plain>plain</A>
+<BR><A NAME=a:plain-ext HREF=#d:plain-ext>plain-ext</A>
 </TD><TD>Simple text format</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=apng HREF=#dpng>png</A>
+ <TR><TD ALIGN=CENTER><A NAME=a:png HREF=#d:png>png</A>
 </TD><TD>Portable Network Graphics format</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=aps HREF=#dps>ps</A>
+ <TR><TD ALIGN=CENTER><A NAME=a:ps HREF=#d:ps>ps</A>
 </TD><TD>PostScript</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=aps2 HREF=#dps2>ps2</A>
+ <TR><TD ALIGN=CENTER><A NAME=a:ps2 HREF=#d:ps2>ps2</A>
 </TD><TD>PostScript for PDF</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=asvg HREF=#dsvg>svg</A>
-<BR><A NAME=asvgz HREF=#dsvgz>svgz</A>
+ <TR><TD ALIGN=CENTER><A NAME=a:svg HREF=#d:svg>svg</A>
+<BR><A NAME=a:svgz HREF=#d:svgz>svgz</A>
 </TD><TD>Scalable Vector Graphics</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=atif HREF=#dtif>tif</A>
-<BR><A NAME=atiff HREF=#dtiff>tiff</A>
+ <TR><TD ALIGN=CENTER><A NAME=a:tif HREF=#d:tif>tif</A>
+<BR><A NAME=a:tiff HREF=#d:tiff>tiff</A>
 </TD><TD>TIFF (Tag Image File Format)</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=avml HREF=#dvml>vml</A>
-<BR><A NAME=avmlz HREF=#dvmlz>vmlz</A>
+ <TR><TD ALIGN=CENTER><A NAME=a:vml HREF=#d:vml>vml</A>
+<BR><A NAME=a:vmlz HREF=#d:vmlz>vmlz</A>
 </TD><TD>Vector Markup Language (VML)</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=avrml HREF=#dvrml>vrml</A>
+ <TR><TD ALIGN=CENTER><A NAME=a:vrml HREF=#d:vrml>vrml</A>
 </TD><TD>VRML</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=awbmp HREF=#dwbmp>wbmp</A>
+ <TR><TD ALIGN=CENTER><A NAME=a:wbmp HREF=#d:wbmp>wbmp</A>
 </TD><TD>Wireless BitMap format</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=axlib HREF=#dxlib>xlib</A>
+ <TR><TD ALIGN=CENTER><A NAME=a:xlib HREF=#d:xlib>xlib</A>
 </TD><TD>Xlib canvas</TD> </TR>
 </TABLE>
 <HR>
 <H2>Format Descriptions</H2>
 <DL>
-<DT><A NAME=dbmp HREF=#abmp><STRONG>bmp</STRONG></A>
-<DD>Outputs images in the Windows <A HREF="http://en.wikipedia.org/wiki/Bitmap" target="_blank">BMP</A> format.
+<DT><A NAME=d:bmp HREF=#a:bmp><STRONG>bmp</STRONG></A>
+<DD>Outputs images in the Windows <A HREF="http://en.wikipedia.org/wiki/Bitmap">BMP</A> format.
 
-<DT><A NAME=dcanon HREF=#acanon><STRONG>canon</STRONG></A>
-,<DT><A NAME=ddot HREF=#adot><STRONG>dot</STRONG></A>
-,<DT><A NAME=dxdot HREF=#axdot><STRONG>xdot</STRONG></A>
+<DT><A NAME=d:canon HREF=#a:canon><STRONG>canon</STRONG></A>
+,<DT><A NAME=d:dot HREF=#a:dot><STRONG>dot</STRONG></A>
+,<DT><A NAME=d:xdot HREF=#a:xdot><STRONG>xdot</STRONG></A>
 <DD>These formats produce output in the
-<A HREF=/content/dot-language>dot language</A>.
+<A HREF=lang.html>dot language</A>.
 Using <B>canon</B> produces a prettyprinted version of the input,
 with no layout performed.
 <P>
 The <B>dot</B> option corresponds to attributed dot output,
 and is the default output format.
 It reproduces the input, along with layout information for the graph.
-In particular, a <A HREF=/content/attrs#dbb>bb</A> attribute is
+In particular, a <A HREF=attrs.html#d:bb>bb</A> attribute is
 attached to the graph, specifying the bounding box of the drawing.
 If the graph has a label, its position is specified by the
-<A HREF=/content/attrs#dlp>lp</A> attribute.
+<A HREF=attrs.html#d:lp>lp</A> attribute.
 <P>
-Each node gets <A HREF=/content/attrs#dpos>pos</A>,
-<A HREF=/content/attrs#dwidth>width</A> and
-<A HREF=/content/attrs#dheight>height</A> attributes. If the node is a record,
+Each node gets <A HREF=attrs.html#d:pos>pos</A>,
+<A HREF=attrs.html#d:width>width</A> and
+<A HREF=attrs.html#d:height>height</A> attributes. If the node is a record,
 the record rectangles are given in the
-<A HREF=/content/attrs#drects>rects</A> attribute.
+<A HREF=attrs.html#d:rects>rects</A> attribute.
 If the node is a polygon and the
-<A HREF=/content/attrs#dvertices>vertices</A> attribute is defined, this
+<A HREF=attrs.html#d:vertices>vertices</A> attribute is defined, this
 attribute contains the vertices of the node.
 <P>
 Every edge is
-assigned a <A HREF=/content/attrs#dpos>pos</A> attribute,
+assigned a <A HREF=attrs.html#d:pos>pos</A> attribute,
 and if the edge has a label, the label position
-is given in <A HREF=/content/attrs#dlp>lp</A>.
+is given in <A HREF=attrs.html#d:lp>lp</A>.
 <P>
 The <B>xdot</B> format extends the
 <B>dot</B> format by providing much more detailed information about
@@ -192,7 +192,7 @@ n bytes following '-'. (1.1)
 <TR><TD>S n -<I>b<sub>1</sub>b<sub>2</sub>...b<sub>n</sub></I>
 <TD>Set style attribute. The style value consists of the
 n bytes following '-'. The syntax of the value is the same as
-specified for a <B>styleItem</B> in <A HREF=/content/attrs#kstyle>style</A>. (1.1)
+specified for a <B>styleItem</B> in <A HREF=attrs.html#k:style>style</A>. (1.1)
 <TR><TD>I x y w h n -<I>b<sub>1</sub>b<sub>2</sub>...b<sub>n</sub></I>
 <TD>Externally-specified image drawn in the box with lower left
 corner (x,y) and upper right corner (x+w,y+h). The name of the image
@@ -218,7 +218,7 @@ string width using its own rendering primitives.
 <P>
 The text operation is only used in the label attributes. Normally,
 the non-text operations are only used in the non-label attributes.
-If, however, the <A HREF=/content/attrs#ddecorate>decorate</A>
+If, however, the <A HREF=attrs.html#d:decorate>decorate</A>
 attribute is set on an edge, its label
 attribute will also contain a polyline operation.
 In addition, if a label is a complex, HTML-like label, it will also
@@ -236,7 +236,7 @@ Version info:
 <TR><TD>1.2</TD><TD>2.13</TD></TR>
 </TABLE>
 
-<DT><A NAME=dcmap HREF=#acmap><STRONG>cmap</STRONG></A>
+<DT><A NAME=d:cmap HREF=#a:cmap><STRONG>cmap</STRONG></A>
 <DD>Produces map files for client-side image maps. The cmap format is
 mostly identical to cmapx, but the latter is well-formed XML amenable
 to processing by XML tools. In particular, the cmapx output is wrapped in
@@ -244,38 +244,38 @@ to processing by XML tools. In particular, the cmapx output is wrapped in
 <P>
 See <A HREF=#ID>Note</A>.
 
-<DT><A NAME=deps HREF=#aeps><STRONG>eps</STRONG></A>
+<DT><A NAME=d:eps HREF=#a:eps><STRONG>eps</STRONG></A>
 <DD>Produces Encapsulated PostScript output.
 At present, this is only guaranteed to be correct for a single
 input graph since the Bounding Box information has to appear
 at the beginning of the output, and this will be based on the first graph.
 
-<DT><A NAME=dfig HREF=#afig><STRONG>fig</STRONG></A>
+<DT><A NAME=d:fig HREF=#a:fig><STRONG>fig</STRONG></A>
 <DD>Outputs graphs in the FIG graphics language.
 
-<DT><A NAME=dgd HREF=#agd><STRONG>gd</STRONG></A>
-,<DT><A NAME=dgd2 HREF=#agd2><STRONG>gd2</STRONG></A>
+<DT><A NAME=d:gd HREF=#a:gd><STRONG>gd</STRONG></A>
+,<DT><A NAME=d:gd2 HREF=#a:gd2><STRONG>gd2</STRONG></A>
 <DD>Output images in the GD and GD2 format. These are the internal
 formats used by the gd library. The latter is compressed.
 
-<DT><A NAME=dgif HREF=#agif><STRONG>gif</STRONG></A>
+<DT><A NAME=d:gif HREF=#a:gif><STRONG>gif</STRONG></A>
 <DD>Outputs GIF bitmap images.
 
-<DT><A NAME=dgtk HREF=#agtk><STRONG>gtk</STRONG></A>
-<DD>Creates a <A HREF="http://www.gtk.org/" target="_blank">GTK</A> window and displays the output there.
+<DT><A NAME=d:gtk HREF=#a:gtk><STRONG>gtk</STRONG></A>
+<DD>Creates a <A HREF="http://www.gtk.org/">GTK</A> window and displays the output there.
 
-<DT><A NAME=dico HREF=#aico><STRONG>ico</STRONG></A>
-<DD>Outputs images in the Windows <A HREF="http://en.wikipedia.org/wiki/ICO_(icon_image_file_format)" target="_blank">ICO format</A>.
+<DT><A NAME=d:ico HREF=#a:ico><STRONG>ico</STRONG></A>
+<DD>Outputs images in the Windows <A HREF="http://en.wikipedia.org/wiki/ICO_(icon_image_file_format)">ICO format</A>.
 
-<DT><A NAME=dimap HREF=#aimap><STRONG>imap</STRONG></A>
-,<DT><A NAME=dcmapx HREF=#acmapx><STRONG>cmapx</STRONG></A>
+<DT><A NAME=d:imap HREF=#a:imap><STRONG>imap</STRONG></A>
+,<DT><A NAME=d:cmapx HREF=#a:cmapx><STRONG>cmapx</STRONG></A>
 <DD>Produces map files for server-side and client-side image maps,
 These can be used in a web page with
 a graphical form of the output, e.g. in JPEG or GIF format, to attach
 links to nodes and edges. For example, to create a server-side map
 given the dot file
 <PRE>
-/* x.dot */
+/* x.gv */
 digraph mainmap {
   URL="http://www.research.att.com/base.html";
   command [URL="http://www.research.att.com/command.html"];
@@ -284,7 +284,7 @@ digraph mainmap {
 </PRE>
 one would process the graph and generate two output files:
 <PRE>
-dot -Timap -ox.map -Tgif -ox.gif x.dot
+dot -Timap -ox.map -Tgif -ox.gif x.gv
 </PRE>
 and then refer to it in a web page:
 <XMP>
@@ -292,7 +292,7 @@ and then refer to it in a web page:
 </XMP>
 For client-side maps, one again generates two output files:
 <PRE>
-dot -Tcmapx -ox.map -Tgif -ox.gif x.dot
+dot -Tcmapx -ox.map -Tgif -ox.gif x.gv
 </PRE>
 and uses the HTML
 <XMP>
@@ -310,19 +310,19 @@ in the IMG attribute, and x.map will look like
 </map>
 </XMP>
 <P>
-<A HREF=/content/attrs#dURL>URLs</A> can be attached to the root
+<A HREF=attrs.html#d:URL>URLs</A> can be attached to the root
 graph, nodes and edges. If a node has a URL, clicking in the node
 will activate the link.
 If an edge has a URL, various
 points along the edge (but not necessarily the head or tail)
 will link to it. In addition, if the edge has a
-<A HREF=/content/attrs#dlabel>label</A>, that will link
+<A HREF=attrs.html#d:label>label</A>, that will link
 to the URL.
 As for the head of the edge, this is linked to the
-<A HREF=/content/attrs#dheadURL>headURL</A>, if set.
+<A HREF=attrs.html#d:headURL>headURL</A>, if set.
 Otherwise, it is linked to the edge's URL if that is defined.
 The analogous description holds for the tail and the
-<A HREF=/content/attrs#dtailURL>tailURL</A>.
+<A HREF=attrs.html#d:tailURL>tailURL</A>.
 A URL associated with the graph is used as a default link.
 <P>
 If the URL
@@ -330,44 +330,44 @@ of a node contains the escape sequence "\N", it will be replaced by
 the node's name.
 If the headURL is defined and contains the escape sequence "\N",
 it will be replaced by
-the <A HREF=/content/attrs#dheadlabel>headlabel</A>, if defined.
+the <A HREF=attrs.html#d:headlabel>headlabel</A>, if defined.
 The analogous result holds for the tailURL and the
-<A HREF=/content/attrs#dtaillabel>taillabel</A>.
+<A HREF=attrs.html#d:taillabel>taillabel</A>.
 <P>
 See <A HREF=#ID>Note</A>.
 
-<DT><A NAME=dimap_np HREF=#aimap_np><STRONG>imap_np</STRONG></A>
-,<DT><A NAME=dcmapx_np HREF=#acmapx_np><STRONG>cmapx_np</STRONG></A>
+<DT><A NAME=d:imap_np HREF=#a:imap_np><STRONG>imap_np</STRONG></A>
+,<DT><A NAME=d:cmapx_np HREF=#a:cmapx_np><STRONG>cmapx_np</STRONG></A>
 <DD>These are identical to the imap and cmapx formats, except they
 rely solely on rectangles as active areas.
 
-<DT><A NAME=dismap HREF=#aismap><STRONG>ismap</STRONG></A>
+<DT><A NAME=d:ismap HREF=#a:ismap><STRONG>ismap</STRONG></A>
 <DD>Produces HTML image map files. This is a predecessor (circa 1994)
 of the IMAP format.  Most servers now use the latter.
-<A HREF=/content/attrs#dURL>URLs</A> can be attached to the root graph,
+<A HREF=attrs.html#d:URL>URLs</A> can be attached to the root graph,
 nodes and edges. Since edge
 links are attached to edge labels, an edge must
-have a <A HREF=/content/attrs#dlabel>label</A> for its
+have a <A HREF=attrs.html#d:label>label</A> for its
 URL to be used. For both nodes and edges, if the URL has the escape
 sequence "\N" embedded in its string, this will be replaced with the
 node or edge name.
 
-<DT><A NAME=djpg HREF=#ajpg><STRONG>jpg</STRONG></A>
-,<DT><A NAME=djpeg HREF=#ajpeg><STRONG>jpeg</STRONG></A>
-,<DT><A NAME=djpe HREF=#ajpe><STRONG>jpe</STRONG></A>
+<DT><A NAME=d:jpg HREF=#a:jpg><STRONG>jpg</STRONG></A>
+,<DT><A NAME=d:jpeg HREF=#a:jpeg><STRONG>jpeg</STRONG></A>
+,<DT><A NAME=d:jpe HREF=#a:jpe><STRONG>jpe</STRONG></A>
 <DD>Output JPEG compressed image files.
 
-<DT><A NAME=dpdf HREF=#apdf><STRONG>pdf</STRONG></A>
-<DD>Produces <A HREF="http://www.adobe.com/devnet/pdf/" target="_blank">PDF</A> output.
+<DT><A NAME=d:pdf HREF=#a:pdf><STRONG>pdf</STRONG></A>
+<DD>Produces <A HREF="http://www.adobe.com/devnet/pdf/">PDF</A> output.
 (This option assumes Graphviz includes the Cairo renderer.)
-Alternatively, one can use the <A HREF="#dps2">ps2</A> option to
+Alternatively, one can use the <A HREF="#d:ps2">ps2</A> option to
 produce PDF-compatible PostScript, and then use a ps-to-pdf converter.
 <P>
 Note: At present, this option does not support anchors, etc. To get these
-included in your PDF output, use <A HREF="#dps2">ps2</A>.
+included in your PDF output, use <A HREF="#d:ps2">ps2</A>.
 
-<DT><A NAME=dplain HREF=#aplain><STRONG>plain</STRONG></A>
-,<DT><A NAME=dplain-ext HREF=#aplain-ext><STRONG>plain-ext</STRONG></A>
+<DT><A NAME=d:plain HREF=#a:plain><STRONG>plain</STRONG></A>
+,<DT><A NAME=d:plain-ext HREF=#a:plain-ext><STRONG>plain-ext</STRONG></A>
 <DD>The plain and plain-ext formats produce output using
 a simple, line-based language.
 The latter format differs in that, on edges, it provides port names
@@ -385,7 +385,7 @@ There are four types of statements.
 <DD>The <I>width</I> and <I>height</I> values give the width and height
 of the drawing. The lower left corner of the drawing is at the origin.
 The <I>scale</I> value indicates how the drawing should be scaled
-if a <A HREF=/content/attrs#dsize>size</A> attribute was given and the drawing
+if a <A HREF=attrs.html#d:size>size</A> attribute was given and the drawing
 needs to be scaled to conform to that size. If no scaling is necessary,
 it will be set to 1.0. Note that all graph, node and edge
 coordinates and lengths are given unscaled.
@@ -395,10 +395,10 @@ give the node's position. The <I>width</I> and <I>height</I> are the
 width and height of the node.
 The <I>label</I>,
 <I>style</I>, <I>shape</I>, <I>color</I> and <I>fillcolor</I> give the
-node's <A HREF=/content/attrs#dlabel>label</A>,
-<A HREF=/content/attrs#dstyle>style</A>, <A HREF=/content/attrs#dshape>shape</A>,
-<A HREF=/content/attrs#dcolor>color</A> and
-<A HREF=/content/attrs#dfillcolor>fillcolor</A>,
+node's <A HREF=attrs.html#d:label>label</A>,
+<A HREF=attrs.html#d:style>style</A>, <A HREF=attrs.html#d:shape>shape</A>,
+<A HREF=attrs.html#d:color>color</A> and
+<A HREF=attrs.html#d:fillcolor>fillcolor</A>,
 respectively, using attribute default values where necessary. If the
 node does not have a style attribute, "solid" is used.
 <DT><STRONG>edge</STRONG>
@@ -408,10 +408,10 @@ with a colon and a portname if the edge connects to the node at a port.
 <I>n</I> is the number of control points defining the
 B-spline forming the edge. This is followed by 2*<I>n</I> numbers giving
 the x and y coordinates of the control points in order from tail to head.
-If the edge has a <A HREF=/content/attrs#dlabel>label</A>, this comes next
+If the edge has a <A HREF=attrs.html#d:label>label</A>, this comes next
 followed by the x and y coordinates of the label's position.
 The edge description is completed by the edge's
-<A HREF=/content/attrs#dstyle>style</A> and <A HREF=/content/attrs#dcolor>color</A>.
+<A HREF=attrs.html#d:style>style</A> and <A HREF=attrs.html#d:color>color</A>.
 As with nodes, if a style is not defined, "solid" is used.
 <P>
 <B>Note:</B> The control points given in an edge statement define the
@@ -450,14 +450,14 @@ much more than node positions and sizes, and edge spline control points.
 These formats are usually most useful to applications wanting just this
 geometric information, and willing to fill in all of the graphical details.
 The only real advantages to these formats is their terseness and their
-ease of parsing. In general, the <A HREF=#ddot>dot</A> and
-<A HREF=#dxdot>xdot</A> are preferable in terms of the quantity of
+ease of parsing. In general, the <A HREF=#d:dot>dot</A> and
+<A HREF=#d:xdot>xdot</A> are preferable in terms of the quantity of
 information provided.
 
-<DT><A NAME=dpng HREF=#apng><STRONG>png</STRONG></A>
+<DT><A NAME=d:png HREF=#a:png><STRONG>png</STRONG></A>
 <DD>Produces output in the PNG (Portable Network Graphics) format.
 
-<DT><A NAME=dps HREF=#aps><STRONG>ps</STRONG></A>
+<DT><A NAME=d:ps HREF=#a:ps><STRONG>ps</STRONG></A>
 <DD>Produces PostScript output.
 <P>
 Note: The default PostScript renderer can only handle the Latin-1
@@ -465,7 +465,7 @@ character set. To get non-Latin-1 characters into PostScript output,
 use <TT>-Tps:cairo</TT>, assuming your version was built with the
 Cairo renderer.
 
-<DT><A NAME=dps2 HREF=#aps2><STRONG>ps2</STRONG></A>
+<DT><A NAME=d:ps2 HREF=#a:ps2><STRONG>ps2</STRONG></A>
 <DD>Produces PostScript output with PDF notations. It is assumed the output
 will be directly converted into PDF format. The notations include PDF
 bounding box information, so that the resulting PDF file can be correctly
@@ -477,49 +477,49 @@ when viewed in a PDF-viewer, e.g.,
 is a link to the given URL. If a URL is attached to the graph, this serves
 as a base, such that relative URLs on nodes are derived from it.
 
-<DT><A NAME=dsvg HREF=#asvg><STRONG>svg</STRONG></A>
-,<DT><A NAME=dsvgz HREF=#asvgz><STRONG>svgz</STRONG></A>
-<DD>Produce <A HREF="http://www.adobe.com/svg/" target="_blank">SVG</A> output,
+<DT><A NAME=d:svg HREF=#a:svg><STRONG>svg</STRONG></A>
+,<DT><A NAME=d:svgz HREF=#a:svgz><STRONG>svgz</STRONG></A>
+<DD>Produce <A HREF="http://www.adobe.com/svg/">SVG</A> output,
 the latter in compressed format.
 <P>
 See <A HREF=#ID>Note</A>.
 
-<DT><A NAME=dtif HREF=#atif><STRONG>tif</STRONG></A>
-,<DT><A NAME=dtiff HREF=#atiff><STRONG>tiff</STRONG></A>
-<DD>Produces <A HREF="http://www.libtiff.org/" target="_blank">TIFF</A> output.
+<DT><A NAME=d:tif HREF=#a:tif><STRONG>tif</STRONG></A>
+,<DT><A NAME=d:tiff HREF=#a:tiff><STRONG>tiff</STRONG></A>
+<DD>Produces <A HREF="http://www.libtiff.org/">TIFF</A> output.
 
-<DT><A NAME=dvml HREF=#avml><STRONG>vml</STRONG></A>
-,<DT><A NAME=dvmlz HREF=#avmlz><STRONG>vmlz</STRONG></A>
-<DD>Produces <A HREF="http://www.w3.org/TR/NOTE-VML" target="_blank">VML</A> output,
+<DT><A NAME=d:vml HREF=#a:vml><STRONG>vml</STRONG></A>
+,<DT><A NAME=d:vmlz HREF=#a:vmlz><STRONG>vmlz</STRONG></A>
+<DD>Produces <A HREF="http://www.w3.org/TR/NOTE-VML">VML</A> output,
 the latter in compressed format.
 <P>
 See <A HREF=#ID>Note</A>.
 
-<DT><A NAME=dvrml HREF=#avrml><STRONG>vrml</STRONG></A>
-<DD>Outputs graphs in the <A HREF="http://www.vrml.org/" target="_blank">VRML</A> format.
-To get a 3D embedding, nodes must have a <A HREF=/content/attrs#dz>z</A>
+<DT><A NAME=d:vrml HREF=#a:vrml><STRONG>vrml</STRONG></A>
+<DD>Outputs graphs in the <A HREF="http://www.vrml.org/">VRML</A> format.
+To get a 3D embedding, nodes must have a <A HREF=attrs.html#d:z>z</A>
 attribute. These can either be supplied as part of the input graph, or
-be generated by neato provided <A HREF=/content/attrs#ddim>dim</A><TT>=3</TT>
+be generated by neato provided <A HREF=attrs.html#d:dim>dim</A><TT>=3</TT>
 and at least one node has a <B>z</B> value.
 <P>
 Line segments are drawn as cylinders.
 In general, VRML output relies on having the PNG library to produce images
 used to texture-fill the node shapes. However, if
-<A HREF=/content/attrs#dshape>shape</A><TT>=point</TT>,
+<A HREF=attrs.html#d:shape>shape</A><TT>=point</TT>,
 a node is drawn as a 3D sphere.
 
-<DT><A NAME=dwbmp HREF=#awbmp><STRONG>wbmp</STRONG></A>
+<DT><A NAME=d:wbmp HREF=#a:wbmp><STRONG>wbmp</STRONG></A>
 <DD>Produces output in the Wireless BitMap (WBMP) format, optimized for
 mobile computing.
 
-<DT><A NAME=dxlib HREF=#axlib><STRONG>xlib</STRONG></A>
-<DD>Creates an <A HREF="http://en.wikipedia.org/wiki/Xlib" target="_blank">Xlib</A> window and displays the output there.
+<DT><A NAME=d:xlib HREF=#a:xlib><STRONG>xlib</STRONG></A>
+<DD>Creates an <A HREF="http://en.wikipedia.org/wiki/Xlib">Xlib</A> window and displays the output there.
 
 </DL>
 <HR>
-<H1 align=CENTER><A NAME=dimage_fmts>Image Formats</A></H1>
+<H1 align=CENTER><A NAME=d:image_fmts>Image Formats</A></H1>
 <HR>
-The <A HREF=/content/attrs#aimage>image</A> and <A HREF=/content/attrs#ashapefile>shapefile</A> attributes specify an image file to be included
+The <A HREF=attrs.html#a:image>image</A> and <A HREF=attrs.html#a:shapefile>shapefile</A> attributes specify an image file to be included
 as part of the final diagram. Not all image formats can be read. In addition,
 even if read, not all image formats can necessarily be used in a given
 output format.
@@ -537,7 +537,7 @@ one of the plugins, in which case, that transformation is not possible.
 <H2>Notes</H2>
 <OL TYPE="1">
 <LI>
-<A NAME=ID>In the formats: -Tcmap, -Tcmapx, -Tsvg, -Tvml, the output generates
+<A NAME=ID></A>In the formats: -Tcmap, -Tcmapx, -Tsvg, -Tvml, the output generates
 'id="node#"' properties for nodes, 'id="edge#"' properties for edges, and 'id="cluster#"' properties for clusters, with the '#' replaced by an internally assigned integer. These strings can be provided instead by an externally provided "id=xxx" attribute on the object.
 Normal "\N" "\E" "\G" substitutions are applied.
 Externally provided id values are not used internally, and it is the use's reponsibilty to ensure

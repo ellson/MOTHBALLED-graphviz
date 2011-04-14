@@ -1,6 +1,6 @@
 <BR>
 <A NAME=brewer_license>Apache-Style Software License for ColorBrewer software and ColorBrewer
-Color Schemes, Version 1.1<A>
+Color Schemes, Version 1.1</A>
 <P>
 Copyright (c) 2002 Cynthia Brewer, Mark Harrower, and The Pennsylvania
 State University. All rights reserved.
