@@ -337,7 +337,6 @@ cairogen_polyline(GVJ_t * job, pointf * A, int n)
 
     cairogen_set_penstyle(job, cr);
 
-    cairo_set_line_width (cr, obj->penwidth * job->scale.x);
     cairo_move_to(cr, A[0].x, -A[0].y);
     for (i = 1; i < n; i++)
 	cairo_line_to(cr, A[i].x, -A[i].y);
