@@ -70,7 +70,7 @@ $(GV_DIR)/Makefile: $(GV_DIR)/configure
 	@echo
 	@echo CONFIGURING GRAPHVIZ...
 	@echo
-	cd $(GV_DIR) && ./configure --enable-swig=no --disable-dependency-tracking --with-ipsepcola --with-quartz --with-smyrna --disable-perl --with-extra-includedir="$(PREFIX)/include" --with-extra-libdir="$(PREFIX)/lib" CFLAGS="-O2 $(ARCH)" CXXFLAGS="-O2 $(ARCH)" OBJCFLAGS="-O2 $(ARCH)" LDFLAGS="$(ARCH) -Wl,-dead_strip" GDLIB_CONFIG="$(PREFIX)/bin/gdlib-config" PKG_CONFIG="$(PREFIX)/bin/pkg-config" PKG_CONFIG_PATH="$(PREFIX)/lib/pkgconfig:/usr/X11/lib/pkgconfig"
+	cd $(GV_DIR) && ./configure --enable-static --disable-shared --enable-swig=no --disable-dependency-tracking --with-ipsepcola --with-quartz --with-smyrna --disable-perl --with-extra-includedir="$(PREFIX)/include" --with-extra-libdir="$(PREFIX)/lib" CFLAGS="-O2 $(ARCH)" CXXFLAGS="-O2 $(ARCH)" OBJCFLAGS="-O2 $(ARCH)" LDFLAGS="$(ARCH) -Wl,-dead_strip" GDLIB_CONFIG="$(PREFIX)/bin/gdlib-config" PKG_CONFIG="$(PREFIX)/bin/pkg-config" PKG_CONFIG_PATH="$(PREFIX)/lib/pkgconfig:/usr/X11/lib/pkgconfig"
 
 clean:
 	$(MAKE) -C $(GV_DIR) clean
