@@ -53,6 +53,21 @@ static void twopi_init_node_edge(graph_t * g)
     }
 }
 
+static void scaleGraph (graph_t * g, node_t* root, pointf sc)
+{
+    pointf ctr;
+    node_t* n;
+
+    ctr.x = ND_pos(root)[0];
+    ctr.y = ND_pos(root)[1];
+
+    for (n = agfstnode(g); n; n = agnxtnode (g, n)) {
+	if (n == root) continue;
+	ND_pos(n)[0] = sc.x*(ND_pos(n)[0] - ctr.x) + ctr.x;
+	ND_pos(n)[1] = sc.y*(ND_pos(n)[1] - ctr.y) + ctr.y;
+    }
+}
+
 void twopi_init_graph(graph_t * g)
 {
     setEdgeType (g, ET_LINE);
@@ -68,6 +83,9 @@ void twopi_layout(Agraph_t * g)
     Agnode_t *ctr = 0;
     char *s;
     int setRoot = 0;
+    pointf sc;
+    int doScale = 0;
+    int r;
 
     if (agnnodes(g) == 0) return;
 
@@ -86,6 +104,16 @@ void twopi_layout(Agraph_t * g)
 	    setRoot = 1;
 	}
     }
+
+    if ((s = agget(g, "scale")) && *s) {
+	if ((r = sscanf (s, "%lf,%lf",&sc.x,&sc.y))) {
+	    if (r == 1) sc.y = sc.x;
+	    doScale = 1;
+	    if (Verbose)
+		fprintf (stderr, "scale = (%f,%f)\n", sc.x, sc.y);
+	}
+    }
+
     if (agnnodes(g)) {
 	Agraph_t **ccs;
 	Agraph_t *sg;
@@ -99,6 +127,8 @@ void twopi_layout(Agraph_t * g)
 	    if (setRoot && !ctr)
 		ctr = c;
 	    free(ND_alg(agfstnode(g)));
+	    if (doScale)
+		scaleGraph (g, c, sc);
 	    adjustNodes(g);
 	    spline_edges(g);
 	} else {
@@ -116,6 +146,8 @@ void twopi_layout(Agraph_t * g)
 		c = circleLayout(sg, c);
 	        if (setRoot && !ctr)
 		    ctr = c;
+		if (doScale)
+		    scaleGraph (sg, c, sc);
 		adjustNodes(sg);
 		setEdgeType (sg, ET_LINE);
 		spline_edges(sg);
