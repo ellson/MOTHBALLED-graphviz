@@ -123,6 +123,8 @@ static void fill_key(md5_byte_t * b, md5_byte_t * data)
     }
 
 }
+
+#if TEST_FOR_CHANGE
 static int compare_keys(md5_byte_t * b1, md5_byte_t * b2)
 {
     /*1 keys are equal */
@@ -137,12 +139,17 @@ static int compare_keys(md5_byte_t * b1, md5_byte_t * b2)
     }
     return eq;
 }
-
+#endif
 
 int close_graph(ViewInfo * view, int graphid)
 {
     if (view->activeGraph < 0)
 	return 1;
+#if TEST_FOR_CHANGE
+    /* This test should only be done if the user has something significant, not just
+     * setting some smyrna control, which then becomes a changed attribute. In addition,
+     * it might be good to allow a user to express a preference for the service.
+     */
     fill_key(view->final_key, get_md5_key(view->g[graphid]));
     if (!compare_keys(view->final_key, view->orig_key))
 	view->Topview->Graphdata.Modified = 1;
@@ -164,6 +171,7 @@ int close_graph(ViewInfo * view, int graphid)
 	    break;
 	}
     }
+#endif
     clear_viewport(view);
     return 1;
 
@@ -727,7 +735,7 @@ int add_graph_to_viewport(Agraph_t * graph, char *id)
 }
 void switch_graph(int graphId)
 {
-    if (graphId >= view->graphCount)
+    if ((graphId >= view->graphCount) || (graphId < 0))
 	return;			/*wrong entry */
     else
 	activate(graphId, 0);
