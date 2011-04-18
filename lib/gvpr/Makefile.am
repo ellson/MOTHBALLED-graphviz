@@ -3,7 +3,7 @@
 
 pkgconfigdir = $(libdir)/pkgconfig
 
-GVPR_VERSION="1:0:0"
+GVPR_VERSION="2:0:0"
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
