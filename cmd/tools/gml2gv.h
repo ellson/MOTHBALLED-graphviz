@@ -4,6 +4,10 @@
 #include <stdio.h>
 #include <cgraph.h>
 
+#ifdef WIN32
+#define strdup(x) _strdup(x)
+#endif
+
 typedef struct {
     Dtlink_t link;
     unsigned short kind;
