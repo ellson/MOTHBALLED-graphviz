@@ -233,7 +233,7 @@ void dijkstra(Dict_t * Q, Agraph_t * G, Agnode_t * n)
 }
 
 static char *useString =
-    "Usage: dijkstra [-a?] <node> [<file> <node> <file>]\n\
+    "Usage: dijkstra [-ap?] <node> [<file> <node> <file>]\n\
   -a - for nodes in a different component, set dist very large\n\
   -p - attach shortest path info\n\
   -? - print usage\n\
