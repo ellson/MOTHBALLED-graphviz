@@ -4,6 +4,7 @@
 	Version="9.00"
 	Name="osage"
 	ProjectGUID="{8E82D6BD-74D0-48C3-887A-1754EA71DA5A}"
+	RootNamespace="osage"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -120,6 +121,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				OutputFile="c:/graphviz-ms/bin/$(ProjectName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
