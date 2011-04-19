@@ -24,19 +24,13 @@ extern "C" {
 
 #include "geom.h"
 
+#ifdef WIN32
 #ifdef GVDLL
 #define extern __declspec(dllexport)
 #else
-#define extern
-#endif
-	
-/*visual studio*/
-#ifdef WIN32_DLL
-#ifndef GVC_EXPORTS
 #define extern __declspec(dllimport)
 #endif
-#endif
-/*end visual studio*/
+#endif	
 
 extern box mkbox(point p, point q);
 extern boxf mkboxf(pointf p, pointf q);
