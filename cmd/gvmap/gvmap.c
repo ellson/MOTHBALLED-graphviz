@@ -28,7 +28,9 @@
 #include "ingraphs.h"
 #include "DotIO.h"
 #include "colorutil.h"
-
+#ifdef WIN32
+#define strdup(x) _strdup(x)
+#endif
 int Verbose;
 enum {POINTS_ALL = 1, POINTS_LABEL, POINTS_RANDOM};
 enum {maxlen = 10000000};
