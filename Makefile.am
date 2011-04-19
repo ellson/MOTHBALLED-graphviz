@@ -28,6 +28,11 @@ dist-hook:
 #	rm -f ToPAS
 #	find $(distdir) -type f -exec md5sum {} >>ToPAS \;
 
+BUILT_SOURCES = graphviz_version.h
+
+graphviz_version.h: config.h
+	$(GREP) 'PACKAGE\|VERSION\|GVPLUGIN' config.h > graphviz_version.h
+
 EXTRA_DIST = $(txt) $(html) graphviz.spec.in graphviz.spec \
 	autogen.sh config/depcomp config/config.rpath \
 	builddate.h ast_common.h.in compat.h \
