@@ -29,20 +29,20 @@ one would use
 </TABLE>
 Further details concerning the setting of attributes can be found
 in the description of the
-<A HREF="http://www.graphviz.org/content/dot-language">DOT language.</A>
+<A HREF="http://www.graphviz.org/doc/info/lang.html">DOT language.</A>
 <P>
 At present, most device-independent units are either inches or
 <A NAME="points"></A>
-<A HREF="http://en.wikipedia.org/wiki/Point_(typography)" target="_blank">points</A>,
+<A HREF="http://en.wikipedia.org/wiki/Point_(typography)">points</A>,
 which we take as 72 points per inch.
 <P>
-<A NAME=hundir_note><STRONG>Note:</STRONG></A> Some attributes, such as
-<A HREF=#ddir>dir</A> or <A HREF=#darrowtail>arrowtail</A>, are
+<A NAME=h:undir_note><STRONG>Note:</STRONG></A> Some attributes, such as
+<A HREF=#d:dir>dir</A> or <A HREF=#d:arrowtail>arrowtail</A>, are
 ambiguous when used in
-<A HREF="http://www.graphviz.org/content/dot-language">DOT</A>
+<A HREF="http://www.graphviz.org/doc/info/lang.html">DOT</A>
 with an undirected graph since the head and tail of an edge are meaningless.
 As a convention, the first time an undirected edge appears, the
-<A HREF="http://www.graphviz.org/content/dot-language">DOT</A>
+<A HREF="http://www.graphviz.org/doc/info/lang.html">DOT</A>
 parser will assign the left node as the tail node and the right node as
 the head. For example, the edge <TT>A -- B</TT> will have tail <TT>A</TT>
 and head <TT>B</TT>. It is the user's responsibility to handle such
@@ -54,12 +54,12 @@ the drawing will attach the tail label to node <TT>A</TT>.
 To avoid possible confusion when such attributes are required, the user
 is encouraged to use a directed graph.
 If it is important to make the graph appear undirected, this can be
-done using the <A HREF=#ddir>dir</A>, <A HREF=#darrowtail>arrowtail</A>
-or <A HREF=#darrowhead>arrowhead</A> attributes.
+done using the <A HREF=#d:dir>dir</A>, <A HREF=#d:arrowtail>arrowtail</A>
+or <A HREF=#d:arrowhead>arrowhead</A> attributes.
 <P>
 The tools accept standard C representations for <EM>int</EM> and
 <EM>double</EM> types.
-For the <A NAME=kbool><EM>bool</EM></A> type, TRUE values are
+For the <A NAME=k:bool><EM>bool</EM></A> type, TRUE values are
 represented by "true" or "yes" (case-insensitive)
 and any non-zero integer, and FALSE values by "false" or "no" (case-insensitive)
 and zero.
@@ -68,431 +68,433 @@ In addition, there are a variety of specialized types such as
 <EM>pointf</EM> and <EM>rankdir</EM>. Legal values for these types are given
 at the end.
 <P>
-In the <A NAME=huses><STRONG>Used By</STRONG></A> field, the
+In the <A NAME=h:uses><STRONG>Used By</STRONG></A> field, the
 characters E, N, G, S and C
 represent edges, nodes, the root graph, subgraphs
 and cluster subgraphs, respectively.
 This field indicates which graph component uses the attribute.
 <HR ALIGN=CENTER WIDTH="70%" SIZE=3>
 <TABLE ALIGN=CENTER>
-<TR><TH>Name</TH><TH><A HREF=#huses>Used By</A></TH><TH>Type</TH><TH>Default</TH><TH>Minimum</TH><TH>Notes</TH></TR>
- <TR><TD><A NAME=aDamping HREF=#dDamping>Damping</A>
+<TR><TH>Name</TH><TH><A HREF=#h:uses>Used By</A></TH><TH>Type</TH><TH>Default</TH><TH>Minimum</TH><TH>Notes</TH></TR>
+ <TR><TD><A NAME=a:Damping HREF=#d:Damping>Damping</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.99</TD><TD>0.0</TD><TD>neato only</TD> </TR>
- <TR><TD><A NAME=aK HREF=#dK>K</A>
+ <TR><TD><A NAME=a:K HREF=#d:K>K</A>
 </TD><TD>GC</TD><TD>double</TD><TD ALIGN="CENTER">0.3</TD><TD>0</TD><TD>sfdp, fdp only</TD> </TR>
- <TR><TD><A NAME=aURL HREF=#dURL>URL</A>
-</TD><TD>ENGC</TD><TD><A HREF=#kescString>escString</A>
+ <TR><TD><A NAME=a:URL HREF=#d:URL>URL</A>
+</TD><TD>ENGC</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">&#60;none&#62;</TD><TD></TD><TD>svg, postscript, map only</TD> </TR>
- <TR><TD><A NAME=aarrowhead HREF=#darrowhead>arrowhead</A>
-</TD><TD>E</TD><TD><A HREF=#karrowType>arrowType</A>
+ <TR><TD><A NAME=a:area HREF=#d:area>area</A>
+</TD><TD>NC</TD><TD>double</TD><TD ALIGN="CENTER">1.0</TD><TD>&#62;0</TD><TD>patchwork only</TD> </TR>
+ <TR><TD><A NAME=a:arrowhead HREF=#d:arrowhead>arrowhead</A>
+</TD><TD>E</TD><TD><A HREF=#k:arrowType>arrowType</A>
 </TD><TD ALIGN="CENTER">normal</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=aarrowsize HREF=#darrowsize>arrowsize</A>
+ <TR><TD><A NAME=a:arrowsize HREF=#d:arrowsize>arrowsize</A>
 </TD><TD>E</TD><TD>double</TD><TD ALIGN="CENTER">1.0</TD><TD>0.0</TD><TD></TD> </TR>
- <TR><TD><A NAME=aarrowtail HREF=#darrowtail>arrowtail</A>
-</TD><TD>E</TD><TD><A HREF=#karrowType>arrowType</A>
+ <TR><TD><A NAME=a:arrowtail HREF=#d:arrowtail>arrowtail</A>
+</TD><TD>E</TD><TD><A HREF=#k:arrowType>arrowType</A>
 </TD><TD ALIGN="CENTER">normal</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=aaspect HREF=#daspect>aspect</A>
-</TD><TD>G</TD><TD><A HREF=#kaspectType>aspectType</A>
+ <TR><TD><A NAME=a:aspect HREF=#d:aspect>aspect</A>
+</TD><TD>G</TD><TD><A HREF=#k:aspectType>aspectType</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD>dot only</TD> </TR>
- <TR><TD><A NAME=abb HREF=#dbb>bb</A>
-</TD><TD>G</TD><TD><A HREF=#krect>rect</A>
+ <TR><TD><A NAME=a:bb HREF=#d:bb>bb</A>
+</TD><TD>G</TD><TD><A HREF=#k:rect>rect</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD>write only</TD> </TR>
- <TR><TD><A NAME=abgcolor HREF=#dbgcolor>bgcolor</A>
-</TD><TD>GC</TD><TD><A HREF=#kcolor>color</A>
+ <TR><TD><A NAME=a:bgcolor HREF=#d:bgcolor>bgcolor</A>
+</TD><TD>GC</TD><TD><A HREF=#k:color>color</A>
 </TD><TD ALIGN="CENTER">&#60;none&#62;</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=acenter HREF=#dcenter>center</A>
-</TD><TD>G</TD><TD><A HREF=#kbool>bool</A>
+ <TR><TD><A NAME=a:center HREF=#d:center>center</A>
+</TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=acharset HREF=#dcharset>charset</A>
+ <TR><TD><A NAME=a:charset HREF=#d:charset>charset</A>
 </TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">"UTF-8"</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=aclusterrank HREF=#dclusterrank>clusterrank</A>
-</TD><TD>G</TD><TD><A HREF=#kclusterMode>clusterMode</A>
+ <TR><TD><A NAME=a:clusterrank HREF=#d:clusterrank>clusterrank</A>
+</TD><TD>G</TD><TD><A HREF=#k:clusterMode>clusterMode</A>
 </TD><TD ALIGN="CENTER">local</TD><TD></TD><TD>dot only</TD> </TR>
- <TR><TD><A NAME=acolor HREF=#dcolor>color</A>
-</TD><TD>ENC</TD><TD><A HREF=#kcolor>color</A>
-<BR><A HREF=#kcolorList>colorList</A>
+ <TR><TD><A NAME=a:color HREF=#d:color>color</A>
+</TD><TD>ENC</TD><TD><A HREF=#k:color>color</A>
+<BR><A HREF=#k:colorList>colorList</A>
 </TD><TD ALIGN="CENTER">black</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=acolorscheme HREF=#dcolorscheme>colorscheme</A>
+ <TR><TD><A NAME=a:colorscheme HREF=#d:colorscheme>colorscheme</A>
 </TD><TD>ENCG</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=acomment HREF=#dcomment>comment</A>
+ <TR><TD><A NAME=a:comment HREF=#d:comment>comment</A>
 </TD><TD>ENG</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=acompound HREF=#dcompound>compound</A>
-</TD><TD>G</TD><TD><A HREF=#kbool>bool</A>
+ <TR><TD><A NAME=a:compound HREF=#d:compound>compound</A>
+</TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD>dot only</TD> </TR>
- <TR><TD><A NAME=aconcentrate HREF=#dconcentrate>concentrate</A>
-</TD><TD>G</TD><TD><A HREF=#kbool>bool</A>
+ <TR><TD><A NAME=a:concentrate HREF=#d:concentrate>concentrate</A>
+</TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=aconstraint HREF=#dconstraint>constraint</A>
-</TD><TD>E</TD><TD><A HREF=#kbool>bool</A>
+ <TR><TD><A NAME=a:constraint HREF=#d:constraint>constraint</A>
+</TD><TD>E</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">true</TD><TD></TD><TD>dot only</TD> </TR>
- <TR><TD><A NAME=adecorate HREF=#ddecorate>decorate</A>
-</TD><TD>E</TD><TD><A HREF=#kbool>bool</A>
+ <TR><TD><A NAME=a:decorate HREF=#d:decorate>decorate</A>
+</TD><TD>E</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=adefaultdist HREF=#ddefaultdist>defaultdist</A>
+ <TR><TD><A NAME=a:defaultdist HREF=#d:defaultdist>defaultdist</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">1+(avg. len)*sqrt(|V|)</TD><TD>epsilon</TD><TD>neato only</TD> </TR>
- <TR><TD><A NAME=adim HREF=#ddim>dim</A>
+ <TR><TD><A NAME=a:dim HREF=#d:dim>dim</A>
 </TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">2</TD><TD>2</TD><TD>sfdp, fdp, neato only</TD> </TR>
- <TR><TD><A NAME=adimen HREF=#ddimen>dimen</A>
+ <TR><TD><A NAME=a:dimen HREF=#d:dimen>dimen</A>
 </TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">2</TD><TD>2</TD><TD>sfdp, fdp, neato only</TD> </TR>
- <TR><TD><A NAME=adir HREF=#ddir>dir</A>
-</TD><TD>E</TD><TD><A HREF=#kdirType>dirType</A>
+ <TR><TD><A NAME=a:dir HREF=#d:dir>dir</A>
+</TD><TD>E</TD><TD><A HREF=#k:dirType>dirType</A>
 </TD><TD ALIGN="CENTER">forward(directed)<BR>none(undirected)</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=adiredgeconstraints HREF=#ddiredgeconstraints>diredgeconstraints</A>
-</TD><TD>G</TD><TD>string<BR><A HREF=#kbool>bool</A>
+ <TR><TD><A NAME=a:diredgeconstraints HREF=#d:diredgeconstraints>diredgeconstraints</A>
+</TD><TD>G</TD><TD>string<BR><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD>neato only</TD> </TR>
- <TR><TD><A NAME=adistortion HREF=#ddistortion>distortion</A>
+ <TR><TD><A NAME=a:distortion HREF=#d:distortion>distortion</A>
 </TD><TD>N</TD><TD>double</TD><TD ALIGN="CENTER">0.0</TD><TD>-100.0</TD><TD></TD> </TR>
- <TR><TD><A NAME=adpi HREF=#ddpi>dpi</A>
+ <TR><TD><A NAME=a:dpi HREF=#d:dpi>dpi</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">96.0<BR>0.0</TD><TD></TD><TD>svg, bitmap output only</TD> </TR>
- <TR><TD><A NAME=aedgeURL HREF=#dedgeURL>edgeURL</A>
-</TD><TD>E</TD><TD><A HREF=#kescString>escString</A>
+ <TR><TD><A NAME=a:edgeURL HREF=#d:edgeURL>edgeURL</A>
+</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
- <TR><TD><A NAME=aedgehref HREF=#dedgehref>edgehref</A>
-</TD><TD>E</TD><TD><A HREF=#kescString>escString</A>
+ <TR><TD><A NAME=a:edgehref HREF=#d:edgehref>edgehref</A>
+</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
- <TR><TD><A NAME=aedgetarget HREF=#dedgetarget>edgetarget</A>
-</TD><TD>E</TD><TD><A HREF=#kescString>escString</A>
+ <TR><TD><A NAME=a:edgetarget HREF=#d:edgetarget>edgetarget</A>
+</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">&#60;none&#62;</TD><TD></TD><TD>svg, map only</TD> </TR>
- <TR><TD><A NAME=aedgetooltip HREF=#dedgetooltip>edgetooltip</A>
-</TD><TD>E</TD><TD><A HREF=#kescString>escString</A>
+ <TR><TD><A NAME=a:edgetooltip HREF=#d:edgetooltip>edgetooltip</A>
+</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, cmap only</TD> </TR>
- <TR><TD><A NAME=aepsilon HREF=#depsilon>epsilon</A>
+ <TR><TD><A NAME=a:epsilon HREF=#d:epsilon>epsilon</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">.0001 * # nodes(mode == KK)<BR>.0001(mode == major)</TD><TD></TD><TD>neato only</TD> </TR>
- <TR><TD><A NAME=aesep HREF=#desep>esep</A>
-</TD><TD>G</TD><TD>double<BR><A HREF=#kpointf>pointf</A>
+ <TR><TD><A NAME=a:esep HREF=#d:esep>esep</A>
+</TD><TD>G</TD><TD>double<BR><A HREF=#k:pointf>pointf</A>
 </TD><TD ALIGN="CENTER">+3</TD><TD></TD><TD>not dot</TD> </TR>
- <TR><TD><A NAME=afillcolor HREF=#dfillcolor>fillcolor</A>
-</TD><TD>NC</TD><TD><A HREF=#kcolor>color</A>
+ <TR><TD><A NAME=a:fillcolor HREF=#d:fillcolor>fillcolor</A>
+</TD><TD>NC</TD><TD><A HREF=#k:color>color</A>
 </TD><TD ALIGN="CENTER">lightgrey(nodes)<BR>black(clusters)</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=afixedsize HREF=#dfixedsize>fixedsize</A>
-</TD><TD>N</TD><TD><A HREF=#kbool>bool</A>
+ <TR><TD><A NAME=a:fixedsize HREF=#d:fixedsize>fixedsize</A>
+</TD><TD>N</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=afontcolor HREF=#dfontcolor>fontcolor</A>
-</TD><TD>ENGC</TD><TD><A HREF=#kcolor>color</A>
+ <TR><TD><A NAME=a:fontcolor HREF=#d:fontcolor>fontcolor</A>
+</TD><TD>ENGC</TD><TD><A HREF=#k:color>color</A>
 </TD><TD ALIGN="CENTER">black</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=afontname HREF=#dfontname>fontname</A>
+ <TR><TD><A NAME=a:fontname HREF=#d:fontname>fontname</A>
 </TD><TD>ENGC</TD><TD>string</TD><TD ALIGN="CENTER">"Times-Roman"</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=afontnames HREF=#dfontnames>fontnames</A>
+ <TR><TD><A NAME=a:fontnames HREF=#d:fontnames>fontnames</A>
 </TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg only</TD> </TR>
- <TR><TD><A NAME=afontpath HREF=#dfontpath>fontpath</A>
+ <TR><TD><A NAME=a:fontpath HREF=#d:fontpath>fontpath</A>
 </TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">system-dependent</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=afontsize HREF=#dfontsize>fontsize</A>
+ <TR><TD><A NAME=a:fontsize HREF=#d:fontsize>fontsize</A>
 </TD><TD>ENGC</TD><TD>double</TD><TD ALIGN="CENTER">14.0</TD><TD>1.0</TD><TD></TD> </TR>
- <TR><TD><A NAME=agroup HREF=#dgroup>group</A>
+ <TR><TD><A NAME=a:group HREF=#d:group>group</A>
 </TD><TD>N</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>dot only</TD> </TR>
- <TR><TD><A NAME=aheadURL HREF=#dheadURL>headURL</A>
-</TD><TD>E</TD><TD><A HREF=#kescString>escString</A>
+ <TR><TD><A NAME=a:headURL HREF=#d:headURL>headURL</A>
+</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
- <TR><TD><A NAME=aheadclip HREF=#dheadclip>headclip</A>
-</TD><TD>E</TD><TD><A HREF=#kbool>bool</A>
+ <TR><TD><A NAME=a:headclip HREF=#d:headclip>headclip</A>
+</TD><TD>E</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">true</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=aheadhref HREF=#dheadhref>headhref</A>
-</TD><TD>E</TD><TD><A HREF=#kescString>escString</A>
+ <TR><TD><A NAME=a:headhref HREF=#d:headhref>headhref</A>
+</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
- <TR><TD><A NAME=aheadlabel HREF=#dheadlabel>headlabel</A>
-</TD><TD>E</TD><TD><A HREF=#klblString>lblString</A>
+ <TR><TD><A NAME=a:headlabel HREF=#d:headlabel>headlabel</A>
+</TD><TD>E</TD><TD><A HREF=#k:lblString>lblString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=aheadport HREF=#dheadport>headport</A>
-</TD><TD>E</TD><TD><A HREF=#kportPos>portPos</A>
+ <TR><TD><A NAME=a:headport HREF=#d:headport>headport</A>
+</TD><TD>E</TD><TD><A HREF=#k:portPos>portPos</A>
 </TD><TD ALIGN="CENTER">center</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=aheadtarget HREF=#dheadtarget>headtarget</A>
-</TD><TD>E</TD><TD><A HREF=#kescString>escString</A>
+ <TR><TD><A NAME=a:headtarget HREF=#d:headtarget>headtarget</A>
+</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">&#60;none&#62;</TD><TD></TD><TD>svg, map only</TD> </TR>
- <TR><TD><A NAME=aheadtooltip HREF=#dheadtooltip>headtooltip</A>
-</TD><TD>E</TD><TD><A HREF=#kescString>escString</A>
+ <TR><TD><A NAME=a:headtooltip HREF=#d:headtooltip>headtooltip</A>
+</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, cmap only</TD> </TR>
- <TR><TD><A NAME=aheight HREF=#dheight>height</A>
+ <TR><TD><A NAME=a:height HREF=#d:height>height</A>
 </TD><TD>N</TD><TD>double</TD><TD ALIGN="CENTER">0.5</TD><TD>0.02</TD><TD></TD> </TR>
- <TR><TD><A NAME=ahref HREF=#dhref>href</A>
-</TD><TD>GCNE</TD><TD><A HREF=#kescString>escString</A>
+ <TR><TD><A NAME=a:href HREF=#d:href>href</A>
+</TD><TD>GCNE</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, postscript, map only</TD> </TR>
- <TR><TD><A NAME=aid HREF=#did>id</A>
-</TD><TD>GNE</TD><TD><A HREF=#kescString>escString</A>
+ <TR><TD><A NAME=a:id HREF=#d:id>id</A>
+</TD><TD>GNE</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, postscript, map only</TD> </TR>
- <TR><TD><A NAME=aimage HREF=#dimage>image</A>
+ <TR><TD><A NAME=a:image HREF=#d:image>image</A>
 </TD><TD>N</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=aimagescale HREF=#dimagescale>imagescale</A>
-</TD><TD>N</TD><TD><A HREF=#kbool>bool</A>
+ <TR><TD><A NAME=a:imagescale HREF=#d:imagescale>imagescale</A>
+</TD><TD>N</TD><TD><A HREF=#k:bool>bool</A>
 <BR>string</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=alabel HREF=#dlabel>label</A>
-</TD><TD>ENGC</TD><TD><A HREF=#klblString>lblString</A>
+ <TR><TD><A NAME=a:label HREF=#d:label>label</A>
+</TD><TD>ENGC</TD><TD><A HREF=#k:lblString>lblString</A>
 </TD><TD ALIGN="CENTER">"\N" (nodes)<BR>"" (otherwise)</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=alabelURL HREF=#dlabelURL>labelURL</A>
-</TD><TD>E</TD><TD><A HREF=#kescString>escString</A>
+ <TR><TD><A NAME=a:labelURL HREF=#d:labelURL>labelURL</A>
+</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
- <TR><TD><A NAME=alabel_scheme HREF=#dlabel_scheme>label_scheme</A>
+ <TR><TD><A NAME=a:label_scheme HREF=#d:label_scheme>label_scheme</A>
 </TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">0</TD><TD>0</TD><TD>sfdp only</TD> </TR>
- <TR><TD><A NAME=alabelangle HREF=#dlabelangle>labelangle</A>
+ <TR><TD><A NAME=a:labelangle HREF=#d:labelangle>labelangle</A>
 </TD><TD>E</TD><TD>double</TD><TD ALIGN="CENTER">-25.0</TD><TD>-180.0</TD><TD></TD> </TR>
- <TR><TD><A NAME=alabeldistance HREF=#dlabeldistance>labeldistance</A>
+ <TR><TD><A NAME=a:labeldistance HREF=#d:labeldistance>labeldistance</A>
 </TD><TD>E</TD><TD>double</TD><TD ALIGN="CENTER">1.0</TD><TD>0.0</TD><TD></TD> </TR>
- <TR><TD><A NAME=alabelfloat HREF=#dlabelfloat>labelfloat</A>
-</TD><TD>E</TD><TD><A HREF=#kbool>bool</A>
+ <TR><TD><A NAME=a:labelfloat HREF=#d:labelfloat>labelfloat</A>
+</TD><TD>E</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=alabelfontcolor HREF=#dlabelfontcolor>labelfontcolor</A>
-</TD><TD>E</TD><TD><A HREF=#kcolor>color</A>
+ <TR><TD><A NAME=a:labelfontcolor HREF=#d:labelfontcolor>labelfontcolor</A>
+</TD><TD>E</TD><TD><A HREF=#k:color>color</A>
 </TD><TD ALIGN="CENTER">black</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=alabelfontname HREF=#dlabelfontname>labelfontname</A>
+ <TR><TD><A NAME=a:labelfontname HREF=#d:labelfontname>labelfontname</A>
 </TD><TD>E</TD><TD>string</TD><TD ALIGN="CENTER">"Times-Roman"</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=alabelfontsize HREF=#dlabelfontsize>labelfontsize</A>
+ <TR><TD><A NAME=a:labelfontsize HREF=#d:labelfontsize>labelfontsize</A>
 </TD><TD>E</TD><TD>double</TD><TD ALIGN="CENTER">14.0</TD><TD>1.0</TD><TD></TD> </TR>
- <TR><TD><A NAME=alabelhref HREF=#dlabelhref>labelhref</A>
-</TD><TD>E</TD><TD><A HREF=#kescString>escString</A>
+ <TR><TD><A NAME=a:labelhref HREF=#d:labelhref>labelhref</A>
+</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
- <TR><TD><A NAME=alabeljust HREF=#dlabeljust>labeljust</A>
+ <TR><TD><A NAME=a:labeljust HREF=#d:labeljust>labeljust</A>
 </TD><TD>GC</TD><TD>string</TD><TD ALIGN="CENTER">"c"</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=alabelloc HREF=#dlabelloc>labelloc</A>
+ <TR><TD><A NAME=a:labelloc HREF=#d:labelloc>labelloc</A>
 </TD><TD>NGC</TD><TD>string</TD><TD ALIGN="CENTER">"t"(clusters)<BR>"b"(root graphs)<BR>"c"(nodes)</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=alabeltarget HREF=#dlabeltarget>labeltarget</A>
-</TD><TD>E</TD><TD><A HREF=#kescString>escString</A>
+ <TR><TD><A NAME=a:labeltarget HREF=#d:labeltarget>labeltarget</A>
+</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">&#60;none&#62;</TD><TD></TD><TD>svg, map only</TD> </TR>
- <TR><TD><A NAME=alabeltooltip HREF=#dlabeltooltip>labeltooltip</A>
-</TD><TD>E</TD><TD><A HREF=#kescString>escString</A>
+ <TR><TD><A NAME=a:labeltooltip HREF=#d:labeltooltip>labeltooltip</A>
+</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, cmap only</TD> </TR>
- <TR><TD><A NAME=alandscape HREF=#dlandscape>landscape</A>
-</TD><TD>G</TD><TD><A HREF=#kbool>bool</A>
+ <TR><TD><A NAME=a:landscape HREF=#d:landscape>landscape</A>
+</TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=alayer HREF=#dlayer>layer</A>
-</TD><TD>EN</TD><TD><A HREF=#klayerRange>layerRange</A>
+ <TR><TD><A NAME=a:layer HREF=#d:layer>layer</A>
+</TD><TD>EN</TD><TD><A HREF=#k:layerRange>layerRange</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=alayers HREF=#dlayers>layers</A>
-</TD><TD>G</TD><TD><A HREF=#klayerList>layerList</A>
+ <TR><TD><A NAME=a:layers HREF=#d:layers>layers</A>
+</TD><TD>G</TD><TD><A HREF=#k:layerList>layerList</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=alayersep HREF=#dlayersep>layersep</A>
-</TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">" \t"</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=alayout HREF=#dlayout>layout</A>
+ <TR><TD><A NAME=a:layersep HREF=#d:layersep>layersep</A>
+</TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">" :\t"</TD><TD></TD><TD></TD> </TR>
+ <TR><TD><A NAME=a:layout HREF=#d:layout>layout</A>
 </TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=alen HREF=#dlen>len</A>
+ <TR><TD><A NAME=a:len HREF=#d:len>len</A>
 </TD><TD>E</TD><TD>double</TD><TD ALIGN="CENTER">1.0(neato)<BR>0.3(fdp)</TD><TD></TD><TD>fdp, neato only</TD> </TR>
- <TR><TD><A NAME=alevels HREF=#dlevels>levels</A>
+ <TR><TD><A NAME=a:levels HREF=#d:levels>levels</A>
 </TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">MAXINT</TD><TD>0.0</TD><TD>sfdp only</TD> </TR>
- <TR><TD><A NAME=alevelsgap HREF=#dlevelsgap>levelsgap</A>
+ <TR><TD><A NAME=a:levelsgap HREF=#d:levelsgap>levelsgap</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.0</TD><TD></TD><TD>neato only</TD> </TR>
- <TR><TD><A NAME=alhead HREF=#dlhead>lhead</A>
+ <TR><TD><A NAME=a:lhead HREF=#d:lhead>lhead</A>
 </TD><TD>E</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>dot only</TD> </TR>
- <TR><TD><A NAME=alheight HREF=#dlheight>lheight</A>
+ <TR><TD><A NAME=a:lheight HREF=#d:lheight>lheight</A>
 </TD><TD>GC</TD><TD>double</TD><TD ALIGN="CENTER"></TD><TD></TD><TD>write only</TD> </TR>
- <TR><TD><A NAME=alp HREF=#dlp>lp</A>
-</TD><TD>EGC</TD><TD><A HREF=#kpoint>point</A>
+ <TR><TD><A NAME=a:lp HREF=#d:lp>lp</A>
+</TD><TD>EGC</TD><TD><A HREF=#k:point>point</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD>write only</TD> </TR>
- <TR><TD><A NAME=altail HREF=#dltail>ltail</A>
+ <TR><TD><A NAME=a:ltail HREF=#d:ltail>ltail</A>
 </TD><TD>E</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>dot only</TD> </TR>
- <TR><TD><A NAME=alwidth HREF=#dlwidth>lwidth</A>
+ <TR><TD><A NAME=a:lwidth HREF=#d:lwidth>lwidth</A>
 </TD><TD>GC</TD><TD>double</TD><TD ALIGN="CENTER"></TD><TD></TD><TD>write only</TD> </TR>
- <TR><TD><A NAME=amargin HREF=#dmargin>margin</A>
-</TD><TD>NG</TD><TD>double<BR><A HREF=#kpointf>pointf</A>
+ <TR><TD><A NAME=a:margin HREF=#d:margin>margin</A>
+</TD><TD>NG</TD><TD>double<BR><A HREF=#k:pointf>pointf</A>
 </TD><TD ALIGN="CENTER">&#60;device-dependent&#62;</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=amaxiter HREF=#dmaxiter>maxiter</A>
+ <TR><TD><A NAME=a:maxiter HREF=#d:maxiter>maxiter</A>
 </TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">100 * # nodes(mode == KK)<BR>200(mode == major)<BR>600(fdp)</TD><TD></TD><TD>fdp, neato only</TD> </TR>
- <TR><TD><A NAME=amclimit HREF=#dmclimit>mclimit</A>
+ <TR><TD><A NAME=a:mclimit HREF=#d:mclimit>mclimit</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">1.0</TD><TD></TD><TD>dot only</TD> </TR>
- <TR><TD><A NAME=amindist HREF=#dmindist>mindist</A>
+ <TR><TD><A NAME=a:mindist HREF=#d:mindist>mindist</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">1.0</TD><TD>0.0</TD><TD>circo only</TD> </TR>
- <TR><TD><A NAME=aminlen HREF=#dminlen>minlen</A>
+ <TR><TD><A NAME=a:minlen HREF=#d:minlen>minlen</A>
 </TD><TD>E</TD><TD>int</TD><TD ALIGN="CENTER">1</TD><TD>0</TD><TD>dot only</TD> </TR>
- <TR><TD><A NAME=amode HREF=#dmode>mode</A>
+ <TR><TD><A NAME=a:mode HREF=#d:mode>mode</A>
 </TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">major<BR>spring</TD><TD></TD><TD>sfdp, neato only</TD> </TR>
- <TR><TD><A NAME=amodel HREF=#dmodel>model</A>
+ <TR><TD><A NAME=a:model HREF=#d:model>model</A>
 </TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">shortpath</TD><TD></TD><TD>neato only</TD> </TR>
- <TR><TD><A NAME=amosek HREF=#dmosek>mosek</A>
-</TD><TD>G</TD><TD><A HREF=#kbool>bool</A>
+ <TR><TD><A NAME=a:mosek HREF=#d:mosek>mosek</A>
+</TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD>neato only</TD> </TR>
- <TR><TD><A NAME=anodesep HREF=#dnodesep>nodesep</A>
+ <TR><TD><A NAME=a:nodesep HREF=#d:nodesep>nodesep</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.25</TD><TD>0.02</TD><TD>dot only</TD> </TR>
- <TR><TD><A NAME=anojustify HREF=#dnojustify>nojustify</A>
-</TD><TD>GCNE</TD><TD><A HREF=#kbool>bool</A>
+ <TR><TD><A NAME=a:nojustify HREF=#d:nojustify>nojustify</A>
+</TD><TD>GCNE</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=anormalize HREF=#dnormalize>normalize</A>
-</TD><TD>G</TD><TD><A HREF=#kbool>bool</A>
+ <TR><TD><A NAME=a:normalize HREF=#d:normalize>normalize</A>
+</TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD>not dot</TD> </TR>
- <TR><TD><A NAME=anslimit HREF=#dnslimit>nslimit</A>
-<BR><A NAME=anslimit1 HREF=#dnslimit1>nslimit1</A>
+ <TR><TD><A NAME=a:nslimit HREF=#d:nslimit>nslimit</A>
+<BR><A NAME=a:nslimit1 HREF=#d:nslimit1>nslimit1</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER"></TD><TD></TD><TD>dot only</TD> </TR>
- <TR><TD><A NAME=aordering HREF=#dordering>ordering</A>
+ <TR><TD><A NAME=a:ordering HREF=#d:ordering>ordering</A>
 </TD><TD>GN</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>dot only</TD> </TR>
- <TR><TD><A NAME=aorientation HREF=#dorientation>orientation</A>
+ <TR><TD><A NAME=a:orientation HREF=#d:orientation>orientation</A>
 </TD><TD>N</TD><TD>double</TD><TD ALIGN="CENTER">0.0</TD><TD>360.0</TD><TD></TD> </TR>
- <TR><TD><A NAME=aaorientation HREF=#ddorientation>orientation</A>
+ <TR><TD><A NAME=aa:orientation HREF=#dd:orientation>orientation</A>
 </TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=aoutputorder HREF=#doutputorder>outputorder</A>
-</TD><TD>G</TD><TD><A HREF=#koutputMode>outputMode</A>
+ <TR><TD><A NAME=a:outputorder HREF=#d:outputorder>outputorder</A>
+</TD><TD>G</TD><TD><A HREF=#k:outputMode>outputMode</A>
 </TD><TD ALIGN="CENTER">breadthfirst</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=aoverlap HREF=#doverlap>overlap</A>
-</TD><TD>G</TD><TD>string<BR><A HREF=#kbool>bool</A>
+ <TR><TD><A NAME=a:overlap HREF=#d:overlap>overlap</A>
+</TD><TD>G</TD><TD>string<BR><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">true</TD><TD></TD><TD>not dot</TD> </TR>
- <TR><TD><A NAME=aoverlap_scaling HREF=#doverlap_scaling>overlap_scaling</A>
+ <TR><TD><A NAME=a:overlap_scaling HREF=#d:overlap_scaling>overlap_scaling</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">-4</TD><TD>-1.0e10</TD><TD>prism only</TD> </TR>
- <TR><TD><A NAME=apack HREF=#dpack>pack</A>
-</TD><TD>G</TD><TD><A HREF=#kbool>bool</A>
+ <TR><TD><A NAME=a:pack HREF=#d:pack>pack</A>
+</TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 <BR>int</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD>not dot</TD> </TR>
- <TR><TD><A NAME=apackmode HREF=#dpackmode>packmode</A>
-</TD><TD>G</TD><TD><A HREF=#kpackMode>packMode</A>
+ <TR><TD><A NAME=a:packmode HREF=#d:packmode>packmode</A>
+</TD><TD>G</TD><TD><A HREF=#k:packMode>packMode</A>
 </TD><TD ALIGN="CENTER">node</TD><TD></TD><TD>not dot</TD> </TR>
- <TR><TD><A NAME=apad HREF=#dpad>pad</A>
-</TD><TD>G</TD><TD>double<BR><A HREF=#kpointf>pointf</A>
+ <TR><TD><A NAME=a:pad HREF=#d:pad>pad</A>
+</TD><TD>G</TD><TD>double<BR><A HREF=#k:pointf>pointf</A>
 </TD><TD ALIGN="CENTER">0.0555 (4 points)</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=apage HREF=#dpage>page</A>
-</TD><TD>G</TD><TD>double<BR><A HREF=#kpointf>pointf</A>
+ <TR><TD><A NAME=a:page HREF=#d:page>page</A>
+</TD><TD>G</TD><TD>double<BR><A HREF=#k:pointf>pointf</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=apagedir HREF=#dpagedir>pagedir</A>
-</TD><TD>G</TD><TD><A HREF=#kpagedir>pagedir</A>
+ <TR><TD><A NAME=a:pagedir HREF=#d:pagedir>pagedir</A>
+</TD><TD>G</TD><TD><A HREF=#k:pagedir>pagedir</A>
 </TD><TD ALIGN="CENTER">BL</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=apencolor HREF=#dpencolor>pencolor</A>
-</TD><TD>C</TD><TD><A HREF=#kcolor>color</A>
+ <TR><TD><A NAME=a:pencolor HREF=#d:pencolor>pencolor</A>
+</TD><TD>C</TD><TD><A HREF=#k:color>color</A>
 </TD><TD ALIGN="CENTER">black</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=apenwidth HREF=#dpenwidth>penwidth</A>
+ <TR><TD><A NAME=a:penwidth HREF=#d:penwidth>penwidth</A>
 </TD><TD>CNE</TD><TD>double</TD><TD ALIGN="CENTER">1.0</TD><TD>0.0</TD><TD></TD> </TR>
- <TR><TD><A NAME=aperipheries HREF=#dperipheries>peripheries</A>
+ <TR><TD><A NAME=a:peripheries HREF=#d:peripheries>peripheries</A>
 </TD><TD>NC</TD><TD>int</TD><TD ALIGN="CENTER">shape default(nodes)<BR>1(clusters)</TD><TD>0</TD><TD></TD> </TR>
- <TR><TD><A NAME=apin HREF=#dpin>pin</A>
-</TD><TD>N</TD><TD><A HREF=#kbool>bool</A>
+ <TR><TD><A NAME=a:pin HREF=#d:pin>pin</A>
+</TD><TD>N</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD>fdp, neato only</TD> </TR>
- <TR><TD><A NAME=apos HREF=#dpos>pos</A>
-</TD><TD>EN</TD><TD><A HREF=#kpoint>point</A>
-<BR><A HREF=#ksplineType>splineType</A>
+ <TR><TD><A NAME=a:pos HREF=#d:pos>pos</A>
+</TD><TD>EN</TD><TD><A HREF=#k:point>point</A>
+<BR><A HREF=#k:splineType>splineType</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=aquadtree HREF=#dquadtree>quadtree</A>
-</TD><TD>G</TD><TD><A HREF=#kquadType>quadType</A>
-<BR><A HREF=#kbool>bool</A>
+ <TR><TD><A NAME=a:quadtree HREF=#d:quadtree>quadtree</A>
+</TD><TD>G</TD><TD><A HREF=#k:quadType>quadType</A>
+<BR><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">normal</TD><TD></TD><TD>sfdp only</TD> </TR>
- <TR><TD><A NAME=aquantum HREF=#dquantum>quantum</A>
+ <TR><TD><A NAME=a:quantum HREF=#d:quantum>quantum</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.0</TD><TD>0.0</TD><TD></TD> </TR>
- <TR><TD><A NAME=arank HREF=#drank>rank</A>
-</TD><TD>S</TD><TD><A HREF=#krankType>rankType</A>
+ <TR><TD><A NAME=a:rank HREF=#d:rank>rank</A>
+</TD><TD>S</TD><TD><A HREF=#k:rankType>rankType</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD>dot only</TD> </TR>
- <TR><TD><A NAME=arankdir HREF=#drankdir>rankdir</A>
-</TD><TD>G</TD><TD><A HREF=#krankdir>rankdir</A>
+ <TR><TD><A NAME=a:rankdir HREF=#d:rankdir>rankdir</A>
+</TD><TD>G</TD><TD><A HREF=#k:rankdir>rankdir</A>
 </TD><TD ALIGN="CENTER">TB</TD><TD></TD><TD>dot only</TD> </TR>
- <TR><TD><A NAME=aranksep HREF=#dranksep>ranksep</A>
-</TD><TD>G</TD><TD>double<BR><A HREF=#kdoubleList>doubleList</A>
+ <TR><TD><A NAME=a:ranksep HREF=#d:ranksep>ranksep</A>
+</TD><TD>G</TD><TD>double<BR><A HREF=#k:doubleList>doubleList</A>
 </TD><TD ALIGN="CENTER">0.5(dot)<BR>1.0(twopi)</TD><TD>0.02</TD><TD>twopi, dot only</TD> </TR>
- <TR><TD><A NAME=aratio HREF=#dratio>ratio</A>
+ <TR><TD><A NAME=a:ratio HREF=#d:ratio>ratio</A>
 </TD><TD>G</TD><TD>double<BR>string</TD><TD ALIGN="CENTER"></TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=arects HREF=#drects>rects</A>
-</TD><TD>N</TD><TD><A HREF=#krect>rect</A>
+ <TR><TD><A NAME=a:rects HREF=#d:rects>rects</A>
+</TD><TD>N</TD><TD><A HREF=#k:rect>rect</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD>write only</TD> </TR>
- <TR><TD><A NAME=aregular HREF=#dregular>regular</A>
-</TD><TD>N</TD><TD><A HREF=#kbool>bool</A>
+ <TR><TD><A NAME=a:regular HREF=#d:regular>regular</A>
+</TD><TD>N</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=aremincross HREF=#dremincross>remincross</A>
-</TD><TD>G</TD><TD><A HREF=#kbool>bool</A>
+ <TR><TD><A NAME=a:remincross HREF=#d:remincross>remincross</A>
+</TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD>dot only</TD> </TR>
- <TR><TD><A NAME=arepulsiveforce HREF=#drepulsiveforce>repulsiveforce</A>
+ <TR><TD><A NAME=a:repulsiveforce HREF=#d:repulsiveforce>repulsiveforce</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">1.0</TD><TD>0.0</TD><TD>sfdp only</TD> </TR>
- <TR><TD><A NAME=aresolution HREF=#dresolution>resolution</A>
+ <TR><TD><A NAME=a:resolution HREF=#d:resolution>resolution</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">96.0<BR>0.0</TD><TD></TD><TD>svg, bitmap output only</TD> </TR>
- <TR><TD><A NAME=aroot HREF=#droot>root</A>
-</TD><TD>GN</TD><TD>string<BR><A HREF=#kbool>bool</A>
+ <TR><TD><A NAME=a:root HREF=#d:root>root</A>
+</TD><TD>GN</TD><TD>string<BR><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">&#60;none&#62;(graphs)<BR>false(nodes)</TD><TD></TD><TD>circo, twopi only</TD> </TR>
- <TR><TD><A NAME=arotate HREF=#drotate>rotate</A>
+ <TR><TD><A NAME=a:rotate HREF=#d:rotate>rotate</A>
 </TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">0</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=arotation HREF=#drotation>rotation</A>
+ <TR><TD><A NAME=a:rotation HREF=#d:rotation>rotation</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0</TD><TD></TD><TD>sfdp only</TD> </TR>
- <TR><TD><A NAME=asamehead HREF=#dsamehead>samehead</A>
+ <TR><TD><A NAME=a:samehead HREF=#d:samehead>samehead</A>
 </TD><TD>E</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>dot only</TD> </TR>
- <TR><TD><A NAME=asametail HREF=#dsametail>sametail</A>
+ <TR><TD><A NAME=a:sametail HREF=#d:sametail>sametail</A>
 </TD><TD>E</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>dot only</TD> </TR>
- <TR><TD><A NAME=asamplepoints HREF=#dsamplepoints>samplepoints</A>
+ <TR><TD><A NAME=a:samplepoints HREF=#d:samplepoints>samplepoints</A>
 </TD><TD>N</TD><TD>int</TD><TD ALIGN="CENTER">8(output)<BR>20(overlap and image maps)</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=ascale HREF=#dscale>scale</A>
-</TD><TD>G</TD><TD>double<BR><A HREF=#kpointf>pointf</A>
+ <TR><TD><A NAME=a:scale HREF=#d:scale>scale</A>
+</TD><TD>G</TD><TD>double<BR><A HREF=#k:pointf>pointf</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD>twopi only</TD> </TR>
- <TR><TD><A NAME=asearchsize HREF=#dsearchsize>searchsize</A>
+ <TR><TD><A NAME=a:searchsize HREF=#d:searchsize>searchsize</A>
 </TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">30</TD><TD></TD><TD>dot only</TD> </TR>
- <TR><TD><A NAME=asep HREF=#dsep>sep</A>
-</TD><TD>G</TD><TD>double<BR><A HREF=#kpointf>pointf</A>
+ <TR><TD><A NAME=a:sep HREF=#d:sep>sep</A>
+</TD><TD>G</TD><TD>double<BR><A HREF=#k:pointf>pointf</A>
 </TD><TD ALIGN="CENTER">+4</TD><TD></TD><TD>not dot</TD> </TR>
- <TR><TD><A NAME=ashape HREF=#dshape>shape</A>
-</TD><TD>N</TD><TD><A HREF=#kshape>shape</A>
+ <TR><TD><A NAME=a:shape HREF=#d:shape>shape</A>
+</TD><TD>N</TD><TD><A HREF=#k:shape>shape</A>
 </TD><TD ALIGN="CENTER">ellipse</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=ashapefile HREF=#dshapefile>shapefile</A>
+ <TR><TD><A NAME=a:shapefile HREF=#d:shapefile>shapefile</A>
 </TD><TD>N</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=ashowboxes HREF=#dshowboxes>showboxes</A>
+ <TR><TD><A NAME=a:showboxes HREF=#d:showboxes>showboxes</A>
 </TD><TD>ENG</TD><TD>int</TD><TD ALIGN="CENTER">0</TD><TD>0</TD><TD>dot only</TD> </TR>
- <TR><TD><A NAME=asides HREF=#dsides>sides</A>
+ <TR><TD><A NAME=a:sides HREF=#d:sides>sides</A>
 </TD><TD>N</TD><TD>int</TD><TD ALIGN="CENTER">4</TD><TD>0</TD><TD></TD> </TR>
- <TR><TD><A NAME=asize HREF=#dsize>size</A>
-</TD><TD>G</TD><TD>double<BR><A HREF=#kpointf>pointf</A>
+ <TR><TD><A NAME=a:size HREF=#d:size>size</A>
+</TD><TD>G</TD><TD>double<BR><A HREF=#k:pointf>pointf</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=askew HREF=#dskew>skew</A>
+ <TR><TD><A NAME=a:skew HREF=#d:skew>skew</A>
 </TD><TD>N</TD><TD>double</TD><TD ALIGN="CENTER">0.0</TD><TD>-100.0</TD><TD></TD> </TR>
- <TR><TD><A NAME=asmoothing HREF=#dsmoothing>smoothing</A>
-</TD><TD>G</TD><TD><A HREF=#ksmoothType>smoothType</A>
+ <TR><TD><A NAME=a:smoothing HREF=#d:smoothing>smoothing</A>
+</TD><TD>G</TD><TD><A HREF=#k:smoothType>smoothType</A>
 </TD><TD ALIGN="CENTER">"none"</TD><TD></TD><TD>sfdp only</TD> </TR>
- <TR><TD><A NAME=asortv HREF=#dsortv>sortv</A>
+ <TR><TD><A NAME=a:sortv HREF=#d:sortv>sortv</A>
 </TD><TD>GCN</TD><TD>int</TD><TD ALIGN="CENTER">0</TD><TD>0</TD><TD></TD> </TR>
- <TR><TD><A NAME=asplines HREF=#dsplines>splines</A>
-</TD><TD>G</TD><TD><A HREF=#kbool>bool</A>
+ <TR><TD><A NAME=a:splines HREF=#d:splines>splines</A>
+</TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 <BR>string</TD><TD ALIGN="CENTER"></TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=astart HREF=#dstart>start</A>
-</TD><TD>G</TD><TD><A HREF=#kstartType>startType</A>
+ <TR><TD><A NAME=a:start HREF=#d:start>start</A>
+</TD><TD>G</TD><TD><A HREF=#k:startType>startType</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>fdp, neato only</TD> </TR>
- <TR><TD><A NAME=astyle HREF=#dstyle>style</A>
-</TD><TD>ENC</TD><TD><A HREF=#kstyle>style</A>
+ <TR><TD><A NAME=a:style HREF=#d:style>style</A>
+</TD><TD>ENC</TD><TD><A HREF=#k:style>style</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=astylesheet HREF=#dstylesheet>stylesheet</A>
+ <TR><TD><A NAME=a:stylesheet HREF=#d:stylesheet>stylesheet</A>
 </TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg only</TD> </TR>
- <TR><TD><A NAME=atailURL HREF=#dtailURL>tailURL</A>
-</TD><TD>E</TD><TD><A HREF=#kescString>escString</A>
+ <TR><TD><A NAME=a:tailURL HREF=#d:tailURL>tailURL</A>
+</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
- <TR><TD><A NAME=atailclip HREF=#dtailclip>tailclip</A>
-</TD><TD>E</TD><TD><A HREF=#kbool>bool</A>
+ <TR><TD><A NAME=a:tailclip HREF=#d:tailclip>tailclip</A>
+</TD><TD>E</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">true</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=atailhref HREF=#dtailhref>tailhref</A>
-</TD><TD>E</TD><TD><A HREF=#kescString>escString</A>
+ <TR><TD><A NAME=a:tailhref HREF=#d:tailhref>tailhref</A>
+</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
- <TR><TD><A NAME=ataillabel HREF=#dtaillabel>taillabel</A>
-</TD><TD>E</TD><TD><A HREF=#klblString>lblString</A>
+ <TR><TD><A NAME=a:taillabel HREF=#d:taillabel>taillabel</A>
+</TD><TD>E</TD><TD><A HREF=#k:lblString>lblString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=atailport HREF=#dtailport>tailport</A>
-</TD><TD>E</TD><TD><A HREF=#kportPos>portPos</A>
+ <TR><TD><A NAME=a:tailport HREF=#d:tailport>tailport</A>
+</TD><TD>E</TD><TD><A HREF=#k:portPos>portPos</A>
 </TD><TD ALIGN="CENTER">center</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=atailtarget HREF=#dtailtarget>tailtarget</A>
-</TD><TD>E</TD><TD><A HREF=#kescString>escString</A>
+ <TR><TD><A NAME=a:tailtarget HREF=#d:tailtarget>tailtarget</A>
+</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">&#60;none&#62;</TD><TD></TD><TD>svg, map only</TD> </TR>
- <TR><TD><A NAME=atailtooltip HREF=#dtailtooltip>tailtooltip</A>
-</TD><TD>E</TD><TD><A HREF=#kescString>escString</A>
+ <TR><TD><A NAME=a:tailtooltip HREF=#d:tailtooltip>tailtooltip</A>
+</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, cmap only</TD> </TR>
- <TR><TD><A NAME=atarget HREF=#dtarget>target</A>
-</TD><TD>ENGC</TD><TD><A HREF=#kescString>escString</A>
+ <TR><TD><A NAME=a:target HREF=#d:target>target</A>
+</TD><TD>ENGC</TD><TD><A HREF=#k:escString>escString</A>
 <BR>string</TD><TD ALIGN="CENTER">&#60;none&#62;</TD><TD></TD><TD>svg, map only</TD> </TR>
- <TR><TD><A NAME=atooltip HREF=#dtooltip>tooltip</A>
-</TD><TD>NEC</TD><TD><A HREF=#kescString>escString</A>
+ <TR><TD><A NAME=a:tooltip HREF=#d:tooltip>tooltip</A>
+</TD><TD>NEC</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, cmap only</TD> </TR>
- <TR><TD><A NAME=atruecolor HREF=#dtruecolor>truecolor</A>
-</TD><TD>G</TD><TD><A HREF=#kbool>bool</A>
+ <TR><TD><A NAME=a:truecolor HREF=#d:truecolor>truecolor</A>
+</TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD>bitmap output only</TD> </TR>
- <TR><TD><A NAME=avertices HREF=#dvertices>vertices</A>
-</TD><TD>N</TD><TD><A HREF=#kpointfList>pointfList</A>
+ <TR><TD><A NAME=a:vertices HREF=#d:vertices>vertices</A>
+</TD><TD>N</TD><TD><A HREF=#k:pointfList>pointfList</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD>write only</TD> </TR>
- <TR><TD><A NAME=aviewport HREF=#dviewport>viewport</A>
-</TD><TD>G</TD><TD><A HREF=#kviewPort>viewPort</A>
+ <TR><TD><A NAME=a:viewport HREF=#d:viewport>viewport</A>
+</TD><TD>G</TD><TD><A HREF=#k:viewPort>viewPort</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=avoro_margin HREF=#dvoro_margin>voro_margin</A>
+ <TR><TD><A NAME=a:voro_margin HREF=#d:voro_margin>voro_margin</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.05</TD><TD>0.0</TD><TD>not dot</TD> </TR>
- <TR><TD><A NAME=aweight HREF=#dweight>weight</A>
+ <TR><TD><A NAME=a:weight HREF=#d:weight>weight</A>
 </TD><TD>E</TD><TD>double</TD><TD ALIGN="CENTER">1.0</TD><TD>0(dot)<BR>1(neato,fdp,sfdp)</TD><TD></TD> </TR>
- <TR><TD><A NAME=awidth HREF=#dwidth>width</A>
+ <TR><TD><A NAME=a:width HREF=#d:width>width</A>
 </TD><TD>N</TD><TD>double</TD><TD ALIGN="CENTER">0.75</TD><TD>0.01</TD><TD></TD> </TR>
- <TR><TD><A NAME=az HREF=#dz>z</A>
+ <TR><TD><A NAME=a:z HREF=#d:z>z</A>
 </TD><TD>N</TD><TD>double</TD><TD ALIGN="CENTER">0.0</TD><TD>-MAXFLOAT<BR>-1000</TD><TD></TD> </TR>
 </TABLE>
 <HR>
 <H1>Attribute Descriptions</H1>
 <DL>
-<DT><A NAME=dDamping HREF=#aDamping><STRONG>Damping</STRONG></A>
+<DT><A NAME=d:Damping HREF=#a:Damping><STRONG>Damping</STRONG></A>
 <DD>  Factor damping force motions. On each iteration, a nodes movement
   is limited to this factor of its potential motion. By being less than
   1.0, the system tends to ``cool'', thereby preventing cycling.
 
-<DT><A NAME=dK HREF=#aK><STRONG>K</STRONG></A>
+<DT><A NAME=d:K HREF=#a:K><STRONG>K</STRONG></A>
 <DD>  Spring constant used in virtual physical model. It roughly corresponds
   to an ideal edge length (in inches), in that increasing K tends to
   increase the distance between nodes.
-  Note that the edge attribute <A HREF=#dlen>len</A> can be used to
+  Note that the edge attribute <A HREF=#d:len>len</A> can be used to
   override this value for adjacent nodes.
 
-<DT><A NAME=dURL HREF=#aURL><STRONG>URL</STRONG></A>
+<DT><A NAME=d:URL HREF=#a:URL><STRONG>URL</STRONG></A>
 <DD>  Hyperlinks incorporated into device-dependent output.
   At present, used in ps2, cmap, i*map and svg formats.
   For all these formats, URLs can be attached to nodes, edges and
@@ -513,29 +515,32 @@ This field indicates which graph component uses the attribute.
   If the edge has a label, this will also be active.
   Finally, if the edge has a head or tail label, this will also be active.
   <P>
-  Note that, for edges, the attributes <A HREF=#dheadURL>headURL</A>,
-  <A HREF=#dtailURL>tailURL</A>, <A HREF=#dlabelURL>labelURL</A> and
-  <A HREF=#dedgeURL>edgeURL</A> allow control of various parts of an
+  Note that, for edges, the attributes <A HREF=#d:headURL>headURL</A>,
+  <A HREF=#d:tailURL>tailURL</A>, <A HREF=#d:labelURL>labelURL</A> and
+  <A HREF=#d:edgeURL>edgeURL</A> allow control of various parts of an
   edge.
   Also note that, if active areas of two edges overlap, it is unspecified
   which area dominates.
 
-<DT><A NAME=darrowhead HREF=#aarrowhead><STRONG>arrowhead</STRONG></A>
-<DD>  Style of arrowhead on the head node of an edge.
-  This will only appear if the <A HREF=#ddir>dir</A> attribute
-  is "forward" or "both".
-  See the <A HREF=#hundir_note>limitation</A>.
+<DT><A NAME=d:area HREF=#a:area><STRONG>area</STRONG></A>
+<DD>  Indicates the preferred area for a node or empty cluster when laid out by patchwork.
 
-<DT><A NAME=darrowsize HREF=#aarrowsize><STRONG>arrowsize</STRONG></A>
+<DT><A NAME=d:arrowhead HREF=#a:arrowhead><STRONG>arrowhead</STRONG></A>
+<DD>  Style of arrowhead on the head node of an edge.
+  This will only appear if the <A HREF=#d:dir>dir</A> attribute
+  is "forward" or "both".
+  See the <A HREF=#h:undir_note>limitation</A>.
+
+<DT><A NAME=d:arrowsize HREF=#a:arrowsize><STRONG>arrowsize</STRONG></A>
 <DD>  Multiplicative scale factor for arrowheads.
 
-<DT><A NAME=darrowtail HREF=#aarrowtail><STRONG>arrowtail</STRONG></A>
+<DT><A NAME=d:arrowtail HREF=#a:arrowtail><STRONG>arrowtail</STRONG></A>
 <DD>  Style of arrowhead on the tail node of an edge.
-  This will only appear if the <A HREF=#ddir>dir</A> attribute
+  This will only appear if the <A HREF=#d:dir>dir</A> attribute
   is "back" or "both".
-  See the <A HREF=#hundir_note>limitation</A>.
+  See the <A HREF=#h:undir_note>limitation</A>.
 
-<DT><A NAME=daspect HREF=#aaspect><STRONG>aspect</STRONG></A>
+<DT><A NAME=d:aspect HREF=#a:aspect><STRONG>aspect</STRONG></A>
 <DD>  Target aspect ratio (width of the layout divided by the height)
   of the graph drawing. If unset, dot minimizes the total edge length.
   For certain graphs, like those with large fan-in or fan-out, this can
@@ -554,15 +559,15 @@ This field indicates which graph component uses the attribute.
   <TT>ccomps -x | dot | gvpack | neato -n2</TT>
   to get a similar effect.
 
-<DT><A NAME=dbb HREF=#abb><STRONG>bb</STRONG></A>
+<DT><A NAME=d:bb HREF=#a:bb><STRONG>bb</STRONG></A>
 <DD>  Bounding box of drawing in points.
 
-<DT><A NAME=dbgcolor HREF=#abgcolor><STRONG>bgcolor</STRONG></A>
+<DT><A NAME=d:bgcolor HREF=#a:bgcolor><STRONG>bgcolor</STRONG></A>
 <DD>  When attached to the root graph, this color is used as the background for
   entire canvas. When a cluster attribute, it is used as the initial
   background for the cluster. If a cluster has a filled
-  <A HREF=#dstyle>style</A>, the
-  cluster's <A HREF=#dfillcolor>fillcolor</A> will overlay the
+  <A HREF=#d:style>style</A>, the
+  cluster's <A HREF=#d:fillcolor>fillcolor</A> will overlay the
   background color.
   <P>
   If no background color is specified for the root graph, no graphics
@@ -574,10 +579,10 @@ This field indicates which graph component uses the attribute.
   If this effect is not desired, and you only want to set bits explicitly
   assigned in drawing the graph, set <B>bgcolor</B>="transparent".
 
-<DT><A NAME=dcenter HREF=#acenter><STRONG>center</STRONG></A>
+<DT><A NAME=d:center HREF=#a:center><STRONG>center</STRONG></A>
 <DD>  If true, the drawing is centered in the output canvas.
 
-<DT><A NAME=dcharset HREF=#acharset><STRONG>charset</STRONG></A>
+<DT><A NAME=d:charset HREF=#a:charset><STRONG>charset</STRONG></A>
 <DD>  Specifies the character encoding used when interpreting string input
   as a text label. The default value is <TT>"UTF-8"</TT>.
   The other legal value is <TT>"iso-8859-1"</TT> or,
@@ -586,23 +591,23 @@ This field indicates which graph component uses the attribute.
   Note that if the character encoding used in the input does not
   match the <B>charset</B> value, the resulting output may be very strange.
 
-<DT><A NAME=dclusterrank HREF=#aclusterrank><STRONG>clusterrank</STRONG></A>
+<DT><A NAME=d:clusterrank HREF=#a:clusterrank><STRONG>clusterrank</STRONG></A>
 <DD>  Mode used for handling clusters. If <B>clusterrank</B> is "local", a
   subgraph whose name begins with "cluster" is given special treatment.
   The subgraph is laid out separately, and then integrated as a unit into
   its parent graph, with a bounding rectangle drawn about it.
-  If the cluster has a <A HREF=#dlabel>label</A> parameter, this label
+  If the cluster has a <A HREF=#d:label>label</A> parameter, this label
   is displayed within the rectangle.
   Note also that there can be clusters within clusters.
   At present, the modes "global" and "none"
   appear to be identical, both turning off the special cluster processing.
 
-<DT><A NAME=dcolor HREF=#acolor><STRONG>color</STRONG></A>
+<DT><A NAME=d:color HREF=#a:color><STRONG>color</STRONG></A>
 <DD>  Basic drawing color for graphics, not text. For the latter, use the
-  <A HREF=#dfontcolor>fontcolor</A> attribute.
+  <A HREF=#d:fontcolor>fontcolor</A> attribute.
   <P>
   For edges, the value
-  can either be a single color or a <A HREF=#kcolorList>colorList</A>.
+  can either be a single color or a <A HREF=#k:colorList>colorList</A>.
   In the latter case, the edge is drawn using parallel splines or lines,
   one for each color in the list, in the order given.
   The head arrow, if any, is drawn using the first color in the list,
@@ -617,30 +622,30 @@ This field indicates which graph component uses the attribute.
   yields<BR>
   <IMG SRC="colorlist.gif">
 
-<DT><A NAME=dcolorscheme HREF=#acolorscheme><STRONG>colorscheme</STRONG></A>
+<DT><A NAME=d:colorscheme HREF=#a:colorscheme><STRONG>colorscheme</STRONG></A>
 <DD>  This attribute specifies a color scheme namespace. If defined, it specifies
   the context for interpreting color names. In particular, if a
-  <A HREF=#kcolor>color</A> value has form <TT>"xxx"</TT> or <TT>"//xxx"</TT>,
+  <A HREF=#k:color>color</A> value has form <TT>"xxx"</TT> or <TT>"//xxx"</TT>,
   then the
   color <TT>xxx</TT> will be evaluated according to the current color scheme.
   If no color scheme is set, the standard X11 naming is used.
   For example, if <TT>colorscheme=bugn9</TT>, then <TT>color=7</TT>
   is interpreted as <TT>"/bugn9/7"</TT>.
 
-<DT><A NAME=dcomment HREF=#acomment><STRONG>comment</STRONG></A>
+<DT><A NAME=d:comment HREF=#a:comment><STRONG>comment</STRONG></A>
 <DD>  Comments are inserted into output. Device-dependent
 
-<DT><A NAME=dcompound HREF=#acompound><STRONG>compound</STRONG></A>
-<DD>  If true, allow edges between clusters. (See <A HREF=#dlhead>lhead</A>
-  and <A HREF=#dltail>ltail</A> below.)
+<DT><A NAME=d:compound HREF=#a:compound><STRONG>compound</STRONG></A>
+<DD>  If true, allow edges between clusters. (See <A HREF=#d:lhead>lhead</A>
+  and <A HREF=#d:ltail>ltail</A> below.)
 
-<DT><A NAME=dconcentrate HREF=#aconcentrate><STRONG>concentrate</STRONG></A>
+<DT><A NAME=d:concentrate HREF=#a:concentrate><STRONG>concentrate</STRONG></A>
 <DD>  If true, use edge concentrators.
   This merges multiedges into a single edge and causes partially parallel
   edges to share part of their paths. The latter feature is not yet available
   outside of dot.
 
-<DT><A NAME=dconstraint HREF=#aconstraint><STRONG>constraint</STRONG></A>
+<DT><A NAME=d:constraint HREF=#a:constraint><STRONG>constraint</STRONG></A>
 <DD>  If false, the edge is not used in ranking the nodes. For example,
   in the graph
   <PRE>
@@ -655,20 +660,20 @@ This field indicates which graph component uses the attribute.
   yielding the graph:<BR>
   <IMG SRC="constraint.gif">
 
-<DT><A NAME=ddecorate HREF=#adecorate><STRONG>decorate</STRONG></A>
+<DT><A NAME=d:decorate HREF=#a:decorate><STRONG>decorate</STRONG></A>
 <DD>  If true, attach edge label to edge by a 2-segment
   polyline, underlining the label, then going to the closest point of spline.
 
-<DT><A NAME=ddefaultdist HREF=#adefaultdist><STRONG>defaultdist</STRONG></A>
+<DT><A NAME=d:defaultdist HREF=#a:defaultdist><STRONG>defaultdist</STRONG></A>
 <DD>  This specifies the distance between nodes in separate connected
   components. If set too small, connected components may overlap.
-  Only applicable if <A HREF=#dpack>pack</A>=false.
+  Only applicable if <A HREF=#d:pack>pack</A>=false.
 
-<DT><A NAME=ddim HREF=#adim><STRONG>dim</STRONG></A>
+<DT><A NAME=d:dim HREF=#a:dim><STRONG>dim</STRONG></A>
 <DD>  Set the number of dimensions used for the layout. The maximum value
   allowed is 10.
 
-<DT><A NAME=ddimen HREF=#adimen><STRONG>dimen</STRONG></A>
+<DT><A NAME=d:dimen HREF=#a:dimen><STRONG>dimen</STRONG></A>
 <DD>  Set the number of dimensions used for rendering. 
   The maximum value allowed is 10.
   If both <TT>dimen</TT> and <TT>dim</TT> are set, the latter specifies
@@ -683,76 +688,76 @@ This field indicates which graph component uses the attribute.
   All other coordinates will be 2D and, at best, will reflect a projection
   of a higher-dimensional point onto the plane.
 
-<DT><A NAME=ddir HREF=#adir><STRONG>dir</STRONG></A>
+<DT><A NAME=d:dir HREF=#a:dir><STRONG>dir</STRONG></A>
 <DD>  Set edge type for drawing arrowheads. This indicates which ends of the
   edge should be decorated with an arrowhead. The actual style of the
-  arrowhead can be specified using the <A HREF=#darrowhead>arrowhead</A>
-  and <A HREF=#darrowtail>arrowtail</A> attributes.
-  See <A HREF=#hundir_note>limitation</A>.
+  arrowhead can be specified using the <A HREF=#d:arrowhead>arrowhead</A>
+  and <A HREF=#d:arrowtail>arrowtail</A> attributes.
+  See <A HREF=#h:undir_note>limitation</A>.
 
-<DT><A NAME=ddiredgeconstraints HREF=#adiredgeconstraints><STRONG>diredgeconstraints</STRONG></A>
-<DD>  Only valid when <A HREF=#dmode>mode</A>="ipsep".
+<DT><A NAME=d:diredgeconstraints HREF=#a:diredgeconstraints><STRONG>diredgeconstraints</STRONG></A>
+<DD>  Only valid when <A HREF=#d:mode>mode</A>="ipsep".
   If true, constraints are generated for each edge in the largest (heuristic)
   directed acyclic subgraph such that the edge must point downwards.
   If "hier", generates level constraints similar to those used with
-  <A HREF=#dmode>mode</A>="hier". The main difference is that, in the latter
+  <A HREF=#d:mode>mode</A>="hier". The main difference is that, in the latter
   case, only these constraints are involved, so a faster solver can be used.
 
-<DT><A NAME=ddistortion HREF=#adistortion><STRONG>distortion</STRONG></A>
-<DD>  Distortion factor for <A HREF=#dshape><B>shape</B></A>=polygon.
+<DT><A NAME=d:distortion HREF=#a:distortion><STRONG>distortion</STRONG></A>
+<DD>  Distortion factor for <A HREF=#d:shape><B>shape</B></A>=polygon.
   Positive values cause top part to
   be larger than bottom; negative values do the opposite.
 
-<DT><A NAME=ddpi HREF=#adpi><STRONG>dpi</STRONG></A>
+<DT><A NAME=d:dpi HREF=#a:dpi><STRONG>dpi</STRONG></A>
 <DD>  This specifies the expected number of pixels per inch on a display device.
   For bitmap output, this guarantees that text rendering will be
   done more accurately, both in size and in placement. For SVG output,
   it is used to guarantee that the dimensions in the output correspond to
   the correct number of points or inches.
 
-<DT><A NAME=dedgeURL HREF=#aedgeURL><STRONG>edgeURL</STRONG></A>
+<DT><A NAME=d:edgeURL HREF=#a:edgeURL><STRONG>edgeURL</STRONG></A>
 <DD>  If <B>edgeURL</B> is defined, this is the link used for the non-label
-  parts of an edge. This value overrides any <A HREF=#dURL>URL</A>
+  parts of an edge. This value overrides any <A HREF=#d:URL>URL</A>
   defined for the edge.
   Also, this value is used near the head or tail node unless overridden
-  by a <A HREF=#dheadURL>headURL</A> or <A HREF=#dtailURL>tailURL</A> value,
+  by a <A HREF=#d:headURL>headURL</A> or <A HREF=#d:tailURL>tailURL</A> value,
   respectively.
-  See <A HREF=#hundir_note>limitation</A>.
+  See <A HREF=#h:undir_note>limitation</A>.
 
-<DT><A NAME=dedgehref HREF=#aedgehref><STRONG>edgehref</STRONG></A>
-<DD>  Synonym for <A HREF=#dedgeURL>edgeURL</A>.
+<DT><A NAME=d:edgehref HREF=#a:edgehref><STRONG>edgehref</STRONG></A>
+<DD>  Synonym for <A HREF=#d:edgeURL>edgeURL</A>.
 
-<DT><A NAME=dedgetarget HREF=#aedgetarget><STRONG>edgetarget</STRONG></A>
-<DD>  If the edge has a <A HREF=#dURL>URL</A> or <A HREF=#dedgeURL>edgeURL</A>
+<DT><A NAME=d:edgetarget HREF=#a:edgetarget><STRONG>edgetarget</STRONG></A>
+<DD>  If the edge has a <A HREF=#d:URL>URL</A> or <A HREF=#d:edgeURL>edgeURL</A>
   attribute, this attribute determines which window of the
   browser is used
   for the URL attached to the non-label part of the edge.
   Setting it to "_graphviz" will open a new window if it
   doesn't already exist, or reuse it if it does.
-  If undefined, the value of the <A HREF=#dtarget>target</A> is used.
+  If undefined, the value of the <A HREF=#d:target>target</A> is used.
 
-<DT><A NAME=dedgetooltip HREF=#aedgetooltip><STRONG>edgetooltip</STRONG></A>
+<DT><A NAME=d:edgetooltip HREF=#a:edgetooltip><STRONG>edgetooltip</STRONG></A>
 <DD>  Tooltip annotation attached to the non-label part of an edge.
-  This is used only if the edge has a <A HREF=#dURL>URL</A>
-  or <A HREF=#dedgeURL>edgeURL</A> attribute.
+  This is used only if the edge has a <A HREF=#d:URL>URL</A>
+  or <A HREF=#d:edgeURL>edgeURL</A> attribute.
 
-<DT><A NAME=depsilon HREF=#aepsilon><STRONG>epsilon</STRONG></A>
+<DT><A NAME=d:epsilon HREF=#a:epsilon><STRONG>epsilon</STRONG></A>
 <DD>  Terminating condition. If the length squared of all energy gradients are
   < <B>epsilon</B>, the algorithm stops.
 
-<DT><A NAME=desep HREF=#aesep><STRONG>esep</STRONG></A>
+<DT><A NAME=d:esep HREF=#a:esep><STRONG>esep</STRONG></A>
 <DD>  Margin used around polygons for purposes of spline edge routing.
-  The interpretation is the same as given for <A HREF=#dsep>sep</A>.
-  This should normally be strictly less than <A HREF=#dsep>sep</A>.
+  The interpretation is the same as given for <A HREF=#d:sep>sep</A>.
+  This should normally be strictly less than <A HREF=#d:sep>sep</A>.
 
-<DT><A NAME=dfillcolor HREF=#afillcolor><STRONG>fillcolor</STRONG></A>
+<DT><A NAME=d:fillcolor HREF=#a:fillcolor><STRONG>fillcolor</STRONG></A>
 <DD>  Color used to fill the background of a node or cluster
-  assuming <A HREF=#dstyle>style</A>=filled.
-  If <B>fillcolor</B> is not defined, <A HREF=#dcolor>color</A> is
+  assuming <A HREF=#d:style>style</A>=filled.
+  If <B>fillcolor</B> is not defined, <A HREF=#d:color>color</A> is
   used. (For clusters, if <B>color</B> is not defined,
-  <A HREF=#dbgcolor>bgcolor</A> is used.) If this is not defined,
+  <A HREF=#d:bgcolor>bgcolor</A> is used.) If this is not defined,
   the default is used, except for
-  <A HREF=#dshape><B>shape</B></A>=point or when the output
+  <A HREF=#d:shape><B>shape</B></A>=point or when the output
   format is MIF,
   which use black by default.
   <P>
@@ -760,16 +765,16 @@ This field indicates which graph component uses the attribute.
   Thus, if the root graph has defined a <B>fillcolor</B>, this will override a
   <B>color</B> or <B>bgcolor</B> attribute set for the cluster.
 
-<DT><A NAME=dfixedsize HREF=#afixedsize><STRONG>fixedsize</STRONG></A>
+<DT><A NAME=d:fixedsize HREF=#a:fixedsize><STRONG>fixedsize</STRONG></A>
 <DD>  If true, the node size is specified by the values of the
-  <A HREF=#dwidth><B>width</B></A>
-  and <A HREF=#dheight><B>height</B></A> attributes only
+  <A HREF=#d:width><B>width</B></A>
+  and <A HREF=#d:height><B>height</B></A> attributes only
   and is not expanded to contain the text label.
 
-<DT><A NAME=dfontcolor HREF=#afontcolor><STRONG>fontcolor</STRONG></A>
+<DT><A NAME=d:fontcolor HREF=#a:fontcolor><STRONG>fontcolor</STRONG></A>
 <DD>  Color used for text.
 
-<DT><A NAME=dfontname HREF=#afontname><STRONG>fontname</STRONG></A>
+<DT><A NAME=d:fontname HREF=#a:fontname><STRONG>fontname</STRONG></A>
 <DD>  Font used for text. This very much depends on the output format and, for
   non-bitmap output such as PostScript or SVG, the availability of the font
   when the graph is displayed or printed. As such, it is best to rely on
@@ -777,7 +782,7 @@ This field indicates which graph component uses the attribute.
   Courier.
   <P>
   If Graphviz was built using the
-  <A HREF="http://pdx.freedesktop.org/~fontconfig/fontconfig-user.html" target="_blank">fontconfig library</A>, the latter library
+  <A HREF=http://pdx.freedesktop.org/~fontconfig/fontconfig-user.html>fontconfig library</A>, the latter library
   will be used to search for the font. However, if the <TT>fontname</TT> string
   contains a slash character "/", it is treated as a pathname for the font
   file, though font lookup will append the usual font suffixes.
@@ -787,10 +792,10 @@ This field indicates which graph component uses the attribute.
   If you specify <TT>fontname=schlbk</TT>, the tool will look for a
   file named  <TT>schlbk.ttf</TT> or <TT>schlbk.pfa</TT> or <TT>schlbk.pfb</TT>
   in one of the directories specified by
-  the <A HREF=#dfontpath>fontpath</A> attribute.
+  the <A HREF=#d:fontpath>fontpath</A> attribute.
   The lookup does support various aliases for the common fonts.
 
-<DT><A NAME=dfontnames HREF=#afontnames><STRONG>fontnames</STRONG></A>
+<DT><A NAME=d:fontnames HREF=#a:fontnames><STRONG>fontnames</STRONG></A>
 <DD>  Allows user control of how basic fontnames are represented in SVG output.
   If <TT>fontnames</TT> is undefined or <TT>"svg"</TT>,
   the output will try to use known SVG fontnames. For example, the
@@ -804,7 +809,7 @@ This field indicates which graph component uses the attribute.
   <TT>"Nimbus Roman No9 L"</TT>. These last two options are useful
   with SVG viewers that support these richer fontname spaces.
 
-<DT><A NAME=dfontpath HREF=#afontpath><STRONG>fontpath</STRONG></A>
+<DT><A NAME=d:fontpath HREF=#a:fontpath><STRONG>fontpath</STRONG></A>
 <DD>  Directory list used by libgd to search for bitmap fonts if Graphviz
   was not built with the fontconfig library.
   If <B>fontpath</B> is not set, the environment
@@ -813,54 +818,54 @@ This field indicates which graph component uses the attribute.
   If not set, libgd uses its compiled-in font path.
   Note that fontpath is an attribute of the root graph.
 
-<DT><A NAME=dfontsize HREF=#afontsize><STRONG>fontsize</STRONG></A>
+<DT><A NAME=d:fontsize HREF=#a:fontsize><STRONG>fontsize</STRONG></A>
 <DD>  Font size, <A HREF=#points>in points</A>, used for text.
 
-<DT><A NAME=dgroup HREF=#agroup><STRONG>group</STRONG></A>
+<DT><A NAME=d:group HREF=#a:group><STRONG>group</STRONG></A>
 <DD>  If the end points of an edge belong to the same group, i.e., have the
   same group attribute, parameters are set to avoid crossings and keep
   the edges straight.
 
-<DT><A NAME=dheadURL HREF=#aheadURL><STRONG>headURL</STRONG></A>
+<DT><A NAME=d:headURL HREF=#a:headURL><STRONG>headURL</STRONG></A>
 <DD>  If <B>headURL</B> is defined, it is
   output as part of the head label of the edge.
   Also, this value is used near the head node, overriding any
-  <A HREF=#dURL>URL</A> value.
-  See <A HREF=#hundir_note>limitation</A>.
+  <A HREF=#d:URL>URL</A> value.
+  See <A HREF=#h:undir_note>limitation</A>.
 
-<DT><A NAME=dheadclip HREF=#aheadclip><STRONG>headclip</STRONG></A>
+<DT><A NAME=d:headclip HREF=#a:headclip><STRONG>headclip</STRONG></A>
 <DD>  If true, the head of an edge is clipped to the boundary of the head node;
   otherwise, the end of the edge goes to the center of the node, or the
   center of a port, if applicable.
 
-<DT><A NAME=dheadhref HREF=#aheadhref><STRONG>headhref</STRONG></A>
-<DD>  Synonym for <A HREF=#dheadURL>headURL</A>.
+<DT><A NAME=d:headhref HREF=#a:headhref><STRONG>headhref</STRONG></A>
+<DD>  Synonym for <A HREF=#d:headURL>headURL</A>.
 
-<DT><A NAME=dheadlabel HREF=#aheadlabel><STRONG>headlabel</STRONG></A>
+<DT><A NAME=d:headlabel HREF=#a:headlabel><STRONG>headlabel</STRONG></A>
 <DD>  Text label to be placed near head of edge.
-  See <A HREF=#hundir_note>limitation</A>.
+  See <A HREF=#h:undir_note>limitation</A>.
 
-<DT><A NAME=dheadport HREF=#aheadport><STRONG>headport</STRONG></A>
+<DT><A NAME=d:headport HREF=#a:headport><STRONG>headport</STRONG></A>
 <DD>  Indicates where on the head node to attach the head of the edge.
   In the default case, the edge is aimed towards the center of the node,
   and then clipped at the node boundary.
-  See <A HREF=#hundir_note>limitation</A>.
+  See <A HREF=#h:undir_note>limitation</A>.
 
-<DT><A NAME=dheadtarget HREF=#aheadtarget><STRONG>headtarget</STRONG></A>
-<DD>  If the edge has a <A HREF=#dheadURL>headURL</A>,
+<DT><A NAME=d:headtarget HREF=#a:headtarget><STRONG>headtarget</STRONG></A>
+<DD>  If the edge has a <A HREF=#d:headURL>headURL</A>,
   this attribute determines which window of the
   browser is used
   for the URL. Setting it to "_graphviz" will open a new window if it
   doesn't already exist, or reuse it if it does.
-  If undefined, the value of the <A HREF=#dtarget>target</A> is used.
+  If undefined, the value of the <A HREF=#d:target>target</A> is used.
 
-<DT><A NAME=dheadtooltip HREF=#aheadtooltip><STRONG>headtooltip</STRONG></A>
+<DT><A NAME=d:headtooltip HREF=#a:headtooltip><STRONG>headtooltip</STRONG></A>
 <DD>  Tooltip annotation attached to the head of an edge. This is used only
-  if the edge has a <A HREF=#dheadURL>headURL</A> attribute.
+  if the edge has a <A HREF=#d:headURL>headURL</A> attribute.
 
-<DT><A NAME=dheight HREF=#aheight><STRONG>height</STRONG></A>
+<DT><A NAME=d:height HREF=#a:height><STRONG>height</STRONG></A>
 <DD>  Height of node, in inches. This is taken as the initial, minimum height
-  of the node. If <A HREF=#dfixedsize><B>fixedsize</B></A> is true, this
+  of the node. If <A HREF=#d:fixedsize><B>fixedsize</B></A> is true, this
   will be the final height of the node. Otherwise, if the node label
   requires more height to fit, the node's height will be increased to
   contain the label. Note also that, if the output format is dot, the
@@ -874,10 +879,10 @@ This field indicates which graph component uses the attribute.
   If neither is set explicitly, the minimum of the two default values
   is used.
 
-<DT><A NAME=dhref HREF=#ahref><STRONG>href</STRONG></A>
-<DD>  Synonym for <A HREF=#dURL>URL</A>.
+<DT><A NAME=d:href HREF=#a:href><STRONG>href</STRONG></A>
+<DD>  Synonym for <A HREF=#d:URL>URL</A>.
 
-<DT><A NAME=did HREF=#aid><STRONG>id</STRONG></A>
+<DT><A NAME=d:id HREF=#a:id><STRONG>id</STRONG></A>
 <DD>  Allows the graph author to provide an id for graph objects which is to be included in the output.
   Normal "N", "E", "G" substitutions are applied.
   If provided, it is the reponsiblity of the provider to keep
@@ -891,26 +896,26 @@ This field indicates which graph component uses the attribute.
   internally generated attributes. By making these distinct, the user
   can include multiple image maps in the same document.
 
-<DT><A NAME=dimage HREF=#aimage><STRONG>image</STRONG></A>
+<DT><A NAME=d:image HREF=#a:image><STRONG>image</STRONG></A>
 <DD>  Gives the name of a file containing an image to be displayed inside
   a node. The image file must be in one of the recognized 
-  <A HREF=/content/output-formats#dimage_fmts>formats</A>,
+  <A HREF=output.html#d:image_fmts>formats</A>,
   typically JPEG, PNG, GIF or Postscript, and be able to be converted
   into the desired output format.
   <P>
-  Unlike with the <A HREF=#dshapefile>shapefile</A> attribute,
+  Unlike with the <A HREF=#d:shapefile>shapefile</A> attribute,
   the image is treated as node
   content rather than the entire node. In particular, an image can
   be contained in a node of any shape, not just a rectangle.
 
-<DT><A NAME=dimagescale HREF=#aimagescale><STRONG>imagescale</STRONG></A>
+<DT><A NAME=d:imagescale HREF=#a:imagescale><STRONG>imagescale</STRONG></A>
 <DD>  Attribute controlling how an image fills its
   containing node. In general, the image is given its natural size,
-  (cf. <A HREF=#ddpi>dpi</A>),
+  (cf. <A HREF=#d:dpi>dpi</A>),
   and the node size is made large enough to contain its image, its
   label, its margin, and its peripheries.
   Its width and height will also be at least as large as its
-  minimum <A HREF=#dwidth>width</A> and <A HREF=#dheight>height</A>.
+  minimum <A HREF=#d:width>width</A> and <A HREF=#d:height>height</A>.
   If, however, <TT>fixedsize=true</TT>,
   the width and height attributes specify the exact size of the node.
   <P>
@@ -933,18 +938,18 @@ This field indicates which graph component uses the attribute.
   expansion, if  <TT>imagescale=true</TT>, width and height are
   scaled uniformly.
 
-<DT><A NAME=dlabel HREF=#alabel><STRONG>label</STRONG></A>
+<DT><A NAME=d:label HREF=#a:label><STRONG>label</STRONG></A>
 <DD>  Text label attached to objects.
-  If a node's <A HREF=#dshape>shape</A> is record, then the label can
-  have a <A HREF=/content/node-shapes#record>special format</A>
+  If a node's <A HREF=#d:shape>shape</A> is record, then the label can
+  have a <A HREF=shapes.html#record>special format</A>
   which describes the record layout.
 
-<DT><A NAME=dlabelURL HREF=#alabelURL><STRONG>labelURL</STRONG></A>
+<DT><A NAME=d:labelURL HREF=#a:labelURL><STRONG>labelURL</STRONG></A>
 <DD>  If <B>labelURL</B> is defined, this is the link used for the label
-  of an edge. This value overrides any <A HREF=#dURL>URL</A>
+  of an edge. This value overrides any <A HREF=#d:URL>URL</A>
   defined for the edge.
 
-<DT><A NAME=dlabel_scheme HREF=#alabel_scheme><STRONG>label_scheme</STRONG></A>
+<DT><A NAME=d:label_scheme HREF=#a:label_scheme><STRONG>label_scheme</STRONG></A>
 <DD>  The value indicates
   whether to treat a node whose name has the form |edgelabel|* as a special node representing an edge label. 
   The default (0) produces no effect.
@@ -953,8 +958,8 @@ This field indicates which graph component uses the attribute.
   close to the old center of its neighbor. Finally, a value of 3 invokes a two-step process of overlap 
   removal and straightening.
 
-<DT><A NAME=dlabelangle HREF=#alabelangle><STRONG>labelangle</STRONG></A>
-<DD>  This, along with <A HREF=#dlabeldistance>labeldistance</A>, determine
+<DT><A NAME=d:labelangle HREF=#a:labelangle><STRONG>labelangle</STRONG></A>
+<DD>  This, along with <A HREF=#d:labeldistance>labeldistance</A>, determine
   where the
   headlabel (taillabel) are placed with respect to the head (tail)
   in polar coordinates. The origin in the coordinate system is
@@ -966,32 +971,32 @@ This field indicates which graph component uses the attribute.
   with positive angles moving counterclockwise and negative angles
   moving clockwise.
 
-<DT><A NAME=dlabeldistance HREF=#alabeldistance><STRONG>labeldistance</STRONG></A>
+<DT><A NAME=d:labeldistance HREF=#a:labeldistance><STRONG>labeldistance</STRONG></A>
 <DD>  Multiplicative scaling factor adjusting the distance that
   the headlabel(taillabel) is from the head(tail) node.
-  The default distance is 10 points. See <A HREF=#dlabelangle>labelangle</A>
+  The default distance is 10 points. See <A HREF=#d:labelangle>labelangle</A>
   for more details.
 
-<DT><A NAME=dlabelfloat HREF=#alabelfloat><STRONG>labelfloat</STRONG></A>
+<DT><A NAME=d:labelfloat HREF=#a:labelfloat><STRONG>labelfloat</STRONG></A>
 <DD>  If true, allows edge labels to be less constrained in position.
   In particular, it may appear on top of other edges.
 
-<DT><A NAME=dlabelfontcolor HREF=#alabelfontcolor><STRONG>labelfontcolor</STRONG></A>
+<DT><A NAME=d:labelfontcolor HREF=#a:labelfontcolor><STRONG>labelfontcolor</STRONG></A>
 <DD>  Color used for headlabel and taillabel.
   If not set, defaults to edge's fontcolor.
 
-<DT><A NAME=dlabelfontname HREF=#alabelfontname><STRONG>labelfontname</STRONG></A>
+<DT><A NAME=d:labelfontname HREF=#a:labelfontname><STRONG>labelfontname</STRONG></A>
 <DD>  Font used for headlabel and taillabel.
   If not set, defaults to edge's fontname.
 
-<DT><A NAME=dlabelfontsize HREF=#alabelfontsize><STRONG>labelfontsize</STRONG></A>
+<DT><A NAME=d:labelfontsize HREF=#a:labelfontsize><STRONG>labelfontsize</STRONG></A>
 <DD>  Font size, <A HREF=#points>in points</A>, used for headlabel and taillabel.
   If not set, defaults to edge's fontsize.
 
-<DT><A NAME=dlabelhref HREF=#alabelhref><STRONG>labelhref</STRONG></A>
-<DD>  Synonym for <A HREF=#dlabelURL>labelURL</A>.
+<DT><A NAME=d:labelhref HREF=#a:labelhref><STRONG>labelhref</STRONG></A>
+<DD>  Synonym for <A HREF=#d:labelURL>labelURL</A>.
 
-<DT><A NAME=dlabeljust HREF=#alabeljust><STRONG>labeljust</STRONG></A>
+<DT><A NAME=d:labeljust HREF=#a:labeljust><STRONG>labeljust</STRONG></A>
 <DD>  Justification for cluster labels. If "r", the label
   is right-justified within bounding rectangle; if "l", left-justified;
   else the label is centered.
@@ -999,7 +1004,7 @@ This field indicates which graph component uses the attribute.
   the root graph sets <B>labeljust</B> to "l", the subgraph inherits
   this value.
 
-<DT><A NAME=dlabelloc HREF=#alabelloc><STRONG>labelloc</STRONG></A>
+<DT><A NAME=d:labelloc HREF=#a:labelloc><STRONG>labelloc</STRONG></A>
 <DD>  Vertical placement of labels for nodes, root graphs and clusters.
   <P>
   For graphs and clusters, only "t" and "b" are allowed, corresponding
@@ -1016,39 +1021,39 @@ This field indicates which graph component uses the attribute.
   with the top, centered, or aligned with the bottom of the node, respectively.
   In the default case, the label is vertically centered.
 
-<DT><A NAME=dlabeltarget HREF=#alabeltarget><STRONG>labeltarget</STRONG></A>
-<DD>  If the edge has a <A HREF=#dURL>URL</A> or <A HREF=#dlabelURL>labelURL</A>
+<DT><A NAME=d:labeltarget HREF=#a:labeltarget><STRONG>labeltarget</STRONG></A>
+<DD>  If the edge has a <A HREF=#d:URL>URL</A> or <A HREF=#d:labelURL>labelURL</A>
   attribute, this attribute determines which window of the
   browser is used
   for the URL attached to the label.
   Setting it to "_graphviz" will open a new window if it
   doesn't already exist, or reuse it if it does.
-  If undefined, the value of the <A HREF=#dtarget>target</A> is used.
+  If undefined, the value of the <A HREF=#d:target>target</A> is used.
 
-<DT><A NAME=dlabeltooltip HREF=#alabeltooltip><STRONG>labeltooltip</STRONG></A>
+<DT><A NAME=d:labeltooltip HREF=#a:labeltooltip><STRONG>labeltooltip</STRONG></A>
 <DD>  Tooltip annotation attached to label of an edge.
-  This is used only if the edge has a <A HREF=#dURL>URL</A>
-  or <A HREF=#dlabelURL>labelURL</A> attribute.
+  This is used only if the edge has a <A HREF=#d:URL>URL</A>
+  or <A HREF=#d:labelURL>labelURL</A> attribute.
 
-<DT><A NAME=dlandscape HREF=#alandscape><STRONG>landscape</STRONG></A>
+<DT><A NAME=d:landscape HREF=#a:landscape><STRONG>landscape</STRONG></A>
 <DD>  If true, the graph is rendered in landscape mode. Synonymous with
-  <A HREF=#drotate><TT>rotate=90</TT></A> or
-  <A HREF=#dorientation><TT>orientation=landscape</TT></A>.
+  <A HREF=#d:rotate><TT>rotate=90</TT></A> or
+  <A HREF=#d:orientation><TT>orientation=landscape</TT></A>.
 
-<DT><A NAME=dlayer HREF=#alayer><STRONG>layer</STRONG></A>
+<DT><A NAME=d:layer HREF=#a:layer><STRONG>layer</STRONG></A>
 <DD>  Specifies layers in which the node or edge is present.
 
-<DT><A NAME=dlayers HREF=#alayers><STRONG>layers</STRONG></A>
+<DT><A NAME=d:layers HREF=#a:layers><STRONG>layers</STRONG></A>
 <DD>  Specifies a linearly ordered list of layer names attached to the graph
   The graph is then output in separate layers. Only those components
   belonging to the current output layer appear. For more information,
   see the page <A HREF="http://www.graphviz.org/Documentation/html/layers/">How to use drawing layers (overlays)</A>.
 
-<DT><A NAME=dlayersep HREF=#alayersep><STRONG>layersep</STRONG></A>
+<DT><A NAME=d:layersep HREF=#a:layersep><STRONG>layersep</STRONG></A>
 <DD>  Specifies the separator characters used to split the
-  <A HREF=#dlayers>layers </A>attribute into a list of layer names.
+  <A HREF=#d:layers>layers </A>attribute into a list of layer names.
 
-<DT><A NAME=dlayout HREF=#alayout><STRONG>layout</STRONG></A>
+<DT><A NAME=d:layout HREF=#a:layout><STRONG>layout</STRONG></A>
 <DD>  Specifies the name of the layout algorithm to use, such as "dot"
   or "neato". Normally, graphs should be kept independent of a type of
   layout. In some cases, however, it can be convenient to embed the type
@@ -1057,47 +1062,47 @@ This field indicates which graph component uses the attribute.
   associated layout algorithm was.
   <P>
   This attribute takes precedence over 
-  the <A HREF=command-line-invocation#minusK>-K flag</A> 
+  the <A HREF=command.html#minusK>-K flag</A> 
   or the actual command name used.
 
-<DT><A NAME=dlen HREF=#alen><STRONG>len</STRONG></A>
+<DT><A NAME=d:len HREF=#a:len><STRONG>len</STRONG></A>
 <DD>  Preferred edge length, in inches.
 
-<DT><A NAME=dlevels HREF=#alevels><STRONG>levels</STRONG></A>
+<DT><A NAME=d:levels HREF=#a:levels><STRONG>levels</STRONG></A>
 <DD>  Number of levels allowed in the multilevel scheme.
 
-<DT><A NAME=dlevelsgap HREF=#alevelsgap><STRONG>levelsgap</STRONG></A>
+<DT><A NAME=d:levelsgap HREF=#a:levelsgap><STRONG>levelsgap</STRONG></A>
 <DD>  Specifies strictness of level constraints in neato
-  when <TT><A HREF=#dmode>mode</A>="ipsep" or "hier"</TT>.
+  when <TT><A HREF=#d:mode>mode</A>="ipsep" or "hier"</TT>.
   Larger positive values mean stricter constraints, which demand more
   separation between levels. On the other hand, negative values will relax
   the constraints by allowing some overlap between the levels.
 
-<DT><A NAME=dlhead HREF=#alhead><STRONG>lhead</STRONG></A>
-<DD>  Logical head of an edge. When <A HREF=#dcompound><B>compound</B></A> is true,
+<DT><A NAME=d:lhead HREF=#a:lhead><STRONG>lhead</STRONG></A>
+<DD>  Logical head of an edge. When <A HREF=#d:compound><B>compound</B></A> is true,
   if <B>lhead</B> is defined and is the name of a cluster containing
   the real head,
   the edge is clipped to the boundary of the cluster.
-  See <A HREF=#hundir_note>limitation</A>.
+  See <A HREF=#h:undir_note>limitation</A>.
 
-<DT><A NAME=dlheight HREF=#alheight><STRONG>lheight</STRONG></A>
+<DT><A NAME=d:lheight HREF=#a:lheight><STRONG>lheight</STRONG></A>
 <DD>  Height of graph or cluster label, in inches.
 
-<DT><A NAME=dlp HREF=#alp><STRONG>lp</STRONG></A>
+<DT><A NAME=d:lp HREF=#a:lp><STRONG>lp</STRONG></A>
 <DD>  Label position, <A HREF=#points>in points</A>.
   The position indicates the center of the label.
 
-<DT><A NAME=dltail HREF=#altail><STRONG>ltail</STRONG></A>
-<DD>  Logical tail of an edge. When <A HREF=#dcompound><B>compound</B></A> is true,
+<DT><A NAME=d:ltail HREF=#a:ltail><STRONG>ltail</STRONG></A>
+<DD>  Logical tail of an edge. When <A HREF=#d:compound><B>compound</B></A> is true,
   if <B>ltail</B> is defined and is the name of a cluster
   containing the real tail,
   the edge is clipped to the boundary of the cluster.
-  See <A HREF=#hundir_note>limitation</A>.
+  See <A HREF=#h:undir_note>limitation</A>.
 
-<DT><A NAME=dlwidth HREF=#alwidth><STRONG>lwidth</STRONG></A>
+<DT><A NAME=d:lwidth HREF=#a:lwidth><STRONG>lwidth</STRONG></A>
 <DD>  Width of graph or cluster label, in inches.
 
-<DT><A NAME=dmargin HREF=#amargin><STRONG>margin</STRONG></A>
+<DT><A NAME=d:margin HREF=#a:margin><STRONG>margin</STRONG></A>
 <DD>  For graphs, this sets x and y margins of canvas, in inches. If the margin
   is a single double, both margins are set equal to the given value.
   <P>
@@ -1105,28 +1110,28 @@ This field indicates which graph component uses the attribute.
   left around the drawing. It basically corresponds to a translation of
   drawing, as would be necessary to center a drawing on a page. Nothing
   is actually drawn in the margin. To actually extend the background of
-  a drawing, see the <A HREF=#dpad>pad</A> attribute.
+  a drawing, see the <A HREF=#d:pad>pad</A> attribute.
   <P>
   For nodes, this attribute specifies space left around the node's label.
   By default, the value is <TT>0.11,0.055</TT>.
 
-<DT><A NAME=dmaxiter HREF=#amaxiter><STRONG>maxiter</STRONG></A>
+<DT><A NAME=d:maxiter HREF=#a:maxiter><STRONG>maxiter</STRONG></A>
 <DD>  Sets the number of iterations used.
 
-<DT><A NAME=dmclimit HREF=#amclimit><STRONG>mclimit</STRONG></A>
+<DT><A NAME=d:mclimit HREF=#a:mclimit><STRONG>mclimit</STRONG></A>
 <DD>  Multiplicative scale factor used to alter the MinQuit (default = 8)
   and MaxIter (default = 24) parameters used during crossing
   minimization. These correspond to the
   number of tries without improvement before quitting and the
   maximum number of iterations in each pass.
 
-<DT><A NAME=dmindist HREF=#amindist><STRONG>mindist</STRONG></A>
+<DT><A NAME=d:mindist HREF=#a:mindist><STRONG>mindist</STRONG></A>
 <DD>  Specifies the minimum separation between all nodes.
 
-<DT><A NAME=dminlen HREF=#aminlen><STRONG>minlen</STRONG></A>
+<DT><A NAME=d:minlen HREF=#a:minlen><STRONG>minlen</STRONG></A>
 <DD>  Minimum edge length (rank difference between head and tail).
 
-<DT><A NAME=dmode HREF=#amode><STRONG>mode</STRONG></A>
+<DT><A NAME=d:mode HREF=#a:mode><STRONG>mode</STRONG></A>
 <DD>  Technique for optimizing the layout. For neato, if <B>mode</B> is <TT>"major"</TT>,
   neato uses stress majorization. If <B>mode</B> is <TT>"KK"</TT>,
   neato uses a version of the gradient descent method. The only advantage
@@ -1137,19 +1142,19 @@ This field indicates which graph component uses the attribute.
   There are two experimental modes in neato, "hier", which adds a top-down
   directionality similar to the layout used in dot, and "ipsep", which
   allows the graph to specify minimum vertical and horizontal distances
-  between nodes. (See the <A HREF=#dsep>sep</A> attribute.)
+  between nodes. (See the <A HREF=#d:sep>sep</A> attribute.)
   <P>
   For sfdp, the default <B>mode</B> is <TT>"spring"</TT>, which corresponds to using
   a spring-electrical model. Setting <B>mode</B> to <TT>"maxent"</TT> causes a similar
   model to be run but one that also takes into account edge lengths specified by a the
   <TT>"len"</TT> attribute.
 
-<DT><A NAME=dmodel HREF=#amodel><STRONG>model</STRONG></A>
+<DT><A NAME=d:model HREF=#a:model><STRONG>model</STRONG></A>
 <DD>  This value specifies how the distance matrix is computed for the input
   graph. The distance matrix specifies the ideal distance between every
   pair of nodes. neato attemps to find a layout which best achieves
   these distances. By default, it uses the length of the shortest path,
-  where the length of each edge is given by its <A HREF=#dlen>len</A>
+  where the length of each edge is given by its <A HREF=#d:len>len</A>
   attribute. If <B>model</B> is <TT>"circuit"</TT>, neato uses the
   circuit resistance
   model to compute the distances. This tends to emphasize clusters. If
@@ -1159,23 +1164,23 @@ This field indicates which graph component uses the attribute.
   to separate nodes with high degree.
   <P>
   For more control of distances, one can use <TT>model=mds</TT>. In this
-  case, the <A HREF=#dlen>len</A> of an edge is used as the ideal distance
+  case, the <A HREF=#d:len>len</A> of an edge is used as the ideal distance
   between its vertices. A shortest path calculation is only used for
   pairs of nodes not connected by an edge. Thus, by supplying a complete
   graph, the input can specify all of the relevant distances.
 
-<DT><A NAME=dmosek HREF=#amosek><STRONG>mosek</STRONG></A>
+<DT><A NAME=d:mosek HREF=#a:mosek><STRONG>mosek</STRONG></A>
 <DD>  If Graphviz is built with MOSEK defined, mode=ipsep and mosek=true,
   the Mosek software (www.mosek.com) is use to solve the ipsep constraints.
 
-<DT><A NAME=dnodesep HREF=#anodesep><STRONG>nodesep</STRONG></A>
+<DT><A NAME=d:nodesep HREF=#a:nodesep><STRONG>nodesep</STRONG></A>
 <DD>  Minimum space between two adjacent nodes in the same rank, in inches.
 
-<DT><A NAME=dnojustify HREF=#anojustify><STRONG>nojustify</STRONG></A>
+<DT><A NAME=d:nojustify HREF=#a:nojustify><STRONG>nojustify</STRONG></A>
 <DD>  By default, the justification of multi-line labels is done within the
   largest context that makes sense. Thus, in the label of a polygonal
   node, a left-justified line will align with the left side of the node
-  (shifted by the prescribed <A HREF=#dmargin>margin</A>).
+  (shifted by the prescribed <A HREF=#d:margin>margin</A>).
   In record nodes, left-justified
   line will line up with the left side of the enclosing column of fields.
   If <B>nojustify</B> is <TT>"true"</TT>, multi-line labels will be justified
@@ -1184,20 +1189,20 @@ This field indicates which graph component uses the attribute.
   the second will align with the left-most character in the first line,
   regardless of  how large the node might be.
 
-<DT><A NAME=dnormalize HREF=#anormalize><STRONG>normalize</STRONG></A>
+<DT><A NAME=d:normalize HREF=#a:normalize><STRONG>normalize</STRONG></A>
 <DD>  If set, normalize coordinates of final
   layout so that the first point is at the origin, and then rotate the
   layout so that the first edge is horizontal.
 
-<DT><A NAME=dnslimit HREF=#anslimit><STRONG>nslimit</STRONG></A>
-,<DT><A NAME=dnslimit1 HREF=#anslimit1><STRONG>nslimit1</STRONG></A>
+<DT><A NAME=d:nslimit HREF=#a:nslimit><STRONG>nslimit</STRONG></A>
+,<DT><A NAME=d:nslimit1 HREF=#a:nslimit1><STRONG>nslimit1</STRONG></A>
 <DD>  Used to set number of iterations in
   network simplex applications. <B>nslimit</B> is used in
   computing node x coordinates, <B>nslimit1</B> for ranking nodes.
   If defined, # iterations =  <B>nslimit(1)</B> * # nodes;
   otherwise,  # iterations = MAXINT.
 
-<DT><A NAME=dordering HREF=#aordering><STRONG>ordering</STRONG></A>
+<DT><A NAME=d:ordering HREF=#a:ordering><STRONG>ordering</STRONG></A>
 <DD>  If the value of the attribute is "out", then
   the outedges of a node, that is, edges with the node as its tail node,
   must appear
@@ -1211,19 +1216,19 @@ This field indicates which graph component uses the attribute.
   in the graph or subgraph. Note that the graph attribute takes
   precedence over the node attribute.
 
-<DT><A NAME=dorientation HREF=#aorientation><STRONG>orientation</STRONG></A>
+<DT><A NAME=d:orientation HREF=#a:orientation><STRONG>orientation</STRONG></A>
 <DD>  Angle, in degrees, used to rotate polygon node shapes. For any number of polygon sides, 0 degrees rotation results in a flat base.
 
-<DT><A NAME=ddorientation HREF=#aaorientation><STRONG>orientation</STRONG></A>
+<DT><A NAME=dd:orientation HREF=#aa:orientation><STRONG>orientation</STRONG></A>
 <DD>  If "[lL]*", set graph orientation to landscape
-  Used only if <A HREF=#drotate><B>rotate</B></A> is not defined.
+  Used only if <A HREF=#d:rotate><B>rotate</B></A> is not defined.
 
-<DT><A NAME=doutputorder HREF=#aoutputorder><STRONG>outputorder</STRONG></A>
+<DT><A NAME=d:outputorder HREF=#a:outputorder><STRONG>outputorder</STRONG></A>
 <DD>  Specify order in which nodes and edges are drawn.
 
-<DT><A NAME=doverlap HREF=#aoverlap><STRONG>overlap</STRONG></A>
+<DT><A NAME=d:overlap HREF=#a:overlap><STRONG>overlap</STRONG></A>
 <DD>  Determines if and how node overlaps should be removed. Nodes are first
-  enlarged using the <A HREF=#dsep><B>sep</B></A> attribute.
+  enlarged using the <A HREF=#d:sep><B>sep</B></A> attribute.
   If "true" , overlaps are retained.
   If the value is "scale", overlaps are removed by uniformly scaling in x and y.
   If the value converts to "false", and it is available, Prism, a proximity graph-based algorithm, is
@@ -1231,7 +1236,7 @@ This field indicates which graph component uses the attribute.
   This can also be invoked explicitly with "overlap=prism".
   This technique starts with a
   small scaling up, controlled by the 
-  <A HREF="#doverlap_scaling"><TT>overlap_scaling</TT></A> attribute,
+  <A HREF="#d:overlap_scaling"><TT>overlap_scaling</TT></A> attribute,
   which can remove a significant portion of the overlap.
   The prism option also accepts an optional non-negative integer suffix.
   This can be used to control the number of attempts made at overlap
@@ -1268,7 +1273,7 @@ This field indicates which graph component uses the attribute.
   to the previous four, except only pseudo-orthogonal ordering is
   enforced.
   <P>
-  If the layout is done by neato with <A HREF=#dmode>mode</A>="ipsep",
+  If the layout is done by neato with <A HREF=#d:mode>mode</A>="ipsep",
   then one can use <TT>overlap=ipsep</TT>.
   In this case, the overlap removal constraints are
   incorporated into the layout algorithm itself.
@@ -1295,7 +1300,7 @@ This field indicates which graph component uses the attribute.
   This is not quite true for the "porth*" cases. For these, orthogonal
   ordering is only preserved among nodes related by an edge.
 
-<DT><A NAME=doverlap_scaling HREF=#aoverlap_scaling><STRONG>overlap_scaling</STRONG></A>
+<DT><A NAME=d:overlap_scaling HREF=#a:overlap_scaling><STRONG>overlap_scaling</STRONG></A>
 <DD>  When <TT>overlap=prism</TT>, the layout is scaled by this factor, thereby
   removing a fair amount of node overlap, and making node overlap removal
   faster and better able to retain the graph's shape.
@@ -1306,7 +1311,7 @@ This field indicates which graph component uses the attribute.
   <TT>overlap_scaling</TT>.
   If <TT>overlap_scaling</TT> is zero, no scaling is done.
 
-<DT><A NAME=dpack HREF=#apack><STRONG>pack</STRONG></A>
+<DT><A NAME=d:pack HREF=#a:pack><STRONG>pack</STRONG></A>
 <DD>  This is true if the value of pack is "true" (case-insensitive) or a
   non-negative integer. If true, each connected component of the graph is
   laid out separately, and then the graphs are packed together.
@@ -1315,18 +1320,18 @@ This field indicates which graph component uses the attribute.
   a margin around each part; otherwise, a default margin of 8 is used.
   If pack is interpreted as false, the entire graph is laid out together.
   The granularity and method of packing is influenced by the
-  <A HREF=#dpackmode>packmode</A> attribute.
+  <A HREF=#d:packmode>packmode</A> attribute.
   <P>
   For layouts which always do packing, such a twopi, the <B>pack</B>
   attribute is just used to set the margin.
 
-<DT><A NAME=dpackmode HREF=#apackmode><STRONG>packmode</STRONG></A>
+<DT><A NAME=d:packmode HREF=#a:packmode><STRONG>packmode</STRONG></A>
 <DD>  This indicates how connected components should be packed
-  (cf. <A HREF=#kpackMode>packMode</A>). Note that defining
+  (cf. <A HREF=#k:packMode>packMode</A>). Note that defining
   <B>packmode</B> will automatically turn on packing as though one had
   set <B>pack=true</B>.
 
-<DT><A NAME=dpad HREF=#apad><STRONG>pad</STRONG></A>
+<DT><A NAME=d:pad HREF=#a:pad><STRONG>pad</STRONG></A>
 <DD>  The pad attribute specifies how much, in inches, to extend the
   drawing area around the minimal area needed to draw the graph.
   If the pad is a single double, both the x and y pad values are set
@@ -1337,7 +1342,7 @@ This field indicates which graph component uses the attribute.
   a background color is used, to avoid having nodes and edges abutting
   the boundary of the drawn region.
 
-<DT><A NAME=dpage HREF=#apage><STRONG>page</STRONG></A>
+<DT><A NAME=d:page HREF=#a:page><STRONG>page</STRONG></A>
 <DD>  Width and height of output pages, in inches. If only a single value
   is given, this is used for both the width and height.
   <P>
@@ -1346,29 +1351,29 @@ This field indicates which graph component uses the attribute.
   the specified page size is overlaid on the layout, with origins
   aligned in the lower-left corner, thereby partitioning the layout
   into pages. The pages are then produced one at a time, in
-  <A HREF=#dpagedir>pagedir</A> order.
+  <A HREF=#d:pagedir>pagedir</A> order.
   <P>
   At present, this only works for PostScript output. For other types of
   output, one should use another tool to split the output into multiple
-  output files. Or use the <A HREF=#dviewport>viewport</A> to generate
+  output files. Or use the <A HREF=#d:viewport>viewport</A> to generate
   multiple files.
 
-<DT><A NAME=dpagedir HREF=#apagedir><STRONG>pagedir</STRONG></A>
-<DD>  If the <A HREF=#dpage>page</A> attribute is set and applicable,
+<DT><A NAME=d:pagedir HREF=#a:pagedir><STRONG>pagedir</STRONG></A>
+<DD>  If the <A HREF=#d:page>page</A> attribute is set and applicable,
   this attribute specifies the order in which the pages are emitted.
   This is limited to one of the 8 row or column major orders.
 
-<DT><A NAME=dpencolor HREF=#apencolor><STRONG>pencolor</STRONG></A>
+<DT><A NAME=d:pencolor HREF=#a:pencolor><STRONG>pencolor</STRONG></A>
 <DD>  Color used to draw the bounding box around a cluster.
-  If <B>pencolor</B> is not defined, <A HREF=#dcolor><B>color</B></A> is
-  used. If this is not defined, <A HREF=#dbgcolor>bgcolor</A> is used.
+  If <B>pencolor</B> is not defined, <A HREF=#d:color><B>color</B></A> is
+  used. If this is not defined, <A HREF=#d:bgcolor>bgcolor</A> is used.
   If this is not defined, the default is used.
   <P>
   Note that a cluster inherits the root graph's attributes if defined.
   Thus, if the root graph has defined a <B>pencolor</B>, this will override a
   <B>color</B> or <B>bgcolor</B> attribute set for the cluster.
 
-<DT><A NAME=dpenwidth HREF=#apenwidth><STRONG>penwidth</STRONG></A>
+<DT><A NAME=d:penwidth HREF=#a:penwidth><STRONG>penwidth</STRONG></A>
 <DD>  Specifies the width of the pen, in points, used to draw lines and curves,
   including the boundaries of edges and clusters. The value is inherited
   by subclusters.
@@ -1376,22 +1381,22 @@ This field indicates which graph component uses the attribute.
   <P>
   Previous to 31 January 2008, the effect of <TT>penwidth=<I>W</I></TT>
   was achieved by including <TT>setlinewidth(<I>W</I>)</TT>
-  as part of a <A HREF=#dstyle><TT>style</TT></A> specification.
+  as part of a <A HREF=#d:style><TT>style</TT></A> specification.
   If both are used, <TT>penwidth</TT> will be used.
 
-<DT><A NAME=dperipheries HREF=#aperipheries><STRONG>peripheries</STRONG></A>
+<DT><A NAME=d:peripheries HREF=#a:peripheries><STRONG>peripheries</STRONG></A>
 <DD>  Set number of peripheries used in polygonal shapes and cluster
   boundaries. Note that
-  <A HREF=/content/node-shapes#epsf>user-defined shapes</A> are treated as a
+  <A HREF=shapes.html#epsf>user-defined shapes</A> are treated as a
   form of box shape, so the default
   peripheries value is 1 and the user-defined shape will be drawn in
   a bounding rectangle. Setting <TT>peripheries=0</TT> will turn this off.
   Also, 1 is the maximum peripheries value for clusters.
 
-<DT><A NAME=dpin HREF=#apin><STRONG>pin</STRONG></A>
+<DT><A NAME=d:pin HREF=#a:pin><STRONG>pin</STRONG></A>
 <DD>  If true and the node has a pos attribute on input, neato or fdp prevents the
   node from moving from the input position. This property can also be specified
-  in the pos attribute itself (cf. the <A HREF=#kpoint>point</A> type).
+  in the pos attribute itself (cf. the <A HREF=#k:point>point</A> type).
   <P>
   <B>Note:</B> Due to an artifact of the implementation, final coordinates
   are translated to the origin. Thus, if you look at the output coordinates
@@ -1401,25 +1406,25 @@ This field indicates which graph component uses the attribute.
   difference between the old and new coordinates will give the translation,
   which can then be subtracted from all of the appropriate coordinates.
 
-<DT><A NAME=dpos HREF=#apos><STRONG>pos</STRONG></A>
+<DT><A NAME=d:pos HREF=#a:pos><STRONG>pos</STRONG></A>
 <DD>  Position of node, or spline control points.
   For nodes, the position indicates the center of the node.
   On output, the coordinates are in <A HREF=#points>points</A>.
   <P>
   In neato and fdp, pos can be used to set the initial position of a node.
   By default, the coordinates are assumed to be in inches. However, the
-  <A HREF=command-line-invocation#ds>-s</A> command line flag can be used to specify
+  <A HREF=command.html#d:s>-s</A> command line flag can be used to specify
   different units. As the output coordinates are in points, 
   feeding the output of a graph laid out by a Graphviz program into
   neato or fdp will almost always require the -s flag.
   <P>
-  When the <A HREF=command-line-invocation#dn>-n</A> command line flag is used with
+  When the <A HREF=command.html#d:n>-n</A> command line flag is used with
   neato, it is assumed the positions have been set by one of the layout
   programs, and are therefore in points. Thus, <TT>neato -n</TT> can accept
   input correctly without requiring a <TT>-s</TT> flag and, in fact,
   ignores any such flag.
 
-<DT><A NAME=dquadtree HREF=#aquadtree><STRONG>quadtree</STRONG></A>
+<DT><A NAME=d:quadtree HREF=#a:quadtree><STRONG>quadtree</STRONG></A>
 <DD>  Quadtree scheme to use.
   <P>
   A TRUE bool value corresponds to "normal";
@@ -1427,11 +1432,11 @@ This field indicates which graph component uses the attribute.
   As a slight exception to the normal interpretation of bool,
   a value of "2" corresponds to "fast".
 
-<DT><A NAME=dquantum HREF=#aquantum><STRONG>quantum</STRONG></A>
+<DT><A NAME=d:quantum HREF=#a:quantum><STRONG>quantum</STRONG></A>
 <DD>  If <B>quantum</B> > 0.0, node label dimensions
   will be rounded to integral multiples of the quantum.
 
-<DT><A NAME=drank HREF=#arank><STRONG>rank</STRONG></A>
+<DT><A NAME=d:rank HREF=#a:rank><STRONG>rank</STRONG></A>
 <DD>  Rank constraints on the nodes in a subgraph.
   If <B>rank</B>="same", all nodes are placed on the same rank.
   If <B>rank</B>="min", all nodes are placed on the minimum rank.
@@ -1443,15 +1448,15 @@ This field indicates which graph component uses the attribute.
   minimum rank is topmost or leftmost, and the maximum rank is bottommost
   or rightmost.)
 
-<DT><A NAME=drankdir HREF=#arankdir><STRONG>rankdir</STRONG></A>
+<DT><A NAME=d:rankdir HREF=#a:rankdir><STRONG>rankdir</STRONG></A>
 <DD>  Sets direction of graph layout. For example, if <B>rankdir</B>="LR",
   and barring cycles, an edge <CODE>T -> H;</CODE> will go
   from left to right. By default, graphs are laid out from top to bottom.
   <P>
   This attribute also has a side-effect in determining how record nodes
-  are interpreted. See <A HREF="/content/node-shapes#record">record shapes</A>.
+  are interpreted. See <A HREF="shapes.html#record">record shapes</A>.
 
-<DT><A NAME=dranksep HREF=#aranksep><STRONG>ranksep</STRONG></A>
+<DT><A NAME=d:ranksep HREF=#a:ranksep><STRONG>ranksep</STRONG></A>
 <DD>  In dot, this gives the desired rank separation, in inches. This is
   the minimum vertical distance between the bottom of the nodes in one
   rank and the tops of nodes in the next. If the value
@@ -1465,10 +1470,10 @@ This field indicates which graph component uses the attribute.
   radius from the first circle to the second; etc. If there are more circles than
   numbers, the last number is used as the increment for the remainder.
 
-<DT><A NAME=dratio HREF=#aratio><STRONG>ratio</STRONG></A>
+<DT><A NAME=d:ratio HREF=#a:ratio><STRONG>ratio</STRONG></A>
 <DD>  Sets the aspect ratio (drawing height/drawing width) for the drawing.
   Note that this is adjusted before
-  the <A HREF=#dsize><B>size</B></A> attribute constraints are enforced.
+  the <A HREF=#d:size><B>size</B></A> attribute constraints are enforced.
   In addition, the calculations usually ignore the node sizes, so the
   final drawing size may only approximate what is desired.
   <P>
@@ -1478,64 +1483,64 @@ This field indicates which graph component uses the attribute.
   desired ratio; if the actual ratio is greater than that desired ratio,
   the drawing width is scaled up.
   <P>
-  If <B>ratio</B> = "fill" and the <A HREF=#dsize><B>size</B></A>
+  If <B>ratio</B> = "fill" and the <A HREF=#d:size><B>size</B></A>
   attribute is set, node positions are scaled, separately in both x
   and y, so that the final drawing exactly fills the specified size.
-  If both <A HREF=#dsize><B>size</B></A> values exceed the width
+  If both <A HREF=#d:size><B>size</B></A> values exceed the width
   and height of the drawing, then both coordinate values of each
   node are scaled up accordingly. However, if either size dimension
   is smaller than the corresponding dimension in the drawing, one
   dimension is scaled up so that the final drawing has the same aspect
-  ratio as specified by <A HREF=#dsize><B>size</B></A>. 
+  ratio as specified by <A HREF=#d:size><B>size</B></A>. 
   Then, when rendered, the layout will be
   scaled down uniformly in both dimensions to fit the given
-  <A HREF=#dsize><B>size</B></A>, which may cause nodes and text
+  <A HREF=#d:size><B>size</B></A>, which may cause nodes and text
   to shrink as well. This may not be what the user
   wants, but it avoids the hard problem of how to reposition the
   nodes in an acceptable fashion to reduce the drawing size.
   <P>
-  If <B>ratio</B> = "compress" and the <A HREF=#dsize><B>size</B></A>
+  If <B>ratio</B> = "compress" and the <A HREF=#d:size><B>size</B></A>
   attribute is set, dot attempts to compress the initial layout to fit
   in the given size. This achieves a tighter packing of nodes but
   reduces the balance and symmetry. This feature only works in dot.
   <P>
-  If <B>ratio</B> = "expand", the <A HREF=#dsize><B>size</B></A>
+  If <B>ratio</B> = "expand", the <A HREF=#d:size><B>size</B></A>
   attribute is set, and both the width and the height of the graph are
-  less than the value in  <A HREF=#dsize><B>size</B></A>, node positions are scaled
+  less than the value in  <A HREF=#d:size><B>size</B></A>, node positions are scaled
   uniformly until at least
-  one dimension fits <A HREF=#dsize><B>size</B></A> exactly.
-  Note that this is distinct from using <A HREF=#dsize><B>size</B></A> as the
+  one dimension fits <A HREF=#d:size><B>size</B></A> exactly.
+  Note that this is distinct from using <A HREF=#d:size><B>size</B></A> as the
   desired size, as here the drawing is expanded before edges are generated and
   all node and text sizes remain unchanged.
   <P>
-  If <B>ratio</B> = "auto", the <A HREF=#dpage><B>page</B></A>
+  If <B>ratio</B> = "auto", the <A HREF=#d:page><B>page</B></A>
   attribute is set and the graph cannot be drawn on a single page,
-  then <A HREF=#dsize><B>size</B></A> is set to an ``ideal'' value.
+  then <A HREF=#d:size><B>size</B></A> is set to an ``ideal'' value.
   In particular, the size in a given dimension will be the smallest integral
   multiple of the page size in that dimension which is at least half the
   current size. The two dimensions are then scaled independently to the
   new size. This feature only works in dot.
 
-<DT><A NAME=drects HREF=#arects><STRONG>rects</STRONG></A>
+<DT><A NAME=d:rects HREF=#a:rects><STRONG>rects</STRONG></A>
 <DD>  Rectangles for fields of records, <A HREF=#points>in points</A>.
 
-<DT><A NAME=dregular HREF=#aregular><STRONG>regular</STRONG></A>
+<DT><A NAME=d:regular HREF=#a:regular><STRONG>regular</STRONG></A>
 <DD>  If true, force polygon to be regular, i.e., the vertices of the
   polygon will lie on a circle whose center is the center of the node.
 
-<DT><A NAME=dremincross HREF=#aremincross><STRONG>remincross</STRONG></A>
+<DT><A NAME=d:remincross HREF=#a:remincross><STRONG>remincross</STRONG></A>
 <DD>  If true and there are multiple clusters, run cross
   minimization a second time.
 
-<DT><A NAME=drepulsiveforce HREF=#arepulsiveforce><STRONG>repulsiveforce</STRONG></A>
+<DT><A NAME=d:repulsiveforce HREF=#a:repulsiveforce><STRONG>repulsiveforce</STRONG></A>
 <DD>  The power of the repulsive force used in an extended Fruchterman-Reingold 
   force directed model. Values larger than 1 tend to reduce 
   the warping effect at the expense of less clustering.
 
-<DT><A NAME=dresolution HREF=#aresolution><STRONG>resolution</STRONG></A>
-<DD>  This is a synonym for the <A HREF=#ddpi>dpi</A> attribute.
+<DT><A NAME=d:resolution HREF=#a:resolution><STRONG>resolution</STRONG></A>
+<DD>  This is a synonym for the <A HREF=#d:dpi>dpi</A> attribute.
 
-<DT><A NAME=droot HREF=#aroot><STRONG>root</STRONG></A>
+<DT><A NAME=d:root HREF=#a:root><STRONG>root</STRONG></A>
 <DD>  This specifies nodes to be used as the center of the
   layout and the root of the generated spanning tree. As a graph attribute,
   this gives the name of the node. As a node attribute (circo only), it
@@ -1548,39 +1553,39 @@ This field indicates which graph component uses the attribute.
   If the root attribute is defined as the empty string, twopi will reset it
   to name of the node picked as the root node.
 
-<DT><A NAME=drotate HREF=#arotate><STRONG>rotate</STRONG></A>
+<DT><A NAME=d:rotate HREF=#a:rotate><STRONG>rotate</STRONG></A>
 <DD>  If 90, set drawing orientation to landscape.
 
-<DT><A NAME=drotation HREF=#arotation><STRONG>rotation</STRONG></A>
+<DT><A NAME=d:rotation HREF=#a:rotation><STRONG>rotation</STRONG></A>
 <DD>  Causes the final layout to be rotated counter-clockwise by the specified number of degrees.
 
-<DT><A NAME=dsamehead HREF=#asamehead><STRONG>samehead</STRONG></A>
+<DT><A NAME=d:samehead HREF=#a:samehead><STRONG>samehead</STRONG></A>
 <DD>  Edges with the same head and the same <B>samehead</B> value are aimed
   at the same point on the head.
-  See <A HREF=#hundir_note>limitation</A>.
+  See <A HREF=#h:undir_note>limitation</A>.
 
-<DT><A NAME=dsametail HREF=#asametail><STRONG>sametail</STRONG></A>
+<DT><A NAME=d:sametail HREF=#a:sametail><STRONG>sametail</STRONG></A>
 <DD>  Edges with the same tail and the same <B>sametail</B> value are aimed
   at the same point on the tail.
-  See <A HREF=#hundir_note>limitation</A>.
+  See <A HREF=#h:undir_note>limitation</A>.
 
-<DT><A NAME=dsamplepoints HREF=#asamplepoints><STRONG>samplepoints</STRONG></A>
-<DD>  If the input graph defines the <A HREF=#dvertices><B>vertices</B></A>
+<DT><A NAME=d:samplepoints HREF=#a:samplepoints><STRONG>samplepoints</STRONG></A>
+<DD>  If the input graph defines the <A HREF=#d:vertices><B>vertices</B></A>
   attribute, and output is dot or xdot, this gives
   the number of points used for a node whose shape is a circle or ellipse.
   It plays the same role in neato, when adjusting the layout to avoid
   overlapping nodes, and in image maps.
 
-<DT><A NAME=dscale HREF=#ascale><STRONG>scale</STRONG></A>
+<DT><A NAME=d:scale HREF=#a:scale><STRONG>scale</STRONG></A>
 <DD>  If set, after the initial layout, twopi will scale the layout by the given factors.
   The scaling uses the root node of each component as the center of the scaling.
   If only a single number is given, this is used for both factors.
 
-<DT><A NAME=dsearchsize HREF=#asearchsize><STRONG>searchsize</STRONG></A>
+<DT><A NAME=d:searchsize HREF=#a:searchsize><STRONG>searchsize</STRONG></A>
 <DD>  During network simplex, maximum number of edges with negative cut values
   to search when looking for one with minimum cut value.
 
-<DT><A NAME=dsep HREF=#asep><STRONG>sep</STRONG></A>
+<DT><A NAME=d:sep HREF=#a:sep><STRONG>sep</STRONG></A>
 <DD>  Specifies margin to leave around nodes when removing node overlap.
   This guarantees a minimal non-zero distance between nodes.
   <P>
@@ -1593,22 +1598,22 @@ This field indicates which graph component uses the attribute.
   <P>
   If only a single number is given, this is used for both dimensions.
   <P>
-  If unset but <A HREF=#desep>esep</A> is defined, the <tt>sep</tt> values
+  If unset but <A HREF=#d:esep>esep</A> is defined, the <tt>sep</tt> values
   will be set to the <tt>esep</tt> values divided by <tt>0.8</tt>. 
   If <tt>esep</tt> is unset, the default value is used.
 
-<DT><A NAME=dshape HREF=#ashape><STRONG>shape</STRONG></A>
+<DT><A NAME=d:shape HREF=#a:shape><STRONG>shape</STRONG></A>
 <DD>  Set the shape of a node.
 
-<DT><A NAME=dshapefile HREF=#ashapefile><STRONG>shapefile</STRONG></A>
+<DT><A NAME=d:shapefile HREF=#a:shapefile><STRONG>shapefile</STRONG></A>
 <DD>  (Deprecated) If defined, shapefile specifies a file containing user-supplied node content.
-  The <A HREF=#dshape><B>shape</B></A> of the node is set to box.
+  The <A HREF=#d:shape><B>shape</B></A> of the node is set to box.
   The image in the shapefile must be
   rectangular. The image formats supported as well as the precise semantics of
   how the file is used depends on the
-  <A HREF="http://www.graphviz.org/content/output-formats">output format</A>.  For further details, see
-  <A HREF=/content/output-formats#dimage_fmts>Image Formats</A> and
-  <A HREF="http://www.graphviz.org/Documentation/html/shapehowto.html#ext_image" target="_blank">External PostScript files</A>.
+  <A HREF="http://www.graphviz.org/doc/info/output.html">output format</A>.  For further details, see
+  <A HREF=output.html#d:image_fmts>Image Formats</A> and
+  <A HREF=http://www.graphviz.org/Documentation/html/shapehowto.html#ext_image>External PostScript files</A>.
   <P>
   There is one exception to this usage.
   If <B>shape</B> is set to "epsf", shapefile gives
@@ -1616,17 +1621,17 @@ This field indicates which graph component uses the attribute.
   The graphics defined must be contain all of the
   node content, including any desired boundaries.
   For further details, see
-  <A HREF="http://www.graphviz.org/Documentation/html/shapehowto.html#ext_ps" target="_blank">
+  <A HREF=http://www.graphviz.org/Documentation/html/shapehowto.html#ext_ps>
   External PostScript files</A>.
 
-<DT><A NAME=dshowboxes HREF=#ashowboxes><STRONG>showboxes</STRONG></A>
+<DT><A NAME=d:showboxes HREF=#a:showboxes><STRONG>showboxes</STRONG></A>
 <DD>  Print guide boxes in PostScript at the beginning of
   routesplines if 1, or at the end if 2. (Debugging)
 
-<DT><A NAME=dsides HREF=#asides><STRONG>sides</STRONG></A>
-<DD>  Number of sides if <A HREF=#dshape><B>shape</B></A>=polygon.
+<DT><A NAME=d:sides HREF=#a:sides><STRONG>sides</STRONG></A>
+<DD>  Number of sides if <A HREF=#d:shape><B>shape</B></A>=polygon.
 
-<DT><A NAME=dsize HREF=#asize><STRONG>size</STRONG></A>
+<DT><A NAME=d:size HREF=#a:size><STRONG>size</STRONG></A>
 <DD>  Maximum width and height of drawing, in inches.
   If only a single number is given, this is used for both the width
   and the height.
@@ -1642,22 +1647,22 @@ This field indicates which graph component uses the attribute.
   least one dimension equals its dimension in <TT>size</TT>.
   <P>
   Note that there is some interaction between the <B>size</B> and
-  <A HREF=#dratio><B>ratio</B></A> attributes.
+  <A HREF=#d:ratio><B>ratio</B></A> attributes.
 
-<DT><A NAME=dskew HREF=#askew><STRONG>skew</STRONG></A>
-<DD>  Skew factor for <A HREF=#dshape><B>shape</B></A>=polygon. Positive values
+<DT><A NAME=d:skew HREF=#a:skew><STRONG>skew</STRONG></A>
+<DD>  Skew factor for <A HREF=#d:shape><B>shape</B></A>=polygon. Positive values
   skew top of polygon to right; negative to left.
 
-<DT><A NAME=dsmoothing HREF=#asmoothing><STRONG>smoothing</STRONG></A>
+<DT><A NAME=d:smoothing HREF=#a:smoothing><STRONG>smoothing</STRONG></A>
 <DD>  Specifies a post-processing step used to smooth out an uneven distribution 
   of nodes.
 
-<DT><A NAME=dsortv HREF=#asortv><STRONG>sortv</STRONG></A>
-<DD>  If <A HREF="#dpackmode">packmode</A> indicates an array packing, 
+<DT><A NAME=d:sortv HREF=#a:sortv><STRONG>sortv</STRONG></A>
+<DD>  If <A HREF="#d:packmode">packmode</A> indicates an array packing, 
   this attribute specifies an
   insertion order among the components, with smaller values inserted first.
 
-<DT><A NAME=dsplines HREF=#asplines><STRONG>splines</STRONG></A>
+<DT><A NAME=d:splines HREF=#a:splines><STRONG>splines</STRONG></A>
 <DD>  Controls how, and if, edges are represented. If true, edges are drawn as
   splines routed around nodes; if false, edges are drawn as line segments.
   If set to "", no edges are drawn at all.
@@ -1674,77 +1679,77 @@ This field indicates which graph component uses the attribute.
   the layout. For dot, the default is to draw edges as splines. For all
   other layouts, the default is to draw edges as line segments. Note that
   for these latter layouts, if <TT>splines="true"</TT>, this
-  requires non-overlapping nodes (cf. <A HREF=#doverlap><B>overlap</B></A>).
+  requires non-overlapping nodes (cf. <A HREF=#d:overlap><B>overlap</B></A>).
   If fdp is used for layout and <TT>splines="compound"</TT>, then the edges are
   drawn to avoid clusters as well as nodes.
 
-<DT><A NAME=dstart HREF=#astart><STRONG>start</STRONG></A>
+<DT><A NAME=d:start HREF=#a:start><STRONG>start</STRONG></A>
 <DD>  Parameter used to determine the initial layout of nodes. If unset, the
   nodes are randomly placed in a unit square with
   the same seed is always used for the random number generator, so the
   initial placement is repeatable.
 
-<DT><A NAME=dstyle HREF=#astyle><STRONG>style</STRONG></A>
+<DT><A NAME=d:style HREF=#a:style><STRONG>style</STRONG></A>
 <DD>  Set style for node or edge. For cluster subgraph, if "filled", the
   cluster box's background is filled.
 
-<DT><A NAME=dstylesheet HREF=#astylesheet><STRONG>stylesheet</STRONG></A>
+<DT><A NAME=d:stylesheet HREF=#a:stylesheet><STRONG>stylesheet</STRONG></A>
 <DD>  A URL or pathname specifying an XML style sheet, used in SVG output.
 
-<DT><A NAME=dtailURL HREF=#atailURL><STRONG>tailURL</STRONG></A>
+<DT><A NAME=d:tailURL HREF=#a:tailURL><STRONG>tailURL</STRONG></A>
 <DD>  If <B>tailURL</B> is defined, it is
   output as part of the tail label of the edge.
   Also, this value is used near the tail node, overriding any
-  <A HREF=#dURL>URL</A> value.
-  See <A HREF=#hundir_note>limitation</A>.
+  <A HREF=#d:URL>URL</A> value.
+  See <A HREF=#h:undir_note>limitation</A>.
 
-<DT><A NAME=dtailclip HREF=#atailclip><STRONG>tailclip</STRONG></A>
+<DT><A NAME=d:tailclip HREF=#a:tailclip><STRONG>tailclip</STRONG></A>
 <DD>  If true, the tail of an edge is clipped to the boundary of the tail node;
   otherwise, the end of the edge goes to the center of the node, or the
   center of a port, if applicable.
 
-<DT><A NAME=dtailhref HREF=#atailhref><STRONG>tailhref</STRONG></A>
-<DD>  Synonym for <A HREF=#dtailURL>tailURL</A>.
+<DT><A NAME=d:tailhref HREF=#a:tailhref><STRONG>tailhref</STRONG></A>
+<DD>  Synonym for <A HREF=#d:tailURL>tailURL</A>.
 
-<DT><A NAME=dtaillabel HREF=#ataillabel><STRONG>taillabel</STRONG></A>
+<DT><A NAME=d:taillabel HREF=#a:taillabel><STRONG>taillabel</STRONG></A>
 <DD>  Text label to be placed near tail of edge.
-  See <A HREF=#hundir_note>limitation</A>.
+  See <A HREF=#h:undir_note>limitation</A>.
 
-<DT><A NAME=dtailport HREF=#atailport><STRONG>tailport</STRONG></A>
+<DT><A NAME=d:tailport HREF=#a:tailport><STRONG>tailport</STRONG></A>
 <DD>  Indicates where on the tail node to attach the tail of the edge.
-  See <A HREF=#hundir_note>limitation</A>.
+  See <A HREF=#h:undir_note>limitation</A>.
 
-<DT><A NAME=dtailtarget HREF=#atailtarget><STRONG>tailtarget</STRONG></A>
-<DD>  If the edge has a <A HREF=#dtailURL>tailURL</A>,
+<DT><A NAME=d:tailtarget HREF=#a:tailtarget><STRONG>tailtarget</STRONG></A>
+<DD>  If the edge has a <A HREF=#d:tailURL>tailURL</A>,
   this attribute determines which window of the
   browser is used
   for the URL. Setting it to "_graphviz" will open a new window if it
   doesn't already exist, or reuse it if it does.
-  If undefined, the value of the <A HREF=#dtarget>target</A> is used.
+  If undefined, the value of the <A HREF=#d:target>target</A> is used.
 
-<DT><A NAME=dtailtooltip HREF=#atailtooltip><STRONG>tailtooltip</STRONG></A>
+<DT><A NAME=d:tailtooltip HREF=#a:tailtooltip><STRONG>tailtooltip</STRONG></A>
 <DD>  Tooltip annotation attached to the tail of an edge. This is used only
-  if the edge has a <A HREF=#dtailURL>tailURL</A> attribute.
+  if the edge has a <A HREF=#d:tailURL>tailURL</A> attribute.
 
-<DT><A NAME=dtarget HREF=#atarget><STRONG>target</STRONG></A>
+<DT><A NAME=d:target HREF=#a:target><STRONG>target</STRONG></A>
 <DD>  If the object has a URL, this attribute determines which window
   of the browser is used for the URL.
-  See <A HREF="http://www.w3.org/TR/html401/present/frames.html#adef-target" target="_blank">W3C documentation</A>.
+  See <A HREF="http://www.w3.org/TR/html401/present/frames.html#adef-target">W3C documentation</A>.
 
-<DT><A NAME=dtooltip HREF=#atooltip><STRONG>tooltip</STRONG></A>
+<DT><A NAME=d:tooltip HREF=#a:tooltip><STRONG>tooltip</STRONG></A>
 <DD>  Tooltip annotation attached to the node or edge. If unset, Graphviz
-  will use the object's <A HREF=#dlabel>label</A> if defined.
+  will use the object's <A HREF=#d:label>label</A> if defined.
   Note that if the label is a record specification or an HTML-like
   label, the resulting tooltip may be unhelpful. In this case, if
   tooltips will be generated, the user should set a <TT>tooltip</TT>
   attribute explicitly.
 
-<DT><A NAME=dtruecolor HREF=#atruecolor><STRONG>truecolor</STRONG></A>
+<DT><A NAME=d:truecolor HREF=#a:truecolor><STRONG>truecolor</STRONG></A>
 <DD>  If set explicitly to true or false, the value determines whether or not
   internal bitmap rendering relies on a truecolor color model or uses
   a color palette.
   If the attribute is unset, truecolor is not used
-  unless there is a <A HREF=#dshapefile>shapefile</A> property
+  unless there is a <A HREF=#d:shapefile>shapefile</A> property
   for some node in the graph.
   The output model will use the input model when possible.
   <P>
@@ -1753,35 +1758,35 @@ This field indicates which graph component uses the attribute.
   <P>
   Usually, the only time it is necessary to specify the truecolor model
   is if the graph uses more than 256 colors.
-  However, if one uses <A HREF=#dbgcolor>bgcolor</A>=transparent with
+  However, if one uses <A HREF=#d:bgcolor>bgcolor</A>=transparent with
   a color palette, font
   antialiasing can show up as a fuzzy white area around characters.
   Using <B>truecolor</B>=true avoids this problem.
 
-<DT><A NAME=dvertices HREF=#avertices><STRONG>vertices</STRONG></A>
+<DT><A NAME=d:vertices HREF=#a:vertices><STRONG>vertices</STRONG></A>
 <DD>  If the input graph defines this attribute, the node is polygonal,
   and output is dot or xdot, this attribute provides the
   coordinates of the vertices of the node's polygon, in inches.
   If the node is an ellipse or circle, the
-  <A HREF=#dsamplepoints>samplepoints</A> attribute affects
+  <A HREF=#d:samplepoints>samplepoints</A> attribute affects
   the output.
 
-<DT><A NAME=dviewport HREF=#aviewport><STRONG>viewport</STRONG></A>
+<DT><A NAME=d:viewport HREF=#a:viewport><STRONG>viewport</STRONG></A>
 <DD>  Clipping window on final drawing. Note that this attribute supersedes any
-  <A HREF="#dsize">size</A> attribute. The width and height of the viewport specify
+  <A HREF="#d:size">size</A> attribute. The width and height of the viewport specify
   precisely the final size of the output. 
 
-<DT><A NAME=dvoro_margin HREF=#avoro_margin><STRONG>voro_margin</STRONG></A>
+<DT><A NAME=d:voro_margin HREF=#a:voro_margin><STRONG>voro_margin</STRONG></A>
 <DD>  Factor to scale up drawing to allow margin for expansion in
   Voronoi technique. dim' = (1+2*margin)*dim.
 
-<DT><A NAME=dweight HREF=#aweight><STRONG>weight</STRONG></A>
+<DT><A NAME=d:weight HREF=#a:weight><STRONG>weight</STRONG></A>
 <DD>  Weight of edge. In dot, the heavier the weight, the shorter,
   straighter and more vertical the edge is.
 
-<DT><A NAME=dwidth HREF=#awidth><STRONG>width</STRONG></A>
+<DT><A NAME=d:width HREF=#a:width><STRONG>width</STRONG></A>
 <DD>  Width of node, in inches. This is taken as the initial, minimum width
-  of the node. If <A HREF=#dfixedsize><B>fixedsize</B></A> is true, this
+  of the node. If <A HREF=#d:fixedsize><B>fixedsize</B></A> is true, this
   will be the final width of the node. Otherwise, if the node label
   requires more width to fit, the node's width will be increased to
   contain the label. Note also that, if the output format is dot, the
@@ -1795,16 +1800,16 @@ This field indicates which graph component uses the attribute.
   If neither is set explicitly, the minimum of the two default values
   is used.
 
-<DT><A NAME=dz HREF=#az><STRONG>z</STRONG></A>
-<DD>  <B>Deprecated:</B>Use <A HREF=#dpos><B>pos</B></A> attribute, along
-  with <A HREF=#ddimen><B>dimen</B></A> and/or <A HREF=#ddim><B>dim</B></A>
+<DT><A NAME=d:z HREF=#a:z><STRONG>z</STRONG></A>
+<DD>  <B>Deprecated:</B>Use <A HREF=#d:pos><B>pos</B></A> attribute, along
+  with <A HREF=#d:dimen><B>dimen</B></A> and/or <A HREF=#d:dim><B>dim</B></A>
   to specify dimensions.
   <P>
   Provides z coordinate value for 3D layouts and displays. If the
-  graph has <A HREF=#ddim><B>dim</B></A> set to 3 (or more),
+  graph has <A HREF=#d:dim><B>dim</B></A> set to 3 (or more),
   neato will use a node's <B>z</B> value
   for the z coordinate of its initial position if
-  its <A HREF=#dpos><B>pos</B></A> attribute is also defined.
+  its <A HREF=#d:pos><B>pos</B></A> attribute is also defined.
   <P>
   Even if no <B>z</B> values are specified in the input, it is necessary to
   declare a <B>z</B> attribute for nodes, e.g, using <TT>node[z=""]</TT>
@@ -1821,7 +1826,7 @@ This field indicates which graph component uses the attribute.
 The following list gives the legal strings corresponding to values of
 the given types.
 <DL>
-<DT><A NAME=karrowType><STRONG>arrowType</STRONG></A>
+<DT><A NAME=k:arrowType><STRONG>arrowType</STRONG></A>
 <DD><TABLE>
     <TR><TD>"normal"<TD><IMG SRC="a_normal.gif">
         <TD>"inv"<TD><IMG SRC="a_inv.gif"></TR>
@@ -1845,7 +1850,7 @@ the given types.
   </TABLE>
   <P>
   These are the basic set of backward-compatible arrow shapes. In addition,
-  there is a grammar of <A HREF=/content/arrow-shapes>arrow shapes</A>
+  there is a grammar of <A HREF=arrows.html>arrow shapes</A>
   which can be used to describe a collection of 1,544,761 arrow combinations of the 36 varations of the primitive set of 9 arrows. The basic arrows shown
   above contain all of the primitive shapes
   (<TT>box</TT>, <TT>crow</TT>, <TT>diamond</TT>,
@@ -1858,20 +1863,20 @@ the given types.
   (<TT>ediamond</TT>, <TT>open</TT>, <TT>halfopen</TT>,
   <TT>empty</TT>, <TT>invempty</TT>).
 
-<DT><A NAME=kaspectType><STRONG>aspectType</STRONG></A>
+<DT><A NAME=k:aspectType><STRONG>aspectType</STRONG></A>
 <DD><p>An aspect ratio, double, followed optionally by a ',' and a maximum pass 
   count. If the aspect ratio is given, but no maximum pass count, the
   latter defaults to 5.
 
-<DT><A NAME=kclusterMode><STRONG>clusterMode</STRONG></A>
+<DT><A NAME=k:clusterMode><STRONG>clusterMode</STRONG></A>
 <DD>"local","global","none"
 
-<DT><A NAME=kcolor><STRONG>color</STRONG></A>
+<DT><A NAME=k:color><STRONG>color</STRONG></A>
 <DD>Colors can be specified using one of four formats.
          <TABLE><TR><TD>"#%2x%2x%2x"<TD>Red-Green-Blue (RGB)</TR>
          <TR><TD>"#%2x%2x%2x%2x"<TD>Red-Green-Blue-Alpha (RGBA)</TR>
          <TR><TD>H[,&#160;]+S[,&#160;]+V<TD>Hue-Saturation-Value (HSV) 0.0 <= H,S,V <= 1.0</TR>
-         <TR><TD>string<TD><A HREF=/content/color-names>color name</A></TR></TABLE>
+         <TR><TD>string<TD><A HREF=colors.html>color name</A></TR></TABLE>
    The specification for the RGB and RGBA formats are the format strings used by
    <TT>sscanf</TT> to scan the color value. Thus, these values have the form
    "#RGB" or "#RGBA", where R, G, B, and A each consist of 2 hexidecimal
@@ -1880,7 +1885,7 @@ the given types.
   <P>
   String-valued color specifications are case-insensitive and interpreted
   in the context of the current color scheme, as specified by the
-  <A HREF=#dcolorscheme>colorscheme</A> attribute. If this is undefined,
+  <A HREF=#d:colorscheme>colorscheme</A> attribute. If this is undefined,
   the X11 naming scheme will be used.
   An initial <TT>"/"</TT> character can be used to override the use of
   the <TT>colorscheme</TT> attribute. In particular, a single initial
@@ -1892,8 +1897,8 @@ the given types.
   Thus, the forms <TT>"yyyy"</TT> and <TT>"//yyyy"</TT> are
   equivalent.
   <P>At present, Graphviz recognizes the default color scheme <TT>X11</TT>,
-  and the <A HREF="/content/color-names#brewer">Brewer color schemes</A> (cf. <A HREF="http://www.personal.psu.edu/faculty/c/a/cab38/ColorBrewer/ColorBrewer_intro.html" target="_blank">ColorBrewer</A>). Please note that Brewer
-  color schemes are covered by this <A HREF=/content/color-names#brewer_license>license</A>.
+  and the <A HREF="colors.html#brewer">Brewer color schemes</A> (cf. <A HREF="http://www.personal.psu.edu/faculty/c/a/cab38/ColorBrewer/ColorBrewer_intro.html">ColorBrewer</A>). Please note that Brewer
+  color schemes are covered by this <A HREF=colors.html#brewer_license>license</A>.
   <P>
   Examples:<BR>
     <TABLE border=1>
@@ -1909,15 +1914,15 @@ the given types.
    This is only available in the output formats
    ps, svg, fig, vmrl, and the bitmap formats. It can be used whenever a
    color is needed but is most useful with
-   the <A HREF=#dbgcolor>bgcolor</A> attribute.
+   the <A HREF=#d:bgcolor>bgcolor</A> attribute.
    Usually, the same effect can be achieved by setting
-   <A HREF=#dstyle>style</A> to <TT>invis</TT>.
+   <A HREF=#d:style>style</A> to <TT>invis</TT>.
 
-<DT><A NAME=kcolorList><STRONG>colorList</STRONG></A>
+<DT><A NAME=k:colorList><STRONG>colorList</STRONG></A>
 <DD>A colon-separated list of color values: <I>C</I>(:<I>C</I>)*
-   where each <I>C</I> is a <A HREF=#kcolor>color</A> value.
+   where each <I>C</I> is a <A HREF=#k:color>color</A> value.
 
-<DT><A NAME=kdirType><STRONG>dirType</STRONG></A>
+<DT><A NAME=k:dirType><STRONG>dirType</STRONG></A>
 <DD>For an edge <CODE>T -> H;</CODE>
     <TABLE>
     <TR><TD>"forward"<TD><IMG SRC="forward.gif">
@@ -1934,11 +1939,11 @@ the given types.
   the righthand one, is treated as the head for the purpose of
   interpreting "forward" and "back".
 
-<DT><A NAME=kdoubleList><STRONG>doubleList</STRONG></A>
+<DT><A NAME=k:doubleList><STRONG>doubleList</STRONG></A>
 <DD>A colon-separated list of doubles: <I>d</I>(:<I>d</I>)*
    where each <I>d</I> is a double.
 
-<DT><A NAME=kescString><STRONG>escString</STRONG></A>
+<DT><A NAME=k:escString><STRONG>escString</STRONG></A>
 <DD>string allowing escape sequences which are replaced according
   to the context.
   For node attributes, the substring "\N" is replaced by the name of the node,
@@ -1955,30 +1960,30 @@ the given types.
   In all cases, the substring "\L" is replaced by the object's label attribute.
   <P>
   In addition, if the associated attribute is
-  <A HREF=#alabel>label</A>,
-  <A HREF=#aheadlabel>headlabel</A> or <A HREF=#ataillabel>taillabel</A>,
+  <A HREF=#a:label>label</A>,
+  <A HREF=#a:headlabel>headlabel</A> or <A HREF=#a:taillabel>taillabel</A>,
   the escape sequences "\n", "\l" and "\r"
   divide the label into lines, centered, left-justified, and right-justified,
   respectively.
 
-<DT><A NAME=klayerList><STRONG>layerList</STRONG></A>
+<DT><A NAME=k:layerList><STRONG>layerList</STRONG></A>
 <DD>list of strings separated by characters from the
-  <A HREF=#alayersep>layersep</A> attribute (by default, colons,
-  tabs or spaces), defining <A HREF=#alayer>layer</A>
+  <A HREF=#a:layersep>layersep</A> attribute (by default, colons,
+  tabs or spaces), defining <A HREF=#a:layer>layer</A>
   names and implicitly numbered 1,2,...
 
-<DT><A NAME=klayerRange><STRONG>layerRange</STRONG></A>
+<DT><A NAME=k:layerRange><STRONG>layerRange</STRONG></A>
 <DD>layerId or layerId<B>s</B>layerId,<BR> where layerId = "all",
-  a decimal integer or a <A HREF=#alayer>layer</A> name.
+  a decimal integer or a <A HREF=#a:layer>layer</A> name.
   (An integer i corresponds to layer i.)
   The string <B>s</B> consists of 1 or more separator characters specified
-  by the <A HREF=#alayersep>layersep</A> attribute.
+  by the <A HREF=#a:layersep>layersep</A> attribute.
 
-<DT><A NAME=klblString><STRONG>lblString</STRONG></A>
-<DD>an <A HREF=#kescString>escString</A>
-  or an <A HREF=/content/node-shapes#html>HTML label</A>.
+<DT><A NAME=k:lblString><STRONG>lblString</STRONG></A>
+<DD>an <A HREF=#k:escString>escString</A>
+  or an <A HREF=shapes.html#html>HTML label</A>.
 
-<DT><A NAME=koutputMode><STRONG>outputMode</STRONG></A>
+<DT><A NAME=k:outputMode><STRONG>outputMode</STRONG></A>
 <DD>"breadthfirst","nodesfirst","edgesfirst"
   These specify the order in which nodes and edges are drawn in concrete
   output. The default "breadthfirst" is the simplest, but when the graph
@@ -1991,7 +1996,7 @@ the given types.
   if the resulting drawing is ambiguous. This can be achieved by choosing
   "edgesfirst".
 
-<DT><A NAME=kpackMode><STRONG>packMode</STRONG></A>
+<DT><A NAME=k:packMode><STRONG>packMode</STRONG></A>
 <DD>"node", "clust" , "graph" , "array[_flags][%d]"
   <P>
   The modes "node", "clust" or "graph"
@@ -2028,12 +2033,12 @@ the given types.
   If the optional flags contains "u", this causes the insertion
   order of elements in the array to be determined by user-supplied
   values. Each component can specify its sort value by a 
-  non-negative integer using the <A HREF="#dsortv">sortv</A> attribute. 
+  non-negative integer using the <A HREF="#d:sortv">sortv</A> attribute. 
   Components are
   inserted in order, starting with the one with the smallest
   sort value. If no sort value is specified, zero is used.
 
-<DT><A NAME=kpagedir><STRONG>pagedir</STRONG></A>
+<DT><A NAME=k:pagedir><STRONG>pagedir</STRONG></A>
 <DD>"BL", "BR", "TL", "TR", "RB", "RT", "LB", "LT".
   These specify the 8 row or column major orders for traversing a
   rectangular array, the first character corresponding to the major
@@ -2043,28 +2048,28 @@ the given types.
   to right, then the next row up, from left to right, and so on,
   until the topmost row is traversed.
 
-<DT><A NAME=kpoint><STRONG>point</STRONG></A>
+<DT><A NAME=k:point><STRONG>point</STRONG></A>
 <DD>"%f,%f"('!') representing the point (x,y). The
   optional '!' indicates the
   node position should not change (input-only).
   <P>
-  If <A HREF=#ddim>dim</A> is 3 or more, <B>point</B> may also have
+  If <A HREF=#d:dim>dim</A> is 3 or more, <B>point</B> may also have
   the format "%f,%f,%f"('!') to represent the point (x,y,z).
 
-<DT><A NAME=kpointf><STRONG>pointf</STRONG></A>
+<DT><A NAME=k:pointf><STRONG>pointf</STRONG></A>
 <DD>"%lf,%lf" representing the point (x,y).
 
-<DT><A NAME=kpointfList><STRONG>pointfList</STRONG></A>
+<DT><A NAME=k:pointfList><STRONG>pointfList</STRONG></A>
 <DD>list of pointf, separated by spaces.
 
-<DT><A NAME=kportPos><STRONG>portPos</STRONG></A>
+<DT><A NAME=k:portPos><STRONG>portPos</STRONG></A>
 <DD>modifier indicating where on a node an edge should be aimed.
   It has the form <TT><I>portname</I>[:<I>compass_point</I>]</TT>
   or <TT><I>compass_point</I></TT>.
   If the first form is used, the corresponding node must either have
-  <A HREF=/content/node-shapes#record>record</A> shape with one of its fields
+  <A HREF=shapes.html#record>record</A> shape with one of its fields
   having the given <I>portname</I>,
-  or have an <A HREF=/content/node-shapes#html>HTML-like label</A>, one of
+  or have an <A HREF=shapes.html#html>HTML-like label</A>, one of
   whose components has a <TT>PORT</TT> attribute set to <I>portname</I>.
   <P>
   If a compass point is used, it must have the form
@@ -2079,8 +2084,8 @@ the given types.
   <P>
   <P>
   This attribute can be attached to an edge using the
-  <A HREF=#dheadport>headport</A> and
-  <A HREF=#dtailport>tailport</A> attributes, or as part of the
+  <A HREF=#d:headport>headport</A> and
+  <A HREF=#d:tailport>tailport</A> attributes, or as part of the
   edge description as in
   <CENTER>
   <TT>node1:port1 -> node2:port5:nw;</TT>
@@ -2093,42 +2098,42 @@ the given types.
   At present, in this case, there is no way to specify that the compass
   point should be used.
 
-<DT><A NAME=kquadType><STRONG>quadType</STRONG></A>
+<DT><A NAME=k:quadType><STRONG>quadType</STRONG></A>
 <DD>"normal", "fast", "none". 
   <P>
   Using "fast" gives about a 2-4 times overall speedup compared with "normal", 
   though layout quality can suffer a little. 
 
-<DT><A NAME=krankType><STRONG>rankType</STRONG></A>
+<DT><A NAME=k:rankType><STRONG>rankType</STRONG></A>
 <DD>"same", "min", "source", "max", "sink"
 
-<DT><A NAME=krankdir><STRONG>rankdir</STRONG></A>
+<DT><A NAME=k:rankdir><STRONG>rankdir</STRONG></A>
 <DD>"TB", "LR", "BT", "RL", corresponding to directed graphs drawn
   from top to bottom, from left to right, from bottom to top, and from
   right to left, respectively.
 
-<DT><A NAME=krect><STRONG>rect</STRONG></A>
+<DT><A NAME=k:rect><STRONG>rect</STRONG></A>
 <DD>"%f,%f,%f,%f"  The rectangle llx,lly,urx,ury gives the coordinates, in
    points, of the lower-left corner (llx,lly) and the upper-right corner
    (urx,ury).
 
-<DT><A NAME=kshape><STRONG>shape</STRONG></A>
-<DD>A string specifying the <A HREF=/content/node-shapes#html>shape</A> of a node.
+<DT><A NAME=k:shape><STRONG>shape</STRONG></A>
+<DD>A string specifying the <A HREF=shapes.html>shape</A> of a node.
   There are three
   main types of shapes :
-  <A HREF=/content/node-shapes#polygon>polygon-based</A>,
-  <A HREF=/content/node-shapes#record>record-based</A> and
-  <A HREF=/content/node-shapes#epsf>user-defined</A>.
+  <A HREF=shapes.html#polygon>polygon-based</A>,
+  <A HREF=shapes.html#record>record-based</A> and
+  <A HREF=shapes.html#epsf>user-defined</A>.
   The record-based shape has largely been superseded and greatly generalized
-  by <A HREF=/content/node-shapes#html>HTML-like labels</A>. 
+  by <A HREF=shapes.html#html>HTML-like labels</A>. 
   That is, instead of using <TT>shape=record</TT>, one might
   consider using <TT>shape=none</TT> and an HTML-like label.
 
-<DT><A NAME=ksmoothType><STRONG>smoothType</STRONG></A>
+<DT><A NAME=k:smoothType><STRONG>smoothType</STRONG></A>
 <DD>Values are "none", "avg_dist", "graph_dist", "power_dist", "rng", 
   "spring" and "triangle".
 
-<DT><A NAME=ksplineType><STRONG>splineType</STRONG></A>
+<DT><A NAME=k:splineType><STRONG>splineType</STRONG></A>
 <DD>spline ( ';' spline )*<BR>
   <TABLE>
    <TR><TD ALIGN=right>where spline<TD>=<TD>(endp)? (startp)? point (triple)+</TR>
@@ -2142,7 +2147,7 @@ the given types.
    goes from p<SUB>1</SUB> to startp. If startp is not given, p<SUB>1</SUB> touches a node.
    Similarly for p<SUB>n</SUB>  and endp.
 
-<DT><A NAME=kstartType><STRONG>startType</STRONG></A>
+<DT><A NAME=k:startType><STRONG>startType</STRONG></A>
 <DD>has the syntax <TT>[<I>style</I>][<I>seed</I>]</TT>.
   <P>
   If <I>style</I> is present, it must be one of the strings <TT>"regular"</TT>,
@@ -2161,10 +2166,10 @@ the given types.
   If the value is just <TT>"random"</TT>, a time-based seed is chosen.
   <P>
   Note that input positions, specified by a node's
-  <A HREF=#dpos>pos</A>
+  <A HREF=#d:pos>pos</A>
   attribute, are only used when the style is <TT>"random"</TT>.
 
-<DT><A NAME=kstyle><STRONG>style</STRONG></A>
+<DT><A NAME=k:style><STRONG>style</STRONG></A>
 <DD>styleItem ( ',' styleItem )*<BR>
   <TABLE>
   <TR><TD ALIGN=right>where styleItem<TD>=<TD>name or name'('args')'</TR>
@@ -2190,9 +2195,9 @@ the given types.
   width of the line in <A HREF=#points>points</A>. For example, <TT>style="bold"</TT> is
   equivalent to <TT>style="setlinewidth(2)"</TT>.
   <B>The use of <TT>setlinewidth</TT> is deprecated; one should use the
-  <A HREF=#dpenwidth><TT>penwidth</TT></A> attribute instead.</B>
+  <A HREF=#d:penwidth><TT>penwidth</TT></A> attribute instead.</B>
 
-<DT><A NAME=kviewPort><STRONG>viewPort</STRONG></A>
+<DT><A NAME=k:viewPort><STRONG>viewPort</STRONG></A>
 <DD>"%lf,%lf,%lf,%lf,%lf" or  "%lf,%lf,%lf,'%s'"
   <P>
   The viewPort <TT>W,H,Z,x,y</TT> or <TT>W,H,Z,N</TT>
@@ -2207,7 +2212,7 @@ the given types.
   of a node whose center should used as the focus.
   By default, the focus is the center of the graph bounding box, i.e.,
   (bbx/2,bby/2), where "bbx,bby" is the
-  value of the bounding box attribute <A HREF=#abb>bb</A>.
+  value of the bounding box attribute <A HREF=#a:bb>bb</A>.
   <P>
   Sample values: <TT>50,50,.5,'2.8 BSD'</T> or <TT>100,100,2,450,300</TT>.
   The first will take the 100x100 point square centered on the node <TT>2.8 BSD</TT>

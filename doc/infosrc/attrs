@@ -78,6 +78,8 @@ Note that, for edges, the attributes <A HREF=#d:headURL>headURL</A>,
 edge.
 Also note that, if active areas of two edges overlap, it is unspecified
 which area dominates.
+:area:NC:double:1.0:>0;  patchwork
+Indicates the preferred area for a node or empty cluster when laid out by patchwork.
 :arrowhead:E:arrowType:normal;
 Style of arrowhead on the head node of an edge.
 This will only appear if the <A HREF=#d:dir>dir</A> attribute
