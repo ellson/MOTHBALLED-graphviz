@@ -30,14 +30,18 @@ struct treenode_t {
     int n_children;
 };
 
+#define DFTL_SZ 1.0
+#define SCALE 1000.0      /* scale up so that 1 is a reasonable default size */
+
 /* mkTreeNode:
  */
 static treenode_t* mkTreeNode (Agnode_t* n, attrsym_t* ap)
 {
     treenode_t *p = NEW(treenode_t);
 
-    p->area = late_double (n, ap, 1.0, 0);
-    if (p->area == 0) p->area = 1.0;
+    p->area = late_double (n, ap, DFTL_SZ, 0);
+    if (p->area == 0) p->area = DFTL_SZ;
+    p->area *= SCALE;
     p->kind = AGNODE;
     p->u.n = n;
 
