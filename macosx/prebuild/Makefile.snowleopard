@@ -6,7 +6,7 @@ TAR=tar
 
 PREFIX=$(HOME)/FIX/Darwin.i386
 
-ARCHS=-arch ppc -arch i386 -arch x86_64
+ARCHS=-arch i386 -arch x86_64
 
 # package URL
 
@@ -395,11 +395,6 @@ $(GLIB_DIR)/Makefile: $(PREFIX)/lib/$(INTL) | $(PREFIX)/bin/$(PKGCONFIG) $(GLIB_
 	$(MAKE) -C gio && \
 	$(MAKE) -C gobject glib-genmarshal && \
 	cp darwin.cache darwinian.cache && \
-	echo --- PPC PASS --- && \
-	./configure --cache-file=darwinian.cache --build=$$BUILD --host=powerpc-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch ppc -I$(PREFIX)/include" LDFLAGS="-arch ppc -L$(PREFIX)/lib" && \
-	cp config.h config.ppc.h && \
-	cp glib/glibconfig.h glib/glibconfig.ppc.h && \
-	cp darwin.cache darwinian.cache && \
 	echo --- I386 PASS --- && \
 	./configure --cache-file=darwinian.cache --build=$$BUILD --host=i686-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch i386 -I$(PREFIX)/include" LDFLAGS="-arch i386 -L$(PREFIX)/lib" && \
 	cp config.h config.i386.h && \
@@ -413,17 +408,13 @@ $(GLIB_DIR)/Makefile: $(PREFIX)/lib/$(INTL) | $(PREFIX)/bin/$(PKGCONFIG) $(GLIB_
 	echo --- UNIVERSAL BINARY PASS --- && \
 	./configure $(BASE_CONFIG) CFLAGS="-O2 $(ARCHS) -I$(PREFIX)/include" LDFLAGS="$(ARCHS) -L$(PREFIX)/lib" && \
 	rm config.h && \
-	echo "#if defined(__ppc__)" >>config.h && \
-	cat config.ppc.h >>config.h && \
-	echo "#elif defined(__i386__)" >>config.h && \
+	echo "#if defined(__i386__)" >>config.h && \
 	cat config.i386.h >>config.h && \
 	echo "#elif defined(__x86_64__)" >>config.h && \
 	cat config.x86_64.h >>config.h && \
 	echo "#endif" >>config.h && \
 	rm glib/glibconfig.h && \
-	echo "#if defined(__ppc__)" >>glib/glibconfig.h && \
-	cat glib/glibconfig.ppc.h >>glib/glibconfig.h && \
-	echo "#elif defined(__i386__)" >>glib/glibconfig.h && \
+	echo "#if defined(__i386__)" >>glib/glibconfig.h && \
 	cat glib/glibconfig.i386.h >>glib/glibconfig.h && \
 	echo "#elif defined(__x86_64__)" >>glib/glibconfig.h && \
 	cat glib/glibconfig.x86_64.h >>glib/glibconfig.h && \
