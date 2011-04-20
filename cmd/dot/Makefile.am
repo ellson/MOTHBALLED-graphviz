@@ -12,7 +12,7 @@ pdfdir = $(pkgdatadir)/doc/pdf
 linkedman = neato.1 twopi.1 fdp.1 circo.1
 linkedpdf = neato.1.pdf twopi.1.pdf fdp.1.pdf circo.1.pdf
 linkedprogram = neato$(EXEEXT) twopi$(EXEEXT) fdp$(EXEEXT) circo$(EXEEXT) \
-    osage$(EXREEXT)
+    osage$(EXEEXT) patchwork$(EXEEXT)
 
 if WITH_SFDP
 linkedman += sfdp.1
@@ -47,8 +47,8 @@ bin_PROGRAMS = dot_static
 endif
 endif
 
-man_MANS = dot.1 osage.1
-pdf_DATA = dot.1.pdf osage.1.pdf
+man_MANS = dot.1 osage.1 patchwork.1
+pdf_DATA = dot.1.pdf osage.1.pdf patchwork.1.pdf
 
 dot_SOURCES = dot.c no_builtins.c
 dot_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
@@ -75,6 +75,9 @@ dot.1.pdf: $(srcdir)/dot.1
 
 osage.1.pdf: $(srcdir)/osage.1
 	- $(GROFF) -Tps -man $(srcdir)/osage.1 | $(PS2PDF) - - >osage.1.pdf
+
+patchwork.1.pdf: $(srcdir)/patchwork.1
+	- $(GROFF) -Tps -man $(srcdir)/patchwork.1 | $(PS2PDF) - - >patchwork.1.pdf
 
 dot_static_SOURCES = dot.c dot_builtins.c
 dot_static_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=0
@@ -117,6 +120,6 @@ dot_static_LDADD += $(top_builddir)/plugin/pango/.libs/libgvplugin_pango_C.a $(P
 dot_builtins_LDADD += $(top_builddir)/plugin/pango/libgvplugin_pango.la $(PANGOCAIRO_LIBS)
 endif
 
-EXTRA_DIST = Makefile.old dot.1 dot.1.pdf osage.1 osage.1.pdf dot.vcproj
+EXTRA_DIST = Makefile.old dot.1 dot.1.pdf osage.1 osage.1.pdf patchwork.1 patchwork.1.pdf dot.vcproj
 
 DISTCLEANFILES = dot.1.pdf osage.1.pdf
