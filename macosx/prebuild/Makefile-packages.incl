@@ -4,7 +4,9 @@ AUTOMAKE_URL=http://ftp.gnu.org/gnu/automake/automake-1.11.tar.gz
 CAIRO_URL=http://cairographics.org/releases/cairo-1.10.2.tar.gz
 FONTCONFIG_URL=http://fontconfig.org/release/fontconfig-2.8.0.tar.gz
 FREETYPE_URL=http://download.savannah.gnu.org/releases-noredirect/freetype/freetype-2.4.4.tar.gz
-GD_URL=http://www.libgd.org/releases/gd-2.0.36RC1.tar.gz
+# This seems to be permanently down.
+# GD_URL=http://www.libgd.org/releases/gd-2.0.36RC1.tar.gz
+GD_URL=http://www.graphviz.org/pub/tmp/gd-2.0.36RC1.tar.gz
 GETTEXT_URL=ftp://mirrors.kernel.org/gnu/gettext/gettext-0.18.1.tar.gz
 GLIB_URL=http://ftp.gnome.org/pub/gnome/sources/glib/2.26/glib-2.26.1.tar.gz
 GTK_URL=http://ftp.gnome.org/pub/gnome/sources/gtk+/2.23/gtk+-2.23.90.tar.gz
