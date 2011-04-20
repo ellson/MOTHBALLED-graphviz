@@ -156,9 +156,9 @@ static void patchwork_init_graph(graph_t * g)
  */
 void patchwork_layout(Agraph_t *g)
 {
-    if (agnnodes(g) == 0) return;
-
     patchwork_init_graph(g);
+
+    if ((agnnodes(g) == 0) && (GD_n_cluster(g) == 0)) return;
 
     patchworkLayout (g);
 

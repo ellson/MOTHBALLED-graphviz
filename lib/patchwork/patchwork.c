@@ -30,8 +30,16 @@ struct treenode_t {
     int n_children;
 };
 
-#define DFTL_SZ 1.0
+#define DFLT_SZ 1.0
 #define SCALE 1000.0      /* scale up so that 1 is a reasonable default size */
+
+static double getArea (void* obj, attrsym_t* ap)
+{
+    double area = late_double (obj, ap, DFLT_SZ, 0);
+    if (area == 0) area = DFLT_SZ;
+    area *= SCALE;
+    return area;
+}
 
 /* mkTreeNode:
  */
@@ -39,9 +47,7 @@ static treenode_t* mkTreeNode (Agnode_t* n, attrsym_t* ap)
 {
     treenode_t *p = NEW(treenode_t);
 
-    p->area = late_double (n, ap, DFTL_SZ, 0);
-    if (p->area == 0) p->area = DFTL_SZ;
-    p->area *= SCALE;
+    p->area = getArea (n, ap);
     p->kind = AGNODE;
     p->u.n = n;
 
@@ -54,7 +60,7 @@ static treenode_t* mkTreeNode (Agnode_t* n, attrsym_t* ap)
  * Recursively build tree from graph
  * Pre-condition: agnnodes(g) != 0
  */
-static treenode_t *mkTree (Agraph_t * g,  attrsym_t* ap)
+static treenode_t *mkTree (Agraph_t * g, attrsym_t* gp, attrsym_t* ap)
 {
     treenode_t *p = NEW(treenode_t);
     Agraph_t *subg;
@@ -70,9 +76,7 @@ static treenode_t *mkTree (Agraph_t * g,  attrsym_t* ap)
 
     for (i = 1; i <= GD_n_cluster(g); i++) {
 	subg = GD_clust(g)[i];
-	if (agnnodes(subg) == 0)
-	    continue;
-	cp = mkTree (subg, ap);
+	cp = mkTree (subg, gp, ap);
 	n_children++;
 	area += cp->area;
 	INSERT(cp);
@@ -89,7 +93,11 @@ static treenode_t *mkTree (Agraph_t * g,  attrsym_t* ap)
     }
 
     p->n_children = n_children;
-    p->area = area;
+    if (n_children)
+	p->area = area;
+    else {
+	p->area = getArea (g, gp);
+    }
     p->leftchild = first;
 
     return p;
@@ -230,10 +238,11 @@ static void freeTree (treenode_t* tp)
 void patchworkLayout(Agraph_t * g)
 {
     treenode_t* root;
-    attrsym_t * ap = agfindnodeattr(g, "size");
+    attrsym_t * ap = agfindnodeattr(g, "area");
+    attrsym_t * gp = agfindgraphattr(g, "area");
     double total;
 
-    root = mkTree (g,ap);
+    root = mkTree (g,gp,ap);
     total = root->area;
     root->r = rectangle_new(0, 0, sqrt(total + 0.1), sqrt(total + 0.1));
     layoutTree(root);
