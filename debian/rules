@@ -20,6 +20,7 @@ CGRAPH_SONAME     = 6
 GVPR_SONAME       = 2
 EXPR_SONAME       = 4
 XDOT_SONAME       = 4
+GRAPHVIZ_SONAME	  = 4
 
 OCAMLABI          = $(shell ocamlc -version)
 OCAML_PACKAGE     = $(CURDIR)/debian/libgv-ocaml
@@ -138,8 +139,8 @@ install: build
 
 	# Install lintian overrides
 	install -d $(CURDIR)/debian/tmp/usr/share/lintian/overrides
-	install -m 644 $(CURDIR)/debian/libgraphviz$(SONAME).lintian-overrides \
-		$(CURDIR)/debian/tmp/usr/share/lintian/overrides/libgraphviz$(SONAME)
+	install -m 644 $(CURDIR)/debian/libgraphviz$(GRAPHVIZ_SONAME).lintian-overrides \
+		$(CURDIR)/debian/tmp/usr/share/lintian/overrides/libgraphviz$(GRAPHVIZ_SONAME)
 
 	# Compute the dependencies of the -dev package
 	# NOTE: It is important to do that before splitting the files into
@@ -159,8 +160,8 @@ install: build
 
 	# Move from debian/tmp to the appropriate packages, rename one binary
 	dh_install --sourcedir=debian/tmp --list-missing
-	mv $(CURDIR)/debian/libgraphviz$(SONAME)/usr/sbin/dot \
-		$(CURDIR)/debian/libgraphviz$(SONAME)/usr/sbin/libgraphviz$(SONAME)-config-update
+	mv $(CURDIR)/debian/libgraphviz$(GRAPHVIZ_SONAME)/usr/sbin/dot \
+		$(CURDIR)/debian/libgraphviz$(GRAPHVIZ_SONAME)/usr/sbin/libgraphviz$(GRAPHVIZ_SONAME)-config-update
 
 	# Some additional work for libgv-php5
 	install -d $(PHP_PACKAGE)/$(PHP_EXTENSION_DIR)
@@ -256,9 +257,9 @@ binary-arch: build install
 	dh_strip -a
 	dh_compress -a
 	dh_fixperms -a
-	dh_makeshlibs -plibgraphviz$(SONAME) -V 'libgraphviz4 (>= 2.18)'
+	dh_makeshlibs -plibgraphviz$(GRAPHVIZ_SONAME) -V "libgraphviz4 (>= 2.18)'
 	dh_installdeb -a
-	dh_shlibdeps -a -L libgraphviz$(SONAME) $(CURDIR)/debian/libgraphviz$(SONAME)/usr/lib
+	dh_shlibdeps -a -L libgraphviz$(GRAPHVIZ_SONAME) $(CURDIR)/debian/libgraphviz$(GRAPHVIZ_SONAME)/usr/lib
 	dh_gencontrol -a -- -VF:OCamlABI="$(OCAMLABI)"
 	dh_md5sums -a
 	dh_builddeb -a
