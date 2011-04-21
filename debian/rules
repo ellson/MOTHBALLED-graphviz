@@ -12,8 +12,14 @@ export DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 export DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
 UPSTREAM_VERSION  = $(shell dpkg-parsechangelog | perl -ne 'print $$1 if /^Version: (.*?)-(.*)$$/')
-SONAME            = 4
-CGRAPH_SONAME     = 5
+PATHPLAN_SONAME   = 4
+GVC_SONAME        = 6
+CDT_SONAME        = 5
+GRAPH_SONAME      = 5
+CGRAPH_SONAME     = 6
+GVPR_SONAME       = 2
+EXPR_SONAME       = 4
+XDOT_SONAME       = 4
 
 OCAMLABI          = $(shell ocamlc -version)
 OCAML_PACKAGE     = $(CURDIR)/debian/libgv-ocaml
@@ -139,11 +145,14 @@ install: build
 	# NOTE: It is important to do that before splitting the files into
 	# their respective packages, otherwise the symlinks are broken
 	d-devlibdeps \
-		--override s/libpathplan$(SONAME)-dev// \
+		--override s/libpathplan$(PATHPLAN_SONAME)-dev// \
 		--override s/libcgraph$(CGRAPH_SONAME)-dev//   \
-		--override s/libgraph$(SONAME)-dev//    \
-		--override s/libxdot$(SONAME)-dev//     \
-		--override s/libcdt$(SONAME)-dev//      \
+		--override s/libgraph$(GRAPH_SONAME)-dev//    \
+		--override s/libxdot$(XDOT_SONAME)-dev//     \
+		--override s/libcdt$(CDT_SONAME)-dev//      \
+		--override s/libgvpr$(GVPR_SONAME)-dev//      \
+		--override s/libgvc$(GVC_SONAME)-dev//      \
+		--override s/libexpr$(EXPR_SONAME)-dev//      \
 		--override s/libgts-0.7-5-dev/libgts-dev/ \
 		$(CURDIR)/debian/libgraphviz-dev.substvars \
 		$(CURDIR)/debian/tmp/usr/lib/*.so
