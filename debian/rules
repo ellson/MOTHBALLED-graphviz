@@ -257,7 +257,7 @@ binary-arch: build install
 	dh_strip -a
 	dh_compress -a
 	dh_fixperms -a
-	dh_makeshlibs -plibgraphviz$(GRAPHVIZ_SONAME) -V "libgraphviz4 (>= 2.18)'
+	dh_makeshlibs -plibgraphviz$(GRAPHVIZ_SONAME) -V 'libgraphviz4 (>= 2.18)'
 	dh_installdeb -a
 	dh_shlibdeps -a -L libgraphviz$(GRAPHVIZ_SONAME) $(CURDIR)/debian/libgraphviz$(GRAPHVIZ_SONAME)/usr/lib
 	dh_gencontrol -a -- -VF:OCamlABI="$(OCAMLABI)"
