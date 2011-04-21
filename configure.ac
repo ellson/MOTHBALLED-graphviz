@@ -26,8 +26,8 @@ AC_SUBST(GRAPHVIZ_VERSION_MICRO)
 VERSION_DATE=`date -u +%Y%m%d.%H%M`
 AC_SUBST(VERSION_DATE)
 
-#NB: "development" on the next line gets changed to "stable" when building a release
-GRAPHVIZ_COLLECTION=development
+#NB: "stable" on the next line gets changed to "development" when building a development release
+GRAPHVIZ_COLLECTION=stable
 
 GRAPHVIZ_SOURCES=graphviz/$GRAPHVIZ_COLLECTION/SOURCES
 AC_SUBST(GRAPHVIZ_COLLECTION)
