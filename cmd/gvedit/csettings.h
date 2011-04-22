@@ -64,6 +64,7 @@ private:
     bool loadRenderers();
     void refreshContent();
     void saveContent();
+    void doPreview(QString);
     void setActiveWindow(MdiChild* m);
     bool loadGraph(MdiChild* m);
     bool createLayout();

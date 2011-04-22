@@ -32,32 +32,32 @@
 
 
 #ifdef WIN32_DLL
-__declspec(dllimport) boolean MemTest;
+__declspec(dllimport)
+boolean MemTest;
 /*gvc.lib cgraph.lib*/
 #ifdef WITH_CGRAPH
-    #pragma comment( lib, "cgraph.lib" )
+#pragma comment( lib, "cgraph.lib" )
 #else
-    #pragma comment( lib, "graph.lib" )
-    #pragma comment( lib, "ingraphs.lib" )
-    #pragma comment( lib, "gvc.lib" )
-    #pragma comment( lib, "glib-2.0.lib" )
-    #pragma comment( lib, "pango-1.0.lib" )
-    #pragma comment( lib, "pangocairo-1.0.lib" )
-    #pragma comment( lib, "cairo.lib" )
-    #pragma comment( lib, "gobject-2.0.lib" )
+#pragma comment( lib, "graph.lib" )
+#pragma comment( lib, "ingraphs.lib" )
+#pragma comment( lib, "gvc.lib" )
+#pragma comment( lib, "glib-2.0.lib" )
+#pragma comment( lib, "pango-1.0.lib" )
+#pragma comment( lib, "pangocairo-1.0.lib" )
+#pragma comment( lib, "cairo.lib" )
+#pragma comment( lib, "gobject-2.0.lib" )
 
 #endif
-    #pragma comment( lib, "gvc.lib" )
+#pragma comment( lib, "gvc.lib" )
 #endif
 
-static char* cmd;
+static char *cmd;
 
 extern int Verbose;
 
-QTextStream errout (stderr, QIODevice::WriteOnly);
+QTextStream errout(stderr, QIODevice::WriteOnly);
 
-static char *useString =
-    "Usage: gvedit [-v?] <files>\n\
+static char *useString = "Usage: gvedit [-v?] <files>\n\
   -v - verbose\n\
   -? - print usage\n";
 
@@ -81,7 +81,8 @@ static char **parseArgs(int argc, char *argv[])
 	    if (optopt == '?')
 		usage(0);
 	    else
-		errout << cmd << " : option -" << ((char)optopt) << " unrecognized - ignored\n" << flush;
+		errout << cmd << " : option -" << ((char) optopt) <<
+		    " unrecognized - ignored\n" << flush;
 	    break;
 	}
     }
@@ -101,11 +102,11 @@ int main(int argc, char *argv[])
     int ret;
 
     QApplication app(argc, argv);
-    char** files = parseArgs (argc, argv);
+    char **files = parseArgs(argc, argv);
     CMainWindow mainWin;
     if (files)
 	while (*files) {
-	    mainWin.addFile (QString(*files));
+	    mainWin.addFile(QString(*files));
 	    files++;
 	}
     mainWin.show();

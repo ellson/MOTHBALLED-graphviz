@@ -79,9 +79,7 @@ private:
     MdiChild* prevChild;
     QMdiSubWindow *findMdiChild(const QString &fileName);
     QSignalMapper *windowMapper;
-
-
-
+    int dfltRenderIdx, dfltLayoutIdx;
 
     QToolBar *tbFile;
     QToolBar *tbEdit;
