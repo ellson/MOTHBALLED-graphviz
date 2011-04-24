@@ -61,6 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				OutputFile="c:/graphviz-ms/bin/$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="C:\graphviz-ms\bin;"
 				GenerateDebugInformation="true"
@@ -131,6 +132,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				OutputFile="c:/graphviz-ms/bin/$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="C:\graphviz-ms\bin;"
 				GenerateDebugInformation="true"
@@ -204,11 +206,11 @@
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\debug\BuildLog.htm"
+			RelativePath=".\release\BuildLog.htm"
 			>
 		</File>
 		<File
-			RelativePath=".\release\BuildLog.htm"
+			RelativePath=".\debug\BuildLog.htm"
 			>
 		</File>
 	</Files>
