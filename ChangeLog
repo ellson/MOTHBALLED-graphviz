@@ -1,4 +1,5 @@
 	- Add gvmap, cluster and gvmap.sh
+	- Deprecate dotty; prefer gvedit
 	- Add patchwork supporting squarified tree maps
 	- Add ordering as a node attribute
 	- Fix problems with font resolution
