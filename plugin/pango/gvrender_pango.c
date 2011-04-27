@@ -292,7 +292,9 @@ cairogen_polygon(GVJ_t * job, pointf * A, int n, int filled)
     cairo_t *cr = (cairo_t *) job->context;
     int i;
 
+    cairo_save(cr);
     cairogen_set_penstyle(job, cr);
+    cairo_set_line_join(cr, CAIRO_LINE_JOIN_ROUND);
 
     cairo_move_to(cr, A[0].x, -A[0].y);
     for (i = 1; i < n; i++)
@@ -304,6 +306,7 @@ cairogen_polygon(GVJ_t * job, pointf * A, int n, int filled)
     }
     cairogen_set_color(cr, &(obj->pencolor));
     cairo_stroke(cr);
+    cairo_restore(cr);
 }
 
 static void
