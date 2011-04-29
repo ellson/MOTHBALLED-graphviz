@@ -73,6 +73,7 @@ char **Files;
 int verbose;
 int printMode = INTERNAL;
 int useClusters = 0;
+int doEdges = 1;		/* induce edges */
 int doAll = 1;			/* induce subgraphs */
 char *suffix = 0;
 char *outfile = 0;
@@ -86,11 +87,12 @@ int x_final = -1;  /* require 0 <= x_index <= x_final or x_final= -1 */
 char *x_node;
 
 static char *useString =
-    "Usage: ccomps [-svnCx?] [-X[#]s[-f]] [-o<out template>] <files>\n\
+    "Usage: ccomps [-svenCx?] [-X[#]s[-f]] [-o<out template>] <files>\n\
   -s - silent\n\
   -x - external\n\
   -X - extract component\n\
   -C - use clusters\n\
+  -e - do not induce edges\n\
   -n - do not induce subgraphs\n\
   -v - verbose\n\
   -o - output file template\n\
@@ -136,7 +138,7 @@ static void init(int argc, char *argv[])
 
     Cmd = argv[0];
     opterr = 0;
-    while ((c = getopt(argc, argv, ":zo:xCX:nsv")) != -1) {
+    while ((c = getopt(argc, argv, ":zo:xCX:nesv")) != -1) {
 	switch (c) {
 	case 'o':
 	    outfile = optarg;
@@ -144,6 +146,9 @@ static void init(int argc, char *argv[])
 	    break;
 	case 'C':
 	    useClusters = 1;
+	    break;
+	case 'e':
+	    doEdges = 0;
 	    break;
 	case 'n':
 	    doAll = 0;
@@ -419,7 +424,7 @@ static Agraph_t *projectG(Agraph_t * subg, Agraph_t * g, int inCluster)
 	proj = agsubg(g, agnameof(subg), 1);
     }
     if (proj) {
-	nodeInduce(proj, subg);
+	if (doEdges) nodeInduce(proj, subg);
 	agcopyattr(subg, proj);
     }
 
@@ -600,7 +605,7 @@ printSorted (Agraph_t* root, int c_cnt)
 /* processClusters:
  * Return 0 if graph is connected.
  */
-static int processClusters(Agraph_t * g)
+static int processClusters(Agraph_t * g, char* graphName)
 {
     Agraph_t *dg;
     long n_cnt, c_cnt, e_cnt;
@@ -620,8 +625,8 @@ static int processClusters(Agraph_t * g)
 		    x_node, agnameof(g));
 	    return 1;
 	}
-	name = getBuf(sizeof(PFX1) + strlen(agnameof(g)));
-	sprintf(name, PFX1, agnameof(g));
+	name = getBuf(sizeof(PFX1) + strlen(graphName));
+	sprintf(name, PFX1, graphName);
 	dout = agsubg(dg, name, 1);
 	out = agsubg(g, name, 1);
 	aginit(out, AGRAPH, "graphinfo", sizeof(Agraphinfo_t), TRUE);
@@ -629,7 +634,10 @@ static int processClusters(Agraph_t * g)
 	dn = ND_dn(n);
 	n_cnt = dfs(dg, dn, dout);
 	unionNodes(dout, out);
-	e_cnt = nodeInduce(out, out->root);
+	if (doEdges)
+	    e_cnt = nodeInduce(out, out->root);
+	else
+	    e_cnt = 0;
 	if (doAll)
 	    subGInduce(g, out);
 	gwrite(out);
@@ -642,15 +650,18 @@ static int processClusters(Agraph_t * g)
     for (dn = agfstnode(dg); dn; dn = agnxtnode(dg, dn)) {
 	if (ND_mark(dn))
 	    continue;
-	name = getBuf(sizeof(PFX2) + strlen(agnameof(g)) + 32);
-	sprintf(name, "%s_component_%ld", agnameof(g), c_cnt);
+	name = getBuf(sizeof(PFX2) + strlen(graphName) + 32);
+	sprintf(name, PFX2, graphName, c_cnt);
 	dout = agsubg(dg, name, 1);
 	out = agsubg(g, name, 1);
 	aginit(out, AGRAPH, "graphinfo", sizeof(Agraphinfo_t), TRUE);
 	GD_cc_subg(out) = 1;
 	n_cnt = dfs(dg, dn, dout);
 	unionNodes(dout, out);
-	e_cnt = nodeInduce(out, out->root);
+	if (doEdges)
+	    e_cnt = nodeInduce(out, out->root);
+	else
+	    e_cnt = 0;
 	if (printMode == EXTERNAL) {
 	    if (doAll)
 		subGInduce(g, out);
@@ -708,7 +719,7 @@ bindGraphinfo (Agraph_t * g)
 /* process:
  * Return 0 if graph is connected.
  */
-static int process(Agraph_t * g)
+static int process(Agraph_t * g, char* graphName)
 {
     long n_cnt, c_cnt, e_cnt;
     char *name;
@@ -721,7 +732,7 @@ static int process(Agraph_t * g)
     initStk();
 
     if (useClusters)
-	return processClusters(g);
+	return processClusters(g, graphName);
 
     if (x_node) {
 	n = agfindnode(g, x_node);
@@ -731,13 +742,16 @@ static int process(Agraph_t * g)
 		    x_node, agnameof(g));
 	    return 1;
 	}
-	name = getBuf(sizeof(PFX1) + strlen(agnameof(g)));
-	sprintf(name, PFX1, agnameof(g));
+	name = getBuf(sizeof(PFX1) + strlen(graphName));
+	sprintf(name, PFX1, graphName);
 	out = agsubg(g, name, 1);
 	aginit(out, AGRAPH, "graphinfo", sizeof(Agraphinfo_t), TRUE);
 	GD_cc_subg(out) = 1;
 	n_cnt = dfs(g, n, out);
-	e_cnt = nodeInduce(out, out->root);
+	if (doEdges)
+	    e_cnt = nodeInduce(out, out->root);
+	else
+	    e_cnt = 0;
 	if (doAll)
 	    subGInduce(g, out);
 	gwrite(out);
@@ -750,13 +764,16 @@ static int process(Agraph_t * g)
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (ND_mark(n))
 	    continue;
-	name = getBuf(sizeof(PFX2) + strlen(agnameof(g)) + 32);
-	sprintf(name, "%s_component_%ld", agnameof(g), c_cnt);
+	name = getBuf(sizeof(PFX2) + strlen(graphName) + 32);
+	sprintf(name, PFX2, graphName, c_cnt);
 	out = agsubg(g, name, 1);
 	aginit(out, AGRAPH, "graphinfo", sizeof(Agraphinfo_t), TRUE);
 	GD_cc_subg(out) = 1;
 	n_cnt = dfs(g, n, out);
-	e_cnt = nodeInduce(out, out->root);
+	if (doEdges)
+	    e_cnt = nodeInduce(out, out->root);
+	else
+	    e_cnt = 0;
 	if (printMode == EXTERNAL) {
 	    if (doAll)
 		subGInduce(g, out);
@@ -801,6 +818,37 @@ static Agraph_t *gread(FILE * fp)
     return agread(fp, (Agdisc_t *) 0);
 }
 
+/* chkGraphName:
+ * If the graph is anonymous, its name starts with '%'.
+ * If we use this as the prefix for subgraphs, they will not be
+ * emitted in agwrite() because cgraph assumes these were anonymous
+ * structural subgraphs all of whose properties are attached directly
+ * to the nodes and edges involved.
+ *
+ * This function checks for an initial '%' and if found, prepends '_'
+ * the the graph name.
+ * NB: static buffer is used.
+ */
+static char*
+chkGraphName (Agraph_t* g)
+{
+    static char* buf = NULL;
+    static int buflen = 0;
+    char* s = agnameof(g);
+    int len;
+
+    if (*s != '%') return s;
+    len = strlen(s) + 2;   /* plus '\0' and '_' */
+    if (len > buflen) {
+	buf = realloc (buf, len);
+	buflen = len;
+    }
+    buf[0] = '_';
+    strcpy (buf+1, s);
+
+    return buf;
+}
+
 int main(int argc, char *argv[])
 {
     Agraph_t *g;
@@ -810,7 +858,7 @@ int main(int argc, char *argv[])
     newIngraph(&ig, Files, gread);
 
     while ((g = nextGraph(&ig)) != 0) {
-	r += process(g);
+	r += process(g, chkGraphName(g));
 	agclose(g);
     }
 
