@@ -33,9 +33,9 @@ computing the clustering.
 The following options are supported:
 .TP
 .BI \-C k 
-specifies that no more than \fIk\fP clusters should be generated.
-The specified number of clusters \fIk\fP is only a suggestion and may not be realisable. 
-If \fIk == 0\fP, the default, there is no limit on the number of clusters.
+specifies a targeted number of clusters that should be generated.
+The specified number \fIk\fP is only a suggestion and may not be realisable. 
+If \fIk == 0\fP, the default, the number of clusters that approximately optimizes the modularity is returned.
 .TP
 .BI \-o outfile 
 Specifies that output should go into the file \fIoutfile\fP. By default,

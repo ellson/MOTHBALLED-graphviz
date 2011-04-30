@@ -16,6 +16,8 @@
 #include "SparseMatrix.h"
 #include "clustering.h"
 
+
+
 Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_init(SparseMatrix A, int level){
   Multilevel_Modularity_Clustering grid;
   int n = A->n, i, j;
@@ -36,6 +38,7 @@ Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_init(SparseMat
   grid->delete_top_level_A = FALSE;
   grid->matching = MALLOC(sizeof(real)*(n));
   grid->deg = NULL;
+  grid->agglomerate_regardless = FALSE;
 
   if (level == 0){
     real modularity = 0;
@@ -90,7 +93,7 @@ void Multilevel_Modularity_Clustering_delete(Multilevel_Modularity_Clustering gr
   FREE(grid);
 }
 
-Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_establish(Multilevel_Modularity_Clustering grid, int maxcluster){
+Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_establish(Multilevel_Modularity_Clustering grid, int ncluster_target){
   int *matching = grid->matching;
   SparseMatrix A = grid->A;
   int n = grid->n, level = grid->level, nc = 0;
@@ -153,24 +156,24 @@ Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_establish(Mult
 	  gain = -1;
 	}
       }
-      if (j == ia[i] || gain > maxgain){
+      if (jmax < 0 || gain > maxgain){
 	maxgain = gain;
-	jmax = jj;
-      }
+        jmax = jj;
+      } 
 
     }
 
     /* now merge i and jmax */
-    if (maxgain > 0 || (nc >= 1 && nc > maxcluster)){
+    if (maxgain > 0 || grid->agglomerate_regardless){
       total_gain += maxgain;
       jc = matching[jmax];
       if (jc == UNMATCHED){
-	//     printf("maxgain=%f, merge %d, %d\n",maxgain, i, jmax);
+	//fprintf(stderr, "maxgain=%f, merge %d, %d\n",maxgain, i, jmax);
 	matching[i] = matching[jmax] = nc;
 	deg_new[nc] = deg[i] + deg[jmax];
 	nc++;
       } else {
-	//	printf("maxgain=%f, merge with existing cluster %d, %d\n",maxgain, i, jc);
+	//fprintf(stderr, "maxgain=%f, merge with existing cluster %d, %d\n",maxgain, i, jc);
 	deg_new[jc] += deg[i];
 	matching[i] = jc;
       }
@@ -185,6 +188,25 @@ Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_establish(Mult
 
   if (Verbose) fprintf(stderr,"modularity = %f new modularity = %f level = %d, n = %d, nc = %d, gain = %g\n", modularity, modularity + total_gain, 
 		       level, n, nc, total_gain);
+
+  /* !!!!!!!!!!!!!!!!!!!!!! */
+  if (ncluster_target > 0){
+    if (nc <= ncluster_target && n >= ncluster_target){
+      if (n - ncluster_target > ncluster_target - nc){/* ncluster = nc */
+
+      } else if (n - ncluster_target <= ncluster_target - nc){/* ncluster_target close to n */
+	fprintf(stderr,"ncluster_target = %d, close to n=%d\n", ncluster_target, n);
+	for (i = 0; i < n; i++) matching[i] = i;
+	FREE(deg_new);
+	goto RETURN;
+      }
+    } else if (n < ncluster_target){
+      fprintf(stderr,"n < target\n");
+      for (i = 0; i < n; i++) matching[i] = i;
+      FREE(deg_new);
+      goto RETURN;
+    }
+  }
 
   if (nc >= 1 && (total_gain > 0 || nc < n)){
     /* now set up restriction and prolongation operator */
@@ -213,10 +235,18 @@ Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_establish(Mult
     cgrid->deg = deg_new;
     cgrid->modularity = grid->modularity + total_gain;
     cgrid->deg_total = grid->deg_total;
-    cgrid = Multilevel_Modularity_Clustering_establish(cgrid, maxcluster);
+    cgrid = Multilevel_Modularity_Clustering_establish(cgrid, ncluster_target);
     grid->next = cgrid;
     cgrid->prev = grid;
   } else {
+    /* if we want a small number of cluster but right now we have too many, we will force agglomeration */
+    if (ncluster_target > 0 && nc > ncluster_target && !(grid->agglomerate_regardless)){
+      grid->agglomerate_regardless = TRUE;
+      FREE(deg_inter);
+      FREE(mask);
+      FREE(deg_new);
+      return Multilevel_Modularity_Clustering_establish(grid, ncluster_target);
+    }
     /* no more improvement, stop and final clustering found */
     for (i = 0; i < n; i++) matching[i] = i;
     FREE(deg_new);
@@ -228,31 +258,43 @@ Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_establish(Mult
   return grid;
 }
 
-Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_new(SparseMatrix A0, int maxcluster){
-  /* maxcluster is used to specify the maximum number of cluster desired, e.g., maxcluster=10 means that a maximum of 10 clusters
-     is desired. this may not always be realized, and modularity may be low when this is specified. Default: maxcluster = 0 */
+Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_new(SparseMatrix A0, int ncluster_target){
+  /* ncluster_target is used to specify the target number of cluster desired, e.g., ncluster_target=10 means that around 10 clusters
+     is desired. The resulting clustering will give as close to this number as possible.
+     If this number != the optimal number of clusters, the resulting modularity may be lower, or equal to, the optimal modularity.
+     .  Agglomeration will be forced even if that reduces the modularity when there are too many clusters. It will stop when nc <= ncluster_target <= nc2,
+     .  where nc and nc2 are the number of clusters in the current and next level of clustering. The final cluster number will be
+     .  selected among nc or nc2, which ever is closer to ncluster_target.
+     Default: ncluster_target <= 0 */
+
   Multilevel_Modularity_Clustering grid;
   SparseMatrix A = A0;
 
-  if (maxcluster <= 0) maxcluster = A->m;
   if (!SparseMatrix_is_symmetric(A, FALSE) || A->type != MATRIX_TYPE_REAL){
     A = SparseMatrix_get_real_adjacency_matrix_symmetrized(A);
   }
   grid = Multilevel_Modularity_Clustering_init(A, 0);
 
-  grid = Multilevel_Modularity_Clustering_establish(grid, maxcluster);
+  grid = Multilevel_Modularity_Clustering_establish(grid, ncluster_target);
 
   if (A != A0) grid->delete_top_level_A = TRUE;/* be sure to clean up later */
   return grid;
 }
 
 
-static void hierachical_modularity_clustering(SparseMatrix A, int maxcluster,
+static void hierachical_modularity_clustering(SparseMatrix A, int ncluster_target,
 					      int *nclusters, int **assignment, real *modularity, int *flag){
   /* find a clustering of vertices by maximize modularity
      A: symmetric square matrix n x n. If real value, value will be used as edges weights, otherwise edge weights are considered as 1.
-     maxcluster: used to specify the maximum number of cluster desired, e.g., maxcluster=10 means that a maximum of 10 clusters
-     .   is desired. this may not always be realized, and modularity may be low when this is specified. Default: maxcluster = 0 
+
+     ncluster_target: is used to specify the target number of cluster desired, e.g., ncluster_target=10 means that around 10 clusters 
+     is desired. The resulting clustering will give as close to this number as possible.                                                                                                 
+     If this number != the optimal number of clusters, the resulting modularity may be lower, or equal to, the optimal modularity.                                                      
+     .  Agglomeration will be forced even if that reduces the modularity when there are too many clusters. It will stop when nc <= ncluster_target <= nc2,                                   
+     .  where nc and nc2 are the number of clusters in the current and next level of clustering. The final cluster number will be                                                     
+     .  selected among nc or nc2, which ever is closer to ncluster_target.                                                                                                                  
+     Default: ncluster_target <= 0 
+
      nclusters: on output the number of clusters
      assignment: dimension n. Node i is assigned to cluster "assignment[i]". 0 <= assignment < nclusters
    */
@@ -267,7 +309,7 @@ static void hierachical_modularity_clustering(SparseMatrix A, int maxcluster,
 
   *flag = 0;
 
-  grid = Multilevel_Modularity_Clustering_new(A, maxcluster);
+  grid = Multilevel_Modularity_Clustering_new(A, ncluster_target);
 
   /* find coarsest */
   cgrid = grid;
@@ -305,13 +347,18 @@ static void hierachical_modularity_clustering(SparseMatrix A, int maxcluster,
 
 
 
-void modularity_clustering(SparseMatrix A, int inplace, int maxcluster, int use_value,
+void modularity_clustering(SparseMatrix A, int inplace, int ncluster_target, int use_value,
 			   int *nclusters, int **assignment, real *modularity, int *flag){
   /* find a clustering of vertices by maximize modularity
      A: symmetric square matrix n x n. If real value, value will be used as edges weights, otherwise edge weights are considered as 1.
      inplace: whether A can e modified. If true, A will be modified by removing diagonal.
-     maxcluster: used to specify the maximum number of cluster desired, e.g., maxcluster=10 means that a maximum of 10 clusters
-     .   is desired. this may not always be realized, and modularity may be low when this is specified. Default: maxcluster = 0 
+     ncluster_target: is used to specify the target number of cluster desired, e.g., ncluster_target=10 means that around 10 clusters
+     is desired. The resulting clustering will give as close to this number as possible.
+     If this number != the optimal number of clusters, the resulting modularity may be lower, or equal to, the optimal modularity.
+     .  Agglomeration will be forced even if that reduces the modularity when there are too many clusters. It will stop when nc <= ncluster_target <= nc2,
+     .  where nc and nc2 are the number of clusters in the current and next level of clustering. The final cluster number will be
+     .  selected among nc or nc2, which ever is closer to ncluster_target.
+     Default: ncluster_target <= 0 
      nclusters: on output the number of clusters
      assignment: dimension n. Node i is assigned to cluster "assignment[i]". 0 <= assignment < nclusters
    */
@@ -331,7 +378,7 @@ void modularity_clustering(SparseMatrix A, int inplace, int maxcluster, int use_
 
   if (B->type != MATRIX_TYPE_REAL || !use_value) B = SparseMatrix_set_entries_to_real_one(B);
 
-  hierachical_modularity_clustering(B, maxcluster, nclusters, assignment, modularity, flag);
+  hierachical_modularity_clustering(B, ncluster_target, nclusters, assignment, modularity, flag);
 
   if (B != A) SparseMatrix_delete(B);
 
