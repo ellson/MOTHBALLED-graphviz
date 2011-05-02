@@ -211,6 +211,7 @@ void CMainWindow::addFile(QString fileName)
 	if (child->loadFile(fileName)) {
 	    statusBar()->showMessage(tr("File loaded"), 2000);
 	    child->show();
+		slotRun();
 	} else {
 	    child->close();
 	}
@@ -294,10 +295,10 @@ void CMainWindow::slotRun()
 	errorPipe((char *) msg.toAscii().constData());
 	prevChild = activeMdiChild();
     }
-    if ((activeMdiChild()) && (!activeMdiChild()->firstTime()))
+//    if ((activeMdiChild()) && (!activeMdiChild()->firstTime()))
 	frmSettings->runSettings(activeMdiChild());
-    if ((activeMdiChild()) && (activeMdiChild()->firstTime()))
-	frmSettings->showSettings(activeMdiChild());
+//    if ((activeMdiChild()) && (activeMdiChild()->firstTime()))
+//	frmSettings->showSettings(activeMdiChild());
 
 
 }

@@ -444,6 +444,10 @@ int CFrmSettings::drawGraph()
 
 int CFrmSettings::runSettings(MdiChild * m)
 {
+	if (this->loadGraph(m))
+	    return drawGraph();
+
+
     if ((m) && (m == getActiveWindow())) {
 	if (this->loadGraph(m))
 	    return drawGraph();
