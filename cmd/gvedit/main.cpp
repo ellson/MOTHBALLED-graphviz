@@ -29,6 +29,8 @@
 #else
 #include "compat_getopt.h"
 #endif
+#include "gvc.h"
+#include "globals.h"
 
 
 #ifdef WIN32_DLL
@@ -53,7 +55,7 @@ boolean MemTest;
 
 static char *cmd;
 
-extern int Verbose;
+//extern int Verbose;
 
 QTextStream errout(stderr, QIODevice::WriteOnly);
 
