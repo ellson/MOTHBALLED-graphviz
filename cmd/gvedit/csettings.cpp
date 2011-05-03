@@ -323,7 +323,15 @@ bool CFrmSettings::createLayout()
 	return false;
     }
     Agraph_t *G = this->graph;
-    gvLayout(gvc, G, (char *) WIDGET(QComboBox, cbLayout)->currentText().toUtf8().constData());	/* library function */
+    QString layout;
+
+    if(agfindattr(agprotonode(G), "pos"))
+	layout="nop2";
+    else
+	layout=WIDGET(QComboBox, cbLayout)->currentText();
+
+
+    gvLayout(gvc, G, (char *)layout.toUtf8().constData());	/* library function */
     return true;
 }
 
