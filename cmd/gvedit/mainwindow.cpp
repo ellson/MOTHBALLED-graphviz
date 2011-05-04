@@ -211,7 +211,10 @@ void CMainWindow::addFile(QString fileName)
 	if (child->loadFile(fileName)) {
 	    statusBar()->showMessage(tr("File loaded"), 2000);
 	    child->show();
+	    if (activeMdiChild())
 		slotRun();
+	    else
+		slotRun(child);
 	} else {
 	    child->close();
 	}
@@ -269,8 +272,7 @@ void CMainWindow::slotAbout()
 			  "Version:1.01"));
 }
 
-
-void CMainWindow::slotSettings()
+void CMainWindow::setChild ()
 {
     if (prevChild != activeMdiChild()) {
 	QString msg;
@@ -284,23 +286,28 @@ void CMainWindow::slotSettings()
 
 }
 
+void CMainWindow::slotSettings()
+{
+    setChild ();
+    frmSettings->showSettings(activeMdiChild());
+
+}
+
 void CMainWindow::slotRun()
 {
+    setChild ();
 
-    if (prevChild != activeMdiChild()) {
-	QString msg;
-	msg.append("working on ");
-	msg.append(activeMdiChild()->currentFile());
-	msg.append("\n");
-	errorPipe((char *) msg.toAscii().constData());
-	prevChild = activeMdiChild();
-    }
 //    if ((activeMdiChild()) && (!activeMdiChild()->firstTime()))
-	frmSettings->runSettings(activeMdiChild());
+    frmSettings->runSettings(activeMdiChild());
 //    if ((activeMdiChild()) && (activeMdiChild()->firstTime()))
 //	frmSettings->showSettings(activeMdiChild());
 
 
+}
+
+void CMainWindow::slotRun(MdiChild* m)
+{
+    frmSettings->runSettings(m);
 }
 
 void CMainWindow::slotNewLog()

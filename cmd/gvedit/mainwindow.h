@@ -65,6 +65,8 @@ protected:
 
 
 private:
+    void setChild();
+    void slotRun(MdiChild*);
     void createConsole();
     void actions();
     void menus();
