@@ -282,15 +282,12 @@ void CMainWindow::setChild ()
 	errorPipe((char *) msg.toAscii().constData());
 	prevChild = activeMdiChild();
     }
-    frmSettings->showSettings(activeMdiChild());
-
 }
 
 void CMainWindow::slotSettings()
 {
     setChild ();
     frmSettings->showSettings(activeMdiChild());
-
 }
 
 void CMainWindow::slotRun()
