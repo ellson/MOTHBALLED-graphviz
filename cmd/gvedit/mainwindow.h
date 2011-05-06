@@ -22,6 +22,7 @@ These examples are published under the terms of the BSD
 #include <QMainWindow>
 #include <QTextStream>
 #include "ui_settings.h"
+#include <vector>
 
 extern QTextStream errout;
 
@@ -40,12 +41,13 @@ class CMainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    CMainWindow();
+    CMainWindow(char*** Files=NULL);
     QMdiArea *mdiArea;
     void addFile (QString fileName);
+    std::vector <QString> initFiles;
 private slots:
     void slotSettings();
-    void slotRun();
+    void slotRun(MdiChild * m=NULL);
     void slotNew();
     void slotOpen();
     void slotSave();
@@ -66,7 +68,6 @@ protected:
 
 private:
     void setChild();
-    void slotRun(MdiChild*);
     void createConsole();
     void actions();
     void menus();

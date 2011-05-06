@@ -105,12 +105,7 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
     char **files = parseArgs(argc, argv);
-    CMainWindow mainWin;
-    if (files)
-	while (*files) {
-	    mainWin.addFile(QString(*files));
-	    files++;
-	}
+    CMainWindow mainWin(&files);
     mainWin.show();
     ret = app.exec();
     return ret;

@@ -122,7 +122,7 @@ static char *xtra[] = {
     (char *) 0
 };
 
-CMainWindow::CMainWindow()
+CMainWindow::CMainWindow(char*** Files)
 {
 
     QWidget *centralwidget = new QWidget(this);
@@ -178,6 +178,16 @@ CMainWindow::CMainWindow()
 	LoadPlugins(cb, frmSettings->gvc, "device", xtra, "png");
     statusBar()->showMessage(tr("Ready"));
     setWindowIcon(QIcon(":/images/icon.png"));
+    //load files specified in command line , one time task
+    char** files=*Files;
+    if (files)
+	while (*files) {
+	    addFile(QString(*files));
+	    files++;
+	}
+
+
+
 }
 
 void CMainWindow::closeEvent(QCloseEvent * event)
@@ -211,10 +221,7 @@ void CMainWindow::addFile(QString fileName)
 	if (child->loadFile(fileName)) {
 	    statusBar()->showMessage(tr("File loaded"), 2000);
 	    child->show();
-	    if (activeMdiChild())
-		slotRun();
-	    else
-		slotRun(child);
+	    slotRun(child);
 	} else {
 	    child->close();
 	}
@@ -290,22 +297,24 @@ void CMainWindow::slotSettings()
     frmSettings->showSettings(activeMdiChild());
 }
 
-void CMainWindow::slotRun()
+void CMainWindow::slotRun(MdiChild * m)
 {
     setChild ();
 
+    
+    
 //    if ((activeMdiChild()) && (!activeMdiChild()->firstTime()))
-    frmSettings->runSettings(activeMdiChild());
+    if(m)
+	frmSettings->runSettings(m);
+    else
+	frmSettings->runSettings(activeMdiChild());
 //    if ((activeMdiChild()) && (activeMdiChild()->firstTime()))
 //	frmSettings->showSettings(activeMdiChild());
 
 
 }
 
-void CMainWindow::slotRun(MdiChild* m)
-{
-    frmSettings->runSettings(m);
-}
+
 
 void CMainWindow::slotNewLog()
 {
