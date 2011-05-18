@@ -348,6 +348,7 @@ elist : elist elistitem
 
 elistitem : SOURCE INTEGER { E->source = $2; }
           | TARGET INTEGER { E->target = $2; }
+	  | ID INTEGER { E->id = $2; }
           | alistitem { dtinsert (E->attrlist, $1); }
           ;
 
@@ -367,6 +368,7 @@ alistitem : NAME INTEGER { $$ = mkAttr ($1, 0, INTEGER, $2, 0); }
           | NAME STRING  { $$ = mkAttr ($1, 0, STRING, $2, 0); }
           | NAME attrlist  { $$ = mkAttr ($1, 0, LIST, 0, $2); }
           | XVAL REAL  { $$ = mkAttr (0, XVAL, REAL, $2, 0); }
+          | XVAL INTEGER  { $$ = mkAttr (0, XVAL, REAL, $2, 0); }
           | YVAL REAL  { $$ = mkAttr (0, YVAL, REAL, $2, 0); }
           | WVAL REAL  { $$ = mkAttr (0, WVAL, REAL, $2, 0); }
           | HVAL REAL  { $$ = mkAttr (0, HVAL, REAL, $2, 0); }
@@ -378,7 +380,7 @@ alistitem : NAME INTEGER { $$ = mkAttr ($1, 0, INTEGER, $2, 0); }
           | OUTLINE STRING  { $$ = mkAttr (0, OUTLINE, STRING, $2, 0); }
           | OUTLINESTYLE STRING  { $$ = mkAttr (0, OUTLINESTYLE, STRING, $2, 0); }
           | OUTLINEWIDTH INTEGER  { $$ = mkAttr (0, OUTLINEWIDTH, INTEGER, $2, 0); }
-          | WIDTH INTEGER  { $$ = mkAttr (0, OUTLINEWIDTH, INTEGER, $2, 0); }
+          | WIDTH REAL  { $$ = mkAttr (0, OUTLINEWIDTH, REAL, $2, 0); }
           | STYLE STRING  { $$ = mkAttr (0, STYLE, STRING, $2, 0); }
           | STYLE attrlist  { $$ = mkAttr (0, STYLE, LIST, 0, $2); }
           | LINE attrlist  { $$ = mkAttr (0, LINE, LIST, 0, $2); }
@@ -647,7 +649,7 @@ addEdgePos (Agedge_t* ep, Dt_t* alist, agxbuf* xb)
 {
     gmlattr* ap;
     
-
+    if (!alist) return;
     for (ap = dtfirst(alist); ap; ap = dtnext (alist, ap)) {
 	if (ap->sort == POINT) {
 	    addEdgePoint (ep, ap->u.lp, xb);
