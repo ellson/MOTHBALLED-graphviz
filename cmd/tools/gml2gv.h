@@ -29,7 +29,6 @@ typedef struct {
     Dtlink_t link;
     char* source;
     char* target;
-    char* id;
     Dt_t* attrlist;  
 } gmledge;
 
