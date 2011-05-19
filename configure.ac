@@ -676,7 +676,7 @@ else
       if test "x$GUILE" = "x"; then
         use_guile="No (guile not available)"
       else
-        GUILE_VERSION=`$GUILE --version | head -1 | cut -d ' ' -f 2`
+        [GUILE_VERSION=`$GUILE --version | sed -n '1 s/^.* \+\([0-9\.]\+\)$/\1/ p'`]
         GUILE_VERSION_MAJOR=`echo $GUILE_VERSION | cut -d '.' -f 1`
         GUILE_VERSION_MINOR=`echo $GUILE_VERSION | cut -d '.' -f 2`
         if test $GUILE_VERSION_MAJOR -lt 2; then
@@ -693,10 +693,18 @@ else
         else
           GUILE_INCLUDES=
           GUILE_LIBS=
+          PKG_CHECK_MODULES([GUILE], [guile-$GUILE_VERSION_MAJOR.$GUILE_VERSION_MINOR])
+          GUILE_INCLUDES="$GUILE_CFLAGS"
+          ac_save_CFLAGS="$CFLAGS"
+          ac_save_CPPFLAGS="$CPPFLAGS"
+          CFLAGS="$CFLAGS $GUILE_INCLUDES"
+          CPPFLAGS="$CPPFLAGS $GUILE_INCLUDES"
           AC_CHECK_HEADER(libguile.h,,[
             use_guile="No (guile header missing)"
             GUILE=
           ])
+          CFLAGS="$ac_save_CFLAGS"
+          CPPFLAGS="$ac_save_CPPFLAGS"
           if test "x$GUILE" != "x"; then
 	    use_guile="Yes"
             AC_SUBST(GUILE_INCLUDES)
