@@ -679,11 +679,11 @@ else
         [GUILE_VERSION=`$GUILE --version | sed -n '1 s/^.* \+\([0-9\.]\+\)$/\1/ p'`]
         GUILE_VERSION_MAJOR=`echo $GUILE_VERSION | cut -d '.' -f 1`
         GUILE_VERSION_MINOR=`echo $GUILE_VERSION | cut -d '.' -f 2`
-        if test $GUILE_VERSION_MAJOR -lt 2; then
-          if test $GUILE_VERSION_MAJOR -lt 1; then
+        if test 0$GUILE_VERSION_MAJOR -lt 2; then
+          if test 0$GUILE_VERSION_MAJOR -lt 1; then
             GUILE=
           else
-            if test $GUILE_VERSION_MINOR -lt 4; then
+            if test 0$GUILE_VERSION_MINOR -lt 4; then
 	      GUILE=
             fi
           fi
