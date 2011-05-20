@@ -28,6 +28,10 @@
 
 #ifdef WIN32
 #define log2(x)  (log(x)/log(2))
+#else
+#ifndef HAVE_LOG2
+#define log2(x)  (log(x)/log(2))
+#endif
 #endif
 
 /* Node types */

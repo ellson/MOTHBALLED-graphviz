@@ -12,7 +12,7 @@ html =
 txt_DATA = $(txt)
 html_DATA = $(html)
 
-pkginclude_HEADERS = graphviz_version.h
+pkginclude_HEADERS = $(top_builddir)/graphviz_version.h
 
 man_MANS = graphviz.7
 
@@ -28,10 +28,10 @@ dist-hook:
 #	rm -f ToPAS
 #	find $(distdir) -type f -exec md5sum {} >>ToPAS \;
 
-BUILT_SOURCES = graphviz_version.h
+BUILT_SOURCES = $(top_builddir)/graphviz_version.h
 
-graphviz_version.h: config.h
-	$(GREP) 'PACKAGE\|VERSION\|GVPLUGIN' config.h > graphviz_version.h
+$(top_builddir)/graphviz_version.h: config.h
+	$(GREP) 'PACKAGE\|VERSION\|GVPLUGIN' config.h > $(top_builddir)/graphviz_version.h
 
 EXTRA_DIST = $(txt) $(html) graphviz.spec.in graphviz.spec \
 	autogen.sh config/depcomp config/config.rpath \

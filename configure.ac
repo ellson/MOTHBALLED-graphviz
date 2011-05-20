@@ -431,7 +431,7 @@ AC_SUBST(MATH_LIBS)
 
 # Check for functions that might need -lm
 LIBS="$LIBS $MATH_LIBS"
-AC_CHECK_FUNCS([feenableexcept fesetenv])
+AC_CHECK_FUNCS([feenableexcept fesetenv log2])
 
 LIBS=$save_LIBS
 
