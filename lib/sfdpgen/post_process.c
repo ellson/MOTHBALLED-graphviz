@@ -412,7 +412,7 @@ static real total_distance(int m, int dim, real* x, real* y){
 
 
 void SparseStressMajorizationSmoother_delete(SparseStressMajorizationSmoother sm){
-  return StressMajorizationSmoother_delete(sm);
+  StressMajorizationSmoother_delete(sm);
 }
 
 
