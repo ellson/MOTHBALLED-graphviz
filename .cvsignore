@@ -4,6 +4,7 @@
 .libs
 po
 graphviz*.tar.gz
+graphviz_version.h
 Makefile
 Makefile.in
 Doxyfile
