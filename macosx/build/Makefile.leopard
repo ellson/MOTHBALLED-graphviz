@@ -7,7 +7,7 @@ PMSURVEY=$(CURDIR)/pmsurvey
 
 # prefix
 
-PREFIX=$HOME/FIX/Darwin.i386
+PREFIX=$(HOME)/FIX/Darwin.i386
 
 # base
 
