@@ -102,7 +102,7 @@ If no files are specified, stdin is used\n";
 
 static void usage(int v)
 {
-    printf(useString);
+    printf("%s",useString);
     exit(v);
 }
 

@@ -65,7 +65,7 @@ static char *useString = "Usage: gvedit [-v?] <files>\n\
 
 static void usage(int v)
 {
-    printf(useString);
+    printf("%s",useString);
     exit(v);
 }
 

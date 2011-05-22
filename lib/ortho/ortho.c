@@ -1520,7 +1520,7 @@ emitGraph (FILE* fp, maze* mp, int n_edges, route* route_list, epair_t es[])
     absbb.LL.x = absbb.LL.y = MAXDOUBLE;
     absbb.UR.x = absbb.UR.y = -MAXDOUBLE;
 
-    fprintf (fp, prolog2);
+    fprintf (fp, "%s", prolog2);
     fprintf (fp, "%d %d translate\n", TRANS, TRANS);
 
     fputs ("0 0 1 setrgbcolor\n", fp);
