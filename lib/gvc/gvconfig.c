@@ -49,6 +49,10 @@ static int glob (GVC_t * gvc, char*, int, int (*errfunc)(const char *, int), glo
 #endif
 #endif
 
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#endif
+
 #include        "memory.h"
 #include        "const.h"
 #include        "types.h"
@@ -293,8 +297,25 @@ char * gvconfig_libdir(GVC_t * gvc)
 	    *s = '\0';
 	    libdir = line;
 #else
-	    /* this only works on linux, other systems will get GVLIBDIR only */
-	    libdir = GVLIBDIR;
+        libdir = GVLIBDIR;	    
+#ifdef __APPLE__
+        uint32_t i, c = _dyld_image_count();
+        for (i=0; i<c; ++i) {
+            tmp = _dyld_get_image_name(i);
+            strcpy(path, tmp);
+            tmp = strstr(path, "/libgvc.");
+            if (tmp) {
+            *tmp = '\0';
+            /* Check for real /lib dir. Don't accept pre-install /.libs */
+            if (strcmp(strrchr(path,'/'), "/.libs") == 0)
+                continue;
+            strcpy(line, path);  /* use line buffer for result */
+            strcat(line, "/graphviz");  /* plugins are in "graphviz" subdirectory */
+            libdir = line;
+            break;
+            }
+        }
+#else
 	    f = fopen ("/proc/self/maps", "r");
 	    if (f) {
 		while (!feof (f)) {
@@ -319,6 +340,7 @@ char * gvconfig_libdir(GVC_t * gvc)
 		}
 		fclose (f);
 	    }
+#endif
 #endif
 	}
     }
