@@ -263,14 +263,15 @@ static void gvconfig_write_library_config(GVC_t *gvc, char *path, gvplugin_libra
 }
 
 #define BSZ 1024
+#define DOTLIBS "/.libs"
+#define STRLEN(s) (sizeof(s)-1)
 
 char * gvconfig_libdir(GVC_t * gvc)
 {
     static char line[BSZ];
     static char *libdir;
     static boolean dirShown = 0; 
-    char *path, *tmp;
-    FILE *f;
+    char *tmp;
 
     if (!libdir) {
         libdir=getenv("GVBINDIR");
@@ -297,26 +298,39 @@ char * gvconfig_libdir(GVC_t * gvc)
 	    *s = '\0';
 	    libdir = line;
 #else
-        libdir = GVLIBDIR;	    
+	    libdir = GVLIBDIR;	    
 #ifdef __APPLE__
-        uint32_t i, c = _dyld_image_count();
-        for (i=0; i<c; ++i) {
-            tmp = _dyld_get_image_name(i);
-            strcpy(path, tmp);
-            tmp = strstr(path, "/libgvc.");
-            if (tmp) {
-            *tmp = '\0';
-            /* Check for real /lib dir. Don't accept pre-install /.libs */
-            if (strcmp(strrchr(path,'/'), "/.libs") == 0)
-                continue;
-            strcpy(line, path);  /* use line buffer for result */
-            strcat(line, "/graphviz");  /* plugins are in "graphviz" subdirectory */
-            libdir = line;
-            break;
-            }
-        }
+	    uint32_t i, c = _dyld_image_count();
+	    size_t len, ind;
+	    const char* path;
+	    for (i = 0; i < c; ++i) {
+		path = _dyld_get_image_name(i);
+		tmp = strstr(path, "/libgvc.");
+		if (tmp) {
+		    if (tmp > path) {
+			/* Check for real /lib dir. Don't accept pre-install /.libs */
+			char* s = tmp-1;
+			/* back up to previous slash (or head of string) */
+			while ((*s != '/') && (s > path)) s--;
+			if (strncmp (s, DOTLIBS, STRLEN(DOTLIBS)) == 0);
+			    continue;
+		    }
+
+		    ind = tmp - path;  /* byte offset */
+		    len = ind + sizeof("/graphviz");
+		    if (len < BSZ)
+			libdir = line;
+		    else
+		        libdir = gmalloc(len);
+		    bcopy (path, libdir, ind);
+		    /* plugins are in "graphviz" subdirectory */
+		    strcpy(libdir+ind, "/graphviz");  
+		    break;
+		}
+	    }
 #else
-	    f = fopen ("/proc/self/maps", "r");
+	    FILE* f = fopen ("/proc/self/maps", "r");
+	    char* path;
 	    if (f) {
 		while (!feof (f)) {
 		    if (!fgets (line, sizeof (line), f))
