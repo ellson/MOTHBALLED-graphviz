@@ -693,7 +693,7 @@ else
         else
           GUILE_INCLUDES=
           GUILE_LIBS=
-          PKG_CHECK_MODULES([GUILE], [guile-$GUILE_VERSION_MAJOR.$GUILE_VERSION_MINOR])
+          PKG_CHECK_MODULES([GUILE], [guile-$GUILE_VERSION])
           GUILE_INCLUDES="$GUILE_CFLAGS"
           ac_save_CFLAGS="$CFLAGS"
           ac_save_CPPFLAGS="$CPPFLAGS"
