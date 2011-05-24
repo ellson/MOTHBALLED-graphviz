@@ -695,7 +695,7 @@ else
           GUILE_LIBS=
 	  # don't die if PKG_CHECK_MODULES not available - el4, el5
           PKG_CHECK_MODULES([GUILE],
-		[guile-$GUILE_VERSION],
+		[guile >= "$GUILE_VERSION_MAJOR.$GUILE_VERSION_MINOR"],
 		GUILE_INCLUDES="$GUILE_CFLAGS",
 		false)
           ac_save_CFLAGS="$CFLAGS"
