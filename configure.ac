@@ -693,8 +693,11 @@ else
         else
           GUILE_INCLUDES=
           GUILE_LIBS=
-          PKG_CHECK_MODULES([GUILE], [guile-$GUILE_VERSION])
-          GUILE_INCLUDES="$GUILE_CFLAGS"
+	  # don't die if PKG_CHECK_MODULES not available - el4, el5
+          PKG_CHECK_MODULES([GUILE],
+		[guile-$GUILE_VERSION],
+		GUILE_INCLUDES="$GUILE_CFLAGS",
+		false)
           ac_save_CFLAGS="$CFLAGS"
           ac_save_CPPFLAGS="$CPPFLAGS"
           CFLAGS="$CFLAGS $GUILE_INCLUDES"
