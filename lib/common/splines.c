@@ -1195,6 +1195,28 @@ polylineMidpoint (splines* spl, pointf* pp, pointf* pq)
     return mf;
 }
 
+pointf
+edgeMidpoint (graph_t* g, edge_t * e)
+{
+    int et = EDGE_TYPE (g);
+    pointf d, spf, p, q;
+
+    endPoints(ED_spl(e), &p, &q);
+    if (APPROXEQPT(p, q, MILLIPOINT)) { /* degenerate spline */
+	spf = p;
+    }
+    else if (et == ET_SPLINE) {
+	d.x = (q.x + p.x) / 2.;
+	d.y = (p.y + q.y) / 2.;
+	spf = dotneato_closest(ED_spl(e), d);
+    }
+    else {   /* ET_PLINE, ET_ORTHO or ET_LINE */
+	spf = polylineMidpoint (ED_spl(e), &p, &q);
+    }
+
+    return spf;
+}
+
 #define LEFTOF(a,b,c) (((a.y - b.y)*(c.x - b.x) - (c.y - b.y)*(a.x - b.x)) > 0)
 #define MAXLABELWD  (POINTS_PER_INCH/2.0)
 
