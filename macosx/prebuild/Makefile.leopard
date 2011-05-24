@@ -4,9 +4,9 @@ CURL=curl
 MAKE=make
 TAR=tar
 
-PREFIX=$(HOME)/FIX/leopard
+PREFIX=$(HOME)/FIX/Darwin.i386
 
-ARCHS=-arch ppc -arch i386 -arch ppc64 -arch x86_64
+ARCHS=-arch ppc -arch i386
 
 # package URL
 
