@@ -51,6 +51,7 @@ Release/Graphviz.app: ../*.m ../*.h $(GV_DIR)/cmd/dot/.libs/$(DOT)
 postinstall:
 	echo "#!/bin/sh" >$@
 	echo >>$@
+	echo 'if [[ `uname -m` = i386 ]]; then rm /usr/local/lib/graphviz/*pango*; fi' >>$@
 	echo "/usr/local/bin/dot -c" >>$@
 	echo ignoring: make -n -C ../../tclpkg install-data-hook >>$@ 
 	echo "arch -arch i386 /usr/local/bin/gv-fc-cache" >>$@
