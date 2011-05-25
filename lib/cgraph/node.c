@@ -181,6 +181,9 @@ void agdelnodeimage(Agraph_t * g, Agnode_t * n, void *ignored)
 	f = agnxtedge(g, e, n);
 	agdeledgeimage(g, e, 0);
     }
+    /* If the following lines are switched, switch the discpline using
+     * free_subnode below.
+     */ 
     dtdelete(g->n_id, &template);
     dtdelete(g->n_seq, &template);
 }
@@ -286,6 +289,22 @@ int agsubnodeseqcmpf(Dict_t * d, void *arg0, void *arg1, Dtdisc_t * disc)
     return ((v==0)?0:(v<0?-1:1));
 }
 
+/* free_subnode:
+ * Free Agsubnode_t allocated in installnode. This should
+ * only be done for subgraphs, as the root graph uses the
+ * subnode structure built into the node. This explains the
+ * AGSNMAIN test. Also, note that both the id and the seq
+ * dictionaries use the same subnode object, so only one
+ * should do the deletion.
+ */
+static void
+free_subnode (Dt_t* d, Agsubnode_t* sn, Dtdisc_t * disc)
+{
+
+   if (!AGSNMAIN(sn)) 
+	agfree (sn->node->root, sn);
+}
+
 Dtdisc_t Ag_subnode_id_disc = {
     0,				/* pass object ptr  */
     0,				/* size (ignored)   */
@@ -303,7 +322,7 @@ Dtdisc_t Ag_subnode_seq_disc = {
     0,				/* size (ignored)   */
     offsetof(Agsubnode_t, seq_link),	/* link offset */
     NIL(Dtmake_f),
-    NIL(Dtfree_f),
+    (Dtfree_f)free_subnode,
     agsubnodeseqcmpf,
     NIL(Dthash_f),
     agdictobjmem,
