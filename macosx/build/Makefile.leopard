@@ -7,7 +7,7 @@ PMSURVEY=$(CURDIR)/pmsurvey
 
 # prefix
 
-PREFIX=$(HOME)/FIX/Darwin.i386
+PREFIX=$(HOME)/FIX/leopard
 
 # base
 
@@ -50,7 +50,7 @@ postinstall:
 	echo "/usr/local/bin/dot -c" >>$@
 	make -n -C ../../tclpkg install-data-hook >>$@
 	echo "arch -arch ppc -arch i386 /usr/local/bin/gv-fc-cache" >>$@
-	echo 'if test `sysctl -n hw.cpu64bit_capable` = 1; then arch -arch x86_64 /usr/local/bin/gv-fc-cache; fi' >>$@
+	echo 'if test `sysctl -n hw.cpu64bit_capable` = 1; then arch -arch ppc64 -arch x86_64 /usr/local/bin/gv-fc-cache; fi' >>$@
 
 $(GV_DIR)/cmd/dot/.libs/$(DOT): $(GV_DIR)/Makefile
 	@echo
@@ -67,4 +67,4 @@ $(GV_DIR)/Makefile: $(GV_DIR)/configure
 	@echo CONFIGURING GRAPHVIZ...
 	@echo
 # add ppc and ppc64 below if you want them
-	cd $(GV_DIR) && ./configure --disable-dependency-tracking --with-smyrna=no --enable-swig=no --with-ipsepcola --with-quartz CFLAGS="-O2 -arch ppc -arch i386 -arch x86_64 -I$(PREFIX)/include" CXXFLAGS="-O2 -arch ppc -arch i386 -arch x86_64 -I$(PREFIX)/include" OBJCFLAGS="-O2 -arch ppc -arch i386 -arch x86_64 -I$(PREFIX)/include" LDFLAGS="-arch ppc -arch i386 -arch x86_64 -L$(PREFIX)/lib -Wl,-dead_strip" GDLIB_CONFIG="$(PREFIX)/bin/gdlib-config" PKG_CONFIG="$(PREFIX)/bin/pkg-config" PKG_CONFIG_PATH="$(PREFIX)/lib/pkgconfig:/usr/X11/lib/pkgconfig"
+	cd $(GV_DIR) && ./configure --disable-dependency-tracking --with-smyrna=no --enable-swig=no --with-ipsepcola --with-quartz CFLAGS="-O2 -arch ppc -arch ppc64 -arch i386 -arch x86_64 -I$(PREFIX)/include" CXXFLAGS="-O2 -arch ppc -arch ppc64 -arch i386 -arch x86_64 -I$(PREFIX)/include" OBJCFLAGS="-O2 -arch ppc -arch ppc64 -arch i386 -arch x86_64 -I$(PREFIX)/include" LDFLAGS="-arch ppc -arch ppc64 -arch i386 -arch x86_64 -L$(PREFIX)/lib -Wl,-dead_strip" GDLIB_CONFIG="$(PREFIX)/bin/gdlib-config" PKG_CONFIG="$(PREFIX)/bin/pkg-config" PKG_CONFIG_PATH="$(PREFIX)/lib/pkgconfig:/usr/X11/lib/pkgconfig"
