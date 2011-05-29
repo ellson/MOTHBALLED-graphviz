@@ -22,6 +22,8 @@ AM_CFLAGS = -D_BLD_gvc=1
 AM_CPPFLAGS += -O0
 endif
 
+BUILT_SOURCES = colortbl.h ps_font_equiv.h htmlparse.h
+
 pkginclude_HEADERS = arith.h geom.h color.h types.h textpara.h usershape.h
 noinst_HEADERS = render.h utils.h memory.h \
 	geomprocs.h colorprocs.h colortbl.h entities.h globals.h \
