@@ -19,19 +19,19 @@ AC_INIT([graphviz],[graphviz_version_major.graphviz_version_minor.graphviz_versi
 GRAPHVIZ_VERSION_MAJOR=graphviz_version_major()
 GRAPHVIZ_VERSION_MINOR=graphviz_version_minor()
 GRAPHVIZ_VERSION_MICRO=graphviz_version_micro()
-AC_SUBST(GRAPHVIZ_VERSION_MAJOR)
-AC_SUBST(GRAPHVIZ_VERSION_MINOR)
-AC_SUBST(GRAPHVIZ_VERSION_MICRO)
+AC_SUBST([GRAPHVIZ_VERSION_MAJOR])
+AC_SUBST([GRAPHVIZ_VERSION_MINOR])
+AC_SUBST([GRAPHVIZ_VERSION_MICRO])
 
 VERSION_DATE=`date -u +%Y%m%d.%H%M`
-AC_SUBST(VERSION_DATE)
+AC_SUBST([VERSION_DATE])
 
 #NB: "stable" on the next line gets changed to "development" when building a development release
 GRAPHVIZ_COLLECTION=stable
 
 GRAPHVIZ_SOURCES=graphviz/$GRAPHVIZ_COLLECTION/SOURCES
-AC_SUBST(GRAPHVIZ_COLLECTION)
-AC_SUBST(GRAPHVIZ_SOURCES)
+AC_SUBST([GRAPHVIZ_COLLECTION])
+AC_SUBST([GRAPHVIZ_SOURCES])
 
 dnl ===========================================================================
 
@@ -51,10 +51,10 @@ GVPLUGIN_AGE=0
 
 GVPLUGIN_CONFIG_FILE="config$GVPLUGIN_CURRENT"
 AC_DEFINE_UNQUOTED(GVPLUGIN_CONFIG_FILE,"$GVPLUGIN_CONFIG_FILE",[Filename for plugin configuration file.])
-AC_SUBST(GVPLUGIN_CONFIG_FILE)
+AC_SUBST([GVPLUGIN_CONFIG_FILE])
 
 GVPLUGIN_VERSION_INFO="$GVPLUGIN_CURRENT:$GVPLUGIN_REVISION:$GVPLUGIN_AGE"
-AC_SUBST(GVPLUGIN_VERSION_INFO)
+AC_SUBST([GVPLUGIN_VERSION_INFO])
 
 dnl ===========================================================================
 
@@ -78,7 +78,7 @@ case "${host_os}" in
     ;;
 esac
 AC_DEFINE_UNQUOTED(GVPLUGIN_VERSION,$GVPLUGIN_VERSION,[Compatibility version number for plugins.])
-AC_SUBST(GVPLUGIN_VERSION)
+AC_SUBST([GVPLUGIN_VERSION])
 
 GRAPHVIZ_VERSION_BUILD=0
 GRAPHVIZ_VERSION_REVISION=0
@@ -93,8 +93,8 @@ case "${host_os}" in
 	fi
 	;;
 esac
-AC_SUBST(GRAPHVIZ_VERSION_BUILD)
-AC_SUBST(GRAPHVIZ_VERSION_REVISION)
+AC_SUBST([GRAPHVIZ_VERSION_BUILD])
+AC_SUBST([GRAPHVIZ_VERSION_REVISION])
 
 LIBPOSTFIX=
 case "${host_os}" in
@@ -167,11 +167,11 @@ case "${host_os}" in
 	BROWSER="xdg-open"
 	;;
 esac
-AC_SUBST(CYGWIN)
-AC_SUBST(MINGW32)
-AC_SUBST(DARWIN)
-AC_SUBST(DARWIN9)
-AC_SUBST(EXTRA_SMYRNA_LDFLAGS)
+AC_SUBST([CYGWIN])
+AC_SUBST([MINGW32])
+AC_SUBST([DARWIN])
+AC_SUBST([DARWIN9])
+AC_SUBST([EXTRA_SMYRNA_LDFLAGS])
 AC_DEFINE_UNQUOTED(DEFAULT_FONTPATH,"$DEFAULT_FONTPATH",[Path to TrueType fonts.])
 AC_DEFINE_UNQUOTED(PATHSEPARATOR,"$PATHSEPARATOR",[Path separator character.])
 AC_DEFINE_UNQUOTED(NO_POSTSCRIPT_ALIAS,$NO_POSTSCRIPT_ALIAS,[Postscript fontnames.])
@@ -200,7 +200,7 @@ fi
 AC_PREFIX_DEFAULT([/usr/local])
 if test "x${prefix}" = "xNONE"; then
 	prefix=${ac_default_prefix}
-	AC_SUBST(prefix)
+	AC_SUBST([prefix])
 fi
 
 # automatically check for other dependencies in $prefix first
@@ -427,7 +427,7 @@ dnl Checks for -lm library
 
 save_LIBS=$LIBS
 AC_CHECK_LIB(m, main, [MATH_LIBS="-lm"])
-AC_SUBST(MATH_LIBS)
+AC_SUBST([MATH_LIBS])
 
 # Check for functions that might need -lm
 LIBS="$LIBS $MATH_LIBS"
@@ -447,7 +447,7 @@ AC_CHECK_HEADER(libgen.h,
         AC_MSG_WARN(libgen.h header not available))
 LDFLAGS=$save_LDFLAGS
 CPPFLAGS=$save_CPPFLAGS
-AC_SUBST(LIBGEN_LIBS)
+AC_SUBST([LIBGEN_LIBS])
 
 # -----------------------------------
 
@@ -464,6 +464,7 @@ AC_REPLACE_FUNCS([strcasecmp strncasecmp strcasestr])
 dnl -----------------------------------
 dnl libtool ltdl on-demand plugin loading
 
+save_LIBS="$LIBS"
 LT_INIT([dlopen])
 LT_CONFIG_LTDL_DIR([libltdl])
 LTDL_INIT
@@ -492,9 +493,10 @@ else
   use_ltdl="No (disabled)"
 fi
 AM_CONDITIONAL(ENABLE_LTDL, [test "x$enable_ltdl" != "xno"])
-AC_SUBST(INCLTDL)
-AC_SUBST(LIBLTDL)
-AC_SUBST(LIBLTDL_LDFLAGS)
+AC_SUBST([INCLTDL])
+AC_SUBST([LIBLTDL])
+AC_SUBST([LIBLTDL_LDFLAGS])
+LIBS="$save_LIBS"
 
 
 # Checks for libraries.
@@ -604,8 +606,8 @@ else
         use_sharp="Yes"
         SHARP_INCLUDES=
         SHARP_LIBS=
-        AC_SUBST(SHARP_INCLUDES)
-        AC_SUBST(SHARP_LIBS)
+        AC_SUBST([SHARP_INCLUDES])
+        AC_SUBST([SHARP_LIBS])
       fi
     fi
   fi
@@ -645,10 +647,10 @@ else
 #        CPPFLAGS=$save_CPPFLAGS
 	if test "x$GO" != "x"; then
 	  use_go="Yes"
-#          AC_SUBST(GO_INSTALL_DATADIR)
-#          AC_SUBST(GO_INSTALL_DIR)
-          AC_SUBST(GO_INCLUDES)
-          AC_SUBST(GO_LIBS)
+#          AC_SUBST([GO_INSTALL_DATADIR])
+#          AC_SUBST([GO_INSTALL_DIR])
+          AC_SUBST([GO_INCLUDES])
+          AC_SUBST([GO_LIBS])
         fi
       fi
     fi
@@ -710,8 +712,8 @@ else
           CPPFLAGS="$ac_save_CPPFLAGS"
           if test "x$GUILE" != "x"; then
 	    use_guile="Yes"
-            AC_SUBST(GUILE_INCLUDES)
-            AC_SUBST(GUILE_LIBS)
+            AC_SUBST([GUILE_INCLUDES])
+            AC_SUBST([GUILE_LIBS])
           fi
         fi
       fi
@@ -743,8 +745,8 @@ else
         use_io="Yes"
         IO_INCLUDES=
         IO_LIBS=
-        AC_SUBST(IO_INCLUDES)
-        AC_SUBST(IO_LIBS)
+        AC_SUBST([IO_INCLUDES])
+        AC_SUBST([IO_LIBS])
       fi
     fi
   fi
@@ -796,8 +798,8 @@ else
         CPPFLAGS="$save_CPPFLAGS"
         if test "x$JAVA" != "x"; then
           use_java="Yes"
-	  AC_SUBST(JAVA_INCLUDES)
-          AC_SUBST(JAVA_LIBS)
+	  AC_SUBST([JAVA_INCLUDES])
+          AC_SUBST([JAVA_LIBS])
         fi
       fi
     fi
@@ -931,9 +933,9 @@ else
           use_lua="No (lua compiling/linking failed)"
         else
 	  use_lua="Yes"
-          AC_SUBST(LUA_INCLUDES)
-          AC_SUBST(LUA_LIBS)
-          AC_SUBST(LUA_INSTALL_DIR)
+          AC_SUBST([LUA_INCLUDES])
+          AC_SUBST([LUA_LIBS])
+          AC_SUBST([LUA_INSTALL_DIR])
           # Not needed for Graphviz: AC_DEFINE(PLUGIN_LUA)
         fi
         CFLAGS="$ac_save_CFLAGS"
@@ -973,8 +975,8 @@ else
         CPPFLAGS="$CPPFLAGS $OCAML_INCLUDES"
         AC_CHECK_HEADER(caml/mlvalues.h,[
 	  use_ocaml="Yes"
-          AC_SUBST(OCAML_INCLUDES)
-          AC_SUBST(OCAML_LIBS)
+          AC_SUBST([OCAML_INCLUDES])
+          AC_SUBST([OCAML_LIBS])
 	],[
 	  use_ocaml="No (missing header)"
           AC_MSG_WARN([Unable to find header caml/mlvalues.h. The OCAML packages will not be built])
@@ -1031,9 +1033,9 @@ else
 	fi
         if test "x$PERL" != "x"; then
           use_perl="Yes"
-	  AC_SUBST(PERL_INCLUDES)
-          AC_SUBST(PERL_LIBS)
-	  AC_SUBST(PERL_INSTALL_DIR)
+	  AC_SUBST([PERL_INCLUDES])
+          AC_SUBST([PERL_LIBS])
+	  AC_SUBST([PERL_INSTALL_DIR])
         fi
       fi
     fi
@@ -1078,10 +1080,10 @@ else
         CPPFLAGS=$save_CPPFLAGS
 	if test "x$PHP" != "x"; then
 	  use_php="Yes"
-          AC_SUBST(PHP_INSTALL_DATADIR)
-          AC_SUBST(PHP_INSTALL_DIR)
-          AC_SUBST(PHP_INCLUDES)
-          AC_SUBST(PHP_LIBS)
+          AC_SUBST([PHP_INSTALL_DATADIR])
+          AC_SUBST([PHP_INSTALL_DIR])
+          AC_SUBST([PHP_INCLUDES])
+          AC_SUBST([PHP_LIBS])
         fi
       fi
     fi
@@ -1143,9 +1145,9 @@ else
         CPPFLAGS=$save_CPPFLAGS
 	if test "x$PYTHON" != "x"; then
 	  use_python="Yes"
-          AC_SUBST(PYTHON_INSTALL_DIR)
-          AC_SUBST(PYTHON_INCLUDES)
-          AC_SUBST(PYTHON_LIBS)
+          AC_SUBST([PYTHON_INSTALL_DIR])
+          AC_SUBST([PYTHON_INCLUDES])
+          AC_SUBST([PYTHON_LIBS])
         fi
       fi
     fi
@@ -1207,9 +1209,9 @@ else
         CPPFLAGS=$save_CPPFLAGS
 	if test "x$PYTHON23" != "x"; then
 	  use_python23="Yes"
-          AC_SUBST(PYTHON23_INSTALL_DIR)
-          AC_SUBST(PYTHON23_INCLUDES)
-          AC_SUBST(PYTHON23_LIBS)
+          AC_SUBST([PYTHON23_INSTALL_DIR])
+          AC_SUBST([PYTHON23_INCLUDES])
+          AC_SUBST([PYTHON23_LIBS])
         fi
       fi
     fi
@@ -1271,9 +1273,9 @@ else
         CPPFLAGS=$save_CPPFLAGS
 	if test "x$PYTHON24" != "x"; then
 	  use_python24="Yes"
-          AC_SUBST(PYTHON24_INSTALL_DIR)
-          AC_SUBST(PYTHON24_INCLUDES)
-          AC_SUBST(PYTHON24_LIBS)
+          AC_SUBST([PYTHON24_INSTALL_DIR])
+          AC_SUBST([PYTHON24_INCLUDES])
+          AC_SUBST([PYTHON24_LIBS])
         fi
       fi
     fi
@@ -1335,9 +1337,9 @@ else
         CPPFLAGS=$save_CPPFLAGS
 	if test "x$PYTHON25" != "x"; then
 	  use_python25="Yes"
-          AC_SUBST(PYTHON25_INSTALL_DIR)
-          AC_SUBST(PYTHON25_INCLUDES)
-          AC_SUBST(PYTHON25_LIBS)
+          AC_SUBST([PYTHON25_INSTALL_DIR])
+          AC_SUBST([PYTHON25_INCLUDES])
+          AC_SUBST([PYTHON25_LIBS])
         fi
       fi
     fi
@@ -1399,9 +1401,9 @@ else
         CPPFLAGS=$save_CPPFLAGS
 	if test "x$PYTHON26" != "x"; then
 	  use_python26="Yes"
-          AC_SUBST(PYTHON26_INSTALL_DIR)
-          AC_SUBST(PYTHON26_INCLUDES)
-          AC_SUBST(PYTHON26_LIBS)
+          AC_SUBST([PYTHON26_INSTALL_DIR])
+          AC_SUBST([PYTHON26_INCLUDES])
+          AC_SUBST([PYTHON26_LIBS])
         fi
       fi
     fi
@@ -1463,9 +1465,9 @@ else
         CPPFLAGS=$save_CPPFLAGS
 	if test "x$PYTHON27" != "x"; then
 	  use_python27="Yes"
-          AC_SUBST(PYTHON27_INSTALL_DIR)
-          AC_SUBST(PYTHON27_INCLUDES)
-          AC_SUBST(PYTHON27_LIBS)
+          AC_SUBST([PYTHON27_INSTALL_DIR])
+          AC_SUBST([PYTHON27_INCLUDES])
+          AC_SUBST([PYTHON27_LIBS])
         fi
       fi
     fi
@@ -1491,8 +1493,8 @@ else
     else
       PKG_CHECK_MODULES(R, [libR],[
 	use_r="Yes"
-	AC_SUBST(R_CFLAGS)
-	AC_SUBST(R_LIBS)
+	AC_SUBST([R_CFLAGS])
+	AC_SUBST([R_LIBS])
       ],[
 	use_r="No (R not available)"
       ])
@@ -1538,9 +1540,9 @@ else
       fi
       if test "x$RUBY" != "x"; then
 	use_ruby="Yes"
-        AC_SUBST(RUBY_INCLUDES)
-        AC_SUBST(RUBY_LIBS)
-        AC_SUBST(RUBY_INSTALL_DIR)
+        AC_SUBST([RUBY_INCLUDES])
+        AC_SUBST([RUBY_LIBS])
+        AC_SUBST([RUBY_INSTALL_DIR])
       fi
     fi
   fi
@@ -1576,7 +1578,7 @@ if test "x$use_tcl" = "x"; then
   if test "x$TCL_INCLUDES" != "x" ; then
     AC_MSG_RESULT([using tcl headers from $TCL_INCLUDES])
   fi
-  AC_SUBST(TCL_INCLUDES)
+  AC_SUBST([TCL_INCLUDES])
   save_CPPFLAGS=$CPPFLAGS
   CPPFLAGS="$CPPFLAGS $TCL_INCLUDES"
   AC_CHECK_HEADER(tcl.h,,[
@@ -1624,62 +1626,62 @@ if test "x$use_tcl" = "x"; then
   fi
 fi
 
-AC_SUBST(TCL_INSTALL_DIR)
+AC_SUBST([TCL_INSTALL_DIR])
 
 AM_CONDITIONAL(WITH_TCL, [test "x$use_tcl" = "xYes"])
 
-#AC_SUBST(TCLSH_EXEC_PREFIX)
-AC_SUBST(TCL_VERSION)
-AC_SUBST(TCL_MAJOR_VERSION)
-AC_SUBST(TCL_MINOR_VERSION)
-AC_SUBST(TCL_PATCH_LEVEL)
-#AC_SUBST(TCL_CC)
-#AC_SUBST(TCL_CXX)
-AC_SUBST(TCL_CFLAGS)
-#AC_SUBST(TCL_CXXFLAGS)
-AC_SUBST(TCL_DEFS)
-#AC_SUBST(TCL_DBGX)
-#AC_SUBST(TCL_CFLAGS_DEBUG)
-#AC_SUBST(TCL_CFLAGS_OPTIMIZE)
-#AC_SUBST(TCL_SHARED_BUILD)
-#AC_SUBST(TCL_LIB_FILE)
-#AC_SUBST(TCL_NEEDS_EXP_FILE)
-#AC_SUBST(TCL_EXPORT_FILE_SUFFIX)
-#AC_SUBST(TCL_NEEDS_EXP_FILE)
-#AC_SUBST(TCL_EXPORT_FILE_SUFFIX)
+#AC_SUBST([TCLSH_EXEC_PREFIX])
+AC_SUBST([TCL_VERSION])
+AC_SUBST([TCL_MAJOR_VERSION])
+AC_SUBST([TCL_MINOR_VERSION])
+AC_SUBST([TCL_PATCH_LEVEL])
+#AC_SUBST([TCL_CC])
+#AC_SUBST([TCL_CXX])
+AC_SUBST([TCL_CFLAGS])
+#AC_SUBST([TCL_CXXFLAGS])
+AC_SUBST([TCL_DEFS])
+#AC_SUBST([TCL_DBGX])
+#AC_SUBST([TCL_CFLAGS_DEBUG])
+#AC_SUBST([TCL_CFLAGS_OPTIMIZE])
+#AC_SUBST([TCL_SHARED_BUILD])
+#AC_SUBST([TCL_LIB_FILE])
+#AC_SUBST([TCL_NEEDS_EXP_FILE])
+#AC_SUBST([TCL_EXPORT_FILE_SUFFIX])
+#AC_SUBST([TCL_NEEDS_EXP_FILE])
+#AC_SUBST([TCL_EXPORT_FILE_SUFFIX])
 
 # TCL modules use stubs and don't need any other tcl libraries
 TCL_LIBS=
-AC_SUBST(TCL_LIBS)
+AC_SUBST([TCL_LIBS])
 
-#AC_SUBST(TCL_PREFIX)
-#AC_SUBST(TCL_EXEC_PREFIX)
-#AC_SUBST(TCL_SHLIB_CFLAGS)
-#AC_SUBST(TCL_SHLIB_CXXFLAGS)
-#AC_SUBST(TCL_EXTRA_CFLAGS)
-#AC_SUBST(TCL_SHLIB_LD)
-#AC_SUBST(TCL_SHLIB_LD_LIBS)
-AC_SUBST(TCL_SHLIB_SUFFIX)
-#AC_SUBST(TCL_DL_LIBS)
-#AC_SUBST(TCL_LD_FLAGS)
-#AC_SUBST(TCL_LD_SEARCH_FLAGS)
-#AC_SUBST(TCL_COMPAT_OBJS)
-#AC_SUBST(TCL_RANLIB)
-#AC_SUBST(TCL_LIB_FLAG)
-#AC_SUBST(TCL_BUILD_LIB_SPEC)
-#AC_SUBST(TCL_LIB_SPEC)
-#AC_SUBST(TCL_LIB_VERSIONS_OK)
-#AC_SUBST(TCL_SHARED_LIB_SUFFIX)
-#AC_SUBST(TCL_UNSHARED_LIB_SUFFIX)
-AC_SUBST(TCL_SRC_DIR)
-#AC_SUBST(TCL_PACKAGE_PATH)
-#AC_SUBST(TCL_SUPPORTS_STUBS)
-#AC_SUBST(TCL_STUB_LIB_FILE)
-#AC_SUBST(TCL_STUB_LIB_FLAG)
-#AC_SUBST(TCL_BUILD_STUB_LIB_SPEC)
-AC_SUBST(TCL_STUB_LIB_SPEC)
-#AC_SUBST(TCL_BUILD_STUB_LIB_PATH)
-#AC_SUBST(TCL_STUB_LIB_PATH)
+#AC_SUBST([TCL_PREFIX])
+#AC_SUBST([TCL_EXEC_PREFIX])
+#AC_SUBST([TCL_SHLIB_CFLAGS])
+#AC_SUBST([TCL_SHLIB_CXXFLAGS])
+#AC_SUBST([TCL_EXTRA_CFLAGS])
+#AC_SUBST([TCL_SHLIB_LD])
+#AC_SUBST([TCL_SHLIB_LD_LIBS])
+AC_SUBST([TCL_SHLIB_SUFFIX])
+#AC_SUBST([TCL_DL_LIBS])
+#AC_SUBST([TCL_LD_FLAGS])
+#AC_SUBST([TCL_LD_SEARCH_FLAGS])
+#AC_SUBST([TCL_COMPAT_OBJS])
+#AC_SUBST([TCL_RANLIB])
+#AC_SUBST([TCL_LIB_FLAG])
+#AC_SUBST([TCL_BUILD_LIB_SPEC])
+#AC_SUBST([TCL_LIB_SPEC])
+#AC_SUBST([TCL_LIB_VERSIONS_OK])
+#AC_SUBST([TCL_SHARED_LIB_SUFFIX])
+#AC_SUBST([TCL_UNSHARED_LIB_SUFFIX])
+AC_SUBST([TCL_SRC_DIR])
+#AC_SUBST([TCL_PACKAGE_PATH])
+#AC_SUBST([TCL_SUPPORTS_STUBS])
+#AC_SUBST([TCL_STUB_LIB_FILE])
+#AC_SUBST([TCL_STUB_LIB_FLAG])
+#AC_SUBST([TCL_BUILD_STUB_LIB_SPEC])
+AC_SUBST([TCL_STUB_LIB_SPEC])
+#AC_SUBST([TCL_BUILD_STUB_LIB_PATH])
+#AC_SUBST([TCL_STUB_LIB_PATH])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for TK
@@ -1723,7 +1725,7 @@ if test "x$use_tk" = "x"; then
     if test "x$TK_INCLUDES" != "x" ; then
 	AC_MSG_RESULT([using tk headers from $TK_INCLUDES])
     fi
-    AC_SUBST(TK_INCLUDES)
+    AC_SUBST([TK_INCLUDES])
     save_CPPFLAGS=$CPPFLAGS
     CPPFLAGS="$CPPFLAGS $TCL_INCLUDES $TK_INCLUDES $X_CFLAGS"
     AC_CHECK_HEADER(tk.h,,[
@@ -1771,29 +1773,29 @@ if test "${TCL_SUPPORTS_STUBS}" = "1"; then
     TK_CFLAGS="${TK_CFLAGS} -DUSE_TK_STUBS"
 fi
 
-AC_SUBST(TK_VERSION)
-AC_SUBST(TK_MAJOR_VERSION)
-AC_SUBST(TK_MINOR_VERSION)
-AC_SUBST(TK_PATCH_LEVEL)
-AC_SUBST(TK_DEFS)
-#AC_SUBST(TK_SHARED_BUILD)
-#AC_SUBST(TK_LIB_FILE)
-#AC_SUBST(TK_LIBS)
-#AC_SUBST(TK_PREFIX)
-#AC_SUBST(TK_EXEC_PREFIX)
-AC_SUBST(TK_XINCLUDES)
-#AC_SUBST(TK_XLIBSW)
-#AC_SUBST(TK_BUILD_LIB_SPEC)
-AC_SUBST(TK_LIB_SPEC)
-AC_SUBST(TK_SRC_DIR)
-AC_SUBST(TK_CFLAGS)
-#AC_SUBST(TK_SUPPORTS_STUBS)
-#AC_SUBST(TK_STUB_LIB_FILE)
-#AC_SUBST(TK_STUB_LIB_FLAG)
-#AC_SUBST(TK_BUILD_STUB_LIB_SPEC)
-AC_SUBST(TK_STUB_LIB_SPEC)
-#AC_SUBST(TK_BUILD_STUB_LIB_PATH)
-#AC_SUBST(TK_STUB_LIB_PATH)
+AC_SUBST([TK_VERSION])
+AC_SUBST([TK_MAJOR_VERSION])
+AC_SUBST([TK_MINOR_VERSION])
+AC_SUBST([TK_PATCH_LEVEL])
+AC_SUBST([TK_DEFS])
+#AC_SUBST([TK_SHARED_BUILD])
+#AC_SUBST([TK_LIB_FILE])
+#AC_SUBST([TK_LIBS])
+#AC_SUBST([TK_PREFIX])
+#AC_SUBST([TK_EXEC_PREFIX])
+AC_SUBST([TK_XINCLUDES])
+#AC_SUBST([TK_XLIBSW])
+#AC_SUBST([TK_BUILD_LIB_SPEC])
+AC_SUBST([TK_LIB_SPEC])
+AC_SUBST([TK_SRC_DIR])
+AC_SUBST([TK_CFLAGS])
+#AC_SUBST([TK_SUPPORTS_STUBS])
+#AC_SUBST([TK_STUB_LIB_FILE])
+#AC_SUBST([TK_STUB_LIB_FLAG])
+#AC_SUBST([TK_BUILD_STUB_LIB_SPEC])
+AC_SUBST([TK_STUB_LIB_SPEC])
+#AC_SUBST([TK_BUILD_STUB_LIB_PATH])
+#AC_SUBST([TK_STUB_LIB_PATH])
 
 dnl -----------------------------------
 dnl Support for generic "extra" search paths for includes and libraries
@@ -1823,7 +1825,7 @@ if test "$tk_checkBoth" = 1; then
 fi  
 AC_CHECK_FUNC(gethostbyname, , [AC_CHECK_LIB(nsl, main, [LIBS="$LIBS -lnsl"])])
 SOCKET_LIBS=$LIBS
-AC_SUBST(SOCKET_LIBS)
+AC_SUBST([SOCKET_LIBS])
 LIBS=$save_LIBS
 
 dnl -----------------------------------
@@ -1879,8 +1881,8 @@ if test "x$use_expat" = "x"; then
   use_expat="Yes"
   AC_DEFINE_UNQUOTED(HAVE_EXPAT,1,
     [Define if you have the expat library])
-  AC_SUBST(EXPAT_INCLUDES)
-  AC_SUBST(EXPAT_LIBS)
+  AC_SUBST([EXPAT_INCLUDES])
+  AC_SUBST([EXPAT_LIBS])
 fi
   
 dnl -----------------------------------
@@ -1922,8 +1924,8 @@ if test "x$use_devil" = "x"; then
   use_devil="Yes"
   AC_DEFINE_UNQUOTED(HAVE_DEVIL,1,
     [Define if you have the DevIL library])
-  AC_SUBST(DEVIL_INCLUDES)
-  AC_SUBST(DEVIL_LIBS)
+  AC_SUBST([DEVIL_INCLUDES])
+  AC_SUBST([DEVIL_LIBS])
 fi
 
 AM_CONDITIONAL(WITH_DEVIL, [test "x$use_devil" = "xYes"])
@@ -1952,8 +1954,8 @@ AC_CHECK_LIB(Xpm,main,
    AC_MSG_WARN(Optional Xpm library not available), [-lXmu -lXt -lX11 -lXext $SOCKET_LIBS])
 LDFLAGS=$save_LDFLAGS
 CPPFLAGS=$save_CPPFLAGS
-AC_SUBST(XPM_INCLUDES)
-AC_SUBST(XPM_LIBS)
+AC_SUBST([XPM_INCLUDES])
+AC_SUBST([XPM_LIBS])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for XAW
@@ -1989,8 +1991,8 @@ AC_CHECK_LIB(Xaw,main,
 fi
 LDFLAGS=$save_LDFLAGS
 CPPFLAGS=$save_CPPFLAGS
-AC_SUBST(XAW_INCLUDES)
-AC_SUBST(XAW_LIBS)
+AC_SUBST([XAW_INCLUDES])
+AC_SUBST([XAW_LIBS])
 AM_CONDITIONAL(WITH_XAW, [test "x$with_xaw" != "xno"])
 if test "x$with_xaw" = "xno"; then
     if test "x$no_x" != "xyes"; then
@@ -2022,8 +2024,8 @@ AC_CHECK_HEADER(zlib.h,
         AC_CHECK_FUNCS(deflateBound)
 LDFLAGS=$save_LDFLAGS
 CPPFLAGS=$save_CPPFLAGS
-AC_SUBST(Z_INCLUDES)
-AC_SUBST(Z_LIBS)
+AC_SUBST([Z_INCLUDES])
+AC_SUBST([Z_LIBS])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for RSVG
@@ -2039,8 +2041,8 @@ else
     use_rsvg="Yes"
     AC_DEFINE_UNQUOTED(HAVE_RSVG,1,
       [Define if you have the rsvg library])
-    AC_SUBST(RSVG_CFLAGS)
-    AC_SUBST(RSVG_LIBS)
+    AC_SUBST([RSVG_CFLAGS])
+    AC_SUBST([RSVG_LIBS])
   ],[
     use_rsvg="No (rsvg library not available)"
   ])
@@ -2067,8 +2069,8 @@ else
           use_ghostscript="Yes"
           AC_DEFINE_UNQUOTED(HAVE_GS,1,
             [Define if you have the gs library])
-          AC_SUBST(GS_CFLAGS)
-          AC_SUBST(GS_LIBS)
+          AC_SUBST([GS_CFLAGS])
+          AC_SUBST([GS_LIBS])
         fi
      fi
   fi
@@ -2092,8 +2094,8 @@ else
       use_visio="Yes"
       AC_DEFINE_UNQUOTED(HAVE_VISIO,1,
         [Define if you have the visio library])
-      AC_SUBST(VISIO_CFLAGS)
-      AC_SUBST(VISIO_LIBS)
+      AC_SUBST([VISIO_CFLAGS])
+      AC_SUBST([VISIO_LIBS])
 #    fi
 #  fi
 fi
@@ -2114,8 +2116,8 @@ else
     use_pangocairo="Yes"
     AC_DEFINE_UNQUOTED(HAVE_PANGOCAIRO,1,
       [Define if you have the pangocairo library])
-    AC_SUBST(PANGOCAIRO_CFLAGS)
-    AC_SUBST(PANGOCAIRO_LIBS)
+    AC_SUBST([PANGOCAIRO_CFLAGS])
+    AC_SUBST([PANGOCAIRO_LIBS])
   ],[
     use_pangocairo="No (pangocairo library not available)"
   ])
@@ -2145,8 +2147,8 @@ else
     use_lasi="Yes"
     AC_DEFINE_UNQUOTED(HAVE_LASI,1,
       [Define if you have the lasi library])
-    AC_SUBST(LASI_CFLAGS)
-    AC_SUBST(LASI_LIBS)
+    AC_SUBST([LASI_CFLAGS])
+    AC_SUBST([LASI_LIBS])
   ],[
     use_lasi="No (lasi library not available)"
   ])
@@ -2167,8 +2169,8 @@ else
     use_glitz="Yes"
     AC_DEFINE_UNQUOTED(HAVE_GLITZ,1,
       [Define if you have the glitz library])
-    AC_SUBST(GLITZ_CFLAGS)
-    AC_SUBST(GLITZ_LIBS)
+    AC_SUBST([GLITZ_CFLAGS])
+    AC_SUBST([GLITZ_LIBS])
   ],[
     use_glitz="No (glitz library not available)"
   ])
@@ -2216,8 +2218,8 @@ fi
 
 if test "x$use_freetype" = "xYes"; then
   AC_DEFINE_UNQUOTED(HAVE_FREETYPE2,1,[Define if you have the freetype2 library])
-  AC_SUBST(FREETYPE2_CFLAGS)
-  AC_SUBST(FREETYPE2_LIBS)
+  AC_SUBST([FREETYPE2_CFLAGS])
+  AC_SUBST([FREETYPE2_LIBS])
 fi
 AM_CONDITIONAL(WITH_FREETYPE2, [test "x$ue_freetype" = "xYes"])
 
@@ -2262,8 +2264,8 @@ fi
 
 if test "x$use_fontconfig" = "xYes"; then
   AC_DEFINE_UNQUOTED(HAVE_FONTCONFIG,1,[Define if you have the fontconfig library])
-  AC_SUBST(FONTCONFIG_CFLAGS)
-  AC_SUBST(FONTCONFIG_LIBS)
+  AC_SUBST([FONTCONFIG_CFLAGS])
+  AC_SUBST([FONTCONFIG_LIBS])
 fi
 AM_CONDITIONAL(WITH_FONTCONFIG, [test "x$use_fontconfig" = "xYes"])
 
@@ -2281,8 +2283,8 @@ else
     use_gdk_pixbuf="Yes"
     AC_DEFINE_UNQUOTED(HAVE_GDK_PIXBUF,1,
       [Define if you have the gdk_pixbuf library])
-    AC_SUBST(GDK_PIXBUF_CFLAGS)
-    AC_SUBST(GDK_PIXBUF_LIBS)
+    AC_SUBST([GDK_PIXBUF_CFLAGS])
+    AC_SUBST([GDK_PIXBUF_LIBS])
   ],[
     use_gdk_pixbuf="No (gdk_pixbuf library not available)"
   ])
@@ -2303,8 +2305,8 @@ else
     use_gtk="Yes"
     AC_DEFINE_UNQUOTED(HAVE_GTK,1,
       [Define if you have the gtk library])
-    AC_SUBST(GTK_CFLAGS)
-    AC_SUBST(GTK_LIBS)
+    AC_SUBST([GTK_CFLAGS])
+    AC_SUBST([GTK_LIBS])
   ],[
     use_gtk="No (gtk library not available)"
   ])
@@ -2325,8 +2327,8 @@ else
     use_gtkgl="Yes"
     AC_DEFINE_UNQUOTED(HAVE_GTKGL,1,
       [Define if you have the gtkgl library])
-    AC_SUBST(GTKGL_CFLAGS)
-    AC_SUBST(GTKGL_LIBS)
+    AC_SUBST([GTKGL_CFLAGS])
+    AC_SUBST([GTKGL_LIBS])
   ],[
     use_gtkgl="No (gtkgl library not available)"
   ])
@@ -2347,8 +2349,8 @@ else
     use_gtkglext="Yes"
     AC_DEFINE_UNQUOTED(HAVE_GTKGLEXT,1,
       [Define if you have the gtkglext library])
-    AC_SUBST(GTKGLEXT_CFLAGS)
-    AC_SUBST(GTKGLEXT_LIBS)
+    AC_SUBST([GTKGLEXT_CFLAGS])
+    AC_SUBST([GTKGLEXT_LIBS])
   ],[
     use_gtkglext="No (gtkglext library not available)"
   ])
@@ -2369,8 +2371,8 @@ else
     use_gts="Yes"
     AC_DEFINE_UNQUOTED(HAVE_GTS,1,
       [Define if you have the gts library])
-    AC_SUBST(GTS_CFLAGS)
-    AC_SUBST(GTS_LIBS)
+    AC_SUBST([GTS_CFLAGS])
+    AC_SUBST([GTS_LIBS])
   ],[
     use_gts="No (gts library not available)"
   ])
@@ -2391,8 +2393,8 @@ else
     use_glade="Yes"
     AC_DEFINE_UNQUOTED(HAVE_GLADE,1,
       [Define if you have the glade library])
-    AC_SUBST(GLADE_CFLAGS)
-    AC_SUBST(GLADE_LIBS)
+    AC_SUBST([GLADE_CFLAGS])
+    AC_SUBST([GLADE_LIBS])
   ],[
     use_glade="No (glade library not available)"
   ])
@@ -2413,8 +2415,8 @@ else
     use_ming="Yes"
     AC_DEFINE_UNQUOTED(HAVE_MING,1,
       [Define if you have the ming library for SWF support])
-    AC_SUBST(MING_CFLAGS)
-    AC_SUBST(MING_LIBS)
+    AC_SUBST([MING_CFLAGS])
+    AC_SUBST([MING_LIBS])
   ],[
     use_ming="No (ming library not available)"
   ])
@@ -2464,8 +2466,8 @@ else
     AC_DEFINE_UNQUOTED(HAVE_QUARTZ,1,[Define if you have the Quartz framework for Mac OS X])
     QUARTZ_CFLAGS=''
     QUARTZ_LIBS='-framework ApplicationServices'
-    AC_SUBST(QUARTZ_CFLAGS)
-    AC_SUBST(QUARTZ_LIBS)
+    AC_SUBST([QUARTZ_CFLAGS])
+    AC_SUBST([QUARTZ_LIBS])
   else
     use_quartz="No (missing ApplicationServices.framework)"
   fi
@@ -2483,9 +2485,9 @@ AC_ARG_WITH(platformsdklibdir,
   [AS_HELP_STRING([--with-platformsdklibdir=DIR],[use Platform SDK (Windows) libraries from DIR])],
   [PLATFORMSDKLIB=$withval])
 
-AC_SUBST(PLATFORMSDKINCLUDE)
-AC_SUBST(PLATFORMSDKINCLUDE_ESCAPED)
-AC_SUBST(PLATFORMSDKLIB) 
+AC_SUBST([PLATFORMSDKINCLUDE])
+AC_SUBST([PLATFORMSDKINCLUDE_ESCAPED])
+AC_SUBST([PLATFORMSDKLIB]) 
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GDI+ 
@@ -2503,9 +2505,9 @@ else
     GDIPLUS_HEADS=`cd "$PLATFORMSDKINCLUDE" && echo GdiPlus*.h`
     GDIPLUS_CFLAGS=''
     GDIPLUS_LIBS=''
-    AC_SUBST(GDIPLUS_HEADS)
-    AC_SUBST(GDIPLUS_CFLAGS)
-    AC_SUBST(GDIPLUS_LIBS)
+    AC_SUBST([GDIPLUS_HEADS])
+    AC_SUBST([GDIPLUS_CFLAGS])
+    AC_SUBST([GDIPLUS_LIBS])
   else
     use_gdiplus="No (missing headers)"
     AC_MSG_WARN(--with-gdiplus requires valid --with-platformsdkincludedir and --with-platformsdklibdir.)
@@ -2657,8 +2659,8 @@ else
     GD_INCLUDES='-I$(top_srcdir)/lib/gd'
     GD_LIBS='$(top_builddir)/lib/gd/libgvgd.la'
   fi
-  AC_SUBST(GD_INCLUDES)
-  AC_SUBST(GD_LIBS)
+  AC_SUBST([GD_INCLUDES])
+  AC_SUBST([GD_LIBS])
 fi
 AM_CONDITIONAL(WITH_LIBGD, [test "x$with_libgd" = "xyes"])
 AM_CONDITIONAL(WITH_MYLIBGD, [test "x$with_mylibgd" = "xyes"])
@@ -2710,8 +2712,8 @@ fi
 
 LDFLAGS=$save_LDFLAGS
 CPPFLAGS=$save_CPPFLAGS
-AC_SUBST(GLUT_CFLAGS)
-AC_SUBST(GLUT_LIBS)
+AC_SUBST([GLUT_CFLAGS])
+AC_SUBST([GLUT_LIBS])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for ICONV (only with mylibgd)
@@ -2747,8 +2749,8 @@ AC_CHECK_HEADERS(iconv.h,
 
 LDFLAGS=$save_LDFLAGS
 CPPFLAGS=$save_CPPFLAGS
-AC_SUBST(ICONV_INCLUDES)
-AC_SUBST(ICONV_LIBS)
+AC_SUBST([ICONV_INCLUDES])
+AC_SUBST([ICONV_LIBS])
 
 fi
 
@@ -2797,8 +2799,8 @@ else
 fi
 LDFLAGS=$save_LDFLAGS
 CPPFLAGS=$save_CPPFLAGS
-AC_SUBST(PNG_INCLUDES)
-AC_SUBST(PNG_LIBS)
+AC_SUBST([PNG_INCLUDES])
+AC_SUBST([PNG_LIBS])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for JPEG (only with mylibgd)
@@ -2845,8 +2847,8 @@ AC_CHECK_HEADER(jpeglib.h,
 	AC_MSG_WARN(Optional jpeg library not available - no jpeglib.h))
 LDFLAGS=$save_LDFLAGS
 CPPFLAGS=$save_CPPFLAGS
-AC_SUBST(JPEG_INCLUDES)
-AC_SUBST(JPEG_LIBS)
+AC_SUBST([JPEG_INCLUDES])
+AC_SUBST([JPEG_LIBS])
 
 fi
 fi
@@ -2866,7 +2868,7 @@ TCLINT_INCLUDES='-I$(top_srcdir)/tclpkg/tclstubs'
 fi
 fi
 fi
-AC_SUBST(TCLINT_INCLUDES)
+AC_SUBST([TCLINT_INCLUDES])
 
 # -----------------------------------
 # tkInt.h
@@ -2883,7 +2885,7 @@ TKINT_INCLUDES='-I$(top_srcdir)/tclpkg/tkstubs'
 fi
 fi
 fi
-AC_SUBST(TKINT_INCLUDES)
+AC_SUBST([TKINT_INCLUDES])
 
 # ------------------------------------
 # triangle.[ch]
@@ -2913,10 +2915,10 @@ if test "$use_tcl" = "Yes"; then
         TK_PKGINDEX="tkspline/pkgIndex.tcl"
     fi
 fi
-AC_SUBST(TCL_PKGINDEX)
-AC_SUBST(TCL_PKGINDEX_GD)
-AC_SUBST(TCL_PKGINDEX_SWIG)
-AC_SUBST(TK_PKGINDEX)
+AC_SUBST([TCL_PKGINDEX])
+AC_SUBST([TCL_PKGINDEX_GD])
+AC_SUBST([TCL_PKGINDEX_SWIG])
+AC_SUBST([TK_PKGINDEX])
 
 dnl -----------------------------------
 dnl SFDP
@@ -3036,8 +3038,8 @@ else
     AC_DEFINE_UNQUOTED(IPSEPCOLA,1,[Define if you want IPSEPCOLA])
     IPSEPCOLA_INCLUDES='-I$(top_srcdir)/lib/vpsc'
     IPSEPCOLA_LIBS='$(top_builddir)/lib/vpsc/libvpsc_C.la -lstdc++'
-    AC_SUBST(IPSEPCOLA_INCLUDES)
-    AC_SUBST(IPSEPCOLA_LIBS)
+    AC_SUBST([IPSEPCOLA_INCLUDES])
+    AC_SUBST([IPSEPCOLA_LIBS])
   fi
 fi
 AM_CONDITIONAL(WITH_IPSEPCOLA, [test "x$use_ipsepcola" = "xYes"])
