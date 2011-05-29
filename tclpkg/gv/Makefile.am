@@ -133,7 +133,8 @@ gv.a:	gv.cmxa
 
 pkgperldir = $(pkglibdir)/perl
 PERL        ?= perl
-PERL_CC      = `$(PERL) -MExtUtils::Embed -e ccopts`
+# sed cleanup for opencsw's perl which adds flags that g++ doesn't like
+PERL_CC      = `$(PERL) -MExtUtils::Embed -e ccopts | $(SED) -e 's/-x[^ ]* //g'`
 PERL_LD      = `$(PERL) -MExtUtils::Embed -e ldopts`
 VENDOR_ARCH  = `$(PERL) -MConfig -e 'print $$Config{installvendorarch};'`
 PERL_data = gv.pm
