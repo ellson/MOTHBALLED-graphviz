@@ -98,7 +98,7 @@ void fdp_init_node_edge(graph_t * g)
     edge_t *e;
     int nn;
     int i;
-    ndata* alg;
+    /* ndata* alg; */
 
     processClusterEdges(g);
 
@@ -106,12 +106,12 @@ void fdp_init_node_edge(graph_t * g)
      * add new nodes.
      */
     nn = agnnodes(g);
-    alg = N_NEW(nn, ndata);
+    /* alg = N_NEW(nn, ndata); */
     GD_neato_nlist(g) = N_NEW(nn + 1, node_t *);
 
     for (i = 0, n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	neato_init_node (n);
-	ND_alg(n) = alg + i;
+	/* ND_alg(n) = alg + i; */
 	GD_neato_nlist(g)[i] = n;
 	ND_id(n) = i++;
     }

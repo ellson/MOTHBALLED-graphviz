@@ -1187,13 +1187,15 @@ fdpSplines (graph_t * g)
 
 void fdp_layout(graph_t * g)
 {
-    Agnode_t* n;
+    /* Agnode_t* n; */
 
     fdp_init_graph(g);
     fdpLayout(g);
+#if 0
     /* free ND_alg field so it can be used in spline routing */
     if ((n = agfstnode(g)))
 	free(ND_alg(n));
+#endif
     neato_set_aspect(g);
 
     if (EDGE_TYPE(g) != ET_NONE) fdpSplines (g); 

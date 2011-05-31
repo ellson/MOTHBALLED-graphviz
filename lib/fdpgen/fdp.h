@@ -53,6 +53,7 @@ typedef struct {
 #define GORIG(g)    (GDATA(g)->orig)
 #endif
 
+#if 0
 /* ndata is attached to nodes in real graphs.
  * Real nodes also use "builtin" fields:
  *   pos   - position information
@@ -69,6 +70,23 @@ typedef struct {
 #define NDATA(n) ((ndata*)(ND_alg(n)))
 #define DNODE(n) (NDATA(n)->dn)
 #define PARENT(n) (NDATA(n)->parent)
+#endif
+
+/* 
+ * Real nodes use "builtin" fields:
+ *   ND_pos   - position information
+ *   ND_width,ND_height     - node dimensions
+ *   ND_pinned
+ *   ND_lw,ND_rw,ND_ht      - node dimensions in points
+ *   ND_id
+ *   ND_shape, ND_shape_info
+ *
+ * In addition, we use two of the dot fields for parent and derived node. 
+ * Previously, we attached these via ND_alg, but ND_alg may be needed for
+ * spline routing, and splines=compound also requires the parent field. 
+ */
+#define DNODE(n) (ND_next(n))
+#define PARENT(n) (ND_clust(n))
 
 /* dndata is attached to nodes in derived graphs.
  * Derived nodes also use "builtin" fields:
