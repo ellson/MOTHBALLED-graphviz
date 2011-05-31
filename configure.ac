@@ -2631,14 +2631,14 @@ else
       AC_ARG_WITH(gdlibdir,
         [AS_HELP_STRING([--with-gdlibdir=DIR],[use GD libraries from DIR])],
         [GD_LDFLAGS="-L$withval"])
-      LDFLAGS="$LDFLAGS $GD_LDFLAGS"
+      GD_LIBS="$GD_LDFLAGS -lgd $GD_LIBS"
+      LDFLAGS="$LDFLAGS $GD_LIBS"
       AC_CHECK_HEADER(gd.h,,[
         AC_MSG_WARN(Optional GD library not available - no gd.h)
         use_gd="No (gd headers not found)"
       ])
       if test "x$use_gd" = "x"; then
         AC_CHECK_LIB(gd,main,[
-	  GD_LIBS="$GD_LDFLAGS -lgd $GD_LIBS"
           AC_DEFINE_UNQUOTED(HAVE_LIBGD,1,[Define if you have the GD library])
 	  use_gd="Yes"
         ],[
