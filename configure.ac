@@ -2538,7 +2538,7 @@ else
       AC_PATH_PROG(GDLIB_CONFIG,gdlib-config)
       if test -n "$GDLIB_CONFIG"; then
         GD_INCLUDES=`$GDLIB_CONFIG --includes`
-        GD_LDFLAGS=`$GDLIB_CONFIG --ldflags | sed 's/-xarch=386 //'`
+        GD_LDFLAGS=`$GDLIB_CONFIG --ldflags | sed 's/-xarch=[^ ]* //'`
         GD_LIBS=`$GDLIB_CONFIG --libs`
         GD_MAJORVERSION=`$GDLIB_CONFIG --majorversion`
         GD_MINORVERSION=`$GDLIB_CONFIG --minorversion`
