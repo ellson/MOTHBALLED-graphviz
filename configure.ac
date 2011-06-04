@@ -254,12 +254,16 @@ AC_PROG_YACC
 AC_PROG_AWK
 AC_PROG_INSTALL
 AC_PROG_LN_S
-AC_CHECK_PROG(SED,sed,sed,false)
-AC_CHECK_PROG(GREP,grep,grep,false)
-AC_CHECK_PROG(SORT,sort,sort,false)
+
+# prefer GNU variants over, say, Oracle's or Apples
+AC_CHECK_PROGS(SED,gsed sed,false)
+AC_CHECK_PROGS(GREP,ggrep grep,false)
+AC_CHECK_PROGS(SORT,gsort sort,false)
+
 AC_CHECK_PROG(GROFF,groff,groff,false)
 AC_CHECK_PROG(PS2PDF,ps2pdf,ps2pdf,false)
 AC_CHECK_PROG(PS2PDF,pstopdf,pstopdf,false)
+
 PKG_PROG_PKG_CONFIG
 
 AC_ARG_WITH(tclsh,
