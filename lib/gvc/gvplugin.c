@@ -362,6 +362,10 @@ char *gvplugin_list(GVC_t * gvc, api_t api, const char *str)
     if (api < 0)
 	return NULL;
 
+    /* check for valid str */
+    if (! str)
+	return NULL;
+
     if (first) {
 	agxbinit(&xb, 0, 0);
 	first = 0;
