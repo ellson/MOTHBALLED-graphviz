@@ -1063,7 +1063,7 @@ else
     if test `$SWIG -help 2>&1 | $GREP -c '\-php5* *- Generate'` = 0 ; then
       use_php="No (swig does not support -php or -php5 option)"
     else
-      AC_CHECK_PROG(PHP,php,php)
+      AC_CHECK_PROGS(PHP,php5 php)
       if test "x$PHP" = "x"; then
         use_php="No (php not available)"
       else
