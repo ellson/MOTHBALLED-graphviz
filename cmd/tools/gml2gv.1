@@ -1,6 +1,6 @@
-.TH GML2GV 1 "30 September 2010"
+.TH GML2GV,GV2GML 1 "24 June 2011"
 .SH NAME
-gml2gv \- GML-DOT converter
+gml2gv,gv2gml \- GML-DOT converters
 .SH SYNOPSIS
 .B gml2gv
 [
@@ -16,9 +16,22 @@ gml2gv \- GML-DOT converter
 .I files
 ]
 .br
+.B gv2gml
+[
+.B \-?
+]
+[
+.BI -o outfile
+]
+[ 
+.I files
+]
+
 .SH DESCRIPTION
 .B gml2gv
 converts a graph specified in the GML format to a graph in the GV (formerly DOT) format. 
+.B gv2gml
+converts a graph specified in the GV format to a graph in the GML format.
 .SH OPTIONS
 The following options are supported:
 .TP
@@ -57,6 +70,12 @@ are differentiated in GML, so multiedges are created in GV with no user-availabl
 key. Also, no attribute information is lost, in that
 any GML attributes that aren't converted to GV equivalents are retained as
 attributes in the output graph.
+.P
+At present, 
+.B gv2gml
+does not support subgraphs and clusters. In addition, there does not appear to be
+a standard mechanism for specifying default node and edge attributes in GML, so
+any attributes are repeated for every node and edge.
 .SH AUTHORS
 Emden R. Gansner <erg@research.att.com>
 .SH "SEE ALSO"

@@ -19,7 +19,7 @@ pdfdir = $(pkgdatadir)/doc/pdf
 noinst_HEADERS = colortbl.h convert.h mmio.h matrix_market.h \
 	 graph_generator.h gml2gv.h gmlparse.h
 bin_PROGRAMS = gc gvcolor gxl2gv acyclic nop ccomps sccmap tred \
-	unflatten gvpack dijkstra bcomps mm2gv gvgen gml2gv
+	unflatten gvpack dijkstra bcomps mm2gv gvgen gml2gv gv2gml
 man_MANS = gc.1 gvcolor.1 gxl2gv.1 acyclic.1 nop.1 ccomps.1 sccmap.1 \
 	tred.1 unflatten.1 gvpack.1 dijkstra.1 bcomps.1 mm2gv.1 gvgen.1 gml2gv.1
 pdf_DATA = gc.1.pdf gvcolor.1.pdf gxl2gv.1.pdf acyclic.1.pdf \
@@ -30,6 +30,8 @@ pdf_DATA = gc.1.pdf gvcolor.1.pdf gxl2gv.1.pdf acyclic.1.pdf \
 install-data-hook:
 	(cd $(DESTDIR)$(man1dir); rm -f gv2gxl.1; $(LN_S) gxl2gv.1 gv2gxl.1;)
 	(cd $(DESTDIR)$(pdfdir); rm -f gv2gxl.1.pdf; $(LN_S) gxl2gv.1.pdf gv2gxl.1.pdf;)
+	(cd $(DESTDIR)$(man1dir); rm -f gv2gml.1; $(LN_S) gml2gv.1 gv2gml.1;)
+	(cd $(DESTDIR)$(pdfdir); rm -f gv2gml.1.pdf; $(LN_S) gml2gv.1.pdf gv2gml.1.pdf;)
 
 install-exec-hook:
 	(cd $(DESTDIR)$(bindir); rm -f gv2gxl$(EXEEXT); $(LN_S) gxl2gv$(EXEEXT) gv2gxl$(EXEEXT);)
@@ -153,6 +155,12 @@ mm2gv_LDADD = \
 
 mm2gv.1.pdf: mm2gv.1
 	- @GROFF@ -Tps -man mm2gv.1 | @PS2PDF@ - - >mm2gv.1.pdf
+
+gv2gml_SOURCES = gv2gml.c
+
+gv2gml_LDADD = \
+	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
+	$(top_builddir)/lib/cgraph/libcgraph.la
 
 gml2gv_SOURCES = gml2gv.c gmlparse.y gmlscan.l
 
