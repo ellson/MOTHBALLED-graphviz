@@ -54,8 +54,7 @@ libgvc_C_la_LIBADD += $(top_builddir)/lib/ortho/libortho_C.la
 libgvc_C_la_DEPENDENCIES +=  $(top_builddir)/lib/ortho/libortho_C.la
 endif
 if ENABLE_LTDL
-libgvc_C_la_LIBADD += $(LIBLTDL) $(LIBLTDL_LDFLAGS)
-libgvc_C_la_DEPENDENCIES += $(LIBLTDL)
+libgvc_C_la_LIBADD += @LIBLTDL@ $(LIBLTDL_LDFLAGS)
 endif
 
 libgvc_la_LDFLAGS = -version-info $(GVC_VERSION) -no-undefined
