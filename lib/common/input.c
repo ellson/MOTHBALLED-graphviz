@@ -61,7 +61,7 @@ static char *configFlags = "(additional options for config)  [-cv]\n";
 static char *configItems = "\n\
  -c          - Configure plugins (Writes $prefix/lib/graphviz/config \n\
                with available plugin information.  Needs write privilege.)\n\
- -v          - Enable verbose mode \n";
+ -?          - Print usage and exit\n";
 
 void dotneato_usage(int exval)
 {
