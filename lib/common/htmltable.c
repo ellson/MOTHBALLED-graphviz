@@ -348,6 +348,7 @@ endAnchor (GVJ_t* job, htmlmap_data_t* save, int openPrev)
 
 /* forward declaration */
 static void emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env);
+static void emit_html_rules(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env, char *fillc);
 
 static void
 emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
@@ -392,6 +393,12 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
 	if (tbl->data.border)
 	    doBorder(job, tbl->data.pencolor, tbl->data.border, pts);
     }
+    //render table rules
+    while (*cells){
+	emit_html_rules(job, *cells, env, tbl->data.bgcolor);
+	cells++;
+    }
+    cells = tbl->u.n.cells;
 
     while (*cells) {
 	emit_html_cell(job, *cells, env);
@@ -480,6 +487,73 @@ emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
 	if (initAnchor(job, env, &cp->data, pts, &saved, 0))
 	    endAnchor (job, &saved, 0);
     }
+}
+
+/* emit_html_rules:
+ * place vertical and horizontal lines between adjacent cells and
+ * extend the lines to intersect the rounded table boundary 
+ */
+static void
+emit_html_rules(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env, char *color)
+{
+    pointf rule_pt;
+    double rule_length;
+    unsigned char base;
+    boxf pts = cp->data.box;
+    pointf pos = env->pos;
+    
+    if (!color)
+	color = DEFAULT_COLOR;
+    gvrender_set_fillcolor(job, color);
+    gvrender_set_pencolor(job, color);
+
+    pts = cp->data.box;
+    pts.LL.x += pos.x;
+    pts.UR.x += pos.x;
+    pts.LL.y += pos.y;
+    pts.UR.y += pos.y;
+
+    //Determine vertical line coordinate and length
+    if (cp->col + cp->cspan < cp->parent->cc){
+	if(cp->row == 0) {  //first row
+		//extend to table border and add half cell spacing
+		base = cp->parent->data.border + cp->parent->data.space/2;
+		rule_pt.y = pts.LL.y - cp->parent->data.space/2; 
+	}
+	else if(cp->row + cp->rspan == cp->parent->rc){  //bottom row
+		//extend to table border and add half cell spacing
+		base = cp->parent->data.border + cp->parent->data.space/2;
+		rule_pt.y = pts.LL.y - cp->parent->data.space/2 - base;
+	}
+	else{
+		base = 0;
+		rule_pt.y = pts.LL.y - cp->parent->data.space/2;
+	}
+	rule_pt.x = pts.UR.x + cp->parent->data.space/2;
+	rule_length = base + pts.UR.y - pts.LL.y + cp->parent->data.space;
+	doSide(job,rule_pt,0,rule_length);
+    }
+//Determine the horizontal coordinate and length
+    if(cp->row + cp->rspan < cp->parent->rc){
+	if(cp->col == 0) { //first column 
+		//extend to table border and add half cell spacing
+		base = cp->parent->data.border + cp->parent->data.space/2;
+		rule_pt.x = pts.LL.x - base - cp->parent->data.space/2;
+	}
+	else if(cp->col + cp->cspan == cp->parent->cc){  //last column
+		//extend to table border and add half cell spacing
+		base = cp->parent->data.border + cp->parent->data.space/2;
+		rule_pt.x = pts.LL.x - cp->parent->data.space/2;
+	}
+	else{
+		base = 0;
+		  rule_pt.x = pts.LL.x - cp->parent->data.space/2;
+	}
+	rule_pt.y = pts.LL.y - cp->parent->data.space/2;
+	rule_length = base + pts.UR.x - pts.LL.x + cp->parent->data.space;
+	doSide(job,rule_pt,rule_length,0);
+    }
+
 }
 
 /* allocObj:
