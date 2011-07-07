@@ -394,10 +394,12 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
 	    doBorder(job, tbl->data.pencolor, tbl->data.border, pts);
     }
     //render table rules
+#if 0
     while (*cells){
 	emit_html_rules(job, *cells, env, tbl->data.bgcolor);
 	cells++;
     }
+#endif
     cells = tbl->u.n.cells;
 
     while (*cells) {
@@ -515,39 +517,39 @@ emit_html_rules(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env, char *color)
 
     //Determine vertical line coordinate and length
     if (cp->col + cp->cspan < cp->parent->cc){
-	if(cp->row == 0) {  //first row
-		//extend to table border and add half cell spacing
-		base = cp->parent->data.border + cp->parent->data.space/2;
-		rule_pt.y = pts.LL.y - cp->parent->data.space/2; 
+	if(cp->row == 0) {  // first row
+	    // extend to table border and add half cell spacing
+	    base = cp->parent->data.border + cp->parent->data.space/2;
+	    rule_pt.y = pts.LL.y - cp->parent->data.space/2; 
 	}
-	else if(cp->row + cp->rspan == cp->parent->rc){  //bottom row
-		//extend to table border and add half cell spacing
-		base = cp->parent->data.border + cp->parent->data.space/2;
-		rule_pt.y = pts.LL.y - cp->parent->data.space/2 - base;
+	else if(cp->row + cp->rspan == cp->parent->rc){  // bottom row
+	    // extend to table border and add half cell spacing
+	    base = cp->parent->data.border + cp->parent->data.space/2;
+	    rule_pt.y = pts.LL.y - cp->parent->data.space/2 - base;
 	}
-	else{
-		base = 0;
-		rule_pt.y = pts.LL.y - cp->parent->data.space/2;
+	else {
+	    base = 0;
+	    rule_pt.y = pts.LL.y - cp->parent->data.space/2;
 	}
 	rule_pt.x = pts.UR.x + cp->parent->data.space/2;
 	rule_length = base + pts.UR.y - pts.LL.y + cp->parent->data.space;
 	doSide(job,rule_pt,0,rule_length);
     }
-//Determine the horizontal coordinate and length
+    //Determine the horizontal coordinate and length
     if(cp->row + cp->rspan < cp->parent->rc){
-	if(cp->col == 0) { //first column 
-		//extend to table border and add half cell spacing
-		base = cp->parent->data.border + cp->parent->data.space/2;
-		rule_pt.x = pts.LL.x - base - cp->parent->data.space/2;
+	if(cp->col == 0) { // first column 
+	    // extend to table border and add half cell spacing
+	    base = cp->parent->data.border + cp->parent->data.space/2;
+	    rule_pt.x = pts.LL.x - base - cp->parent->data.space/2;
 	}
-	else if(cp->col + cp->cspan == cp->parent->cc){  //last column
-		//extend to table border and add half cell spacing
-		base = cp->parent->data.border + cp->parent->data.space/2;
-		rule_pt.x = pts.LL.x - cp->parent->data.space/2;
+	else if(cp->col + cp->cspan == cp->parent->cc){  // last column
+	    // extend to table border and add half cell spacing
+	    base = cp->parent->data.border + cp->parent->data.space/2;
+	    rule_pt.x = pts.LL.x - cp->parent->data.space/2;
 	}
-	else{
-		base = 0;
-		  rule_pt.x = pts.LL.x - cp->parent->data.space/2;
+	else {
+	    base = 0;
+	    rule_pt.x = pts.LL.x - cp->parent->data.space/2;
 	}
 	rule_pt.y = pts.LL.y - cp->parent->data.space/2;
 	rule_length = base + pts.UR.x - pts.LL.x + cp->parent->data.space;
