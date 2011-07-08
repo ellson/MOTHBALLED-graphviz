@@ -52,8 +52,7 @@ BuildRequires: xorg-x11-devel
 BuildRequires: fontconfig-devel
 %define TCL 1
 BuildRequires: tcl-devel tk-devel 
-# define PERL 1
-# BuildRequires: perl perl-ExtUtils-Embed
+%define PERL 1
 %define RUBY 1
 BuildRequires: ruby ruby-devel
 %define GUILE 1
@@ -80,12 +79,11 @@ BuildRequires: libglade2-devel gtkglarea2-devel gtkglext-devel freeglut-devel
 # BuildRequires: qt-devel
 %endif
 %if %rhel >= 6
+BuildRequires: perl-devel perl-libs perl-ExtUtils-Embed
 %define LUA 1
 BuildRequires: lua-devel
 %define OCAML 1
 BuildRequires: ocaml
-%define PERL 1
-BuildRequires: perl-devel perl-libs perl-ExtUtils-Embed
 %define PHP 1
 BuildRequires: php-devel
 %define MYLIBGD 0
