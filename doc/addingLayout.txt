@@ -268,7 +268,7 @@ NOTES:
   flag of bits, and the only flag supported is LAYOUT_USES_RANKDIR,
   which enables the layout to the rankdir attribute.
 
-Changes need to be made to any applications, such as gvedit, that
+Changes need to be made to any applications that
 statically know about layout algorithms.
 
 ==================
