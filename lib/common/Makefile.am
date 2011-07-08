@@ -27,12 +27,12 @@ BUILT_SOURCES = colortbl.h ps_font_equiv.h htmlparse.h
 pkginclude_HEADERS = arith.h geom.h color.h types.h textpara.h usershape.h
 noinst_HEADERS = render.h utils.h memory.h \
 	geomprocs.h colorprocs.h colortbl.h entities.h globals.h \
-	logic.h const.h macros.h htmllex.h htmltable.h pointset.h
+	logic.h const.h macros.h htmllex.h htmltable.h pointset.h intset.h
 noinst_LTLIBRARIES = libcommon_C.la
 
 libcommon_C_la_SOURCES = arrows.c colxlate.c fontmetrics.c \
 	args.c memory.c globals.c htmllex.c htmlparse.y htmltable.c input.c \
-	pointset.c postproc.c routespl.c splines.c psusershape.c \
+	pointset.c intset.c postproc.c routespl.c splines.c psusershape.c \
 	timing.c labels.c ns.c shapes.c utils.c geom.c \
 	output.c emit.c ps_font_equiv.txt ps_fontmap.txt fontmap.cfg \
 	color_names

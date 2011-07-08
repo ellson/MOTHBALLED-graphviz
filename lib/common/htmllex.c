@@ -229,6 +229,26 @@ static int cellborderfn(htmltbl_t * p, char *v)
     return 0;
 }
 
+static int columnsfn(htmltbl_t * p, char *v)
+{
+    if (*v != '*') {
+	agerr(AGWARN, "Unknown value %s for COLUMNS - ignored\n", v);
+	return 1;
+    }
+    p->flags |= HTML_VRULE;
+    return 0;
+}
+
+static int rowsfn(htmltbl_t * p, char *v)
+{
+    if (*v != '*') {
+	agerr(AGWARN, "Unknown value %s for ROWS - ignored\n", v);
+	return 1;
+    }
+    p->flags |= HTML_HRULE;
+    return 0;
+}
+
 static int fixedsizefn(htmldata_t * p, char *v)
 {
     int rv = 0;
@@ -412,11 +432,13 @@ static attr_item tbl_items[] = {
     {"cellpadding", (attrFn) cellpaddingfn},
     {"cellspacing", (attrFn) cellspacingfn},
     {"color", (attrFn) pencolorfn},
+    {"columns", (attrFn) columnsfn},
     {"fixedsize", (attrFn) fixedsizefn},
     {"height", (attrFn) heightfn},
     {"href", (attrFn) hreffn},
     {"id", (attrFn) idfn},
     {"port", (attrFn) portfn},
+    {"rows", (attrFn) rowsfn},
     {"style", (attrFn) stylefn},
     {"target", (attrFn) targetfn},
     {"title", (attrFn) titlefn},
@@ -576,6 +598,10 @@ static void startElement(void *user, const char *name, char **atts)
     } else if (strcasecmp(name, "BR") == 0) {
 	mkBR(atts);
 	state.tok = T_br;
+    } else if (strcasecmp(name, "HR") == 0) {
+	state.tok = T_hr;
+    } else if (strcasecmp(name, "VR") == 0) {
+	state.tok = T_vr;
     } else if (strcasecmp(name, "IMG") == 0) {
 	htmllval.img = mkImg(atts);
 	state.tok = T_img;
@@ -616,6 +642,16 @@ static void endElement(void *user, const char *name)
 	    state.tok = T_BR;
 	else
 	    state.tok = T_end_br;
+    } else if (strcasecmp(name, "HR") == 0) {
+	if (state.tok == T_hr)
+	    state.tok = T_HR;
+	else
+	    state.tok = T_end_hr;
+    } else if (strcasecmp(name, "VR") == 0) {
+	if (state.tok == T_vr)
+	    state.tok = T_VR;
+	else
+	    state.tok = T_end_vr;
     } else if (strcasecmp(name, "IMG") == 0) {
 	if (state.tok == T_img)
 	    state.tok = T_IMG;
@@ -774,6 +810,24 @@ static void printTok(int tok)
     char *s;
 
     switch (tok) {
+    case T_VR:
+	s = "T_VR";
+	break;
+    case T_vr:
+	s = "T_vr";
+	break;
+    case T_end_vr:
+	s = "T_end_vr";
+	break;
+    case T_HR:
+	s = "T_HR";
+	break;
+    case T_hr:
+	s = "T_hr";
+	break;
+    case T_end_hr:
+	s = "T_end_hr";
+	break;
     case T_BR:
 	s = "T_BR";
 	break;
@@ -905,8 +959,10 @@ int htmllex()
 	if (endp)
 	    state.ptr = endp;
     } while (state.tok == 0);
+    /* printTok (state.tok); */
     return state.tok;
 #else
     return EOF;
 #endif
 }
+

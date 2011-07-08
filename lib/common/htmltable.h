@@ -84,6 +84,9 @@ extern "C" {
 #define HTML_TEXT 2
 #define HTML_IMAGE 3
 
+#define HTML_VRULE 1
+#define HTML_HRULE 2
+
     typedef struct htmlcell_t htmlcell_t;
     typedef struct htmltbl_t htmltbl_t;
 	
@@ -106,6 +109,7 @@ extern "C" {
 	int cc;			/* number of columns */
 	htmlfont_t *font;	/* font info */
 	unsigned char style;
+	unsigned char flags;
     };
 
     struct htmllabel_t {
@@ -125,6 +129,7 @@ extern "C" {
 	unsigned short row;
 	htmllabel_t child;
 	htmltbl_t *parent;
+	unsigned char ruled;
     };
 
 /* During parsing, table contents are stored as rows of cells.
@@ -138,6 +143,7 @@ extern "C" {
 	    Dt_t *rp;
 	    htmlcell_t *cp;
 	} u;
+	unsigned char ruled;
     } pitem;
 	
     extern htmllabel_t *parseHTML(char *, int *, int);

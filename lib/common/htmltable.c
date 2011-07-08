@@ -36,6 +36,7 @@
 #include "htmltable.h"
 #include "agxbuf.h"
 #include "pointset.h"
+#include "intset.h"
 
 #define DEFAULT_BORDER    1
 #define DEFAULT_CELLPADDING  2
@@ -348,7 +349,73 @@ endAnchor (GVJ_t* job, htmlmap_data_t* save, int openPrev)
 
 /* forward declaration */
 static void emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env);
-static void emit_html_rules(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env, char *fillc);
+
+/* emit_html_rules:
+ * place vertical and horizontal lines between adjacent cells and
+ * extend the lines to intersect the rounded table boundary 
+ */
+static void
+emit_html_rules(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env, char *color)
+{
+    pointf rule_pt;
+    double rule_length;
+    unsigned char base;
+    boxf pts = cp->data.box;
+    pointf pos = env->pos;
+    
+    if (!color)
+	color = DEFAULT_COLOR;
+    gvrender_set_fillcolor(job, color);
+    gvrender_set_pencolor(job, color);
+
+    pts = cp->data.box;
+    pts.LL.x += pos.x;
+    pts.UR.x += pos.x;
+    pts.LL.y += pos.y;
+    pts.UR.y += pos.y;
+
+    //Determine vertical line coordinate and length
+    if ((cp->ruled & HTML_VRULE) && (cp->col + cp->cspan < cp->parent->cc)) {
+	if(cp->row == 0) {  // first row
+	    // extend to table border and add half cell spacing
+	    base = cp->parent->data.border + cp->parent->data.space/2;
+	    rule_pt.y = pts.LL.y - cp->parent->data.space/2; 
+	}
+	else if(cp->row + cp->rspan == cp->parent->rc){  // bottom row
+	    // extend to table border and add half cell spacing
+	    base = cp->parent->data.border + cp->parent->data.space/2;
+	    rule_pt.y = pts.LL.y - cp->parent->data.space/2 - base;
+	}
+	else {
+	    base = 0;
+	    rule_pt.y = pts.LL.y - cp->parent->data.space/2;
+	}
+	rule_pt.x = pts.UR.x + cp->parent->data.space/2;
+	rule_length = base + pts.UR.y - pts.LL.y + cp->parent->data.space;
+	doSide(job,rule_pt,0,rule_length);
+    }
+
+    //Determine the horizontal coordinate and length
+    if ((cp->ruled & HTML_HRULE) && (cp->row + cp->rspan < cp->parent->rc)) {
+	if(cp->col == 0) { // first column 
+	    // extend to table border and add half cell spacing
+	    base = cp->parent->data.border + cp->parent->data.space/2;
+	    rule_pt.x = pts.LL.x - base - cp->parent->data.space/2;
+	}
+	else if(cp->col + cp->cspan == cp->parent->cc){  // last column
+	    // extend to table border and add half cell spacing
+	    base = cp->parent->data.border + cp->parent->data.space/2;
+	    rule_pt.x = pts.LL.x - cp->parent->data.space/2;
+	}
+	else {
+	    base = 0;
+	    rule_pt.x = pts.LL.x - cp->parent->data.space/2;
+	}
+	rule_pt.y = pts.LL.y - cp->parent->data.space/2;
+	rule_length = base + pts.UR.x - pts.LL.x + cp->parent->data.space;
+	doSide(job,rule_pt,rule_length,0);
+    }
+}
 
 static void
 emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
@@ -356,6 +423,7 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
     boxf pts = tbl->data.box;
     pointf pos = env->pos;
     htmlcell_t **cells = tbl->u.n.cells;
+    htmlcell_t *cp;
     static htmlfont_t savef;
     htmlmap_data_t saved;
     int anchor; /* if true, we need to undo anchor settings. */
@@ -394,12 +462,9 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
 	    doBorder(job, tbl->data.pencolor, tbl->data.border, pts);
     }
     //render table rules
-#if 0
-    while (*cells){
-	emit_html_rules(job, *cells, env, tbl->data.bgcolor);
-	cells++;
+    while ((cp = *cells++)){
+	if (cp->ruled) emit_html_rules(job, cp, env, tbl->data.bgcolor);
     }
-#endif
     cells = tbl->u.n.cells;
 
     while (*cells) {
@@ -489,73 +554,6 @@ emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
 	if (initAnchor(job, env, &cp->data, pts, &saved, 0))
 	    endAnchor (job, &saved, 0);
     }
-}
-
-/* emit_html_rules:
- * place vertical and horizontal lines between adjacent cells and
- * extend the lines to intersect the rounded table boundary 
- */
-static void
-emit_html_rules(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env, char *color)
-{
-    pointf rule_pt;
-    double rule_length;
-    unsigned char base;
-    boxf pts = cp->data.box;
-    pointf pos = env->pos;
-    
-    if (!color)
-	color = DEFAULT_COLOR;
-    gvrender_set_fillcolor(job, color);
-    gvrender_set_pencolor(job, color);
-
-    pts = cp->data.box;
-    pts.LL.x += pos.x;
-    pts.UR.x += pos.x;
-    pts.LL.y += pos.y;
-    pts.UR.y += pos.y;
-
-    //Determine vertical line coordinate and length
-    if (cp->col + cp->cspan < cp->parent->cc){
-	if(cp->row == 0) {  // first row
-	    // extend to table border and add half cell spacing
-	    base = cp->parent->data.border + cp->parent->data.space/2;
-	    rule_pt.y = pts.LL.y - cp->parent->data.space/2; 
-	}
-	else if(cp->row + cp->rspan == cp->parent->rc){  // bottom row
-	    // extend to table border and add half cell spacing
-	    base = cp->parent->data.border + cp->parent->data.space/2;
-	    rule_pt.y = pts.LL.y - cp->parent->data.space/2 - base;
-	}
-	else {
-	    base = 0;
-	    rule_pt.y = pts.LL.y - cp->parent->data.space/2;
-	}
-	rule_pt.x = pts.UR.x + cp->parent->data.space/2;
-	rule_length = base + pts.UR.y - pts.LL.y + cp->parent->data.space;
-	doSide(job,rule_pt,0,rule_length);
-    }
-    //Determine the horizontal coordinate and length
-    if(cp->row + cp->rspan < cp->parent->rc){
-	if(cp->col == 0) { // first column 
-	    // extend to table border and add half cell spacing
-	    base = cp->parent->data.border + cp->parent->data.space/2;
-	    rule_pt.x = pts.LL.x - base - cp->parent->data.space/2;
-	}
-	else if(cp->col + cp->cspan == cp->parent->cc){  // last column
-	    // extend to table border and add half cell spacing
-	    base = cp->parent->data.border + cp->parent->data.space/2;
-	    rule_pt.x = pts.LL.x - cp->parent->data.space/2;
-	}
-	else {
-	    base = 0;
-	    rule_pt.x = pts.LL.x - cp->parent->data.space/2;
-	}
-	rule_pt.y = pts.LL.y - cp->parent->data.space/2;
-	rule_length = base + pts.UR.x - pts.LL.x + cp->parent->data.space;
-	doSide(job,rule_pt,rule_length,0);
-    }
-
 }
 
 /* allocObj:
@@ -704,7 +702,7 @@ static void free_html_cell(htmlcell_t * cp)
 
 /* free_html_tbl:
  * If tbl->n_rows is negative, table is in initial state from
- * HTML parse, with data stored in u.p. Once run through processTable,
+ * HTML parse, with data stored in u.p. Once run through processTbl,
  * data is stored in u.n and tbl->n_rows is > 0.
  */
 static void free_html_tbl(htmltbl_t * tbl)
@@ -1073,9 +1071,11 @@ static int processTbl(graph_t *g, htmltbl_t * tbl, htmlenv_t * env)
     int n_rows = 0;
     int n_cols = 0;
     PointSet *ps = newPS();
+    Dt_t* is = openIntSet();
 
     rp = (pitem *) dtflatten(rows);
     cnt = 0;
+    r = 0;
     while (rp) {
 	cdict = rp->u.rp;
 	cp = (pitem *) dtflatten(cdict);
@@ -1084,7 +1084,11 @@ static int processTbl(graph_t *g, htmltbl_t * tbl, htmlenv_t * env)
 	    cnt++;
 	    cp = (pitem *) dtlink(cdict, (Dtlink_t *) cp);
 	}
+	if (rp->ruled) {
+	    addIntSet (is, r+1);
+	}
 	rp = (pitem *) dtlink(rows, (Dtlink_t *) rp);
+	r++;
     }
 
     cells = tbl->u.n.cells = N_NEW(cnt + 1, htmlcell_t *);
@@ -1104,6 +1108,7 @@ static int processTbl(graph_t *g, htmltbl_t * tbl, htmlenv_t * env)
 	    c += cellp->cspan;
 	    n_cols = MAX(c, n_cols);
 	    n_rows = MAX(r + cellp->rspan, n_rows);
+	    if (inIntSet (is, r+cellp->rspan)) cellp->ruled |= HTML_HRULE;
 	    cp = (pitem *) dtlink(cdict, (Dtlink_t *) cp);
 	}
 	rp = (pitem *) dtlink(rows, (Dtlink_t *) rp);
@@ -1112,6 +1117,7 @@ static int processTbl(graph_t *g, htmltbl_t * tbl, htmlenv_t * env)
     tbl->rc = n_rows;
     tbl->cc = n_cols;
     dtclose(rows);
+    dtclose(is);
     freePS(ps);
     return rv;
 }

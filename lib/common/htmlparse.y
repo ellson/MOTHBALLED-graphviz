@@ -252,16 +252,26 @@ mkText(void)
     return hft;
 }
 
+static pitem* lastRow (void)
+{
+  htmltbl_t* tbl = HTMLstate.tblstack;
+  pitem*     sp = dtlast (tbl->u.p.rows);
+  return sp;
+}
+
 /* addRow:
  * Add new cell row to current table.
  */
-static void addRow (void)
+static pitem* addRow (void)
 {
   Dt_t*      dp = dtopen(&cellDisc, Dtqueue);
   htmltbl_t* tbl = HTMLstate.tblstack;
   pitem*     sp = NEW(pitem);
   sp->u.rp = dp;
+  if (tbl->flags & HTML_HRULE)
+    sp->ruled = 1;
   dtinsert (tbl->u.p.rows, sp);
+  return sp;
 }
 
 /* setCell:
@@ -276,6 +286,8 @@ static void setCell (htmlcell_t* cp, void* obj, int kind)
   sp->u.cp = cp;
   dtinsert (row, sp);
   cp->child.kind = kind;
+  if (tbl->flags & HTML_VRULE)
+    cp->ruled = HTML_VRULE;
   
   if(kind == HTML_TEXT)
   	cp->child.u.txt = (htmltxt_t*)obj;
@@ -410,11 +422,14 @@ popFont (void)
   htmltbl_t*   tbl;
   htmlfont_t*  font;
   htmlimg_t*   img;
+  pitem*       p;
 }
 
 %token T_end_br T_end_img T_row T_end_row T_html T_end_html
 %token T_end_table T_end_cell T_end_font T_string T_error
 %token T_n_italic T_n_bold T_n_underline T_n_sup T_n_sub
+%token T_HR T_hr T_end_hr
+%token T_VR T_vr T_end_vr
 %token <i> T_BR T_br
 %token <img> T_IMG T_img
 %token <tbl> T_table
@@ -422,9 +437,11 @@ popFont (void)
 %token <font> T_font T_italic T_bold T_underline T_sup T_sub
 
 %type <txt> fonttext
+%type <cell> cell cells
 %type <i> br  
 %type <tbl> table fonttable
 %type <img> image
+%type <p> row rows
 
 %start html
              
@@ -528,26 +545,37 @@ opt_space : string
           | /* empty*/
           ;
 
-rows : row
-     | rows row
+rows : row { $$ = $1; }
+     | rows row { $$ = $2; }
+     | rows HR row { $1->ruled = 1; $$ = $3; }
      ;
 
-row : T_row { addRow (); } cells T_end_row
+row : T_row { addRow (); } cells T_end_row { $$ = lastRow(); }
       ;
 
-cells : cell
-      | cells cell
+cells : cell { $$ = $1; }
+      | cells cell { $$ = $2; }
+      | cells VR cell { $1->ruled |= HTML_VRULE; $$ = $3; }
       ;
 
-cell : T_cell fonttable { setCell($1,$2,HTML_TBL); } T_end_cell
-     | T_cell fonttext { setCell($1,$2,HTML_TEXT); } T_end_cell
-     | T_cell image { setCell($1,$2,HTML_IMAGE); } T_end_cell
-     | T_cell { setCell($1,mkText(),HTML_TEXT); } T_end_cell
+cell : T_cell fonttable { setCell($1,$2,HTML_TBL); } T_end_cell { $$ = $1; }
+     | T_cell fonttext { setCell($1,$2,HTML_TEXT); } T_end_cell { $$ = $1; }
+     | T_cell image { setCell($1,$2,HTML_IMAGE); } T_end_cell { $$ = $1; }
+     | T_cell { setCell($1,mkText(),HTML_TEXT); } T_end_cell { $$ = $1; }
      ;
 
 image  : T_img T_end_img { $$ = $1; }
        | T_IMG { $$ = $1; }
        ;
+
+HR  : T_hr T_end_hr
+    | T_HR
+    ;
+
+VR  : T_vr T_end_vr
+    | T_VR
+    ;
+
 
 %%
 
