@@ -21,13 +21,13 @@ if WITH_ORTHO
 AM_CFLAGS = -D_BLD_gvc=1
 endif
 
-noinst_HEADERS = fPQ.h ortho.h intset.h maze.h partition.h rawgraph.h sgraph.h structures.h trap.h
+noinst_HEADERS = fPQ.h ortho.h maze.h partition.h rawgraph.h sgraph.h structures.h trap.h
 
 if WITH_ORTHO
 noinst_LTLIBRARIES = libortho_C.la
 endif
 
-libortho_C_la_SOURCES = fPQ.c intset.c maze.c ortho.c partition.c rawgraph.c sgraph.c trapezoid.c
+libortho_C_la_SOURCES = fPQ.c maze.c ortho.c partition.c rawgraph.c sgraph.c trapezoid.c
 
 EXTRA_DIST = Makefile.old gvortho.vcproj
  
