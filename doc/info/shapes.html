@@ -435,6 +435,11 @@ Note that, as in HTML, element and attribute names are case-insensitive.
   <TD ALIGN=LEFT><I>rows</I> <I>row</I></TD>
 </TR>
 <TR>
+  <TD ALIGN=RIGHT></TD>
+  <TD ALIGN=LEFT>|</TD>
+  <TD ALIGN=LEFT><I>rows</I> <B>&lt;HR/&gt;</B> <I>row</I></TD>
+</TR>
+<TR>
   <TD ALIGN=RIGHT><I>row</I></TD>
   <TD ALIGN=LEFT>:</TD>
   <TD ALIGN=LEFT><B>&lt;TR&gt;</B> <I>cells</I> <B>&lt;/TR&gt;</B></TD>
@@ -448,6 +453,11 @@ Note that, as in HTML, element and attribute names are case-insensitive.
   <TD ALIGN=RIGHT></TD>
   <TD ALIGN=LEFT>|</TD>
   <TD ALIGN=LEFT><I>cells</I> <I>cell</I></TD>
+</TR>
+<TR>
+  <TD ALIGN=RIGHT></TD>
+  <TD ALIGN=LEFT>|</TD>
+  <TD ALIGN=LEFT><I>cells</I> <B>&lt;VR/&gt;</B> <I>cell</I></TD>
 </TR>
 <TR>
   <TD ALIGN=RIGHT><I>cell</I></TD>
@@ -493,11 +503,13 @@ Attribute values must appear in double quotes.
   CELLPADDING="<I>value</I>"
   CELLSPACING="<I>value</I>"
   COLOR="<I>color</I>"
+  COLUMNS="<I>value</I>"
   FIXEDSIZE="FALSE|TRUE"
   HEIGHT="<I>value</I>"
   HREF="<I>value</I>"
   ID="<I>value</I>"
   PORT="<I>portName</I>"
+  ROWS="<I>value</I>"
   STYLE="ROUNDED"
   TARGET="<I>value</I>"
   TITLE="<I>value</I>"
@@ -550,7 +562,7 @@ Attribute values must appear in double quotes.
   &lt;!-- Line break --&gt;
 <PRE>&lt;BR
   ALIGN="CENTER|LEFT|RIGHT"
-&gt;
+/&gt;
 </PRE>
 
 <P>
@@ -589,6 +601,18 @@ Attribute values must appear in double quotes.
 <PRE>&lt;SUP
   &lt;!-- No attributes --&gt;
 &gt;
+</PRE>
+<P>
+  &lt;!-- Horizontal rule --&gt;
+<PRE>&lt;HR
+  &lt;!-- No attributes --&gt;
+/&gt;
+</PRE>
+<P>
+  &lt;!-- Vertical rule --&gt;
+<PRE>&lt;VR
+  &lt;!-- No attributes --&gt;
+/&gt;
 </PRE>
 
 <P>
@@ -685,6 +709,13 @@ specifies the number of columns spanned by the cell. The default is 1.
 The maximum value is 65535.
 </BLOCKQUOTE>
 
+<B><I><FONT SIZE=-1>COLUMNS="value"</FONT></I></B>
+<BLOCKQUOTE>
+provides general formatting information concerning the columns.
+At present, the only legal value is "*", which causes a vertical rule to
+appear between every cell in every row.
+</BLOCKQUOTE>
+
 <B><I><FONT SIZE=-1>FACE="fontname"</FONT></I></B>
 <BLOCKQUOTE>
 specifies the font to use within the scope of
@@ -754,6 +785,13 @@ This can be used to modify the head
 or tail of an edge, so that the end attaches directly to the object.
 </BLOCKQUOTE>
 
+<B><I><FONT SIZE=-1>ROWS="value"</FONT></I></B>
+<BLOCKQUOTE>
+provides general formatting information concerning the rows.
+At present, the only legal value is "*", which causes a horizontal rule to
+appear between every row.
+</BLOCKQUOTE>
+
 <B><I><FONT SIZE=-1>ROWSPAN="value"</FONT></I></B>
 <BLOCKQUOTE>
 specifies the number of rows spanned by the cell. The default is 1.
@@ -798,6 +836,8 @@ specifies style characteristics of the table. At present, the only
 legal value is "ROUNDED", which causes the table to have rounded corners.
 This probably works best if the outmost cells have no borders, or their CELLSPACING
 is sufficiently large.
+If it is desirable to have borders around the cells, use <I><B>HR</B></I>
+and <I><B>VR</B></I> elements, or the <I><B>COLUMNS</B></I> and <I><B>ROWS</B></I> attributes of <I><B>TABLE</B></I>.
 </BLOCKQUOTE>
 
 <B><I><FONT SIZE=-1>TARGET="value"</FONT></I></B>
@@ -862,6 +902,11 @@ are the default for drawing text. These can be overridden by using
 until overridden by an enclosed <I><B>FONT</B></I> element.
 Finally, the pencolor or color of the graph object will be used as
 the border color.
+<P>
+If you want horizontal or vertical rules used uniformly within a table, consider
+using the <I><B>COLUMNS</B></I> or <I><B>ROWS</B></I> attributes 
+rather than using many
+<I><B>HR</B></I> and <I><B>VR</B></I> elements.
 <P>
 Because of certain limitations in handling tables in a device-independent
 manner, when <I><B>BORDER</B></I> is 1 and both table and cell borders
