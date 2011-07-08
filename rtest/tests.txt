@@ -269,3 +269,12 @@ dot gv
 nestedclust
 =
 dot gv
+
+rd_rules
+=
+dot png
+
+sq_rules
+=
+dot png
+
