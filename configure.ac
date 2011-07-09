@@ -257,9 +257,9 @@ AC_PROG_LN_S
 
 # prefer GNU variants over, say, Oracle's or Apples
 AC_CHECK_PROGS(SED,gsed sed,false)
-AC_CHECK_PROGS(GREP,ggrep grep,false)
 AC_CHECK_PROGS(SORT,gsort sort,false)
 
+AC_CHECK_PROG(EGREP,egrep,egrep,false)
 AC_CHECK_PROG(GROFF,groff,groff,false)
 AC_CHECK_PROG(PS2PDF,ps2pdf,ps2pdf,false)
 AC_CHECK_PROG(PS2PDF,pstopdf,pstopdf,false)
@@ -337,7 +337,7 @@ else
 	        * )
 		    # -Wno-unused-parameter only needed for bug in gcc3
 		    # this test from: http://cvs.auriga.wearlab.de/cgi-bin/cvsweb.cgi/dillo/configure.in?rev=1.90;content-type=text%2Fplain;cvsroot=dillo
-		    if test "`$CC -v 2>&1 | $GREP 'version 3'`" != ""; then
+		    if test "`$CC -v 2>&1 | $EGREP 'version 3'`" != ""; then
 		        CFLAGS="${CFLAGS} -Wno-unused-parameter"
 		    fi
 	            CFLAGS="${CFLAGS} -Wno-unknown-pragmas -Wstrict-prototypes -Wpointer-arith -Wall -ffast-math"
@@ -348,7 +348,7 @@ else
 fi
 # -ffast-math is incompatible with FP error trapping
 #     ref: https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=175793
-if `echo ${CFLAGS} | $GREP ffast-math >/dev/null`; then
+if `echo ${CFLAGS} | $EGREP ffast-math >/dev/null`; then
     AC_DEFINE_UNQUOTED(NO_FPERR,1,[Define if no fpu error exception handling is required.])
 fi
 
@@ -565,7 +565,7 @@ else
   if test "x$SWIG" = "x"; then
     use_swig="No (swig not available)"
   else
-    SWIG_VERSION=`$SWIG -version 2>&1 | $GREP Version | cut -d ' ' -f 3`
+    SWIG_VERSION=`$SWIG -version 2>&1 | $EGREP Version | cut -d ' ' -f 3`
     SWIG_VERSION_MAJOR=`echo $SWIG_VERSION | cut -d '.' -f 1`
     SWIG_VERSION_MINOR=`echo $SWIG_VERSION | cut -d '.' -f 2`
     if test $SWIG_VERSION_MAJOR -lt 2; then
@@ -600,7 +600,7 @@ else
   if test "x$use_swig" != "xYes"; then
     use_sharp="No (swig not available)"
   else
-    if test `$SWIG -help 2>&1 | $GREP -c '\-csharp *- Generate'` = 0; then
+    if test `$SWIG -help 2>&1 | $EGREP -c '\-csharp *- Generate'` = 0; then
       use_sharp="No (swig does not support -csharp option)"
     else
       AC_CHECK_PROG(MCS,mcs,mcs)
@@ -631,7 +631,7 @@ else
   if test "x$use_swig" != "xYes"; then
     use_go="No (swig not available)"
   else
-    if test `$SWIG -help 2>&1 | $GREP -c '\-go* *- Generate'` = 0 ; then
+    if test `$SWIG -help 2>&1 | $EGREP -c '\-go* *- Generate'` = 0 ; then
       use_go="No (swig does not support -go option)"
     else
       AC_CHECK_PROG(GO,6g,8g)
@@ -675,7 +675,7 @@ else
   if test "x$use_swig" != "xYes"; then
     use_guile="No (swig not available)"
   else
-    if test `$SWIG -help 2>&1 | $GREP -c '\-guile *- Generate'` = 0; then
+    if test `$SWIG -help 2>&1 | $EGREP -c '\-guile *- Generate'` = 0; then
       use_guile="No (swig does not support -guile option)"
     else
       AC_CHECK_PROG(GUILE,guile,guile)
@@ -739,7 +739,7 @@ else
   if test "x$use_swig" != "xYes"; then
     use_io="No (swig not available)"
   else
-    if test `$SWIG -help 2>&1 | $GREP -c '\-io *- Generate'` = 0; then
+    if test `$SWIG -help 2>&1 | $EGREP -c '\-io *- Generate'` = 0; then
       use_io="No (swig does not support -io option)"
     else
       AC_CHECK_PROG(IO,io,io)
@@ -770,7 +770,7 @@ else
   if test "x$use_swig" != "xYes"; then
     use_java="No (swig not available)"
   else
-    if test `$SWIG -help 2>&1 | $GREP -c '\-java *- Generate'` = 0; then
+    if test `$SWIG -help 2>&1 | $EGREP -c '\-java *- Generate'` = 0; then
       use_java="No (swig does not support -java option)"
     else
       AC_CHECK_PROG(JAVA,java,java)
@@ -824,7 +824,7 @@ else
   if test "x$use_swig" != "xYes"; then
     use_lua="No (swig not available)"
   else
-    if test `$SWIG -help 2>&1 | $GREP -c '\-lua *- Generate'` = 0; then
+    if test `$SWIG -help 2>&1 | $EGREP -c '\-lua *- Generate'` = 0; then
       use_lua="No (swig does not support -lua option)"
     else
       AC_CHECK_PROG(LUA,lua,lua)
@@ -965,7 +965,7 @@ else
   if test "x$use_swig" != "xYes"; then
     use_ocaml="No (swig not available)"
   else
-    if test `$SWIG -help 2>&1 | $GREP -c '\-ocaml *- Generate'` = 0; then
+    if test `$SWIG -help 2>&1 | $EGREP -c '\-ocaml *- Generate'` = 0; then
       use_ocaml="No (swig does not support -ocaml option)"
     else
       AC_CHECK_PROG(OCAML,ocaml,ocaml)
@@ -1006,7 +1006,7 @@ else
   if test "x$use_swig" != "xYes"; then
     use_perl="No (swig not available)"
   else
-    if test `$SWIG -help 2>&1 | $GREP -c '\-perl *- Generate'` = 0; then
+    if test `$SWIG -help 2>&1 | $EGREP -c '\-perl *- Generate'` = 0; then
       use_perl="No (swig does not support -perl option)"
     else
       AC_CHECK_PROG(PERL,perl,perl)
@@ -1060,7 +1060,7 @@ else
   if test "x$use_swig" != "xYes"; then
     use_php="No (swig not available)"
   else
-    if test `$SWIG -help 2>&1 | $GREP -c '\-php5* *- Generate'` = 0 ; then
+    if test `$SWIG -help 2>&1 | $EGREP -c '\-php5* *- Generate'` = 0 ; then
       use_php="No (swig does not support -php or -php5 option)"
     else
       AC_CHECK_PROGS(PHP,php5 php)
@@ -1108,14 +1108,14 @@ else
   if test "x$use_swig" != "xYes"; then
     use_python="No (swig not available)"
   else
-    if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
+    if test `$SWIG -help 2>&1 | $EGREP -c '\-python *- Generate'` = 0; then
       use_python="No (swig does not support -python option)"
     else
       AC_CHECK_PROG(PYTHON,python,python)
       if test "x$PYTHON" = "x"; then
         use_python="No (python not available)"
       else
-        PYTHON_VERSION=`$PYTHON -V 2>&1 | $GREP Python | cut -d ' ' -f 2`
+        PYTHON_VERSION=`$PYTHON -V 2>&1 | $EGREP Python | cut -d ' ' -f 2`
         if test "x$PYTHON_VERSION" = "x"; then
           PYTHON=
         else
@@ -1172,14 +1172,14 @@ else
   if test "x$use_swig" != "xYes"; then
     use_python23="No (swig not available)"
   else
-    if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
+    if test `$SWIG -help 2>&1 | $EGREP -c '\-python *- Generate'` = 0; then
       use_python23="No (swig does not support -python option)"
     else
       AC_CHECK_PROG(PYTHON23,python2.3,python2.3)
       if test "x$PYTHON23" = "x"; then
         use_python23="No (python23 not available)"
       else
-        PYTHON23_VERSION=`$PYTHON23 -V 2>&1 | $GREP Python | cut -d ' ' -f 2`
+        PYTHON23_VERSION=`$PYTHON23 -V 2>&1 | $EGREP Python | cut -d ' ' -f 2`
         if test "x$PYTHON23_VERSION" = "x"; then
           PYTHON23=
         else
@@ -1236,14 +1236,14 @@ else
   if test "x$use_swig" != "xYes"; then
     use_python24="No (swig not available)"
   else
-    if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
+    if test `$SWIG -help 2>&1 | $EGREP -c '\-python *- Generate'` = 0; then
       use_python24="No (swig does not support -python option)"
     else
       AC_CHECK_PROG(PYTHON24,python2.4,python2.4)
       if test "x$PYTHON24" = "x"; then
         use_python24="No (python24 not available)"
       else
-        PYTHON24_VERSION=`$PYTHON24 -V 2>&1 | $GREP Python | cut -d ' ' -f 2`
+        PYTHON24_VERSION=`$PYTHON24 -V 2>&1 | $EGREP Python | cut -d ' ' -f 2`
         if test "x$PYTHON24_VERSION" = "x"; then
           PYTHON24=
         else
@@ -1300,14 +1300,14 @@ else
   if test "x$use_swig" != "xYes"; then
     use_python25="No (swig not available)"
   else
-    if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
+    if test `$SWIG -help 2>&1 | $EGREP -c '\-python *- Generate'` = 0; then
       use_python25="No (swig does not support -python option)"
     else
       AC_CHECK_PROG(PYTHON25,python2.5,python2.5)
       if test "x$PYTHON25" = "x"; then
         use_python25="No (python25 not available)"
       else
-        PYTHON25_VERSION=`$PYTHON25 -V 2>&1 | $GREP Python | cut -d ' ' -f 2`
+        PYTHON25_VERSION=`$PYTHON25 -V 2>&1 | $EGREP Python | cut -d ' ' -f 2`
         if test "x$PYTHON25_VERSION" = "x"; then
           PYTHON25=
         else
@@ -1364,14 +1364,14 @@ else
   if test "x$use_swig" != "xYes"; then
     use_python26="No (swig not available)"
   else
-    if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
+    if test `$SWIG -help 2>&1 | $EGREP -c '\-python *- Generate'` = 0; then
       use_python26="No (swig does not support -python option)"
     else
       AC_CHECK_PROG(PYTHON26,python2.6,python2.6)
       if test "x$PYTHON26" = "x"; then
         use_python26="No (python26 not available)"
       else
-        PYTHON26_VERSION=`$PYTHON26 -V 2>&1 | $GREP Python | cut -d ' ' -f 2`
+        PYTHON26_VERSION=`$PYTHON26 -V 2>&1 | $EGREP Python | cut -d ' ' -f 2`
         if test "x$PYTHON26_VERSION" = "x"; then
           PYTHON26=
         else
@@ -1428,14 +1428,14 @@ else
   if test "x$use_swig" != "xYes"; then
     use_python27="No (swig not available)"
   else
-    if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
+    if test `$SWIG -help 2>&1 | $EGREP -c '\-python *- Generate'` = 0; then
       use_python27="No (swig does not support -python option)"
     else
       AC_CHECK_PROG(PYTHON27,python2.7,python2.7)
       if test "x$PYTHON27" = "x"; then
         use_python27="No (python27 not available)"
       else
-        PYTHON27_VERSION=`$PYTHON27 -V 2>&1 | $GREP Python | cut -d ' ' -f 2`
+        PYTHON27_VERSION=`$PYTHON27 -V 2>&1 | $EGREP Python | cut -d ' ' -f 2`
         if test "x$PYTHON27_VERSION" = "x"; then
           PYTHON27=
         else
@@ -1492,7 +1492,7 @@ else
   if test "x$use_swig" != "xYes"; then
     use_r="No (swig not available)"
   else
-    if test `$SWIG -help 2>&1 | $GREP -c '\-r *- Generate'` = 0; then
+    if test `$SWIG -help 2>&1 | $EGREP -c '\-r *- Generate'` = 0; then
       use_r="No (swig does not support -r option)"
     else
       PKG_CHECK_MODULES(R, [libR],[
@@ -1520,7 +1520,7 @@ else
   if test "x$use_swig" != "xYes"; then
     use_ruby="No (swig not available)"
   else
-    if test `$SWIG -help 2>&1 | $GREP -c '\-ruby *- Generate'` = 0; then
+    if test `$SWIG -help 2>&1 | $EGREP -c '\-ruby *- Generate'` = 0; then
       use_ruby="No (swig does not support -ruby option)"
     else
       AC_CHECK_PROG(RUBY,ruby,ruby)
@@ -3179,7 +3179,7 @@ assert(argc);
 ; return 0; }
 EOF
 ${CC-cc} -c $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext 1>&5
-if test "x`nm conftest.o |$GREP __eprintf`" != "x"; then
+if test "x`nm conftest.o |$EGREP __eprintf`" != "x"; then
     AC_MSG_RESULT(yes)
     CFLAGS="$CFLAGS -DNDEBUG"
 else
