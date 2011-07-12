@@ -1690,13 +1690,20 @@ static void point_init(node_t * n)
      * if both are set, use smallest.
      * if neither, use default
      */
-    w = late_double(n, N_width, MAXDOUBLE, MIN_POINT);
-    h = late_double(n, N_height, MAXDOUBLE, MIN_POINT);
+    w = late_double(n, N_width, MAXDOUBLE, 0.0);
+    h = late_double(n, N_height, MAXDOUBLE, 0.0);
     w = MIN(w, h);
     if ((w == MAXDOUBLE) && (h == MAXDOUBLE))	/* neither defined */
 	ND_width(n) = ND_height(n) = DEF_POINT;
-    else
+    else {
+	w = MIN(w, h);
+	/* If w == 0, use it; otherwise, make w no less than MIN_POINT due
+         * to the restrictions mentioned above.
+         */
+	if (w > 0.0) 
+	    w = MAX(w,MIN_POINT);
 	ND_width(n) = ND_height(n) = w;
+    }
 
     sz = ND_width(n) * POINTS_PER_INCH;
     peripheries = late_int(n, N_peripheries, peripheries, 0);
