@@ -377,13 +377,13 @@ emit_html_rules(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env, char *color)
     //Determine vertical line coordinate and length
     if ((cp->ruled & HTML_VRULE) && (cp->col + cp->cspan < cp->parent->cc)) {
 	if(cp->row == 0) {  // first row
-	    // extend to table border and add half cell spacing
-	    base = cp->parent->data.border + cp->parent->data.space/2;
+	    // extend to center of table border and add half cell spacing
+	    base = cp->parent->data.border/2 + cp->parent->data.space/2;
 	    rule_pt.y = pts.LL.y - cp->parent->data.space/2; 
 	}
 	else if(cp->row + cp->rspan == cp->parent->rc){  // bottom row
-	    // extend to table border and add half cell spacing
-	    base = cp->parent->data.border + cp->parent->data.space/2;
+	    // extend to center of table border and add half cell spacing
+	    base = cp->parent->data.border/2 + cp->parent->data.space/2;
 	    rule_pt.y = pts.LL.y - cp->parent->data.space/2 - base;
 	}
 	else {
@@ -398,13 +398,13 @@ emit_html_rules(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env, char *color)
     //Determine the horizontal coordinate and length
     if ((cp->ruled & HTML_HRULE) && (cp->row + cp->rspan < cp->parent->rc)) {
 	if(cp->col == 0) { // first column 
-	    // extend to table border and add half cell spacing
-	    base = cp->parent->data.border + cp->parent->data.space/2;
-	    rule_pt.x = pts.LL.x - base - cp->parent->data.space/2;
+	    // extend to center of table border and add half cell spacing
+	    base = cp->parent->data.border/2 + cp->parent->data.space/2;
+	    rule_pt.x = pts.LL.x - base  - cp->parent->data.space/2;
 	}
 	else if(cp->col + cp->cspan == cp->parent->cc){  // last column
-	    // extend to table border and add half cell spacing
-	    base = cp->parent->data.border + cp->parent->data.space/2;
+	    // extend to center of table border and add half cell spacing
+	    base = cp->parent->data.border/2 + cp->parent->data.space/2;
 	    rule_pt.x = pts.LL.x - cp->parent->data.space/2;
 	}
 	else {
@@ -443,16 +443,24 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
 	anchor = 0;
 
     if (tbl->style & ROUNDED) {
-	pointf AF[4];
-	char* color = (tbl->data.pencolor ? tbl->data.pencolor : DEFAULT_COLOR);
-	AF[0] = pts.LL;
-	AF[2] = pts.UR;
-	AF[1].x = AF[2].x;
-	AF[1].y = AF[0].y;
-	AF[3].x = AF[0].x;
-	AF[3].y = AF[2].y;
-	round_corners (job, tbl->data.bgcolor, color, AF, 4, tbl->style,
-	    (tbl->data.bgcolor != NULL));
+	if(tbl->data.border == 0 ){  //no need to display border, just fill if required
+	  if (tbl->data.bgcolor)
+	    doFill(job, tbl->data.bgcolor, pts);
+	}
+	else {
+	  pointf AF[4];
+	  char* color = (tbl->data.pencolor ? tbl->data.pencolor : DEFAULT_COLOR);
+	  AF[0] = pts.LL;
+	  AF[2] = pts.UR;
+	  AF[1].x = AF[2].x;
+	  AF[1].y = AF[0].y;
+	  AF[3].x = AF[0].x;
+	  AF[3].y = AF[2].y;
+	  gvrender_set_fillcolor(job, tbl->data.bgcolor);	/* emit fill color */
+	  gvrender_set_pencolor(job,  color);
+	  gvrender_rounded_box(job, AF, 4, (tbl->data.bgcolor != NULL), tbl->data.border);
+
+	}
     }
     else {
 	if (tbl->data.bgcolor)
@@ -463,8 +471,8 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
     }
     //render table rules
     while ((cp = *cells++)){
-	if (cp->ruled) emit_html_rules(job, cp, env, tbl->data.bgcolor);
-    }
+	if (cp->ruled) emit_html_rules(job, cp, env, tbl->data.pencolor);
+ }
     cells = tbl->u.n.cells;
 
     while (*cells) {

@@ -48,6 +48,7 @@ extern int strcasecmp(const char *s1, const char *s2);
 /* storage for temporary hacks until client API is FP */
 static pointf *AF;
 static int sizeAF;
+#define PARAM_OFFSET 1000
 /* end hack */
 
 int gvrender_select(GVJ_t * job, const char *str)
@@ -562,6 +563,30 @@ void gvrender_polygon(GVJ_t * job, pointf * af, int n, boolean filled)
 	        }
 	        gvrender_ptf_A(job, af, AF, n);
 	        gvre->polygon(job, AF, n, filled);
+	    }
+	}
+    }
+}
+
+void gvrender_rounded_box(GVJ_t * job, pointf * af, int n, boolean filled, int border)
+{
+    gvrender_engine_t *gvre = job->render.engine;
+    int n_border;
+    
+    //encode the border size within the point count parameter
+    //it has to be passed through polygon() to cairogen_rounded_rectangle()
+    n_border = border * PARAM_OFFSET + n;
+    if (gvre) {
+	if (gvre->polygon && job->obj->pen != PEN_NONE) {
+	    if (job->flags & GVRENDER_DOES_TRANSFORM)
+		gvre->polygon(job, af, n_border, filled);
+	    else {
+	        if (sizeAF < n) {
+		    sizeAF = n+10;
+		    AF = grealloc(AF, sizeAF * sizeof(pointf));
+	        }
+	        gvrender_ptf_A(job, af, AF, n);
+	        gvre->polygon(job, AF, n_border, filled);
 	    }
 	}
     }
