@@ -441,11 +441,12 @@ void round_corners(GVJ_t * job, char *fillc, char *penc, pointf * AF,
 				     TRUE);
 	    }
 	}
-	gvrender_set_pencolor(job, penc);
-	for (seg = 0; seg < sides; seg++) {
-	    gvrender_polyline(job, B + 4 * seg + 1, 2);
-	    gvrender_beziercurve(job, B + 4 * seg + 2, 4, FALSE, FALSE,
-				 FALSE);
+	if (penc) {
+	    gvrender_set_pencolor(job, penc);
+	    for (seg = 0; seg < sides; seg++) {
+		gvrender_polyline(job, B + 4 * seg + 1, 2);
+		gvrender_beziercurve(job, B + 4 * seg + 2, 4, FALSE, FALSE, FALSE);
+	    }
 	}
 	break;
     case DIAGONALS:
