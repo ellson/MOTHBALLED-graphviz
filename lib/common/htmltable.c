@@ -378,12 +378,12 @@ emit_html_rules(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env, char *color)
     if ((cp->ruled & HTML_VRULE) && (cp->col + cp->cspan < cp->parent->cc)) {
 	if(cp->row == 0) {  // first row
 	    // extend to center of table border and add half cell spacing
-	    base = cp->parent->data.border/2 + cp->parent->data.space/2;
+	    base = cp->parent->data.border + cp->parent->data.space/2;
 	    rule_pt.y = pts.LL.y - cp->parent->data.space/2; 
 	}
 	else if(cp->row + cp->rspan == cp->parent->rc){  // bottom row
 	    // extend to center of table border and add half cell spacing
-	    base = cp->parent->data.border/2 + cp->parent->data.space/2;
+	    base = cp->parent->data.border + cp->parent->data.space/2;
 	    rule_pt.y = pts.LL.y - cp->parent->data.space/2 - base;
 	}
 	else {
@@ -399,12 +399,12 @@ emit_html_rules(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env, char *color)
     if ((cp->ruled & HTML_HRULE) && (cp->row + cp->rspan < cp->parent->rc)) {
 	if(cp->col == 0) { // first column 
 	    // extend to center of table border and add half cell spacing
-	    base = cp->parent->data.border/2 + cp->parent->data.space/2;
+	    base = cp->parent->data.border + cp->parent->data.space/2;
 	    rule_pt.x = pts.LL.x - base - cp->parent->data.space/2;
 	}
 	else if(cp->col + cp->cspan == cp->parent->cc){  // last column
 	    // extend to center of table border and add half cell spacing
-	    base = cp->parent->data.border/2 + cp->parent->data.space/2;
+	    base = cp->parent->data.border + cp->parent->data.space/2;
 	    rule_pt.x = pts.LL.x - cp->parent->data.space/2;
 	}
 	else {
@@ -428,6 +428,7 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
     htmlmap_data_t saved;
     int anchor; /* if true, we need to undo anchor settings. */
     int doAnchor = (tbl->data.href || tbl->data.target);
+    pointf AF[4];
 
     if (tbl->font)
 	pushFontInfo(env, tbl->font, &savef);
@@ -442,25 +443,29 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
     else
 	anchor = 0;
 
+    /* Set up rounded style */
     if (tbl->style & ROUNDED) {
-	pointf AF[4];
-	char* color = (tbl->data.pencolor ? tbl->data.pencolor : DEFAULT_COLOR);
 	AF[0] = pts.LL;
 	AF[2] = pts.UR;
+	if (tbl->data.border) {
+	    double delta = ((double)tbl->data.border)/2.0;
+	    AF[0].x += delta;
+	    AF[0].y += delta;
+	    AF[2].x -= delta;
+	    AF[2].y -= delta;
+	}
 	AF[1].x = AF[2].x;
 	AF[1].y = AF[0].y;
 	AF[3].x = AF[0].x;
 	AF[3].y = AF[2].y;
-	gvrender_set_penwidth(job, tbl->data.border);
-	round_corners (job, tbl->data.bgcolor, color, AF, 4, tbl->style,
-	    (tbl->data.bgcolor != NULL));
     }
-    else {
-	if (tbl->data.bgcolor)
-	    doFill(job, tbl->data.bgcolor, pts);
 
-	if (tbl->data.border)
-	    doBorder(job, tbl->data.pencolor, tbl->data.border, pts);
+    /* Fill first */
+    if (tbl->data.bgcolor) {
+	if (tbl->style & ROUNDED)
+	    round_corners (job, tbl->data.bgcolor, NULL, AF, 4, tbl->style, 1);
+	else
+	    doFill(job, tbl->data.bgcolor, pts);
     }
 
     while (*cells) {
@@ -468,10 +473,25 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
 	cells++;
     }
 
-    //render table rules
+    /* Draw table rules and border.
+     * Draw after cells so we can draw over any fill.
+     * At present, we set the penwidth to 1 for rules until we provide the calculations to take
+     * into account wider rules.
+     */
     cells = tbl->u.n.cells;
+    gvrender_set_penwidth(job, 1.0);
     while ((cp = *cells++)){
 	if (cp->ruled) emit_html_rules(job, cp, env, tbl->data.pencolor);
+    }
+
+    if (tbl->data.border) {
+	if (tbl->style & ROUNDED) {
+	    char* color = (tbl->data.pencolor ? tbl->data.pencolor : DEFAULT_COLOR);
+	    gvrender_set_penwidth(job, tbl->data.border);
+	    round_corners (job, tbl->data.bgcolor, color, AF, 4, tbl->style, 0);
+	}
+	else
+	    doBorder(job, tbl->data.pencolor, tbl->data.border, pts);
     }
 
     if (anchor)
