@@ -40,8 +40,7 @@ typedef enum {
     } format_type;
 
 #define ARRAY_SIZE(A) (sizeof(A)/sizeof(A[0]))
-#define RBCONST 12
-#define PARAM_OFFSET 1000
+
 static double dashed[] = {6.};
 static int dashed_len = ARRAY_SIZE(dashed);
 
@@ -287,75 +286,10 @@ if (ry < RMIN) ry = RMIN;
     cairo_stroke(cr);
 }
 
-//create a rounded path and implement border width by setting line width
-static void
-cairogen_rounded_rectangle(GVJ_t * job, pointf * AF, int n, int filled, int border)
-{
-    obj_state_t *obj = job->obj;
-    cairo_t *cr = (cairo_t *) job->context;
-    pointf p0, p1;
-    double d, dx, dy, radius;
-    double x,y,height,width;
-    int seg, sides;
-    double degrees = -(M_PI / 180.0); //sign inversion required due to y-coordinate inversion
-
-    radius = RBCONST;
-    sides = n;
-    for (seg = 0; seg < sides; seg++) {
-	p0 = AF[seg];
-	if (seg < sides - 1)
-	    p1 = AF[seg + 1];
-	else
-	    p1 = AF[0];
-	dx = p1.x - p0.x;
-	dy = p1.y - p0.y;
-	d = sqrt(dx * dx + dy * dy);
-	radius = MIN(radius, d / 3.0);
-    }
-
-
-    x = AF[0].x + border/2;
-    y = -AF[0].y - border/2;
-    width = AF[2].x - AF[0].x - border;
-    height = AF[2].y - AF[0].y - border;
-    
-    cairogen_set_penstyle(job, cr);
-    cairogen_set_color(cr, &(obj->pencolor));
-
-    cairo_new_sub_path (cr);
-    cairo_arc (cr, x + width - radius, y - radius, radius,0 * degrees, -90 * degrees); //lower right
-    cairo_arc (cr, x + radius, y - radius, radius, -90 * degrees, 180 * degrees); //lower left
-    cairo_arc (cr, x + radius, y - height + radius, radius, 180 * degrees, 90 * degrees); //upper left
-    cairo_arc (cr, x + width - radius, y - height + radius, radius, 90 * degrees, 0 * degrees); //upper right
-    cairo_close_path (cr);
-
-
-     if (filled) {
-	cairogen_set_color(cr, &(obj->fillcolor));
-	cairo_fill_preserve(cr);
-    }
-
-    cairogen_set_color(cr, &(obj->pencolor));
-    cairo_set_line_width (cr, border);
-    cairo_stroke(cr);
-
-  
-}
-
 static void
 cairogen_polygon(GVJ_t * job, pointf * A, int n, int filled)
 {
- 
-//if a rounded rectangle is being rendered, extract the border
-//value that is encoded in the point count parameter
-if( n > PARAM_OFFSET){
-    int border = n/PARAM_OFFSET;
-    n = n%PARAM_OFFSET;
-    cairogen_rounded_rectangle(job, A, n, filled, border);
-    return;
-  }
-
-obj_state_t *obj = job->obj;
+    obj_state_t *obj = job->obj;
     cairo_t *cr = (cairo_t *) job->context;
     int i;
 
