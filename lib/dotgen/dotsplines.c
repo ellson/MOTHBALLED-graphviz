@@ -494,6 +494,7 @@ finish :
     } 
 #endif
     State = GVSPLINES;
+    EdgeLabelsDone = 1;
 }
 
 /* dot_splines:

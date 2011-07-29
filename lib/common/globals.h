@@ -85,6 +85,7 @@ extern "C" {
     EXTERN int MaxIter;
     EXTERN int Ndim;
     EXTERN int State;		/* last finished phase */
+    EXTERN int EdgeLabelsDone;	/* true if edge labels have been positioned */
     EXTERN double Initial_dist;
     EXTERN double Damping;
     EXTERN int Y_invert;	/* invert y in dot & plain output */

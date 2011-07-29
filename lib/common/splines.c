@@ -1232,6 +1232,7 @@ edgeMidpoint (graph_t* g, edge_t * e)
  */
 void addEdgeLabels(graph_t* g, edge_t * e, pointf rp, pointf rq)
 {
+#if 0
     int et = EDGE_TYPE (g);
     pointf p, q;
     pointf d;			/* midpoint of segment p-q */
@@ -1286,6 +1287,7 @@ void addEdgeLabels(graph_t* g, edge_t * e, pointf rp, pointf rq)
 	ED_label(e)->set = TRUE;
 	updateBB(agraphof(agtail(e)), ED_label(e));
     }
+#endif
     makePortLabels(e);
 }
 

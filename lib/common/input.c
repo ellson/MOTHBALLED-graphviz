@@ -760,6 +760,7 @@ void graph_init(graph_t * g, boolean use_rankdir)
     p = agget(g, "concentrate");
     Concentrate = mapbool(p);
     State = GVBEGIN;
+    EdgeLabelsDone = 0;
 
     GD_drawing(g)->dpi = 0.0;
     if (((p = agget(g, "dpi")) && p[0])

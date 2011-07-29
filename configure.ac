@@ -3221,6 +3221,7 @@ AC_CONFIG_FILES(Makefile
 	lib/neatogen/Makefile
 	lib/fdpgen/Makefile
 	lib/sparse/Makefile
+	lib/label/Makefile
 	lib/sfdpgen/Makefile
 	lib/osage/Makefile
 	lib/gvpr/Makefile
