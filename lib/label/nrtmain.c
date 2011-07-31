@@ -73,6 +73,7 @@ printData(object_t * objs, int n_objs, xlabel_t * lbls, int n_lbls,
 	    params->bb.LL.y, params->bb.UR.x, params->bb.UR.y);
     if (Verbose < 2)
 	return 0;
+    fprintf(stderr, "objects\n");
     for (i = 0; i < n_objs; i++) {
 	fprintf(stderr, " [%d] (%.02f,%.02f) (%.02f,%.02f) %p\n",
 		i, objs->pos.x, objs->pos.y, objs->sz.x, objs->sz.y,
