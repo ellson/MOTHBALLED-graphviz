@@ -14,5 +14,5 @@ noinst_LTLIBRARIES = liblabel_C.la
 
 liblabel_C_la_SOURCES = xlabels.c index.c node.c rectangle.c split.q.c
 
-EXTRA_DIST = rtmain.c
+EXTRA_DIST = nrtmain.c
 
