@@ -208,18 +208,23 @@ static int
 printData (object_t* objs, int n_objs, xlabel_t* lbls, int n_lbls,
 	   label_params_t* params) {
   int i;
+  xlabel_t* xp;
   fprintf (stderr, "%d objs %d xlabels force=%d bb=(%.02f,%.02f) (%.02f,%.02f)\n",
 	   n_objs, n_lbls, params->force, params->bb.LL.x, params->bb.LL.y,
 	   params->bb.UR.x, params->bb.UR.y);
   if (Verbose < 2) return 0;
+  fprintf(stderr, "objects\n");
   for (i = 0; i < n_objs; i++) {
-    fprintf (stderr, " [%d] (%.02f,%.02f) (%.02f,%.02f) %p\n",
-	     i, objs->pos.x,objs->pos.y,objs->sz.x,objs->sz.y, objs->lbl);
+    xp = objs->lbl;
+    fprintf (stderr, " [%d] (%.02f,%.02f) (%.02f,%.02f) %p \"%s\"\n",
+	    i, objs->pos.x,objs->pos.y,objs->sz.x,objs->sz.y, objs->lbl, 
+	    (xp?((textlabel_t*)(xp->lbl))->text:""));
     objs++;
   }
+  fprintf(stderr, "xlabels\n");
   for (i = 0; i < n_lbls; i++) {
-    fprintf (stderr, " [%d] %p (%.02f,%.02f) %s\n",
-	     i, lbls, lbls->sz.x,lbls->sz.y, ((textlabel_t*)lbls->lbl)->text);  
+    fprintf (stderr, " [%d] %p set %d (%.02f,%.02f) (%.02f,%.02f) %s\n",
+	     i, lbls,  lbls->set, lbls->pos.x,lbls->pos.y, lbls->sz.x,lbls->sz.y, ((textlabel_t*)lbls->lbl)->text);  
     lbls++;
   }
   return 0;
@@ -354,9 +359,9 @@ static void addXLabels(Agraph_t * gp)
 
     params.force = late_bool(gp, force, FALSE);
     params.bb = bb;
+    placeLabels(objs, n_objs, lbls, n_lbls, &params);
     if (Verbose)
 	printData(objs, n_objs, lbls, n_lbls, &params);
-    placeLabels(objs, n_objs, lbls, n_lbls, &params);
 
     xlp = lbls;
     cnt = 0;
@@ -372,6 +377,8 @@ static void addXLabels(Agraph_t * gp)
     }
     if (Verbose)
 	fprintf (stderr, "%d out of %d labels positioned.\n", cnt, n_lbls);
+    else if (cnt != n_lbls)
+	agerr(AGWARN, "%d out of %d exterior labels positioned.\n", cnt, n_lbls);
     free(objs);
     free(lbls);
 }
