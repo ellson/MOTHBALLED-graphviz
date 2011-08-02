@@ -52,7 +52,7 @@ void RTreeLeafListFree(LeafList_t * llp)
 /* Allocate space for a node in the list used in DeletRect to
  * store Nodes that are too empty.
  */
-static struct ListNode *RTreeNewListNode()
+static struct ListNode *RTreeNewListNode(void)
 {
     return NEW(struct ListNode);
 }
@@ -421,7 +421,6 @@ RTreeDelete2(RTree_t * rtp, Rect_t * r, void *data, Node_t * n,
 /* RTreeDelete2(RTree_t*rtp, Rect_t*r, int data, Node_t*n, ListNode_t**ee) */
 {
     register int i;
-    Rect_t NodeCover();
 
     assert(r && n && ee);
     assert(data >= 0);

@@ -29,7 +29,7 @@ int RectArea(Rect_t *);
 int Overlap(Rect_t *, Rect_t *);
 int Contained(Rect_t *, Rect_t *);
 Rect_t CombineRect(Rect_t *, Rect_t *);
-Rect_t NullRect();
+Rect_t NullRect(void);
 
 #ifdef __cplusplus
 }
