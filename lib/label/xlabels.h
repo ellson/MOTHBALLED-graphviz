@@ -17,7 +17,7 @@
 extern "C" {
 #endif
 
-#include <graphviz/geom.h>
+#include <geom.h>
 
 typedef struct {
     pointf sz;			/* Size of label (input) */

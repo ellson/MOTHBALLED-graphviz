@@ -15,10 +15,10 @@
 #include <unistd.h>
 
 #include <memory.h>
-#include <graphviz/gvc.h>
+#include <gvc.h>
 #include "xlabels.h"
 
-#if 1
+#if 0
 #define POINTS_PER_INCH 72
 #define N_NEW(n,t)       (t*)calloc((n),sizeof(t))
 #define MIN(a,b)        ((a)<(b)?(a):(b))
