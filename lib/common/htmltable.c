@@ -401,6 +401,8 @@ emit_html_rules(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env, char *color)
 	    // extend to center of table border and add half cell spacing
 	    base = cp->parent->data.border + cp->parent->data.space/2;
 	    rule_pt.x = pts.LL.x - base - cp->parent->data.space/2;
+	    if(cp->col + cp->cspan == cp->parent->cc)  // also last column
+		base *= 2;
 	}
 	else if(cp->col + cp->cspan == cp->parent->cc){  // last column
 	    // extend to center of table border and add half cell spacing
