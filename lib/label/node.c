@@ -95,7 +95,7 @@ void PrintBranch(int i, Branch_t * b)
 Rect_t NodeCover(Node_t * n)
 {
     register int i, flag;
-    Rect_t r, CombineRect();
+    Rect_t r;
     assert(n);
 
     InitRect(&r);
@@ -122,7 +122,6 @@ int PickBranch(Rect_t * r, Node_t * n)
     register Rect_t *rr;
     register int i, flag, increase, bestIncr, area, bestArea;
     int best;
-    Rect_t CombineRect();
     assert(r && n);
 
     flag = 1;

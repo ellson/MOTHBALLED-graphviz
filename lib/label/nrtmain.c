@@ -15,10 +15,10 @@
 #include <unistd.h>
 
 #include <memory.h>
-#include <gvc.h>
+#include <graphviz/gvc.h>
 #include "xlabels.h"
 
-#if 0
+#if 1
 #define POINTS_PER_INCH 72
 #define N_NEW(n,t)       (t*)calloc((n),sizeof(t))
 #define MIN(a,b)        ((a)<(b)?(a):(b))
@@ -75,16 +75,22 @@ printData(object_t * objs, int n_objs, xlabel_t * lbls, int n_lbls,
 	return 0;
     fprintf(stderr, "objects\n");
     for (i = 0; i < n_objs; i++) {
-	fprintf(stderr, " [%d] (%.02f,%.02f) (%.02f,%.02f) %p\n",
-		i, objs->pos.x, objs->pos.y, objs->sz.x, objs->sz.y,
-		objs->lbl);
-	objs++;
+      if(objs[i].lbl && objs[i].lbl->lbl)
+	fprintf (stderr, " [%d] %p %p (%.02f, %.02f) (%.02f, %.02f) %s\n",
+		 i, &objs[i], objs[i].lbl, objs[i].pos.x,objs[i].pos.y,
+		 objs[i].sz.x,objs[i].sz.y,
+		 ((textlabel_t*)objs[i].lbl->lbl)->text );  
+      else
+	fprintf (stderr, " [%d] %p %p (%.02f, %.02f) (%.02f, %.02f)\n",
+		 i, &objs[i], objs[i].lbl, objs[i].pos.x,objs[i].pos.y,
+		 objs[i].sz.x,objs[i].sz.y);  
     }
+    fprintf(stderr, "xlabels\n");
     for (i = 0; i < n_lbls; i++) {
-	fprintf(stderr, " [%d] %p (%.02f,%.02f) %s\n",
-		i, lbls, lbls->sz.x, lbls->sz.y,
-		((textlabel_t *) lbls->lbl)->text);
-	lbls++;
+	fprintf(stderr, " [%d] %p (%.02f, %.02f) (%.02f, %.02f) %s\n",
+		i, &lbls[i], lbls[i].pos.x, lbls[i].pos.y,
+		lbls[i].sz.x, lbls[i].sz.y,
+		((textlabel_t *)lbls[i].lbl)->text);
     }
     return 0;
 }

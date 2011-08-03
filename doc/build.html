@@ -46,7 +46,7 @@ source package is the usual:
 	make
 	make install
 </pre>
-<p>If you are building from CVS sources, then you must have
+<p>If you are building from Mercurial sources, then you must have
 recent versions of "libtool", "automake", and "autoconf".
 Build with:
 <pre>
@@ -97,7 +97,7 @@ to <tt>configure</tt> may be needed.
 For Linux you can also just pick up the source tarball
 or RPMs <A HREF="http://www.graphviz.org/Download..php/">here</A>.
 <P>
-First, if you are using sources from CVS, run "./autogen.sh"
+First, if you are using sources from Mercurial, run "./autogen.sh"
 to generate the "configure" script.  If you are using sources
 from graphviz-&lt;version&gt;.tar.gz this autogen.sh step should not be
 needed.
@@ -163,7 +163,7 @@ to enable all the Graphviz drivers.
 
 <!--------------------------------------------------------------------------
 Currently we build graphviz on Windows using the MS Visual C++ compiler only.
-The project and makefiles can be found in both the CVS tree and the source
+The project and makefiles can be found in both the Mercurial tree and the source
 distribution package in the $ROOT/windows directory. ($ROOT refers
 to the directory where the source tree has been installed.)
 <p>
@@ -348,9 +348,9 @@ By the way making by sneakily cd'ing into the macosx folder and using the makefi
 
 <pre>
 <!--
-To produce graphviz-(ver).tar.gz from CVS sources.
+To produce graphviz-(ver).tar.gz from Mercurial sources.
 
-	cvs checkout graphviz
+	hg clone http://hg.research.att.com/graphviz
 	cd graphviz
 	./autogen.sh
 	make dist

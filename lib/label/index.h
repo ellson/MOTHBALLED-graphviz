@@ -114,7 +114,7 @@ typedef struct ListNode {
     struct Node *node;
 } ListNode_t;
 
-RTree_t *RTreeOpen();
+RTree_t *RTreeOpen(void);
 int RTreeClose(RTree_t * rtp);
 Node_t *RTreeNewIndex(RTree_t * rtp);
 LeafList_t *RTreeSearch(RTree_t *, Node_t *, Rect_t *);
