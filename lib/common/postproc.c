@@ -230,21 +230,65 @@ printData (object_t* objs, int n_objs, xlabel_t* lbls, int n_lbls,
   return 0;
 }
 
+/* addXLabel:
+ * Set up xlabel_t object and connect with related object.
+ * If initObj is set, initialize the object.
+ */
+static void
+addXLabel (textlabel_t* lp, object_t* objp, xlabel_t* xlp, int initObj, pointf pos)
+{
+    if (initObj) {
+	objp->sz.x = 0;
+	objp->sz.y = 0;
+	objp->pos = pos;
+    }
+
+    xlp->sz = lp->dimen;
+    xlp->lbl = lp;
+    xlp->set = 0;
+    objp->lbl = xlp;
+}
+
+/* addLabelObj:
+ * Set up obstacle object based on set external label.
+ * Use label information to determine size and position of object.
+ * Then adjust given bounding box bb to include label and return new bb.
+ */
+static boxf
+addLabelObj (textlabel_t* lp, object_t* objp, boxf bb)
+{
+    pointf ur;
+
+    objp->sz.x = lp->dimen.x; 
+    objp->sz.y = lp->dimen.y;
+    objp->pos = lp->pos;
+    objp->pos.x -= (objp->sz.x) / 2.0;
+    objp->pos.y -= (objp->sz.y) / 2.0;
+
+    /* Adjust bounding box */
+    bb.LL.x = MIN(bb.LL.x, objp->pos.x);
+    bb.LL.y = MIN(bb.LL.y, objp->pos.y);
+    ur.x = objp->pos.x + objp->sz.x;
+    ur.y = objp->pos.y + objp->sz.y;
+    bb.UR.x = MAX(bb.UR.x, ur.x);
+    bb.UR.y = MAX(bb.UR.y, ur.y);
+    return bb;
+}
+
 /* addXLabels:
  * Position xlabels and any unpositioned edge labels using
  * a map placement algorithm to avoid overlap.
  *
  * TODO: interaction with spline=ortho
- *       interaction with rankdir=LR
  */
 static void addXLabels(Agraph_t * gp)
 {
     Agnode_t *np;
     Agedge_t *ep;
     int cnt, i, n_objs, n_lbls;
-    int n_nlbls = 0;		/* # of node xlabels */
-    int n_elbls = 0;		/* # of edge xlabels */
-    int n_set_elbls = 0;	/* # of edge labels set */
+    int n_nlbls = 0;		/* # of unset node xlabels */
+    int n_elbls = 0;		/* # of unset edge labels or xlabels */
+    int n_set_lbls = 0;		/* # of set xlabels and edge labels */
     boxf bb;
     pointf ur;
     textlabel_t* lp;
@@ -261,26 +305,36 @@ static void addXLabels(Agraph_t * gp)
 	return;
 
     for (np = agfstnode(gp); np; np = agnxtnode(gp, np)) {
-	if (ND_xlabel(np))
-	    n_nlbls++;
+	if (ND_xlabel(np)) {
+	    if (ND_xlabel(np)->set)
+		n_set_lbls++;
+	    else
+		n_nlbls++;
+	}
 	for (ep = agfstout(gp, np); ep; ep = agnxtout(gp, ep)) {
-	    if (ED_xlabel(ep))
-		n_elbls++;
+	    if (ED_xlabel(ep)) {
+		if (ED_xlabel(ep)->set)
+		    n_set_lbls++;
+		else
+		    n_elbls++;
+	    }
 	    if (ED_label(ep)) {
 		if (ED_label(ep)->set)
-		    n_set_elbls++;
+		    n_set_lbls++;
 		else
 		    n_elbls++;
 	    }
 	}
     }
 
-    /* An object for each node, each positioned edge label, and all unset edge
+    /* A label for each unpositioned external label */
+    n_lbls = n_nlbls + n_elbls;
+    if (n_lbls == 0) return;
+
+    /* An object for each node, each positioned external label, and all unset edge
      * labels and xlabels.
      */
-    n_objs = agnnodes(gp) + n_set_elbls + n_elbls;
-    /* A label for each unpositioned label */
-    n_lbls = n_nlbls + n_elbls;
+    n_objs = agnnodes(gp) + n_set_lbls + n_elbls;
     objp = objs = N_NEW(n_objs, object_t);
     xlp = lbls = N_NEW(n_lbls, xlabel_t);
     bb.LL = pointfof(INT_MAX, INT_MAX);
@@ -302,54 +356,36 @@ static void addXLabels(Agraph_t * gp)
 	bb.UR.x = MAX(bb.UR.x, ur.x);
 	bb.UR.y = MAX(bb.UR.y, ur.y);
 
-	if (ND_xlabel(np)) {
-	    xlp->sz = ND_xlabel(np)->dimen;
-	    xlp->lbl = ND_xlabel(np);
-	    xlp->set = 0;
-	    objp->lbl = xlp;
-	    xlp++;
+	if ((lp = ND_xlabel(np))) {
+	    if (lp->set) {
+		bb = addLabelObj (lp, objp, bb);
+		objp++;
+	    }
+	    else {
+		addXLabel (lp, objp, xlp, 0, ur); 
+		xlp++;
+	    }
 	}
 	objp++;
 	for (ep = agfstout(gp, np); ep; ep = agnxtout(gp, ep)) {
 	    if ((lp = ED_label(ep))) {
 		if (lp->set) {
-		    objp->sz.x = lp->dimen.x; 
-		    objp->sz.y = lp->dimen.y;
-		    objp->pos = lp->pos;
-		    objp->pos.x -= (objp->sz.x) / 2.0;
-		    objp->pos.y -= (objp->sz.y) / 2.0;
-
-			/* Adjust bounding box */
-		    bb.LL.x = MIN(bb.LL.x, objp->pos.x);
-		    bb.LL.y = MIN(bb.LL.y, objp->pos.y);
-		    ur.x = objp->pos.x + objp->sz.x;
-		    ur.y = objp->pos.y + objp->sz.y;
-		    bb.UR.x = MAX(bb.UR.x, ur.x);
-		    bb.UR.y = MAX(bb.UR.y, ur.y);
+		    bb = addLabelObj (lp, objp, bb);
 		}
 		else {
-		    objp->sz.x = 0;
-		    objp->sz.y = 0;
-		    objp->pos = edgeMidpoint(gp, ep);
-
-		    xlp->sz = ED_label(ep)->dimen;
-		    xlp->lbl = ED_label(ep);
-		    xlp->set = 0;
-		    objp->lbl = xlp;
+		    addXLabel (lp, objp, xlp, 1, edgeMidpoint(gp, ep)); 
 		    xlp++;
 		}
 	        objp++;
 	    }
-	    if (ED_xlabel(ep)) {
-		objp->sz.x = 0;
-		objp->sz.y = 0;
-		objp->pos = edgeMidpoint(gp, ep);
-
-		xlp->sz = ED_xlabel(ep)->dimen;
-		xlp->lbl = ED_xlabel(ep);
-		xlp->set = 0;
-		objp->lbl = xlp;
-		xlp++;
+	    if ((lp = ED_xlabel(ep))) {
+		if (lp->set) {
+		    bb = addLabelObj (lp, objp, bb);
+		}
+		else {
+		    addXLabel (lp, objp, xlp, 1, edgeMidpoint(gp, ep)); 
+		    xlp++;
+		}
 		objp++;
 	    }
 	}
