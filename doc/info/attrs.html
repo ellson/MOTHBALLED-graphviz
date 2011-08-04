@@ -293,7 +293,7 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:minlen HREF=#d:minlen>minlen</A>
 </TD><TD>E</TD><TD>int</TD><TD ALIGN="CENTER">1</TD><TD>0</TD><TD>dot only</TD> </TR>
  <TR><TD><A NAME=a:mode HREF=#d:mode>mode</A>
-</TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">major<BR>spring</TD><TD></TD><TD>sfdp, neato only</TD> </TR>
+</TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">major</TD><TD></TD><TD>neato only</TD> </TR>
  <TR><TD><A NAME=a:model HREF=#d:model>model</A>
 </TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">shortpath</TD><TD></TD><TD>neato only</TD> </TR>
  <TR><TD><A NAME=a:mosek HREF=#d:mosek>mosek</A>
@@ -1143,10 +1143,6 @@ This field indicates which graph component uses the attribute.
   directionality similar to the layout used in dot, and "ipsep", which
   allows the graph to specify minimum vertical and horizontal distances
   between nodes. (See the <A HREF=#d:sep>sep</A> attribute.)
-  <P>
-  For sfdp, the default <B>mode</B> is <TT>"spring"</TT>, which corresponds to using
-  a spring-electrical model. Setting <B>mode</B> to <TT>"maxent"</TT> causes a similar
-  model to be run but one that also takes into account edge lengths specified by a the
   <TT>"len"</TT> attribute.
 
 <DT><A NAME=d:model HREF=#a:model><STRONG>model</STRONG></A>
@@ -2117,8 +2113,8 @@ the given types.
    points, of the lower-left corner (llx,lly) and the upper-right corner
    (urx,ury).
 
-<DT><A NAME=kshape><STRONG>shape</STRONG></A>
-<DD>A string specifying the <A HREF=/content/node-shapes>shape</A> of a node.
+<DT><A NAME=k:shape><STRONG>shape</STRONG></A>
+<DD>A string specifying the <A HREF=shapes.html>shape</A> of a node.
   There are three
   main types of shapes :
   <A HREF=shapes.html#polygon>polygon-based</A>,
