@@ -278,3 +278,6 @@ sq_rules
 =
 dot png
 
+fdp_clus
+fdp
+fdp png

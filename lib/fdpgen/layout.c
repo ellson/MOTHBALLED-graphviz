@@ -841,7 +841,7 @@ setClustNodes(graph_t* root)
     graph_t* p;
     pointf ctr;
     node_t *n;
-    double w, h;
+    double w, h, h_pts;
     double h2, w2;
     pointf *vertices;
 
@@ -856,14 +856,14 @@ setClustNodes(graph_t* root)
 	ctr.y = h / 2.0;
 	w2 = INCH2PS(w / 2.0);
 	h2 = INCH2PS(h / 2.0);
-	h = INCH2PS(h);
+	h_pts = INCH2PS(h);
 	ND_pos(n)[0] = ctr.x;
 	ND_pos(n)[1] = ctr.y;
 	ND_width(n) = w;
 	ND_height(n) = h;
 	/* ND_xsize(n) = POINTS(w); */
 	ND_lw(n) = ND_rw(n) = w2;
-	ND_ht(n) = h;
+	ND_ht(n) = h_pts;
 
 	vertices = ((polygon_t *) ND_shape_info(n))->vertices;
 	vertices[0].x = ND_rw(n);
