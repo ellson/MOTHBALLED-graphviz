@@ -342,6 +342,9 @@ If not set, libgd uses its compiled-in font path.
 Note that fontpath is an attribute of the root graph.
 :fontsize:ENGC:double:14.0:1.0;
 Font size, <A HREF=#points>in points</A>, used for text.
+:forcelabels:G:bool:false;
+If true, all  <A HREF=#d:xlabel><B>xlabel</B></A> attributes are placed, even if there is some overlap with nodes
+or other labels.
 :group:N:string:"";  dot
 If the end points of an edge belong to the same group, i.e., have the
 same group attribute, parameters are set to avoid crossings and keep
@@ -1213,6 +1216,16 @@ In this case, if both the width or the height are set explicitly,
 the maximum of the two values is used.
 If neither is set explicitly, the minimum of the two default values
 is used.
+:xlabel:EN:lblString:"";
+External label for a node or edge. For nodes, the label will be placed outside of the
+node but near it. For edges, the label will be placed near the center of the edge.
+This can be useful in dot to avoid the occasional problem when the use of edge labels
+distorts the layout. For other layouts, the xlabel attribute can be viewed as a synonym
+for the <A HREF=#d:label><B>label</B></A> attribute.
+<P>
+These labels are added after all nodes and edges have been placed. The labels will be placed
+so that they do not overlap any node or label. This means it may not be possible to place all
+of them. To force placing all of them, use the  <A HREF=#d:forcelabels><B>forcelabels</B></A> attribute.
 :z:N:double:0.0:-MAXFLOAT/-1000;
 <B>Deprecated:</B>Use <A HREF=#d:pos><B>pos</B></A> attribute, along
 with <A HREF=#d:dimen><B>dimen</B></A> and/or <A HREF=#d:dim><B>dim</B></A>
