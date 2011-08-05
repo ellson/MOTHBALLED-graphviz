@@ -949,8 +949,8 @@ static lookup_t adjustMode[] = {
 #if ((defined(HAVE_GTS) || defined(HAVE_TRIANGLE)) && defined(SFDP))
     ITEM(AM_PRISM, "prism", "prism"),
 #endif
-    ITEM(AM_NSCALE, "scale", "scaling"),
     ITEM(AM_VOR, "voronoi", "Voronoi"),
+    ITEM(AM_NSCALE, "scale", "scaling"),
     ITEM(AM_COMPRESS, "compress", "compress"),
     ITEM(AM_VPSC, "vpsc", "vpsc"),
     ITEM(AM_IPSEP, "ipsep", "ipsep"),
