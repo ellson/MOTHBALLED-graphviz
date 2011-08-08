@@ -1,4 +1,0 @@
-SUBDIRS = tclhandle tclstubs gdtclft tcldot
-
-all clean distclean install:
-	(for i in ${SUBDIRS}; do (cd $$i; make $@); done)       
