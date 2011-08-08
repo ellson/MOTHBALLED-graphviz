@@ -172,6 +172,10 @@ int agnedges(Agraph_t * g)
     return rv;
 }
 
+int agnsubg(Agraph_t * g)
+{
+	return dtsize(g->g_dict);
+}
 
 int agisdirected(Agraph_t * g)
 {
