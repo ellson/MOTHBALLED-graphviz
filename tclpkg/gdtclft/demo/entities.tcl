@@ -9,7 +9,7 @@ package require Gdtclft
 # John Ellson <ellson@graphviz.org>
 
 #set font symbol
-set font times
+set font freesans
 
 set titlefont times
 set gd [gd create 1100 850]
@@ -44,7 +44,7 @@ for {set val 32} {$val < 127} {incr val} {
 
 # get other names for  html-4.0 characters from: 
 #          http://www.w3.org/TR/REC-html40/sgml/entities.html
-set f [open entities.html r]
+set f [open entities.tcl.html r]
 while {! [eof $f]} {
 	set rec [gets $f]
 	if {[scan $rec {&lt;!ENTITY %s CDATA &quot;&amp;#%d;&quot; --} name val] == 2} {
