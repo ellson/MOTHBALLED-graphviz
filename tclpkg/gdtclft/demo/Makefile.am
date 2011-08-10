@@ -8,4 +8,4 @@ demo_SCRIPTS = entities.tcl
 demo_DATA = entities.tcl.README entities.tcl.html
 endif
 
-EXTRA_DIST = entities.tcl entities.tcl.README entities.tcl.html
+EXTRA_DIST = entities.tcl entities.tcl.README entities.html
