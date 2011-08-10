@@ -484,25 +484,6 @@ if WITH_RUBY
 	(cd $(DESTDIR)$(pkgrubydir);   rm -f gv.so;  $(LN_S) libgv_ruby.so gv.so;)
 endif
 
-uninstall-hook:
-	rm -rf $(DESTDIR)$(pkgsharpdir);
-	rm -rf $(DESTDIR)$(pkggodir);
-	rm -rf $(DESTDIR)$(pkgguiledir);
-	rm -rf $(DESTDIR)$(pkgiodir);
-	rm -rf $(DESTDIR)$(pkgjavadir);
-	rm -rf $(DESTDIR)$(pkgluadir);
-	rm -rf $(DESTDIR)$(pkgperldir);
-	rm -rf $(DESTDIR)$(pkgpythondir);
-	rm -rf $(DESTDIR)$(pkgpython23dir);
-	rm -rf $(DESTDIR)$(pkgpython24dir);
-	rm -rf $(DESTDIR)$(pkgpython25dir);
-	rm -rf $(DESTDIR)$(pkgpython26dir);
-	rm -rf $(DESTDIR)$(pkgpython27dir);
-	rm -rf $(DESTDIR)$(pkgRdir);
-	rm -rf $(DESTDIR)$(pkgrubydir);
-	rm -rf $(DESTDIR)$(pkgtcldir);
-	rm -rf $(DESTDIR)$(pkgphpdir);
-
 devtsts: $(DEVTSTS)
 
 .PHONY: test_sharp
