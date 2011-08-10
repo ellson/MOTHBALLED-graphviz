@@ -1,0 +1,27 @@
+syntax: glob
+
+Makefile
+Makefile.in
+autom4te.cache
+pkgIndex.tcl
+SWIGTYPE*
+gv_*.cpp
+gv.3*
+.libs
+*.o
+*.a
+*.la
+*.lai
+*.lo
+*.Po
+*.Plo
+*.so
+*.so.*
+*.soT
+*.[1234567]*.pdf
+*.pc
+y.*
+
+libltdl
+m4
+
