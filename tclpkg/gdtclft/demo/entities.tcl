@@ -47,7 +47,7 @@ for {set val 32} {$val < 127} {incr val} {
 set f [open entities.html r]
 while {! [eof $f]} {
 	set rec [gets $f]
-	if {[scan $rec {&lt;!ENTITY %s CDATA &quot;&amp;#%d;&quot; --} name val] == 2} {
+	if {[scan $rec {&lt;!ENTITY %s CDATA "&amp;#%d;" --} name val] == 2} {
 		set entity($val) $name
 	}
 }
