@@ -329,43 +329,43 @@ DEVTSTS += test_php
 endif
 if WITH_PYTHON
 pkgpython_DATA = $(PYTHON_data)
-py_mans ?= gv.3python
-py_data ?= gv.3python.pdf
+py_mans = gv.3python
+py_data = gv.3python.pdf
 pkgpython_LTLIBRARIES = libgv_python.la
 DEVTSTS += test_python
 endif
 if WITH_PYTHON23
 pkgpython23_DATA = $(PYTHON23_data)
-py_mans ?= gv.3python
-py_data ?= gv.3python.pdf
+py_mans = gv.3python
+py_data = gv.3python.pdf
 pkgpython23_LTLIBRARIES = libgv_python23.la
 #DEVTSTS += test_python23
 endif
 if WITH_PYTHON24
 pkgpython24_DATA = $(PYTHON24_data)
-py_mans ?= gv.3python
-py_data ?= gv.3python.pdf
+py_mans = gv.3python
+py_data = gv.3python.pdf
 pkgpython24_LTLIBRARIES = libgv_python24.la
 #DEVTSTS += test_python24
 endif
 if WITH_PYTHON25
 pkgpython25_DATA = $(PYTHON25_data)
-py_mans ?= gv.3python
-py_data ?= gv.3python.pdf
+py_mans = gv.3python
+py_data = gv.3python.pdf
 pkgpython25_LTLIBRARIES = libgv_python25.la
 #DEVTSTS += test_python25
 endif
 if WITH_PYTHON26
 pkgpython26_DATA = $(PYTHON26_data)
-py_mans ?= gv.3python
-py_data ?= gv.3python.pdf
+py_mans = gv.3python
+py_data = gv.3python.pdf
 pkgpython26_LTLIBRARIES = libgv_python26.la
 #DEVTSTS += test_python26
 endif
 if WITH_PYTHON27
 pkgpython27_DATA = $(PYTHON27_data)
-py_mans ?= gv.3python
-py_data ?= gv.3python.pdf
+py_mans = gv.3python
+py_data = gv.3python.pdf
 pkgpython27_LTLIBRARIES = libgv_python27.la
 #DEVTSTS += test_python27
 endif
