@@ -390,7 +390,6 @@ xlintersections(XLabels_t * xlp, object_t * objp, object_t * intrsx[XLNBR])
       if(xlp->objs[i].sz.x > 0 && xlp->objs[i].sz.y > 0) continue;
       if(lblenclosing(objp, &xlp->objs[i]) ) {
 	bp.n++;
-	return bp;
       }
     }
 
@@ -411,9 +410,9 @@ xlintersections(XLabels_t * xlp, object_t * objp, object_t * intrsx[XLNBR])
 	objp2rect(cp, &srect);
 	a = aabbaabb(&rect, &srect);
 	if (a > 0.0) {
-	    ra = recordointrsx(xlp, objp, cp, &rect, a, intrsx);
-	    bp.n++;
-	    bp.area += ra;
+	  ra = recordointrsx(xlp, objp, cp, &rect, a, intrsx);
+	  bp.n++;
+	  bp.area += ra;
 	}
 	/*label-label intersect */
 	if (!cp->lbl || !cp->lbl->set)
@@ -421,9 +420,9 @@ xlintersections(XLabels_t * xlp, object_t * objp, object_t * intrsx[XLNBR])
 	objplp2rect(cp, &srect);
 	a = aabbaabb(&rect, &srect);
 	if (a > 0.0) {
-	    recordlintrsx(xlp, objp, cp, &rect, a, intrsx);
-	    bp.n++;
-	    bp.area += a;
+	  ra = recordlintrsx(xlp, objp, cp, &rect, a, intrsx);
+	  bp.n++;
+	  bp.area += ra;
 	}
     }
     RTreeLeafListFree(llp);
