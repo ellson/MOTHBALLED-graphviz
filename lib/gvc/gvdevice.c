@@ -52,6 +52,7 @@ static unsigned long int crc;
 #endif /* HAVE_LIBZ */
 
 #include "const.h"
+#include "memory.h"
 #include "gvplugin_device.h"
 #include "gvcjob.h"
 #include "gvcint.h"
@@ -384,27 +385,42 @@ void gvdevice_finalize(GVJ_t * job)
     }
 }
 /* gvprintf:
- * Note that this function is unsafe due to the fixed buffer size.
+ * Unless vsnprintf is available, this function is unsafe due to the fixed buffer size.
  * It should only be used when the caller is sure the input will not
  * overflow the buffer. In particular, it should be avoided for
- * input coming from users. Also, if vsnprintf is available, the
- * code should check for return values to use it safely.
+ * input coming from users.
  */
 void gvprintf(GVJ_t * job, const char *format, ...)
 {
     char buf[BUFSIZ];
     size_t len;
     va_list argp;
+    char* bp = buf;
 
     va_start(argp, format);
 #ifdef HAVE_VSNPRINTF
-    len = vsnprintf((char *)buf, sizeof(buf), format, argp);
+    len = vsnprintf((char *)buf, BUFSIZ, format, argp);
+    if (len < 0) {
+	agerr (AGERR, "gvprintf: %s\n", strerror(errno));
+	return;
+    }
+    else if (len >= BUFSIZ) {
+    /* C99 vsnprintf returns the length that would be required
+     * to write the string without truncation. 
+     */
+	bp = gmalloc(len + 1);
+	va_end(argp);
+	va_start(argp, format);
+	len = vsprintf(bp, format, argp);
+    }
 #else
     len = vsprintf((char *)buf, format, argp);
 #endif
     va_end(argp);
 
-    gvwrite(job, buf, len);
+    gvwrite(job, bp, len);
+    if (bp != buf)
+	free (bp);
 }
 
 
