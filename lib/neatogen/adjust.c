@@ -749,8 +749,9 @@ SparseMatrix makeMatrix(Agraph_t* g, int dim, SparseMatrix *D)
 	/* edge length */
 	    if (symD) {
 #ifndef WITH_CGRAPH
-#else
 		if (sscanf (agxget (e, symD->index), "%lf", &v) != 1) v = 1;
+#else
+		if (sscanf (agxget (e, symD), "%lf", &v) != 1) v = 1;
 #endif
 		valD[i] = v;
 	    }
