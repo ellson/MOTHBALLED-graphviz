@@ -15,6 +15,10 @@
  * Tapered edges, based on lines.ps written by Denis Moskowitz.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
