@@ -11,6 +11,7 @@ AM_CPPFLAGS = \
         -I$(top_srcdir) \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/pack \
+	-I$(top_srcdir)/lib/label \
 	-I$(top_srcdir)/lib/xdot \
 	-I$(top_srcdir)/lib/fdpgen \
 	-I$(top_srcdir)/lib/pathplan \
@@ -33,7 +34,7 @@ noinst_LTLIBRARIES = libcommon_C.la
 libcommon_C_la_SOURCES = arrows.c colxlate.c fontmetrics.c \
 	args.c memory.c globals.c htmllex.c htmlparse.y htmltable.c input.c \
 	pointset.c intset.c postproc.c routespl.c splines.c psusershape.c \
-	timing.c labels.c ns.c shapes.c utils.c geom.c \
+	timing.c labels.c ns.c shapes.c utils.c geom.c taper.c \
 	output.c emit.c ps_font_equiv.txt ps_fontmap.txt fontmap.cfg \
 	color_names
 

@@ -362,7 +362,7 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 	sprintf(buf, "%.5g", PS2INCH(ND_lw(n) + ND_rw(n)));
 	agxset(n, N_width, buf);
 #endif
-	if (ND_xlabel(n)) {
+	if (ND_xlabel(n) && ND_xlabel(n)->set) {
 	    ptf = ND_xlabel(n)->pos;
 	    sprintf(buf, "%.5g,%.5g", ptf.x, YDIR(ptf.y));
 	    agset(n, "xlp", buf);
@@ -443,7 +443,7 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 		    sprintf(buf, "%.5g,%.5g", ptf.x, YDIR(ptf.y));
 		    agset(e, "lp", buf);
 		}
-		if (ED_xlabel(e)) {
+		if (ED_xlabel(e) && ED_xlabel(e)->set) {
 		    ptf = ED_xlabel(e)->pos;
 		    sprintf(buf, "%.5g,%.5g", ptf.x, YDIR(ptf.y));
 		    agset(e, "xlp", buf);

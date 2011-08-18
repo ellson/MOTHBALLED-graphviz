@@ -13,6 +13,7 @@
 
 
 #include "render.h"
+#include "xlabels.h"
 
 static int Rankdir;
 static boolean Flip;
@@ -80,7 +81,7 @@ static void place_flip_graph_label(graph_t * g);
 
 static pointf map_point(pointf p)
 {
-    p = ccwrotatepf(p, Rankdir*90);
+    p = ccwrotatepf(p, Rankdir * 90);
     p.x -= Offset.x;
     p.y -= Offset.y;
     return p;
@@ -93,7 +94,7 @@ static void map_edge(edge_t * e)
 
     if (ED_spl(e) == NULL) {
 	if ((Concentrate == FALSE) || (ED_edge_type(e) != IGNORED))
-	    agerr(AGERR, "lost %s %s edge\n",agnameof(agtail(e)),
+	    agerr(AGERR, "lost %s %s edge\n", agnameof(agtail(e)),
 		  agnameof(aghead(e)));
 	return;
     }
@@ -149,9 +150,11 @@ static void translate_drawing(graph_t * g)
     edge_t *e;
     int shift = (Offset.x || Offset.y);
 
-    if (!shift && !Rankdir) return;
+    if (!shift && !Rankdir)
+	return;
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
-	if (Rankdir) gv_nodesize(v, FALSE);
+	if (Rankdir)
+	    gv_nodesize(v, FALSE);
 	ND_coord(v) = map_point(ND_coord(v));
 	if (ND_xlabel(v))
 	    ND_xlabel(v)->pos = map_point(ND_xlabel(v)->pos);
@@ -190,23 +193,294 @@ static void place_root_label(graph_t * g, pointf d)
     GD_label(g)->set = TRUE;
 }
 
-static void 
-addXLabels (Agraph_t* g)
-{
-    textlabel_t* lp;
-    pointf p, pp;
-    Agnode_t* n;
+static pointf
+centerPt (xlabel_t* xlp) {
+  pointf p;
 
-    for (n = agfstnode(g); n; n = agnxtnode(g,n)) {
-	lp = ND_xlabel(n);
-	if (!lp) continue;
-	p = ND_coord(n);
-	
-	pp.y = p.y;
-	pp.x += p.x + ND_rw(n) + lp->dimen.x/2.0; 
-	lp->pos = pp;
-	lp->set = 1;
+  p = xlp->pos;
+  p.x += (xlp->sz.x)/2.0;
+  p.y += (xlp->sz.y)/2.0;
+
+  return p;
+}
+
+static int
+printData (object_t* objs, int n_objs, xlabel_t* lbls, int n_lbls,
+	   label_params_t* params) {
+  int i;
+  xlabel_t* xp;
+  fprintf (stderr, "%d objs %d xlabels force=%d bb=(%.02f,%.02f) (%.02f,%.02f)\n",
+	   n_objs, n_lbls, params->force, params->bb.LL.x, params->bb.LL.y,
+	   params->bb.UR.x, params->bb.UR.y);
+  if (Verbose < 2) return 0;
+  fprintf(stderr, "objects\n");
+  for (i = 0; i < n_objs; i++) {
+    xp = objs->lbl;
+    fprintf (stderr, " [%d] (%.02f,%.02f) (%.02f,%.02f) %p \"%s\"\n",
+	    i, objs->pos.x,objs->pos.y,objs->sz.x,objs->sz.y, objs->lbl, 
+	    (xp?((textlabel_t*)(xp->lbl))->text:""));
+    objs++;
+  }
+  fprintf(stderr, "xlabels\n");
+  for (i = 0; i < n_lbls; i++) {
+    fprintf (stderr, " [%d] %p set %d (%.02f,%.02f) (%.02f,%.02f) %s\n",
+	     i, lbls,  lbls->set, lbls->pos.x,lbls->pos.y, lbls->sz.x,lbls->sz.y, ((textlabel_t*)lbls->lbl)->text);  
+    lbls++;
+  }
+  return 0;
+}
+
+/* addXLabel:
+ * Set up xlabel_t object and connect with related object.
+ * If initObj is set, initialize the object.
+ */
+static void
+addXLabel (textlabel_t* lp, object_t* objp, xlabel_t* xlp, int initObj, pointf pos)
+{
+    if (initObj) {
+	objp->sz.x = 0;
+	objp->sz.y = 0;
+	objp->pos = pos;
     }
+
+    xlp->sz = lp->dimen;
+    xlp->lbl = lp;
+    xlp->set = 0;
+    objp->lbl = xlp;
+}
+
+static pointf
+edgeTailpoint (Agedge_t* e)
+{
+    splines *spl;
+    bezier *bez;
+
+    spl = getsplinepoints(e);
+    bez = &spl->list[0];
+    if (bez->sflag) {
+	return bez->sp;
+    } else {
+	return bez->list[0];
+    }
+}
+
+static pointf
+edgeHeadpoint (Agedge_t* e)
+{
+    splines *spl;
+    bezier *bez;
+
+    spl = getsplinepoints(e);
+    bez = &spl->list[spl->size - 1];
+    if (bez->eflag) {
+	return bez->ep;
+    } else {
+	return bez->list[bez->size - 1];
+    }
+}
+
+/* addLabelObj:
+ * Set up obstacle object based on set external label.
+ * Use label information to determine size and position of object.
+ * Then adjust given bounding box bb to include label and return new bb.
+ */
+static boxf
+addLabelObj (textlabel_t* lp, object_t* objp, boxf bb)
+{
+    pointf ur;
+
+    objp->sz.x = lp->dimen.x; 
+    objp->sz.y = lp->dimen.y;
+    objp->pos = lp->pos;
+    objp->pos.x -= (objp->sz.x) / 2.0;
+    objp->pos.y -= (objp->sz.y) / 2.0;
+
+    /* Adjust bounding box */
+    bb.LL.x = MIN(bb.LL.x, objp->pos.x);
+    bb.LL.y = MIN(bb.LL.y, objp->pos.y);
+    ur.x = objp->pos.x + objp->sz.x;
+    ur.y = objp->pos.y + objp->sz.y;
+    bb.UR.x = MAX(bb.UR.x, ur.x);
+    bb.UR.y = MAX(bb.UR.y, ur.y);
+    return bb;
+}
+
+/* addXLabels:
+ * Position xlabels and any unpositioned edge labels using
+ * a map placement algorithm to avoid overlap.
+ *
+ * TODO: interaction with spline=ortho
+ */
+static void addXLabels(Agraph_t * gp)
+{
+    Agnode_t *np;
+    Agedge_t *ep;
+    int cnt, i, n_objs, n_lbls;
+    int n_nlbls = 0;		/* # of unset node xlabels */
+    int n_elbls = 0;		/* # of unset edge labels or xlabels */
+    int n_set_lbls = 0;		/* # of set xlabels and edge labels */
+    boxf bb;
+    pointf ur;
+    textlabel_t* lp;
+    label_params_t params;
+    object_t* objs;
+    xlabel_t* lbls;
+    object_t* objp;
+    xlabel_t* xlp;
+    Agsym_t* force;
+
+    if (!(GD_has_labels(gp) & NODE_XLABEL) &&
+	!(GD_has_labels(gp) & EDGE_XLABEL) &&
+	!(GD_has_labels(gp) & TAIL_LABEL) &&
+	!(GD_has_labels(gp) & HEAD_LABEL) &&
+	(!(GD_has_labels(gp) & EDGE_LABEL) || EdgeLabelsDone))
+	return;
+
+    for (np = agfstnode(gp); np; np = agnxtnode(gp, np)) {
+	if (ND_xlabel(np)) {
+	    if (ND_xlabel(np)->set)
+		n_set_lbls++;
+	    else
+		n_nlbls++;
+	}
+	for (ep = agfstout(gp, np); ep; ep = agnxtout(gp, ep)) {
+	    if (ED_xlabel(ep)) {
+		if (ED_xlabel(ep)->set)
+		    n_set_lbls++;
+		else
+		    n_elbls++;
+	    }
+	    if (ED_head_label(ep)) {
+		if (ED_head_label(ep)->set)
+		    n_set_lbls++;
+		else
+		    n_elbls++;
+	    }
+	    if (ED_tail_label(ep)) {
+		if (ED_tail_label(ep)->set)
+		    n_set_lbls++;
+		else
+		    n_elbls++;
+	    }
+	    if (ED_label(ep)) {
+		if (ED_label(ep)->set)
+		    n_set_lbls++;
+		else
+		    n_elbls++;
+	    }
+	}
+    }
+
+    /* A label for each unpositioned external label */
+    n_lbls = n_nlbls + n_elbls;
+    if (n_lbls == 0) return;
+
+    /* An object for each node, each positioned external label, and all unset edge
+     * labels and xlabels.
+     */
+    n_objs = agnnodes(gp) + n_set_lbls + n_elbls;
+    objp = objs = N_NEW(n_objs, object_t);
+    xlp = lbls = N_NEW(n_lbls, xlabel_t);
+    bb.LL = pointfof(INT_MAX, INT_MAX);
+    bb.UR = pointfof(-INT_MAX, -INT_MAX);
+
+    for (np = agfstnode(gp); np; np = agnxtnode(gp, np)) {
+	/* Add an obstacle per node */
+	objp->sz.x = INCH2PS(ND_width(np));
+	objp->sz.y = INCH2PS(ND_height(np));
+	objp->pos = ND_coord(np);
+	objp->pos.x -= (objp->sz.x) / 2.0;
+	objp->pos.y -= (objp->sz.y) / 2.0;
+
+	/* Adjust bounding box */
+	bb.LL.x = MIN(bb.LL.x, objp->pos.x);
+	bb.LL.y = MIN(bb.LL.y, objp->pos.y);
+	ur.x = objp->pos.x + objp->sz.x;
+	ur.y = objp->pos.y + objp->sz.y;
+	bb.UR.x = MAX(bb.UR.x, ur.x);
+	bb.UR.y = MAX(bb.UR.y, ur.y);
+
+	if ((lp = ND_xlabel(np))) {
+	    if (lp->set) {
+		bb = addLabelObj (lp, objp, bb);
+		objp++;
+	    }
+	    else {
+		addXLabel (lp, objp, xlp, 0, ur); 
+		xlp++;
+	    }
+	}
+	objp++;
+	for (ep = agfstout(gp, np); ep; ep = agnxtout(gp, ep)) {
+	    if ((lp = ED_label(ep))) {
+		if (lp->set) {
+		    bb = addLabelObj (lp, objp, bb);
+		}
+		else {
+		    addXLabel (lp, objp, xlp, 1, edgeMidpoint(gp, ep)); 
+		    xlp++;
+		}
+	        objp++;
+	    }
+	    if ((lp = ED_tail_label(ep))) {
+		if (lp->set) {
+		    bb = addLabelObj (lp, objp, bb);
+		}
+		else {
+		    addXLabel (lp, objp, xlp, 1, edgeTailpoint(ep)); 
+		    xlp++;
+		}
+		objp++;
+	    }
+	    if ((lp = ED_head_label(ep))) {
+		if (lp->set) {
+		    bb = addLabelObj (lp, objp, bb);
+		}
+		else {
+		    addXLabel (lp, objp, xlp, 1, edgeHeadpoint(ep)); 
+		    xlp++;
+		}
+		objp++;
+	    }
+	    if ((lp = ED_xlabel(ep))) {
+		if (lp->set) {
+		    bb = addLabelObj (lp, objp, bb);
+		}
+		else {
+		    addXLabel (lp, objp, xlp, 1, edgeMidpoint(gp, ep)); 
+		    xlp++;
+		}
+		objp++;
+	    }
+	}
+    }
+
+    force = agfindgraphattr(gp, "forcelabels");
+
+    params.force = late_bool(gp, force, TRUE);
+    params.bb = bb;
+    placeLabels(objs, n_objs, lbls, n_lbls, &params);
+    if (Verbose)
+	printData(objs, n_objs, lbls, n_lbls, &params);
+
+    xlp = lbls;
+    cnt = 0;
+    for (i = 0; i < n_lbls; i++) {
+	if (xlp->set) {
+	    cnt++;
+	    lp = (textlabel_t *) (xlp->lbl);
+	    lp->set = 1;
+	    lp->pos = centerPt(xlp);
+	    updateBB (gp, lp);
+	}
+	xlp++;
+    }
+    if (Verbose)
+	fprintf (stderr, "%d out of %d labels positioned.\n", cnt, n_lbls);
+    else if (cnt != n_lbls)
+	agerr(AGWARN, "%d out of %d exterior labels positioned.\n", cnt, n_lbls);
+    free(objs);
+    free(lbls);
 }
 
 /* dotneato_postprocess:
@@ -216,12 +490,12 @@ addXLabels (Agraph_t* g)
  * Assumes the boxes of all clusters have been computed.
  * When done, the bounding box of g has LL at origin.
  */
-void gv_postprocess(Agraph_t *g, int allowTranslation)
+void gv_postprocess(Agraph_t * g, int allowTranslation)
 {
     double diff;
-    pointf dimen = {0., 0.};
+    pointf dimen = { 0., 0. };
 
-    addXLabels (g);
+    addXLabels(g);
 
     Rankdir = GD_rankdir(g);
     Flip = GD_flip(g);
@@ -230,7 +504,7 @@ void gv_postprocess(Agraph_t *g, int allowTranslation)
     else
 	place_graph_label(g);
 
-	/* Add space for graph label if necessary */
+    /* Add space for graph label if necessary */
     if (GD_label(g) && !GD_label(g)->set) {
 	dimen = GD_label(g)->dimen;
 	PAD(dimen);
@@ -293,15 +567,15 @@ void gv_postprocess(Agraph_t *g, int allowTranslation)
 	if (Flip)
 	    sprintf(buf, M2, Offset.x, Offset.y, Offset.x, Offset.y);
 	else
-	    sprintf(buf, M1, Offset.y, Offset.x, Offset.y, Offset.x, 
-                 -Offset.x, -Offset.y);
+	    sprintf(buf, M1, Offset.y, Offset.x, Offset.y, Offset.x,
+		    -Offset.x, -Offset.y);
 	Show_boxes[0] = strdup(buf);
     }
 }
 
 void dotneato_postprocess(Agraph_t * g)
 {
-    gv_postprocess (g, 1);
+    gv_postprocess(g, 1);
 }
 
 /* place_flip_graph_label:
@@ -314,9 +588,9 @@ static void place_flip_graph_label(graph_t * g)
 
 #ifndef WITH_CGRAPH
     if ((g != g->root) && (GD_label(g)) && !GD_label(g)->set) {
-#else /* WITH_CGRAPH */
+#else				/* WITH_CGRAPH */
     if ((g != agroot(g)) && (GD_label(g)) && !GD_label(g)->set) {
-#endif /* WITH_CGRAPH */
+#endif				/* WITH_CGRAPH */
 
 	if (GD_label_pos(g) & LABEL_AT_TOP) {
 	    d = GD_border(g)[RIGHT_IX];
@@ -354,9 +628,9 @@ void place_graph_label(graph_t * g)
 
 #ifndef WITH_CGRAPH
     if ((g != g->root) && (GD_label(g)) && !GD_label(g)->set) {
-#else /* WITH_CGRAPH */
+#else				/* WITH_CGRAPH */
     if ((g != agroot(g)) && (GD_label(g)) && !GD_label(g)->set) {
-#endif /* WITH_CGRAPH */
+#endif				/* WITH_CGRAPH */
 	if (GD_label_pos(g) & LABEL_AT_TOP) {
 	    d = GD_border(g)[TOP_IX];
 	    p.y = GD_bb(g).UR.y - d.y / 2;

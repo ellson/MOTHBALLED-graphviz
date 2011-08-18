@@ -180,6 +180,9 @@ This field indicates which graph component uses the attribute.
 </TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">system-dependent</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:fontsize HREF=#d:fontsize>fontsize</A>
 </TD><TD>ENGC</TD><TD>double</TD><TD ALIGN="CENTER">14.0</TD><TD>1.0</TD><TD></TD> </TR>
+ <TR><TD><A NAME=a:forcelabels HREF=#d:forcelabels>forcelabels</A>
+</TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
+</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:group HREF=#d:group>group</A>
 </TD><TD>N</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>dot only</TD> </TR>
  <TR><TD><A NAME=a:headURL HREF=#d:headURL>headURL</A>
@@ -293,7 +296,7 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:minlen HREF=#d:minlen>minlen</A>
 </TD><TD>E</TD><TD>int</TD><TD ALIGN="CENTER">1</TD><TD>0</TD><TD>dot only</TD> </TR>
  <TR><TD><A NAME=a:mode HREF=#d:mode>mode</A>
-</TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">major<BR>spring</TD><TD></TD><TD>sfdp, neato only</TD> </TR>
+</TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">major</TD><TD></TD><TD>neato only</TD> </TR>
  <TR><TD><A NAME=a:model HREF=#d:model>model</A>
 </TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">shortpath</TD><TD></TD><TD>neato only</TD> </TR>
  <TR><TD><A NAME=a:mosek HREF=#d:mosek>mosek</A>
@@ -476,6 +479,9 @@ This field indicates which graph component uses the attribute.
 </TD><TD>E</TD><TD>double</TD><TD ALIGN="CENTER">1.0</TD><TD>0(dot)<BR>1(neato,fdp,sfdp)</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:width HREF=#d:width>width</A>
 </TD><TD>N</TD><TD>double</TD><TD ALIGN="CENTER">0.75</TD><TD>0.01</TD><TD></TD> </TR>
+ <TR><TD><A NAME=a:xlabel HREF=#d:xlabel>xlabel</A>
+</TD><TD>EN</TD><TD><A HREF=#k:lblString>lblString</A>
+</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:z HREF=#d:z>z</A>
 </TD><TD>N</TD><TD>double</TD><TD ALIGN="CENTER">0.0</TD><TD>-MAXFLOAT<BR>-1000</TD><TD></TD> </TR>
 </TABLE>
@@ -821,6 +827,10 @@ This field indicates which graph component uses the attribute.
 <DT><A NAME=d:fontsize HREF=#a:fontsize><STRONG>fontsize</STRONG></A>
 <DD>  Font size, <A HREF=#points>in points</A>, used for text.
 
+<DT><A NAME=d:forcelabels HREF=#a:forcelabels><STRONG>forcelabels</STRONG></A>
+<DD>  If true, all  <A HREF=#d:xlabel><B>xlabel</B></A> attributes are placed, even if there is some overlap with nodes
+  or other labels.
+
 <DT><A NAME=d:group HREF=#a:group><STRONG>group</STRONG></A>
 <DD>  If the end points of an edge belong to the same group, i.e., have the
   same group attribute, parameters are set to avoid crossings and keep
@@ -1143,10 +1153,6 @@ This field indicates which graph component uses the attribute.
   directionality similar to the layout used in dot, and "ipsep", which
   allows the graph to specify minimum vertical and horizontal distances
   between nodes. (See the <A HREF=#d:sep>sep</A> attribute.)
-  <P>
-  For sfdp, the default <B>mode</B> is <TT>"spring"</TT>, which corresponds to using
-  a spring-electrical model. Setting <B>mode</B> to <TT>"maxent"</TT> causes a similar
-  model to be run but one that also takes into account edge lengths specified by a the
   <TT>"len"</TT> attribute.
 
 <DT><A NAME=d:model HREF=#a:model><STRONG>model</STRONG></A>
@@ -1800,6 +1806,17 @@ This field indicates which graph component uses the attribute.
   If neither is set explicitly, the minimum of the two default values
   is used.
 
+<DT><A NAME=d:xlabel HREF=#a:xlabel><STRONG>xlabel</STRONG></A>
+<DD>  External label for a node or edge. For nodes, the label will be placed outside of the
+  node but near it. For edges, the label will be placed near the center of the edge.
+  This can be useful in dot to avoid the occasional problem when the use of edge labels
+  distorts the layout. For other layouts, the xlabel attribute can be viewed as a synonym
+  for the <A HREF=#d:label><B>label</B></A> attribute.
+  <P>
+  These labels are added after all nodes and edges have been placed. The labels will be placed
+  so that they do not overlap any node or label. This means it may not be possible to place all
+  of them. To force placing all of them, use the  <A HREF=#d:forcelabels><B>forcelabels</B></A> attribute.
+
 <DT><A NAME=d:z HREF=#a:z><STRONG>z</STRONG></A>
 <DD>  <B>Deprecated:</B>Use <A HREF=#d:pos><B>pos</B></A> attribute, along
   with <A HREF=#d:dimen><B>dimen</B></A> and/or <A HREF=#d:dim><B>dim</B></A>
@@ -2117,8 +2134,8 @@ the given types.
    points, of the lower-left corner (llx,lly) and the upper-right corner
    (urx,ury).
 
-<DT><A NAME=kshape><STRONG>shape</STRONG></A>
-<DD>A string specifying the <A HREF=/content/node-shapes>shape</A> of a node.
+<DT><A NAME=k:shape><STRONG>shape</STRONG></A>
+<DD>A string specifying the <A HREF=shapes.html>shape</A> of a node.
   There are three
   main types of shapes :
   <A HREF=shapes.html#polygon>polygon-based</A>,
@@ -2183,6 +2200,7 @@ the given types.
   <P>
   At present, the recognized style names are
   "dashed", "dotted", "solid", "invis" and "bold" for nodes and edges,
+  "tapered" for edges only,
   and "filled", "diagonals" and "rounded" for nodes only.
   The styles "filled" and "rounded" are recognized for clusters.
   Additional styles are available in

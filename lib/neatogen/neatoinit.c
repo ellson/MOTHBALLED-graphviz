@@ -197,11 +197,11 @@ static int numFields(unsigned char *pos)
     return cnt;
 }
 
-static void set_elabel(edge_t * e, textlabel_t * l, char *name)
+static void set_label(void* obj, textlabel_t * l, char *name)
 {
     double x, y;
     char *lp;
-    lp = agget(e, name);
+    lp = agget(obj, name);
     if (lp && (sscanf(lp, "%lf,%lf", &x, &y) == 2)) {
 	l->pos = pointfof(x, y);
 	l->set = TRUE;
@@ -404,11 +404,13 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
     } while (more);
 
     if (ED_label(e))
-	set_elabel(e, ED_label(e), "lp");
+	set_label(e, ED_label(e), "lp");
+    if (ED_xlabel(e))
+	set_label(e, ED_xlabel(e), "xlp");
     if (ED_head_label(e))
-	set_elabel(e, ED_head_label(e), "head_lp");
+	set_label(e, ED_head_label(e), "head_lp");
     if (ED_tail_label(e))
-	set_elabel(e, ED_tail_label(e), "tail_lp");
+	set_label(e, ED_tail_label(e), "tail_lp");
 
     return 1;
 }
@@ -705,6 +707,8 @@ int init_nop(Agraph_t * g, int adjust)
 		  agnameof(np), agnameof(g));
 	    return -1;
 	}
+	if (ND_xlabel(np))
+	    set_label(np, ND_xlabel(np), "xlp");
     }
     nop_init_graphs(g, G_lp, G_bb);
     posEdges = nop_init_edges(g);

@@ -749,8 +749,9 @@ SparseMatrix makeMatrix(Agraph_t* g, int dim, SparseMatrix *D)
 	/* edge length */
 	    if (symD) {
 #ifndef WITH_CGRAPH
-#else
 		if (sscanf (agxget (e, symD->index), "%lf", &v) != 1) v = 1;
+#else
+		if (sscanf (agxget (e, symD), "%lf", &v) != 1) v = 1;
 #endif
 		valD[i] = v;
 	    }
@@ -949,8 +950,8 @@ static lookup_t adjustMode[] = {
 #if ((defined(HAVE_GTS) || defined(HAVE_TRIANGLE)) && defined(SFDP))
     ITEM(AM_PRISM, "prism", "prism"),
 #endif
-    ITEM(AM_NSCALE, "scale", "scaling"),
     ITEM(AM_VOR, "voronoi", "Voronoi"),
+    ITEM(AM_NSCALE, "scale", "scaling"),
     ITEM(AM_COMPRESS, "compress", "compress"),
     ITEM(AM_VPSC, "vpsc", "vpsc"),
     ITEM(AM_IPSEP, "ipsep", "ipsep"),

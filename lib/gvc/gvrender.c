@@ -517,6 +517,8 @@ void gvrender_set_style(GVJ_t * job, char **s)
 		obj->fill = FILL_SOLID;
 	    else if (streq(line, "unfilled"))
 		obj->fill = FILL_NONE;
+	    else if (streq(line, "tapered"))
+		;
 	    else {
 		agerr(AGWARN,
 		      "gvrender_set_style: unsupported style %s - ignoring\n",

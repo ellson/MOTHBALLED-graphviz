@@ -471,9 +471,13 @@ pointf dotneato_closest(splines * spl, pointf pt)
     }
 
     bz = spl->list[besti];
-    j = bestj / 3;
-    if (j >= spl->size)
-	j--;
+    /* Pick best Bezier. If bestj is the last point in the B-spline, decrement.
+     * Then set j to be the first point in the corresponding Bezier by dividing
+     * then multiplying be 3. Thus, 0,1,2 => 0; 3,4,5 => 3, etc.
+     */
+    if (bestj == bz.size-1)
+	bestj--;
+    j = 3*(bestj / 3);
     for (k = 0; k < 4; k++) {
 	c[k].x = bz.list[j + k].x;
 	c[k].y = bz.list[j + k].y;

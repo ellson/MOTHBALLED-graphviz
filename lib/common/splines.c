@@ -1119,13 +1119,18 @@ makeSelfEdge(path * P, edge_t * edges[], int ind, int cnt, double sizex,
  */
 void makePortLabels(edge_t * e)
 {
+    /* Only use this if labelangle or labeldistance is set for the edge;
+     * otherwise, handle with external labels.
+     */
+    if (!E_labelangle && !E_labeldistance) return;
+
     if (ED_head_label(e) && !ED_head_label(e)->set) {
-	place_portlabel(e, TRUE);
-	updateBB(agraphof(agtail(e)), ED_head_label(e));
+	if (place_portlabel(e, TRUE))
+	    updateBB(agraphof(agtail(e)), ED_head_label(e));
     }
     if (ED_tail_label(e) && !ED_tail_label(e)->set) {
-	place_portlabel(e, FALSE);
-	updateBB(agraphof(agtail(e)), ED_tail_label(e));
+	if (place_portlabel(e, FALSE))
+	    updateBB(agraphof(agtail(e)), ED_tail_label(e));
     }
 }
 
@@ -1232,6 +1237,7 @@ edgeMidpoint (graph_t* g, edge_t * e)
  */
 void addEdgeLabels(graph_t* g, edge_t * e, pointf rp, pointf rq)
 {
+#if 0
     int et = EDGE_TYPE (g);
     pointf p, q;
     pointf d;			/* midpoint of segment p-q */
@@ -1286,15 +1292,24 @@ void addEdgeLabels(graph_t* g, edge_t * e, pointf rp, pointf rq)
 	ED_label(e)->set = TRUE;
 	updateBB(agraphof(agtail(e)), ED_label(e));
     }
+#endif
     makePortLabels(e);
 }
 
+#ifndef WITH_CGRAPH
+#define AGXGET(o,a) agxget(o,a->index)
+#else /* WITH_CGRAPH */
+#define AGXGET(o,a) agxget(o,a)
+#endif /* WITH_CGRAPH */
+
 /* vladimir */
-void place_portlabel(edge_t * e, boolean head_p)
-/* place the {head,tail}label (depending on HEAD_P) of edge E */
-/* N.B. Assume edges are normalized, so tail is at spl->list[0].list[0]
+/* place_portlabel:
+ * place the {head,tail}label (depending on HEAD_P) of edge E
+ * N.B. Assume edges are normalized, so tail is at spl->list[0].list[0]
  * and head is at spl->list[spl->size-l].list[bez->size-1]
+ * Return 1 on success
  */
+int place_portlabel(edge_t * e, boolean head_p)
 {
     textlabel_t *l;
     splines *spl;
@@ -1302,9 +1317,17 @@ void place_portlabel(edge_t * e, boolean head_p)
     double dist, angle;
     pointf c[4], pe, pf;
     int i;
+    char* la;
+    char* ld;
 
     if (ED_edge_type(e) == IGNORED)
-	return;
+	return 0;
+    /* add label here only if labelangle or labeldistance is defined; else, use external label */
+    if ((!E_labelangle || (*(la = AGXGET(e,E_labelangle)) == '\0')) &&
+	(!E_labeldistance || (*(ld = AGXGET(e,E_labeldistance)) == '\0'))) {
+	return 0;
+    }
+
     l = head_p ? ED_head_label(e) : ED_tail_label(e);
     spl = getsplinepoints(e);
     if (!head_p) {
@@ -1336,6 +1359,7 @@ void place_portlabel(edge_t * e, boolean head_p)
     l->pos.x = pe.x + dist * cos(angle);
     l->pos.y = pe.y + dist * sin(angle);
     l->set = TRUE;
+    return 1;
 }
 
 splines *getsplinepoints(edge_t * e)

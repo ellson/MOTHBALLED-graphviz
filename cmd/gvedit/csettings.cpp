@@ -373,11 +373,11 @@ bool CFrmSettings::renderLayout()
     if (!graph)
 	return false;
     QString sfx = WIDGET(QComboBox, cbExtension)->currentText();
+    QString fileName(WIDGET(QLineEdit, leOutput)->text());
 
-    if (sfx == QString("NONE"))
+    if ((fileName == QString("")) || (sfx == QString("NONE")))
 	doPreview(QString());
     else {
-	QString fileName(WIDGET(QLineEdit, leOutput)->text());
 	fileName = stripFileExtension(fileName);
 	fileName = fileName + "." + sfx;
 	if (fileName != activeWindow->outputFile)
