@@ -168,6 +168,7 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
 	    tl.str = ti->str;
 	    tl.fontname = fname_;
 	    tl.fontsize = fsize_;
+	    tl.font = ti->font;
 	    tl.yoffset_layout = ti->yoffset_layout;
 	    /* tl.yoffset_centerline = ti->yoffset_centerline; */
 	    tl.yoffset_centerline = 1;
