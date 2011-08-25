@@ -19,6 +19,13 @@
 #include <string.h>
 #include <errno.h>
 
+#ifdef WIN32
+#include "libltdl/lt_system.h"
+#endif
+#ifndef WIN32
+#include <unistd.h>
+#endif
+
 #include "types.h"
 #include "logic.h"
 #include "memory.h"
@@ -51,6 +58,12 @@ typedef struct {
 #define EPS_MAGIC  "\xC5\xD0\xD3\xC6"
 #define XML_MAGIC  "<?xml"
 #define SVG_MAGIC  "<svg"
+
+#ifdef WIN32
+#define DIRSEP "\\"
+#else
+#define DIRSEP "/"
+#endif
 
 static knowntype_t knowntypes[] = {
     { PNG_MAGIC,  sizeof(PNG_MAGIC)-1,  FT_PNG,  "png",  },
@@ -475,9 +488,14 @@ gvusershape_size_dpi (usershape_t* us, pointf dpi)
  */
 point gvusershape_size(graph_t * g, char *name)
 {
+    static char *ipfilename = NULL;
+    static char* imagepath;
+    static boolean firsttime = TRUE;
+    const char *str;
+    char *p;
     point rv;
     pointf dpi;
-
+    
     /* no shape file, no shape size */
     if (!name || (*name == '\0')) {
         rv.x = rv.y = -1;
@@ -488,6 +506,21 @@ point gvusershape_size(graph_t * g, char *name)
 	dpi.x = dpi.y;
     else
 	dpi.x = dpi.y = (double)DEFAULT_DPI;
+    
+    //imagepath is typically set as a graph attribute on macos platforms
+    //It points to the directory where node images are located
+    if (firsttime) {
+      imagepath = agget(g,"imagepath");
+      firsttime = FALSE;
+    }
 
+    if ((access (safefile(name), R_OK) != 0) && imagepath != NULL){
+      if (p = strrchr(name, '/'))
+	name = ++p;
+      ipfilename = realloc(ipfilename,(strlen(imagepath) + strlen(name) + 2));
+      sprintf (ipfilename, "%s%s%s", imagepath, DIRSEP, name);
+      name = ipfilename;
+    }
     return gvusershape_size_dpi (gvusershape_open (name), dpi);
+
 }
