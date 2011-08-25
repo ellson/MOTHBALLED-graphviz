@@ -1,3 +1,5 @@
+August 24, 2011
+	- Add <B>,<I>,<U> to html strings via svg
 August 16, 2011
 	- Add tapered edges
 August 3, 2011
@@ -32,7 +34,7 @@ March 31, 2011
 	- Add many new gvpr scripts to release package
 	- Add scale attribute to twopi
 October 14, 2010
-	- Add <B>,<I>,<U> to html strings
+	- Add <B>,<I>,<U> to html strings via cairo
 February 15, 2010
 	- migrated to 2005 version of cdt 
 January 26, 2010
