@@ -14,12 +14,6 @@
 #include "render.h"
 #include "htmltable.h"
 #include <limits.h>
-#ifdef WIN32
-#include "libltdl/lt_system.h"
-#endif
-#ifndef WIN32
-#include <unistd.h>
-#endif
 
 #define RBCONST 12
 #define RBCURVE .5
@@ -1537,10 +1531,6 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     boolean pfilled;		/* true if fill not handled by user shape */
     char *color, *name;
     int doMap = (obj->url || obj->explicit_tooltip);
-    static char* ipfilename = NULL;
-    static char* imagepath = NULL;
-    static boolean firsttime = TRUE;
-    char *p;
 
     if (doMap && !(job->flags & EMIT_CLUSTERS_LAST))
 	gvrender_begin_anchor(job,
@@ -1623,18 +1613,6 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	    name = agget(n, "shapefile");
 	usershape_p = TRUE;
     } else if ((name = agget(n, "image"))) {
-      
-      if (firsttime) {
-	imagepath = agget(agraphof(n),"imagepath");
-	firsttime = FALSE;
-      }
-      if ((access (safefile(name), R_OK) != 0) && imagepath != NULL){
-	if (p = strrchr(name, '/'))
-	  name = ++p;
-	ipfilename = realloc(ipfilename,(strlen(imagepath) + strlen(name) + 2));
-	sprintf (ipfilename, "%s%s%s", imagepath, DIRSEP, name);
-	name = ipfilename;
-      }
 	usershape_p = TRUE;
     }
     if (usershape_p) {

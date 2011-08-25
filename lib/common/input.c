@@ -695,6 +695,12 @@ void graph_init(graph_t * g, boolean use_rankdir)
 
     GD_charset(g) = findCharset (g);
 
+    if (!HTTPServerEnVar) {
+	Gvimagepath = agget (g, "imagepath");
+	if (!Gvimagepath)
+	    Gvimagepath = Gvfilepath;
+    }
+
     GD_drawing(g)->quantum =
 	late_double(g, agfindgraphattr(g, "quantum"), 0.0, 0.0);
 
