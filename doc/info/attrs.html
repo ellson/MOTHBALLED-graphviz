@@ -910,8 +910,22 @@ This field indicates which graph component uses the attribute.
 <DD>  Gives the name of a file containing an image to be displayed inside
   a node. The image file must be in one of the recognized 
   <A HREF=output.html#d:image_fmts>formats</A>,
-  typically JPEG, PNG, GIF or Postscript, and be able to be converted
+  typically JPEG, PNG, GIF, BMP, SVG or Postscript, and be able to be converted
   into the desired output format.
+  <P>
+  The file must contain the image size information. This is usually trivially
+  true for the bitmap formats. For PostScript, the file must contain a
+  line starting with <TT>%%BoundingBox: </TT> followed by four integers
+  specifying the lower left x and y coordinates and the upper right x and y
+  coordinates of the bounding box for the image, the coordinates being in
+  points. An SVG image file must contain <TT>width</TT> and <TT>height</TT>
+  attributes, typically as part of the <TT>svg</TT> element.
+  The values for these should have the form of a floating point number,
+  followed by optional units, e.g., <TT>width="76pt"</TT>. 
+  Recognized units are <TT>in</TT>, <TT>px</TT>,
+  <TT>pc</TT>, <TT>pt</TT>, <TT>cm</TT> and <TT>mm</TT> for inches, pixels,
+  picas, points, centimeters and millimeters, respectively.
+  The default unit is points.
   <P>
   Unlike with the <A HREF=#d:shapefile>shapefile</A> attribute,
   the image is treated as node

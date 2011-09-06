@@ -67,6 +67,9 @@ INSTALL_FILES = $(HTML) $(DOTS) $(SGIF) $(AGIF) $(A2GIF) $(MGIF) $(XGIF) $(MJPG)
 .dot.gif :
 	dot -Tgif -o $@ $<
 
+.gv.gif :
+	dot -Tgif -o $@ $<
+
 .gv.png :
 	dot -Tpng -o $@ $<
 

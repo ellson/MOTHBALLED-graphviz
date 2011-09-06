@@ -249,6 +249,36 @@ addXLabel (textlabel_t* lp, object_t* objp, xlabel_t* xlp, int initObj, pointf p
     objp->lbl = xlp;
 }
 
+static pointf
+edgeTailpoint (Agedge_t* e)
+{
+    splines *spl;
+    bezier *bez;
+
+    spl = getsplinepoints(e);
+    bez = &spl->list[0];
+    if (bez->sflag) {
+	return bez->sp;
+    } else {
+	return bez->list[0];
+    }
+}
+
+static pointf
+edgeHeadpoint (Agedge_t* e)
+{
+    splines *spl;
+    bezier *bez;
+
+    spl = getsplinepoints(e);
+    bez = &spl->list[spl->size - 1];
+    if (bez->eflag) {
+	return bez->ep;
+    } else {
+	return bez->list[bez->size - 1];
+    }
+}
+
 /* addLabelObj:
  * Set up obstacle object based on set external label.
  * Use label information to determine size and position of object.
@@ -301,7 +331,9 @@ static void addXLabels(Agraph_t * gp)
 
     if (!(GD_has_labels(gp) & NODE_XLABEL) &&
 	!(GD_has_labels(gp) & EDGE_XLABEL) &&
-	((!GD_has_labels(gp) & EDGE_LABEL) || EdgeLabelsDone))
+	!(GD_has_labels(gp) & TAIL_LABEL) &&
+	!(GD_has_labels(gp) & HEAD_LABEL) &&
+	(!(GD_has_labels(gp) & EDGE_LABEL) || EdgeLabelsDone))
 	return;
 
     for (np = agfstnode(gp); np; np = agnxtnode(gp, np)) {
@@ -314,6 +346,18 @@ static void addXLabels(Agraph_t * gp)
 	for (ep = agfstout(gp, np); ep; ep = agnxtout(gp, ep)) {
 	    if (ED_xlabel(ep)) {
 		if (ED_xlabel(ep)->set)
+		    n_set_lbls++;
+		else
+		    n_elbls++;
+	    }
+	    if (ED_head_label(ep)) {
+		if (ED_head_label(ep)->set)
+		    n_set_lbls++;
+		else
+		    n_elbls++;
+	    }
+	    if (ED_tail_label(ep)) {
+		if (ED_tail_label(ep)->set)
 		    n_set_lbls++;
 		else
 		    n_elbls++;
@@ -378,6 +422,26 @@ static void addXLabels(Agraph_t * gp)
 		}
 	        objp++;
 	    }
+	    if ((lp = ED_tail_label(ep))) {
+		if (lp->set) {
+		    bb = addLabelObj (lp, objp, bb);
+		}
+		else {
+		    addXLabel (lp, objp, xlp, 1, edgeTailpoint(ep)); 
+		    xlp++;
+		}
+		objp++;
+	    }
+	    if ((lp = ED_head_label(ep))) {
+		if (lp->set) {
+		    bb = addLabelObj (lp, objp, bb);
+		}
+		else {
+		    addXLabel (lp, objp, xlp, 1, edgeHeadpoint(ep)); 
+		    xlp++;
+		}
+		objp++;
+	    }
 	    if ((lp = ED_xlabel(ep))) {
 		if (lp->set) {
 		    bb = addLabelObj (lp, objp, bb);
@@ -393,7 +457,7 @@ static void addXLabels(Agraph_t * gp)
 
     force = agfindgraphattr(gp, "forcelabels");
 
-    params.force = late_bool(gp, force, FALSE);
+    params.force = late_bool(gp, force, TRUE);
     params.bb = bb;
     placeLabels(objs, n_objs, lbls, n_lbls, &params);
     if (Verbose)
