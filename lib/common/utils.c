@@ -1077,6 +1077,7 @@ static edge_t *cloneEdge(edge_t * e, node_t * ct, node_t * ch)
     edge_t *ce = agedge(g, ct, ch);
 #else /* WITH_CGRAPH */
     edge_t *ce = agedge(g, ct, ch,NULL,1);
+    agbindrec(ce, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
 #endif /* WITH_CGRAPH */
     agcopyattr(e, ce);
 

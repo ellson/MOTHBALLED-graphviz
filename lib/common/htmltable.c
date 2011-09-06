@@ -1237,6 +1237,7 @@ static void checkChain(graph_t * g)
 	if (!agfindedge(g, t, h)) {
 #ifdef WITH_CGRAPH
             e = agedge(g, t, h, NULL, 1);
+	    agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
 #else
 	    e = agedge(g, t, h);
 #endif
@@ -1274,6 +1275,7 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
     for (i = 0; i <= tbl->cc; i++) {
 #ifdef WITH_CGRAPH
 	t = agnode(colg, nToName(i),1);
+	agbindrec(t, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
 #else
 	t = agnode(colg, nToName(i));
 #endif
@@ -1290,6 +1292,7 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
     for (i = 0; i <= tbl->rc; i++) {
 #ifdef WITH_CGRAPH
 	t = agnode(rowg, nToName(i),1);
+	agbindrec(t, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
 #else
 	t = agnode(rowg, nToName(i));
 #endif
@@ -1321,6 +1324,7 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
 	h = agfindnode(colg, nToName(cp->col + cp->cspan));
 #ifdef WITH_CGRAPH
 	e = agedge(colg, t, h, NULL, 1);
+	agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
 #else
 	e = agedge(colg, t, h);
 #endif
@@ -1340,6 +1344,7 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
 	h = agfindnode(rowg, nToName(cp->row + cp->rspan));
 #ifdef WITH_CGRAPH
 	e = agedge(rowg, t, h, NULL, 1);
+	agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
 #else
 	e = agedge(rowg, t, h);
 #endif
@@ -1417,6 +1422,9 @@ void sizeArray(htmltbl_t * tbl)
 #else
     rowg = agopen("rowg", AGDIGRAPH);
     colg = agopen("colg", AGDIGRAPH);
+    /* Only need GD_nlist */
+    agbindrec(rowg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);    // graph custom data
+    agbindrec(colg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);    // graph custom data
 #endif
     makeGraphs(tbl, rowg, colg);
     rank(rowg, 2, INT_MAX);

@@ -170,7 +170,7 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 #ifndef WITH_CGRAPH
 		agedge(g, tp, hp);
 #else /* WITH_CGRAPH */
-		agbindrec(agedge(g, tp, hp, NULL, 1), "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//node custom data
+		agbindrec(agedge(g, tp, hp, NULL, 1), "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);   // edge custom data
 
 #endif /* WITH_CGRAPH */
 		DEGREE(tp)++;
@@ -186,7 +186,7 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 		agedge(g, tp, hp);
 #else /* WITH_CGRAPH */
 
-		agbindrec(agedge(g, tp, hp, NULL, 1), "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//node custom data
+		agbindrec(agedge(g, tp, hp, NULL, 1), "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);   // edge custom data
 
 #endif /* WITH_CGRAPH */
 		DEGREE(tp)++;

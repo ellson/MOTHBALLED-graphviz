@@ -25,7 +25,7 @@
 static void twopi_init_edge(edge_t * e)
 {
 #ifdef WITH_CGRAPH
-    agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//node custom data
+    agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//edge custom data
 #endif /* WITH_CGRAPH */
     common_init_edge(e);
     ED_factor(e) = late_double(e, E_weight, 1.0, 0.0);
