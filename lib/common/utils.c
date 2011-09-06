@@ -305,7 +305,6 @@ char *Fgets(FILE * fp)
 
 /* safefile:
  * Check to make sure it is okay to read in files.
- * For normal uses, it is a no-op, and returns the input.
  * It returns NULL if the filename is trivial.
  *
  * If the application has set the SERVER_NAME environment variable, 
@@ -324,30 +323,67 @@ char *Fgets(FILE * fp)
  * If filename contains multiple components, the user is
  * warned, once, that everything to the left is ignored.
  *
+ * For non-server applications, we use the path list in Gvimagepath to 
+ * resolve relative pathnames.
+ *
  * N.B. safefile uses a fixed buffer, so functions using it should use the
  * value immediately or make a copy.
  */
 #ifdef WIN32
-#define DIRSEP "\\"
 #define PATHSEP ";"
 #else
-#define DIRSEP "/"
 #define PATHSEP ":"
 #endif
+
+static char** mkDirlist (const char* list, int* maxdirlen)
+{
+    int cnt = 0;
+    char* s = strdup (list);
+    char* dir;
+    char** dirs = NULL;
+    int maxlen = 0;
+
+    for (dir = strtok (s, PATHSEP); dir; dir = strtok (NULL, PATHSEP)) {
+	dirs = ALLOC (cnt+2,dirs,char*);
+	dirs[cnt++] = dir;
+	maxlen = MAX(maxlen, strlen (dir));
+    }
+    dirs[cnt] = NULL;
+    *maxdirlen = maxlen;
+    return dirs;
+}
+
+static char* findPath (char** dirs, int maxdirlen, const char* str)
+{
+    static char *safefilename = NULL;
+    char** dp;
+
+	/* allocate a buffer that we are sure is big enough
+         * +1 for null character.
+         * +1 for directory separator character.
+         */
+    safefilename = realloc(safefilename, (maxdirlen + strlen(str) + 2));
+
+    for (dp = dirs; *dp; dp++) {
+	sprintf (safefilename, "%s%s%s", *dp, DIRSEP, str);
+	if (access (safefilename, R_OK) == 0)
+	    return safefilename;
+    }
+    return NULL;
+}
 
 const char *safefile(const char *filename)
 {
     static boolean onetime = TRUE;
-    static boolean firsttime = TRUE;
-    static char *safefilename = NULL;
+    static char *pathlist = NULL;
     static int maxdirlen;
     static char** dirs;
-    char** dp;
     const char *str, *p;
 
     if (!filename || !filename[0])
 	return NULL;
-    if (HTTPServerEnVar) {
+
+    if (HTTPServerEnVar) {   /* If used as a server */
 	/* 
 	 * If we are running in an http server we allow
 	 * files only from the directory specified in
@@ -363,17 +399,9 @@ const char *safefile(const char *filename)
 	    }
 	    return NULL;
 	}
-	if (firsttime) {
-	    int cnt = 0;
-	    char* s = strdup (Gvfilepath);
-	    char* dir;
-	    for (dir = strtok (s, PATHSEP); dir; dir = strtok (NULL, PATHSEP)) {
-		dirs = ALLOC (cnt+2,dirs,char*);
-		dirs[cnt++] = dir;
-		maxdirlen = MAX(maxdirlen, strlen (dir));
-	    }
-	    dirs[cnt] = NULL;
-	    firsttime = FALSE;
+	if (!pathlist) {
+	    dirs = mkDirlist (Gvfilepath, &maxdirlen);
+	    pathlist = Gvfilepath;
 	}
 
 	str = filename;
@@ -391,23 +419,24 @@ const char *safefile(const char *filename)
 	    onetime = FALSE;
 	}
 
-	/* allocate a buffer that we are sure is big enough
-         * +1 for null character.
-         * +1 for directory separator character.
-         */
-	safefilename = realloc(safefilename,
-			       (maxdirlen + strlen(str) + 2));
-
-	for (dp = dirs; *dp; dp++) {
-	    sprintf (safefilename, "%s%s%s", *dp, DIRSEP, str);
-	    if (access (safefilename, R_OK) == 0)
-		return safefilename;
-	}
-	return NULL;
+	return findPath (dirs, maxdirlen, str);
     }
-	/* else, not in server, use original filename without modification. */
-    else
+
+    if (pathlist != Gvimagepath) {
+	if (dirs) {
+	    free (dirs[0]);
+	    free (dirs);
+	    dirs = NULL;
+	}
+	pathlist = Gvimagepath;
+	if (pathlist && *pathlist)
+	    dirs = mkDirlist (pathlist, &maxdirlen);
+    }
+
+    if ((*filename == DIRSEP[0]) || !dirs)
 	return filename;
+
+    return findPath (dirs, maxdirlen, filename);
 }
 
 int maptoken(char *p, char **name, int *val)
@@ -1048,6 +1077,7 @@ static edge_t *cloneEdge(edge_t * e, node_t * ct, node_t * ch)
     edge_t *ce = agedge(g, ct, ch);
 #else /* WITH_CGRAPH */
     edge_t *ce = agedge(g, ct, ch,NULL,1);
+    agbindrec(ce, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
 #endif /* WITH_CGRAPH */
     agcopyattr(e, ce);
 

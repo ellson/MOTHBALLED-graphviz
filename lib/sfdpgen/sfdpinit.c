@@ -35,6 +35,9 @@
 
 static void sfdp_init_edge(edge_t * e)
 {
+#ifdef WITH_CGRAPH
+    agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//node custom data
+#endif /* WITH_CGRAPH */
     common_init_edge(e);
 }
 
