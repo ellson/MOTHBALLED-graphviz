@@ -486,7 +486,7 @@ point gvusershape_size(graph_t * g, char *name)
 	return rv;
     }
 
-    if (!HTTPServerEnVar && strcmp(oldpath,Gvimagepath)) {
+    if (!HTTPServerEnVar && (oldpath != Gvimagepath)) {
 	oldpath = Gvimagepath;
 	if (ImageDict) {
 	    dtclose(ImageDict);
