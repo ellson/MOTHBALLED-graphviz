@@ -1419,12 +1419,12 @@ void sizeArray(htmltbl_t * tbl)
 #ifdef WITH_CGRAPH
     rowg = agopen("rowg", Agdirected,NIL(Agdisc_t *));
     colg = agopen("colg", Agdirected,NIL(Agdisc_t *));
-#else
-    rowg = agopen("rowg", AGDIGRAPH);
-    colg = agopen("colg", AGDIGRAPH);
     /* Only need GD_nlist */
     agbindrec(rowg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);    // graph custom data
     agbindrec(colg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);    // graph custom data
+#else
+    rowg = agopen("rowg", AGDIGRAPH);
+    colg = agopen("colg", AGDIGRAPH);
 #endif
     makeGraphs(tbl, rowg, colg);
     rank(rowg, 2, INT_MAX);
