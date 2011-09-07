@@ -317,6 +317,8 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     obj_state_t *obj = job->obj;
     PostscriptAlias *pA;
+    char *family=NULL, *weight=NULL, *stretch=NULL, *style=NULL;
+    int flags;
 
     gvputs(job, "<text");
     switch (para->just) {
@@ -335,7 +337,6 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
     gvprintf(job, " x=\"%g\" y=\"%g\"", p.x, -p.y);
     pA = para->postscript_alias;
     if (pA) {
-	char *family=NULL, *weight=NULL, *stretch=NULL, *style=NULL;
 	switch(GD_fontnames(job->gvc->g)) {
 		case PSFONTS:
 		    family = pA->name;
@@ -365,6 +366,14 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
     }
     else
 	gvprintf(job, " font-family=\"%s\"", para->fontname);
+    if ((para->font) && (flags = para->font->flags)) {
+	if ((flags & HTML_BF) && !weight) gvprintf(job, " font-weight=\"bold\"");
+	if ((flags & HTML_IF) && !style) gvprintf(job, " font-style=\"italic\"");
+	if ((flags & HTML_UL)) gvprintf(job, " text-decoration=\"underline\"");
+	if ((flags & HTML_SUP)) gvprintf(job, " baseline-shift=\"super\"");
+	if ((flags & HTML_SUB)) gvprintf(job, " baseline-shift=\"sub\"");
+    }
+
     gvprintf(job, " font-size=\"%.2f\"", para->fontsize);
     switch (obj->pencolor.type) {
     case COLOR_STRING:

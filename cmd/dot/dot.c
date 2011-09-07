@@ -167,8 +167,13 @@ static graph_t *create_test_graph(void)
 	}
     }
 
+#ifndef WITH_CGRAPH
     sg = agsubg (g, "cluster1");
     aginsert (sg, node[0]);
+#else /* WITH_CGRAPH */
+    sg = agsubg (g, "cluster1", 1);
+    agsubnode (sg, node[0], 1);
+#endif /* WITH_CGRAPH */
 
     return g;
 }

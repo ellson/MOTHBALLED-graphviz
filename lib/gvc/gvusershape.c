@@ -28,7 +28,8 @@
 #include "utils.h"
 #include "gvplugin_loadimage.h"
 
-
+extern char *Gvimagepath;
+extern char *HTTPServerEnVar;
 extern shape_desc *find_user_shape(const char *);
 
 static Dict_t *ImageDict;
@@ -477,11 +478,20 @@ point gvusershape_size(graph_t * g, char *name)
 {
     point rv;
     pointf dpi;
+    static char* oldpath;
 
     /* no shape file, no shape size */
     if (!name || (*name == '\0')) {
         rv.x = rv.y = -1;
 	return rv;
+    }
+
+    if (!HTTPServerEnVar && strcmp(oldpath,Gvimagepath)) {
+	oldpath = Gvimagepath;
+	if (ImageDict) {
+	    dtclose(ImageDict);
+	    ImageDict = NULL;
+	}
     }
 
     if ((dpi.y = GD_drawing(g)->dpi) >= 1.0)

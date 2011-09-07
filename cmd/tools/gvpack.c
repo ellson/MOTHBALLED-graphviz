@@ -305,6 +305,8 @@ static void init_node_edge(Agraph_t * g)
 static void init_graph(Agraph_t * g, boolean fill, GVC_t* gvc)
 {
     int d;
+    node_t *n;
+    edge_t *e;
 
 #ifdef WITH_CGRAPH
     aginit (g, AGRAPH, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
@@ -331,6 +333,13 @@ static void init_graph(Agraph_t * g, boolean fill, GVC_t* gvc)
 		fprintf(stderr, "gvpack does not support backgrounds as found in graph %s\n",
 		    agnameof(g));
 	    exit(1);
+	}
+	if (Concentrate) { /* check for edges without pos info */
+	    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+		for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+		    if (ED_spl(e) == NULL) ED_edge_type(e) = IGNORED;
+		}
+	    }
 	}
     }
 }
@@ -382,6 +391,7 @@ static void cloneEdge(Agedge_t * old, Agedge_t * new)
 {
     cloneAttrs(old, new);
     ED_spl(new) = ED_spl(old);
+    ED_edge_type(new) = ED_edge_type(old);
     ED_label(new) = ED_label(old);
     ED_head_label(new) = ED_head_label(old);
     ED_tail_label(new) = ED_tail_label(old);

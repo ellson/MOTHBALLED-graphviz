@@ -85,6 +85,7 @@ mkClusters (graph_t * g, clist_t* pclist, graph_t* parent)
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
 #endif /* WITH_CGRAPH */
         if (!strncmp(agnameof(subg), "cluster", 7)) {
+	    agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
 #ifdef FDP_GEN
             GD_alg(subg) = (void *) NEW(gdata); /* freed in cleanup_subgs */
             GD_ndim(subg) = GD_ndim(parent);
@@ -125,6 +126,9 @@ static void patchwork_init_node_edge(graph_t * g)
 
     GD_neato_nlist(g) = N_NEW(agnnodes(g) + 1, node_t *);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+#ifdef WITH_CGRAPH
+	agbindrec(n, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);  // node custom data
+#endif /* WITH_CGRAPH */
 	ND_alg(n) = alg + i;
 	GD_neato_nlist(g)[i++] = n;
 	patchwork_init_node(n);

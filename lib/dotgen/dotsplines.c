@@ -461,20 +461,20 @@ finish :
 #endif
     /* vladimir: place port labels */
     /* FIX: head and tail labels are not part of cluster bbox */
-    if (E_headlabel || E_taillabel) {
+    if ((E_headlabel || E_taillabel) && (E_labelangle || E_labeldistance)) {
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    if (E_headlabel) {
 		for (e = agfstin(g, n); e; e = agnxtin(g, e))
 		    if (ED_head_label(e)) {
-			place_portlabel(e, TRUE);
-			updateBB(g, ED_head_label(e));
+			if (place_portlabel(e, TRUE))
+			    updateBB(g, ED_head_label(e));
 		    }
 	    }
 	    if (E_taillabel) {
 		for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 		    if (ED_tail_label(e)) {
-			place_portlabel(e, FALSE);
-			updateBB(g, ED_tail_label(e));
+			if (place_portlabel(e, FALSE))
+			    updateBB(g, ED_tail_label(e));
 		    }
 		}
 	    }

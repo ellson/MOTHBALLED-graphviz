@@ -1783,6 +1783,14 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
     return 0;
 }
 
+static void free_stroke (stroke_t* sp)
+{
+    if (sp) {
+	free (sp->vertices);
+	free (sp);
+    }
+}
+
 static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 {
     int i, j, cnum, numc = 0, numcomma = 0;
@@ -1801,6 +1809,22 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
     if (ED_spl(e)) {
 	arrowsize = late_double(e, E_arrowsz, 1.0, 0.0);
 	color = late_string(e, E_color, "");
+
+	if (styles) {
+	    char** sp = styles;
+	    while ((p = *sp++)) {
+		stroke_t* stp;
+		if (streq(p, "tapered")) {
+		    if (*color == '\0') color = DEFAULT_COLOR;
+    		    gvrender_set_pencolor(job, "transparent");
+		    gvrender_set_fillcolor(job, color);
+		    stp = taper0 (ED_spl(e)->list, penwidth);
+		    gvrender_polygon(job, stp->vertices, stp->nvertices, TRUE);
+		    free_stroke (stp);
+		    return;
+		}
+	    }
+	}
 
 	/* need to know how many colors separated by ':' */
 	for (p = color; *p; p++) {

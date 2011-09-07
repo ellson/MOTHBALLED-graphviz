@@ -144,6 +144,7 @@ static void mapGraphs(graph_t * g, graph_t * cg, distfn dist)
 	    ce = agedge(cg, t, h);
 #else
 	    ce = agedge(cg, t, h, NULL, 1);
+	    agbindrec(ce, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
 #endif
 	    ED_weight(ce) = 1;
 	    if (ED_minlen(ce) < delta) {
@@ -230,6 +231,7 @@ static graph_t *mkNConstraintG(graph_t * g, Dt_t * list,
     graph_t *cg = agopen("cg", AGDIGRAPHSTRICT);
 #else
     graph_t *cg = agopen("cg", Agstrictdirected, NIL(Agdisc_t *));
+    agbindrec(cg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);  // graph custom data
 #endif
     node_t *n;
     edge_t *e;
@@ -265,6 +267,7 @@ static graph_t *mkNConstraintG(graph_t * g, Dt_t * list,
 	        e = agedge(cg, p->cnode, nxp->cnode);
 #else
 	        e = agedge(cg, p->cnode, nxp->cnode, NULL, 1);
+		agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);   // edge custom data
 #endif
 		assert (delta <= 0xFFFF);
 		ED_minlen(e) = delta;
@@ -317,6 +320,7 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
     graph_t *cg = agopen("cg", AGDIGRAPHSTRICT);
 #else
     graph_t *cg = agopen("cg", Agstrictdirected, NIL(Agdisc_t *));
+    agbindrec(cg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);  // graph custom data
 #endif
     graph_t *vg;
     node_t *prev = NULL;
@@ -375,6 +379,7 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
 		e = agedge(cg, prev, n);
 #else
 		e = agedge(cg, prev, n, NULL, 1);
+		agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);   // edge custom data
 #endif
 		ED_minlen(e) = SCALE;
 		ED_weight(e) = 1;
@@ -403,9 +408,8 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
 #ifndef WITH_CGRAPH
 	n = agnode(vg, agnameof(p->np));     /* FIX */
 #else
-	n = agnode(cg, agnameof(p->np), 1);  /* FIX */
-	agbindrec(cg, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);  //node custom data
-
+	n = agnode(vg, agnameof(p->np), 1);  /* FIX */
+	agbindrec(n, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);  //node custom data
 #endif
 	p->vnode = n;
 	ND_alg(n) = p;
@@ -486,7 +490,7 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
 	elist_append(e, ND_out(n));
 	elist_append(e, ND_in(vn));
     }
-#endif
+#endif  /* OLD */
 
     return cg;
 }

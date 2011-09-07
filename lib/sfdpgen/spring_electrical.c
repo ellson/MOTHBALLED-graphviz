@@ -11,6 +11,10 @@
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "SparseMatrix.h"
 #include "spring_electrical.h"
 #include "QuadTree.h"

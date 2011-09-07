@@ -67,7 +67,8 @@ extern "C" {
     EXTERN char *CmdName;
     EXTERN char *specificFlags;
     EXTERN char *specificItems;
-    EXTERN char *Gvfilepath;	/* Path of files allowed in 'shapefile' attrib  (also ps libs) */
+    EXTERN char *Gvfilepath;  /* Per-process path of files allowed in image attributes (also ps libs) */
+    EXTERN char *Gvimagepath; /* Per-graph path of files allowed in image attributes  (also ps libs) */
 
     EXTERN unsigned char Verbose;
     EXTERN boolean Reduce, MemTest;

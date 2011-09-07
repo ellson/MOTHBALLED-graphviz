@@ -20,6 +20,7 @@
 
 #ifdef __GNUC__
 #include <cmath>
+#include <cstring>
 #endif
 
 #include "VisioGraphic.h"
