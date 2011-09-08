@@ -33,7 +33,7 @@ EXTRA_DIST = README-JPEG.TXT README.TXT configure.pl bdftogd demoin.png \
 	pngtogd2.c webpng.c gd2togif.c gdcmpgif.c giftogd2.c \
 	fontsizetest.c fontwheeltest.c gdtest.c gddemo.c gd2time.c gdtestft.c \
 	testac.c circletexttest.c testtr.c fontconfigtest.c gifanimtest.c \
-	configure.ac Makefile.old Makefile.am.orig Makefile.in.orig gd.vcproj\
+	configure.ac Makefile.old gd.vcproj\
 	config.hin config test $(html)
 
 DISTCLEANFILES = $(html_DATA)
