@@ -85,7 +85,9 @@ mkClusters (graph_t * g, clist_t* pclist, graph_t* parent)
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
 #endif /* WITH_CGRAPH */
         if (!strncmp(agnameof(subg), "cluster", 7)) {
+#ifdef WITH_CGRAPH
 	    agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
+#endif
 #ifdef FDP_GEN
             GD_alg(subg) = (void *) NEW(gdata); /* freed in cleanup_subgs */
             GD_ndim(subg) = GD_ndim(parent);
