@@ -61,6 +61,7 @@ extern char *gvplugin_list(GVC_t * gvc, api_t api, const char *str);
 
 - (id)initWithURL:(NSURL *)URL error:(NSError **)outError
 {
+	char *parentDir,*ptr;
 	if (self = [super init]) {
 		if ([URL isFileURL]) {
 			/* open a FILE* on the file URL */
@@ -78,6 +79,12 @@ extern char *gvplugin_list(GVC_t * gvc, api_t api, const char *str);
 					*outError = [NSError errorWithDomain:GVGraphvizErrorDomain code:GVFileParseError userInfo:nil];
 				[self autorelease];
 				return nil;
+			}
+			if(!agget(_graph,"imagepath")){
+					parentDir = (char *)[[URL path] fileSystemRepresentation];
+					ptr = strrchr(parentDir,'/');
+					*ptr = 0;
+					agraphattr(_graph,"imagepath",parentDir);
 			}
 			fclose(file);
 		}

@@ -56,6 +56,10 @@
 	<string>@GRAPHVIZ_VERSION_MAJOR@.@GRAPHVIZ_VERSION_MINOR@</string>
 	<key>CFBundleVersion</key>
 	<string>@VERSION@</string>
+	<key>CFBundleHelpBookFolder</key>
+	<string>graphviz.help</string>
+	<key>CFBundleHelpBookName</key>
+	<string>Graphviz Help</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>

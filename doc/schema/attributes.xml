@@ -334,6 +334,16 @@
 	
 	<!--  ATTRIBUTES -->
 
+	<xsd:attribute name="imagepath" type="xsd:string" default="UTF-8">
+		<xsd:annotation>
+			<xsd:documentation>
+				<html:p>
+					Specifies the path to images referenced within the graph.
+				</html:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+
 	<xsd:attribute name="Damping" type="xsd:decimal" default="0.99" gv:layouts="neato">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -2542,6 +2552,7 @@
 	</xsd:complexType>
 	
 	<xsd:complexType name="graph">
+		<xsd:attribute ref="imagepath" />
 		<xsd:attribute ref="Damping" default="0.99" />
 		<xsd:attribute ref="K" default="0.3" />
 		<xsd:attribute ref="URL" />
