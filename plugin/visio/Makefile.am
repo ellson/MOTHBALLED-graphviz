@@ -1,4 +1,4 @@
-# $Id$ $Revision$
+# $Id: Makefile.am,v 1.3 2009/06/03 01:10:57 ellson Exp $ $Revision: 1.3 $
 ## Process this file with automake to produce Makefile.in
 
 if WITH_CGRAPH

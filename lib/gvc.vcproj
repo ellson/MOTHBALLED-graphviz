@@ -393,6 +393,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\common\intset.c"
+				>
+			</File>
+			<File
 				RelativePath=".\common\labels.c"
 				>
 			</File>

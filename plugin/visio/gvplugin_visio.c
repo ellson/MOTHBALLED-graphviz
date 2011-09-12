@@ -1,4 +1,4 @@
-/* $Id$ $Revision$ */
+/* $Id: gvplugin_visio.c,v 1.4 2011/01/25 16:30:51 ellson Exp $ $Revision: 1.4 $ */
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
@@ -11,6 +11,17 @@
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
 
+#ifdef WIN32 //*dependencies
+    #pragma comment( lib, "gvc.lib" )
+//    #pragma comment( lib, "glib-2.0.lib" )
+//    #pragma comment( lib, "pango-1.0.lib" )
+//    #pragma comment( lib, "pangocairo-1.0.lib" )
+//    #pragma comment( lib, "cairo.lib" )
+//    #pragma comment( lib, "gobject-2.0.lib" )
+    #pragma comment( lib, "graph.lib" )
+#endif
+
+
 #include "gvplugin.h"
 
 extern gvplugin_installed_t gvdevice_vdx_types[];
@@ -22,4 +33,16 @@ static gvplugin_api_t apis[] = {
     {(api_t)0, 0},
 };
 
-gvplugin_library_t gvplugin_visio_LTX_library = { "visio", apis };
+#ifdef WIN32_DLL   /*visual studio*/
+#ifndef GVPLUGIN_VISIO_EXPORTS
+__declspec(dllimport) gvplugin_library_t gvplugin_visio_LTX_library = { "visio", apis };
+#else
+__declspec(dllexport) gvplugin_library_t gvplugin_visio_LTX_library = { "visio", apis };
+#endif
+#else /*end visual studio*/
+#ifdef GVDLL
+__declspec(dllexport) gvplugin_library_t gvplugin_visio_LTX_library = { "visio", apis };
+#else
+gvplugin_library_t gvplugin_pango_LTX_library = { "visio", apis };
+#endif
+#endif

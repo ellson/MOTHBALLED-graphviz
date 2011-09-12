@@ -1,4 +1,4 @@
-/* $Id$ $Revision$ */
+/* $Id: VisioGraphic.cpp,v 1.9 2011/01/25 16:30:51 ellson Exp $ $Revision: 1.9 $ */
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
@@ -20,7 +20,6 @@
 
 #ifdef __GNUC__
 #include <cmath>
-#include <cstring>
 #endif
 
 #include "VisioGraphic.h"
