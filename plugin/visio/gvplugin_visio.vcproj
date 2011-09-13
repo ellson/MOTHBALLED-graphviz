@@ -61,6 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="gvc.lib graph.lib"
 				OutputFile="c:/graphviz-ms/bin/$(ProjectName).dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="C:\graphviz-ms\bin;C:\gtk\lib"
@@ -113,7 +114,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)/lib/graph&quot;;&quot;$(SolutionDir)/lib/cdt&quot;;&quot;$(SolutionDir)/lib/common&quot;;&quot;$(SolutionDir)/lib/gvc&quot;;&quot;$(SolutionDir)/plugin/visio&quot;;&quot;$(SolutionDir)/lib/pathplan&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)/lib/graph&quot;;&quot;$(SolutionDir)/lib/cdt&quot;;&quot;$(SolutionDir)/lib/common&quot;;&quot;$(SolutionDir)/lib/gvc&quot;;&quot;$(SolutionDir)/plugin/visio&quot;;&quot;$(SolutionDir)/lib/pathplan&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;GVPLUGIN_VISIO_EXPORTS;HAVE_CONFIG_H;WIN32_DLL"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -132,6 +133,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="gvc.lib graph.lib"
 				OutputFile="c:/graphviz-ms/bin/$(ProjectName).dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="C:\graphviz-ms\bin;C:\gtk\lib"
