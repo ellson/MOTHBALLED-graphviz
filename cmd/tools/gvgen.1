@@ -28,6 +28,9 @@ gvgen \- generate graphs
 .BI -b x,y
 ]
 [
+.BI -m n
+]
+[
 .BI -p n
 ]
 [
@@ -38,6 +41,9 @@ gvgen \- generate graphs
 ]
 [
 .BI -t n
+]
+[
+.BI -t d,n
 ]
 [
 .BI -T x,y
@@ -96,6 +102,9 @@ Generate a complete \fIx\fP by \fIy\fP bipartite graph.
 This will have \fIx+y\fP vertices and
 \fIx*y\fP edges.
 .TP
+.BI \-m " n"
+Generate a triangular mesh with \fIn\fP vertices on a side.
+.TP
 .BI \-p " n"
 Generate a path on \fIn\fP vertices.
 This will have \fIn-1\fP edges.
@@ -113,6 +122,9 @@ This will have \fI3*(3^(n-1) - 1)/2\fP vertices and
 Generate a binary tree of height \fIn\fP.
 This will have \fI2^n-1\fP vertices and
 \fI2^n-2\fP edges.
+.TP
+.BI \-t " h,n"
+Generate a n-ary tree of height \fIh\fP.
 .TP
 .BI \-T " x,y"
 Generate an \fIx\fP by \fIy\fP torus.
