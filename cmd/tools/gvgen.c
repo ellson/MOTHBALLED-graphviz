@@ -40,7 +40,7 @@
 
 typedef enum { unknown, grid, circle, complete, completeb, 
     path, tree, torus, cylinder,
-    sierpinski, hypercube, star, wheel
+    sierpinski, hypercube, star, wheel, trimesh
 } GraphType;
 
 typedef struct {
@@ -83,6 +83,7 @@ static char *Usage = "Usage: %s [-dV?] [options]\n\
  -h<x>         : hypercube \n\
  -k<x>         : complete \n\
  -b<x,y>       : complete bipartite\n\
+ -m<x>         : triangular mesh\n\
  -n<prefix>    : use <prefix> in node names (\"\")\n\
  -N<name>      : use <name> for the graph (\"\")\n\
  -o<outfile>   : put output in <outfile> (stdout)\n\
@@ -90,6 +91,7 @@ static char *Usage = "Usage: %s [-dV?] [options]\n\
  -s<x>         : star\n\
  -S<x>         : sierpinski\n\
  -t<x>         : binary tree \n\
+ -t<x>,<n>     : n-ary tree \n\
  -T<x,y>       : torus \n\
  -w<x>         : wheel\n\
  -d            : directed graph\n\
@@ -108,6 +110,11 @@ static void errexit(char opt)
     usage(1);
 }
 
+/* readPos:
+ * Read and return a single int from s, guaranteed to be >= min.
+ * A pointer to the next available character from s is stored in e.
+ * Return -1 on error.
+ */
 static int readPos(char *s, char **e, int min)
 {
     int d;
@@ -167,6 +174,33 @@ static int setTwo(char *s, opts_t* opts)
     else return d;
 }
 
+/* setTwoOpt:
+ * Return non-zero on error.
+ */
+static int setTwoOpt(char *s, opts_t* opts, int dflt)
+{
+    int d;
+    char *next;
+
+    d = readPos(s, &next, 1);
+    if (d < 0)
+	return d;
+    opts->graphSize1 = d;
+
+    if (*next != ',') {
+	opts->graphSize2 = dflt;
+	return 0;
+    }
+
+    s = next + 1;
+    d = readPos(s, &next, 1);
+    if (d > 1) {
+	opts->graphSize2 = d;
+	return 0;
+    }
+    else return d;
+}
+
 static char* setFold(char *s, opts_t* opts)
 {
     char *next;
@@ -181,7 +215,7 @@ static char* setFold(char *s, opts_t* opts)
     return next;
 }
 
-static char *optList = ":n:N:c:C:dg:G:h:k:b:o:p:s:S:t:T:Vw:";
+static char *optList = ":m:n:N:c:C:dg:G:h:k:b:o:p:s:S:t:T:Vw:";
 
 static GraphType init(int argc, char *argv[], opts_t* opts)
 {
@@ -228,6 +262,11 @@ static GraphType init(int argc, char *argv[], opts_t* opts)
 	    if (setTwo(optarg, opts))
 		errexit(c);
 	    break;
+	case 'm':
+	    graphType = trimesh;
+	    if (setOne(optarg, opts))
+		errexit(c);
+	    break;
 	case 'n':
 	    opts->pfx = optarg;
 	    break;
@@ -254,7 +293,7 @@ static GraphType init(int argc, char *argv[], opts_t* opts)
 	    break;
 	case 't':
 	    graphType = tree;
-	    if (setOne(optarg, opts))
+	    if (setTwoOpt(optarg, opts, 2))
 		errexit(c);
 	    break;
 	case 'T':
@@ -339,7 +378,13 @@ int main(int argc, char *argv[])
 	makePath(opts.graphSize1, ef);
 	break;
     case tree:
-	makeBinaryTree(opts.graphSize1, ef);
+	if (opts.graphSize2 == 2)
+	    makeBinaryTree(opts.graphSize1, ef);
+	else
+	    makeTree(opts.graphSize1, opts.graphSize2, ef);
+	break;
+    case trimesh:
+	makeTriMesh(opts.graphSize1, ef);
 	break;
     case torus:
 	makeTorus(opts.graphSize1, opts.graphSize2, ef);

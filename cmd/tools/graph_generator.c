@@ -190,14 +190,39 @@ makeSquareGrid(int dim1, int dim2, int connect_corners, int partial, edgefn ef)
 	}
 }
 
+static int
+ipow (int base, int power)
+{
+    int ip;
+    if (power == 1) return base;
+
+    ip = base;
+    power--;
+    while (power--) ip *= base;
+    return ip; 
+}
+
+void makeTree(int depth, int nary, edgefn ef)
+{
+    unsigned int i, j;
+    unsigned int n = (ipow(nary,depth)-1)/(nary-1); /* no. of non-leaf nodes */
+    unsigned int idx = 2;
+
+    for (i = 1; i <= n; i++) {
+	for (j = 0; j < nary; j++) {
+	    ef (i, idx++);
+	}
+    }
+}
+
 void makeBinaryTree(int depth, edgefn ef)
 {
     unsigned int i;
     unsigned int n = (1 << depth) - 1;
 
-    for (i = 0; i < n; i++) {
-	ef( i + 1, 2 * i + 2);
-	ef( i + 1, 2 * i + 3);
+    for (i = 1; i <= n; i++) {
+	ef( i, 2 * i);
+	ef( i, 2 * i + 1);
     }
 }
 
@@ -298,3 +323,34 @@ void makeHypercube(int dim, edgefn ef)
 	}
     }
 }
+
+void makeTriMesh(int sz, edgefn ef)
+{
+    int i, j, idx;
+
+    if (sz == 1) {
+	ef (1, 0);
+	return;
+    }
+    ef(1,2);
+    ef(1,3);
+    idx = 2;
+    for (i=2; i < sz; i++) {
+	for (j=1; j <= i; j++) {
+	    ef(idx,idx+i);
+	    ef(idx,idx+i+1);
+	    if (j < i)
+		ef(idx,idx+1);
+	    idx++;
+	}
+    }
+    for (j=1; j < sz; j++) {
+	ef (idx,idx+1);
+	idx++;
+    }
+}
+
+void makeMobius(int dim1, int dim2, edgefn ef)
+{
+}
+
