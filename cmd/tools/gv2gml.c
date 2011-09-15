@@ -38,6 +38,7 @@
 static FILE *outFile;
 static char *CmdName;
 static char **Files;
+static unsigned long id;
 
 #define streq(s,t) (!strcmp(s,t))
 
@@ -84,6 +85,13 @@ typedef struct {
     char* fontSize;
     char* fontName;
 } edge_attrs;
+
+typedef struct Agnodeinfo_t {
+    Agrec_t h;
+    unsigned long id;
+} Agnodeinfo_t;
+
+#define ID(n)  (((Agnodeinfo_t*)(n->base.data))->id)
 
 static void indent (int ix, FILE* outFile)
 {
@@ -411,12 +419,15 @@ emitNodeAttrs (Agraph_t* G, Agnode_t* np, FILE* outFile, int ix)
 }
 
 /* emitNode:
+ * set node id
  * label, width height, x, y, type fillcolor
  */
 static void 
 emitNode (Agraph_t* G, Agnode_t* n, FILE* outFile)
 {
-    fprintf (outFile, "  node [\n    id %lu\n    name \"%s\"\n", AGID(n), agnameof(n));
+    agbindrec (n, "nodeinfo", sizeof(Agnodeinfo_t), TRUE);
+    fprintf (outFile, "  node [\n    id %lu\n    name \"%s\"\n", id, agnameof(n));
+    ID(n) = id++;
     emitNodeAttrs (G, n, outFile, 2);
     fprintf (outFile, "  ]\n");
 
@@ -595,8 +606,8 @@ static void
 emitEdge (Agraph_t* G, Agedge_t* e, FILE* outFile)
 {
     fprintf (outFile, "  edge [\n    id %lu\n", AGID(e));
-    fprintf (outFile, "    source %lu\n", AGID(agtail(e)));
-    fprintf (outFile, "    target %lu\n", AGID(aghead(e)));
+    fprintf (outFile, "    source %lu\n", ID(agtail(e)));
+    fprintf (outFile, "    target %lu\n", ID(aghead(e)));
     emitEdgeAttrs (G, e, outFile, 2);
     fprintf (outFile, "  ]\n");
 }
@@ -691,7 +702,7 @@ static void initargs(int argc, char **argv)
 
     CmdName = cmdName(argv[0]);
     opterr = 0;
-    while ((c = getopt(argc, argv, ":o:")) != -1) {
+    while ((c = getopt(argc, argv, ":io:")) != -1) {
 	switch (c) {
 	case 'o':
 	    outFile = openFile(optarg, "w");
@@ -733,8 +744,10 @@ int main(int argc, char **argv)
     newIngraph(&ig, Files, gread);
 
     while ((G = nextGraph(&ig))) {
-	if (prev)
+	if (prev) {
+	    id = 0;
 	    agclose(prev);
+	}
 	prev = G;
 	gv_to_gml(G, outFile);
 	fflush(outFile);
