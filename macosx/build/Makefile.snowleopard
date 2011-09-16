@@ -53,7 +53,7 @@ postinstall:
 	echo >>$@
 	echo 'if [[ `uname -m` = i386 ]]; then rm /usr/local/lib/graphviz/*pango*; fi' >>$@
 	echo "/usr/local/bin/dot -c" >>$@
-	echo ignoring: make -n -C ../../tclpkg install-data-hook >>$@ 
+	# make -n -C ../../tclpkg install-data-hook >>$@ 
 	echo "arch -arch i386 /usr/local/bin/gv-fc-cache" >>$@
 	echo 'if test `sysctl -n hw.cpu64bit_capable` = 1; then arch -arch x86_64 /usr/local/bin/gv-fc-cache; fi' >>$@
 
