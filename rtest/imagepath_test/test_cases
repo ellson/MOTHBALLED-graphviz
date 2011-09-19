@@ -1,0 +1,10 @@
+val val  "image^from^image^attribute^directory^should^be^displayed" val_val
+val inv "image^from^image^attribute^directory^should^be^displayed" val_inv
+val nul "image^from^image^attribute^directory^should^be^displayed" val_nul
+inv val "no^image^should^be^displayed" inv_val
+inv inv "no^image^should^be^displayed" inv_inv
+inv nul "no^image^should^be^displayed" inv_nul
+nul val "image^from^imagepath^attribute^directory^or^working^directory^should^be^displayed" nul_val
+nul inv "no^image^for^Graphviz.app,^else^image^from^working^directory" nul_inv
+nul nul "image^in^working^directory^should^be^displayed" nul_nul
+
