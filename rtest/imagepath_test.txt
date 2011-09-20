@@ -34,9 +34,11 @@
 #test output.
 
 #The graphs in this test suite should also be tested using the mac os user
-#interface.  Select each of the test graphs from the Graphviz.app and visually
+#interface.  Copy rtest/imagepath_test/image.jpg to the directory graphviz is run
+#from. Select each of the test graphs from the graphviz application and visually
 #determine whether the tests complete successfully.  The image that is displayed
-#should correspond to the expected result message that appears below it.
+#during the test should correspond to the expected result message that appears 
+#below it.
 
 val_val
 =
