@@ -511,6 +511,7 @@ Various tcl packages (extensions) for the graphviz tools.
 %{_libdir}/tcl*/*
 %{_datadir}/graphviz/demo/*.tcl*
 %{_datadir}/graphviz/demo/*_data
+%{_datadir}/graphviz/demo/entities.html
 %{_mandir}/man3/*.3tcl.gz
 %{_mandir}/man3/*.3tk.gz
 %endif
