@@ -1,3 +1,6 @@
+September 21, 2011
+	- Add imagepath attribute
+	- Add help functionality to Graphviz.app
 August 24, 2011
 	- Add <B>,<I>,<U> to html strings via svg
 August 16, 2011
