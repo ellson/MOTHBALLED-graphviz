@@ -573,9 +573,10 @@ Provides some additional PDF and HTML documentation for graphviz.
 #-- building --------------------------------------------------
 
 %prep
-for p in %{patches}; do
-     patch -p1 < ${p} || exit 1
-done
+### the rpm in centos4/5 is too old to handle this
+#for p in %{patches}; do
+#     patch -p1 < ${p} || exit 1
+#done
 %setup -q
 
 %build
