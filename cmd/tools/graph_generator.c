@@ -11,9 +11,16 @@
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#ifdef HAVE_TIME_H
+#include <time.h>
+#endif
 #include <graph_generator.h>
 
 void makePath(int n, edgefn ef)
@@ -120,6 +127,23 @@ void makeTorus(int dim1, int dim2, edgefn ef)
     }
 }
 
+void makeTwistedTorus(int dim1, int dim2, int t1, int t2, edgefn ef)
+{
+    int i, j, li, lj;
+
+    for (i = 0; i < dim1; i++) {
+	for (j = 0; j < dim2; j++) {
+	    li = (i + t1) % dim1;
+	    lj = (j + 1) % dim2;
+	    ef (i+j*dim1+1, li+lj*dim1+1);
+
+	    li = (i + 1) % dim1;
+	    lj = (j + t2) % dim2;
+	    ef(i+j*dim1+1, li+lj*dim1+1);
+	}
+    }
+}
+
 void makeCylinder(int dim1, int dim2, edgefn ef)
 {
     int i, j, n = 0;
@@ -194,6 +218,7 @@ static int
 ipow (int base, int power)
 {
     int ip;
+    if (power == 0) return 1;
     if (power == 1) return base;
 
     ip = base;
@@ -350,7 +375,90 @@ void makeTriMesh(int sz, edgefn ef)
     }
 }
 
-void makeMobius(int dim1, int dim2, edgefn ef)
+void makeBall(int w, int h, edgefn ef)
 {
+    int i, cap;
+
+    makeCylinder (w, h, ef);
+
+    for (i = 1; i <= h; i++)
+	ef (0, i);
+
+    cap = w*h+1;
+    for (i = (w-1)*h+1; i <= w*h; i++)
+	ef (i, cap);
+
 }
+
+/* makeRandom:
+ * No. of nodes is largest 2^n - 1 less than or equal to h.
+ */
+void makeRandom(int h, int w, edgefn ef)
+{
+    int i, j, type, size, depth;
+
+    srand(time(0));
+    if (rand()%2==1)
+	type = 1;
+    else
+	type = 0;
+
+    size = depth = 0;
+    while (size <= h) {
+	size += ipow(2,depth);
+	depth++;
+    }
+    depth--;
+    if (size > h) {
+	size -= ipow(2,depth);
+	depth--;
+    }
+
+    if (type)
+	makeBinaryTree (depth, ef);
+    else
+	makePath (size, ef);
+
+    for (i=3; i<=size; i++) {
+	for (j=1; j<i-1; j++) {
+	    int th = rand()%(size*size);
+	    if (((th<=(w*w))&&((i<5)||((i>h-4)&&(j>h-4)))) || (th<=w))
+		ef(j,i);
+	}
+    }
+}
+
+void makeMobius(int w, int h, edgefn ef)
+{
+    int i, j;
+
+    if (h == 1) {
+	fprintf(stderr, "Warning: degenerate Moebius strip of %d vertices\n", w);
+	makePath(w, ef);
+	return;
+    }
+    if (w == 1) {
+	fprintf(stderr, "Warning: degenerate Moebius strip of %d vertices\n", h);
+	makePath(h, ef);
+	return;
+    }
+
+    for(i=0; i < w-1; i++) {
+        for(j = 1; j < h; j++){
+            ef(j + i*h, j + (i+1)*h);
+            ef(j + i*h, j+1 + i*h);
+        }
+    }
+
+    for(i = 1; i < h; i++){
+        ef (i + (w-1)*h, i+1 + (w-1)*h);
+    }
+    for(i=1; i < w; i++) {
+        ef(i*h , (i+1)*h);
+        ef(i*h, (w-i)*h+1);
+    }
+
+    ef(1,w*h);
+}
+
 

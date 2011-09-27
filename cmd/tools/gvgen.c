@@ -39,13 +39,15 @@
 #include "graph_generator.h"
 
 typedef enum { unknown, grid, circle, complete, completeb, 
-    path, tree, torus, cylinder,
+    path, tree, torus, cylinder, mobius, randomg, ball,
     sierpinski, hypercube, star, wheel, trimesh
 } GraphType;
 
 typedef struct {
     int graphSize1;
     int graphSize2;
+    int parm1;
+    int parm2;
     int Verbose;
     int isPartial;
     int foldVal;
@@ -83,16 +85,20 @@ static char *Usage = "Usage: %s [-dV?] [options]\n\
  -h<x>         : hypercube \n\
  -k<x>         : complete \n\
  -b<x,y>       : complete bipartite\n\
+ -B<x,y>       : ball\n\
  -m<x>         : triangular mesh\n\
+ -M<x,y>       : x by y Moebius strip\n\
  -n<prefix>    : use <prefix> in node names (\"\")\n\
  -N<name>      : use <name> for the graph (\"\")\n\
  -o<outfile>   : put output in <outfile> (stdout)\n\
  -p<x>         : path \n\
+ -r<x>,<n>     : random graph\n\
  -s<x>         : star\n\
  -S<x>         : sierpinski\n\
  -t<x>         : binary tree \n\
  -t<x>,<n>     : n-ary tree \n\
  -T<x,y>       : torus \n\
+ -T<x,y,t1,t2> : twisted torus \n\
  -w<x>         : wheel\n\
  -d            : directed graph\n\
  -V            : verbose mode\n\
@@ -174,6 +180,58 @@ static int setTwo(char *s, opts_t* opts)
     else return d;
 }
 
+/* setTwoTwoOpt:
+ * Read 2 numbers
+ * Read 2 more optional numbers
+ * Return non-zero on error.
+ */
+static int setTwoTwoOpt(char *s, opts_t* opts, int dflt)
+{
+    int d;
+    char *next;
+
+    d = readPos(s, &next, 1);
+    if (d < 0)
+	return d;
+    opts->graphSize1 = d;
+
+    if (*next != ',') {
+	fprintf(stderr, "ill-formed int pair \"%s\" ", s);
+	return -1;
+    }
+
+    s = next + 1;
+    d = readPos(s, &next, 1);
+    if (d < 1) {
+	return 0;
+    }
+    opts->graphSize2 = d;
+
+    if (*next != ',') {
+	opts->parm1 = opts->parm2 = dflt;
+	return 0;
+    }
+
+    s = next + 1;
+    d = readPos(s, &next, 1);
+    if (d < 0)
+	return d;
+    opts->parm1 = d;
+
+    if (*next != ',') {
+	opts->parm2 = dflt;
+	return 0;
+    }
+
+    s = next + 1;
+    d = readPos(s, &next, 1);
+    if (d < 0) {
+	return d;
+    }
+    opts->parm2 = d;
+    return 0;
+}
+
 /* setTwoOpt:
  * Return non-zero on error.
  */
@@ -215,7 +273,7 @@ static char* setFold(char *s, opts_t* opts)
     return next;
 }
 
-static char *optList = ":m:n:N:c:C:dg:G:h:k:b:o:p:s:S:t:T:Vw:";
+static char *optList = ":M:m:n:N:c:C:dg:G:h:k:b:B:o:p:r:s:S:t:T:Vw:";
 
 static GraphType init(int argc, char *argv[], opts_t* opts)
 {
@@ -233,6 +291,11 @@ static GraphType init(int argc, char *argv[], opts_t* opts)
 	    break;
 	case 'C':
 	    graphType = cylinder;
+	    if (setTwo(optarg, opts))
+		errexit(c);
+	    break;
+	case 'M':
+	    graphType = mobius;
 	    if (setTwo(optarg, opts))
 		errexit(c);
 	    break;
@@ -262,9 +325,19 @@ static GraphType init(int argc, char *argv[], opts_t* opts)
 	    if (setTwo(optarg, opts))
 		errexit(c);
 	    break;
+	case 'B':
+	    graphType = ball;
+	    if (setTwo(optarg, opts))
+		errexit(c);
+	    break;
 	case 'm':
 	    graphType = trimesh;
 	    if (setOne(optarg, opts))
+		errexit(c);
+	    break;
+	case 'r':
+	    graphType = randomg;
+	    if (setTwo(optarg, opts))
 		errexit(c);
 	    break;
 	case 'n':
@@ -298,7 +371,7 @@ static GraphType init(int argc, char *argv[], opts_t* opts)
 	    break;
 	case 'T':
 	    graphType = torus;
-	    if (setTwo(optarg, opts))
+	    if (setTwoTwoOpt(optarg, opts, 0))
 		errexit(c);
 	    break;
 	case 'V':
@@ -386,17 +459,29 @@ int main(int argc, char *argv[])
     case trimesh:
 	makeTriMesh(opts.graphSize1, ef);
 	break;
+    case ball:
+	makeBall(opts.graphSize1, opts.graphSize2, ef);
+	break;
     case torus:
-	makeTorus(opts.graphSize1, opts.graphSize2, ef);
+	if ((opts.parm1 == 0) && (opts.parm2 == 0))
+	    makeTorus(opts.graphSize1, opts.graphSize2, ef);
+	else
+	    makeTwistedTorus(opts.graphSize1, opts.graphSize2, opts.parm1, opts.parm2, ef);
 	break;
     case cylinder:
 	makeCylinder(opts.graphSize1, opts.graphSize2, ef);
+	break;
+    case mobius:
+	makeMobius(opts.graphSize1, opts.graphSize2, ef);
 	break;
     case sierpinski:
 	makeSierpinski(opts.graphSize1, ef);
 	break;
     case complete:
 	makeComplete(opts.graphSize1, ef);
+	break;
+    case randomg:
+	makeRandom (opts.graphSize1, opts.graphSize2, ef);
 	break;
     case completeb:
 	makeCompleteB(opts.graphSize1, opts.graphSize2, ef);
