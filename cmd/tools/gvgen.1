@@ -28,10 +28,19 @@ gvgen \- generate graphs
 .BI -b x,y
 ]
 [
+.BI -B x,y
+]
+[
 .BI -m n
 ]
 [
+.BI -M x,y
+]
+[
 .BI -p n
+]
+[
+.BI -r x,y
 ]
 [
 .BI -s n
@@ -47,6 +56,9 @@ gvgen \- generate graphs
 ]
 [
 .BI -T x,y
+]
+[
+.BI -T x,y,u,v
 ]
 [
 .BI -w n
@@ -102,12 +114,30 @@ Generate a complete \fIx\fP by \fIy\fP bipartite graph.
 This will have \fIx+y\fP vertices and
 \fIx*y\fP edges.
 .TP
+.BI \-B " x,y"
+Generate an \fIx\fP by \fIy\fP ball, i.e., an \fIx\fP by \fIy\fP cylinder
+with two "cap" nodes closing the ends. 
+This will have \fIx*y + 2\fP vertices
+and \fI2*x*y + y\fP edges.
+.TP
 .BI \-m " n"
 Generate a triangular mesh with \fIn\fP vertices on a side.
+This will have \fI(n+1)*n/2\fP vertices
+and \fI3*(n-1)*n/2\fP edges.
+.TP
+.BI \-M " x,y"
+Generate an x by y Moebius strip.
+This will have \fIx*y\fP vertices
+and \fI2*x*y - y\fP edges.
 .TP
 .BI \-p " n"
 Generate a path on \fIn\fP vertices.
 This will have \fIn-1\fP edges.
+.TP
+.BI \-r " x,y"
+Generate a random graph.
+The number of vertices will be the largest value of the form \fI2^n-1\fP less than or
+equal to \fIx\fP. Larger values of \fIy\fP increase the density of the graph.
 .TP
 .BI \-s " n"
 Generate a star on \fIn\fP vertices.
@@ -127,9 +157,13 @@ This will have \fI2^n-1\fP vertices and
 Generate a n-ary tree of height \fIh\fP.
 .TP
 .BI \-T " x,y"
+.TP
+.BI \-T " x,y,u,v"
 Generate an \fIx\fP by \fIy\fP torus.
 This will have \fIx*y\fP vertices and
 \fI2*x*y\fP edges.
+If \fIu\fP and \fIv\fP are given, they specify twists of that amount in
+the horizontal and vertical directions, respectively.
 .TP
 .BI \-w " n"
 Generate a path on \fIn\fP vertices.
