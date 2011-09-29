@@ -57,7 +57,7 @@ void dot_sameports(graph_t * g)
 #ifndef WITH_CGRAPH
 		(id = agxget(e, E_samehead->index))[0])
 #else /* WITH_CGRAPH */
-	        (id = agxget(e, E_sametail))[0])
+	        (id = agxget(e, E_samehead))[0])
 #endif /* WITH_CGRAPH */
 		sameedge(same, n, e, id);
 	    else if (agtail(e) == n && E_sametail &&

@@ -205,6 +205,9 @@ static void freeDeriveNode(node_t * n)
 {
     free(ND_alg(n));
     free(ND_pos(n));
+#ifdef WITH_CGRAPH
+    agdelrec(n, "Agnodeinfo_t");
+#endif
 }
 
 static void freeGData(graph_t * g)
@@ -221,14 +224,23 @@ static void freeDerivedGraph(graph_t * g, graph_t ** cc)
 
     while ((cg = *cc++)) {
 	freeGData(cg);
+#ifdef WITH_CGRAPH
+	agdelrec(cg, "Agraphinfo_t");
+#endif
     }
     if (PORTS(g))
 	free(PORTS(g));
     freeGData(g);
+#ifdef WITH_CGRAPH
+    agdelrec(dg, "Agraphinfo_t");
+#endif
     for (dn = agfstnode(g); dn; dn = dnxt) {
 	dnxt = agnxtnode(g, dn);
 	for (e = agfstout(g, dn); e; e = agnxtout(g, e)) {
 	    free (ED_to_virt(e));
+#ifdef WITH_CGRAPH
+	    agdelrec(e, "Agedgeinfo_t");
+#endif
 	}
 	freeDeriveNode(dn);
     }
@@ -473,7 +485,7 @@ static graph_t *deriveGraph(graph_t * g, layout_info * infop)
     dg = agopen(name, AGRAPHSTRICT);
 #else /* WITH_CGRAPH */
     dg = agopen("derived", Agstrictdirected,NIL(Agdisc_t *));
-    agbindrec(dg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	//node custom data
+    agbindrec(dg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
 #endif /* WITH_CGRAPH */
     GD_alg(dg) = (void *) NEW(gdata);	/* freed in freeDeriveGraph */
 #ifdef DEBUG
@@ -570,7 +582,7 @@ static graph_t *deriveGraph(graph_t * g, layout_info * infop)
 		de = agedge(dg, hd, tl);
 #else /* WITH_CGRAPH */
 		de = agedge(dg, hd, tl, NULL,1);
-		agbindrec(de, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//node custom data
+	    agbindrec(de, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
 #endif /* WITH_CGRAPH */
 	    ED_dist(de) = ED_dist(e);
 	    ED_factor(de) = ED_factor(e);
@@ -612,6 +624,7 @@ static graph_t *deriveGraph(graph_t * g, layout_info * infop)
 		    de = agedge(dg, dn, m);
 #else /* WITH_CGRAPH */
 		    de = agedge(dg, dn, m, NULL,1);
+		agbindrec(de, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
 #endif /* WITH_CGRAPH */
 		ED_dist(de) = ED_dist(pp->e);
 		ED_factor(de) = ED_factor(pp->e);
@@ -1100,10 +1113,8 @@ mkClusters (graph_t * g, clist_t* pclist, graph_t* parent)
 
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg))
 	{
-//	for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
-//	mn = aghead(me);
-//	subg = agusergraph(mn);
 	if (!strncmp(agnameof(subg), "cluster", 7)) {
+	    agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
 #endif /* WITH_CGRAPH */
 	    GD_alg(subg) = (void *) NEW(gdata);	/* freed in cleanup_subgs */
 	    GD_ndim(subg) = GD_ndim(parent);

@@ -149,7 +149,7 @@ static void cleanup_subgs(graph_t * g)
 #ifndef WITH_CGRAPH
 	memset(&(g->u), 0, sizeof(Agraphinfo_t));
 #else /* WITH_CGRAPH */
-	agclean(g, AGRAPH , "Agraphinfo_t");				
+	agdelrec(g, "Agraphinfo_t");				
 #endif /* WITH_CGRAPH */
 }
 

@@ -16,6 +16,21 @@
 #include "dot.h"
 #include "aspect.h"
 
+#ifdef WITH_CGRAPH
+static void
+dot_init_subg(graph_t * g)
+{
+    graph_t* subg;
+
+    if ((g != agroot(g)) && is_cluster(g))
+	agbindrec(g, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
+    for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
+	dot_init_subg(subg);
+    }
+}
+#endif
+
+
 static void 
 dot_init_node(node_t * n)
 {
@@ -99,7 +114,7 @@ dot_cleanup_node(node_t * n)
 #ifndef WITH_CGRAPH
     memset(&(n->u), 0, sizeof(Agnodeinfo_t));
 #else /* WITH_CGRAPH */
-	agclean(agraphof(n), AGNODE,"Agnodeinfo_t");	
+    agdelrec(n, "Agnodeinfo_t");	
 #endif /* WITH_CGRAPH */
 }
 
@@ -111,11 +126,17 @@ static void free_virtual_edge_list(node_t * n)
     for (i = ND_in(n).size - 1; i >= 0; i--) {
 	e = ND_in(n).list[i];
 	delete_fast_edge(e);
+#ifdef WITH_CGRAPH
+	free(e->base.data);
+#endif
 	free(e);
     }
     for (i = ND_out(n).size - 1; i >= 0; i--) {
 	e = ND_out(n).list[i];
 	delete_fast_edge(e);
+#ifdef WITH_CGRAPH
+	free(e->base.data);
+#endif
 	free(e);
     }
 }
@@ -130,6 +151,9 @@ static void free_virtual_node_list(node_t * vn)
 	if (ND_node_type(vn) == VIRTUAL) {
 	    free_list(ND_out(vn));
 	    free_list(ND_in(vn));
+#ifdef WITH_CGRAPH
+	    free(vn->base.data);
+#endif
 	    free(vn);
 	}
 	vn = next_vn;
@@ -163,7 +187,7 @@ dot_cleanup_graph(graph_t * g)
 #ifndef WITH_CGRAPH
 	memset(&(g->u), 0, sizeof(Agraphinfo_t));
 #else /* WITH_CGRAPH */
-	agclean(g,AGRAPH,"Agraphinfo_t");
+	agdelrec(g,"Agraphinfo_t");
 #endif /* WITH_CGRAPH */
 }
 
@@ -256,6 +280,10 @@ void dot_layout(Agraph_t * g)
 
     setEdgeType (g, ET_SPLINE);
     asp = setAspect (g, &aspect);
+
+#ifdef WITH_CGRAPH
+    dot_init_subg(g);
+#endif
 
     dot_init_node_edge(g);
 
