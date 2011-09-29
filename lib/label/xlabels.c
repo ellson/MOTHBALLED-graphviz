@@ -606,19 +606,18 @@ static int xlhdxload(XLabels_t * xlp)
 
 static int xlspdxload(XLabels_t * xlp)
 {
-    HDict_t *op;
+    HDict_t *op=0;
 
     for (op = dtfirst(xlp->hdx); op; op = dtnext(xlp->hdx, op)) {
 	/*          tree       rectangle    data        node             lvl */
-	RTreeInsert(xlp->spdx, &op->d.rect, op->d.data, &xlp->spdx->root,
-		    0);
+	RTreeInsert(xlp->spdx, &op->d.rect, op->d.data, &xlp->spdx->root, 0);
     }
     return 0;
 }
 
 static int xlinitialize(XLabels_t * xlp)
 {
-    int r;
+    int r=0;
     if ((r = xlhdxload(xlp)) < 0)
 	return r;
     if ((r = xlspdxload(xlp)) < 0)
