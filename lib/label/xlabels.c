@@ -596,12 +596,31 @@ static int xlhdxload(XLabels_t * xlp)
 
 	hp->key = hd_hil_s_from_xy(pi, order);
 
-	if (dtsearch(xlp->hdx, hp) != 0)
+#if 0
+	if (dtsearch(xlp->hdx, hp) != 0) {
+	    free(hp);
 	    continue;
+	}
+#endif
 	if (!(dtinsert(xlp->hdx, hp)))
 	    return -1;
     }
     return 0;
+}
+
+static void xlhdxunload(XLabels_t * xlp)
+{
+  int size=dtsize(xlp->hdx), freed=0;
+  while(dtsize(xlp->hdx) ) {
+    Void_t*vp=dtfinger(xlp->hdx);
+    assert(vp);
+    if(vp) {
+      dtdetach(xlp->hdx, vp);
+      free(vp);
+      freed++;
+    }
+  }
+  assert(size==freed);
 }
 
 static int xlspdxload(XLabels_t * xlp)
@@ -622,6 +641,7 @@ static int xlinitialize(XLabels_t * xlp)
 	return r;
     if ((r = xlspdxload(xlp)) < 0)
 	return r;
+    xlhdxunload(xlp);
     return dtclose(xlp->hdx);
 }
 
