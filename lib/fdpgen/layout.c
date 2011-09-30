@@ -342,11 +342,11 @@ static char *portName(graph_t * g, bport_t * p)
 
     len += strlen(agnameof(g)) + strlen(agnameof(h)) + strlen(agnameof(t));
     if (len >= BSZ)
-	sprintf(buf, "_port_%s_%s_%s_%d", agnameof(g), agnameof(t), agnameof(h),
-		AGID(e));
+	sprintf(buf, "_port_%s_%s_%s_%ld", agnameof(g), agnameof(t), agnameof(h),
+		(unsigned long)AGID(e));
     else
-	sprintf(buf, "_port_%s_(%d)_(%d)_%d",agnameof(g), ND_id(t), ND_id(h),
-		AGID(e));
+	sprintf(buf, "_port_%s_(%d)_(%d)_%ld",agnameof(g), ND_id(t), ND_id(h),
+		(unsigned long)AGID(e));
     return buf;
 }
 
