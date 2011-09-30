@@ -422,8 +422,7 @@
 			buildSettings = {
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				SDKROOT = macosx;
-			};
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.7.sdk";			};
 			name = Debug;
 		};
 		C05733CD08A9546B00998B17 /* Release */ = {
@@ -435,8 +434,7 @@
 				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				SDKROOT = macosx;
-			};
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.7.sdk";			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
