@@ -22,7 +22,7 @@ dot_init_subg(graph_t * g)
 {
     graph_t* subg;
 
-    if ((g != agroot(g)) && is_cluster(g))
+    if ((g != agroot(g)))
 	agbindrec(g, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
 	dot_init_subg(subg);
@@ -163,14 +163,21 @@ static void free_virtual_node_list(node_t * vn)
 static void 
 dot_cleanup_graph(graph_t * g)
 {
-    int i, c;
+    int i;
+#ifndef WITH_CGRAPH
     graph_t *clust;
-
+    int c;
     for (c = 1; c <= GD_n_cluster(g); c++) {
 	clust = GD_clust(g)[c];
 	GD_cluster_was_collapsed(clust) = FALSE;
 	dot_cleanup(clust);
     }
+#else
+    graph_t *subg;
+    for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
+	dot_cleanup_graph(subg);
+    }
+#endif
     if (GD_clust(g)) free (GD_clust(g));
     if (GD_rankleader(g)) free (GD_rankleader(g));
 
