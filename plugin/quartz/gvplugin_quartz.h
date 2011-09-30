@@ -22,8 +22,6 @@
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 
-#include "types.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
