@@ -57,8 +57,10 @@ SparseMatrix call_tri(int n, int dim, real * x)
 	SparseMatrix_coordinate_form_add_entries(A, 1, &i, &i, &one);
     }
     B = SparseMatrix_from_coordinate_format(A);
-    B = SparseMatrix_symmetrize(B, FALSE);
     SparseMatrix_delete(A);
+    A = SparseMatrix_symmetrize(B, FALSE);
+    SparseMatrix_delete(B);
+    B = A;
 
     free (edgelist);
     free (xv);
