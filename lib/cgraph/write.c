@@ -313,9 +313,12 @@ static int irrelevant_subgraph(Agraph_t * g)
     int i, n;
     Agattr_t *sdata, *pdata, *rdata;
     Agdatadict_t *dd;
+    Agraph_t *subg;
 
     char *name;
 
+    for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg))
+	if (!irrelevant_subgraph(subg)) return FALSE;
     name = agnameof(g);
     if (name && name[0] != LOCALNAMEPREFIX)
 	return FALSE;
