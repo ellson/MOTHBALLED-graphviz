@@ -50,8 +50,12 @@
 #else /* WITH_CGRAPH */
 #define MAKEFWDEDGE(new, old) { \
 	edge_t *newp; \
+	Agedgeinfo_t *info; \
 	newp = new; \
+	info = (Agedgeinfo_t*)newp->base.data; \
+	*info = *(Agedgeinfo_t*)old->base.data; \
 	*newp = *old; \
+	newp->base.data = (Agrec_t*)info; \
 	AGTAIL(newp) = AGHEAD(old); \
 	AGHEAD(newp) = AGTAIL(old); \
 	ED_tail_port(newp) = ED_head_port(old); \
@@ -264,14 +268,19 @@ static void _dot_splines(graph_t * g, int normalize)
 {
     int i, j, k, n_nodes, n_edges, ind, cnt;
     node_t *n;
+#ifndef WITH_CGRAPH
     edge_t fwdedgea, fwdedgeb;
+#else
+    Agedgeinfo_t fwdedgeai, fwdedgebi;
+    Agedgepair_t fwdedgea, fwdedgeb;
+#endif
     edge_t *e, *e0, *e1, *ea, *eb, *le0, *le1, **edges;
     path *P;
     spline_info_t sd;
-#ifndef WITH_CGRAPH
     int et = EDGE_TYPE(g);
-#else /* WITH_CGRAPH */
-    int et = EDGE_TYPE(g);
+#ifdef WITH_CGRAPH
+    fwdedgea.out.base.data = (Agrec_t*)&fwdedgeai;
+    fwdedgeb.out.base.data = (Agrec_t*)&fwdedgebi;
 #endif /* WITH_CGRAPH */
 
     if (et == ET_NONE) return; 
@@ -387,8 +396,13 @@ static void _dot_splines(graph_t * g, int normalize)
 	ea = (ED_tail_port(e0).defined
 	      || ED_head_port(e0).defined) ? e0 : le0;
 	if (ED_tree_index(ea) & BWDEDGE) {
+#ifndef WITH_CGRAPH
 	    MAKEFWDEDGE(&fwdedgea, ea);
 	    ea = &fwdedgea;
+#else
+	    MAKEFWDEDGE(&fwdedgea.out, ea);
+	    ea = &fwdedgea.out;
+#endif
 	}
 	for (cnt = 1; i < n_edges; cnt++, i++) {
 	    if (le0 != (le1 = getmainedge((e1 = edges[i]))))
@@ -397,8 +411,13 @@ static void _dot_splines(graph_t * g, int normalize)
 	    eb = (ED_tail_port(e1).defined
 		  || ED_head_port(e1).defined) ? e1 : le1;
 	    if (ED_tree_index(eb) & BWDEDGE) {
+#ifndef WITH_CGRAPH
 		MAKEFWDEDGE(&fwdedgeb, eb);
 		eb = &fwdedgeb;
+#else
+		MAKEFWDEDGE(&fwdedgeb.out, eb);
+		eb = &fwdedgeb.out;
+#endif
 	    }
 	    if (portcmp(ED_tail_port(ea), ED_tail_port(eb)))
 		break;
@@ -465,10 +484,18 @@ finish :
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    if (E_headlabel) {
 		for (e = agfstin(g, n); e; e = agnxtin(g, e))
+#ifndef WITH_CGRAPH
 		    if (ED_head_label(e)) {
 			if (place_portlabel(e, TRUE))
 			    updateBB(g, ED_head_label(e));
 		    }
+#else
+		    if (ED_head_label(AGMKOUT(e))) {
+			place_portlabel(AGMKOUT(e), TRUE);
+			updateBB(g, ED_head_label(AGMKOUT(e)));
+		    }
+#endif
+
 	    }
 	    if (E_taillabel) {
 		for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
@@ -569,10 +596,20 @@ setflags(edge_t *e, int hint1, int hint2, int f3)
  */
 static int edgecmp(edge_t** ptr0, edge_t** ptr1)
 {
+#ifndef WITH_CGRAPH
     edge_t fwdedgea, fwdedgeb, *e0, *e1, *ea, *eb, *le0, *le1;
+#else
+    Agedgeinfo_t fwdedgeai, fwdedgebi;
+    Agedgepair_t fwdedgea, fwdedgeb;
+    edge_t *e0, *e1, *ea, *eb, *le0, *le1;
+#endif
     int et0, et1, v0, v1, rv;
     double t0, t1;
 
+#ifdef WITH_CGRAPH
+    fwdedgea.out.base.data = (Agrec_t*)&fwdedgeai;
+    fwdedgeb.out.base.data = (Agrec_t*)&fwdedgebi;
+#endif
     e0 = (edge_t *) * ptr0;
     e1 = (edge_t *) * ptr1;
     et0 = ED_tree_index(e0) & EDGETYPEMASK;
@@ -603,13 +640,23 @@ static int edgecmp(edge_t** ptr0, edge_t** ptr1)
 
     ea = (ED_tail_port(e0).defined || ED_head_port(e0).defined) ? e0 : le0;
     if (ED_tree_index(ea) & BWDEDGE) {
+#ifndef WITH_CGRAPH
 	MAKEFWDEDGE(&fwdedgea, ea);
 	ea = &fwdedgea;
+#else
+	MAKEFWDEDGE(&fwdedgea.out, ea);
+	ea = &fwdedgea.out;
+#endif
     }
     eb = (ED_tail_port(e1).defined || ED_head_port(e1).defined) ? e1 : le1;
     if (ED_tree_index(eb) & BWDEDGE) {
+#ifndef WITH_CGRAPH
 	MAKEFWDEDGE(&fwdedgeb, eb);
 	eb = &fwdedgeb;
+#else
+	MAKEFWDEDGE(&fwdedgeb.out, eb);
+	eb = &fwdedgeb.out;
+#endif
     }
     if ((rv = portcmp(ED_tail_port(ea), ED_tail_port(eb))))
 	return rv;
@@ -657,14 +704,11 @@ cloneGraph (graph_t* g)
     auxg = agopen ("auxg", AG_IS_DIRECTED(g)?AGDIGRAPH:AGRAPH);
     agraphattr(auxg, "rank", "");
 #else /* WITH_CGRAPH */
-//    auxg = agopen ("auxg", AG_IS_DIRECTED(g)?AGDIGRAPH:AGRAPH);
-
-	if (agisdirected(g))
-		auxg = agopen ("auxg",Agdirected, NIL(Agdisc_t *));
-	else
-		auxg = agopen ("auxg",Agundirected, NIL(Agdisc_t *));
-
-
+    if (agisdirected(g))
+	auxg = agopen ("auxg",Agdirected, NIL(Agdisc_t *));
+    else
+	auxg = agopen ("auxg",Agundirected, NIL(Agdisc_t *));
+    agbindrec(auxg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
     agattr(auxg, AGRAPH, "rank", "");
 #endif /* WITH_CGRAPH */
     GD_drawing(auxg) = NEW(layout_t);
@@ -1440,7 +1484,13 @@ static void
 make_flat_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt, int et)
 {
     node_t *tn, *hn;
+#ifndef WITH_CGRAPH
     edge_t fwdedge, *e;
+#else
+    Agedgeinfo_t fwdedgei;
+    Agedgepair_t fwdedge;
+    edge_t *e;
+#endif
     int j, i, r;
     double stepx, stepy, vspace;
     int tside, hside, pn;
@@ -1448,11 +1498,20 @@ make_flat_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt, i
     pathend_t tend, hend;
     graph_t* g;
 
+#ifdef WITH_CGRAPH
+    fwdedge.out.base.data = (Agrec_t*)&fwdedgei;
+#endif
+
     /* Get sample edge; normalize to go from left to right */
     e = edges[ind];
     if (ED_tree_index(e) & BWDEDGE) {
+#ifndef WITH_CGRAPH
 	MAKEFWDEDGE(&fwdedge, e);
 	e = &fwdedge;
+#else
+	MAKEFWDEDGE(&fwdedge.out, e);
+	e = &fwdedge.out;
+#endif
     }
     if (ED_adjacent(edges[ind])) {
 	make_flat_adj_edges (P, edges, ind, cnt, e, et);
@@ -1635,7 +1694,13 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
 {
     graph_t *g;
     node_t *tn, *hn;
+#ifndef WITH_CGRAPH
     edge_t fwdedgea, fwdedgeb, fwdedge, *e, *fe, *le, *segfirst;
+#else
+    Agedgeinfo_t fwdedgeai, fwdedgebi, fwdedgei;
+    Agedgepair_t fwdedgea, fwdedgeb, fwdedge;
+    edge_t *e, *fe, *le, *segfirst;
+#endif /* WITH_CGRAPH */
     pointf *ps;
     pathend_t tend, hend;
     boxf b;
@@ -1645,6 +1710,12 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
     static int numpts;
     static int numpts2;
     int pointn;
+
+#ifdef WITH_CGRAPH
+    fwdedgea.out.base.data = (Agrec_t*)&fwdedgeai;
+    fwdedgeb.out.base.data = (Agrec_t*)&fwdedgebi;
+    fwdedge.out.base.data = (Agrec_t*)&fwdedgei;
+#endif /* WITH_CGRAPH */
 
     if (!pointfs) {
 	pointfs = N_GNEW(NUMPTS, pointf);
@@ -1657,22 +1728,32 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
     g = agraphof(agtail(e));
     hackflag = FALSE;
     if (ABS(ND_rank(agtail(e)) - ND_rank(aghead(e))) > 1) {
-	fwdedgea = *e;
-	if (ED_tree_index(e) & BWDEDGE) {
-	    MAKEFWDEDGE(&fwdedgeb, e);
 #ifndef WITH_CGRAPH
+	fwdedgea = *e;
+#else /* WITH_CGRAPH */
+	fwdedgeai = *(Agedgeinfo_t*)e->base.data;
+	fwdedgea.out = *e;
+	fwdedgea.out.base.data = (Agrec_t*)&fwdedgeai;
+#endif /* WITH_CGRAPH */
+	if (ED_tree_index(e) & BWDEDGE) {
+#ifndef WITH_CGRAPH
+	    MAKEFWDEDGE(&fwdedgeb, e);
 	    fwdedgea.tail = aghead(e);
 	    fwdedgea.u.tail_port = ED_head_port(e);
 #else /* WITH_CGRAPH */
-	    agtail(&fwdedgea) = aghead(e);
-	    ED_tail_port(&fwdedgea) = ED_head_port(e);
+	    MAKEFWDEDGE(&fwdedgeb.out, e);
+	    agtail(&fwdedgea.out) = aghead(e);
+	    ED_tail_port(&fwdedgea.out) = ED_head_port(e);
 #endif /* WITH_CGRAPH */
 	} else {
-	    fwdedgeb = *e;
 #ifndef WITH_CGRAPH
+	    fwdedgeb = *e;
 	    fwdedgea.tail = e->tail;
 #else /* WITH_CGRAPH */
-	    agtail(&fwdedgea) = agtail(e);
+	    fwdedgebi = *(Agedgeinfo_t*)e->base.data;
+	    fwdedgeb.out = *e;
+	    fwdedgeb.out.base.data = (Agrec_t*)&fwdedgebi;
+	    agtail(&fwdedgea.out) = agtail(e);
 #endif /* WITH_CGRAPH */
 	}
 	le = getmainedge(e);
@@ -1684,19 +1765,25 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
 	fwdedgea.u.edge_type = VIRTUAL;
 	fwdedgea.u.head_port.p.x = fwdedgea.u.head_port.p.y = 0;
 	fwdedgea.u.to_orig = e;
-#else /* WITH_CGRAPH */
-	aghead(&fwdedgea) = aghead(le);
-	ED_head_port(&fwdedgea).defined = FALSE;
-	ED_edge_type(&fwdedgea) = VIRTUAL;
-	ED_head_port(&fwdedgea).p.x = ED_head_port(&fwdedgea).p.y = 0;
-	ED_to_orig(&fwdedgea) = e;
-#endif /* WITH_CGRAPH */
 	e = &fwdedgea;
+#else /* WITH_CGRAPH */
+	aghead(&fwdedgea.out) = aghead(le);
+	ED_head_port(&fwdedgea.out).defined = FALSE;
+	ED_edge_type(&fwdedgea.out) = VIRTUAL;
+	ED_head_port(&fwdedgea.out).p.x = ED_head_port(&fwdedgea.out).p.y = 0;
+	ED_to_orig(&fwdedgea.out) = e;
+	e = &fwdedgea.out;
+#endif /* WITH_CGRAPH */
 	hackflag = TRUE;
     } else {
 	if (ED_tree_index(e) & BWDEDGE) {
+#ifndef WITH_CGRAPH
 	    MAKEFWDEDGE(&fwdedgea, e);
 	    e = &fwdedgea;
+#else
+	    MAKEFWDEDGE(&fwdedgea.out, e);
+	    e = &fwdedgea.out;
+#endif
 	}
     }
     fe = e;
@@ -1786,8 +1873,11 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
 	}
 	boxes[boxn++] = rank_box(sp, g, ND_rank(tn));
 	b = hend.nb = maximal_bbox(sp, hn, e, NULL);
-	endpath(P, hackflag ? &fwdedgeb : e, REGULAREDGE, &hend,
-	        spline_merge(aghead(e)));
+#ifndef WITH_CGRAPH
+	endpath(P, hackflag ? &fwdedgeb : e, REGULAREDGE, &hend, spline_merge(aghead(e)));
+#else
+	endpath(P, hackflag ? &fwdedgeb.out : e, REGULAREDGE, &hend, spline_merge(aghead(e)));
+#endif
 	b.UR.y = hend.boxes[hend.boxn - 1].UR.y;
 	b.LL.y = hend.boxes[hend.boxn - 1].LL.y;
 	b = makeregularend(b, TOP,
@@ -1817,7 +1907,11 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
 	    pointfs[pointn++] = ps[i];
 	}
 	recover_slack(segfirst, P);
+#ifndef WITH_CGRAPH
 	hn = hackflag ? aghead(&fwdedgeb) : aghead(e);
+#else
+	hn = hackflag ? aghead(&fwdedgeb.out) : aghead(e);
+#endif
     }
 
     /* make copies of the spline points, one per multi-edge */
@@ -1840,8 +1934,13 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
     for (j = 1; j < cnt; j++) {
 	e = edges[ind + j];
 	if (ED_tree_index(e) & BWDEDGE) {
+#ifndef WITH_CGRAPH
 	    MAKEFWDEDGE(&fwdedge, e);
 	    e = &fwdedge;
+#else
+	    MAKEFWDEDGE(&fwdedge.out, e);
+	    e = &fwdedge.out;
+#endif
 	}
 	for (i = 1; i < pointn - 1; i++)
 	    pointfs[i].x += sp->Multisep;

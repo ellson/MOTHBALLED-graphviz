@@ -742,6 +742,9 @@ static void cleanup2(graph_t * g, int nc)
 		for (j = 0; (e = ND_flat_out(v).list[j]); j++)
 		    if (ED_edge_type(e) == FLATORDER) {
 			delete_flat_edge(e);
+#ifdef WITH_CGRAPH
+			free(e->base.data);
+#endif
 			free(e);
 			j--;
 		    }

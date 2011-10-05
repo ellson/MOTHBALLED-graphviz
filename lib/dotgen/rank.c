@@ -61,6 +61,7 @@ cleanup1(graph_t * g)
 	     */
 	    if (f && (e == ED_to_orig(f))) {
 		edge_t *e1, *f1;
+#ifndef WITH_CGRAPH
 		for (e1 = agfstout(g, n); e1; e1 = agnxtout(g, e1)) {
 		    if (e != e1) {
 			f1 = ED_to_virt(e1);
@@ -69,6 +70,20 @@ cleanup1(graph_t * g)
 			}
 		    }
 		}
+#else
+		node_t *n1;
+		for (n1 = agfstnode(g); n1; n1 = agnxtnode(g, n1)) {
+		    for (e1 = agfstout(g, n1); e1; e1 = agnxtout(g, e1)) {
+			if (e != e1) {
+			    f1 = ED_to_virt(e1);
+			    if (f1 && (f == f1)) {
+				ED_to_virt(e1) = NULL;
+			    }
+			}
+		    }
+		}
+		free(f->base.data);
+#endif
 		free(f);
 	    }
 	    ED_to_virt(e) = NULL;
@@ -637,7 +652,11 @@ collapse_leaves(graph_t * g)
 	    continue;
 	if (agfstout(g, n) == NULL) {
 	    if ((e = agfstin(g, n)) && (agnxtin(g, e) == NULL)) {
+#ifndef WITH_CGRAPH
 		potential_leaf(g, e, n);
+#else
+		potential_leaf(g, AGMKOUT(e), n);
+#endif
 		continue;
 	    }
 	}

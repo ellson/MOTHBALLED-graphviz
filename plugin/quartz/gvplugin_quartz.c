@@ -11,6 +11,11 @@
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif 
+
+#include "types.h"
 #include "gvplugin.h"
 #include "gvplugin_quartz.h"
 #include "gvio.h"

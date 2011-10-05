@@ -89,7 +89,7 @@ graph_t **findCComp(graph_t * g, int *cnt, int *pinned)
 	subg = agsubg(g, name);
 #else /* WITH_CGRAPH */
 	subg = agsubg(g, name,1);
-	agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	//node custom data
+	agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
 #endif /* WITH_CGRAPH */
 	GD_alg(subg) = (void *) NEW(gdata);
 	PORTS(subg) = pp;
@@ -114,7 +114,7 @@ graph_t **findCComp(graph_t * g, int *cnt, int *pinned)
 	    subg = agsubg(g, name);
 #else /* WITH_CGRAPH */
 	    subg = agsubg(g, name,1);
-		agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	//node custom data
+		agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
 #endif /* WITH_CGRAPH */
 	    GD_alg(subg) = (void *) NEW(gdata);
 	}

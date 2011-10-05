@@ -953,7 +953,7 @@ static void Multilevel_coarsen_internal(SparseMatrix A, SparseMatrix *cA, Sparse
   real *val = NULL;
   SparseMatrix B = NULL;
   int *vset = NULL, nvset, ncov, j;
-  int *cluster, *clusterp, ncluster;
+  int *cluster=NULL, *clusterp=NULL, ncluster;
 
   assert(A->m == A->n);
   *cA = NULL;
@@ -1193,6 +1193,9 @@ static void Multilevel_coarsen_internal(SparseMatrix A, SparseMatrix *cA, Sparse
   if (jcn) FREE(jcn);
   if (val) FREE(val);
   if (B) SparseMatrix_delete(B);
+
+  if(cluster) FREE(cluster);
+  if(clusterp) FREE(clusterp);
 }
 
 void Multilevel_coarsen(SparseMatrix A, SparseMatrix *cA, SparseMatrix D, SparseMatrix *cD, real *node_wgt, real **cnode_wgt,
