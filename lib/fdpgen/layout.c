@@ -232,7 +232,7 @@ static void freeDerivedGraph(graph_t * g, graph_t ** cc)
 	free(PORTS(g));
     freeGData(g);
 #ifdef WITH_CGRAPH
-    agdelrec(dg, "Agraphinfo_t");
+    agdelrec(g, "Agraphinfo_t");
 #endif
     for (dn = agfstnode(g); dn; dn = dnxt) {
 	dnxt = agnxtnode(g, dn);
