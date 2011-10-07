@@ -150,6 +150,9 @@ BuildRequires: ghostscript-devel
 #define MING 1
 #BuildRequires: ming ming-devel
 %endif
+%if %fedora >= 17
+%define R_LANG 1
+%endif
 %endif
 
 #-- main graphviz rpm ------------------------------------------------
