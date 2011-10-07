@@ -1882,7 +1882,7 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 	    d_coords[i][j] = coords[i][j];
 #ifdef WITH_CGRAPH
             if (Verbose)
-		fprintf (stderr, "%d\n",coords[i][j]);
+		fprintf (stderr, "%f\n",coords[i][j]);
 			
 #endif /* WITH_CGRAPH */
 	}
