@@ -466,7 +466,7 @@ static pos_edge nop_init_edges(Agraph_t * g)
  */
 #define BS "%lf,%lf,%lf,%lf"
 
-static int chkBB(Agraph_t * g, attrsym_t * G_bb)
+static int chkBB(Agraph_t * g, attrsym_t * G_bb, boxf* bbp)
 {
     char *s;
     boxf bb;
@@ -486,7 +486,7 @@ static int chkBB(Agraph_t * g, attrsym_t * G_bb)
 	    bb.LL.y = bb.UR.y;
 	    bb.UR.y = tmp;
 	}
-	GD_bb(g) = bb;
+	*bbp = bb;
 	return 1;
     } else
 	return 0;
@@ -513,11 +513,16 @@ dfs(node_t * mn, Agraph_t * g, attrsym_t * G_lp, attrsym_t * G_bb)
 dfs(Agraph_t * subg, Agraph_t * g, attrsym_t * G_lp, attrsym_t * G_bb)
 #endif /* WITH_CGRAPH */
 {
+    boxf bb;
 
 #ifndef WITH_CGRAPH
     graph_t *subg = agusergraph(mn);
 #endif
-    if (!strncmp(agnameof(subg), "cluster", 7) && chkBB(subg, G_bb)) {
+    if (!strncmp(agnameof(subg), "cluster", 7) && chkBB(subg, G_bb, &bb)) {
+#ifdef WITH_CGRAPH
+	agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
+#endif
+	GD_bb(subg) = bb;
 	add_cluster(g, subg);
 	nop_init_graphs(subg, G_lp, G_bb);
     } else {
@@ -1555,6 +1560,9 @@ addCluster (graph_t* g)
     for (subg = agfstsubg(agroot(g)); subg; subg = agnxtsubg(subg)) {
 #endif
 	if (!strncmp(agnameof(subg), "cluster", 7)) {
+#ifdef WITH_CGRAPH
+	    agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
+#endif
 	    add_cluster(g, subg);
 	    compute_bb(subg);
 	}
@@ -1645,6 +1653,9 @@ void neato_layout(Agraph_t * g)
 	    for (i = 0; i < n_cc; i++) {
 		gc = cc[i];
 		free_scan_graph(gc);
+#ifdef WITH_CGRAPH
+		agdelrec (gc, "Agraphinfo_t"); 
+#endif
 		agdelete(g, gc);
 	    }
 	    free (cc);
