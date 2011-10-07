@@ -32,12 +32,12 @@ typedef enum { LAYOUT_DOT, } layout_type;
 #ifdef WITH_CGRAPH
     #pragma comment( lib, "cgraph.lib" )
     #pragma comment( lib, "dotgen2.lib" )
-    extern void dot2_layout(graph_t * g);
-    extern void dot2_cleanup(graph_t * g);
+    extern void dot_layout(graph_t * g);
+    extern void dot_cleanup(graph_t * g);
 
     gvlayout_engine_t dotgen_engine = {
-    dot2_layout,
-    dot2_cleanup,
+    dot_layout,
+    dot_cleanup,
     };
 
 

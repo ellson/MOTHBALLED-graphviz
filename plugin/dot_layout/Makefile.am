@@ -29,7 +29,7 @@ libgvplugin_dot_layout_C_la_SOURCES = \
 	gvlayout_dot_layout.c
 if WITH_CGRAPH
 libgvplugin_dot_layout_C_la_LIBADD = \
-	$(top_builddir)/lib/dotgen2/libdotgen2_C.la
+	$(top_builddir)/lib/dotgen/libdotgen_C.la
 else
 libgvplugin_dot_layout_C_la_LIBADD = \
 	$(top_builddir)/lib/dotgen/libdotgen_C.la 
