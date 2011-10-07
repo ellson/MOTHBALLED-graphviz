@@ -986,7 +986,7 @@ static node_t *clustNode(node_t * n, graph_t * cg, agxbuf * xb,
     cn = agnode(agroot(cg), agxbuse(xb));
 #else
     cn = agnode(agroot(cg), agxbuse(xb), 1);
-    agbindrec(cn, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);	//node custom data
+    agbindrec(cn, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
 #endif /* WITH_CGRAPH */
 
     SET_CLUST_NODE(cn);
@@ -1224,7 +1224,7 @@ int processClusterEdges(graph_t * g)
     clg = agsubg(g, "__clusternodes");
 #else /* WITH_CGRAPH */
     clg = agsubg(g, "__clusternodes",1);
-	agbindrec(clg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	//node custom data
+    agbindrec(clg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
 #endif /* WITH_CGRAPH */
     agxbinit(&xb, SMALLBUF, buf);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
@@ -1282,7 +1282,7 @@ static node_t *mapN(node_t * n, graph_t * clg)
     nn = agnode(g, name);
 #else /* WITH_CGRAPH */
     nn = agnode(g, name, 1);
-    agbindrec(nn, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);	//node custom data
+    agbindrec(nn, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
 #endif /* WITH_CGRAPH */
 
     /* Set all attributes to default */
@@ -1332,7 +1332,7 @@ void undoClusterEdges(graph_t * g)
     clg = agsubg(g, "__clusternodes");
 #else /* WITH_CGRAPH */
     clg = agsubg(g, "__clusternodes",1);
-	agbindrec(clg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	//node custom data
+	agbindrec(clg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
 #endif /* WITH_CGRAPH */
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
