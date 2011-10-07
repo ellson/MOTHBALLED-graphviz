@@ -306,6 +306,7 @@ tuneControl (graph_t* g, spring_electrical_control ctrl)
     ctrl->tscheme = late_quadtree_scheme(g, agfindgraphattr(g, "quadtree"), QUAD_TREE_NORMAL);
     /* ctrl->method = late_mode(g, agfindgraphattr(g, "mode"), METHOD_SPRING_ELECTRICAL); */
     ctrl->method = METHOD_SPRING_ELECTRICAL;
+    ctrl->beautify_leaves = mapBool (agget(g, "beautify"), FALSE);
     ctrl->rotation = late_double(g, agfindgraphattr(g, "rotation"), 0.0, -MAXDOUBLE);
     ctrl->edge_labeling_scheme = late_int(g, agfindgraphattr(g, "label_scheme"), 0, 0);
     if (ctrl->edge_labeling_scheme > 4) {

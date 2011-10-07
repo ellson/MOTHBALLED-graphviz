@@ -413,6 +413,7 @@ static void beautify_leaves(int dim, SparseMatrix A, real *x){
       pad = MAX(maxang - PI*0.166667*(nleaves-1), 0)*0.5;
       ang1 += pad*0.95;
       ang2 -= pad*0.95;
+ang1 = 0; ang2 = 2*PI; maxang = 2*PI;
       assert(ang2 >= ang1);
       step = 0.;
       if (nleaves > 1) step = (ang2 - ang1)/(nleaves - 1);
