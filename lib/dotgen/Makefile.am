@@ -17,6 +17,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/pathplan
 
 if WITH_CGRAPH
+noinst_HEADERS = dot.h dotprocs.h aspect.h
+noinst_LTLIBRARIES = libdotgen_C.la
 else
 noinst_HEADERS = dot.h dotprocs.h aspect.h
 noinst_LTLIBRARIES = libdotgen_C.la
