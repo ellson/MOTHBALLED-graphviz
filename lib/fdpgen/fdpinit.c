@@ -91,6 +91,13 @@ static void init_edge(edge_t * e, attrsym_t * E_len)
     common_init_edge(e);
 }
 
+static void init_node(node_t * n)
+{
+    common_init_node(n);
+    ND_pos(n) = N_NEW(GD_ndim(agraphof(n)), double);
+    gv_nodesize(n, GD_flip(agraphof(n)));
+}
+
 void fdp_init_node_edge(graph_t * g)
 {
     attrsym_t *E_len;
@@ -100,6 +107,9 @@ void fdp_init_node_edge(graph_t * g)
     int i;
     /* ndata* alg; */
 
+#ifdef WITH_CGRAPH
+    aginit(g, AGNODE, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
+#endif
     processClusterEdges(g);
 
     /* Get node count after processClusterEdges(), as this function may
@@ -110,7 +120,11 @@ void fdp_init_node_edge(graph_t * g)
     GD_neato_nlist(g) = N_NEW(nn + 1, node_t *);
 
     for (i = 0, n = agfstnode(g); n; n = agnxtnode(g, n)) {
+#ifdef WITH_CGRAPH
+	init_node (n);
+#else
 	neato_init_node (n);
+#endif
 	/* ND_alg(n) = alg + i; */
 	GD_neato_nlist(g)[i] = n;
 	ND_id(n) = i++;
