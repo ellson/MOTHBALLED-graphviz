@@ -147,10 +147,8 @@ BuildRequires: libglade2-devel gtkglarea2-devel gtkglext-devel glade3-libgladeui
 BuildRequires: ghostscript-devel
 #define MING 1
 #BuildRequires: ming ming-devel
-%if %fedora < 17
 %define R_LANG 1
 BuildRequires: R-devel swig >= 1.3.33 perl-libs
-%endif
 %endif
 %endif
 
