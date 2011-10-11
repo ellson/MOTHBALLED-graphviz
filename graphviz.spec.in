@@ -139,8 +139,6 @@ BuildRequires: lasi-devel
 %define GDK_PIXBUF 1
 %define IPSEPCOLA 1
 %define ORTHO 1
-%define R_LANG 1
-BuildRequires: R-devel swig >= 1.3.33 perl-libs
 %define SMYRNA 1
 BuildRequires: libglade2-devel gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel freeglut-devel
 #define GLITZ 1
@@ -149,6 +147,8 @@ BuildRequires: libglade2-devel gtkglarea2-devel gtkglext-devel glade3-libgladeui
 BuildRequires: ghostscript-devel
 #define MING 1
 #BuildRequires: ming ming-devel
+%define R_LANG 1
+BuildRequires: R-devel swig >= 1.3.33 perl-libs
 %endif
 %endif
 
