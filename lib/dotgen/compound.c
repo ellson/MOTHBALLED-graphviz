@@ -88,26 +88,93 @@ static int inBoxf(pointf p, boxf * bb)
     return INSIDE(p, *bb);
 }
 
+#ifdef WITH_CGRAPH
+typedef struct {
+    Dtlink_t link;
+    char* name;
+    Agraph_t* clp;
+} clust_t;
+
+static void free_clust (Dt_t* dt, clust_t* clp, Dtdisc_t* disc)
+{
+    free (clp);
+}
+
+static Dtdisc_t strDisc = {
+    offsetof(clust_t,name),
+    -1,
+    offsetof(clust_t,link),
+    NIL(Dtmake_f),
+    (Dtfree_f)free_clust,
+    NIL(Dtcompar_f),
+    NIL(Dthash_f),
+    NIL(Dtmemory_f),
+    NIL(Dtevent_f)
+};
+
+static void fillMap (Agraph_t* g, Dt_t* map)
+{
+    Agraph_t* cl;
+    int c;
+    char* s;
+    clust_t* ip;
+
+    for (c = 1; c <= GD_n_cluster(g); c++) {
+	cl = GD_clust(g)[c];
+	s = agnameof(cl);
+	if (dtmatch (map, &s)) {
+	    agerr(AGWARN, "Two clusters named %s - the second will be ignored\n", s);
+	}
+	else {
+	    ip = NEW(clust_t);
+	    ip->name = s;
+	    ip->clp = cl;
+	    dtinsert (map, ip);
+	}
+	fillMap (cl, map);
+    }
+}
+
+static Dt_t* mkClustMap (Agraph_t* g)
+{
+    Dt_t* map = dtopen (&strDisc, Dtoset);
+
+    fillMap (g, map);
+    
+    return map;
+}
+
 /* getCluster:
  * Returns subgraph of g with given name.
  * Returns NULL if no name is given, or subgraph of
  * that name does not exist.
  */
+static graph_t *getCluster(graph_t * g, char *cluster_name, Dt_t* map)
+{
+    clust_t* clp;
+
+    if (!cluster_name || (*cluster_name == '\0'))
+	return NULL;
+    clp = dtmatch (map, cluster_name);
+    if (clp == NULL) {
+	agerr(AGWARN, "cluster named %s not found\n", cluster_name);
+	return NULL;
+    }
+    else return clp->clp;
+}
+#else
 static graph_t *getCluster(graph_t * g, char *cluster_name)
 {
     graph_t *sg;
 
     if (!cluster_name || (*cluster_name == '\0'))
 	return NULL;
-#ifndef WITH_CGRAPH
     sg = agfindsubg(g, cluster_name);
-#else
-    sg = agsubg(g, cluster_name, 0);
-#endif
     if (sg == NULL)
 	agerr(AGWARN, "cluster named %s not found\n", cluster_name);
     return sg;
 }
+#endif
 
 /* The following functions are derived from pp. 411-415 (pp. 791-795)
  * of Graphics Gems. In the code there, they use a SGN function to
@@ -294,7 +361,11 @@ static int splineIntersectf(pointf * pts, boxf * bb)
  * with n control points where n >= 4 and n (mod 3) = 1.
  * If edge has arrowheads, reposition them.
  */
+#ifdef WITH_CGRAPH
+static void makeCompoundEdge(graph_t * g, edge_t * e, Dt_t* clustMap)
+#else
 static void makeCompoundEdge(graph_t * g, edge_t * e)
+#endif
 {
     graph_t *lh;		/* cluster containing head */
     graph_t *lt;		/* cluster containing tail */
@@ -311,8 +382,13 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
     int fixed;
 
     /* find head and tail target clusters, if defined */
+#ifdef WITH_CGRAPH
+    lh = getCluster(g, agget(e, "lhead"), clustMap);
+    lt = getCluster(g, agget(e, "ltail"), clustMap);
+#else
     lh = getCluster(g, agget(e, "lhead"));
     lt = getCluster(g, agget(e, "ltail"));
+#endif
     if (!lt && !lh)
 	return;
     if (!ED_spl(e)) return;
@@ -473,6 +549,16 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
     free(bez);
     ED_spl(e)->list = nbez;
 }
+#if 0
+static void dump(Dt_t* map)
+{
+  clust_t* p;  
+  fprintf (stderr, "# in map: %d\n", dtsize(map));
+  for (p=(clust_t*)dtfirst(map);p; p = (clust_t*)dtnext(map,p)) {
+    fprintf (stderr, "  %s\n", p->name);
+ }
+}
+#endif
 
 /* dot_compoundEdges:
  */
@@ -480,10 +566,19 @@ void dot_compoundEdges(graph_t * g)
 {
     edge_t *e;
     node_t *n;
-
+#ifdef WITH_CGRAPH
+    Dt_t* clustMap = mkClustMap (g);
+#endif
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+#ifdef WITH_CGRAPH
+	    makeCompoundEdge(g, e, clustMap);
+#else
 	    makeCompoundEdge(g, e);
+#endif
 	}
     }
+#ifdef WITH_CGRAPH
+    dtclose(clustMap);
+#endif
 }
