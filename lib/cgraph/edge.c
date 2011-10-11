@@ -427,13 +427,7 @@ int agedgeseqcmpf(Dict_t * d, void *arg_e0, void *arg_e1, Dtdisc_t * disc)
     e0 = arg_e0;
     e1 = arg_e1;
     NOTUSED(disc);
-    v = AGID(e0->node) - AGID(e1->node);
-    if (v == 0) {		/* same node */
-	if ((AGTYPE(e0) == 0) || (AGTYPE(e1) == 0))
-	    v = 0;
-	else
-	    v = AGSEQ(e0) - AGSEQ(e1);
-    }
+    v = (AGSEQ(e0) - AGSEQ(e1));
     return ((v==0)?0:(v<0?-1:1));
 }
 
