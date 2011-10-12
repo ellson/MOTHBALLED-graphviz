@@ -107,6 +107,9 @@ extern Agcbdisc_t AgAttrdisc;
 Agraph_t *agopen1(Agraph_t * g);
 void agstrclose(Agraph_t * g);
 
+	/* ref string management */
+void agmarkhtmlstr(char *s);
+
 	/* object set management */
 Agnode_t *agfindnode_by_id(Agraph_t * g, unsigned long id);
 Dtcompar_f agdictorder(Agraph_t *, Dict_t *, Dtcompar_f);

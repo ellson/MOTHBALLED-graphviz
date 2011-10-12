@@ -532,6 +532,8 @@ int agcopyattr(void *oldobj, void *newobj)
     Agraph_t *g;
     Agsym_t *sym;
     Agsym_t *newsym;
+    char* val;
+    char* nval;
     int r = 1;
 
     g = agraphof(oldobj);
@@ -542,7 +544,16 @@ int agcopyattr(void *oldobj, void *newobj)
 	newsym = agattrsym(newobj, sym->name);
 	if (!newsym)
 	    return 1;
-	r = agxset(newobj, newsym, agxget(oldobj, sym));
+	val = agxget(oldobj, sym);
+	r = agxset(newobj, newsym, val);
+	/* FIX(?): Each graph has its own string cache, so a whole new refstr is possibly
+	 * allocated. If the original was an html string, make sure the new one is as well.
+	 * If cgraph goes to single string table, this can be removed.
+	 */
+	if (aghtmlstr (val)) {
+	    nval = agxget (newobj, newsym);
+	    agmarkhtmlstr (nval);
+	}
     }
     return r;
 }

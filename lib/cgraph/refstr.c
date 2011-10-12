@@ -185,6 +185,16 @@ int aghtmlstr(char *s)
     return (key->refcnt & HTML_BIT);
 }
 
+void agmarkhtmlstr(char *s)
+{
+    refstr_t *key;
+
+    if (s == NULL)
+	return;
+    key = (refstr_t *) (s - offsetof(refstr_t, store[0]));
+    key->refcnt |= HTML_BIT;
+}
+
 #ifdef DEBUG
 static int refstrprint(Dict_t * dict, void *ptr, void *user)
 {
