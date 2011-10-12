@@ -279,5 +279,5 @@ sq_rules
 dot png
 
 fdp_clus
-fdp
+fdp.gv
 fdp png
