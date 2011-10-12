@@ -400,4 +400,9 @@ while readTest
 do
   doTest
 done
+if [[ $NOOP != 1 ]]
+then
 print -u 2 "No. tests: $TOT_CNT Layout failures: $CRASH_CNT Changes: $DIFF_CNT"
+else
+print -u 2 "No. tests: $TOT_CNT"
+fi
