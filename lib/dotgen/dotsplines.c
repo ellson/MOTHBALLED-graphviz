@@ -819,8 +819,7 @@ cloneNode (graph_t* g, node_t* orign, int flipped)
     node_t* n = agnode(g, orign->name);
 #else /* WITH_CGRAPH */
     node_t* n = agnode(g, agnameof(orign),1);
-    agbindrec(n, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);	//node custom data
-
+    agbindrec(n, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
 #endif /* WITH_CGRAPH */
     agcopyattr (orign, n);
     if (shapeOf(orign) == SH_RECORD) {
@@ -1169,8 +1168,7 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0,
     subg = agsubg (auxg, "xxx");
 #else /* WITH_CGRAPH */
     subg = agsubg (auxg, "xxx",1);
-	agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	//node custom data
-
+    agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
 #endif /* WITH_CGRAPH */
     agset (subg, "rank", "source");
     rightx = ND_coord(hn).x;
