@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		083018F31445E95C00258B61 /* graphviz.hlp in Resources */ = {isa = PBXBuildFile; fileRef = 083018F21445E95C00258B61 /* graphviz.hlp */; };
 		8D15AC2F0486D014006FF6A4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165FFE840EACC02AAC07 /* InfoPlist.strings */; };
 		8D15AC310486D014006FF6A4 /* GVDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A37F4ACFDCFA73011CA2CEA /* GVDocument.m */; settings = {ATTRIBUTES = (); }; };
 		8D15AC320486D014006FF6A4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A37F4B0FDCFA73011CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
@@ -46,6 +47,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		083018F21445E95C00258B61 /* graphviz.hlp */ = {isa = PBXFileReference; lastKnownFileType = folder; path = graphviz.hlp; sourceTree = "<group>"; };
 		089C1660FE840EACC02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		2A37F4ACFDCFA73011CA2CEA /* GVDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GVDocument.m; sourceTree = "<group>"; };
 		2A37F4AEFDCFA73011CA2CEA /* GVDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GVDocument.h; sourceTree = "<group>"; };
@@ -178,6 +180,7 @@
 		2A37F4B8FDCFA73011CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				083018F21445E95C00258B61 /* graphviz.hlp */,
 				D82649090DE58739009D6A44 /* ActualSizeToolbarImage.tiff */,
 				D826490A0DE58739009D6A44 /* InspectorToolbarImage.tif */,
 				D826490B0DE58739009D6A44 /* ZoomInToolbarImage.tiff */,
@@ -296,6 +299,7 @@
 				D82649100DE58739009D6A44 /* ZoomOutToolbarImage.tiff in Resources */,
 				D8264B0D0DE81133009D6A44 /* Export.xib in Resources */,
 				D85D33870DEC599F00A69D07 /* ZoomToFitToolbarImage.tiff in Resources */,
+				083018F31445E95C00258B61 /* graphviz.hlp in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
