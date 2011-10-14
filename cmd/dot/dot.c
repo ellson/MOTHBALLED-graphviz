@@ -197,7 +197,7 @@ int main(int argc, char **argv)
 #endif
 
     if (MemTest) {
-	while (1) {
+	while (MemTest--) {
 	    /* Create a test graph */
 	    G = create_test_graph();
 

@@ -71,7 +71,8 @@ extern "C" {
     EXTERN char *Gvimagepath; /* Per-graph path of files allowed in image attributes  (also ps libs) */
 
     EXTERN unsigned char Verbose;
-    EXTERN boolean Reduce, MemTest;
+    EXTERN boolean Reduce;
+    EXTERN int MemTest;
     EXTERN char *HTTPServerEnVar;
     EXTERN char *Output_file_name;
     EXTERN int graphviz_errors;

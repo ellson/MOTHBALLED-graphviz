@@ -77,7 +77,16 @@ memtest_extra_args(GVC_t *gvc, int argc, char** argv)
     arg = argv[i];
     if (arg && *arg == '-') {
       switch (arg[1]) {
-      case 'm' : MemTest = TRUE; break;
+      case 'm' :
+        if (arg[2]) {
+          MemTest = atoi(arg+2);
+          if (MemTest <= 0) {
+            fprintf (stderr, "Invalid parameter \"%s\" for -m flag\n", arg+2);
+            dotneato_usage (1);
+          }
+        }
+        else MemTest = -1;
+	break;
       default :
         cnt++;
         if (*p != arg) *p = arg;
