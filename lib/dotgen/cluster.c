@@ -286,10 +286,9 @@ merge_ranks(graph_t * subg)
 #ifndef WITH_CGRAPH
 	    v->graph = subg->root;
 #else /* WITH_CGRAPH */
-//	    agraphof(v) = agroot(subg);
-		agsubnode(subg, v, 1);
-
-
+	/* real nodes automatically have v->root = root graph */
+	    if (ND_node_type(v) == VIRTUAL)
+		v->root = root;
 #endif /* WITH_CGRAPH */
 	    delete_fast_node(subg, v);
 	    fast_node(agroot(subg), v);

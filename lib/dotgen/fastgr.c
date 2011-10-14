@@ -254,7 +254,6 @@ node_t *virtual_node(graph_t * g)
 #else /* WITH_CGRAPH */
 //  agnameof(n) = "virtual";
     AGTYPE(n) = AGNODE;
-    n->root = g;
     n->base.data = NEW(Agnodeinfo_t);
     n->root = g;
 #endif /* WITH_CGRAPH */
