@@ -169,7 +169,7 @@ edge_t *new_virtual_edge(node_t * u, node_t * v, edge_t * orig)
     Agedgepair_t* e2 = NEW(Agedgepair_t);
     AGTYPE(&(e2->in)) = AGINEDGE;
     AGTYPE(&(e2->out)) = AGOUTEDGE;
-    e2->out.base.data = NEW(Agedgeinfo_t);
+    e2->out.base.data = (Agrec_t*)NEW(Agedgeinfo_t);
     e = &(e2->out);
 #endif /* WITH_CGRAPH */
     agtail(e) = u;
@@ -254,8 +254,7 @@ node_t *virtual_node(graph_t * g)
 #else /* WITH_CGRAPH */
 //  agnameof(n) = "virtual";
     AGTYPE(n) = AGNODE;
-    n->root = g;
-    n->base.data = NEW(Agnodeinfo_t);
+    n->base.data = (Agrec_t*)NEW(Agnodeinfo_t);
     n->root = g;
 #endif /* WITH_CGRAPH */
     ND_node_type(n) = VIRTUAL;

@@ -178,7 +178,7 @@ edge_t *make_aux_edge(node_t * u, node_t * v, double len, int wt)
     Agedgepair_t* e2 = NEW(Agedgepair_t);
     AGTYPE(&(e2->in)) = AGINEDGE;
     AGTYPE(&(e2->out)) = AGOUTEDGE;
-    e2->out.base.data = NEW(Agedgeinfo_t);
+    e2->out.base.data = (Agrec_t*)NEW(Agedgeinfo_t);
     e = &(e2->out);
 #endif /* WITH_CGRAPH */
 
