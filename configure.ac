@@ -105,6 +105,13 @@ case "${host_os}" in
         ;;
     esac
     ;;
+  *solaris* )
+    case "${host_cpu}" in
+      x86_64 | sparc64 )
+        LIBPOSTFIX="/64"
+        ;;
+    esac
+    ;;
 esac
 
 UWIN=no
