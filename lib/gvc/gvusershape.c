@@ -25,6 +25,18 @@
 #include <unistd.h>
 #endif
 
+#ifdef WIN32
+#include <windows.h>
+#define GLOB_NOSPACE    1   /* Ran out of memory.  */
+#define GLOB_ABORTED    2   /* Read error.  */
+#define GLOB_NOMATCH    3   /* No matches found.  */
+#define GLOB_NOSORT     4
+#define DMKEY "Software\\Microsoft" //key to look for library dir
+#include "regex_win32.h"
+#else
+#include <regex.h>
+#endif
+
 #include "types.h"
 #include "logic.h"
 #include "memory.h"
@@ -153,33 +165,61 @@ static unsigned int svg_units_convert(double n, char *u)
     return 0;
 }
 
+static char* svg_attr_value_re = "([a-z][a-zA-Z]*)=\"([^\"]*)\"";
+static regex_t re, *pre = NULL;
+
 static void svg_size (usershape_t *us)
 {
     unsigned int w = 0, h = 0;
-    double n;
+    double n, x0, y0, x1, y1;
     char u[10];
-    char *token;
+    char *attribute, *value, *re_string;
     char line[200];
     boolean wFlag = FALSE, hFlag = FALSE;
+#define RE_NMATCH 4
+    regmatch_t re_pmatch[RE_NMATCH];
 
-    fseek(us->f, -strlen(line), SEEK_CUR);
+    /* compile on first use */
+    if (! pre) {
+        if (regcomp(&re, svg_attr_value_re, REG_EXTENDED) != 0) {
+	    agerr(AGERR,"cannot compile regular expression %s", svg_attr_value_re);
+    	}
+	pre = &re;
+    }
+
+    fseek(us->f, 0, SEEK_SET);
     while (fgets(line, sizeof(line), us->f) != NULL && (!wFlag || !hFlag)) {
-        token = strtok(line, " ");
-        while (token != NULL && token[strlen(token)-1] != '>') {
-	    if (sscanf(token, "width=\"%lf%2s\"", &n, u) == 2) {
+	re_string = line;
+	while (regexec(&re, re_string, RE_NMATCH, re_pmatch, 0) == 0) {
+	    re_string[re_pmatch[1].rm_eo] = '\0';
+	    re_string[re_pmatch[2].rm_eo] = '\0';
+	    attribute = re_string + re_pmatch[1].rm_so;
+	    value = re_string + re_pmatch[2].rm_so;
+    	    re_string += re_pmatch[0].rm_eo + 1;
+
+	    if (strcmp(attribute,"width") == 0
+	      && sscanf(value, "%lf%2s", &n, u) == 2) {
 	        w = svg_units_convert(n, u);
 	        wFlag = TRUE;
 		if (hFlag)
 		    break;
 	    }
-	    if (sscanf(token, "height=\"%lf%2s\"", &n, u) == 2) {
+	    else if (strcmp(attribute,"height") == 0
+	      && sscanf(value, "%lf%2s", &n, u) == 2) {
 	        h = svg_units_convert(n, u);
 	        hFlag = TRUE;
                 if (wFlag)
 		    break;
 	    }
-            token =  strtok(NULL, " ");
-        }
+	    else if (strcmp(attribute,"viewBox") == 0
+	     && sscanf(value, "%lf %lf %lf %lf", &x0,&y0,&x1,&y1) == 4) {
+		w = x1 - x0 + 1;
+		h = y1 - y0 + 1;
+	        wFlag = TRUE;
+	        hFlag = TRUE;
+	        break;
+	    }
+	}
     }
     us->dpi = 72;
     us->w = w;
