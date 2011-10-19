@@ -1071,6 +1071,12 @@ static void poly_free(node_t * n)
 
 #define GET_PORT_BOX(n,e) ((n) == (e)->head ? ED_head_port(e).bp : ED_tail_port(e).bp)
 
+/* poly_inside:
+ * Return true if point p is inside polygonal shape of node inside_context->s.n.
+ * Calculations are done using unrotated node shape. Thus, if p is in a rotated
+ * coordinate system, it is reset as P in the unrotated coordinate system. Similarly,
+ * the ND_rw, ND_lw and ND_ht values are rotated if the graph is flipped.
+ */
 static boolean poly_inside(inside_t * inside_context, pointf p)
 {
     static node_t *lastn;	/* last node argument */
@@ -1274,25 +1280,37 @@ static double invflip_angle(double angle, int rankdir)
 /* compassPoint:
  * Compute compass points for non-trivial shapes.
  * It finds where the ray ((0,0),(x,y)) hits the boundary and
- * return it.
+ * returns it.
  * Assumes ictxt and ictxt->n are non-NULL.
+ *
+ * bezier_clip uses the shape's _inside function, which assumes the input
+ * point is in the rotated coordinate system (as determined by rankdir), so
+ * it rotates the point counterclockwise based on rankdir to get the node's
+ * coordinate system.
+ * To handle this, if rankdir is set, we rotate (x,y) clockwise, and then
+ * rotate the answer counterclockwise.
  */
 static pointf compassPoint(inside_t * ictxt, double y, double x)
 {
     pointf curve[4];		/* bezier control points for a straight line */
     node_t *n = ictxt->s.n;
+    graph_t* g = agraphof(n);
+    int rd = GD_rankdir(g);
+    pointf p;
 
-    curve[0].x = 0;
-    curve[0].y = 0;
-    curve[1].x = x / 3;
-    curve[1].y = y / 3;
-    curve[2].x = 2 * x / 3;
-    curve[2].y = 2 * y / 3;
-    curve[3].x = x;
-    curve[3].y = y;
+    p.x = x;
+    p.y = y;
+    if (rd)
+	p = cwrotatepf(p, 90 * rd);
+
+    curve[0].x = curve[0].y = 0;
+    curve[1] = curve[0];
+    curve[3] = curve[2] = p;
 
     bezier_clip(ictxt, ND_shape(n)->fns->insidefn, curve, 1);
 
+    if (rd)
+	curve[0] = ccwrotatepf(curve[0], 90 * rd);
     return curve[0];
 }
 
@@ -1302,14 +1320,23 @@ static pointf compassPoint(inside_t * ictxt, double y, double x)
  * compass is the compass point
  * Return 1 if unrecognized compass point, in which case we
  * use the center.
+ *
  * This function also finishes initializing the port structure,
  * even if no compass point is involved.
  * The sides value gives the set of sides shared by the port. This
  * is used with a compass point to indicate if the port is exposed, to
  * set the port's side value.
+ *
+ * If ictxt is NULL, we are working with a simple rectangular shape (node or
+ * port of record of HTML label), so compass points are trivial. If ictxt is
+ * not NULL, it provides shape information so that the compass point can be
+ * calculated based on the shape.
+ *
+ * The code assumes the node has its unrotated shape to find the points,
+ * angles, etc. At the end, the parameters are adjusted to take into account
+ * the rankdir attribute. In particular, the first if-else statement flips 
+ * the already adjusted ND_ht, ND_lw and ND_rw back to non-flipped values. 
  * 
- * FIX: For purposes, of rankdir=BT or RL, this assumes nodes are up-down
- * symmetric, left-right symmetric, and convex.
  */
 static int
 compassPort(node_t * n, boxf * bp, port * pp, char *compass, int sides,
@@ -1324,6 +1351,7 @@ compassPort(node_t * n, boxf * bp, port * pp, char *compass, int sides,
     int side = 0;
     boolean clip = TRUE;
     boolean defined;
+    double maxv;  /* sufficiently large value outside of range of node */
 
     if (bp) {
 	b = *bp;
@@ -1344,6 +1372,8 @@ compassPort(node_t * n, boxf * bp, port * pp, char *compass, int sides,
 	}
 	defined = FALSE;
     }
+    maxv = MAX(b.UR.x,b.UR.y);
+    maxv *= 4.0;
     ctr = p;
     if (compass && *compass) {
 	switch (*compass++) {
@@ -1351,7 +1381,10 @@ compassPort(node_t * n, boxf * bp, port * pp, char *compass, int sides,
 	    if (*compass)
 		rv = 1;
 	    else {
-		p.x = b.UR.x;
+                if (ictxt)
+                    p = compassPoint(ictxt, ctr.y, maxv);
+                else
+		    p.x = b.UR.x;
 		theta = 0.0;
 		constrain = TRUE;
 		defined = TRUE;
@@ -1368,7 +1401,7 @@ compassPort(node_t * n, boxf * bp, port * pp, char *compass, int sides,
 		theta = -M_PI * 0.5;
 		defined = TRUE;
                 if (ictxt)
-                    p = compassPoint(ictxt, -INT_MAX, ctr.x);
+                    p = compassPoint(ictxt, -maxv, ctr.x);
                 else
                     p.x = ctr.x;
 		side = sides & BOTTOM;
@@ -1377,7 +1410,7 @@ compassPort(node_t * n, boxf * bp, port * pp, char *compass, int sides,
 		theta = -M_PI * 0.25;
 		defined = TRUE;
 		if (ictxt)
-		    p = compassPoint(ictxt, -INT_MAX, INT_MAX);
+		    p = compassPoint(ictxt, -maxv, maxv);
 		else
 		    p.x = b.UR.x;
 		side = sides & (BOTTOM | RIGHT);
@@ -1386,7 +1419,7 @@ compassPort(node_t * n, boxf * bp, port * pp, char *compass, int sides,
 		theta = -M_PI * 0.75;
 		defined = TRUE;
 		if (ictxt)
-		    p = compassPoint(ictxt, -INT_MAX, -INT_MAX);
+		    p = compassPoint(ictxt, -maxv, -maxv);
 		else
 		    p.x = b.LL.x;
 		side = sides & (BOTTOM | LEFT);
@@ -1403,7 +1436,10 @@ compassPort(node_t * n, boxf * bp, port * pp, char *compass, int sides,
 	    if (*compass)
 		rv = 1;
 	    else {
-		p.x = b.LL.x;
+                if (ictxt)
+                    p = compassPoint(ictxt, ctr.y, -maxv);
+                else
+		    p.x = b.LL.x;
 		theta = M_PI;
 		constrain = TRUE;
 		defined = TRUE;
@@ -1420,7 +1456,7 @@ compassPort(node_t * n, boxf * bp, port * pp, char *compass, int sides,
 		defined = TRUE;
 		theta = M_PI * 0.5;
                 if (ictxt)
-                    p = compassPoint(ictxt, INT_MAX, ctr.x);
+                    p = compassPoint(ictxt, maxv, ctr.x);
                 else
                     p.x = ctr.x;
 		side = sides & TOP;
@@ -1429,7 +1465,7 @@ compassPort(node_t * n, boxf * bp, port * pp, char *compass, int sides,
 		defined = TRUE;
 		theta = M_PI * 0.25;
 		if (ictxt)
-		    p = compassPoint(ictxt, INT_MAX, INT_MAX);
+		    p = compassPoint(ictxt, maxv, maxv);
 		else
 		    p.x = b.UR.x;
 		side = sides & (TOP | RIGHT);
@@ -1438,7 +1474,7 @@ compassPort(node_t * n, boxf * bp, port * pp, char *compass, int sides,
 		defined = TRUE;
 		theta = M_PI * 0.75;
 		if (ictxt)
-		    p = compassPoint(ictxt, INT_MAX, -INT_MAX);
+		    p = compassPoint(ictxt, maxv, -maxv);
 		else
 		    p.x = b.LL.x;
 		side = sides & (TOP | LEFT);
