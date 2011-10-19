@@ -44,7 +44,6 @@ void* init_xdot (Agraph_t* g)
     xdot* xd = NULL;
 
     if ((p = agget(g, "_draw_")) && p[0]) {
-#define DEBUG 1
 #ifdef DEBUG
 	if (Verbose) {
 	    start_timer();
