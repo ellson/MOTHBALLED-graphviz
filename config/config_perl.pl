@@ -11,5 +11,14 @@ if ($ARGV[0] eq "PERL_INCLUDES") {
 	print "-I$archlib/CORE";
 }
 if ($ARGV[0] eq "PERL_INSTALL_DIR") {
-	print "$Config{vendorarch}"
+
+	my $d;
+
+	foreach $d qw(installvendorarch vendorarch installsitearch sitearch) {
+		if (exists($Config{$d}) and defined($Config{$d}) and
+			($Config{$d} ne '') ) {
+			print "$Config{$d}";
+			last;
+		}
+	}
 }
