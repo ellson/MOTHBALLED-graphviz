@@ -434,6 +434,15 @@ Unlike with the <A HREF=#d:shapefile>shapefile</A> attribute,
 the image is treated as node
 content rather than the entire node. In particular, an image can
 be contained in a node of any shape, not just a rectangle.
+:imagepath:G:string:"";
+Specifies a list of directories in which to look for image files as specified by the
+<a href="#d:image">image</a> attribute or using the <TT>IMG</TT> element in
+<a href="shapes.html#html">HTML-like labels</a>.
+The string should be a list of (absolute or relative) pathnames, each separated by
+a semicolon (for Windows) or a colon (all other OS). 
+The first directory in which a file of the given name is found will be used to
+load the image. If <tt>imagepath</tt> is not set, relative pathnames for the image
+file will be interpreted with respect to the current working directory.
 :imagescale:N:bool/string:false:;
 Attribute controlling how an image fills its
 containing node. In general, the image is given its natural size,

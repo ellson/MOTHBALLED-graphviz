@@ -216,6 +216,8 @@ This field indicates which graph component uses the attribute.
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, postscript, map only</TD> </TR>
  <TR><TD><A NAME=a:image HREF=#d:image>image</A>
 </TD><TD>N</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
+ <TR><TD><A NAME=a:imagepath HREF=#d:imagepath>imagepath</A>
+</TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:imagescale HREF=#d:imagescale>imagescale</A>
 </TD><TD>N</TD><TD><A HREF=#k:bool>bool</A>
 <BR>string</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
@@ -931,6 +933,16 @@ This field indicates which graph component uses the attribute.
   the image is treated as node
   content rather than the entire node. In particular, an image can
   be contained in a node of any shape, not just a rectangle.
+
+<DT><A NAME=d:imagepath HREF=#a:imagepath><STRONG>imagepath</STRONG></A>
+<DD>  Specifies a list of directories in which to look for image files as specified by the
+  <a href="#d:image">image</a> attribute or using the <TT>IMG</TT> element in
+  <a href="shapes.html#html">HTML-like labels</a>.
+  The string should be a list of (absolute or relative) pathnames, each separated by
+  a semicolon (for Windows) or a colon (all other OS). 
+  The first directory in which a file of the given name is found will be used to
+  load the image. If <tt>imagepath</tt> is not set, relative pathnames for the image
+  file will be interpreted with respect to the current working directory.
 
 <DT><A NAME=d:imagescale HREF=#a:imagescale><STRONG>imagescale</STRONG></A>
 <DD>  Attribute controlling how an image fills its
