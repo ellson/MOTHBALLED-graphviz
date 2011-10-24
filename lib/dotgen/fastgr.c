@@ -290,7 +290,7 @@ static char *NAME(node_t * n)
     static char buf[20];
     if (ND_node_type(n) == NORMAL)
 	return n->name;
-    sprintf(buf, "V%x", n);
+    sprintf(buf, "V%p", n);
     return buf;
 }
 
