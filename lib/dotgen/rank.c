@@ -29,9 +29,8 @@
 #include	"dot.h"
 
 static void dot1_rank(graph_t * g, aspect_t* asp);
-#ifdef WITH_CGRAPH
+#ifdef WITH_NEW_RANK
 static void dot2_rank(graph_t * g, aspect_t* asp);
-static void node_induce(graph_t * par, graph_t * g);
 #endif
 
 static void 
@@ -1216,6 +1215,32 @@ static void add_fast_edges (graph_t * g)
     }
 }
 
+#ifdef WITH_CGRAPH
+static void my_init_graph(Agraph_t *g, Agobj_t *graph, void *arg)
+{ int *sz = arg; agbindrec(graph,"level graph rec",sz[0],TRUE); }
+static void my_init_node(Agraph_t *g, Agobj_t *node, void *arg)
+{ int *sz = arg; agbindrec(node,"level node rec",sz[1],TRUE); }
+static void my_init_edge(Agraph_t *g, Agobj_t *edge, void *arg)
+{ int *sz = arg; agbindrec(edge,"level edge rec",sz[2],TRUE); }
+static Agcbdisc_t mydisc = { {my_init_graph,0,0}, {my_init_node,0,0}, {my_init_edge,0,0} };
+
+int infosizes[] = {
+    sizeof(Agraphinfo_t), 
+    sizeof(Agnodeinfo_t),
+    sizeof(Agedgeinfo_t)
+};
+#endif
+
+static void 
+cleanLevelGraph (graph_t * g)
+{
+    node_t* n;
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	free_list (ND_out(n));
+	free_list (ND_in(n));
+    }
+}
+
 void dot2_rank(graph_t * g, aspect_t* asp)
 {
     int ssize;
@@ -1224,7 +1249,12 @@ void dot2_rank(graph_t * g, aspect_t* asp)
 #ifdef ALLOW_LEVELS
     attrsym_t* N_level;
 #endif
+    Last_node = NULL;
     graph_t *Xg = agopen("level assignment constraints", Agstrictdirected, 0);
+#ifdef WITH_CGRAPH
+    agbindrec(Xg,"level graph rec",sizeof(Agraphinfo_t),TRUE);
+    agpushdisc(Xg,&mydisc,infosizes);
+#endif
 
     edgelabel_ranks(g);
 
@@ -1256,6 +1286,7 @@ void dot2_rank(graph_t * g, aspect_t* asp)
 #ifdef DEBUG
     fprintf (stderr, "Xg %d nodes %d edges\n", agnnodes(Xg), agnedges(Xg));
 #endif
+    cleanLevelGraph (Xg);
     agclose(Xg);
 }
 
