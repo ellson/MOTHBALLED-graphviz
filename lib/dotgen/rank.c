@@ -1231,16 +1231,6 @@ int infosizes[] = {
 };
 #endif
 
-static void 
-cleanLevelGraph (graph_t * g)
-{
-    node_t* n;
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	free_list (ND_out(n));
-	free_list (ND_in(n));
-    }
-}
-
 void dot2_rank(graph_t * g, aspect_t* asp)
 {
     int ssize;
@@ -1286,7 +1276,6 @@ void dot2_rank(graph_t * g, aspect_t* asp)
 #ifdef DEBUG
     fprintf (stderr, "Xg %d nodes %d edges\n", agnnodes(Xg), agnedges(Xg));
 #endif
-    cleanLevelGraph (Xg);
     agclose(Xg);
 }
 
