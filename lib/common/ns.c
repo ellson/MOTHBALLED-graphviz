@@ -596,11 +596,12 @@ graphSize (graph_t * g, int* nn, int* ne)
  * Returns 0 if successful; returns 1 if not, the latter indicating that
  * the graph was not connected.
  */
-int rank(graph_t * g, int balance, int maxiter)
+int rank2(graph_t * g, int balance, int maxiter, int searchsize)
 {
     int iter = 0, feasible;
-    char *s, *ns = "network simplex: ";
+    char *ns = "network simplex: ";
     edge_t *e, *f;
+    int search_size;
 
 #ifdef DEBUG
     check_cycles(g);
@@ -620,8 +621,8 @@ int rank(graph_t * g, int balance, int maxiter)
 	return 0;
     }
 
-    if ((s = agget(g, "searchsize")))
-	Search_size = atoi(s);
+    if (searchsize >= 0)
+	Search_size = search_size;
     else
 	Search_size = SEARCHSIZE;
 
@@ -652,6 +653,7 @@ int rank(graph_t * g, int balance, int maxiter)
 	break;
     default:
 	scan_and_normalize();
+	freeTreeList (G);
 	break;
     }
     if (Verbose) {
@@ -661,6 +663,19 @@ int rank(graph_t * g, int balance, int maxiter)
 		ns, N_nodes, N_edges, iter, elapsed_sec());
     }
     return 0;
+}
+
+int rank(graph_t * g, int balance, int maxiter)
+{
+    char *s;
+    int search_size;
+
+    if ((s = agget(g, "searchsize")))
+	search_size = atoi(s);
+    else
+	search_size = SEARCHSIZE;
+
+    return rank2 (g, balance, maxiter, search_size);
 }
 
 /* set cut value of f, assuming values of edges on one side were already set */
@@ -767,12 +782,12 @@ void tchk(void)
 
     n_cnt = 0;
     e_cnt = 0;
-    for (n = GD_nlist(G); n; n = ND_next(n)) {
+    for (n = agfstnode(G); n; n = agnxtnode(G, n)) {
 	n_cnt++;
 	for (i = 0; (e = ND_tree_out(n).list[i]); i++) {
 	    e_cnt++;
 	    if (SLACK(e) > 0)
-		fprintf(stderr, "not a tight tree %lx", (unsigned long int)e);
+		fprintf(stderr, "not a tight tree %p", e);
 	}
     }
     if ((n_cnt != Tree_node.size) || (e_cnt != Tree_edge.size))
@@ -785,7 +800,7 @@ void check_cutvalues(void)
     edge_t *e;
     int i, save;
 
-    for (v = GD_nlist(G); v; v = ND_next(v)) {
+    for (v = agfstnode(G); v; v = agnxtnode(G, v)) {
 	for (i = 0; (e = ND_tree_out(v).list[i]); i++) {
 	    save = ED_cutvalue(e);
 	    x_cutval(e);
@@ -797,12 +812,12 @@ void check_cutvalues(void)
 
 int check_ranks(void)
 {
-    int i, cost = 0;
+    int cost = 0;
     node_t *n;
     edge_t *e;
 
-    for (n = GD_nlist(G); n; n = ND_next(n)) {
-	for (i = 0; (e = ND_out(n).list[i]); i++) {
+    for (n = agfstnode(G); n; n = agnxtnode(G, n)) {
+	for (e = agfstout(G, n); e; e = agnxtout(G, e)) {
 	    cost += (ED_weight(e)) * abs(LENGTH(e));
 	    if (ND_rank(aghead(e)) - ND_rank(agtail(e)) - ED_minlen(e) < 0)
 		abort();
@@ -818,7 +833,7 @@ void checktree(void)
     node_t *v;
     edge_t *e;
 
-    for (v = GD_nlist(G); v; v = ND_next(v)) {
+    for (v = agfstnode(G); v; v = agnxtnode(G, v)) {
 	for (i = 0; (e = ND_tree_out(v).list[i]); i++)
 	    n++;
 	if (i != ND_tree_out(v).size)
@@ -840,9 +855,39 @@ void check_fast_node(node_t * n)
     assert(nptr != NULL);
 }
 
-static node_t *checkdfs(node_t * n)
+static void dump_graph (graph_t* g)
 {
     int i;
+    edge_t *e;
+    node_t *n,*w;
+    FILE* fp = fopen ("ns.gv", "w");
+    fprintf (fp, "digraph %s {\n", g->name);
+    for (n = GD_nlist(g); n; n = ND_next(n)) {
+	if (streq(n->name,"virtual"))
+	    fprintf (fp, "  \"%p\"\n", n);
+	else
+	    fprintf (fp, "  \"%s\"\n", n->name);
+    }
+    for (n = GD_nlist(g); n; n = ND_next(n)) {
+	for (i = 0; (e = ND_out(n).list[i]); i++) {
+	    if (streq(n->name,"virtual"))
+		fprintf (fp, "  \"%p\"", n);
+	    else
+		fprintf (fp, "  \"%s\"", n->name);
+	    w = aghead(e);
+	    if (streq(w->name,"virtual"))
+		fprintf (fp, " -> \"%p\"\n", w);
+	    else
+		fprintf (fp, " -> \"%s\"\n", w->name);
+	}
+    }
+
+    fprintf (fp, "}\n");
+    fclose (fp);
+}
+
+static node_t *checkdfs(graph_t* g, node_t * n)
+{
     edge_t *e;
     node_t *w,*x;
 
@@ -850,9 +895,10 @@ static node_t *checkdfs(node_t * n)
 	return 0;
     ND_mark(n) = TRUE;
     ND_onstack(n) = TRUE;
-    for (i = 0; (e = ND_out(n).list[i]); i++) {
+    for (e = agfstout(G, n); e; e = agnxtout(G, e)) {
 	w = aghead(e);
 	if (ND_onstack(w)) {
+	    dump_graph (g);
 	    fprintf(stderr, "cycle: last edge %lx %s(%lx) %s(%lx)\n",
 		(unsigned long int)e,
 	       	agnameof(n), (unsigned long int)n,
@@ -861,7 +907,7 @@ static node_t *checkdfs(node_t * n)
 	}
 	else {
 	    if (ND_mark(w) == FALSE) {
-		x = checkdfs(w);
+		x = checkdfs(g, w);
 		if (x) {
 		    fprintf(stderr,"unwind %lx %s(%lx)\n",
 			(unsigned long int)e,
@@ -882,9 +928,15 @@ static node_t *checkdfs(node_t * n)
 void check_cycles(graph_t * g)
 {
     node_t *n;
-    for (n = GD_nlist(g); n; n = ND_next(n))
+    for (n = agfstnode(g); n; n = agnxtnode(g, n))
 	ND_mark(n) = ND_onstack(n) = FALSE;
-    for (n = GD_nlist(g); n; n = ND_next(n))
-	checkdfs(n);
+    for (n = agfstnode(g); n; n = agnxtnode(g, n))
+	checkdfs(g, n);
+    for (n = agfstnode(g); n; n = agnxtnode(g, n))
+	if (ND_mark(n) == FALSE) {
+	    fprintf (stderr, "graph is unconnected\n");
+	    break;
+	}
+    }
 }
 #endif				/* DEBUG */

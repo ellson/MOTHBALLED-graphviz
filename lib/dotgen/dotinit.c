@@ -301,7 +301,7 @@ void dot_layout(Agraph_t * g)
 	    asp = NULL;
 	    aspect.nextIter = 0;
 	}
-        dot_mincross(g,  (asp != NULL));
+        dot_mincross(g, (asp != NULL));
         dot_position(g, asp);
 	aspect.nPasses--;
     } while (aspect.nextIter && aspect.nPasses);
