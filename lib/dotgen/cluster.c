@@ -231,7 +231,9 @@ void interclexp(graph_t * subg)
 		continue;
 	    }
 
+#ifndef WITH_NEW_RANK
 	    assert(ED_to_virt(e) != NULL);
+#endif
 
 	    /* forward edges */
 	    if (ND_rank(aghead(e)) > ND_rank(agtail(e))) {
