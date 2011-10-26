@@ -29,7 +29,7 @@ REFDIR=nshare          # Directory for expected test output
 GENERATE=              # If set, generate test data
 VERBOSE=               # If set, give verbose output
 NOOP=                  # If set, just print list of tests
-DOT=../cmd/dot/dot_builtins # build tree version with a builtin set of plugins
+DOT=../cmd/dot/dot_static # build tree version with a builtin set of plugins
 		       # should be $(top_builddir)/cmd/dot/dot_static
 DIFFIMG=../contrib/diffimg/diffimg # build tree version
 
@@ -387,7 +387,7 @@ then
   exit 1
 fi
 
-if [[ ! -x $DIFFIMG ]]
+if [[ $GENERATE != 1 && ! -x $DIFFIMG ]]
 then
   print -u 2 "$DIFFIMG program is not executable"
   exit 1
