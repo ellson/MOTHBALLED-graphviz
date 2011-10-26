@@ -701,40 +701,6 @@ collapse_leaves(graph_t * g)
 
 extern int rank2(Agraph_t *, int, int, int);
 
-#if 0
-static edge_t *me;
-static graph_t *agfstsubg(graph_t * g)
-{
-    graph_t *mg;
-    node_t *mn;
-
-    mn = agmetanode(g);
-    mg = mn->graph;
-    me = agfstout(mg, mn);
-    if (me)
-	return agusergraph(me->head);
-    return 0;
-}
-
-static graph_t *agnxtsubg(graph_t * g, graph_t * sub)
-{
-    graph_t *mg;
-    node_t *tmn;
-    node_t *hmn;
-
-    tmn = agmetanode(g);
-    hmn = agmetanode(sub);
-    mg = tmn->graph;
-    if ((!me) || (me->tail != tmn) || (me->head != hmn))
-	me = agfindedge(mg, tmn, hmn);
-    if (me)
-	me = agnxtout(mg, me);
-    if (me)
-	return agusergraph(me->head);
-    return 0;
-}
-#endif
-
 static void set_parent(graph_t* g, graph_t* p) 
 {
     GD_parent(g) = p;
