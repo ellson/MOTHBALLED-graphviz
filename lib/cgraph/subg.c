@@ -76,7 +76,7 @@ Agraph_t *agnxtsubg(Agraph_t * subg)
     Agraph_t *g;
 
     g = agparent(subg);
-    return (Agraph_t *) dtnext(g->g_dict, subg);
+    return g? (Agraph_t *) dtnext(g->g_dict, subg) : 0;
 }
 
 Agraph_t *agparent(Agraph_t * g)
