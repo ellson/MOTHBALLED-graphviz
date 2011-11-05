@@ -3,6 +3,11 @@
 
 # Note: pre gd-2.0.34 graphviz uses its own gd tree with gif support and other fixes
 
+# What a meal PHP makes of versioning !!!
+%define php_extdir %(php-config --extension-dir 2>/dev/null || echo %{_libdir}/php4)
+%global php_apiver %((echo 0; php -i 2>/dev/null | sed -n 's/^PHP API => //p') | tail -1)
+
+
 #-- Global graphviz rpm and src.rpm tags-------------------------------------
 Name:    graphviz
 Summary: Graph Visualization Tools
@@ -13,7 +18,6 @@ Version: @VERSION@
 %{!?distroagnostic: %define release %{truerelease}%{?dist}}
 
 Release: %{?release}
-
 Group:   Applications/Multimedia
 License: EPL
 URL:     http://www.graphviz.org/
@@ -418,13 +422,8 @@ Perl extension for graphviz.
 Group:          Applications/Multimedia
 Summary:        PHP extension for graphviz
 Requires:       graphviz = %{version}-%{release} php
-#               #if 0#{?php_zend_api}        <-- this breaks on fc16
-%if 0%{?fedora} >= 16
-Requires:       php-api = %{php_apiver}
-%else
 Requires:       php(zend-abi) = %{php_zend_api}
 Requires:       php(api) = %{php_core_api}
-%endif
 
 %description php
 PHP extension for graphviz.
