@@ -65,7 +65,7 @@ and any non-zero integer, and FALSE values by "false" or "no" (case-insensitive)
 and zero.
 In addition, there are a variety of specialized types such as
 <EM>arrowType</EM>, <EM>color</EM>,
-<EM>pointf</EM> and <EM>rankdir</EM>. Legal values for these types are given
+<EM>point</EM> and <EM>rankdir</EM>. Legal values for these types are given
 at the end.
 <P>
 In the <A NAME=h:uses><STRONG>Used By</STRONG></A> field, the
@@ -75,7 +75,7 @@ and cluster subgraphs, respectively.
 This field indicates which graph component uses the attribute.
 <HR ALIGN=CENTER WIDTH="70%" SIZE=3>
 <TABLE ALIGN=CENTER>
-<TR><TH>Name</TH><TH><A HREF=#h:uses>Used By</A></TH><TH>Type</TH><TH>Default</TH><TH>Minimum</TH><TH>Notes</TH></TR>
+<TR><TH>Name</TH><TH><A HREF=#h:uses>Used By</A></TH><TH>Type</TH><TH >Default</TH><TH>Minimum</TH><TH>Notes</TH></TR>
  <TR><TD><A NAME=a:Damping HREF=#d:Damping>Damping</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.99</TD><TD>0.0</TD><TD>neato only</TD> </TR>
  <TR><TD><A NAME=a:K HREF=#d:K>K</A>
@@ -161,7 +161,8 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:epsilon HREF=#d:epsilon>epsilon</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">.0001 * # nodes(mode == KK)<BR>.0001(mode == major)</TD><TD></TD><TD>neato only</TD> </TR>
  <TR><TD><A NAME=a:esep HREF=#d:esep>esep</A>
-</TD><TD>G</TD><TD>double<BR><A HREF=#k:pointf>pointf</A>
+</TD><TD>G</TD><TD><A HREF=#k:addDouble>addDouble</A>
+<BR><A HREF=#k:addPoint>addPoint</A>
 </TD><TD ALIGN="CENTER">+3</TD><TD></TD><TD>not dot</TD> </TR>
  <TR><TD><A NAME=a:fillcolor HREF=#d:fillcolor>fillcolor</A>
 </TD><TD>NC</TD><TD><A HREF=#k:color>color</A>
@@ -287,7 +288,7 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:lwidth HREF=#d:lwidth>lwidth</A>
 </TD><TD>GC</TD><TD>double</TD><TD ALIGN="CENTER"></TD><TD></TD><TD>write only</TD> </TR>
  <TR><TD><A NAME=a:margin HREF=#d:margin>margin</A>
-</TD><TD>NG</TD><TD>double<BR><A HREF=#k:pointf>pointf</A>
+</TD><TD>NG</TD><TD>double<BR><A HREF=#k:point>point</A>
 </TD><TD ALIGN="CENTER">&#60;device-dependent&#62;</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:maxiter HREF=#d:maxiter>maxiter</A>
 </TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">100 * # nodes(mode == KK)<BR>200(mode == major)<BR>600(fdp)</TD><TD></TD><TD>fdp, neato only</TD> </TR>
@@ -336,10 +337,10 @@ This field indicates which graph component uses the attribute.
 </TD><TD>G</TD><TD><A HREF=#k:packMode>packMode</A>
 </TD><TD ALIGN="CENTER">node</TD><TD></TD><TD>not dot</TD> </TR>
  <TR><TD><A NAME=a:pad HREF=#d:pad>pad</A>
-</TD><TD>G</TD><TD>double<BR><A HREF=#k:pointf>pointf</A>
+</TD><TD>G</TD><TD>double<BR><A HREF=#k:point>point</A>
 </TD><TD ALIGN="CENTER">0.0555 (4 points)</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:page HREF=#d:page>page</A>
-</TD><TD>G</TD><TD>double<BR><A HREF=#k:pointf>pointf</A>
+</TD><TD>G</TD><TD>double<BR><A HREF=#k:point>point</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:pagedir HREF=#d:pagedir>pagedir</A>
 </TD><TD>G</TD><TD><A HREF=#k:pagedir>pagedir</A>
@@ -402,12 +403,13 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:samplepoints HREF=#d:samplepoints>samplepoints</A>
 </TD><TD>N</TD><TD>int</TD><TD ALIGN="CENTER">8(output)<BR>20(overlap and image maps)</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:scale HREF=#d:scale>scale</A>
-</TD><TD>G</TD><TD>double<BR><A HREF=#k:pointf>pointf</A>
+</TD><TD>G</TD><TD>double<BR><A HREF=#k:point>point</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD>twopi only</TD> </TR>
  <TR><TD><A NAME=a:searchsize HREF=#d:searchsize>searchsize</A>
 </TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">30</TD><TD></TD><TD>dot only</TD> </TR>
  <TR><TD><A NAME=a:sep HREF=#d:sep>sep</A>
-</TD><TD>G</TD><TD>double<BR><A HREF=#k:pointf>pointf</A>
+</TD><TD>G</TD><TD><A HREF=#k:addDouble>addDouble</A>
+<BR><A HREF=#k:addPoint>addPoint</A>
 </TD><TD ALIGN="CENTER">+4</TD><TD></TD><TD>not dot</TD> </TR>
  <TR><TD><A NAME=a:shape HREF=#d:shape>shape</A>
 </TD><TD>N</TD><TD><A HREF=#k:shape>shape</A>
@@ -419,7 +421,7 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:sides HREF=#d:sides>sides</A>
 </TD><TD>N</TD><TD>int</TD><TD ALIGN="CENTER">4</TD><TD>0</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:size HREF=#d:size>size</A>
-</TD><TD>G</TD><TD>double<BR><A HREF=#k:pointf>pointf</A>
+</TD><TD>G</TD><TD>double<BR><A HREF=#k:point>point</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:skew HREF=#d:skew>skew</A>
 </TD><TD>N</TD><TD>double</TD><TD ALIGN="CENTER">0.0</TD><TD>-100.0</TD><TD></TD> </TR>
@@ -470,7 +472,7 @@ This field indicates which graph component uses the attribute.
 </TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD>bitmap output only</TD> </TR>
  <TR><TD><A NAME=a:vertices HREF=#d:vertices>vertices</A>
-</TD><TD>N</TD><TD><A HREF=#k:pointfList>pointfList</A>
+</TD><TD>N</TD><TD><A HREF=#k:pointList>pointList</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD>write only</TD> </TR>
  <TR><TD><A NAME=a:viewport HREF=#d:viewport>viewport</A>
 </TD><TD>G</TD><TD><A HREF=#k:viewPort>viewPort</A>
@@ -1869,7 +1871,18 @@ This field indicates which graph component uses the attribute.
 <H1>Attribute Type Descriptions</H1>
 The following list gives the legal strings corresponding to values of
 the given types.
+The syntax for describing legal type strings is a mixture of literal strings,
+stdio encodings (e.g., <TT>%f</TT> for a double), and regular expressions.
+For regular expressions, <TT>(...)*</TT> indicates 0 or more copies of the expression
+enclosed in the parentheses,  <TT>(...)+</TT> indicates 1 or more, and
+<TT>(...)?</TT> denotes 0 or 1 copy.
 <DL>
+<DT><A NAME=k:addDouble><STRONG>addDouble</STRONG></A>
+<DD><P>A double with an optional prefix '+'.
+
+<DT><A NAME=k:addPoint><STRONG>addPoint</STRONG></A>
+<DD><P>A <A HREF="k:point">point</A> with an optional prefix '+'.
+
 <DT><A NAME=k:arrowType><STRONG>arrowType</STRONG></A>
 <DD><TABLE>
     <TR><TD>"normal"<TD><IMG SRC="a_normal.gif">
@@ -1919,7 +1932,7 @@ the given types.
 <DD>Colors can be specified using one of four formats.
          <TABLE><TR><TD>"#%2x%2x%2x"<TD>Red-Green-Blue (RGB)</TR>
          <TR><TD>"#%2x%2x%2x%2x"<TD>Red-Green-Blue-Alpha (RGBA)</TR>
-         <TR><TD>H[,&#160;]+S[,&#160;]+V<TD>Hue-Saturation-Value (HSV) 0.0 <= H,S,V <= 1.0</TR>
+         <TR><TD>"H[,&#160;]+S[,&#160;]+V"<TD>Hue-Saturation-Value (HSV) 0.0 <= H,S,V <= 1.0</TR>
          <TR><TD>string<TD><A HREF=colors.html>color name</A></TR></TABLE>
    The specification for the RGB and RGBA formats are the format strings used by
    <TT>sscanf</TT> to scan the color value. Thus, these values have the form
@@ -1984,8 +1997,8 @@ the given types.
   interpreting "forward" and "back".
 
 <DT><A NAME=k:doubleList><STRONG>doubleList</STRONG></A>
-<DD>A colon-separated list of doubles: <I>d</I>(:<I>d</I>)*
-   where each <I>d</I> is a double.
+<DD>A colon-separated list of doubles: "<I>%f</I>(:<I>%f</I>)*"
+   where each <I>%f</I> is a double.
 
 <DT><A NAME=k:escString><STRONG>escString</STRONG></A>
 <DD>string allowing escape sequences which are replaced according
@@ -2041,7 +2054,7 @@ the given types.
   "edgesfirst".
 
 <DT><A NAME=k:packMode><STRONG>packMode</STRONG></A>
-<DD>"node", "clust" , "graph" , "array[_flags][%d]"
+<DD>"node", "clust" , "graph" , "array(_<I>flags</I>)?(%d)?"
   <P>
   The modes "node", "clust" or "graph"
   specify that the components should be packed together tightly, using
@@ -2058,12 +2071,12 @@ the given types.
   example, neato does not support clusters, so a value of "clust" will
   have the same effect as the default "node" value.
   <P>
-  The mode "array[_flags][%d]"
+  The mode "array(_<I>flag</I>)?(%d)?"
   indicates that the components should be packed at the 
   graph level into an array of graphs. By default, the components
   are in row-major order, with the number of columns roughly the
   square root of the number of components. If the optional flags
-  contains "c", then column-major order is used. Finally, if the
+  contains 'c', then column-major order is used. Finally, if the
   optional integer suffix is used, this specifies the number of 
   columns for row-major or the number of rows for column-major.
   Thus, the mode "array_c4" indicates array packing, with 4 rows,
@@ -2071,10 +2084,10 @@ the given types.
   down the second column, etc., until all components are used.
   <P>
   If a graph is smaller than the array cell it occupies, it is centered by default.
-  The optional flags may contain "t", "b", "l", or "r", indicating that the graphs
+  The optional flags may contain 't', 'b', 'l', or 'r', indicating that the graphs
   should be aligned along the top, bottom, left or right, respectively.
   <P>
-  If the optional flags contains "u", this causes the insertion
+  If the optional flags contains 'u', this causes the insertion
   order of elements in the array to be determined by user-supplied
   values. Each component can specify its sort value by a 
   non-negative integer using the <A HREF="#d:sortv">sortv</A> attribute. 
@@ -2093,22 +2106,19 @@ the given types.
   until the topmost row is traversed.
 
 <DT><A NAME=k:point><STRONG>point</STRONG></A>
-<DD>"%f,%f"('!') representing the point (x,y). The
+<DD>"%f,%f('!')?" representing the point (x,y). The
   optional '!' indicates the
   node position should not change (input-only).
   <P>
-  If <A HREF=#d:dim>dim</A> is 3 or more, <B>point</B> may also have
-  the format "%f,%f,%f"('!') to represent the point (x,y,z).
+  If <A HREF=#d:dim>dim</A> is 3, <B>point</B> may also have
+  the format "%f,%f,%f('!')?" to represent the point (x,y,z).
 
-<DT><A NAME=k:pointf><STRONG>pointf</STRONG></A>
-<DD>"%lf,%lf" representing the point (x,y).
-
-<DT><A NAME=k:pointfList><STRONG>pointfList</STRONG></A>
-<DD>list of pointf, separated by spaces.
+<DT><A NAME=k:pointList><STRONG>pointList</STRONG></A>
+<DD>A list of points, separated by spaces.
 
 <DT><A NAME=k:portPos><STRONG>portPos</STRONG></A>
 <DD>modifier indicating where on a node an edge should be aimed.
-  It has the form <TT><I>portname</I>[:<I>compass_point</I>]</TT>
+  It has the form <TT><I>portname</I>(:<I>compass_point</I>)?</TT>
   or <TT><I>compass_point</I></TT>.
   If the first form is used, the corresponding node must either have
   <A HREF=shapes.html#record>record</A> shape with one of its fields
@@ -2192,7 +2202,7 @@ the given types.
    Similarly for p<SUB>n</SUB>  and endp.
 
 <DT><A NAME=k:startType><STRONG>startType</STRONG></A>
-<DD>has the syntax <TT>[<I>style</I>][<I>seed</I>]</TT>.
+<DD>has the syntax <TT>(<I>style</I>)?(<I>seed</I>)?</TT>.
   <P>
   If <I>style</I> is present, it must be one of the strings <TT>"regular"</TT>,
   <TT>"self"</TT>, or <TT>"random"</TT>. In the first case, the nodes are
@@ -2218,12 +2228,10 @@ the given types.
   <TABLE>
   <TR><TD ALIGN=right>where styleItem<TD>=<TD>name or name'('args')'</TR>
   <TR><TD ALIGN=right>and args<TD>=<TD>name ( ',' name )*</TR>
-  <TR><TD ALIGN=right>and name<TD>=<TD>[^)(, &nbsp;][^)(,]*</TR>
   </TABLE>
-  Note that whitespace characters are ignored, except for names which
-  can contain them. A
-  name cannot contain any comma, or left or right parenthesis, and it cannot
-  begin with a whitespace character.
+  and name can be any string of characters not containing a space, a left or
+  right parenthesis, or a comma.
+  Note that whitespace characters are ignored.
   <P>
   At present, the recognized style names are
   "dashed", "dotted", "solid", "invis" and "bold" for nodes and edges,

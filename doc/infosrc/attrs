@@ -274,7 +274,7 @@ or <A HREF=#d:edgeURL>edgeURL</A> attribute.
 :epsilon:G:double:.0001 * # nodes(mode == KK)/.0001(mode == major);  neato
 Terminating condition. If the length squared of all energy gradients are
 < <B>epsilon</B>, the algorithm stops.
-:esep:G:double/pointf:+3; notdot
+:esep:G:addDouble/addPoint:+3; notdot
 Margin used around polygons for purposes of spline edge routing.
 The interpretation is the same as given for <A HREF=#d:sep>sep</A>.
 This should normally be strictly less than <A HREF=#d:sep>sep</A>.
@@ -615,7 +615,7 @@ the edge is clipped to the boundary of the cluster.
 See <A HREF=#h:undir_note>limitation</A>.
 :lwidth:GC:double; write
 Width of graph or cluster label, in inches.
-:margin:NG:double/pointf:<device-dependent>;
+:margin:NG:double/point:<device-dependent>;
 For graphs, this sets x and y margins of canvas, in inches. If the margin
 is a single double, both margins are set equal to the given value.
 <P>
@@ -820,7 +820,7 @@ This indicates how connected components should be packed
 (cf. <A HREF=#k:packMode>packMode</A>). Note that defining
 <B>packmode</B> will automatically turn on packing as though one had
 set <B>pack=true</B>.
-:pad:G:double/pointf:0.0555 (4 points);
+:pad:G:double/point:0.0555 (4 points);
 The pad attribute specifies how much, in inches, to extend the
 drawing area around the minimal area needed to draw the graph.
 If the pad is a single double, both the x and y pad values are set
@@ -830,7 +830,7 @@ drawing and will be filled with the background color, if appropriate.
 Normally, a small pad is used for aesthetic reasons, especially when
 a background color is used, to avoid having nodes and edges abutting
 the boundary of the drawn region.
-:page:G:double/pointf;
+:page:G:double/point;
 Width and height of output pages, in inches. If only a single value
 is given, this is used for both the width and height.
 <P>
@@ -1040,14 +1040,14 @@ attribute, and output is dot or xdot, this gives
 the number of points used for a node whose shape is a circle or ellipse.
 It plays the same role in neato, when adjusting the layout to avoid
 overlapping nodes, and in image maps.
-:scale:G:double/pointf; twopi
+:scale:G:double/point; twopi
 If set, after the initial layout, twopi will scale the layout by the given factors.
 The scaling uses the root node of each component as the center of the scaling.
 If only a single number is given, this is used for both factors.
 :searchsize:G:int:30; dot
 During network simplex, maximum number of edges with negative cut values
 to search when looking for one with minimum cut value.
-:sep:G:double/pointf:+4; notdot
+:sep:G:addDouble/addPoint:+4; notdot
 Specifies margin to leave around nodes when removing node overlap.
 This guarantees a minimal non-zero distance between nodes.
 <P>
@@ -1088,7 +1088,7 @@ Print guide boxes in PostScript at the beginning of
 routesplines if 1, or at the end if 2. (Debugging)
 :sides:N:int:4:0;
 Number of sides if <A HREF=#d:shape><B>shape</B></A>=polygon.
-:size:G:double/pointf;
+:size:G:double/point;
 Maximum width and height of drawing, in inches.
 If only a single number is given, this is used for both the width
 and the height.
@@ -1204,7 +1204,7 @@ However, if one uses <A HREF=#d:bgcolor>bgcolor</A>=transparent with
 a color palette, font
 antialiasing can show up as a fuzzy white area around characters.
 Using <B>truecolor</B>=true avoids this problem.
-:vertices:N:pointfList; write
+:vertices:N:pointList; write
 If the input graph defines this attribute, the node is polygonal,
 and output is dot or xdot, this attribute provides the
 coordinates of the vertices of the node's polygon, in inches.

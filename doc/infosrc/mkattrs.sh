@@ -190,7 +190,7 @@ fi
 #exit
 
 print "<TABLE ALIGN=CENTER>"
-print "<TR><TH>Name</TH><TH><A HREF=#h:uses>Used By</A></TH><TH>Type</TH><TH>Default</TH><TH>Minimum</TH><TH>Notes</TH></TR>"
+print "<TR><TH>Name</TH><TH><A HREF=#h:uses>Used By</A></TH><TH>Type</TH><TH ALIGN=CENTER>Default</TH><TH>Minimum</TH><TH>Notes</TH></TR>"
 
 set -s ${!descs[@]}
 for i

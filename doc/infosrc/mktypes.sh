@@ -46,6 +46,11 @@ fi
 print "<H1>Attribute Type Descriptions</H1>"
 print "The following list gives the legal strings corresponding to values of"
 print "the given types."
+print "The syntax for describing legal type strings is a mixture of literal strings,"
+print "stdio encodings (e.g., <TT>%f</TT> for a double), and regular expressions."
+print "For regular expressions, <TT>(...)*</TT> indicates 0 or more copies of the expression"
+print "enclosed in the parentheses,  <TT>(...)+</TT> indicates 1 or more, and"
+print "<TT>(...)?</TT> denotes 0 or 1 copy."
 print "<DL>"
 
 set -s ${!desc[@]}
