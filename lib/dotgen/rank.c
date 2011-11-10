@@ -29,9 +29,7 @@
 #include	"dot.h"
 
 static void dot1_rank(graph_t * g, aspect_t* asp);
-#ifdef WITH_NEW_RANK
 static void dot2_rank(graph_t * g, aspect_t* asp);
-#endif
 
 static void 
 renewlist(elist * L)
@@ -607,11 +605,11 @@ static void dot1_rank(graph_t * g, aspect_t* asp)
 
 void dot_rank(graph_t * g, aspect_t* asp)
 {
-#ifdef WITH_NEW_RANK
-    if (agget (g, "newrank"))
+    if (agget (g, "newrank")) {
+	GD_flags(g) |= NEW_RANK;
 	dot2_rank (g, asp);
+    }
     else
-#endif
 	dot1_rank (g, asp);
 }
 
@@ -685,7 +683,6 @@ collapse_leaves(graph_t * g)
 }
 #endif
 
-#ifdef WITH_NEW_RANK
 /* new ranking code:
  * Allows more constraints
  * Copy of level.c in dotgen2
@@ -1247,4 +1244,3 @@ void dot2_rank(graph_t * g, aspect_t* asp)
 
 /* end of new ranking code
  */
-#endif /* WITH_NEW_RANK */

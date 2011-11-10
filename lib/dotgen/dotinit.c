@@ -280,6 +280,49 @@ setAspect (Agraph_t * g, aspect_t* adata)
     return adata;
 }
 
+static void
+remove_from_rank (Agraph_t * g, Agnode_t* n)
+{
+    Agnode_t* v = NULL;
+    int j, rk = ND_rank(n);
+
+    for (j = 0; j < GD_rank(g)[rk].n; j++) {
+	v = GD_rank(g)[rk].v[j];
+	if (v == n) {
+	    for (j++; j < GD_rank(g)[rk].n; j++) {
+		GD_rank(g)[rk].v[j-1] = GD_rank(g)[rk].v[j];
+	    }
+	    GD_rank(g)[rk].n--;
+	    break;
+	}
+    }
+    assert (v == n);  /* if found */
+}
+
+/* removeFill:
+ * This removes all of the fill nodes added in mincross.
+ * It appears to be sufficient to remove them only from the
+ * rank array and fast node list of the root graph.
+ */
+static void
+removeFill (Agraph_t * g)
+{
+    Agnode_t* n;
+    Agnode_t* nxt;
+    Agraph_t* sg = agsubg (g, "_new_rank", 0);
+
+    if (!sg) return;
+    for (n = agfstnode(sg); n; n = nxt) {
+	nxt = agnxtnode(sg, n);
+	delete_fast_node (g, n);
+	remove_from_rank (g, n);
+	dot_cleanup_node (n);
+	agdelnode(g, n);
+    }
+    agdelsubg (g, sg);
+
+}
+
 void dot_layout(Agraph_t * g)
 {
     aspect_t aspect;
@@ -305,7 +348,10 @@ void dot_layout(Agraph_t * g)
         dot_position(g, asp);
 	aspect.nPasses--;
     } while (aspect.nextIter && aspect.nPasses);
-
+#ifdef WITH_CGRAPH
+    if (GD_flags(g) & NEW_RANK)
+	removeFill (g);
+#endif
     dot_sameports(g);
     dot_splines(g);
     if (mapbool(agget(g, "compound")))

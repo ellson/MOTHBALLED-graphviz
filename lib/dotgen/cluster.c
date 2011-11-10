@@ -231,7 +231,8 @@ void interclexp(graph_t * subg)
 		continue;
 	    }
 
-#ifndef WITH_NEW_RANK
+/* This assertion is still valid if the new ranking is not used */
+#ifndef WITH_CGRAPH
 	    assert(ED_to_virt(e) != NULL);
 #endif
 

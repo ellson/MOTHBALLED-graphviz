@@ -39,7 +39,6 @@ static void init_mccomp(graph_t * g, int c);
 static void cleanup2(graph_t * g, int nc);
 static int mincross_clust(graph_t * par, graph_t * g, int);
 static int mincross(graph_t * g, int startpass, int endpass, int);
-static void init_mincross(graph_t * g);
 static void mincross_step(graph_t * g, int pass);
 static void mincross_options(graph_t * g);
 static void save_best(graph_t * g);
@@ -857,6 +856,67 @@ void rec_reset_vlists(graph_t * g)
 	}
 }
 
+/* realFillRanks:
+ * The structures in crossing minimization and positioning require
+ * that clusters have some node on each rank. This function recursively
+ * guarantees this property. It takes into account nodes and edges in
+ * a cluster, the latter causing dummy nodes for intervening ranks.
+ * For any rank without node, we create a real node of small size. This
+ * is stored in the subgraph sg, for easy removal later.
+ *
+ * I believe it is not necessary to do this for the root graph, as these
+ * are laid out one component at a time and these will necessarily have a
+ * node on each rank from source to sink levels.
+ */
+static Agraph_t*
+realFillRanks (Agraph_t* g, int rnks[], int rnks_sz, Agraph_t* sg)
+{
+    int i, c;
+    Agedge_t* e;
+    Agnode_t* n;
+
+    for (c = 1; c <= GD_n_cluster(g); c++)
+	sg = realFillRanks (GD_clust(g)[c], rnks, rnks_sz, sg);
+
+    if (agroot(g) == g)
+	return sg;
+    memset (rnks, 0, sizeof(int)*rnks_sz);
+    for (n = agfstnode(g); n; n = agnxtnode(g,n)) {
+	rnks[ND_rank(n)] = 1;
+	for (e = agfstout(g,n); e; e = agnxtout(g,e)) {
+	    for (i = ND_rank(n)+1; i <= ND_rank(aghead(e)); i++) 
+		rnks[i] = 1;
+	}
+    }
+    for (i = GD_minrank(g); i <= GD_maxrank(g); i++) {
+	if (rnks[i] == 0) {
+	    if (!sg) {
+		sg = agsubg (agroot(g), "_new_rank", 1);
+	    }
+	    n = agnode (sg, NULL, 1);
+	    agbindrec(n, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
+	    ND_rank(n) = i;
+	    ND_lw(n) = ND_rw(n) = 0.5;
+	    ND_ht(n) = 1;
+	    ND_UF_size(n) = 1;
+	    alloc_elist(4, ND_in(n));
+	    alloc_elist(4, ND_out(n));
+	    agsubnode (g, n, 1);
+	}
+    }
+    return sg;
+}
+
+static void
+fillRanks (Agraph_t* g)
+{
+    Agraph_t* sg;
+    int rnks_sz = GD_maxrank(g) + 2;
+    int* rnks = N_NEW(rnks_sz, int);
+    sg = realFillRanks (g, rnks, rnks_sz, NULL);
+    free (rnks);
+}
+
 static void init_mincross(graph_t * g)
 {
     int size;
@@ -873,6 +933,8 @@ static void init_mincross(graph_t * g)
     TE_list = N_NEW(size, edge_t *);
     TI_list = N_NEW(size, int);
     mincross_options(g);
+    if (GD_flags(g) & NEW_RANK)
+	fillRanks (g);
     class2(g);
     decompose(g, 1);
     allocate_ranks(g);
