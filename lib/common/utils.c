@@ -260,6 +260,10 @@ edge_t *debug_getedge(graph_t * g, char *s0, char *s1)
     else
 	return NULL;
 }
+#ifdef WITH_CGRAPH
+Agraphinfo_t* GD_info(g) { return ((Agraphinfo_t*)AGDATA(g));}
+Agnodeinfo_t* ND_info(n) { return ((Agnodeinfo_t*)AGDATA(n));}
+#endif
 #endif
 
 #if !defined(MSWIN32) && !defined(WIN32)
