@@ -73,12 +73,13 @@ void agsetfile(char *f)
 
 void aglexinit(FILE * fp, gets_f mygets)
 {
+    if (Lexer_fp != fp)
+	LexPtr = NULL;
     Lexer_fp = fp;
     if (mygets)
         AG.fgets = mygets;
     if (AG.fgets == NULL)
 	AG.fgets = fgets;
-    LexPtr = NULL;
     if (AG.linebuf == NULL) {
 	LineBufSize = BUFSIZ;
 	AG.linebuf = N_NEW(LineBufSize, char);
