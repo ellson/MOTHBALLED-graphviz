@@ -99,6 +99,10 @@ extern "C" {
 #include	<stdint.h>
 #endif
 
+#if _hdr_stddef
+#include	<stddef.h>
+#endif
+
 #if _hdr_time
 #include	<time.h>
 #endif
