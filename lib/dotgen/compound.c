@@ -88,93 +88,31 @@ static int inBoxf(pointf p, boxf * bb)
     return INSIDE(p, *bb);
 }
 
-#ifdef WITH_CGRAPH
-typedef struct {
-    Dtlink_t link;
-    char* name;
-    Agraph_t* clp;
-} clust_t;
-
-static void free_clust (Dt_t* dt, clust_t* clp, Dtdisc_t* disc)
-{
-    free (clp);
-}
-
-static Dtdisc_t strDisc = {
-    offsetof(clust_t,name),
-    -1,
-    offsetof(clust_t,link),
-    NIL(Dtmake_f),
-    (Dtfree_f)free_clust,
-    NIL(Dtcompar_f),
-    NIL(Dthash_f),
-    NIL(Dtmemory_f),
-    NIL(Dtevent_f)
-};
-
-static void fillMap (Agraph_t* g, Dt_t* map)
-{
-    Agraph_t* cl;
-    int c;
-    char* s;
-    clust_t* ip;
-
-    for (c = 1; c <= GD_n_cluster(g); c++) {
-	cl = GD_clust(g)[c];
-	s = agnameof(cl);
-	if (dtmatch (map, &s)) {
-	    agerr(AGWARN, "Two clusters named %s - the second will be ignored\n", s);
-	}
-	else {
-	    ip = NEW(clust_t);
-	    ip->name = s;
-	    ip->clp = cl;
-	    dtinsert (map, ip);
-	}
-	fillMap (cl, map);
-    }
-}
-
-static Dt_t* mkClustMap (Agraph_t* g)
-{
-    Dt_t* map = dtopen (&strDisc, Dtoset);
-
-    fillMap (g, map);
-    
-    return map;
-}
-
 /* getCluster:
  * Returns subgraph of g with given name.
  * Returns NULL if no name is given, or subgraph of
  * that name does not exist.
  */
+#ifdef WITH_CGRAPH
 static graph_t *getCluster(graph_t * g, char *cluster_name, Dt_t* map)
-{
-    clust_t* clp;
-
-    if (!cluster_name || (*cluster_name == '\0'))
-	return NULL;
-    clp = dtmatch (map, cluster_name);
-    if (clp == NULL) {
-	agerr(AGWARN, "cluster named %s not found\n", cluster_name);
-	return NULL;
-    }
-    else return clp->clp;
-}
 #else
 static graph_t *getCluster(graph_t * g, char *cluster_name)
+#endif
 {
-    graph_t *sg;
+    Agraph_t* sg;
 
     if (!cluster_name || (*cluster_name == '\0'))
 	return NULL;
+#ifdef WITH_CGRAPH
+    sg = findCluster (map, cluster_name);
+#else
     sg = agfindsubg(g, cluster_name);
-    if (sg == NULL)
+#endif
+    if (sg == NULL) {
 	agerr(AGWARN, "cluster named %s not found\n", cluster_name);
+    }
     return sg;
 }
-#endif
 
 /* The following functions are derived from pp. 411-415 (pp. 791-795)
  * of Graphics Gems. In the code there, they use a SGN function to
