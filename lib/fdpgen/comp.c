@@ -74,8 +74,8 @@ graph_t **findCComp(graph_t * g, int *cnt, int *pinned)
 #ifndef WITH_CGRAPH
     graph_t *mg;
     node_t *mn;
-#endif
     edge_t *me;
+#endif
     int pinflag = 0;
 
 /* fprintf (stderr, "comps of %s starting at %d \n", g->name, c_cnt); */
