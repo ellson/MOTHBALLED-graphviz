@@ -388,11 +388,14 @@ static int write_subgs(Agraph_t * g, iochan_t * ofile)
     Agraph_t *subg;
 
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
-	if (irrelevant_subgraph(subg))
-	    continue;
-	CHKRV(write_hdr(subg, ofile, FALSE));
-	CHKRV(write_body(subg, ofile));
-	CHKRV(write_trl(subg, ofile));
+	if (irrelevant_subgraph(subg)) {
+	    write_subgs(subg, ofile);
+	}
+	else {
+	    CHKRV(write_hdr(subg, ofile, FALSE));
+	    CHKRV(write_body(subg, ofile));
+	    CHKRV(write_trl(subg, ofile));
+	}
     }
     return 0;
 }
