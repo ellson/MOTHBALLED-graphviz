@@ -280,6 +280,7 @@ setAspect (Agraph_t * g, aspect_t* adata)
     return adata;
 }
 
+#ifdef WITH_CGRAPH
 static void
 remove_from_rank (Agraph_t * g, Agnode_t* n)
 {
@@ -322,6 +323,7 @@ removeFill (Agraph_t * g)
     agdelsubg (g, sg);
 
 }
+#endif
 
 void dot_layout(Agraph_t * g)
 {
