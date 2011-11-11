@@ -1137,11 +1137,17 @@ static item *mapEdge(Dt_t * map, edge_t * e)
 #ifndef WITH_CGRAPH
 #define MAPC(n) (strncmp((n)->name,"cluster",7)?NULL:agfindsubg((n)->graph, (n)->name))
 #else /* WITH_CGRAPH */
-#define MAPC(n) (strncmp(agnameof(n),"cluster",7)?NULL:agsubg(agraphof(n), agnameof(n),0))
+#define MAPC(n) (strncmp(agnameof(n),"cluster",7)?NULL:findCluster(cmap,agnameof(n)))
 #endif /* WITH_CGRAPH */
 
+
+#ifdef WITH_CGRAPH
+static void
+checkCompound(edge_t * e, graph_t * clg, agxbuf * xb, Dt_t * map, Dt_t* cmap)
+#else
 static void
 checkCompound(edge_t * e, graph_t * clg, agxbuf * xb, Dt_t * map)
+#endif
 {
     graph_t *tg;
     graph_t *hg;
@@ -1221,6 +1227,9 @@ int processClusterEdges(graph_t * g)
     graph_t *clg;
     agxbuf xb;
     Dt_t *map;
+#ifdef WITH_CGRAPH
+    Dt_t *cmap = mkClustMap (g);
+#endif
     unsigned char buf[SMALLBUF];
 
     map = dtopen(&mapDisc, Dtoset);
@@ -1234,7 +1243,11 @@ int processClusterEdges(graph_t * g)
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (IS_CLUST_NODE(n)) continue;
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+#ifndef WITH_CGRAPH
 	    checkCompound(e, clg, &xb, map);
+#else
+	    checkCompound(e, clg, &xb, map, cmap);
+#endif
 	}
     }
     agxbfree(&xb);
@@ -1247,6 +1260,9 @@ int processClusterEdges(graph_t * g)
     agclose(clg);
     if (rv)
 	SET_CLUST_EDGE(g);
+#ifdef WITH_CGRAPH
+    dtclose(cmap);
+#endif
     return rv;
 }
 
@@ -1945,5 +1961,76 @@ double drand48(void)
     d = rand();
     d = d / RAND_MAX;
     return d;
+}
+#endif
+#ifdef WITH_CGRAPH
+typedef struct {
+    Dtlink_t link;
+    char* name;
+    Agraph_t* clp;
+} clust_t;
+
+static void free_clust (Dt_t* dt, clust_t* clp, Dtdisc_t* disc)
+{
+    free (clp);
+}
+
+static Dtdisc_t strDisc = {
+    offsetof(clust_t,name),
+    -1,
+    offsetof(clust_t,link),
+    NIL(Dtmake_f),
+    (Dtfree_f)free_clust,
+    NIL(Dtcompar_f),
+    NIL(Dthash_f),
+    NIL(Dtmemory_f),
+    NIL(Dtevent_f)
+};
+
+static void fillMap (Agraph_t* g, Dt_t* map)
+{
+    Agraph_t* cl;
+    int c;
+    char* s;
+    clust_t* ip;
+
+    for (c = 1; c <= GD_n_cluster(g); c++) {
+	cl = GD_clust(g)[c];
+	s = agnameof(cl);
+	if (dtmatch (map, &s)) {
+	    agerr(AGWARN, "Two clusters named %s - the second will be ignored\n", s);
+	}
+	else {
+	    ip = NEW(clust_t);
+	    ip->name = s;
+	    ip->clp = cl;
+	    dtinsert (map, ip);
+	}
+	fillMap (cl, map);
+    }
+}
+
+/* mkClustMap:
+ * Generates a dictionary mapping cluster names to corresponding cluster.
+ * Used with cgraph as the latter does not support a flat namespace of clusters.
+ * Assumes G has already built a cluster tree using GD_n_cluster and GD_clust.
+ */
+Dt_t* mkClustMap (Agraph_t* g)
+{
+    Dt_t* map = dtopen (&strDisc, Dtoset);
+
+    fillMap (g, map);
+    
+    return map;
+}
+
+Agraph_t*
+findCluster (Dt_t* map, char* name)
+{
+    clust_t* clp = dtmatch (map, name);
+    if (clp)
+	return clp->clp;
+    else
+	return NULL;
 }
 #endif

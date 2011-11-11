@@ -60,6 +60,8 @@ extern "C" {
     extern attrsym_t* safe_dcl(graph_t*, void*, char*, char*,
              attrsym_t * (*fun) (Agraph_t *, char *, char *));
 #else
+    extern Dt_t* mkClustMap (Agraph_t* g);
+    extern Agraph_t* findCluster (Dt_t* map, char* name);
     extern attrsym_t* safe_dcl(graph_t * g, int obj_kind, char *name, char *def);
 #endif
 
