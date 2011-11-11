@@ -29,7 +29,9 @@
 #include	"dot.h"
 
 static void dot1_rank(graph_t * g, aspect_t* asp);
+#ifdef WITH_CGRAPH
 static void dot2_rank(graph_t * g, aspect_t* asp);
+#endif
 
 static void 
 renewlist(elist * L)
@@ -605,11 +607,13 @@ static void dot1_rank(graph_t * g, aspect_t* asp)
 
 void dot_rank(graph_t * g, aspect_t* asp)
 {
+#ifdef WITH_CGRAPH
     if (agget (g, "newrank")) {
 	GD_flags(g) |= NEW_RANK;
 	dot2_rank (g, asp);
     }
     else
+#endif
 	dot1_rank (g, asp);
 }
 
@@ -683,6 +687,7 @@ collapse_leaves(graph_t * g)
 }
 #endif
 
+#ifdef WITH_CGRAPH
 /* new ranking code:
  * Allows more constraints
  * Copy of level.c in dotgen2
@@ -1178,7 +1183,6 @@ static void add_fast_edges (graph_t * g)
     }
 }
 
-#ifdef WITH_CGRAPH
 static void my_init_graph(Agraph_t *g, Agobj_t *graph, void *arg)
 { int *sz = arg; agbindrec(graph,"level graph rec",sz[0],TRUE); }
 static void my_init_node(Agraph_t *g, Agobj_t *node, void *arg)
@@ -1192,7 +1196,6 @@ int infosizes[] = {
     sizeof(Agnodeinfo_t),
     sizeof(Agedgeinfo_t)
 };
-#endif
 
 void dot2_rank(graph_t * g, aspect_t* asp)
 {
@@ -1204,10 +1207,8 @@ void dot2_rank(graph_t * g, aspect_t* asp)
 #endif
     Last_node = NULL;
     graph_t *Xg = agopen("level assignment constraints", Agstrictdirected, 0);
-#ifdef WITH_CGRAPH
     agbindrec(Xg,"level graph rec",sizeof(Agraphinfo_t),TRUE);
     agpushdisc(Xg,&mydisc,infosizes);
-#endif
 
     edgelabel_ranks(g);
 
@@ -1242,5 +1243,6 @@ void dot2_rank(graph_t * g, aspect_t* asp)
     agclose(Xg);
 }
 
+#endif /* WITH_CGRAPH */
 /* end of new ranking code
  */

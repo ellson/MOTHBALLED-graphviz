@@ -856,6 +856,7 @@ void rec_reset_vlists(graph_t * g)
 	}
 }
 
+#ifdef WITH_CGRAPH
 /* realFillRanks:
  * The structures in crossing minimization and positioning require
  * that clusters have some node on each rank. This function recursively
@@ -916,6 +917,7 @@ fillRanks (Agraph_t* g)
     sg = realFillRanks (g, rnks, rnks_sz, NULL);
     free (rnks);
 }
+#endif
 
 static void init_mincross(graph_t * g)
 {
@@ -933,8 +935,10 @@ static void init_mincross(graph_t * g)
     TE_list = N_NEW(size, edge_t *);
     TI_list = N_NEW(size, int);
     mincross_options(g);
+#ifdef WITH_CGRAPH
     if (GD_flags(g) & NEW_RANK)
 	fillRanks (g);
+#endif
     class2(g);
     decompose(g, 1);
     allocate_ranks(g);
