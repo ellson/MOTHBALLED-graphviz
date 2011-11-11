@@ -57,6 +57,14 @@
 #  define _sys_stat 1
 #endif
 
+#ifdef HAVE_STRING_H
+#  define _hdr_string 1
+#endif
+
+#ifdef HAVE_STDINT_H
+#  define _hdr_stdint 1
+#endif
+
 #ifdef HAVE_STDARG_H
 #  define _hdr_stdarg 1
 #endif
