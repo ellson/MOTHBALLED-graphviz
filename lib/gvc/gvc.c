@@ -22,6 +22,9 @@
 #include "gvcproc.h"
 #include "gvconfig.h"
 #include "gvio.h"
+#ifdef WITH_CGRAPH
+#include <stdlib.h>
+#endif
 
 #ifdef WIN32 /*dependencies*/
 #ifdef WITH_CGRAPH
