@@ -97,7 +97,7 @@ userout (agerrlevel_t level, const char *fmt, va_list args)
     va_end(args);
 }
 
-static int agerr_va(agerrlevel_t level, char *fmt, va_list args)
+static int agerr_va(agerrlevel_t level, const char *fmt, va_list args)
 {
     agerrlevel_t lvl;
 
@@ -139,7 +139,7 @@ static int agerr_va(agerrlevel_t level, char *fmt, va_list args)
     return 0;
 }
 
-int agerr(agerrlevel_t level, char *fmt, ...)
+int agerr(agerrlevel_t level, const char *fmt, ...)
 {
     va_list args;
 
@@ -147,7 +147,7 @@ int agerr(agerrlevel_t level, char *fmt, ...)
     return agerr_va(level, fmt, args);
 }
 
-void agerrorf(char *fmt, ...)
+void agerrorf(const char *fmt, ...)
 {
     va_list args;
 
@@ -155,7 +155,7 @@ void agerrorf(char *fmt, ...)
     agerr_va(AGERR, fmt, args);
 }
 
-void agwarningf(char *fmt, ...)
+void agwarningf(const char *fmt, ...)
 {
     va_list args;
 

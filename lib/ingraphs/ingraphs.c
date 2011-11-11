@@ -109,7 +109,7 @@ new_ing(ingraph_state * sp, char **files, Agraph_t** graphs, ingdisc * disc)
     }
     else {
 	sp->ingraphs = 0;
-	sp->u.Graphs = files;
+	sp->u.Files = files;
     }
     sp->ctr = 0;
     sp->errors = 0;
