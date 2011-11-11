@@ -281,3 +281,57 @@ dot png
 fdp_clus
 fdp.gv
 fdp png
+
+japanese
+=
+dot png
+
+russian
+=
+dot png
+
+AvantGarde
+=
+dot png
+dot ps
+
+Bookman
+=
+dot png
+dot ps
+
+Courier
+=
+dot png
+dot ps
+
+Helvetica
+=
+dot png
+dot ps
+
+NewCenturySchlbk
+=
+dot png
+dot ps
+
+Palatino
+=
+dot png
+dot ps
+
+Times
+=
+dot png
+dot ps
+
+ZapfChancery
+=
+dot png
+dot ps
+
+ZapfDingbats
+=
+dot png
+dot ps
+
