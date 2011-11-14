@@ -305,7 +305,7 @@ clip_and_install(edge_t * fe, node_t * hn, pointf * ps, int pn,
     for (; end > 0; end -= 3)
 	if (! APPROXEQPT(ps[end], ps[end + 3], MILLIPOINT))
 	    break;
-    arrow_clip(fe, hn, ps, &start, &end, newspl, info);
+   arrow_clip(fe, hn, ps, &start, &end, newspl, info);
     for (i = start; i < end + 4; ) {
 	pointf cp[4];
 	newspl->list[i - start] = ps[i];
@@ -773,13 +773,50 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
     }
 }
 
+
+static int convert_sides_to_points(int tail_side, int head_side)
+{
+int vertices[] = {12,4,6,2,3,1,9,8};  //the cumulative side value of each node point
+int i, tail_i, head_i;
+int pair_a[8][8] = {	    //array of possible node point pairs
+{11,12,13,14,15,16,17,18},
+{21,22,23,24,25,26,27,28},
+{31,32,33,34,35,36,37,38},
+{41,42,43,44,45,46,47,48},
+{51,52,53,54,55,56,57,58},
+{61,62,63,64,65,66,67,68},
+{71,72,73,74,75,76,77,78},
+{81,82,83,84,85,86,87,88}
+};
+
+ tail_i = head_i = -1;
+	for(i=0;i< 8; i++){
+		if(head_side == vertices[i]){
+			head_i = i;
+			break;
+		}
+	}
+	for(i=0;i< 8; i++){
+		if(tail_side == vertices[i]){
+			tail_i = i;
+			break;
+		}
+	}
+	
+if( tail_i < 0 || head_i < 0)
+  return 0;
+else
+  return pair_a[tail_i][head_i];
+}
+
+
 static void selfBottom (edge_t* edges[], int ind, int cnt,
 	double sizex, double stepy, splineInfo* sinfo) 
 {
     pointf tp, hp, np;
     node_t *n;
     edge_t *e;
-    int i, sgn;
+    int i, sgn, point_pair;
     double hy, ty, stepx, dx, dy, width, height; 
     pointf points[1000];
     int pointn;
@@ -800,6 +837,15 @@ static void selfBottom (edge_t* edges[], int ind, int cnt,
     if (tp.x >= hp.x) sgn = 1;
     else sgn = -1;
     dy = ND_ht(n)/2., dx = 0.;
+    // certain adjustments are required for some point_pairs in order to improve the 
+    // display of the edge path between them
+    point_pair = convert_sides_to_points(e->u.tail_port.side,e->u.head_port.side);
+    switch(point_pair){
+      case 67:  sgn = -sgn;
+		break;
+      default:
+		break;
+    }
     ty = MIN(dy, 3*(tp.y + dy - np.y));
     hy = MIN(dy, 3*(hp.y + dy - np.y));
     for (i = 0; i < cnt; i++) {
@@ -826,8 +872,6 @@ static void selfBottom (edge_t* edges[], int ind, int cnt,
     	ED_label(e)->set = TRUE;
     	if (height > stepy)
     	    dy += height - stepy;
-    	if (dx + stepx < width)
-    	    dx += width - stepx;
         }
         clip_and_install(e, aghead(e), points, pointn, sinfo);
 #ifdef DEBUG
@@ -842,7 +886,7 @@ static void
 selfTop (edge_t* edges[], int ind, int cnt, double sizex, double stepy,
            splineInfo* sinfo) 
 {
-    int i, sgn;
+    int i, sgn, point_pair;
     double hy, ty,  stepx, dx, dy, width, height; 
     pointf tp, hp, np;
     node_t *n;
@@ -866,6 +910,49 @@ selfTop (edge_t* edges[], int ind, int cnt, double sizex, double stepy,
     if (tp.x >= hp.x) sgn = 1;
     else sgn = -1;
     dy = ND_ht(n)/2., dx = 0.;
+    // certain adjustments are required for some point_pairs in order to improve the 
+    // display of the edge path between them
+    point_pair = convert_sides_to_points(e->u.tail_port.side,e->u.head_port.side);
+    switch(point_pair){
+	case 15:	
+		dx = sgn*(ND_rw(n) - (hp.x-np.x) + stepx);
+		break;
+
+	case 38:
+		dx = sgn*(ND_lw(n)-(np.x-hp.x) + stepx);
+		break;
+	case 41:
+		dx = sgn*(ND_rw(n)-(tp.x-np.x) + stepx);
+		break;
+	case 48:
+		dx = sgn*(ND_rw(n)-(tp.x-np.x) + stepx);
+		break;
+	
+	case 14:
+	case 37:
+	case 47:
+	case 51:
+	case 57:
+	case 58:
+		dx = sgn*((((ND_lw(n)-(np.x-tp.x)) + (ND_rw(n)-(hp.x-np.x)))/3.));
+		break;
+	case 73:
+ 		dx = sgn*(ND_lw(n)-(np.x-tp.x) + stepx);
+		break;
+	case 83:
+		dx = sgn*(ND_lw(n)-(np.x-tp.x));
+		break;
+	case 84:
+		dx = sgn*((((ND_lw(n)-(np.x-tp.x)) + (ND_rw(n)-(hp.x-np.x)))/2.) + stepx);
+		break;
+	case 74:
+	case 75:
+	case 85:
+		dx = sgn*((((ND_lw(n)-(np.x-tp.x)) + (ND_rw(n)-(hp.x-np.x)))/2.) + 2*stepx);
+		break;
+	default:
+		break;
+    }
     ty = MIN(dy, 3*(np.y + dy - tp.y));
     hy = MIN(dy, 3*(np.y + dy - hp.y));
     for (i = 0; i < cnt; i++) {
@@ -892,10 +979,8 @@ selfTop (edge_t* edges[], int ind, int cnt, double sizex, double stepy,
 	    ED_label(e)->set = TRUE;
 	    if (height > stepy)
 		dy += height - stepy;
-	    if (dx + stepx < width)
-		dx += width - stepx;
         }
-        clip_and_install(e, aghead(e), points, pointn, sinfo);
+       clip_and_install(e, aghead(e), points, pointn, sinfo);
 #ifdef DEBUG
         if (debugleveln(e,1))
 	    showPoints (points, pointn);
@@ -908,7 +993,7 @@ static void
 selfRight (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
            splineInfo* sinfo) 
 {
-    int i, sgn;
+    int i, sgn, point_pair;
     double hx, tx, stepy, dx, dy, width, height; 
     pointf tp, hp, np;
     node_t *n;
@@ -932,6 +1017,17 @@ selfRight (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
     if (tp.y >= hp.y) sgn = 1;
     else sgn = -1;
     dx = ND_rw(n), dy = 0;
+    // certain adjustments are required for some point_pairs in order to improve the 
+    // display of the edge path between them
+    point_pair = convert_sides_to_points(e->u.tail_port.side,e->u.head_port.side);
+    switch(point_pair){
+      case 32: 
+      case 65:	if(tp.y == hp.y)
+		  sgn = -sgn;
+		break;
+      default:
+		break;
+    }
     tx = MIN(dx, 3*(np.x + dx - tp.x));
     hx = MIN(dx, 3*(np.x + dx - hp.x));
     for (i = 0; i < cnt; i++) {
@@ -958,8 +1054,6 @@ selfRight (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
 	    ED_label(e)->set = TRUE;
 	    if (width > stepx)
 		dx += width - stepx;
-	    if (dy + stepy < height)
-		dy += height - stepy;
         }
 	clip_and_install(e, aghead(e), points, pointn, sinfo);
 #ifdef DEBUG
@@ -974,7 +1068,7 @@ static void
 selfLeft (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
           splineInfo* sinfo) 
 {
-    int i, sgn;
+    int i, sgn,point_pair;
     double hx, tx, stepy, dx, dy, width, height; 
     pointf tp, hp, np;
     node_t *n;
@@ -995,9 +1089,23 @@ selfLeft (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
     hp = ED_head_port(e).p;
     hp.x += np.x;
     hp.y += np.y;
+    
+    
     if (tp.y >= hp.y) sgn = 1;
     else sgn = -1;
     dx = ND_lw(n), dy = 0.;
+    // certain adjustments are required for some point_pairs in order to improve the 
+    // display of the edge path between them
+    point_pair = convert_sides_to_points(e->u.tail_port.side,e->u.head_port.side);
+    switch(point_pair){
+      case 12:
+      case 67:
+		if(tp.y == hp.y)
+		  sgn = -sgn;
+		break;
+      default:
+		break;
+    }
     tx = MIN(dx, 3*(tp.x + dx - np.x));
     hx = MIN(dx, 3*(hp.x + dx - np.x));
     for (i = 0; i < cnt; i++) {
@@ -1010,6 +1118,7 @@ selfLeft (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
         points[pointn++] = pointfof(np.x - dx, (tp.y+hp.y)/2);
         points[pointn++] = pointfof(np.x - dx, hp.y - dy);
         points[pointn++] = pointfof(hp.x - hx / 3, hp.y - dy);
+      
         points[pointn++] = hp;
         if (ED_label(e)) {
     	if (GD_flip(agraphof(agtail(e)))) {
@@ -1024,9 +1133,8 @@ selfLeft (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
     	ED_label(e)->set = TRUE;
     	if (width > stepx)
     	    dx += width - stepx;
-    	if (dy + stepy < height)
-    	    dy += height - stepy;
         }
+
         clip_and_install(e, aghead(e), points, pointn, sinfo);
 #ifdef DEBUG
         if (debugleveln(e,1))
@@ -1083,6 +1191,7 @@ makeSelfEdge(path * P, edge_t * edges[], int ind, int cnt, double sizex,
      * self edge with all ports inside, on the right, or at most 1 on top 
      * and at most 1 on bottom 
      */
+    
     if (((!ED_tail_port(e).defined) && (!ED_head_port(e).defined)) ||
         (!(ED_tail_port(e).side & LEFT) && 
          !(ED_head_port(e).side & LEFT) &&
