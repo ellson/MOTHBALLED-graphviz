@@ -701,6 +701,11 @@ collapse_leaves(graph_t * g)
 #define TOPNODE     "\177top"
 #define BOTNODE     "\177bot"
 
+/* hops is not used in dot, so we overload it to 
+ * contain the index of the connected component
+ */
+#define ND_comp(n)  ND_hops(n)   
+
 extern int rank2(Agraph_t *, int, int, int);
 
 static void set_parent(graph_t* g, graph_t* p) 
@@ -1070,7 +1075,7 @@ static void break_cycles(graph_t * g)
 	dfs(g, n);
 }
 
-static void setMinMax (graph_t* g)
+static void setMinMax (graph_t* g, int doRoot)
 {
     int c, v;
     node_t *n;
@@ -1078,9 +1083,9 @@ static void setMinMax (graph_t* g)
 
       /* Do child clusters */
     for (c = 1; c <= GD_n_cluster(g); c++)
-	setMinMax(GD_clust(g)[c]);
+	    setMinMax(GD_clust(g)[c], 0);
 
-    if (!GD_parent(g)) // root graph
+    if (!GD_parent(g) && !doRoot) // root graph
 	return;
 
     GD_minrank(g) = MAXSHORT;
@@ -1101,21 +1106,43 @@ static void setMinMax (graph_t* g)
  * Store node rank information in original graph.
  * Set rank bounds in graph and clusters
  * Free added data structures.
+ *
+ * rank2 is called with balance=1, which ensures that minrank=0
  */
-static void readout_levels(graph_t * g, graph_t * Xg)
+static void readout_levels(graph_t * g, graph_t * Xg, int ncc)
 {
     node_t *n;
+    node_t *xn;
+    int* minrk = NULL;
+    int doRoot = 0;
 
     GD_minrank(g) = MAXSHORT;
     GD_maxrank(g) = -1;
+    if (ncc > 1) {
+	int i;
+	minrk = N_NEW(ncc+1,int);
+	for (i = 1; i <= ncc; i++)
+	    minrk[i] = MAXSHORT;
+    }
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	ND_rank(n) = ND_rank(ND_rep(find(n)));
+	xn = ND_rep(find(n));
+	ND_rank(n) = ND_rank(xn);
 	if (GD_maxrank(g) < ND_rank(n))
 	    GD_maxrank(g) = ND_rank(n);
 	if (GD_minrank(g) > ND_rank(n))
 	    GD_minrank(g) = ND_rank(n);
+	if (minrk) {
+	    ND_comp(n) = ND_comp(xn);
+	    minrk[ND_comp(n)] = MIN(minrk[ND_comp(n)],ND_rank(n));
+	}
     }
-    if (GD_minrank(g) > 0) {
+    if (minrk) {
+	for (n = agfstnode(g); n; n = agnxtnode(g, n))
+	    ND_rank(n) -= minrk[ND_comp(n)];
+	/* Non-uniform shifting, so recompute maxrank/minrank of root graph */
+	doRoot = 1;
+    }
+    else if (GD_minrank(g) > 0) {  /* should never happen */
 	int delta = GD_minrank(g);
 	for (n = agfstnode(g); n; n = agnxtnode(g, n))
 	    ND_rank(n) -= delta;
@@ -1123,7 +1150,7 @@ static void readout_levels(graph_t * g, graph_t * Xg)
 	GD_maxrank(g) -= delta;
     }
 
-    setMinMax(g);
+    setMinMax(g, doRoot);
 
     /* release fastgraph memory from Xg */
     for (n = agfstnode(Xg); n; n = agnxtnode(Xg, n)) {
@@ -1135,13 +1162,15 @@ static void readout_levels(graph_t * g, graph_t * Xg)
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	ND_alg(n) = NULL;
     }
+    if (minrk)
+	free (minrk);
 }
 
 static void dfscc(graph_t * g, node_t * n, int cc)
 {
     edge_t *e;
-    if (ND_mark(n) == 0) {
-	ND_mark(n) = cc;
+    if (ND_comp(n) == 0) {
+	ND_comp(n) = cc;
 	for (e = agfstout(g, n); e; e = agnxtout(g, e))
 	    dfscc(g, aghead(e), cc);
 	for (e = agfstin(g, n); e; e = agnxtin(g, e))
@@ -1149,26 +1178,27 @@ static void dfscc(graph_t * g, node_t * n, int cc)
     }
 }
 
-static void connect_components(graph_t * g)
+static int connect_components(graph_t * g)
 {
     int cc = 0;
     node_t *n;
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n))
-	ND_mark(n) = 0;
+	ND_comp(n) = 0;
     for (n = agfstnode(g); n; n = agnxtnode(g, n))
-	if (ND_mark(n) == 0)
+	if (ND_comp(n) == 0)
 	    dfscc(g, n, ++cc);
     if (cc > 1) {
 	node_t *root = makeXnode(g, ROOT);
 	int ncc = 1;
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	    if (ND_mark(n) == ncc) {
+	    if (ND_comp(n) == ncc) {
 		(void) agedge(g, root, n, 0, 1);
 		ncc++;
 	    }
 	}
     }
+    return (cc);
 }
 
 static void add_fast_edges (graph_t * g)
@@ -1200,7 +1230,7 @@ int infosizes[] = {
 void dot2_rank(graph_t * g, aspect_t* asp)
 {
     int ssize;
-    int maxiter = INT_MAX;
+    int ncc, maxiter = INT_MAX;
     char *s;
 #ifdef ALLOW_LEVELS
     attrsym_t* N_level;
@@ -1222,7 +1252,7 @@ void dot2_rank(graph_t * g, aspect_t* asp)
     compile_edges(g, Xg);
     compile_clusters(g, Xg, 0, 0);
     break_cycles(Xg);
-    connect_components(Xg);
+    ncc = connect_components(Xg);
     add_fast_edges (Xg);
 
     if (asp) {
@@ -1236,7 +1266,7 @@ void dot2_rank(graph_t * g, aspect_t* asp)
 	ssize = -1;
     rank2(Xg, 1, maxiter, ssize);
 /* fastgr(Xg); */
-    readout_levels(g, Xg);
+    readout_levels(g, Xg, ncc);
 #ifdef DEBUG
     fprintf (stderr, "Xg %d nodes %d edges\n", agnnodes(Xg), agnedges(Xg));
 #endif
