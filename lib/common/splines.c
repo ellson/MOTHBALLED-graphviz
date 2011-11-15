@@ -839,7 +839,7 @@ static void selfBottom (edge_t* edges[], int ind, int cnt,
     dy = ND_ht(n)/2., dx = 0.;
     // certain adjustments are required for some point_pairs in order to improve the 
     // display of the edge path between them
-    point_pair = convert_sides_to_points(e->u.tail_port.side,e->u.head_port.side);
+    point_pair = convert_sides_to_points(ED_tail_port(e).side,ED_head_port(e).side);
     switch(point_pair){
       case 67:  sgn = -sgn;
 		break;
@@ -912,7 +912,7 @@ selfTop (edge_t* edges[], int ind, int cnt, double sizex, double stepy,
     dy = ND_ht(n)/2., dx = 0.;
     // certain adjustments are required for some point_pairs in order to improve the 
     // display of the edge path between them
-    point_pair = convert_sides_to_points(e->u.tail_port.side,e->u.head_port.side);
+    point_pair = convert_sides_to_points(ED_tail_port(e).side,ED_head_port(e).side);
     switch(point_pair){
 	case 15:	
 		dx = sgn*(ND_rw(n) - (hp.x-np.x) + stepx);
@@ -1019,7 +1019,7 @@ selfRight (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
     dx = ND_rw(n), dy = 0;
     // certain adjustments are required for some point_pairs in order to improve the 
     // display of the edge path between them
-    point_pair = convert_sides_to_points(e->u.tail_port.side,e->u.head_port.side);
+    point_pair = convert_sides_to_points(ED_tail_port(e).side,ED_head_port(e).side);
     switch(point_pair){
       case 32: 
       case 65:	if(tp.y == hp.y)
@@ -1096,7 +1096,7 @@ selfLeft (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
     dx = ND_lw(n), dy = 0.;
     // certain adjustments are required for some point_pairs in order to improve the 
     // display of the edge path between them
-    point_pair = convert_sides_to_points(e->u.tail_port.side,e->u.head_port.side);
+    point_pair = convert_sides_to_points(ED_tail_port(e).side,ED_head_port(e).side);
     switch(point_pair){
       case 12:
       case 67:
