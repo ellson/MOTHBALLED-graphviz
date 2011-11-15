@@ -1,0 +1,101 @@
+# Graphviz test suite
+# Tests are separated by blank or comment lines.
+# Tests have the following syntax:
+#  testname
+#  Test input (one-line graph or name of .gv file or =)
+#    In the last case, the input file is taken as testname.gv
+#  One or more subtests of the form: 
+#     layout_alg output_format additional_flags
+#  
+# For example, the test
+#   Shapes
+#   shapes.gv
+#   dot ps
+#   neato png "-Gsize=3,3 -Ncolor=red"
+# specifies the "shapes" test, using shapes.gv as input, and
+# run "dot -Tps" and "neato -Tpng -Gsize=3,3 -Ncolor=red" on the input.
+#
+
+
+
+sb_box
+=
+dot png
+
+
+sb_box_dbl
+=
+dot png
+
+
+sl_box
+=
+dot png
+
+
+sl_box_dbl
+=
+dot png
+
+
+sr_box
+=
+dot png
+
+
+sr_box_dbl
+=
+dot png
+
+
+st_box
+=
+dot png
+
+
+st_box_dbl
+=
+dot png
+
+
+sb_circle
+=
+dot png
+
+
+sb_circle_dbl
+=
+dot png
+
+
+sl_circle
+=
+dot png
+
+
+sl_circle_dbl
+=
+dot png
+
+sr_circle
+=
+dot png
+
+
+sr_circle_dbl
+=
+dot png
+
+
+st_circle
+=
+dot png
+
+
+st_circle_dbl
+=
+dot png
+
+
+
+

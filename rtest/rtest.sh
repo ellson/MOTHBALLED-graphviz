@@ -1,4 +1,4 @@
-#! /bin/ksh
+#! /home/dperry/work_related/packages/arch/linux.i386-64/src/cmd/ksh93/ksh
 #
 # Graphviz regression test driver
 #
@@ -29,7 +29,7 @@ REFDIR=nshare          # Directory for expected test output
 GENERATE=              # If set, generate test data
 VERBOSE=               # If set, give verbose output
 NOOP=                  # If set, just print list of tests
-DOT=../cmd/dot/dot_static # build tree version with a builtin set of plugins
+DOT=../cmd/dot/dot # build tree version with a builtin set of plugins
 		       # should be $(top_builddir)/cmd/dot/dot_static
 DIFFIMG=../contrib/diffimg/diffimg # build tree version
 
