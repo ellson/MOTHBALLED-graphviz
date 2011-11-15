@@ -334,6 +334,7 @@ struct Agsym_s {		/* symbol in one of the above dictionaries */
     int id;			/* its index in attr[] */
     unsigned char kind;		/* referent object type */
     unsigned char fixed;	/* immutable value */
+    unsigned char print;	/* always print */
 };
 
 struct Agdatadict_s {		/* set of dictionaries per graph */

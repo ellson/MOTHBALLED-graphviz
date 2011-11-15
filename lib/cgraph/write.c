@@ -212,12 +212,12 @@ static int write_dict(Agraph_t * g, iochan_t * ofile, char *name,
 	view = 0;
     for (sym = (Agsym_t *) dtfirst(dict); sym;
 	 sym = (Agsym_t *) dtnext(dict, sym)) {
-	if (EMPTY(sym->defval)) {	/* try to skip empty str (default) */
+	if (EMPTY(sym->defval) && !sym->print) {	/* try to skip empty str (default) */
 	    if (view == NIL(Dict_t *))
 		continue;	/* no parent */
 	    psym = (Agsym_t *) dtsearch(view, sym);
 	    assert(psym);
-	    if (EMPTY(psym->defval))
+	    if (EMPTY(psym->defval) && psym->print)
 		continue;	/* also empty in parent */
 	}
 	if (cnt++ == 0) {

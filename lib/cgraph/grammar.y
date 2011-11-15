@@ -303,6 +303,7 @@ static void attrstmt(int tkind, char *macroname)
 {
 	item			*aptr;
 	int				kind;
+	Agsym_t*  sym;
 
 		/* creating a macro def */
 	if (macroname) nomacros();
@@ -317,8 +318,11 @@ static void attrstmt(int tkind, char *macroname)
 		default : abort();
 	}
 	bindattrs(kind);	/* set up defaults for new attributes */
-	for (aptr = Attrlist.first; aptr; aptr = aptr->next)
-		agattr(G,kind,aptr->u.asym->name,aptr->str);
+	for (aptr = Attrlist.first; aptr; aptr = aptr->next) {
+		sym = agattr(G,kind,aptr->u.asym->name,aptr->str);
+		if (G->root == G)
+			sym->print = TRUE;
+	}
 	deletelist(&Attrlist);
 }
 
