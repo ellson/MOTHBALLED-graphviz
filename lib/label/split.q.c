@@ -218,13 +218,16 @@ static void MethodZero(RTree_t * rtp)
 -----------------------------------------------------------------------------*/
 static void PickSeeds(RTree_t * rtp)
 {
-    register int i, j, waste, worst, seed0, seed1;
-    int area[NODECARD + 1];
+  register int i, j;
+  unsigned int waste, worst;
+  int seed0, seed1;
+  unsigned int area[NODECARD + 1];
 
     for (i = 0; i < NODECARD + 1; i++)
 	area[i] = RectArea(&rtp->split.BranchBuf[i].rect);
 
-    worst = -rtp->split.CoverSplitArea - 1;
+    //worst = -rtp->split.CoverSplitArea - 1;
+    worst=0;
     for (i = 0; i < NODECARD; i++) {
 	for (j = i + 1; j < NODECARD + 1; j++) {
 	    Rect_t rect;

@@ -25,7 +25,7 @@ void InitRect(Rect_t * r);
 #ifdef RTDEBUG
 void PrintRect(Rect_t *);
 #endif
-int RectArea(Rect_t *);
+unsigned int RectArea(Rect_t *);
 int Overlap(Rect_t *, Rect_t *);
 int Contained(Rect_t *, Rect_t *);
 Rect_t CombineRect(Rect_t *, Rect_t *);
