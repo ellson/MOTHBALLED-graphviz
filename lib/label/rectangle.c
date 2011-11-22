@@ -13,7 +13,6 @@
 #include "index.h"
 #include <stdio.h>
 #include <assert.h>
-#include <limits.h>
 #include "logic.h"
 #include "arith.h"
 #include "rectangle.h"
@@ -116,30 +115,17 @@ void PrintRect(Rect_t * r)
 /*-----------------------------------------------------------------------------
 | Calculate the n-dimensional area of a rectangle
 -----------------------------------------------------------------------------*/
-unsigned int RectArea(Rect_t * r)
+int RectArea(Rect_t * r)
 {
-  register int i;
-  unsigned int area;
-  assert(r);
+    register int i, area;
+    assert(r);
 
     if (Undefined(r))
 	return 0;
 
-    /*
-     * XXX add overflow checks
-     */
     area = 1;
     for (i = 0; i < NUMDIMS; i++) {
-#if 1  /* overflow check */
-      long long a_test = area * r->boundary[i + NUMDIMS] - r->boundary[i];
-      if( a_test > UINT_MAX) {
-	agerror("label: area too large for rtree\n");
-	return UINT_MAX;
-      }
-      area = a_test;
-#else
-      area *= r->boundary[i + NUMDIMS] - r->boundary[i];
-#endif
+	area *= r->boundary[i + NUMDIMS] - r->boundary[i];
     }
     return area;
 }

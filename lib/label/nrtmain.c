@@ -12,11 +12,18 @@
 
 #include <errno.h>
 #include <string.h>
-#include <unistd.h>
+//#include <unistd.h>
 
 #include <memory.h>
 #include <gvc.h>
 #include "xlabels.h"
+
+#ifdef HAVE_GETOPT_H
+#include <getopt.h>
+#else
+#include "compat_getopt.h"
+#endif
+
 
 #if 0
 #define POINTS_PER_INCH 72
@@ -31,7 +38,7 @@ static char *progname;
 static int Verbose;
 extern pointf edgeMidpoint(graph_t * g, edge_t * e);
 
-static inline pointf pointfof(double x, double y)
+static  pointf pointfof(double x, double y)
 {
     pointf r;
 

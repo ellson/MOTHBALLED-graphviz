@@ -119,11 +119,12 @@ Rect_t NodeCover(Node_t * n)
 */
 int PickBranch(Rect_t * r, Node_t * n)
 {
-    register Rect_t *rr=0;
-    register int i=0, flag=1, increase=0, bestIncr=0, area=0, bestArea=0;
-    int best=0;
+    register Rect_t *rr;
+    register int i, flag, increase, bestIncr, area, bestArea;
+    int best;
     assert(r && n);
 
+    flag = 1;
     for (i = 0; i < NODECARD; i++) {
 	if (n->branch[i].child) {
 	    Rect_t rect;

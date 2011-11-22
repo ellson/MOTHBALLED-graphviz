@@ -596,52 +596,33 @@ static int xlhdxload(XLabels_t * xlp)
 
 	hp->key = hd_hil_s_from_xy(pi, order);
 
-#if 0
-	if (dtsearch(xlp->hdx, hp) != 0) {
-	    free(hp);
+	if (dtsearch(xlp->hdx, hp) != 0)
 	    continue;
-	}
-#endif
 	if (!(dtinsert(xlp->hdx, hp)))
 	    return -1;
     }
     return 0;
 }
 
-static void xlhdxunload(XLabels_t * xlp)
-{
-  int size=dtsize(xlp->hdx), freed=0;
-  while(dtsize(xlp->hdx) ) {
-    Void_t*vp=dtfinger(xlp->hdx);
-    assert(vp);
-    if(vp) {
-      dtdetach(xlp->hdx, vp);
-      free(vp);
-      freed++;
-    }
-  }
-  assert(size==freed);
-}
-
 static int xlspdxload(XLabels_t * xlp)
 {
-    HDict_t *op=0;
+    HDict_t *op;
 
     for (op = dtfirst(xlp->hdx); op; op = dtnext(xlp->hdx, op)) {
 	/*          tree       rectangle    data        node             lvl */
-	RTreeInsert(xlp->spdx, &op->d.rect, op->d.data, &xlp->spdx->root, 0);
+	RTreeInsert(xlp->spdx, &op->d.rect, op->d.data, &xlp->spdx->root,
+		    0);
     }
     return 0;
 }
 
 static int xlinitialize(XLabels_t * xlp)
 {
-    int r=0;
+    int r;
     if ((r = xlhdxload(xlp)) < 0)
 	return r;
     if ((r = xlspdxload(xlp)) < 0)
 	return r;
-    xlhdxunload(xlp);
     return dtclose(xlp->hdx);
 }
 

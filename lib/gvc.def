@@ -154,7 +154,8 @@ gvusershape_file_release
 gvwrite    
 htmlEntityUTF8    
 HTTPServerEnVar    
-Initial_dist    
+Initial_dist 
+EdgeLabelsDone   
 initMapData    
 inPS    
 insertPM

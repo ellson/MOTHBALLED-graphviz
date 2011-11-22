@@ -22,10 +22,8 @@ LeafList_t *RTreeNewLeafList(Leaf_t * lp)
 {
     LeafList_t *llp;
 
-    if ((llp = NEW(LeafList_t))) {
+    if ((llp = NEW(LeafList_t)))
 	llp->leaf = lp;
-	llp->next = 0;
-    }
     return llp;
 }
 
@@ -48,7 +46,6 @@ void RTreeLeafListFree(LeafList_t * llp)
 	free(llp);
 	llp = tlp;
     }
-    free(llp);
     return;
 }
 
@@ -121,13 +118,9 @@ static int RTreeClose2(RTree_t * rtp, Node_t * n)
 	for (i = 0; i < NODECARD; i++) {
 	    if (!n->branch[i].child)
 		continue;
-	    // free(n->branch[i].child);
 	    DisconBranch(n, i);
 	    rtp->EntryCount--;
-	    if (rtp->StatFlag)
-	        rtp->ElimCount++;
 	}
-	//free(n);
     }
     return 0;
 }
@@ -136,7 +129,6 @@ static int RTreeClose2(RTree_t * rtp, Node_t * n)
 int RTreeClose(RTree_t * rtp)
 {
     RTreeClose2(rtp, rtp->root);
-    free(rtp->root);
     free(rtp);
     return 0;
 }
@@ -239,7 +231,7 @@ RTreeInsert(RTree_t * rtp, Rect_t * r, void *data, Node_t ** n, int level)
     /* RTreeInsert(RTree_t*rtp, Rect_t*r, int data, Node_t**n, int level) { */
     register int i;
     register Node_t *newroot;
-    Node_t *newnode=0;
+    Node_t *newnode;
     Branch_t b;
     int result = 0;
 
@@ -280,7 +272,6 @@ RTreeInsert(RTree_t * rtp, Rect_t * r, void *data, Node_t ** n, int level)
 	b.child = newnode;
 	AddBranch(rtp, &b, newroot, NULL);
 	*n = newroot;
-	// rtp->root = newroot;
 	rtp->EntryCount += 2;
 	result = 1;
     }
@@ -304,9 +295,9 @@ RTreeInsert2(RTree_t * rtp, Rect_t * r, void *data,
     /* RTreeInsert2(RTree_t*rtp, Rect_t*r,
        int data, Node_t*n, Node_t**new, int level) {
      */
-    register int i=0;
+    register int i;
     Branch_t b;
-    Node_t *n2=0;
+    Node_t *n2;
 
     assert(r && n && new);
     assert(level >= 0 && level <= n->level);
@@ -475,7 +466,7 @@ RTreeDelete2(RTree_t * rtp, Rect_t * r, void *data, Node_t * n,
 */
 struct ListNode *NewListNode()
 {
-    return (struct ListNode *) NEW(sizeof(struct ListNode));
+    return (struct ListNode *) malloc(sizeof(struct ListNode));
 }
 
 #endif
