@@ -32,6 +32,7 @@ libgvplugin_core_C_la_SOURCES = \
 	gvrender_core_svg.c \
 	gvrender_core_tk.c \
 	gvrender_core_vml.c \
+	gvrender_core_pov.c \
 	gvloadimage_core.c \
 	ps.txt
 
