@@ -14,7 +14,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/$(GRAPH) \
 	-I$(top_srcdir)/lib/cdt \
-	$(GDK_PIXBUF_CFLAGS)
+	$(PANGOCAIRO_CFLAGS) $(GDK_PIXBUF_CFLAGS)
 
 if WITH_PANGOCAIRO
 if WITH_GDK_PIXBUF
@@ -29,7 +29,8 @@ endif
 
 libgvplugin_gdk_pixbuf_C_la_SOURCES = \
 	gvplugin_gdk_pixbuf.c \
-	gvdevice_gdk_pixbuf.c
+	gvdevice_gdk_pixbuf.c \
+	gvloadimage_gdk_pixbuf.c
 
 libgvplugin_gdk_pixbuf_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_gdk_pixbuf_la_SOURCES = $(libgvplugin_gdk_pixbuf_C_la_SOURCES)
