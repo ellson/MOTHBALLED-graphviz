@@ -5,5 +5,5 @@
 
 \f0\fs26 \cf0 If you deselected the Command Line Tools and Libraries option, you must link to a different or older set of Graphviz libraries. 
 \f1\fs22 \cf2 \CocoaLigature0 \
-}]]></resource></locale></resources><flags/><item type="file">01usr.xml</item><item type="file">02graphviz.xml</item><mod>properties.title</mod><mod>properties.anywhereDomain</mod><mod>properties.systemDomain</mod></pkmkdoc>
+}]]></resource></locale></resources><flags/><item type="file">01local.xml</item><item type="file">02graphviz.xml</item><mod>properties.title</mod><mod>properties.anywhereDomain</mod><mod>properties.systemDomain</mod></pkmkdoc>
 
