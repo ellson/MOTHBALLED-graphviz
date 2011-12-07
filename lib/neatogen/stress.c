@@ -26,20 +26,6 @@
 #include <time.h>
 
 
- /* Optimization of the stress function using sparse distance matrix, within a vector-space */
- /* Fastest and least accurate method */
-static int sparse_stress_subspace_majorization_kD(vtx_data * graph,	/* Input graph in sparse representation */
-						  int n,	/* Number of nodes */
-						  int nedges_graph,	/* Number of edges */
-						  double **coords,	/* coordinates of nodes (output layout)  */
-						  int dim,	/* dimemsionality of layout */
-						  int smart_ini,	/* smart initialization */
-						  int reweight_graph,	/* difference model */
-						  int maxi,	/* max iterations */
-						  int dist_bound,	/* neighborhood in sparse distance matrix */
-						  int num_centers	/* #pivots in sparse distance matrix */
-    );
-
 #ifndef HAVE_DRAND48
 extern double drand48(void);
 #endif
@@ -72,7 +58,7 @@ typedef struct {
     boolean free_mem;
 } dist_data;
 
-static double compute_stressf(float **coords, float *lap, int dim, int n)
+static double compute_stressf(float **coords, float *lap, int dim, int n, int exp)
 {
     /* compute the overall stress */
 
@@ -91,13 +77,18 @@ static double compute_stressf(float **coords, float *lap, int dim, int n)
 							    [neighbor]);
 	    }
 	    dist = sqrt(dist);
+	    if (exp == 2) {
 #ifdef Dij2
-	    Dij = 1.0 / sqrt(lap[count]);
-	    sum += (Dij - dist) * (Dij - dist) * (lap[count]);
+		Dij = 1.0 / sqrt(lap[count]);
+		sum += (Dij - dist) * (Dij - dist) * (lap[count]);
 #else
-	    Dij = 1.0 / lap[count];
-	    sum += (Dij - dist) * (Dij - dist) * (lap[count]);
+		Dij = 1.0 / lap[count];
+		sum += (Dij - dist) * (Dij - dist) * (lap[count]);
 #endif
+	    } else {
+		Dij = 1.0 / lap[count];
+		sum += (Dij - dist) * (Dij - dist) * (lap[count]);
+	    }
 	}
     }
 
@@ -105,32 +96,54 @@ static double compute_stressf(float **coords, float *lap, int dim, int n)
 }
 
 static double
-compute_stress1(double **coords, dist_data * distances, int dim, int n)
+compute_stress1(double **coords, dist_data * distances, int dim, int n, int exp)
 {
     /* compute the overall stress */
 
     int i, j, l, node;
     double sum, dist, Dij;
     sum = 0;
-    for (i = 0; i < n; i++) {
-	for (j = 0; j < distances[i].nedges; j++) {
-	    node = distances[i].edges[j];
-	    if (node <= i) {
-		continue;
-	    }
-	    dist = 0;
-	    for (l = 0; l < dim; l++) {
-		dist +=
-		    (coords[l][i] - coords[l][node]) * (coords[l][i] -
-							coords[l][node]);
-	    }
-	    dist = sqrt(dist);
-	    Dij = distances[i].edist[j];
+    if (exp == 2) {
+	for (i = 0; i < n; i++) {
+	    for (j = 0; j < distances[i].nedges; j++) {
+		node = distances[i].edges[j];
+		if (node <= i) {
+		    continue;
+		}
+		dist = 0;
+		for (l = 0; l < dim; l++) {
+		    dist +=
+			(coords[l][i] - coords[l][node]) * (coords[l][i] -
+							    coords[l]
+							    [node]);
+		}
+		dist = sqrt(dist);
+		Dij = distances[i].edist[j];
 #ifdef Dij2
-	    sum += (Dij - dist) * (Dij - dist) / (Dij * Dij);
+		sum += (Dij - dist) * (Dij - dist) / (Dij * Dij);
 #else
-	    sum += (Dij - dist) * (Dij - dist) / Dij;
+		sum += (Dij - dist) * (Dij - dist) / Dij;
 #endif
+	    }
+	}
+    } else {
+	for (i = 0; i < n; i++) {
+	    for (j = 0; j < distances[i].nedges; j++) {
+		node = distances[i].edges[j];
+		if (node <= i) {
+		    continue;
+		}
+		dist = 0;
+		for (l = 0; l < dim; l++) {
+		    dist +=
+			(coords[l][i] - coords[l][node]) * (coords[l][i] -
+							    coords[l]
+							    [node]);
+		}
+		dist = sqrt(dist);
+		Dij = distances[i].edist[j];
+		sum += (Dij - dist) * (Dij - dist) / Dij;
+	    }
 	}
     }
 
@@ -237,6 +250,8 @@ float *circuitModel(vtx_data * graph, int nG)
 }
 
 /* sparse_stress_subspace_majorization_kD:
+ * Optimization of the stress function using sparse distance matrix, within a vector-space
+ * Fastest and least accurate method
  *
  * NOTE: We use integral shortest path values here, assuming
  * this is only to get an initial layout. In general, if edge lengths
@@ -248,6 +263,7 @@ static int sparse_stress_subspace_majorization_kD(vtx_data * graph,	/* Input gra
 						  double **coords,	/* coordinates of nodes (output layout)  */
 						  int dim,	/* dimemsionality of layout */
 						  int smart_ini,	/* smart initialization */
+						  int exp,	/* scale exponent */
 						  int reweight_graph,	/* difference model */
 						  int n_iterations,	/* max #iterations */
 						  int dist_bound,	/* neighborhood size in sparse distance matrix    */
@@ -514,14 +530,22 @@ static int sparse_stress_subspace_majorization_kD(vtx_data * graph,	/* Input gra
 	lap[i].nedges = distances[i].nedges + 1;	/*add the self loop */
 	dist_list = distances[i].edist - 1;	/* '-1' since edist[0] goes for number '1' entry in the lap */
 	degree = 0;
-	for (j = 1; j < lap[i].nedges; j++) {
-	    edges[j] = distances[i].edges[j - 1];
+	if (exp == 2) {
+	    for (j = 1; j < lap[i].nedges; j++) {
+		edges[j] = distances[i].edges[j - 1];
 #ifdef Dij2
-	    ewgts[j] = (float) -1.0 / ((float) dist_list[j] * (float) dist_list[j]);	/* cast to float to prevent overflow */
+		ewgts[j] = (float) -1.0 / ((float) dist_list[j] * (float) dist_list[j]);	/* cast to float to prevent overflow */
 #else
-	    ewgts[j] = -1.0 / (float) dist_list[j];
+		ewgts[j] = -1.0 / (float) dist_list[j];
 #endif
-	    degree -= ewgts[j];
+		degree -= ewgts[j];
+	    }
+	} else {
+	    for (j = 1; j < lap[i].nedges; j++) {
+		edges[j] = distances[i].edges[j - 1];
+		ewgts[j] = -1.0 / (float) dist_list[j];
+		degree -= ewgts[j];
+	    }
 	}
 	edges[0] = i;
 	ewgts[0] = (float) degree;
@@ -603,7 +627,7 @@ static int sparse_stress_subspace_majorization_kD(vtx_data * graph,	/* Input gra
 
     b = N_GNEW(n, double);
     b_restricted = N_GNEW(subspace_dim, double);
-    old_stress = compute_stress1(coords, distances, dim, n);
+    old_stress = compute_stress1(coords, distances, dim, n, exp);
     for (converged = FALSE, iterations = 0;
 	 iterations < n_iterations && !converged; iterations++) {
 
@@ -639,7 +663,7 @@ static int sparse_stress_subspace_majorization_kD(vtx_data * graph,	/* Input gra
 	}
 
 	if ((converged = (iterations % 2 == 0))) {	/* check for convergence each two iterations */
-	    new_stress = compute_stress1(coords, distances, dim, n);
+	    new_stress = compute_stress1(coords, distances, dim, n, exp);
 	    converged =
 		fabs(new_stress - old_stress) / (new_stress + 1e-10) <
 		Epsilon;
@@ -864,7 +888,7 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 				   double **d_coords,	/* coordinates of nodes (output layout) */
 				   node_t ** nodes,	/* original nodes */
 				   int dim,	/* dimemsionality of layout */
-				   int smart_ini,	/* smart initialization */
+				   int opts,    /* options */
 				   int model,	/* model */
 				   int maxi	/* max iterations */
     )
@@ -890,6 +914,8 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
     float *tmp_coords;
     float *dist_accumulator;
     float *lap1;
+    int smart_ini = opts & opt_smart_init;
+    int exp = opts & opt_exp_flag;
     int len;
     int havePinned;		/* some node is pinned */
 #ifdef ALTERNATIVE_STRESS_CALC
@@ -958,7 +984,7 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 	/* perform at most 50 iterations within 30-D subspace to 
 	   get an estimate */
 	sparse_stress_subspace_majorization_kD(graph, n, nedges_graph,
-					       d_coords, dim, smart_ini,
+					       d_coords, dim, smart_ini, exp,
 					       (model == MODEL_SUBSET), 50,
 					       neighborhood_radius_subspace,
 					       num_pivots_stress);
@@ -1004,17 +1030,27 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 
     /* compute constant term in stress sum */
     /* which is \sum_{i<j} w_{ij}d_{ij}^2 */
+    if (exp) {
 #ifdef Dij2
-    constant_term = ((float) n * (n - 1) / 2);
+	constant_term = ((float) n * (n - 1) / 2);
 #else
-    constant_term = 0;
-    for (count = 0, i = 0; i < n - 1; i++) {
-	count++;		/* skip self distance */
-	for (j = 1; j < n - i; j++, count++) {
-	    constant_term += Dij[count];
+	constant_term = 0;
+	for (count = 0, i = 0; i < n - 1; i++) {
+	    count++;		/* skip self distance */
+	    for (j = 1; j < n - i; j++, count++) {
+		constant_term += Dij[count];
+	    }
+	}
+#endif
+    } else {
+	constant_term = 0;
+	for (count = 0, i = 0; i < n - 1; i++) {
+	    count++;		/* skip self distance */
+	    for (j = 1; j < n - i; j++, count++) {
+		constant_term += Dij[count];
+	    }
 	}
     }
-#endif
 
 	/**************************
 	** Laplacian computation **
@@ -1022,9 +1058,11 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 
     lap_length = n * (n + 1) / 2;
     lap2 = Dij;
+    if (exp == 2) {
 #ifdef Dij2
     square_vec(lap_length, lap2);
 #endif
+    }
     /* compute off-diagonal entries */
     invert_vec(lap_length, lap2);
 
@@ -1100,17 +1138,19 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 	/* First, construct Laplacian of 1/(d_ij*|p_i-p_j|)  */
 	/* set_vector_val(n, 0, degrees); */
 	memset(degrees, 0, n * sizeof(DegType));
+	if (exp == 2) {
 #ifdef Dij2
 #ifdef NONCORE
-	if (n <= max_nodes_in_mem) {
-	    sqrt_vecf(lap_length, lap2, lap1);
-	} else {
-	    sqrt_vec(lap_length, lap1);
-	}
+	    if (n <= max_nodes_in_mem) {
+		sqrt_vecf(lap_length, lap2, lap1);
+	    } else {
+		sqrt_vec(lap_length, lap1);
+	    }
 #else
-	sqrt_vecf(lap_length, lap2, lap1);
+	    sqrt_vecf(lap_length, lap2, lap1);
 #endif
 #endif
+	}
 	for (count = 0, i = 0; i < n - 1; i++) {
 	    len = n - i - 1;
 	    /* init 'dist_accumulator' with zeros */
@@ -1138,14 +1178,22 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 
 	    count++;		/* save place for the main diagonal entry */
 	    degree = 0;
-	    for (j = 0; j < len; j++, count++) {
+	    if (exp == 2) {
+		for (j = 0; j < len; j++, count++) {
 #ifdef Dij2
-		val = lap1[count] *= dist_accumulator[j];
+		    val = lap1[count] *= dist_accumulator[j];
 #else
-		val = lap1[count] = dist_accumulator[j];
+		    val = lap1[count] = dist_accumulator[j];
 #endif
-		degree += val;
-		degrees[i + j + 1] -= val;
+		    degree += val;
+		    degrees[i + j + 1] -= val;
+		}
+	    } else {
+		for (j = 0; j < len; j++, count++) {
+		    val = lap1[count] = dist_accumulator[j];
+		    degree += val;
+		    degrees[i + j + 1] -= val;
+		}
 	    }
 	    degrees[i] -= degree;
 	}
@@ -1223,7 +1271,7 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
     }
     if (Verbose) {
 	fprintf(stderr, "\nfinal e = %f %d iterations %.2f sec\n",
-		compute_stressf(coords, lap2, dim, n),
+		compute_stressf(coords, lap2, dim, n, exp),
 		iterations, elapsed_sec());
     }
 #ifdef WITH_CGRAPH
