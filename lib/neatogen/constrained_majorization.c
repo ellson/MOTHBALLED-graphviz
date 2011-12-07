@@ -38,7 +38,7 @@ stress_majorization_with_hierarchy(
     double** d_coords,  /* Coordinates of nodes (output layout)  */
     node_t** nodes,     /* Original nodes */
     int dim,            /* Dimemsionality of layout */
-    int smart_ini,      /* smart initialization */
+    int opts,      /* options */
     int model,          /* difference model */
     int maxi,           /* max iterations */
     double levels_gap
@@ -72,6 +72,7 @@ stress_majorization_with_hierarchy(
 	CMajEnv *cMajEnv = NULL;
 	double y_0;
 	int length;
+	int smart_ini = opts & opt_smart_init;
 	DistType diameter;
 	float * Dij=NULL;
     /* to compensate noises, we never consider gaps smaller than 'abs_tol' */
@@ -98,7 +99,7 @@ stress_majorization_with_hierarchy(
 		}
 	}
 	if (!directionalityExist) {
-		return stress_majorization_kD_mkernel(graph, n, nedges_graph, d_coords, nodes, dim, smart_ini, model, maxi);
+		return stress_majorization_kD_mkernel(graph, n, nedges_graph, d_coords, nodes, dim, opts, model, maxi);
 	}
 
 	/******************************************************************
@@ -110,7 +111,7 @@ stress_majorization_with_hierarchy(
 		double* y;
 		if (dim>2) {
 			/* the dim==2 case is handled below			 */
-			stress_majorization_kD_mkernel(graph, n, nedges_graph, d_coords+1, nodes, dim-1, smart_ini, model, 15);
+			stress_majorization_kD_mkernel(graph, n, nedges_graph, d_coords+1, nodes, dim-1, opts, model, 15);
 			/* now copy the y-axis into the (dim-1)-axis */
 			for (i=0; i<n; i++) {
 				d_coords[dim-1][i] = d_coords[1][i];
@@ -122,7 +123,7 @@ stress_majorization_with_hierarchy(
 		compute_hierarchy(graph, n, abs_tol, relative_tol, y, &ordering, &levels, &num_levels);
 		if (num_levels<=1) {
 			/* no hierarchy found, use faster algorithm */
-			return stress_majorization_kD_mkernel(graph, n, nedges_graph, d_coords, nodes, dim, smart_ini, model, maxi);
+			return stress_majorization_kD_mkernel(graph, n, nedges_graph, d_coords, nodes, dim, opts, model, maxi);
 		}
 
 		if (levels_gap>0) {

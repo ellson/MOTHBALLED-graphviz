@@ -10,6 +10,8 @@
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
 
+#include <config.h>
+
 #include "index.h"
 #include <stdio.h>
 #include <assert.h>
@@ -115,20 +117,52 @@ void PrintRect(Rect_t * r)
 /*-----------------------------------------------------------------------------
 | Calculate the n-dimensional area of a rectangle
 -----------------------------------------------------------------------------*/
+#if SIZEOF_LONG_LONG > SIZEOF_INT
+int RectArea(Rect_t * r) {
+  register int i, area;
+  long long a=1;
+  assert(r);
+  if (Undefined(r)) return 0;
+
+  for (i = 0; i < NUMDIMS; i++) {
+    a *= r->boundary[i + NUMDIMS] - r->boundary[i];
+  }
+  if(a > INT_MAX) return INT_MAX;
+  area = a;
+  return area;
+}
+#else
+int RectArea(Rect_t * r) {   /* more expensize test */
+    register int i, area=1;
+    int a = 1;
+    assert(r);
+    if (Undefined(r)) return 0;
+
+    for (i = 0; i < NUMDIMS; i++) {
+      int b = r->boundary[i + NUMDIMS] - r->boundary[i];
+      a *= b;
+      if( (a / b ) != area)
+	return INT_MAX;
+      area = a;
+    }
+    return area;
+}
+#endif /*SIZEOF_LONG_LONG > SIZEOF_INT*/
+#if 0 /*original code*/
 int RectArea(Rect_t * r)
 {
-    register int i, area;
+    register int i, area=1;
     assert(r);
 
     if (Undefined(r))
 	return 0;
-
     area = 1;
     for (i = 0; i < NUMDIMS; i++) {
 	area *= r->boundary[i + NUMDIMS] - r->boundary[i];
     }
     return area;
 }
+#endif
 
 /*-----------------------------------------------------------------------------
 | Combine two rectangles, make one that includes both.

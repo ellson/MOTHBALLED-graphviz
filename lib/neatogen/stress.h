@@ -40,6 +40,8 @@ extern "C" {
 #define neighborhood_radius_unrestricted  4
 #define neighborhood_radius_subspace 0
 
+#define opt_smart_init 0x4
+#define opt_exp_flag   0x3
 
     /* Full dense stress optimization (equivalent to Kamada-Kawai's energy) */
     /* Slowest and most accurate optimization */
@@ -49,7 +51,7 @@ extern "C" {
 					      double **coords,	/* coordinates of nodes (output layout)  */
 					      node_t **nodes,	/* original nodes  */
 					      int dim,	/* dimemsionality of layout */
-					      int smart_ini,	/* smart initialization */
+					      int opts,	/* option flags */
 					      int model,	/* model */
 					      int maxi	/* max iterations */
 	);
