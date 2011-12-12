@@ -342,7 +342,7 @@ If not set, libgd uses its compiled-in font path.
 Note that fontpath is an attribute of the root graph.
 :fontsize:ENGC:double:14.0:1.0;
 Font size, <A HREF=#points>in points</A>, used for text.
-:forcelabels:G:bool:false;
+:forcelabels:G:bool:true;
 If true, all  <A HREF=#d:xlabel><B>xlabel</B></A> attributes are placed, even if there is some overlap with nodes
 or other labels.
 :group:N:string:"";  dot
