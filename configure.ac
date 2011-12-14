@@ -793,16 +793,21 @@ else
       if test "x$JAVA" = "x"; then
         use_java="No (java not available)"
       else
-	case "${host_os}" in
-	  *darwin* )
-            JAVA_INCLUDES="-I/System/Library/Frameworks/JavaVM.framework/Headers"
-	    JAVE_LIBS=
-	    ;;
-	  *)
-            JAVA_INCLUDES="-I/usr/lib/jvm/java/include -I/usr/lib/jvm/java/include/linux"
-	    JAVE_LIBS=
-	    ;;
-        esac
+        for try_java_include in \
+          /System/Library/Frameworks/JavaVM.framework/Headers \
+          /usr/lib/jvm/java/include \
+          /usr/lib/jvm/java/include/linux \
+          /usr/lib/jvm/default-java/include \
+          /usr/lib/jvm/default-java/include/linux \
+          /etc/java-config-2/current-system-vm/include \
+          /etc/java-config-2/current-system-vm/include/linux \
+          /etc/java-config-2/current-system-vm/include/freebsd
+        do
+          if test -d "$try_java_include" ; then
+            JAVA_INCLUDES="$JAVA_INCLUDES -I${try_java_include}"
+          fi
+        done
+        JAVA_LIBS=
         AC_ARG_WITH(javaincludedir,
            [AS_HELP_STRING([--with-javaincludedir=DIR],[use JAVA includes from DIR])],
           [JAVA_INCLUDES="-I$withval"])

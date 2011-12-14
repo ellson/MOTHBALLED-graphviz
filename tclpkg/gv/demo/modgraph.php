@@ -1,5 +1,5 @@
 #!/usr/bin/php
-<?
+<?php
 include("gv.php");
 
 # display the kernel module dependencies
