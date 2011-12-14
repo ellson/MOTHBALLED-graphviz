@@ -582,8 +582,10 @@ printSorted (Agraph_t* root, int c_cnt)
 		sortIndex, agnameof(root));
 	    return;
 	}
-	if (sortFinal >= sortIndex)
+	if (sortFinal >= sortIndex) {
 	    endi = sortFinal;
+	    if (endi >= c_cnt) endi = c_cnt-1;
+	}
 	else
 	    endi = c_cnt-1;
         for (i = sortIndex; i <= endi ; i++) {
