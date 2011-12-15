@@ -208,31 +208,34 @@ static double aabbaabb(Rect_t * r, Rect_t * s)
     return (imaxx - iminx) * (imaxy - iminy);
 }
 
+#if 0
 /*
  * test if objp1, a size 0 object is enclosed in the xlabel
  * associated with objp
+ * if objp1 label is set, then test if objp is inside 
  */
 static int lblenclosing(object_t * objp, object_t * objp1)
 {
-  xlabel_t * xlp = objp->lbl;;
+  xlabel_t * xlp = objp->lbl;
 
   assert(objp1->sz.x == 0 && objp1->sz.y == 0);
 
   if(! xlp) return 0;
 
-  return objp1->pos.x > xlp->pos.x &&
-	 objp1->pos.x < (xlp->pos.x + xlp->sz.x) &&
-	 objp1->pos.y > xlp->pos.y &&
-	 objp1->pos.y < (xlp->pos.y + xlp->sz.y);
+  return objp1->pos.x > (xlp->pos.x - xlp->sz.x/2.0) &&
+         objp1->pos.x < (xlp->pos.x + xlp->sz.x/2.0) &&
+         objp1->pos.y > (xlp->pos.y - xlp->sz.y/2.0) &&
+         objp1->pos.y < (xlp->pos.y + xlp->sz.y/2.0);
 }
+#endif
 
 /*fill in rectangle from the object */
 static void objp2rect(object_t * op, Rect_t * r)
 {
-    r->boundary[0] = op->pos.x;
-    r->boundary[1] = op->pos.y;
-    r->boundary[2] = op->pos.x + op->sz.x;
-    r->boundary[3] = op->pos.y + op->sz.y;
+    r->boundary[0] = op->pos.x - op->sz.x/2.0;
+    r->boundary[1] = op->pos.y - op->sz.y/2.0;
+    r->boundary[2] = op->pos.x + op->sz.x/2.0;
+    r->boundary[3] = op->pos.y + op->sz.y/2.0;
     return;
 }
 
@@ -240,10 +243,10 @@ static void objp2rect(object_t * op, Rect_t * r)
 static void objplp2rect(object_t * objp, Rect_t * r)
 {
     xlabel_t *lp = objp->lbl;
-    r->boundary[0] = lp->pos.x;
-    r->boundary[1] = lp->pos.y;
-    r->boundary[2] = lp->pos.x + lp->sz.x;
-    r->boundary[3] = lp->pos.y + lp->sz.y;
+    r->boundary[0] = lp->pos.x - lp->sz.x/2.0;
+    r->boundary[1] = lp->pos.y - lp->sz.y/2.0;
+    r->boundary[2] = lp->pos.x + lp->sz.x/2.0;
+    r->boundary[3] = lp->pos.y + lp->sz.y/2.0;
     return;
 }
 
@@ -257,12 +260,12 @@ static Rect_t objplpmks(XLabels_t * xlp, object_t * objp)
     if (objp->lbl)
 	p = objp->lbl->sz;
 
-    rect.boundary[0] = (int) floor(objp->pos.x - p.x);
-    rect.boundary[1] = (int) floor(objp->pos.y - p.y);
+    rect.boundary[0] = (int) floor(objp->pos.x - p.x/2.0);
+    rect.boundary[1] = (int) floor(objp->pos.y - p.y/2.0);
 
-    rect.boundary[2] = (int) ceil(objp->pos.x + objp->sz.x + p.x);
+    rect.boundary[2] = (int) ceil(objp->pos.x + objp->sz.x/2.0 + p.x/2.0);
     assert(rect.boundary[2] < INT_MAX);
-    rect.boundary[3] = (int) ceil(objp->pos.y + objp->sz.y + p.y);
+    rect.boundary[3] = (int) ceil(objp->pos.y + objp->sz.y/2.0 + p.y/2.0);
     assert(rect.boundary[3] < INT_MAX);
 
     return rect;
@@ -370,11 +373,14 @@ recordlintrsx(XLabels_t * xlp, object_t * op, object_t * cp, Rect_t * rp,
     return a;
 }
 
+#if 1
+#include <types.h>
+#endif
+
 /* find the objects and labels intersecting lp */
 static BestPos_t
 xlintersections(XLabels_t * xlp, object_t * objp, object_t * intrsx[XLNBR])
 {
-    int i;
     LeafList_t *ilp, *llp;
     Rect_t rect, srect;
     BestPos_t bp;
@@ -384,14 +390,6 @@ xlintersections(XLabels_t * xlp, object_t * objp, object_t * intrsx[XLNBR])
     bp.n = 0;
     bp.area = 0.0;
     bp.pos = objp->lbl->pos;
-
-    for(i=0; i<xlp->n_objs; i++) {
-      if(objp == &xlp->objs[i]) continue;
-      if(xlp->objs[i].sz.x > 0 && xlp->objs[i].sz.y > 0) continue;
-      if(lblenclosing(objp, &xlp->objs[i]) ) {
-	bp.n++;
-      }
-    }
 
     objplp2rect(objp, &rect);
 
@@ -406,6 +404,12 @@ xlintersections(XLabels_t * xlp, object_t * objp, object_t * intrsx[XLNBR])
 	if (cp == objp)
 	    continue;
 
+#if 0
+	if(strcmp(((textlabel_t*)(cp->lbl->lbl))->text, "ba29") == 0 ||
+	   strcmp(((textlabel_t*)(cp->lbl->lbl))->text, "login") == 0) {
+	  fprintf(stderr, "\t%s\n", ((textlabel_t*)(objp->lbl->lbl))->text);
+	}
+#endif
 	/*label-object intersect */
 	objp2rect(cp, &srect);
 	a = aabbaabb(&rect, &srect);
@@ -439,6 +443,10 @@ static BestPos_t xladjust(XLabels_t * xlp, object_t * objp)
     xlabel_t *lp = objp->lbl;
     double xincr = ((2 * lp->sz.x) + objp->sz.x) / XLXDENOM;
     double yincr = ((2 * lp->sz.y) + objp->sz.y) / XLYDENOM;
+    double minx = (objp->pos.x - objp->sz.x/2.0 - lp->sz.x/2.0);
+    double maxx = (objp->pos.x + objp->sz.x/2.0 + lp->sz.x/2.0);
+    double miny = (objp->pos.y - objp->sz.y/2.0 - lp->sz.y/2.0);
+    double maxy = (objp->pos.y + objp->sz.y/2.0 + lp->sz.y/2.0);
     object_t *intrsx[XLNBR];
     BestPos_t bp, nbp;
 
@@ -447,12 +455,48 @@ static BestPos_t xladjust(XLabels_t * xlp, object_t * objp)
     memset(intrsx, 0, sizeof(intrsx));
 
     /*x left */
-    lp->pos.x = objp->pos.x - lp->sz.x;
+    lp->pos.x = minx;
     /*top */
-    lp->pos.y = objp->pos.y + objp->sz.y;
+    lp->pos.y = maxy;
     bp = xlintersections(xlp, objp, intrsx);
     if (bp.n == 0)
 	return bp;
+
+    /*x right */
+    lp->pos.x = maxx;
+    /* bottom */
+    lp->pos.y = miny;
+    nbp = xlintersections(xlp, objp, intrsx);
+    if (nbp.n == 0)
+	return nbp;
+    if (nbp.area < bp.area)
+	bp = nbp;
+
+    /*mid */
+    lp->pos.x = minx;
+    lp->pos.y = objp->pos.y;
+    nbp = xlintersections(xlp, objp, intrsx);
+    if (nbp.n == 0)
+	return nbp;
+    if (nbp.area < bp.area)
+	bp = nbp;
+    /*bottom */
+    lp->pos.y = miny;
+    nbp = xlintersections(xlp, objp, intrsx);
+    if (nbp.n == 0)
+	return nbp;
+    if (nbp.area < bp.area)
+	bp = nbp;
+
+    /*x right */
+    lp->pos.x = maxx;
+    /*top */
+    lp->pos.y = maxy;
+    nbp = xlintersections(xlp, objp, intrsx);
+    if (nbp.n == 0)
+	return nbp;
+    if (nbp.area < bp.area)
+	bp = nbp;
     /*mid */
     lp->pos.y = objp->pos.y;
     nbp = xlintersections(xlp, objp, intrsx);
@@ -461,7 +505,7 @@ static BestPos_t xladjust(XLabels_t * xlp, object_t * objp)
     if (nbp.area < bp.area)
 	bp = nbp;
     /*bottom */
-    lp->pos.y = objp->pos.y - lp->sz.y;
+    lp->pos.y = miny;
     nbp = xlintersections(xlp, objp, intrsx);
     if (nbp.n == 0)
 	return nbp;
@@ -471,38 +515,14 @@ static BestPos_t xladjust(XLabels_t * xlp, object_t * objp)
     /*x mid */
     lp->pos.x = objp->pos.x;
     /*top */
-    lp->pos.y = objp->pos.y + objp->sz.y;
+    lp->pos.y = maxy;
     nbp = xlintersections(xlp, objp, intrsx);
     if (nbp.n == 0)
 	return nbp;
     if (nbp.area < bp.area)
 	bp = nbp;
     /*bottom */
-    lp->pos.y = objp->pos.y - lp->sz.y;
-    nbp = xlintersections(xlp, objp, intrsx);
-    if (nbp.n == 0)
-	return nbp;
-    if (nbp.area < bp.area)
-	bp = nbp;
-
-    /*x right */
-    lp->pos.x = objp->pos.x + objp->sz.x;
-    /*top */
-    lp->pos.y = objp->pos.y + objp->sz.y;
-    nbp = xlintersections(xlp, objp, intrsx);
-    if (nbp.n == 0)
-	return nbp;
-    if (nbp.area < bp.area)
-	bp = nbp;
-    /*mid */
-    lp->pos.y = objp->pos.y;
-    nbp = xlintersections(xlp, objp, intrsx);
-    if (nbp.n == 0)
-	return nbp;
-    if (nbp.area < bp.area)
-	bp = nbp;
-    /*bottom */
-    lp->pos.y = objp->pos.y - lp->sz.y;
+    lp->pos.y = miny;
     nbp = xlintersections(xlp, objp, intrsx);
     if (nbp.n == 0)
 	return nbp;
@@ -512,31 +532,26 @@ static BestPos_t xladjust(XLabels_t * xlp, object_t * objp)
     /*sliding from top left */
     if (intrsx[XLPXNY] || intrsx[XLCXNY] || intrsx[XLNXNY] || intrsx[XLPXCY] || intrsx[XLPXPY]) {	/* have to move */
 	if (!intrsx[XLCXNY] && !intrsx[XLNXNY]) {	/* some room right? */
-	    /* slide along upper edge */
-	    for (lp->pos.x = objp->pos.x - lp->sz.x,
-		 lp->pos.y = objp->pos.y + objp->sz.y;
-		 lp->pos.x <= (objp->pos.x + objp->sz.x);
-		 lp->pos.x += xincr) {
-		nbp = xlintersections(xlp, objp, intrsx);
-		if (nbp.n == 0)
-		    return nbp;
-		if (nbp.area < bp.area)
-		    bp = nbp;
-	    }
+	  /* slide along upper edge */
+	  for (lp->pos.x = minx, lp->pos.y = maxy; lp->pos.x <= maxx;
+	       lp->pos.x += xincr) {
+	    nbp = xlintersections(xlp, objp, intrsx);
+	    if (nbp.n == 0)
+	      return nbp;
+	    if (nbp.area < bp.area)
+	      bp = nbp;
+	  }
 	}
 	if (!intrsx[XLPXCY] && !intrsx[XLPXPY]) {	/* some room down? */
 	    /* slide down left edge */
-	    for (lp->pos.x = objp->pos.x - lp->sz.x,
-		 lp->pos.y = objp->pos.y + objp->sz.y;
-		 lp->pos.y >= (objp->pos.y - lp->sz.y);
-		 lp->pos.y -= yincr) {
-		nbp = xlintersections(xlp, objp, intrsx);
-		if (nbp.n == 0)
-		    return nbp;
-		if (nbp.area < bp.area)
-		    bp = nbp;
-
-	    }
+	  for (lp->pos.x = minx, lp->pos.y = maxy; lp->pos.y >= miny;
+	       lp->pos.y -= yincr) {
+	    nbp = xlintersections(xlp, objp, intrsx);
+	    if (nbp.n == 0)
+	      return nbp;
+	    if (nbp.area < bp.area)
+	      bp = nbp;
+	  }
 	}
     }
 
@@ -546,9 +561,7 @@ static BestPos_t xladjust(XLabels_t * xlp, object_t * objp)
     if (intrsx[XLNXPY] || intrsx[XLCXPY] || intrsx[XLPXPY] || intrsx[XLNXCY] || intrsx[XLNXNY]) {	/* have to move */
 	if (!intrsx[XLCXPY] && !intrsx[XLPXPY]) {	/* some room left? */
 	    /* slide along lower edge */
-	    for (lp->pos.x = objp->pos.x + objp->sz.x,
-		 lp->pos.y = objp->pos.y - lp->sz.y;
-		 lp->pos.x >= (objp->pos.x - lp->sz.x);
+	  for (lp->pos.x = maxx, lp->pos.y = miny; lp->pos.x >= minx;
 		 lp->pos.x -= xincr) {
 		nbp = xlintersections(xlp, objp, intrsx);
 		if (nbp.n == 0)
@@ -559,9 +572,7 @@ static BestPos_t xladjust(XLabels_t * xlp, object_t * objp)
 	}
 	if (!intrsx[XLNXCY] && !intrsx[XLNXNY]) {	/* some room up? */
 	    /* slide up right edge */
-	    for (lp->pos.x = objp->pos.x + objp->sz.x,
-		 lp->pos.y = objp->pos.y - lp->sz.y;
-		 lp->pos.y <= (objp->pos.y + objp->sz.y);
+	  for (lp->pos.x = maxx, lp->pos.y = miny; lp->pos.y <= maxy;
 		 lp->pos.y += yincr) {
 		nbp = xlintersections(xlp, objp, intrsx);
 		if (nbp.n == 0)
@@ -587,12 +598,9 @@ static int xlhdxload(XLabels_t * xlp)
 	hp = NEW(HDict_t);
 
 	hp->d.data = &xlp->objs[i];
-	hp->d.rect = objplpmks(xlp, &xlp->objs[i]);
-	/* center of the labeling area */
-	pi.x = hp->d.rect.boundary[0] +
-	    (hp->d.rect.boundary[2] - hp->d.rect.boundary[0]) / 2;
-	pi.y = hp->d.rect.boundary[1] +
-	    (hp->d.rect.boundary[3] - hp->d.rect.boundary[1]) / 2;
+
+	pi.x = xlp->objs[i].pos.x;
+	pi.y = xlp->objs[i].pos.y;
 
 	hp->key = hd_hil_s_from_xy(pi, order);
 
@@ -609,6 +617,7 @@ static int xlspdxload(XLabels_t * xlp)
     HDict_t *op;
 
     for (op = dtfirst(xlp->hdx); op; op = dtnext(xlp->hdx, op)) {
+        op->d.rect = objplpmks(xlp, op->d.data);
 	/*          tree       rectangle    data        node             lvl */
 	RTreeInsert(xlp->spdx, &op->d.rect, op->d.data, &xlp->spdx->root,
 		    0);
@@ -624,6 +633,24 @@ static int xlinitialize(XLabels_t * xlp)
     if ((r = xlspdxload(xlp)) < 0)
 	return r;
     return dtclose(xlp->hdx);
+}
+
+static void printobjects(XLabels_t * xlp) {
+  int i;
+
+  for(i = 0; i < xlp->n_objs; i++) {
+    object_t*op = &xlp->objs[i];
+    if(op->lbl) {
+      char *nm = ((textlabel_t*)op->lbl->lbl)->text;
+      fprintf(stderr, "%s obj: %g %g %g %g lbl: %g %g %g %g\n", nm,
+	      op->pos.x, op->pos.y, op->sz.x, op->sz.y,
+	      op->lbl->pos.x, op->lbl->pos.y,
+	      op->lbl->sz.x, op->lbl->sz.y);
+    } else {
+      fprintf(stderr, "%g %g %g %g\n",
+	      op->pos.x, op->pos.y, op->sz.x, op->sz.y);
+    }
+  }
 }
 
 int
@@ -653,9 +680,11 @@ placeLabels(object_t * objs, int n_objs,
      */
     r = 0;
     for (i = 0; i < n_objs; i++) {
+        textlabel_t* lbl=0;
 	if (objs[i].lbl == 0)
 	    continue;
 	bp = xladjust(xlp, &objs[i]);
+	lbl = ((textlabel_t*)objs[i].lbl->lbl);
 	if (bp.n == 0) {
 	    objs[i].lbl->set = 1;
 	} else if(bp.area == 0) {
@@ -670,6 +699,9 @@ placeLabels(object_t * objs, int n_objs,
 	    r = 1;
 	}
     }
+#if 0
+    printobjects(xlp);
+#endif
     xlfree(xlp);
     return r;
 }
