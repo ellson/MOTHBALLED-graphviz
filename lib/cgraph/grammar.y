@@ -299,6 +299,9 @@ static void nomacros(void)
 	agerr(AGWARN,"attribute macros not implemented");
 }
 
+/* attrstmt:
+ * First argument is always attrtype, so switch covers all cases.
+ */
 static void attrstmt(int tkind, char *macroname)
 {
 	item			*aptr;
@@ -315,7 +318,6 @@ static void attrstmt(int tkind, char *macroname)
 		case T_graph: kind = AGRAPH; break;
 		case T_node: kind = AGNODE; break;
 		case T_edge: kind = AGEDGE; break;
-		default : abort();
 	}
 	bindattrs(kind);	/* set up defaults for new attributes */
 	for (aptr = Attrlist.first; aptr; aptr = aptr->next) {
