@@ -932,7 +932,7 @@ void check_cycles(graph_t * g)
 	ND_mark(n) = ND_onstack(n) = FALSE;
     for (n = agfstnode(g); n; n = agnxtnode(g, n))
 	checkdfs(g, n);
-    for (n = agfstnode(g); n; n = agnxtnode(g, n))
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (ND_mark(n) == FALSE) {
 	    fprintf (stderr, "graph is unconnected\n");
 	    break;

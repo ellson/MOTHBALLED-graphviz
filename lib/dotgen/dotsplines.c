@@ -2554,14 +2554,14 @@ edge_t *ie1, *oe1;
 void showpath(path * p)
 {
     int i;
-    point LL, UR;
+    pointf LL, UR;
 
     fprintf(stderr, "%%!PS\n");
     for (i = 0; i < p->nbox; i++) {
 	LL = p->boxes[i].LL;
 	UR = p->boxes[i].UR;
 	fprintf(stderr,
-		"newpath %d %d moveto %d %d lineto %d %d lineto %d %d lineto closepath stroke\n",
+		"newpath %.04f %.04f moveto %.04f %.04f lineto %.04f %.04f lineto %.04f %.04f lineto closepath stroke\n",
 		LL.x, LL.y, UR.x, LL.y, UR.x, UR.y, LL.x, UR.y);
     }
     fprintf(stderr, "showpage\n");

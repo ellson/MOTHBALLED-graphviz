@@ -278,7 +278,7 @@ raySegIntersect(pointf v, pointf w, pointf a, pointf b, pointf * p)
 	return 0;
 }
 
-#ifdef DEBUG
+#ifdef DEVDBG
 #include <psdbg.c>
 #endif
 
@@ -299,7 +299,7 @@ triPoint(tripoly_t * trip, int vx, pointf v, pointf w, pointf * ip)
 	    (v, w, trip->poly.ps[tp->v.i], trip->poly.ps[tp->v.j], ip))
 	    return 0;
     }
-#ifdef DEBUG
+#ifdef DEVDBG
     psInit();
     psComment ("Failure in triPoint");
     psColor("0 0 1");
@@ -645,7 +645,7 @@ void freeRouter(router_t * rtr)
     free(rtr);
 }
 
-#ifdef DEBUG
+#ifdef DEVDBG
 static void
 prTriPoly (tripoly_t *poly, int si, int ei)
 {

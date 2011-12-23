@@ -75,7 +75,7 @@ and cluster subgraphs, respectively.
 This field indicates which graph component uses the attribute.
 <HR ALIGN=CENTER WIDTH="70%" SIZE=3>
 <TABLE ALIGN=CENTER>
-<TR><TH>Name</TH><TH><A HREF=#h:uses>Used By</A></TH><TH>Type</TH><TH >Default</TH><TH>Minimum</TH><TH>Notes</TH></TR>
+<TR><TH>Name</TH><TH><A HREF=#h:uses>Used By</A></TH><TH>Type</TH><TH ALIGN=CENTER>Default</TH><TH>Minimum</TH><TH>Notes</TH></TR>
  <TR><TD><A NAME=a:Damping HREF=#d:Damping>Damping</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.99</TD><TD>0.0</TD><TD>neato only</TD> </TR>
  <TR><TD><A NAME=a:K HREF=#d:K>K</A>
@@ -183,7 +183,7 @@ This field indicates which graph component uses the attribute.
 </TD><TD>ENGC</TD><TD>double</TD><TD ALIGN="CENTER">14.0</TD><TD>1.0</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:forcelabels HREF=#d:forcelabels>forcelabels</A>
 </TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
-</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
+</TD><TD ALIGN="CENTER">true</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:group HREF=#d:group>group</A>
 </TD><TD>N</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>dot only</TD> </TR>
  <TR><TD><A NAME=a:headURL HREF=#d:headURL>headURL</A>
@@ -1085,7 +1085,7 @@ This field indicates which graph component uses the attribute.
 <DD>  Specifies a linearly ordered list of layer names attached to the graph
   The graph is then output in separate layers. Only those components
   belonging to the current output layer appear. For more information,
-  see the page <A HREF="http://www.graphviz.org/Documentation/html/layers/">How to use drawing layers (overlays)</A>.
+  see the page <A HREF="http://www.graphviz.org/wiki/how-use-drawing-layers-overlays">How to use drawing layers (overlays)</A>.
 
 <DT><A NAME=d:layersep HREF=#a:layersep><STRONG>layersep</STRONG></A>
 <DD>  Specifies the separator characters used to split the
@@ -2196,7 +2196,7 @@ enclosed in the parentheses,  <TT>(...)+</TT> indicates 1 or more, and
    <TR><TD ALIGN=right>and startp<TD>=<TD>"s,%f,%f"</TR>
   </TABLE>
   If a spline has points p<SUB>1</SUB> p<SUB>2</SUB> p<SUB>3</SUB> ... p<SUB>n</SUB>, (n = 1 (mod 3)), the points
-   correspond to the control points of a B-spline from p<SUB>1</SUB> to p<SUB>n</SUB>. If startp
+   correspond to the control points of a cubic B-spline from p<SUB>1</SUB> to p<SUB>n</SUB>. If startp
    is given, it touches one node of the edge, and the arrowhead
    goes from p<SUB>1</SUB> to startp. If startp is not given, p<SUB>1</SUB> touches a node.
    Similarly for p<SUB>n</SUB>  and endp.

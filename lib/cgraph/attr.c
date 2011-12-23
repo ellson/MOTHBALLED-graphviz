@@ -68,7 +68,9 @@ Dict_t *agdictof(Agraph_t * g, int kind)
 	    dict = dd->dict.e;
 	    break;
 	default:
-	    abort();
+	    agerr(AGERR,"agdictof: unknown kind %d\n", kind);
+	    dict = NIL(Dict_t *);
+	    break;
     } else
 	dict = NIL(Dict_t *);
     return dict;
