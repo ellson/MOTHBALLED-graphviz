@@ -165,7 +165,6 @@ extern "C" {
     void agFREEdict(Agraph_t *, Agdict_t *);
     void agFREEedge(Agedge_t *);
     void agFREEnode(Agnode_t *);
-    void aginitlib(int, int, int);
     void agINSedge(Agraph_t *, Agedge_t *);
     void agINSgraph(Agraph_t *, Agraph_t *);
     void agINSnode(Agraph_t *, Agnode_t *);
