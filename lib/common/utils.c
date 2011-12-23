@@ -2034,3 +2034,11 @@ findCluster (Dt_t* map, char* name)
 	return NULL;
 }
 #endif
+
+#ifdef WITH_CGRAPH
+#ifdef DEBUG
+Agnodeinfo_t* ninfo(Agnode_t* n) {return (Agnodeinfo_t*)AGDATA(n);}
+Agraphinfo_t* ginfo(Agraph_t* g) {return (Agraphinfo_t*)AGDATA(g);}
+Agedgeinfo_t* einfo(Agedge_t* e) {return (Agedgeinfo_t*)AGDATA(e);}
+#endif
+#endif
