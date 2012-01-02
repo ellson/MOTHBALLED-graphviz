@@ -258,7 +258,7 @@ libgv_tcl_la_CPPFLAGS = $(BASECPPFLAGS) $(TCL_INCLUDES)
 gv_tcl.cpp: gv.i
 	$(SWIG) -c++ -tcl -namespace -o gv_tcl.cpp $(srcdir)/gv.i
 
-pkginclude_DATA = gv.i gv.cpp
+pkginclude_HEADERS = gv.i gv.cpp
 pkglib_LTLIBRARIES = 
 man_MANS =
 pdf_DATA = 
