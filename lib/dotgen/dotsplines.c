@@ -298,7 +298,7 @@ static void _dot_splines(graph_t * g, int normalize)
 #endif
 
     mark_lowclusters(g);
-    routesplinesinit();
+    if (routesplinesinit()) return;
     P = NEW(path);
     /* FlatHeight = 2 * GD_nodesep(g); */
     sd.Splinesep = GD_nodesep(g) / 4;
