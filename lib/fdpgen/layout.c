@@ -49,6 +49,9 @@
 #include "pack.h"
 #include "clusteredges.h"
 #include "dbg.h"
+#include <setjmp.h>
+
+static jmp_buf jbuf;
 
 typedef struct {
     graph_t*  rootg;  /* logical root; graph passed in to fdp_layout */
@@ -538,7 +541,7 @@ static graph_t *deriveGraph(graph_t * g, layout_info * infop)
 	if (!DNODE(n)) {
 	    if (PARENT(n) && (PARENT(n) != GPARENT(g))) {
 		agerr (AGERR, "node \"%s\" is contained in two non-comparable clusters \"%s\" and \"%s\"\n", agnameof(n), agnameof(g), agnameof(PARENT(n)));
-		exit (1);
+		longjmp (jbuf, 1);
 	    }
 	    PARENT(n) = g;
 	    if (IS_CLUST_NODE(n))
@@ -917,7 +920,8 @@ setClustNodes(graph_t* root)
  * Add edges per components to get better packing, rather than
  * wait until the end.
  */
-/* static */ void layout(graph_t * g, layout_info * infop)
+static 
+void layout(graph_t * g, layout_info * infop)
 {
     point *pts = NULL;
     graph_t *dg;
@@ -1201,6 +1205,9 @@ void fdp_layout(graph_t * g)
     /* Agnode_t* n; */
 
     fdp_init_graph(g);
+    if (setjmp(jbuf)) {
+	return;
+    }
     fdpLayout(g);
 #if 0
     /* free ND_alg field so it can be used in spline routing */

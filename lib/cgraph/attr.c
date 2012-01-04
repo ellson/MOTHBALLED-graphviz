@@ -365,7 +365,7 @@ void agraphattr_init(Agraph_t * g)
     /* attr = */ agmakeattrs(context, g);
 }
 
-void agraphattr_delete(Agraph_t * g)
+int agraphattr_delete(Agraph_t * g)
 {
     Agdatadict_t *dd;
     Agattr_t *attr;
@@ -377,11 +377,12 @@ void agraphattr_delete(Agraph_t * g)
     }
 
     if ((dd = agdatadict(g, FALSE))) {
-	agdtclose(g, dd->dict.n);
-	agdtclose(g, dd->dict.e);
-	agdtclose(g, dd->dict.g);
+	if (agdtclose(g, dd->dict.n)) return 1;
+	if (agdtclose(g, dd->dict.e)) return 1;
+	if (agdtclose(g, dd->dict.g)) return 1;
 	agdelrec(g, dd->h.name);
     }
+    return 0;
 }
 
 void agnodeattr_init(Agraph_t * g, Agnode_t * n)
