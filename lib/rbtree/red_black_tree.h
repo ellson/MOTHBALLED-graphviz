@@ -35,7 +35,7 @@ extern "C" {
 
 /* comment out the line below to remove all the debugging assertion */
 /* checks from the compiled code.  */
-#define DEBUG_ASSERT 1
+/* #define DEBUG_ASSERT 1 */
 
 typedef struct rb_red_blk_node {
   void* key;

@@ -32,8 +32,8 @@
 
 void Assert(int assertion, char* error) {
   if(!assertion) {
-    printf("Assertion Failed: %s\n",error);
-    exit(-1);
+    fprintf(stderr, "Assertion Failed: %s\n",error);
+    longjmp(rb_jbuf, 1);
   }
 }
 
@@ -59,9 +59,9 @@ void * SafeMalloc(size_t size) {
   if ( (result = malloc(size)) ) { /* assignment intentional */
     return(result);
   } else {
-    printf("memory overflow: malloc failed in SafeMalloc.");
-    printf("  Exiting Program.\n");
-    exit(-1);
+    fprintf(stderr, "memory overflow: malloc failed in SafeMalloc.");
+    /* printf("  Exiting Program.\n"); */
+    longjmp(rb_jbuf, 2);
     return(0);
   }
 }
