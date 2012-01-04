@@ -116,20 +116,20 @@ int agclose(Agraph_t * g)
     agmethod_delete(g, g);
 
     assert(dtsize(g->n_id) == 0);
-    agdtclose(g, g->n_id);
+    if (agdtclose(g, g->n_id)) return FAILURE;
     assert(dtsize(g->n_seq) == 0);
-    agdtclose(g, g->n_seq);
+    if (agdtclose(g, g->n_seq)) return FAILURE;
 
     assert(dtsize(g->e_id) == 0);
-    agdtclose(g, g->e_id);
+    if (agdtclose(g, g->e_id)) return FAILURE;
     assert(dtsize(g->e_seq) == 0);
-    agdtclose(g, g->e_seq);
+    if (agdtclose(g, g->e_seq)) return FAILURE;
 
     assert(dtsize(g->g_dict) == 0);
-    agdtclose(g, g->g_dict);
+    if (agdtclose(g, g->g_dict)) return FAILURE;
 
     if (g->desc.has_attrs)
-	agraphattr_delete(g);
+	if (agraphattr_delete(g)) return FAILURE;
     agrecclose((Agobj_t *) g);
     agfreeid(g, AGRAPH, AGID(g));
 
@@ -142,7 +142,7 @@ int agclose(Agraph_t * g)
 	while (g->clos->cb)
 	    agpopdisc(g, g->clos->cb->f);
 	AGDISC(g, id)->close(AGCLOS(g, id));
-	agstrclose(g);
+	if (agstrclose(g)) return FAILURE;
 	memdisc = AGDISC(g, mem);
 	memclos = AGCLOS(g, mem);
 	clos = g->clos;
