@@ -249,11 +249,11 @@ CMDS_orthog(vtx_data* graph, int n, int dim, double** eigs, double tol,
 
 #define SCALE_FACTOR 256
 
-void IMDS_given_dim(vtx_data* graph, int n, double* given_coords, 
+int IMDS_given_dim(vtx_data* graph, int n, double* given_coords, 
        double* new_coords, double conj_tol)
 {
 	int iterations2;
-	int i,j;
+	int i,j, rv = 0;
 	DistType** Dij;
 	float* f_storage = NULL;	
 	double* x = given_coords;	
@@ -350,7 +350,10 @@ void IMDS_given_dim(vtx_data* graph, int n, double* given_coords,
 	}
 
 	for (converged=FALSE,iterations2=0; iterations2<200 && !converged; iterations2++) {
-		conjugate_gradient_f(lap, y, balance, n, conj_tol, n, TRUE);
+		if (conjugate_gradient_f(lap, y, balance, n, conj_tol, n, TRUE) < 0) {
+		    rv = 1;
+		    goto cleanup;
+		}
 		converged=TRUE;
 		for (i=0; i<n; i++) {
 			pos_i=y[i];
@@ -379,10 +382,12 @@ void IMDS_given_dim(vtx_data* graph, int n, double* given_coords,
 		y[i] /= uniLength;
 	}
 	
+cleanup:
 
 	free (Dij[0]); free (Dij);	
 	free (lap[0]); free (lap);	
 	free (orthog_aux); free (balance);	
+	return rv;
 }
 
 #endif /* DIGCOLA */

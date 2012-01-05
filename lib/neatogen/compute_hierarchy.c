@@ -15,7 +15,7 @@
 #ifdef DIGCOLA
 #include "kkutils.h"
 
-static int* given_levels = NULL;
+static int *given_levels = NULL;
 /*
  * This function partitions the graph nodes into levels
  * according to the minimizer of the hierarchy energy.
@@ -46,90 +46,92 @@ static int* given_levels = NULL;
  * Please note that 'ordering[levels[i]]' contains the first node at level i+1,
  *  and not the last node of level i.
  */
-double 
-compute_hierarchy(vtx_data* graph, int n, double abs_tol, double relative_tol, 
-      double* given_coords, int** orderingp, int** levelsp, int* num_levelsp) 
+int
+compute_hierarchy(vtx_data * graph, int n, double abs_tol,
+		  double relative_tol, double *given_coords,
+		  int **orderingp, int **levelsp, int *num_levelsp)
 {
-	double* y;
-	int i;
-	double spread;
-	int use_given_levels=FALSE;
-    int* ordering;
-    int* levels;
-	double tol; /* node 'i' precedes 'j' in hierachy iff y[i]-y[j]>tol */
-	double hierarchy_span;
+    double *y;
+    int i, rv=0;
+    double spread;
+    int use_given_levels = FALSE;
+    int *ordering;
+    int *levels;
+    double tol;			/* node 'i' precedes 'j' in hierachy iff y[i]-y[j]>tol */
+    double hierarchy_span;
     int num_levels;
 
-	/* compute optimizer of hierarchy energy: 'y' */
-	if (given_coords) {
-		y = given_coords;
+    /* compute optimizer of hierarchy energy: 'y' */
+    if (given_coords) {
+	y = given_coords;
+    } else {
+	y = N_GNEW(n, double);
+	if (compute_y_coords(graph, n, y, n)) {
+	    rv = 1;
+	    goto finish;    
 	}
-	else {
-		y = N_GNEW(n,double);
-		compute_y_coords(graph, n, y, n);
-	}
+    }
 
-	/* sort nodes accoridng to their y-ordering */
-	*orderingp = ordering = N_NEW(n, int);
-	for (i=0; i<n; i++) {
-		ordering[i] = i;
-	}
-	quicksort_place(y, ordering, 0,n-1);	
-	
-	spread = y[ordering[n-1]]-y[ordering[0]];
+    /* sort nodes accoridng to their y-ordering */
+    *orderingp = ordering = N_NEW(n, int);
+    for (i = 0; i < n; i++) {
+	ordering[i] = i;
+    }
+    quicksort_place(y, ordering, 0, n - 1);
 
-	/* after spread is computed, we may take the y-coords as the given levels */
-	if (given_levels) {
-		use_given_levels=TRUE;
-		for (i=0; i<n; i++) {
-			use_given_levels = use_given_levels && given_levels[i]>=0;
-		}
+    spread = y[ordering[n - 1]] - y[ordering[0]];
+
+    /* after spread is computed, we may take the y-coords as the given levels */
+    if (given_levels) {
+	use_given_levels = TRUE;
+	for (i = 0; i < n; i++) {
+	    use_given_levels = use_given_levels && given_levels[i] >= 0;
 	}
-	if (use_given_levels) {
-		for (i=0; i<n; i++) {
-			y[i] = given_levels[i];
-			ordering[i] = i;
-		}
-		quicksort_place(y,  ordering, 0,n-1);
+    }
+    if (use_given_levels) {
+	for (i = 0; i < n; i++) {
+	    y[i] = given_levels[i];
+	    ordering[i] = i;
 	}
-	
-	/* compute tolerance
-	 * take the maximum between 'abs_tol' and a fraction of the average gap
-	 * controlled by 'relative_tol'
+	quicksort_place(y, ordering, 0, n - 1);
+    }
+
+    /* compute tolerance
+     * take the maximum between 'abs_tol' and a fraction of the average gap
+     * controlled by 'relative_tol'
      */
-	hierarchy_span = y[ordering[n-1]]-y[ordering[0]];
-	tol = MAX(abs_tol, relative_tol*hierarchy_span/(n-1)); 
-	/* 'hierarchy_span/(n-1)' - average gap between consecutive nodes */
+    hierarchy_span = y[ordering[n - 1]] - y[ordering[0]];
+    tol = MAX(abs_tol, relative_tol * hierarchy_span / (n - 1));
+    /* 'hierarchy_span/(n-1)' - average gap between consecutive nodes */
 
-	
-	/* count how many levels the hierarchy contains (a SINGLE_LINK clustering */
+
+    /* count how many levels the hierarchy contains (a SINGLE_LINK clustering */
     /* alternatively we could use COMPLETE_LINK clustering) */
-	num_levels = 0;
-	for (i=1; i<n; i++) {
-		if (y[ordering[i]] - y[ordering[i-1]] > tol) {
-			num_levels++;
-		}
+    num_levels = 0;
+    for (i = 1; i < n; i++) {
+	if (y[ordering[i]] - y[ordering[i - 1]] > tol) {
+	    num_levels++;
 	}
-	*num_levelsp = num_levels;
-	if (num_levels==0) {
-		*levelsp = levels = N_GNEW(1, int);
-		levels[0] = n;
+    }
+    *num_levelsp = num_levels;
+    if (num_levels == 0) {
+	*levelsp = levels = N_GNEW(1, int);
+	levels[0] = n;
+    } else {
+	int count = 0;
+	*levelsp = levels = N_GNEW(num_levels, int);
+	for (i = 1; i < n; i++) {
+	    if (y[ordering[i]] - y[ordering[i - 1]] > tol) {
+		levels[count++] = i;
+	    }
 	}
-	else {
-		int count=0;
-		*levelsp = levels = N_GNEW(num_levels, int);
-		for (i=1; i<n; i++) {
-			if (y[ordering[i]] - y[ordering[i-1]] > tol) {
-				levels[count++] = i;
-			}
-		}
-	}
-	if (!given_coords) {
-		free(y);
-	}
+    }
+finish:
+    if (!given_coords) {
+	free(y);
+    }
 
-	return spread;
+    return rv;
 }
 
-#endif /* DIGCOLA */
-
+#endif				/* DIGCOLA */

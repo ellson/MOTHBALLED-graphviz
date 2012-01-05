@@ -655,9 +655,12 @@ static int sparse_stress_subspace_majorization_kD(vtx_data * graph,	/* Input gra
 	    }
 	    right_mult_with_vector_d(subspace, subspace_dim, n, b,
 				     b_restricted);
-	    conjugate_gradient_f(matrix, directions[k], b_restricted,
+	    if (conjugate_gradient_f(matrix, directions[k], b_restricted,
 				 subspace_dim, conj_tol, subspace_dim,
-				 FALSE);
+				 FALSE)) {
+		iterations = -1;
+		goto finish0;
+	    }
 	    right_mult_with_vector_transpose(subspace, n, subspace_dim,
 					     directions[k], coords[k]);
 	}
@@ -670,6 +673,7 @@ static int sparse_stress_subspace_majorization_kD(vtx_data * graph,	/* Input gra
 	    old_stress = new_stress;
 	}
     }
+finish0:
     free(b_restricted);
     free(b);
 
@@ -898,22 +902,22 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
     double conj_tol = tolerance_cg;	/* tolerance of Conjugate Gradient */
     float *Dij = NULL;
     int i, j, k;
-    float **coords;
-    float *f_storage;
+    float **coords = NULL;
+    float *f_storage = NULL;
     float constant_term;
     int count;
     DegType degree;
     int lap_length;
-    float *lap2;
-    DegType *degrees;
+    float *lap2 = NULL;
+    DegType *degrees = NULL;
     int step;
     float val;
     double old_stress, new_stress;
     boolean converged;
-    float **b;
-    float *tmp_coords;
-    float *dist_accumulator;
-    float *lap1;
+    float **b = NULL;
+    float *tmp_coords = NULL;
+    float *dist_accumulator = NULL;
+    float *lap1 = NULL;
     int smart_ini = opts & opt_smart_init;
     int exp = opts & opt_exp_flag;
     int len;
@@ -924,6 +928,10 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 #ifdef NONCORE
     FILE *fp = NULL;
 #endif
+    free(coords[0]);
+
+    free(b[0]);
+
 
 	/*************************************************
 	** Computation of full, dense, unrestricted k-D ** 
@@ -983,11 +991,14 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 	/* optimize layout quickly within subspace */
 	/* perform at most 50 iterations within 30-D subspace to 
 	   get an estimate */
-	sparse_stress_subspace_majorization_kD(graph, n, nedges_graph,
+	if (sparse_stress_subspace_majorization_kD(graph, n, nedges_graph,
 					       d_coords, dim, smart_ini, exp,
 					       (model == MODEL_SUBSET), 50,
 					       neighborhood_radius_subspace,
-					       num_pivots_stress);
+					       num_pivots_stress) < 0) {
+	    iterations = -1;
+	    goto finish1;
+	}
 
 	for (i = 0; i < dim; i++) {
 	    /* for numerical stability, scale down layout */
@@ -1251,16 +1262,22 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 	    node_t *np;
 	    if (havePinned) {
 		copy_vectorf(n, coords[k], tmp_coords);
-		conjugate_gradient_mkernel(lap2, tmp_coords, b[k], n,
-					   conj_tol, n);
+		if (conjugate_gradient_mkernel(lap2, tmp_coords, b[k], n,
+					   conj_tol, n) < 0) {
+		    iterations = -1;
+		    goto finish1;
+		}
 		for (i = 0; i < n; i++) {
 		    np = nodes[i];
 		    if (!isFixed(np))
 			coords[k][i] = tmp_coords[i];
 		}
 	    } else {
-		conjugate_gradient_mkernel(lap2, coords[k], b[k], n,
-					   conj_tol, n);
+		if (conjugate_gradient_mkernel(lap2, coords[k], b[k], n,
+					   conj_tol, n) < 0) {
+		    iterations = -1;
+		    goto finish1;
+		}
 	    }
 	}
 	if (Verbose && (iterations % 5 == 0)) {
@@ -1284,13 +1301,15 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
     if (fp)
 	fclose(fp);
 #endif
-
-    free(coords[0]);
+finish1:
+    free(f_storage);
     free(coords);
 
     free(lap2);
-    free(b[0]);
-    free(b);
+    if (b) {
+	free(b[0]);
+	free(b);
+    }
     free(tmp_coords);
     free(dist_accumulator);
     free(degrees);

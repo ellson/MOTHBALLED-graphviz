@@ -148,13 +148,13 @@ static void chkBoundBox(Agraph_t * graph)
  /* makeInfo:
   * For each node in the graph, create a Info data structure 
   */
-static void makeInfo(Agraph_t * graph)
+static int makeInfo(Agraph_t * graph)
 {
     Agnode_t *node;
     int i;
     Info_t *ip;
     expand_t pmargin;
-    void (*polyf)(Poly *, Agnode_t *, float, float);
+    int (*polyf)(Poly *, Agnode_t *, float, float);
 
     nsites = agnnodes(graph);
     geominit();
@@ -178,7 +178,11 @@ static void makeInfo(Agraph_t * graph)
 	ip->site.coord.x = ND_pos(node)[0];
 	ip->site.coord.y = ND_pos(node)[1];
 
-	polyf(&ip->poly, node, pmargin.x, pmargin.y);
+	if (polyf(&ip->poly, node, pmargin.x, pmargin.y)) {
+	    free (nodeInfo);
+	    nodeInfo = NULL;
+	    return 1;
+        }
 
 	ip->site.sitenbr = i;
 	ip->site.refcnt = 1;
@@ -187,6 +191,7 @@ static void makeInfo(Agraph_t * graph)
 	node = agnxtnode(graph, node);
 	ip++;
     }
+    return 0;
 }
 
 /* sort sites on y, then x, coord */
@@ -1108,7 +1113,12 @@ removeOverlapWith (graph_t * G, adjust_data* am)
 
     /* create main array */
 /* start_timer(); */
-    makeInfo(G);
+    if (makeInfo(G)) {
+	freeNodes();
+	free(sites);
+	sites = 0;
+	return 0;
+    }
 
     /* establish and verify bounding box */
     chkBoundBox(G);
