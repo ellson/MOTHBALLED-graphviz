@@ -935,7 +935,8 @@ static void strong(graph_t * g, node_t * t, node_t * h, edge_t * orig)
 	(e = agfindedge(g, h, t)) || (e = agedge(g, t, h, 0, 1)))
 	merge(e, ED_minlen(orig), ED_weight(orig));
     else
-	agerr(AGERR, "ranking: failure to create strong constraint edge between nodes %s and %s\n", agnameof(
+	agerr(AGERR, "ranking: failure to create strong constraint edge between nodes %s and %s\n", 
+	    agnameof(t), agnameof(h));
 }
 
 static void weak(graph_t * g, node_t * t, node_t * h, edge_t * orig)
