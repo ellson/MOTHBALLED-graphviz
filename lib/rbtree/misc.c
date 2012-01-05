@@ -12,6 +12,8 @@
 #include "misc.h"
 #include <stdio.h>
 
+jmp_buf rb_jbuf;
+
 /***********************************************************************/
 /*  FUNCTION:  void Assert(int assertion, char* error)  */
 /**/
