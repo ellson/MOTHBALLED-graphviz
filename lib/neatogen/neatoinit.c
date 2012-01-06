@@ -615,6 +615,10 @@ static void translateE(edge_t * e, pointf offset)
 	ED_label(e)->pos.x -= offset.x;
 	ED_label(e)->pos.y -= offset.y;
     }
+    if (ED_xlabel(e) && ED_xlabel(e)->set) {
+	ED_xlabel(e)->pos.x -= offset.x;
+	ED_xlabel(e)->pos.y -= offset.y;
+    }
     if (ED_head_label(e) && ED_head_label(e)->set) {
 	ED_head_label(e)->pos.x -= offset.x;
 	ED_head_label(e)->pos.y -= offset.y;
