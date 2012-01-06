@@ -928,9 +928,6 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 #ifdef NONCORE
     FILE *fp = NULL;
 #endif
-    free(coords[0]);
-
-    free(b[0]);
 
 
 	/*************************************************
