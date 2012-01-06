@@ -335,3 +335,6 @@ ZapfDingbats
 dot png
 dot ps
 
+xlabels
+=
+dot png
