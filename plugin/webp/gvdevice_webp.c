@@ -16,6 +16,7 @@
 #endif
 
 #include "gvplugin_device.h"
+#include "gvio.h"
 
 #ifdef HAVE_WEBP
 #include "webp/encode.h"
@@ -24,10 +25,16 @@ typedef enum {
     FORMAT_WEBP,
 } format_type;
 
+static int writer(const uint8_t* data, size_t data_size, const WebPPicture* const pic) {
+    return (gvwrite((GVJ_t *)pic->custom_ptr, (const char *)data, data_size) == data_size) ? 1 : 0;
+}
+
 static void webp_format(GVJ_t * job)
 {
     WebPPicture picture;
+    WebPPreset preset;
     WebPConfig config;
+    int stride;
 
     if (!WebPPictureInit(&picture) || !WebPConfigInit(&config)) {
 	fprintf(stderr, "Error! Version mismatch!\n");
@@ -36,13 +43,55 @@ static void webp_format(GVJ_t * job)
 
     picture.width = job->width;
     picture.height = job->height;
+    stride = 4 * job->width;
+
+    picture.writer = writer;
+    picture.custom_ptr = (void*)job;
+
+#if 1
+    picture.extra_info_type = 0;
+    picture.colorspace = 0;
+
+    config.method = 0;
+    config.quality = 0;
+    config.show_compressed = 0;
+    config.alpha_quality = 0;
+    config.alpha_compression = 0;
+    config.alpha_filtering = 0;
+    config.target_size = 0;
+    config.target_PSNR = 0;
+    config.sns_strength = 0;
+    config.filter_strength = 0;
+    config.autofilter = 0;
+    config.filter_type = 0;
+    config.filter_sharpness = 0;
+    config.pass = 0;
+    config.preprocessing = 0;
+    config.segments = 0;
+    config.partition_limit = 0;
+
+#if 1
+    preset = WEBP_PRESET_DRAWING;
+
+    if (!WebPConfigPreset(&config, preset, config.quality)) {
+	fprintf(stderr, "Error! Could initialize configuration with preset.\n");
+	goto Error;
+    }
+#endif
+
+    if (!WebPValidateConfig(&config)) {
+	fprintf(stderr, "Error! Invalid configuration.\n");
+	goto Error;
+    }
+#endif
 
     if (!WebPPictureAlloc(&picture)) {
 	fprintf(stderr, "Error! Cannot allocate memory\n");
 	return;
     }
 
-    if (!WebPPictureImportRGBA(&picture, (const uint8_t * const)(job->imagedata), 4)) {
+    if (!WebPPictureImportRGBA(&picture,
+		(const uint8_t * const)job->imagedata, stride)) {
 	fprintf(stderr, "Error! Cannot import picture\n");
 	goto Error;
     }
@@ -53,9 +102,6 @@ static void webp_format(GVJ_t * job)
 //	    pic.error_code, kErrorMessages[picture.error_code]);
 	goto Error;
      }
-//     DumpPicture(&picture, job->output_file);
-
-//  FIXME - unfinished code
 
 Error:
      WebPPictureFree(&picture);
