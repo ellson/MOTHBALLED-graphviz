@@ -17,6 +17,7 @@
  */
 
 #include "render.h"
+#include <setjmp.h>
 
 static int init_graph(graph_t *);
 static void dfs_cutval(node_t * v, edge_t * par);
@@ -31,6 +32,7 @@ static void check_cycles(graph_t * g);
 #define SEQ(a,b,c)		(((a) <= (b)) && ((b) <= (c)))
 #define TREE_EDGE(e)	(ED_tree_index(e) >= 0)
 
+static jmp_buf jbuf;
 static graph_t *G;
 static int N_nodes, N_edges;
 static int Minrank, Maxrank;
@@ -43,8 +45,10 @@ static elist Tree_edge;
 static void add_tree_edge(edge_t * e)
 {
     node_t *n;
-    if (TREE_EDGE(e))
-	abort();
+    if (TREE_EDGE(e)) {
+	agerr(AGERR, "add_tree_edge: missing tree edge\n");
+	longjmp (jbuf, 1);
+    }
     ED_tree_index(e) = Tree_edge.size;
     Tree_edge.list[Tree_edge.size++] = e;
     if (ND_mark(agtail(e)) == FALSE)
@@ -55,14 +59,18 @@ static void add_tree_edge(edge_t * e)
     ND_mark(n) = TRUE;
     ND_tree_out(n).list[ND_tree_out(n).size++] = e;
     ND_tree_out(n).list[ND_tree_out(n).size] = NULL;
-    if (ND_out(n).list[ND_tree_out(n).size - 1] == 0)
-	abort();
+    if (ND_out(n).list[ND_tree_out(n).size - 1] == 0) {
+	agerr(AGERR, "add_tree_edge: empty outedge list\n");
+	longjmp (jbuf, 1);
+    }
     n = aghead(e);
     ND_mark(n) = TRUE;
     ND_tree_in(n).list[ND_tree_in(n).size++] = e;
     ND_tree_in(n).list[ND_tree_in(n).size] = NULL;
-    if (ND_in(n).list[ND_tree_in(n).size - 1] == 0)
-	abort();
+    if (ND_in(n).list[ND_tree_in(n).size - 1] == 0) {
+	agerr(AGERR, "add_tree_edge: empty inedge list\n");
+	longjmp (jbuf, 1);
+    }
 }
 
 static void exchange_tree_edges(edge_t * e, edge_t * f)
@@ -413,8 +421,10 @@ update(edge_t * e, edge_t * f)
 
     cutvalue = ED_cutvalue(e);
     lca = treeupdate(agtail(f), aghead(f), cutvalue, 1);
-    if (treeupdate(aghead(f), agtail(f), cutvalue, 0) != lca)
-	abort();
+    if (treeupdate(aghead(f), agtail(f), cutvalue, 0) != lca) {
+	agerr(AGERR, "update: mismatched lca in treeupdates\n");
+	longjmp (jbuf, 1);
+    }
     ED_cutvalue(f) = -cutvalue;
     ED_cutvalue(e) = 0;
     exchange_tree_edges(e, f);
@@ -593,8 +603,8 @@ graphSize (graph_t * g, int* nn, int* ne)
  *   Out and in edges lists stored in ND_out and ND_in, even if the node
  *  doesn't have any out or in edges.
  * The node rank values are stored in ND_rank.
- * Returns 0 if successful; returns 1 if not, the latter indicating that
- * the graph was not connected.
+ * Returns 0 if successful; returns 1 if `he graph was not connected;
+ * returns 2 if something seriously wrong;
  */
 int rank2(graph_t * g, int balance, int maxiter, int searchsize)
 {
@@ -625,6 +635,10 @@ int rank2(graph_t * g, int balance, int maxiter, int searchsize)
 	Search_size = search_size;
     else
 	Search_size = SEARCHSIZE;
+
+    if (setjmp (jbuf)) {
+	return 2;
+    }
 
     if (feasible_tree()) {
 	freeTreeList (g);
@@ -932,7 +946,7 @@ void check_cycles(graph_t * g)
 	ND_mark(n) = ND_onstack(n) = FALSE;
     for (n = agfstnode(g); n; n = agnxtnode(g, n))
 	checkdfs(g, n);
-    for (n = agfstnode(g); n; n = agnxtnode(g, n))
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (ND_mark(n) == FALSE) {
 	    fprintf (stderr, "graph is unconnected\n");
 	    break;

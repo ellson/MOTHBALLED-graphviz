@@ -20,7 +20,6 @@ For linking, the application should use the \gviz\ libraries
 \begin{itemize}
 \item {\tt gvc}
 \item {\tt graph}
-\item {\tt pathplan}
 \item {\tt cdt}
 \end{itemize}
 If the system is configured to use plug-ins, these libraries
@@ -31,10 +30,11 @@ If the program does not use plug-ins, then these libraries
 need to be incorporated at link time. These libraries may
 include
 \begin{itemize}
+\item {\tt gvplugin\_core}
 \item {\tt gvplugin\_dot\_layout}
 \item {\tt gvplugin\_neato\_layout}
 \item {\tt gvplugin\_gd}
-\item {\tt gvplugin\_pangocairo}\footnote{
+\item {\tt gvplugin\_pango}\footnote{
 For completeness, we note that it may be necessary to explicitly
 link in the following additional libraries, depending
 on the options set when \gviz\ was built:

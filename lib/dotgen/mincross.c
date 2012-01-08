@@ -1086,9 +1086,9 @@ void install_in_rank(graph_t * g, node_t * n)
     r = ND_rank(n);
     i = GD_rank(g)[r].n;
     if (GD_rank(g)[r].an <= 0) {
-	agerr(AGERR, "install_in_rank %s %s rank %d i = %d an = 0\n",
-	      agnameof(g), agnameof(n), r, i);
-	abort();
+	agerr(AGERR, "install_in_rank, line %d: %s %s rank %d i = %d an = 0\n",
+	      __LINE__, agnameof(g), agnameof(n), r, i);
+	return;
     }
 
     GD_rank(g)[r].v[i] = n;
@@ -1105,13 +1105,22 @@ void install_in_rank(graph_t * g, node_t * n)
 	assert(v != NULL);
     }
 #endif
-    if (ND_order(n) > GD_rank(Root)[r].an)
-	abort();
-    if ((r < GD_minrank(g)) || (r > GD_maxrank(g)))
-	abort();
+    if (ND_order(n) > GD_rank(Root)[r].an) {
+	agerr(AGERR, "install_in_rank, line %d: ND_order(%s) [%d] > GD_rank(Root)[%d].an [%d]\n",
+	      __LINE__, agnameof(n), ND_order(n), r, GD_rank(Root)[r].an);
+	return;
+    }
+    if ((r < GD_minrank(g)) || (r > GD_maxrank(g))) {
+	agerr(AGERR, "install_in_rank, line %d: rank %d not in rank range [%d,%d]\n",
+	      __LINE__, r, GD_minrank(g), GD_maxrank(g));
+	return;
+    }
     if (GD_rank(g)[r].v + ND_order(n) >
-	GD_rank(g)[r].av + GD_rank(Root)[r].an)
-	abort();
+	GD_rank(g)[r].av + GD_rank(Root)[r].an) {
+	agerr(AGERR, "install_in_rank, line %d: GD_rank(g)[%d].v + ND_order(%s) [%d] > GD_rank(g)[%d].av + GD_rank(Root)[%d].an [%d]\n",
+	      __LINE__, r, agnameof(n),GD_rank(g)[r].v + ND_order(n), r, r, GD_rank(g)[r].av+GD_rank(Root)[r].an);
+	return;
+    }
 }
 
 /*	install nodes in ranks. the initial ordering ensure that series-parallel

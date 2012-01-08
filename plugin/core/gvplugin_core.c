@@ -20,6 +20,7 @@ extern gvplugin_installed_t gvdevice_ps_types[];
 extern gvplugin_installed_t gvdevice_svg_types[];
 extern gvplugin_installed_t gvdevice_tk_types[];
 extern gvplugin_installed_t gvdevice_vml_types[];
+extern gvplugin_installed_t gvdevice_pov_types[];
 
 extern gvplugin_installed_t gvrender_dot_types[];
 extern gvplugin_installed_t gvrender_fig_types[];
@@ -28,6 +29,7 @@ extern gvplugin_installed_t gvrender_ps_types[];
 extern gvplugin_installed_t gvrender_svg_types[];
 extern gvplugin_installed_t gvrender_tk_types[];
 extern gvplugin_installed_t gvrender_vml_types[];
+extern gvplugin_installed_t gvrender_pov_types[];
 
 extern gvplugin_installed_t gvloadimage_core_types[];
 
@@ -42,6 +44,7 @@ static gvplugin_api_t apis[] = {
     {API_device, gvdevice_svg_types},
     {API_device, gvdevice_tk_types},
     {API_device, gvdevice_vml_types},
+    {API_device, gvdevice_pov_types},
 
     {API_render, gvrender_dot_types},
     {API_render, gvrender_fig_types},
@@ -50,6 +53,7 @@ static gvplugin_api_t apis[] = {
     {API_render, gvrender_svg_types},
     {API_render, gvrender_tk_types},
     {API_render, gvrender_vml_types},
+    {API_render, gvrender_pov_types},
 
     {API_loadimage, gvloadimage_core_types},
 

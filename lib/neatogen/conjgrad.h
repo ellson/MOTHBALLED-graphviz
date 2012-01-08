@@ -26,17 +26,17 @@ extern "C" {
  * C.G. method - SPARSE  *
  ************************/
 
-    extern void conjugate_gradient(vtx_data *, double *, double *, int,
+    extern int conjugate_gradient(vtx_data *, double *, double *, int,
 				   double, int);
 
 /*************************
  * C.G. method - DENSE   *
  ************************/
 
-    extern void conjugate_gradient_f(float **, double *, double *, int,
+    extern int conjugate_gradient_f(float **, double *, double *, int,
 				     double, int, boolean);
 
-    extern void conjugate_gradient_mkernel(float *, float *, float *, int,
+    extern int conjugate_gradient_mkernel(float *, float *, float *, int,
 					   double, int);
 
 #endif

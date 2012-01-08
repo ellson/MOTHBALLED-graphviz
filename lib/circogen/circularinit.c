@@ -270,6 +270,9 @@ void circo_layout(Agraph_t * g)
     dotneato_postprocess(g);
 }
 
+/* circo_cleanup:
+ * ND_alg is freed in circo_layout
+ */
 void circo_cleanup(graph_t * g)
 {
     node_t *n;
@@ -281,7 +284,7 @@ void circo_cleanup(graph_t * g)
 
     closeDerivedGraph((graph_t*)GD_alg(g));	/* delete derived graph */
 
-    free (ND_alg(n));
+    /* free (ND_alg(n)); */
     for (; n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    gv_cleanup_edge(e);

@@ -724,7 +724,7 @@ void s1(graph_t * G, node_t * node)
 	    make_spring(G, Src, v, ND_dist(v));
 	for (e = agfstedge(G, v); e; e = agnxtedge(G, e, v)) {
 	    if ((u = agtail(e)) == v)
-		u = agtail(e);     /* FIXME - isn't this redundant? Why the if? */
+		u = aghead(e);
 	    f = ND_dist(v) + ED_dist(e);
 	    if (ND_dist(u) > f) {
 		ND_dist(u) = f;

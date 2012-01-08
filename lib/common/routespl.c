@@ -17,6 +17,7 @@
 
 #include "render.h"
 #include "pathplan.h"
+#include <setjmp.h>
 
 #ifdef UNUSED
 static box *bs = NULL;
@@ -32,6 +33,7 @@ static edge_t *origedge;
 #endif
 
 static int nedges, nboxes; /* total no. of edges and boxes used in routing */
+static jmp_buf jbuf;
 
 static int routeinit;
 /* static data used across multiple edges */
@@ -43,7 +45,7 @@ static Pedge_t *edges;        /* polygon edges passed to Proutespline */
 static int edgen;             /* size of edges[] */
 
 static void checkpath(int, boxf*, path*);
-static void mkspacep(int size);
+static int mkspacep(int size);
 static void printpath(path * pp);
 #ifdef DEBUG
 static void printboxes(int boxn, boxf* boxes)
@@ -270,7 +272,8 @@ simpleSplineRoute (pointf tp, pointf hp, Ppoly_t poly, int* n_spl_pts,
             return NULL;
     }
 
-    mkspacep(spl.pn);
+    if (mkspacep(spl.pn))
+	return NULL;
     for (i = 0; i < spl.pn; i++) {
         ps[i] = spl.ps[i];
     }
@@ -282,13 +285,13 @@ simpleSplineRoute (pointf tp, pointf hp, Ppoly_t poly, int* n_spl_pts,
  * Data initialized once until matching call to routeplineterm
  * Allows recursive calls to dot
  */
-void
+int
 routesplinesinit()
 {
-    if (++routeinit > 1) return;
+    if (++routeinit > 1) return 0;
     if (!(ps = N_GNEW(PINC, pointf))) {
-	agerr(AGERR, "cannot allocate ps\n");
-	abort();
+	agerr(AGERR, "routesplinesinit: cannot allocate ps\n");
+	return 1;
     }
     maxpn = PINC;
 #ifdef DEBUG
@@ -305,6 +308,7 @@ routesplinesinit()
     nboxes = 0;
     if (Verbose)
 	start_timer();
+    return 0;
 }
 
 void routesplinesterm()
@@ -348,7 +352,7 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
 	 realedge = ED_to_orig(realedge));
     if (!realedge) {
 	agerr(AGERR, "in routesplines, cannot find NORMAL edge\n");
-	abort();
+	longjmp (jbuf, 1);
     }
 
     boxes = pp->boxes;
@@ -409,8 +413,10 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
 		polypoints[pi++].y = boxes[bi].LL.y;
 	    } 
 	    else {
-		if (!(prev == -1 && next == -1))
-		    abort();
+		if (!(prev == -1 && next == -1)) {
+		    agerr(AGERR, "in routesplines, illegal values of prev %d and next %d, line %d\n", prev, next, __LINE__);
+		    longjmp (jbuf, 1);
+		}
 	    }
 	}
 	for (bi = boxn - 1; bi >= 0; bi--) {
@@ -441,8 +447,8 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
 	    else {
 		if (!(prev == -1 && next == -1)) {
 		    /* it went badly, e.g. degenerate box in boxlist */
-		    *npoints = 0;
-		    abort();	/* for correctness sake, it's best to just stop */
+		    agerr(AGERR, "in routesplines, illegal values of prev %d and next %d, line %d\n", prev, next, __LINE__);
+		    longjmp (jbuf, 1); /* for correctness sake, it's best to just stop */
 		    return ps;	/* could also be reported as a lost edge (no spline) */
 		}
 		polypoints[pi].x = boxes[bi].UR.x;
@@ -457,7 +463,8 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
 	}
     }
     else {
-	abort();
+	agerr(AGERR, "in routesplines, edge is a loop at %s\n", agnameof(aghead(realedge)));
+	longjmp (jbuf, 1);
     }
 
     if (flip) {
@@ -476,8 +483,10 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
     poly.ps = polypoints, poly.pn = pi;
     eps[0].x = pp->start.p.x, eps[0].y = pp->start.p.y;
     eps[1].x = pp->end.p.x, eps[1].y = pp->end.p.y;
-    if (Pshortestpath(&poly, eps, &pl) == -1)
-	abort();
+    if (Pshortestpath(&poly, eps, &pl) == -1) {
+	agerr(AGERR, "in routesplines, Pshortestpath failed\n");
+	longjmp (jbuf, 1);
+    }
 #ifdef DEBUG
     if (debugleveln(realedge, 3)) {
 	psprintpoly(poly);
@@ -508,8 +517,10 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
 	} else
 	    evs[1].x = evs[1].y = 0;
 
-	if (Proutespline(edges, poly.pn, pl, evs, &spl) == -1)
-	    abort();
+	if (Proutespline(edges, poly.pn, pl, evs, &spl) == -1) {
+	    agerr(AGERR, "in routesplines, Proutespline failed\n");
+	    longjmp (jbuf, 1);
+	}
 #ifdef DEBUG
 	if (debugleveln(realedge, 3)) {
 	    psprintspline(spl);
@@ -517,7 +528,8 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
 	}
 #endif
     }
-    mkspacep(spl.pn);
+    if (mkspacep(spl.pn))
+	longjmp (jbuf, 1);
     for (bi = 0; bi < boxn; bi++) {
 	boxes[bi].LL.x = INT_MAX;
 	boxes[bi].UR.x = INT_MIN;
@@ -588,11 +600,19 @@ REDO:
 
 pointf *routesplines(path * pp, int *npoints)
 {
+    if (setjmp (jbuf)) {
+	*npoints = 0;
+	return NULL;
+    }
     return _routesplines (pp, npoints, 0);
 }
 
 pointf *routepolylines(path * pp, int *npoints)
 {
+    if (setjmp (jbuf)) {
+	*npoints = 0;
+	return NULL;
+    }
     return _routesplines (pp, npoints, 1);
 }
 
@@ -643,7 +663,7 @@ static void checkpath(int boxn, boxf* boxes, path* thepath)
     if (ba->LL.x > ba->UR.x || ba->LL.y > ba->UR.y) {
 	agerr(AGERR, "in checkpath, box 0 has LL coord > UR coord\n");
 	printpath(thepath);
-	abort();
+	longjmp (jbuf, 1);
     }
     for (bi = 0; bi < boxn - 1; bi++) {
 	ba = &boxes[bi], bb = &boxes[bi + 1];
@@ -651,7 +671,7 @@ static void checkpath(int boxn, boxf* boxes, path* thepath)
 	    agerr(AGERR, "in checkpath, box %d has LL coord > UR coord\n",
 		  bi + 1);
 	    printpath(thepath);
-	    abort();
+	    longjmp (jbuf, 1);
 	}
 	l = (ba->UR.x < bb->LL.x) ? 1 : 0;
 	r = (ba->LL.x > bb->UR.x) ? 1 : 0;
@@ -775,17 +795,18 @@ static void checkpath(int boxn, boxf* boxes, path* thepath)
     }
 }
 
-static void mkspacep(int size)
+static int mkspacep(int size)
 {
     if (size > maxpn) {
 	int newmax = maxpn + (size / PINC + 1) * PINC;
 	ps = RALLOC(newmax, ps, pointf);
 	if (!ps) {
 	    agerr(AGERR, "cannot re-allocate ps\n");
-	    abort();
+	    return 1;
 	}
 	maxpn = newmax;
     }
+    return 0;
 }
 
 static void printpath(path * pp)

@@ -278,7 +278,7 @@ raySegIntersect(pointf v, pointf w, pointf a, pointf b, pointf * p)
 	return 0;
 }
 
-#ifdef DEBUG
+#ifdef DEVDBG
 #include <psdbg.c>
 #endif
 
@@ -299,7 +299,7 @@ triPoint(tripoly_t * trip, int vx, pointf v, pointf w, pointf * ip)
 	    (v, w, trip->poly.ps[tp->v.i], trip->poly.ps[tp->v.j], ip))
 	    return 0;
     }
-#ifdef DEBUG
+#ifdef DEVDBG
     psInit();
     psComment ("Failure in triPoint");
     psColor("0 0 1");
@@ -645,7 +645,7 @@ void freeRouter(router_t * rtr)
     free(rtr);
 }
 
-#ifdef DEBUG
+#ifdef DEVDBG
 static void
 prTriPoly (tripoly_t *poly, int si, int ei)
 {
@@ -1279,7 +1279,8 @@ triPath(tgraph * g, int n, int v0, int v1, PQ * pq)
     PQinit(pq);
     N_DAD(v0) = -1;
     N_VAL(pq, v0) = 0;
-    PQinsert(pq, v0);
+    if (PQinsert(pq, v0))
+	return NULL;
 
     while ((i = PQremove(pq)) != -1) {
 	N_VAL(pq, i) *= -1;
@@ -1297,7 +1298,7 @@ triPath(tgraph * g, int n, int v0, int v1, PQ * pq)
 		if (N_VAL(pq, adjn) == UNSEEN) {
 		    N_VAL(pq, adjn) = d;
 		    N_DAD(adjn) = i;
-		    PQinsert(pq, adjn);
+		    if (PQinsert(pq, adjn)) return NULL;
 		} else if (N_VAL(pq, adjn) < d) {
 		    PQupdate(pq, adjn, d);
 		    N_DAD(adjn) = i;
@@ -1351,13 +1352,15 @@ int makeMultiSpline(graph_t* g,  edge_t* e, router_t * rtr, int doPolyline)
     PQfree(&(pq.pq), 0);
 
 	/* Use path of triangles to generate guiding polygon */
-    poly = mkPoly(rtr, sp, h_id, t_id, h_p, t_p, &idx);
-
-    free(sp);
+    if (sp) {
+	poly = mkPoly(rtr, sp, h_id, t_id, h_p, t_p, &idx);
+	free(sp);
 
 	/* Generate multiple splines using polygon */
-    ret = genroute(g, poly, 0, idx, e, doPolyline);
-    freeTripoly (poly);
+	ret = genroute(g, poly, 0, idx, e, doPolyline);
+	freeTripoly (poly);
+    }
+    else ret = -1;
 
     resetGraph(rtr->tg, rtr->tn, ecnt);
     return ret;

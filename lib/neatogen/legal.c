@@ -13,6 +13,9 @@
 
 #include "neato.h"
 #include "pathutil.h"
+#include <setjmp.h>
+
+static jmp_buf jbuf;
 
 #define MAXINTS  10000		/* modify this line to reflect the max no. of 
 				   intersections you want reported -- 50000 seems to break the program */
@@ -333,8 +336,8 @@ find_ints(vertex vertex_list[],
 	    case 1:		/* backward edge, delete        */
 
 		if ((tempa = templ->active) == 0) {
-		    agerr(AGERR, "trying to delete a non line\n");
-		    exit(1);
+		    agerr(AGERR, "trying to delete a non-line\n");
+		    longjmp(jbuf, 1);
 		}
 		if (all.number == 1)
 		    all.final = all.first = 0;	/* delete the line */
@@ -447,6 +450,11 @@ int Plegal_arrangement(Ppoly_t ** polys, int n_polys)
     input.nvertices = nverts;
     input.npolygons = n_polys;
 
+    if (setjmp(jbuf)) {
+	free(polygon_list);
+	free(vertex_list);
+	return 0;
+    }
     found = find_ints(vertex_list, polygon_list, &input, ilist);
 
     if (!found) {

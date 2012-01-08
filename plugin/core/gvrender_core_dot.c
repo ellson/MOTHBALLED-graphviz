@@ -373,7 +373,7 @@ xdot_begin_graph (graph_t *g, int s_arrows, int e_arrows)
 #endif
     else
 	xd->t_draw = NULL;
-    if (GD_has_labels(g) & EDGE_LABEL)
+    if (GD_has_labels(g) & (EDGE_LABEL|EDGE_XLABEL))
 #ifndef WITH_CGRAPH
 	xd->e_l_draw = safe_dcl(g, g->proto->e, "_ldraw_", "", agedgeattr);
 #else

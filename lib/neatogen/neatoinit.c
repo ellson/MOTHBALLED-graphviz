@@ -1,4 +1,4 @@
-/* $Id$ $Revision$ */
+/* Id$ $Revision$ */
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
@@ -615,6 +615,10 @@ static void translateE(edge_t * e, pointf offset)
 	ED_label(e)->pos.x -= offset.x;
 	ED_label(e)->pos.y -= offset.y;
     }
+    if (ED_xlabel(e) && ED_xlabel(e)->set) {
+	ED_xlabel(e)->pos.x -= offset.x;
+	ED_xlabel(e)->pos.y -= offset.y;
+    }
     if (ED_head_label(e) && ED_head_label(e)->set) {
 	ED_head_label(e)->pos.x -= offset.x;
 	ED_head_label(e)->pos.y -= offset.y;
@@ -1172,6 +1176,22 @@ setSeed (graph_t * G, int dflt, long* seedp)
     return init;
 }
 
+/* checkExp:
+ * Allow various weights for the scale factor in used to calculate stress.
+ * At present, only 1 or 2 are allowed, with 2 the default.
+ */
+#define exp_name "stresswt"
+
+static int checkExp (graph_t * G)
+{
+    int exp = late_int(G, agfindgraphattr(G, exp_name), 2, 0);
+    if ((exp == 0) || (exp > 2)) {
+	agerr (AGWARN, "%s attribute value must be 1 or 2 - ignoring\n", exp_name);
+	exp = 2;
+    }
+    return exp;
+}
+
 /* checkStart:
  * Analyzes start attribute, setting seed.
  * If set,
@@ -1287,7 +1307,7 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
 {
     double **coords;
     int ne;
-    int i;
+    int i, rv = 0;
     node_t *v;
     vtx_data *gp;
     node_t** nodes;
@@ -1296,10 +1316,11 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
     expand_t margin;
 #endif
 #endif
-
-    int init;
-
-    init = checkStart(g, nv, (mode == MODE_HIER ? INIT_SELF : INIT_RANDOM));
+    int init = checkStart(g, nv, (mode == MODE_HIER ? INIT_SELF : INIT_RANDOM));
+    int opts = checkExp (g);
+	
+    if (init == INIT_SELF)
+	opts |= opt_smart_init;
 
     coords = N_GNEW(dim, double *);
     coords[0] = N_GNEW(nv * dim, double);
@@ -1307,8 +1328,8 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
 	coords[i] = coords[0] + i * nv;
     }
     if (Verbose) {
-	fprintf(stderr, "model %d smart_init %d iterations %d tol %f\n",
-		model, (init == INIT_SELF), MaxIter, Epsilon);
+	fprintf(stderr, "model %d smart_init %d stresswt %d iterations %d tol %f\n",
+		model, (init == INIT_SELF), opts & opt_exp_flag, MaxIter, Epsilon);
 	fprintf(stderr, "convert graph: ");
 	start_timer();
 #ifdef WITH_CGRAPH
@@ -1327,8 +1348,8 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
     if (mode != MODE_MAJOR) {
         double lgap = late_double(g, agfindgraphattr(g, "levelsgap"), 0.0, -MAXDOUBLE);
         if (mode == MODE_HIER) {        
-            stress_majorization_with_hierarchy(gp, nv, ne, coords, nodes, Ndim,
-                       (init == INIT_SELF), model, MaxIter, lgap);
+            rv = stress_majorization_with_hierarchy(gp, nv, ne, coords, nodes, Ndim,
+                       opts, model, MaxIter, lgap);
         } 
 #ifdef IPSEPCOLA
 	else {
@@ -1397,7 +1418,7 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
 	    fprintf (stderr, "\n");
 	    dumpOpts (&opt, nv);
 #endif
-            stress_majorization_cola(gp, nv, ne, coords, nodes, Ndim, model, MaxIter, &opt);
+            rv = stress_majorization_cola(gp, nv, ne, coords, nodes, Ndim, model, MaxIter, &opt);
 	    freeClusterData(cs);
 	    free (nsize);
         }
@@ -1405,11 +1426,12 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
     }
     else
 #endif
-	stress_majorization_kD_mkernel(gp, nv, ne, coords, nodes, Ndim,
-				   (init == INIT_SELF), model, MaxIter);
+	rv = stress_majorization_kD_mkernel(gp, nv, ne, coords, nodes, Ndim, opts, model, MaxIter);
 
-    /* store positions back in nodes */
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
+    if (rv < 0) {
+	agerr(AGPREV, "layout aborted\n");
+    }
+    else for (v = agfstnode(g); v; v = agnxtnode(g, v)) { /* store positions back in nodes */
 	int idx = ND_id(v);
 	int i;
 	for (i = 0; i < Ndim; i++) {

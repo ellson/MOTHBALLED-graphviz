@@ -255,7 +255,11 @@ edgeTailpoint (Agedge_t* e)
     splines *spl;
     bezier *bez;
 
-    spl = getsplinepoints(e);
+    if ((spl = getsplinepoints(e)) == NULL) {
+	pointf p;
+	p.x = p.y = 0;
+	return p;
+    }
     bez = &spl->list[0];
     if (bez->sflag) {
 	return bez->sp;
@@ -270,7 +274,11 @@ edgeHeadpoint (Agedge_t* e)
     splines *spl;
     bezier *bez;
 
-    spl = getsplinepoints(e);
+    if ((spl = getsplinepoints(e)) == NULL) {
+	pointf p;
+	p.x = p.y = 0;
+	return p;
+    }
     bez = &spl->list[spl->size - 1];
     if (bez->eflag) {
 	return bez->ep;

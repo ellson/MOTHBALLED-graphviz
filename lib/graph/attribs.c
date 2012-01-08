@@ -176,22 +176,23 @@ Agedge_t *agprotoedge(Agraph_t *g)
 }
 
 
-static void initproto(void)
+static int initproto(void)
 {
     Agsym_t *a;
     Agraph_t *g;
     g = AG.proto_g = agopen("ProtoGraph", AGRAPH);
     a = agattr(g->proto->e, KEY_ID, "");
     if (a->index != KEYX)
-	abort();
+	return 1;
     a = agattr(g->proto->e, TAIL_ID, "");
     if (a->index != TAILX)
-	abort();
+	return 1;
     a->printed = FALSE;
     a = agattr(g->proto->e, HEAD_ID, "");
     if (a->index != HEADX)
-	abort();
+	return 1;
     a->printed = FALSE;
+    return 0;
 }
 
 Agsym_t *agraphattr(Agraph_t * g, char *name, char *value)
@@ -322,18 +323,23 @@ Agsym_t *agprvattr(void *obj, Agsym_t *a)
 }
 
 	/* this is normally called by the aginit() macro */
-void aginitlib(int gs, int ns, int es)
+int aginitlib(int gs, int ns, int es)
 {
+    int rv = 0;
     if (AG.proto_g == NULL) {
 	AG.graph_nbytes = gs;
 	AG.node_nbytes = ns;
 	AG.edge_nbytes = es;
 	AG.init_called = TRUE;
-	initproto();
+	if (initproto()) {
+	    agerr(AGERR, "aginitlib: initproto failed\n");
+	    rv = 1;
+	}
     } else
 	if ((AG.graph_nbytes != gs) || (AG.node_nbytes != ns)
 	    || (AG.edge_nbytes != es))
 	agerr(AGWARN, "aginit() called multiply with inconsistent args\n");
+    return rv;
 }
 
 char *agget(void *obj, char *attr)

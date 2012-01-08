@@ -105,7 +105,7 @@ extern Agcbdisc_t AgAttrdisc;
 
 	/* internal constructor of graphs and subgraphs */
 Agraph_t *agopen1(Agraph_t * g);
-void agstrclose(Agraph_t * g);
+int agstrclose(Agraph_t * g);
 
 	/* ref string management */
 void agmarkhtmlstr(char *s);
@@ -122,7 +122,7 @@ unsigned long agnextseq(Agraph_t * g, int objtype);
 Dict_t *agdtopen(Agraph_t * g, Dtdisc_t * disc, Dtmethod_t * method);
 void agdtdisc(Agraph_t * g, Dict_t * dict, Dtdisc_t * disc);
 long agdtdelete(Agraph_t * g, Dict_t * dict, void *obj);
-void agdtclose(Agraph_t * g, Dict_t * dict);
+int agdtclose(Agraph_t * g, Dict_t * dict);
 void *agdictobjmem(Dict_t * dict, Void_t * p, size_t size,
 		   Dtdisc_t * disc);
 void agdictobjfree(Dict_t * dict, Void_t * p, Dtdisc_t * disc);
@@ -132,7 +132,7 @@ Agdatadict_t *agdatadict(Agraph_t * g, int cflag);
 Agattr_t *agattrrec(void *obj);
 
 void agraphattr_init(Agraph_t * g);
-void agraphattr_delete(Agraph_t * g);
+int agraphattr_delete(Agraph_t * g);
 void agnodeattr_init(Agraph_t *g, Agnode_t * n);
 void agnodeattr_delete(Agnode_t * n);
 void agedgeattr_init(Agraph_t *g, Agedge_t * e);

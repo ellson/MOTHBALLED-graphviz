@@ -28,6 +28,7 @@
 
 #define DEBUG
 #include <stddef.h>
+#include <setjmp.h>
 #include <maze.h>
 #include "fPQ.h"
 #include "memory.h"
@@ -39,6 +40,8 @@ typedef struct {
     int d;
     Agedge_t* e;
 } epair_t;
+
+static jmp_buf jbuf;
 
 #ifdef DEBUG
 static void emitSearchGraph (FILE* fp, sgraph* sg);
@@ -740,8 +743,8 @@ static int
 seg_cmp(segment* S1, segment* S2)		
 {
     if(S1->isVert!=S2->isVert||S1->comm_coord!=S2->comm_coord) {
-	fprintf (stderr, "incomparable segments !! -- Aborting\n");
-	exit(1);
+	agerr (AGERR, "incomparable segments !! -- Aborting\n");
+	longjmp(jbuf, 1);
     }
     if(S1->isVert)
 	return segCmp (S1, S2, B_RIGHT, B_LEFT);
@@ -1335,7 +1338,7 @@ orthoEdges (Agraph_t* g, int doLbls)
        		addNodeEdges (sg, dest, dn);
 		addNodeEdges (sg, start, sn);
 	    }
-       	    shortPath (sg, dn, sn);
+       	    if (shortPath (sg, dn, sn)) goto orthofinish;
 	}
 	    
        	route_list[i] = convertSPtoRoute(sg, sn, dn);
@@ -1346,12 +1349,15 @@ orthoEdges (Agraph_t* g, int doLbls)
     mp->hchans = extractHChans (mp);
     mp->vchans = extractVChans (mp);
     assignSegs (n_edges, route_list, mp);
+    if (setjmp(jbuf))
+	goto orthofinish;
     assignTracks (n_edges, route_list, mp);
 #ifdef DEBUG
     if (odb_flags & ODB_ROUTE) emitGraph (stderr, mp, n_edges, route_list, es);
 #endif
     attachOrthoEdges (g, mp, n_edges, route_list, &sinfo, es, doLbls);
 
+orthofinish:
     if (Concentrate)
 	freePS (ps);
 

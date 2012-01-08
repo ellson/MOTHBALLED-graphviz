@@ -4,23 +4,28 @@ The \gviz\ package consists of a variety of software for drawing
 attributed graphs. It implements a handful of common graph layout
 algorithms. These are: 
 \begin{description}
- \item[dot] A Sugiyama-style hierarchical layout\cite{stt,gknv:methods}.
- \item[neato] An implementation of the Kamada-Kawai algorithm\cite{kk}
-for ``symmetric'' layouts. This is a
-variation of multidimensional scaling\cite{kruskal,cohen}.
- \item[fdp] An implementation of the Fruchterman-Reingold 
-algorithm\cite{fr}
+ \item[dot] A Sugiyama-style hierarchical layout \cite{stt,gknv:methods}.
+ \item[neato] A ``symmetric'' layout algorithm based on stress reduction. 
+This is a variation of multidimensional scaling \cite{kruskal,cohen}. The
+default implementation uses stress majorization \cite{gkn}. 
+An alternate implementation uses the Kamada-Kawai algorithm \cite{kk}
+ \item[fdp] An implementation of the Fruchterman-Reingold force-directed
+algorithm \cite{fr}
 for ``symmetric'' layouts. This layout is similar to neato, but there
 are performance and feature differences. 
- \item[twopi] A radial layout as described by Wills\cite{nicheworks}.
+ \item[sfdp] A multiscale force-directed layout using a spring-electrical
+model \cite{sfdp}.
+ \item[twopi] A radial layout as described by Wills \cite{nicheworks}.
  \item[circo] A circular layout combining aspects of the
-work of Six and Tollis\cite{st,st2} and Kaufmann and Wiese\cite{kw}.
+work of Six and Tollis \cite{st,st2} and Kaufmann and Wiese \cite{kw}.
+ \item[patchwork] An implementation of squarified treemaps \cite{sqtreemap}.
+ \item[osage] A layout algorithm for clustered graphs based on user specifications.
 \end{description}
 In addition, \gviz\ provides an assortment of more general-purpose
 graph algorithms, such as transitive reduction, which have proven useful in
 the context of graph drawing.
 
-The package was designed\cite{gviz}
+The package was designed \cite{gviz}
  to rely on the
 ``program-as-filter'' model of software, in which distinct graph
 operations or transformations are embodied as programs. Graph drawing
@@ -49,8 +54,8 @@ program computes position information for the graph, attaches this
 as attributes, and delivers the graph back to the application through
 another file or pipe. The application can then read in the graph,
 and apply the geometric information as necessary. This is the
-approach used by many applications, e.g., dotty\cite{dotty} and
-grappa\cite{grappa}, which
+approach used by many applications, e.g., dotty \cite{dotty} and
+grappa \cite{grappa}, which
 rely on \gviz.
 
 There are several \gviz\ output formats which can be used in this
@@ -254,16 +259,20 @@ except that port names are attached to the node names in an edge,
 when applicable. It uses the usual \DOT\ representation, where port
 {\em p} of node {\em n} is given as {\tt {\em n}:{\em p}}.
 
-\subsubsection{GXL}
-The GXL \cite{gxl} dialect of XML is a widely accepted standard for
+\subsubsection{GXL and GML}
+The GXL \cite{gxl} dialect of XML and GML \cite{gml} are a widely used standards for
 representing attributed graphs as text, especially in the graph
-drawing and software engineering communities. As an XML dialect, there
+drawing and software engineering communities. There
 are many tools available for parsing and analyzing graphs represented
-in this format. Other graph drawing and manipulation packages either 
-use GXL as their main graph language, or provide a translator.  
+in these formats. And, as GXL is based on XML, it is amenable to the panoply of
+XML tools.
+
+Various graph drawing and manipulation packages either 
+use GXL or GML as their main graph language, or provide a translator.  
 In this, \gviz\ is no different. We supply the programs
-{\tt dot2gxl} and {\tt gxl2dot} for converting between the DOT and
-GXL formats. Thus, if an application is XML-based, to use the
+{\tt gv2gxl}, {\tt gxl2gv}, {\tt gv2gml} and {\tt gml2gv} 
+for converting between the DOT and
+these formats. Thus, if an application is XML-based, to use the
 \gviz\ tools, it needs to insert these filters as appropriate between
 its I/O and the \gviz\ layout programs.  
 

@@ -56,7 +56,7 @@ extern void gsave(sgraph*);
 extern sgraph* createSGraph(int);
 extern void freeSGraph (sgraph*);
 extern void initSEdges (sgraph* g, int maxdeg);
-extern void shortPath (sgraph* g, snode* from, snode* to);
+extern int shortPath (sgraph* g, snode* from, snode* to);
 extern snode* createSNode (sgraph*);
 extern sedge* createSEdge (sgraph* g, snode* v0, snode* v1, double wt);
 
