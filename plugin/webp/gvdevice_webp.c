@@ -18,72 +18,47 @@
 #include "gvplugin_device.h"
 
 #ifdef HAVE_WEBP
+#include "webp/encode.h"
 
 typedef enum {
     FORMAT_WEBP,
 } format_type;
 
-static void
-Y_inv ( unsigned int width, unsigned int height, char *data)
-{
-        unsigned int x, y, *a, *b, t;
-
-	a = (unsigned int*)data;
-        b = a + (height-1) * width;
-        for (y = 0; y < height/2; y++) {
-                for (x = 0; x < width; x++) {
-			t = *a;
-			*a++ = *b;
-			*b++ = t;
-                }
-                b -= 2*width;
-        }
-}
-
 static void webp_format(GVJ_t * job)
 {
-#if 0
-    ILuint	ImgId;
-    ILenum	Error;
-    ILboolean rc;
+    WebPPicture picture;
+    WebPConfig config;
 
-    // Check if the shared lib's version matches the executable's version.
-    if (ilGetInteger(IL_VERSION_NUM) < IL_VERSION ||
-    	iluGetInteger(ILU_VERSION_NUM) < ILU_VERSION) {
-    	fprintf(stderr, "DevIL version is different...exiting!\n");
+    if (!WebPPictureInit(&picture) || !WebPConfigInit(&config)) {
+	fprintf(stderr, "Error! Version mismatch!\n");
+	goto Error;
     }
 
-    // Initialize DevIL.
-    ilInit();
+    picture.width = job->width;
+    picture.height = job->height;
 
-    // Generate the main image name to use.
-    ilGenImages(1, &ImgId);
-
-    // Bind this image name.
-    ilBindImage(ImgId);
-
-    // cairo's inmemory image format needs inverting for DevIL 
-    Y_inv ( job->width, job->height, job->imagedata );
-    
-    // let the DevIL do its thing
-    rc = ilTexImage( job->width, job->height,
-    		1,		// Depth
-    		4,		// Bpp
-    		IL_BGRA,	// Format
-    		IL_UNSIGNED_BYTE,// Type
-    		job->imagedata);
-    
-    // output to the provided open file handle
-    ilSaveF(job->device.id, job->output_file);
-    
-    // We're done with the image, so delete it.
-    ilDeleteImages(1, &ImgId);
-    
-    // Simple Error detection loop that displays the Error to the user in a human-readable form.
-    while ((Error = ilGetError())) {
-    	fprintf(stderr, "Error: %s\n", iluErrorString(Error));
+    if (!WebPPictureAlloc(&picture)) {
+	fprintf(stderr, "Error! Cannot allocate memory\n");
+	return;
     }
-#endif
+
+    if (!WebPPictureImportRGBA(&picture, (const uint8_t * const)(job->imagedata), 4)) {
+	fprintf(stderr, "Error! Cannot import picture\n");
+	goto Error;
+    }
+
+    if (!WebPEncode(&config, &picture)) {
+	fprintf(stderr, "Error! Cannot encode picture as WebP\n");
+//	fprintf(stderr, "Error code: %d (%s)\n",
+//	    pic.error_code, kErrorMessages[picture.error_code]);
+	goto Error;
+     }
+//     DumpPicture(&picture, job->output_file);
+
+//  FIXME - unfinished code
+
+Error:
+     WebPPictureFree(&picture);
 }
 
 static gvdevice_engine_t webp_engine = {
