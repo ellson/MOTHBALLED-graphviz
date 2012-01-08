@@ -64,17 +64,20 @@ typedef struct {
 #define EPS_MAGIC  "\xC5\xD0\xD3\xC6"
 #define XML_MAGIC  "<?xml"
 #define SVG_MAGIC  "<svg"
+#define RIFF_MAGIC  "RIFF"
+#define WEBP_MAGIC  "WEBP"
 
 static knowntype_t knowntypes[] = {
-    { PNG_MAGIC,  sizeof(PNG_MAGIC)-1,  FT_PNG,  "png",  },
-    { PS_MAGIC,   sizeof(PS_MAGIC)-1,   FT_PS,   "ps",   },
-    { BMP_MAGIC,  sizeof(BMP_MAGIC)-1,  FT_BMP,  "bmp",  },
-    { GIF_MAGIC,  sizeof(GIF_MAGIC)-1,  FT_GIF,  "gif",  },
-    { JPEG_MAGIC, sizeof(JPEG_MAGIC)-1, FT_JPEG, "jpeg", },
-    { PDF_MAGIC,  sizeof(PDF_MAGIC)-1,  FT_PDF,  "pdf",  },
-    { EPS_MAGIC,  sizeof(EPS_MAGIC)-1,  FT_EPS,  "eps",  },
+    { PNG_MAGIC,  sizeof(PNG_MAGIC)-1,   FT_PNG,  "png",  },
+    { PS_MAGIC,   sizeof(PS_MAGIC)-1,    FT_PS,   "ps",   },
+    { BMP_MAGIC,  sizeof(BMP_MAGIC)-1,   FT_BMP,  "bmp",  },
+    { GIF_MAGIC,  sizeof(GIF_MAGIC)-1,   FT_GIF,  "gif",  },
+    { JPEG_MAGIC, sizeof(JPEG_MAGIC)-1,  FT_JPEG, "jpeg", },
+    { PDF_MAGIC,  sizeof(PDF_MAGIC)-1,   FT_PDF,  "pdf",  },
+    { EPS_MAGIC,  sizeof(EPS_MAGIC)-1,   FT_EPS,  "eps",  },
 /*    { SVG_MAGIC,  sizeof(SVG_MAGIC)-1,  FT_SVG,  "svg",  },  - viewers expect xml preamble */
-    { XML_MAGIC,  sizeof(XML_MAGIC)-1,  FT_XML,  "xml",  },
+    { XML_MAGIC,  sizeof(XML_MAGIC)-1,   FT_XML,  "xml",  },
+    { RIFF_MAGIC,  sizeof(RIFF_MAGIC)-1, FT_RIFF, "riff", },
 };
 
 static int imagetype (usershape_t *us)
@@ -88,15 +91,23 @@ static int imagetype (usershape_t *us)
 	    if (!memcmp (header, knowntypes[i].template, knowntypes[i].size)) {
 	        us->stringtype = knowntypes[i].stringtype;
 		us->type = knowntypes[i].type;
-		if (us->type != FT_XML)
-		    return us->type;
-		/* check for SVG in case of XML */
-		while (fgets(line, sizeof(line), us->f) != NULL) {
-		    if (!memcmp(line, SVG_MAGIC, sizeof(SVG_MAGIC)-1)) {
-    			us->stringtype = "svg";
-			return (us->type = FT_SVG);
+		if (us->type == FT_XML) {
+		    /* check for SVG in case of XML */
+		    while (fgets(line, sizeof(line), us->f) != NULL) {
+		        if (!memcmp(line, SVG_MAGIC, sizeof(SVG_MAGIC)-1)) {
+    			    us->stringtype = "svg";
+			    return (us->type = FT_SVG);
+		        }
 		    }
 		}
+	    	else if (us->type == FT_RIFF) {
+		    /* check for WEBP in case of RIFF */
+		    if (!memcmp(header+8, WEBP_MAGIC, sizeof(WEBP_MAGIC)-1)) {
+    			us->stringtype = "webp";
+			return (us->type = FT_WEBP);
+		    }
+		}
+		return us->type;
 	    }
         }
     }
@@ -221,6 +232,18 @@ static void png_size (usershape_t *us)
     us->dpi = 0;
     fseek(us->f, 16, SEEK_SET);
     if (get_int_msb_first(us->f, 4, &w) && get_int_msb_first(us->f, 4, &h)) {
+        us->w = w;
+        us->h = h;
+    }
+}
+
+static void webp_size (usershape_t *us)
+{
+    unsigned int w, h;
+
+    us->dpi = 0;
+    fseek(us->f, 26, SEEK_SET);
+    if (get_int_lsb_first(us->f, 2, &w) && get_int_lsb_first(us->f, 2, &h)) {
         us->w = w;
         us->h = h;
     }
@@ -472,6 +495,9 @@ static usershape_t *gvusershape_open (char *name)
 	        break;
 	    case FT_PS:
 	        ps_size(us);
+	        break;
+	    case FT_WEBP:
+	        webp_size(us);
 	        break;
 	    case FT_SVG:
 	        svg_size(us);
