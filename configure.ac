@@ -3206,6 +3206,9 @@ fi
 rm -f conftest*
 
 # -----------------------------------------------------------------------
+AC_CHECK_SIZEOF([long long])
+AC_CHECK_SIZEOF([int])
+# -----------------------------------------------------------------------
 
 # Generate Makefiles
 AC_CONFIG_FILES(Makefile

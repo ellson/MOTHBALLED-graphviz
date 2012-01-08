@@ -116,6 +116,9 @@ void PrintRect(Rect_t * r)
 /*-----------------------------------------------------------------------------
 | Calculate the n-dimensional area of a rectangle
 -----------------------------------------------------------------------------*/
+void agerror(char *);
+
+#if SIZEOF_LONG_LONG > SIZEOF_INT
 unsigned int RectArea(Rect_t * r)
 {
   register int i;
@@ -130,19 +133,55 @@ unsigned int RectArea(Rect_t * r)
      */
     area = 1;
     for (i = 0; i < NUMDIMS; i++) {
-#if 1  /* overflow check */
       long long a_test = area * r->boundary[i + NUMDIMS] - r->boundary[i];
       if( a_test > UINT_MAX) {
 	agerror("label: area too large for rtree\n");
 	return UINT_MAX;
       }
       area = a_test;
-#else
-      area *= r->boundary[i + NUMDIMS] - r->boundary[i];
-#endif
     }
     return area;
 }
+#else
+unsigned int RectArea(Rect_t * r)
+{
+  register int i;
+  unsigned int area=1, a=1;
+  assert(r);
+
+    if (Undefined(r)) return 0;
+
+    /*
+     * XXX add overflow checks
+     */
+    area = 1;
+    for (i = 0; i < NUMDIMS; i++) {
+      unsigned int b = r->boundary[i + NUMDIMS] - r->boundary[i];
+      a *= b;
+      if( (a / b ) != area) {
+	agerror("label: area too large for rtree\n");
+	return UINT_MAX;
+      }
+      area = a;
+    }
+    return area;
+}
+#endif /*SIZEOF_LONG_LONG > SIZEOF_INT*/
+#if 0 /*original code*/
+int RectArea(Rect_t * r)
+{
+    register int i, area=1;
+    assert(r);
+
+    if (Undefined(r))
+        return 0;
+    area = 1;
+    for (i = 0; i < NUMDIMS; i++) {
+        area *= r->boundary[i + NUMDIMS] - r->boundary[i];
+    }
+    return area;
+}
+#endif
 
 /*-----------------------------------------------------------------------------
 | Combine two rectangles, make one that includes both.
