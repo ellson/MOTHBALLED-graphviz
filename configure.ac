@@ -537,9 +537,6 @@ LIBS="$save_LIBS"
 #AC_CHECK_LIB([xml2], [main])
 #AC_CHECK_LIB([z], [main])
 
-AC_CHECK_SIZEOF([long long])
-AC_CHECK_SIZEOF([int])
-
 dnl -----------------------------------
 dnl ElectricFence support for debugging
 
