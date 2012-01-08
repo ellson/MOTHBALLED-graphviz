@@ -1,6 +1,8 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
+pkgfontdir = ${pkgdatadir}/font
+
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib/common \
@@ -17,7 +19,7 @@ lib_LTLIBRARIES = libgvplugin_ming.la
 else
 pkglib_LTLIBRARIES = libgvplugin_ming.la
 endif
-pkglib_DATA = Bitstream_Vera_Sans.fdb  Bitstream_Vera_Serif.fdb
+pkgfont_DATA = Bitstream_Vera_Sans.fdb  Bitstream_Vera_Serif.fdb
 endif
 
 libgvplugin_ming_C_la_SOURCES = \

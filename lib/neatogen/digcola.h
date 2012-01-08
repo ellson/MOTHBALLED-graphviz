@@ -20,10 +20,10 @@ extern "C" {
 
 #include <defs.h>
 #ifdef DIGCOLA
-extern void compute_y_coords(vtx_data*, int, double*, int);
-extern double compute_hierarchy(vtx_data*, int, double, double, 
+extern int compute_y_coords(vtx_data*, int, double*, int);
+extern int compute_hierarchy(vtx_data*, int, double, double, 
                                 double*, int**, int**, int*); 
-extern void IMDS_given_dim(vtx_data*, int, double*, double*, double);
+extern int IMDS_given_dim(vtx_data*, int, double*, double*, double);
 extern int stress_majorization_with_hierarchy(vtx_data*, int, int, double**, 
                                               node_t**, int, int, int, int, double);
 #ifdef IPSEPCOLA

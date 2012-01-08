@@ -40,19 +40,20 @@ static void subgraph_warn (void)
     agerr (AGPREV, "Please use a single definition of the subgraph within the context of its parent graph \"%s\"\n", Gstack[GSP-2]->name);
 }
 
-static void push_subg(Agraph_t *g)
+static int push_subg(Agraph_t *g)
 {
 	if (GSP >= GSTACK_SIZE) {
-		agerr (AGERR, "Gstack overflow in graph parser\n"); exit(1);
+		agerr (AGERR, "Gstack overflow in graph parser\n"); return(1);
 	}
 	G = Gstack[GSP++] = g;
+	return 0;
 }
 
 static Agraph_t *pop_subg(void)
 {
 	Agraph_t		*g;
 	if (GSP == 0) {
-		agerr (AGERR, "Gstack underflow in graph parser\n"); exit(1);
+		agerr (AGERR, "Gstack underflow in graph parser\n"); return(NULL);
 	}
 	g = Gstack[--GSP];					/* graph being popped off */
 	if (GSP > 0) G = Gstack[GSP - 1];	/* current graph */
@@ -75,7 +76,7 @@ static void anonname(char* buf)
 	sprintf(buf,"_anonymous_%d",anon_id++);
 }
 
-static void begin_graph(char *name)
+static int begin_graph(char *name)
 {
 	Agraph_t		*g;
 	char			buf[SMALLBUF];
@@ -87,13 +88,14 @@ static void begin_graph(char *name)
 	g = AG.parsed_g = agopen(name,Agraph_type);
 	Current_class = TAG_GRAPH;
 	headsubsym = tailsubsym = NULL;
-	push_subg(g);
+	if (push_subg(g)) return 1;
 	In_decl = TRUE;
+	return 0;
 }
 
-static void end_graph(void)
+static Agraph_t* end_graph(void)
 {
-	pop_subg();
+	return (pop_subg());
 }
 
 static Agnode_t *bind_node(char *name)
@@ -103,7 +105,7 @@ static Agnode_t *bind_node(char *name)
 	return n;
 }
 
-static void anonsubg(void)
+static int anonsubg(void)
 {
 	char			buf[SMALLBUF];
 	Agraph_t			*subg;
@@ -111,7 +113,8 @@ static void anonsubg(void)
 	In_decl = FALSE;
 	anonname(buf);
 	subg = agsubg(G,buf);
-	push_subg(subg);
+	if (push_subg(subg)) return 1;
+	else return 0;
 }
 
 #if 0 /* NOT USED */
@@ -145,7 +148,7 @@ static void mid_edgestmt(objport_t objp)
 	SP->last->link = NULL;
 }
 
-static void end_edgestmt(void)
+static int end_edgestmt(void)
 {
 	objstack_t	*old_SP;
 	objlist_t	*tailptr,*headptr,*freeptr;
@@ -207,7 +210,7 @@ static void end_edgestmt(void)
 		if (TAG_OF(freeptr->data.obj) == TAG_NODE)
 		free(freeptr);
 	}
-	if (G != SP->subg) abort();
+	if (G != SP->subg) return 1;
 	agpopproto(G);
 	In_edge_stmt = SP->in_edge_stmt;
 	old_SP = SP;
@@ -215,6 +218,7 @@ static void end_edgestmt(void)
 	In_decl = FALSE;
 	free(old_SP);
 	Current_class = TAG_GRAPH;
+	return 0;
 }
 
 #if 0 /* NOT USED */
@@ -320,15 +324,14 @@ concat3 (char* s1, char* s2, char*s3)
 %%
 
 file		:	graph_type optgraphname
-				{begin_graph($2); agstrfree($2);}
+				{if (begin_graph($2)) YYABORT; agstrfree($2);}
 			'{' stmt_list '}'
-				{AG.accepting_state = TRUE; end_graph();}
+				{AG.accepting_state = TRUE; if (!end_graph()) YYABORT;}
 		|	error
 				{
 					if (AG.parsed_g)
 						agclose(AG.parsed_g);
 					AG.parsed_g = NULL;
-					/*exit(1);*/
 				}
 		|	/* empty*/  {AG.parsed_g = NULL;}
 		;
@@ -436,14 +439,14 @@ edge_stmt	:	node_id
 				{ E = SP->subg->proto->e;
 				  Current_class = TAG_EDGE; }
 			opt_attr_list
-				{end_edgestmt();}
+				{if(end_edgestmt()) YYABORT;}
 		|	subg_stmt
 				{begin_edgestmt($1);}
 			edgeRHS
 				{ E = SP->subg->proto->e;
 				  Current_class = TAG_EDGE; }
 			opt_attr_list
-				{end_edgestmt();}
+				{if(end_edgestmt()) YYABORT;}
 		;
 
 edgeRHS		:	T_edgeop node_id {mid_edgestmt($2);}
@@ -458,10 +461,10 @@ edgeRHS		:	T_edgeop node_id {mid_edgestmt($2);}
 		;
 
 
-subg_stmt	:	subg_hdr '{' stmt_list '}'%prec '{' {$$ = pop_gobj();}
-		|	T_subgraph '{' { anonsubg(); } stmt_list '}' {$$ = pop_gobj();}
-		|	'{' { anonsubg(); } stmt_list '}' {$$ = pop_gobj();}
-		|	subg_hdr %prec T_subgraph {subgraph_warn(); $$ = pop_gobj();}
+subg_stmt	:	subg_hdr '{' stmt_list '}'%prec '{' {$$ = pop_gobj(); if (!$$.obj) YYABORT;}
+		|	T_subgraph '{' { if(anonsubg()) YYABORT; } stmt_list '}' {$$ = pop_gobj();  if (!$$.obj) YYABORT;}
+		|	'{' { if(anonsubg()) YYABORT; } stmt_list '}' {$$ = pop_gobj();  if (!$$.obj) YYABORT;}
+		|	subg_hdr %prec T_subgraph {subgraph_warn(); $$ = pop_gobj();  if (!$$.obj) YYABORT;}
 		;
 
 subg_hdr	:	T_subgraph symbol

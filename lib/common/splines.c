@@ -1438,7 +1438,7 @@ int place_portlabel(edge_t * e, boolean head_p)
     }
 
     l = head_p ? ED_head_label(e) : ED_tail_label(e);
-    spl = getsplinepoints(e);
+    if ((spl = getsplinepoints(e)) == NULL) return 0;
     if (!head_p) {
 	bez = &spl->list[0];
 	if (bez->sflag) {
@@ -1478,7 +1478,8 @@ splines *getsplinepoints(edge_t * e)
 
     for (le = e; !(sp = ED_spl(le)) && ED_edge_type(le) != NORMAL;
 	 le = ED_to_orig(le));
-    if (sp == NULL)
-	abort();
+    if (sp == NULL) 
+	agerr (AGERR, "getsplinepoints: no spline points available for edge (%s,%s)\n",
+	    agnameof(agtail(e)), agnameof(aghead(e)));
     return sp;
 }

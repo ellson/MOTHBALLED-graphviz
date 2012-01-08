@@ -22,13 +22,13 @@
 ** C.G. method - SPARSE  *
 *************************/
 
-void conjugate_gradient
+int conjugate_gradient
     (vtx_data * A, double *x, double *b, int n, double tol,
      int max_iterations) {
     /* Solves Ax=b using Conjugate-Gradients method */
     /* 'x' and 'b' are orthogonalized against 1 */
 
-    int i;
+    int i, rv = 0;
 
     double alpha, beta, r_r, r_r_new, p_Ap;
     double *r = N_GNEW(n, double);
@@ -67,8 +67,11 @@ void conjugate_gradient
 	    /* vectors_subtraction(n,b,Ax,r); */
 
 	    r_r_new = vectors_inner_product(n, r, r);
-	    if (r_r == 0)
-		exit(1);
+	    if (r_r == 0) {
+		agerr (AGERR, "conjugate_gradient: unexpected length 0 vector\n");
+		rv = 1;
+		goto cleanup0;
+	    }
 	    beta = r_r_new / r_r;
 	    r_r = r_r_new;
 	    vectors_scalar_mult(n, p, beta, p);
@@ -76,6 +79,7 @@ void conjugate_gradient
 	}
     }
 
+cleanup0 :
     free(r);
     free(p);
     free(Ap);
@@ -83,6 +87,7 @@ void conjugate_gradient
     free(alphap);
     free(orth_b);
 
+    return rv;
 }
 
 
@@ -90,13 +95,13 @@ void conjugate_gradient
 ** C.G. method - DENSE      *
 ****************************/
 
-void conjugate_gradient_f
+int conjugate_gradient_f
     (float **A, double *x, double *b, int n, double tol,
      int max_iterations, boolean ortho1) {
     /* Solves Ax=b using Conjugate-Gradients method */
     /* 'x' and 'b' are orthogonalized against 1 if 'ortho1=true' */
 
-    int i;
+    int i, rv = 0;
 
     double alpha, beta, r_r, r_r_new, p_Ap;
     double *r = N_GNEW(n, double);
@@ -137,15 +142,18 @@ void conjugate_gradient_f
 	    /* vectors_subtraction(n,b,Ax,r); */
 
 	    r_r_new = vectors_inner_product(n, r, r);
-	    if (r_r == 0)
-		exit(1);
+	    if (r_r == 0) {
+		rv = 1;
+		agerr (AGERR, "conjugate_gradient: unexpected length 0 vector\n");
+		goto cleanup1;
+	    }
 	    beta = r_r_new / r_r;
 	    r_r = r_r_new;
 	    vectors_scalar_mult(n, p, beta, p);
 	    vectors_addition(n, r, p, p);
 	}
     }
-
+cleanup1:
     free(r);
     free(p);
     free(Ap);
@@ -153,9 +161,10 @@ void conjugate_gradient_f
     free(alphap);
     free(orth_b);
 
+    return rv;
 }
 
-void
+int
 conjugate_gradient_mkernel(float *A, float *x, float *b, int n,
 			   double tol, int max_iterations)
 {
@@ -163,7 +172,7 @@ conjugate_gradient_mkernel(float *A, float *x, float *b, int n,
     /* A is a packed symmetric matrix */
     /* matrux A is "packed" (only upper triangular portion exists, row-major); */
 
-    int i;
+    int i, rv = 0;
 
     double alpha, beta, r_r, r_r_new, p_Ap;
     float *r = N_NEW(n, float);
@@ -209,8 +218,11 @@ conjugate_gradient_mkernel(float *A, float *x, float *b, int n,
 
 	    r_r_new = vectors_inner_productf(n, r, r);
 
-	    if (r_r == 0)
-		exit(1);
+	    if (r_r == 0) {
+		rv = 1;
+		agerr (AGERR, "conjugate_gradient: unexpected length 0 vector\n");
+		goto cleanup2;
+	    }
 	    beta = r_r_new / r_r;
 	    r_r = r_r_new;
 
@@ -220,8 +232,10 @@ conjugate_gradient_mkernel(float *A, float *x, float *b, int n,
 	}
     }
 
+cleanup2 :
     free(r);
     free(p);
     free(Ap);
     free(Ax);
+    return rv;
 }

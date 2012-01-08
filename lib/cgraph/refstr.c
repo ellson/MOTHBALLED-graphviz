@@ -66,9 +66,9 @@ static Dict_t *refdict(Agraph_t * g)
     return *dictref;
 }
 
-void agstrclose(Agraph_t * g)
+int agstrclose(Agraph_t * g)
 {
-    agdtclose(g, refdict(g));
+    return agdtclose(g, refdict(g));
 }
 
 static refstr_t *refsymbind(Dict_t * strdict, char *s)

@@ -213,7 +213,7 @@ adjacentNode(sgraph* g, sedge* e, snode* n)
 	return (&(g->nodes[e->v1]));
 }
 
-void
+int
 shortPath (sgraph* g, snode* from, snode* to)
 {
     snode* n;
@@ -229,7 +229,7 @@ shortPath (sgraph* g, snode* from, snode* to)
     }
     
     PQinit();
-    PQ_insert (from);
+    if (PQ_insert (from)) return 1;
     N_DAD(from) = NULL;
     N_VAL(from) = 0;
     
@@ -249,7 +249,7 @@ shortPath (sgraph* g, snode* from, snode* to)
 		    fprintf (stderr, "new %d (%d)\n", adjn->index, -d);
 #endif
 		    N_VAL(adjn) = d;
-		    PQ_insert(adjn);
+		    if (PQ_insert(adjn)) return 1;
 		    N_DAD(adjn) = n;
 		    N_EDGE(adjn) = e;
             	}
@@ -268,6 +268,6 @@ shortPath (sgraph* g, snode* from, snode* to)
     }
 
     /* PQfree(); */
-    return ;
+    return 0;
 }
 

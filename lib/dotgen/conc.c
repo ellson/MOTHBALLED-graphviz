@@ -17,10 +17,12 @@
  */
 
 #include	"dot.h"
-
+#include	<setjmp.h>
 
 #define		UP		0
 #define		DOWN	1
+
+static jmp_buf jbuf;
 
 static boolean samedir(edge_t * e, edge_t * f)
 {
@@ -157,8 +159,11 @@ static void rebuild_vlists(graph_t * g)
 
     for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
 	lead = GD_rankleader(g)[r];
-	if (GD_rank(agroot(g))[r].v[ND_order(lead)] != lead)
-	    abort();
+	if (GD_rank(agroot(g))[r].v[ND_order(lead)] != lead) {
+	    agerr(AGERR, "rebuiltd_vlists: rank lead %s not in order %d of rank %d\n", 
+		agnameof(lead), ND_order(lead), r);
+	    longjmp(jbuf, 1);
+	}
 	GD_rank(g)[r].v =
 	    GD_rank(agroot(g))[r].v + ND_order((GD_rankleader(g)[r]));
 	maxi = -1;
@@ -228,6 +233,10 @@ void dot_concentrate(graph_t * g)
 		mergevirtual(g, r, leftpos, rightpos - 1, UP);
 	}
 	r--;
+    }
+    if (setjmp(jbuf)) {
+	agerr(AGPREV, "concentrate=true may not work correctly.\n");
+	return;
     }
     for (c = 1; c <= GD_n_cluster(g); c++)
 	rebuild_vlists(GD_clust(g)[c]);

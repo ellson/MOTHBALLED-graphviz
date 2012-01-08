@@ -342,7 +342,7 @@ If not set, libgd uses its compiled-in font path.
 Note that fontpath is an attribute of the root graph.
 :fontsize:ENGC:double:14.0:1.0;
 Font size, <A HREF=#points>in points</A>, used for text.
-:forcelabels:G:bool:false;
+:forcelabels:G:bool:true;
 If true, all  <A HREF=#d:xlabel><B>xlabel</B></A> attributes are placed, even if there is some overlap with nodes
 or other labels.
 :group:N:string:"";  dot
@@ -571,7 +571,7 @@ Specifies layers in which the node or edge is present.
 Specifies a linearly ordered list of layer names attached to the graph
 The graph is then output in separate layers. Only those components
 belonging to the current output layer appear. For more information,
-see the page <A HREF="http://www.graphviz.org/Documentation/html/layers/">How to use drawing layers (overlays)</A>.
+see the page <A HREF="http://www.graphviz.org/wiki/how-use-drawing-layers-overlays">How to use drawing layers (overlays)</A>.
 :layersep:G:string:" :\\\\t";
 Specifies the separator characters used to split the
 <A HREF=#d:layers>layers </A>attribute into a list of layer names.

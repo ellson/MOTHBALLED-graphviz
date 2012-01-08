@@ -119,8 +119,10 @@ extern Agraph_t *graphof(Agnode_t *n);
 extern Agraph_t *rootof(Agraph_t *g);
 
 /** Obtain handles of proto node/edge for setting default attribute values */
+#ifndef WITH_CGRAPH
 extern Agnode_t *protonode(Agraph_t *g);
 extern Agedge_t *protoedge(Agraph_t *g);
+#endif
 
 /** Iterators */
 /*** Iteration termination tests */
@@ -299,8 +301,10 @@ extern Agraph_t *graphof(Agnode_t *n);
 extern Agraph_t *rootof(Agraph_t *g);
 
 /** Obtain handles of proto node/edge for setting default attribute values */
+#ifndef WITH_CGRAPH
 extern Agnode_t *protonode(Agraph_t *g);
 extern Agedge_t *protoedge(Agraph_t *g);
+#endif
 
 /** Iterators */
 /*** Iteration termination tests */

@@ -55,11 +55,11 @@ dumpNS (graph_t * g)
 }
 #endif
 
-static void
+static double
 largeMinlen (double l)
 {
     agerr (AGERR, "Edge length %f larger than maximum %u allowed.\nCheck for overwide node(s).\n", l, USHRT_MAX); 
-    exit (1);
+    return (double)USHRT_MAX;
 }
 
 /* connectGraph:
@@ -185,7 +185,7 @@ edge_t *make_aux_edge(node_t * u, node_t * v, double len, int wt)
     agtail(e) = u;
     aghead(e) = v;
     if (len > USHRT_MAX)
-	largeMinlen (len);
+	len = largeMinlen (len);
     ED_minlen(e) = ROUND(len);
     ED_weight(e) = wt;
     fast_edge(e);
@@ -306,7 +306,7 @@ make_LR_constraints(graph_t * g)
                      */
 		    m0 = MAX(m0, width + GD_nodesep(g) + ROUND(ED_dist(e)));
 		    if (m0 > USHRT_MAX)
-			largeMinlen (m0);
+			m0 = largeMinlen (m0);
 		    ED_minlen(e0) = MAX(ED_minlen(e0), m0);
 		}
 		else if (!ED_label(e)) {

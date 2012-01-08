@@ -29,7 +29,8 @@ this section explores these steps in more detail.
 Here, we just note the {\tt gvc} parameter. This is a handle
 to a {\em Graphviz context}, which contains drawing and rendering
 information independent of the properties pertaining to a particular
-graph. For the present, we view this an abstract parameter required
+graph as well as various state information. 
+For the present, we view this an abstract parameter required
 for various \gviz\ functions. We will discuss it further in  
 Section~\ref{sec:gvc}.
 
@@ -45,12 +46,33 @@ Section~\ref{sec:layout_info} for a description of occasions when
 the more general function {\tt aginitlib} should be called first.}
 Also, it is safe to make multiple calls to {\tt aginit}.
 
-We can create a graph in one of two ways, using {\tt agread} or {\tt agopen}.
+We can create a graph in one of two main ways, using {\tt agread} or {\tt agopen}.
 The former function takes a {\tt FILE*} pointer to a file open for reading.
 It is assumed the file contains the description of graphs using the
 \DOT\ language. The {\tt agread} function parses one graph at a time, 
 returning a pointer to an attributed graph generated from the input,
 or {\tt NULL} if there are no more graphs or an error occurred.
+
+The \gviz\ library provides several specialized variations of {\tt agread}. If
+the \DOT\ representation of the graph is stored in memory at {\tt char* cp}, then
+\begin{verbatim}
+    Agraph_t* G = agmeread(cp);
+\end{verbatim}
+can be used to parse the representation. The {\tt agread} function relies on the
+standard {\tt FILE} structure and {\tt fgets} function of the stdio library. You
+can supply your own text reading function {\tt mygets} coupled with a compatible 
+source of text {\tt fp}
+to read a graph using
+\begin{verbatim}
+    Agraph_t* G = agread_usergets((FILE*)fp, mygets);
+\end{verbatim}
+{\bf N.B.} If you use a Windows binary distribution of \gviz\, it is possible that 
+the {\tt FILE} structure used during the build of \gviz\ is different from the one
+used in your compilation system. In this case, a call to {\tt agread} will not work,
+and you will need to either use {\tt agread\_usergets}, 
+supplying your version of {\tt fgets},
+or {\tt agmemread}.
+
 
 The alternative technique is to call {\tt agopen}. 
 \begin{verbatim}
@@ -78,6 +100,10 @@ AGDIGRAPHSTRICT & Strict, directed graph \\ \hline
 \caption{Graph types}
 \label{table:types}
 \end{table*}
+So, to open a graph name {\tt "network"} that is directed but not strict, one would use
+\begin{verbatim}
+    Agraph_t* G = agopen("network", AGDIGRAPH);
+\end{verbatim}
 
 Nodes and edges are created by the functions {\tt agnode} and
 {\tt agedge}, respectively.
@@ -145,10 +171,10 @@ contained within a bounding rectangle.
 
 We note here some important fields used in nodes, edges and graphs.
 If {\tt np}, {\tt ep} and {\tt gp} are pointers to a node, edge and
-graph, respectively, {\tt np->name} and {\tt np->graph} give the 
+graph, respectively, {\tt agnameof(np)} and {\tt agraphof(np)} give the 
 name of the node and the root graph containing it, 
-{\tt ep->tail} and {\tt ep->head} give the tail and head nodes of the
-edge, and {\tt gp->root} gives the root graph containing the subgraph.
+{\tt agtail(ep)} and {\tt aghead(ep)} give the tail and head nodes of the
+edge, and {\tt agroot(gp)} gives the root graph containing the subgraph.
 For the root graph, this field will point to itself. 
 
 \subsubsection{Attributes}
@@ -190,22 +216,27 @@ The graph must be the root graph.
 Once the attribute has been initialized, the attribute can be set for
 a specific component by calling 
 \begin{verbatim}
-    agset (void*, char*, char*)},
+    agset (void*, char*, char*)
 \end{verbatim}
 with a pointer to the component,
 the name of the attribute and the value to which it should be set.
+For example, the call
+\begin{verbatim}
+    agset (np, "color", "blue");
+\end{verbatim}
+sets the color of node {\tt np} to {\tt "blue"}.
 The attribute value must not be {\tt NULL}.
 
 For simplicity, the \graph library provides the function
 \begin{verbatim}
-    agsafeset(void*, char*, char*, char*)}
+    agsafeset(void*, char*, char*, char*)
 \end{verbatim}
 the first three arguments
 being the same as those of {\tt agset}. This function first checks that
 the named attribute has been declared for the given graph component.
 If it has not, it declares the attribute, using its last argument as
 the required default value. It then sets the attribute value for the
-specific component. 
+specific component.
 
 When an attribute is assigned a value, the graph library replicates the
 string. This means the application can use a temporary string as the
@@ -227,9 +258,10 @@ as the usual string-valued attribute, and also in an internal machine
 format such an {\tt int}, {\tt double} or some more structured type.
 An application should only set attributes using strings and {\tt agset}.
 The implementation of the layout algorithm
-may change the machine-level representation or may change when it does
-the conversion from a string value. Hence, the low-level
-interface cannot be relied on by the application. Also note that there
+may change the machine-level representation at any time.
+Hence, the low-level
+interface cannot be relied on by the application to supply the desired
+input values. Also note that there
 is not a one-to-one correspondence between string-valued
 attributes and internal attributes. A given string attribute might be
 encoded as part of some data structure, might be represented via 
@@ -279,7 +311,7 @@ edges, graphs, and clusters.
 {\tt label} & node name & any string \\
 {\tt margin} &  0.11,0.055 & space between node label and boundary \\
 {\tt orientation} & {\tt 0.0} & node rotation angle \\
-{\tt peripheries} & {\tt shape-dependent} & number of node boundaries \\
+{\tt peripheries} & {\em shape dependent} & number of node boundaries \\
 {\tt pin} & false & fix node at its {\tt pos} attribute \\
 {\tt regular} & false & force polygon to be regular \\
 {\tt root} & & indicates node should be used as root of a layout \\
@@ -337,7 +369,7 @@ edges, graphs, and clusters.
 {\tt fontsize} & $14$ & point size of label \\
 {\tt label} & & $\dagger$ any string \\
 {\tt margin} & & $\dagger$ space placed around drawing \\
-{\tt maxiter} & {\em layout-dependent} & bound on iterations in layout \\
+{\tt maxiter} & {\em layout dependent} & bound on iterations in layout \\
 {\tt mclimit} & $1.0$ & scale factor for mincross iterations \\
 {\tt mindist} & $1.0$ & minimum distance between nodes \\
 {\tt mode} & {\tt major} & variation of layout \\
@@ -455,14 +487,14 @@ is rotated off edge \\
 \begin{tabular}[t]{|l|l|p{2.5in}|} \hline
 \multicolumn{1}{|c|}{Name} & \multicolumn{1}{c|}{Default} & \multicolumn{1}{c|}{Use} \\ \hline
 {\tt bgcolor} &  & background color for drawing, plus initial fill color \\
-{\tt charset} & {\tt "UTF-8"} & character encoding for text \\ 
+{\tt charset} & {\tt UTF-8} & character encoding for text \\ 
 {\tt fontcolor} & {\tt black} & type face color \\ 
 {\tt labeljust} & centered & left, right or center alignment for graph labels \\
 {\tt labelloc} & bottom & top or bottom location for graph labels \\
 {\tt layers} & & names for output layers \\
 {\tt layersep} & {\tt "\t :" } & separator characters used in layer specification \\
 {\tt nojustify} & false & context for justifying multiple lines of text \\
-{\tt outputorder} & {\tt "breadthfirst"} & order in which to emit nodes and edges \\ 
+{\tt outputorder} & {\tt breadthfirst} & order in which to emit nodes and edges \\ 
 {\tt pagedir} & {\tt BL} & traversal order of pages \\
 {\tt samplepoints} & {\tt 8} & number of points used to represent ellipses
 and circles on output \\
@@ -596,7 +628,7 @@ nodes and edges. The application can do this itself, or use the
 
 For example, if one wants to position the nodes of a graph using
 a \dot\ layout, but wants edges drawn as line segments, one could
-use the following code.
+use the following code shown in Figure~\ref{fig:nop}.
 \begin{figure}[hbt]
 \begin{verbatim}
     Agraph_t* G;
@@ -656,6 +688,15 @@ in which the graph is laid out using the \dot\ algorithm, followed by
 PNG bitmap output and a corresponding map file which can be used in a web
 browser.
 
+As with reading, \gviz\ provides some specialized functions for rendering.
+Of note is
+\begin{verbatim}
+    gvRenderData (GVC_t *gvc, Agraph_t* g, char *format, char **result, unsigned int *length)
+\end{verbatim}
+which writes the output of the rendering onto an allocated character buffer. A pointer
+to this buffer is returned in {\tt result} and the number of bytes written is stored in
+{\tt length}. After using the buffer, the memory should be freed by the application.
+
 Sometimes, an application will decide to do its own rendering.
 An application-supplied
 drawing routine, such as {\tt drawGraph} in Figure~\ref{fig:basic}
@@ -688,18 +729,9 @@ structures, we suggest either using {\tt xdot} approach, described above,
 or supplying its own renderer plug-in as described in
 Section~\ref{sec:renderers}.
 
-In general,
-the \graph\ library allows an application to define specific data fields 
-which are 
-compiled into the node, edge and graph structures. These have the names
-\begin{itemize}
-\item \verb+Agnodeinfo_t+
-\item \verb+Agedgeinfo_t+
-\item \verb+Agraphinfo_t+
-\end{itemize}
-respectively. The \gviz\ layout algorithms rely on a specific set of fields
-to record position and drawing information, and therefore provide 
-definitions for the three fields. Thus, the definitions
+The \gviz\ layout algorithms rely on a specific set of fields
+to record position and drawing information.
+Thus, the definitions
 of the information fields are fixed by the layout library and
 cannot be altered by the application.\footnote{This is a limitation
 of the \graph\ library. We plan to remove this restriction by moving to
@@ -714,22 +746,24 @@ that these components will have the correct sizes and alignments.
 The application can then cast the generic \graph\ types to the
 types it defined, and access the additional fields.}
 
-These information structures occur as the field named {\tt u} in the
-node, edge and graph structure. The definition of the information
-structures as defined by the layout code is given in {\tt types.h},
-along with various auxiliary types such as {\tt point} or {\tt bezier}.
-This file also provides macro expressions for accessing these
-fields. Thus, if {\tt np} is a node pointer, the width field can
-be read using {\tt np->u.width} or \verb+ND_width(np)+.
+The fields should only be accessed using macro expressions provided for
+this purpose.
+Thus, if {\tt np} is a node pointer, the width field should
+be read using \verb+ND_width(np)+.
 Edge and graph attributes follow the same convention, with
 prefixes \verb+ED_+ and \verb+GD_+, respectively.
-We strongly deprecate the former access method, for the usual reason
+A complete list of these macros is given in {\tt types.h}, 
+along with various auxiliary types such as {\tt pointf} or 
+{\tt bezier}
+\footnote{We strongly deprecate accessing the fields directly, for the usual reason
 of good programming style. By using the macros, source code will not be 
-affected by any changes to the how the value is provided.
+affected by any changes to the how the value is provided}.
 
-Each node has {\tt ND\_coord\_i}, {\tt ND\_width} and {\tt ND\_height} 
+We now consider the principal fields providing position information.
+
+Each node has {\tt ND\_coord}, {\tt ND\_width} and {\tt ND\_height} 
 attributes. The value
-of {\tt ND\_coord\_i} gives the position of the center of the node, 
+of {\tt ND\_coord} gives the position of the center of the node, 
 in points.\footnote{
 The \neato\ and \fdp\ layouts allow the graph to specify fixed positions
 for nodes. Unfortunately, some post-processing done in \gviz\ translates
@@ -737,13 +771,16 @@ the layout so that its lower-left corner is at the origin. To recover
 the original coordinates, the application will need to translate all positions
 by the vector $p_0 - p$, where $p_0$ and $p$ are the input position and
 the final position of some node whose position was fixed.
-}
+} 
 The {\tt ND\_width} and {\tt ND\_height} attributes specify the size of the
 bounding box of the node, in inches.
+Note that the {\tt width} and {\tt height} attributes provide in the input
+graph are minimum values, so that the values stored in {\tt ND\_width} 
+and {\tt ND\_height} may be larger.
 
-Edges, even if a line segment, are represented as B-splines or
+Edges, even if a line segment, are represented as cubic B-splines or
 piecewise Bezier curves.
-The {\tt spl} attribute of the edge stores this spline information.
+The {\tt ED\_spl} attribute of the edge stores this spline information.
 It has a pointer to an array of 1 or more {\tt bezier} structures. Each
 of these describes a single piecewise Bezier curve as well as associated
 arrowhead information. Normally, a single {\tt bezier} structure is
@@ -757,7 +794,7 @@ segment connecting the centers of the edge's nodes.
 If a subgraph is specified as a cluster, the nodes of the cluster
 will be drawn together and the entire subgraph is contained within
 a rectangle containing no other nodes. The rectangle is specified by
-the {\tt bb} attribute of the subgraph, the coordinates in points in
+the {\tt GD\_bb} attribute of the subgraph, the coordinates in points in
 the global coordinate system.
 
 \subsubsection{Drawing nodes and edges}
@@ -768,9 +805,7 @@ can draw the nodes and edges of a graph. It could just use rectangles
 or circles for nodes, and represent edges as line segments or splines.
 However, nodes and edges typically have a variety of other attributes,
 such as color or line style, which an application can read from the
-appropriate
-fields in {\tt Agnodeinfo\_t} and {\tt Agedgeinfo\_t} and use
-in its rendering.
+appropriate fields and use in its rendering.
 
 Additional drawing information about the node depends mostly on the shape
 of the node. 
@@ -800,7 +835,7 @@ of the node, with the origin at the center of the node.
 To handle a node's shape, an application has two basic choices. It
 can implement the geometry for each of the different shapes.
 Thus, it could see that \verb+ND_shape(n)->name+ is {\tt "box"}, and
-use the {\tt ND\_coord\_i}, {\tt ND\_width} and {\tt ND\_height} attributes to draw
+use the {\tt ND\_coord}, {\tt ND\_width} and {\tt ND\_height} attributes to draw
 rectangle at the given position with the given width and  height.
 A second approach would be
 to use the specification of the shape as stored internally in the
@@ -812,8 +847,11 @@ Again, if an application desires to be fully faithful in the rendering,
 it may be preferable to use the {\tt xdot} information or to supply its
 own renderer plugin.
 
-For edges, each {\tt bezier} structure has, in addition to its list of
-control points, fields for specifying arrowheads. If {\tt bp} points to
+For edges, each {\tt bezier} structure has a \verb+list+ field pointing to
+an array containing the control points and a \verb+size+ field giving the 
+number of points in \verb+list+, which will always have the form $(3*n+1)$. 
+In addition, there are
+fields for specifying arrowheads. If {\tt bp} points to
 a {\tt bezier} structure and the {\tt bp->sflag} field is
 true, there should be an arrowhead attached to the beginning of the bezier.
 The field {\tt bp->sp} gives the point where the nominal tip of the arrowhead

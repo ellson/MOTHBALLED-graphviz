@@ -13,8 +13,11 @@
 
 
 #include <ctype.h>
+#include <setjmp.h>
 #include "render.h"
 #include "pack.h"
+
+static jmp_buf jbuf;
 
 #define MARKED(n) ND_mark(n)
 #define MARK(n) (ND_mark(n) = 1)
@@ -88,15 +91,15 @@ static void push(stk_t* sp, Agnode_t * np)
 	if (sp->curblk->next == NULL) {
 	    blk_t *bp = GNEW(blk_t);
 	    if (bp == 0) {
-		fprintf(stderr, "gc: Out of memory\n");
-		exit(1);
+		agerr(AGERR, "gc: Out of memory\n");
+		longjmp(jbuf, 1);
 	    }
 	    bp->prev = sp->curblk;
 	    bp->next = NULL;
 	    bp->data = N_GNEW(BIGBUF, Agnode_t *);
 	    if (bp->data == 0) {
-		fprintf(stderr, "gc: Out of memory\n");
-		exit(1);
+		agerr(AGERR, "gc: Out of memory\n");
+		longjmp(jbuf, 1);
 	    }
 	    bp->endp = bp->data + BIGBUF;
 	    sp->curblk->next = bp;
@@ -172,6 +175,7 @@ static void insertFn(Agnode_t * n, void *state)
  * and the first component is the one containing the pinned nodes.
  * Note that the component subgraphs do not contain any edges. These must
  * be obtained from the root graph.
+ * Return NULL on error or if graph is empty.
  */
 Agraph_t **pccomps(Agraph_t * g, int *ncc, char *pfx, boolean * pinned)
 {
@@ -187,6 +191,7 @@ Agraph_t **pccomps(Agraph_t * g, int *ncc, char *pfx, boolean * pinned)
     stk_t stk;
     blk_t blk;
     Agnode_t* base[INITBUF];
+    int error = 0;
 
     if (agnnodes(g) == 0) {
 	*ncc = 0;
@@ -208,6 +213,10 @@ Agraph_t **pccomps(Agraph_t * g, int *ncc, char *pfx, boolean * pinned)
     ccs = N_GNEW(bnd, Agraph_t *);
 
     initStk (&stk, &blk, base);
+    if (setjmp(jbuf)) {
+	error = 1;
+	goto packerror;
+    }
     /* Component with pinned nodes */
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (MARKED(n) || !isPinned(n))
@@ -246,13 +255,24 @@ Agraph_t **pccomps(Agraph_t * g, int *ncc, char *pfx, boolean * pinned)
 	ccs[c_cnt] = out;
 	c_cnt++;
     }
+packerror:
     freeStk (&stk);
-
-    ccs = RALLOC(c_cnt, ccs, Agraph_t *);
     if (name != buffer)
 	free(name);
-    *ncc = c_cnt;
-    *pinned = pin;
+    if (error) {
+	int i;
+	*ncc = 0;
+	for (i=0; i < c_cnt; i++) {
+	    agclose (ccs[i]);
+	}
+	free (ccs);
+	ccs = NULL;
+    }
+    else {
+	ccs = RALLOC(c_cnt, ccs, Agraph_t *);
+	*ncc = c_cnt;
+	*pinned = pin;
+    }
     return ccs;
 }
 
@@ -263,6 +283,7 @@ Agraph_t **pccomps(Agraph_t * g, int *ncc, char *pfx, boolean * pinned)
  * for the name of the subgraphs created. If not, a simple default is used.
  * Note that the component subgraphs do not contain any edges. These must
  * be obtained from the root graph.
+ * Returns NULL on error or if graph is empty.
  */
 Agraph_t **ccomps(Agraph_t * g, int *ncc, char *pfx)
 {
@@ -288,8 +309,9 @@ Agraph_t **ccomps(Agraph_t * g, int *ncc, char *pfx)
     len = strlen(pfx);
     if (len + 25 <= SMALLBUF)
 	name = buffer;
-    else
-	name = (char *) gmalloc(len + 25);
+    else {
+	if (!(name = (char *) gmalloc(len + 25))) return NULL;
+    }
     strcpy(name, pfx);
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n))
@@ -297,6 +319,14 @@ Agraph_t **ccomps(Agraph_t * g, int *ncc, char *pfx)
 
     ccs = N_GNEW(bnd, Agraph_t *);
     initStk (&stk, &blk, base);
+    if (setjmp(jbuf)) {
+	freeStk (&stk);
+	free (ccs);
+	if (name != buffer)
+	    free(name);
+	*ncc = 0;
+	return NULL;
+    }
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (MARKED(n))
 	    continue;
@@ -331,7 +361,9 @@ static void cntFn(Agnode_t * n, void *s)
 }
 
 /* isConnected:
- * Returns true if the graph is connected.
+ * Returns 1 if the graph is connected.
+ * Returns 0 if the graph is not connected.
+ * Returns -1 if the graph is error.
  */
 int isConnected(Agraph_t * g)
 {
@@ -348,6 +380,10 @@ int isConnected(Agraph_t * g)
     n = agfstnode(g);
     if (n) {
 	initStk (&stk, &blk, base);
+	if (setjmp(jbuf)) {
+	    freeStk (&stk);
+	    return -1;
+        }
 	dfs(g, n, cntFn, &cnt, &stk);
 	if (cnt != agnnodes(g))
 	    ret = 0;

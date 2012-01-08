@@ -152,7 +152,7 @@ extern "C" {
     extern int agxset(void *, int, char *);
     extern int agindex(void *, char *);
 
-    extern void aginitlib(int, int, int);
+    extern int aginitlib(int, int, int);
     extern Agraph_t *agopen(char *, int);
     extern Agraph_t *agsubg(Agraph_t *, char *);
     extern Agraph_t *agfindsubg(Agraph_t *, char *);

@@ -34,7 +34,7 @@ void *zrealloc(void *ptr, size_t size, size_t elt, size_t osize)
     void *p = realloc(ptr, size * elt);
     if (p == NULL && size) {
 	fprintf(stderr, "out of memory\n");
-	abort();
+	return p;
     }
     if (osize < size)
 	memset((char *) p + (osize * elt), '\0', (size - osize) * elt);
@@ -49,7 +49,6 @@ void *gmalloc(size_t nbytes)
     rv = malloc(nbytes);
     if (rv == NULL) {
 	fprintf(stderr, "out of memory\n");
-	abort();
     }
     return rv;
 }
@@ -59,7 +58,6 @@ void *grealloc(void *ptr, size_t size)
     void *p = realloc(ptr, size);
     if (p == NULL && size) {
 	fprintf(stderr, "out of memory\n");
-	abort();
     }
     return p;
 }

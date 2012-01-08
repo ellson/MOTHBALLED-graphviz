@@ -118,6 +118,7 @@ void twopi_layout(Agraph_t * g)
 	Agraph_t **ccs;
 	Agraph_t *sg;
 	Agnode_t *c = NULL;
+	Agnode_t *n;
 	int ncc;
 	int i;
 
@@ -126,7 +127,9 @@ void twopi_layout(Agraph_t * g)
 	    c = circleLayout(g, ctr);
 	    if (setRoot && !ctr)
 		ctr = c;
-	    free(ND_alg(agfstnode(g)));
+	    n = agfstnode(g);
+	    free(ND_alg(n));
+	    ND_alg(n) = NULL;
 	    if (doScale)
 		scaleGraph (g, c, sc);
 	    adjustNodes(g);
@@ -134,7 +137,7 @@ void twopi_layout(Agraph_t * g)
 	} else {
 	    pack_info pinfo;
 	    getPackInfo (g, l_node, CL_OFFSET, &pinfo);
-	    pinfo.doSplines = 1;
+	    pinfo.doSplines = 0;
 
 	    for (i = 0; i < ncc; i++) {
 		sg = ccs[i];
@@ -149,11 +152,12 @@ void twopi_layout(Agraph_t * g)
 		if (doScale)
 		    scaleGraph (sg, c, sc);
 		adjustNodes(sg);
-		setEdgeType (sg, ET_LINE);
-		spline_edges(sg);
 	    }
-	    free(ND_alg(agfstnode(g)));
+	    n = agfstnode(g);
+	    free(ND_alg(n));
+	    ND_alg(n) = NULL;
 	    packSubgraphs(ncc, ccs, g, &pinfo);
+	    spline_edges(g);
 	}
 	for (i = 0; i < ncc; i++) {
 	    agdelete(g, ccs[i]);
@@ -177,6 +181,10 @@ static void twopi_cleanup_graph(graph_t * g)
 #endif /* WITH_CGRAPH */
 }
 
+/* twopi_cleanup:
+ * The ND_alg data used by twopi is freed in twopi_layout
+ * before edge routing as edge routing may use this field.
+ */
 void twopi_cleanup(graph_t * g)
 {
     node_t *n;
@@ -184,7 +192,7 @@ void twopi_cleanup(graph_t * g)
 
     n = agfstnode (g);
     if (!n) return; /* empty graph */
-    free (ND_alg(n));
+    /* free (ND_alg(n)); */
     for (; n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    gv_cleanup_edge(e);
