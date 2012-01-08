@@ -454,15 +454,17 @@ static BestPos_t xladjust(XLabels_t * xlp, object_t * objp)
 
     memset(intrsx, 0, sizeof(intrsx));
 
-    /* top left */
+    /*x left */
     lp->pos.x = minx;
+    /*top */
     lp->pos.y = maxy;
     bp = xlintersections(xlp, objp, intrsx);
     if (bp.n == 0)
 	return bp;
 
-    /* bottom right */
+    /*x right */
     lp->pos.x = maxx;
+    /* bottom */
     lp->pos.y = miny;
     nbp = xlintersections(xlp, objp, intrsx);
     if (nbp.n == 0)
@@ -470,8 +472,15 @@ static BestPos_t xladjust(XLabels_t * xlp, object_t * objp)
     if (nbp.area < bp.area)
 	bp = nbp;
 
-    /* bottom left */
+    /*mid */
     lp->pos.x = minx;
+    lp->pos.y = objp->pos.y;
+    nbp = xlintersections(xlp, objp, intrsx);
+    if (nbp.n == 0)
+	return nbp;
+    if (nbp.area < bp.area)
+	bp = nbp;
+    /*bottom */
     lp->pos.y = miny;
     nbp = xlintersections(xlp, objp, intrsx);
     if (nbp.n == 0)
@@ -479,27 +488,41 @@ static BestPos_t xladjust(XLabels_t * xlp, object_t * objp)
     if (nbp.area < bp.area)
 	bp = nbp;
 
-    /* top right */
+    /*x right */
     lp->pos.x = maxx;
+    /*top */
     lp->pos.y = maxy;
     nbp = xlintersections(xlp, objp, intrsx);
     if (nbp.n == 0)
 	return nbp;
     if (nbp.area < bp.area)
 	bp = nbp;
-
-    /* mid left */
-    lp->pos.x = minx;
+    /*mid */
     lp->pos.y = objp->pos.y;
     nbp = xlintersections(xlp, objp, intrsx);
     if (nbp.n == 0)
 	return nbp;
     if (nbp.area < bp.area)
 	bp = nbp;
+    /*bottom */
+    lp->pos.y = miny;
+    nbp = xlintersections(xlp, objp, intrsx);
+    if (nbp.n == 0)
+	return nbp;
+    if (nbp.area < bp.area)
+	bp = nbp;
 
-    /* mid right */
-    lp->pos.x = maxx;
-    lp->pos.y = objp->pos.y;
+    /*x mid */
+    lp->pos.x = objp->pos.x;
+    /*top */
+    lp->pos.y = maxy;
+    nbp = xlintersections(xlp, objp, intrsx);
+    if (nbp.n == 0)
+	return nbp;
+    if (nbp.area < bp.area)
+	bp = nbp;
+    /*bottom */
+    lp->pos.y = miny;
     nbp = xlintersections(xlp, objp, intrsx);
     if (nbp.n == 0)
 	return nbp;
