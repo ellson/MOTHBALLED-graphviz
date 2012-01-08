@@ -13,6 +13,9 @@ extern "C" {
 #endif
 
 #include <stdlib.h>
+#include <setjmp.h>
+
+extern jmp_buf rb_jbuf;
 
 /*  CONVENTIONS:  All data structures for red-black trees have the prefix */
 /*                "rb_" to prevent name conflicts. */

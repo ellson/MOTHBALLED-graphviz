@@ -87,17 +87,18 @@ PQupheap(int k)
   N_IDX(x) = k;
 }
 
-static void
+static int
 PQ_insert(snode* np)
 {
   if (PQcnt == PQsize) {
-    fprintf (stderr, "Heap overflow\n");
-    exit (1);
+    agerr (AGERR, "Heap overflow\n");
+    return 1;
   }
   PQcnt++;
   pq[PQcnt] = np;
   PQupheap (PQcnt);
   PQcheck();
+  return 0;
 }
 
 static void
@@ -175,7 +176,7 @@ void PQfree(void);
 void PQinit(void);
 void PQcheck (void);
 void PQupheap(int);
-void PQ_insert(snode* np);
+int PQ_insert(snode* np);
 void PQdownheap (int k);
 snode* PQremove (void);
 void PQupdate (snode* n, int d);

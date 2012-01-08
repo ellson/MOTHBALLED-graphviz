@@ -37,10 +37,18 @@ rb_red_blk_tree* RBTreeCreate( int (*CompFunc) (const void*,const void*),
 			      void (*InfoDestFunc) (void*),
 			      void (*PrintFunc) (const void*),
 			      void (*PrintInfo)(void*)) {
-  rb_red_blk_tree* newTree;
+  rb_red_blk_tree* newTree = NULL;
   rb_red_blk_node* temp;
 
+  if (setjmp(rb_jbuf)) {
+    if (newTree) {
+      if (newTree->nil) free (newTree->nil);
+      free (newTree);
+    }
+    return NULL;
+  }
   newTree=(rb_red_blk_tree*) SafeMalloc(sizeof(rb_red_blk_tree));
+  newTree->nil = newTree->root = NULL;
   newTree->Compare=  CompFunc;
   newTree->DestroyKey= DestFunc;
   newTree->PrintKey= PrintFunc;
@@ -238,6 +246,8 @@ rb_red_blk_node * RBTreeInsert(rb_red_blk_tree* tree, void* key, void* info) {
   rb_red_blk_node * x;
   rb_red_blk_node * newNode;
 
+  if (setjmp(rb_jbuf))
+    return NULL;
   x=(rb_red_blk_node*) SafeMalloc(sizeof(rb_red_blk_node));
   x->key=key;
   x->info=info;
@@ -643,7 +653,7 @@ void RBDelete(rb_red_blk_tree* tree, rb_red_blk_node* z){
 
 
 /***********************************************************************/
-/*  FUNCTION:  RBDEnumerate */
+/*  FUNCTION:  RBEnumerate */
 /**/
 /*    INPUTS:  tree is the tree to look for keys >= low */
 /*             and <= high with respect to the Compare function */
@@ -659,6 +669,9 @@ stk_stack* RBEnumerate(rb_red_blk_tree* tree, void* low, void* high) {
   rb_red_blk_node* x=tree->root->left;
   rb_red_blk_node* lastBest=nil;
 
+  if (setjmp(rb_jbuf)) {
+    return NULL;
+  }
   enumResultStack=StackCreate();
   while(nil != x) {
     if ( 1 == (tree->Compare(x->key,high)) ) { /* x->key > high */

@@ -76,7 +76,7 @@ int agobjfinalize(Void_t * obj)
     return 0;
 }
 
-void agdtclose(Agraph_t * g, Dict_t * dict)
+int agdtclose(Agraph_t * g, Dict_t * dict)
 {
     Dtmemory_f memf;
     Dtdisc_t *disc;
@@ -86,9 +86,10 @@ void agdtclose(Agraph_t * g, Dict_t * dict)
     disc->memoryf = agdictobjmem;
     Ag_dictop_G = g;
     if (dtclose(dict))
-	abort();
+	return 1;
     disc->memoryf = memf;
     Ag_dictop_G = NIL(Agraph_t*);
+    return 0;
 }
 
 void agdtdisc(Agraph_t * g, Dict_t * dict, Dtdisc_t * disc)

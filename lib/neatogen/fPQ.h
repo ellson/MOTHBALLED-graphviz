@@ -92,12 +92,12 @@ PQupheap(PQ* ppq, int k)
     N_IDX(ppq,x) = k;
 }
 
-static void
+static int
 PQinsert(PQ* pq, PQTYPE np)
 {
     if (pq->PQcnt == pq->PQsize) {
-	fprintf (stderr, "Heap overflow\n");
-	exit (1);
+	agerr (AGERR, "Heap overflow\n");
+	return (1);
     }
     pq->PQcnt++;
     pq->pq[pq->PQcnt] = np;
@@ -105,6 +105,7 @@ PQinsert(PQ* pq, PQTYPE np)
 #ifdef PQCHECK
     PQcheck(pq);
 #endif
+    return 0;
 }
 
 static void

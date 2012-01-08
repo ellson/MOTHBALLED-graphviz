@@ -615,6 +615,10 @@ static void translateE(edge_t * e, pointf offset)
 	ED_label(e)->pos.x -= offset.x;
 	ED_label(e)->pos.y -= offset.y;
     }
+    if (ED_xlabel(e) && ED_xlabel(e)->set) {
+	ED_xlabel(e)->pos.x -= offset.x;
+	ED_xlabel(e)->pos.y -= offset.y;
+    }
     if (ED_head_label(e) && ED_head_label(e)->set) {
 	ED_head_label(e)->pos.x -= offset.x;
 	ED_head_label(e)->pos.y -= offset.y;
@@ -1303,7 +1307,7 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
 {
     double **coords;
     int ne;
-    int i;
+    int i, rv = 0;
     node_t *v;
     vtx_data *gp;
     node_t** nodes;
@@ -1344,7 +1348,7 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
     if (mode != MODE_MAJOR) {
         double lgap = late_double(g, agfindgraphattr(g, "levelsgap"), 0.0, -MAXDOUBLE);
         if (mode == MODE_HIER) {        
-            stress_majorization_with_hierarchy(gp, nv, ne, coords, nodes, Ndim,
+            rv = stress_majorization_with_hierarchy(gp, nv, ne, coords, nodes, Ndim,
                        opts, model, MaxIter, lgap);
         } 
 #ifdef IPSEPCOLA
@@ -1414,7 +1418,7 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
 	    fprintf (stderr, "\n");
 	    dumpOpts (&opt, nv);
 #endif
-            stress_majorization_cola(gp, nv, ne, coords, nodes, Ndim, model, MaxIter, &opt);
+            rv = stress_majorization_cola(gp, nv, ne, coords, nodes, Ndim, model, MaxIter, &opt);
 	    freeClusterData(cs);
 	    free (nsize);
         }
@@ -1422,10 +1426,12 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
     }
     else
 #endif
-	stress_majorization_kD_mkernel(gp, nv, ne, coords, nodes, Ndim, opts, model, MaxIter);
+	rv = stress_majorization_kD_mkernel(gp, nv, ne, coords, nodes, Ndim, opts, model, MaxIter);
 
-    /* store positions back in nodes */
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
+    if (rv < 0) {
+	agerr(AGPREV, "layout aborted\n");
+    }
+    else for (v = agfstnode(g); v; v = agnxtnode(g, v)) { /* store positions back in nodes */
 	int idx = ND_id(v);
 	int i;
 	for (i = 0; i < Ndim; i++) {

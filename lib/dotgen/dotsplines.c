@@ -298,7 +298,7 @@ static void _dot_splines(graph_t * g, int normalize)
 #endif
 
     mark_lowclusters(g);
-    routesplinesinit();
+    if (routesplinesinit()) return;
     P = NEW(path);
     /* FlatHeight = 2 * GD_nodesep(g); */
     sd.Splinesep = GD_nodesep(g) / 4;
@@ -1967,24 +1967,24 @@ completeregularpath(path * P, edge_t * first, edge_t * last,
     uleft = uright = NULL;
     uleft = top_bound(first, -1), uright = top_bound(first, 1);
     if (uleft) {
-	spl = getsplinepoints(uleft);
+	if (!(spl = getsplinepoints(uleft))) return;
 	pp = spl->list[0].list;
        	pn = spl->list[0].size;
     }
     if (uright) {
-	spl = getsplinepoints(uright);
+	if (!(spl = getsplinepoints(uright))) return;
 	pp = spl->list[0].list;
        	pn = spl->list[0].size;
     }
     lleft = lright = NULL;
     lleft = bot_bound(last, -1), lright = bot_bound(last, 1);
     if (lleft) {
-	spl = getsplinepoints(lleft);
+	if (!(spl = getsplinepoints(lleft))) return;
 	pp = spl->list[spl->size - 1].list;
        	pn = spl->list[spl->size - 1].size;
     }
     if (lright) {
-	spl = getsplinepoints(lright);
+	if (!(spl = getsplinepoints(lright))) return;
 	pp = spl->list[spl->size - 1].list;
        	pn = spl->list[spl->size - 1].size;
     }
@@ -2142,7 +2142,7 @@ int *boxnp;
 	j += nsub - 1;
     }
     if (left) {
-	lspls = getsplinepoints(left);
+	if (!(lspls = getsplinepoints(left))) return;
 	pp = spline_at_y(lspls, boxes[0].UR.y);
 	for (i = 0; i < nsub; i++) {
 	    cp = spline_at_y(lspls, boxes[i].LL.y);
@@ -2163,7 +2163,7 @@ int *boxnp;
 	    boxes[i].LL.x = endp->boxes[endp->boxn - 1].UR.x - MINW;
     }
     if (right) {
-	rspls = getsplinepoints(right);
+	if (!(rspls = getsplinepoints(right))) return;
 	pp = spline_at_y(rspls, boxes[0].UR.y);
 	for (i = 0; i < nsub; i++) {
 	    cp = spline_at_y(rspls, boxes[i].LL.y);

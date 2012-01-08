@@ -1544,7 +1544,7 @@ char* htmlEntityUTF8 (char* s)
 	    }
 	    else {
 		agerr(AGERR, "Invalid 2-byte UTF8 found in input. Perhaps \"-Gcharset=latin1\" is needed?\n");
-		exit(EXIT_FAILURE);
+		return "";
 	    }
 	}
 	else if (c < 0xF0) { /* copy 3 byte UTF8 characters */
@@ -1556,12 +1556,12 @@ char* htmlEntityUTF8 (char* s)
 	    }
 	    else {
 		agerr(AGERR, "Invalid 3-byte UTF8 found in input. Perhaps \"-Gcharset=latin1\" is needed?\n");
-		exit(EXIT_FAILURE);
+		return "";
 	    }
 	}
 	else  {
 	    agerr(AGERR, "UTF8 codes > 3 bytes are not currently supported. Or perhaps \"-Gcharset=latin1\" is needed?\n");
-	    exit(EXIT_FAILURE);
+	    return "";
         }
 	rc = agxbputc(&xb, c);
     }
@@ -2033,4 +2033,12 @@ findCluster (Dt_t* map, char* name)
     else
 	return NULL;
 }
+#endif
+
+#ifdef WITH_CGRAPH
+#ifdef DEBUG
+Agnodeinfo_t* ninfo(Agnode_t* n) {return (Agnodeinfo_t*)AGDATA(n);}
+Agraphinfo_t* ginfo(Agraph_t* g) {return (Agraphinfo_t*)AGDATA(g);}
+Agedgeinfo_t* einfo(Agedge_t* e) {return (Agedgeinfo_t*)AGDATA(e);}
+#endif
 #endif

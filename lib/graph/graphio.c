@@ -58,34 +58,48 @@ static char *memgets(char *ubuf, int n, FILE * mbuf)
     return clp;
 }
 
+static Agraph_t*
+finish (int rv, Agraph_t *g)
+{
+    if (rv) {
+	if (g) agclose (g);
+	return NULL;
+    }
+    else
+	return g;
+}
+
 Agraph_t *agread(FILE * fp)
 {
+    int rv;
     aglexinit(fp, NULL);	/* use fgets from current io discipline */
-    agparse();
-    return AG.parsed_g;
+    rv = agparse();
+    return finish(rv, AG.parsed_g);
 }
 
 Agraph_t *agmemread(char *cp)
 {
+    int rv;
     gets_f savefgets = AG.fgets;
  
     AG.fgets = memgets;  /* memgets defined above */
     /* cast cp into a file pointer */
     aglexinit((FILE *) cp, NULL);
-    agparse();
+    rv = agparse();
     AG.fgets = savefgets;
-    return AG.parsed_g;
+    return finish(rv, AG.parsed_g);
 }
 
 Agraph_t *agread_usergets(FILE * fp, gets_f usergets)
 {
+    int rv;
     gets_f savefgets = AG.fgets;
 
     AG.fgets = usergets;		/* usergets provided externally */
     aglexinit(fp, NULL);
-    agparse();
+    rv = agparse();
     AG.fgets = savefgets;
-    return AG.parsed_g;
+    return finish(rv, AG.parsed_g);
 }
 
 static int

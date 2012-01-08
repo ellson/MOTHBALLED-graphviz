@@ -180,7 +180,7 @@ static Point *genRound(Agnode_t * n, int *sidep, float xm, float ym)
 
 #define PUTPT(P,X,Y) ((P).x=(X),(P).y=(Y))
 
-void makeAddPoly(Poly * pp, Agnode_t * n, float xmargin, float ymargin)
+int makeAddPoly(Poly * pp, Agnode_t * n, float xmargin, float ymargin)
 {
     int i;
     int sides;
@@ -260,7 +260,7 @@ void makeAddPoly(Poly * pp, Agnode_t * n, float xmargin, float ymargin)
 	default:
 	    agerr(AGERR, "makeAddPoly: unknown shape type %s\n",
 		  ND_shape(n)->name);
-	    exit(1);
+	    return 1;
 	}
 
     pp->verts = verts;
@@ -269,9 +269,10 @@ void makeAddPoly(Poly * pp, Agnode_t * n, float xmargin, float ymargin)
 
     if (sides > maxcnt)
 	maxcnt = sides;
+    return 0;
 }
 
-void makePoly(Poly * pp, Agnode_t * n, float xmargin, float ymargin)
+int makePoly(Poly * pp, Agnode_t * n, float xmargin, float ymargin)
 {
     int i;
     int sides;
@@ -332,7 +333,7 @@ void makePoly(Poly * pp, Agnode_t * n, float xmargin, float ymargin)
 	default:
 	    agerr(AGERR, "makePoly: unknown shape type %s\n",
 		  ND_shape(n)->name);
-	    exit(1);
+	    return 1;
 	}
 
 #ifdef OLD
@@ -349,6 +350,7 @@ void makePoly(Poly * pp, Agnode_t * n, float xmargin, float ymargin)
 
     if (sides > maxcnt)
 	maxcnt = sides;
+    return 0;
 }
 
 static int

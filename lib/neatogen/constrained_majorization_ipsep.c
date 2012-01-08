@@ -54,18 +54,17 @@
 
 #define localConstrMajorIterations 1000
 
-int stress_majorization_cola(
-    vtx_data * graph,	/* Input graph in sparse representation  */
-    int n,              /* Number of nodes */
-    int nedges_graph,	/* Number of edges */
-    double **d_coords,	/* Coordinates of nodes (output layout)  */
-    node_t **nodes,	/* Original nodes */
-    int dim,            /* Dimemsionality of layout */
-    int model,	        /* difference model */
-    int maxi,	        /* max iterations */
-    ipsep_options * opt)
+int stress_majorization_cola(vtx_data * graph,	/* Input graph in sparse representation  */
+			     int n,	/* Number of nodes */
+			     int nedges_graph,	/* Number of edges */
+			     double **d_coords,	/* Coordinates of nodes (output layout)  */
+			     node_t ** nodes,	/* Original nodes */
+			     int dim,	/* Dimemsionality of layout */
+			     int model,	/* difference model */
+			     int maxi,	/* max iterations */
+			     ipsep_options * opt)
 {
-    int iterations = 0;	  /* Output: number of iteration of the process */
+    int iterations = 0;		/* Output: number of iteration of the process */
 
 	/*************************************************
 	** Computation of full, dense, unrestricted k-D ** 
@@ -190,7 +189,8 @@ int stress_majorization_cola(
     for (i = 0; i < n; i++) {
 	d_coords[1][i] -= y_0;
     }
-    if (Verbose) fprintf(stderr, ": %.2f sec", elapsed_sec());
+    if (Verbose)
+	fprintf(stderr, ": %.2f sec", elapsed_sec());
 
 	/**************************
 	** Laplacian computation **
@@ -279,8 +279,14 @@ int stress_majorization_cola(
 
     old_stress = DBL_MAX;	/* at least one iteration */
 
-    cMajEnvHor = initCMajVPSC(n, lap2, graph, opt, 0);
-    cMajEnvVrt = initCMajVPSC(n, lap2, graph, opt, opt->diredges);
+    if ((cMajEnvHor = initCMajVPSC(n, lap2, graph, opt, 0)) == NULL) {
+	iterations = -1;
+	goto finish;
+    }
+    if ((cMajEnvVrt = initCMajVPSC(n, lap2, graph, opt, opt->diredges)) == NULL) {
+	iterations = -1;
+	goto finish;
+    }
 
     lap1 = N_GNEW(lap_length, float);
 
@@ -425,8 +431,11 @@ int stress_majorization_cola(
 	    /* if there are no constraints then use conjugate gradient
 	     * optimisation which should be considerably faster
 	     */
-	    conjugate_gradient_mkernel(lap2, coords[0], b[0], n,
-				       tolerance_cg, n);
+	    if (conjugate_gradient_mkernel(lap2, coords[0], b[0], n,
+				       tolerance_cg, n) < 0) {
+		iterations = -1;
+		goto finish;
+	    }
 	}
 	if (opt->noverlap == 1 && nsizeScale > 0.001) {
 	    generateNonoverlapConstraints(cMajEnvVrt, nsizeScale, coords,
@@ -439,8 +448,11 @@ int stress_majorization_cola(
 				     coords[1]);
 	    } else
 #endif				/* MOSEK */
-		constrained_majorization_vpsc(cMajEnvVrt, b[1], coords[1],
-					      localConstrMajorIterations);
+		if (constrained_majorization_vpsc(cMajEnvVrt, b[1], coords[1],
+					      localConstrMajorIterations) < 0) {
+		iterations = -1;
+		goto finish;
+	    }
 	} else {
 	    conjugate_gradient_mkernel(lap2, coords[1], b[1], n,
 				       tolerance_cg, n);
@@ -458,6 +470,7 @@ int stress_majorization_cola(
 	removeoverlaps(orig_n, coords, opt);
     }
 
+finish:
     if (coords != NULL) {
 	for (i = 0; i < dim; i++) {
 	    for (j = 0; j < orig_n; j++) {
