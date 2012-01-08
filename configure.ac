@@ -2050,6 +2050,28 @@ AC_SUBST([Z_INCLUDES])
 AC_SUBST([Z_LIBS])
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for WEBP
+                                                                                
+AC_ARG_WITH(webp,
+  [AS_HELP_STRING([--with-webp=no],[webp library])],
+  [], [with_webp=no])
+
+if test "x$with_webp" != "xyes"; then
+  use_webp="No (disabled by default - experimental)"
+else
+  PKG_CHECK_MODULES(WEBP, [libwebp],[
+    use_webp="Yes"
+    AC_DEFINE_UNQUOTED(HAVE_WEBP,1,
+      [Define if you have the webp library])
+    AC_SUBST([WEBP_CFLAGS])
+    AC_SUBST([WEBP_LIBS])
+  ],[
+    use_webp="No (webp library not available)"
+  ])
+fi
+AM_CONDITIONAL(WITH_WEBP, [test "x$use_webp" = "xYes"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for RSVG
                                                                                 
 AC_ARG_WITH(rsvg,
@@ -3283,6 +3305,7 @@ AC_CONFIG_FILES(Makefile
 	plugin/quartz/Makefile
 	plugin/rsvg/Makefile
 	plugin/visio/Makefile
+	plugin/webp/Makefile
 	plugin/xlib/Makefile
 	plugin/dot_layout/Makefile
 	plugin/neato_layout/Makefile
@@ -3418,6 +3441,7 @@ echo "  pangocairo:    $use_pangocairo"
 echo "  quartz:        $use_quartz"
 echo "  rsvg:          $use_rsvg"
 echo "  visio:         $use_visio"
+echo "  webp:          $use_webp"
 echo "  xlib:          $use_xlib"
 echo ""
 echo "language extensions:"
