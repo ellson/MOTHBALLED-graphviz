@@ -48,7 +48,7 @@ static void webp_format(GVJ_t * job)
     picture.writer = writer;
     picture.custom_ptr = (void*)job;
 
-#if 1
+#if 0
     picture.extra_info_type = 0;
     picture.colorspace = 0;
 
@@ -69,6 +69,7 @@ static void webp_format(GVJ_t * job)
     config.preprocessing = 0;
     config.segments = 0;
     config.partition_limit = 0;
+#endif
 
 #if 1
     preset = WEBP_PRESET_DRAWING;
@@ -79,6 +80,7 @@ static void webp_format(GVJ_t * job)
     }
 #endif
 
+#if 1
     if (!WebPValidateConfig(&config)) {
 	fprintf(stderr, "Error! Invalid configuration.\n");
 	goto Error;
