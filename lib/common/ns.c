@@ -606,12 +606,11 @@ graphSize (graph_t * g, int* nn, int* ne)
  * Returns 0 if successful; returns 1 if `he graph was not connected;
  * returns 2 if something seriously wrong;
  */
-int rank2(graph_t * g, int balance, int maxiter, int searchsize)
+int rank2(graph_t * g, int balance, int maxiter, int search_size)
 {
     int iter = 0, feasible;
     char *ns = "network simplex: ";
     edge_t *e, *f;
-    int search_size;
 
 #ifdef DEBUG
     check_cycles(g);
@@ -631,7 +630,7 @@ int rank2(graph_t * g, int balance, int maxiter, int searchsize)
 	return 0;
     }
 
-    if (searchsize >= 0)
+    if (search_size >= 0)
 	Search_size = search_size;
     else
 	Search_size = SEARCHSIZE;
