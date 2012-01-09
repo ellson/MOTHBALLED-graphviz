@@ -193,6 +193,10 @@ static void place_root_label(graph_t * g, pointf d)
     GD_label(g)->set = TRUE;
 }
 
+/* centerPt:
+ * Calculate the center point of the xlabel. The returned positions for
+ * xlabels always correspond to the lower left corner. 
+ */
 static pointf
 centerPt (xlabel_t* xlp) {
   pointf p;
@@ -228,25 +232,6 @@ printData (object_t* objs, int n_objs, xlabel_t* lbls, int n_lbls,
     lbls++;
   }
   return 0;
-}
-
-/* addXLabel:
- * Set up xlabel_t object and connect with related object.
- * If initObj is set, initialize the object.
- */
-static void
-addXLabel (textlabel_t* lp, object_t* objp, xlabel_t* xlp, int initObj, pointf pos)
-{
-    if (initObj) {
-	objp->sz.x = 0;
-	objp->sz.y = 0;
-	objp->pos = pos;
-    }
-
-    xlp->sz = lp->dimen;
-    xlp->lbl = lp;
-    xlp->set = 0;
-    objp->lbl = xlp;
 }
 
 static pointf
@@ -287,21 +272,12 @@ edgeHeadpoint (Agedge_t* e)
     }
 }
 
-/* addLabelObj:
- * Set up obstacle object based on set external label.
- * Use label information to determine size and position of object.
- * Then adjust given bounding box bb to include label and return new bb.
+/* adjustBB:
  */
 static boxf
-addLabelObj (textlabel_t* lp, object_t* objp, boxf bb)
+adjustBB (object_t* objp, boxf bb)
 {
     pointf ur;
-
-    objp->sz.x = lp->dimen.x; 
-    objp->sz.y = lp->dimen.y;
-    objp->pos = lp->pos;
-    objp->pos.x -= (objp->sz.x) / 2.0;
-    objp->pos.y -= (objp->sz.y) / 2.0;
 
     /* Adjust bounding box */
     bb.LL.x = MIN(bb.LL.x, objp->pos.x);
@@ -310,7 +286,112 @@ addLabelObj (textlabel_t* lp, object_t* objp, boxf bb)
     ur.y = objp->pos.y + objp->sz.y;
     bb.UR.x = MAX(bb.UR.x, ur.x);
     bb.UR.y = MAX(bb.UR.y, ur.y);
+
     return bb;
+}
+
+/* addXLabel:
+ * Set up xlabel_t object and connect with related object.
+ * If initObj is set, initialize the object.
+ */
+static void
+addXLabel (textlabel_t* lp, object_t* objp, xlabel_t* xlp, int initObj, pointf pos)
+{
+    if (initObj) {
+	objp->sz.x = 0;
+	objp->sz.y = 0;
+	objp->pos = pos;
+    }
+
+    if (Flip) {
+	xlp->sz.x = lp->dimen.y;
+	xlp->sz.y = lp->dimen.x;
+    }
+    else {
+	xlp->sz = lp->dimen;
+    }
+    xlp->lbl = lp;
+    xlp->set = 0;
+    objp->lbl = xlp;
+}
+
+/* addLabelObj:
+ * Set up obstacle object based on set external label.
+ * This includes dot edge labels.
+ * Use label information to determine size and position of object.
+ * Then adjust given bounding box bb to include label and return new bb.
+ */
+static boxf
+addLabelObj (textlabel_t* lp, object_t* objp, boxf bb)
+{
+    if (Flip) {
+	objp->sz.x = lp->dimen.y; 
+	objp->sz.y = lp->dimen.x;
+    }
+    else {
+	objp->sz.x = lp->dimen.x; 
+	objp->sz.y = lp->dimen.y;
+    }
+    objp->pos = lp->pos;
+    objp->pos.x -= (objp->sz.x) / 2.0;
+    objp->pos.y -= (objp->sz.y) / 2.0;
+
+    return adjustBB(objp, bb);
+}
+
+/* addNodeOjb:
+ * Set up obstacle object based on a node.
+ * Use node information to determine size and position of object.
+ * Then adjust given bounding box bb to include label and return new bb.
+ */
+static boxf
+addNodeObj (node_t* np, object_t* objp, boxf bb)
+{
+    if (Flip) {
+	objp->sz.x = INCH2PS(ND_height(np));
+	objp->sz.y = INCH2PS(ND_width(np));
+    }
+    else {
+	objp->sz.x = INCH2PS(ND_width(np));
+	objp->sz.y = INCH2PS(ND_height(np));
+    }
+    objp->pos = ND_coord(np);
+    objp->pos.x -= (objp->sz.x) / 2.0;
+    objp->pos.y -= (objp->sz.y) / 2.0;
+
+    return adjustBB(objp, bb);
+}
+
+typedef struct {
+    boxf bb;
+    object_t* objp;
+} cinfo_t;
+
+static cinfo_t
+addClusterObj (Agraph_t* g, cinfo_t info)
+{
+    int c;
+
+    for (c = 1; c <= GD_n_cluster(g); c++)
+	info = addClusterObj (GD_clust(g)[c], info);
+    if ((g != agroot(g)) && (GD_label(g)) && GD_label(g)->set) {
+	object_t* objp = info.objp;
+	info.bb = addLabelObj (GD_label(g), objp, info.bb);
+	info.objp++;
+    }
+
+    return info;
+}
+
+static int
+countClusterLabels (Agraph_t* g)
+{
+    int c, i = 0;
+    if ((g != agroot(g)) && (GD_label(g)) && GD_label(g)->set)
+	i++;
+    for (c = 1; c <= GD_n_cluster(g); c++)
+	i += countClusterLabels (GD_clust(g)[c]);
+    return i;
 }
 
 /* addXLabels:
@@ -327,6 +408,7 @@ static void addXLabels(Agraph_t * gp)
     int n_nlbls = 0;		/* # of unset node xlabels */
     int n_elbls = 0;		/* # of unset edge labels or xlabels */
     int n_set_lbls = 0;		/* # of set xlabels and edge labels */
+    int n_clbls;		/* # of set cluster labels */
     boxf bb;
     pointf ur;
     textlabel_t* lp;
@@ -378,40 +460,29 @@ static void addXLabels(Agraph_t * gp)
 	    }
 	}
     }
+    if (GD_has_labels(gp) & GRAPH_LABEL)
+	n_clbls = countClusterLabels (gp);
 
     /* A label for each unpositioned external label */
     n_lbls = n_nlbls + n_elbls;
     if (n_lbls == 0) return;
 
-    /* An object for each node, each positioned external label, and all unset edge
-     * labels and xlabels.
+    /* An object for each node, each positioned external label, any cluster label, 
+     * and all unset edge labels and xlabels.
      */
-    n_objs = agnnodes(gp) + n_set_lbls + n_elbls;
+    n_objs = agnnodes(gp) + n_set_lbls + n_clbls + n_elbls;
     objp = objs = N_NEW(n_objs, object_t);
     xlp = lbls = N_NEW(n_lbls, xlabel_t);
     bb.LL = pointfof(INT_MAX, INT_MAX);
     bb.UR = pointfof(-INT_MAX, -INT_MAX);
 
     for (np = agfstnode(gp); np; np = agnxtnode(gp, np)) {
-	/* Add an obstacle per node */
-	objp->sz.x = INCH2PS(ND_width(np));
-	objp->sz.y = INCH2PS(ND_height(np));
-	objp->pos = ND_coord(np);
-	objp->pos.x -= (objp->sz.x) / 2.0;
-	objp->pos.y -= (objp->sz.y) / 2.0;
 
-	/* Adjust bounding box */
-	bb.LL.x = MIN(bb.LL.x, objp->pos.x);
-	bb.LL.y = MIN(bb.LL.y, objp->pos.y);
-	ur.x = objp->pos.x + objp->sz.x;
-	ur.y = objp->pos.y + objp->sz.y;
-	bb.UR.x = MAX(bb.UR.x, ur.x);
-	bb.UR.y = MAX(bb.UR.y, ur.y);
-
+	bb = addNodeObj (np, objp, bb);
 	if ((lp = ND_xlabel(np))) {
 	    if (lp->set) {
-		bb = addLabelObj (lp, objp, bb);
 		objp++;
+		bb = addLabelObj (lp, objp, bb);
 	    }
 	    else {
 		addXLabel (lp, objp, xlp, 0, ur); 
@@ -462,6 +533,13 @@ static void addXLabels(Agraph_t * gp)
 	    }
 	}
     }
+    if (n_clbls) {
+	cinfo_t info;
+	info.bb = bb;
+	info.objp = objp;
+	info = addClusterObj (gp, info);
+	bb = info.bb;
+    }
 
     force = agfindgraphattr(gp, "forcelabels");
 
@@ -503,14 +581,19 @@ void gv_postprocess(Agraph_t * g, int allowTranslation)
     double diff;
     pointf dimen = { 0., 0. };
 
-    addXLabels(g);
 
     Rankdir = GD_rankdir(g);
     Flip = GD_flip(g);
+    /* Handle cluster labels */
     if (Flip)
 	place_flip_graph_label(g);
     else
 	place_graph_label(g);
+
+    /* Everything has been placed except the root graph label, if any.
+     * The graph positions have not yet been rotated back if necessary.
+     */
+    addXLabels(g);
 
     /* Add space for graph label if necessary */
     if (GD_label(g) && !GD_label(g)->set) {
@@ -594,12 +677,7 @@ static void place_flip_graph_label(graph_t * g)
     int c;
     pointf p, d;
 
-#ifndef WITH_CGRAPH
-    if ((g != g->root) && (GD_label(g)) && !GD_label(g)->set) {
-#else				/* WITH_CGRAPH */
     if ((g != agroot(g)) && (GD_label(g)) && !GD_label(g)->set) {
-#endif				/* WITH_CGRAPH */
-
 	if (GD_label_pos(g) & LABEL_AT_TOP) {
 	    d = GD_border(g)[RIGHT_IX];
 	    p.x = GD_bb(g).UR.x - d.x / 2;
@@ -634,11 +712,7 @@ void place_graph_label(graph_t * g)
     int c;
     pointf p, d;
 
-#ifndef WITH_CGRAPH
-    if ((g != g->root) && (GD_label(g)) && !GD_label(g)->set) {
-#else				/* WITH_CGRAPH */
     if ((g != agroot(g)) && (GD_label(g)) && !GD_label(g)->set) {
-#endif				/* WITH_CGRAPH */
 	if (GD_label_pos(g) & LABEL_AT_TOP) {
 	    d = GD_border(g)[TOP_IX];
 	    p.y = GD_bb(g).UR.y - d.y / 2;
