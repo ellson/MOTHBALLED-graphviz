@@ -14,9 +14,11 @@
 #include "gvplugin.h"
 
 extern gvplugin_installed_t gvdevice_webp_types[];
+extern gvplugin_installed_t gvloadimage_webp_types[];
 
 static gvplugin_api_t apis[] = {
     {API_device, gvdevice_webp_types},
+    {API_device, gvloadimage_webp_types},
     {(api_t)0, 0},
 };
 

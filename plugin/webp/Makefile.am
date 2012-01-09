@@ -27,6 +27,7 @@ endif
 
 libgvplugin_webp_C_la_SOURCES = \
 	gvplugin_webp.c \
+	gvloadimage_webp.c \
 	gvdevice_webp.c
 
 libgvplugin_webp_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
