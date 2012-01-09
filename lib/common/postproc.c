@@ -408,7 +408,7 @@ static void addXLabels(Agraph_t * gp)
     int n_nlbls = 0;		/* # of unset node xlabels */
     int n_elbls = 0;		/* # of unset edge labels or xlabels */
     int n_set_lbls = 0;		/* # of set xlabels and edge labels */
-    int n_clbls;		/* # of set cluster labels */
+    int n_clbls = 0;		/* # of set cluster labels */
     boxf bb;
     pointf ur;
     textlabel_t* lp;
