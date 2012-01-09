@@ -36,7 +36,7 @@ Prefix: /usr
 # Available features are:
 #    SHARP GHOSTSCRIPT GUILE _IO JAVA LUA OCAML ORTHO PERL PHP
 #    PYTHON RUBY R_LANG TCL IPSEPCOLA MYLIBGD PANGOCAIRO RSVG
-#    GLITZ SMYRNA DEVIL MING GDK_PIXBUF _QT
+#    GLITZ SMYRNA DEVIL MING GDK_PIXBUF _QT WEBP
 
 # SuSE uses a different mechanism to generate BuildRequires
 # norootforbuild
@@ -136,6 +136,8 @@ BuildRequires: librsvg2-devel
 BuildRequires: gd gd-devel
 %define DEVIL 1
 BuildRequires: DevIL-devel
+#define WEBP 1
+# BuildRequires: libwebp-devel
 %define SFDP 1
 BuildRequires: gts-devel
 %define LASI 1
@@ -196,6 +198,9 @@ fi
 %dir %{_datadir}/graphviz
 %{_datadir}/graphviz/lefty
 %exclude %{_libdir}/graphviz/libgvplugin_gd.*
+%if 0%{?WEBP}
+%exclude %{_libdir}/graphviz/libgvplugin_webp.*
+%endif
 %if 0%{?DEVIL}
 %exclude %{_libdir}/graphviz/libgvplugin_devil.*
 %endif
@@ -229,6 +234,27 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %files gd
 %{_bindir}/diffimg
 %{_libdir}/graphviz/libgvplugin_gd.so.*
+
+#-- graphviz-webp rpm --------------------------------------------------
+%if 0%{?WEBP}
+%package webp
+Group:            Applications/Multimedia
+Summary:          Graphviz plugin for webp format images, using libwebp
+Requires:         graphviz = %{version}-%{release}
+
+%description webp
+Graphviz plugin for webp image rendering. 
+
+# run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
+%post webp
+LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
+
+%postun webp
+[ -x $RPM_INSTALL_PREFIX0/bin/dot ] && LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c || :
+
+%files webp
+%{_libdir}/graphviz/libgvplugin_webp.so.*
+%endif
 
 #-- graphviz-devil rpm --------------------------------------------------
 %if 0%{?DEVIL}
@@ -611,6 +637,7 @@ CFLAGS="$RPM_OPT_FLAGS" \
 	--enable-ruby%{!?RUBY:=no} \
 	--enable-tcl%{!?TCL:=no} \
 	--with%{!?DEVIL:out}-devil \
+	--with%{!?WEBP:out}-webp \
 	--with%{!?GDK_PIXBUF:out}-gdk-pixbuf \
 	--with%{!?GHOSTSCRIPT:out}-ghostscript \
 	--with%{!?GLITZ:out}-glitz \
