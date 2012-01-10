@@ -28,6 +28,9 @@ extern gvplugin_library_t gvplugin_gd_LTX_library;
 #endif
 #ifdef HAVE_PANGOCAIRO
 extern gvplugin_library_t gvplugin_pango_LTX_library;
+#ifdef HAVE_WEBP
+extern gvplugin_library_t gvplugin_webp_LTX_library;
+#endif
 #endif
 extern gvplugin_library_t gvplugin_core_LTX_library;
 
@@ -37,6 +40,9 @@ lt_symlist_t lt_preloaded_symbols[] = {
 	{ "gvplugin_neato_layout_LTX_library", (void*)(&gvplugin_neato_layout_LTX_library) },
 #ifdef HAVE_PANGOCAIRO
 	{ "gvplugin_pango_LTX_library", (void*)(&gvplugin_pango_LTX_library) },
+#ifdef HAVE_WEBP
+	{ "gvplugin_webp_LTX_library", (void*)(&gvplugin_webp_LTX_library) },
+#endif
 #endif
 #ifdef HAVE_LIBGD
 	{ "gvplugin_gd_LTX_library", (void*)(&gvplugin_gd_LTX_library) },
