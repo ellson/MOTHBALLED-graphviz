@@ -33,10 +33,8 @@
     #pragma comment( lib, "cairo.lib" )
     #pragma comment( lib, "gobject-2.0.lib" )
     #pragma comment( lib, "graph.lib" )
+    #pragma comment( lib, "webp.lib" )
 #endif
-
-
-
 
 typedef enum {
     FORMAT_WEBP_CAIRO,
@@ -51,12 +49,12 @@ reader (void *closure, unsigned char *data, unsigned int length)
     return CAIRO_STATUS_READ_ERROR;
 }
 
-static void cairo_freeimage(usershape_t *us)
+static void webp_freeimage(usershape_t *us)
 {
     cairo_surface_destroy((cairo_surface_t*)(us->data));
 }
 
-static cairo_surface_t* cairo_loadimage(GVJ_t * job, usershape_t *us)
+static cairo_surface_t* webp_loadimage(GVJ_t * job, usershape_t *us)
 {
     cairo_surface_t *surface = NULL; /* source surface */
 
@@ -65,7 +63,7 @@ static cairo_surface_t* cairo_loadimage(GVJ_t * job, usershape_t *us)
     assert(us->name);
 
     if (us->data) {
-        if (us->datafree == cairo_freeimage)
+        if (us->datafree == webp_freeimage)
              surface = (cairo_surface_t*)(us->data); /* use cached data */
         else {
              us->datafree(us);        /* free incompatible cache data */
@@ -77,30 +75,30 @@ static cairo_surface_t* cairo_loadimage(GVJ_t * job, usershape_t *us)
 	if (!gvusershape_file_access(us))
 	    return NULL;
         switch (us->type) {
-#ifdef CAIRO_HAS_PNG_FUNCTIONS
-            case FT_PNG:
+            case FT_WEBP:
+#if 0 // FIXME
                 surface = cairo_image_surface_create_from_png_stream(reader, us->f);
                 cairo_surface_reference(surface);
-                break;
 #endif
+                break;
             default:
                 surface = NULL;
         }
         if (surface) {
             us->data = (void*)surface;
-            us->datafree = cairo_freeimage;
+            us->datafree = webp_freeimage;
         }
 	gvusershape_file_release(us);
     }
     return surface;
 }
 
-static void pango_loadimage_webp(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
+static void webp_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
 {
     cairo_t *cr = (cairo_t *) job->context; /* target context */
     cairo_surface_t *surface;	 /* source surface */
 
-    surface = cairo_loadimage(job, us);
+    surface = webp_loadimage(job, us);
     if (surface) {
         cairo_save(cr);
         cairo_translate(cr,
@@ -116,12 +114,12 @@ static void pango_loadimage_webp(GVJ_t * job, usershape_t *us, boxf b, boolean f
 }
 
 static gvloadimage_engine_t engine_webp = {
-    pango_loadimage_webp
+    webp_loadimage_cairo
 };
 #endif
 #endif
 
-gvplugin_installed_t gvloadimage_pango_types[] = {
+gvplugin_installed_t gvloadimage_webp_types[] = {
 #ifdef HAVE_WEBP
 #ifdef HAVE_PANGOCAIRO
     {FORMAT_WEBP_CAIRO, "webp:cairo", 1, &engine_webp, NULL},
