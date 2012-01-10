@@ -107,11 +107,11 @@ static void svg_grstyle(GVJ_t * job, int filled)
 	svg_print_color(job, obj->fillcolor);
 	if (obj->fillcolor.type == RGBA_BYTE && obj->fillcolor.u.rgba[3] > 0 && obj->fillcolor.u.rgba[3] < 255 )
 	    gvprintf(job, "\" fill-opacity=\"%f", ((float)obj->fillcolor.u.rgba[3]/255.0));
-    }
+	gvputs(job, "\" stroke=\"");
+	svg_print_color(job, obj->pencolor);
+   }
     else
 	gvputs(job, "none");
-    gvputs(job, "\" stroke=\"");
-    svg_print_color(job, obj->pencolor);
     if (obj->penwidth != PENWIDTH_NORMAL)
 	gvprintf(job, "\" stroke-width=\"%g", obj->penwidth);
     if (obj->pen == PEN_DASHED) {
