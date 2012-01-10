@@ -41,6 +41,3 @@ endif
 if WITH_DARWIN9
 libgvplugin_webp_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_webp_LTX_library
 endif
-
-EXTRA_DIST = Makefile.old
-
