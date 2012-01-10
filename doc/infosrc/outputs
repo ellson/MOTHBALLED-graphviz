@@ -389,5 +389,10 @@ the latter in compressed format.
 See <A HREF=#ID>Note</A>.
 :gtk: GTK canvas
 Creates a <A HREF="http://www.gtk.org/">GTK</A> window and displays the output there.
+:webp: Image format for the Web
+Produces output in the image format for the Web (WEBP) format, optimized for
+web devices such as tablets.
+See Wikipedia's <a href="http://en.wikipedia.org/wiki/Webp">WebP</a>
+or Google's <a href="http://code.google.com/speed/webp/">webp</a> pages.
 :xlib: Xlib canvas
 Creates an <A HREF="http://en.wikipedia.org/wiki/Xlib">Xlib</A> window and displays the output there.

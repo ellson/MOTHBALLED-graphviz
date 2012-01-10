@@ -65,7 +65,7 @@ static char *configItems = "\n\
  -?          - Print usage and exit\n";
 
 /* dotneato_usage:
- * Print usage information. If ExitOnUsage is set, exit with
+ * Print usage information. If GvExitOnUsage is set, exit with
  * given exval, else return exval+1.
  */
 int dotneato_usage(int exval)
@@ -88,7 +88,7 @@ int dotneato_usage(int exval)
     fputs(memtestItems, outs);
     fputs(configItems, outs);
 
-    if (ExitOnUsage && (exval >= 0))
+    if (GvExitOnUsage && (exval >= 0))
 	exit(exval);
     return (exval+1);
 	
@@ -332,6 +332,7 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		if (!v) {
 		    fprintf(stderr, "Format: \"%s\" not recognized. Use one of:%s\n",
 			val, gvplugin_list(gvc, API_device, val));
+		    if (GvExitOnUsage) exit(1);
 		    return(2);
 		}
 		break;
@@ -351,6 +352,7 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
                         fprintf(stderr, "Use one of:%s\n",
 				gvplugin_list(gvc, API_layout, val));
 		    }
+		    if (GvExitOnUsage) exit(1);
 		    return(2);
                 }
 		Kflag = 1;
@@ -362,6 +364,7 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		fprintf(stderr, "%s - %s version %s (%s)\n",
 			gvc->common.cmdname, gvc->common.info[0], 
 			gvc->common.info[1], gvc->common.info[2]);
+		if (GvExitOnUsage) exit(0);
 		return (1);
 		break;
 	    case 'l':
@@ -439,6 +442,8 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		fprintf(stderr, "Perhaps \"dot -c\" needs to be run (with installer's privileges) to register the plugins?\n");
 	    else 
 		fprintf(stderr, "Use one of:%s\n", gvplugin_list(gvc, API_layout, ""));
+
+	    if (GvExitOnUsage) exit(1);
 	    return(2);
 	}
     }

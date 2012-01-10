@@ -186,7 +186,7 @@ int main(int argc, char **argv)
 #endif /* WITH_CGRAPH */
 
     Gvc = gvContextPlugins(lt_preloaded_symbols, DEMAND_LOADING);
-    ExitOnUsage = 1;
+    GvExitOnUsage = 1;
     gvParseArgs(Gvc, argc, argv);
 #ifndef WIN32
     signal(SIGUSR1, gvToggle);
