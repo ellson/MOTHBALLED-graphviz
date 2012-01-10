@@ -33,7 +33,7 @@ extern "C" {
     typedef struct gvloadimage_engine_s gvloadimage_engine_t;
 
     typedef enum { PEN_NONE, PEN_DASHED, PEN_DOTTED, PEN_SOLID } pen_type;
-    typedef enum { FILL_NONE, FILL_SOLID } fill_type;
+    typedef enum { FILL_NONE, FILL_SOLID, FILL_LINEAR, FILL_RADIAL } fill_type;
     typedef enum { FONT_REGULAR, FONT_BOLD, FONT_ITALIC } font_type;
     typedef enum { LABEL_PLAIN, LABEL_HTML } label_type;
 
@@ -152,7 +152,13 @@ extern "C" {
 	int argc;
 	int alloc;
     } gv_argvlist_t;
-
+    
+    typedef struct gv_gradient_s {
+      int angle;
+      gvcolor_t startcolor, stopcolor;
+      int id;
+    } gv_gradient_t;
+    
     typedef struct gvdevice_callbacks_s {
 	void (*refresh) (GVJ_t * job);
         void (*button_press) (GVJ_t * job, int button, pointf pointer);
@@ -201,6 +207,7 @@ extern "C" {
 	emit_state_t emit_state; 
 
 	gvcolor_t pencolor, fillcolor;
+	gv_gradient_t gradient;
 	pen_type pen;
 	fill_type fill;
 	double penwidth;

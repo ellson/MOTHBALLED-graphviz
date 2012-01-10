@@ -31,6 +31,7 @@
 #define P2RECT(p, pr, sx, sy) (pr[0].x = p.x - sx, pr[0].y = p.y - sy, pr[1].x = p.x + sx, pr[1].y = p.y + sy)
 #define FUZZ 3
 #define EPSILON .0001
+#define GR_SZ 50
 
 typedef struct {
     xdot_op op;
@@ -90,6 +91,9 @@ obj_state_t* push_obj_state(GVJ_t *job)
         obj->pen = parent->pen;
         obj->fill = parent->fill;
         obj->penwidth = parent->penwidth;
+	obj->gradient.angle = parent->gradient.angle;
+	obj->gradient.startcolor = parent->gradient.startcolor;
+	obj->gradient.stopcolor = parent->gradient.stopcolor;
     }
     else {
 	/* obj->pencolor = NULL */
@@ -1013,8 +1017,8 @@ static void emit_xdot (GVJ_t * job, xdot* xd)
 static void emit_background(GVJ_t * job, graph_t *g)
 {
     xdot* xd;
-    char *str;
-    int dfltColor;
+    char *str,*gcolor,*style;
+    int dfltColor,filltype;
     
     /* if no bgcolor specified - first assume default of "white" */
     if (! ((str = agget(g, "bgcolor")) && str[0])) {
@@ -1023,6 +1027,19 @@ static void emit_background(GVJ_t * job, graph_t *g)
     }
     else
 	dfltColor = 0;
+    
+    if (((style = agget(g, "style")) && str[0])) {
+	if(strcmp(style,"linear") == 0)
+	  filltype = GRADIENT;
+	else if(strcmp(style,"radial") == 0)
+	  filltype = RGRADIENT;
+	else
+	  filltype = 0;
+    }
+
+   if ( filltype > 0 && ((gcolor = agget(g, "gradientcolor")) && str[0])) {
+      gvrender_set_gradient(job,g,G_gradientcolor,G_gradientangle);
+   }
 
     /* if device has no truecolor support, change "transparent" to "white" */
     if (! (job->flags & GVDEVICE_DOES_TRUECOLOR) && (streq(str, "transparent")))
@@ -1033,7 +1050,10 @@ static void emit_background(GVJ_t * job, graph_t *g)
           || ((job->flags & GVRENDER_NO_WHITE_BG) && dfltColor))) {
         gvrender_set_fillcolor(job, str);
         gvrender_set_pencolor(job, str);
-        gvrender_box(job, job->clip, TRUE);	/* filled */
+	if(filltype > 0)
+	  gvrender_box(job, job->clip,filltype); /* linear or radial gradient */
+	else
+	  gvrender_box(job, job->clip, TRUE);	/* filled */
     }
 
     if ((xd = (xdot*)GD_drawing(g)->xdots))
@@ -2813,6 +2833,7 @@ static void emit_colors(GVJ_t * job, graph_t * g)
 	gvrender_set_fillcolor(job, str);
     if (((str = agget(g, "fontcolor")) != 0) && str[0])
 	gvrender_set_pencolor(job, str);
+  
     emit_cluster_colors(job, g);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (((str = agget(n, "color")) != 0) && str[0])
@@ -3098,7 +3119,15 @@ static char **checkClusterStyle(graph_t* sg, int *flagp)
 	    if (strcmp(p, "filled") == 0) {
 		istyle |= FILLED;
 		pp++;
-	    } else if (strcmp(p, "rounded") == 0) {
+	    }
+	    else if (strcmp(p, "linear") == 0) {
+		istyle |= GRADIENT;
+		pp++;
+	    }
+	    	    if (strcmp(p, "radial") == 0) {
+		istyle |= (RGRADIENT);
+		pp++;
+	    }else if (strcmp(p, "rounded") == 0) {
 		istyle |= ROUNDED;
 		qp = pp; /* remove rounded from list passed to renderer */
 		do {
@@ -3204,6 +3233,11 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 		fillcolor = color;
 	        filled = TRUE;
             }
+	    if (istyle & GRADIENT) {  //handles both linear and radial gradients
+	      gvrender_set_gradient(job,sg,G_gradientcolor,G_gradientangle);
+	      filled = FALSE;
+	    } 
+
 	}
 	if (!pencolor) pencolor = DEFAULT_COLOR;
 	if (!fillcolor) fillcolor = DEFAULT_FILL;
@@ -3231,8 +3265,14 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	else {
     	    gvrender_set_pencolor(job, pencolor);
 	    gvrender_set_fillcolor(job, fillcolor);
-	    if (late_int(sg, G_peripheries, 1, 0))
+	    if (late_int(sg, G_peripheries, 1, 0)){
+	      if (istyle & GRADIENT)
+		  gvrender_box(job, GD_bb(sg), istyle);
+	      else
 		gvrender_box(job, GD_bb(sg), filled);
+	    }
+	    else if (istyle & GRADIENT)
+		  gvrender_box(job, GD_bb(sg), istyle);
 	    else if (filled) { 
 		if (fillcolor && fillcolor != pencolor)
 		    gvrender_set_pencolor(job, fillcolor);

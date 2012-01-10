@@ -44,6 +44,8 @@ typedef enum { FORMAT_SVG, FORMAT_SVGZ, } format_type;
 
 extern char *xml_string(char *str);
 extern char *xml_url_string(char *str);
+extern void cairogen_get_gradient_points(pointf * A, pointf * G, int n, float angle);
+extern void cairogen_get_rgradient_points(pointf * A, pointf * G, int n);
 
 /* SVG dash array */
 static char *sdasharray = "5,2";
@@ -90,9 +92,18 @@ static void svg_print_color(GVJ_t * job, gvcolor_t color)
 static void svg_grstyle(GVJ_t * job, int filled)
 {
     obj_state_t *obj = job->obj;
+    char sgid[11];
 
     gvputs(job, " fill=\"");
-    if (filled) {
+    if (filled == GRADIENT){
+	sprintf(sgid,"%d",obj->gradient.id);
+      	gvprintf(job,"url(#l_%s)",sgid);
+    }
+    else if (filled == RGRADIENT){
+	sprintf(sgid,"%d",obj->gradient.id);
+      	gvprintf(job,"url(#r_%s)",sgid);
+    }
+    else if (filled) {
 	svg_print_color(job, obj->fillcolor);
 	if (obj->fillcolor.type == RGBA_BYTE && obj->fillcolor.u.rgba[3] > 0 && obj->fillcolor.u.rgba[3] < 255 )
 	    gvprintf(job, "\" fill-opacity=\"%f", ((float)obj->fillcolor.u.rgba[3]/255.0));
@@ -392,9 +403,93 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
     gvputs(job, "</text>\n");
 }
 
+/* svg_gradstyle
+ * Outputs the SVG statements that define the gradient pattern
+ */
+static void svg_gradstyle(GVJ_t * job, pointf * A, int n)
+{
+      pointf G[2];
+      float angle;
+      char sgid[11];
+    
+      obj_state_t *obj = job->obj;
+      angle = obj->gradient.angle * M_PI / 180; //angle of gradient line
+      G[0].x = G[0].y = G[1].x = G[1].y = 0.;
+      cairogen_get_gradient_points(A, G, n, angle); //get points on gradient line
+      sprintf(sgid,"%d",obj->gradient.id);
+
+      gvprintf(job, "<defs>\n<linearGradient id=\"l_%s\" gradientUnits=\"userSpaceOnUse\" ",sgid);
+      gvprintf(job,"x1=\"%g\" y1=\"%g\" x2=\"%g\" y2=\"%g\" >\n", G[0].x,G[0].y,G[1].x,G[1].y);
+      gvputs(job,"<stop offset=\"0\" style=\"stop-color:");
+      svg_print_color(job, obj->gradient.startcolor);
+      gvputs(job,";stop-opacity:");
+      if (obj->gradient.startcolor.type == RGBA_BYTE && obj->gradient.startcolor.u.rgba[3] > 0 && obj->gradient.startcolor.u.rgba[3] < 255 )
+	    gvprintf(job, "%f", ((float)obj->gradient.startcolor.u.rgba[3]/255.0));
+      else gvputs(job,"1.");
+      gvputs(job,";\"/>\n");
+      gvputs(job,"<stop offset=\"1\" style=\"stop-color:");
+      svg_print_color(job, obj->gradient.stopcolor);
+      gvputs(job,";stop-opacity:");
+      if (obj->gradient.stopcolor.type == RGBA_BYTE && obj->gradient.stopcolor.u.rgba[3] > 0 && obj->gradient.stopcolor.u.rgba[3] < 255 )
+	    gvprintf(job, "%f", ((float)obj->gradient.stopcolor.u.rgba[3]/255.0));
+      else gvputs(job,"1.");
+      gvputs(job,";\"/>\n</linearGradient>\n</defs>\n");
+}
+
+/* svg_gradstyle
+ * Outputs the SVG statements that define the radial gradient pattern
+ */
+static void svg_rgradstyle(GVJ_t * job, pointf * A, int n)
+{
+      pointf G[2];
+      float angle;
+      char fx[5],fy[5],sgid[11];
+      int ifx,ify;
+    
+      obj_state_t *obj = job->obj;
+      angle = obj->gradient.angle * M_PI / 180; //angle of gradient line
+      G[0].x = G[0].y = G[1].x = G[1].y = G[2].x = G[2].y= 0.;
+      cairogen_get_rgradient_points(A, G, n);
+      if(angle == 0.){
+	ifx = ify = 50;
+      }
+      else {
+	ifx = 50*(1 + cos(angle));
+	ify = 50*(1 - sin(angle));
+      }
+      sprintf(sgid,"%d",obj->gradient.id);
+      sprintf(fx,"%d%%",ifx);
+      sprintf(fy,"%d%%",ify);
+      gvprintf(job, "<defs>\n<radialGradient id=\"r_%s\" cx=\"50%\" cy=\"50%\" r=\"75%\" fx=",sgid);
+      gvprintf(job,"\"%s\"",fx);
+      gvputs(job," fy=");
+      gvprintf(job,"\"%s\">\n",fy);
+      gvputs(job,"<stop offset=\"0\" style=\"stop-color:");
+      svg_print_color(job, obj->gradient.startcolor);
+      gvputs(job,";stop-opacity:");
+      if (obj->gradient.startcolor.type == RGBA_BYTE && obj->gradient.startcolor.u.rgba[3] > 0 && obj->gradient.startcolor.u.rgba[3] < 255 )
+	    gvprintf(job, "%f", ((float)obj->gradient.startcolor.u.rgba[3]/255.0));
+      else gvputs(job,"1.");
+      gvputs(job,";\"/>\n");
+      gvputs(job,"<stop offset=\"1\" style=\"stop-color:");
+      svg_print_color(job, obj->gradient.stopcolor);
+      gvputs(job,";stop-opacity:");
+      if (obj->gradient.stopcolor.type == RGBA_BYTE && obj->gradient.stopcolor.u.rgba[3] > 0 && obj->gradient.stopcolor.u.rgba[3] < 255 )
+	    gvprintf(job, "%f", ((float)obj->gradient.stopcolor.u.rgba[3]/255.0));
+      else gvputs(job,"1.");
+      gvputs(job,";\"/>\n</radialGradient>\n</defs>\n");
+}
+
+
 static void svg_ellipse(GVJ_t * job, pointf * A, int filled)
 {
     /* A[] contains 2 points: the center and corner. */
+    if (filled == GRADIENT) {
+      svg_gradstyle(job,A,2);
+    }
+    else if (filled == (RGRADIENT)){
+      svg_rgradstyle(job,A,2);
+    }
     gvputs(job, "<ellipse");
     svg_grstyle(job, filled);
     gvprintf(job, " cx=\"%g\" cy=\"%g\"", A[0].x, -A[0].y);
@@ -417,7 +512,12 @@ svg_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 static void svg_polygon(GVJ_t * job, pointf * A, int n, int filled)
 {
     int i;
-
+    if (filled == GRADIENT) {
+      svg_gradstyle(job,A,n);
+    }
+    else if (filled == (RGRADIENT)){
+      svg_rgradstyle(job,A,n);
+    }
     gvputs(job, "<polygon");
     svg_grstyle(job, filled);
     gvputs(job, " points=\"");

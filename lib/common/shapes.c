@@ -17,6 +17,7 @@
 
 #define RBCONST 12
 #define RBCURVE .5
+#define GR_SZ 50
 
 static port Center = { {0, 0}, -1, 0, 0, 0, 1, 0, 0, 0 };
 
@@ -280,6 +281,50 @@ char *findFill(node_t * n)
     return (findFillDflt(n, DEFAULT_FILL));
 }
 
+char *findStartColor(void * n, attrsym_t * attr, char *dflt)
+{
+    char *color;
+
+    color = late_nnstring(n, attr, dflt);
+    if (!color[0]) {
+	color = late_nnstring(n, N_color, "");
+	if (!color[0]) {
+	    color =  DEFAULT_FILL;
+	}
+    }
+    return color;
+}
+
+
+char *findStopColor(void * n, attrsym_t * attr, char *dflt)
+{
+    char *color,*str;
+
+    str = late_nnstring(n, attr, dflt);
+    color = strchr(str, ':');
+   if ((color == NULL) || !color[0]) {
+	color = str;
+	if (!color[0]) {
+	    color = DEFAULT_FILL;
+	}
+    }
+    else {
+      color++;
+      if (!color[0]) {
+	    color = DEFAULT_FILL;
+	}
+    }
+
+    return color;
+}
+
+int findGradientAngle(void * n,  attrsym_t * attr)
+{
+  int angle;
+      angle = late_int(n, attr, 0, 0);
+      return (angle);
+}
+
 static char **checkStyle(node_t * n, int *flagp)
 {
     char *style;
@@ -296,6 +341,12 @@ static char **checkStyle(node_t * n, int *flagp)
 	while ((p = *pp)) {
 	    if (streq(p, "filled")) {
 		istyle |= FILLED;
+		pp++;
+	    } else if (streq(p, "linear")) {
+		istyle |= GRADIENT;
+		pp++;
+	    }else if (streq(p, "radial")) {
+		istyle |= (RGRADIENT);
 		pp++;
 	    } else if (streq(p, "rounded")) {
 		istyle |= ROUNDED;
@@ -434,7 +485,10 @@ void round_corners(GVJ_t * job, char *fillc, char *penc, pointf * AF,
 		pts[j++] = B[4 * seg + 1];
 		pts[j++] = B[4 * seg + 2];
 	    }
-	    gvrender_polygon(job, pts, 2 * sides, TRUE);
+	    if (filled & GRADIENT)
+	      gvrender_polygon(job, pts, 2 * sides, filled);
+	    else
+	      gvrender_polygon(job, pts, 2 * sides, TRUE);
 	    free(pts);
 	    for (seg = 0; seg < sides; seg++) {
 		gvrender_beziercurve(job, B + 4 * seg + 2, 4, FALSE, FALSE,
@@ -1623,10 +1677,15 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	gvrender_set_fillcolor(job, color);
 	filled = TRUE;
     } else {
-	if (style & FILLED) {
+	if (style & GRADIENT) {
+	    gvrender_set_gradient(job,n,N_gradientcolor,N_gradientangle);
+	    filled = FALSE;
+	} 
+	else if (style & FILLED) {
 	    gvrender_set_fillcolor(job, findFill(n));	/* emit fill color */
 	    filled = TRUE;
-	} else {
+	} 
+	else {
 	    filled = FALSE;
 	}
 	pencolor(job, n);	/* emit pen color */
@@ -1661,14 +1720,26 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	/* lay down fill first */
 	if (filled && pfilled) {
 	    if (sides <= 2) {
-		gvrender_ellipse(job, AF, sides, filled);
+		if (style & GRADIENT)
+		  gvrender_ellipse(job, AF, sides, style);
+		else
+		  gvrender_ellipse(job, AF, sides, filled);
+		  
 		if (style & DIAGONALS) {
 		    Mcircle_hack(job, n);
 		}
 	    } else if (style & (ROUNDED | DIAGONALS)) {
-		node_round_corners(job, n, AF, sides, style, filled);
+		if (style & GRADIENT) {
+		  gvrender_set_gradient(job,n,N_gradientcolor,N_gradientangle);
+		  node_round_corners(job, n, AF, sides, style, style);
+		}
+		else
+		  node_round_corners(job, n, AF, sides, style, filled);
 	    } else {
-		gvrender_polygon(job, AF, sides, filled);
+		if (style & GRADIENT)
+		  gvrender_polygon(job, AF, sides, style);
+		else
+		  gvrender_polygon(job, AF, sides, filled);
 	    }
 	}
 	gvrender_usershape(job, name, AF, sides, filled,
@@ -1683,14 +1754,25 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	    AF[i].y = P.y * ysize + ND_coord(n).y;
 	}
 	if (sides <= 2) {
-	    gvrender_ellipse(job, AF, sides, filled);
+	    if (style & GRADIENT)
+		gvrender_ellipse(job, AF, sides, style);
+	    else
+		gvrender_ellipse(job, AF, sides, filled);
 	    if (style & DIAGONALS) {
 		Mcircle_hack(job, n);
 	    }
 	} else if (SPECIAL_CORNERS(style)) {
+	  if (style & GRADIENT) {
+	    gvrender_set_gradient(job,n,N_gradientcolor,N_gradientangle);
+	    node_round_corners(job, n, AF, sides, style, style);
+	  }
+	  else
 	    node_round_corners(job, n, AF, sides, style, filled);
 	} else {
-	    gvrender_polygon(job, AF, sides, filled);
+	    if (style & GRADIENT)
+	      gvrender_polygon(job, AF, sides, style);
+	    else
+	      gvrender_polygon(job, AF, sides, filled);
 	}
 	/* fill innermost periphery only */
 	filled = FALSE;

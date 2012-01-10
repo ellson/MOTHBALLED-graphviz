@@ -259,6 +259,13 @@ static void doFill(GVJ_t * job, char *color, boxf BF)
     gvrender_box(job, BF, 1);
 }
 
+static void doGrdtFill(GVJ_t * job, char *color, boxf BF, int gradient)
+{
+    //gvrender_set_fillcolor(job, color);
+    gvrender_set_pencolor(job, color);
+    gvrender_box(job, BF, gradient);
+}
+
 /* initAnchor:
  * Save current map values
  * Initialize fields in job->obj pertaining to anchors.
@@ -432,6 +439,8 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
     int anchor; /* if true, we need to undo anchor settings. */
     int doAnchor = (tbl->data.href || tbl->data.target);
     pointf AF[4];
+    int gradient;
+    char *bordercolor;
 
     if (tbl->font)
 	pushFontInfo(env, tbl->font, &savef);
@@ -445,7 +454,6 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
 	anchor = initAnchor(job, env, &tbl->data, pts, &saved, 1);
     else
 	anchor = 0;
-
     /* Set up rounded style */
     if (tbl->style & ROUNDED) {
 	AF[0] = pts.LL;
@@ -465,11 +473,29 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
 
     /* Fill first */
     if (tbl->data.bgcolor) {
-	if (tbl->style & ROUNDED)
+	if (tbl->style & ROUNDED){
 	    round_corners (job, tbl->data.bgcolor, NULL, AF, 4, tbl->style, 1);
+	}
 	else
 	    doFill(job, tbl->data.bgcolor, pts);
+     }
+     
+    if (tbl->data.gradient && tbl->data.gradientcolor) {
+	if (strcmp(tbl->data.gradient,"linear") == 0)
+	   gradient = GRADIENT;
+	else if (strcmp(tbl->data.gradient,"radial") == 0)
+	    gradient = RGRADIENT;
+	else
+	    gradient = 0;
+	bordercolor = gvrender_set_gradient_values(job, tbl->data.gradientcolor, 0);	    
+	
+	if (tbl->style & ROUNDED){
+	    round_corners (job, bordercolor, NULL, AF, 4, tbl->style, gradient);
+	}
+	else
+	    doGrdtFill(job, bordercolor, pts,gradient);
     }
+     
 
     while (*cells) {
 	emit_html_cell(job, *cells, env);
@@ -547,6 +573,8 @@ emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
     boxf pts = cp->data.box;
     pointf pos = env->pos;
     int inAnchor, doAnchor = (cp->data.href || cp->data.target);
+    int gradient;
+    char *bordercolor;
 
     pts.LL.x += pos.x;
     pts.UR.x += pos.x;
@@ -558,12 +586,22 @@ emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
     else
 	inAnchor = 0;
 
-    if (cp->data.bgcolor) {
+    if (cp->data.bgcolor)
 	doFill(job, cp->data.bgcolor, pts);
-    }
 
     if (cp->data.border)
 	doBorder(job, cp->data.pencolor, cp->data.border, pts);
+    
+    if(cp->data.gradient && cp->data.gradientcolor){
+	if(strcmp(cp->data.gradient,"linear")==0)
+	  gradient = GRADIENT;
+	else if (strcmp(cp->data.gradient,"radial")==0)
+	  gradient = RGRADIENT;
+	else
+	  gradient = 0;
+	bordercolor = gvrender_set_gradient_values(job, cp->data.gradientcolor, 0);
+	doGrdtFill(job,bordercolor, pts, gradient);
+      }
 
     if (cp->child.kind == HTML_TBL)
 	emit_html_tbl(job, cp->child.u.tbl, env);

@@ -83,6 +83,7 @@
 #define		DEFAULT_RANKSEP	0.5
 #define		MIN_RANKSEP		0.02
 
+
 /* default margin for paged formats such as PostScript - in points  = 0.5in */
 #define		DEFAULT_PRINT_MARGIN 36
 /* default margin for embedded formats such as PNG - in points */
@@ -210,6 +211,8 @@
 #define FOLDER (1 << 7)
 #define BOX3D (1 << 8)
 #define COMPONENT (1 << 9)
+#define GRADIENT (1 << 10)
+#define RGRADIENT GRADIENT + 1 /*radial gradient */
 
 /* label types */
 #define LT_NONE 	(0 << 1)

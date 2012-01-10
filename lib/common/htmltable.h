@@ -69,6 +69,8 @@ extern "C" {
 	char *id;
 	char *bgcolor;
 	char *pencolor;
+	char *gradient;
+	char *gradientcolor;
 	signed char space;
 	unsigned char border;
 	unsigned char pad;

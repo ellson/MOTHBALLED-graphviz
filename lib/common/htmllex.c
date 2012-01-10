@@ -160,6 +160,19 @@ static int idfn(htmldata_t * p, char *v)
     return 0;
 }
 
+static int gradientfn(htmldata_t * p, char *v)
+{
+    p->gradient = strdup(v);
+    return 0;
+}
+
+static int gradientcolorfn(htmldata_t * p, char *v)
+{
+    p->gradientcolor = strdup(v);
+    return 0;
+}
+
+
 /* doInt:
  * Scan v for integral value. Check that
  * the value is >= min and <= max. Return value in ul.
@@ -434,6 +447,8 @@ static attr_item tbl_items[] = {
     {"color", (attrFn) pencolorfn},
     {"columns", (attrFn) columnsfn},
     {"fixedsize", (attrFn) fixedsizefn},
+    {"gradient", (attrFn) gradientfn},
+    {"gradientcolor", (attrFn) gradientcolorfn},
     {"height", (attrFn) heightfn},
     {"href", (attrFn) hreffn},
     {"id", (attrFn) idfn},
@@ -457,6 +472,8 @@ static attr_item cell_items[] = {
     {"color", (attrFn) pencolorfn},
     {"colspan", (attrFn) colspanfn},
     {"fixedsize", (attrFn) fixedsizefn},
+    {"gradient", (attrFn) gradientfn},
+    {"gradientcolor", (attrFn) gradientcolorfn},
     {"height", (attrFn) heightfn},
     {"href", (attrFn) hreffn},
     {"id", (attrFn) idfn},

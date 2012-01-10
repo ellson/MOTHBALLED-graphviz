@@ -39,11 +39,16 @@
 
 extern int emit_once(char *str);
 extern shape_desc *find_user_shape(char *name);
+extern char *findStopColor(void * n, attrsym_t * attr, char *dflt);
+extern char *findStartColor(void * n, attrsym_t * attr, char *dflt);
+extern int findGradientAngle(void * n,  attrsym_t * attr);
 extern boolean mapbool(char *s);
 
 #ifndef HAVE_STRCASECMP
 extern int strcasecmp(const char *s1, const char *s2);
 #endif
+
+#define GR_SZ 50
 
 /* storage for temporary hacks until client API is FP */
 static pointf *AF;
@@ -489,6 +494,92 @@ void gvrender_set_fillcolor(GVJ_t * job, char *name)
 	*cp = ':';
 }
 
+void gvrender_set_gradientcolor(GVJ_t * job, char *gr_color_ptr[2])
+{
+    gvrender_engine_t *gvre = job->render.engine;
+    gvcolor_t *color;
+    char * start_color, * stop_color;
+    
+    start_color = gr_color_ptr[0];
+    stop_color = gr_color_ptr[1];
+    if (gvre && gr_color_ptr[0] != NULL && gr_color_ptr[1] != NULL) {
+      color = &(job->obj->gradient.startcolor);
+      gvrender_resolve_color(job->render.features, start_color, color);
+      if (gvre->resolve_color)
+	gvre->resolve_color(job, color);
+      color = &(job->obj->gradient.stopcolor);
+      gvrender_resolve_color(job->render.features, stop_color, color);
+      if (gvre->resolve_color)
+	gvre->resolve_color(job, color);
+    }
+}
+
+void gvrender_set_gradientAngle(GVJ_t * job, int angle)
+{
+  obj_state_t *obj = job->obj;
+  obj->gradient.angle = angle;
+      
+}
+static int gradientId;
+void gvrender_set_gradientId(GVJ_t * job){
+
+  obj_state_t *obj = job->obj;
+  obj->gradient.id = gradientId++;
+}
+
+void gvrender_set_gradient(GVJ_t * job, void *g_obj, attrsym_t * color_attr, attrsym_t * angle_attr){
+char *ptr, *gradcolor = NULL,*gradstartcolor;
+int angle;
+
+    
+    if(g_obj != NULL && color_attr != NULL) {
+      gradcolor = N_GNEW((2 * GR_SZ)+1,char);
+      gradstartcolor = N_GNEW(GR_SZ,char);
+      strcpy(gradcolor,findStartColor(g_obj,color_attr,DEFAULT_FILL));
+      if ((ptr = strstr(gradcolor, ":")) != NULL) /* if attribute is a color list use first one */
+	*ptr = '\0';
+      strcpy(gradstartcolor,gradcolor);
+      strcat(gradcolor,":");
+      strcat(gradcolor,findStopColor(g_obj,color_attr,gradstartcolor)); /* use start color as stop color if : missing */
+      angle = findGradientAngle(g_obj,angle_attr);
+      gvrender_set_gradient_values(job,gradcolor,angle);
+      free(gradstartcolor);
+      free(gradcolor);
+    }
+      
+}
+
+static char gradientcolor[2][GR_SZ];
+
+char *gvrender_set_gradient_values(GVJ_t* job, char* gradcolor, int angle){
+    char *gr_color_ptr[2], *ptr;
+
+    gr_color_ptr[0] = gradientcolor[0];
+    gr_color_ptr[1] = gradientcolor[1];
+    gr_color_ptr[0][GR_SZ - 1] = gr_color_ptr[0][0] = 0;
+    gr_color_ptr[1][GR_SZ - 1] = gr_color_ptr[1][0] = 0;
+    if(gradcolor != NULL && gradcolor[0]){
+      ptr= strstr(gradcolor,":");
+      if(ptr != NULL){
+	*ptr = '\0';
+	++ptr;
+	if(ptr[0])
+	  strncpy(gr_color_ptr[1],ptr,GR_SZ - 1);
+	else
+	  strncpy(gr_color_ptr[1],gradcolor,GR_SZ - 1);  //use start color as stop color
+      }
+      else
+	strncpy(gr_color_ptr[1],gradcolor,GR_SZ - 1);  //use start color as stop color	
+      strncpy(gr_color_ptr[0],gradcolor,GR_SZ - 1);
+      gvrender_set_gradientcolor(job, gr_color_ptr);
+      gvrender_set_gradientAngle(job,angle);
+      gvrender_set_gradientId(job);
+    }
+    return gr_color_ptr[1];
+
+}
+
+
 void gvrender_set_style(GVJ_t * job, char **s)
 {
     gvrender_engine_t *gvre = job->render.engine;
@@ -515,6 +606,10 @@ void gvrender_set_style(GVJ_t * job, char **s)
 		obj->penwidth = atof(p);
 	    } else if (streq(line, "filled"))
 		obj->fill = FILL_SOLID;
+	    else if (streq(line, "linear"))
+		obj->fill = FILL_LINEAR;
+	    else if (streq(line, "radial"))
+		obj->fill = FILL_RADIAL;
 	    else if (streq(line, "unfilled"))
 		obj->fill = FILL_NONE;
 	    else if (streq(line, "tapered"))
@@ -528,7 +623,7 @@ void gvrender_set_style(GVJ_t * job, char **s)
     }
 }
 
-void gvrender_ellipse(GVJ_t * job, pointf * pf, int n, boolean filled)
+void gvrender_ellipse(GVJ_t * job, pointf * pf, int n, int filled)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
@@ -549,10 +644,9 @@ void gvrender_ellipse(GVJ_t * job, pointf * pf, int n, boolean filled)
     }
 }
 
-void gvrender_polygon(GVJ_t * job, pointf * af, int n, boolean filled)
+void gvrender_polygon(GVJ_t * job, pointf * af, int n, int filled)
 {
     gvrender_engine_t *gvre = job->render.engine;
-
     if (gvre) {
 	if (gvre->polygon && job->obj->pen != PEN_NONE) {
 	    if (job->flags & GVRENDER_DOES_TRANSFORM)
@@ -569,7 +663,8 @@ void gvrender_polygon(GVJ_t * job, pointf * af, int n, boolean filled)
     }
 }
 
-void gvrender_box(GVJ_t * job, boxf B, boolean filled)
+
+void gvrender_box(GVJ_t * job, boxf B, int filled)
 {
     pointf A[4];
 
