@@ -110,8 +110,11 @@ static void svg_grstyle(GVJ_t * job, int filled)
 	gvputs(job, "\" stroke=\"");
 	svg_print_color(job, obj->pencolor);
    }
-    else
+    else {
 	gvputs(job, "none");
+	gvputs(job, "\" stroke=\"");
+	svg_print_color(job, obj->pencolor);
+    }
     if (obj->penwidth != PENWIDTH_NORMAL)
 	gvprintf(job, "\" stroke-width=\"%g", obj->penwidth);
     if (obj->pen == PEN_DASHED) {
