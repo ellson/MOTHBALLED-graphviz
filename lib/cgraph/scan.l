@@ -186,7 +186,7 @@ ID		({NAME}|{NUMBER})
 <hstring>[>]			html_nest--; if (html_nest) addstr(yytext); else {BEGIN(INITIAL); endstr_html(); return (T_qatom);}
 <hstring>[<]			html_nest++; addstr(yytext);
 <hstring>[\n]			addstr(yytext); line_num++; /* add newlines */
-<hstring>([^><]*)		addstr(yytext);
+<hstring>([^><\n]*)		addstr(yytext);
 .						return (yytext[0]);
 %%
 void yyerror(char *str)
