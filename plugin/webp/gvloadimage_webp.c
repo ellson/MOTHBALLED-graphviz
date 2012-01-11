@@ -23,7 +23,7 @@
 #ifdef HAVE_WEBP
 #ifdef HAVE_PANGOCAIRO
 #include <cairo.h>
-#include <webp/encode.h>
+#include <webp/decode.h>
 
 #ifdef WIN32 //*dependencies
     #pragma comment( lib, "gvc.lib" )
@@ -36,22 +36,74 @@
     #pragma comment( lib, "webp.lib" )
 #endif
 
+static const char* const kStatusMessages[] = {
+    "OK", "OUT_OF_MEMORY", "INVALID_PARAM", "BITSTREAM_ERROR",
+    "UNSUPPORTED_FEATURE", "SUSPENDED", "USER_ABORT", "NOT_ENOUGH_DATA"
+};
+
 typedef enum {
     FORMAT_WEBP_CAIRO,
 } format_type;
 
-static cairo_status_t
-reader (void *closure, unsigned char *data, unsigned int length)
-{
-    if (length == fread(data, 1, length, (FILE *)closure)
-     || feof((FILE *)closure))
-        return CAIRO_STATUS_SUCCESS;
-    return CAIRO_STATUS_READ_ERROR;
-}
-
 static void webp_freeimage(usershape_t *us)
 {
     cairo_surface_destroy((cairo_surface_t*)(us->data));
+}
+
+static cairo_surface_t* webp_really_loadimage(const char *in_file, FILE* const in)
+{
+    WebPDecoderConfig config;
+    WebPDecBuffer* const output_buffer = &config.output;
+    WebPBitstreamFeatures* const bitstream = &config.input;
+    VP8StatusCode status = VP8_STATUS_OK;
+    cairo_surface_t *surface = NULL; /* source surface */
+    int ok;
+    uint32_t data_size = 0;
+    void* data = NULL;
+
+    if (!WebPInitDecoderConfig(&config)) {
+	fprintf(stderr, "Error: WebP library version mismatch!\n");
+	return NULL;
+    }
+
+    fseek(in, 0, SEEK_END);
+    data_size = ftell(in);
+    fseek(in, 0, SEEK_SET);
+    data = malloc(data_size);
+    ok = (fread(data, data_size, 1, in) == 1);
+    if (!ok) {
+        fprintf(stderr, "Error: WebP could not read %d bytes of data from %s\n",
+            data_size, in_file);
+        free(data);
+        return NULL;
+    }
+
+    status = WebPGetFeatures((const uint8_t*)data, data_size, bitstream);
+    if (status != VP8_STATUS_OK) {
+	goto end;
+    }
+
+    output_buffer->colorspace = MODE_RGBA;
+    status = WebPDecode((const uint8_t*)data, data_size, &config);
+
+end:
+    free(data);
+    ok = (status == VP8_STATUS_OK);
+    if (!ok) {
+	fprintf(stderr, "Error: WebP decoding of %s failed.\n", in_file);
+	fprintf(stderr, "Status: %d (%s)\n", status, kStatusMessages[status]);
+	return NULL;
+    }
+
+    // FIXME - convert data to cairo surface ...
+
+#if 1
+    fprintf(stderr, "Info: WebP file %s can be decoded (dimensions: %d x %d)%s.\n",
+	in_file, output_buffer->width, output_buffer->height,
+	bitstream->has_alpha ? " (with alpha)" : "");
+#endif
+
+    return surface;
 }
 
 static cairo_surface_t* webp_loadimage(GVJ_t * job, usershape_t *us)
@@ -76,10 +128,8 @@ static cairo_surface_t* webp_loadimage(GVJ_t * job, usershape_t *us)
 	    return NULL;
         switch (us->type) {
             case FT_WEBP:
-#if 0 // FIXME
-                surface = cairo_image_surface_create_from_png_stream(reader, us->f);
-                cairo_surface_reference(surface);
-#endif
+		if ((surface = webp_really_loadimage(us->name, us->f)))
+                    cairo_surface_reference(surface);
                 break;
             default:
                 surface = NULL;
