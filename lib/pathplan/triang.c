@@ -83,6 +83,10 @@ int Ptriangulate(Ppoly_t * polygon, void (*fn) (void *, Ppoint_t *),
     return 0;
 }
 
+/* triangulate:
+ * Triangulates the given polygon. 
+ * Throws an exception if no diagonal exists.
+ */
 static void
 triangulate(Ppoint_t ** pointp, int pointn,
 	    void (*fn) (void *, Ppoint_t *), void *vc)
@@ -103,10 +107,10 @@ triangulate(Ppoint_t ** pointp, int pointn,
 		    if (i != ip1)
 			pointp[j++] = pointp[i];
 		triangulate(pointp, pointn - 1, fn, vc);
-		longjmp(jbuf,1);
+		return;
 	    }
 	}
-	abort();
+	longjmp(jbuf,1);
     } else {
 	A[0] = *pointp[0];
 	A[1] = *pointp[1];
