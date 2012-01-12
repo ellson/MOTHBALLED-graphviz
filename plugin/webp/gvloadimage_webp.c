@@ -106,6 +106,7 @@ end:
     return surface;
 }
 
+/* get image either from cached surface, or from freskly loaded surface */
 static cairo_surface_t* webp_loadimage(GVJ_t * job, usershape_t *us)
 {
     cairo_surface_t *surface = NULL; /* source surface */
@@ -143,6 +144,7 @@ static cairo_surface_t* webp_loadimage(GVJ_t * job, usershape_t *us)
     return surface;
 }
 
+/* paint image into required location in graph */
 static void webp_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
 {
     cairo_t *cr = (cairo_t *) job->context; /* target context */
