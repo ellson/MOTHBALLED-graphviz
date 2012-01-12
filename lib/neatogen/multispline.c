@@ -859,7 +859,7 @@ genroute(graph_t* g, tripoly_t * trip, int s, int t, edge_t * e, int doPolyline)
 {
     pointf eps[2];
     Pvector_t evs[2];
-    pointf **cpts;		/* lists of control points */
+    pointf **cpts = NULL;		/* lists of control points */
     Ppoly_t poly;
     Ppolyline_t pl, spl;
     int i, j;
@@ -868,14 +868,21 @@ genroute(graph_t* g, tripoly_t * trip, int s, int t, edge_t * e, int doPolyline)
     int pn;
     int mult = ED_count(e);
     node_t* head = aghead(e);
+    int rv = 0;
 
+    poly.ps = NULL;
+    pl.pn = 0;
     eps[0].x = trip->poly.ps[s].x, eps[0].y = trip->poly.ps[s].y;
     eps[1].x = trip->poly.ps[t].x, eps[1].y = trip->poly.ps[t].y;
-    Pshortestpath(&(trip->poly), eps, &pl);
+    if (Pshortestpath(&(trip->poly), eps, &pl) < 0) {
+	agerr(AGWARN, "Could not create control points for multiple spline for edge (%s,%s)\n", agnameof(agtail(e)), agnameof(aghead(e)));
+	rv = 1;
+	goto finish;
+    }
 
     if (pl.pn == 2) {
 	makeStraightEdge(agraphof(head), e, doPolyline);
-	return 0;
+	goto finish;
     }
 
     evs[0].x = evs[0].y = 0;
@@ -888,7 +895,11 @@ genroute(graph_t* g, tripoly_t * trip, int s, int t, edge_t * e, int doPolyline)
 	    medges[j].b = poly.ps[(j + 1) % poly.pn];
 	}
 	tweakPath (poly, s, t, pl);
-	Proutespline(medges, poly.pn, pl, evs, &spl);
+	if (Proutespline(medges, poly.pn, pl, evs, &spl) < 0) {
+	    agerr(AGWARN, "Could not create control points for multiple spline for edge (%s,%s)\n", agnameof(agtail(e)), agnameof(aghead(e)));
+	    rv = 1;
+	    goto finish;
+	}
 	finishEdge (g, e, spl, aghead(e) != head, eps[0], eps[1]);
 	free(medges);
 
@@ -903,7 +914,8 @@ genroute(graph_t* g, tripoly_t * trip, int s, int t, edge_t * e, int doPolyline)
 	    mkCtrlPts(t, mult+1, pl.ps[i], pl.ps[i + 1], pl.ps[i + 2], trip);
 	if (!cpts[i]) {
 	    agerr(AGWARN, "Could not create control points for multiple spline for edge (%s,%s)\n", agnameof(agtail(e)), agnameof(aghead(e)));
-	    return 1;
+	    rv = 1;
+	    goto finish;
 	}
     }
 
@@ -919,7 +931,11 @@ genroute(graph_t* g, tripoly_t * trip, int s, int t, edge_t * e, int doPolyline)
 	for (j = 1; j < pl.pn - 1; j++) {
 	    poly.ps[pn - j] = cpts[j - 1][i + 1];
 	}
-	Pshortestpath(&poly, eps, &mmpl);
+	if (Pshortestpath(&poly, eps, &mmpl) < 0) {
+	    agerr(AGWARN, "Could not create control points for multiple spline for edge (%s,%s)\n", agnameof(agtail(e)), agnameof(aghead(e)));
+	    rv = 1;
+	    goto finish;
+	}
 
 	if (doPolyline) {
 	    make_polyline (mmpl, &spl);
@@ -930,19 +946,27 @@ genroute(graph_t* g, tripoly_t * trip, int s, int t, edge_t * e, int doPolyline)
 		medges[j].b = poly.ps[(j + 1) % poly.pn];
 	    }
 	    tweakPath (poly, 0, pl.pn-1, mmpl);
-	    Proutespline(medges, poly.pn, mmpl, evs, &spl);
+	    if (Proutespline(medges, poly.pn, mmpl, evs, &spl) < 0) {
+		agerr(AGWARN, "Could not create control points for multiple spline for edge (%s,%s)\n", 
+		    agnameof(agtail(e)), agnameof(aghead(e)));
+		rv = 1;
+		goto finish;
+	    }
 	}
 	finishEdge (g, e, spl, aghead(e) != head, eps[0], eps[1]);
 
 	e = ED_to_virt(e);
     }
 
-    for (i = 0; i < pl.pn - 2; i++)
-	free(cpts[i]);
-    free(cpts);
+finish :
+    if (cpts) {
+	for (i = 0; i < pl.pn - 2; i++)
+	    free(cpts[i]);
+	free(cpts);
+    }
     free(medges);
     free(poly.ps);
-    return 0;
+    return rv;
 }
 
 #define NSMALL -0.0000000001

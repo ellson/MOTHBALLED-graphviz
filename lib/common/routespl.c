@@ -240,7 +240,7 @@ simpleSplineRoute (pointf tp, pointf hp, Ppoly_t poly, int* n_spl_pts,
     eps[0].y = tp.y;
     eps[1].x = hp.x;
     eps[1].y = hp.y;
-    if (Pshortestpath(&poly, eps, &pl) == -1)
+    if (Pshortestpath(&poly, eps, &pl) < 0)
         return NULL;
 
     if (polyline)
@@ -268,7 +268,7 @@ simpleSplineRoute (pointf tp, pointf hp, Ppoly_t poly, int* n_spl_pts,
 	} else
 #endif
 	    evs[1].x = evs[1].y = 0;
-	if (Proutespline(edges, poly.pn, pl, evs, &spl) == -1)
+	if (Proutespline(edges, poly.pn, pl, evs, &spl) < 0)
             return NULL;
     }
 
@@ -483,7 +483,7 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
     poly.ps = polypoints, poly.pn = pi;
     eps[0].x = pp->start.p.x, eps[0].y = pp->start.p.y;
     eps[1].x = pp->end.p.x, eps[1].y = pp->end.p.y;
-    if (Pshortestpath(&poly, eps, &pl) == -1) {
+    if (Pshortestpath(&poly, eps, &pl) < 0) {
 	agerr(AGERR, "in routesplines, Pshortestpath failed\n");
 	longjmp (jbuf, 1);
     }
@@ -517,7 +517,7 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
 	} else
 	    evs[1].x = evs[1].y = 0;
 
-	if (Proutespline(edges, poly.pn, pl, evs, &spl) == -1) {
+	if (Proutespline(edges, poly.pn, pl, evs, &spl) < 0) {
 	    agerr(AGERR, "in routesplines, Proutespline failed\n");
 	    longjmp (jbuf, 1);
 	}

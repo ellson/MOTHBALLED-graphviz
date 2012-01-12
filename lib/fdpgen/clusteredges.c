@@ -275,8 +275,14 @@ int compoundEdges(graph_t * g, expand_t* pm, int edgetype)
 		makeSelfArcs(P, e, GD_nodesep(g));
 	    } else if (ED_count(e)) {
 		objl = objectList(e, pm);
-		if (Plegal_arrangement(objl->obs, objl->cnt))
+		if (Plegal_arrangement(objl->obs, objl->cnt)) {
 		    vconfig = Pobsopen(objl->obs, objl->cnt);
+		    if (!vconfig) {
+			agerr(AGWARN, "compoundEdges: could not construct obstacles - falling back to straight line edges\n");
+			rv = 1;
+			continue;
+		    }
+		}
 		else {
 		    if (Verbose)
 			fprintf(stderr,
