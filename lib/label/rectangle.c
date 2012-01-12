@@ -24,6 +24,9 @@
 #ifdef WITH_CGRAPH
 #include <cgraph.h>
 #else
+typedef int Agraphinfo_t;
+typedef int Agnodeinfo_t;
+typedef int Agedgeinfo_t;
 #include <graph.h>
 #endif
 
