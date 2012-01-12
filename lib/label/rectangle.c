@@ -10,6 +10,10 @@
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "index.h"
 #include <stdio.h>
 #include <assert.h>
@@ -17,6 +21,11 @@
 #include "logic.h"
 #include "arith.h"
 #include "rectangle.h"
+#ifdef WITH_CGRAPH
+#include <cgraph.h>
+#else
+#include <graph.h>
+#endif
 
 #define Undefined(x) ((x)->boundary[0] > (x)->boundary[NUMDIMS])
 
@@ -116,7 +125,6 @@ void PrintRect(Rect_t * r)
 /*-----------------------------------------------------------------------------
 | Calculate the n-dimensional area of a rectangle
 -----------------------------------------------------------------------------*/
-void agerror(char *);
 
 #if SIZEOF_LONG_LONG > SIZEOF_INT
 unsigned int RectArea(Rect_t * r)
@@ -135,7 +143,7 @@ unsigned int RectArea(Rect_t * r)
     for (i = 0; i < NUMDIMS; i++) {
       long long a_test = area * r->boundary[i + NUMDIMS] - r->boundary[i];
       if( a_test > UINT_MAX) {
-	agerror("label: area too large for rtree\n");
+	agerr (AGERR, "label: area too large for rtree\n");
 	return UINT_MAX;
       }
       area = a_test;
@@ -159,7 +167,7 @@ unsigned int RectArea(Rect_t * r)
       unsigned int b = r->boundary[i + NUMDIMS] - r->boundary[i];
       a *= b;
       if( (a / b ) != area) {
-	agerror("label: area too large for rtree\n");
+	agerr (AGERR, "label: area too large for rtree\n");
 	return UINT_MAX;
       }
       area = a;
