@@ -95,12 +95,22 @@ end:
 	return NULL;
     }
 
-    // FIXME - convert data to cairo surface ...
-
 #if 1
     fprintf(stderr, "Info: WebP file %s can be decoded (dimensions: %d x %d)%s.\n",
 	in_file, output_buffer->width, output_buffer->height,
 	bitstream->has_alpha ? " (with alpha)" : "");
+#endif
+
+#if 0
+
+    // FIXME - this statement dies....
+    
+    surface = cairo_image_surface_create_for_data (
+	    output_buffer->u.RGBA.rgba,
+	    CAIRO_FORMAT_ARGB32,
+	    output_buffer->width,
+	    output_buffer->height,
+	    output_buffer->u.RGBA.stride);
 #endif
 
     return surface;
