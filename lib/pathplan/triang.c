@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <setjmp.h>
 #include "pathutil.h"
 #include "tri.h"
 
@@ -39,6 +40,7 @@ typedef struct dpd_triangle {
 #define FALSE 0
 #endif
 
+static jmp_buf jbuf;
 static int dpd_ccw(Ppoint_t *, Ppoint_t *, Ppoint_t *);
 static int dpd_isdiagonal(int, int, Ppoint_t **, int);
 static int dpd_intersects(Ppoint_t *, Ppoint_t *, Ppoint_t *, Ppoint_t *);
@@ -54,7 +56,10 @@ static int dpd_ccw(Ppoint_t * p1, Ppoint_t * p2, Ppoint_t * p3)
     return (d > 0) ? ISCW : ((d < 0) ? ISCCW : ISON);
 }
 
-void Ptriangulate(Ppoly_t * polygon, void (*fn) (void *, Ppoint_t *),
+/* Ptriangulate:
+ * Return 0 on success; non-zero on error.
+ */
+int Ptriangulate(Ppoly_t * polygon, void (*fn) (void *, Ppoint_t *),
 		  void *vc)
 {
     int i;
@@ -68,9 +73,14 @@ void Ptriangulate(Ppoly_t * polygon, void (*fn) (void *, Ppoint_t *),
     for (i = 0; i < pointn; i++)
 	pointp[i] = &(polygon->ps[i]);
 
+    if (setjmp(jbuf)) {
+	free(pointp);
+	return 1;
+    }
     triangulate(pointp, pointn, fn, vc);
 
     free(pointp);
+    return 0;
 }
 
 static void
@@ -93,7 +103,7 @@ triangulate(Ppoint_t ** pointp, int pointn,
 		    if (i != ip1)
 			pointp[j++] = pointp[i];
 		triangulate(pointp, pointn - 1, fn, vc);
-		return;
+		longjmp(jbuf,1);
 	    }
 	}
 	abort();
