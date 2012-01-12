@@ -227,6 +227,11 @@ static void delete_items(item *ilist)
 	}
 }
 
+static void initlist(list_t *list)
+{
+	list->first = list->last = NILitem;
+}
+
 static void deletelist(list_t *list)
 {
 	delete_items(list->first);
@@ -537,6 +542,9 @@ Agraph_t *agconcat(Agraph_t *g, void *chan, Agdisc_t *disc)
 	Ag_G_global = NILgraph;
 	Disc = (disc? disc :  &AgDefaultDisc);
 	aglexinit(Disc, chan);
+	initlist(&Attrlist);
+	initlist(&Nodelist);
+	initlist(&Edgelist);
 	yyparse();
 	return Ag_G_global;
 }
