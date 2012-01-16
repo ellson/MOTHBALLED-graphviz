@@ -173,6 +173,7 @@ static int gradientcolorfn(htmldata_t * p, char *v)
 }
 
 
+
 /* doInt:
  * Scan v for integral value. Check that
  * the value is >= min and <= max. Return value in ul.
@@ -198,6 +199,18 @@ static int doInt(char *v, char *s, int min, int max, long *ul)
 	*ul = b;
     return rv;
 }
+
+
+static int gradientanglefn(htmldata_t * p, char *v)
+{
+    long u;
+
+    if (doInt(v, "GRADIENTANGLE", 0, 360, &u))
+	return 1;
+    p->gradientangle = (unsigned short) u;
+    return 0;
+}
+
 
 static int borderfn(htmldata_t * p, char *v)
 {
@@ -448,6 +461,7 @@ static attr_item tbl_items[] = {
     {"columns", (attrFn) columnsfn},
     {"fixedsize", (attrFn) fixedsizefn},
     {"gradient", (attrFn) gradientfn},
+    {"gradientangle", (attrFn) gradientanglefn},
     {"gradientcolor", (attrFn) gradientcolorfn},
     {"height", (attrFn) heightfn},
     {"href", (attrFn) hreffn},
@@ -473,6 +487,7 @@ static attr_item cell_items[] = {
     {"colspan", (attrFn) colspanfn},
     {"fixedsize", (attrFn) fixedsizefn},
     {"gradient", (attrFn) gradientfn},
+    {"gradientangle", (attrFn) gradientanglefn},
     {"gradientcolor", (attrFn) gradientcolorfn},
     {"height", (attrFn) heightfn},
     {"href", (attrFn) hreffn},
