@@ -1803,6 +1803,47 @@ static void free_stroke (stroke_t* sp)
     }
 }
 
+typedef double (*radfunc_t)(double,double,double);
+
+static double forfunc (double curlen, double totallen, double initwid)
+{
+    return ((1 - (curlen/totallen))*initwid/2.0);
+}
+
+static double revfunc (double curlen, double totallen, double initwid)
+{
+    return (((curlen/totallen))*initwid/2.0);
+}
+
+static double nonefunc (double curlen, double totallen, double initwid)
+{
+    return (initwid/2.0);
+}
+
+static double bothfunc (double curlen, double totallen, double initwid)
+{
+    double fr = curlen/totallen;
+    if (fr <= 0.5) return (fr*initwid);
+    else return ((1-fr)*initwid);
+}
+
+static radfunc_t 
+taperfun (edge_t* e)
+{
+    char* attr;
+#ifdef WITH_CGRAPH
+    if (E_dir && ((attr = agxget(e, E_dir)))[0]) {
+#else
+    if (E_dir && ((attr = agxget(e, E_dir->index)))[0]) {
+#endif
+	if (streq(attr, "forward")) return forfunc;
+	if (streq(attr, "back")) return revfunc;
+	if (streq(attr, "both")) return bothfunc;
+	if (streq(attr, "none")) return nonefunc;
+    }
+    return (agisdirected(agraphof(aghead(e))) ? forfunc : nonefunc);
+}
+
 static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 {
     int i, j, cnum, numc = 0, numcomma = 0;
@@ -1814,6 +1855,7 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
     pointf pf0, pf1, pf2 = { 0, 0 }, pf3, *offlist, *tmplist;
     double arrowsize, numc2, penwidth=job->obj->penwidth;
     char* p;
+    boolean tapered = 0;
 
 #define SEP 2.0
 
@@ -1825,15 +1867,9 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 	if (styles) {
 	    char** sp = styles;
 	    while ((p = *sp++)) {
-		stroke_t* stp;
 		if (streq(p, "tapered")) {
-		    if (*color == '\0') color = DEFAULT_COLOR;
-    		    gvrender_set_pencolor(job, "transparent");
-		    gvrender_set_fillcolor(job, color);
-		    stp = taper0 (ED_spl(e)->list, penwidth);
-		    gvrender_polygon(job, stp->vertices, stp->nvertices, TRUE);
-		    free_stroke (stp);
-		    return;
+		    tapered = 1;
+		    break;
 		}
 	    }
 	}
@@ -1880,8 +1916,26 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 	if (fillcolor != color)
 	    gvrender_set_fillcolor(job, fillcolor);
 	color = pencolor;
+
+	if (tapered) {
+	    stroke_t* stp;
+	    if (*color == '\0') color = DEFAULT_COLOR;
+    	    gvrender_set_pencolor(job, "transparent");
+	    gvrender_set_fillcolor(job, color);
+	    bz = ED_spl(e)->list[0];
+	    stp = taper (&bz, taperfun (e), penwidth, 0, 0);
+	    gvrender_polygon(job, stp->vertices, stp->nvertices, TRUE);
+	    free_stroke (stp);
+	    if (bz.sflag) {
+		arrow_gen(job, EMIT_TDRAW, bz.sp, bz.list[0], arrowsize, penwidth, bz.sflag);
+	    }
+	    if (bz.eflag) {
+		arrow_gen(job, EMIT_HDRAW, bz.ep, bz.list[bz.size - 1],
+		    arrowsize, penwidth, bz.eflag);
+	    }
+	}
 	/* if more than one color - then generate parallel beziers, one per color */
-	if (numc) {
+	else if (numc) {
 	    /* calculate and save offset vector spline and initialize first offset spline */
 	    tmpspl.size = offspl.size = ED_spl(e)->size;
 	    offspl.list = malloc(sizeof(bezier) * offspl.size);
