@@ -132,7 +132,7 @@ int stress_majorization_with_hierarchy(vtx_data * graph,	/* Input graph in spars
 	    iterations = -1;
 	    goto finish;
 	}
-	if (num_levels <= 1) {
+	if (num_levels < 1) {
 	    /* no hierarchy found, use faster algorithm */
 	    return stress_majorization_kD_mkernel(graph, n, nedges_graph,
 						  d_coords, nodes, dim,
