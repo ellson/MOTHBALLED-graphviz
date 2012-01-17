@@ -285,11 +285,20 @@ char *findFill(node_t * n)
 
 int findGradient(void * n, attrsym_t * attr)
 {
-    char *gradient;
+    char *gradient,*color,*stopcolor;
 
     gradient = late_nnstring(n, attr, NULL);
-    if(gradient == NULL)
+    if(gradient == NULL){
+      if (((color = agget(n, "fillcolor")) != 0) && color[0]){
+	stopcolor = strdup(color);
+	if(findGradientColor(n,GR_STOP,stopcolor,NULL) != NULL){
+	  free(stopcolor);
+	  return GRADIENT;
+	}
+	free(stopcolor);
+      }
       return 0;
+    }
     else if( strcmp(gradient,"linear") == 0)
       return GRADIENT;
     else if (strcmp(gradient,"radial") == 0)
@@ -335,7 +344,7 @@ char *findGradientColor(void * n, char *pos, char *g_color, char *dflt)
 	else
 	  color = dflt;
       }
-      else {	//input color is good so search for color separator ':'
+      //input color is good so search for color separator ':'
 	ptr = strchr(color, ':');  
 	if(strcmp(pos,GR_START) == 0){
 	  if(ptr != NULL)
@@ -348,15 +357,12 @@ char *findGradientColor(void * n, char *pos, char *g_color, char *dflt)
 	  }
 	  if (!color[0]) {	//if color is not good, use dflt, N_color or default color instead
 	    if(dflt == NULL || !dflt[0]){
-	      color = late_nnstring(n, N_color, "");
-	      if (!color[0])
-		color =  DEFAULT_FILL;
+		color =  NULL;
 	    }
 	    else
 	      color = dflt;
 	  }
 	}
-      }
     }
     return color;
 }
