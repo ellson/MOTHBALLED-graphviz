@@ -794,7 +794,7 @@ void graph_init(graph_t * g, boolean use_rankdir)
     Initial_dist = MYHUGE;
 
     G_ordering = agfindgraphattr(g, "ordering");
-    G_gradientcolor = agfindgraphattr(g,"gradientcolor");
+    G_gradient = agfindgraphattr(g,"gradient");
     G_gradientangle = agfindgraphattr(g,"gradientangle");
 
     /* initialize nodes */
@@ -826,7 +826,7 @@ void graph_init(graph_t * g, boolean use_rankdir)
     N_comment = agfindnodeattr(g, "comment");
     N_vertices = agfindnodeattr(g, "vertices");
     N_z = agfindnodeattr(g, "z");
-    N_gradientcolor = agfindnodeattr(g,"gradientcolor");
+    N_gradient = agfindnodeattr(g,"gradient");
     N_gradientangle = agfindnodeattr(g,"gradientangle");
 
     /* initialize edges */

@@ -487,7 +487,7 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
 	    gradient = RGRADIENT;
 	else
 	    gradient = 0;
-	bordercolor = gvrender_set_gradient_values(job, tbl->data.gradientcolor, 0);	    
+	bordercolor = gvrender_set_gradient_values(job, tbl->data.gradientcolor, tbl->data.gradientangle);	    
 	
 	if (tbl->style & ROUNDED){
 	    round_corners (job, bordercolor, NULL, AF, 4, tbl->style, gradient);
@@ -599,7 +599,7 @@ emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
 	  gradient = RGRADIENT;
 	else
 	  gradient = 0;
-	bordercolor = gvrender_set_gradient_values(job, cp->data.gradientcolor, 0);
+	bordercolor = gvrender_set_gradient_values(job, cp->data.gradientcolor, cp->data.gradientangle);
 	doGrdtFill(job,bordercolor, pts, gradient);
       }
 
