@@ -95,15 +95,15 @@ end:
 	return NULL;
     }
 
-#if 1
+#if 0
     fprintf(stderr, "Info: WebP file %s can be decoded (dimensions: %d x %d)%s.\n",
 	in_file, output_buffer->width, output_buffer->height,
 	bitstream->has_alpha ? " (with alpha)" : "");
 #endif
 
-#if 0
+#if 1
 
-    // FIXME - this statement dies....
+    // FIXME - this statement dies....    but works in dot_static!!!
     
     surface = cairo_image_surface_create_for_data (
 	    output_buffer->u.RGBA.rgba,
