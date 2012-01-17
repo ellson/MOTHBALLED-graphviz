@@ -1,0 +1,13 @@
+digraph G {gradient=radial fillcolor="yellow:blue" gradientangle=0 label="Graph" fontcolor="black"
+
+
+	subgraph cluster_1 {gradient=radial fillcolor="green:magenta" label="Cluster" fontcolor="white"
+		node [ gradient=radial,shape="box",fillcolor="antiquewhite:aquamarine" ]n5;
+		node [ shape="ellipse",fillcolor="bisque4:blue2" ]n4;
+		node [ shape="circle",fillcolor="cadetblue1:chocolate1" ]n3;
+		node [ shape="diamond",fillcolor="crimson:cyan4" ]n2;
+		node [ shape="triangle",fillcolor="deepskyblue2:firebrick" ]n1;
+		node [ shape="pentagon",fillcolor="gray24:gray88" ]n0;
+	}
+
+}
