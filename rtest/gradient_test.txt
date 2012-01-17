@@ -72,6 +72,11 @@ grdradial_angle
 dot png
 dot svg
 
+#fillcolor_test
+grdfillcolor
+=
+dot png
+dot svg
 
 
 
