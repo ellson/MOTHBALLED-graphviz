@@ -16,6 +16,7 @@
 #endif
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "gvplugin_loadimage.h"
 #include "gvio.h"
@@ -86,6 +87,22 @@ static cairo_surface_t* webp_really_loadimage(const char *in_file, FILE* const i
     output_buffer->colorspace = MODE_RGBA;
     status = WebPDecode((const uint8_t*)data, data_size, &config);
 
+    /* FIXME - this is ugly */
+    if (! bitstream->has_alpha) {
+	int x, y;
+	unsigned char *p, t;
+
+	for (y = 0; y < output_buffer->height; y++) {
+	    p = output_buffer->u.RGBA.rgba + (output_buffer->u.RGBA.stride * y);
+	    for (x = 0; x < output_buffer->width; x++) {
+		t = p[0];     /* swap red/blue */
+		p[0] = p[2];
+		p[2] = t;
+		p += 4;
+	    }
+	}
+    }
+
 end:
     free(data);
     ok = (status == VP8_STATUS_OK);
@@ -95,23 +112,12 @@ end:
 	return NULL;
     }
 
-#if 0
-    fprintf(stderr, "Info: WebP file %s can be decoded (dimensions: %d x %d)%s.\n",
-	in_file, output_buffer->width, output_buffer->height,
-	bitstream->has_alpha ? " (with alpha)" : "");
-#endif
-
-#if 1
-
-    // FIXME - this statement dies....    but works in dot_static!!!
-    
     surface = cairo_image_surface_create_for_data (
 	    output_buffer->u.RGBA.rgba,
 	    CAIRO_FORMAT_ARGB32,
 	    output_buffer->width,
 	    output_buffer->height,
 	    output_buffer->u.RGBA.stride);
-#endif
 
     return surface;
 }
