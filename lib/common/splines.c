@@ -226,6 +226,7 @@ bezier *new_spline(edge_t * e, int sz)
     rv->list = N_NEW(sz, pointf);
     rv->size = sz;
     rv->sflag = rv->eflag = FALSE;
+    rv->sp.x = rv->sp.y = rv->ep.x = rv->ep.y = 0;
     return rv;
 }
 
