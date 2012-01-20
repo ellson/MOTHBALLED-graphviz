@@ -1030,10 +1030,12 @@ static void emit_background(GVJ_t * job, graph_t *g)
     
 
     /* if device has no truecolor support, change "transparent" to "white" */
-    if (! (job->flags & GVDEVICE_DOES_TRUECOLOR) && (streq(str, "transparent")))
+    if (! (job->flags & GVDEVICE_DOES_TRUECOLOR) && (streq(str, "transparent"))) {
 	str = "white";
+	dfltColor = 1;
+    }
 
-    /* except for "tranparent" on truecolor, or default "white" on (assumed) white paper, paint background */
+    /* except for "transparent" on truecolor, or default "white" on (assumed) white paper, paint background */
     if (!(   ((job->flags & GVDEVICE_DOES_TRUECOLOR) && streq(str, "transparent"))
           || ((job->flags & GVRENDER_NO_WHITE_BG) && dfltColor))) {
         gvrender_set_fillcolor(job, str);
