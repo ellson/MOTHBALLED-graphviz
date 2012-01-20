@@ -3281,7 +3281,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	if (!pencolor) pencolor = DEFAULT_COLOR;
 	if (!fillcolor) fillcolor = DEFAULT_FILL;
 	if (gradient > 0) {  //handles both linear and radial gradients
-	  gvrender_set_gradient(job,sg,fillcolor,findGradientAngle(g,G_gradientangle));
+	  gvrender_set_gradient(job,sg,fillcolor,findGradientAngle(sg,G_gradientangle));
 	} 
 
 #ifndef WITH_CGRAPH
