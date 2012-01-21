@@ -1017,8 +1017,8 @@ static void emit_xdot (GVJ_t * job, xdot* xd)
 static void emit_background(GVJ_t * job, graph_t *g)
 {
     xdot* xd;
-    char *str,*gcolor,*style;
-    int dfltColor,filltype;
+    char *str,*fillcolor;
+    int dfltColor,gradient;
     
     /* if no bgcolor specified - first assume default of "white" */
     if (! ((str = agget(g, "bgcolor")) && str[0])) {
@@ -1028,18 +1028,6 @@ static void emit_background(GVJ_t * job, graph_t *g)
     else
 	dfltColor = 0;
     
-    if (((style = agget(g, "style")) && str[0])) {
-	if(strcmp(style,"linear") == 0)
-	  filltype = GRADIENT;
-	else if(strcmp(style,"radial") == 0)
-	  filltype = RGRADIENT;
-	else
-	  filltype = 0;
-    }
-
-   if ( filltype > 0 && ((gcolor = agget(g, "gradientcolor")) && str[0])) {
-      gvrender_set_gradient(job,g,G_gradientcolor,G_gradientangle);
-   }
 
     /* if device has no truecolor support, change "transparent" to "white" */
     if (! (job->flags & GVDEVICE_DOES_TRUECOLOR) && (streq(str, "transparent")))
@@ -1050,8 +1038,13 @@ static void emit_background(GVJ_t * job, graph_t *g)
           || ((job->flags & GVRENDER_NO_WHITE_BG) && dfltColor))) {
         gvrender_set_fillcolor(job, str);
         gvrender_set_pencolor(job, str);
-	if(filltype > 0)
-	  gvrender_box(job, job->clip,filltype); /* linear or radial gradient */
+	gradient = findGradient(g,G_gradient);
+	if(gradient > 0){
+	  if (! ((fillcolor = agget(g, "fillcolor")) && str[0]))
+	    fillcolor = str;
+	  gvrender_set_gradient(job,g,fillcolor,findGradientAngle(g,G_gradientangle));
+	  gvrender_box(job, job->clip,gradient); /* linear or radial gradient */
+	}
 	else
 	  gvrender_box(job, job->clip, TRUE);	/* filled */
     }
@@ -1810,6 +1803,47 @@ static void free_stroke (stroke_t* sp)
     }
 }
 
+typedef double (*radfunc_t)(double,double,double);
+
+static double forfunc (double curlen, double totallen, double initwid)
+{
+    return ((1 - (curlen/totallen))*initwid/2.0);
+}
+
+static double revfunc (double curlen, double totallen, double initwid)
+{
+    return (((curlen/totallen))*initwid/2.0);
+}
+
+static double nonefunc (double curlen, double totallen, double initwid)
+{
+    return (initwid/2.0);
+}
+
+static double bothfunc (double curlen, double totallen, double initwid)
+{
+    double fr = curlen/totallen;
+    if (fr <= 0.5) return (fr*initwid);
+    else return ((1-fr)*initwid);
+}
+
+static radfunc_t 
+taperfun (edge_t* e)
+{
+    char* attr;
+#ifdef WITH_CGRAPH
+    if (E_dir && ((attr = agxget(e, E_dir)))[0]) {
+#else
+    if (E_dir && ((attr = agxget(e, E_dir->index)))[0]) {
+#endif
+	if (streq(attr, "forward")) return forfunc;
+	if (streq(attr, "back")) return revfunc;
+	if (streq(attr, "both")) return bothfunc;
+	if (streq(attr, "none")) return nonefunc;
+    }
+    return (agisdirected(agraphof(aghead(e))) ? forfunc : nonefunc);
+}
+
 static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 {
     int i, j, cnum, numc = 0, numcomma = 0;
@@ -1821,6 +1855,7 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
     pointf pf0, pf1, pf2 = { 0, 0 }, pf3, *offlist, *tmplist;
     double arrowsize, numc2, penwidth=job->obj->penwidth;
     char* p;
+    boolean tapered = 0;
 
 #define SEP 2.0
 
@@ -1832,15 +1867,9 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 	if (styles) {
 	    char** sp = styles;
 	    while ((p = *sp++)) {
-		stroke_t* stp;
 		if (streq(p, "tapered")) {
-		    if (*color == '\0') color = DEFAULT_COLOR;
-    		    gvrender_set_pencolor(job, "transparent");
-		    gvrender_set_fillcolor(job, color);
-		    stp = taper0 (ED_spl(e)->list, penwidth);
-		    gvrender_polygon(job, stp->vertices, stp->nvertices, TRUE);
-		    free_stroke (stp);
-		    return;
+		    tapered = 1;
+		    break;
 		}
 	    }
 	}
@@ -1887,8 +1916,26 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 	if (fillcolor != color)
 	    gvrender_set_fillcolor(job, fillcolor);
 	color = pencolor;
+
+	if (tapered) {
+	    stroke_t* stp;
+	    if (*color == '\0') color = DEFAULT_COLOR;
+    	    gvrender_set_pencolor(job, "transparent");
+	    gvrender_set_fillcolor(job, color);
+	    bz = ED_spl(e)->list[0];
+	    stp = taper (&bz, taperfun (e), penwidth, 0, 0);
+	    gvrender_polygon(job, stp->vertices, stp->nvertices, TRUE);
+	    free_stroke (stp);
+	    if (bz.sflag) {
+		arrow_gen(job, EMIT_TDRAW, bz.sp, bz.list[0], arrowsize, penwidth, bz.sflag);
+	    }
+	    if (bz.eflag) {
+		arrow_gen(job, EMIT_HDRAW, bz.ep, bz.list[bz.size - 1],
+		    arrowsize, penwidth, bz.eflag);
+	    }
+	}
 	/* if more than one color - then generate parallel beziers, one per color */
-	if (numc) {
+	else if (numc) {
 	    /* calculate and save offset vector spline and initialize first offset spline */
 	    tmpspl.size = offspl.size = ED_spl(e)->size;
 	    offspl.list = malloc(sizeof(bezier) * offspl.size);
@@ -3119,14 +3166,6 @@ static char **checkClusterStyle(graph_t* sg, int *flagp)
 	    if (strcmp(p, "filled") == 0) {
 		istyle |= FILLED;
 		pp++;
-	    }
-	    else if (strcmp(p, "linear") == 0) {
-		istyle |= GRADIENT;
-		pp++;
-	    }
-	    	    if (strcmp(p, "radial") == 0) {
-		istyle |= (RGRADIENT);
-		pp++;
 	    }else if (strcmp(p, "rounded") == 0) {
 		istyle |= ROUNDED;
 		qp = pp; /* remove rounded from list passed to renderer */
@@ -3174,7 +3213,8 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
     textlabel_t *lab;
     int doAnchor;
     double penwidth;
-
+    int gradient;
+    
     for (c = 1; c <= GD_n_cluster(g); c++) {
 	sg = GD_clust(g)[c];
 	if (clust_in_layer(job, sg) == FALSE)
@@ -3198,6 +3238,8 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 		filled = TRUE;
 	}
 	fillcolor = pencolor = 0;
+	gradient = findGradient(sg,G_gradient);
+
 	if (GD_gui_state(sg) & GUI_STATE_ACTIVE) {
 	    pencolor = late_nnstring(sg, G_activepencolor, DEFAULT_ACTIVEPENCOLOR);
 	    fillcolor = late_nnstring(sg, G_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
@@ -3228,19 +3270,19 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	    /* bgcolor is supported for backward compatability 
 	       if fill is set, fillcolor trumps bgcolor, so
                don't bother checking.
+               if gradient is set fillcolor trumps bgcolor
              */
-	    if (!filled && ((color = agget(sg, "bgcolor")) != 0) && color[0]) {
+	    if (!filled && ((color = agget(sg, "bgcolor")) != 0) && color[0] && gradient==0) {
 		fillcolor = color;
 	        filled = TRUE;
             }
-	    if (istyle & GRADIENT) {  //handles both linear and radial gradients
-	      gvrender_set_gradient(job,sg,G_gradientcolor,G_gradientangle);
-	      filled = FALSE;
-	    } 
 
 	}
 	if (!pencolor) pencolor = DEFAULT_COLOR;
 	if (!fillcolor) fillcolor = DEFAULT_FILL;
+	if (gradient > 0) {  //handles both linear and radial gradients
+	  gvrender_set_gradient(job,sg,fillcolor,findGradientAngle(sg,G_gradientangle));
+	} 
 
 #ifndef WITH_CGRAPH
 	if (G_penwidth && ((s=agxget(sg, G_penwidth->index)) && s[0])) {
@@ -3259,20 +3301,23 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 		AF[1].y = AF[0].y;
 		AF[3].x = AF[0].x;
 		AF[3].y = AF[2].y;
-		round_corners(job, fillcolor, pencolor, AF, 4, istyle,istyle & FILLED);
+		if (gradient)
+		  round_corners(job, fillcolor, pencolor, AF, 4, istyle,(istyle & FILLED) | gradient);
+		else
+		  round_corners(job, fillcolor, pencolor, AF, 4, istyle,istyle & FILLED);
 	    }
 	}
 	else {
     	    gvrender_set_pencolor(job, pencolor);
 	    gvrender_set_fillcolor(job, fillcolor);
 	    if (late_int(sg, G_peripheries, 1, 0)){
-	      if (istyle & GRADIENT)
-		  gvrender_box(job, GD_bb(sg), istyle);
+	      if (gradient)
+		  gvrender_box(job, GD_bb(sg), gradient);
 	      else
 		gvrender_box(job, GD_bb(sg), filled);
 	    }
-	    else if (istyle & GRADIENT)
-		  gvrender_box(job, GD_bb(sg), istyle);
+	    else if (gradient)
+		  gvrender_box(job, GD_bb(sg), gradient);
 	    else if (filled) { 
 		if (fillcolor && fillcolor != pencolor)
 		    gvrender_set_pencolor(job, fillcolor);

@@ -66,6 +66,9 @@ vconfig_t *Pobsopen(Ppoly_t ** obs, int n_obs)
     int start, end;
 
     rv = malloc(sizeof(vconfig_t));
+    if (!rv) {
+	return NULL;
+    }
 
     /* get storage */
     n = 0;

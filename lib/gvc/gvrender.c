@@ -39,8 +39,8 @@
 
 extern int emit_once(char *str);
 extern shape_desc *find_user_shape(char *name);
-extern char *findStopColor(void * n, attrsym_t * attr, char *dflt);
-extern char *findStartColor(void * n, attrsym_t * attr, char *dflt);
+extern char *findGradientColor(void * n, char *pos, char *color, char *dflt);
+extern char *findAttrColor(void *obj, attrsym_t *colorattr, char *dflt);
 extern int findGradientAngle(void * n,  attrsym_t * attr);
 extern boolean mapbool(char *s);
 
@@ -49,6 +49,8 @@ extern int strcasecmp(const char *s1, const char *s2);
 #endif
 
 #define GR_SZ 50
+#define GR_START "start"
+#define GR_STOP "stop"
 
 /* storage for temporary hacks until client API is FP */
 static pointf *AF;
@@ -527,23 +529,37 @@ void gvrender_set_gradientId(GVJ_t * job){
   obj->gradient.id = gradientId++;
 }
 
-void gvrender_set_gradient(GVJ_t * job, void *g_obj, attrsym_t * color_attr, attrsym_t * angle_attr){
-char *ptr, *gradcolor = NULL,*gradstartcolor;
-int angle;
+void gvrender_set_gradient_attr(GVJ_t * job, void *g_obj, attrsym_t * color_attr, attrsym_t * angle_attr){
+  char *color;
+  int angle;
 
+    if(color_attr != NULL) {
+      color = N_GNEW(GR_SZ,char);
+      strcpy(color,findAttrColor(g_obj, color_attr, ""));
+      if ( angle_attr != NULL )
+	angle = findGradientAngle(g_obj,angle_attr);
+      else
+	angle = 0;
+      gvrender_set_gradient(job, g_obj, color, angle);
+      free(color);
+    }
+      
+}
+
+void gvrender_set_gradient(GVJ_t * job, void *g_obj, char * color, int angle){
+char *gradcolor = NULL,*startcolor,*stopcolor;
     
-    if(g_obj != NULL && color_attr != NULL) {
+    if(color != NULL) {
       gradcolor = N_GNEW((2 * GR_SZ)+1,char);
-      gradstartcolor = N_GNEW(GR_SZ,char);
-      strcpy(gradcolor,findStartColor(g_obj,color_attr,DEFAULT_FILL));
-      if ((ptr = strstr(gradcolor, ":")) != NULL) /* if attribute is a color list use first one */
-	*ptr = '\0';
-      strcpy(gradstartcolor,gradcolor);
+      startcolor = strdup(color);
+      stopcolor = strdup(color);
+      findGradientColor(g_obj,GR_START,startcolor,DEFAULT_FILL);
+      strcpy(gradcolor,startcolor);
       strcat(gradcolor,":");
-      strcat(gradcolor,findStopColor(g_obj,color_attr,gradstartcolor)); /* use start color as stop color if : missing */
-      angle = findGradientAngle(g_obj,angle_attr);
+      strcat(gradcolor,findGradientColor(g_obj,GR_STOP, stopcolor, startcolor)); /* use start color as stop color if : missing */
       gvrender_set_gradient_values(job,gradcolor,angle);
-      free(gradstartcolor);
+      free(startcolor);
+      free(stopcolor);
       free(gradcolor);
     }
       
@@ -606,10 +622,6 @@ void gvrender_set_style(GVJ_t * job, char **s)
 		obj->penwidth = atof(p);
 	    } else if (streq(line, "filled"))
 		obj->fill = FILL_SOLID;
-	    else if (streq(line, "linear"))
-		obj->fill = FILL_LINEAR;
-	    else if (streq(line, "radial"))
-		obj->fill = FILL_RADIAL;
 	    else if (streq(line, "unfilled"))
 		obj->fill = FILL_NONE;
 	    else if (streq(line, "tapered"))

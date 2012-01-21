@@ -118,6 +118,10 @@ endif
 if WITH_PANGOCAIRO
 dot_static_LDADD += $(top_builddir)/plugin/pango/.libs/libgvplugin_pango_C.a $(PANGOCAIRO_LIBS)
 dot_builtins_LDADD += $(top_builddir)/plugin/pango/libgvplugin_pango.la $(PANGOCAIRO_LIBS)
+if WITH_WEBP
+dot_static_LDADD += $(top_builddir)/plugin/webp/.libs/libgvplugin_webp_C.a $(WEBP_LIBS)
+dot_builtins_LDADD += $(top_builddir)/plugin/webp/libgvplugin_webp.la $(WEBP_LIBS)
+endif
 endif
 
 EXTRA_DIST = Makefile.old dot.1 dot.1.pdf osage.1 osage.1.pdf patchwork.1 patchwork.1.pdf dot.vcproj

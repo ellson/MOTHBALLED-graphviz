@@ -99,7 +99,7 @@ extern "C" {
 	*G_visitedpencolor, *G_visitedfillcolor,
 	*G_deletedpencolor, *G_deletedfillcolor,
 	*G_ordering, *G_peripheries, *G_penwidth,
-	*G_gradientcolor,*G_gradientangle;
+	*G_gradient, *G_gradientangle;
     EXTERN attrsym_t
 	*N_height, *N_width, *N_shape, *N_color, *N_fillcolor,
 	*N_activepencolor, *N_activefillcolor,
@@ -111,7 +111,7 @@ extern "C" {
 	*N_sides, *N_peripheries, *N_ordering, *N_orientation,
 	*N_skew, *N_distortion, *N_fixed, *N_imagescale, *N_layer,
 	*N_group, *N_comment, *N_vertices, *N_z,
-	*N_penwidth,*N_gradientcolor, *N_gradientangle;
+	*N_penwidth,*N_gradient, *N_gradientangle;
     EXTERN attrsym_t
 	*E_weight, *E_minlen, *E_color,
 	*E_activepencolor, *E_activefillcolor,

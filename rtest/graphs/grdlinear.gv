@@ -1,0 +1,100 @@
+digraph G { fillcolor="purple:pink" gradient=linear label="Graph" fontcolor="white"
+  subgraph cluster1 {fillcolor="blue:green" gradient="linear" label="Cluster" fontcolor="white"
+		node [shape=circle fillcolor="gold:brown" gradient="radial" gradientangle=180]
+		a0 [label=<
+ <TABLE border="10" cellspacing="10" cellpadding="10" style="rounded" gradient="linear" gradientcolor="yellow:violet" gradientangle="315">
+<TR><TD border="3" gradient="linear" gradientcolor="yellow">00</TD>
+<TD border="3" gradient="linear" gradientcolor="yellow:green">01</TD>
+<TD border="3" gradient="linear" gradientcolor="green">02</TD>
+<TD border="3" gradient="linear" gradientcolor="green:blue">03</TD>
+<TD border="3" gradient="linear" gradientcolor="blue">04</TD>
+<TD border="3" gradient="linear" gradientcolor="blue:purple">05</TD>
+<TD border="3" gradient="linear" gradientcolor="purple">06</TD>
+<TD border="3" gradient="linear" gradientcolor="purple:violet">07</TD>
+<TD border="3" gradient="linear" gradientcolor="violet">08</TD></TR>
+  
+<TR><TD border="3" gradient="linear" gradientcolor="yellow:gold">10</TD>
+<TD border="3" gradient="linear" gradientcolor="yellow:green">11</TD>
+<TD border="3" gradient="linear" gradientcolor="yellow:green">12</TD>
+<TD border="3" gradient="linear" gradientcolor="yellow:blue">13</TD>
+<TD border="3" gradient="linear" gradientcolor="yellow:blue">14</TD>
+<TD border="3" gradient="linear" gradientcolor="yellow:purple">15</TD>
+<TD border="3" gradient="linear" gradientcolor="yellow:purple">16</TD>
+<TD border="3" gradient="linear" gradientcolor="yellow:violet">17</TD>
+<TD border="3" gradient="linear" gradientcolor="yellow:violet">18</TD></TR>
+  
+<TR><TD border="3" gradient="linear" gradientcolor="gold">20</TD>
+<TD border="3" gradient="linear" gradientcolor="gold:green">21</TD>
+<TD border="3" gradient="linear" gradientcolor="gold:green">22</TD>
+<TD border="3" gradient="linear" gradientcolor="gold:blue">23</TD>
+<TD border="3" gradient="linear" gradientcolor="gold:blue">24</TD>
+<TD border="3" gradient="linear" gradientcolor="gold:purple">25</TD>
+<TD border="3" gradient="linear" gradientcolor="gold:purple">26</TD>
+<TD border="3" gradient="linear" gradientcolor="gold:violet">27</TD>
+<TD border="3" gradient="linear" gradientcolor="gold:violet">28</TD></TR>
+  
+<TR><TD border="3" gradient="linear" gradientcolor="gold:orange">30</TD>
+<TD border="3" gradient="linear" gradientcolor="orange:green">31</TD>
+<TD border="3" gradient="linear" gradientcolor="orange:green">32</TD>
+<TD border="3" gradient="linear" gradientcolor="orange:blue">33</TD>
+<TD border="3" gradient="linear" gradientcolor="orange:blue">34</TD>
+<TD border="3" gradient="linear" gradientcolor="orange:purple">35</TD>
+<TD border="3" gradient="linear" gradientcolor="orange:purple">36</TD>
+<TD border="3" gradient="linear" gradientcolor="orange:violet">37</TD>
+<TD border="3" gradient="linear" gradientcolor="orange:violet">38</TD></TR>
+  
+<TR><TD border="3" gradient="linear" gradientcolor="orange">40</TD>
+<TD border="3" gradient="linear" gradientcolor="orange:green">41</TD>
+<TD border="3" gradient="linear" gradientcolor="orange:green">42</TD>
+<TD border="3" gradient="linear" gradientcolor="orange:blue">43</TD>
+<TD border="3" gradient="linear" gradientcolor="orange:blue">44</TD>
+<TD border="3" gradient="linear" gradientcolor="orange:purple">45</TD>
+<TD border="3" gradient="linear" gradientcolor="orange:purple">46</TD>
+<TD border="3" gradient="linear" gradientcolor="orange:violet">47</TD>
+<TD border="3" gradient="linear" gradientcolor="orange:violet">48</TD></TR>
+  
+<TR><TD border="3" gradient="linear" gradientcolor="orange:red">50</TD>
+<TD border="3" gradient="linear" gradientcolor="red:green">51</TD>
+<TD border="3" gradient="linear" gradientcolor="red:green">52</TD>
+<TD border="3" gradient="linear" gradientcolor="red:blue">53</TD>
+<TD border="3" gradient="linear" gradientcolor="red:blue">54</TD>
+<TD border="3" gradient="linear" gradientcolor="red:purple">55</TD>
+<TD border="3" gradient="linear" gradientcolor="red:purple">56</TD>
+<TD border="3" gradient="linear" gradientcolor="red:violet">57</TD>
+<TD border="3" gradient="linear" gradientcolor="red:violet">58</TD></TR>
+  
+<TR><TD border="3" gradient="linear" gradientcolor="red">60</TD>
+<TD border="3" gradient="linear" gradientcolor="red:green">61</TD>
+<TD border="3" gradient="linear" gradientcolor="red:green">62</TD>
+<TD border="3" gradient="linear" gradientcolor="red:blue">63</TD>
+<TD border="3" gradient="linear" gradientcolor="red:blue">64</TD>
+<TD border="3" gradient="linear" gradientcolor="red:purple">65</TD>
+<TD border="3" gradient="linear" gradientcolor="red:purple">66</TD>
+<TD border="3" gradient="linear" gradientcolor="red:violet">67</TD>
+<TD border="3" gradient="linear" gradientcolor="red:violet">68</TD></TR>
+  
+<TR><TD border="3" gradient="linear" gradientcolor="red:brown">70</TD>
+<TD border="3" gradient="linear" gradientcolor="brown:green">71</TD>
+<TD border="3" gradient="linear" gradientcolor="brown:green">72</TD>
+<TD border="3" gradient="linear" gradientcolor="brown:blue">73</TD>
+<TD border="3" gradient="linear" gradientcolor="brown:blue">74</TD>
+<TD border="3" gradient="linear" gradientcolor="brown:purple">75</TD>
+<TD border="3" gradient="linear" gradientcolor="brown:purple">76</TD>
+<TD border="3" gradient="linear" gradientcolor="brown:violet">77</TD>
+<TD border="3" gradient="linear" gradientcolor="brown:violet">78</TD></TR>
+  
+<TR><TD border="3" gradient="linear" gradientcolor="brown">80</TD>
+<TD border="3" gradient="linear" gradientcolor="brown:green">81</TD>
+<TD border="3" gradient="linear" gradientcolor="brown:green">82</TD>
+<TD border="3" gradient="linear" gradientcolor="brown:blue">83</TD>
+<TD border="3" gradient="linear" gradientcolor="brown:blue">84</TD>
+<TD border="3" gradient="linear" gradientcolor="brown:purple">85</TD>
+<TD border="3" gradient="linear" gradientcolor="brown:purple">86</TD>
+<TD border="3" gradient="linear" gradientcolor="brown:violet">87</TD>
+<TD border="3" gradient="linear" gradientcolor="brown:violet">88</TD></TR>
+  
+</TABLE>>];
+
+}
+
+} 

@@ -1,0 +1,35 @@
+digraph G {bgcolor=blue
+	subgraph cluster_1 { fontcolor="white"
+
+		node [shape = circle,gradient=linear,fillcolor="white:black",
+			gradientangle=360 label="n9:360" fontcolor="black" ] "n9"; 
+		node [gradientangle=315 label="n8:315"] "n8"; 
+		node [gradientangle=270 label="n7:270"] "n7"; 
+		node [gradientangle=225 label="n6:225"] "n6"; 
+		node [gradientangle=180 label="n5:180"] "n5"; 
+		node [gradientangle=135 label="n4:135"] "n4"; 
+		node [gradientangle=90 label="n3:90 "] "n3"; 
+		node [gradientangle=45 label="n2:45 "] "n2"; 
+		node [gradientangle=0 label="n1:0  "] "n1"; 
+
+		label = "Linear Angle Variations (white to black gradient)";
+	}
+
+
+	subgraph cluster_2 { fontcolor="white"
+
+		node [shape = circle,gradient=radial,fillcolor="white:black",
+			gradientangle=360 label="n18:360" fontcolor="black" ] "n18"; 
+		node [gradientangle=315 label="n17:315"] "n17"; 
+		node [gradientangle=270 label="n16:270"] "n16"; 
+		node [gradientangle=225 label="n15:225"] "n15"; 
+		node [gradientangle=180 label="n14:180"] "n14"; 
+		node [gradientangle=135 label="n13:135"] "n13"; 
+		node [gradientangle=90 label="n12:90 "] "n12"; 
+		node [gradientangle=45 label="n11:45 "] "n11"; 
+		node [gradientangle=0 label="n10:0  "] "n10"; 
+
+		label = "Radial Angle Variations (white to black gradient)";
+	}
+n5 -> n14;
+}

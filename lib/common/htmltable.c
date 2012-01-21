@@ -480,14 +480,19 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
 	    doFill(job, tbl->data.bgcolor, pts);
      }
      
-    if (tbl->data.gradient && tbl->data.gradientcolor) {
-	if (strcmp(tbl->data.gradient,"linear") == 0)
-	   gradient = GRADIENT;
-	else if (strcmp(tbl->data.gradient,"radial") == 0)
-	    gradient = RGRADIENT;
+    if (tbl->data.gradientcolor) {
+	if(tbl->data.gradient){
+	  if (strcmp(tbl->data.gradient,"linear") == 0)
+	    gradient = GRADIENT;
+	  else if (strcmp(tbl->data.gradient,"radial") == 0)
+	      gradient = RGRADIENT;
+	  else
+	      gradient = 0;
+	}
 	else
-	    gradient = 0;
-	bordercolor = gvrender_set_gradient_values(job, tbl->data.gradientcolor, 0);	    
+	  gradient = GRADIENT;
+	
+	bordercolor = gvrender_set_gradient_values(job, tbl->data.gradientcolor, tbl->data.gradientangle);	    
 	
 	if (tbl->style & ROUNDED){
 	    round_corners (job, bordercolor, NULL, AF, 4, tbl->style, gradient);
@@ -591,15 +596,20 @@ emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
 
     if (cp->data.border)
 	doBorder(job, cp->data.pencolor, cp->data.border, pts);
-    
-    if(cp->data.gradient && cp->data.gradientcolor){
-	if(strcmp(cp->data.gradient,"linear")==0)
-	  gradient = GRADIENT;
-	else if (strcmp(cp->data.gradient,"radial")==0)
-	  gradient = RGRADIENT;
+
+    if(cp->data.gradientcolor){
+	if(cp->data.gradient){
+	  if(strcmp(cp->data.gradient,"linear")==0)
+	    gradient = GRADIENT;
+	  else if (strcmp(cp->data.gradient,"radial")==0)
+	    gradient = RGRADIENT;
+	  else
+	    gradient = 0;
+	}
 	else
-	  gradient = 0;
-	bordercolor = gvrender_set_gradient_values(job, cp->data.gradientcolor, 0);
+	  gradient = GRADIENT;
+	
+	bordercolor = gvrender_set_gradient_values(job, cp->data.gradientcolor, cp->data.gradientangle);
 	doGrdtFill(job,bordercolor, pts, gradient);
       }
 

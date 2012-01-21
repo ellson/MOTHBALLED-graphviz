@@ -71,6 +71,7 @@ extern "C" {
 	char *pencolor;
 	char *gradient;
 	char *gradientcolor;
+	int gradientangle;
 	signed char space;
 	unsigned char border;
 	unsigned char pad;
