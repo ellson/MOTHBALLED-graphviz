@@ -236,7 +236,7 @@ fi
 %package x
 Group:            Applications/Multimedia
 Summary:          Graphviz plugins and commands that depend on x11 - most installations will want this
-Requires:         graphviz = %{version}-%{release}
+Requires:         %{name} = %{version}-%{release}
 
 %description x
 Graphviz plugins and commands that depend on x11 - most installations will want this
@@ -278,7 +278,7 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %package gd
 Group:            Applications/Multimedia
 Summary:          Graphviz plugin for renderers based on gd
-Requires:         graphviz = %{version}-%{release}
+Requires:         %{name} = %{version}-%{release}
 
 %description gd
 Graphviz plugin for renderers based on gd.  (Unless you absolutely have
@@ -302,7 +302,7 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %package webp
 Group:            Applications/Multimedia
 Summary:          Graphviz plugin for webp format images, using libwebp
-Requires:         graphviz-x = %{version}-%{release}
+Requires:         %{name}-x = %{version}-%{release}
 
 %description webp
 Graphviz plugin for webp image rendering. 
@@ -323,7 +323,7 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %package devil
 Group:            Applications/Multimedia
 Summary:          Graphviz plugin for renderers based on DevIL
-Requires:         graphviz-x = %{version}-%{release}
+Requires:         %{name}-x = %{version}-%{release}
 
 %description devil
 Graphviz plugin for renderers based on DevIL.  (Unless you absolutely have
@@ -346,7 +346,7 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %package ming
 Group:            Applications/Multimedia
 Summary:          Graphviz plugin for flash renderer based on ming
-Requires:         graphviz-x = %{version}-%{release}
+Requires:         %{name}-x = %{version}-%{release}
 
 %description ming
 Graphviz plugin for -Tswf (flash) renderer based on ming.
@@ -368,7 +368,7 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %package qt
 Group:            Applications/Multimedia
 Summary:          Graphviz applications using _QT
-Requires:         graphviz-x = %{version}-%{release}
+Requires:         %{name}-x = %{version}-%{release}
 
 %description qt
 Graphviz applications using _QT - currently just gvedit
@@ -386,7 +386,7 @@ Graphviz applications using _QT - currently just gvedit
 %package sharp
 Group:          Applications/Multimedia
 Summary:        C# extension for graphviz
-Requires:       graphviz = %{version}-%{release} mono-core
+Requires:       %{name} = %{version}-%{release}, mono-core
 
 %description sharp
 C# extension for graphviz.
@@ -403,7 +403,7 @@ C# extension for graphviz.
 %package guile
 Group:          Applications/Multimedia
 Summary:        Guile extension for graphviz
-Requires:       graphviz = %{version}-%{release} guile
+Requires:       %{name} = %{version}-%{release}, guile
 
 %description guile
 Guile extension for graphviz.
@@ -420,7 +420,7 @@ Guile extension for graphviz.
 %package io
 Group:          Applications/Multimedia
 Summary:        Io extension for graphviz
-Requires:       graphviz = %{version}-%{release} io
+Requires:       %{name} = %{version}-%{release}, io
 
 %description io
 Io extension for graphviz.
@@ -437,7 +437,7 @@ Io extension for graphviz.
 %package java
 Group:          Applications/Multimedia
 Summary:        Java extension for graphviz
-Requires:       graphviz = %{version}-%{release} java
+Requires:       %{name} = %{version}-%{release}, java
 
 %description java
 Java extension for graphviz.
@@ -454,7 +454,7 @@ Java extension for graphviz.
 %package lua
 Group:          Applications/Multimedia
 Summary:        Lua extension for graphviz
-Requires:       graphviz = %{version}-%{release} lua
+Requires:       %{name} = %{version}-%{release}, lua
 
 %description lua
 Lua extension for graphviz.
@@ -473,7 +473,7 @@ Lua extension for graphviz.
 %package ocaml
 Group:          Applications/Multimedia
 Summary:        Ocaml extension for graphviz
-Requires:       graphviz = %{version}-%{release} ocaml
+Requires:       %{name} = %{version}-%{release}, ocaml
 
 %description ocaml
 Ocaml extension for graphviz.
@@ -490,7 +490,7 @@ Ocaml extension for graphviz.
 %package perl
 Group:          Applications/Multimedia
 Summary:        Perl extension for graphviz
-Requires:       graphviz = %{version}-%{release} perl
+Requires:       %{name} = %{version}-%{release}, perl
 
 %description perl
 Perl extension for graphviz.
@@ -509,7 +509,7 @@ Perl extension for graphviz.
 %package php
 Group:          Applications/Multimedia
 Summary:        PHP extension for graphviz
-Requires:       graphviz = %{version}-%{release} php
+Requires:       %{name} = %{version}-%{release}, php
 %if 0%{?fedora} >= 17
 Requires:       php(zend-abi) = %{php_zend_api}
 Requires:       php(api) = %{php_core_api}
@@ -540,7 +540,7 @@ PHP extension for graphviz.
 %package python
 Group:          Applications/Multimedia
 Summary:        Python extension for graphviz
-Requires:       graphviz = %{version}-%{release} python
+Requires:       %{name} = %{version}-%{release}, python
 
 %description python
 Python extension for graphviz.
@@ -559,7 +559,7 @@ Python extension for graphviz.
 %package R
 Group:          Applications/Multimedia
 Summary:        R extension for graphviz
-Requires:       graphviz = %{version}-%{release} R
+Requires:       %{name} = %{version}-%{release}, R
 
 %description R
 R extension for graphviz.
@@ -576,7 +576,7 @@ R extension for graphviz.
 %package ruby
 Group:          Applications/Multimedia
 Summary:        Ruby extension for graphviz
-Requires:       graphviz = %{version}-%{release} ruby
+Requires:       %{name} = %{version}-%{release}, ruby
 
 %description ruby
 Ruby extension for graphviz.
@@ -595,7 +595,7 @@ Ruby extension for graphviz.
 %package tcl
 Group:          Applications/Multimedia
 Summary:        Tcl extension & tools for graphviz
-Requires:       graphviz = %{version}-%{release} tcl >= 8.3 tk
+Requires:       %{name} = %{version}-%{release}, tcl >= 8.3 tk
 
 %description tcl
 Various tcl packages (extensions) for the graphviz tools.
@@ -616,7 +616,7 @@ Various tcl packages (extensions) for the graphviz tools.
 %package devel
 Group:          Development/Libraries
 Summary:        Development package for graphviz
-Requires:       graphviz = %{version}-%{release} pkgconfig
+Requires:       %{name} = %{version}-%{release}, pkgconfig
 
 %description devel
 A collection of tools for the manipulation and layout
