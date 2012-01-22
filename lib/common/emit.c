@@ -2862,6 +2862,8 @@ static void emit_cluster_colors(GVJ_t * job, graph_t * g)
 	emit_cluster_colors(job, sg);
 	if (((str = agget(sg, "color")) != 0) && str[0])
 	    gvrender_set_pencolor(job, str);
+	if (((str = agget(sg, "bgcolor")) != 0) && str[0])
+	    gvrender_set_pencolor(job, str);
 	if (((str = agget(sg, "fillcolor")) != 0) && str[0])
 	    gvrender_set_fillcolor(job, str);
 	if (((str = agget(sg, "fontcolor")) != 0) && str[0])
@@ -2885,8 +2887,22 @@ static void emit_colors(GVJ_t * job, graph_t * g)
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (((str = agget(n, "color")) != 0) && str[0])
 	    gvrender_set_pencolor(job, str);
-	if (((str = agget(n, "fillcolor")) != 0) && str[0])
+	if (((str = agget(n, "pencolor")) != 0) && str[0])
 	    gvrender_set_fillcolor(job, str);
+	if (((str = agget(n, "fillcolor")) != 0) && str[0]) {
+	    if (strchr(str, ':')) {
+		colors = strdup(str);
+		for (str = strtok(colors, ":"); str;
+		    str = strtok(0, ":")) {
+		    if (str[0])
+			gvrender_set_pencolor(job, str);
+		}
+		free(colors);
+	    }
+	    else {
+		gvrender_set_pencolor(job, str);
+	    }
+	}
 	if (((str = agget(n, "fontcolor")) != 0) && str[0])
 	    gvrender_set_pencolor(job, str);
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
@@ -2899,8 +2915,10 @@ static void emit_colors(GVJ_t * job, graph_t * g)
 			    gvrender_set_pencolor(job, str);
 		    }
 		    free(colors);
-		} else
+		}
+		else {
 		    gvrender_set_pencolor(job, str);
+		}
 	    }
 	    if (((str = agget(e, "fontcolor")) != 0) && str[0])
 		gvrender_set_pencolor(job, str);
