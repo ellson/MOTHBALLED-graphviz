@@ -297,9 +297,7 @@ gvplugin_installed_t gvloadimage_core_types[] = {
     {FORMAT_JPEG_VRML, "jpg:vrml", 1, &engine_vrml, NULL},
 
     {FORMAT_PS_PS, "eps:ps", 1, &engine_ps, NULL},
-    {FORMAT_PS_PS, "eps:lasi", 1, &engine_ps, NULL},
     {FORMAT_PS_PS, "ps:ps", 1, &engine_ps, NULL},
-    {FORMAT_PS_PS, "ps:lasi", 1, &engine_ps, NULL},
     {FORMAT_PSLIB_PS, "(lib):ps", 1, &engine_pslib, NULL},  /* for pslib */
 
     {FORMAT_PNG_MAP, "png:map", 1, &engine_null, NULL},
