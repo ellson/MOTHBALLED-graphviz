@@ -2862,6 +2862,8 @@ static void emit_cluster_colors(GVJ_t * job, graph_t * g)
 	emit_cluster_colors(job, sg);
 	if (((str = agget(sg, "color")) != 0) && str[0])
 	    gvrender_set_pencolor(job, str);
+	if (((str = agget(sg, "pencolor")) != 0) && str[0])
+	    gvrender_set_pencolor(job, str);
 	if (((str = agget(sg, "bgcolor")) != 0) && str[0])
 	    gvrender_set_pencolor(job, str);
 	if (((str = agget(sg, "fillcolor")) != 0) && str[0])
