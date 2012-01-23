@@ -91,9 +91,8 @@ obj_state_t* push_obj_state(GVJ_t *job)
         obj->pen = parent->pen;
         obj->fill = parent->fill;
         obj->penwidth = parent->penwidth;
-	obj->gradient.angle = parent->gradient.angle;
-	obj->gradient.startcolor = parent->gradient.startcolor;
-	obj->gradient.stopcolor = parent->gradient.stopcolor;
+	obj->gradient_angle = parent->gradient_angle;
+	obj->stopcolor = parent->stopcolor;
     }
     else {
 	/* obj->pencolor = NULL */
@@ -267,6 +266,39 @@ static void map_point(GVJ_t *job, pointf pf)
 	if (! (flags & GVRENDER_DOES_MAP_RECTANGLE))
 	    rect2poly(p);
     }
+}
+
+static char **checkClusterStyle(graph_t* sg, int *flagp)
+{
+    char *style;
+    char **pstyle = 0;
+    int istyle = 0;
+
+    if (((style = agget(sg, "style")) != 0) && style[0]) {
+	char **pp;
+	char **qp;
+	char *p;
+	pp = pstyle = parse_style(style);
+	while ((p = *pp)) {
+	    if (strcmp(p, "filled") == 0) {
+		istyle |= FILLED;
+		pp++;
+ 	    }else if (strcmp(p, "radial") == 0) {
+ 		istyle |= (FILLED | RADIAL);
+ 		pp++;
+	    }else if (strcmp(p, "rounded") == 0) {
+		istyle |= ROUNDED;
+		qp = pp; /* remove rounded from list passed to renderer */
+		do {
+		    qp++;
+		    *(qp-1) = *qp;
+		} while (*qp);
+	    } else pp++;
+	}
+    }
+
+    *flagp = istyle;
+    return pstyle;
 }
 
 void emit_map_rect(GVJ_t *job, boxf b)
@@ -1014,11 +1046,34 @@ static void emit_xdot (GVJ_t * job, xdot* xd)
     free (pts);
 }
 
+static boolean findStopColor (char* colorlist, char* clrs[2])
+{
+    char* p = strchr(colorlist,':');
+
+    if (p) {
+	char* s;
+	*p = '\0';
+	clrs[0] = strdup (colorlist); 
+	*p++ = ':';
+	if (*p == '\0')
+	    clrs[1] = NULL;
+	else if ((s = strchr(p,':'))) {
+	    *s = '\0';
+	    clrs[0] = strdup (p); 
+	    *s++ = ':';
+	}
+	else
+	    clrs[1] = strdup (p);
+	return TRUE;
+    }
+    else return FALSE;
+}
+
 static void emit_background(GVJ_t * job, graph_t *g)
 {
     xdot* xd;
-    char *str,*fillcolor;
-    int dfltColor,gradient;
+    char *str;
+    int dfltColor;
     
     /* if no bgcolor specified - first assume default of "white" */
     if (! ((str = agget(g, "bgcolor")) && str[0])) {
@@ -1038,17 +1093,30 @@ static void emit_background(GVJ_t * job, graph_t *g)
     /* except for "transparent" on truecolor, or default "white" on (assumed) white paper, paint background */
     if (!(   ((job->flags & GVDEVICE_DOES_TRUECOLOR) && streq(str, "transparent"))
           || ((job->flags & GVRENDER_NO_WHITE_BG) && dfltColor))) {
-        gvrender_set_fillcolor(job, str);
-        gvrender_set_pencolor(job, str);
-	gradient = findGradient(g,G_gradient);
-	if(gradient > 0){
-	  if (! ((fillcolor = agget(g, "fillcolor")) && str[0]))
-	    fillcolor = str;
-	  gvrender_set_gradient(job,g,fillcolor,findGradientAngle(g,G_gradientangle));
-	  gvrender_box(job, job->clip,gradient); /* linear or radial gradient */
+	char* clrs[2];
+
+	if ((findStopColor (str, clrs))) {
+	    int filled, istyle = 0;
+            gvrender_set_fillcolor(job, clrs[0]);
+            gvrender_set_pencolor(job, "transparent");
+	    checkClusterStyle(g, &istyle);
+	    if (clrs[1]) 
+		gvrender_set_gradient_vals(job,clrs[1],findGradientAngle(g,G_gradientangle));
+	    else 
+		gvrender_set_gradient_vals(job,DEFAULT_COLOR,findGradientAngle(g,G_gradientangle));
+	    if (istyle & RADIAL)
+		filled = RGRADIENT;
+	    else
+		filled = GRADIENT;
+	    gvrender_box(job, job->clip, filled);
+	    free (clrs[0]);
+	    free (clrs[1]);
 	}
-	else
-	  gvrender_box(job, job->clip, TRUE);	/* filled */
+	else {
+            gvrender_set_fillcolor(job, str);
+            gvrender_set_pencolor(job, str);
+	    gvrender_box(job, job->clip, FILL);	/* filled */
+	}
     }
 
     if ((xd = (xdot*)GD_drawing(g)->xdots))
@@ -3151,36 +3219,6 @@ void emit_once_reset(void)
 	dtclose(strings);
 	strings = 0;
     }
-}
-
-static char **checkClusterStyle(graph_t* sg, int *flagp)
-{
-    char *style;
-    char **pstyle = 0;
-    int istyle = 0;
-
-    if (((style = agget(sg, "style")) != 0) && style[0]) {
-	char **pp;
-	char **qp;
-	char *p;
-	pp = pstyle = parse_style(style);
-	while ((p = *pp)) {
-	    if (strcmp(p, "filled") == 0) {
-		istyle |= FILLED;
-		pp++;
-	    }else if (strcmp(p, "rounded") == 0) {
-		istyle |= ROUNDED;
-		qp = pp; /* remove rounded from list passed to renderer */
-		do {
-		    qp++;
-		    *(qp-1) = *qp;
-		} while (*qp);
-	    } else pp++;
-	}
-    }
-
-    *flagp = istyle;
-    return pstyle;
 }
 
 static void emit_begin_cluster(GVJ_t * job, Agraph_t * sg)

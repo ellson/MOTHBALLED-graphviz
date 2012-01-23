@@ -202,17 +202,21 @@
 
 /* style flags */
 #define FILLED 	(1 << 0)
-#define ROUNDED (1 << 1)
-#define DIAGONALS (1 << 2)
-#define AUXLABELS (1 << 3)
-#define INVISIBLE (1 << 4)
-#define DOGEAR (1 << 5)
-#define TAB (1 << 6)
-#define FOLDER (1 << 7)
-#define BOX3D (1 << 8)
-#define COMPONENT (1 << 9)
-#define GRADIENT (1 << 10)
-#define RGRADIENT GRADIENT + 1 /*radial gradient */
+#define RADIAL  (1 << 1)
+#define ROUNDED (1 << 2)
+#define DIAGONALS (1 << 3)
+#define AUXLABELS (1 << 4)
+#define INVISIBLE (1 << 5)
+#define DOGEAR (1 << 6)
+#define TAB (1 << 7)
+#define FOLDER (1 << 8)
+#define BOX3D (1 << 9)
+#define COMPONENT (1 << 10)
+
+/* fill types */
+#define FILL      1
+#define GRADIENT  2
+#define RGRADIENT 3
 
 /* label types */
 #define LT_NONE 	(0 << 1)

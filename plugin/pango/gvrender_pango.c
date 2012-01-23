@@ -24,6 +24,8 @@
 
 #include "const.h"
 #include "gvplugin_render.h"
+#include "agxbuf.h"
+#include "utils.h"
 #include "gvplugin_device.h"
 #include "gvio.h"
 
@@ -31,8 +33,6 @@
 
 #ifdef HAVE_PANGOCAIRO
 #include <pango/pangocairo.h>
-extern void cairogen_get_gradient_points(pointf * A, pointf * G, int n, float angle);
-extern void cairogen_get_rgradient_points(pointf * A, pointf * G, int n);
 
 typedef enum {
 		FORMAT_CAIRO,
@@ -292,14 +292,13 @@ if (ry < RMIN) ry = RMIN;
     cairo_set_matrix(cr, &matrix);
 
     if (filled == GRADIENT || filled == (RGRADIENT)) {
-      angle = obj->gradient.angle * M_PI / 180;
+      angle = obj->gradient_angle * M_PI / 180;
       if(filled == GRADIENT) {
-	  angle = obj->gradient.angle * M_PI / 180;
-	  cairogen_get_gradient_points(A, G, 2, angle);
+	  get_gradient_points(A, G, 2, angle, 0);
 	  pat = cairo_pattern_create_linear (G[0].x,G[0].y,G[1].x,G[1].y);
       }
       else {
-	  cairogen_get_rgradient_points(A, G, 2);
+	  get_gradient_points(A, G, 2, 0, 1);
 	  //r1 is inner radius, r2 is outter radius
 	r1 = G[1].x;
 	r2 = G[1].y;
@@ -317,8 +316,8 @@ if (ry < RMIN) ry = RMIN;
 	//r1 is inner radius, r2 is outter radius
 	  pat = cairo_pattern_create_radial(c1.x,c1.y,r1,c2.x,c2.y,r2); 
 	}
-	cairogen_add_color_stop_rgba(pat,0,&(obj->gradient.startcolor));
-	cairogen_add_color_stop_rgba(pat,1,&(obj->gradient.stopcolor));
+	cairogen_add_color_stop_rgba(pat,0,&(obj->fillcolor));
+	cairogen_add_color_stop_rgba(pat,1,&(obj->stopcolor));
 	cairo_set_source (cr, pat);
 	cairo_fill_preserve (cr);
 	cairo_pattern_destroy (pat);
@@ -348,13 +347,13 @@ cairogen_polygon(GVJ_t * job, pointf * A, int n, int filled)
     cairo_line_to(cr, A[i].x, -A[i].y);
     cairo_close_path(cr);
     if (filled == GRADIENT || filled == (RGRADIENT)) {
-      angle = obj->gradient.angle * M_PI / 180;
+      angle = obj->gradient_angle * M_PI / 180;
       if(filled == GRADIENT) {
-	cairogen_get_gradient_points(A, G, n, angle);
+	get_gradient_points(A, G, n, angle, 0);
 	pat = cairo_pattern_create_linear (G[0].x,G[0].y,G[1].x,G[1].y);
       }
       else {
-	cairogen_get_rgradient_points(A, G, n);
+	get_gradient_points(A, G, n, 0, 1);
 	r1 = G[1].x;
 	r2 = G[1].y;
 	  if (angle == 0) {
@@ -371,8 +370,8 @@ cairogen_polygon(GVJ_t * job, pointf * A, int n, int filled)
 	//r1 is inner radius, r2 is outter radius
 	pat = cairo_pattern_create_radial(c1.x,c1.y,r1,c2.x,c2.y,r2); 
       }
-      cairogen_add_color_stop_rgba(pat,0,&(obj->gradient.startcolor));
-      cairogen_add_color_stop_rgba(pat,1,&(obj->gradient.stopcolor));
+      cairogen_add_color_stop_rgba(pat,0,&(obj->fillcolor));
+      cairogen_add_color_stop_rgba(pat,1,&(obj->stopcolor));
       cairo_set_source (cr, pat);
       cairo_fill_preserve (cr);
       cairo_pattern_destroy (pat);

@@ -1832,19 +1832,20 @@ void setEdgeType (graph_t* g, int dflt)
 }
 
 
-/* cairogen_get_gradient_points
+/* get_gradient_points
  * Evaluates the extreme points of an ellipse or polygon
  * Determines the point at the center of the extreme points
- * Uses the angle parameter to identify two points on a line that defines the gradient direction
- * 
+ * If isRadial is true,sets the inner radius to half the distance to the min point;
+ * else uses the angle parameter to identify two points on a line that defines the 
+ * gradient direction
  */
-void cairogen_get_gradient_points(pointf * A, pointf * G, int n, float angle)
+void get_gradient_points(pointf * A, pointf * G, int n, float angle, boolean isRadial)
 {
     int i;
     double rx, ry;
     pointf min,max,center;
     
-    if ( n == 2) {
+    if (n == 2) {
       rx = A[1].x - A[0].x;
       ry = A[1].y - A[0].y;
       min.x = A[0].x - rx;
@@ -1856,52 +1857,16 @@ void cairogen_get_gradient_points(pointf * A, pointf * G, int n, float angle)
       min.x = max.x = A[0].x;
       min.y = max.y = A[0].y;
       for (i = 0; i < n; i++){
-	min.x = (A[i].x < min.x ? A[i].x : min.x);
-	min.y = (A[i].y < min.y ? A[i].y : min.y);
-	max.x = (A[i].x > max.x ? A[i].x : max.x);
-	max.y = (A[i].y > max.y ? A[i].y : max.y);
+	min.x = MIN(A[i].x,min.x);
+	min.y = MIN(A[i].y,min.y);
+	max.x = MAX(A[i].x,max.x);
+	max.y = MAX(A[i].y,max.y);
       }
     }
       center.x = min.x + (max.x - min.x)/2;
       center.y = min.y + (max.y - min.y)/2;
-      G[0].x = center.x - (max.x - center.x) * cos(angle);
-      G[0].y = -center.y + (max.y - center.y) * sin(angle);
-      G[1].x = center.x + (center.x - min.x) * cos(angle);
-      G[1].y = -center.y - (center.y - min.y) * sin(angle);
-}
-
-/* cairogen_get_rgradient_points
- * Evaluates the extreme points of an ellipse or polygon
- * Determines the point at the center of the extreme points
- * Sets the inner radius to half the distance to the min point
- * 
- */
-void cairogen_get_rgradient_points(pointf * A, pointf * G, int n)
-{
-    int i;
-    double rx, ry,inner_r,outer_r;
-    pointf min,max,center;
-    
-    if ( n == 2) {
-      rx = A[1].x - A[0].x;
-      ry = A[1].y - A[0].y;
-      min.x = A[0].x - rx;
-      max.x = A[0].x + rx;
-      min.y = A[0].y - ry;
-      max.y = A[0].y + ry;
-    }    
-    else {
-      min.x = max.x = A[0].x;
-      min.y = max.y = A[0].y;
-      for (i = 0; i < n; i++){
-	min.x = (A[i].x < min.x ? A[i].x : min.x);
-	min.y = (A[i].y < min.y ? A[i].y : min.y);
-	max.x = (A[i].x > max.x ? A[i].x : max.x);
-	max.y = (A[i].y > max.y ? A[i].y : max.y);
-      }
-    }
-      center.x = min.x + (max.x - min.x)/2;
-      center.y = min.y + (max.y - min.y)/2;
+    if (isRadial) {
+	double inner_r, outer_r;
       outer_r = sqrt((center.x - min.x)*(center.x - min.x) +
 		      (center.y - min.y)*(center.y - min.y));
       inner_r = outer_r /4.;
@@ -1909,7 +1874,13 @@ void cairogen_get_rgradient_points(pointf * A, pointf * G, int n)
       G[0].y = -center.y;
       G[1].x = inner_r;
       G[1].y = outer_r;
-      
+    }
+    else {
+      G[0].x = center.x - (max.x - center.x) * cos(angle);
+      G[0].y = -center.y + (max.y - center.y) * sin(angle);
+      G[1].x = center.x + (center.x - min.x) * cos(angle);
+      G[1].y = -center.y - (center.y - min.y) * sin(angle);
+    }
 }
 
 #ifndef WIN32_STATIC
