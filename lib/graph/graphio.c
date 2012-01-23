@@ -105,7 +105,7 @@ Agraph_t *agread_usergets(FILE * fp, gets_f usergets)
 static int
 _is_number_char(char c)
 {
-    return (isdigit(c) || c == '.' || c == '-' || c == '+');
+    return (isdigit(c) || (c == '.'));
 }
 
 /* _agstrcanon:
@@ -117,7 +117,7 @@ _agstrcanon (char* arg, char* buf)
     char *s = arg;
     unsigned char uc;
     char *p = buf;
-    int cnt = 0;
+    int cnt = 0, dotcnt = 0;
     int has_special = FALSE;
     int maybe_num;
     int backslash_pending = FALSE;
@@ -126,15 +126,31 @@ _agstrcanon (char* arg, char* buf)
 	return "\"\"";
     *p++ = '\"';
     uc = *(unsigned char *) s++;
-    maybe_num = _is_number_char(uc);
+    maybe_num = _is_number_char(uc) || (uc == '-');
     while (uc) {
 	if (uc == '\"') {
 	    *p++ = '\\';
 	    has_special = TRUE;
 	} else {
-	    if (!ISALNUM(uc))
-		has_special = TRUE;
-	    else if (maybe_num && !_is_number_char(uc))
+	    if (maybe_num) {
+		if (uc == '-') {
+		    if (cnt) {
+			maybe_num = FALSE;
+			has_special = TRUE;
+		    }
+		}
+		else if (uc == '.') {
+		    if (dotcnt++) {
+			maybe_num = FALSE;
+			has_special = TRUE;
+		    }
+		}
+		else if (!isdigit(uc)) {
+		    maybe_num = FALSE;
+		    has_special = TRUE;
+		}
+	    }
+	    else if (!ISALNUM(uc))
 		has_special = TRUE;
 	}
 	*p++ = (char) uc;
