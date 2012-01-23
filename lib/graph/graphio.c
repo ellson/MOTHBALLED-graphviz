@@ -131,28 +131,27 @@ _agstrcanon (char* arg, char* buf)
 	if (uc == '\"') {
 	    *p++ = '\\';
 	    has_special = TRUE;
-	} else {
-	    if (maybe_num) {
-		if (uc == '-') {
-		    if (cnt) {
-			maybe_num = FALSE;
-			has_special = TRUE;
-		    }
-		}
-		else if (uc == '.') {
-		    if (dotcnt++) {
-			maybe_num = FALSE;
-			has_special = TRUE;
-		    }
-		}
-		else if (!isdigit(uc)) {
+	} 
+	else if (maybe_num) {
+	    if (uc == '-') {
+		if (cnt) {
 		    maybe_num = FALSE;
 		    has_special = TRUE;
 		}
 	    }
-	    else if (!ISALNUM(uc))
+	    else if (uc == '.') {
+		if (dotcnt++) {
+		    maybe_num = FALSE;
+		    has_special = TRUE;
+		}
+	    }
+	    else if (!isdigit(uc)) {
+		maybe_num = FALSE;
 		has_special = TRUE;
+	    }
 	}
+	else if (!ISALNUM(uc))
+	    has_special = TRUE;
 	*p++ = (char) uc;
 	uc = *(unsigned char *) s++;
 	cnt++;
