@@ -2597,17 +2597,17 @@ static void record_gencode(GVJ_t * job, node_t * n)
 	AF[1].y = AF[0].y;
 	AF[3].x = AF[0].x;
 	AF[3].y = AF[2].y;
-	gradient = findGradient(n,G_gradient);
+	gradient = findGradient(n,N_gradient);
 	if (gradient > 0) {  //handles both linear and radial gradients
-	  gvrender_set_gradient(job,n,findFill(n),findGradientAngle(n,G_gradientangle));
+	  gvrender_set_gradient(job,n,findFill(n),findGradientAngle(n,N_gradientangle));
 	  node_round_corners(job, n, AF, 4, style, (style & FILLED) | gradient);
 	} 
 	else
 	  node_round_corners(job, n, AF, 4, style, style & FILLED);
     } else {
-	gradient = findGradient(n,G_gradient);
+	gradient = findGradient(n,N_gradient);
 	if (gradient > 0) {  //handles both linear and radial gradients
-	  gvrender_set_gradient(job,n,findFill(n),findGradientAngle(n,G_gradientangle));
+	  gvrender_set_gradient(job,n,findFill(n),findGradientAngle(n,N_gradientangle));
 	  gvrender_box(job, BF, (style & FILLED) | gradient);
 	}
 	else

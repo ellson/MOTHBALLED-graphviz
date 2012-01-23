@@ -67,7 +67,7 @@ static char *_agstrcanon(char *arg, char *buf)
 {
     char *s, *p;
     unsigned char uc;
-    int cnt = 0;
+    int cnt = 0, dotcnt = 0;
     int needs_quotes = FALSE;
     int maybe_num;
     int backslash_pending = FALSE;
@@ -83,17 +83,32 @@ static char *_agstrcanon(char *arg, char *buf)
     p = buf;
     *p++ = '\"';
     uc = *(unsigned char *) s++;
-    maybe_num = is_number_char(uc);
+    maybe_num = is_number_char(uc) || (uc == '-');
     while (uc) {
 	if (uc == '\"') {
 	    *p++ = '\\';
 	    needs_quotes = TRUE;
-	} else {
-	    if (!ISALNUM(uc))
+	} 
+	else if (maybe_num) {
+	    if (uc == '-') {
+		if (cnt) {
+		    maybe_num = FALSE;
+		    needs_quotes = TRUE;
+		}
+	    }
+	    else if (uc == '.') {
+		if (dotcnt++) {
+		    maybe_num = FALSE;
+		    needs_quotes = TRUE;
+		}
+	    }
+	    else if (!isdigit(uc)) {
+		maybe_num = FALSE;
 		needs_quotes = TRUE;
-	    else if (maybe_num && !is_number_char(uc))
-		needs_quotes = TRUE;
+	    }
 	}
+	else if (!ISALNUM(uc))
+	    needs_quotes = TRUE;
 	*p++ = (char) uc;
 	uc = *(unsigned char *) s++;
 	cnt++;
