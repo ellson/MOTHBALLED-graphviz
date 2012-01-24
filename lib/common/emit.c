@@ -1046,27 +1046,48 @@ static void emit_xdot (GVJ_t * job, xdot* xd)
     free (pts);
 }
 
+/* findStopColor:
+ * Check for colon in colorlist. If one exists, and not the first
+ * character, store the characters before the colon in clrs[0] and
+ * the characters after the colon (and before the next or end-of-string)
+ * in clrs[1]. If there are no characters after the first colon, clrs[1]
+ * is NULL. Return TRUE.
+ * If there is no non-trivial string before a first colon, set clrs[0] to
+ * NULL and return FALSE.
+ *
+ * Note that memory is allocated as a single block stored in clrs[0] and
+ * must be freed by calling function.
+ */
 static boolean findStopColor (char* colorlist, char* clrs[2])
 {
-    char* p = strchr(colorlist,':');
+    char* p;
+    char* s;
+    int len;
 
-    if (p) {
-	char* s;
-	*p = '\0';
-	clrs[0] = strdup (colorlist); 
-	*p++ = ':';
-	if (*p == '\0')
-	    clrs[1] = NULL;
-	else if ((s = strchr(p,':'))) {
+    if ((*colorlist == ':') || !(p = strchr(colorlist,':'))) {
+	clrs[0] = NULL;
+	return FALSE;
+    }
+
+    clrs[0] = N_GNEW (strlen(colorlist)+1,char); 
+    len = p-colorlist;
+    memcpy (clrs[0],colorlist,len);
+    clrs[0][len]= '\0';
+
+    p++;
+    if ((*p == '\0') || (*p == ':'))
+	clrs[1] = NULL;
+    else {
+	clrs[1] = clrs[0] + (len+1);
+	if ((s = strchr(p,':'))) {
 	    *s = '\0';
-	    clrs[0] = strdup (p); 
-	    *s++ = ':';
+	    strcpy (clrs[1],p); 
+	    *s = ':';
 	}
 	else
-	    clrs[1] = strdup (p);
-	return TRUE;
+	    strcpy (clrs[1], p);
     }
-    else return FALSE;
+    return TRUE;
 }
 
 static void emit_background(GVJ_t * job, graph_t *g)
@@ -1110,7 +1131,6 @@ static void emit_background(GVJ_t * job, graph_t *g)
 		filled = GRADIENT;
 	    gvrender_box(job, job->clip, filled);
 	    free (clrs[0]);
-	    free (clrs[1]);
 	}
 	else {
             gvrender_set_fillcolor(job, str);
@@ -3263,7 +3283,7 @@ static void emit_end_cluster(GVJ_t * job, Agraph_t * g)
 
 void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 {
-    int c, istyle, filled;
+    int doPerim, c, istyle, filled;
     pointf AF[4];
     char *color, *fillcolor, *pencolor, **style, *s;
     graph_t *sg;
@@ -3273,7 +3293,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
     textlabel_t *lab;
     int doAnchor;
     double penwidth;
-    int gradient;
+    char* clrs[2];
     
     for (c = 1; c <= GD_n_cluster(g); c++) {
 	sg = GD_clust(g)[c];
@@ -3298,7 +3318,6 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 		filled = TRUE;
 	}
 	fillcolor = pencolor = 0;
-	gradient = findGradient(sg,G_gradient);
 
 	if (GD_gui_state(sg) & GUI_STATE_ACTIVE) {
 	    pencolor = late_nnstring(sg, G_activepencolor, DEFAULT_ACTIVEPENCOLOR);
@@ -3332,7 +3351,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
                don't bother checking.
                if gradient is set fillcolor trumps bgcolor
              */
-	    if (!filled && ((color = agget(sg, "bgcolor")) != 0) && color[0] && gradient==0) {
+	    if (!filled && ((color = agget(sg, "bgcolor")) != 0) && color[0]) {
 		fillcolor = color;
 	        filled = TRUE;
             }
@@ -3340,50 +3359,52 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	}
 	if (!pencolor) pencolor = DEFAULT_COLOR;
 	if (!fillcolor) fillcolor = DEFAULT_FILL;
-	if (gradient > 0) {  //handles both linear and radial gradients
-	  gvrender_set_gradient(job,sg,fillcolor,findGradientAngle(sg,G_gradientangle));
-	} 
+	if (filled && findStopColor (fillcolor, clrs)) {
+            gvrender_set_fillcolor(job, clrs[0]);
+	    if (clrs[1]) 
+		gvrender_set_gradient_vals(job,clrs[1],findGradientAngle(sg,G_gradientangle));
+	    else 
+		gvrender_set_gradient_vals(job,DEFAULT_COLOR,findGradientAngle(sg,G_gradientangle));
+	    if (istyle & RADIAL)
+		filled = RGRADIENT;
+	    else
+		filled = GRADIENT;
+	}
+	else
+            gvrender_set_fillcolor(job, fillcolor);
 
-#ifndef WITH_CGRAPH
-	if (G_penwidth && ((s=agxget(sg, G_penwidth->index)) && s[0])) {
-#else
-	if (G_penwidth && ((s=agxget(sg, G_penwidth)) && s[0])) {
-#endif
+	if (G_penwidth && ((s=ag_xget(sg,G_penwidth)) && s[0])) {
 	    penwidth = late_double(sg, G_penwidth, 1.0, 0.0);
             gvrender_set_penwidth(job, penwidth);
 	}
 
 	if (istyle & ROUNDED) {
-	    if (late_int(sg, G_peripheries, 1, 0) || filled) {
+	    if ((doPerim = late_int(sg, G_peripheries, 1, 0)) || filled) {
 		AF[0] = GD_bb(sg).LL;
 		AF[2] = GD_bb(sg).UR;
 		AF[1].x = AF[2].x;
 		AF[1].y = AF[0].y;
 		AF[3].x = AF[0].x;
 		AF[3].y = AF[2].y;
-		if (gradient)
-		  round_corners(job, fillcolor, pencolor, AF, 4, istyle,(istyle & FILLED) | gradient);
+		if (doPerim)
+    		    gvrender_set_pencolor(job, pencolor);
 		else
-		  round_corners(job, fillcolor, pencolor, AF, 4, istyle,istyle & FILLED);
+        	    gvrender_set_pencolor(job, "transparent");
+		round_corners(job, fillcolor, pencolor, AF, 4, istyle, filled);
 	    }
 	}
 	else {
-    	    gvrender_set_pencolor(job, pencolor);
-	    gvrender_set_fillcolor(job, fillcolor);
-	    if (late_int(sg, G_peripheries, 1, 0)){
-	      if (gradient)
-		  gvrender_box(job, GD_bb(sg), gradient);
-	      else
+	    if (late_int(sg, G_peripheries, 1, 0)) {
+    		gvrender_set_pencolor(job, pencolor);
 		gvrender_box(job, GD_bb(sg), filled);
 	    }
-	    else if (gradient)
-		  gvrender_box(job, GD_bb(sg), gradient);
-	    else if (filled) { 
-		if (fillcolor && fillcolor != pencolor)
-		    gvrender_set_pencolor(job, fillcolor);
+	    else if (filled) {
+        	gvrender_set_pencolor(job, "transparent");
 		gvrender_box(job, GD_bb(sg), filled);
 	    }
 	}
+
+	free (clrs[0]);
 	if ((lab = GD_label(sg)))
 	    emit_label(job, EMIT_CLABEL, lab);
 
