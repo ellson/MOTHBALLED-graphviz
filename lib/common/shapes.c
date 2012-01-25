@@ -99,7 +99,7 @@ static polygon_t p_Mcircle =
 
 #define IS_BOX(n) (ND_shape(n)->polygon == &p_box)
 
-/* True if style requires processing through node_round_corners. */
+/* True if style requires processing through round_corners. */
 #define SPECIAL_CORNERS(style) \
 	((style) & (ROUNDED | DIAGONALS | DOGEAR | TAB | FOLDER | BOX3D | COMPONENT))
 
@@ -247,18 +247,6 @@ void pencolor(GVJ_t * job, node_t * n)
 }
 
 static
-char *findPen(node_t * n)
-{
-    char *color;
-
-    color = late_nnstring(n, N_color, "");
-    if (color[0])
-	return color;
-    else
-	return DEFAULT_COLOR;
-}
-
-static
 char *findFillDflt(node_t * n, char *dflt)
 {
     char *color;
@@ -384,12 +372,20 @@ static void Mcircle_hack(GVJ_t * job, node_t * n)
     gvrender_polyline(job, AF, 2);
 }
 
-void round_corners(GVJ_t * job, char *fillc, char *penc, pointf * AF,
-		   int sides, int style, int filled)
+/* round_corners:
+ * Handle some special graphical cases, such as rounding the shape,
+ * adding diagonals at corners, or drawing certain non-simple figures.
+ * Any drawing done here should assume fillcolors, pencolors, etc.
+ * have been set by the calling routine. Normally, the drawing should
+ * consist of a region, filled or unfilled, followed by additional line
+ * segments. A single fill is necessary for gradient colors to work.
+ */
+void round_corners(GVJ_t * job, pointf * AF, int sides, int style, int filled)
 {
     pointf *B, C[4], *D, p0, p1;
     double rbconst, d, dx, dy, t;
     int i, seg, mode;
+    pointf* pts;
 
     if (style & DIAGONALS)
 	mode = DIAGONALS;
@@ -431,7 +427,7 @@ void round_corners(GVJ_t * job, char *fillc, char *penc, pointf * AF,
 	    t /= 2;
 	if (mode != ROUNDED)
 	    B[i++] = p0;
-	if (mode == ROUNDED)
+	else 
 	    B[i++] = interpolate_pointf(RBCURVE * t, p0, p1);
 	B[i++] = interpolate_pointf(t, p0, p1);
 	B[i++] = interpolate_pointf(1.0 - t, p0, p1);
@@ -444,18 +440,30 @@ void round_corners(GVJ_t * job, char *fillc, char *penc, pointf * AF,
 
     switch (mode) {
     case ROUNDED:
+	pts = N_GNEW(6 * sides + 2, pointf);
+	i = 0;
+	for (seg = 0; seg < sides; seg++) {
+	    pts[i++] = B[4 * seg];
+	    pts[i++] = B[4 * seg+1];
+	    pts[i++] = B[4 * seg+1];
+	    pts[i++] = B[4 * seg+2];
+	    pts[i++] = B[4 * seg+2];
+	    pts[i++] = B[4 * seg+3];
+	}
+	pts[i++] = pts[0];
+	pts[i++] = pts[1];
+	gvrender_beziercurve(job, pts+1, i-1, FALSE, FALSE, filled);
+	free (pts);
+	
+#if 0
 	if (filled) {
-	    int j = 0;
 	    pointf *pts = N_GNEW(2 * sides, pointf);
-	    for (seg = 0; seg < sides; seg++) {
 		pts[j++] = B[4 * seg + 1];
 		pts[j++] = B[4 * seg + 2];
 	    }
 	    gvrender_polygon(job, pts, 2 * sides, filled);
 	    free(pts);
 	    for (seg = 0; seg < sides; seg++) {
-		gvrender_beziercurve(job, B + 4 * seg + 2, 4, FALSE, FALSE,
-				     TRUE);
 	    }
 	}
 	if (penc) {
@@ -464,6 +472,7 @@ void round_corners(GVJ_t * job, char *fillc, char *penc, pointf * AF,
 		gvrender_beziercurve(job, B + 4 * seg + 2, 4, FALSE, FALSE, FALSE);
 	    }
 	}
+#endif
 	break;
     case DIAGONALS:
 	/* diagonals are weird.  rewrite someday. */
@@ -649,13 +658,6 @@ void round_corners(GVJ_t * job, char *fillc, char *penc, pointf * AF,
 	break;
     }
     free(B);
-}
-
-static void
-node_round_corners(GVJ_t * job, node_t * n, pointf * AF, int sides,
-		   int style, int filled)
-{
-    round_corners(job, findFill(n), findPen(n), AF, sides, style, filled);
 }
 
 /*=============================poly start=========================*/
@@ -1637,8 +1639,10 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	 	else
 		    filled = GRADIENT;
 	    }
-	    else
+	    else {
         	gvrender_set_fillcolor(job, fillcolor);
+		filled = FILL;
+	    }
 	}
 	else {
 	    filled = FALSE;
@@ -1677,7 +1681,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 		    Mcircle_hack(job, n);
 		}
 	    } else if (style & (ROUNDED | DIAGONALS)) {
-		node_round_corners(job, n, AF, sides, style, filled);
+		round_corners(job, AF, sides, style, filled);
 	    } else {
 		gvrender_polygon(job, AF, sides, filled);
 	    }
@@ -1699,7 +1703,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 		Mcircle_hack(job, n);
 	    }
 	} else if (SPECIAL_CORNERS(style)) {
-	    node_round_corners(job, n, AF, sides, style, filled);
+	    round_corners(job, AF, sides, style, filled);
 	} else {
 	      gvrender_polygon(job, AF, sides, filled);
 	}
@@ -2499,7 +2503,7 @@ static void record_gencode(GVJ_t * job, node_t * n)
 	AF[1].y = AF[0].y;
 	AF[3].x = AF[0].x;
 	AF[3].y = AF[2].y;
-	node_round_corners(job, n, AF, 4, style, filled);
+	round_corners(job, AF, 4, style, filled);
     } else {
 	gvrender_box(job, BF, filled);
     }

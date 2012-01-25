@@ -487,8 +487,7 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
 	char* clrs[2];
 	int filled = setFill (job, tbl->data.bgcolor, tbl->data.gradientangle, tbl->data.style, clrs);
 	if (tbl->data.style & ROUNDED){
-	    gvrender_set_pencolor(job, "transparent");
-	    round_corners (job, tbl->data.bgcolor, NULL, AF, 4, tbl->data.style, filled);
+	    round_corners (job, AF, 4, tbl->data.style, filled);
 	}
 	else
 	    gvrender_box(job, pts, filled);
@@ -516,7 +515,7 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
 	    char* color = (tbl->data.pencolor ? tbl->data.pencolor : DEFAULT_COLOR);
 	    gvrender_set_penwidth(job, tbl->data.border);
 	    gvrender_set_pencolor(job, color);
-	    round_corners (job, tbl->data.bgcolor, color, AF, 4, tbl->data.style, 0);
+	    round_corners (job, AF, 4, tbl->data.style, 0);
 	}
 	else
 	    doBorder(job, tbl->data.pencolor, tbl->data.border, pts);

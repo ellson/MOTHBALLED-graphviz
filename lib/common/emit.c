@@ -3352,7 +3352,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
     		    gvrender_set_pencolor(job, pencolor);
 		else
         	    gvrender_set_pencolor(job, "transparent");
-		round_corners(job, fillcolor, pencolor, AF, 4, istyle, filled);
+		round_corners(job, AF, 4, istyle, filled);
 	    }
 	}
 	else {
