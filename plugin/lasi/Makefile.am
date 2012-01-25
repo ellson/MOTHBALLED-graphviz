@@ -41,7 +41,7 @@ libgvplugin_lasi_la_LIBADD = \
 gvrender_lasi.o gvrender_lasi.lo: ps.h
 
 ps.h : $(top_srcdir)/plugin/core/ps.txt   
-	$(AWK) -f $(top_srcdir)/awk/stringize.awk $(srcdir)/ps.txt > ps.h
+	$(AWK) -f $(top_srcdir)/awk/stringize.awk $(top_srcdir)/plugin/core/ps.txt > ps.h
 
 if WITH_WIN32
 libgvplugin_lasi_la_LDFLAGS += -no-undefined
