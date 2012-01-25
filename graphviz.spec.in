@@ -36,7 +36,7 @@ Prefix: /usr
 # Available features are:
 #    SHARP GHOSTSCRIPT GUILE _IO JAVA LUA OCAML ORTHO PERL PHP
 #    PYTHON RUBY R_LANG TCL IPSEPCOLA MYLIBGD PANGOCAIRO RSVG
-#    GLITZ SMYRNA DEVIL MING GDK_PIXBUF _QT WEBP
+#    GTK GLITZ SMYRNA DEVIL MING GDK_PIXBUF _QT WEBP
 
 # SuSE uses a different mechanism to generate BuildRequires
 # norootforbuild
@@ -79,6 +79,7 @@ BuildRequires: librsvg2-devel
 BuildRequires: gts-devel
 %define SMYRNA 1
 BuildRequires: libglade2-devel gtkglarea2-devel gtkglext-devel freeglut-devel
+%define GTK 1
 # define _QT 1
 # BuildRequires: qt-devel
 %endif
@@ -145,6 +146,7 @@ BuildRequires: lasi-devel
 %define GDK_PIXBUF 1
 %define IPSEPCOLA 1
 %define ORTHO 1
+%define GTK 1
 %define SMYRNA 1
 BuildRequires: libglade2-devel gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel freeglut-devel
 #define GLITZ 1
@@ -203,7 +205,6 @@ fi
 %exclude %{_bindir}/lefty
 %exclude %{_bindir}/lneato
 %exclude %{_bindir}/dotty
-%exclude %{_bindir}/vimdot
 %endif
 %dir %{_libdir}/graphviz
 %{_libdir}/*.so.*
@@ -222,12 +223,17 @@ fi
 %if 0%{?GDK_PIXBUF}
 %exclude %{_libdir}/graphviz/libgvplugin_gdk_pixbuf.*
 %endif
+%if 0%{?GTK}
+%exclude %{_bindir}/vimdot
 %exclude %{_libdir}/graphviz/libgvplugin_gtk.*
+%exclude %{_libdir}/graphviz/libgvplugin_xlib.*
+%endif
+%if 0%{?GHOSTSCRIPT}
 %exclude %{_libdir}/graphviz/libgvplugin_gs.*
+%endif
 %if 0%{?RSVG}
 %exclude %{_libdir}/graphviz/libgvplugin_rsvg.*
 %endif
-%exclude %{_libdir}/graphviz/libgvplugin_xlib.*
 %if 0%{?WEBP}
 %exclude %{_libdir}/graphviz/libgvplugin_webp.*
 %endif
@@ -263,7 +269,6 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %{_bindir}/lefty
 %{_bindir}/lneato
 %{_bindir}/dotty
-%{_bindir}/vimdot
 %{_datadir}/graphviz/lefty
 %if 0%{?PANGOCAIRO}
 %{_libdir}/graphviz/libgvplugin_pango.*
@@ -274,12 +279,17 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %if 0%{?GDK_PIXBUF}
 %{_libdir}/graphviz/libgvplugin_gdk_pixbuf.*
 %endif
+%if 0%{?GTK}
+%{_bindir}/vimdot
 %{_libdir}/graphviz/libgvplugin_gtk.*
+%{_libdir}/graphviz/libgvplugin_xlib.*
+%endif
+%if 0%{?GHOSTSCRIPT}
 %{_libdir}/graphviz/libgvplugin_gs.*
+%endif
 %if 0%{?RSVG}
 %{_libdir}/graphviz/libgvplugin_rsvg.*
 %endif
-%{_libdir}/graphviz/libgvplugin_xlib.*
 %if 0%{?SMYRNA}
 %{_bindir}/smyrna
 %{_datadir}/graphviz/smyrna

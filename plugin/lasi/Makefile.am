@@ -31,7 +31,7 @@ libgvplugin_lasi_C_la_SOURCES = \
 	gvplugin_lasi.c \
 	gvrender_lasi.cpp \
 	gvloadimage_lasi.c \
-	ps.txt
+	$(top_srcdir)/plugin/core/ps.txt
 
 libgvplugin_lasi_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_lasi_la_SOURCES = $(libgvplugin_lasi_C_la_SOURCES)
@@ -40,8 +40,8 @@ libgvplugin_lasi_la_LIBADD = \
 
 gvrender_lasi.o gvrender_lasi.lo: ps.h
 
-ps.h : $(srcdir)/ps.txt
-	$(AWK) -f $(top_srcdir)/awk/stringize.awk $(srcdir)/ps.txt > ps.h
+ps.h : $(top_srcdir)/plugin/core/ps.txt   
+	$(AWK) -f $(top_srcdir)/awk/stringize.awk $(top_srcdir)/plugin/core/ps.txt > ps.h
 
 if WITH_WIN32
 libgvplugin_lasi_la_LDFLAGS += -no-undefined

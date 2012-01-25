@@ -608,7 +608,7 @@ static gvdevice_features_t device_features_eps = {
 };
 
 gvplugin_installed_t gvrender_lasi_types[] = {
-    {FORMAT_PS, "lasi", 1, &lasi_engine, &render_features_lasi},
+    {FORMAT_PS, "lasi", -5, &lasi_engine, &render_features_lasi},
     {0, NULL, 0, NULL, NULL}
 };
 
