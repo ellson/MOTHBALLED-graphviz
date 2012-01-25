@@ -105,7 +105,7 @@ static gvloadimage_engine_t engine_ps = {
 };
 
 gvplugin_installed_t gvloadimage_lasi_types[] = {
-    {FORMAT_PS_PS, "eps:lasi", 1, &engine_ps, NULL},
-    {FORMAT_PS_PS, "ps:lasi", 1, &engine_ps, NULL},
+    {FORMAT_PS_PS, "eps:lasi", -5, &engine_ps, NULL},
+    {FORMAT_PS_PS, "ps:lasi", -5, &engine_ps, NULL},
     {0, NULL, 0, NULL, NULL}
 };
