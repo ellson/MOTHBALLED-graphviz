@@ -31,7 +31,6 @@
 #define P2RECT(p, pr, sx, sy) (pr[0].x = p.x - sx, pr[0].y = p.y - sy, pr[1].x = p.x + sx, pr[1].y = p.y + sy)
 #define FUZZ 3
 #define EPSILON .0001
-#define GR_SZ 50
 
 typedef struct {
     xdot_op op;
@@ -285,7 +284,11 @@ static char **checkClusterStyle(graph_t* sg, int *flagp)
 		pp++;
  	    }else if (strcmp(p, "radial") == 0) {
  		istyle |= (FILLED | RADIAL);
- 		pp++;
+		qp = pp; /* remove rounded from list passed to renderer */
+		do {
+		    qp++;
+		    *(qp-1) = *qp;
+		} while (*qp);
 	    }else if (strcmp(p, "rounded") == 0) {
 		istyle |= ROUNDED;
 		qp = pp; /* remove rounded from list passed to renderer */
@@ -1046,50 +1049,6 @@ static void emit_xdot (GVJ_t * job, xdot* xd)
     free (pts);
 }
 
-/* findStopColor:
- * Check for colon in colorlist. If one exists, and not the first
- * character, store the characters before the colon in clrs[0] and
- * the characters after the colon (and before the next or end-of-string)
- * in clrs[1]. If there are no characters after the first colon, clrs[1]
- * is NULL. Return TRUE.
- * If there is no non-trivial string before a first colon, set clrs[0] to
- * NULL and return FALSE.
- *
- * Note that memory is allocated as a single block stored in clrs[0] and
- * must be freed by calling function.
- */
-static boolean findStopColor (char* colorlist, char* clrs[2])
-{
-    char* p;
-    char* s;
-    int len;
-
-    if ((*colorlist == ':') || !(p = strchr(colorlist,':'))) {
-	clrs[0] = NULL;
-	return FALSE;
-    }
-
-    clrs[0] = N_GNEW (strlen(colorlist)+1,char); 
-    len = p-colorlist;
-    memcpy (clrs[0],colorlist,len);
-    clrs[0][len]= '\0';
-
-    p++;
-    if ((*p == '\0') || (*p == ':'))
-	clrs[1] = NULL;
-    else {
-	clrs[1] = clrs[0] + (len+1);
-	if ((s = strchr(p,':'))) {
-	    *s = '\0';
-	    strcpy (clrs[1],p); 
-	    *s = ':';
-	}
-	else
-	    strcpy (clrs[1], p);
-    }
-    return TRUE;
-}
-
 static void emit_background(GVJ_t * job, graph_t *g)
 {
     xdot* xd;
@@ -1122,9 +1081,9 @@ static void emit_background(GVJ_t * job, graph_t *g)
             gvrender_set_pencolor(job, "transparent");
 	    checkClusterStyle(g, &istyle);
 	    if (clrs[1]) 
-		gvrender_set_gradient_vals(job,clrs[1],findGradientAngle(g,G_gradientangle));
+		gvrender_set_gradient_vals(job,clrs[1],late_int(g,G_gradientangle,0,0));
 	    else 
-		gvrender_set_gradient_vals(job,DEFAULT_COLOR,findGradientAngle(g,G_gradientangle));
+		gvrender_set_gradient_vals(job,DEFAULT_COLOR,late_int(g,G_gradientangle,0,0));
 	    if (istyle & RADIAL)
 		filled = RGRADIENT;
 	    else
@@ -3315,7 +3274,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	if ((style = checkClusterStyle(sg, &istyle))) {
 	    gvrender_set_style(job, style);
 	    if (istyle & FILLED)
-		filled = TRUE;
+		filled = FILL;
 	}
 	fillcolor = pencolor = 0;
 
@@ -3353,25 +3312,28 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
              */
 	    if (!filled && ((color = agget(sg, "bgcolor")) != 0) && color[0]) {
 		fillcolor = color;
-	        filled = TRUE;
+	        filled = FILL;
             }
 
 	}
 	if (!pencolor) pencolor = DEFAULT_COLOR;
 	if (!fillcolor) fillcolor = DEFAULT_FILL;
-	if (filled && findStopColor (fillcolor, clrs)) {
-            gvrender_set_fillcolor(job, clrs[0]);
-	    if (clrs[1]) 
-		gvrender_set_gradient_vals(job,clrs[1],findGradientAngle(sg,G_gradientangle));
-	    else 
-		gvrender_set_gradient_vals(job,DEFAULT_COLOR,findGradientAngle(sg,G_gradientangle));
-	    if (istyle & RADIAL)
-		filled = RGRADIENT;
+	clrs[0] = NULL;
+	if (filled) {
+	    if (findStopColor (fillcolor, clrs)) {
+        	gvrender_set_fillcolor(job, clrs[0]);
+		if (clrs[1]) 
+		    gvrender_set_gradient_vals(job,clrs[1],late_int(sg,G_gradientangle,0,0));
+		else 
+		    gvrender_set_gradient_vals(job,DEFAULT_COLOR,late_int(sg,G_gradientangle,0,0));
+		if (istyle & RADIAL)
+		    filled = RGRADIENT;
+	 	else
+		    filled = GRADIENT;
+	    }
 	    else
-		filled = GRADIENT;
+        	gvrender_set_fillcolor(job, fillcolor);
 	}
-	else
-            gvrender_set_fillcolor(job, fillcolor);
 
 	if (G_penwidth && ((s=ag_xget(sg,G_penwidth)) && s[0])) {
 	    penwidth = late_double(sg, G_penwidth, 1.0, 0.0);

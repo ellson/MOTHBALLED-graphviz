@@ -69,8 +69,6 @@ extern "C" {
 	char *id;
 	char *bgcolor;
 	char *pencolor;
-	char *gradient;
-	char *gradientcolor;
 	int gradientangle;
 	signed char space;
 	unsigned char border;
@@ -79,6 +77,7 @@ extern "C" {
 	unsigned short flags;
 	unsigned short width;
 	unsigned short height;
+	unsigned char style;
 	boxf box;		/* its geometric placement in points */
     } htmldata_t;
 
@@ -111,7 +110,6 @@ extern "C" {
 	int rc;			/* number of rows */
 	int cc;			/* number of columns */
 	htmlfont_t *font;	/* font info */
-	unsigned char style;
 	unsigned char flags;
     };
 

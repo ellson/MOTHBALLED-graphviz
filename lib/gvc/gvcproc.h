@@ -103,9 +103,6 @@
     extern void gvrender_set_pencolor(GVJ_t * job, char *name);
     extern void gvrender_set_penwidth(GVJ_t * job, double penwidth);
     extern void gvrender_set_fillcolor(GVJ_t * job, char *name);
-    extern void gvrender_set_gradient_attr(GVJ_t * job, void *g_obj, attrsym_t * color_attr, attrsym_t * angle_attr);
-    extern void gvrender_set_gradient(GVJ_t * job, void *g_obj, char *color, int angle);
-    extern char *gvrender_set_gradient_values(GVJ_t* job, char* gradcolor, int angle);
     extern void gvrender_set_gradient_vals (GVJ_t * job, char *stopcolor, int angle);
 
     extern void gvrender_set_style(GVJ_t * job, char **s);

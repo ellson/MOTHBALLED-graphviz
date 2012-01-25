@@ -17,9 +17,6 @@
 
 #define RBCONST 12
 #define RBCURVE .5
-#define GR_SZ 50
-#define GR_START "start"
-#define GR_STOP "stop"
 
 static port Center = { {0, 0}, -1, 0, 0, 0, 1, 0, 0, 0 };
 
@@ -283,30 +280,6 @@ char *findFill(node_t * n)
     return (findFillDflt(n, DEFAULT_FILL));
 }
 
-int findGradient(void * n, attrsym_t * attr)
-{
-    char *gradient,*color,*stopcolor;
-
-    gradient = late_nnstring(n, attr, NULL);
-    if(gradient == NULL){
-      if (((color = agget(n, "fillcolor")) != 0) && color[0]){
-	stopcolor = strdup(color);
-	if(findGradientColor(n,GR_STOP,stopcolor,NULL) != NULL){
-	  free(stopcolor);
-	  return GRADIENT;
-	}
-	free(stopcolor);
-      }
-      return 0;
-    }
-    else if( strcmp(gradient,"linear") == 0)
-      return GRADIENT;
-    else if (strcmp(gradient,"radial") == 0)
-      return RGRADIENT;
-    else
-      return 0;
-}
-
 char *findAttrColor(void *obj, attrsym_t *colorattr, char *dflt){
     char *color;
 
@@ -317,61 +290,6 @@ char *findAttrColor(void *obj, attrsym_t *colorattr, char *dflt){
     else
       color = DEFAULT_FILL;
     return color;
-}
-
-char *findGradientColor(void * n, char *pos, char *g_color, char *dflt)
-{
-    char *color,*ptr;
-
-    if( g_color == NULL){	//use dflt if available else use N_color or default color
-      if(dflt == NULL || !dflt[0]){
-	color = late_nnstring(n, N_color, "");
-	if (!color[0]) {
-	    color =  DEFAULT_FILL;
-	}
-      }
-      else
-	color = dflt;
-    }
-    else {		//input color is parameter is available
-      color = g_color;
-      if (!color[0]) {	//input color is no good, so use dflt, N_color or default color instead
-	if(dflt == NULL || !dflt[0]){
-	  color = late_nnstring(n, N_color, "");
-	  if (!color[0])
-	    color =  DEFAULT_FILL;
-	}
-	else
-	  color = dflt;
-      }
-      //input color is good so search for color separator ':'
-	ptr = strchr(color, ':');  
-	if(strcmp(pos,GR_START) == 0){
-	  if(ptr != NULL)
-	    *ptr = 0;    //drop gradient stop color
-	}
-	else if(strcmp(pos,GR_STOP) == 0) {
-	  if (ptr != NULL) {   //colon not found so use start color
-	    ptr++;
-	    color = ptr;
-	  }
-	  if (!color[0]) {	//if color is not good, use dflt, N_color or default color instead
-	    if(dflt == NULL || !dflt[0]){
-		color =  NULL;
-	    }
-	    else
-	      color = dflt;
-	  }
-	}
-    }
-    return color;
-}
-
-int findGradientAngle(void * n,  attrsym_t * attr)
-{
-  int angle;
-      angle = late_int(n, attr, 0, 0);
-      return (angle);
 }
 
 static char **checkStyle(node_t * n, int *flagp)
@@ -408,6 +326,13 @@ static char **checkStyle(node_t * n, int *flagp)
 	    } else if (streq(p, "invis")) {
 		istyle |= INVISIBLE;
 		pp++;
+	    } else if (streq(p, "radial")) {
+		istyle |= (RADIAL|FILLED);
+		qp = pp;	/* remove radial from list passed to renderer */
+		do {
+		    qp++;
+		    *(qp - 1) = *qp;
+		} while (*qp);
 	    } else
 		pp++;
 	}
@@ -522,8 +447,6 @@ void round_corners(GVJ_t * job, char *fillc, char *penc, pointf * AF,
 	if (filled) {
 	    int j = 0;
 	    pointf *pts = N_GNEW(2 * sides, pointf);
-	    gvrender_set_pencolor(job, fillc);
-	    gvrender_set_fillcolor(job, fillc);
 	    for (seg = 0; seg < sides; seg++) {
 		pts[j++] = B[4 * seg + 1];
 		pts[j++] = B[4 * seg + 2];
@@ -536,7 +459,6 @@ void round_corners(GVJ_t * job, char *fillc, char *penc, pointf * AF,
 	    }
 	}
 	if (penc) {
-	    gvrender_set_pencolor(job, penc);
 	    for (seg = 0; seg < sides; seg++) {
 		gvrender_polyline(job, B + 4 * seg + 1, 2);
 		gvrender_beziercurve(job, B + 4 * seg + 2, 4, FALSE, FALSE, FALSE);
@@ -545,9 +467,6 @@ void round_corners(GVJ_t * job, char *fillc, char *penc, pointf * AF,
 	break;
     case DIAGONALS:
 	/* diagonals are weird.  rewrite someday. */
-	gvrender_set_pencolor(job, penc);
-	if (filled)
-	    gvrender_set_fillcolor(job, fillc);	/* emit fill color */
 	gvrender_polygon(job, AF, sides, filled);
 
 	for (seg = 0; seg < sides; seg++) {
@@ -562,9 +481,6 @@ void round_corners(GVJ_t * job, char *fillc, char *penc, pointf * AF,
 	}
 	break;
     case DOGEAR:
-	gvrender_set_pencolor(job, penc);
-	if (filled)
-	    gvrender_set_fillcolor(job, fillc);	/* emit fill color */
 	/* Add the cutoff edge. */
 	D = N_NEW(sides + 1, pointf);
 	for (seg = 1; seg < sides; seg++)
@@ -598,9 +514,6 @@ void round_corners(GVJ_t * job, char *fillc, char *penc, pointf * AF,
 	 *       +----------------+
 	 *
 	 */
-	gvrender_set_pencolor(job, penc);
-	if (filled)
-	    gvrender_set_fillcolor(job, fillc);	/* emit fill color */
 	/* Add the tab edges. */
 	D = N_NEW(sides + 2, pointf);
 	D[0] = AF[0];
@@ -634,9 +547,6 @@ void round_corners(GVJ_t * job, char *fillc, char *penc, pointf * AF,
 	 *       +----------------+
 	 *
 	 */
-	gvrender_set_pencolor(job, penc);
-	if (filled)
-	    gvrender_set_fillcolor(job, fillc);	/* emit fill color */
 	/* Add the folder edges. */
 	D = N_NEW(sides + 3, pointf);
 	D[0] = AF[0];
@@ -655,9 +565,6 @@ void round_corners(GVJ_t * job, char *fillc, char *penc, pointf * AF,
 	break;
     case BOX3D:
 	assert(sides == 4);
-	gvrender_set_pencolor(job, penc);
-	if (filled)
-	    gvrender_set_fillcolor(job, fillc);	/* emit fill color */
 	/* Adjust for the cutoff edges. */
 	D = N_NEW(sides + 2, pointf);
 	D[0] = AF[0];
@@ -681,9 +588,6 @@ void round_corners(GVJ_t * job, char *fillc, char *penc, pointf * AF,
 	break;
     case COMPONENT:
 	assert(sides == 4);
-	gvrender_set_pencolor(job, penc);
-	if (filled)
-	    gvrender_set_fillcolor(job, fillc);	/* emit fill color */
 	/*
 	 * Adjust the perimeter for the protrusions.
 	 *
@@ -1661,7 +1565,8 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     boolean pfilled;		/* true if fill not handled by user shape */
     char *color, *name;
     int doMap = (obj->url || obj->explicit_tooltip);
-    int gradient;
+    char* fillcolor;
+    char* clrs[2];
 
     if (doMap && !(job->flags & EMIT_CLUSTERS_LAST))
 	gvrender_begin_anchor(job,
@@ -1684,6 +1589,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     ysize = ND_ht(n) / POINTS(ND_height(n));
 
     style = stylenode(job, n);
+    clrs[0] = NULL;
 
     if (ND_gui_state(n) & GUI_STATE_ACTIVE) {
 	color = late_nnstring(n, N_activepencolor, DEFAULT_ACTIVEPENCOLOR);
@@ -1691,7 +1597,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	color =
 	    late_nnstring(n, N_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
 	gvrender_set_fillcolor(job, color);
-	filled = TRUE;
+	filled = FILL;
     } else if (ND_gui_state(n) & GUI_STATE_SELECTED) {
 	color =
 	    late_nnstring(n, N_selectedpencolor, DEFAULT_SELECTEDPENCOLOR);
@@ -1700,7 +1606,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	    late_nnstring(n, N_selectedfillcolor,
 			  DEFAULT_SELECTEDFILLCOLOR);
 	gvrender_set_fillcolor(job, color);
-	filled = TRUE;
+	filled = FILL;
     } else if (ND_gui_state(n) & GUI_STATE_DELETED) {
 	color =
 	    late_nnstring(n, N_deletedpencolor, DEFAULT_DELETEDPENCOLOR);
@@ -1708,7 +1614,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	color =
 	    late_nnstring(n, N_deletedfillcolor, DEFAULT_DELETEDFILLCOLOR);
 	gvrender_set_fillcolor(job, color);
-	filled = TRUE;
+	filled = FILL;
     } else if (ND_gui_state(n) & GUI_STATE_VISITED) {
 	color =
 	    late_nnstring(n, N_visitedpencolor, DEFAULT_VISITEDPENCOLOR);
@@ -1716,29 +1622,36 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	color =
 	    late_nnstring(n, N_visitedfillcolor, DEFAULT_VISITEDFILLCOLOR);
 	gvrender_set_fillcolor(job, color);
-	filled = TRUE;
+	filled = FILL;
     } else {
 	if (style & FILLED) {
-	    gvrender_set_fillcolor(job, findFill(n));	/* emit fill color */
-	    filled = TRUE;
-	    if ( findGradient(n,N_gradient) > 0)
-	      gvrender_set_gradient_attr(job,n,N_fillcolor,N_gradientangle);
-	} 
+	    fillcolor = findFill (n);
+	    if (findStopColor (fillcolor, clrs)) {
+        	gvrender_set_fillcolor(job, clrs[0]);
+		if (clrs[1]) 
+		    gvrender_set_gradient_vals(job,clrs[1],late_int(n,N_gradientangle,0,0));
+		else 
+		    gvrender_set_gradient_vals(job,DEFAULT_COLOR,late_int(n,N_gradientangle,0,0));
+		if (style & RADIAL)
+		    filled = RGRADIENT;
+	 	else
+		    filled = GRADIENT;
+	    }
+	    else
+        	gvrender_set_fillcolor(job, fillcolor);
+	}
 	else {
 	    filled = FALSE;
 	}
 	pencolor(job, n);	/* emit pen color */
     }
 
-    pfilled = !ND_shape(n)->usershape
-	|| streq(ND_shape(n)->name, "custom");
-    /* if no boundary but filled, set boundary color to fill color */
+    pfilled = !ND_shape(n)->usershape || streq(ND_shape(n)->name, "custom");
+
+    /* if no boundary but filled, set boundary color to transparent */
     if ((peripheries == 0) && filled && pfilled) {
-	char *color;
 	peripheries = 1;
-	color = findFill(n);
-	if (color[0])
-	    gvrender_set_pencolor(job, color);
+	gvrender_set_pencolor(job, "transparent");
     }
     usershape_p = FALSE;
     if (ND_shape(n)->usershape) {
@@ -1759,30 +1672,14 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	/* lay down fill first */
 	if (filled && pfilled) {
 	    if (sides <= 2) {
-		if ( (gradient = findGradient(n,N_gradient)) > 0){
-		  gvrender_ellipse(job, AF, sides, gradient);
-		  gvrender_set_gradient_attr(job,n,N_fillcolor,N_gradientangle);
-		}
-		else
-		  gvrender_ellipse(job, AF, sides, filled);
-		  
+		gvrender_ellipse(job, AF, sides, filled);
 		if (style & DIAGONALS) {
 		    Mcircle_hack(job, n);
 		}
 	    } else if (style & (ROUNDED | DIAGONALS)) {
-	      if ( (gradient = findGradient(n,N_gradient)) > 0){
-		  gvrender_set_gradient_attr(job,n,N_fillcolor,N_gradientangle);
-		  node_round_corners(job, n, AF, sides, style, gradient);
-		}
-		else
-		  node_round_corners(job, n, AF, sides, style, filled);
+		node_round_corners(job, n, AF, sides, style, filled);
 	    } else {
-	      if ( (gradient = findGradient(n,N_gradient)) > 0){
-		  gvrender_set_gradient_attr(job,n,N_fillcolor,N_gradientangle);
-		  gvrender_polygon(job, AF, sides, gradient);
-	      }
-		else
-		  gvrender_polygon(job, AF, sides, filled);
+		gvrender_polygon(job, AF, sides, filled);
 	    }
 	}
 	gvrender_usershape(job, name, AF, sides, filled,
@@ -1797,33 +1694,19 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	    AF[i].y = P.y * ysize + ND_coord(n).y;
 	}
 	if (sides <= 2) {
-	  if ( (gradient = findGradient(n,N_gradient)) > 0){
-	    gvrender_set_gradient_attr(job,n,N_fillcolor,N_gradientangle);
-	    gvrender_ellipse(job, AF, sides, gradient);
-	  }
-	  else
 	    gvrender_ellipse(job, AF, sides, filled);
-	  if (style & DIAGONALS) {
-	    Mcircle_hack(job, n);
-	  }
+	    if (style & DIAGONALS) {
+		Mcircle_hack(job, n);
+	    }
 	} else if (SPECIAL_CORNERS(style)) {
-	  if ( (gradient = findGradient(n,N_gradient)) > 0){
-	    gvrender_set_gradient_attr(job,n,N_fillcolor,N_gradientangle);
-	    node_round_corners(job, n, AF, sides, style, gradient);
-	  }
-	  else
 	    node_round_corners(job, n, AF, sides, style, filled);
 	} else {
-	  if ( (gradient = findGradient(n,N_gradient)) > 0){
-	    gvrender_set_gradient_attr(job,n,N_fillcolor,N_gradientangle);
-	    gvrender_polygon(job, AF, sides, gradient);
-	  }
-	  else
 	      gvrender_polygon(job, AF, sides, filled);
 	}
 	/* fill innermost periphery only */
 	filled = FALSE;
     }
+    free (clrs[0]);
 
     emit_label(job, EMIT_NLABEL, ND_label(n));
     if (doMap) {
@@ -2571,7 +2454,8 @@ static void record_gencode(GVJ_t * job, node_t * n)
     int style;
     field_t *f;
     int doMap = (obj->url || obj->explicit_tooltip);
-    int gradient;
+    int filled;
+    char* clrs[2];
 
     f = (field_t *) ND_shape_info(n);
     BF = f->b;
@@ -2586,8 +2470,26 @@ static void record_gencode(GVJ_t * job, node_t * n)
 			      obj->id);
     style = stylenode(job, n);
     pencolor(job, n);
-    if (style & FILLED)
-	gvrender_set_fillcolor(job, findFill(n));	/* emit fill color */
+    if (style & FILLED) {
+	char* fillcolor = findFill (n);
+	if (findStopColor (fillcolor, clrs)) {
+            gvrender_set_fillcolor(job, clrs[0]);
+	    if (clrs[1]) 
+		gvrender_set_gradient_vals(job,clrs[1],late_int(n,N_gradientangle,0,0));
+	    else 
+		gvrender_set_gradient_vals(job,DEFAULT_COLOR,late_int(n,N_gradientangle,0,0));
+	    if (style & RADIAL)
+		filled = RGRADIENT;
+	     else
+		filled = GRADIENT;
+	}
+	else {
+	    filled = FILL;
+            gvrender_set_fillcolor(job, fillcolor);
+	}
+    }
+    else filled = FALSE;
+
     if (streq(ND_shape(n)->name, "Mrecord"))
 	style |= ROUNDED;
     if (SPECIAL_CORNERS(style)) {
@@ -2597,22 +2499,10 @@ static void record_gencode(GVJ_t * job, node_t * n)
 	AF[1].y = AF[0].y;
 	AF[3].x = AF[0].x;
 	AF[3].y = AF[2].y;
-	gradient = findGradient(n,N_gradient);
-	if (gradient > 0) {  //handles both linear and radial gradients
-	  gvrender_set_gradient(job,n,findFill(n),findGradientAngle(n,N_gradientangle));
-	  node_round_corners(job, n, AF, 4, style, (style & FILLED) | gradient);
-	} 
-	else
-	  node_round_corners(job, n, AF, 4, style, style & FILLED);
+	node_round_corners(job, n, AF, 4, style, filled);
     } else {
-	gradient = findGradient(n,N_gradient);
-	if (gradient > 0) {  //handles both linear and radial gradients
-	  gvrender_set_gradient(job,n,findFill(n),findGradientAngle(n,N_gradientangle));
-	  gvrender_box(job, BF, (style & FILLED) | gradient);
-	}
-	else
-	  gvrender_box(job, BF, style & FILLED);
-      }
+	gvrender_box(job, BF, filled);
+    }
 
     gen_fields(job, n, f);
 

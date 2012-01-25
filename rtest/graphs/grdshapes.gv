@@ -1,39 +1,46 @@
 digraph G {bgcolor=blue
 
-	subgraph cluster_1 {fontcolor=white
+  subgraph cluster_1 {
+    fontcolor=white
+    node [style=filled fillcolor="bisque:brown"]
+    n27 [shape = "polygon" ]
+	n26 [shape = "oval" ]
+	n25 [shape = "egg" ]
+	n24 [shape = "trapezium" ]
+	n23 [shape = "parallelogram" ]
+	n22 [shape = "house" ]
+	n21 [shape = "octagon" ]
+	n20 [shape = box  ]
+	n19 [shape = "circle" ]
+	n18 [shape = "diamond" ]
+	n17 [shape = "ellipse" ]
+	n16 [shape = "hexagon" ]
+	n15 [shape = "invtriangle" ]
+	n14 [shape = "pentagon" ]
+	n13 [shape = "rect" ]
+	n12 [shape = "septagon" ]
+	n11 [shape = "triangle" ]
+	n10 [shape = "rectangle" ]
+	n9 [shape = "square" ]
+	n8 [shape = "doublecircle" ]
+	n7 [shape = "doubleoctagon" ]
+	n6 [shape = "tripleoctagon" ]
+	n5 [shape = "invtrapezium" ]
+	n4 [shape = "invhouse" ]
+	n3 [shape = "Mdiamond" ]
+	n2 [shape = "Msquare" ]
+	n1 [shape = "Mcircle"  ]
+	x1 [shape = "note"  ]
+	x2 [shape = "tab"  ]
+	x3 [shape = "folder"  ]
+	x4 [shape = "box3d"  ]
+	x5 [shape = "component"  ]
 
-		node [shape = "polygon",gradient=linear fillcolor="bisque:brown" 
-			gradientangle=0 label="n27  "  fontcolor="black"] "n27"; 
-		node [shape = "oval" label="n26  " ] "n26"; 
-		node [shape = "egg" label="n25  " ] "n25"; 
-		node [shape = "trapezium" label="n24  " ] "n24"; 
-		node [shape = "parallelogram" label="n23  " ] "n23"; 
-		node [shape = "house" label="n22  " ] "n22"; 
-		node [shape = "octagon" label="n21  " ] "n21"; 
-		node [shape = box  label="n20  "  ] "n20";
-		node [shape = "circle" label="n19  " ] "n19"; 
-		node [shape = "diamond" label="n18  " ] "n18"; 
-		node [shape = "ellipse" label="n17  " ] "n17"; 
-		node [shape = "hexagon" label="n16  " ] "n16"; 
-		node [shape = "invtriangle" label="n15  " ] "n15"; 
-		node [shape = "pentagon" label="n14  " ] "n14"; 
-		node [shape = "rect" label="n13  " ] "n13"; 
-		node [shape = "septagon" label="n12  " ] "n12"; 
-		node [shape = "triangle" label="n11  " ] "n11"; 
-		node [shape = "rectangle" label="n10  " ] "n10"; 
-		node [shape = "square" label="n9  " ] "n9"; 
-		node [shape = "doublecircle" label="n8  " ] "n8"; 
-		node [shape = "doubleoctagon" label="n7  " ] "n7"; 
-		node [shape = "tripleoctagon" label="n6  " ] "n6"; 
-		node [shape = "invtrapezium" label="n5  " ] "n5"; 
-		node [shape = "invhouse" label="n4  " ] "n4"; 
-		node [shape = "Mdiamond" label="n3  " ] "n3"; 
-		node [shape = "Msquare" label="n2  " ] "n2"; 
-		node [shape = "Mcircle"  label="n1  " ] "n1"; 
-
-		label = "Shape Variations";
-	}
-n1 -> n2-> n3 -> n4 -> n5 -> n6 -> n7 -> n8 -> n9 -> n10 -> n11 -> n12 -> n13 -> n14 -> n15 -> n16 -> n17 -> n18 -> n19 -> n20 -> n21 -> n22 -> n23 -> n24 -> n25 -> n26 -> n27
+	label = "Shape Variations";
+  }
+  n1 -> n2-> n3 -> n4 -> n5 -> n6 -> n7 -> n8 -> n9 -> n10 -> n11 -> n12 -> n13 -> n14 
+  n15 -> n16 -> n17 -> n18 -> n19 -> n20 -> n21 -> n22 -> n23 -> n24 -> n25 -> n26 -> n27
+  x1 -> x2 -> x3 -> x4 -> x5
 }
 
 

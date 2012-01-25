@@ -135,12 +135,18 @@ static int portfn(htmldata_t * p, char *v)
     return 0;
 }
 
-static int stylefn(htmltbl_t * p, char *v)
+static int stylefn(htmldata_t * p, char *v)
 {
     int rv = 0;
     char c = toupper(*v);
-    if ((c == 'R') && !strcasecmp(v + 1, "OUNDED"))
-	p->style = ROUNDED;
+    if (c == 'R') {
+	if (!strcasecmp(v + 1, "OUNDED")) p->style |= ROUNDED;
+	else if (!strcasecmp(v + 1, "ADIAL")) p->style |= RADIAL;
+	else {
+	    agerr(AGWARN, "Illegal value %s for STYLE - ignored\n", v);
+	    rv = 1;
+	}
+    }
     else {
 	agerr(AGWARN, "Illegal value %s for STYLE - ignored\n", v);
 	rv = 1;
@@ -159,19 +165,6 @@ static int idfn(htmldata_t * p, char *v)
     p->id = strdup(v);
     return 0;
 }
-
-static int gradientfn(htmldata_t * p, char *v)
-{
-    p->gradient = strdup(v);
-    return 0;
-}
-
-static int gradientcolorfn(htmldata_t * p, char *v)
-{
-    p->gradientcolor = strdup(v);
-    return 0;
-}
-
 
 
 /* doInt:
@@ -460,9 +453,7 @@ static attr_item tbl_items[] = {
     {"color", (attrFn) pencolorfn},
     {"columns", (attrFn) columnsfn},
     {"fixedsize", (attrFn) fixedsizefn},
-    {"gradient", (attrFn) gradientfn},
     {"gradientangle", (attrFn) gradientanglefn},
-    {"gradientcolor", (attrFn) gradientcolorfn},
     {"height", (attrFn) heightfn},
     {"href", (attrFn) hreffn},
     {"id", (attrFn) idfn},
@@ -486,14 +477,13 @@ static attr_item cell_items[] = {
     {"color", (attrFn) pencolorfn},
     {"colspan", (attrFn) colspanfn},
     {"fixedsize", (attrFn) fixedsizefn},
-    {"gradient", (attrFn) gradientfn},
     {"gradientangle", (attrFn) gradientanglefn},
-    {"gradientcolor", (attrFn) gradientcolorfn},
     {"height", (attrFn) heightfn},
     {"href", (attrFn) hreffn},
     {"id", (attrFn) idfn},
     {"port", (attrFn) portfn},
     {"rowspan", (attrFn) rowspanfn},
+    {"style", (attrFn) stylefn},
     {"target", (attrFn) targetfn},
     {"title", (attrFn) titlefn},
     {"tooltip", (attrFn) titlefn},

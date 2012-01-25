@@ -84,6 +84,7 @@ extern "C" {
     extern boolean mapbool(char *);
     extern int maptoken(char *, char **, int *);
 
+    extern boolean findStopColor (char* colorlist, char* clrs[2]);
     extern int test_toggle(void);
 
     extern void common_init_node(node_t * n);

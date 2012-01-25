@@ -78,10 +78,9 @@ grdfillcolor
 dot png
 dot svg
 
-
-
-
-
-
-
+#clusters
+grdcluster
+=
+dot png
+dot svg
 
