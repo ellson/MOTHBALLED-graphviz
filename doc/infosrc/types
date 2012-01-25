@@ -307,6 +307,8 @@ At present, the recognized style names are
 "tapered" for edges only,
 and "filled", "diagonals" and "rounded" for nodes only.
 The styles "filled" and "rounded" are recognized for clusters.
+The style "radial" is recognized for nodes, clusters and graphs, and indicates a
+radial-style gradient fill if applicable.
 Additional styles are available in
 device-dependent form. Style lists are passed to device drivers, which
 can use this to generate appropriate output.

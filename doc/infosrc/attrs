@@ -112,13 +112,20 @@ For the latter case, one can split the pipeline<BR>
 to get a similar effect.
 :bb:G:rect; write
 Bounding box of drawing in points.
-:bgcolor:GC:color:<none>;
+:bgcolor:GC:color/colorList:<none>;
 When attached to the root graph, this color is used as the background for
 entire canvas. When a cluster attribute, it is used as the initial
 background for the cluster. If a cluster has a filled
 <A HREF=#d:style>style</A>, the
 cluster's <A HREF=#d:fillcolor>fillcolor</A> will overlay the
 background color.
+<P>
+If the value is a <A HREF=#k:colorList>colorList</A>, a gradient fill is
+used. By default, this is a linear fill; setting <TT>style=radial</TT> will
+cause a radial fill. At present, only two colors are used. If the second
+color (after a colon) is missing, the default color is used for it.
+See also the <A HREF=#d:gradientangle>gradientangle</A> attribute
+for setting the gradient angle. 
 <P>
 If no background color is specified for the root graph, no graphics
 operation are performed on the background. This works fine for
@@ -278,7 +285,7 @@ Terminating condition. If the length squared of all energy gradients are
 Margin used around polygons for purposes of spline edge routing.
 The interpretation is the same as given for <A HREF=#d:sep>sep</A>.
 This should normally be strictly less than <A HREF=#d:sep>sep</A>.
-:fillcolor:NC:color:lightgrey(nodes)/black(clusters);
+:fillcolor:NC:color/colorList:lightgrey(nodes)/black(clusters);
 Color used to fill the background of a node or cluster
 assuming <A HREF=#d:style>style</A>=filled.
 If <B>fillcolor</B> is not defined, <A HREF=#d:color>color</A> is
@@ -288,6 +295,13 @@ the default is used, except for
 <A HREF=#d:shape><B>shape</B></A>=point or when the output
 format is MIF,
 which use black by default.
+<P>
+If the value is a <A HREF=#k:colorList>colorList</A>, a gradient fill is
+used. By default, this is a linear fill; setting <TT>style=radial</TT> will
+cause a radial fill. At present, only two colors are used. If the second
+color (after a colon) is missing, the default color is used for it.
+See also the <A HREF=#d:gradientangle>gradientangle</A> attribute
+for setting the gradient angle. 
 <P>
 Note that a cluster inherits the root graph's attributes if defined.
 Thus, if the root graph has defined a <B>fillcolor</B>, this will override a
@@ -345,6 +359,13 @@ Font size, <A HREF=#points>in points</A>, used for text.
 :forcelabels:G:bool:true;
 If true, all  <A HREF=#d:xlabel><B>xlabel</B></A> attributes are placed, even if there is some overlap with nodes
 or other labels.
+:gradientangle:NCG:int:"";
+If a gradient fill is being used, this determines the angle of the fill. For linear fills, the colors transform
+along a line specified by the angle and the center of the object. For radial fills, a value of zero causes the
+colors to transform radially from the center; for non-zero values, the colors transform from a point near the
+object's periphery as specified by the value.
+<P>
+If unset, the default angle is 0.
 :group:N:string:"";  dot
 If the end points of an edge belong to the same group, i.e., have the
 same group attribute, parameters are set to avoid crossings and keep
@@ -1140,8 +1161,8 @@ Parameter used to determine the initial layout of nodes. If unset, the
 nodes are randomly placed in a unit square with
 the same seed is always used for the random number generator, so the
 initial placement is repeatable.
-:style:ENC:style:;
-Set style for node or edge. For cluster subgraph, if "filled", the
+:style:ENCG:style:;
+Set style information for components of the graph. For cluster subgraphs, if "filled", the
 cluster box's background is filled.
 :stylesheet:G:string:"";  svg
 A URL or pathname specifying an XML style sheet, used in SVG output.
