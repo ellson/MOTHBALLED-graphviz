@@ -263,15 +263,49 @@ static void cairogen_set_penstyle(GVJ_t *job, cairo_t *cr)
 
 }
 
+static void cairo_gradient_fill (cairo_t* cr, obj_state_t* obj, int filled, pointf* A, int n)
+{
+    cairo_pattern_t* pat;
+    float angle = obj->gradient_angle * M_PI / 180;
+    float r1,r2;
+    pointf G[2],c1,c2;
+
+    if (filled == GRADIENT) {
+	  get_gradient_points(A, G, n, angle, 0);
+	  pat = cairo_pattern_create_linear (G[0].x,G[0].y,G[1].x,G[1].y);
+    }
+    else {
+	get_gradient_points(A, G, n, 0, 1);
+	  //r1 is inner radius, r2 is outer radius
+	r1 = G[1].x;
+	r2 = G[1].y;
+	if (angle == 0) {
+	    c1.x = G[0].x;
+	    c1.y = G[0].y;
+	}
+	else {
+	    c1.x = G[0].x +  (r2/4) * cos(angle);
+	    c1.y = G[0].y -  (r2/4) * sin(angle);
+	}
+	c2.x = G[0].x;
+	c2.y = G[0].y;
+	r1 = r2/4;
+	//r1 is inner radius, r2 is outter radius
+	pat = cairo_pattern_create_radial(c1.x,c1.y,r1,c2.x,c2.y,r2); 
+    }
+    cairogen_add_color_stop_rgba(pat,0,&(obj->fillcolor));
+    cairogen_add_color_stop_rgba(pat,1,&(obj->stopcolor));
+    cairo_set_source (cr, pat);
+    cairo_fill_preserve (cr);
+    cairo_pattern_destroy (pat);
+}
+
 static void cairogen_ellipse(GVJ_t * job, pointf * A, int filled)
 {
     obj_state_t *obj = job->obj;
     cairo_t *cr = (cairo_t *) job->context;
     cairo_matrix_t matrix;
     double rx, ry;
-    float angle,r1,r2;
-    pointf G[2],c1,c2;
-    cairo_pattern_t *pat;
 
     cairogen_set_penstyle(job, cr);
 
@@ -292,35 +326,7 @@ if (ry < RMIN) ry = RMIN;
     cairo_set_matrix(cr, &matrix);
 
     if (filled == GRADIENT || filled == (RGRADIENT)) {
-      angle = obj->gradient_angle * M_PI / 180;
-      if(filled == GRADIENT) {
-	  get_gradient_points(A, G, 2, angle, 0);
-	  pat = cairo_pattern_create_linear (G[0].x,G[0].y,G[1].x,G[1].y);
-      }
-      else {
-	  get_gradient_points(A, G, 2, 0, 1);
-	  //r1 is inner radius, r2 is outter radius
-	r1 = G[1].x;
-	r2 = G[1].y;
-	  if (angle == 0) {
-	    c1.x = G[0].x;
-	    c1.y = G[0].y;
-	  }
-	  else {
-	    c1.x = G[0].x +  (r2/4) * cos(angle);
-	    c1.y = G[0].y -  (r2/4) * sin(angle);
-	  }
-	c2.x = G[0].x;
-	c2.y = G[0].y;
-	r1 = r2/4;
-	//r1 is inner radius, r2 is outter radius
-	  pat = cairo_pattern_create_radial(c1.x,c1.y,r1,c2.x,c2.y,r2); 
-	}
-	cairogen_add_color_stop_rgba(pat,0,&(obj->fillcolor));
-	cairogen_add_color_stop_rgba(pat,1,&(obj->stopcolor));
-	cairo_set_source (cr, pat);
-	cairo_fill_preserve (cr);
-	cairo_pattern_destroy (pat);
+	cairo_gradient_fill (cr, obj, filled, A, 2);
     }
     else if (filled) {
 	cairogen_set_color(cr, &(obj->fillcolor));
@@ -336,9 +342,6 @@ cairogen_polygon(GVJ_t * job, pointf * A, int n, int filled)
     obj_state_t *obj = job->obj;
     cairo_t *cr = (cairo_t *) job->context;
     int i;
-    float angle,r1,r2;
-    cairo_pattern_t *pat;
-    pointf G[2],c1,c2;
 
     cairogen_set_penstyle(job, cr);
 
@@ -347,38 +350,11 @@ cairogen_polygon(GVJ_t * job, pointf * A, int n, int filled)
     cairo_line_to(cr, A[i].x, -A[i].y);
     cairo_close_path(cr);
     if (filled == GRADIENT || filled == (RGRADIENT)) {
-      angle = obj->gradient_angle * M_PI / 180;
-      if(filled == GRADIENT) {
-	get_gradient_points(A, G, n, angle, 0);
-	pat = cairo_pattern_create_linear (G[0].x,G[0].y,G[1].x,G[1].y);
-      }
-      else {
-	get_gradient_points(A, G, n, 0, 1);
-	r1 = G[1].x;
-	r2 = G[1].y;
-	  if (angle == 0) {
-	    c1.x = G[0].x;
-	    c1.y = G[0].y;
-	  }
-	  else {
-	    c1.x = G[0].x +  (r2/4) * cos(angle);
-	    c1.y = G[0].y -  (r2/4) * sin(angle);
-	  }
-	c2.x = G[0].x;
-	c2.y = G[0].y;
-	r1 = r2/4;
-	//r1 is inner radius, r2 is outter radius
-	pat = cairo_pattern_create_radial(c1.x,c1.y,r1,c2.x,c2.y,r2); 
-      }
-      cairogen_add_color_stop_rgba(pat,0,&(obj->fillcolor));
-      cairogen_add_color_stop_rgba(pat,1,&(obj->stopcolor));
-      cairo_set_source (cr, pat);
-      cairo_fill_preserve (cr);
-      cairo_pattern_destroy (pat);
+	cairo_gradient_fill (cr, obj, filled, A, 2);
     }
     else if (filled) {
-      cairogen_set_color(cr, &(obj->fillcolor));
-      cairo_fill_preserve(cr);
+	cairogen_set_color(cr, &(obj->fillcolor));
+	cairo_fill_preserve(cr);
     }
     cairogen_set_color(cr, &(obj->pencolor));
     cairo_stroke(cr);
