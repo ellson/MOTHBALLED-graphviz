@@ -3,6 +3,8 @@ January 26, 2012
 	- Support gradient fill
 January 23, 2012
 	- Provide support for webp images
+January 17, 2012
+	- Fix tapered edges to use the dir attribute and arrowhead
 September 21, 2011
 	- Add imagepath attribute
 	- Add help functionality to Graphviz.app
