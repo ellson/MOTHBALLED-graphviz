@@ -135,22 +135,30 @@ static int portfn(htmldata_t * p, char *v)
     return 0;
 }
 
+#define DELIM " ,"
+
 static int stylefn(htmldata_t * p, char *v)
 {
     int rv = 0;
-    char c = toupper(*v);
-    if (c == 'R') {
-	if (!strcasecmp(v + 1, "OUNDED")) p->style |= ROUNDED;
-	else if (!strcasecmp(v + 1, "ADIAL")) p->style |= RADIAL;
+    char c;
+    char* tk;
+    char* buf = strdup (v);
+    for (tk = strtok (buf, DELIM); tk; tk = strtok (NULL, DELIM)) {
+	c = toupper(*tk);
+	if (c == 'R') {
+	    if (!strcasecmp(tk + 1, "OUNDED")) p->style |= ROUNDED;
+	    else if (!strcasecmp(tk + 1, "ADIAL")) p->style |= RADIAL;
+	    else {
+		agerr(AGWARN, "Illegal value %s for STYLE - ignored\n", tk);
+		rv = 1;
+	    }
+	}
 	else {
-	    agerr(AGWARN, "Illegal value %s for STYLE - ignored\n", v);
+	    agerr(AGWARN, "Illegal value %s for STYLE - ignored\n", tk);
 	    rv = 1;
 	}
     }
-    else {
-	agerr(AGWARN, "Illegal value %s for STYLE - ignored\n", v);
-	rv = 1;
-    }
+    free (buf);
     return rv;
 }
 
