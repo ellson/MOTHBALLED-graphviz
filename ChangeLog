@@ -1,3 +1,8 @@
+January 26, 2012
+	- Modify the dijkstra tool to use only directed edges
+	- Support gradient fill
+January 23, 2012
+	- Provide support for webp images
 September 21, 2011
 	- Add imagepath attribute
 	- Add help functionality to Graphviz.app
