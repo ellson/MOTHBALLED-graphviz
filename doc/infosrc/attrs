@@ -1092,7 +1092,7 @@ The <A HREF=#d:shape><B>shape</B></A> of the node is set to box.
 The image in the shapefile must be
 rectangular. The image formats supported as well as the precise semantics of
 how the file is used depends on the
-<A HREF="http://www.graphviz.org/doc/info/output.html">output format</A>.  For further details, see
+<A HREF="output.html">output format</A>.  For further details, see
 <A HREF=output.html#d:image_fmts>Image Formats</A> and
 <A HREF=http://www.graphviz.org/wiki/how-create-custom-shapes#ext_image>External PostScript files</A>.
 <P>
