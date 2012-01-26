@@ -522,8 +522,15 @@ static void
 svg_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 	   int arrow_at_end, int filled)
 {
+  int gid = 0;
+  
+    if (filled == GRADIENT) {
+	gid = svg_gradstyle(job, A, n);
+    } else if (filled == (RGRADIENT)) {
+	gid = svg_rgradstyle(job, A, n);
+    }
     gvputs(job, "<path");
-    svg_grstyle(job, filled, 0);
+    svg_grstyle(job, filled, gid);
     gvputs(job, " d=\"");
     svg_bzptarray(job, A, n);
     gvputs(job, "\"/>\n");
