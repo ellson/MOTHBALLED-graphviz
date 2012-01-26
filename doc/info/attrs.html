@@ -29,7 +29,7 @@ one would use
 </TABLE>
 Further details concerning the setting of attributes can be found
 in the description of the
-<A HREF="http://www.graphviz.org/doc/info/lang.html">DOT language.</A>
+<A HREF="lang.html">DOT language.</A>
 <P>
 At present, most device-independent units are either inches or
 <A NAME="points"></A>
@@ -39,10 +39,10 @@ which we take as 72 points per inch.
 <A NAME=h:undir_note><STRONG>Note:</STRONG></A> Some attributes, such as
 <A HREF=#d:dir>dir</A> or <A HREF=#d:arrowtail>arrowtail</A>, are
 ambiguous when used in
-<A HREF="http://www.graphviz.org/doc/info/lang.html">DOT</A>
+<A HREF="lang.html">DOT</A>
 with an undirected graph since the head and tail of an edge are meaningless.
 As a convention, the first time an undirected edge appears, the
-<A HREF="http://www.graphviz.org/doc/info/lang.html">DOT</A>
+<A HREF="lang.html">DOT</A>
 parser will assign the left node as the tail node and the right node as
 the head. For example, the edge <TT>A -- B</TT> will have tail <TT>A</TT>
 and head <TT>B</TT>. It is the user's responsibility to handle such
@@ -2004,6 +2004,19 @@ enclosed in the parentheses,  <TT>(...)+</TT> indicates 1 or more, and
 <DT><A NAME=k:colorList><STRONG>colorList</STRONG></A>
 <DD>A colon-separated list of color values: <I>C</I>(:<I>C</I>)*
    where each <I>C</I> is a <A HREF=#k:color>color</A> value.
+  <P>
+  Depending on the related attribute and graph object, two colors may specify a gradient fill.
+  The following table shows some variations of the <TT>yellow:blue</TT> color list depending on the
+  <A HREF=#a:style>style</A> and <A HREF=#a:gradientangle>gradientangle</A> attributes.
+    <TABLE border=1>
+      <TR><TH>Gradient angle<TH>Linear<TH>Radial</TR>
+      <TR><TD align=center>0<TD><IMG SRC="g_lin0.png"><TD><IMG SRC="g_rad0.png"></TR>
+      <TR><TD align=center>45<TD><IMG SRC="g_lin45.png"><TD><IMG SRC="g_rad45.png"></TR>
+      <TR><TD align=center>90<TD><IMG SRC="g_lin90.png"><TD><IMG SRC="g_rad90.png"></TR>
+      <TR><TD align=center>180<TD><IMG SRC="g_lin180.png"><TD><IMG SRC="g_rad180.png"></TR>
+      <TR><TD align=center>270<TD><IMG SRC="g_lin270.png"><TD><IMG SRC="g_rad270.png"></TR>
+      <TR><TD align=center>360<TD><IMG SRC="g_lin360.png"><TD><IMG SRC="g_rad360.png"></TR>
+    </TABLE>
 
 <DT><A NAME=k:dirType><STRONG>dirType</STRONG></A>
 <DD>For an edge <CODE>T -> H;</CODE>
