@@ -45,6 +45,7 @@ static int setall = 0;		/* if false, don't set dist attribute for
 				 * nodes in different components.
 				 */
 static int doPath = 0;		/* if 1, record shortest paths */
+static int doDirected;		/* if 1, use directed paths */
 static Agsym_t *len_sym;
 
 typedef struct nodedata_s {
@@ -223,10 +224,19 @@ void dijkstra(Dict_t * Q, Agraph_t * G, Agnode_t * n)
     pre(G);
     setdist(n, 1);
     dtinsert(Q, n);
-    while ((u = extract_min(Q))) {
-	setDone (u);
-	for (e = agfstedge(G, u); e; e = agnxtedge(G, e, u)) {
-	    if (!isDone(e->node)) update(Q, e->node, u, getlength(e));
+    if (doDirected) {
+	while ((u = extract_min(Q))) {
+	    setDone (u);
+	    for (e = agfstout(G, u); e; e = agnxtout(G, e)) {
+		if (!isDone(e->node)) update(Q, e->node, u, getlength(e));
+	    }
+	}
+    } else {
+	while ((u = extract_min(Q))) {
+	    setDone (u);
+	    for (e = agfstedge(G, u); e; e = agnxtedge(G, e, u)) {
+		if (!isDone(e->node)) update(Q, e->node, u, getlength(e));
+	    }
 	}
     }
     post(G);
@@ -235,6 +245,7 @@ void dijkstra(Dict_t * Q, Agraph_t * G, Agnode_t * n)
 static char *useString =
     "Usage: dijkstra [-ap?] <node> [<file> <node> <file>]\n\
   -a - for nodes in a different component, set dist very large\n\
+  -d - use forward directed edges\n\
   -p - attach shortest path info\n\
   -? - print usage\n\
 If no files are specified, stdin is used\n";
@@ -251,10 +262,13 @@ static void init(int argc, char *argv[])
 
     CmdName = argv[0];
     opterr = 0;
-    while ((c = getopt(argc, argv, ":ap")) != -1) {
+    while ((c = getopt(argc, argv, ":adp")) != -1) {
 	switch (c) {
 	case 'a':
 	    setall = 1;
+	    break;
+	case 'd':
+	    doDirected = 1;
 	    break;
 	case 'p':
 	    doPath = 1;
