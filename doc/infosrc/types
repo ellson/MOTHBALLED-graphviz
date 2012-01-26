@@ -100,6 +100,19 @@ Examples:<BR>
 :colorList
 A colon-separated list of color values: <I>C</I>(:<I>C</I>)*
  where each <I>C</I> is a <A HREF=#k:color>color</A> value.
+<P>
+Depending on the related attribute and graph object, two colors may specify a gradient fill.
+The following table shows some variations of the <TT>yellow:blue</TT> color list depending on the
+<A HREF=#a:style>style</A> and <A HREF=#a:gradientangle>gradientangle</A> attributes.
+  <TABLE border=1>
+    <TR><TH>Gradient angle<TH>Linear<TH>Radial</TR>
+    <TR><TD align=center>0<TD><IMG SRC="g_lin0.png"><TD><IMG SRC="g_rad0.png"></TR>
+    <TR><TD align=center>45<TD><IMG SRC="g_lin45.png"><TD><IMG SRC="g_rad45.png"></TR>
+    <TR><TD align=center>90<TD><IMG SRC="g_lin90.png"><TD><IMG SRC="g_rad90.png"></TR>
+    <TR><TD align=center>180<TD><IMG SRC="g_lin180.png"><TD><IMG SRC="g_rad180.png"></TR>
+    <TR><TD align=center>270<TD><IMG SRC="g_lin270.png"><TD><IMG SRC="g_rad270.png"></TR>
+    <TR><TD align=center>360<TD><IMG SRC="g_lin360.png"><TD><IMG SRC="g_rad360.png"></TR>
+  </TABLE>
 :dirType
 For an edge <CODE>T -> H;</CODE>
   <TABLE>

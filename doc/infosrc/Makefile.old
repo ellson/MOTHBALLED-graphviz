@@ -29,7 +29,10 @@ MGIF = constraint.gif record.gif html1.gif html2.gif fill.gif round.gif \
 
 MJPG = sdlshapes.jpg
 
-MPNG = plugins.png sdlshapes.png
+GRADPNG = g_lin0.png g_rad0.png g_lin45.png g_rad45.png g_lin90.png g_rad90.png \
+          g_lin180.png g_rad180.png g_lin270.png g_rad270.png g_lin360.png g_rad360.png
+
+MPNG = plugins.png sdlshapes.png $(GRADPNG)
 
 SGIF = Mcircle.gif Mdiamond.gif Msquare.gif box.gif \
       circle.gif diamond.gif doublecircle.gif \
@@ -165,6 +168,9 @@ $(AGIF) :
 
 $(A2GIF) :
 	./mkarrows.sh -s $@
+
+$(GRADPNG) :
+	./mkgrads.sh $@
 
 clean :
 	rm -f mklang sdlshapes.ps sdlshapes.ppm html.html
