@@ -22,7 +22,7 @@ html_DATA = attrs.html colors.html command.html \
   ellipse.gif fill.gif folder.gif forward.gif hexagon.gif house.gif \
   html1.gif html2.gif html3.gif html4.gif invhouse.gif invtrapezium.gif \
   invtriangle.gif mrecord.gif nohead.gif none.gif note.gif octagon.gif \
-  parallelogram.gif pentagon.gif plaintext.gif point.gif polygon.gif \
+  oval.gif parallelogram.gif pentagon.gif plaintext.gif point.gif polygon.gif \
   record.gif record2.gif rect.gif rectangle.gif round.gif septagon.gif tab.gif \
   trapezium.gif triangle.gif tripleoctagon.gif sdlshapes.jpg sdlshapes.png \
   square.gif html2.gv html3.gv html4.gv plugins.png
