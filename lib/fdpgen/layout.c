@@ -143,7 +143,7 @@ finalCC(graph_t * g, int c_cnt, graph_t ** cc, point * pts, graph_t * rg,
     if (isRoot || isEmpty)
 	margin = 0;
     else
-	margin = CL_OFFSET;
+	margin = late_int (g, G_margin, CL_OFFSET, 0);
     pt.x = -bb.LL.x + margin;
     pt.y = -bb.LL.y + margin + GD_border(rg)[BOTTOM_IX].y;
     bb.LL.x = 0;
