@@ -69,6 +69,7 @@ node_t *dequeue(nodequeue * q)
 int late_int(void *obj, attrsym_t * attr, int def, int low)
 {
     char *p;
+    char *endp;
     int rv;
     if (attr == NULL)
 	return def;
@@ -79,9 +80,10 @@ int late_int(void *obj, attrsym_t * attr, int def, int low)
 #endif /* WITH_CGRAPH */
     if (!p || p[0] == '\0')
 	return def;
-    if ((rv = atoi(p)) < low)
-	rv = low;
-    return rv;
+    rv = strtol (p, &endp, 10);
+    if (p == endp) return def;  /* invalid int format */
+    if (rv < low) return low;
+    else return rv;
 }
 
 double late_double(void *obj, attrsym_t * attr, double def, double low)
