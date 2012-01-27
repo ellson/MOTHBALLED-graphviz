@@ -797,6 +797,8 @@ static void compile_samerank(graph_t * ug, graph_t * parent_clust)
     graph_t *clust;		/* cluster that contains the rankset */
     node_t *n, *leader;
 
+    if (is_empty(ug))
+	return;
     if (is_a_cluster(ug)) {
 	clust = ug;
 	if (parent_clust) {
@@ -807,8 +809,6 @@ static void compile_samerank(graph_t * ug, graph_t * parent_clust)
 	    GD_level(ug) = 0;
     } else
 	clust = parent_clust;
-    if (is_empty(ug))
-	return;
 
     /* process subgraphs of this subgraph */
     for (s = agfstsubg(ug); s; s = agnxtsubg(s))
