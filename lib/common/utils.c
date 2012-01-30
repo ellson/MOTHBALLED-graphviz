@@ -73,11 +73,7 @@ int late_int(void *obj, attrsym_t * attr, int def, int low)
     int rv;
     if (attr == NULL)
 	return def;
-#ifndef WITH_CGRAPH
-    p = agxget(obj, attr->index);
-#else /* WITH_CGRAPH */
-    p = agxget(obj, attr);
-#endif /* WITH_CGRAPH */
+    p = ag_xget(obj, attr);
     if (!p || p[0] == '\0')
 	return def;
     rv = strtol (p, &endp, 10);
@@ -89,20 +85,18 @@ int late_int(void *obj, attrsym_t * attr, int def, int low)
 double late_double(void *obj, attrsym_t * attr, double def, double low)
 {
     char *p;
+    char *endp;
     double rv;
 
     if (!attr || !obj)
 	return def;
-#ifndef WITH_CGRAPH
-    p = agxget(obj, attr->index);
-#else  /* WITH_CGRAPH */
-    p = agxget(obj, attr);
-#endif /* WITH_CGRAPH */
+    p = ag_xget(obj, attr);
     if (!p || p[0] == '\0')
 	return def;
-    if ((rv = atof(p)) < low)
-	rv = low;
-    return rv;
+    rv = strtod (p, &endp);
+    if (p == endp) return def;  /* invalid double format */
+    if (rv < low) return low;
+    else return rv;
 }
 
 char *late_string(void *obj, attrsym_t * attr, char *def)
