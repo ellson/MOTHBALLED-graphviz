@@ -429,6 +429,8 @@ static void pov_begin_job(GVJ_t * job)
 
 static void pov_begin_graph(GVJ_t * job)
 {
+	float x, y, d, px, py;
+
 	gvprintf(job, "//*** begin_graph %s\n", agnameof(job->obj->u.g));
 #ifdef DEBUG
 	gvprintf(job, "// graph_index = %d, pages = %d, layer = %d/%d\n",
@@ -473,11 +475,11 @@ static void pov_begin_graph(GVJ_t * job)
 #endif
 
 	//setup scene
-	float x = job->view.x / 2.0 * job->scale.x;
-	float y = job->view.y / 2.0 * job->scale.y;
-	float d = -500;
-	float px = atanf(x / abs(d)) * 180 / M_PI * 2;
-	float py = atanf(y / abs(d)) * 180 / M_PI * 2;
+	x = job->view.x / 2.0 * job->scale.x;
+	y = job->view.y / 2.0 * job->scale.y;
+	d = -500;
+	px = atanf(x / abs(d)) * 180 / M_PI * 2;
+	py = atanf(y / abs(d)) * 180 / M_PI * 2;
 	gvprintf(job, POV_CAMERA, x, y, d, x, y, 0.0,
 		 (px > py ? px : py) * 1.2);
 	gvputs(job, POV_SKY_AND_GND);
@@ -552,6 +554,9 @@ static void pov_end_edge(GVJ_t * job)
 
 static void pov_textpara(GVJ_t * job, pointf c, textpara_t * para)
 {
+	double x, y;
+	char *pov, *s, *r, *t, *p;
+
 	gvprintf(job, "//*** textpara: %s, fontsize = %.3f, fontname = %s\n",
 		 para->str, para->fontsize, para->fontname);
 	z = layerz - 9;
@@ -574,10 +579,9 @@ static void pov_textpara(GVJ_t * job, pointf c, textpara_t * para)
 		break;
 	}
 
-	double x = (c.x + job->translation.x) * job->scale.x;
-	double y = (c.y + job->translation.y) * job->scale.y;
+	x = (c.x + job->translation.x) * job->scale.x;
+	y = (c.y + job->translation.y) * job->scale.y;
 
-	char *pov, *s, *r, *t, *p;
 	s = el(POV_SCALE1, para->fontsize * job->scale.x);
 	r = el(POV_ROTATE, 0.0, 0.0, (float)job->rotation);
 	t = el(POV_TRANSLATE, x, y, z);
@@ -605,6 +609,8 @@ static void pov_textpara(GVJ_t * job, pointf c, textpara_t * para)
 
 static void pov_ellipse(GVJ_t * job, pointf * A, int filled)
 {
+	char *pov, *s, *r, *t, *p;
+
 	gvputs(job, "//*** ellipse\n");
 	z = layerz - 6;
 
@@ -616,7 +622,6 @@ static void pov_ellipse(GVJ_t * job, pointf * A, int filled)
 	float w = job->obj->penwidth / (rx + ry) / 2.0 * 5;
 
 	//draw rim (torus)
-	char *pov, *s, *r, *t, *p;
 	s = el(POV_SCALE3, rx, (rx + ry) / 4.0, ry);
 	r = el(POV_ROTATE, 90.0, 0.0, (float)job->rotation);
 	t = el(POV_TRANSLATE, cx, cy, z);
@@ -662,6 +667,9 @@ static void pov_ellipse(GVJ_t * job, pointf * A, int filled)
 static void pov_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 		       int arrow_at_end, int filled)
 {
+	int i;
+	char *v, *x;
+
 	gvputs(job, "//*** bezier\n");
 	z = layerz - 4;
 
@@ -673,8 +681,6 @@ static void pov_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 
 	pov = el(POV_SPHERE_SWEEP, "b_spline", n + 2);
 
-	int i;
-	char *v, *x;
 	for (i = 0; i < n; i++) {
 		v = el(POV_VECTOR3 ", %.3f\n", A[i].x + job->translation.x, A[i].y + job->translation.y, 0.0, job->obj->penwidth);	//z coordinate, thickness
 		x = el("%s    %s", pov, v);	//catenate pov & vector v
@@ -714,10 +720,12 @@ static void pov_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 
 static void pov_polygon(GVJ_t * job, pointf * A, int n, int filled)
 {
+	char *pov, *s, *r, *t, *p, *v, *x;
+	int i;
+
 	gvputs(job, "//*** polygon\n");
 	z = layerz - 2;
 
-	char *pov, *s, *r, *t, *p, *v, *x;
 	s = el(POV_SCALE3, job->scale.x, job->scale.y, 1.0);
 	r = el(POV_ROTATE, 0.0, 0.0, (float)job->rotation);
 	t = el(POV_TRANSLATE, 0.0, 0.0, z - 2);
@@ -725,7 +733,6 @@ static void pov_polygon(GVJ_t * job, pointf * A, int n, int filled)
 
 	pov = el(POV_SPHERE_SWEEP, "linear_spline", n + 1);
 
-	int i;
 	for (i = 0; i < n; i++) {
 		v = el(POV_VECTOR3 ", %.3f\n", A[i].x + job->translation.x, A[i].y + job->translation.y, 0.0, job->obj->penwidth);	//z coordinate, thickness
 		x = el("%s    %s", pov, v);	//catenate pov & vector v
@@ -789,10 +796,12 @@ static void pov_polygon(GVJ_t * job, pointf * A, int n, int filled)
 
 static void pov_polyline(GVJ_t * job, pointf * A, int n)
 {
+	char *pov, *s, *r, *t, *p, *v, *x;
+	int i;
+
 	gvputs(job, "//*** polyline\n");
 	z = layerz - 6;
 
-	char *pov, *s, *r, *t, *p, *v, *x;
 	s = el(POV_SCALE3, job->scale.x, job->scale.y, 1.0);
 	r = el(POV_ROTATE, 0.0, 0.0, (float)job->rotation);
 	t = el(POV_TRANSLATE, 0.0, 0.0, z);
@@ -800,7 +809,6 @@ static void pov_polyline(GVJ_t * job, pointf * A, int n)
 
 	pov = el(POV_SPHERE_SWEEP, "linear_spline", n);
 
-	int i;
 	for (i = 0; i < n; i++) {
 		v = el(POV_VECTOR3 ", %.3f\n", A[i].x + job->translation.x, A[i].y + job->translation.y, 0.0, job->obj->penwidth);	//z coordinate, thickness
 		x = el("%s    %s", pov, v);	//catenate pov & vector v
