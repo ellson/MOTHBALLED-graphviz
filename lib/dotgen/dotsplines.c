@@ -2377,6 +2377,13 @@ static int cl_vninside(graph_t * cl, node_t * n)
 	    BETWEEN(GD_bb(cl).LL.y, (double)(ND_coord(n).y), GD_bb(cl).UR.y));
 }
 
+/* All nodes belong to some cluster, which may be the root graph.
+ * For the following, we only want a cluster if it is a real cluster
+ * It is not clear this will handle all potential problems. It seems one
+ * could have hcl and tcl contained in cl, which would also cause problems.
+ */
+#define REAL_CLUSTER(n) (ND_clust(n)==agraphof(n)?NULL:ND_clust(n))
+
 /* returns the cluster of (adj) that interferes with n,
  */
 static Agraph_t *cl_bound(n, adj)
@@ -2394,16 +2401,16 @@ node_t *n, *adj;
 	hcl = ND_clust(aghead(orig));
     }
     if (ND_node_type(adj) == NORMAL) {
-	cl = ND_clust(adj);
+	cl = REAL_CLUSTER(adj);
 	if (cl && (cl != tcl) && (cl != hcl))
 	    rv = cl;
     } else {
 	orig = ED_to_orig(ND_out(adj).list[0]);
-	cl = ND_clust(agtail(orig));
+	cl = REAL_CLUSTER(agtail(orig));
 	if (cl && (cl != tcl) && (cl != hcl) && cl_vninside(cl, adj))
 	    rv = cl;
 	else {
-	    cl = ND_clust(aghead(orig));
+	    cl = REAL_CLUSTER(aghead(orig));
 	    if (cl && (cl != tcl) && (cl != hcl) && cl_vninside(cl, adj))
 		rv = cl;
 	}
@@ -2469,8 +2476,10 @@ static boxf maximal_bbox(spline_info_t* sp, node_t* vn, edge_t* ie, edge_t* oe)
     } else
 	rv.UR.x = MAX(ROUND(b), sp->RightBound);
 
-    if ((ND_node_type(vn) == VIRTUAL) && (ND_label(vn)))
+    if ((ND_node_type(vn) == VIRTUAL) && (ND_label(vn))) {
 	rv.UR.x -= ND_rw(vn);
+	if (rv.UR.x < rv.LL.x) rv.UR.x = ND_coord(vn).x;
+    }
 
     rv.LL.y = ND_coord(vn).y - GD_rank(g)[ND_rank(vn)].ht1;
     rv.UR.y = ND_coord(vn).y + GD_rank(g)[ND_rank(vn)].ht2;
