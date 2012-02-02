@@ -34,17 +34,15 @@
  */
 static array2 allocArray(int V, int extra)
 {
-    int i, k;
+    int i;
     array2 arr;
     COORD *p;
 
     arr = (COORD **) malloc((V + extra) * sizeof(COORD *));
+    p = (COORD *) calloc(V * V, sizeof(COORD));
     for (i = 0; i < V; i++) {
-	p = (COORD *) malloc(V * sizeof(COORD));
 	arr[i] = p;
-	for (k = 0; k < V; k++) {
-	    *p++ = 0;
-	}
+	p += V;
     }
     for (i = V; i < V + extra; i++)
 	arr[i] = (COORD *) 0;

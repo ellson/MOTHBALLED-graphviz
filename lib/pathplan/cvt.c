@@ -107,7 +107,10 @@ void Pobsclose(vconfig_t * config)
     free(config->start);
     free(config->next);
     free(config->prev);
-    free(config->vis);
+    if (config->vis) {
+	free(config->vis[0]);
+	free(config->vis);
+    }
     free(config);
 }
 
