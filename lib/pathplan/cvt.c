@@ -161,6 +161,7 @@ int Pobspath(vconfig_t * config, Ppoint_t p0, int poly0, Ppoint_t p1,
 #ifdef GASP
     gasp_print_polyline(output_route);
 #endif
+    free(dad);
     return TRUE;
 }
 
