@@ -1984,6 +1984,7 @@ void gv_free_splines(edge_t * e)
 
 void gv_cleanup_edge(edge_t * e)
 {
+    free (ED_path(e).ps);
     gv_free_splines(e);
     free_label(ED_label(e));
     free_label(ED_xlabel(e));
