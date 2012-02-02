@@ -156,7 +156,7 @@ BuildRequires: ghostscript-devel
 %define R_LANG 1
 BuildRequires: R-devel swig >= 1.3.33 perl-libs
 %endif
-%if %fedora >= 17
+%if %fedora >= 16
 %define WEBP 1
 BuildRequires: libwebp-devel
 %endif
