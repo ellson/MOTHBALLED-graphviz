@@ -1489,7 +1489,7 @@ make_flat_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt, i
     Agedgepair_t fwdedge;
     edge_t *e;
 #endif
-    int j, i, r;
+    int j, i, r, isAdjacent;
     double stepx, stepy, vspace;
     int tside, hside, pn;
     pointf *ps;
@@ -1502,6 +1502,7 @@ make_flat_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt, i
 
     /* Get sample edge; normalize to go from left to right */
     e = edges[ind];
+    isAdjacent = ED_adjacent(e);
     if (ED_tree_index(e) & BWDEDGE) {
 #ifndef WITH_CGRAPH
 	MAKEFWDEDGE(&fwdedge, e);
@@ -1511,7 +1512,16 @@ make_flat_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt, i
 	e = &fwdedge.out;
 #endif
     }
-    if (ED_adjacent(edges[ind])) {
+    for (i = 1; i < cnt; i++) {
+	if (ED_adjacent(edges[ind+i])) {
+	    isAdjacent = 1;
+	    break;
+	}
+    }
+    /* The lead edge edges[ind] might not have been marked earlier as adjacent,
+     * so check them all.
+     */
+    if (isAdjacent) {
 	make_flat_adj_edges (P, edges, ind, cnt, e, et);
 	return;
     }
