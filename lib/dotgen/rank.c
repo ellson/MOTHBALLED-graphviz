@@ -407,10 +407,12 @@ minmax_edges2(graph_t * g, point slen)
 	    if ((ND_out(n).size == 0) && GD_maxset(g) && (n != GD_maxset(g))) {
 		e = virtual_edge(n, GD_maxset(g), NULL);
 		ED_minlen(e) = slen.y;
+		ED_weight(e) = 0;
 	    }
 	    if ((ND_in(n).size == 0) && GD_minset(g) && (n != GD_minset(g))) {
 		e = virtual_edge(GD_minset(g), n, NULL);
 		ED_minlen(e) = slen.x;
+		ED_weight(e) = 0;
 	    }
 	}
     }
