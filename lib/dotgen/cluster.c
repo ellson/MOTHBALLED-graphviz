@@ -193,18 +193,22 @@ void interclexp(graph_t * subg)
 {
     graph_t *g;
     node_t *n;
-    edge_t *e, *prev;
+    edge_t *e, *prev, *next;
 
     g = agroot(subg);
     for (n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
 
 	/* N.B. n may be in a sub-cluster of subg */
 	prev = NULL;
-	for (e = agfstedge(agroot(subg), n); e;
-	     e = agnxtedge(agroot(subg), e, n)) {
+	for (e = agfstedge(agroot(subg), n); e; e = next) {
+	    next = agnxtedge(agroot(subg), e, n);
 	    if (agcontains(subg, e))
 		continue;
 
+#ifdef WITH_CGRAPH
+		/* canonicalize edge */
+	    e = AGMKOUT(e);
+#endif
 	    /* short/flat multi edges */
 	    if (mergeable(prev, e)) {
 		if (ND_rank(agtail(e)) == ND_rank(aghead(e)))
