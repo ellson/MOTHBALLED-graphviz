@@ -41,7 +41,7 @@ void plot_ps_map(int n, int dim, real *x, SparseMatrix polys, SparseMatrix poly_
 		 float *fsz, float *r, float *g, float *b, char *plot_label, real *bg_color, SparseMatrix A);
 #endif
 
-void plot_dot_map(Agraph_t* gr, int n, int dim, real *x, SparseMatrix polys, SparseMatrix poly_lines, real line_width, char *line_color, real *x_poly, int *polys_groups, char **labels, real *width, float *fsz, float *r, float *g, float *b, char *plot_label, real *bg_color, SparseMatrix A, FILE*);
+void plot_dot_map(Agraph_t* gr, int n, int dim, real *x, SparseMatrix polys, SparseMatrix poly_lines, real line_width, char *line_color, real *x_poly, int *polys_groups, char **labels, real *width, float *fsz, float *r, float *g, float *b, char* opacity, char *plot_label, real *bg_color, SparseMatrix A, FILE*);
 
 #if 0
 void plot_processing_map(Agraph_t* gr, int n, int dim, real *x, SparseMatrix polys, SparseMatrix poly_lines, real line_width, int nverts, real *x_poly, int *polys_groups, char **labels, real *width, float *fsz, float *r, float *g, float *b, char *plot_label, real *bg_color, SparseMatrix A);

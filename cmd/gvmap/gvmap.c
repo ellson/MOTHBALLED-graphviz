@@ -83,6 +83,7 @@ typedef struct {
     int plotedges;
     int color_scheme;
     real line_width;
+    char *opacity;
     char *plot_label;
     real *bg_color;
     int improve_contiguity_n;
@@ -148,7 +149,7 @@ int string_split(char *s, char sp, char ***ss0, int *ntokens0){
 }
 
 static char* usestr =
-"   where graphfile must contain node positions, and width/height of each node. No overlap between nodes should be present. Acceptable options are: \n\
+"   where graphfile must contain node positions, and widths and heights for each node. No overlap between nodes should be present. Acceptable options are: \n\
     -a k - average number of artificial points added along the bounding box of the labels. If < 0, a suitable value is selected automatically. (-1)\n\
     -b v - polygon line width, with v < 0 for no line. (0)\n\
     -c k - polygon color scheme (1)\n\
@@ -161,29 +162,30 @@ static char* usestr =
        6 : sequential single hue red \n\
        7 : sequential single hue lighter red \n\
        8 : light grey\n\
-    -d s - seed used to calculate Fielder vector for optimal coloring\n\
     -C k - generate at most k clusters. (0)\n\
+    -d s - seed used to calculate Fielder vector for optimal coloring\n\
     -e   - show edges\n\
     -g c - bounding box color. If not specified, a bounding box is not drawn.\n\
+    -h k - number of artificial points added to maintain bridge between endpoints (0)\n\
+    -highlight=k - only draw cluster k\n\
     -k   - increase randomesss of boundary\n\
-    -r k - number of random points k used to define sea and lake boundaries. If 0, auto assigned. (0)\n\
-    -s v - depth of the sea and lake shores in points. If 0, auto assigned. (0)\n\
+    -l s - specify label\n\
+    -m v - bounding box margin. If 0, auto-assigned (0)\n\
     -o <file> - put output in <file> (stdout)\n\
     -O   - do NOT do color assignment optimization that maximizes color difference between neighboring countries\n\
-    -v   - verbose\n\
-    -z c - polygon line color (black)\n";
-
-/* 
-
-    -t n - improve contiguity up to n times. (0)\n\
     -p k - show points. (0)\n\
        0 : no points\n\
        1 : all points\n\
        2 : label points\n\
        3 : random/artificial points\n\
-    -h k - number of artificial points added maintain bridge between endpoints (0)\n\
-    -l s - specify label\n\
-    -m v - bounding box margin. If 0, auto assigned (0)\n\
+    -r k - number of random points k used to define sea and lake boundaries. If 0, auto assigned. (0)\n\
+    -s v - depth of the sea and lake shores in points. If 0, auto assigned. (0)\n\
+    -t n - improve contiguity up to n times. (0)\n\
+    -v   - verbose\n\
+    -z c - polygon line color (black)\n";
+
+/* 
+
    -q f - output format (3)\n\
        0 : Mathematica\n\
        1 : PostScript\n\
@@ -239,8 +241,10 @@ init(int argc, char **argv, params_t* pm)
   unsigned int c;
   real s;
   int v, r;
+  char stmp[3];  /* two character string plus '\0' */
 
   pm->outfile = NULL;
+  pm->opacity = NULL;
   pm->nrandom = -1;
   pm->dim = 2;
   pm->shore_depth_tol = 0;
@@ -269,7 +273,7 @@ init(int argc, char **argv, params_t* pm)
   /*  bbox_margin[0] =  bbox_margin[1] = -0.2;*/
   pm->bbox_margin[0] =  pm->bbox_margin[1] = 0;
 
-  while ((c = getopt(argc, argv, ":efvOko:m:s:r:p:c:C:l:b:g:t:a:h:z:d:")) != -1) {
+  while ((c = getopt(argc, argv, ":evOko:m:s:r:p:c:C:l:b:g:t:a:h:z:d:")) != -1) {
     switch (c) {
     case 'm':
       if ((sscanf(optarg,"%lf",&s) > 0) && (s != 0)){
@@ -342,7 +346,9 @@ init(int argc, char **argv, params_t* pm)
       }
       break;
     case 'c':
-      if ((sscanf(optarg,"%d",&r) > 0) && r >= COLOR_SCHEME_NONE && r <= COLOR_SCHEME_GREY){
+      if (sscanf(optarg,"_opacity=%2s", stmp) > 0 && strlen(stmp) == 2){
+        pm->opacity = strdup(stmp);
+      } else if ((sscanf(optarg,"%d",&r) > 0) && r >= COLOR_SCHEME_NONE && r <= COLOR_SCHEME_GREY){
         pm->color_scheme = r;
       } else {
         usage(cmd,1);
@@ -542,7 +548,8 @@ makeMap (SparseMatrix graph, int n, real* x, real* width, int* grouping,
   if (whatout == OUT_DOT){
 #endif
     Dot_SetClusterColor(g, rgb_r,  rgb_g,  rgb_b, grouping);
-    plot_dot_map(g, n, dim, x, polys, poly_lines, pm->line_width, pm->line_color, x_poly, polys_groups, labels, width, fsz, rgb_r, rgb_g, rgb_b, pm->plot_label, pm->bg_color, (pm->plotedges?graph:NULL), pm->outfile);
+    plot_dot_map(g, n, dim, x, polys, poly_lines, pm->line_width, pm->line_color, x_poly, polys_groups, labels, width, fsz, rgb_r, rgb_g, rgb_b, pm->opacity,
+           pm->plot_label, pm->bg_color, (pm->plotedges?graph:NULL), pm->outfile);
 #if 0
     }
     goto RETURN;
