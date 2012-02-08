@@ -1894,7 +1894,7 @@ int make_map_internal(int exclude_random, int include_OK_points,
     int nz, nh = 0;/* the set to highlight */
     real *xtemp;
     if (HIGHLIGHT_SET){
-      fprintf(stderr," hightlight cluster %d, n = %d\n",HIGHLIGHT_SET, n);
+      if (Verbose) fprintf(stderr," highlight cluster %d, n = %d\n",HIGHLIGHT_SET, n);
       xtemp = MALLOC(sizeof(real)*n*dim);
       /* shift set to the beginning */
       nz = 0;
@@ -1923,7 +1923,7 @@ int make_map_internal(int exclude_random, int include_OK_points,
       MEMCPY(*xcombined, xtemp, n*dim*sizeof(real));
       *nrandom = *nrandom + n - nh;/* count everything except cluster HIGHLIGHT_SET as random */
       n = nh;
-      fprintf(stderr,"nh = %d\n",nh);
+      if (Verbose) fprintf(stderr,"nh = %d\n",nh);
       FREE(xtemp);
     }
   }
