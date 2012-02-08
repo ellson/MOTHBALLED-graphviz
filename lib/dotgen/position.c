@@ -395,7 +395,7 @@ static int vnode_not_related_to(graph_t * g, node_t * v)
 /* keepout_othernodes:
  * Guarantee nodes outside the cluster g are placed outside of it.
  * This is done by adding constraints to make sure such nodes have
- * a gap of CL_OFFSET from the left or right bounding box node ln or rn.
+ * a gap of margin from the left or right bounding box node ln or rn.
  * 
  * We could probably reduce some of these constraints by checking if
  * the node is in a cluster, since elsewhere we make constrain a
@@ -404,9 +404,10 @@ static int vnode_not_related_to(graph_t * g, node_t * v)
  */
 static void keepout_othernodes(graph_t * g)
 {
-    int i, c, r;
+    int i, c, r, margin;
     node_t *u, *v;
 
+    margin = late_int (g, G_margin, CL_OFFSET, 0);
     for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
 	if (GD_rank(g)[r].n == 0)
 	    continue;
@@ -417,7 +418,7 @@ static void keepout_othernodes(graph_t * g)
 	    u = GD_rank(agroot(g))[r].v[i];
 	    /* can't use "is_a_vnode_of" because elists are swapped */
 	    if ((ND_node_type(u) == NORMAL) || vnode_not_related_to(g, u)) {
-		make_aux_edge(u, GD_ln(g), CL_OFFSET + ND_rw(u), 0);
+		make_aux_edge(u, GD_ln(g), margin + ND_rw(u), 0);
 		break;
 	    }
 	}
@@ -425,7 +426,7 @@ static void keepout_othernodes(graph_t * g)
 	     i++) {
 	    u = GD_rank(agroot(g))[r].v[i];
 	    if ((ND_node_type(u) == NORMAL) || vnode_not_related_to(g, u)) {
-		make_aux_edge(GD_rn(g), u, CL_OFFSET + ND_lw(u), 0);
+		make_aux_edge(GD_rn(g), u, margin + ND_lw(u), 0);
 		break;
 	    }
 	}
@@ -443,17 +444,18 @@ static void keepout_othernodes(graph_t * g)
  */
 static void contain_subclust(graph_t * g)
 {
-    int c;
+    int margin, c;
     graph_t *subg;
 
+    margin = late_int (g, G_margin, CL_OFFSET, 0);
     make_lrvn(g);
     for (c = 1; c <= GD_n_cluster(g); c++) {
 	subg = GD_clust(g)[c];
 	make_lrvn(subg);
 	make_aux_edge(GD_ln(g), GD_ln(subg),
-		      CL_OFFSET + GD_border(g)[LEFT_IX].x, 0);
+		      margin + GD_border(g)[LEFT_IX].x, 0);
 	make_aux_edge(GD_rn(subg), GD_rn(g),
-		      CL_OFFSET + GD_border(g)[RIGHT_IX].x, 0);
+		      margin + GD_border(g)[RIGHT_IX].x, 0);
 	contain_subclust(subg);
     }
 }
@@ -466,10 +468,11 @@ static void contain_subclust(graph_t * g)
  */
 static void separate_subclust(graph_t * g)
 {
-    int i, j;
+    int i, j, margin;
     graph_t *low, *high;
     graph_t *left, *right;
 
+    margin = late_int (g, G_margin, CL_OFFSET, 0);
     for (i = 1; i <= GD_n_cluster(g); i++)
 	make_lrvn(GD_clust(g)[i]);
     for (i = 1; i <= GD_n_cluster(g); i++) {
@@ -491,7 +494,7 @@ static void separate_subclust(graph_t * g)
 		left = high;
 		right = low;
 	    }
-	    make_aux_edge(GD_rn(left), GD_ln(right), CL_OFFSET, 0);
+	    make_aux_edge(GD_rn(left), GD_ln(right), margin, 0);
 	}
 	separate_subclust(GD_clust(g)[i]);
     }
@@ -709,9 +712,11 @@ static void adjustRanks(graph_t * g, int equal)
 {
     int lht;			/* label height */
     int rht;			/* height between top and bottom ranks */
-    int delta, maxr, minr;
+    int delta, maxr, minr, margin;
     int c, ht1, ht2;
+
     rank_t *rank = GD_rank(agroot(g));
+    margin = late_int (g, G_margin, CL_OFFSET, 0);
 
     ht1 = GD_ht1(g);
     ht2 = GD_ht2(g);
@@ -720,9 +725,9 @@ static void adjustRanks(graph_t * g, int equal)
 	graph_t *subg = GD_clust(g)[c];
 	adjustRanks(subg, equal);
 	if (GD_maxrank(subg) == GD_maxrank(g))
-	    ht1 = MAX(ht1, GD_ht1(subg) + CL_OFFSET);
+	    ht1 = MAX(ht1, GD_ht1(subg) + margin);
 	if (GD_minrank(subg) == GD_minrank(g))
-	    ht2 = MAX(ht2, GD_ht2(subg) + CL_OFFSET);
+	    ht2 = MAX(ht2, GD_ht2(subg) + margin);
     }
 
     GD_ht1(g) = ht1;
@@ -760,7 +765,12 @@ static int clust_ht(Agraph_t * g)
     int c, ht1, ht2;
     graph_t *subg;
     rank_t *rank = GD_rank(agroot(g));
-    int haveClustLabel = 0;
+    int margin, haveClustLabel = 0;
+
+    if (g == agroot(g)) 
+	margin = CL_OFFSET;
+    else
+	margin = late_int (g, G_margin, CL_OFFSET, 0);
 
     ht1 = GD_ht1(g);
     ht2 = GD_ht2(g);
@@ -770,9 +780,9 @@ static int clust_ht(Agraph_t * g)
 	subg = GD_clust(g)[c];
 	haveClustLabel |= clust_ht(subg);
 	if (GD_maxrank(subg) == GD_maxrank(g))
-	    ht1 = MAX(ht1, GD_ht1(subg) + CL_OFFSET);
+	    ht1 = MAX(ht1, GD_ht1(subg) + margin);
 	if (GD_minrank(subg) == GD_minrank(g))
-	    ht2 = MAX(ht2, GD_ht2(subg) + CL_OFFSET);
+	    ht2 = MAX(ht2, GD_ht2(subg) + margin);
     }
 
     /* account for a possible cluster label in clusters */
@@ -834,7 +844,7 @@ static void set_ycoords(graph_t * g)
 
 	    /* update nearest enclosing cluster rank ht */
 	    if ((clust = ND_clust(n))) {
-		int yoff = (clust == g ? 0 : CL_OFFSET);
+		int yoff = (clust == g ? 0 : late_int (clust, G_margin, CL_OFFSET, 0));
 		if (ND_rank(n) == GD_minrank(clust))
 		    GD_ht2(clust) = MAX(GD_ht2(clust), ht2 + yoff);
 		if (ND_rank(n) == GD_maxrank(clust))
@@ -1239,9 +1249,10 @@ static void make_lrvn(graph_t * g)
  */
 static void contain_nodes(graph_t * g)
 {
-    int r;
+    int margin, r;
     node_t *ln, *rn, *v;
 
+    margin = late_int (g, G_margin, CL_OFFSET, 0);
     make_lrvn(g);
     ln = GD_ln(g);
     rn = GD_rn(g);
@@ -1255,10 +1266,10 @@ static void contain_nodes(graph_t * g)
 	    continue;
 	}
 	make_aux_edge(ln, v,
-		      ND_lw(v) + CL_OFFSET + GD_border(g)[LEFT_IX].x, 0);
+		      ND_lw(v) + margin + GD_border(g)[LEFT_IX].x, 0);
 	v = GD_rank(g)[r].v[GD_rank(g)[r].n - 1];
 	make_aux_edge(v, rn,
-		      ND_rw(v) + CL_OFFSET + GD_border(g)[RIGHT_IX].x, 0);
+		      ND_rw(v) + margin + GD_border(g)[RIGHT_IX].x, 0);
     }
 }
 
