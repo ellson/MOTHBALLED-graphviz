@@ -463,6 +463,17 @@ static void get_graph_node_attribute(Agraph_t* g, char *tag, char *format, size_
 }
 #endif
 
+static int
+validateCluster (int n, int* grouping, int clust_num)
+{
+  int i;
+  for (i = 0; i < n; i++) {
+      if (grouping[i] == clust_num) return clust_num;
+  }
+  fprintf (stderr, "Highlighted cluster %d not found - ignored\n", clust_num);
+  return 0;
+}
+
 static void 
 makeMap (SparseMatrix graph, int n, real* x, real* width, int* grouping, 
   char** labels, float* fsz, float* rgb_r, float* rgb_g, float* rgb_b, params_t* pm, Agraph_t* g )
@@ -500,6 +511,9 @@ makeMap (SparseMatrix graph, int n, real* x, real* width, int* grouping,
   cpu = clock();
 #endif
   nr0 = nrandom = pm->nrandom; nart0 = nart = pm->nart;
+  if (pm->highlight_cluster) {
+    pm->highlight_cluster = validateCluster (n, grouping, pm->highlight_cluster);
+  }
   make_map_from_rectangle_groups(exclude_random, pm->include_OK_points,
 				 n, dim, x, width, grouping, graph, pm->bbox_margin, &nrandom, &nart, pm->nedgep, 
 				 pm->shore_depth_tol, edge_bridge_tol, &xcombined, &nverts, &x_poly, &npolys, &poly_lines, 
