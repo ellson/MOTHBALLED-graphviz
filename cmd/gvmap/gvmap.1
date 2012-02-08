@@ -25,6 +25,18 @@ takes as input a graph in DOT format, finds node clusters and produces a renderi
 .P
 The input graph must have node positions and width/height information defined, 
 and nodes must not overlap.
+.P
+By default, 
+.B gvmap
+will generate the clusters from the data. If desired, the input graph can specify
+cluster information by giving every node a \fIcluster\fP attribute whose value is
+a small positive integer. Nodes sharing the same \fIcluster\fP attribute value will 
+be put into the same cluster. \fBN.B.\fP For the \fIcluster\fP attribute to be used,
+all nodes must have a valid value.
+.P
+If the input specifies the desired clustering as described above, it can also
+specify a desired coloring by having some node in each cluster provide a
+\fIclustercolor\fP attribute.
 .SH OPTIONS
 The following options are supported:
 .TP
@@ -57,7 +69,7 @@ The integer k specifies color scheme used to color the countries. By default k =
 The integer d specifies the maximum number of clusters (countries) allowed. By default d = 0, which means that there is no limit.
 .TP
 .BI \-d " d"
-The integer d specifies the random seed used during color assignment optimization that maximize color difference between neighbpring countries.
+The integer d specifies the random seed used during color assignment optimization that maximize color difference between neighboring countries.
 .TP
 .BI \-e
 If specified, edges will be included in the final output.
@@ -66,7 +78,7 @@ If specified, edges will be included in the final output.
 Specifies the bounding box color. If not specified, a bounding box is not drawn. 
 .TP
 .BI \-k 
-If specified, increases the randomesss of outer boundary.
+If specified, increases the randomness of outer boundary.
 .TP
 .BI \-r " k"
 The number of random points k (integer) used to define sea and lake boundaries. If 0, auto assigned. By default v = 0
