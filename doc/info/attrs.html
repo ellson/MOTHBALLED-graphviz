@@ -292,7 +292,7 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:lwidth HREF=#d:lwidth>lwidth</A>
 </TD><TD>GC</TD><TD>double</TD><TD ALIGN="CENTER"></TD><TD></TD><TD>write only</TD> </TR>
  <TR><TD><A NAME=a:margin HREF=#d:margin>margin</A>
-</TD><TD>NG</TD><TD>double<BR><A HREF=#k:point>point</A>
+</TD><TD>NCG</TD><TD>double<BR><A HREF=#k:point>point</A>
 </TD><TD ALIGN="CENTER">&#60;device-dependent&#62;</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:maxiter HREF=#d:maxiter>maxiter</A>
 </TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">100 * # nodes(mode == KK)<BR>200(mode == major)<BR>600(fdp)</TD><TD></TD><TD>fdp, neato only</TD> </TR>
@@ -1175,6 +1175,9 @@ This field indicates which graph component uses the attribute.
   drawing, as would be necessary to center a drawing on a page. Nothing
   is actually drawn in the margin. To actually extend the background of
   a drawing, see the <A HREF=#d:pad>pad</A> attribute.
+  <P>
+  For clusters, this specifies the space between the nodes in the cluster and
+  the cluster bounding box. By default, this is 8 points.
   <P>
   For nodes, this attribute specifies space left around the node's label.
   By default, the value is <TT>0.11,0.055</TT>.

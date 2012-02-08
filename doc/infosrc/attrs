@@ -636,7 +636,7 @@ the edge is clipped to the boundary of the cluster.
 See <A HREF=#h:undir_note>limitation</A>.
 :lwidth:GC:double; write
 Width of graph or cluster label, in inches.
-:margin:NG:double/point:<device-dependent>;
+:margin:NCG:double/point:<device-dependent>;
 For graphs, this sets x and y margins of canvas, in inches. If the margin
 is a single double, both margins are set equal to the given value.
 <P>
@@ -645,6 +645,9 @@ left around the drawing. It basically corresponds to a translation of
 drawing, as would be necessary to center a drawing on a page. Nothing
 is actually drawn in the margin. To actually extend the background of
 a drawing, see the <A HREF=#d:pad>pad</A> attribute.
+<P>
+For clusters, this specifies the space between the nodes in the cluster and
+the cluster bounding box. By default, this is 8 points.
 <P>
 For nodes, this attribute specifies space left around the node's label.
 By default, the value is <TT>0.11,0.055</TT>.
