@@ -1,3 +1,8 @@
+February 9, 2012
+	- Add next graph variable to gvpr
+February 8, 2012
+	- Modify dot and fdp so that a cluster's margin attribute will affect the space
+	  between the bounding box and nodes
 January 26, 2012
 	- Modify the dijkstra tool to use only directed edges
 	- Output numbers without quotes if quotes are not needed on input
