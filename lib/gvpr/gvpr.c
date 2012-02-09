@@ -61,6 +61,7 @@ static const char *usage =
    -i         - create node induced subgraph\n\
    -a <args>  - string arguments available as ARGV[0..]\n\
    -o <ofile> - write output to <ofile>; stdout by default\n\
+   -n         - no read-ahead of input graphs\n\
    -q         - turn off warning messages\n\
    -V         - print version info\n\
    -?         - print usage info\n\
@@ -72,6 +73,7 @@ typedef struct {
     char *program;              /* program source */
     int useFile;		/* true if program comes from a file */
     int compflags;
+    int readAhead;
     char **inFiles;
     int argc;
     char **argv;
@@ -304,6 +306,9 @@ doFlags(char* arg, int argi, int argc, char** argv, options* opts)
 	case 'i':
 	    opts->compflags |= INDUCE;
 	    break;
+	case 'n':
+	    opts->readAhead = 0;
+	    break;
 	case 'a':
 	    if ((optarg = getOptarg(c, &arg, &argi, argc, argv))) {
 		opts->argc = parseArgs(optarg, opts->argc, &(opts->argv));
@@ -364,6 +369,7 @@ static options* scanArgs(int argc, char **argv, gvpropts* uopts)
 
     opts->cmdName = argv[0];
     opts->state = 1;
+    opts->readAhead = 1;
     setErrorId (opts->cmdName);
 
     /* estimate number of file names */
@@ -890,8 +896,8 @@ gverrorf (Expr_t *handle, Exdisc_t *discipline, int level, ...)
  *  - close non-source/non-output graphs
  *  - flag to clone target graph?
  *  - remove assignment in boolean warning if wrapped in ()
- *  - supply input edge during traversal
  *  - do automatic cast for array indices if type is known
+ *  - array initialization
  */
 int gvpr (int argc, char *argv[], gvpropts * uopts)
 {
@@ -905,6 +911,7 @@ int gvpr (int argc, char *argv[], gvpropts * uopts)
     int rv = 0;
     options* opts = 0;
     int cleanup, i, incoreGraphs;
+    Agraph_t* nextg;
 
     setErrorErrors (0);
     ingDisc.dflt = sfstdin;
@@ -979,8 +986,10 @@ int gvpr (int argc, char *argv[], gvpropts * uopts)
 	else
 	    ing = newIng(0, opts->inFiles, &ingDisc);
 	
-	while ((state->curgraph = nextGraph(ing))) {
+	for (state->curgraph = nextGraph(ing); state->curgraph; state->curgraph = nextg) {
 	    state->infname = fileName(ing);
+	    if (opts->readAhead)
+		nextg = state->nextgraph = nextGraph(ing);
 	    cleanup = 0;
 
 	    for (i = 0; i < xprog->n_blocks; i++) {
@@ -1027,6 +1036,9 @@ int gvpr (int argc, char *argv[], gvpropts * uopts)
 		chkClose(state->curgraph);
 	    state->target = 0;
 	    state->outgraph = 0;
+	
+	    if (!opts->readAhead)
+		nextg = nextGraph(ing);
 	}
     }
 

@@ -1,5 +1,6 @@
 V_this      "$"            ID       T_obj              0           YALL
 V_thisg     "$G"           ID       T_graph            0           Y(G)
+V_nextg     "$NG"          ID       T_graph            0           Y(G)
 V_targt     "$T"           ID       T_graph            0           Y(G)
 V_outgraph  "$O"           ID       T_graph            0           Y(G)
 V_tgtname   "$tgtname"     ID       STRING             0           Y(S)

@@ -12,7 +12,7 @@ gvpr \- graph pattern scanning and processing language
 )
 .SH SYNOPSIS
 .B gvpr
-[\fB\-icqV?\fP]
+[\fB\-icnqV?\fP]
 [
 .BI \-o
 .I outfile
@@ -96,6 +96,12 @@ will use the first non\(hyoption argument as the program.
 .TP
 .B \-q
 Turns off warning messages.
+.TP
+.B \-n
+Turns off graph read-ahead. By default, the variable \fB$NG\fP is set to the next
+graph to be processed. This requires a read of the next graph before processing the
+current graph, which may block is the next graph is only generated in response to
+some action pertaining to the processing of the current graph.
 .TP
 .B \-V
 Causes the program to print version information and exit.
@@ -867,6 +873,14 @@ is the name of the current input file.
 \fB$G\fP : \fBgraph_t\fP
 denotes the current graph being processed. It is not available
 in \fBBEGIN\fP or \fBEND\fP clauses.
+.TP
+\fB$NG\fP : \fBgraph_t\fP
+denotes the next graph to be processed. If \fB$NG\fP is NULL, 
+the current graph \fB$G\fP is the last graph. Note that if the input
+comes from stdin, the last graph cannot be determined until the input
+pipe is closed. 
+It is not available in \fBBEGIN\fP or \fBEND\fP clauses, or if the 
+\fB-n\fP flag is used.
 .TP
 \fB$O\fP : \fBgraph_t\fP
 denotes the output graph. Before graph traversal, it is initialized
