@@ -1545,13 +1545,13 @@ else
       if test "x$RUBY" = "x"; then
 	use_ruby="No (ruby not available)"
       else
-        RUBY_INCLUDES="-I`$RUBY $srcdir/config/config_ruby.rb INCLUDES`"
+        RUBY_INCLUDES="-I`$RUBY $srcdir/config/config_ruby.rb archdir` -I`$RUBY $srcdir/config/config_ruby.rb sitearchdir`"
 	# hack for powerpc-darwin8 (10.4)
 	if test "x$DARWIN" = "xyes"; then
 	  RUBY_INCLUDES=`echo $RUBY_INCLUDES | sed 's/powerpc/universal/'`
 	fi
-        RUBY_LIBS="-L`$RUBY $srcdir/config/config_ruby.rb lib` `$RUBY -rrbconfig -e \"puts Config::CONFIG[['LIBRUBYARG_SHARED']]\"`"
-        RUBY_INSTALL_DIR="`$RUBY $srcdir/config/config_ruby.rb archsitelib`"
+        RUBY_LIBS="-L`$RUBY $srcdir/config/config_ruby.rb libdir` `$RUBY -rrbconfig -e \"puts Config::CONFIG[['LIBRUBYARG_SHARED']]\"`"
+        RUBY_INSTALL_DIR="`$RUBY $srcdir/config/config_ruby.rb vendorarchdir`"
         save_CPPFLAGS=$CPPFLAGS
         CPPFLAGS="$CPPFLAGS $RUBY_INCLUDES"
         AC_CHECK_HEADER(ruby.h,,[

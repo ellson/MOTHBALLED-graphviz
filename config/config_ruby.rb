@@ -4,13 +4,17 @@ CONFIG = Config::MAKEFILE_CONFIG
 
 
 case ARGV[0]
-when "INCLUDES"
-    puts Config::expand(CONFIG["archdir"])
-when "lib"
-    puts Config::expand(CONFIG["libdir"])
-when "archsitelib"
-    puts Config::expand(CONFIG["sitearchdir"])
-when "sitelib"
-    puts Config::expand(CONFIG["sitedir"])
+when "archdir"
+    puts Config::expand(Config::CONFIG["archdir"])
+when "sitearchdir"
+    puts Config::expand(Config::CONFIG["sitearchdir"])
+when "includedir"
+    puts Config::expand(Config::CONFIG["includedir"])
+when "libdir"
+    puts Config::expand(Config::CONFIG["libdir"])
+when "vendorarchdir"
+    puts Config::expand(Config::CONFIG["vendorarchdir"])
+when "sitedir"
+    puts Config::expand(Config::CONFIG["sitedir"])
 end
 
