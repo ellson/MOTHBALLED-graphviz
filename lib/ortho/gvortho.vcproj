@@ -201,10 +201,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\intset.c"
-				>
-			</File>
-			<File
 				RelativePath=".\maze.c"
 				>
 			</File>
