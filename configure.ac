@@ -1541,28 +1541,37 @@ else
     if test `$SWIG -help 2>&1 | $EGREP -c '\-ruby *- Generate'` = 0; then
       use_ruby="No (swig does not support -ruby option)"
     else
-      AC_CHECK_PROG(RUBY,ruby,ruby)
-      if test "x$RUBY" = "x"; then
-	use_ruby="No (ruby not available)"
-      else
-        RUBY_INCLUDES="-I`$RUBY $srcdir/config/config_ruby.rb archdir` -I`$RUBY $srcdir/config/config_ruby.rb sitearchdir`"
-	# hack for powerpc-darwin8 (10.4)
-	if test "x$DARWIN" = "xyes"; then
-	  RUBY_INCLUDES=`echo $RUBY_INCLUDES | sed 's/powerpc/universal/'`
+      PKG_CHECK_MODULES(RUBY, [ruby-1.9],[
+	AC_CHECK_PROG(RUBY,ruby,ruby)
+        if test "x$RUBY" = "x"; then
+          use_ruby="No (ruby not available)"
+        else
+          RUBY_INSTALL_DIR="`$RUBY $srcdir/config/config_ruby.rb archsitelib`"
 	fi
-        RUBY_LIBS="-L`$RUBY $srcdir/config/config_ruby.rb libdir` `$RUBY -rrbconfig -e \"puts Config::CONFIG[['LIBRUBYARG_SHARED']]\"`"
-        RUBY_INSTALL_DIR="`$RUBY $srcdir/config/config_ruby.rb vendorarchdir`"
-        save_CPPFLAGS=$CPPFLAGS
-        CPPFLAGS="$CPPFLAGS $RUBY_INCLUDES"
-        AC_CHECK_HEADER(ruby.h,,[
-          use_ruby="No (missing header)"
-          RUBY=
-        ])
-        CPPFLAGS=$save_CPPFLAGS
-      fi
+      ],[
+        AC_CHECK_PROG(RUBY,ruby,ruby)
+        if test "x$RUBY" = "x"; then
+	  use_ruby="No (ruby not available)"
+        else
+          RUBY_CFLAGS="-I`$RUBY $srcdir/config/config_ruby.rb archdir`"
+	  # hack for powerpc-darwin8 (10.4)
+	  if test "x$DARWIN" = "xyes"; then
+	    RUBY_CFLAGS=`echo $RUBY_CFLAGS | sed 's/powerpc/universal/'`
+	  fi
+          RUBY_LIBS="-L`$RUBY $srcdir/config/config_ruby.rb lib` `$RUBY -rrbconfig -e \"puts Config::CONFIG[['LIBRUBYARG_SHARED']]\"`"
+          RUBY_INSTALL_DIR="`$RUBY $srcdir/config/config_ruby.rb archsitelib`"
+          save_CPPFLAGS=$CPPFLAGS
+          CPPFLAGS="$CPPFLAGS $RUBY_CFLAGS"
+          AC_CHECK_HEADER(ruby.h,,[
+            use_ruby="No (missing header)"
+            RUBY=
+          ])
+          CPPFLAGS=$save_CPPFLAGS
+        fi
+      ])
       if test "x$RUBY" != "x"; then
 	use_ruby="Yes"
-        AC_SUBST([RUBY_INCLUDES])
+        AC_SUBST([RUBY_CFLAGS])
         AC_SUBST([RUBY_LIBS])
         AC_SUBST([RUBY_INSTALL_DIR])
       fi

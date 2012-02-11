@@ -242,7 +242,7 @@ nodist_libgv_ruby_la_SOURCES = gv_ruby.cpp $(RUBY_data)
 libgv_ruby_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
 libgv_ruby_la_LIBADD = $(BASELIBS) $(RUBY_LIBS)
 libgv_ruby_la_LDFLAGS = -module -avoid-version
-libgv_ruby_la_CPPFLAGS = $(BASECPPFLAGS) $(RUBY_INCLUDES)
+libgv_ruby_la_CPPFLAGS = $(BASECPPFLAGS) $(RUBY_CFLAGS)
 # $(RUBY_data): gv_ruby.cpp
 gv_ruby.cpp: gv.i
 	$(SWIG) $(DEFS) -c++ -ruby -o gv_ruby.cpp $(srcdir)/gv.i
