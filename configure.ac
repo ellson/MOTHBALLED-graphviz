@@ -1546,7 +1546,7 @@ else
         if test "x$RUBY" = "x"; then
           use_ruby="No (ruby not available)"
         else
-          RUBY_INSTALL_DIR="`$RUBY $srcdir/config/config_ruby.rb archsitelib`"
+          RUBY_INSTALL_DIR="`$RUBY $srcdir/config/config_ruby.rb vendorarchdir`"
 	fi
       ],[
         AC_CHECK_PROG(RUBY,ruby,ruby)

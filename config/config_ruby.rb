@@ -8,8 +8,8 @@ when "archdir"
     puts Config::expand(CONFIG["archdir"])
 when "lib"
     puts Config::expand(CONFIG["libdir"])
-when "archsitelib"
-    puts Config::expand(CONFIG["sitearchdir"])
+when "vendorarchdir"
+    puts Config::expand(CONFIG["vendorarchdir"])
 when "sitelib"
     puts Config::expand(CONFIG["sitedir"])
 end
