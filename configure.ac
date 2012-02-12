@@ -1560,6 +1560,9 @@ else
 	  fi
           RUBY_LIBS="-L`$RUBY $srcdir/config/config_ruby.rb lib` `$RUBY -rrbconfig -e \"puts Config::CONFIG[['LIBRUBYARG_SHARED']]\"`"
           RUBY_INSTALL_DIR="`$RUBY $srcdir/config/config_ruby.rb vendorarchdir`"
+	  if test "x$RUBY_INSTALL_DIR" = "x"; then
+	  	RUBY_INSTALL_DIR="`$RUBY $srcdir/config/config_ruby.rb sitearchdir`"
+	  fi
           save_CPPFLAGS=$CPPFLAGS
           CPPFLAGS="$CPPFLAGS $RUBY_CFLAGS"
           AC_CHECK_HEADER(ruby.h,,[
