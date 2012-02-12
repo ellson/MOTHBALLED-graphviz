@@ -1559,7 +1559,7 @@ else
 	    RUBY_CFLAGS=`echo $RUBY_CFLAGS | sed 's/powerpc/universal/'`
 	  fi
           RUBY_LIBS="-L`$RUBY $srcdir/config/config_ruby.rb lib` `$RUBY -rrbconfig -e \"puts Config::CONFIG[['LIBRUBYARG_SHARED']]\"`"
-          RUBY_INSTALL_DIR="`$RUBY $srcdir/config/config_ruby.rb archsitelib`"
+          RUBY_INSTALL_DIR="`$RUBY $srcdir/config/config_ruby.rb vendorarchdir`"
           save_CPPFLAGS=$CPPFLAGS
           CPPFLAGS="$CPPFLAGS $RUBY_CFLAGS"
           AC_CHECK_HEADER(ruby.h,,[
