@@ -129,6 +129,7 @@ gvcBuildDate
 gvcInfo    
 gvContext    
 gvcVersion    
+GvExitOnUsage
 Gvfilepath    
 gvFreeContext    
 gvFreeLayout    
