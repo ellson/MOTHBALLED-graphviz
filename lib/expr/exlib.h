@@ -28,27 +28,36 @@ extern "C" {
 #include <align.h>
 #include <ast.h>
 
-    typedef struct Exinput_s {	/* input stack                    */
-	struct Exinput_s *next;	/* next in stack                */
-	int close;		/* close fp on pop              */
-	char *file;		/* previous file                */
-	Sfio_t *fp;		/* expression file pointer      */
-	int line;		/* previous line                */
-	int nesting;		/* expression nesting level     */
-	int peek;		/* 1 char peek                  */
-	int unit;		/* first frame in parse unit    */
-	char *pushback;		/* pushback buffer              */
-	char *bp;		/* expression string base       */
-	char *pp;		/* pushback pointer             */
-	char *sp;		/* expression string pointer    */
-    } Exinput_t;
+#define sfstrseek(f,p,m) \
+    ( \
+        (((p) < 0 || (p) > (f)->size) ? (char*)0 : \
+         (char*)((f)->next = (f)->data+(p)) ) \
+    )
 
-    typedef struct Print_s {	/* compiled printf arg node       */
-	struct Print_s *next;	/* next arg                     */
-	char *format;		/* printf format for arg        */
-	struct Exnode_s *param[3];	/* 0:width 1:precision 2:base   */
-	struct Exnode_s *arg;	/* arg to format                */
-    } Print_t;
+
+typedef struct Exinput_s		/* input stack			*/
+{
+	struct Exinput_s*next;		/* next in stack		*/
+	int		close;		/* close fp on pop		*/
+	char*		file;		/* previous file		*/
+	Sfio_t*		fp;		/* expression file pointer	*/
+	int		line;		/* previous line		*/
+	int		nesting;	/* expression nesting level	*/
+	int		peek;		/* 1 char peek			*/
+	int		unit;		/* first frame in parse unit	*/
+	char*		pushback;	/* pushback buffer		*/
+	char*		bp;		/* expression string base	*/
+	char*		pp;		/* pushback pointer		*/
+	char*		sp;		/* expression string pointer	*/
+} Exinput_t;
+
+typedef struct Print_s			/* compiled printf arg node	*/
+{
+	struct Print_s*	next;		/* next arg			*/
+	char*		format;		/* printf format for arg	*/
+	struct Exnode_s*param[3];	/* 0:width 1:precision 2:base	*/
+	struct Exnode_s*arg;		/* arg to format		*/
+} Print_t;
 
 #define _EX_DATA_PRIVATE_ \
 	Exnode_t*	next;		/* free list link		*/ \
@@ -69,7 +78,7 @@ extern "C" {
 	Exid_t*		array;		/* array 			*/ \
 	Exnode_t*	string;		/* string 			*/ \
 	Exnode_t*	seps;		/* optional separators		*/ \
-	}		split;		/* string split	*/ \
+	}		split;		/* string split			*/ \
 	struct								   \
 	{								   \
 	Exnode_t*	descriptor;	/* Expr_t.file index		*/ \
@@ -93,15 +102,14 @@ extern "C" {
 	Exnode_t*	descriptor;	/* Expr_t.file index		*/ \
 	Exnode_t*	format;		/* format arg			*/ \
 	Exnode_t*	args;		/* actual args			*/ \
-	}		scan;	/* printf                       */
+	}		scan;		/* printf			*/
 
 #define _EX_NODE_PRIVATE_ \
 	Exshort_t	subop;		/* operator qualifier		*/ \
-	Exshort_t	pad_2;	/* padding                      */
+	Exshort_t	pad_2;		/* padding			*/
 
 #define _EX_PROG_PRIVATE_ \
 	Vmalloc_t*	ve;		/* eval tmp region		*/ \
-	Vmalloc_t*	vc;		/* str_* region		*/ \
 	Dt_t*		frame;		/* frame symbol table		*/ \
 	Dtdisc_t	symdisc;	/* Expr_t.symbols discipline	*/ \
 	Exdisc_t*	disc;		/* user discipline		*/ \
@@ -118,7 +126,7 @@ extern "C" {
 	int		linewrap;	/* linep wrapped around line[]	*/ \
 	int		loopcount;	/* break|continue|return count	*/ \
 	int		loopop;		/* break|continue|return op	*/ \
-	int		nesting;	/* exstatement() nesting        */
+	int		nesting;	/* exstatement() nesting	*/
 
 #include <expr.h>
 #include <ctype.h>
@@ -132,44 +140,50 @@ extern "C" {
 #define putcontext(p,c)	(((p)->linep>=&(p)->line[sizeof((p)->line)]?(p)->linep=(p)->line,(p)->linewrap=1:0),*(p)->linep++=(c))
 #define setcontext(p)	((p)->linep=(p)->line,(p)->linewrap=0)
 
-    typedef struct Switch_s {	/* switch parse state             */
-	struct Switch_s *prev;	/* previous switch state        */
-	Exnode_t *firstcase;	/* first case block             */
-	Exnode_t *lastcase;	/* last case block              */
-	Exnode_t *defcase;	/* default case block           */
-	Extype_t **base;	/* label base pointer           */
-	Extype_t **cur;		/* current label pointer        */
-	Extype_t **last;	/* last label pointer           */
-	int def;		/* default label hit            */
-	int type;		/* switch test type             */
-    } Switch_t;
+typedef struct Switch_s			/* switch parse state		*/
+{
+	struct Switch_s*prev;		/* previous switch state	*/
+	Exnode_t*	firstcase;	/* first case block		*/
+	Exnode_t*	lastcase;	/* last case block		*/
+	Exnode_t*	defcase;	/* default case block		*/
+	Extype_t**	base;		/* label base pointer		*/
+	Extype_t**	cur;		/* current label pointer	*/
+	Extype_t**	last;		/* last label pointer		*/
+	int		def;		/* default label hit		*/
+	int		type;		/* switch test type		*/
+} Switch_t;
 
-    typedef struct {		/* associative array bucket       */
-	Dtlink_t link;		/* table link                   */
-	Extype_t key;		/* key                                  */
-	Extype_t value;		/* value                                */
-	char name[1];		/* key name                             */
-    } Exassoc_t;
+typedef struct Exassoc_s		/* associative array bucket	*/
+{
+	Dtlink_t	link;		/* table link			*/
+	Extype_t	key;		/* key				*/
+	Extype_t	value;		/* value			*/
+	char		name[1];	/* index name			*/
+} Exassoc_t;
 
-    typedef struct {		/* ex global state                */
-	Exid_t *id;		/* current declaration id       */
-	int declare;		/* current declaration type     */
-	Exref_t *lastref;	/* last in . reference list     */
-	int nolabel;		/* <id>':' not a label          */
-	Exinput_t null;		/* null input                   */
-	Expr_t *program;	/* current program              */
-	Exnode_t *procedure;	/* current procedure            */
-	Exref_t *refs;		/* . reference list             */
-	Switch_t *swstate;	/* switch parse state           */
-	char nullstring[1];	/* ""               */
-    } Exstate_t;
+typedef struct Exstate_s		/* ex global state		*/
+{
+	Exid_t*		id;		/* current declaration id	*/
+	int		declare;	/* current declaration type	*/
+	Exref_t*	lastref;	/* last in . reference list	*/
+	int		nolabel;	/* <id>':' not a label		*/
+	Exinput_t	null;		/* null input			*/
+	Expr_t*		program;	/* current program		*/
+	Exnode_t*	procedure;	/* current procedure		*/
+	Exref_t*	refs;		/* . reference list		*/
+	int		assigned;	/* declaration assignment	*/
+	int		instatic;	/* static declaration		*/
+	int		statics;	/* static used			*/
+	Switch_t*	swstate;	/* switch parse state		*/
+	char		nullstring[1];	/* ""				*/
+} Exstate_t;
 
-    extern Exid_t exbuiltin[];
-    extern const char *exversion;
-    extern Exstate_t expr;
+extern Exid_t		exbuiltin[];
+extern const char*	exversion;
+extern Exstate_t	expr;
 
-    extern int exparse(void);	/* yacc should do this          */
-    extern Sflong_t strToL(char *, char **);
+extern int		exparse(void);	/* yacc should do this		*/
+extern Sflong_t		strToL(char *, char **);
 
 #endif
 

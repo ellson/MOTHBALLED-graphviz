@@ -1,5 +1,5 @@
 /* $Id$ $Revision$ */
-/* vim:set shiftwidth=4 ts=8: */
+/* vim:set shiftwidth=4 ts=4: */
 
 /*************************************************************************
  * Copyright (c) 2011 AT&T Intellectual Property 
@@ -13,14 +13,11 @@
 
 %{
 
-
 /*
  * Glenn Fowler
  * AT&T Research
  *
  * expression library grammar and compiler
- *
- * NOTE: procedure arguments not implemented yet
  */
 
 #ifdef WIN32
@@ -55,14 +52,15 @@
 
 %token	MINTOKEN
 
+%token	CHARACTER
 %token	INTEGER
 %token	UNSIGNED
-%token	CHARACTER
 %token	FLOATING
 %token	STRING
 %token	VOIDTYPE
+%token	STATIC
 
-%token  ADDRESS
+%token	ADDRESS
 %token	ARRAY
 %token	BREAK
 %token	CALL
@@ -133,11 +131,11 @@
 %binary	<op>	EQ	NE
 %binary	<op>	'<'	'>'	LE	GE
 %left	<op>	LS	RS
-%left	<op>	'+'	'-'     IN_OP
+%left	<op>	'+'	'-'	IN_OP
 %left	<op>	'*'	'/'	'%'
 %right	<op>	'!'	'~'	'#'	UNARY
 %right	<op>	INC	DEC
-%right	<op>	CAST    
+%right	<op>	CAST
 %left	<op>	'('
 
 %type <expr>		statement	statement_list	arg_list
@@ -151,15 +149,16 @@
 %type <id>		CONSTANT	ARRAY		FUNCTION	DECLARE
 %type <id>		EXIT		PRINT		PRINTF		QUERY
 %type <id>		RAND		SRAND
-%type <id>		SPRINTF		GSUB		SUB
+%type <id>		SPRINTF		PROCEDURE	name		dcl_name
+%type <id>		GSUB		SUB		SUBSTR
 %type <id>		SPLIT		TOKENS          splitop
-%type <id>		SUBSTR		PROCEDURE	name		dcl_name
 %type <id>		IF		WHILE		FOR		ITERATER
 %type <id>		BREAK		CONTINUE	print		member
 %type <id>		RETURN		DYNAMIC		SWITCH		UNSET
 %type <id>		SCANF		SSCANF		scan
 %type <floating>	FLOATING
 %type <integer>		INTEGER		UNSIGNED	array
+%type <integer>		static
 %type <string>		STRING
 
 %token	MAXTOKEN
@@ -206,11 +205,14 @@ action		:	LABEL ':' {
 				expr.procedure = $1->value = exnewnode(expr.program, PROCEDURE, 1, $1->type, NiL, NiL);
 				expr.procedure->type = INTEGER;
 				if (!(disc = newof(0, Dtdisc_t, 1, 0)))
-					exerror("out of space [frame discipline]");
+					exnospace();
 				disc->key = offsetof(Exid_t, name);
-				if (!(expr.procedure->data.procedure.frame = dtopen(disc, Dtset)) || !dtview(expr.procedure->data.procedure.frame, expr.program->symbols))
-					exerror("out of space [frame table]");
-				expr.program->symbols = expr.program->frame = expr.procedure->data.procedure.frame;
+				if (expr.assigned && !streq($1->name, "begin"))
+				{
+					if (!(expr.procedure->data.procedure.frame = dtopen(disc, Dtset)) || !dtview(expr.procedure->data.procedure.frame, expr.program->symbols))
+						exnospace();
+					expr.program->symbols = expr.program->frame = expr.procedure->data.procedure.frame;
+				}
 			} statement_list
 		{
 			expr.procedure = 0;
@@ -218,6 +220,7 @@ action		:	LABEL ':' {
 			{
 				expr.program->symbols = expr.program->frame->view;
 				dtview(expr.program->frame, NiL);
+				expr.program->frame = 0;
 			}
 			if ($4 && $4->op == S2B)
 			{
@@ -247,7 +250,16 @@ statement_list	:	/* empty */
 				exfreenode(expr.program, $1);
 				$$ = $2;
 			}
-			else $$ = exnewnode(expr.program, ';', 1, $2->type, $1, $2);
+			else if ($1->op == ';')
+			{
+				$$ = $1;
+				$1->data.operand.last = $1->data.operand.last->data.operand.right = exnewnode(expr.program, ';', 1, $2->type, $2, NiL);
+			}
+			else
+			{
+				$$ = exnewnode(expr.program, ';', 1, $1->type, $1, NiL);
+				$$->data.operand.last = $$->data.operand.right = exnewnode(expr.program, ';', 1, $2->type, $2, NiL);
+			}
 		}
 		;
 
@@ -259,9 +271,10 @@ statement	:	'{' statement_list '}'
 		{
 			$$ = ($1 && $1->type == STRING) ? exnewnode(expr.program, S2B, 1, INTEGER, $1, NiL) : $1;
 		}
-		|	DECLARE {expr.declare=$1->type;} dcl_list ';'
+		|	static {expr.instatic=$1;} DECLARE {expr.declare=$3->type;} dcl_list ';'
 		{
-			$$ = $3;
+			$$ = $5;
+			expr.declare = 0;
 		}
 		|	IF '(' expr ')' statement else_opt
 		{
@@ -353,6 +366,7 @@ statement	:	'{' statement_list '}'
 				free(sw->base);
 			if (sw != &swstate)
 				free(sw);
+			expr.declare = 0;
 		}
 		|	BREAK expr_opt ';'
 		{
@@ -391,12 +405,13 @@ switch_list	:	/* empty */
 			{
 				if (!(sw = newof(0, Switch_t, 1, 0)))
 				{
-					exerror("out of space [switch]");
+					exnospace();
 					sw = &swstate;
 				}
 				sw->prev = expr.swstate;
 			}
-			else sw = &swstate;
+			else
+				sw = &swstate;
 			expr.swstate = sw;
 			sw->type = expr.declare;
 			sw->firstcase = 0;
@@ -406,7 +421,7 @@ switch_list	:	/* empty */
 			n = 8;
 			if (!(sw->base = newof(0, Extype_t*, n, 0)))
 			{
-				exerror("out of space [case]");
+				exnospace();
 				n = 0;
 			}
 			sw->cur = sw->base;
@@ -425,7 +440,8 @@ switch_item	:	case_list statement_list
 			{
 				if (sw->lastcase)
 					sw->lastcase->data.select.next = $$;
-				else sw->firstcase = $$;
+				else
+					sw->firstcase = $$;
 				sw->lastcase = $$;
 				n = sw->cur - sw->base;
 				sw->cur = sw->base;
@@ -433,13 +449,15 @@ switch_item	:	case_list statement_list
 				memcpy($$->data.select.constant, sw->base, n * sizeof(Extype_t*));
 				$$->data.select.constant[n] = 0;
 			}
-			else $$->data.select.constant = 0;
+			else
+				$$->data.select.constant = 0;
 			if (sw->def)
 			{
 				sw->def = 0;
 				if (sw->defcase)
 					exerror("duplicate default in switch");
-				else sw->defcase = $2;
+				else
+					sw->defcase = $2;
 			}
 		}
 		;
@@ -475,6 +493,16 @@ case_item	:	CASE constant ':'
 		}
 		;
 
+static	:	/* empty */
+		{
+			$$ = 0;
+		}
+		|	STATIC
+		{
+			$$ = 1;
+		}
+		;
+
 dcl_list	:	dcl_item
 		|	dcl_list ',' dcl_item
 		{
@@ -486,7 +514,8 @@ dcl_list	:	dcl_item
 dcl_item	:	dcl_name {checkName ($1); expr.id=$1;} array initialize
 		{
 			$$ = 0;
-			$1->type = expr.declare;
+			if (!$1->type || expr.declare)
+				$1->type = expr.declare;
 			if ($4 && $4->op == PROCEDURE)
 			{
 				$1->lex = PROCEDURE;
@@ -502,15 +531,14 @@ dcl_item	:	dcl_name {checkName ($1); expr.id=$1;} array initialize
 					Dtdisc_t*	disc;
 
 					if (!(disc = newof(0, Dtdisc_t, 1, 0)))
-						exerror("out of space [associative array]");
+						exnospace();
 					if ($3 == INTEGER) {
 						disc->key = offsetof(Exassoc_t, key);
 						disc->size = sizeof(Extype_t);
 						disc->comparf = (Dtcompar_f)cmpKey;
 					}
-					else {
+					else
 						disc->key = offsetof(Exassoc_t, name);
-					}
 					if (!($1->local.pointer = (char*)dtopen(disc, Dtoset)))
 						exerror("%s: cannot initialize associative array", $1->name);
 					$1->index_type = $3; /* -1 indicates no typechecking */
@@ -525,6 +553,11 @@ dcl_item	:	dcl_name {checkName ($1); expr.id=$1;} array initialize
 					$4->data.operand.left = exnewnode(expr.program, DYNAMIC, 0, $1->type, NiL, NiL);
 					$4->data.operand.left->data.variable.symbol = $1;
 					$$ = $4;
+					if (!expr.program->frame && !expr.program->errors)
+					{
+						expr.assigned++;
+						exeval(expr.program, $$, NiL);
+					}
 				}
 				else if (!$3)
 					$1->value->data.value = exzero($1->type);
@@ -532,7 +565,7 @@ dcl_item	:	dcl_name {checkName ($1); expr.id=$1;} array initialize
 		}
 		;
 
-dcl_name		:	NAME
+dcl_name	:	NAME
 		|	DYNAMIC
 		|	ID
 		|	FUNCTION
@@ -581,9 +614,11 @@ expr		:	'(' expr ')'
 			{
 				if (!$3->type)
 					$1->type = $3->type = rel ? STRING : INTEGER;
-				else $1->type = $3->type;
+				else
+					$1->type = $3->type;
 			}
-			else if (!$3->type) $3->type = $1->type;
+			else if (!$3->type)
+				$3->type = $1->type;
 			if ($1->type != $3->type)
 			{
 				if ($1->type == STRING)
@@ -600,9 +635,7 @@ expr		:	'(' expr ')'
 			$$ = exnewnode(expr.program, $2, 1, rel, $1, $3);
 			if (!expr.program->errors && $1->op == CONSTANT && $3->op == CONSTANT)
 			{
-				expr.program->vc = expr.program->vm;
 				$$->data.constant.value = exeval(expr.program, $$, NiL);
-				expr.program->vc = expr.program->ve;
 				$$->binary = 0;
 				$$->op = CONSTANT;
 				exfreenode(expr.program, $1);
@@ -696,7 +729,8 @@ expr		:	'(' expr ')'
 				exfreenode(expr.program, $1);
 				$$ = $3;
 			}
-			else $$ = exnewnode(expr.program, ',', 1, $3->type, $1, $3);
+			else
+				$$ = exnewnode(expr.program, ',', 1, $3->type, $1, $3);
 		}
 		|	expr '?' {expr.nolabel=1;} expr ':' {expr.nolabel=0;} expr
 		{
@@ -704,7 +738,8 @@ expr		:	'(' expr ')'
 			{
 				if (!$7->type)
 					$4->type = $7->type = INTEGER;
-				else $4->type = $7->type;
+				else
+					$4->type = $7->type;
 			}
 			else if (!$7->type)
 				$7->type = $4->type;
@@ -735,7 +770,8 @@ expr		:	'(' expr ')'
 				}
 				exfreenode(expr.program, $1);
 			}
-			else $$ = exnewnode(expr.program, '?', 1, $4->type, $1, exnewnode(expr.program, ':', 1, $4->type, $4, $7));
+			else
+				$$ = exnewnode(expr.program, '?', 1, $4->type, $1, exnewnode(expr.program, ':', 1, $4->type, $4, $7));
 		}
 		|	'!' expr
 		{
@@ -787,6 +823,10 @@ expr		:	'(' expr ')'
 		|	FUNCTION '(' args ')'
 		{
 			$$ = exnewnode(expr.program, FUNCTION, 1, T($1->type), call(0, $1, $3), $3);
+			if (!expr.program->disc->getf)
+				exerror("%s: function references not supported", $$->data.operand.left->data.variable.symbol->name);
+			else if (expr.program->disc->reff)
+				(*expr.program->disc->reff)(expr.program, $$->data.operand.left, $$->data.operand.left->data.variable.symbol, 0, NiL, EX_CALL, expr.program->disc);
 		}
 		|	GSUB '(' args ')'
 		{
@@ -845,20 +885,21 @@ expr		:	'(' expr ')'
 				$$->data.print.descriptor = $3->data.operand.left;
 				$3 = $3->data.operand.right;
 			}
-			else switch ($1->index)
-			{
-			case QUERY:
-				$$->data.print.descriptor = exnewnode(expr.program, CONSTANT, 0, INTEGER, NiL, NiL);
-				$$->data.print.descriptor->data.constant.value.integer = 2;
-				break;
-			case PRINTF:
-				$$->data.print.descriptor = exnewnode(expr.program, CONSTANT, 0, INTEGER, NiL, NiL);
-				$$->data.print.descriptor->data.constant.value.integer = 1;
-				break;
-			case SPRINTF:
-				$$->data.print.descriptor = 0;
-				break;
-			}
+			else 
+				switch ($1->index)
+				{
+				case QUERY:
+					$$->data.print.descriptor = exnewnode(expr.program, CONSTANT, 0, INTEGER, NiL, NiL);
+					$$->data.print.descriptor->data.constant.value.integer = 2;
+					break;
+				case PRINTF:
+					$$->data.print.descriptor = exnewnode(expr.program, CONSTANT, 0, INTEGER, NiL, NiL);
+					$$->data.print.descriptor->data.constant.value.integer = 1;
+					break;
+				case SPRINTF:
+					$$->data.print.descriptor = 0;
+					break;
+				}
 			$$->data.print.args = preprint($3);
 		}
 		|	scan '(' args ')'
@@ -871,29 +912,30 @@ expr		:	'(' expr ')'
 				$$->data.scan.descriptor = $3->data.operand.left;
 				$3 = $3->data.operand.right;
 			}
-			else switch ($1->index)
-			{
-			case SCANF:
-				$$->data.scan.descriptor = 0;
-				break;
-			case SSCANF:
-				if ($3 && $3->data.operand.left->type == STRING)
+			else 
+				switch ($1->index)
 				{
-					$$->data.scan.descriptor = $3->data.operand.left;
-					$3 = $3->data.operand.right;
+				case SCANF:
+					$$->data.scan.descriptor = 0;
+					break;
+				case SSCANF:
+					if ($3 && $3->data.operand.left->type == STRING)
+					{
+						$$->data.scan.descriptor = $3->data.operand.left;
+						$3 = $3->data.operand.right;
+					}
+					else
+						exerror("%s: string argument expected", $1->name);
+					break;
 				}
-				else
-					exerror("%s: string argument expected", $1->name);
-				break;
-			}
 			if (!$3 || !$3->data.operand.left || $3->data.operand.left->type != STRING)
 				exerror("%s: format argument expected", $1->name);
 			$$->data.scan.format = $3->data.operand.left;
 			for (x = $$->data.scan.args = $3->data.operand.right; x; x = x->data.operand.right)
 			{
-                if (x->data.operand.left->op != ADDRESS)
-                    exerror("%s: address argument expected", $1->name);
-                x->data.operand.left = x->data.operand.left->data.operand.left;
+				if (x->data.operand.left->op != ADDRESS)
+					exerror("%s: address argument expected", $1->name);
+				x->data.operand.left = x->data.operand.left->data.operand.left;
 			}
 		}
 		|	variable assign
@@ -966,7 +1008,8 @@ constant	:	CONSTANT
 			$$ = exnewnode(expr.program, CONSTANT, 0, $1->type, NiL, NiL);
 			if (!expr.program->disc->reff)
 				exerror("%s: identifier references not supported", $1->name);
-			else $$->data.constant.value = (*expr.program->disc->reff)(expr.program, $$, $1, NiL, NiL, EX_SCALAR, expr.program->disc);
+			else
+				$$->data.constant.value = (*expr.program->disc->reff)(expr.program, $$, $1, NiL, NiL, EX_SCALAR, expr.program->disc);
 		}
 		|	FLOATING
 		{
@@ -1005,23 +1048,23 @@ variable	:	ID members
 		}
 		|	DYNAMIC index members
 		{
-            Exnode_t*   n;
+			Exnode_t*   n;
 
-            n = exnewnode(expr.program, DYNAMIC, 0, $1->type, NiL, NiL);
-            n->data.variable.symbol = $1;
-            n->data.variable.reference = 0;
-            if (((n->data.variable.index = $2) == 0) != ($1->local.pointer == 0))
-              exerror("%s: is%s an array", $1->name, $1->local.pointer ? "" : " not");
+			n = exnewnode(expr.program, DYNAMIC, 0, $1->type, NiL, NiL);
+			n->data.variable.symbol = $1;
+			n->data.variable.reference = 0;
+			if (((n->data.variable.index = $2) == 0) != ($1->local.pointer == 0))
+				exerror("%s: is%s an array", $1->name, $1->local.pointer ? "" : " not");
 			if ($1->local.pointer && ($1->index_type > 0)) {
 				if ($2->type != $1->index_type)
-            		exerror("%s: indices must have type %s, not %s", 
+					exerror("%s: indices must have type %s, not %s", 
 						$1->name, extypename(expr.program, $1->index_type),extypename(expr.program, $2->type));
 			}
 			if ($3) {
-              n->data.variable.dyna =exnewnode(expr.program, 0, 0, 0, NiL, NiL);
-              $$ = makeVar(expr.program, $1, $2, n, $3);
-            }
-            else $$ = n;
+				n->data.variable.dyna =exnewnode(expr.program, 0, 0, 0, NiL, NiL);
+				$$ = makeVar(expr.program, $1, $2, n, $3);
+			}
+			else $$ = n;
 		}
 		|	NAME
 		{
@@ -1125,6 +1168,7 @@ formal_item	:	DECLARE {expr.declare=$1->type;} name
 			$3->type = $1->type;
 			$3->value = exnewnode(expr.program, 0, 0, 0, NiL, NiL);
 			expr.procedure->data.procedure.arity++;
+			expr.declare = 0;
 		}
 		;
 
@@ -1145,7 +1189,7 @@ members	:	/* empty */
 			$$ = expr.refs;
 		}
 		|	'.' ID member
-        {
+		{
 			Exref_t*	r;
 			Exref_t*	l;
 
@@ -1160,7 +1204,7 @@ members	:	/* empty */
 			expr.refs = l;
 			expr.lastref = r;
 			$$ = expr.refs;
-        }
+		}
 		;
 
 member	:	'.' ID
@@ -1172,7 +1216,6 @@ member	:	'.' ID
 			$$ = $2;
 		}
 		;
-
 assign		:	/* empty */
 		{
 			$$ = 0;
@@ -1189,19 +1232,24 @@ initialize	:	assign
 				register Dtdisc_t*	disc;
 
 				if (expr.procedure)
-					exerror("no nested function definitions");
+					exerror("%s: nested function definitions not supported", expr.id->name);
 				expr.procedure = exnewnode(expr.program, PROCEDURE, 1, expr.declare, NiL, NiL);
 				if (!(disc = newof(0, Dtdisc_t, 1, 0)))
-					exerror("out of space [frame discipline]");
+					exnospace();
 				disc->key = offsetof(Exid_t, name);
-				if (!(expr.procedure->data.procedure.frame = dtopen(disc, Dtset)) || !dtview(expr.procedure->data.procedure.frame, expr.program->symbols))
-					exerror("out of space [frame table]");
-				expr.program->symbols = expr.program->frame = expr.procedure->data.procedure.frame;
-				expr.program->formals = 1;
+				if (!streq(expr.id->name, "begin"))
+				{
+					if (!(expr.procedure->data.procedure.frame = dtopen(disc, Dtset)) || !dtview(expr.procedure->data.procedure.frame, expr.program->symbols))
+						exnospace();
+					expr.program->symbols = expr.program->frame = expr.procedure->data.procedure.frame;
+					expr.program->formals = 1;
+				}
+				expr.declare = 0;
 			} formals {
-				expr.program->formals = 0;
 				expr.id->lex = PROCEDURE;
-				expr.id->type = expr.declare;
+				expr.id->type = expr.procedure->type;
+				expr.program->formals = 0;
+				expr.declare = 0;
 			} ')' '{' statement_list '}'
 		{
 			$$ = expr.procedure;
@@ -1210,6 +1258,7 @@ initialize	:	assign
 			{
 				expr.program->symbols = expr.program->frame->view;
 				dtview(expr.program->frame, NiL);
+				expr.program->frame = 0;
 			}
 			$$->data.operand.left = $3;
 			$$->data.operand.right = excast(expr.program, $7, $$->type, NiL, 0);
