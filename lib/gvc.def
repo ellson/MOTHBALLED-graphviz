@@ -129,6 +129,7 @@ gvcBuildDate
 gvcInfo    
 gvContext    
 gvcVersion    
+GvExitOnUsage
 Gvfilepath    
 gvFreeContext    
 gvFreeLayout    
@@ -350,4 +351,3 @@ EdgeLabelsDone
 get_gradient_points
 G_margin
 openIntSet
-GvExitOnUsage

@@ -220,6 +220,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\gvrender_core_pov.c"
+				>
+			</File>
+			<File
 				RelativePath=".\gvrender_core_ps.c"
 				>
 			</File>
