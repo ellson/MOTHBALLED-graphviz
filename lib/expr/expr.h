@@ -86,7 +86,7 @@ extern "C" {
 
 #define DELETE_T		MINTOKEN		/* exexpr() delete `type'	*/
 
-#define INTEGRAL(t)	((t)>=CHARACTER&&(t)<=UNSIGNED)
+#define INTEGRAL(t)	((t)>=INTEGER&&(t)<=CHARACTER)
 #define BUILTIN(t)  ((t) > MINTOKEN)
 
 /* function type mechanism
