@@ -11,10 +11,17 @@
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "VisioText.h"
 
 #include "gvcjob.h"
 #include "gvio.h"
+#ifdef WITH_CGRAPH
+#include <string.h>
+#endif
 
 extern "C" char *xml_string(char* str);
 
@@ -52,14 +59,22 @@ namespace Visio
 	
 	Run::Run(boxf bounds, char* text):
 		_bounds(bounds),
+#ifdef WITH_CGRAPH
+		_text(strdup(text))	/* copy text */
+#else
 		_text(agstrdup(text))	/* copy text */
+#endif
 	{
 	}
 	
 	Run::~Run()
 	{
 		/* since we copied, we need to free */
+#ifdef WITH_CGRAPH
+		free(_text);
+#else
 		agstrfree(_text);
+#endif
 	}
 	
 	boxf Run::GetBounds() const
@@ -156,17 +171,29 @@ namespace Visio
 	}
 
 	Hyperlink::Hyperlink(char* description, char* address, char* frame):
+#ifdef WITH_CGRAPH
+		_description(strdup(description)),
+		_address(strdup(address)),
+		_frame(strdup(frame))
+#else
 		_description(agstrdup(description)),
 		_address(agstrdup(address)),
 		_frame(agstrdup(frame))
+#endif
 	{
 	}
 	
 	Hyperlink::~Hyperlink()
 	{
+#ifdef WITH_CGRAPH
+		free(_description);
+		free(_address);
+		free(_frame);
+#else
 		agstrfree(_description);
 		agstrfree(_address);
 		agstrfree(_frame);
+#endif
 	}
 	
 	/* output the hyperlink */
