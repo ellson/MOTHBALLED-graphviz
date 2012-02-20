@@ -285,9 +285,9 @@ Terminating condition. If the length squared of all energy gradients are
 Margin used around polygons for purposes of spline edge routing.
 The interpretation is the same as given for <A HREF=#d:sep>sep</A>.
 This should normally be strictly less than <A HREF=#d:sep>sep</A>.
-:fillcolor:NC:color/colorList:lightgrey(nodes)/black(clusters);
+:fillcolor:NEC:color/colorList:lightgrey(nodes)/black(clusters);
 Color used to fill the background of a node or cluster
-assuming <A HREF=#d:style>style</A>=filled.
+assuming <A HREF=#d:style>style</A>=filled, or a filled arrowhead.
 If <B>fillcolor</B> is not defined, <A HREF=#d:color>color</A> is
 used. (For clusters, if <B>color</B> is not defined,
 <A HREF=#d:bgcolor>bgcolor</A> is used.) If this is not defined,

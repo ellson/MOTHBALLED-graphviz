@@ -15,29 +15,19 @@
  * Glenn Fowler
  * AT&T Research
  *
- * expression library C program generator
+ * expression library
  */
 
-#include "exlib.h"
-
-#define str(s)		# s
-#define xstr(s)		str(s)
+#include <exlib.h>
 
 /*
- * return C type name for type
+ * 0 terminate string and optionally vmstrdup() return value
  */
 
 char*
-extype(int type)
+exstash(Sfio_t* sp, Vmalloc_t* vp)
 {
-	switch (type)
-	{
-	case FLOATING:
-		return "double";
-	case STRING:
-		return "char*";
-	case UNSIGNED:
-		return xstr(uintmax_t);
-	}
-	return xstr(intmax_t);
+	char*	s;
+
+	return ((s = sfstruse(sp)) && (!vp || (s = vmstrdup(vp, s)))) ? s : exnospace();
 }

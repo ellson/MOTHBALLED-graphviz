@@ -1960,6 +1960,8 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 			default_pencolor(pencolor, DEFAULT_VISITEDPENCOLOR));
 	    fillcolor = late_nnstring(e, E_visitedfillcolor, DEFAULT_VISITEDFILLCOLOR);
 	}
+	else
+	    fillcolor = late_nnstring(e, E_fillcolor, color);
 	if (pencolor != color)
     	    gvrender_set_pencolor(job, pencolor);
 	if (fillcolor != color)
@@ -1975,6 +1977,9 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 	    stp = taper (&bz, taperfun (e), penwidth, 0, 0);
 	    gvrender_polygon(job, stp->vertices, stp->nvertices, TRUE);
 	    free_stroke (stp);
+    	    gvrender_set_pencolor(job, color);
+	    if (fillcolor != color)
+		gvrender_set_fillcolor(job, fillcolor);
 	    if (bz.sflag) {
 		arrow_gen(job, EMIT_TDRAW, bz.sp, bz.list[0], arrowsize, penwidth, bz.sflag);
 	    }
@@ -2082,10 +2087,13 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 	    if (! (ED_gui_state(e) & (GUI_STATE_ACTIVE | GUI_STATE_SELECTED))) {
 	        if (color[0]) {
 		    gvrender_set_pencolor(job, color);
-		    gvrender_set_fillcolor(job, color);
+		    gvrender_set_fillcolor(job, fillcolor);
 	        } else {
 		    gvrender_set_pencolor(job, DEFAULT_COLOR);
-		    gvrender_set_fillcolor(job, DEFAULT_COLOR);
+		    if (fillcolor[0])
+			gvrender_set_fillcolor(job, fillcolor);
+		    else
+			gvrender_set_fillcolor(job, DEFAULT_COLOR);
 	        }
 	    }
 	    for (i = 0; i < ED_spl(e)->size; i++) {

@@ -113,7 +113,7 @@ extern "C" {
 	*N_group, *N_comment, *N_vertices, *N_z,
 	*N_penwidth, *N_gradientangle;
     EXTERN attrsym_t
-	*E_weight, *E_minlen, *E_color,
+	*E_weight, *E_minlen, *E_color, *E_fillcolor,
 	*E_activepencolor, *E_activefillcolor,
 	*E_selectedpencolor, *E_selectedfillcolor,
 	*E_visitedpencolor, *E_visitedfillcolor,

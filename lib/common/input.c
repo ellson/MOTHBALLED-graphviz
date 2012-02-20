@@ -832,6 +832,7 @@ void graph_init(graph_t * g, boolean use_rankdir)
     /* initialize edges */
     E_weight = agfindedgeattr(g, "weight");
     E_color = agfindedgeattr(g, "color");
+    E_fillcolor = agfindedgeattr(g, "fillcolor");
     E_fontsize = agfindedgeattr(g, "fontsize");
     E_fontname = agfindedgeattr(g, "fontname");
     E_fontcolor = agfindedgeattr(g, "fontcolor");

@@ -1,3 +1,5 @@
+February 15, 2012
+	- Update libexpr to reflect Glenn Fowler's changes including scopes for variables.
 February 9, 2012
 	- Add next graph variable to gvpr
 February 8, 2012

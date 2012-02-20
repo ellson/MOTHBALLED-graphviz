@@ -1,4 +1,3 @@
-/* $Id$ $Revision$ */
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
@@ -15,29 +14,20 @@
  * Glenn Fowler
  * AT&T Research
  *
- * expression library C program generator
+ * expression library
  */
 
-#include "exlib.h"
-
-#define str(s)		# s
-#define xstr(s)		str(s)
+#include <exlib.h>
 
 /*
- * return C type name for type
+ * no space message with default (empty) string value
  */
 
 char*
-extype(int type)
+exnospace(void)
 {
-	switch (type)
-	{
-	case FLOATING:
-		return "double";
-	case STRING:
-		return "char*";
-	case UNSIGNED:
-		return xstr(uintmax_t);
-	}
-	return xstr(intmax_t);
+	static const char	null[1];
+
+	exerror("out of space");
+	return (char*)null;
 }
