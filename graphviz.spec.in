@@ -28,8 +28,7 @@ Source0: http://www.graphviz.org/pub/@GRAPHVIZ_SOURCES@/graphviz-@VERSION@.tar.g
 Prefix: /usr
 
 #-- feature and package selection -------------------------------------------
-#   depends on %dist and %fedora (or %rhl or %rhel) which are set
-#   in .rpmmacros on each build host
+#   depends on macro values set by redhat-rpm-config
 
 # All features are off (undefined) by default
 # To enable, use: <percent>define FEATURE 1
@@ -182,7 +181,7 @@ Requires(postun): /sbin/ldconfig
 A collection of tools for the manipulation and layout
 of graphs (as in nodes and edges, not as in barcharts).
 
-# run "dot -c" to generate plugin config in %{libdir}/graphviz/config
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config
 # (don't rely on ldconfig to find libraries since it won't
 #  help if --prefix was used to relocate binaries)
 %post
@@ -260,7 +259,7 @@ Requires:         %{name} = %{version}-%{release}
 %description x
 Graphviz plugins and commands that depend on x11 - most installations will want this
 
-# run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config
 %post x
 LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 
@@ -309,7 +308,7 @@ to use GIF, you are recommended to use the PNG format instead because
 of the better quality anti-aliased lines provided by the cairo+pango
 based renderer.)
 
-# run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config
 %post gd
 LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 
@@ -330,7 +329,7 @@ Requires:         %{name}-x = %{version}-%{release}
 %description webp
 Graphviz plugin for webp image rendering. 
 
-# run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config
 %post webp
 LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 
@@ -353,7 +352,7 @@ Graphviz plugin for renderers based on DevIL.  (Unless you absolutely have
 to use BMP, TIF, or TGA, you are recommended to use the PNG format instead
 supported directly by the cairo+pango based renderer in the base graphviz rpm.)
 
-# run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config
 %post devil
 LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 
@@ -374,7 +373,7 @@ Requires:         %{name}-x = %{version}-%{release}
 %description ming
 Graphviz plugin for -Tswf (flash) renderer based on ming.
 
-# run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config
 %post ming
 LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 
@@ -703,34 +702,34 @@ CFLAGS="$RPM_OPT_FLAGS" \
         --datadir=%{_datadir} \
         --mandir=%{_mandir} \
         --with-x \
-	--disable-static \
+        --disable-static \
         --disable-dependency-tracking \
-	--enable-sharp%{!?SHARP:=no} \
-	--enable-guile%{!?GUILE:=no} \
-	--enable-io%{!?_IO:=no} \
-	--enable-java%{!?JAVA:=no} \
-	--enable-lua%{!?LUA:=no} \
-	--enable-ocaml%{!?OCAML:=no} \
-	--enable-perl%{!?PERL:=no} \
-	--enable-php%{!?PHP:=no} \
-	--enable-python%{!?PYTHON:=no} \
-	--enable-r%{!?R_LANG:=no} \
-	--enable-ruby%{!?RUBY:=no} \
-	--enable-tcl%{!?TCL:=no} \
-	--with%{!?DEVIL:out}-devil \
-	--with%{!?WEBP:out}-webp \
-	--with%{!?GDK_PIXBUF:out}-gdk-pixbuf \
-	--with%{!?GHOSTSCRIPT:out}-ghostscript \
-	--with%{!?GLITZ:out}-glitz \
-	--with%{!?IPSEPCOLA:out}-ipsepcola \
-	--with%{!?LASI:out}-lasi \
-	--with%{!?MING:out}-ming \
-	--with%{!?_QT:out}-qt \
-	--with%{!?PANGOCAIRO:out}-pangocairo \
-	--with%{!?RSVG:out}-rsvg \
-	--with%{!?ORTHO:out}-ortho \
-	--with%{!?SFDP:out}-sfdp \
-	--with%{!?SMYRNA:out}-smyrna
+        --enable-sharp%{!?SHARP:=no} \
+        --enable-guile%{!?GUILE:=no} \
+        --enable-io%{!?_IO:=no} \
+        --enable-java%{!?JAVA:=no} \
+        --enable-lua%{!?LUA:=no} \
+        --enable-ocaml%{!?OCAML:=no} \
+        --enable-perl%{!?PERL:=no} \
+        --enable-php%{!?PHP:=no} \
+        --enable-python%{!?PYTHON:=no} \
+        --enable-r%{!?R_LANG:=no} \
+        --enable-ruby%{!?RUBY:=no} \
+        --enable-tcl%{!?TCL:=no} \
+        --with%{!?DEVIL:out}-devil \
+        --with%{!?WEBP:out}-webp \
+        --with%{!?GDK_PIXBUF:out}-gdk-pixbuf \
+        --with%{!?GHOSTSCRIPT:out}-ghostscript \
+        --with%{!?GLITZ:out}-glitz \
+        --with%{!?IPSEPCOLA:out}-ipsepcola \
+        --with%{!?LASI:out}-lasi \
+        --with%{!?MING:out}-ming \
+        --with%{!?_QT:out}-qt \
+        --with%{!?PANGOCAIRO:out}-pangocairo \
+        --with%{!?RSVG:out}-rsvg \
+        --with%{!?ORTHO:out}-ortho \
+        --with%{!?SFDP:out}-sfdp \
+        --with%{!?SMYRNA:out}-smyrna
 make %{?_smp_mflags}
 
 %install
