@@ -37,7 +37,7 @@ libgv_sharp_la_LDFLAGS = -module -avoid-version
 libgv_sharp_la_CPPFLAGS = $(BASECPPFLAGS) $(SHARP_INCLUDES)
 $(SHARP_data): gv_sharp.cpp
 gv_sharp.cpp: gv.i
-	$(SWIG) -c++ -csharp -namespace gv -o gv_sharp.cpp $(srcdir)/gv.i
+	$(SWIG) $(DEFS) -c++ -csharp -namespace gv -o gv_sharp.cpp $(srcdir)/gv.i
 
 pkggodir = $(pkglibdir)/go
 GO_data = 
@@ -48,7 +48,7 @@ libgv_go_la_LDFLAGS = -module -avoid-version
 libgv_go_la_CPPFLAGS = $(BASECPPFLAGS) $(GO_INCLUDES)
 # $(GO_data): gv_go.cpp
 gv_go.cpp: gv.i
-	$(SWIG) -c++ -go -o gv_go.cpp $(srcdir)/gv.i
+	$(SWIG) $(DEFS) -c++ -go -o gv_go.cpp $(srcdir)/gv.i
 
 pkgguiledir = $(pkglibdir)/guile
 GUILE_data = 
@@ -59,7 +59,7 @@ libgv_guile_la_LDFLAGS = -module -avoid-version
 libgv_guile_la_CPPFLAGS = $(BASECPPFLAGS) $(GUILE_INCLUDES)
 # $(GUILE_data): gv_guile.cpp
 gv_guile.cpp: gv.i
-	$(SWIG) -c++ -guile -o gv_guile.cpp $(srcdir)/gv.i
+	$(SWIG) $(DEFS) -c++ -guile -o gv_guile.cpp $(srcdir)/gv.i
 	$(SED) -e 's/SWIG_GUILE_INIT_STATIC void/void/' <gv_guile.cpp >t$$
 	mv -f t$$ gv_guile.cpp
 
@@ -72,7 +72,7 @@ libgv_io_la_LDFLAGS = -module -avoid-version
 libgv_io_la_CPPFLAGS = $(BASECPPFLAGS) $(IO_INCLUDES)
 # $(IO_data): gv_io.cpp
 gv_io.cpp: gv.i
-	$(SWIG) -c++ -io -o gv_io.cpp $(srcdir)/gv.i
+	$(SWIG) $(DEFS) -c++ -io -o gv_io.cpp $(srcdir)/gv.i
 
 pkgjavadir = $(pkglibdir)/java
 JAVA_data = gv.java gvJNI.java SWIGTYPE_p_Agraph_t.java SWIGTYPE_p_Agnode_t.java SWIGTYPE_p_Agedge_t.java SWIGTYPE_p_Agsym_t.java SWIGTYPE_p_FILE.java

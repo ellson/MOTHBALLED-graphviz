@@ -3038,11 +3038,11 @@ dnl -----------------------------------
 dnl CGRAPH 
 
 AC_ARG_WITH(cgraph,
-  [AS_HELP_STRING([--with-cgraph=no],[Use CGRAPH library])],
-  [], [with_cgraph=no])
+  [AS_HELP_STRING([--with-cgraph=yes],[Use CGRAPH library])],
+  [], [with_cgraph=yes])
 
 if test "x$with_cgraph" != "xyes"; then
-  use_cgraph="No (disabled by default - experimental)"
+  use_cgraph="No (disabled)"
 else
   use_cgraph="Yes"
   AC_DEFINE_UNQUOTED(WITH_CGRAPH,1,[Define if you want CGRAPH])
