@@ -365,13 +365,13 @@ char *setv(Agedge_t *e, char *attr, char *val)
         return NULL;
     g = agroot(agraphof(agtail(e)));
 #ifndef WITH_CGRAPH
-    if ( AGTYPE(e) == AGRAPH ) {
-	// FIXME - protonode
-    }
     a = agfindattr(g->proto->e, attr);
     if (!a)
         a = agedgeattr(g, attr, emptystring);
 #else
+    if ( AGTYPE(e) == AGRAPH ) {
+	// FIXME - protoedge
+    }
     a = agattr(g, AGEDGE, attr, NULL);
     if (!a)
         a = agattr(g, AGEDGE, attr, emptystring);
@@ -484,7 +484,7 @@ Agnode_t *protonode(Agraph_t *g)
 }
 
 Agedge_t *protoedge(Agraph_t *g)
-
+{
     if (!g)
         return NULL;
     return g->proto->e;
