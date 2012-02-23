@@ -432,7 +432,7 @@ Agedge_t *findedge(Agnode_t *t, Agnode_t *h)
 {
     if (!t || !h)
         return NULL;
-#ifndef WITH_CGRAPH
+#ifdef WITH_CGRAPH
     if (AGTYPE(t) == AGRAPH || AGTYPE(h) == AGRAPH)
 	return NULL;
 #endif
@@ -466,7 +466,7 @@ Agnode_t *headof(Agedge_t *e)
 {
     if (!e)
         return NULL;
-#ifndef WITH_CGRAPH
+#ifdef WITH_CGRAPH
     if (AGTYPE(e) == AGRAPH)
 	return NULL;
 #endif
@@ -477,7 +477,7 @@ Agnode_t *tailof(Agedge_t *e)
 {
     if (!e)
         return NULL;
-#ifndef WITH_CGRAPH
+#ifdef WITH_CGRAPH
     if (AGTYPE(e) == AGRAPH)
 	return NULL;
 #endif
@@ -495,7 +495,7 @@ Agraph_t *graphof(Agedge_t *e)
 {
     if (!e)
         return NULL;
-#ifndef WITH_CGRAPH
+#ifdef WITH_CGRAPH
     if (AGTYPE(e) == AGRAPH)
 	return (Agraph_t*)e; /* graph of protoedge is itself recast */
 #endif
@@ -506,8 +506,8 @@ Agraph_t *graphof(Agnode_t *n)
 {
     if (!n)
         return NULL;
-#ifndef WITH_CGRAPH
-    if (AGTYPE(e) == AGRAPH)
+#ifdef WITH_CGRAPH
+    if (AGTYPE(n) == AGRAPH)
 	return (Agraph_t*)n;  /* graph of protonode is itself recast */
 #endif
     return agraphof(n);
@@ -554,7 +554,7 @@ char *nameof(Agnode_t *n)
 {
     if (!n)
         return NULL;
-#ifndef WITH_CGRAPH
+#ifdef WITH_CGRAPH
     if (AGTYPE(n) == AGRAPH)
 	return NULL;
 #endif
@@ -564,7 +564,7 @@ char *nameof(Agnode_t *n)
 //{
 //    if (!e)
 //        return NULL;
-//#ifndef WITH_CGRAPH
+//#ifdef WITH_CGRAPH
 //    if (AGTYPE(e) == AGRAPH)
 //	return NULL;
 //#endif
