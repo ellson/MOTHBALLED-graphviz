@@ -151,8 +151,8 @@ Agedge_t *edge(Agnode_t *t, Agnode_t *h)
     return agedge(agraphof(t), t, h, NULL, 1);
 #else
     // edges from/to the protonode are not permitted
-    if (agnameof(t)[0] == '\001' && strcmp (agnameof(t), "\001proto") == 0)
-      || (agnameof(h)[0] == '\001' && strcmp (agnameof(h), "\001proto") == 0)
+    if ((agnameof(t)[0] == '\001' && strcmp (agnameof(t), "\001proto") == 0)
+      || (agnameof(h)[0] == '\001' && strcmp (agnameof(h), "\001proto") == 0))
         return NULL;
     return agedge(t->graph, t, h);
 #endif
