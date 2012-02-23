@@ -131,26 +131,29 @@ Agraph_t *graph(Agraph_t *g, char *name)
 
 Agnode_t *node(Agraph_t *g, char *name)
 {
-    // creating a protonode is not permitted
-    if (!gvc || (name[0] == '\001' && strcmp (name, "\001proto") == 0))
+    if (!gvc)
         return NULL;
 #ifdef WITH_CGRAPH
     return agnode(g, name, 1);
 #else
+    // creating a protonode is not permitted
+    if (name[0] == '\001' && strcmp (name, "\001proto") == 0)
+        return NULL;
     return agnode(g, name);
 #endif
 }
 
 Agedge_t *edge(Agnode_t *t, Agnode_t *h)
 {
-    // edges from/to the protonode are not permitted
-    if (!gvc || !t || !h
-      || (agnameof(t)[0] == '\001' && strcmp (agnameof(t), "\001proto") == 0)
-      || (agnameof(h)[0] == '\001' && strcmp (agnameof(h), "\001proto") == 0))
+    if (!gvc || !t || !h)
         return NULL;
 #ifdef WITH_CGRAPH
     return agedge(agraphof(t), t, h, NULL, 1);
 #else
+    // edges from/to the protonode are not permitted
+    if (agnameof(t)[0] == '\001' && strcmp (agnameof(t), "\001proto") == 0)
+      || (agnameof(h)[0] == '\001' && strcmp (agnameof(h), "\001proto") == 0)
+        return NULL;
     return agedge(t->graph, t, h);
 #endif
 }
@@ -266,6 +269,12 @@ char *setv(Agraph_t *g, char *attr, char *val)
 //-------------------------------------------------
 char *getv(Agnode_t *n, Agsym_t *a)
 {
+    if (!n || !a)
+        return NULL;
+#ifdef WITH_CGRAPH
+    if (AGTYPE(n) == AGRAPH) // protonode   
+	return NULL;   // FIXME ??
+#endif
     return myagxget(n, a);
 }
 char *getv(Agnode_t *n, char *attr)
@@ -275,6 +284,10 @@ char *getv(Agnode_t *n, char *attr)
 
     if (!n || !attr)
         return NULL;
+#ifdef WITH_CGRAPH
+    if (AGTYPE(n) == AGRAPH) // protonode   
+	return NULL;   // FIXME ??
+#endif
     g = agroot(agraphof(n));
 #ifdef WITH_CGRAPH
     a = agattr(g, AGNODE, attr, NULL);
@@ -287,6 +300,10 @@ char *setv(Agnode_t *n, Agsym_t *a, char *val)
 {
     if (!n || !a || !val)
         return NULL;
+#ifdef WITH_CGRAPH
+    if (AGTYPE(n) == AGRAPH) // protonode   
+	return NULL;   // FIXME ??
+#endif
     myagxset(n, a, val);
     return val;
 }
@@ -297,6 +314,14 @@ char *setv(Agnode_t *n, char *attr, char *val)
 
     if (!n || !attr || !val)
         return NULL;
+#ifdef WITH_CGRAPH
+    if (AGTYPE(n) == AGRAPH) { // protonode   
+	g = (Agraph_t*)n;
+    	a = agattr(g, AGNODE, attr, val); // create default attribute in psuodo protonode
+	    // FIXME? - deal with html in "label" attributes
+	return val;
+    }
+#endif
     g = agroot(agraphof(n));
 #ifdef WITH_CGRAPH
     a = agattr(g, AGNODE, attr, NULL);
@@ -311,6 +336,12 @@ char *setv(Agnode_t *n, char *attr, char *val)
 //-------------------------------------------------
 char *getv(Agedge_t *e, Agsym_t *a)
 {
+    if (!e || !a)
+        return NULL;
+#ifdef WITH_CGRAPH
+    if (AGTYPE(e) == AGRAPH) // protoedge   
+	return NULL;   // FIXME ??
+#endif
     return myagxget(e, a);
 }
 char *getv(Agedge_t *e, char *attr)
@@ -320,6 +351,10 @@ char *getv(Agedge_t *e, char *attr)
 
     if (!e || !attr)
         return NULL;
+#ifdef WITH_CGRAPH
+    if (AGTYPE(e) == AGRAPH) // protoedge   
+	return NULL;   // FIXME ??
+#endif
     g = agraphof(agtail(e));
 #ifndef WITH_CGRAPH
     a = agfindattr(g->proto->e, attr);
@@ -332,6 +367,10 @@ char *setv(Agedge_t *e, Agsym_t *a, char *val)
 {
     if (!e || !a || !val)
         return NULL;
+#ifdef WITH_CGRAPH
+    if (AGTYPE(e) == AGRAPH) // protoedge   
+	return NULL;   // FIXME ??
+#endif
     myagxset(e, a, val);
     return val;
 }
@@ -342,6 +381,14 @@ char *setv(Agedge_t *e, char *attr, char *val)
 
     if (!e || !attr || !val)
         return NULL;
+#ifdef WITH_CGRAPH
+    if (AGTYPE(e) == AGRAPH) { // protoedge   
+	g = (Agraph_t*)e;
+    	a = agattr(g, AGEDGE, attr, val); // create default attribute in pseudo protoedge
+	    // FIXME? - deal with html in "label" attributes
+	return val;
+    }
+#endif
     g = agroot(agraphof(agtail(e)));
 #ifndef WITH_CGRAPH
     a = agfindattr(g->proto->e, attr);
@@ -451,21 +498,27 @@ Agraph_t *rootof(Agraph_t *g)
 }
 
 //-------------------------------------------------
-#ifndef WITH_CGRAPH
 Agnode_t *protonode(Agraph_t *g)
 {
     if (!g)
         return NULL;
+#ifdef WITH_CGRAPH
+    return (Agnode_t *)g;    // gross abuse of the type system!
+#else
     return g->proto->n;
+#endif
 }
 
 Agedge_t *protoedge(Agraph_t *g)
 {
     if (!g)
         return NULL;
+#ifdef WITH_CGRAPH
+    return (Agedge_t *)g;    // gross abuse of the type system!
+#else
     return g->proto->e;
-}
 #endif
+}
 
 //-------------------------------------------------
 char *nameof(Agraph_t *g)
