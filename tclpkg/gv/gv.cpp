@@ -148,14 +148,11 @@ Agedge_t *edge(Agnode_t *t, Agnode_t *h)
     if (!gvc || !t || !h)
         return NULL;
 #ifdef WITH_CGRAPH
-    // edges from/to the protonode are not permitted
-    if ((AGTYPE(t) == AGRAPH) || (AGTYPE(h) == AGRAPH))
-	return NULL;
     return agedge(agraphof(t), t, h, NULL, 1);
 #else
     // edges from/to the protonode are not permitted
-    if ( (agnameof(t)[0] == '\001' && strcmp (agnameof(t), "\001proto") == 0)
-      || (agnameof(h)[0] == '\001' && strcmp (agnameof(h), "\001proto") == 0))
+    if (agnameof(t)[0] == '\001' && strcmp (agnameof(t), "\001proto") == 0)
+      || (agnameof(h)[0] == '\001' && strcmp (agnameof(h), "\001proto") == 0)
         return NULL;
     return agedge(t->graph, t, h);
 #endif
@@ -272,6 +269,12 @@ char *setv(Agraph_t *g, char *attr, char *val)
 //-------------------------------------------------
 char *getv(Agnode_t *n, Agsym_t *a)
 {
+    if (!n || !a)
+        return NULL;
+#ifdef WITH_CGRAPH
+    if (AGTYPE(n) == AGRAPH) // protonode   
+	return NULL;   // FIXME ??
+#endif
     return myagxget(n, a);
 }
 char *getv(Agnode_t *n, char *attr)
@@ -281,6 +284,10 @@ char *getv(Agnode_t *n, char *attr)
 
     if (!n || !attr)
         return NULL;
+#ifdef WITH_CGRAPH
+    if (AGTYPE(n) == AGRAPH) // protonode   
+	return NULL;   // FIXME ??
+#endif
     g = agroot(agraphof(n));
 #ifdef WITH_CGRAPH
     a = agattr(g, AGNODE, attr, NULL);
@@ -294,10 +301,8 @@ char *setv(Agnode_t *n, Agsym_t *a, char *val)
     if (!n || !a || !val)
         return NULL;
 #ifdef WITH_CGRAPH
-    if ( AGTYPE(n) == AGRAPH ) {
-//	agattr(sg,AGNODE,"shape","box")
-	// FIXME - protonode
-    }
+    if (AGTYPE(n) == AGRAPH) // protonode   
+	return NULL;   // FIXME ??
 #endif
     myagxset(n, a, val);
     return val;
@@ -309,12 +314,16 @@ char *setv(Agnode_t *n, char *attr, char *val)
 
     if (!n || !attr || !val)
         return NULL;
+#ifdef WITH_CGRAPH
+    if (AGTYPE(n) == AGRAPH) { // protonode   
+	g = (Agraph_t*)n;
+    	a = agattr(g, AGNODE, attr, val); // create default attribute in psuodo protonode
+	    // FIXME? - deal with html in "label" attributes
+	return val;
+    }
+#endif
     g = agroot(agraphof(n));
 #ifdef WITH_CGRAPH
-    if ( AGTYPE(n) == AGRAPH ) {
-//	agattr(sg,AGNODE,"shape","box")
-	// FIXME - protonode
-    }
     a = agattr(g, AGNODE, attr, NULL);
 #else
     a = agfindattr(g->proto->n, attr);
@@ -327,6 +336,12 @@ char *setv(Agnode_t *n, char *attr, char *val)
 //-------------------------------------------------
 char *getv(Agedge_t *e, Agsym_t *a)
 {
+    if (!e || !a)
+        return NULL;
+#ifdef WITH_CGRAPH
+    if (AGTYPE(e) == AGRAPH) // protoedge   
+	return NULL;   // FIXME ??
+#endif
     return myagxget(e, a);
 }
 char *getv(Agedge_t *e, char *attr)
@@ -336,6 +351,10 @@ char *getv(Agedge_t *e, char *attr)
 
     if (!e || !attr)
         return NULL;
+#ifdef WITH_CGRAPH
+    if (AGTYPE(e) == AGRAPH) // protoedge   
+	return NULL;   // FIXME ??
+#endif
     g = agraphof(agtail(e));
 #ifndef WITH_CGRAPH
     a = agfindattr(g->proto->e, attr);
@@ -349,9 +368,8 @@ char *setv(Agedge_t *e, Agsym_t *a, char *val)
     if (!e || !a || !val)
         return NULL;
 #ifdef WITH_CGRAPH
-    if ( AGTYPE(e) == AGRAPH ) {
-	// FIXME - protonode
-    }
+    if (AGTYPE(e) == AGRAPH) // protoedge   
+	return NULL;   // FIXME ??
 #endif
     myagxset(e, a, val);
     return val;
@@ -363,15 +381,20 @@ char *setv(Agedge_t *e, char *attr, char *val)
 
     if (!e || !attr || !val)
         return NULL;
+#ifdef WITH_CGRAPH
+    if (AGTYPE(e) == AGRAPH) { // protoedge   
+	g = (Agraph_t*)e;
+    	a = agattr(g, AGEDGE, attr, val); // create default attribute in pseudo protoedge
+	    // FIXME? - deal with html in "label" attributes
+	return val;
+    }
+#endif
     g = agroot(agraphof(agtail(e)));
 #ifndef WITH_CGRAPH
     a = agfindattr(g->proto->e, attr);
     if (!a)
         a = agedgeattr(g, attr, emptystring);
 #else
-    if ( AGTYPE(e) == AGRAPH ) {
-	// FIXME - protoedge
-    }
     a = agattr(g, AGEDGE, attr, NULL);
     if (!a)
         a = agattr(g, AGEDGE, attr, emptystring);
@@ -475,43 +498,27 @@ Agraph_t *rootof(Agraph_t *g)
 }
 
 //-------------------------------------------------
-#ifndef WITH_CGRAPH
 Agnode_t *protonode(Agraph_t *g)
 {
     if (!g)
         return NULL;
-    return g->proto->n;
-}
-
-Agedge_t *protoedge(Agraph_t *g)
-{
-    if (!g)
-        return NULL;
-    return g->proto->e;
-}
+#ifdef WITH_CGRAPH
+    return (Agnode_t *)g;    // gross abuse of the type system!
 #else
-/*
- * CGRAPH's default attribute values are not in a node struct.
- *    so fake one
- */
-static Agnode_t stub_protonode;  //specifically .tag == AGRAPH
-
-Agnode_t *protonode(Agraph_t *g)
-{
-    if (!g)
-        return NULL;
-    return &stub_protonode;
+    return g->proto->n;
+#endif
 }
-
-static Agedge_t stub_protoedge;  //specifically  .tag == AGRAPH
 
 Agedge_t *protoedge(Agraph_t *g)
 {
     if (!g)
         return NULL;
-    return &stub_protoedge;
-}
+#ifdef WITH_CGRAPH
+    return (Agedge_t *)g;    // gross abuse of the type system!
+#else
+    return g->proto->e;
 #endif
+}
 
 //-------------------------------------------------
 char *nameof(Agraph_t *g)
@@ -1023,15 +1030,9 @@ bool rm(Agnode_t *n)
 {
     if (!n)
         return false;
-#ifndef WITH_CGRAPH
     // removal of the protonode is not permitted
     if (agnameof(n)[0] == '\001' && strcmp (agnameof(n), "\001proto") ==0)
         return false;
-#else
-    // removal of the protonode is not permitted
-    if (AGTYPE(n) == AGRAPH)  
-	return false;
-#endif
     agdelete(agraphof(n), n);
     return true;
 }
@@ -1040,16 +1041,10 @@ bool rm(Agedge_t *e)
 {
     if (!e)
         return false;
-#ifndef WITH_CGRAPH
     // removal of the protoedge is not permitted
     if ((agnameof(aghead(e))[0] == '\001' && strcmp (agnameof(aghead(e)), "\001proto") == 0)
      || (agnameof(agtail(e))[0] == '\001' && strcmp (agnameof(agtail(e)), "\001proto") == 0))
         return false;
-#else
-    // removal of the protoedge is not permitted
-    if (AGTYPE(e) == AGRAPH)  
-	return false;
-#endif
     agdelete(agroot(agraphof(aghead(e))), e);
     return true;
 }
