@@ -1786,7 +1786,7 @@ eval(Expr_t* ex, register Exnode_t* expr, void* env)
 			if ((*ex->disc->convertf)(ex, &tmp, INTEGER, expr->data.operand.right ? expr->data.operand.right->data.variable.symbol : (Exid_t*)0, 0, ex->disc))
 			{
 				if (v.string) {
-					tmp.data.constant.value.integer = strToL(v.string, &e);
+					tmp.data.constant.value.integer = strtoll(v.string, &e, 0);
                     if (*e)
                         tmp.data.constant.value.integer = *v.string != 0;
 				}
@@ -1889,6 +1889,7 @@ exeval(Expr_t* ex, Exnode_t* expr, void* env)
 	return v;
 }
 
+#if 0
 /* strToL:
  * Convert a string representation of an integer
  * to an integer. The string can specify its own form
@@ -1914,6 +1915,7 @@ Sflong_t strToL(char *s, char **p)
 	sfsscanf(s, "%I*i", sizeof(v), &v);
     return v;
 }
+#endif
 
 /* exstring:
  * Generate copy of input string using
