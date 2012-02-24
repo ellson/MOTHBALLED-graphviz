@@ -44,7 +44,9 @@
 #include <getopt.h>
 #endif
 
-#define DFLT_GPRPATH    "."
+#ifndef DFLT_GVPRPATH
+#define DFLT_GVPRPATH    "."
+#endif
 
 #define GV_USE_JUMP 4
 
@@ -192,7 +194,7 @@ static int parseArgs(char *s, int argc, char ***argv)
 /* resolve:
  * Translate -f arg parameter into a pathname.
  * If arg contains '/', return arg.
- * Else search directories in GPRPATH for arg.
+ * Else search directories in GVPRPATH for arg.
  * Return NULL on error.
  * 
  * FIX - use pathinclude/pathfind
@@ -213,9 +215,11 @@ static char *resolve(char *arg)
 #endif
 	return strdup(arg);
 
-    path = getenv("GPRPATH");
+    path = getenv("GVPRPATH");
     if (!path)
-	path = DFLT_GPRPATH;
+	path = getenv("GPRPATH");  // deprecated
+    if (!path)
+	path = DFLT_GVPRPATH;
 
     if (!(fp = sfstropen())) {
 	error(ERROR_ERROR, "Could not open buffer");
@@ -246,7 +250,7 @@ static char *resolve(char *arg)
     }
 
     if (!fname)
-	error(ERROR_ERROR, "Could not find file \"%s\" in GPRPATH", arg);
+	error(ERROR_ERROR, "Could not find file \"%s\" in GVPRPATH", arg);
 
     sfclose(fp);
     return fname;
@@ -911,7 +915,7 @@ int gvpr (int argc, char *argv[], gvpropts * uopts)
     int rv = 0;
     options* opts = 0;
     int cleanup, i, incoreGraphs;
-    Agraph_t* nextg;
+    Agraph_t* nextg = NULL;
 
     setErrorErrors (0);
     ingDisc.dflt = sfstdin;

@@ -15,7 +15,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/ingraphs \
 	-I$(top_srcdir)/lib/common \
 	-I$(top_srcdir)/lib/cgraph \
-	-I$(top_srcdir)/lib/cdt
+	-I$(top_srcdir)/lib/cdt \
+	-DDFLT_GVPRPATH="\".$(PATH_SEPARATOR)$(pkgdatadir)/gvpr\""
 
 pkginclude_HEADERS = gvpr.h
 noinst_PROGRAMS = mkdefs
