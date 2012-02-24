@@ -205,6 +205,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\exnospace.c"
+				>
+			</File>
+			<File
 				RelativePath=".\exopen.c"
 				>
 			</File>
@@ -214,6 +218,10 @@
 			</File>
 			<File
 				RelativePath=".\exrewind.c"
+				>
+			</File>
+			<File
+				RelativePath=".\exstash.c"
 				>
 			</File>
 			<File
