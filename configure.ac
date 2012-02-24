@@ -3325,6 +3325,7 @@ AC_CONFIG_FILES(Makefile
 	cmd/dot/Makefile
 	cmd/tools/Makefile
 	cmd/gvpr/Makefile
+	cmd/gvpr/lib/Makefile
 	cmd/lefty/ws/x11/libfilereq/Makefile
 	cmd/lefty/ws/x11/Makefile
 	cmd/lefty/ws/mswin32/Makefile
