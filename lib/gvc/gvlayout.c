@@ -106,17 +106,21 @@ int gvLayoutJobs(GVC_t * gvc, Agraph_t * g)
  */
 int gvFreeLayout(GVC_t * gvc, Agraph_t * g)
 {
+#ifdef WITH_CGRAPH
+    /* skip if no Agraphinfo_t yet */
+    if (! agbindrec(g, "Agraphinfo_t", 0, TRUE))
+	    return 0;
+#endif
+
     if (GD_cleanup(g)) {
 	(GD_cleanup(g))(g);
 	GD_cleanup(g) = NULL;
     }
     
     if (GD_drawing(g)) {
-#ifndef WITH_CGRAPH      // FIXME  - shouldn't need this conditional
 	graph_cleanup(g);
 	GD_drawing(g) = NULL;
 	GD_drawing(g->root) = NULL;
-#endif
     }
     return 0;
 }

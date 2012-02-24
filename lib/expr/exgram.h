@@ -529,7 +529,7 @@ excast(Expr_t* p, register Exnode_t* x, register int type, register Exnode_t* xr
 			break;
 		case S2I:
 			s = x->data.constant.value.string;
-			x->data.constant.value.integer = strToL(s, &e);
+			x->data.constant.value.integer = strtoll(s, &e, 0);
 			if (*e)
 				x->data.constant.value.integer = (*s != 0);
 			break;

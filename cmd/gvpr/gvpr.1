@@ -1036,11 +1036,11 @@ Make all blue nodes red.
 BEG_G {
   n = nNodes($G);
   e = nEdges($G);
-  printf ("%d nodes %d edges %s\n", n, e, $G.name);
+  printf ("%d nodes %d edges %s\\n", n, e, $G.name);
   tot_n += n;
   tot_e += e;
 }
-END { printf ("%d nodes %d edges total\n", tot_n, tot_e) }\fP
+END { printf ("%d nodes %d edges total\\n", tot_n, tot_e) }\fP
 .fi
 .RE
 .DT
@@ -1082,7 +1082,7 @@ of an edge indicates how many edges from the input graph the edge represents.
 E{deg[head]++; deg[tail]++; }
 END_G {
   for (deg[n]) {
-    printf ("deg[%s] = %d\n", n.name, deg[n]);
+    printf ("deg[%s] = %d\\n", n.name, deg[n]);
   }
 }\fP
 .fi

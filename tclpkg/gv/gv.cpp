@@ -148,11 +148,14 @@ Agedge_t *edge(Agnode_t *t, Agnode_t *h)
     if (!gvc || !t || !h)
         return NULL;
 #ifdef WITH_CGRAPH
+    // edges from/to the protonode are not permitted
+    if (AGTYPE(t) == AGRAPH || AGTYPE(h) == AGRAPH)
+	return NULL;
     return agedge(agraphof(t), t, h, NULL, 1);
 #else
     // edges from/to the protonode are not permitted
-    if (agnameof(t)[0] == '\001' && strcmp (agnameof(t), "\001proto") == 0)
-      || (agnameof(h)[0] == '\001' && strcmp (agnameof(h), "\001proto") == 0)
+    if ((agnameof(t)[0] == '\001' && strcmp (agnameof(t), "\001proto") == 0)
+      || (agnameof(h)[0] == '\001' && strcmp (agnameof(h), "\001proto") == 0))
         return NULL;
     return agedge(t->graph, t, h);
 #endif
@@ -429,6 +432,10 @@ Agedge_t *findedge(Agnode_t *t, Agnode_t *h)
 {
     if (!t || !h)
         return NULL;
+#ifdef WITH_CGRAPH
+    if (AGTYPE(t) == AGRAPH || AGTYPE(h) == AGRAPH)
+	return NULL;
+#endif
     return agfindedge(agraphof(t), t, h);
 }
 
@@ -459,6 +466,10 @@ Agnode_t *headof(Agedge_t *e)
 {
     if (!e)
         return NULL;
+#ifdef WITH_CGRAPH
+    if (AGTYPE(e) == AGRAPH)
+	return NULL;
+#endif
     return aghead(e);
 }
 
@@ -466,6 +477,10 @@ Agnode_t *tailof(Agedge_t *e)
 {
     if (!e)
         return NULL;
+#ifdef WITH_CGRAPH
+    if (AGTYPE(e) == AGRAPH)
+	return NULL;
+#endif
     return agtail(e);
 }
 
@@ -480,6 +495,10 @@ Agraph_t *graphof(Agedge_t *e)
 {
     if (!e)
         return NULL;
+#ifdef WITH_CGRAPH
+    if (AGTYPE(e) == AGRAPH)
+	return (Agraph_t*)e; /* graph of protoedge is itself recast */
+#endif
     return agraphof(agtail(e));
 }
 
@@ -487,6 +506,10 @@ Agraph_t *graphof(Agnode_t *n)
 {
     if (!n)
         return NULL;
+#ifdef WITH_CGRAPH
+    if (AGTYPE(n) == AGRAPH)
+	return (Agraph_t*)n;  /* graph of protonode is itself recast */
+#endif
     return agraphof(n);
 }
 
@@ -531,12 +554,20 @@ char *nameof(Agnode_t *n)
 {
     if (!n)
         return NULL;
+#ifdef WITH_CGRAPH
+    if (AGTYPE(n) == AGRAPH)
+	return NULL;
+#endif
     return agnameof(n);
 }
 //char *nameof(Agedge_t *e)
 //{
 //    if (!e)
 //        return NULL;
+//#ifdef WITH_CGRAPH
+//    if (AGTYPE(e) == AGRAPH)
+//	return NULL;
+//#endif
 //    return agnameof(e);
 //}
 char *nameof(Agsym_t *a)
