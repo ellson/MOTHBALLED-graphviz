@@ -693,6 +693,7 @@ static boolean selectedLayer(GVC_t *gvc, int layerNum, int numLayers, char *spec
     agxbput(&xb, spec);
     part_in_p = agxbuse(&xb);
 
+    /* Thanks to Matteo Nastasi for this extended code. */
     while ((rval == FALSE) && (cur = strtok_r(part_in_p, gvc->layerListDelims, &buf_part_p))) {
 	w1 = w0 = strtok_r (cur, gvc->layerDelims, &buf_p);
 	if (w0)
