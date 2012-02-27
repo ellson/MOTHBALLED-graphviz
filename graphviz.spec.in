@@ -213,7 +213,7 @@ fi
 %{_mandir}/man1/*.1*
 %{_mandir}/man7/*.7*
 %dir %{_datadir}/graphviz
-%exclude %{_datadir}/graphviz/lefty
+%{_datadir}/graphviz/gvpr
 %exclude %{_libdir}/graphviz/libgvplugin_gd.*
 %if 0%{?PANGOCAIRO}
 %exclude %{_libdir}/graphviz/libgvplugin_pango.*
@@ -247,7 +247,6 @@ fi
 %endif
 %if 0%{?SMYRNA}
 %exclude %{_bindir}/smyrna
-%exclude %{_datadir}/graphviz/smyrna
 %endif
 
 #-- graphviz-x rpm --------------------------------------------------
@@ -398,8 +397,7 @@ Graphviz applications using _QT - currently just gvedit
 %files qt
 %defattr(-,root,root,-)
 %{_bindir}/gvedit
-%dir %{_datadir}/graphviz/gvedit
-%{_datadir}/graphviz/gvedit/*
+%{_datadir}/graphviz/gvedit
 # %{_mandir}/man1/gvedit.1*
 %endif
 

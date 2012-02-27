@@ -15,20 +15,19 @@
 #include "config.h"
 #endif
 
-#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 #include <ctype.h>
 
-#include "macros.h"
-#include "const.h"
-
-#include "gvio.h"
 #include "gvplugin_render.h"
 #include "gvplugin_device.h"
+#include "gvio.h"
 #include "agxbuf.h"
 #include "utils.h"
 #include "color.h"
+
+#include "const.h"
 
 /* Number of points to split splines into */
 #define BEZIERSUBDIVISION 6
@@ -122,7 +121,7 @@ static char *picfontname(char *psname)
     fontinfo *p;
 
     for (p = fonttab; p->psname; p++)
-        if (streq(p->psname, psname))
+        if (strcmp(p->psname, psname) == 0)
             break;
     if (p->psname)
         rv = p->trname;
@@ -298,7 +297,7 @@ static void pic_begin_graph(GVJ_t * job)
 
     gvprintf(job, "%s Creator: %s version %s (%s)\n",
 	EscComment, job->common->info[0], job->common->info[1], job->common->info[2]);
-    gvprintf(job, "%s Title: %s\n", EscComment, obj->u.g->name);
+    gvprintf(job, "%s Title: %s\n", EscComment, agnameof(obj->u.g));
     gvprintf(job,
             "%s save point size and font\n.nr .S \\n(.s\n.nr DF \\n(.f\n",
             EscComment);

@@ -40,16 +40,86 @@ Tcl_GetString(Tcl_Obj *obj) {
 #endif
 ********* */
 
-#ifndef WITH_CGRAPH
-#define AGID(x) ((x)->handle)
-#endif
+/*  Globals */
 
+#ifdef WITH_CGRAPH
+static Tcl_Interp *myiddisc_usercontext;
+#endif
+static void *graphTblPtr, *nodeTblPtr, *edgeTblPtr;
 #if HAVE_LIBGD
 extern void *GDHandleTable;
 extern int Gdtclft_Init(Tcl_Interp *);
 #endif
 
-static void *graphTblPtr, *nodeTblPtr, *edgeTblPtr;
+#ifndef WITH_CGRAPH
+#define AGID(x) ((x)->handle)
+#endif
+
+
+#ifdef WITH_CGRAPH
+static void *myiddisc_open(Agraph_t *g) {
+	fprintf(stderr,"myiddisc_open:\n");
+        return NIL(void*);
+}
+static long myiddisc_map(void *state, int objtype, char *str, unsigned long *id, int createflag) {
+        switch (objtype) {
+                case AGRAPH: tclhandleAlloc(graphTblPtr, Tcl_GetStringResult(myiddisc_usercontext), id); break;
+                case AGNODE: tclhandleAlloc(nodeTblPtr, Tcl_GetStringResult(myiddisc_usercontext), id); break;
+                case AGINEDGE:
+                case AGOUTEDGE: tclhandleAlloc(edgeTblPtr, Tcl_GetStringResult(myiddisc_usercontext), id); break;
+        }
+        fprintf(stderr,"myiddisc_map: objtype %d, str \"%s\", id %lu, createflag %d\n", objtype, str, *id, createflag);
+        return 1;
+}
+static long myiddisc_alloc(void *state, int objtype, unsigned long id) {
+        switch (objtype) {
+                case AGRAPH: break;
+                case AGNODE: break;
+                case AGINEDGE:
+                case AGOUTEDGE: break;
+        }
+        fprintf(stderr,"myiddisc_alloc: objtype %d, id %lu\n", objtype, id);
+        return 0;
+}
+static void myiddisc_free(void *state, int objtype, unsigned long id) {
+        switch (objtype) {
+                case AGRAPH: tclhandleFreeIndex(graphTblPtr, id); break;
+                case AGNODE: tclhandleFreeIndex(nodeTblPtr, id); break;
+                case AGINEDGE:
+                case AGOUTEDGE: tclhandleFreeIndex(edgeTblPtr, id); break;
+        }
+        fprintf(stderr,"myiddisc_free: objtype %d, id %lu\n", objtype, id);
+}
+static char *myiddisc_print(void *state, int objtype, unsigned long id) {
+        static char buf[64];
+        switch (objtype) {
+                case AGRAPH: sprintf(buf, "graph%lu", id); break;
+                case AGNODE: sprintf(buf, "node%lu", id); break;
+                case AGINEDGE:
+                case AGOUTEDGE: sprintf(buf, "edge%lu", id); break;
+        }
+        fprintf(stderr,"myiddisc_print: objtype %d, id %lu\n", objtype, id);
+        return buf;
+}
+static void myiddisc_close(void *state) {
+        fprintf(stderr,"myiddisc_close:\n");
+}
+
+static Agiddisc_t myiddisc = {
+        myiddisc_open,
+        myiddisc_map,
+        myiddisc_alloc,
+        myiddisc_free,
+        myiddisc_print,
+        myiddisc_close
+};
+static Agdisc_t mydisc = {
+        NIL(Agmemdisc_t *),
+        &myiddisc,
+        NIL(Agiodisc_t *)
+};
+
+#endif // WITH_CGRAPH
 
 static size_t Tcldot_string_writer(GVJ_t *job, const char *s, size_t len)
 {
@@ -123,10 +193,12 @@ static void deleteGraph(Tcl_Interp * interp, Agraph_t * g)
     }
     tclhandleString(graphTblPtr, buf, AGID(g));
     Tcl_DeleteCommand(interp, buf);
+#ifndef WITH_CGRAPH
     sgp = (Agraph_t **) tclhandleXlateIndex(graphTblPtr, AGID(g));
     if (!sgp)
 	fprintf(stderr, "Bad entry in graphTbl\n");
     tclhandleFreeIndex(graphTblPtr, AGID(g));
+#endif
     if (g == agroot(g)) {
 	agclose(g);
     } else {
@@ -792,11 +864,8 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 #else
 	e = agedge(g, tail, head);
 #endif
-	if (!
-	    (ep = (Agedge_t **) tclhandleXlateIndex(edgeTblPtr, AGID(e)))
-	    || *ep != e) {
-	    ep = (Agedge_t **) tclhandleAlloc(edgeTblPtr, Tcl_GetStringResult(interp),
-					      &id);
+	if (!(ep = (Agedge_t **) tclhandleXlateIndex(edgeTblPtr, AGID(e))) || *ep != e) {
+	    ep = (Agedge_t **) tclhandleAlloc(edgeTblPtr, Tcl_GetStringResult(interp), &id);
 	    *ep = e;
 	    AGID(e) = id;
 #ifndef TCLOBJ
@@ -822,27 +891,23 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    n = agnode(g, argv[2]);
 #endif
 	    i = 3;
-	    if (!
-		(np =
-		 (Agnode_t **) tclhandleXlateIndex(nodeTblPtr, AGID(n)))
-		|| *np != n) {
+	    if (!(np = (Agnode_t **) tclhandleXlateIndex(nodeTblPtr, AGID(n))) || *np != n) {
 		np = (Agnode_t **) tclhandleAlloc(nodeTblPtr, Tcl_GetStringResult(interp), &id);
 		*np = n;
 		AGID(n) = id;
 #ifndef TCLOBJ
 		Tcl_CreateCommand(interp, Tcl_GetStringResult(interp), nodecmd,
 				  (ClientData) gvc, (Tcl_CmdDeleteProc *) NULL);
-#else				/* TCLOBJ */
+#else /* TCLOBJ */
 		Tcl_CreateObjCommand(interp, Tcl_GetStringResult(interp), nodecmd,
 				     (ClientData) gvc, (Tcl_CmdDeleteProc *) NULL);
-#endif				/* TCLOBJ */
+#endif /* TCLOBJ */
 	    } else {
 		tclhandleString(nodeTblPtr, Tcl_GetStringResult(interp), AGID(n));
 	    }
 	} else {
 	    /* else use handle as name */
-	    np = (Agnode_t **) tclhandleAlloc(nodeTblPtr, Tcl_GetStringResult(interp),
-					      &id);
+	    np = (Agnode_t **) tclhandleAlloc(nodeTblPtr, Tcl_GetStringResult(interp), &id);
 #ifdef WITH_CGRAPH
 	    n = agnode(g, Tcl_GetStringResult(interp), 1);
 #else
@@ -1464,10 +1529,10 @@ static int dotnew(ClientData clientData, Tcl_Interp * interp,
     int i, length;
 #ifndef WITH_CGRAPH
     int kind;
+    unsigned long id;
 #else
     Agdesc_t kind;
 #endif
-    unsigned long id;
 
     if ((argc < 2)) {
 	Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
@@ -1509,13 +1574,15 @@ static int dotnew(ClientData clientData, Tcl_Interp * interp,
 			 "\n\tdigraph, digraphstrict, graph, graphstrict.", NULL);
 	return TCL_ERROR;
     }
+#ifndef WITH_CGRAPH
     gp = (Agraph_t **) tclhandleAlloc(graphTblPtr, Tcl_GetStringResult(interp), &id);
+#endif
     if (argc % 2) {
 	/* if odd number of args then argv[2] is name */
 #ifndef WITH_CGRAPH
 	g = agopen(argv[2], kind);
 #else
-	g = agopen(argv[2], kind, NIL(Agdisc_t *));
+	g = agopen(argv[2], kind, &mydisc);
 #endif
 	i = 3;
     } else {
@@ -1523,16 +1590,24 @@ static int dotnew(ClientData clientData, Tcl_Interp * interp,
 #ifndef WITH_CGRAPH
 	g = agopen(Tcl_GetStringResult(interp), kind);
 #else
-	g = agopen(Tcl_GetStringResult(interp), kind, NIL(Agdisc_t *));
+	g = agopen(Tcl_GetStringResult(interp), kind, &mydisc);
 #endif
 	i = 2;
     }
+#ifdef WITH_CGRAPH
+    agbindrec(g, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
+#endif
     if (!g) {
 	Tcl_AppendResult(interp, "\nFailure to open graph.", NULL);
 	return TCL_ERROR;
     }
+#ifndef WITH_CGRAPH
     *gp = g;
     AGID(g) = id;
+#else
+    gp = (Agraph_t **)tclhandleXlateIndex(graphTblPtr, AGID(g));
+    *gp = g;
+#endif
 
 #ifndef TCLOBJ
     Tcl_CreateCommand(interp, Tcl_GetStringResult(interp), graphcmd,
@@ -1903,7 +1978,11 @@ __EXPORT__
 #endif
 int Tcldot_Init(Tcl_Interp * interp)
 {
-    GVC_t *gvc;
+GVC_t *gvc;
+
+#ifdef WITH_CGRAPH    
+    myiddisc_usercontext = interp;
+#endif
 
 #ifdef USE_TCL_STUBS
     if (Tcl_InitStubs(interp, TCL_VERSION, 0) == NULL) {
