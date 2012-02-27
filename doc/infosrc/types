@@ -163,11 +163,20 @@ list of strings separated by characters from the
 tabs or spaces), defining <A HREF=#a:layer>layer</A>
 names and implicitly numbered 1,2,...
 :layerRange
-layerId or layerId<B>s</B>layerId,<BR> where layerId = "all",
+specifies a list of layers defined by the <A HREF=#a:layers>layers</A> attribute.
+It consists of a list of layer intervals separated by any collection of characters from
+the <A HREF=#a:layerlistsep>layerlistsep</A> attribute.
+Each layer interval is specified as either a
+layerId or a layerId<B>s</B>layerId<BR>, where layerId = "all",
 a decimal integer or a <A HREF=#a:layer>layer</A> name.
-(An integer i corresponds to layer i.)
+(An integer i corresponds to layer i, layers being numbered from 1.)
 The string <B>s</B> consists of 1 or more separator characters specified
 by the <A HREF=#a:layersep>layersep</A> attribute.
+<P>
+Thus, assuming the default values for <A HREF=#a:layersep>layersep</A>
+and <A HREF=#a:layerlistsep>layerlistsep</A>, if <TT>layers="a:b:c:d:e:f:g:h"</TT>, the
+layerRange string <TT>layers="a:b,d,f:all"</TT> would denote the layers
+<TT>a b d f g h"</TT>.
 :outputMode
 "breadthfirst","nodesfirst","edgesfirst"
 These specify the order in which nodes and edges are drawn in concrete

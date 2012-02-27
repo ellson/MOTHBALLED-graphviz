@@ -77,6 +77,7 @@
 #define		NODENAME_ESC		"\\N"
 
 #define		DEFAULT_LAYERSEP	":\t "
+#define		DEFAULT_LAYERLISTSEP	","
 
 #define		DEFAULT_NODESEP	0.25
 #define		MIN_NODESEP		0.02

@@ -265,10 +265,15 @@ This field indicates which graph component uses the attribute.
 </TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:layer HREF=#d:layer>layer</A>
-</TD><TD>EN</TD><TD><A HREF=#k:layerRange>layerRange</A>
+</TD><TD>ENC</TD><TD><A HREF=#k:layerRange>layerRange</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
+ <TR><TD><A NAME=a:layerlistsep HREF=#d:layerlistsep>layerlistsep</A>
+</TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">","</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:layers HREF=#d:layers>layers</A>
 </TD><TD>G</TD><TD><A HREF=#k:layerList>layerList</A>
+</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
+ <TR><TD><A NAME=a:layerselect HREF=#d:layerselect>layerselect</A>
+</TD><TD>G</TD><TD><A HREF=#k:layerRange>layerRange</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:layersep HREF=#d:layersep>layersep</A>
 </TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">" :\t"</TD><TD></TD><TD></TD> </TR>
@@ -1105,7 +1110,11 @@ This field indicates which graph component uses the attribute.
   <A HREF=#d:orientation><TT>orientation=landscape</TT></A>.
 
 <DT><A NAME=d:layer HREF=#a:layer><STRONG>layer</STRONG></A>
-<DD>  Specifies layers in which the node or edge is present.
+<DD>  Specifies layers in which the node, edge or cluster is present.
+
+<DT><A NAME=d:layerlistsep HREF=#a:layerlistsep><STRONG>layerlistsep</STRONG></A>
+<DD>  Specifies the separator characters used to split the
+  an attribute of type <A HREF=#k:layerRange>layerRange</A> into a list of ranges.
 
 <DT><A NAME=d:layers HREF=#a:layers><STRONG>layers</STRONG></A>
 <DD>  Specifies a linearly ordered list of layer names attached to the graph
@@ -1113,9 +1122,12 @@ This field indicates which graph component uses the attribute.
   belonging to the current output layer appear. For more information,
   see the page <A HREF="http://www.graphviz.org/wiki/how-use-drawing-layers-overlays">How to use drawing layers (overlays)</A>.
 
+<DT><A NAME=d:layerselect HREF=#a:layerselect><STRONG>layerselect</STRONG></A>
+<DD>  Selects a list of layers to be emitted.
+
 <DT><A NAME=d:layersep HREF=#a:layersep><STRONG>layersep</STRONG></A>
 <DD>  Specifies the separator characters used to split the
-  <A HREF=#d:layers>layers </A>attribute into a list of layer names.
+  <A HREF=#d:layers>layers</A>attribute into a list of layer names.
 
 <DT><A NAME=d:layout HREF=#a:layout><STRONG>layout</STRONG></A>
 <DD>  Specifies the name of the layout algorithm to use, such as "dot"
@@ -2072,11 +2084,20 @@ enclosed in the parentheses,  <TT>(...)+</TT> indicates 1 or more, and
   names and implicitly numbered 1,2,...
 
 <DT><A NAME=k:layerRange><STRONG>layerRange</STRONG></A>
-<DD>layerId or layerId<B>s</B>layerId,<BR> where layerId = "all",
+<DD>specifies a list of layers defined by the <A HREF=#a:layers>layers</A> attribute.
+  It consists of a list of layer intervals separated by any collection of characters from
+  the <A HREF=#a:layerlistsep>layerlistsep</A> attribute.
+  Each layer interval is specified as either a
+  layerId or a layerId<B>s</B>layerId<BR>, where layerId = "all",
   a decimal integer or a <A HREF=#a:layer>layer</A> name.
-  (An integer i corresponds to layer i.)
+  (An integer i corresponds to layer i, layers being numbered from 1.)
   The string <B>s</B> consists of 1 or more separator characters specified
   by the <A HREF=#a:layersep>layersep</A> attribute.
+  <P>
+  Thus, assuming the default values for <A HREF=#a:layersep>layersep</A>
+  and <A HREF=#a:layerlistsep>layerlistsep</A>, if <TT>layers="a:b:c:d:e:f:g:h"</TT>, the
+  layerRange string <TT>layers="a:b,d,f:all"</TT> would denote the layers
+  <TT>a b d f g h"</TT>.
 
 <DT><A NAME=k:lblString><STRONG>lblString</STRONG></A>
 <DD>an <A HREF=#k:escString>escString</A>

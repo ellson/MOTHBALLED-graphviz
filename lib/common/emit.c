@@ -654,6 +654,118 @@ static void map_output_bspline (pointf **pbs, int **pbs_n, int *pbs_poly_n, bezi
     }
 }
 
+static boolean is_natural_number(char *sstr)
+{
+    unsigned char *str = (unsigned char *) sstr;
+
+    while (*str)
+	if (NOT(isdigit(*str++)))
+	    return FALSE;
+    return TRUE;
+}
+
+static int layer_index(GVC_t *gvc, char *str, int all)
+{
+    /* GVJ_t *job = gvc->job; */
+    int i;
+
+    if (streq(str, "all"))
+	return all;
+    if (is_natural_number(str))
+	return atoi(str);
+    if (gvc->layerIDs)
+	for (i = 1; i <= gvc->numLayers; i++)
+	    if (streq(str, gvc->layerIDs[i]))
+		return i;
+    return -1;
+}
+
+static boolean selectedLayer(GVC_t *gvc, int layerNum, int numLayers, char *spec)
+{
+    int n0, n1;
+    unsigned char buf[SMALLBUF];
+    char *w0, *w1;
+    char *buf_part_p = NULL, *buf_p = NULL, *cur, *part_in_p;
+    agxbuf xb;
+    boolean rval = FALSE;
+
+    agxbinit(&xb, SMALLBUF, buf);
+    agxbput(&xb, spec);
+    part_in_p = agxbuse(&xb);
+
+    while ((rval == FALSE) && (cur = strtok_r(part_in_p, gvc->layerListDelims, &buf_part_p))) {
+	w1 = w0 = strtok_r (cur, gvc->layerDelims, &buf_p);
+	if (w0)
+	    w1 = strtok_r (NULL, gvc->layerDelims, &buf_p);
+	switch ((w0 != NULL) + (w1 != NULL)) {
+	case 0:
+	    rval = FALSE;
+	    break;
+	case 1:
+	    n0 = layer_index(gvc, w0, layerNum);
+	    rval = (n0 == layerNum);
+	    break;
+	case 2:
+	    n0 = layer_index(gvc, w0, 0);
+	    n1 = layer_index(gvc, w1, numLayers);
+	    if ((n0 >= 0) || (n1 >= 0)) {
+		if (n0 > n1) {
+		    int t = n0;
+		    n0 = n1;
+		    n1 = t;
+		}
+		rval = BETWEEN(n0, layerNum, n1);
+	    }
+	    break;
+	}
+	part_in_p = NULL;
+    }
+    agxbfree(&xb);
+    return rval;
+}
+
+static boolean selectedlayer(GVJ_t *job, char *spec)
+{
+    return selectedLayer (job->gvc, job->layerNum, job->numLayers, spec);
+}
+
+/* parse_layerselect:
+ * Parse the graph's layerselect attribute, which determines
+ * which layers are emitted. The specification is the same used
+ * by the layer attribute.
+ *
+ * If we find n layers, we return an array arr of n+2 ints. arr[0]=n.
+ * arr[n+1]=numLayers+1, acting as a sentinel. The other entries give
+ * the desired layer indices.
+ *
+ * If no layers are detected, NULL is returned.
+ *
+ * This implementation does a linear walk through each layer index and
+ * uses selectedLayer to match it against p. There is probably a more
+ * efficient way to do this, but this is simple and until we find people
+ * using huge numbers of layers, it should be adequate.
+ */
+static int* parse_layerselect(GVC_t *gvc, graph_t * g, char *p)
+{
+    int* laylist = N_GNEW(gvc->numLayers+2,int);
+    int i, cnt = 0;
+    for (i = 1; i <=gvc->numLayers; i++) {
+	if (selectedLayer (gvc, i, gvc->numLayers, p)) {
+	    laylist[++cnt] = i;
+	} 
+    }
+    if (cnt) {
+	laylist[0] = cnt;
+	laylist[cnt+1] = gvc->numLayers+1;
+    }
+    else {
+	agerr(AGWARN, "The layerselect attribute \"%s\" does not match any layer specifed by the layers attribute - ignored.\n", p);
+	laylist[0] = cnt;
+	free (laylist);
+	laylist = NULL;
+    }
+    return laylist;
+}
 
 /* parse_layers:
  * Split input string into tokens, with separators specified by
@@ -671,6 +783,13 @@ static int parse_layers(GVC_t *gvc, graph_t * g, char *p)
     gvc->layerDelims = agget(g, "layersep");
     if (!gvc->layerDelims)
         gvc->layerDelims = DEFAULT_LAYERSEP;
+    gvc->layerListDelims = agget(g, "layerlistsep");
+    if (!gvc->layerListDelims)
+        gvc->layerListDelims = DEFAULT_LAYERLISTSEP;
+    if ((tok = strpbrk (gvc->layerDelims, gvc->layerListDelims))) { /* conflict in delimiter strings */
+	agerr(AGWARN, "The character \'%c\' appears in both the layersep and layerlistsep attributes - layerlistsep ignored.\n", *tok);
+        gvc->layerListDelims = "";
+    }
 
     ntok = 0;
     sz = 0;
@@ -717,32 +836,65 @@ static void init_layering(GVC_t * gvc, graph_t * g)
 
     /* free layer strings and pointers from previous graph */
     if (gvc->layers) {
-		free(gvc->layers);
-		gvc->layers = NULL;
-	}
+	free(gvc->layers);
+	gvc->layers = NULL;
+    }
     if (gvc->layerIDs) {
-		free(gvc->layerIDs);
-		gvc->layerIDs = NULL;
-	}
+	free(gvc->layerIDs);
+	gvc->layerIDs = NULL;
+    }
+    if (gvc->layerlist) {
+	free(gvc->layerlist);
+	gvc->layerlist = NULL;
+    }
     if ((str = agget(g, "layers")) != 0) {
 	gvc->numLayers = parse_layers(gvc, g, str);
+ 	if (((str = agget(g, "layerselect")) != 0) && *str) {
+	    gvc->layerlist = parse_layerselect(gvc, g, str);
+	}
     } else {
 	gvc->layerIDs = NULL;
 	gvc->numLayers = 1;
     }
 }
 
-static void firstlayer(GVJ_t *job)
+/* numPhysicalLayers:
+ * Return number of physical layers to be emitted.
+ */
+static int numPhysicalLayers (GVJ_t *job)
+{
+    if (job->gvc->layerlist) {
+	return job->gvc->layerlist[0];
+    }
+    else
+	return job->numLayers;
+
+}
+
+static void firstlayer(GVJ_t *job, int** listp)
 {
     job->numLayers = job->gvc->numLayers;
-    if ((job->numLayers > 1)
-		&& (! (job->flags & GVDEVICE_DOES_LAYERS))) {
-	agerr(AGWARN, "layers not supported in %s output\n",
+    if (job->gvc->layerlist) {
+	int *list = job->gvc->layerlist;
+	int cnt = *list++;
+	if ((cnt > 1) && (! (job->flags & GVDEVICE_DOES_LAYERS))) {
+	    agerr(AGWARN, "layers not supported in %s output\n",
 		job->output_langname);
-	job->numLayers = 1;
+	    list[1] = job->numLayers + 1; /* only one layer printed */
+	}
+	job->layerNum = *list++;
+	*listp = list;
     }
-
-    job->layerNum = 1;
+    else {
+	if ((job->numLayers > 1)
+		&& (! (job->flags & GVDEVICE_DOES_LAYERS))) {
+	    agerr(AGWARN, "layers not supported in %s output\n",
+		job->output_langname);
+	    job->numLayers = 1;
+	}
+	job->layerNum = 1;
+	*listp = NULL;
+    }
 }
 
 static boolean validlayer(GVJ_t *job)
@@ -750,9 +902,15 @@ static boolean validlayer(GVJ_t *job)
     return (job->layerNum <= job->numLayers);
 }
 
-static void nextlayer(GVJ_t *job)
+static void nextlayer(GVJ_t *job, int** listp)
 {
-    job->layerNum++;
+    int *list = *listp;
+    if (list) {
+	job->layerNum = *list++;
+	*listp = list;
+    }
+    else
+	job->layerNum++;
 }
 
 static point pagecode(GVJ_t *job, char c)
@@ -1171,71 +1329,6 @@ fprintf(stderr,"width=%d height=%d dpi=%g,%g\npad=%g,%g focus=%g,%g view=%g,%g z
 	job->clip.LL.x, job->clip.LL.y, job->clip.UR.x, job->clip.UR.y,
 	job->margin.x, job->margin.y);
 #endif
-}
-
-static boolean is_natural_number(char *sstr)
-{
-    unsigned char *str = (unsigned char *) sstr;
-
-    while (*str)
-	if (NOT(isdigit(*str++)))
-	    return FALSE;
-    return TRUE;
-}
-
-static int layer_index(GVC_t *gvc, char *str, int all)
-{
-    GVJ_t *job = gvc->job;
-    int i;
-
-    if (streq(str, "all"))
-	return all;
-    if (is_natural_number(str))
-	return atoi(str);
-    if (gvc->layerIDs)
-	for (i = 1; i <= job->numLayers; i++)
-	    if (streq(str, gvc->layerIDs[i]))
-		return i;
-    return -1;
-}
-
-static boolean selectedlayer(GVJ_t *job, char *spec)
-{
-    GVC_t *gvc = job->gvc;
-    int n0, n1;
-    unsigned char buf[SMALLBUF];
-    char *w0, *w1;
-    agxbuf xb;
-    boolean rval = FALSE;
-
-    agxbinit(&xb, SMALLBUF, buf);
-    agxbput(&xb, spec);
-    w1 = w0 = strtok(agxbuse(&xb), gvc->layerDelims);
-    if (w0)
-	w1 = strtok(NULL, gvc->layerDelims);
-    switch ((w0 != NULL) + (w1 != NULL)) {
-    case 0:
-	rval = FALSE;
-	break;
-    case 1:
-	n0 = layer_index(gvc, w0, job->layerNum);
-	rval = (n0 == job->layerNum);
-	break;
-    case 2:
-	n0 = layer_index(gvc, w0, 0);
-	n1 = layer_index(gvc, w1, job->numLayers);
-	if ((n0 < 0) || (n1 < 0))
-	    rval = TRUE;
-	else if (n0 > n1) {
-	    int t = n0;
-	    n0 = n1;
-	    n1 = t;
-	}
-	rval = BETWEEN(n0, job->layerNum, n1);
-	break;
-    }
-    agxbfree(&xb);
-    return rval;
 }
 
 static boolean node_in_layer(GVJ_t *job, graph_t * g, node_t * n)
@@ -3113,7 +3206,7 @@ static void emit_page(GVJ_t * job, graph_t * g)
 	emit_map_rect(job, job->clip);
 	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target, obj->id);
     }
-    if (job->numLayers == 1)
+    if (numPhysicalLayers(job) == 1)
 	emit_background(job, g);
     if (GD_label(g))
 	emit_label(job, EMIT_GLABEL, GD_label(g));
@@ -3128,6 +3221,7 @@ void emit_graph(GVJ_t * job, graph_t * g)
     node_t *n;
     char *s;
     int flags = job->flags;
+    int* lp;
 
     /* device dpi is now known */
     job->scale.x = job->zoom * job->dpi.x / POINTS_PER_INCH;
@@ -3168,15 +3262,15 @@ fprintf(stderr,"focus=%g,%g view=%g,%g\n",
     for (n = agfstnode(g); n; n = agnxtnode(g, n))
 	ND_state(n) = 0;
     /* iterate layers */
-    for (firstlayer(job); validlayer(job); nextlayer(job)) {
-	if (job->numLayers > 1)
+    for (firstlayer(job,&lp); validlayer(job); nextlayer(job,&lp)) {
+	if (numPhysicalLayers (job) > 1)
 	    gvrender_begin_layer(job);
 
 	/* iterate pages */
 	for (firstpage(job); validpage(job); nextpage(job))
 	    emit_page(job, g);
 
-	if (job->numLayers > 1)
+	if (numPhysicalLayers (job) > 1)
 	    gvrender_end_layer(job);
     } 
     emit_end_graph(job, g);
