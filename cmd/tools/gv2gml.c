@@ -14,6 +14,14 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+#ifdef WIN32 /*dependencies*/
+    #pragma comment( lib, "cgraph.lib" )
+    #pragma comment( lib, "ingraphs.lib" )
+    #pragma comment( lib, "cdt.lib" )
+
+#endif
+
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -251,7 +259,7 @@ emitNodeAttrs (Agraph_t* G, Agnode_t* np, FILE* outFile, int ix)
     double x, y;
 
     /* First, process the attributes, saving the graphics attributes */
-    bzero(&attrs, sizeof(attrs));
+    memset(&attrs,0, sizeof(attrs));
     for (s = agnxtattr (G, AGNODE, NULL); s; s = agnxtattr (G, AGNODE, s)) {
 	if (streq(s->name, "style")) { /* hasFill outlineStyle invis */
 	    if (*(v = agxget (np, s))) {
@@ -450,7 +458,7 @@ emitEdgeAttrs (Agraph_t* G, Agedge_t* ep, FILE* outFile, int ix)
     int style;
 
     /* First, process the attributes, saving the graphics attributes */
-    bzero(&attrs, sizeof(attrs));
+    memset(&attrs,0, sizeof(attrs));
     for (s = agnxtattr (G, AGEDGE, NULL); s; s = agnxtattr (G, AGEDGE, s)) {
 	if (streq(s->name, "style")) { /* hasFill outlineStyle invis */
 	    if (*(v = agxget (ep, s))) {
