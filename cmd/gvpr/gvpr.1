@@ -87,7 +87,7 @@ output is written to \fBstdout\fP.
 Use the contents of the specified file as the program to execute
 on the input. If \fIprogfile\fP contains a slash character, the name is taken
 as the pathname of the file. Otherwise, \fBgvpr\fP will use the
-directories specified in the environment variable \fBGPRPATH\fP to look
+directories specified in the environment variable \fBGVPRPATH\fP to look
 for the file. If 
 .B \-f
 is not given,
@@ -1123,7 +1123,7 @@ Prints the depth-first traversal of the graph, starting
 with the node whose name is \fBARGV[0]\fP, as an indented list.
 .SH ENVIRONMENT
 .TP
-.B GPRPATH
+.B GVPRPATH
 Colon\(hyseparated list of directories to be searched to find
 the file specified by the \-f option.
 .SH BUGS AND WARNINGS
