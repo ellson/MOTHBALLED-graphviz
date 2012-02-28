@@ -28,6 +28,10 @@
 #include "gvc.h"
 #include "xdot.h"
 
+#ifdef WIN32
+#define strtok_r strtok_s
+#endif
+
 #define P2RECT(p, pr, sx, sy) (pr[0].x = p.x - sx, pr[0].y = p.y - sy, pr[1].x = p.x + sx, pr[1].y = p.y + sy)
 #define FUZZ 3
 #define EPSILON .0001
