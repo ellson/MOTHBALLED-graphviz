@@ -274,7 +274,7 @@ AC_CHECK_PROG(PS2PDF,pstopdf,pstopdf,false)
 PKG_PROG_PKG_CONFIG
 
 AC_ARG_WITH(tclsh,
-  [AS_HELP_STRING([--with-tcl=PROG],[use a specific tclsh])],
+  [AS_HELP_STRING([--with-tclsh=PROG],[use a specific tclsh])],
   TCLSH=$withval,)
 
 if test "x$TCLSH" = "x"; then
