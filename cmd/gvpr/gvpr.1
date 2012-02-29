@@ -1125,7 +1125,12 @@ with the node whose name is \fBARGV[0]\fP, as an indented list.
 .TP
 .B GVPRPATH
 Colon\(hyseparated list of directories to be searched to find
-the file specified by the \-f option.
+the file specified by the \-f option. \fBgvpr\fP has a default list built in. If \fBGVPRPATH\fP
+is not defined, the default list is used. If \fBGVPRPATH\fP starts with colon, the list is formed
+by appending \fBGVPRPATH\fP to the default list. If \fBGVPRPATH\fP ends with colon, the list is formed
+by appending the default list to \fBGVPRPATH\fP. Otherwise, \fBGVPRPATH\fP is used for the list.
+.P
+On Windows systems, replace ``colon'' with ``semicolon'' in the previous paragraph.
 .SH BUGS AND WARNINGS
 Scripts should be careful deleting nodes during \fBN{}\fP and \fBE{}\fP
 blocks using BFS and DFS traversals as these rely on stacks and queues of
