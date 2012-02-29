@@ -272,9 +272,14 @@ cluster_leader(graph_t * clust)
 static void 
 collapse_cluster(graph_t * g, graph_t * subg)
 {
-    if (GD_cluster_was_collapsed(subg))
+    if (GD_parent(subg)) {
+#ifndef WITH_CGRAPH
+	agerr(AGWARN, "Cluster %s is multiply defined in %s and %s - this may cause problems.\n", subg->name,
+		g->name, GD_parent(subg)->name);
+#endif
 	return;
-    GD_cluster_was_collapsed(subg) = TRUE;
+    }
+    GD_parent(subg) = g;
     node_induce(g, subg);
     if (agfstnode(subg) == NULL)
 	return;

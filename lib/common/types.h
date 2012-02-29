@@ -303,8 +303,8 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	graph_t **clust;	/* clusters are in clust[1..n_cluster] !!! */
 	node_t *nlist;
 	rank_t *rank;
-#ifdef WITH_CGRAPH
 	graph_t *parent;        /* containing cluster (not parent subgraph) */
+#ifdef WITH_CGRAPH
 	int level;		/* cluster nesting level (not node level!) */
 	node_t	*minrep, *maxrep;	/* set leaders for min and max rank */
 #endif
@@ -324,7 +324,6 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	boolean has_sinkrank;
 #endif
 	unsigned char	showboxes;
-	boolean cluster_was_collapsed;
 	fontname_kind fontnames;		/* to override mangling in SVG */
 
 	int nodesep, ranksep;
@@ -353,7 +352,6 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define GD_border(g) (((Agraphinfo_t*)AGDATA(g))->border)
 #define GD_cl_cnt(g) (((Agraphinfo_t*)AGDATA(g))->cl_nt)
 #define GD_clust(g) (((Agraphinfo_t*)AGDATA(g))->clust)
-#define GD_cluster_was_collapsed(g) (((Agraphinfo_t*)AGDATA(g))->cluster_was_collapsed)
 #define GD_comp(g) (((Agraphinfo_t*)AGDATA(g))->comp)
 #define GD_exact_ranksep(g) (((Agraphinfo_t*)AGDATA(g))->exact_ranksep)
 #define GD_expanded(g) (((Agraphinfo_t*)AGDATA(g))->expanded)
@@ -412,7 +410,6 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define GD_cl_cnt(g) (g)->u.cl_cnt
 #define GD_cleanup(g) (g)->u.cleanup
 #define GD_clust(g) (g)->u.clust
-#define GD_cluster_was_collapsed(g) (g)->u.cluster_was_collapsed
 #define GD_comp(g) (g)->u.comp
 #define GD_dist(g) (g)->u.dist
 #define GD_drawing(g) (g)->u.drawing
@@ -431,6 +428,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define GD_installed(g) (g)->u.installed
 #define GD_label(g) (g)->u.label
 #define GD_leader(g) (g)->u.leader
+#define GD_parent(g) (g)->u.parent
 #define GD_rankdir(g) ((g)->u.rankdir & 0x3)
 #define GD_flip(g) (GD_rankdir(g) & 1)
 #define GD_realrankdir(g) ((g)->u.rankdir >> 2)
