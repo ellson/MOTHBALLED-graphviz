@@ -3760,13 +3760,20 @@ void gv_fixLocale (int set)
     }
 }
 
+
+#define FINISH() if (Verbose) fprintf(stderr,"gvRenderJobs %s: %.2f secs.\n", agnameof(g), elapsed_sec())
+
 int gvRenderJobs (GVC_t * gvc, graph_t * g)
 {
     static GVJ_t *prevjob;
     GVJ_t *job, *firstjob;
 
+    if (Verbose)
+	start_timer();
+    
     if (!GD_drawing(g)) {
         agerr (AGERR, "Layout was not done.  Missing layout plugins? \n");
+	FINISH();
         return -1;
     }
 
@@ -3791,6 +3798,7 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	if (!GD_drawing(g)) {
 	    agerr (AGERR, "layout was not done\n");
 	    gv_fixLocale (0);
+	    FINISH();
 	    return -1;
 	}
 
@@ -3798,6 +3806,7 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
         if (job->output_lang == NO_SUPPORT) {
             agerr (AGERR, "renderer for %s is unavailable\n", job->output_langname);
 	    gv_fixLocale (0);
+	    FINISH();
             return -1;
         }
 
@@ -3867,5 +3876,6 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	prevjob = job;
     }
     gv_fixLocale (0);
+    FINISH();
     return 0;
 }
