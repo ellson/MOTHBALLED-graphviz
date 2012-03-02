@@ -1,3 +1,4 @@
+#!/home/dperry/work_related/packages/arch/linux.i386-64/src/cmd/ksh93/ksh
 #! /bin/ksh
 
 let count=1
