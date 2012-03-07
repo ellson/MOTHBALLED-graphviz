@@ -95,6 +95,6 @@ sed -e s/image_attr/image\=\"${image}image.jpg\",labelloc=b/ \
 -e s/imagepath_attr/imagepath\=\"${imagepath}\"/ base.gv | tr '^' ' ' > ../graphs/${outfile}.gv
 
 #place the image file into the nshare directory
-dot -Tpng -o nshare/${outfile}_dot.png ../graphs/${outfile}.gv
+dot -Tpng -o ../nshare/${outfile}_dot.png ../graphs/${outfile}.gv
 
 

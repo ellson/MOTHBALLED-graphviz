@@ -169,7 +169,7 @@ dot_cleanup_graph(graph_t * g)
     int c;
     for (c = 1; c <= GD_n_cluster(g); c++) {
 	clust = GD_clust(g)[c];
-	GD_cluster_was_collapsed(clust) = FALSE;
+	GD_parent(clust) = NULL;
 	dot_cleanup(clust);
     }
 #else

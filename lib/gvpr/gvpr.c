@@ -191,6 +191,19 @@ static int parseArgs(char *s, int argc, char ***argv)
 #define LISTSEP ':'
 #endif
 
+static Sfio_t*
+concat (char* pfx, char* sfx, char** sp)
+{
+    Sfio_t *pathp;
+    if (!(pathp = sfstropen())) {
+	error(ERROR_ERROR, "Could not open buffer");
+	return 0;
+    }
+    sfprintf(pathp, "%s%s", pfx, sfx);
+    *sp = sfstruse(pathp);
+    return pathp;
+}
+
 /* resolve:
  * Translate -f arg parameter into a pathname.
  * If arg contains '/', return arg.
@@ -204,8 +217,10 @@ static char *resolve(char *arg)
     char *path;
     char *s;
     char *cp;
+    char c;
     char *fname = 0;
     Sfio_t *fp;
+    Sfio_t *pathp = NULL;
     size_t sz;
 
 #ifdef WIN32_DLL
@@ -218,7 +233,15 @@ static char *resolve(char *arg)
     path = getenv("GVPRPATH");
     if (!path)
 	path = getenv("GPRPATH");  // deprecated
-    if (!path)
+    if (path && (c = *path)) {
+	if (c == LISTSEP) {
+	    pathp = concat(DFLT_GVPRPATH, path, &path); 
+	}
+	else if ((c = path[strlen(path)-1]) == LISTSEP) {
+	    pathp = concat(path, DFLT_GVPRPATH, &path); 
+	}
+    }
+    else
 	path = DFLT_GVPRPATH;
 
     if (!(fp = sfstropen())) {
@@ -253,6 +276,8 @@ static char *resolve(char *arg)
 	error(ERROR_ERROR, "Could not find file \"%s\" in GVPRPATH", arg);
 
     sfclose(fp);
+    if (pathp)
+	sfclose(pathp);
     return fname;
 }
 

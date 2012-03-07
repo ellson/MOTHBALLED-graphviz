@@ -20,7 +20,6 @@
 
 #include "gvplugin_device.h"
 #include "gvplugin_render.h"
-#include "graph.h"
 #include "gvplugin_gdiplus.h"
 
 #include <memory>

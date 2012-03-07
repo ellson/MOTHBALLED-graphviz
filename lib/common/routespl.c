@@ -33,7 +33,6 @@ static edge_t *origedge;
 #endif
 
 static int nedges, nboxes; /* total no. of edges and boxes used in routing */
-static jmp_buf jbuf;
 
 static int routeinit;
 /* static data used across multiple edges */
@@ -44,7 +43,7 @@ static int polypointn;        /* size of polypoints[] */
 static Pedge_t *edges;        /* polygon edges passed to Proutespline */
 static int edgen;             /* size of edges[] */
 
-static void checkpath(int, boxf*, path*);
+static int checkpath(int, boxf*, path*);
 static int mkspacep(int size);
 static void printpath(path * pp);
 #ifdef DEBUG
@@ -324,6 +323,70 @@ void routesplinesterm()
 		nedges, nboxes, elapsed_sec());
 }
 
+static void
+limitBoxes (boxf* boxes, int boxn, pointf *pps, int pn, int delta)
+{
+    int bi, si, splinepi;
+    double t;
+    pointf sp[4];
+    int num_div = delta * boxn;
+
+    for (splinepi = 0; splinepi + 3 < pn; splinepi += 3) {
+	for (si = 0; si <= num_div; si++) {
+	    t = si / (double)num_div;
+	    sp[0] = pps[splinepi];
+	    sp[1] = pps[splinepi + 1];
+	    sp[2] = pps[splinepi + 2];
+	    sp[3] = pps[splinepi + 3];
+	    sp[0].x = sp[0].x + t * (sp[1].x - sp[0].x);
+	    sp[0].y = sp[0].y + t * (sp[1].y - sp[0].y);
+	    sp[1].x = sp[1].x + t * (sp[2].x - sp[1].x);
+	    sp[1].y = sp[1].y + t * (sp[2].y - sp[1].y);
+	    sp[2].x = sp[2].x + t * (sp[3].x - sp[2].x);
+	    sp[2].y = sp[2].y + t * (sp[3].y - sp[2].y);
+ 	    sp[0].x = sp[0].x + t * (sp[1].x - sp[0].x);
+	    sp[0].y = sp[0].y + t * (sp[1].y - sp[0].y);
+	    sp[1].x = sp[1].x + t * (sp[2].x - sp[1].x);
+	    sp[1].y = sp[1].y + t * (sp[2].y - sp[1].y);
+	    sp[0].x = sp[0].x + t * (sp[1].x - sp[0].x);
+	    sp[0].y = sp[0].y + t * (sp[1].y - sp[0].y);
+	    for (bi = 0; bi < boxn; bi++) {
+/* this tested ok on 64bit machines, but on 32bit we need this FUDGE
+ *     or graphs/directed/records.gv fails */
+#define FUDGE .0001
+		if (sp[0].y <= boxes[bi].UR.y+FUDGE && sp[0].y >= boxes[bi].LL.y-FUDGE) {
+		    if (boxes[bi].LL.x > sp[0].x)
+			boxes[bi].LL.x = sp[0].x;
+		    if (boxes[bi].UR.x < sp[0].x)
+			boxes[bi].UR.x = sp[0].x;
+		}
+	    }
+	}
+    }
+}
+
+#define INIT_DELTA 10 
+#define LOOP_TRIES 15  /* number of times to try to limiting boxes to regain space, using smaller divisions */
+
+/* routesplines:
+ * Route a path using the path info in pp. This includes start and end points
+ * plus a collection of contiguous boxes contain the terminal points. The boxes
+ * are converted into a containing polygon. A shortest path is constructed within
+ * the polygon from between the terminal points. If polyline is true, this path
+ * is converted to a spline representation. Otherwise, we call the path planner to
+ * convert the polyline into a smooth spline staying within the polygon. In both
+ * cases, the function returns an array of the computed control points. The number
+ * of these points is given in npoints.
+ *
+ * Note that the returned points are stored in a single array, so the points must be
+ * used before another call to this function.
+ *
+ * During cleanup, the function determines the x-extent of the spline in the box, so
+ * the box can be shrunk to the minimum width. The extra space can then be used by other
+ * edges. 
+ *
+ * If a catastrophic error, return NULL.
+ */
 static pointf *_routesplines(path * pp, int *npoints, int polyline)
 {
     Ppoly_t poly;
@@ -332,14 +395,13 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
     Ppoint_t eps[2];
     Pvector_t evs[2];
     int edgei, prev, next;
-    pointf sp[4];
-    int pi, bi, si;
-    double t;
+    int pi, bi;
     boxf *boxes;
     int boxn;
     edge_t* realedge;
     int flip;
-    int delta = 10;
+    int loopcnt, delta = INIT_DELTA;
+    boolean unbounded;
 
     nedges++;
     nboxes += pp->nbox;
@@ -352,13 +414,14 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
 	 realedge = ED_to_orig(realedge));
     if (!realedge) {
 	agerr(AGERR, "in routesplines, cannot find NORMAL edge\n");
-	longjmp (jbuf, 1);
+	return NULL;
     }
 
     boxes = pp->boxes;
     boxn = pp->nbox;
 
-    checkpath(boxn, boxes, pp);
+    if (checkpath(boxn, boxes, pp))
+	return NULL;
 
 #ifdef DEBUG
     if (debugleveln(realedge, 1))
@@ -415,7 +478,7 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
 	    else {
 		if (!(prev == -1 && next == -1)) {
 		    agerr(AGERR, "in routesplines, illegal values of prev %d and next %d, line %d\n", prev, next, __LINE__);
-		    longjmp (jbuf, 1);
+		    return NULL;
 		}
 	    }
 	}
@@ -448,8 +511,7 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
 		if (!(prev == -1 && next == -1)) {
 		    /* it went badly, e.g. degenerate box in boxlist */
 		    agerr(AGERR, "in routesplines, illegal values of prev %d and next %d, line %d\n", prev, next, __LINE__);
-		    longjmp (jbuf, 1); /* for correctness sake, it's best to just stop */
-		    return ps;	/* could also be reported as a lost edge (no spline) */
+		    return NULL; /* for correctness sake, it's best to just stop */
 		}
 		polypoints[pi].x = boxes[bi].UR.x;
 		polypoints[pi++].y = boxes[bi].LL.y;
@@ -464,7 +526,7 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
     }
     else {
 	agerr(AGERR, "in routesplines, edge is a loop at %s\n", agnameof(aghead(realedge)));
-	longjmp (jbuf, 1);
+	return NULL;
     }
 
     if (flip) {
@@ -485,7 +547,7 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
     eps[1].x = pp->end.p.x, eps[1].y = pp->end.p.y;
     if (Pshortestpath(&poly, eps, &pl) < 0) {
 	agerr(AGERR, "in routesplines, Pshortestpath failed\n");
-	longjmp (jbuf, 1);
+	return NULL;
     }
 #ifdef DEBUG
     if (debugleveln(realedge, 3)) {
@@ -519,7 +581,7 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
 
 	if (Proutespline(edges, poly.pn, pl, evs, &spl) < 0) {
 	    agerr(AGERR, "in routesplines, Proutespline failed\n");
-	    longjmp (jbuf, 1);
+	    return NULL;
 	}
 #ifdef DEBUG
 	if (debugleveln(realedge, 3)) {
@@ -529,61 +591,51 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
 #endif
     }
     if (mkspacep(spl.pn))
-	longjmp (jbuf, 1);
+	return NULL;  /* Bailout if no memory left */
+
     for (bi = 0; bi < boxn; bi++) {
 	boxes[bi].LL.x = INT_MAX;
 	boxes[bi].UR.x = INT_MIN;
     }
+    unbounded = TRUE;
     for (splinepi = 0; splinepi < spl.pn; splinepi++) {
 	ps[splinepi] = spl.ps[splinepi];
     }
-REDO:
-    for (splinepi = 0; splinepi + 3 < spl.pn; splinepi += 3) {
-	int num_div = delta * boxn;
-	for (si = 0; si <= num_div; si++) {
-	    t = si / (double)num_div;
-	    sp[0] = ps[splinepi];
-	    sp[1] = ps[splinepi + 1];
-	    sp[2] = ps[splinepi + 2];
-	    sp[3] = ps[splinepi + 3];
-	    sp[0].x = sp[0].x + t * (sp[1].x - sp[0].x);
-	    sp[0].y = sp[0].y + t * (sp[1].y - sp[0].y);
-	    sp[1].x = sp[1].x + t * (sp[2].x - sp[1].x);
-	    sp[1].y = sp[1].y + t * (sp[2].y - sp[1].y);
-	    sp[2].x = sp[2].x + t * (sp[3].x - sp[2].x);
-	    sp[2].y = sp[2].y + t * (sp[3].y - sp[2].y);
-	    sp[0].x = sp[0].x + t * (sp[1].x - sp[0].x);
-	    sp[0].y = sp[0].y + t * (sp[1].y - sp[0].y);
-	    sp[1].x = sp[1].x + t * (sp[2].x - sp[1].x);
-	    sp[1].y = sp[1].y + t * (sp[2].y - sp[1].y);
-	    sp[0].x = sp[0].x + t * (sp[1].x - sp[0].x);
-	    sp[0].y = sp[0].y + t * (sp[1].y - sp[0].y);
-	    for (bi = 0; bi < boxn; bi++) {
-/* this tested ok on 64bit machines, but on 32bit we need this FUDGE
- *     or graphs/directed/records.gv fails */
-#define FUDGE .0001
-		if (sp[0].y <= boxes[bi].UR.y+FUDGE && sp[0].y >= boxes[bi].LL.y-FUDGE) {
-		    if (boxes[bi].LL.x > sp[0].x)
-			boxes[bi].LL.x = sp[0].x;
-		    if (boxes[bi].UR.x < sp[0].x)
-			boxes[bi].UR.x = sp[0].x;
-		}
-	    }
-	}
-    }
+
+    for (loopcnt = 0; unbounded && (loopcnt < LOOP_TRIES); loopcnt++) {
+	limitBoxes (boxes, boxn, ps, spl.pn, delta);
+
     /* The following check is necessary because if a box is not very 
      * high, it is possible that the sampling above might miss it.
      * Therefore, we make the sample finer until all boxes have
      * valid values. cf. bug 456. Would making sp[] pointfs help?
      */
-    for (bi = 0; bi < boxn; bi++) {
+	for (bi = 0; bi < boxn; bi++) {
 	/* these fp equality tests are used only to detect if the
 	 * values have been changed since initialization - ok */
-	if ((boxes[bi].LL.x == INT_MAX) || (boxes[bi].UR.x == INT_MIN)) {
-	    delta *= 2;
-	    goto REDO;
+	    if ((boxes[bi].LL.x == INT_MAX) || (boxes[bi].UR.x == INT_MIN)) {
+		delta *= 2; /* try again with a finer interval */
+		if (delta > INT_MAX/boxn) /* in limitBoxes, boxn*delta must fit in an int, so give up */
+		    loopcnt = LOOP_TRIES;
+		break;
+	    }
 	}
+	if (bi == boxn)
+	    unbounded = FALSE;
     }
+    if (unbounded) {  
+	/* Either an extremely short, even degenerate, box, or some failure with the path
+         * planner causing the spline to miss some boxes. In any case, use the shortest path 
+	 * to bound the boxes. This will probably mean a bad edge, but we avoid an infinite
+	 * loop and we can see the bad edge, and even use the showboxes scaffolding.
+	 */
+	Ppolyline_t polyspl;
+	agerr(AGWARN, "Unable to reclaim box space in spline routing for edge \"%s\" -> \"%s\". Something is probably seriously wrong.\n", agnameof(agtail(realedge)), agnameof(aghead(realedge)));
+	make_polyline (pl, &polyspl);
+	limitBoxes (boxes, boxn, polyspl.ps, polyspl.pn, INIT_DELTA);
+	free (polyspl.ps);
+    }
+
     *npoints = spl.pn;
 
 #ifdef DEBUG
@@ -600,19 +652,11 @@ REDO:
 
 pointf *routesplines(path * pp, int *npoints)
 {
-    if (setjmp (jbuf)) {
-	*npoints = 0;
-	return NULL;
-    }
     return _routesplines (pp, npoints, 0);
 }
 
 pointf *routepolylines(path * pp, int *npoints)
 {
-    if (setjmp (jbuf)) {
-	*npoints = 0;
-	return NULL;
-    }
     return _routesplines (pp, npoints, 1);
 }
 
@@ -637,8 +681,10 @@ static int overlap(int i0, int i1, int j0, int j1)
  * audit process in the 5E control program - if you've given up on
  * fixing all the bugs, at least try to engineer around them!
  * in postmodern CS, we could call this "self-healing code."
+ *
+ * Return 1 on failure; 0 on success.
  */
-static void checkpath(int boxn, boxf* boxes, path* thepath)
+static int checkpath(int boxn, boxf* boxes, path* thepath)
 {
     boxf *ba, *bb;
     int bi, i, errs, l, r, d, u;
@@ -663,7 +709,7 @@ static void checkpath(int boxn, boxf* boxes, path* thepath)
     if (ba->LL.x > ba->UR.x || ba->LL.y > ba->UR.y) {
 	agerr(AGERR, "in checkpath, box 0 has LL coord > UR coord\n");
 	printpath(thepath);
-	longjmp (jbuf, 1);
+	return 1;
     }
     for (bi = 0; bi < boxn - 1; bi++) {
 	ba = &boxes[bi], bb = &boxes[bi + 1];
@@ -671,7 +717,7 @@ static void checkpath(int boxn, boxf* boxes, path* thepath)
 	    agerr(AGERR, "in checkpath, box %d has LL coord > UR coord\n",
 		  bi + 1);
 	    printpath(thepath);
-	    longjmp (jbuf, 1);
+	    return 1;
 	}
 	l = (ba->UR.x < bb->LL.x) ? 1 : 0;
 	r = (ba->LL.x > bb->UR.x) ? 1 : 0;
@@ -793,6 +839,7 @@ static void checkpath(int boxn, boxf* boxes, path* thepath)
 	abort();
 #endif
     }
+    return 0;
 }
 
 static int mkspacep(int size)
