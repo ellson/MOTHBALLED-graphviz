@@ -39,11 +39,11 @@ Prefix: /usr
 
 # SuSE uses a different mechanism to generate BuildRequires
 # norootforbuild
-# neededforbuild  expat freetype2 freetype2-devel gcc libjpeg libpng-devel-packages tcl tcl-devel tk tk-devel x-devel-packages
+# neededforbuild  expat freetype2-devel gcc tcl tcl-devel tk tk-devel x-devel-packages
 
 BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires: zlib-devel libpng-devel libjpeg-devel expat-devel
+BuildRequires: zlib-devel expat-devel
 BuildRequires: /bin/ksh bison m4 flex swig tk tcl >= 8.3 freetype-devel >= 2
 
 #-- Red Hat Enterprise Linux (also Centos) specific Build Requirements --------------------

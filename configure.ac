@@ -525,14 +525,9 @@ LIBS="$save_LIBS"
 #AC_CHECK_LIB([cairo], [main])
 #AC_CHECK_LIB([dl], [main])
 #AC_CHECK_LIB([fl], [main])
-#AC_CHECK_LIB([fontconfig], [main])
-#AC_CHECK_LIB([freetype], [main])
-#AC_CHECK_LIB([iconv], [main])
 #AC_CHECK_LIB([intl], [main])
-#AC_CHECK_LIB([jpeg], [main])
 #AC_CHECK_LIB([m], [main])
 #AC_CHECK_LIB([perl], [main])
-#AC_CHECK_LIB([png], [main])
 #AC_CHECK_LIB([popt], [main])
 #AC_CHECK_LIB([xml2], [main])
 #AC_CHECK_LIB([z], [main])
@@ -2741,54 +2736,6 @@ CPPFLAGS=$save_CPPFLAGS
 AC_SUBST([GLUT_CFLAGS])
 AC_SUBST([GLUT_LIBS])
 
-dnl -----------------------------------
-dnl INCLUDES and LIBS for PNG 
-
-AC_ARG_WITH(png,
-  [AS_HELP_STRING([--with-png=yes],[PNG library])],
-  [], [with_png=yes])
-
-if test "x$with_png" != "xyes"; then
-  use_png="No (disabled)"
-else
-  save_CPPFLAGS=$CPPFLAGS
-  save_LDFLAGS=$LDFLAGS
-  AC_PATH_PROG(LIBPNG_CONFIG,libpng-config)
-  if test -n "$LIBPNG_CONFIG"; then
-        PNG_INCLUDES=`$LIBPNG_CONFIG --cflags`
-        PNG_PREFIX=`$LIBPNG_CONFIG --prefix`
-	if test "${PNG_PREFIX}/lib" != "/usr/lib" ; then
-  		PNG_LIBS="-L${PNG_PREFIX}/lib"
- 	fi
-  else
-	PNG_INCLUDES=""
-  fi
-  AC_ARG_WITH(pngincludedir,
-    [AS_HELP_STRING([--with-pngincludedir=DIR],[use PNG includes from DIR])],
-    [PNG_INCLUDES="-I$withval"])
-  CPPFLAGS="$CPPFLAGS $PNG_INCLUDES $Z_INCLUDES"
-  AC_ARG_WITH(pnglibdir,
-    [AS_HELP_STRING([--with-pnglibdir=DIR],[use PNG libraries from DIR])],
-    [PNG_LIBS="-L$withval"])
-  LDFLAGS="$LDFLAGS $PNG_LIBS $Z_LIBS"
-  AC_CHECK_HEADER(png.h,
-	AC_CHECK_LIB(png,main,
-		[PNG_LIBS="$PNG_LIBS -lpng"
-		use_png="Yes"
-		AC_DEFINE_UNQUOTED(HAVE_GD_PNG,1,[Define if the GD library has the GD_PNG feature])
-		AC_DEFINE_UNQUOTED(HAVE_LIBPNG,1,[Define if you have the PNG library])],
-		use_png="No (missing libpng)"
-		AC_MSG_WARN(Optional png library not available),
-		[$Z_LIBS $MATH_LIBS]),
-	use_png="No (missing png.h)"
-	AC_MSG_WARN(Optional png library not available - no png.h))
-
-fi
-LDFLAGS=$save_LDFLAGS
-CPPFLAGS=$save_CPPFLAGS
-AC_SUBST([PNG_INCLUDES])
-AC_SUBST([PNG_LIBS])
-
 # -----------------------------------
 # tclInt.h
 if test -f "$TCL_SRC_DIR/generic/tclInt.h"; then
@@ -2900,10 +2847,6 @@ else
   if test "x$use_glut" != "xYes"; then
      AC_MSG_WARN(SMYRNA requires GLUT)
      requires="$requires glut"
-  fi
-  if test "x$use_png" != "xYes"; then
-     AC_MSG_WARN(SMYRNA requires PNG)
-     requires="$requires png"
   fi
   if test "x$requires" != "x"; then
      use_smyrna="No (requires:$requires)"
@@ -3297,8 +3240,6 @@ echo "  gts:           $use_gts"
 echo "  ipsepcola:     $use_ipsepcola"
 echo "  ltdl:          $use_ltdl"
 echo "  ortho:         $use_ortho"
-echo "  png:           $use_png"
-echo "  jpeg:          $use_jpeg"
 echo "  sfdp:          $use_sfdp"
 echo "  shared:        $use_shared"
 echo "  static:        $use_static"

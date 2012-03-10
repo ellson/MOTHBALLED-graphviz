@@ -34,7 +34,7 @@ if WITH_LIBGD
 libgdtclft_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
-	$(GD_LIBS) $(ICONV_LIBS) $(FONTCONFIG_LIBS) $(FREETYPE2_LIBS) $(JPEG_LIBS) $(PNG_LIBS) $(Z_LIBS) $(MATH_LIBS)
+	$(GD_LIBS)
 
 if WITH_TCL
 all-local: pkgIndex.tcl
