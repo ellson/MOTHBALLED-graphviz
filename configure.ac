@@ -2578,19 +2578,13 @@ AC_ARG_WITH(libgd,
   [AS_HELP_STRING([--with-libgd=yes],[use gd library])],
   [], [with_libgd=yes])
 
-AC_ARG_WITH(mylibgd,
-  [AS_HELP_STRING([--with-mylibgd=no],[use internal gd library in preference to any installed libgd])],
-  [], [with_mylibgd=no])
-
-if test "x$with_mylibgd" = "xyes"; then
+if test "x$with_libgd" = "xyes"; then
   with_libgd=yes
+else
+  use_gd="No (disabled)"
 fi
 
-if test "x$with_libgd" != "xyes"; then
-  use_gd="No (disabled)"
-else
-  if test "x$with_libgd" = "xyes"; then
-    if test "x$with_mylibgd" = "xno"; then
+if test "x$use_gd" = "x"; then
       AC_PATH_PROG(GDLIB_CONFIG,gdlib-config)
       if test -n "$GDLIB_CONFIG"; then
         GD_INCLUDES=`$GDLIB_CONFIG --includes`
@@ -2635,35 +2629,31 @@ else
 	    AC_MSG_WARN(Your libgd was not built with fontconfig support. This may result in problems resolving fonts.)
         fi
 
-        # GD version check >= 2.0.33  else revert to --with-mylibgd
-	##  centos-5.8 has gd-2.0.33
+        # GD version check >= 2.0.33  -- centos-5.8 has gd-2.0.33
         REQ_GD_MAJORVERSION=2
         REQ_GD_MINORVERSION=0
         REQ_GD_REVISION=33
         if test $GD_MAJORVERSION -lt $REQ_GD_MAJORVERSION; then
-	    with_mylibgd=yes
+            use_gd="No (major version too old)"
         else
             if test $GD_MAJORVERSION -eq $REQ_GD_MAJORVERSION; then
                 if test $GD_MINORVERSION -lt $REQ_GD_MINORVERSION; then
-	            with_mylibgd=yes
+                    use_gd="No (minor version too old)"
 	        else
                     if test $GD_MINORVERSION -eq $REQ_GD_MINORVERSION; then
 		        if test $GD_REVISION -lt $REQ_GD_REVISION; then
-		            with_mylibgd=yes
+                            use_gd="No (revision too old)"
 		        fi
 	            fi
 	        fi
             fi
         fi
-        if test "x$with_mylibgd" = "xyes"; then
+        if test "x$use_gd" != "x"; then
             AC_MSG_WARN(GD library version < $REQ_GD_MAJORVERSION.$REQ_GD_MINORVERSION.$REQ_GD_REVISION)
         fi
       else
-        with_mylibgd=yes
-        AC_MSG_WARN(No gdlib-config found.)
+            AC_MSG_WARN(GD gdlib-config not found)
       fi
-    fi
-  fi
   # prevent explicit use of -I/usr/include as it breaks mingw cross-compiles
   if test "x$GD_INCLUDES" = "x-I/usr/include"; then
      GD_INCLUDES="";
@@ -2676,7 +2666,7 @@ else
      GD_LDFLAGS="";
   fi
 
-  if test "x$with_mylibgd" = "xno"; then
+  if test "x$use_gd" = "x"; then
     if test "x$with_libgd" = "xyes"; then
     # see if we can use the external gd lib
       save_CPPFLAGS=$CPPFLAGS
@@ -2707,32 +2697,11 @@ else
       LDFLAGS=$save_LDFLAGS
       CPPFLAGS=$save_CPPFLAGS
     fi
-  else
-    # using the internal libgd
-    use_gd="Yes (internal)"
-    AC_MSG_WARN(Using internal libgd source.)
-    AC_DEFINE_UNQUOTED(HAVE_GD_GIF,1,[Define if the GD library has the GD_GIF feature])
-    AC_DEFINE_UNQUOTED(HAVE_LIBGD,1,[Define if either internal or external GD library is availabel])
-    GD_INCLUDES='-I$(top_srcdir)/lib/gd'
-    GD_LIBS='$(top_builddir)/lib/gd/libgvgd.la'
   fi
   AC_SUBST([GD_INCLUDES])
   AC_SUBST([GD_LIBS])
 fi
 AM_CONDITIONAL(WITH_LIBGD, [test "x$with_libgd" = "xyes"])
-AM_CONDITIONAL(WITH_MYLIBGD, [test "x$with_mylibgd" = "xyes"])
-
-dnl ----------------------------------
-dnl INCLUDES and LIBS for FREETYPE2 and FONTCONFIG (only with mylibgd)
-
-if test "x$with_mylibgd" = "xyes"; then
-  if test "x$use_freetype" = "xYes"; then
-    AC_DEFINE_UNQUOTED(HAVE_GD_FREETYPE,1,[Define if the GD library has the GD_FREETYPE feature])
-  fi
-  if test "x$use_fontconfig" = "xYes"; then
-    AC_DEFINE_UNQUOTED(HAVE_GD_FONTCONFIG,1,[Define if the GD library has the GD_FONTCONFIG feature])
-  fi
-fi
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GLUT
@@ -2771,45 +2740,6 @@ LDFLAGS=$save_LDFLAGS
 CPPFLAGS=$save_CPPFLAGS
 AC_SUBST([GLUT_CFLAGS])
 AC_SUBST([GLUT_LIBS])
-
-dnl -----------------------------------
-dnl INCLUDES and LIBS for ICONV (only with mylibgd)
-
-if test "x$with_mylibgd" = "xyes"; then
-
-save_CPPFLAGS=$CPPFLAGS
-save_LDFLAGS=$LDFLAGS
-AC_ARG_WITH(iconvincludedir,
-  [AS_HELP_STRING([--with-iconvincludedir=DIR],[use ICONV includes from DIR])],
-  [ICONV_INCLUDES="-I$withval"])
-CPPFLAGS="$CPPFLAGS $ICONV_INCLUDES"
-AC_ARG_WITH(iconvlibdir,
-  [AS_HELP_STRING([--with-iconvlibdir=DIR],[use ICONV libraries from DIR])],
-  [ICONV_LIBS="-L$withval"])
-LDFLAGS="$LDFLAGS $ICONV_LIBS"
-
-# Some systems have iconv in a separate library (e.g. Tru64 UNIX)
-AM_ICONV
-if test -n "$LIBICONV" ; then
-  ICONV_LIBS="$LIBICONV"
-else
-  ICONV_LIBS=""
-fi
-
-AC_CHECK_HEADERS(iconv.h,
-  [AC_MSG_CHECKING(whether iconv.h defines iconv_t)
-   AC_EGREP_HEADER([typedef.*iconv_t],iconv.h,
-     [AC_MSG_RESULT(yes)
-      AC_DEFINE(HAVE_ICONV_T_DEF, 1,
-                [Define if <iconv.h> defines iconv_t.])],
-      AC_MSG_RESULT(no))])
-
-LDFLAGS=$save_LDFLAGS
-CPPFLAGS=$save_CPPFLAGS
-AC_SUBST([ICONV_INCLUDES])
-AC_SUBST([ICONV_LIBS])
-
-fi
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for PNG 
@@ -2858,57 +2788,6 @@ LDFLAGS=$save_LDFLAGS
 CPPFLAGS=$save_CPPFLAGS
 AC_SUBST([PNG_INCLUDES])
 AC_SUBST([PNG_LIBS])
-
-dnl -----------------------------------
-dnl INCLUDES and LIBS for JPEG (only with mylibgd)
-
-AC_ARG_WITH(jpeg,
-  [AS_HELP_STRING([--with-jpeg=yes],[JPEG library])],
-  [], [with_jpeg=yes])
-
-if test "x$with_jpeg" != "xyes"; then
-  use_jpeg="No (disabled)"
-else
-
-if test "x$with_mylibgd" != "xyes"; then
-  use_jpeg="No (only required by internal libgd)"
-else
-
-
-save_CPPFLAGS=$CPPFLAGS
-save_LDFLAGS=$LDFLAGS
-AC_ARG_WITH(jpegincludedir,
-  [AS_HELP_STRING([--with-jpegincludedir=DIR],[use JPEG includes from DIR])],
-  [JPEG_INCLUDES="-I$withval"])
-CPPFLAGS="$CPPFLAGS $JPEG_INCLUDES"
-JPEG_LIBDIR="/usr/lib$LIBPOSTFIX"
-AC_ARG_WITH(jpeglibdir,
-  [AS_HELP_STRING([--with-jpeglibdir=DIR],[use JPEG libraries from DIR])],
-  [JPEG_LIBDIR="$withval"])
-if test "$JPEG_LIBDIR" != "/usr/lib$LIBPOSTFIX"; then
-	JPEG_LIBS="-L$JPEG_LIBDIR"
-	LDFLAGS="$LDFLAGS $JPEG_LIBS"
-fi
-if test -f "$JPEG_LIBDIR/libjpeg.la"; then
-        JPEG_LIBS="$JPEG_LIBDIR/libjpeg.la"
-fi
-AC_CHECK_HEADER(jpeglib.h,
-	AC_CHECK_LIB(jpeg,main,
-		use_jpeg="Yes"
-		[JPEG_LIBS="$JPEG_LIBS -ljpeg"
-		AC_DEFINE_UNQUOTED(HAVE_GD_JPEG,1,[Define if the GD library has the GD_JPEG feature])
-		AC_DEFINE_UNQUOTED(HAVE_LIBJPEG,1,[Define if you have the JPEG library])],
-			use_jpeg="No (missing library)"
-			AC_MSG_WARN(Optional jpeg library not available)),
-	use_jpeg="No (missing header)"
-	AC_MSG_WARN(Optional jpeg library not available - no jpeglib.h))
-LDFLAGS=$save_LDFLAGS
-CPPFLAGS=$save_CPPFLAGS
-AC_SUBST([JPEG_INCLUDES])
-AC_SUBST([JPEG_LIBS])
-
-fi
-fi
 
 # -----------------------------------
 # tclInt.h
@@ -3264,7 +3143,6 @@ AC_CONFIG_FILES(Makefile
 	lib/graph/libgraph.pc
 	lib/cgraph/Makefile
 	lib/cgraph/libcgraph.pc
-	lib/gd/Makefile
 	lib/rbtree/Makefile
 	lib/pathplan/Makefile
 	lib/pathplan/libpathplan.pc
