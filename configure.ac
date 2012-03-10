@@ -2635,10 +2635,11 @@ else
 	    AC_MSG_WARN(Your libgd was not built with fontconfig support. This may result in problems resolving fonts.)
         fi
 
-        # GD version check >= 2.0.34  else revert to --with-mylibgd
+        # GD version check >= 2.0.33  else revert to --with-mylibgd
+	##  centos-5.8 has gd-2.0.33
         REQ_GD_MAJORVERSION=2
         REQ_GD_MINORVERSION=0
-        REQ_GD_REVISION=34
+        REQ_GD_REVISION=33
         if test $GD_MAJORVERSION -lt $REQ_GD_MAJORVERSION; then
 	    with_mylibgd=yes
         else
