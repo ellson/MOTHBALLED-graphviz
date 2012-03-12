@@ -1251,7 +1251,7 @@ Voronoi technique. dim' = (1+2*margin)*dim.
 #  Obsolete, replaced by sep
 #w:E:double:1.0; neato
 #  Redundant definition of weight in neato, cf. bug 9.
-:weight:E:double:1.0:0(dot)/1(neato,fdp,sfdp);
+:weight:E:double:1.0:0(dot)/1(neato,fdp);
 Weight of edge. In dot, the heavier the weight, the shorter,
 straighter and more vertical the edge is.
 :width:N:double:0.75:0.01;
