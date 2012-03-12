@@ -90,7 +90,7 @@ dot_static_LDADD = \
 	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH)_C.la \
 	$(top_builddir)/lib/xdot/libxdot_C.la \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
-       	$(PANGOCAIRO_LIBS) $(PANGOFT2_LIBS) $(GTS_LIBS) $(ICONV_LIBS) $(EXPAT_LIBS) $(Z_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
+       	$(PANGOCAIRO_LIBS) $(PANGOFT2_LIBS) $(GTS_LIBS) $(EXPAT_LIBS) $(Z_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
 
 dot_builtins_SOURCES = dot.c dot_builtins.c
 dot_builtins_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
@@ -103,16 +103,11 @@ dot_builtins_LDADD = \
 	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
 	$(top_builddir)/lib/xdot/libxdot.la \
 	$(top_builddir)/lib/cdt/libcdt.la \
-       	$(GTS_LIBS) $(ICONV_LIBS) $(EXPAT_LIBS) $(Z_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
+       	$(GTS_LIBS) $(EXPAT_LIBS) $(Z_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
 
 if WITH_LIBGD
-if WITH_MYLIBGD
-dot_static_LDADD += $(top_builddir)/plugin/gd/.libs/libgvplugin_gd_C.a $(top_builddir)/lib/gd/libgvgd_C.la $(FONTCONFIG_LIBS) $(FREETYPE2_LIBS) $(JPEG_LIBS) $(PNG_LIBS) $(Z_LIBS)
-dot_builtins_LDADD += $(top_builddir)/plugin/gd/libgvplugin_gd.la $(top_builddir)/lib/gd/libgvgd_C.la $(FONTCONFIG_LIBS) $(FREETYPE2_LIBS) $(JPEG_LIBS) $(PNG_LIBS) $(Z_LIBS)
-else
-dot_static_LDADD += $(top_builddir)/plugin/gd/.libs/libgvplugin_gd_C.a $(GD_LIBS) $(FONTCONFIG_LIBS) $(FREETYPE2_LIBS) $(JPEG_LIBS) $(PNG_LIBS) $(Z_LIBS)
-dot_builtins_LDADD += $(top_builddir)/plugin/gd/libgvplugin_gd.la $(GD_LIBS) $(FONTCONFIG_LIBS) $(FREETYPE2_LIBS) $(JPEG_LIBS) $(PNG_LIBS) $(Z_LIBS)
-endif
+dot_static_LDADD += $(top_builddir)/plugin/gd/.libs/libgvplugin_gd_C.a $(GD_LIBS)
+dot_builtins_LDADD += $(top_builddir)/plugin/gd/libgvplugin_gd.la $(GD_LIBS)
 endif
 
 if WITH_PANGOCAIRO
