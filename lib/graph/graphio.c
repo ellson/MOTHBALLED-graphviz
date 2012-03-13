@@ -172,7 +172,7 @@ _agstrcanon (char* arg, char* buf)
     }
     *p++ = '\"';
     *p = '\0';
-    if (has_special)
+    if (has_special || ((cnt == 1) && ((*arg == '.') || (*arg == '-'))))
 	return buf;
 
     /* use quotes to protect tokens (example, a node named "node") */
