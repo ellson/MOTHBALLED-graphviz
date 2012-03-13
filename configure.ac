@@ -261,6 +261,7 @@ AC_PROG_YACC
 AC_PROG_AWK
 AC_PROG_INSTALL
 AC_PROG_LN_S
+AC_PROG_LIBTOOL
 
 # prefer GNU variants over, say, Oracle's or Apples
 AC_CHECK_PROGS(SED,gsed sed,false)
