@@ -179,7 +179,7 @@ Requires(postun): /sbin/ldconfig
 
 %description
 A collection of tools for the manipulation and layout
-of graphs (as in nodes and edges, not as in barcharts).
+of graphs (as in nodes and edges, not as in bar-charts).
 
 # run "dot -c" to generate plugin config in {_libdir}/graphviz/config
 # (don't rely on ldconfig to find libraries since it won't
@@ -631,7 +631,7 @@ Requires:       %{name} = %{version}-%{release}, pkgconfig
 
 %description devel
 A collection of tools for the manipulation and layout
-of graphs (as in nodes and edges, not as in barcharts).
+of graphs (as in nodes and edges, not as in bar-charts).
 This package contains development files for graphviz.
 
 %files devel
