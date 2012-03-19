@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # Script for gvmap pipeline
 # Use -A to add flags for gvmap; e.g., -Ae results in gvmap -e
 # -K can be used to change the original layout; by default, sfdp is used
