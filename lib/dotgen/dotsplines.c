@@ -252,7 +252,7 @@ setEdgeLabelPos (graph_t * g)
 	    else if ((l = ND_label(n))) {// label of regular edge
 		place_vnlabel(n);
 	    }
-	    updateBB(g, l);
+	    if (l) updateBB(g, l);
 	}
     }
 }
