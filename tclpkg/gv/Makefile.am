@@ -100,9 +100,10 @@ gv_lua.cpp: gv.i
 	rm $@.orig
 
 pkgocamldir = $(pkglibdir)/ocaml
-OCAML_data = gv.cmo gv.cma gv.cmi gv.mli META.gv
+OCAML_data = gv.cmo gv.cma gv.cmi META.gv
+#OCAML_data += gv.mli
 if WITH_OCAMLOPT
-OCAML_data += gv.a gv.cmx gv.cmxa
+#OCAML_data += gv.a gv.cmx gv.cmxa
 endif
 nodist_libgv_ocaml_la_SOURCES = gv_ocaml.cpp $(OCAML_data)
 libgv_ocaml_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
