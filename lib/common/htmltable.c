@@ -1985,7 +1985,7 @@ int make_html_label(void *obj, textlabel_t * lp)
 	    s = latin1ToUTF8(lp->text);
 	    break;
 	default: /* UTF8 */
-	    s = htmlEntityUTF8(lp->text);
+	    s = htmlEntityUTF8(lp->text, env.g);
 	    break;
 	}
 	free(lp->text);

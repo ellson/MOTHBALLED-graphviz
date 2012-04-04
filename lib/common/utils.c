@@ -1538,15 +1538,46 @@ htmlEntity (char** s)
     return n;
 }
 
-/* substitute html entities like: &#123; and: &amp; with the UTF8 equivalents */
-char* htmlEntityUTF8 (char* s)
+static unsigned char
+cvtAndAppend (unsigned char c, agxbuf* xb)
 {
+    char buf[2];
+    char* s;
+    char* p;
+    int len;
+
+    buf[0] = c;
+    buf[1] = '\0';
+
+    p = s = latin1ToUTF8 (buf);
+    len = strlen(s);
+    while (len-- > 1)
+	agxbputc(xb, *p++);
+    c = *p;
+    free (s);
+    return c;
+}
+
+/* htmlEntityUTF8:
+ * substitute html entities like: &#123; and: &amp; with the UTF8 equivalents
+ * check for invalid utf8. If found, treat a single byte as Latin-1, convert it to
+ * utf8 and warn the user.
+ */
+char* htmlEntityUTF8 (char* s, graph_t* g)
+{
+    static graph_t* lastg;
+    static boolean warned;
     char*  ns;
     agxbuf xb;
     unsigned char buf[BUFSIZ];
     unsigned char c;
     unsigned int v;
     int rc;
+
+    if (lastg != g) {
+	lastg = g;
+	warned = 0;
+    }
 
     agxbinit(&xb, BUFSIZ, buf);
 
@@ -1582,9 +1613,12 @@ char* htmlEntityUTF8 (char* s)
 	        rc = agxbputc(&xb, c);
 	        c = *(unsigned char*)s++;
 	    }
-	    else {
-		agerr(AGERR, "Invalid 2-byte UTF8 found in input. Perhaps \"-Gcharset=latin1\" is needed?\n");
-		return "";
+	    else { 
+		if (!warned) {
+		    agerr(AGWARN, "Invalid 2-byte UTF8 found in input of graph %s - treated as Latin-1. Perhaps \"-Gcharset=latin1\" is needed?\n", agnameof(g));
+		    warned = 1;
+		}
+		c = cvtAndAppend (c, &xb);
 	    }
 	}
 	else if (c < 0xF0) { /* copy 3 byte UTF8 characters */
@@ -1595,13 +1629,19 @@ char* htmlEntityUTF8 (char* s)
 	        c = *(unsigned char*)s++;
 	    }
 	    else {
-		agerr(AGERR, "Invalid 3-byte UTF8 found in input. Perhaps \"-Gcharset=latin1\" is needed?\n");
-		return "";
+		if (!warned) {
+		    agerr(AGWARN, "Invalid 3-byte UTF8 found in input of graph %s - treated as Latin-1. Perhaps \"-Gcharset=latin1\" is needed?\n", agnameof(g));
+		    warned = 1;
+		}
+		c = cvtAndAppend (c, &xb);
 	    }
 	}
 	else  {
-	    agerr(AGERR, "UTF8 codes > 3 bytes are not currently supported. Or perhaps \"-Gcharset=latin1\" is needed?\n");
-	    return "";
+	    if (!warned) {
+		agerr(AGWARN, "UTF8 codes > 3 bytes are not currently supported (graph %s) - treated as Latin-1. Perhaps \"-Gcharset=latin1\" is needed?\n", agnameof(g));
+		warned = 1;
+	    }
+	    c = cvtAndAppend (c, &xb);
         }
 	rc = agxbputc(&xb, c);
     }

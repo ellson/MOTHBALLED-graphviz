@@ -101,7 +101,7 @@ extern "C" {
     extern int processClusterEdges(graph_t * g);
 
     extern char *latin1ToUTF8(char *);
-    extern char *htmlEntityUTF8(char *);
+    extern char *htmlEntityUTF8(char *, graph_t* g);
     extern char* utf8ToLatin1 (char* ins);
     extern char* scanEntity (char* t, agxbuf* xb);
 
