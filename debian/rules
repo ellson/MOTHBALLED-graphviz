@@ -186,7 +186,7 @@ install: build
 		$(OCAML_PACKAGE)/usr/lib/ocaml/$(OCAMLABI)/stublibs/dllgv.so
 	# 2. Move the devel files where they belong
 	install -d $(DEV_PACKAGE)/usr/lib/ocaml/$(OCAMLABI)/gv
-	mv $(OCAML_PACKAGE)/usr/lib/graphviz/ocaml/*.ml* \
+	mv $(OCAML_PACKAGE)/usr/lib/graphviz/ocaml/*.cm* \
 		$(DEV_PACKAGE)/usr/lib/ocaml/$(OCAMLABI)/gv
 	# 3. Trash the (almost empty) directory (and its .la)
 	rm -rf $(OCAML_PACKAGE)/usr/lib/graphviz
