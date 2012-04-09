@@ -594,13 +594,13 @@ The graph is then output in separate layers. Only those components
 belonging to the current output layer appear. For more information,
 see the page <A HREF="http://www.graphviz.org/wiki/how-use-drawing-layers-overlays">How to use drawing layers (overlays)</A>.
 :layerlistsep:G:string:",";
-Specifies the separator characters used to split the
+Specifies the separator characters used to split
 an attribute of type <A HREF=#k:layerRange>layerRange</A> into a list of ranges.
 :layerselect:G:layerRange:"";
 Selects a list of layers to be emitted.
 :layersep:G:string:" :\\\\t";
 Specifies the separator characters used to split the
-<A HREF=#d:layers>layers</A>attribute into a list of layer names.
+<A HREF=#d:layers>layers</A> attribute into a list of layer names.
 :layout:G:string:"";
 Specifies the name of the layout algorithm to use, such as "dot"
 or "neato". Normally, graphs should be kept independent of a type of
