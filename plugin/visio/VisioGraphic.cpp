@@ -26,6 +26,11 @@
 #include <cmath>
 #endif
 
+#ifdef __SUNPRO_CC
+#include <ieeefp.h>
+#define isfinite(x) finite(x)
+#endif
+
 #include "VisioGraphic.h"
 
 #include "gvcjob.h"
