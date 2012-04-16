@@ -1060,11 +1060,11 @@ If 90, set drawing orientation to landscape.
 Causes the final layout to be rotated counter-clockwise by the specified number of degrees.
 :samehead:E:string:"";  dot
 Edges with the same head and the same <B>samehead</B> value are aimed
-at the same point on the head.
+at the same point on the head. This has no effect on loops.
 See <A HREF=#h:undir_note>limitation</A>.
 :sametail:E:string:"";  dot
 Edges with the same tail and the same <B>sametail</B> value are aimed
-at the same point on the tail.
+at the same point on the tail. This has no effect on loops.
 See <A HREF=#h:undir_note>limitation</A>.
 :samplepoints:N:int:8(output)/20(overlap and image maps);
 If the input graph defines the <A HREF=#d:vertices><B>vertices</B></A>

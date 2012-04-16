@@ -53,6 +53,7 @@ void dot_sameports(graph_t * g)
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	n_same = 0;
 	for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
+	    if (aghead(e) == agtail(e)) continue;  /* Don't support same* for loops */
 	    if (aghead(e) == n && E_samehead &&
 #ifndef WITH_CGRAPH
 		(id = agxget(e, E_samehead->index))[0])
