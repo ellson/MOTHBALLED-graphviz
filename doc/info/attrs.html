@@ -315,7 +315,7 @@ This field indicates which graph component uses the attribute.
 </TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD>neato only</TD> </TR>
  <TR><TD><A NAME=a:nodesep HREF=#d:nodesep>nodesep</A>
-</TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.25</TD><TD>0.02</TD><TD>dot only</TD> </TR>
+</TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.25</TD><TD>0.02</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:nojustify HREF=#d:nojustify>nojustify</A>
 </TD><TD>GCNE</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
@@ -1249,7 +1249,10 @@ This field indicates which graph component uses the attribute.
   the Mosek software (www.mosek.com) is use to solve the ipsep constraints.
 
 <DT><A NAME=d:nodesep HREF=#a:nodesep><STRONG>nodesep</STRONG></A>
-<DD>  Minimum space between two adjacent nodes in the same rank, in inches.
+<DD>  In dot, this specifies the minimum space between two adjacent nodes in the same rank, in inches.
+  <P>
+  For other layouts, this affects the spacing between loops on a single node, or multiedges between
+  a pair of nodes.
 
 <DT><A NAME=d:nojustify HREF=#a:nojustify><STRONG>nojustify</STRONG></A>
 <DD>  By default, the justification of multi-line labels is done within the

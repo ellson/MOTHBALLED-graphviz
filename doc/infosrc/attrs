@@ -703,8 +703,11 @@ graph, the input can specify all of the relevant distances.
 :mosek:G:bool:false;    neato
 If Graphviz is built with MOSEK defined, mode=ipsep and mosek=true,
 the Mosek software (www.mosek.com) is use to solve the ipsep constraints.
-:nodesep:G:double:0.25:0.02; dot
-Minimum space between two adjacent nodes in the same rank, in inches.
+:nodesep:G:double:0.25:0.02;
+In dot, this specifies the minimum space between two adjacent nodes in the same rank, in inches.
+<P>
+For other layouts, this affects the spacing between loops on a single node, or multiedges between
+a pair of nodes.
 :nojustify:GCNE:bool:false;
 By default, the justification of multi-line labels is done within the
 largest context that makes sense. Thus, in the label of a polygonal
