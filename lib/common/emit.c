@@ -3417,7 +3417,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
                don't bother checking.
                if gradient is set fillcolor trumps bgcolor
              */
-	    if (!filled && ((color = agget(sg, "bgcolor")) != 0) && color[0]) {
+	    if ((!filled || !fillcolor) && ((color = agget(sg, "bgcolor")) != 0) && color[0]) {
 		fillcolor = color;
 	        filled = FILL;
             }
