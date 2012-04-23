@@ -89,6 +89,7 @@ static void sameedge(same_t * same, node_t * n, edge_t * e, char *id)
 	    goto set_arrow;
 	}
     if (++n_same > MAXSAME) {
+	n_same--;
 	agerr(AGERR, "too many same{head,tail} groups for node %s\n",
 	      agnameof(n));
 	return;
