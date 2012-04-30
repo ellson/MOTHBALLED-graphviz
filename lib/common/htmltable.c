@@ -1972,6 +1972,7 @@ int make_html_label(void *obj, textlabel_t * lp)
     env.finfo.size = lp->fontsize;
     env.finfo.name = lp->fontname;
     env.finfo.color = lp->fontcolor;
+    env.finfo.flags = 0;
     lbl = parseHTML(lp->text, &rv, GD_charset(env.g));
     if (!lbl) {
 	/* Parse of label failed; revert to simple text label */
