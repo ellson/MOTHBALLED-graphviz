@@ -7,6 +7,7 @@ digraph G {
 	main -> cleanup;
 	execute -> {make_string printf}
 	init -> make_string;
+	edge [color=red];	// so is this
 	main -> printf [style=bold,label="100 times"];
 	make_string [label="make a\nstring"];
 	node [shape=box,style=filled,color=".7 .3 1.0"];
