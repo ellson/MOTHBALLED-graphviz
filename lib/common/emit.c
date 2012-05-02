@@ -198,16 +198,16 @@ getObjId (GVJ_t* job, void* obj, agxbuf* xb)
 	idnum = ((graph_t*)obj)->meta_node->id;
 #else
     case AGRAPH:
-	idnum = AGID((graph_t*)obj);
+	idnum = AGSEQ(obj);
 #endif
 	pfx = "graph";
 	break;
     case AGNODE:
-        idnum = AGID((node_t*)obj);
+        idnum = AGSEQ((Agnode_t*)obj);
 	pfx = "node";
 	break;
     case AGEDGE:
-        idnum = AGID((edge_t*)obj);
+        idnum = AGSEQ((Agedge_t*)obj);
 	pfx = "edge";
 	break;
     }
