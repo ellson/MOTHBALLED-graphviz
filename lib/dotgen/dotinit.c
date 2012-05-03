@@ -56,7 +56,7 @@ dot_init_edge(edge_t * e)
 #endif /* WITH_CGRAPH */
     common_init_edge(e);
 
-    ED_weight(e) = late_double(e, E_weight, 1.0, 0.0);
+    ED_weight(e) = late_int(e, E_weight, 1, 0);
     tailgroup = late_string(agtail(e), N_group, "");
     headgroup = late_string(aghead(e), N_group, "");
     ED_count(e) = ED_xpenalty(e) = 1;

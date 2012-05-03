@@ -263,7 +263,7 @@ static cluster_data* cluster_map(graph_t *mastergraph, graph_t *g)
                 node_t *gn;
                 int ind = 0;
                 for (gn = agfstnode(g); gn; gn = agnxtnode(g, gn)) {
-                    if(AGID(gn)==AGID(n)) break;
+                    if(AGSEQ(gn)==AGSEQ(n)) break;
                     ind++;
                 }
                 /* fprintf(stderr,"  node=%s, id=%d, ind=%d\n",agnameof(n),n->id,ind); */
@@ -1474,8 +1474,8 @@ static void mds_model(graph_t * g, int nG)
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
 	for (e = agfstout(g, v); e; e = agnxtout(g, e)) {
-	    i = AGID(agtail(e));
-	    j = AGID(aghead(e));
+	    i = AGSEQ(agtail(e));
+	    j = AGSEQ(aghead(e));
 	    if (i == j)
 		continue;
 	    GD_dist(g)[i][j] = GD_dist(g)[j][i] = ED_dist(e);

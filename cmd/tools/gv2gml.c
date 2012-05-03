@@ -613,7 +613,7 @@ emitEdgeAttrs (Agraph_t* G, Agedge_t* ep, FILE* outFile, int ix)
 static void 
 emitEdge (Agraph_t* G, Agedge_t* e, FILE* outFile)
 {
-    fprintf (outFile, "  edge [\n    id %lu\n", AGID(e));
+    fprintf (outFile, "  edge [\n    id %lu\n", AGSEQ(e));
     fprintf (outFile, "    source %lu\n", ID(agtail(e)));
     fprintf (outFile, "    target %lu\n", ID(aghead(e)));
     emitEdgeAttrs (G, e, outFile, 2);

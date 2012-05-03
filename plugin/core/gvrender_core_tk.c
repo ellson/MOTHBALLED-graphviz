@@ -67,7 +67,7 @@ static void tkgen_print_tags(GVJ_t *job)
 	ObjType = "node";
 	ObjPart = "shape";
 	ObjFlag = 1;
-        ObjId = AGID(obj->u.n);
+        ObjId = AGSEQ(obj->u.n);
 #ifndef WITH_CGRAPH
 	ObjHandle = obj->u.n->handle;
 #endif
@@ -76,7 +76,7 @@ static void tkgen_print_tags(GVJ_t *job)
 	ObjType = "node";
 	ObjPart = "label";
 	ObjFlag = 0;
-        ObjId = AGID(obj->u.n);
+        ObjId = AGSEQ(obj->u.n);
 #ifndef WITH_CGRAPH
 	ObjHandle = obj->u.n->handle;
 #endif
@@ -87,7 +87,7 @@ static void tkgen_print_tags(GVJ_t *job)
 	ObjType = "edge";
 	ObjPart = "shape";
 	ObjFlag = 1;
-        ObjId = AGID(obj->u.e);
+        ObjId = AGSEQ(obj->u.e);
 #ifndef WITH_CGRAPH
 	ObjHandle = obj->u.e->handle;
 #endif
@@ -98,7 +98,7 @@ static void tkgen_print_tags(GVJ_t *job)
 	ObjType = "edge";
 	ObjPart = "label";
 	ObjFlag = 0;
-        ObjId = AGID(obj->u.e);
+        ObjId = AGSEQ(obj->u.e);
 #ifndef WITH_CGRAPH
 	ObjHandle = obj->u.e->handle;
 #endif
@@ -130,7 +130,7 @@ static void tkgen_print_tags(GVJ_t *job)
 	ObjId = obj->u.sg->meta_node->id;
 	ObjHandle = obj->u.sg->handle;
 #else
-	ObjId = AGID(obj->u.sg);
+	ObjId = AGSEQ(obj->u.sg);
 #endif
 	break;
     case EMIT_CLABEL:
@@ -141,7 +141,7 @@ static void tkgen_print_tags(GVJ_t *job)
 	ObjId = obj->u.sg->meta_node->id;
 	ObjHandle = obj->u.sg->handle;
 #else
-	ObjId = AGID(obj->u.sg);
+	ObjId = AGSEQ(obj->u.sg);
 #endif
 	break;
     default:

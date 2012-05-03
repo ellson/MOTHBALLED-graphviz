@@ -489,7 +489,7 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:voro_margin HREF=#d:voro_margin>voro_margin</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.05</TD><TD>0.0</TD><TD>not dot</TD> </TR>
  <TR><TD><A NAME=a:weight HREF=#d:weight>weight</A>
-</TD><TD>E</TD><TD>double</TD><TD ALIGN="CENTER">1.0</TD><TD>0(dot)<BR>1(neato,fdp)</TD><TD></TD> </TR>
+</TD><TD>E</TD><TD>int<BR>double</TD><TD ALIGN="CENTER">1</TD><TD>0(dot)<BR>1(neato,fdp)</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:width HREF=#d:width>width</A>
 </TD><TD>N</TD><TD>double</TD><TD ALIGN="CENTER">0.75</TD><TD>0.01</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:xlabel HREF=#d:xlabel>xlabel</A>
@@ -1863,6 +1863,9 @@ This field indicates which graph component uses the attribute.
 <DT><A NAME=d:weight HREF=#a:weight><STRONG>weight</STRONG></A>
 <DD>  Weight of edge. In dot, the heavier the weight, the shorter,
   straighter and more vertical the edge is.
+  For other layouts, a larger weight encourages the layout to 
+  make the edge length closer to that specified by the 
+  <A HREF=#d:len>len</A> attribute.
 
 <DT><A NAME=d:width HREF=#a:width><STRONG>width</STRONG></A>
 <DD>  Width of node, in inches. This is taken as the initial, minimum width

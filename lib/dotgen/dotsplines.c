@@ -635,8 +635,8 @@ static int edgecmp(edge_t** ptr0, edge_t** ptr1)
 	return (v0 - v1);
 
     /* This provides a cheap test for edges having the same set of endpoints.  */
-    if (AGID(le0) != AGID(le1))
-	return (AGID(le0) - AGID(le1));
+    if (AGSEQ(le0) != AGSEQ(le1))
+	return (AGSEQ(le0) - AGSEQ(le1));
 
     ea = (ED_tail_port(e0).defined || ED_head_port(e0).defined) ? e0 : le0;
     if (ED_tree_index(ea) & BWDEDGE) {
@@ -671,7 +671,7 @@ static int edgecmp(edge_t** ptr0, edge_t** ptr1)
     if (et0 == FLATEDGE && ED_label(e0) != ED_label(e1))
 	return (int) (ED_label(e0) - ED_label(e1));
 
-    return (AGID(e0) - AGID(e1));
+    return (AGSEQ(e0) - AGSEQ(e1));
 }
 
 /* cloneGraph:

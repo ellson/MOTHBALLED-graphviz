@@ -1300,8 +1300,8 @@ orthoEdges (Agraph_t* g, int doLbls)
         for (e = agfstout(g, n); e; e = agnxtout(g,e)) {
 	    if ((Nop == 2) && ED_spl(e)) continue;
 	    if (Concentrate) {
-		int ti = AGID(agtail(e));
-		int hi = AGID(aghead(e));
+		int ti = AGSEQ(agtail(e));
+		int hi = AGSEQ(aghead(e));
 		if (ti <= hi) {
 		    if (isInPS (ps,ti,hi)) continue;
 		    else addPS (ps,ti,hi);

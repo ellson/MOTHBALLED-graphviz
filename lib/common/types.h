@@ -657,7 +657,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	unsigned char showboxes;
 	boolean conc_opp_flag;
 	short xpenalty;
-	float weight;
+	int weight;
 	int cutvalue, tree_index;
 	short count;
 	unsigned short minlen;
