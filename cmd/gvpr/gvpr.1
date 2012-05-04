@@ -647,6 +647,9 @@ length of \fIstr\fP, a fatal error occurs.
 provides the standard C function
 .IR strcmp (3).
 .TP
+\fBlength\fP(\fIs\fP : \fBstring\fP) : \fBint\fP
+returns the length of string \fIs\fP.
+.TP
 \fBindex\fP(\fIs\fP : \fBstring\fP, \fIt\fP : \fBstring\fP) : \fBint\fP
 .TP
 \fBrindex\fP(\fIs\fP : \fBstring\fP, \fIt\fP : \fBstring\fP) : \fBint\fP
@@ -677,6 +680,9 @@ act as an HTML string, it has to be used with an object of \fIg\fP. In addition,
 note that the
 angle bracket quotes should not be part of \fIs\fP. These will be added if 
 \fIg\fP is written in concrete DOT format.
+.TP
+\fBishtml\fP(\fIs\fP : \fBstring\fP) : \fBint\fP
+returns non-zero if and only if \fIs\fP is an HTML string.
 .TP
 \fBxOf\fP(\fIs\fP : \fBstring\fP) : \fBstring\fP
 returns the string "\fIx\fP" if \fIs\fP has the form "\fIx\fP,\fIy\fP", 
