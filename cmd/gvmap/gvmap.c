@@ -44,6 +44,37 @@ enum {POINTS_ALL = 1, POINTS_LABEL, POINTS_RANDOM};
 enum {maxlen = 10000000};
 enum {MAX_GRPS = 10000};
 static char swork[maxlen];
+static float test=(float)0.35345345353535345534534545;
+
+#ifdef WIN32
+    #pragma comment( lib, "cgraph.lib" )
+    #pragma comment( lib, "gvc.lib" )
+    #pragma comment( lib, "ingraphs.lib" )
+    #pragma comment( lib, "sparse.lib" )
+    #pragma comment( lib, "neatogen.lib" )
+    #pragma comment( lib, "gvc.lib" )
+    #pragma comment( lib, "pathplan.lib" )
+    #pragma comment( lib, "neatogen.lib" )
+    #pragma comment( lib, "circogen.lib" )
+    #pragma comment( lib, "twopigen.lib" )
+    #pragma comment( lib, "fdpgen.lib" )
+    #pragma comment( lib, "sparse.lib" )
+    #pragma comment( lib, "cdt.lib" )
+    #pragma comment( lib, "gts.lib" )
+    #pragma comment( lib, "glib-2.0.lib" )
+    #pragma comment( lib, "vpsc.lib" )
+    #pragma comment( lib, "patchwork.lib" )
+    #pragma comment( lib, "gvortho.lib" )
+    #pragma comment( lib, "sfdp.lib" )
+    #pragma comment( lib, "rbtree.lib" )
+
+
+#else   /* not WIN32_DLL */
+#include "globals.h"
+#endif
+
+
+
 #if 0
 void *gmalloc(size_t nbytes)
 {
@@ -644,6 +675,7 @@ makeMap (SparseMatrix graph, int n, real* x, real* width, int* grouping,
 
 static void mapFromGraph (Agraph_t* g, params_t* pm)
 {
+    SparseMatrix graph;
   int n;
   real* width = NULL;
   real* x;
@@ -655,7 +687,7 @@ static void mapFromGraph (Agraph_t* g, params_t* pm)
   float* fsz;
 
   initDotIO(g);
-  SparseMatrix graph = Import_coord_clusters_from_dot(g, pm->maxcluster, pm->dim, &n, &width, NULL, &x, &grouping, 
+  graph = Import_coord_clusters_from_dot(g, pm->maxcluster, pm->dim, &n, &width, NULL, &x, &grouping, 
 					   &rgb_r,  &rgb_g,  &rgb_b,  &fsz, &labels, pm->color_scheme, CLUSTERING_MODULARITY);
   makeMap (graph, n, x, width, grouping, labels, fsz, rgb_r, rgb_g, rgb_b, pm, g);
 }

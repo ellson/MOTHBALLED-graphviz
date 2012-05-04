@@ -2124,7 +2124,7 @@ int make_map_from_rectangle_groups(int exclude_random, int include_OK_points,
 
      
   */
-
+    real dist, avgdist;
   real *X;
   int N, nmax, i, j, k, igrp;
   int *groups, K = *nart;/* average number of points added per side of rectangle */
@@ -2271,7 +2271,7 @@ int make_map_from_rectangle_groups(int exclude_random, int include_OK_points,
 
       graph = SparseMatrix_symmetrize(graph, TRUE);
       ia = graph->ia; ja = graph->ja;
-      real dist, avgdist = 0.;
+      dist=avgdist = 0.;
       for (i = 0; i < n; i++){
 	for (j = ia[i]; j < ia[i+1]; j++){
 	  jj = ja[j];
