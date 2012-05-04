@@ -33,7 +33,7 @@ do
     LAYOUT=$OPTARG
     ;;
   A )
-    FLAGS2="$FLAGS3 -$OPTARG"
+    FLAGS2="$FLAGS2 -$OPTARG"
     ;;
   T )
     FLAGS3="$FLAGS3 -T$OPTARG"
