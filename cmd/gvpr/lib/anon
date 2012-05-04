@@ -28,5 +28,4 @@ E {
 
 END_G {
   write (dup);
-  delete (dup,dup);
 }
