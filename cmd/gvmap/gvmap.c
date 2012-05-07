@@ -44,7 +44,6 @@ enum {POINTS_ALL = 1, POINTS_LABEL, POINTS_RANDOM};
 enum {maxlen = 10000000};
 enum {MAX_GRPS = 10000};
 static char swork[maxlen];
-static float test=(float)0.35345345353535345534534545;
 
 #ifdef WIN32
     #pragma comment( lib, "cgraph.lib" )
@@ -69,9 +68,7 @@ static float test=(float)0.35345345353535345534534545;
     #pragma comment( lib, "rbtree.lib" )
 
 
-#else   /* not WIN32_DLL */
-#include "globals.h"
-#endif
+#endif   /* not WIN32_DLL */
 
 
 
