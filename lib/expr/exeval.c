@@ -135,7 +135,7 @@ getdyn(Expr_t* ex, register Exnode_t* expr, void* env, Exassoc_t** assoc)
 
 	if (expr->data.variable.index)
 	{
-		char	buf[9];
+		char	buf[2*(sizeof(key.integer))+1];  /* no. of hex chars needed plus null byte */
 		Extype_t key;
 		char *keyname;
 
@@ -155,7 +155,7 @@ getdyn(Expr_t* ex, register Exnode_t* expr, void* env, Exassoc_t** assoc)
 					key = (*ex->disc->keyf) (ex, v, type, ex->disc);
 				} else
 					key.integer = v.integer;
-				sfsprintf(buf, sizeof(buf), "0x%I*x", sizeof(v.integer), key.integer);
+				sfsprintf(buf, sizeof(buf), "%I*x", sizeof(key.integer), key.integer);
 				keyname = buf;
 			} else
 				keyname = v.string;
