@@ -720,7 +720,7 @@ static void writeBody(gxlstate_t * stp, Agraph_t * g, FILE * gxlFile)
     writeSubgs(stp, g, gxlFile);
     dd = (Agdatadict_t *) agdatadict(g, FALSE);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	realn = agidnode(stp->root, AGSEQ(n), 0);
+	realn = agidnode(stp->root, AGID(n), 0);
 	if (!writeval(realn)) {
 	    writeval(realn) = 1;
 	    writeNode(stp, n, gxlFile, dd->dict.n);
