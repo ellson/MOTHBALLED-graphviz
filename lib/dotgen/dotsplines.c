@@ -941,6 +941,7 @@ makeSimpleFlatLabels (node_t* tn, node_t* hn, edge_t** edges, int ind, int cnt, 
     ctrx = (leftend + rightend)/2.0;
     
     /* do first edge */
+    e = earray[0];
     pointn = 0;
     points[pointn++] = tp;
     points[pointn++] = tp;
@@ -961,7 +962,7 @@ makeSimpleFlatLabels (node_t* tn, node_t* hn, edge_t** edges, int ind, int cnt, 
     umaxx = ctrx + (ED_label(e)->dimen.x)/2.0;
 
     for (i = 1; i < n_lbls; i++) {
-	e = edges[ind + i];
+	e = earray[i];
 	if (i%2) {  /* down */
 	    if (i == 1) {
 		lminx = ctrx - (ED_label(e)->dimen.x)/2.0;
@@ -1019,7 +1020,7 @@ makeSimpleFlatLabels (node_t* tn, node_t* hn, edge_t** edges, int ind, int cnt, 
 
     /* edges with no labels */
     for (; i < cnt; i++) {
-	e = edges[ind + i];
+	e = earray[i];
 	if (i%2) {  /* down */
 	    if (i == 1) {
 		lminx = (2*leftend + rightend)/3.0;
