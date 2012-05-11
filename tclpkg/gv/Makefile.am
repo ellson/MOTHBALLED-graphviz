@@ -331,7 +331,7 @@ DEVTSTS += test_php
 endif
 if WITH_PYTHON
 pkgpython_DATA = $(PYTHON_data)
-py_mans = gv.3python
+py_mans = gv.3python 
 py_data = gv.3python.pdf
 pkgpython_LTLIBRARIES = libgv_python.la
 DEVTSTS += test_python
