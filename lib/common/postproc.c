@@ -418,6 +418,7 @@ static void addXLabels(Agraph_t * gp)
     object_t* objp;
     xlabel_t* xlp;
     Agsym_t* force;
+    int et = EDGE_TYPE(gp);
 
     if (!(GD_has_labels(gp) & NODE_XLABEL) &&
 	!(GD_has_labels(gp) & EDGE_XLABEL) &&
@@ -437,25 +438,25 @@ static void addXLabels(Agraph_t * gp)
 	    if (ED_xlabel(ep)) {
 		if (ED_xlabel(ep)->set)
 		    n_set_lbls++;
-		else
+		else if (et != ET_NONE)
 		    n_elbls++;
 	    }
 	    if (ED_head_label(ep)) {
 		if (ED_head_label(ep)->set)
 		    n_set_lbls++;
-		else
+		else if (et != ET_NONE)
 		    n_elbls++;
 	    }
 	    if (ED_tail_label(ep)) {
 		if (ED_tail_label(ep)->set)
 		    n_set_lbls++;
-		else
+		else if (et != ET_NONE)
 		    n_elbls++;
 	    }
 	    if (ED_label(ep)) {
 		if (ED_label(ep)->set)
 		    n_set_lbls++;
-		else
+		else if (et != ET_NONE)
 		    n_elbls++;
 	    }
 	}
@@ -495,7 +496,7 @@ static void addXLabels(Agraph_t * gp)
 		if (lp->set) {
 		    bb = addLabelObj (lp, objp, bb);
 		}
-		else {
+		else if (et != ET_NONE) {
 		    addXLabel (lp, objp, xlp, 1, edgeMidpoint(gp, ep)); 
 		    xlp++;
 		}
@@ -505,7 +506,7 @@ static void addXLabels(Agraph_t * gp)
 		if (lp->set) {
 		    bb = addLabelObj (lp, objp, bb);
 		}
-		else {
+		else if (et != ET_NONE) {
 		    addXLabel (lp, objp, xlp, 1, edgeTailpoint(ep)); 
 		    xlp++;
 		}
@@ -515,7 +516,7 @@ static void addXLabels(Agraph_t * gp)
 		if (lp->set) {
 		    bb = addLabelObj (lp, objp, bb);
 		}
-		else {
+		else if (et != ET_NONE) {
 		    addXLabel (lp, objp, xlp, 1, edgeHeadpoint(ep)); 
 		    xlp++;
 		}
@@ -525,7 +526,7 @@ static void addXLabels(Agraph_t * gp)
 		if (lp->set) {
 		    bb = addLabelObj (lp, objp, bb);
 		}
-		else {
+		else if (et != ET_NONE) {
 		    addXLabel (lp, objp, xlp, 1, edgeMidpoint(gp, ep)); 
 		    xlp++;
 		}
