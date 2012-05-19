@@ -33,6 +33,7 @@
 #define ARR_TYPE_BOX	  4
 #define ARR_TYPE_DIAMOND  5
 #define ARR_TYPE_DOT      6
+#define ARR_TYPE_CURVE  7
 /* Spare:  #define ARR_TYPE_xxx      7 */
 
 /* arrow mods (in (BITS_PER_ARROW - BITS_PER_ARROW_TYPE) bits) */
@@ -98,7 +99,8 @@ static arrowname_t Arrownames[] = {
     /* Define "empty" as just "mpty" since "e" already taken as ARR_MOD_OPEN */
     /* Note that ARR_MOD_OPEN has expected meaning for ARR_TYPE_NORM shape */
     {"mpty", ARR_TYPE_NORM},
-    {(char *) 0, ARR_TYPE_NONE}
+ {"curve", ARR_TYPE_CURVE},
+ {(char *) 0, ARR_TYPE_NONE}
 };
 
 typedef struct arrowtype_t {
@@ -114,6 +116,7 @@ static void arrow_type_tee(GVJ_t * job, pointf p, pointf u, double arrowsize, do
 static void arrow_type_box(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag);
 static void arrow_type_diamond(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag);
 static void arrow_type_dot(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag);
+static void arrow_type_curve(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag);
 
 static arrowtype_t Arrowtypes[] = {
     {ARR_TYPE_NORM, 1.0, arrow_type_normal},
@@ -122,6 +125,7 @@ static arrowtype_t Arrowtypes[] = {
     {ARR_TYPE_BOX, 1.0, arrow_type_box},
     {ARR_TYPE_DIAMOND, 1.2, arrow_type_diamond},
     {ARR_TYPE_DOT, 0.8, arrow_type_dot},
+ {ARR_TYPE_CURVE, 1.0, arrow_type_curve},
     {ARR_TYPE_NONE, 0.0, NULL}
 };
 
@@ -599,6 +603,35 @@ static void arrow_type_dot(GVJ_t * job, pointf p, pointf u, double arrowsize, do
     AF[1].y = p.y + u.y / 2. + r;
     gvrender_ellipse(job, AF, 2, !(flag & ARR_MOD_OPEN));
 }
+
+
+/* Draw a concave semicircle using a single cubic bezier curve that touches p at its midpoint.
+ * See http://digerati-illuminatus.blogspot.com.au/2008/05/approximating-semicircle-with-cubic.htmlfor details.
+ */
+static void arrow_type_curve(GVJ_t* job, pointf p, pointf u, double arrowsize, double penwidth, int flag)
+{
+ double const arrowwidth = penwidth > 4 ? 0.5 * penwidth / 4 : 0.5;
+ pointf const q = {p.x + u.x, p.y + u.y}, v = {-u.y * arrowwidth, u.x * arrowwidth},
+ w = {v.y, -v.x}; // same direction as u, same magnitude as v.
+ pointf AF[4], a[2] = {p, q};
+
+
+ AF[0].x = p.x + v.x + w.x;
+ AF[0].y = p.y + v.y + w.y;
+
+ AF[3].x = p.x - v.x + w.x;
+ AF[3].y = p.y - v.y + w.y;
+
+ AF[1].x = p.x + 0.95 * v.x + w.x - w.x * 4.0 / 3.0;
+ AF[1].y = AF[0].y - w.y * 4.0 / 3.0;
+
+ AF[2].x = p.x - 0.95 * v.x + w.x - w.x * 4.0 / 3.0;
+ AF[2].y = AF[3].y - w.y * 4.0 / 3.0;
+
+ gvrender_polyline(job, a, 2);
+ gvrender_beziercurve(job, AF, sizeof(AF) / sizeof(pointf), FALSE, FALSE, FALSE);
+}
+
 
 static pointf arrow_gen_type(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag)
 {
