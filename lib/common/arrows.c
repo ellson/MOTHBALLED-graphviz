@@ -610,10 +610,18 @@ static void arrow_type_dot(GVJ_t * job, pointf p, pointf u, double arrowsize, do
  */
 static void arrow_type_curve(GVJ_t* job, pointf p, pointf u, double arrowsize, double penwidth, int flag)
 {
-    double const arrowwidth = penwidth > 4 ? 0.5 * penwidth / 4 : 0.5;
-    pointf const q = {p.x + u.x, p.y + u.y}, v = {-u.y * arrowwidth, u.x * arrowwidth},
-    w = {v.y, -v.x}; // same direction as u, same magnitude as v.
-    pointf AF[4], a[2] = {p, q};
+    double arrowwidth = penwidth > 4 ? 0.5 * penwidth / 4 : 0.5;
+    pointf q, v, w;
+    pointf AF[4], a[2];
+
+    q.x = p.x + u.x;
+    q.y = p.y + u.y; 
+    v.x = -u.y * arrowwidth; 
+    v.y = u.x * arrowwidth;
+    w.x = v.y; // same direction as u, same magnitude as v.
+    w.y = -v.x;
+    a[0] = p;
+    a[1] = q;
 
     AF[0].x = p.x + v.x + w.x;
     AF[0].y = p.y + v.y + w.y;
