@@ -135,8 +135,8 @@ getdyn(Expr_t* ex, register Exnode_t* expr, void* env, Exassoc_t** assoc)
 
 	if (expr->data.variable.index)
 	{
-		char	buf[2*(sizeof(key.integer))+1];  /* no. of hex chars needed plus null byte */
 		Extype_t key;
+		char	buf[2*(sizeof(key.integer))+1];  /* no. of hex chars needed plus null byte */
 		char *keyname;
 
 		v = eval(ex, expr->data.variable.index, env);
