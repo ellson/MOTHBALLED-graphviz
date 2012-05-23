@@ -287,6 +287,14 @@ static void
 svg_begin_anchor(GVJ_t * job, char *href, char *tooltip, char *target,
 		 char *id)
 {
+    gvputs(job, "<g");
+    if (id) {
+        gvputs(job, " id=\"");
+        gvputs(job, xml_string(id));
+        gvputs(job, "\"");
+    }
+    gvputs(job, ">");
+
     gvputs(job, "<a");
 #if 0
     /* the svg spec implies this can be omitted: http://www.w3.org/TR/SVG/linking.html#Links */
@@ -324,6 +332,7 @@ svg_begin_anchor(GVJ_t * job, char *href, char *tooltip, char *target,
 static void svg_end_anchor(GVJ_t * job)
 {
     gvputs(job, "</a>\n");
+    gvputs(job, "</g>\n");
 }
 
 static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
