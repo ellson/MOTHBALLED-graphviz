@@ -794,8 +794,8 @@ void graph_init(graph_t * g, boolean use_rankdir)
     Initial_dist = MYHUGE;
 
     G_ordering = agfindgraphattr(g, "ordering");
-    G_gradientcolor = agfindgraphattr(g,"gradientcolor");
     G_gradientangle = agfindgraphattr(g,"gradientangle");
+    G_margin = agfindgraphattr(g, "margin");
 
     /* initialize nodes */
     N_height = agfindnodeattr(g, "height");
@@ -812,6 +812,7 @@ void graph_init(graph_t * g, boolean use_rankdir)
     N_showboxes = agfindnodeattr(g, "showboxes");
     N_penwidth = agfindnodeattr(g, "penwidth");
     N_ordering = agfindnodeattr(g, "ordering");
+    N_margin = agfindnodeattr(g, "margin");
     /* attribs for polygon shapes */
     N_sides = agfindnodeattr(g, "sides");
     N_peripheries = agfindnodeattr(g, "peripheries");
@@ -826,12 +827,12 @@ void graph_init(graph_t * g, boolean use_rankdir)
     N_comment = agfindnodeattr(g, "comment");
     N_vertices = agfindnodeattr(g, "vertices");
     N_z = agfindnodeattr(g, "z");
-    N_gradientcolor = agfindnodeattr(g,"gradientcolor");
     N_gradientangle = agfindnodeattr(g,"gradientangle");
 
     /* initialize edges */
     E_weight = agfindedgeattr(g, "weight");
     E_color = agfindedgeattr(g, "color");
+    E_fillcolor = agfindedgeattr(g, "fillcolor");
     E_fontsize = agfindedgeattr(g, "fontsize");
     E_fontname = agfindedgeattr(g, "fontname");
     E_fontcolor = agfindedgeattr(g, "fontcolor");

@@ -11,6 +11,10 @@
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <algorithm>
 
 #ifdef _MSC_VER
@@ -20,6 +24,11 @@
 
 #ifdef __GNUC__
 #include <cmath>
+#endif
+
+#ifdef __SUNPRO_CC
+#include <ieeefp.h>
+#define isfinite(x) finite(x)
 #endif
 
 #include "VisioGraphic.h"

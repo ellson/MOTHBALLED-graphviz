@@ -21,7 +21,7 @@ gvmap.sh \- pipeline for running gvmap
 ]
 .SH DESCRIPTION
 .B gvmap.sh
-takes as input a graph in DOT format, performs an layout, runs the output through
+takes as input a graph in DOT format, performs a layout, runs the output through
 gvmap and renders the output. At some point, it is hoped to integrate all of these
 tasks into gvmap.
 .SH OPTIONS
@@ -93,7 +93,7 @@ It is equivalent to running the pipeline
 sfdp -Goverlap=prism foo.gv | gvmap -e | neato -n2 -Ecolor=#55555522 -Tpng > foo.png
 
 .SH AUTHOR
-Yifan Hu <yifanhu@research.att.com>
+Emden R. Gansner <erg@research.att.com>
 .SH "SEE ALSO"
 .PP
 gvmap(1), sfdp(1), neato(1), gvpr(1)

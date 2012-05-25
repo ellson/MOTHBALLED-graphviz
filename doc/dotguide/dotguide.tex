@@ -1309,7 +1309,8 @@ Name & Default & Values \\ \hline
 {\tt imagescale} & false & true, width, height, both \\
 {\tt label} & node name & any string \\
 {\tt labelloc} & c & node label vertical alignment \\
-{\tt layer} & overlay range & {\tt all}, {\it id} or {\it id:id} \\
+{\tt layer} & overlay range & {\tt all}, {\it id} or {\it id:id}, or a comma-separated
+list of the former \\
 {\tt margin} & 0.11,0.55 & space around label \\
 {\tt nojustify} & false & if true, justify to label, not node \\
 {\tt orientation} & {\tt 0.0} & node rotation angle \\
@@ -1379,7 +1380,8 @@ is rotated off edge \\
 {\tt labelURL} & & URL for label, overrides edge URL \\
 {\tt labeltarget} & & if URL or labelURL is set, determines browser window for URL \\
 {\tt labeltooltip} & label & tooltip annotation near label \\
-{\tt layer} & overlay range & {\tt all}, {\it id} or {\it id:id} \\
+{\tt layer} & overlay range & {\tt all}, {\it id} or {\it id:id}, or a comma-separated
+list of the former\\
 {\tt lhead} & & name of cluster to use as head of edge \\
 {\tt ltail} & & name of cluster to use as tail of edge \\
 {\tt minlen} & {\tt 1} & minimum rank distance between head and tail \\
@@ -1650,8 +1652,11 @@ If the edge has a label, the label position is given in {\tt lp}.
 a sequence of overlapping ``layers.'' Typically the layers are
 overhead transparencies.  To activate this feature, one must
 set the top-level graph's {\tt layers} attribute to a list of identifiers.
-A node or edge can then be assigned to a layer or range of layers
-using its {\tt layer} attribute..
+A node or edge can then be assigned to list of layers
+using its {\tt layer} attribute.
+A list of layers is specified as a comma-separated list of ranges, and
+a range is either a single layer or has the form {\em id}:{\em id'}, the latter
+denoting all layers from {\em id} through {\em id'}.
 {\tt all} is a reserved name for all layers (and can be
 used at either end of a range, e.g {\tt design:all} or {\tt all:code}).
 For example:
@@ -1659,12 +1664,14 @@ For example:
     layers = "spec:design:code:debug:ship";
     node90 [layer = "code"];
     node91 [layer = "design:debug"]; 
-    node90 -> node91 [layer = "all"];
     node92 [layer = "all:code"];
+    node93 [layer = "spec:code,ship"];
+    node90 -> node91 [layer = "all"];
 \end{verbatim}
 In this graph, {\tt node91} is in layers {\tt design}, {\tt code}
 and {\tt debug}, while {\tt node92} is in layers {\tt spec},
-{\tt design} and {\tt code}.
+{\tt design} and {\tt code}. {\tt node93} is in layers
+layers {\tt spec}, {\tt design}, {\tt code} and {\tt ship}.
 
 In a layered graph, if a node or edge has no layer assignment,
 but incident edges or nodes do, then its layer specification
@@ -1676,9 +1683,6 @@ the beginning of the graph file:
     node [layer=all];
     edge [layer=all];
 \end{verbatim}
-
-There is currently no way to specify a set of layers that are
-not a continuous range.
 
 When PostScript output is selected, the color sequence for layers
 is set in the array {\tt layercolorseq}.  This array is indexed

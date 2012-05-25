@@ -566,7 +566,7 @@ int deleteObj(Agraph_t * g, Agobj_t * obj)
 	    data->lock |= 2;
 	    return -1;
 	} else
-	    agclose(g);
+	    return agclose(g);
     }
 
     /* node or edge */

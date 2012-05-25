@@ -5,17 +5,14 @@ digraph G {
   // to avoid confusion, remember this:
   // it's spelt tail/head, but it's read start/end
 
-  // emphasize theatrically
-  // show only explicitly given head/tails
   // put head/tail labels farther from the node
-//  edge [arrowsize=2 dir=none labeldistance=3]
-  edge [dir=none labeldistance=3]
+  edge [labeldistance=3]
 
   // not interested in node labels
   node [shape=circle width=0.5 label=""]
 
   {
-    edge [samehead=ahead samearrowhead=1]
+    edge [dir=back samehead=ahead samearrowhead=1]
     a->Z [arrowtail=none taillabel=none]
     b->Z [arrowtail=normal taillabel=normal]
     c->Z [arrowtail=inv taillabel=inv]

@@ -28,7 +28,7 @@ static Agclos_t *agclos(Agdisc_t * proto)
 
     /* establish an allocation arena */
     memdisc = ((proto && proto->mem) ? proto->mem : &AgMemDisc);
-    memclosure = memdisc->open();
+    memclosure = memdisc->open(proto);
     rv = memdisc->alloc(memclosure, sizeof(Agclos_t));
     rv->disc.mem = memdisc;
     rv->state.mem = memclosure;
@@ -54,7 +54,7 @@ Agraph_t *agopen(char *name, Agdesc_t desc, Agdisc_t * arg_disc)
     g->desc = desc;
     g->desc.maingraph = TRUE;
     g->root = g;
-    g->clos->state.id = g->clos->disc.id->open(g);
+    g->clos->state.id = g->clos->disc.id->open(g, arg_disc);
     if (agmapnametoid(g, AGRAPH, name, &gid, TRUE))
 	AGID(g) = gid;
     /* else AGID(g) = 0 because we have no alternatives */

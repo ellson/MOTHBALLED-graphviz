@@ -545,7 +545,7 @@ void Dot_SetClusterColor(Agraph_t* g, float *rgb_r,  float *rgb_g,  float *rgb_b
   for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
     i = ND_id(n);
     if (rgb_r && rgb_g && rgb_b) {
-      rgb2hex((rgb_r)[(clusters)[i]],(rgb_g)[(clusters)[i]],(rgb_b)[(clusters)[i]], scluster);
+      rgb2hex((rgb_r)[(clusters)[i]],(rgb_g)[(clusters)[i]],(rgb_b)[(clusters)[i]], scluster, NULL);
       //sprintf(scluster,"#%2x%2x%2x", (int) (255*((rgb_r)[(clusters)[i]])), (int) (255*((rgb_g)[(clusters)[i]])), (int) (255*((rgb_b)[(clusters)[i]])));
     }
     agxset(n,clust_clr_sym,scluster);
@@ -695,7 +695,7 @@ SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim
   }
 
   *label_sizes = MALLOC(sizeof(real)*dim*nnodes);
-  if (pal){
+  if (pal || (!noclusterinfo && clust_clr_sym)){
     *rgb_r = MALLOC(sizeof(float)*(1+MAX_GRPS));
     *rgb_g = MALLOC(sizeof(float)*(1+MAX_GRPS));
     *rgb_b = MALLOC(sizeof(float)*(1+MAX_GRPS));

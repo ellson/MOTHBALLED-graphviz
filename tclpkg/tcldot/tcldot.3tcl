@@ -128,7 +128,7 @@ The command returns the
 of the newly read graph.  e.g.
 .nf
 
-    set g [dotread $dotsyntaxstring]
+    set g [dotstring $dotsyntaxstring]
 
 .fi
 .TP

@@ -176,7 +176,7 @@ textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *f
 	    s = latin1ToUTF8(rv->text);
 	    break;
 	default: /* UTF8 */
-	    s = htmlEntityUTF8(rv->text);
+	    s = htmlEntityUTF8(rv->text, g);
 	    break;
 	}
         free(rv->text);

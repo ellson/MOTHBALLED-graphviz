@@ -66,6 +66,9 @@ vconfig_t *Pobsopen(Ppoly_t ** obs, int n_obs)
     int start, end;
 
     rv = malloc(sizeof(vconfig_t));
+    if (!rv) {
+	return NULL;
+    }
 
     /* get storage */
     n = 0;
@@ -104,7 +107,10 @@ void Pobsclose(vconfig_t * config)
     free(config->start);
     free(config->next);
     free(config->prev);
-    free(config->vis);
+    if (config->vis) {
+	free(config->vis[0]);
+	free(config->vis);
+    }
     free(config);
 }
 
@@ -158,6 +164,7 @@ int Pobspath(vconfig_t * config, Ppoint_t p0, int poly0, Ppoint_t p1,
 #ifdef GASP
     gasp_print_polyline(output_route);
 #endif
+    free(dad);
     return TRUE;
 }
 

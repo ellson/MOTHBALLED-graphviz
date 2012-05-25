@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <errno.h>
 
 #include "macros.h"
 #include "const.h"
@@ -362,8 +363,9 @@ static char *pov_knowncolors[] = { POV_COLORS };
 static float layerz = 0;
 static float z = 0;
 
-char *el(char *template, ...)
+char *el(GVJ_t* job, char *template, ...)
 {
+#if defined(HAVE_VASPRINTF)
 	char *str;
 	va_list arglist;
 
@@ -372,6 +374,34 @@ char *el(char *template, ...)
 	va_end(arglist);
 
 	return str;
+#elif defined(HAVE_VSNPRINTF)
+	char buf[BUFSIZ];
+	size_t len;
+	char *str;
+	va_list arglist;
+
+	va_start(arglist, template);
+	len = vsnprintf((char *)buf, BUFSIZ, template, arglist);
+	if (len < 0) {
+		job->common->errorfn("pov renderer:el - %s\n", strerror(errno));
+		str = strdup ("");
+	}
+	else if (len >= BUFSIZ) {
+		str = malloc (len+1);
+		va_end(arglist);
+		va_start(arglist, template);
+		len = vsprintf(str, template, arglist);
+	}
+	else {
+		str = strdup (buf);
+	}
+	va_end(arglist);
+
+	return str;
+#else
+/* Dummy function that will never be used */
+	return strdup(""); 
+#endif
 }
 
 static char *pov_color_as_str(GVJ_t * job, gvcolor_t color, float transparency)
@@ -383,13 +413,13 @@ static char *pov_color_as_str(GVJ_t * job, gvcolor_t color, float transparency)
 		gvprintf(job, "// type = %d, color = %s\n", color.type, color.u.string);
 #endif
 		if (!strcmp(color.u.string, "red"))
-			c = el(POV_COLOR_NAME, "Red", transparency);
+			c = el(job, POV_COLOR_NAME, "Red", transparency);
 		else if (!strcmp(color.u.string, "green"))
-			c = el(POV_COLOR_NAME, "Green", transparency);
+			c = el(job, POV_COLOR_NAME, "Green", transparency);
 		else if (!strcmp(color.u.string, "blue"))
-			c = el(POV_COLOR_NAME, "Blue", transparency);
+			c = el(job, POV_COLOR_NAME, "Blue", transparency);
 		else
-			c = el(POV_COLOR_NAME, color.u.string, transparency);
+			c = el(job, POV_COLOR_NAME, color.u.string, transparency);
 		break;
 	case RENDERER_COLOR_TYPE:
 #ifdef DEBUG
@@ -397,7 +427,7 @@ static char *pov_color_as_str(GVJ_t * job, gvcolor_t color, float transparency)
 			 color.type, color.u.rgba[0], color.u.rgba[1],
 			 color.u.rgba[2]);
 #endif
-		c = el(POV_COLOR_RGB,
+		c = el(job, POV_COLOR_RGB,
 		       color.u.rgba[0] / 256.0, color.u.rgba[1] / 256.0,
 		       color.u.rgba[2] / 256.0, transparency);
 		break;
@@ -407,7 +437,7 @@ static char *pov_color_as_str(GVJ_t * job, gvcolor_t color, float transparency)
 			color.type, color.u.string);
 		assert(0);	//oops, wrong type set in gvrender_features_t?
 	}
-	pov = el(POV_PIGMENT_COLOR, c);
+	pov = el(job, POV_PIGMENT_COLOR, c);
 	free(c);
 	return pov;
 }
@@ -429,6 +459,8 @@ static void pov_begin_job(GVJ_t * job)
 
 static void pov_begin_graph(GVJ_t * job)
 {
+	float x, y, d, px, py;
+
 	gvprintf(job, "//*** begin_graph %s\n", agnameof(job->obj->u.g));
 #ifdef DEBUG
 	gvprintf(job, "// graph_index = %d, pages = %d, layer = %d/%d\n",
@@ -473,11 +505,11 @@ static void pov_begin_graph(GVJ_t * job)
 #endif
 
 	//setup scene
-	float x = job->view.x / 2.0 * job->scale.x;
-	float y = job->view.y / 2.0 * job->scale.y;
-	float d = -500;
-	float px = atanf(x / abs(d)) * 180 / M_PI * 2;
-	float py = atanf(y / abs(d)) * 180 / M_PI * 2;
+	x = job->view.x / 2.0 * job->scale.x;
+	y = job->view.y / 2.0 * job->scale.y;
+	d = -500;
+	px = atanf(x / abs(d)) * 180 / M_PI * 2;
+	py = atanf(y / abs(d)) * 180 / M_PI * 2;
 	gvprintf(job, POV_CAMERA, x, y, d, x, y, 0.0,
 		 (px > py ? px : py) * 1.2);
 	gvputs(job, POV_SKY_AND_GND);
@@ -552,6 +584,9 @@ static void pov_end_edge(GVJ_t * job)
 
 static void pov_textpara(GVJ_t * job, pointf c, textpara_t * para)
 {
+	double x, y;
+	char *pov, *s, *r, *t, *p;
+
 	gvprintf(job, "//*** textpara: %s, fontsize = %.3f, fontname = %s\n",
 		 para->str, para->fontsize, para->fontname);
 	z = layerz - 9;
@@ -574,17 +609,16 @@ static void pov_textpara(GVJ_t * job, pointf c, textpara_t * para)
 		break;
 	}
 
-	double x = (c.x + job->translation.x) * job->scale.x;
-	double y = (c.y + job->translation.y) * job->scale.y;
+	x = (c.x + job->translation.x) * job->scale.x;
+	y = (c.y + job->translation.y) * job->scale.y;
 
-	char *pov, *s, *r, *t, *p;
-	s = el(POV_SCALE1, para->fontsize * job->scale.x);
-	r = el(POV_ROTATE, 0.0, 0.0, (float)job->rotation);
-	t = el(POV_TRANSLATE, x, y, z);
+	s = el(job, POV_SCALE1, para->fontsize * job->scale.x);
+	r = el(job, POV_ROTATE, 0.0, 0.0, (float)job->rotation);
+	t = el(job, POV_TRANSLATE, x, y, z);
 	p = pov_color_as_str(job, job->obj->pencolor, 0.0);
 
 	//pov bundled fonts: timrom.ttf, cyrvetic.ttf
-	pov = el(POV_TEXT "    %s    %s    %s    %s    %s" END,
+	pov = el(job, POV_TEXT "    %s    %s    %s    %s    %s" END,
 		para->fontname, 0.25, 0.0,	//font, depth (0.5 ... 2.0), offset
 		para->str, "    no_shadow\n", s, r, t, p);
 
@@ -605,24 +639,26 @@ static void pov_textpara(GVJ_t * job, pointf c, textpara_t * para)
 
 static void pov_ellipse(GVJ_t * job, pointf * A, int filled)
 {
+	char *pov, *s, *r, *t, *p;
+	float cx, cy, rx, ry, w;
+
 	gvputs(job, "//*** ellipse\n");
 	z = layerz - 6;
 
 	// A[0] center, A[1] corner of ellipse
-	float cx = (A[0].x + job->translation.x) * job->scale.x;
-	float cy = (A[0].y + job->translation.y) * job->scale.y;
-	float rx = (A[1].x - A[0].x) * job->scale.x;
-	float ry = (A[1].y - A[0].y) * job->scale.y;
-	float w = job->obj->penwidth / (rx + ry) / 2.0 * 5;
+	cx = (A[0].x + job->translation.x) * job->scale.x;
+	cy = (A[0].y + job->translation.y) * job->scale.y;
+	rx = (A[1].x - A[0].x) * job->scale.x;
+	ry = (A[1].y - A[0].y) * job->scale.y;
+	w = job->obj->penwidth / (rx + ry) / 2.0 * 5;
 
 	//draw rim (torus)
-	char *pov, *s, *r, *t, *p;
-	s = el(POV_SCALE3, rx, (rx + ry) / 4.0, ry);
-	r = el(POV_ROTATE, 90.0, 0.0, (float)job->rotation);
-	t = el(POV_TRANSLATE, cx, cy, z);
+	s = el(job, POV_SCALE3, rx, (rx + ry) / 4.0, ry);
+	r = el(job, POV_ROTATE, 90.0, 0.0, (float)job->rotation);
+	t = el(job, POV_TRANSLATE, cx, cy, z);
 	p = pov_color_as_str(job, job->obj->pencolor, 0.0);
 
-	pov = el(POV_TORUS "    %s    %s    %s    %s" END, 1.0, w,	//radius, size of ring
+	pov = el(job, POV_TORUS "    %s    %s    %s    %s" END, 1.0, w,	//radius, size of ring
 		 s, r, t, p);
 
 #ifdef DEBUG
@@ -641,12 +677,12 @@ static void pov_ellipse(GVJ_t * job, pointf * A, int filled)
 
 	//backgroud of ellipse if filled
 	if (filled) {
-		s = el(POV_SCALE3, rx, ry, 1.0);
-		r = el(POV_ROTATE, 0.0, 0.0, (float)job->rotation);
-		t = el(POV_TRANSLATE, cx, cy, z);
+		s = el(job, POV_SCALE3, rx, ry, 1.0);
+		r = el(job, POV_ROTATE, 0.0, 0.0, (float)job->rotation);
+		t = el(job, POV_TRANSLATE, cx, cy, z);
 		p = pov_color_as_str(job, job->obj->fillcolor, 0.0);
 
-		pov = el(POV_SPHERE "    %s    %s    %s    %s" END,
+		pov = el(job, POV_SPHERE "    %s    %s    %s    %s" END,
 			 0.0, 0.0, 0.0, s, r, t, p);
 
 		gvputs(job, pov);
@@ -662,22 +698,23 @@ static void pov_ellipse(GVJ_t * job, pointf * A, int filled)
 static void pov_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 		       int arrow_at_end, int filled)
 {
+	int i;
+	char *v, *x;
+	char *pov, *s, *r, *t, *p;
+
 	gvputs(job, "//*** bezier\n");
 	z = layerz - 4;
 
-	char *pov, *s, *r, *t, *p;
-	s = el(POV_SCALE3, job->scale.x, job->scale.y, 1.0);
-	r = el(POV_ROTATE, 0.0, 0.0, (float)job->rotation);
-	t = el(POV_TRANSLATE, 0.0, 0.0, z - 2);
+	s = el(job, POV_SCALE3, job->scale.x, job->scale.y, 1.0);
+	r = el(job, POV_ROTATE, 0.0, 0.0, (float)job->rotation);
+	t = el(job, POV_TRANSLATE, 0.0, 0.0, z - 2);
 	p = pov_color_as_str(job, job->obj->fillcolor, 0.0);
 
-	pov = el(POV_SPHERE_SWEEP, "b_spline", n + 2);
+	pov = el(job, POV_SPHERE_SWEEP, "b_spline", n + 2);
 
-	int i;
-	char *v, *x;
 	for (i = 0; i < n; i++) {
-		v = el(POV_VECTOR3 ", %.3f\n", A[i].x + job->translation.x, A[i].y + job->translation.y, 0.0, job->obj->penwidth);	//z coordinate, thickness
-		x = el("%s    %s", pov, v);	//catenate pov & vector v
+		v = el(job, POV_VECTOR3 ", %.3f\n", A[i].x + job->translation.x, A[i].y + job->translation.y, 0.0, job->obj->penwidth);	//z coordinate, thickness
+		x = el(job, "%s    %s", pov, v);	//catenate pov & vector v
 		free(v);
 		free(pov);
 		pov = x;
@@ -685,8 +722,8 @@ static void pov_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 		//TODO: we currently just use the start and end points of the curve as
 		//control points but we should use center of nodes
 		if (i == 0 || i == n - 1) {
-			v = el(POV_VECTOR3 ", %.3f\n", A[i].x + job->translation.x, A[i].y + job->translation.y, 0.0, job->obj->penwidth);	//z coordinate, thickness
-			x = el("%s    %s", pov, v);	//catenate pov & vector v
+			v = el(job, POV_VECTOR3 ", %.3f\n", A[i].x + job->translation.x, A[i].y + job->translation.y, 0.0, job->obj->penwidth);	//z coordinate, thickness
+			x = el(job, "%s    %s", pov, v);	//catenate pov & vector v
 			free(v);
 			free(pov);
 			pov = x;
@@ -698,9 +735,9 @@ static void pov_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 			 (A[i].y + job->translation.y) * job->scale.y, z - 2);
 #endif
 	}
-	x = el("        tolerance 0.01\n    %s    %s    %s    %s" END, s, r, t,
+	x = el(job, "        tolerance 0.01\n    %s    %s    %s    %s" END, s, r, t,
 	       p);
-	pov = el("%s%s", pov, x);	//catenate pov & end str
+	pov = el(job, "%s%s", pov, x);	//catenate pov & end str
 	free(x);
 
 	gvputs(job, pov);
@@ -714,36 +751,37 @@ static void pov_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 
 static void pov_polygon(GVJ_t * job, pointf * A, int n, int filled)
 {
+	char *pov, *s, *r, *t, *p, *v, *x;
+	int i;
+
 	gvputs(job, "//*** polygon\n");
 	z = layerz - 2;
 
-	char *pov, *s, *r, *t, *p, *v, *x;
-	s = el(POV_SCALE3, job->scale.x, job->scale.y, 1.0);
-	r = el(POV_ROTATE, 0.0, 0.0, (float)job->rotation);
-	t = el(POV_TRANSLATE, 0.0, 0.0, z - 2);
+	s = el(job, POV_SCALE3, job->scale.x, job->scale.y, 1.0);
+	r = el(job, POV_ROTATE, 0.0, 0.0, (float)job->rotation);
+	t = el(job, POV_TRANSLATE, 0.0, 0.0, z - 2);
 	p = pov_color_as_str(job, job->obj->pencolor, 0.0);
 
-	pov = el(POV_SPHERE_SWEEP, "linear_spline", n + 1);
+	pov = el(job, POV_SPHERE_SWEEP, "linear_spline", n + 1);
 
-	int i;
 	for (i = 0; i < n; i++) {
-		v = el(POV_VECTOR3 ", %.3f\n", A[i].x + job->translation.x, A[i].y + job->translation.y, 0.0, job->obj->penwidth);	//z coordinate, thickness
-		x = el("%s    %s", pov, v);	//catenate pov & vector v
+		v = el(job, POV_VECTOR3 ", %.3f\n", A[i].x + job->translation.x, A[i].y + job->translation.y, 0.0, job->obj->penwidth);	//z coordinate, thickness
+		x = el(job, "%s    %s", pov, v);	//catenate pov & vector v
 		free(v);
 		free(pov);
 		pov = x;
 	}
 
 	//close polygon, add starting point as final point^
-	v = el(POV_VECTOR3 ", %.3f\n", A[0].x + job->translation.x, A[0].y + job->translation.y, 0.0, job->obj->penwidth);	//z coordinate, thickness
+	v = el(job, POV_VECTOR3 ", %.3f\n", A[0].x + job->translation.x, A[0].y + job->translation.y, 0.0, job->obj->penwidth);	//z coordinate, thickness
 
-	x = el("%s    %s", pov, v);	//catenate pov & vector v
+	x = el(job, "%s    %s", pov, v);	//catenate pov & vector v
 	free(v);
 	free(pov);
 	pov = x;
 
-	x = el("    tolerance 0.1\n    %s    %s    %s    %s" END, s, r, t, p);
-	pov = el("%s%s", pov, x);	//catenate pov & end str
+	x = el(job, "    tolerance 0.1\n    %s    %s    %s    %s" END, s, r, t, p);
+	pov = el(job, "%s%s", pov, x);	//catenate pov & end str
 	free(x);
 
 	gvputs(job, pov);
@@ -756,25 +794,25 @@ static void pov_polygon(GVJ_t * job, pointf * A, int n, int filled)
 
 	//create fill background
 	if (filled) {
-		s = el(POV_SCALE3, job->scale.x, job->scale.y, 1.0);
-		r = el(POV_ROTATE, 0.0, 0.0, (float)job->rotation);
-		t = el(POV_TRANSLATE, 0.0, 0.0, z - 2);
+		s = el(job, POV_SCALE3, job->scale.x, job->scale.y, 1.0);
+		r = el(job, POV_ROTATE, 0.0, 0.0, (float)job->rotation);
+		t = el(job, POV_TRANSLATE, 0.0, 0.0, z - 2);
 		p = pov_color_as_str(job, job->obj->fillcolor, 0.25);
 
-		pov = el(POV_POLYGON, n);
+		pov = el(job, POV_POLYGON, n);
 
 		for (i = 0; i < n; i++) {
 			//create on z = 0 plane, then translate to real z pos
-			v = el(POV_VECTOR3,
+			v = el(job, POV_VECTOR3,
 			       A[i].x + job->translation.x,
 			       A[i].y + job->translation.y, 0.0);
-			x = el("%s\n    %s", pov, v);	//catenate pov & vector v
+			x = el(job, "%s\n    %s", pov, v);	//catenate pov & vector v
 			free(v);
 			free(pov);
 			pov = x;
 		}
-		x = el("\n    %s    %s    %s    %s" END, s, r, t, p);
-		pov = el("%s%s", pov, x);	//catenate pov & end str
+		x = el(job, "\n    %s    %s    %s    %s" END, s, r, t, p);
+		pov = el(job, "%s%s", pov, x);	//catenate pov & end str
 		free(x);
 
 		gvputs(job, pov);
@@ -789,28 +827,29 @@ static void pov_polygon(GVJ_t * job, pointf * A, int n, int filled)
 
 static void pov_polyline(GVJ_t * job, pointf * A, int n)
 {
+	char *pov, *s, *r, *t, *p, *v, *x;
+	int i;
+
 	gvputs(job, "//*** polyline\n");
 	z = layerz - 6;
 
-	char *pov, *s, *r, *t, *p, *v, *x;
-	s = el(POV_SCALE3, job->scale.x, job->scale.y, 1.0);
-	r = el(POV_ROTATE, 0.0, 0.0, (float)job->rotation);
-	t = el(POV_TRANSLATE, 0.0, 0.0, z);
+	s = el(job, POV_SCALE3, job->scale.x, job->scale.y, 1.0);
+	r = el(job, POV_ROTATE, 0.0, 0.0, (float)job->rotation);
+	t = el(job, POV_TRANSLATE, 0.0, 0.0, z);
 	p = pov_color_as_str(job, job->obj->pencolor, 0.0);
 
-	pov = el(POV_SPHERE_SWEEP, "linear_spline", n);
+	pov = el(job, POV_SPHERE_SWEEP, "linear_spline", n);
 
-	int i;
 	for (i = 0; i < n; i++) {
-		v = el(POV_VECTOR3 ", %.3f\n", A[i].x + job->translation.x, A[i].y + job->translation.y, 0.0, job->obj->penwidth);	//z coordinate, thickness
-		x = el("%s    %s", pov, v);	//catenate pov & vector v
+		v = el(job, POV_VECTOR3 ", %.3f\n", A[i].x + job->translation.x, A[i].y + job->translation.y, 0.0, job->obj->penwidth);	//z coordinate, thickness
+		x = el(job, "%s    %s", pov, v);	//catenate pov & vector v
 		free(v);
 		free(pov);
 		pov = x;
 	}
 
-	x = el("    tolerance 0.01\n    %s    %s    %s    %s" END, s, r, t, p);
-	pov = el("%s%s", pov, x);	//catenate pov & end str
+	x = el(job, "    tolerance 0.01\n    %s    %s    %s    %s" END, s, r, t, p);
+	pov = el(job, "%s%s", pov, x);	//catenate pov & end str
 	free(x);
 
 	gvputs(job, pov);
@@ -880,12 +919,16 @@ gvdevice_features_t device_features_pov = {
 };
 
 gvplugin_installed_t gvrender_pov_types[] = {
+#ifdef HAVE_VSNPRINTF
 	{FORMAT_POV, "pov", 1, &pov_engine, &render_features_pov},
+#endif
 	{0, NULL, 0, NULL, NULL}
 };
 
 gvplugin_installed_t gvdevice_pov_types[] = {
+#ifdef HAVE_VSNPRINTF
 	{FORMAT_POV, "pov:pov", 1, NULL, &device_features_pov},
+#endif
 	{0, NULL, 0, NULL, NULL}
 };
 

@@ -17,7 +17,7 @@
 #define MAX(a,b)	((a)>(b)?(a):(b))
 static agerrlevel_t agerrno;		/* Last error level */
 static agerrlevel_t agerrlevel = AGWARN;	/* Report errors >= agerrlevel */
-static int agerrcnt;
+static int agmaxerr;
 
 static long aglast;		/* Last message */
 static FILE *agerrout;		/* Message file */
@@ -107,9 +107,9 @@ static int agerr_va(agerrlevel_t level, const char *fmt, va_list args)
      */
     lvl = (level == AGPREV ? agerrno : (level == AGMAX) ? AGERR : level);
 
-    agerrcnt++;
     /* store this error level */
     agerrno = lvl;
+    agmaxerr = MAX(agmaxerr, agerrno);
 
     /* We report all messages whose level is bigger than the user set agerrlevel
      * Setting agerrlevel to AGMAX turns off immediate error reporting.
@@ -163,12 +163,12 @@ void agwarningf(const char *fmt, ...)
     agerr_va(AGWARN, fmt, args);
 }
 
-int agerrors() { return agerrcnt; }
+int agerrors() { return agmaxerr; }
 
 int agreseterrors() 
 { 
-    int rc = agerrcnt;
-    agerrcnt = 0;
+    int rc = agmaxerr;
+    agmaxerr = 0;
     return rc; 
 }
 

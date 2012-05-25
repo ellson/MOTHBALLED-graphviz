@@ -83,7 +83,7 @@ libgv_java_la_LDFLAGS = -module -avoid-version
 libgv_java_la_CPPFLAGS = $(BASECPPFLAGS) $(JAVA_INCLUDES)
 $(JAVA_data): gv_java.cpp
 gv_java.cpp: gv.i
-	$(SWIG) $(DEFS) -package org.graphviz -c++ -java -o gv_java.cpp $(srcdir)/gv.i
+	$(SWIG) -package org.graphviz -c++ -java -o gv_java.cpp $(srcdir)/gv.i
 
 pkgluadir = $(pkglibdir)/lua
 LUA_data = 
@@ -94,14 +94,16 @@ libgv_lua_la_LDFLAGS = -module -avoid-version
 libgv_lua_la_CPPFLAGS = $(BASECPPFLAGS) $(LUA_INCLUDES)
 # $(LUA_data): gv_lua.cpp
 gv_lua.cpp: gv.i
-	$(SWIG) $(DEFS) -c++ -lua -o gv_lua.cpp $(srcdir)/gv.i
+	$(SWIG) -c++ -lua -o gv_lua.cpp $(srcdir)/gv.i
 	mv $@ $@.orig
 	sed '/include/s/malloc\.h/cstdlib/' $@.orig > $@
+	rm $@.orig
 
 pkgocamldir = $(pkglibdir)/ocaml
-OCAML_data = gv.cmo gv.cma gv.cmi gv.mli META.gv
+OCAML_data = gv.cmo gv.cma gv.cmi META.gv
+#OCAML_data += gv.mli
 if WITH_OCAMLOPT
-OCAML_data += gv.a gv.cmx gv.cmxa
+#OCAML_data += gv.a gv.cmx gv.cmxa
 endif
 nodist_libgv_ocaml_la_SOURCES = gv_ocaml.cpp $(OCAML_data)
 libgv_ocaml_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
@@ -110,7 +112,7 @@ libgv_ocaml_la_LDFLAGS = -module -avoid-version
 libgv_ocaml_la_CPPFLAGS = $(BASECPPFLAGS) $(OCAML_INCLUDES)
 gv.ml gv.mli: gv_ocaml.cpp
 gv_ocaml.cpp: gv.i
-	$(SWIG) $(DEFS) -c++ -ocaml -o gv_ocaml.cpp $(srcdir)/gv.i
+	$(SWIG) -c++ -ocaml -o gv_ocaml.cpp $(srcdir)/gv.i
 swig.mli:
 	$(SWIG) -ocaml -co swig.mli
 swig.ml:
@@ -145,7 +147,7 @@ libgv_perl_la_LDFLAGS = -module -avoid-version $(PERL_LD)
 libgv_perl_la_CPPFLAGS = $(BASECPPFLAGS) $(PERL_CC)
 $(PERL_data): gv_perl.cpp
 gv_perl.cpp: gv.i
-	$(SWIG) $(DEFS) -c++ -perl -o gv_perl.cpp $(srcdir)/gv.i
+	$(SWIG) -c++ -perl -o gv_perl.cpp $(srcdir)/gv.i
 
 pkgphpdir = $(pkglibdir)/php
 PHP_data = gv.php
@@ -157,7 +159,7 @@ libgv_php_la_CPPFLAGS = $(BASECPPFLAGS) $(PHP_INCLUDES)
 gv.php: gv_php.cpp
 php_gv.h: gv_php.cpp
 gv_php.cpp: gv.i
-	$(SWIG) $(DEFS) -c++ -php5 -o gv_php.cpp $(srcdir)/gv.i
+	$(SWIG) -c++ -php5 -o gv_php.cpp $(srcdir)/gv.i
 
 pkgpythondir = $(pkglibdir)/python
 PYTHON_data = gv.py
@@ -168,7 +170,7 @@ libgv_python_la_LDFLAGS = -module -avoid-version
 libgv_python_la_CPPFLAGS = $(BASECPPFLAGS) $(PYTHON_INCLUDES)
 $(PYTHON_data): gv_python.cpp
 gv_python.cpp: gv.i
-	$(SWIG) $(DEFS) -c++ -python -o gv_python.cpp $(srcdir)/gv.i
+	$(SWIG) -c++ -python -o gv_python.cpp $(srcdir)/gv.i
 
 pkgpython23dir = $(pkglibdir)/python23
 PYTHON23_data = gv.py
@@ -179,7 +181,7 @@ libgv_python23_la_LDFLAGS = -module -avoid-version
 libgv_python23_la_CPPFLAGS = $(BASECPPFLAGS) $(PYTHON23_INCLUDES)
 # $(PYTHON23_data): gv_python23.cpp
 gv_python23.cpp: gv.i
-	$(SWIG) $(DEFS) -c++ -python -classic -o gv_python23.cpp $(srcdir)/gv.i
+	$(SWIG) -c++ -python -classic -o gv_python23.cpp $(srcdir)/gv.i
 
 pkgpython24dir = $(pkglibdir)/python24
 PYTHON24_data = gv.py
@@ -190,7 +192,7 @@ libgv_python24_la_LDFLAGS = -module -avoid-version
 libgv_python24_la_CPPFLAGS = $(BASECPPFLAGS) $(PYTHON24_INCLUDES)
 # $(PYTHON24_data): gv_python24.cpp
 gv_python24.cpp: gv.i
-	$(SWIG) $(DEFS) -c++ -python -classic -o gv_python24.cpp $(srcdir)/gv.i
+	$(SWIG) -c++ -python -classic -o gv_python24.cpp $(srcdir)/gv.i
 
 pkgpython25dir = $(pkglibdir)/python25
 PYTHON25_data = gv.py
@@ -201,7 +203,7 @@ libgv_python25_la_LDFLAGS = -module -avoid-version
 libgv_python25_la_CPPFLAGS = $(BASECPPFLAGS) $(PYTHON25_INCLUDES)
 # $(PYTHON25_data): gv_python25.cpp
 gv_python25.cpp: gv.i
-	$(SWIG) $(DEFS) -c++ -python -classic -o gv_python25.cpp $(srcdir)/gv.i
+	$(SWIG) -c++ -python -classic -o gv_python25.cpp $(srcdir)/gv.i
 
 pkgpython26dir = $(pkglibdir)/python26
 PYTHON26_data = gv.py
@@ -212,7 +214,7 @@ libgv_python26_la_LDFLAGS = -module -avoid-version
 libgv_python26_la_CPPFLAGS = $(BASECPPFLAGS) $(PYTHON26_INCLUDES)
 # $(PYTHON26_data): gv_python26.cpp
 gv_python26.cpp: gv.i
-	$(SWIG) $(DEFS) -c++ -python -o gv_python26.cpp $(srcdir)/gv.i
+	$(SWIG) -c++ -python -o gv_python26.cpp $(srcdir)/gv.i
 
 pkgpython27dir = $(pkglibdir)/python27
 PYTHON27_data = gv.py
@@ -223,7 +225,7 @@ libgv_python27_la_LDFLAGS = -module -avoid-version
 libgv_python27_la_CPPFLAGS = $(BASECPPFLAGS) $(PYTHON27_INCLUDES)
 # $(PYTHON27_data): gv_python27.cpp
 gv_python27.cpp: gv.i
-	$(SWIG) $(DEFS) -c++ -python -o gv_python27.cpp $(srcdir)/gv.i
+	$(SWIG) -c++ -python -o gv_python27.cpp $(srcdir)/gv.i
 
 pkgRdir = $(pkglibdir)/R
 R_data = 
@@ -234,7 +236,7 @@ libgv_R_la_LDFLAGS = -module -avoid-version
 libgv_R_la_CPPFLAGS = $(BASECPPFLAGS) $(R_CFLAGS)
 # $(R_data): gv_R.cpp
 gv_R.cpp: gv.i
-	$(SWIG) $(DEFS) -c++ -r -o gv_R.cpp $(srcdir)/gv.i
+	$(SWIG) -c++ -r -o gv_R.cpp $(srcdir)/gv.i
 
 pkgrubydir = $(pkglibdir)/ruby
 RUBY_data = 
@@ -242,10 +244,10 @@ nodist_libgv_ruby_la_SOURCES = gv_ruby.cpp $(RUBY_data)
 libgv_ruby_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
 libgv_ruby_la_LIBADD = $(BASELIBS) $(RUBY_LIBS)
 libgv_ruby_la_LDFLAGS = -module -avoid-version
-libgv_ruby_la_CPPFLAGS = $(BASECPPFLAGS) $(RUBY_INCLUDES)
+libgv_ruby_la_CPPFLAGS = $(BASECPPFLAGS) $(RUBY_CFLAGS)
 # $(RUBY_data): gv_ruby.cpp
 gv_ruby.cpp: gv.i
-	$(SWIG) $(DEFS) -c++ -ruby -o gv_ruby.cpp $(srcdir)/gv.i
+	$(SWIG) -c++ -ruby -o gv_ruby.cpp $(srcdir)/gv.i
 
 pkgtcldir = $(pkglibdir)/tcl
 TCL_data = 
@@ -256,7 +258,7 @@ libgv_tcl_la_LDFLAGS = -module -avoid-version
 libgv_tcl_la_CPPFLAGS = $(BASECPPFLAGS) $(TCL_INCLUDES)
 # $(TCL_data): gv_tcl.cpp
 gv_tcl.cpp: gv.i
-	$(SWIG) $(DEFS) -c++ -tcl -namespace -o gv_tcl.cpp $(srcdir)/gv.i
+	$(SWIG) -c++ -tcl -namespace -o gv_tcl.cpp $(srcdir)/gv.i
 
 pkginclude_HEADERS = gv.i gv.cpp
 pkglib_LTLIBRARIES = 

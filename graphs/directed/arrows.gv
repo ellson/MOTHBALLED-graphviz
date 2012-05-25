@@ -74,4 +74,10 @@ digraph G {
 	lvee -> lveelvee [arrowhead=lveelvee label=lveelvee]
 	_vee -> rvee [arrowhead=rvee label=rvee]
 	rvee -> rveervee [arrowhead=rveervee label=rveervee]
+	_curve -> curve [arrowhead=curve label=curve]
+	curve -> curvecurve [arrowhead=curvecurve label=curvecurve]
+	_curve -> lcurve [arrowhead=lcurve label=lcurve]
+	lcurve -> lcurvelcurve [arrowhead=lcurvelcurve label=lcurvelcurve]
+	_curve -> rcurve [arrowhead=rcurve label=rcurve]
+	rcurve -> rcurvercurve [arrowhead=rcurvercurve label=rcurvercurve]
 }

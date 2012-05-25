@@ -69,38 +69,34 @@ node_t *dequeue(nodequeue * q)
 int late_int(void *obj, attrsym_t * attr, int def, int low)
 {
     char *p;
+    char *endp;
     int rv;
     if (attr == NULL)
 	return def;
-#ifndef WITH_CGRAPH
-    p = agxget(obj, attr->index);
-#else /* WITH_CGRAPH */
-    p = agxget(obj, attr);
-#endif /* WITH_CGRAPH */
+    p = ag_xget(obj, attr);
     if (!p || p[0] == '\0')
 	return def;
-    if ((rv = atoi(p)) < low)
-	rv = low;
-    return rv;
+    rv = strtol (p, &endp, 10);
+    if (p == endp) return def;  /* invalid int format */
+    if (rv < low) return low;
+    else return rv;
 }
 
 double late_double(void *obj, attrsym_t * attr, double def, double low)
 {
     char *p;
+    char *endp;
     double rv;
 
     if (!attr || !obj)
 	return def;
-#ifndef WITH_CGRAPH
-    p = agxget(obj, attr->index);
-#else  /* WITH_CGRAPH */
-    p = agxget(obj, attr);
-#endif /* WITH_CGRAPH */
+    p = ag_xget(obj, attr);
     if (!p || p[0] == '\0')
 	return def;
-    if ((rv = atof(p)) < low)
-	rv = low;
-    return rv;
+    rv = strtod (p, &endp);
+    if (p == endp) return def;  /* invalid double format */
+    if (rv < low) return low;
+    else return rv;
 }
 
 char *late_string(void *obj, attrsym_t * attr, char *def)
@@ -207,6 +203,50 @@ pointf coord(node_t * n)
     r.x = POINTS_PER_INCH * ND_pos(n)[0];
     r.y = POINTS_PER_INCH * ND_pos(n)[1];
     return r;
+}
+
+/* findStopColor:
+ * Check for colon in colorlist. If one exists, and not the first
+ * character, store the characters before the colon in clrs[0] and
+ * the characters after the colon (and before the next or end-of-string)
+ * in clrs[1]. If there are no characters after the first colon, clrs[1]
+ * is NULL. Return TRUE.
+ * If there is no non-trivial string before a first colon, set clrs[0] to
+ * NULL and return FALSE.
+ *
+ * Note that memory is allocated as a single block stored in clrs[0] and
+ * must be freed by calling function.
+ */
+boolean findStopColor (char* colorlist, char* clrs[2])
+{
+    char* p;
+    char* s;
+    int len;
+
+    if ((*colorlist == ':') || !(p = strchr(colorlist,':'))) {
+	clrs[0] = NULL;
+	return FALSE;
+    }
+
+    clrs[0] = N_GNEW (strlen(colorlist)+1,char); 
+    len = p-colorlist;
+    memcpy (clrs[0],colorlist,len);
+    clrs[0][len]= '\0';
+
+    p++;
+    if ((*p == '\0') || (*p == ':'))
+	clrs[1] = NULL;
+    else {
+	clrs[1] = clrs[0] + (len+1);
+	if ((s = strchr(p,':'))) {
+	    *s = '\0';
+	    strcpy (clrs[1],p); 
+	    *s = ':';
+	}
+	else
+	    strcpy (clrs[1], p);
+    }
+    return TRUE;
 }
 
 /* from Glassner's Graphics Gems */
@@ -1498,15 +1538,46 @@ htmlEntity (char** s)
     return n;
 }
 
-/* substitute html entities like: &#123; and: &amp; with the UTF8 equivalents */
-char* htmlEntityUTF8 (char* s)
+static unsigned char
+cvtAndAppend (unsigned char c, agxbuf* xb)
 {
+    char buf[2];
+    char* s;
+    char* p;
+    int len;
+
+    buf[0] = c;
+    buf[1] = '\0';
+
+    p = s = latin1ToUTF8 (buf);
+    len = strlen(s);
+    while (len-- > 1)
+	agxbputc(xb, *p++);
+    c = *p;
+    free (s);
+    return c;
+}
+
+/* htmlEntityUTF8:
+ * substitute html entities like: &#123; and: &amp; with the UTF8 equivalents
+ * check for invalid utf8. If found, treat a single byte as Latin-1, convert it to
+ * utf8 and warn the user.
+ */
+char* htmlEntityUTF8 (char* s, graph_t* g)
+{
+    static graph_t* lastg;
+    static boolean warned;
     char*  ns;
     agxbuf xb;
     unsigned char buf[BUFSIZ];
     unsigned char c;
     unsigned int v;
     int rc;
+
+    if (lastg != g) {
+	lastg = g;
+	warned = 0;
+    }
 
     agxbinit(&xb, BUFSIZ, buf);
 
@@ -1542,9 +1613,12 @@ char* htmlEntityUTF8 (char* s)
 	        rc = agxbputc(&xb, c);
 	        c = *(unsigned char*)s++;
 	    }
-	    else {
-		agerr(AGERR, "Invalid 2-byte UTF8 found in input. Perhaps \"-Gcharset=latin1\" is needed?\n");
-		return "";
+	    else { 
+		if (!warned) {
+		    agerr(AGWARN, "Invalid 2-byte UTF8 found in input of graph %s - treated as Latin-1. Perhaps \"-Gcharset=latin1\" is needed?\n", agnameof(g));
+		    warned = 1;
+		}
+		c = cvtAndAppend (c, &xb);
 	    }
 	}
 	else if (c < 0xF0) { /* copy 3 byte UTF8 characters */
@@ -1555,13 +1629,19 @@ char* htmlEntityUTF8 (char* s)
 	        c = *(unsigned char*)s++;
 	    }
 	    else {
-		agerr(AGERR, "Invalid 3-byte UTF8 found in input. Perhaps \"-Gcharset=latin1\" is needed?\n");
-		return "";
+		if (!warned) {
+		    agerr(AGWARN, "Invalid 3-byte UTF8 found in input of graph %s - treated as Latin-1. Perhaps \"-Gcharset=latin1\" is needed?\n", agnameof(g));
+		    warned = 1;
+		}
+		c = cvtAndAppend (c, &xb);
 	    }
 	}
 	else  {
-	    agerr(AGERR, "UTF8 codes > 3 bytes are not currently supported. Or perhaps \"-Gcharset=latin1\" is needed?\n");
-	    return "";
+	    if (!warned) {
+		agerr(AGWARN, "UTF8 codes > 3 bytes are not currently supported (graph %s) - treated as Latin-1. Perhaps \"-Gcharset=latin1\" is needed?\n", agnameof(g));
+		warned = 1;
+	    }
+	    c = cvtAndAppend (c, &xb);
         }
 	rc = agxbputc(&xb, c);
     }
@@ -1832,19 +1912,20 @@ void setEdgeType (graph_t* g, int dflt)
 }
 
 
-/* cairogen_get_gradient_points
+/* get_gradient_points
  * Evaluates the extreme points of an ellipse or polygon
  * Determines the point at the center of the extreme points
- * Uses the angle parameter to identify two points on a line that defines the gradient direction
- * 
+ * If isRadial is true,sets the inner radius to half the distance to the min point;
+ * else uses the angle parameter to identify two points on a line that defines the 
+ * gradient direction
  */
-void cairogen_get_gradient_points(pointf * A, pointf * G, int n, float angle)
+void get_gradient_points(pointf * A, pointf * G, int n, float angle, boolean isRadial)
 {
     int i;
     double rx, ry;
     pointf min,max,center;
     
-    if ( n == 2) {
+    if (n == 2) {
       rx = A[1].x - A[0].x;
       ry = A[1].y - A[0].y;
       min.x = A[0].x - rx;
@@ -1856,52 +1937,16 @@ void cairogen_get_gradient_points(pointf * A, pointf * G, int n, float angle)
       min.x = max.x = A[0].x;
       min.y = max.y = A[0].y;
       for (i = 0; i < n; i++){
-	min.x = (A[i].x < min.x ? A[i].x : min.x);
-	min.y = (A[i].y < min.y ? A[i].y : min.y);
-	max.x = (A[i].x > max.x ? A[i].x : max.x);
-	max.y = (A[i].y > max.y ? A[i].y : max.y);
+	min.x = MIN(A[i].x,min.x);
+	min.y = MIN(A[i].y,min.y);
+	max.x = MAX(A[i].x,max.x);
+	max.y = MAX(A[i].y,max.y);
       }
     }
       center.x = min.x + (max.x - min.x)/2;
       center.y = min.y + (max.y - min.y)/2;
-      G[0].x = center.x - (max.x - center.x) * cos(angle);
-      G[0].y = -center.y + (max.y - center.y) * sin(angle);
-      G[1].x = center.x + (center.x - min.x) * cos(angle);
-      G[1].y = -center.y - (center.y - min.y) * sin(angle);
-}
-
-/* cairogen_get_rgradient_points
- * Evaluates the extreme points of an ellipse or polygon
- * Determines the point at the center of the extreme points
- * Sets the inner radius to half the distance to the min point
- * 
- */
-void cairogen_get_rgradient_points(pointf * A, pointf * G, int n)
-{
-    int i;
-    double rx, ry,inner_r,outer_r;
-    pointf min,max,center;
-    
-    if ( n == 2) {
-      rx = A[1].x - A[0].x;
-      ry = A[1].y - A[0].y;
-      min.x = A[0].x - rx;
-      max.x = A[0].x + rx;
-      min.y = A[0].y - ry;
-      max.y = A[0].y + ry;
-    }    
-    else {
-      min.x = max.x = A[0].x;
-      min.y = max.y = A[0].y;
-      for (i = 0; i < n; i++){
-	min.x = (A[i].x < min.x ? A[i].x : min.x);
-	min.y = (A[i].y < min.y ? A[i].y : min.y);
-	max.x = (A[i].x > max.x ? A[i].x : max.x);
-	max.y = (A[i].y > max.y ? A[i].y : max.y);
-      }
-    }
-      center.x = min.x + (max.x - min.x)/2;
-      center.y = min.y + (max.y - min.y)/2;
+    if (isRadial) {
+	double inner_r, outer_r;
       outer_r = sqrt((center.x - min.x)*(center.x - min.x) +
 		      (center.y - min.y)*(center.y - min.y));
       inner_r = outer_r /4.;
@@ -1909,7 +1954,13 @@ void cairogen_get_rgradient_points(pointf * A, pointf * G, int n)
       G[0].y = -center.y;
       G[1].x = inner_r;
       G[1].y = outer_r;
-      
+    }
+    else {
+      G[0].x = center.x - (max.x - center.x) * cos(angle);
+      G[0].y = -center.y + (max.y - center.y) * sin(angle);
+      G[1].x = center.x + (center.x - min.x) * cos(angle);
+      G[1].y = -center.y - (center.y - min.y) * sin(angle);
+    }
 }
 
 #ifndef WIN32_STATIC
@@ -1973,6 +2024,7 @@ void gv_free_splines(edge_t * e)
 
 void gv_cleanup_edge(edge_t * e)
 {
+    free (ED_path(e).ps);
     gv_free_splines(e);
     free_label(ED_label(e));
     free_label(ED_xlabel(e));

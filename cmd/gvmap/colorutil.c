@@ -24,15 +24,19 @@ static void r2hex(float r, char *h){
   h[1] = hex[j];
 }
 
-void rgb2hex(float r, float g, float b, char *cstring){
+void rgb2hex(float r, float g, float b, char *cstring, char *opacity){
   cstring[0] = '#';
   r2hex(r, &(cstring[1]));
   r2hex(g, &(cstring[3]));
   r2hex(b, &(cstring[5]));
   //set to semitransparent for multiple sets vis
-  //cstring[7] = cstring[8] = '3';
-  //cstring[9]='\0';
-  cstring[7] = '\0';
+  if (opacity && strlen(opacity) >= 2){
+    cstring[7] = opacity[0];
+    cstring[8] = opacity[1];
+    cstring[9]='\0';
+  } else {
+    cstring[7] = '\0';
+  }
 }
 
 real Hue2RGB(real v1, real v2, real H) {

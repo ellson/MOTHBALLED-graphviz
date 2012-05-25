@@ -20,7 +20,6 @@
 
 #include "gvplugin_device.h"
 #include "gvplugin_render.h"
-#include "graph.h"
 #include "gvplugin_gdiplus.h"
 
 #include <memory>
@@ -212,6 +211,24 @@ static void gdiplusgen_path(GVJ_t *job, const GraphicsPath *path, int filled)
 	/* draw the given path from job pen color and pen width */
 	Pen draw_pen(Color(job->obj->pencolor.u.rgba [3], job->obj->pencolor.u.rgba [0], job->obj->pencolor.u.rgba [1], job->obj->pencolor.u.rgba [2]),
 		job->obj->penwidth);
+
+	/* 
+	 * Set line type
+	 * See http://msdn.microsoft.com/en-us/library/ms535050%28v=vs.85%29.aspx
+	 */
+	switch (job->obj->pen) {
+	case PEN_NONE:
+		return;
+	case PEN_DASHED:
+		draw_pen.SetDashStyle(DashStyleDash);
+		break;
+	case PEN_DOTTED:
+		draw_pen.SetDashStyle(DashStyleDot);
+		break;
+	case PEN_SOLID:
+		break;
+	}
+
 	context->DrawPath(&draw_pen, path);
 }
 

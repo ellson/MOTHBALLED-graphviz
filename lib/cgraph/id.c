@@ -16,7 +16,7 @@
 
 /* a default ID allocator that works off the shared string lib */
 
-static void *idopen(Agraph_t * g)
+static void *idopen(Agraph_t * g, Agdisc_t* disc)
 {
     return g;
 }

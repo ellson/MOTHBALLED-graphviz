@@ -53,8 +53,8 @@ int circuit_model(graph_t * g, int nG)
     /* set non-diagonal entries */
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
 	for (e = agfstedge(g, v); e; e = agnxtedge(g, e, v)) {
-	    i = AGID(agtail(e));
-	    j = AGID(aghead(e));
+	    i = AGSEQ(agtail(e));
+	    j = AGSEQ(aghead(e));
 	    if (i == j)
 		continue;
 	    /* conductance is 1/resistance */

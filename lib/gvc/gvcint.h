@@ -124,9 +124,11 @@ extern "C" {
 
 	/* layers */
 	char *layerDelims;	/* delimiters in layer names */
+	char *layerListDelims;	/* delimiters between layer ranges */ 
 	char *layers;		/* null delimited list of layer names */
 	char **layerIDs;	/* array of layer names */
 	int numLayers;		/* number of layers */
+	int *layerlist;
 
 	/* default font */
 	char *defaultfontname;

@@ -8,7 +8,6 @@
 gvmap \- find clusters and create a geographical map highlighting clusters.
 .SH SYNOPSIS
 .B gvmap
-[\fB\-ekv?\fP]
 [
 .I options
 ]
@@ -21,10 +20,25 @@ gvmap \- find clusters and create a geographical map highlighting clusters.
 ]
 .SH DESCRIPTION
 .B gvmap
-takes as input a graph in DOT format, finds node clusters and produces a rendering of the graph as a geographic-style map, with clusters highlighted, in xdot format.
+takes as input a graph in DOT format, finds node clusters and produces a rendering of the graph as a geographic-style map, with clusters highlighted
+as countries, in xdot format.
 .P
-The input graph must have node positions and width/height information defined, 
-and nodes must not overlap.
+In the input graph, each node must have position, width and height information (pos, width and height attributes, 
+respectively) defined, and nodes must not overlap.
+.P
+By default, 
+.B gvmap
+will generate the clusters from the data. If desired, the input graph can specify
+cluster information by giving every node a \fIcluster\fP attribute whose value is
+a small positive integer. Nodes sharing the same \fIcluster\fP attribute value will 
+be put into the same cluster. \fBN.B.\fP For the \fIcluster\fP attribute to be used,
+all nodes must have a valid value.
+.P
+If the input specifies the desired clustering as described above, it can also
+specify a desired coloring by having some node in each cluster provide a
+\fIclustercolor\fP attribute. \fBN.B.\fP Unless one specifies \fI-c0\fP, only the \fIclustercolor\fP
+of the last node in a cluster has an effect. In addition, unless one uses \fI-O\fP, \fBgvmap\fP may
+permute the given colors.
 .SH OPTIONS
 The following options are supported:
 .TP
@@ -53,11 +67,14 @@ The integer k specifies color scheme used to color the countries. By default k =
    7 : sequential single hue lighter red
    8 : light grey
 .TP
+.BI \-c_opacity= xy
+Specifies a two-character hexadecimal string specifying the opacity of the polygons.
+.TP
 .BI \-C " d"
 The integer d specifies the maximum number of clusters (countries) allowed. By default d = 0, which means that there is no limit.
 .TP
 .BI \-d " d"
-The integer d specifies the random seed used during color assignment optimization that maximize color difference between neighbpring countries.
+The integer d specifies the random seed used during color assignment optimization that maximize color difference between neighboring countries.
 .TP
 .BI \-e
 If specified, edges will be included in the final output.
@@ -65,8 +82,35 @@ If specified, edges will be included in the final output.
 .BI \-g " c"
 Specifies the bounding box color. If not specified, a bounding box is not drawn. 
 .TP
+.BI \-h " k"
+The number of artificial points added to maintain a bridge between endpoints. By default, this is zero.
+.TP
+.BI \-highlight= k
+Only draw cluster \fIk\fP. By default, all clusters are drawn.
+.TP
 .BI \-k 
-If specified, increases the randomesss of outer boundary.
+If specified, increases the randomness of outer boundary.
+.TP
+.BI \-l " s"
+Use the string \fIs\fP as a label for the drawing.
+.TP
+.BI \-m " v"
+Generate a margin of \fIv\fP points around the drawing. By default, this is determined by \fBgvmap\fP.
+.TP
+.BI \-O  
+Do NOT do color assignment optimization that maximizes color differences between neighboring countries
+.TP
+.BI \-o <file> 
+Put output in <file>. Default output is stdout
+.TP
+.BI \-p " k"
+Indicates what level of points should be shown. By default, no points are shown.
+.TP
+   Acceptable values are:
+   0 : no points
+   1 : all points
+   2 : label points
+   3 : random/artificial points
 .TP
 .BI \-r " k"
 The number of random points k (integer) used to define sea and lake boundaries. If 0, auto assigned. By default v = 0
@@ -74,17 +118,17 @@ The number of random points k (integer) used to define sea and lake boundaries. 
 .BI \-s " v"
 The real number v specifies the depth of the sea and lake shores in points. If 0, auto assigned. By default v = 0.
 .TP
-.BI \-O  
-Do NOT do color assignment optimization that maximizes color difference between neighboring countries
-.TP
-.BI \-o <file> 
-Put output in <file>. Default output is stdout
+.BI \-t " n"
+Make \fIn\fP attempts to improve cluster contiguity.
 .TP
 .BI \-v 
 Verbose mode.
 .TP
 .BI \-z " c" 
 Specified the polygon line color. Default is black.
+.TP
+.BI \-? 
+Print usage and exit.
 .SH EXAMPLES
 .PP
 Given a graph foo.gv, one way to generate a layout and highlight the clusters 

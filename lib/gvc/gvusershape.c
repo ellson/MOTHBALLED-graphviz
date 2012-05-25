@@ -211,7 +211,7 @@ static void svg_size (usershape_t *us)
 		    break;
 	    }
 	    else if (strcmp(attribute,"viewBox") == 0
-	     && sscanf(value, "%lf %lf %lf %lf", &x0,&y0,&x1,&y1) == 4) {
+	      && sscanf(value, "%lf %lf %lf %lf", &x0,&y0,&x1,&y1) == 4) {
 		w = x1 - x0 + 1;
 		h = y1 - y0 + 1;
 	        wFlag = TRUE;
@@ -242,10 +242,20 @@ static void webp_size (usershape_t *us)
     unsigned int w, h;
 
     us->dpi = 0;
-    fseek(us->f, 26, SEEK_SET);
-    if (get_int_lsb_first(us->f, 2, &w) && get_int_lsb_first(us->f, 2, &h)) {
-        us->w = w;
-        us->h = h;
+    fseek(us->f, 15, SEEK_SET);
+    if (fgetc(us->f) == 'X') { //VP8X
+        fseek(us->f, 24, SEEK_SET);
+        if (get_int_lsb_first(us->f, 4, &w) && get_int_lsb_first(us->f, 4, &h)) {
+            us->w = w;
+            us->h = h;
+        }
+    }
+    else { //VP8
+        fseek(us->f, 26, SEEK_SET);
+        if (get_int_lsb_first(us->f, 2, &w) && get_int_lsb_first(us->f, 2, &h)) {
+            us->w = w;
+            us->h = h;
+        }
     }
 }
 

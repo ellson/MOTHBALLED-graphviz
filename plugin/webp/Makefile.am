@@ -32,7 +32,7 @@ libgvplugin_webp_C_la_SOURCES = \
 
 libgvplugin_webp_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_webp_la_SOURCES = $(libgvplugin_webp_C_la_SOURCES)
-libgvplugin_webp_la_LIBADD = @WEBP_LIBS@
+libgvplugin_webp_la_LIBADD = @WEBP_LIBS@ @PANGOCAIRO_LIBS@
 
 if WITH_WIN32
 libgvplugin_webp_la_LDFLAGS += -no-undefined

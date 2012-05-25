@@ -14,6 +14,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <setjmp.h>
 #ifdef HAVE_MALLOC_H
 #include <malloc.h>
 #endif
@@ -56,6 +57,8 @@ typedef struct elist_t {
     Pedge_t *ep;
     struct elist_t *next, *prev;
 } elist_t;
+
+static jmp_buf jbuf;
 
 #if 0
 static p2e_t *p2es;
@@ -103,6 +106,12 @@ static void listreplace(Pedge_t *, Pedge_t *);
 static void listinsert(Pedge_t *, Ppoint_t);
 #endif
 
+/* Proutespline:
+ * Given a set of edgen line segments edges as obstacles, a template
+ * path input, and endpoint vectors evs, construct a spline fitting the
+ * input and endpoing vectors, and return in output.
+ * Return 0 on success and -1 on failure, including no memory.
+ */
 int Proutespline(Pedge_t * edges, int edgen, Ppolyline_t input,
 		 Ppoint_t * evs, Ppolyline_t * output)
 {
@@ -124,7 +133,7 @@ int Proutespline(Pedge_t * edges, int edgen, Ppolyline_t input,
 #if 0
     if (!(p2es = (p2e_t *) malloc(sizeof(p2e_t) * (p2en = edgen * 2)))) {
 	prerror("cannot malloc p2es");
-	abort();
+	return -1;
     }
     for (ei = 0, p2ei = 0; ei < edgen; ei++) {
 	if (edges[ei].a.x == edges[ei].b.x
@@ -159,6 +168,9 @@ int Proutespline(Pedge_t * edges, int edgen, Ppolyline_t input,
 	}
     }
 #endif
+    if (setjmp(jbuf))
+	return -1;
+
     /* generate the splines */
     evs[0] = normv(evs[0]);
     evs[1] = normv(evs[1]);
@@ -517,13 +529,13 @@ static void growops(int newopn)
     if (!ops) {
 	if (!(ops = (Ppoint_t *) malloc(POINTSIZE * newopn))) {
 	    prerror("cannot malloc ops");
-	    abort();
+	    longjmp(jbuf,1);
 	}
     } else {
 	if (!(ops = (Ppoint_t *) realloc((void *) ops,
 					 POINTSIZE * newopn))) {
 	    prerror("cannot realloc ops");
-	    abort();
+	    longjmp(jbuf,1);
 	}
     }
     opn = newopn;

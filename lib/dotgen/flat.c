@@ -202,12 +202,13 @@ static void abomination(graph_t * g)
     GD_minrank(g)--;
 }
 
-/* flatAdjacent:
- * Return true if tn and hn are adjacent. 
+/* checkFlatAdjacent:
+ * Check if tn and hn are adjacent. 
+ * If so, set adjacent bit on all related edges.
  * Assume e is flat.
  */
-static int
-flatAdjacent (edge_t* e)
+static void
+checkFlatAdjacent (edge_t* e)
 {
     node_t* tn = agtail(e);
     node_t* hn = aghead(e);
@@ -230,7 +231,12 @@ flatAdjacent (edge_t* e)
              ND_node_type(n) == NORMAL)
 	    break;
     }
-    return (i == hi);
+    if (i == hi) {  /* adjacent edge */
+	do {
+	    ED_adjacent(e) = 1;
+	    e = ED_to_virt(e);
+	} while (e); 
+    }
 }
  
 /* flat_edges:
@@ -259,9 +265,15 @@ flat_edges(graph_t * g)
     int found = FALSE;
 
     for (n = GD_nlist(g); n; n = ND_next(n)) {
-	if (!ND_flat_out(n).list) continue; 
-	for (j = 0; (e = ND_flat_out(n).list[j]); j++) {
-	    if (flatAdjacent (e)) ED_adjacent(e) = 1;
+	if (ND_flat_out(n).list) {
+	    for (j = 0; (e = ND_flat_out(n).list[j]); j++) {
+		checkFlatAdjacent (e);
+	    }
+	}
+	for (j = 0; j < ND_other(n).size; j++) {
+	    e = ND_other(n).list[j];
+	    if (ND_rank(aghead(e)) == ND_rank(agtail(e)))
+		checkFlatAdjacent (e);
 	}
     }
 

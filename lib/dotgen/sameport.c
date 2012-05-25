@@ -53,6 +53,7 @@ void dot_sameports(graph_t * g)
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	n_same = 0;
 	for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
+	    if (aghead(e) == agtail(e)) continue;  /* Don't support same* for loops */
 	    if (aghead(e) == n && E_samehead &&
 #ifndef WITH_CGRAPH
 		(id = agxget(e, E_samehead->index))[0])
@@ -88,8 +89,9 @@ static void sameedge(same_t * same, node_t * n, edge_t * e, char *id)
 	    goto set_arrow;
 	}
     if (++n_same > MAXSAME) {
-	agerr(AGERR, "too many same{head,tail} groups for node %s\n",
-	      agnameof(n));
+	n_same--;
+	agerr(AGERR, "too many (> %d) same{head,tail} groups for node %s\n",
+	      MAXSAME, agnameof(n));
 	return;
     }
     alloc_elist(1, same[i].l);

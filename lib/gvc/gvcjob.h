@@ -153,12 +153,6 @@ extern "C" {
 	int alloc;
     } gv_argvlist_t;
     
-    typedef struct gv_gradient_s {
-      int angle;
-      gvcolor_t startcolor, stopcolor;
-      int id;
-    } gv_gradient_t;
-    
     typedef struct gvdevice_callbacks_s {
 	void (*refresh) (GVJ_t * job);
         void (*button_press) (GVJ_t * job, int button, pointf pointer);
@@ -206,8 +200,8 @@ extern "C" {
 
 	emit_state_t emit_state; 
 
-	gvcolor_t pencolor, fillcolor;
-	gv_gradient_t gradient;
+	gvcolor_t pencolor, fillcolor, stopcolor;
+	int gradient_angle;
 	pen_type pen;
 	fill_type fill;
 	double penwidth;
