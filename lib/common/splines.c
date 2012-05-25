@@ -226,6 +226,7 @@ bezier *new_spline(edge_t * e, int sz)
     rv->list = N_NEW(sz, pointf);
     rv->size = sz;
     rv->sflag = rv->eflag = FALSE;
+    rv->sp.x = rv->sp.y = rv->ep.x = rv->ep.y = 0;
     return rv;
 }
 
@@ -355,8 +356,8 @@ void add_box(path * P, boxf b)
 
 /* beginpath:
  * Set up boxes near the tail node.
- * For regular nodes, the result should be a list of continguous rectangles 
- * such that the last one ends has the smallest LL.y and its LL.y is above
+ * For regular nodes, the result should be a list of contiguous rectangles 
+ * such that the last one has the smallest LL.y and its LL.y is above
  * the bottom of the rank (rank.ht1).
  * 
  * For flat edges, we assume endp->sidemask has been set. For regular
@@ -492,6 +493,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    b.LL.y = MIN(b.LL.y,P->start.p.y);
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
+	    P->start.p.y += 1;
 	}
 	else if (side & BOTTOM) {
 	    if (endp->sidemask == TOP) {
@@ -512,6 +514,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		endp->boxes[0] = b;
 		endp->boxn = 1;
 	    }
+	    P->start.p.y -= 1;
 	}
 	else if (side & LEFT) {
 	    b.UR.x = P->start.p.x+1;
@@ -525,6 +528,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    }
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
+	    P->start.p.x -= 1;
 	}
 	else {
 	    b.LL.x = P->start.p.x;
@@ -538,6 +542,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    }
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
+	    P->start.p.x += 1;
 	}
 	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
 	if (n == agtail(orig))
@@ -684,6 +689,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    b.LL.y = MIN(b.LL.y,P->end.p.y);
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
+	    P->end.p.y += 1;
 	}
 	else if (side & BOTTOM) {
 	    if (endp->sidemask == TOP) {
@@ -704,6 +710,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		endp->boxes[0] = b;
 		endp->boxn = 1;
 	    }
+	    P->end.p.y -= 1;
 	}
 	else if (side & LEFT) {
 	    b.UR.x = P->end.p.x+1;
@@ -717,6 +724,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    }
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
+	    P->end.p.x -= 1;
 	}
 	else {
 	    b.LL.x = P->end.p.x-1;
@@ -730,6 +738,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    }
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
+	    P->end.p.x += 1;
 	}
 	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
 	if (n == aghead(orig))

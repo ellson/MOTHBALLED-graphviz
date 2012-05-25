@@ -34,6 +34,7 @@ extern "C" {
 
     typedef struct {
 	Agraph_t *curgraph;
+	Agraph_t *nextgraph;
 	Agraph_t *target;
 	Agraph_t *outgraph;
 	Agobj_t *curobj;

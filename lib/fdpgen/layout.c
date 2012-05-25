@@ -143,7 +143,7 @@ finalCC(graph_t * g, int c_cnt, graph_t ** cc, point * pts, graph_t * rg,
     if (isRoot || isEmpty)
 	margin = 0;
     else
-	margin = CL_OFFSET;
+	margin = late_int (g, G_margin, CL_OFFSET, 0);
     pt.x = -bb.LL.x + margin;
     pt.y = -bb.LL.y + margin + GD_border(rg)[BOTTOM_IX].y;
     bb.LL.x = 0;
@@ -346,10 +346,10 @@ static char *portName(graph_t * g, bport_t * p)
     len += strlen(agnameof(g)) + strlen(agnameof(h)) + strlen(agnameof(t));
     if (len >= BSZ)
 	sprintf(buf, "_port_%s_%s_%s_%ld", agnameof(g), agnameof(t), agnameof(h),
-		(unsigned long)AGID(e));
+		(unsigned long)AGSEQ(e));
     else
 	sprintf(buf, "_port_%s_(%d)_(%d)_%ld",agnameof(g), ND_id(t), ND_id(h),
-		(unsigned long)AGID(e));
+		(unsigned long)AGSEQ(e));
     return buf;
 }
 

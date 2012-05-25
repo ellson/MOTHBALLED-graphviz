@@ -148,7 +148,7 @@ struct Agdesc_s {		/* graph descriptor */
 /* disciplines for external resources needed by libgraph */
 
 struct Agmemdisc_s {		/* memory allocator */
-    void *(*open) (void);	/* independent of other resources */
+    void *(*open) (Agdisc_t*);	/* independent of other resources */
     void *(*alloc) (void *state, size_t req);
     void *(*resize) (void *state, void *ptr, size_t old, size_t req);
     void (*free) (void *state, void *ptr);
@@ -156,7 +156,7 @@ struct Agmemdisc_s {		/* memory allocator */
 };
 
 struct Agiddisc_s {		/* object ID allocator */
-    void *(*open) (Agraph_t * g);	/* associated with a graph */
+    void *(*open) (Agraph_t * g, Agdisc_t*);	/* associated with a graph */
     long (*map) (void *state, int objtype, char *str, unsigned long *id,
 		 int createflag);
     long (*alloc) (void *state, int objtype, unsigned long id);

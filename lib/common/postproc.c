@@ -93,7 +93,7 @@ static void map_edge(edge_t * e)
     bezier bz;
 
     if (ED_spl(e) == NULL) {
-	if ((Concentrate == FALSE) || (ED_edge_type(e) != IGNORED))
+	if ((Concentrate == FALSE) && (ED_edge_type(e) != IGNORED))
 	    agerr(AGERR, "lost %s %s edge\n", agnameof(agtail(e)),
 		  agnameof(aghead(e)));
 	return;

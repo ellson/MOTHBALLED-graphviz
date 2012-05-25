@@ -100,6 +100,19 @@ Examples:<BR>
 :colorList
 A colon-separated list of color values: <I>C</I>(:<I>C</I>)*
  where each <I>C</I> is a <A HREF=#k:color>color</A> value.
+<P>
+Depending on the related attribute and graph object, two colors may specify a gradient fill.
+The following table shows some variations of the <TT>yellow:blue</TT> color list depending on the
+<A HREF=#a:style>style</A> and <A HREF=#a:gradientangle>gradientangle</A> attributes.
+  <TABLE border=1>
+    <TR><TH>Gradient angle<TH>Linear<TH>Radial</TR>
+    <TR><TD align=center>0<TD><IMG SRC="g_lin0.png"><TD><IMG SRC="g_rad0.png"></TR>
+    <TR><TD align=center>45<TD><IMG SRC="g_lin45.png"><TD><IMG SRC="g_rad45.png"></TR>
+    <TR><TD align=center>90<TD><IMG SRC="g_lin90.png"><TD><IMG SRC="g_rad90.png"></TR>
+    <TR><TD align=center>180<TD><IMG SRC="g_lin180.png"><TD><IMG SRC="g_rad180.png"></TR>
+    <TR><TD align=center>270<TD><IMG SRC="g_lin270.png"><TD><IMG SRC="g_rad270.png"></TR>
+    <TR><TD align=center>360<TD><IMG SRC="g_lin360.png"><TD><IMG SRC="g_rad360.png"></TR>
+  </TABLE>
 :dirType
 For an edge <CODE>T -> H;</CODE>
   <TABLE>
@@ -150,11 +163,20 @@ list of strings separated by characters from the
 tabs or spaces), defining <A HREF=#a:layer>layer</A>
 names and implicitly numbered 1,2,...
 :layerRange
-layerId or layerId<B>s</B>layerId,<BR> where layerId = "all",
+specifies a list of layers defined by the <A HREF=#a:layers>layers</A> attribute.
+It consists of a list of layer intervals separated by any collection of characters from
+the <A HREF=#a:layerlistsep>layerlistsep</A> attribute.
+Each layer interval is specified as either a
+layerId or a layerId<B>s</B>layerId<BR>, where layerId = "all",
 a decimal integer or a <A HREF=#a:layer>layer</A> name.
-(An integer i corresponds to layer i.)
+(An integer i corresponds to layer i, layers being numbered from 1.)
 The string <B>s</B> consists of 1 or more separator characters specified
 by the <A HREF=#a:layersep>layersep</A> attribute.
+<P>
+Thus, assuming the default values for <A HREF=#a:layersep>layersep</A>
+and <A HREF=#a:layerlistsep>layerlistsep</A>, if <TT>layers="a:b:c:d:e:f:g:h"</TT>, the
+layerRange string <TT>layers="a:b,d,f:all"</TT> would denote the layers
+<TT>a b d f g h"</TT>.
 :outputMode
 "breadthfirst","nodesfirst","edgesfirst"
 These specify the order in which nodes and edges are drawn in concrete
@@ -307,6 +329,8 @@ At present, the recognized style names are
 "tapered" for edges only,
 and "filled", "diagonals" and "rounded" for nodes only.
 The styles "filled" and "rounded" are recognized for clusters.
+The style "radial" is recognized for nodes, clusters and graphs, and indicates a
+radial-style gradient fill if applicable.
 Additional styles are available in
 device-dependent form. Style lists are passed to device drivers, which
 can use this to generate appropriate output.

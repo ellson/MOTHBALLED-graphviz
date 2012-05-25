@@ -28,23 +28,22 @@ Source0: http://www.graphviz.org/pub/@GRAPHVIZ_SOURCES@/graphviz-@VERSION@.tar.g
 Prefix: /usr
 
 #-- feature and package selection -------------------------------------------
-#   depends on %dist and %fedora (or %rhl or %rhel) which are set
-#   in .rpmmacros on each build host
+#   depends on macro values set by redhat-rpm-config
 
 # All features are off (undefined) by default
 # To enable, use: <percent>define FEATURE 1
 # Available features are:
 #    SHARP GHOSTSCRIPT GUILE _IO JAVA LUA OCAML ORTHO PERL PHP
 #    PYTHON RUBY R_LANG TCL IPSEPCOLA MYLIBGD PANGOCAIRO RSVG
-#    GLITZ SMYRNA DEVIL MING GDK_PIXBUF _QT WEBP
+#    GTK GLITZ SMYRNA DEVIL MING GDK_PIXBUF _QT WEBP
 
 # SuSE uses a different mechanism to generate BuildRequires
 # norootforbuild
-# neededforbuild  expat freetype2 freetype2-devel gcc libjpeg libpng-devel-packages tcl tcl-devel tk tk-devel x-devel-packages
+# neededforbuild  expat freetype2-devel gcc tcl tcl-devel tk tk-devel x-devel-packages
 
 BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires: zlib-devel libpng-devel libjpeg-devel expat-devel
+BuildRequires: zlib-devel expat-devel
 BuildRequires: /bin/ksh bison m4 flex swig tk tcl >= 8.3 freetype-devel >= 2
 
 #-- Red Hat Enterprise Linux (also Centos) specific Build Requirements --------------------
@@ -79,6 +78,7 @@ BuildRequires: librsvg2-devel
 BuildRequires: gts-devel
 %define SMYRNA 1
 BuildRequires: libglade2-devel gtkglarea2-devel gtkglext-devel freeglut-devel
+%define GTK 1
 # define _QT 1
 # BuildRequires: qt-devel
 %endif
@@ -136,8 +136,6 @@ BuildRequires: librsvg2-devel
 BuildRequires: gd gd-devel
 %define DEVIL 1
 BuildRequires: DevIL-devel
-#define WEBP 1
-# BuildRequires: libwebp-devel
 %define SFDP 1
 BuildRequires: gts-devel
 %define LASI 1
@@ -145,6 +143,7 @@ BuildRequires: lasi-devel
 %define GDK_PIXBUF 1
 %define IPSEPCOLA 1
 %define ORTHO 1
+%define GTK 1
 %define SMYRNA 1
 BuildRequires: libglade2-devel gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel freeglut-devel
 #define GLITZ 1
@@ -156,7 +155,22 @@ BuildRequires: ghostscript-devel
 %define R_LANG 1
 BuildRequires: R-devel swig >= 1.3.33 perl-libs
 %endif
+%if %fedora >= 16
+%define WEBP 1
+BuildRequires: libwebp-devel
 %endif
+%endif
+
+%global php_apiver %((echo 0; php -i 2>/dev/null | sed -n 's/^PHP API => //p') | tail -1)
+
+%global php_extdir %(php-config --extension-dir 2>/dev/null || echo %{_libdir}/php4)
+# Fix private-shared-object-provides
+# RPM 4.8
+%{?filter_provides_in: %filter_provides_in %{php_extdir}/.*\.so$}
+%{?filter_setup}
+# RPM 4.9
+%global __provides_exclude_from %{?__provides_exclude_from:%__provides_exclude_from|}%{php_extdir}/.*\\.so$
+
 
 #-- main graphviz rpm ------------------------------------------------
 Requires:         urw-fonts
@@ -165,9 +179,9 @@ Requires(postun): /sbin/ldconfig
 
 %description
 A collection of tools for the manipulation and layout
-of graphs (as in nodes and edges, not as in barcharts).
+of graphs (as in nodes and edges, not as in bar-charts).
 
-# run "dot -c" to generate plugin config in %{libdir}/graphviz/config
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config
 # (don't rely on ldconfig to find libraries since it won't
 #  help if --prefix was used to relocate binaries)
 %post
@@ -189,6 +203,9 @@ fi
 %exclude %{_bindir}/dot_builtins
 %if 0%{?_QT}
 %exclude %{_bindir}/gvedit
+%exclude %{_bindir}/lefty
+%exclude %{_bindir}/lneato
+%exclude %{_bindir}/dotty
 %endif
 %dir %{_libdir}/graphviz
 %{_libdir}/*.so.*
@@ -196,8 +213,28 @@ fi
 %{_mandir}/man1/*.1*
 %{_mandir}/man7/*.7*
 %dir %{_datadir}/graphviz
-%{_datadir}/graphviz/lefty
+%{_datadir}/graphviz/gvpr
 %exclude %{_libdir}/graphviz/libgvplugin_gd.*
+%if 0%{?PANGOCAIRO}
+%exclude %{_libdir}/graphviz/libgvplugin_pango.*
+%endif
+%if 0%{?LASI}
+%exclude %{_libdir}/graphviz/libgvplugin_lasi.*
+%endif
+%if 0%{?GDK_PIXBUF}
+%exclude %{_libdir}/graphviz/libgvplugin_gdk_pixbuf.*
+%endif
+%if 0%{?GTK}
+%exclude %{_bindir}/vimdot
+%exclude %{_libdir}/graphviz/libgvplugin_gtk.*
+%exclude %{_libdir}/graphviz/libgvplugin_xlib.*
+%endif
+%if 0%{?GHOSTSCRIPT}
+%exclude %{_libdir}/graphviz/libgvplugin_gs.*
+%endif
+%if 0%{?RSVG}
+%exclude %{_libdir}/graphviz/libgvplugin_rsvg.*
+%endif
 %if 0%{?WEBP}
 %exclude %{_libdir}/graphviz/libgvplugin_webp.*
 %endif
@@ -209,6 +246,52 @@ fi
 %exclude %{_libdir}/graphviz/*fdb
 %endif
 %if 0%{?SMYRNA}
+%exclude %{_bindir}/smyrna
+%endif
+
+#-- graphviz-x rpm --------------------------------------------------
+%package x
+Group:            Applications/Multimedia
+Summary:          Graphviz plugins and commands that depend on x11 - most installations will want this
+Requires:         %{name} = %{version}-%{release}
+
+%description x
+Graphviz plugins and commands that depend on x11 - most installations will want this
+
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config
+%post x
+LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
+
+%postun x
+[ -x $RPM_INSTALL_PREFIX0/bin/dot ] && LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c || :
+
+%files x
+%{_bindir}/lefty
+%{_bindir}/lneato
+%{_bindir}/dotty
+%{_datadir}/graphviz/lefty
+%if 0%{?PANGOCAIRO}
+%{_libdir}/graphviz/libgvplugin_pango.*
+%endif
+%if 0%{?LASI}
+%{_libdir}/graphviz/libgvplugin_lasi.*
+%endif
+%if 0%{?GDK_PIXBUF}
+%{_libdir}/graphviz/libgvplugin_gdk_pixbuf.*
+%endif
+%if 0%{?GTK}
+%{_bindir}/vimdot
+%{_libdir}/graphviz/libgvplugin_gtk.*
+%{_libdir}/graphviz/libgvplugin_xlib.*
+%endif
+%if 0%{?GHOSTSCRIPT}
+%{_libdir}/graphviz/libgvplugin_gs.*
+%endif
+%if 0%{?RSVG}
+%{_libdir}/graphviz/libgvplugin_rsvg.*
+%endif
+%if 0%{?SMYRNA}
+%{_bindir}/smyrna
 %{_datadir}/graphviz/smyrna
 %endif
 
@@ -216,7 +299,7 @@ fi
 %package gd
 Group:            Applications/Multimedia
 Summary:          Graphviz plugin for renderers based on gd
-Requires:         graphviz = %{version}-%{release}
+Requires:         %{name} = %{version}-%{release}
 
 %description gd
 Graphviz plugin for renderers based on gd.  (Unless you absolutely have
@@ -224,7 +307,7 @@ to use GIF, you are recommended to use the PNG format instead because
 of the better quality anti-aliased lines provided by the cairo+pango
 based renderer.)
 
-# run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config
 %post gd
 LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 
@@ -240,12 +323,12 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %package webp
 Group:            Applications/Multimedia
 Summary:          Graphviz plugin for webp format images, using libwebp
-Requires:         graphviz = %{version}-%{release}
+Requires:         %{name}-x = %{version}-%{release}
 
 %description webp
 Graphviz plugin for webp image rendering. 
 
-# run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config
 %post webp
 LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 
@@ -261,14 +344,14 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %package devil
 Group:            Applications/Multimedia
 Summary:          Graphviz plugin for renderers based on DevIL
-Requires:         graphviz = %{version}-%{release}
+Requires:         %{name}-x = %{version}-%{release}
 
 %description devil
 Graphviz plugin for renderers based on DevIL.  (Unless you absolutely have
 to use BMP, TIF, or TGA, you are recommended to use the PNG format instead
 supported directly by the cairo+pango based renderer in the base graphviz rpm.)
 
-# run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config
 %post devil
 LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 
@@ -284,12 +367,12 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %package ming
 Group:            Applications/Multimedia
 Summary:          Graphviz plugin for flash renderer based on ming
-Requires:         graphviz = %{version}-%{release}
+Requires:         %{name}-x = %{version}-%{release}
 
 %description ming
 Graphviz plugin for -Tswf (flash) renderer based on ming.
 
-# run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
+# run "dot -c" to generate plugin config in {_libdir}/graphviz/config
 %post ming
 LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 
@@ -306,7 +389,7 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %package qt
 Group:            Applications/Multimedia
 Summary:          Graphviz applications using _QT
-Requires:         graphviz = %{version}-%{release}
+Requires:         %{name}-x = %{version}-%{release}
 
 %description qt
 Graphviz applications using _QT - currently just gvedit
@@ -314,8 +397,7 @@ Graphviz applications using _QT - currently just gvedit
 %files qt
 %defattr(-,root,root,-)
 %{_bindir}/gvedit
-%dir %{_datadir}/graphviz/gvedit
-%{_datadir}/graphviz/gvedit/*
+%{_datadir}/graphviz/gvedit
 # %{_mandir}/man1/gvedit.1*
 %endif
 
@@ -324,7 +406,7 @@ Graphviz applications using _QT - currently just gvedit
 %package sharp
 Group:          Applications/Multimedia
 Summary:        C# extension for graphviz
-Requires:       graphviz = %{version}-%{release} mono-core
+Requires:       %{name} = %{version}-%{release}, mono-core
 
 %description sharp
 C# extension for graphviz.
@@ -341,7 +423,7 @@ C# extension for graphviz.
 %package guile
 Group:          Applications/Multimedia
 Summary:        Guile extension for graphviz
-Requires:       graphviz = %{version}-%{release} guile
+Requires:       %{name} = %{version}-%{release}, guile
 
 %description guile
 Guile extension for graphviz.
@@ -358,7 +440,7 @@ Guile extension for graphviz.
 %package io
 Group:          Applications/Multimedia
 Summary:        Io extension for graphviz
-Requires:       graphviz = %{version}-%{release} io
+Requires:       %{name} = %{version}-%{release}, io
 
 %description io
 Io extension for graphviz.
@@ -375,7 +457,7 @@ Io extension for graphviz.
 %package java
 Group:          Applications/Multimedia
 Summary:        Java extension for graphviz
-Requires:       graphviz = %{version}-%{release} java
+Requires:       %{name} = %{version}-%{release}, java
 
 %description java
 Java extension for graphviz.
@@ -392,7 +474,7 @@ Java extension for graphviz.
 %package lua
 Group:          Applications/Multimedia
 Summary:        Lua extension for graphviz
-Requires:       graphviz = %{version}-%{release} lua
+Requires:       %{name} = %{version}-%{release}, lua
 
 %description lua
 Lua extension for graphviz.
@@ -411,7 +493,7 @@ Lua extension for graphviz.
 %package ocaml
 Group:          Applications/Multimedia
 Summary:        Ocaml extension for graphviz
-Requires:       graphviz = %{version}-%{release} ocaml
+Requires:       %{name} = %{version}-%{release}, ocaml
 
 %description ocaml
 Ocaml extension for graphviz.
@@ -428,7 +510,7 @@ Ocaml extension for graphviz.
 %package perl
 Group:          Applications/Multimedia
 Summary:        Perl extension for graphviz
-Requires:       graphviz = %{version}-%{release} perl
+Requires:       %{name} = %{version}-%{release}, perl
 
 %description perl
 Perl extension for graphviz.
@@ -447,13 +529,9 @@ Perl extension for graphviz.
 %package php
 Group:          Applications/Multimedia
 Summary:        PHP extension for graphviz
-Requires:       graphviz = %{version}-%{release} php
-%if 0%{?fedora} >= 16
-Requires:       php-api = %{php_apiver}
-%else
+Requires:       %{name} = %{version}-%{release}, php
 Requires:       php(zend-abi) = %{php_zend_api}
 Requires:       php(api) = %{php_core_api}
-%endif
 
 %description php
 PHP extension for graphviz.
@@ -473,7 +551,7 @@ PHP extension for graphviz.
 %package python
 Group:          Applications/Multimedia
 Summary:        Python extension for graphviz
-Requires:       graphviz = %{version}-%{release} python
+Requires:       %{name} = %{version}-%{release}, python
 
 %description python
 Python extension for graphviz.
@@ -492,7 +570,7 @@ Python extension for graphviz.
 %package R
 Group:          Applications/Multimedia
 Summary:        R extension for graphviz
-Requires:       graphviz = %{version}-%{release} R
+Requires:       %{name} = %{version}-%{release}, R
 
 %description R
 R extension for graphviz.
@@ -509,7 +587,7 @@ R extension for graphviz.
 %package ruby
 Group:          Applications/Multimedia
 Summary:        Ruby extension for graphviz
-Requires:       graphviz = %{version}-%{release} ruby
+Requires:       %{name} = %{version}-%{release}, ruby
 
 %description ruby
 Ruby extension for graphviz.
@@ -528,7 +606,7 @@ Ruby extension for graphviz.
 %package tcl
 Group:          Applications/Multimedia
 Summary:        Tcl extension & tools for graphviz
-Requires:       graphviz = %{version}-%{release} tcl >= 8.3 tk
+Requires:       %{name} = %{version}-%{release}, tcl >= 8.3 tk
 
 %description tcl
 Various tcl packages (extensions) for the graphviz tools.
@@ -549,11 +627,11 @@ Various tcl packages (extensions) for the graphviz tools.
 %package devel
 Group:          Development/Libraries
 Summary:        Development package for graphviz
-Requires:       graphviz = %{version}-%{release} pkgconfig
+Requires:       %{name} = %{version}-%{release}, pkgconfig
 
 %description devel
 A collection of tools for the manipulation and layout
-of graphs (as in nodes and edges, not as in barcharts).
+of graphs (as in nodes and edges, not as in bar-charts).
 This package contains development files for graphviz.
 
 %files devel
@@ -602,11 +680,11 @@ Provides some additional PDF and HTML documentation for graphviz.
 #-- building --------------------------------------------------
 
 %prep
+%setup -q
 ### the rpm in centos4/5 is too old to handle this
 #for p in %{patches}; do
 #     patch -p1 < ${p} || exit 1
 #done
-%setup -q
 
 %build
 # XXX ix86 only used to have -ffast-math, let's use everywhere
@@ -622,34 +700,34 @@ CFLAGS="$RPM_OPT_FLAGS" \
         --datadir=%{_datadir} \
         --mandir=%{_mandir} \
         --with-x \
-	--disable-static \
+        --disable-static \
         --disable-dependency-tracking \
-	--enable-sharp%{!?SHARP:=no} \
-	--enable-guile%{!?GUILE:=no} \
-	--enable-io%{!?_IO:=no} \
-	--enable-java%{!?JAVA:=no} \
-	--enable-lua%{!?LUA:=no} \
-	--enable-ocaml%{!?OCAML:=no} \
-	--enable-perl%{!?PERL:=no} \
-	--enable-php%{!?PHP:=no} \
-	--enable-python%{!?PYTHON:=no} \
-	--enable-r%{!?R_LANG:=no} \
-	--enable-ruby%{!?RUBY:=no} \
-	--enable-tcl%{!?TCL:=no} \
-	--with%{!?DEVIL:out}-devil \
-	--with%{!?WEBP:out}-webp \
-	--with%{!?GDK_PIXBUF:out}-gdk-pixbuf \
-	--with%{!?GHOSTSCRIPT:out}-ghostscript \
-	--with%{!?GLITZ:out}-glitz \
-	--with%{!?IPSEPCOLA:out}-ipsepcola \
-	--with%{!?LASI:out}-lasi \
-	--with%{!?MING:out}-ming \
-	--with%{!?_QT:out}-qt \
-	--with%{!?PANGOCAIRO:out}-pangocairo \
-	--with%{!?RSVG:out}-rsvg \
-	--with%{!?ORTHO:out}-ortho \
-	--with%{!?SFDP:out}-sfdp \
-	--with%{!?SMYRNA:out}-smyrna
+        --enable-sharp%{!?SHARP:=no} \
+        --enable-guile%{!?GUILE:=no} \
+        --enable-io%{!?_IO:=no} \
+        --enable-java%{!?JAVA:=no} \
+        --enable-lua%{!?LUA:=no} \
+        --enable-ocaml%{!?OCAML:=no} \
+        --enable-perl%{!?PERL:=no} \
+        --enable-php%{!?PHP:=no} \
+        --enable-python%{!?PYTHON:=no} \
+        --enable-r%{!?R_LANG:=no} \
+        --enable-ruby%{!?RUBY:=no} \
+        --enable-tcl%{!?TCL:=no} \
+        --with%{!?DEVIL:out}-devil \
+        --with%{!?WEBP:out}-webp \
+        --with%{!?GDK_PIXBUF:out}-gdk-pixbuf \
+        --with%{!?GHOSTSCRIPT:out}-ghostscript \
+        --with%{!?GLITZ:out}-glitz \
+        --with%{!?IPSEPCOLA:out}-ipsepcola \
+        --with%{!?LASI:out}-lasi \
+        --with%{!?MING:out}-ming \
+        --with%{!?_QT:out}-qt \
+        --with%{!?PANGOCAIRO:out}-pangocairo \
+        --with%{!?RSVG:out}-rsvg \
+        --with%{!?ORTHO:out}-ortho \
+        --with%{!?SFDP:out}-sfdp \
+        --with%{!?SMYRNA:out}-smyrna
 make %{?_smp_mflags}
 
 %install

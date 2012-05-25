@@ -2,6 +2,7 @@ syntax: glob
 *~
 *.o
 *.a
+graphviz*.tar.gz
 *.la
 *.lai
 *.lo
@@ -36,6 +37,7 @@ y.*
 
 
 cmd/dot/dot
+cmd/dot/dot_static
 cmd/dot/dot.1.pdf
 cmd/dot/dot_builtins
 cmd/dot/osage.1.pdf
@@ -58,6 +60,7 @@ cmd/gvmap/gvmap
 cmd/gvmap/gvmap.1.pdf
 cmd/gvmap/gvmap.sh.1.pdf
 cmd/gvpr/gvpr
+cmd/gvpr/gvpr_static
 cmd/gvpr/gvpr.1.pdf
 cmd/lefty/dot2l/dotparse.c
 cmd/lefty/dot2l/dotparse.h
@@ -65,6 +68,7 @@ cmd/lefty/lefty
 cmd/lefty/lefty.1.pdf
 cmd/lneato/lneato
 cmd/lneato/lneato.1.pdf
+cmd/smyrna/smyrna
 cmd/smyrna/smyrna.1.pdf
 cmd/tools/acyclic
 cmd/tools/acyclic.1.pdf
@@ -131,6 +135,7 @@ lib/expr/exop.h
 lib/expr/exparse.c
 lib/expr/exparse.h
 lib/expr/expr.3.pdf
+lib/gd/gd.html
 lib/graph/graph.3.pdf
 lib/graph/parser.c
 lib/graph/parser.h

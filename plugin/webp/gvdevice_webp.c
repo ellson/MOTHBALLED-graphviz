@@ -111,7 +111,7 @@ static void webp_format(GVJ_t * job)
 	return;
     }
 
-    if (!WebPPictureImportRGBA(&picture,
+    if (!WebPPictureImportBGRA(&picture,
 		(const uint8_t * const)job->imagedata, stride)) {
 	fprintf(stderr, "Error! Cannot import picture\n");
 	goto Error;
@@ -146,7 +146,7 @@ static gvdevice_features_t device_features_webp = {
 
 gvplugin_installed_t gvdevice_webp_types[] = {
 #ifdef HAVE_WEBP
-    {FORMAT_WEBP, "webp:cairo", -1, &webp_engine, &device_features_webp},
+    {FORMAT_WEBP, "webp:cairo", 1, &webp_engine, &device_features_webp},
 #endif
     {0, NULL, 0, NULL, NULL}
 };

@@ -691,7 +691,8 @@ browser.
 As with reading, \gviz\ provides some specialized functions for rendering.
 Of note is
 \begin{verbatim}
-    gvRenderData (GVC_t *gvc, Agraph_t* g, char *format, char **result, unsigned int *length)
+    gvRenderData (GVC_t *gvc, Agraph_t* g, char *format, char **result, 
+      unsigned int *length)
 \end{verbatim}
 which writes the output of the rendering onto an allocated character buffer. A pointer
 to this buffer is returned in {\tt result} and the number of bytes written is stored in

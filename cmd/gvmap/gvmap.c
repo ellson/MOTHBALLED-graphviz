@@ -44,6 +44,34 @@ enum {POINTS_ALL = 1, POINTS_LABEL, POINTS_RANDOM};
 enum {maxlen = 10000000};
 enum {MAX_GRPS = 10000};
 static char swork[maxlen];
+
+#ifdef WIN32
+    #pragma comment( lib, "cgraph.lib" )
+    #pragma comment( lib, "gvc.lib" )
+    #pragma comment( lib, "ingraphs.lib" )
+    #pragma comment( lib, "sparse.lib" )
+    #pragma comment( lib, "neatogen.lib" )
+    #pragma comment( lib, "gvc.lib" )
+    #pragma comment( lib, "pathplan.lib" )
+    #pragma comment( lib, "neatogen.lib" )
+    #pragma comment( lib, "circogen.lib" )
+    #pragma comment( lib, "twopigen.lib" )
+    #pragma comment( lib, "fdpgen.lib" )
+    #pragma comment( lib, "sparse.lib" )
+    #pragma comment( lib, "cdt.lib" )
+    #pragma comment( lib, "gts.lib" )
+    #pragma comment( lib, "glib-2.0.lib" )
+    #pragma comment( lib, "vpsc.lib" )
+    #pragma comment( lib, "patchwork.lib" )
+    #pragma comment( lib, "gvortho.lib" )
+    #pragma comment( lib, "sfdp.lib" )
+    #pragma comment( lib, "rbtree.lib" )
+
+
+#endif   /* not WIN32_DLL */
+
+
+
 #if 0
 void *gmalloc(size_t nbytes)
 {
@@ -83,6 +111,7 @@ typedef struct {
     int plotedges;
     int color_scheme;
     real line_width;
+    char *opacity;
     char *plot_label;
     real *bg_color;
     int improve_contiguity_n;
@@ -148,7 +177,7 @@ int string_split(char *s, char sp, char ***ss0, int *ntokens0){
 }
 
 static char* usestr =
-"   where graphfile must contain node positions, and width/height of each node. No overlap between nodes should be present. Acceptable options are: \n\
+"   where graphfile must contain node positions, and widths and heights for each node. No overlap between nodes should be present. Acceptable options are: \n\
     -a k - average number of artificial points added along the bounding box of the labels. If < 0, a suitable value is selected automatically. (-1)\n\
     -b v - polygon line width, with v < 0 for no line. (0)\n\
     -c k - polygon color scheme (1)\n\
@@ -161,29 +190,30 @@ static char* usestr =
        6 : sequential single hue red \n\
        7 : sequential single hue lighter red \n\
        8 : light grey\n\
-    -d s - seed used to calculate Fielder vector for optimal coloring\n\
     -C k - generate at most k clusters. (0)\n\
+    -d s - seed used to calculate Fielder vector for optimal coloring\n\
     -e   - show edges\n\
     -g c - bounding box color. If not specified, a bounding box is not drawn.\n\
+    -h k - number of artificial points added to maintain bridge between endpoints (0)\n\
+    -highlight=k - only draw cluster k\n\
     -k   - increase randomesss of boundary\n\
-    -r k - number of random points k used to define sea and lake boundaries. If 0, auto assigned. (0)\n\
-    -s v - depth of the sea and lake shores in points. If 0, auto assigned. (0)\n\
+    -l s - specify label\n\
+    -m v - bounding box margin. If 0, auto-assigned (0)\n\
     -o <file> - put output in <file> (stdout)\n\
     -O   - do NOT do color assignment optimization that maximizes color difference between neighboring countries\n\
-    -v   - verbose\n\
-    -z c - polygon line color (black)\n";
-
-/* 
-
-    -t n - improve contiguity up to n times. (0)\n\
     -p k - show points. (0)\n\
        0 : no points\n\
        1 : all points\n\
        2 : label points\n\
        3 : random/artificial points\n\
-    -h k - number of artificial points added maintain bridge between endpoints (0)\n\
-    -l s - specify label\n\
-    -m v - bounding box margin. If 0, auto assigned (0)\n\
+    -r k - number of random points k used to define sea and lake boundaries. If 0, auto assigned. (0)\n\
+    -s v - depth of the sea and lake shores in points. If 0, auto assigned. (0)\n\
+    -t n - improve contiguity up to n times. (0)\n\
+    -v   - verbose\n\
+    -z c - polygon line color (black)\n";
+
+/* 
+
    -q f - output format (3)\n\
        0 : Mathematica\n\
        1 : PostScript\n\
@@ -239,8 +269,10 @@ init(int argc, char **argv, params_t* pm)
   unsigned int c;
   real s;
   int v, r;
+  char stmp[3];  /* two character string plus '\0' */
 
   pm->outfile = NULL;
+  pm->opacity = NULL;
   pm->nrandom = -1;
   pm->dim = 2;
   pm->shore_depth_tol = 0;
@@ -269,7 +301,7 @@ init(int argc, char **argv, params_t* pm)
   /*  bbox_margin[0] =  bbox_margin[1] = -0.2;*/
   pm->bbox_margin[0] =  pm->bbox_margin[1] = 0;
 
-  while ((c = getopt(argc, argv, ":efvOko:m:s:r:p:c:C:l:b:g:t:a:h:z:d:")) != -1) {
+  while ((c = getopt(argc, argv, ":evOko:m:s:r:p:c:C:l:b:g:t:a:h:z:d:")) != -1) {
     switch (c) {
     case 'm':
       if ((sscanf(optarg,"%lf",&s) > 0) && (s != 0)){
@@ -342,7 +374,9 @@ init(int argc, char **argv, params_t* pm)
       }
       break;
     case 'c':
-      if ((sscanf(optarg,"%d",&r) > 0) && r >= COLOR_SCHEME_NONE && r <= COLOR_SCHEME_GREY){
+      if (sscanf(optarg,"_opacity=%2s", stmp) > 0 && strlen(stmp) == 2){
+        pm->opacity = strdup(stmp);
+      } else if ((sscanf(optarg,"%d",&r) > 0) && r >= COLOR_SCHEME_NONE && r <= COLOR_SCHEME_GREY){
         pm->color_scheme = r;
       } else {
         usage(cmd,1);
@@ -457,6 +491,17 @@ static void get_graph_node_attribute(Agraph_t* g, char *tag, char *format, size_
 }
 #endif
 
+static int
+validateCluster (int n, int* grouping, int clust_num)
+{
+  int i;
+  for (i = 0; i < n; i++) {
+      if (grouping[i] == clust_num) return clust_num;
+  }
+  fprintf (stderr, "Highlighted cluster %d not found - ignored\n", clust_num);
+  return 0;
+}
+
 static void 
 makeMap (SparseMatrix graph, int n, real* x, real* width, int* grouping, 
   char** labels, float* fsz, float* rgb_r, float* rgb_g, float* rgb_b, params_t* pm, Agraph_t* g )
@@ -494,6 +539,9 @@ makeMap (SparseMatrix graph, int n, real* x, real* width, int* grouping,
   cpu = clock();
 #endif
   nr0 = nrandom = pm->nrandom; nart0 = nart = pm->nart;
+  if (pm->highlight_cluster) {
+    pm->highlight_cluster = validateCluster (n, grouping, pm->highlight_cluster);
+  }
   make_map_from_rectangle_groups(exclude_random, pm->include_OK_points,
 				 n, dim, x, width, grouping, graph, pm->bbox_margin, &nrandom, &nart, pm->nedgep, 
 				 pm->shore_depth_tol, edge_bridge_tol, &xcombined, &nverts, &x_poly, &npolys, &poly_lines, 
@@ -542,7 +590,8 @@ makeMap (SparseMatrix graph, int n, real* x, real* width, int* grouping,
   if (whatout == OUT_DOT){
 #endif
     Dot_SetClusterColor(g, rgb_r,  rgb_g,  rgb_b, grouping);
-    plot_dot_map(g, n, dim, x, polys, poly_lines, pm->line_width, pm->line_color, x_poly, polys_groups, labels, width, fsz, rgb_r, rgb_g, rgb_b, pm->plot_label, pm->bg_color, (pm->plotedges?graph:NULL), pm->outfile);
+    plot_dot_map(g, n, dim, x, polys, poly_lines, pm->line_width, pm->line_color, x_poly, polys_groups, labels, width, fsz, rgb_r, rgb_g, rgb_b, pm->opacity,
+           pm->plot_label, pm->bg_color, (pm->plotedges?graph:NULL), pm->outfile);
 #if 0
     }
     goto RETURN;
@@ -623,6 +672,7 @@ makeMap (SparseMatrix graph, int n, real* x, real* width, int* grouping,
 
 static void mapFromGraph (Agraph_t* g, params_t* pm)
 {
+    SparseMatrix graph;
   int n;
   real* width = NULL;
   real* x;
@@ -634,7 +684,7 @@ static void mapFromGraph (Agraph_t* g, params_t* pm)
   float* fsz;
 
   initDotIO(g);
-  SparseMatrix graph = Import_coord_clusters_from_dot(g, pm->maxcluster, pm->dim, &n, &width, NULL, &x, &grouping, 
+  graph = Import_coord_clusters_from_dot(g, pm->maxcluster, pm->dim, &n, &width, NULL, &x, &grouping, 
 					   &rgb_r,  &rgb_g,  &rgb_b,  &fsz, &labels, pm->color_scheme, CLUSTERING_MODULARITY);
   makeMap (graph, n, x, width, grouping, labels, fsz, rgb_r, rgb_g, rgb_b, pm, g);
 }

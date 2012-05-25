@@ -44,7 +44,9 @@
 #include <getopt.h>
 #endif
 
-#define DFLT_GPRPATH    "."
+#ifndef DFLT_GVPRPATH
+#define DFLT_GVPRPATH    "."
+#endif
 
 #define GV_USE_JUMP 4
 
@@ -61,6 +63,7 @@ static const char *usage =
    -i         - create node induced subgraph\n\
    -a <args>  - string arguments available as ARGV[0..]\n\
    -o <ofile> - write output to <ofile>; stdout by default\n\
+   -n         - no read-ahead of input graphs\n\
    -q         - turn off warning messages\n\
    -V         - print version info\n\
    -?         - print usage info\n\
@@ -72,6 +75,7 @@ typedef struct {
     char *program;              /* program source */
     int useFile;		/* true if program comes from a file */
     int compflags;
+    int readAhead;
     char **inFiles;
     int argc;
     char **argv;
@@ -187,10 +191,23 @@ static int parseArgs(char *s, int argc, char ***argv)
 #define LISTSEP ':'
 #endif
 
+static Sfio_t*
+concat (char* pfx, char* sfx, char** sp)
+{
+    Sfio_t *pathp;
+    if (!(pathp = sfstropen())) {
+	error(ERROR_ERROR, "Could not open buffer");
+	return 0;
+    }
+    sfprintf(pathp, "%s%s", pfx, sfx);
+    *sp = sfstruse(pathp);
+    return pathp;
+}
+
 /* resolve:
  * Translate -f arg parameter into a pathname.
  * If arg contains '/', return arg.
- * Else search directories in GPRPATH for arg.
+ * Else search directories in GVPRPATH for arg.
  * Return NULL on error.
  * 
  * FIX - use pathinclude/pathfind
@@ -200,8 +217,10 @@ static char *resolve(char *arg)
     char *path;
     char *s;
     char *cp;
+    char c;
     char *fname = 0;
     Sfio_t *fp;
+    Sfio_t *pathp = NULL;
     size_t sz;
 
 #ifdef WIN32_DLL
@@ -211,9 +230,19 @@ static char *resolve(char *arg)
 #endif
 	return strdup(arg);
 
-    path = getenv("GPRPATH");
+    path = getenv("GVPRPATH");
     if (!path)
-	path = DFLT_GPRPATH;
+	path = getenv("GPRPATH");  // deprecated
+    if (path && (c = *path)) {
+	if (c == LISTSEP) {
+	    pathp = concat(DFLT_GVPRPATH, path, &path); 
+	}
+	else if ((c = path[strlen(path)-1]) == LISTSEP) {
+	    pathp = concat(path, DFLT_GVPRPATH, &path); 
+	}
+    }
+    else
+	path = DFLT_GVPRPATH;
 
     if (!(fp = sfstropen())) {
 	error(ERROR_ERROR, "Could not open buffer");
@@ -244,9 +273,11 @@ static char *resolve(char *arg)
     }
 
     if (!fname)
-	error(ERROR_ERROR, "Could not find file \"%s\" in GPRPATH", arg);
+	error(ERROR_ERROR, "Could not find file \"%s\" in GVPRPATH", arg);
 
     sfclose(fp);
+    if (pathp)
+	sfclose(pathp);
     return fname;
 }
 
@@ -303,6 +334,9 @@ doFlags(char* arg, int argi, int argc, char** argv, options* opts)
 	    break;
 	case 'i':
 	    opts->compflags |= INDUCE;
+	    break;
+	case 'n':
+	    opts->readAhead = 0;
 	    break;
 	case 'a':
 	    if ((optarg = getOptarg(c, &arg, &argi, argc, argv))) {
@@ -364,6 +398,7 @@ static options* scanArgs(int argc, char **argv, gvpropts* uopts)
 
     opts->cmdName = argv[0];
     opts->state = 1;
+    opts->readAhead = 1;
     setErrorId (opts->cmdName);
 
     /* estimate number of file names */
@@ -890,8 +925,8 @@ gverrorf (Expr_t *handle, Exdisc_t *discipline, int level, ...)
  *  - close non-source/non-output graphs
  *  - flag to clone target graph?
  *  - remove assignment in boolean warning if wrapped in ()
- *  - supply input edge during traversal
  *  - do automatic cast for array indices if type is known
+ *  - array initialization
  */
 int gvpr (int argc, char *argv[], gvpropts * uopts)
 {
@@ -905,6 +940,7 @@ int gvpr (int argc, char *argv[], gvpropts * uopts)
     int rv = 0;
     options* opts = 0;
     int cleanup, i, incoreGraphs;
+    Agraph_t* nextg = NULL;
 
     setErrorErrors (0);
     ingDisc.dflt = sfstdin;
@@ -979,8 +1015,10 @@ int gvpr (int argc, char *argv[], gvpropts * uopts)
 	else
 	    ing = newIng(0, opts->inFiles, &ingDisc);
 	
-	while ((state->curgraph = nextGraph(ing))) {
+	for (state->curgraph = nextGraph(ing); state->curgraph; state->curgraph = nextg) {
 	    state->infname = fileName(ing);
+	    if (opts->readAhead)
+		nextg = state->nextgraph = nextGraph(ing);
 	    cleanup = 0;
 
 	    for (i = 0; i < xprog->n_blocks; i++) {
@@ -1027,6 +1065,9 @@ int gvpr (int argc, char *argv[], gvpropts * uopts)
 		chkClose(state->curgraph);
 	    state->target = 0;
 	    state->outgraph = 0;
+	
+	    if (!opts->readAhead)
+		nextg = nextGraph(ing);
 	}
     }
 

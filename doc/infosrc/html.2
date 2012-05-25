@@ -34,12 +34,13 @@ Attribute values must appear in double quotes.
   COLOR="<I>color</I>"
   COLUMNS="<I>value</I>"
   FIXEDSIZE="FALSE|TRUE"
+  GRADIENTANGLE="<I>value</I>"
   HEIGHT="<I>value</I>"
   HREF="<I>value</I>"
   ID="<I>value</I>"
   PORT="<I>portName</I>"
   ROWS="<I>value</I>"
-  STYLE="ROUNDED"
+  STYLE="<I>value</I>"
   TARGET="<I>value</I>"
   TITLE="<I>value</I>"
   TOOLTIP="<I>value</I>"
@@ -65,11 +66,13 @@ Attribute values must appear in double quotes.
   COLOR="<I>color</I>"
   COLSPAN="<I>value</I>"
   FIXEDSIZE="FALSE|TRUE"
+  GRADIENTANGLE="<I>value</I>"
   HEIGHT="<I>value</I>"
   HREF="<I>value</I>"
   ID="<I>value</I>"
   PORT="<I>portName</I>"
   ROWSPAN="<I>value</I>"
+  STYLE="<I>value</I>"
   TARGET="<I>value</I>"
   TITLE="<I>value</I>"
   TOOLTIP="<I>value</I>"
@@ -182,6 +185,8 @@ by the value of <B><I>BALIGN</I></B>.
 <BLOCKQUOTE>
 sets the color of the background. This color can be 
 overridden by a <B><I>BGCOLOR</I></B> attribute in descendents.
+The value can be a single color or two colors separated by a colon, the
+latter indicating a gradient fill.
 </BLOCKQUOTE>
 
 <B><I><FONT SIZE=-1>BORDER="value"</FONT></I></B>
@@ -267,6 +272,19 @@ and <B><I>HEIGHT</I></B> attributes are enforced.
 and <B><I>HEIGHT</I></B>.
 Both of these attributes must be supplied.</LI>
 </ul>
+</BLOCKQUOTE>
+
+<B><I><FONT SIZE=-1>GRADIENTANGLE="value"</FONT></I></B>
+<BLOCKQUOTE>
+gives the angle used in a gradient fill if the 
+<B><I>BGCOLOR</I></B> is a color list. For the default linear gradient,
+this specifies 
+the angle of a line through the center along which the colors transform.
+Thus, an angle of 0 will cause a left-to-right progression.
+For radial gradients (see <B><I>STYLE</I></B>), the angle specifies the position
+of the center of the coloring. An angle of 0 places the center at the center of the
+table or cell; an non-zero angle places the fill center along that angle near the
+boundary.
 </BLOCKQUOTE>
 
 <B><I><FONT SIZE=-1>HEIGHT="value"</FONT></I></B>
@@ -361,12 +379,17 @@ and <A HREF="command.html#d:SERVER_NAME">SERVER_NAME</A>.
 <P>
 <B><I><FONT SIZE=-1>STYLE</FONT> </I></B>
 <BLOCKQUOTE>
-specifies style characteristics of the table. At present, the only
-legal value is "ROUNDED", which causes the table to have rounded corners.
+specifies style characteristics of the table or cell. Style characteristics are
+given as a comma or space separated list of style attributes. At present, the only
+legal attributes are "ROUNDED" and "RADIAL" for tables, and "RADIAL" for cells.
+If "ROUNDED" is specified, the table will have rounded corners.
 This probably works best if the outmost cells have no borders, or their CELLSPACING
 is sufficiently large.
 If it is desirable to have borders around the cells, use <I><B>HR</B></I>
 and <I><B>VR</B></I> elements, or the <I><B>COLUMNS</B></I> and <I><B>ROWS</B></I> attributes of <I><B>TABLE</B></I>.
+<P>
+The "RADIAL" attribute indicates a radial gradient fill. See the <B><I>BGCOLOR</I></B> and
+<B><I>GRADIENTANGLE</I></B> attributes.
 </BLOCKQUOTE>
 
 <B><I><FONT SIZE=-1>TARGET="value"</FONT></I></B>

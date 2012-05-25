@@ -185,9 +185,12 @@ install: build
 	mv $(OCAML_PACKAGE)/usr/lib/graphviz/ocaml/libgv_ocaml.so \
 		$(OCAML_PACKAGE)/usr/lib/ocaml/$(OCAMLABI)/stublibs/dllgv.so
 	# 2. Move the devel files where they belong
-	install -d $(DEV_PACKAGE)/usr/lib/ocaml/$(OCAMLABI)/gv
-	mv $(OCAML_PACKAGE)/usr/lib/graphviz/ocaml/*.ml* \
-		$(DEV_PACKAGE)/usr/lib/ocaml/$(OCAMLABI)/gv
+	# dev files have been removed by recommendation of rpmlint
+
+	#install -d $(DEV_PACKAGE)/usr/lib/ocaml/$(OCAMLABI)/gv
+	#mv $(OCAML_PACKAGE)/usr/lib/graphviz/ocaml/*.cm* \
+	#	$(DEV_PACKAGE)/usr/lib/ocaml/$(OCAMLABI)/gv
+
 	# 3. Trash the (almost empty) directory (and its .la)
 	rm -rf $(OCAML_PACKAGE)/usr/lib/graphviz
 

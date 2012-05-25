@@ -112,13 +112,20 @@ For the latter case, one can split the pipeline<BR>
 to get a similar effect.
 :bb:G:rect; write
 Bounding box of drawing in points.
-:bgcolor:GC:color:<none>;
+:bgcolor:GC:color/colorList:<none>;
 When attached to the root graph, this color is used as the background for
 entire canvas. When a cluster attribute, it is used as the initial
 background for the cluster. If a cluster has a filled
 <A HREF=#d:style>style</A>, the
 cluster's <A HREF=#d:fillcolor>fillcolor</A> will overlay the
 background color.
+<P>
+If the value is a <A HREF=#k:colorList>colorList</A>, a gradient fill is
+used. By default, this is a linear fill; setting <TT>style=radial</TT> will
+cause a radial fill. At present, only two colors are used. If the second
+color (after a colon) is missing, the default color is used for it.
+See also the <A HREF=#d:gradientangle>gradientangle</A> attribute
+for setting the gradient angle. 
 <P>
 If no background color is specified for the root graph, no graphics
 operation are performed on the background. This works fine for
@@ -278,9 +285,9 @@ Terminating condition. If the length squared of all energy gradients are
 Margin used around polygons for purposes of spline edge routing.
 The interpretation is the same as given for <A HREF=#d:sep>sep</A>.
 This should normally be strictly less than <A HREF=#d:sep>sep</A>.
-:fillcolor:NC:color:lightgrey(nodes)/black(clusters);
+:fillcolor:NEC:color/colorList:lightgrey(nodes)/black(clusters);
 Color used to fill the background of a node or cluster
-assuming <A HREF=#d:style>style</A>=filled.
+assuming <A HREF=#d:style>style</A>=filled, or a filled arrowhead.
 If <B>fillcolor</B> is not defined, <A HREF=#d:color>color</A> is
 used. (For clusters, if <B>color</B> is not defined,
 <A HREF=#d:bgcolor>bgcolor</A> is used.) If this is not defined,
@@ -288,6 +295,13 @@ the default is used, except for
 <A HREF=#d:shape><B>shape</B></A>=point or when the output
 format is MIF,
 which use black by default.
+<P>
+If the value is a <A HREF=#k:colorList>colorList</A>, a gradient fill is
+used. By default, this is a linear fill; setting <TT>style=radial</TT> will
+cause a radial fill. At present, only two colors are used. If the second
+color (after a colon) is missing, the default color is used for it.
+See also the <A HREF=#d:gradientangle>gradientangle</A> attribute
+for setting the gradient angle. 
 <P>
 Note that a cluster inherits the root graph's attributes if defined.
 Thus, if the root graph has defined a <B>fillcolor</B>, this will override a
@@ -345,6 +359,13 @@ Font size, <A HREF=#points>in points</A>, used for text.
 :forcelabels:G:bool:true;
 If true, all  <A HREF=#d:xlabel><B>xlabel</B></A> attributes are placed, even if there is some overlap with nodes
 or other labels.
+:gradientangle:NCG:int:"";
+If a gradient fill is being used, this determines the angle of the fill. For linear fills, the colors transform
+along a line specified by the angle and the center of the object. For radial fills, a value of zero causes the
+colors to transform radially from the center; for non-zero values, the colors transform from a point near the
+object's periphery as specified by the value.
+<P>
+If unset, the default angle is 0.
 :group:N:string:"";  dot
 If the end points of an edge belong to the same group, i.e., have the
 same group attribute, parameters are set to avoid crossings and keep
@@ -565,16 +586,21 @@ removal and straightening.
 If true, the graph is rendered in landscape mode. Synonymous with
 <A HREF=#d:rotate><TT>rotate=90</TT></A> or
 <A HREF=#d:orientation><TT>orientation=landscape</TT></A>.
-:layer:EN:layerRange:"";
-Specifies layers in which the node or edge is present.
+:layer:ENC:layerRange:"";
+Specifies layers in which the node, edge or cluster is present.
 :layers:G:layerList:"";
 Specifies a linearly ordered list of layer names attached to the graph
 The graph is then output in separate layers. Only those components
 belonging to the current output layer appear. For more information,
 see the page <A HREF="http://www.graphviz.org/wiki/how-use-drawing-layers-overlays">How to use drawing layers (overlays)</A>.
+:layerlistsep:G:string:",";
+Specifies the separator characters used to split
+an attribute of type <A HREF=#k:layerRange>layerRange</A> into a list of ranges.
+:layerselect:G:layerRange:"";
+Selects a list of layers to be emitted.
 :layersep:G:string:" :\\\\t";
 Specifies the separator characters used to split the
-<A HREF=#d:layers>layers </A>attribute into a list of layer names.
+<A HREF=#d:layers>layers</A> attribute into a list of layer names.
 :layout:G:string:"";
 Specifies the name of the layout algorithm to use, such as "dot"
 or "neato". Normally, graphs should be kept independent of a type of
@@ -615,7 +641,7 @@ the edge is clipped to the boundary of the cluster.
 See <A HREF=#h:undir_note>limitation</A>.
 :lwidth:GC:double; write
 Width of graph or cluster label, in inches.
-:margin:NG:double/point:<device-dependent>;
+:margin:NCG:double/point:<device-dependent>;
 For graphs, this sets x and y margins of canvas, in inches. If the margin
 is a single double, both margins are set equal to the given value.
 <P>
@@ -624,6 +650,9 @@ left around the drawing. It basically corresponds to a translation of
 drawing, as would be necessary to center a drawing on a page. Nothing
 is actually drawn in the margin. To actually extend the background of
 a drawing, see the <A HREF=#d:pad>pad</A> attribute.
+<P>
+For clusters, this specifies the space between the nodes in the cluster and
+the cluster bounding box. By default, this is 8 points.
 <P>
 For nodes, this attribute specifies space left around the node's label.
 By default, the value is <TT>0.11,0.055</TT>.
@@ -674,8 +703,11 @@ graph, the input can specify all of the relevant distances.
 :mosek:G:bool:false;    neato
 If Graphviz is built with MOSEK defined, mode=ipsep and mosek=true,
 the Mosek software (www.mosek.com) is use to solve the ipsep constraints.
-:nodesep:G:double:0.25:0.02; dot
-Minimum space between two adjacent nodes in the same rank, in inches.
+:nodesep:G:double:0.25:0.02;
+In dot, this specifies the minimum space between two adjacent nodes in the same rank, in inches.
+<P>
+For other layouts, this affects the spacing between loops on a single node, or multiedges between
+a pair of nodes.
 :nojustify:GCNE:bool:false;
 By default, the justification of multi-line labels is done within the
 largest context that makes sense. Thus, in the label of a polygonal
@@ -1028,11 +1060,11 @@ If 90, set drawing orientation to landscape.
 Causes the final layout to be rotated counter-clockwise by the specified number of degrees.
 :samehead:E:string:"";  dot
 Edges with the same head and the same <B>samehead</B> value are aimed
-at the same point on the head.
+at the same point on the head. This has no effect on loops.
 See <A HREF=#h:undir_note>limitation</A>.
 :sametail:E:string:"";  dot
 Edges with the same tail and the same <B>sametail</B> value are aimed
-at the same point on the tail.
+at the same point on the tail. This has no effect on loops.
 See <A HREF=#h:undir_note>limitation</A>.
 :samplepoints:N:int:8(output)/20(overlap and image maps);
 If the input graph defines the <A HREF=#d:vertices><B>vertices</B></A>
@@ -1071,7 +1103,7 @@ The <A HREF=#d:shape><B>shape</B></A> of the node is set to box.
 The image in the shapefile must be
 rectangular. The image formats supported as well as the precise semantics of
 how the file is used depends on the
-<A HREF="http://www.graphviz.org/doc/info/output.html">output format</A>.  For further details, see
+<A HREF="output.html">output format</A>.  For further details, see
 <A HREF=output.html#d:image_fmts>Image Formats</A> and
 <A HREF=http://www.graphviz.org/wiki/how-create-custom-shapes#ext_image>External PostScript files</A>.
 <P>
@@ -1126,7 +1158,8 @@ In addition, the value <TT>polyline</TT> specifies that edges should be
 drawn as polylines.
 <P>
 (28 Sep 2010) The value <TT>ortho</TT> specifies edges should be
-routed as polylines of axis-aligned segments.
+routed as polylines of axis-aligned segments. Currently, the routing
+does not handle ports or, in dot, edge labels.
 <P>
 By default, the attribute is unset. How this is interpreted depends on
 the layout. For dot, the default is to draw edges as splines. For all
@@ -1140,8 +1173,8 @@ Parameter used to determine the initial layout of nodes. If unset, the
 nodes are randomly placed in a unit square with
 the same seed is always used for the random number generator, so the
 initial placement is repeatable.
-:style:ENC:style:;
-Set style for node or edge. For cluster subgraph, if "filled", the
+:style:ENCG:style:;
+Set style information for components of the graph. For cluster subgraphs, if "filled", the
 cluster box's background is filled.
 :stylesheet:G:string:"";  svg
 A URL or pathname specifying an XML style sheet, used in SVG output.
@@ -1222,9 +1255,13 @@ Voronoi technique. dim' = (1+2*margin)*dim.
 #  Obsolete, replaced by sep
 #w:E:double:1.0; neato
 #  Redundant definition of weight in neato, cf. bug 9.
-:weight:E:double:1.0:0(dot)/1(neato,fdp,sfdp);
+:weight:E:int/double:1:0(dot)/1(neato,fdp);
 Weight of edge. In dot, the heavier the weight, the shorter,
 straighter and more vertical the edge is.
+<B>N.B.</B> Weights in dot must be integers.
+For other layouts, a larger weight encourages the layout to 
+make the edge length closer to that specified by the 
+<A HREF=#d:len>len</A> attribute.
 :width:N:double:0.75:0.01;
 Width of node, in inches. This is taken as the initial, minimum width
 of the node. If <A HREF=#d:fixedsize><B>fixedsize</B></A> is true, this

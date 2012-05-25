@@ -90,7 +90,7 @@ dot_static_LDADD = \
 	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH)_C.la \
 	$(top_builddir)/lib/xdot/libxdot_C.la \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
-       	$(PANGOCAIRO_LIBS) $(PANGOFT2_LIBS) $(GTS_LIBS) $(ICONV_LIBS) $(EXPAT_LIBS) $(Z_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
+       	$(PANGOCAIRO_LIBS) $(PANGOFT2_LIBS) $(GTS_LIBS) $(EXPAT_LIBS) $(Z_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
 
 dot_builtins_SOURCES = dot.c dot_builtins.c
 dot_builtins_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
@@ -103,16 +103,11 @@ dot_builtins_LDADD = \
 	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
 	$(top_builddir)/lib/xdot/libxdot.la \
 	$(top_builddir)/lib/cdt/libcdt.la \
-       	$(GTS_LIBS) $(ICONV_LIBS) $(EXPAT_LIBS) $(Z_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
+       	$(GTS_LIBS) $(EXPAT_LIBS) $(Z_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
 
 if WITH_LIBGD
-if WITH_MYLIBGD
-dot_static_LDADD += $(top_builddir)/plugin/gd/.libs/libgvplugin_gd_C.a $(top_builddir)/lib/gd/libgvgd_C.la $(FONTCONFIG_LIBS) $(FREETYPE2_LIBS) $(JPEG_LIBS) $(PNG_LIBS) $(Z_LIBS)
-dot_builtins_LDADD += $(top_builddir)/plugin/gd/libgvplugin_gd.la $(top_builddir)/lib/gd/libgvgd_C.la $(FONTCONFIG_LIBS) $(FREETYPE2_LIBS) $(JPEG_LIBS) $(PNG_LIBS) $(Z_LIBS)
-else
-dot_static_LDADD += $(top_builddir)/plugin/gd/.libs/libgvplugin_gd_C.a $(GD_LIBS) $(FONTCONFIG_LIBS) $(FREETYPE2_LIBS) $(JPEG_LIBS) $(PNG_LIBS) $(Z_LIBS)
-dot_builtins_LDADD += $(top_builddir)/plugin/gd/libgvplugin_gd.la $(GD_LIBS) $(FONTCONFIG_LIBS) $(FREETYPE2_LIBS) $(JPEG_LIBS) $(PNG_LIBS) $(Z_LIBS)
-endif
+dot_static_LDADD += $(top_builddir)/plugin/gd/.libs/libgvplugin_gd_C.a $(GD_LIBS)
+dot_builtins_LDADD += $(top_builddir)/plugin/gd/libgvplugin_gd.la $(GD_LIBS)
 endif
 
 if WITH_PANGOCAIRO
@@ -122,6 +117,15 @@ dot_builtins_LDADD += $(top_builddir)/plugin/webp/libgvplugin_webp.la $(WEBP_LIB
 endif
 dot_static_LDADD += $(top_builddir)/plugin/pango/.libs/libgvplugin_pango_C.a $(PANGOCAIRO_LIBS)
 dot_builtins_LDADD += $(top_builddir)/plugin/pango/libgvplugin_pango.la $(PANGOCAIRO_LIBS)
+if WITH_WEBP
+dot_static_LDADD += $(top_builddir)/plugin/webp/.libs/libgvplugin_webp_C.a $(WEBP_LIBS)
+dot_builtins_LDADD += $(top_builddir)/plugin/webp/libgvplugin_webp.la $(WEBP_LIBS)
+endif
+endif
+
+if WITH_LASI
+dot_static_LDADD += $(top_builddir)/plugin/lasi/.libs/libgvplugin_lasi_C.a $(LASI_LIBS) -lstdc++
+dot_builtins_LDADD += $(top_builddir)/plugin/lasi/libgvplugin_lasi.la $(LASI_LIBS) -lstdc++
 endif
 
 EXTRA_DIST = Makefile.old dot.1 dot.1.pdf osage.1 osage.1.pdf patchwork.1 patchwork.1.pdf dot.vcproj

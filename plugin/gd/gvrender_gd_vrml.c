@@ -111,9 +111,9 @@ static char *nodefilename(const char *filename, node_t * n, char *buf)
 	    dir = ".";
     }
 #ifndef WITH_CGRAPH
-    sprintf(buf, "%s/node%d.png", dir, AGID(n));
+    sprintf(buf, "%s/node%d.png", dir, AGSEQ(n));
 #else
-    sprintf(buf, "%s/node%ld.png", dir, AGID(n));
+    sprintf(buf, "%s/node%ld.png", dir, AGSEQ(n));
 #endif
     return buf;
 }
@@ -510,7 +510,7 @@ vrml_bezier(GVJ_t *job, pointf * A, int n, int arrow_at_start, int arrow_at_end,
 	    (obj->penwidth), -(obj->penwidth), -(obj->penwidth),
 	    (obj->penwidth), -(obj->penwidth));
     gvputs(job,   "}\n");
-    gvprintf(job, " appearance DEF E%ld Appearance {\n", AGID(e));
+    gvprintf(job, " appearance DEF E%ld Appearance {\n", AGSEQ(e));
     gvputs(job,   "   material Material {\n");
     gvputs(job,   "   ambientIntensity 0.33\n");
     gvprintf(job, "   diffuseColor %.3f %.3f %.3f\n",
@@ -611,7 +611,7 @@ static void vrml_polygon(GVJ_t *job, pointf * A, int np, int filled)
 	gvputs(job,   "      ambientIntensity 0.33\n");
 	gvputs(job,   "        diffuseColor 1 1 1\n");
 	gvputs(job,   "    }\n");
-	gvprintf(job, "    texture ImageTexture { url \"node%ld.png\" }\n", AGID(n));
+	gvprintf(job, "    texture ImageTexture { url \"node%ld.png\" }\n", AGSEQ(n));
 	gvputs(job,   "  }\n");
 	gvputs(job,   "  geometry Extrusion {\n");
 	gvputs(job,   "    crossSection [");
@@ -668,7 +668,7 @@ static void vrml_polygon(GVJ_t *job, pointf * A, int np, int filled)
 	gvputs(job,   "        Shape {\n");
 	gvprintf(job, "          geometry Cone {bottomRadius %.3f height %.3f }\n",
 		obj->penwidth * 2.5, obj->penwidth * 10.0);
-	gvprintf(job, "          appearance USE E%ld\n", AGID(e));
+	gvprintf(job, "          appearance USE E%ld\n", AGSEQ(e));
 	gvputs(job,   "        }\n");
 	gvputs(job,   "      ]\n");
 	gvputs(job,   "    }\n");
@@ -771,7 +771,7 @@ static void vrml_ellipse(GVJ_t * job, pointf * A, int filled)
 	gvputs(job,   "              ambientIntensity 0.33\n");
 	gvputs(job,   "              diffuseColor 1 1 1\n");
 	gvputs(job,   "            }\n");
-	gvprintf(job, "            texture ImageTexture { url \"node%ld.png\" }\n", AGID(n));
+	gvprintf(job, "            texture ImageTexture { url \"node%ld.png\" }\n", AGSEQ(n));
 	gvputs(job,   "          }\n");
 	gvputs(job,   "        }\n");
 	gvputs(job,   "      ]\n");
@@ -788,7 +788,7 @@ static void vrml_ellipse(GVJ_t * job, pointf * A, int filled)
 	gvputs(job,   "  children [\n");
 	gvputs(job,   "    Shape {\n");
 	gvprintf(job, "      geometry Sphere {radius %.3f }\n", (double) rx);
-	gvprintf(job, "      appearance USE E%d\n", AGID(e));
+	gvprintf(job, "      appearance USE E%d\n", AGSEQ(e));
 	gvputs(job,   "    }\n");
 	gvputs(job,   "  ]\n");
 	gvputs(job,   "}\n");

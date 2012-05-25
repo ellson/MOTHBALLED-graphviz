@@ -1,8 +1,9 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
-pdfdir = $(pkgdatadir)/doc/pdf
+SUBDIRS = lib
 
+pdfdir = $(pkgdatadir)/doc/pdf
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \

@@ -12,7 +12,7 @@ gvpr \- graph pattern scanning and processing language
 )
 .SH SYNOPSIS
 .B gvpr
-[\fB\-icqV?\fP]
+[\fB\-icnqV?\fP]
 [
 .BI \-o
 .I outfile
@@ -87,7 +87,7 @@ output is written to \fBstdout\fP.
 Use the contents of the specified file as the program to execute
 on the input. If \fIprogfile\fP contains a slash character, the name is taken
 as the pathname of the file. Otherwise, \fBgvpr\fP will use the
-directories specified in the environment variable \fBGPRPATH\fP to look
+directories specified in the environment variable \fBGVPRPATH\fP to look
 for the file. If 
 .B \-f
 is not given,
@@ -96,6 +96,12 @@ will use the first non\(hyoption argument as the program.
 .TP
 .B \-q
 Turns off warning messages.
+.TP
+.B \-n
+Turns off graph read-ahead. By default, the variable \fB$NG\fP is set to the next
+graph to be processed. This requires a read of the next graph before processing the
+current graph, which may block is the next graph is only generated in response to
+some action pertaining to the processing of the current graph.
 .TP
 .B \-V
 Causes the program to print version information and exit.
@@ -641,6 +647,9 @@ length of \fIstr\fP, a fatal error occurs.
 provides the standard C function
 .IR strcmp (3).
 .TP
+\fBlength\fP(\fIs\fP : \fBstring\fP) : \fBint\fP
+returns the length of string \fIs\fP.
+.TP
 \fBindex\fP(\fIs\fP : \fBstring\fP, \fIt\fP : \fBstring\fP) : \fBint\fP
 .TP
 \fBrindex\fP(\fIs\fP : \fBstring\fP, \fIt\fP : \fBstring\fP) : \fBint\fP
@@ -671,6 +680,9 @@ act as an HTML string, it has to be used with an object of \fIg\fP. In addition,
 note that the
 angle bracket quotes should not be part of \fIs\fP. These will be added if 
 \fIg\fP is written in concrete DOT format.
+.TP
+\fBishtml\fP(\fIs\fP : \fBstring\fP) : \fBint\fP
+returns non-zero if and only if \fIs\fP is an HTML string.
 .TP
 \fBxOf\fP(\fIs\fP : \fBstring\fP) : \fBstring\fP
 returns the string "\fIx\fP" if \fIs\fP has the form "\fIx\fP,\fIy\fP", 
@@ -868,6 +880,14 @@ is the name of the current input file.
 denotes the current graph being processed. It is not available
 in \fBBEGIN\fP or \fBEND\fP clauses.
 .TP
+\fB$NG\fP : \fBgraph_t\fP
+denotes the next graph to be processed. If \fB$NG\fP is NULL, 
+the current graph \fB$G\fP is the last graph. Note that if the input
+comes from stdin, the last graph cannot be determined until the input
+pipe is closed. 
+It is not available in \fBBEGIN\fP or \fBEND\fP clauses, or if the 
+\fB-n\fP flag is used.
+.TP
 \fB$O\fP : \fBgraph_t\fP
 denotes the output graph. Before graph traversal, it is initialized
 to the target graph. After traversal and any \fBEND_G\fP actions,
@@ -1022,11 +1042,11 @@ Make all blue nodes red.
 BEG_G {
   n = nNodes($G);
   e = nEdges($G);
-  printf ("%d nodes %d edges %s\n", n, e, $G.name);
+  printf ("%d nodes %d edges %s\\n", n, e, $G.name);
   tot_n += n;
   tot_e += e;
 }
-END { printf ("%d nodes %d edges total\n", tot_n, tot_e) }\fP
+END { printf ("%d nodes %d edges total\\n", tot_n, tot_e) }\fP
 .fi
 .RE
 .DT
@@ -1068,7 +1088,7 @@ of an edge indicates how many edges from the input graph the edge represents.
 E{deg[head]++; deg[tail]++; }
 END_G {
   for (deg[n]) {
-    printf ("deg[%s] = %d\n", n.name, deg[n]);
+    printf ("deg[%s] = %d\\n", n.name, deg[n]);
   }
 }\fP
 .fi
@@ -1109,9 +1129,14 @@ Prints the depth-first traversal of the graph, starting
 with the node whose name is \fBARGV[0]\fP, as an indented list.
 .SH ENVIRONMENT
 .TP
-.B GPRPATH
+.B GVPRPATH
 Colon\(hyseparated list of directories to be searched to find
-the file specified by the \-f option.
+the file specified by the \-f option. \fBgvpr\fP has a default list built in. If \fBGVPRPATH\fP
+is not defined, the default list is used. If \fBGVPRPATH\fP starts with colon, the list is formed
+by appending \fBGVPRPATH\fP to the default list. If \fBGVPRPATH\fP ends with colon, the list is formed
+by appending the default list to \fBGVPRPATH\fP. Otherwise, \fBGVPRPATH\fP is used for the list.
+.P
+On Windows systems, replace ``colon'' with ``semicolon'' in the previous paragraph.
 .SH BUGS AND WARNINGS
 Scripts should be careful deleting nodes during \fBN{}\fP and \fBE{}\fP
 blocks using BFS and DFS traversals as these rely on stacks and queues of

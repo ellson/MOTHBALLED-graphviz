@@ -135,16 +135,30 @@ static int portfn(htmldata_t * p, char *v)
     return 0;
 }
 
-static int stylefn(htmltbl_t * p, char *v)
+#define DELIM " ,"
+
+static int stylefn(htmldata_t * p, char *v)
 {
     int rv = 0;
-    char c = toupper(*v);
-    if ((c == 'R') && !strcasecmp(v + 1, "OUNDED"))
-	p->style = ROUNDED;
-    else {
-	agerr(AGWARN, "Illegal value %s for STYLE - ignored\n", v);
-	rv = 1;
+    char c;
+    char* tk;
+    char* buf = strdup (v);
+    for (tk = strtok (buf, DELIM); tk; tk = strtok (NULL, DELIM)) {
+	c = toupper(*tk);
+	if (c == 'R') {
+	    if (!strcasecmp(tk + 1, "OUNDED")) p->style |= ROUNDED;
+	    else if (!strcasecmp(tk + 1, "ADIAL")) p->style |= RADIAL;
+	    else {
+		agerr(AGWARN, "Illegal value %s for STYLE - ignored\n", tk);
+		rv = 1;
+	    }
+	}
+	else {
+	    agerr(AGWARN, "Illegal value %s for STYLE - ignored\n", tk);
+	    rv = 1;
+	}
     }
+    free (buf);
     return rv;
 }
 
@@ -157,18 +171,6 @@ static int targetfn(htmldata_t * p, char *v)
 static int idfn(htmldata_t * p, char *v)
 {
     p->id = strdup(v);
-    return 0;
-}
-
-static int gradientfn(htmldata_t * p, char *v)
-{
-    p->gradient = strdup(v);
-    return 0;
-}
-
-static int gradientcolorfn(htmldata_t * p, char *v)
-{
-    p->gradientcolor = strdup(v);
     return 0;
 }
 
@@ -198,6 +200,18 @@ static int doInt(char *v, char *s, int min, int max, long *ul)
 	*ul = b;
     return rv;
 }
+
+
+static int gradientanglefn(htmldata_t * p, char *v)
+{
+    long u;
+
+    if (doInt(v, "GRADIENTANGLE", 0, 360, &u))
+	return 1;
+    p->gradientangle = (unsigned short) u;
+    return 0;
+}
+
 
 static int borderfn(htmldata_t * p, char *v)
 {
@@ -447,8 +461,7 @@ static attr_item tbl_items[] = {
     {"color", (attrFn) pencolorfn},
     {"columns", (attrFn) columnsfn},
     {"fixedsize", (attrFn) fixedsizefn},
-    {"gradient", (attrFn) gradientfn},
-    {"gradientcolor", (attrFn) gradientcolorfn},
+    {"gradientangle", (attrFn) gradientanglefn},
     {"height", (attrFn) heightfn},
     {"href", (attrFn) hreffn},
     {"id", (attrFn) idfn},
@@ -472,13 +485,13 @@ static attr_item cell_items[] = {
     {"color", (attrFn) pencolorfn},
     {"colspan", (attrFn) colspanfn},
     {"fixedsize", (attrFn) fixedsizefn},
-    {"gradient", (attrFn) gradientfn},
-    {"gradientcolor", (attrFn) gradientcolorfn},
+    {"gradientangle", (attrFn) gradientanglefn},
     {"height", (attrFn) heightfn},
     {"href", (attrFn) hreffn},
     {"id", (attrFn) idfn},
     {"port", (attrFn) portfn},
     {"rowspan", (attrFn) rowspanfn},
+    {"style", (attrFn) stylefn},
     {"target", (attrFn) targetfn},
     {"title", (attrFn) titlefn},
     {"tooltip", (attrFn) titlefn},

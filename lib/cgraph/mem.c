@@ -62,7 +62,7 @@ Agmemdisc_t AgMemDisc =
 
 	/* malloc based allocator */
 
-static void *memopen(void)
+static void *memopen(Agdisc_t* disc)
 {
     return NIL(void *);
 }

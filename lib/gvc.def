@@ -129,6 +129,7 @@ gvcBuildDate
 gvcInfo    
 gvContext    
 gvcVersion    
+GvExitOnUsage
 Gvfilepath    
 gvFreeContext    
 gvFreeLayout    
@@ -346,3 +347,7 @@ is_a_cluster
 mapBool
 drand48
 gvPluginList
+EdgeLabelsDone
+get_gradient_points
+G_margin
+openIntSet

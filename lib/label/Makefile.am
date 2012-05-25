@@ -1,12 +1,16 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
+if WITH_CGRAPH
+GRAPH = cgraph
+else
+GRAPH = graph
+endif
+
 AM_CPPFLAGS = \
     -I$(top_srcdir) \
-	-I$(top_srcdir)/lib/gvc \
-	-I$(top_srcdir)/lib/pathplan \
 	-I$(top_srcdir)/lib/common \
-	-I$(top_srcdir)/lib/graph \
+	-I$(top_srcdir)/lib/$(GRAPH) \
     -I$(top_srcdir)/lib/cdt
 
 noinst_HEADERS = xlabels.h index.h node.h rectangle.h split.q.h

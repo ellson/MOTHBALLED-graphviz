@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # Script for gvmap pipeline
 # Use -A to add flags for gvmap; e.g., -Ae results in gvmap -e
 # -K can be used to change the original layout; by default, sfdp is used
@@ -31,7 +33,7 @@ do
     LAYOUT=$OPTARG
     ;;
   A )
-    FLAGS2="$FLAGS3 -$OPTARG"
+    FLAGS2="$FLAGS2 -$OPTARG"
     ;;
   T )
     FLAGS3="$FLAGS3 -T$OPTARG"

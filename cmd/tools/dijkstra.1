@@ -4,7 +4,7 @@ dijkstra \- single-source distance filter
 .SH SYNOPSIS
 .B dijkstra
 [
-.B \-ap?
+.B \-adp?
 ]
 [ 
 .I sourcenode file
@@ -30,6 +30,9 @@ The graph attribute
 is set to the maximum 
 .I dist
 of all nodes in the graph.
+.P
+If the \fB-d\fP flag is used, the graph is treated as directed and 
+only forward edges are used.
 .P
 By default, if the graph is disconnected, the
 .I dist

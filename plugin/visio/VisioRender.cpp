@@ -11,6 +11,10 @@
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #ifdef _MSC_VER
 #include <cfloat>
 #define isfinite _finite
@@ -18,6 +22,11 @@
 
 #ifdef __GNUC__
 #include <cmath>
+#endif
+
+#ifdef __SUNPRO_CC
+#include <ieeefp.h>
+#define isfinite(x) finite(x)
 #endif
 
 #include "VisioRender.h"
@@ -185,8 +194,8 @@ namespace Visio
 			Agedge_t* edge = job->obj->u.e;
 			
 			/* get previously saved ids for tail and head node; edge type for graph */
-			NodeIds::const_iterator beginId = _nodeIds.find(edge->tail);
-			NodeIds::const_iterator endId = _nodeIds.find(edge->head);
+			NodeIds::const_iterator beginId = _nodeIds.find(agtail(edge));
+			NodeIds::const_iterator endId = _nodeIds.find(aghead(edge));
 			
 			/* output first connectable shape as an edge shape, all else as regular outer shapes */
 			bool firstConnector = true;
@@ -195,7 +204,11 @@ namespace Visio
 					_graphics[0],
 					beginId == _nodeIds.end() ? 0 : beginId->second,
 					endId == _nodeIds.end() ? 0 : endId->second,
+#ifdef WITH_CGRAPH
+					EDGE_TYPE(agroot(edge))))
+#else
 					EDGE_TYPE(edge->head->graph->root)))
+#endif
 					firstConnector = false;
 				else
 					PrintOuterShape(job, *nextGraphic);

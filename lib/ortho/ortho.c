@@ -1284,6 +1284,10 @@ orthoEdges (Agraph_t* g, int doLbls)
 	}
     }
 #endif
+    if (doLbls) {
+	agerr(AGWARN, "Orthogonal edges do not currently handle edge labels. Try using xlabels.\n");
+	doLbls = 0;
+    }
     mp = mkMaze (g, doLbls);
     sg = mp->sg;
 #ifdef DEBUG
@@ -1296,8 +1300,8 @@ orthoEdges (Agraph_t* g, int doLbls)
         for (e = agfstout(g, n); e; e = agnxtout(g,e)) {
 	    if ((Nop == 2) && ED_spl(e)) continue;
 	    if (Concentrate) {
-		int ti = AGID(agtail(e));
-		int hi = AGID(aghead(e));
+		int ti = AGSEQ(agtail(e));
+		int hi = AGSEQ(aghead(e));
 		if (ti <= hi) {
 		    if (isInPS (ps,ti,hi)) continue;
 		    else addPS (ps,ti,hi);
