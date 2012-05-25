@@ -116,7 +116,6 @@ void PrintRect(Rect_t * r)
 /*-----------------------------------------------------------------------------
 | Calculate the n-dimensional area of a rectangle
 -----------------------------------------------------------------------------*/
-void agerror(char *);
 
 #if SIZEOF_LONG_LONG > SIZEOF_INT
 unsigned int RectArea(Rect_t * r)
@@ -135,7 +134,7 @@ unsigned int RectArea(Rect_t * r)
     for (i = 0; i < NUMDIMS; i++) {
       long long a_test = area * r->boundary[i + NUMDIMS] - r->boundary[i];
       if( a_test > UINT_MAX) {
-	agerror("label: area too large for rtree\n");
+	fprintf(stderr, "label: area too large for rtree\n");
 	return UINT_MAX;
       }
       area = a_test;
@@ -159,7 +158,7 @@ unsigned int RectArea(Rect_t * r)
       unsigned int b = r->boundary[i + NUMDIMS] - r->boundary[i];
       a *= b;
       if( (a / b ) != area) {
-	agerror("label: area too large for rtree\n");
+	fprintf(stderr, "label: area too large for rtree\n");
 	return UINT_MAX;
       }
       area = a;
@@ -228,7 +227,7 @@ int Overlap(Rect_t * r, Rect_t * s)
 int Contained(Rect_t * r, Rect_t * s)
 {
     register int i, j, result;
-    assert((int) r && (int) s);
+    assert(r && s);
 
     /* undefined rect is contained in any other */
     if (Undefined(r))
