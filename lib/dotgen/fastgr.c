@@ -177,9 +177,9 @@ edge_t *new_virtual_edge(node_t * u, node_t * v, edge_t * orig)
     ED_edge_type(e) = VIRTUAL;
 
     if (orig) {
-	AGID(e) = AGID(orig);
+	AGSEQ(e) = AGSEQ(orig);
 #ifdef WITH_CGRAPH
-	AGID(&(e2->in)) = AGID(orig);
+	AGSEQ(&(e2->in)) = AGSEQ(orig);
 #endif
 	ED_count(e) = ED_count(orig);
 	ED_xpenalty(e) = ED_xpenalty(orig);

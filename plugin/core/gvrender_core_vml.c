@@ -267,8 +267,7 @@ static void vml_begin_graph(GVJ_t * job)
 #ifndef WITH_CGRAPH
     name = obj->u.g->name;
 #else
-    // FIXME
-    name = "FIXME";
+    name = agnameof(obj->u.g);
 #endif
     if (name[0]) {
         gvputs(job, "<TITLE>");

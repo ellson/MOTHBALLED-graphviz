@@ -689,7 +689,7 @@ void processing_one_poly(FILE *f, int use_line, real line_width, int fill, int c
 }
 
 
-void plot_dot_polygons(char **sbuff, int *len, int *len_max, real line_width, char *line_color, SparseMatrix polys, real *x_poly, int *polys_groups, float *r, float *g, float *b){
+void plot_dot_polygons(char **sbuff, int *len, int *len_max, real line_width, char *line_color, SparseMatrix polys, real *x_poly, int *polys_groups, float *r, float *g, float *b, char* opacity){
   int i, j, *ia = polys->ia, *ja = polys->ja, *a = (int*) polys->a, npolys = polys->m, nverts = polys->n, ipoly,first;
   int np = 0, maxlen = 0;
   float *xp, *yp;
@@ -713,7 +713,7 @@ void plot_dot_polygons(char **sbuff, int *len, int *len_max, real line_width, ch
 	ipoly = ABS(a[j]);
 	is_river = (a[j] < 0);
 	if (r && g && b) {
-	  rgb2hex(r[polys_groups[i]], g[polys_groups[i]], b[polys_groups[i]], cstring);
+	  rgb2hex(r[polys_groups[i]], g[polys_groups[i]], b[polys_groups[i]], cstring, opacity);
 	}
 	dot_one_poly(sbuff, len, len_max, use_line, line_width, fill, close, is_river, np, xp, yp, cstring);
 	np = 0;/* start a new polygon */
@@ -778,7 +778,7 @@ void plot_processing_polygons(FILE *f, real line_width, SparseMatrix polys, real
 
 
 void plot_dot_map(Agraph_t* gr, int n, int dim, real *x, SparseMatrix polys, SparseMatrix poly_lines, real line_width, char *line_color, real *x_poly, int *polys_groups, char **labels, real *width,
-		 float *fsz, float *r, float *g, float *b, char *plot_label, real *bg_color, SparseMatrix A, FILE* f){
+		 float *fsz, float *r, float *g, float *b, char* opacity, char *plot_label, real *bg_color, SparseMatrix A, FILE* f){
   /* if graph object exist, we just modify some attributes, otherwise we dump the whole graph */
   int plot_polyQ = TRUE;
   char *sbuff;
@@ -806,12 +806,12 @@ void plot_dot_map(Agraph_t* gr, int n, int dim, real *x, SparseMatrix polys, Spa
   /*polygons */
   if (plot_polyQ) {
     if (!gr) fprintf(f,"_draw_ = \"");
-    plot_dot_polygons(&sbuff, &len, &len_max, -1., NULL, polys, x_poly, polys_groups, r, g, b);
+    plot_dot_polygons(&sbuff, &len, &len_max, -1., NULL, polys, x_poly, polys_groups, r, g, b, opacity);
   }
 
   /* polylines: line width is set here */
   if (line_width >= 0){
-    plot_dot_polygons(&sbuff, &len, &len_max, line_width, line_color, poly_lines, x_poly, polys_groups, NULL, NULL, NULL);
+    plot_dot_polygons(&sbuff, &len, &len_max, line_width, line_color, poly_lines, x_poly, polys_groups, NULL, NULL, NULL, NULL);
   }
   if (!gr) {
     fprintf(f,"%s",sbuff);
@@ -1894,7 +1894,7 @@ int make_map_internal(int exclude_random, int include_OK_points,
     int nz, nh = 0;/* the set to highlight */
     real *xtemp;
     if (HIGHLIGHT_SET){
-      fprintf(stderr," hightlight cluster %d, n = %d\n",HIGHLIGHT_SET, n);
+      if (Verbose) fprintf(stderr," highlight cluster %d, n = %d\n",HIGHLIGHT_SET, n);
       xtemp = MALLOC(sizeof(real)*n*dim);
       /* shift set to the beginning */
       nz = 0;
@@ -1923,7 +1923,7 @@ int make_map_internal(int exclude_random, int include_OK_points,
       MEMCPY(*xcombined, xtemp, n*dim*sizeof(real));
       *nrandom = *nrandom + n - nh;/* count everything except cluster HIGHLIGHT_SET as random */
       n = nh;
-      fprintf(stderr,"nh = %d\n",nh);
+      if (Verbose) fprintf(stderr,"nh = %d\n",nh);
       FREE(xtemp);
     }
   }
@@ -2124,7 +2124,7 @@ int make_map_from_rectangle_groups(int exclude_random, int include_OK_points,
 
      
   */
-
+    real dist, avgdist;
   real *X;
   int N, nmax, i, j, k, igrp;
   int *groups, K = *nart;/* average number of points added per side of rectangle */
@@ -2271,7 +2271,7 @@ int make_map_from_rectangle_groups(int exclude_random, int include_OK_points,
 
       graph = SparseMatrix_symmetrize(graph, TRUE);
       ia = graph->ia; ja = graph->ja;
-      real dist, avgdist = 0.;
+      dist=avgdist = 0.;
       for (i = 0; i < n; i++){
 	for (j = ia[i]; j < ia[i+1]; j++){
 	  jj = ja[j];

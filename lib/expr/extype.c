@@ -27,15 +27,17 @@
  * return C type name for type
  */
 
-char *extype(int type)
+char*
+extype(int type)
 {
-    switch (type) {
-    case FLOATING:
-	return "double";
-    case STRING:
-	return "char*";
-    case UNSIGNED:
-	return xstr(unsigned _ast_intmax_t);
-    }
-    return xstr(_ast_intmax_t);
+	switch (type)
+	{
+	case FLOATING:
+		return "double";
+	case STRING:
+		return "char*";
+	case UNSIGNED:
+		return xstr(uintmax_t);
+	}
+	return xstr(intmax_t);
 }

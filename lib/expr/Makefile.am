@@ -30,7 +30,7 @@ pdf_DATA = expr.3.pdf
 
 libexpr_C_la_SOURCES = excc.c excontext.c exdata.c exerror.c \
 	exeval.c exexpr.c exlexname.c exopen.c exrewind.c extoken.c \
-	extype.c exzero.c exparse.y
+	extype.c exzero.c exparse.y exnospace.c exstash.c 
 libexpr_C_la_LIBADD = \
 	$(top_builddir)/lib/ast/libast_C.la \
 	$(top_builddir)/lib/vmalloc/libvmalloc_C.la \

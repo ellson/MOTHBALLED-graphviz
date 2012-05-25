@@ -567,7 +567,10 @@ void makeSpline(graph_t* g, edge_t * e, Ppoly_t ** obs, int npoly, boolean chkPt
     make_barriers(obs, npoly, pp, qp, &barriers, &n_barriers);
     slopes[0].x = slopes[0].y = 0.0;
     slopes[1].x = slopes[1].y = 0.0;
-    Proutespline(barriers, n_barriers, line, slopes, &spline);
+    if (Proutespline(barriers, n_barriers, line, slopes, &spline) < 0) {
+	agerr (AGERR, "makeSpline: failed to make spline edge (%s,%s)\n", agnameof(agtail(e)), agnameof(aghead(e)));
+	return;
+    }
 
     /* north why did you ever use int coords */
     if (Verbose > 1)

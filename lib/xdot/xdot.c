@@ -19,6 +19,76 @@
 #define NEW(t)           (t*)calloc(1, sizeof(t))
 #define N_NEW(n,t)       (t*)calloc((n), sizeof(t))
 
+typedef struct {
+    unsigned char *buf;		/* start of buffer */
+    unsigned char *ptr;		/* next place to write */
+    unsigned char *eptr;	/* end of buffer */
+    int dyna;			/* true if buffer is malloc'ed */
+} agxbuf;
+
+#define agxbputc(X,C) ((((X)->ptr >= (X)->eptr) ? agxbmore(X,1) : 0), \
+          (int)(*(X)->ptr++ = ((unsigned char)C)))
+#define agxbuse(X) (agxbputc(X,'\0'),(char*)((X)->ptr = (X)->buf))
+
+static void agxbinit(agxbuf * xb, unsigned int hint, unsigned char *init)
+{
+    if (init) {
+	xb->buf = init;
+	xb->dyna = 0;
+    } else {
+	if (hint == 0)
+	    hint = BUFSIZ;
+	xb->dyna = 1;
+	xb->buf = N_NEW(hint, unsigned char);
+    }
+    xb->eptr = xb->buf + hint;
+    xb->ptr = xb->buf;
+    *xb->ptr = '\0';
+}
+static int agxbmore(agxbuf * xb, unsigned int ssz)
+{
+    int cnt;			/* current no. of characters in buffer */
+    int size;			/* current buffer size */
+    int nsize;			/* new buffer size */
+    unsigned char *nbuf;	/* new buffer */
+
+    size = xb->eptr - xb->buf;
+    nsize = 2 * size;
+    if (size + ssz > nsize)
+	nsize = size + ssz;
+    cnt = xb->ptr - xb->buf;
+    if (xb->dyna) {
+	nbuf = realloc(xb->buf, nsize);
+    } else {
+	nbuf = N_NEW(nsize, unsigned char);
+	memcpy(nbuf, xb->buf, cnt);
+	xb->dyna = 1;
+    }
+    xb->buf = nbuf;
+    xb->ptr = xb->buf + cnt;
+    xb->eptr = xb->buf + nsize;
+    return 0;
+}
+
+static int agxbput(char *s, agxbuf * xb)
+{
+    unsigned int ssz = strlen(s);
+    if (xb->ptr + ssz > xb->eptr)
+	agxbmore(xb, ssz);
+    memcpy(xb->ptr, s, ssz);
+    xb->ptr += ssz;
+    return ssz;
+}
+
+/* agxbfree:
+ * Free any malloced resources.
+ */
+static void agxbfree(agxbuf * xb)
+{
+    if (xb->dyna)
+	free(xb->buf);
+}
+
 /* the parse functions should return NULL on error */
 static char *parseReal(char *s, double *fp)
 {
@@ -447,7 +517,9 @@ static void printAlign(xdot_align a, pf print, void *info)
     }
 }
 
-static void printXDot_Op(xdot_op * op, pf print, void *info)
+typedef void (*print_op)(xdot_op * op, pf print, void *info, int more);
+
+static void printXDot_Op(xdot_op * op, pf print, void *info, int more)
 {
     switch (op->kind) {
     case xd_filled_ellipse:
@@ -511,89 +583,137 @@ static void printXDot_Op(xdot_op * op, pf print, void *info)
 	printString(op->u.image.name, print, info);
 	break;
     }
+    if (more)
+	print(" ", info);
 }
 
-static void _printXDot(xdot * x, pf print, void *info)
+static void jsonRect(xdot_rect * r, pf print, void *info)
+{
+    char buf[128];
+
+    sprintf(buf, "[%.06f,%.06f,%.06f,%.06f]", r->x, r->y, r->w, r->h);
+    print(buf, info);
+}
+
+static void jsonPolyline(xdot_polyline * p, pf print, void *info)
+{
+    int i;
+    char buf[128];
+
+    print("[", info);
+    for (i = 0; i < p->cnt; i++) {
+	sprintf(buf, "%.06f,%.06f", p->pts[i].x, p->pts[i].y);
+	print(buf, info);
+	if (i < p->cnt-1) print(",", info);
+    }
+    print("]", info);
+}
+
+static void jsonString(char *p, pf print, void *info)
+{
+    unsigned char c, buf[BUFSIZ];
+    agxbuf xb;
+
+    agxbinit(&xb, BUFSIZ, buf);
+    agxbputc(&xb, '"');
+    while ((c = *p++)) {
+	if (c == '"') agxbput("\\\"", &xb);
+	else if (c == '\\') agxbput("\\\\", &xb);
+	/* else if (c > 127) handle UTF-8 */
+	else agxbputc(&xb, c);
+    }
+    agxbputc(&xb, '"');
+    print(agxbuse(&xb), info);
+    agxbfree(&xb);
+}
+
+static void jsonXDot_Op(xdot_op * op, pf print, void *info, int more)
+{
+    switch (op->kind) {
+    case xd_filled_ellipse:
+	print("{E : ", info);
+	jsonRect(&op->u.ellipse, print, info);
+	break;
+    case xd_unfilled_ellipse:
+	print("{e : ", info);
+	jsonRect(&op->u.ellipse, print, info);
+	break;
+    case xd_filled_polygon:
+	print("{P : ", info);
+	jsonPolyline(&op->u.polygon, print, info);
+	break;
+    case xd_unfilled_polygon:
+	print("{p : ", info);
+	jsonPolyline(&op->u.polygon, print, info);
+	break;
+    case xd_filled_bezier:
+	print("{b : ", info);
+	jsonPolyline(&op->u.bezier, print, info);
+	break;
+    case xd_unfilled_bezier:
+	print("{B : ", info);
+	jsonPolyline(&op->u.bezier, print, info);
+	break;
+    case xd_pen_color:
+	print("{c : ", info);
+	jsonString(op->u.color, print, info);
+	break;
+    case xd_fill_color:
+	print("{C : ", info);
+	jsonString(op->u.color, print, info);
+	break;
+    case xd_polyline:
+	print("{L :", info);
+	jsonPolyline(&op->u.polyline, print, info);
+	break;
+    case xd_text:
+	print("{T : [", info);
+	printInt(op->u.text.x, print, info);
+	print(",", info);
+	printInt(op->u.text.y, print, info);
+	print(",", info);
+	printAlign(op->u.text.align, print, info);
+	print(",", info);
+	printInt(op->u.text.width, print, info);
+	print(",", info);
+	jsonString(op->u.text.text, print, info);
+	print("]", info);
+	break;
+    case xd_font:
+	print("{F : [", info);
+	op->kind = xd_font;
+	printFloat(op->u.font.size, print, info);
+	print(",", info);
+	jsonString(op->u.font.name, print, info);
+	print("]", info);
+	break;
+    case xd_style:
+	print("{S : ", info);
+	jsonString(op->u.style, print, info);
+	break;
+    case xd_image:
+	print("{I : [", info);
+	jsonRect(&op->u.image.pos, print, info);
+	print(",", info);
+	jsonString(op->u.image.name, print, info);
+	print("]", info);
+	break;
+    }
+    if (more)
+	print("},\n", info);
+    else
+	print("}\n", info);
+}
+
+static void _printXDot(xdot * x, pf print, void *info, print_op ofn)
 {
     int i;
     xdot_op *op;
     char *base = (char *) (x->ops);
     for (i = 0; i < x->cnt; i++) {
 	op = (xdot_op *) (base + i * x->sz);
-	printXDot_Op(op, print, info);
-	if (i < x->cnt - 1)
-	    print(" ", info);
+	ofn(op, print, info, (i < x->cnt - 1));
     }
-}
-
-typedef struct {
-    unsigned char *buf;		/* start of buffer */
-    unsigned char *ptr;		/* next place to write */
-    unsigned char *eptr;	/* end of buffer */
-    int dyna;			/* true if buffer is malloc'ed */
-} agxbuf;
-
-#define agxbputc(X,C) ((((X)->ptr >= (X)->eptr) ? agxbmore(X,1) : 0), \
-          (int)(*(X)->ptr++ = ((unsigned char)C)))
-#define agxbuse(X) (agxbputc(X,'\0'),(char*)((X)->ptr = (X)->buf))
-
-static void agxbinit(agxbuf * xb, unsigned int hint, unsigned char *init)
-{
-    if (init) {
-	xb->buf = init;
-	xb->dyna = 0;
-    } else {
-	if (hint == 0)
-	    hint = BUFSIZ;
-	xb->dyna = 1;
-	xb->buf = N_NEW(hint, unsigned char);
-    }
-    xb->eptr = xb->buf + hint;
-    xb->ptr = xb->buf;
-    *xb->ptr = '\0';
-}
-static int agxbmore(agxbuf * xb, unsigned int ssz)
-{
-    int cnt;			/* current no. of characters in buffer */
-    int size;			/* current buffer size */
-    int nsize;			/* new buffer size */
-    unsigned char *nbuf;	/* new buffer */
-
-    size = xb->eptr - xb->buf;
-    nsize = 2 * size;
-    if (size + ssz > nsize)
-	nsize = size + ssz;
-    cnt = xb->ptr - xb->buf;
-    if (xb->dyna) {
-	nbuf = realloc(xb->buf, nsize);
-    } else {
-	nbuf = N_NEW(nsize, unsigned char);
-	memcpy(nbuf, xb->buf, cnt);
-	xb->dyna = 1;
-    }
-    xb->buf = nbuf;
-    xb->ptr = xb->buf + cnt;
-    xb->eptr = xb->buf + nsize;
-    return 0;
-}
-
-static int agxbput(char *s, agxbuf * xb)
-{
-    unsigned int ssz = strlen(s);
-    if (xb->ptr + ssz > xb->eptr)
-	agxbmore(xb, ssz);
-    memcpy(xb->ptr, s, ssz);
-    xb->ptr += ssz;
-    return ssz;
-}
-
-/* agxbfree:
- * Free any malloced resources.
- */
-static void agxbfree(agxbuf * xb)
-{
-    if (xb->dyna)
-	free(xb->buf);
 }
 
 char *sprintXDot(xdot * x)
@@ -602,7 +722,7 @@ char *sprintXDot(xdot * x)
     unsigned char buf[BUFSIZ];
     agxbuf xb;
     agxbinit(&xb, BUFSIZ, buf);
-    _printXDot(x, (pf) agxbput, &xb);
+    _printXDot(x, (pf) agxbput, &xb, printXDot_Op);
     s = strdup(agxbuse(&xb));
     agxbfree(&xb);
 
@@ -611,7 +731,14 @@ char *sprintXDot(xdot * x)
 
 void fprintXDot(FILE * fp, xdot * x)
 {
-    _printXDot(x, (pf) fputs, fp);
+    _printXDot(x, (pf) fputs, fp, printXDot_Op);
+}
+
+void jsonXDot(FILE * fp, xdot * x)
+{
+    fputs ("[\n", fp);
+    _printXDot(x, (pf) fputs, fp, jsonXDot_Op);
+    fputs ("]\n", fp);
 }
 
 static void freeXOpData(xdot_op * x)

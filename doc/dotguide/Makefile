@@ -8,7 +8,7 @@ SHAPEFILES = \
     triangle.pdf tripleoctagon.pdf \
 
 ARROWHEADFILES = \
-    normal.pdf diamondarrow.pdf odot.pdf \
+    normal.pdf diamondarrow.pdf dot.pdf odot.pdf \
     inv.pdf invdot.pdf invodot.pdf \
     crow.pdf vee.pdf tee.pdf \
     no_arrow.pdf diamond.pdf

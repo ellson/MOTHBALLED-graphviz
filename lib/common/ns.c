@@ -903,12 +903,13 @@ static node_t *checkdfs(graph_t* g, node_t * n)
 {
     edge_t *e;
     node_t *w,*x;
+    int i;
 
     if (ND_mark(n))
 	return 0;
     ND_mark(n) = TRUE;
     ND_onstack(n) = TRUE;
-    for (e = agfstout(G, n); e; e = agnxtout(G, e)) {
+    for (i = 0; (e = ND_out(n).list[i]); i++) {
 	w = aghead(e);
 	if (ND_onstack(w)) {
 	    dump_graph (g);
@@ -941,15 +942,9 @@ static node_t *checkdfs(graph_t* g, node_t * n)
 void check_cycles(graph_t * g)
 {
     node_t *n;
-    for (n = agfstnode(g); n; n = agnxtnode(g, n))
+    for (n = GD_nlist(g); n; n = ND_next(n))
 	ND_mark(n) = ND_onstack(n) = FALSE;
-    for (n = agfstnode(g); n; n = agnxtnode(g, n))
+    for (n = GD_nlist(g); n; n = ND_next(n))
 	checkdfs(g, n);
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	if (ND_mark(n) == FALSE) {
-	    fprintf (stderr, "graph is unconnected\n");
-	    break;
-	}
-    }
 }
 #endif				/* DEBUG */

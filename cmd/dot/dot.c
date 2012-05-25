@@ -22,16 +22,9 @@
 #include "gvc.h"
 #include "gvio.h"
 
-#ifndef WIN32_DLL
-#ifdef GVDLL
-__declspec(dllimport) boolean MemTest;
-#else
-#include "globals.h"
-#endif
-#endif
-
 #ifdef WIN32_DLL
 __declspec(dllimport) boolean MemTest;
+__declspec(dllimport) int GvExitOnUsage;
 /*gvc.lib cgraph.lib*/
 #ifdef WITH_CGRAPH
     #pragma comment( lib, "cgraph.lib" )
@@ -39,6 +32,8 @@ __declspec(dllimport) boolean MemTest;
     #pragma comment( lib, "graph.lib" )
 #endif
     #pragma comment( lib, "gvc.lib" )
+#else   /* not WIN32_DLL */
+#include "globals.h"
 #endif
 
 #include <stdlib.h>

@@ -81,11 +81,7 @@ boolean gvjobs_output_langname(GVC_t * gvc, const char *name)
     output_langname_job->gvc = gvc;
 
     /* load it now to check that it exists */
-#ifndef WITH_CGRAPH
     if (gvplugin_load(gvc, API_device, name))
-#else /* WITH_CGRAPH */
-   // if (gvplugin_load(gvc, API_device, name))
-#endif /* WITH_CGRAPH */
 	return TRUE;
     return FALSE;
 }

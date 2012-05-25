@@ -14,6 +14,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <setjmp.h>
 #ifdef HAVE_MALLOC_H
 #include <malloc.h>
 #endif
@@ -69,6 +70,7 @@ typedef struct deque_t {
     int pnlpn, fpnlpi, lpnlpi, apex;
 } deque_t;
 
+static jmp_buf jbuf;
 static pointnlink_t *pnls, **pnlps;
 static int pnln, pnll;
 
@@ -100,6 +102,11 @@ static void growtris(int);
 static void growdq(int);
 static void growops(int);
 
+/* Pshortestpath:
+ * Find a shortest path contained in the polygon polyp going between the
+ * points supplied in eps. The resulting polyline is stored in output.
+ * Return 0 on success, -1 on bad input, -2 on memory allocation problem. 
+ */
 int Pshortestpath(Ppoly_t * polyp, Ppoint_t * eps, Ppolyline_t * output)
 {
     int pi, minpi;
@@ -114,6 +121,8 @@ int Pshortestpath(Ppoly_t * polyp, Ppoint_t * eps, Ppolyline_t * output)
     int pnli;
 #endif
 
+    if (setjmp(jbuf))
+	return -2;
     /* make space */
     growpnls(polyp->pn);
     pnll = 0;
@@ -512,23 +521,23 @@ static void growpnls(int newpnln)
     if (!pnls) {
 	if (!(pnls = (pointnlink_t *) malloc(POINTNLINKSIZE * newpnln))) {
 	    prerror("cannot malloc pnls");
-	    abort();
+	    longjmp(jbuf,1);
 	}
 	if (!(pnlps = (pointnlink_t **) malloc(POINTNLINKPSIZE * newpnln))) {
 	    prerror("cannot malloc pnlps");
-	    abort();
+	    longjmp(jbuf,1);
 	}
     } else {
 	if (!(pnls = (pointnlink_t *) realloc((void *) pnls,
 					      POINTNLINKSIZE * newpnln))) {
 	    prerror("cannot realloc pnls");
-	    abort();
+	    longjmp(jbuf,1);
 	}
 	if (!(pnlps = (pointnlink_t **) realloc((void *) pnlps,
 						POINTNLINKPSIZE *
 						newpnln))) {
 	    prerror("cannot realloc pnlps");
-	    abort();
+	    longjmp(jbuf,1);
 	}
     }
     pnln = newpnln;
@@ -541,13 +550,13 @@ static void growtris(int newtrin)
     if (!tris) {
 	if (!(tris = (triangle_t *) malloc(TRIANGLESIZE * newtrin))) {
 	    prerror("cannot malloc tris");
-	    abort();
+	    longjmp(jbuf,1);
 	}
     } else {
 	if (!(tris = (triangle_t *) realloc((void *) tris,
 					    TRIANGLESIZE * newtrin))) {
 	    prerror("cannot realloc tris");
-	    abort();
+	    longjmp(jbuf,1);
 	}
     }
     trin = newtrin;
@@ -562,14 +571,14 @@ static void growdq(int newdqn)
 	    (dq.pnlps =
 	     (pointnlink_t **) malloc(POINTNLINKPSIZE * newdqn))) {
 	    prerror("cannot malloc dq.pnls");
-	    abort();
+	    longjmp(jbuf,1);
 	}
     } else {
 	if (!(dq.pnlps = (pointnlink_t **) realloc((void *) dq.pnlps,
 						   POINTNLINKPSIZE *
 						   newdqn))) {
 	    prerror("cannot realloc dq.pnls");
-	    abort();
+	    longjmp(jbuf,1);
 	}
     }
     dq.pnlpn = newdqn;
@@ -582,13 +591,13 @@ static void growops(int newopn)
     if (!ops) {
 	if (!(ops = (Ppoint_t *) malloc(POINTSIZE * newopn))) {
 	    prerror("cannot malloc ops");
-	    abort();
+	    longjmp(jbuf,1);
 	}
     } else {
 	if (!(ops = (Ppoint_t *) realloc((void *) ops,
 					 POINTSIZE * newopn))) {
 	    prerror("cannot realloc ops");
-	    abort();
+	    longjmp(jbuf,1);
 	}
     }
     opn = newopn;

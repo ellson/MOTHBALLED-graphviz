@@ -1612,7 +1612,7 @@ static int nodeposcmpf(node_t ** n0, node_t ** n1)
 
 static int edgeidcmpf(edge_t ** e0, edge_t ** e1)
 {
-    return (AGID(*e0) - AGID(*e1));
+    return (AGSEQ(*e0) - AGSEQ(*e1));
 }
 
 /* following code deals with weights of edges of "virtual" nodes */

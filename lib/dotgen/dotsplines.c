@@ -252,7 +252,7 @@ setEdgeLabelPos (graph_t * g)
 	    else if ((l = ND_label(n))) {// label of regular edge
 		place_vnlabel(n);
 	    }
-	    updateBB(g, l);
+	    if (l) updateBB(g, l);
 	}
     }
 }
@@ -635,8 +635,8 @@ static int edgecmp(edge_t** ptr0, edge_t** ptr1)
 	return (v0 - v1);
 
     /* This provides a cheap test for edges having the same set of endpoints.  */
-    if (AGID(le0) != AGID(le1))
-	return (AGID(le0) - AGID(le1));
+    if (AGSEQ(le0) != AGSEQ(le1))
+	return (AGSEQ(le0) - AGSEQ(le1));
 
     ea = (ED_tail_port(e0).defined || ED_head_port(e0).defined) ? e0 : le0;
     if (ED_tree_index(ea) & BWDEDGE) {
@@ -671,7 +671,7 @@ static int edgecmp(edge_t** ptr0, edge_t** ptr1)
     if (et0 == FLATEDGE && ED_label(e0) != ED_label(e1))
 	return (int) (ED_label(e0) - ED_label(e1));
 
-    return (AGID(e0) - AGID(e1));
+    return (AGSEQ(e0) - AGSEQ(e1));
 }
 
 /* cloneGraph:
@@ -941,6 +941,7 @@ makeSimpleFlatLabels (node_t* tn, node_t* hn, edge_t** edges, int ind, int cnt, 
     ctrx = (leftend + rightend)/2.0;
     
     /* do first edge */
+    e = earray[0];
     pointn = 0;
     points[pointn++] = tp;
     points[pointn++] = tp;
@@ -961,7 +962,7 @@ makeSimpleFlatLabels (node_t* tn, node_t* hn, edge_t** edges, int ind, int cnt, 
     umaxx = ctrx + (ED_label(e)->dimen.x)/2.0;
 
     for (i = 1; i < n_lbls; i++) {
-	e = edges[ind + i];
+	e = earray[i];
 	if (i%2) {  /* down */
 	    if (i == 1) {
 		lminx = ctrx - (ED_label(e)->dimen.x)/2.0;
@@ -1019,7 +1020,7 @@ makeSimpleFlatLabels (node_t* tn, node_t* hn, edge_t** edges, int ind, int cnt, 
 
     /* edges with no labels */
     for (; i < cnt; i++) {
-	e = edges[ind + i];
+	e = earray[i];
 	if (i%2) {  /* down */
 	    if (i == 1) {
 		lminx = (2*leftend + rightend)/3.0;
@@ -1489,7 +1490,7 @@ make_flat_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt, i
     Agedgepair_t fwdedge;
     edge_t *e;
 #endif
-    int j, i, r;
+    int j, i, r, isAdjacent;
     double stepx, stepy, vspace;
     int tside, hside, pn;
     pointf *ps;
@@ -1502,6 +1503,7 @@ make_flat_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt, i
 
     /* Get sample edge; normalize to go from left to right */
     e = edges[ind];
+    isAdjacent = ED_adjacent(e);
     if (ED_tree_index(e) & BWDEDGE) {
 #ifndef WITH_CGRAPH
 	MAKEFWDEDGE(&fwdedge, e);
@@ -1511,7 +1513,16 @@ make_flat_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt, i
 	e = &fwdedge.out;
 #endif
     }
-    if (ED_adjacent(edges[ind])) {
+    for (i = 1; i < cnt; i++) {
+	if (ED_adjacent(edges[ind+i])) {
+	    isAdjacent = 1;
+	    break;
+	}
+    }
+    /* The lead edge edges[ind] might not have been marked earlier as adjacent,
+     * so check them all.
+     */
+    if (isAdjacent) {
 	make_flat_adj_edges (P, edges, ind, cnt, e, et);
 	return;
     }
@@ -2377,6 +2388,13 @@ static int cl_vninside(graph_t * cl, node_t * n)
 	    BETWEEN(GD_bb(cl).LL.y, (double)(ND_coord(n).y), GD_bb(cl).UR.y));
 }
 
+/* All nodes belong to some cluster, which may be the root graph.
+ * For the following, we only want a cluster if it is a real cluster
+ * It is not clear this will handle all potential problems. It seems one
+ * could have hcl and tcl contained in cl, which would also cause problems.
+ */
+#define REAL_CLUSTER(n) (ND_clust(n)==agraphof(n)?NULL:ND_clust(n))
+
 /* returns the cluster of (adj) that interferes with n,
  */
 static Agraph_t *cl_bound(n, adj)
@@ -2394,16 +2412,16 @@ node_t *n, *adj;
 	hcl = ND_clust(aghead(orig));
     }
     if (ND_node_type(adj) == NORMAL) {
-	cl = ND_clust(adj);
+	cl = REAL_CLUSTER(adj);
 	if (cl && (cl != tcl) && (cl != hcl))
 	    rv = cl;
     } else {
 	orig = ED_to_orig(ND_out(adj).list[0]);
-	cl = ND_clust(agtail(orig));
+	cl = REAL_CLUSTER(agtail(orig));
 	if (cl && (cl != tcl) && (cl != hcl) && cl_vninside(cl, adj))
 	    rv = cl;
 	else {
-	    cl = ND_clust(aghead(orig));
+	    cl = REAL_CLUSTER(aghead(orig));
 	    if (cl && (cl != tcl) && (cl != hcl) && cl_vninside(cl, adj))
 		rv = cl;
 	}
@@ -2469,8 +2487,10 @@ static boxf maximal_bbox(spline_info_t* sp, node_t* vn, edge_t* ie, edge_t* oe)
     } else
 	rv.UR.x = MAX(ROUND(b), sp->RightBound);
 
-    if ((ND_node_type(vn) == VIRTUAL) && (ND_label(vn)))
+    if ((ND_node_type(vn) == VIRTUAL) && (ND_label(vn))) {
 	rv.UR.x -= ND_rw(vn);
+	if (rv.UR.x < rv.LL.x) rv.UR.x = ND_coord(vn).x;
+    }
 
     rv.LL.y = ND_coord(vn).y - GD_rank(g)[ND_rank(vn)].ht1;
     rv.UR.y = ND_coord(vn).y + GD_rank(g)[ND_rank(vn)].ht2;

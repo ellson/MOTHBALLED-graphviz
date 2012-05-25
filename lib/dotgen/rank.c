@@ -272,9 +272,14 @@ cluster_leader(graph_t * clust)
 static void 
 collapse_cluster(graph_t * g, graph_t * subg)
 {
-    if (GD_cluster_was_collapsed(subg))
+    if (GD_parent(subg)) {
+#ifndef WITH_CGRAPH
+	agerr(AGWARN, "Cluster %s is multiply defined in %s and %s - this may cause problems.\n", subg->name,
+		g->name, GD_parent(subg)->name);
+#endif
 	return;
-    GD_cluster_was_collapsed(subg) = TRUE;
+    }
+    GD_parent(subg) = g;
     node_induce(g, subg);
     if (agfstnode(subg) == NULL)
 	return;
@@ -407,10 +412,12 @@ minmax_edges2(graph_t * g, point slen)
 	    if ((ND_out(n).size == 0) && GD_maxset(g) && (n != GD_maxset(g))) {
 		e = virtual_edge(n, GD_maxset(g), NULL);
 		ED_minlen(e) = slen.y;
+		ED_weight(e) = 0;
 	    }
 	    if ((ND_in(n).size == 0) && GD_minset(g) && (n != GD_minset(g))) {
 		e = virtual_edge(GD_minset(g), n, NULL);
 		ED_minlen(e) = slen.x;
+		ED_weight(e) = 0;
 	    }
 	}
     }
@@ -797,6 +804,8 @@ static void compile_samerank(graph_t * ug, graph_t * parent_clust)
     graph_t *clust;		/* cluster that contains the rankset */
     node_t *n, *leader;
 
+    if (is_empty(ug))
+	return;
     if (is_a_cluster(ug)) {
 	clust = ug;
 	if (parent_clust) {
@@ -807,8 +816,6 @@ static void compile_samerank(graph_t * ug, graph_t * parent_clust)
 	    GD_level(ug) = 0;
     } else
 	clust = parent_clust;
-    if (is_empty(ug))
-	return;
 
     /* process subgraphs of this subgraph */
     for (s = agfstsubg(ug); s; s = agnxtsubg(s))

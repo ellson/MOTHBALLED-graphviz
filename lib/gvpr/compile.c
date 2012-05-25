@@ -273,6 +273,10 @@ static Agobj_t *deref(Expr_t * pgm, Exnode_t * x, Exref_t * ref,
 	    return deref(pgm, x, ref->next, (Agobj_t *) state->curgraph,
 			 state);
 	    break;
+	case V_nextg:
+	    return deref(pgm, x, ref->next, (Agobj_t *) state->nextgraph,
+			 state);
+	    break;
 	case V_targt:
 	    return deref(pgm, x, ref->next, (Agobj_t *) state->target,
 			 state);
@@ -1376,10 +1380,12 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	case F_canon:
 	    v.string = canon(pgm, args[0].string);
 	    break;
+	case F_ishtml:
+	    v.integer = aghtmlstr(args[0].string);
+	    break;
 	case F_html:
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    if (gp) {
-		v.string = toHtml(gp, args[1].string);
 	    } else {
 		error(ERROR_WARNING, "NULL graph passed to html()");
 		v.string = 0;
@@ -1466,6 +1472,9 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    break;
 	case V_thisg:
 	    v.integer = PTR2INT(state->curgraph);
+	    break;
+	case V_nextg:
+	    v.integer = PTR2INT(state->nextgraph);
 	    break;
 	case V_targt:
 	    v.integer = PTR2INT(state->target);
@@ -1644,6 +1653,7 @@ static tctype typeChk(tctype intype, Exid_t * sym)
 	    case V_travroot:
 	    case V_this:
 	    case V_thisg:
+	    case V_nextg:
 		if (!haveGraph)
 		    exerror
 			("keyword %s cannot be used in BEGIN/END statements",

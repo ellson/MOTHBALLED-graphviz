@@ -141,7 +141,7 @@ extern "C" {
     extern int rank(graph_t * g, int balance, int maxiter);
     extern port resolvePort(node_t*  n, node_t* other, port* oldport);
     extern void resolvePorts (edge_t* e);
-    extern void round_corners(GVJ_t*, char*, char*, pointf*, int, int,int);
+    extern void round_corners(GVJ_t*, pointf*, int, int,int);
     extern int routesplinesinit(void);
     extern pointf *routesplines(path *, int *);
     extern void routesplinesterm(void);
@@ -160,9 +160,7 @@ extern "C" {
     extern void write_attributed_dot(graph_t *g, FILE *f);
     extern void write_canonical_dot(graph_t *g, FILE *f);
     extern boxf xdotBB (graph_t* g);
-    extern char *findStartColor(void * n, attrsym_t * attr, char *);
-    extern char *findStopColor(void * n, attrsym_t * attr, char *);
-    extern int findGradientAngle(void * n, attrsym_t * attr);
+    extern char *findAttrColor(void *obj, attrsym_t *colorattr, char *dflt);
 
 #undef extern
 

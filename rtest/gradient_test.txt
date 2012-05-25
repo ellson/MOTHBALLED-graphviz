@@ -14,31 +14,73 @@
 #   neato png "-Gsize=3,3 -Ncolor=red"
 # specifies the "shapes" test, using shapes.gv as input, and
 # run "dot -Tps" and "neato -Tpng -Gsize=3,3 -Ncolor=red" on the input.
+#
 
-rd_tbl_basic
+
+
+#shapes_test
+grdshapes
 =
 dot png
+dot svg
 
-rd_tbl_border
+#colors_test
+grdcolors
 =
 dot png
+dot svg
 
-rd_tbl_all
+#angles_test
+grdangles
 =
 dot png
+dot svg
 
-sq_tbl_basic
+#linear_node_test
+grdlinear_node
 =
 dot png
+dot svg
 
-sq_tbl_border
+#radial_node_test
+grdradial_node
 =
 dot png
+dot svg
 
-sq_tbl_all
+#linear_table_test
+grdlinear
 =
 dot png
+dot svg
 
+#linear_angle_table_test
+grdlinear_angle
+=
+dot png
+dot svg
 
+#radial_table_test
+grdradial
+=
+dot png
+dot svg
 
+#radial_angle_table_test
+grdradial_angle
+=
+dot png
+dot svg
+
+#fillcolor_test
+grdfillcolor
+=
+dot png
+dot svg
+
+#clusters
+grdcluster
+=
+dot png
+dot svg
 

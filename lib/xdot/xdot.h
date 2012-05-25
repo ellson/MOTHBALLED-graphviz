@@ -120,6 +120,7 @@ extern xdot* parseXDotFOn (char*, drawfunc_t opfns[], int sz, xdot*);
 extern xdot* parseXDot (char*);
 extern char* sprintXDot (xdot*);
 extern void fprintXDot (FILE*, xdot*);
+extern void jsonXDot (FILE*, xdot*);
 extern void freeXDot (xdot*);
 extern int statXDot (xdot*, xdot_stats*);
 

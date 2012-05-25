@@ -9,7 +9,7 @@
 # * Contributors: See CVS logs. Details at http://www.graphviz.org/
 # *************************************************************************/
 
-BEGIN	{ s = ARGV[1]; gsub (".*/", "", s); gsub("\\.","_",s); printf("const char *%s[] = {\n",s); }
+BEGIN	{ s = ARGV[1]; gsub (".*/", "", s); gsub("\\.","_",s); printf("static const char *%s[] = {\n",s); }
 /^#/	{ print $0; next; }
 		{ gsub("\\\\","&&",$0); printf("\"%s\",\n",$0); }
 END		{ printf("(char*)0 };\n"); }

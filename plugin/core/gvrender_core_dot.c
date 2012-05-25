@@ -454,6 +454,10 @@ static void xdot_end_graph(graph_t* g)
     penwidth[EMIT_GLABEL] = 1;
 }
 
+#ifdef WITH_CGRAPH
+typedef int (*putstrfn) (void *chan, const char *str);
+typedef int (*flushfn) (void *chan);
+#endif
 static void dot_end_graph(GVJ_t *job)
 {
     graph_t *g = job->obj->u.g;
@@ -463,8 +467,8 @@ static void dot_end_graph(GVJ_t *job)
 
     if (io.afread == NULL) {
 	io.afread = AgIoDisc.afread;
-	io.putstr = gvputs;
-	io.flush = gvflush;
+	io.putstr = (putstrfn)gvputs;
+	io.flush = (flushfn)gvflush;
     }
 #endif
 

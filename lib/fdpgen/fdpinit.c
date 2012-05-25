@@ -91,12 +91,14 @@ static void init_edge(edge_t * e, attrsym_t * E_len)
     common_init_edge(e);
 }
 
+#ifdef WITH_CGRAPH
 static void init_node(node_t * n)
 {
     common_init_node(n);
     ND_pos(n) = N_NEW(GD_ndim(agraphof(n)), double);
     gv_nodesize(n, GD_flip(agraphof(n)));
 }
+#endif
 
 void fdp_init_node_edge(graph_t * g)
 {
