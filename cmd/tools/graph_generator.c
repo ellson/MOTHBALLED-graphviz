@@ -294,7 +294,8 @@ constructSierpinski(int v1, int v2, int v3, int depth, vtx_data* graph)
 
 }
 
-#define N_NEW(n,t)       (t*)malloc((n)*sizeof(t))
+#define NEW(t)           (t*)calloc((1),sizeof(t))
+#define N_NEW(n,t)       (t*)calloc((n),sizeof(t))
 
 void makeSierpinski(int depth, edgefn ef)
 {
@@ -461,4 +462,264 @@ void makeMobius(int w, int h, edgefn ef)
     ef(1,w*h);
 }
 
+typedef struct {
+    int j, d;
+} pair;
+
+typedef struct {
+    int top, root;
+    int* p; 
+} tree_t;
+
+static tree_t*
+mkTree (int sz)
+{
+    tree_t* tp = NEW(tree_t);
+    tp->root = 0;
+    tp->top = 0;
+    tp->p = N_NEW(sz,int);
+    return tp;
+}
+
+static void
+freeTree (tree_t* tp)
+{
+    free (tp->p);
+    free (tp);
+}
+
+static void
+resetTree (tree_t* tp)
+{
+    tp->root = 0;
+    tp->top = 0;
+}
+
+static int
+treeRoot (tree_t* tp)
+{
+    return tp->root;
+}
+
+static int
+prevRoot (tree_t* tp)
+{
+    return tp->p[tp->root];
+}
+
+static int
+treeSize (tree_t* tp)
+{
+    return (tp->top - tp->root + 1);
+}
+
+static int
+treeTop (tree_t* tp)
+{
+    return (tp->top);
+}
+
+static void
+treePop (tree_t* tp)
+{
+    tp->root = prevRoot(tp);
+}
+
+static void
+addTree (tree_t* tp, int sz)
+{
+	tp->p[tp->top+1] = tp->root;
+	tp->root = tp->top+1;
+	tp->top += sz;
+	if (sz > 1) tp->p[tp->top] = tp->top-1;
+}
+
+static void 
+treeDup (tree_t* tp, int J)
+{
+    int M = treeSize(tp);
+    int L = treeRoot(tp);
+    int LL = prevRoot(tp);
+    int i, LS = L + (J-1)*M - 1;
+    for (i = L; i <= LS; i++) {
+	if ((i-L)%M == 0)  tp->p[i+M] = LL;
+	else tp->p[i+M] = tp->p[i] + M;
+    }
+    tp->top = LS + M;
+}
+
+/*****************/
+
+typedef struct {
+    int top;
+    pair* v;
+} stack;
+
+static stack*
+mkStack (int sz)
+{
+    stack* sp = NEW(stack);
+    sp->top = 0;
+    sp->v = N_NEW(sz,pair);
+    return sp;
+}
+
+static void
+freeStack (stack* sp)
+{
+    free (sp->v);
+    free (sp);
+}
+
+static void
+resetStack (stack* sp)
+{
+    sp->top = 0;
+}
+
+static void
+push(stack* sp, int j, int d)
+{
+    sp->top++;
+    sp->v[sp->top].j = j;
+    sp->v[sp->top].d = d;
+}
+
+static pair
+pop (stack* sp)
+{
+    sp->top--;
+    return sp->v[sp->top+1];
+}
+
+/*****************/
+
+static int*
+genCnt(int NN)
+{
+    int* T = N_NEW(NN+1,int);
+    int D, I, J, TD;
+    int SUM;
+    int NLAST = 1;
+    T[1] = 1;
+    while (NN > NLAST) {
+	SUM = 0;
+	for (D = 1; D <= NLAST; D++) {
+	    I = NLAST+1;
+	    TD = T[D]*D;
+	    for (J = 1; J <= NLAST; J++) {
+		I = I-D;
+		if (I <= 0) break;
+		SUM += T[I]*TD;
+	    }
+	}
+	NLAST++;
+	T[NLAST] = SUM/(NLAST-1);
+    }
+    return T;
+}
+
+static double 
+drand(void)
+{
+    double d;
+    d = rand();
+    d = d / RAND_MAX;
+    return d;
+}
+
+static void
+genTree (int NN, int* T, stack* stack, tree_t* TREE)
+{
+    double v;
+    pair p;
+    int Z, D, N, J, TD, M, more;
+
+    N = NN;
+
+    while (1) {
+	while (N > 2) {
+	    v = (N-1)*T[N];
+	    Z = v*drand();
+	    D = 0;
+	    more = 1;
+	    do {
+		D++;
+		TD = D*T[D];
+		M = N;
+		J = 0;
+		do {
+		    J++;
+		    M -= D;
+		    if (M < 1) break;
+		    Z -= T[M]*TD;
+		    if (Z < 0) more = 0;
+		} while (Z >= 0);
+	    } while (more);
+	    push(stack, J, D);
+	    N = M;
+	}
+	addTree (TREE, N);
+	 
+	while (1) {
+	    p = pop(stack);
+	    N = p.d;
+	    if (N != 0) {
+		push(stack,p.j,0);
+		break;
+	    }
+	    J = p.j;
+	    if (J > 1) treeDup (TREE, J);
+	    if (treeTop(TREE) == NN) return;
+	    treePop(TREE);
+	}
+    }
+
+}
+
+static void
+writeTree (tree_t* tp, edgefn ef)
+{
+    int i;
+    for (i = 2; i <= tp->top; i++)
+	ef (tp->p[i], i);
+}
+
+struct treegen_s {
+    int N;
+    int* T;
+    stack* sp;
+    tree_t* tp;
+};
+
+treegen_t* 
+makeTreeGen (int N)
+{
+    treegen_t* tg = NEW(treegen_t);
+
+    tg->N = N;
+    tg->T = genCnt(N);
+    tg->sp = mkStack(N+1);
+    tg->tp = mkTree(N+1);
+    srand(time(0));
+
+    return tg;
+}
+
+void makeRandomTree (treegen_t* tg, edgefn ef)
+{
+    resetStack(tg->sp);
+    resetTree(tg->tp);
+    genTree (tg->N, tg->T, tg->sp, tg->tp);
+    writeTree (tg->tp, ef);
+}
+
+void 
+freeTreeGen(treegen_t* tg)
+{
+    free (tg->T);
+    freeStack (tg->sp);
+    freeTree (tg->tp);
+    free (tg);
+}
 

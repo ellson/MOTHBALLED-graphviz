@@ -35,4 +35,8 @@ extern void makeTree(int, int, edgefn);
 extern void makeTriMesh(int, edgefn);
 extern void makeMobius(int, int, edgefn);
 
+typedef struct treegen_s treegen_t;
+extern treegen_t* makeTreeGen (int);
+extern void makeRandomTree (treegen_t*, edgefn);
+extern void freeTreeGen(treegen_t*);
 #endif

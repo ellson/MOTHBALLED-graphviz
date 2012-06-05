@@ -1,10 +1,13 @@
-.TH GVGEN 1 "27 March 2008"
+.TH GVGEN 1 "5 June 2012"
 .SH NAME
 gvgen \- generate graphs
 .SH SYNOPSIS
 .B gvgen
 [
 .B \-d?
+]
+[
+.BI -i n
 ]
 [
 .BI -c n
@@ -41,6 +44,9 @@ gvgen \- generate graphs
 ]
 [
 .BI -r x,y
+]
+[
+.BI -R x
 ]
 [
 .BI -s n
@@ -139,6 +145,9 @@ Generate a random graph.
 The number of vertices will be the largest value of the form \fI2^n-1\fP less than or
 equal to \fIx\fP. Larger values of \fIy\fP increase the density of the graph.
 .TP
+.BI \-R " x"
+Generate a random rooted tree on \fIx\fP vertices.
+.TP
 .BI \-s " n"
 Generate a star on \fIn\fP vertices.
 This will have \fIn-1\fP edges.
@@ -168,6 +177,10 @@ the horizontal and vertical directions, respectively.
 .BI \-w " n"
 Generate a path on \fIn\fP vertices.
 This will have \fIn-1\fP edges.
+.TP
+.BI \-i " n"
+Generate \fIn\fP graphs of the requested type. At present, only available if 
+the \fB-R\fP flag is used. 
 .TP
 .BI \-n " prefix"
 Normally, integers are used as node names. If \fIprefix\fP is specified,

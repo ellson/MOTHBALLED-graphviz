@@ -39,13 +39,14 @@
 #include "graph_generator.h"
 
 typedef enum { unknown, grid, circle, complete, completeb, 
-    path, tree, torus, cylinder, mobius, randomg, ball,
+    path, tree, torus, cylinder, mobius, randomg, randomt, ball,
     sierpinski, hypercube, star, wheel, trimesh
 } GraphType;
 
 typedef struct {
     int graphSize1;
     int graphSize2;
+    int cnt;
     int parm1;
     int parm2;
     int Verbose;
@@ -86,6 +87,7 @@ static char *Usage = "Usage: %s [-dV?] [options]\n\
  -k<x>         : complete \n\
  -b<x,y>       : complete bipartite\n\
  -B<x,y>       : ball\n\
+ -i<n>         : generate <n> random\n\
  -m<x>         : triangular mesh\n\
  -M<x,y>       : x by y Moebius strip\n\
  -n<prefix>    : use <prefix> in node names (\"\")\n\
@@ -93,6 +95,7 @@ static char *Usage = "Usage: %s [-dV?] [options]\n\
  -o<outfile>   : put output in <outfile> (stdout)\n\
  -p<x>         : path \n\
  -r<x>,<n>     : random graph\n\
+ -R<n>         : random rooted tree on <n> vertices\n\
  -s<x>         : star\n\
  -S<x>         : sierpinski\n\
  -t<x>         : binary tree \n\
@@ -135,6 +138,22 @@ static int readPos(char *s, char **e, int min)
 	return -1;
     }
     return d;
+}
+
+/* readOne:
+ * Return non-zero on error.
+ */
+static int readOne(char *s, int* ip)
+{
+    int d;
+    char *next;
+
+    d = readPos(s, &next, 1);
+    if (d > 0) {
+	*ip = d;
+	return 0;
+    }
+    else return d;
 }
 
 /* setOne:
@@ -273,7 +292,7 @@ static char* setFold(char *s, opts_t* opts)
     return next;
 }
 
-static char *optList = ":M:m:n:N:c:C:dg:G:h:k:b:B:o:p:r:s:S:t:T:Vw:";
+static char *optList = ":i:M:m:n:N:c:C:dg:G:h:k:b:B:o:p:r:R:s:S:t:T:Vw:";
 
 static GraphType init(int argc, char *argv[], opts_t* opts)
 {
@@ -340,6 +359,11 @@ static GraphType init(int argc, char *argv[], opts_t* opts)
 	    if (setTwo(optarg, opts))
 		errexit(c);
 	    break;
+	case 'R':
+	    graphType = randomt;
+	    if (setOne(optarg, opts))
+		errexit(c);
+	    break;
 	case 'n':
 	    opts->pfx = optarg;
 	    break;
@@ -372,6 +396,10 @@ static GraphType init(int argc, char *argv[], opts_t* opts)
 	case 'T':
 	    graphType = torus;
 	    if (setTwoTwoOpt(optarg, opts, 0))
+		errexit(c);
+	    break;
+	case 'i':
+	    if (readOne(optarg,&(opts->cnt)))
 		errexit(c);
 	    break;
 	case 'V':
@@ -422,6 +450,15 @@ static void undirfn (int t, int h)
 	fprintf (opts.outfile, "  %s%d\n", opts.pfx, t);
 }
 
+static void
+closeOpen ()
+{
+    if (opts.directed)
+	fprintf(opts.outfile, "}\ndigraph {\n");
+    else
+	fprintf(opts.outfile, "}\ngraph {\n");
+}
+
 int main(int argc, char *argv[])
 {
     GraphType graphType;
@@ -429,6 +466,7 @@ int main(int argc, char *argv[])
 
     opts.pfx = "";
     opts.name = "";
+    opts.cnt = 1;
     graphType = init(argc, argv, &opts);
     if (opts.directed) {
 	fprintf(opts.outfile, "digraph {\n");
@@ -481,6 +519,18 @@ int main(int argc, char *argv[])
 	makeComplete(opts.graphSize1, ef);
 	break;
     case randomg:
+	makeRandom (opts.graphSize1, opts.graphSize2, ef);
+	break;
+    case randomt:
+	{
+	    int i;
+	    treegen_t* tg = makeTreeGen (opts.graphSize1);
+	    for (i = 1; i <= opts.cnt; i++) {
+		makeRandomTree (tg, ef);
+		if (i != opts.cnt) closeOpen ();
+	    }
+	    freeTreeGen (tg);
+	}
 	makeRandom (opts.graphSize1, opts.graphSize2, ef);
 	break;
     case completeb:
