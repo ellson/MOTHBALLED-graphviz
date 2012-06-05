@@ -661,7 +661,7 @@ gvrender_features_t render_features_svg = {
 };
 
 gvdevice_features_t device_features_svg = {
-    GVDEVICE_DOES_TRUECOLOR,	/* flags */
+    GVDEVICE_DOES_TRUECOLOR|GVDEVICE_DOES_LAYERS,  /* flags */
     {0., 0.},			/* default margin - points */
     {0., 0.},			/* default page width, height - points */
     {72., 72.},			/* default dpi */

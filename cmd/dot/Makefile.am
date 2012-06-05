@@ -128,6 +128,12 @@ dot_static_LDADD += $(top_builddir)/plugin/lasi/.libs/libgvplugin_lasi_C.a $(LAS
 dot_builtins_LDADD += $(top_builddir)/plugin/lasi/libgvplugin_lasi.la $(LASI_LIBS) -lstdc++
 endif
 
+if WITH_LASI
+dot_static_LDADD += $(top_builddir)/plugin/lasi/.libs/libgvplugin_lasi_C.a $(LASI_LIBS) -lstdc++
+dot_builtins_LDADD += $(top_builddir)/plugin/lasi/libgvplugin_lasi.la $(LASI_LIBS) -lstdc++
+endif
+
+
 EXTRA_DIST = Makefile.old dot.1 dot.1.pdf osage.1 osage.1.pdf patchwork.1 patchwork.1.pdf dot.vcproj
 
 DISTCLEANFILES = dot.1.pdf osage.1.pdf
