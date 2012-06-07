@@ -80,6 +80,7 @@ typedef struct {
     int argc;
     char **argv;
     int state;                  /* > 0 : continue; <= 0 finish */
+    int verbose;
 } options;
 
 static Sfio_t *openOut(char *name)
@@ -351,6 +352,9 @@ doFlags(char* arg, int argi, int argc, char** argv, options* opts)
 	case 'q':
 	    setTraceLevel (ERROR_ERROR);  /* Don't emit warning messages */
 	    break;
+	case 'v':
+	    opts->verbose = 1;
+	    break;
 	case 'V':
 	    sfprintf(sfstderr, "%s version %s (%s)\n",
 		    Info[0], Info[1], Info[2]);
@@ -400,6 +404,7 @@ static options* scanArgs(int argc, char **argv, gvpropts* uopts)
     opts->state = 1;
     opts->readAhead = 1;
     setErrorId (opts->cmdName);
+    opts->verbose = 0;
 
     /* estimate number of file names */
     nfiles = 0;
@@ -955,6 +960,8 @@ int gvpr (int argc, char *argv[], gvpropts * uopts)
 	goto finish;
     }
 
+    if (opts->verbose)
+	gvstart_timer ();
     prog = parseProg(opts->program, opts->useFile);
     if (!prog) {
 	rv = 1;
@@ -1004,6 +1011,8 @@ int gvpr (int argc, char *argv[], gvpropts * uopts)
     else
 	incoreGraphs = 0;
 
+    if (opts->verbose)
+	sfprintf (sfstderr, "Parse/compile/init: %.2f secs.\n", gvelapsed_sec());
     /* do begin */
     if (xprog->begin_stmt)
 	exeval(xprog->prog, xprog->begin_stmt, state);
@@ -1015,7 +1024,9 @@ int gvpr (int argc, char *argv[], gvpropts * uopts)
 	else
 	    ing = newIng(0, opts->inFiles, &ingDisc);
 	
+	if (opts->verbose) gvstart_timer ();
 	for (state->curgraph = nextGraph(ing); state->curgraph; state->curgraph = nextg) {
+	    if (opts->verbose) sfprintf (sfstderr, "Read graph: %.2f secs.\n", gvelapsed_sec());
 	    state->infname = fileName(ing);
 	    if (opts->readAhead)
 		nextg = state->nextgraph = nextGraph(ing);
@@ -1043,6 +1054,7 @@ int gvpr (int argc, char *argv[], gvpropts * uopts)
 	    state->curobj = (Agobj_t *) state->curgraph;
 	    if (xprog->endg_stmt)
 		exeval(xprog->prog, xprog->endg_stmt, state);
+	    if (opts->verbose) sfprintf (sfstderr, "Finish graph: %.2f secs.\n", gvelapsed_sec());
 
 	    /* if $O == $G and $T is empty, delete $T */
 	    if ((state->outgraph == state->curgraph) &&
@@ -1066,8 +1078,10 @@ int gvpr (int argc, char *argv[], gvpropts * uopts)
 	    state->target = 0;
 	    state->outgraph = 0;
 	
+	    if (opts->verbose) gvstart_timer ();
 	    if (!opts->readAhead)
 		nextg = nextGraph(ing);
+	    if (opts->verbose && nextg) sfprintf (sfstderr, "Read graph: %.2f secs.\n", gvelapsed_sec());
 	}
     }
 

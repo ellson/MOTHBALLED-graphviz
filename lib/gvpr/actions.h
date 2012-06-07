@@ -50,6 +50,8 @@ extern "C" {
     extern char *toUpper(Expr_t * pgm, char *, Sfio_t*);
     extern int deleteObj(Agraph_t * g, Agobj_t * obj);
     extern char *colorx (Expr_t* ex, char* incolor, char* fmt, Sfio_t* fp);
+    extern void gvstart_timer(void);
+    extern double gvelapsed_sec(void);
 
 #endif
 
