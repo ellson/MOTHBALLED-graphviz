@@ -469,11 +469,11 @@ int main(int argc, char *argv[])
     opts.cnt = 1;
     graphType = init(argc, argv, &opts);
     if (opts.directed) {
-	fprintf(opts.outfile, "digraph {\n");
+	fprintf(opts.outfile, "digraph %s{\n", opts.name);
 	ef = dirfn;
     }
     else {
-	fprintf(opts.outfile, "graph {\n");
+	fprintf(opts.outfile, "graph %s{\n", opts.name);
 	ef = undirfn;
     }
 
