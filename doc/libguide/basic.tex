@@ -56,7 +56,7 @@ or {\tt NULL} if there are no more graphs or an error occurred.
 The \gviz\ library provides several specialized variations of {\tt agread}. If
 the \DOT\ representation of the graph is stored in memory at {\tt char* cp}, then
 \begin{verbatim}
-    Agraph_t* G = agmeread(cp);
+    Agraph_t* G = agmemread(cp);
 \end{verbatim}
 can be used to parse the representation. The {\tt agread} function relies on the
 standard {\tt FILE} structure and {\tt fgets} function of the stdio library. You
