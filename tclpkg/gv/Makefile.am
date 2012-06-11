@@ -114,7 +114,7 @@ gv.ml gv.mli: gv_ocaml.cpp
 gv_ocaml.cpp: gv.i
 	$(SWIG) -c++ -ocaml -o gv_ocaml.cpp $(srcdir)/gv.i
 	mv $@ $@.orig
-	sed '/int caml_array_length/mlsize_t caml_array_length/' $@.orig > $@
+	sed 's/int caml_array_length/mlsize_t caml_array_length/' $@.orig > $@
 	rm $@.orig
 swig.mli:
 	$(SWIG) -ocaml -co swig.mli
