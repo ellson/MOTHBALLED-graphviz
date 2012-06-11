@@ -17,6 +17,9 @@ edge, etc.) which use the attribute and the type of the attribute
 also gives a default value for the attribute, a minimum allowed setting
 for numeric attributes, and certain restrictions on the use of the attribute.
 <P>
+Note that attribute names are case-sensitive. 
+This is usually true for attribute values as well, unless noted.
+<P>
 All Graphviz attributes are specified by name-value pairs. Thus, to
 set the fillcolor of a node <TT>abc</TT>, one would use
 <TABLE>
@@ -1863,6 +1866,7 @@ This field indicates which graph component uses the attribute.
 <DT><A NAME=d:weight HREF=#a:weight><STRONG>weight</STRONG></A>
 <DD>  Weight of edge. In dot, the heavier the weight, the shorter,
   straighter and more vertical the edge is.
+  <B>N.B.</B> Weights in dot must be integers.
   For other layouts, a larger weight encourages the layout to 
   make the edge length closer to that specified by the 
   <A HREF=#d:len>len</A> attribute.
