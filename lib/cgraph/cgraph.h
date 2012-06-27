@@ -412,6 +412,7 @@ extern agusererrf agseterrf(agusererrf);
 #define agtail(e)		AGTAIL(e)
 #define aghead(e)		AGHEAD(e)
 #define agopp(e)		AGOPP(e)
+#define ageqedge(e,f)		(AGMKOUT(e) == AGMKOUT(f))
 
 #define TAILPORT_ID		"tailport"
 #define HEADPORT_ID		"headport"
