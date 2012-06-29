@@ -20,6 +20,7 @@
 typedef struct treenode_t treenode_t;
 struct treenode_t {
     double area;
+    double child_area;
     rectangle r;
     treenode_t *leftchild, *rightsib;
     union {
@@ -32,6 +33,34 @@ struct treenode_t {
 
 #define DFLT_SZ 1.0
 #define SCALE 1000.0      /* scale up so that 1 is a reasonable default size */
+
+#ifdef DEBUG
+void dumpTree (treenode_t* r, int ind)
+{
+    int i;
+    treenode_t* cp;
+
+    for (i=0; i < ind; i++) fputs("  ", stderr);
+    fprintf (stderr, "%s (%f)\n", (r->kind == AGNODE?agnameof(r->u.n):agnameof(r->u.subg)), r->area);
+    for (cp = r->leftchild; cp; cp = cp->rightsib)
+	dumpTree (cp, ind+1);
+}
+#endif
+
+/* fullArea:
+ * Allow extra area for specified inset. Assume p->kind = AGRAPH
+ * and p->child_area is set. At present, inset is additive; we
+ * may want to allow a multiplicative inset as well.
+ */
+static double fullArea (treenode_t* p, attrsym_t* mp)
+{
+    double m = late_double (p->u.subg, mp, 0, 0);
+    if (m == 0) return p->child_area;
+    else {
+	double wid = (2.0*m + sqrt(p->child_area));
+	return wid*wid;
+    }
+}
 
 static double getArea (void* obj, attrsym_t* ap)
 {
@@ -60,7 +89,7 @@ static treenode_t* mkTreeNode (Agnode_t* n, attrsym_t* ap)
  * Recursively build tree from graph
  * Pre-condition: agnnodes(g) != 0
  */
-static treenode_t *mkTree (Agraph_t * g, attrsym_t* gp, attrsym_t* ap)
+static treenode_t *mkTree (Agraph_t * g, attrsym_t* gp, attrsym_t* ap, attrsym_t* mp)
 {
     treenode_t *p = NEW(treenode_t);
     Agraph_t *subg;
@@ -76,7 +105,7 @@ static treenode_t *mkTree (Agraph_t * g, attrsym_t* gp, attrsym_t* ap)
 
     for (i = 1; i <= GD_n_cluster(g); i++) {
 	subg = GD_clust(g)[i];
-	cp = mkTree (subg, gp, ap);
+	cp = mkTree (subg, gp, ap, mp);
 	n_children++;
 	area += cp->area;
 	INSERT(cp);
@@ -93,8 +122,10 @@ static treenode_t *mkTree (Agraph_t * g, attrsym_t* gp, attrsym_t* ap)
     }
 
     p->n_children = n_children;
-    if (n_children)
-	p->area = area;
+    if (n_children) {
+	p->child_area = area;
+	p->area = fullArea (p, mp);
+    }
     else {
 	p->area = getArea (g, gp);
     }
@@ -120,7 +151,8 @@ static void layoutTree(treenode_t * tree)
     int i, nc;
     treenode_t* cp;
 
-    if (tree->kind == AGNODE) return;
+    /* if (tree->kind == AGNODE) return; */
+    if (tree->n_children == 0) return;
 
     nc = tree->n_children;
     nodes = N_NEW(nc, treenode_t*);
@@ -135,7 +167,20 @@ static void layoutTree(treenode_t * tree)
     for (i = 0; i < nc; i++) {
 	areas_sorted[i] = nodes[i]->area;
     }
-    recs = tree_map(nc, areas_sorted, tree->r);
+    if (tree->area == tree->child_area)
+	recs = tree_map(nc, areas_sorted, tree->r);
+    else {
+	rectangle crec;
+	double disc, delta, m, h = tree->r.size[1], w = tree->r.size[0];
+	crec.x[0] = tree->r.x[0];
+	crec.x[1] = tree->r.x[1];
+	delta = h - w;
+	disc = sqrt(delta*delta + 4.0*tree->child_area);
+	m = (h + w - disc)/2.0;
+	crec.size[0] = w - m;
+	crec.size[1] = h - m;
+	recs = tree_map(nc, areas_sorted, crec);
+    }
     if (Verbose)
 	fprintf (stderr, "rec %f %f %f %f\n", tree->r.x[0], tree->r.x[1], tree->r.size[0], tree->r.size[1]);
     for (i = 0; i < nc; i++) {
@@ -240,9 +285,10 @@ void patchworkLayout(Agraph_t * g)
     treenode_t* root;
     attrsym_t * ap = agfindnodeattr(g, "area");
     attrsym_t * gp = agfindgraphattr(g, "area");
+    attrsym_t * mp = agfindgraphattr(g, "inset");
     double total;
 
-    root = mkTree (g,gp,ap);
+    root = mkTree (g,gp,ap,mp);
     total = root->area;
     root->r = rectangle_new(0, 0, sqrt(total + 0.1), sqrt(total + 0.1));
     layoutTree(root);
