@@ -49,6 +49,7 @@ BuildRequires: /bin/ksh bison m4 flex swig tk tcl >= 8.3 freetype-devel >= 2
 #-- Red Hat Enterprise Linux (also Centos) specific Build Requirements --------------------
 %if 0%{?rhel}
 %if %rhel == 4
+%define __X 1
 BuildRequires: xorg-x11-devel
 %endif
 %if %rhel >= 4
@@ -66,6 +67,7 @@ BuildRequires: python python-devel
 %define ORTHO 1
 %endif
 %if %rhel >= 5
+%define __X 1
 BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel
 BuildRequires: libtool-ltdl libtool-ltdl-devel
 %define JAVA 1
@@ -101,6 +103,7 @@ BuildRequires: ghostscript-devel
 #-- Fedora specific Build Requirements --------------------------------------
 %if 0%{?fedora}
 %if %fedora >= 9
+%define __X 1
 BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel
 BuildRequires: fontconfig-devel
 BuildRequires: libtool-ltdl libtool-ltdl-devel
@@ -201,11 +204,19 @@ fi
 %{_bindir}/*
 %exclude %{_bindir}/diffimg
 %exclude %{_bindir}/dot_builtins
-%if 0%{?_QT}
-%exclude %{_bindir}/gvedit
+%if 0%{?__X}
 %exclude %{_bindir}/lefty
 %exclude %{_bindir}/lneato
 %exclude %{_bindir}/dotty
+%exclude %{_bindir}/vimdot
+%exclude %{_mandir}/man1/lefty.1*
+%exclude %{_mandir}/man1/lneato.1*
+%exclude %{_mandir}/man1/dotty.1*
+%exclude %{_mandir}/man1/vimdot.1*
+%endif
+%if 0%{?_QT}
+%exclude %{_bindir}/gvedit
+%exclude %{_mandir}/man1/gvedit.1*
 %endif
 %dir %{_libdir}/graphviz
 %{_libdir}/*.so.*
@@ -247,9 +258,11 @@ fi
 %endif
 %if 0%{?SMYRNA}
 %exclude %{_bindir}/smyrna
+%exclude %{_mandir}/man1/smyrna.1*
 %endif
 
 #-- graphviz-x rpm --------------------------------------------------
+%if 0%{?__X}
 %package x
 Group:            Applications/Multimedia
 Summary:          Graphviz plugins and commands that depend on x11 - most installations will want this
@@ -269,6 +282,10 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %{_bindir}/lefty
 %{_bindir}/lneato
 %{_bindir}/dotty
+%{_mandir}/man1/lefty.1*
+%{_mandir}/man1/lneato.1*
+%{_mandir}/man1/dotty.1*
+%{_mandir}/man1/vimdot.1*
 %{_datadir}/graphviz/lefty
 %if 0%{?PANGOCAIRO}
 %{_libdir}/graphviz/libgvplugin_pango.*
@@ -293,6 +310,8 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %if 0%{?SMYRNA}
 %{_bindir}/smyrna
 %{_datadir}/graphviz/smyrna
+%{_mandir}/man1/smyrna.1*
+%endif
 %endif
 
 #-- graphviz-gd rpm --------------------------------------------------
@@ -398,7 +417,7 @@ Graphviz applications using _QT - currently just gvedit
 %defattr(-,root,root,-)
 %{_bindir}/gvedit
 %{_datadir}/graphviz/gvedit
-# %{_mandir}/man1/gvedit.1*
+%{_mandir}/man1/gvedit.1*
 %endif
 
 #-- graphviz-sharp rpm --------------------------------------------
@@ -699,7 +718,6 @@ CFLAGS="$RPM_OPT_FLAGS" \
         --includedir=%{_includedir} \
         --datadir=%{_datadir} \
         --mandir=%{_mandir} \
-        --with-x \
         --disable-static \
         --disable-dependency-tracking \
         --enable-sharp%{!?SHARP:=no} \
@@ -727,7 +745,8 @@ CFLAGS="$RPM_OPT_FLAGS" \
         --with%{!?RSVG:out}-rsvg \
         --with%{!?ORTHO:out}-ortho \
         --with%{!?SFDP:out}-sfdp \
-        --with%{!?SMYRNA:out}-smyrna
+        --with%{!?SMYRNA:out}-smyrna \
+        --with%{!?__X:out}-x
 make %{?_smp_mflags}
 
 %install
