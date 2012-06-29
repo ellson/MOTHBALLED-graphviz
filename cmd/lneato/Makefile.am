@@ -6,12 +6,14 @@ pdfdir = $(pkgdatadir)/doc/pdf
 man = lneato.1
 pdf = lneato.1.pdf
 
+if WITH_X
 man_MANS = $(man)
 pdf_DATA = $(pdf)
 if WITH_WIN32
 bin_PROGRAMS = lneato
 else
 bin_SCRIPTS = lneato
+endif
 endif
 
 AM_CFLAGS = -DLNEATO
