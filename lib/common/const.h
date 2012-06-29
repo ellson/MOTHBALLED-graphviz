@@ -213,11 +213,13 @@
 #define FOLDER (1 << 8)
 #define BOX3D (1 << 9)
 #define COMPONENT (1 << 10)
+#define STRIPED (1 << 11)
 
 /* fill types */
 #define FILL      1
 #define GRADIENT  2
 #define RGRADIENT 3
+#define NO_POLY   4    /* bit flag: if set, do fill only */
 
 /* label types */
 #define LT_NONE 	(0 << 1)

@@ -293,6 +293,13 @@ static char **checkClusterStyle(graph_t* sg, int *flagp)
 		    qp++;
 		    *(qp-1) = *qp;
 		} while (*qp);
+ 	    }else if (strcmp(p, "striped") == 0) {
+ 		istyle |= STRIPED;
+		qp = pp; /* remove rounded from list passed to renderer */
+		do {
+		    qp++;
+		    *(qp-1) = *qp;
+		} while (*qp);
 	    }else if (strcmp(p, "rounded") == 0) {
 		istyle |= ROUNDED;
 		qp = pp; /* remove rounded from list passed to renderer */
@@ -306,6 +313,68 @@ static char **checkClusterStyle(graph_t* sg, int *flagp)
 
     *flagp = istyle;
     return pstyle;
+}
+
+static int
+splitColorList (char* clist, char*** carray)
+{
+    char* p;
+    char** colors;
+    char* buf;
+    int i, numc = 1;
+
+    /* count colors */
+    for (p = clist; *p; p++) {
+	if (*p == ':') numc++;
+    }
+    buf = strdup(clist);
+    colors = N_NEW(numc, char*);
+ 
+    for (i = 0, p = strtok(buf, ":"); p; i++, p = strtok(0, ":")) {
+	if (p[0] == '\0')
+	    colors[i] = NULL;
+	else
+	    colors[i] = p;
+    }
+
+    *carray = colors;
+    return numc;
+}
+
+/* stripedBox:
+ * Fill a rectangular box with verticle stripes of colors.
+ * AF gives 4 corner points, with AF[0] the LL corner and the points ordered CCW.
+ * clrs is a list of colon separated colors. 
+ * No boundaries are drawn.
+ */
+void
+stripedBox (GVJ_t * job, pointf* AF, char* clrs)
+{
+    char** colors;
+    int i, numclrs = splitColorList (clrs, &colors);
+    double xdelta;
+    pointf pts[4];
+    double lastx = AF[1].x;
+
+    if (numclrs < 1) numclrs = 1;
+    xdelta = (AF[1].x - AF[0].x)/numclrs;
+    pts[0] = AF[0];
+    pts[1] = AF[1];
+    pts[2] = AF[2];
+    pts[3] = AF[3];
+    if (numclrs > 1)
+	pts[1].x = pts[2].x = pts[0].x + xdelta;
+    for (i = 0; i < numclrs; i++) { 
+	gvrender_set_fillcolor (job, (colors[i]?colors[i]:DEFAULT_COLOR));
+	gvrender_polygon(job, pts, 4, FILL | NO_POLY);
+	pts[0].x = pts[3].x = pts[1].x;
+	if (i == numclrs-2) 
+	    pts[1].x = pts[2].x = lastx;
+	else
+	    pts[1].x = pts[2].x = pts[0].x + xdelta;
+    }
+    free (colors[0]);
+    free (colors);
 }
 
 void emit_map_rect(GVJ_t *job, boxf b)
@@ -3461,6 +3530,20 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
         	    gvrender_set_pencolor(job, "transparent");
 		round_corners(job, AF, 4, istyle, filled);
 	    }
+	}
+	else if (istyle & STRIPED) {
+	    AF[0] = GD_bb(sg).LL;
+	    AF[2] = GD_bb(sg).UR;
+	    AF[1].x = AF[2].x;
+	    AF[1].y = AF[0].y;
+	    AF[3].x = AF[0].x;
+	    AF[3].y = AF[2].y;
+	    if (late_int(sg, G_peripheries, 1, 0) == 0)
+        	gvrender_set_pencolor(job, "transparent");
+	    else
+    		gvrender_set_pencolor(job, pencolor);
+	    stripedBox (job, AF, fillcolor);
+	    gvrender_box(job, GD_bb(sg), 0);
 	}
 	else {
 	    if (late_int(sg, G_peripheries, 1, 0)) {

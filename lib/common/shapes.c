@@ -280,6 +280,19 @@ char *findAttrColor(void *obj, attrsym_t *colorattr, char *dflt){
     return color;
 }
 
+
+static int
+isBox (node_t* n)
+{
+    polygon_t *p;
+
+    if ((p = ND_shape(n)->polygon)) {
+	return (p->sides == 4 && (ROUND(p->orientation) % 90) == 0 && p->distortion == 0. && p->skew == 0.);
+    }
+    else
+	return 0;
+}
+
 static char **checkStyle(node_t * n, int *flagp)
 {
     char *style;
@@ -317,6 +330,13 @@ static char **checkStyle(node_t * n, int *flagp)
 	    } else if (streq(p, "radial")) {
 		istyle |= (RADIAL|FILLED);
 		qp = pp;	/* remove radial from list passed to renderer */
+		do {
+		    qp++;
+		    *(qp - 1) = *qp;
+		} while (*qp);
+	    } else if (streq(p, "striped") && isBox(n)) {
+		istyle |= STRIPED;
+		qp = pp;	/* remove striped from list passed to renderer */
 		do {
 		    qp++;
 		    *(qp - 1) = *qp;
@@ -1644,6 +1664,10 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 		filled = FILL;
 	    }
 	}
+	else if (style & STRIPED) {
+	    fillcolor = findFill (n);
+	    filled = TRUE;
+	}
 	else {
 	    filled = FALSE;
 	}
@@ -1702,6 +1726,10 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	    if (style & DIAGONALS) {
 		Mcircle_hack(job, n);
 	    }
+	} else if (style & STRIPED) {
+	    if (j == 0)
+		stripedBox (job, AF, fillcolor);
+	    gvrender_polygon(job, AF, sides, 0);
 	} else if (SPECIAL_CORNERS(style)) {
 	    round_corners(job, AF, sides, style, filled);
 	} else {

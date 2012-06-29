@@ -569,9 +569,18 @@ void gvrender_ellipse(GVJ_t * job, pointf * pf, int n, int filled)
 
 void gvrender_polygon(GVJ_t * job, pointf * af, int n, int filled)
 {
+    int noPoly = 0;
+    gvcolor_t save_pencolor;
+
     gvrender_engine_t *gvre = job->render.engine;
     if (gvre) {
 	if (gvre->polygon && job->obj->pen != PEN_NONE) {
+	    if (filled & NO_POLY) {
+		noPoly = 1;
+		filled &= ~NO_POLY;
+		save_pencolor = job->obj->pencolor;
+		job->obj->pencolor = job->obj->fillcolor;
+	    }
 	    if (job->flags & GVRENDER_DOES_TRANSFORM)
 		gvre->polygon(job, af, n, filled);
 	    else {
@@ -582,6 +591,8 @@ void gvrender_polygon(GVJ_t * job, pointf * af, int n, int filled)
 		gvrender_ptf_A(job, af, AF, n);
 		gvre->polygon(job, AF, n, filled);
 	    }
+	    if (noPoly)
+		job->obj->pencolor = save_pencolor;
 	}
     }
 }
