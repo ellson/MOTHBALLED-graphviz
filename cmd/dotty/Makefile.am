@@ -7,6 +7,7 @@ pdf = dotty.1.pdf
 leftydir = $(pkgdatadir)/lefty
 pdfdir = $(pkgdatadir)/doc/pdf
 
+if WITH_X
 man_MANS = $(man)
 pdf_DATA = $(pdf)
 if WITH_WIN32
@@ -16,6 +17,7 @@ bin_SCRIPTS = dotty
 endif
 lefty_DATA = dotty.lefty dotty_draw.lefty dotty_edit.lefty \
         dotty_layout.lefty dotty_ui.lefty
+endif
 
 if WITH_WIN32
 dotty_SOURCES = mswin32/dotty.c
