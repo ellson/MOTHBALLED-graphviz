@@ -35,7 +35,7 @@ Prefix: /usr
 # Available features are:
 #    SHARP GHOSTSCRIPT GUILE _IO JAVA LUA OCAML ORTHO PERL PHP
 #    PYTHON RUBY R_LANG TCL IPSEPCOLA MYLIBGD PANGOCAIRO RSVG
-#    GTK GLITZ SMYRNA DEVIL MING GDK_PIXBUF _QT WEBP
+#    GTK GLITZ SMYRNA DEVIL MING GDK_PIXBUF _QT WEBP CGRAPH
 
 # SuSE uses a different mechanism to generate BuildRequires
 # norootforbuild
@@ -49,6 +49,7 @@ BuildRequires: /bin/ksh bison m4 flex swig tk tcl >= 8.3 freetype-devel >= 2
 #-- Red Hat Enterprise Linux (also Centos) specific Build Requirements --------------------
 %if 0%{?rhel}
 %if %rhel == 4
+%define CGRAPH 1
 %define __X 1
 BuildRequires: xorg-x11-devel
 %endif
@@ -103,6 +104,7 @@ BuildRequires: ghostscript-devel
 #-- Fedora specific Build Requirements --------------------------------------
 %if 0%{?fedora}
 %if %fedora >= 9
+%define CGRAPH 1
 %define __X 1
 BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel
 BuildRequires: fontconfig-devel
@@ -269,8 +271,12 @@ fi
 %{_mandir}/man1/unflatten.1*
 %{_mandir}/man7/graphviz.7*
 %{_libdir}/libcdt.so.*
+%if 0%{?CGRAPH}
 %{_libdir}/libcgraph.so.*
+%endif
+%if ! 0%{?CGRAPH}
 %{_libdir}/libgraph.so.*
+%endif
 %{_libdir}/libgvc.so.*
 %{_libdir}/libgvpr.so.*
 %{_libdir}/libpathplan.so.*
@@ -753,6 +759,7 @@ CFLAGS="$RPM_OPT_FLAGS" \
         --enable-r%{!?R_LANG:=no} \
         --enable-ruby%{!?RUBY:=no} \
         --enable-tcl%{!?TCL:=no} \
+        --with%{!?CGRAPH:out}-cgraph \
         --with%{!?DEVIL:out}-devil \
         --with%{!?WEBP:out}-webp \
         --with%{!?GDK_PIXBUF:out}-gdk-pixbuf \

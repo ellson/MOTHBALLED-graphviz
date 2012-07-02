@@ -2865,9 +2865,11 @@ AC_ARG_WITH(cgraph,
   [], [with_cgraph=yes])
 
 if test "x$with_cgraph" != "xyes"; then
-  use_cgraph="No (disabled by)"
+  use_cgraph="No (disabled)"
+  use_graph="Yes"
 else
   use_cgraph="Yes"
+  use_graph="No (disabled deprecated)"
   AC_DEFINE_UNQUOTED(WITH_CGRAPH,1,[Define if you want CGRAPH])
 fi
 AM_CONDITIONAL(WITH_CGRAPH, [test "x$use_cgraph" = "xYes"])
@@ -3230,6 +3232,7 @@ echo ""
 echo "graphviz-$VERSION will be compiled with the following:"
 echo ""
 echo "options:"
+echo "  graph:         $use_graph"
 echo "  cgraph:        $use_cgraph"
 echo "  digcola:       $use_digcola"
 echo "  expat:         $use_expat"
