@@ -48,8 +48,6 @@
 #define DFLT_GVPRPATH    "."
 #endif
 
-#define GV_USE_JUMP 4
-
 static char *Info[] = {
     "gvpr",                     /* Program */
     VERSION,                    /* Version */
@@ -518,6 +516,9 @@ static Agnode_t *nextNode(Gpr_t * state, nodestream * nodes)
 
     if (state->tvroot != nodes->oldroot) {
 	np = nodes->oldroot = state->tvroot;
+    } else if (state->flags & GV_NEXT_SET) {
+	np = nodes->oldroot = state->tvroot = state->tvnext;
+	state->flags &= ~GV_NEXT_SET;
     } else if (nodes->prev) {
 	np = nodes->prev = agnxtnode(state->curgraph, nodes->prev);
     } else {

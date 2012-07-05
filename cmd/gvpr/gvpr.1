@@ -909,8 +909,18 @@ This variable may be set by the user.
 .TP
 \fB$tvroot\fP : \fBnode_t\fP
 indicates the starting node for a (directed or undirected)
-depth\(hyfirst traversal of the
+depth\(hyfirst or breadth\(hyfirst traversal of the
 graph (cf. \fB$tvtype\fP below).
+The default value is \fBNULL\fP for each input graph.
+After the traversal at the given root, if the value of \fB$tvroot\fP has changed,
+a new traversal will begin with the new value of \fB$tvroot\fP. Also, set \fB$tvnext\fP below.
+.TP
+\fB$tvnext\fP : \fBnode_t\fP
+indicates the next starting node for a (directed or undirected)
+depth\(hyfirst or breadth\(hyfirst traversal of the
+graph (cf. \fB$tvtype\fP below).
+If a traversal finishes and the \fB$tvroot\fP but the \fB$tvnext\fP has been
+set but not used, this node will be used as the next choice for \fB$tvroot\fP.
 The default value is \fBNULL\fP for each input graph.
 .TP
 \fB$tvedge\fP : \fBedge_t\fP
