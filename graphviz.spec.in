@@ -46,15 +46,16 @@ BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: zlib-devel expat-devel
 BuildRequires: /bin/ksh bison m4 flex swig tk tcl >= 8.3 freetype-devel >= 2
 
-#-- Red Hat Enterprise Linux (also Centos) specific Build Requirements --------------------
+#-- All platforms
+%define __X 1
+%define CGRAPH 1
+
+#-- Red Hat Enterprise Linux (also Centos) specific Build Requirements
 %if 0%{?rhel}
 %if %rhel == 4
-%define CGRAPH 1
-%define __X 1
 BuildRequires: xorg-x11-devel
 %endif
 %if %rhel >= 4
-%define CGRAPH 1
 BuildRequires: fontconfig-devel
 %define TCL 1
 BuildRequires: tcl-devel tk-devel 
@@ -69,7 +70,6 @@ BuildRequires: python python-devel
 %define ORTHO 1
 %endif
 %if %rhel >= 5
-%define __X 1
 BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel
 BuildRequires: libtool-ltdl libtool-ltdl-devel
 %define JAVA 1
@@ -102,11 +102,9 @@ BuildRequires: ghostscript-devel
 %endif
 %endif
 
-#-- Fedora specific Build Requirements --------------------------------------
+#-- Fedora specific Build Requirements
 %if 0%{?fedora}
 %if %fedora >= 9
-%define CGRAPH 1
-%define __X 1
 BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel
 BuildRequires: fontconfig-devel
 BuildRequires: libtool-ltdl libtool-ltdl-devel
