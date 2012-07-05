@@ -21,10 +21,19 @@ extern "C" {
 #include "ast_common.h"
 #include "cgraph.h"
 
+/* Bits for flags variable in gvprstate_t.
+ * Included here so that calling programs can use the first
+ * two in gvpropts.flags
+ */
   /* If set, gvpr calls exit() on errors */
 #define GV_USE_EXIT 1    
   /* If set, gvpr stores output graphs in gvpropts */
 #define GV_USE_OUTGRAPH 2
+  /* Use longjmp to return to top-level call in gvpr */
+#define GV_USE_JUMP 4
+  /* $tvnext has been set but not used */
+#define GV_NEXT_SET 8
+
 
 typedef ssize_t (*gvprwr) (void*, const char *buf, size_t nbyte, void*);
 typedef int (*gvpruserfn) (char *);

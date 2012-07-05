@@ -289,6 +289,10 @@ static Agobj_t *deref(Expr_t * pgm, Exnode_t * x, Exref_t * ref,
 	    return deref(pgm, x, ref->next, (Agobj_t *) state->tvroot,
 			 state);
 	    break;
+	case V_travnext:
+	    return deref(pgm, x, ref->next, (Agobj_t *) state->tvnext,
+			 state);
+	    break;
 	case M_head:
 	    if (!objp && !(objp = state->curobj)) {
 		exerror("Current object $ not defined");
@@ -1497,6 +1501,9 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	case V_travroot:
 	    v.integer = PTR2INT(state->tvroot);
 	    break;
+	case V_travnext:
+	    v.integer = PTR2INT(state->tvnext);
+	    break;
 	case V_travedge:
 	    v.integer = PTR2INT(state->tvedge);
 	    break;
@@ -1571,6 +1578,16 @@ setval(Expr_t * pgm, Exnode_t * x, Exid_t * sym, Exref_t * ref,
 		state->tvroot = np;
 	    else {
 		error(1, "cannot set $tvroot, node %s not in $G : ignored",
+		      agnameof(np));
+	    }
+	    break;
+	case V_travnext:
+	    np = INT2PTR(Agnode_t *, v.integer);
+	    if (!np || (agroot(np) == state->curgraph)) {
+		state->tvnext = np;
+		state->flags |= GV_NEXT_SET;
+	    } else {
+		error(1, "cannot set $tvnext, node %s not in $G : ignored",
 		      agnameof(np));
 	    }
 	    break;

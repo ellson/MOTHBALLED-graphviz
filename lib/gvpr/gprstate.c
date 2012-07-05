@@ -56,6 +56,7 @@ Gpr_t *openGPRState(gpr_info* info)
     state->tvt = TV_flat;
     state->name_used = name_used;
     state->tvroot = 0;
+    state->tvnext = 0;
     state->tvedge = 0;
     state->outFile = info->outFile;
     state->argc = info->argc;
