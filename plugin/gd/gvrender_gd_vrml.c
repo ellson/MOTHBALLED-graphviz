@@ -113,7 +113,7 @@ static char *nodefilename(const char *filename, node_t * n, char *buf)
 #ifndef WITH_CGRAPH
     sprintf(buf, "%s/node%d.png", dir, AGSEQ(n));
 #else
-    sprintf(buf, "%s/node%ld.png", dir, AGSEQ(n));
+    sprintf(buf, "%s/node%ld.png", dir, (unsigned long)AGSEQ(n));
 #endif
     return buf;
 }
