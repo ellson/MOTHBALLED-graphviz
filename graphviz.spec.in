@@ -83,8 +83,8 @@ BuildRequires: gts-devel
 %define SMYRNA 1
 BuildRequires: libglade2-devel gtkglarea2-devel gtkglext-devel freeglut-devel
 %define GTK 1
-# define _QT 1
-# BuildRequires: qt-devel
+%define _QT 1
+BuildRequires: qt-devel
 %endif
 %if %rhel >= 6
 BuildRequires: perl-devel perl-libs perl-ExtUtils-Embed
