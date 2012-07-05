@@ -342,7 +342,7 @@ splitColorList (char* clist, char*** carray)
 }
 
 /* stripedBox:
- * Fill a rectangular box with verticle stripes of colors.
+ * Fill a rectangular box with vertical stripes of colors.
  * AF gives 4 corner points, with AF[0] the LL corner and the points ordered CCW.
  * clrs is a list of colon separated colors. 
  * No boundaries are drawn.
@@ -355,6 +355,7 @@ stripedBox (GVJ_t * job, pointf* AF, char* clrs)
     double xdelta;
     pointf pts[4];
     double lastx = AF[1].x;
+    int save_penwidth = job->obj->penwidth;
 
     if (numclrs < 1) numclrs = 1;
     xdelta = (AF[1].x - AF[0].x)/numclrs;
@@ -364,15 +365,19 @@ stripedBox (GVJ_t * job, pointf* AF, char* clrs)
     pts[3] = AF[3];
     if (numclrs > 1)
 	pts[1].x = pts[2].x = pts[0].x + xdelta;
+    
+    gvrender_set_penwidth(job, 0.5);
     for (i = 0; i < numclrs; i++) { 
 	gvrender_set_fillcolor (job, (colors[i]?colors[i]:DEFAULT_COLOR));
-	gvrender_polygon(job, pts, 4, FILL | NO_POLY);
+	/* gvrender_polygon(job, pts, 4, FILL | NO_POLY); */
+	gvrender_polygon(job, pts, 4, FILL);
 	pts[0].x = pts[3].x = pts[1].x;
 	if (i == numclrs-2) 
 	    pts[1].x = pts[2].x = lastx;
 	else
 	    pts[1].x = pts[2].x = pts[0].x + xdelta;
     }
+    gvrender_set_penwidth(job, save_penwidth);
     free (colors[0]);
     free (colors);
 }
