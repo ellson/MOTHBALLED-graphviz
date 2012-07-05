@@ -54,6 +54,7 @@ BuildRequires: /bin/ksh bison m4 flex swig tk tcl >= 8.3 freetype-devel >= 2
 BuildRequires: xorg-x11-devel
 %endif
 %if %rhel >= 4
+%define CGRAPH 1
 BuildRequires: fontconfig-devel
 %define TCL 1
 BuildRequires: tcl-devel tk-devel 
