@@ -12,10 +12,9 @@ SUBDIRS = ui images
 pdfdir = $(pkgdatadir)/doc/pdf
 gveditdir = $(pkgdatadir)/gvedit
 
+if WITH_QT
 man_MANS = gvedit.1
 pdf_DATA = gvedit.1.pdf
-
-if WITH_QT
 bin_PROGRAMS = gvedit
 gvedit_DATA = attrs.txt
 endif
