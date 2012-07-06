@@ -1727,8 +1727,16 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 		Mcircle_hack(job, n);
 	    }
 	} else if (style & STRIPED) {
-	    if (j == 0)
-		stripedBox (job, AF, fillcolor);
+	    if (j == 0) {
+		pointf af[4];
+		af[0] = AF[2];
+		af[1] = AF[3];
+		af[2] = AF[0];
+		af[3] = AF[1];
+		int rv = stripedBox (job, af, fillcolor);
+		if (rv > 1)
+		    agerr (AGPREV, "in node %s\n", agnameof(n));
+	    }
 	    gvrender_polygon(job, AF, sides, 0);
 	} else if (SPECIAL_CORNERS(style)) {
 	    round_corners(job, AF, sides, style, filled);

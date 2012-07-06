@@ -315,71 +315,185 @@ static char **checkClusterStyle(graph_t* sg, int *flagp)
     return pstyle;
 }
 
-static int
-splitColorList (char* clist, char*** carray)
-{
-    char* p;
-    char** colors;
-    char* buf;
-    int i, numc = 1;
-
-    /* count colors */
-    for (p = clist; *p; p++) {
-	if (*p == ':') numc++;
-    }
-    buf = strdup(clist);
-    colors = N_NEW(numc, char*);
+typedef struct {
+    char* color;   /* segment color */
+    float t;       /* segment size >= 0 */
+} colorseg_t;
+/* Sum of segment sizes should add to 1 */
+typedef struct {
+    int numc;     /* number of used segments in segs */
+    char* base;   /* storage of color names */
+    colorseg_t* segs;  /* array of segments */
+} colorsegs_t;
  
-    for (i = 0, p = strtok(buf, ":"); p; i++, p = strtok(0, ":")) {
-	if (p[0] == '\0')
-	    colors[i] = NULL;
-	else
-	    colors[i] = p;
+static void
+freeSegs (colorsegs_t* segs)
+{
+    free (segs->base);
+    free (segs->segs);
+    free (segs);
+}
+
+/* getSegLen:
+ * Find semicolon in s, replace with '\0'.
+ * Convert remainder to float v.
+ * Return 0 if no float given
+ * Return -1 on failure
+ */
+static double getSegLen (char* s)
+{
+    char* p = strchr (s, ';');
+    char* endp;
+    double v;
+
+    if (!p) {
+	return 0;
+    }
+    *p++ = '\0';
+    v = strtod (p, &endp);
+    if (endp != p) {  /* scanned something */
+	if (v >= 0)
+	    return v;
+    }
+    return -1;
+}
+
+/* parseSegs:
+ * Parse string of form color;float:color;float:...:color;float:color
+ * where the floats are optional, nonnegative, sum to <= 1.
+ * Store the values in an array of colorseg_t's and return the array in psegs.
+ * If nseg == 0, count the number of colors.
+ *  0 => okay
+ *  1 => error without message 
+ *  2 => error with message 
+ *  3 => warning message
+ * There is a last sentinel segment with color == NULL; it will always follow
+ * the last segment with t > 0.
+ */
+static int
+parseSegs (char* clrs, int nseg, colorsegs_t** psegs)
+{
+    colorsegs_t* segs = NEW(colorsegs_t);
+    colorseg_t* s;
+    char* colors = strdup (clrs);
+    char* color;
+    int cnum = 0;
+    double v, left = 1;
+    static int doWarn = 1;
+    int i, rval = 0;
+    char* p;
+
+    if (nseg == 0) {
+	nseg = 1;
+	/* need to know how many colors separated by ':' */
+	for (p = colors; *p; p++) {
+	    if (*p == ':') nseg++;
+	}
     }
 
-    *carray = colors;
-    return numc;
+    segs->base = colors;
+    segs->segs = s = N_NEW(nseg+1,colorseg_t);
+    for (color = strtok(colors, ":"); color; color = strtok(0, ":")) {
+	if ((v = getSegLen (color)) >= 0) {
+	    if (v > left) {
+		if (doWarn) {
+		    agerr (AGWARN, "Total size > 1 in \"%s\" color spec ", clrs);
+		    doWarn = 0;
+		    rval = 3;
+		}
+		v = left;
+	    }
+	    left -= v;
+	    s[cnum].color = color;
+	    s[cnum++].t = v;
+	}
+	else {
+	    if (doWarn) {
+		agerr (AGERR, "Illegal length value in \"%s\" color attribute ", clrs);
+		doWarn = 0;
+		rval = 2;
+	    }
+	    else rval = 1;
+	    freeSegs (segs);
+	    return rval;
+	}
+    }
+
+    /* distribute remaining into slot with t == 0; if none, add to last */
+    if (left > 0) {
+	/* count zero segments */
+	nseg = 0;
+	for (i = 0; i < cnum; i++) {
+	    if (s[i].t == 0) nseg++;
+	}
+	if (nseg > 0) {
+	    double delta = left/nseg;
+	    for (i = 0; i < cnum; i++) {
+		if (s[i].t == 0) s[i].t = delta;
+	    }
+	}
+	else {
+	    s[cnum-1].t += left;
+	}
+    }
+    
+    /* Make sure last positive segment is followed by a sentinel. */
+    nseg = 0;
+    for (i = cnum-1; i >= 0; i--) {
+	if (s[i].t > 0) break;
+    }
+    s[i+1].color = NULL;
+    segs->numc = i+1;
+
+    *psegs = segs;
+    return rval;
 }
 
 /* stripedBox:
  * Fill a rectangular box with vertical stripes of colors.
  * AF gives 4 corner points, with AF[0] the LL corner and the points ordered CCW.
- * clrs is a list of colon separated colors. 
- * No boundaries are drawn.
+ * clrs is a list of colon separated colors, with possible quantities. 
+ * Thin boundaries are drawn.
+ *  0 => okay
+ *  1 => error without message 
+ *  2 => error with message 
+ *  3 => warning message
  */
-void
+int
 stripedBox (GVJ_t * job, pointf* AF, char* clrs)
 {
-    char** colors;
-    int i, numclrs = splitColorList (clrs, &colors);
+    colorsegs_t* segs;
+    colorseg_t* s;
+    int rv;
     double xdelta;
     pointf pts[4];
     double lastx = AF[1].x;
     int save_penwidth = job->obj->penwidth;
 
-    if (numclrs < 1) numclrs = 1;
-    xdelta = (AF[1].x - AF[0].x)/numclrs;
+    rv = parseSegs (clrs, 0, &segs);
+    if ((rv == 1) || (rv == 2)) return rv;
+    xdelta = (AF[1].x - AF[0].x);
     pts[0] = AF[0];
     pts[1] = AF[1];
     pts[2] = AF[2];
     pts[3] = AF[3];
-    if (numclrs > 1)
-	pts[1].x = pts[2].x = pts[0].x + xdelta;
+    pts[1].x = pts[2].x = pts[0].x;
     
     gvrender_set_penwidth(job, 0.5);
-    for (i = 0; i < numclrs; i++) { 
-	gvrender_set_fillcolor (job, (colors[i]?colors[i]:DEFAULT_COLOR));
+    for (s = segs->segs; s->color; s++) {
+	if (s->t == 0) continue;
+	gvrender_set_fillcolor (job, (s->color?s->color:DEFAULT_COLOR));
 	/* gvrender_polygon(job, pts, 4, FILL | NO_POLY); */
-	gvrender_polygon(job, pts, 4, FILL);
-	pts[0].x = pts[3].x = pts[1].x;
-	if (i == numclrs-2) 
+	if (s[1].color == NULL) 
 	    pts[1].x = pts[2].x = lastx;
 	else
-	    pts[1].x = pts[2].x = pts[0].x + xdelta;
+	    pts[1].x = pts[2].x = pts[0].x + xdelta*(s->t);
+	gvrender_polygon(job, pts, 4, FILL);
+	pts[0].x = pts[3].x = pts[1].x;
     }
     gvrender_set_penwidth(job, save_penwidth);
-    free (colors[0]);
-    free (colors);
+    freeSegs (segs);
+    return rv;
 }
 
 void emit_map_rect(GVJ_t *job, boxf b)
@@ -1759,118 +1873,6 @@ static char* default_pencolor(char *pencolor, char *deflt)
     return buf;
 }
 
-typedef struct {
-    char* color;
-    float t;
-} colorseg_t;
-typedef struct {
-    char* base;
-    colorseg_t* segs;
-} colorsegs_t;
- 
-static void
-freeSegs (colorsegs_t* segs)
-{
-    free (segs->base);
-    free (segs->segs);
-    free (segs);
-}
-
-/* getSegLen:
- * Find comma in s, replace with '\0'.
- * Convert remainder to float v and verify prev_v <= v <= 1.
- * Return -1 on failure
- */
-static double getSegLen (char* s, double prev_v)
-{
-    char* p = strchr (s, ',');
-    char* endp;
-    double v;
-
-    if (!p) {
-	agerr (AGERR, "No comma in color spec \"%s\" in color attribute ", s);
-	return -1;
-    }
-    *p++ = '\0';
-    v = strtod (p, &endp);
-    if (endp != p) {  /* scanned something */
-	if ((prev_v <= v) && (v <= 1))
-	    return v;
-    }
-    return -1;
-}
-
-/* parseSegs:
- * Parse string of form color,float:color,float:...:color,float:color
- * where the floats are nonnegative, <= 1, and increasing.
- * We allow equality, discarding the later values.
- * Store the values in an array of colorseg_t's and return the array in psegs.
- *  0 => okay
- *  1 => error without message 
- *  2 => error with message 
- *  3 => warning message
- */
-static int
-parseSegs (char* clrs, int nseg, colorsegs_t** psegs)
-{
-    colorsegs_t* segs = NEW(colorsegs_t);
-    colorseg_t* s = N_NEW(nseg+1,colorseg_t);
-    char* colors = strdup (clrs);
-    char* color;
-    int cnum = 0;
-    double v, prev_v = 0;
-    static int doWarn = 1;
-    int rval = 0;
-
-    segs->base = colors;
-    segs->segs = s = N_NEW(nseg+1,colorseg_t);
-    for (color = strtok(colors, ":"); color; color = strtok(0, ":")) {
-	if (cnum == nseg-1) {
-	    if (prev_v < 1) {
-		char* p = strchr (color, ',');
-		if (p)   /* mask optional length */
-		    *p = '\0';
-		s[cnum].color = color;
-		s[cnum++].t = 1.0;
-	    }
-	}
-	else if ((v = getSegLen (color, prev_v)) >= 0) {
-	    if (prev_v < v) {
-		s[cnum].color = color;
-		s[cnum++].t = (v - prev_v)/(1.0 - prev_v);
-		prev_v = v;
-	    }
-	    else {
-		nseg--;
-		if (doWarn) {
-		    agerr (AGWARN, "0-length in color spec \"%s\"\n", clrs);
-		    doWarn = 0;
-		    rval = 3;
-		}
-	    }
-	}
-	else {
-	    if (doWarn) {
-		agerr (AGERR, "Illegal length value in \"%s\" color attribute ", clrs);
-		doWarn = 0;
-		rval = 2;
-	    }
-	    else rval = 1;
-	    freeSegs (segs);
-	    return rval;
-	}
-    }
-    
-    if (cnum == 0) {
-	freeSegs (segs);
-	segs = NULL;
-	rval = 1;
-    }
-    else	
-	*psegs = segs;
-    return rval;
-}
-
 /* approxLen:
  */
 static double approxLen (pointf* pts)
@@ -1954,6 +1956,7 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
     colorsegs_t* segs;
     colorseg_t* s;
     char* endcolor;
+    double sum;
 
     rv = parseSegs (colors, num, &segs);
     if (rv > 1) {
@@ -1973,17 +1976,20 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
     
 
     for (i = 0; i < ED_spl(e)->size; i++) {
+	sum = 0;
 	bz = ED_spl(e)->list[i];
 	for (s = segs->segs; s->color; s++) {
+	    if (s->t == 0) continue;
     	    gvrender_set_pencolor(job, s->color);
+	    sum += s->t;
 	    if (s == segs->segs) {
-		splitBSpline (&bz, s->t, &bz_l, &bz_r);
+		splitBSpline (&bz, sum, &bz_l, &bz_r);
 		gvrender_beziercurve(job, bz_l.list, bz_l.size, FALSE, FALSE, FALSE);
 		free (bz_l.list);
 	    }
-	    else if (s->t < 1.0) {
+	    else if (sum < 1.0) {
 		bz0 = bz_r;
-		splitBSpline (&bz0, s->t, &bz_l, &bz_r);
+		splitBSpline (&bz0, sum, &bz_l, &bz_r);
 		free (bz0.list);
 		gvrender_beziercurve(job, bz_l.list, bz_l.size, FALSE, FALSE, FALSE);
 		free (bz_l.list);
@@ -2067,7 +2073,7 @@ taperfun (edge_t* e)
 
 static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 {
-    int i, j, cnum, numc = 0, numcomma = 0;
+    int i, j, cnum, numc = 0, numsemi = 0;
     char *color, *pencolor, *fillcolor;
     char *headcolor, *tailcolor, *lastcolor;
     char *colors = NULL;
@@ -2099,11 +2105,11 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 	for (p = color; *p; p++) {
 	    if (*p == ':')
 		numc++;
-	    else if (*p == ',')
-		numcomma++;
+	    else if (*p == ';')
+		numsemi++;
 	}
 
-	if (numcomma && numc) {
+	if (numsemi && numc) {
 	    if (multicolor (job, e, styles, color, numc+1, arrowsize, penwidth)) {
 		color = DEFAULT_COLOR;
 	    }
@@ -3537,6 +3543,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	    }
 	}
 	else if (istyle & STRIPED) {
+	    int rv;
 	    AF[0] = GD_bb(sg).LL;
 	    AF[2] = GD_bb(sg).UR;
 	    AF[1].x = AF[2].x;
@@ -3547,7 +3554,9 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
         	gvrender_set_pencolor(job, "transparent");
 	    else
     		gvrender_set_pencolor(job, pencolor);
-	    stripedBox (job, AF, fillcolor);
+	    rv = stripedBox (job, AF, fillcolor);
+	    if (rv > 1)
+		agerr (AGPREV, "in cluster %s\n", agnameof(sg));
 	    gvrender_box(job, GD_bb(sg), 0);
 	}
 	else {
