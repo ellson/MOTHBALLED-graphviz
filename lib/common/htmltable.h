@@ -77,7 +77,7 @@ extern "C" {
 	unsigned short flags;
 	unsigned short width;
 	unsigned short height;
-	unsigned char style;
+	unsigned short style;
 	boxf box;		/* its geometric placement in points */
     } htmldata_t;
 

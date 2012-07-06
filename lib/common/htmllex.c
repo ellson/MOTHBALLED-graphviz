@@ -153,6 +153,10 @@ static int stylefn(htmldata_t * p, char *v)
 		rv = 1;
 	    }
 	}
+	else if(!strcasecmp(tk,"SOLID")) p->style &= ~(DOTTED|DASHED);
+	else if(!strcasecmp(tk,"INVISIBLE") || !strcasecmp(tk,"INVIS")) p->style |= INVISIBLE;
+	else if(!strcasecmp(tk,"DOTTED")) p->style |= DOTTED;
+	else if(!strcasecmp(tk,"DASHED")) p->style |= DASHED;
 	else {
 	    agerr(AGWARN, "Illegal value %s for STYLE - ignored\n", tk);
 	    rv = 1;
