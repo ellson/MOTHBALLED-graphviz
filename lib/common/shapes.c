@@ -1,4 +1,4 @@
-/* $id: shapes.c,v 1.82 2007/12/24 04:50:36 ellson Exp $ $Revision$ */
+/* $id: shapes.c,v 1.82 2007/12/24 04:50:36 ellson Exp $ $Revision: 1.1 $ */
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
@@ -293,6 +293,20 @@ isBox (node_t* n)
 	return 0;
 }
 
+/* isEllipse:
+ */
+static int
+isEllipse(node_t* n)
+{
+    polygon_t *p;
+
+    if ((p = ND_shape(n)->polygon)) {
+	return (p->sides <= 2);
+    }
+    else
+	return 0;
+}
+
 static char **checkStyle(node_t * n, int *flagp)
 {
     char *style;
@@ -337,6 +351,13 @@ static char **checkStyle(node_t * n, int *flagp)
 	    } else if (streq(p, "striped") && isBox(n)) {
 		istyle |= STRIPED;
 		qp = pp;	/* remove striped from list passed to renderer */
+		do {
+		    qp++;
+		    *(qp - 1) = *qp;
+		} while (*qp);
+	    } else if (streq(p, "wedged") && isEllipse(n)) {
+		istyle |= WEDGED;
+		qp = pp;	/* remove wedged from list passed to renderer */
 		do {
 		    qp++;
 		    *(qp - 1) = *qp;
@@ -1664,7 +1685,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 		filled = FILL;
 	    }
 	}
-	else if (style & STRIPED) {
+	else if (style & (STRIPED|WEDGED))  {
 	    fillcolor = findFill (n);
 	    filled = TRUE;
 	}
@@ -1700,10 +1721,21 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	/* lay down fill first */
 	if (filled && pfilled) {
 	    if (sides <= 2) {
+		if ((style & WEDGED) && (j == 0)) {
+		    int rv = wedgedEllipse (job, AF, fillcolor);
+		    if (rv > 1)
+			agerr (AGPREV, "in node %s\n", agnameof(n));
+		    filled = 0;
+		}
 		gvrender_ellipse(job, AF, sides, filled);
 		if (style & DIAGONALS) {
 		    Mcircle_hack(job, n);
 		}
+	    } else if (style & STRIPED) {
+		int rv = stripedBox (job, AF, fillcolor, 1);
+		if (rv > 1)
+		    agerr (AGPREV, "in node %s\n", agnameof(n));
+		gvrender_polygon(job, AF, sides, 0);
 	    } else if (style & (ROUNDED | DIAGONALS)) {
 		round_corners(job, AF, sides, style, filled);
 	    } else {
@@ -1722,18 +1754,19 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	    AF[i].y = P.y * ysize + ND_coord(n).y;
 	}
 	if (sides <= 2) {
+	    if ((style & WEDGED) && (j == 0)) {
+		int rv = wedgedEllipse (job, AF, fillcolor);
+		if (rv > 1)
+		    agerr (AGPREV, "in node %s\n", agnameof(n));
+		filled = 0;
+	    }
 	    gvrender_ellipse(job, AF, sides, filled);
 	    if (style & DIAGONALS) {
 		Mcircle_hack(job, n);
 	    }
 	} else if (style & STRIPED) {
 	    if (j == 0) {
-		pointf af[4];
-		af[0] = AF[2];
-		af[1] = AF[3];
-		af[2] = AF[0];
-		af[3] = AF[1];
-		int rv = stripedBox (job, af, fillcolor);
+		int rv = stripedBox (job, AF, fillcolor, 1);
 		if (rv > 1)
 		    agerr (AGPREV, "in node %s\n", agnameof(n));
 	    }

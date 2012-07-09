@@ -449,6 +449,55 @@ parseSegs (char* clrs, int nseg, colorsegs_t** psegs)
     return rval;
 }
 
+/* wedgedEllipse:
+ * Fill an ellipse whose bounding box is given by 2 points in pf
+ * with multiple wedges determined by the color spec in clrs.
+ * clrs is a list of colon separated colors, with possible quantities. 
+ * Thin boundaries are drawn.
+ *  0 => okay
+ *  1 => error without message 
+ *  2 => error with message 
+ *  3 => warning message
+ */
+int 
+wedgedEllipse (GVJ_t* job, pointf * pf, char* clrs)
+{
+    colorsegs_t* segs;
+    colorseg_t* s;
+    int rv;
+    int save_penwidth = job->obj->penwidth;
+    pointf ctr, semi;
+    Ppolyline_t* pp;
+    double angle0, angle1;
+
+    rv = parseSegs (clrs, 0, &segs);
+    if ((rv == 1) || (rv == 2)) return rv;
+    ctr.x = (pf[0].x + pf[1].x) / 2.;
+    ctr.y = (pf[0].y + pf[1].y) / 2.;
+    semi.x = pf[1].x - ctr.x;
+    semi.y = pf[1].y - ctr.y;
+    gvrender_set_penwidth(job, 0.5);
+	
+    angle0 = 0;
+    for (s = segs->segs; s->color; s++) {
+	if (s->t == 0) continue;
+	gvrender_set_fillcolor (job, (s->color?s->color:DEFAULT_COLOR));
+
+	if (s[1].color == NULL) 
+	    angle1 = 2*M_PI;
+	else
+	    angle1 = angle0 + 2*M_PI*(s->t);
+	pp = ellipticWedge (ctr, semi.x, semi.y, angle0, angle1);
+	gvrender_beziercurve(job, pp->ps, pp->pn, 0, 0, 1);
+	angle0 = angle1;
+	freePath (pp);
+    }
+
+    gvrender_set_penwidth(job, save_penwidth);
+    freeSegs (segs);
+    return rv;
+}
+
 /* stripedBox:
  * Fill a rectangular box with vertical stripes of colors.
  * AF gives 4 corner points, with AF[0] the LL corner and the points ordered CCW.
@@ -460,23 +509,31 @@ parseSegs (char* clrs, int nseg, colorsegs_t** psegs)
  *  3 => warning message
  */
 int
-stripedBox (GVJ_t * job, pointf* AF, char* clrs)
+stripedBox (GVJ_t * job, pointf* AF, char* clrs, int rotate)
 {
     colorsegs_t* segs;
     colorseg_t* s;
     int rv;
     double xdelta;
     pointf pts[4];
-    double lastx = AF[1].x;
+    double lastx;
     int save_penwidth = job->obj->penwidth;
 
     rv = parseSegs (clrs, 0, &segs);
     if ((rv == 1) || (rv == 2)) return rv;
-    xdelta = (AF[1].x - AF[0].x);
-    pts[0] = AF[0];
-    pts[1] = AF[1];
-    pts[2] = AF[2];
-    pts[3] = AF[3];
+    if (rotate) {
+	pts[0] = AF[2];
+	pts[1] = AF[3];
+	pts[2] = AF[0];
+	pts[3] = AF[1];
+    } else {
+	pts[0] = AF[0];
+	pts[1] = AF[1];
+	pts[2] = AF[2];
+	pts[3] = AF[3];
+    }
+    lastx = pts[1].x;
+    xdelta = (pts[1].x - pts[0].x);
     pts[1].x = pts[2].x = pts[0].x;
     
     gvrender_set_penwidth(job, 0.5);
@@ -3554,7 +3611,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
         	gvrender_set_pencolor(job, "transparent");
 	    else
     		gvrender_set_pencolor(job, pencolor);
-	    rv = stripedBox (job, AF, fillcolor);
+	    rv = stripedBox (job, AF, fillcolor, 0);
 	    if (rv > 1)
 		agerr (AGPREV, "in cluster %s\n", agnameof(sg));
 	    gvrender_box(job, GD_bb(sg), 0);

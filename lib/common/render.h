@@ -100,6 +100,7 @@ extern "C" {
     extern void dotneato_set_margins(GVC_t * gvc, Agraph_t *);
     extern void dotneato_write(GVC_t * gvc, graph_t *g);
     extern void dotneato_write_one(GVC_t * gvc, graph_t *g);
+    extern Ppolyline_t* ellipticWedge (pointf ctr, double major, double minor, double angle0, double angle1);
     extern void emit_clusters(GVJ_t * job, Agraph_t * g, int flags);
     extern char* getObjId (GVJ_t* job, void* obj, agxbuf* xb);
     /* extern void emit_begin_edge(GVJ_t * job, edge_t * e, char**); */
@@ -152,11 +153,12 @@ extern "C" {
     extern shape_kind shapeOf(node_t *);
     extern void shape_clip(node_t * n, pointf curve[4]);
     extern void make_simple_label (graph_t* g, textlabel_t* rv);
-    extern int stripedBox (GVJ_t * job, pointf* AF, char* clrs);
+    extern int stripedBox (GVJ_t * job, pointf* AF, char* clrs, int rotate);
     extern stroke_t* taper (bezier*, double (*radfunc_t)(double,double,double), double initwid, int linejoin, int linecap);
     extern stroke_t* taper0 (bezier* bez, double initwid);
     extern pointf textsize(graph_t *g, textpara_t * para, char *fontname, double fontsize);
     extern void translate_bb(Agraph_t *, int);
+    extern int wedgedEllipse (GVJ_t* job, pointf * pf, char* clrs);
     extern void update_bb_bz(boxf *bb, pointf *cp);
     extern void write_attributed_dot(graph_t *g, FILE *f);
     extern void write_canonical_dot(graph_t *g, FILE *f);
