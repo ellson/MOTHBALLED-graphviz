@@ -45,6 +45,7 @@ extern "C" {
 /* opaque state handle for visibility graph operations */
     typedef struct vconfig_s vconfig_t;
 
+    void freePath(Ppolyline_t* p);
 #ifdef __cplusplus
 }
 #endif

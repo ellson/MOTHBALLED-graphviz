@@ -34,6 +34,12 @@ Ppoly_t copypoly(Ppoly_t argpoly)
     return rv;
 }
 
+void freePath(Ppolyline_t* p)
+{
+    free(p->ps);
+    free(p);
+}
+
 void freepoly(Ppoly_t argpoly)
 {
     free(argpoly.ps);
