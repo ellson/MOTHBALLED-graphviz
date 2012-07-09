@@ -227,9 +227,6 @@ static void doSide(GVJ_t * job, pointf p, double wd, double ht)
  */
 static void doBorder(GVJ_t * job, char *color, int border, boxf BF)
 {
-    pointf pt;
-    double wd, ht;
-
     if (!color)
 	color = DEFAULT_COLOR;
     gvrender_set_fillcolor(job, color);
@@ -238,17 +235,12 @@ static void doBorder(GVJ_t * job, char *color, int border, boxf BF)
     if (border == 1) {
 	gvrender_box(job, BF, 0);
     } else {
-	border--;
-	ht = BF.UR.y - BF.LL.y;
-	wd = BF.UR.x - BF.LL.x;
-	doSide(job, BF.LL, border, ht);
-	pt.x = BF.LL.x;
-	pt.y = BF.UR.y;
-	doSide(job, pt, wd, -border);
-	doSide(job, BF.UR, -border, -ht);
-	pt.x = BF.UR.x;
-	pt.y = BF.LL.y;
-	doSide(job, pt, -wd, border);
+      BF.UR.y -= border;
+      BF.UR.x -= border;
+      BF.LL.y += border;
+      BF.LL.x += border;
+      gvrender_box(job, BF, 0);
+
     }
 }
 
@@ -452,6 +444,7 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
     int anchor; /* if true, we need to undo anchor settings. */
     int doAnchor = (tbl->data.href || tbl->data.target);
     pointf AF[4];
+    char *sptr[2];
 
     if (tbl->font)
 	pushFontInfo(env, tbl->font, &savef);
@@ -511,11 +504,28 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
     }
 
     if (tbl->data.border) {
-	if (tbl->data.style & ROUNDED) {
+	if ((tbl->data.style & ROUNDED) ||
+	    (tbl->data.style & DASHED) ||
+	    (tbl->data.style & DOTTED) ||
+	    (tbl->data.style & INVISIBLE)) {
 	    char* color = (tbl->data.pencolor ? tbl->data.pencolor : DEFAULT_COLOR);
 	    gvrender_set_penwidth(job, tbl->data.border);
 	    gvrender_set_pencolor(job, color);
-	    round_corners (job, AF, 4, tbl->data.style, 0);
+	    sptr[0] = sptr[1] = NULL;
+	    if(tbl->data.style & DASHED)
+	      sptr[0] = "dashed";
+	    else if(tbl->data.style & DOTTED)
+	      sptr[0] = "dotted";
+	    else if(tbl->data.style & INVISIBLE)
+	      sptr[0] = "invisible";
+	    if(sptr[0] != NULL)
+	      gvrender_set_style(job,sptr);
+	    else
+	      gvrender_set_style(job, job->gvc->defaultlinestyle);
+	    if (tbl->data.style & ROUNDED)
+	      round_corners (job, AF, 4, tbl->data.style, 0);	      
+	    else
+	      doBorder(job, tbl->data.pencolor, tbl->data.border, pts);
 	}
 	else
 	    doBorder(job, tbl->data.pencolor, tbl->data.border, pts);
@@ -571,6 +581,8 @@ emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
     boxf pts = cp->data.box;
     pointf pos = env->pos;
     int inAnchor, doAnchor = (cp->data.href || cp->data.target);
+    pointf AF[4];
+    char *sptr[2];
 
     pts.LL.x += pos.x;
     pts.UR.x += pos.x;
@@ -581,6 +593,23 @@ emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
 	inAnchor = initAnchor(job, env, &cp->data, pts, &saved, 1);
     else
 	inAnchor = 0;
+    
+    /* Set up rounded style */
+    if (cp->data.style & ROUNDED) {
+	AF[0] = pts.LL;
+	AF[2] = pts.UR;
+	if (cp->data.border) {
+	    double delta = ((double)cp->data.border)/2.0;
+	    AF[0].x += delta;
+	    AF[0].y += delta;
+	    AF[2].x -= delta;
+	    AF[2].y -= delta;
+	}
+	AF[1].x = AF[2].x;
+	AF[1].y = AF[0].y;
+	AF[3].x = AF[0].x;
+	AF[3].y = AF[2].y;
+    }
 
     if (cp->data.bgcolor) {
 	char* clrs[2];
@@ -589,7 +618,32 @@ emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
 	free (clrs[0]);
     }
 
-    if (cp->data.border)
+    if (cp->data.border) {
+	if ((cp->data.style & ROUNDED) ||
+	    (cp->data.style & DASHED) ||
+	    (cp->data.style & DOTTED) ||
+	    (cp->data.style & INVISIBLE)) {
+	    char* color = (cp->data.pencolor ? cp->data.pencolor : DEFAULT_COLOR);
+	    gvrender_set_penwidth(job, cp->data.border);
+	    gvrender_set_pencolor(job, color);
+	    sptr[0] = sptr[1] = NULL;
+	    if(cp->data.style & DASHED)
+	      sptr[0] = "dashed";
+	    else if(cp->data.style & DOTTED)
+	      sptr[0] = "dotted";
+	    else if(cp->data.style & INVISIBLE)
+	      sptr[0] = "invisible";
+	    if(sptr[0] == NULL)
+		gvrender_set_style(job, job->gvc->defaultlinestyle);
+	    else
+		gvrender_set_style(job,sptr);
+	    if (cp->data.style & ROUNDED)
+	      round_corners (job, AF, 4, cp->data.style, 0);	      
+	    else 
+	      doBorder(job, cp->data.pencolor, cp->data.border, pts);
+	    }
+    }
+    else
 	doBorder(job, cp->data.pencolor, cp->data.border, pts);
 
     if (cp->child.kind == HTML_TBL)

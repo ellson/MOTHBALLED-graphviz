@@ -214,7 +214,9 @@
 #define BOX3D (1 << 9)
 #define COMPONENT (1 << 10)
 #define STRIPED (1 << 11)
-#define WEDGED  (1 << 12)
+#define DOTTED (1 << 12)
+#define DASHED (1 << 13)
+#define WEDGED  (1 << 14)
 
 /* fill types */
 #define FILL      1
