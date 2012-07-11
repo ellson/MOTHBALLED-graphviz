@@ -47,13 +47,13 @@ typedef struct {
     htmlfont_t finfo;
     void *obj;
     graph_t *g;
-    char* imgscale;
-    char* objid;
+    char *imgscale;
+    char *objid;
     boolean objid_set;
 } htmlenv_t;
 
 typedef struct {
-    char *url; 
+    char *url;
     char *tooltip;
     char *target;
     char *id;
@@ -111,28 +111,28 @@ static void popFontInfo(htmlenv_t * env, htmlfont_t * savp)
 	env->finfo.size = savp->size;
 }
 
-static void 
-emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
-         double halfwidth_x, htmlfont_t finfo, boxf b)
+static void
+emit_htextparas(GVJ_t * job, int nparas, htextpara_t * paras, pointf p,
+		double halfwidth_x, htmlfont_t finfo, boxf b)
 {
-    int i,j;
+    int i, j;
     double center_x, left_x, right_x, fsize_;
-    char *fname_ , *fcolor_;
+    char *fname_, *fcolor_;
     textpara_t tl;
-    pointf p_ = {0.0, 0.0};
-    textpara_t* ti;
-	
+    pointf p_ = { 0.0, 0.0 };
+    textpara_t *ti;
+
     center_x = p.x;
     left_x = center_x - halfwidth_x;
     right_x = center_x + halfwidth_x;
 
-	/* Initial p is in center of text block; set initial baseline
- 	 * to top of text block.
-	 */
-    p_.y = p.y + (b.UR.y-b.LL.y)/2.0;
+    /* Initial p is in center of text block; set initial baseline
+     * to top of text block.
+     */
+    p_.y = p.y + (b.UR.y - b.LL.y) / 2.0;
 
     gvrender_begin_label(job, LABEL_HTML);
-    for(i=0; i<nparas; i++) {
+    for (i = 0; i < nparas; i++) {
 	/* set p.x to leftmost point where the line of text begins */
 	switch (paras[i].just) {
 	case 'l':
@@ -143,27 +143,27 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
 	    break;
 	default:
 	case 'n':
-	    p.x = center_x - paras[i].size/2.0;
+	    p.x = center_x - paras[i].size / 2.0;
 	    break;
 	}
-	p_.y -= paras[i].lfsize;  /* move to current base line */
+	p_.y -= paras[i].lfsize;	/* move to current base line */
 
 	ti = paras[i].items;
-	for(j=0; j<paras[i].nitems; j++) {
+	for (j = 0; j < paras[i].nitems; j++) {
 	    if (ti->font && (ti->font->size > 0))
 		fsize_ = ti->font->size;
 	    else
-	        fsize_ = finfo.size;
+		fsize_ = finfo.size;
 	    if (ti->font && ti->font->name)
 		fname_ = ti->font->name;
 	    else
-	        fname_ = finfo.name;
+		fname_ = finfo.name;
 	    if (ti->font && ti->font->color)
 		fcolor_ = ti->font->color;
 	    else
-	        fcolor_ = finfo.color;
+		fcolor_ = finfo.color;
 
-    	    gvrender_set_pencolor(job, fcolor_);
+	    gvrender_set_pencolor(job, fcolor_);
 
 	    tl.str = ti->str;
 	    tl.fontname = fname_;
@@ -181,15 +181,14 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
 	    p_.x = p.x;
 	    gvrender_textpara(job, p_, &tl);
 	    p.x += ti->size;
-            ti++;
+	    ti++;
 	}
     }
 
     gvrender_end_label(job);
 }
 
-static void
-emit_html_txt(GVJ_t* job, htmltxt_t* tp, htmlenv_t* env)
+static void emit_html_txt(GVJ_t * job, htmltxt_t * tp, htmlenv_t * env)
 {
     double halfwidth_x;
     pointf p;
@@ -202,7 +201,8 @@ emit_html_txt(GVJ_t* job, htmltxt_t* tp, htmlenv_t* env)
     p.x = env->pos.x + ((double) (tp->box.UR.x + tp->box.LL.x)) / 2.0;
     p.y = env->pos.y + ((double) (tp->box.UR.y + tp->box.LL.y)) / 2.0;
 
-    emit_htextparas(job, tp->nparas, tp->paras, p, halfwidth_x, env->finfo, tp->box);
+    emit_htextparas(job, tp->nparas, tp->paras, p, halfwidth_x, env->finfo,
+		    tp->box);
 }
 
 static void doSide(GVJ_t * job, pointf p, double wd, double ht)
@@ -215,32 +215,66 @@ static void doSide(GVJ_t * job, pointf p, double wd, double ht)
     gvrender_box(job, BF, 1);
 }
 
-/* doBorder:
- * Draw rectangle of width border inside rectangle given
- * by box. If border is 1, we call use a single call to gvrender_polygon.
- * (We have set linewidth to 1 below.) Otherwise, we use four separate
- * filled rectangles. We could use a richer graphics model, as things
- * can go wrong when cell spacing and borders are small.
- * We decrement the border value by 1, as typically a filled rectangle
- * from x to x+border will all pixels from x to x+border, and thus have
- * width border+1.
+/* mkPts:
+ * Convert boxf into four corner points
+ * If border is > 1, inset the points by half the border.
+ * It is assume AF is pointf[4], so the data is store there
+ * and AF is returned.
  */
-static void doBorder(GVJ_t * job, char *color, int border, boxf BF)
+static pointf *mkPts(pointf * AF, boxf b, int border)
 {
-    if (!color)
-	color = DEFAULT_COLOR;
-    gvrender_set_fillcolor(job, color);
+    AF[0] = b.LL;
+    AF[2] = b.UR;
+    if (border > 1) {
+	double delta = ((double) border) / 2.0;
+	AF[0].x += delta;
+	AF[0].y += delta;
+	AF[2].x -= delta;
+	AF[2].y -= delta;
+    }
+    AF[1].x = AF[2].x;
+    AF[1].y = AF[0].y;
+    AF[3].x = AF[0].x;
+    AF[3].y = AF[2].y;
+
+    return AF;
+}
+
+/* doBorder:
+ * Draw a rectangular border for the box b.
+ * Handles dashed and dotted styles, rounded corners.
+ * Also handles thick lines.
+ * Assume dp->border > 0
+ */
+static void doBorder(GVJ_t * job, htmldata_t * dp, boxf b)
+{
+    pointf AF[4];
+    char *sptr[2];
+    char *color = (dp->pencolor ? dp->pencolor : DEFAULT_COLOR);
+
     gvrender_set_pencolor(job, color);
+    if ((dp->style & (DASHED | DOTTED))) {
+	sptr[0] = sptr[1] = NULL;
+	if (dp->style & DASHED)
+	    sptr[0] = "dashed";
+	else if (dp->style & DOTTED)
+	    sptr[0] = "dotted";
+	gvrender_set_style(job, sptr);
+    } else
+	gvrender_set_style(job, job->gvc->defaultlinestyle);
+    gvrender_set_penwidth(job, dp->border);
 
-    if (border == 1) {
-	gvrender_box(job, BF, 0);
-    } else {
-      BF.UR.y -= border;
-      BF.UR.x -= border;
-      BF.LL.y += border;
-      BF.LL.x += border;
-      gvrender_box(job, BF, 0);
-
+    if (dp->style & ROUNDED)
+	round_corners(job, mkPts(AF, b, dp->border), 4, ROUNDED, 0);
+    else {
+	if (dp->border > 1) {
+	    double delta = ((double) dp->border) / 2.0;
+	    b.LL.x += delta;
+	    b.LL.y += delta;
+	    b.UR.x -= delta;
+	    b.UR.y -= delta;
+	}
+	gvrender_box(job, b, 0);
     }
 }
 
@@ -249,21 +283,20 @@ static void doBorder(GVJ_t * job, char *color, int border, boxf BF)
  * Return type of fill required.
  */
 static int
-setFill (GVJ_t* job, char* color, int angle, int style, char* clrs[2])
+setFill(GVJ_t * job, char *color, int angle, int style, char *clrs[2])
 {
     int filled;
-    if (findStopColor (color, clrs)) {
+    if (findStopColor(color, clrs)) {
 	gvrender_set_fillcolor(job, clrs[0]);
-	if (clrs[1]) 
-	    gvrender_set_gradient_vals(job,clrs[1],angle);
-	else 
-	    gvrender_set_gradient_vals(job,DEFAULT_COLOR,angle);
+	if (clrs[1])
+	    gvrender_set_gradient_vals(job, clrs[1], angle);
+	else
+	    gvrender_set_gradient_vals(job, DEFAULT_COLOR, angle);
 	if (style & RADIAL)
 	    filled = RGRADIENT;
 	else
 	    filled = GRADIENT;
-    }
-    else {
+    } else {
 	gvrender_set_fillcolor(job, color);
 	filled = FILL;
     }
@@ -283,39 +316,41 @@ setFill (GVJ_t* job, char* color, int angle, int style, char* clrs[2])
  * for nodes, edges, etc. ?
  */
 static int
-initAnchor (GVJ_t* job, htmlenv_t* env, htmldata_t* data, boxf b, htmlmap_data_t* save,
-    int closePrev)
+initAnchor(GVJ_t * job, htmlenv_t * env, htmldata_t * data, boxf b,
+	   htmlmap_data_t * save, int closePrev)
 {
     obj_state_t *obj = job->obj;
     int changed;
-    char* id;
+    char *id;
     static int anchorId;
     int internalId = 0;
     agxbuf xb;
-    char intbuf[30];  /* hold 64-bit decimal integer */
+    char intbuf[30];		/* hold 64-bit decimal integer */
     unsigned char buf[SMALLBUF];
 
-    save->url = obj->url; 
+    save->url = obj->url;
     save->tooltip = obj->tooltip;
     save->target = obj->target;
     save->id = obj->id;
     save->explicit_tooltip = obj->explicit_tooltip;
     id = data->id;
-    if (!id || !*id) { /* no external id, so use the internal one */
+    if (!id || !*id) {		/* no external id, so use the internal one */
 	agxbinit(&xb, SMALLBUF, buf);
 	if (!env->objid) {
-	    env->objid = strdup (getObjId (job, obj->u.n, &xb));
+	    env->objid = strdup(getObjId(job, obj->u.n, &xb));
 	    env->objid_set = 1;
 	}
-	agxbput (&xb, env->objid);
-	sprintf (intbuf, "_%d", anchorId++);
-	agxbput (&xb, intbuf);
-	id = agxbuse (&xb);
+	agxbput(&xb, env->objid);
+	sprintf(intbuf, "_%d", anchorId++);
+	agxbput(&xb, intbuf);
+	id = agxbuse(&xb);
 	internalId = 1;
     }
-    changed = initMapData (job, NULL, data->href, data->title, data->target, id, obj->u.g);
+    changed =
+	initMapData(job, NULL, data->href, data->title, data->target, id,
+		    obj->u.g);
     if (internalId)
-	agxbfree (&xb);
+	agxbfree(&xb);
 
     if (changed) {
 	if (closePrev && (save->url || save->explicit_tooltip))
@@ -323,7 +358,8 @@ initAnchor (GVJ_t* job, htmlenv_t* env, htmldata_t* data, boxf b, htmlmap_data_t
 	if (obj->url || obj->explicit_tooltip) {
 	    emit_map_rect(job, b);
 	    gvrender_begin_anchor(job,
-		obj->url, obj->tooltip, obj->target, obj->id);
+				  obj->url, obj->tooltip, obj->target,
+				  obj->id);
 	}
     }
     return changed;
@@ -343,8 +379,7 @@ initAnchor (GVJ_t* job, htmlenv_t* env, htmldata_t* data, boxf b, htmlmap_data_t
  * top-down. For ordinary map anchors, this is all done bottom-up, so
  * the geometric map info at the higher level hasn't been emitted yet.
  */
-static void
-endAnchor (GVJ_t* job, htmlmap_data_t* save, int openPrev)
+static void endAnchor(GVJ_t * job, htmlmap_data_t * save, int openPrev)
 {
     obj_state_t *obj = job->obj;
 
@@ -357,7 +392,8 @@ endAnchor (GVJ_t* job, htmlmap_data_t* save, int openPrev)
     obj->explicit_tooltip = save->explicit_tooltip;
     if (openPrev && (obj->url || obj->explicit_tooltip))
 	gvrender_begin_anchor(job,
-		obj->url, obj->tooltip, obj->target, obj->id);
+			      obj->url, obj->tooltip, obj->target,
+			      obj->id);
 }
 
 /* forward declaration */
@@ -375,7 +411,7 @@ emit_html_rules(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env, char *color)
     unsigned char base;
     boxf pts = cp->data.box;
     pointf pos = env->pos;
-    
+
     if (!color)
 	color = DEFAULT_COLOR;
     gvrender_set_fillcolor(job, color);
@@ -389,51 +425,45 @@ emit_html_rules(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env, char *color)
 
     //Determine vertical line coordinate and length
     if ((cp->ruled & HTML_VRULE) && (cp->col + cp->cspan < cp->parent->cc)) {
-	if(cp->row == 0) {  // first row
+	if (cp->row == 0) {	// first row
 	    // extend to center of table border and add half cell spacing
-	    base = cp->parent->data.border + cp->parent->data.space/2;
-	    rule_pt.y = pts.LL.y - cp->parent->data.space/2; 
-	}
-	else if(cp->row + cp->rspan == cp->parent->rc){  // bottom row
+	    base = cp->parent->data.border + cp->parent->data.space / 2;
+	    rule_pt.y = pts.LL.y - cp->parent->data.space / 2;
+	} else if (cp->row + cp->rspan == cp->parent->rc) {	// bottom row
 	    // extend to center of table border and add half cell spacing
-	    base = cp->parent->data.border + cp->parent->data.space/2;
-	    rule_pt.y = pts.LL.y - cp->parent->data.space/2 - base;
-	}
-	else {
+	    base = cp->parent->data.border + cp->parent->data.space / 2;
+	    rule_pt.y = pts.LL.y - cp->parent->data.space / 2 - base;
+	} else {
 	    base = 0;
-	    rule_pt.y = pts.LL.y - cp->parent->data.space/2;
+	    rule_pt.y = pts.LL.y - cp->parent->data.space / 2;
 	}
-	rule_pt.x = pts.UR.x + cp->parent->data.space/2;
+	rule_pt.x = pts.UR.x + cp->parent->data.space / 2;
 	rule_length = base + pts.UR.y - pts.LL.y + cp->parent->data.space;
-	doSide(job,rule_pt,0,rule_length);
+	doSide(job, rule_pt, 0, rule_length);
     }
-
     //Determine the horizontal coordinate and length
     if ((cp->ruled & HTML_HRULE) && (cp->row + cp->rspan < cp->parent->rc)) {
-	if(cp->col == 0) { // first column 
+	if (cp->col == 0) {	// first column 
 	    // extend to center of table border and add half cell spacing
-	    base = cp->parent->data.border + cp->parent->data.space/2;
-	    rule_pt.x = pts.LL.x - base - cp->parent->data.space/2;
-	    if(cp->col + cp->cspan == cp->parent->cc)  // also last column
+	    base = cp->parent->data.border + cp->parent->data.space / 2;
+	    rule_pt.x = pts.LL.x - base - cp->parent->data.space / 2;
+	    if (cp->col + cp->cspan == cp->parent->cc)	// also last column
 		base *= 2;
-	}
-	else if(cp->col + cp->cspan == cp->parent->cc){  // last column
+	} else if (cp->col + cp->cspan == cp->parent->cc) {	// last column
 	    // extend to center of table border and add half cell spacing
-	    base = cp->parent->data.border + cp->parent->data.space/2;
-	    rule_pt.x = pts.LL.x - cp->parent->data.space/2;
-	}
-	else {
+	    base = cp->parent->data.border + cp->parent->data.space / 2;
+	    rule_pt.x = pts.LL.x - cp->parent->data.space / 2;
+	} else {
 	    base = 0;
-	    rule_pt.x = pts.LL.x - cp->parent->data.space/2;
+	    rule_pt.x = pts.LL.x - cp->parent->data.space / 2;
 	}
-	rule_pt.y = pts.LL.y - cp->parent->data.space/2;
+	rule_pt.y = pts.LL.y - cp->parent->data.space / 2;
 	rule_length = base + pts.UR.x - pts.LL.x + cp->parent->data.space;
-	doSide(job,rule_pt,rule_length,0);
+	doSide(job, rule_pt, rule_length, 0);
     }
 }
 
-static void
-emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
+static void emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
 {
     boxf pts = tbl->data.box;
     pointf pos = env->pos;
@@ -441,10 +471,9 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
     htmlcell_t *cp;
     static htmlfont_t savef;
     htmlmap_data_t saved;
-    int anchor; /* if true, we need to undo anchor settings. */
+    int anchor;			/* if true, we need to undo anchor settings. */
     int doAnchor = (tbl->data.href || tbl->data.target);
     pointf AF[4];
-    char *sptr[2];
 
     if (tbl->font)
 	pushFontInfo(env, tbl->font, &savef);
@@ -458,85 +487,51 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
 	anchor = initAnchor(job, env, &tbl->data, pts, &saved, 1);
     else
 	anchor = 0;
-    /* Set up rounded style */
-    if (tbl->data.style & ROUNDED) {
-	AF[0] = pts.LL;
-	AF[2] = pts.UR;
-	if (tbl->data.border) {
-	    double delta = ((double)tbl->data.border)/2.0;
-	    AF[0].x += delta;
-	    AF[0].y += delta;
-	    AF[2].x -= delta;
-	    AF[2].y -= delta;
-	}
-	AF[1].x = AF[2].x;
-	AF[1].y = AF[0].y;
-	AF[3].x = AF[0].x;
-	AF[3].y = AF[2].y;
-    }
 
-    /* Fill first */
-    if (tbl->data.bgcolor) {
-	char* clrs[2];
-	int filled = setFill (job, tbl->data.bgcolor, tbl->data.gradientangle, tbl->data.style, clrs);
-	if (tbl->data.style & ROUNDED){
-	    round_corners (job, AF, 4, tbl->data.style, filled);
-	}
-	else
-	    gvrender_box(job, pts, filled);
-	free (clrs[0]);
-    }
-     
-    while (*cells) {
-	emit_html_cell(job, *cells, env);
-	cells++;
-    }
+    if (!(tbl->data.style & INVISIBLE)) {
 
-    /* Draw table rules and border.
-     * Draw after cells so we can draw over any fill.
-     * At present, we set the penwidth to 1 for rules until we provide the calculations to take
-     * into account wider rules.
-     */
-    cells = tbl->u.n.cells;
-    gvrender_set_penwidth(job, 1.0);
-    while ((cp = *cells++)){
-	if (cp->ruled) emit_html_rules(job, cp, env, tbl->data.pencolor);
-    }
-
-    if (tbl->data.border) {
-	if ((tbl->data.style & ROUNDED) ||
-	    (tbl->data.style & DASHED) ||
-	    (tbl->data.style & DOTTED) ||
-	    (tbl->data.style & INVISIBLE)) {
-	    char* color = (tbl->data.pencolor ? tbl->data.pencolor : DEFAULT_COLOR);
-	    gvrender_set_penwidth(job, tbl->data.border);
-	    gvrender_set_pencolor(job, color);
-	    sptr[0] = sptr[1] = NULL;
-	    if(tbl->data.style & DASHED)
-	      sptr[0] = "dashed";
-	    else if(tbl->data.style & DOTTED)
-	      sptr[0] = "dotted";
-	    else if(tbl->data.style & INVISIBLE)
-	      sptr[0] = "invisible";
-	    if(sptr[0] != NULL)
-	      gvrender_set_style(job,sptr);
-	    else
-	      gvrender_set_style(job, job->gvc->defaultlinestyle);
-	    if (tbl->data.style & ROUNDED)
-	      round_corners (job, AF, 4, tbl->data.style, 0);	      
-	    else
-	      doBorder(job, tbl->data.pencolor, tbl->data.border, pts);
+	/* Fill first */
+	if (tbl->data.bgcolor) {
+	    char *clrs[2];
+	    int filled =
+		setFill(job, tbl->data.bgcolor, tbl->data.gradientangle,
+			tbl->data.style, clrs);
+	    if (tbl->data.style & ROUNDED) {
+		round_corners(job, mkPts(AF, pts, tbl->data.border), 4,
+			      ROUNDED, filled);
+	    } else
+		gvrender_box(job, pts, filled);
+	    free(clrs[0]);
 	}
-	else
-	    doBorder(job, tbl->data.pencolor, tbl->data.border, pts);
+
+	while (*cells) {
+	    emit_html_cell(job, *cells, env);
+	    cells++;
+	}
+
+	/* Draw table rules and border.
+	 * Draw after cells so we can draw over any fill.
+	 * At present, we set the penwidth to 1 for rules until we provide the calculations to take
+	 * into account wider rules.
+	 */
+	cells = tbl->u.n.cells;
+	gvrender_set_penwidth(job, 1.0);
+	while ((cp = *cells++)) {
+	    if (cp->ruled)
+		emit_html_rules(job, cp, env, tbl->data.pencolor);
+	}
+
+	if (tbl->data.border)
+	    doBorder(job, &tbl->data, pts);
+
     }
 
     if (anchor)
-	endAnchor (job, &saved, 1);
+	endAnchor(job, &saved, 1);
 
     if (doAnchor && (job->flags & EMIT_CLUSTERS_LAST)) {
 	if (initAnchor(job, env, &tbl->data, pts, &saved, 0))
-	    endAnchor (job, &saved, 0);
+	    endAnchor(job, &saved, 0);
     }
 
     if (tbl->font)
@@ -548,12 +543,11 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
  * Scaling is determined by either the image's scale attribute,
  * or the imagescale attribute of the graph object being drawn.
  */
-static void
-emit_html_img(GVJ_t * job, htmlimg_t * cp, htmlenv_t * env)
+static void emit_html_img(GVJ_t * job, htmlimg_t * cp, htmlenv_t * env)
 {
     pointf A[4];
     boxf bb = cp->box;
-    char* scale;
+    char *scale;
 
     bb.LL.x += env->pos.x;
     bb.LL.y += env->pos.y;
@@ -574,15 +568,13 @@ emit_html_img(GVJ_t * job, htmlimg_t * cp, htmlenv_t * env)
     gvrender_usershape(job, cp->src, A, 4, TRUE, scale);
 }
 
-static void
-emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
+static void emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
 {
     htmlmap_data_t saved;
     boxf pts = cp->data.box;
     pointf pos = env->pos;
     int inAnchor, doAnchor = (cp->data.href || cp->data.target);
     pointf AF[4];
-    char *sptr[2];
 
     pts.LL.x += pos.x;
     pts.UR.x += pos.x;
@@ -593,72 +585,38 @@ emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
 	inAnchor = initAnchor(job, env, &cp->data, pts, &saved, 1);
     else
 	inAnchor = 0;
-    
-    /* Set up rounded style */
-    if (cp->data.style & ROUNDED) {
-	AF[0] = pts.LL;
-	AF[2] = pts.UR;
-	if (cp->data.border) {
-	    double delta = ((double)cp->data.border)/2.0;
-	    AF[0].x += delta;
-	    AF[0].y += delta;
-	    AF[2].x -= delta;
-	    AF[2].y -= delta;
+
+    if (!(cp->data.style & INVISIBLE)) {
+	if (cp->data.bgcolor) {
+	    char *clrs[2];
+	    int filled =
+		setFill(job, cp->data.bgcolor, cp->data.gradientangle,
+			cp->data.style, clrs);
+	    if (cp->data.style & ROUNDED) {
+		round_corners(job, mkPts(AF, pts, cp->data.border), 4,
+			      ROUNDED, filled);
+	    } else
+		gvrender_box(job, pts, filled);
+	    free(clrs[0]);
 	}
-	AF[1].x = AF[2].x;
-	AF[1].y = AF[0].y;
-	AF[3].x = AF[0].x;
-	AF[3].y = AF[2].y;
-    }
 
-    if (cp->data.bgcolor) {
-	char* clrs[2];
-	int filled = setFill (job, cp->data.bgcolor, cp->data.gradientangle, cp->data.style, clrs);
-	gvrender_box(job, pts, filled);
-	free (clrs[0]);
-    }
+	if (cp->data.border)
+	    doBorder(job, &cp->data, pts);
 
-    if (cp->data.border) {
-	if ((cp->data.style & ROUNDED) ||
-	    (cp->data.style & DASHED) ||
-	    (cp->data.style & DOTTED) ||
-	    (cp->data.style & INVISIBLE)) {
-	    char* color = (cp->data.pencolor ? cp->data.pencolor : DEFAULT_COLOR);
-	    gvrender_set_penwidth(job, cp->data.border);
-	    gvrender_set_pencolor(job, color);
-	    sptr[0] = sptr[1] = NULL;
-	    if(cp->data.style & DASHED)
-	      sptr[0] = "dashed";
-	    else if(cp->data.style & DOTTED)
-	      sptr[0] = "dotted";
-	    else if(cp->data.style & INVISIBLE)
-	      sptr[0] = "invisible";
-	    if(sptr[0] == NULL)
-		gvrender_set_style(job, job->gvc->defaultlinestyle);
-	    else
-		gvrender_set_style(job,sptr);
-	    if (cp->data.style & ROUNDED)
-	      round_corners (job, AF, 4, cp->data.style, 0);	      
-	    else 
-	      doBorder(job, cp->data.pencolor, cp->data.border, pts);
-	    }
+	if (cp->child.kind == HTML_TBL)
+	    emit_html_tbl(job, cp->child.u.tbl, env);
+	else if (cp->child.kind == HTML_IMAGE)
+	    emit_html_img(job, cp->child.u.img, env);
+	else
+	    emit_html_txt(job, cp->child.u.txt, env);
     }
-    else
-	doBorder(job, cp->data.pencolor, cp->data.border, pts);
-
-    if (cp->child.kind == HTML_TBL)
-	emit_html_tbl(job, cp->child.u.tbl, env);
-    else if (cp->child.kind == HTML_IMAGE)
-	emit_html_img(job, cp->child.u.img, env);
-    else
-	emit_html_txt(job, cp->child.u.txt, env);
 
     if (inAnchor)
-	endAnchor (job, &saved, 1);
+	endAnchor(job, &saved, 1);
 
     if (doAnchor && (job->flags & EMIT_CLUSTERS_LAST)) {
 	if (initAnchor(job, env, &cp->data, pts, &saved, 0))
-	    endAnchor (job, &saved, 0);
+	    endAnchor(job, &saved, 0);
     }
 }
 
@@ -668,8 +626,7 @@ emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
  * This inherits the type, emit_state, and object of the
  * parent, as well as the url, explicit, target and tooltip.
  */
-static void
-allocObj (GVJ_t * job)
+static void allocObj(GVJ_t * job)
 {
     obj_state_t *obj;
     obj_state_t *parent;
@@ -679,16 +636,16 @@ allocObj (GVJ_t * job)
     obj->type = parent->type;
     obj->emit_state = parent->emit_state;
     switch (obj->type) {
-    case NODE_OBJTYPE :
+    case NODE_OBJTYPE:
 	obj->u.n = parent->u.n;
 	break;
-    case ROOTGRAPH_OBJTYPE :
+    case ROOTGRAPH_OBJTYPE:
 	obj->u.g = parent->u.g;
 	break;
-    case CLUSTER_OBJTYPE :
+    case CLUSTER_OBJTYPE:
 	obj->u.sg = parent->u.sg;
 	break;
-    case EDGE_OBJTYPE :
+    case EDGE_OBJTYPE:
 	obj->u.e = parent->u.e;
 	break;
     }
@@ -698,8 +655,7 @@ allocObj (GVJ_t * job)
     obj->explicit_tooltip = parent->explicit_tooltip;
 }
 
-static void
-freeObj (GVJ_t * job)
+static void freeObj(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
@@ -712,18 +668,17 @@ freeObj (GVJ_t * job)
 
 /* emit_html_label:
  */
-void
-emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t * tp)
+void emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t * tp)
 {
     htmlenv_t env;
 
-    allocObj (job);
+    allocObj(job);
     env.pos = tp->pos;
     env.finfo.color = tp->fontcolor;
     env.finfo.name = tp->fontname;
     env.finfo.size = tp->fontsize;
     env.finfo.size = tp->fontsize;
-    env.imgscale = agget (job->obj->u.n, "imagescale");
+    env.imgscale = agget(job->obj->u.n, "imagescale");
     env.objid = job->obj->id;
     env.objid_set = 0;
     if ((env.imgscale == NULL) || (env.imgscale[0] == '\0'))
@@ -743,8 +698,8 @@ emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t * tp)
 	emit_html_txt(job, lp->u.txt, &env);
     }
     if (env.objid_set)
-	free (env.objid);
-    freeObj (job);
+	free(env.objid);
+    freeObj(job);
 }
 
 void free_html_font(htmlfont_t * fp)
@@ -752,9 +707,9 @@ void free_html_font(htmlfont_t * fp)
     fp->cnt--;
     if (fp->cnt == 0) {
 	if (fp->name)
-	   free(fp->name);
+	    free(fp->name);
 	if (fp->color)
-	   free(fp->color);
+	    free(fp->color);
 	free(fp);
     }
 }
@@ -770,26 +725,31 @@ void free_html_data(htmldata_t * dp)
     free(dp->pencolor);
 }
 
-void free_html_text(htmltxt_t* t)
+void free_html_text(htmltxt_t * t)
 {
     htextpara_t *tl;
     textpara_t *ti;
     int i, j;
 
-    if (!t) return;
+    if (!t)
+	return;
 
     tl = t->paras;
     for (i = 0; i < t->nparas; i++) {
 	ti = tl->items;
 	for (j = 0; j < tl->nitems; j++) {
-	    if (ti->str) free (ti->str);
-	    if (ti->font) free_html_font(ti->font);
-	    if (ti->layout && ti->free_layout) ti->free_layout (ti->layout);
+	    if (ti->str)
+		free(ti->str);
+	    if (ti->font)
+		free_html_font(ti->font);
+	    if (ti->layout && ti->free_layout)
+		ti->free_layout(ti->layout);
 	    ti++;
 	}
 	tl++;
     }
-    if (t->paras) free(t->paras);
+    if (t->paras)
+	free(t->paras);
     free(t);
 }
 
@@ -846,11 +806,11 @@ void free_html_label(htmllabel_t * lp, int root)
 	free(lp);
 }
 
-static htmldata_t* portToTbl(htmltbl_t *, char *);  /* forward declaration */
+static htmldata_t *portToTbl(htmltbl_t *, char *);	/* forward declaration */
 
-static htmldata_t* portToCell(htmlcell_t * cp, char *id)
+static htmldata_t *portToCell(htmlcell_t * cp, char *id)
 {
-    htmldata_t* rv;
+    htmldata_t *rv;
 
     if (cp->data.port && (strcasecmp(cp->data.port, id) == 0))
 	rv = &cp->data;
@@ -866,12 +826,11 @@ static htmldata_t* portToCell(htmlcell_t * cp, char *id)
  * See if tp or any of its child cells has the given port id.
  * If true, return corresponding box.
  */
-static htmldata_t* 
-portToTbl(htmltbl_t* tp, char* id)
+static htmldata_t *portToTbl(htmltbl_t * tp, char *id)
 {
-    htmldata_t*  rv;
-    htmlcell_t** cells;
-    htmlcell_t*  cp;
+    htmldata_t *rv;
+    htmlcell_t **cells;
+    htmlcell_t *cp;
 
     if (tp->data.port && (strcasecmp(tp->data.port, id) == 0))
 	rv = &tp->data;
@@ -893,11 +852,11 @@ portToTbl(htmltbl_t* tp, char* id)
  * If successful, return pointer to port's box.
  * Else return NULL.
  */
-boxf *html_port(node_t * n, char *pname, int* sides)
+boxf *html_port(node_t * n, char *pname, int *sides)
 {
-    htmldata_t*   tp; 
-    htmllabel_t* lbl = ND_label(n)->u.html;
-    boxf*         rv = NULL;
+    htmldata_t *tp;
+    htmllabel_t *lbl = ND_label(n)->u.html;
+    boxf *rv = NULL;
 
     if (lbl->kind == HTML_TEXT)
 	return NULL;
@@ -924,7 +883,7 @@ boxf *html_port(node_t * n, char *pname, int* sides)
  * At present, unimplemented, since the label may be inside a
  * non-box node and we need to figure out what this means.
  */
-int html_path(node_t * n, port* p, int side, boxf * rv, int *k)
+int html_path(node_t * n, port * p, int side, boxf * rv, int *k)
 {
 #ifdef UNIMPL
     point p;
@@ -969,15 +928,14 @@ int html_path(node_t * n, port* p, int side, boxf * rv, int *k)
     return 0;
 }
 
-static int 
-size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
+static int size_html_txt(graph_t * g, htmltxt_t * ftxt, htmlenv_t * env)
 {
-    double xsize = 0.0; /* width of text block */
-    double ysize = 0.0; /* height of text block */
+    double xsize = 0.0;		/* width of text block */
+    double ysize = 0.0;		/* height of text block */
     double fsize;
-    double lsize;    /* height of current line */
-    double mxfsize = 0.0;  /* max. font size for the current line */
-    double curbline = 0.0; /* dist. of current base line from top */
+    double lsize;		/* height of current line */
+    double mxfsize = 0.0;	/* max. font size for the current line */
+    double curbline = 0.0;	/* dist. of current base line from top */
     pointf sz;
     int i, j, w, width;
     char *fname;
@@ -990,11 +948,13 @@ size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
 	width = w = 0;
 	maxoffset = mxfsize = 0;
 	for (j = 0; j < ftxt->paras[i].nitems; j++) {
-	    lp.str = strdup_and_subst_obj (ftxt->paras[i].items[j].str, env->obj);
+	    lp.str =
+		strdup_and_subst_obj(ftxt->paras[i].items[j].str,
+				     env->obj);
 	    if (ftxt->paras[i].items[j].font) {
-		if(ftxt->paras[i].items[j].font->flags)
+		if (ftxt->paras[i].items[j].font->flags)
 		    lp.font->flags = ftxt->paras[i].items[j].font->flags;
-		else if(env->finfo.flags > 0)
+		else if (env->finfo.flags > 0)
 		    lp.font->flags = env->finfo.flags;
 		else
 		    lp.font->flags = 0;
@@ -1012,11 +972,12 @@ size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
 		lp.font->flags = 0;
 	    }
 	    sz = textsize(g, &lp, fname, fsize);
-	    free (ftxt->paras[i].items[j].str);
+	    free(ftxt->paras[i].items[j].str);
 	    ftxt->paras[i].items[j].str = lp.str;
 	    ftxt->paras[i].items[j].size = sz.x;
 	    ftxt->paras[i].items[j].yoffset_layout = lp.yoffset_layout;
-	    ftxt->paras[i].items[j].yoffset_centerline = lp.yoffset_centerline;
+	    ftxt->paras[i].items[j].yoffset_centerline =
+		lp.yoffset_centerline;
 	    ftxt->paras[i].items[j].postscript_alias = lp.postscript_alias;
 	    ftxt->paras[i].items[j].layout = lp.layout;
 	    ftxt->paras[i].items[j].free_layout = lp.free_layout;
@@ -1027,12 +988,12 @@ size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
 	/* lsize = mxfsize * LINESPACING; */
 	lsize = mxfsize;
 	ftxt->paras[i].size = (double) width;
-	    /* ysize - curbline is the distance from the previous
-	     * baseline to the bottom of the previous line.
-	     * Then, in the current line, we set the baseline to
-	     * be 5/6 of the max. font size. Thus, lfsize gives the
-	     * distance from the previous baseline to the new one.
-	     */
+	/* ysize - curbline is the distance from the previous
+	 * baseline to the bottom of the previous line.
+	 * Then, in the current line, we set the baseline to
+	 * be 5/6 of the max. font size. Thus, lfsize gives the
+	 * distance from the previous baseline to the new one.
+	 */
 	/* ftxt->paras[i].lfsize = 5*mxfsize/6 + ysize - curbline; */
 	ftxt->paras[i].lfsize = mxfsize + ysize - curbline - maxoffset;
 	curbline += ftxt->paras[i].lfsize;
@@ -1048,7 +1009,7 @@ size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
 }
 
 /* forward declarion for recursive usage */
-static int size_html_tbl(graph_t *g, htmltbl_t * tbl, htmlcell_t * parent,
+static int size_html_tbl(graph_t * g, htmltbl_t * tbl, htmlcell_t * parent,
 			 htmlenv_t * env);
 
 /* size_html_img:
@@ -1076,7 +1037,8 @@ static int size_html_img(htmlimg_t * img, htmlenv_t * env)
 /* size_html_cell:
  */
 static int
-size_html_cell(graph_t *g, htmlcell_t * cp, htmltbl_t * parent, htmlenv_t * env)
+size_html_cell(graph_t * g, htmlcell_t * cp, htmltbl_t * parent,
+	       htmlenv_t * env)
 {
     int rv;
     pointf sz, child_sz;
@@ -1164,7 +1126,7 @@ static int findCol(PointSet * ps, int row, int col, htmlcell_t * cellp)
  * Recursively size cells.
  * Return 1 if problem sizing a cell.
  */
-static int processTbl(graph_t *g, htmltbl_t * tbl, htmlenv_t * env)
+static int processTbl(graph_t * g, htmltbl_t * tbl, htmlenv_t * env)
 {
     pitem *rp;
     pitem *cp;
@@ -1177,7 +1139,7 @@ static int processTbl(graph_t *g, htmltbl_t * tbl, htmlenv_t * env)
     int n_rows = 0;
     int n_cols = 0;
     PointSet *ps = newPS();
-    Dt_t* is = openIntSet();
+    Dt_t *is = openIntSet();
 
     rp = (pitem *) dtflatten(rows);
     cnt = 0;
@@ -1191,7 +1153,7 @@ static int processTbl(graph_t *g, htmltbl_t * tbl, htmlenv_t * env)
 	    cp = (pitem *) dtlink(cdict, (Dtlink_t *) cp);
 	}
 	if (rp->ruled) {
-	    addIntSet (is, r+1);
+	    addIntSet(is, r + 1);
 	}
 	rp = (pitem *) dtlink(rows, (Dtlink_t *) rp);
 	r++;
@@ -1214,7 +1176,8 @@ static int processTbl(graph_t *g, htmltbl_t * tbl, htmlenv_t * env)
 	    c += cellp->cspan;
 	    n_cols = MAX(c, n_cols);
 	    n_rows = MAX(r + cellp->rspan, n_rows);
-	    if (inIntSet (is, r+cellp->rspan)) cellp->ruled |= HTML_HRULE;
+	    if (inIntSet(is, r + cellp->rspan))
+		cellp->ruled |= HTML_HRULE;
 	    cp = (pitem *) dtlink(cdict, (Dtlink_t *) cp);
 	}
 	rp = (pitem *) dtlink(rows, (Dtlink_t *) rp);
@@ -1317,7 +1280,7 @@ static void checkChain(graph_t * g)
     for (h = ND_next(t); h; h = ND_next(h)) {
 	if (!agfindedge(g, t, h)) {
 #ifdef WITH_CGRAPH
-            e = agedge(g, t, h, NULL, 1);
+	    e = agedge(g, t, h, NULL, 1);
 	    agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
 #else
 	    e = agedge(g, t, h);
@@ -1349,13 +1312,13 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
     node_t *h;
     edge_t *e;
     int i;
-    int* minc;
-    int* minr;
+    int *minc;
+    int *minr;
 
     lastn = NULL;
     for (i = 0; i <= tbl->cc; i++) {
 #ifdef WITH_CGRAPH
-	t = agnode(colg, nToName(i),1);
+	t = agnode(colg, nToName(i), 1);
 	agbindrec(t, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
 #else
 	t = agnode(colg, nToName(i));
@@ -1372,7 +1335,7 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
     lastn = NULL;
     for (i = 0; i <= tbl->rc; i++) {
 #ifdef WITH_CGRAPH
-	t = agnode(rowg, nToName(i),1);
+	t = agnode(rowg, nToName(i), 1);
 	agbindrec(t, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
 #else
 	t = agnode(rowg, nToName(i));
@@ -1389,17 +1352,17 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
     minr = N_NEW(tbl->rc, int);
     minc = N_NEW(tbl->cc, int);
     for (cells = tbl->u.n.cells; *cells; cells++) {
-        int x, y, c, r;
+	int x, y, c, r;
 	cp = *cells;
-        x = (cp->data.box.UR.x + (cp->cspan-1))/cp->cspan;
-        for (c = 0; c < cp->cspan; c++)
-          minc[cp->col + c] = MAX(minc[cp->col + c],x);
-        y = (cp->data.box.UR.y + (cp->rspan-1))/cp->rspan;
-        for (r = 0; r < cp->rspan; r++)
-          minr[cp->row + r] = MAX(minr[cp->row + r],y);
+	x = (cp->data.box.UR.x + (cp->cspan - 1)) / cp->cspan;
+	for (c = 0; c < cp->cspan; c++)
+	    minc[cp->col + c] = MAX(minc[cp->col + c], x);
+	y = (cp->data.box.UR.y + (cp->rspan - 1)) / cp->rspan;
+	for (r = 0; r < cp->rspan; r++)
+	    minr[cp->row + r] = MAX(minr[cp->row + r], y);
     }
     for (cells = tbl->u.n.cells; *cells; cells++) {
-        int x, y, c, r;
+	int x, y, c, r;
 	cp = *cells;
 	t = agfindnode(colg, nToName(cp->col));
 	h = agfindnode(colg, nToName(cp->col + cp->cspan));
@@ -1409,9 +1372,9 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
 #else
 	e = agedge(colg, t, h);
 #endif
-        x = 0;
-        for (c = 0; c < cp->cspan; c++)
-            x += minc[cp->col + c];
+	x = 0;
+	for (c = 0; c < cp->cspan; c++)
+	    x += minc[cp->col + c];
 	ED_minlen(e) = x;
 	/* ED_minlen(e) = cp->data.box.UR.x; */
 #if (DEBUG==2)
@@ -1429,9 +1392,9 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
 #else
 	e = agedge(rowg, t, h);
 #endif
-        y = 0;
-        for (r = 0; r < cp->rspan; r++)
-            y += minr[cp->row + r];
+	y = 0;
+	for (r = 0; r < cp->rspan; r++)
+	    y += minr[cp->row + r];
 	ED_minlen(e) = y;
 	/* ED_minlen(e) = cp->data.box.UR.y; */
 #if (DEBUG==2)
@@ -1446,8 +1409,8 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
     checkChain(colg);
     checkChain(rowg);
 
-    free (minc);
-    free (minr);
+    free(minc);
+    free(minr);
 }
 
 /* setSizes:
@@ -1498,11 +1461,11 @@ void sizeArray(htmltbl_t * tbl)
     tbl->widths = N_NEW(tbl->cc + 1, int);
 
 #ifdef WITH_CGRAPH
-    rowg = agopen("rowg", Agdirected,NIL(Agdisc_t *));
-    colg = agopen("colg", Agdirected,NIL(Agdisc_t *));
+    rowg = agopen("rowg", Agdirected, NIL(Agdisc_t *));
+    colg = agopen("colg", Agdirected, NIL(Agdisc_t *));
     /* Only need GD_nlist */
-    agbindrec(rowg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);    // graph custom data
-    agbindrec(colg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);    // graph custom data
+    agbindrec(rowg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	// graph custom data
+    agbindrec(colg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	// graph custom data
 #else
     rowg = agopen("rowg", AGDIGRAPH);
     colg = agopen("colg", AGDIGRAPH);
@@ -1514,7 +1477,7 @@ void sizeArray(htmltbl_t * tbl)
     closeGraphs(rowg, colg);
 }
 
-static void pos_html_tbl(htmltbl_t *, boxf, int);  /* forward declaration */
+static void pos_html_tbl(htmltbl_t *, boxf, int);	/* forward declaration */
 
 /* pos_html_img:
  * Place image in cell
@@ -1529,13 +1492,12 @@ static void pos_html_img(htmlimg_t * cp, boxf pos)
 /* pos_html_txt:
  * Set default alignment.
  */
-static void
-pos_html_txt(htmltxt_t* ftxt, char c)
+static void pos_html_txt(htmltxt_t * ftxt, char c)
 {
     int i;
 
     for (i = 0; i < ftxt->nparas; i++) {
-	if (ftxt->paras[i].just == UNSET_ALIGN)  /* unset */
+	if (ftxt->paras[i].just == UNSET_ALIGN)	/* unset */
 	    ftxt->paras[i].just = c;
     }
 }
@@ -1632,9 +1594,10 @@ static void pos_html_cell(htmlcell_t * cp, boxf pos, int sides)
 	oldsz = cp->child.u.txt->box.UR;
 	delx = (cbox.UR.x - cbox.LL.x) - oldsz.x;
 	/* If the cell is larger than the text block and alignment is 
-         * done at textblock level, the text box is shrunk accordingly. 
-         */
-	if ((delx > 0)&&((af=(cp->data.flags & HALIGN_MASK)) != HALIGN_TEXT)) {
+	 * done at textblock level, the text box is shrunk accordingly. 
+	 */
+	if ((delx > 0)
+	    && ((af = (cp->data.flags & HALIGN_MASK)) != HALIGN_TEXT)) {
 	    switch (af) {
 	    case HALIGN_LEFT:
 		cbox.UR.x -= delx;
@@ -1667,7 +1630,7 @@ static void pos_html_cell(htmlcell_t * cp, boxf pos, int sides)
 	cp->child.u.txt->box = cbox;
 
 	/* Set default text alignment
-         */
+	 */
 	switch (cp->data.flags & BALIGN_MASK) {
 	case BALIGN_LEFT:
 	    dfltalign = 'l';
@@ -1679,7 +1642,7 @@ static void pos_html_cell(htmlcell_t * cp, boxf pos, int sides)
 	    dfltalign = 'n';
 	    break;
 	}
-	pos_html_txt (cp->child.u.txt, dfltalign);
+	pos_html_txt(cp->child.u.txt, dfltalign);
     }
 }
 
@@ -1697,8 +1660,9 @@ static void pos_html_tbl(htmltbl_t * tbl, boxf pos, int sides)
     htmlcell_t *cp;
     boxf cbox;
 
-    if (tbl->u.n.parent && tbl->u.n.parent->data.pencolor && !tbl->data.pencolor)
-	tbl->data.pencolor = strdup (tbl->u.n.parent->data.pencolor);
+    if (tbl->u.n.parent && tbl->u.n.parent->data.pencolor
+	&& !tbl->data.pencolor)
+	tbl->data.pencolor = strdup(tbl->u.n.parent->data.pencolor);
 
     oldsz = tbl->data.box.UR.x;
     delx = (pos.UR.x - pos.LL.x) - oldsz;
@@ -1764,10 +1728,14 @@ static void pos_html_tbl(htmltbl_t * tbl, boxf pos, int sides)
     while ((cp = *cells++)) {
 	int mask = 0;
 	if (sides) {
-	    if (cp->col == 0) mask |= LEFT;
-	    if (cp->row == 0) mask |= TOP;
-	    if (cp->col + cp->cspan == tbl->cc) mask |= RIGHT;
-	    if (cp->row + cp->rspan == tbl->rc) mask |= BOTTOM;
+	    if (cp->col == 0)
+		mask |= LEFT;
+	    if (cp->row == 0)
+		mask |= TOP;
+	    if (cp->col + cp->cspan == tbl->cc)
+		mask |= RIGHT;
+	    if (cp->row + cp->rspan == tbl->rc)
+		mask |= BOTTOM;
 	}
 	cbox.LL.x = tbl->widths[cp->col];
 	cbox.UR.x = tbl->widths[cp->col + cp->cspan] - tbl->data.space;
@@ -1785,7 +1753,8 @@ static void pos_html_tbl(htmltbl_t * tbl, boxf pos, int sides)
  * size of each cell.
  */
 static int
-size_html_tbl(graph_t *g, htmltbl_t * tbl, htmlcell_t * parent, htmlenv_t * env)
+size_html_tbl(graph_t * g, htmltbl_t * tbl, htmlcell_t * parent,
+	      htmlenv_t * env)
 {
     int i, wd, ht;
     int rv = 0;
@@ -1873,7 +1842,7 @@ void printBox(boxf b)
     fprintf(stderr, "(%f,%f)(%f,%f)", b.LL.x, b.LL.y, b.UR.x, b.UR.y);
 }
 
-void printImage(htmlimg_t *ip, int ind)
+void printImage(htmlimg_t * ip, int ind)
 {
     indent(ind);
     fprintf(stderr, "img: %s\n", ip->src);
@@ -1884,21 +1853,22 @@ void printTxt(htmltxt_t * txt, int ind)
     int i, j;
 
     indent(ind);
-    fprintf (stderr, "txt paras = %d \n", txt->nparas);
+    fprintf(stderr, "txt paras = %d \n", txt->nparas);
     for (i = 0; i < txt->nparas; i++) {
-	indent(ind+1);
-	fprintf (stderr, "[%d] %d items\n", i, txt->paras[i].nitems);
+	indent(ind + 1);
+	fprintf(stderr, "[%d] %d items\n", i, txt->paras[i].nitems);
 	for (j = 0; j < txt->paras[i].nitems; j++) {
-	    indent(ind+2);
-	    fprintf (stderr, "[%d] (%f) \"%s\" ",
-		   j, txt->paras[i].items[j].size,
-		   txt->paras[i].items[j].str);
+	    indent(ind + 2);
+	    fprintf(stderr, "[%d] (%f) \"%s\" ",
+		    j, txt->paras[i].items[j].size,
+		    txt->paras[i].items[j].str);
 	    if (txt->paras[i].items[j].font)
-	      fprintf (stderr, "font %s color %s size %f\n",
-		   txt->paras[i].items[j].font->name,
-		   txt->paras[i].items[j].font->color,
-		   txt->paras[i].items[j].font->size);
-	    else fprintf (stderr, "\n");
+		fprintf(stderr, "font %s color %s size %f\n",
+			txt->paras[i].items[j].font->name,
+			txt->paras[i].items[j].font->color,
+			txt->paras[i].items[j].font->size);
+	    else
+		fprintf(stderr, "\n");
 	}
     }
 }
@@ -2012,14 +1982,14 @@ int make_html_label(void *obj, textlabel_t * lp)
 #else
     case AGGRAPH:
 #endif
-        env.g = ((Agraph_t *) obj)->root;
-        break;
+	env.g = ((Agraph_t *) obj)->root;
+	break;
     case AGNODE:
-        env.g = agraphof(((Agnode_t *) obj));
-        break;
+	env.g = agraphof(((Agnode_t *) obj));
+	break;
     case AGEDGE:
-        env.g = agraphof(aghead (((Agedge_t *) obj)));
-        break;
+	env.g = agraphof(aghead(((Agedge_t *) obj)));
+	break;
     }
     g = env.g->root;
 
@@ -2039,7 +2009,7 @@ int make_html_label(void *obj, textlabel_t * lp)
 	case CHAR_LATIN1:
 	    s = latin1ToUTF8(lp->text);
 	    break;
-	default: /* UTF8 */
+	default:		/* UTF8 */
 	    s = htmlEntityUTF8(lp->text, env.g);
 	    break;
 	}
@@ -2051,7 +2021,7 @@ int make_html_label(void *obj, textlabel_t * lp)
     }
 
     if (lbl->kind == HTML_TBL) {
-	if (! lbl->u.tbl->data.pencolor && getPenColor(obj))
+	if (!lbl->u.tbl->data.pencolor && getPenColor(obj))
 	    lbl->u.tbl->data.pencolor = strdup(getPenColor(obj));
 	rv |= size_html_tbl(g, lbl->u.tbl, NULL, &env);
 	wd2 = (lbl->u.tbl->data.box.UR.x + 1) / 2;
@@ -2076,10 +2046,9 @@ int make_html_label(void *obj, textlabel_t * lp)
      * be used for the title and alt fields in image maps.
      */
     if (lbl->kind == HTML_TBL) {
-	free (lp->text);
-	lp->text = strdup ("<TABLE>");
+	free(lp->text);
+	lp->text = strdup("<TABLE>");
     }
 
     return rv;
 }
-
