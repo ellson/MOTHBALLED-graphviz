@@ -861,15 +861,19 @@ and <A HREF="command.html#d:SERVER_NAME">SERVER_NAME</A>.
 <BLOCKQUOTE>
 specifies style characteristics of the table or cell. Style characteristics are
 given as a comma or space separated list of style attributes. At present, the only
-legal attributes are "ROUNDED" and "RADIAL" for tables, and "RADIAL" for cells.
-If "ROUNDED" is specified, the table will have rounded corners.
-This probably works best if the outmost cells have no borders, or their CELLSPACING
+legal attributes are "ROUNDED", "RADIAL", "DASHED" and "DOTTED".
+<P>
+If "ROUNDED" is specified, the table or cell will have rounded corners.
+For tables, this probably works best if the outmost cells have no borders, or their CELLSPACING
 is sufficiently large.
 If it is desirable to have borders around the cells, use <I><B>HR</B></I>
 and <I><B>VR</B></I> elements, or the <I><B>COLUMNS</B></I> and <I><B>ROWS</B></I> attributes of <I><B>TABLE</B></I>.
 <P>
 The "RADIAL" attribute indicates a radial gradient fill. See the <B><I>BGCOLOR</I></B> and
 <B><I>GRADIENTANGLE</I></B> attributes.
+<P>
+A "DOTTED" or "DASHED" attribute indicates that a border, if it exists, will be drawn as a dotted
+or dashed line, respectively.
 </BLOCKQUOTE>
 
 <B><I><FONT SIZE=-1>TARGET="value"</FONT></I></B>
@@ -1015,7 +1019,7 @@ How to create custom shapes</A>.
 One example of user-defined node shapes is provided by Mark Rison of CSR.
 These are the <A  HREF=http://www.sdl-forum.org/SDL/index.htm>SDL</A> shapes.
 These are available as PostScript functions whose use is described in
-<A HREF="http://www.graphviz.org/wiki/how-create-custom-shapes#psprocs"> External PostScript procedures</A>.
+<A HREF="http://www.graphviz.org/Documentation/html/shapehowto.html#psprocs"> External PostScript procedures</A>.
 The necessary PostScript library file and sample use can be found in the
 <tt>contrib/sdlshapes</tt> directory in the release. Please note the
 COPYRIGHT AND PERMISSION NOTICE contained in the library file <tt>sdl.ps</tt>.
