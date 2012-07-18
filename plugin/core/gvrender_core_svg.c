@@ -46,6 +46,8 @@ typedef enum { FORMAT_SVG, FORMAT_SVGZ, } format_type;
 static char *sdasharray = "5,2";
 /* SVG dot array */
 static char *sdotarray = "1,5";
+static int gradId;
+static int anchorId;
 
 #ifndef HAVE_STRCASECMP
 extern int strcasecmp(const char *s1, const char *s2);
@@ -164,6 +166,7 @@ static void svg_begin_graph(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
+    anchorId = gradId = 0;
     gvputs(job, "<!--");
     if (agnameof(obj->u.g)[0]) {
 	gvputs(job, " Title: ");
@@ -202,6 +205,11 @@ static void svg_end_layer(GVJ_t * job)
     gvputs(job, "</g>\n");
 }
 
+#if UNSUPPORTED
+/* svg_begin_page:
+ * Currently, svg output does not support pages.
+ * FIX: If implemented, we must guarantee the id is unique.
+ */
 static void svg_begin_page(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
@@ -227,6 +235,7 @@ static void svg_end_page(GVJ_t * job)
 {
     gvputs(job, "</g>\n");
 }
+#endif
 
 static void svg_begin_cluster(GVJ_t * job)
 {
@@ -251,6 +260,8 @@ static void svg_begin_node(GVJ_t * job)
 
     gvputs(job, "<g id=\"");
     gvputs(job, xml_string(obj->id));
+    if (job->layerNum > 1)
+	gvprintf (job, "_%s", xml_string(job->gvc->layerIDs[job->layerNum]));
     gvputs(job, "\" class=\"node\">");
     gvputs(job, "<title>");
     gvputs(job, xml_string(agnameof(obj->u.n)));
@@ -289,7 +300,7 @@ svg_begin_anchor(GVJ_t * job, char *href, char *tooltip, char *target,
 {
     gvputs(job, "<g");
     if (id) {
-        gvputs(job, " id=\"");
+	gvprintf(job, " id=\"a%d_", anchorId++);
         gvputs(job, xml_string(id));
         gvputs(job, "\"");
     }
@@ -422,8 +433,6 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
     gvputs(job, xml_string(para->str));
     gvputs(job, "</text>\n");
 }
-
-static int gradId;
 
 /* svg_gradstyle
  * Outputs the SVG statements that define the gradient pattern
@@ -626,8 +635,8 @@ gvrender_engine_t svg_engine = {
     svg_end_graph,
     svg_begin_layer,
     svg_end_layer,
-    svg_begin_page,
-    svg_end_page,
+    0,				/* svg_begin_page */
+    0,				/* svg_end_page */
     svg_begin_cluster,
     svg_end_cluster,
     0,				/* svg_begin_nodes */
