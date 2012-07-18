@@ -2,6 +2,7 @@ July 12, 2012
 	- For HTML-like labels, provide rounded cells, and dashed or dotted borders.
 	- Add lcurve and rcurve arrowheads.
 	- Add prototype pie chart and striped fills.
+	- Support insets in treemaps to make containment clear
 June 7, 2012
 	- Add random rooted tree generation to gvgen
 February 29, 2012
