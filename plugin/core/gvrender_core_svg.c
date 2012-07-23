@@ -166,7 +166,6 @@ static void svg_begin_graph(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
-    anchorId = gradId = 0;
     gvputs(job, "<!--");
     if (agnameof(obj->u.g)[0]) {
 	gvputs(job, " Title: ");
@@ -205,7 +204,6 @@ static void svg_end_layer(GVJ_t * job)
     gvputs(job, "</g>\n");
 }
 
-#if UNSUPPORTED
 /* svg_begin_page:
  * Currently, svg output does not support pages.
  * FIX: If implemented, we must guarantee the id is unique.
@@ -235,7 +233,6 @@ static void svg_end_page(GVJ_t * job)
 {
     gvputs(job, "</g>\n");
 }
-#endif
 
 static void svg_begin_cluster(GVJ_t * job)
 {
@@ -635,8 +632,8 @@ gvrender_engine_t svg_engine = {
     svg_end_graph,
     svg_begin_layer,
     svg_end_layer,
-    0,				/* svg_begin_page */
-    0,				/* svg_end_page */
+    svg_begin_page,
+    svg_end_page,
     svg_begin_cluster,
     svg_end_cluster,
     0,				/* svg_begin_nodes */
