@@ -14,6 +14,8 @@
 #ifndef			GVC_H
 #define			GVC_H
 
+#define WITH_CGRAPH 1
+
 #include "types.h"
 #include "gvplugin.h"
 

@@ -2874,6 +2874,12 @@ else
 fi
 AM_CONDITIONAL(WITH_CGRAPH, [test "x$use_cgraph" = "xYes"])
 
+if test "x$use_cgraph" = "xYes"; then
+  cp $(top_srcdir)lib/gvc/gvc.h.cgraph $(top_srcdir)lib/gvc/gvc.h
+else
+  cp $(top_srcdir)lib/gvc/gvc.h.graph $(top_srcdir)lib/gvc/gvc.h
+fi
+
 dnl -----------------------------------
 dnl ORTHO 
 
