@@ -194,7 +194,7 @@ AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 # Suppress verbose compile lines
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
-AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_HEADERS([config.h lib/gvc/gvc.h])
 
 # put BUILDDATE in its own file so that only targets that use it get rebuilt
 echo "#define BUILDDATE \"$VERSION_DATE\"" > builddate.h
@@ -2873,12 +2873,6 @@ else
   AC_DEFINE_UNQUOTED(WITH_CGRAPH,1,[Define if you want CGRAPH])
 fi
 AM_CONDITIONAL(WITH_CGRAPH, [test "x$use_cgraph" = "xYes"])
-
-if test "x$use_cgraph" = "xYes"; then
-  cp $(top_srcdir)lib/gvc/gvc.h.cgraph $(top_srcdir)lib/gvc/gvc.h
-else
-  cp $(top_srcdir)lib/gvc/gvc.h.graph $(top_srcdir)lib/gvc/gvc.h
-fi
 
 dnl -----------------------------------
 dnl ORTHO 

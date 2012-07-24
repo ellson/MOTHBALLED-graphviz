@@ -14,7 +14,8 @@
 #ifndef			GVC_H
 #define			GVC_H
 
-#define WITH_CGRAPH 1
+/* Define if you want CGRAPH */
+#undef WITH_CGRAPH
 
 #include "types.h"
 #include "gvplugin.h"
