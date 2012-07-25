@@ -46,8 +46,6 @@ typedef enum { FORMAT_SVG, FORMAT_SVGZ, } format_type;
 static char *sdasharray = "5,2";
 /* SVG dot array */
 static char *sdotarray = "1,5";
-static int gradId;
-static int anchorId;
 
 #ifndef HAVE_STRCASECMP
 extern int strcasecmp(const char *s1, const char *s2);
@@ -297,7 +295,7 @@ svg_begin_anchor(GVJ_t * job, char *href, char *tooltip, char *target,
 {
     gvputs(job, "<g");
     if (id) {
-	gvprintf(job, " id=\"a%d_", anchorId++);
+	gvputs(job, " id=\"a_");
         gvputs(job, xml_string(id));
         gvputs(job, "\"");
     }
@@ -438,6 +436,7 @@ static int svg_gradstyle(GVJ_t * job, pointf * A, int n)
 {
     pointf G[2];
     float angle;
+    static int gradId;
     int id = gradId++;
 
     obj_state_t *obj = job->obj;
@@ -478,7 +477,8 @@ static int svg_rgradstyle(GVJ_t * job, pointf * A, int n)
     pointf G[2];
     float angle;
     int ifx, ify;
-    int id = gradId++;
+    static int rgradId;
+    int id = rgradId++;
 
     obj_state_t *obj = job->obj;
     angle = obj->gradient_angle * M_PI / 180;	//angle of gradient line
