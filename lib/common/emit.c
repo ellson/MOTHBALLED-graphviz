@@ -175,6 +175,20 @@ initMapData (GVJ_t* job, char* lbl, char* url, char* tooltip, char* target, char
     return assigned;
 }
 
+static void
+layerPagePrefix (GVJ_t* job, agxbuf* xb)
+{
+    char buf[128]; /* large enough for 2 decimal 64-bit ints and "page_," */
+    if (job->layerNum > 1) {
+	agxbput (xb, job->gvc->layerIDs[job->layerNum]);
+	agxbputc (xb, '_');
+    }
+    if ((job->pagesArrayElem.x > 0) || (job->pagesArrayElem.x > 0)) {
+	sprintf (buf, "page%d,%d_", job->pagesArrayElem.x, job->pagesArrayElem.y);
+	agxbput (xb, buf);
+    }
+}
+
 /* genObjId:
  * Use id of root graph if any, plus kind and internal id of object
  */
@@ -186,11 +200,20 @@ getObjId (GVJ_t* job, void* obj, agxbuf* xb)
     char* gid = GD_drawing(root)->id;
     long idnum;
     char* pfx;
-    char buf[30]; /* large enough for decimal 64-bit int */
+    char buf[64]; /* large enough for a decimal 64-bit int */
+
+    layerPagePrefix (job, xb);
 
     id = agget(obj, "id");
-    if (id && *id)
-	return id;
+    if (id && (*id != '\0')) {
+	agxbput (xb, id);
+	return agxbuse(xb);
+    }
+
+    if ((obj != root) && gid) {
+	agxbput (xb, gid);
+	agxbputc (xb, '_');
+    }
 
     switch (agobjkind(obj)) {
 #ifndef WITH_CGRAPH
@@ -200,7 +223,10 @@ getObjId (GVJ_t* job, void* obj, agxbuf* xb)
     case AGRAPH:
 	idnum = AGSEQ(obj);
 #endif
-	pfx = "graph";
+	if (root == obj)
+	    pfx = "graph";
+	else
+	    pfx = "clust";
 	break;
     case AGNODE:
         idnum = AGSEQ((Agnode_t*)obj);
@@ -212,10 +238,6 @@ getObjId (GVJ_t* job, void* obj, agxbuf* xb)
 	break;
     }
 
-    if (gid) {
-	agxbput (xb, gid);
-	agxbputc (xb, '_');
-    }
     agxbput (xb, pfx);
     sprintf (buf, "%ld", idnum);
     agxbput (xb, buf);
@@ -3303,12 +3325,30 @@ static void emit_end_graph(GVJ_t * job, graph_t * g)
     pop_obj_state(job);
 }
 
+#define NotFirstPage(j) (((j)->layerNum>1)||((j)->pagesArrayElem.x > 0)||((j)->pagesArrayElem.x > 0))
+
 static void emit_page(GVJ_t * job, graph_t * g)
 {
     obj_state_t *obj = job->obj;
     int nump = 0, flags = job->flags;
     textlabel_t *lab;
     pointf *p = NULL;
+    char* saveid;
+    unsigned char buf[SMALLBUF];
+    agxbuf xb;
+
+    /* For the first page, we can use the values generated in emit_begin_graph. 
+     * For multiple pages, we need to generate a new id.
+     */
+    if (NotFirstPage(job)) {
+	agxbinit(&xb, SMALLBUF, buf);
+	saveid = obj->id;
+	layerPagePrefix (job, &xb);
+	agxbput (&xb, saveid);
+	obj->id = agxbuse(&xb);
+    }
+    else
+	saveid = NULL;
 
     setColorScheme (agget (g, "colorscheme"));
     setup_page(job, g);
@@ -3348,7 +3388,7 @@ static void emit_page(GVJ_t * job, graph_t * g)
 	emit_map_rect(job, job->clip);
 	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target, obj->id);
     }
-    if (numPhysicalLayers(job) == 1)
+    /* if (numPhysicalLayers(job) == 1) */
 	emit_background(job, g);
     if (GD_label(g))
 	emit_label(job, EMIT_GLABEL, GD_label(g));
@@ -3356,6 +3396,10 @@ static void emit_page(GVJ_t * job, graph_t * g)
 	gvrender_end_anchor(job);
     emit_view(job,g,flags);
     gvrender_end_page(job);
+    if (saveid) {
+	agxbfree(&xb);
+	obj->id = saveid;
+    }
 }
 
 void emit_graph(GVJ_t * job, graph_t * g)
