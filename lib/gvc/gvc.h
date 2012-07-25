@@ -66,12 +66,6 @@ extern int gvLayoutJobs(GVC_t *gvc, graph_t *g);
 /* Render layout into string attributes of the graph */
 extern void attach_attrs(graph_t *g);
 
-/* Parse an html string */
-#ifndef WITH_CGRAPH
-extern char *agstrdup_html(char *s);
-extern int aghtmlstr(char *s);
-#endif
-
 /* Render layout in a specified format to an open FILE */
 extern int gvRender(GVC_t *gvc, graph_t *g, const char *format, FILE *out);
 
