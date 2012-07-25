@@ -14,9 +14,6 @@
 #ifndef			GVC_H
 #define			GVC_H
 
-/* Define if you want CGRAPH */
-#undef WITH_CGRAPH
-
 #include "types.h"
 #include "gvplugin.h"
 
@@ -114,9 +111,6 @@ extern char** gvPluginList (GVC_t *gvc, char* kind, int* sz, char*);
  * @param gvc Graphviz context to add library to
  * @param lib library to add
  */
-
-
-
 
 extern void gvAddLibrary(GVC_t *gvc, gvplugin_library_t *lib);
 
