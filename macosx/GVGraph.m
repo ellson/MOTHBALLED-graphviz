@@ -73,7 +73,11 @@ extern char *gvplugin_list(GVC_t * gvc, api_t api, const char *str);
 				return nil;
 			}
 			
+#ifdef WITH_CGRAPH
+			_graph = agread(file,0);
+#else
 			_graph = agread(file);
+#endif
 			if (!_graph) {
 				if (outError)
 					*outError = [NSError errorWithDomain:GVGraphvizErrorDomain code:GVFileParseError userInfo:nil];
@@ -84,7 +88,11 @@ extern char *gvplugin_list(GVC_t * gvc, api_t api, const char *str);
 					parentDir = (char *)[[URL path] fileSystemRepresentation];
 					ptr = strrchr(parentDir,'/');
 					*ptr = 0;
+#ifdef WITH_CGRAPH
 					agraphattr(_graph,"imagepath",parentDir);
+#else
+					agattr(_graph,AGRAPH,"imagepath",parentDir);
+#endif
 			}
 			fclose(file);
 		}
@@ -111,9 +119,15 @@ extern char *gvplugin_list(GVC_t * gvc, api_t api, const char *str);
 
 		_freeLastLayout = NO;
 		_arguments = [[GVGraphArguments alloc] initWithGraph:self];
+#ifdef WITH_CGRAPH
+		_graphAttributes = [[GVGraphDefaultAttributes alloc] initWithGraph:self prototype:AGRAPH];
+		_defaultNodeAttributes = [[GVGraphDefaultAttributes alloc] initWithGraph:self prototype:AGNODE];
+		_defaultEdgeAttributes = [[GVGraphDefaultAttributes alloc] initWithGraph:self prototype:AGEDGE];
+#else
 		_graphAttributes = [[GVGraphDefaultAttributes alloc] initWithGraph:self prototype:_graph];
 		_defaultNodeAttributes = [[GVGraphDefaultAttributes alloc] initWithGraph:self prototype:agprotonode(_graph)];
 		_defaultEdgeAttributes = [[GVGraphDefaultAttributes alloc] initWithGraph:self prototype:agprotoedge(_graph)];
+#endif
 	}
 	
 	return self;

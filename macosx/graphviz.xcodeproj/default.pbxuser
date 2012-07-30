@@ -71,7 +71,7 @@
 			{
 				active = YES;
 				name = DYLD_LIBRARY_PATH;
-				value = "../lib/cdt/.libs:../lib/pathplan/.libs:../lib/graph/.libs:../lib/gvc/.libs";
+				value = "../lib/cdt/.libs:../lib/pathplan/.libs:../lib/cgraph/.libs:../lib/gvc/.libs";
 			},
 		);
 		executableSystemSymbolLevel = 0;

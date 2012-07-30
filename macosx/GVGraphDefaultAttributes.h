@@ -13,18 +13,25 @@
 
 #import <Foundation/Foundation.h>
 
-#include "types.h"
-#include "graph.h"
+#include "gvc.h"
 
 @class GVGraph;
 
 @interface GVGraphDefaultAttributes : NSMutableDictionary
 {
 	GVGraph *_graph;
+#ifdef WITH_CGRAPH
+	int _kind;
+#else
 	void *_proto;
+#endif
 }
 
+#ifdef WITH_CGRAPH
+- (id)initWithGraph:(GVGraph *)graph prototype:(int)kind;
+#else
 - (id)initWithGraph:(GVGraph *)graph prototype:(void *)proto;
+#endif
 
 /* dictionary primitive methods */
 - (NSUInteger)count;

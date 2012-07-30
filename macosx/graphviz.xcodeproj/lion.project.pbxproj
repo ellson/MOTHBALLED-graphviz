@@ -85,7 +85,7 @@
 		D8798BDD0D5D5BD700CCC6E3 /* GVAttributeSchema.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GVAttributeSchema.h; sourceTree = "<group>"; };
 		D8798BDE0D5D5BD700CCC6E3 /* GVAttributeSchema.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GVAttributeSchema.m; sourceTree = "<group>"; };
 		D88584190D54866C00D35701 /* Graphviz.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Graphviz.icns; sourceTree = "<group>"; };
-		D88585F70D56D3D700D35701 /* libgraph.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgraph.dylib; path = ../lib/graph/.libs/libgraph.dylib; sourceTree = SOURCE_ROOT; };
+		D88585F70D56D3D700D35701 /* libgraph.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgraph.dylib; path = ../lib/cgraph/.libs/libgraph.dylib; sourceTree = SOURCE_ROOT; };
 		D88585F90D56D3FB00D35701 /* libgvc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgvc.dylib; path = ../lib/gvc/.libs/libgvc.dylib; sourceTree = SOURCE_ROOT; };
 		D885863B0D56DC2C00D35701 /* GVWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GVWindowController.h; sourceTree = "<group>"; };
 		D885863C0D56DC2C00D35701 /* GVWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GVWindowController.m; sourceTree = "<group>"; };
@@ -384,11 +384,11 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
 					../lib/cdt/.libs,
-					../lib/graph/.libs,
+					../lib/cgraph/.libs,
 					../lib/gvc/.libs,
 				);
 				PRODUCT_NAME = Graphviz;
-				USER_HEADER_SEARCH_PATHS = "../lib/common ../lib/cdt ../lib/pathplan ../lib/graph ../lib/gvc";
+				USER_HEADER_SEARCH_PATHS = "../lib/common ../lib/cdt ../lib/pathplan ../lib/cgraph ../lib/gvc";
 				VALID_ARCHS = x86_64;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -407,11 +407,11 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
 					../lib/cdt/.libs,
-					../lib/graph/.libs,
+					../lib/cgraph/.libs,
 					../lib/gvc/.libs,
 				);
 				PRODUCT_NAME = Graphviz;
-				USER_HEADER_SEARCH_PATHS = "../lib/common ../lib/cdt ../lib/pathplan ../lib/graph ../lib/gvc";
+				USER_HEADER_SEARCH_PATHS = "../lib/common ../lib/cdt ../lib/pathplan ../lib/cgraph ../lib/gvc";
 				VALID_ARCHS = x86_64;
 				WRAPPER_EXTENSION = app;
 			};

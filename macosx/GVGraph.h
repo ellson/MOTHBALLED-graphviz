@@ -20,7 +20,9 @@
 
 @interface GVGraph : NSObject
 {
+@public
 	graph_t *_graph;
+@protected
 	BOOL _freeLastLayout;
 	
 	GVGraphArguments *_arguments;
