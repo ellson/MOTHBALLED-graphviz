@@ -505,12 +505,17 @@ static void add_cluster(Agraph_t * g, Agraph_t * subg)
 static void nop_init_graphs(Agraph_t *, attrsym_t *, attrsym_t *);
 
 /* dfs:
+ * Process subgraph subg of parent graph g
+ * If subg is a cluster, add its bounding box, if any; attach to
+ * cluster array of parent, and recursively initialize subg.
+ * If not a cluster, recursively call this function on the subgraphs
+ * of subg, using parentg as the parent graph.
  */
 static void
 #ifndef WITH_CGRAPH
 dfs(node_t * mn, Agraph_t * g, attrsym_t * G_lp, attrsym_t * G_bb)
 #else /* WITH_CGRAPH */
-dfs(Agraph_t * subg, Agraph_t * g, attrsym_t * G_lp, attrsym_t * G_bb)
+dfs(Agraph_t * subg, Agraph_t * parentg, attrsym_t * G_lp, attrsym_t * G_bb)
 #endif /* WITH_CGRAPH */
 {
     boxf bb;
@@ -523,7 +528,7 @@ dfs(Agraph_t * subg, Agraph_t * g, attrsym_t * G_lp, attrsym_t * G_bb)
 	agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
 #endif
 	GD_bb(subg) = bb;
-	add_cluster(g, subg);
+	add_cluster(parentg, subg);
 	nop_init_graphs(subg, G_lp, G_bb);
     } else {
 #ifndef WITH_CGRAPH
@@ -532,9 +537,9 @@ dfs(Agraph_t * subg, Agraph_t * g, attrsym_t * G_lp, attrsym_t * G_bb)
 	for (me = agfstout(mg, mn); me; me = agnxtout(mg, me)) {
 	    dfs(me->head, g, G_lp, G_bb);
 #else
-	graph_t *mg;
-	for (mg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
-	    dfs(mg, g, G_lp, G_bb);
+	graph_t *sg;
+	for (sg = agfstsubg(subg); sg; sg = agnxtsubg(sg)) {
+	    dfs(sg, parentg, G_lp, G_bb);
 #endif
 	}
     }
