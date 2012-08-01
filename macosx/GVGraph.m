@@ -89,9 +89,9 @@ extern char *gvplugin_list(GVC_t * gvc, api_t api, const char *str);
 					ptr = strrchr(parentDir,'/');
 					*ptr = 0;
 #ifdef WITH_CGRAPH
-					agraphattr(_graph,"imagepath",parentDir);
-#else
 					agattr(_graph,AGRAPH,"imagepath",parentDir);
+#else
+					agraphattr(_graph,"imagepath",parentDir);
 #endif
 			}
 			fclose(file);
