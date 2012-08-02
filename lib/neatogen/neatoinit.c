@@ -513,7 +513,7 @@ static void nop_init_graphs(Agraph_t *, attrsym_t *, attrsym_t *);
  */
 static void
 #ifndef WITH_CGRAPH
-dfs(node_t * mn, Agraph_t * g, attrsym_t * G_lp, attrsym_t * G_bb)
+dfs(node_t * mn, Agraph_t * parentg, attrsym_t * G_lp, attrsym_t * G_bb)
 #else /* WITH_CGRAPH */
 dfs(Agraph_t * subg, Agraph_t * parentg, attrsym_t * G_lp, attrsym_t * G_bb)
 #endif /* WITH_CGRAPH */
@@ -532,10 +532,10 @@ dfs(Agraph_t * subg, Agraph_t * parentg, attrsym_t * G_lp, attrsym_t * G_bb)
 	nop_init_graphs(subg, G_lp, G_bb);
     } else {
 #ifndef WITH_CGRAPH
-	graph_t *mg = g->meta_node->graph;
+	graph_t *mg = parentg->meta_node->graph;
 	edge_t *me;
 	for (me = agfstout(mg, mn); me; me = agnxtout(mg, me)) {
-	    dfs(me->head, g, G_lp, G_bb);
+	    dfs(me->head, parentg, G_lp, G_bb);
 #else
 	graph_t *sg;
 	for (sg = agfstsubg(subg); sg; sg = agnxtsubg(sg)) {
