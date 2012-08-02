@@ -95,6 +95,8 @@ static void agcopydict(Dict_t * src, Dict_t * dest, Agraph_t * g, int kind)
     for (sym = (Agsym_t *) dtfirst(src); sym;
 	 sym = (Agsym_t *) dtnext(src, sym)) {
 	newsym = agnewsym(g, sym->name, sym->defval, sym->id, kind);
+	newsym->print = sym->print;
+	newsym->fixed = sym->fixed;
 	dtinsert(dest, newsym);
     }
 }

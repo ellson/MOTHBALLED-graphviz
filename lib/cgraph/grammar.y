@@ -281,13 +281,14 @@ static void bindattrs(int kind)
 	}
 }
 
+/* attach node/edge specific attributes */
 static void applyattrs(void *obj)
 {
 	item		*aptr;
 
 	for (aptr = Attrlist.first; aptr; aptr = aptr->next) {
 		if (aptr->tag == T_attr) {
-			if (aptr->u.asym && !aptr->u.asym->fixed) {
+			if (aptr->u.asym) {
 				agxset(obj,aptr->u.asym,aptr->str);
 			}
 		}
@@ -306,6 +307,7 @@ static void nomacros(void)
 
 /* attrstmt:
  * First argument is always attrtype, so switch covers all cases.
+ * This function is used to handle default attribute value assignment.
  */
 static void attrstmt(int tkind, char *macroname)
 {
@@ -326,7 +328,8 @@ static void attrstmt(int tkind, char *macroname)
 	}
 	bindattrs(kind);	/* set up defaults for new attributes */
 	for (aptr = Attrlist.first; aptr; aptr = aptr->next) {
-		sym = agattr(G,kind,aptr->u.asym->name,aptr->str);
+		if (!(aptr->u.asym->fixed) || (G->root != G))
+			sym = agattr(G,kind,aptr->u.asym->name,aptr->str);
 		if (G->root == G)
 			sym->print = TRUE;
 	}
@@ -472,8 +475,7 @@ static void mkport(Agedge_t *e, char *name, char *val)
 	if (val) {
 		if ((attr = agattr(G,AGEDGE,name,NIL(char*))) == NILsym)
 			attr = agattr(G,AGEDGE,name,"");
-		if (!attr->fixed)
-			agxset(e,attr,val);
+		agxset(e,attr,val);
 	}
 }
 
