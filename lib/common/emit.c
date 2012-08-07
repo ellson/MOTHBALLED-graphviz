@@ -385,6 +385,9 @@ static double getSegLen (char* s)
  * where the floats are optional, nonnegative, sum to <= 1.
  * Store the values in an array of colorseg_t's and return the array in psegs.
  * If nseg == 0, count the number of colors.
+ * If the sum of the floats does not equal 1, the remainder is equally distributed
+ * to all colors without an explicit float. If no such colors exist, the remainder
+ * is added to the last color.
  *  0 => okay
  *  1 => error without message 
  *  2 => error with message 
@@ -471,6 +474,8 @@ parseSegs (char* clrs, int nseg, colorsegs_t** psegs)
     return rval;
 }
 
+#define THIN_LINE 0.5
+
 /* wedgedEllipse:
  * Fill an ellipse whose bounding box is given by 2 points in pf
  * with multiple wedges determined by the color spec in clrs.
@@ -487,7 +492,7 @@ wedgedEllipse (GVJ_t* job, pointf * pf, char* clrs)
     colorsegs_t* segs;
     colorseg_t* s;
     int rv;
-    int save_penwidth = job->obj->penwidth;
+    double save_penwidth = job->obj->penwidth;
     pointf ctr, semi;
     Ppolyline_t* pp;
     double angle0, angle1;
@@ -498,7 +503,8 @@ wedgedEllipse (GVJ_t* job, pointf * pf, char* clrs)
     ctr.y = (pf[0].y + pf[1].y) / 2.;
     semi.x = pf[1].x - ctr.x;
     semi.y = pf[1].y - ctr.y;
-    gvrender_set_penwidth(job, 0.5);
+    if (save_penwidth > THIN_LINE)
+	gvrender_set_penwidth(job, THIN_LINE);
 	
     angle0 = 0;
     for (s = segs->segs; s->color; s++) {
@@ -515,7 +521,8 @@ wedgedEllipse (GVJ_t* job, pointf * pf, char* clrs)
 	freePath (pp);
     }
 
-    gvrender_set_penwidth(job, save_penwidth);
+    if (save_penwidth > THIN_LINE)
+	gvrender_set_penwidth(job, save_penwidth);
     freeSegs (segs);
     return rv;
 }
@@ -539,7 +546,7 @@ stripedBox (GVJ_t * job, pointf* AF, char* clrs, int rotate)
     double xdelta;
     pointf pts[4];
     double lastx;
-    int save_penwidth = job->obj->penwidth;
+    double save_penwidth = job->obj->penwidth;
 
     rv = parseSegs (clrs, 0, &segs);
     if ((rv == 1) || (rv == 2)) return rv;
@@ -558,7 +565,8 @@ stripedBox (GVJ_t * job, pointf* AF, char* clrs, int rotate)
     xdelta = (pts[1].x - pts[0].x);
     pts[1].x = pts[2].x = pts[0].x;
     
-    gvrender_set_penwidth(job, 0.5);
+    if (save_penwidth > THIN_LINE)
+	gvrender_set_penwidth(job, THIN_LINE);
     for (s = segs->segs; s->color; s++) {
 	if (s->t == 0) continue;
 	gvrender_set_fillcolor (job, (s->color?s->color:DEFAULT_COLOR));
@@ -570,7 +578,8 @@ stripedBox (GVJ_t * job, pointf* AF, char* clrs, int rotate)
 	gvrender_polygon(job, pts, 4, FILL);
 	pts[0].x = pts[3].x = pts[1].x;
     }
-    gvrender_set_penwidth(job, save_penwidth);
+    if (save_penwidth > THIN_LINE)
+	gvrender_set_penwidth(job, save_penwidth);
     freeSegs (segs);
     return rv;
 }

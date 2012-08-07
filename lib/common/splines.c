@@ -160,7 +160,8 @@ static void
 shape_clip0(inside_t * inside_context, node_t * n, pointf curve[4],
 	    boolean left_inside)
 {
-    int i, save_real_size;
+    int i;
+    double save_real_size;
     pointf c[4];
 
     save_real_size = ND_rw(n);
@@ -193,7 +194,7 @@ shape_clip0(inside_t * inside_context, node_t * n, pointf curve[4],
  */
 void shape_clip(node_t * n, pointf curve[4])
 {
-    int save_real_size;
+    double save_real_size;
     boolean left_inside;
     pointf c;
     inside_t inside_context;
