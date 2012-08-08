@@ -404,7 +404,7 @@ static void emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env);
  * extend the lines to intersect the rounded table boundary 
  */
 static void
-emit_html_rules(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env, char *color)
+emit_html_rules(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env, char *color, htmlcell_t* nextc)
 {
     pointf rule_pt;
     double rule_length;
@@ -449,6 +449,10 @@ emit_html_rules(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env, char *color)
 	    rule_pt.x = pts.LL.x - base - cp->parent->data.space / 2;
 	    if (cp->col + cp->cspan == cp->parent->cc)	// also last column
 		base *= 2;
+	    /* incomplete row of cells; extend line to end */
+	    else if (nextc && (nextc->row != cp->row)) {
+		base += (cp->parent->data.box.UR.x + pos.x) - (pts.UR.x + cp->parent->data.space / 2);
+	    }
 	} else if (cp->col + cp->cspan == cp->parent->cc) {	// last column
 	    // extend to center of table border and add half cell spacing
 	    base = cp->parent->data.border + cp->parent->data.space / 2;
@@ -456,6 +460,10 @@ emit_html_rules(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env, char *color)
 	} else {
 	    base = 0;
 	    rule_pt.x = pts.LL.x - cp->parent->data.space / 2;
+	    /* incomplete row of cells; extend line to end */
+	    if (nextc && (nextc->row != cp->row)) {
+		base += (cp->parent->data.box.UR.x + pos.x) - (pts.UR.x + cp->parent->data.space / 2);
+	    }
 	}
 	rule_pt.y = pts.LL.y - cp->parent->data.space / 2;
 	rule_length = base + pts.UR.x - pts.LL.x + cp->parent->data.space;
@@ -518,7 +526,7 @@ static void emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
 	gvrender_set_penwidth(job, 1.0);
 	while ((cp = *cells++)) {
 	    if (cp->ruled)
-		emit_html_rules(job, cp, env, tbl->data.pencolor);
+		emit_html_rules(job, cp, env, tbl->data.pencolor, *cells);
 	}
 
 	if (tbl->data.border)
