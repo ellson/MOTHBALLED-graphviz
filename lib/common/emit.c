@@ -380,6 +380,9 @@ static double getSegLen (char* s)
     return -1;
 }
 
+#define EPS 1E-5
+#define AEQ0(x) (((x) < EPS) && ((x) > -EPS))
+
 /* parseSegs:
  * Parse string of form color;float:color;float:...:color;float:color
  * where the floats are optional, nonnegative, sum to <= 1.
@@ -420,8 +423,9 @@ parseSegs (char* clrs, int nseg, colorsegs_t** psegs)
     segs->segs = s = N_NEW(nseg+1,colorseg_t);
     for (color = strtok(colors, ":"); color; color = strtok(0, ":")) {
 	if ((v = getSegLen (color)) >= 0) {
-	    if (v > left) {
-		if (doWarn && ((v-left) > 0.00001)) {
+	    double del = v - left;
+	    if (del > 0) {
+		if (doWarn && !AEQ0(del)) {
 		    agerr (AGWARN, "Total size > 1 in \"%s\" color spec ", clrs);
 		    doWarn = 0;
 		    rval = 3;
@@ -441,6 +445,10 @@ parseSegs (char* clrs, int nseg, colorsegs_t** psegs)
 	    else rval = 1;
 	    freeSegs (segs);
 	    return rval;
+	}
+	if (AEQ0(left)) {
+	    left = 0;
+	    break;
 	}
     }
 
@@ -2069,7 +2077,7 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
 	bz = ED_spl(e)->list[i];
 	first = 1;
 	for (s = segs->segs; s->color; s++) {
-	    if (s->t == 0) continue;
+	    if (AEQ0(s->t)) continue;
     	    gvrender_set_pencolor(job, s->color);
 	    sum += s->t;
 	    if (first) {
@@ -2077,19 +2085,23 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
 		splitBSpline (&bz, sum, &bz_l, &bz_r);
 		gvrender_beziercurve(job, bz_l.list, bz_l.size, FALSE, FALSE, FALSE);
 		free (bz_l.list);
-		if (sum == 1) free (bz_r.list);
+		if (AEQ0(sum-1)) {
+		    free (bz_r.list);
+		    break;
+		}
 	    }
-	    else if (sum < 1.0) {
+	    else if (AEQ0(sum-1)) {
+		endcolor = s->color;
+		gvrender_beziercurve(job, bz_r.list, bz_r.size, FALSE, FALSE, FALSE);
+		free (bz_r.list);
+		break;
+	    }
+	    else {
 		bz0 = bz_r;
 		splitBSpline (&bz0, sum, &bz_l, &bz_r);
 		free (bz0.list);
 		gvrender_beziercurve(job, bz_l.list, bz_l.size, FALSE, FALSE, FALSE);
 		free (bz_l.list);
-	    }
-	    else {
-		endcolor = s->color;
-		gvrender_beziercurve(job, bz_r.list, bz_r.size, FALSE, FALSE, FALSE);
-		free (bz_r.list);
 	    }
 		
 	}
