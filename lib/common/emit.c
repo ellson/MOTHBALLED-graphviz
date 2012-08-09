@@ -343,9 +343,9 @@ typedef struct {
 } colorseg_t;
 /* Sum of segment sizes should add to 1 */
 typedef struct {
-    int numc;     /* number of used segments in segs */
+    int numc;     /* number of used segments in segs; may include segs with t == 0 */
     char* base;   /* storage of color names */
-    colorseg_t* segs;  /* array of segments */
+    colorseg_t* segs;  /* array of segments; real segments always followed by a sentinel */
 } colorsegs_t;
  
 static void
@@ -421,7 +421,7 @@ parseSegs (char* clrs, int nseg, colorsegs_t** psegs)
     for (color = strtok(colors, ":"); color; color = strtok(0, ":")) {
 	if ((v = getSegLen (color)) >= 0) {
 	    if (v > left) {
-		if (doWarn) {
+		if (doWarn && ((v-left) > 0.00001)) {
 		    agerr (AGWARN, "Total size > 1 in \"%s\" color spec ", clrs);
 		    doWarn = 0;
 		    rval = 3;
@@ -2045,6 +2045,7 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
     colorseg_t* s;
     char* endcolor;
     double sum;
+    int first;  /* first segment with t > 0 */
 
     rv = parseSegs (colors, num, &segs);
     if (rv > 1) {
@@ -2066,14 +2067,17 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
     for (i = 0; i < ED_spl(e)->size; i++) {
 	sum = 0;
 	bz = ED_spl(e)->list[i];
+	first = 1;
 	for (s = segs->segs; s->color; s++) {
 	    if (s->t == 0) continue;
     	    gvrender_set_pencolor(job, s->color);
 	    sum += s->t;
-	    if (s == segs->segs) {
+	    if (first) {
+		first = 0;
 		splitBSpline (&bz, sum, &bz_l, &bz_r);
 		gvrender_beziercurve(job, bz_l.list, bz_l.size, FALSE, FALSE, FALSE);
 		free (bz_l.list);
+		if (sum == 1) free (bz_r.list);
 	    }
 	    else if (sum < 1.0) {
 		bz0 = bz_r;
