@@ -343,9 +343,9 @@ typedef struct {
 } colorseg_t;
 /* Sum of segment sizes should add to 1 */
 typedef struct {
-    int numc;     /* number of used segments in segs */
+    int numc;     /* number of used segments in segs; may include segs with t == 0 */
     char* base;   /* storage of color names */
-    colorseg_t* segs;  /* array of segments */
+    colorseg_t* segs;  /* array of segments; real segments always followed by a sentinel */
 } colorsegs_t;
  
 static void
@@ -380,11 +380,17 @@ static double getSegLen (char* s)
     return -1;
 }
 
+#define EPS 1E-5
+#define AEQ0(x) (((x) < EPS) && ((x) > -EPS))
+
 /* parseSegs:
  * Parse string of form color;float:color;float:...:color;float:color
  * where the floats are optional, nonnegative, sum to <= 1.
  * Store the values in an array of colorseg_t's and return the array in psegs.
  * If nseg == 0, count the number of colors.
+ * If the sum of the floats does not equal 1, the remainder is equally distributed
+ * to all colors without an explicit float. If no such colors exist, the remainder
+ * is added to the last color.
  *  0 => okay
  *  1 => error without message 
  *  2 => error with message 
@@ -417,8 +423,9 @@ parseSegs (char* clrs, int nseg, colorsegs_t** psegs)
     segs->segs = s = N_NEW(nseg+1,colorseg_t);
     for (color = strtok(colors, ":"); color; color = strtok(0, ":")) {
 	if ((v = getSegLen (color)) >= 0) {
-	    if (v > left) {
-		if (doWarn) {
+	    double del = v - left;
+	    if (del > 0) {
+		if (doWarn && !AEQ0(del)) {
 		    agerr (AGWARN, "Total size > 1 in \"%s\" color spec ", clrs);
 		    doWarn = 0;
 		    rval = 3;
@@ -438,6 +445,10 @@ parseSegs (char* clrs, int nseg, colorsegs_t** psegs)
 	    else rval = 1;
 	    freeSegs (segs);
 	    return rval;
+	}
+	if (AEQ0(left)) {
+	    left = 0;
+	    break;
 	}
     }
 
@@ -471,6 +482,8 @@ parseSegs (char* clrs, int nseg, colorsegs_t** psegs)
     return rval;
 }
 
+#define THIN_LINE 0.5
+
 /* wedgedEllipse:
  * Fill an ellipse whose bounding box is given by 2 points in pf
  * with multiple wedges determined by the color spec in clrs.
@@ -487,7 +500,7 @@ wedgedEllipse (GVJ_t* job, pointf * pf, char* clrs)
     colorsegs_t* segs;
     colorseg_t* s;
     int rv;
-    int save_penwidth = job->obj->penwidth;
+    double save_penwidth = job->obj->penwidth;
     pointf ctr, semi;
     Ppolyline_t* pp;
     double angle0, angle1;
@@ -498,7 +511,8 @@ wedgedEllipse (GVJ_t* job, pointf * pf, char* clrs)
     ctr.y = (pf[0].y + pf[1].y) / 2.;
     semi.x = pf[1].x - ctr.x;
     semi.y = pf[1].y - ctr.y;
-    gvrender_set_penwidth(job, 0.5);
+    if (save_penwidth > THIN_LINE)
+	gvrender_set_penwidth(job, THIN_LINE);
 	
     angle0 = 0;
     for (s = segs->segs; s->color; s++) {
@@ -515,7 +529,8 @@ wedgedEllipse (GVJ_t* job, pointf * pf, char* clrs)
 	freePath (pp);
     }
 
-    gvrender_set_penwidth(job, save_penwidth);
+    if (save_penwidth > THIN_LINE)
+	gvrender_set_penwidth(job, save_penwidth);
     freeSegs (segs);
     return rv;
 }
@@ -539,7 +554,7 @@ stripedBox (GVJ_t * job, pointf* AF, char* clrs, int rotate)
     double xdelta;
     pointf pts[4];
     double lastx;
-    int save_penwidth = job->obj->penwidth;
+    double save_penwidth = job->obj->penwidth;
 
     rv = parseSegs (clrs, 0, &segs);
     if ((rv == 1) || (rv == 2)) return rv;
@@ -558,7 +573,8 @@ stripedBox (GVJ_t * job, pointf* AF, char* clrs, int rotate)
     xdelta = (pts[1].x - pts[0].x);
     pts[1].x = pts[2].x = pts[0].x;
     
-    gvrender_set_penwidth(job, 0.5);
+    if (save_penwidth > THIN_LINE)
+	gvrender_set_penwidth(job, THIN_LINE);
     for (s = segs->segs; s->color; s++) {
 	if (s->t == 0) continue;
 	gvrender_set_fillcolor (job, (s->color?s->color:DEFAULT_COLOR));
@@ -570,7 +586,8 @@ stripedBox (GVJ_t * job, pointf* AF, char* clrs, int rotate)
 	gvrender_polygon(job, pts, 4, FILL);
 	pts[0].x = pts[3].x = pts[1].x;
     }
-    gvrender_set_penwidth(job, save_penwidth);
+    if (save_penwidth > THIN_LINE)
+	gvrender_set_penwidth(job, save_penwidth);
     freeSegs (segs);
     return rv;
 }
@@ -2036,6 +2053,7 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
     colorseg_t* s;
     char* endcolor;
     double sum;
+    int first;  /* first segment with t > 0 */
 
     rv = parseSegs (colors, num, &segs);
     if (rv > 1) {
@@ -2057,26 +2075,33 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
     for (i = 0; i < ED_spl(e)->size; i++) {
 	sum = 0;
 	bz = ED_spl(e)->list[i];
+	first = 1;
 	for (s = segs->segs; s->color; s++) {
-	    if (s->t == 0) continue;
+	    if (AEQ0(s->t)) continue;
     	    gvrender_set_pencolor(job, s->color);
 	    sum += s->t;
-	    if (s == segs->segs) {
+	    if (first) {
+		first = 0;
 		splitBSpline (&bz, sum, &bz_l, &bz_r);
 		gvrender_beziercurve(job, bz_l.list, bz_l.size, FALSE, FALSE, FALSE);
 		free (bz_l.list);
+		if (AEQ0(sum-1)) {
+		    free (bz_r.list);
+		    break;
+		}
 	    }
-	    else if (sum < 1.0) {
+	    else if (AEQ0(sum-1)) {
+		endcolor = s->color;
+		gvrender_beziercurve(job, bz_r.list, bz_r.size, FALSE, FALSE, FALSE);
+		free (bz_r.list);
+		break;
+	    }
+	    else {
 		bz0 = bz_r;
 		splitBSpline (&bz0, sum, &bz_l, &bz_r);
 		free (bz0.list);
 		gvrender_beziercurve(job, bz_l.list, bz_l.size, FALSE, FALSE, FALSE);
 		free (bz_l.list);
-	    }
-	    else {
-		endcolor = s->color;
-		gvrender_beziercurve(job, bz_r.list, bz_r.size, FALSE, FALSE, FALSE);
-		free (bz_r.list);
 	    }
 		
 	}

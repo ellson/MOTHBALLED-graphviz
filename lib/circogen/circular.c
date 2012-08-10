@@ -72,6 +72,34 @@ static void cleanup(block_t * root, circ_state * sp)
     freeBlocktree(root);
 }
 
+static block_t*
+createOneBlock(Agraph_t * g, circ_state * state)
+{
+    Agraph_t *subg;
+    char name[SMALLBUF];
+    block_t *bp;
+    Agnode_t* n;
+
+    sprintf(name, "_block_%d", state->blockCount++);
+#ifdef WITH_CGRAPH
+    subg = agsubg(g, name, 1);
+#else
+    subg = agsubg(g, name);
+#endif
+    bp = mkBlock(subg);
+
+    for (n = agfstnode(g); n; n = agnxtnode(g,n)) {
+#ifdef WITH_CGRAPH
+	agsubnode(bp->sub_graph, n, 1);
+#else
+	aginsert(bp->sub_graph, n);
+#endif
+	BLOCK(n) = bp;
+    }
+
+    return bp;
+}
+
 /* circularLayout:
  * Do circular layout of g.
  * Assume g is strict.
@@ -80,7 +108,7 @@ static void cleanup(block_t * root, circ_state * sp)
  * We make state static so that it keeps a record of block numbers used
  * in a graph; it gets reset when a new root graph is used.
  */
-void circularLayout(Agraph_t * g)
+void circularLayout(Agraph_t * g, Agraph_t* realg)
 {
     block_t *root;
     static circ_state state;
@@ -94,7 +122,10 @@ void circularLayout(Agraph_t * g)
 
     initGraphAttrs(g, &state);
 
-    root = createBlocktree(g, &state);
+    if (mapbool(agget(realg, "oneblock")))
+	root = createOneBlock(g, &state);
+    else
+	root = createBlocktree(g, &state);
     circPos(g, root, &state);
 
     cleanup(root, &state);

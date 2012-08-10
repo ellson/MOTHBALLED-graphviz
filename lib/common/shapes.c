@@ -1593,6 +1593,8 @@ static port poly_port(node_t * n, char *portname, char *compass)
     return rv;
 }
 
+#define multicolor(f) (strchr(f,':'))
+
 /* generic polygon gencode routine */
 static void poly_gencode(GVJ_t * job, node_t * n)
 {
@@ -1687,6 +1689,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	}
 	else if (style & (STRIPED|WEDGED))  {
 	    fillcolor = findFill (n);
+            gvrender_set_fillcolor(job, fillcolor);
 	    filled = TRUE;
 	}
 	else {
@@ -1721,7 +1724,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	/* lay down fill first */
 	if (filled && pfilled) {
 	    if (sides <= 2) {
-		if ((style & WEDGED) && (j == 0)) {
+		if ((style & WEDGED) && (j == 0) && multicolor(fillcolor)) {
 		    int rv = wedgedEllipse (job, AF, fillcolor);
 		    if (rv > 1)
 			agerr (AGPREV, "in node %s\n", agnameof(n));
@@ -1754,7 +1757,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	    AF[i].y = P.y * ysize + ND_coord(n).y;
 	}
 	if (sides <= 2) {
-	    if ((style & WEDGED) && (j == 0)) {
+	    if ((style & WEDGED) && (j == 0) && multicolor(fillcolor)) {
 		int rv = wedgedEllipse (job, AF, fillcolor);
 		if (rv > 1)
 		    agerr (AGPREV, "in node %s\n", agnameof(n));

@@ -939,7 +939,7 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 	** Compute the all-pairs-shortest-distances matrix **
 	****************************************************/
 
-    if (maxi == 0)
+    if (maxi < 0)
 	return 0;
 
     if (Verbose)
@@ -1019,7 +1019,7 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
     }
     if (Verbose)
 	fprintf(stderr, ": %.2f sec", elapsed_sec());
-    if (n == 1)
+    if ((n == 1) || (maxi == 0))
 	return 0;
 
     if (Verbose) {
