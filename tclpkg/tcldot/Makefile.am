@@ -43,7 +43,14 @@ if WITH_LIBGD
 GDTCLFT = $(top_srcdir)/tclpkg/gdtclft/gdtclft.c
 endif
 
-libtcldot_la_SOURCES = tcldot.c tcldot-graphcmd.c tcldot-nodecmd.c tcldot-edgecmd.c tcldot-util.c no_builtins.c $(GDTCLFT)
+libtcldot_la_SOURCES = \
+	tcldot.c \
+	tcldot-graphcmd.c \
+	tcldot-nodecmd.c \
+	tcldot-edgecmd.c \
+	tcldot-util.c \
+	tcldot-mygets.c \
+	no_builtins.c $(GDTCLFT)
 libtcldot_la_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
 libtcldot_la_LDFLAGS = -no-undefined 
 
@@ -63,7 +70,14 @@ endif
 
 libtcldot_la_LIBADD += $(LIBGEN_LIBS) $(MATH_LIBS)
 
-libtcldot_builtin_la_SOURCES = tcldot.c tcldot-graphcmd.c tcldot-nodecmd.c tcldot-edgecmd.c tcldot-util.c tcldot_builtins.c $(GDTCLFT)
+libtcldot_builtin_la_SOURCES = \
+	tcldot.c \
+	tcldot-graphcmd.c \
+	tcldot-nodecmd.c \
+	tcldot-edgecmd.c \
+	tcldot-util.c \
+	tcldot-mygets.c \
+	tcldot_builtins.c $(GDTCLFT)
 libtcldot_builtin_la_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
 libtcldot_builtin_la_LDFLAGS =
 

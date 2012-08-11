@@ -40,16 +40,30 @@ Tcl_GetString(Tcl_Obj *obj) {
 #endif
 ********* */
 
+/*
+ * mycontext - one per tcl interpreter, may support multiple graph namespaces
+ */
 typedef struct {
 #ifdef WITH_CGRAPH
     Agdisc_t mydisc;    // must be first to allow casting mydisc to mycontext
 #endif
-    void *graphTblPtr, *nodeTblPtr, *edgeTblPtr;
+    void *graphTblPtr;
+/* **FIXME**  #ifndef WITH_CGRAPH */
+    void *nodeTblPtr, *edgeTblPtr;
+/*            #endif */
     Tcl_Interp *interp;
     GVC_t *gvc;
 } mycontext_t;
 
-/*  Globals */
+#ifdef WITH_CGRAPH
+/*
+ * graph_context - one for each graph in a tcl interp
+ */
+typedef struct {
+    Agraph_t *g;        /* the graph */
+    mycontext_t *mycontext;   /* refer back to top context */
+} graph_context_t;
+#endif
 
 #if HAVE_LIBGD
 extern void *GDHandleTable;
@@ -90,6 +104,7 @@ extern void deleteGraph(Agraph_t * g);
 extern void listGraphAttrs (Tcl_Interp * interp, Agraph_t* g);
 extern void listNodeAttrs (Tcl_Interp * interp, Agraph_t* g);
 extern void listEdgeAttrs (Tcl_Interp * interp, Agraph_t* g);
+extern int mygets(void* channel, char *ubuf, int n);
 #else
 extern void deleteEdges(mycontext_t * mycontext, Agraph_t * g, Agnode_t * n);
 extern void deleteNodes(mycontext_t * mycontext, Agraph_t * g);
@@ -97,6 +112,7 @@ extern void deleteGraph(mycontext_t * mycontext, Agraph_t * g);
 extern void listGraphAttrs (Tcl_Interp * interp, Agraph_t* g);
 extern void listNodeAttrs (Tcl_Interp * interp, Agraph_t* g);
 extern void listEdgeAttrs (Tcl_Interp * interp, Agraph_t* g);
+extern char *mygets(char *ubuf, int n, FILE * channel);
 #endif
 
 extern void setgraphattributes(Agraph_t * g, char *argv[], int argc);
@@ -108,11 +124,5 @@ extern size_t Tcldot_channel_writer(GVJ_t *job, const char *s, size_t len);
 
 extern void tcldot_layout(GVC_t *gvc, Agraph_t * g, char *engine);
 extern void reset_layout(GVC_t *gvc, Agraph_t * sg);
-
-
-
-
-
-
 
 
