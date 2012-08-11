@@ -28,8 +28,8 @@ int nodecmd(ClientData clientData, Tcl_Interp * interp,
     Agnode_t **np, *n, *head;
     Agedge_t **ep, *e;
     Agsym_t *a;
-    mycontext_t *mycontext = (mycontext_t *)clientData;
-    GVC_t *gvc = mycontext->gvc;
+    ictx_t *ictx = (ictx_t *)clientData;
+    GVC_t *gvc = ictx->gvc;
 
     if (argc < 2) {
 	Tcl_AppendResult(interp, "wrong # args: should be \"",
@@ -37,7 +37,7 @@ int nodecmd(ClientData clientData, Tcl_Interp * interp,
 			 NULL);
 	return TCL_ERROR;
     }
-    if (!(np = (Agnode_t **) tclhandleXlate(mycontext->nodeTblPtr, argv[0]))) {
+    if (!(np = (Agnode_t **) tclhandleXlate(ictx->nodeTblPtr, argv[0]))) {
 	Tcl_AppendResult(interp, " \"", argv[0], "\"", NULL);
 	return TCL_ERROR;
     }
@@ -56,7 +56,7 @@ int nodecmd(ClientData clientData, Tcl_Interp * interp,
 			     NULL);
 	    return TCL_ERROR;
 	}
-	if (!(np = (Agnode_t **) tclhandleXlate(mycontext->nodeTblPtr, argv[2]))) {
+	if (!(np = (Agnode_t **) tclhandleXlate(ictx->nodeTblPtr, argv[2]))) {
 	    if (!(head = agfindnode(g, argv[2]))) {
 		Tcl_AppendResult(interp, "Head node \"", argv[2],
 				 "\" not found.", NULL);
@@ -77,23 +77,23 @@ int nodecmd(ClientData clientData, Tcl_Interp * interp,
 	e = agedge(g, n, head);
 #endif
 	if (!
-	    (ep = (Agedge_t **) tclhandleXlateIndex(mycontext->edgeTblPtr, AGID(e)))
+	    (ep = (Agedge_t **) tclhandleXlateIndex(ictx->edgeTblPtr, AGID(e)))
 	    || *ep != e) {
-	    ep = (Agedge_t **) tclhandleAlloc(mycontext->edgeTblPtr, Tcl_GetStringResult(interp),
+	    ep = (Agedge_t **) tclhandleAlloc(ictx->edgeTblPtr, Tcl_GetStringResult(interp),
 					      &id);
 	    *ep = e;
 	    AGID(e) = id;
 #ifndef TCLOBJ
 	    Tcl_CreateCommand(interp, Tcl_GetStringResult(interp), edgecmd,
-			      (ClientData) mycontext,
+			      (ClientData) ictx,
 			      (Tcl_CmdDeleteProc *) NULL);
 #else				/* TCLOBJ */
 	    Tcl_CreateObjCommand(interp, Tcl_GetStringResult(interp), edgecmd,
-				 (ClientData) mycontext,
+				 (ClientData) ictx,
 				 (Tcl_CmdDeleteProc *) NULL);
 #endif				/* TCLOBJ */
 	} else {
-	    tclhandleString(mycontext->edgeTblPtr, Tcl_GetStringResult(interp), AGID(e));
+	    tclhandleString(ictx->edgeTblPtr, Tcl_GetStringResult(interp), AGID(e));
 	}
 	setedgeattributes(agroot(g), e, &argv[3], argc - 3);
 	reset_layout(gvc, g);
@@ -101,8 +101,8 @@ int nodecmd(ClientData clientData, Tcl_Interp * interp,
 
     } else if ((c == 'd') && (strncmp(argv[1], "delete", length) == 0)) {
 #ifndef WITH_CGRAPH
-	deleteEdges(mycontext, g, n);
-	tclhandleFreeIndex(mycontext->nodeTblPtr, AGID(n));
+	deleteEdges(ictx, g, n);
+	tclhandleFreeIndex(ictx->nodeTblPtr, AGID(n));
 	Tcl_DeleteCommand(interp, argv[0]);
 #else
 	deleteEdges(g, n);
@@ -124,12 +124,12 @@ int nodecmd(ClientData clientData, Tcl_Interp * interp,
 	    return TCL_ERROR;
 	}
 	if (!(e = agfindedge(g, n, head))) {
-	    tclhandleString(mycontext->nodeTblPtr, buf, AGID(head));
+	    tclhandleString(ictx->nodeTblPtr, buf, AGID(head));
 	    Tcl_AppendResult(interp, "Edge \"", argv[0],
 			     " - ", buf, "\" not found.", NULL);
 	    return TCL_ERROR;
 	}
-	tclhandleString(mycontext->edgeTblPtr, buf, AGID(e));
+	tclhandleString(ictx->edgeTblPtr, buf, AGID(e));
 	Tcl_AppendElement(interp, buf);
 	return TCL_OK;
 
@@ -140,7 +140,7 @@ int nodecmd(ClientData clientData, Tcl_Interp * interp,
 
     } else if ((c == 'l') && (strncmp(argv[1], "listedges", length) == 0)) {
 	for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
-	    tclhandleString(mycontext->edgeTblPtr, buf, AGID(e));
+	    tclhandleString(ictx->edgeTblPtr, buf, AGID(e));
 	    Tcl_AppendElement(interp, buf);
 	}
 	return TCL_OK;
@@ -148,7 +148,7 @@ int nodecmd(ClientData clientData, Tcl_Interp * interp,
     } else if ((c == 'l')
 	       && (strncmp(argv[1], "listinedges", length) == 0)) {
 	for (e = agfstin(g, n); e; e = agnxtin(g, e)) {
-	    tclhandleString(mycontext->edgeTblPtr, buf, AGID(e));
+	    tclhandleString(ictx->edgeTblPtr, buf, AGID(e));
 	    Tcl_AppendElement(interp, buf);
 	}
 	return TCL_OK;
@@ -156,7 +156,7 @@ int nodecmd(ClientData clientData, Tcl_Interp * interp,
     } else if ((c == 'l')
 	       && (strncmp(argv[1], "listoutedges", length) == 0)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    tclhandleString(mycontext->edgeTblPtr, buf, AGID(e));
+	    tclhandleString(ictx->edgeTblPtr, buf, AGID(e));
 	    Tcl_AppendElement(interp, buf);
 	}
 	return TCL_OK;

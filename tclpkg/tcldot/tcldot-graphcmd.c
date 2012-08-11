@@ -29,8 +29,8 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
     char c, buf[256], **argv2;
     int i, j, length, argc2, rc;
     unsigned long id;
-    mycontext_t *mycontext = (mycontext_t *)clientData;
-    GVC_t *gvc = mycontext->gvc;
+    ictx_t *ictx = (ictx_t *)clientData;
+    GVC_t *gvc = ictx->gvc;
     GVJ_t *job = gvc->job;
 
     if (argc < 2) {
@@ -39,7 +39,7 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 			 NULL);
 	return TCL_ERROR;
     }
-    if (!(gp = (Agraph_t **) tclhandleXlate(mycontext->graphTblPtr, argv[0]))) {
+    if (!(gp = (Agraph_t **) tclhandleXlate(ictx->graphTblPtr, argv[0]))) {
 	Tcl_AppendResult(interp, " \"", argv[0], "\"", NULL);
 	return TCL_ERROR;
     }
@@ -56,7 +56,7 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 			     NULL);
 	    return TCL_ERROR;
 	}
-	if (!(np = (Agnode_t **) tclhandleXlate(mycontext->nodeTblPtr, argv[2]))) {
+	if (!(np = (Agnode_t **) tclhandleXlate(ictx->nodeTblPtr, argv[2]))) {
 	    if (!(tail = agfindnode(g, argv[2]))) {
 		Tcl_AppendResult(interp, "Tail node \"", argv[2],
 				 "\" not found.", NULL);
@@ -70,7 +70,7 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		return TCL_ERROR;
 	    }
 	}
-	if (!(np = (Agnode_t **) tclhandleXlate(mycontext->nodeTblPtr, argv[3]))) {
+	if (!(np = (Agnode_t **) tclhandleXlate(ictx->nodeTblPtr, argv[3]))) {
 	    if (!(head = agfindnode(g, argv[3]))) {
 		Tcl_AppendResult(interp, "Head node \"", argv[3],
 				 "\" not found.", NULL);
@@ -89,19 +89,19 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 #else
 	e = agedge(g, tail, head);
 #endif
-	if (!(ep = (Agedge_t **) tclhandleXlateIndex(mycontext->edgeTblPtr, AGID(e))) || *ep != e) {
-	    ep = (Agedge_t **) tclhandleAlloc(mycontext->edgeTblPtr, Tcl_GetStringResult(interp), &id);
+	if (!(ep = (Agedge_t **) tclhandleXlateIndex(ictx->edgeTblPtr, AGID(e))) || *ep != e) {
+	    ep = (Agedge_t **) tclhandleAlloc(ictx->edgeTblPtr, Tcl_GetStringResult(interp), &id);
 	    *ep = e;
 	    AGID(e) = id;
 #ifndef TCLOBJ
 	    Tcl_CreateCommand(interp, Tcl_GetStringResult(interp), edgecmd,
-			      (ClientData) mycontext, (Tcl_CmdDeleteProc *) NULL);
+			      (ClientData) ictx, (Tcl_CmdDeleteProc *) NULL);
 #else				/* TCLOBJ */
 	    Tcl_CreateObjCommand(interp, Tcl_GetStringResult(interp), edgecmd,
-				 (ClientData) mycontext, (Tcl_CmdDeleteProc *) NULL);
+				 (ClientData) ictx, (Tcl_CmdDeleteProc *) NULL);
 #endif				/* TCLOBJ */
 	} else {
-	    tclhandleString(mycontext->edgeTblPtr, Tcl_GetStringResult(interp), AGID(e));
+	    tclhandleString(ictx->edgeTblPtr, Tcl_GetStringResult(interp), AGID(e));
 	}
 	setedgeattributes(agroot(g), e, &argv[4], argc - 4);
 	reset_layout(gvc, g);
@@ -114,19 +114,19 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    n = agnode(g, argv[2], 1);
 #else
 	    n = agnode(g, argv[2]);
-	    if (!(np = (Agnode_t **) tclhandleXlateIndex(mycontext->nodeTblPtr, AGID(n))) || *np != n) {
-		np = (Agnode_t **) tclhandleAlloc(mycontext->nodeTblPtr, Tcl_GetStringResult(interp), &id);
+	    if (!(np = (Agnode_t **) tclhandleXlateIndex(ictx->nodeTblPtr, AGID(n))) || *np != n) {
+		np = (Agnode_t **) tclhandleAlloc(ictx->nodeTblPtr, Tcl_GetStringResult(interp), &id);
 		*np = n;
 		AGID(n) = id;
 #ifndef TCLOBJ
 		Tcl_CreateCommand(interp, Tcl_GetStringResult(interp), nodecmd,
-				  (ClientData) mycontext, (Tcl_CmdDeleteProc *) NULL);
+				  (ClientData) ictx, (Tcl_CmdDeleteProc *) NULL);
 #else /* TCLOBJ */
 		Tcl_CreateObjCommand(interp, Tcl_GetStringResult(interp), nodecmd,
-				     (ClientData) mycontext, (Tcl_CmdDeleteProc *) NULL);
+				     (ClientData) ictx, (Tcl_CmdDeleteProc *) NULL);
 #endif /* TCLOBJ */
 	    } else {
-		tclhandleString(mycontext->nodeTblPtr, Tcl_GetStringResult(interp), AGID(n));
+		tclhandleString(ictx->nodeTblPtr, Tcl_GetStringResult(interp), AGID(n));
 	    }
 #endif
 	    i = 3;
@@ -135,22 +135,22 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 #ifdef WITH_CGRAPH
 	    n = agnode(g, Tcl_GetStringResult(interp), 1);
 #else
-	    np = (Agnode_t **) tclhandleAlloc(mycontext->nodeTblPtr, Tcl_GetStringResult(interp), &id);
+	    np = (Agnode_t **) tclhandleAlloc(ictx->nodeTblPtr, Tcl_GetStringResult(interp), &id);
 	    n = agnode(g, Tcl_GetStringResult(interp));
 	    *np = n;
 	    AGID(n) = id;
 #ifndef TCLOBJ
 	    Tcl_CreateCommand(interp, Tcl_GetStringResult(interp), nodecmd,
-			      (ClientData) mycontext, (Tcl_CmdDeleteProc *) NULL);
+			      (ClientData) ictx, (Tcl_CmdDeleteProc *) NULL);
 #else				/* TCLOBJ */
 	    Tcl_CreateObjCommand(interp, Tcl_GetStringResult(interp), nodecmd,
-				 (ClientData) mycontext, (Tcl_CmdDeleteProc *) NULL);
+				 (ClientData) ictx, (Tcl_CmdDeleteProc *) NULL);
 #endif				/* TCLOBJ */
 #endif
 	    i = 2;
 	}
 #ifdef WITH_CGRAPH
-	np = (Agnode_t **)tclhandleXlateIndex(mycontext->nodeTblPtr, AGID(n));
+	np = (Agnode_t **)tclhandleXlateIndex(ictx->nodeTblPtr, AGID(n));
     	*np = n;
 #endif
 	setnodeattributes(agroot(g), n, &argv[i], argc - i);
@@ -170,19 +170,19 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    sg = agsubg(g, argv[2], 1);
 #else
 	    sg = agsubg(g, argv[2]);
-	    if (!  (sgp = (Agraph_t **) tclhandleXlateIndex(mycontext->graphTblPtr, AGID(sg))) || *sgp != sg) {
-		sgp = (Agraph_t **) tclhandleAlloc(mycontext->graphTblPtr, Tcl_GetStringResult(interp), &id);
+	    if (!  (sgp = (Agraph_t **) tclhandleXlateIndex(ictx->graphTblPtr, AGID(sg))) || *sgp != sg) {
+		sgp = (Agraph_t **) tclhandleAlloc(ictx->graphTblPtr, Tcl_GetStringResult(interp), &id);
 		*sgp = sg;
 		AGID(sg) = id;
 #ifndef TCLOBJ
 		Tcl_CreateCommand(interp, Tcl_GetStringResult(interp), graphcmd,
-				  (ClientData) mycontext, (Tcl_CmdDeleteProc *) NULL);
+				  (ClientData) ictx, (Tcl_CmdDeleteProc *) NULL);
 #else
 		Tcl_CreateObjCommand(interp, Tcl_GetStringResult(interp), graphcmd,
-				     (ClientData) mycontext, (Tcl_CmdDeleteProc *) NULL);
+				     (ClientData) ictx, (Tcl_CmdDeleteProc *) NULL);
 #endif
 	    } else {
-		tclhandleString(mycontext->graphTblPtr, Tcl_GetStringResult(interp), AGID(sg));
+		tclhandleString(ictx->graphTblPtr, Tcl_GetStringResult(interp), AGID(sg));
 	    }
 #endif
 	    i = 3;
@@ -191,22 +191,22 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 #ifdef WITH_CGRAPH
 	    sg = agsubg(g, Tcl_GetStringResult(interp), 1);
 #else
-	    sgp = (Agraph_t **) tclhandleAlloc(mycontext->graphTblPtr, Tcl_GetStringResult(interp), &id);
+	    sgp = (Agraph_t **) tclhandleAlloc(ictx->graphTblPtr, Tcl_GetStringResult(interp), &id);
 	    sg = agsubg(g, Tcl_GetStringResult(interp));
 	    *sgp = sg;
 	    AGID(sg) = id;
 #ifndef TCLOBJ
 	    Tcl_CreateCommand(interp, Tcl_GetStringResult(interp), graphcmd,
-			      (ClientData) mycontext, (Tcl_CmdDeleteProc *) NULL);
+			      (ClientData) ictx, (Tcl_CmdDeleteProc *) NULL);
 #else
 	    Tcl_CreateObjCommand(interp, Tcl_GetStringResult(interp), graphcmd,
-				 (ClientData) mycontext, (Tcl_CmdDeleteProc *) NULL);
+				 (ClientData) ictx, (Tcl_CmdDeleteProc *) NULL);
 #endif
 #endif
 	    i = 2;
 	}
 #ifdef WITH_CGRAPH
-	sgp = (Agraph_t **)tclhandleXlateIndex(mycontext->graphTblPtr, AGID(sg));
+	sgp = (Agraph_t **)tclhandleXlateIndex(ictx->graphTblPtr, AGID(sg));
     	*sgp = sg;
 #endif
 	setgraphattributes(sg, &argv[i], argc - i);
@@ -226,8 +226,8 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
     } else if ((c == 'd') && (strncmp(argv[1], "delete", length) == 0)) {
 	reset_layout(gvc, g);
 #ifndef WITH_CGRAPH
-	deleteNodes(mycontext, g);
-	deleteGraph(mycontext, g);
+	deleteNodes(ictx, g);
+	deleteGraph(ictx, g);
 #else
 	deleteNodes(g);
 	deleteGraph(g);
@@ -252,7 +252,7 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    Tcl_AppendResult(interp, "Edge \"", argv[2], " - ", argv[3], "\" not found.", NULL);
 	    return TCL_ERROR;
 	}
-	tclhandleString(mycontext->edgeTblPtr, buf, AGID(e));
+	tclhandleString(ictx->edgeTblPtr, buf, AGID(e));
 	Tcl_AppendElement(interp, buf);
 	return TCL_OK;
 
@@ -265,7 +265,7 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    Tcl_AppendResult(interp, "Node not found.", NULL);
 	    return TCL_ERROR;
 	}
-	tclhandleString(mycontext->nodeTblPtr, buf, AGID(n));
+	tclhandleString(ictx->nodeTblPtr, buf, AGID(n));
 	Tcl_AppendResult(interp, buf, NULL);
 	return TCL_OK;
 
@@ -301,7 +301,7 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
     } else if ((c == 'l') && (strncmp(argv[1], "listedges", length) == 0)) {
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-		tclhandleString(mycontext->edgeTblPtr, buf, AGID(e));
+		tclhandleString(ictx->edgeTblPtr, buf, AGID(e));
 		Tcl_AppendElement(interp, buf);
 	    }
 	}
@@ -309,7 +309,7 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 
     } else if ((c == 'l') && (strncmp(argv[1], "listnodes", length) == 0)) {
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	    tclhandleString(mycontext->nodeTblPtr, buf, AGID(n));
+	    tclhandleString(ictx->nodeTblPtr, buf, AGID(n));
 	    Tcl_AppendElement(interp, buf);
 	}
 	return TCL_OK;
@@ -317,7 +317,7 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
     } else if ((c == 'l')
 	       && (strncmp(argv[1], "listnodesrev", length) == 0)) {
 	for (n = aglstnode(g); n; n = agprvnode(g, n)) {
-	    tclhandleString(mycontext->nodeTblPtr, buf, AGID(n));
+	    tclhandleString(ictx->nodeTblPtr, buf, AGID(n));
 	    Tcl_AppendElement(interp, buf);
 	}
 	return TCL_OK;
@@ -326,7 +326,7 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	       && (strncmp(argv[1], "listsubgraphs", length) == 0)) {
 #ifdef WITH_CGRAPH
 	for (sg = agfstsubg(g); sg; sg = agnxtsubg(sg)) {
-	    tclhandleString(mycontext->graphTblPtr, buf, AGID(sg));
+	    tclhandleString(ictx->graphTblPtr, buf, AGID(sg));
 	    Tcl_AppendElement(interp, buf);
 	}
 #else
@@ -334,7 +334,7 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    for (e = agfstout(g->meta_node->graph, g->meta_node); e;
 		 e = agnxtout(g->meta_node->graph, e)) {
 		sg = agusergraph(aghead(e));
-		tclhandleString(mycontext->graphTblPtr, buf, AGID(sg));
+		tclhandleString(ictx->graphTblPtr, buf, AGID(sg));
 		Tcl_AppendElement(interp, buf);
 	    }
 	}

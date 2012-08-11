@@ -26,8 +26,8 @@ int edgecmd(ClientData clientData, Tcl_Interp * interp,
     Agraph_t *g;
     Agedge_t **ep, *e;
     Agsym_t *a;
-    mycontext_t *mycontext = (mycontext_t *)clientData;
-    GVC_t *gvc = mycontext->gvc;
+    ictx_t *ictx = (ictx_t *)clientData;
+    GVC_t *gvc = ictx->gvc;
 
     if (argc < 2) {
 	Tcl_AppendResult(interp, "wrong # args: should be \"",
@@ -35,7 +35,7 @@ int edgecmd(ClientData clientData, Tcl_Interp * interp,
 			 NULL);
 	return TCL_ERROR;
     }
-    if (!(ep = (Agedge_t **) tclhandleXlate(mycontext->edgeTblPtr, argv[0]))) {
+    if (!(ep = (Agedge_t **) tclhandleXlate(ictx->edgeTblPtr, argv[0]))) {
 	Tcl_AppendResult(interp, " \"", argv[0], "\"", NULL);
 	return TCL_ERROR;
     }
@@ -47,7 +47,7 @@ int edgecmd(ClientData clientData, Tcl_Interp * interp,
 
     if ((c == 'd') && (strncmp(argv[1], "delete", length) == 0)) {
 #ifndef WITH_CGRAPH
-	tclhandleFreeIndex(mycontext->edgeTblPtr, AGID(e));
+	tclhandleFreeIndex(ictx->edgeTblPtr, AGID(e));
 	Tcl_DeleteCommand(interp, argv[0]);
 #endif
 	agdelete(g, e);
@@ -60,9 +60,9 @@ int edgecmd(ClientData clientData, Tcl_Interp * interp,
 	return TCL_OK;
 
     } else if ((c == 'l') && (strncmp(argv[1], "listnodes", length) == 0)) {
-	tclhandleString(mycontext->nodeTblPtr, buf, AGID(agtail(e)));
+	tclhandleString(ictx->nodeTblPtr, buf, AGID(agtail(e)));
 	Tcl_AppendElement(interp, buf);
-	tclhandleString(mycontext->nodeTblPtr, buf, AGID(aghead(e)));
+	tclhandleString(ictx->nodeTblPtr, buf, AGID(aghead(e)));
 	Tcl_AppendElement(interp, buf);
 	return TCL_OK;
 

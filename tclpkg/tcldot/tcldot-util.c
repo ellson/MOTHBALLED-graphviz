@@ -74,44 +74,44 @@ void deleteGraph(Agraph_t * g)
     }
 }
 #else
-void deleteEdges(mycontext_t * mycontext, Agraph_t * g, Agnode_t * n)
+void deleteEdges(ictx_t * ictx, Agraph_t * g, Agnode_t * n)
 {
     Agedge_t **ep, *e, *e1;
     char buf[16];
 
     e = agfstedge(g, n);
     while (e) {
-	tclhandleString(mycontext->edgeTblPtr, buf, AGID(e));
-	Tcl_DeleteCommand(mycontext->interp, buf);
-	ep = (Agedge_t **) tclhandleXlateIndex(mycontext->edgeTblPtr, AGID(e));
+	tclhandleString(ictx->edgeTblPtr, buf, AGID(e));
+	Tcl_DeleteCommand(ictx->interp, buf);
+	ep = (Agedge_t **) tclhandleXlateIndex(ictx->edgeTblPtr, AGID(e));
 	if (!ep)
 	    fprintf(stderr, "Bad entry in edgeTbl\n");
-	tclhandleFreeIndex(mycontext->edgeTblPtr, AGID(e));
+	tclhandleFreeIndex(ictx->edgeTblPtr, AGID(e));
 	e1 = agnxtedge(g, e, n);
 	agdelete(agroot(g), e);
 	e = e1;
     }
 }
-void deleteNodes(mycontext_t * mycontext, Agraph_t * g)
+void deleteNodes(ictx_t * ictx, Agraph_t * g)
 {
     Agnode_t **np, *n, *n1;
     char buf[16];
 
     n = agfstnode(g);
     while (n) {
-	tclhandleString(mycontext->nodeTblPtr, buf, AGID(n));
-	Tcl_DeleteCommand(mycontext->interp, buf);
-	np = (Agnode_t **) tclhandleXlateIndex(mycontext->nodeTblPtr, AGID(n));
+	tclhandleString(ictx->nodeTblPtr, buf, AGID(n));
+	Tcl_DeleteCommand(ictx->interp, buf);
+	np = (Agnode_t **) tclhandleXlateIndex(ictx->nodeTblPtr, AGID(n));
 	if (!np)
 	    fprintf(stderr, "Bad entry in nodeTbl\n");
-	tclhandleFreeIndex(mycontext->nodeTblPtr, AGID(n));
-	deleteEdges(mycontext, agroot(g), n);
+	tclhandleFreeIndex(ictx->nodeTblPtr, AGID(n));
+	deleteEdges(ictx, agroot(g), n);
 	n1 = agnxtnode(g, n);
 	agdelete(agroot(g), n);
 	n = n1;
     }
 }
-void deleteGraph(mycontext_t * mycontext, Agraph_t * g)
+void deleteGraph(ictx_t * ictx, Agraph_t * g)
 {
     Agraph_t **sgp;
     Agedge_t *e;
@@ -120,14 +120,14 @@ void deleteGraph(mycontext_t * mycontext, Agraph_t * g)
     if (g->meta_node) {
 	for (e = agfstout(g->meta_node->graph, g->meta_node); e;
 	     e = agnxtout(g->meta_node->graph, e)) {
-	    deleteGraph(mycontext, agusergraph(aghead(e)));
+	    deleteGraph(ictx, agusergraph(aghead(e)));
 	}
-	tclhandleString(mycontext->graphTblPtr, buf, AGID(g));
-	Tcl_DeleteCommand(mycontext->interp, buf);
-	sgp = (Agraph_t **) tclhandleXlateIndex(mycontext->graphTblPtr, AGID(g));
+	tclhandleString(ictx->graphTblPtr, buf, AGID(g));
+	Tcl_DeleteCommand(ictx->interp, buf);
+	sgp = (Agraph_t **) tclhandleXlateIndex(ictx->graphTblPtr, AGID(g));
 	if (!sgp)
 	    fprintf(stderr, "Bad entry in graphTbl\n");
-	tclhandleFreeIndex(mycontext->graphTblPtr, AGID(g));
+	tclhandleFreeIndex(ictx->graphTblPtr, AGID(g));
 	if (g == agroot(g)) {
 	    agclose(g);
 	} else {
