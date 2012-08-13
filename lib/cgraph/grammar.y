@@ -330,6 +330,8 @@ static void attrstmt(int tkind, char *macroname)
 	for (aptr = Attrlist.first; aptr; aptr = aptr->next) {
 		if (!(aptr->u.asym->fixed) || (G->root != G))
 			sym = agattr(G,kind,aptr->u.asym->name,aptr->str);
+		else
+			sym = aptr->u.asym;
 		if (G->root == G)
 			sym->print = TRUE;
 	}
