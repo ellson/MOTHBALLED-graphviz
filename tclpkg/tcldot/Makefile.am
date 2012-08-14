@@ -9,6 +9,10 @@ else
 GRAPH = graph
 endif
 
+# tclhandle still needed for gd
+TCLHANDLE_INCLUDES=-I$(top_srcdir)/tclpkg/tclhandle
+TCLHANDLE_LIBS=$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la
+
 pdfdir = $(pkgdatadir)/doc/pdf
 htmldir = $(pkgdatadir)/doc/html
 
@@ -20,8 +24,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/common \
 	-I$(top_srcdir)/lib/$(GRAPH) \
 	-I$(top_srcdir)/lib/cdt \
-	-I$(top_srcdir)/lib/pathplan \
-	-I$(top_srcdir)/tclpkg/tclhandle $(GD_INCLUDES) $(TCL_INCLUDES)
+	-I$(top_srcdir)/lib/pathplan $(TCLHANDLE_INCLUDES) $(GD_INCLUDES) $(TCL_INCLUDES)
 
 LIBS = -lc
 
@@ -43,11 +46,19 @@ if WITH_LIBGD
 GDTCLFT = $(top_srcdir)/tclpkg/gdtclft/gdtclft.c
 endif
 
-libtcldot_la_SOURCES = tcldot.c no_builtins.c $(GDTCLFT)
+libtcldot_la_SOURCES = \
+	tcldot.c \
+	tcldot-graphcmd.c \
+	tcldot-nodecmd.c \
+	tcldot-edgecmd.c \
+	tcldot-util.c \
+	tcldot-id.c \
+	tcldot-io.c \
+	no_builtins.c $(GDTCLFT)
 libtcldot_la_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
 libtcldot_la_LDFLAGS = -no-undefined 
 
-libtcldot_la_LIBADD = $(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
+libtcldot_la_LIBADD = $(TCLHANDLE_LIBS) \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
@@ -63,12 +74,19 @@ endif
 
 libtcldot_la_LIBADD += $(LIBGEN_LIBS) $(MATH_LIBS)
 
-libtcldot_builtin_la_SOURCES = tcldot.c tcldot_builtins.c $(GDTCLFT)
+libtcldot_builtin_la_SOURCES = \
+	tcldot.c \
+	tcldot-graphcmd.c \
+	tcldot-nodecmd.c \
+	tcldot-edgecmd.c \
+	tcldot-util.c \
+	tcldot-id.c \
+	tcldot-io.c \
+	tcldot_builtins.c $(GDTCLFT)
 libtcldot_builtin_la_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
 libtcldot_builtin_la_LDFLAGS =
 
-libtcldot_builtin_la_LIBADD = \
-	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
+libtcldot_builtin_la_LIBADD = $(TCLHANDLE_LIBS) \
 	$(top_builddir)/plugin/dot_layout/libgvplugin_dot_layout_C.la \
 	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout_C.la \
 	$(top_builddir)/plugin/core/libgvplugin_core_C.la \

@@ -52,6 +52,7 @@ int agrename(Agobj_t * obj, char *newname)
 	if (agmapnametoid(agroot(g), AGTYPE(obj), newname,
 			  &new_id, TRUE) == 0)
 	    return FAILURE;
+        /* obj* is unchanged, so no need to re agregister() */
 	if (agparent(g) && agidsubg(agparent(g), new_id, 0))
 	    return FAILURE;
 	agfreeid(g, AGRAPH, old_id);

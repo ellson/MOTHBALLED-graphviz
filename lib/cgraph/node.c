@@ -162,6 +162,7 @@ Agnode_t *agnode(Agraph_t * g, char *name, int cflag)
 	installnodetoroot(g, n);
 	initnode(g, n);
 	assert(agsubrep(g,n));
+	agregister(g, AGNODE, n); /* register in external namespace */
 	return n;
     }
 
@@ -244,6 +245,7 @@ int agrelabel_node(Agnode_t * n, char *newname)
 	} else {
 	    agfreeid(g, AGNODE, new_id);	/* couldn't use it after all */
 	}
+        /* obj* is unchanged, so no need to re agregister() */
     }
     return FAILURE;
 }

@@ -163,6 +163,7 @@ struct Agiddisc_s {		/* object ID allocator */
     void (*free) (void *state, int objtype, unsigned long id);
     char *(*print) (void *state, int objtype, unsigned long id);
     void (*close) (void *state);
+    void (*idregister) (void *state, int objtype, void *obj);
 };
 
 struct Agiodisc_s {

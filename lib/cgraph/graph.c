@@ -58,7 +58,9 @@ Agraph_t *agopen(char *name, Agdesc_t desc, Agdisc_t * arg_disc)
     if (agmapnametoid(g, AGRAPH, name, &gid, TRUE))
 	AGID(g) = gid;
     /* else AGID(g) = 0 because we have no alternatives */
-    return agopen1(g);
+    g = agopen1(g);
+    agregister(g, AGRAPH, g);
+    return g;
 }
 
 /* 

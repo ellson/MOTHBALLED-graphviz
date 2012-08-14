@@ -313,8 +313,10 @@ Agedge_t *agedge(Agraph_t * g, Agnode_t * t, Agnode_t * h, char *name,
     }
 
     if (cflag && ok_to_make_edge(g, t, h)
-	&& agmapnametoid(g, AGEDGE, name, &id, TRUE))	/* reserve id */
+	&& agmapnametoid(g, AGEDGE, name, &id, TRUE)) { /* reserve id */
 	e = newedge(g, t, h, id);
+	agregister(g, AGEDGE, e); /* register new object in external namespace */
+    }
     else
 	e = NILedge;
     return e;

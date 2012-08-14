@@ -60,8 +60,11 @@ Agraph_t *agsubg(Agraph_t * g, char *name, int cflag)
 	    return subg;
     }
 
-    if (cflag && agmapnametoid(g, AGRAPH, name, &id, TRUE))	/* reserve id */
-	return localsubg(g, id);
+    if (cflag && agmapnametoid(g, AGRAPH, name, &id, TRUE)) {	/* reserve id */
+	subg = localsubg(g, id);
+	agregister(g, AGRAPH, subg);
+	return subg;
+    }
 
     return NILgraph;
 }
