@@ -46,11 +46,10 @@ Tcl_GetString(Tcl_Obj *obj) {
 typedef struct {
 #ifdef WITH_CGRAPH
     Agdisc_t mydisc;    /* must be first to allow casting mydisc to ictx */
-    unsigned long int ctr; /* odd number counter for anon objects over all g's in interp */
-#endif
-/* **FIXME**  #ifndef WITH_CGRAPH */
+    unsigned long ctr;  /* odd number counter for anon objects over all g's in interp */
+#else
     void *graphTblPtr, *nodeTblPtr, *edgeTblPtr;
-/*            #endif */
+#endif
     Tcl_Interp *interp;
     GVC_t *gvc;
 } ictx_t;
@@ -62,7 +61,7 @@ typedef struct {
 typedef struct {
     Agraph_t *g;        /* the graph */
     ictx_t *ictx;
-    unsigned long int idx; 
+    unsigned long idx; 
 } gctx_t;
 #endif
 
@@ -99,16 +98,23 @@ extern int edgecmd(ClientData clientData, Tcl_Interp * interp,
     );
 
 #ifdef WITH_CGRAPH
-extern void deleteEdges(Agraph_t * g, Agnode_t * n);
-extern void deleteNodes(Agraph_t * g);
-extern void deleteGraph(Agraph_t * g);
+extern Agiddisc_t myiddisc;
+extern Agiodisc_t myiodisc;
+extern Agmemdisc_t mymemdisc;
+extern Agraph_t *agread_usergets (ictx_t *ictx, FILE * fp, int (*usergets)(void *chan, char *buf, int bufsize));
+extern Agraph_t *cmd2g(gctx_t *gctx, char *cmd);
+extern Agnode_t *cmd2n(gctx_t *gctx, char *cmd);
+extern Agedge_t *cmd2e(gctx_t *gctx, char *cmd);
+extern void deleteEdge(gctx_t *gctx, Agraph_t * g, Agedge_t * e);
+extern void deleteNode(gctx_t *gctx, Agraph_t * g, Agnode_t * n);
+extern void deleteGraph(gctx_t *gctx, Agraph_t * g);
 extern void listGraphAttrs (Tcl_Interp * interp, Agraph_t* g);
 extern void listNodeAttrs (Tcl_Interp * interp, Agraph_t* g);
 extern void listEdgeAttrs (Tcl_Interp * interp, Agraph_t* g);
 extern int mygets(void* channel, char *ubuf, int n);
 #else
-extern void deleteEdges(ictx_t * ictx, Agraph_t * g, Agnode_t * n);
-extern void deleteNodes(ictx_t * ictx, Agraph_t * g);
+extern void deleteEdge(ictx_t * ictx, Agraph_t * g, Agedge_t * e);
+extern void deleteNode(ictx_t * ictx, Agraph_t * g, Agnode_t * n);
 extern void deleteGraph(ictx_t * ictx, Agraph_t * g);
 extern void listGraphAttrs (Tcl_Interp * interp, Agraph_t* g);
 extern void listNodeAttrs (Tcl_Interp * interp, Agraph_t* g);

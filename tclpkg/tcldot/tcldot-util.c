@@ -36,37 +36,71 @@ void reset_layout(GVC_t *gvc, Agraph_t * sg)
 }
 
 #ifdef WITH_CGRAPH
-void deleteEdges(Agraph_t * g, Agnode_t * n)
+/* handles (tcl commands) to obj* */
+
+Agraph_t *cmd2g(gctx_t *gctx, char *cmd) {
+    Agraph_t *g = NULL;
+
+    if (sscanf(cmd, "graph%p", &g) != 1 || !g)
+        return NULL;
+    return g;
+}
+Agnode_t *cmd2n(gctx_t *gctx, char *cmd) {
+    Agnode_t *n = NULL;
+
+    if (sscanf(cmd, "node%p", &n) != 1 || !n)
+        return NULL;
+    return n;
+}
+Agedge_t *cmd2e(gctx_t *gctx, char *cmd) {
+    Agedge_t *e = NULL;
+
+    if (sscanf(cmd, "edge%p", &e) != 1 || !e)
+        return NULL;
+    return e;
+}
+#endif // WITH_CGRAPH
+
+#ifdef WITH_CGRAPH
+void deleteEdge(gctx_t *gctx, Agraph_t * g, Agedge_t *e)
+{
+    agdelete(gctx->g, e);  /* delete edge from root graph */
+}
+static void deleteNodeEdges(gctx_t *gctx, Agraph_t *g, Agnode_t *n)
 {
     Agedge_t *e, *e1;
 
     e = agfstedge(g, n);
     while (e) {
 	e1 = agnxtedge(g, e, n);
-	agdelete(agroot(g), e);
+	deleteEdge(gctx, g, e);
 	e = e1;
     }
 }
-
-void deleteNodes(Agraph_t * g)
+void deleteNode(gctx_t * gctx, Agraph_t *g, Agnode_t *n)
+{
+    deleteNodeEdges(gctx, gctx->g, n); /* delete all edges to/from node in root graph */
+    agdelete(gctx->g, n); /* delete node from root graph */
+}
+static void deleteGraphNodes(gctx_t * gctx, Agraph_t *g)
 {
     Agnode_t *n, *n1;
 
     n = agfstnode(g);
     while (n) {
-	deleteEdges(agroot(g), n);
 	n1 = agnxtnode(g, n);
-	agdelete(agroot(g), n);
+	deleteNode(gctx, g, n);
 	n = n1;
     }
 }
-void deleteGraph(Agraph_t * g)
+void deleteGraph(gctx_t * gctx, Agraph_t *g)
 {
     Agraph_t *sg;
 
     for (sg = agfstsubg (g); sg; sg = agnxtsubg (sg)) {
-	deleteGraph(sg);
+	deleteGraph(gctx, sg);
     }
+    deleteGraphNodes(gctx, g);
     if (g == agroot(g)) {
 	agclose(g);
     } else {
@@ -74,40 +108,52 @@ void deleteGraph(Agraph_t * g)
     }
 }
 #else
-void deleteEdges(ictx_t * ictx, Agraph_t * g, Agnode_t * n)
+void deleteEdge(ictx_t * ictx, Agraph_t * g, Agedge_t *e)
 {
-    Agedge_t **ep, *e, *e1;
-    char buf[16];
+    Agedge_t **ep;
+    char buf[32];
+
+    tclhandleString(ictx->edgeTblPtr, buf, AGID(e));
+    Tcl_DeleteCommand(ictx->interp, buf);
+    ep = (Agedge_t **) tclhandleXlateIndex(ictx->edgeTblPtr, AGID(e));
+    if (!ep)
+	fprintf(stderr, "Bad entry in edgeTbl\n");
+    tclhandleFreeIndex(ictx->edgeTblPtr, AGID(e));
+    agdelete(agroot(g), e);
+}
+static void deleteNodeEdges(ictx_t * ictx, Agraph_t * g, Agnode_t * n)
+{
+    Agedge_t *e, *e1;
 
     e = agfstedge(g, n);
     while (e) {
-	tclhandleString(ictx->edgeTblPtr, buf, AGID(e));
-	Tcl_DeleteCommand(ictx->interp, buf);
-	ep = (Agedge_t **) tclhandleXlateIndex(ictx->edgeTblPtr, AGID(e));
-	if (!ep)
-	    fprintf(stderr, "Bad entry in edgeTbl\n");
-	tclhandleFreeIndex(ictx->edgeTblPtr, AGID(e));
 	e1 = agnxtedge(g, e, n);
-	agdelete(agroot(g), e);
+        deleteEdge(ictx, g, e);
 	e = e1;
     }
 }
-void deleteNodes(ictx_t * ictx, Agraph_t * g)
+void deleteNode(ictx_t * ictx, Agraph_t * g, Agnode_t *n)
 {
-    Agnode_t **np, *n, *n1;
-    char buf[16];
+    Agnode_t **np;
+    char buf[32];
+    
+    deleteNodeEdges(ictx, agroot(g), n);
+    tclhandleString(ictx->nodeTblPtr, buf, AGID(n));
+    Tcl_DeleteCommand(ictx->interp, buf);
+    np = (Agnode_t **) tclhandleXlateIndex(ictx->nodeTblPtr, AGID(n));
+    if (!np)
+	fprintf(stderr, "Bad entry in nodeTbl\n");
+    tclhandleFreeIndex(ictx->nodeTblPtr, AGID(n));
+    agdelete(agroot(g), n);
+}
+static void deleteGraphNodes(ictx_t * ictx, Agraph_t * g)
+{
+    Agnode_t *n, *n1;
 
     n = agfstnode(g);
     while (n) {
-	tclhandleString(ictx->nodeTblPtr, buf, AGID(n));
-	Tcl_DeleteCommand(ictx->interp, buf);
-	np = (Agnode_t **) tclhandleXlateIndex(ictx->nodeTblPtr, AGID(n));
-	if (!np)
-	    fprintf(stderr, "Bad entry in nodeTbl\n");
-	tclhandleFreeIndex(ictx->nodeTblPtr, AGID(n));
-	deleteEdges(ictx, agroot(g), n);
 	n1 = agnxtnode(g, n);
-	agdelete(agroot(g), n);
+	deleteNode(ictx, g, n);
 	n = n1;
     }
 }
@@ -115,7 +161,7 @@ void deleteGraph(ictx_t * ictx, Agraph_t * g)
 {
     Agraph_t **sgp;
     Agedge_t *e;
-    char buf[16];
+    char buf[32];
 
     if (g->meta_node) {
 	for (e = agfstout(g->meta_node->graph, g->meta_node); e;
@@ -128,6 +174,7 @@ void deleteGraph(ictx_t * ictx, Agraph_t * g)
 	if (!sgp)
 	    fprintf(stderr, "Bad entry in graphTbl\n");
 	tclhandleFreeIndex(ictx->graphTblPtr, AGID(g));
+	deleteGraphNodes(ictx, g);
 	if (g == agroot(g)) {
 	    agclose(g);
 	} else {
