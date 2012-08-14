@@ -35,6 +35,7 @@ pdf = tcldot.3tcl.pdf
 html = tcldot.html
 
 if WITH_TCL
+noinst_HEADERS = tcldot.h
 pkgtcl_LTLIBRARIES = libtcldot.la libtcldot_builtin.la
 
 man_MANS = $(man)
