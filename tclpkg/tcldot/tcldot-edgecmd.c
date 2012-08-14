@@ -27,7 +27,7 @@ int edgecmd(ClientData clientData, Tcl_Interp * interp,
     Agedge_t *e;
     Agsym_t *a;
 #ifndef WITH_CGRAPH
-    buf[32];
+    char buf[32];
     Agedge_t **ep;
     ictx_t *ictx = (ictx_t *)clientData;
 #else
