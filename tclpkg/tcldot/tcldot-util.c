@@ -38,37 +38,53 @@ void reset_layout(GVC_t *gvc, Agraph_t * sg)
 #ifdef WITH_CGRAPH
 /* handles (tcl commands) to obj* */
 
-Agraph_t *cmd2g(gctx_t *gctx, char *cmd) {
+Agraph_t *cmd2g(char *cmd) {
     Agraph_t *g = NULL;
 
     if (sscanf(cmd, "graph%p", &g) != 1 || !g)
         return NULL;
     return g;
 }
-Agnode_t *cmd2n(gctx_t *gctx, char *cmd) {
+Agnode_t *cmd2n(char *cmd) {
     Agnode_t *n = NULL;
 
     if (sscanf(cmd, "node%p", &n) != 1 || !n)
         return NULL;
     return n;
 }
-Agedge_t *cmd2e(gctx_t *gctx, char *cmd) {
+Agedge_t *cmd2e(char *cmd) {
     Agedge_t *e = NULL;
 
     if (sscanf(cmd, "edge%p", &e) != 1 || !e)
         return NULL;
     return e;
 }
+
+
+/* obj* to handles (tcl commands) */
+
+char *obj2cmd (void *obj) {
+    static char buf[32];
+
+    switch (AGTYPE(obj)) {
+        case AGRAPH: sprintf(buf,"graph%p",obj); break;
+        case AGNODE: sprintf(buf,"node%p",obj); break;
+        case AGINEDGE: 
+        case AGOUTEDGE: sprintf(buf,"edge%p",obj); break;
+    }
+    return buf;
+}
+
 #endif // WITH_CGRAPH
 
 #ifdef WITH_CGRAPH
 void deleteEdge(gctx_t *gctx, Agraph_t * g, Agedge_t *e)
 {
-    char buf[32];
+    char *hndl;
 
-    sprintf(buf,"edge%p",e);
+    hndl = obj2cmd(e);
     agdelete(gctx->g, e);  /* delete edge from root graph */
-    Tcl_DeleteCommand(gctx->ictx->interp, buf);
+    Tcl_DeleteCommand(gctx->ictx->interp, hndl);
 }
 static void deleteNodeEdges(gctx_t *gctx, Agraph_t *g, Agnode_t *n)
 {
@@ -83,13 +99,13 @@ static void deleteNodeEdges(gctx_t *gctx, Agraph_t *g, Agnode_t *n)
 }
 void deleteNode(gctx_t * gctx, Agraph_t *g, Agnode_t *n)
 {
-    char buf[32];
+    char *hndl;
 
     deleteNodeEdges(gctx, gctx->g, n); /* delete all edges to/from node in root graph */
 
-    sprintf(buf,"node%p",n);
+    hndl = obj2cmd(n);
     agdelete(gctx->g, n); /* delete node from root graph */
-    Tcl_DeleteCommand(gctx->ictx->interp, buf);
+    Tcl_DeleteCommand(gctx->ictx->interp, hndl);
 }
 static void deleteGraphNodes(gctx_t * gctx, Agraph_t *g)
 {
@@ -105,20 +121,20 @@ static void deleteGraphNodes(gctx_t * gctx, Agraph_t *g)
 void deleteGraph(gctx_t * gctx, Agraph_t *g)
 {
     Agraph_t *sg;
-    char buf[32];
+    char *hndl;
 
     for (sg = agfstsubg (g); sg; sg = agnxtsubg (sg)) {
 	deleteGraph(gctx, sg);
     }
     deleteGraphNodes(gctx, g);
 
-    sprintf(buf,"graph%p",g);
+    hndl = obj2cmd(g);
     if (g == agroot(g)) {
 	agclose(g);
     } else {
 	agdelsubg(agroot(g), g);
     }
-    Tcl_DeleteCommand(gctx->ictx->interp, buf);
+    Tcl_DeleteCommand(gctx->ictx->interp, hndl);
 }
 #else
 void deleteEdge(ictx_t * ictx, Agraph_t * g, Agedge_t *e)

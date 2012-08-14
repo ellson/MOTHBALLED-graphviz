@@ -85,18 +85,17 @@ static void myiddisc_idregister(void *state, int objtype, void *obj) {
     ictx_t *ictx = gctx->ictx;
     Tcl_Interp *interp = ictx->interp;
     Tcl_CmdProc *proc = NULL;
-    char buf[32] = "";
 
     switch (objtype) {
-        case AGRAPH: sprintf(buf,"graph%p",obj); proc=graphcmd; break;
-        case AGNODE: sprintf(buf,"node%p",obj); proc=nodecmd; break;
+        case AGRAPH: proc=graphcmd; break;
+        case AGNODE: proc=nodecmd; break;
         case AGINEDGE:
-        case AGOUTEDGE: sprintf(buf,"edge%p",obj); proc=edgecmd; break;
+        case AGOUTEDGE: proc=edgecmd; break;
     }
 #ifndef TCLOBJ
-    Tcl_CreateCommand(interp, buf, proc, (ClientData) gctx, (Tcl_CmdDeleteProc *) NULL);
+    Tcl_CreateCommand(interp, obj2cmd(obj), proc, (ClientData) gctx, (Tcl_CmdDeleteProc *) NULL);
 #else
-    Tcl_CreateObjCommand(interp, buf, proc, (ClientData) gctx, (Tcl_CmdDeleteProc *) NULL);
+    Tcl_CreateObjCommand(interp, obj2cmd(obj), proc, (ClientData) gctx, (Tcl_CmdDeleteProc *) NULL);
 #endif           
 }
 Agiddisc_t myiddisc = {

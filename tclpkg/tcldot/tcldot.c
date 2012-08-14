@@ -31,7 +31,6 @@ static int dotnew(ClientData clientData, Tcl_Interp * interp,
     int kind;
     unsigned long id;
 #else
-    char buf[32];
     Agdesc_t kind;
 #endif
 
@@ -118,8 +117,7 @@ static int dotnew(ClientData clientData, Tcl_Interp * interp,
     GD_drawing(g) = NULL;
 
 #ifdef WITH_CGRAPH
-    sprintf(buf, "graph%p", g);
-    Tcl_AppendResult(interp, buf, NULL);
+    Tcl_AppendResult(interp, obj2cmd(g), NULL);
 #endif
 
     return TCL_OK;
@@ -210,7 +208,6 @@ static int dotread(ClientData clientData, Tcl_Interp * interp,
     Tcl_Channel channel;
     int mode;
 #ifdef WITH_CGRAPH
-    char buf[32];
     ictx_t *ictx = (ictx_t *)clientData;
 
     ictx->myioDisc.afread = myiodisc_afread;  /* replace afread to use Tcl Channels */
@@ -254,8 +251,7 @@ static int dotread(ClientData clientData, Tcl_Interp * interp,
 #ifndef WITH_CGRAPH
     return (tcldot_fixup((ictx_t *)clientData, g));
 #else
-    sprintf(buf, "graph%p", g);
-    Tcl_AppendResult(interp, buf, NULL);
+    Tcl_AppendResult(interp, obj2cmd(g), NULL);
     return TCL_OK;
 #endif
 }
@@ -270,7 +266,6 @@ static int dotstring(ClientData clientData, Tcl_Interp * interp,
 {
     Agraph_t *g;
 #ifdef WITH_CGRAPH
-    char buf[32];
     ictx_t *ictx = (ictx_t *)clientData;
     rdr_t rdr;
 
@@ -308,8 +303,7 @@ static int dotstring(ClientData clientData, Tcl_Interp * interp,
 #ifndef WITH_CGRAPH
     return (tcldot_fixup((ictx_t *)clientData, g));
 #else
-    sprintf(buf, "graph%p", g);
-    Tcl_AppendResult(interp, buf, NULL);
+    Tcl_AppendResult(interp, obj2cmd(g), NULL);
     return TCL_OK;
 #endif
 }

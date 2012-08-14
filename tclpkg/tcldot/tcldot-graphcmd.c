@@ -52,7 +52,7 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
     }
     g = *gp;
 #else
-    g = cmd2g(gctx,argv[0]);
+    g = cmd2g(argv[0]);
     if (!g) {
 	Tcl_AppendResult(interp, "Graph \"", argv[0], "\" not found", NULL);
 	return TCL_ERROR;
@@ -80,7 +80,7 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    tail = *np;
 	}
 #else
-        tail = cmd2n(gctx,argv[2]);
+        tail = cmd2n(argv[2]);
         if (!tail) {
 	    if (!(tail = agfindnode(g, argv[2]))) {
 		Tcl_AppendResult(interp, "Tail node \"", argv[2], "\" not found.", NULL);
@@ -103,7 +103,7 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    head = *np;
 	}
 #else
-        head = cmd2n(gctx,argv[2]);
+        head = cmd2n(argv[2]);
         if (!head) {
 	    if (!(head = agfindnode(g, argv[3]))) {
 		Tcl_AppendResult(interp, "Head node \"", argv[3], "\" not found.", NULL);
@@ -115,12 +115,11 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    Tcl_AppendResult(interp, "Head node ", argv[3], " is not in the graph.", NULL);
 	    return TCL_ERROR;
 	}
-#ifdef WITH_CGRAPH
-	e = agedge(g, tail, head, NULL, 1);
-	sprintf(buf,"edge%p",e);
-	Tcl_AppendResult(interp, buf, NULL);
-#else
+#ifndef WITH_CGRAPH
 	e = agedge(g, tail, head);
+#else
+	e = agedge(g, tail, head, NULL, 1);
+	Tcl_AppendResult(interp, obj2cmd(e), NULL);
 #endif
 #ifndef WITH_CGRAPH
 	if (!(ep = (Agedge_t **) tclhandleXlateIndex(ictx->edgeTblPtr, AGID(e))) || *ep != e) {
@@ -188,8 +187,7 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	np = (Agnode_t **)tclhandleXlateIndex(ictx->nodeTblPtr, AGID(n));
     	*np = n;
 #else
-	sprintf(buf,"node%p",n);
-	Tcl_AppendResult(interp, buf, NULL);
+	Tcl_AppendResult(interp, obj2cmd(n), NULL);
 #endif
 	setnodeattributes(agroot(g), n, &argv[i], argc - i);
 	reset_layout(gvc, g);
@@ -206,8 +204,7 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    /* if odd number of args then argv[2] is name */
 #ifdef WITH_CGRAPH
 	    sg = agsubg(g, argv[2], 1);
-	    sprintf(buf,"graph%p",sg);
-	    Tcl_AppendResult(interp, buf, NULL);
+	    Tcl_AppendResult(interp, obj2cmd(sg), NULL);
 #else
 	    sg = agsubg(g, argv[2]);
 	    if (!  (sgp = (Agraph_t **) tclhandleXlateIndex(ictx->graphTblPtr, AGID(sg))) || *sgp != sg) {
@@ -292,10 +289,10 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	}
 #ifndef WITH_CGRAPH
 	tclhandleString(ictx->edgeTblPtr, buf, AGID(e));
-#else
-	sprintf(buf,"edge%p",e);
-#endif
 	Tcl_AppendElement(interp, buf);
+#else
+	Tcl_AppendElement(interp, obj2cmd(e));
+#endif
 	return TCL_OK;
 
     } else if ((c == 'f') && (strncmp(argv[1], "findnode", length) == 0)) {
@@ -309,10 +306,10 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	}
 #ifndef WITH_CGRAPH
 	tclhandleString(ictx->nodeTblPtr, buf, AGID(n));
-#else
-	sprintf(buf,"node%p",n);
-#endif
 	Tcl_AppendResult(interp, buf, NULL);
+#else
+	Tcl_AppendResult(interp, obj2cmd(n), NULL);
+#endif
 	return TCL_OK;
 
     } else if ((c == 'l')
@@ -349,10 +346,10 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 #ifndef WITH_CGRAPH
 		tclhandleString(ictx->edgeTblPtr, buf, AGID(e));
-#else
-	        sprintf(buf,"edge%p",e);
-#endif
 		Tcl_AppendElement(interp, buf);
+#else
+		Tcl_AppendElement(interp, obj2cmd(e));
+#endif
 	    }
 	}
 	return TCL_OK;
@@ -361,10 +358,10 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 #ifndef WITH_CGRAPH
 	    tclhandleString(ictx->nodeTblPtr, buf, AGID(n));
-#else
-	    sprintf(buf,"node%p",n);
-#endif
 	    Tcl_AppendElement(interp, buf);
+#else
+	    Tcl_AppendElement(interp, obj2cmd(n));
+#endif
 	    
 	}
 	return TCL_OK;
@@ -374,10 +371,10 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	for (n = aglstnode(g); n; n = agprvnode(g, n)) {
 #ifndef WITH_CGRAPH
 	    tclhandleString(ictx->nodeTblPtr, buf, AGID(n));
-#else
-	    sprintf(buf,"node%p",n);
-#endif
 	    Tcl_AppendElement(interp, buf);
+#else
+	    Tcl_AppendElement(interp, obj2cmd(n));
+#endif
 	}
 	return TCL_OK;
 
@@ -385,8 +382,7 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	       && (strncmp(argv[1], "listsubgraphs", length) == 0)) {
 #ifdef WITH_CGRAPH
 	for (sg = agfstsubg(g); sg; sg = agnxtsubg(sg)) {
-	    sprintf(buf,"graph%p",sg);
-	    Tcl_AppendElement(interp, buf);
+	    Tcl_AppendElement(interp, obj2cmd(g));
 	}
 #else
 	if (g->meta_node) {

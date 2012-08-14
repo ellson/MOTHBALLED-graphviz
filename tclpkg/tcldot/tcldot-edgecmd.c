@@ -21,12 +21,13 @@ int edgecmd(ClientData clientData, Tcl_Interp * interp,
 #endif				/* TCLOBJ */
     )
 {
-    char c, buf[32], *s, **argv2;
+    char c, *s, **argv2;
     int i, j, length, argc2;
     Agraph_t *g;
     Agedge_t *e;
     Agsym_t *a;
 #ifndef WITH_CGRAPH
+    buf[32];
     Agedge_t **ep;
     ictx_t *ictx = (ictx_t *)clientData;
 #else
@@ -46,7 +47,7 @@ int edgecmd(ClientData clientData, Tcl_Interp * interp,
     }
     e = *ep;
 #else
-    e = cmd2e(gctx,argv[0]);
+    e = cmd2e(argv[0]);
     if (!e) {
         Tcl_AppendResult(interp, "Edge \"", argv[0], "\" not found", NULL);
         return TCL_ERROR;
@@ -74,16 +75,16 @@ int edgecmd(ClientData clientData, Tcl_Interp * interp,
     } else if ((c == 'l') && (strncmp(argv[1], "listnodes", length) == 0)) {
 #ifndef WITH_CGRAPH
 	tclhandleString(ictx->nodeTblPtr, buf, AGID(agtail(e)));
-#else
-	sprintf(buf,"node%p",agtail(e));
-#endif
 	Tcl_AppendElement(interp, buf);
+#else
+	Tcl_AppendElement(interp, obj2cmd(agtail(e)));
+#endif
 #ifndef WITH_CGRAPH
 	tclhandleString(ictx->nodeTblPtr, buf, AGID(aghead(e)));
-#else
-	sprintf(buf,"node%p",aghead(e));
-#endif
 	Tcl_AppendElement(interp, buf);
+#else
+	Tcl_AppendElement(interp, obj2cmd(aghead(e)));
+#endif
 	return TCL_OK;
 
     } else if ((c == 'q')
