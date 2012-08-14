@@ -270,9 +270,7 @@ fi
 %{_mandir}/man1/unflatten.1*
 %{_mandir}/man7/graphviz.7*
 %{_libdir}/libcdt.so.*
-%if 0%{?CGRAPH}
 %{_libdir}/libcgraph.so.*
-%endif
 %if ! 0%{?CGRAPH}
 %{_libdir}/libgraph.so.*
 %endif
