@@ -29,34 +29,18 @@ static void *myiddisc_open(Agraph_t *g, Agdisc_t *disc) {
 static long myiddisc_map(void *state, int objtype, char *str, unsigned long *id, int createflag) {
     gctx_t *gctx = (gctx_t *)state;
     ictx_t *ictx = gctx->ictx;
-    Tcl_Interp *interp = ictx->interp;
-    Tcl_CmdProc *proc = NULL;
-    Agraph_t *g = NULL;
-    char *s, buf[30] = "";
+    char *s;
 
     if (str) {
         if (createflag)
-            s = agstrdup(g, str);
+            s = agstrdup(gctx->g, str);
         else
-            s = agstrbind(g, str);
+            s = agstrbind(gctx->g, str);
         *id = (unsigned long) s;
     } else {
-        *id = ictx->ctr;
+        *id = ictx->ctr;  /* counter maintained in per-interp space, so that
+		ids are unique across all graphs in the interp */
         ictx->ctr += 2;
-    }
-    switch (objtype) {
-        case AGRAPH: sprintf(buf,"graph%lu",*id); proc=graphcmd; break;
-        case AGNODE: sprintf(buf,"node%lu",*id); proc=nodecmd; break;
-        case AGINEDGE:
-        case AGOUTEDGE: sprintf(buf,"edge%lu",*id); proc=edgecmd; break;
-    }
-    Tcl_AppendResult(interp, buf, NULL);
-    if (createflag) {
-#ifndef TCLOBJ
-	Tcl_CreateCommand(interp, Tcl_GetStringResult(interp), proc, (ClientData) gctx, (Tcl_CmdDeleteProc *) NULL);
-#else
-	Tcl_CreateObjCommand(interp, Tcl_GetStringResult(interp), proc, (ClientData) gctx, (Tcl_CmdDeleteProc *) NULL);
-#endif           
     }
     return TRUE;
 }
@@ -69,6 +53,8 @@ static long myiddisc_alloc(void *state, int objtype, unsigned long request_id) {
 }
 static void myiddisc_free(void *state, int objtype, unsigned long id) {
     gctx_t *gctx = (gctx_t *)state;
+
+/* FIXME no obj* available
     ictx_t *ictx = gctx->ictx;
     char buf[30] = "";
 
@@ -79,8 +65,9 @@ static void myiddisc_free(void *state, int objtype, unsigned long id) {
         case AGOUTEDGE: sprintf(buf,"edge%lu",id); break;
     }
     Tcl_DeleteCommand(ictx->interp, buf);
+*/
     if (id % 2 == 0)
-        agstrfree((Agraph_t *) state, (char *) id);
+        agstrfree(gctx->g, (char *) id);
 }
 static char *myiddisc_print(void *state, int objtype, unsigned long id) {
     NOTUSED(state);
@@ -93,13 +80,34 @@ static char *myiddisc_print(void *state, int objtype, unsigned long id) {
 static void myiddisc_close(void *state) {
     free(state);
 }
+static void myiddisc_register(void *state, int objtype, void *obj) {
+    gctx_t *gctx = (gctx_t *)state;
+    ictx_t *ictx = gctx->ictx;
+    Tcl_Interp *interp = ictx->interp;
+    Tcl_CmdProc *proc = NULL;
+    char buf[30] = "";
+
+    switch (objtype) {
+        case AGRAPH: sprintf(buf,"graph%p",obj); proc=graphcmd; break;
+        case AGNODE: sprintf(buf,"node%p",obj); proc=nodecmd; break;
+        case AGINEDGE:
+        case AGOUTEDGE: sprintf(buf,"edge%p",obj); proc=edgecmd; break;
+    }
+    Tcl_AppendResult(interp, buf, NULL);
+#ifndef TCLOBJ
+    Tcl_CreateCommand(interp, Tcl_GetStringResult(interp), proc, (ClientData) gctx, (Tcl_CmdDeleteProc *) NULL);
+#else
+    Tcl_CreateObjCommand(interp, Tcl_GetStringResult(interp), proc, (ClientData) gctx, (Tcl_CmdDeleteProc *) NULL);
+#endif           
+}
 static Agiddisc_t myiddisc = {
     myiddisc_open,
     myiddisc_map,
     myiddisc_alloc,
     myiddisc_free,
     myiddisc_print,
-    myiddisc_close
+    myiddisc_close,
+    myiddisc_register
 };
 
 #endif // WITH_CGRAPH

@@ -14,47 +14,27 @@
 #include "tcldot.h"
 
 Agraph_t *cmd2g(gctx_t *gctx, char *cmd) {
-    unsigned long int id;
-    Agraph_t *g;
+    Agraph_t *g = NULL;
 
-    if (sscanf(cmd, "graph%lu", &id) != 1) {
-	Tcl_AppendResult(gctx->ictx->interp, " \"", cmd, "\" doesn't sscanf for graph object", NULL);
-	return NULL;
-    }
-    g = agidsubg(gctx->g, id, FALSE);
-    if (!g) {
+    if (sscanf(cmd, "graph%p", &g) != 1 || !g) {
 	Tcl_AppendResult(gctx->ictx->interp, " \"", cmd, "\" not found", NULL);
 	return NULL;
     }
     return g;
 }
 Agnode_t *cmd2n(gctx_t *gctx, char *cmd) {
-    unsigned long int id;
-    Agnode_t *n;
+    Agnode_t *n = NULL;
 
-    if (sscanf(cmd, "node%lu", &id) != 1) {
-	Tcl_AppendResult(gctx->ictx->interp, " \"", cmd, "\" doesn't sscanf for node object", NULL);
-	return NULL;
-    }
-    n = agidnode(gctx->g, id, FALSE);
-    if (!n) {
+    if (sscanf(cmd, "node%p", &n) != 1 || !n) {
 	Tcl_AppendResult(gctx->ictx->interp, " \"", cmd, "\" not found", NULL);
 	return NULL;
     }
     return n;
 }
 Agedge_t *cmd2e(gctx_t *gctx, char *cmd) {
-    unsigned long int id;
-    Agedge_t *e;
-// FIXME
-    Agnode_t *t=NULL, *h=NULL;
+    Agedge_t *e = NULL;
 
-    if (sscanf(cmd, "edge%lu", &id) != 1) {
-	Tcl_AppendResult(gctx->ictx->interp, " \"", cmd, "\" doesn't sscanf for edge object", NULL);
-	return NULL;
-    }
-    e = agidedge(gctx->g, t, h, id, FALSE);
-    if (!e) {
+    if (sscanf(cmd, "edge%p", &e) != 1 || !e) {
 	Tcl_AppendResult(gctx->ictx->interp, " \"", cmd, "\" not found", NULL);
 	return NULL;
     }
