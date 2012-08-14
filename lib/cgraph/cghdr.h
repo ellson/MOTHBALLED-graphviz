@@ -157,6 +157,7 @@ void aginternalmapinsert(Agraph_t * g, int objtype, char *str,
 char *aginternalmapprint(Agraph_t * g, int objtype, unsigned long id);
 int aginternalmapdelete(Agraph_t * g, int objtype, unsigned long id);
 void aginternalmapclose(Agraph_t * g);
+void agregister(Agraph_t * g, int objtype, void *obj);
 
 	/* internal set operations */
 void agedgesetop(Agraph_t * g, Agedge_t * e, int insertion);

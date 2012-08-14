@@ -74,13 +74,21 @@ static void idclose(void *state)
     NOTUSED(state);
 }
 
+static void idregister(void *state, int objtype, void *obj)
+{
+    NOTUSED(state);
+    NOTUSED(objtype);
+    NOTUSED(obj);
+}
+
 Agiddisc_t AgIdDisc = {
     idopen,
     idmap,
     idalloc,
     idfree,
     idprint,
-    idclose
+    idclose,
+    idregister
 };
 
 /* aux functions incl. support for disciplines with anonymous IDs */
@@ -155,4 +163,10 @@ char *agnameof(void *obj)
     else
 	rv = 0;
     return rv;
+}
+
+/* register a graph object in an external namespace */
+void agregister(Agraph_t * g, int objtype, void *obj)
+{
+	AGDISC(g, id)->idregister(AGCLOS(g, id), objtype, obj);
 }

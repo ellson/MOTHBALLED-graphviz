@@ -13,6 +13,54 @@
 
 #include "tcldot.h"
 
+Agraph_t *cmd2g(gctx_t *gctx, char *cmd) {
+    unsigned long int id;
+    Agraph_t *g;
+
+    if (sscanf(cmd, "graph%lu", &id) != 1) {
+	Tcl_AppendResult(gctx->ictx->interp, " \"", cmd, "\" doesn't sscanf for graph object", NULL);
+	return NULL;
+    }
+    g = agidsubg(gctx->g, id, FALSE);
+    if (!g) {
+	Tcl_AppendResult(gctx->ictx->interp, " \"", cmd, "\" not found", NULL);
+	return NULL;
+    }
+    return g;
+}
+Agnode_t *cmd2n(gctx_t *gctx, char *cmd) {
+    unsigned long int id;
+    Agnode_t *n;
+
+    if (sscanf(cmd, "node%lu", &id) != 1) {
+	Tcl_AppendResult(gctx->ictx->interp, " \"", cmd, "\" doesn't sscanf for node object", NULL);
+	return NULL;
+    }
+    n = agidnode(gctx->g, id, FALSE);
+    if (!n) {
+	Tcl_AppendResult(gctx->ictx->interp, " \"", cmd, "\" not found", NULL);
+	return NULL;
+    }
+    return n;
+}
+Agedge_t *cmd2e(gctx_t *gctx, char *cmd) {
+    unsigned long int id;
+    Agedge_t *e;
+// FIXME
+    Agnode_t *t=NULL, *h=NULL;
+
+    if (sscanf(cmd, "edge%lu", &id) != 1) {
+	Tcl_AppendResult(gctx->ictx->interp, " \"", cmd, "\" doesn't sscanf for edge object", NULL);
+	return NULL;
+    }
+    e = agidedge(gctx->g, t, h, id, FALSE);
+    if (!e) {
+	Tcl_AppendResult(gctx->ictx->interp, " \"", cmd, "\" not found", NULL);
+	return NULL;
+    }
+    return e;
+}
+
 int graphcmd(ClientData clientData, Tcl_Interp * interp,
 #ifndef TCLOBJ
 		    int argc, char *argv[]
@@ -22,14 +70,25 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
     )
 {
 
-    Agraph_t *g, **gp, *sg, **sgp;
-    Agnode_t **np, *n, *tail, *head;
-    Agedge_t **ep, *e;
+    Agraph_t *g, *sg;
+    Agnode_t *n, *tail, *head;
+    Agedge_t *e;
+// FIXME #ifndef WITH_CGRAPH
+    Agraph_t **sgp;
+    Agnode_t **np;
+//       #endif
+#ifndef WITH_CGRAPH
+    Agraph_t **gp;
+    Agedge_t **ep;
+    ictx_t *ictx = (ictx_t *)clientData;
+    unsigned long id;
+#else
+    gctx_t *gctx = (gctx_t *)clientData;
+    ictx_t *ictx = gctx->ictx;
+#endif
     Agsym_t *a;
     char c, buf[256], **argv2;
     int i, j, length, argc2, rc;
-    unsigned long id;
-    ictx_t *ictx = (ictx_t *)clientData;
     GVC_t *gvc = ictx->gvc;
     GVJ_t *job = gvc->job;
 
@@ -39,12 +98,17 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 			 NULL);
 	return TCL_ERROR;
     }
+#ifndef WITH_CGRAPH
     if (!(gp = (Agraph_t **) tclhandleXlate(ictx->graphTblPtr, argv[0]))) {
 	Tcl_AppendResult(interp, " \"", argv[0], "\"", NULL);
 	return TCL_ERROR;
     }
-
     g = *gp;
+#else
+    g = cmd2g(gctx,argv[0]);
+    if (!g)
+	return TCL_ERROR;
+#endif
 
     c = argv[1][0];
     length = strlen(argv[1]);
@@ -56,28 +120,48 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 			     NULL);
 	    return TCL_ERROR;
 	}
+#ifndef WITH_CGRAPH
 	if (!(np = (Agnode_t **) tclhandleXlate(ictx->nodeTblPtr, argv[2]))) {
 	    if (!(tail = agfindnode(g, argv[2]))) {
 		Tcl_AppendResult(interp, "Tail node \"", argv[2],
 				 "\" not found.", NULL);
 		return TCL_ERROR;
 	    }
-	} else {
+        }
+#else
+        tail = cmd2n(gctx,argv[2]);
+        if (!tail) {
+	    return TCL_ERROR;
+        }
+#endif
+	else {
+#ifndef WITH_CGRAPH
 	    tail = *np;
+#endif
 	    if (agroot(g) != agroot(agraphof(tail))) {
 		Tcl_AppendResult(interp, "Node ", argv[2],
 				 " is not in the graph.", NULL);
 		return TCL_ERROR;
 	    }
 	}
+#ifndef WITH_CGRAPH
 	if (!(np = (Agnode_t **) tclhandleXlate(ictx->nodeTblPtr, argv[3]))) {
 	    if (!(head = agfindnode(g, argv[3]))) {
 		Tcl_AppendResult(interp, "Head node \"", argv[3],
 				 "\" not found.", NULL);
 		return TCL_ERROR;
 	    }
-	} else {
+	}
+#else
+        head = cmd2n(gctx,argv[2]);
+        if (!head) {
+	    return TCL_ERROR;
+        }
+#endif
+	else {
+#ifndef WITH_CGRAPH
 	    head = *np;
+#endif
 	    if (agroot(g) != agroot(agraphof(head))) {
 		Tcl_AppendResult(interp, "Node ", argv[3],
 				 " is not in the graph.", NULL);
@@ -89,6 +173,7 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 #else
 	e = agedge(g, tail, head);
 #endif
+#ifndef WITH_CGRAPH
 	if (!(ep = (Agedge_t **) tclhandleXlateIndex(ictx->edgeTblPtr, AGID(e))) || *ep != e) {
 	    ep = (Agedge_t **) tclhandleAlloc(ictx->edgeTblPtr, Tcl_GetStringResult(interp), &id);
 	    *ep = e;
@@ -103,6 +188,7 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	} else {
 	    tclhandleString(ictx->edgeTblPtr, Tcl_GetStringResult(interp), AGID(e));
 	}
+#endif
 	setedgeattributes(agroot(g), e, &argv[4], argc - 4);
 	reset_layout(gvc, g);
 	return TCL_OK;

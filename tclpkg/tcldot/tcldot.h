@@ -45,11 +45,11 @@ Tcl_GetString(Tcl_Obj *obj) {
  */
 typedef struct {
 #ifdef WITH_CGRAPH
-    Agdisc_t mydisc;    // must be first to allow casting mydisc to ictx
+    Agdisc_t mydisc;    /* must be first to allow casting mydisc to ictx */
+    unsigned long int ctr; /* odd number counter for anon objects over all g's in interp */
 #endif
-    void *graphTblPtr;
 /* **FIXME**  #ifndef WITH_CGRAPH */
-    void *nodeTblPtr, *edgeTblPtr;
+    void *graphTblPtr, *nodeTblPtr, *edgeTblPtr;
 /*            #endif */
     Tcl_Interp *interp;
     GVC_t *gvc;
@@ -61,7 +61,8 @@ typedef struct {
  */
 typedef struct {
     Agraph_t *g;        /* the graph */
-    ictx_t *ictx;   /* refer back to top context */
+    ictx_t *ictx;
+    unsigned long int idx; 
 } gctx_t;
 #endif
 
