@@ -14,8 +14,9 @@
 
 #include "tcldot.h"
 
+#ifdef WITH_CGRAPH
 /*
- * mygets - same api as gets for libgraph, or read for libcgraph
+ * myiodisc_afread - same api as read for libcgraph
  *
  * gets one line at a time from a Tcl_Channel and places it in a user buffer
  *    up to a maximum of n characters
@@ -28,8 +29,7 @@
  * but it is needed so that we can take full advantage
  * of the Tcl_Channel mechanism.
  */
-#ifdef WITH_CGRAPH
-int mygets(void* channel, char *ubuf, int n)
+int myiodisc_afread(void* channel, char *ubuf, int n)
 {
     static Tcl_DString dstr;
     static int strpos;
@@ -81,7 +81,48 @@ int mygets(void* channel, char *ubuf, int n)
     }
     return nput;
 }
+
+
+/* exact copy from cgraph/io.c - but that one is static */
+int myiodisc_memiofread(void *chan, char *buf, int bufsize)
+{
+    const char *ptr;
+    char *optr;
+    char c;
+    int l;
+    rdr_t *s;
+
+    if (bufsize == 0) return 0;
+    s = (rdr_t *) chan;
+    if (s->cur >= s->len)
+        return 0;
+    l = 0;
+    ptr = s->data + s->cur;
+    optr = buf;
+    do {
+        *optr++ = c = *ptr++;
+        l++;
+    } while (c && (c != '\n') && (l < bufsize));
+    s->cur += l;
+    return l;
+}
+
 #else
+/*
+ * mygets - same api as gets
+ *
+ * gets one line at a time from a Tcl_Channel and places it in a user buffer
+ *    up to a maximum of n characters
+ *
+ * returns pointer to obtained line in user buffer, or
+ * returns NULL when last line read from memory buffer
+ *
+ * This is probably innefficient because it introduces
+ * one more stage of line buffering during reads (at least)
+ * but it is needed so that we can take full advantage
+ * of the Tcl_Channel mechanism.
+ */
+
 char *mygets(char *ubuf, int n, FILE * channel)
 {
     static Tcl_DString dstr;
@@ -158,8 +199,7 @@ char *mygets(char *ubuf, int n, FILE * channel)
 }
 #endif /* WITH_CGRAPH */
 
-#ifdef WITH_CGRAPH
-
+#if 0
 Agraph_t *agread_usergets (ictx_t *ictx, FILE * fp, int (*usergets)(void *chan, char *buf, int bufsize))
 {
     Agraph_t* g;

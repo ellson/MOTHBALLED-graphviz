@@ -80,7 +80,7 @@ static char *myiddisc_print(void *state, int objtype, unsigned long id) {
 static void myiddisc_close(void *state) {
     free(state);
 }
-static void myiddisc_register(void *state, int objtype, void *obj) {
+static void myiddisc_idregister(void *state, int objtype, void *obj) {
     gctx_t *gctx = (gctx_t *)state;
     ictx_t *ictx = gctx->ictx;
     Tcl_Interp *interp = ictx->interp;
@@ -106,6 +106,6 @@ Agiddisc_t myiddisc = {
     myiddisc_free,
     myiddisc_print,
     myiddisc_close,
-    myiddisc_register
+    myiddisc_idregister
 };
 #endif

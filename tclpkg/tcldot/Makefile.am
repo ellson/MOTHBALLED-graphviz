@@ -54,7 +54,6 @@ libtcldot_la_SOURCES = \
 	tcldot-util.c \
 	tcldot-id.c \
 	tcldot-io.c \
-	tcldot-mem.c \
 	no_builtins.c $(GDTCLFT)
 libtcldot_la_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
 libtcldot_la_LDFLAGS = -no-undefined 
@@ -83,7 +82,6 @@ libtcldot_builtin_la_SOURCES = \
 	tcldot-util.c \
 	tcldot-id.c \
 	tcldot-io.c \
-	tcldot-mem.c \
 	tcldot_builtins.c $(GDTCLFT)
 libtcldot_builtin_la_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
 libtcldot_builtin_la_LDFLAGS =

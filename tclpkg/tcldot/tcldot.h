@@ -46,6 +46,7 @@ Tcl_GetString(Tcl_Obj *obj) {
 typedef struct {
 #ifdef WITH_CGRAPH
     Agdisc_t mydisc;    /* must be first to allow casting mydisc to ictx */
+    Agiodisc_t myioDisc;
     unsigned long ctr;  /* odd number counter for anon objects over all g's in interp */
 #else
     void *graphTblPtr, *nodeTblPtr, *edgeTblPtr;
@@ -98,9 +99,16 @@ extern int edgecmd(ClientData clientData, Tcl_Interp * interp,
     );
 
 #ifdef WITH_CGRAPH
+/* rdr_t isn't exposed by cgraph/io.c */
+typedef struct {
+    const char *data;
+    int len;
+    int cur;
+} rdr_t;
+
+extern int myiodisc_afread(void* channel, char *ubuf, int n);
+extern int myiodisc_memiofread(void *chan, char *buf, int bufsize);
 extern Agiddisc_t myiddisc;
-extern Agiodisc_t myiodisc;
-extern Agmemdisc_t mymemdisc;
 extern Agraph_t *agread_usergets (ictx_t *ictx, FILE * fp, int (*usergets)(void *chan, char *buf, int bufsize));
 extern Agraph_t *cmd2g(gctx_t *gctx, char *cmd);
 extern Agnode_t *cmd2n(gctx_t *gctx, char *cmd);
@@ -111,7 +119,6 @@ extern void deleteGraph(gctx_t *gctx, Agraph_t * g);
 extern void listGraphAttrs (Tcl_Interp * interp, Agraph_t* g);
 extern void listNodeAttrs (Tcl_Interp * interp, Agraph_t* g);
 extern void listEdgeAttrs (Tcl_Interp * interp, Agraph_t* g);
-extern int mygets(void* channel, char *ubuf, int n);
 #else
 extern void deleteEdge(ictx_t * ictx, Agraph_t * g, Agedge_t * e);
 extern void deleteNode(ictx_t * ictx, Agraph_t * g, Agnode_t * n);

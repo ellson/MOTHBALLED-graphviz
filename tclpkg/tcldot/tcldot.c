@@ -211,6 +211,9 @@ static int dotread(ClientData clientData, Tcl_Interp * interp,
     int mode;
 #ifdef WITH_CGRAPH
     char buf[32];
+    ictx_t *ictx = (ictx_t *)clientData;
+
+    ictx->myioDisc.afread = myiodisc_afread;  /* replace afread to use Tcl Channels */
 #endif
 
     if (argc < 2) {
@@ -228,7 +231,11 @@ static int dotread(ClientData clientData, Tcl_Interp * interp,
      *   a properly parsed graph. If the graph doesn't parse
      *   during reading then the channel will be left at EOF
      */
-    g = agread_usergets((ictx_t *)clientData, (FILE *) channel, (mygets));
+#ifndef WITH_CGRAPH
+    g = agread_usergets((FILE *) channel, (mygets));
+#else
+    g = agread ((FILE*)channel, (Agdisc_t *)clientData);
+#endif
     if (!g) {
 	Tcl_AppendResult(interp, "\nFailure to read graph \"", argv[1], "\"", NULL);
 	if (agerrors()) {
@@ -264,13 +271,26 @@ static int dotstring(ClientData clientData, Tcl_Interp * interp,
     Agraph_t *g;
 #ifdef WITH_CGRAPH
     char buf[32];
+    ictx_t *ictx = (ictx_t *)clientData;
+    rdr_t rdr;
+
+    ictx->myioDisc.afread = myiodisc_memiofread;  /* replace afread to use memory range */
+    rdr.data = argv[1];
+    rdr.len = strlen(rdr.data);
+    rdr.cur = 0;
 #endif
 
     if (argc < 2) {
 	Tcl_AppendResult(interp, "Wrong # args: should be \"", argv[0], " string\"", NULL);
 	return TCL_ERROR;
     }
-    if (!(g = agmemread(argv[1]))) {
+#ifndef WITH_CGRAPH
+    g = agmemread(argv[1]);
+#else
+    /* agmemread() is broken for our use because it replaces the id disc */
+    g = agread(&rdr, (Agdisc_t *)clientData);
+#endif
+    if (!g) {
 	Tcl_AppendResult(interp, "\nFailure to read string \"", argv[1], "\"", NULL);
 	if (agerrors()) {
 	    Tcl_AppendResult(interp, " because of syntax errors.", NULL);
@@ -308,9 +328,16 @@ int Tcldot_Init(Tcl_Interp * interp)
 
     ictx->interp = interp;
 #ifdef WITH_CGRAPH    
-    ictx->mydisc.mem = &AgMemDisc;
-    ictx->mydisc.id = &myiddisc;
-    ictx->mydisc.io = &AgIoDisc;
+    /* build disciplines dynamically so we can selectively replace functions */
+
+    ictx->myioDisc.afread = NULL;            /* set in dotread() or dotstring() according to need */
+    ictx->myioDisc.putstr = AgIoDisc.putstr; /* no change */
+    ictx->myioDisc.flush = AgIoDisc.flush;   /* no change */
+
+    ictx->mydisc.mem = &AgMemDisc;           /* no change */
+    ictx->mydisc.id = &myiddisc;             /* complete replacement */
+    ictx->mydisc.io = &(ictx->myioDisc);     /* change parts */
+
     ictx->ctr = 1;  /* init to first odd number,  increment by 2 */
 #endif
 
