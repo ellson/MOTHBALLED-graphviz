@@ -17,9 +17,9 @@ noinst_HEADERS = libgraph.h triefa.h parser.h agxbuf.h
 noinst_LTLIBRARIES = libgraph_C.la
 lib_LTLIBRARIES = libgraph.la
 pkgconfig_DATA = libgraph.pc
+endif
 man_MANS = graph.3
 pdf_DATA = graph.3.pdf
-endif
 
 libgraph_C_la_SOURCES = \
 	attribs.c agxbuf.c edge.c graph.c graphio.c lexer.c \
