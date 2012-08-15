@@ -93,13 +93,13 @@ static int dotnew(ClientData clientData, Tcl_Interp * interp,
 #endif
 	i = 2;
     }
-#ifdef WITH_CGRAPH
-    agbindrec(g, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
-#endif
     if (!g) {
 	Tcl_AppendResult(interp, "\nFailure to open graph.", NULL);
 	return TCL_ERROR;
     }
+#ifdef WITH_CGRAPH
+    agbindrec(g, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
+#endif
 #ifndef WITH_CGRAPH
     *gp = g;
     AGID(g) = id;
@@ -240,6 +240,9 @@ static int dotread(ClientData clientData, Tcl_Interp * interp,
 	}
 	return TCL_ERROR;
     }
+#ifdef WITH_CGRAPH
+    agbindrec(g, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
+#endif
     if (agerrors()) {
 	Tcl_AppendResult(interp, "\nSyntax errors in file \"", argv[1], " \"", NULL);
 	return TCL_ERROR;
@@ -292,6 +295,9 @@ static int dotstring(ClientData clientData, Tcl_Interp * interp,
 	}
 	return TCL_ERROR;
     }
+#ifdef WITH_CGRAPH
+    agbindrec(g, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
+#endif
     if (agerrors()) {
 	Tcl_AppendResult(interp, "\nSyntax errors in string \"", argv[1], " \"", NULL);
 	return TCL_ERROR;
