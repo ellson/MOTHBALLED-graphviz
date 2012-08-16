@@ -32,7 +32,12 @@ MJPG = sdlshapes.jpg
 GRADPNG = g_lin0.png g_rad0.png g_lin45.png g_rad45.png g_lin90.png g_rad90.png \
           g_lin180.png g_rad180.png g_lin270.png g_rad270.png g_lin360.png g_rad360.png
 
-MPNG = plugins.png sdlshapes.png $(GRADPNG)
+STYLEPNG = s_n_dashed.png s_e_dashed.png s_c_dashed.png s_n_dotted.png s_e_dotted.png s_c_dotted.png \
+           s_n_solid.png s_e_solid.png s_c_solid.png s_n_bold.png s_e_bold.png s_c_bold.png \
+           s_e_tapered.png s_n_diagonals.png s_n_rounded.png s_c_rounded.png s_n_filled.png \
+           s_c_filled.png s_n_striped.png s_c_striped.png s_n_wedged.png
+
+MPNG = plugins.png sdlshapes.png $(GRADPNG) $(STYLEPNG)
 
 SGIF = Mcircle.gif Mdiamond.gif Msquare.gif box.gif \
       circle.gif diamond.gif doublecircle.gif \
@@ -173,6 +178,9 @@ $(A2GIF) :
 
 $(GRADPNG) :
 	./mkgrads.sh $@
+
+$(STYLEPNG) :
+	./mkstyles.sh $@
 
 clean :
 	rm -f mklang sdlshapes.ps sdlshapes.ppm html.html
