@@ -74,7 +74,7 @@ __declspec(dllimport) lt_symlist_t lt_preloaded_symbols[];
 /*end visual studio*/
 
 
-#ifndef WIN32_DLL
+#if !defined(WIN32_DLL) && !defined(__MINGW32__) && !defined(__MINGW64__)
 #if defined(GVDLL)
 	__declspec(dllexport) lt_symlist_t lt_preloaded_symbols[];
 #else
