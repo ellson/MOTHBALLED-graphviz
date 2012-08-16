@@ -29,4 +29,10 @@ libdotgen_C_la_SOURCES = acyclic.c class1.c class2.c cluster.c compound.c \
 	conc.c decomp.c fastgr.c flat.c dotinit.c mincross.c \
 	position.c rank.c sameport.c dotsplines.c aspect.c
 
+if WITH_ORTHO
+libdotgen_C_la_DEPENDENCIES = \
+	 $(top_builddir)/lib/ortho/libortho_C.la
+endif
+
+
 EXTRA_DIST = Makefile.old gvdotgen.vcproj

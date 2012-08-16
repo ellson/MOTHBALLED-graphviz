@@ -46,6 +46,11 @@ libgvplugin_neato_layout_la_LIBADD = $(libgvplugin_neato_layout_C_la_LIBADD) \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
 	$(GTS_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
 	
+if WITH_ORTHO
+libgvplugin_neato_layout_la_LIBADD += \
+	$(top_builddir)/lib/ortho/libortho_C.la 
+endif
+
 if WITH_SFDP
 libgvplugin_neato_layout_C_la_LIBADD += $(top_builddir)/lib/sfdpgen/libsfdpgen_C.la
 endif

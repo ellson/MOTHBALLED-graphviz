@@ -52,10 +52,6 @@ libgvc_C_la_DEPENDENCIES = \
 	$(top_builddir)/lib/xdot/libxdot_C.la \
 	$(top_builddir)/lib/label/liblabel_C.la \
 	$(top_builddir)/lib/common/libcommon_C.la
-if WITH_ORTHO
-libgvc_C_la_LIBADD += $(top_builddir)/lib/ortho/libortho_C.la
-libgvc_C_la_DEPENDENCIES +=  $(top_builddir)/lib/ortho/libortho_C.la
-endif
 if ENABLE_LTDL
 libgvc_C_la_LIBADD += @LIBLTDL@ $(LIBLTDL_LDFLAGS)
 endif

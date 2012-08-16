@@ -27,13 +27,9 @@ endif
 libgvplugin_dot_layout_C_la_SOURCES = \
 	gvplugin_dot_layout.c \
 	gvlayout_dot_layout.c
-if WITH_CGRAPH
+
 libgvplugin_dot_layout_C_la_LIBADD = \
 	$(top_builddir)/lib/dotgen/libdotgen_C.la
-else
-libgvplugin_dot_layout_C_la_LIBADD = \
-	$(top_builddir)/lib/dotgen/libdotgen_C.la 
-endif
 
 libgvplugin_dot_layout_la_LDFLAGS = -version-info $(GVPLUGIN_VERSION_INFO)
 libgvplugin_dot_layout_la_SOURCES = $(libgvplugin_dot_layout_C_la_SOURCES)
@@ -43,6 +39,11 @@ libgvplugin_dot_layout_la_LIBADD = $(libgvplugin_dot_layout_C_la_LIBADD) \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/pathplan/libpathplan.la $(MATH_LIBS)
 	
+if WITH_ORTHO
+libgvplugin_dot_layout_la_LIBADD += \
+	$(top_builddir)/lib/ortho/libortho_C.la 
+endif
+
 if WITH_WIN32
 libgvplugin_dot_layout_la_LDFLAGS += -no-undefined
 libgvplugin_dot_layout_la_LIBADD += $(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la
