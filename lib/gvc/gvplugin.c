@@ -204,7 +204,7 @@ gvplugin_library_t *gvplugin_library_load(GVC_t *gvc, char *path)
 
 	s = strrchr(p, DIRSEP[0]);
     len = strlen(s); 
-#if defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+#if defined(WIN32) && !defined(__MINGW32__) && !defined(__MINGW64__) && !defined(__CYGWIN__)
     if (len < strlen("/gvplugin_x")) {
 #else
     if (len < strlen("/libgvplugin_x")) {
@@ -213,12 +213,12 @@ gvplugin_library_t *gvplugin_library_load(GVC_t *gvc, char *path)
 	return NULL;
     }
     sym = gmalloc(len + strlen(suffix) + 1);
-#if defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
+#if defined(WIN32) && !defined(__MINGW32__)&& !defined(__MINGW64__)  && !defined(__CYGWIN__)
     strcpy(sym, s+1);         /* strip leading "/"  */
 #else
     strcpy(sym, s+4);         /* strip leading "/lib" or "/cyg" */
 #endif
-#if defined(__CYGWIN__) || defined(__MINGW32__)
+#if defined(__CYGWIN__) || defined(__MINGW32__) || defined(__MINGW64__)
     s = strchr(sym, '-');     /* strip trailing "-1.dll" */
 #else 
     s = strchr(sym, '.');     /* strip trailing ".so.0" or ".dll" or ".sl" */

@@ -213,7 +213,7 @@ void agsetiodisc(
 {
     if (myfgets) AG.fgets = myfgets;
     if (myfwrite) AG.fwrite = myfwrite;
-#if defined(__SUNPRO_C) || defined(__CYGWIN__) || defined(__MINGW32__) || defined(__FreeBSD__)
+#if defined(__SUNPRO_C) || defined(__CYGWIN__) || defined(__MINGW32__) || defined(__MINGW64__) || defined(__FreeBSD__)
 #undef ferror
 #endif
     if (myferror) AG.ferror = myferror;
@@ -592,7 +592,7 @@ static void free_printdict_t(printdict_t * dict)
 }
 
 #ifdef ferror
-/* if ferror is a macro (__SUNPRO_C __CYGWIN__ __MINGW32__ __FreeBSD__ and poss others)
+/* if ferror is a macro (__SUNPRO_C __CYGWIN__ __MINGW32__ __MINGW64__ __FreeBSD__ and poss others)
  * then wrap it in a function */
 static int agferror(FILE *stream)
 {

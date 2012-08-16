@@ -83,7 +83,7 @@ AC_SUBST([GVPLUGIN_VERSION])
 GRAPHVIZ_VERSION_BUILD=0
 GRAPHVIZ_VERSION_REVISION=0
 case "${host_os}" in
-  *uwin* | *cygwin* | *mingw32* )
+  *uwin* | *cygwin* | *mingw32* | *mingw64* )
 	# Windows version numbers
 	# For the build number: months since Jan 2000, day of month from the timestamp
 	# For the revision number: hour, minute from the timestamp
@@ -117,6 +117,7 @@ esac
 UWIN=no
 CYGWIN=no
 MINGW32=no
+MINGW64=no
 DARWIN9=no
 case "${host_os}" in
   *uwin* )
@@ -138,6 +139,13 @@ case "${host_os}" in
 	;;
   *mingw32* )
 	MINGW32=yes
+	DEFAULT_FONTPATH="C:/WINDOWS/FONTS;C:/WINNT/Fonts;C:/winnt/fonts"
+	PATHSEPARATOR=":"
+        NO_POSTSCRIPT_ALIAS=1
+	BROWSER="xdg-open"
+	;;
+  *mingw64* )
+	MINGW64=yes
 	DEFAULT_FONTPATH="C:/WINDOWS/FONTS;C:/WINNT/Fonts;C:/winnt/fonts"
 	PATHSEPARATOR=":"
         NO_POSTSCRIPT_ALIAS=1
@@ -176,13 +184,15 @@ case "${host_os}" in
 esac
 AC_SUBST([CYGWIN])
 AC_SUBST([MINGW32])
+AC_SUBST([MINGW64])
 AC_SUBST([DARWIN])
 AC_SUBST([DARWIN9])
 AC_SUBST([EXTRA_SMYRNA_LDFLAGS])
 AC_DEFINE_UNQUOTED(DEFAULT_FONTPATH,"$DEFAULT_FONTPATH",[Path to TrueType fonts.])
 AC_DEFINE_UNQUOTED(PATHSEPARATOR,"$PATHSEPARATOR",[Path separator character.])
 AC_DEFINE_UNQUOTED(NO_POSTSCRIPT_ALIAS,$NO_POSTSCRIPT_ALIAS,[Postscript fontnames.])
-AM_CONDITIONAL(WITH_WIN32, [test "x$UWIN" = "xyes" -o "x$CYGWIN" = "xyes" -o "x$MINGW32" = "xyes"])
+# FIXME - WITH_WIN32 also set for MINGW64 - may need to separate
+AM_CONDITIONAL(WITH_WIN32, [test "x$UWIN" = "xyes" -o "x$CYGWIN" = "xyes" -o "x$MINGW32" = "xyes" -o "x$MINGW64" = "xyes"])
 AM_CONDITIONAL(WITH_DARWIN9, [test "x$DARWIN9" = "xyes"])
 
 DEFAULT_DPI=96
@@ -241,7 +251,7 @@ if test "x$enable_shared" != "xno"; then
 	AC_ENABLE_SHARED
         use_shared="Yes"
 	case "${host_os}" in
-  		*uwin* | *cygwin* | *mingw32* )
+  		*uwin* | *cygwin* | *mingw32* | *mingw64* )
 			AC_DEFINE_UNQUOTED(GVDLL,1, [Define for DLLs on Windows.])
 		;;
 	esac
