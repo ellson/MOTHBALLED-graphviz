@@ -55,14 +55,13 @@ smyrna_SOURCES = arcball.c draw.c glexpose.c \
 	gui/glcompui.c gui/gui.c gui/menucallbacks.c \
 	gui/toolboxcallbacks.c gui/topviewsettings.c glutrender.c
 
-smyrna_LDADD = $(top_builddir)/lib/cgraph/libcgraph_C.la \
-		$(top_builddir)/lib/cdt/libcdt_C.la \
-		$(top_builddir)/lib/xdot/libxdot_C.la \
+smyrna_LDADD = $(top_builddir)/lib/cgraph/libcgraph.la \
+		$(top_builddir)/lib/cdt/libcdt.la \
+		$(top_builddir)/lib/xdot/libxdot.la \
 		$(top_builddir)/lib/glcomp/libglcomp_C.la \
 		$(top_builddir)/lib/topfish/libtopfish_C.la \
 		$(top_builddir)/lib/common/libcommon_C.la \
-		$(top_builddir)/lib/gvpr/libgvpr_C.la \
-		$(top_builddir)/lib/expr/libexpr_C.la \
+		$(top_builddir)/lib/gvpr/libgvpr.la \
 		$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 		$(top_builddir)/lib/neatogen/libneatogen_C.la \
 		$(GTK_LIBS) $(GLUT_LIBS) $(GTKGLEXT_LIBS) $(GLADE_LIBS) $(EXPAT_LIBS) $(GTS_LIBS) $(EXTRA_SMYRNA_LDFLAGS)

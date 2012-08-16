@@ -31,7 +31,8 @@ $(libgvpr_C_la_OBJECTS): gdefs.h
 libgvpr_C_la_DEPENDENCIES = \
 	$(top_builddir)/lib/expr/libexpr_C.la \
 	$(top_builddir)/lib/common/libcommon_C.la \
-	$(top_builddir)/lib/ingraphs/libingraphs_C.la
+	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
+	$(top_builddir)/lib/cdt/libcdt_C.la
 
 
 libgvpr_la_LDFLAGS = -version-info $(GVPR_VERSION) -no-undefined

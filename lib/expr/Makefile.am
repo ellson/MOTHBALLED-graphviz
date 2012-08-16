@@ -34,8 +34,12 @@ libexpr_C_la_SOURCES = excc.c excontext.c exdata.c exerror.c \
 libexpr_C_la_LIBADD = \
 	$(top_builddir)/lib/ast/libast_C.la \
 	$(top_builddir)/lib/vmalloc/libvmalloc_C.la \
+	$(top_builddir)/lib/sfio/libsfio_C.la
+libexpr_C_la_DEPENDENCIES = \
+	$(top_builddir)/lib/ast/libast_C.la \
+	$(top_builddir)/lib/vmalloc/libvmalloc_C.la \
 	$(top_builddir)/lib/sfio/libsfio_C.la \
-	$(top_builddir)/lib/cdt/libcdt.la
+	$(top_builddir)/lib/cdt/libcdt_C.la
 
 #libexpr_la_LDFLAGS = -version-info $(EXPR_VERSION)
 #libexpr_la_SOURCES = $(libexpr_C_la_SOURCES)
