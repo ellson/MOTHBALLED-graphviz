@@ -23,6 +23,7 @@ AM_CPPFLAGS = \
 if WITH_WIN32
 AM_CFLAGS = -D_BLD_gvc=1
 AM_CPPFLAGS += -O0
+REGEX_SRC=regex_win32.c
 endif
 
 LIBS = $(SOCKET_LIBS) $(Z_LIBS) $(MATH_LIBS)
@@ -30,7 +31,7 @@ LIBS = $(SOCKET_LIBS) $(Z_LIBS) $(MATH_LIBS)
 pkginclude_HEADERS = gvc.h gvcext.h gvplugin.h gvcjob.h \
 	gvcommon.h gvplugin_render.h gvplugin_layout.h gvconfig.h \
 	gvplugin_textlayout.h gvplugin_device.h gvplugin_loadimage.h
-noinst_HEADERS = gvcint.h gvcproc.h gvio.h
+noinst_HEADERS = gvcint.h gvcproc.h gvio.h regex_win32.h
 noinst_LTLIBRARIES = libgvc_C.la
 lib_LTLIBRARIES = libgvc.la
 pkgconfig_DATA = libgvc.pc
@@ -40,7 +41,7 @@ pdf_DATA = gvc.3.pdf
 
 libgvc_C_la_SOURCES = gvrender.c gvlayout.c gvdevice.c gvloadimage.c \
 	gvcontext.c gvjobs.c gvevent.c gvplugin.c gvconfig.c \
-	gvtextlayout.c gvusershape.c gvc.c
+	gvtextlayout.c gvusershape.c gvc.c $(REGEX_SRC)
 libgvc_C_la_LIBADD = \
 	$(top_builddir)/lib/pack/libpack_C.la \
 	$(top_builddir)/lib/xdot/libxdot_C.la \
