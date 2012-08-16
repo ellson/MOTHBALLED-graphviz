@@ -28,13 +28,40 @@
 #include "gvc.h"
 #include "xdot.h"
 
-#ifdef WIN32
-#define strtok_r strtok_s
-#endif
-
 #define P2RECT(p, pr, sx, sy) (pr[0].x = p.x - sx, pr[0].y = p.y - sy, pr[1].x = p.x + sx, pr[1].y = p.y + sy)
 #define FUZZ 3
 #define EPSILON .0001
+
+// #ifdef WIN32
+// #define strtok_r strtok_s
+// #endif
+
+#ifndef HAVE_STRTOK_R
+/*
+ * From:  http://sourceforge.net/tracker/?func=detail&aid=2673480&group_id=2435&atid=352435
+ *
+ * NB this implementation uses strok(), so will corrupt any existing strok() state.
+ */
+char *strtok_r(char *str, const char *delim, char **save)
+{
+    char *res, *last;
+
+    if( !save )
+        return strtok(str, delim);
+    if( !str && !(str = *save) )
+        return NULL;
+    last = str + strlen(str);
+    if( (*save = res = strtok(str, delim)) )
+    {
+        *save += strlen(res);
+        if( *save < last )
+            (*save)++;
+        else
+            *save = NULL;
+    }
+    return res;
+}
+#endif
 
 typedef struct {
     xdot_op op;

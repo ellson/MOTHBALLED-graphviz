@@ -475,7 +475,7 @@ AC_FUNC_ALLOCA
 AC_CHECK_FUNCS([lrand48 drand48 srand48 setmode setenv getenv \
 	__freadable _sysconf getrusage strerror cbrt lsqrt vsnprintf \
 	strtoul strtoll strtoull uname memset nl_langinfo pow sqrt \
-	strchr strdup strerror strstr _NSGetEnviron])
+	strchr strdup strerror strstr strtok_r _NSGetEnviron])
 
 AC_REPLACE_FUNCS([strcasecmp strncasecmp strcasestr])
 
