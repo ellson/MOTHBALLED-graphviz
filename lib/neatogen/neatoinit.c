@@ -21,6 +21,7 @@
 #include <unistd.h>
 #endif
 #include <ctype.h>
+#include <stdlib.h>
 
 #include "neato.h"
 #include "pack.h"
@@ -33,6 +34,9 @@
 
 #ifndef HAVE_SRAND48
 #define srand48 srand
+#endif
+#ifndef HAVE_DRAND48
+#define drand48 rand
 #endif
 
 static attrsym_t *N_pos;

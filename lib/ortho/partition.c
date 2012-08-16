@@ -43,8 +43,8 @@
 #ifndef HAVE_SRAND48
 #define srand48 srand
 #endif
-#ifdef WIN32
-extern double drand48(void);
+#ifndef HAVE_DRAND48
+#define drand48 rand
 #endif
 
 typedef struct {
