@@ -4,8 +4,16 @@
 # Note: pre gd-2.0.34 graphviz uses its own gd tree with gif support and other fixes
 
 # What a meal PHP makes of versioning !!!
-%define php_extdir %(php-config --extension-dir 2>/dev/null || echo %{_libdir}/php4)
+%define php_extdir %(php-config --extension-dir 2>/dev/null || echo %{_libdir}/php)
 %global php_apiver %((echo 0; php -i 2>/dev/null | sed -n 's/^PHP API => //p') | tail -1)
+
+# Fix private-shared-object-provides
+# RPM 4.8
+%{?filter_provides_in: %filter_provides_in %{php_extdir}/.*\.so$}
+%{?filter_setup}
+# RPM 4.9
+%global __provides_exclude_from %{?__provides_exclude_from:%__provides_exclude_from|}%{php_extdir}/.*\\.so$
+
 
 
 #-- Global graphviz rpm and src.rpm tags-------------------------------------
@@ -164,16 +172,6 @@ BuildRequires: R-devel swig >= 1.3.33 perl-libs
 BuildRequires: libwebp-devel
 %endif
 %endif
-
-%global php_apiver %((echo 0; php -i 2>/dev/null | sed -n 's/^PHP API => //p') | tail -1)
-
-%global php_extdir %(php-config --extension-dir 2>/dev/null || echo %{_libdir}/php4)
-# Fix private-shared-object-provides
-# RPM 4.8
-%{?filter_provides_in: %filter_provides_in %{php_extdir}/.*\.so$}
-%{?filter_setup}
-# RPM 4.9
-%global __provides_exclude_from %{?__provides_exclude_from:%__provides_exclude_from|}%{php_extdir}/.*\\.so$
 
 
 #-- main graphviz rpm ------------------------------------------------
@@ -573,8 +571,10 @@ Perl extension for graphviz.
 Group:          Applications/Multimedia
 Summary:        PHP extension for graphviz
 Requires:       %{name} = %{version}-%{release}, php
-Requires:       php(zend-abi) = %{php_zend_api}
-Requires:       php(api) = %{php_core_api}
+
+### none of this abi/api stuff works!
+#Requires:       php(zend-abi) = %{php_zend_api}
+#Requires:       php(api) = %{php_core_api}
 
 %description php
 PHP extension for graphviz.
