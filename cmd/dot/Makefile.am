@@ -92,6 +92,12 @@ dot_static_LDADD = \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
        	$(PANGOCAIRO_LIBS) $(PANGOFT2_LIBS) $(GTS_LIBS) $(EXPAT_LIBS) $(Z_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
 
+if WITH_ORTHO
+dot_static_LDADD += \
+        $(top_builddir)/lib/ortho/libortho_C.la
+endif
+
+
 dot_builtins_SOURCES = dot.c dot_builtins.c
 dot_builtins_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
 dot_builtins_LDADD = \

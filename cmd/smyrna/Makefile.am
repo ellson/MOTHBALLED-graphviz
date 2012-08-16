@@ -68,15 +68,18 @@ smyrna_LDADD = $(top_builddir)/lib/cgraph/libcgraph.la \
 
 smyrna_static_SOURCES = $(smyrna_SOURCES)
 smyrna_static_LDADD = $(top_builddir)/lib/cgraph/libcgraph_C.la \
-		$(top_builddir)/lib/cdt/libcdt_C.la \
 		$(top_builddir)/lib/xdot/libxdot_C.la \
 		$(top_builddir)/lib/glcomp/libglcomp_C.la \
 		$(top_builddir)/lib/topfish/libtopfish_C.la \
 		$(top_builddir)/lib/common/libcommon_C.la \
 		$(top_builddir)/lib/gvpr/libgvpr_C.la \
 		$(top_builddir)/lib/expr/libexpr_C.la \
+		$(top_builddir)/lib/sfio/libsfio_C.la \
+		$(top_builddir)/lib/ast/libast_C.la \
+		$(top_builddir)/lib/vmalloc/libvmalloc_C.la \
 		$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 		$(top_builddir)/lib/neatogen/libneatogen_C.la \
+		$(top_builddir)/lib/cdt/libcdt_C.la \
 		$(GTK_LIBS) $(GLUT_LIBS) $(GTKGLEXT_LIBS) $(GLADE_LIBS) $(EXPAT_LIBS) $(GTS_LIBS)
 
 smyrna.1.pdf: $(srcdir)/smyrna.1
