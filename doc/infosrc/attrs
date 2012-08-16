@@ -671,10 +671,10 @@ Minimum edge length (rank difference between head and tail).
 :mode:G:string:major;  neato
 Technique for optimizing the layout. For neato, if <B>mode</B> is <TT>"major"</TT>,
 neato uses stress majorization. If <B>mode</B> is <TT>"KK"</TT>,
-neato uses a version of the gradient descent method. The only advantage
+neato uses a version of the gradient descent method. The only advantages
 to the latter technique is that it is sometimes appreciably faster for
-small (number of nodes < 100) graphs. A significant disadvantage is that
-it may cycle.
+small (number of nodes < 100) graphs, and it works much better with pinned nodes.
+A disadvantage is that it may cycle.
 <P>
 There are two experimental modes in neato, "hier", which adds a top-down
 directionality similar to the layout used in dot, and "ipsep", which

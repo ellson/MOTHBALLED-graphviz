@@ -325,6 +325,7 @@ static char **checkClusterStyle(graph_t* sg, int *flagp)
     char *style;
     char **pstyle = 0;
     int istyle = 0;
+    static boolean warned = 0;
 
     if (((style = agget(sg, "style")) != 0) && style[0]) {
 	char **pp;
@@ -337,27 +338,31 @@ static char **checkClusterStyle(graph_t* sg, int *flagp)
 		pp++;
  	    }else if (strcmp(p, "radial") == 0) {
  		istyle |= (FILLED | RADIAL);
-		qp = pp; /* remove rounded from list passed to renderer */
+		qp = pp; /* remove style from list passed to renderer */
 		do {
 		    qp++;
 		    *(qp-1) = *qp;
 		} while (*qp);
  	    }else if (strcmp(p, "striped") == 0) {
  		istyle |= STRIPED;
-		qp = pp; /* remove rounded from list passed to renderer */
+		qp = pp; /* remove style from list passed to renderer */
 		do {
 		    qp++;
 		    *(qp-1) = *qp;
 		} while (*qp);
 	    }else if (strcmp(p, "rounded") == 0) {
 		istyle |= ROUNDED;
-		qp = pp; /* remove rounded from list passed to renderer */
+		qp = pp; /* remove style from list passed to renderer */
 		do {
 		    qp++;
 		    *(qp-1) = *qp;
 		} while (*qp);
 	    } else pp++;
 	}
+    }
+    if ((istyle & ROUNDED) && (istyle & STRIPED) && !warned) {
+	agerr (AGWARN, "Striped, rounded clusters are currently unimplemented.\n");
+	warned = 1;
     }
 
     *flagp = istyle;
@@ -2280,6 +2285,7 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 	if (tapered) {
 	    stroke_t* stp;
 	    if (*color == '\0') color = DEFAULT_COLOR;
+	    if (*fillcolor == '\0') fillcolor = DEFAULT_COLOR;
     	    gvrender_set_pencolor(job, "transparent");
 	    gvrender_set_fillcolor(job, color);
 	    bz = ED_spl(e)->list[0];
