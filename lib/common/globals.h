@@ -34,6 +34,7 @@
 #if !defined(_BLD_dotneato) && defined(__IMPORT__)
 #   define external __IMPORT__
 #endif
+
 #if defined(GVDLL)
 #if !defined(_BLD_gvc)
 #define extern	__declspec(dllimport)
@@ -42,13 +43,16 @@
 #endif
 #endif
 #endif
-/*visual studio*/
-#ifdef WIN32_DLL
-#ifndef GVC_EXPORTS
-#define extern __declspec(dllimport)
+
+#if !defined(__MINGW32__) && !defined(__MINGW64__)
+ /*visual studio*/
+# ifdef WIN32_DLL
+#  ifndef GVC_EXPORTS
+#   define extern __declspec(dllimport)
+#  endif
+# endif
+ /*end visual studio*/
 #endif
-#endif
-/*end visual studio*/
 
 #ifndef external
 #   define external   extern

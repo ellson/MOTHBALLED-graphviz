@@ -57,19 +57,22 @@ extern "C" {
     } epsf_t;
 
     typedef void (*nodesizefn_t) (Agnode_t *, boolean);
-#ifdef GVDLL
-#define extern __declspec(dllexport)
-#else
-#define extern
-#endif
 
-/*visual studio*/
-#ifdef WIN32_DLL
-#ifndef GVC_EXPORTS
-#define extern __declspec(dllimport)
+#if !defined(__MINGW32__) && !defined(__MINGW64__)
+# ifdef GVDLL
+#  define extern __declspec(dllexport)
+# else
+#  define extern
+# endif
+
+ /*visual studio*/
+# ifdef WIN32_DLL
+#  ifndef GVC_EXPORTS
+#   define extern __declspec(dllimport)
+#  endif
+# endif
+ /*end visual studio*/
 #endif
-#endif
-/*end visual studio*/
 
 	extern void add_box(path *, boxf);
     extern void arrow_flags(Agedge_t * e, int *sflag, int *eflag);

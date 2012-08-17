@@ -19,19 +19,21 @@ extern "C" {
 #endif
 
 
-#ifdef GVDLL
-#define extern __declspec(dllexport)
-#else
-#define extern
-#endif
+#if !defined(__MINGW32__) && !defined(__MINGW64__)
+# ifdef GVDLL
+#  define extern __declspec(dllexport)
+# else
+#  define extern
+# endif
 
-/*visual studio*/
-#ifdef WIN32_DLL
-#ifndef GVC_EXPORTS
-#define extern __declspec(dllimport)
+ /*visual studio*/
+# ifdef WIN32_DLL
+#  ifndef GVC_EXPORTS
+#   define extern __declspec(dllimport)
+#  endif
+# endif
+ /*end visual studio*/
 #endif
-#endif
-/*end visual studio*/
 
 #ifndef HAVE_STRCASECMP
     extern int strcasecmp(const char *s1, const char *s2);
