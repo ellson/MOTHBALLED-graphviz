@@ -14,6 +14,8 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/pack \
         -I$(top_srcdir)/lib/ortho \
         -I$(top_srcdir)/lib/pathplan \
+        -I$(top_srcdir)/lib/ns \
+        -I$(top_srcdir)/lib/intset \
         -I$(top_srcdir)/lib/$(GRAPH) \
 	-I$(top_srcdir)/lib/sparse \
 	-I$(top_srcdir)/lib/rbtree \
@@ -45,9 +47,13 @@ libneatogen_C_la_SOURCES = adjust.c circuit.c edges.c geometry.c \
     overlap.c call_tri.c \
 	compute_hierarchy.c delaunay.c multispline.c $(WITH_IPSEPCOLA_SOURCES)
 
-if WITH_ORTHO
 libneatogen_C_la_DEPENDENCIES = \
-	$(top_builddir)/lib/ortho/libortho_C.la
+	$(top_builddir)/lib/ns/libns_C.la
+
+if WITH_ORTHO
+libneatogen_C_la_DEPENDENCIES += \
+	$(top_builddir)/lib/ortho/libortho_C.la \
+	$(top_builddir)/lib/intset/libintset_C.la
 endif
 
 EXTRA_DIST = Makefile.old $(IPSEPCOLA_SOURCES) gvneatogen.vcproj

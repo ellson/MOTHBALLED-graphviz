@@ -37,6 +37,8 @@ libgvplugin_dot_layout_la_LIBADD = $(libgvplugin_dot_layout_C_la_LIBADD) \
 	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
 	$(top_builddir)/lib/cdt/libcdt.la \
+	$(top_builddir)/lib/ns/libns_C.la \
+	$(top_builddir)/lib/intset/libintset_C.la \
 	$(top_builddir)/lib/pathplan/libpathplan.la $(MATH_LIBS)
 	
 if WITH_ORTHO
@@ -46,7 +48,8 @@ endif
 
 if WITH_WIN32
 libgvplugin_dot_layout_la_LDFLAGS += -no-undefined
-libgvplugin_dot_layout_la_LIBADD += $(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la
+libgvplugin_dot_layout_la_LIBADD += 
+	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la
 endif
 
 if WITH_DARWIN9

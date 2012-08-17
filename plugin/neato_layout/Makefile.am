@@ -31,6 +31,7 @@ libgvplugin_neato_layout_C_la_LIBADD = \
 	$(top_builddir)/lib/neatogen/libneatogen_C.la \
 	$(top_builddir)/lib/twopigen/libtwopigen_C.la \
 	$(top_builddir)/lib/patchwork/libpatchwork_C.la \
+        $(top_builddir)/lib/intset/libintset_C.la \
 	$(top_builddir)/lib/osage/libosage_C.la \
 	$(top_builddir)/lib/fdpgen/libfdpgen_C.la \
 	$(top_builddir)/lib/sparse/libsparse_C.la \
@@ -43,6 +44,7 @@ libgvplugin_neato_layout_la_LIBADD = $(libgvplugin_neato_layout_C_la_LIBADD) \
 	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
 	$(top_builddir)/lib/cdt/libcdt.la \
+	$(top_builddir)/lib/ns/libns_C.la \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
 	$(GTS_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
 	
@@ -52,12 +54,15 @@ libgvplugin_neato_layout_la_LIBADD += \
 endif
 
 if WITH_SFDP
-libgvplugin_neato_layout_C_la_LIBADD += $(top_builddir)/lib/sfdpgen/libsfdpgen_C.la
+libgvplugin_neato_layout_C_la_LIBADD += \
+	$(top_builddir)/lib/sfdpgen/libsfdpgen_C.la
 endif
 
 if WITH_WIN32
 libgvplugin_neato_layout_la_LDFLAGS += -no-undefined
-libgvplugin_neato_layout_la_LIBADD += $(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la $(top_builddir)/lib/cdt/libcdt.la
+libgvplugin_neato_layout_la_LIBADD += \
+	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
+	$(top_builddir)/lib/cdt/libcdt.la
 endif
 
 if WITH_DARWIN9

@@ -86,6 +86,8 @@ dot_static_LDADD = \
 	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout_C.la \
 	$(top_builddir)/plugin/core/libgvplugin_core_C.la \
 	$(top_builddir)/lib/gvc/libgvc_C.la \
+	$(top_builddir)/lib/ns/libns_C.la \
+	$(top_builddir)/lib/intset/libintset_C.la \
 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
 	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH)_C.la \
 	$(top_builddir)/lib/xdot/libxdot_C.la \

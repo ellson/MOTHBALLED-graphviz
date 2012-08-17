@@ -47,11 +47,11 @@
 #include <grid.h>
 #include <neato.h>
 
-#ifndef HAVE_SRAND48
+#if !defined(HAVE_SRAND48) && defined(HAVE_SRAND)
 #define srand48 srand
 #endif
-#ifndef HAVE_DRAND48
-extern double drand48(void);
+#if !defined(HAVE_DRAND48) && defined(HAVE_RAND)
+#define drand48 rand
 #endif
 
 #include "tlayout.h"

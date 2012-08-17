@@ -11,15 +11,19 @@
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
-
-
 #include <stdlib.h>
+
 #ifdef WIN32
 #include <string.h>
 #include <ctype.h>
 #include "compat.h"
 #endif
+
 #include <string.h>
 #include <ctype.h>
 
@@ -29,13 +33,14 @@
 #include "colortbl.h"
 #include "memory.h"
 
-static char* colorscheme;
-
-#ifdef WIN32
-extern int strcasecmp(const char *s1, const char *s2);
-extern int strncasecmp(const char *s1, const char *s2, unsigned int n);
+#ifndef HAVE_STRCASECMP
+    extern int strcasecmp(const char *s1, const char *s2);
+#endif
+#ifndef HAVE_STRNCASECMP
+    extern int strncasecmp(const char *s1, const char *s2, size_t n);
 #endif
 
+static char* colorscheme;
 
 static void hsv2rgb(double h, double s, double v,
 			double *r, double *g, double *b)

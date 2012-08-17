@@ -37,6 +37,7 @@
 #include "agxbuf.h"
 #include "pointset.h"
 #include "intset.h"
+#include "ns.h"
 
 #define DEFAULT_BORDER    1
 #define DEFAULT_CELLPADDING  2

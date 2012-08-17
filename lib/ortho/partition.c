@@ -40,10 +40,10 @@
 #define CROSS_SINE(v0, v1) ((v0).x * (v1).y - (v1).x * (v0).y)
 #define LENGTH(v0) (sqrt((v0).x * (v0).x + (v0).y * (v0).y))
 
-#ifndef HAVE_SRAND48
+#if !defined(HAVE_SRAND48) && defined(HAVE_SRAND)
 #define srand48 srand
 #endif
-#ifndef HAVE_DRAND48
+#if !defined(HAVE_DRAND48) && defined(HAVE_RAND)
 #define drand48 rand
 #endif
 

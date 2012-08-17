@@ -51,6 +51,8 @@ libgvc_C_la_DEPENDENCIES = \
 	$(top_builddir)/lib/pack/libpack_C.la \
 	$(top_builddir)/lib/xdot/libxdot_C.la \
 	$(top_builddir)/lib/label/liblabel_C.la \
+	$(top_builddir)/lib/ns/libns_C.la \
+	$(top_builddir)/lib/intset/libintset_C.la \
 	$(top_builddir)/lib/common/libcommon_C.la
 if ENABLE_LTDL
 libgvc_C_la_LIBADD += @LIBLTDL@ $(LIBLTDL_LDFLAGS)
@@ -63,6 +65,8 @@ libgvc_la_LIBADD = $(libgvc_C_la_LIBADD) \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
+	$(top_builddir)/lib/ns/libns_C.la \
+	$(top_builddir)/lib/intset/libintset_C.la \
 	$(EXPAT_LIBS) $(Z_LIBS) $(MATH_LIBS)
 libgvc_la_DEPENDENCIES = $(libgvc_C_la_DEPENDENCIES)
 

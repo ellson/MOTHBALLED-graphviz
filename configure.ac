@@ -482,7 +482,7 @@ AC_SUBST([LIBGEN_LIBS])
 # Checks for library functions
 AC_FUNC_ALLOCA
 
-AC_CHECK_FUNCS([lrand48 drand48 srand48 setmode setenv getenv \
+AC_CHECK_FUNCS([lrand48 drand48 srand48 srand rand setmode setenv getenv \
 	__freadable _sysconf getrusage strerror cbrt lsqrt vsnprintf \
 	strtoul strtoll strtoull uname memset nl_langinfo pow sqrt \
 	strchr strdup strerror strstr strtok_r regexec _NSGetEnviron])
@@ -3120,6 +3120,8 @@ AC_CONFIG_FILES(Makefile
 	lib/patchwork/Makefile
 	lib/pack/Makefile
 	lib/ortho/Makefile
+	lib/intset/Makefile
+	lib/ns/Makefile
 	lib/expr/Makefile
 	lib/expr/libexpr.pc
 	lib/common/Makefile
