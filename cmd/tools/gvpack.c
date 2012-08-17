@@ -35,6 +35,8 @@
 #include "ingraphs.h"
 #include "pack.h"
 
+extern lt_symlist_t *lt_preloaded_symbols;
+
 #ifndef WITH_CGRAPH
 extern Agdict_t *agdictof(void *);
 #endif

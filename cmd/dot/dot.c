@@ -22,6 +22,8 @@
 #include "gvc.h"
 #include "gvio.h"
 
+extern lt_symlist_t *lt_preloaded_symbols;
+
 #ifdef WIN32_DLL
 __declspec(dllimport) boolean MemTest;
 __declspec(dllimport) int GvExitOnUsage;
