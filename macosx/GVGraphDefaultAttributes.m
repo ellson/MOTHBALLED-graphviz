@@ -17,7 +17,7 @@
 @interface GVGraphDefaultAttributeKeyEnumerator : NSEnumerator
 {
 #ifdef WITH_CGRAPH
-	graph_t *_graph;
+	graph_t *_graph; 
 	int _kind;
 #else
 	void *_proto;
