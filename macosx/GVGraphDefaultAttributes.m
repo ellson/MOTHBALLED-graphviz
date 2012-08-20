@@ -26,9 +26,9 @@
 }
 
 #ifdef WITH_CGRAPH
-- (id)initWithGraph:(graph_t *)graph prototype:(int)kind;
+- (id)initWithGraphLoc:(graph_t *)graph prototype:(int)kind;
 #else
-- (id)initWithPrototype:(void *)proto;
+- (id)initWithPrototypeLoc:(void *)proto;
 #endif
 - (NSArray *)allObjects;
 - (id)nextObject;
@@ -38,7 +38,7 @@
 @implementation GVGraphDefaultAttributeKeyEnumerator
 
 #ifdef WITH_CGRAPH
-- (id)initWithGraph:(graph_t *)graph prototype:(int)kind;
+- (id)initWithGraphLoc:(graph_t *)graph prototype:(int)kind;
 {
 	if (self = [super init]) {
 		_kind = kind;
@@ -70,7 +70,7 @@
 	return nil;
 }
 #else
-- (id)initWithPrototype:(void *)proto
+- (id)initWithPrototypeLoc:(void *)proto
 {
 	if (self = [super init]) {
 		_proto = proto;
@@ -128,7 +128,7 @@
 
 - (NSEnumerator *)keyEnumerator
 {
-	return [[[GVGraphDefaultAttributeKeyEnumerator alloc] initWithGraph:_graph->_graph prototype:_kind] autorelease];
+	return [[[GVGraphDefaultAttributeKeyEnumerator alloc] initWithGraphLoc:_graph->_graph prototype:_kind] autorelease];
 }
 
 - (id)objectForKey:(id)aKey
@@ -176,7 +176,7 @@
 
 - (NSEnumerator *)keyEnumerator
 {
-	return [[[GVGraphDefaultAttributeKeyEnumerator alloc] initWithPrototype:_proto] autorelease];
+	return [[[GVGraphDefaultAttributeKeyEnumerator alloc] initWithPrototypeLoc:_proto] autorelease];
 }
 
 - (id)objectForKey:(id)aKey
