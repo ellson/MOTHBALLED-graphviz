@@ -23,22 +23,19 @@ extern "C" {
 
     typedef Dict_t PointSet;
     typedef Dict_t PointMap;
-
-#if !defined(__MINGW32__) && !defined(__MINGW64__)
-# ifdef GVDLL
-#  define extern __declspec(dllexport)
-# else
-#  define extern
-# endif
-
- /*visual studio*/
-# ifdef WIN32_DLL
-#  ifndef GVC_EXPORTS
-#   define extern __declspec(dllimport)
-#  endif
-# endif
- /*end visual studio*/
+#ifdef GVDLL
+#define extern __declspec(dllexport)
+#else
+#define extern
 #endif
+
+/*visual studio*/
+#ifdef WIN32_DLL
+#ifndef GVC_EXPORTS
+#define extern __declspec(dllimport)
+#endif
+#endif
+/*end visual studio*/
 
 	extern PointSet *newPS(void);
     extern void freePS(PointSet *);

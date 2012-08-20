@@ -18,7 +18,6 @@
 
 #include "neato.h"
 #include "adjust.h"
-#include "ns.h"
 
 /* For precision, scale up before algorithms, then scale down */
 #define SCALE 10   

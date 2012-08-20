@@ -1216,10 +1216,10 @@ This field indicates which graph component uses the attribute.
 <DT><A NAME=d:mode HREF=#a:mode><STRONG>mode</STRONG></A>
 <DD>  Technique for optimizing the layout. For neato, if <B>mode</B> is <TT>"major"</TT>,
   neato uses stress majorization. If <B>mode</B> is <TT>"KK"</TT>,
-  neato uses a version of the gradient descent method. The only advantages
+  neato uses a version of the gradient descent method. The only advantage
   to the latter technique is that it is sometimes appreciably faster for
-  small (number of nodes < 100) graphs, and it works much better with pinned nodes.
-  A disadvantage is that it may cycle.
+  small (number of nodes < 100) graphs. A significant disadvantage is that
+  it may cycle.
   <P>
   There are two experimental modes in neato, "hier", which adds a top-down
   directionality similar to the layout used in dot, and "ipsep", which
@@ -2044,19 +2044,6 @@ enclosed in the parentheses,  <TT>(...)+</TT> indicates 1 or more, and
       <TR><TD align=center>360<TD><IMG SRC="g_lin360.png"><TD><IMG SRC="g_rad360.png"></TR>
     </TABLE>
 
-<DT><A NAME=k:colorValList><STRONG>colorValList</STRONG></A>
-<DD>A colon-separated list of color-value pairs: <I>CV</I>(:<I>CV</I>)*
-   where each <I>CV</I> has the form <A HREF=#k:color>color</A>(;v)* and v is an optional non-negative double.
-  The sum of all the v's must be less than or equal to 1. Semantically, such as list is used to specify the
-  proportion of each color used. 
-  <P>
-  If the sum of the doubles is strictly less than 1, then the remainder is distributed equally among each
-  color without an explicit value or, if there are none, added to the last color.
-  As an example, the list<BR>
-  <TT>blue:#ff0000;.3:0.482 0.714 0.878:brown;.2</TT>
-  is equivalent to<BR>
-  <TT>blue;2.5:#ff0000;.3:0.482 0.714 0.878;2.5:brown;.2</TT>
-
 <DT><A NAME=k:dirType><STRONG>dirType</STRONG></A>
 <DD>For an edge <CODE>T -> H;</CODE>
     <TABLE>
@@ -2327,33 +2314,6 @@ enclosed in the parentheses,  <TT>(...)+</TT> indicates 1 or more, and
   The styles "filled" and "rounded" are recognized for clusters.
   The style "radial" is recognized for nodes, clusters and graphs, and indicates a
   radial-style gradient fill if applicable.
-  <P>
-  For non-rounded clusters and rectangular nodes, the style "striped" is also supported,
-  as is the  the style "wedged" for elliptical and circular nodes. In these cases, the relevant
-  fill color attribute (<A HREF=#d:fillcolor>fillcolor</A>, <A HREF=#d:bgcolor>bgcolor</A> or <A HREF=#d:color>color</A>)
-  may have the type <A HREF=#k:colorValList>colorValList</A>. 
-  For the "striped" style, the object's rectangle is filled with
-  multiple vertical stripes, the colors and proportions being determined the colorValList.
-  For the "wedged" style, the node's elliptical shape is filled with
-  multiple wedges, producing a "pie chart" effect.
-  <P>
-  Examples:<BR>
-    <TABLE border=1>
-      <TR><TH>Style<TH>Node<TH>Edge<TH>Cluster</TR>
-      <TR><TD align=center >dashed<TD><IMG SRC="s_n_dashed.png"><TD><IMG SRC="s_e_dashed.png"><TD><IMG SRC="s_c_dashed.png"></TR>
-      <TR><TD align=center >dotted<TD><IMG SRC="s_n_dotted.png"><TD><IMG SRC="s_e_dotted.png"><TD><IMG SRC="s_c_dotted.png"></TR>
-      <TR><TD align=center >solid<TD><IMG SRC="s_n_solid.png"><TD><IMG SRC="s_e_solid.png"><TD><IMG SRC="s_c_solid.png"></TR>
-      <TR><TD align=center >bold<TD><IMG SRC="s_n_bold.png"><TD><IMG SRC="s_e_bold.png"><TD><IMG SRC="s_c_bold.png"></TR>
-      <TR><TD align=center >tapered<TD> <TD><IMG SRC="s_e_tapered.png"><TD> </TR>
-      <TR><TD align=center >diagonals<TD><IMG SRC="s_n_diagonals.png"><TD> <TD> </TR>
-      <TR><TD align=center >rounded<TD><IMG SRC="s_n_rounded.png"><TD><TD><IMG SRC="s_c_rounded.png"></TR>
-      <TR><TD align=center >filled<TD><IMG SRC="s_n_filled.png"><TD><TD><IMG SRC="s_c_filled.png"></TR>
-      <TR><TD align=center >striped<TD><IMG SRC="s_n_striped.png"><TD><TD><IMG SRC="s_c_striped.png"></TR>
-      <TR><TD align=center >wedged<TD><IMG SRC="s_n_wedged.png"><TD><TD></TR>
-    </TABLE>
-  The style "invis" indicates that the object is not drawn.
-  Examples of the gradient and radial styles are shown in the <A HREF=#k:colorList>colorList</A> entry above.
-  <P>
   Additional styles are available in
   device-dependent form. Style lists are passed to device drivers, which
   can use this to generate appropriate output.

@@ -25,11 +25,9 @@
 #include <stdlib.h>
 #include <time.h>
 
-#if !defined(HAVE_SRAND48) && defined(HAVE_SRAND)
-#define srand48 srand
-#endif
-#if !defined(HAVE_DRAND48) && defined(HAVE_RAND)
-#define drand48 rand
+
+#ifndef HAVE_DRAND48
+extern double drand48(void);
 #endif
 
 #define Dij2			/* If defined, the terms in the stress energy are normalized 

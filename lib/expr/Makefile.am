@@ -31,17 +31,17 @@ pdf_DATA = expr.3.pdf
 libexpr_C_la_SOURCES = excc.c excontext.c exdata.c exerror.c \
 	exeval.c exexpr.c exlexname.c exopen.c exrewind.c extoken.c \
 	extype.c exzero.c exparse.y exnospace.c exstash.c 
-libexpr_C_la_DEPENDENCIES = \
+libexpr_C_la_LIBADD = \
 	$(top_builddir)/lib/ast/libast_C.la \
 	$(top_builddir)/lib/vmalloc/libvmalloc_C.la \
 	$(top_builddir)/lib/sfio/libsfio_C.la \
-	$(top_builddir)/lib/cdt/libcdt_C.la
+	$(top_builddir)/lib/cdt/libcdt.la
 
 #libexpr_la_LDFLAGS = -version-info $(EXPR_VERSION)
 #libexpr_la_SOURCES = $(libexpr_C_la_SOURCES)
 #libexpr_la_LIBADD = $(libexpr_C_la_LIBADD)
 
-$(libexpr_C_la_OBJECTS): \
+$(libexpr_C_la_OBJECTS) $(libexpr_la_OBJECTS): \
 	exparse.h exparse.c exgram.h exop.h
 
 exop.h: exparse.h

@@ -381,7 +381,7 @@ static void config_rescan(GVC_t *gvc, char *config_path)
 #if defined(DARWIN_DYLIB)
     char *plugin_re_beg = "[^0-9]\\.";
     char *plugin_re_end = "\\.dylib$";
-#elif defined(__MINGW32__) || defined(__MINGW64__)
+#elif defined(__MINGW32__)
 	char *plugin_glob = "libgvplugin_*";
 	char *plugin_re_beg = "[^0-9]-";
     char *plugin_re_end = "\\.dll$"; 
@@ -420,7 +420,7 @@ static void config_rescan(GVC_t *gvc, char *config_path)
 
     config_re = gmalloc(strlen(plugin_re_beg) + 20 + strlen(plugin_re_end) + 1);
 
-#if defined(WIN32) && !defined(__MINGW32__) && !defined(__MINGW64__) && !defined(__CYGWIN__)
+#if defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
     sprintf(config_re,"%s%s", plugin_re_beg, plugin_re_end);
 #elif defined(GVPLUGIN_VERSION)
     sprintf(config_re,"%s%d%s", plugin_re_beg, GVPLUGIN_VERSION, plugin_re_end);

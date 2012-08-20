@@ -68,11 +68,7 @@ void dot2_levels(graph_t * g)
 	ssize = atoi (s);
     else
 	ssize = -1;
-
-/* FIXME - template clashes with the other rank2() in lib/ns/ns.c */
-/*       - work around by renaming to new_rank2()  also in lib/dotgen2/ns.c */
-    new_rank2(Xg, 1, INT_MAX, ssize);
-
+    rank2(Xg, 1, INT_MAX, ssize);
     readout_levels(g, Xg);
 }
 

@@ -18,14 +18,11 @@
 #include "logic.h"
 #include "gvc.h"
 
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#else
-#include "compat_unistd.h"
-#endif
-
 #ifdef WIN32
 #include "libltdl/lt_system.h"
+#endif
+#ifndef WIN32
+#include <unistd.h>
 #endif
 #include <ctype.h>
 

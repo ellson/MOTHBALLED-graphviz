@@ -57,22 +57,19 @@ extern "C" {
     } epsf_t;
 
     typedef void (*nodesizefn_t) (Agnode_t *, boolean);
-
-#if !defined(__MINGW32__) && !defined(__MINGW64__)
-# ifdef GVDLL
-#  define extern __declspec(dllexport)
-# else
-#  define extern
-# endif
-
- /*visual studio*/
-# ifdef WIN32_DLL
-#  ifndef GVC_EXPORTS
-#   define extern __declspec(dllimport)
-#  endif
-# endif
- /*end visual studio*/
+#ifdef GVDLL
+#define extern __declspec(dllexport)
+#else
+#define extern
 #endif
+
+/*visual studio*/
+#ifdef WIN32_DLL
+#ifndef GVC_EXPORTS
+#define extern __declspec(dllimport)
+#endif
+#endif
+/*end visual studio*/
 
 	extern void add_box(path *, boxf);
     extern void arrow_flags(Agedge_t * e, int *sflag, int *eflag);
@@ -142,6 +139,7 @@ extern "C" {
     extern void addEdgeLabels(graph_t* g, edge_t * e, pointf rp, pointf rq);
     extern void pop_obj_state(GVJ_t *job);
     extern obj_state_t* push_obj_state(GVJ_t *job);
+    extern int rank(graph_t * g, int balance, int maxiter);
     extern port resolvePort(node_t*  n, node_t* other, port* oldport);
     extern void resolvePorts (edge_t* e);
     extern void round_corners(GVJ_t*, pointf*, int, int,int);

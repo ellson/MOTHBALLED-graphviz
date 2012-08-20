@@ -98,18 +98,12 @@ libtcldot_builtin_la_LIBADD = $(TCLHANDLE_LIBS) \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la $(GTS_LIBS)
 
 if WITH_PANGOCAIRO
-libtcldot_builtin_la_LIBADD += \
-	$(top_builddir)/plugin/pango/libgvplugin_pango_C.la $(PANGOCAIRO_LIBS) $(PANGOFT2_LIBS)
+libtcldot_builtin_la_LIBADD += $(top_builddir)/plugin/pango/libgvplugin_pango_C.la $(PANGOCAIRO_LIBS) $(PANGOFT2_LIBS)
 endif
 
 if WITH_LIBGD
-libtcldot_builtin_la_LIBADD += \
-	$(top_builddir)/plugin/gd/libgvplugin_gd_C.la $(GD_LIBS)
-endif
-
-if WITH_ORTHO
-libtcldot_builtin_la_LIBADD += \
-        $(top_builddir)/lib/ortho/libortho_C.la
+libtcldot_builtin_la_LIBADD += $(top_builddir)/plugin/gd/libgvplugin_gd_C.la
+libtcldot_builtin_la_LIBADD += $(GD_LIBS)
 endif
 
 libtcldot_builtin_la_LIBADD += $(EXPAT_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)

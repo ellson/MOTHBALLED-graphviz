@@ -105,13 +105,9 @@ extern "C" {
 #if _BLD_vmalloc && defined(__EXPORT__)
 #define extern	__EXPORT__
 #endif
-
-/*
- * In graphviz we only use vmalloc as a convience library, so we never need __IMPORT__
- */
-// #if !_BLD_vmalloc && defined(__IMPORT__)
-// #define extern	__IMPORT__
-// #endif
+#if !_BLD_vmalloc && defined(__IMPORT__)
+#define extern	__IMPORT__
+#endif
 
 /*visual studio*/
 #ifdef WIN32_DLL

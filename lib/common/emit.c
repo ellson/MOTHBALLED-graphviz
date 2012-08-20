@@ -28,40 +28,13 @@
 #include "gvc.h"
 #include "xdot.h"
 
+#ifdef WIN32
+#define strtok_r strtok_s
+#endif
+
 #define P2RECT(p, pr, sx, sy) (pr[0].x = p.x - sx, pr[0].y = p.y - sy, pr[1].x = p.x + sx, pr[1].y = p.y + sy)
 #define FUZZ 3
 #define EPSILON .0001
-
-// #ifdef WIN32
-// #define strtok_r strtok_s
-// #endif
-
-#ifndef HAVE_STRTOK_R
-/*
- * From:  http://sourceforge.net/tracker/?func=detail&aid=2673480&group_id=2435&atid=352435
- *
- * NB this implementation uses strok(), so will corrupt any existing strok() state.
- */
-char *strtok_r(char *str, const char *delim, char **save)
-{
-    char *res, *last;
-
-    if( !save )
-        return strtok(str, delim);
-    if( !str && !(str = *save) )
-        return NULL;
-    last = str + strlen(str);
-    if( (*save = res = strtok(str, delim)) )
-    {
-        *save += strlen(res);
-        if( *save < last )
-            (*save)++;
-        else
-            *save = NULL;
-    }
-    return res;
-}
-#endif
 
 typedef struct {
     xdot_op op;
@@ -325,7 +298,6 @@ static char **checkClusterStyle(graph_t* sg, int *flagp)
     char *style;
     char **pstyle = 0;
     int istyle = 0;
-    static boolean warned = 0;
 
     if (((style = agget(sg, "style")) != 0) && style[0]) {
 	char **pp;
@@ -338,31 +310,27 @@ static char **checkClusterStyle(graph_t* sg, int *flagp)
 		pp++;
  	    }else if (strcmp(p, "radial") == 0) {
  		istyle |= (FILLED | RADIAL);
-		qp = pp; /* remove style from list passed to renderer */
+		qp = pp; /* remove rounded from list passed to renderer */
 		do {
 		    qp++;
 		    *(qp-1) = *qp;
 		} while (*qp);
  	    }else if (strcmp(p, "striped") == 0) {
  		istyle |= STRIPED;
-		qp = pp; /* remove style from list passed to renderer */
+		qp = pp; /* remove rounded from list passed to renderer */
 		do {
 		    qp++;
 		    *(qp-1) = *qp;
 		} while (*qp);
 	    }else if (strcmp(p, "rounded") == 0) {
 		istyle |= ROUNDED;
-		qp = pp; /* remove style from list passed to renderer */
+		qp = pp; /* remove rounded from list passed to renderer */
 		do {
 		    qp++;
 		    *(qp-1) = *qp;
 		} while (*qp);
 	    } else pp++;
 	}
-    }
-    if ((istyle & ROUNDED) && (istyle & STRIPED) && !warned) {
-	agerr (AGWARN, "Striped, rounded clusters are currently unimplemented.\n");
-	warned = 1;
     }
 
     *flagp = istyle;
@@ -2285,7 +2253,6 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 	if (tapered) {
 	    stroke_t* stp;
 	    if (*color == '\0') color = DEFAULT_COLOR;
-	    if (*fillcolor == '\0') fillcolor = DEFAULT_COLOR;
     	    gvrender_set_pencolor(job, "transparent");
 	    gvrender_set_fillcolor(job, color);
 	    bz = ED_spl(e)->list[0];

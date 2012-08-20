@@ -31,29 +31,18 @@ $(libgvpr_C_la_OBJECTS): gdefs.h
 libgvpr_C_la_DEPENDENCIES = \
 	$(top_builddir)/lib/expr/libexpr_C.la \
 	$(top_builddir)/lib/common/libcommon_C.la \
-	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(top_builddir)/lib/cdt/libcdt_C.la
+	$(top_builddir)/lib/ingraphs/libingraphs_C.la
 
 
 libgvpr_la_LDFLAGS = -version-info $(GVPR_VERSION) -no-undefined
 libgvpr_la_SOURCES = $(libgvpr_C_la_SOURCES)
-libgvpr_la_LIBADD = \
+libgvpr_la_LIBADD = $(libgvpr_C_la_LIBADD) \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(top_builddir)/lib/expr/libexpr_C.la \
-        $(top_builddir)/lib/vmalloc/libvmalloc_C.la \
-        $(top_builddir)/lib/sfio/libsfio_C.la \
-        $(top_builddir)/lib/ast/libast_C.la \
-        $(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(MATH_LIBS)
-libgvpr_la_DEPENDENCIES = $(libgvpr_C_la_DEPENDENCIES) \
-	$(top_builddir)/lib/vmalloc/libvmalloc_C.la \
-	$(top_builddir)/lib/sfio/libsfio_C.la \
-	$(top_builddir)/lib/ast/libast_C.la \
-	$(top_builddir)/lib/gvc/libgvc_C.la \
-        $(top_builddir)/lib/cdt/libcdt_C.la \
-        $(top_builddir)/lib/cgraph/libcgraph_C.la
+libgvpr_la_DEPENDENCIES = $(libgvpr_C_la_DEPENDENCIES)
 
 mkdefs_SOURCES = mkdefs.c
 

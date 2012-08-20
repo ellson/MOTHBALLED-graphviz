@@ -86,19 +86,11 @@ dot_static_LDADD = \
 	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout_C.la \
 	$(top_builddir)/plugin/core/libgvplugin_core_C.la \
 	$(top_builddir)/lib/gvc/libgvc_C.la \
-	$(top_builddir)/lib/ns/libns_C.la \
-	$(top_builddir)/lib/intset/libintset_C.la \
 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
 	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH)_C.la \
 	$(top_builddir)/lib/xdot/libxdot_C.la \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
        	$(PANGOCAIRO_LIBS) $(PANGOFT2_LIBS) $(GTS_LIBS) $(EXPAT_LIBS) $(Z_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
-
-if WITH_ORTHO
-dot_static_LDADD += \
-        $(top_builddir)/lib/ortho/libortho_C.la
-endif
-
 
 dot_builtins_SOURCES = dot.c dot_builtins.c
 dot_builtins_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1

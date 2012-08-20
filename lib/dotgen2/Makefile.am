@@ -24,8 +24,4 @@ endif
 libdotgen2_C_la_LDFLAGS = -no-undefined
 libdotgen2_C_la_SOURCES = dotinit.c level.c minc2.c ns.c groups.c minc_utils.c decomp.c
 
-if WITH_ORTHO
-libdotgen2_C_la_DEPENDENCIES =  $(top_builddir)/lib/ortho/libortho_C.la
-endif
-
 # EXTRA_DIST = dotgen2.vcproj

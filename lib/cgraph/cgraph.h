@@ -180,19 +180,17 @@ struct Agdisc_s {		/* user's discipline */
 };
 
 	/* default resource disciplines */
-
-#if !defined(__MINGW32__) && !defined(__MINGW64__)
-# if !defined(_BLD_cgraph) && defined(GVDLL)
-#  define extern  __declspec(dllimport)
-# endif
-/*visual studio*/
-# ifdef WIN32_DLL
-#  ifndef CGRAPH_EXPORTS
-#   define extern __declspec(dllimport)
-#  endif
-# endif
-/*end visual studio*/
+#if !defined(_BLD_cgraph) && defined(GVDLL)
+#define extern  __declspec(dllimport)
 #endif
+
+/*visual studio*/
+#ifdef WIN32_DLL
+#ifndef CGRAPH_EXPORTS
+#define extern __declspec(dllimport)
+#endif
+#endif
+/*end visual studio*/
 
 extern Agmemdisc_t AgMemDisc;
 extern Agiddisc_t AgIdDisc;

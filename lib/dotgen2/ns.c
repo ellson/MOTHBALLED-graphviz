@@ -556,9 +556,7 @@ static int init_graph(graph_t * g)
     return feasible;
 }
 
-/* FIXME - template clashes with the other rank2() in lib/ns/ns.c */
-/*       - work around by renaming to new_rank2()  - also in lib/dotgen2/level.c */
-void new_rank2(graph_t * g, int balance, int maxiter, int searchsize)
+void rank2(graph_t * g, int balance, int maxiter, int searchsize)
 {
     int iter = 0, feasible;
     char *s, *ns = "network simplex: ";

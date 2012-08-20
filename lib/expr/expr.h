@@ -29,17 +29,12 @@ extern "C" {
 
 #undef	RS	/* hp.pa <signal.h> grabs this!! */
 
-
 #if _BLD_expr && defined(__EXPORT__)
 #define extern		__EXPORT__
 #endif
-
-/*
- * In graphviz we only use expr as a convience library, so we never need __IMPORT__
- */
-// #if !_BLD_expr && defined(__IMPORT__)
-// #define extern		extern __IMPORT__
-// #endif
+#if !_BLD_expr && defined(__IMPORT__)
+#define extern		extern __IMPORT__
+#endif
 
 /*
  * bison -pPREFIX misses YYSTYPE

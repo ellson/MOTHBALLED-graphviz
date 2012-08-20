@@ -12,6 +12,7 @@
  *************************************************************************/
 
 
+
 #ifndef _GRAPH_H
 #define _GRAPH_H 1
 
@@ -130,19 +131,16 @@ extern "C" {
 #define extern  __IMPORT__
 #endif
 #endif
-
-#if !defined(__MINGW32__) && !defined(__MINGW64__)
- /*visual studio*/
-# ifdef WIN32_DLL
-#  ifndef GRAPH_EXPORTS
-#   define extern __declspec(dllimport)
-#  else
-#   define extern __declspec(dllexport)
-# endif
-# endif
- /*end visual studio*/
+/*visual studio*/
+#ifdef WIN32_DLL
+#ifndef GRAPH_EXPORTS
+#define extern __declspec(dllimport)
+#else
+#define extern __declspec(dllexport)
 #endif
 
+#endif
+/*end visual studio*/
     extern char *agstrcanon(char *, char *);
     extern char *agcanonical(char *);
     extern char *agcanon(char *);

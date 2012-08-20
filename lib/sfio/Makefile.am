@@ -29,7 +29,7 @@ $(top_builddir)/FEATURE/sfio: $(top_srcdir)/lib/sfio/features/sfio
 	mkdir -p $(top_builddir)/FEATURE
 	$(top_srcdir)/iffe - set cc $(CC) $(CCMODE) $(CXFLAGS) : run $(top_srcdir)/lib/sfio/features/sfio >$@
 
-$(libsfio_C_la_OBJECTS): $(top_builddir)/FEATURE/sfio
+$(libsfio_la_OBJECTS): $(top_builddir)/FEATURE/sfio
 
 DISTCLEANFILES = $(top_builddir)/FEATURE/sfio
 

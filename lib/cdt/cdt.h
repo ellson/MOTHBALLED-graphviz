@@ -25,12 +25,11 @@
 #define _END_EXTERNS_
 #endif
 
-#if !defined(__MINGW32__) && !defined(__MINGW64__)
-# ifdef WIN32
-#  define __EXPORT__  __declspec (dllexport)
-#  define __IMPORT__	__declspec (dllimport)
-# endif
+#ifdef WIN32
+#define __EXPORT__  __declspec (dllexport)
+#define __IMPORT__	__declspec (dllimport)
 #endif
+
 
 #if !_DLL_BLD && _dll_import
 #define __EXTERN__(T,obj)       extern T obj; T* _imp__ ## obj = &obj
