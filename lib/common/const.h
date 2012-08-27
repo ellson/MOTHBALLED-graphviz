@@ -217,6 +217,11 @@
 #define DOTTED (1 << 12)
 #define DASHED (1 << 13)
 #define WEDGED  (1 << 14)
+#define RPROMOTER (1 << 15)
+#define RARROW (1 << 16)
+#define LARROW (1 << 17)
+#define LPROMOTER (1 << 18)
+
 
 /* fill types */
 #define FILL      1

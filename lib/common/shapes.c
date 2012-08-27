@@ -97,11 +97,18 @@ static polygon_t p_Msquare = { TRUE, 1, 4, 0., 0., 0., DIAGONALS };
 static polygon_t p_Mcircle =
     { TRUE, 1, 1, 0., 0., 0., DIAGONALS | AUXLABELS };
 
+/* biological circuit shapes */
+static polygon_t p_rpromoter = { FALSE, 1, 4, 0., 0., 0., RPROMOTER };
+static polygon_t p_rarrow = { FALSE, 1, 4, 0., 0., 0., RARROW };
+static polygon_t p_larrow = { FALSE, 1, 4, 0., 0., 0., LARROW};
+static polygon_t p_lpromoter = { FALSE, 1, 4, 0., 0., 0., LPROMOTER};
+
 #define IS_BOX(n) (ND_shape(n)->polygon == &p_box)
 
 /* True if style requires processing through round_corners. */
 #define SPECIAL_CORNERS(style) \
-	((style) & (ROUNDED | DIAGONALS | DOGEAR | TAB | FOLDER | BOX3D | COMPONENT))
+    ((style) & (ROUNDED | DIAGONALS | DOGEAR | TAB | FOLDER | BOX3D | COMPONENT | RPROMOTER | RARROW | LARROW | LPROMOTER))
+
 
 /*
  * every shape has these functions:
@@ -197,7 +204,12 @@ static shape_desc Shapes[] = {	/* first entry is default for no such shape */
     {"Mdiamond", &poly_fns, &p_Mdiamond},
     {"Msquare", &poly_fns, &p_Msquare},
     {"Mcircle", &poly_fns, &p_Mcircle},
-/*  *** shapes other than polygons  *** */
+	/* biological circuit shapes */
+    {"rpromoter", &poly_fns, &p_rpromoter},
+    {"larrow",  &poly_fns, &p_larrow},
+    {"rarrow",  &poly_fns, &p_rarrow},
+    {"lpromoter",  &poly_fns, &p_lpromoter},
+	/*  *** shapes other than polygons  *** */
     {"record", &record_fns, NULL},
     {"Mrecord", &record_fns, NULL},
     {"epsf", &epsf_fns, NULL},
@@ -430,8 +442,8 @@ void round_corners(GVJ_t * job, pointf * AF, int sides, int style, int filled)
 
     if (style & DIAGONALS)
 	mode = DIAGONALS;
-    else if (style & (DOGEAR | TAB | FOLDER | BOX3D | COMPONENT))
-	mode = style & (DOGEAR | TAB | FOLDER | BOX3D | COMPONENT);
+    else if (style & (DOGEAR | TAB | FOLDER | BOX3D | COMPONENT | RPROMOTER | RARROW | LARROW | LPROMOTER))
+	mode = style & (DOGEAR | TAB | FOLDER | BOX3D | COMPONENT | RPROMOTER | RARROW | LARROW | LPROMOTER);
     else
 	mode = ROUNDED;
     B = N_NEW(4 * sides + 4, pointf);
@@ -697,6 +709,157 @@ void round_corners(GVJ_t * job, pointf * AF, int sides, int style, int filled)
 
 	free(D);
 	break;
+
+    case RPROMOTER:
+	/*
+	 * Adjust the perimeter for the protrusions.
+	 *
+	 *  
+	 *      D[1] = AF[1]      |\
+	 *       +----------------+ \
+	 *       |	        D[0] \
+	 *       |                    \
+	 *       |                    /    
+	 *       |                   /
+	 *       |        +-------+ /
+	 *       |	  |       |/
+	 *	 +--------+
+	 */
+	/* Add the tab edges. */
+	D = N_NEW(sides + 5, pointf); /*5 new points*/
+	D[0].x = B[1].x - (B[2].x - B[3].x)/2;
+	D[0].y = B[1].y - (B[3].y - B[4].y)/2;
+	D[1].x = B[3].x;
+	D[1].y = B[3].y - (B[3].y - B[4].y)/2;
+	D[2].x = AF[2].x;
+	D[2].y = AF[2].y;
+	D[3].x = B[2].x + (B[2].x - B[3].x)/2;
+	D[3].y = AF[2].y;
+	D[4].x = B[2].x + (B[2].x - B[3].x)/2;
+	D[4].y = AF[2].y + (B[3].y - B[4].y)/2;
+	D[5].x = B[1].x - (B[2].x - B[3].x)/2;
+	D[5].y = AF[2].y + (B[3].y - B[4].y)/2;
+	D[6].x = B[1].x - (B[2].x - B[3].x)/2;
+	D[6].y = AF[3].y;
+	D[7].y = AF[0].y - (AF[0].y - AF[3].y)/2; /*triangle point */
+	D[7].x = AF[0].x; /*triangle point */
+	D[8].y = AF[0].y;
+	D[8].x = B[1].x - (B[2].x - B[3].x)/2;
+
+	gvrender_polygon(job, D, sides + 5, filled);
+	free(D);
+	break;
+				
+    case RARROW:
+	/*
+	 * Adjust the perimeter for the protrusions.
+	 *
+	 *  
+	 *      D[1] = AF[1]      |\
+	 *       +----------------+ \
+	 *       |		D[0] \
+	 *       |                    \
+	 *       |                    /    
+	 *       |                   /
+	 *       +----------------+ /
+	 *	  	          |/
+	 *	 
+	 */
+	/* Add the tab edges. */
+	D = N_NEW(sides + 3, pointf); /*3 new points*/
+	D[0].x = B[1].x - (B[2].x - B[3].x)/2;
+	D[0].y = B[1].y - (B[3].y - B[4].y)/2;
+	D[1].x = B[3].x;
+	D[1].y = B[3].y - (B[3].y - B[4].y)/2;
+	D[2].x = AF[2].x;
+	D[2].y = AF[2].y + (B[3].y - B[4].y)/2;
+	D[3].x = B[1].x - (B[2].x - B[3].x)/2;
+	D[3].y = AF[2].y + (B[3].y - B[4].y)/2;
+	D[4].x = B[1].x - (B[2].x - B[3].x)/2;
+	D[4].y = AF[3].y;
+	D[5].y = AF[0].y - (AF[0].y - AF[3].y)/2;/*triangle point*/
+	D[5].x = AF[0].x; /*triangle point */
+	D[6].y = AF[0].y;
+	D[6].x = B[1].x - (B[2].x - B[3].x)/2;
+
+	gvrender_polygon(job, D, sides + 3, filled);
+	free(D);
+	break;
+
+    case LARROW:
+	/*
+	 * Adjust the perimeter for the protrusions.
+	 *
+	 *  
+	 *      /|     
+	 *     / +----------------+ 
+	 *    /                   |        
+	 *    \                   |   
+	 *     \ +----------------+ 
+	 *	\| 	          
+	 *	 
+	 */
+	/* Add the tab edges. */
+	D = N_NEW(sides + 3, pointf); /*3 new points*/
+	D[0].x = AF[0].x;
+	D[0].y = AF[0].y - (B[3].y-B[4].y)/2;
+	D[1].x = B[2].x + (B[2].x - B[3].x)/2;
+	D[1].y = AF[0].y - (B[3].y-B[4].y)/2;/*D[0].y*/
+	D[2].x = B[2].x + (B[2].x - B[3].x)/2;/*D[1].x*/
+	D[2].y = B[2].y;
+	D[3].x = AF[1].x; /*triangle point*/
+	D[3].y = AF[1].y - (AF[1].y - AF[2].y)/2; /*triangle point*/
+	D[4].x = B[2].x + (B[2].x - B[3].x)/2;/*D[1].x*/
+	D[4].y = AF[2].y;
+	D[5].y = AF[2].y + (B[3].y-B[4].y)/2;
+	D[5].x = B[2].x + (B[2].x - B[3].x)/2;/*D[1].x*/
+	D[6].y = AF[3].y + (B[3].y - B[4].y)/2;
+	D[6].x = AF[0].x;/*D[0]*/
+
+	gvrender_polygon(job, D, sides + 3, filled);
+	free(D);
+	break;
+
+    case LPROMOTER:
+	/*
+	 * Adjust the perimeter for the protrusions.
+	 *
+	 *  
+	 *      /|     
+	 *     / +----------------+ 
+	 *    /   		D[0] 
+	 *   /                    |    
+	 *   \                    |        
+	 *    \                   |   
+	 *     \ +--------+       + 
+	 *	\| 	  |       |
+	 *	          +-------+
+	 */
+	/* Add the tab edges. */
+	D = N_NEW(sides + 5, pointf); /*3 new points*/
+	D[0].x = AF[0].x;
+	D[0].y = AF[0].y - (B[3].y-B[4].y)/2;
+	D[1].x = B[2].x + (B[2].x - B[3].x)/2;
+	D[1].y = AF[0].y - (B[3].y-B[4].y)/2;/*D[0].y*/
+	D[2].x = B[2].x + (B[2].x - B[3].x)/2;/*D[1].x*/
+	D[2].y = B[2].y;
+	D[3].x = AF[1].x; /*triangle point*/
+	D[3].y = AF[1].y - (AF[1].y - AF[2].y)/2; /*triangle point*/
+	D[4].x = B[2].x + (B[2].x - B[3].x)/2;/*D[1].x*/
+	D[4].y = AF[2].y;
+	D[5].y = AF[2].y + (B[3].y-B[4].y)/2;
+	D[5].x = B[2].x + (B[2].x - B[3].x)/2;/*D[1].x*/
+	D[6].y = AF[3].y + (B[3].y - B[4].y)/2;
+	D[6].x = B[1].x - (B[2].x - B[3].x)/2;
+	D[7].x = B[1].x - (B[2].x - B[3].x)/2;/*D[6].x*/
+	D[7].y = AF[3].y;
+	D[8].x = AF[3].x;
+	D[8].y = AF[3].y;
+				
+	gvrender_polygon(job, D, sides + 5, filled);
+	free(D);
+	break;
+				
     }
     free(B);
 }
