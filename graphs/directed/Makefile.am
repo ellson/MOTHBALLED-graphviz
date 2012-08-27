@@ -2,7 +2,7 @@
 ## Process this file with automake to produce Makefile.in
 
 GRAPHS = KW91.gv Latin1.gv NaN.gv abstract.gv alf.gv arrows.gv \
-	awilliams.gv clust.gv clust1.gv clust2.gv clust3.gv clust4.gv \
+	awilliams.gv biological.gv clust.gv clust1.gv clust2.gv clust3.gv clust4.gv \
 	clust5.gv crazy.gv ctext.gv dfa.gv fig6.gv fsm.gv \
 	grammar.gv hashtable.gv honda-tokoro.gv jcctree.gv jsort.gv \
 	ldbxtried.gv longflat.gv mike.gv nhg.gv oldarrows.gv \
