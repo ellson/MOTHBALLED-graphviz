@@ -1139,6 +1139,20 @@ static void poly_init(node_t * n)
 	    bb.y = 2. * P.y;
 	}
     } else {
+
+/*
+ * FIXME - this code is wrong - it doesn't work for concave boundaries.
+ *          (e.g. "folder"  or "rarrow")
+ *   I don't think it even needs sectorangle, or knowledge of skewed shapes.
+ *   (Concepts that only work for convex regular (modulo skew/distort) polygons.)
+ *
+ *   I think it only needs to know inside v. outside (by always drawing
+ *   boundaries clockwise, say),  and the two adjacent segments.
+ *
+ *   It needs to find the point where the two lines, parallel to
+ *   the current segments, and outside by GAP distance, intersect.   
+ */
+
 	vertices = N_NEW(outp * sides, pointf);
 	sectorangle = 2. * M_PI / sides;
 	sidelength = sin(sectorangle / 2.);
