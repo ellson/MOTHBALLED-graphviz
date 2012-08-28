@@ -614,7 +614,7 @@ int writeFile(Agraph_t * g, char *f, Agiodisc_t* io)
     }
     fp = sfopen(0, f, "w");
     if (!fp) {
-	exerror("Could not open %s for writing in writeG", f);
+	exwarn("Could not open %s for writing in writeG", f);
 	return 1;
     }
     rv = sfioWrite(g, fp, io);
@@ -637,7 +637,7 @@ Agraph_t *readFile(char *f)
     }
     fp = sfopen(0, f, "r");
     if (!fp) {
-	exerror("Could not open %s for reading in readG", f);
+	exwarn("Could not open %s for reading in readG", f);
 	return 0;
     }
     gp = readG(fp);
