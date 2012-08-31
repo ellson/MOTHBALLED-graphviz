@@ -1074,7 +1074,8 @@ static void poly_init(node_t * n)
 
     /* increase node size to width/height if needed */
     if (mapbool(late_string(n, N_fixed, "false"))) {
-	if ((width < bb.x) || (height < bb.y))
+	/* check only label, as images we can scale to fit */
+	if ((width < ND_label(n)->dimen.x) || (height < ND_label(n)->dimen.y))
 	    agerr(AGWARN,
 		  "node '%s', graph '%s' size too small for label\n",
 		  agnameof(n), agnameof(agraphof(n)));
