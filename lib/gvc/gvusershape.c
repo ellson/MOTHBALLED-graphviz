@@ -196,17 +196,27 @@ static void svg_size (usershape_t *us)
 	    value = re_string + re_pmatch[2].rm_so;
     	    re_string += re_pmatch[0].rm_eo + 1;
 
-	    if (strcmp(attribute,"width") == 0
-	      && sscanf(value, "%lf%2s", &n, u) == 2) {
-	        w = svg_units_convert(n, u);
-	        wFlag = TRUE;
+	    if (strcmp(attribute,"width") == 0) {
+	        if (sscanf(value, "%lf%2s", &n, u) == 2) {
+	            w = svg_units_convert(n, u);
+	            wFlag = TRUE;
+		}
+		else if (sscanf(value, "%lf", &n) == 1) {
+	            w = svg_units_convert(n, "pt");
+	            wFlag = TRUE;
+		}
 		if (hFlag)
 		    break;
 	    }
-	    else if (strcmp(attribute,"height") == 0
-	      && sscanf(value, "%lf%2s", &n, u) == 2) {
-	        h = svg_units_convert(n, u);
-	        hFlag = TRUE;
+	    else if (strcmp(attribute,"height") == 0) {
+	        if (sscanf(value, "%lf%2s", &n, u) == 2) {
+	            h = svg_units_convert(n, u);
+	            hFlag = TRUE;
+		}
+	        else if (sscanf(value, "%lf", &n) == 1) {
+	            h = svg_units_convert(n, "pt");
+	            hFlag = TRUE;
+		}
                 if (wFlag)
 		    break;
 	    }
@@ -555,6 +565,7 @@ point gvusershape_size(graph_t * g, char *name)
     point rv;
     pointf dpi;
     static char* oldpath;
+    usershape_t* us;
 
     /* no shape file, no shape size */
     if (!name || (*name == '\0')) {
@@ -575,5 +586,7 @@ point gvusershape_size(graph_t * g, char *name)
     else
 	dpi.x = dpi.y = (double)DEFAULT_DPI;
 
-    return gvusershape_size_dpi (gvusershape_open (name), dpi);
+    us = gvusershape_open (name);
+    rv = gvusershape_size_dpi (us, dpi);
+    return rv;
 }
