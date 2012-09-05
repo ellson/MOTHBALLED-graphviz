@@ -888,6 +888,23 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    } else
 		v.integer = PTR2INT(addEdge(gp, ep, 1));
 	    break;
+	case F_opp:
+	    ep = INT2PTR(Agedge_t *, args[0].integer);
+	    np = INT2PTR(Agnode_t *, args[1].integer);
+	    if (!ep) {
+		error(ERROR_WARNING, "NULL edge passed to opp()");
+		v.integer = 0;
+	    } else if (!np) {
+		error(ERROR_WARNING, "NULL node passed to opp()");
+		v.integer = 0;
+	    } else {
+		if (aghead(ep) == np)
+		    np = agtail(ep);
+		else
+		    np = aghead(ep);
+		v.integer = PTR2INT(np);
+	    }
+	    break;
 	case F_isedge:
 	    key = args[2].string;
 	    if (*key == '\0')

@@ -471,6 +471,12 @@ returns the next edge after \fIe\fP in the root graph.
 .TP
 \fBnxtedge_sg\fP(\fIsg\fP : \fBgraph_t\fP, \fIe\fP : \fBedge_t\fP, \fBnode_t\fP) : \fBedge_t\fP
 returns the next edge after \fIe\fP in the graph \fIsg\fP.
+.TP
+\fBopp\fP(\fIe\fP : \fBedge_t\fP, \fBnode_t\fP) : \fBnode_t\fP
+returns the node on the edge \fIe\fP not equal to \fIn\fP.
+Returns NULL if \fIn\fP is not a node of \fIe\fP.
+This can be useful when using \fBfstedge\fP and \fBnxtedge\fP
+to enumerate the neighbors of \fIn\fP.
 .SS "Graph I/O"
 .TP
 \fBwrite\fP(\fIg\fP : \fBgraph_t\fP) : \fBvoid\fP
