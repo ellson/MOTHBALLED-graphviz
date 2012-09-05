@@ -18,6 +18,8 @@
 #
 # The files listed after each give the main data files used to
 # generate the page.
+#
+# If shapelist is extended, add entry to SGIF.
 
 INSTALL = cp
 INSTALL_DIR = ../info
@@ -41,7 +43,8 @@ SGIF = Mcircle.gif Mdiamond.gif Msquare.gif box.gif \
       octagon.gif oval.gif parallelogram.gif plaintext.gif \
       point.gif polygon.gif trapezium.gif triangle.gif \
       tripleoctagon.gif pentagon.gif septagon.gif rect.gif \
-      rectangle.gif square.gif
+      rectangle.gif square.gif tab.gif folder.gif box3d.gif component.gif \
+      rpromoter.gif rarrow.gif, larrow.gif lpromoter.gif
 
 AGIF = a_normal.gif a_inv.gif a_dot.gif a_invdot.gif a_odot.gif \
        a_invodot.gif a_curve.gif a_none.gif \
