@@ -622,6 +622,8 @@ void dot_rank(graph_t * g, aspect_t* asp)
     else
 #endif
 	dot1_rank (g, asp);
+    if (Verbose)
+	fprintf (stderr, "Maxrank = %d, minrank = %d\n", GD_maxrank(g), GD_minrank(g));
 }
 
 int is_cluster(graph_t * g)
