@@ -325,10 +325,38 @@ removeFill (Agraph_t * g)
 }
 #endif
 
+#ifndef WITH_CGRAPH
+#define ag_xset(x,a,v) agxset(x,a->index,v)
+#else /* WITH_CGRAPH */
+#define ag_xset(x,a,v) agxset(x,a,v)
+#define agnodeattr(g,n,v) agattr(g,AGNODE,n,v)
+#endif /* WITH_CGRAPH */
+
+static void
+attach_phase_attrs (Agraph_t * g, int maxphase)
+{
+    Agsym_t* rk = agnodeattr(g,"rank","");
+    Agsym_t* order = agnodeattr(g,"order","");
+    Agnode_t* n;
+    char buf[BUFSIZ];
+
+    for (n = agfstnode(g); n; n = agnxtnode(g,n)) {
+	if (maxphase >= 1) {
+	    sprintf(buf, "%d", ND_rank(n));
+	    ag_xset(n,rk,buf);
+	}
+	if (maxphase >= 2) {
+	    sprintf(buf, "%d", ND_order(n));
+	    ag_xset(n,order,buf);
+	}
+    }
+}
+
 void dot_layout(Agraph_t * g)
 {
     aspect_t aspect;
     aspect_t* asp;
+    int maxphase = late_int(g, agfindgraphattr(g,"phase"), -1, 1);
 
     setEdgeType (g, ET_SPLINE);
     asp = setAspect (g, &aspect);
@@ -341,13 +369,25 @@ void dot_layout(Agraph_t * g)
 
     do {
         dot_rank(g, asp);
+	if (maxphase == 1) {
+	    attach_phase_attrs (g, 1);
+	    return;
+	}
 	if (aspect.badGraph) {
 	    agerr(AGWARN, "dot does not support the aspect attribute for disconnected graphs or graphs with clusters\n");
 	    asp = NULL;
 	    aspect.nextIter = 0;
 	}
         dot_mincross(g, (asp != NULL));
+	if (maxphase == 2) {
+	    attach_phase_attrs (g, 2);
+	    return;
+	}
         dot_position(g, asp);
+	if (maxphase == 3) {
+	    attach_phase_attrs (g, 2);  /* positions will be attached on output */
+	    return;
+	}
 	aspect.nPasses--;
     } while (aspect.nextIter && aspect.nPasses);
 #ifdef WITH_CGRAPH
