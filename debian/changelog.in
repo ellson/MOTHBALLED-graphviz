@@ -4,9 +4,13 @@ graphviz (@VERSION@-1) intrepid; urgency=low
 
  -- John Ellson <ellson@research.att.com>  Tue, 19 Jan 2010 09:07:00 -0400
 
+graphviz (2.18-1ubuntu4) intrepid; urgency=low
+
   * Enabled "--with-sfdp"  new layout engine
 
  -- John Ellson <ellson@research.att.com>  Tue, 2 Jun 2009 22:38:00 -0400
+
+graphviz (2.18-1ubuntu3) intrepid; urgency=low
 
   * Adapted for upstream nightly builds by applying graphviz_2.18-1ubuntu2.diff.gz
     to CVS sources and adding the debian/ subtree to CVS.
