@@ -334,7 +334,7 @@ static double safety3[] = {
 static double
 estimateError(ellipse_t * ep, int degree, double etaA, double etaB)
 {
-    double eta = 0.5 * (etaA + etaB);
+    double c0, c1, eta = 0.5 * (etaA + etaB);
 
     if (degree < 2) {
 
@@ -387,12 +387,12 @@ estimateError(ellipse_t * ep, int degree, double etaA, double etaB)
 	    safety = safety3;
 	}
 
-	double c0 = RationalFunction(x, coeffs[0][0])
+	c0 = RationalFunction(x, coeffs[0][0])
 	    + cos2 * RationalFunction(x, coeffs[0][1])
 	    + cos4 * RationalFunction(x, coeffs[0][2])
 	    + cos6 * RationalFunction(x, coeffs[0][3]);
 
-	double c1 = RationalFunction(x, coeffs[1][0])
+	c1 = RationalFunction(x, coeffs[1][0])
 	    + cos2 * RationalFunction(x, coeffs[1][1])
 	    + cos4 * RationalFunction(x, coeffs[1][2])
 	    + cos6 * RationalFunction(x, coeffs[1][3]);
