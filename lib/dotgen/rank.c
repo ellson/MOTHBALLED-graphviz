@@ -1242,11 +1242,12 @@ void dot2_rank(graph_t * g, aspect_t* asp)
     int ssize;
     int ncc, maxiter = INT_MAX;
     char *s;
+    graph_t *Xg;
 #ifdef ALLOW_LEVELS
     attrsym_t* N_level;
 #endif
     Last_node = NULL;
-    graph_t *Xg = agopen("level assignment constraints", Agstrictdirected, 0);
+    Xg = agopen("level assignment constraints", Agstrictdirected, 0);
     agbindrec(Xg,"level graph rec",sizeof(Agraphinfo_t),TRUE);
     agpushdisc(Xg,&mydisc,infosizes);
 
