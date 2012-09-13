@@ -227,15 +227,15 @@ static graph_t *mkNConstraintG(graph_t * g, Dt_t * list,
 {
     nitem *p;
     nitem *nxp;
+    node_t *n;
+    edge_t *e;
+    node_t *lastn = NULL;
 #ifndef WITH_CGRAPH
     graph_t *cg = agopen("cg", AGDIGRAPHSTRICT);
 #else
     graph_t *cg = agopen("cg", Agstrictdirected, NIL(Agdisc_t *));
     agbindrec(cg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);  // graph custom data
 #endif
-    node_t *n;
-    edge_t *e;
-    node_t *lastn = NULL;
 
     for (p = (nitem *) dtflatten(list); p;
 	 p = (nitem *) dtlink(list, (Dtlink_t *) p)) {
@@ -316,12 +316,6 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
     nitem *p;
     nitem *nxt = NULL;
     nitem *nxp;
-#ifndef WITH_CGRAPH
-    graph_t *cg = agopen("cg", AGDIGRAPHSTRICT);
-#else
-    graph_t *cg = agopen("cg", Agstrictdirected, NIL(Agdisc_t *));
-    agbindrec(cg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);  // graph custom data
-#endif
     graph_t *vg;
     node_t *prev = NULL;
     node_t *root = NULL;
@@ -333,6 +327,12 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
     double root_val;
 #endif
     node_t *lastn = NULL;
+#ifndef WITH_CGRAPH
+    graph_t *cg = agopen("cg", AGDIGRAPHSTRICT);
+#else
+    graph_t *cg = agopen("cg", Agstrictdirected, NIL(Agdisc_t *));
+    agbindrec(cg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);  // graph custom data
+#endif
 
     /* count distinct nodes */
     cnt = 0;
