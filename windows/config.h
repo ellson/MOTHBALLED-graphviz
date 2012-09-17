@@ -462,7 +462,7 @@
 #define TIME_WITH_SYS_TIME 1
 
 /* Define if you want CGRAPH */
-/* #undef WITH_CGRAPH */
+#define WITH_CGRAPH 1
 
 /* Define to 1 if the X Window System is missing or not being used. */
 #define X_DISPLAY_MISSING 1
