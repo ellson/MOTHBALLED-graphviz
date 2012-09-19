@@ -132,23 +132,59 @@ The possible polygon-based shapes are displayed below.
     <TD><IMG SRC=folder.gif>
     <TD><IMG SRC=box3d.gif>
     <TD><IMG SRC=component.gif>
-    <TD><IMG SRC=rpromoter.gif>
+    <TD><IMG SRC=promoter.gif>
   </TR>
   <TR ALIGN=CENTER>
     <TD><A NAME=d:folder>folder</A>
     <TD><A NAME=d:box3d>box3d</A>
     <TD><A NAME=d:component>component</A>
-    <TD><A NAME=d:rpromoter>rpromoter</A>
+    <TD><A NAME=d:promoter>promoter</A>
   </TR>
   <TR ALIGN=CENTER>
-    <TD><IMG SRC=rarrow.gif>
-    <TD><IMG SRC=larrow.gif>
-    <TD><IMG SRC=lpromoter.gif>
+    <TD><IMG SRC=cds.gif>
+    <TD><IMG SRC=terminator.gif>
+    <TD><IMG SRC=utr.gif>
+    <TD><IMG SRC=primersite.gif>
   </TR>
   <TR ALIGN=CENTER>
-    <TD><A NAME=d:rarrow>rarrow</A>
-    <TD><A NAME=d:larrow>larrow</A>
-    <TD><A NAME=d:lpromoter>lpromoter</A>
+    <TD><A NAME=d:cds>cds</A>
+    <TD><A NAME=d:terminator>terminator</A>
+    <TD><A NAME=d:utr>utr</A>
+    <TD><A NAME=d:primersite>primersite</A>
+  </TR>
+  <TR ALIGN=CENTER>
+    <TD><IMG SRC=restrictionsite.gif>
+    <TD><IMG SRC=fivepoverhang.gif>
+    <TD><IMG SRC=threepoverhang.gif>
+    <TD><IMG SRC=noverhang.gif>
+  </TR>
+  <TR ALIGN=CENTER>
+    <TD><A NAME=d:restrictionsite>restrictionsite</A>
+    <TD><A NAME=d:fivepoverhang>fivepoverhang</A>
+    <TD><A NAME=d:threepoverhang>threepoverhang</A>
+    <TD><A NAME=d:noverhang>noverhang</A>
+  </TR>
+  <TR ALIGN=CENTER>
+    <TD><IMG SRC=assembly.gif>
+    <TD><IMG SRC=signature.gif>
+    <TD><IMG SRC=insulator.gif>
+    <TD><IMG SRC=ribosite.gif>
+  </TR>
+  <TR ALIGN=CENTER>
+    <TD><A NAME=d:assembly>assembly</A>
+    <TD><A NAME=d:signature>signature</A>
+    <TD><A NAME=d:insulator>insulator</A>
+    <TD><A NAME=d:ribosite>ribosite</A>
+  </TR>
+  <TR ALIGN=CENTER>
+    <TD><IMG SRC=rnastab.gif>
+    <TD><IMG SRC=proteasesite.gif>
+    <TD><IMG SRC=proteinstab.gif>
+  </TR>
+  <TR ALIGN=CENTER>
+    <TD><A NAME=d:rnastab>rnastab</A>
+    <TD><A NAME=d:proteasesite>proteasesite</A>
+    <TD><A NAME=d:proteinstab>proteinstab</A>
   </TR>
 </TABLE>
 As the figures suggest, the shapes <TT>rect</TT> and <TT>rectangle</TT> are synonyms for <TT>box</TT>, and <TT>none</TT> is a synonym for <TT>plaintext</TT>.
@@ -172,10 +208,26 @@ only affected by the <A HREF=attrs.html#d:peripheries><TT>peripheries</TT></A>,
 <A HREF=attrs.html#d:width><TT>width</TT></A> and
 <A HREF=attrs.html#d:height><TT>height</TT></A> attributes.
 <P>
-The shapes <TT>note</TT>, <TT>tab</TT>, <TT>folder</TT>,
+The shapes: <TT>note</TT>, <TT>tab</TT>, <TT>folder</TT>,
 <TT>box3d</TT> and <TT>component</TT> were provided by Pander.
-The synthetic biology shapes <TT>rpromoter</TT>, <TT>rarrow</TT>, <TT>larrow</TT> and
-<TT>lpromoter</TT> were contributed by Jenny Cheng.
+The synthetic biology shapes:
+<TT>promoter</TT>,
+<TT>cds</TT>,
+<TT>terminator</TT>,
+<TT>utr</TT>,
+<TT>primersite</TT>,
+<TT>restrictionsite</TT>,
+<TT>fivepoverhang</TT>,
+<TT>threepoverhang</TT>,
+<TT>noverhang</TT>,
+<TT>assembly</TT>,
+<TT>signature</TT>,
+<TT>insulator</TT>,
+<TT>ribosite</TT>,
+<TT>rnastab</TT>,
+<TT>proteasesite</TT> and
+<TT>proteinstab</TT>
+were contributed by Jenny Cheng.
 
 <H2><A NAME=record>Record-based Nodes</A></H2>
 These are specified by shape values of "record" and "Mrecord".
@@ -878,19 +930,15 @@ and <A HREF="command.html#d:SERVER_NAME">SERVER_NAME</A>.
 <BLOCKQUOTE>
 specifies style characteristics of the table or cell. Style characteristics are
 given as a comma or space separated list of style attributes. At present, the only
-legal attributes are "ROUNDED", "RADIAL", "DASHED" and "DOTTED".
-<P>
-If "ROUNDED" is specified, the table or cell will have rounded corners.
-For tables, this probably works best if the outmost cells have no borders, or their CELLSPACING
+legal attributes are "ROUNDED" and "RADIAL" for tables, and "RADIAL" for cells.
+If "ROUNDED" is specified, the table will have rounded corners.
+This probably works best if the outmost cells have no borders, or their CELLSPACING
 is sufficiently large.
 If it is desirable to have borders around the cells, use <I><B>HR</B></I>
 and <I><B>VR</B></I> elements, or the <I><B>COLUMNS</B></I> and <I><B>ROWS</B></I> attributes of <I><B>TABLE</B></I>.
 <P>
 The "RADIAL" attribute indicates a radial gradient fill. See the <B><I>BGCOLOR</I></B> and
 <B><I>GRADIENTANGLE</I></B> attributes.
-<P>
-A "DOTTED" or "DASHED" attribute indicates that a border, if it exists, will be drawn as a dotted
-or dashed line, respectively.
 </BLOCKQUOTE>
 
 <B><I><FONT SIZE=-1>TARGET="value"</FONT></I></B>

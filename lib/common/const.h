@@ -217,11 +217,22 @@
 #define DOTTED (1 << 12)
 #define DASHED (1 << 13)
 #define WEDGED  (1 << 14)
-#define RPROMOTER (1 << 15)
-#define RARROW (1 << 16)
-#define LARROW (1 << 17)
-#define LPROMOTER (1 << 18)
-
+#define PROMOTER (1 << 15)
+#define CDS (1 << 16)
+#define TERMINATOR (1 << 17)
+#define UTR (1 << 18)
+#define PRIMERSITE (1 << 19)
+#define RESTRICTIONSITE (1 << 20)
+#define FIVEPOVERHANG (1 << 21)
+#define THREEPOVERHANG (1 << 22)
+#define NOVERHANG (1 << 23)
+#define ASSEMBLY (1 << 24)
+#define SIGNATURE (1 << 25)
+#define INSULATOR (1 << 26)
+#define RIBOSITE (1 << 27)
+#define RNASTAB (1 << 28)
+#define PROTEASESITE (1 << 29)
+#define PROTEINSTAB (1 << 30)
 
 /* fill types */
 #define FILL      1

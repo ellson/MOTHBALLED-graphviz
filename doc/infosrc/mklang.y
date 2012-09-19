@@ -185,6 +185,7 @@ skipSpace (char* p)
     return p;
 }
 
+#if 0
 static char*
 strndup (char* p, int sz)
 {
@@ -193,6 +194,7 @@ strndup (char* p, int sz)
     s[sz] = '\0';
     return s;
 }
+#endif
 
 static char*
 readLiteral (char* p)

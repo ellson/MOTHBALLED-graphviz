@@ -97,17 +97,31 @@ static polygon_t p_Msquare = { TRUE, 1, 4, 0., 0., 0., DIAGONALS };
 static polygon_t p_Mcircle =
     { TRUE, 1, 1, 0., 0., 0., DIAGONALS | AUXLABELS };
 
-/* biological circuit shapes */
-static polygon_t p_rpromoter = { FALSE, 1, 4, 0., 0., 0., RPROMOTER };
-static polygon_t p_rarrow = { FALSE, 1, 4, 0., 0., 0., RARROW };
-static polygon_t p_larrow = { FALSE, 1, 4, 0., 0., 0., LARROW};
-static polygon_t p_lpromoter = { FALSE, 1, 4, 0., 0., 0., LPROMOTER};
+/* biological circuit shapes, as specified by SBOLv*/
+/** gene expression symbols **/
+static polygon_t p_promoter = { FALSE, 1, 4, 0., 0., 0., PROMOTER };
+static polygon_t p_cds = { FALSE, 1, 4, 0., 0., 0., CDS };
+static polygon_t p_terminator = { FALSE, 1, 4, 0., 0., 0., TERMINATOR};
+static polygon_t p_utr = { FALSE, 1, 4, 0., 0., 0., UTR};
+static polygon_t p_insulator = { FALSE, 1, 4, 0., 0., 0., INSULATOR};
+static polygon_t p_ribosite = { FALSE, 1, 4, 0., 0., 0., RIBOSITE};
+static polygon_t p_rnastab = { FALSE, 1, 4, 0., 0., 0., RNASTAB};
+static polygon_t p_proteasesite = { FALSE, 1, 4, 0., 0., 0., PROTEASESITE};
+static polygon_t p_proteinstab = { FALSE, 1, 4, 0., 0., 0., PROTEINSTAB};
+/** dna construction symbols **/
+static polygon_t p_primersite = { FALSE, 1, 4, 0., 0., 0., PRIMERSITE};
+static polygon_t p_restrictionsite = { FALSE, 1, 4, 0., 0., 0., RESTRICTIONSITE};
+static polygon_t p_fivepoverhang = { FALSE, 1, 4, 0., 0., 0., FIVEPOVERHANG};
+static polygon_t p_threepoverhang = { FALSE, 1, 4, 0., 0., 0., THREEPOVERHANG};
+static polygon_t p_noverhang = { FALSE, 1, 4, 0., 0., 0., NOVERHANG};
+static polygon_t p_assembly = { FALSE, 1, 4, 0., 0., 0., ASSEMBLY};
+static polygon_t p_signature = { FALSE, 1, 4, 0., 0., 0., SIGNATURE};
 
 #define IS_BOX(n) (ND_shape(n)->polygon == &p_box)
 
 /* True if style requires processing through round_corners. */
 #define SPECIAL_CORNERS(style) \
-    ((style) & (ROUNDED | DIAGONALS | DOGEAR | TAB | FOLDER | BOX3D | COMPONENT | RPROMOTER | RARROW | LARROW | LPROMOTER))
+    ((style) & (ROUNDED | DIAGONALS | DOGEAR | TAB | FOLDER | BOX3D | COMPONENT | PROMOTER | CDS | TERMINATOR | UTR | PRIMERSITE | RESTRICTIONSITE | FIVEPOVERHANG | THREEPOVERHANG | NOVERHANG | ASSEMBLY | SIGNATURE | INSULATOR | RIBOSITE | RNASTAB | PROTEASESITE | PROTEINSTAB))
 
 
 /*
@@ -204,11 +218,25 @@ static shape_desc Shapes[] = {	/* first entry is default for no such shape */
     {"Mdiamond", &poly_fns, &p_Mdiamond},
     {"Msquare", &poly_fns, &p_Msquare},
     {"Mcircle", &poly_fns, &p_Mcircle},
-	/* biological circuit shapes */
-    {"rpromoter", &poly_fns, &p_rpromoter},
-    {"larrow",  &poly_fns, &p_larrow},
-    {"rarrow",  &poly_fns, &p_rarrow},
-    {"lpromoter",  &poly_fns, &p_lpromoter},
+	/* biological circuit shapes, as specified by SBOLv*/
+	/** gene expression symbols **/
+    {"promoter", &poly_fns, &p_promoter},
+    {"cds",  &poly_fns, &p_cds},
+    {"terminator",  &poly_fns, &p_terminator},
+    {"utr",  &poly_fns, &p_utr},
+    {"insulator", &poly_fns, &p_insulator},
+    {"ribosite", &poly_fns, &p_ribosite},
+    {"rnastab", &poly_fns, &p_rnastab},
+    {"proteasesite", &poly_fns, &p_proteasesite},
+    {"proteinstab", &poly_fns, &p_proteinstab},
+	/** dna construction symbols **/
+    {"primersite",  &poly_fns, &p_primersite},
+    {"restrictionsite", &poly_fns, &p_restrictionsite},
+    {"fivepoverhang", &poly_fns, &p_fivepoverhang},
+    {"threepoverhang", &poly_fns, &p_threepoverhang},
+    {"noverhang", &poly_fns, &p_noverhang},
+    {"assembly", &poly_fns, &p_assembly},
+    {"signature", &poly_fns, &p_signature},
 	/*  *** shapes other than polygons  *** */
     {"record", &record_fns, NULL},
     {"Mrecord", &record_fns, NULL},
@@ -442,8 +470,8 @@ void round_corners(GVJ_t * job, pointf * AF, int sides, int style, int filled)
 
     if (style & DIAGONALS)
 	mode = DIAGONALS;
-    else if (style & (DOGEAR | TAB | FOLDER | BOX3D | COMPONENT | RPROMOTER | RARROW | LARROW | LPROMOTER))
-	mode = style & (DOGEAR | TAB | FOLDER | BOX3D | COMPONENT | RPROMOTER | RARROW | LARROW | LPROMOTER);
+    else if (style & (DOGEAR | TAB | FOLDER | BOX3D | COMPONENT | PROMOTER | CDS | TERMINATOR | UTR | PRIMERSITE | RESTRICTIONSITE | FIVEPOVERHANG | THREEPOVERHANG | NOVERHANG | ASSEMBLY | SIGNATURE | INSULATOR | RIBOSITE | RNASTAB | PROTEASESITE | PROTEINSTAB))
+	mode = style & (DOGEAR | TAB | FOLDER | BOX3D | COMPONENT | PROMOTER | CDS | TERMINATOR | UTR | PRIMERSITE | RESTRICTIONSITE | FIVEPOVERHANG | THREEPOVERHANG | NOVERHANG | ASSEMBLY | SIGNATURE | INSULATOR | RIBOSITE | RNASTAB | PROTEASESITE | PROTEINSTAB);
     else
 	mode = ROUNDED;
     B = N_NEW(4 * sides + 4, pointf);
@@ -710,156 +738,860 @@ void round_corners(GVJ_t * job, pointf * AF, int sides, int style, int filled)
 	free(D);
 	break;
 
-    case RPROMOTER:
+    case PROMOTER:
 	/*
-	 * Adjust the perimeter for the protrusions.
+	 * L-shaped arrow on a center line, scales in the x direction
 	 *
 	 *  
-	 *      D[1] = AF[1]      |\
+	 *      D[1]	          |\
 	 *       +----------------+ \
 	 *       |	        D[0] \
 	 *       |                    \
 	 *       |                    /    
-	 *       |                   /
+	 *       |             D[5]  /
 	 *       |        +-------+ /
 	 *       |	  |       |/
 	 *	 +--------+
 	 */
 	/* Add the tab edges. */
-	D = N_NEW(sides + 5, pointf); /*5 new points*/
-	D[0].x = B[1].x - (B[2].x - B[3].x)/2;
-	D[0].y = B[1].y - (B[3].y - B[4].y)/2;
-	D[1].x = B[3].x;
-	D[1].y = B[3].y - (B[3].y - B[4].y)/2;
-	D[2].x = AF[2].x;
-	D[2].y = AF[2].y;
-	D[3].x = B[2].x + (B[2].x - B[3].x)/2;
-	D[3].y = AF[2].y;
-	D[4].x = B[2].x + (B[2].x - B[3].x)/2;
-	D[4].y = AF[2].y + (B[3].y - B[4].y)/2;
-	D[5].x = B[1].x - (B[2].x - B[3].x)/2;
-	D[5].y = AF[2].y + (B[3].y - B[4].y)/2;
-	D[6].x = B[1].x - (B[2].x - B[3].x)/2;
-	D[6].y = AF[3].y;
-	D[7].y = AF[0].y - (AF[0].y - AF[3].y)/2; /*triangle point */
-	D[7].x = AF[0].x; /*triangle point */
-	D[8].y = AF[0].y;
-	D[8].x = B[1].x - (B[2].x - B[3].x)/2;
-
+				
+	//x_center is AF[1].x + (AF[0].x - AF[1].x)/2
+	//y_center is AF[2].y + (AF[1].y - AF[2].y)/2;
+	//the arrow's thickness is (B[2].x-B[3].x)/2 or (B[3].y-B[4].y)/2;
+	//the thickness is subituted with (AF[0].x - AF[1].x)/8 to make it scalable in the y with label length
+	D = N_NEW(sides + 5, pointf);
+	D[0].x = AF[1].x + (AF[0].x - AF[1].x)/2 + (AF[0].x - AF[1].x)/8; //x_center + width
+	D[0].y = AF[2].y + (AF[1].y - AF[2].y)/2 + (B[3].y-B[4].y)*3/2; //D[4].y + width
+	D[1].x = AF[1].x + (AF[0].x - AF[1].x)/2 - (AF[0].x - AF[1].x)/4; //x_center - 2*width
+	D[1].y = D[0].y;
+	D[2].x = D[1].x;
+	D[2].y = AF[2].y + (AF[1].y - AF[2].y)/2; //y_center
+	D[3].x = D[2].x + (B[2].x - B[3].x)/2; //D[2].x + width
+	D[3].y = AF[2].y + (AF[1].y - AF[2].y)/2; //y_center
+	D[4].x = D[3].x;
+	D[4].y = AF[2].y + (AF[1].y - AF[2].y)/2 + (B[3].y-B[4].y); //highest cds point 
+	D[5].x = D[0].x;
+	D[5].y = D[4].y; //highest cds point
+	D[6].x = D[0].x;
+	D[6].y = D[4].y - (B[3].y-B[4].y)/4; //D[4].y - width/2 
+	D[7].x = D[6].x + (B[2].x - B[3].x); //D[6].x + 2*width
+	D[7].y = D[6].y + (B[3].y - B[4].y)/2; //D[6].y + width
+	D[8].x = D[0].x;
+	D[8].y = D[0].y + (B[3].y - B[4].y)/4;//D[0].y + width/2
 	gvrender_polygon(job, D, sides + 5, filled);
-	free(D);
+
+	/*dsDNA line*/
+	C[0].x = AF[1].x;
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2;
+	C[1].x = AF[0].x;
+	C[1].y = AF[2].y + (AF[0].y - AF[3].y)/2;
+	gvrender_polyline(job, C, 2);				
+	free(D);			
+			
 	break;
 				
-    case RARROW:
+    case CDS:
 	/*
-	 * Adjust the perimeter for the protrusions.
+	 * arrow without the protrusions, scales normally
 	 *
 	 *  
-	 *      D[1] = AF[1]      |\
-	 *       +----------------+ \
-	 *       |		D[0] \
-	 *       |                    \
-	 *       |                    /    
-	 *       |                   /
-	 *       +----------------+ /
-	 *	  	          |/
+	 *      D[1] = AF[1]      
+	 *       +----------------+\
+	 *       |		D[0]\
+	 *       |                   \
+	 *       |                   /    
+	 *       |                  /
+	 *       +----------------+/
+	 *	  	          D[3]
 	 *	 
 	 */
-	/* Add the tab edges. */
-	D = N_NEW(sides + 3, pointf); /*3 new points*/
-	D[0].x = B[1].x - (B[2].x - B[3].x)/2;
+	D = N_NEW(sides + 1, pointf);
+	D[0].x = B[1].x;
 	D[0].y = B[1].y - (B[3].y - B[4].y)/2;
 	D[1].x = B[3].x;
 	D[1].y = B[3].y - (B[3].y - B[4].y)/2;
 	D[2].x = AF[2].x;
 	D[2].y = AF[2].y + (B[3].y - B[4].y)/2;
-	D[3].x = B[1].x - (B[2].x - B[3].x)/2;
+	D[3].x = B[1].x;
 	D[3].y = AF[2].y + (B[3].y - B[4].y)/2;
-	D[4].x = B[1].x - (B[2].x - B[3].x)/2;
-	D[4].y = AF[3].y;
-	D[5].y = AF[0].y - (AF[0].y - AF[3].y)/2;/*triangle point*/
-	D[5].x = AF[0].x; /*triangle point */
-	D[6].y = AF[0].y;
-	D[6].x = B[1].x - (B[2].x - B[3].x)/2;
-
-	gvrender_polygon(job, D, sides + 3, filled);
-	free(D);
-	break;
-
-    case LARROW:
-	/*
-	 * Adjust the perimeter for the protrusions.
-	 *
-	 *  
-	 *      /|     
-	 *     / +----------------+ 
-	 *    /                   |        
-	 *    \                   |   
-	 *     \ +----------------+ 
-	 *	\| 	          
-	 *	 
-	 */
-	/* Add the tab edges. */
-	D = N_NEW(sides + 3, pointf); /*3 new points*/
-	D[0].x = AF[0].x;
-	D[0].y = AF[0].y - (B[3].y-B[4].y)/2;
-	D[1].x = B[2].x + (B[2].x - B[3].x)/2;
-	D[1].y = AF[0].y - (B[3].y-B[4].y)/2;/*D[0].y*/
-	D[2].x = B[2].x + (B[2].x - B[3].x)/2;/*D[1].x*/
-	D[2].y = B[2].y;
-	D[3].x = AF[1].x; /*triangle point*/
-	D[3].y = AF[1].y - (AF[1].y - AF[2].y)/2; /*triangle point*/
-	D[4].x = B[2].x + (B[2].x - B[3].x)/2;/*D[1].x*/
-	D[4].y = AF[2].y;
-	D[5].y = AF[2].y + (B[3].y-B[4].y)/2;
-	D[5].x = B[2].x + (B[2].x - B[3].x)/2;/*D[1].x*/
-	D[6].y = AF[3].y + (B[3].y - B[4].y)/2;
-	D[6].x = AF[0].x;/*D[0]*/
-
-	gvrender_polygon(job, D, sides + 3, filled);
-	free(D);
-	break;
-
-    case LPROMOTER:
-	/*
-	 * Adjust the perimeter for the protrusions.
-	 *
-	 *  
-	 *      /|     
-	 *     / +----------------+ 
-	 *    /   		D[0] 
-	 *   /                    |    
-	 *   \                    |        
-	 *    \                   |   
-	 *     \ +--------+       + 
-	 *	\| 	  |       |
-	 *	          +-------+
-	 */
-	/* Add the tab edges. */
-	D = N_NEW(sides + 5, pointf); /*3 new points*/
-	D[0].x = AF[0].x;
-	D[0].y = AF[0].y - (B[3].y-B[4].y)/2;
-	D[1].x = B[2].x + (B[2].x - B[3].x)/2;
-	D[1].y = AF[0].y - (B[3].y-B[4].y)/2;/*D[0].y*/
-	D[2].x = B[2].x + (B[2].x - B[3].x)/2;/*D[1].x*/
-	D[2].y = B[2].y;
-	D[3].x = AF[1].x; /*triangle point*/
-	D[3].y = AF[1].y - (AF[1].y - AF[2].y)/2; /*triangle point*/
-	D[4].x = B[2].x + (B[2].x - B[3].x)/2;/*D[1].x*/
-	D[4].y = AF[2].y;
-	D[5].y = AF[2].y + (B[3].y-B[4].y)/2;
-	D[5].x = B[2].x + (B[2].x - B[3].x)/2;/*D[1].x*/
-	D[6].y = AF[3].y + (B[3].y - B[4].y)/2;
-	D[6].x = B[1].x - (B[2].x - B[3].x)/2;
-	D[7].x = B[1].x - (B[2].x - B[3].x)/2;/*D[6].x*/
-	D[7].y = AF[3].y;
-	D[8].x = AF[3].x;
-	D[8].y = AF[3].y;
+	D[4].y = AF[0].y - (AF[0].y - AF[3].y)/2;
+	D[4].x = AF[0].x;
 				
-	gvrender_polygon(job, D, sides + 5, filled);
+	gvrender_polygon(job, D, sides + 1, filled);
 	free(D);
+
 	break;
+
+    case TERMINATOR:
+	/*
+	* T-shape, does not scale, always in the center
+	*
+	*  
+	*      D[4]      
+	*       +----------------+
+	*       |		D[3]
+	*       |                |
+	*       |                |    
+	*       |  D[6]    D[1]  |
+	*   D[5]+---+       +----+ D[2]
+	*	    |	    |     
+	*	    +-------+ D[0]
+	*/
+	//x_center is AF[1].x + (AF[0].x - AF[1].x)/2
+	//y_center is AF[2].y + (AF[1].y - AF[2].y)/2;
+	//width units are (B[2].x-B[3].x)/2 or (B[3].y-B[4].y)/2;
+	D = N_NEW(sides + 4, pointf);
+	D[0].x = AF[1].x + (AF[0].x-AF[1].x)/2 + (B[2].x-B[3].x)/4; //x_center + width/2
+	D[0].y = AF[2].y + (AF[1].y - AF[2].y)/2; //y_center
+	D[1].x = D[0].x;
+	D[1].y = D[0].y + (B[3].y-B[4].y)/2;
+	D[2].x = D[1].x + (B[2].x-B[3].x)/2;
+	D[2].y = D[1].y;
+	D[3].x = D[2].x;
+	D[3].y = D[2].y + (B[3].y-B[4].y)/2;
+	D[4].x = AF[1].x + (AF[0].x-AF[1].x)/2 - (B[2].x-B[3].x)*3/4; //D[3].y mirrowed across the center
+	D[4].y = D[3].y;
+	D[5].x = D[4].x;
+	D[5].y = D[2].y;
+	D[6].x = AF[1].x + (AF[0].x-AF[1].x)/2 - (B[2].x-B[3].x)/4; //D[1].x mirrowed across the center
+	D[6].y = D[1].y;
+	D[7].x = D[6].x;
+	D[7].y = D[0].y;
+	gvrender_polygon(job, D, sides + 4, filled);
+
+	/*dsDNA line*/
+	C[0].x = AF[1].x;
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2;
+	C[1].x = AF[0].x;
+	C[1].y = AF[2].y + (AF[0].y - AF[3].y)/2;
+	gvrender_polyline(job, C, 2);				
+	free(D);
+
+	break;
+
+    case UTR:
+	/*
+	 * half-octagon with line, does not scale, always in center
+	 *
+	 *  D[3]
+	 *     _____  D[2] 
+	 *    /     \
+	 *   /       \ D[1]
+	 *   |       |
+	 *   -----------
+	 *              D[0]   
+	 *      
+	 *	
+	 *	          
+	 */
+	//x_center is AF[1].x + (AF[0].x - AF[1].x)/2
+	//y_center is AF[2].y + (AF[1].y - AF[2].y)/2;
+	//width units are (B[2].x-B[3].x)/2 or (B[3].y-B[4].y)/2;
+	D = N_NEW(sides + 2, pointf);
+	D[0].x = AF[1].x + (AF[0].x-AF[1].x)/2 + (B[2].x-B[3].x)*3/4; //x_center+width	
+	D[0].y = AF[2].y + (AF[1].y - AF[2].y)/2; //y_center
+	D[1].x = D[0].x;
+	D[1].y = D[0].y + (B[3].y-B[4].y)/4; //D[0].y+width/2
+	D[2].x = AF[1].x + (AF[0].x-AF[1].x)/2 + (B[2].x-B[3].x)/4; //x_center+width/2
+	D[2].y = D[1].y + (B[3].y-B[4].y)/2; //D[1].y+width
+	D[3].x = AF[1].x + (AF[0].x-AF[1].x)/2 - (B[2].x-B[3].x)/4; //D[2].x mirrowed across the center
+	D[3].y = D[2].y;
+	D[4].x = AF[1].x + (AF[0].x-AF[1].x)/2 - (B[2].x-B[3].x)*3/4;
+	D[4].y = D[1].y;
+	D[5].x = D[4].x;
+	D[5].y = D[0].y;
+	gvrender_polygon(job, D, sides + 2, filled);
+
+	/*dsDNA line*/
+	C[0].x = AF[1].x;
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2;
+	C[1].x = AF[0].x;
+	C[1].y = AF[2].y + (AF[0].y - AF[3].y)/2;
+	gvrender_polyline(job, C, 2);				
+	free(D);
+
+	break;
+    case PRIMERSITE:
+	/*
+	* half arrow shape, scales in the x-direction
+	*                 D[1]
+	*		    |\		 
+	*		    | \	 
+	*		    |  \
+	*	------------    \
+	*	|		 \	 
+	*	------------------\ D[0]			 
+	*				
+	*   --------------------------------
+	*  
+	*/
+	//x_center is AF[1].x + (AF[0].x - AF[1].x)/2;
+	//y_center is AF[2].y + (AF[1].y - AF[2].y)/2;
+	//width units are (B[2].x-B[3].x)/2 or (B[3].y-B[4].y)/2;
+	//the thickness is subituted with (AF[0].x - AF[1].x)/8 to make it scalable in the y with label length
+	D = N_NEW(sides + 1, pointf);
+	D[0].x = AF[1].x + (AF[0].x - AF[1].x)/2 + (B[2].x-B[3].x);//x_center + width*2
+	D[0].y = AF[2].y + (AF[1].y - AF[2].y)/2 + (B[3].y-B[4].y)/4;//y_center + 1/2 width
+	D[1].x = D[0].x - (B[2].x-B[3].x); //x_center
+	D[1].y = D[0].y + (B[3].y-B[4].y);
+	D[2].x = D[1].x;
+	D[2].y = D[0].y + (B[3].y-B[4].y)/2;
+	D[3].x = AF[1].x + (AF[0].x - AF[1].x)/2 - (AF[0].x - AF[1].x)/4;//x_center - 2*(scalable width)
+	D[3].y = D[2].y;
+	D[4].x = D[3].x;
+	D[4].y = D[0].y;
+	gvrender_polygon(job, D, sides + 1, filled);
 				
+	/*dsDNA line*/
+	C[0].x = AF[1].x;
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2;
+	C[1].x = AF[0].x;
+	C[1].y = AF[2].y + (AF[0].y - AF[3].y)/2;
+	gvrender_polyline(job, C, 2);				
+	free(D);
+
+	break;
+    case RESTRICTIONSITE:
+	/*
+	* zigzag shape, scales in the x-direction (only the middle section)
+	*
+	*		 
+	*   ----D[2]	 
+	*   |   |________ D[0]
+	*   |            |____
+	*   ----------	 |
+	*   D[4]      --- D[7]
+	*				
+	*   
+	*  
+	*/
+	//x_center is AF[1].x + (AF[0].x - AF[1].x)/2;
+	//y_center is AF[2].y + (AF[1].y - AF[2].y)/2;
+	//width units are (B[2].x-B[3].x)/2 or (B[3].y-B[4].y)/2;
+	//the thickness is subituted with (AF[0].x - AF[1].x)/8 to make it scalable in the y with label length
+	D = N_NEW(sides + 4, pointf);
+	D[0].x = AF[1].x + (AF[0].x - AF[1].x)/2 + (AF[0].x - AF[1].x)/8 + (B[2].x-B[3].x)/2;//x_center + scalable_width + width
+	D[0].y = AF[2].y + (AF[1].y - AF[2].y)/2 + (B[3].y-B[4].y)/4;//y_center + 1/2 width
+	D[1].x = AF[1].x + (AF[0].x - AF[1].x)/2 - (AF[0].x - AF[1].x)/8; //x_center - width
+	D[1].y = D[0].y;
+	D[2].x = D[1].x;
+	D[2].y = D[1].y + (B[3].y-B[4].y)/2;
+	D[3].x = D[2].x - (B[2].x-B[3].x)/2; //D[2].x - width
+	D[3].y = D[2].y;
+	D[4].x = D[3].x;
+	D[4].y = AF[2].y + (AF[1].y - AF[2].y)/2 - (B[3].y-B[4].y)/4; //y_center - 1/2(width)
+	D[5].x = D[0].x - (B[2].x-B[3].x)/2;
+	D[5].y = D[4].y;
+	D[6].x = D[5].x;
+	D[6].y = D[5].y - (B[3].y-B[4].y)/2;
+	D[7].x = D[0].x;
+	D[7].y = D[6].y;
+	gvrender_polygon(job, D, sides + 4, filled);
+				
+	/*dsDNA line left half*/
+	C[0].x = AF[1].x;
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2;
+	C[1].x = D[4].x;
+	C[1].y = AF[2].y + (AF[0].y - AF[3].y)/2;
+	gvrender_polyline(job, C, 2);
+
+	/*dsDNA line right half*/
+	C[0].x = D[7].x;
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2;
+	C[1].x = AF[0].x;
+	C[1].y = AF[2].y + (AF[0].y - AF[3].y)/2;
+	gvrender_polyline(job, C, 2);			    
+	free(D);
+
+	break;	
+    case FIVEPOVERHANG:
+	/*
+	*  does not scale, on the left side
+	*
+	*  D[3]------D[2]	 
+	*  |          |
+	*  D[0]------D[1]
+	*        -----  ------------
+	*        |    |
+	*       D[0]--D[1]
+	*				
+	*   
+	*  
+	*/
+	//x_center is AF[1].x + (AF[0].x - AF[1].x)/2;
+	//y_center is AF[2].y + (AF[1].y - AF[2].y)/2;
+	//width units are (B[2].x-B[3].x)/2 or (B[3].y-B[4].y)/2;
+	//the thickness is subituted with (AF[0].x - AF[1].x)/8 to make it scalable in the y with label length
+	D = N_NEW(sides, pointf);
+	D[0].x = AF[1].x;//the very left edge
+	D[0].y = AF[2].y + (AF[1].y - AF[2].y)/2 + (B[3].y-B[4].y)/8;//y_center + 1/4 width
+	D[1].x = D[0].x + 2*(B[2].x-B[3].x);
+	D[1].y = D[0].y;
+	D[2].x = D[1].x;
+	D[2].y = D[1].y + (B[3].y-B[4].y)/2;
+	D[3].x = D[0].x;
+	D[3].y = D[2].y;
+	gvrender_polygon(job, D, sides, filled);
+
+	/*second, lower shape*/
+	free(D);
+	D = N_NEW(sides, pointf);
+	D[0].x = AF[1].x + (B[2].x-B[3].x);
+	D[0].y = AF[2].y + (AF[1].y - AF[2].y)/2 - (B[3].y-B[4].y)*5/8; //y_center - 5/4 width
+	D[1].x = D[0].x + (B[2].x-B[3].x);
+	D[1].y = D[0].y;
+	D[2].x = D[1].x;
+	D[2].y = D[1].y + (B[3].y-B[4].y)/2;
+	D[3].x = D[0].x;
+	D[3].y = D[2].y;
+	gvrender_polygon(job, D, sides, filled);
+
+	/*dsDNA line right half*/
+	C[0].x = D[1].x;
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2;
+	C[1].x = AF[0].x;
+	C[1].y = AF[2].y + (AF[0].y - AF[3].y)/2;
+	gvrender_polyline(job, C, 2);			    
+	free(D);
+
+	break;	
+    case THREEPOVERHANG:
+	/*
+	*  does not scale, on the right side
+	*
+	*	   D[2]------D[1]	 
+	*	   |          |
+	*----------D[3]------D[0]
+	*	   -----  D[1]
+	*          |    |
+	*          D[3]--D[0]
+	*				
+	*   
+	*  
+	*/
+	//x_center is AF[1].x + (AF[0].x - AF[1].x)/2;
+	//y_center is AF[2].y + (AF[1].y - AF[2].y)/2;
+	//width units are (B[2].x-B[3].x)/2 or (B[3].y-B[4].y)/2;
+	//the thickness is subituted with (AF[0].x - AF[1].x)/8 to make it scalable in the y with label length
+	D = N_NEW(sides, pointf);
+	D[0].x = AF[0].x;//the very right edge
+	D[0].y = AF[2].y + (AF[1].y - AF[2].y)/2 + (B[3].y-B[4].y)/8;//y_center + 1/4 width
+	D[1].x = D[0].x;
+	D[1].y = D[0].y + (B[3].y-B[4].y)/2;
+	D[2].x = D[1].x - 2*(B[3].y-B[4].y);
+	D[2].y = D[1].y;
+	D[3].x = D[2].x;
+	D[3].y = D[0].y;
+	gvrender_polygon(job, D, sides, filled);
+
+	/*second, lower shape*/
+	free(D);
+	D = N_NEW(sides, pointf);
+	D[0].x = AF[0].x - (B[2].x-B[3].x);
+	D[0].y = AF[2].y + (AF[1].y - AF[2].y)/2 - (B[3].y-B[4].y)*5/8; //y_center - 5/4 width
+	D[1].x = D[0].x;
+	D[1].y = D[0].y + (B[3].y-B[4].y)/2;
+	D[2].x = D[1].x - (B[3].y-B[4].y);
+	D[2].y = D[1].y;
+	D[3].x = D[2].x;
+	D[3].y = D[0].y;
+	gvrender_polygon(job, D, sides, filled);
+
+	/*dsDNA line left half*/
+	C[0].x = AF[1].x;
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2;
+	C[1].x = D[3].x;
+	C[1].y = AF[2].y + (AF[0].y - AF[3].y)/2;
+	gvrender_polyline(job, C, 2);			    
+	free(D);
+
+	break;	
+    case NOVERHANG:
+	/*
+	*  does not scale
+	*
+	*     D[3]------D[2]   D[3]------D[2]    
+	*     |          |      |          |
+	*  ---D[0]------D[1]   D[0]------D[1]----
+	*     D[3]------D[2]   D[3]------D[2]    
+	*     |          |	|          |
+	*     D[0]------D[1]   D[0]------D[1]
+	*        
+	*				
+	*   
+	*  
+	*/
+	//x_center is AF[1].x + (AF[0].x - AF[1].x)/2;
+	//y_center is AF[2].y + (AF[1].y - AF[2].y)/2;
+	//width units are (B[2].x-B[3].x)/2 or (B[3].y-B[4].y)/2;
+	//the thickness is subituted with (AF[0].x - AF[1].x)/8 to make it scalable in the y with label length
+	/*upper left rectangle*/
+	D = N_NEW(sides, pointf);
+	D[0].x = AF[1].x + (AF[0].x - AF[1].x)/2 - (B[2].x-B[3].x)*9/8; //x_center - 2*width - 1/4*width
+	D[0].y = AF[2].y + (AF[1].y - AF[2].y)/2 + (B[3].y-B[4].y)/8;//y_center + 1/4 width
+	D[1].x = D[0].x + (B[2].x-B[3].x);
+	D[1].y = D[0].y;
+	D[2].x = D[1].x;
+	D[2].y = D[1].y + (B[3].y-B[4].y)/2;
+	D[3].x = D[0].x;
+	D[3].y = D[2].y;
+	gvrender_polygon(job, D, sides, filled);
+
+	/*lower, left rectangle*/
+	free(D);
+	D = N_NEW(sides, pointf);
+	D[0].x = AF[1].x + (AF[0].x - AF[1].x)/2 - (B[2].x-B[3].x)*9/8; //x_center - 2*width - 1/4*width
+	D[0].y = AF[2].y + (AF[1].y - AF[2].y)/2 - (B[3].y-B[4].y)*5/8;//y_center - width - 1/4 width
+	D[1].x = D[0].x + (B[2].x-B[3].x);
+	D[1].y = D[0].y;
+	D[2].x = D[1].x;
+	D[2].y = D[1].y + (B[3].y-B[4].y)/2;
+	D[3].x = D[0].x;
+	D[3].y = D[2].y;
+	gvrender_polygon(job, D, sides, filled);
+
+	/*lower, right rectangle*/
+	free(D);
+	D = N_NEW(sides, pointf);
+	D[0].x = AF[1].x + (AF[0].x - AF[1].x)/2 + (B[2].x-B[3].x)/8; //x_center + 1/4*width
+	D[0].y = AF[2].y + (AF[1].y - AF[2].y)/2 - (B[3].y-B[4].y)*5/8;//y_center - width - 1/4 width
+	D[1].x = D[0].x + (B[2].x-B[3].x);
+	D[1].y = D[0].y;
+	D[2].x = D[1].x;
+	D[2].y = D[1].y + (B[3].y-B[4].y)/2;
+	D[3].x = D[0].x;
+	D[3].y = D[2].y;
+	gvrender_polygon(job, D, sides, filled);
+
+	/*upper, right rectangle*/
+	free(D);
+	D = N_NEW(sides, pointf);
+	D[0].x = AF[1].x + (AF[0].x - AF[1].x)/2 + (B[2].x-B[3].x)/8; //x_center + 1/4*width
+	D[0].y = AF[2].y + (AF[1].y - AF[2].y)/2 + (B[3].y-B[4].y)/8;//y_center - width - 1/4 width
+	D[1].x = D[0].x + (B[2].x-B[3].x);
+	D[1].y = D[0].y;
+	D[2].x = D[1].x;
+	D[2].y = D[1].y + (B[3].y-B[4].y)/2;
+	D[3].x = D[0].x;
+	D[3].y = D[2].y;
+	gvrender_polygon(job, D, sides, filled);
+	
+	/*dsDNA line right half*/
+	C[0].x = D[1].x;
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2;
+	C[1].x = AF[0].x;
+	C[1].y = AF[2].y + (AF[0].y - AF[3].y)/2;
+	gvrender_polyline(job, C, 2);
+
+	/*dsDNA line left half*/
+	C[0].x = AF[1].x + (AF[0].x - AF[1].x)/2 - (B[2].x-B[3].x)*9/8; //D[0].x of of the left rectangles
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2;
+	C[1].x = AF[1].x;
+	C[1].y = AF[2].y + (AF[0].y - AF[3].y)/2;
+	gvrender_polyline(job, C, 2);			    
+	free(D);
+
+	break;	
+    case ASSEMBLY:
+	/*
+	*  does not scale
+	*
+	*      D[3]----------D[2]	 
+	*      |               |
+	*     D[0]----------D[1]
+	* ----                  ---------
+	*      D[3]----------D[2]	 
+	*      |               |
+	*     D[0]----------D[1]
+	*  
+	*/
+	//x_center is AF[1].x + (AF[0].x - AF[1].x)/2;
+	//y_center is AF[2].y + (AF[1].y - AF[2].y)/2;
+	//width units are (B[2].x-B[3].x)/2 or (B[3].y-B[4].y)/2;
+	//the thickness is subituted with (AF[0].x - AF[1].x)/8 to make it scalable in the y with label length
+	D = N_NEW(sides, pointf);
+	D[0].x = AF[1].x + (AF[0].x - AF[1].x)/2 - (B[2].x-B[3].x); //x_center - 2*width
+	D[0].y = AF[2].y + (AF[1].y - AF[2].y)/2 + (B[3].y-B[4].y)/8;//y_center + 1/4 width
+	D[1].x = D[0].x + 2*(B[2].x-B[3].x);
+	D[1].y = D[0].y;
+	D[2].x = D[1].x;
+	D[2].y = D[1].y + (B[3].y-B[4].y)/2;
+	D[3].x = D[0].x;
+	D[3].y = D[2].y;
+	gvrender_polygon(job, D, sides, filled);
+
+	/*second, lower shape*/
+	free(D);
+	D = N_NEW(sides, pointf);
+	D[0].x = AF[1].x + (AF[0].x - AF[1].x)/2 - (B[2].x-B[3].x); //x_center - 2*width
+	D[0].y = AF[2].y + (AF[1].y - AF[2].y)/2 - (B[3].y-B[4].y)*5/8;//y_center - width - 1/4 width
+	D[1].x = D[0].x + 2*(B[2].x-B[3].x);
+	D[1].y = D[0].y;
+	D[2].x = D[1].x;
+	D[2].y = D[1].y + (B[3].y-B[4].y)/2;
+	D[3].x = D[0].x;
+	D[3].y = D[2].y;
+	gvrender_polygon(job, D, sides, filled);
+
+	/*dsDNA line right half*/
+	C[0].x = D[1].x;
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2;
+	C[1].x = AF[0].x;
+	C[1].y = AF[2].y + (AF[0].y - AF[3].y)/2;
+	gvrender_polyline(job, C, 2);
+
+	/*dsDNA line left half*/
+	C[0].x = AF[1].x;
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2;
+	C[1].x = D[0].x;
+	C[1].y = AF[2].y + (AF[0].y - AF[3].y)/2;
+	gvrender_polyline(job, C, 2);
+	free(D);
+
+	break;	
+    case SIGNATURE:
+	/*
+	*   
+	* 
+	*   +--------------+
+	*   |		   |
+	*   |x		   |
+	*   |_____________ |
+	*   +--------------+
+	*/
+	//x_center is AF[1].x + (AF[0].x - AF[1].x)/2;
+	//y_center is AF[2].y + (AF[1].y - AF[2].y)/2;
+	//width units are (B[2].x-B[3].x)/2 or (B[3].y-B[4].y)/2;
+	//the thickness is subituted with (AF[0].x - AF[1].x)/8 to make it scalable in the y with label length
+	D = N_NEW(sides, pointf);
+	D[0].x = AF[0].x;
+	D[0].y = B[1].y - (B[3].y - B[4].y)/2;
+	D[1].x = B[3].x;
+	D[1].y = B[3].y - (B[3].y - B[4].y)/2;
+	D[2].x = AF[2].x;
+	D[2].y = AF[2].y + (B[3].y - B[4].y)/2;
+	D[3].x = AF[0].x;
+	D[3].y = AF[2].y + (B[3].y - B[4].y)/2;
+	gvrender_polygon(job, D, sides, filled);
+
+	/* "\" of the X*/
+	C[0].x = AF[1].x + (B[2].x-B[3].x)/4;
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2 + (B[3].y-B[4].y)/8; //y_center + 1/4 width
+	C[1].x = C[0].x + (B[2].x-B[3].x)/4;//C[0].x + width/2
+	C[1].y = C[0].y - (B[3].y-B[4].y)/4;//C[0].y - width/2
+	gvrender_polyline(job, C, 2);
+	
+	/*"/" of the X*/
+	C[0].x = AF[1].x + (B[2].x-B[3].x)/4;
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2 - (B[3].y-B[4].y)/8; //y_center - 1/4 width
+	C[1].x = C[0].x + (B[2].x-B[3].x)/4;//C[0].x + width/2
+	C[1].y = C[0].y + (B[3].y-B[4].y)/4;//C[0].y + width/2
+	gvrender_polyline(job, C, 2);	
+
+	/*bottom line*/
+	C[0].x = AF[1].x + (B[2].x-B[3].x)/4;
+	C[0].y = AF[2].y + (B[3].y-B[4].y)*3/4;
+	C[1].x = AF[0].x - (B[2].x-B[3].x)/4;
+	C[1].y = C[0].y;
+	gvrender_polyline(job, C, 2);
+	free(D);
+
+	break;	
+    case INSULATOR:
+	/*
+	 * double square
+	 *
+	 *  +-----+
+	 *--| ___ |---
+	 *  | |_| |
+	 *  +-----+
+	 *	          
+	 */
+	//x_center is AF[1].x + (AF[0].x - AF[1].x)/2
+	//y_center is AF[2].y + (AF[1].y - AF[2].y)/2;
+	//width units are (B[2].x-B[3].x)/2 or (B[3].y-B[4].y)/2;
+	D = N_NEW(sides, pointf);
+	D[0].x = AF[1].x + (AF[0].x - AF[1].x)/2 + (B[2].x-B[3].x)/2; //x_center+width	
+	D[0].y = AF[2].y + (AF[1].y - AF[2].y)/2 + (B[2].x-B[3].x)/2; //y_center
+	D[1].x = D[0].x;
+	D[1].y = AF[2].y + (AF[1].y - AF[2].y)/2 - (B[2].x-B[3].x)/2; //D[0].y- width
+	D[2].x = AF[1].x + (AF[0].x - AF[1].x)/2 - (B[2].x-B[3].x)/2; //x_center-width
+	D[2].y = D[1].y;
+	D[3].x = D[2].x;
+	D[3].y = D[0].y;
+	gvrender_polygon(job, D, sides, filled);
+	free(D);
+
+	/*outer square line*/
+	C[0].x = AF[1].x + (AF[0].x - AF[1].x)/2 + (B[2].x-B[3].x)*3/4; //x_center+1.5*width	
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2 + (B[2].x-B[3].x)*3/4; //y_center
+	C[1].x = C[0].x;
+	C[1].y = AF[2].y + (AF[1].y - AF[2].y)/2 - (B[2].x-B[3].x)*3/4; //y_center- 1.5*width
+	C[2].x = AF[1].x + (AF[0].x - AF[1].x)/2 - (B[2].x-B[3].x)*3/4; //x_center-1.5*width
+	C[2].y = C[1].y;
+	C[3].x = C[2].x;
+	C[3].y = C[0].y;
+	C[4] = C[0];
+	gvrender_polyline(job, C, 5);		        
+	
+	/*dsDNA line right half*/
+	C[0].x = AF[1].x + (AF[0].x - AF[1].x)/2 + (B[2].x-B[3].x)*3/4;
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2;
+	C[1].x = AF[0].x;
+	C[1].y = AF[2].y + (AF[0].y - AF[3].y)/2;
+	gvrender_polyline(job, C, 2);
+
+	/*dsDNA line left half*/
+	C[0].x = AF[1].x;
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2;
+	C[1].x = AF[1].x + (AF[0].x - AF[1].x)/2 - (B[2].x-B[3].x)*3/4;
+	C[1].y = AF[2].y + (AF[0].y - AF[3].y)/2;
+	gvrender_polyline(job, C, 2);
+
+	break;
+    case RIBOSITE:
+	/*
+	 * X with a dashed line on the bottom
+	 * 
+	 *
+	 *           X
+	 *	     |
+	 *	------------          
+	 */
+	//x_center is AF[1].x + (AF[0].x - AF[1].x)/2
+	//y_center is AF[2].y + (AF[1].y - AF[2].y)/2;
+	//width units are (B[2].x-B[3].x)/2 or (B[3].y-B[4].y)/2;
+
+	D = N_NEW(sides + 12, pointf); //12-sided x
+	D[0].x = AF[1].x + (AF[0].x-AF[1].x)/2 + (B[2].x-B[3].x)/4; //x_center+widtht/2 , lower right corner of the x
+	D[0].y = AF[2].y + (AF[1].y - AF[2].y)/2 + (B[3].y-B[4].y)/2; //y_center + width
+	D[1].x = D[0].x;
+	D[1].y = D[0].y + (B[3].y-B[4].y)/8; //D[0].y +width/4
+	D[2].x = D[0].x - (B[2].x-B[3].x)/8; //D[0].x- width/4 //right nook of the x
+	D[2].y = D[1].y + (B[3].y-B[4].y)/8; //D[0].y+width/2 or D[1].y+width/4
+	D[3].x = D[0].x;
+	D[3].y = D[2].y + (B[3].y-B[4].y)/8; //D[2].y + width/4
+	D[4].x = D[0].x;
+	D[4].y = D[3].y + (B[3].y-B[4].y)/8; //top right corner of the x
+	D[5].x = D[2].x;
+	D[5].y = D[4].y;
+	D[6].x = AF[1].x + (AF[0].x - AF[1].x)/2; //x_center
+	D[6].y = D[3].y; //top nook
+	D[7].x = D[6].x - (B[2].x-B[3].x)/8; //D[5] mirrowed across y
+	D[7].y = D[5].y;
+	D[8].x = D[7].x - (B[2].x-B[3].x)/8;//top left corner
+	D[8].y = D[7].y;
+	D[9].x = D[8].x;
+	D[9].y = D[3].y;
+	D[10].x = D[8].x + (B[2].x-B[3].x)/8;
+	D[10].y = D[2].y;
+	D[11].x = D[8].x;
+	D[11].y = D[1].y;
+	D[12].x = D[8].x;
+	D[12].y = D[0].y;
+	D[13].x = D[10].x;
+	D[13].y = D[12].y;
+	D[14].x = D[6].x; //bottom nook
+	D[14].y = D[1].y;
+	D[15].x = D[2].x;
+	D[15].y = D[0].y;
+	gvrender_polygon(job, D, sides + 12, filled);
+
+	//2-part dash line
+
+	/*line below the x, bottom dash*/
+	C[0].x = D[14].x; //x_center
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2; //y_center
+	C[1].x = C[0].x;
+	C[1].y = C[0].y + (B[3].y-B[4].y)/8; //y_center + 1/4*width
+	gvrender_polyline(job, C, 2);
+
+	/*line below the x, top dash*/
+	C[0].x = D[14].x; //x_center
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2 + (B[3].y-B[4].y)/4;
+	C[1].x = C[0].x;
+	C[1].y = C[0].y + (B[3].y-B[4].y)/8;
+	gvrender_polyline(job, C, 2);
+
+	/*dsDNA line*/
+	C[0].x = AF[1].x;
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2;
+	C[1].x = AF[0].x;
+	C[1].y = AF[2].y + (AF[0].y - AF[3].y)/2;
+	gvrender_polyline(job, C, 2);				
+	free(D);
+
+	break;
+    case RNASTAB:
+	/*
+	 * hexagon with a dashed line on the bottom
+	 * 
+	 *
+	 *           O
+	 *	     |
+	 *	------------          
+	 */
+	//x_center is AF[1].x + (AF[0].x - AF[1].x)/2
+	//y_center is AF[2].y + (AF[1].y - AF[2].y)/2;
+	//width units are (B[2].x-B[3].x)/2 or (B[3].y-B[4].y)/2;
+
+	D = N_NEW(sides + 4, pointf); //12-sided x
+	D[0].x = AF[1].x + (AF[0].x-AF[1].x)/2 + (B[2].x-B[3].x)/8; //x_center+widtht/8 , lower right corner of the hexagon
+	D[0].y = AF[2].y + (AF[1].y - AF[2].y)/2 + (B[3].y-B[4].y)/2; //y_center + width
+	D[1].x = D[0].x + (B[2].x-B[3].x)/8;
+	D[1].y = D[0].y + (B[3].y-B[4].y)/8; //D[0].y +width/4
+	D[2].x = D[1].x; //D[0].x- width/4
+	D[2].y = D[1].y + (B[3].y-B[4].y)/4; //D[1].y+width/2
+	D[3].x = D[0].x;
+	D[3].y = D[2].y + (B[3].y-B[4].y)/8; //D[2].y + width/4
+	D[4].x = D[3].x - (B[2].x-B[3].x)/4;
+	D[4].y = D[3].y; //top of the hexagon
+	D[5].x = D[4].x - (B[2].x-B[3].x)/8;
+	D[5].y = D[2].y;
+	D[6].x = D[5].x;
+	D[6].y = D[1].y; //left side
+	D[7].x = D[4].x;
+	D[7].y = D[0].y; //bottom
+	gvrender_polygon(job, D, sides + 4, filled);
+
+	//2-part dash line
+
+	/*line below the x, bottom dash*/
+	C[0].x = AF[1].x + (AF[0].x - AF[1].x)/2; //x_center
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2; //y_center
+	C[1].x = C[0].x;
+	C[1].y = C[0].y + (B[3].y-B[4].y)/8; //y_center + 1/4*width
+	gvrender_polyline(job, C, 2);
+
+	/*line below the x, top dash*/
+	C[0].x = AF[1].x + (AF[0].x - AF[1].x)/2; //x_center
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2 + (B[3].y-B[4].y)/4;
+	C[1].x = C[0].x;
+	C[1].y = C[0].y + (B[3].y-B[4].y)/8;
+	gvrender_polyline(job, C, 2);
+
+
+
+	/*dsDNA line*/
+	C[0].x = AF[1].x;
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2;
+	C[1].x = AF[0].x;
+	C[1].y = AF[2].y + (AF[0].y - AF[3].y)/2;
+	gvrender_polyline(job, C, 2);				
+	free(D);
+
+	break;
+    case PROTEASESITE:
+	/*
+	 * X with a solid line on the bottom
+	 * 
+	 *
+	 *           X
+	 *	     |
+	 *	------------          
+	 */
+	//x_center is AF[1].x + (AF[0].x - AF[1].x)/2
+	//y_center is AF[2].y + (AF[1].y - AF[2].y)/2;
+	//width units are (B[2].x-B[3].x)/2 or (B[3].y-B[4].y)/2;
+	D = N_NEW(sides + 12, pointf); //12-sided x
+	D[0].x = AF[1].x + (AF[0].x-AF[1].x)/2 + (B[2].x-B[3].x)/4; //x_center+widtht/2 , lower right corner of the x
+	D[0].y = AF[2].y + (AF[1].y - AF[2].y)/2 + (B[3].y-B[4].y)/2; //y_center + width
+	D[1].x = D[0].x;
+	D[1].y = D[0].y + (B[3].y-B[4].y)/8; //D[0].y +width/4
+	D[2].x = D[0].x - (B[2].x-B[3].x)/8; //D[0].x- width/4 //right nook of the x
+	D[2].y = D[1].y + (B[3].y-B[4].y)/8; //D[0].y+width/2 or D[1].y+width/4
+	D[3].x = D[0].x;
+	D[3].y = D[2].y + (B[3].y-B[4].y)/8; //D[2].y + width/4
+	D[4].x = D[0].x;
+	D[4].y = D[3].y + (B[3].y-B[4].y)/8; //top right corner of the x
+	D[5].x = D[2].x;
+	D[5].y = D[4].y;
+	D[6].x = AF[1].x + (AF[0].x - AF[1].x)/2; //x_center
+	D[6].y = D[3].y; //top nook
+	D[7].x = D[6].x - (B[2].x-B[3].x)/8; //D[5] mirrowed across y
+	D[7].y = D[5].y;
+	D[8].x = D[7].x - (B[2].x-B[3].x)/8;//top left corner
+	D[8].y = D[7].y;
+	D[9].x = D[8].x;
+	D[9].y = D[3].y;
+	D[10].x = D[8].x + (B[2].x-B[3].x)/8;
+	D[10].y = D[2].y;
+	D[11].x = D[8].x;
+	D[11].y = D[1].y;
+	D[12].x = D[8].x;
+	D[12].y = D[0].y;
+	D[13].x = D[10].x;
+	D[13].y = D[12].y;
+	D[14].x = D[6].x; //bottom nook
+	D[14].y = D[1].y;
+	D[15].x = D[2].x;
+	D[15].y = D[0].y;
+	gvrender_polygon(job, D, sides + 12, filled);
+
+
+	/*line below the x*/
+	C[0] = D[14];
+	C[1].x = C[0].x;
+	C[1].y = AF[2].y + (AF[1].y - AF[2].y)/2; //y_center
+	gvrender_polyline(job, C, 2);
+
+	/*dsDNA line*/
+	C[0].x = AF[1].x;
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2;
+	C[1].x = AF[0].x;
+	C[1].y = AF[2].y + (AF[0].y - AF[3].y)/2;
+	gvrender_polyline(job, C, 2);				
+	free(D);
+
+	break;
+    case PROTEINSTAB:
+	/*
+	 * hexagon with a dashed line on the bottom
+	 * 
+	 *
+	 *           O
+	 *	     |
+	 *	------------          
+	 */
+	//x_center is AF[1].x + (AF[0].x - AF[1].x)/2
+	//y_center is AF[2].y + (AF[1].y - AF[2].y)/2;
+	//width units are (B[2].x-B[3].x)/2 or (B[3].y-B[4].y)/2;
+
+	D = N_NEW(sides + 4, pointf); //12-sided x
+	D[0].x = AF[1].x + (AF[0].x-AF[1].x)/2 + (B[2].x-B[3].x)/8; //x_center+widtht/8 , lower right corner of the hexagon
+	D[0].y = AF[2].y + (AF[1].y - AF[2].y)/2 + (B[3].y-B[4].y)/2; //y_center + width
+	D[1].x = D[0].x + (B[2].x-B[3].x)/8;
+	D[1].y = D[0].y + (B[3].y-B[4].y)/8; //D[0].y +width/4
+	D[2].x = D[1].x; //D[0].x- width/4
+	D[2].y = D[1].y + (B[3].y-B[4].y)/4; //D[1].y+width/2
+	D[3].x = D[0].x;
+	D[3].y = D[2].y + (B[3].y-B[4].y)/8; //D[2].y + width/4
+	D[4].x = D[3].x - (B[2].x-B[3].x)/4;
+	D[4].y = D[3].y; //top of the hexagon
+	D[5].x = D[4].x - (B[2].x-B[3].x)/8;
+	D[5].y = D[2].y;
+	D[6].x = D[5].x;
+	D[6].y = D[1].y; //left side
+	D[7].x = D[4].x;
+	D[7].y = D[0].y; //bottom
+	gvrender_polygon(job, D, sides + 4, filled);
+
+	/*line below the x*/
+	C[0].x = AF[1].x + (AF[0].x - AF[1].x)/2;
+	C[0].y = D[0].y;
+	C[1].x = C[0].x;
+	C[1].y = AF[2].y + (AF[1].y - AF[2].y)/2; //y_center
+	gvrender_polyline(job, C, 2);
+
+	/*dsDNA line*/
+	C[0].x = AF[1].x;
+	C[0].y = AF[2].y + (AF[1].y - AF[2].y)/2;
+	C[1].x = AF[0].x;
+	C[1].y = AF[2].y + (AF[0].y - AF[3].y)/2;
+	gvrender_polyline(job, C, 2);				
+	free(D);
+
+	break;        
     }
     free(B);
 }
@@ -1143,7 +1875,7 @@ static void poly_init(node_t * n)
 
 /*
  * FIXME - this code is wrong - it doesn't work for concave boundaries.
- *          (e.g. "folder"  or "rarrow")
+ *          (e.g. "folder"  or "promoter")
  *   I don't think it even needs sectorangle, or knowledge of skewed shapes.
  *   (Concepts that only work for convex regular (modulo skew/distort) polygons.)
  *
