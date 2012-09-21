@@ -107,6 +107,7 @@ static int gvloadimage_process_surface(GVJ_t *job, usershape_t *us, gs_t *gs, vo
     int rc, rc2;
     char width_height[20], dpi[10], cairo_context[30];
     char *gs_args[] = {
+	"dot",      /* actual value of argv[0] doesn't matter */
 	"-dQUIET",
 	"-dNOPAUSE",
 	"-sDEVICE=cairo",
