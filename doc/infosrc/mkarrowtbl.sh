@@ -13,7 +13,8 @@ CURRA="xxxx"
  
 function closeLine
 {
-  echo "  </TR>\n  <TR ALIGN=CENTER>"
+  echo "  </TR>"
+  echo "  <TR ALIGN=CENTER>"
   for (( I=0;I<CNT;I++ ))
   do
     echo "    <TD>${AS[$I]}"
@@ -21,7 +22,8 @@ function closeLine
   echo "  </TR>"
 }
 
-echo '<CENTER>\n<TABLE>'
+echo "<CENTER>"
+echo "<TABLE>"
 
 while (( $# > 0 ))
 do
@@ -49,6 +51,8 @@ done
 
 closeLine
 
-echo '</TABLE>\n</CENTER>'
-echo '</BODY>\n</HTML>'
+echo "</TABLE>"
+echo "</CENTER>"
+echo "</BODY>"
+echo "</HTML>"
 
