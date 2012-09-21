@@ -48,7 +48,7 @@ SGIF = Mcircle.gif Mdiamond.gif Msquare.gif box.gif \
       primersite.gif restrictionsite.gif fivepoverhang.gif \
       threepoverhang.gif noverhang.gif assembly.gif signature.gif \
       insulator.gif ribosite.gif rnastab.gif proteasesite.gif \
-      proteinstab.gif
+      proteinstab.gif rpromoter.gif rarrow.gif larrow.gif lpromoter.gif
 
 AGIF = a_normal.gif a_inv.gif a_dot.gif a_invdot.gif a_odot.gif \
        a_invodot.gif a_curve.gif a_none.gif \

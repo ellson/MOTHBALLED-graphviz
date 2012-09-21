@@ -142,7 +142,7 @@ extern "C" {
     extern int rank(graph_t * g, int balance, int maxiter);
     extern port resolvePort(node_t*  n, node_t* other, port* oldport);
     extern void resolvePorts (edge_t* e);
-    extern void round_corners(GVJ_t*, pointf*, int, int,int);
+    extern void round_corners(GVJ_t * job, pointf * AF, int sides, int style, int filled);
     extern int routesplinesinit(void);
     extern pointf *routesplines(path *, int *);
     extern void routesplinesterm(void);

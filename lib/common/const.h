@@ -201,44 +201,52 @@
 #define CHAR_LATIN1	1
 #define CHAR_BIG5	2
 
-/* style flags */
-#define FILLED 	(1 << 0)
-#define RADIAL  (1 << 1)
-#define ROUNDED (1 << 2)
-#define DIAGONALS (1 << 3)
-#define AUXLABELS (1 << 4)
-#define INVISIBLE (1 << 5)
-#define DOGEAR (1 << 6)
-#define TAB (1 << 7)
-#define FOLDER (1 << 8)
-#define BOX3D (1 << 9)
-#define COMPONENT (1 << 10)
-#define STRIPED (1 << 11)
-#define DOTTED (1 << 12)
-#define DASHED (1 << 13)
-#define WEDGED  (1 << 14)
-#define PROMOTER (1 << 15)
-#define CDS (1 << 16)
-#define TERMINATOR (1 << 17)
-#define UTR (1 << 18)
-#define PRIMERSITE (1 << 19)
-#define RESTRICTIONSITE (1 << 20)
-#define FIVEPOVERHANG (1 << 21)
-#define THREEPOVERHANG (1 << 22)
-#define NOVERHANG (1 << 23)
-#define ASSEMBLY (1 << 24)
-#define SIGNATURE (1 << 25)
-#define INSULATOR (1 << 26)
-#define RIBOSITE (1 << 27)
-#define RNASTAB (1 << 28)
-#define PROTEASESITE (1 << 29)
-#define PROTEINSTAB (1 << 30)
+/* style flags (0-23)*/
+#define FILLED		(1 << 0)
+#define RADIAL		(1 << 1)
+#define ROUNDED		(1 << 2)
+#define DIAGONALS	(1 << 3)
+#define AUXLABELS	(1 << 4)
+#define INVISIBLE	(1 << 5)
+#define STRIPED		(1 << 6)
+#define DOTTED		(1 << 7)
+#define DASHED		(1 << 8)
+#define WEDGED		(1 << 9)
+
+#define SHAPE_MASK	(127 << 24)
+
+/* shape (1-127) */
+#define DOGEAR		(1 << 24)
+#define TAB		(2 << 24)
+#define FOLDER		(3 << 24)
+#define BOX3D		(4 << 24)
+#define COMPONENT	(5 << 24)
+#define PROMOTER	(6 << 24)
+#define CDS		(7 << 24)
+#define TERMINATOR	(8 << 24)
+#define UTR		(9 << 24)
+#define PRIMERSITE	(10 << 24)
+#define RESTRICTIONSITE	(11 << 24)
+#define FIVEPOVERHANG	(12 << 24)
+#define THREEPOVERHANG	(13 << 24)
+#define NOVERHANG	(14 << 24)
+#define ASSEMBLY	(15 << 24)
+#define SIGNATURE	(16 << 24)
+#define INSULATOR	(17 << 24)
+#define RIBOSITE	(18 << 24)
+#define RNASTAB		(19 << 24)
+#define PROTEASESITE	(20 << 24)
+#define PROTEINSTAB	(21 << 24)
+#define RPROMOTER	(22 << 24)
+#define RARROW		(23 << 24)
+#define LARROW		(24 << 24)
+#define LPROMOTER	(25 << 24)
 
 /* fill types */
-#define FILL      1
-#define GRADIENT  2
-#define RGRADIENT 3
-#define NO_POLY   4    /* bit flag: if set, do fill only */
+#define FILL      	1
+#define GRADIENT  	2
+#define RGRADIENT 	3
+#define NO_POLY   	4    /* bit flag: if set, do fill only */
 
 /* label types */
 #define LT_NONE 	(0 << 1)
