@@ -161,4 +161,5 @@ node_in_subg
 agread
 agsetfile
 agcontains
+agreseterrors
 

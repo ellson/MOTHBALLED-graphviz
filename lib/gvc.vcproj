@@ -309,6 +309,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\common\ellipse.c"
+				>
+			</File>
+			<File
 				RelativePath=".\common\emit.c"
 				>
 			</File>

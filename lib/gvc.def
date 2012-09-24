@@ -351,3 +351,6 @@ EdgeLabelsDone
 get_gradient_points
 G_margin
 openIntSet
+mkClustMap
+findCluster
+rank2
