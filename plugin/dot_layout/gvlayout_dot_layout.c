@@ -31,7 +31,7 @@ typedef enum { LAYOUT_DOT, } layout_type;
 
 #ifdef WITH_CGRAPH
     #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "dotgen2.lib" )
+    #pragma comment( lib, "dotgen.lib" )
     extern void dot_layout(graph_t * g);
     extern void dot_cleanup(graph_t * g);
 

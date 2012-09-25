@@ -1,91 +1,98 @@
-set vc=c:\progra~1\micros~3
-set PATH=%PATH%;%vc%\VC98\bin;%vc%\Common\MsDev98\bin;
-set LIB=%vc%\VC98\lib
-set INCLUDE=%vc%\VC98\include
+REM variables need to be filled out , Modify only this section
+REM *****************************************************
+SET VS2008DIR="C:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE"
+SET buildBaseDir=c:\graphviz-ms\
+SET buildDir=%buildBaseDir%graphviz2\
+SET targetDir=%buildBaseDir%release\
+SET outputDir=c:\graphviz-ms\bin\
+SET setupProjectDir=C:\graphviz-ms\graphviz-msi\setup\
+SET setupProjectName=setup
+SET setupProjectFile=%setupProjectDir%%setupProjectName%.sln
+set sourceLibDir=c:\graphviz-ms\add-on\
+set sourceUrl=http://www.graphviz.org/pub/graphviz/development/SOURCES/graphviz-working.tar.gz
+set wgetPath=C:\wget\bin
+set SevenzPath="C:\Program Files\7-Zip"
+PATH=%PATH%;%VS2008DIR%;%wgetPath%;%SevenzPath%
 
-cd lib
-mkdir lib
-cd lib
-mkdir Release
-mkdir Debug
-cd ..
-cd cdt
-nmake /nologo /f cdt.mak CFG="cdt - Win32 Release"
-cd ..
-cd graph
-nmake /nologo /f graph.mak CFG="graph - Win32 Release"
-cd ..
-cd agraph
-nmake /nologo /f agraph.mak CFG="agraph - Win32 Release"
-cd ..
-cd gd
-nmake /nologo /f gd.mak CFG="gd - Win32 Release"
-cd ..
-cd pathplan
-nmake /nologo /f pathplan.mak CFG="pathplan - Win32 Release"
-cd ..
-cd common
-nmake /nologo /f common.mak CFG="common - Win32 Release"
-cd ..
-cd gvc
-nmake /nologo /f gvc.mak CFG="gvc - Win32 Release"
-cd ..
-cd pack
-nmake /nologo /f pack.mak CFG="pack - Win32 Release"
-cd ..
-cd neatogen
-nmake /nologo /f neatogen.mak CFG="neatogen - Win32 Release"
-cd ..
-cd dotgen
-nmake /nologo /f dotgen.mak CFG="dotgen - Win32 Release"
-cd ..
-cd twopigen
-nmake /nologo /f twopigen.mak CFG="twopigen - Win32 Release"
-cd ..
-cd circogen
-nmake /nologo /f circogen.mak CFG="circogen - Win32 Release"
-cd ..
-cd fdpgen
-nmake /nologo /f fdpgen.mak CFG="fdpgen - Win32 Release"
-cd ..
-cd ingraphs
-nmake /nologo /f ingraphs.mak CFG="ingraphs - Win32 Release"
-cd ..
-cd ..
 
-cd plugin
-nmake /nologo /f plugin.mak CFG="plugin - Win32 Release"
-cd ..
+REM *****************************************************
+REM 84716ny
+REM clean up code , if you rpvode source manually comment out this section
+REM *****************************************************
+rmdir /S /Q %buildBaseDir%graphviz2
+rmdir /S /Q %targetDir%
+del %buildBaseDir%*.msi
+del %buildBaseDir%*.tar
+del %buildBaseDir%*.gz
+del %buildBaseDir%*.gz
+del %outputDir%*.exe
+del %outputDir%*.dll
+REM *****************************************************
+REM Comment out this section to disable source download
+REM *****************************************************
+wget -O %buildBaseDir%source.tar.gz %sourceUrl%
+7z x -y %buildBaseDir%source.tar.gz
+7z x -y %buildBaseDir%source.tar
+move /Y %buildBaseDir%graphviz-2.29.* graphviz2
+REM **************End of source download*****************
 
-cd cmd
-cd dot
-nmake /nologo /f dot.mak CFG="dot - Win32 Release"
-cd ..
-cd lefty
-cd gfx
-nmake /nologo /f gfx.mak CFG="gfx - Win32 Release"
-cd ..
-nmake /nologo /f lefty.mak CFG="lefty - Win32 Release"
-cd ..
-cd dotty
-nmake /nologo /f dotty.mak CFG="dotty - Win32 Release"
-cd ..
-cd lneato
-nmake /nologo /f lneato.mak CFG="lneato - Win32 Release"
-cd ..
-cd tools
-nmake /nologo /f Acyclic.mak CFG="Acyclic - Win32 Release"
-nmake /nologo /f ccomps.mak CFG="ccomps - Win32 Release"
-nmake /nologo /f gvcolor.mak CFG="gvcolor - Win32 Release"
-nmake /nologo /f gc.mak CFG="gc - Win32 Release"
-nmake /nologo /f nop.mak CFG="nop - Win32 Release"
-nmake /nologo /f sccmap.mak CFG="sccmap - Win32 Release"
-nmake /nologo /f tred.mak CFG="tred - Win32 Release"
-nmake /nologo /f unflatten.mak CFG="unflatten - Win32 Release"
-nmake /nologo /f gxl2dot.mak CFG="gxl2dot - Win32 Release"
-nmake /nologo /f dijkstra.mak CFG="dijkstra - Win32 Release"
-nmake /nologo /f bcomps.mak CFG="bcomps - Win32 Release"
-nmake /nologo /f gvpack.mak CFG="gvpack - Win32 Release"
-cd ..
-cd ..
+
+xcopy /Y %buildDir%windows\FEATURE %buildDir%\FEATURE\ /S
+xcopy /Y %sourceLibDir%GTS %buildDir%lib\GTS\ /S
+xcopy /Y %sourceLibDir%release %buildBaseDir%release\ /S
+xcopy /Y %sourceLibDir%gd %buildBaseDir%\graphviz2\lib\gd\
+del %buildDir%libltdl\config.h /q
+copy /Y %sourceLibDir%*.lib %targetDir%bin\
+
+REM Copy few files from source tree for windows build
+REM *****************************************************
+copy /Y %buildDir%windows\config.h %buildDir%
+copy /Y %buildDir%windows\ast_common.h %buildDir%
+copy /Y %sourceLibDir%getopt.h %buildDir%
+REM copy /Y %sourceLibDir%config.h %buildDir%
+
+REM *****************************************************
+
+REM Build release
+REM *****************************************************
+devenv %buildDir%graphviz.sln -Clean release
+devenv %buildDir%graphviz.sln -Build release -Out %buildDir%releaseLog1
+devenv %buildDir%graphviz.sln -Build release -Out %buildDir%releaseLog2
+REM *****************************************************
+REM Copy release outputs
+REM *****************************************************
+copy /Y %sourceLibDir%*.*  %targetDir%bin
+copy /Y %outputDir%*.exe  %targetDir%bin
+copy /Y %outputDir%dot.exe %targetDir%bin\circo.exe
+copy /Y %outputDir%dot.exe %targetDir%bin\neato.exe
+copy /Y %outputDir%dot.exe %targetDir%bin\fdp.exe
+copy /Y %outputDir%dot.exe %targetDir%bin\twopi.exe
+copy /Y %outputDir%dot.exe %targetDir%bin\sfdp.exe
+copy /Y %outputDir%gv2gml.exe %targetDir%bin\gml2gv.exe
+copy /Y %outputDir%*.dll  %targetDir%bin
+copy /Y %outputDir%*.lib  %targetDir%lib\release\lib
+copy /Y %outputDir%*.dll  %targetDir%lib\release\dll
+REM *****************************************************
+
+REM Run dot -c to generate config6 file. condig6 is shipped in the package
+REM *****************************************************
+%targetDir%\bin\dot -c
+REM *****************************************************
+
+
+REM Build debug
+REM *****************************************************
+devenv %buildDir%graphviz.sln -Clean debug
+devenv %buildDir%graphviz.sln -Build debug -Out %buildDir%debugLog1
+devenv %buildDir%graphviz.sln -Build debug -Out %buildDir%debugLog2
+copy /Y %outputDir%*.lib  %targetDir%lib\debug\lib
+copy /Y %outputDir%*.dll  %targetDir%lib\debug\dll
+REM *****************************************************
+REM del %setupProjectDir%Release\%setupProjectName%.msi
+del %setupProjectDir%Release\*.msi
+devenv %setupProjectFile% -Clean release -Out %buildDir%packagingLog
+devenv %setupProjectFile% -Build release -Out %buildDir%packagingLog
+COPY /Y %setupProjectDir%Release\%setupProjectName%.msi %buildBaseDir%graphviz-2.29.%date:~10,4%.%date:~4,2%.%date:~7,2%.msi
+pscp -q *.msi graphviz-web://data/pub/graphviz/development/windows
+
 
