@@ -1161,6 +1161,9 @@ drawn as polylines.
 routed as polylines of axis-aligned segments. Currently, the routing
 does not handle ports or, in dot, edge labels.
 <P>
+(25 Sep 2012) The value <TT>curved</TT> specifies edges should be
+drawn as curved arcs.
+<P>
 By default, the attribute is unset. How this is interpreted depends on
 the layout. For dot, the default is to draw edges as splines. For all
 other layouts, the default is to draw edges as line segments. Note that
