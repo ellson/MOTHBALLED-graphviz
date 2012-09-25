@@ -254,7 +254,7 @@
 #define LT_RECD 	(2 << 1)
 
 /* Flags stored in GD_flags 
- * Bit(s):  0     HAS_CLUSt_EDGE
+ * Bit(s):  0     HAS_CLUST_EDGE
  *          1-3   ET_ 
  *          4     NEW_RANK
  */
@@ -262,10 +262,11 @@
 /* edge types */
 #define ET_NONE 	(0 << 1)
 #define ET_LINE 	(1 << 1)
-#define ET_PLINE 	(2 << 1)
-#define ET_ORTHO 	(3 << 1)
-#define ET_SPLINE 	(4 << 1)
-#define ET_COMPOUND 	(5 << 1)
+#define ET_CURVED 	(2 << 1)
+#define ET_PLINE 	(3 << 1)
+#define ET_ORTHO 	(4 << 1)
+#define ET_SPLINE 	(5 << 1)
+#define ET_COMPOUND 	(6 << 1)
 
 /* New ranking is used */
 #define NEW_RANK    	(1 << 4)

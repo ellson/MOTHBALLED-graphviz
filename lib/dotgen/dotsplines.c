@@ -284,6 +284,18 @@ static void _dot_splines(graph_t * g, int normalize)
 #endif /* WITH_CGRAPH */
 
     if (et == ET_NONE) return; 
+    if (et == ET_CURVED) {
+	resetRW (g);
+	if (GD_has_labels(g) & EDGE_LABEL) {
+	    agerr (AGWARN, "edge labels with splines=curved not supported in dot - use xlabels\n");
+	}
+	for (n = agfstnode (g); n; n = agnxtnode(g, n)) {
+	    for (e = agfstout(g, n); e; e = agnxtout(g,e)) {
+		makeStraightEdge(g, e, et, &sinfo);
+	    }
+	}
+	goto finish;
+    } 
 #ifdef ORTHO
     if (et == ET_ORTHO) {
 	resetRW (g);
@@ -475,9 +487,7 @@ static void _dot_splines(graph_t * g, int normalize)
     if (normalize)
 	edge_normalize(g);
 
-#ifdef ORTHO
 finish :
-#endif
     /* vladimir: place port labels */
     /* FIX: head and tail labels are not part of cluster bbox */
     if ((E_headlabel || E_taillabel) && (E_labelangle || E_labeldistance)) {
@@ -510,16 +520,16 @@ finish :
     /* end vladimir */
 
 #ifdef ORTHO
-    if (et != ET_ORTHO) {
+    if ((et != ET_ORTHO) && (et != ET_CURVED))  {
+#else
+    if (et != ET_CURVED) {
 #endif
 	free(edges);
 	free(P->boxes);
 	free(P);
 	free(sd.Rank_box);
 	routesplinesterm();
-#ifdef ORTHO
     } 
-#endif
     State = GVSPLINES;
     EdgeLabelsDone = 1;
 }

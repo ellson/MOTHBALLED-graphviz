@@ -881,7 +881,7 @@ genroute(graph_t* g, tripoly_t * trip, int s, int t, edge_t * e, int doPolyline)
     }
 
     if (pl.pn == 2) {
-	makeStraightEdge(agraphof(head), e, doPolyline);
+	makeStraightEdge(agraphof(head), e, doPolyline, &sinfo);
 	goto finish;
     }
 

@@ -86,6 +86,7 @@ extern "C" {
 						pointf p), pointf * sp,
 			    boolean left_inside);
     extern shape_desc *bind_shape(char *name, node_t *);
+    extern void makeStraightEdge(graph_t * g, edge_t * e, int edgetype, splineInfo * info);
     extern void clip_and_install(edge_t * fe, node_t * hn,
 	pointf * ps, int pn, splineInfo * info);
     extern char* charsetToStr (int c);

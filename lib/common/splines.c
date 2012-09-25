@@ -1329,7 +1329,7 @@ edgeMidpoint (graph_t* g, edge_t * e)
     if (APPROXEQPT(p, q, MILLIPOINT)) { /* degenerate spline */
 	spf = p;
     }
-    else if (et == ET_SPLINE) {
+    else if ((et == ET_SPLINE) || (et == ET_CURVED)) {
 	d.x = (q.x + p.x) / 2.;
 	d.y = (p.y + q.y) / 2.;
 	spf = dotneato_closest(ED_spl(e), d);
@@ -1493,3 +1493,4 @@ splines *getsplinepoints(edge_t * e)
 	    agnameof(agtail(e)), agnameof(aghead(e)));
     return sp;
 }
+

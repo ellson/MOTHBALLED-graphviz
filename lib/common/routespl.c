@@ -879,3 +879,138 @@ static void printpath(path * pp)
 	    pp->end.constrained ? "constrained" : "not constrained");
 }
 
+static pointf get_centroid(Agraph_t *g)
+{
+    int     cnt = 0;
+    static pointf   sum = {0.0, 0.0};
+    static Agraph_t *save;
+    Agnode_t *n;
+
+    sum.x = (GD_bb(g).LL.x + GD_bb(g).UR.x) / 2.0;
+    sum.y = (GD_bb(g).LL.y + GD_bb(g).UR.y) / 2.0;
+    return sum;
+
+    if (save == g) return sum;
+    save = g;
+    for (n = agfstnode(g); n; n = agnxtnode(g,n)) {
+        sum.x += ND_pos(n)[0];
+        sum.y += ND_pos(n)[1];
+        cnt++;
+    }
+    sum.x = sum.x / cnt;
+    sum.y = sum.y / cnt;
+    return sum;
+}
+
+static void bend(pointf spl[4], pointf centroid)
+{
+    pointf  midpt,a;
+    double  r;
+    double  dist,dx,dy;
+
+    midpt.x = (spl[0].x + spl[3].x)/2.0;
+    midpt.y = (spl[0].y + spl[3].y)/2.0;
+    dx = (spl[3].x - spl[0].x);
+    dy = (spl[3].y - spl[0].y);
+    dist = sqrt(dx*dx + dy*dy);
+    r = dist/5.0;
+    {
+        double vX = centroid.x - midpt.x;
+        double vY = centroid.y - midpt.y;
+        double magV = sqrt(vX*vX + vY*vY);
+        a.x = midpt.x - vX / magV * r;      /* + would be closest point */
+        a.y = midpt.y - vY / magV * r;
+    }
+    /* this can be improved */
+    spl[1].x = spl[2].x = a.x;
+    spl[1].y = spl[2].y = a.y;
+}
+
+/* makeStraightEdge:
+ *
+ * FIX: handle ports on boundary?
+ */
+void 
+makeStraightEdge(graph_t * g, edge_t * e, int et, splineInfo* sinfo)
+{
+    pointf dumb[4];
+    node_t *n = agtail(e);
+    node_t *head = aghead(e);
+    int e_cnt = ED_count(e);
+    int curved = (et == ET_CURVED);
+    pointf perp;
+    pointf del;
+    edge_t *e0;
+    int i, j, xstep, dx;
+    double l_perp;
+    pointf dumber[4];
+    pointf p, q;
+
+    p = dumb[1] = dumb[0] = add_pointf(ND_coord(n), ED_tail_port(e).p);
+    q = dumb[2] = dumb[3] = add_pointf(ND_coord(head), ED_head_port(e).p);
+    if ((e_cnt == 1) || Concentrate) {
+	if (curved) bend(dumb,get_centroid(g));
+	clip_and_install(e, aghead(e), dumb, 4, sinfo);
+	addEdgeLabels(g, e, p, q);
+	return;
+    }
+
+    e0 = e;
+    if (APPROXEQPT(dumb[0], dumb[3], MILLIPOINT)) {
+	/* degenerate case */
+	dumb[1] = dumb[0];
+	dumb[2] = dumb[3];
+	del.x = 0;
+	del.y = 0;
+    }
+    else {
+        perp.x = dumb[0].y - dumb[3].y;
+        perp.y = dumb[3].x - dumb[0].x;
+	l_perp = LEN(perp.x, perp.y);
+	xstep = GD_nodesep(g->root);
+	dx = xstep * (e_cnt - 1) / 2;
+	dumb[1].x = dumb[0].x + (dx * perp.x) / l_perp;
+	dumb[1].y = dumb[0].y + (dx * perp.y) / l_perp;
+	dumb[2].x = dumb[3].x + (dx * perp.x) / l_perp;
+	dumb[2].y = dumb[3].y + (dx * perp.y) / l_perp;
+	del.x = -xstep * perp.x / l_perp;
+	del.y = -xstep * perp.y / l_perp;
+    }
+
+    for (i = 0; i < e_cnt; i++) {
+	if (aghead(e0) == head) {
+	    p = dumb[0];
+	    q = dumb[3];
+	    for (j = 0; j < 4; j++) {
+		dumber[j] = dumb[j];
+	    }
+	} else {
+	    p = dumb[3];
+	    q = dumb[0];
+	    for (j = 0; j < 4; j++) {
+		dumber[3 - j] = dumb[j];
+	    }
+	}
+	if (et == ET_PLINE) {
+	    Ppoint_t pts[4];
+	    Ppolyline_t spl, line;
+
+	    line.pn = 4;
+	    line.ps = pts;
+	    for (j=0; j < 4; j++) {
+		pts[j] = dumber[j];
+	    }
+	    make_polyline (line, &spl);
+	    clip_and_install(e0, aghead(e0), spl.ps, spl.pn, sinfo);
+	}
+	else
+	    clip_and_install(e0, aghead(e0), dumber, 4, sinfo);
+
+	addEdgeLabels(g, e0, p, q);
+	e0 = ED_to_virt(e0);
+	dumb[1].x += del.x;
+	dumb[1].y += del.y;
+	dumb[2].x += del.x;
+	dumb[2].y += del.y;
+    }
+}

@@ -44,7 +44,6 @@ extern "C" {
     extern void jitter3d(Agnode_t *, int);
     extern void jitter_d(Agnode_t *, int, int);
     extern Ppoly_t *makeObstacle(node_t * n, expand_t* );
-    extern void makeStraightEdge(graph_t * g, edge_t * e, int doPolyline);
     extern void makeSelfArcs(path * P, edge_t * e, int stepx);
     extern void makeSpline(graph_t*, edge_t *, Ppoly_t **, int, boolean);
     extern void make_spring(graph_t *, Agnode_t *, Agnode_t *, double);

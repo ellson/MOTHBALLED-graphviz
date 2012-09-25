@@ -1832,7 +1832,9 @@ int edgeType (char* s, int dflt)
 	break;
     case 'c' :
     case 'C' :
-	if (!strcasecmp (s+1, "ompound"))
+	if (!strcasecmp (s+1, "urved"))
+	    et = ET_CURVED;
+	else if (!strcasecmp (s+1, "ompound"))
 	    et = ET_COMPOUND;
 	break;
     case 'f' :
