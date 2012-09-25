@@ -179,7 +179,7 @@ static void
 layerPagePrefix (GVJ_t* job, agxbuf* xb)
 {
     char buf[128]; /* large enough for 2 decimal 64-bit ints and "page_," */
-    if (job->layerNum > 1) {
+    if (job->layerNum > 1 && (job->flags & GVDEVICE_DOES_LAYERS)) {
 	agxbput (xb, job->gvc->layerIDs[job->layerNum]);
 	agxbputc (xb, '_');
     }
