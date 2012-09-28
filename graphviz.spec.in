@@ -3,11 +3,6 @@
 
 # Note: pre gd-2.0.34 graphviz uses its own gd tree with gif support and other fixes
 
-# What a meal PHP makes of versioning !!!
-%define php_extdir %(php-config --extension-dir 2>/dev/null || echo %{_libdir}/php4)
-%global php_apiver %((echo 0; php -i 2>/dev/null | sed -n 's/^PHP API => //p') | tail -1)
-
-
 #-- Global graphviz rpm and src.rpm tags-------------------------------------
 Name:    graphviz
 Summary: Graph Visualization Tools
@@ -165,9 +160,10 @@ BuildRequires: libwebp-devel
 %endif
 %endif
 
+# What a meal PHP makes of versioning !!!
+%define php_extdir %(php-config --extension-dir 2>/dev/null || echo %{_libdir}/php4)
 %global php_apiver %((echo 0; php -i 2>/dev/null | sed -n 's/^PHP API => //p') | tail -1)
 
-%global php_extdir %(php-config --extension-dir 2>/dev/null || echo %{_libdir}/php4)
 # Fix private-shared-object-provides
 # RPM 4.8
 %{?filter_provides_in: %filter_provides_in %{php_extdir}/.*\.so$}
@@ -573,8 +569,8 @@ Perl extension for graphviz.
 Group:          Applications/Multimedia
 Summary:        PHP extension for graphviz
 Requires:       %{name} = %{version}-%{release}, php
-Requires:       php(zend-abi) = %{php_zend_api}
-Requires:       php(api) = %{php_core_api}
+#Requires:       php(zend-abi) = %{php_zend_api}
+#Requires:       php(api) = %{php_apiver}
 
 %description php
 PHP extension for graphviz.
