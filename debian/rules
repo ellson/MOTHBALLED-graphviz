@@ -129,7 +129,7 @@ clean-patched:
 install: build
 	dh_testdir
 	dh_testroot
-	dh_clean -k
+	dh_prep
 	dh_installdirs
 
 	# Install the package into debian/tmp
@@ -256,7 +256,7 @@ binary-arch: build install
 	dh_installman -a
 	dh_installchangelogs ChangeLog -a
 	dh_perl -a
-	dh_pysupport -a
+	dh_python2 -a
 	dh_link -a
 	dh_strip -a
 	dh_compress -a
