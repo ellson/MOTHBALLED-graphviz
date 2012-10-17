@@ -2,7 +2,7 @@ graphviz (@VERSION@-1) intrepid; urgency=low
 
   * Modified build scripts for Launchpad use
 
- -- GraphvizAdmin <gviz_adm@graphviz.org>  Wed, 10 Oct 2012 13:07:00 -0400
+ -- Graphviz Development <gviz_adm@graphviz.org>  Wed, 17 Oct 2012 13:07:00 -0400
 
 graphviz (2.18-1ubuntu5) intrepid; urgency=low
 
