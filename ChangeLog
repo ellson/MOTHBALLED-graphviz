@@ -1,3 +1,7 @@
+September 25, 2012
+	- Support edges using curved arcs.
+August 16, 2012
+	- Added new shapes used by the synthetic biology community.
 July 12, 2012
 	- For HTML-like labels, provide rounded cells, and dashed or dotted borders.
 	- Add lcurve and rcurve arrowheads.

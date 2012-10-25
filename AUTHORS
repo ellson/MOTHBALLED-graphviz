@@ -2,24 +2,22 @@ Primary contact. Please send patches or enhancements to:
     Graphviz project <gviz-bugs@research.att.com>
 
 ---------------
-Authors: (In alphabetical order.)
+Primary Authors: (In alphabetical order.)
 
-    David Dobkin <dpd@cs.princeton.edu>
     John Ellson  <ellson@graphviz.org>
     Emden Gansner <erg@research.att.com>
-    Eleftherios Koutsofios <ek@research.att.com>
+    Yifan Hu <yifanhu@research.att.com>
     Stephen North <north@research.att.com>
+
+Auxiliary Authors: (In alphabetical order.)
+
+	Don Caldwell <dfwc@reserach.att.com>
+    David Dobkin <dpd@cs.princeton.edu>
+    Tim Dwyer <tgdwyer@gmail.com>
+    Eleftherios Koutsofios <ek@research.att.com>
     Kiem-Phong Vo <kpv@research.att.com>
     Gordon Woodhull <gmcw@worldnet.att.net>
 
 ---------------
 
-Recommended packages:
-
-FreeType:    <http://www.freetype.org/>
-    David TURNER (david.turner@freetype.org)
-    Robert WILHELM (robert.wilhelm@freetype.org)
-        and others.
-
-GD: <http://www.boutell.com/gd/>
-       Tom Boutell
+See http://www.graphviz.org/Credits.php for further information.
