@@ -10,6 +10,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib/cdt
 
+man_MANS = graph.3
 if WITH_CGRAPH
 else
 pkginclude_HEADERS = graph.h
@@ -17,7 +18,6 @@ noinst_HEADERS = libgraph.h triefa.h parser.h agxbuf.h
 noinst_LTLIBRARIES = libgraph_C.la
 lib_LTLIBRARIES = libgraph.la
 pkgconfig_DATA = libgraph.pc
-man_MANS = graph.3
 pdf_DATA = graph.3.pdf
 endif
 
