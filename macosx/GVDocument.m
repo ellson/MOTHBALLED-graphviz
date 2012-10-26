@@ -110,7 +110,9 @@
 
 	[_exporter release];
 	[_graph release];
-	[super dealloc];
+	if ( NSAppKitVersionNumber <= NSAppKitVersionNumber10_6 ) {
+	    [super dealloc];
+	}
 }
 
 @end

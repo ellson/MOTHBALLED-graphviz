@@ -108,6 +108,9 @@
 - (void)dealloc
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"GVGraphDocumentDidChange" object:[self document]];
+	if ( NSAppKitVersionNumber <= NSAppKitVersionNumber10_6 ) {
+	    [super dealloc];
+        }
 }
 
 @end

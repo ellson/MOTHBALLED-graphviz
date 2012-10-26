@@ -56,7 +56,9 @@
 - (void)dealloc
 {
 	[_arguments release];
-	[super dealloc];
+	if ( NSAppKitVersionNumber <= NSAppKitVersionNumber10_6 ) {
+	    [super dealloc];
+	}
 }
 
 @end

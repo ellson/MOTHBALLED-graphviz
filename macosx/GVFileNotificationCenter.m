@@ -64,7 +64,9 @@ static GVFileNotificationCenter *_defaultCenter = nil;
 - (void)dealloc
 {
 	[_path release];
-	[super dealloc];
+	if ( NSAppKitVersionNumber <= NSAppKitVersionNumber10_6 ) {
+	    [super dealloc];
+	}
 }
 
 @end

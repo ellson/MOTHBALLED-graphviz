@@ -168,7 +168,9 @@
 	[_allSchemas release];
 	[_allAttributes release];
 	
-	[super dealloc];
+	if ( NSAppKitVersionNumber <= NSAppKitVersionNumber10_6 ) {
+	    [super dealloc];
+	}
 }
 
 @end
