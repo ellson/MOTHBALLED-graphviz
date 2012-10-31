@@ -3,7 +3,7 @@
 #
 # Required tools: cc, dot, awk, ksh, yacc, gs.
 #  gs and awk are used in ps_to_jpg.sh
-#  dot is used in mkarrows.sh and mkshapes.sh
+#  dot is used in mkarrows.sh, mkshapes.sh, mkstyles.sh, mktapers.sh
 #  ps_to_png.sh and other make rules rely on netpbm tools 
 #  and ps2raster, which is part of the GMT library.
 #
@@ -34,7 +34,15 @@ MJPG = sdlshapes.jpg
 GRADPNG = g_lin0.png g_rad0.png g_lin45.png g_rad45.png g_lin90.png g_rad90.png \
           g_lin180.png g_rad180.png g_lin270.png g_rad270.png g_lin360.png g_rad360.png
 
-MPNG = plugins.png sdlshapes.png $(GRADPNG)
+STYLEPNG = n_solid.png n_dashed.png n_dotted.png n_bold.png n_filled.png n_rounded.png n_striped.png \
+           n_wedged.png n_diagonals.png \
+           e_solid.png e_dashed.png e_dotted.png e_bold.png \
+           c_solid.png c_dashed.png c_dotted.png c_bold.png c_filled.png c_rounded.png c_striped.png
+
+TAPERPNG = normal_forward.png normal_back.png normal_both.png normal_none.png \
+           none_forward.png none_back.png none_both.png none_none.png
+
+MPNG = plugins.png sdlshapes.png $(GRADPNG) $(STYLEPNG) $(TAPERPNG)
 
 SGIF = Mcircle.gif Mdiamond.gif Msquare.gif box.gif \
       circle.gif diamond.gif doublecircle.gif \
@@ -178,8 +186,14 @@ $(AGIF) :
 $(A2GIF) :
 	./mkarrows.sh -s $@
 
-$(GRADPNG) :
+$(GRADPNG) : mkgrads.sh
 	./mkgrads.sh $@
+
+$(STYLEPNG) : mkstyles.sh
+	./mkstyles.sh $@
+
+$(TAPERPNG) : mktapers.sh
+	./mktapers.sh $@
 
 clean :
 	rm -f mklang sdlshapes.ps sdlshapes.ppm html.html
@@ -189,7 +203,7 @@ distclean : clean
 	rm -f $(A2GIF) $(AGIF) $(SGIF) $(MJPG) $(MGIF) $(MPNG) shapes
 	(for s in $$(cat shapelist); do rm -f $$s.gif; done)
 
-EXTRA_DIST = $(XGIF) mklang.y mkarrows.sh mkattrs.sh mkshapes.sh \
+EXTRA_DIST = $(XGIF) mklang.y mkarrows.sh mkattrs.sh mkshapes.sh mkstyles.sh mktapers.sh \
              mktypes.sh mkarrowtbl.sh mkoutput.sh mkshhtml.sh \
 	         ps_to_jpg.sh ps_to_png.sh arrow_grammar grammar html_grammar \
              shapelist attrs.1 colors.1 colors.n \
