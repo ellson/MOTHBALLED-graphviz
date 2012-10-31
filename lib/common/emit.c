@@ -2253,6 +2253,7 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 	if (tapered) {
 	    stroke_t* stp;
 	    if (*color == '\0') color = DEFAULT_COLOR;
+	    if (*fillcolor == '\0') fillcolor = DEFAULT_COLOR;
     	    gvrender_set_pencolor(job, "transparent");
 	    gvrender_set_fillcolor(job, color);
 	    bz = ED_spl(e)->list[0];
