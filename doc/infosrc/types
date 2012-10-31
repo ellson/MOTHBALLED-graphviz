@@ -98,8 +98,10 @@ Examples:<BR>
  Usually, the same effect can be achieved by setting
  <A HREF=#d:style>style</A> to <TT>invis</TT>.
 :colorList
-A colon-separated list of color values: <I>C</I>(:<I>C</I>)*
- where each <I>C</I> is a <A HREF=#k:color>color</A> value.
+A colon-separated list of weighted color values: <I>WC</I>(:<I>WC</I>)*
+where each <I>WC</I> has the form <I>C(;F)?</I> with C a <A HREF=#k:color>color</A> value
+and the optional <I>F</I> a floating-point number, 0 &le; <I>F</I> &le; 1. The sum of the 
+floating-point numbers in a <TT>colorList</TT> must sum to at most 1.
 <P>
 Depending on the related attribute and graph object, two colors may specify a gradient fill.
 The following table shows some variations of the <TT>yellow:blue</TT> color list depending on the
@@ -327,10 +329,59 @@ Note that whitespace characters are ignored.
 At present, the recognized style names are
 "dashed", "dotted", "solid", "invis" and "bold" for nodes and edges,
 "tapered" for edges only,
-and "filled", "diagonals" and "rounded" for nodes only.
-The styles "filled" and "rounded" are recognized for clusters.
+and "filled", "striped", "wedged", "diagonals" and "rounded" for nodes only.
+The styles "filled", "striped" and "rounded" are recognized for clusters.
 The style "radial" is recognized for nodes, clusters and graphs, and indicates a
 radial-style gradient fill if applicable.
+The style "striped" is recognized for clusters and rectangularly-shaped nodes, and causes the
+fill to be done as a set of vertical stripes. The colors are specified via a <A HREF=#k:colorList>colorList</A>, 
+the colors drawn from left to right in list order. Optional color weights can be specified to indicate the
+proportional widths of the bars. If the sum of the weights is less than 1, the remainder is divided evenly
+among the colors with no weight. 
+The style "wedged" is recognized for elliptically-shaped nodes, and causes the
+fill to be done as a set of wedges. The colors are specified via a <A HREF=#k:colorList>colorList</A>, 
+with the colors drawn counter-clockwise starting at angle 0. Optional color weights are interpreted
+analogously to the striped case described above.
+<P>
+The following tables illustrate some of the effects of the style settings. 
+Examples of tapered line styles are given below.
+Examples of linear and radial gradient fill can be seen under  <A HREF=#k:colorList>colorList</A>.
+<P>
+  <TABLE border=1>
+    <TR><TD align="center"><tt>solid</tt><TD align="center"><tt>dashed</tt><TD align="center"><tt>dotted</tt><TD align="center"><tt>bold</tt><TD align="center"><tt>rounded</tt><TD align="center"><tt>diagonals</tt><TD align="center"><tt>filled</tt><TD align="center"><tt>striped</tt><TD align="center"><tt>wedged</tt></TR>
+    <TR><TD><IMG SRC="n_solid.png"><TD><IMG SRC="n_dashed.png"><TD><IMG SRC="n_dotted.png"><TD><IMG SRC="n_bold.png"><TD><IMG SRC="n_rounded.png"><TD><IMG SRC="n_diagonals.png"><TD><IMG SRC="n_filled.png"><TD><IMG SRC="n_striped.png"><TD><IMG SRC="n_wedged.png"></TR>
+    <CAPTION>Basic style settings for nodes</CAPTION>
+  </TABLE>
+<P>
+  <TABLE border=1>
+    <TR><TD align="center"><tt>solid</tt><TD align="center"><tt>dashed</tt><TD align="center"><tt>dotted</tt><TD align="center"><tt>bold</tt></TR>
+    <TR><TD><IMG SRC="e_solid.png"><TD><IMG SRC="e_dashed.png"><TD><IMG SRC="e_dotted.png"><TD><IMG SRC="e_bold.png"></TR>
+    <CAPTION>Basic style settings for edges</CAPTION>
+  </TABLE>
+<P>
+  <TABLE border=1>
+    <TR><TD align="center"><tt>solid</tt><TD align="center"><tt>dashed</tt><TD align="center"><tt>dotted</tt><TD align="center"><tt>bold</tt><TD align="center"><tt>rounded</tt><TD align="center"><tt>filled</tt><TD align="center"><tt>striped</tt></TR>
+    <TR><TD><IMG SRC="c_solid.png"><TD><IMG SRC="c_dashed.png"><TD><IMG SRC="c_dotted.png"><TD><IMG SRC="c_bold.png"><TD><IMG SRC="c_rounded.png"><TD><IMG SRC="c_filled.png"><TD><IMG SRC="c_striped.png"></TR>
+    <CAPTION>Basic style settings for clusters</CAPTION>
+  </TABLE>
+<P>
+The effect of <tt>style=tapered</tt> depends on the <A HREF=#d:penwidth>penwidth</A>,
+<A HREF=#d:dir>dir</A>, <A HREF=#d:arrowhead>arrowhead</A> and <A HREF=#d:arrowtail>arrowtail</A> attributes.
+The edge starts with width <tt>penwidth</tt> and tapers to width 1, in points. The <tt>dir</tt> attribute
+determines whether the tapering goes from tail to head (<tt>dir=forward</tt>), from head to 
+tail (<tt>dir=forward</tt>), from the middle to both the head and tail (<tt>dir=both</tt>), or no
+tapering at all (<tt>dir=none</tt>). If the <tt>dir</tt> is not explicitly set, the default for the
+graph type is used (see <A HREF=#a:dir>dir</A>). Arrowheads and arrowtails are also drawn, based on the
+value of <tt>dir</tt>; to avoid this, set <tt>arrowhead</tt> and/or <TT>arrowtail</TT> to <TT>"none"</TT>.
+<P>
+The following table illustrates the <tt>style=tapered</tt> with <tt>penwidth=7</tt> and
+<tt>arrowtail=none</tt>.
+  <TABLE border=1>
+    <TR><TD><tt>arrowhead</tt> &#92; <tt>dir</tt><TD align="center"><tt>forward</tt><TD align="center"><tt>back</tt><TD align="center"><tt>both</tt><TD align="center"><tt>none</tt></TR>
+    <TR><TD><tt>normal</tt><TD><IMG SRC="normal_forward.png"><TD><IMG SRC="normal_back.png"><TD><IMG SRC="normal_both.png"><TD><IMG SRC="normal_none.png"></TR>
+    <TR><TD><tt>none</tt><TD><IMG SRC="none_forward.png"><TD><IMG SRC="none_back.png"><TD><IMG SRC="none_both.png"><TD><IMG SRC="none_none.png"></TR>
+  </TABLE>
+<P>
 Additional styles are available in
 device-dependent form. Style lists are passed to device drivers, which
 can use this to generate appropriate output.

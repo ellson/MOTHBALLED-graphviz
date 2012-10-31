@@ -185,16 +185,14 @@ skipSpace (char* p)
     return p;
 }
 
-#if 0
 static char*
-strndup (char* p, int sz)
+mystrndup (char* p, int sz)
 {
     char* s = malloc (sz+1);
     memcpy (s, p, sz);
     s[sz] = '\0';
     return s;
 }
-#endif
 
 static char*
 readLiteral (char* p)
@@ -218,7 +216,7 @@ readName (char* p)
     char* s = p;
 
     while (!isspace ((c = *p)) && (c != '\0')) p++;
-    yylval.str = strndup (s, p-s);
+    yylval.str = mystrndup (s, p-s);
     return p;
 }
 
