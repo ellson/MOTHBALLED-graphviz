@@ -12,7 +12,8 @@ set sourceLibDir=c:\graphviz-ms\add-on\
 set sourceUrl=http://www.graphviz.org/pub/graphviz/development/SOURCES/graphviz-working.tar.gz
 set wgetPath=C:\wget\bin
 set SevenzPath="C:\Program Files\7-Zip"
-PATH=%PATH%;%VS2008DIR%;%wgetPath%;%SevenzPath%
+set pscpPath="C:\Program Files\PuTTY"
+PATH=%PATH%;%VS2008DIR%;%wgetPath%;%SevenzPath%;%pscpPath%;
 
 
 REM *****************************************************
