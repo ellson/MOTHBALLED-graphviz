@@ -27,9 +27,8 @@ typedef struct same_t {
     int n_arr;			/* number of edges with arrows */
     double arr_len;		/* arrow length of an edge in the group */
 } same_t;
-static int n_same;		/* number of same_t groups on current node */
 
-static void sameedge(same_t * same, node_t * n, edge_t * e, char *id);
+static int sameedge(same_t * same, int n_same, node_t * n, edge_t * e, char *id);
 static void sameport(node_t * u, elist * l, double arr_len);
 
 void dot_sameports(graph_t * g)
@@ -38,7 +37,10 @@ void dot_sameports(graph_t * g)
     node_t *n;
     edge_t *e;
     char *id;
-    same_t same[MAXSAME];
+    same_t samehead[MAXSAME];
+    same_t sametail[MAXSAME];
+    int n_samehead;		/* number of same_t groups on current node */
+    int n_sametail;		/* number of same_t groups on current node */
     int i;
 
 #ifndef WITH_CGRAPH
@@ -51,7 +53,7 @@ void dot_sameports(graph_t * g)
     if (!(E_samehead || E_sametail))
 	return;
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	n_same = 0;
+	n_samehead = n_sametail = 0;
 	for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
 	    if (aghead(e) == agtail(e)) continue;  /* Don't support same* for loops */
 	    if (aghead(e) == n && E_samehead &&
@@ -60,25 +62,31 @@ void dot_sameports(graph_t * g)
 #else /* WITH_CGRAPH */
 	        (id = agxget(e, E_samehead))[0])
 #endif /* WITH_CGRAPH */
-		sameedge(same, n, e, id);
+		n_samehead = sameedge(samehead, n_samehead, n, e, id);
 	    else if (agtail(e) == n && E_sametail &&
 #ifndef WITH_CGRAPH
 	        (id = agxget(e, E_sametail->index))[0])
 #else /* WITH_CGRAPH */
 	        (id = agxget(e, E_sametail))[0])
 #endif /* WITH_CGRAPH */
-		sameedge(same, n, e, id);
+		n_sametail = sameedge(sametail, n_sametail, n, e, id);
 	}
-	for (i = 0; i < n_same; i++) {
-	    if (same[i].l.size > 1)
-		sameport(n, &same[i].l, same[i].arr_len);
-	    free_list(same[i].l);
+	for (i = 0; i < n_samehead; i++) {
+	    if (samehead[i].l.size > 1)
+		sameport(n, &samehead[i].l, samehead[i].arr_len);
+	    free_list(samehead[i].l);
+	    /* I sure hope I don't need to free the char* id */
+	}
+	for (i = 0; i < n_sametail; i++) {
+	    if (sametail[i].l.size > 1)
+		sameport(n, &sametail[i].l, sametail[i].arr_len);
+	    free_list(sametail[i].l);
 	    /* I sure hope I don't need to free the char* id */
 	}
     }
 }
 
-static void sameedge(same_t * same, node_t * n, edge_t * e, char *id)
+static int sameedge(same_t * same, int n_same, node_t * n, edge_t * e, char *id)
 /* register E in the SAME structure of N under ID. Uses static int N_SAME */
 {
     int i, sflag, eflag, flag;
@@ -92,7 +100,7 @@ static void sameedge(same_t * same, node_t * n, edge_t * e, char *id)
 	n_same--;
 	agerr(AGERR, "too many (> %d) same{head,tail} groups for node %s\n",
 	      MAXSAME, agnameof(n));
-	return;
+	return n_same;
     }
     alloc_elist(1, same[i].l);
     elist_fastapp(e, same[i].l);
@@ -105,6 +113,7 @@ static void sameedge(same_t * same, node_t * n, edge_t * e, char *id)
 	same[i].arr_len =
 	    /* only consider arrows if there's exactly one arrow */
 	    (++same[i].n_arr == 1) ? arrow_length(e, flag) : 0;
+    return n_same;
 }
 
 static void sameport(node_t * u, elist * l, double arr_len)
