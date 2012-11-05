@@ -32,9 +32,6 @@ extern gvplugin_library_t gvplugin_pango_LTX_library;
 extern gvplugin_library_t gvplugin_webp_LTX_library;
 #endif
 #endif
-#ifdef HAVE_LASI
-extern gvplugin_library_t gvplugin_lasi_LTX_library;
-#endif
 extern gvplugin_library_t gvplugin_core_LTX_library;
 
 
@@ -46,9 +43,6 @@ lt_symlist_t lt_preloaded_symbols[] = {
 #ifdef HAVE_WEBP
 	{ "gvplugin_webp_LTX_library", (void*)(&gvplugin_webp_LTX_library) },
 #endif
-#endif
-#ifdef HAVE_LASI
-	{ "gvplugin_lasi_LTX_library", (void*)(&gvplugin_lasi_LTX_library) },
 #endif
 #ifdef HAVE_LIBGD
 	{ "gvplugin_gd_LTX_library", (void*)(&gvplugin_gd_LTX_library) },
