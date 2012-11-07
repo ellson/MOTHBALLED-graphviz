@@ -1,3 +1,4 @@
+cd c:/graphviz-ms
 REM variables need to be filled out , Modify only this section
 REM *****************************************************
 SET VS2008DIR="C:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE"
@@ -14,8 +15,6 @@ set wgetPath=C:\wget\bin
 set SevenzPath="C:\Program Files\7-Zip"
 set pscpPath="C:\Program Files\PuTTY"
 PATH=%PATH%;%VS2008DIR%;%wgetPath%;%SevenzPath%;%pscpPath%;
-
-
 REM *****************************************************
 REM 84716ny
 REM clean up code , if you rpvode source manually comment out this section
@@ -53,12 +52,11 @@ copy /Y %sourceLibDir%getopt.h %buildDir%
 REM copy /Y %sourceLibDir%config.h %buildDir%
 
 REM *****************************************************
-
 REM Build release
 REM *****************************************************
 devenv %buildDir%graphviz.sln -Clean release
-devenv %buildDir%graphviz.sln -Build release -Out %buildDir%releaseLog1
-devenv %buildDir%graphviz.sln -Build release -Out %buildDir%releaseLog2
+devenv %buildDir%graphviz.sln -Build release -Out %buildDir%releaseLog1.txt
+devenv %buildDir%graphviz.sln -Build release -Out %buildDir%releaseLog2.txt
 REM *****************************************************
 REM Copy release outputs
 REM *****************************************************
@@ -84,16 +82,17 @@ REM *****************************************************
 REM Build debug
 REM *****************************************************
 devenv %buildDir%graphviz.sln -Clean debug
-devenv %buildDir%graphviz.sln -Build debug -Out %buildDir%debugLog1
-devenv %buildDir%graphviz.sln -Build debug -Out %buildDir%debugLog2
+devenv %buildDir%graphviz.sln -Build debug -Out %buildDir%debugLog1.txt
+devenv %buildDir%graphviz.sln -Build debug -Out %buildDir%debugLog2.txt
 copy /Y %outputDir%*.lib  %targetDir%lib\debug\lib
 copy /Y %outputDir%*.dll  %targetDir%lib\debug\dll
 REM *****************************************************
-REM del %setupProjectDir%Release\%setupProjectName%.msi
+del %setupProjectDir%Release\%setupProjectName%.msi
 del %setupProjectDir%Release\*.msi
-devenv %setupProjectFile% -Clean release -Out %buildDir%packagingLog
-devenv %setupProjectFile% -Build release -Out %buildDir%packagingLog
-COPY /Y %setupProjectDir%Release\%setupProjectName%.msi %buildBaseDir%graphviz-2.29.%date:~10,4%.%date:~4,2%.%date:~7,2%.msi
-pscp -q *.msi graphviz-web://data/pub/graphviz/development/windows
+devenv %setupProjectFile% -Clean release -Out %buildDir%packagingLog.txt
+devenv %setupProjectFile% -Build release -Out %buildDir%packagingLog.txt
+COPY /Y %setupProjectDir%Release\%setupProjectName%.msi %buildBaseDir%graphviz-2.29.%date:~10,4%%date:~4,2%%date:~7,2%.msi
+pscp -q *.msi graphviz-web://data/pub/graphviz/development/windows > pscpLog.txt 2>&1
+
 
 
