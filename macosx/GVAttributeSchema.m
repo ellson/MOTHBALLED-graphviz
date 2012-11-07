@@ -98,8 +98,7 @@ static NSComboBoxCell *_enumCell = nil;
 - (void)dealloc
 {
 	[_element release];
-	if ( NSAppKitVersionNumber <= NSAppKitVersionNumber10_6 ) {
-	    [super dealloc];
+	[super dealloc];
 	}
 }
 

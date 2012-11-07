@@ -167,9 +167,7 @@
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowDidBecomeMainNotification object:nil];
 	[_allSchemas release];
 	[_allAttributes release];
-	
-	if ( NSAppKitVersionNumber <= NSAppKitVersionNumber10_6 ) {
-	    [super dealloc];
+	[super dealloc];
 	}
 }
 

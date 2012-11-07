@@ -143,8 +143,7 @@ NSMutableArray *_formatRenders = nil;
 	[_filename release];
 	[_formatRender release];
 	[_render release];
-	if ( NSAppKitVersionNumber <= NSAppKitVersionNumber10_6 ) {
-	    [super dealloc];
+	[super dealloc];
 	}
 }
 

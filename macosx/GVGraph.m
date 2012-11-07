@@ -214,9 +214,7 @@ extern char *gvplugin_list(GVC_t * gvc, api_t api, const char *str);
 	[_graphAttributes release];
 	[_defaultNodeAttributes release];
 	[_defaultEdgeAttributes release];
-	
-	if ( NSAppKitVersionNumber <= NSAppKitVersionNumber10_6 ) {
-	    [super dealloc];
+	[super dealloc];
 	}
 }
 
