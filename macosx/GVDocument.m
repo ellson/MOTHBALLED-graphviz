@@ -111,7 +111,6 @@
 	[_exporter release];
 	[_graph release];
 	[super dealloc];
-	}
 }
 
 @end
