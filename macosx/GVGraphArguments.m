@@ -57,7 +57,6 @@
 {
 	[_arguments release];
 	[super dealloc];
-	}
 }
 
 @end

@@ -168,7 +168,6 @@
 	[_allSchemas release];
 	[_allAttributes release];
 	[super dealloc];
-	}
 }
 
 @end

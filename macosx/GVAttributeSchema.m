@@ -99,7 +99,6 @@ static NSComboBoxCell *_enumCell = nil;
 {
 	[_element release];
 	[super dealloc];
-	}
 }
 
 

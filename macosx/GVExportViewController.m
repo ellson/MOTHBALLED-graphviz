@@ -144,7 +144,6 @@ NSMutableArray *_formatRenders = nil;
 	[_formatRender release];
 	[_render release];
 	[super dealloc];
-	}
 }
 
 @end
