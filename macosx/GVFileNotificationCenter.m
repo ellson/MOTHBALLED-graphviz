@@ -65,7 +65,6 @@ static GVFileNotificationCenter *_defaultCenter = nil;
 {
 	[_path release];
 	[super dealloc];
-	}
 }
 
 @end
