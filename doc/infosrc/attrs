@@ -1155,7 +1155,7 @@ insertion order among the components, with smaller values inserted first.
 :splines:G:bool/string;
 Controls how, and if, edges are represented. If true, edges are drawn as
 splines routed around nodes; if false, edges are drawn as line segments.
-If set to "", no edges are drawn at all.
+If set to <tt>none</tt> or "", no edges are drawn at all.
 <P>
 (1 March 2007) The values <TT>line</TT> and <TT>spline</TT> can be
 used as synonyms for <TT>false</TT> and <TT>true</TT>, respectively.
@@ -1168,6 +1168,24 @@ does not handle ports or, in dot, edge labels.
 <P>
 (25 Sep 2012) The value <TT>curved</TT> specifies edges should be
 drawn as curved arcs.
+<P>
+<TABLE>
+<TR><TD><IMG WIDTH="200" VSPACE="10" HSPACE="10" SRC="spline_none.png">
+    <TD><IMG WIDTH="200" VSPACE="10" HSPACE="10" SRC="spline_line.png">
+    <TD><IMG WIDTH="200" VSPACE="10" HSPACE="10" SRC="spline_polyline.png">
+    <TD><IMG WIDTH="200" VSPACE="10" HSPACE="10" SRC="spline_curved.png">
+    <TD><IMG WIDTH="200" VSPACE="10" HSPACE="10" SRC="spline_ortho.png">
+    <TD><IMG WIDTH="200" VSPACE="10" HSPACE="10" SRC="spline_spline.png">
+</TR>
+<TR><TD ALIGN="center">splines=none<BR>splines=""
+    <TD ALIGN="center">splines=line<BR>splines=false
+    <TD ALIGN="center">splines=polyline
+    <TD ALIGN="center">splines=curved
+    <TD ALIGN="center">splines=ortho
+    <TD ALIGN="center">splines=spline<BR>splines=true
+</TR>
+</TABLE>
+
 <P>
 By default, the attribute is unset. How this is interpreted depends on
 the layout. For dot, the default is to draw edges as splines. For all

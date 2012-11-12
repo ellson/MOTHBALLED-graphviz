@@ -35,6 +35,8 @@ html_DATA = attrs.html colors.html command.html \
   n_bold.png n_dashed.png n_diagonals.png n_dotted.png n_filled.png \
   n_rounded.png n_solid.png n_striped.png n_wedged.png \
   none_back.png none_both.png none_forward.png none_none.png \
-  normal_back.png normal_both.png normal_forward.png normal_none.png
+  normal_back.png normal_both.png normal_forward.png normal_none.png \
+  spline_curved.png spline_none.png spline_polyline.png \
+  spline_line.png spline_ortho.png spline_spline.png
 
 EXTRA_DIST = $(html_DATA)

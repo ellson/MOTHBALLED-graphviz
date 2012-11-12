@@ -3,7 +3,7 @@
 #
 # Required tools: cc, dot, awk, ksh, yacc, gs.
 #  gs and awk are used in ps_to_jpg.sh
-#  dot is used in mkarrows.sh, mkshapes.sh, mkstyles.sh, mktapers.sh
+#  dot is used in mkarrows.sh, mkshapes.sh, mkstyles.sh, mktapers.sh, mksplines.sh
 #  ps_to_png.sh and other make rules rely on netpbm tools 
 #  and ps2raster, which is part of the GMT library.
 #
@@ -42,7 +42,9 @@ STYLEPNG = n_solid.png n_dashed.png n_dotted.png n_bold.png n_filled.png n_round
 TAPERPNG = normal_forward.png normal_back.png normal_both.png normal_none.png \
            none_forward.png none_back.png none_both.png none_none.png
 
-MPNG = plugins.png sdlshapes.png $(GRADPNG) $(STYLEPNG) $(TAPERPNG)
+SPLINEPNG = spline_none.png spline_line.png spline_spline.png spline_ortho.png spline_curved.png spline_polyline.png
+
+MPNG = plugins.png sdlshapes.png $(GRADPNG) $(STYLEPNG) $(TAPERPNG) $(SPLINEPNG)
 
 SGIF = Mcircle.gif Mdiamond.gif Msquare.gif box.gif \
       circle.gif diamond.gif doublecircle.gif \
@@ -194,6 +196,9 @@ $(STYLEPNG) : mkstyles.sh
 
 $(TAPERPNG) : mktapers.sh
 	./mktapers.sh $@
+
+$(SPLINEPNG) : mksplines.sh
+	./mksplines.sh $@
 
 clean :
 	rm -f mklang sdlshapes.ps sdlshapes.ppm html.html

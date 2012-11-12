@@ -29,6 +29,6 @@ DIR=${TAPER#${AH}_}  # dir
     exec 3>&-
 
     dot -T$FMT $F > $TGT
-#    rm -f $F
+    rm -f $F
 
 
