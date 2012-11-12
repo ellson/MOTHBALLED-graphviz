@@ -2757,7 +2757,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	}
 	else if (style & (STRIPED|WEDGED))  {
 	    fillcolor = findFill (n);
-            gvrender_set_fillcolor(job, fillcolor);
+            /* gvrender_set_fillcolor(job, fillcolor); */
 	    filled = TRUE;
 	}
 	else {
