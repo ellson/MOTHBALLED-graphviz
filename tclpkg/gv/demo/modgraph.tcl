@@ -24,11 +24,23 @@ gv::setv $N fontsize 8
 gv::setv $N fontname helvetica
 gv::setv $E arrowsize .4
 
+# prepare a subraph for rootnodes - populated later
+set sg [gv::graph $G rootnodes]
+gv::setv $sg rank same
+
+# extract graph from /proc/modules
 foreach rec [split $modules \n] {
   set n [gv::node $G [lindex $rec 0]]
   foreach usedby [split [lindex $rec 3] ,] {
     if {[string equal $usedby -] || [string equal $usedby {}]} {continue}
     set e [gv::edge $n [gv::node $G $usedby]]
+  }
+}
+
+# add all rootnodes to subgraph with rank=same
+for { set n [gv::firstnode $G] } { [ gv::ok $n] } { set n [gv::nextnode $G $n] } {
+  if { ! [ gv::ok [ gv::firstin $n ] ] } {
+    gv::node $sg [gv::nameof $n]
   }
 }
 
