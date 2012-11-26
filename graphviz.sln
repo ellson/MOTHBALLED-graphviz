@@ -252,6 +252,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gml2gv", "cmd\tools\gml2gv.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvmap", "cmd\gvmap\gvmap.vcproj", "{10015250-7CFF-45BE-90F3-13648727C0A0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "graphml2gv", "cmd\tools\graphml2gv.vcproj", "{DE3057E9-F665-4691-929D-4A7DDED63F73}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gv2gml", "cmd\tools\gv2gml.vcproj", "{58E6D7CC-5122-4830-B841-D6FB796B00E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -482,6 +486,14 @@ Global
 		{10015250-7CFF-45BE-90F3-13648727C0A0}.Debug|Win32.Build.0 = Debug|Win32
 		{10015250-7CFF-45BE-90F3-13648727C0A0}.Release|Win32.ActiveCfg = Release|Win32
 		{10015250-7CFF-45BE-90F3-13648727C0A0}.Release|Win32.Build.0 = Release|Win32
+		{DE3057E9-F665-4691-929D-4A7DDED63F73}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DE3057E9-F665-4691-929D-4A7DDED63F73}.Debug|Win32.Build.0 = Debug|Win32
+		{DE3057E9-F665-4691-929D-4A7DDED63F73}.Release|Win32.ActiveCfg = Release|Win32
+		{DE3057E9-F665-4691-929D-4A7DDED63F73}.Release|Win32.Build.0 = Release|Win32
+		{58E6D7CC-5122-4830-B841-D6FB796B00E8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{58E6D7CC-5122-4830-B841-D6FB796B00E8}.Debug|Win32.Build.0 = Debug|Win32
+		{58E6D7CC-5122-4830-B841-D6FB796B00E8}.Release|Win32.ActiveCfg = Release|Win32
+		{58E6D7CC-5122-4830-B841-D6FB796B00E8}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

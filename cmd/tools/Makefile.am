@@ -218,7 +218,8 @@ EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old bcomps.vcproj \
 	acyclic.vcproj bcomps.vcproj ccomps.vcproj dijkstra.vcproj gc.vcproj \
 	gv2gxl.vcproj gvcolor.vcproj gvgen.vcproj gvpack.vcproj gxl2gv.vcproj \
 	mm2gv.vcproj nop.vcproj sccmap.vcproj tred.vcproj unflatten.vcproj \
-	gmlscan.c gmlparse.c gmlparse.h y.output y.tab.c y.tab.h gml2gv.vcproj
+	gmlscan.c gmlparse.c gmlparse.h y.output y.tab.c y.tab.h gml2gv.vcproj \
+	graphml2gv.vcproj gv2gml.vcproj
 		
 CLEANFILES = stamp.h 
 
