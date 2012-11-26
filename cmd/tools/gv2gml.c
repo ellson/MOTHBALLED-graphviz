@@ -18,9 +18,7 @@
     #pragma comment( lib, "cgraph.lib" )
     #pragma comment( lib, "ingraphs.lib" )
     #pragma comment( lib, "cdt.lib" )
-
 #endif
-
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -134,7 +132,11 @@ parseStyle (char* s)
     char* ip;
     char* sep = " \t,";
 
-    s = strdup(s);
+#ifdef WIN32 
+	s = _strdup(s);
+#else
+	s = strdup(s);
+#endif
     for (ip = strtok (s, sep); ip; ip = strtok (NULL, sep)) {
 	if (streq(ip,"invis")) flags |= INVIS;
 	else if (streq(ip,"filled")) flags |= FILL;
