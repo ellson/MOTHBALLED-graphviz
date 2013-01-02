@@ -453,7 +453,7 @@ This field indicates which graph component uses the attribute.
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>fdp, neato only</TD> </TR>
  <TR><TD><A NAME=a:style HREF=#d:style>style</A>
 </TD><TD>ENCG</TD><TD><A HREF=#k:style>style</A>
-</TD><TD ALIGN="CENTER"></TD><TD></TD><TD></TD> </TR>
+</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:stylesheet HREF=#d:stylesheet>stylesheet</A>
 </TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg only</TD> </TR>
  <TR><TD><A NAME=a:tailURL HREF=#d:tailURL>tailURL</A>
@@ -1809,8 +1809,19 @@ This field indicates which graph component uses the attribute.
   initial placement is repeatable.
 
 <DT><A NAME=d:style HREF=#a:style><STRONG>style</STRONG></A>
-<DD>  Set style information for components of the graph. For cluster subgraphs, if "filled", the
+<DD>  Set style information for components of the graph. For cluster subgraphs, if <TT>style="filled"</TT>, the
   cluster box's background is filled.
+  <P>
+  If the default style attribute has been set for a component, an individual component can use
+  <TT>style=""</TT> to revert to the normal default. For example, if the graph has
+  <P>
+  <TT>edge [style="invis"]</TT>
+  <P>
+  making all edges invisible, a specific edge can overrride this via:
+  <P>
+  <TT>a -> b [style=""]</TT>
+  <P>
+  Of course, the component can also explicitly set its <TT>style</TT> attribute to the desired value.
 
 <DT><A NAME=d:stylesheet HREF=#a:stylesheet><STRONG>stylesheet</STRONG></A>
 <DD>  A URL or pathname specifying an XML style sheet, used in SVG output.

@@ -1199,9 +1199,20 @@ Parameter used to determine the initial layout of nodes. If unset, the
 nodes are randomly placed in a unit square with
 the same seed is always used for the random number generator, so the
 initial placement is repeatable.
-:style:ENCG:style:;
-Set style information for components of the graph. For cluster subgraphs, if "filled", the
+:style:ENCG:style:"";
+Set style information for components of the graph. For cluster subgraphs, if <TT>style="filled"</TT>, the
 cluster box's background is filled.
+<P>
+If the default style attribute has been set for a component, an individual component can use
+<TT>style=""</TT> to revert to the normal default. For example, if the graph has
+<P>
+<TT>edge [style="invis"]</TT>
+<P>
+making all edges invisible, a specific edge can overrride this via:
+<P>
+<TT>a -> b [style=""]</TT>
+<P>
+Of course, the component can also explicitly set its <TT>style</TT> attribute to the desired value.
 :stylesheet:G:string:"";  svg
 A URL or pathname specifying an XML style sheet, used in SVG output.
 :tailURL:E:escString:""; map,svg
