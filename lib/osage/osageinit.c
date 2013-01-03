@@ -348,7 +348,7 @@ mkClusters (Agraph_t* g, clist_t* pclist, Agraph_t* parent)
 #ifdef WITH_CGRAPH
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
         if (!strncmp(agnameof(subg), "cluster", 7)) {
-	    agbindrec(g, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
+	    agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
 	    do_graph_label (subg);
             addCluster(clist, subg);
             mkClusters(subg, NULL, subg);
