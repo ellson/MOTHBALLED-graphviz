@@ -33,7 +33,7 @@ scan.o scan.lo: scan.c grammar.h
 
 scan.c: $(top_srcdir)/lib/cgraph/scan.l
 	@LEX@ -i $(top_srcdir)/lib/cgraph/scan.l
-	@SED@ "s/yy/aag/g" < @LEX_OUTPUT_ROOT@.c > scan.c
+	@SED@ "s/yy/aag/g" < @LEX_OUTPUT_ROOT@.c | @SED@ '/extern.*isatty/d' > scan.c
 	rm @LEX_OUTPUT_ROOT@.c
 
 grammar.c: y.tab.c
