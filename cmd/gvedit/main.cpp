@@ -34,14 +34,11 @@
 
 
 #ifdef WIN32_DLL
-__declspec(dllimport)
-boolean MemTest;
 /*gvc.lib cgraph.lib*/
 #ifdef WITH_CGRAPH
 #pragma comment( lib, "cgraph.lib" )
 #else
 #pragma comment( lib, "graph.lib" )
-#pragma comment( lib, "ingraphs.lib" )
 #pragma comment( lib, "gvc.lib" )
 #pragma comment( lib, "glib-2.0.lib" )
 #pragma comment( lib, "pango-1.0.lib" )
@@ -51,6 +48,8 @@ boolean MemTest;
 
 #endif
 #pragma comment( lib, "gvc.lib" )
+#pragma comment( lib, "ingraphs.lib" )
+
 #endif
 
 static char *cmd;
