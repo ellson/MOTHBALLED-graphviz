@@ -33,7 +33,7 @@ REM *****************************************************
 wget -O %buildBaseDir%source.tar.gz %sourceUrl%
 7z x -y %buildBaseDir%source.tar.gz
 7z x -y %buildBaseDir%source.tar
-move /Y %buildBaseDir%graphviz-2.29.* graphviz2
+move /Y %buildBaseDir%graphviz-2.31.* graphviz2
 REM **************End of source download*****************
 
 
@@ -91,7 +91,7 @@ del %setupProjectDir%Release\%setupProjectName%.msi
 del %setupProjectDir%Release\*.msi
 devenv %setupProjectFile% -Clean release -Out %buildDir%packagingLog.txt
 devenv %setupProjectFile% -Build release -Out %buildDir%packagingLog.txt
-COPY /Y %setupProjectDir%Release\%setupProjectName%.msi %buildBaseDir%graphviz-2.29.%date:~10,4%%date:~4,2%%date:~7,2%.msi
+COPY /Y %setupProjectDir%Release\%setupProjectName%.msi %buildBaseDir%graphviz-2.31.%date:~10,4%%date:~4,2%%date:~7,2%.msi
 pscp -q *.msi graphviz-web://data/pub/graphviz/development/windows > pscpLog.txt 2>&1
 
 
