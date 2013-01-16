@@ -52,7 +52,9 @@ pdf_DATA = dot.1.pdf osage.1.pdf patchwork.1.pdf
 
 dot_SOURCES = dot.c no_builtins.c
 dot_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
-dot_LDADD = $(top_builddir)/lib/gvc/libgvc.la
+dot_LDADD = \
+	$(top_builddir)/lib/gvc/libgvc.la \
+	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la
 
 install-data-hook:
 	(cd $(DESTDIR)$(man1dir); for i in $(linkedman); do rm -f $$i; $(LN_S) dot.1 $$i; done;)

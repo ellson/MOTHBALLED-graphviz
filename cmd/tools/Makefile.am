@@ -49,7 +49,8 @@ gxl2gv_SOURCES = cvtgxl.c gv2gxl.c gxl2gv.c
 
 gxl2gv_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(top_builddir)/lib/cgraph/libcgraph.la @EXPAT_LIBS@ 
+	$(top_builddir)/lib/cgraph/libcgraph.la \
+	$(top_builddir)/lib/cdt/libcdt.la @EXPAT_LIBS@ 
 
 gxl2gv.1.pdf: $(srcdir)/gxl2gv.1
 	- @GROFF@ -Tps -man $(srcdir)/gxl2gv.1 | @PS2PDF@ - - >gxl2gv.1.pdf
@@ -141,6 +142,8 @@ gvpack_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=0
 gvpack_LDADD = \
 	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
+	$(top_builddir)/lib/cgraph/libcgraph.la \
+	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout.la
 
 gvpack.1.pdf: $(srcdir)/gvpack.1
@@ -183,7 +186,8 @@ gmlscan.c: $(top_srcdir)/cmd/tools/gmlscan.l
 	rm @LEX_OUTPUT_ROOT@.c
 
 gml2gv_LDADD = \
-	$(top_builddir)/lib/cgraph/libcgraph.la @MATH_LIBS@
+	$(top_builddir)/lib/cgraph/libcgraph.la \
+	$(top_builddir)/lib/cdt/libcdt.la @MATH_LIBS@
 
 gml2gv.1.pdf: gml2gv.1
 	- @GROFF@ -Tps -man gml2gv.1 | @PS2PDF@ - - >gml2gv.1.pdf
@@ -192,7 +196,8 @@ graphml2gv_SOURCES = graphml2gv.c
 
 graphml2gv_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(top_builddir)/lib/cgraph/libcgraph.la @EXPAT_LIBS@ 
+	$(top_builddir)/lib/cgraph/libcgraph.la \
+	$(top_builddir)/lib/cdt/libcdt.la @EXPAT_LIBS@ 
 
 graphml2gv.1.pdf: $(srcdir)/graphml2gv.1
 	- @GROFF@ -Tps -man $(srcdir)/graphml2gv.1 | @PS2PDF@ - - >graphml2gv.1.pdf
@@ -201,7 +206,8 @@ dijkstra_SOURCES = dijkstra.c
 
 dijkstra_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(top_builddir)/lib/cgraph/libcgraph.la
+	$(top_builddir)/lib/cgraph/libcgraph.la \
+	$(top_builddir)/lib/cdt/libcdt.la
 
 dijkstra.1.pdf: $(srcdir)/dijkstra.1
 	- @GROFF@ -Tps -man $(srcdir)/dijkstra.1 | @PS2PDF@ - - >dijkstra.1.pdf
