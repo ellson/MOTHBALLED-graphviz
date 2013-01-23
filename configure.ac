@@ -687,7 +687,7 @@ else
     if test `$SWIG -help 2>&1 | $EGREP -c '\-guile *- Generate'` == 0; then
       use_guile="No (swig does not support -guile option)"
     else
-      AC_CHECK_PROG(GUILE,guile,guile)
+      AC_CHECK_PROGS(GUILE,guile guile1.8)
       if test "x$GUILE" == "x"; then
         use_guile="No (guile not available)"
       else
@@ -712,7 +712,12 @@ else
           PKG_CHECK_MODULES([GUILE],
 		[guile >= "$GUILE_VERSION_MAJOR.$GUILE_VERSION_MINOR"],
 		GUILE_INCLUDES="$GUILE_CFLAGS",
-		false)
+          	[
+			PKG_CHECK_MODULES([GUILE],
+			[guile-1.8 >= "$GUILE_VERSION_MAJOR.$GUILE_VERSION_MINOR"],
+			GUILE_INCLUDES="$GUILE_CFLAGS",
+			false)
+		])
           ac_save_CFLAGS="$CFLAGS"
           ac_save_CPPFLAGS="$CPPFLAGS"
           CFLAGS="$CFLAGS $GUILE_INCLUDES"
@@ -1537,7 +1542,7 @@ else
     if test `$SWIG -help 2>&1 | $EGREP -c '\-ruby *- Generate'` == 0; then
       use_ruby="No (swig does not support -ruby option)"
     else
-      PKG_CHECK_MODULES(RUBY, [ruby],[
+      PKG_CHECK_MODULES([RUBY], [ruby],[
 	AC_CHECK_PROG(RUBY,ruby,ruby)
         if test "x$RUBY" == "x"; then
           use_ruby="No (ruby not available)"
@@ -1545,7 +1550,7 @@ else
           RUBY_INSTALL_DIR="`$RUBY $srcdir/config/config_ruby.rb vendorarchdir`"
 	fi
       ],[
-        PKG_CHECK_MODULES(RUBY, [ruby-1.9],[
+        PKG_CHECK_MODULES([RUBY], [ruby-1.9],[
 	  AC_CHECK_PROG(RUBY,ruby,ruby)
           if test "x$RUBY" == "x"; then
             use_ruby="No (ruby not available)"
