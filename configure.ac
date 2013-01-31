@@ -2209,15 +2209,19 @@ AC_ARG_WITH(lasi,
 if test "x$with_lasi" != "xyes"; then
   use_lasi="No (disabled)"
 else
-  PKG_CHECK_MODULES(LASI, [lasi],[
-    use_lasi="Yes"
-    AC_DEFINE_UNQUOTED(HAVE_LASI,1,
-      [Define if you have the lasi library])
-    AC_SUBST([LASI_CFLAGS])
-    AC_SUBST([LASI_LIBS])
-  ],[
-    use_lasi="No (lasi library not available)"
-  ])
+  if test "x$use_pangocairo" != "xYes"; then
+    use_lasi="No (missing pangocairo support)"
+  else
+    PKG_CHECK_MODULES(LASI, [lasi],[
+      use_lasi="Yes"
+      AC_DEFINE_UNQUOTED(HAVE_LASI,1,
+        [Define if you have the lasi library])
+      AC_SUBST([LASI_CFLAGS])
+      AC_SUBST([LASI_LIBS])
+    ],[
+      use_lasi="No (lasi library not available)"
+    ])
+  fi
 fi
 AM_CONDITIONAL(WITH_LASI, [test "x$use_lasi" == "xYes"])
 
