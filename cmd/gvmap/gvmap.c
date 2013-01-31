@@ -190,6 +190,7 @@ static char* usestr =
        6 : sequential single hue red \n\
        7 : sequential single hue lighter red \n\
        8 : light grey\n\
+    -c_opacity=xx - 2-character hex string for opacity of polygons\n\
     -C k - generate at most k clusters. (0)\n\
     -d s - seed used to calculate Fielder vector for optimal coloring\n\
     -e   - show edges\n\
