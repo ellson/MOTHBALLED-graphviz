@@ -36,7 +36,7 @@
   # Canonical machine
 MACH=$(uname -s).$(uname -m)
   # Default location of graphviz tree
-DFLTROOT=/Users/north/src/graphviz2
+DFLTROOT=/Users/north/src/graphviz
   # Quiet diff : usually diff -q
 QDIFF="diff -q"
   # Root of common libraries and fonts
