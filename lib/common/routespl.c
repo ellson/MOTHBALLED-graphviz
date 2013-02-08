@@ -213,11 +213,11 @@ static void psprintinit (int begin)
 
 static int debugleveln(edge_t* realedge, int i)
 {
-    return (GD_showboxes(realedge->head->graph) == i ||
-	    GD_showboxes(realedge->tail->graph) == i ||
+    return (GD_showboxes(agraphof(aghead(realedge))) == i ||
+	    GD_showboxes(agraphof(agtail(realedge))) == i ||
 	    ED_showboxes(realedge) == i ||
-	    ND_showboxes(realedge->head) == i ||
-	    ND_showboxes(realedge->tail) == i);
+	    ND_showboxes(aghead(realedge)) == i ||
+	    ND_showboxes(agtail(realedge)) == i);
 }
 #endif  /* DEBUG */
 
@@ -639,11 +639,11 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
     *npoints = spl.pn;
 
 #ifdef DEBUG
-    if (GD_showboxes(realedge->head->graph) == 2 ||
-	GD_showboxes(realedge->tail->graph) == 2 ||
+    if (GD_showboxes(agraphof(aghead(realedge))) == 2 ||
+	GD_showboxes(agraphof(agtail(realedge))) == 2 ||
 	ED_showboxes(realedge) == 2 ||
-	ND_showboxes(realedge->head) == 2 ||
-	ND_showboxes(realedge->tail) == 2)
+	ND_showboxes(aghead(realedge)) == 2 ||
+	ND_showboxes(agtail(realedge)) == 2)
 	printboxes(boxn, boxes);
 #endif
 

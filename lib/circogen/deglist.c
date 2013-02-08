@@ -153,7 +153,7 @@ void printDeglist(deglist_t * dl)
 	if (np)
 	    fprintf(stderr, " (%d)", ip->deg);
 	for (; np; np = ND_next(np)) {
-	    fprintf(stderr, " %s", np->name);
+	    fprintf(stderr, " %s", agnameof(np));
 	}
 	fprintf(stderr, "\n");
     }

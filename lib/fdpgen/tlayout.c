@@ -152,7 +152,8 @@ static int init_params(graph_t * g, xparams * xpms)
 #ifdef DEBUG
 	if (Verbose) {
 	    prIndent();
-	    fprintf(stderr, "tlayout %s(%s) : T0 %f\n", g->name, GORIG(g->root)->name, T_T0);
+	    fprintf(stderr, "tlayout %s", agnameof(g));
+	    fprintf(stderr, "(%s) : T0 %f\n", agnameof(GORIG(g->root)), T_T0);
 	}
 #endif
 	ret = 1;
@@ -225,7 +226,7 @@ void fdp_initParams(graph_t * g)
 	prIndent();
 	fprintf(stderr,
 		"Params %s : K %f T0 %f Tfact %f maxIters %d unscaled %d\n",
-		g->name, 
+		agnameof(g),
                 T_K, T_T0, T_Tfact, T_maxIters, T_unscaled);
     }
 #endif

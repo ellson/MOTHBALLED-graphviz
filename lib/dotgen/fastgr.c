@@ -79,14 +79,14 @@ edge_t *fast_edge(edge_t * e)
     for (i = 0; (f = ND_out(agtail(e)).list[i]); i++) {
 	if (e == f) {
 	    fprintf(stderr, "duplicate fast edge\n");
-	    return;
+	    return 0;
 	}
 	assert(aghead(e) != aghead(f));
     }
     for (i = 0; (f = ND_in(aghead(e)).list[i]); i++) {
 	if (e == f) {
 	    fprintf(stderr, "duplicate fast edge\n");
-	    return;
+	    return 0;
 	}
 	assert(agtail(e) != agtail(f));
     }
@@ -289,7 +289,7 @@ static char *NAME(node_t * n)
 {
     static char buf[20];
     if (ND_node_type(n) == NORMAL)
-	return n->name;
+	return agnameof(n);
     sprintf(buf, "V%p", n);
     return buf;
 }
@@ -302,22 +302,22 @@ void fastgr(graph_t * g)
 
     for (n = GD_nlist(g); n; n = ND_next(n)) {
 	fprintf(stderr, "%s %d: (", NAME(n), ND_rank(n));
-	for (i = 0; e = ND_out(n).list[i]; i++) {
+	for (i = 0; (e = ND_out(n).list[i]); i++) {
 	    fprintf(stderr, " %s:%d", NAME(aghead(e)), ED_count(e));
 	    w = aghead(e);
 	    if (g == g->root) {
-		for (j = 0; f = ND_in(w).list[j]; j++)
+		for (j = 0; (f = ND_in(w).list[j]); j++)
 		    if (e == f)
 			break;
 		assert(f != NULL);
 	    }
 	}
 	fprintf(stderr, " ) (");
-	for (i = 0; e = ND_in(n).list[i]; i++) {
+	for (i = 0; (e = ND_in(n).list[i]); i++) {
 	    fprintf(stderr, " %s:%d", NAME(agtail(e)), ED_count(e));
 	    w = agtail(e);
 	    if (g == g->root) {
-		for (j = 0; f = ND_out(w).list[j]; j++)
+		for (j = 0; (f = ND_out(w).list[j]); j++)
 		    if (e == f)
 			break;
 		assert(f != NULL);

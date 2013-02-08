@@ -22,7 +22,7 @@ extern "C" {
 
 #include <fdp.h>
 #include <stdio.h>
-#include <graph.h>
+#include <cgraph.h>
 
     extern double Scale;
     extern void outputGraph(Agraph_t *, FILE *, int);

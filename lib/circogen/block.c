@@ -98,17 +98,17 @@ void printBlocklist(blocklist_t * snl)
 	Agnode_t *n;
 	char *p;
 	Agraph_t *g = bp->sub_graph;
-	fprintf(stderr, "block=%s\n", g->name);
+	fprintf(stderr, "block=%s\n", agnameof(g));
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    Agedge_t *e;
 	    if (PARENT(n))
-		p = PARENT(n)->name;
+		p = agnameof(PARENT(n));
 	    else
 		p = "<nil>";
-	    fprintf(stderr, "  %s (%d %s)\n", n->name, VAL(n), p);
+	    fprintf(stderr, "  %s (%d %s)\n", agnameof(n), VAL(n), p);
 	    for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
-		fprintf(stderr, "    %s--%s\n", e->tail->name,
-			e->head->name);
+		fprintf(stderr, "    %s--", agnameof(agtail(e)));
+		fprintf(stderr, "%s\n", agnameof(aghead(e)));
 	    }
 	}
     }

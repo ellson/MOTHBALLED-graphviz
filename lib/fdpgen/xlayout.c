@@ -57,6 +57,12 @@ static expand_t X_marg;
 static double X_nonov;
 static double X_ov;
 
+void pr2graphs(Agraph_t *g0, Agraph_t *g1)
+{
+	fprintf(stderr,"%s",agnameof(g0));
+	fprintf(stderr,"(%s)",agnameof(g1));
+}
+
 static double RAD(Agnode_t * n)
 {
     double w = WD2(n);
@@ -81,9 +87,9 @@ static void xinit_params(graph_t* g, int n, xparams * xpms)
 #ifdef DEBUG
     if (Verbose) {
 	prIndent();
-	fprintf(stderr,
-		"xLayout %s(%s) : n = %d K = %f T0 = %f loop %d C %f\n", 
-		g->name, GORIG(g->root)->name,
+	fprintf(stderr, "xLayout ");
+	pr2graphs(g,GORIG(agroot(g)));
+	fprintf(stderr, " : n = %d K = %f T0 = %f loop %d C %f\n", 
 		xParams.numIters, xParams.K, xParams.T0, xParams.loopcnt,
 		xParams.C);
     }
@@ -476,8 +482,9 @@ static int x_layout(graph_t * g, xparams * pxpms, int tries)
 #ifdef DEBUG
 	if (Verbose) {
 	    prIndent();
-	    fprintf(stderr, "try %d (%d): %d overlaps on %s(%s) \n", try, tries, ov,
-		    g->name, GORIG(g->root)->name);
+	    fprintf(stderr, "try %d (%d): %d overlaps on ", try, tries, ov);
+		pr2graphs(g,GORIG(agroot(g)));
+		fprintf(stderr," \n");
 	}
 #endif
 
@@ -494,8 +501,9 @@ static int x_layout(graph_t * g, xparams * pxpms, int tries)
     }
 #ifdef DEBUG
     if (Verbose && ov)
-	fprintf(stderr, "Warning: %d overlaps remain on %s(%s)\n", ov,
-		g->name, GORIG(g->root)->name);
+	fprintf(stderr, "Warning: %d overlaps remain on ", ov);
+	pr2graphs(g,GORIG(agroot(g)));
+	fprintf(stderr,"\n");
 #endif
 
     return ov;

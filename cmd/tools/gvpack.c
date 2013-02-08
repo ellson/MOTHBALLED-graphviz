@@ -948,13 +948,14 @@ void dump(Agraph_t * g)
     edge_t *e;
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
-	fprintf(stderr, "%s\n", v->name);
+	fprintf(stderr, "%s\n", agnameof(v));
 	for (e = agfstout(g, v); e; e = agnxtout(g, e)) {
 	    fprintf(stderr, "  %s -- %s\n", agnameof(agtail(e)), agnameof(aghead(e)));
 	}
     }
 }
 
+#ifndef WITH_CGRAPH
 void dumps(Agraph_t * g)
 {
     graph_t *subg;
@@ -970,6 +971,17 @@ void dumps(Agraph_t * g)
 	fprintf(stderr, "====\n");
     }
 }
+#else
+void dumps(Agraph_t * g)
+{
+    graph_t *subg;
+
+    for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
+	dump(subg);
+	fprintf(stderr, "====\n");
+    }
+}
+#endif
 #endif
 
 int main(int argc, char *argv[])

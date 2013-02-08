@@ -87,7 +87,8 @@ void print_edge(edgelist * list)
     for (temp = (edgelistitem *) dtflatten(list); temp;
 	 temp = (edgelistitem *) dtlink(list, (Dtlink_t *) temp)) {
 	ep = temp->edge;
-	fprintf(stderr, "%s--%s \n", ep->tail->name, ep->head->name);
+	fprintf(stderr, "%s--", agnameof(agtail(ep)));
+	fprintf(stderr, "%s \n", agnameof(aghead(ep)));
     }
     fputs("\n", stderr);
 }

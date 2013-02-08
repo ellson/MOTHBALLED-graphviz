@@ -236,10 +236,10 @@ dumpRanks (graph_t * g)
 	for (j = 0; j < rank[i].n; j++) {
 	    u = rank[i].v[j];
             rcnt++;
-	    if (streq(u->name,"virtual"))
+	    if (streq(agnameof(u),"virtual"))
 	        fprintf (stderr, " %x", u);
 	    else
-	        fprintf (stderr, " %s", u->name);
+	        fprintf (stderr, " %s", agnameof(u));
       
         }
 	fprintf (stderr, "\n");

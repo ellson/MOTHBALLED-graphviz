@@ -342,7 +342,7 @@ static int feasible_tree(void)
 		    if (Tree_node.list[i] == n)
 			break;
 		if (i >= Tree_node.size)
-		    fprintf(stderr, "\t%s\n", n->name);
+		    fprintf(stderr, "\t%s\n", agnameof(n));
 	    }
 #endif
 	    return 1;
@@ -874,24 +874,24 @@ static void dump_graph (graph_t* g)
     edge_t *e;
     node_t *n,*w;
     FILE* fp = fopen ("ns.gv", "w");
-    fprintf (fp, "digraph %s {\n", g->name);
+    fprintf (fp, "digraph %s {\n", agnameof(g));
     for (n = GD_nlist(g); n; n = ND_next(n)) {
-	if (streq(n->name,"virtual"))
+	if (streq(agnameof(n),"virtual"))
 	    fprintf (fp, "  \"%p\"\n", n);
 	else
-	    fprintf (fp, "  \"%s\"\n", n->name);
+	    fprintf (fp, "  \"%s\"\n", agnameof(n));
     }
     for (n = GD_nlist(g); n; n = ND_next(n)) {
 	for (i = 0; (e = ND_out(n).list[i]); i++) {
-	    if (streq(n->name,"virtual"))
+	    if (streq(agnameof(n),"virtual"))
 		fprintf (fp, "  \"%p\"", n);
 	    else
-		fprintf (fp, "  \"%s\"", n->name);
+		fprintf (fp, "  \"%s\"", agnameof(n));
 	    w = aghead(e);
-	    if (streq(w->name,"virtual"))
+	    if (streq(agnameof(w),"virtual"))
 		fprintf (fp, " -> \"%p\"\n", w);
 	    else
-		fprintf (fp, " -> \"%s\"\n", w->name);
+		fprintf (fp, " -> \"%s\"\n", agnameof(w));
 	}
     }
 

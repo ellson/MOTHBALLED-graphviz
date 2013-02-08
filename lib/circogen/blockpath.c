@@ -723,8 +723,10 @@ void prTree(Agraph_t * g)
     Agnode_t *n;
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	if (TPARENT(n))
-	    fprintf(stderr, "%s -> %s\n", n->name, TPARENT(n)->name);
+	if (TPARENT(n)) {
+			fprintf(stderr, "%s ", agnameof(n));
+			fprintf(stderr, "-> %s\n", agnameof(TPARENT(n)));
+		}
     }
 }
 #endif

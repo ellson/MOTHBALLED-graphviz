@@ -137,11 +137,12 @@ void prGraph(Agraph_t * g)
     Agnode_t *n;
     Agedge_t *e;
 
-    fprintf(stderr, "%s\n", g->name);
+    fprintf(stderr, "%s\n", agnameof(g));
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	fprintf(stderr, "%s (%x)\n", n->name, (unsigned int) n);
+	fprintf(stderr, "%s (%x)\n", agnameof(n), (unsigned int) n);
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    fprintf(stderr, "%s -- %s (%x)\n", n->name, e->head->name,
+	    fprintf(stderr, "%s", agnameof(n));
+	    fprintf(stderr, " -- %s (%x)\n", agnameof(aghead(e)),
 		    (unsigned int) e);
 	}
     }
@@ -162,31 +163,31 @@ void prData(Agnode_t * n, int pass)
     int dist1, dist2;
 
     if (PARENT(n))
-	pname = PARENT(n)->name;
+	pname = agnameof(PARENT(n));
     else
 	pname = "<P0>";
     if (BLOCK(n))
-	bname = BLOCK(n)->sub_graph->name;
+	bname = agnameof(BLOCK(n)->sub_graph);
     else
 	pname = "<B0>";
-    fprintf(stderr, "%s: %x %s %s ", n->name, FLAGS(n), pname, bname);
+    fprintf(stderr, "%s: %x %s %s ", agnameof(n), FLAGS(n), pname, bname);
     switch (pass) {
     case 0:
 	fprintf(stderr, "%d %d\n", VAL(n), LOWVAL(n));
 	break;
     case 1:
 	if (TPARENT(n))
-	    tname = TPARENT(n)->name;
+	    tname = agnameof(TPARENT(n));
 	else
 	    tname = "<ROOT>";
 	dist1 = DISTONE(n);
 	if (dist1 > 0)
-	    name1 = LEAFONE(n)->name;
+	    name1 = agnameof(LEAFONE(n));
 	else
 	    name1 = "<null>";
 	dist2 = DISTTWO(n);
 	if (dist2 > 0)
-	    name2 = LEAFTWO(n)->name;
+	    name2 = agnameof(LEAFTWO(n));
 	else
 	    name2 = "<null>";
 	fprintf(stderr, "%s %s %d %s %d\n", tname, name1, dist1, name2,

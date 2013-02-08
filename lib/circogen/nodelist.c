@@ -313,10 +313,10 @@ int node_position(nodelist_t * list, Agnode_t * n)
 #ifdef OLD
     nodelistitem_t *temp;
     int i = 0;
-    char *name = n->name;
+    char *name = agnameof(n);
 
     for (temp = list->first; temp; temp = temp->next) {
-	if (temp->curr->name == name) {
+	if (streq(agnameof(temp->curr),name)) {
 	    return i;
 	}
 	i++;
@@ -360,7 +360,7 @@ void printNodelist(nodelist_t * list)
 
     temp = list->first;
     while (temp != NULL) {
-	fprintf(stderr, "%s ", temp->curr->name);
+	fprintf(stderr, "%s ", agnameof(temp->curr));
 	temp = temp->next;
     }
     fputs("\n", stderr);

@@ -46,6 +46,12 @@ void prIndent(void)
 	fputs("  ", stderr);
 }
 
+void prEdge(edge_t *e,char *s)
+{
+	fprintf(stderr,"%s --", agnameof(agtail(e)));
+	fprintf(stderr,"%s%s", agnameof(aghead(e)),s);
+}
+
 static void dumpBB(graph_t * g)
 {
     boxf bb;
@@ -73,7 +79,7 @@ static void dumpSG(graph_t * g)
     for (i = 1; i <= GD_n_cluster(g); i++) {
 	subg = (GD_clust(g))[i];
 	prIndent();
-	fprintf(stderr, "  subgraph %s : %d nodes\n", subg->name,
+	fprintf(stderr, "  subgraph %s : %d nodes\n", agnameof(subg),
 		agnnodes(subg));
 	dumpBB(subg);
 	incInd ();
@@ -96,27 +102,26 @@ void dumpE(graph_t * g, int derived)
     int deg;
 
     prIndent();
-    fprintf(stderr, "Graph %s : %d nodes %d edges\n", g->name, agnnodes(g),
+    fprintf(stderr, "Graph %s : %d nodes %d edges\n", agnameof(g), agnnodes(g),
 	    agnedges(g));
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	deg = 0;
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    deg++;
 	    prIndent();
-	    fprintf(stderr, " %s -- %s\n", e->tail->name, e->head->name);
+		prEdge(e,"\n");
 	    if (derived) {
 		for (i = 0, ep = (Agedge_t **) ED_to_virt(e);
 		     i < ED_count(e); i++, ep++) {
 		    el = *ep;
 		    prIndent();
-		    fprintf(stderr, "   %s -- %s\n", el->tail->name,
-			    el->head->name);
+			prEdge(el,"\n");
 		}
 	    }
 	}
 	if (deg == 0) {		/* no out edges */
 	    if (!agfstin(g, n))	/* no in edges */
-		fprintf(stderr, " %s\n", n->name);
+		fprintf(stderr, " %s\n", agnameof(n));
 	}
     }
     if (!derived) {
@@ -125,8 +130,8 @@ void dumpE(graph_t * g, int derived)
 	    int sz = NPORTS(g);
 	    fprintf(stderr, "   %d ports\n", sz);
 	    while (pp->e) {
-		fprintf(stderr, "   %s : %s -- %s\n", pp->n->name,
-			pp->e->tail->name, pp->e->head->name);
+		fprintf(stderr, "   %s : ", agnameof(pp->n));
+		prEdge(pp->e,"\n");
 		pp++;
 	    }
 	}
@@ -145,7 +150,7 @@ void dump(graph_t * g, int level, int doBB)
     if (Verbose < level)
 	return;
     prIndent();
-    fprintf(stderr, "Graph %s : %d nodes\n", g->name, agnnodes(g));
+    fprintf(stderr, "Graph %s : %d nodes\n", agnameof(g), agnnodes(g));
     dumpBB(g);
     if (Verbose > level) {
 	incInd();
@@ -163,11 +168,11 @@ void dump(graph_t * g, int level, int doBB)
 		bb.UR.x = bb.LL.x + w;
 		bb.UR.y = bb.LL.y + h;
 		fprintf(stderr, "%s: (%f,%f) ((%f,%f) , (%f,%f))\n",
-			n->name, pos.x, pos.y, bb.LL.x, bb.LL.y, bb.UR.x,
+			agnameof(n), pos.x, pos.y, bb.LL.x, bb.LL.y, bb.UR.x,
 			bb.UR.y);
 	    } else {
 		fprintf(stderr, "%s: (%f,%f) (%f,%f) \n",
-			n->name, pos.x, pos.y, w, h);
+			agnameof(n), pos.x, pos.y, w, h);
 	    }
 	}
     }
@@ -269,8 +274,6 @@ static void pswrite(Agraph_t * g, FILE * fp, int expMode)
     Agnode_t *n;
     Agnode_t *h;
     Agedge_t *e;
-    Agnodeinfo_t *data;
-    Agnodeinfo_t *hdata;
     double minx, miny, maxx, maxy;
     double scale, width, height;
     int do_arrow;
@@ -292,22 +295,20 @@ static void pswrite(Agraph_t * g, FILE * fp, int expMode)
     do_arrow = 0;
 
     n = agfstnode(g);
-    data = &(n->u);
-    minx = data->pos[0];
-    miny = data->pos[1];
-    maxx = data->pos[0];
-    maxy = data->pos[1];
+    minx = ND_pos(n)[0];
+    miny = ND_pos(n)[1];
+    maxx = ND_pos(n)[0];
+    maxy = ND_pos(n)[1];
     n = agnxtnode(g, n);
     for (; n; n = agnxtnode(g, n)) {
-	data = &(n->u);
-	if (data->pos[0] < minx)
-	    minx = data->pos[0];
-	if (data->pos[1] < miny)
-	    miny = data->pos[1];
-	if (data->pos[0] > maxx)
-	    maxx = data->pos[0];
-	if (data->pos[1] > maxy)
-	    maxy = data->pos[1];
+	if (ND_pos(n)[0] < minx)
+	    minx = ND_pos(n)[0];
+	if (ND_pos(n)[1] < miny)
+	    miny = ND_pos(n)[1];
+	if (ND_pos(n)[0] > maxx)
+	    maxx = ND_pos(n)[0];
+	if (ND_pos(n)[1] > maxy)
+	    maxy = ND_pos(n)[1];
     }
 
     /* Convert to points
@@ -382,29 +383,26 @@ static void pswrite(Agraph_t * g, FILE * fp, int expMode)
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (IS_PORT(n)) {
 	    double r;
-	    data = &(n->u);
-	    r = sqrt(data->pos[0] * data->pos[0] +
-		     data->pos[1] * data->pos[1]);
+	    r = sqrt(ND_pos(n)[0] * ND_pos(n)[0] +
+		     ND_pos(n)[1] * ND_pos(n)[1]);
 	    fprintf(fp, "0 0 %f inch drawCircle\n", r);
 	    break;
 	}
     }
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	data = &(n->u);
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    h = e->head;
-	    hdata = &(h->u);
+	    h = aghead(e);
 	    fprintf(fp, "%f inch %f inch moveto %f inch %f inch lineto\n",
-		    data->pos[0], data->pos[1], hdata->pos[0],
-		    hdata->pos[1]);
+		    ND_pos(n)[0], ND_pos(n)[1], ND_pos(h)[0],
+		    ND_pos(h)[1]);
 	    fprintf(fp, "stroke\n");
 	    if (do_arrow) {
 		theta =
-		    atan2(data->pos[1] - hdata->pos[1],
-			  data->pos[0] - hdata->pos[0]);
+		    atan2(ND_pos(n)[1] - ND_pos(h)[1],
+			  ND_pos(n)[0] - ND_pos(h)[0]);
 		fprintf(fp, "%f %f %.2f %.2f %.2f doArrow\n",
-			hdata->pos[0], hdata->pos[1], DEGREES(theta),
+			ND_pos(h)[0], ND_pos(h)[1], DEGREES(theta),
 			arrow_l, arrow_w);
 	    }
 
@@ -423,18 +421,17 @@ static void pswrite(Agraph_t * g, FILE * fp, int expMode)
     }
 #else
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	data = &(n->u);
-	fprintf(fp, "%% %s\n", n->name);
+	fprintf(fp, "%% %s\n", agnameof(n));
 	if (expMode) {
 	    double wd, ht;
 	    double r;
-	    wd = data->width;
-	    ht = data->height;
+	    wd = ND_width(n);
+	    ht = ND_height(n);
 	    r = sqrt((wd * wd / 4) + ht * ht / 4);
 	    fprintf(fp, "%f inch %f inch %f inch %f inch doBox\n", wd, ht,
-		    data->pos[0] - (wd / 2), data->pos[1] - (ht / 2));
+		    ND_pos(n)[0] - (wd / 2), ND_pos(n)[1] - (ht / 2));
 	    fprintf(fp, "%f inch %f inch %f inch drawCircle\n",
-		    data->pos[0], data->pos[1], r);
+		    ND_pos(n)[0], ND_pos(n)[1], r);
 	} else {
 	    if (IS_PORT(n)) {
 		if (!portColor) {
@@ -448,27 +445,25 @@ static void pswrite(Agraph_t * g, FILE * fp, int expMode)
 		}
 	    }
 	}
-	fprintf(fp, "%f inch %f inch %f fillCircle\n", data->pos[0],
-		data->pos[1], 3 / scale);
+	fprintf(fp, "%f inch %f inch %f fillCircle\n", ND_pos(n)[0],
+		ND_pos(n)[1], 3 / scale);
     }
 #endif
 
     fprintf(fp, "0.667 1.000 1.000 sethsbcolor\n");
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	data = &(n->u);
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    h = e->head;
-	    hdata = &(h->u);
+	    h = aghead(e);
 	    fprintf(fp, "%f inch %f inch moveto %f inch %f inch lineto\n",
-		    data->pos[0], data->pos[1], hdata->pos[0],
-		    hdata->pos[1]);
+		    ND_pos(n)[0], ND_pos(n)[1], ND_pos(h)[0],
+		    ND_pos(h)[1]);
 	    fprintf(fp, "stroke\n");
 	    if (do_arrow) {
 		theta =
-		    atan2(data->pos[1] - hdata->pos[1],
-			  data->pos[0] - hdata->pos[0]);
+		    atan2(ND_pos(n)[1] - ND_pos(h)[1],
+			  ND_pos(n)[0] - ND_pos(h)[0]);
 		fprintf(fp, "%f %f %.2f %.2f %.2f doArrow\n",
-			hdata->pos[0], hdata->pos[1], DEGREES(theta),
+			ND_pos(h)[0], ND_pos(h)[1], DEGREES(theta),
 			arrow_l, arrow_w);
 	    }
 

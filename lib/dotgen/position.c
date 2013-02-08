@@ -47,7 +47,8 @@ dumpNS (graph_t * g)
 	el = ND_out(n);
 	for (i = 0; i < el.size; i++) {
 	    e = el.list[i];
-	    fprintf (stderr, "%s(%x) -> %s(%x) : %d\n", agtail(e)->name,agtail(e), aghead(e)->name, aghead(e),
+	    fprintf (stderr, "%s(%x) -> ", agnameof(agtail(e)),agtail(e));
+	    fprintf (stderr, "%s(%x) : %d\n", agnameof(aghead(e)), aghead(e),
 		ED_minlen(e));
 	}
 	n = ND_next(n); 

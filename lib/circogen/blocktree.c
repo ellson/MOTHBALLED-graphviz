@@ -257,9 +257,9 @@ void print_blocktree(block_t * sn, int depth)
 
     indent(depth);
     g = sn->sub_graph;
-    fprintf(stderr, "%s:", g->name);
+    fprintf(stderr, "%s:", agnameof(g));
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	fprintf(stderr, " %s", n->name);
+	fprintf(stderr, " %s", agnameof(n));
     }
     fputs("\n", stderr);
 

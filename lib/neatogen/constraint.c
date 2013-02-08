@@ -188,13 +188,13 @@ validate(graph_t * g)
     for (n = GD_nlist(g);n; n = ND_next(n)) {
       assert(outdegree(g,n) == ND_out(n).size);
       for (i = 0; (e = ND_out(n).list[i]); i++) {
-        assert(e->tail == n);
-        assert( e == agfindedge(g, n, e->head)); 
+        assert(agtail(e) == n);
+        assert( e == agfindedge(g, n, aghead(e))); 
       }
       assert(indegree(g,n) == ND_in(n).size);
       for (i = 0; (e = ND_in(n).list[i]); i++) {
-        assert(e->head == n);
-        assert( e == agfindedge(g, e->tail, n)); 
+        assert(aghead(e) == n);
+        assert( e == agfindedge(g, agtail(e), n)); 
       }
       cnt++;
     }
@@ -580,10 +580,18 @@ static void constrainY(graph_t* g, nitem* nlist, int nnodes, intersectfn ifn,
 	edge_t *e;
 	for (n = agfstnode(cg); n; n = agnxtnode(cg, n)) {
 	    sprintf(buf, "%d", ND_rank(n));
+#ifndef WITH_CGRAPH
 	    agxset(n, rksym->index, buf);
+#else
+	    agxset(n, rksym, buf);
+#endif
 	    for (e = agfstedge(cg, n); e; e = agnxtedge(cg, e, n)) {
 		sprintf(buf, "%d", ED_minlen(e));
+#ifndef WITH_CGRAPH
 		agxset(e, mlsym->index, buf);
+#else
+		agxset(e, mlsym, buf);
+#endif
 	    }
 	}
     }
