@@ -186,13 +186,11 @@ int main(int argc, char *argv[])
     }
     fprintf(fp, "};\n");
 
-#ifdef DEBUG
-    fprintf(fp, "\nstatic char* gprnames[] = {\n\t\"\",\n");
+    fprintf(fp, "\n#ifdef DEBUG\nstatic char* gprnames[] = {\n\t\"\",\n");
     for (recp = vals.next; recp; recp = recp->next) {
 	fprintf(fp, "\t\"%s\",\n", recp->symbol);
     }
-    fprintf(fp, "};\n");
-#endif
+    fprintf(fp, "};\n#endif\n");
 
     fprintf(fp, "\ntypedef unsigned short tctype;\n");
     fprintf(fp, "\nstatic tctype tchk[][2] = {\n\t{ 0, 0 },\n");
