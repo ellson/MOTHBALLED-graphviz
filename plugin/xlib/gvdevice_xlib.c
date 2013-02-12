@@ -47,6 +47,10 @@
 #include <fcntl.h>
 #endif
 
+#ifdef WITH_CGRAPH
+#include <poll.h>
+#endif
+
 #include "gvplugin_device.h"
 
 #include <cairo.h>
@@ -376,8 +380,19 @@ static int handle_stdin_events(GVJ_t *job, int stdin_fd)
 {
     int rc=0;
 
+#ifndef WITH_CGRAPH
     if (feof(stdin))
 	return -1;
+#else
+    struct pollfd ufds[2];
+	int r;
+    ufds[0].fd = stdin_fd;
+    ufds[0].events = POLLIN;
+	ufds[0].revents = 0;
+    r = poll(ufds,1,0);
+	if (ufds[0].revents == POLLIN) return -1;
+	/* Beware of bugs in the above code; I have only proved it correct, not tried it. */
+#endif
     (job->callbacks->read)(job, job->input_filename, job->layout_type);
     
     rc++;
