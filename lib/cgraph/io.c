@@ -68,7 +68,11 @@ static int iofreadiconv(void *chan, char *buf, int bufsize)
 
 static int iofread(void *chan, char *buf, int bufsize)
 {
-    return read(fileno((FILE *) chan), buf, bufsize);
+    if (fgets(buf, bufsize, (FILE*)chan))
+	return strlen(buf);
+    else
+	return 0;
+    /* return read(fileno((FILE *) chan), buf, bufsize); */
     /* return fread(buf, 1, bufsize, (FILE*)chan); */
 }
 
