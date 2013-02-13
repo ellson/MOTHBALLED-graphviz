@@ -18051,7 +18051,7 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Graphviz"
-        "ProductCode" = "8:{11CA1306-2BC1-481F-B903-0AD03A184365}"
+        "ProductCode" = "8:{884CF059-9A11-4DF7-A2A7-17EFE90B9278}"
         "PackageCode" = "8:{E9A13C33-940E-4F4A-AEAD-18128E2637BA}"
         "UpgradeCode" = "8:{6FCBADD9-3662-441D-A171-2A6D51538973}"
         "RestartWWWService" = "11:FALSE"
