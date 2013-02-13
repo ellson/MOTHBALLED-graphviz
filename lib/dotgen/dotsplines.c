@@ -1158,7 +1158,7 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0,
     tn = agtail(e0), hn = aghead(e0);
     for (i = 0; i < cnt; i++) {
 	e = edges[ind + i];
-	if (ND_label(e)) labels++;
+	if (ED_label(e)) labels++;
 	if (ED_tail_port(e).defined || ED_head_port(e).defined) ports = 1;
     }
 
