@@ -390,7 +390,7 @@ static int handle_stdin_events(GVJ_t *job, int stdin_fd)
     ufds[0].events = POLLIN;
 	ufds[0].revents = 0;
     r = poll(ufds,1,0);
-	if (ufds[0].revents == POLLIN) return -1;
+	if (ufds[0].revents & POLLIN) return -1;
 	/* Beware of bugs in the above code; I have only proved it correct, not tried it. */
 #endif
     (job->callbacks->read)(job, job->input_filename, job->layout_type);

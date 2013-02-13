@@ -1386,8 +1386,8 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
 	ED_minlen(e) = x;
 	/* ED_minlen(e) = cp->data.box.UR.x; */
 #if (DEBUG==2)
-	fprintf(stderr, "col edge %s -> %s %d\n", t->name, h->name,
-		ED_minlen(e));
+	fprintf(stderr, "col edge %s ", agnameof(t));
+	fprintf(stderr, "-> %s %d\n", agnameof(h), ED_minlen(e));
 #endif
 	elist_append(e, ND_out(t));
 	elist_append(e, ND_in(h));
