@@ -646,15 +646,20 @@ This field indicates which graph component uses the attribute.
   <P>
   For edges, the value
   can either be a single color or a <A HREF=#k:colorList>colorList</A>.
-  In the latter case, the edge is drawn using parallel splines or lines,
+  In the latter case, if colorList has no fractions,
+  the edge is drawn using parallel splines or lines,
   one for each color in the list, in the order given.
   The head arrow, if any, is drawn using the first color in the list,
   and the tail arrow, if any, the second color. This supports the common
   case of drawing opposing edges, but using parallel splines instead of
-  separately routed multiedges. For example, the graph
+  separately routed multiedges. 
+  If any fraction is used, the colors are drawn in series, with each color
+  being given roughly its specified fraction of the edge.
+  For example, the graph
   <PRE>
   digraph G {
     a -> b [dir=both color="red:blue"]
+    c -> d [dir=none color="green:red;0.25:blue"]
   }
   </PRE>
   yields<BR>
@@ -946,7 +951,7 @@ This field indicates which graph component uses the attribute.
 <DT><A NAME=d:id HREF=#a:id><STRONG>id</STRONG></A>
 <DD>  Allows the graph author to provide an id for graph objects which is to be included in the output.
   Normal "N", "E", "G" substitutions are applied.
-  If provided, it is the reponsiblity of the provider to keep
+  If provided, it is the responsiblity of the provider to keep
   its values sufficiently unique for its intended downstream use.
   Note, in particular, that "E" does not provide a unique id for multi-edges.
   If no id attribute is provided, then a unique internal id is used. However, 
