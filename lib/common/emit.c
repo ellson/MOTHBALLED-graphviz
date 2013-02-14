@@ -2052,7 +2052,7 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
     colorsegs_t* segs;
     colorseg_t* s;
     char* endcolor;
-    double sum;
+    double left;
     int first;  /* first segment with t > 0 */
 
     rv = parseSegs (colors, num, &segs);
@@ -2073,24 +2073,24 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
     
 
     for (i = 0; i < ED_spl(e)->size; i++) {
-	sum = 0;
+	left = 1;
 	bz = ED_spl(e)->list[i];
 	first = 1;
 	for (s = segs->segs; s->color; s++) {
 	    if (AEQ0(s->t)) continue;
     	    gvrender_set_pencolor(job, s->color);
-	    sum += s->t;
+	    left -= s->t;
 	    if (first) {
 		first = 0;
-		splitBSpline (&bz, sum, &bz_l, &bz_r);
+		splitBSpline (&bz, s->t, &bz_l, &bz_r);
 		gvrender_beziercurve(job, bz_l.list, bz_l.size, FALSE, FALSE, FALSE);
 		free (bz_l.list);
-		if (AEQ0(sum-1)) {
+		if (AEQ0(left)) {
 		    free (bz_r.list);
 		    break;
 		}
 	    }
-	    else if (AEQ0(sum-1)) {
+	    else if (AEQ0(left)) {
 		endcolor = s->color;
 		gvrender_beziercurve(job, bz_r.list, bz_r.size, FALSE, FALSE, FALSE);
 		free (bz_r.list);
@@ -2098,7 +2098,7 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
 	    }
 	    else {
 		bz0 = bz_r;
-		splitBSpline (&bz0, sum, &bz_l, &bz_r);
+		splitBSpline (&bz0, (s->t)/(left+s->t), &bz_l, &bz_r);
 		free (bz0.list);
 		gvrender_beziercurve(job, bz_l.list, bz_l.size, FALSE, FALSE, FALSE);
 		free (bz_l.list);
