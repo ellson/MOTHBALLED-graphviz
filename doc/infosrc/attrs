@@ -425,7 +425,7 @@ If neither is set explicitly, the minimum of the two default values
 is used.
 :href:GCNE:escString:"";  map,ps,svg
 Synonym for <A HREF=#d:URL>URL</A>.
-:id:GNE:escString:"";  map,ps,svg
+:id:GCNE:escString:"";  map,ps,svg
 Allows the graph author to provide an id for graph objects which is to be included in the output.
 Normal "\N", "\E", "\G" substitutions are applied.
 If provided, it is the responsiblity of the provider to keep
