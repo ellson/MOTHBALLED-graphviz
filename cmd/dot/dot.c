@@ -125,6 +125,7 @@ static graph_t *create_test_graph(void)
 #define NUMNODES 5
 
     Agnode_t *node[NUMNODES];
+    Agedge_t *e;
     Agraph_t *g;
     Agraph_t *sg;
     int j, k;
@@ -147,7 +148,6 @@ static graph_t *create_test_graph(void)
 #else /* WITH_CGRAPH */
 	node[j] = agnode(g, name, 1);
 	agbindrec(node[j], "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);	//node custom data
-
 #endif /* WITH_CGRAPH */
     }
 
@@ -157,7 +157,8 @@ static graph_t *create_test_graph(void)
 #ifndef WITH_CGRAPH
 	    agedge(g, node[j], node[k]);
 #else /* WITH_CGRAPH */
-	    agedge(g, node[j], node[k], NULL, 1);
+	    e = agedge(g, node[j], node[k], NULL, 1);
+	    agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//edge custom data
 #endif /* WITH_CGRAPH */
 	}
     }
@@ -177,8 +178,6 @@ int main(int argc, char **argv)
 {
     graph_t *prev = NULL;
     int r, rc = 0;
-#ifndef WITH_CGRAPH
-#endif /* WITH_CGRAPH */
 
     Gvc = gvContextPlugins(lt_preloaded_symbols, DEMAND_LOADING);
     GvExitOnUsage = 1;
@@ -209,10 +208,6 @@ int main(int argc, char **argv)
     }
     else {
 	while ((G = gvNextInputGraph(Gvc))) {
-#ifdef WITH_CGRAPH
-
-
-#endif /* WITH_CGRAPH */
 	    if (prev) {
 		gvFreeLayout(Gvc, prev);
 		agclose(prev);
@@ -226,7 +221,6 @@ int main(int argc, char **argv)
     }
     gvFinalize(Gvc);
     
-
     r = gvFreeContext(Gvc);
     return (MAX(rc,r));
 }

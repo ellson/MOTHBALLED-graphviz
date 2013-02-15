@@ -190,10 +190,11 @@ dot_cleanup_graph(graph_t * g)
 	else
 	    free(GD_rank(g));
     }
-    if (g != agroot(g)) 
 #ifndef WITH_CGRAPH
+    if (g != agroot(g)) 
 	memset(&(g->u), 0, sizeof(Agraphinfo_t));
 #else /* WITH_CGRAPH */
+    if (g != agroot(g)) 
 	agdelrec(g,"Agraphinfo_t");
 #endif /* WITH_CGRAPH */
 }

@@ -117,6 +117,7 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	}
 #ifndef WITH_CGRAPH
 	e = agedge(g, tail, head);
+	agbindrec(ce, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
 #else
 	e = agedge(g, tail, head, NULL, 1);
 	Tcl_AppendResult(interp, obj2cmd(e), NULL);
@@ -146,6 +147,7 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    /* if odd number of args then argv[2] is name */
 #ifdef WITH_CGRAPH
 	    n = agnode(g, argv[2], 1);
+	    agbindrec(n, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
 #else
 	    n = agnode(g, argv[2]);
 	    if (!(np = (Agnode_t **) tclhandleXlateIndex(ictx->nodeTblPtr, AGID(n))) || *np != n) {
@@ -167,6 +169,7 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	} else {
 #ifdef WITH_CGRAPH
 	    n = agnode(g, NULL, 1);  /* anon node */
+	    agbindrec(n, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
 #else
 	    /* else use handle as name */
 	    np = (Agnode_t **) tclhandleAlloc(ictx->nodeTblPtr, Tcl_GetStringResult(interp), &id);
