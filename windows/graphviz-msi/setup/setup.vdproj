@@ -573,6 +573,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_2493D07BE9EF448D87DEF1C6EB0100B2"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_24C1745F20D349009EEF72BA9288A7E5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1192,6 +1198,12 @@
         "Entry"
         {
         "MsmKey" = "8:_4795E4EE960B4480B225C849471C74D1"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_47F2431DAC064B6285B23746884F4463"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2061,6 +2073,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_7D32B174E5C6409CB6D4B9EAF62B06EF"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_7D47E42723DE43388EDA9BCEDE7437E7"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2482,6 +2500,12 @@
         "Entry"
         {
         "MsmKey" = "8:_99B90AB8E2DC409087F2C0BDCF2CEB6E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_9A34B75639794B7EA4B99F695A048449"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -5978,6 +6002,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2493D07BE9EF448D87DEF1C6EB0100B2"
+            {
+            "SourcePath" = "8:..\\..\\release\\bin\\osage.exe"
+            "TargetName" = "8:osage.exe"
+            "Tag" = "8:"
+            "Folder" = "8:_2CB80ACEA55C4CCD8EC8A66D0DE2ADA9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_24C1745F20D349009EEF72BA9288A7E5"
             {
             "SourcePath" = "8:..\\..\\release\\etc\\gtk-2.0\\gdk-pixbuf.loaders"
@@ -8044,6 +8088,26 @@
             "TargetName" = "8:aa_ornormal.gif"
             "Tag" = "8:"
             "Folder" = "8:_7704C4199BC641AB8AB08D3B01715F0A"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_47F2431DAC064B6285B23746884F4463"
+            {
+            "SourcePath" = "8:..\\..\\release\\bin\\circo.exe"
+            "TargetName" = "8:circo.exe"
+            "Tag" = "8:"
+            "Folder" = "8:_2CB80ACEA55C4CCD8EC8A66D0DE2ADA9"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -10938,6 +11002,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7D32B174E5C6409CB6D4B9EAF62B06EF"
+            {
+            "SourcePath" = "8:..\\..\\release\\bin\\sfdp.exe"
+            "TargetName" = "8:sfdp.exe"
+            "Tag" = "8:"
+            "Folder" = "8:_2CB80ACEA55C4CCD8EC8A66D0DE2ADA9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7D47E42723DE43388EDA9BCEDE7437E7"
             {
             "SourcePath" = "8:..\\..\\release\\share\\graphviz\\smyrna\\Thumbs.db"
@@ -12344,6 +12428,26 @@
             "TargetName" = "8:10-sub-pixel-bgr.conf"
             "Tag" = "8:"
             "Folder" = "8:_3C1E9E8D12E44EAA978CD8BA5B1A6E02"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9A34B75639794B7EA4B99F695A048449"
+            {
+            "SourcePath" = "8:..\\..\\release\\bin\\patchwork.exe"
+            "TargetName" = "8:patchwork.exe"
+            "Tag" = "8:"
+            "Folder" = "8:_2CB80ACEA55C4CCD8EC8A66D0DE2ADA9"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"

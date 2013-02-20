@@ -63,10 +63,12 @@ REM *****************************************************
 copy /Y %sourceLibDir%*.*  %targetDir%bin
 copy /Y %outputDir%*.exe  %targetDir%bin
 copy /Y %outputDir%dot.exe %targetDir%bin\circo.exe
-copy /Y %outputDir%dot.exe %targetDir%bin\neato.exe
 copy /Y %outputDir%dot.exe %targetDir%bin\fdp.exe
-copy /Y %outputDir%dot.exe %targetDir%bin\twopi.exe
+copy /Y %outputDir%dot.exe %targetDir%bin\neato.exe
+copy /Y %outputDir%dot.exe %targetDir%bin\osage.exe
+copy /Y %outputDir%dot.exe %targetDir%bin\patchwork.exe
 copy /Y %outputDir%dot.exe %targetDir%bin\sfdp.exe
+copy /Y %outputDir%dot.exe %targetDir%bin\twopi.exe
 copy /Y %outputDir%gv2gml.exe %targetDir%bin\gml2gv.exe
 copy /Y %outputDir%*.dll  %targetDir%bin
 copy /Y %outputDir%*.lib  %targetDir%lib\release\lib
@@ -93,6 +95,10 @@ devenv %setupProjectFile% -Clean release -Out %buildDir%packagingLog.txt
 devenv %setupProjectFile% -Build release -Out %buildDir%packagingLog.txt
 COPY /Y %setupProjectDir%Release\%setupProjectName%.msi %buildBaseDir%graphviz-2.31.%date:~10,4%%date:~4,2%%date:~7,2%.msi
 pscp -q *.msi graphviz-web://data/pub/graphviz/development/windows > pscpLog.txt 2>&1
+
+7z a -tzip c:\graphviz-ms\graphviz.zip c:\graphviz-ms\release
+move /Y c:\graphviz-ms\graphviz.zip %buildBaseDir%graphviz-2.31.%date:~10,4%%date:~4,2%%date:~7,2%.zip
+pscp -q *.zip graphviz-web://data/pub/graphviz/development/windows >> pscpLog.txt 2>&1
 
 
 
