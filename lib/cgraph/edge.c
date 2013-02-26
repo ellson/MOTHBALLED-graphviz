@@ -419,7 +419,7 @@ int agedgeidcmpf(Dict_t * d, void *arg_e0, void *arg_e1, Dtdisc_t * disc)
     return ((v==0)?0:(v<0?-1:1));
 }
 
-/* edge comparison.  OBJTYPE(e) == 0 means ID is a wildcard. */
+/* edge comparison.  for ordered traversal. */
 int agedgeseqcmpf(Dict_t * d, void *arg_e0, void *arg_e1, Dtdisc_t * disc)
 {
     long v;
@@ -429,10 +429,13 @@ int agedgeseqcmpf(Dict_t * d, void *arg_e0, void *arg_e1, Dtdisc_t * disc)
     e0 = arg_e0;
     e1 = arg_e1;
     NOTUSED(disc);
-    v = (AGSEQ(e0) - AGSEQ(e1));
+	assert(arg_e0 && arg_e1);
+	if (e0->node != e1->node) v = AGSEQ(e0->node) - AGSEQ(e1->node);
+	else v = (AGSEQ(e0) - AGSEQ(e1));
     return ((v==0)?0:(v<0?-1:1));
 }
 
+/* indexing for ordered traversal */
 Dtdisc_t Ag_mainedge_seq_disc = {
     0,				/* pass object ptr      */
     0,				/* size (ignored)       */
@@ -457,6 +460,7 @@ Dtdisc_t Ag_subedge_seq_disc = {
     NIL(Dtevent_f)
 };
 
+/* indexing for random search */
 Dtdisc_t Ag_mainedge_id_disc = {
     0,				/* pass object ptr      */
     0,				/* size (ignored)       */

@@ -73,7 +73,6 @@
 #define NILsym				NIL(Agsym_t*)
 #define NILstr				NIL(char*)
 
-#define MAX_OUTPUTLINE		128
 #define	SUCCESS				0
 #define FAILURE				-1
 #define LOCALNAMEPREFIX		'%'

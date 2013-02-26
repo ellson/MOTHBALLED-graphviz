@@ -14,7 +14,9 @@ set sourceUrl=http://www.graphviz.org/pub/graphviz/stable/SOURCES/graphviz-worki
 set wgetPath=C:\wget\bin
 set SevenzPath="C:\Program Files\7-Zip"
 set pscpPath="C:\Program Files\PuTTY"
-PATH=%PATH%;%VS2008DIR%;%wgetPath%;%SevenzPath%;%pscpPath%;
+set sdkPath="C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin"
+PATH=%PATH%;%VS2008DIR%;%wgetPath%;%SevenzPath%;%pscpPath%;%sdkPath%;
+
 REM *****************************************************
 REM 84716ny
 REM clean up code , if you provide source manually comment out this section
@@ -24,7 +26,7 @@ rmdir /S /Q %targetDir%
 del %buildBaseDir%*.msi
 del %buildBaseDir%*.tar
 del %buildBaseDir%*.gz
-del %buildBaseDir%*.gz
+del %buildBaseDir%*.zip
 del %outputDir%*.exe
 del %outputDir%*.dll
 REM *****************************************************
@@ -63,10 +65,12 @@ REM *****************************************************
 copy /Y %sourceLibDir%*.*  %targetDir%bin
 copy /Y %outputDir%*.exe  %targetDir%bin
 copy /Y %outputDir%dot.exe %targetDir%bin\circo.exe
-copy /Y %outputDir%dot.exe %targetDir%bin\neato.exe
 copy /Y %outputDir%dot.exe %targetDir%bin\fdp.exe
-copy /Y %outputDir%dot.exe %targetDir%bin\twopi.exe
+copy /Y %outputDir%dot.exe %targetDir%bin\neato.exe
+copy /Y %outputDir%dot.exe %targetDir%bin\osage.exe
+copy /Y %outputDir%dot.exe %targetDir%bin\patchwork.exe
 copy /Y %outputDir%dot.exe %targetDir%bin\sfdp.exe
+copy /Y %outputDir%dot.exe %targetDir%bin\twopi.exe
 copy /Y %outputDir%gv2gml.exe %targetDir%bin\gml2gv.exe
 copy /Y %outputDir%*.dll  %targetDir%bin
 copy /Y %outputDir%*.lib  %targetDir%lib\release\lib
@@ -75,7 +79,7 @@ REM *****************************************************
 
 REM Run dot -c to generate config6 file. condig6 is shipped in the package
 REM *****************************************************
-%targetDir%\bin\dot -c
+%targetDir%bin\dot -c
 REM *****************************************************
 
 
@@ -91,8 +95,11 @@ del %setupProjectDir%Release\%setupProjectName%.msi
 del %setupProjectDir%Release\*.msi
 devenv %setupProjectFile% -Clean release -Out %buildDir%packagingLog.txt
 devenv %setupProjectFile% -Build release -Out %buildDir%packagingLog.txt
-COPY /Y %setupProjectDir%Release\%setupProjectName%.msi %buildBaseDir%graphviz-2.30.msi
+COPY /Y %setupProjectDir%Release\%setupProjectName%.msi %buildBaseDir%graphviz-2.30.1.msi
+msitran -a c:\graphviz-ms\addtopath.mst %buildBaseDir%graphviz-2.30.1.msi
 pscp -q *.msi graphviz-web://data/pub/graphviz/stable/windows > pscpLog.txt 2>&1
 
-
+7z a -tzip c:\graphviz-ms\graphviz.zip c:\graphviz-ms\release
+move /Y c:\graphviz-ms\graphviz.zip %buildBaseDir%graphviz-2.30.1.zip
+pscp -q *.zip graphviz-web://data/pub/graphviz/stable/windows >> pscpLog.txt 2>&1
 

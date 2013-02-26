@@ -98,7 +98,10 @@ bool MdiChild::saveFile(const QString & fileName)
     QTextStream out(&file);
     QApplication::setOverrideCursor(Qt::WaitCursor);
 //    out << toPlainText();
-    out << toPlainText().toUtf8().constData();
+//    out << toPlainText().toUtf8().constData();
+    out.setCodec("UTF-8");
+    out << toPlainText();
+    out.flush();
     QApplication::restoreOverrideCursor();
 
     setCurrentFile(fileName);

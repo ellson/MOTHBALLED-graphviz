@@ -1407,6 +1407,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	case F_html:
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    if (gp) {
+		v.string = toHtml(gp, args[1].string);
 	    } else {
 		error(ERROR_WARNING, "NULL graph passed to html()");
 		v.string = 0;

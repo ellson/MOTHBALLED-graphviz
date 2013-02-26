@@ -27,8 +27,11 @@ static int ioput(Agraph_t * g, iochan_t * ofile, char *str)
 
 }
 
+#define MAX_OUTPUTLINE		128
+#define MIN_OUTPUTLINE		 60
 static int write_body(Agraph_t * g, iochan_t * ofile);
 static int Level;
+static int Max_outputline = MAX_OUTPUTLINE;
 static unsigned char Attrs_not_written_flag;
 static Agsym_t *Tailport, *Headport;
 
@@ -58,6 +61,8 @@ static int strcasecmp(const char *s1, const char *s2)
 #endif
 
 #define is_number_char(c) (isdigit(c) || ((c) == '.'))
+    /* alphanumeric, '.', or non-ascii; basically, non-punctuation */
+#define is_id_char(c) (isalnum(c) || ((c) == '.') || !isascii(c))
 
 /* _agstrcanon:
  * Canonicalize ordinary strings. 
@@ -113,21 +118,26 @@ static char *_agstrcanon(char *arg, char *buf)
 	uc = *(unsigned char *) s++;
 	cnt++;
 	
-        if (uc && backslash_pending && !((is_number_char(p[-1]) || isalpha(p[-1]) || (p[-1] == '\\')) && (is_number_char(uc) || isalpha(uc)))) {
-            *p++ = '\\';
-            *p++ = '\n';
-            needs_quotes = TRUE;
-            backslash_pending = FALSE;
-	    cnt = 0;
-        } else if (uc && (cnt >= MAX_OUTPUTLINE)) {
-            if (!((is_number_char(p[-1]) || isalpha(p[-1]) || (p[-1] == '\\')) && (is_number_char(uc) || isalpha(uc)))) {
-	        *p++ = '\\';
-    	        *p++ = '\n';
-	        needs_quotes = TRUE;
+	/* If breaking long strings into multiple lines, only allow breaks after a non-id char, not a backslash, where the next char is an
+ 	 * id char.
+	 */
+	if (Max_outputline) {
+            if (uc && backslash_pending && !(is_id_char(p[-1]) || (p[-1] == '\\')) && is_id_char(uc)) {
+        	*p++ = '\\';
+        	*p++ = '\n';
+        	needs_quotes = TRUE;
+        	backslash_pending = FALSE;
 		cnt = 0;
-            } else {
-                backslash_pending = TRUE;
-            }
+            } else if (uc && (cnt >= Max_outputline)) {
+        	if (!(is_id_char(p[-1]) || (p[-1] == '\\')) && is_id_char(uc)) {
+	            *p++ = '\\';
+    	            *p++ = '\n';
+	            needs_quotes = TRUE;
+		    cnt = 0;
+        	} else {
+                    backslash_pending = TRUE;
+        	}
+	    }
 	}
     }
     *p++ = '\"';
@@ -648,10 +658,18 @@ static void set_attrwf(Agraph_t * g, int toplevel, int value)
  */
 int agwrite(Agraph_t * g, void *ofile)
 {
+    char* s;
+    int len;
     Level = 0;			/* re-initialize tab level */
+    if ((s = agget(g, "linelength")) && isdigit(*s)) {
+	len = (int)strtol(s, (char **)NULL, 10);
+	if ((len == 0) || (len >= MIN_OUTPUTLINE))
+	    Max_outputline = len;
+    }
     set_attrwf(g, TRUE, FALSE);
     CHKRV(write_hdr(g, ofile, TRUE));
     CHKRV(write_body(g, ofile));
     CHKRV(write_trl(g, ofile));
+    Max_outputline = MAX_OUTPUTLINE;
     return AGDISC(g, io)->flush(ofile);
 }
