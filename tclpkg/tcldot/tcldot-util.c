@@ -27,12 +27,14 @@ size_t Tcldot_channel_writer(GVJ_t *job, const char *s, size_t len)
 
 void reset_layout(GVC_t *gvc, Agraph_t * sg)
 {
+#ifndef WITH_CGRAPH
     Agraph_t *g = agroot(sg);
 
     if (GD_drawing(g)) {	/* only cleanup once between layouts */
 	gvFreeLayout(gvc, g);
 	GD_drawing(g) = NULL;
     }
+#endif
 }
 
 #ifdef WITH_CGRAPH
@@ -332,7 +334,11 @@ void tcldot_layout(GVC_t *gvc, Agraph_t * g, char *engine)
     Agsym_t *a;
     int rc;
 
+#ifndef WITH_CGRAPH
     reset_layout(gvc, g);		/* in case previously drawn */
+#else
+    gvFreeLayout(gvc, g);               /* in case previously drawn */
+#endif
 
 /* support old behaviors if engine isn't specified*/
     if (!engine || *engine == '\0') {
