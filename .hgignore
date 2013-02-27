@@ -24,6 +24,7 @@ Makefile.in
 autom4te.cache
 COPYING
 Doxyfile
+doxygen
 INSTALL
 aclocal.m4
 ast_common.h
