@@ -449,7 +449,7 @@ AC_SUBST([MATH_LIBS])
 
 # Check for functions that might need -lm
 LIBS="$LIBS $MATH_LIBS"
-AC_CHECK_FUNCS([feenableexcept fesetenv log2])
+AC_CHECK_FUNCS([feenableexcept fesetenv log2 sincos])
 
 LIBS=$save_LIBS
 
@@ -2942,35 +2942,6 @@ else
   fi
 fi
 AM_CONDITIONAL(WITH_IPSEPCOLA, [test "x$use_ipsepcola" == "xYes"])
-
-# -----------------------------------
-# Special checks
-
-save_LIBS=$LIBS
-LIBS="$LIBS $MATH_LIBS"
-AC_MSG_CHECKING(if have working sincos())
-AC_RUN_IFELSE([AC_LANG_SOURCE([[
-	#include <stdio.h>
-	#include <assert.h>
-	#define PI 3.14159265358979323846
-	extern void sincos(double x, double *s, double *c);
-	int main () {
-		double sinx=0.0, cosx=1.0;
-                int i;
-                /* try to convince clever compilers not to optize this away! */
-                for (i=2; i<4; i++) {sincos(PI/(double)i,&sinx,&cosx);}
-		assert(sinx>0.8660253);
-		assert(sinx<0.8660255);
-		assert(cosx<0.5000001);
-		assert(cosx>0.4999999);
-		return 0;
-	}
-	]])],[AC_MSG_RESULT(yes)
-	AC_DEFINE_UNQUOTED(HAVE_SINCOS,1,Define if libm provides a *working* sincos function)
-	],[AC_MSG_RESULT(no)
-	],[AC_MSG_RESULT(no - assumed because cross-compiling)
-	])
-LIBS=$save_LIBS
 
 # -----------------------------------
 AC_MSG_CHECKING(if FILE struct contains _cnt)
