@@ -319,6 +319,7 @@ extern char *agstrdup_html(Agraph_t *, char *);
 extern int aghtmlstr(char *);
 extern char *agstrbind(Agraph_t * g, char *);
 extern int agstrfree(Agraph_t *, char *);
+extern char *agcanon(char *, int);
 extern char *agstrcanon(char *, char *);
 char *agcanonStr(char *str);  /* manages its own buf */
 

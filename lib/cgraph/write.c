@@ -203,10 +203,25 @@ static char *getoutputbuffer(char *str)
 /*
  * canonicalize a string for printing.
  * must agree with strings in scan.l
+ * Shared static buffer - unsafe.
  */
 char *agcanonStr(char *str)
 {
     return agstrcanon(str, getoutputbuffer(str));
+}
+
+/*
+ * canonicalize a string for printing.
+ * If html is true, use HTML canonicalization.
+ * Shared static buffer - unsafe.
+ */
+char *agcanon(char *str, int html)
+{
+    char* buf = getoutputbuffer(str);
+    if (html)
+	return agcanonhtmlstr(str, buf);
+    else
+	return _agstrcanon(str, buf);
 }
 
 static int _write_canonstr(Agraph_t * g, iochan_t * ofile, char *str,
