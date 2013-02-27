@@ -180,7 +180,6 @@ ID		({NAME}|{NUMBER})
 ["]						BEGIN(qstring); beginstr();
 <qstring>["]			BEGIN(INITIAL); endstr(); return (T_qatom);
 <qstring>[\\]["]		addstr ("\"");
-<qstring>[\\][\\]		addstr ("\\\\");
 <qstring>[\\][\n]		line_num++; /* ignore escaped newlines */
 <qstring>([^"\\]*|[\\])		addstr(yytext);
 [<]						BEGIN(hstring); html_nest = 1; beginstr();
