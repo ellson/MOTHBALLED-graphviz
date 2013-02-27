@@ -28,7 +28,11 @@ int main (int argc, char* argv[])
         fp = fopen(argv[1], "r");
     else
         fp = stdin;
+#ifdef WITH_CGRAPH
+    g = agread(fp, 0);
+#else
     g = agread(fp);
+#endif
 
     cc = ccomps(g, &ncc, (char*)0);
 
