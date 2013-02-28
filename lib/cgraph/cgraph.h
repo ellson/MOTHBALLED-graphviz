@@ -321,7 +321,7 @@ extern char *agstrbind(Agraph_t * g, char *);
 extern int agstrfree(Agraph_t *, char *);
 extern char *agcanon(char *, int);
 extern char *agstrcanon(char *, char *);
-char *agcanonStr(char *str);  /* manages its own buf */
+extern char *agcanonStr(char *str);  /* manages its own buf */
 
 /* definitions for dynamic string attributes */
 struct Agattr_s {		/* dynamic string attributes */
