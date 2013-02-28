@@ -6,14 +6,13 @@ using the {\tt plain} format.
 An application can replace the call to {\tt gvRender} with its own
 function for rendering the graph, using the layout information
 encoded in the graph structure (cf. Section~\ref{sec:layout_info}).
-\pagebreak[4]
 \begin{verbatim}
 #include <gvc.h>
 
 int main(int argc, char **argv)
 {
     GVC_t *gvc; 
-    graph_t *g;
+    Agraph_t *g;
     FILE *fp;
 
     gvc = gvContext();
@@ -22,7 +21,7 @@ int main(int argc, char **argv)
         fp = fopen(argv[1], "r");
     else    
         fp = stdin;
-    g = agread(fp);
+    g = agread(fp, 0);
 
     gvLayout(gvc, g, "dot");
 
@@ -35,6 +34,7 @@ int main(int argc, char **argv)
     return (gvFreeContext(gvc));
 }
 \end{verbatim}
+\newpage
 
 \section{A sample program: {\tt dot.c}}
 \label{sec:dot}
@@ -50,7 +50,7 @@ minor details.
     
 int main(int argc, char **argv)
 {   
-    graph_t *g, *prev = NULL;
+    Agraph_t *g, *prev = NULL;
     GVC_t *gvc;
 
     gvc = gvContext();
@@ -69,6 +69,7 @@ int main(int argc, char **argv)
 }
 
 \end{verbatim}
+\newpage
 
 \section{A sample program: {\tt demo.c}}
 \label{sec:demo}
@@ -93,10 +94,10 @@ int main(int argc, char **argv)
     gvParseArgs(gvc, argc, argv);
 
     /* Create a simple digraph */
-    g = agopen("g", AGDIGRAPH);
-    n = agnode(g, "n");
-    m = agnode(g, "m");
-    e = agedge(g, n, m);
+    g = agopen("g", Agdirected);
+    n = agnode(g, "n", 1);
+    m = agnode(g, "m", 1);
+    e = agedge(g, n, m, 0, 1);
 
     /* Set an attribute - in this case one that affects the visible rendering */
     agsafeset(n, "color", "red", "");

@@ -7,8 +7,9 @@ all : Agraph.pdf
 %.pdf : %.dot
 	dot -Tps2 $< | epstopdf --filter --outfile=$@
 
-Agraph.pdf : Agraph.ps
-	ps2pdf Agraph.ps Agraph.pdf
+Agraph.pdf : Agraph.tex
+	$(PTEX) Agraph.tex
+	@if grep "Label(s) may have changed" Agraph.log; then $(PTEX) Agraph.tex; fi
 
 Agraph.ps : Agraph.dvi 
 	@if grep "Label(s) may have changed" Agraph.log; then $(TEX) Agraph.tex; fi

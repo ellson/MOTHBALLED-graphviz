@@ -9,8 +9,11 @@ all : libguide.pdf
 
 # libguide.bbl
 
-libguide.pdf : libguide.ps
-	ps2pdf libguide.ps libguide.pdf
+libguide.pdf : libguide.tex
+	$(PTEX) libguide
+	bibtex libguide
+	$(PTEX) libguide
+	@if grep "Label(s) may have changed" libguide.log; then $(PTEX) libguide; fi
 
 libguide.ps : libguide.dvi 
 	@if grep "Label(s) may have changed" libguide.log; then $(TEX) libguide.tex; fi

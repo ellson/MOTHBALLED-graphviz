@@ -37,17 +37,13 @@ Section~\ref{sec:gvc}.
 \subsection{Creating the graph}
 The first step in drawing a graph is to create it. To use the \gviz\
 layout software, the graph must be created using the \graph\ library. 
-Before any other function in \graph\ is called, an application must
-call the library initialization function {\tt aginit}. This
-function is called by {\tt gvContext} and {\tt gvParseArgs}, 
-so if either of these is used,
-no additional call to {\tt aginit} is necessary.\footnote{See
-Section~\ref{sec:layout_info} for a description of occasions when
-the more general function {\tt aginitlib} should be called first.}
-Also, it is safe to make multiple calls to {\tt aginit}.
 
 We can create a graph in one of two main ways, using {\tt agread} or {\tt agopen}.
 The former function takes a {\tt FILE*} pointer to a file open for reading.
+\begin{verbatim}
+    FILE* fp;
+    Agraph_t* G = agread(fp, 0);
+\end{verbatim}
 It is assumed the file contains the description of graphs using the
 \DOT\ language. The {\tt agread} function parses one graph at a time, 
 returning a pointer to an attributed graph generated from the input,
@@ -58,28 +54,21 @@ the \DOT\ representation of the graph is stored in memory at {\tt char* cp}, the
 \begin{verbatim}
     Agraph_t* G = agmemread(cp);
 \end{verbatim}
-can be used to parse the representation. The {\tt agread} function relies on the
+can be used to parse the representation. By default, the {\tt agread} function relies on the
 standard {\tt FILE} structure and {\tt fgets} function of the stdio library. You
-can supply your own text reading function {\tt mygets} coupled with a compatible 
-source of text {\tt fp}
-to read a graph using
+can supply your own data source {\tt dp} coupled with your own discipline {\tt disc} 
+for reading the data to read a graph using
 \begin{verbatim}
-    Agraph_t* G = agread_usergets((FILE*)fp, mygets);
+    Agraph_t* G = agread(dp, &disc);
 \end{verbatim}
-{\bf N.B.} If you use a Windows binary distribution of \gviz\, it is possible that 
-the {\tt FILE} structure used during the build of \gviz\ is different from the one
-used in your compilation system. In this case, a call to {\tt agread} will not work,
-and you will need to either use {\tt agread\_usergets}, 
-supplying your version of {\tt fgets},
-or {\tt agmemread}.
-
+Further details on using {\tt agread} and disciplines can be found in the \graph\ library manual.
 
 The alternative technique is to call {\tt agopen}. 
 \begin{verbatim}
-    Agraph_t* G = agopen(name, type);
+    Agraph_t* G = agopen(name, type, &disc);
 \end{verbatim}
 The first argument is a {\tt char*} giving the name of the graph; 
-the second argument is an {\tt int} value describing the type of graph
+the second argument is an {\tt Agdesc\_t} value describing the type of graph
 to be created. A graph can be directed or undirected. In
 addition, a graph can be strict, i.e., have at most one edge between
 any pair of nodes, or non-strict, allowing an arbitrary number of edges
@@ -92,24 +81,26 @@ The return value is a new graph, with no nodes or edges.
 \centering
 \begin{tabular}{|l|l|} \hline
 Graph Type & Graph \\ \hline
-AGRAPH & Non-strict, undirected graph \\
-AGRAPHSTRICT & Strict, undirected graph \\
-AGDIGRAPH & Non-strict, directed graph \\
-AGDIGRAPHSTRICT & Strict, directed graph \\ \hline
+Agundirected & Non-strict, undirected graph \\
+Agstrictundirected & Strict, undirected graph \\
+Agdirected & Non-strict, directed graph \\
+Agstrictdirected & Strict, directed graph \\ \hline
 \end{tabular}
 \caption{Graph types}
 \label{table:types}
 \end{table*}
-So, to open a graph name {\tt "network"} that is directed but not strict, one would use
+So, to open a graph named {\tt "network"} that is directed but not strict, one would use
 \begin{verbatim}
-    Agraph_t* G = agopen("network", AGDIGRAPH);
+    Agraph_t* G = agopen("network", Agdirected, 0);
 \end{verbatim}
+The third argument is a pointer to a discipline of functions used for reading, memory, etc.
+If the value of 0 or NULL is used, the library uses a default discipline.
 
 Nodes and edges are created by the functions {\tt agnode} and
 {\tt agedge}, respectively.
 \begin{verbatim}
-    Agnode_t *agnode(Agraph_t*, char*);
-    Agedge_t *agedge(Agraph_t*,  Agnode_t*,  Agnode_t*);
+    Agnode_t *agnode(Agraph_t*, char*, int);
+    Agedge_t *agedge(Agraph_t*,  Agnode_t*,  Agnode_t*, char*, int);
 \end{verbatim}
 The first argument is the graph containing the node or edge. Note
 that if this is a subgraph, the node or edge will also belong to
@@ -117,11 +108,14 @@ all containing graphs. The second argument to {\tt agnode} is the
 node's name. This is a key for the node within the graph. If
 {\tt agnode} is called twice with the same name, the second invocation
 will not create a new node but simply return a pointer to the previously
-created node with the given name. 
+created node with the given name. The third argument specifies whether or not
+a node of the given name should be created if it does not already exist.
 
 Edges are created using {\tt agedge} by passing in the edge's two nodes.
 If the graph is not strict, additional calls to {\tt agedge} with
 the same arguments will create additional edges between the two nodes.
+The string argument allows you to supply a further name to distinguish between
+edges with the same head and tail.
 If the graph is strict, extra calls will simply return the already existing
 edge.
 For directed graphs, the first and
@@ -129,15 +123,17 @@ second node arguments are taken to be the tail and head
 nodes, respectively. For undirected graph, they still play this role
 for the functions {\tt agfstout} and {\tt agfstin}, but when checking
 if an edge exists with {\tt agedge} or {\tt agfindedge}, the order is
-irrelevant.
+irrelevant. As with {\tt agnode}, the final argument specifies whether or not
+the edge should be created if it does not yet exist.
 
 As suggested above, a graph can also contain subgraphs. These are
 created using {\tt agsubg}:
 \begin{verbatim}
-    Agraph_t *agsubg(Agraph_t*,  char*);
+    Agraph_t *agsubg(Agraph_t*,  char*, int);
 \end{verbatim}
 The first argument is the immediate parent graph; the second argument
-is the name of the subgraph. 
+is the name of the subgraph; the final argument indicates if the subgraph should
+be created. 
 
 Subgraphs play three roles in \gviz.
 First, a subgraph can be used to represent graph structure, indicating that
@@ -205,12 +201,11 @@ default in both cases.
 
 Setting attributes is a bit more complex. Before attaching an attribute
 to a graph component, the code must first set up the default case. This
-is accomplished by a call to {\tt agraphattr}, {\tt agnodeattr} or 
-{\tt agedgeattr} for graph, node or edge attributes, respectively.
-The types of the 3 functions are identical. They all take a graph and
+is accomplished by a call to {\tt agattr}.
+It takes a graph, an object type ({\tt AGRAPH, AGNODE, AGEDGE}), and
 two strings as arguments, and return a representation of the attribute.
 The first string gives the name of the attribute; the second supplies
-the default value, which must not be {\tt NULL}. 
+the default value.
 The graph must be the root graph.
 
 Once the attribute has been initialized, the attribute can be set for
@@ -227,7 +222,7 @@ For example, the call
 sets the color of node {\tt np} to {\tt "blue"}.
 The attribute value must not be {\tt NULL}.
 
-For simplicity, the \graph library provides the function
+For simplicity, the \graph\ library provides the function
 \begin{verbatim}
     agsafeset(void*, char*, char*, char*)
 \end{verbatim}
@@ -271,15 +266,17 @@ In order to expedite the reading and writing of attributes for large
 graphs, \gviz\ provides a lower-level mechanism for manipulating attributes
 which can avoid hashing a string.
 Attributes have a representation of type \verb+Agsym_t+. This is basically the
-value returned by the initialization functions {\tt agraphattr}, etc.
-It can also be obtained by a call to {\tt agfindattr}, which takes
+value returned by the initialization function {\tt agattr}. (Passing {\tt NULL}
+as the default value will cause {\tt agattr} to return the \verb+Agsym_t+ if
+it exists, and {\tt NULL} otherwise.)
+An attribute can also be obtained by a call to {\tt agattrsym}, which takes
 a graph component and an attribute name. If the attribute has been defined,
 the function returns a pointer to the corresponding \verb+Agsym_t+ value. 
 This can be used to directly access the corresponding attribute value,
 using the functions {\tt agxget} and {\tt agxset}. These are identical to 
 {\tt agget} and {\tt agset}, respectively, except that instead of
 taking the attribute name as the second argument, they use 
-the {\tt index} field of the \verb+Agsym_t+ value to extract the attribute
+the \verb+Agsym_t+ value to access the attribute
 value from an array.
 
 Due to the nature of the implementation of attributes in \gviz, an application 
@@ -288,9 +285,10 @@ attributes before creating nodes and edges.
 
 The drawing algorithms in \gviz\ use a large collection of attributes,
 giving the application a great deal of control over the appearance of the
-drawing. For more detailed information on what the attributes mean, the
-reader should consult the manual {\bf Drawing graphs with \dot}.
+drawing. For more detailed and complete information on what the attributes mean, the
+reader should consult the page \url{http://www.graphviz.org/content/attrs}.
 
+Here, we consider some of the more commonly used attributes.
 We can divide the attributes into those that affect the placement
 of nodes, edges and clusters in the layout and those, such as color, 
 which do not. 

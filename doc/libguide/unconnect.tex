@@ -21,9 +21,9 @@ basic layout algorithms given an input graph {\tt g} and a \gvc\ value
 {\tt gvc}.
 
 \begin{verbatim}
-    graph_t *sg;
+    Agraph_t *sg;
     FILE *fp;
-    graph_t** cc;
+    Agraph_t** cc;
     int       i, ncc;
 
     cc = ccomps(g, &ncc, (char*)0);
