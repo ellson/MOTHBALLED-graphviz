@@ -22,25 +22,11 @@ with only one graph at a time. In addition, if {\tt gvLayout()}
 was invoked for a graph and \gvc, then {\tt gvFreeLayout()} should
 be called before using {\tt gvLayout()} again, even on the same graph.
  
-An instance of a \gvc\ can be created by a call to
-\begin{verbatim}
-    extern GVC_t *gvNEWcontext(char **info, char *user);
-\end{verbatim}
-The first argument is an array of three character pointers
-providing version information; see Section~\ref{sec:info} below for a
-description of this data. The second argument is a string giving a
-name for the user. If desired, the application can call the library
-function {\tt gvUsername()} to obtain this value. These strings
-are stored in the \gvc\ and used in various messages and comments.
-
-For convenience, the \gviz\ library provides a simple way to 
-create a context:
+Normally, one creates a \gvc\ by a call to:
 \begin{verbatim}
     extern GVC_t *gvContext();
 \end{verbatim}
 which is what we have used in the examples shown here.
-This uses version information created when \gviz\ was built, plus
-the value returned by {\tt gvUsername()}.
 
 One can initialize a \gvc\ to record a list of graphs, layout algorithms
 and renderers. To do this, the application should
@@ -91,24 +77,18 @@ and layout algorithm to the \gvc, as would be done by
 {\tt gvParseArgs}, and then invokes {\tt gvLayoutJobs}. A similar
 remark holds for {\tt gvRender} and {\tt gvRenderJobs}.
  
-\subsection{Application-specific data}
+\subsection{Version-specific data}
 \label{sec:info}
 
-It is sometimes useful to supply version information.
-For example, some renderers in \gviz\ the library version used
-to create the output file. To do this, they rely on 
-the application providing an array 
+When the \gvc\ is created, it stores version and build date information 
+that can be used by renderers to identify which version of \gviz\ produced
+the output. It is also what is printed when a layout program is given the {\tt -V}
+flag. This information is stored as an array of three {\tt char*}, giving the
+name, version number and build date, respectively.  
+These can be accessed via the functions:
 \begin{verbatim}
-    extern char* Info[3];
-\end{verbatim}
-giving the desired version information.
-The three strings should be the name of the application, the version
-of the application, and a build date. For example, \dot\ might provide
-\begin{verbatim}
-    char *Info[] = {
-        "dot",              /* Program */
-        "1.8.10",           /* Version */
-        "16 Dec 2006"       /* Build Date */
-    };
+extern char **gvcInfo(GVC_t*);
+extern char *gvcVersion(GVC_t*);
+extern char *gvcBuildDate(GVC_t*);
 \end{verbatim}
 

@@ -238,6 +238,26 @@ route the edges. In \fdp, because it is necessary
 to keep clusters separate, the removal of overlaps is (usually)
 obligatory.
 
+\subsection{\sfdp}
+\label{sec:sfdp}
+
+The \sfdp\ layout is similar to \fdp\, except it uses a refined multilevel
+approach that enables it to handle very large graphs. The algorithm is
+due to Hu\cite{sfdp}.
+
+Unlike \fdp, \sfdp\ does not support cluster subgraphs. It also 
+does not model edge lengths or weights.
+
+\begin{verbatim}
+    initialize
+    position
+    adjust
+    splines
+\end{verbatim}
+
+The layout scheme is fairly simple: initialization; layout; node overlap removal; and a call to
+route the edges.
+
 \subsection{\twopi}
 \label{sec:twopi}
 
