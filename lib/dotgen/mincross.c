@@ -1311,7 +1311,7 @@ static void flat_reorder(graph_t * g)
 		    for (j = 0; (e = ND_flat_out(v).list[j]); j++) {
 			if ( ((GD_flip(g) == FALSE) && (ND_order(aghead(e)) < ND_order(agtail(e)))) ||
 				 ( GD_flip(g)) && (ND_order(aghead(e)) > ND_order(agtail(e)) )) {
-			    assert(constraining_flat_edge(g,v,e) == FALSE);
+			    //assert(constraining_flat_edge(g,v,e) == FALSE);
 			    delete_flat_edge(e);
 			    j--;
 			    flat_rev(g, e);
