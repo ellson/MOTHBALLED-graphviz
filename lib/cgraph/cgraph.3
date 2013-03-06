@@ -50,7 +50,6 @@ void		agsetfile(char *file_name);
 Agraph_t	*agconcat(Agraph_t *g, void *channel, Agdisc_t *disc)
 int		agwrite(Agraph_t *g, void *channel);
 int		agnnodes(Agraph_t *g),agnedges(Agraph_t *g), agnsubg(Agraph_t * g);
-int		agcountuniqedges(Agraph_t * g, Agnode_t * n, int in, int out);
 int		agisdirected(Agraph_t * g),agisundirected(Agraph_t * g),agisstrict(Agraph_t * g), agissimple(Agraph_t * g); 
 .SS "SUBGRAPHS"
 .P0
@@ -70,7 +69,8 @@ Agnode_t	*agnxtnode(Agraph_t *g, Agnode_t *n);
 Agnode_t	*agprvnode(Agraph_t *g, Agnode_t *n);
 Agnode_t	*aglstnode(Agraph_t *g);
 int		agdelnode(Agraph_t *g, Agnode_t *n);
-int		agdegree(Agnode_t *n, int use_inedges, int use_outedges);
+int		agdegree(Agraph_t *g, Agnode_t *n, int use_inedges, int use_outedges);
+int		agcountuniqedges(Agraph_t * g, Agnode_t * n, int in, int out);
 .P1
 .SS "EDGES"
 .P0
@@ -86,7 +86,7 @@ Agedge_t	*agfstout(Agraph_t* g, Agnode_t *n);
 Agedge_t	*agnxtout(Agraph_t* g, Agedge_t *e);
 int		agdeledge(Agraph_t *g, Agedge_t *e);
 Agedge_t	*agopp(Agedge_t *e);
-int		ageqedge(Agedge_t *g, Agedge_t *e);
+int		ageqedge(Agedge_t *e0, Agedge_t *e1);
 .SS "STRING ATTRIBUTES"
 .P0
 Agsym_t	*agattr(Agraph_t *g, int kind, char *name, char *value);
@@ -109,9 +109,9 @@ void		agclean(Agraph_t * g, int kind, char *rec_name);
 .P1
 .SS "CALLBACKS"
 .P0
-Agcbdisc_t	*agpopdisc(Agraph_t *g);
+int			*agpopdisc(Agraph_t *g);
 void		agpushdisc(Agraph_t *g, Agcbdisc_t *disc);
-void		agmethod(Agraph_t *g, void *obj, Agcbdisc_t *disc, int initflag);
+int			agcallbacks(Agraph_t * g, int flag);
 .P1
 .SS "MEMORY"
 .P0
@@ -395,14 +395,11 @@ is usually applied to convert the list pointer to
 an appropriate programmer-defined type.
 
 To control the setting of this pointer,
-the \fBmove_to_front\fP flag may be \fBAG_MTF_FALSE\fP,
-\fBAG_MTF_SOFT\fP, or \fBAG_MTF_HARD\fP accordingly.
-The \fBAG_MTF_SOFT\fP field is only a hint that decreases
-overhead in subsequent calls of \fBaggetrec\fP;
-\fBAG_MTF_HARD\fP guarantees that a lock was obtained.
-To release locks, use \fBAG_MTF_SOFT\fP or \fBAG_MTF_FALSE\fP.
-Use of this feature implies cooperation or at least isolation
-from other functions also using the move-to-front convention.
+the \fBmove_to_front\fP flag may be \fBTRUE\fP
+or \fBFALSE\fP.
+If \fBmove_to_front\fP is \fBTRUE\fP, the record will be locked at the
+head of the list, so it can be accessed directly by \fBAGDATA(obj)\fP.
+The lock can be subsequently released or reset by a call to \fBaggetrec\fP. 
 
 .SH "DISCIPLINES"
 (This section is not intended for casual users.)
@@ -484,20 +481,6 @@ The \f5map\fP and \f5alloc\fP calls do not pass a pointer to the
 newly allocated object.  If a client needs to install object
 pointers in a handle table, it can obtain them via 
 new object callbacks.
-.PP
-An \fBAgcbdisc_t\fP defines callbacks to be invoked by Libcgraph when
-initializing, modifying, or finalizing graph objects.
-Disciplines are kept on a stack.  Libcgraph automatically
-calls the methods on the stack, top-down.  Callbacks are installed
-with \fBagpushdisc\fP, uninstalled with \fBagpopdisc\fP, and 
-can be held pending or released via \fBagcallbacks\fP.
-.PP
-When Libcgraph is compiled with Vmalloc (which is not the default),
-each graph has its own heap.
-Programmers may allocate application-dependent data within the
-same heap as the rest of the graph.  The advantage is that
-a graph can be deleted by atomically freeing its entire heap
-without scanning each individual node and edge.
 .SH "IO DISCIPLINE"
 .PP
 The I/O discipline provides an abstraction for the reading and writing of graphs.
@@ -536,7 +519,22 @@ open resources.
 For actual allocation, the library uses the functions
 \fBagalloc\fP, \fBagrealloc\fP, and \fBagfree\fP, which provide simple wrappers for
 the underlying discipline functions \fBalloc\fP, \fBresize\fP, and \fBfree\fP..
+.PP
+When Libcgraph is compiled with Vmalloc (which is not the default),
+each graph has its own heap.
+Programmers may allocate application-dependent data within the
+same heap as the rest of the graph.  The advantage is that
+a graph can be deleted by atomically freeing its entire heap
+without scanning each individual node and edge.
 
+.SH "CALLBACKS"
+.PP
+An \fBAgcbdisc_t\fP defines callbacks to be invoked by Libcgraph when
+initializing, modifying, or finalizing graph objects.
+Disciplines are kept on a stack.  Libcgraph automatically
+calls the methods on the stack, top-down.  Callbacks are installed
+with \fBagpushdisc\fP, uninstalled with \fBagpopdisc\fP, and 
+can be held pending or released via \fBagcallbacks\fP.
 .SH "GENERIC OBJECTS"
 \fBagroot\fP takes any graph object (graph, subgraph, node, edge) and returns
 the root graph in which it lives. \fBagraphof\fP does the same, except it 
