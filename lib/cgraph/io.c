@@ -120,14 +120,14 @@ memiofread(void *chan, char *buf, int bufsize)
     return l;
 }
 
+static Agiodisc_t memIoDisc = {memiofread, 0, 0};
+
 Agraph_t *agmemread(const char *cp)
 {
     Agraph_t* g;
     rdr_t rdr;
     Agdisc_t disc;
-    Agiodisc_t memIoDisc;
 
-    memIoDisc.afread = memiofread;
     memIoDisc.putstr = AgIoDisc.putstr;
     memIoDisc.flush = AgIoDisc.flush;
     rdr.data = cp;
