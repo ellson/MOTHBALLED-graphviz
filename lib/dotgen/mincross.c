@@ -1266,8 +1266,11 @@ static void flat_reorder(graph_t * g)
 	    MARK(GD_rank(g)[r].v[i]) = FALSE;
 	temprank = ALLOC(i + 1, temprank, node_t *);
 	pos = 0;
+
+	/* construct reverse topological sort order in temprank */
 	for (i = 0; i < GD_rank(g)[r].n; i++) {
-	    v = GD_rank(g)[r].v[i];
+	    if (GD_flip(g)) v = GD_rank(g)[r].v[i];
+	    else v = GD_rank(g)[r].v[GD_rank(g)[r].n - i - 1];
 
 	    local_in_cnt = local_out_cnt = 0;
 	    for (j = 0; j < ND_flat_in(v).size; j++) {
@@ -1284,21 +1287,23 @@ static void flat_reorder(graph_t * g)
 		if ((MARK(v) == FALSE) && (local_in_cnt == 0)) {
 		    left = temprank + pos;
 		    n_search = postorder(g, v, left, r);
-		    if (GD_flip(g) == FALSE) {
-			right = left + n_search - 1;
-			while (left < right) {
-			    t = *left;
-			    *left = *right;
-			    *right = t;
-			    left++;
-			    right--;
-			}
-		    }
 		    pos += n_search;
 		}
 	    }
 	}
+
 	if (pos) {
+	    if (GD_flip(g) == FALSE) {
+		left = temprank;
+		right = temprank + pos - 1;
+		while (left < right) {
+		    t = *left;
+		    *left = *right;
+		    *right = t;
+		    left++;
+		    right--;
+		}
+	    }
 	    for (i = 0; i < GD_rank(g)[r].n; i++) {
 		v = GD_rank(g)[r].v[i] = temprank[i];
 		ND_order(v) = i + base_order;
@@ -1310,8 +1315,8 @@ static void flat_reorder(graph_t * g)
 		if (ND_flat_out(v).list) {
 		    for (j = 0; (e = ND_flat_out(v).list[j]); j++) {
 			if ( ((GD_flip(g) == FALSE) && (ND_order(aghead(e)) < ND_order(agtail(e)))) ||
-				 ( GD_flip(g)) && (ND_order(aghead(e)) > ND_order(agtail(e)) )) {
-			    //assert(constraining_flat_edge(g,v,e) == FALSE);
+				 ( (GD_flip(g)) && (ND_order(aghead(e)) > ND_order(agtail(e)) ))) {
+			    assert(constraining_flat_edge(g,v,e) == FALSE);
 			    delete_flat_edge(e);
 			    j--;
 			    flat_rev(g, e);
@@ -1319,6 +1324,7 @@ static void flat_reorder(graph_t * g)
 		    }
 		}
 	    }
+	    /* postprocess to restore intended order */
 	}
 	/* else do no harm! */
 	GD_rank(Root)[r].valid = FALSE;
@@ -1691,7 +1697,7 @@ void check_order(void)
 
     for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
 	assert(GD_rank(g)[r].v[GD_rank(g)[r].n] == NULL);
-	for (i = 0; v = GD_rank(g)[r].v[i]; i++) {
+	for (i = 0; (v = GD_rank(g)[r].v[i]); i++) {
 	    assert(ND_rank(v) == r);
 	    assert(ND_order(v) == i);
 	}
