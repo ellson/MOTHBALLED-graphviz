@@ -13,7 +13,9 @@
 %% which was a notable improvement upon Van Jacobsen's tgrind for
 %% plain TeX, which was adapted from vgrind, a troff prettyprinter.
 %% 
-%% Author: Michael Piefel, piefel@cs.tu-berlin.de
+%% LGrind contains non-free code written by Van Jacobson, who does not answer
+%% to any request for changing his licence. This software is therefore not
+%% maintained. I also do not accept any cheques anymore.
 %% Based on Van Jacobson's ``tgrindmac'', a macro package for TeX.
 %% Modified, 1987 by Jerry Leichter. Put '@' in all internal names.
 %% Modified, 1991 by George Reilly. Changed name from tgrind to lgrind.
@@ -21,7 +23,7 @@
 %%          -1999    Hundreds of bells and whistles. No changelog here.
 \NeedsTeXFormat{LaTeX2e}[1996/06/01]
 \ProvidesPackage{lgrind}
-          [1999/05/28 v3.6 LGrind environment and supporting stuff]
+          [2002/01/28 v3.67 LGrind environment and supporting stuff]
 %%stopzone   % VIM syncing
 \newcount\lc@unt
 \newcount\ln@xt
@@ -90,45 +92,45 @@
 \ifLGnoprocindex%
   \let\index\@gobble%
 \fi%
-\hfuzz=\LGsloppy
+\hfuzz=\LGsloppy%
 \def\NewPage{\filbreak\bigskip}%
-\ifLGinline
+\ifLGinline%
  \def\L##1{\setbox\ls@far\null{\CF\strut##1}\ignorespaces}%
-\else
- \let\r@ghtlno\relax\let\l@ftlno\relax
- \ifnum\LGnuminterval>\z@
-  \ifLGleftnum
-   \def\l@ftlno{\ifnum\lc@unt>\ln@xt
-     \global\advance\ln@xt by\LGnuminterval
-     \llap{{\normalfont\scriptsize\the\lc@unt\quad}}\fi}
+\else%
+ \let\r@ghtlno\relax\let\l@ftlno\relax%
+ \ifnum\LGnuminterval>\z@%
+  \ifLGleftnum%
+   \def\l@ftlno{\ifnum\lc@unt>\ln@xt%
+     \global\advance\ln@xt by\LGnuminterval%
+     \llap{{\normalfont\scriptsize\the\lc@unt\quad}}\fi}%
    \def\r@ghtlno{\rlap{\enspace\box\procbox}}%
-  \else
-   \def\r@ghtlno{\ifnum\lc@unt>\ln@xt
-     \global\advance\ln@xt by\LGnuminterval
+  \else%
+   \def\r@ghtlno{\ifnum\lc@unt>\ln@xt%
+     \global\advance\ln@xt by\LGnuminterval%
      \rlap{{\normalfont\scriptsize\enspace\the\lc@unt%
-                \enspace\box\procbox}}
+                \enspace\box\procbox}}%
      \else\rlap{\enspace\box\procbox}\fi}%
-  \fi
- \fi
- \def\L##1{\@@par\setbox\ls@far=\null\strut
+  \fi%
+ \fi%
+ \def\L##1{\@@par\setbox\ls@far=\null\strut%
   \global\advance\lc@unt by1%
   \hbox to \linewidth{\hskip\LGindent\l@ftlno ##1\egroup%
   \hfil\r@ghtlno}%
   \ignorespaces}%
-\fi
+\fi%
 \lc@unt=#1\advance\lc@unt by-1%
 \ln@xt=\LGnuminterval\advance\ln@xt by-1%
 \loop\ifnum\lc@unt>\ln@xt\advance\ln@xt by\LGnuminterval\repeat%
 \def\LB{\hbox\bgroup\bgroup\box\ls@far\CF\let\next=}%
 \def\Tab##1{\egroup\setbox\tb@x=\lastbox\TBw@d=\wd\tb@x%
- \advance\TBw@d by 1\@ts\ifdim\TBw@d>##1\@ts
-  \setbox\ls@far=\hbox{\box\ls@far \box\tb@x \sp@ce}\else
+ \advance\TBw@d by 1\@ts\ifdim\TBw@d>##1\@ts%
+  \setbox\ls@far=\hbox{\box\ls@far \box\tb@x \sp@ce}\else%
   \setbox\ls@far=\hbox to ##1\@ts{\box\ls@far \box\tb@x \hfil}\fi\LB}%
 \ifLGinline\def\sp@ce{{\hskip .3333em}}%
 \else \setbox\tb@x=\hbox{\texttt{0}}%
-      \@ts=0.8\wd\tb@x \def\sp@ce{{\hskip 1\@ts}}\fi
-\catcode`\_=\active \@setunder
-\def\CF{\ifc@mment\CMfont\else\ifstr@ng\STfont\fi\fi}
+      \@ts=0.8\wd\tb@x \def\sp@ce{{\hskip 1\@ts}}\fi%
+\catcode`\_=\active \@setunder%
+\def\CF{\ifc@mment\CMfont\else\ifstr@ng\STfont\fi\fi}%
 \def\N##1{{\NOfont ##1}\global\futurelet\next\ic@r}%
 \def\K##1{{\KWfont ##1}\global\futurelet\next\ic@r}%
 \def\V##1{{\VRfont ##1}\global\futurelet\next\ic@r}%
@@ -141,23 +143,23 @@
 \def\,{\relax \ifmmode\mskip\thinmuskip \else\thinspace \fi}%
 \def\!{\relax \ifmmode\mskip-\thinmuskip \else\negthinspace \fi}%
 %%stopzone   % VIM syncing
-\def\CH##1##2##3{\relax\ifmmode ##1\relax
+\def\CH##1##2##3{\relax\ifmmode ##1\relax%
 \else\ifstr@ng ##2\relax\else$##3$\fi\fi }%
 \def\|{\CH|||}%  not necessary for T1
 \def\<{\CH<<<}%  dto.
 \def\>{\CH>>>}%  dto.
 \def\-{\CH---}%  minus sign nicer than hyphen
-\def\_{\ifstr@ng {\char'137}\else
+\def\_{\ifstr@ng {\char'137}\else%
   \leavevmode \kern.06em \vbox{\hrule width.35em}%
   \ifdim\fontdimen\@ne\font=\z@ \kern.06em \fi\fi }%
 \def\#{{\STfont\char'043}}%
 \def\2{\CH\backslash {\char'134}\backslash }%          % \
 \def\3{\ifc@mment\ifright@ ''\global\right@false%
-                      \else``\global\right@true \fi
+                      \else``\global\right@true \fi%
    \else{\texttt{\char'042}}\fi}%                      % "
 \def\5{{\texttt{\char'136}}}%                          % ^
 \parindent\z@\parskip\z@ plus 1pt%
-\bgroup\BGfont
+\bgroup\BGfont%
 }
 {\egroup\@@par}           % end of environment lgrind
 \def\lgrinde{\ifLGinline\else\LGsize\fi\begin{lgrind}}
@@ -222,8 +224,7 @@
 \end{lgrind}
     \endgroup
     \vskip .5\baselineskip
-    \ifLGnorules\else\hrule\fi
-    \addvspace{0.1in}
+    \ifLGnorules\else\hrule\vspace{0.1in}\fi
 }
 \endinput
 %%
