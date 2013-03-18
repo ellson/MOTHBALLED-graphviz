@@ -1,10 +1,9 @@
-
+# Rename gvedit.pro, run 'qmake -tp vc' to create gvedit.vcproj file
 DEFINES += HAVE_CONFIG_H
 LIBS += \
-        -L$(top_builddir)/lib/gvc/.libs -lgvc \
-        -L$(top_builddir)/lib/cgraph/.libs -lcgraph \
-        -L$(top_builddir)/lib/cdt/.libs -lcdt \
-        -lexpat -lz -lltdl
+        -LC:/gtk/lib \
+        -LC:/graphviz-ms/bin \
+        -lgvc -lcgraph -lcdt -lexpat -lz -lltdl
 
 INCLUDEPATH += \
 	../../lib/gvc \
