@@ -35,6 +35,10 @@
 extern int strcasecmp(const char *s1, const char *s2);
 #endif
 
+#ifdef WIN32
+#define strdup(x) _strdup(x)
+#endif
+
 /*
  * Define an apis array of name strings using an enumerated api_t as index.
  * The enumerated type is defined gvplugin.h.  The apis array is
@@ -372,11 +376,7 @@ char *gvplugin_list(GVC_t * gvc, api_t api, const char *str)
     }
 
     /* does str have a :path modifier? */
-#ifdef WIN32
-    s = _strdup(str);
-#else
     s = strdup(str);
-#endif
     p = strchr(s, ':');
     if (p)
 	*p++ = '\0';
