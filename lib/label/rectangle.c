@@ -239,7 +239,7 @@ int Overlap(Rect_t * r, Rect_t * s)
 int Contained(Rect_t * r, Rect_t * s)
 {
     register int i, j, result;
-    assert((int) r && (int) s);
+    assert(r && s);
 
     /* undefined rect is contained in any other */
     if (Undefined(r))
