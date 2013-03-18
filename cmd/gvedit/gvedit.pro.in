@@ -2,7 +2,7 @@
 DEFINES += HAVE_CONFIG_H
 LIBS += \
         -L$(top_builddir)/lib/gvc/.libs -lgvc \
-        -L$(top_builddir)/lib/graph/.libs -lgraph \
+        -L$(top_builddir)/lib/cgraph/.libs -lcgraph \
         -L$(top_builddir)/lib/cdt/.libs -lcdt \
         -lexpat -lz -lltdl
 
@@ -10,7 +10,7 @@ INCLUDEPATH += \
 	../../lib/gvc \
 	../../lib/common \
 	../../lib/pathplan \
-	../../lib/graph \
+	../../lib/cgraph \
 	../../lib/cdt \
 	../..
 
