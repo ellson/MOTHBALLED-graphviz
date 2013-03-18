@@ -256,6 +256,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "graphml2gv", "cmd\tools\gra
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gv2gml", "cmd\tools\gv2gml.vcproj", "{58E6D7CC-5122-4830-B841-D6FB796B00E8}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvedit", "cmd\gvedit\gvedit.vcproj", "{33E97266-F213-3639-BCAB-2F3F95E15B16}"
+	ProjectSection(ProjectDependencies) = postProject
+		{15229511-9F6C-48A5-9194-660CA6492563} = {15229511-9F6C-48A5-9194-660CA6492563}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -494,6 +499,10 @@ Global
 		{58E6D7CC-5122-4830-B841-D6FB796B00E8}.Debug|Win32.Build.0 = Debug|Win32
 		{58E6D7CC-5122-4830-B841-D6FB796B00E8}.Release|Win32.ActiveCfg = Release|Win32
 		{58E6D7CC-5122-4830-B841-D6FB796B00E8}.Release|Win32.Build.0 = Release|Win32
+		{33E97266-F213-3639-BCAB-2F3F95E15B16}.Debug|Win32.ActiveCfg = Debug|Win32
+		{33E97266-F213-3639-BCAB-2F3F95E15B16}.Debug|Win32.Build.0 = Debug|Win32
+		{33E97266-F213-3639-BCAB-2F3F95E15B16}.Release|Win32.ActiveCfg = Release|Win32
+		{33E97266-F213-3639-BCAB-2F3F95E15B16}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
