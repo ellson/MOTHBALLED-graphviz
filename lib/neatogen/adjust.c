@@ -899,16 +899,17 @@ vpscAdjust(graph_t* G)
  * rotate graph so that first edge is horizontal.
  * FIX: Generalize to allow rotation determined by graph shape.
  */
-void normalize(graph_t * g)
+int normalize(graph_t * g)
 {
     node_t *v;
     edge_t *e;
 
     double theta;
     pointf p;
+    int ret;
 
     if (!mapbool(agget(g, "normalize")))
-	return;
+	return 0;
 
     v = agfstnode(g);
     p.x = ND_pos(v)[0];
@@ -917,13 +918,15 @@ void normalize(graph_t * g)
 	ND_pos(v)[0] -= p.x;
 	ND_pos(v)[1] -= p.y;
     }
+    if (p.x || p.y) ret = 1;
+    else ret = 0;
 
     e = NULL;
     for (v = agfstnode(g); v; v = agnxtnode(g, v))
 	if ((e = agfstout(g, v)))
 	    break;
     if (e == NULL)
-	return;
+	return ret;
 
     theta = -atan2(ND_pos(aghead(e))[1] - ND_pos(agtail(e))[1],
 		   ND_pos(aghead(e))[0] - ND_pos(agtail(e))[0]);
@@ -934,6 +937,8 @@ void normalize(graph_t * g)
 	ND_pos(v)[0] = p.x * cos(theta) - p.y * sin(theta);
 	ND_pos(v)[1] = p.x * sin(theta) + p.y * cos(theta);
     }
+    if (theta) return 1;
+    else return ret;
 }
 
 typedef struct {
@@ -1053,8 +1058,6 @@ removeOverlapWith (graph_t * G, adjust_data* am)
     if (agnnodes(G) < 2)
 	return 0;
 
-    normalize(G);
-
     if (am->mode == AM_NONE)
 	return 0;
 
@@ -1147,14 +1150,17 @@ int
 removeOverlapAs(graph_t * G, char* flag)
 {
     adjust_data am;
+    int ret;
 
     if (agnnodes(G) < 2)
 	return 0;
-    if (flag == NULL)
-	return 0;
-
-    getAdjustMode(G, flag, &am);
-    return removeOverlapWith (G, &am);
+    if (flag) {
+	getAdjustMode(G, flag, &am);
+	ret = removeOverlapWith (G, &am);
+    }
+    else
+	ret = 0;
+    return (ret + normalize(G));
 }
 
 /* adjustNodes:

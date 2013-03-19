@@ -48,7 +48,7 @@ typedef struct {
     extern expand_t sepFactor(graph_t * G);
     extern expand_t esepFactor(graph_t * G);
     extern int adjustNodes(graph_t * G);
-    extern void normalize(graph_t * g);
+    extern int normalize(graph_t * g);
     extern int removeOverlapAs(graph_t*, char*);
     extern int removeOverlapWith(graph_t*, adjust_data*);
     extern int cAdjust(graph_t *, int);
