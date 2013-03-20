@@ -326,7 +326,7 @@ This field indicates which graph component uses the attribute.
 </TD><TD>GCNE</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:normalize HREF=#d:normalize>normalize</A>
-</TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
+</TD><TD>G</TD><TD>double<BR><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD>not dot</TD> </TR>
  <TR><TD><A NAME=a:nslimit HREF=#d:nslimit>nslimit</A>
 <BR><A NAME=a:nslimit1 HREF=#d:nslimit1>nslimit1</A>
@@ -1291,7 +1291,10 @@ This field indicates which graph component uses the attribute.
 <DT><A NAME=d:normalize HREF=#a:normalize><STRONG>normalize</STRONG></A>
 <DD>  If set, normalize coordinates of final
   layout so that the first point is at the origin, and then rotate the
-  layout so that the first edge is horizontal.
+  layout so that the angle of the first edge is specified by the value of <TT>normalize</TT> in degrees.
+  If  <TT>normalize</TT> is not a number, it is evaluated as a  <TT>bool</TT>, with true
+  corresponding to 0 degrees. <B>NOTE:</B> Since the attribute is evaluated first as a number,
+  0 and 1 cannot be used for false and true.
 
 <DT><A NAME=d:nslimit HREF=#a:nslimit><STRONG>nslimit</STRONG></A>
 ,<DT><A NAME=d:nslimit1 HREF=#a:nslimit1><STRONG>nslimit1</STRONG></A>

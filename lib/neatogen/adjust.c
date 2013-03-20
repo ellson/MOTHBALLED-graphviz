@@ -894,21 +894,50 @@ vpscAdjust(graph_t* G)
 }
 #endif
 
+/* angleSet:
+ * Return true if "normalize" is defined and valid; return angle in phi.
+ * Read angle as degrees, convert to radians.
+ * Guarantee -PI < phi <= PI.
+ */
+static int
+angleSet (graph_t* g, double* phi)
+{
+    double ang;
+    char* p;
+    char* a = agget(g, "normalize");
+
+    if (!a || (*a == '\0'))
+	return 0;
+    ang = strtod (a, &p);
+    if (p == a) {  /* no number */
+	if (mapbool(a))
+	    ang = 0.0;
+	else
+	    return 0;
+    }
+    while (ang > 180) ang -= 360;
+    while (ang <= -180) ang += 360;
+
+    *phi = RADIANS(ang);
+    return 1;
+}
+
 /* normalize:
  * If normalize is set, move first node to origin, then
- * rotate graph so that first edge is horizontal.
+ * rotate graph so that the angle of the first edge is given
+ * by the degrees from normalize.
  * FIX: Generalize to allow rotation determined by graph shape.
  */
 int normalize(graph_t * g)
 {
     node_t *v;
     edge_t *e;
-
-    double theta;
-    pointf p;
+    double phi;
+    double cosv, sinv;
+    pointf p, orig;
     int ret;
 
-    if (!mapbool(agget(g, "normalize")))
+    if (!angleSet(g, &phi))
 	return 0;
 
     v = agfstnode(g);
@@ -928,16 +957,23 @@ int normalize(graph_t * g)
     if (e == NULL)
 	return ret;
 
-    theta = -atan2(ND_pos(aghead(e))[1] - ND_pos(agtail(e))[1],
+	/* rotation necessary; pos => ccw */
+    phi -= atan2(ND_pos(aghead(e))[1] - ND_pos(agtail(e))[1],
 		   ND_pos(aghead(e))[0] - ND_pos(agtail(e))[0]);
 
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
-	p.x = ND_pos(v)[0];
-	p.y = ND_pos(v)[1];
-	ND_pos(v)[0] = p.x * cos(theta) - p.y * sin(theta);
-	ND_pos(v)[1] = p.x * sin(theta) + p.y * cos(theta);
+    if (phi) {
+	orig.x = ND_pos(agtail(e))[0];
+	orig.y = ND_pos(agtail(e))[1];
+	cosv = cos(phi);
+	sinv = sin(phi);
+	for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
+	    p.x = ND_pos(v)[0] - orig.x;
+	    p.y = ND_pos(v)[1] - orig.y;
+	    ND_pos(v)[0] = p.x * cosv - p.y * sinv + orig.x;
+	    ND_pos(v)[1] = p.x * sinv + p.y * cosv + orig.y;
+	}
+	return 1;
     }
-    if (theta) return 1;
     else return ret;
 }
 

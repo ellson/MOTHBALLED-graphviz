@@ -728,10 +728,13 @@ in the context of itself. For example, if the attribute is set,
 the first label line is long, and the second is shorter and left-justified,
 the second will align with the left-most character in the first line,
 regardless of  how large the node might be.
-:normalize:G:bool:false; notdot
+:normalize:G:double/bool:false; notdot
 If set, normalize coordinates of final
 layout so that the first point is at the origin, and then rotate the
-layout so that the first edge is horizontal.
+layout so that the angle of the first edge is specified by the value of <TT>normalize</TT> in degrees.
+If  <TT>normalize</TT> is not a number, it is evaluated as a  <TT>bool</TT>, with true
+corresponding to 0 degrees. <B>NOTE:</B> Since the attribute is evaluated first as a number,
+0 and 1 cannot be used for false and true.
 :nslimit/nslimit1:G:double;  dot
 Used to set number of iterations in
 network simplex applications. <B>nslimit</B> is used in
