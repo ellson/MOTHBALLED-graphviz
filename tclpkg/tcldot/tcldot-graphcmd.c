@@ -117,9 +117,9 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	}
 #ifndef WITH_CGRAPH
 	e = agedge(g, tail, head);
-	agbindrec(ce, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
 #else
 	e = agedge(g, tail, head, NULL, 1);
+	agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
 	Tcl_AppendResult(interp, obj2cmd(e), NULL);
 #endif
 #ifndef WITH_CGRAPH
