@@ -881,7 +881,7 @@ Agnode_t *nexttail(Agnode_t *n, Agnode_t *t)
     if (!e)
         return NULL;
     do {
-        e = agnxtout(g, e);
+        e = agnxtin(g, e);
         if (!e)
             return NULL;
     } while (agtail(e) == t);
