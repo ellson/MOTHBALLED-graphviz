@@ -119,8 +119,10 @@ int gvFreeLayout(GVC_t * gvc, Agraph_t * g)
     
     if (GD_drawing(g)) {
 	graph_cleanup(g);
+#ifndef WITH_CGRAPH
 	GD_drawing(g) = NULL;
 	GD_drawing(g->root) = NULL;
+#endif
     }
     return 0;
 }

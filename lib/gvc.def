@@ -147,6 +147,7 @@ gvputc
 gvputs    
 gvRender    
 gvRenderData    
+gvFreeRenderData    
 gvRenderFilename    
 gvRenderJobs    
 gvToggle    

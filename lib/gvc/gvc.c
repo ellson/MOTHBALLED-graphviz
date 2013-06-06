@@ -252,6 +252,14 @@ int gvRenderData(GVC_t *gvc, graph_t *g, const char *format, char **result, unsi
     return rc;
 }
 
+/* gvFreeRenderData:
+ * Utility routine to free memory allocated in gvRenderData, as the application code may use
+ * a different runtime library.
+ */
+void gvFreeRenderData (char* data)
+{
+    free (data);
+}
 
 void gvAddLibrary(GVC_t *gvc, gvplugin_library_t *lib)
 {

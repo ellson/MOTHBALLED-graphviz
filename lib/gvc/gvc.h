@@ -78,6 +78,9 @@ extern int gvRenderContext(GVC_t *gvc, graph_t *g, const char *format, void *con
 /* Render layout in a specified format to a malloc'ed string */
 extern int gvRenderData(GVC_t *gvc, graph_t *g, const char *format, char **result, unsigned int *length);
 
+/* Free memory allocated and pointed to by *result in gvRenderData */
+extern void gvFreeRenderData (char* data);
+
 /* Render layout according to -T and -o options found by gvParseArgs */
 extern int gvRenderJobs(GVC_t *gvc, graph_t *g);
 
