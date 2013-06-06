@@ -159,6 +159,7 @@ agxget
 agxset	
 node_in_subg	
 agread
+agmemread
 agsetfile
 agcontains
 agreseterrors
