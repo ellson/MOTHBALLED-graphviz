@@ -93,9 +93,6 @@ static int dotnew(ClientData clientData, Tcl_Interp * interp,
 #endif
 	i = 2;
     }
-#ifdef WITH_CGRAPH
-    agbindrec(g, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
-#endif
     if (!g) {
 	Tcl_AppendResult(interp, "\nFailure to open graph.", NULL);
 	return TCL_ERROR;
@@ -112,11 +109,12 @@ static int dotnew(ClientData clientData, Tcl_Interp * interp,
 #endif				/* TCLOBJ */
 #endif
     setgraphattributes(g, &argv[i], argc - i);
+
+#ifndef WITH_CGRAPH
     /* we use GD_drawing(g) as a flag that layout has been done.
      * so we make sure that it is initialized to "not done" */
     GD_drawing(g) = NULL;
-
-#ifdef WITH_CGRAPH
+#else
     Tcl_AppendResult(interp, obj2cmd(g), NULL);
 #endif
 
@@ -240,18 +238,14 @@ static int dotread(ClientData clientData, Tcl_Interp * interp,
 	}
 	return TCL_ERROR;
     }
-#ifdef WITH_CGRAPH
-    agbindrec(g, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
-#endif
     if (agerrors()) {
 	Tcl_AppendResult(interp, "\nSyntax errors in file \"", argv[1], " \"", NULL);
 	return TCL_ERROR;
     }
+#ifndef WITH_CGRAPH
     /* we use GD_drawing(g) as a flag that layout has been done.
      * so we make sure that it is initialized to "not done" */
     GD_drawing(g) = NULL;
-
-#ifndef WITH_CGRAPH
     return (tcldot_fixup((ictx_t *)clientData, g));
 #else
     Tcl_AppendResult(interp, obj2cmd(g), NULL);
@@ -295,18 +289,14 @@ static int dotstring(ClientData clientData, Tcl_Interp * interp,
 	}
 	return TCL_ERROR;
     }
-#ifdef WITH_CGRAPH
-    agbindrec(g, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
-#endif
     if (agerrors()) {
 	Tcl_AppendResult(interp, "\nSyntax errors in string \"", argv[1], " \"", NULL);
 	return TCL_ERROR;
     }
+#ifndef WITH_CGRAPH
     /* we use GD_drawing(g) as a flag that layout has been done.
      * so we make sure that it is initialized to "not done" */
     GD_drawing(g) = NULL;
-
-#ifndef WITH_CGRAPH
     return (tcldot_fixup((ictx_t *)clientData, g));
 #else
     Tcl_AppendResult(interp, obj2cmd(g), NULL);

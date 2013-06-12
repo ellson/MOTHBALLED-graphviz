@@ -91,7 +91,6 @@ int nodecmd(ClientData clientData, Tcl_Interp * interp,
 	}
 #ifdef WITH_CGRAPH
 	e = agedge(g, n, head, NULL, 1);
-	agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
         Tcl_AppendResult(interp, obj2cmd(e), NULL);
 #else
 	e = agedge(g, n, head);

@@ -119,7 +119,6 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	e = agedge(g, tail, head);
 #else
 	e = agedge(g, tail, head, NULL, 1);
-	agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
 	Tcl_AppendResult(interp, obj2cmd(e), NULL);
 #endif
 #ifndef WITH_CGRAPH
@@ -147,7 +146,6 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    /* if odd number of args then argv[2] is name */
 #ifdef WITH_CGRAPH
 	    n = agnode(g, argv[2], 1);
-	    agbindrec(n, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
 #else
 	    n = agnode(g, argv[2]);
 	    if (!(np = (Agnode_t **) tclhandleXlateIndex(ictx->nodeTblPtr, AGID(n))) || *np != n) {
@@ -169,7 +167,6 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	} else {
 #ifdef WITH_CGRAPH
 	    n = agnode(g, NULL, 1);  /* anon node */
-	    agbindrec(n, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
 #else
 	    /* else use handle as name */
 	    np = (Agnode_t **) tclhandleAlloc(ictx->nodeTblPtr, Tcl_GetStringResult(interp), &id);
@@ -318,14 +315,22 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
     } else if ((c == 'l')
 	       && (strncmp(argv[1], "layoutedges", length) == 0)) {
 	g = agroot(g);
+#ifndef WITH_CGRAPH
 	if (!GD_drawing(g))
+#else
+	if (!aggetrec (g, "Agraphinfo_t",0))
+#endif
 	    tcldot_layout(gvc, g, (argc > 2) ? argv[2] : NULL);
 	return TCL_OK;
 
     } else if ((c == 'l')
 	       && (strncmp(argv[1], "layoutnodes", length) == 0)) {
 	g = agroot(g);
+#ifndef WITH_CGRAPH
 	if (!GD_drawing(g))
+#else
+	if (!aggetrec (g, "Agraphinfo_t",0))
+#endif
 	    tcldot_layout(gvc, g, (argc > 2) ? argv[2] : NULL);
 	return TCL_OK;
 
@@ -579,7 +584,11 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 
 	/* make sure that layout is done */
 	g = agroot(g);
+#ifndef WITH_CGRAPH
 	if (!GD_drawing(g) || argc > 3)
+#else
+	if (!aggetrec (g, "Agraphinfo_t",0) || argc > 3)
+#endif
 	    tcldot_layout (gvc, g, (argc > 3) ? argv[3] : NULL);
 
 	/* render graph TK canvas commands */
@@ -616,7 +625,11 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 
 	/* make sure that layout is done */
 	g = agroot(g);
+#ifndef WITH_CGRAPH
 	if (!GD_drawing(g) || argc > 4)
+#else
+	if (!aggetrec (g, "Agraphinfo_t",0) || argc > 4)
+#endif
 	    tcldot_layout(gvc, g, (argc > 4) ? argv[4] : NULL);
 	
 	gvc->common.viewNum = 0;
@@ -786,9 +799,12 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	job->output_filename = NULL;
 
 	/* make sure that layout is done  - unless canonical output */
-	if ((!GD_drawing(g) || argc > 4) && !(job->flags & LAYOUT_NOT_REQUIRED)) {
+#ifndef WITH_CGRAPH
+	if ((!GD_drawing(g) || argc > 4) && !(job->flags & LAYOUT_NOT_REQUIRED))
+#else
+	if ((!aggetrec (g, "Agraphinfo_t",0) || argc > 4) && !(job->flags & LAYOUT_NOT_REQUIRED))
+#endif
 	    tcldot_layout(gvc, g, (argc > 4) ? argv[4] : NULL);
-	}
 
 	gvc->common.viewNum = 0;
 	gvRenderJobs(gvc, g);
