@@ -112,10 +112,16 @@ memiofread(void *chan, char *buf, int bufsize)
     l = 0;
     ptr = s->data + s->cur;
     optr = buf;
+    /* We know we have at least one character */
+    c = *ptr++;
     do {
-        *optr++ = c = *ptr++;
+        *optr++ = c;
         l++;
-    } while (c && (c != '\n') && (l < bufsize));
+	/* continue if c is not newline, we have space in buffer,
+	 * and next character is non-null (we are working with
+	 * null-terminated strings.
+	 */
+    } while ((c != '\n') && (l < bufsize) && (c = *ptr++));
     s->cur += l;
     return l;
 }
