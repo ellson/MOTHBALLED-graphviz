@@ -7,9 +7,6 @@
 .SH NAME
 gvpr \- graph pattern scanning and processing language
 .br
-( previously known as
-.B gpr
-)
 .SH SYNOPSIS
 .B gvpr
 [\fB\-icnqV?\fP]
@@ -32,6 +29,8 @@ gvpr \- graph pattern scanning and processing language
 ]
 .SH DESCRIPTION
 .B gvpr
+(previously known as
+.BR gpr )
 is a graph stream editor inspired by \fBawk\fP.
 It copies input graphs to its
 output, possibly transforming their structure and attributes,
@@ -144,7 +143,6 @@ These are separated into blocks, a block consisting of an optional
 the next \fBBEG_G\fP statement, if any.
 The top\(hylevel semantics of a \fBgvpr\fP program are:
 .PP
-.ta \w'\f(CWdelete array[expression]'u
 .RS
 .nf
 Evaluate the \fBBEGIN\fP clause, if any.
@@ -213,7 +211,6 @@ A statement can be a declaration of a function, a variable
 or an array, or an executable statement. For declarations, there
 is a single scope. Array declarations have the form: 
 .PP
-.ta \w'\f(CWdelete array[expression]'u
 .RS
 .nf
 \fI type array \fB[\fP type0 \fB]\fR
@@ -230,9 +227,9 @@ as the name of an attribute of a node, edge or graph, depending on the
 context.
 .PP
 Executable statements can be one of the following:
-.ta \w'\f(CWdelete array[expression]'u
 .RS
-.nf
+.TS
+l l.
 \fB{\fR [\fI statement ... \fR] \fB}\fR
 \fIexpression\fP	\fR// commonly\fP\fI var \fB=\fP expression\fR
 \fBif(\fI expression \fP)\fI statement \fR[ \fBelse\fI statement \fR]
@@ -244,7 +241,7 @@ Executable statements can be one of the following:
 \fBbreak [\fI expression \fP]
 \fBcontinue [\fI expression \fP]
 \fBreturn [\fI expression \fP]\fR
-.fi
+.TE
 .RE
 .SM
 Items in brackets are optional.
@@ -1031,7 +1028,6 @@ graph ignoring edge directions. See the item on \fBTV_dfs\fR above
 for the role of \fB$tvroot\fP.
 .SH EXAMPLES
 .PP
-.ta \w'\f(CWdelete array[expression]'u
 .RS
 .nf
 \fBgvpr \-i 'N[color=="blue"]' file.gv\fP
@@ -1041,7 +1037,6 @@ for the role of \fB$tvroot\fP.
 .PP
 Generate the node\(hyinduced subgraph of all nodes with color blue.
 .PP
-.ta \w'\f(CWdelete array[expression]'u
 .RS
 .nf
 \fBgvpr \-c 'N[color=="blue"]{color = "red"}' file.gv\fP
@@ -1051,7 +1046,6 @@ Generate the node\(hyinduced subgraph of all nodes with color blue.
 .PP
 Make all blue nodes red.
 .PP
-.ta \w'\f(CWdelete array[expression]'u
 .RS
 .nf
 \fBBEGIN { int n, e; int tot_n = 0; int tot_e = 0; }
@@ -1069,7 +1063,6 @@ END { printf ("%d nodes %d edges total\\n", tot_n, tot_e) }\fP
 .PP
 Version of the program \fBgc\fP.
 .PP
-.ta \w'\f(CWdelete array[expression]'u
 .RS
 .nf
 \fBgvpr \-c ""\fP
@@ -1079,7 +1072,6 @@ Version of the program \fBgc\fP.
 .PP
 Equivalent to \fBnop\fP.
 .PP
-.ta \w'\f(CWdelete array[expression]'u
 .RS
 .nf
 \fBBEG_G { graph_t g = graph ("merge", "S"); }
@@ -1097,7 +1089,6 @@ END_G { $O = g; }\fP
 Produces a strict version of the input graph, where the weight attribute
 of an edge indicates how many edges from the input graph the edge represents.
 .PP
-.ta \w'\f(CWdelete array[expression]'u
 .RS
 .nf
 \fBBEGIN {node_t n; int deg[]}
@@ -1113,7 +1104,6 @@ END_G {
 .PP
 Computes the degrees of nodes with edges.
 .PP
-.ta \w'\f(CWdelete array[expression]'u
 .RS
 .nf
 \fBBEGIN {
