@@ -369,6 +369,7 @@ static Agraph_t *makeDotGraph(SparseMatrix A, char *name, int dim,
 
 static char* useString = "Usage: %s [-uvcl] [-o file] matrix_market_filename\n\
   -u - make graph undirected\n\
+  -U i whether to treat unsymmetric square matrix as a bipartite graph. 0 (never), 1 (default, pattern unsymmetric as bipartite), 2 (unsymmetric matrix always as bipartite. 3: always treat square matrix as bipartite.\n\
   -v - assign len to edges\n\
   -c - assign color and wt to edges\n\
   -l - add label\n\
@@ -399,6 +400,7 @@ typedef struct {
     int with_label;
     int with_color;
     int with_val;
+  int bipartite;
 } parms_t;
 
 static void init(int argc, char **argv, parms_t * p)
@@ -407,7 +409,7 @@ static void init(int argc, char **argv, parms_t * p)
 
     cmd = argv[0];
     opterr = 0;
-    while ((c = getopt(argc, argv, ":o:uvcl")) != -1) {
+    while ((c = getopt(argc, argv, ":o:uvclU:")) != -1) {
 	switch (c) {
 	case 'o':
 	    p->outf = openF(optarg, "w");
@@ -424,7 +426,16 @@ static void init(int argc, char **argv, parms_t * p)
 	case 'c':
 	    p->with_color = 1;
 	    break;
-	case '?':
+	case 'U':{
+	  int u;
+	  if (sscanf(optarg,"%d",&u) <= 0 || u < 0 || u > BIPARTITE_ALWAYS) {
+	    usage(1);
+	  } else {
+	    p->bipartite = u;
+	  }
+	  break;
+	}
+ 	case '?':
 	    if (optopt == '?')
 		usage(0);
 	    else
@@ -458,6 +469,7 @@ int main(int argc, char *argv[])
     pv.with_label = 0;
     pv.with_color = 0;
     pv.with_val = 0;
+    pv.bipartite = BIPARTITE_PATTERN_UNSYM;
     init(argc, argv, &pv);
 
     /* ======================= read graph ==================== */
@@ -468,7 +480,7 @@ int main(int argc, char *argv[])
 	usage(1);
     }
 
-    A = SparseMatrix_to_square_matrix(A, BIPARTITE_PATTERN_UNSYM);
+    A = SparseMatrix_to_square_matrix(A, pv.bipartite);
 
     if (!A) {
 	fprintf(stderr, "cannot import from file %s\n", pv.infile);
@@ -487,3 +499,4 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+
