@@ -15,6 +15,7 @@
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
+#include "builddate.h"
 //windows.h for win machines
 #if defined(_WIN32) && !defined(__CYGWIN__)
 #define WIN32_LEAN_AND_MEAN 1
@@ -94,16 +95,22 @@ static char *useString = "Usage: smyrns [-v?] <file>\n\
 
 static void usage(int v)
 {
-    printf(useString);
+    fputs(useString, stdout);
     exit(v);
 }
+
+static char *Info[] = {
+    "smyrna",                   /* Program */
+    VERSION,                    /* Version */
+    BUILDDATE                   /* Build Date */
+};
 
 
 static char *parseArgs(int argc, char *argv[], ViewInfo * view)
 {
     unsigned int c;
 
-    while ((c = getopt(argc, argv, ":eKf:txv?")) != -1) {
+    while ((c = getopt(argc, argv, ":eKf:txvV?")) != -1) {
 	switch (c) {
 	case 'e':
 	    view->drawSplines = 1;
@@ -127,6 +134,11 @@ static char *parseArgs(int argc, char *argv[], ViewInfo * view)
 	    view->optArg=strdup(optarg);
 	    break;
 
+	case 'V':
+	    fprintf(stderr, "%s version %s (%s)\n",
+		    Info[0], Info[1], Info[2]);
+	    exit (0);
+	    break;
 	case '?':
 	    if (optopt == '?')
 		usage(0);
