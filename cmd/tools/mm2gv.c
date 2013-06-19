@@ -368,11 +368,15 @@ static Agraph_t *makeDotGraph(SparseMatrix A, char *name, int dim,
 }
 
 static char* useString = "Usage: %s [-uvcl] [-o file] matrix_market_filename\n\
-  -u - make graph undirected\n\
-  -U i whether to treat unsymmetric square matrix as a bipartite graph. 0 (never), 1 (default, pattern unsymmetric as bipartite), 2 (unsymmetric matrix always as bipartite. 3: always treat square matrix as bipartite.\n\
-  -v - assign len to edges\n\
-  -c - assign color and wt to edges\n\
-  -l - add label\n\
+  -u   - make graph undirected\n\
+  -U i - treat non-square matrix as a bipartite graph\n\
+         i = 0   never\n\
+         i = 1   if pattern unsymmetric (default)\n\
+         i = 2   if matrix unsymmetric\n\
+         i = 3   always\n\
+  -v   - assign len to edges\n\
+  -c   - assign color and wt to edges\n\
+  -l   - add label\n\
   -o <file> - output file \n";
 
 static void usage(int eval)

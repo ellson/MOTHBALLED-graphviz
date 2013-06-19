@@ -7,6 +7,9 @@ mm2gv \- Matrix Market-DOT converters
 .B \-cluv?
 ]
 [
+.BI -U i
+]
+[
 .BI -o outfile
 ]
 [ 
@@ -16,6 +19,21 @@ mm2gv \- Matrix Market-DOT converters
 .SH DESCRIPTION
 .B mm2gv
 converts a sparse matrix of the Matrix Market format to a graph in the GV (formerly DOT) format. 
+If the matrix \fIM\fP is not square, the graph is considered bipartite and the matrix is viewed
+as a bipartite graph adjacency matrix, with the rows and columns of the matrix specifying the
+two sets of vertices. Equivalently, the matrix is converted into a symmetric square matrix
+.TS
+c c.
+0    \fIM\fP
+\fIM\fP^T  0
+.TE
+a block matrix with square blocks of 0's in the upper left and lower right, the upper right
+block being \fIM\fP and the lower left block being the transpose of \fIM\fP.
+This matrix is then viewed as the adjacency matrix of the graph.
+.P
+For a square matrix, \fBmm2gv\fP uses it directly as an adjacency matrix if its pattern of non-zero
+entries is symmetric; otherwise, it will treat it as a bipartite graph as with the case of non-square
+matrices. This behavior can be modified by the \fB-U\fP flag.
 .SH OPTIONS
 The following options are supported:
 .TP
@@ -35,6 +53,15 @@ If specified, the graph is assumed to be undirected. By default, the graph gener
 .B \-v
 This flag causes \fBmm2gv\fP to store the matrix values as the \fI"len"\fP attribute of the
 corresponding edge.
+.TP
+.BI \-U "bflag"
+Specifies how square matrices are handled. If \fIbflag\fP is 0, a square matrix will always be treated
+as an adjacency matrix.  
+If \fIbflag\fP is 1 (the default), a square matrix with a symmetric pattern
+of non-zero entries will be used as an adjacency matrix; otherwise, it will be used a bipartite graph.
+If \fIbflag\fP is 2, a symmetric matrix
+will be used as an adjacency matrix; otherwise, it will be used a bipartite graph.
+If \fIbflag\fP is 3, any input matrix will be treated like a bipartite graph.
 .TP
 .BI \-o "outfile"
 Prints output to the file \fIoutfile\fP. If not given, \fBmm2gv\fP

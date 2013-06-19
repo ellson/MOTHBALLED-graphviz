@@ -157,7 +157,7 @@ mm2gv_LDADD = \
 	$(top_builddir)/lib/cgraph/libcgraph.la @MATH_LIBS@
 
 mm2gv.1.pdf: mm2gv.1
-	- @GROFF@ -Tps -man mm2gv.1 | @PS2PDF@ - - >mm2gv.1.pdf
+	- @TBL@ mm2gv.1 | @GROFF@ -Tps -man | @PS2PDF@ - - >mm2gv.1.pdf
 
 gv2gml_SOURCES = gv2gml.c
 
