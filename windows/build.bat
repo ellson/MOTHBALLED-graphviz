@@ -26,7 +26,7 @@ rmdir /S /Q %targetDir%
 del %buildBaseDir%*.msi
 del %buildBaseDir%*.tar
 del %buildBaseDir%*.gz
-del %buildBaseDir%*.gz
+del %buildBaseDir%*.zip
 del %outputDir%*.exe
 del %outputDir%*.dll
 REM *****************************************************
@@ -46,6 +46,33 @@ xcopy /Y %sourceLibDir%gd %buildBaseDir%\graphviz2\lib\gd\
 del %buildDir%libltdl\config.h /q
 copy /Y %sourceLibDir%*.lib %targetDir%bin\
 
+REM Copy installed .h files to release\include\graphviz
+REM *****************************************************
+copy /Y %buildDir%lib\cdt\cdt.h %buildBaseDir%release\include\graphviz
+copy /Y %buildDir%lib\cgraph\cgraph.h %buildBaseDir%release\include\graphviz
+copy /Y %buildDir%lib\graph\graph.h %buildBaseDir%release\include\graphviz
+copy /Y %buildDir%lib\common\arith.h %buildBaseDir%release\include\graphviz
+copy /Y %buildDir%lib\common\geom.h %buildBaseDir%release\include\graphviz
+copy /Y %buildDir%lib\common\types.h %buildBaseDir%release\include\graphviz
+copy /Y %buildDir%lib\common\color.h %buildBaseDir%release\include\graphviz
+copy /Y %buildDir%lib\common\textpara.h %buildBaseDir%release\include\graphviz
+copy /Y %buildDir%lib\common\usershape.h %buildBaseDir%release\include\graphviz
+copy /Y %buildDir%lib\pathplan\pathplan.h %buildBaseDir%release\include\graphviz
+copy /Y %buildDir%lib\pathplan\pathgeom.h %buildBaseDir%release\include\graphviz
+copy /Y %buildDir%lib\gvc\gvc.h %buildBaseDir%release\include\graphviz
+copy /Y %buildDir%lib\gvc\gvcext.h %buildBaseDir%release\include\graphviz
+copy /Y %buildDir%lib\gvc\gvcjob.h %buildBaseDir%release\include\graphviz
+copy /Y %buildDir%lib\gvc\gvcommon.h %buildBaseDir%release\include\graphviz
+copy /Y %buildDir%lib\gvc\gvplugin.h %buildBaseDir%release\include\graphviz
+copy /Y %buildDir%lib\gvc\gvplugin_render.h %buildBaseDir%release\include\graphviz
+copy /Y %buildDir%lib\gvc\gvplugin_textlayout.h %buildBaseDir%release\include\graphviz
+copy /Y %buildDir%lib\gvc\gvplugin_device.h %buildBaseDir%release\include\graphviz
+copy /Y %buildDir%lib\gvc\gvplugin_layout.h %buildBaseDir%release\include\graphviz
+copy /Y %buildDir%lib\gvc\gvplugin_loadimage.h %buildBaseDir%release\include\graphviz
+copy /Y %buildDir%lib\pack\pack.h %buildBaseDir%release\include\graphviz
+copy /Y %buildDir%lib\xdot\xdot.h %buildBaseDir%release\include\graphviz
+copy /Y %buildDir%lib\gvpr\gvpr.h %buildBaseDir%release\include\graphviz
+
 REM Copy few files from source tree for windows build
 REM *****************************************************
 copy /Y %buildDir%windows\config.h %buildDir%
@@ -64,13 +91,13 @@ REM Copy release outputs
 REM *****************************************************
 copy /Y %sourceLibDir%*.*  %targetDir%bin
 copy /Y %outputDir%*.exe  %targetDir%bin
-copy /Y %outputDir%dot.exe %targetDir%bin\circo.exe
-copy /Y %outputDir%dot.exe %targetDir%bin\fdp.exe
-copy /Y %outputDir%dot.exe %targetDir%bin\neato.exe
-copy /Y %outputDir%dot.exe %targetDir%bin\osage.exe
-copy /Y %outputDir%dot.exe %targetDir%bin\patchwork.exe
 copy /Y %outputDir%dot.exe %targetDir%bin\sfdp.exe
+copy /Y %outputDir%dot.exe %targetDir%bin\patchwork.exe
+copy /Y %outputDir%dot.exe %targetDir%bin\circo.exe
+copy /Y %outputDir%dot.exe %targetDir%bin\neato.exe
+copy /Y %outputDir%dot.exe %targetDir%bin\fdp.exe
 copy /Y %outputDir%dot.exe %targetDir%bin\twopi.exe
+copy /Y %outputDir%dot.exe %targetDir%bin\osage.exe
 copy /Y %outputDir%gv2gml.exe %targetDir%bin\gml2gv.exe
 copy /Y %outputDir%*.dll  %targetDir%bin
 copy /Y %outputDir%*.lib  %targetDir%lib\release\lib
@@ -79,7 +106,7 @@ REM *****************************************************
 
 REM Run dot -c to generate config6 file. condig6 is shipped in the package
 REM *****************************************************
-%targetDir%\bin\dot -c
+%targetDir%bin\dot -c
 REM *****************************************************
 
 
@@ -96,9 +123,8 @@ del %setupProjectDir%Release\*.msi
 devenv %setupProjectFile% -Clean release -Out %buildDir%packagingLog.txt
 devenv %setupProjectFile% -Build release -Out %buildDir%packagingLog.txt
 COPY /Y %setupProjectDir%Release\%setupProjectName%.msi %buildBaseDir%graphviz-2.31.%date:~10,4%%date:~4,2%%date:~7,2%.msi
-msitran -a c:\graphviz-ms\addtopath.mst %buildBaseDir%graphviz-2.31.%date:~10,4%%date:~4,2%%date:~7,2%.msi
+REM msitran -a c:\graphviz-ms\addtopath.mst %buildBaseDir%graphviz-2.31.%date:~10,4%%date:~4,2%%date:~7,2%.msi
 pscp -q *.msi graphviz-web://data/pub/graphviz/development/windows > pscpLog.txt 2>&1
-
 7z a -tzip c:\graphviz-ms\graphviz.zip c:\graphviz-ms\release
 move /Y c:\graphviz-ms\graphviz.zip %buildBaseDir%graphviz-2.31.%date:~10,4%%date:~4,2%%date:~7,2%.zip
 pscp -q *.zip graphviz-web://data/pub/graphviz/development/windows >> pscpLog.txt 2>&1
