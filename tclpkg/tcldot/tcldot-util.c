@@ -223,11 +223,12 @@ void setgraphattributes(Agraph_t * g, char *argv[], int argc)
     Agsym_t *a;
 
     for (i = 0; i < argc; i++) {
-	if (!(a = agfindgraphattr(agroot(g), argv[i])))
 #ifndef WITH_CGRAPH
+	if (!(a = agfindgraphattr(agroot(g), argv[i])))
 	    a = agraphattr(agroot(g), argv[i], "");
 	agxset(g, a->index, argv[++i]);
 #else
+	if (!(a = agfindgraphattr(agroot(g), argv[i])))
 	    a = agattr(agroot(g), AGRAPH, argv[i], "");
 	agxset(g, a, argv[++i]);
 #endif
@@ -245,13 +246,20 @@ void setedgeattributes(Agraph_t * g, Agedge_t * e, char *argv[], int argc)
 	    i++;
 	    continue;
 	}
-	if (!(a = agfindedgeattr(g, argv[i])))
 #ifndef WITH_CGRAPH
+	if (!(a = agfindedgeattr(g, argv[i])))
 	    a = agedgeattr(agroot(g), argv[i], "");
 	agxset(e, a->index, argv[++i]);
 #else
-	    a = agattr(agroot(g), AGEDGE, argv[i], "");
-	agxset(e, a, argv[++i]);
+	if (e) {
+	    if (!(a = agfindedgeattr(g, argv[i])))
+		a = agattr(agroot(g), AGEDGE, argv[i], "");
+	    agxset(e, a, argv[++i]);
+	}
+	else {
+	    agattr(g, AGEDGE, argv[i], argv[i+1]);
+	    i++;
+	}
 #endif
     }
 }
@@ -262,13 +270,20 @@ void setnodeattributes(Agraph_t * g, Agnode_t * n, char *argv[], int argc)
     Agsym_t *a;
 
     for (i = 0; i < argc; i++) {
-	if (!(a = agfindnodeattr(g, argv[i])))
 #ifndef WITH_CGRAPH
+	if (!(a = agfindnodeattr(g, argv[i])))
 	    a = agnodeattr(agroot(g), argv[i], "");
 	agxset(n, a->index, argv[++i]);
 #else
-	    a = agattr(agroot(g), AGNODE, argv[i], "");
-	agxset(n, a, argv[++i]);
+	if (n) {
+	    if (!(a = agfindnodeattr(g, argv[i])))
+		a = agattr(agroot(g), AGNODE, argv[i], "");
+	    agxset(n, a, argv[++i]);
+	}
+	else {
+	    agattr(g, AGNODE, argv[i], argv[i+1]);
+	    i++;
+	}
 #endif
     }
 }
