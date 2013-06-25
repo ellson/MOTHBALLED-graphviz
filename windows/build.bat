@@ -43,6 +43,8 @@ xcopy /Y %buildDir%windows\FEATURE %buildDir%\FEATURE\ /S
 xcopy /Y %sourceLibDir%GTS %buildDir%lib\GTS\ /S
 xcopy /Y %sourceLibDir%release %buildBaseDir%release\ /S
 xcopy /Y %sourceLibDir%gd %buildBaseDir%\graphviz2\lib\gd\
+xcopy /Y %sourceLibDir%GL %buildBaseDir%\graphviz2\cmd\smyrna\GL\
+
 del %buildDir%libltdl\config.h /q
 copy /Y %sourceLibDir%*.lib %targetDir%bin\
 
