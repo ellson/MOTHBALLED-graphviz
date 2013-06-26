@@ -106,6 +106,11 @@ copy /Y %outputDir%*.lib  %targetDir%lib\release\lib
 copy /Y %outputDir%*.dll  %targetDir%lib\release\dll
 REM *****************************************************
 
+REM Copy smyrna shared files
+xcopy /Y %buildDir%share\gui %targetDir%share\graphviz\smyrna\ /S
+REM *****************************************************
+
+REM *****************************************************
 REM Run dot -c to generate config6 file. condig6 is shipped in the package
 REM *****************************************************
 %targetDir%bin\dot -c
