@@ -1,5 +1,5 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
+#
 # Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Pathplan", "lib\pathplan\Pathplan.vcproj", "{BD347753-A09D-48B4-8752-F1D8D9CF235D}"
 	ProjectSection(ProjectDependencies) = postProject
