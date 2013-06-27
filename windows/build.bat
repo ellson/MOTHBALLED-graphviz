@@ -108,6 +108,7 @@ REM *****************************************************
 
 REM Copy smyrna shared files
 xcopy /Y %buildDir%share\gui %targetDir%share\graphviz\smyrna\ /S
+xcopy /Y %buildDir%share\examples %targetDir%share\graphviz\examples\ /S
 REM *****************************************************
 
 REM *****************************************************

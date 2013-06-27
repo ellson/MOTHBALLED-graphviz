@@ -543,12 +543,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_2383DE1A95EC407EB6D682093A0D52D3"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_23AAC3BFD1A146C38FAAB88253570CEB"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -886,12 +880,6 @@
         "Entry"
         {
         "MsmKey" = "8:_3697260FB6EA42469E7E769815FB16C7"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_36D792D2B20E46A1A539B76AF037F7A1"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1833,12 +1821,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_713BC23BB7C94F919A3118683F27F549"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_71A33D4CBF0D49D891231132F695875C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1936,12 +1918,6 @@
         "Entry"
         {
         "MsmKey" = "8:_754FD15A6DC6420FAC0DEEE226189DCF"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_75606E8A3B9C476C928B026BF7973FBC"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2074,12 +2050,6 @@
         "Entry"
         {
         "MsmKey" = "8:_7D32B174E5C6409CB6D4B9EAF62B06EF"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_7D47E42723DE43388EDA9BCEDE7437E7"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2715,6 +2685,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_A5199651888840D58828CBAEFACAA2E8"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_A64A4F60B2D440FEAF16DBA573EE03FB"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2943,7 +2919,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_B28211C1347F4F65A94B0C0D6F45869F"
+        "MsmKey" = "8:_B28186595FBE4964BFE7E220515E68E9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3069,12 +3045,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_BE044239E6984BAE94F2898209B682FA"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_BE5478CAF3C64BF398F6A799650B6C4D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3190,6 +3160,12 @@
         "Entry"
         {
         "MsmKey" = "8:_C439EF09BC1248F69A2F526BCF3EE7C6"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C4A64AD58C8044F09E0F520C7F4D631A"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3411,12 +3387,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_D3055B0352614D0295994E6DA2DB13C8"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_D39971DF218C462984BE449A24B695EC"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3454,12 +3424,6 @@
         "Entry"
         {
         "MsmKey" = "8:_D869106DD8A84882B4E212551446DBD4"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_D880D4507B784EEBBCCF7716FE1D5802"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3508,12 +3472,6 @@
         "Entry"
         {
         "MsmKey" = "8:_DAAED1DCDB7740399E8E7ABEE6B47EC1"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_DAB2F1F919944C94B14B42AE7438CBD6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3754,12 +3712,6 @@
         "Entry"
         {
         "MsmKey" = "8:_EDA9AF0A557343A395E890E1B0D0DC9C"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_EDB1B78C841D45FC9381F09E280F3FB5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -5908,26 +5860,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2383DE1A95EC407EB6D682093A0D52D3"
-            {
-            "SourcePath" = "8:..\\..\\release\\share\\graphviz\\smyrna\\new_smyrna.gladep.bak"
-            "TargetName" = "8:new_smyrna.gladep.bak"
-            "Tag" = "8:"
-            "Folder" = "8:_A86D6EE186DF4E79B112E4E66EE0BFE4"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_23AAC3BFD1A146C38FAAB88253570CEB"
             {
             "SourcePath" = "8:..\\..\\release\\share\\graphviz\\doc\\pdf\\acyclic.1.pdf"
@@ -7054,26 +6986,6 @@
             "TargetName" = "8:gtkrc"
             "Tag" = "8:"
             "Folder" = "8:_13535EFEF6B3450482DEBCA2905811A8"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_36D792D2B20E46A1A539B76AF037F7A1"
-            {
-            "SourcePath" = "8:..\\..\\release\\share\\graphviz\\smyrna\\new_smyrna.glade.bak"
-            "TargetName" = "8:new_smyrna.glade.bak"
-            "Tag" = "8:"
-            "Folder" = "8:_A86D6EE186DF4E79B112E4E66EE0BFE4"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -10208,26 +10120,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_713BC23BB7C94F919A3118683F27F549"
-            {
-            "SourcePath" = "8:..\\..\\release\\share\\graphviz\\smyrna\\new_smyrna.gladep"
-            "TargetName" = "8:new_smyrna.gladep"
-            "Tag" = "8:"
-            "Folder" = "8:_A86D6EE186DF4E79B112E4E66EE0BFE4"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_71A33D4CBF0D49D891231132F695875C"
             {
             "SourcePath" = "8:..\\..\\release\\share\\graphviz\\graphs\\directed\\clust3.gif"
@@ -10554,26 +10446,6 @@
             "TargetName" = "8:ccomps.exe"
             "Tag" = "8:"
             "Folder" = "8:_2CB80ACEA55C4CCD8EC8A66D0DE2ADA9"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_75606E8A3B9C476C928B026BF7973FBC"
-            {
-            "SourcePath" = "8:..\\..\\release\\share\\graphviz\\smyrna\\smyrna.gladep"
-            "TargetName" = "8:smyrna.gladep"
-            "Tag" = "8:"
-            "Folder" = "8:_A86D6EE186DF4E79B112E4E66EE0BFE4"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -11014,26 +10886,6 @@
             "TargetName" = "8:sfdp.exe"
             "Tag" = "8:"
             "Folder" = "8:_2CB80ACEA55C4CCD8EC8A66D0DE2ADA9"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7D47E42723DE43388EDA9BCEDE7437E7"
-            {
-            "SourcePath" = "8:..\\..\\release\\share\\graphviz\\smyrna\\Thumbs.db"
-            "TargetName" = "8:Thumbs.db"
-            "Tag" = "8:"
-            "Folder" = "8:_A86D6EE186DF4E79B112E4E66EE0BFE4"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -13148,6 +13000,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A5199651888840D58828CBAEFACAA2E8"
+            {
+            "SourcePath" = "8:..\\..\\release\\share\\graphviz\\examples\\world.gv"
+            "TargetName" = "8:world.gv"
+            "Tag" = "8:"
+            "Folder" = "8:_D9210589EFDF424CBF2E6F2D8DBD1A3F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A64A4F60B2D440FEAF16DBA573EE03FB"
             {
             "SourcePath" = "8:..\\..\\release\\share\\man\\man1\\neato.1"
@@ -13908,12 +13780,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B28211C1347F4F65A94B0C0D6F45869F"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B28186595FBE4964BFE7E220515E68E9"
             {
-            "SourcePath" = "8:..\\..\\release\\share\\graphviz\\smyrna\\new_smyrna.glade"
-            "TargetName" = "8:new_smyrna.glade"
+            "SourcePath" = "8:..\\..\\release\\share\\graphviz\\examples\\4elt.gv"
+            "TargetName" = "8:4elt.gv"
             "Tag" = "8:"
-            "Folder" = "8:_A86D6EE186DF4E79B112E4E66EE0BFE4"
+            "Folder" = "8:_D9210589EFDF424CBF2E6F2D8DBD1A3F"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -14328,26 +14200,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BE044239E6984BAE94F2898209B682FA"
-            {
-            "SourcePath" = "8:..\\..\\release\\share\\graphviz\\smyrna\\smyrna.gladep.bak"
-            "TargetName" = "8:smyrna.gladep.bak"
-            "Tag" = "8:"
-            "Folder" = "8:_A86D6EE186DF4E79B112E4E66EE0BFE4"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_BE5478CAF3C64BF398F6A799650B6C4D"
             {
             "SourcePath" = "8:..\\..\\release\\share\\man\\man1\\lefty.1"
@@ -14734,6 +14586,26 @@
             "TargetName" = "8:round.gif"
             "Tag" = "8:"
             "Folder" = "8:_7704C4199BC641AB8AB08D3B01715F0A"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C4A64AD58C8044F09E0F520C7F4D631A"
+            {
+            "SourcePath" = "8:..\\..\\release\\bin\\libglade-2.0-0.dll"
+            "TargetName" = "8:libglade-2.0-0.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_2CB80ACEA55C4CCD8EC8A66D0DE2ADA9"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -15468,26 +15340,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D3055B0352614D0295994E6DA2DB13C8"
-            {
-            "SourcePath" = "8:..\\..\\release\\share\\graphviz\\smyrna\\smyrna.glade.bak"
-            "TargetName" = "8:smyrna.glade.bak"
-            "Tag" = "8:"
-            "Folder" = "8:_A86D6EE186DF4E79B112E4E66EE0BFE4"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D39971DF218C462984BE449A24B695EC"
             {
             "SourcePath" = "8:..\\..\\release\\lib\\release\\dll\\cdt.dll"
@@ -15614,26 +15466,6 @@
             "TargetName" = "8:a_invodot.gif"
             "Tag" = "8:"
             "Folder" = "8:_7704C4199BC641AB8AB08D3B01715F0A"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D880D4507B784EEBBCCF7716FE1D5802"
-            {
-            "SourcePath" = "8:..\\..\\release\\share\\graphviz\\smyrna\\examples\\4elt.dot"
-            "TargetName" = "8:4elt.dot"
-            "Tag" = "8:"
-            "Folder" = "8:_EBD156450A8D4DF0BF58BE0BDFA07B13"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -15794,26 +15626,6 @@
             "TargetName" = "8:libgio-2.0-0.dll"
             "Tag" = "8:"
             "Folder" = "8:_2CB80ACEA55C4CCD8EC8A66D0DE2ADA9"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DAB2F1F919944C94B14B42AE7438CBD6"
-            {
-            "SourcePath" = "8:..\\..\\release\\share\\graphviz\\smyrna\\examples\\world.dot"
-            "TargetName" = "8:world.dot"
-            "Tag" = "8:"
-            "Folder" = "8:_EBD156450A8D4DF0BF58BE0BDFA07B13"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -16614,26 +16426,6 @@
             "TargetName" = "8:doublecircle.gif"
             "Tag" = "8:"
             "Folder" = "8:_7704C4199BC641AB8AB08D3B01715F0A"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EDB1B78C841D45FC9381F09E280F3FB5"
-            {
-            "SourcePath" = "8:..\\..\\release\\share\\graphviz\\smyrna\\original_smyrna.glade"
-            "TargetName" = "8:original_smyrna.glade"
-            "Tag" = "8:"
-            "Folder" = "8:_A86D6EE186DF4E79B112E4E66EE0BFE4"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -18036,17 +17828,6 @@
                                     "Property" = "8:_81CC76F5C425413B9DB50840AE775314"
                                         "Folders"
                                         {
-                                            "{9EF0B969-E518-4E46-987F-47570745A589}:_EBD156450A8D4DF0BF58BE0BDFA07B13"
-                                            {
-                                            "Name" = "8:examples"
-                                            "AlwaysCreate" = "11:FALSE"
-                                            "Condition" = "8:"
-                                            "Transitive" = "11:FALSE"
-                                            "Property" = "8:_B4A43E1308064064A91337C4C4D6F2CF"
-                                                "Folders"
-                                                {
-                                                }
-                                            }
                                         }
                                     }
                                     "{9EF0B969-E518-4E46-987F-47570745A589}:_BB984C221B12486F8B638122C307F48E"
@@ -18056,6 +17837,17 @@
                                     "Condition" = "8:"
                                     "Transitive" = "11:FALSE"
                                     "Property" = "8:_69BE721FE6B54B809B77FBFF99EFCBFB"
+                                        "Folders"
+                                        {
+                                        }
+                                    }
+                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_D9210589EFDF424CBF2E6F2D8DBD1A3F"
+                                    {
+                                    "Name" = "8:examples"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "Condition" = "8:"
+                                    "Transitive" = "11:FALSE"
+                                    "Property" = "8:_B4A43E1308064064A91337C4C4D6F2CF"
                                         "Folders"
                                         {
                                         }
