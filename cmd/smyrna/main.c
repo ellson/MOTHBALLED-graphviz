@@ -238,13 +238,42 @@ int main(int argc, char *argv[])
     smyrnaDir = getenv("SMYRNA_PATH");
     if (!smyrnaDir) {
 #ifdef _WIN32
-	int sz =
-	    GetCurrentDirectory(0,
-				NULL) +
-	    strlen("\\share\\graphviz\\smyrna") + 1;
-	smyrnaDir = N_NEW(sz, char);
-	GetCurrentDirectory(sz, smyrnaDir);
-	smyrnaDir[strlen(smyrnaDir) - 4] = (char) 0;
+#define BSZ 1024
+#define SMYRNA "\\share\\graphviz\\smyrna"
+
+	int r;
+	char line[BSZ];
+	char* s;
+	MEMORY_BASIC_INFORMATION mbi;
+
+	if (VirtualQuery (&main, &mbi, sizeof(mbi)) == 0) {
+	    fprintf (stderr,"failed to get handle for executable.\n");
+	    return 1;
+	}
+	r = GetModuleFileName ((HMODULE)mbi.AllocationBase, line, BSZ);
+	if (!r || (r == BSZ)) {
+	    fprintf (stderr,"failed to get path for executable.\n");
+	    return 1;
+	}
+
+	/* line contains path to smyrna: "$GVROOT\bin\smyrna.exe" 
+	 * We want to obtain $GVROOT. We find the second rightmost '\'
+	 * and store a '\0' there.
+ 	 */
+	s = strrchr(line,'\\');
+	if (!s) {
+	    fprintf (stderr,"no backslash in path %s.\n", line);
+	    return 1;
+	}
+	while ((s != line) && (*(--s) != '\\')) ;
+	if (s == line) {
+	    fprintf (stderr,"no backslash in path %s.\n", line);
+	    return 1;
+	}
+	*s = '\0';
+
+	smyrnaDir = N_NEW(strlen(line)+sizeof(SMYRNA), char);
+	strcpy (smyrnaDir, line);
 	strcat(smyrnaDir, "\\share\\graphviz\\smyrna");
 #else
 	smyrnaDir = SMYRNA_PATH;
