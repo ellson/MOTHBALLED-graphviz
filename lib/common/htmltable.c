@@ -286,12 +286,13 @@ static int
 setFill(GVJ_t * job, char *color, int angle, int style, char *clrs[2])
 {
     int filled;
-    if (findStopColor(color, clrs)) {
+    float frac;
+    if (findStopColor(color, clrs, &frac)) {
 	gvrender_set_fillcolor(job, clrs[0]);
 	if (clrs[1])
-	    gvrender_set_gradient_vals(job, clrs[1], angle);
+	    gvrender_set_gradient_vals(job, clrs[1], angle, frac);
 	else
-	    gvrender_set_gradient_vals(job, DEFAULT_COLOR, angle);
+	    gvrender_set_gradient_vals(job, DEFAULT_COLOR, angle, frac);
 	if (style & RADIAL)
 	    filled = RGRADIENT;
 	else

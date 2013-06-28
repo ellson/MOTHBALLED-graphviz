@@ -68,7 +68,7 @@ static void cairogen_set_color(cairo_t * cr, gvcolor_t * color)
                         color->u.RGBA[2], color->u.RGBA[3]);
 }
 
-static void cairogen_add_color_stop_rgba(cairo_pattern_t *pat,int stop , gvcolor_t * color) 
+static void cairogen_add_color_stop_rgba(cairo_pattern_t *pat, double stop , gvcolor_t * color) 
 {
   cairo_pattern_add_color_stop_rgba (pat, stop,color->u.RGBA[0], color->u.RGBA[1],
                         color->u.RGBA[2], color->u.RGBA[3]);
@@ -293,8 +293,14 @@ static void cairo_gradient_fill (cairo_t* cr, obj_state_t* obj, int filled, poin
 	//r1 is inner radius, r2 is outter radius
 	pat = cairo_pattern_create_radial(c1.x,c1.y,r1,c2.x,c2.y,r2); 
     }
-    cairogen_add_color_stop_rgba(pat,0,&(obj->fillcolor));
-    cairogen_add_color_stop_rgba(pat,1,&(obj->stopcolor));
+    if (obj->gradient_frac > 0) {
+	cairogen_add_color_stop_rgba(pat,obj->gradient_frac - 0.001,&(obj->fillcolor));
+	cairogen_add_color_stop_rgba(pat,obj->gradient_frac,&(obj->stopcolor));
+    }
+    else {
+	cairogen_add_color_stop_rgba(pat,0,&(obj->fillcolor));
+	cairogen_add_color_stop_rgba(pat,1,&(obj->stopcolor));
+    }
     cairo_set_source (cr, pat);
     cairo_fill_preserve (cr);
     cairo_pattern_destroy (pat);

@@ -340,6 +340,7 @@ static char **checkClusterStyle(graph_t* sg, int *flagp)
 typedef struct {
     char* color;   /* segment color */
     float t;       /* segment size >= 0 */
+    boolean hasFraction;  /* true if color explicitly specifies its fraction */
 } colorseg_t;
 /* Sum of segment sizes should add to 1 */
 typedef struct {
@@ -433,7 +434,8 @@ parseSegs (char* clrs, int nseg, colorsegs_t** psegs)
 		v = left;
 	    }
 	    left -= v;
-	    s[cnum].color = color;
+	    if (v > 0) s[cnum].hasFraction = TRUE;
+	    if (*color) s[cnum].color = color;
 	    s[cnum++].t = v;
 	}
 	else {
@@ -1521,16 +1523,17 @@ static void emit_background(GVJ_t * job, graph_t *g)
     if (!(   ((job->flags & GVDEVICE_DOES_TRUECOLOR) && streq(str, "transparent"))
           || ((job->flags & GVRENDER_NO_WHITE_BG) && dfltColor))) {
 	char* clrs[2];
+	float frac;
 
-	if ((findStopColor (str, clrs))) {
+	if ((findStopColor (str, clrs, &frac))) {
 	    int filled, istyle = 0;
             gvrender_set_fillcolor(job, clrs[0]);
             gvrender_set_pencolor(job, "transparent");
 	    checkClusterStyle(g, &istyle);
 	    if (clrs[1]) 
-		gvrender_set_gradient_vals(job,clrs[1],late_int(g,G_gradientangle,0,0));
+		gvrender_set_gradient_vals(job,clrs[1],late_int(g,G_gradientangle,0,0), frac);
 	    else 
-		gvrender_set_gradient_vals(job,DEFAULT_COLOR,late_int(g,G_gradientangle,0,0));
+		gvrender_set_gradient_vals(job,DEFAULT_COLOR,late_int(g,G_gradientangle,0,0), frac);
 	    if (istyle & RADIAL)
 		filled = RGRADIENT;
 	    else
@@ -3634,12 +3637,13 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	if (!fillcolor) fillcolor = DEFAULT_FILL;
 	clrs[0] = NULL;
 	if (filled) {
-	    if (findStopColor (fillcolor, clrs)) {
+	    float frac;
+	    if (findStopColor (fillcolor, clrs, &frac)) {
         	gvrender_set_fillcolor(job, clrs[0]);
 		if (clrs[1]) 
-		    gvrender_set_gradient_vals(job,clrs[1],late_int(sg,G_gradientangle,0,0));
+		    gvrender_set_gradient_vals(job,clrs[1],late_int(sg,G_gradientangle,0,0), frac);
 		else 
-		    gvrender_set_gradient_vals(job,DEFAULT_COLOR,late_int(sg,G_gradientangle,0,0));
+		    gvrender_set_gradient_vals(job,DEFAULT_COLOR,late_int(sg,G_gradientangle,0,0), frac);
 		if (istyle & RADIAL)
 		    filled = RGRADIENT;
 	 	else
@@ -4103,3 +4107,50 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
     FINISH();
     return 0;
 }
+
+/* findStopColor:
+ * Check for colon in colorlist. If one exists, and not the first
+ * character, store the characters before the colon in clrs[0] and
+ * the characters after the colon (and before the next or end-of-string)
+ * in clrs[1]. If there are no characters after the first colon, clrs[1]
+ * is NULL. Return TRUE.
+ * If there is no non-trivial string before a first colon, set clrs[0] to
+ * NULL and return FALSE.
+ *
+ * Note that memory is allocated as a single block stored in clrs[0] and
+ * must be freed by calling function.
+ */
+boolean findStopColor (char* colorlist, char* clrs[2], float* frac)
+{
+    colorsegs_t* segs;
+    int rv;
+
+    rv = parseSegs (colorlist, 0, &segs);
+    if (rv || (segs->numc < 2) || (segs->segs[0].color == NULL)) {
+	clrs[0] = NULL;
+	return FALSE;
+    }
+
+    if (segs->numc > 2)
+	agerr (AGWARN, "More than 2 colors specified for a gradient - ignoring remaining\n");
+
+    clrs[0] = N_GNEW (strlen(colorlist)+1,char); 
+    strcpy (clrs[0], segs->segs[0].color);
+    if (segs->segs[1].color) {
+	clrs[1] = clrs[0] + (strlen(clrs[0])+1);
+	strcpy (clrs[1], segs->segs[1].color);
+    }
+    else
+	clrs[1] = NULL;
+
+    if (segs->segs[0].hasFraction)
+	*frac = segs->segs[0].t;
+    else if (segs->segs[1].hasFraction)
+	*frac = 1 - segs->segs[1].t;
+    else 
+	*frac = 0;
+
+    freeSegs (segs);
+    return TRUE;
+}
+

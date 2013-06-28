@@ -2738,13 +2738,14 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	filled = FILL;
     } else {
 	if (style & FILLED) {
+	    float frac;
 	    fillcolor = findFill (n);
-	    if (findStopColor (fillcolor, clrs)) {
+	    if (findStopColor (fillcolor, clrs, &frac)) {
         	gvrender_set_fillcolor(job, clrs[0]);
 		if (clrs[1]) 
-		    gvrender_set_gradient_vals(job,clrs[1],late_int(n,N_gradientangle,0,0));
+		    gvrender_set_gradient_vals(job,clrs[1],late_int(n,N_gradientangle,0,0), frac);
 		else 
-		    gvrender_set_gradient_vals(job,DEFAULT_COLOR,late_int(n,N_gradientangle,0,0));
+		    gvrender_set_gradient_vals(job,DEFAULT_COLOR,late_int(n,N_gradientangle,0,0), frac);
 		if (style & RADIAL)
 		    filled = RGRADIENT;
 	 	else
@@ -3616,16 +3617,19 @@ static void record_gencode(GVJ_t * job, node_t * n)
     pencolor(job, n);
     if (style & FILLED) {
 	char* fillcolor = findFill (n);
-	if (findStopColor (fillcolor, clrs)) {
+	float frac;
+	
+	if (findStopColor (fillcolor, clrs, &frac)) {
             gvrender_set_fillcolor(job, clrs[0]);
 	    if (clrs[1]) 
-		gvrender_set_gradient_vals(job,clrs[1],late_int(n,N_gradientangle,0,0));
+		gvrender_set_gradient_vals(job,clrs[1],late_int(n,N_gradientangle,0,0), frac);
 	    else 
-		gvrender_set_gradient_vals(job,DEFAULT_COLOR,late_int(n,N_gradientangle,0,0));
+		gvrender_set_gradient_vals(job,DEFAULT_COLOR,late_int(n,N_gradientangle,0,0), frac);
 	    if (style & RADIAL)
 		filled = RGRADIENT;
-	     else
+	    else
 		filled = GRADIENT;
+	    free (clrs[0]);
 	}
 	else {
 	    filled = FILL;

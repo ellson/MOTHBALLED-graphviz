@@ -448,7 +448,10 @@ static int svg_gradstyle(GVJ_t * job, pointf * A, int n)
 	     "<defs>\n<linearGradient id=\"l_%d\" gradientUnits=\"userSpaceOnUse\" ", id);
     gvprintf(job, "x1=\"%g\" y1=\"%g\" x2=\"%g\" y2=\"%g\" >\n", G[0].x,
 	     G[0].y, G[1].x, G[1].y);
-    gvputs(job, "<stop offset=\"0\" style=\"stop-color:");
+    if (obj->gradient_frac > 0)
+	gvprintf(job, "<stop offset=\"%.03f\" style=\"stop-color:", obj->gradient_frac - 0.001);
+    else
+	gvputs(job, "<stop offset=\"0\" style=\"stop-color:");
     svg_print_color(job, obj->fillcolor);
     gvputs(job, ";stop-opacity:");
     if (obj->fillcolor.type == RGBA_BYTE && obj->fillcolor.u.rgba[3] > 0
@@ -457,7 +460,10 @@ static int svg_gradstyle(GVJ_t * job, pointf * A, int n)
     else
 	gvputs(job, "1.");
     gvputs(job, ";\"/>\n");
-    gvputs(job, "<stop offset=\"1\" style=\"stop-color:");
+    if (obj->gradient_frac > 0)
+	gvprintf(job, "<stop offset=\"%.03f\" style=\"stop-color:", obj->gradient_frac);
+    else
+	gvputs(job, "<stop offset=\"1\" style=\"stop-color:");
     svg_print_color(job, obj->stopcolor);
     gvputs(job, ";stop-opacity:");
     if (obj->stopcolor.type == RGBA_BYTE && obj->stopcolor.u.rgba[3] > 0

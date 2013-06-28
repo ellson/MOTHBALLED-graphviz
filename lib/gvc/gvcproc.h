@@ -103,7 +103,7 @@
     extern void gvrender_set_pencolor(GVJ_t * job, char *name);
     extern void gvrender_set_penwidth(GVJ_t * job, double penwidth);
     extern void gvrender_set_fillcolor(GVJ_t * job, char *name);
-    extern void gvrender_set_gradient_vals (GVJ_t * job, char *stopcolor, int angle);
+    extern void gvrender_set_gradient_vals (GVJ_t * job, char *stopcolor, int angle, float frac);
 
     extern void gvrender_set_style(GVJ_t * job, char **s);
     extern void gvrender_ellipse(GVJ_t * job, pointf * AF, int n, int filled);

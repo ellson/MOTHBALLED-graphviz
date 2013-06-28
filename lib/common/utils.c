@@ -205,50 +205,6 @@ pointf coord(node_t * n)
     return r;
 }
 
-/* findStopColor:
- * Check for colon in colorlist. If one exists, and not the first
- * character, store the characters before the colon in clrs[0] and
- * the characters after the colon (and before the next or end-of-string)
- * in clrs[1]. If there are no characters after the first colon, clrs[1]
- * is NULL. Return TRUE.
- * If there is no non-trivial string before a first colon, set clrs[0] to
- * NULL and return FALSE.
- *
- * Note that memory is allocated as a single block stored in clrs[0] and
- * must be freed by calling function.
- */
-boolean findStopColor (char* colorlist, char* clrs[2])
-{
-    char* p;
-    char* s;
-    int len;
-
-    if ((*colorlist == ':') || !(p = strchr(colorlist,':'))) {
-	clrs[0] = NULL;
-	return FALSE;
-    }
-
-    clrs[0] = N_GNEW (strlen(colorlist)+1,char); 
-    len = p-colorlist;
-    memcpy (clrs[0],colorlist,len);
-    clrs[0][len]= '\0';
-
-    p++;
-    if ((*p == '\0') || (*p == ':'))
-	clrs[1] = NULL;
-    else {
-	clrs[1] = clrs[0] + (len+1);
-	if ((s = strchr(p,':'))) {
-	    *s = '\0';
-	    strcpy (clrs[1],p); 
-	    *s = ':';
-	}
-	else
-	    strcpy (clrs[1], p);
-    }
-    return TRUE;
-}
-
 /* from Glassner's Graphics Gems */
 #define W_DEGREE 5
 
