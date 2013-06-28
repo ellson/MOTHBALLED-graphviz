@@ -31,8 +31,8 @@ MGIF = constraint.gif record.gif html1.gif html2.gif fill.gif round.gif \
 
 MJPG = sdlshapes.jpg
 
-GRADPNG = g_lin0.png g_rad0.png g_lin45.png g_rad45.png g_lin90.png g_rad90.png \
-          g_lin180.png g_rad180.png g_lin270.png g_rad270.png g_lin360.png g_rad360.png
+GRADPNG = g_lin0.png g_wlin0.png g_rad0.png g_lin45.png g_wlin45.png g_rad45.png g_lin90.png g_wlin90.png g_rad90.png \
+          g_lin180.png g_wlin180.png g_rad180.png g_lin270.png g_wlin270.png g_rad270.png g_lin360.png g_wlin360.png g_rad360.png
 
 STYLEPNG = n_solid.png n_dashed.png n_dotted.png n_bold.png n_filled.png n_rounded.png n_striped.png \
            n_wedged.png n_diagonals.png \

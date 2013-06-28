@@ -103,17 +103,26 @@ where each <I>WC</I> has the form <I>C(;F)?</I> with C a <A HREF=#k:color>color<
 and the optional <I>F</I> a floating-point number, 0 &le; <I>F</I> &le; 1. The sum of the 
 floating-point numbers in a <TT>colorList</TT> must sum to at most 1.
 <P>
-Depending on the related attribute and graph object, two colors may specify a gradient fill.
+If the colorList value specifies multiple colors, with no weights, and a filled style is specified,
+a linear gradient fill is done using the first two colors.
+If weights are present, a degenerate linear gradient fill is done. This essentially does a fill using
+two colors, with the weights specifying how much of region is filled with each color. 
+If the <A HREF=#a:style>style</A> attribute contains the value <tt>radial</tt>, then
+a radial gradient fill is done. These fills work with any shape. 
+<P>
+For certain shapes, the <A HREF=#a:style>style</A> attribute can be set
+to do fills using more than 2 colors. See the <A HREF=#k:style>style</A> type for more information.
+<P>
 The following table shows some variations of the <TT>yellow:blue</TT> color list depending on the
 <A HREF=#a:style>style</A> and <A HREF=#a:gradientangle>gradientangle</A> attributes.
   <TABLE border=1>
-    <TR><TH>Gradient angle<TH>Linear<TH>Radial</TR>
-    <TR><TD align=center>0<TD><IMG SRC="g_lin0.png"><TD><IMG SRC="g_rad0.png"></TR>
-    <TR><TD align=center>45<TD><IMG SRC="g_lin45.png"><TD><IMG SRC="g_rad45.png"></TR>
-    <TR><TD align=center>90<TD><IMG SRC="g_lin90.png"><TD><IMG SRC="g_rad90.png"></TR>
-    <TR><TD align=center>180<TD><IMG SRC="g_lin180.png"><TD><IMG SRC="g_rad180.png"></TR>
-    <TR><TD align=center>270<TD><IMG SRC="g_lin270.png"><TD><IMG SRC="g_rad270.png"></TR>
-    <TR><TD align=center>360<TD><IMG SRC="g_lin360.png"><TD><IMG SRC="g_rad360.png"></TR>
+    <TR><TH>Gradient angle<TH><tt>style=filled</tt><TH><tt>style=filled<br>fillcolor=yellow;0.3:blue</tt><TH><tt>style=radial</tt></TR>
+    <TR><TD align=center>0<TD><IMG SRC="g_lin0.png"><TD ALIGN="CENTER"><IMG SRC="g_wlin0.png"><TD><IMG SRC="g_rad0.png"></TR>
+    <TR><TD align=center>45<TD><IMG SRC="g_lin45.png"><TD ALIGN="CENTER"><IMG SRC="g_wlin45.png"><TD><IMG SRC="g_rad45.png"></TR>
+    <TR><TD align=center>90<TD><IMG SRC="g_lin90.png"><TD ALIGN="CENTER"><IMG SRC="g_wlin90.png"><TD><IMG SRC="g_rad90.png"></TR>
+    <TR><TD align=center>180<TD><IMG SRC="g_lin180.png"><TD ALIGN="CENTER"><IMG SRC="g_wlin180.png"><TD><IMG SRC="g_rad180.png"></TR>
+    <TR><TD align=center>270<TD><IMG SRC="g_lin270.png"><TD ALIGN="CENTER"><IMG SRC="g_wlin270.png"><TD><IMG SRC="g_rad270.png"></TR>
+    <TR><TD align=center>360<TD><IMG SRC="g_lin360.png"><TD ALIGN="CENTER"><IMG SRC="g_wlin360.png"><TD><IMG SRC="g_rad360.png"></TR>
   </TABLE>
 :dirType
 For an edge <CODE>T -> H;</CODE>
