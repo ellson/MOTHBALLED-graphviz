@@ -92,6 +92,8 @@ BuildRequires: gd gd-devel
 %define GDK_PIXBUF 1
 %define GHOSTSCRIPT 1
 BuildRequires: ghostscript-devel
+%define POPPLER 1
+BuildRequires: poppler-glib-devel
 %define _QT 1
 BuildRequires: qt-devel
 %endif
@@ -149,6 +151,8 @@ BuildRequires: libglade2-devel gtkglarea2-devel gtkglext-devel glade3-libgladeui
 # BuildRequires: glitz-devel
 %define GHOSTSCRIPT 1
 BuildRequires: ghostscript-devel
+%define POPPLER 1
+BuildRequires: poppler-glib-devel
 #define MING 1
 #BuildRequires: ming ming-devel
 %define R_LANG 1
@@ -323,6 +327,9 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %endif
 %if 0%{?GHOSTSCRIPT}
 %{_libdir}/graphviz/libgvplugin_gs.*
+%endif
+%if 0%{?POPPLER}
+%{_libdir}/graphviz/libgvplugin_poppler.*
 %endif
 %if 0%{?RSVG}
 %{_libdir}/graphviz/libgvplugin_rsvg.*
@@ -763,6 +770,7 @@ CFLAGS="$RPM_OPT_FLAGS" \
         --with%{!?MING:out}-ming \
         --with%{!?_QT:out}-qt \
         --with%{!?PANGOCAIRO:out}-pangocairo \
+        --with%{!?POPPLER:out}-poppler \
         --with%{!?RSVG:out}-rsvg \
         --with%{!?ORTHO:out}-ortho \
         --with%{!?SFDP:out}-sfdp \

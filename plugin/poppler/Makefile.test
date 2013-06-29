@@ -1,0 +1,11 @@
+CFLAGS=`pkg-config --cflags cairo poppler-glib`
+LDFLAGS=`pkg-config --libs cairo poppler-glib`
+
+all: pdftops pdftoimage
+
+pdftops: pdftops.c
+
+pdftoimage: pdftoimage.c
+
+clean:
+	rm -f pdftops pdftoimage
