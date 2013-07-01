@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <poppler.h>
 #include <cairo.h>
 #include <cairo-ps.h>

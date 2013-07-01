@@ -39,6 +39,9 @@ int main(int argc, char *argv[])
     }
 
     uri = g_filename_to_uri (absolute, NULL, &error);
+
+    fprintf(stderr, "%s\n%s\n", absolute, uri);
+
     free (absolute);
     if (uri == NULL) {
         printf("%s\n", error->message);

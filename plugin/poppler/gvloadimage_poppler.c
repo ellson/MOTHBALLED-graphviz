@@ -26,14 +26,12 @@
 
 #include "gvplugin_loadimage.h"
 
-// NOT YET
+// not ready yet
 #undef HAVE_POPPLER
-
 
 #ifdef HAVE_POPPLER
 #ifdef HAVE_PANGOCAIRO
-#include <ghostscript/iapi.h>
-#include <ghostscript/ierrors.h>
+#include <poppler.h>
 #include <cairo/cairo.h>
 
 #ifdef WIN32
@@ -61,6 +59,7 @@ static void gvloadimage_poppler_free(usershape_t *us)
     free(poppler);
 }
 
+#if 0
 static int poppler_writer(void *caller_handle, const char *str, int len)
 {
     GVJ_t *job = (GVJ_t*)caller_handle;
@@ -88,19 +87,53 @@ static void poppler_error(GVJ_t * job, const char *name, const char *funstr, int
     job->common->errorfn("%s: %s() returned: %d \"%s\" (%s)\n",
 		name, funstr, err, poppler_error_names[-err - 1], errsrc);
 }
+#endif
 
 static int gvloadimage_process_file(GVJ_t *job, usershape_t *us, void *instance)
 {
     int rc = 0, exit_code;
+    gchar *absolute, *ura, *dir;
+    PopplerDocument *document;
+    PopplerPage *page;
+    GError *error;
+    int num_pages;
 
     if (! gvusershape_file_access(us)) {
 	job->common->errorfn("Failure to read shape file\n");
 	return -1;
     }
-    rc = popplerapi_run_file(instance, us->name, -1, &exit_code);
-    if (rc) {
-	poppler_error(job, us->name, "popplerapi_run_file", rc);
+    if (g_path_is_absolute(pdf_file)) {
+        absolute = g_strdup (pdf_file);
+    } else {
+	dir = g_get_current_dir ();
+	absolute = g_build_filename (dir, pdf_file, (gchar *) 0);
+	free (dir);
     }
+
+    uri = g_filename_to_uri (absolute, NULL, &error);
+    free (absolute);
+    if (uri == NULL) {
+        printf("%s\n", error->message);
+        return 1;
+    }
+		    }
+    document = poppler_document_new_from_file (uri, NULL, &error);
+    if (document == NULL) {
+	printf("%s\n", error->message);
+	return 1;
+    }
+    num_pages = poppler_document_get_n_pages (document);
+    if (page_num < 1) {
+	printf("must be at least one page in the pdf\n");
+	return 1;
+    }
+
+    page = poppler_document_get_page (document, 1);
+    if (page == NULL) {
+	printf("poppler fail: page 1 not found\n");
+	return 1;
+    }
+
     gvusershape_file_release(us);
     return rc;
 }
