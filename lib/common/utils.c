@@ -2127,7 +2127,7 @@ findCluster (Dt_t* map, char* name)
 #endif
 
 #ifdef WITH_CGRAPH
-Agnodeinfo_t* ninfo(Agnode_t* n) {return (Agnodeinfo_t*)AGDATA(n);}
-Agraphinfo_t* ginfo(Agraph_t* g) {return (Agraphinfo_t*)AGDATA(g);}
-Agedgeinfo_t* einfo(Agedge_t* e) {return (Agedgeinfo_t*)AGDATA(e);}
+Agnodeinfo_t* ninf(Agnode_t* n) {return (Agnodeinfo_t*)AGDATA(n);}
+Agraphinfo_t* ginf(Agraph_t* g) {return (Agraphinfo_t*)AGDATA(g);}
+Agedgeinfo_t* einf(Agedge_t* e) {return (Agedgeinfo_t*)AGDATA(e);}
 #endif
