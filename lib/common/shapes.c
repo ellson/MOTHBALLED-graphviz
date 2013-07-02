@@ -18,6 +18,11 @@
 #define RBCONST 12
 #define RBCURVE .5
 
+typedef struct {
+    pointf (*size_gen) (pointf);
+    void (*vertex_gen) (pointf*, pointf*);
+} poly_desc_t;
+ 
 static port Center = { {0, 0}, -1, 0, 0, 0, 1, 0, 0, 0 };
 
 #define ATTR_SET(a,n) ((a) && (*(agxget(n,a->index)) != '\0'))
@@ -56,6 +61,14 @@ static boolean point_inside(inside_t * inside_context, pointf p);
 
 static boolean epsf_inside(inside_t * inside_context, pointf p);
 static void epsf_gencode(GVJ_t * job, node_t * n);
+
+static pointf star_size (pointf);
+static void star_vertices (pointf*, pointf*);
+static boolean star_inside(inside_t * inside_context, pointf p);
+static poly_desc_t star_gen = {
+    star_size,
+    star_vertices,
+};
 
 /* polygon descriptions.  "polygon" with 0 sides takes all user control */
 
@@ -96,6 +109,9 @@ static polygon_t p_Mdiamond =
 static polygon_t p_Msquare = { TRUE, 1, 4, 0., 0., 0., DIAGONALS };
 static polygon_t p_Mcircle =
     { TRUE, 1, 1, 0., 0., 0., DIAGONALS | AUXLABELS };
+
+/* non-convex polygons */
+static polygon_t p_star = { FALSE, 1, 10, 0., 0., 0., 0, (point*)&star_gen };
 
 /* biological circuit shapes, as specified by SBOLv*/
 /** gene expression symbols **/
@@ -184,6 +200,14 @@ static shape_functions epsf_fns = {
     NULL,
     epsf_gencode
 };
+static shape_functions star_fns = {
+    poly_init,
+    poly_free,
+    poly_port,
+    star_inside,
+    poly_path,
+    poly_gencode
+};
 
 static shape_desc Shapes[] = {	/* first entry is default for no such shape */
     {"box", &poly_fns, &p_box},
@@ -248,6 +272,7 @@ static shape_desc Shapes[] = {	/* first entry is default for no such shape */
     {"record", &record_fns, NULL},
     {"Mrecord", &record_fns, NULL},
     {"epsf", &epsf_fns, NULL},
+    {"star", &star_fns, &p_star},
     {NULL, NULL, NULL}
 };
 
@@ -1933,6 +1958,9 @@ static void poly_init(node_t * n)
 	     && distortion == 0. && skew == 0.);
     if (isBox) {
 	/* for regular boxes the fit should be exact */
+    } else if (ND_shape(n)->polygon->vertices) {
+	poly_desc_t* pd = (poly_desc_t*)ND_shape(n)->polygon->vertices;
+	bb = pd->size_gen(bb);
     } else {
 	/* for all other shapes, compute a smallest ellipse
 	 * containing bb centered on the origin, and then pad for that.
@@ -2045,54 +2073,61 @@ static void poly_init(node_t * n)
  */
 
 	vertices = N_NEW(outp * sides, pointf);
-	sectorangle = 2. * M_PI / sides;
-	sidelength = sin(sectorangle / 2.);
-	skewdist = hypot(fabs(distortion) + fabs(skew), 1.);
-	gdistortion = distortion * SQRT2 / cos(sectorangle / 2.);
-	gskew = skew / 2.;
-	angle = (sectorangle - M_PI) / 2.;
-	sincos(angle, &sinx, &cosx);
-	R.x = .5 * cosx;
-	R.y = .5 * sinx;
-	xmax = ymax = 0.;
-	angle += (M_PI - sectorangle) / 2.;
-	for (i = 0; i < sides; i++) {
+	if (ND_shape(n)->polygon->vertices) {
+	    poly_desc_t* pd = (poly_desc_t*)ND_shape(n)->polygon->vertices;
+	    pd->vertex_gen (vertices, &bb);
+	    xmax = bb.x/2;
+	    ymax = bb.y/2;
+	} else {
+	    sectorangle = 2. * M_PI / sides;
+	    sidelength = sin(sectorangle / 2.);
+	    skewdist = hypot(fabs(distortion) + fabs(skew), 1.);
+	    gdistortion = distortion * SQRT2 / cos(sectorangle / 2.);
+	    gskew = skew / 2.;
+	    angle = (sectorangle - M_PI) / 2.;
+	    sincos(angle, &sinx, &cosx);
+	    R.x = .5 * cosx;
+	    R.y = .5 * sinx;
+	    xmax = ymax = 0.;
+	    angle += (M_PI - sectorangle) / 2.;
+	    for (i = 0; i < sides; i++) {
 
 	    /*next regular vertex */
-	    angle += sectorangle;
-	    sincos(angle, &sinx, &cosx);
-	    R.x += sidelength * cosx;
-	    R.y += sidelength * sinx;
+		angle += sectorangle;
+		sincos(angle, &sinx, &cosx);
+		R.x += sidelength * cosx;
+		R.y += sidelength * sinx;
 
 	    /*distort and skew */
-	    P.x = R.x * (skewdist + R.y * gdistortion) + R.y * gskew;
-	    P.y = R.y;
+		P.x = R.x * (skewdist + R.y * gdistortion) + R.y * gskew;
+		P.y = R.y;
 
 	    /*orient P.x,P.y */
-	    alpha = RADIANS(orientation) + atan2(P.y, P.x);
-	    sincos(alpha, &sinx, &cosx);
-	    P.x = P.y = hypot(P.x, P.y);
-	    P.x *= cosx;
-	    P.y *= sinx;
+		alpha = RADIANS(orientation) + atan2(P.y, P.x);
+		sincos(alpha, &sinx, &cosx);
+		P.x = P.y = hypot(P.x, P.y);
+		P.x *= cosx;
+		P.y *= sinx;
 
 	    /*scale for label */
-	    P.x *= bb.x;
-	    P.y *= bb.y;
+		P.x *= bb.x;
+		P.y *= bb.y;
 
 	    /*find max for bounding box */
-	    xmax = MAX(fabs(P.x), xmax);
-	    ymax = MAX(fabs(P.y), ymax);
+		xmax = MAX(fabs(P.x), xmax);
+		ymax = MAX(fabs(P.y), ymax);
 
 	    /* store result in array of points */
-	    vertices[i] = P;
-	    if (isBox) { /* enforce exact symmetry of box */
-		vertices[1].x = -P.x;
-		vertices[1].y = P.y;
-		vertices[2].x = -P.x;
-		vertices[2].y = -P.y;
-		vertices[3].x = P.x;
-		vertices[3].y = -P.y;
-		break;
+		vertices[i] = P;
+		if (isBox) { /* enforce exact symmetry of box */
+		    vertices[1].x = -P.x;
+		    vertices[1].y = P.y;
+		    vertices[2].x = -P.x;
+		    vertices[2].y = -P.y;
+		    vertices[3].x = P.x;
+		    vertices[3].y = -P.y;
+		    break;
+		}
 	    }
 	}
 
@@ -3763,6 +3798,108 @@ static void epsf_gencode(GVJ_t * job, node_t * n)
 				  obj->id);
 	gvrender_end_anchor(job);
     }
+}
+
+#define alpha   (M_PI/10.0)
+#define alpha2  (2*alpha)
+#define alpha3  (3*alpha)
+#define alpha4  (2*alpha2)
+
+static pointf star_size (pointf sz0)
+{
+    pointf sz;
+    double r0, r, rx, ry;
+
+    rx = sz0.x/(2*cos(alpha));
+    ry = sz0.y/(sin(alpha) + sin(alpha3));
+    r0 = MAX(rx,ry);
+    r = (r0*sin(alpha4)*cos(alpha2))/(cos(alpha)*cos(alpha4));
+
+    sz.x = 2*r*cos(alpha);
+    sz.y = r*(1 + sin(alpha3));
+    return sz;
+}
+
+static void star_vertices (pointf* vertices, pointf* bb)
+{
+    int i;
+    pointf sz = *bb;
+    double offset, a, aspect = (1 + sin(alpha3))/(2*cos(alpha));
+    double r, r0, theta = alpha;
+
+    /* Scale up width or height to required aspect ratio */
+    a = sz.y/sz.x;
+    if (a > aspect) {
+	sz.x = sz.y/aspect;
+    }
+    else if (a < aspect) {
+	sz.y = sz.x*aspect;
+    }
+
+    /* for given sz, get radius */
+    r = sz.x/(2*cos(alpha));
+    r0 = (r*cos(alpha)*cos(alpha4))/(sin(alpha4)*cos(alpha2));
+    
+    /* offset is the y shift of circle center from bb center */
+    offset = (r*(1 - sin(alpha3)))/2;
+
+    for (i = 0; i < 10; i += 2) {
+	vertices[i].x = r*cos(theta);
+	vertices[i].y = r*sin(theta) - offset;
+	theta += alpha2;
+	vertices[i+1].x = r0*cos(theta);
+	vertices[i+1].y = r0*sin(theta) - offset;
+	theta += alpha2;
+    }
+
+    *bb = sz;
+}
+
+static boolean star_inside(inside_t * inside_context, pointf p)
+{
+    static node_t *lastn;	/* last node argument */
+    static polygon_t *poly;
+    static int outp, sides;
+    static pointf *vertex;
+    static pointf O;		/* point (0,0) */
+
+    boxf *bp = inside_context->s.bp;
+    node_t *n = inside_context->s.n;
+    pointf P, Q, R;
+    int i, outcnt;
+
+    P = ccwrotatepf(p, 90 * GD_rankdir(agraphof(n)));
+
+    /* Quick test if port rectangle is target */
+    if (bp) {
+	boxf bbox = *bp;
+	return INSIDE(P, bbox);
+    }
+
+    if (n != lastn) {
+	poly = (polygon_t *) ND_shape_info(n);
+	vertex = poly->vertices;
+	sides = poly->sides;
+
+	/* index to outer-periphery */
+	outp = (poly->peripheries - 1) * sides;
+	if (outp < 0)
+	    outp = 0;
+	lastn = n;
+    }
+
+    outcnt = 0;
+    for (i = 0; i < sides; i += 2) {
+	Q = vertex[i + outp];
+	R = vertex[((i+4) % sides) + outp];
+	if (!(same_side(P, O, Q, R))) {
+	    outcnt++;
+	}
+	if (outcnt == 2) {
+	    return FALSE;
+	}
+    }
+    return TRUE;
 }
 
 static char *side_port[] = { "s", "e", "n", "w" };

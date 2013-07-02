@@ -53,7 +53,7 @@ SGIF = Mcircle.gif Mdiamond.gif Msquare.gif box.gif \
       octagon.gif oval.gif parallelogram.gif plaintext.gif \
       point.gif polygon.gif trapezium.gif triangle.gif \
       tripleoctagon.gif pentagon.gif septagon.gif rect.gif \
-      rectangle.gif square.gif tab.gif folder.gif box3d.gif component.gif \
+      rectangle.gif square.gif star.gif tab.gif folder.gif box3d.gif component.gif \
       promoter.gif cds.gif terminator.gif utr.gif \
       primersite.gif restrictionsite.gif fivepoverhang.gif \
       threepoverhang.gif noverhang.gif assembly.gif signature.gif \
