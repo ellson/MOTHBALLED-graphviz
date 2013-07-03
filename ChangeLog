@@ -6,6 +6,8 @@ February 14, 2013
 	- various build fixes
 January 13, 2013
 	- Release 2.30.0
+	- Replaced libgraph with libcgraph; use of libgraph is now deprecated
+	- New ranking algorithm that allows multiple subgraph constraints
 November 27, 2012
 	- Add graphml2gv and gv2gml to Windows package.
 September 25, 2012
