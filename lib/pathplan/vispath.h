@@ -26,7 +26,9 @@ extern "C" {
 #   define extern __EXPORT__
 #endif
 
-/* open a visibility graph */
+/* open a visibility graph 
+ * Points in polygonal obstacles must be in clockwise order.
+ */
     extern vconfig_t *Pobsopen(Ppoly_t ** obstacles, int n_obstacles);
 
 /* close a visibility graph, freeing its storage */
