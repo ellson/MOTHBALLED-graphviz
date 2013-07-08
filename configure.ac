@@ -269,7 +269,6 @@ AC_CHECK_PROGS(SORT,gsort sort,false)
 
 AC_CHECK_PROG(EGREP,egrep,egrep,false)
 AC_CHECK_PROG(GROFF,groff,groff,false)
-AC_CHECK_PROG(TBL,tbl,tbl,false)
 AC_CHECK_PROG(PS2PDF,ps2pdf,ps2pdf,false)
 AC_CHECK_PROG(PS2PDF,pstopdf,pstopdf,false)
 
@@ -688,7 +687,7 @@ else
     if test `$SWIG -help 2>&1 | $EGREP -c '\-guile *- Generate'` == 0; then
       use_guile="No (swig does not support -guile option)"
     else
-      AC_CHECK_PROGS(GUILE,guile guile1.8)
+      AC_CHECK_PROGS(GUILE,guile2 guile1.8 guile)
       if test "x$GUILE" == "x"; then
         use_guile="No (guile not available)"
       else
@@ -947,7 +946,7 @@ else
         fi
     
         AC_MSG_CHECKING(for Lua compiling and linking)
-        LUA_TEST=`LT=luatest.c ; echo "#include <lua.h>" > $LT;  echo "#include <lualib.h>" >> $LT; echo "int main() { /* luaopen_base((lua_State *)lua_open())i */; return 0; }" >> $LT ; $CC -Wall $LT -o $LT.out $LUA_INCLUDES $LUA_LIBS $CFLAGS $LDFLAGS 1>/dev/null 2>&1 ; echo $?; rm -f $LT $LT.out 1>/dev/null 2>&1`
+        LUA_TEST=`LT=luatest.c ; echo "#include <lua.h>" > $LT;  echo "#include <lualib.h>" >> $LT; echo "int main() { luaopen_base((lua_State *)lua_open()); return 0; }" >> $LT ; $CC -Wall $LT -o $LT.out $LUA_INCLUDES $LUA_LIBS $CFLAGS $LDFLAGS 1>/dev/null 2>&1 ; echo $?; rm -f $LT $LT.out 1>/dev/null 2>&1`
         if test "x$LUA_TEST" != "x0" ; then
           AC_MSG_RESULT(no)
           AC_MSG_WARN([
@@ -2117,28 +2116,6 @@ fi
 AM_CONDITIONAL(WITH_RSVG, [test "x$use_rsvg" == "xYes"])
 
 dnl -----------------------------------
-dnl INCLUDES and LIBS for POPPLER
-                                                                                
-AC_ARG_WITH(poppler,
-  [AS_HELP_STRING([--with-poppler=yes],[poppler-glib library])],
-  [], [with_poppler=yes])
-
-if test "x$with_poppler" != "xyes"; then
-  use_poppler="No (disabled)"
-else
-  PKG_CHECK_MODULES(POPPLER, [poppler-glib],[
-    use_poppler="Yes"
-    AC_DEFINE_UNQUOTED(HAVE_POPPLER,1,
-      [Define if you have the poppler-glib library])
-    AC_SUBST([POPPLER_CFLAGS])
-    AC_SUBST([POPPLER_LIBS])
-  ],[
-    use_poppler="No (poppler-glib library not available)"
-  ])
-fi
-AM_CONDITIONAL(WITH_POPPLER, [test "x$use_poppler" == "xYes"])
-
-dnl -----------------------------------
 dnl INCLUDES and LIBS for GHOSTSCRIPT
                                                                                 
 AC_ARG_WITH(ghostscript,
@@ -3150,7 +3127,6 @@ AC_CONFIG_FILES(Makefile
 	plugin/lasi/Makefile
 	plugin/ming/Makefile
 	plugin/pango/Makefile
-	plugin/poppler/Makefile
 	plugin/quartz/Makefile
 	plugin/rsvg/Makefile
 	plugin/visio/Makefile
@@ -3288,7 +3264,6 @@ echo "  gtk:           $use_gtk"
 echo "  lasi:          $use_lasi"
 echo "  ming:          $use_ming"
 echo "  pangocairo:    $use_pangocairo"
-echo "  poppler:       $use_poppler"
 echo "  quartz:        $use_quartz"
 echo "  rsvg:          $use_rsvg"
 echo "  visio:         $use_visio"
