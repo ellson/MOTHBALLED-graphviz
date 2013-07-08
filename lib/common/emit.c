@@ -3468,6 +3468,7 @@ fprintf(stderr,"focus=%g,%g view=%g,%g\n",
 #endif
     gvrender_comment(job, s);
 
+    job->layerNum = 0;
     emit_begin_graph(job, g);
 
     if (flags & EMIT_COLORS)
