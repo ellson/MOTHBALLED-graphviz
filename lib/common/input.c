@@ -570,6 +570,7 @@ graph_t *gvNextInputGraph(GVC_t *gvc)
     graph_t *g = NULL;
     static char *fn;
     static FILE *fp;
+    static FILE *oldfp;
     static int fidx, gidx;
 
     while (!g) {
@@ -587,7 +588,10 @@ graph_t *gvNextInputGraph(GVC_t *gvc)
 	}
 	if (fp == NULL)
 	    break;
-	agsetfile(fn ? fn : "<stdin>");
+	if (oldfp != fp) {
+	    agsetfile(fn ? fn : "<stdin>");
+	    oldfp = fp;
+	}
 #ifdef EXPERIMENTAL_MYFGETS
 	g = agread_usergets(fp, myfgets);
 #else
@@ -808,6 +812,12 @@ void graph_init(graph_t * g, boolean use_rankdir)
     N_fontname = agfindnodeattr(g, "fontname");
     N_fontcolor = agfindnodeattr(g, "fontcolor");
     N_label = agfindnodeattr(g, "label");
+    if (!N_label)
+#ifdef WITH_CGRAPH
+	N_label = agattr(g, AGNODE, "label", NODENAME_ESC);
+#else
+	N_label = agnodeattr(g, "label", NODENAME_ESC);
+#endif
     N_xlabel = agfindnodeattr(g, "xlabel");
     N_showboxes = agfindnodeattr(g, "showboxes");
     N_penwidth = agfindnodeattr(g, "penwidth");
