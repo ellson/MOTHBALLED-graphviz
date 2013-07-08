@@ -693,8 +693,14 @@ Of note is
       unsigned int *length)
 \end{verbatim}
 which writes the output of the rendering onto an allocated character buffer. A pointer
-to this buffer is returned in {\tt result} and the number of bytes written is stored in
+to this buffer is returned in {\tt *result} and the number of bytes written is stored in
 {\tt length}. After using the buffer, the memory should be freed by the application.
+As the calling program may rely on a different run-time system than that used by
+\gviz, the library provides the function 
+\begin{verbatim}
+    gvFreeRenderData (char *data); 
+\end{verbatim}
+which can be used to free the memory pointed to by {\tt *result}.
 
 Sometimes, an application will decide to do its own rendering.
 An application-supplied
