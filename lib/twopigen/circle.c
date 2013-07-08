@@ -115,6 +115,7 @@ static Agnode_t *findCenterNode(Agraph_t * g)
     return center;
 }
 
+#if 0
 /* dfs to set distance from center
  * Note that termination is implicit in the test
  * for reduced number of steps. Proof?
@@ -142,24 +143,91 @@ static void setNStepsToCenter(Agraph_t * g, Agnode_t * n, Agnode_t * prev)
 	}
     }
 }
+#endif
 
+typedef struct item_s {
+    void* p;
+    struct item_s* s;
+} item_t;
+typedef struct {
+    item_t* head;
+    item_t* tail;
+} queue;
+static void push(queue* q, void* p)
+{
+    item_t* ip = NEW(item_t);
+    ip->p = p;
+    if (q->tail) {  /* non-empty q */
+	q->tail->s = ip;
+	q->tail = ip;
+    }
+    else
+	q->tail = q->head = ip;
+}
+static void* pull(queue* q)
+{
+    item_t* ip;
+    void* p;
+    if ((ip = q->head)) {
+	p = ip->p;
+	q->head = ip->s;
+	free (ip);
+	if (!q->head)
+	    q->tail = NULL; 
+	return p;
+    }
+    else
+	return NULL;
+}
+
+/* bfs to create tree structure */
+static void setNStepsToCenter(Agraph_t * g, Agnode_t * n)
+{
+    Agnode_t *next;
+    Agedge_t *ep;
+    Agsym_t* wt = agfindedgeattr(g,"weight");
+    queue qd;
+    queue* q = &qd;
+
+    qd.head = qd.tail = NULL;
+    push(q,n);
+    while ((n = (Agnode_t*)pull(q))) {
+	int nsteps = SCENTER(n) + 1;
+	for (ep = agfstedge(g, n); ep; ep = agnxtedge(g, ep, n)) {
+	    if (wt && streq(ag_xget(ep,wt),"0")) continue;
+	    if ((next = agtail(ep)) == n)
+		next = aghead(ep);
+	    if (nsteps < SCENTER(next)) {
+		SCENTER(next) = nsteps;
+		SPARENT(next) = n;
+		NCHILD(n)++;
+		push (q, next);
+	    }
+	}
+    }
+}
 
 /*
  * Work out from the center and determine the value of
  * nStepsToCenter and parent node for each node.
+ * Return -1 if some node was not reached.
  */
 static int setParentNodes(Agraph_t * sg, Agnode_t * center)
 {
     Agnode_t *n;
     int maxn = 0;
+    int unset = SCENTER(center);
 
     SCENTER(center) = 0;
     SPARENT(center) = 0;
-    setNStepsToCenter(sg, center, 0);
+    setNStepsToCenter(sg, center);
 
     /* find the maximum number of steps from the center */
     for (n = agfstnode(sg); n; n = agnxtnode(sg, n)) {
-	if (SCENTER(n) > maxn) {
+	if (SCENTER(n) == unset) {
+	    return -1;
+	}
+	else if (SCENTER(n) > maxn) {
 	    maxn = SCENTER(n);
 	}
     }
@@ -358,6 +426,10 @@ Agnode_t* circleLayout(Agraph_t * sg, Agnode_t * center)
 	fprintf(stderr, "root = %s\n", agnameof(center));
 
     maxNStepsToCenter = setParentNodes(sg,center);
+    if (maxNStepsToCenter < 0) {
+	agerr(AGERR, "twopi: use of weight=0 creates disconnected component.\n");
+	return center;
+    }
 
     setSubtreeSize(sg);
 
