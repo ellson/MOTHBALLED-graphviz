@@ -95,6 +95,7 @@ static int G_cnt;		/* No. of -G arguments */
 static int G_sz;		/* Storage size for -G arguments */
 static attr_t *G_args;		/* Storage for -G arguments */
 static int doPack;              /* Do packing if true */
+static char* gname = "root";
 
 #define NEWNODE(n) ((node_t*)ND_alg(n))
 
@@ -105,6 +106,7 @@ static char *useString =
   -array*     - pack as array of graphs\n\
   -G<n>=<v>   - attach name/value attribute to output graph\n\
   -m<n>       - set margin to <n> points\n\
+  -s<gname>   - use <gname> for name of root graph\n\
   -o<outfile> - write output to <outfile>\n\
   -u          - no packing; just combine graphs\n\
   -v          - verbose\n\
@@ -216,7 +218,7 @@ static void init(int argc, char *argv[], pack_info* pinfo)
     pinfo->fixed = 0;
 
     opterr = 0;
-    while ((c = getopt(argc, argv, ":na:gvum:o:G:")) != -1) {
+    while ((c = getopt(argc, argv, ":na:gvum:s:o:G:")) != -1) {
 	switch (c) {
 	case 'a':
 	    len = strlen(optarg) + 2;
@@ -231,6 +233,9 @@ static void init(int argc, char *argv[], pack_info* pinfo)
 	    break;
 	case 'n':
 	    pinfo->mode = l_node;
+	    break;
+	case 's':
+	    gname = optarg;
 	    break;
 	case 'g':
 	    pinfo->mode = l_graph;
@@ -354,17 +359,26 @@ static void cloneDfltAttrs(Agraph_t *old, Agraph_t *new, int kind)
     Agsym_t *a;
 
     for (a = agnxtattr(old, kind, 0); a; a =  agnxtattr(old, kind, a)) {
-	agattr (new, kind, a->name, a->defval);
+	if (aghtmlstr(a->defval))
+	    agattr (new, kind, a->name, agstrdup_html(new, a->defval));
+	else
+	    agattr (new, kind, a->name, a->defval);
     }
 }
 static void cloneAttrs(void *old, void *new)
 {
     int kind = AGTYPE(old);
     Agsym_t *a;
+    char* s;
     Agraph_t *g = agroot(old);
+    Agraph_t *ng = agroot(new);
 
     for (a = agnxtattr(g, kind, 0); a; a =  agnxtattr(g, kind, a)) {
-	agset(new, a->name, agxget(old, a));
+	s = agxget (old, a);
+	if (aghtmlstr(s))
+	    agset(new, a->name, agstrdup_html(ng, s));
+	else
+	    agset(new, a->name, s);
     }
 }
 #else
@@ -759,9 +773,9 @@ static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt, GVC_t * gvc)
     if (verbose)
 	fprintf(stderr, "Creating clone graph\n");
 #ifndef WITH_CGRAPH
-    root = agopen("root", kind);
+    root = agopen(gname, kind);
 #else
-    root = agopen("root", kind, &AgDefaultDisc);
+    root = agopen(gname, kind, &AgDefaultDisc);
 #endif
     initAttrs(root, gs, cnt);
     G_bb = agfindgraphattr(root, "bb");
