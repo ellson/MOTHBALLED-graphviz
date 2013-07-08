@@ -1035,12 +1035,12 @@ setPrismValues (Agraph_t* g, char* s, adjust_data* dp)
 
 /* getAdjustMode:
  * Convert string value to internal value of adjustment mode.
- * Assume s != NULL.
+ * If s is NULL or empty, return NONE.
  */
 static adjust_data *getAdjustMode(Agraph_t* g, char *s, adjust_data* dp)
 {
     lookup_t *ap = adjustMode + 1;
-    if (*s == '\0') {
+    if ((s == NULL) || (*s == '\0')) {
 	dp->mode = adjustMode[0].mode;
 	dp->print = adjustMode[0].print;
     }
@@ -1089,13 +1089,15 @@ adjust_data *graphAdjustMode(graph_t *G, adjust_data* dp, char* dflt)
 int 
 removeOverlapWith (graph_t * G, adjust_data* am)
 {
-    int ret;
+    int ret, nret;
 
     if (agnnodes(G) < 2)
 	return 0;
 
+    nret = normalize (G);
+
     if (am->mode == AM_NONE)
-	return 0;
+	return nret;
 
     if (Verbose)
 	fprintf(stderr, "Adjusting %s using %s\n", agnameof(G), am->print);
@@ -1135,7 +1137,7 @@ removeOverlapWith (graph_t * G, adjust_data* am)
 #endif
 #ifdef IPSEPCOLA
 	case AM_IPSEP:
-	    return 0;   /* handled during layout */
+	    return nret;   /* handled during layout */
 	    break;
 	case AM_VPSC:
 	    ret = vpscAdjust(G);
@@ -1147,7 +1149,7 @@ removeOverlapWith (graph_t * G, adjust_data* am)
 	    break;
 	}
 /* fprintf (stderr, "%s %.4f sec\n", am->print, elapsed_sec()); */
-	return ret;
+	return nret+ret;
     }
 
     /* create main array */
@@ -1156,7 +1158,7 @@ removeOverlapWith (graph_t * G, adjust_data* am)
 	freeNodes();
 	free(sites);
 	sites = 0;
-	return 0;
+	return nret;
     }
 
     /* establish and verify bounding box */
@@ -1175,7 +1177,7 @@ removeOverlapWith (graph_t * G, adjust_data* am)
     sites = 0;
 /* fprintf (stderr, "%s %.4f sec\n", am->print, elapsed_sec()); */
 
-    return ret;
+    return ret+nret;
 }
 
 /* removeOverlapAs:
@@ -1186,17 +1188,11 @@ int
 removeOverlapAs(graph_t * G, char* flag)
 {
     adjust_data am;
-    int ret;
 
     if (agnnodes(G) < 2)
 	return 0;
-    if (flag) {
-	getAdjustMode(G, flag, &am);
-	ret = removeOverlapWith (G, &am);
-    }
-    else
-	ret = 0;
-    return (ret + normalize(G));
+    getAdjustMode(G, flag, &am);
+    return removeOverlapWith (G, &am);
 }
 
 /* adjustNodes:
