@@ -639,7 +639,8 @@ extoken_fn(register Expr_t* ex)
 					sfputc(ex->tmp, c);
 				exunlex(ex, c);
 				s = exstash(ex->tmp, NiL);
-				v = expr.declare ? dtview(ex->symbols, NiL) : (Dt_t*)0;
+				/* v = expr.declare ? dtview(ex->symbols, NiL) : (Dt_t*)0; FIX */
+				v = (Dt_t*)0;
 				exlval.id = (Exid_t*)dtmatch(ex->symbols, s);
 				if (v)
 					dtview(ex->symbols, v);
