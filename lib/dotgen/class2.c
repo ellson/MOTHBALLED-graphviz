@@ -281,7 +281,7 @@ void class2(graph_t * g)
 #ifndef WITH_CGRAPH
 		if ((opp = agfindedge(g, aghead(e), agtail(e))) && (opp != e)) {
 #else
-		if ((opp = agfindedge(g, aghead(e), agtail(e))) && (AGMKOUT(opp) != e)) {
+		if ((opp = agfindedge(g, aghead(e), agtail(e))) && (aghead(opp) != aghead(e))) {
 #endif /* WITH_CGRAPH */
 		    /* shadows a forward edge */
 		    if (ED_to_virt(opp) == NULL)
