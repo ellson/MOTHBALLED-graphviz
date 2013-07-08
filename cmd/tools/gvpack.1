@@ -16,6 +16,9 @@ gvpack \- merge and pack disjoint graphs
 .BI \-o outfile
 ]
 [
+.BI \-s graph_name
+]
+[
 .BI \-G name\fB=\fPvalue
 ]
 [ 
@@ -73,6 +76,10 @@ Combines the graphs at the node level. Clusters are ignored in the packing.
 .BI \-o "output"
 Prints output to the file \fIoutput\fP. If not given, \fBgvpack\fP
 uses stdout.
+.TP
+.BI \-s "graph_name"
+Use \fIgraph_name\fP as the name of the root graph. By default, "root"
+is used.
 .TP
 .B \-u
 Don't pack the graphs. Just combine them into a single graph.
