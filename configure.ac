@@ -2094,6 +2094,28 @@ fi
 AM_CONDITIONAL(WITH_WEBP, [test "x$use_webp" == "xYes"])
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for POPPLER
+                                                                                
+AC_ARG_WITH(poppler,
+  [AS_HELP_STRING([--with-poppler=yes],[poppler library])],
+  [], [with_poppler=yes])
+
+if test "x$with_poppler" != "xyes"; then
+  use_poppler="No (disabled)"
+else
+  PKG_CHECK_MODULES(POPPLER, [poppler-glib],[
+    use_poppler="Yes"
+    AC_DEFINE_UNQUOTED(HAVE_POPPLER,1,
+      [Define if you have the poppler library])
+    AC_SUBST([POPPLER_CFLAGS])
+    AC_SUBST([POPPLER_LIBS])
+  ],[
+    use_poppler="No (poppler library not available)"
+  ])
+fi
+AM_CONDITIONAL(WITH_POPPLER, [test "x$use_poppler" == "xYes"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for RSVG
                                                                                 
 AC_ARG_WITH(rsvg,
@@ -3127,6 +3149,7 @@ AC_CONFIG_FILES(Makefile
 	plugin/lasi/Makefile
 	plugin/ming/Makefile
 	plugin/pango/Makefile
+	plugin/poppler/Makefile
 	plugin/quartz/Makefile
 	plugin/rsvg/Makefile
 	plugin/visio/Makefile
@@ -3264,6 +3287,7 @@ echo "  gtk:           $use_gtk"
 echo "  lasi:          $use_lasi"
 echo "  ming:          $use_ming"
 echo "  pangocairo:    $use_pangocairo"
+echo "  poppler:       $use_poppler"
 echo "  quartz:        $use_quartz"
 echo "  rsvg:          $use_rsvg"
 echo "  visio:         $use_visio"
