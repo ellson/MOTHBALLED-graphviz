@@ -688,6 +688,10 @@ There are two experimental modes in neato, "hier", which adds a top-down
 directionality similar to the layout used in dot, and "ipsep", which
 allows the graph to specify minimum vertical and horizontal distances
 between nodes. (See the <A HREF=#d:sep>sep</A> attribute.)
+<P>
+For sfdp, the default <B>mode</B> is <TT>"spring"</TT>, which corresponds to using
+a spring-electrical model. Setting <B>mode</B> to <TT>"maxent"</TT> causes a similar
+model to be run but one that also takes into account edge lengths specified by the
 <TT>"len"</TT> attribute.
 :model:G:string:shortpath;  neato
 This value specifies how the distance matrix is computed for the input
