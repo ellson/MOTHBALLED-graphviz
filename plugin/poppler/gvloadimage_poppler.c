@@ -57,6 +57,7 @@ static PopplerDocument* gvloadimage_poppler_load(GVJ_t * job, usershape_t *us)
         else {
              us->datafree(us);        /* free incompatible cache data */
              us->data = NULL;
+             us->datafree = NULL;
         }
 
     }
@@ -67,11 +68,11 @@ static PopplerDocument* gvloadimage_poppler_load(GVJ_t * job, usershape_t *us)
         switch (us->type) {
             case FT_PDF:
 
-		if (g_path_is_absolute(pdf_file)) {
-		    absolute = g_strdup (pdf_file);
+		if (g_path_is_absolute(us->name)) {
+		    absolute = g_strdup (us->name);
 		} else {
 		    gchar *dir = g_get_current_dir ();
-		    absolute = g_build_filename (dir, pdf_file, (gchar *) 0);
+		    absolute = g_build_filename (dir, us->name, (gchar *) 0);
 		    free (dir);
 		}
 
@@ -112,7 +113,7 @@ static void gvloadimage_poppler_cairo(GVJ_t * job, usershape_t *us, boxf b, bool
     PopplerDocument* document = gvloadimage_poppler_load(job, us);
 
     cairo_t *cr = (cairo_t *) job->context; /* target context */
-    cairo_surface_t *surface;	 /* source surface */
+    cairo_surface_t *surface = NULL;	 /* source surface */
 
     if (document) {
         cairo_save(cr);
