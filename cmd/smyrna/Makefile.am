@@ -2,10 +2,13 @@
 ## Process this file with automake to produce Makefile.in
 
 pdfdir = $(pkgdatadir)/doc/pdf
+
+if WITH_SMYRNA
 man = smyrna.1
 pdf = smyrna.1.pdf
 man_MANS = $(man)
 pdf_DATA = $(pdf)
+endif
 
 AM_CPPFLAGS = \
 	-DSMYRNA_PATH=\""$(pkgdatadir)/smyrna"\" \
