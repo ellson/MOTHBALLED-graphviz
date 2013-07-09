@@ -214,7 +214,7 @@ void free_label(textlabel_t * p)
     if (p) {
 	free(p->text);
 	if (p->html) {
-	    free_html_label(p->u.html, 1);
+	    if (p->u.html) free_html_label(p->u.html, 1);
 	} else {
 	    free_textpara(p->u.txt.para, p->u.txt.nparas);
 	}

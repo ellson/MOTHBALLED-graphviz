@@ -217,6 +217,8 @@ static Agedge_t *newedge(Agraph_t * g, Agnode_t * t, Agnode_t * h,
     Agedge_t *in, *out;
     int seq;
 
+    (void)agsubnode(g,t,TRUE);
+    (void)agsubnode(g,h,TRUE);
     e2 = (Agedgepair_t *) agalloc(g, sizeof(Agedgepair_t));
     in = &(e2->in);
     out = &(e2->out);

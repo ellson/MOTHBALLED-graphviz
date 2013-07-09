@@ -271,10 +271,15 @@ formats used by the gd library. The latter is compressed.
 
 <DT><A NAME=d:imap HREF=#a:imap><STRONG>imap</STRONG></A>
 ,<DT><A NAME=d:cmapx HREF=#a:cmapx><STRONG>cmapx</STRONG></A>
-<DD>Produces map files for server-side and client-side image maps,
+<DD>Produces map files for server-side and client-side image maps.
 These can be used in a web page with
-a graphical form of the output, e.g. in JPEG or GIF format, to attach
-links to nodes and edges. For example, to create a server-side map
+a graphical form of the output, e.g. in JPEG, GIF or PNG format, to attach
+links to nodes and edges. 
+Graphviz generates an object's map information only if the object has a non-trival 
+<A HREF=attrs.html#d:URL>URL</A> or <A HREF=attrs.html#d:href>href</A>
+attribute, or if it has an explicit <A HREF=attrs.html#d:tooltip>tooltip</A> attribute.
+<P>
+For example, to create a server-side map
 given the dot file
 <PRE>
 /* x.gv */

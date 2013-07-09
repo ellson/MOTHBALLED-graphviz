@@ -7,7 +7,7 @@ ccomps \- connected components filter for graphs
 .B \-sxvenzC?
 ]
 [
-.BI -X [#]s[-f]
+.BI -X [#%]s[-f]
 ]
 [
 .BI -o outfile
@@ -65,12 +65,23 @@ if any.
 .BI \-X# " start-"
 .TP
 .BI \-X# " start-last"
-Prints only components in the given range. In the first form, only
+Prints only components in the given range of indices. In the first form, only
 the component whose index is \fIstart\fP, if any, is printed.
 In the second form, each component whose index is at least \fIstart\fP
 is printed. In the last form, only those components whose indices are
 in the range \fB[\fP\fIIstart\fP\fB,\fP\fIlast\fP\fB]\fP are printed.
 Thus, the flag \fB-x\fP is equivalent to \fB-X#0-\fP.
+.TP
+.BI \-X# " min"
+.TP
+.BI \-X# " min-"
+.TP
+.BI \-X# " min-max"
+Prints only components in the given range of sizes. In the first form, only
+a component whose size is \fImin\fP, if any, is printed.
+In the second form, each component whose size is at least \fImin\fP
+is printed. In the last form, only those components whose sizes are
+in the range \fB[\fP\fIImin\fP\fB,\fP\fImax\fP\fB]\fP are printed.
 .TP
 .BI \-o " outfile"
 If specified, each graph will be written to a different file
