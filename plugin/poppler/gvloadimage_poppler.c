@@ -16,23 +16,14 @@
 #endif
 
 #include <stdlib.h>
-#ifdef HAVE_STDINT_H
-#include <stdint.h>
-#endif
-#ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
-#endif
 #include <sys/stat.h>
 
 #include "gvplugin_loadimage.h"
 
-// not ready yet
-#undef HAVE_POPPLER
-
-#ifdef HAVE_POPPLER
 #ifdef HAVE_PANGOCAIRO
+#ifdef HAVE_POPPLER
 #include <poppler.h>
-#include <cairo/cairo.h>
+#include <cairo.h>
 
 #ifdef WIN32
 #define NUL_FILE "nul"
@@ -44,226 +35,101 @@ typedef enum {
     FORMAT_PDF_CAIRO,
 } format_type;
 
-typedef struct poppler_s {
-    cairo_t* cr;
-    cairo_surface_t* surface;
-    cairo_pattern_t* pattern;
-} poppler_t;
 
 static void gvloadimage_poppler_free(usershape_t *us)
 {
-    poppler_t *poppler = (poppler_t*)us->data;
-
-    if (poppler->pattern) cairo_pattern_destroy(poppler->pattern);
-    if (poppler->surface) cairo_surface_destroy(poppler->surface);
-    free(poppler);
+    g_object_unref((PopplerDocument*)us->data);
 }
 
-#if 0
-static int poppler_writer(void *caller_handle, const char *str, int len)
+static PopplerDocument* gvloadimage_poppler_load(GVJ_t * job, usershape_t *us)
 {
-    GVJ_t *job = (GVJ_t*)caller_handle;
-
-    if (job->common->verbose)
-    	return fwrite(str, 1, len, stderr);
-    return len;
-}
-
-static void poppler_error(GVJ_t * job, const char *name, const char *funstr, int err)
-{
-    const char *errsrc;
-
-    assert (err < 0);
-
-    if (err >= e_VMerror) 
-	errsrc = "PostScript Level 1"; 
-    else if (err >= e_unregistered)
-	errsrc = "PostScript Level 2";
-    else if (err >= e_invalidid)
-	errsrc = "DPS error";
-    else
-	errsrc = "Ghostscript internal error";
-
-    job->common->errorfn("%s: %s() returned: %d \"%s\" (%s)\n",
-		name, funstr, err, poppler_error_names[-err - 1], errsrc);
-}
-#endif
-
-static int gvloadimage_process_file(GVJ_t *job, usershape_t *us, void *instance)
-{
-    int rc = 0, exit_code;
-    gchar *absolute, *ura, *dir;
-    PopplerDocument *document;
-    PopplerPage *page;
+    PopplerDocument *document = NULL;
     GError *error;
-    int num_pages;
-
-    if (! gvusershape_file_access(us)) {
-	job->common->errorfn("Failure to read shape file\n");
-	return -1;
-    }
-    if (g_path_is_absolute(pdf_file)) {
-        absolute = g_strdup (pdf_file);
-    } else {
-	dir = g_get_current_dir ();
-	absolute = g_build_filename (dir, pdf_file, (gchar *) 0);
-	free (dir);
-    }
-
-    uri = g_filename_to_uri (absolute, NULL, &error);
-    free (absolute);
-    if (uri == NULL) {
-        printf("%s\n", error->message);
-        return 1;
-    }
-		    }
-    document = poppler_document_new_from_file (uri, NULL, &error);
-    if (document == NULL) {
-	printf("%s\n", error->message);
-	return 1;
-    }
-    num_pages = poppler_document_get_n_pages (document);
-    if (page_num < 1) {
-	printf("must be at least one page in the pdf\n");
-	return 1;
-    }
-
-    page = poppler_document_get_page (document, 1);
-    if (page == NULL) {
-	printf("poppler fail: page 1 not found\n");
-	return 1;
-    }
-
-    gvusershape_file_release(us);
-    return rc;
-}
-
-static int gvloadimage_process_surface(GVJ_t *job, usershape_t *us, poppler_t *poppler, void *instance)
-{
-    cairo_t *cr; /* temp cr for poppler */
-    int rc, rc2;
-    char width_height[20], dpi[10], cairo_context[30];
-    char *poppler_args[] = {
-	"dot",      /* actual value of argv[0] doesn't matter */
-	"-dQUIET",
-	"-dNOPAUSE",
-	"-sDEVICE=cairo",
-	cairo_context,
-	width_height,
-	dpi,
-    };
-#define POPPLER_ARGC sizeof(poppler_args)/sizeof(poppler_args[0])
-
-    poppler->surface = cairo_surface_create_similar( 
-	cairo_get_target(poppler->cr),
-	CAIRO_CONTENT_COLOR_ALPHA,
-	us->x + us->w,
-	us->y + us->h);
-
-    cr = cairo_create(poppler->surface);  /* temp context for poppler */
-
-    sprintf(width_height, "-g%dx%d", us->x + us->w, us->y + us->h);
-    sprintf(dpi, "-r%d", us->dpi);
-    sprintf(cairo_context, "-sCairoContext=%p", cr);
-
-    rc = popplerapi_init_with_args(instance, POPPLER_ARGC, poppler_args);
-
-    cairo_destroy(cr); /* finished with temp context */
-
-    if (rc)
-	poppler_error(job, us->name, "popplerapi_init_with_args", rc);
-    else
-	rc = gvloadimage_process_file(job, us, instance);
-
-    if (rc) {
-	cairo_surface_destroy(poppler->surface);
-	poppler->surface = NULL;
-    }
-
-    rc2 = popplerapi_exit(instance);
-    if (rc2) {
-	poppler_error(job, us->name, "popplerapi_exit", rc2);
-	return rc2;
-    }
-
-    if (!rc) 
-        poppler->pattern = cairo_pattern_create_for_surface (poppler->surface);
-
-    return rc;
-}
-
-static cairo_pattern_t* gvloadimage_poppler_load(GVJ_t * job, usershape_t *us)
-{
-    poppler_t *poppler = NULL;
-    popplerapi_revision_t popplerapi_revision_info;
-    void *instance;
-    int rc;
+    gchar *absolute, *uri;
 
     assert(job);
     assert(us);
     assert(us->name);
 
     if (us->data) {
-        if (us->datafree == gvloadimage_poppler_free
-	&& ((poppler_t*)(us->data))->cr == (cairo_t *)job->context)
-	    poppler = (poppler_t*)(us->data); /* use cached data */
-	else {
-	    us->datafree(us);        /* free incompatible cache data */
-	    us->data = NULL;
-	}
-    }
-    if (!poppler) {
-	poppler = (poppler_t *)malloc(sizeof(poppler_t));
-	if (!poppler) {
-	    job->common->errorfn("malloc() failure\n");
-	    return NULL;
-	}
-	poppler->cr = (cairo_t *)job->context;
-	poppler->surface = NULL;
-	poppler->pattern = NULL;
-
-	/* cache this - even if things go bad below - avoids repeats */
-	us->data = (void*)poppler;
-	us->datafree = gvloadimage_poppler_free;
-
-#define POPPLERAPI_REVISION_REQUIRED 863
-	rc = popplerapi_revision(&popplerapi_revision_info, sizeof(popplerapi_revision_t));
-        if (rc && rc < sizeof(popplerapi_revision_t)) {
-    	    job->common->errorfn("poppler revision - struct too short %d\n", rc);
-	    return NULL;
+        if (us->datafree == gvloadimage_poppler_free)
+             document = (PopplerDocument*)(us->data); /* use cached data */
+        else {
+             us->datafree(us);        /* free incompatible cache data */
+             us->data = NULL;
         }
-	if (popplerapi_revision_info.revision < POPPLERAPI_REVISION_REQUIRED) {
-    	    job->common->errorfn("poppler revision - too old %d\n",
-		popplerapi_revision_info.revision);
-	    return NULL;
-	}
 
-	rc = popplerapi_new_instance(&instance, (void*)job);
-	if (rc)
-	    poppler_error(job, us->name, "popplerapi_new_instance", rc);
-	else {
-	    rc = popplerapi_set_stdio(instance, NULL, poppler_writer, poppler_writer);
-	    if (rc)
-	        poppler_error(job, us->name, "popplerapi_set_stdio", rc);
-	    else
-                rc = gvloadimage_process_surface(job, us, poppler, instance);
-	    popplerapi_delete_instance(instance);
-	}
     }
-    return poppler->pattern;
+
+    if (!document) { /* read file into cache */
+	if (!gvusershape_file_access(us))
+	    return NULL;
+        switch (us->type) {
+            case FT_PDF:
+
+		if (g_path_is_absolute(pdf_file)) {
+		    absolute = g_strdup (pdf_file);
+		} else {
+		    gchar *dir = g_get_current_dir ();
+		    absolute = g_build_filename (dir, pdf_file, (gchar *) 0);
+		    free (dir);
+		}
+
+		uri = g_filename_to_uri (absolute, NULL, &error);
+
+		fprintf(stderr, "%s\n%s\n", absolute, uri);
+
+		free (absolute);
+		if (uri == NULL) {
+		    printf("%s\n", error->message);
+		    return NULL;
+		}
+
+		document = poppler_document_new_from_file (uri, NULL, &error);
+		if (document == NULL) {
+		    printf("%s\n", error->message);
+		    return NULL;
+		}
+
+                break;
+	    default:
+		break;
+        }
+
+        if (document) {
+            us->data = (void*)document;
+            us->datafree = gvloadimage_poppler_free;
+        }
+
+	gvusershape_file_release(us);
+    }
+
+    return document;
 }
 
 static void gvloadimage_poppler_cairo(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
 {
-    cairo_t *cr = (cairo_t *) job->context; /* target context */
-    cairo_pattern_t *pattern = gvloadimage_poppler_load(job, us);
+    PopplerDocument* document = gvloadimage_poppler_load(job, us);
 
-    if (pattern) {
+    cairo_t *cr = (cairo_t *) job->context; /* target context */
+    cairo_surface_t *surface;	 /* source surface */
+
+    if (document) {
         cairo_save(cr);
-	cairo_translate(cr, b.LL.x - us->x, -b.UR.y);
-	cairo_scale(cr, (b.UR.x - b.LL.x) / us->w, (b.UR.y - b.LL.y) / us->h);
-        cairo_set_source(cr, pattern);
-	cairo_paint(cr);
+
+//FIX       	surface = cairo_svg_surface_create(NUL_FILE, us->w, us->h); 
+
+	cairo_surface_reference(surface);
+
+        cairo_set_source_surface(cr, surface, 0, 0);
+
+        cairo_translate(cr, ROUND(b.LL.x), ROUND(-b.UR.y));
+        cairo_scale(cr, (b.UR.x - b.LL.x) / us->w,
+                       (b.UR.y - b.LL.y) / us->h);
+
+//FIX	poppler_handle_render_cairo(poppler, cr);
+
+        cairo_paint (cr);
         cairo_restore(cr);
     }
 }
@@ -275,9 +141,9 @@ static gvloadimage_engine_t engine_cairo = {
 #endif
 
 gvplugin_installed_t gvloadimage_poppler_types[] = {
-#ifdef HAVE_POPPLER
 #ifdef HAVE_PANGOCAIRO
-    {FORMAT_PDF_CAIRO,  "pdf:cairo", 1, &engine_cairo, NULL},
+#ifdef HAVE_POPPLER
+    {FORMAT_PDF_CAIRO, "pdf:cairo", 1, &engine_cairo, NULL},
 #endif
 #endif
     {0, NULL, 0, NULL, NULL}
