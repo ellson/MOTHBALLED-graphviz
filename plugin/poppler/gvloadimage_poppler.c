@@ -44,12 +44,17 @@ static void gvloadimage_poppler_free(usershape_t *us)
 static PopplerDocument* gvloadimage_poppler_load(GVJ_t * job, usershape_t *us)
 {
     PopplerDocument *document = NULL;
+    PopplerPage* page;
     GError *error;
     gchar *absolute, *uri;
+    int num_pages;
+    double width, height;
 
     assert(job);
     assert(us);
     assert(us->name);
+
+fprintf(stderr, "hello from gvloadimage_poppler_load\n");
 
     if (us->data) {
         if (us->datafree == gvloadimage_poppler_free)
@@ -90,6 +95,26 @@ static PopplerDocument* gvloadimage_poppler_load(GVJ_t * job, usershape_t *us)
 		    return NULL;
 		}
 
+		// check page 1 exists, and get size of image
+
+                num_pages = poppler_document_get_n_pages (document);
+                if (num_pages < 1) {
+                    printf("poppler fail: num_pages %d,  must be at least 1", num_pages);
+                    return NULL;
+                }
+            
+                page = poppler_document_get_page (document, 0);
+                if (page == NULL) {
+                    printf("poppler fail: page not found\n");
+                    return NULL;
+                }
+            
+                poppler_page_get_size (page, &width, &height);
+
+		// Hmmmmm...
+		us->w = (int)width;
+		us->h = (int)height;
+        
                 break;
 	    default:
 		break;
@@ -110,37 +135,27 @@ static void gvloadimage_poppler_cairo(GVJ_t * job, usershape_t *us, boxf b, bool
 {
     PopplerDocument* document = gvloadimage_poppler_load(job, us);
     PopplerPage* page;
-    int num_pages;
-    double width, height;
+
+fprintf(stderr, "hello from gvloadimage_poppler_cairo\n");
 
     cairo_t *cr = (cairo_t *) job->context; /* target context */
     cairo_surface_t *surface;	 /* source surface */
 
     if (document) {
-        num_pages = poppler_document_get_n_pages (document);
-        if (num_pages < 1) {
-            printf("poppler fail: num_pages %d,  must be at least 1", num_pages);
-            return;
-        }
     
+	// already done this once, so no err checking
         page = poppler_document_get_page (document, 0);
-        if (page == NULL) {
-            printf("poppler fail: page not found\n");
-            return;
-        }
-    
-        poppler_page_get_size (page, &width, &height);
-    
+
         cairo_save(cr);
 
-       /* For correct rendering of PDF, the PDF is first rendered to a
-        * transparent image (all alpha = 0). */
+        /* For correct rendering of PDF, the PDF is first rendered to a
+         * transparent image (all alpha = 0). */
 
 // FIXME
 #define IMAGE_DPI 72
  	surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-                                          IMAGE_DPI*width/72.0,
-                                          IMAGE_DPI*height/72.0);
+                                          IMAGE_DPI*(us->w)/72.0,
+                                          IMAGE_DPI*(us->h)/72.0);
         cr = cairo_create (surface);
         cairo_scale (cr, IMAGE_DPI/72.0, IMAGE_DPI/72.0);
         cairo_save (cr);
