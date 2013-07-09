@@ -78,8 +78,6 @@ static PopplerDocument* gvloadimage_poppler_load(GVJ_t * job, usershape_t *us)
 
 		uri = g_filename_to_uri (absolute, NULL, &error);
 
-		fprintf(stderr, "%s\n%s\n", absolute, uri);
-
 		free (absolute);
 		if (uri == NULL) {
 		    printf("%s\n", error->message);
@@ -111,14 +109,50 @@ static PopplerDocument* gvloadimage_poppler_load(GVJ_t * job, usershape_t *us)
 static void gvloadimage_poppler_cairo(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
 {
     PopplerDocument* document = gvloadimage_poppler_load(job, us);
+    PopplerPage* page;
+    int num_pages;
+    double width, height;
 
     cairo_t *cr = (cairo_t *) job->context; /* target context */
-    cairo_surface_t *surface = NULL;	 /* source surface */
+    cairo_surface_t *surface;	 /* source surface */
 
     if (document) {
+        num_pages = poppler_document_get_n_pages (document);
+        if (num_pages < 1) {
+            printf("poppler fail: num_pages %d,  must be at least 1", num_pages);
+            return;
+        }
+    
+        page = poppler_document_get_page (document, 0);
+        if (page == NULL) {
+            printf("poppler fail: page not found\n");
+            return;
+        }
+    
+        poppler_page_get_size (page, &width, &height);
+    
         cairo_save(cr);
 
-//FIX       	surface = cairo_svg_surface_create(NUL_FILE, us->w, us->h); 
+       /* For correct rendering of PDF, the PDF is first rendered to a
+        * transparent image (all alpha = 0). */
+
+// FIXME
+#define IMAGE_DPI 72
+ 	surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+                                          IMAGE_DPI*width/72.0,
+                                          IMAGE_DPI*height/72.0);
+        cr = cairo_create (surface);
+        cairo_scale (cr, IMAGE_DPI/72.0, IMAGE_DPI/72.0);
+        cairo_save (cr);
+        poppler_page_render (page, cr);
+        cairo_restore (cr);
+
+        /* Then the image is painted on top of a white "page". Instead of
+         * creating a second image, painting it white, then painting the
+         * PDF image over it we can use the CAIRO_OPERATOR_DEST_OVER
+         * operator to achieve the same effect with the one image. */
+        cairo_set_operator (cr, CAIRO_OPERATOR_DEST_OVER);
+        cairo_set_source_rgb (cr, 1, 1, 1);
 
 	cairo_surface_reference(surface);
 
@@ -127,8 +161,6 @@ static void gvloadimage_poppler_cairo(GVJ_t * job, usershape_t *us, boxf b, bool
         cairo_translate(cr, ROUND(b.LL.x), ROUND(-b.UR.y));
         cairo_scale(cr, (b.UR.x - b.LL.x) / us->w,
                        (b.UR.y - b.LL.y) / us->h);
-
-//FIX	poppler_handle_render_cairo(poppler, cr);
 
         cairo_paint (cr);
         cairo_restore(cr);
