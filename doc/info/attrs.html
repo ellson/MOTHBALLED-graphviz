@@ -2100,6 +2100,8 @@ enclosed in the parentheses,  <TT>(...)+</TT> indicates 1 or more, and
   and the optional <I>F</I> a floating-point number, 0 &le; <I>F</I> &le; 1. The sum of the 
   floating-point numbers in a <TT>colorList</TT> must sum to at most 1.
   <P>
+  <b>NOTE:</b> Gradient fills, described below, are currently only available via CAIRO or SVG rendering.
+  <P>
   If the colorList value specifies multiple colors, with no weights, and a filled style is specified,
   a linear gradient fill is done using the first two colors.
   If weights are present, a degenerate linear gradient fill is done. This essentially does a fill using
