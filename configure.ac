@@ -874,7 +874,7 @@ else
             if test "x$PKGCONFIG" != "x"; then
 	        AC_MSG_CHECKING(for Lua headers and libraries with pkg-config)
 	        echo
-	        for l in "$lua_suffix" "" "51" "5.1" "50" "5.0" ; do
+	        for l in "$lua_suffix" "" "52" "5.2" "51" "5.1" "50" "5.0" ; do
 	            pkgconfig_lua_found=`$PKGCONFIG --exists lua$l 2>/dev/null`
 	            if test "x$?" == "x0" ; then
 		        LUA_VERSION=`$PKGCONFIG --modversion lua$l`
@@ -895,7 +895,7 @@ else
     
         if test "x$LUA_INCLUDES" == "x" -o "x$LUA_LIBS" == "x" ; then
             LUACONFIG=""
-            AC_CHECK_PROGS(LUACONFIG, lua-config lua-config51 lua-config5.1 lua-config50 lua-config5.0)
+            AC_CHECK_PROGS(LUACONFIG, lua-config lua-config52 lua-config5.2 lua-config51 lua-config5.1 lua-config50 lua-config5.0)
             if test "x$LUACONFIG" != "x" ; then
                 AC_MSG_CHECKING(for Lua headers and libraries with lua-config)
 	        echo
@@ -914,7 +914,7 @@ else
             if test "x$ac_found_lua_header" == "xyes" -a "x$ac_found_liblua_header" == "xyes"; then
                 LUA_INCLUDES="$CFLAGS"
             fi
-            for l in "$lua_suffix" "" "51" "5.1" "50" "5.0" ; do
+            for l in "$lua_suffix" "" "52" "5.2" "51" "5.1" "50" "5.0" ; do
                 AC_CHECK_LIB(lua$l,lua_call,ac_found_lua_lib="yes",ac_found_lua_lib="no")
                 if test "x$ac_found_lua_lib" == "xyes" ; then
 	            LUA_VERSION=">=5.1.0"
