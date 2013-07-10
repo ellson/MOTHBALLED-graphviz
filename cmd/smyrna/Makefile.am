@@ -3,12 +3,10 @@
 
 pdfdir = $(pkgdatadir)/doc/pdf
 
-if WITH_SMYRNA
+
 man = smyrna.1
 pdf = smyrna.1.pdf
-man_MANS = $(man)
-pdf_DATA = $(pdf)
-endif
+
 
 AM_CPPFLAGS = \
 	-DSMYRNA_PATH=\""$(pkgdatadir)/smyrna"\" \
@@ -28,8 +26,12 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/cmd/smyrna/gui \
 	$(GTK_CFLAGS) $(GLUT_CFLAGS) $(GTKGLEXT_CFLAGS) $(GLADE_CFLAGS) $(FREETYPE2_CFLAGS) $(FONTCONFIG_CFLAGS) $(GTS_CFLAGS)
 
+man_MANS =
+pdf_DATA =
 bin_PROGRAMS =
 if WITH_SMYRNA
+man_MANS += $(man)
+pdf_DATA += $(pdf)
 if ENABLE_SHARED
 bin_PROGRAMS += smyrna 
 endif
