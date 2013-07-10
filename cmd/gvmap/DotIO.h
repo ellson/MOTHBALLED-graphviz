@@ -29,7 +29,7 @@ Agraph_t* assign_random_edge_color(Agraph_t* g);
 void dump_coordinates(char *name, int n, int dim, real *x);
 char * hue2rgb(real hue, char *color);
 
-SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim, int *nn, real **label_sizes, real ** areas, real **x, int **clusters, float **rgb_r,  float **rgb_g,  float **rgb_b,  float **fsz, char ***labels, int default_color_scheme, int clustering_scheme);
+SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim, int *nn, real **label_sizes, real ** areas, real **x, int **clusters, float **rgb_r,  float **rgb_g,  float **rgb_b,  float **fsz, char ***labels, int default_color_scheme, int clustering_scheme, int useClusters);
 
 void Dot_SetClusterColor(Agraph_t* g, float *rgb_r,  float *rgb_g,  float *rgb_b, int *clustering);
 void attached_clustering(Agraph_t* g, int maxcluster, int clustering_scheme);
