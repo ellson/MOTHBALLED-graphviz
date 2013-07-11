@@ -368,6 +368,9 @@ static void scanArgs(int argc, char **argv)
 	    Verbose = 0;
 	    Silent = 1;
 	    break;
+	case ':':
+	    fprintf(stderr, "%s: option -%c missing argument - ignored\n", CmdName, optopt);
+	    break;
 	case '?':
 	    if (optopt == '?')
 		usage(0);
@@ -380,7 +383,7 @@ static void scanArgs(int argc, char **argv)
     argv += optind;
     argc -= optind;
 
-    if (argc)
+    if (argc > 0)
 	Files = argv;
     if (!outfp)
 	outfp = stdout;		/* stdout the default */

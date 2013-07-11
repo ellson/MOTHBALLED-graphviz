@@ -712,10 +712,14 @@ static void initargs(int argc, char **argv)
 
     CmdName = cmdName(argv[0]);
     opterr = 0;
-    while ((c = getopt(argc, argv, ":io:")) != -1) {
+    while ((c = getopt(argc, argv, ":o:")) != -1) {
 	switch (c) {
 	case 'o':
 	    outFile = openFile(optarg, "w");
+	    break;
+	case ':':
+	    fprintf(stderr, "%s: option -%c missing parameter\n", CmdName, optopt);
+	    usage(1);
 	    break;
 	case '?':
 	    if (optopt == '?')
@@ -723,8 +727,9 @@ static void initargs(int argc, char **argv)
 	    else {
 		fprintf(stderr, "%s: option -%c unrecognized\n", CmdName,
 			optopt);
-		exit(1);
+		usage(1);
 	    }
+	    break;
 	}
     }
 

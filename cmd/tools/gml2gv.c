@@ -128,13 +128,17 @@ static void initargs(int argc, char **argv)
 	case 'o':
 	    outFile = openFile(optarg, "w");
 	    break;
+	case ':':
+	    fprintf(stderr, "%s: option -%c missing argument\n", CmdName, optopt);
+	    usage(1);
+	    break;
 	case '?':
 	    if (optopt == '?')
 		usage(0);
 	    else {
 		fprintf(stderr, "%s: option -%c unrecognized\n", CmdName,
 			optopt);
-		exit(1);
+		usage(1);
 	    }
 	}
     }
