@@ -56,6 +56,7 @@ E_fontsize
 E_headclip    
 E_headlabel    
 E_label    
+E_xabel    
 E_label_float    
 E_labelangle    
 E_labeldistance    
@@ -230,6 +231,7 @@ N_group
 N_height    
 N_imagescale    
 N_label    
+N_xlabel    
 N_layer    
 N_nojustify    
 N_ordering    
