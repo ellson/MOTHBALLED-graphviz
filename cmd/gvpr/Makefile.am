@@ -31,7 +31,7 @@ gvpr_CPPFLAGS = $(AM_CPPFLAGS)
 gvpr_LDADD = $(top_builddir)/lib/gvpr/libgvpr.la
 
 gvpr.1.pdf: $(srcdir)/gvpr.1
-	- @TBL@ $(srcdir)/gvpr.1 | @GROFF@ -Tps -man | @PS2PDF@ - - >gvpr.1.pdf
+	- @GROFF@ -Tps -man -t $(srcdir)/gvpr.1 | @PS2PDF@ - - >gvpr.1.pdf
 
 gvpr_static_SOURCES = gvprmain.c
 gvpr_static_CPPFLAGS = $(AM_CPPFLAGS)
