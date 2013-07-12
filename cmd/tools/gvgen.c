@@ -78,7 +78,7 @@ static FILE *openFile(char *name, char *mode)
     return fp;
 }
 
-static char *Usage = "Usage: %s [-dV?] [options]\n\
+static char *Usage = "Usage: %s [-dv?] [options]\n\
  -c<n>         : cycle \n\
  -C<x,y>       : cylinder \n\
  -g[f]<h,w>    : grid (folded if f is used)\n\
@@ -104,7 +104,7 @@ static char *Usage = "Usage: %s [-dV?] [options]\n\
  -T<x,y,t1,t2> : twisted torus \n\
  -w<x>         : wheel\n\
  -d            : directed graph\n\
- -V            : verbose mode\n\
+ -v            : verbose mode\n\
  -?            : print usage\n";
 
 static void usage(int v)
@@ -292,7 +292,7 @@ static char* setFold(char *s, opts_t* opts)
     return next;
 }
 
-static char *optList = ":i:M:m:n:N:c:C:dg:G:h:k:b:B:o:p:r:R:s:S:t:T:Vw:";
+static char *optList = ":i:M:m:n:N:c:C:dg:G:h:k:b:B:o:p:r:R:s:S:t:T:vw:";
 
 static GraphType init(int argc, char *argv[], opts_t* opts)
 {
@@ -402,7 +402,7 @@ static GraphType init(int argc, char *argv[], opts_t* opts)
 	    if (readOne(optarg,&(opts->cnt)))
 		errexit(c);
 	    break;
-	case 'V':
+	case 'v':
 	    opts->Verbose = 1;
 	    break;
 	case 'w':

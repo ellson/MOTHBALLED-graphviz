@@ -1,4 +1,4 @@
-.TH DOT 1 "23 August 2004"
+.TH DOT 1 "12 July 2013"
 .SH NAME
 dot \- filter for drawing directed graphs
 .br
@@ -11,97 +11,48 @@ circo \- filter for circular layout of graphs
 fdp \- filter for drawing undirected graphs
 .br
 sfdp \- filter for drawing large undirected graphs
+.br
+patchwork \- filter for tree maps
 .SH SYNOPSIS
 \fBdot\fR
-[\fB\-\fR(\fBG\fR|\fBN\fR|\fBE\fR)\fIname=value\fR]
-[\fB\-T\fIlang\fR]
-[\fB\-l\fIlibfile\fR]
-[\fB\-o\fIoutfile\fR]
-[\fB\-K\fIlayout\fR]
-[\fB\-O\fR]
-[\fB\-P\fR]
-[\fB\-v\fR]
-[\fB\-V\fR]
+[\fIoptions\fP]
 [files]
 .br
 \fBneato\fR
-[\fB\-\fR(\fBG\fR|\fBN\fR|\fBE\fR)\fIname=value\fR]
-[\fB\-T\fIlang\fR]
-[\fB\-l\fIlibfile\fR]
-[\fB\-n\fR[\fB1\fR|\fB2\fR]]
-[\fB\-o\fIoutfile\fR]
-[\fB\-K\fIlayout\fR]
-[\fB\-O\fR]
-[\fB\-P\fR]
-[\fB\-v\fR]
-[\fB\-V\fR]
+[\fIoptions\fP]
 [files]
 .br
 \fBtwopi\fR
-[\fB\-\fR(\fBG\fR|\fBN\fR|\fBE\fR)\fIname=value\fR]
-[\fB\-T\fIlang\fR]
-[\fB\-l\fIlibfile\fR]
-[\fB\-o\fIoutfile\fR]
-[\fB\-K\fIlayout\fR]
-[\fB\-O\fR]
-[\fB\-P\fR]
-[\fB\-v\fR]
-[\fB\-V\fR]
+[\fIoptions\fP]
 [files]
 .br
-\fBcirco\fR
-[\fB\-\fR(\fBG\fR|\fBN\fR|\fBE\fR)\fIname=value\fR]
-[\fB\-T\fIlang\fR]
-[\fB\-l\fIlibfile\fR]
-[\fB\-o\fIoutfile\fR]
-[\fB\-K\fIlayout\fR]
-[\fB\-O\fR]
-[\fB\-P\fR]
-[\fB\-v\fR]
-[\fB\-V\fR]
+\fBcircle\fR
+[\fIoptions\fP]
 [files]
 .br
 \fBfdp\fR
-[\fB\-\fR(\fBG\fR|\fBN\fR|\fBE\fR)\fIname=value\fR]
-[\fB\-T\fIlang\fR]
-[\fB\-l\fIlibfile\fR]
-[\fB\-o\fIoutfile\fR]
-[\fB\-K\fIlayout\fR]
-[\fB\-O\fR]
-[\fB\-P\fR]
-[\fB\-v\fR]
-[\fB\-V\fR]
+[\fIoptions\fP]
 [files]
 .br
 \fBsfdp\fR
-[\fB\-\fR(\fBG\fR|\fBN\fR|\fBE\fR)\fIname=value\fR]
-[\fB\-T\fIlang\fR]
-[\fB\-l\fIlibfile\fR]
-[\fB\-o\fIoutfile\fR]
-[\fB\-K\fIlayout\fR]
-[\fB\-O\fR]
-[\fB\-P\fR]
-[\fB\-v\fR]
-[\fB\-V\fR]
+[\fIoptions\fP]
+[files]
+.br
+\fBpatchwork\fR
+[\fIoptions\fP]
 [files]
 .SH DESCRIPTION
+These are a collection of programs for drawing graphs. 
+There is actually only one main program; the specific layout algorithms
+implemented as plugins. Thus, they largely share all of the same command-line 
+options.
 .I dot
 draws directed graphs.  It works well on DAGs and other graphs
 that can be drawn as hierarchies.
-It reads attributed graph files and writes drawings.
-By default, the output format
-.I dot
-is the input file with layout coordinates appended.
 .PP
 .I neato
 draws undirected graphs using ``spring'' models (see Kamada and Kawai,
-Information Processing Letters 31:1, April 1989).  Input files must be
-formatted in the
-.I dot
-attributed graph language.
-By default, the output of
-.I neato
-is the input graph with layout coordinates appended.
+Information Processing Letters 31:1, April 1989). 
 .PP
 .I twopi
 draws graphs using a radial layout (see G. Wills,
@@ -139,8 +90,13 @@ force\(hydirected approach in the spirit of Fruchterman and Reingold
 also draws undirected graphs using the ``spring'' model described
 above, but it uses a multi-scale approach to produce layouts
 of large graphs in a reasonably short time.
+.PP
+.I patchwork
+draws the graph as a squarified treemap (see M. Bruls et al., "Squarified treemaps", Proc. Joint Eurographics 
+and IEEE TCVG Symp. on Visualization, 2000, pp. 33-42). The clusters of the graph are used to
+specify the tree.
 .SH OUTPUT FORMATS
-Dot uses an extensible plugin mechanism for its output renderers,
+Graphviz uses an extensible plugin mechanism for its output renderers,
 so to see what output formats your installation of dot supports
 you can use ``dot \-Txxx'' (where xxx is an unlikely format)
 and check the warning message.
@@ -149,35 +105,40 @@ of the output formats.
 To see what variants are available, use, for example: ``dot \-Tpng:''
 and to force a particular variant, use, for example: ``dot \-Tpng:gd''
 .P
-Traditionally, dot supports the following:
+Traditionally, Graphviz supports the following:
+.br
 \fB\-Tps\fP (PostScript),
+.br
 \fB\-Tsvg\fP \fB\-Tsvgz\fP (Structured Vector Graphics),
+.br
 \fB\-Tfig\fP (XFIG graphics),
-\fB\-Tmif\fP (FrameMaker graphics),
-\fB\-Thpgl\fP (HP pen plotters), and \fB\-Tpcl\fP (Laserjet printers),
+.br
 \fB\-Tpng\fP \fB\-Tgif\fP (bitmap graphics),
-\fB\-Tdia\fP (GTK+ based diagrams),
+.br
 \fB\-Timap\fP (imagemap files for httpd servers for each node or edge
 that has a non\(hynull "href" attribute.),
+.br
 \fB\-Tcmapx\fP (client\(hyside imagemap for use in html and xhtml).
+.br
 Additional less common or more special\(hypurpose output formats
-can be found at http://www.graphviz.org/cvs/doc/info/output.html.)
-.P
+can be found at //http://www.graphviz.org/content/output-formats.
+.PP
 Alternative plugins providing support for a given output format
 can be found from the error message resulting from appending a ':' to the format. e.g. \fB-Tpng:\fP
 The first plugin listed is always the default.
-.P
+.PP
 The \fB\-P\fP switch can be used to produce a graph of all output variants supported by plugins in the local installation of graphviz.
 .SH GRAPH FILE LANGUAGE
 Here is a synopsis of the graph file language, normally using the extension \fB.gv\fR, for graphs:
 .PP
 [\fBstrict\fR] (\fBgraph\fR|\fBdigraph\fR) \fIname\fP { \fIstatement\(hylist\fP }\fR
 .br 
-Is the top level graph. If the graph is \fBstrict\fR then multiple edges are
+is the top\(hylevel graph. If the graph is \fBstrict\fR, then multiple edges are
 not allowed between the same pairs of nodes.
 If it is a directed graph, indicated by \fBdigraph\fR,
 then the \fIedgeop\fR must be "\->". If it is an undirected \fBgraph\fR
 then the \fIedgeop\fR must be "\-\-".
+.PP
 Statements may be:
 .PP
 \fIname\fB=\fIval\fB;\fR
@@ -212,12 +173,16 @@ Comments may be /*C\(hylike*/ or //C++\(hylike.
 .PP
 Attribute names and values are ordinary (C\(hystyle) strings.
 The following sections describe attributes that control graph layout.
-
-.SH "GRAPH ATTRIBUTES"
 .PP
-\fBsize="\fIx,y\fP"\fR sets bounding box of drawing in inches.
-.PP
-\fBpage="\fIx,y\fP"\fR sets the PostScript pagination unit.
+A more complete description of the language can be found at
+http://www.graphviz.org/content/dot-language.
+.SH "GRAPH, NODE AND EDGE ATTRIBUTES"
+Graphviz uses the \fIname\fP=\fIvalue\fP attributes, attached to graphs, subgraphs,
+nodes and edges, to tailor the layout and rendering. We list the more prominent
+attributes below. The complete list is available at 
+http://www.graphviz.org/content/attrs.
+.SH "  Graph Attributes"
+\fBsize="\fIx,y\fP"\fR specifies the maximum bounding box of drawing in inches.
 .PP
 \fBratio=\fIf\fR sets the aspect ratio to \fIf\fP which may be
 a floating point number, or one of the keywords \fBfill\fP,
@@ -236,8 +201,6 @@ according to their file sequence.
 .PP
 \fBrankdir=LR|RL|BT\fR requests a left\(hyto\(hyright, right\(hyto\(hyleft, or bottom\(hyto\(hytop, drawing.
 .PP
-\fBpagedir=\fR[TBLR][TBLR] sets the major and minor order of pagination.
-.PP
 \fBrank=same\fR (or \fBmin\fP or \fBmax\fP) in a subgraph
 constrains the rank assignment of its nodes.   If a subgraph's
 name has the prefix \fBcluster\fP, its nodes are drawn in
@@ -247,15 +210,6 @@ a distinct rectangle of the layout.  Clusters may be nested.
 (\fBorientation=land\fR is backward compatible but obsolete.)
 .PP
 \fBcenter=\fIn\fR a non\(hyzero value centers the drawing on the page.
-.PP
-\fBnslimit=\fIf\fR or \fBmclimit=\fIf\fR adjusts the bound on the
-number of network simplex or mincross iterations by the given ratio.
-For example, \fBmclimit=2.0\fP runs twice as long.
-.PP
-\fBlayers="\fIid:id:id:id\fR" is a sequence of layer identifiers for
-overlay diagrams.  The PostScript array variable \fIlayercolorseq\fR
-sets the assignment of colors to layers. The least index is 1 and 
-each element must be a 3\(hyelement array to be interpreted as a color coordinate.
 .PP
 \fBcolor=\fIcolorvalue\fR sets foreground color (\fBbgcolor\fP for background).
 .PP
@@ -268,7 +222,7 @@ the base URL for all relative URLs, as recognized by Acrobat Distiller
 \fBstylesheet=\fI"file.css"\fR includes a reference to a stylesheet
 in \-Tsvg and \-Tsvgz outputs.  Ignored by other formats.
 .PP
-\fBsplines\fR. If set to \fItrue\fR, edges are
+\fBsplines\fR If set to \fItrue\fR, edges are
 drawn as splines.
 If set to \fIpolyline\fR, edges are 
 drawn as polylines.
@@ -335,22 +289,25 @@ If \fIval\fP is not an integer, a random system\(hygenerated integer,
 such as the process ID or current time, is used as the seed.
 .PP
 
-.SH "NODE ATTRIBUTES"
+.SH "  Node Attributes"
 .PP
 \fBheight=\fId\fR or \fBwidth=\fId\fR sets minimum height or width.
 Adding \fBfixedsize=true\fP forces these to be the actual size
 (text labels are ignored).
 .PP
-\fBshape=record polygon epsf \fIbuiltin_polygon\fR
+\fBshape=record polygon epsf \fIbuiltin_shape\fR
 .br
-\fIbuiltin_polygon\fR is one of: \fBplaintext ellipse oval circle egg 
+\fIbuiltin_polygon\fR can be \fBplaintext ellipse oval circle egg 
 triangle box diamond trapezium parallelogram house hexagon octagon
-note tab box3d component.\fR
+note tab box3d component\fR, among others.
 (Polygons are defined or modified by the following node attributes:
 \fBregular\fR, \fBperipheries\fR, \fBsides\fR, \fBorientation\fR,
 \fBdistortion\fR and \fBskew\fR.)  \fBepsf\fR uses the node's
 \fBshapefile\fR attribute as the path name of an external
 EPSF file to be automatically loaded for the node shape.
+.PP
+See http://www.graphviz.org/content/node-shapes for a complete description
+of node shapes.
 .PP
 \fBlabel=\fItext\fR where \fItext\fP may include escaped newlines
 \\\|n, \\\|l, or \\\|r for center, left, and right justified lines.
@@ -359,6 +316,9 @@ The string '\\G' value will be replaced by the graph name.
 Record labels may contain recursive box lists delimited by { | }.
 Port identifiers in labels are set off by angle brackets < >.
 In the graph file, use colon (such as, \fBnode0:port28\fR).
+.PP
+Graphviz also supports special HTML-like labels for constructing complex node
+content. A full\(hydescription of these is given at http://www.graphviz.org/content/node-shapes#html.
 .PP
 \fBfontsize=\fIn\fR sets the label type size to \fIn\fP points.
 .PP
@@ -380,8 +340,32 @@ or a "\fI#rrggbb" (red, green, blue, 2 hex characters each) value.
 .PP
 \fBstyle=filled solid dashed dotted bold invis\fP or any Postscript code.
 .PP
-\fBlayer=\fIid\fR or \fIid:id\fR or "all" sets the node's active layers.
-The empty string means no layers (invisible).
+\fBhref=\fI"url"\fR sets the url for the node in imagemap, PostScript and SVG
+files.
+The substrings '\\N' and '\\G' are substituted in the same manner as
+for the node label attribute.
+Additionally the substring '\\L' is substituted with the node label string.
+.PP
+\fBURL=\fI"url"\fR ("URL" is a synonym for "href".)
+.PP
+\fBtarget=\fI"target"\fR is a target string for client\(hyside imagemaps
+and SVG, effective when nodes have a URL.
+The target string is used to determine which window of the browser is used
+for the URL.  Setting it to "_graphviz" will open a new window if it doesn't
+already exist, or reuse it if it does.
+If the target string is empty, the default,
+then no target attribute is included in the output.
+The substrings '\\N' and '\\G' are substituted in the same manner as
+for the node label attribute.
+Additionally the substring '\\L' is substituted with the node label string.
+.PP
+\fBtooltip=\fI"tooltip"\fR is a tooltip string for client\(hyside imagemaps
+and SVG, effective when nodes have a URL.  The tooltip string defaults to be the
+same as the label string, but this attribute permits nodes without
+labels to still have tooltips thus permitting denser graphs.
+The substrings '\\N' and '\\G' are substituted in the same manner as
+for the node label attribute.
+Additionally the substring '\\L' is substituted with the node label string.
 .PP
 The following attributes apply only to polygon shape nodes:
 .PP
@@ -417,33 +401,6 @@ left\(hydisplacement of the bottom of the polygon (relative to its
 orientation).
 Floating point values between \-1 and +1 are suggested.
 This attribute is ignored by \fIbuiltin_polygons\fR.
-.PP
-\fBhref=\fI"url"\fR sets the url for the node in imagemap, PostScript and SVG
-files.
-The substrings '\\N' and '\\G' are substituted in the same manner as
-for the node label attribute.
-Additionally the substring '\\L' is substituted with the node label string.
-.PP
-\fBURL=\fI"url"\fR ("URL" is a synonym for "href".)
-.PP
-\fBtarget=\fI"target"\fR is a target string for client\(hyside imagemaps
-and SVG, effective when nodes have a URL.
-The target string is used to determine which window of the browser is used
-for the URL.  Setting it to "_graphviz" will open a new window if it doesn't
-already exist, or reuse it if it does.
-If the target string is empty, the default,
-then no target attribute is included in the output.
-The substrings '\\N' and '\\G' are substituted in the same manner as
-for the node label attribute.
-Additionally the substring '\\L' is substituted with the node label string.
-.PP
-\fBtooltip=\fI"tooltip"\fR is a tooltip string for client\(hyside imagemaps
-and SVG, effective when nodes have a URL.  The tooltip string defaults to be the
-same as the label string, but this attribute permits nodes without
-labels to still have tooltips thus permitting denser graphs.
-The substrings '\\N' and '\\G' are substituted in the same manner as
-for the node label attribute.
-Additionally the substring '\\L' is substituted with the node label string.
 
 .PP
 \fB(circo\(hyspecific attributes)\fR
@@ -457,7 +414,7 @@ node be treated as the root of the spanning tree in the layout.
 \fBpin=\fIval\fR. If \fIval\fR is "true", the node will remain at
 its initial position.
 
-.SH "EDGE ATTRIBUTES"
+.SH "  Edge Attributes"
 \fBminlen=\fIn\fR where \fIn\fP is an integer factor that applies
 to the edge length (ranks for normal edges, or minimum node separation
 for flat edges).
@@ -573,8 +530,8 @@ The substrings '\\T', '\\H', '\\E' and '\\G' are substituted in the same manner 
 for the edge label attribute.
 Additionally the substring '\\L' is substituted with the edge label string.
 .PP
-\fBlabeldistance\fP and \fPport_label_distance\fP set distance; also
-\fBlabelangle\fP (in degrees CCW)
+\fBlabeldistance\fP and \fBlabelangle\fP (in degrees CCW) specify the placement of
+head and tail labels.
 .PP
 \fBdecorate\fP draws line from edge to label.
 .PP
@@ -601,7 +558,7 @@ The default is 1.0.
 \fBweight=\fIf\fR sets the weight of an edge
 to the given floating point value. The default is 1.0;
 greater values make the edge tend more toward its optimal length.
-.SH "COMMAND LINE OPTIONS"
+.SH "COMMAND\(hyLINE OPTIONS"
 \fB\-G\fP sets a default graph attribute.
 .br
 \fB\-N\fP sets a default node attribute.
@@ -645,9 +602,22 @@ As usual, edge layout is guided by the \fBsplines\fR attribute.
 .PP
 \fB\-v\fP (verbose) prints various information useful for debugging.
 .PP
+\fB\-c\fP configure plugins.
+.PP
+\fB\-m\fP memory test (observe no growth with top, kill when done).
+.PP
+\fB\-q\fIlevel\fP set level of message suppression. The default is 1.
+.PP
+\fB\-s\fIfscale\fP scale input by \fIfscale\fP, the default is 72.
+.PP
+\fB\-y\fR invert y coordinate in output.
+.PP
 \fB\-V\fP (version) prints version information and exits.
 .PP
 \fB\-?\fP prints the usage and exits.
+.PP
+A complete description of the available command\(hyline options can be found at
+http://www.graphviz.org/content/command-line-invocation.
 .SH "EXAMPLES"
 .nf
 digraph test123 {
@@ -690,6 +660,8 @@ Stephen C. North <north@research.att.com>
 Emden R. Gansner <erg@research.att.com>
 .br
 John C. Ellson <ellson@research.att.com>
+.br
+Yifan Hu <yifanhu@research.att.com>
 .PP
 The bitmap driver (PNG, GIF etc) is by Thomas Boutell, <http://www.boutell.com/gd>
 .PP
@@ -718,8 +690,9 @@ E. R. Gansner, E. Koutsofios, S. C. North,  K. P. Vo, "A Technique for Drawing D
 S. North and E. Koutsofios, "Applications of graph visualization",
 Graphics Interface 94, pp. 234\(hy245.
 .br
-E. Koutsofios and S. C. North, "Drawing Graphs with dot," 
-Available on research.att.com in dist/drawdag/dotguide.ps.Z.
+E.R. Gansner and E. Koutsofios and S. C. North, "Drawing Graphs with dot," 
+Available at http://www.graphviz.org/pdf/dotguide.pdf.
 .br
 S. C. North, "NEATO User's Manual".
-Available on research.att.com in dist/drawdag/neatodoc.ps.Z.
+Available http://www.graphviz.org/pdf/neatoguide.pdf.
+

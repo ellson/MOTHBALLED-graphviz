@@ -6,6 +6,10 @@ lneato \- A Customizable Graph Editor
 [
 .B -V
 ] [
+.BI -lm mode
+] [
+.BI -el lev
+] [
 .I file
 ]
 .SH DESCRIPTION
@@ -48,6 +52,12 @@ window.
 .TP
 .B -V
 Prints the version.
+.TP
+.BI -lm mode
+Sets the layout mode. The \fImode\fP can be \fBsync\fP or \fBasync\fP. The default is \fBasync\fP.
+.TP
+.BI -el lev
+Sets the mesage level. The \fIlev\fP can be \fB0\fP or \fB1\fP. The default is \fB0\fP.
 .SH SEE ALSO
 neato(1), lefty(1), dotty(1), xdot(3),
 .br
