@@ -128,7 +128,10 @@ int main(int argc, char **argv)
 		break;
 	    }
 	case '?':
-	    if (isprint(optopt)) {
+	    if (optopt == '?') {
+		help_message(progname);
+		exit(EXIT_SUCCESS);
+	    } else if (isprint(optopt)) {
 		fprintf(stderr, "Unknown option `-%c'.\n", optopt);
 	    } else {
 		fprintf(stderr, "Unknown option character `\\x%X'.\n",
@@ -253,6 +256,8 @@ Usage: %s [options] [<files>]\n\
 \n\
 Options:\n\
   -h :           Print this message\n\
+  -? :           Print this message\n\
+  -v :           Verbose\n\
   -n<node> :     Name node to prune.\n\
   -N<attrspec> : Attribute specification to apply to pruned nodes\n\
 \n\

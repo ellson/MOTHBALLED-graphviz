@@ -20,6 +20,12 @@ prune \- Prune directed graphs
 .BI \-N " attrspec"
 ]
 [
+.B \-v
+]
+[
+.BR \- ( h | ? )
+]
+[
 .I files ...
 ]
 .SH DESCRIPTION
@@ -54,7 +60,12 @@ pruned node.
 .I attrspec
 is a string of the form
 .IR attr "=" value.
-
+.TP
+.B \-v
+Verbose output.
+.TP
+.BR \-h " "\-?
+Prints the usage and exits.
 .SH EXAMPLES
 An input graph
 .I test.gv
