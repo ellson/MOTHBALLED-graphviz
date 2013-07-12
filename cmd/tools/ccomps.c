@@ -206,6 +206,10 @@ static void init(int argc, char *argv[])
 	case 'z':
 	    sorted = 1;
 	    break;
+	case ':':
+	    fprintf(stderr,
+		"ccomps: option -%c missing argument - ignored\n", optopt);
+	    break;
 	case '?':
 	    if (optopt == '?')
 		usage(0);
@@ -231,7 +235,7 @@ static void init(int argc, char *argv[])
 	else
 	    sorted = 0;    /* not relevant; turn off */
     }
-    if (argc)
+    if (argc > 0)
 	Files = argv;
 }
 

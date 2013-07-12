@@ -367,6 +367,9 @@ static void init(int argc, char *argv[])
 	case 'x':
 	    external = 1;
 	    break;
+	case ':':
+	    fprintf(stderr, "bcomps: option -%c missing argument - ignored\n", optopt);
+	    break;
 	case '?':
 	    if (optopt == '?')
 		usage(0);
@@ -379,7 +382,7 @@ static void init(int argc, char *argv[])
     argv += optind;
     argc -= optind;
 
-    if (argc)
+    if (argc > 0)
 	Files = argv;
 }
 

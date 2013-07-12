@@ -1243,6 +1243,10 @@ This field indicates which graph component uses the attribute.
   directionality similar to the layout used in dot, and "ipsep", which
   allows the graph to specify minimum vertical and horizontal distances
   between nodes. (See the <A HREF=#d:sep>sep</A> attribute.)
+  <P>
+  For sfdp, the default <B>mode</B> is <TT>"spring"</TT>, which corresponds to using
+  a spring-electrical model. Setting <B>mode</B> to <TT>"maxent"</TT> causes a similar
+  model to be run but one that also takes into account edge lengths specified by the
   <TT>"len"</TT> attribute.
 
 <DT><A NAME=d:model HREF=#a:model><STRONG>model</STRONG></A>
@@ -2095,6 +2099,8 @@ enclosed in the parentheses,  <TT>(...)+</TT> indicates 1 or more, and
   where each <I>WC</I> has the form <I>C(;F)?</I> with C a <A HREF=#k:color>color</A> value
   and the optional <I>F</I> a floating-point number, 0 &le; <I>F</I> &le; 1. The sum of the 
   floating-point numbers in a <TT>colorList</TT> must sum to at most 1.
+  <P>
+  <b>NOTE:</b> Gradient fills, described below, are currently only available via CAIRO or SVG rendering.
   <P>
   If the colorList value specifies multiple colors, with no weights, and a filled style is specified,
   a linear gradient fill is done using the first two colors.

@@ -8,7 +8,7 @@
 :addDouble
 <P>A double with an optional prefix '+'.
 :addPoint
-<P>A <A HREF="k:point">point</A> with an optional prefix '+'.
+<P>A <A HREF="#k:point">point</A> with an optional prefix '+'.
 :aspectType
 <p>An aspect ratio, double, followed optionally by a ',' and a maximum pass 
 count. If the aspect ratio is given, but no maximum pass count, the
@@ -102,6 +102,8 @@ A colon-separated list of weighted color values: <I>WC</I>(:<I>WC</I>)*
 where each <I>WC</I> has the form <I>C(;F)?</I> with C a <A HREF=#k:color>color</A> value
 and the optional <I>F</I> a floating-point number, 0 &le; <I>F</I> &le; 1. The sum of the 
 floating-point numbers in a <TT>colorList</TT> must sum to at most 1.
+<P>
+<b>NOTE:</b> Gradient fills, described below, are currently only available via CAIRO or SVG rendering.
 <P>
 If the colorList value specifies multiple colors, with no weights, and a filled style is specified,
 a linear gradient fill is done using the first two colors.

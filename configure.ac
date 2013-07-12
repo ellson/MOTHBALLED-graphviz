@@ -874,7 +874,7 @@ else
             if test "x$PKGCONFIG" != "x"; then
 	        AC_MSG_CHECKING(for Lua headers and libraries with pkg-config)
 	        echo
-	        for l in "$lua_suffix" "" "51" "5.1" "50" "5.0" ; do
+	        for l in "$lua_suffix" "" "52" "5.2" "51" "5.1" "50" "5.0" ; do
 	            pkgconfig_lua_found=`$PKGCONFIG --exists lua$l 2>/dev/null`
 	            if test "x$?" == "x0" ; then
 		        LUA_VERSION=`$PKGCONFIG --modversion lua$l`
@@ -895,7 +895,7 @@ else
     
         if test "x$LUA_INCLUDES" == "x" -o "x$LUA_LIBS" == "x" ; then
             LUACONFIG=""
-            AC_CHECK_PROGS(LUACONFIG, lua-config lua-config51 lua-config5.1 lua-config50 lua-config5.0)
+            AC_CHECK_PROGS(LUACONFIG, lua-config lua-config52 lua-config5.2 lua-config51 lua-config5.1 lua-config50 lua-config5.0)
             if test "x$LUACONFIG" != "x" ; then
                 AC_MSG_CHECKING(for Lua headers and libraries with lua-config)
 	        echo
@@ -914,7 +914,7 @@ else
             if test "x$ac_found_lua_header" == "xyes" -a "x$ac_found_liblua_header" == "xyes"; then
                 LUA_INCLUDES="$CFLAGS"
             fi
-            for l in "$lua_suffix" "" "51" "5.1" "50" "5.0" ; do
+            for l in "$lua_suffix" "" "52" "5.2" "51" "5.1" "50" "5.0" ; do
                 AC_CHECK_LIB(lua$l,lua_call,ac_found_lua_lib="yes",ac_found_lua_lib="no")
                 if test "x$ac_found_lua_lib" == "xyes" ; then
 	            LUA_VERSION=">=5.1.0"
@@ -946,7 +946,7 @@ else
         fi
     
         AC_MSG_CHECKING(for Lua compiling and linking)
-        LUA_TEST=`LT=luatest.c ; echo "#include <lua.h>" > $LT;  echo "#include <lualib.h>" >> $LT; echo "int main() { luaopen_base((lua_State *)lua_open()); return 0; }" >> $LT ; $CC -Wall $LT -o $LT.out $LUA_INCLUDES $LUA_LIBS $CFLAGS $LDFLAGS 1>/dev/null 2>&1 ; echo $?; rm -f $LT $LT.out 1>/dev/null 2>&1`
+        LUA_TEST=`LT=luatest.c ; echo "#include <lua.h>" > $LT;  echo "#include <lualib.h>" >> $LT; echo "int main() { return 0; }" >> $LT ; $CC -Wall $LT -o $LT.out $LUA_INCLUDES $LUA_LIBS $CFLAGS $LDFLAGS 1>/dev/null 2>&1 ; echo $?; rm -f $LT $LT.out 1>/dev/null 2>&1`
         if test "x$LUA_TEST" != "x0" ; then
           AC_MSG_RESULT(no)
           AC_MSG_WARN([
@@ -2094,6 +2094,28 @@ fi
 AM_CONDITIONAL(WITH_WEBP, [test "x$use_webp" == "xYes"])
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for POPPLER
+                                                                                
+AC_ARG_WITH(poppler,
+  [AS_HELP_STRING([--with-poppler=yes],[poppler library])],
+  [], [with_poppler=yes])
+
+if test "x$with_poppler" != "xyes"; then
+  use_poppler="No (disabled)"
+else
+  PKG_CHECK_MODULES(POPPLER, [poppler-glib],[
+    use_poppler="Yes"
+    AC_DEFINE_UNQUOTED(HAVE_POPPLER,1,
+      [Define if you have the poppler library])
+    AC_SUBST([POPPLER_CFLAGS])
+    AC_SUBST([POPPLER_LIBS])
+  ],[
+    use_poppler="No (poppler library not available)"
+  ])
+fi
+AM_CONDITIONAL(WITH_POPPLER, [test "x$use_poppler" == "xYes"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for RSVG
                                                                                 
 AC_ARG_WITH(rsvg,
@@ -3127,6 +3149,7 @@ AC_CONFIG_FILES(Makefile
 	plugin/lasi/Makefile
 	plugin/ming/Makefile
 	plugin/pango/Makefile
+	plugin/poppler/Makefile
 	plugin/quartz/Makefile
 	plugin/rsvg/Makefile
 	plugin/visio/Makefile
@@ -3264,6 +3287,7 @@ echo "  gtk:           $use_gtk"
 echo "  lasi:          $use_lasi"
 echo "  ming:          $use_ming"
 echo "  pangocairo:    $use_pangocairo"
+echo "  poppler:       $use_poppler"
 echo "  quartz:        $use_quartz"
 echo "  rsvg:          $use_rsvg"
 echo "  visio:         $use_visio"

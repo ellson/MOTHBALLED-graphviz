@@ -439,6 +439,9 @@ static void init(int argc, char **argv, parms_t * p)
 	  }
 	  break;
 	}
+ 	case ':':
+	    fprintf(stderr, "%s: option -%c missing argument - ignored\n", cmd, optopt);
+	    break;
  	case '?':
 	    if (optopt == '?')
 		usage(0);
@@ -452,7 +455,7 @@ static void init(int argc, char **argv, parms_t * p)
     argv += optind;
     argc -= optind;
 
-    if (argc) {
+    if (argc > 0) {
 	p->infile = argv[0];
 	p->inf = openF(argv[0], "r");
     }

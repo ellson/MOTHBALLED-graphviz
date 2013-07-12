@@ -107,6 +107,7 @@ typedef struct {
     int show_points; 
     real bbox_margin[2]; 
     int whatout;
+    int useClusters;
     int plotedges;
     int color_scheme;
     real line_width;
@@ -192,6 +193,7 @@ static char* usestr =
     -c_opacity=xx - 2-character hex string for opacity of polygons\n\
     -C k - generate at most k clusters. (0)\n\
     -d s - seed used to calculate Fielder vector for optimal coloring\n\
+    -D   - use top-level cluster subgraphs to specify clustering\n\
     -e   - show edges\n\
     -g c - bounding box color. If not specified, a bounding box is not drawn.\n\
     -h k - number of artificial points added to maintain bridge between endpoints (0)\n\
@@ -277,6 +279,7 @@ init(int argc, char **argv, params_t* pm)
   pm->dim = 2;
   pm->shore_depth_tol = 0;
   pm->highlight_cluster = 0;
+  pm->useClusters = 0;
   pm->plotedges = 0;
   pm->whatout = 0;
   pm->show_points = 0;
@@ -301,7 +304,7 @@ init(int argc, char **argv, params_t* pm)
   /*  bbox_margin[0] =  bbox_margin[1] = -0.2;*/
   pm->bbox_margin[0] =  pm->bbox_margin[1] = 0;
 
-  while ((c = getopt(argc, argv, ":evOko:m:s:r:p:c:C:l:b:g:t:a:h:z:d:")) != -1) {
+  while ((c = getopt(argc, argv, ":evODko:m:s:r:p:c:C:l:b:g:t:a:h:z:d:")) != -1) {
     switch (c) {
     case 'm':
       if ((sscanf(optarg,"%lf",&s) > 0) && (s != 0)){
@@ -356,6 +359,9 @@ init(int argc, char **argv, params_t* pm)
       break;
     case 'v':
       Verbose = 1;
+      break;
+    case 'D':
+      pm->useClusters = 1;
       break;
     case 'e':
       pm->plotedges = 1;
@@ -685,7 +691,7 @@ static void mapFromGraph (Agraph_t* g, params_t* pm)
 
   initDotIO(g);
   graph = Import_coord_clusters_from_dot(g, pm->maxcluster, pm->dim, &n, &width, NULL, &x, &grouping, 
-					   &rgb_r,  &rgb_g,  &rgb_b,  &fsz, &labels, pm->color_scheme, CLUSTERING_MODULARITY);
+					   &rgb_r,  &rgb_g,  &rgb_b,  &fsz, &labels, pm->color_scheme, CLUSTERING_MODULARITY, pm->useClusters);
   makeMap (graph, n, x, width, grouping, labels, fsz, rgb_r, rgb_g, rgb_b, pm, g);
 }
 

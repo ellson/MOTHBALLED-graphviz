@@ -30,9 +30,15 @@ By default,
 .B gvmap
 will generate the clusters from the data. If desired, the input graph can specify
 cluster information by giving every node a \fIcluster\fP attribute whose value is
-a small positive integer. Nodes sharing the same \fIcluster\fP attribute value will 
+a small positive integer. (It is works best if \fIcluster\fP values are all integers
+in the interval [1,K] for some K. Nodes sharing the same \fIcluster\fP attribute value will 
 be put into the same cluster. \fBN.B.\fP For the \fIcluster\fP attribute to be used,
 all nodes must have a valid value.
+.P
+If the \fI-D\fP flag is used, 
+.B  gvmap
+will use the top-level cluster subgraphs to determine the clustering. Any nodes not in
+such a cluster will be put into a single catch-all cluster.
 .P
 If the input specifies the desired clustering as described above, it can also
 specify a desired coloring by having some node in each cluster provide a
@@ -75,6 +81,9 @@ The integer d specifies the maximum number of clusters (countries) allowed. By d
 .TP
 .BI \-d " d"
 The integer d specifies the random seed used during color assignment optimization that maximize color difference between neighboring countries.
+.TP
+.BI \-D
+If specified, the graph's cluster subgraphs are used to specify the clustering.
 .TP
 .BI \-e
 If specified, edges will be included in the final output.

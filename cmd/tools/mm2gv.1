@@ -1,3 +1,6 @@
+.EQ
+delim $$
+.EN
 .TH MM2GV 1 "31 July 2008"
 .SH NAME
 mm2gv \- Matrix Market-DOT converters
@@ -24,8 +27,8 @@ as a bipartite graph adjacency matrix, with the rows and columns of the matrix s
 two sets of vertices. Equivalently, the matrix is converted into a symmetric square matrix
 .TS
 c c.
-0    \fIM\fP
-\fIM\fP^T  0
+0	\fIM\fP
+$\fIM\fP sup \fIT\fP$	0
 .TE
 a block matrix with square blocks of 0's in the upper left and lower right, the upper right
 block being \fIM\fP and the lower left block being the transpose of \fIM\fP.

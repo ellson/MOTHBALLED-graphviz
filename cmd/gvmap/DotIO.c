@@ -552,7 +552,7 @@ void Dot_SetClusterColor(Agraph_t* g, float *rgb_r,  float *rgb_g,  float *rgb_b
   }
 }
 
-SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim, int *nn, real **label_sizes, real **areas, real **x, int **clusters, float **rgb_r,  float **rgb_g,  float **rgb_b,  float **fsz, char ***labels, int default_color_scheme, int clustering_scheme){
+SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim, int *nn, real **label_sizes, real **areas, real **x, int **clusters, float **rgb_r,  float **rgb_g,  float **rgb_b,  float **fsz, char ***labels, int default_color_scheme, int clustering_scheme, int useClusters){
   SparseMatrix A = 0;
   Agnode_t* n;
   Agedge_t* e;
@@ -647,25 +647,56 @@ SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim
   A = SparseMatrix_from_coordinate_arrays(nedges, nnodes, nnodes, I, J, val, type);
 
   /* get clustering info */
+  *clusters = MALLOC(sizeof(int)*nnodes);
   nc = 1;
   MIN_GRPS = 0;
-  for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
-    i = ND_id(n);
-    if (clust_sym && (sscanf(agxget(n,clust_sym), "%d", &ic)>0)) {
-      nc = MAX(nc, ic);
-      if (first){
-	MIN_GRPS = ic;
-	first = FALSE;
-      } else {
-	MIN_GRPS = MIN(MIN_GRPS, ic);
+  /* if useClusters, the nodes in each top-level cluster subgraph are assigned to
+   * clusters 2, 3, .... Any nodes not in a cluster subgraph are tossed into cluster 1.
+   */
+  if (useClusters) {
+    Agraph_t* sg;
+    int gid = 1;  
+    memset (*clusters, 0, sizeof(int)*nnodes);
+    for (sg = agfstsubg(g); sg; sg = agnxtsubg(sg)) {
+      if (strncmp(agnameof(sg), "cluster", 7)) continue;
+      gid++;
+      for (n = agfstnode(sg); n; n = agnxtnode (sg, n)) {
+        i = ND_id(n);
+        if ((*clusters)[i])
+          fprintf (stderr, "Warning: node %s appears in multiple clusters.\n", agnameof(n));
+        else
+          (*clusters)[i] = gid;
       }
-    } else {
-      noclusterinfo = TRUE;
+    }
+    for (n = agfstnode(g); n; n = agnxtnode (g, n)) {
+      i = ND_id(n);
+      if ((*clusters)[i] == 0)
+        (*clusters)[i] = 1;
+    }
+    MIN_GRPS = 1;
+    nc = gid;
+  }
+  else if (clust_sym) {
+    for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
+      i = ND_id(n);
+      if ((sscanf(agxget(n,clust_sym), "%d", &ic)>0)) {
+        (*clusters)[i] = ic;
+        nc = MAX(nc, ic);
+        if (first){
+	  MIN_GRPS = ic;
+	  first = FALSE;
+        } else {
+	  MIN_GRPS = MIN(MIN_GRPS, ic);
+        }
+      } else {
+        noclusterinfo = TRUE;
+        break;
+      }
     }
   }
+  else 
+    noclusterinfo = TRUE;
   MAX_GRPS = nc;
-
-  *clusters = MALLOC(sizeof(int)*nnodes);
 
   if (noclusterinfo) {
     int use_value = TRUE, flag = 0;
@@ -733,11 +764,6 @@ SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim
       else
         areap[i] = 1.0;
     }
-
-    if (!noclusterinfo && (sscanf(agxget(n, clust_sym), "%d", &ic)>0)) {
-      (*clusters)[i] = ic;
-    }
-
 
    if (agget(n, "fontsize")){
       sscanf(agget(n, "fontsize"), "%f", &ff);

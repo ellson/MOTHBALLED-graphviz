@@ -389,11 +389,11 @@ const char *safefile(const char *filename)
 	 * files only from the directory specified in
 	 * the GV_FILE_PATH environment variable.
 	 */
-	if (!Gvfilepath) {
+	if (!Gvfilepath || (*Gvfilepath == '\0')) {
 	    if (onetime) {
 		agerr(AGWARN,
-		      "file loading is disabled because the environment contains SERVER_NAME=\"%s\"n"
-		      "and there is no GV_FILE_PATH variable set.\n",
+		      "file loading is disabled because the environment contains SERVER_NAME=\"%s\"\n"
+		      "and the GV_FILE_PATH variable is unset or empty.\n",
 		      HTTPServerEnVar);
 		onetime = FALSE;
 	    }

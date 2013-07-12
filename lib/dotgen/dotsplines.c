@@ -686,15 +686,145 @@ static int edgecmp(edge_t** ptr0, edge_t** ptr1)
 
 /* cloneGraph:
  */
-static struct {
+typedef struct {
     attrsym_t* E_constr;
     attrsym_t* E_samehead;
     attrsym_t* E_sametail;
     attrsym_t* E_weight;
     attrsym_t* E_minlen;
+    attrsym_t* E_fontcolor;
+    attrsym_t* E_fontname;
+    attrsym_t* E_fontsize;
+    attrsym_t* E_headclip;
+    attrsym_t* E_headlabel;
+    attrsym_t* E_label;
+    attrsym_t* E_label_float;
+    attrsym_t* E_labelfontcolor;
+    attrsym_t* E_labelfontname;
+    attrsym_t* E_labelfontsize;
+    attrsym_t* E_tailclip;
+    attrsym_t* E_taillabel;
+    attrsym_t* E_xlabel;
+
+    attrsym_t* N_height;
+    attrsym_t* N_width;
+    attrsym_t* N_shape;
+    attrsym_t* N_style;
+    attrsym_t* N_fontsize;
+    attrsym_t* N_fontname;
+    attrsym_t* N_fontcolor;
+    attrsym_t* N_label;
+    attrsym_t* N_xlabel;
+    attrsym_t* N_showboxes;
+    attrsym_t* N_ordering;
+    attrsym_t* N_sides;
+    attrsym_t* N_peripheries;
+    attrsym_t* N_skew;
+    attrsym_t* N_orientation;
+    attrsym_t* N_distortion;
+    attrsym_t* N_fixed;
+    attrsym_t* N_nojustify;
     attrsym_t* N_group;
+
+    attrsym_t* G_ordering;
     int        State;
-} attr_state;
+} attr_state_t;
+
+static void
+setState (graph_t* auxg, attr_state_t* attr_state)
+{
+    /* save state */
+    attr_state->E_constr = E_constr;
+    attr_state->E_samehead = E_samehead;
+    attr_state->E_sametail = E_sametail;
+    attr_state->E_weight = E_weight;
+    attr_state->E_minlen = E_minlen;
+    attr_state->E_fontcolor = E_fontcolor;
+    attr_state->E_fontname = E_fontname;
+    attr_state->E_fontsize = E_fontsize;
+    attr_state->E_headclip = E_headclip;
+    attr_state->E_headlabel = E_headlabel;
+    attr_state->E_label = E_label;
+    attr_state->E_label_float = E_label_float;
+    attr_state->E_labelfontcolor = E_labelfontcolor;
+    attr_state->E_labelfontname = E_labelfontname;
+    attr_state->E_labelfontsize = E_labelfontsize;
+    attr_state->E_tailclip = E_tailclip;
+    attr_state->E_taillabel = E_taillabel;
+    attr_state->E_xlabel = E_xlabel;
+    attr_state->N_height = N_height;
+    attr_state->N_width = N_width;
+    attr_state->N_shape = N_shape;
+    attr_state->N_style = N_style;
+    attr_state->N_fontsize = N_fontsize;
+    attr_state->N_fontname = N_fontname;
+    attr_state->N_fontcolor = N_fontcolor;
+    attr_state->N_label = N_label;
+    attr_state->N_xlabel = N_xlabel;
+    attr_state->N_showboxes = N_showboxes;
+    attr_state->N_ordering = N_ordering;
+    attr_state->N_sides = N_sides;
+    attr_state->N_peripheries = N_peripheries;
+    attr_state->N_skew = N_skew;
+    attr_state->N_orientation = N_orientation;
+    attr_state->N_distortion = N_distortion;
+    attr_state->N_fixed = N_fixed;
+    attr_state->N_nojustify = N_nojustify;
+    attr_state->N_group = N_group;
+    attr_state->State = State;
+    attr_state->G_ordering = G_ordering;
+
+    E_constr = NULL;
+#ifndef WITH_CGRAPH
+    E_samehead = agfindattr(auxg->proto->e, "samehead");
+    E_sametail = agfindattr(auxg->proto->e, "sametail");
+    E_weight = agfindattr(auxg->proto->e, "weight");
+#else /* WITH_CGRAPH */
+    E_samehead = agattr(auxg,AGEDGE, "samehead", NULL);
+    E_sametail = agattr(auxg,AGEDGE, "sametail", NULL);
+    E_weight = agattr(auxg,AGEDGE, "weight", NULL);
+#endif /* WITH_CGRAPH */
+    if (!E_weight)
+#ifndef WITH_CGRAPH
+	E_weight = agedgeattr (auxg, "weight", "");
+#else /* WITH_CGRAPH */
+	E_weight = agattr (auxg,AGEDGE,"weight", "");
+#endif /* WITH_CGRAPH */
+    E_minlen = NULL;
+    E_fontcolor = NULL;
+    E_fontname = agfindedgeattr(auxg, "fontname");
+    E_fontsize = agfindedgeattr(auxg, "fontsize");
+    E_headclip = agfindedgeattr(auxg, "headclip");
+    E_headlabel = NULL;
+    E_label = agfindedgeattr(auxg, "label");
+    E_label_float = agfindedgeattr(auxg, "label_float");
+    E_labelfontcolor = NULL;
+    E_labelfontname = agfindedgeattr(auxg, "labelfontname");
+    E_labelfontsize = agfindedgeattr(auxg, "labelfontsize");
+    E_tailclip = agfindedgeattr(auxg, "tailclip");
+    E_taillabel = NULL;
+    E_xlabel = NULL;
+    N_height = agfindnodeattr(auxg, "height");
+    N_width = agfindnodeattr(auxg, "width");
+    N_shape = agfindnodeattr(auxg, "shape");
+    N_style = NULL;
+    N_fontsize = agfindnodeattr(auxg, "fontsize");
+    N_fontname = agfindnodeattr(auxg, "fontname");
+    N_fontcolor = NULL;
+    N_label = agfindnodeattr(auxg, "label");
+    N_xlabel = NULL;
+    N_showboxes = NULL;
+    N_ordering = agfindnodeattr(auxg, "ordering");
+    N_sides = agfindnodeattr(auxg, "sides");
+    N_peripheries = agfindnodeattr(auxg, "peripheries");
+    N_skew = agfindnodeattr(auxg, "skew");
+    N_orientation = agfindnodeattr(auxg, "orientation");
+    N_distortion = agfindnodeattr(auxg, "distortion");
+    N_fixed = agfindnodeattr(auxg, "fixed");
+    N_nojustify = NULL;
+    N_group = NULL;
+    G_ordering = agfindgraphattr (auxg, "ordering");
+}
 
 /* cloneGraph:
  * Create clone graph. It stores the global Agsyms, to be
@@ -704,7 +834,7 @@ static struct {
  * graph.
  */
 static graph_t*
-cloneGraph (graph_t* g)
+cloneGraph (graph_t* g, attr_state_t* attr_state)
 {
     Agsym_t* sym;
     graph_t* auxg;
@@ -770,31 +900,7 @@ cloneGraph (graph_t* g)
 	agattr(auxg,AGEDGE, "tailport", "");
 #endif /* WITH_CGRAPH */
 
-    attr_state.E_constr = E_constr;
-    attr_state.E_samehead = E_samehead;
-    attr_state.E_sametail = E_sametail;
-    attr_state.E_weight = E_weight;
-    attr_state.E_minlen = E_minlen;
-    attr_state.N_group = N_group;
-    attr_state.State = State;
-    E_constr = NULL;
-#ifndef WITH_CGRAPH
-    E_samehead = agfindattr(auxg->proto->e, "samehead");
-    E_sametail = agfindattr(auxg->proto->e, "sametail");
-    E_weight = agfindattr(auxg->proto->e, "weight");
-#else /* WITH_CGRAPH */
-    E_samehead = agattr(auxg,AGEDGE, "samehead", NULL);
-    E_sametail = agattr(auxg,AGEDGE, "sametail", NULL);
-    E_weight = agattr(auxg,AGEDGE, "weight", NULL);
-#endif /* WITH_CGRAPH */
-    if (!E_weight)
-#ifndef WITH_CGRAPH
-	E_weight = agedgeattr (auxg, "weight", "");
-#else /* WITH_CGRAPH */
-	E_weight = agattr (auxg,AGEDGE,"weight", "");
-#endif /* WITH_CGRAPH */
-    E_minlen = NULL;
-    N_group = NULL;
+    setState (auxg, attr_state);
 
     return auxg;
 }
@@ -802,17 +908,50 @@ cloneGraph (graph_t* g)
 /* cleanupCloneGraph:
  */
 static void
-cleanupCloneGraph (graph_t* g)
+cleanupCloneGraph (graph_t* g, attr_state_t* attr_state)
 {
     /* restore main graph syms */
-    E_constr = attr_state.E_constr;
-    E_samehead = attr_state.E_samehead;
-    E_sametail = attr_state.E_sametail;
-    E_weight = attr_state.E_weight;
-    E_minlen = attr_state.E_minlen;
-    N_group = attr_state.N_group;
-    State = attr_state.State;
+    E_constr = attr_state->E_constr;
+    E_samehead = attr_state->E_samehead;
+    E_sametail = attr_state->E_sametail;
+    E_weight = attr_state->E_weight;
+    E_minlen = attr_state->E_minlen;
+    E_fontcolor = attr_state->E_fontcolor;
+    E_fontname = attr_state->E_fontname;
+    E_fontsize = attr_state->E_fontsize;
+    E_headclip = attr_state->E_headclip;
+    E_headlabel = attr_state->E_headlabel;
+    E_label = attr_state->E_label;
+    E_label_float = attr_state->E_label_float;
+    E_labelfontcolor = attr_state->E_labelfontcolor;
+    E_labelfontname = attr_state->E_labelfontname;
+    E_labelfontsize = attr_state->E_labelfontsize;
+    E_tailclip = attr_state->E_tailclip;
+    E_taillabel = attr_state->E_taillabel;
+    E_xlabel = attr_state->E_xlabel;
+    N_height = attr_state->N_height;
+    N_width = attr_state->N_width;
+    N_shape = attr_state->N_shape;
+    N_style = attr_state->N_style;
+    N_fontsize = attr_state->N_fontsize;
+    N_fontname = attr_state->N_fontname;
+    N_fontcolor = attr_state->N_fontcolor;
+    N_label = attr_state->N_label;
+    N_xlabel = attr_state->N_xlabel;
+    N_showboxes = attr_state->N_showboxes;
+    N_ordering = attr_state->N_ordering;
+    N_sides = attr_state->N_sides;
+    N_peripheries = attr_state->N_peripheries;
+    N_skew = attr_state->N_skew;
+    N_orientation = attr_state->N_orientation;
+    N_distortion = attr_state->N_distortion;
+    N_fixed = attr_state->N_fixed;
+    N_nojustify = attr_state->N_nojustify;
+    N_group = attr_state->N_group;
+    G_ordering = attr_state->G_ordering;
+    State = attr_state->State;
 
+    free (attr_state);
     dot_cleanup(g);
     agclose(g);
 }
@@ -1136,6 +1275,8 @@ makeSimpleFlat (node_t* tn, node_t* hn, edge_t** edges, int ind, int cnt, int et
  * If there are only labels, cobble something together.
  * Otherwise, we run dot recursively on the 2 nodes and the edges, 
  * essentially using rankdir=LR, to get the needed spline info.
+ * This is probably to cute and fragile, and should be rewritten in a 
+ * more straightforward and laborious fashion. 
  */
 static void
 make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0,
@@ -1153,6 +1294,7 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0,
     int     i, j, midx, midy, leftx, rightx;
     pointf   del;
     edge_t* hvye = NULL;
+    attr_state_t* attrs;
 
     g = agraphof(agtail(e0));
     tn = agtail(e0), hn = aghead(e0);
@@ -1174,7 +1316,8 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0,
 	return;
     }
 
-    auxg = cloneGraph (g);
+    attrs = NEW(attr_state_t);
+    auxg = cloneGraph (g, attrs);
 #ifndef WITH_CGRAPH
     subg = agsubg (auxg, "xxx");
 #else /* WITH_CGRAPH */
@@ -1286,7 +1429,7 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0,
 	}
     }
 
-    cleanupCloneGraph (auxg);
+    cleanupCloneGraph (auxg, attrs);
 }
 
 /* makeFlatEnd;

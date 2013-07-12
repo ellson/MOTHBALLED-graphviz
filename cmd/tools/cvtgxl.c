@@ -154,6 +154,9 @@ static void initargs(int argc, char **argv)
 	case 'o':
 	    outFile = openFile(optarg, "w");
 	    break;
+	case ':':
+	    fprintf(stderr, "%s: option -%c missing argument\n", CmdName, optopt);
+	    break;
 	case '?':
 	    if (optopt == '?')
 		usage(0);
@@ -168,7 +171,7 @@ static void initargs(int argc, char **argv)
     argv += optind;
     argc -= optind;
 
-    if (argc)
+    if (argc > 0)
 	Files = argv;
     if (!outFile)
 	outFile = stdout;

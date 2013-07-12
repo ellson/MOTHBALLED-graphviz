@@ -260,6 +260,9 @@ static void init(int argc, char *argv[], pack_info* pinfo)
 	    verbose = 1;
 	    Verbose = 1;
 	    break;
+	case ':':
+	    fprintf(stderr, "gvpack: option -%c missing argument - ignored\n", optopt);
+	    break;
 	case '?':
 	    if (optopt == '?')
 		usage(0);
@@ -272,7 +275,7 @@ static void init(int argc, char *argv[], pack_info* pinfo)
     argv += optind;
     argc -= optind;
 
-    if (argc) {
+    if (argc > 0) {
 	myFiles = argv;
 	nGraphs = argc;		/* guess one graph per file */
     } else
