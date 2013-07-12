@@ -393,6 +393,25 @@ static int processinput (int waitflag) {
     return rtn;
 }
 
+static char* usestr =
+"    -x    - exit after processing the input file.\n\
+    -e E  - parse and execute expression E.\n\
+    -el N - set error reporting level. (0)\n\
+    -sd N - how much of the stack to show if error is printed. (2)\n\
+    -sb N - how much of each function in the stack show if error is printed. (2)\n\
+    -df S - set default font.\n\
+    -ps F - specify a default file name for postscript files.\n\
+    -     - read input from stdin.\n\
+    -?    - show help.\n\
+    -V    - print version.\n";
+
+static void usage(int eval)
+{
+    fprintf (stderr, "Usage: lefty [options] [file]\n");
+    fputs (usestr, stderr);
+    exit (eval);
+}
+
 static void processstr (char *buf) {
     char *words[100];
     char *s, *s1;
@@ -441,11 +460,18 @@ static void processargs (int argc, char *argv[]) {
             fprintf (stderr, "lefty version %s\n", LEFTYVERSION);
             fprintf (stderr, "graphviz version %s (%s)\n", VERSION, BUILDDATE);
 	}
+        else if (strcmp (argv[0], "-?") == 0)
+            usage(0);
         else if (strcmp (argv[0], "-") == 0)
             fp = stdin;
+        else if (argv[0][0] == '-') {
+            fprintf (stderr, "option %s unrecognized - ignored\n", argv[0]);
+        }
         else {
-            if ((fp = fopen (argv[0], "r")) == NULL)
-                panic1 (POS, "main", "cannot open input file: %s", argv[0]);
+            if ((fp = fopen (argv[0], "r")) == NULL) {
+                fprintf (stderr, "cannot open input file: %s\n", argv[0]);
+                exit(2);
+            }
         }
         argv++, argc--;
     }
