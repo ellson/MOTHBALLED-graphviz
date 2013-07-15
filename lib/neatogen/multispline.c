@@ -1262,7 +1262,7 @@ static void resetGraph(tgraph * g, int ncnt, int ecnt)
 #define PQVTYPE float
 
 #define PQ_TYPES
-#include <fPQ.h>
+#include "fPQ.h"
 #undef PQ_TYPES
 
 typedef struct {
@@ -1275,7 +1275,7 @@ typedef struct {
 #define N_IDX(pq,n) ((PPQ*)pq)->idxs[n]
 
 #define PQ_CODE
-#include <fPQ.h>
+#include "fPQ.h"
 #undef PQ_CODE
 
 #define N_DAD(n) dad[n]

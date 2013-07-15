@@ -16,10 +16,10 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-
-#include <fPQ.h>
 #include <memory.h>
 #include <assert.h>
+
+#include "fPQ.h"
 
 static snode**  pq;
 static int     PQcnt;
