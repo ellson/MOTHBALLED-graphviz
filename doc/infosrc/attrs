@@ -39,9 +39,9 @@
 # There can be more than one item with the same name.
 # The attributes are alphabetized on output.
 # 
-# The current program generating HTML is a shell script. This should
-# cause no problems except with '\', which may require some number of
-# escaping '\' to get the right final output.
+# As this is processed by a shell script, and then the web page generator,
+# the special character '\' can cause problems. When used as a literal, use
+# the HTML encoding &#92; to avoid problems.
 #    
 :Damping:G:double:0.99:0.0; neato
 Factor damping force motions. On each iteration, a nodes movement
@@ -427,10 +427,10 @@ is used.
 Synonym for <A HREF=#d:URL>URL</A>.
 :id:GCNE:escString:"";  map,ps,svg
 Allows the graph author to provide an id for graph objects which is to be included in the output.
-Normal "\N", "\E", "\G" substitutions are applied.
+Normal "&#92;N", "&#92;E", "&#92;G" substitutions are applied.
 If provided, it is the responsiblity of the provider to keep
 its values sufficiently unique for its intended downstream use.
-Note, in particular, that "\E" does not provide a unique id for multi-edges.
+Note, in particular, that "&#92;E" does not provide a unique id for multi-edges.
 If no id attribute is provided, then a unique internal id is used. However, 
 this value is unpredictable by the graph writer.
 An externally provided id is not used internally.
@@ -507,7 +507,7 @@ to an ideal edge length (in inches), in that increasing K tends to
 increase the distance between nodes.
 Note that the edge attribute <A HREF=#d:len>len</A> can be used to
 override this value for adjacent nodes.
-:label:ENGC:lblString:"\\\\N" (nodes)/"" (otherwise);
+:label:ENGC:lblString:"\&#92;N" (nodes)/"" (otherwise);
 Text label attached to objects.
 If a node's <A HREF=#d:shape>shape</A> is record, then the label can
 have a <A HREF=shapes.html#record>special format</A>
@@ -606,7 +606,7 @@ Specifies the separator characters used to split
 an attribute of type <A HREF=#k:layerRange>layerRange</A> into a list of ranges.
 :layerselect:G:layerRange:"";
 Selects a list of layers to be emitted.
-:layersep:G:string:" :\\\\t";
+:layersep:G:string:" :&#92;t";
 Specifies the separator characters used to split the
 <A HREF=#d:layers>layers</A> attribute into a list of layer names.
 :layout:G:string:"";
@@ -664,7 +664,7 @@ the cluster bounding box. By default, this is 8 points.
 <P>
 For nodes, this attribute specifies space left around the node's label.
 By default, the value is <TT>0.11,0.055</TT>.
-:maxiter:G:int:100 \\* # nodes(mode == KK)/200(mode == major)/600(fdp);  neato,fdp
+:maxiter:G:int:100 &#42; # nodes(mode == KK)/200(mode == major)/600(fdp);  neato,fdp
 Sets the number of iterations used.
 :mclimit:G:double:1.0;  dot
 Multiplicative scale factor used to alter the MinQuit (default = 8)

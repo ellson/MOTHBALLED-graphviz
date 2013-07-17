@@ -64,7 +64,7 @@ The first string in <I>fieldId</I> assigns a portname to the field and can
 be combined with the node name to indicate where to attach an edge
 to the node. (See <A HREF=attrs.html#k:portPos>portPos</A>.)
 The second string is used as the text for the field; it supports the usual
-<A HREF=attrs.html#k:escString>escape sequences</A> \n, \l and \r.
+<A HREF=attrs.html#k:escString>escape sequences</A> &#92;n, &#92;l and &#92;r.
 <P>
 Visually, a record is a box, with fields represented by alternating
 rows of horizontal or vertical subboxes. The Mrecord shape is identical
@@ -88,9 +88,9 @@ As an example of a record node, the dot input
 <XMP>
 digraph structs {
     node [shape=record];
-    struct1 [label="<f0> left|<f1> mid\ dle|<f2> right"];
+    struct1 [label="<f0> left|<f1> mid&#92; dle|<f2> right"];
     struct2 [label="<f0> one|<f1> two"];
-    struct3 [label="hello\nworld |{ b |{c|<here> d|e}| f}| g | h"];
+    struct3 [label="hello&#92;nworld |{ b |{c|<here> d|e}| f}| g | h"];
     struct1:f1 -> struct2:f0;
     struct1:f2 -> struct3:here;
 }

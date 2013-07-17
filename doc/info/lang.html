@@ -117,7 +117,7 @@ the parser will actually accept any identifier.
 <P>
 An <I>ID</I> is one of the following: 
 <MENU>
-<LI> Any string of alphabetic (<TT>[a-zA-Z\200-\377]</TT>) characters, underscores (<TT>'_'</TT>) or
+<LI> Any string of alphabetic (<TT>[a-zA-Z&#92;200-&#92;377]</TT>) characters, underscores (<TT>'_'</TT>) or
 digits (<TT>[0-9]</TT>), not beginning with a digit;
 <LI> a numeral [<tt>-</tt>]<sup>?</sup>(<tt>.</tt>[<tt>0</tt>-<tt>9</tt>]<sup>+</sup>  | [<tt>0</tt>-<tt>9</tt>]<sup>+</sup>(<tt>.</tt>[<tt>0</tt>-<tt>9</tt>]<sup>*</sup>)<sup>?</sup> ); 
 <LI> any double-quoted string (&quot;...&quot;) possibly containing escaped 

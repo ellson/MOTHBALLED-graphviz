@@ -333,9 +333,9 @@ The analogous description holds for the tail and the
 A URL associated with the graph is used as a default link.
 <P>
 If the URL
-of a node contains the escape sequence "\N", it will be replaced by
+of a node contains the escape sequence "&#92;N", it will be replaced by
 the node's name.
-If the headURL is defined and contains the escape sequence "\N",
+If the headURL is defined and contains the escape sequence "&#92;N",
 it will be replaced by
 the <A HREF=attrs.html#d:headlabel>headlabel</A>, if defined.
 The analogous result holds for the tailURL and the
@@ -356,7 +356,7 @@ nodes and edges. Since edge
 links are attached to edge labels, an edge must
 have a <A HREF=attrs.html#d:label>label</A> for its
 URL to be used. For both nodes and edges, if the URL has the escape
-sequence "\N" embedded in its string, this will be replaced with the
+sequence "&#92;N" embedded in its string, this will be replaced with the
 node or edge name.
 
 <DT><A NAME=d:jpg HREF=#a:jpg><STRONG>jpg</STRONG></A>
@@ -552,10 +552,10 @@ one of the plugins, in which case, that transformation is not possible.
 <LI>
 <A NAME=ID></A>In the formats: -Tcmap, -Tcmapx, -Tsvg, -Tvml, the output generates
 'id="node#"' properties for nodes, 'id="edge#"' properties for edges, and 'id="cluster#"' properties for clusters, with the '#' replaced by an internally assigned integer. These strings can be provided instead by an externally provided "id=xxx" attribute on the object.
-Normal "\N" "\E" "\G" substitutions are applied.
+Normal "&#92;N" "&#92;E" "&#92;G" substitutions are applied.
 Externally provided id values are not used internally, and it is the use's reponsibilty to ensure
 that they are sufficiently unique for their intended downstream use.
-Note, in particular, that "\E" is not a unique id for multiedges.
+Note, in particular, that "&#92;E" is not a unique id for multiedges.
 </OL>
 </BODY>
 </HTML>

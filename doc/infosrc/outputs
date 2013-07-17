@@ -49,7 +49,7 @@ nodes and edges. Since edge
 links are attached to edge labels, an edge must
 have a <A HREF=attrs.html#d:label>label</A> for its
 URL to be used. For both nodes and edges, if the URL has the escape
-sequence "\\N" embedded in its string, this will be replaced with the
+sequence "&#92;N" embedded in its string, this will be replaced with the
 node or edge name.
 :cmap:Client-side imagemap (deprecated)
 Produces map files for client-side image maps. The cmap format is
@@ -121,9 +121,9 @@ The analogous description holds for the tail and the
 A URL associated with the graph is used as a default link.
 <P>
 If the URL
-of a node contains the escape sequence "\\N", it will be replaced by
+of a node contains the escape sequence "&#92;N", it will be replaced by
 the node's name.
-If the headURL is defined and contains the escape sequence "\\N",
+If the headURL is defined and contains the escape sequence "&#92;N",
 it will be replaced by
 the <A HREF=attrs.html#d:headlabel>headlabel</A>, if defined.
 The analogous result holds for the tailURL and the
