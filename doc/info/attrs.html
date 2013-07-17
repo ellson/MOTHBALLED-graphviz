@@ -234,7 +234,7 @@ This field indicates which graph component uses the attribute.
 <BR>string</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:label HREF=#d:label>label</A>
 </TD><TD>ENGC</TD><TD><A HREF=#k:lblString>lblString</A>
-</TD><TD ALIGN="CENTER">"\N" (nodes)<BR>"" (otherwise)</TD><TD></TD><TD></TD> </TR>
+</TD><TD ALIGN="CENTER">"&#92;N" (nodes)<BR>"" (otherwise)</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:labelURL HREF=#d:labelURL>labelURL</A>
 </TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
@@ -282,7 +282,7 @@ This field indicates which graph component uses the attribute.
 </TD><TD>G</TD><TD><A HREF=#k:layerRange>layerRange</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:layersep HREF=#d:layersep>layersep</A>
-</TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">" :\t"</TD><TD></TD><TD></TD> </TR>
+</TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">" :&#92;t"</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:layout HREF=#d:layout>layout</A>
 </TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:len HREF=#d:len>len</A>
@@ -2148,23 +2148,23 @@ enclosed in the parentheses,  <TT>(...)+</TT> indicates 1 or more, and
 <DT><A NAME=k:escString><STRONG>escString</STRONG></A>
 <DD>string allowing escape sequences which are replaced according
   to the context.
-  For node attributes, the substring "\N" is replaced by the name of the node,
-  and the substring "\G" by the name of the graph.
-  For graph or cluster attributes, the substring "\G" is replaced by the
+  For node attributes, the substring "&#92;N" is replaced by the name of the node,
+  and the substring "&#92;G" by the name of the graph.
+  For graph or cluster attributes, the substring "&#92;G" is replaced by the
   name of the graph or cluster.
-  For edge attributes, the substring "\E" is replaced by the name of the edge,
-  the substring "\G" is replaced by the name of the graph or cluster,
-  and the substrings "\T" and "\H" by the names of
+  For edge attributes, the substring "&#92;E" is replaced by the name of the edge,
+  the substring "&#92;G" is replaced by the name of the graph or cluster,
+  and the substrings "&#92;T" and "&#92;H" by the names of
   the tail and head nodes, respectively.
   The name of an edge is the string formed from the name of the
   tail node, the appropriate edge operator ("--" or "->") and the name of the
   head node.
-  In all cases, the substring "\L" is replaced by the object's label attribute.
+  In all cases, the substring "&#92;L" is replaced by the object's label attribute.
   <P>
   In addition, if the associated attribute is
   <A HREF=#a:label>label</A>,
   <A HREF=#a:headlabel>headlabel</A> or <A HREF=#a:taillabel>taillabel</A>,
-  the escape sequences "\n", "\l" and "\r"
+  the escape sequences "&#92;n", "&#92;l" and "&#92;r"
   divide the label into lines, centered, left-justified, and right-justified,
   respectively.
 
