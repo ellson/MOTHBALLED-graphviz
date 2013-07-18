@@ -43,11 +43,12 @@ extern void yyerror(const char *fmt, ...);
 %token <i> T_node T_edge T_edgeop
 %token <s> T_id
 %type <o> node_name node_id subg_stmt
+%type <s> optgraphname
 %left <i> T_subgraph /* to eliminate subgraph hdr shift/reduce conflict */
 %left '{'
 %%
 
-file: graph_type T_id
+file: graph_type optgraphname
     { D2Lbegin ($2); free ($2); }
   '{' stmt_list '}'
     { D2Lend (); }
@@ -56,6 +57,8 @@ file: graph_type T_id
 | /* empty*/
     { D2Labort (); }
 ;
+
+optgraphname:   T_id {$$=$1;} | /* empty */ {$$=0;} ;
 
 graph_type: T_graph /* safe to change graph type/name before contents appear */
     { gtype = "graph"; etype = "--"; }

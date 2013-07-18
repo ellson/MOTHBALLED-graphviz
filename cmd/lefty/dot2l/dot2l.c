@@ -522,8 +522,16 @@ static void quotestring (char *buf, Tobj so) {
     *s1++ = '"', *s1 = 0;
 }
 
+static void anonname(char* buf)
+{
+    static int              anon_id = 0;
+
+    sprintf(buf,"_anonymous_%d",anon_id++);
+}
+
 void D2Lbegin (char *name) {
 
+    char buf[BUFSIZ];
     newgid = neweid = newnid = 0;
     attrclass = GRAPH;
 
@@ -535,6 +543,10 @@ void D2Lbegin (char *name) {
 
     gmark = Mpushmark ((gstack->g = Ttable (12)));
     Tinss (gstack->g, "type", Tstring (gtype));
+    if (!name) {
+        anonname(buf);
+        name = buf;
+    }
     Tinss (gstack->g, "name", Tstring (name));
 
     /* the dictionaries */
