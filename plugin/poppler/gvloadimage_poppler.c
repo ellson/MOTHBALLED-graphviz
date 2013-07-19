@@ -54,8 +54,6 @@ static PopplerDocument* gvloadimage_poppler_load(GVJ_t * job, usershape_t *us)
     assert(us);
     assert(us->name);
 
-fprintf(stderr, "hello from gvloadimage_poppler_load\n");
-
     if (us->data) {
         if (us->datafree == gvloadimage_poppler_free)
              document = (PopplerDocument*)(us->data); /* use cached data */
@@ -135,8 +133,6 @@ static void gvloadimage_poppler_cairo(GVJ_t * job, usershape_t *us, boxf b, bool
 {
     PopplerDocument* document = gvloadimage_poppler_load(job, us);
     PopplerPage* page;
-
-fprintf(stderr, "hello from gvloadimage_poppler_cairo\n");
 
     cairo_t *cr = (cairo_t *) job->context; /* target context */
     cairo_surface_t *surface;	 /* source surface */
