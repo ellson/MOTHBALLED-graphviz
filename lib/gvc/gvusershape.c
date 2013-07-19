@@ -17,6 +17,8 @@
 
 #include <stddef.h>
 #include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
 #include <errno.h>
 
 #ifdef WIN32
@@ -404,6 +406,115 @@ static void ps_size (usershape_t *us)
     }
 }
 
+#define KEY "/MediaBox"
+
+typedef struct {
+    char* s;
+    char* buf;
+    FILE* fp;
+} stream_t;
+
+static unsigned char
+nxtc (stream_t* str)
+{
+    if (fgets(str->buf, BUFSIZ, str->fp)) {
+	str->s = str->buf;
+	return *(str->s);
+    }
+    return '\0';
+	
+}
+
+#define strc(x) (*(x->s)?*(x->s):nxtc(x))
+#define stradv(x) (x->s++)
+
+static void
+skipWS (stream_t* str)
+{
+    unsigned char c;
+    while ((c = strc(str))) {
+	if (isspace(c)) stradv(str);
+	else return;
+    }
+}
+
+static int
+scanNum (char* tok, double* dp)
+{
+    char* endp;
+    double d = strtod(tok, &endp);
+
+    if (tok == endp) return 1;
+    *dp = d;
+    return 0;
+}
+
+static void
+getNum (stream_t* str, char* buf)
+{
+    int len = 0;
+    skipWS(str);
+    char c;
+    while ((c = strc(str)) && (isdigit(c) || (c == '.'))) {
+	buf[len++] = c;
+	stradv(str);
+	if (len == BUFSIZ-1) break;
+    }
+    buf[len] = '\0';
+
+    return;
+}
+
+static int
+boxof (stream_t* str, boxf* bp)
+{
+	char tok[BUFSIZ];
+
+	skipWS(str);
+	if (strc(str) != '[') return 1;
+	stradv(str);
+	getNum(str, tok);
+	if (scanNum(tok,&bp->LL.x)) return 1;
+	getNum(str, tok);
+	if (scanNum(tok,&bp->LL.y)) return 1;
+	getNum(str, tok);
+	if (scanNum(tok,&bp->UR.x)) return 1;
+	getNum(str, tok);
+	if (scanNum(tok,&bp->UR.y)) return 1;
+	return 0;
+}
+
+static int
+bboxPDF (FILE* fp, boxf* bp)
+{
+	stream_t str;
+	char* s;
+	char buf[BUFSIZ];
+	while (fgets(buf, BUFSIZ, fp)) {
+		if ((s = strstr(buf,KEY))) {
+			str.buf = buf;
+			str.s = s+(sizeof(KEY)-1);
+			str.fp = fp;
+			return boxof(&str,bp);
+		} 
+	} 
+	return 1;
+}
+
+static void pdf_size (usershape_t *us)
+{
+    boxf bb;
+
+    us->dpi = POINTS_PER_INCH;
+    fseek(us->f, 0, SEEK_SET);
+    if ( ! bboxPDF (us->f, &bb)) {
+	us->x = bb.LL.x;
+	us->y = bb.LL.y;
+        us->w = bb.UR.x - bb.LL.x;
+        us->h = bb.UR.y - bb.LL.y;
+    }
+}
+
 static void usershape_close (Dict_t * dict, Void_t * p, Dtdisc_t * disc)
 {
     usershape_t *us = (usershape_t *)p;
@@ -522,7 +633,9 @@ static usershape_t *gvusershape_open (char *name)
 	    case FT_SVG:
 	        svg_size(us);
 	        break;
-	    case FT_PDF:   /* no pdf_size code available */
+	    case FT_PDF:
+		pdf_size(us);
+		break;
 	    case FT_EPS:   /* no eps_size code available */
 	    default:
 	        break;
