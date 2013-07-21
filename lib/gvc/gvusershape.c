@@ -453,8 +453,8 @@ static void
 getNum (stream_t* str, char* buf)
 {
     int len = 0;
-    skipWS(str);
     char c;
+    skipWS(str);
     while ((c = strc(str)) && (isdigit(c) || (c == '.'))) {
 	buf[len++] = c;
 	stradv(str);
