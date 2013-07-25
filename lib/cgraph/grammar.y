@@ -397,7 +397,7 @@ static void getedgeitems(int x)
 		v = cons_list(S->nodelist.first);
 		S->nodelist.first = S->nodelist.last = NILitem;
 	}
-	else {if (S->subg) v = cons_subg(S->subg);}
+	else {if (S->subg) v = cons_subg(S->subg); S->subg = 0;}
 	/* else nil append */
 	if (v) listapp(&(S->edgelist),v);
 }
