@@ -126,7 +126,7 @@ compound 	:	simple rcompound optattr
 
 simple		:	nodelist | subgraph ;
 
-rcompound	:	T_edgeop {getedgeitems(1);} simple rcompound {getedgeitems(2); $$ = 1;}
+rcompound	:	T_edgeop {getedgeitems(1);} simple rcompound {if ($4) getedgeitems(2); $$ = 1;}
 			|	/* empty */ {$$ = 0;}
 			;
 
