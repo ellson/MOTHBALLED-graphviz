@@ -223,10 +223,14 @@ static vararr_t* pathtolines (bezier* bez, double initwid)
 	for (step = 1; step <= BEZIERSUBDIVISION; step++) {
 	    p1 = Bezier(V, 3, (double) step / BEZIERSUBDIVISION, NULL, NULL);
 	    seglen = l2dist(p0, p1);
-	    if (seglen > initwid/10) {
+	    /* If initwid is large, this may never happen, so turn off. I assume this is to prevent
+	     * too man points or too small a movement. Perhaps a better test can be made, but for now
+	     * we turn it off. 
+	     */
+	    /* if (seglen > initwid/10) { */
 		linelen += seglen;
 		insertArr (arr, p1, linelen); 
-	    }
+	    /* } */
 	    p0 = p1;
 	}
     }
