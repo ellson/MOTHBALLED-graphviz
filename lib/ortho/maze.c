@@ -408,7 +408,7 @@ mkMazeGraph (maze* mp, boxf bb)
 	nsides += cp->nsides;
         if (cp->nsides > maxdeg) maxdeg = cp->nsides;
     }
-    RALLOC (nsides, sides, snode*);
+    /* sides = RALLOC (nsides, sides, snode*); */
 
     /* Mark cells that are small because of a small node, not because of the close
      * alignment of two rectangles.
@@ -434,8 +434,8 @@ mkMazeGraph (maze* mp, boxf bb)
     }
 
     /* tidy up memory */
-    g->nodes = RALLOC (g->nnodes+2, g->nodes, snode);
-    g->edges = RALLOC (g->nedges+2*maxdeg, g->edges, sedge);
+    /* g->nodes = RALLOC (g->nnodes+2, g->nodes, snode); */
+    /* g->edges = RALLOC (g->nedges+2*maxdeg, g->edges, sedge); */
     dtclose (vdict);
     dtclose (hdict);
     free (ditems);
