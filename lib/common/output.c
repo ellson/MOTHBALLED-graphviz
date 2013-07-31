@@ -481,7 +481,7 @@ void attach_attrs(graph_t * g)
 void output_point(agxbuf *xbuf, pointf p)
 {
     char buf[BUFSIZ];
-    sprintf(buf, "%d %d ", ROUND(p.x), ROUND(YDIR(p.y)));
+    sprintf(buf, "%.02f %.02f ", (p.x), (YDIR(p.y)));
     agxbput(xbuf, buf);
 }
 

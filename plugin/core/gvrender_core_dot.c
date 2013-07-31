@@ -55,7 +55,7 @@ typedef enum {
 //    #pragma comment( lib, "ingraphs.lib" )
 #endif
 
-#define XDOTVERSION "1.2"
+#define XDOTVERSION "1.3"
 
 #define NUMXBUFS (EMIT_HLABEL+1)
 /* There are as many xbufs as there are values of emit_state_t.
@@ -510,7 +510,7 @@ static void xdot_textpara(GVJ_t * job, pointf p, textpara_t * para)
     char buf[BUFSIZ];
     int j;
     
-    sprintf(buf, "F %f ", para->fontsize);
+    sprintf(buf, "F %.01f ", para->fontsize);
     agxbput(xbufs[emit_state], buf);
     xdot_str (job, "", para->fontname);
     xdot_pencolor(job);
@@ -529,7 +529,7 @@ static void xdot_textpara(GVJ_t * job, pointf p, textpara_t * para)
     }
     agxbput(xbufs[emit_state], "T ");
     output_point(xbufs[emit_state], p);
-    sprintf(buf, "%d %d ", j, (int) para->width);
+    sprintf(buf, "%d %.02f ", j, para->width);
     agxbput(xbufs[emit_state], buf);
     xdot_str (job, "", para->str);
 }
@@ -549,7 +549,7 @@ static void xdot_ellipse(GVJ_t * job, pointf * A, int filled)
     else
         agxbput(xbufs[emit_state], "e ");
     output_point(xbufs[emit_state], A[0]);
-    sprintf(buf, "%d %d ", ROUND(A[1].x - A[0].x), ROUND(A[1].y - A[0].y));
+    sprintf(buf, "%.02f %.02f ", (A[1].x - A[0].x), (A[1].y - A[0].y));
     agxbput(xbufs[emit_state], buf);
 }
 
@@ -591,7 +591,7 @@ void core_loadimage_xdot(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
     
     agxbput(xbufs[emit_state], "I ");
     output_point(xbufs[emit_state], b.LL);
-    sprintf(buf, "%d %d ", ROUND(b.UR.x - b.LL.x), ROUND(b.UR.y - b.LL.y));
+    sprintf(buf, "%.02f %.02f ", (b.UR.x - b.LL.x), (b.UR.y - b.LL.y));
     agxbput(xbufs[emit_state], buf);
     xdot_str (job, "", (char*)(us->name));
 }
