@@ -55,7 +55,7 @@ typedef enum {
 //    #pragma comment( lib, "ingraphs.lib" )
 #endif
 
-#define XDOTVERSION "1.3"
+#define XDOTVERSION "1.4"
 
 #define NUMXBUFS (EMIT_HLABEL+1)
 /* There are as many xbufs as there are values of emit_state_t.
@@ -89,15 +89,20 @@ typedef struct {
 } xdot_state_t;
 static xdot_state_t* xd;
 
+static void xdot_str_xbuf (agxbuf* xb, char* pfx, char* s)
+{
+    char buf[BUFSIZ];
+
+    sprintf (buf, "%s%d -", pfx, (int)strlen(s));
+    agxbput(xb, buf);
+    agxbput(xb, s);
+    agxbputc(xb, ' ');
+}
+
 static void xdot_str (GVJ_t *job, char* pfx, char* s)
 {   
     emit_state_t emit_state = job->obj->emit_state;
-    char buf[BUFSIZ];
-    
-    sprintf (buf, "%s%d -", pfx, (int)strlen(s));
-    agxbput(xbufs[emit_state], buf);
-    agxbput(xbufs[emit_state], s);
-    agxbputc(xbufs[emit_state], ' ');
+    xdot_str_xbuf (xbufs[emit_state], pfx, s);
 }
 
 static void xdot_points(GVJ_t *job, char c, pointf * A, int n)
@@ -534,6 +539,70 @@ static void xdot_textpara(GVJ_t * job, pointf p, textpara_t * para)
     xdot_str (job, "", para->str);
 }
 
+static void xdot_color_stop (agxbuf* xb, float v, gvcolor_t* clr)
+{
+    char buf[BUFSIZ];
+
+    sprintf (buf, "%.03f ", v);
+    xdot_str_xbuf (xb, buf, color2str (clr->u.rgba));
+}
+
+static void xdot_gradient_fillcolor (GVJ_t* job, int filled, pointf* A, int n)
+{
+    unsigned char buf0[BUFSIZ];
+    agxbuf xbuf;
+    obj_state_t* obj = job->obj;
+    float angle = obj->gradient_angle * M_PI / 180;
+    float r1,r2;
+    pointf G[2],c1,c2;
+    char buf[BUFSIZ];
+
+    agxbinit(&xbuf, BUFSIZ, buf0);
+    if (filled == GRADIENT) {
+	get_gradient_points(A, G, n, angle, 0);
+	sprintf(buf, "[%.02f %.02f %.02f %.02f ", G[0].x,G[0].y, G[1].x,G[1].y);
+	agxbput(&xbuf, buf);
+    }
+    else {
+	get_gradient_points(A, G, n, 0, 1);
+	  //r1 is inner radius, r2 is outer radius
+	r1 = G[1].x;
+	r2 = G[1].y;
+	if (angle == 0) {
+	    c1.x = G[0].x;
+	    c1.y = G[0].y;
+	}
+	else {
+	    c1.x = G[0].x +  (r2/4) * cos(angle);
+	    c1.y = G[0].y -  (r2/4) * sin(angle);
+	}
+	c2.x = G[0].x;
+	c2.y = G[0].y;
+	r1 = r2/4;
+	sprintf(buf, "(%.02f %.02f %.02f ", c1.x,c1.y,r1);
+	agxbput(&xbuf, buf);
+	sprintf(buf, "%.02f %.02f %.02f ", c2.x,c2.y,r2);
+	agxbput(&xbuf, buf);
+    }
+    
+    agxbput(&xbuf, "2 ");
+    if (obj->gradient_frac > 0) {
+	xdot_color_stop (&xbuf, obj->gradient_frac, &obj->fillcolor);
+	xdot_color_stop (&xbuf, obj->gradient_frac, &obj->stopcolor);
+    }
+    else {
+	xdot_color_stop (&xbuf, 0, &obj->fillcolor);
+	xdot_color_stop (&xbuf, 1, &obj->stopcolor);
+    }
+    agxbpop(&xbuf);
+    if (filled == GRADIENT)
+	agxbputc(&xbuf, ']');
+    else
+	agxbputc(&xbuf, ')');
+    xdot_str (job, "C ", agxbuse(&xbuf));
+    agxbfree(&xbuf);
+}
+
 static void xdot_ellipse(GVJ_t * job, pointf * A, int filled)
 {
     emit_state_t emit_state = job->obj->emit_state;
@@ -543,7 +612,11 @@ static void xdot_ellipse(GVJ_t * job, pointf * A, int filled)
     xdot_style (job);
     xdot_pencolor (job);
     if (filled) {
-        xdot_fillcolor (job);
+	if ((filled == GRADIENT) || (filled == RGRADIENT)) {
+	   xdot_gradient_fillcolor (job, filled, A, 2);
+	}
+        else 
+	    xdot_fillcolor (job);
         agxbput(xbufs[emit_state], "E ");
     }
     else
@@ -558,7 +631,11 @@ static void xdot_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start, int 
     xdot_style (job);
     xdot_pencolor (job);
     if (filled) {
-        xdot_fillcolor (job);
+	if ((filled == GRADIENT) || (filled == RGRADIENT)) {
+	   xdot_gradient_fillcolor (job, filled, A, n);
+	}
+        else
+	    xdot_fillcolor (job);
         xdot_points(job, 'b', A, n);   /* NB - 'B' & 'b' are reversed in comparison to the other items */
     }
     else
@@ -570,7 +647,11 @@ static void xdot_polygon(GVJ_t * job, pointf * A, int n, int filled)
     xdot_style (job);
     xdot_pencolor (job);
     if (filled) {
-        xdot_fillcolor (job);
+	if ((filled == GRADIENT) || (filled == RGRADIENT)) {
+	   xdot_gradient_fillcolor (job, filled, A, n);
+	}
+        else
+	    xdot_fillcolor (job);
         xdot_points(job, 'P', A, n);
     }
     else
