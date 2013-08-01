@@ -1,3 +1,7 @@
+August 1, 2013
+	- New version of xdot format, annotating gradient color schemes
+	- Support for reading pdf images using poppler
+	- Lefty/dotty/lneato now accept anonymous graphs
 July 2, 2013
 	- Add star node shape
 	- Add two-tone (non-gradient) fill

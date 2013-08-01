@@ -265,6 +265,24 @@ appear in xdot output. In particular, the style values
 will not appear. Indeed, if style contains <TT>invis</TT>, 
 there will not be any xdot output at all.
 <P>
+With version 1.3 of xdot, color strings may now encode linear and radial gradients. Linear
+gradients have the form <br>
+&nbsp;&nbsp;&nbsp;&nbsp;'[' x<sub>0</sub> y<sub>0</sub> x<sub>1</sub> y<sub>1</sub> n [<I>color-stop</I>]<sup>+</sup> ']'<br>
+where (x<sub>0</sub>,y<sub>0</sub>) and (x<sub>1</sub>,y<sub>1</sub>) define the starting and
+ending points of the gradient line segment, and n gives the number of <I>color-stops</I>. Each
+<I>color-stop</I> has the form<br>
+&nbsp;&nbsp;&nbsp;&nbsp;v m -<I>b<sub>1</sub>b<sub>2</sub>...b<sub>m</sub></I><br>
+where v is a number in the range [0,1] defining a position on the gradient line segment, with
+color specified by the m byte string <I>b<sub>1</sub>b<sub>2</sub>...b<sub>m</sub></I>, 
+the same format as used for colors in the 'c' and 'C' operations.
+<P>
+Radial gradients have the form<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'(' x<sub>0</sub> y<sub>0</sub> r<sub>0</sub> x<sub>1</sub> y<sub>1</sub> r<sub>1</sub> n [<I>color-stop</I>]<sup>+</sup> ')' <br>
+where x<sub><i>j</i></sub> y<sub><i>j</i></sub> r<sub><i>j</i></sub>, for <i>j</i>=0,1, specify
+the center and radius of the start and ending circle, and n gives the number of <I>color-stops</I>.
+A <I>color-stop</I> has the same format as defined for linear gradients, again given the fractional
+offset and its associated color. 
+<P>
 In handling text alignment, the application may want to recompute the
 string width using its own rendering primitives.
 <P>
@@ -286,6 +304,7 @@ Version info:
 <TR><TD>1.0</TD><TD>1.9</TD></TR>
 <TR><TD>1.1</TD><TD>2.8</TD></TR>
 <TR><TD>1.2</TD><TD>2.13</TD></TR>
+<TR><TD>1.3</TD><TD>2.31</TD></TR>
 </TABLE>
 :plain/plain-ext:Simple text format
 The plain and plain-ext formats produce output using
