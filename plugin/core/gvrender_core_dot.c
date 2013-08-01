@@ -105,6 +105,60 @@ static void xdot_str (GVJ_t *job, char* pfx, char* s)
     xdot_str_xbuf (xbufs[emit_state], pfx, s);
 }
 
+/* xdot_trim_zeros
+ * Trailing zeros are removed and decimal point, if possible.
+ * Add trailing space if addSpace is non-zero.
+ */
+static void xdot_trim_zeros (char* buf, int addSpace)
+{
+    char* dotp;
+    char* p;
+
+    if ((dotp = strchr (buf,'.'))) {
+	p = dotp+1;
+	while (*p) p++;  // find end of string
+	p--;
+	while (*p == '0') *p-- = '\0';
+        if (*p == '.')        // If all decimals were zeros, remove ".".
+            *p = '\0';
+	else
+	    p++;
+    }
+    else if (addSpace)
+	p = buf + strlen(buf);
+
+    if (addSpace) { /* p points to null byte */
+	*p++ = ' ';
+	*p = '\0';
+    }
+}
+
+/* xdot_fmt_num:
+ * Convert double to string with space at end.
+ * Trailing zeros are removed and decimal point, if possible.
+ */
+static void xdot_fmt_num (char* buf, double v)
+{
+    sprintf(buf, "%.02f", v);
+    xdot_trim_zeros (buf, 1);
+}
+
+static void xdot_point(agxbuf *xbuf, pointf p)
+{
+    char buf[BUFSIZ];
+    xdot_fmt_num (buf, p.x);
+    agxbput(xbuf, buf);
+    xdot_fmt_num (buf, yDir(p.y));
+    agxbput(xbuf, buf);
+}
+
+static void xdot_num(agxbuf *xbuf, double v)
+{
+    char buf[BUFSIZ];
+    xdot_fmt_num (buf, v);
+    agxbput(xbuf, buf);
+}
+
 static void xdot_points(GVJ_t *job, char c, pointf * A, int n)
 {
     emit_state_t emit_state = job->obj->emit_state;
@@ -115,7 +169,7 @@ static void xdot_points(GVJ_t *job, char c, pointf * A, int n)
     sprintf(buf, " %d ", n);
     agxbput(xbufs[emit_state], buf);
     for (i = 0; i < n; i++)
-        output_point(xbufs[emit_state], A[i]);
+        xdot_point(xbufs[emit_state], A[i]);
 }
 
 static char*
@@ -123,7 +177,10 @@ color2str (unsigned char rgba[4])
 {
     static char buf [10];
 
-    sprintf (buf, "#%02x%02x%02x%02x", rgba[0], rgba[1],  rgba[2], rgba[3]);
+    if (rgba[3] == 0xFF)
+	sprintf (buf, "#%02x%02x%02x", rgba[0], rgba[1],  rgba[2]);
+    else
+	sprintf (buf, "#%02x%02x%02x%02x", rgba[0], rgba[1],  rgba[2], rgba[3]);
     return buf;
 }
 
@@ -139,16 +196,22 @@ static void xdot_fillcolor (GVJ_t *job)
 
 static void xdot_style (GVJ_t *job)
 {
-    unsigned char buf[BUFSIZ];
+    unsigned char buf0[BUFSIZ];
+    char buf [128]; /* enough to hold a double */
     agxbuf xbuf;
     char* p, **s;
     int more;
 
+    agxbinit(&xbuf, BUFSIZ, buf0);
+
     /* First, check if penwidth state is correct */
     if (job->obj->penwidth != penwidth[job->obj->emit_state]) {
 	penwidth[job->obj->emit_state] = job->obj->penwidth;
-	sprintf ((char*)buf, "setlinewidth(%.3f)", job->obj->penwidth);
-        xdot_str (job, "S ", (char*)buf);
+	agxbput (&xbuf, "setlinewidth(");
+	sprintf (buf, "%.3f", job->obj->penwidth);
+	xdot_trim_zeros (buf, 0);
+	agxbputc (&xbuf, ')');
+        xdot_str (job, "S ", agxbuse(&xbuf));
     }
 
     /* now process raw style, if any */
@@ -156,7 +219,6 @@ static void xdot_style (GVJ_t *job)
     if (!s)
 	return;
 
-    agxbinit(&xbuf, BUFSIZ, buf);
     while ((p = *s++)) {
 	if (streq(p, "filled") || streq(p, "bold") || streq(p, "setlinewidth")) continue;
         agxbput(&xbuf, p);
@@ -515,7 +577,8 @@ static void xdot_textpara(GVJ_t * job, pointf p, textpara_t * para)
     char buf[BUFSIZ];
     int j;
     
-    sprintf(buf, "F %.01f ", para->fontsize);
+    agxbput(xbufs[emit_state], "F ");
+    xdot_fmt_num (buf, para->fontsize);
     agxbput(xbufs[emit_state], buf);
     xdot_str (job, "", para->fontname);
     xdot_pencolor(job);
@@ -533,8 +596,10 @@ static void xdot_textpara(GVJ_t * job, pointf p, textpara_t * para)
         break;
     }
     agxbput(xbufs[emit_state], "T ");
-    output_point(xbufs[emit_state], p);
-    sprintf(buf, "%d %.02f ", j, para->width);
+    xdot_point(xbufs[emit_state], p);
+    sprintf(buf, "%d ", j);
+    agxbput(xbufs[emit_state], buf);
+    xdot_fmt_num (buf, para->width);
     agxbput(xbufs[emit_state], buf);
     xdot_str (job, "", para->str);
 }
@@ -543,7 +608,8 @@ static void xdot_color_stop (agxbuf* xb, float v, gvcolor_t* clr)
 {
     char buf[BUFSIZ];
 
-    sprintf (buf, "%.03f ", v);
+    sprintf (buf, "%.03f", v);
+    xdot_trim_zeros (buf, 1);
     xdot_str_xbuf (xb, buf, color2str (clr->u.rgba));
 }
 
@@ -555,13 +621,13 @@ static void xdot_gradient_fillcolor (GVJ_t* job, int filled, pointf* A, int n)
     float angle = obj->gradient_angle * M_PI / 180;
     float r1,r2;
     pointf G[2],c1,c2;
-    char buf[BUFSIZ];
 
     agxbinit(&xbuf, BUFSIZ, buf0);
     if (filled == GRADIENT) {
 	get_gradient_points(A, G, n, angle, 0);
-	sprintf(buf, "[%.02f %.02f %.02f %.02f ", G[0].x,G[0].y, G[1].x,G[1].y);
-	agxbput(&xbuf, buf);
+	agxbputc (&xbuf, '[');
+	xdot_point (&xbuf, G[0]);
+	xdot_point (&xbuf, G[1]);
     }
     else {
 	get_gradient_points(A, G, n, 0, 1);
@@ -579,10 +645,11 @@ static void xdot_gradient_fillcolor (GVJ_t* job, int filled, pointf* A, int n)
 	c2.x = G[0].x;
 	c2.y = G[0].y;
 	r1 = r2/4;
-	sprintf(buf, "(%.02f %.02f %.02f ", c1.x,c1.y,r1);
-	agxbput(&xbuf, buf);
-	sprintf(buf, "%.02f %.02f %.02f ", c2.x,c2.y,r2);
-	agxbput(&xbuf, buf);
+	agxbputc(&xbuf, '(');
+	xdot_point (&xbuf, c1);
+	xdot_num (&xbuf, r1);
+	xdot_point (&xbuf, c2);
+	xdot_num (&xbuf, r2);
     }
     
     agxbput(&xbuf, "2 ");
@@ -621,8 +688,10 @@ static void xdot_ellipse(GVJ_t * job, pointf * A, int filled)
     }
     else
         agxbput(xbufs[emit_state], "e ");
-    output_point(xbufs[emit_state], A[0]);
-    sprintf(buf, "%.02f %.02f ", (A[1].x - A[0].x), (A[1].y - A[0].y));
+    xdot_point(xbufs[emit_state], A[0]);
+    xdot_fmt_num (buf, A[1].x - A[0].x);
+    agxbput(xbufs[emit_state], buf);
+    xdot_fmt_num (buf, A[1].y - A[0].y);
     agxbput(xbufs[emit_state], buf);
 }
 
@@ -671,8 +740,10 @@ void core_loadimage_xdot(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
     char buf[BUFSIZ];
     
     agxbput(xbufs[emit_state], "I ");
-    output_point(xbufs[emit_state], b.LL);
-    sprintf(buf, "%.02f %.02f ", (b.UR.x - b.LL.x), (b.UR.y - b.LL.y));
+    xdot_point(xbufs[emit_state], b.LL);
+    xdot_fmt_num (buf, b.UR.x - b.LL.x);
+    agxbput(xbufs[emit_state], buf);
+    xdot_fmt_num (buf, b.UR.y - b.LL.y);
     agxbput(xbufs[emit_state], buf);
     xdot_str (job, "", (char*)(us->name));
 }

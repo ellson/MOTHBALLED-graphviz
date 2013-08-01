@@ -19,8 +19,13 @@
 #define YDIR(y) (Y_invert ? (Y_off - (y)) : (y))
 #define YFDIR(y) (Y_invert ? (YF_off - (y)) : (y))
 
-double Y_off;        /* ymin + ymax */
-double YF_off;       /* Y_off in inches */
+static double Y_off;        /* ymin + ymax */
+static double YF_off;       /* Y_off in inches */
+
+double yDir (double y)
+{
+    return YDIR(y);
+}
 
 #ifdef WITH_CGRAPH
 static int (*putstr) (void *chan, const char *str);
@@ -476,12 +481,5 @@ void attach_attrs(graph_t * g)
 {
     int e, s;
     attach_attrs_and_arrows (g, &s, &e);
-}
-
-void output_point(agxbuf *xbuf, pointf p)
-{
-    char buf[BUFSIZ];
-    sprintf(buf, "%.02f %.02f ", (p.x), (YDIR(p.y)));
-    agxbput(xbuf, buf);
 }
 

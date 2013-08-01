@@ -259,7 +259,7 @@ newPS
 nodeInduce    
 Nop    
 Output_file_name    
-output_point    
+yDir    
 overlap_edge    
 overlap_label    
 overlap_node    

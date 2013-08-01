@@ -49,7 +49,7 @@ extern "C" {
     extern void attach_attrs_and_arrows(graph_t*, int*, int*);
     extern char *xml_string(char *str);
     extern void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend);
-    extern void output_point(agxbuf *xbuf, pointf p);
+    extern double yDir (double y);
     extern char *ps_string(char *s, int);
     extern char *strdup_and_subst_obj(char *str, void *obj);
     extern char *xml_url_string(char *s);
