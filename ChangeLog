@@ -1,4 +1,5 @@
 August 1, 2013
+	- Release 2.32.0
 	- New version of xdot format, annotating gradient color schemes
 	- Support for reading pdf images using poppler
 	- Lefty/dotty/lneato now accept anonymous graphs
