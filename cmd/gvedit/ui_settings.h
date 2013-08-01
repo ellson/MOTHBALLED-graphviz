@@ -360,7 +360,7 @@ public:
          << QApplication::translate("Dialog", "sfdp", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("Dialog", "twopi", 0, QApplication::UnicodeUTF8)
         );
-        label_3->setText(QApplication::translate("Dialog", "Output file Type", 0, QApplication::UnicodeUTF8));
+        label_3->setText(QApplication::translate("Dialog", "Output File Type", 0, QApplication::UnicodeUTF8));
         cbExtension->clear();
         cbExtension->insertItems(0, QStringList()
          << QApplication::translate("Dialog", "png", 0, QApplication::UnicodeUTF8)

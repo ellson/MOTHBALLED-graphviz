@@ -23,6 +23,8 @@
 #include "mainwindow.h"
 #include <QTemporaryFile>
 
+extern int errorPipe(char *errMsg);
+
 #define WIDGET(t,f)  ((t*)findChild<t *>(#f))
 typedef struct {
     const char *data;
@@ -315,8 +317,10 @@ void CFrmSettings::saveSlot()
 
 bool CFrmSettings::loadGraph(MdiChild * m)
 {
-    if (graph)
+    if (graph) {
 	agclose(graph);
+	graph = NULL;
+    }
     graphData.clear();
     graphData.append(m->toPlainText());
     setActiveWindow(m);
@@ -339,7 +343,7 @@ bool CFrmSettings::createLayout()
     /* Reset line number and file name;
      * If known, might want to use real name
      */
-    agsetfile("<gvedit>");
+    agsetfile((char*)"<gvedit>");
     QByteArray bytes = graphData.toUtf8();
     rdr.data = bytes.constData();
     rdr.len = strlen(rdr.data);
@@ -363,7 +367,7 @@ bool CFrmSettings::createLayout()
     Agraph_t *G = this->graph;
     QString layout;
 
-    if(agfindnodeattr(G, "pos"))
+    if(agfindnodeattr(G, (char*)"pos"))
 	layout="nop2";
     else
 	layout=WIDGET(QComboBox, cbLayout)->currentText();
@@ -420,6 +424,26 @@ bool CFrmSettings::renderLayout()
 	fileName = fileName + "." + sfx;
 	if (fileName != activeWindow->outputFile)
 	    activeWindow->outputFile = fileName;
+
+#ifdef WIN32
+	if ((!fileName.contains('/')) && (!fileName.contains('\\'))) 
+#else
+	if (!fileName.contains('/'))
+#endif
+	{  // no directory info => can we create/write the file?
+	    QFile outf(fileName);
+	    if (outf.open(QIODevice::WriteOnly))
+		outf.close();
+	    else {
+		QString pathName = QDir::homePath();
+		pathName.append("/").append(fileName);
+		fileName = QDir::toNativeSeparators (pathName);
+		QString msg ("Output written to ");
+		msg.append(fileName);
+		msg.append("\n");
+		errorPipe((char *) msg.toAscii().constData());
+	    }
+	}
 
 	if (gvRenderFilename
 	    (gvc, graph, (char *) sfx.toUtf8().constData(),
