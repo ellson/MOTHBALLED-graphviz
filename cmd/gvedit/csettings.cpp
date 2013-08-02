@@ -78,34 +78,7 @@ QString stripFileExtension(QString fileName)
     return fileName.left(idx);
 }
 
-
-#ifdef WITH_CGRAPH
-static int
-iofread(void *chan, char *buf, int bufsize)
-{
-    const char *ptr;
-    char *optr;
-    char c;
-    int l;
-    rdr_t *s;
-
-    if (bufsize == 0) return 0;
-    s = (rdr_t *) chan;
-    if (s->cur >= s->len)
-	return 0;
-    l = 0;
-    ptr = s->data + s->cur;
-    optr = buf;
-    do {
-	*optr++ = c = *ptr++;
-	l++;
-    } while (c && (c != '\n') && (l < bufsize));
-    s->cur += l;
-    return l;
-}
-
-static Agiodisc_t gveditIoDisc = { iofread, AgIoDisc.putstr, AgIoDisc.flush };
-#else
+#ifndef WITH_CGRAPH
 static char*
 graph_reader(char *str, int num, FILE * stream)	//helper function to load / parse graphs from tstring
 {
@@ -330,9 +303,6 @@ bool CFrmSettings::loadGraph(MdiChild * m)
 
 bool CFrmSettings::createLayout()
 {
-#ifdef WITH_CGRAPH
-    Agdisc_t disc;
-#endif
     rdr_t rdr;
     //first attach attributes to graph
     int _pos = graphData.indexOf(tr("{"));
@@ -349,10 +319,7 @@ bool CFrmSettings::createLayout()
     rdr.len = strlen(rdr.data);
     rdr.cur = 0;
 #ifdef WITH_CGRAPH
-    disc.mem = &AgMemDisc;
-    disc.id = &AgIdDisc;
-    disc.io = &gveditIoDisc;
-    graph = agread(&rdr, &disc);
+    graph = agmemread(rdr.data);
 #else
     graph = agread_usergets((FILE *) & rdr, (gets_f) graph_reader);
     /* graph=agread_usergets(reinterpret_cast<FILE*>(this),(gets_f)graph_reader); */
