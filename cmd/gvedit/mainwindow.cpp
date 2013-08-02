@@ -164,7 +164,7 @@ CMainWindow::CMainWindow(char*** Files)
 
     readSettings();
 
-    setWindowTitle(tr("GVEdit For Graphviz ver:1.01"));
+    setWindowTitle(tr("GVEdit For Graphviz ver:1.02"));
     this->resize(1024, 900);
     this->move(0, 0);
     setUnifiedTitleAndToolBarOnMac(true);
@@ -276,7 +276,7 @@ void CMainWindow::slotAbout()
 {
     QMessageBox::about(this, tr("About GVEdit\n"),
 		       tr("<b>GVEdit</b> Graph File Editor For Graphviz\n"
-			  "Version:1.01"));
+			  "Version:1.02"));
 }
 
 void CMainWindow::setChild ()
