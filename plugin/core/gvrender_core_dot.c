@@ -210,6 +210,7 @@ static void xdot_style (GVJ_t *job)
 	agxbput (&xbuf, "setlinewidth(");
 	sprintf (buf, "%.3f", job->obj->penwidth);
 	xdot_trim_zeros (buf, 0);
+	agxbput(&xbuf, buf);
 	agxbputc (&xbuf, ')');
         xdot_str (job, "S ", agxbuse(&xbuf));
     }
