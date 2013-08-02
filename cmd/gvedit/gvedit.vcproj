@@ -76,7 +76,7 @@
 				IgnoreImportLibrary="true"
 				AdditionalOptions="&quot;/MANIFESTDEPENDENCY:type=&apos;win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos; processorArchitecture=&apos;*&apos;&quot;"
 				AdditionalDependencies="c:\Qt\4.8.3\lib\qtmaind.lib C:/graphviz-ms/bin\gvc.lib C:/graphviz-ms/bin\cgraph.lib C:/graphviz-ms/bin\cdt.lib C:/gtk/lib\expat.lib C:/gtk/lib\z.lib C:/gtk/lib\ltdl.lib c:\Qt\4.8.3\lib\QtGuid4.lib c:\Qt\4.8.3\lib\QtCored4.lib"
-				OutputFile="$(OutDir)\gvedit.exe"
+				OutputFile="c:/graphviz-ms/bin/$(ProjectName).exe"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="c:\Qt\4.8.3\lib,C:/gtk/lib,C:/graphviz-ms/bin"
 				GenerateDebugInformation="true"
@@ -166,7 +166,7 @@
 				IgnoreImportLibrary="true"
 				AdditionalOptions="&quot;/MANIFESTDEPENDENCY:type=&apos;win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos; processorArchitecture=&apos;*&apos;&quot;"
 				AdditionalDependencies="c:\Qt\4.8.3\lib\qtmain.lib C:/graphviz-ms/bin\gvc.lib C:/graphviz-ms/bin\cgraph.lib C:/graphviz-ms/bin\cdt.lib C:/gtk/lib\expat.lib C:/gtk/lib\z.lib C:/gtk/lib\ltdl.lib c:\Qt\4.8.3\lib\QtGui4.lib c:\Qt\4.8.3\lib\QtCore4.lib"
-				OutputFile="$(OutDir)\gvedit.exe"
+				OutputFile="c:/graphviz-ms/bin/$(ProjectName).exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="c:\Qt\4.8.3\lib,C:/gtk/lib,C:/graphviz-ms/bin"
@@ -347,18 +347,6 @@
 			UniqueIdentifier="{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}"
 			>
 			<File
-				RelativePath="release\moc_csettings.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="debug\moc_csettings.cpp"
 				>
 				<FileConfiguration
@@ -371,7 +359,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="release\moc_imageviewer.cpp"
+				RelativePath="release\moc_csettings.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -387,6 +375,18 @@
 				>
 				<FileConfiguration
 					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="release\moc_imageviewer.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -419,18 +419,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="release\moc_mdichild.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="debug\moc_mdichild.cpp"
 				>
 				<FileConfiguration
@@ -443,7 +431,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="release\qrc_mdi.cpp"
+				RelativePath="release\moc_mdichild.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -459,6 +447,18 @@
 				>
 				<FileConfiguration
 					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="release\qrc_mdi.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
