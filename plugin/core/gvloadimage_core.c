@@ -47,6 +47,13 @@ typedef enum {
 
 static void core_loadimage_svg(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
 {
+
+// FIXME - no idea why this magic 72/96 is needed for images!  >>>
+    double width = (b.UR.x-b.LL.x)*72/96;
+    double height = (b.UR.y-b.LL.y)*72/96;
+    double originx = (b.UR.x+b.LL.x - width)/2;
+    double originy = (b.UR.y+b.LL.y + height)/2;
+// <<<
     assert(job);
     assert(us);
     assert(us->name);
@@ -54,14 +61,17 @@ static void core_loadimage_svg(GVJ_t * job, usershape_t *us, boxf b, boolean fil
     gvputs(job, "<image xlink:href=\"");
     gvputs(job, us->name);
     if (job->rotation) {
+
+// FIXME - this is messed up >>>
         gvprintf (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
-            b.UR.y - b.LL.y, b.UR.x - b.LL.x, b.LL.x, b.UR.y);
+            height, width, originx, -originy);
         gvprintf (job, " transform=\"rotate(%d %g %g)\"",
-            job->rotation, b.LL.x, b.UR.y);
+            job->rotation, originx, -originy);
+// <<<
     }
     else {
         gvprintf (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMinYMin meet\" x=\"%g\" y=\"%g\"",
-            b.UR.x - b.LL.x, b.UR.y - b.LL.y, b.LL.x, -b.UR.y);
+            width, height, originx, -originy);
     }
     gvputs(job, "/>\n");
 }
@@ -243,8 +253,6 @@ static void core_loadimage_vml(GVJ_t * job, usershape_t *us, boxf b, boolean fil
 
 static void core_loadimage_tk(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
 {
-    double graphHeight;
-    graphHeight = (job->bb.UR.y - job->bb.LL.y);
     gvprintf (job, "image create photo \"photo_%s\" -file \"%s\"\n",
 	us->name, us->name);
     gvprintf (job, "$c create image %.2f %.2f -image \"photo_%s\"\n",
