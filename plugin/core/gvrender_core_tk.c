@@ -54,7 +54,7 @@ static void tkgen_print_color(GVJ_t * job, gvcolor_t color)
 
 static void tkgen_print_tags(GVJ_t *job)
 {
-    char *ObjType, *ObjPart;
+    char *ObjType;
     unsigned int ObjId;
     obj_state_t *obj = job->obj;
     int ObjFlag;
@@ -65,7 +65,6 @@ static void tkgen_print_tags(GVJ_t *job)
     switch (obj->emit_state) {
     case EMIT_NDRAW:
 	ObjType = "node";
-	ObjPart = "shape";
 	ObjFlag = 1;
         ObjId = AGSEQ(obj->u.n);
 #ifndef WITH_CGRAPH
@@ -74,7 +73,6 @@ static void tkgen_print_tags(GVJ_t *job)
 	break;
     case EMIT_NLABEL:
 	ObjType = "node";
-	ObjPart = "label";
 	ObjFlag = 0;
         ObjId = AGSEQ(obj->u.n);
 #ifndef WITH_CGRAPH
@@ -85,7 +83,6 @@ static void tkgen_print_tags(GVJ_t *job)
     case EMIT_TDRAW:
     case EMIT_HDRAW:
 	ObjType = "edge";
-	ObjPart = "shape";
 	ObjFlag = 1;
         ObjId = AGSEQ(obj->u.e);
 #ifndef WITH_CGRAPH
@@ -96,7 +93,6 @@ static void tkgen_print_tags(GVJ_t *job)
     case EMIT_TLABEL:
     case EMIT_HLABEL:
 	ObjType = "edge";
-	ObjPart = "label";
 	ObjFlag = 0;
         ObjId = AGSEQ(obj->u.e);
 #ifndef WITH_CGRAPH
@@ -105,7 +101,6 @@ static void tkgen_print_tags(GVJ_t *job)
 	break;
     case EMIT_GDRAW:
 	ObjType = "graph";
-	ObjPart = "shape";
 	ObjFlag = 1;
 	ObjId = -1;  /* hack! */
 #ifndef WITH_CGRAPH
@@ -113,8 +108,6 @@ static void tkgen_print_tags(GVJ_t *job)
 #endif
 	break;
     case EMIT_GLABEL:
-	ObjType = "graph";
-	ObjPart = "label";
 	ObjFlag = 0;
 	ObjType = "graph label";
 	ObjId = -1;  /* hack! */
@@ -124,7 +117,6 @@ static void tkgen_print_tags(GVJ_t *job)
 	break;
     case EMIT_CDRAW:
 	ObjType = "graph";
-	ObjPart = "shape";
 	ObjFlag = 1;
 #ifndef WITH_CGRAPH
 	ObjId = obj->u.sg->meta_node->id;
@@ -135,7 +127,6 @@ static void tkgen_print_tags(GVJ_t *job)
 	break;
     case EMIT_CLABEL:
 	ObjType = "graph";
-	ObjPart = "label";
 	ObjFlag = 0;
 #ifndef WITH_CGRAPH
 	ObjId = obj->u.sg->meta_node->id;
