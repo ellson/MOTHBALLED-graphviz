@@ -96,23 +96,26 @@ esac
 AC_SUBST([GRAPHVIZ_VERSION_BUILD])
 AC_SUBST([GRAPHVIZ_VERSION_REVISION])
 
-LIBPOSTFIX=
-case "${host_os}" in
-  *linux* )
-    case "${host_cpu}" in
-      powerpc64 | s390x | x86_64 | sparc64 )
-        LIBPOSTFIX="64"
-        ;;
-    esac
-    ;;
-  *solaris* )
-    case "${host_cpu}" in
-      x86_64 | sparc64 )
-        LIBPOSTFIX="/64"
-        ;;
-    esac
-    ;;
-esac
+AC_ARG_VAR(LIBPOSTFIX, [subscript to lib, e.g. "/64" for "/usr/lib/64" on Solaris])
+
+if test -z "$LIBPOSTFIX"; then
+  case "${host_os}" in
+    *linux* )
+      case "${host_cpu}" in
+        powerpc64 | s390x | x86_64 | sparc64 )
+          LIBPOSTFIX="64"
+          ;;
+      esac
+      ;;
+    *solaris* )
+      case "${host_cpu}" in
+        x86_64 | sparc64 )
+          LIBPOSTFIX="/64"
+          ;;
+      esac
+      ;;
+  esac
+fi
 
 UWIN=no
 CYGWIN=no
@@ -1610,7 +1613,7 @@ if test "x$use_tcl" == "x"; then
   # can't assume ksh on all architectures
   # TCLSH_EXEC_PREFIX=${TCLSH%%/bin/tclsh.*}
   # so use sed instead
-  TCLSH_EXEC_PREFIX=`echo $TCLSH|sed -e 's%/bin/tclsh.*$%%'`
+  TCLSH_EXEC_PREFIX=`echo $TCLSH|sed -e 's%/bin/.*tclsh.*$%%'`
 
   if test -f ${TCLSH_EXEC_PREFIX}/include/tcl${TCL_VERSION_FOUND}/tcl.h; then
     TCL_INCLUDES="-I${TCLSH_EXEC_PREFIX}/include/tcl${TCL_VERSION_FOUND} -I${TCLSH_EXEC_PREFIX}/include/tcl${TCL_VERSION_FOUND}/generic"
@@ -1757,7 +1760,7 @@ if test "x$use_tk" == "x"; then
     # can't assume ksh on all architectures
     # WISH_EXEC_PREFIX=${WISH%%/bin/tclsh.*}
     # so use sed instead
-    WISH_EXEC_PREFIX=`echo $WISH|sed -e 's%/bin/wish.*$%%'`
+    WISH_EXEC_PREFIX=`echo $WISH|sed -e 's%/bin/.*wish.*$%%'`
 
     if test -f ${WISH_EXEC_PREFIX}/include/tk${TK_VERSION_FOUND}/tk.h; then
 	TK_INCLUDES="-I${WISH_EXEC_PREFIX}/include/tk${TK_VERSION_FOUND} -I${WISH_EXEC_PREFIX}/include/tk${TK_VERSION_FOUND}/generic -I${WISH_EXEC_PREFIX}/include/tk${TK_VERSION_FOUND}/unix"
