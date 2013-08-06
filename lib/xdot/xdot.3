@@ -9,6 +9,40 @@
 #include <graphviz/xdot.h>
 
 typedef enum {
+    xd_none,
+    xd_linear,
+    xd_radial
+} xdot_grad_type;
+
+typedef struct {
+    float frac;
+    char* color;
+} xdot_color_stop;
+
+typedef struct {
+    double x0, y0;
+    double x1, y1;
+    int n_stops;
+    xdot_color_stop* stops;
+} xdot_linear_grad;
+
+typedef struct {
+    double x0, y0, r0;
+    double x1, y1, r1;
+    int n_stops;
+    xdot_color_stop* stops;
+} xdot_radial_grad;
+
+typedef struct {
+    xdot_grad_type type;
+    union {
+	char* clr;
+	xdot_linear_grad ling;
+	xdot_radial_grad ring;
+    } u;
+} xdot_color;
+
+typedef enum {
     xd_left, xd_center, xd_right
 } xdot_align;
 
@@ -47,7 +81,8 @@ typedef enum {
     xd_filled_polygon, xd_unfilled_polygon,
     xd_filled_bezier,  xd_unfilled_bezier,
     xd_polyline,       xd_text,
-    xd_fill_color,     xd_pen_color, xd_font, xd_style, xd_image
+    xd_fill_color,     xd_pen_color, xd_font, xd_style, xd_image,
+    xd_grad_fill_color,     xd_grad_pen_color
 } xdot_kind; 
     
 typedef enum {
@@ -55,7 +90,8 @@ typedef enum {
     xop_polygon,
     xop_bezier,
     xop_polyline,       xop_text,
-    xop_fill_color,     xop_pen_color, xop_font, xop_style, xop_image
+    xop_fill_color,     xop_pen_color, xop_font, xop_style, xop_image,
+    xop_grad_fill_color,     xop_grad_pen_color
 } xop_kind; 
     
 typedef struct _xdot_op xdot_op;
@@ -72,6 +108,7 @@ struct _xdot_op {
       xdot_text text;          /* xd_text */
       xdot_image image;        /* xd_image */
       char* color;             /* xd_fill_color, xd_pen_color */
+      xdot_color grad_color;   /* xd_grad_fill_color, xd_grad_pen_color */
       xdot_font font;          /* xd_font */
       char* style;             /* xd_style */
     } u;
@@ -93,6 +130,10 @@ xdot* parseXDot (char*);
 char* sprintXDot (xdot*);
 void fprintXDot (FILE*, xdot*);
 void freeXDot (xdot*);
+
+xdot_grad_type colorType (char*);
+xdot_color* parseXDotColor (char*);
+void freeXDotColor (xdot_color*);
 \fP
 .fi
 .SH DESCRIPTION
@@ -119,7 +160,7 @@ a given \fIkind\fP indicated by the comments.
 The \fIdrawfunc\fP field allows the user to attach a drawing-specific
 function to the operation, providing an object-based interface. These
 functions can be automatically attached during parsing by providing a
-non-NULL second argument to \fIparseXDotF\fP.
+non-NULL second argument to \fBparseXDotF\fP.
 .PP
 .SS "  xop_kind"
 This type provides an enumeration of the allowed xdot operations.
@@ -193,6 +234,25 @@ These two functions deparse the argument xdot structure, producing
 a string representation. \fIfprintXDot\fP writes the output onto
 the open stream \fIfp\fP; \fIsprintXDot\fP returns a heap-allocated
 string.
+.PP
+The color string with fill and draw operations can encode linear
+and radial gradients. These values are parsed automatically by
+\fBparseXDotF\fP or \fBparseXDot\fP, 
+with \fIxdot_op\fP having kind \fIxd_grad_pen_color\fP or
+\fIxd_grad_fill_color\fP and the value is stored in \fIgrad_color\fP.
+.PP
+For an application that handles its own parsing of xdot, the library
+provides three helper functions.
+.PP
+.SS "  xdot_grad_type colorTypeXDot (char *str)"
+returns the color type described by the input string.
+.PP
+.SS "  char* parseXDotColor (char *str, xdot_color* clr)"
+attempts to parse the string \fIstr\fP as a color value, storing
+the result in \fIclr\fP. It returns NULL on failure.
+.PP
+.SS "  void freeXDotColor (xdot_color* cp)"
+This frees the resources associated with a value of type \fIxdot_color\fP.
 
 .SH BUGS
 Although some small checking is done on the \fIsz\fP argument to

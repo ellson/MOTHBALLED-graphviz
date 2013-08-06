@@ -19,6 +19,40 @@
 #define INITIAL_XDOT_CAPACITY 512
 
 typedef enum {
+    xd_none,
+    xd_linear,
+    xd_radial
+} xdot_grad_type;
+
+typedef struct {
+    float frac;
+    char* color;
+} xdot_color_stop;
+
+typedef struct {
+    double x0, y0;
+    double x1, y1;
+    int n_stops;
+    xdot_color_stop* stops;
+} xdot_linear_grad;
+
+typedef struct {
+    double x0, y0, r0;
+    double x1, y1, r1;
+    int n_stops;
+    xdot_color_stop* stops;
+} xdot_radial_grad;
+
+typedef struct {
+    xdot_grad_type type;
+    union {
+	char* clr;
+	xdot_linear_grad ling;
+	xdot_radial_grad ring;
+    } u;
+} xdot_color;
+
+typedef enum {
     xd_left, xd_center, xd_right
 } xdot_align;
 
@@ -57,7 +91,8 @@ typedef enum {
     xd_filled_polygon, xd_unfilled_polygon,
     xd_filled_bezier,  xd_unfilled_bezier,
     xd_polyline,       xd_text,
-    xd_fill_color,     xd_pen_color, xd_font, xd_style, xd_image
+    xd_fill_color,     xd_pen_color, xd_font, xd_style, xd_image,
+    xd_grad_fill_color,     xd_grad_pen_color
 } xdot_kind; 
     
 typedef enum {
@@ -65,7 +100,8 @@ typedef enum {
     xop_polygon,
     xop_bezier,
     xop_polyline,       xop_text,
-    xop_fill_color,     xop_pen_color, xop_font, xop_style, xop_image
+    xop_fill_color,     xop_pen_color, xop_font, xop_style, xop_image,
+    xop_grad_fill_color,     xop_grad_pen_color
 } xop_kind; 
     
 typedef struct _xdot_op xdot_op;
@@ -82,6 +118,7 @@ struct _xdot_op {
       xdot_text text;          /* xd_text */
       xdot_image image;        /* xd_image */
       char* color;             /* xd_fill_color, xd_pen_color */
+      xdot_color grad_color;   /* xd_grad_fill_color, xd_grad_pen_color */
       xdot_font font;          /* xd_font */
       char* style;             /* xd_style */
     } u;
@@ -123,5 +160,8 @@ extern void fprintXDot (FILE*, xdot*);
 extern void jsonXDot (FILE*, xdot*);
 extern void freeXDot (xdot*);
 extern int statXDot (xdot*, xdot_stats*);
+extern xdot_grad_type colorTypeXDot (char*);
+extern char* parseXDotColor (char* cp, xdot_color* clr);
+extern void freeXDotColor (xdot_color*);
 
 #endif

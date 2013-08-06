@@ -1,4 +1,3 @@
-/* $Id$Revision: */
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
@@ -247,6 +246,9 @@ static char *parseAlign(char *s, xdot_align * ap)
 
 static char *parseOp(xdot_op * op, char *s, drawfunc_t ops[], int* error)
 {
+    char* cs;
+    xdot_color clr;
+
     *error = 0;
     while (isspace(*s))
 	s++;
@@ -300,19 +302,41 @@ static char *parseOp(xdot_op * op, char *s, drawfunc_t ops[], int* error)
 	break;
 
     case 'c':
-	op->kind = xd_pen_color;
-	s = parseString(s, &op->u.color);
+	s = parseString(s, &cs);
 	CHK(s);
-	if (ops)
-	    op->drawfunc = ops[xop_pen_color];
+	cs = parseXDotColor (cs, &clr);
+	CHK(cs);
+	if (clr.type == xd_none) {
+	    op->kind = xd_pen_color;
+	    op->u.color = clr.u.clr;
+	    if (ops)
+		op->drawfunc = ops[xop_pen_color];
+	}
+	else {
+	    op->kind = xd_grad_pen_color;
+	    op->u.grad_color = clr;
+	    if (ops)
+		op->drawfunc = ops[xop_grad_pen_color];
+	}
 	break;
 
     case 'C':
-	op->kind = xd_fill_color;
-	s = parseString(s, &op->u.color);
+	s = parseString(s, &cs);
 	CHK(s);
-	if (ops)
-	    op->drawfunc = ops[xop_fill_color];
+	cs = parseXDotColor (cs, &clr);
+	CHK(cs);
+	if (clr.type == xd_none) {
+	    op->kind = xd_fill_color;
+	    op->u.color = clr.u.clr;
+	    if (ops)
+		op->drawfunc = ops[xop_fill_color];
+	}
+	else {
+	    op->kind = xd_grad_fill_color;
+	    op->u.grad_color = clr;
+	    if (ops)
+		op->drawfunc = ops[xop_grad_fill_color];
+	}
 	break;
 
     case 'L':
@@ -456,11 +480,41 @@ xdot *parseXDot(char *s)
 
 typedef void (*pf) (char *, void *);
 
+/* trim:
+ * Trailing zeros are removed and decimal point, if possible.
+ */
+static void trim (char* buf)
+{
+    char* dotp;
+    char* p;
+
+    if ((dotp = strchr (buf,'.'))) {
+        p = dotp+1;
+        while (*p) p++;  // find end of string
+        p--;
+        while (*p == '0') *p-- = '\0';
+        if (*p == '.')        // If all decimals were zeros, remove ".".
+            *p = '\0';
+        else
+            p++;
+    }
+}
+
 static void printRect(xdot_rect * r, pf print, void *info)
 {
     char buf[128];
 
-    sprintf(buf, " %.06f %.06f %.06f %.06f", r->x, r->y, r->w, r->h);
+    sprintf(buf, " %.02f", r->x);
+    trim(buf);
+    print(buf, info);
+    sprintf(buf, " %.02f", r->y);
+    trim(buf);
+    print(buf, info);
+    sprintf(buf, " %.02f", r->w);
+    trim(buf);
+    print(buf, info);
+    sprintf(buf, " %.02f", r->h);
+    trim(buf);
     print(buf, info);
 }
 
@@ -472,7 +526,11 @@ static void printPolyline(xdot_polyline * p, pf print, void *info)
     sprintf(buf, " %d", p->cnt);
     print(buf, info);
     for (i = 0; i < p->cnt; i++) {
-	sprintf(buf, " %.06f %.06f", p->pts[i].x, p->pts[i].y);
+	sprintf(buf, " %.02f", p->pts[i].x);
+	trim(buf);
+	print(buf, info);
+	sprintf(buf, " %.02f", p->pts[i].y);
+	trim(buf);
 	print(buf, info);
     }
 }
@@ -494,11 +552,15 @@ static void printInt(int i, pf print, void *info)
     print(buf, info);
 }
 
-static void printFloat(float f, pf print, void *info)
+static void printFloat(float f, pf print, void *info, int space)
 {
     char buf[128];
 
-    sprintf(buf, " %f", f);
+    if (space)
+	sprintf(buf, " %.02f", f);
+    else
+	sprintf(buf, "%.02f", f);
+    trim (buf);
     print(buf, info);
 }
 
@@ -517,10 +579,58 @@ static void printAlign(xdot_align a, pf print, void *info)
     }
 }
 
+static void
+gradprint (char* s, void* v)
+{
+    agxbput(s, (agxbuf*)v);
+}
+
+static void
+toGradString (agxbuf* xb, xdot_color* cp)
+{
+    int i, n_stops;
+    xdot_color_stop* stops;
+
+    if (cp->type == xd_linear) {
+	agxbputc (xb, '[');
+	printFloat (cp->u.ling.x0, gradprint, xb, 0);
+	printFloat (cp->u.ling.y0, gradprint, xb, 1);
+	printFloat (cp->u.ling.x1, gradprint, xb, 1);
+	printFloat (cp->u.ling.y1, gradprint, xb, 1);
+	n_stops = cp->u.ling.n_stops;
+	stops = cp->u.ling.stops;
+    }
+    else {
+	agxbputc (xb, '(');
+	printFloat (cp->u.ring.x0, gradprint, xb, 0);
+	printFloat (cp->u.ring.y0, gradprint, xb, 1);
+	printFloat (cp->u.ring.r0, gradprint, xb, 1);
+	printFloat (cp->u.ring.x1, gradprint, xb, 1);
+	printFloat (cp->u.ring.y1, gradprint, xb, 1);
+	printFloat (cp->u.ring.r1, gradprint, xb, 1);
+	n_stops = cp->u.ring.n_stops;
+	stops = cp->u.ring.stops;
+    }
+    printInt (n_stops, gradprint, xb);
+    for (i = 0; i < n_stops; i++) {
+	printFloat (stops[i].frac, gradprint, xb, 1);
+	printString (stops[i].color, gradprint, xb);
+    }
+
+    if (cp->type == xd_linear)
+	agxbputc (xb, ']');
+    else
+	agxbputc (xb, ')');
+}
+
 typedef void (*print_op)(xdot_op * op, pf print, void *info, int more);
 
 static void printXDot_Op(xdot_op * op, pf print, void *info, int more)
 {
+    agxbuf xb;
+    unsigned char buf[BUFSIZ];
+
+    agxbinit (&xb, BUFSIZ, buf);
     switch (op->kind) {
     case xd_filled_ellipse:
 	print("E", info);
@@ -551,9 +661,19 @@ static void printXDot_Op(xdot_op * op, pf print, void *info, int more)
 	print("c", info);
 	printString(op->u.color, print, info);
 	break;
+    case xd_grad_pen_color:
+	print("c", info);
+	toGradString (&xb, &op->u.grad_color);
+	printString(agxbuse(&xb), print, info);
+	break;
     case xd_fill_color:
 	print("C", info);
 	printString(op->u.color, print, info);
+	break;
+    case xd_grad_fill_color:
+	print("C", info);
+	toGradString (&xb, &op->u.grad_color);
+	printString(agxbuse(&xb), print, info);
 	break;
     case xd_polyline:
 	print("L", info);
@@ -570,7 +690,7 @@ static void printXDot_Op(xdot_op * op, pf print, void *info, int more)
     case xd_font:
 	print("F", info);
 	op->kind = xd_font;
-	printFloat(op->u.font.size, print, info);
+	printFloat(op->u.font.size, print, info, 1);
 	printString(op->u.font.name, print, info);
 	break;
     case xd_style:
@@ -585,6 +705,7 @@ static void printXDot_Op(xdot_op * op, pf print, void *info, int more)
     }
     if (more)
 	print(" ", info);
+    agxbfree (&xb);
 }
 
 static void jsonRect(xdot_rect * r, pf print, void *info)
@@ -629,6 +750,10 @@ static void jsonString(char *p, pf print, void *info)
 
 static void jsonXDot_Op(xdot_op * op, pf print, void *info, int more)
 {
+    agxbuf xb;
+    unsigned char buf[BUFSIZ];
+
+    agxbinit (&xb, BUFSIZ, buf);
     switch (op->kind) {
     case xd_filled_ellipse:
 	print("{E : ", info);
@@ -658,9 +783,19 @@ static void jsonXDot_Op(xdot_op * op, pf print, void *info, int more)
 	print("{c : ", info);
 	jsonString(op->u.color, print, info);
 	break;
+    case xd_grad_pen_color:
+	print("{c : ", info);
+	toGradString (&xb, &op->u.grad_color);
+	jsonString(agxbuse(&xb), print, info);
+	break;
     case xd_fill_color:
 	print("{C : ", info);
 	jsonString(op->u.color, print, info);
+	break;
+    case xd_grad_fill_color:
+	print("{C : ", info);
+	toGradString (&xb, &op->u.grad_color);
+	jsonString(agxbuse(&xb), print, info);
 	break;
     case xd_polyline:
 	print("{L :", info);
@@ -682,7 +817,7 @@ static void jsonXDot_Op(xdot_op * op, pf print, void *info, int more)
     case xd_font:
 	print("{F : [", info);
 	op->kind = xd_font;
-	printFloat(op->u.font.size, print, info);
+	printFloat(op->u.font.size, print, info, 1);
 	print(",", info);
 	jsonString(op->u.font.name, print, info);
 	print("]", info);
@@ -703,6 +838,7 @@ static void jsonXDot_Op(xdot_op * op, pf print, void *info, int more)
 	print("},\n", info);
     else
 	print("}\n", info);
+    agxbfree (&xb);
 }
 
 static void _printXDot(xdot * x, pf print, void *info, print_op ofn)
@@ -761,6 +897,10 @@ static void freeXOpData(xdot_op * x)
     case xd_fill_color:
     case xd_pen_color:
 	free(x->u.color);
+	break;
+    case xd_grad_fill_color:
+    case xd_grad_pen_color:
+	freeXDotColor (&x->u.grad_color);
 	break;
     case xd_font:
 	free(x->u.font.name);
@@ -847,6 +987,157 @@ int statXDot (xdot* x, xdot_stats* sp)
     }
     
     return 0;
+}
+
+xdot_grad_type 
+colorType (char* cp)
+{
+    xdot_grad_type rv;
+
+    switch (*cp) {
+    case '[' :
+	rv = xd_linear;
+	break;
+    case '(' :
+	rv = xd_radial;
+	break;
+    default :
+	rv = xd_none;
+	break;
+    }
+    return rv;
+}
+
+#define CHK1(s) if(!s){free(stops);return NULL;}
+
+/* radGradient:
+ * Parse radial gradient spec
+ * Return NULL on failure.
+ */
+static char*
+radGradient (char* cp, xdot_color* clr)
+{
+    char* s = cp;
+    int i;
+    double d;
+    xdot_color_stop* stops = NULL;
+
+    clr->type = xd_radial;
+    s = parseReal(s, &clr->u.ring.x0);
+    CHK1(s);
+    s = parseReal(s, &clr->u.ring.y0);
+    CHK1(s);
+    s = parseReal(s, &clr->u.ring.r0);
+    CHK1(s);
+    s = parseReal(s, &clr->u.ring.x1);
+    CHK1(s);
+    s = parseReal(s, &clr->u.ring.y1);
+    CHK1(s);
+    s = parseReal(s, &clr->u.ring.r1);
+    CHK1(s);
+    s = parseInt(s, &clr->u.ring.n_stops);
+    CHK1(s);
+
+    stops = N_NEW(clr->u.ring.n_stops,xdot_color_stop);
+    for (i = 0; i < clr->u.ring.n_stops; i++) {
+	s = parseReal(s, &d);
+	CHK1(s);
+	stops[i].frac = d;
+	s = parseString(s, &stops[i].color);
+	CHK1(s);
+    }
+    clr->u.ring.stops = stops;
+
+    return cp;
+}
+
+/* linGradient:
+ * Parse linear gradient spec
+ * Return NULL on failure.
+ */
+static char*
+linGradient (char* cp, xdot_color* clr)
+{
+    char* s = cp;
+    int i;
+    double d;
+    xdot_color_stop* stops = NULL;
+
+    clr->type = xd_linear;
+    s = parseReal(s, &clr->u.ling.x0);
+    CHK1(s);
+    s = parseReal(s, &clr->u.ling.y0);
+    CHK1(s);
+    s = parseReal(s, &clr->u.ling.x1);
+    CHK1(s);
+    s = parseReal(s, &clr->u.ling.y1);
+    CHK1(s);
+    s = parseInt(s, &clr->u.ling.n_stops);
+    CHK1(s);
+
+    stops = N_NEW(clr->u.ling.n_stops,xdot_color_stop);
+    for (i = 0; i < clr->u.ling.n_stops; i++) {
+	s = parseReal(s, &d);
+	CHK1(s);
+	stops[i].frac = d;
+	s = parseString(s, &stops[i].color);
+	CHK1(s);
+    }
+    clr->u.ling.stops = stops;
+
+    return cp;
+}
+
+/* parseXDotColor:
+ * Parse xdot color spec: ordinary or gradient
+ * The result is stored in clr.
+ * Return NULL on failure.
+ */
+char*
+parseXDotColor (char* cp, xdot_color* clr)
+{
+    char c = *cp;
+
+    switch (c) {
+    case '[' :
+	return linGradient (cp+1, clr);
+	break;
+    case '(' :
+	return radGradient (cp+1, clr);
+	break;
+    case '#' :
+    case '/' :
+	clr->type = xd_none; 
+	clr->u.clr = cp;
+	return cp;
+	break;
+    default :
+	if (isalnum(c)) {
+	    clr->type = xd_none; 
+	    clr->u.clr = cp;
+	    return cp;
+	}
+	else
+	    return NULL;
+    }
+}
+
+void freeXDotColor (xdot_color* cp)
+{
+    int i;
+
+    if (cp->type == xd_linear) {
+	for (i = 0; i < cp->u.ling.n_stops; i++) {
+	    free (cp->u.ling.stops[i].color);
+	}
+	free (cp->u.ling.stops);
+    }
+    else if (cp->type == xd_radial) {
+	for (i = 0; i < cp->u.ring.n_stops; i++) {
+	    free (cp->u.ring.stops[i].color);
+	}
+	free (cp->u.ring.stops);
+    }
 }
 
 #if 0
