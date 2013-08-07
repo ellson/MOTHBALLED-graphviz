@@ -22,7 +22,7 @@
 Multilevel_control Multilevel_control_new(int scheme, int mode){
   Multilevel_control ctrl;
 
-  ctrl = N_GNEW(1,struct Multilevel_control_struct);
+  ctrl = GNEW(struct Multilevel_control_struct);
   ctrl->minsize = 4;
   ctrl->min_coarsen_factor = 0.75;
   ctrl->maxlevel = 1<<30;
@@ -49,7 +49,7 @@ static Multilevel Multilevel_init(SparseMatrix A, SparseMatrix D, real *node_wei
   Multilevel grid;
   if (!A) return NULL;
   assert(A->m == A->n);
-  grid = N_GNEW(1,struct Multilevel_struct);
+  grid = GNEW(struct Multilevel_struct);
   grid->level = 0;
   grid->n = A->n;
   grid->A = A;
@@ -1023,7 +1023,7 @@ static void Multilevel_coarsen_internal(SparseMatrix A, SparseMatrix *cA, Sparse
     }
     assert(ncluster <= n);
     nc = ncluster;
-    if ((ctrl->coarsen_mode == COARSEN_MODE_GENTLE && nc > ctrl->min_coarsen_factor*n) || nc < ctrl->minsize) {
+    if ((ctrl->coarsen_mode == COARSEN_MODE_GENTLE && nc > ctrl->min_coarsen_factor*n) || nc == n || nc < ctrl->minsize) {
 #ifdef DEBUG_PRINT
       if (Verbose)
         fprintf(stderr, "nc = %d, nf = %d, minsz = %d, coarsen_factor = %f coarsening stops\n",nc, n, ctrl->minsize, ctrl->min_coarsen_factor);
@@ -1075,7 +1075,7 @@ static void Multilevel_coarsen_internal(SparseMatrix A, SparseMatrix *cA, Sparse
     if (ctrl->coarsen_scheme == COARSEN_INDEPENDENT_EDGE_SET_HEAVEST_EDGE_PERNODE_DEGREE_SCALED) 
       maximal_independent_edge_set_heavest_edge_pernode_scaled(A, ctrl->randomize, &matching, &nmatch);
     nc = nmatch;
-    if ((ctrl->coarsen_mode == COARSEN_MODE_GENTLE && nc > ctrl->min_coarsen_factor*n) || nc < ctrl->minsize) {
+    if ((ctrl->coarsen_mode == COARSEN_MODE_GENTLE && nc > ctrl->min_coarsen_factor*n) || nc == n || nc < ctrl->minsize) {
 #ifdef DEBUG_PRINT
       if (Verbose)
         fprintf(stderr, "nc = %d, nf = %d, minsz = %d, coarsen_factor = %f coarsening stops\n",nc, n, ctrl->minsize, ctrl->min_coarsen_factor);
@@ -1137,7 +1137,7 @@ static void Multilevel_coarsen_internal(SparseMatrix A, SparseMatrix *cA, Sparse
     ia = A->ia;
     ja = A->ja;
     nc = nvset;
-    if ((ctrl->coarsen_mode == COARSEN_MODE_GENTLE && nc > ctrl->min_coarsen_factor*n) || nc < ctrl->minsize) {
+    if ((ctrl->coarsen_mode == COARSEN_MODE_GENTLE && nc > ctrl->min_coarsen_factor*n) || nc == n || nc < ctrl->minsize) {
 #ifdef DEBUG_PRINT
       if (Verbose)
         fprintf(stderr, "nc = %d, nf = %d, minsz = %d, coarsen_factor = %f coarsening stops\n",nc, n, ctrl->minsize, ctrl->min_coarsen_factor);

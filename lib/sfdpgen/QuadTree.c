@@ -477,12 +477,12 @@ static QuadTree QuadTree_add_internal(QuadTree q, real *coord, real weight, int 
 
   /* Make sure that coord is within bounding box */
   for (i = 0; i < q->dim; i++) {
-    if (coord[i] < q->center[i] - q->width - 1.e5*MACHINEACC || coord[i] > q->center[i] + q->width + 1.e5*MACHINEACC) {
+    if (coord[i] < q->center[i] - q->width - 1.e5*MACHINEACC*q->width || coord[i] > q->center[i] + q->width + 1.e5*MACHINEACC*q->width) {
 #ifdef DEBUG_PRINT
-      fprintf(stderr,"(q->center[i] - q->width) - coord[i] =%g, coord[i]-(q->center[i] + q->width) = %g\n",
+      fprintf(stderr,"coordinate %f is outside of the box:{%f, %f}, \n(q->center[i] - q->width) - coord[i] =%g, coord[i]-(q->center[i] + q->width) = %g\n",coord[i], (q->center[i] - q->width), (q->center[i] + q->width),
 	      (q->center[i] - q->width) - coord[i],  coord[i]-(q->center[i] + q->width));
 #endif
-      return NULL;
+      //return NULL;
     }
   }
 

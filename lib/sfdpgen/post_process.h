@@ -16,16 +16,21 @@
 
 #include "spring_electrical.h"
 
-enum {SM_SCHEME_NORMAL, SM_SCHEME_NORMAL_ELABEL, SM_SCHEME_UNIFORM_STRESS};
+enum {SM_SCHEME_NORMAL, SM_SCHEME_NORMAL_ELABEL, SM_SCHEME_UNIFORM_STRESS, SM_SCHEME_MAXENT, SM_SCHEME_STRESS_APPROX, SM_SCHEME_STRESS};
 
 struct StressMajorizationSmoother_struct {
-  SparseMatrix Lw;
-  SparseMatrix Lwd;
+  SparseMatrix D;/* distance matrix. The diagonal is removed hence the ia, ja structure is different from Lw and Lwd!! */
+  SparseMatrix Lw;/* the weighted laplacian. with offdiag = -1/w_ij */
+  SparseMatrix Lwd;/* the laplacian like matrix with offdiag = -scaling*d_ij/w_ij. RHS in stress majorization = Lwd.x */
   real* lambda;
   void (*data_deallocator)(void*);
   void *data;
   int scheme;
-  real scaling;/* scaling applied to the distance. need to divide coordinate at the end of the stress majorization process */
+  real scaling;/* scaling. It is multiplied to Lwd. need to divide coordinate x at the end of the stress majorization process */
+  real tol_cg;/* tolerance and maxit for conjugate gradient that solves the Laplacian system.
+		 typically the Laplacian only needs to be solved very crudely as it is part of an
+		 outer iteration.*/
+  int maxit_cg;
 };
 
 typedef struct StressMajorizationSmoother_struct *StressMajorizationSmoother;
@@ -74,12 +79,17 @@ typedef  StressMajorizationSmoother SparseStressMajorizationSmoother;
 
 void SparseStressMajorizationSmoother_delete(SparseStressMajorizationSmoother sm);
 
-enum {WEIGHTING_SCHEME_NONE, WEIGHTING_SCHEME_SQR_DIST};
-SparseStressMajorizationSmoother SparseStressMajorizationSmoother_new(SparseMatrix A, int dim, real lambda, real *x, int weighting_scheme);
+enum {WEIGHTING_SCHEME_NONE, WEIGHTING_SCHEME_INV_DIST, WEIGHTING_SCHEME_SQR_DIST};
+SparseStressMajorizationSmoother SparseStressMajorizationSmoother_new(SparseMatrix A, int dim, real lambda, real *x, 
+								      int weighting_scheme, int scale_initial_coord);
 
 real SparseStressMajorizationSmoother_smooth(SparseStressMajorizationSmoother sm, int dim, real *x, int maxit_sm, real tol);
 
 real get_stress(int m, int dim, int *iw, int *jw, real *w, real *d, real *x, real scaling, void *data, int weighted);
+
+real get_full_stress(SparseMatrix A, int dim, real *x, int weighting_scheme);
+void dump_distance_edge_length(char *outfile, SparseMatrix A, int dim, real *x);
+
 /*--------------------------------------------------------------*/
 
 #endif

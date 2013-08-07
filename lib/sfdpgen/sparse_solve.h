@@ -17,8 +17,7 @@
 
 #include "SparseMatrix.h"
 
-enum {SOLVE_METHOD_CG};
-
+enum {SOLVE_METHOD_CG, SOLVE_METHOD_JACOBI};
 
 typedef struct Operator_struct *Operator;
 

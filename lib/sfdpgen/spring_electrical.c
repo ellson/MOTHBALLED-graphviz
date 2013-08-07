@@ -76,22 +76,11 @@ void spring_electrical_control_delete(spring_electrical_control ctrl){
 }
 
 
-
-enum {MAX_I = 20, OPT_UP = 1, OPT_DOWN = -1, OPT_INIT = 0};
-struct oned_optimizer_struct{
-  int i;
-  real work[MAX_I+1];
-  int direction;
-};
-
-typedef struct oned_optimizer_struct *oned_optimizer;
-
-
-static void oned_optimizer_delete(oned_optimizer opt){
+void oned_optimizer_delete(oned_optimizer opt){
   FREE(opt);
 }
 
-static oned_optimizer oned_optimizer_new(int i){
+oned_optimizer oned_optimizer_new(int i){
   oned_optimizer opt;
   opt = MALLOC(sizeof(struct oned_optimizer_struct));
   opt->i = i;
@@ -99,7 +88,7 @@ static oned_optimizer oned_optimizer_new(int i){
   return opt;
 }
 
-static void oned_optimizer_train(oned_optimizer opt, real work){
+void oned_optimizer_train(oned_optimizer opt, real work){
   int i = opt->i;
  
   assert(i >= 0);
@@ -137,7 +126,7 @@ static void oned_optimizer_train(oned_optimizer opt, real work){
   }
 }
 
-static int oned_optimizer_get(oned_optimizer opt){
+int oned_optimizer_get(oned_optimizer opt){
   return opt->i;
 }
 
@@ -1729,7 +1718,7 @@ static void interpolate2(int dim, SparseMatrix A, real *x){
 
 */
 
-static void interpolate(int dim, SparseMatrix A, real *x){
+void interpolate_coord(int dim, SparseMatrix A, real *x){
   int i, j, k, *ia = A->ia, *ja = A->ja, nz;
   real alpha = 0.5, beta, *y;
 
@@ -1758,7 +1747,7 @@ static void prolongate(int dim, SparseMatrix A, SparseMatrix P, SparseMatrix R, 
 
   /* xu yao rao dong */
   if (coarsen_scheme_used > EDGE_BASED_STA && coarsen_scheme_used < EDGE_BASED_STO){
-    interpolate(dim, A, y);
+    interpolate_coord(dim, A, y);
     nc = R->m;
     ia = R->ia;
     ja = R->ja;
@@ -1852,11 +1841,10 @@ void pcp_rotate(int n, int dim, real *x){
  
 static void rotate(int n, int dim, real *x, real angle){
   int i, k;
-  real y[4], axis[2], center[2], x0, x1;
+  real axis[2], center[2], x0, x1;
   real radian = 3.14159/180;
 
   assert(dim == 2);
-  for (i = 0; i < dim*dim; i++) y[i] = 0;
   for (i = 0; i < dim; i++) center[i] = 0;
   for (i = 0; i < n; i++){
     for (k = 0; k < dim; k++){
@@ -2000,7 +1988,7 @@ static SparseMatrix shorting_edge_label_nodes(SparseMatrix A, int n_edge_label_n
 
 }
 
-void multilevel_spring_electrical_embedding(int dim, SparseMatrix A0, SparseMatrix D0, spring_electrical_control ctrl, real *node_weights, real *label_sizes, 
+static void multilevel_spring_electrical_embedding_core(int dim, SparseMatrix A0, SparseMatrix D0, spring_electrical_control ctrl, real *node_weights, real *label_sizes, 
 					    real *x, int n_edge_label_nodes, int *edge_label_nodes, int *flag){
   
 
@@ -2181,3 +2169,53 @@ void multilevel_spring_electrical_embedding(int dim, SparseMatrix A0, SparseMatr
   Multilevel_delete(grid0);
 }
 
+#ifdef GVIEWER
+struct multilevel_spring_electrical_embedding_data {
+  int dim;
+  SparseMatrix A;
+  SparseMatrix D;
+  spring_electrical_control ctrl;
+  real *node_weights;
+  real *label_sizes;
+  real *x;
+  int n_edge_label_nodes;
+  int *edge_label_nodes;
+  int *flag;
+};
+
+void multilevel_spring_electrical_embedding_gv(void* data){
+  struct multilevel_spring_electrical_embedding_data* d;
+
+  d = (struct multilevel_spring_electrical_embedding_data*) data;
+  multilevel_spring_electrical_embedding_core(d->dim, d->A, d->D, d->ctrl, d->node_weights, d->label_sizes, d->x, d->n_edge_label_nodes, d->edge_label_nodes, d->flag);
+  gviewer_reset_graph_coord(d->A, d->dim, d->x);/* A inside spring_electrical gets deleted */
+}
+void multilevel_spring_electrical_embedding(int dim, SparseMatrix A, SparseMatrix D, spring_electrical_control ctrl, real *node_weights, real *label_sizes, 
+				 real *x, int n_edge_label_nodes, int *edge_label_nodes, int *flag){
+  struct multilevel_spring_electrical_embedding_data data = {dim, A, D, ctrl, node_weights, label_sizes, x, n_edge_label_nodes, edge_label_nodes, flag};
+
+  int argcc = 1;
+  char **argvv;
+
+  if (!Gviewer) return multilevel_spring_electrical_embedding_core(dim, A, D, ctrl, node_weights, label_sizes, x, n_edge_label_nodes, edge_label_nodes, flag);
+
+  argcc = 1;
+  argvv = malloc(sizeof(char*)*argcc);
+  argvv[0] = malloc(sizeof(char));
+  argvv[0][0] = '1';
+
+  gviewer_set_edge_color_scheme(COLOR_SCHEME_NO);
+  //gviewer_set_edge_color_scheme(COLOR_SCHEME_MEDIAN_AS_GREEN);
+  gviewer_toggle_bgcolor();
+  //gviewer_toggle_vertex();
+  //gviewer_init(&argcc, argvv, 0.01, 20, 60, 2*1010, 2*770, A, dim, x, &(data), multilevel_spring_electrical_embedding_gv);
+  gviewer_init(&argcc, argvv, 0.01, 20, 60, 320, 320, A, dim, x, &(data), multilevel_spring_electrical_embedding_gv);
+  free(argvv);
+
+}
+#else
+void multilevel_spring_electrical_embedding(int dim, SparseMatrix A, SparseMatrix D, spring_electrical_control ctrl, real *node_weights, real *label_sizes, 
+				 real *x, int n_edge_label_nodes, int *edge_label_nodes, int *flag){
+  return multilevel_spring_electrical_embedding_core(dim, A, D, ctrl, node_weights, label_sizes, x, n_edge_label_nodes, edge_label_nodes, flag);
+}
+#endif

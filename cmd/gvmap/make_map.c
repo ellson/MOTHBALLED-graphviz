@@ -62,7 +62,8 @@ void improve_contiguity(int n, int dim, int *grouping, SparseMatrix poly_point_m
      poly_point_map: a matrix of dimension npolys x (n + nrandom), poly_point_map[i,j] != 0 if polygon i contains the point j.
      .  If j < n, it is the original point, otherwise it is artificial point (forming the rectangle around a label) or random points.
   */
-  int i, j, *ia, *ja, *ib, *jb, u, v;
+  int i, j, *ia, *ja, u, v;
+  //int *ib, *jb;
   real *a;
   SparseMatrix point_poly_map, D;
   real dist;
@@ -79,8 +80,8 @@ void improve_contiguity(int n, int dim, int *grouping, SparseMatrix poly_point_m
   /* point_poly_map: each row i has only 1 entry at column j, which says that point i is in polygon j */
   point_poly_map = SparseMatrix_transpose(poly_point_map);
 
-  ib = point_poly_map->ia;
-  jb = point_poly_map->ja;
+  //  ib = point_poly_map->ia;
+  //  jb = point_poly_map->ja;
 
 
   for (i = 0; i < n; i++){
@@ -109,7 +110,7 @@ void improve_contiguity(int n, int dim, int *grouping, SparseMatrix poly_point_m
   }
 
   if (Verbose || 1) fprintf(stderr,"ratio (edges among discontigous regions vs total edges)=%f\n",((real) nbad)/ia[n]);
-  stress_model(dim, D, &x, maxit, tol, &flag);
+  stress_model(dim, D, D, &x, FALSE, maxit, tol, &flag);
 
   assert(!flag);
 
@@ -689,13 +690,13 @@ void processing_one_poly(FILE *f, int use_line, real line_width, int fill, int c
 }
 
 
-void plot_dot_polygons(char **sbuff, int *len, int *len_max, real line_width, char *line_color, SparseMatrix polys, real *x_poly, int *polys_groups, float *r, float *g, float *b, char* opacity){
+void plot_dot_polygons(char **sbuff, int *len, int *len_max, real line_width, char *line_color, SparseMatrix polys, real *x_poly, int *polys_groups, float *r, float *g, float *b, char *opacity){
   int i, j, *ia = polys->ia, *ja = polys->ja, *a = (int*) polys->a, npolys = polys->m, nverts = polys->n, ipoly,first;
   int np = 0, maxlen = 0;
   float *xp, *yp;
   int fill = -1, close = 1;
   int is_river = FALSE;
-  char cstring[] = "#00000011";
+  char cstring[] = "#aaaaaaff";
   int use_line = (line_width >= 0);
   
   for (i = 0; i < npolys; i++) maxlen = MAX(maxlen, ia[i+1]-ia[i]);
@@ -778,7 +779,7 @@ void plot_processing_polygons(FILE *f, real line_width, SparseMatrix polys, real
 
 
 void plot_dot_map(Agraph_t* gr, int n, int dim, real *x, SparseMatrix polys, SparseMatrix poly_lines, real line_width, char *line_color, real *x_poly, int *polys_groups, char **labels, real *width,
-		 float *fsz, float *r, float *g, float *b, char* opacity, char *plot_label, real *bg_color, SparseMatrix A, FILE* f){
+		  float *fsz, float *r, float *g, float *b, char* opacity, char *plot_label, real *bg_color, SparseMatrix A, FILE* f){
   /* if graph object exist, we just modify some attributes, otherwise we dump the whole graph */
   int plot_polyQ = TRUE;
   char *sbuff;
@@ -2087,7 +2088,7 @@ int make_map_from_rectangle_groups(int exclude_random, int include_OK_points,
      .        If nrandom = 0, no points are inserted, if nrandom < 0, the number is decided automatically.
      .        On exit, it is the actual number of random points used. The last 4 "random" points is always the
      .        
-     nart: on entry, number of artificla points to be added along rach side of a rectangle enclosing the labels
+     nart: on entry, number of artificla points to be added along rach side of a rectangle enclosing the labels. if < 0, auto-selected.
      . On exit, actual number of artificial points added.
      nedgep: number of artificial points are adding along edges to establish as much as possible a bright between nodes 
      .       connected by the edge, and avoid islands that are connected. k = 0 mean no points.

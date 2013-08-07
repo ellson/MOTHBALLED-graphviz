@@ -27,7 +27,7 @@ enum {QUAD_TREE_HYBRID_SIZE = 10000};
 
 enum {QUAD_TREE_NONE = 0, QUAD_TREE_NORMAL, QUAD_TREE_FAST, QUAD_TREE_HYBRID};
 
-enum {METHOD_SPRING_ELECTRICAL = 0, METHOD_SPRING_MAXENT, METHOD_STRESS, METHOD_UNIFORM_STRESS};
+enum {METHOD_STA = -1, METHOD_SPRING_ELECTRICAL, METHOD_SPRING_MAXENT, METHOD_STRESS_MAXENT, METHOD_STRESS_APPROX, METHOD_STRESS, METHOD_UNIFORM_STRESS, METHOD_FULL_STRESS, METHOD_NONE, METHOD_STO};
 
 struct spring_electrical_control_struct {
   real p;/*a negativve real number default to -1. repulsive force = dist^p */
@@ -60,7 +60,7 @@ struct spring_electrical_control_struct {
   real rotation;/* degree of rotation */
   int edge_labeling_scheme; /* specifying whether to treat node of the form |edgelabel|* as a special node representing an edge label. 
 			       0 (no action, default), 1 (penalty based method to make that kind of node close to the center of its neighbor), 
-		       1 (penalty based method to make that kind of node close to the old center of its neighbor),
+			       1 (penalty based method to make that kind of node close to the old center of its neighbor),
 			       3 (two step process of overlap removal and straightening) */
 };
 
@@ -83,4 +83,18 @@ real average_edge_length(SparseMatrix A, int dim, real *coord);
 void spring_electrical_spring_embedding(int dim, SparseMatrix A, SparseMatrix D, spring_electrical_control ctrl, real *node_weights, real *x, int *flag);
 void force_print(FILE *fp, int n, int dim, real *x, real *force);
 
+enum {MAX_I = 20, OPT_UP = 1, OPT_DOWN = -1, OPT_INIT = 0};
+struct oned_optimizer_struct{
+  int i;
+  real work[MAX_I+1];
+  int direction;
+};
+typedef struct oned_optimizer_struct *oned_optimizer;
+void oned_optimizer_delete(oned_optimizer opt);
+oned_optimizer oned_optimizer_new(int i);
+void oned_optimizer_train(oned_optimizer opt, real work);
+int oned_optimizer_get(oned_optimizer opt);
+void interpolate_coord(int dim, SparseMatrix A, real *x);
+int power_law_graph(SparseMatrix A);
+void pcp_rotate(int n, int dim, real *x);
 #endif

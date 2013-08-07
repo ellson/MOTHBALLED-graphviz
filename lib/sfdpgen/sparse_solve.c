@@ -75,7 +75,7 @@ real *Operator_matmul_apply(Operator o, real *x, real *y){
 Operator Operator_matmul_new(SparseMatrix A){
   Operator o;
 
-  o = N_GNEW(1,struct Operator_struct);
+  o = GNEW(struct Operator_struct);
   o->data = (void*) A;
   o->Operator_apply = Operator_matmul_apply;
   return o;
@@ -176,8 +176,8 @@ static real conjugate_gradient(Operator A, Operator precon, int n, real *x, real
 
   res0 = res = sqrt(vector_product(n, r, r))/n;
 #ifdef DEBUG_PRINT
-    if (Verbose && 0){
-      fprintf(stderr, "   cg iter = %d, residual = %g\n", iter, res);
+    if (Verbose){
+      fprintf(stderr, "on entry, cg iter = %d of %d, residual = %g, tol = %g\n", iter, maxit, res, tol);
     }
 #endif
 
@@ -203,7 +203,7 @@ static real conjugate_gradient(Operator A, Operator precon, int n, real *x, real
 
 #ifdef DEBUG_PRINT
     if (Verbose && 0){
-      fprintf(stderr, "   cg iter = %d, residual = %g\n", iter, res);
+      fprintf(stderr, "   cg iter = %d, residual = %g, relative res = %g\n", iter, res, res/res0);
     }
 #endif
 
@@ -217,8 +217,8 @@ static real conjugate_gradient(Operator A, Operator precon, int n, real *x, real
 #endif
 
 #ifdef DEBUG_PRINT
-  if (Verbose && 0){
-    fprintf(stderr, "   cg iter = %d, residual = %g\n", iter, res);
+  if (Verbose){
+    fprintf(stderr, "   cg iter = %d, residual = %g, relative res = %g\n", iter, res, res/res0);
   }
 #endif
   return res;
@@ -246,6 +246,53 @@ real cg(Operator Ax, Operator precond, int n, int dim, real *x0, real *rhs, real
 
 }
 
+real* jacobi(SparseMatrix A, int dim, real *x0, real *rhs, int maxit, int *flag){
+  /* maxit iteration of jacobi */
+  real *x, *y, *b, sum, diag, *a;
+  int k, i, j, n = A->n, *ia, *ja, iter;
+  x = MALLOC(sizeof(real)*n);
+  y = MALLOC(sizeof(real)*n);
+  b = MALLOC(sizeof(real)*n);
+  assert(A->type = MATRIX_TYPE_REAL);
+  ia = A->ia; ja = A->ja; a = (real*) A->a;
+
+  for (k = 0; k < dim; k++){
+    for (i = 0; i < n; i++) {
+      x[i] = x0[i*dim+k];
+      b[i] = rhs[i*dim+k];
+    }
+
+    for (iter = 0; iter < maxit; iter++){
+      for (i = 0; i < n; i++){
+	sum = 0; diag = 0;
+	for (j = ia[i]; j < ia[i+1]; j++){
+	  if (ja[j] != i){
+	    sum += a[j]*x[ja[j]];
+	  } else {
+	    diag = a[j];
+	  }
+	}
+	if (sum == 0) fprintf(stderr,"neighb=%d\n",ia[i+1]-ia[i]);
+	assert(diag != 0);
+	y[i] = (b[i] - sum)/diag;
+
+      }
+      MEMCPY(x, y, sizeof(real)*n);
+    }
+
+    for (i = 0; i < n; i++) {
+      rhs[i*dim+k] = x[i];
+    }
+  }
+
+
+  FREE(x);
+  FREE(y);
+  FREE(b);
+  return rhs;
+
+}
+
 real SparseMatrix_solve(SparseMatrix A, int dim, real *x0, real *rhs, real tol, int maxit, int method, int *flag){
   Operator Ax, precond;
   int n = A->m;
@@ -260,6 +307,10 @@ real SparseMatrix_solve(SparseMatrix A, int dim, real *x0, real *rhs, real tol, 
     Operator_matmul_delete(Ax);
     Operator_diag_precon_delete(precond);
     break;
+  case SOLVE_METHOD_JACOBI:{
+    jacobi(A, dim, x0, rhs, maxit, flag);
+    break;
+  }
   default:
     assert(0);
     break;

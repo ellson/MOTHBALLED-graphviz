@@ -99,7 +99,7 @@ static real *getPos(Agraph_t * g, spring_electrical_control ctrl)
 }
 
 static void sfdpLayout(graph_t * g, spring_electrical_control ctrl,
-		       pointf pad)
+		       int hops, pointf pad)
 {
     real *sizes;
     real *pos;
@@ -133,9 +133,29 @@ static void sfdpLayout(graph_t * g, spring_electrical_control ctrl,
 	uniform_stress(Ndim, A, pos, &flag);
 	break;
     case METHOD_STRESS:{
-	int maxit = 1000;
+	int maxit = 200;
 	real tol = 0.001;
-	stress_model(Ndim, A, &pos, maxit, tol, &flag);
+	int weighted = TRUE;
+
+	if (!D){
+	    D = SparseMatrix_get_real_adjacency_matrix_symmetrized(A);/* all distance 1 */
+	    weighted = FALSE;
+	} else {
+	    D = SparseMatrix_symmetrize_nodiag(D, FALSE);
+	    weighted = TRUE;
+	}
+	if (hops > 0){
+	    SparseMatrix DD;
+	    DD = SparseMatrix_distance_matrix_khops(hops, D, weighted);
+	    if (Verbose){
+		fprintf(stderr,"extracted a %d-neighborhood graph of %d edges from a graph of %d edges\n",
+		    hops, (DD->nz)/2, (D->nz/2));
+	    }
+	    SparseMatrix_delete(D);
+	    D = DD;
+	}
+
+	stress_model(Ndim, A, D, &pos, TRUE, maxit, tol, &flag);
 	}
 	break;
     }
@@ -319,6 +339,7 @@ void sfdp_layout(graph_t * g)
 {
     int doAdjust;
     adjust_data am;
+    int hops = -1;
     sfdp_init_graph(g);
     doAdjust = (Ndim == 2);
 
@@ -358,7 +379,7 @@ void sfdp_layout(graph_t * g)
 
 	ccs = ccomps(g, &ncc, 0);
 	if (ncc == 1) {
-	    sfdpLayout(g, ctrl, pad);
+	    sfdpLayout(g, ctrl, hops, pad);
 	    if (doAdjust) removeOverlapWith(g, &am);
 	    spline_edges(g);
 	} else {
@@ -369,7 +390,7 @@ void sfdp_layout(graph_t * g)
 	    for (i = 0; i < ncc; i++) {
 		sg = ccs[i];
 		nodeInduce(sg);
-		sfdpLayout(sg, ctrl, pad);
+		sfdpLayout(sg, ctrl, hops, pad);
 		if (doAdjust) removeOverlapWith(sg, &am);
 		setEdgeType(sg, ET_LINE);
 		spline_edges(sg);

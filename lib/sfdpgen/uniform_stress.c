@@ -1,3 +1,16 @@
+/* $Id$ $Revision$ */
+/* vim:set shiftwidth=4 ts=8: */
+
+/*************************************************************************
+ * Copyright (c) 2011 AT&T Intellectual Property 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: See CVS logs. Details at http://www.graphviz.org/
+ *************************************************************************/
+
 #include "general.h"
 #include "SparseMatrix.h"
 #include "spring_electrical.h"
@@ -6,6 +19,13 @@
 #include <time.h>
 #include "uniform_stress.h"
 
+/* uniform stress solves the model:
+
+\Sum_{i<->j} (||x_i-x_j||-1)^2 + alpha * \Sum_{i!=j} (||x_i-x_j||^2-M)^2
+
+This is somewhat similar to the binary stress model
+
+*/
 
 UniformStressSmoother UniformStressSmoother_new(int dim, SparseMatrix A, real *x, real alpha, real M, int *flag){
   UniformStressSmoother sm;
@@ -24,6 +44,8 @@ UniformStressSmoother UniformStressSmoother_new(int dim, SparseMatrix A, real *x
   ((real*) sm->data)[0] = alpha;
   ((real*) sm->data)[1] = M;
   sm->data_deallocator = FREE;
+  sm->tol_cg = 0.01;
+  sm->maxit_cg = sqrt((double) A->m);
 
   /* Lw and Lwd have diagonals */
   sm->Lw = SparseMatrix_new(m, m, A->nz + m, MATRIX_TYPE_REAL, FORMAT_CSR);
@@ -109,7 +131,6 @@ extern void scale_to_box(real xmin, real ymin, real xmax, real ymax, int n, int 
 void uniform_stress(int dim, SparseMatrix A, real *x, int *flag){
   UniformStressSmoother sm;
   real lambda0 = 10.1, M = 100, scaling = 1.;
-  real res;
   int maxit = 300, samepoint = TRUE, i, k, n = A->m;
   SparseMatrix B = NULL;
 
@@ -143,19 +164,19 @@ void uniform_stress(int dim, SparseMatrix A, real *x, int *flag){
   assert(SparseMatrix_is_symmetric(B, FALSE));
 
   sm = UniformStressSmoother_new(dim, B, x, 1000000*lambda0, M, flag);
-  res = UniformStressSmoother_smooth(sm, dim, x, maxit);
+  UniformStressSmoother_smooth(sm, dim, x, maxit);
   UniformStressSmoother_delete(sm);
 
   sm = UniformStressSmoother_new(dim, B, x, 10000*lambda0, M, flag);
-  res = UniformStressSmoother_smooth(sm, dim, x, maxit);
+  UniformStressSmoother_smooth(sm, dim, x, maxit);
   UniformStressSmoother_delete(sm);
 
   sm = UniformStressSmoother_new(dim, B, x, 100*lambda0, M, flag);
-  res = UniformStressSmoother_smooth(sm, dim, x, maxit);
+  UniformStressSmoother_smooth(sm, dim, x, maxit);
   UniformStressSmoother_delete(sm);
 
   sm = UniformStressSmoother_new(dim, B, x, lambda0, M, flag);
-  res = UniformStressSmoother_smooth(sm, dim, x, maxit);
+  UniformStressSmoother_smooth(sm, dim, x, maxit);
   UniformStressSmoother_delete(sm);
 
   scale_to_box(0,0,7*70,10*70,A->m,dim,x);;
