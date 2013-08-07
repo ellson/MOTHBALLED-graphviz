@@ -17,6 +17,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include "gvplugin_render.h"
+#include "agxbuf.h"
+#include "utils.h"
 #include "gvplugin_textlayout.h"
 
 #ifdef HAVE_PANGOCAIRO
@@ -175,36 +178,39 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 
 #ifdef ENABLE_PANGO_MARKUP
     if ((para->font) && (flags = para->font->flags)) {
-	char* markup = N_NEW(strlen(para->str) + sizeof(FULL_MARKUP), char);
-	strcpy(markup,"<span");
+	unsigned char buf[BUFSIZ];
+	agxbuf xb;
+
+	agxbinit(&xb, BUFSIZ, buf);
+	agxbput(&xb,"<span");
 
 	if (flags & HTML_BF)
-	    strcat(markup," weight=\"bold\"");
+	    agxbput(&xb," weight=\"bold\"");
 	if (flags & HTML_IF)
-	    strcat(markup," style=\"italic\"");
+	    agxbput(&xb," style=\"italic\"");
 	if (flags & HTML_UL)
-	    strcat(markup," underline=\"single\"");
-	strcat (markup,">");
+	    agxbput(&xb," underline=\"single\"");
+	agxbput (&xb,">");
 
 	if (flags & HTML_SUP)
-	    strcat(markup,"<sup>");
+	    agxbput(&xb,"<sup>");
 	if (flags & HTML_SUB)
-	    strcat(markup,"<sub>");
+	    agxbput(&xb,"<sub>");
 
-	strcat (markup,para->str);
+	agxbput (&xb,xml_string(para->str));
 
 	if (flags & HTML_SUB)
-	    strcat(markup,"</sub>");
+	    agxbput(&xb,"</sub>");
 	if (flags & HTML_SUP)
-	    strcat(markup,"</sup>");
+	    agxbput(&xb,"</sup>");
 
-	strcat (markup,"</span>");
-	if (!pango_parse_markup (markup, -1, 0, &attrs, &text, NULL, &error)) {
+	agxbput (&xb,"</span>");
+	if (!pango_parse_markup (agxbuse(&xb), -1, 0, &attrs, &text, NULL, &error)) {
 	    fprintf (stderr, "Error - pango_parse_markup: %s\n", error->message);
 	    text = para->str;
 	    attrs = NULL;
 	}
-	free (markup);
+	agxbfree (&xb);
     }
     else {
 	text = para->str;
