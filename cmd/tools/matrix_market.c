@@ -272,7 +272,7 @@ SparseMatrix SparseMatrix_import_matrix_market(FILE * f, int format)
 
 	if (format == FORMAT_CSR) {
 	    A = SparseMatrix_from_coordinate_arrays(nz, m, n, I, J, vp,
-						    type);
+						    type, sizeof(real));
 	} else {
 	    A = SparseMatrix_new(m, n, 1, type, FORMAT_COORD);
 	    A = SparseMatrix_coordinate_form_add_entries(A, nz, I, J, vp);

@@ -18,9 +18,10 @@
 
 #define SYMMETRY_EPSILON 0.0000001
 enum {FORMAT_CSC, FORMAT_CSR, FORMAT_COORD};
-enum {UNMASKED = -10};
+enum {UNMASKED = -10, MASKED = 1};
 enum {MATRIX_PATTERN_SYMMETRIC = 1<<0, MATRIX_SYMMETRIC = 1<<1, MATRIX_SKEW = 1<<2, MATRIX_HERMITIAN = 1<<3, MATRIX_UNDIRECTED = 1<<4};
 enum {BIPARTITE_RECT = 0, BIPARTITE_PATTERN_UNSYM, BIPARTITE_UNSYM, BIPARTITE_ALWAYS};
+
 
 struct SparseMatrix_struct {
   int m; /* row dimension */
@@ -33,19 +34,25 @@ struct SparseMatrix_struct {
   void *a; /* entry values. If NULL, pattern matrix */
   int format;/* whether it is CSR, CSC, COORD. By default it is in CSR format */
   int property; /* pattern_symmetric/symmetric/skew/hermitian*/
+  int size;/* size of each entry. This allows for general matrix where each entry is, say, a matrix itself */
 };
 
 typedef struct SparseMatrix_struct* SparseMatrix;
 
 enum {MATRIX_TYPE_REAL = 1<<0, MATRIX_TYPE_COMPLEX = 1<<1, MATRIX_TYPE_INTEGER = 1<<2, MATRIX_TYPE_PATTERN = 1<<3, MATRIX_TYPE_UNKNOWN = 1<<4};
 
+/* SparseMatrix_general is more general and allow elements to be 
+   any data structure, not just real/int/complex etc */
 SparseMatrix SparseMatrix_new(int m, int n, int nz, int type, int format);
+SparseMatrix SparseMatrix_general_new(int m, int n, int nz, int type, size_t sz, int format);
 
+/* this version sum repeated entries */
 SparseMatrix SparseMatrix_from_coordinate_format(SparseMatrix A);
+/* what_to_sum is SUM_REPEATED_NONE, SUM_REPEATED_ALL, SUM_REPEATED_REAL_PART, SUM_REPEATED_IMAGINARY_PART*/
 SparseMatrix SparseMatrix_from_coordinate_format_not_compacted(SparseMatrix A, int what_to_sum);
 
-SparseMatrix SparseMatrix_from_coordinate_arrays(int nz, int m, int n, int *irn, int *jcn, void *val, int type);
-SparseMatrix SparseMatrix_from_coordinate_arrays_not_compacted(int nz, int m, int n, int *irn, int *jcn, void *val, int type, int what_to_sum);
+SparseMatrix SparseMatrix_from_coordinate_arrays(int nz, int m, int n, int *irn, int *jcn, void *val, int type, size_t sz);
+SparseMatrix SparseMatrix_from_coordinate_arrays_not_compacted(int nz, int m, int n, int *irn, int *jcn, void *val, int type, size_t sz, int what_to_sum);
 
 
 void SparseMatrix_print(char *, SparseMatrix A);/*print to stdout in Mathematica format*/
@@ -96,6 +103,7 @@ real SparseMatrix_pseudo_diameter_only(SparseMatrix A);
 real SparseMatrix_pseudo_diameter_weighted(SparseMatrix A0, int root, int aggressive, int *end1, int *end2, int *connectedQ); /* assume real distances, unsymmetric matrix ill be symmetrized */
 real SparseMatrix_pseudo_diameter_unweighted(SparseMatrix A0, int root, int aggressive, int *end1, int *end2, int *connectedQ); /* assume unit edge length, unsymmetric matrix ill be symmetrized */
 void SparseMatrix_level_sets(SparseMatrix A, int root, int *nlevel, int **levelset_ptr, int **levelset, int **mask, int reintialize_mask);
+void SparseMatrix_level_sets_khops(int khops, SparseMatrix A, int root, int *nlevel, int **levelset_ptr, int **levelset, int **mask, int reintialize_mask);
 void SparseMatrix_weakly_connected_components(SparseMatrix A0, int *ncomp, int **comps, int **comps_ptr);
 void SparseMatrix_decompose_to_supervariables(SparseMatrix A, int *ncluster, int **cluster, int **clusterp);
 SparseMatrix SparseMatrix_get_submatrix(SparseMatrix A, int nrow, int ncol, int *rindices, int *cindices);
@@ -120,6 +128,29 @@ SparseMatrix SparseMatrix_sort(SparseMatrix A);
 SparseMatrix SparseMatrix_set_entries_to_real_one(SparseMatrix A);
 
 SparseMatrix SparseMatrix_complement(SparseMatrix A, int undirected);
+
+int SparseMatrix_k_centers(SparseMatrix D, int weighted, int K, int root, 
+			  int **centers, int centering, real **dist);
+
+int SparseMatrix_k_centers_user(SparseMatrix D, int weighted, int K, 
+				int *centers_user, int centering, real **dist);
+
+SparseMatrix SparseMatrix_distance_matrix_k_centers(int K, SparseMatrix D, int weighted);
+
+int SparseMatrix_distance_matrix(SparseMatrix A, int weighted,  real **dist_matrix);
+SparseMatrix SparseMatrix_distance_matrix_khops(int khops, SparseMatrix A, int weighted);
+SparseMatrix SparseMatrix_distance_matrix_k_centers(int K, SparseMatrix D, int weighted);
+
+void SparseMatrix_kcoreness(SparseMatrix A, int **coreness);/* assign coreness to each node */
+void SparseMatrix_kcore_decomposition(SparseMatrix A, int *coreness_max0, int **coreness_ptr0, int **coreness_list0);/* return the decomposition */
+
+void SparseMatrix_khairness(SparseMatrix A, int **hairness);/* assign hairness to each node */
+void SparseMatrix_khair_decomposition(SparseMatrix A, int *hairness_max0, int **hairness_ptr0, int **hairness_list0);/* return the decomposition */
+
+SparseMatrix SparseMatrix_from_dense(int m, int n, real *x);
+
+void SparseMatrix_page_rank(SparseMatrix A, real teleport_probablity, int weighted, real epsilon, real **page_rank);
+
 
 #define SparseMatrix_set_undirected(A) set_flag((A)->property, MATRIX_UNDIRECTED)
 #define SparseMatrix_set_symmetric(A) set_flag((A)->property, MATRIX_SYMMETRIC)

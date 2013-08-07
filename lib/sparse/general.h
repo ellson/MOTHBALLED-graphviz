@@ -85,7 +85,9 @@ extern real drand(void);
 extern int *random_permutation(int n);/* random permutation of 0 to n-1 */
 
 
-real* vector_subtract_to(int n, real *x, real *y);
+real* vector_subtract_to(int n, real *x, real *y);/* y = x-y */
+real* vector_subtract_from(int n, real *x, real *y);/* y = y-x */
+real* vector_add_to(int n, real *x, real *y);
 
 real vector_product(int n, real *x, real *y);
 
@@ -106,6 +108,8 @@ void vector_float_take(int n, float *v, int m, int *p, float **u);
 void vector_ordering(int n, real *v, int **p, int ascending);
 void vector_sort_real(int n, real *v, int ascending);
 void vector_sort_int(int n, int *v, int ascending);
+real vector_median(int n, real *x);
+real vector_percentile(int n, real *x, real y);/* find the value such that y% of element of vector x is <= that value.*/
 
 void vector_print(char *s, int n, real *x);
 

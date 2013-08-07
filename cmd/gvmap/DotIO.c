@@ -82,6 +82,7 @@ SparseMatrix_import_dot (Agraph_t* g, int dim, real **label_sizes, real **x, int
   real *val, *valD = NULL;
   real v;
   int type = MATRIX_TYPE_REAL;
+  size_t sz = sizeof(real);
   real padding = 10;
   int nedge_nodes = 0;
 
@@ -199,10 +200,10 @@ SparseMatrix_import_dot (Agraph_t* g, int dim, real **label_sizes, real **x, int
     }
   }
 
-  A = SparseMatrix_from_coordinate_arrays(nedges, nnodes, nnodes, I, J, val, type);
+  A = SparseMatrix_from_coordinate_arrays(nedges, nnodes, nnodes, I, J, val, type, sz);
   if (edge_label_nodes) *n_edge_label_nodes = nedge_nodes;
 
-  if (D) *D = SparseMatrix_from_coordinate_arrays(nedges, nnodes, nnodes, I, J, valD, type);
+  if (D) *D = SparseMatrix_from_coordinate_arrays(nedges, nnodes, nnodes, I, J, valD, type, sz);
 
   FREE(I);
   FREE(J);
@@ -567,6 +568,7 @@ SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim
   real* val;
   real v;
   int type = MATRIX_TYPE_REAL;
+  size_t sz = sizeof(real);
   char scluster[100];
   float ff;
   real* areap = NULL;
@@ -644,7 +646,7 @@ SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim
       i++;
     }
   }
-  A = SparseMatrix_from_coordinate_arrays(nedges, nnodes, nnodes, I, J, val, type);
+  A = SparseMatrix_from_coordinate_arrays(nedges, nnodes, nnodes, I, J, val, type, sz);
 
   /* get clustering info */
   *clusters = MALLOC(sizeof(int)*nnodes);
@@ -846,6 +848,7 @@ void attached_clustering(Agraph_t* g, int maxcluster, int clustering_scheme){
   real* val;
   real v;
   int type = MATRIX_TYPE_REAL;
+  size_t sz = sizeof(real);
   char scluster[100];
 
 
@@ -886,7 +889,7 @@ void attached_clustering(Agraph_t* g, int maxcluster, int clustering_scheme){
       i++;
     }
   }
-  A = SparseMatrix_from_coordinate_arrays(nedges, nnodes, nnodes, I, J, val, type);
+  A = SparseMatrix_from_coordinate_arrays(nedges, nnodes, nnodes, I, J, val, type, sz);
 
   clusters = MALLOC(sizeof(int)*nnodes);
 

@@ -487,7 +487,7 @@ static void get_edge_label_matrix(relative_position_constraints data, int m, int
 	}
       }
     }
-    Lc = SparseMatrix_from_coordinate_arrays(nz, m, m, irn, jcn, val, MATRIX_TYPE_REAL);
+    Lc = SparseMatrix_from_coordinate_arrays(nz, m, m, irn, jcn, val, MATRIX_TYPE_REAL, sizeof(real));
   } else if (edge_labeling_scheme == ELSCHEME_PENALTY2 || edge_labeling_scheme == ELSCHEME_STRAIGHTLINE_PENALTY2){
     /* for an node with two neighbors j--i--k, and assume i needs to be between the old position of j and k, then the contribution to P is
        1/d_jk, and to the right hand side: {0,...,average_position_of_i's neighbor if i is an edge node,...}
@@ -517,7 +517,7 @@ static void get_edge_label_matrix(relative_position_constraints data, int m, int
 	x00[ii*dim+l] *= constr_penalty/(dist)/(ia[ii+1] - ia[ii]);
       }
     }
-    Lc = SparseMatrix_from_coordinate_arrays(nz, m, m, irn, jcn, val, MATRIX_TYPE_REAL);
+    Lc = SparseMatrix_from_coordinate_arrays(nz, m, m, irn, jcn, val, MATRIX_TYPE_REAL, sizeof(real));
     
   }
   *LL = Lc;

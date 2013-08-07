@@ -1991,7 +1991,7 @@ static SparseMatrix shorting_edge_label_nodes(SparseMatrix A, int n_edge_label_n
     }
   }
 
-  B = SparseMatrix_from_coordinate_arrays(nz, id, id, irn, jcn, NULL, MATRIX_TYPE_PATTERN);
+  B = SparseMatrix_from_coordinate_arrays(nz, id, id, irn, jcn, NULL, MATRIX_TYPE_PATTERN, sizeof(real));
 
   FREE(irn);
   FREE(jcn);

@@ -1043,7 +1043,7 @@ static void Multilevel_coarsen_internal(SparseMatrix A, SparseMatrix *cA, Sparse
      }
     }
     assert(nzc == n);
-    *P = SparseMatrix_from_coordinate_arrays(nzc, n, nc, irn, jcn, (void *) val, MATRIX_TYPE_REAL);
+    *P = SparseMatrix_from_coordinate_arrays(nzc, n, nc, irn, jcn, (void *) val, MATRIX_TYPE_REAL, sizeof(real));
     *R = SparseMatrix_transpose(*P);
 
     *cD = DistanceMatrix_restrict_cluster(ncluster, clusterp, cluster, *P, *R, D);
@@ -1107,7 +1107,7 @@ static void Multilevel_coarsen_internal(SparseMatrix A, SparseMatrix *cA, Sparse
     }
     assert(nc == nmatch);
     assert(nzc == n);
-    *P = SparseMatrix_from_coordinate_arrays(nzc, n, nc, irn, jcn, (void *) val, MATRIX_TYPE_REAL);
+    *P = SparseMatrix_from_coordinate_arrays(nzc, n, nc, irn, jcn, (void *) val, MATRIX_TYPE_REAL, sizeof(real));
     *R = SparseMatrix_transpose(*P);
     *cA = SparseMatrix_multiply3(*R, A, *P); 
     /*
@@ -1172,7 +1172,7 @@ static void Multilevel_coarsen_internal(SparseMatrix A, SparseMatrix *cA, Sparse
       }
     }
 
-    *P = SparseMatrix_from_coordinate_arrays(nzc, n, nc, irn, jcn, (void *) val, MATRIX_TYPE_REAL);
+    *P = SparseMatrix_from_coordinate_arrays(nzc, n, nc, irn, jcn, (void *) val, MATRIX_TYPE_REAL, sizeof(real));
     *R = SparseMatrix_transpose(*P);
     *cA = SparseMatrix_multiply3(*R, A, *P); 
     if (!*cA) goto RETURN;

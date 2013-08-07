@@ -765,9 +765,9 @@ SparseMatrix makeMatrix(Agraph_t* g, int dim, SparseMatrix *D)
     }
 
     A = SparseMatrix_from_coordinate_arrays(nedges, nnodes, nnodes, I, J,
-					    val, type);
+					    val, type, sizeof(real));
 
-    if (D) *D = SparseMatrix_from_coordinate_arrays(nedges, nnodes, nnodes, I, J, valD, type);
+    if (D) *D = SparseMatrix_from_coordinate_arrays(nedges, nnodes, nnodes, I, J, valD, type, sizeof(real));
 
     free(I);
     free(J);
