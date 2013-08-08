@@ -153,6 +153,7 @@ mm2gv_SOURCES = mm2gv.c matrix_market.c mmio.c
 
 mm2gv_LDADD = \
     $(top_builddir)/lib/common/libcommon_C.la \
+	$(top_builddir)/lib/sfdpgen/libsfdpgen_C.la \
 	$(top_builddir)/lib/sparse/libsparse_C.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la @MATH_LIBS@
 

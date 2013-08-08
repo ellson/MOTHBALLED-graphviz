@@ -3,6 +3,7 @@
 
 AM_CPPFLAGS = \
         -I$(top_srcdir) \
+	-I$(top_srcdir)/lib/sfdpgen \ 
 	-I$(top_srcdir)/lib/common 
 
 noinst_HEADERS = SparseMatrix.h general.h BinaryHeap.h IntStack.h
