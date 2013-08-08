@@ -1427,8 +1427,9 @@ static void emit_xdot (GVJ_t * job, xdot* xd)
     double fontsize;
     char* fontname;
     exdot_op* op;
-    int i;
+    int i, angle;
     char** styles = 0;
+    int filled = FILL;
 
     op = (exdot_op*)(xd->ops);
     for (i = 0; i < xd->cnt; i++) {
@@ -1440,21 +1441,21 @@ static void emit_xdot (GVJ_t * job, xdot* xd)
 		pts[0].y = op->op.u.ellipse.y - op->op.u.ellipse.h;
 		pts[1].x = op->op.u.ellipse.w;
 		pts[1].y = op->op.u.ellipse.h;
-		gvrender_ellipse(job, pts, 2, op->op.kind == xd_filled_ellipse);
+		gvrender_ellipse(job, pts, 2, (op->op.kind == xd_filled_ellipse?filled:0));
 	    }
 	    break;
 	case xd_filled_polygon :
 	case xd_unfilled_polygon :
     	    if (boxf_overlap(op->bb, job->clip)) {
 		pts = copyPts (pts, &ptsize, op->op.u.polygon.pts, op->op.u.polygon.cnt);
-		gvrender_polygon(job, pts, op->op.u.polygon.cnt, op->op.kind == xd_filled_polygon);
+		gvrender_polygon(job, pts, op->op.u.polygon.cnt, (op->op.kind == xd_filled_polygon?filled:0));
 	    }
 	    break;
 	case xd_filled_bezier :
 	case xd_unfilled_bezier :
     	    if (boxf_overlap(op->bb, job->clip)) {
 		pts = copyPts (pts, &ptsize, op->op.u.bezier.pts, op->op.u.bezier.cnt);
-		gvrender_beziercurve(job, pts, op->op.u.bezier.cnt, 0, 0, op->op.kind == xd_filled_bezier);
+		gvrender_beziercurve(job, pts, op->op.u.bezier.cnt, 0, 0, (op->op.kind == xd_filled_bezier?filled:0));
 	    }
 	    break;
 	case xd_polyline :
@@ -1472,9 +1473,44 @@ static void emit_xdot (GVJ_t * job, xdot* xd)
 	    break;
 	case xd_fill_color :
             gvrender_set_fillcolor(job, op->op.u.color);
+	    filled = FILL;
 	    break;
 	case xd_pen_color :
             gvrender_set_pencolor(job, op->op.u.color);
+	    filled = FILL;
+	    break;
+	case xd_grad_fill_color : 
+	    {
+		char* clr0;
+		char* clr1;
+		float frac;
+		if (op->op.u.grad_color.type == xd_radial) {
+		    xdot_radial_grad* p = &op->op.u.grad_color.u.ring;
+		    clr0 = p->stops[0].color;
+		    clr1 = p->stops[1].color;
+		    frac = p->stops[1].frac;
+		    if ((p->x1 == p->x0) && (p->y1 == p->y0))
+			angle = 0;
+		    else
+			angle = (int)(180.0*acos((p->x0 - p->x1)/p->r0)/M_PI);
+        	    gvrender_set_fillcolor(job, clr0);
+		    gvrender_set_gradient_vals(job, clr1, angle, frac);
+		    filled = RGRADIENT;
+		}
+		else {
+		    xdot_linear_grad* p = &op->op.u.grad_color.u.ling;
+		    clr0 = p->stops[0].color;
+		    clr1 = p->stops[1].color;
+		    frac = p->stops[1].frac;
+		    angle = (int)(180.0*atan2(p->y1-p->y0,p->x1-p->x0)/M_PI);
+        	    gvrender_set_fillcolor(job, clr0);
+		    gvrender_set_gradient_vals(job, clr1, angle, frac);
+		    filled = GRADIENT;
+		}
+	    }
+	    break;
+	case xd_grad_pen_color :
+	    agerr (AGWARN, "gradient pen colors not yet supported.\n");
 	    break;
 	case xd_font :
 	    fontsize = op->op.u.font.size;
