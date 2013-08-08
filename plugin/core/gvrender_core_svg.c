@@ -490,8 +490,8 @@ static int svg_rgradstyle(GVJ_t * job, pointf * A, int n)
 
     obj_state_t *obj = job->obj;
     angle = obj->gradient_angle * M_PI / 180;	//angle of gradient line
-    G[0].x = G[0].y = G[1].x = G[1].y;
-    get_gradient_points(A, G, n, 0, 1);
+    /* G[0].x = G[0].y = G[1].x = G[1].y; */
+    /* get_gradient_points(A, G, n, 0, 1); */
     if (angle == 0.) {
 	ifx = ify = 50;
     } else {
