@@ -20,8 +20,8 @@
 #include "arith.h"
 #include "SparseMatrix.h"
 #include "BinaryHeap.h"
-#include "LinkedList.h"
 #if PQ
+#include "LinkedList.h"
 #include "PriorityQueue.h"
 #endif
 
