@@ -482,7 +482,7 @@ static int svg_gradstyle(GVJ_t * job, pointf * A, int n)
  */
 static int svg_rgradstyle(GVJ_t * job, pointf * A, int n)
 {
-    pointf G[2];
+    /* pointf G[2]; */
     float angle;
     int ifx, ify;
     static int rgradId;
