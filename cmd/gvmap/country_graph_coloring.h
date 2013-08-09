@@ -14,6 +14,16 @@
 #ifndef COUNTRY_GRAPH_CLUSTERING_H
 #define COUNTRY_GRAPH_CLUSTERING_H
 
+#include <SparseMatrix.h>
+
+enum {DO_SWAPPING = 1, DO_SWAPPING_CHEAP};
+
 void country_graph_coloring(int seed, SparseMatrix A, int **p, real *norm_1);
+
+void country_graph_coloring_general(int seed, SparseMatrix A, int **p, real *norm_1, int do_swapping);
+
+void improve_antibandwidth_by_swapping_for_fortran(int *n, int *nz, int *ja, int *ia, int *p, int *aprof, int *Verbose);
+
+void improve_antibandwidth_by_swapping(SparseMatrix A, int *p);
 
 #endif
