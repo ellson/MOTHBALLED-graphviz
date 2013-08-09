@@ -20,14 +20,11 @@ bin_PROGRAMS = gvmap cluster
 dist_bin_SCRIPTS = gvmap.sh
 endif
 
-noinst_HEADERS = make_map.h power.h country_graph_coloring.h DotIO.h \
-	colorutil.h color_palette.h mq.h clustering.h
+noinst_HEADERS = make_map.h power.h country_graph_coloring.h
 
-gvmap_SOURCES = gvmap.c make_map.c power.c country_graph_coloring.c DotIO.c \
-	colorutil.c mq.c clustering.c
+gvmap_SOURCES = gvmap.c make_map.c power.c country_graph_coloring.c
 
-cluster_SOURCES = cluster.c make_map.c power.c country_graph_coloring.c DotIO.c \
-	colorutil.c mq.c clustering.c 
+cluster_SOURCES = cluster.c make_map.c power.c country_graph_coloring.c 
 
 gvmap_CPPFLAGS = $(AM_CPPFLAGS)
 

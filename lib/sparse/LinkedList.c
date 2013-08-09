@@ -22,7 +22,7 @@
 
 SingleLinkedList SingleLinkedList_new(void *data){
   SingleLinkedList head;
-  head = N_GNEW(1,struct SingleLinkedList_struct);
+  head = GNEW(struct SingleLinkedList_struct);
   head->data = data;
   head->next = NULL;
   return head;
@@ -83,7 +83,7 @@ void SingleLinkedList_print(SingleLinkedList head, void (*linkedlist_print)(void
 
 DoubleLinkedList DoubleLinkedList_new(void *data){
   DoubleLinkedList head;
-  head = N_GNEW(1,struct DoubleLinkedList_struct);
+  head = GNEW(struct DoubleLinkedList_struct);
   head->data = data;
   head->next = NULL;
   head->prev = NULL;

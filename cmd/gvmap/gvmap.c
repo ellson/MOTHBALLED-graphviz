@@ -182,14 +182,16 @@ static char* usestr =
     -b v - polygon line width, with v < 0 for no line. (0)\n\
     -c k - polygon color scheme (1)\n\
        0 : no polygons\n\
-       1 : pastel\n\
+       1 : pastel (default)\n\
        2 : blue to yellow\n\
        3 : white to red\n\
        4 : light grey to red\n\
        5 : primary colors\n\
        6 : sequential single hue red \n\
-       7 : sequential single hue lighter red \n\
-       8 : light grey\n\
+       7 : Adam color scheme\n\
+       8 : Adam blend\n\
+       9 : sequential single hue lighter red \n\
+      10 : light grey\n\
     -c_opacity=xx - 2-character hex string for opacity of polygons\n\
     -C k - generate at most k clusters. (0)\n\
     -d s - seed used to calculate Fielder vector for optimal coloring\n\
@@ -690,7 +692,7 @@ static void mapFromGraph (Agraph_t* g, params_t* pm)
   float* fsz;
 
   initDotIO(g);
-  graph = Import_coord_clusters_from_dot(g, pm->maxcluster, pm->dim, &n, &width, NULL, &x, &grouping, 
+  graph = Import_coord_clusters_from_dot(g, pm->maxcluster, pm->dim, &n, &width, &x, &grouping, 
 					   &rgb_r,  &rgb_g,  &rgb_b,  &fsz, &labels, pm->color_scheme, CLUSTERING_MODULARITY, pm->useClusters);
   makeMap (graph, n, x, width, grouping, labels, fsz, rgb_r, rgb_g, rgb_b, pm, g);
 }

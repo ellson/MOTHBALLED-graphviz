@@ -18,7 +18,7 @@
 
 
 
-Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_init(SparseMatrix A, int level){
+static Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_init(SparseMatrix A, int level){
   Multilevel_Modularity_Clustering grid;
   int n = A->n, i, j;
 
@@ -75,7 +75,7 @@ Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_init(SparseMat
   return grid;
 } 
 
-void Multilevel_Modularity_Clustering_delete(Multilevel_Modularity_Clustering grid){
+static void Multilevel_Modularity_Clustering_delete(Multilevel_Modularity_Clustering grid){
   if (!grid) return;
   if (grid->A){
     if (grid->level == 0) {
@@ -93,7 +93,7 @@ void Multilevel_Modularity_Clustering_delete(Multilevel_Modularity_Clustering gr
   FREE(grid);
 }
 
-Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_establish(Multilevel_Modularity_Clustering grid, int ncluster_target){
+static Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_establish(Multilevel_Modularity_Clustering grid, int ncluster_target){
   int *matching = grid->matching;
   SparseMatrix A = grid->A;
   int n = grid->n, level = grid->level, nc = 0;
@@ -258,7 +258,7 @@ Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_establish(Mult
   return grid;
 }
 
-Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_new(SparseMatrix A0, int ncluster_target){
+static Multilevel_Modularity_Clustering Multilevel_Modularity_Clustering_new(SparseMatrix A0, int ncluster_target){
   /* ncluster_target is used to specify the target number of cluster desired, e.g., ncluster_target=10 means that around 10 clusters
      is desired. The resulting clustering will give as close to this number as possible.
      If this number != the optimal number of clusters, the resulting modularity may be lower, or equal to, the optimal modularity.

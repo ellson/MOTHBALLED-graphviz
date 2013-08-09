@@ -16,7 +16,7 @@
 #include "DotIO.h"
 #include "clustering.h"
 #include "mq.h"
-#include "spring_electrical.h"
+/* #include "spring_electrical.h" */
 #include "color_palette.h"
 #include "colorutil.h"
 
@@ -29,17 +29,23 @@ typedef struct {
 
 #if 0
 static void
-posStr (char* buf, int dim, real* x, double sc)
+posStr (int len_buf, char* buf, int dim, real* x, double sc)
 {
-  if (dim== 3){
-    sprintf (buf, "%f,%f,%f", sc*x[0], sc*x[1], sc*x[2]);
-  } else if (dim == 2) {
-    sprintf (buf, "%f,%f", sc*x[0], sc*x[1]);
-  } else if (dim == 1) {
-    sprintf (buf, "%f", sc*x[0]);
-  } else {
-    assert(0);
-  }
+  char s[1000];
+  int i;
+  int len = 0;
+
+  buf[0] = '\0';
+  for (i = 0; i < dim; i++){
+    if (i < dim - 1){
+      sprintf(s,"%f,",sc*x[i]);
+    } else {
+      sprintf(s,"%f",sc*x[i]);
+    }
+    len += strlen(s);
+    assert(len < len_buf);
+    buf = strcat(buf, s);
+  } 
 }
 
 static void 
@@ -47,7 +53,8 @@ attach_embedding (Agraph_t* g, int dim, double sc, real *x)
 {
   Agsym_t* sym = agattr(g, AGNODE, "pos", NULL); 
   Agnode_t* n;
-  char buf[1024];
+#define SLEN 1024
+  char buf[SLEN];
   int i = 0;
 
   if (!sym)
@@ -55,13 +62,25 @@ attach_embedding (Agraph_t* g, int dim, double sc, real *x)
 
   for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
     assert (i == ND_id(n));
-    posStr (buf, dim, x + i*dim, sc);
+    posStr (SLEN, buf, dim, x + i*dim, sc);
     agxset (n, sym, buf);
     i++;
   }
   
 }
 #endif
+
+/* SparseMatrix_read_dot:
+ * Wrapper for reading dot graph from file
+ */
+Agraph_t* 
+SparseMatrix_read_dot(FILE* f)
+{
+    Agraph_t* g;
+    g = agread (f, 0);
+    aginit(g, AGNODE, "nodeinfo", sizeof(Agnodeinfo_t), TRUE);
+    return g;
+}
 
 /* SparseMatrix_import_dot:
  * Assumes g is connected and simple, i.e., we can have a->b and b->a
@@ -74,6 +93,7 @@ SparseMatrix_import_dot (Agraph_t* g, int dim, real **label_sizes, real **x, int
   Agnode_t* n;
   Agedge_t* e;
   Agsym_t *sym, *symD = NULL;
+  Agsym_t *psym;
   int nnodes;
   int nedges;
   int i, row;
@@ -126,8 +146,14 @@ SparseMatrix_import_dot (Agraph_t* g, int dim, real **label_sizes, real **x, int
 
       /* edge length */
       if (symD) {
-        if (sscanf (agxget(e,symD), "%lf", &v) != 1) v = 1;
+        if (sscanf (agxget (e, symD), "%lf", &v) != 1) {
+          v = 72;
+        } else {
+          v *= 72;/* len is specified in inch. Convert to points */
+        }
 	valD[i] = v;
+      } else if (valD) {
+        valD[i] = 72;
       }
 
       i++;
@@ -159,7 +185,9 @@ SparseMatrix_import_dot (Agraph_t* g, int dim, real **label_sizes, real **x, int
     }
  }
 
-  if (x){
+  if (x && (psym = agattr(g, AGNODE, "pos", NULL))) {
+    int has_position = FALSE;
+    char* pval;
     if (!(*x)) {
       *x = MALLOC(sizeof(real)*dim*nnodes);
       assert(*x);
@@ -168,27 +196,28 @@ SparseMatrix_import_dot (Agraph_t* g, int dim, real **label_sizes, real **x, int
       real xx,yy, zz,ww;
       int nitems, k;
       i = ND_id(n);
-      if (agget(n, "pos")){
+      if ((pval = agxget(n, psym)) && *pval) {
+        has_position = TRUE;
 	if (dim == 2){
-	  nitems = sscanf(agget(n, "pos"), "%lf,%lf", &xx, &yy);
+	  nitems = sscanf(pval, "%lf,%lf", &xx, &yy);
 	  if (nitems != 2) return NULL;
 	  (*x)[i*dim] = xx;
 	  (*x)[i*dim+1] = yy;
 	} else if (dim == 3){
-	  nitems = sscanf(agget(n, "pos"), "%lf,%lf,%lf", &xx, &yy, &zz);
+	  nitems = sscanf(pval, "%lf,%lf,%lf", &xx, &yy, &zz);
 	  if (nitems != 3) return NULL;
 	  (*x)[i*dim] = xx;
 	  (*x)[i*dim+1] = yy;
 	  (*x)[i*dim+2] = zz;
 	} else if (dim == 4){
-	  nitems = sscanf(agget(n, "pos"), "%lf,%lf,%lf,%lf", &xx, &yy, &zz,&ww);
+	  nitems = sscanf(pval, "%lf,%lf,%lf,%lf", &xx, &yy, &zz,&ww);
 	  if (nitems != 4) return NULL;
 	  (*x)[i*dim] = xx;
 	  (*x)[i*dim+1] = yy;
 	  (*x)[i*dim+2] = zz;
 	  (*x)[i*dim+3] = ww;
 	} else if (dim == 1){
-	  nitems = sscanf(agget(n, "pos"), "%lf", &xx);
+	  nitems = sscanf(pval, "%lf", &xx);
 	  if (nitems != 1) return NULL;
 	  (*x)[i*dim] = xx;
 	} else {
@@ -197,6 +226,10 @@ SparseMatrix_import_dot (Agraph_t* g, int dim, real **label_sizes, real **x, int
       } else {
 	for (k = 0; k < dim; k++) (*x)[i*dim + k] = 0;
       }
+    }
+    if (!has_position) {
+      FREE(*x);
+      *x = NULL;
     }
   }
 
@@ -211,6 +244,57 @@ SparseMatrix_import_dot (Agraph_t* g, int dim, real **label_sizes, real **x, int
   if (valD) FREE(valD);
 
   return A;
+}
+
+static real dist(int dim, real *x, real *y){
+  int k;
+  real d = 0;
+  for (k = 0; k < dim; k++) d += (x[k] - y[k])*(x[k]-y[k]);
+  return sqrt(d);
+}
+
+void edgelist_export(FILE* f, SparseMatrix A, int dim, real *x){
+  int n = A->m, *ia = A->ia, *ja = A->ja;
+  int i, j, len;
+  real max_edge_len, min_edge_len;
+
+  for (i = 0; i < n; i++){
+    for (j = ia[i]; j < ia[i+1]; j++){
+      max_edge_len = MAX(max_edge_len, dist(dim, &x[dim*i], &x[dim*ja[j]]));
+      if (min_edge_len < 0){
+	min_edge_len = dist(dim, &x[dim*i], &x[dim*ja[j]]);
+      } else {
+	min_edge_len = MIN(min_edge_len, dist(dim, &x[dim*i], &x[dim*ja[j]]));
+      }
+    }
+  }
+  /* format:
+     n
+     nz
+     dim
+     x (length n*dim)
+     min_edge_length
+     max_edge_length
+     v1
+     neighbors of v1
+     v2
+     neighbors of v2
+     ...
+  */
+  fprintf(stderr,"writing a total of %d edges\n",A->nz);
+  fwrite(&(A->n), sizeof(int), 1, f);
+  fwrite(&(A->nz), sizeof(int), 1, f);
+  fwrite(&dim, sizeof(int), 1, f);
+  fwrite(x, sizeof(real), dim*n, f);
+  fwrite(&min_edge_len, sizeof(real), 1, f);
+  fwrite(&max_edge_len, sizeof(real), 1, f);
+  for (i = 0; i < n; i++){
+    if (i%1000 == 0) fprintf(stderr,"%6.2f%% done\r", i/(real) n*100);
+    fwrite(&i, sizeof(int), 1, f);
+    len = ia[i+1] - ia[i];
+    fwrite(&len, sizeof(int), 1, f);
+    fwrite(&(ja[ia[i]]), sizeof(int), len, f);
+  }
 }
 
 
@@ -345,7 +429,7 @@ makeDotGraph (SparseMatrix A, char *name, int dim, real *x, int with_color, int 
     color = malloc(sizeof(real)*A->nz);
     for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
       i = ND_id(n);
-      if (A->type != MATRIX_TYPE_REAL || use_matrix_value){
+      if (A->type != MATRIX_TYPE_REAL || !use_matrix_value){
 	for (j = ia[i]; j < ia[i+1]; j++) {
 	  color[j] = distance(x, dim, i, ja[j]);
 	  if (i != ja[j]){
@@ -376,7 +460,11 @@ makeDotGraph (SparseMatrix A, char *name, int dim, real *x, int with_color, int 
     for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
       i = ND_id(n);
       for (j = ia[i]; j < ia[i+1]; j++) {
-	color[j] = ((color[j] - mindist)/MAX(maxdist-mindist, 0.000001));
+        if (i != ja[j]){
+	  color[j] = ((color[j] - mindist)/MAX(maxdist-mindist, 0.000001));
+        } else {
+          color[j] = 0;
+        }
       }
     }
   }
@@ -398,10 +486,22 @@ makeDotGraph (SparseMatrix A, char *name, int dim, real *x, int with_color, int 
 	  sprintf (buf, "%f", ((real*)A->a)[2*j]);
 	  break;
 	}
-	if (with_color) sprintf (buf2, "%s", hue2rgb(.65*color[j], cstring));
+	if (with_color) {
+          if (i != ja[j]){
+            sprintf (buf2, "%s", hue2rgb(.65*color[j], cstring));
+          } else {
+            sprintf (buf2, "#000000");
+          }
+        }
       } else {
 	sprintf (buf, "%f", 1.);
- 	if (with_color) sprintf (buf2, "%s", hue2rgb(.65*color[j], cstring));
+        if (with_color) {
+          if (i != ja[j]){
+            sprintf (buf2, "%s", hue2rgb(.65*color[j], cstring));
+          } else {
+            sprintf (buf2, "#000000");
+          }
+        }
      }
       e = agedge (g, n, h, NULL, 1);
       if (with_color) {
@@ -553,7 +653,7 @@ void Dot_SetClusterColor(Agraph_t* g, float *rgb_r,  float *rgb_g,  float *rgb_b
   }
 }
 
-SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim, int *nn, real **label_sizes, real **areas, real **x, int **clusters, float **rgb_r,  float **rgb_g,  float **rgb_b,  float **fsz, char ***labels, int default_color_scheme, int clustering_scheme, int useClusters){
+SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim, int *nn, real **label_sizes, real **x, int **clusters, float **rgb_r,  float **rgb_g,  float **rgb_b,  float **fsz, char ***labels, int default_color_scheme, int clustering_scheme, int useClusters){
   SparseMatrix A = 0;
   Agnode_t* n;
   Agedge_t* e;
@@ -571,10 +671,10 @@ SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim
   size_t sz = sizeof(real);
   char scluster[100];
   float ff;
-  real* areap = NULL;
 
   int MAX_GRPS, MIN_GRPS, noclusterinfo = FALSE, first = TRUE;
   float *pal;
+  int max_color = MAX_COLOR;
 
   switch (default_color_scheme){
   case COLOR_SCHEME_BLUE_YELLOW:
@@ -602,6 +702,13 @@ SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim
     break;
   case COLOR_SCHEME_PRIMARY:
     pal = &(palette_primary[0][0]);
+    break;
+  case COLOR_SCHEME_ADAM_BLEND:
+    pal = &(palette_adam_blend[0][0]);
+    break;
+  case COLOR_SCHEME_ADAM:
+    pal = &(palette_adam[0][0]);
+    max_color = 11;
     break;
   case COLOR_SCHEME_NONE:
     pal = NULL;
@@ -740,10 +847,6 @@ SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim
   *fsz = MALLOC(sizeof(float)*nnodes);
   *labels = MALLOC(sizeof(char*)*nnodes);
 
-  if (areas){
-    *areas = areap = MALLOC(sizeof(real)*nnodes);
-  }
-
   for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
     gvcolor_t color;
     real sz;
@@ -756,15 +859,6 @@ SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim
     } else {
       (*label_sizes)[i*2] = POINTS(0.75/2);
       (*label_sizes)[i*2+1] = POINTS(0.5*2);
-    }
-
-    if (areap) {
-      char* s;
-      double d;
-      if ((s = agget(n, "area")) && sscanf(s, "%lf", &d))
-        areap[i] = d;
-      else
-        areap[i] = 1.0;
     }
 
    if (agget(n, "fontsize")){
@@ -787,10 +881,10 @@ SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim
 
 
    j = (*clusters)[i];
-   if (MAX_GRPS-MIN_GRPS < MAX_COLOR) {
-     j = (j-MIN_GRPS)*((int)((MAX_COLOR-1)/MAX((MAX_GRPS-MIN_GRPS),1)));
+   if (MAX_GRPS-MIN_GRPS < max_color) {
+     j = (j-MIN_GRPS)*((int)((max_color-1)/MAX((MAX_GRPS-MIN_GRPS),1)));
    } else {
-     j = (j-MIN_GRPS)%MAX_COLOR;
+     j = (j-MIN_GRPS)%max_color;
    }
 
    if (pal){
@@ -811,11 +905,13 @@ SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim
 
 
   if (x){
+    int has_position = FALSE;
     *x = MALLOC(sizeof(real)*dim*nnodes);
     for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
       real xx,yy;
       i = ND_id(n);
       if (agget(n, "pos")){
+        has_position = TRUE;
 	sscanf(agget(n, "pos"), "%lf,%lf", &xx, &yy);
 	(*x)[i*dim] = xx;
 	(*x)[i*dim+1] = yy;
@@ -824,6 +920,10 @@ SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim
 	(*x)[i*dim] = 0;
 	(*x)[i*dim+1] = 0;
       }
+    }
+    if (!has_position){
+      FREE(*x);
+      *x = NULL;
     }
   }
 
