@@ -185,19 +185,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\clustering.c"
-				>
-			</File>
-			<File
-				RelativePath=".\colorutil.c"
-				>
-			</File>
-			<File
 				RelativePath=".\country_graph_coloring.c"
-				>
-			</File>
-			<File
-				RelativePath=".\DotIO.c"
 				>
 			</File>
 			<File
@@ -206,10 +194,6 @@
 			</File>
 			<File
 				RelativePath=".\make_map.c"
-				>
-			</File>
-			<File
-				RelativePath=".\mq.c"
 				>
 			</File>
 			<File

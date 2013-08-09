@@ -169,11 +169,31 @@
 				>
 			</File>
 			<File
+				RelativePath=".\clustering.c"
+				>
+			</File>
+			<File
+				RelativePath=".\colorutil.c"
+				>
+			</File>
+			<File
+				RelativePath=".\DotIO.c"
+				>
+			</File>
+			<File
 				RelativePath=".\general.c"
 				>
 			</File>
 			<File
 				RelativePath=".\IntStack.c"
+				>
+			</File>
+			<File
+				RelativePath=".\LinkedList.c"
+				>
+			</File>
+			<File
+				RelativePath=".\mq.c"
 				>
 			</File>
 			<File
