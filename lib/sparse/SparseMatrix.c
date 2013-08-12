@@ -25,8 +25,6 @@
 #include "PriorityQueue.h"
 #endif
 
-extern int Verbose;
-
 static size_t size_of_matrix_type(int type){
   int size = 0;
   switch (type){

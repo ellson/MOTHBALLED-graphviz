@@ -27,7 +27,7 @@
 #include <logic.h>
 #include <arith.h>
 #include <memory.h>
-#endif
+#endif  /* STANDALONE */
 
 #define real double
 
@@ -62,9 +62,7 @@
 
 typedef unsigned int boolean;
 
-extern int Verbose;
-
-#else
+#else  /* STANDALONE */
 #define MALLOC gmalloc
 #define REALLOC grealloc
 #endif    /* STANDALONE */
@@ -79,6 +77,8 @@ extern int Verbose;
 #ifdef DEBUG
 extern double _statistics[10];
 #endif
+
+extern unsigned char Verbose;
 
 extern int irand(int n);
 extern real drand(void);

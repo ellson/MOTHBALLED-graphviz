@@ -27,6 +27,12 @@ typedef struct {
 
 #define ND_id(n)  (((Agnodeinfo_t*)((n)->base.data))->id)
 
+void
+initGraph (Agraph_t* g)
+{
+    aginit(g, AGNODE, "nodeinfo", sizeof(Agnodeinfo_t), TRUE);
+}
+
 #if 0
 static void
 posStr (int len_buf, char* buf, int dim, real* x, double sc)
