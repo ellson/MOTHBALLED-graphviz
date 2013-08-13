@@ -828,6 +828,11 @@ exsub(Expr_t * ex, register Exnode_t * expr, void *env, int global)
 		v.string = vmstrdup(ex->ve, str);
 		return v;
 	}
+    if (sub[0] == sub[1]) {
+		exwarn("pattern match of empty string - ill-specified pattern \"%s\"?", pat);
+		v.string = vmstrdup(ex->ve, str);
+		return v;
+    } 
 	sfwrite(ex->tmp, str, sub[0]);
 	if (repl)
 		replace(ex->tmp, str, repl, ng, sub);
