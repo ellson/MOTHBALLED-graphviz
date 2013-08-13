@@ -24,6 +24,9 @@
  *   - Provide algorithms for aspect ratios < 1
  */
 
+#define MIN_AR 1.0
+#define MAX_AR 20.0
+#define DEF_PASSES 5
 #define DPI 72
 
 /*
@@ -1785,10 +1788,11 @@ void rank3(graph_t * g, aspect_t * asp)
     Agnode_t *n;
     int i;
     int iterations = asp->nextIter;
+    double lastAR = MAXDOUBLE;
 
     computeNodeGroups(g);	/* groups of UF DS nodes */
 
-    for (i = 0; i < iterations || iterations == -1; i++) {
+    for (i = 0; (i < iterations) || (iterations == -1); i++) {
 	/* initialize all ranks to be 0 */
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    ND_rank(n) = 0;
@@ -1814,12 +1818,14 @@ void rank3(graph_t * g, aspect_t * asp)
 	    break;
 	} else
 #endif
-	if (iterations == -1 && asp->combiAR <= asp->targetAR) {
+        /* Success or if no improvement */
+	if ((asp->combiAR <= asp->targetAR) || ((iterations == -1) && (lastAR <= asp->combiAR))) {
 	    asp->prevIterations = asp->curIterations;
 	    asp->curIterations = i;
 
 	    break;
 	}
+	lastAR = asp->combiAR;
 	/* Apply the FFDH algorithm to reduce the aspect ratio; */
 	applyPacking2(g);
     }
@@ -1966,4 +1972,32 @@ void init_UF_size(graph_t * g)
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n))
 	ND_UF_size(n) = 0;
+}
+
+aspect_t*
+setAspect (Agraph_t * g, aspect_t* adata)
+{
+    double rv;
+    char *p;
+    int r, passes = DEF_PASSES;
+
+    p = agget (g, "aspect");
+
+    if (!p || ((r = sscanf (p, "%lf,%d", &rv, &passes)) <= 0)) {
+	adata->nextIter = 0;
+	adata->badGraph = 0;
+	return NULL;
+    }
+    
+    if (rv < MIN_AR) rv = MIN_AR;
+    else if (rv > MAX_AR) rv = MAX_AR;
+    adata->targetAR = rv;
+    adata->nextIter = -1;
+    adata->nPasses = passes;
+    adata->badGraph = 0;
+
+    if (Verbose) 
+        fprintf(stderr, "Target AR = %g\n", adata->targetAR);
+
+    return adata;
 }

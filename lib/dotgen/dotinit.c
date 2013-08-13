@@ -249,37 +249,6 @@ dumpRanks (graph_t * g)
 }
 #endif
 
-#define MIN_AR 1.0
-#define MAX_AR 20.0
-#define DEF_PASSES 5
-
-static aspect_t*
-setAspect (Agraph_t * g, aspect_t* adata)
-{
-    double rv;
-    char *p;
-    int r, passes = DEF_PASSES;
-
-    p = agget (g, "aspect");
-
-    if (!p || ((r = sscanf (p, "%lf,%d", &rv, &passes)) <= 0)) {
-	adata->nextIter = 0;
-	adata->badGraph = 0;
-	return NULL;
-    }
-    
-    if (rv < MIN_AR) rv = MIN_AR;
-    else if (rv > MAX_AR) rv = MAX_AR;
-    adata->targetAR = rv;
-    adata->nextIter = -1;
-    adata->nPasses = passes;
-    adata->badGraph = 0;
-
-    if (Verbose) 
-        fprintf(stderr, "Target AR = %g\n", adata->targetAR);
-
-    return adata;
-}
 
 #ifdef WITH_CGRAPH
 static void

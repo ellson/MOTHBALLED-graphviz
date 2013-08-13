@@ -25,6 +25,7 @@ typedef struct aspect_t {
                            * clusters. If so, turn off aspect */
 } aspect_t;
 
+extern aspect_t* setAspect (Agraph_t * g, aspect_t* adata);
 extern void rank3(graph_t * g, aspect_t * asp);
 extern void initEdgeTypes(graph_t * g);
 extern void init_UF_size(graph_t * g);
