@@ -146,7 +146,7 @@ typedef struct {
 #endif
 
 #ifndef isxdigit
-#define isxdigit(c)	((c)>='0'&&(c)<='9'||(c)>='a'&&(c)<='f'||(c)>='A'&&(c)<='F')
+#define isxdigit(c)	(((c)>='0'&&(c)<='9')||((c)>='a'&&(c)<='f')||((c)>='A'&&(c)<='F'))
 #endif
 
 #define getsource(s,e)	(((s)>=(e))?0:mbgetchar(s))
