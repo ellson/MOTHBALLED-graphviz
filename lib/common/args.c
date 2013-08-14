@@ -24,6 +24,7 @@
 #include "render.h"
 #include "tlayout.h"
 #include "gvc.h"
+#include "fdp.h"
 
 /* neato_extra_args:
  * Handle special neato arguments.
@@ -204,26 +205,26 @@ setFDPAttr (char* arg)
 {
   switch (*arg++) {
   case 'g' :
-    fdp_parms.useGrid = 0;
+    fdp_parms->useGrid = 0;
     break;
   case 'O' :
-    fdp_parms.useNew = 0;
+    fdp_parms->useNew = 0;
     break;
   case 'n' :
-    if (setInt (&fdp_parms.numIters, arg)) return 1;
+    if (setInt (&fdp_parms->numIters, arg)) return 1;
     break;
   case 'U' :
-    if (setInt (&fdp_parms.unscaled, arg)) return 1;
+    if (setInt (&fdp_parms->unscaled, arg)) return 1;
     break;
   case 'C' :
-    if (setDouble (&fdp_parms.C, arg)) return 1;
+    if (setDouble (&fdp_parms->C, arg)) return 1;
     break;
   case 'T' :
     if (*arg == '*') {
-      if (setDouble (&fdp_parms.Tfact, arg+1)) return 1;
+      if (setDouble (&fdp_parms->Tfact, arg+1)) return 1;
     }
     else {
-      if (setDouble (&fdp_parms.T0, arg)) return 1;
+      if (setDouble (&fdp_parms->T0, arg)) return 1;
     }
     break;
   default :

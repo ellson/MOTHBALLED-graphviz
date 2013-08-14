@@ -86,7 +86,7 @@ static void init_edge(edge_t * e, attrsym_t * E_len)
     agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//node custom data
 #endif /* WITH_CGRAPH */
     ED_factor(e) = late_double(e, E_weight, 1.0, 0.0);
-    ED_dist(e) = late_double(e, E_len, fdp_parms.K, 0.0);
+    ED_dist(e) = late_double(e, E_len, fdp_parms->K, 0.0);
 
     common_init_edge(e);
 }

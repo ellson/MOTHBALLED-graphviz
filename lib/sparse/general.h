@@ -24,6 +24,8 @@
  * In particular, note that Verbose is declared but undefined.
  */
 #ifndef STANDALONE
+#include <cgraph.h>
+#include <globals.h>
 #include <logic.h>
 #include <arith.h>
 #include <memory.h>
@@ -61,6 +63,7 @@
 #define POINTS(inch) 72*(inch)
 
 typedef unsigned int boolean;
+extern unsigned char Verbose;
 
 #else  /* STANDALONE */
 #define MALLOC gmalloc
@@ -78,7 +81,6 @@ typedef unsigned int boolean;
 extern double _statistics[10];
 #endif
 
-extern unsigned char Verbose;
 
 extern int irand(int n);
 extern real drand(void);

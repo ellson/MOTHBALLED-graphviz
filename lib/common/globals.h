@@ -71,7 +71,7 @@ extern "C" {
     EXTERN char *Gvimagepath; /* Per-graph path of files allowed in image attributes  (also ps libs) */
 
     EXTERN unsigned char Verbose;
-    EXTERN boolean Reduce;
+    EXTERN unsigned char Reduce;
     EXTERN int MemTest;
     EXTERN char *HTTPServerEnVar;
     EXTERN char *Output_file_name;
@@ -82,7 +82,7 @@ extern "C" {
     EXTERN int Show_cnt;
     EXTERN char** Show_boxes;	/* emit code for correct box coordinates */
     EXTERN int CL_type;		/* NONE, LOCAL, GLOBAL */
-    EXTERN boolean Concentrate;	/* if parallel edges should be merged */
+    EXTERN unsigned char Concentrate;	/* if parallel edges should be merged */
     EXTERN double Epsilon;	/* defined in input_graph */
     EXTERN int MaxIter;
     EXTERN int Ndim;
@@ -93,14 +93,14 @@ extern "C" {
     EXTERN int Y_invert;	/* invert y in dot & plain output */
     EXTERN int GvExitOnUsage;   /* gvParseArgs() should exit on usage or error */
 
-    EXTERN attrsym_t
+    EXTERN Agsym_t
 	*G_activepencolor, *G_activefillcolor,
 	*G_selectedpencolor, *G_selectedfillcolor,
 	*G_visitedpencolor, *G_visitedfillcolor,
 	*G_deletedpencolor, *G_deletedfillcolor,
 	*G_ordering, *G_peripheries, *G_penwidth,
 	*G_gradientangle, *G_margin;
-    EXTERN attrsym_t
+    EXTERN Agsym_t
 	*N_height, *N_width, *N_shape, *N_color, *N_fillcolor,
 	*N_activepencolor, *N_activefillcolor,
 	*N_selectedpencolor, *N_selectedfillcolor,
@@ -112,7 +112,7 @@ extern "C" {
 	*N_skew, *N_distortion, *N_fixed, *N_imagescale, *N_layer,
 	*N_group, *N_comment, *N_vertices, *N_z,
 	*N_penwidth, *N_gradientangle;
-    EXTERN attrsym_t
+    EXTERN Agsym_t
 	*E_weight, *E_minlen, *E_color, *E_fillcolor,
 	*E_activepencolor, *E_activefillcolor,
 	*E_selectedpencolor, *E_selectedfillcolor,
@@ -130,7 +130,7 @@ extern "C" {
 	*E_tailclip, *E_headclip,
 	*E_penwidth;
 
-    extern fdpParms_t fdp_parms;
+    extern struct fdpParms_s* fdp_parms;
 
 #undef external
 #undef EXTERN

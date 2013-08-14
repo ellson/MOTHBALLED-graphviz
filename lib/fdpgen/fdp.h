@@ -115,6 +115,18 @@ typedef struct {
 extern "C" {
 #endif
 
+struct fdpParms_s {
+        int useGrid;            /* use grid for speed up */
+        int useNew;             /* encode x-K into attractive force */
+        int numIters;           /* actual iterations in layout */
+        int unscaled;           /* % of iterations used in pass 1 */
+        double C;               /* Repulsion factor in xLayout */
+        double Tfact;           /* scale temp from default expression */
+        double K;               /* spring constant; ideal distance */
+        double T0;              /* initial temperature */
+};
+typedef struct fdpParms_s fdpParms_t;
+
     extern void fdp_layout(Agraph_t * g);
     extern void fdp_nodesize(node_t *, boolean);
     extern void fdp_init_graph(Agraph_t * g);

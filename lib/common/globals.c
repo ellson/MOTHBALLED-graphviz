@@ -18,9 +18,10 @@
 #define EXTERN
 #include "types.h"
 #include "globals.h"
+#include "fdp.h"
 
 /* Default layout values, possibly set via command line; -1 indicates unset */
-fdpParms_t fdp_parms = {
+static fdpParms_t fdpParms = {
     1,                          /* useGrid */
     1,                          /* useNew */
     -1,                         /* numIters */
@@ -31,3 +32,4 @@ fdpParms_t fdp_parms = {
     -1.0,                       /* T0 */
 };
 
+struct fdpParms_s* fdp_parms = &fdpParms;

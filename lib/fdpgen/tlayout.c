@@ -57,14 +57,14 @@ extern double drand48(void);
 #include "tlayout.h"
 #include "globals.h"
 
-#define D_useGrid   (fdp_parms.useGrid)
-#define D_useNew    (fdp_parms.useNew)
-#define D_numIters  (fdp_parms.numIters)
-#define D_unscaled  (fdp_parms.unscaled)
-#define D_C         (fdp_parms.C)
-#define D_Tfact     (fdp_parms.Tfact)
-#define D_K         (fdp_parms.K)
-#define D_T0        (fdp_parms.T0)
+#define D_useGrid   (fdp_parms->useGrid)
+#define D_useNew    (fdp_parms->useNew)
+#define D_numIters  (fdp_parms->numIters)
+#define D_unscaled  (fdp_parms->unscaled)
+#define D_C         (fdp_parms->C)
+#define D_Tfact     (fdp_parms->Tfact)
+#define D_K         (fdp_parms->K)
+#define D_T0        (fdp_parms->T0)
 
   /* Actual parameters used; initialized using fdp_parms, then possibly
    * updated with graph-specific values.
