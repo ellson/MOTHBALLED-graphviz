@@ -2475,6 +2475,28 @@ fi
 AM_CONDITIONAL(WITH_GTS, [test "x$use_gts" == "xYes"])
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for ANN.
+
+AC_ARG_WITH(ann,
+  [AS_HELP_STRING([--with-ann=yes],[ANN library])],
+  [], [with_ann=yes])
+
+if test "x$with_ann" != "xyes"; then
+  use_ann="No (disabled)"
+else
+  PKG_CHECK_MODULES(ANN, [ann],[
+    use_ann="Yes"
+    AC_DEFINE_UNQUOTED(HAVE_ANN,1,
+      [Define if you have the ann library])
+    AC_SUBST([ANN_CFLAGS])
+    AC_SUBST([ANN_LIBS])
+  ],[
+    use_ann="No (ANN library not available)"
+  ])
+fi
+AM_CONDITIONAL(WITH_ANN, [test "x$use_ann" == "xYes"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for GLADE.
 
 AC_ARG_WITH(glade,
@@ -3114,6 +3136,7 @@ AC_CONFIG_FILES(Makefile
 	lib/neatogen/Makefile
 	lib/fdpgen/Makefile
 	lib/sparse/Makefile
+	lib/mingle/Makefile
 	lib/label/Makefile
 	lib/sfdpgen/Makefile
 	lib/osage/Makefile
@@ -3179,6 +3202,7 @@ AC_CONFIG_FILES(Makefile
 	cmd/dotty/Makefile
 	cmd/smyrna/Makefile
 	cmd/gvmap/Makefile
+	cmd/mingle/Makefile
 	cmd/gvedit/Makefile
 	cmd/gvedit/gvedit.pro
 	cmd/gvedit/ui/Makefile
@@ -3254,6 +3278,7 @@ echo "  expat:         $use_expat"
 echo "  fontconfig:    $use_fontconfig"
 echo "  freetype:      $use_freetype"
 echo "  glut:          $use_glut"
+echo "  ann:           $use_ann"
 echo "  gts:           $use_gts"
 echo "  ipsepcola:     $use_ipsepcola"
 echo "  ltdl:          $use_ltdl"
