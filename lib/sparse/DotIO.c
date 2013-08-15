@@ -192,32 +192,40 @@ SparseMatrix_import_dot (Agraph_t* g, int dim, real **label_sizes, real **x, int
  }
 
   if (x && (psym = agattr(g, AGNODE, "pos", NULL))) {
-    int has_position = FALSE;
+    int has_positions = TRUE;
     char* pval;
     if (!(*x)) {
       *x = MALLOC(sizeof(real)*dim*nnodes);
       assert(*x);
     }
-    for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
+    for (n = agfstnode (g); n && has_positions; n = agnxtnode (g, n)) {
       real xx,yy, zz,ww;
-      int nitems, k;
+      int nitems;
       i = ND_id(n);
       if ((pval = agxget(n, psym)) && *pval) {
-        has_position = TRUE;
 	if (dim == 2){
 	  nitems = sscanf(pval, "%lf,%lf", &xx, &yy);
-	  if (nitems != 2) return NULL;
+	  if (nitems != 2) {
+            has_positions = FALSE;
+            agerr(AGERR, "Node \"%s\" pos has %d < 2 values", agnameof(n), nitems);
+	  }
 	  (*x)[i*dim] = xx;
 	  (*x)[i*dim+1] = yy;
 	} else if (dim == 3){
 	  nitems = sscanf(pval, "%lf,%lf,%lf", &xx, &yy, &zz);
-	  if (nitems != 3) return NULL;
+	  if (nitems != 3) {
+            has_positions = FALSE;
+            agerr(AGERR, "Node \"%s\" pos has %d < 3 values", agnameof(n), nitems);
+	  }
 	  (*x)[i*dim] = xx;
 	  (*x)[i*dim+1] = yy;
 	  (*x)[i*dim+2] = zz;
 	} else if (dim == 4){
 	  nitems = sscanf(pval, "%lf,%lf,%lf,%lf", &xx, &yy, &zz,&ww);
-	  if (nitems != 4) return NULL;
+	  if (nitems != 4) {
+            has_positions = FALSE;
+            agerr(AGERR, "Node \"%s\" pos has %d < 4 values", agnameof(n), nitems);
+	  }
 	  (*x)[i*dim] = xx;
 	  (*x)[i*dim+1] = yy;
 	  (*x)[i*dim+2] = zz;
@@ -230,14 +238,17 @@ SparseMatrix_import_dot (Agraph_t* g, int dim, real **label_sizes, real **x, int
 	  assert(0);
 	}
       } else {
-	for (k = 0; k < dim; k++) (*x)[i*dim + k] = 0;
+        has_positions = FALSE;
+	agerr(AGERR, "Node \"%s\" lacks position info", agnameof(n));
       }
     }
-    if (!has_position) {
+    if (!has_positions) {
       FREE(*x);
       *x = NULL;
     }
   }
+  else if (x)
+    agerr (AGERR, "Error: graph %s has missing \"pos\" information", agnameof(g));
 
   A = SparseMatrix_from_coordinate_arrays(nedges, nnodes, nnodes, I, J, val, type, sz);
   if (edge_label_nodes) *n_edge_label_nodes = nedge_nodes;
