@@ -30,6 +30,7 @@
 #include "builddate.h"
 #include "gprstate.h"
 #include "cgraph.h"
+#include "globals.h"
 #include "ingraphs.h"
 #include "compile.h"
 #include "queue.h"
@@ -211,7 +212,7 @@ concat (char* pfx, char* sfx, char** sp)
  * 
  * FIX - use pathinclude/pathfind
  */
-static char *resolve(char *arg)
+static char *resolve(char *arg, int Verbose)
 {
     char *path;
     char *s;
@@ -242,7 +243,8 @@ static char *resolve(char *arg)
     }
     else
 	path = DFLT_GVPRPATH;
-
+    if (Verbose)
+	fprintf (stderr, "PATH: %s\n", path);
     if (!(fp = sfstropen())) {
 	error(ERROR_ERROR, "Could not open buffer");
 	return 0;
@@ -277,6 +279,8 @@ static char *resolve(char *arg)
     sfclose(fp);
     if (pathp)
 	sfclose(pathp);
+    if (Verbose)
+	fprintf (stderr, "file %s resolved to %s\n", arg, fname);
     return fname;
 }
 
@@ -326,7 +330,7 @@ doFlags(char* arg, int argi, int argc, char** argv, options* opts)
 	    opts->compflags |= (SRCOUT|CLONE);
 	    break;
 	case 'f':
-	    if ((optarg = getOptarg(c, &arg, &argi, argc, argv)) && (opts->program = resolve(optarg))) {
+	    if ((optarg = getOptarg(c, &arg, &argi, argc, argv)) && (opts->program = resolve(optarg, opts->verbose))) {
 		opts->useFile = 1;
 	    }
 	    else return -1;
