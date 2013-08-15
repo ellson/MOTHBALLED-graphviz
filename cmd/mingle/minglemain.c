@@ -14,8 +14,15 @@
 
 #ifdef WIN32 /*dependencies*/
     #pragma comment( lib, "cgraph.lib" )
+    #pragma comment( lib, "gvc.lib" )
     #pragma comment( lib, "ingraphs.lib" )
-#endif
+    #pragma comment( lib, "sparse.lib" )
+    #pragma comment( lib, "sfdp.lib" )
+    #pragma comment( lib, "minglelib.lib" )
+    #pragma comment( lib, "neatogen.lib" )
+    #pragma comment( lib, "rbtree.lib" )
+    #pragma comment( lib, "common.lib" )
+#endif   /* not WIN32_DLL */
 
 #include <cgraph.h>
 #include <ingraphs.h>
@@ -71,6 +78,7 @@ static void init(int argc, char *argv[], opts_t* opts)
 	unsigned int c;
 	char* CmdName = argv[0];
 
+    opterr = 0;
 	opts->outer_iter = 4;
 #ifdef HAVE_ANN
 	opts->method = METHOD_INK_AGGLOMERATE;

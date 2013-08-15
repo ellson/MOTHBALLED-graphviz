@@ -65,8 +65,6 @@ static char swork[maxlen];
     #pragma comment( lib, "gvortho.lib" )
     #pragma comment( lib, "sfdp.lib" )
     #pragma comment( lib, "rbtree.lib" )
-
-
 #endif   /* not WIN32_DLL */
 
 
@@ -306,6 +304,7 @@ init(int argc, char **argv, params_t* pm)
   /*  bbox_margin[0] =  bbox_margin[1] = -0.2;*/
   pm->bbox_margin[0] =  pm->bbox_margin[1] = 0;
 
+  opterr = 0;
   while ((c = getopt(argc, argv, ":evODko:m:s:r:p:c:C:l:b:g:t:a:h:z:d:")) != -1) {
     switch (c) {
     case 'm':
@@ -429,6 +428,9 @@ init(int argc, char **argv, params_t* pm)
     case 'l':
       if (pm->plot_label) free (pm->plot_label);
       pm->plot_label = strdup (optarg);
+      break;
+    case ':':
+      fprintf(stderr, "gvpack: option -%c missing argument - ignored\n", optopt);
       break;
     case '?':
       if (optopt == '?')
