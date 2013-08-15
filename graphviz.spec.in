@@ -38,7 +38,7 @@ Prefix: /usr
 
 BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires: zlib-devel expat-devel
+BuildRequires: zlib-devel expat-devel ann-devel
 BuildRequires: /bin/ksh bison m4 flex swig tk tcl >= 8.3 freetype-devel >= 2
 
 #-- All platforms
@@ -225,6 +225,7 @@ fi
 %{_bindir}/gvpr
 %{_bindir}/gxl2dot
 %{_bindir}/gxl2gv
+%{_bindir}/mingle
 %{_bindir}/mm2gv
 %{_bindir}/neato
 %{_bindir}/nop

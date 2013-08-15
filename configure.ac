@@ -2491,7 +2491,16 @@ else
     AC_SUBST([ANN_CFLAGS])
     AC_SUBST([ANN_LIBS])
   ],[
-    use_ann="No (ANN library not available)"
+    AC_CHECK_PROGS(ANN2FIG,ann2fig,false)
+    if test "$ANN2FIG" != "false"; then
+      AC_DEFINE_UNQUOTED(HAVE_ANN,1,
+        [Define if you have the ann library])
+      ANN_LIBS=-lANN
+      AC_SUBST([ANN_LIBS])
+      use_ann="Yes (but no ann.pc found)"
+    else
+      use_ann="No (ANN library not available)"
+    fi
   ])
 fi
 AM_CONDITIONAL(WITH_ANN, [test "x$use_ann" == "xYes"])

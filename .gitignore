@@ -69,6 +69,8 @@ cmd/lefty/lefty
 cmd/lefty/lefty.1.pdf
 cmd/lneato/lneato
 cmd/lneato/lneato.1.pdf
+cmd/lneato/mingle
+cmd/lneato/mingle.1.pdf
 cmd/smyrna/smyrna
 cmd/smyrna/smyrna.1.pdf
 cmd/tools/acyclic
