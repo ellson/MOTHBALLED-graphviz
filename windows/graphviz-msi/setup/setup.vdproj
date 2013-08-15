@@ -129,6 +129,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_0683BF2AF9FA45ABA06BF0F0D3C69F2E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_06EF3D020EAC41CDA777D6CFB2CDA00B"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -370,6 +376,12 @@
         "Entry"
         {
         "MsmKey" = "8:_180105F723674DB09455039D6B61B4E8"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_18B18614408748948AE6548347B43B00"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1125,6 +1137,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_447C0D0AE5AB4B99A4DB8369281EE4E4"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_44EAC333F35247FB967A199270C8940D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1540,6 +1558,12 @@
         "Entry"
         {
         "MsmKey" = "8:_619EAA957CE54A1AA9B82B9FC49049DC"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_61A935DB88F74C7D87B8486224BB67FE"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2212,6 +2236,12 @@
         "Entry"
         {
         "MsmKey" = "8:_87A11A7CEC9C4E03983C78204C3BBC02"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_886DCBE442C742AF8BD519C0E252B8BC"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3142,6 +3172,12 @@
         "Entry"
         {
         "MsmKey" = "8:_C34A4E8F5C94424BA8D9D87F1535D416"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C34B0BEAF4EC471189AD0A1CE18DB007"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -4480,6 +4516,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0683BF2AF9FA45ABA06BF0F0D3C69F2E"
+            {
+            "SourcePath" = "8:..\\..\\release\\lib\\release\\dll\\ann.dll"
+            "TargetName" = "8:ann.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_4F6E35FF8AF049FFB5270298E3BF6F4D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_06EF3D020EAC41CDA777D6CFB2CDA00B"
             {
             "SourcePath" = "8:..\\..\\release\\fonts\\conf.avail\\70-yes-bitmaps.conf"
@@ -5286,6 +5342,26 @@
             "TargetName" = "8:gtkrc"
             "Tag" = "8:"
             "Folder" = "8:_152E10A52B414C1E8C35CFFCB832EF5A"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_18B18614408748948AE6548347B43B00"
+            {
+            "SourcePath" = "8:..\\..\\release\\lib\\debug\\lib\\minglelib.lib"
+            "TargetName" = "8:minglelib.lib"
+            "Tag" = "8:"
+            "Folder" = "8:_E630780592AF4A139D075370DF107A89"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -7800,6 +7876,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_447C0D0AE5AB4B99A4DB8369281EE4E4"
+            {
+            "SourcePath" = "8:..\\..\\release\\bin\\ann.dll"
+            "TargetName" = "8:ann.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_2CB80ACEA55C4CCD8EC8A66D0DE2ADA9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_44EAC333F35247FB967A199270C8940D"
             {
             "SourcePath" = "8:..\\..\\release\\include\\graphviz\\pathplan.h"
@@ -9186,6 +9282,26 @@
             "TargetName" = "8:patchwork.lib"
             "Tag" = "8:"
             "Folder" = "8:_E630780592AF4A139D075370DF107A89"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_61A935DB88F74C7D87B8486224BB67FE"
+            {
+            "SourcePath" = "8:..\\..\\release\\lib\\release\\lib\\minglelib.lib"
+            "TargetName" = "8:minglelib.lib"
+            "Tag" = "8:"
+            "Folder" = "8:_0F18EC14CB9E4053A952F7D6E985BA78"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -11426,6 +11542,26 @@
             "TargetName" = "8:Thumbs.db"
             "Tag" = "8:"
             "Folder" = "8:_D63509F437B34254B738CAF3D055F760"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_886DCBE442C742AF8BD519C0E252B8BC"
+            {
+            "SourcePath" = "8:..\\..\\release\\lib\\debug\\dll\\ann.dll"
+            "TargetName" = "8:ann.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_E95C230A024E4AE68F5A30B47956E2C4"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -14540,6 +14676,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C34B0BEAF4EC471189AD0A1CE18DB007"
+            {
+            "SourcePath" = "8:..\\..\\release\\bin\\mingle.exe"
+            "TargetName" = "8:mingle.exe"
+            "Tag" = "8:"
+            "Folder" = "8:_2CB80ACEA55C4CCD8EC8A66D0DE2ADA9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C3603235123744DFA629A8C72DEF9E9D"
             {
             "SourcePath" = "8:..\\..\\release\\share\\graphviz\\smyrna\\rect_select2.png"
@@ -17417,7 +17573,7 @@
                 {
                     "{9EF0B969-E518-4E46-987F-47570745A589}:_7311E34D27CB4695BDD9C87AEE0F24EA"
                     {
-                    "Name" = "8:Graphviz 2.31"
+                    "Name" = "8:Graphviz 2.33"
                     "AlwaysCreate" = "11:FALSE"
                     "Condition" = "8:"
                     "Transitive" = "11:FALSE"
@@ -17452,7 +17608,7 @@
             }
             "{3C67513D-01DD-4637-8A68-80971EB9504F}:_F3B82057CB3E4512B7B06FFC35CFDF7F"
             {
-            "DefaultLocation" = "8:[ProgramFilesFolder][ProductName]2.31"
+            "DefaultLocation" = "8:[ProgramFilesFolder][ProductName][ProductVersion]"
             "Name" = "8:#1925"
             "AlwaysCreate" = "11:FALSE"
             "Condition" = "8:"
@@ -17974,13 +18130,13 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Graphviz"
         "ProductCode" = "8:{884CF059-9A11-4DF7-A2A7-17EFE90B9278}"
-        "PackageCode" = "8:{E9A13C33-940E-4F4A-AEAD-18128E2637BA}"
+        "PackageCode" = "8:{95ABEDDE-8299-4F75-A234-928B51BCE704}"
         "UpgradeCode" = "8:{6FCBADD9-3662-441D-A171-2A6D51538973}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:FALSE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:2.31"
+        "ProductVersion" = "8:2.33"
         "Manufacturer" = "8:AT&T Research Labs."
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

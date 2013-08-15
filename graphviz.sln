@@ -262,6 +262,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvedit", "cmd\gvedit\gvedit
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "minglelib", "lib\mingle\minglelib.vcproj", "{70575BD2-A532-41B8-9A17-B9876E992A84}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A7D00B21-CB9C-4BBB-8DEE-51025104F867} = {A7D00B21-CB9C-4BBB-8DEE-51025104F867}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mingle", "cmd\mingle\mingle.vcproj", "{A6DF0D74-E4D1-4EF4-A642-59B0CF3E74BB}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -274,6 +277,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mingle", "cmd\mingle\mingle
 		{70575BD2-A532-41B8-9A17-B9876E992A84} = {70575BD2-A532-41B8-9A17-B9876E992A84}
 		{D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04} = {D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ann", "lib\ann\MS_Win32\dll\dll.vcproj", "{A7D00B21-CB9C-4BBB-8DEE-51025104F867}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -529,6 +534,10 @@ Global
 		{A6DF0D74-E4D1-4EF4-A642-59B0CF3E74BB}.Debug|Win32.Build.0 = Debug|Win32
 		{A6DF0D74-E4D1-4EF4-A642-59B0CF3E74BB}.Release|Win32.ActiveCfg = Release|Win32
 		{A6DF0D74-E4D1-4EF4-A642-59B0CF3E74BB}.Release|Win32.Build.0 = Release|Win32
+		{A7D00B21-CB9C-4BBB-8DEE-51025104F867}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A7D00B21-CB9C-4BBB-8DEE-51025104F867}.Debug|Win32.Build.0 = Debug|Win32
+		{A7D00B21-CB9C-4BBB-8DEE-51025104F867}.Release|Win32.ActiveCfg = Release|Win32
+		{A7D00B21-CB9C-4BBB-8DEE-51025104F867}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

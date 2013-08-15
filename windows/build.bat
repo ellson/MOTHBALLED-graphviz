@@ -1,4 +1,4 @@
-cd c:/graphviz-ms
+cd c:\graphviz-ms
 REM variables need to be filled out , Modify only this section
 REM *****************************************************
 SET VS2008DIR="C:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE"
@@ -15,6 +15,7 @@ set wgetPath=C:\wget\bin
 set SevenzPath="C:\Program Files\7-Zip"
 set pscpPath="C:\Program Files\PuTTY"
 set sdkPath="C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin"
+set VERSION="2.33"
 PATH=%PATH%;%VS2008DIR%;%wgetPath%;%SevenzPath%;%pscpPath%;%sdkPath%;
 
 REM *****************************************************
@@ -35,12 +36,13 @@ REM *****************************************************
 wget -O %buildBaseDir%source.tar.gz %sourceUrl%
 7z x -y %buildBaseDir%source.tar.gz
 7z x -y %buildBaseDir%source.tar
-move /Y %buildBaseDir%graphviz-2.31.* graphviz2
+move /Y %buildBaseDir%graphviz-%VERSION%.* graphviz2
 REM **************End of source download*****************
 
 
 xcopy /Y %buildDir%windows\FEATURE %buildDir%\FEATURE\ /S
 xcopy /Y %sourceLibDir%GTS %buildDir%lib\GTS\ /S
+xcopy /Y %sourceLibDir%ann_1.1.2 %buildDir%lib\ann\ /S
 xcopy /Y %sourceLibDir%release %buildBaseDir%release\ /S
 xcopy /Y %sourceLibDir%gd %buildBaseDir%\graphviz2\lib\gd\
 xcopy /Y %sourceLibDir%GL %buildBaseDir%\graphviz2\cmd\smyrna\GL\
@@ -130,11 +132,11 @@ del %setupProjectDir%Release\%setupProjectName%.msi
 del %setupProjectDir%Release\*.msi
 devenv %setupProjectFile% -Clean release -Out %buildDir%packagingLog.txt
 devenv %setupProjectFile% -Build release -Out %buildDir%packagingLog.txt
-COPY /Y %setupProjectDir%Release\%setupProjectName%.msi %buildBaseDir%graphviz-2.31.%date:~10,4%%date:~4,2%%date:~7,2%.msi
-REM msitran -a c:\graphviz-ms\addtopath.mst %buildBaseDir%graphviz-2.31.%date:~10,4%%date:~4,2%%date:~7,2%.msi
+COPY /Y %setupProjectDir%Release\%setupProjectName%.msi %buildBaseDir%graphviz-%VERSION%.%date:~10,4%%date:~4,2%%date:~7,2%.msi
+REM msitran -a c:\graphviz-ms\addtopath.mst %buildBaseDir%graphviz-%VERSION%.%date:~10,4%%date:~4,2%%date:~7,2%.msi
 pscp -q *.msi graphviz-web://data/pub/graphviz/development/windows > pscpLog.txt 2>&1
 7z a -tzip c:\graphviz-ms\graphviz.zip c:\graphviz-ms\release
-move /Y c:\graphviz-ms\graphviz.zip %buildBaseDir%graphviz-2.31.%date:~10,4%%date:~4,2%%date:~7,2%.zip
+move /Y c:\graphviz-ms\graphviz.zip %buildBaseDir%graphviz-%VERSION%.%date:~10,4%%date:~4,2%%date:~7,2%.zip
 pscp -q *.zip graphviz-web://data/pub/graphviz/development/windows >> pscpLog.txt 2>&1
 
 

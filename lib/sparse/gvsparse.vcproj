@@ -152,6 +152,10 @@
 				RelativePath=".\SparseMatrix.h"
 				>
 			</File>
+			<File
+				RelativePath=".\vector.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -198,6 +202,10 @@
 			</File>
 			<File
 				RelativePath=".\SparseMatrix.c"
+				>
+			</File>
+			<File
+				RelativePath=".\vector.c"
 				>
 			</File>
 		</Filter>

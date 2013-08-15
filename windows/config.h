@@ -37,6 +37,9 @@
    */
 /* #undef HAVE_ALLOCA_H */
 
+/* Define if you have the ann library */
+#define HAVE_ANN 1
+
 /* Define to 1 if compiler supports bool */
 #define HAVE_BOOL 1
 
