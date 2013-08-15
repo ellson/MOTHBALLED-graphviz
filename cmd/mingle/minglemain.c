@@ -36,12 +36,17 @@
 #include "edge_bundling.h"
 #include "nearest_neighbor_graph.h"
 
+typedef enum {
+	FMT_GV,
+	FMT_SIMPLE,
+} fmt_t;
+
 typedef struct {
 	int outer_iter;
 	int method; 
 	int compatibility_method;
 	real K;
-	char* fmt;
+	fmt_t fmt;
 	int nneighbors;
 	int max_recursion;
 	real angle_param;
@@ -51,7 +56,26 @@ typedef struct {
 static char *fname;
 static FILE *outfile;
 
+static FILE *openFile(char *name, char *mode, char* cmd)
+{
+    FILE *fp;
+    char *modestr;
+
+	fp = fopen(name, mode);
+	if (!fp) {
+		if (*mode == 'r')
+			modestr = "reading";
+		else
+			modestr = "writing";
+		fprintf(stderr, "%s: could not open file %s for %s\n",
+			cmd, name, modestr);
+		exit(-1);
+	}
+	return (fp);
+}
+
 static char* use_msg =
+#ifdef HAVE_ANN
 "Usage: mingle <options> <file>\n\
     -a t - max. turning angle [0-180] (40)\n\
     -c i - compatability measure; 0 : distance, 1: full (default)\n\
@@ -63,8 +87,23 @@ static char* use_msg =
     -p t - balance for avoiding sharp angles\n\
            The larger the t, the more sharp angles are allowed\n\
     -r R - max. recursion level with agglomerative ink saving method (100)\n\
-    -T t - output format\n\
+    -T fmt - output format: gv (default) or simple\n\
     -v - verbose\n";
+#else
+"Usage: mingle <options> <file>\n\
+    -a t - max. turning angle [0-180] (40)\n\
+    -c i - compatability measure; 0 : distance, 1: full (default)\n\
+    -i iter: number of outer iterations/subdivisions (4)\n\
+    -k k - number of neighbors in the nearest neighbor graph of edges (10)\n\
+    -K k - the force constant\n\
+    -m method - method used. 0 (force directed, default), 2 (cluster+ink saving)\n\
+    -o fname - write output to file fname (stdout)\n\
+    -p t - balance for avoiding sharp angles\n\
+           The larger the t, the more sharp angles are allowed\n\
+    -r R - max. recursion level with agglomerative ink saving method (100)\n\
+    -T fmt - output format: gv (default) or simple\n\
+    -v - verbose\n";
+#endif
 
 static void
 usage (int eval)
@@ -77,6 +116,8 @@ static void init(int argc, char *argv[], opts_t* opts)
 {
 	unsigned int c;
 	char* CmdName = argv[0];
+	real s;
+    int i;
 
     opterr = 0;
 	opts->outer_iter = 4;
@@ -87,7 +128,7 @@ static void init(int argc, char *argv[], opts_t* opts)
 #endif
 	opts->compatibility_method = COMPATIBILITY_FULL;
 	opts->K = -1;
-	opts->fmt = "gv";
+	opts->fmt = FMT_GV;
 	opts->nneighbors = 10;
 	opts->max_recursion = 100;
 	opts->angle_param = -1;
@@ -95,6 +136,69 @@ static void init(int argc, char *argv[], opts_t* opts)
 
 	while ((c = getopt(argc, argv, ":a:c:i:k:K:m:o:p:r:T:v")) != -1) {
 		switch (c) {
+		case 'a':
+            if ((sscanf(optarg,"%lf",&s) > 0) && (s > 0))
+				opts->angle =  M_PI*s/180;
+			else 
+				fprintf (stderr, "-a arg %s must be positive real - ignored\n", optarg); 
+			break;
+		case 'c':
+            if ((sscanf(optarg,"%d",&i) > 0) && (0 <= i) && (i <= COMPATIBILITY_FULL))
+				opts->compatibility_method =  i;
+			else 
+				fprintf (stderr, "-c arg %s must be an integer in [0,%d] - ignored\n", optarg, COMPATIBILITY_FULL); 
+			break;
+		case 'i':
+            if ((sscanf(optarg,"%d",&i) > 0) && (i >= 0))
+				opts->outer_iter =  i;
+			else 
+				fprintf (stderr, "-i arg %s must be a non-negative integer - ignored\n", optarg); 
+			break;
+		case 'k':
+            if ((sscanf(optarg,"%d",&i) > 0) && (i >= 2))
+				opts->nneighbors =  i;
+			else 
+				fprintf (stderr, "-k arg %s must be an integer >= 2 - ignored\n", optarg); 
+			break;
+		case 'K':
+            if ((sscanf(optarg,"%lf",&s) > 0) && (s > 0))
+				opts->K =  s;
+			else 
+				fprintf (stderr, "-K arg %s must be positive real - ignored\n", optarg); 
+			break;
+		case 'm':
+            if ((sscanf(optarg,"%d",&i) > 0) && (0 <= i) && (i <= METHOD_INK)
+#ifndef HAVE_ANN
+				&& (i != METHOD_INK_AGGLOMERATE)
+#endif 
+               )
+				opts->method =  i;
+			else 
+				fprintf (stderr, "-k arg %s must be an integer >= 2 - ignored\n", optarg); 
+			break;
+		case 'o':
+			outfile = openFile(optarg, "w", CmdName);
+			break;
+		case 'p':
+            if ((sscanf(optarg,"%lf",&s) > 0))
+				opts->angle_param =  s;
+			else 
+				fprintf (stderr, "-p arg %s must be real - ignored\n", optarg); 
+			break;
+		case 'r':
+            if ((sscanf(optarg,"%d",&i) > 0) && (i >= 0))
+				opts->max_recursion =  i;
+			else 
+				fprintf (stderr, "-r arg %s must be a non-negative integer - ignored\n", optarg); 
+			break;
+		case 'T':
+			if ((*optarg == 'g') && ((*(optarg+1) == 'v'))) 
+				opts->fmt = FMT_GV;
+			else if ((*optarg == 's') && (!strcmp(optarg+1,"imple"))) 
+				opts->fmt = FMT_SIMPLE;
+			else
+				fprintf (stderr, "-T arg %s must be \"gv\" or \"simple\" - ignored\n", optarg); 
+			break;
 		case 'v':
 			Verbose = 1;
 			break;
@@ -115,7 +219,7 @@ static void init(int argc, char *argv[], opts_t* opts)
 
     if (argc > 0)
 		Files = argv;
-    outfile = stdout;
+    if (!outfile) outfile = stdout;
 }
 
 static int
@@ -136,11 +240,11 @@ bundle (Agraph_t* g, opts_t* opts)
     initDotIO(g);
 	A = SparseMatrix_import_dot(g, dim, &label_sizes, &x, &n_edge_label_nodes, NULL, FORMAT_CSR, NULL);
 	if (!A){
-		fprintf (stderr, "Error: could not convert graph %s (%s) into matrix\n", agnameof(g), fname);
+		agerr (AGERR, "Error: could not convert graph %s (%s) into matrix\n", agnameof(g), fname);
 		return 1;
     }
     if (x == NULL) {
-		fprintf (stderr, "Error: graph %s (%s) has missing \"pos\" information\n", agnameof(g), fname);
+		agerr (AGPREV, " in file %s\n",  fname);
 		return 1;
     }
 
@@ -175,7 +279,10 @@ bundle (Agraph_t* g, opts_t* opts)
 
 	edges = edge_bundling(A, 2, x, opts->outer_iter, opts->K, opts->method, opts->nneighbors, opts->compatibility_method, opts->max_recursion, opts->angle_param, opts->angle, 0);
 	
-    pedge_export_gv(stdout, A->m, edges);
+	if (opts->fmt == FMT_GV)
+    	pedge_export_gv(outfile, A->m, edges);   /* FIX */
+    else
+    	pedge_export_gv(outfile, A->m, edges);
 	return rv;
 }
 
