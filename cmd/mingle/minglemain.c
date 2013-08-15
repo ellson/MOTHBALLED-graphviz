@@ -139,6 +139,10 @@ bundle (Agraph_t* g, opts_t* opts)
 		fprintf (stderr, "Error: could not convert graph %s (%s) into matrix\n", agnameof(g), fname);
 		return 1;
     }
+    if (x == NULL) {
+		fprintf (stderr, "Error: graph %s (%s) has missing \"pos\" information\n", agnameof(g), fname);
+		return 1;
+    }
 
 	A = SparseMatrix_symmetrize(A, TRUE);
 	ia = A->ia; ja = A->ja;
