@@ -2503,7 +2503,7 @@ else
     fi
   ])
 fi
-AM_CONDITIONAL(WITH_ANN, [test "x$use_ann" == "xYes"])
+AM_CONDITIONAL(WITH_ANN, [test x"${use_ann%% *}" == "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GLADE.

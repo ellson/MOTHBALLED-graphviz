@@ -12,12 +12,14 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/cgraph \
 	-I$(top_srcdir)/lib/cdt
 
+if WITH_ANN
 bin_PROGRAMS = mingle
 
 #man_MANS = mingle.1
 #pdf_DATA = mingle.1.pdf
 man_MANS =
 pdf_DATA = 
+endif
 
 mingle_SOURCES = minglemain.c
 mingle_CPPFLAGS = $(AM_CPPFLAGS)

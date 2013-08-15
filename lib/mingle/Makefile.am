@@ -13,7 +13,9 @@ AM_CPPFLAGS = \
 
 noinst_HEADERS =  edge_bundling.h ink.h agglomerative_bundling.h nearest_neighbor_graph.h nearest_neighbor_graph_ann.h
 
+if WITH_ANN
 noinst_LTLIBRARIES = libmingle_C.la
+endif
 
 libmingle_C_la_SOURCES = edge_bundling.c ink.c agglomerative_bundling.c nearest_neighbor_graph.c nearest_neighbor_graph_ann.cpp
 
