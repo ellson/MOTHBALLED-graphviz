@@ -96,7 +96,7 @@ static Agglomerative_Ink_Bundling Agglomerative_Ink_Bundling_establish(Agglomera
   real ink0, ink1, grand_total_ink = 0, grand_total_gain = 0;
   point_t meet1, meet2;
 
-  if (Verbose) fprintf(stderr,"level ===================== %d, n = %d\n",grid->level, n);
+  if (Verbose > 1) fprintf(stderr,"level ===================== %d, n = %d\n",grid->level, n);
   cedges = MALLOC(sizeof(Vector)*n);
   cinks = MALLOC(sizeof(real)*n);
   for (i = 0; i < n; i++) cedges[i] = Vector_new(1, sizeof(int), NULL);
@@ -273,7 +273,7 @@ static Agglomerative_Ink_Bundling Agglomerative_Ink_Bundling_establish(Agglomera
     cgrid->inks = cinks;
     cgrid->total_ink = grand_total_ink;
 
-    if (Verbose) fprintf(stderr,"level %d->%d, edges %d -> %d, ink %f->%f , gain = %f, or %f\n", grid->level, cgrid->level, grid->n, 
+    if (Verbose > 1) fprintf(stderr,"level %d->%d, edges %d -> %d, ink %f->%f , gain = %f, or %f\n", grid->level, cgrid->level, grid->n, 
 			 cgrid->n, grid->total_ink, grand_total_ink, grid->total_ink - grand_total_ink, grand_total_gain);	 
     assert(ABS(grid->total_ink - cgrid->total_ink - grand_total_gain) <= 0.0001*grid->total_ink);
 
@@ -282,7 +282,7 @@ static Agglomerative_Ink_Bundling Agglomerative_Ink_Bundling_establish(Agglomera
     cgrid->prev = grid;
 
   } else {
-    if (Verbose) fprintf(stderr,"no more improvement, orig ink = %f, gain = %f, stop and final bundling found\n", grand_total_ink, grand_total_gain);
+    if (Verbose > 1) fprintf(stderr,"no more improvement, orig ink = %f, gain = %f, stop and final bundling found\n", grand_total_ink, grand_total_gain);
     /* no more improvement, stop and final bundling found */
     for (i = 0; i < n; i++) matching[i] = i;
   }
@@ -320,7 +320,7 @@ static Agglomerative_Ink_Bundling Agglomerative_Ink_Bundling_aggressive_establis
   real ink0, ink1, grand_total_ink = 0, grand_total_gain = 0;
   point_t meet1, meet2;
 
-  if (Verbose) fprintf(stderr,"level ===================== %d, n = %d\n",grid->level, n);
+  if (Verbose > 1) fprintf(stderr,"level ===================== %d, n = %d\n",grid->level, n);
   cedges = MALLOC(sizeof(Vector)*n);
   cinks = MALLOC(sizeof(real)*n);
   for (i = 0; i < n; i++) cedges[i] = Vector_new(1, sizeof(int), NULL);
@@ -521,7 +521,7 @@ static Agglomerative_Ink_Bundling Agglomerative_Ink_Bundling_aggressive_establis
     cgrid->inks = cinks;
     cgrid->total_ink = grand_total_ink;
 
-    if (Verbose) fprintf(stderr,"level %d->%d, edges %d -> %d, ink %f->%f , gain = %f, or %f\n", grid->level, cgrid->level, grid->n, 
+    if (Verbose > 1) fprintf(stderr,"level %d->%d, edges %d -> %d, ink %f->%f , gain = %f, or %f\n", grid->level, cgrid->level, grid->n, 
 			 cgrid->n, grid->total_ink, grand_total_ink, grid->total_ink - grand_total_ink, grand_total_gain);	 
     assert(ABS(grid->total_ink - cgrid->total_ink - grand_total_gain) <= 0.0001*grid->total_ink);
 
@@ -530,7 +530,7 @@ static Agglomerative_Ink_Bundling Agglomerative_Ink_Bundling_aggressive_establis
     cgrid->prev = grid;
 
   } else {
-    if (Verbose) fprintf(stderr,"no more improvement, orig ink = %f, gain = %f, stop and final bundling found\n", grand_total_ink, grand_total_gain);
+    if (Verbose > 1) fprintf(stderr,"no more improvement, orig ink = %f, gain = %f, stop and final bundling found\n", grand_total_ink, grand_total_gain);
     /* no more improvement, stop and final bundling found */
     for (i = 0; i < n; i++) matching[i] = i;
   }
@@ -578,7 +578,7 @@ static pedge* agglomerative_ink_bundling_internal(int dim, SparseMatrix A, pedge
   clock_t start;
   
   (*recurse_level)++;
-  if (Verbose) fprintf(stderr, "agglomerative_ink_bundling_internal, recurse level ------- %d\n",*recurse_level);
+  if (Verbose > 1) fprintf(stderr, "agglomerative_ink_bundling_internal, recurse level ------- %d\n",*recurse_level);
 
   assert(A->m == A->n);
 
@@ -586,7 +586,7 @@ static pedge* agglomerative_ink_bundling_internal(int dim, SparseMatrix A, pedge
 
   start = clock();
   grid = Agglomerative_Ink_Bundling_new(A, edges, angle_param, angle);
-  if (Verbose)
+  if (Verbose > 1)
     fprintf(stderr, "CPU for agglomerative bundling %f\n", ((real) (clock() - start))/CLOCKS_PER_SEC);
   ink0 = grid->total_ink;
 
@@ -599,14 +599,14 @@ static pedge* agglomerative_ink_bundling_internal(int dim, SparseMatrix A, pedge
 
   if (*current_ink < 0){
     *current_ink = *ink00 = ink0;
-    if (Verbose)
+    if (Verbose > 1)
       fprintf(stderr,"initial total ink = %f\n",*current_ink);
   } 
   if (ink1 < ink0){
     *current_ink -= ink0 - ink1;
   }
 
-  if (Verbose) fprintf(stderr,"ink: %f->%f, edges: %d->%d, current ink = %f, percentage gain over original = %f\n", ink0, ink1, grid->n, cgrid->n, *current_ink, (ink0-ink1)/(*ink00));
+  if (Verbose > 1) fprintf(stderr,"ink: %f->%f, edges: %d->%d, current ink = %f, percentage gain over original = %f\n", ink0, ink1, grid->n, cgrid->n, *current_ink, (ink0-ink1)/(*ink00));
 
   /* if no meaningful improvement (0.0001%), out, else rebundle the middle section */
   if ((ink0-ink1)/(*ink00) < 0.000001 || *recurse_level > MAX_RECURSE_LEVEL) {
@@ -766,7 +766,7 @@ pedge* agglomerative_ink_bundling(int dim, SparseMatrix A, pedge* edges, int nne
   edges2 = agglomerative_ink_bundling_internal(dim, A, edges, nneighbor, &recurse_level, MAX_RECURSE_LEVEL, angle_param, angle, open_gl, &current_ink, &ink0, flag);
 
   
-  if (Verbose)
+  if (Verbose > 1)
     fprintf(stderr,"initial total ink = %f, final total ink = %f, inksaving = %f percent, total ink_calc = %f, avg ink_calc per edge = %f\n", ink0, current_ink, (ink0-current_ink)/ink0, ink_count,  ink_count/(real) A->m);
   return edges2;
 }

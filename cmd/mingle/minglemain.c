@@ -132,12 +132,12 @@ static void init(int argc, char *argv[], opts_t* opts)
 	opts->nneighbors = 10;
 	opts->max_recursion = 100;
 	opts->angle_param = -1;
-	opts->angle = 40/180*M_PI;
+	opts->angle = 40.0/180.0*M_PI;
 
-	while ((c = getopt(argc, argv, ":a:c:i:k:K:m:o:p:r:T:v")) != -1) {
+	while ((c = getopt(argc, argv, ":a:c:i:k:K:m:o:p:r:T:v:")) != -1) {
 		switch (c) {
 		case 'a':
-            if ((sscanf(optarg,"%lf",&s) > 0) && (s > 0))
+            if ((sscanf(optarg,"%lf",&s) > 0) && (s >= 0))
 				opts->angle =  M_PI*s/180;
 			else 
 				fprintf (stderr, "-a arg %s must be positive real - ignored\n", optarg); 
@@ -201,10 +201,18 @@ static void init(int argc, char *argv[], opts_t* opts)
 			break;
 		case 'v':
 			Verbose = 1;
+            if ((sscanf(optarg,"%d",&i) > 0) && (i >= 0))
+				Verbose =  i;
+			else 
+				fprintf (stderr, "-v arg %s must be a non-negative integer - ignored\n", optarg); 
 			break;
 		case ':':
-			fprintf(stderr, "%s: option -%c missing argument\n", CmdName, optopt);
-			usage(1);
+			if (optopt == 'v')
+				Verbose = 1;
+			else {
+				fprintf(stderr, "%s: option -%c missing argument\n", CmdName, optopt);
+				usage(1);
+			}
 			break;
 		case '?':
 			if (optopt == '?')
@@ -220,6 +228,18 @@ static void init(int argc, char *argv[], opts_t* opts)
     if (argc > 0)
 		Files = argv;
     if (!outfile) outfile = stdout;
+    if (Verbose) {
+       fprintf (stderr, "Mingle params:\n");
+       fprintf (stderr, "  outer_iter = %d\n", opts->outer_iter);
+       fprintf (stderr, "  method = %d\n", opts->method);
+       fprintf (stderr, "  compatibility_method = %d\n", opts->compatibility_method);
+       fprintf (stderr, "  K = %.02f\n", opts->K);
+       fprintf (stderr, "  fmt = %s\n", (opts->fmt?"simple":"gv"));
+       fprintf (stderr, "  nneighbors = %d\n", opts->nneighbors);
+       fprintf (stderr, "  max_recursion = %d\n", opts->max_recursion);
+       fprintf (stderr, "  angle_param = %.02f\n", opts->angle_param);
+       fprintf (stderr, "  angle = %.02f\n", 180*opts->angle/M_PI);
+    }
 }
 
 static int

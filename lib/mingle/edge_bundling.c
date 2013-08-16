@@ -570,7 +570,7 @@ static pedge* force_directed_edge_bundling(SparseMatrix A, pedge* edges, int max
   real step = step0;
   real fnorm_a, fnorm_t, edge_length, start;
   
-  if (Verbose)
+  if (Verbose > 1)
     fprintf(stderr, "total interaction pairs = %d out of %d, avg neighbors per edge = %f\n",A->nz, A->m*A->m, A->nz/(real) A->m);
 
   force_t = MALLOC(sizeof(real)*dim*(np));
@@ -618,7 +618,7 @@ static pedge* force_directed_edge_bundling(SparseMatrix A, pedge* edges, int max
       
     }
     step = step*0.9;
-  if (Verbose)
+  if (Verbose > 1)
     fprintf(stderr, "iter ==== %d cpu = %f npoints = %d\n",iter, ((real) (clock() - start))/CLOCKS_PER_SEC, np - 2);
 
 #ifdef OPENGL
@@ -668,7 +668,7 @@ static pedge* modularity_ink_bundling(int dim, int ne, SparseMatrix B, pedge* ed
 #endif
 
   assert(!flag);
-  if (Verbose) fprintf(stderr, "there are %d clusters, modularity = %f\n",nclusters, modularity);
+  if (Verbose > 1) fprintf(stderr, "there are %d clusters, modularity = %f\n",nclusters, modularity);
   
   C = SparseMatrix_new(1, 1, 1, MATRIX_TYPE_PATTERN, FORMAT_COORD);
   
@@ -683,7 +683,7 @@ static pedge* modularity_ink_bundling(int dim, int ne, SparseMatrix B, pedge* ed
   clusters = D->ja;
   for (i = 0; i < nclusters; i++){
     ink1 = ink(edges, clusterp[i+1] - clusterp[i], &(clusters[clusterp[i]]), &ink0, &meet1, &meet2, angle_param, angle);
-    if (Verbose)
+    if (Verbose > 1)
       fprintf(stderr,"nedges = %d ink0 = %f, ink1 = %f\n",clusterp[i+1] - clusterp[i], ink0, ink1);
     if (ink1 < ink0){
       for (j = clusterp[i]; j < clusterp[i+1]; j++){
@@ -746,7 +746,7 @@ static SparseMatrix check_compatibility(SparseMatrix A, int ne, pedge *edges, in
   //SparseMatrix_print("C",C);
   SparseMatrix_delete(B);
   B = C;
-  if (Verbose)
+  if (Verbose > 1)
     fprintf(stderr, "edge compatibilitu time = %f\n",((real) (clock() - start))/CLOCKS_PER_SEC);
   return B;
 }
@@ -789,9 +789,6 @@ pedge* edge_bundling(SparseMatrix A0, int dim, real *x, int maxit_outer, real K,
 
 
   if (Verbose) start = clock();
-#ifndef HAVE_ANN
-  method = METHOD_INK; 
-#endif
   if (method == METHOD_INK){
 
     /* go through the links and make sure edges are compatable */
