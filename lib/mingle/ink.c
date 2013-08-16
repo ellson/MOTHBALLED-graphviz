@@ -19,28 +19,28 @@
 
 double ink_count;
 
-point_t addPoint (point_t a, point_t b)
+static point_t addPoint (point_t a, point_t b)
 {
   a.x += b.x;
   a.y += b.y;
   return a;
 }
 
-point_t subPoint (point_t a, point_t b)
+static point_t subPoint (point_t a, point_t b)
 {
   a.x -= b.x;
   a.y -= b.y;
   return a;
 }
 
-point_t scalePoint (point_t a, double d)
+static point_t scalePoint (point_t a, double d)
 {
   a.x *= d;
   a.y *= d;
   return a;
 }
 
-double dotPoint(point_t a, point_t b){
+static double dotPoint(point_t a, point_t b){
   return a.x*b.x + a.y*b.y;
 }
 
@@ -49,7 +49,7 @@ point_t Origin;
 
 /* sumLengths:
  */
-double sumLengths_avoid_bad_angle(point_t* points, int npoints, point_t end, point_t meeting, real angle_param) 
+static double sumLengths_avoid_bad_angle(point_t* points, int npoints, point_t end, point_t meeting, real angle_param) 
 {
   /* avoid sharp turns, we want cos_theta to be as close to -1 as possible */
   int i;
@@ -74,7 +74,7 @@ double sumLengths_avoid_bad_angle(point_t* points, int npoints, point_t end, poi
   // distance of single line from 'meeting' to 'end'
   return sum*(cos_max + angle_param);/* straight line gives angle_param - 1, turning angle of 180 degree gives angle_param + 1 */
 }
-double sumLengths(point_t* points, int npoints, point_t end, point_t meeting) 
+static double sumLengths(point_t* points, int npoints, point_t end, point_t meeting) 
 {
   int i;
   double sum = 0;
@@ -95,7 +95,7 @@ double sumLengths(point_t* points, int npoints, point_t end, point_t meeting)
 
 /* bestInk:
  */
-double bestInk(point_t* points, int npoints, point_t begin, point_t end, double prec, point_t *meet, real angle_param)
+static double bestInk(point_t* points, int npoints, point_t begin, point_t end, double prec, point_t *meet, real angle_param)
 {
   point_t first, second, third, fourth, diff, meeting;
   double value1, value2, value3, value4;

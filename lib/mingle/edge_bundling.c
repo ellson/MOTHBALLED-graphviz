@@ -395,7 +395,8 @@ void pedge_export_mma(FILE *fp, int ne, pedge *edges){
   fprintf(fp,"}]\n");
 }
 
-void pedge_print(char *comments, pedge e){
+#ifdef DEBUG
+static void pedge_print(char *comments, pedge e){
   int i, j, dim;
   dim = e->dim;
   fprintf(stderr,"%s", comments);
@@ -410,6 +411,7 @@ void pedge_print(char *comments, pedge e){
   }
   fprintf(stderr,"\n");
 }
+#endif
 
 pedge pedge_realloc(pedge e, int n){
   if (n <= e->npoints) return e;
@@ -616,6 +618,7 @@ static pedge* force_directed_edge_bundling(SparseMatrix A, pedge* edges, int max
       
     }
     step = step*0.9;
+  if (Verbose)
     fprintf(stderr, "iter ==== %d cpu = %f npoints = %d\n",iter, ((real) (clock() - start))/CLOCKS_PER_SEC, np - 2);
 
 #ifdef OPENGL
@@ -639,7 +642,7 @@ static real absfun(real x){
 
 
 
-pedge* modularity_ink_bundling(int dim, int ne, SparseMatrix B, pedge* edges, real angle_param, real angle){
+static pedge* modularity_ink_bundling(int dim, int ne, SparseMatrix B, pedge* edges, real angle_param, real angle){
   int *assignment = NULL, flag, nclusters;
   real modularity;
   int *clusterp, *clusters;
@@ -680,7 +683,8 @@ pedge* modularity_ink_bundling(int dim, int ne, SparseMatrix B, pedge* edges, re
   clusters = D->ja;
   for (i = 0; i < nclusters; i++){
     ink1 = ink(edges, clusterp[i+1] - clusterp[i], &(clusters[clusterp[i]]), &ink0, &meet1, &meet2, angle_param, angle);
-    fprintf(stderr,"nedges = %d ink0 = %f, ink1 = %f\n",clusterp[i+1] - clusterp[i], ink0, ink1);
+    if (Verbose)
+      fprintf(stderr,"nedges = %d ink0 = %f, ink1 = %f\n",clusterp[i+1] - clusterp[i], ink0, ink1);
     if (ink1 < ink0){
       for (j = clusterp[i]; j < clusterp[i+1]; j++){
 	/* make this edge 5 points, insert two meeting points at 1 and 2, make 3 the last point */
@@ -742,7 +746,8 @@ static SparseMatrix check_compatibility(SparseMatrix A, int ne, pedge *edges, in
   //SparseMatrix_print("C",C);
   SparseMatrix_delete(B);
   B = C;
-  fprintf(stderr, "edge compatibilitu time = %f\n",((real) (clock() - start))/CLOCKS_PER_SEC);
+  if (Verbose)
+    fprintf(stderr, "edge compatibilitu time = %f\n",((real) (clock() - start))/CLOCKS_PER_SEC);
   return B;
 }
 
