@@ -329,7 +329,7 @@ void pedge_export_gv(FILE *fp, int ne, pedge *edges){
 	t = edge->wgts[j]/maxwgt;
 	/* interpotate between red (t = 1) to blue (t = 0) */
 	r = 255*t; g = 0; b = 255*(1-t); b = 255*(1-t);
-	if (j != 0) fprintf(fp,":");
+	if (j != 0) fprintf(fp,";");
 	fprint_rgb(fp, r, g, b, 85);
 	fprintf(fp,",%f",len_total/len_total0);
       }
