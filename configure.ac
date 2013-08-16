@@ -2491,6 +2491,9 @@ else
     AC_SUBST([ANN_CFLAGS])
     AC_SUBST([ANN_LIBS])
   ],[
+    use_ann="No (no ann.pc found)"
+  ])
+  if test "$use_ann" != "Yes"; then
     if test -f /usr/lib$LIBPOSTFIX/libANN.so; then
       AC_DEFINE_UNQUOTED(HAVE_ANN,1,
         [Define if you have the ann library])
@@ -2508,7 +2511,7 @@ else
         use_ann="No (ANN library not available)"
       fi
     fi
-  ])
+  fi
 fi
 AM_CONDITIONAL(WITH_ANN, [test x"${use_ann%% *}" == "xYes"])
 
