@@ -278,7 +278,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mingle", "cmd\mingle\mingle
 		{D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04} = {D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ann", "lib\ann\MS_Win32\dll\dll.vcproj", "{A7D00B21-CB9C-4BBB-8DEE-51025104F867}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libann", "lib\ann\MS_Win32\dll\dll.vcproj", "{A7D00B21-CB9C-4BBB-8DEE-51025104F867}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
