@@ -15,10 +15,8 @@ AM_CPPFLAGS = \
 if WITH_ANN
 bin_PROGRAMS = mingle
 
-#man_MANS = mingle.1
-#pdf_DATA = mingle.1.pdf
-man_MANS =
-pdf_DATA = 
+man_MANS = mingle.1
+pdf_DATA = mingle.1.pdf
 endif
 
 mingle_SOURCES = minglemain.c
@@ -35,7 +33,7 @@ mingle_LDADD = \
 	$(ANN_LIBS) -lstdc++ -lm
 
 mingle.1.pdf: $(srcdir)/mingle.1
-	- @GROFF@ -Tps -man -t $(srcdir)/mingle.1 | @PS2PDF@ - - >mingle.1.pdf
+	- @GROFF@ -e -Tps -man -t $(srcdir)/mingle.1 | @PS2PDF@ - - >mingle.1.pdf
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) mingle.vcproj
 
