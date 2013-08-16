@@ -21,7 +21,7 @@
     #pragma comment( lib, "minglelib.lib" )
     #pragma comment( lib, "neatogen.lib" )
     #pragma comment( lib, "rbtree.lib" )
-    #pragma comment( lib, "common.lib" )
+    #pragma comment( lib, "cdt.lib" )
 #endif   /* not WIN32_DLL */
 
 #include <cgraph.h>
