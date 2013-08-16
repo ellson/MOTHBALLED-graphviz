@@ -2491,15 +2491,22 @@ else
     AC_SUBST([ANN_CFLAGS])
     AC_SUBST([ANN_LIBS])
   ],[
-    AC_CHECK_PROGS(ANN2FIG,ann2fig,false)
-    if test "$ANN2FIG" != "false"; then
+    if test -f /usr/lib$LIBPOSTFIX/libANN.so; then
       AC_DEFINE_UNQUOTED(HAVE_ANN,1,
         [Define if you have the ann library])
       ANN_LIBS=-lANN
       AC_SUBST([ANN_LIBS])
       use_ann="Yes (but no ann.pc found)"
     else
-      use_ann="No (ANN library not available)"
+      if test -f /usr/lib$LIBPOSTFIX/libann.so; then
+        AC_DEFINE_UNQUOTED(HAVE_ANN,1,
+          [Define if you have the ann library])
+        ANN_LIBS=-lann
+        AC_SUBST([ANN_LIBS])
+        use_ann="Yes (but no ann.pc found)"
+      else
+        use_ann="No (ANN library not available)"
+      fi
     fi
   ])
 fi
