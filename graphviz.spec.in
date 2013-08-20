@@ -258,6 +258,7 @@ fi
 %{_mandir}/man1/gvpack.1*
 %{_mandir}/man1/gvpr.1*
 %{_mandir}/man1/gxl2gv.1*
+%{_mandir}/man1/mingle.1*
 %{_mandir}/man1/mm2gv.1*
 %{_mandir}/man1/neato.1*
 %{_mandir}/man1/nop.1*
