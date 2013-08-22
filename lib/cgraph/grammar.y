@@ -126,7 +126,7 @@ compound 	:	simple rcompound optattr
 
 simple		:	nodelist | subgraph ;
 
-rcompound	:	T_edgeop {getedgeitems(1);} simple rcompound {getedgeitems(2); $$ = 1;}
+rcompound	:	T_edgeop {getedgeitems(1);} simple {getedgeitems(2);} rcompound {$$ = 1;}
 			|	/* empty */ {$$ = 0;}
 			;
 
@@ -376,6 +376,10 @@ static void appendnode(char *name, char *port, char *sport)
 }
 
 /* apply current optional attrs to nodelist and clean up lists */
+/* what's bad is that this could also be endsubg.  also, you can't
+clean up S->subg in closesubg() because S->subg might be needed
+to construct edges.  these are the sort of notes you write to yourself
+in the future. */
 static void endnode()
 {
 	item	*ptr;
@@ -385,6 +389,8 @@ static void endnode()
 		applyattrs(ptr->u.n);
 	deletelist(&(S->nodelist));
 	deletelist(&(S->attrlist));
+	deletelist(&(S->edgelist));
+	S->subg = 0;  /* notice a pattern here? :-( */
 }
 
 /* edges - store up node/subg lists until optional edge key can be seen */
