@@ -15,10 +15,10 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/$(GRAPH) \
 	-I$(top_srcdir)/lib/cdt
 	
+if WITH_GDIPLUS
 PATCHES = GdiPlusEnums.h.patch GdiPlusHeaders.h.patch GdiPlusimageAttributes.h.patch GdiPlusImaging.h.patch
 PATCHED_HEADS = $(PATCHES:.h.patch=.h)
 
-if WITH_GDIPLUS
 noinst_LTLIBRARIES = libgvplugin_gdiplus_C.la
 if WITH_WIN32
 lib_LTLIBRARIES = libgvplugin_gdiplus.la
@@ -60,6 +60,7 @@ gvloadimage_gdiplus.lo : $(GDIPLUS_HEADS)
 
 gvrender_gdiplus.lo : $(GDIPLUS_HEADS)
 
+if WITH_GDIPLUS
 # patched GDI+ headers are dependent on the patches
 $(PATCHED_HEADS) : %.h : %.h.patch
 	
@@ -70,5 +71,6 @@ $(GDIPLUS_HEADS) : %.h : $(PLATFORMSDKINCLUDE_ESCAPED)/%.h
 	then patch -o $*.h "$(PLATFORMSDKINCLUDE)\$*.h" $*.h.patch; \
 	else cp "$(PLATFORMSDKINCLUDE)\$*.h" $*.h; \
 	fi
+endif
 	
 EXTRA_DIST = $(PATCHES) gvplugin_gdiplus.vcproj gvplugin_gdiplus.def
