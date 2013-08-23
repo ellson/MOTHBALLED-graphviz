@@ -899,6 +899,10 @@ static Agraph_t **readGraphs(int *cp, GVC_t* gvc)
     while ((g = nextGraph(&ig)) != 0) {
 	if (verbose)
 	    fprintf(stderr, "Reading graph %s\n", agnameof(g));
+	if (agnnodes(g) == 0) {
+	    fprintf(stderr, "Graph %s is empty - ignoring\n", agnameof(g));
+	    continue;
+	}
 	if (cnt >= sz) {
 	    sz += nGraphs;
 	    gs = ALLOC(sz, gs, Agraph_t *);
