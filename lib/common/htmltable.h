@@ -52,6 +52,7 @@ extern "C" {
     typedef struct {
 	htextpara_t *paras;
 	short nparas;
+	char simple;
 	boxf box;
     } htmltxt_t;
 

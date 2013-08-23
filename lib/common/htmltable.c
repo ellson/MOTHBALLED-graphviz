@@ -113,7 +113,7 @@ static void popFontInfo(htmlenv_t * env, htmlfont_t * savp)
 
 static void
 emit_htextparas(GVJ_t * job, int nparas, htextpara_t * paras, pointf p,
-		double halfwidth_x, htmlfont_t finfo, boxf b)
+		double halfwidth_x, htmlfont_t finfo, boxf b, int simple)
 {
     int i, j;
     double center_x, left_x, right_x, fsize_;
@@ -170,8 +170,10 @@ emit_htextparas(GVJ_t * job, int nparas, htextpara_t * paras, pointf p,
 	    tl.fontsize = fsize_;
 	    tl.font = ti->font;
 	    tl.yoffset_layout = ti->yoffset_layout;
-	    /* tl.yoffset_centerline = ti->yoffset_centerline; */
-	    tl.yoffset_centerline = 1;
+	    if (simple)
+		tl.yoffset_centerline = ti->yoffset_centerline;
+	    else
+		tl.yoffset_centerline = 1;
 	    tl.postscript_alias = ti->postscript_alias;
 	    tl.layout = ti->layout;
 	    tl.width = ti->size;
@@ -202,7 +204,7 @@ static void emit_html_txt(GVJ_t * job, htmltxt_t * tp, htmlenv_t * env)
     p.y = env->pos.y + ((double) (tp->box.UR.y + tp->box.LL.y)) / 2.0;
 
     emit_htextparas(job, tp->nparas, tp->paras, p, halfwidth_x, env->finfo,
-		    tp->box);
+		    tp->box, tp->simple);
 }
 
 static void doSide(GVJ_t * job, pointf p, double wd, double ht)
@@ -686,7 +688,6 @@ void emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t * tp)
     env.finfo.color = tp->fontcolor;
     env.finfo.name = tp->fontname;
     env.finfo.size = tp->fontsize;
-    env.finfo.size = tp->fontsize;
     env.imgscale = agget(job->obj->u.n, "imagescale");
     env.objid = job->obj->id;
     env.objid_set = 0;
@@ -946,16 +947,42 @@ static int size_html_txt(graph_t * g, htmltxt_t * ftxt, htmlenv_t * env)
     double mxfsize = 0.0;	/* max. font size for the current line */
     double curbline = 0.0;	/* dist. of current base line from top */
     pointf sz;
-    int i, j, w, width;
+    int i, j;
+    double width;
     char *fname;
     textpara_t lp;
     htmlfont_t lhf;
-    double maxoffset;
+    double maxoffset, mxysize;
+    int simple = 1;              /* one item per param, same font size */
+    double prev_fsize = -1;
 
     lp.font = &lhf;
+
     for (i = 0; i < ftxt->nparas; i++) {
-	width = w = 0;
-	maxoffset = mxfsize = 0;
+	if (ftxt->paras[i].nitems > 1) {
+	    simple = 0;
+	    break;
+	}
+	if (ftxt->paras[i].items[0].font) {
+	    if (ftxt->paras[i].items[0].font->size > 0)
+		fsize = ftxt->paras[i].items[0].font->size;
+	    else
+		fsize = env->finfo.size;
+	}
+	else
+	    fsize = env->finfo.size;
+	if (prev_fsize == -1)
+	    prev_fsize = fsize;
+	else if (fsize != prev_fsize) {
+	    simple = 0;
+	    break;
+	}
+    }
+    ftxt->simple = simple;
+
+    for (i = 0; i < ftxt->nparas; i++) {
+	width = 0;
+	mxysize = maxoffset = mxfsize = 0;
 	for (j = 0; j < ftxt->paras[i].nitems; j++) {
 	    lp.str =
 		strdup_and_subst_obj(ftxt->paras[i].items[j].str,
@@ -985,18 +1012,17 @@ static int size_html_txt(graph_t * g, htmltxt_t * ftxt, htmlenv_t * env)
 	    ftxt->paras[i].items[j].str = lp.str;
 	    ftxt->paras[i].items[j].size = sz.x;
 	    ftxt->paras[i].items[j].yoffset_layout = lp.yoffset_layout;
-	    ftxt->paras[i].items[j].yoffset_centerline =
-		lp.yoffset_centerline;
+	    ftxt->paras[i].items[j].yoffset_centerline = lp.yoffset_centerline;
 	    ftxt->paras[i].items[j].postscript_alias = lp.postscript_alias;
 	    ftxt->paras[i].items[j].layout = lp.layout;
 	    ftxt->paras[i].items[j].free_layout = lp.free_layout;
 	    width += sz.x;
 	    mxfsize = MAX(fsize, mxfsize);
+	    mxysize = MAX(sz.y, mxysize);
 	    maxoffset = MAX(lp.yoffset_centerline, maxoffset);
 	}
 	/* lsize = mxfsize * LINESPACING; */
-	lsize = mxfsize;
-	ftxt->paras[i].size = (double) width;
+	ftxt->paras[i].size = width;
 	/* ysize - curbline is the distance from the previous
 	 * baseline to the bottom of the previous line.
 	 * Then, in the current line, we set the baseline to
@@ -1004,16 +1030,29 @@ static int size_html_txt(graph_t * g, htmltxt_t * ftxt, htmlenv_t * env)
 	 * distance from the previous baseline to the new one.
 	 */
 	/* ftxt->paras[i].lfsize = 5*mxfsize/6 + ysize - curbline; */
-	ftxt->paras[i].lfsize = mxfsize + ysize - curbline - maxoffset;
+	if (simple) {
+	    lsize = mxysize;
+	    if (i == 0)
+		ftxt->paras[i].lfsize = mxfsize;
+	    else
+		ftxt->paras[i].lfsize = mxysize;
+	}
+	else {
+	    lsize = mxfsize;
+	    if (i == 0)
+		ftxt->paras[i].lfsize = mxfsize - maxoffset;
+	    else
+		ftxt->paras[i].lfsize = mxfsize + ysize - curbline - maxoffset;
+	}
 	curbline += ftxt->paras[i].lfsize;
 	xsize = MAX(width, xsize);
 	ysize += lsize;
     }
     ftxt->box.UR.x = xsize;
     if (ftxt->nparas == 1)
-	ftxt->box.UR.y = (int) (mxfsize);
+	ftxt->box.UR.y = mxysize;
     else
-	ftxt->box.UR.y = (int) (ysize);
+	ftxt->box.UR.y = ysize;
     return 0;
 }
 
@@ -2041,8 +2080,8 @@ int make_html_label(void *obj, textlabel_t * lp)
 	lp->dimen.y = box.UR.y - box.LL.y;
     } else {
 	rv |= size_html_txt(g, lbl->u.txt, &env);
-	wd2 = (lbl->u.txt->box.UR.x + 1) / 2;
-	ht2 = (lbl->u.txt->box.UR.y + 1) / 2;
+	wd2 = lbl->u.txt->box.UR.x  / 2;
+	ht2 = lbl->u.txt->box.UR.y  / 2;
 	box = boxfof(-wd2, -ht2, wd2, ht2);
 	lbl->u.txt->box = box;
 	lp->dimen.x = box.UR.x - box.LL.x;
