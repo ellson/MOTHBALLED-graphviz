@@ -953,8 +953,9 @@ static int size_html_txt(graph_t * g, htmltxt_t * ftxt, htmlenv_t * env)
     textpara_t lp;
     htmlfont_t lhf;
     double maxoffset, mxysize;
-    int simple = 1;              /* one item per param, same font size */
+    int simple = 1;              /* one item per param, same font size/face, no flags */
     double prev_fsize = -1;
+    char* prev_fname = NULL;
 
     lp.font = &lhf;
 
@@ -964,16 +965,32 @@ static int size_html_txt(graph_t * g, htmltxt_t * ftxt, htmlenv_t * env)
 	    break;
 	}
 	if (ftxt->paras[i].items[0].font) {
+	    if (ftxt->paras[i].items[0].font->flags) {
+		simple = 0;
+		break;
+	    }
 	    if (ftxt->paras[i].items[0].font->size > 0)
 		fsize = ftxt->paras[i].items[0].font->size;
 	    else
 		fsize = env->finfo.size;
+	    if (ftxt->paras[i].items[0].font->name)
+		fname = ftxt->paras[i].items[0].font->name;
+	    else
+		fname = env->finfo.name;
 	}
-	else
+	else {
 	    fsize = env->finfo.size;
+	    fname = env->finfo.name;
+	}
 	if (prev_fsize == -1)
 	    prev_fsize = fsize;
 	else if (fsize != prev_fsize) {
+	    simple = 0;
+	    break;
+	}
+	if (prev_fname == NULL)
+	    prev_fname = fname;
+	else if (strcmp(fname,prev_fname)) {
 	    simple = 0;
 	    break;
 	}
