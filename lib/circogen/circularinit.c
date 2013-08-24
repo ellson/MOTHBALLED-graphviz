@@ -120,6 +120,7 @@ Agraph_t **circomps(Agraph_t * g, int *cnt)
 
 #ifndef WITH_CGRAPH
     dg = agopen("derived", AGFLAG_STRICT);
+    agbindrec (dg, "info", sizeof(Agraphinfo_t), TRUE);
 #else /* WITH_CGRAPH */
     dg = agopen("derived", Agstrictundirected,NIL(Agdisc_t *));
 #endif /* WITH_CGRAPH */
