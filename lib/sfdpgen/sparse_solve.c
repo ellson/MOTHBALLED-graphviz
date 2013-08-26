@@ -22,7 +22,7 @@
 #include "types.h"
 #include "globals.h"
 
-#define DEBUG_PRINT
+/* #define DEBUG_PRINT */
 
 struct uniform_stress_matmul_data{
   real alpha;

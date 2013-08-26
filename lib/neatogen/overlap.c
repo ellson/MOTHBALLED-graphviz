@@ -296,6 +296,9 @@ OverlapSmoother OverlapSmoother_new(SparseMatrix A, int m,
     sm->data = NULL;
   }
 
+  sm->tol_cg = 0.01;
+  sm->maxit_cg = sqrt((double) A->m);
+
   lambda = sm->lambda = N_GNEW(m,real);
   for (i = 0; i < m; i++) sm->lambda[i] = lambda0;
   

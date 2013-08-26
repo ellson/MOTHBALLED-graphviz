@@ -834,7 +834,9 @@ real StressMajorizationSmoother_smooth(StressMajorizationSmoother sm, int dim, r
   w = (real*) Lw->a;
   iw = Lw->ia; jw = Lw->ja;
 
+#ifdef DEBUG_PRINT
   if (Verbose) fprintf(stderr, "initial stress = %f\n", get_stress(m, dim, iw, jw, w, d, x, sm->scaling, sm->data, 1));
+#endif
   /* for the additional matrix L due to the position constraints */
   if (sm->scheme == SM_SCHEME_NORMAL_ELABEL){
     get_edge_label_matrix(sm->data, m, dim, x, &Lc, &x00);
@@ -996,7 +998,9 @@ real StressMajorizationSmoother_smooth(StressMajorizationSmoother sm, int dim, r
   _statistics[1] += iter-1;
 #endif
 
+#ifdef DEBUG_PRINT
   if (Verbose) fprintf(stderr, "iter = %d, final stress = %f\n", iter, get_stress(m, dim, iw, jw, w, d, x, sm->scaling, sm->data, 1));
+#endif
 
  RETURN:
   SparseMatrix_delete(Lwdd);
