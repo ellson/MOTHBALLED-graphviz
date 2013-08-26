@@ -1060,7 +1060,12 @@ static adjust_data *getAdjustMode(Agraph_t* g, char *s, adjust_data* dp)
 	    ap++;
 	}
 	if (ap->attrib == NULL ) {
-	    if (mapbool(s)) {
+	    int v = mapBool(s,'?');
+	    if (v == '?') {
+		agerr (AGWARN, "Unrecognized overlap value \"%s\" - using false\n", s);
+		v = FALSE;
+	    }
+	    if (v) {
 		dp->mode = adjustMode[0].mode;
 		dp->print = adjustMode[0].print;
 	    }
