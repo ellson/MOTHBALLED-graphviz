@@ -94,6 +94,11 @@ dir
 =
 dot ps
 
+clusters
+=
+dot ps
+dot png
+
 clustlabel
 =
 dot ps -Glabelloc=t -Glabeljust=r
