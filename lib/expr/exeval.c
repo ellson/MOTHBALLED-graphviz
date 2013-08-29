@@ -474,6 +474,7 @@ scformat(Sfio_t* sp, void* vp, Sffmt_t* dp)
 		*((void**)vp) = &node->data.variable.symbol->value->data.constant.value;
 		break;
 	case 's':
+	case '[':
 		if (node->type != STRING)
 		{
 			exerror("scanf: %s: string variable address argument expected", node->data.variable.symbol->name);
