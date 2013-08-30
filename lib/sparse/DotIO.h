@@ -21,6 +21,9 @@ enum {COLOR_SCHEME_NONE, COLOR_SCHEME_PASTEL = 1, COLOR_SCHEME_BLUE_YELLOW, COLO
 extern void initDotIO (Agraph_t *g);
 extern Agraph_t* SparseMatrix_read_dot(FILE*);
 
+extern void setDotNodeID (Agnode_t* n, int v);
+extern int getDotNodeID (Agnode_t* n);
+
 /* extern void attach_embedding(Agraph_t *g, int dim, double sc, real *x); */
 extern SparseMatrix SparseMatrix_import_dot(Agraph_t* g, int dim, real **label_sizes, real **x, int *n_edge_label_nodes,
 					    int **edge_label_nodes, int format, SparseMatrix *D);

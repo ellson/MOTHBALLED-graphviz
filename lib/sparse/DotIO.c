@@ -27,12 +27,6 @@ typedef struct {
 
 #define ND_id(n)  (((Agnodeinfo_t*)((n)->base.data))->id)
 
-void
-initGraph (Agraph_t* g)
-{
-    aginit(g, AGNODE, "nodeinfo", sizeof(Agnodeinfo_t), TRUE);
-}
-
 #if 0
 static void
 posStr (int len_buf, char* buf, int dim, real* x, double sc)
@@ -1049,5 +1043,15 @@ void attached_clustering(Agraph_t* g, int maxcluster, int clustering_scheme){
 void initDotIO (Agraph_t *g)
 {
   aginit(g, AGNODE, "info", sizeof(Agnodeinfo_t), TRUE);
+}
+
+void setDotNodeID (Agnode_t* n, int v)
+{
+    ND_id(n) = v;
+}
+
+int getDotNodeID (Agnode_t* n)
+{
+    return ND_id(n);
 }
 
