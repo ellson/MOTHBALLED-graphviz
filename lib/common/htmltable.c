@@ -677,14 +677,47 @@ static void freeObj(GVJ_t * job)
     pop_obj_state(job);
 }
 
+static double
+heightOfLbl (htmllabel_t * lp)
+{
+    double sz;
+
+    switch (lp->kind) {
+    case HTML_TBL:
+	sz  = lp->u.tbl->data.box.UR.y - lp->u.tbl->data.box.LL.y;
+	break;
+    case HTML_IMAGE:
+	sz  = lp->u.img->box.UR.y - lp->u.img->box.LL.y;
+	break;
+    case HTML_TEXT:
+	sz  = lp->u.txt->box.UR.y - lp->u.txt->box.LL.y;
+	break;
+    }
+    return sz;
+}
+
 /* emit_html_label:
  */
 void emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t * tp)
 {
     htmlenv_t env;
+    pointf p;
 
     allocObj(job);
-    env.pos = tp->pos;
+
+    p = tp->pos;
+    switch (tp->valign) {
+	case 't':
+    	    p.y = tp->pos.y + (tp->space.y - heightOfLbl(lp))/ 2.0 - 1;
+	    break;
+	case 'b':
+    	    p.y = tp->pos.y - (tp->space.y - heightOfLbl(lp))/ 2.0 - 1;
+	    break;
+	default:	
+    	    /* no-op */
+	    break;
+    }
+    env.pos = p;
     env.finfo.color = tp->fontcolor;
     env.finfo.name = tp->fontname;
     env.finfo.size = tp->fontsize;

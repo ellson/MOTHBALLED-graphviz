@@ -171,10 +171,11 @@ static void arrow_match_name(char *name, int *flag)
     int i, f;
 
     *flag = 0;
-    for (i = 0; *rest != '\0' && i < NUMB_OF_ARROW_HEADS; i++) {
+    for (i = 0; *rest != '\0' && i < NUMB_OF_ARROW_HEADS; ) {
 	f = ARR_TYPE_NONE;
         rest = arrow_match_shape(rest, &f);
-	*flag |= (f << (i * BITS_PER_ARROW));
+	if (f != ARR_TYPE_NONE)
+	    *flag |= (f << (i++ * BITS_PER_ARROW));
     }
 }
 
