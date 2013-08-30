@@ -600,9 +600,8 @@ if \fIn\fP is not in \fIg\fP. Connectivity is based on the underlying
 undirected graph of \fIg\fP.
 .TP
 \fBkindOf\fP(\fIobj\fP : \fBobj_t\fP) : \fBstring\fP
-returns an indication of what kind of graph object is the argument.
-For nodes, edges, and graphs, it returns
-should be "N", "E", and "G", respectively.
+returns an indication of the type of \fIobj\fP.
+For nodes, edges, and graphs, it returns "N", "E", and "G", respectively.
 .TP
 \fBlock\fP(\fIg\fP : \fBgraph_t\fP, \fIv\fP : \fBint\fP) : \fBint\fP
 implements graph locking on root graphs. If the integer \fIv\fP is positive, the
