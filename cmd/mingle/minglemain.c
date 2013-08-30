@@ -27,6 +27,7 @@
 #include <cgraph.h>
 #include <agxbuf.h>
 #include <ingraphs.h>
+#include <pointset.h>
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
 #else
@@ -41,6 +42,13 @@ typedef enum {
 	FMT_GV,
 	FMT_SIMPLE,
 } fmt_t;
+
+typedef struct {
+	Agrec_t hdr;
+	int idx;
+} etoi_t;
+
+#define ED_idx(e) (((etoi_t*)AGDATA(e))->idx)
 
 typedef struct {
 	int outer_iter;
@@ -357,7 +365,7 @@ export_dot (FILE* fp, int ne, pedge *edges, Agraph_t* g)
 	agxbuf xbuf;
 	unsigned char buf[BUFSIZ];
 
-	  /* figure out max number of bundled origional edges in a pedge */
+	  /* figure out max number of bundled original edges in a pedge */
 	for (i = 0; i < ne; i++){
 		edge = edges[i];
 		if (edge->wgts){
@@ -368,9 +376,9 @@ export_dot (FILE* fp, int ne, pedge *edges, Agraph_t* g)
 	}
 
 	agxbinit(&xbuf, BUFSIZ, buf);
-	for (i = 0, n = agfstnode (g); n; n = agnxtnode (g, n)) {
+	for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
 		for (e = agfstout (g, n); e; e = agnxtout (g, e)) {
-			edge = edges[i++];
+			edge = edges[ED_idx(e)];
 
 			genBundleSpline (edge, &xbuf);
 			agxset (e, epos, agxbuse(&xbuf));
@@ -401,7 +409,7 @@ bundle (Agraph_t* g, opts_t* opts)
 	pedge* edges;
     real *xx, eps = 0.;
     int nz = 0;
-    int *ia, *ja, i, j;
+    int *ia, *ja, i, j, k;
 	int rv = 0;
 
 	if (checkG(g)) {
@@ -420,6 +428,41 @@ bundle (Agraph_t* g, opts_t* opts)
     }
 
 	A = SparseMatrix_symmetrize(A, TRUE);
+	if (opts->fmt == FMT_GV) {
+		PointMap* pm = newPM();    /* map from node id pairs to edge index */
+		Agnode_t* n;
+		Agedge_t* e;
+		int idx = 0;
+
+		ia = A->ia; ja = A->ja;
+		for (i = 0; i < A->m; i++){
+			for (j = ia[i]; j < ia[i+1]; j++){
+				if (ja[j] > i){
+					insertPM (pm, i, ja[j], idx++);
+				}
+			}
+		}
+		for (i = 0, n = agfstnode(g); n; n = agnxtnode(g,n)) {
+			setDotNodeID(n, i++);
+		}
+		for (i = 0, n = agfstnode(g); n; n = agnxtnode(g,n)) {
+			for (e = agfstout (g, n); e; e = agnxtout (g, e)) {
+				i = getDotNodeID (agtail(e));
+				j = getDotNodeID (aghead(e));
+				if (j < i) {
+					k = i;
+					i = j;
+					j = k;
+				}
+				k = insertPM (pm, i, j, -1);
+				assert (k >= 0);
+				agbindrec (e, "info", sizeof(etoi_t), TRUE);
+				ED_idx(e) = k;
+			}
+		}
+		freePM (pm);
+	}
+		
 	ia = A->ia; ja = A->ja;
 	nz = A->nz;
 	xx = MALLOC(sizeof(real)*nz*4);

@@ -79,6 +79,10 @@ provided, the value 1 is used.
 .BI \-? 
 Print usage and exit.
 
+.SH BUGS
+At present, \fBmingle\fP does not handle graphs with loops or directed multiedges. So, a graph with edges
+\fIa -> b\fP and \fIb -> a\fP is acceptable, but not if it has edges \fIa -> b\fP and \fIa -> b\fP or
+\fIa -- b\fP and \fIa -- b\fP.
 .SH AUTHOR
 Emden R. Gansner <erg@research.att.com>
 Yifan Hu <yifanhu@research.att.com>
