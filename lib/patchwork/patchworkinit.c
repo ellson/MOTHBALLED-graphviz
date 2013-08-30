@@ -116,6 +116,7 @@ static void patchwork_init_node(node_t * n)
 
 static void patchwork_init_edge(edge_t * e)
 {
+    agbindrec(e, "Agedgeinfo_t", sizeof(Agnodeinfo_t), TRUE);  // edge custom data
     /* common_init_edge(e); */
 }
 
@@ -134,8 +135,7 @@ static void patchwork_init_node_edge(graph_t * g)
 	ND_alg(n) = alg + i;
 	GD_neato_nlist(g)[i++] = n;
 	patchwork_init_node(n);
-    }
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    patchwork_init_edge(e);
 	}
