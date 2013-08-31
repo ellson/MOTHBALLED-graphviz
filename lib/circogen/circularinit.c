@@ -120,9 +120,9 @@ Agraph_t **circomps(Agraph_t * g, int *cnt)
 
 #ifndef WITH_CGRAPH
     dg = agopen("derived", AGFLAG_STRICT);
-    agbindrec (dg, "info", sizeof(Agraphinfo_t), TRUE);
 #else /* WITH_CGRAPH */
     dg = agopen("derived", Agstrictundirected,NIL(Agdisc_t *));
+    agbindrec (dg, "info", sizeof(Agraphinfo_t), TRUE);
 #endif /* WITH_CGRAPH */
     GD_alg(g) = dg;  /* store derived graph for closing later */
 
