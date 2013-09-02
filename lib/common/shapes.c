@@ -495,7 +495,7 @@ static void Mcircle_hack(GVJ_t * job, node_t * n)
  */
 void round_corners(GVJ_t * job, pointf * AF, int sides, int style, int filled)
 {
-    pointf *B, C[4], *D, p0, p1;
+    pointf *B, C[5], *D, p0, p1;
     double rbconst, d, dx, dy, t;
     int i, seg, mode, shape;
     pointf* pts;
