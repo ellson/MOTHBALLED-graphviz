@@ -709,8 +709,8 @@ else
         if test "x$GUILE" == "x"; then
 	  use_guile="No (guile is too old)"
         else
-          GUILE_INCLUDES=
-          GUILE_LIBS=
+	  GUILE_INCLUDES=$(guile-config compile)
+	  GUILE_LIBS=$(guile-config link)
 	  # don't die if PKG_CHECK_MODULES not available - el4, el5
           PKG_CHECK_MODULES([GUILE],
 		[guile-2.0 >= "$GUILE_VERSION_MAJOR.$GUILE_VERSION_MINOR"],
@@ -722,7 +722,7 @@ else
 			false)
 		])
           ac_save_CFLAGS="$CFLAGS"
-          ac_save_CPPFLAGS="$CPPFLAGS"
+          ac_save_CPPFLAGS="$save_CPPFLAGS"
           CFLAGS="$CFLAGS $GUILE_INCLUDES"
           CPPFLAGS="$CPPFLAGS $GUILE_INCLUDES"
           AC_CHECK_HEADER(libguile.h,,[
