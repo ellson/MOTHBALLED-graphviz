@@ -102,7 +102,7 @@ if test -z "$LIBPOSTFIX"; then
   case "${host_os}" in
     *linux* )
       case "${host_cpu}" in
-        powerpc64 | s390x | x86_64 | sparc64 )
+        aarch64 | powerpc64 | s390x | x86_64 | sparc64 )
           LIBPOSTFIX="64"
           ;;
       esac
