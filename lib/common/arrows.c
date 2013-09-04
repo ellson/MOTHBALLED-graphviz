@@ -24,7 +24,7 @@
 
 #define BITS_PER_ARROW 8
 
-#define BITS_PER_ARROW_TYPE 3
+#define BITS_PER_ARROW_TYPE 4
 /* arrow types (in BITS_PER_ARROW_TYPE bits) */
 #define ARR_TYPE_NONE	  (ARR_NONE)
 #define ARR_TYPE_NORM	  1
@@ -33,15 +33,16 @@
 #define ARR_TYPE_BOX	  4
 #define ARR_TYPE_DIAMOND  5
 #define ARR_TYPE_DOT      6
-#define ARR_TYPE_CURVE  7
-/* Spare:  #define ARR_TYPE_xxx      7 */
+#define ARR_TYPE_CURVE    7
+#define ARR_TYPE_GAP      8
+/* Spare: 9-15 */
 
 /* arrow mods (in (BITS_PER_ARROW - BITS_PER_ARROW_TYPE) bits) */
 #define ARR_MOD_OPEN      (1<<(BITS_PER_ARROW_TYPE+0))
 #define ARR_MOD_INV       (1<<(BITS_PER_ARROW_TYPE+1))
 #define ARR_MOD_LEFT      (1<<(BITS_PER_ARROW_TYPE+2))
 #define ARR_MOD_RIGHT     (1<<(BITS_PER_ARROW_TYPE+3))
-/* Spare:  #define ARR_MOD_xxx       (1<<(BITS_PER_ARROW_TYPE+4))  */
+/* No spares */
 
 typedef struct arrowdir_t {
     char *dir;
@@ -86,7 +87,9 @@ static arrowname_t Arrownames[] = {
     {"box", ARR_TYPE_BOX},
     {"diamond", ARR_TYPE_DIAMOND},
     {"dot", ARR_TYPE_DOT},
-    {"none", ARR_TYPE_NONE},
+//    {"none", ARR_TYPE_NONE},
+    {"none", ARR_TYPE_GAP},
+//    {"gap", ARR_TYPE_GAP},
     /* ARR_MOD_INV is used only here to define two additional shapes
        since not all types can use it */
     {"inv", (ARR_TYPE_NORM | ARR_MOD_INV)},
@@ -117,6 +120,7 @@ static void arrow_type_box(GVJ_t * job, pointf p, pointf u, double arrowsize, do
 static void arrow_type_diamond(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag);
 static void arrow_type_dot(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag);
 static void arrow_type_curve(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag);
+static void arrow_type_gap(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag);
 
 static arrowtype_t Arrowtypes[] = {
     {ARR_TYPE_NORM, 1.0, arrow_type_normal},
@@ -126,6 +130,7 @@ static arrowtype_t Arrowtypes[] = {
     {ARR_TYPE_DIAMOND, 1.2, arrow_type_diamond},
     {ARR_TYPE_DOT, 0.8, arrow_type_dot},
     {ARR_TYPE_CURVE, 1.0, arrow_type_curve},
+    {ARR_TYPE_GAP, 0.5, arrow_type_gap},
     {ARR_TYPE_NONE, 0.0, NULL}
 };
 
@@ -174,6 +179,8 @@ static void arrow_match_name(char *name, int *flag)
     for (i = 0; *rest != '\0' && i < NUMB_OF_ARROW_HEADS; ) {
 	f = ARR_TYPE_NONE;
         rest = arrow_match_shape(rest, &f);
+	if (f == ARR_TYPE_GAP && i == (NUMB_OF_ARROW_HEADS -1))
+	    f = ARR_TYPE_NONE;
 	if (f != ARR_TYPE_NONE)
 	    *flag |= (f << (i++ * BITS_PER_ARROW));
     }
@@ -502,6 +509,17 @@ static void arrow_type_crow(GVJ_t * job, pointf p, pointf u, double arrowsize, d
 	gvrender_polygon(job, &a[3], 6, 1);
     else
 	gvrender_polygon(job, a, 9, 1);
+}
+
+static void arrow_type_gap(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag)
+{
+    pointf q, a[2];
+
+    q.x = p.x + u.x;
+    q.y = p.y + u.y;
+    a[0] = p;
+    a[1] = q;
+    gvrender_polyline(job, a, 2);
 }
 
 static void arrow_type_tee(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag)
