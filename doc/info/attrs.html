@@ -2397,15 +2397,19 @@ enclosed in the parentheses,  <TT>(...)+</TT> indicates 1 or more, and
   The styles "filled", "striped" and "rounded" are recognized for clusters.
   The style "radial" is recognized for nodes, clusters and graphs, and indicates a
   radial-style gradient fill if applicable.
-  The style "striped" is recognized for clusters and rectangularly-shaped nodes, and causes the
+  <P>
+  The style "striped" causes the
   fill to be done as a set of vertical stripes. The colors are specified via a <A HREF=#k:colorList>colorList</A>, 
   the colors drawn from left to right in list order. Optional color weights can be specified to indicate the
   proportional widths of the bars. If the sum of the weights is less than 1, the remainder is divided evenly
-  among the colors with no weight. 
-  The style "wedged" is recognized for elliptically-shaped nodes, and causes the
+  among the colors with no weight. <B>Note</B>: The style "striped" is only supported with clusters and
+  rectangularly-shaped nodes.
+  <P>
+  The style "wedged" causes the
   fill to be done as a set of wedges. The colors are specified via a <A HREF=#k:colorList>colorList</A>, 
   with the colors drawn counter-clockwise starting at angle 0. Optional color weights are interpreted
   analogously to the striped case described above.
+  <B>Note</B>: The style "wedged" is allowed only for elliptically-shaped nodes.
   <P>
   The following tables illustrate some of the effects of the style settings. 
   Examples of tapered line styles are given below.

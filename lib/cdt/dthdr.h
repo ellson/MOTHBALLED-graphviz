@@ -10,6 +10,8 @@
 
 #if _PACKAGE_ast
 #include	<ast.h>
+#else
+#include	<ast_common.h>
 #endif
 
 #include	<cdt.h>
