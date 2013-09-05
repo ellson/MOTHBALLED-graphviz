@@ -681,11 +681,13 @@ static void gvevent_read (GVJ_t * job, const char *filename, const char *layout)
 	g = agread(f);
 #else /* WITH_CGRAPH */
 	g = agread(f,NIL(Agdisc_t *));
+
 #endif /* WITH_CGRAPH */
 	fclose(f);
     }
     if (!g)
 	return;   /* FIXME - need some error handling */
+
     if (gvc->g) {
 	gvle = gvc->layout.engine;
 	if (gvle && gvle->cleanup)
@@ -693,6 +695,12 @@ static void gvevent_read (GVJ_t * job, const char *filename, const char *layout)
 	graph_cleanup(gvc->g);
 	agclose(gvc->g);
     }
+
+#ifdef WITH_CGRAPH
+    aginit (g, AGRAPH, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
+    aginit (g, AGNODE, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
+    aginit (g, AGEDGE, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
+#endif
     gvc->g = g;
     GD_gvc(g) = gvc;
     gvLayout(gvc, g, layout);
