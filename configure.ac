@@ -802,6 +802,10 @@ else
           /usr/lib${LIBPOSTFIX}/jvm/java/include/linux \
           /usr/lib${LIBPOSTFIX}/jvm/default-java/include \
           /usr/lib${LIBPOSTFIX}/jvm/default-java/include/linux \
+          /usr/lib/jvm/java/include \
+          /usr/lib/jvm/java/include/linux \
+          /usr/lib/jvm/default-java/include \
+          /usr/lib/jvm/default-java/include/linux \
           /etc/java-config-2/current-system-vm/include \
           /etc/java-config-2/current-system-vm/include/linux \
           /etc/java-config-2/current-system-vm/include/freebsd
