@@ -625,7 +625,7 @@ static void dot_end_graph(GVJ_t *job)
 static void xdot_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     emit_state_t emit_state = job->obj->emit_state;
-
+    int flags;
     char buf[BUFSIZ];
     int j;
     
@@ -647,6 +647,13 @@ static void xdot_textpara(GVJ_t * job, pointf p, textpara_t * para)
         j = 0;
         break;
     }
+    if (para->font)
+	flags = para->font->flags;
+    else
+	flags = 0;
+    sprintf (buf, "t %d ", flags);
+    agxbput(xbufs[emit_state], buf);
+
     p.y += para->yoffset_centerline;
     agxbput(xbufs[emit_state], "T ");
     xdot_point(xbufs[emit_state], p);
