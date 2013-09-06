@@ -501,6 +501,8 @@ This field indicates which graph component uses the attribute.
 </TD><TD>E</TD><TD>int<BR>double</TD><TD ALIGN="CENTER">1</TD><TD>0(dot)<BR>1(neato,fdp)</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:width HREF=#d:width>width</A>
 </TD><TD>N</TD><TD>double</TD><TD ALIGN="CENTER">0.75</TD><TD>0.01</TD><TD></TD> </TR>
+ <TR><TD><A NAME=a:xdotversion HREF=#d:xdotversion>xdotversion</A>
+</TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER"></TD><TD></TD><TD>xdot only</TD> </TR>
  <TR><TD><A NAME=a:xlabel HREF=#d:xlabel>xlabel</A>
 </TD><TD>EN</TD><TD><A HREF=#k:lblString>lblString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
@@ -1949,6 +1951,10 @@ This field indicates which graph component uses the attribute.
   the maximum of the two values is used.
   If neither is set explicitly, the minimum of the two default values
   is used.
+
+<DT><A NAME=d:xdotversion HREF=#a:xdotversion><STRONG>xdotversion</STRONG></A>
+<DD>  For xdot output, if this attribute is set, this determines the version of xdot used in output.
+  If not set, the attribute will be set to the xdot version used for output.
 
 <DT><A NAME=d:xlabel HREF=#a:xlabel><STRONG>xlabel</STRONG></A>
 <DD>  External label for a node or edge. For nodes, the label will be placed outside of the

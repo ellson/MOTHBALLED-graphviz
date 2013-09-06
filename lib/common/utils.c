@@ -1876,12 +1876,16 @@ void setEdgeType (graph_t* g, int dflt)
  * If isRadial is true,sets the inner radius to half the distance to the min point;
  * else uses the angle parameter to identify two points on a line that defines the 
  * gradient direction
+ * By default, this assumes a left-hand coordinate system (for svg); if RHS = 2 flag
+ * is set, use standard coordinate system.
  */
-void get_gradient_points(pointf * A, pointf * G, int n, float angle, boolean isRadial)
+void get_gradient_points(pointf * A, pointf * G, int n, float angle, int flags)
 {
     int i;
     double rx, ry;
     pointf min,max,center;
+    int isRadial = flags & 1;
+    int isRHS = flags & 2;
     
     if (n == 2) {
       rx = A[1].x - A[0].x;
@@ -1905,19 +1909,34 @@ void get_gradient_points(pointf * A, pointf * G, int n, float angle, boolean isR
       center.y = min.y + (max.y - min.y)/2;
     if (isRadial) {
 	double inner_r, outer_r;
-      outer_r = sqrt((center.x - min.x)*(center.x - min.x) +
+	outer_r = sqrt((center.x - min.x)*(center.x - min.x) +
 		      (center.y - min.y)*(center.y - min.y));
-      inner_r = outer_r /4.;
-      G[0].x = center.x;
-      G[0].y = -center.y;
-      G[1].x = inner_r;
-      G[1].y = outer_r;
+	inner_r = outer_r /4.;
+	if (isRHS) {
+	    G[0].y = center.y;
+	}
+	else {
+	    G[0].y = -center.y;
+	}
+	G[0].x = center.x;
+	G[1].x = inner_r;
+	G[1].y = outer_r;
     }
     else {
-      G[0].x = center.x - (max.x - center.x) * cos(angle);
-      G[0].y = -center.y + (max.y - center.y) * sin(angle);
-      G[1].x = center.x + (center.x - min.x) * cos(angle);
-      G[1].y = -center.y - (center.y - min.y) * sin(angle);
+	double half_x = max.x - center.x;
+	double half_y = max.y - center.y;
+	double sina = sin(angle);
+	double cosa = cos(angle);
+	if (isRHS) {
+	    G[0].y = center.y - half_y * sina;
+	    G[1].y = center.y + half_y * sina;
+	}
+	else {
+	    G[0].y = -center.y + (max.y - center.y) * sin(angle);
+	    G[1].y = -center.y - (center.y - min.y) * sin(angle);
+	}
+	G[0].x = center.x - half_x * cosa;
+	G[1].x = center.x + half_x * cosa;
     }
 }
 

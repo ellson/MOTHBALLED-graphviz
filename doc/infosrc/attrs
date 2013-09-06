@@ -1289,6 +1289,9 @@ However, if one uses <A HREF=#d:bgcolor>bgcolor</A>=transparent with
 a color palette, font
 antialiasing can show up as a fuzzy white area around characters.
 Using <B>truecolor</B>=true avoids this problem.
+:xdotversion:G:string:;   xdot
+For xdot output, if this attribute is set, this determines the version of xdot used in output.
+If not set, the attribute will be set to the xdot version used for output.
 :vertices:N:pointList; write
 If the input graph defines this attribute, the node is polygonal,
 and output is dot or xdot, this attribute provides the

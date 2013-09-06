@@ -23,6 +23,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "macros.h"
 #include "const.h"
@@ -42,7 +43,9 @@ typedef enum {
 	FORMAT_CANON,
 	FORMAT_PLAIN,
 	FORMAT_PLAIN_EXT,
-	FORMAT_XDOT
+	FORMAT_XDOT,
+	FORMAT_XDOT12,
+	FORMAT_XDOT14,
 } format_type;
 
 #ifdef WIN32 /*dependencies*/
@@ -86,6 +89,8 @@ typedef struct {
     attrsym_t *hl_draw;
     attrsym_t *tl_draw;
     unsigned char buf[NUMXBUFS][BUFSIZ];
+    unsigned short version;
+    char* version_s;
 } xdot_state_t;
 static xdot_state_t* xd;
 
@@ -368,6 +373,29 @@ static void xdot_end_cluster(GVJ_t * job)
     penwidth[EMIT_CLABEL] = 1;
 }
 
+static unsigned short
+versionStr2Version (char* str)
+{
+    char c, buf[BUFSIZ];
+    int n = 0;
+    char* s = str;
+    unsigned short us;
+
+    while ((c = *s++)) {
+	if (isdigit(c)) {
+	    if (n < BUFSIZ-1) buf[n++] = c;
+	    else {
+		agerr(AGWARN, "xdot version \"%s\" too long", str);
+		break;
+	    }
+	}
+    }
+    buf[n] = '\0';
+    
+    us = atoi(buf);
+    return us;
+}
+
 /* 
  * John M. suggests:
  * You might want to add four more:
@@ -391,11 +419,29 @@ static void xdot_end_cluster(GVJ_t * job)
  * output with them, it could break what we have. 
  */
 static void
-xdot_begin_graph (graph_t *g, int s_arrows, int e_arrows)
+xdot_begin_graph (graph_t *g, int s_arrows, int e_arrows, format_type id)
 {
-    int i;
+    int i, us;
+    char* s;
 
     xd = GNEW(xdot_state_t);
+
+    if (id == FORMAT_XDOT14) {
+	xd->version = 14;
+	xd->version_s = "1.4";
+    }
+    else if (id == FORMAT_XDOT12) {
+	xd->version = 12;
+	xd->version_s = "1.2";
+    }
+    else if ((s = agget(g, "xdotversion")) && s[0] && ((us = versionStr2Version(s)) > 10)) {
+	xd->version = us;
+	xd->version_s = s;
+    }
+    else {
+	xd->version = versionStr2Version(XDOTVERSION);
+	xd->version_s = XDOTVERSION;
+    }
 
     if (GD_n_cluster(g))
 #ifndef WITH_CGRAPH
@@ -488,8 +534,11 @@ static void dot_begin_graph(GVJ_t *job)
 	case FORMAT_PLAIN_EXT:
 	    break;
 	case FORMAT_XDOT:
+	case FORMAT_XDOT12:
+	case FORMAT_XDOT14:
 	    attach_attrs_and_arrows(g, &s_arrows, &e_arrows);
-	    xdot_begin_graph(g, s_arrows, e_arrows);
+	    xdot_begin_graph(g, s_arrows, e_arrows, job->render.id);
+	    break;
     }
 }
 
@@ -513,7 +562,7 @@ static void xdot_end_graph(graph_t* g)
 #else /* WITH_CGRAPH */
 	agxset(g, xd->g_l_draw, agxbuse(xbufs[EMIT_GLABEL]));
 #endif /* WITH_CGRAPH */
-    agsafeset (g, "xdotversion", XDOTVERSION, "");
+    agsafeset (g, "xdotversion", xd->version_s, "");
 
     for (i = 0; i < NUMXBUFS; i++)
 	agxbfree(xbuf+i);
@@ -559,6 +608,8 @@ static void dot_end_graph(GVJ_t *job)
 		agwrite(g, (FILE*)job);
 	    break;
 	case FORMAT_XDOT:
+	case FORMAT_XDOT12:
+	case FORMAT_XDOT14:
 	    xdot_end_graph(g);
 	    if (!(job->flags & OUTPUT_NOT_REQUIRED))
 		agwrite(g, (FILE*)job);
@@ -624,15 +675,20 @@ static void xdot_gradient_fillcolor (GVJ_t* job, int filled, pointf* A, int n)
     float r1,r2;
     pointf G[2],c1,c2;
 
+    if (xd->version < 14) {
+	xdot_fillcolor (job);
+	return;
+    }
+
     agxbinit(&xbuf, BUFSIZ, buf0);
     if (filled == GRADIENT) {
-	get_gradient_points(A, G, n, angle, 0);
+	get_gradient_points(A, G, n, angle, 2);
 	agxbputc (&xbuf, '[');
 	xdot_point (&xbuf, G[0]);
 	xdot_point (&xbuf, G[1]);
     }
     else {
-	get_gradient_points(A, G, n, 0, 1);
+	get_gradient_points(A, G, n, 0, 3);
 	  //r1 is inner radius, r2 is outer radius
 	r1 = G[1].x;
 	r2 = G[1].y;
@@ -867,5 +923,7 @@ gvplugin_installed_t gvdevice_dot_types[] = {
     {FORMAT_PLAIN, "plain:dot", 1, NULL, &device_features_dot},
     {FORMAT_PLAIN_EXT, "plain-ext:dot", 1, NULL, &device_features_dot},
     {FORMAT_XDOT, "xdot:xdot", 1, NULL, &device_features_dot},
+    {FORMAT_XDOT12, "xdot1.2:xdot", 1, NULL, &device_features_dot},
+    {FORMAT_XDOT14, "xdot1.4:xdot", 1, NULL, &device_features_dot},
     {0, NULL, 0, NULL, NULL}
 };

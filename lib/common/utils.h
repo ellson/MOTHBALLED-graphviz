@@ -96,7 +96,7 @@ extern "C" {
     extern boolean overlap_label(textlabel_t *lp, boxf b);
     extern boolean overlap_edge(edge_t *e, boxf b);
 
-    extern void get_gradient_points(pointf * A, pointf * G, int n, float angle, boolean isRadial);
+    extern void get_gradient_points(pointf * A, pointf * G, int n, float angle, int flags);
 
     extern int processClusterEdges(graph_t * g);
 
