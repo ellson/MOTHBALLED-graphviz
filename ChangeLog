@@ -1,6 +1,7 @@
-September 5, 2013
+September 6, 2013
+	- Release 2.34.0
 	- Resolves bugs: 2325, 2326, 2333, 2334, 2337, 2338, 2340, 2343,
-		2345, 2346, 2349, 2350, 2351, 2352, 2353, 2354
+		2345, 2346, 2349, 2350, 2351, 2352, 2353, 2354, 2357, 2359
 	- Resolves Redhat bug: BZ#847458
 August 21, 2013
 	- Added mingle command and library for edge bundling
