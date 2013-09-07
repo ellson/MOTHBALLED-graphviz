@@ -3116,7 +3116,7 @@ int main(int argc, char **argv) {
 assert(argc);
 ; return 0; }
 EOF
-${CC-cc} -c $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext 1>&5
+${CC-cc} -c $CFLAGS $CPPFLAGS conftest.$ac_ext 1>&5
 if test "x`nm conftest.o |$EGREP __eprintf`" != "x"; then
     AC_MSG_RESULT(yes)
     CFLAGS="$CFLAGS -DNDEBUG"
