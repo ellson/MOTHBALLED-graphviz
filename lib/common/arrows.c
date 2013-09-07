@@ -734,6 +734,8 @@ void arrow_gen(GVJ_t * job, emit_state_t emit_state, pointf p, pointf u, double 
     /* linewidth needs to be reset */
     gvrender_set_style(job, job->gvc->defaultlinestyle);
 
+    gvrender_set_penwidth(job, penwidth);
+
     /* generate arrowhead vector */
     u.x -= p.x;
     u.y -= p.y;
