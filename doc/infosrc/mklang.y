@@ -311,6 +311,7 @@ openF (char* fname, char* mode)
   return f;    
 }
 
+int
 main (int argc, char* argv[])
 {
   if (argc != 3) {
@@ -321,5 +322,5 @@ main (int argc, char* argv[])
   outf = openF (argv[2], "w");
   lexinit();
   yyparse ();
-  exit (0);
+  return (0);
 }
