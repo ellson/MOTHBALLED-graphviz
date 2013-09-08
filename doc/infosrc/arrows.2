@@ -55,6 +55,7 @@ The following table indicates which modifiers are allowed with which shapes.
  <TH>Modifier</TH>
  <TH>box
  <TH>crow
+ <TH>curve
  <TH>diamond
  <TH>dot
  <TH>inv
@@ -63,16 +64,18 @@ The following table indicates which modifiers are allowed with which shapes.
  <TH>tee
  <TH>vee
 </TR>
-<TR ALIGN=CENTER><TD>'l'/'r'<TD>X<TD>X<TD>X<TD>&nbsp;<TD>X<TD>&nbsp;<TD>X<TD>X<TD>X</TR>
-<TR ALIGN=CENTER><TD>'o'    <TD>X<TD>&nbsp;<TD>X<TD>X<TD>X<TD>&nbsp;<TD>X<TD>&nbsp;<TD>&nbsp;</TR>
+<TR ALIGN=CENTER><TD>'l'/'r'<TD>X<TD>X<TD>X<TD>X<TD>&nbsp;<TD>X<TD>&nbsp;<TD>X<TD>X<TD>X</TR>
+<TR ALIGN=CENTER><TD>'o'    <TD>X<TD>&nbsp;<TD>&nbsp;<TD>X<TD>X<TD>X<TD>&nbsp;<TD>X<TD>&nbsp;<TD>&nbsp;</TR>
 </TABLE>
 </CENTER>
 <P>
-This yields 36 different arrow shapes. The optional second, third, fourth shapes
-can independently be any of the 36, but since <TT>nonenone</TT> 
-is redundant, there are 35**4 + 35**3 + 35**2 + 35 + 1 = 1,544,761 different combinations.
+This yields 39 different arrow shapes. The optional second, third, fourth shapes
+can independently be any of the 39, except the last cannot be <TT>none</TT> as
+this would create a redundant shape.
+Thus, there are 38 &middot; 39<sup>3</sup> + 38 &middot; 39<sup>2</sup> + 38 &middot; 39 + 39 = 2,313,441 different combinations.
+
 <P>
-The following display contains the 36 combinations possible with a single
+The following display contains the 39 combinations possible with a single
 arrow shape. The node attached to the arrow is not drawn but would appear
 on the right side of the edge.
 <P>

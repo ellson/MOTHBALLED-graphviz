@@ -166,7 +166,7 @@ lang.html : grammar lang.1 lang.2 mklang
 	cat lang.2 >> lang.html
 	rm gramtmp
 
-arrows.html : arrow_grammar arrows.1 arrows.2 mkarrowtbl.sh mklang
+arrows.html : arrow_grammar arrows.1 arrows.2 mkarrowtbl.sh mklang $(AGIF) $(A2GIF)
 	./mklang arrow_grammar gramtmp
 	cat arrows.1 > arrows.html
 	cat gramtmp >> arrows.html
