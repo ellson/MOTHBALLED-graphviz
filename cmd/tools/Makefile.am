@@ -18,8 +18,13 @@ pdfdir = $(pkgdatadir)/doc/pdf
 
 noinst_HEADERS = colortbl.h convert.h mmio.h matrix_market.h \
 	 graph_generator.h gml2gv.h gmlparse.h
+if ENABLE_STATIC
+bin_PROGRAMS = gc gvcolor gxl2gv acyclic nop ccomps sccmap tred \
+	unflatten gvpack gvpack_static dijkstra bcomps mm2gv gvgen gml2gv gv2gml graphml2gv
+else
 bin_PROGRAMS = gc gvcolor gxl2gv acyclic nop ccomps sccmap tred \
 	unflatten gvpack dijkstra bcomps mm2gv gvgen gml2gv gv2gml graphml2gv
+endif
 man_MANS = gc.1 gvcolor.1 gxl2gv.1 acyclic.1 nop.1 ccomps.1 sccmap.1 \
 	tred.1 unflatten.1 gvpack.1 dijkstra.1 bcomps.1 mm2gv.1 gvgen.1 gml2gv.1 graphml2gv.1
 pdf_DATA = gc.1.pdf gvcolor.1.pdf gxl2gv.1.pdf acyclic.1.pdf \
@@ -145,6 +150,21 @@ gvpack_LDADD = \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout.la
+
+if ENABLE_STATIC
+gvpack_static_SOURCES = gvpack.c gvpack_builtins.c
+gvpack_static_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=0
+gvpack_static_LDADD = \
+	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout_C.la \
+	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
+	$(top_builddir)/lib/gvc/libgvc_C.la \
+	$(top_builddir)/lib/pathplan/libpathplan_C.la \
+	$(top_builddir)/lib/cgraph/libcgraph_C.la \
+	$(top_builddir)/lib/cdt/libcdt_C.la \
+       	$(EXPAT_LIBS) $(Z_LIBS) $(GTS_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS) 
+endif
+
+#$(PANGOCAIRO_LIBS) $(PANGOFT2_LIBS) $(GTS_LIBS) $(EXPAT_LIBS) $(Z_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
 
 gvpack.1.pdf: $(srcdir)/gvpack.1
 	- @GROFF@ -Tps -man $(srcdir)/gvpack.1 | @PS2PDF@ - - >gvpack.1.pdf
