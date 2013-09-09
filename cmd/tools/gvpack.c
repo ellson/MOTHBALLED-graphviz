@@ -412,6 +412,7 @@ static void cloneEdge(Agedge_t * old, Agedge_t * new)
     ED_label(new) = ED_label(old);
     ED_head_label(new) = ED_head_label(old);
     ED_tail_label(new) = ED_tail_label(old);
+    ED_xlabel(new) = ED_xlabel(old);
 }
 
 /* cloneNode:
@@ -428,6 +429,7 @@ static void cloneNode(Agnode_t * old, Agnode_t * new)
     ND_rw(new) = ND_rw(old);
     ND_shape(new) = ND_shape(old);
     ND_shape_info(new) = ND_shape_info(old);
+    ND_xlabel(new) = ND_xlabel(old);
 }
 
 /* cloneCluster:
