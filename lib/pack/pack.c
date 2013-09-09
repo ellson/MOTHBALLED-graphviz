@@ -646,6 +646,8 @@ arrayRects (int ng, boxf* gs, pack_info* pinfo)
 	    nr = (ng + (nc-1))/nc;
 	}
     }
+    if (Verbose)
+	fprintf (stderr, "array packing: %s %d rows %d columns\n", (rowMajor?"row major":"column major"), nr, nc);
     widths = N_NEW(nc+1, double);
     heights = N_NEW(nr+1, double);
 
@@ -1244,6 +1246,35 @@ chkFlags (char* p, pack_info* pinfo)
     return p;
 }
 
+static char*
+mode2Str (pack_mode m)
+{
+    char *s;
+
+    switch (m) {
+    case l_clust:
+	s = "cluster";
+	break;
+    case l_node:
+	s = "node";
+	break;
+    case l_graph:
+	s = "graph";
+	break;
+    case l_array:
+	s = "array";
+	break;
+    case l_aspect:
+	s = "aspect";
+	break;
+    case l_undef: 
+    default:
+	s = "undefined";
+	break;
+    }
+    return s;
+}
+
 /* parsePackModeInfo;
  * Return pack_mode of graph using "packmode" attribute.
  * If not defined, return dflt
@@ -1312,7 +1343,7 @@ parsePackModeInfo(char* p, pack_mode dflt, pack_info* pinfo)
 
     if (Verbose) {
 	fprintf (stderr, "pack info:\n");
-	fprintf (stderr, "  mode   %d\n", pinfo->mode);
+	fprintf (stderr, "  mode   %s\n", mode2Str(pinfo->mode));
 	if (pinfo->mode == l_aspect)
 	    fprintf (stderr, "  aspect %f\n", pinfo->aspect);
 	fprintf (stderr, "  size   %d\n", pinfo->sz);

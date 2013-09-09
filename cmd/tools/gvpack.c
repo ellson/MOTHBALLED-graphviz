@@ -216,6 +216,7 @@ static void init(int argc, char *argv[], pack_info* pinfo)
     pinfo->margin = CL_OFFSET;
     pinfo->doSplines = TRUE; /* Use edges in packing */
     pinfo->fixed = 0;
+    pinfo->sz = 0;
 
     opterr = 0;
     while ((c = getopt(argc, argv, ":na:gvum:s:o:G:")) != -1) {
@@ -232,13 +233,13 @@ static void init(int argc, char *argv[], pack_info* pinfo)
 		free (bp);
 	    break;
 	case 'n':
-	    pinfo->mode = l_node;
+	    parsePackModeInfo ("node", pinfo->mode, pinfo);
 	    break;
 	case 's':
 	    gname = optarg;
 	    break;
 	case 'g':
-	    pinfo->mode = l_graph;
+	    parsePackModeInfo ("graph", pinfo->mode, pinfo);
 	    break;
 	case 'm':
 	    setUInt(&pinfo->margin, optarg);
@@ -282,6 +283,8 @@ static void init(int argc, char *argv[], pack_info* pinfo)
 	nGraphs = 10;		/* initial guess as to no. of graphs */
     if (!outfp)
 	outfp = stdout;		/* stdout the default */
+    if (verbose)
+	fprintf (stderr, "  margin %d\n", pinfo->margin);
 }
 
 /* init_node_edge:
