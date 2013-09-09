@@ -651,7 +651,7 @@ static void xdot_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	flags = para->font->flags;
     else
 	flags = 0;
-    sprintf (buf, "t %d ", flags);
+    if (xd->version >= 15) sprintf (buf, "t %d ", flags);
     agxbput(xbufs[emit_state], buf);
 
     p.y += para->yoffset_centerline;
