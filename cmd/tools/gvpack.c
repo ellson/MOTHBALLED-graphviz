@@ -676,6 +676,7 @@ cloneSubg(Agraph_t * g, Agraph_t * ng, Agsym_t * G_bb, Dt_t * gnames)
 #ifdef WITH_CGRAPH
     for (subg = agfstsubg (g); subg; subg = agfstsubg (subg)) {
 	nsubg = agsubg(ng, xName(gnames, agnameof(subg)), 1);
+	agbindrec (nsubg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
 #else
     mg = g->meta_node->graph;
     for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
@@ -837,6 +838,7 @@ static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt, GVC_t * gvc)
 	subg = agsubg(root, xName(gnames, agnameof(g)));
 #else
 	subg = agsubg(root, xName(gnames, agnameof(g)), 1);
+	agbindrec (subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
 #endif
 	cloneSubg(g, subg, G_bb, gnames);
     }
