@@ -1014,6 +1014,8 @@ static void shiftEdge(Agedge_t * e, int dx, int dy)
 
     if (ED_label(e))
 	MOVEPT(ED_label(e)->pos);
+    if (ED_xlabel(e))
+	MOVEPT(ED_xlabel(e)->pos);
     if (ED_head_label(e))
 	MOVEPT(ED_head_label(e)->pos);
     if (ED_tail_label(e))
@@ -1107,6 +1109,8 @@ shiftGraphs(int ng, Agraph_t ** gs, point * pp, Agraph_t * root,
 	dy = p.y;
 	fx = PS2INCH(dx);
 	fy = PS2INCH(dy);
+	if (ND_label(n))
+	    MOVEPT(ND_label(n)->pos);
 
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    ND_pos(n)[0] += fx;
