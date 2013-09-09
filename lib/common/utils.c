@@ -887,6 +887,9 @@ void compute_bb(graph_t * g)
 	b.UR = add_pointf(ptf, s2);
 
 	EXPANDBB(bb,b);
+	if (ND_xlabel(n) && ND_xlabel(n)->set) {
+	    bb = addLabelBB(bb, ND_xlabel(n), GD_flip(g));
+	}
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    if (ED_spl(e) == 0)
 		continue;
@@ -902,6 +905,15 @@ void compute_bb(graph_t * g)
 	    }
 	    if (ED_label(e) && ED_label(e)->set) {
 		bb = addLabelBB(bb, ED_label(e), GD_flip(g));
+	    }
+	    if (ED_head_label(e) && ED_head_label(e)->set) {
+		bb = addLabelBB(bb, ED_head_label(e), GD_flip(g));
+	    }
+	    if (ED_tail_label(e) && ED_tail_label(e)->set) {
+		bb = addLabelBB(bb, ED_tail_label(e), GD_flip(g));
+	    }
+	    if (ED_xlabel(e) && ED_xlabel(e)->set) {
+		bb = addLabelBB(bb, ED_xlabel(e), GD_flip(g));
 	    }
 	}
     }
