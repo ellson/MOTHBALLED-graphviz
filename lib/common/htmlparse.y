@@ -206,17 +206,26 @@ appendFLineList (int v)
     Dt_t *ilist = HTMLstate.fitemList;
 
     cnt = dtsize(ilist);
-    ln->lp.nitems = cnt;
     ln->lp.just = v;
     if (cnt) {
         int i = 0;
+	ln->lp.nitems = cnt;
 	ln->lp.items = N_NEW(cnt, textpara_t);
 
 	fi = (fitem*)dtflatten(ilist);
 	for (; fi; fi = (fitem*)dtlink(fitemList,(Dtlink_t*)fi)) {
-	    ln->lp.items[i] = fi->ti;
+		/* NOTE: When fitemList is closed, it uses free_item, which only frees the container,
+		 * not the contents, so this copy is safe.
+		 */
+	    ln->lp.items[i] = fi->ti;  
 	    i++;
 	}
+    }
+    else {
+	ln->lp.items = NEW(textpara_t);
+	ln->lp.nitems = 1;
+	ln->lp.items[0].str = strdup("");
+	ln->lp.items[0].font = dupFont (HTMLstate.fontstack->cfont);
     }
 
     dtclear(ilist);
