@@ -173,12 +173,18 @@ static char *arrow_match_shape(char *name, int *flag)
 static void arrow_match_name(char *name, int *flag)
 {
     char *rest = name;
+    char *next;
     int i, f;
 
     *flag = 0;
     for (i = 0; *rest != '\0' && i < NUMB_OF_ARROW_HEADS; ) {
 	f = ARR_TYPE_NONE;
-        rest = arrow_match_shape(rest, &f);
+	next = rest;
+        rest = arrow_match_shape(next, &f);
+	if (f == ARR_TYPE_NONE) {
+	    agerr(AGWARN, "Arrow type \"%s\" unknown - ignoring\n", next);
+	    return;
+	}
 	if (f == ARR_TYPE_GAP && i == (NUMB_OF_ARROW_HEADS -1))
 	    f = ARR_TYPE_NONE;
 	if (f != ARR_TYPE_NONE)
