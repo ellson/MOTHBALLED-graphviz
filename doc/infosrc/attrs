@@ -93,6 +93,10 @@ This will only appear if the <A HREF=#d:dir>dir</A> attribute
 is "back" or "both".
 See the <A HREF=#h:undir_note>limitation</A>.
 :aspect:G:aspectType; dot
+<B>NOTE</B>: As of 2.35 and until further notice, 
+dot will not support the <TT>aspect</TT>
+attribute. There are some significant flaws in the implementation.
+<P>
 Target aspect ratio (width of the layout divided by the height)
 of the graph drawing. If unset, dot minimizes the total edge length.
 For certain graphs, like those with large fan-in or fan-out, this can

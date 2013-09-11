@@ -574,7 +574,11 @@ This field indicates which graph component uses the attribute.
   See the <A HREF=#h:undir_note>limitation</A>.
 
 <DT><A NAME=d:aspect HREF=#a:aspect><STRONG>aspect</STRONG></A>
-<DD>  Target aspect ratio (width of the layout divided by the height)
+<DD>  <B>NOTE</B>: As of 2.35 and until further notice, 
+  dot will not support the <TT>aspect</TT>
+  attribute. There are some significant flaws in the implementation.
+  <P>
+  Target aspect ratio (width of the layout divided by the height)
   of the graph drawing. If unset, dot minimizes the total edge length.
   For certain graphs, like those with large fan-in or fan-out, this can
   lead to very wide layouts. Setting <TT>aspect</TT> will cause dot to try
