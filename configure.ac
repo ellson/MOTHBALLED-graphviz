@@ -1143,7 +1143,7 @@ else
       if test "x$PYTHON" = "x"; then
         use_python="No (python not available)"
       else
-        PYTHON_VERSION=`$PYTHON -c "import sys; print '%d.%d' % (sys.version_info[[0:2]])"`
+        PYTHON_VERSION=`$PYTHON -c "import sys; print('%d.%d' % sys.version_info[[0:2]])"`
         if test "x$PYTHON_VERSION" = "x"; then
           PYTHON=
         else
