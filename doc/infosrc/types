@@ -9,10 +9,10 @@
 <P>A double with an optional prefix '+'.
 :addPoint
 <P>A <A HREF="#k:point">point</A> with an optional prefix '+'.
-:aspectType
-<p>An aspect ratio, double, followed optionally by a ',' and a maximum pass 
-count. If the aspect ratio is given, but no maximum pass count, the
-latter defaults to 5.
+#:aspectType
+#<p>An aspect ratio, double, followed optionally by a ',' and a maximum pass 
+#count. If the aspect ratio is given, but no maximum pass count, the
+#latter defaults to 5.
 :arrowType
 <TABLE>
   <TR><TD>"normal"<TD><IMG SRC="a_normal.gif">

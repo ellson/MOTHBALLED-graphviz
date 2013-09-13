@@ -96,9 +96,6 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:arrowtail HREF=#d:arrowtail>arrowtail</A>
 </TD><TD>E</TD><TD><A HREF=#k:arrowType>arrowType</A>
 </TD><TD ALIGN="CENTER">normal</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=a:aspect HREF=#d:aspect>aspect</A>
-</TD><TD>G</TD><TD><A HREF=#k:aspectType>aspectType</A>
-</TD><TD ALIGN="CENTER"></TD><TD></TD><TD>dot only</TD> </TR>
  <TR><TD><A NAME=a:bb HREF=#d:bb>bb</A>
 </TD><TD>G</TD><TD><A HREF=#k:rect>rect</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD>write only</TD> </TR>
@@ -572,25 +569,6 @@ This field indicates which graph component uses the attribute.
   This will only appear if the <A HREF=#d:dir>dir</A> attribute
   is "back" or "both".
   See the <A HREF=#h:undir_note>limitation</A>.
-
-<DT><A NAME=d:aspect HREF=#a:aspect><STRONG>aspect</STRONG></A>
-<DD>  Target aspect ratio (width of the layout divided by the height)
-  of the graph drawing. If unset, dot minimizes the total edge length.
-  For certain graphs, like those with large fan-in or fan-out, this can
-  lead to very wide layouts. Setting <TT>aspect</TT> will cause dot to try
-  to adjust the layout to get an aspect ratio close to that specified
-  by <TT>aspect</TT>.
-  <P>
-  By default, dot will do 5 passes attempting to achieve the desired
-  aspect ratio. For certain graphs, more passes will be needed to get
-  close enough. The <TT>aspect</TT> attribute can also be used to 
-  specify the maximum number of passes to try.
-  <P>
-  At present, there is no mechanism for widening a very tall layout.
-  Also, the algorithm doesn't handle clusters, nor disconnected graphs.
-  For the latter case, one can split the pipeline<BR>
-  <TT>ccomps -x | dot | gvpack | neato -n2</TT>
-  to get a similar effect.
 
 <DT><A NAME=d:bb HREF=#a:bb><STRONG>bb</STRONG></A>
 <DD>  Bounding box of drawing in points.
@@ -2046,11 +2024,6 @@ enclosed in the parentheses,  <TT>(...)+</TT> indicates 1 or more, and
   plus some supported as special cases for backward-compatibility
   (<TT>ediamond</TT>, <TT>open</TT>, <TT>halfopen</TT>,
   <TT>empty</TT>, <TT>invempty</TT>).
-
-<DT><A NAME=k:aspectType><STRONG>aspectType</STRONG></A>
-<DD><p>An aspect ratio, double, followed optionally by a ',' and a maximum pass 
-  count. If the aspect ratio is given, but no maximum pass count, the
-  latter defaults to 5.
 
 <DT><A NAME=k:clusterMode><STRONG>clusterMode</STRONG></A>
 <DD>"local","global","none"

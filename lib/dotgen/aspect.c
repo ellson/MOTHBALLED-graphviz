@@ -1988,6 +1988,11 @@ setAspect (Agraph_t * g, aspect_t* adata)
 	adata->badGraph = 0;
 	return NULL;
     }
+    agerr (AGWARN, "the aspect attribute has been disabled due to implementation flaws - attribute ignored.\n");
+    
+    adata->nextIter = 0;
+    adata->badGraph = 0;
+    return NULL;
     
     if (rv < MIN_AR) rv = MIN_AR;
     else if (rv > MAX_AR) rv = MAX_AR;
