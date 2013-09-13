@@ -705,7 +705,7 @@ static void xdot_gradient_fillcolor (GVJ_t* job, int filled, pointf* A, int n)
 	}
 	else {
 	    c1.x = G[0].x +  (r2/4) * cos(angle);
-	    c1.y = G[0].y -  (r2/4) * sin(angle);
+	    c1.y = G[0].y +  (r2/4) * sin(angle);
 	}
 	c2.x = G[0].x;
 	c2.y = G[0].y;
