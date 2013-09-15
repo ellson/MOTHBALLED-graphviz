@@ -404,8 +404,17 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	    gvprintf(job, " font-weight=\"bold\"");
 	if ((flags & HTML_IF) && !style)
 	    gvprintf(job, " font-style=\"italic\"");
-	if ((flags & HTML_UL))
-	    gvprintf(job, " text-decoration=\"underline\"");
+	if ((flags & (HTML_UL|HTML_S))) {
+	    int comma = 0;
+	    gvprintf(job, " text-decoration=\"");
+	    if ((flags & HTML_UL)) {
+		gvprintf(job, "underline");
+		comma = 1;
+	    }
+	    if ((flags & HTML_S))
+		gvprintf(job, "%sline-through", (comma?",":""));
+	    gvprintf(job, "\"");
+	}
 	if ((flags & HTML_SUP))
 	    gvprintf(job, " baseline-shift=\"super\"");
 	if ((flags & HTML_SUB))

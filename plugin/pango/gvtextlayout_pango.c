@@ -190,6 +190,8 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	    agxbput(&xb," style=\"italic\"");
 	if (flags & HTML_UL)
 	    agxbput(&xb," underline=\"single\"");
+	if (flags & HTML_S)
+	    agxbput(&xb," strikethrough=\"true\"");
 	agxbput (&xb,">");
 
 	if (flags & HTML_SUP)

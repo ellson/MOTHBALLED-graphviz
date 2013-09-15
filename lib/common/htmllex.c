@@ -617,6 +617,9 @@ static void startElement(void *user, const char *name, char **atts)
     } else if (strcasecmp(name, "B") == 0) {
 	htmllval.font = mkFont(0, HTML_BF, 0);
 	state.tok = T_bold;
+    } else if (strcasecmp(name, "S") == 0) {
+	htmllval.font = mkFont(0, HTML_S, 0);
+	state.tok = T_s;
     } else if (strcasecmp(name, "U") == 0) {
 	htmllval.font = mkFont(0, HTML_UL, 1);
 	state.tok = T_underline;
@@ -671,6 +674,8 @@ static void endElement(void *user, const char *name)
 	state.tok = T_n_sup;
     } else if (strcasecmp(name, "SUB") == 0) {
 	state.tok = T_n_sub;
+    } else if (strcasecmp(name, "S") == 0) {
+	state.tok = T_n_s;
     } else if (strcasecmp(name, "BR") == 0) {
 	if (state.tok == T_br)
 	    state.tok = T_BR;
@@ -914,19 +919,25 @@ static void printTok(int tok)
 	s = "T_underline";
 	break;
     case T_n_underline:
-	s = "T_underline";
+	s = "T_n_underline";
 	break;
     case T_italic:
 	s = "T_italic";
 	break;
     case T_n_italic:
-	s = "T_italic";
+	s = "T_n_italic";
 	break;
     case T_bold:
 	s = "T_bold";
 	break;
     case T_n_bold:
-	s = "T_bold";
+	s = "T_n_bold";
+	break;
+    case T_s:
+	s = "T_s";
+	break;
+    case T_n_s:
+	s = "T_n_s";
 	break;
     default:
 	s = "<unknown>";

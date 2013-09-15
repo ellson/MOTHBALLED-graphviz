@@ -436,14 +436,14 @@ popFont (void)
 
 %token T_end_br T_end_img T_row T_end_row T_html T_end_html
 %token T_end_table T_end_cell T_end_font T_string T_error
-%token T_n_italic T_n_bold T_n_underline T_n_sup T_n_sub
+%token T_n_italic T_n_bold T_n_underline T_n_sup T_n_sub T_n_s
 %token T_HR T_hr T_end_hr
 %token T_VR T_vr T_end_vr
 %token <i> T_BR T_br
 %token <img> T_IMG T_img
 %token <tbl> T_table
 %token <cell> T_cell
-%token <font> T_font T_italic T_bold T_underline T_sup T_sub
+%token <font> T_font T_italic T_bold T_underline T_sup T_sub T_s
 
 %type <txt> fonttext
 %type <cell> cell cells
@@ -476,6 +476,7 @@ textitem : string { appendFItemList(HTMLstate.str);}
          | bold text n_bold
          | sup text n_sup
          | sub text n_sub
+         | strike text n_strike
          ;
 
 font : T_font { pushFont ($1); }
@@ -494,6 +495,12 @@ bold : T_bold {pushFont($1);}
           ;
 
 n_bold : T_n_bold {popFont();}
+            ;
+
+strike : T_s {pushFont($1);}
+          ;
+
+n_strike : T_n_s {popFont();}
             ;
 
 underline : T_underline {pushFont($1);}

@@ -18,12 +18,13 @@
 extern "C" {
 #endif
 
-/* Bold, Italic, Underline */
+/* Bold, Italic, Underline, Sup, Sub, Strike */
 #define HTML_BF 1
 #define HTML_IF 2
 #define HTML_UL 4
 #define HTML_SUP 8
 #define HTML_SUB 16
+#define HTML_S   32
 
     /* font information
      * If name or color is NULL, or size < 0, that attribute
@@ -32,8 +33,8 @@ extern "C" {
     typedef struct {
 	char*  name;
 	char*  color;
-        int    flags:7;  /* HTML_UL, HTML_IF, HTML_BF */
-	int    cnt;   /* reference count */
+        int    flags:7;  /* HTML_UL, HTML_IF, HTML_BF, etc. */
+	int    cnt:(sizeof(int) * 8 - 7);   /* reference count */
 	double size;
     } htmlfont_t;
 
