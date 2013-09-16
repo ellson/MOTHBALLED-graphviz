@@ -2119,6 +2119,7 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
 	    if (AEQ0(s->t)) continue;
     	    gvrender_set_pencolor(job, s->color);
 	    left -= s->t;
+	    endcolor = s->color;
 	    if (first) {
 		first = 0;
 		splitBSpline (&bz, s->t, &bz_l, &bz_r);
@@ -2130,7 +2131,6 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
 		}
 	    }
 	    else if (AEQ0(left)) {
-		endcolor = s->color;
 		gvrender_beziercurve(job, bz_r.list, bz_r.size, FALSE, FALSE, FALSE);
 		free (bz_r.list);
 		break;
