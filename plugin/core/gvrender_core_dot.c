@@ -58,7 +58,7 @@ typedef enum {
 //    #pragma comment( lib, "ingraphs.lib" )
 #endif
 
-#define XDOTVERSION "1.5"
+#define XDOTVERSION "1.6"
 
 #define NUMXBUFS (EMIT_HLABEL+1)
 /* There are as many xbufs as there are values of emit_state_t.
@@ -651,8 +651,11 @@ static void xdot_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	flags = para->font->flags;
     else
 	flags = 0;
-    if (xd->version >= 15) sprintf (buf, "t %d ", flags);
-    agxbput(xbufs[emit_state], buf);
+    if (xd->version >= 15) {
+	unsigned int mask = (xd->version >= 16?0x3F:0x1F);
+	sprintf (buf, "t %d ", flags & mask);
+	agxbput(xbufs[emit_state], buf);
+    }
 
     p.y += para->yoffset_centerline;
     agxbput(xbufs[emit_state], "T ");
