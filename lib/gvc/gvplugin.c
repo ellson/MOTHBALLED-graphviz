@@ -670,7 +670,7 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 #ifndef WITH_CGRAPH
 		agdelete(ssg->meta_node->graph, ssg->meta_node);
 #else
-	        agdelete(g, ssg);
+	        agdelete(sg, ssg);
 #endif
 	}
     }
