@@ -1,0 +1,32 @@
+all:	libagutil.a
+ROOT=../..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
+
+INCS =  -I. \
+	    -I$(ROOT) \
+	    -I../agraph \
+	    -I../cdt
+
+DEFINES = -DHAVE_CONFIG_H
+
+HDRS = agutil.h
+
+OBJS = dynattr.o nodeq.o
+
+libagutil.a : $(OBJS)
+	$(RM) libagutil.a
+	$(AR) cr libagutil.a $(OBJS)
+	$(RANLIB) libagutil.a
+
+install: libagutil.a 
+	$(MKPATH) $(LIBDIR)
+	$(INSTALL) libagutil.a $(LIBDIR)
+
+$(OBJS) : agutil.h
+
+clean:
+	$(RM) core *.o
+
+distclean: clean
+	$(RM) *.a ptest

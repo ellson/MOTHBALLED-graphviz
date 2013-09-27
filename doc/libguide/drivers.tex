@@ -1,0 +1,94 @@
+\section{The \gviz\ context}
+\label{sec:gvc}
+
+Up to now, we have used a \gviz\ context \gvc\ without
+considering its purpose. As suggested earlier, this value is used
+to store various layout information that is independent of a particular
+graph and its attributes. 
+It holds the data associated with plugins, parsed-command lines, 
+script engines, and anything else with a scope potentially larger 
+than one graph, up to the scope of the application.
+In addition, it maintains lists of the
+available layout algorithms and renderers; it also records the most recent
+layout algorithm applied to a graph. It can be used to specify multiple
+renderings of a given graph layout into different associated files.
+It is also used to store various global information used during
+rendering.
+
+There should be just one \gvc\ created for the entire 
+duration of an application.
+A single \gvc\ value can be used with multiple graphs, though
+with only one graph at a time. In addition, if {\tt gvLayout()}
+was invoked for a graph and \gvc, then {\tt gvFreeLayout()} should
+be called before using {\tt gvLayout()} again, even on the same graph.
+ 
+Normally, one creates a \gvc\ by a call to:
+\begin{verbatim}
+    extern GVC_t *gvContext();
+\end{verbatim}
+which is what we have used in the examples shown here.
+
+One can initialize a \gvc\ to record a list of graphs, layout algorithms
+and renderers. To do this, the application should
+call the function {\tt gvParseArgs}:
+\begin{verbatim}
+  extern void gvParseArgs(GVC_t* gvc, int argc, char* argv[]);
+\end{verbatim}
+This function takes the context value, plus an array of strings
+using the same conventions as the parameters to {\tt main} function
+in a C program. In particular, {\tt argc} should be the number of
+values in {\tt argv}. If {\tt argv[0]} is the name of one of the
+layout algorithms, this will be bound to the \gvc\ value and used
+at layout time.
+The remaining {\tt argv} values, if any, are interpreted exactly like
+the allowed command line flags for any \gviz\ program.
+Thus, {\tt "-T"} can be used to set the output type, and {\tt "-o"}
+can be used to specify the output files.
+
+For example, the application can use a synthetic argument list
+\begin{verbatim}
+    GVC_t* gvc = gcContext();
+    char* args[] = {
+        "dot",
+        "-Tgif",       /* gif output */
+        "-oabc.gif"    /* output to file abc.gif */
+    };
+    gvParseArgs (gvc, sizeof(args)/sizeof(char*), args);
+\end{verbatim}
+to specify a dot layout in {\tt GIF} output written to the file {\tt abc.gif}.
+Another approach is to use a program's actual argument list, 
+after removing flags not handled by \gviz.
+ 
+Most of the information is stored in a \gvc\ value for use during
+rendering. However,
+if the {\tt argv} array contains non-flag arguments, i.e., strings
+after the first not beginning with {\tt "-"}, these are taken
+to be input files defining a stream of graphs to be drawn. 
+These graphs can be accessed by calls to {\tt gvNextInputGraph}.
+
+Once the \gvc\ has been initialized this way, the application can
+call {\tt gvNextInputGraph} to get each input graph in sequence, and
+then invoke {\tt gvLayoutJobs} and {\tt gvRenderJobs}
+to do the specified layouts and renderings. See
+Appendix~\ref{sec:dot} for a typical example of this approach.
+
+We note that {\tt gvLayout} basically attaches the graph
+and layout algorithm to the \gvc, as would be done by
+{\tt gvParseArgs}, and then invokes {\tt gvLayoutJobs}. A similar
+remark holds for {\tt gvRender} and {\tt gvRenderJobs}.
+ 
+\subsection{Version-specific data}
+\label{sec:info}
+
+When the \gvc\ is created, it stores version and build date information 
+that can be used by renderers to identify which version of \gviz\ produced
+the output. It is also what is printed when a layout program is given the {\tt -V}
+flag. This information is stored as an array of three {\tt char*}, giving the
+name, version number and build date, respectively.  
+These can be accessed via the functions:
+\begin{verbatim}
+extern char **gvcInfo(GVC_t*);
+extern char *gvcVersion(GVC_t*);
+extern char *gvcBuildDate(GVC_t*);
+\end{verbatim}
+

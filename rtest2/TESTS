@@ -1,0 +1,287 @@
+shape none
+	graph G {a [label="" shape=none]}
+	dot -Tgv
+	dot -Txdot
+	dot -Tpng
+	dot -Tsvg
+	dot -Tps
+	dot -Tcmapx
+shape plaintext
+	graph G {a [label="" shape=plaintext]}
+	dot -Txdot
+shape point
+	graph G {a [label="" shape=point]}
+	dot -Txdot
+shape box
+	graph G {a [label="" shape=box]}
+	dot -Txdot
+shape rect
+	graph G {a [label="" shape=rect]}
+	dot -Txdot
+shape rectangle
+	graph G {a [label="" shape=rectangle]}
+	dot -Txdot
+shape ellipse
+	graph G {a [label="" shape=ellipse]}
+	dot -Txdot
+shape circle
+	graph G {a [label="" shape=circle]}
+	dot -Txdot
+shape triangle
+	graph G {a [label="" shape=triangle]}
+	dot -Txdot
+shape invtriangle
+	graph G {a [label="" shape=invtriangle]}
+	dot -Txdot
+shape diamond
+	graph G {a [label="" shape=diamond]}
+	dot -Txdot
+shape trapezium
+	graph G {a [label="" shape=trapezium]}
+	dot -Txdot
+shape invtrapezium
+	graph G {a [label="" shape=invtrapezium]}
+	dot -Txdot
+shape parallelogram
+	graph G {a [label="" shape=parallelogram]}
+	dot -Txdot
+shape house
+	graph G {a [label="" shape=house]}
+	dot -Txdot
+shape invhouse
+	graph G {a [label="" shape=invhouse]}
+	dot -Txdot
+shape pentagon
+	graph G {a [label="" shape=pentagon]}
+	dot -Txdot
+shape hexagon
+	graph G {a [label="" shape=hexagon]}
+	dot -Txdot
+shape septagon
+	graph G {a [label="" shape=septagon]}
+	dot -Txdot
+shape octagon
+	graph G {a [label="" shape=octagon]}
+	dot -Txdot
+shape doubleoctagon
+	graph G {a [label="" shape=doubleoctagon]}
+	dot -Txdot
+shape doublecircle
+	graph G {a [label="" shape=doublecircle]}
+	dot -Txdot
+shape tripleoctagon
+	graph G {a [label="" shape=tripleoctagon]}
+	dot -Txdot
+shape Mdiamond
+	graph G {a [label="" shape=Mdiamond]}
+	dot -Txdot
+shape Msquare
+	graph G {a [label="" shape=Msquare]}
+	dot -Txdot
+shape Mcircle
+	graph G {a [label="" shape=Mcircle]}
+	dot -Txdot
+label ""
+	graph G {a [label="" shape=none]}
+	dot -Txdot
+label b
+	graph G {a [label=b shape=none]}
+	dot -Txdot
+label a (default)
+	graph G {a [shape=none]}
+	dot -Txdot
+label a (\N)
+	graph G {a [label="\N" shape=none]}
+	dot -Txdot
+label n_of_G (\G)
+	graph G {a [label="n_of_\G" shape=none]}
+	dot -Txdot
+label \E\H\T (\E\H\T)
+	graph G {a [label="\E\H\T" shape=none]}
+	dot -Txdot
+label a->b (\E)
+	digraph G {node [label="" shape=none]; a->b [label="\E"]}
+	dot -Txdot
+label a (\T)
+	digraph G {node [label="" shape=none]; a->b [label="\T"]}
+	dot -Txdot
+label b (\H)
+	digraph G {node [label="" shape=none]; a->b [label="\H"]}
+	dot -Txdot
+label e_of_G (e_of_\G)
+	digraph G {node [label="" shape=none]; a->b [label="e_of_\G"]}
+	dot -Txdot
+label \N (\N)
+	digraph G {node [label="" shape=none]; a->b [label="\N"]}
+	dot -Txdot
+label center aligned
+	graph G {a [label="center\naligned\ntext" shape=none]}
+	dot -Txdot
+label left aligned
+	graph G {a [label="left\laligned\ltext" shape=none]}
+	dot -Txdot
+label right aligned
+	graph G {a [label="right\raligned\rtext" shape=none]}
+	dot -Txdot
+arrow none
+	digraph G {node [label="" shape=none]; a->b [arrowhead=none]}
+	dot -Txdot
+arrow default
+	digraph G {node [label="" shape=none]; a->b [arrowhead=""]}
+	dot -Txdot
+arrow normal
+	digraph G {node [label="" shape=none]; a->b [arrowhead=normal]}
+	dot -Txdot
+arrow box
+	digraph G {node [label="" shape=none]; a->b [arrowhead=box]}
+	dot -Txdot
+arrow crow
+	digraph G {node [label="" shape=none]; a->b [arrowhead=crow]}
+	dot -Txdot
+arrow diamond
+	digraph G {node [label="" shape=none]; a->b [arrowhead=diamond]}
+	dot -Txdot
+arrow dot
+	digraph G {node [label="" shape=none]; a->b [arrowhead=dot]}
+	dot -Txdot
+arrow inv
+	digraph G {node [label="" shape=none]; a->b [arrowhead=inv]}
+	dot -Txdot
+arrow tee
+	digraph G {node [label="" shape=none]; a->b [arrowhead=tee]}
+	dot -Txdot
+arrow vee
+	digraph G {node [label="" shape=none]; a->b [arrowhead=vee]}
+	dot -Txdot
+arrow lnormal	
+	digraph G {node [label="" shape=none]; a->b [arrowhead=lnormal]}
+	dot -Txdot
+arrow lbox
+	digraph G {node [label="" shape=none]; a->b [arrowhead=lbox]}
+	dot -Txdot
+arrow lcrow
+	digraph G {node [label="" shape=none]; a->b [arrowhead=lcrow]}
+	dot -Txdot
+arrow ldiamond
+	digraph G {node [label="" shape=none]; a->b [arrowhead=ldiamond]}
+	dot -Txdot
+arrow ldot
+	digraph G {node [label="" shape=none]; a->b [arrowhead=ldot]}
+	dot -Txdot
+arrow linv
+	digraph G {node [label="" shape=none]; a->b [arrowhead=linv]}
+	dot -Txdot
+arrow ltee
+	digraph G {node [label="" shape=none]; a->b [arrowhead=ltee]}
+	dot -Txdot
+arrow lvee
+	digraph G {node [label="" shape=none]; a->b [arrowhead=lvee]}
+	dot -Txdot
+arrow rnormal
+	digraph G {node [label="" shape=none]; a->b [arrowhead=rnormal]}
+	dot -Txdot
+arrow rbox
+	digraph G {node [label="" shape=none]; a->b [arrowhead=rbox]}
+	dot -Txdot
+arrow rcrow
+	digraph G {node [label="" shape=none]; a->b [arrowhead=rcrow]}
+	dot -Txdot
+arrow rdiamond
+	digraph G {node [label="" shape=none]; a->b [arrowhead=rdiamond]}
+	dot -Txdot
+arrow rdot
+	digraph G {node [label="" shape=none]; a->b [arrowhead=rdot]}
+	dot -Txdot
+arrow rinv
+	digraph G {node [label="" shape=none]; a->b [arrowhead=rinv]}
+	dot -Txdot
+arrow rtee
+	digraph G {node [label="" shape=none]; a->b [arrowhead=rtee]}
+	dot -Txdot
+arrow rvee
+	digraph G {node [label="" shape=none]; a->b [arrowhead=rvee]}
+	dot -Txdot
+arrow onormal
+	digraph G {node [label="" shape=none]; a->b [arrowhead=onormal]}
+	dot -Txdot
+arrow obox
+	digraph G {node [label="" shape=none]; a->b [arrowhead=obox]}
+	dot -Txdot
+arrow ocrow
+	digraph G {node [label="" shape=none]; a->b [arrowhead=ocrow]}
+	dot -Txdot
+arrow odiamond
+	digraph G {node [label="" shape=none]; a->b [arrowhead=odiamond]}
+	dot -Txdot
+arrow odot
+	digraph G {node [label="" shape=none]; a->b [arrowhead=odot]}
+	dot -Txdot
+arrow oinv
+	digraph G {node [label="" shape=none]; a->b [arrowhead=oinv]}
+	dot -Txdot
+arrow otee
+	digraph G {node [label="" shape=none]; a->b [arrowhead=otee]}
+	dot -Txdot
+arrow ovee
+	digraph G {node [label="" shape=none]; a->b [arrowhead=ovee]}
+	dot -Txdot
+arrow onormalnormal
+	digraph G {node [label="" shape=none]; a->b [arrowhead=onormalnormal]}
+	dot -Txdot
+arrow oboxbox
+	digraph G {node [label="" shape=none]; a->b [arrowhead=oboxbox]}
+	dot -Txdot
+arrow ocrowcrow
+	digraph G {node [label="" shape=none]; a->b [arrowhead=ocrowcrow]}
+	dot -Txdot
+arrow odiamonddiamond
+	digraph G {node [label="" shape=none]; a->b [arrowhead=odiamonddiamond]}
+	dot -Txdot
+arrow odotdot
+	digraph G {node [label="" shape=none]; a->b [arrowhead=odotdot]}
+	dot -Txdot
+arrow oinvinv
+	digraph G {node [label="" shape=none]; a->b [arrowhead=oinvinv]}
+	dot -Txdot
+arrow oteetee
+	digraph G {node [label="" shape=none]; a->b [arrowhead=oteetee]}
+	dot -Txdot
+arrow oveevee
+	digraph G {node [label="" shape=none]; a->b [arrowhead=oveevee]}
+	dot -Txdot
+color black
+	graph G {a [label="" shape=box style=filled color=black]}
+	dot -Txdot
+	dot -Tpng
+color red
+	graph G {a [label="" shape=box style=filled color=red]}
+	dot -Txdot
+	dot -Tpng
+color hotpink
+	graph G {a [label="" shape=box style=filled color=hotpink]}
+	dot -Txdot
+	dot -Tpng
+color transparent
+	graph G {a [label="" shape=box style=filled color=transparent]}
+	dot -Txdot
+	dot -Tpng
+anchor empty
+	graph G {a [URL="" label="" shape=none]}
+	dot -Tcmapx
+	dot -Tps
+	dot -Tsvg
+anchor \G.html
+	graph G {graph [URL="\G.html"]}
+	dot -Tcmapx
+	dot -Tps
+	dot -Tsvg
+anchor \N.html
+	graph G {a [URL="\N.html" label="" shape=none]}
+	dot -Tcmapx
+	dot -Tps
+	dot -Tsvg
+anchor \E.html
+	digraph G {node [label="" shape=none]; a->b [URL="\E.html"]}
+	dot -Tcmapx
+	dot -Tps
+	dot -Tsvg

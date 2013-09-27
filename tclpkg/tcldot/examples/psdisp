@@ -1,0 +1,26 @@
+#!/bin/sh
+# next line is a comment in tcl \
+exec tclsh "$0" ${1+"$@"}
+
+package require Tkspline
+package require Tcldot
+
+# psdisp - display a .gv graph file using ghostview - John.Ellson@att.com 
+#
+# Usage: psdisp <file.gv>
+#
+
+if {[llength $argv] == 0} {
+    puts "No .gv file specified. Assuming demo."
+    set argv "data/poly.gv"
+}
+if {[llength $argv] > 1} {puts "Too many args."; exit}
+if {[catch {open $argv r} f]} {puts "unable to open .gv file"; exit}
+set g [dotread $f]
+close $f
+
+$g layout
+
+if {[catch {open "| ghostview -" w} f]} {puts "unable to open output pipe to ghostview"; exit}
+$g write $f ps
+close $f

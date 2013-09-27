@@ -1,0 +1,388 @@
+#!/usr/bin/env tclsh
+
+package require Tcldot
+
+set cmd [file tail $argv0]
+
+if {$argc < 2} {
+	puts "Usage: $cmd <gvfile1> <gvfile2>"
+	exit
+}
+if {$argc > 2} {
+	set verbose 0
+} else {
+	set verbose 1
+}
+
+foreach {fn1 fn2} $argv {break}
+
+set f [open $fn1 r]
+set g1 [dotread $f]
+close $f
+
+set f [open $fn2 r]
+set g2 [dotread $f]
+close $f
+
+if { $verbose > 0 } { puts "$cmd: Comparing: $fn1 $fn2" }
+
+set gnames_g1 [$g1 showname]
+set gids_g1 $g1
+foreach g [$g1 listsubgraphs] {
+	set gn [$g showname]
+	if {[string first _anonymous $gn] == 0} {
+		lappend gnames_g1 {}
+	} {
+		lappend gnames_g1 $gn
+	}
+	lappend gids_g1 $g
+}
+set gnames_g2 [$g2 showname]
+set gids_g2 $g2
+foreach g [$g2 listsubgraphs] {
+	set gn [$g showname]
+	if {[string first _anonymous $gn] == 0} {
+		lappend gnames_g2 {}
+	} {
+		lappend gnames_g2 $gn
+	}
+	lappend gids_g2 $g
+}
+if {! [string equal $gnames_g1 $gnames_g2]} {
+	puts "$cmd: Error: Graph names don't match: [list $gnames_g1 $gnames_g2]"
+	exit
+}
+
+set names_g1 {}
+set ids_g1 {}
+foreach n [$g1 listnodes] {
+	lappend names_g1 [$n showname]
+	lappend ids_g1 $n
+	set name_key_id {}
+	foreach e [$n listoutedges] {
+		lappend name_key_id [list [$e showname] [$e queryattribute key] $e]
+	}
+	set names {}
+	set ids {}
+	foreach name_key_id [lsort -integer -index 1 $name_key_id] {
+		foreach {name key id} $name_key_id {break}
+		lappend names $name
+		lappend ids $id
+	}
+	lappend names_g1 $names
+	lappend ids_g1 $ids
+}
+set names_g2 {}
+set ids_g2 {}
+foreach n [$g2 listnodes] {
+	lappend names_g2 [$n showname]
+	lappend ids_g2 $n
+	set name_key_id {}
+	foreach e [$n listoutedges] {
+		lappend name_key_id [list [$e showname] [$e queryattribute key] $e]
+	}
+	set names {}
+	set ids {}
+	foreach name_key_id [lsort -integer -index 1 $name_key_id] {
+		foreach {name key id} $name_key_id {break}
+		lappend names $name
+		lappend ids $id
+	}
+	lappend names_g2 $names
+	lappend ids_g2 $ids
+}
+if {! [string equal $names_g1 $names_g2]} {
+	puts "$cmd: Error: Node and/or edge names don't match"
+	exit
+}
+
+set maxgraphbb_dx 0
+set maxgraphbb_dy 0
+set maxgraphlp_dx 0
+set maxgraphlp_dy 0
+
+set maxnodepos_dx 0
+set maxnodepos_dy 0
+set maxnodesize_dx 0
+set maxnodesize_dy 0
+set maxnoderects_dx 0
+set maxnoderects_dy 0
+
+set maxedgepos_dx 0
+set maxedgepos_dy 0
+set maxedgelp_dx 0
+set maxedgelp_dy 0
+
+set node_attr 0
+set edge_attr 0
+set pos_cnt 0
+set arrow_cnt 0
+
+foreach gi1 $gids_g1 gi2 $gids_g2 {
+	set as1 [$gi1 listattributes]
+	set as2 [$gi2 listattributes]
+	if {! [string equal $as1 $as2]} {
+		puts "$cmd: Error: [$gi1 showname] attributes don't match: [list $as1 $as2]"
+		exit
+	}
+	foreach {a1 v1} [$gi1 queryattributevalues $as1] {a2 v2} [$gi2 queryattributevalues $as2] {
+		if {! [string equal $v1 $v2]} {
+			switch $a1 {
+				lp {
+					set vc1 [split $v1 " ,"]
+					set vc2 [split $v2 " ,"]
+					if {[llength $vc1] != [llength $vc2]} {
+						puts "$cmd: Error: [$gi1 showname]\[$a1\] number of lp coords don't match: [list $v1 $v2]"
+					} elseif {[llength $vc1]} {
+						foreach {x1 y1} $vc1 {x2 y2} $vc2 {
+							set dx [expr {abs($x1 - $x2)}]
+							if {$dx > $maxgraphlp_dx} {
+								set maxgraphlp_dx $dx
+							}
+							set dy [expr {abs($y1 - $y2)}]
+							if {$dy > $maxgraphlp_dy} {
+								set maxgraphlp_dy $dy
+							}
+#						   puts "$cmd: Warning: [$gi1 showname]\[$a1\] delta $dx,$dy"
+						}
+					}
+				}
+				bb {
+					set vc1 [split $v1 " ,"]
+					set vc2 [split $v2 " ,"]
+					if {[llength $vc1] != [llength $vc2]} {
+						puts "$cmd: Error: [$gi1 showname]\[$a1\] number of bb coords don't match: [list $v1 $v2]"
+					} {
+						foreach {lx1 ly1 ux1 uy1} $vc1 {lx2 ly2 ux2 uy2} $vc2 {break}
+						set dx [expr {abs($lx1 - $lx2)}]
+						if {$dx > $maxgraphbb_dx} {
+							set maxgraphbb_dx $dx
+						}
+						set dy [expr {abs($ly1 - $ly2)}]
+						if {$dy > $maxgraphbb_dy} {
+							set maxgraphbb_dy $dy
+						}
+						set dx [expr {abs($ux1 - $ux2)}]
+						if {$dx > $maxgraphbb_dx} {
+							set maxgraphbb_dx $dx
+						}
+						set dy [expr {abs($uy1 - $uy2)}]
+						if {$dy > $maxgraphbb_dy} {
+							set maxgraphbb_dy $dy
+						}
+#					   puts "$cmd: Warning: [$gi1 showname]\[$a1\] delta $dx,$dy"
+					}
+				}
+				default {
+					puts "$cmd: Error: [$gi1 showname]\[$a1\] values don't match: [list $v1 $v2]"
+					exit
+				}
+			}
+		}
+	}
+}
+
+foreach {n1 edges1} $ids_g1 {n2 edges2} $ids_g2 {
+	set as1 [$n1 listattributes]
+	set as2 [$n2 listattributes]
+	if {! [string equal $as1 $as2]} {
+		puts "$cmd: Error: [$n1 showname] attributes don't match: [list $as1 $as2]"
+		exit
+	}
+	foreach {a1 v1} [$n1 queryattributevalues $as1] {a2 v2} [$n2 queryattributevalues $as2] {
+		if {! [string equal $v1 $v2]} {
+			switch $a1 {
+				pos {
+					foreach {x1 y1} [split $v1 ,] {x2 y2} [split $v2 ,] {
+						set dx [expr {abs($x1 - $x2)}]
+						if {$dx > $maxnodepos_dx} {
+							set maxnodepos_dx $dx
+						}
+						set dy [expr {abs($y1 - $y2)}]
+						if {$dy > $maxnodepos_dy} {
+							set maxnodepos_dy $dy
+						}
+#					   puts "$cmd: Warning: [$n1 showname]\[$a1\] delta $dx,$dy"
+					}
+				}
+				rects {
+					set vc1 [split $v1 " ,"]
+					set vc2 [split $v2 " ,"]
+					if {[llength $vc1] != [llength $vc2]} {
+						puts "$cmd: Error: [$e1 showname]\[$a1\] number of rects coords don't match: [list $v1 $v2]"
+					} {
+						foreach {lx1 ly1 ux1 uy1} $vc1 {lx2 ly2 ux2 uy2} $vc2 {
+							set dx [expr {abs($lx1 - $lx2)}]
+							if {$dx > $maxnoderects_dx} {
+								set maxnoderects_dx $dx
+							}
+							set dx [expr {abs($ux1 - $ux2)}]
+							if {$dx > $maxnoderects_dx} {
+								set maxnoderects_dx $dx
+							}
+							set dy [expr {abs($ly1 - $ly2)}]
+							if {$dy > $maxnoderects_dy} {
+								set maxnoderects_dy $dy
+							}
+							set dy [expr {abs($uy1 - $uy2)}]
+							if {$dy > $maxnoderects_dy} {
+								set maxnoderects_dy $dy
+							}
+#						   puts "$cmd: Warning: [$n1 showname]\[$a1\] delta $dx,$dy"
+						}
+					}
+				}
+				width {
+					set delta [expr {abs($v1 - $v2)}]
+					if {$delta > $maxnodesize_dx} {
+						set maxnodesize_dx $delta
+					}
+#				   puts "$cmd Warning: [$n1 showname]\[$a1\] delta $delta"
+				}
+				height {
+					set delta [expr {abs($v1 - $v2)}]
+					if {$delta > $maxnodesize_dy} {
+						set maxnodesize_dy $delta
+					}
+#				   puts "$cmd: Warning: [$n1 showname]\[$a1\] delta $delta"
+				}
+				default {
+					if { $verbose > 0 } { 
+						puts "$cmd: Warning: [$n1 showname]\[$a1\] values don't match: [list $v1 $v2]"
+						exit
+					} else {
+						incr node_attr
+					}
+				}
+			}
+		}
+	}
+	foreach e1 $edges1 e2 $edges2 {
+		set as1 [$e1 listattributes]
+		set as2 [$e2 listattributes]
+		if {! [string equal $as1 $as2]} {
+			puts "$cmd: Error: [$e1 showname] attributes don't match: [list $as1 $as2]"
+			exit
+		}
+		foreach {a1 v1} [$e1 queryattributevalues $as1] {a2 v2} [$e2 queryattributevalues $as2] {
+			if {! [string equal $v1 $v2]} {
+				switch $a1 {
+					key {}
+					pos {
+						set v1 [split $v1]
+						set v2 [split $v2]
+						set len1 [llength $v1]
+						set len2 [llength $v2]
+						if {$len1 != $len2} {
+							if { $verbose > 0 } { 
+								puts "$cmd: Warning: [$e1 showname]\[$a1\] number of coordinates don't match: $len1 $len2]"
+							} else {
+								set delta [expr {abs($len1 - $len2)}]
+								if {$delta > $pos_cnt} {
+									set pos_cnt $delta
+								}
+							}
+						} {
+							set i 0
+							foreach p1 $v1 p2 $v2 {
+								set p1 [split $p1 ,]
+								if {[llength $p1] == 3} {
+									foreach {t1 x1 y1} $p1 {break}
+								} {
+									set t1 .
+									foreach {x1 y1} $p1 {break}
+								}
+								set p2 [split $p2 ,]
+								if {[llength $p2] == 3} {
+									foreach {t2 x2 y2} $p2 {break}
+								} {
+									set t2 .
+									foreach {x2 y2} $p2 {break}
+								}
+								if {! [string equal $t1 $t2]} {
+									if { $verbose > 0 } { 
+										puts "$cmd: Warning: [$e1 showname]\[$a1\] arrows don't match"
+										exit
+									} else {
+										incr arrow_cnt
+									}
+								}
+								set dx [expr {abs($x1 - $x2)}]
+								if {$dx > $maxedgepos_dx} {
+									set maxedgepos_dx $dx
+								}
+								set dy [expr {abs($y1 - $y2)}]
+								if {$dy > $maxedgepos_dy} {
+									set maxedgepos_dy $dy
+								}
+#							   if {$dx || $dy} {
+#								   puts "$cmd: Warning: [$e1 showname]\[$a1\] point $i delta $dx,$dy"
+#							   }
+								incr i
+							}
+						}
+					}
+					lp {
+						foreach {x1 y1} [split $v1 ,] {x2 y2} [split $v2 ,] {
+							set dx [expr {abs($x1 - $x2)}]
+							if {$dx > $maxedgelp_dx} {
+								set maxedgelp_dx $dx
+							}
+							set dy [expr {abs($y1 - $y2)}]
+							if {$dy > $maxedgelp_dy} {
+								set maxedgelp_dy $dy
+							}
+#						   puts "$cmd: Warning: [$n1 showname]\[$a1\] delta $dx,$dy"
+						}
+					}
+					default {
+						if { $verbose > 0 } { 
+							puts "$cmd: Warning: [$n1 showname]\[$a1\] values don't match: [list $v1 $v2]"
+							exit
+						} else {
+							incr edge_attr
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+if { $verbose > 0 } { 
+
+puts -nonewline "$cmd: Max deltas:"
+
+puts -nonewline "graph{"
+puts -nonewline "bb:$maxgraphbb_dx,$maxgraphbb_dy "
+puts -nonewline "lp:$maxgraphlp_dx,$maxgraphlp_dy "
+puts -nonewline "}"
+
+puts -nonewline "node{"
+puts -nonewline "pos:$maxnodepos_dx,$maxnodepos_dy "
+puts -nonewline "rects:$maxnoderects_dx,$maxnoderects_dy "
+puts -nonewline "size:$maxnodesize_dx,$maxnodesize_dy "
+puts -nonewline "}"
+
+puts -nonewline "edge{"
+puts -nonewline "pos:$maxedgepos_dx,$maxedgepos_dy "
+puts -nonewline "lp:$maxedgelp_dx,$maxedgelp_dy "
+puts			"}"
+} else {
+puts -nonewline "G{"
+puts -nonewline "bb:$maxgraphbb_dx,$maxgraphbb_dy;"
+puts -nonewline "lp:$maxgraphlp_dx,$maxgraphlp_dy"
+puts -nonewline "}"
+
+puts -nonewline "N{"
+puts -nonewline "pos:$maxnodepos_dx,$maxnodepos_dy;"
+puts -nonewline "rects:$maxnoderects_dx,$maxnoderects_dy;"
+puts -nonewline "size:$maxnodesize_dx,$maxnodesize_dy"
+puts -nonewline "}"
+
+puts -nonewline "E{"
+puts -nonewline "pos:$maxedgepos_dx,$maxedgepos_dy;"
+puts -nonewline "lp:$maxedgelp_dx,$maxedgelp_dy"
+puts			"}"
+}
+

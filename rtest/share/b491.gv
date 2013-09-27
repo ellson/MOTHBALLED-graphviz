@@ -1,0 +1,10 @@
+digraph G {
+	node [label="\N"];
+	graph [bb="0,0,160,110"];
+	Node29 [shape=record, pos="79,92", rects="48,74,110,110", width="0.86", height="0.50"];
+	Node27 [pos="35,18", width="0.97", height="0.50"];
+	Node26 [pos="124,18", width="1.00", height="0.50"];
+	Node29 -> Node27 [pos="e,45,35 68,74 63,65 56,54 50,44"];
+	Node29 -> Node26 [pos="e,113,35 90,74 95,65 102,54 108,44"];
+	Node29 -> Node29 [label=v, pos="e,110,79 110,105 120,105 128,101 128,92 128,86 125,83 120,81", lp="132,92"];
+}

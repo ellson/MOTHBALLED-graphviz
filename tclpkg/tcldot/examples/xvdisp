@@ -1,0 +1,27 @@
+#!/bin/sh
+# next line is a comment in tcl \
+exec tclsh "$0" ${1+"$@"}
+
+package require Tcldot
+
+# xvdisp - display a .gv file using xv - John Ellson <ellson@graphviz.org>
+#
+# Usage: xvdisp <file.gv>
+#
+
+if {[llength $argv] == 0} {
+    puts "No .gv file specified. Assuming demo."
+    set argv "data/poly.gv"
+}
+if {[llength $argv] > 1} {puts "Too many args."; exit}
+if {[catch {open $argv r} f]} {puts "unable to open .gv file"; exit}
+set g [dotread $f]
+close $f
+
+$g layout
+
+puts [$g queryattribute bb]
+
+if {[catch {open "| xv -" w} f]} {puts "unable to open output pipe to xv"; exit}
+$g write $f gif
+close $f

@@ -1,0 +1,163 @@
+\chapter{Overview}
+\label{secoverview}
+This section presents an overview of the editor. We use an example that
+demonstrates how pictures are described and built using {\LEFTY}. This example
+is too simple to take advantage of the editor's programmability because the
+picture has no structure, but it demonstrates the basic picture-design
+principles.
+
+The picture in this example is a collection of rectangles of various sizes
+positioned randomly. The complete program for this program can be found in
+Appendix~\ref{applistings}.
+
+Picture descriptions consist of two parts:
+\begin{list}{}{}
+\item[]
+data structures that hold information about the picture. For this example, the
+data structures tell how many boxes are in the picture and their locations and
+sizes.
+\item[]
+functions that implement operations on the data structures. This example has
+functions to insert, delete, move, and draw boxes.
+\end{list}
+
+\noindent
+Location and size data are stored in {\tt objarray}, which is an array of
+key-value pairs, and the number of boxes is given by {\tt objnum}.
+Figure~\ref{progboxdsinitial} shows a snapshot of the data structures for two
+boxes.  Each element of {\tt objarray} specifies the origin and corner of a box
+in fields {\tt rect[0]} and {\tt rect[1]} respectively.
+Section~\ref{subseclang} describes the {\LEFTY} language in more detail.
+Figure~\ref{figboxinitial} is the WYSIWYG view.
+
+\vspace{-6pt}
+\begin{figure}[htb]
+\input{progs/progboxdsinitial}
+\vspace{-12pt}
+\caption{A snapshot of the data structure}
+\label{progboxdsinitial}
+\end{figure}
+
+\begin{figure}[htb]
+\centerline{\hbox{
+{\epsfxsize=2.5in \epsffile{figs/figboxinitial.ps}}
+}}
+\caption{The WYSIWYG view of the picture}
+\label{figboxinitial}
+\end{figure}
+
+We need functions to draw the picture, to change it, and to bind user events to
+changes to the picture. {\tt drawbox} and {\tt redrawboxes} in
+Figure~\ref{progboxdraw} do the actual drawing; {\tt drawbox} draws a single
+box, and {\tt redrawboxes} clears the display and draws all the boxes. {\tt
+box} does the actual rendering; it is a built-in function that draws a
+rectangle.  Built-in functions provide access to window and operating system
+resources.  They are described in Section~\ref{secbuiltins}. {\tt canvas} is
+the id for the drawing area. In this example there is only one drawing area and
+its id is assigned to the global variable {\tt canvas}.
+
+\begin{figure}[htb]
+\input{progs/progboxdraw}
+\vspace{-12pt}
+\caption{Drawing functions}
+\label{progboxdraw}
+\end{figure}
+
+Figure~\ref{progboxedit} shows various editing functions. {\tt new} adds a new
+box to {\tt objarray}. {\tt reshape} changes the shape of an existing box, and
+{\tt move} moves a box. {\tt pointadd} is a function that adds two points and
+returns the resulting point. {\tt remove} is a built-in function that removes
+array elements; here it removes entry {\tt objnum - 1} from {\tt objarray}.
+
+\begin{figure}[htb]
+\input{progs/progboxedit}
+\vspace{-12pt}
+\caption{Editing functions}
+\label{progboxedit}
+\end{figure}
+
+Figure~\ref{progboxui} shows some of the functions that bind user events to
+editing operations. {\tt leftdown} is called when the user presses the left
+mouse button. In this picture, if the user presses the left button over white
+space (not inside any box) a new---zero size---box is created and the drawing
+mode is set to {\tt xor}. As the user moves the mouse while holding the left
+button down, {\tt leftmove} is called. {\tt leftmove} creates a rubberband
+effect, by reshaping the box so that the corner of the box follows the mouse.
+When the user releases the left button, {\tt leftup} is called. {\tt leftup}
+sets the drawing mode back to normal (mode {\tt src}). Functions {\tt
+middledown}, {\tt middlemove}, and {\tt middleup}, allow the user to grab an
+existing box and move it. Finally, {\tt rightup} deletes a box. The names of
+these functions are special. When a mouse or keyboard event occurs, {\LEFTY}
+searches its data structures for a function that corresponds to the event. If
+such a function is defined, {\LEFTY} calls it with one argument, {\tt data}.
+{\tt data} is a table that contains information about the user event.  {\tt
+data.pos} is the position of the mouse at the time of the event.  {\tt
+data.ppos} is present only for move or up events and it holds the position of
+the mouse at the time of the corresponding down event. {\tt data.obj} is the
+object that the user ``selected''. In this example, each rectangle on the
+screen is associated with an entry in {\tt objarray}. This is done by {\tt
+drawbox} which calls {\tt box} with the corresponding entry in {\tt objarray}
+as the second argument. When the user presses a mouse button over a rectangle,
+{\LEFTY} locates that rectangle and from that locates the corresponding object.
+{\tt setgattr} is a built-in function that changes the graphics state of a
+drawing area. {\tt clearpick} is a built-in function that makes its object
+argument unselectable from the WYSIWYG view, by removing it from the data
+structure used by {\LEFTY} to locate graphical primitives.
+
+\begin{figure}[htb]
+\input{progs/progboxui}
+\vspace{-12pt}
+\caption{User Interface functions}
+\label{progboxui}
+\end{figure}
+
+The user can edit the picture from either the program or the WYSIWYG view. From
+the WYSIWYG view, the user can create a new box by pressing the left button,
+then---while holding the button down---moving the mouse to another location and
+releasing the button. From the program view, the user can perform similar
+operations by entering expressions in the editor's language. For example, the
+user can create a new box by typing the following commands:
+
+\vbox{
+\begin{verbatim}
+newbox = new ([0 = ['x' = 250; 'y' = 120;]; 1 = ['x' = 390; 'y' = 240;];]);
+drawbox (newbox, 1);
+\end{verbatim}
+}
+
+The program view shows the data structures and functions of the current
+program. By default, entries in this view are shown abstracted, with each entry
+taking up a single line. The user can selectively expand individual entries to
+their full size.
+
+Figure~\ref{figboxfinal} shows the WYSIWYG view after moving one of the boxes
+and Figure~\ref{progboxdsfinal} shows the corresponding data structures.
+
+\begin{figure}[htb]
+\input{progs/progboxdsfinal}
+\vspace{-9pt}
+\caption{A snapshot of the data structure after editing the picture}
+\label{progboxdsfinal}
+\end{figure}
+
+\begin{figure}[htb]
+\centerline{\hbox{
+{\epsfxsize=2.5in \epsffile{figs/figboxfinal.ps}}
+}}
+\caption{The WYSIWYG view of the picture after editing}
+\label{figboxfinal}
+\end{figure}
+
+Generating postscript output is easy. {\tt canvas} can be set to an id
+corresponding to a file. In this case, built-ins such as {\tt box}, will append
+the appropriate postscript expressions to this file. Function {\tt dops}, shown
+in Figure~\ref{progboxdops} creates a postscript file, sets {\tt canvas} to the
+id of the file, draws the picture, closes the file and restores {\tt canvas} to
+its original value.
+
+\begin{figure}[htb]
+\input{progs/progboxdops}
+\vspace{-12pt}
+\caption{Function for generating postscript output}
+\label{progboxdops}
+\end{figure}

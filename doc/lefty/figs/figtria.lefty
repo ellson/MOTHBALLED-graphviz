@@ -1,0 +1,12 @@
+load ('tried.lefty');
+insert (['x' = 26; 'y' = 387;]);
+insert (['x' = 363; 'y' = 191;]);
+insert (['x' = 373; 'y' = 140;]);
+insert (['x' = 8; 'y' = 261;]);
+insert (['x' = 80; 'y' = 204;]);
+insert (['x' = 81; 'y' = 375;]);
+insert (['x' = 317; 'y' = 151;]);
+insert (['x' = 106; 'y' = 115;]);
+insert (['x' = 51; 'y' = 142;]);
+insert (['x' = 294; 'y' = 281;]);
+dops ();

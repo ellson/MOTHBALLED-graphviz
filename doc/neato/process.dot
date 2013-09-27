@@ -1,0 +1,18 @@
+graph G {
+	size="4,4";
+	start=1;
+	edge [len=1.5];
+	run -- intr;
+	intr -- runbl;
+	runbl -- run;
+	run -- kernel;
+	kernel -- zombie;
+	kernel -- sleep;
+	kernel -- runmem;
+	sleep -- swap;
+	swap -- runswap;
+	runswap -- new;
+	runswap -- runmem;
+	new -- runmem;
+	sleep -- runmem;
+}

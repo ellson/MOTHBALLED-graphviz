@@ -1,0 +1,146 @@
+digraph polypoly {
+	graph [size="7,9.5", page="8.5,11", ratio=fill];
+	node [label="\N", shape=polygon];
+	graph [bb="0,0,1900,2578"];
+	{
+		graph [rank=same,
+			bb=""];
+		node [sides=0,
+			peripheries=2,
+			distortion="-.3"];
+		0000 [label=M, peripheries=1, distortion="", pos="40,116", width="0.75", height="0.50"];
+		0001 [label=MMMMMMMMMM, peripheries=1, distortion="", pos="161,116", width="2.11", height="0.50"];
+		0002 [label="M\nM\nM\nM\nM\nM", peripheries=1, distortion="", pos="282,116", width="0.75", height="1.61"];
+		0003 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", peripheries=1, distortion="", pos="420,116", width="2.58", height="2.04"];
+		0010 [label=M, distortion="", pos="562,116", width="0.86", height="0.61"];
+		0011 [label=MMMMMMMMMM, distortion="", pos="691,116", width="2.22", height="0.61"];
+		0012 [label="M\nM\nM\nM\nM\nM", distortion="", pos="820,116", width="0.86", height="1.72"];
+		0013 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", distortion="", pos="966,116", width="2.69", height="2.15"];
+		0110 [label=M, pos="1113,116", width="0.89", height="0.61"];
+		0111 [label=MMMMMMMMMM, pos="1248,116", width="2.36", height="0.61"];
+		0112 [label="M\nM\nM\nM\nM\nM", pos="1383,116", width="0.89", height="1.72"];
+		0113 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", pos="1536,116", width="2.86", height="2.15"];
+	}
+	{
+		graph [rank=same,
+			bb=""];
+		node [sides=3,
+			peripheries=2,
+			orientation=60];
+		3000 [label=M, peripheries=1, orientation=0, pos="40,515", width="1.11", height="0.94"];
+		3001 [label=MMMMMMMMMM, peripheries=1, orientation=0, pos="251,515", width="4.25", height="0.94"];
+		3002 [label="M\nM\nM\nM\nM\nM", peripheries=1, orientation=0, pos="464,515", width="1.17", height="3.24"];
+		3003 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", peripheries=1, orientation=0, pos="710,515", width="5.17", height="4.08"];
+		3110 [label=M, pos="962,515", width="1.33", height="1.13"];
+		3111 [label=MMMMMMMMMM, pos="1205,515", width="4.92", height="1.06"];
+		3112 [label="M\nM\nM\nM\nM\nM", pos="1447,515", width="1.31", height="3.71"];
+		3113 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", pos="1706,515", width="5.39", height="4.26"];
+	}
+	{
+		graph [rank=same,
+			bb=""];
+		node [sides=4,
+			peripheries=2,
+			orientation=45];
+		4000 [label=M, peripheries=1, orientation=0, pos="40,960", width="0.75", height="0.50"];
+		4001 [label=MMMMMMMMMM, peripheries=1, orientation=0, pos="156,960", width="1.97", height="0.50"];
+		4002 [label="M\nM\nM\nM\nM\nM", peripheries=1, orientation=0, pos="272,960", width="0.75", height="1.44"];
+		4003 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", peripheries=1, orientation=0, pos="388,960", width="1.97", height="1.44"];
+		4110 [label=M, pos="511,960", width="0.94", height="0.81"];
+		4111 [label=MMMMMMMMMM, pos="689,960", width="3.50", height="0.78"];
+		4112 [label="M\nM\nM\nM\nM\nM", pos="867,960", width="0.94", height="2.61"];
+		4113 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", pos="1057,960", width="3.83", height="3.03"];
+	}
+	{
+		graph [rank=same,
+			bb=""];
+		node [sides=5,
+			peripheries=2,
+			orientation=36];
+		5000 [label=M, peripheries=1, orientation=0, pos="40,1319", width="0.75", height="0.58"];
+		5001 [label=MMMMMMMMMM, peripheries=1, orientation=0, pos="179,1319", width="2.61", height="0.58"];
+		5002 [label="M\nM\nM\nM\nM\nM", peripheries=1, orientation=0, pos="318,1319", width="0.75", height="2.00"];
+		5003 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", peripheries=1, orientation=0, pos="478,1319", width="3.19", height="2.53"];
+		5110 [label=M, pos="643,1319", width="0.89", height="0.71"];
+		5111 [label=MMMMMMMMMM, pos="798,1319", width="2.92", height="0.69"];
+		5112 [label="M\nM\nM\nM\nM\nM", pos="952,1319", width="0.86", height="2.24"];
+		5113 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", pos="1121,1319", width="3.33", height="2.65"];
+	}
+	{
+		graph [rank=same,
+			bb=""];
+		node [sides=6,
+			peripheries=2,
+			orientation=30];
+		6000 [label=M, peripheries=1, orientation=0, pos="40,1648", width="0.75", height="0.54"];
+		6001 [label=MMMMMMMMMM, peripheries=1, orientation=0, pos="173,1648", width="2.44", height="0.54"];
+		6002 [label="M\nM\nM\nM\nM\nM", peripheries=1, orientation=0, pos="306,1648", width="0.75", height="1.86"];
+		6003 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", peripheries=1, orientation=0, pos="458,1648", width="2.97", height="2.36"];
+		6110 [label=M, pos="614,1648", width="0.86", height="0.67"];
+		6111 [label=MMMMMMMMMM, pos="755,1648", width="2.56", height="0.65"];
+		6112 [label="M\nM\nM\nM\nM\nM", pos="896,1648", width="0.86", height="2.04"];
+		6113 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", pos="1056,1648", width="3.08", height="2.47"];
+	}
+	{
+		graph [rank=same,
+			bb=""];
+		node [sides=7,
+			peripheries=2,
+			orientation="25.7"];
+		7000 [label=M, peripheries=1, orientation=0, pos="40,1962", width="0.75", height="0.53"];
+		7001 [label=MMMMMMMMMM, peripheries=1, orientation=0, pos="170,1962", width="2.36", height="0.53"];
+		7002 [label="M\nM\nM\nM\nM\nM", peripheries=1, orientation=0, pos="300,1962", width="0.75", height="1.79"];
+		7003 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", peripheries=1, orientation=0, pos="448,1962", width="2.86", height="2.26"];
+		7110 [label=M, pos="600,1962", width="0.86", height="0.64"];
+		7111 [label=MMMMMMMMMM, pos="742,1962", width="2.58", height="0.64"];
+		7112 [label="M\nM\nM\nM\nM\nM", pos="884,1962", width="0.86", height="1.96"];
+		7113 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", pos="1041,1962", width="3.00", height="2.39"];
+	}
+	{
+		graph [rank=same,
+			bb=""];
+		node [sides=8,
+			peripheries=2,
+			orientation="22.5"];
+		8000 [label=M, peripheries=1, orientation=0, pos="40,2268", width="0.75", height="0.51"];
+		8001 [label=MMMMMMMMMM, peripheries=1, orientation=0, pos="168,2268", width="2.31", height="0.51"];
+		8002 [label="M\nM\nM\nM\nM\nM", peripheries=1, orientation=0, pos="296,2268", width="0.75", height="1.75"];
+		8003 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", peripheries=1, orientation=0, pos="441,2268", width="2.78", height="2.21"];
+		8110 [label=M, pos="590,2268", width="0.86", height="0.63"];
+		8111 [label=MMMMMMMMMM, pos="730,2268", width="2.53", height="0.63"];
+		8112 [label="M\nM\nM\nM\nM\nM", pos="870,2268", width="0.86", height="1.90"];
+		8113 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", pos="1024,2268", width="2.92", height="2.33"];
+	}
+	{
+		graph [rank=same,
+			bb=""];
+		node [sides=4,
+			peripheries=2,
+			distortion=".5",
+			orientation="315.",
+			regular=1];
+		9000 [label=M, peripheries=1, orientation=0, pos="40,2513", width="0.86", height="0.83"];
+		9001 [label=M, peripheries=1, orientation="45.", pos="126,2513", width="1.03", height="1.03"];
+		9002 [label=M, peripheries=1, orientation="90.", pos="211,2513", width="0.83", height="0.86"];
+		9003 [label=M, peripheries=1, orientation="135.", pos="296,2513", width="1.03", height="1.03"];
+		9004 [label=M, peripheries=1, orientation="180.", pos="382,2513", width="0.86", height="0.83"];
+		9005 [label=M, peripheries=1, orientation="225.", pos="468,2513", width="1.03", height="1.03"];
+		9006 [label=M, peripheries=1, orientation="270.", pos="553,2513", width="0.83", height="0.86"];
+		9007 [label=M, peripheries=1, pos="638,2513", width="1.03", height="1.03"];
+		9010 [label=M, orientation=0, pos="729,2513", width="1.00", height="0.94"];
+		9011 [label=M, orientation="45.", pos="827,2513", width="1.22", height="1.22"];
+		9012 [label=M, orientation="90.", pos="923,2513", width="0.94", height="1.01"];
+		9013 [label=M, orientation="135.", pos="1019,2513", width="1.22", height="1.22"];
+		9014 [label=M, orientation="180.", pos="1117,2513", width="1.00", height="0.94"];
+		9015 [label=M, orientation="225.", pos="1215,2513", width="1.22", height="1.22"];
+		9016 [label=M, orientation="270.", pos="1311,2513", width="0.94", height="1.01"];
+		9017 [label=M, pos="1407,2513", width="1.22", height="1.22"];
+	}
+	3000 -> 0000 [pos="e,40,134 40,498 40,435 40,222 40,144"];
+	4000 -> 3000 [pos="e,40,549 40,942 40,876 40,655 40,559"];
+	5000 -> 4000 [pos="e,40,978 40,1302 40,1244 40,1059 40,988"];
+	6000 -> 5000 [pos="e,40,1340 40,1628 40,1574 40,1418 40,1350"];
+	7000 -> 6000 [pos="e,40,1668 40,1945 40,1894 40,1743 40,1678"];
+	8000 -> 7000 [pos="e,40,1981 40,2249 40,2198 40,2054 40,1991"];
+	9000 -> 8000 [pos="e,40,2286 40,2483 40,2436 40,2344 40,2296"];
+}

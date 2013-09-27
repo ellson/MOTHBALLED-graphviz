@@ -1,0 +1,49 @@
+901214 merged cheyenne.a with devices/x11 and made libgfx.a
+901220 changed the interface to dag to do a straight copy
+910201 changed parse.c and exec.c to make code a scalar object
+       (it used to be a table)
+910214 changed the way function declarations within function
+       declarations are handled.
+910418 added Xt support
+       changed gc to incremental
+910422 removed the mark field from mem.c objects
+       removed the time field from scalar objects
+910425 improved performance of spline drawing
+       added the ability to read files
+910501 added menus
+910503 optimized getva[rl] to not do unnecessary eeval's
+910506 optimized earithmetic to not eeval unless necessary
+       changed stack from being a gc table to being an array.
+910508 changed gg:findfont to keep a cache of fonts
+910521 fixed a color bug in gps.c
+910720 fixed bug in g.c where the buttonsdown wasn't updated
+       fixed gfxview.c to check if down objects have been gc'ed
+       added a recursive copy builtin
+910724 saved one word per gc object by making an array of offsets
+910726 changed the hashtables to variable size hash tables
+910809 combined type and size words into one
+       upgraded to SUNOS 4.1.1
+910826 changed lefty to use a path when searching for cmds of libs.
+       cleaned up code
+910905 cleaned up code to work with cc
+920308 cleaned up widget code
+       added support for Xaw widgets from LEFTY's language
+920813 changed the meaning of null objects for 'not equal'
+       changed text rendering options
+       changed gfxview to look in widgets and in root for functions
+       fixed arrows to always have the same size
+       split recognises \n
+       added node deletion in dot.lefty
+921107 new memory allocation scheme
+       cleanup
+930407 fixed file I/O events to not interfere with plain X events
+       message built-in is gone
+       fixed bug where text with non-existant font was slow
+       split handles ' ' like the shell (multiple spaces are treated as one)
+930614 fix ``return from outside a func'' bug
+       made openio use LEFTYPATH for plain files too
+931208 added cursor setting support for canvases
+940620 re-arranged the graphics library
+950126 added getenv putenv, fixed bugs in libgfx
+950906 added bitmap functions
+951207 added win32 support

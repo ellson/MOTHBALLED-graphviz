@@ -1,0 +1,4 @@
+
+(load-extension "./libgv.so" "SWIG_init")
+
+

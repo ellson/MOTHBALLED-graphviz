@@ -1,0 +1,27 @@
+\begin{verbatim}
+new = function (rect) {
+    objarray[objnum] = [
+        'rect' = rect;
+        'id' = objnum;
+    ];
+    objnum = objnum + 1;
+    return objarray[objnum - 1];
+};
+reshape = function (obj, rect) {
+    obj.rect = rect;
+    return obj;
+};
+move = function (obj, p) {
+    obj.rect[0] = pointadd (obj.rect[0], p);
+    obj.rect[1] = pointadd (obj.rect[1], p);
+    return obj;
+};
+delete = function (obj) {
+    if (obj.id ~= objnum - 1) {
+        objarray[obj.id] = objarray[objnum - 1];
+        objarray[obj.id].id = obj.id;
+    }
+    remove (objnum - 1, objarray);
+    objnum = objnum - 1;
+};
+\end{verbatim}

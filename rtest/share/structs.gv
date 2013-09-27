@@ -1,0 +1,9 @@
+digraph structs {
+	node [label="\N", shape=record];
+	graph [bb="0,0,260,144"];
+	struct1 [label="<f0> left|<f1> middle|<f2> right", pos="77,126", rects="10,108,45,144 45,108,100,144 100,108,144,144", width="1.86", height="0.50"];
+	struct2 [label="<f0> one|<f1> two", pos="37,36", rects="0,18,37,54 37,18,75,54", width="1.03", height="0.50"];
+	struct3 [label="hello\nworld |{ b |{c|<here> d|e}| f}| g | h", pos="176,36", rects="92,0,141,72 141,48,211,72 141,24,164,48 164,24,188,48 188,24,211,48 141,0,211,24 211,0,235,72 235,0,260,72", width="2.33", height="1.00"];
+	struct1:f1 -> struct2:f0 [pos="e,30,54 62,108 54,95 43,77 35,63"];
+	struct1:f2 -> struct3:here [pos="e,169,48 133,108 142,93 155,72 164,57"];
+}

@@ -1,0 +1,106 @@
+\chapter{Overview}
+{\DOTTY} is a graph editor built by combining the programmable graphics editor
+{\LEFTY} \cite{lefty-gi} and the graph layout tool {\DOT} \cite{dot-tse}.
+%{\LEFTY} \cite{lefty-guide-tm} and the graph layout tool {\DOT} \cite{dot-guide-tm}.
+{\LEFTY} has been programmed to operate on internal representations of graphs,
+and to allow the user to edit graphs.  The {\LEFTY} program that implements
+{\DOTTY} starts up {\DOT} as a separate process to compute layouts. When the
+user asks for a new layout, {\LEFTY} sends the graph to {\DOT}. {\DOT} computes
+the layout and outputs the graph (in the graph language notation) with
+coordinate and size information as graph attributes. {\LEFTY} then redraws the
+picture using the new layout.  {\DOTTY} can manage several windows, displaying
+different graphs. A future version will support multiple views.
+
+{\DOTTY} can be customized to handle graphs for specific applications.  For
+example, if a graph is supposed to not have cycles, the user can edit the
+{\LEFTY} function that inserts edges to check if inserting an edge would create
+a cycle.  {\DOTTY} can also be programmed to communicate with other processes.
+This allows it to be a front end for other tools. In this case, a tool can
+download its state to {\DOTTY}, as a graph, and whenever the user changes the
+graph, {\DOTTY} sends a message to the tool, which changes its state
+accordingly.
+
+Upon startup, {\DOTTY} opens a window labeled \verb"DOTTY".  The window is
+empty, unless a graph file name was specified on the command line, in which
+case the graph is displayed. The user can then add and delete nodes and edges
+or change attributes such as color and shapes of nodes and edges. {\DOTTY} does
+not generate new layouts automatically. The user has to ask for a new layout
+explicitly.
+
+As an example, the user can start up {\DOTTY} and select \verb+load graph+ from
+the menu. Figure~\ref{figdotty1}a shows the \verb+DOTTY+ window and the dialog
+window that asks for the graph file name. In this example, the user asks for
+file \verb+d.gv+. Figure~\ref{figdotty1}b shows the result of the \verb+load
+graph+ action.
+
+\begin{figure}[htb]
+\centerline{\hbox{
+\begin{tabular}[b]{c@{\hspace{.1in}}c}
+{\epsfxsize=2.5in \epsffile{figs/d1.ps}}&
+{\epsfxsize=2.5in \epsffile{figs/d2.ps}}\\
+(a) & (b)
+\end{tabular}
+}}
+\caption{Loading a graph file}
+\label{figdotty1}
+\end{figure}
+
+The user can then insert more nodes and edges as shown in
+Figure~\ref{figdotty2}a. Nodes can be inserted by clicking the left mouse
+button over white space. Edges can be inserted by pressing the middle button
+over the tail node and then, with the button held down, moving the mouse to the
+head node and releasing the button. Figure~\ref{figdotty2}b shows the graph
+after the user asks for a new layout.
+
+\begin{figure}[htb]
+\centerline{\hbox{
+\begin{tabular}[b]{c@{\hspace{.1in}}c}
+{\epsfxsize=2.5in \epsffile{figs/d3.ps}}&
+{\epsfxsize=2.5in \epsffile{figs/d4.ps}}\\
+(a) & (b)
+\end{tabular}
+}}
+\caption{Inserting nodes and edges}
+\label{figdotty2}
+\end{figure}
+
+The user can also change node and edge attributes. When the user presses the
+right mouse button over a node or an edge, a node/edge-specific menu appears.
+One of its options is \verb+set attr+.  Figure~\ref{figdotty3}a shows the
+dialog box that pops up when the user selects that option over node \verb+n2+.
+In this case, the user is specifying that the shape of node \verb+n2+ should be
+changed to a box. Figure~\ref{figdotty3}b shows the result.
+
+\begin{figure}[htb]
+\centerline{\hbox{
+\begin{tabular}[b]{c@{\hspace{.1in}}c}
+{\epsfxsize=2.5in \epsffile{figs/d5.ps}}&
+{\epsfxsize=2.5in \epsffile{figs/d6.ps}}\\
+(a) & (b)
+\end{tabular}
+}}
+\caption{Changing attributes}
+\label{figdotty3}
+\end{figure}
+
+The user can examine and change the {\LEFTY} program that implements {\DOTTY}
+by selecting the option \verb+text view+ from the global menu. This opens a
+window labeled \verb+LEFTY Text View+. The top part of the window can be used
+to run {\LEFTY} commands. The bottom part shows the current program.  Most
+entries are shown as ellipses (\verb"...").  Clicking on an entry expands it
+one level.  Figure~\ref{figdotty4}a shows the text view and
+Figure~\ref{figdotty4}b shows the text view with the {\tt dotty} entry
+expanded.  {\tt dotty} contains all the functions and data structures for
+{\DOTTY}.
+
+\begin{figure}[htb]
+\centerline{\hbox{
+\begin{tabular}[b]{c@{\hspace{.1in}}c}
+{\epsfxsize=2.5in \epsffile{figs/d7.ps}}&
+{\epsfxsize=2.5in \epsffile{figs/d8.ps}}\\
+(a) & (b)
+\end{tabular}
+}}
+\caption{The text view}
+\label{figdotty4}
+\end{figure}

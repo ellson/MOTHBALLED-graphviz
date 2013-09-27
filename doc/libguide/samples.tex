@@ -1,0 +1,120 @@
+\section{A sample program: {\tt simple.c}}
+\label{sec:simple}
+This following code illustrates an application which uses \gviz\ to
+position a graph using the \dot\ layout and then write the output
+using the {\tt plain} format.
+An application can replace the call to {\tt gvRender} with its own
+function for rendering the graph, using the layout information
+encoded in the graph structure (cf. Section~\ref{sec:layout_info}).
+\begin{verbatim}
+#include <gvc.h>
+
+int main(int argc, char **argv)
+{
+    GVC_t *gvc; 
+    Agraph_t *g;
+    FILE *fp;
+
+    gvc = gvContext();
+
+    if (argc > 1)
+        fp = fopen(argv[1], "r");
+    else    
+        fp = stdin;
+    g = agread(fp, 0);
+
+    gvLayout(gvc, g, "dot");
+
+    gvRender(gvc, g, "plain", stdout);
+
+    gvFreeLayout(gvc, g);
+
+    agclose(g);
+
+    return (gvFreeContext(gvc));
+}
+\end{verbatim}
+\newpage
+
+\section{A sample program: {\tt dot.c}}
+\label{sec:dot}
+This example shows how an application might read a stream of input graphs,
+lay out each, and then use the \gviz\ renderers to write the drawings
+to an output file. Indeed, this
+is precisely how the \dot\ program is written, ignoring some signal
+handling, its specific declaration of 
+the {\tt Info} data (cf. Section~\ref{sec:info}), and a few other
+minor details.
+\begin{verbatim}
+#include <gvc.h>
+    
+int main(int argc, char **argv)
+{   
+    Agraph_t *g, *prev = NULL;
+    GVC_t *gvc;
+
+    gvc = gvContext();
+    gvParseArgs(gvc, argc, argv);
+    
+    while ((g = gvNextInputGraph(gvc))) {
+        if (prev) {
+            gvFreeLayout(gvc, prev);
+            agclose(prev);
+        }
+        gvLayoutJobs(gvc, g); 
+        gvRenderJobs(gvc, g);
+        prev = g;
+    }
+    return (gvFreeContext(gvc));
+}
+
+\end{verbatim}
+\newpage
+
+\section{A sample program: {\tt demo.c}}
+\label{sec:demo}
+This example provides a modification of the previous example. Again it
+relies on the \gviz\ renderers, but now it creates the graph dynamically
+rather than reading the graph from a file.   
+\begin{verbatim}
+#include <gvc.h>
+
+int main(int argc, char **argv)
+{
+    Agraph_t *g;
+    Agnode_t *n, *m;
+    Agedge_t *e;
+    Agsym_t *a;
+    GVC_t *gvc;
+
+    /* set up a graphviz context */
+    gvc = gvContext();
+
+    /* parse command line args - minimally argv[0] sets layout engine */
+    gvParseArgs(gvc, argc, argv);
+
+    /* Create a simple digraph */
+    g = agopen("g", Agdirected);
+    n = agnode(g, "n", 1);
+    m = agnode(g, "m", 1);
+    e = agedge(g, n, m, 0, 1);
+
+    /* Set an attribute - in this case one that affects the visible rendering */
+    agsafeset(n, "color", "red", "");
+
+    /* Compute a layout using layout engine from command line args */
+    gvLayoutJobs(gvc, g);
+
+    /* Write the graph according to -T and -o options */
+    gvRenderJobs(gvc, g);
+
+    /* Free layout data */
+    gvFreeLayout(gvc, g);
+
+    /* Free graph structures */
+    agclose(g);
+
+    /* close output file, free context, and return number of errors */
+    return (gvFreeContext(gvc));
+}
+\end{verbatim}

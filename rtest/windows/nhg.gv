@@ -1,0 +1,15 @@
+digraph automata_0 {
+	graph [size="8.5, 11"];
+	node [label="\N", shape=circle];
+	graph [bb="0,0,208,220"];
+	0 [style=filled, color=lightgrey, pos="94,202", width="0.50", height="0.50"];
+	2 [shape=doublecircle, pos="39,110", width="0.61", height="0.61"];
+	1 [pos="87,18", width="0.50", height="0.50"];
+	"Machine: a" [shape=plaintext, pos="169,202", width="1.08", height="0.50"];
+	0 -> 2 [label="a ", pos="e,51,129 85,186 77,173 65,154 56,138", lp="79,158"];
+	0 -> 1 [label="other ", pos="e,90,36 96,184 98,161 100,121 98,88 96,74 94,59 92,46", lp="114,110"];
+	1 -> 2 [label="a ", pos="e,49,90 79,34 72,47 62,65 54,81", lp="73,62"];
+	1 -> 1 [label="other ", pos="e,101,30 101,6 112,2 123,6 123,18 123,26 118,31 111,31", lp="139,18"];
+	2 -> 2 [label="a ", pos="e,56,125 56,95 67,91 79,96 79,110 79,120 73,125 66,126", lp="84,110"];
+	2 -> 1 [label="other ", pos="e,70,23 28,91 23,79 19,65 25,54 33,40 47,32 60,27", lp="42,62"];
+}

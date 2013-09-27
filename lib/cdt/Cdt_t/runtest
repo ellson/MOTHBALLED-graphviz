@@ -1,0 +1,44 @@
+INCLUDE=../
+LIB=../
+
+#SENTINEL
+#export SE_HOME=/home/sentinel
+#PATH=$PATH:$SE_HOME
+#CC="sentinel cc"
+
+#PURIFY
+#export PURIFYHOME=/home/purify
+#PATH=$PATH:$PURIFYHOME
+#CC="purify cc"
+
+if test "$CC" = ""; then CC="cc"; fi
+
+if test "$1" = "-c"
+then	exit_on_fail=0; shift
+else	exit_on_fail=1
+fi
+
+if test "$*" != ""
+then
+	files="$*"
+else
+	files="*.c"
+fi
+
+for i in $files
+do
+	echo " ---- $i ----"
+	status=""
+	if $CC -g -I.. -I$INCLUDE $i $LIB/libcdt.a -o t
+	then
+		if ./t
+		then	rm t; status=passed
+		else	status=failed
+		fi
+	else	status="Not compiled"
+	fi
+	echo $status
+	if test "$status" != "passed"
+	then if test "$exit_on_fail" = "1"; then exit; fi
+	fi
+done

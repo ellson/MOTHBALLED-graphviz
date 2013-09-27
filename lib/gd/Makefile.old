@@ -1,0 +1,29 @@
+all:	libgd.a
+ROOT=../..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
+
+INCS =	-I. -I$(ROOT) $(EXTLIB_INC) -I$(X11INC)
+
+DEFINES = -DHAVE_CONFIG_H
+
+OBJS = gd.o gd_gd.o gd_gd2.o gd_io.o gd_io_dp.o gd_io_file.o \
+       gd_ss.o gd_io_ss.o gd_gif_in.o gd_gif_out.o gd_jpeg.o gd_png.o \
+       gdcache.o gdfontg.o gdfontl.o gdfontmb.o gdfonts.o gdfontt.o \
+       gdhelpers.o gdkanji.o gdtables.o gdft.o gdxpm.o \
+       wbmp.o gd_wbmp.o gd_topal.o gdfx.o gd_security.o
+
+libgd.a: $(OBJS)
+	$(RM) libgd.a
+	$(AR) cr libgd.a $(OBJS)
+	$(RANLIB) libgd.a
+
+install: libgd.a
+	$(MKPATH) $(LIBDIR)
+	$(INSTALL) libgd.a $(LIBDIR)
+
+clean:
+	$(RM) *.o
+
+distclean: clean
+	$(RM) *.a lib*.so.*

@@ -1,0 +1,665 @@
+#!/bin/ksh
+#
+# Regression test for graphviz
+#
+# Assume LD_LIBRARY_PATH or equivalent is set.
+#
+# Environment:
+#   TESTDIR = root directory for tests
+#   INSTALLROOT = root directory for graphviz 
+#   OUTDIR = directory in which to place test output
+#   ARCHDIR = pathname for directory of architecture-specific output
+#   ARCHTYPE = basename for directory of architecture-specific output
+#   BINDIR = directory of executables; overrides INSTALLROOT
+#
+# If ARCHDIR is defined, architecture-specific files are found there.
+# else
+#   if ARCHTYPE not set, let ARCHTYPE=(uname -s).(uname -m).(whichcc)
+#   use ARCHDIR=TESTDIR/ARCHTYPE
+#   If ARCHDIR doesn't exist, use PAIRS mapping to map ARCHTYPE to another name
+#   and try again.
+#   If this doesn't work, use the share directory
+#
+# If INSTALLROOT is defined, it is used to find bin and lib directories
+# else binaries found on PATH.
+# If BINDIR is defined, it is used to find executables.
+#
+# Test output:
+#   OK-BAD   (stable but inconsistent)   no action
+#   BAD-OK   (unstable but consistent)   can remove special test file
+#   BAD-BAD  (unstable and inconsistent) bug or update special test file
+#   OK-OK    (stable and consistent)     cannot happen
+#   OK=OK    (stable and consistent)     no action
+#   BAD=BAD  (unstable and inconsistent) bug or add special test file
+#
+
+  # Canonical machine
+MACH=$(uname -s).$(uname -m)
+  # Default location of graphviz tree
+DFLTROOT=/Users/north/src/graphviz
+  # Quiet diff : usually diff -q
+QDIFF="diff -q"
+  # Root of common libraries and fonts
+COMMON=/opt/local
+  # Source of tclsh8.4
+TCLDIR=/opt/local/bin
+
+TESTDIR=${TESTDIR:=.}
+GRAPHDIR=$TESTDIR/graphs    # directory where .gv test files are kept
+INSTALLROOT=${INSTALLROOT:-""}            # base for bin and lib directories
+
+DOTTESTS=1             # if non-empty, do dot batch tests
+NEATOTESTS=1           # if non-empty, do neato batch tests
+TWOPITESTS=1           # if non-empty, do twopi batch tests
+CIRCOTESTS=1           # if non-empty, do circo batch tests
+BIGBATCHTESTS=         # if non-empty, do big batch tests
+LEFTYTESTS=            # if non-empty, do lefty tests
+TCLTESTS=              # if non-empty, do tcl tests
+USEDFLT=               # if non-empty, use default path
+VERBOSE=               # if non-empty, what would be done
+CLEANUP=               # if non-empty, remove generated files
+UPDATE=                # if non-empty, copy new files into data
+SHOWENV=               # if non-empty, exit after printing environment
+
+TFILE1=/tmp/tmp$$_1
+TFILE2=/tmp/tmp$$_2
+
+USAGE="Usage: doit [-ncdbltuV?] [+abCDNPBlt] [--help]"
+LUSAGE='\040-d  - use built-in default bin for arch\n
+ -n  - print tests\n
+ -b  - no batch tests\n
+ -c  - cleanup\n
+ -u  - update\n
+ -l  - no lefty tests\n
+ -t  - no tcl tests\n
+ -V  - print test environment and exit\n
+ -?  - usage\n
+ +a  - all tests except big batch\n
+ +b  - only batch tests\n
+ +C  - only circo tests\n
+ +D  - only dot tests\n
+ +N  - only neato tests\n
+ +P  - only twopi tests\n
+ +B  - big batch tests\n
+ +l  - only lefty tests\n
+ +t  - only tcl tests\n
+ --help  - long usage'
+
+trap 'rm -f $TFILE1 $TFILE2 errout core; exit' 0 1 2 3 15
+
+while [[ -n $1 ]]
+do
+  case $1 in
+  +a )                     # all tests except big
+    LEFTYTESTS=1
+    TCLTESTS=1
+    ;;
+  -b )                     # no batch tests
+    DOTTESTS=
+    NEATOTESTS=
+    TWOPITESTS=
+    CIRCOTESTS=
+    ;;
+  +b )                     # only batch tests
+    LEFTYTESTS=
+    TCLTESTS=
+    ;;
+  +B )                     # big batch tests
+    BIGBATCHTESTS=1
+    ;;
+  -c )                     # cleanup
+    CLEANUP=1
+    ;;
+  -V )                     # print test environment only
+    SHOWENV=1
+    ;;
+  +C )                     # only circo tests
+    CIRCOTESTS=1
+    DOTTESTS=
+    LEFTYTESTS=
+    TCLTESTS=
+    NEATOTESTS=
+    TWOPITESTS=
+    ;;
+  +D )                     # only dot tests
+    CIRCOTESTS=
+    DOTTESTS=1
+    LEFTYTESTS=
+    TCLTESTS=
+    NEATOTESTS=
+    TWOPITESTS=
+    ;;
+  +N )                     # only neato tests
+    CIRCOTESTS=
+    LEFTYTESTS=
+    TCLTESTS=
+    DOTTESTS=
+    NEATOTESTS=1
+    TWOPITESTS=
+    ;;
+  +P )                     # only twopi tests
+    CIRCOTESTS=
+    LEFTYTESTS=
+    TCLTESTS=
+    DOTTESTS=
+    NEATOTESTS=
+    TWOPITESTS=1
+    ;;
+  -d )
+    USEDFLT=1
+    ;;
+  -c )                     # no circo tests
+    CIRCOTESTS=
+    ;;
+  -l )                     # no lefty tests
+    LEFTYTESTS=
+    ;;
+  +l )
+    LEFTYTESTS=1           # only lefty tests
+    TCLTESTS=
+    DOTTESTS=
+    NEATOTESTS=
+    TWOPITESTS=
+    ;;
+  -t )                     # no tcl tests
+    TCLTESTS=
+    ;;
+  +t )                     # only tcl tests
+    TCLTESTS=1
+    LEFTYTESTS=
+    DOTTESTS=
+    NEATOTESTS=
+    TWOPITESTS=
+    ;;
+  -n )
+    VERBOSE=1
+    ;;
+  -u )                     # update
+    UPDATE=1
+    ;;
+  -\? )
+    echo $USAGE
+    exit 0
+    ;;
+  --help )
+    echo $USAGE
+    echo $LUSAGE
+    exit 0
+    ;;
+  -* )
+    echo Unknown flag : $1
+    echo $USAGE
+    exit 0
+    ;;
+  esac
+  shift
+done
+
+COMMONDIR=$TESTDIR/share   # sys-independent directory
+
+OUTDIR=${OUTDIR:-"$TESTDIR/data"}        # output directory
+if [[ ! -d $OUTDIR ]]
+then
+  mkdir -p "$OUTDIR"
+  if [[ $? != 0 ]]
+  then
+    echo "Could not create directory $OUTDIR" >&2
+    exit 1
+  fi
+fi
+
+ # make sure output directory is writable
+if [[ ! -w "$OUTDIR" ]]
+then
+    echo "Output directory $OUTDIR is not writable" >&2
+    exit 1
+fi
+
+if [[ -n "$USEDFLT" ]]
+then
+  if [[ -z "$ARCHTYPE" ]]
+  then
+    case "$ARCH" in
+    linux* )
+      ARCHTYPE=linux.i386.old
+      ;;
+    sgi* )
+      ARCHTYPE=sgi.mips3
+      ;;
+    sol* )
+      ARCHTYPE=sol6.sun4
+      ;;
+    esac
+  fi
+  export GDFONTPATH=$COMMON/share/fonts/ttf
+  echo export GDFONTPATH=$GDFONTPATH
+  export LD_LIBRARY_PATH=$COMMON/lib:$COMMON/lib/graphviz:$LD_LIBRARY_PATH
+fi
+
+# Array of pattern/string mapping one archtype to another
+# Current hack uses colon separator because I don't the correct way now. 
+PAIRS="IRIX64.IP27.sgi_cc:share sgi.mips3:share SunOS.sun4u*:sol6.sun4 Linux.*:linux.i386"
+
+function mapa {
+  for R in $PAIRS
+  do
+    PAT=${R%%:*}
+    VAL=${R##*:}
+    if [[ $1 == $PAT ]]
+    then
+      echo $VAL
+      return
+    fi
+  done
+  echo share
+}
+
+  # set ARCHTYPE if necessary
+if [[ -z "$ARCHDIR" ]]
+then
+  if [[ -z "$ARCHTYPE" ]]
+  then
+    ARCHTYPE=$MACH.$($TESTDIR/whichcc)  
+    USER_ARCHTYPE=
+  else
+    USER_ARCHTYPE=$ARCHTYPE
+  fi
+  ARCHDIR="$TESTDIR/$ARCHTYPE"
+  if [[ ! -d $ARCHDIR ]]
+  then
+    NARCHTYPE=$(mapa $ARCHTYPE)
+    ARCHDIR="$TESTDIR/$NARCHTYPE"
+    if [[ -z "$NARCHTYPE" || ! -d $ARCHDIR ]]
+    then
+      if [[ -n "$USER_ARCHTYPE" ]]
+      then
+        echo "Warning: could not find $USER_ARCHTYPE - using share" >&2
+      fi
+      ARCHDIR=$COMMONDIR
+    fi
+  fi
+else
+ # make sure ARCHDIR exists as directory
+  if [[ ! -d "$ARCHDIR" ]]
+  then
+    echo "Cannot find directory ARCHDIR=$ARCHDIR">&2
+    exit 1
+  fi
+fi
+
+ # where to find the binaries and libraries to test
+if [[ -z "$INSTALLROOT" ]]
+then
+  if [[ -n "$USEDFLT" ]]
+  then
+    INSTALLROOT=$DFLTROOT
+  else
+    DP=`which dot`
+    INSTALLROOT=${DP%/*/dot}  # remove /bin/dot
+  fi
+fi
+
+BINDIR=${BINDIR:-$INSTALLROOT/bin}
+if [[ ! -x "$BINDIR/dot" ]]
+then
+  echo "Could not find test programs in $BINDIR" >&2
+  exit 1
+fi
+
+export TCLLIBPATH=$INSTALLROOT/lib/graphviz/tcl
+PATH=$BINDIR:$TCLDIR:$PATH
+echo doit: BINDIR=$BINDIR ARCHDIR=$ARCHDIR ARCHTYPE=$ARCHTYPE TCLLIBPATH=$TCLLIBPATH
+if [[ -n "$SHOWENV" ]]
+then
+  exit
+fi
+
+ # if need DISPLAY, make sure set
+if [[ -n "$LEFTYTESTS" || -n "$TCLTESTS" ]]
+then
+  if [[ -z "$DISPLAY" ]]
+  then
+    echo "DISPLAY variable needs to be set" >&2
+    exit 1
+  fi
+  export DISPLAY
+fi
+
+# newfile = $1
+# oldfile = $2
+# assume subscript indicates file type
+function strip {
+  case $1 in
+    *.ps )
+      awk -f strps.awk $1 > $TFILE1
+      awk -f strps.awk $2 > $TFILE2
+      ;;
+    *.svg )
+      sed '/^<!--/d' < $1 | sed '/-->$/d' > $TFILE1
+      sed '/^<!--/d' < $2 | sed '/-->$/d' > $TFILE2
+      ;;
+    * )
+      cp $1  $TFILE1
+      cp $2  $TFILE2
+      ;;
+  esac
+
+}
+
+function gdiff {
+	strip $1 $2
+	diff $TFILE1 $TFILE2 > /dev/null 2>&1
+	return $?
+}
+
+function findOld {
+	F=$ARCHDIR/$1
+	if [[ -f $F ]]
+	then
+		printf "$F"
+	else
+		printf "$COMMONDIR/$1"
+	fi
+}
+
+# Apply test: tst cmd fmt arguments name [suffix]
+# Suffix allows multiple test on same .gv file.
+function tst {
+  CMD=$1
+  FMT=$2
+  ARGS=$3
+  NAME=$4
+  OUTF=$NAME$5.$FMT
+  NEWFILE=$OUTDIR/$OUTF
+  OLDFILE=$(findOld $OUTF)
+  if [[ -n "$CLEANUP" ]]
+  then
+    rm -f $NEWFILE
+  elif [[ -n "$UPDATE" ]]
+  then
+	if [[ ! -s $NEWFILE ]]
+	then
+		return
+	fi
+    gdiff $NEWFILE $OLDFILE
+    if [[ $? != 0 ]]
+    then
+      cp $NEWFILE $OLDFILE
+    fi
+  elif [[ -n "$VERBOSE" ]]
+  then
+    echo $CMD -T$2 $ARGS $GRAPHDIR/$NAME.gv \> $NEWFILE
+  elif [[ -f $GRAPHDIR/$NAME.gv ]]
+  then 
+    $CMD -T$2 $ARGS $GRAPHDIR/$NAME.gv > $NEWFILE 2> errout
+    if [[ $? == 0 && -s $NEWFILE ]]
+    then
+      if [[ -f $OLDFILE ]]
+      then
+          # Check stability
+        if gdiff $NEWFILE $OLDFILE
+        then
+          STABLE=OK
+        else
+          STABLE=BAD
+        fi
+
+          # Check consistency
+        SHAREFILE=$COMMONDIR/$OUTF
+        if [[ $OLDFILE == $SHAREFILE ]]
+        then
+          CONSISTENT="=$STABLE"
+        else
+            if gdiff $NEWFILE $SHAREFILE
+            then
+              CONSISTENT="-OK"
+            else
+              CONSISTENT="-BAD"
+            fi
+        fi
+
+        if [[ $STABLE == BAD ]]
+        then
+          LOGFD=2
+        else
+          LOGFD=1
+        fi
+        printf "$OUTF : $STABLE$CONSISTENT " >&$LOGFD
+        if [[ $STABLE == BAD && $OUTF == *.gv ]]
+        then
+          $TESTDIR/dotdiff $NEWFILE $OLDFILE 1 1>&$LOGFD
+        else
+          echo "" >&$LOGFD
+        fi
+      else
+        echo "Data file $OUTF does not exist - creating; add to CVS" >&2
+        mv $NEWFILE $OLDFILE
+      fi
+    else
+      echo "$CMD $OUTF : == Failed ==" >&2
+      if [[ -s errout ]]
+      then
+        cat errout 2>&1
+      fi
+    fi
+  else
+    echo "$CMD $OUTF : == Graph $NAME.gv does not exist ==" >&2
+  fi
+}
+
+if [[ -n "$DOTTESTS" ]]
+then
+tst dot gv "" abstract  
+tst dot gv "" alf  
+tst dot gv "" clust1
+tst dot gv "" clust2
+tst dot gv "" clust3
+tst dot gv "" clust4
+tst dot gv "" clust5
+tst dot gv "" clust
+tst dot gv "" crazy  
+tst dot gv "" ctext 
+tst dot gv "" dfa 
+tst dot gv "" fig6 
+tst dot gv "" fsm 
+tst dot gv "" grammar 
+tst dot gv "" hashtable 
+#tst dot gv "" honda-tokoro     # abort
+tst dot gv "" jcctree 
+tst dot gv "" jsort 
+tst dot gv "" KW91 
+tst dot gv "" Latin1 
+tst dot gv "" ldbxtried 
+tst dot gv "" longflat 
+tst dot gv "" mike 
+tst dot gv "" NaN 
+tst dot gv "" newarrows 
+tst dot gv "" nhg 
+tst dot gv "" pgram 
+tst dot gv "" pm2way 
+tst dot gv "" pmpipe 
+tst dot gv "" polypoly 
+tst dot gv "" proc3d 
+tst dot gv "" record2 
+tst dot gv "" records 
+tst dot gv "" rowe 
+tst dot gv "" shells 
+tst dot gv "" states 
+tst dot gv "" structs 
+tst dot gv "" train11 
+tst dot gv "" trapeziumlr 
+tst dot gv "" tree 
+tst dot gv "" triedds 
+tst dot gv "" try 
+tst dot gv "" unix2 
+tst dot gv "" unix2k 
+tst dot gv "" unix 
+tst dot gv "" viewfile 
+tst dot gv "" world 
+tst dot gv "" ER 
+tst dot gv "" Heawood 
+tst dot gv "" ngk10_4 
+tst dot gv "" Petersen 
+tst dot gv "" process 
+tst dot ps "" crazy  
+tst dot ps "" unix 
+tst dot ps "" structs 
+tst dot ps "" big 
+tst dot ps "" biglabel 
+tst dot ps "" b3         # unescaped parentheses
+tst dot ps "" b7         # core dump
+#tst dot png "" b15       # windows core dump
+tst dot ps "" b22        # core dump
+tst dot gv "" b29       # windows core dump
+tst dot ps "" b33        # core dump
+tst dot gif "" b34       # trouble with tilde
+tst dot gv "" b36       # windows core dump
+tst dot gv "" b51       # core dump
+tst dot gif "" b56       # trouble with umlaut
+tst dot ps "" b57        # core dump
+tst dot gif "" b60       # bad text length from non-ascii text
+tst dot plain "" b62     # core dump
+tst dot ps "" b68        # bide attributes ignored
+tst dot ps "" b69        # core dump
+tst dot ps "" b71        # core dump
+#tst dot ps "" b73       # open core dump
+#tst dot ps "" b73a      # open core dump
+#tst dot ps "" b76       # open core dump
+tst dot jpg "" b79       # unfilled dot arrowhead
+tst dot ps "" b80
+#tst dot ps "" b80a      # open core dump
+tst dot svg "" b81       # core dump
+tst dot gv "" b94       # windows core dump
+tst dot gv "" b102      # windows core dump
+tst dot gv "" b106
+#tst dot ps "" b123      # open core dump
+tst dot ps "" b135       # core dump
+tst dot png "" b145      # assertion fail
+#tst dot ps "" b146      # open core dump
+tst dot ps "" b155      # windows core dump
+tst dot gv "" b491
+tst dot plain-ext "" b545
+tst dot ps "" layer
+tst dot ps "" layer2
+tst dot gif "" newarrows
+tst dot ps "" newarrows
+tst dot ps "" lsunix1
+tst dot ps "" lsunix2
+tst dot ps "" lsunix3
+tst dot gv "" labelroot-ndd
+tst dot gv "" labelroot-ndr
+tst dot gv "" labelroot-ndl
+tst dot gv "" labelroot-ndc
+tst dot gv "" labelroot-ntd
+tst dot gv "" labelroot-ntr
+tst dot gv "" labelroot-ntl
+tst dot gv "" labelroot-ntc
+tst dot gv "" labelroot-nbd
+tst dot gv "" labelroot-nbr
+tst dot gv "" labelroot-nbl
+tst dot gv "" labelroot-nbc
+tst dot gv "" labelroot-fdd
+tst dot gv "" labelroot-fdr
+tst dot gv "" labelroot-fdl
+tst dot gv "" labelroot-fdc
+tst dot gv "" labelroot-ftd
+tst dot gv "" labelroot-ftr
+tst dot gv "" labelroot-ftl
+tst dot gv "" labelroot-ftc
+tst dot gv "" labelroot-fbd
+tst dot gv "" labelroot-fbr
+tst dot gv "" labelroot-fbl
+tst dot gv "" labelroot-fbc
+tst dot gv "" labelclust-ndd
+tst dot gv "" labelclust-ndr
+tst dot gv "" labelclust-ndl
+tst dot gv "" labelclust-ndc
+tst dot gv "" labelclust-ntd
+tst dot gv "" labelclust-ntr
+tst dot gv "" labelclust-ntl
+tst dot gv "" labelclust-ntc
+tst dot gv "" labelclust-nbd
+tst dot gv "" labelclust-nbr
+tst dot gv "" labelclust-nbl
+tst dot gv "" labelclust-nbc
+tst dot gv "" labelclust-fdd
+tst dot gv "" labelclust-fdr
+tst dot gv "" labelclust-fdl
+tst dot gv "" labelclust-fdc
+tst dot gv "" labelclust-ftd
+tst dot gv "" labelclust-ftr
+tst dot gv "" labelclust-ftl
+tst dot gv "" labelclust-ftc
+tst dot gv "" labelclust-fbd
+tst dot gv "" labelclust-fbr
+tst dot gv "" labelclust-fbl
+tst dot gv "" labelclust-fbc
+tst dot ps "" in
+tst dot ps "-lgraphs/dfd.ps" ps
+tst dot gv "-Grankdir=LR" a 1
+tst dot gv "-Grankdir=RL" a 2
+tst dot gv "-Grankdir=BT" a 3
+tst dot ps "" multi
+tst dot gv "" b786
+fi
+
+if [[ -n "$NEATOTESTS" ]]
+then
+tst neato ps "" dpd 
+tst neato ps "-Gsplines=true -Goverlap=false" dpd 1
+tst neato ps "-Gsize=8,8 -Gsplines=true -Goverlap=scale" dpd 2
+tst neato ps "-Nstyle=filled -Goutputorder=edgesfirst" dpd  3
+tst neato ps "-Nstyle=filled -Goutputorder=nodesfirst" dpd  4
+tst neato ps "-Nshape=box" dpd 5
+tst neato ps -x b77      # core dump 
+tst neato gv "" b124      # core dump on linux
+fi
+
+if [[ -n "$TWOPITESTS" ]]
+then
+tst twopi ps "" b117     # assertion fail
+fi
+
+if [[ -n "$CIRCOTESTS" ]]
+then
+tst circo ps "" b117 a
+tst circo ps "" process
+tst circo ps "" p4
+tst circo ps "" p3
+tst circo ps "" p2
+tst circo ps "" p
+tst circo ps "" ngk10_4
+tst circo ps "" Petersen
+tst circo ps "" Heawood
+tst circo ps "" ER
+tst circo ps "" clover
+fi
+
+if [[ -n "$BIGBATCHTESTS" ]]
+then
+tst dot gv "" b100     # windows core dump
+tst dot gv "" b103     # windows core dump
+tst dot gv "" b104      # windows core dump
+fi
+
+if [[ -n "$LEFTYTESTS" ]]
+then
+  if [[ -n "$VERBOSE" ]]
+  then
+    echo dotty $GRAPHDIR/awilliams.gv
+    echo lneato $GRAPHDIR/dpd.gv
+  else
+    dotty $GRAPHDIR/awilliams.gv
+    lneato $GRAPHDIR/dpd.gv
+  fi
+fi
+
+if [[ -n "$TCLTESTS" ]]
+then
+  if [[ -n "$VERBOSE" ]]
+  then
+    echo $TESTDIR/doted
+  else
+    $TESTDIR/doted
+  fi
+fi

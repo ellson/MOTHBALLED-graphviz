@@ -1,0 +1,51 @@
+\section{Some basic types and their string representations}
+\label{sec:types}
+A {\tt point} type is the structure
+\begin{verbatim}
+struct {
+  int x, y;
+}
+\end{verbatim}
+The fields can either give an absolute position or represent a
+vector displacement.
+A {\tt pointf} type is the same, with {\tt int} replaced with {\tt double}.
+A {\tt box} type is the structure
+\begin{verbatim}
+struct {
+  point LL, UR;
+}
+\end{verbatim}
+representing a rectangle. The {\tt LL} gives the coordinates of the
+lower-left corner, while the {\tt UR} is the upper-right corner.
+A {\tt boxf} type is the same, with {\tt point} replaced with {\tt pointf}.
+
+The following gives the accepted string representations 
+corresponding to values of the given types. 
+Whitespace is ignored when converting these values from strings
+to their internal representations. 
+
+\begin{description}
+\item[{\tt point}] {\tt "x,y"} where {\tt (x,y)} are the integer coordinates 
+of a position in points (72 points = 1 inch).
+\item[{\tt pointf}] {\tt "x,y"} where {\tt (x,y)} are the 
+floating-point coordinates of a position in inches.
+\item[{\tt rectangle}] {\tt "llx,lly,urx,ury"} 
+where {\tt (llx,lly)} is the lower left corner
+of the rectangle and {\tt (urx,ury)} is the upper right corner, 
+all in integer points.
+\item[{\tt splineType}] A semicolon-separated list of {\tt spline} values.
+\item[{\tt spline}] This type has an optional end point, an optional start
+point, and a space-separated list of $N = 3n+1$ points for some positive 
+integer $n$. An end point consists of a {\tt point} preceded by {\tt "e,"};
+a start point consists of a {\tt point} preceded by {\tt "s,"}. The
+optional components are separated by spaces.  
+
+The terminating list of points $p_1,p_2,\ldots ,p_N$ gives the control points 
+of a B-spline.
+If a start point is given, this indicates the presence of an arrowhead.
+The start point touches one node of the corresponding edge 
+and the direction of the arrowhead is given by the vector from $p_1$
+to the start point. If the start point is absent, the point $p_1$
+will touch the node. The analogous interpretation holds for an end point
+and $p_N$.
+\end{description}

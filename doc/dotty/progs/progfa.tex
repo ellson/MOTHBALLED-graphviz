@@ -1,0 +1,195 @@
+\begin{verbatim}
+load ('dotty.lefty');
+fa = [];
+fa.normalcolor = 'black';
+fa.highlightcolor = 'light_grey';
+fa.currentcolor = 'tan';
+fa.trackcur = 0;
+fa.init = function () {
+    dotty.init ();
+    monitorfile = dotty.monitorfile;
+};
+fa.protogt = [
+    'layoutmode' = 'sync';
+    'actions' = copy (dotty.protogt.actions);
+    # new actions are added later in the file
+];
+fa.protovt = [
+    'name' = 'FA';
+    'type' = 'normal';
+    # other entries are added later in the file
+];
+fa.main = function () {
+    local gnvt, gt;
+
+    gnvt = dotty.createviewandgraph (null, 'file', fa.protogt, fa.protovt);
+    gt = gnvt.gt;
+    gt.loadgraph (gt, 'fa.gv', 'file', fa.protogt.graph, 1);
+    fa.currstate = gt.graph.nodes[gt.graph.nodedict['start']];
+    fa.loadtrans ('fa.trans');
+    fa.setcurrcolor (gt, fa.currstate);
+    fa.focuson (gt, fa.currstate);
+};
+fa.loadtrans = function (filename) {
+    local fd, i;
+
+    if (~((fd = openio ('file', filename, 'r')) >= 0)) {
+        echo ('cannot open transition file: ', filename);
+        return;
+    }
+    echo ('reading transition file');
+    i = 0;
+    while ((fa.trans[i] = readline (fd)))
+        i = i + 1;
+    closeio (fd);
+    fa.trani = 0;
+    fa.states[0] = fa.currstate;
+    fa.currstate.count = 1;
+};
+fa.next = function (gt) {
+    local label, eid, edge, tran;
+
+    if (~(label = fa.trans[fa.trani]))
+        return 0;
+    for (eid in fa.currstate.edges) {
+        edge = fa.currstate.edges[eid];
+        if (edge.attr.label == label & edge.tail == fa.currstate) {
+            tran = edge;
+            break;
+        }
+    }
+    if (tran) {
+        fa.trani = fa.trani + 1;
+        fa.setcolor (gt, fa.currstate);
+        fa.currstate = (fa.states[fa.trani] = tran.head);
+        if (fa.currstate.count)
+            fa.currstate.count = fa.currstate.count + 1;
+        else
+            fa.currstate.count = 1;
+        fa.setcurrcolor (gt, fa.currstate);
+        if (fa.trackcur)
+            fa.focuson (gt, fa.currstate);
+    }
+    return 1;
+};
+fa.prev = function (gt) {
+    if (fa.trani == 0)
+        return 0;
+    remove (fa.trani, fa.states);
+    fa.trani = fa.trani - 1;
+    fa.currstate.count = fa.currstate.count - 1;
+    fa.setcolor (gt, fa.currstate);
+    fa.currstate = fa.states[fa.trani];
+    fa.setcurrcolor (gt, fa.currstate);
+    if (fa.trackcur)
+        fa.focuson (gt, fa.currstate);
+    return 1;
+};
+fa.setcolor = function (gt, node) {
+    if (node.count) {
+        node.attr.style = 'filled';
+        node.attr.color = fa.highlightcolor;
+    } else {
+        gt.undrawnode (gt, gt.views, node);
+        remove ('style', node.attr);
+        node.attr.color = fa.normalcolor;
+    }
+    gt.unpacknodeattr (gt, node);
+    gt.drawnode (gt, gt.views, node);
+};
+fa.setcurrcolor = function (gt, node) {
+    node.attr.style = 'filled';
+    node.attr.color = fa.currentcolor;
+    gt.unpacknodeattr (gt, node);
+    gt.drawnode (gt, gt.views, node);
+};
+fa.focuson = function (gt, node) {
+    gt.setviewcenter (gt.views, node.pos);
+};
+fa.protogt.actions.general['play fwd'] = function (gt, vt, data) {
+    while (fa.next (gt))
+        ;
+};
+fa.protogt.actions.general['play bwd'] = function (gt, vt, data) {
+    while (fa.prev (gt))
+        ;
+};
+fa.protogt.actions.general['track node'] = function (gt, vt, data) {
+    if (fa.trackcur)
+        fa.trackcur = 0;
+    else {
+        fa.trackcur = 1;
+        fa.focuson (gt, fa.currstate);
+    }
+};
+fa.protovt.menus = [
+    'general' = [
+        0 = "undo";
+        1 = "paste";
+        2 = "do layout";
+        3 = "cancel layout";
+        4 = "redraw";
+        5 = "new graph";
+        6 = "load graph";
+        7 = "reload graph";
+        8 = "open view";
+        9 = "copy view";
+        10 = "clone view";
+        11 = "birdseye view";
+        12 = "close view";
+        13 = "play fwd";
+        14 = "play bwd";
+        15 = "zoom in";
+        16 = "zoom out";
+        17 = "find node";
+        18 = "track node";
+        19 = "print graph";
+        20 = "text view";
+        21 = "quit";
+    ];
+    'node' = [
+        0 = "cut";
+        1 = "Cut";
+        2 = "copy";
+        3 = "Copy";
+        4 = "group";
+        5 = "Group";
+        6 = "delete";
+        7 = "Delete";
+        8 = "remove";
+        9 = "Remove";
+        10 = "set attr";
+        11 = "print attr";
+    ];
+    'edge' = [
+        0 = "cut";
+        1 = "Cut";
+        2 = "copy";
+        3 = "Copy";
+        4 = "group";
+        5 = "Group";
+        6 = "delete";
+        7 = "Delete";
+        8 = "set attr";
+        9 = "print attr";
+    ];
+];
+fa.protovt.uifuncs.rightdown = dotty.protovt.normal.uifuncs.rightdown;
+fa.protovt.uifuncs.keyup = dotty.protovt.normal.uifuncs.keyup;
+fa.protovt.uifuncs.redraw = dotty.protovt.normal.uifuncs.redraw;
+fa.protovt.uifuncs.closeview = dotty.protovt.normal.uifuncs.closeview;
+fa.protovt.uifuncs.leftup = function (data) {
+    local gt;
+
+    gt = dotty.graphs[dotty.views[data.widget].gtid];
+    if (fa.next (gt) == 0)
+        echo ('at end of log');
+};
+fa.protovt.uifuncs.middleup = function (data) {
+    local gt;
+
+    gt = dotty.graphs[dotty.views[data.widget].gtid];
+    if (fa.prev (gt) == 0)
+        echo ('at start of log');
+};
+\end{verbatim}

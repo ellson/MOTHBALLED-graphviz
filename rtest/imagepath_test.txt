@@ -1,0 +1,78 @@
+# Graphviz test suite
+# Tests are separated by blank or comment lines.
+# Tests have the following syntax:
+#  testname
+#  Test input (one-line graph or name of .gv file or =)
+#    In the last case, the input file is taken as testname.gv
+#  One or more subtests of the form: 
+#     layout_alg output_format additional_flags
+#  
+# For example, the test
+#   Shapes
+#   shapes.gv
+#   dot ps
+#   neato png "-Gsize=3,3 -Ncolor=red"
+# specifies the "shapes" test, using shapes.gv as input, and
+# run "dot -Tps" and "neato -Tpng -Gsize=3,3 -Ncolor=red" on the input.
+#
+#Test graph names indicate the image attribute and the imagepath attribute
+#being tested.  For instance val_val.gv, is a graph that has the image
+#attribute directory set to a valid directory name and the imagepath attribute 
+#directory set to a valid directory name.  Likewise inv_inv.gv has both 
+#attribute directories set to an invalid directory name and nul_nul.gv has 
+#no setting for the image attribute and the imagepath attribute directories.
+#Graphs named with combinations of val, inv and nul have 
+#image and imagepath attributes set correspondingly.
+
+#Since this test relies on absolute pathnames, it is necessary to run a 
+#shell script to generate the test graphs. 
+#Run imagepath_test.sh from within the imagepath_test directory before running 
+#rtest on this test suite. This script creates the input graphs and output png 
+#files and stores them in the graphs and imagepath_test/nshare directories.
+#The png files may be copied into the nshare directory by running 
+#imagepath_test/save_png_files.sh when it is appropriate to update the expected 
+#test output.
+
+#The graphs in this test suite should also be tested using the mac os user
+#interface.  Copy rtest/imagepath_test/image.jpg to the directory graphviz is run
+#from. Select each of the test graphs from the graphviz application and visually
+#determine whether the tests complete successfully.  The image that is displayed
+#during the test should correspond to the expected result message that appears 
+#below it.
+
+val_val
+=
+dot png
+
+val_inv
+=
+dot png
+
+val_nul
+=
+dot png
+
+inv_val
+=
+dot png
+
+inv_inv
+=
+dot png
+
+inv_nul
+=
+dot png
+
+nul_val
+=
+dot png
+
+nul_inv
+=
+dot png
+
+nul_nul
+=
+dot png
+

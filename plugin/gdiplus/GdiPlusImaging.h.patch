@@ -1,0 +1,11 @@
+--- /d/Program Files (x86)/Microsoft Visual Studio 8/VC/PlatformSDK/include/GdiPlusImaging.h	Thu Apr 14 16:54:44 2005
++++ ./GdiPlusImaging.h	Mon Feb 25 17:23:08 2008
+@@ -153,7 +153,7 @@
+     UINT Width;
+     UINT Height;
+     INT Stride;
+-    PixelFormat PixelFormat;
++    Gdiplus::PixelFormat PixelFormat;
+     VOID* Scan0;
+     UINT_PTR Reserved;
+ };

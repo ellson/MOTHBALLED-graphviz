@@ -1,0 +1,48 @@
+<!-- $Id: -->
+<bookinfo>
+<!-- Embedding of external image, only for pdf -->
+<!--
+<mediaobject>
+<imageobject>
+<imagedata fileref="tba.png" format="PNG"/>
+</imageobject>
+</mediaobject>
+-->
+<authorgroup>
+<!-- Authors listed alphabetically by last name -->
+<author>
+<firstname>John</firstname>
+<surname>Ellson</surname>
+</author>
+</authorgroup>
+<!--
+<othercredit>
+<firstname>tba</firstname>
+<surname>tba</surname>
+<contrib>Logo art</contrib>
+</othercredit>
+-->
+<!-- Revision history, do not forget to update it each time -->
+<revhistory>
+<revision>
+<revnumber>0.1</revnumber>
+<date>09/12/2005</date>
+<revremark>Initial Release</revremark>
+</revision>
+</revhistory>
+<!--
+<editor>
+<firstname>tba</firstname>
+<surname>tba</surname>
+</editor>
+-->
+<copyright>
+<year>2005-2006</year>
+<holder>AT&amp;T</holder>
+</copyright>
+<!-- Page numbers for pdf-a4 and pfs-us -->
+<!-- If same numbers, just nums, otherwise numsa4-numsus -->
+<pagenums>120-126 pages</pagenums>
+<!-- Date of revision -->
+<pubdate>December, 2nd 2005</pubdate>
+</bookinfo>

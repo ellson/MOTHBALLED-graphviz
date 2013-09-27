@@ -1,0 +1,390 @@
+diff -rub gd-2.0.33/entities.h gd-2.0.33jce3/entities.h
+--- gd-2.0.33/entities.h	2004-10-27 10:22:46.000000000 -0400
++++ gd-2.0.33jce3/entities.h	2005-08-15 11:23:47.000000000 -0400
+@@ -11,7 +11,7 @@
+ extern "C" {
+ #endif
+ 
+-struct entities_s {
++static struct entities_s {
+ 	char	*name;
+ 	int	value;
+ } entities[] = {
+diff -rub gd-2.0.33/entities.tcl gd-2.0.33jce3/entities.tcl
+--- gd-2.0.33/entities.tcl	2004-10-27 10:22:48.000000000 -0400
++++ gd-2.0.33jce3/entities.tcl	2005-08-15 10:19:33.000000000 -0400
+@@ -32,7 +32,7 @@
+ puts $f "extern \"C\" {"
+ puts $f "#endif"
+ puts $f ""
+-puts $f "struct entities_s {"
++puts $f "static struct entities_s {"
+ puts $f "	char	*name;"
+ puts $f "	int	value;"
+ puts $f "} entities\[\] = {"
+diff -rub gd-2.0.33/gd.c gd-2.0.33jce3/gd.c
+--- gd-2.0.33/gd.c	2004-11-01 13:28:56.000000000 -0500
++++ gd-2.0.33jce3/gd.c	2005-08-15 11:23:47.000000000 -0400
+@@ -72,9 +72,16 @@
+   int i;
+   gdImagePtr im;
+   im = (gdImage *) gdMalloc (sizeof (gdImage));
++  if (!im)
++    return NULL;
+   memset (im, 0, sizeof (gdImage));
+   /* Row-major ever since gd 1.3 */
+   im->pixels = (unsigned char **) gdMalloc (sizeof (unsigned char *) * sy);
++  if (!im->pixels)
++    {
++      free(im);
++      return NULL;
++    }
+   im->polyInts = 0;
+   im->polyAllocated = 0;
+   im->brush = 0;
+@@ -84,6 +91,15 @@
+     {
+       /* Row-major ever since gd 1.3 */
+       im->pixels[i] = (unsigned char *) gdCalloc (sx, sizeof (unsigned char));
++      if (!im->pixels[i]) 
++	{
++	  for (--i ; i >= 0; i--)
++	    {
++	      gdFree(im->pixels[i]);
++	    }
++	  gdFree(im);
++	  return NULL;
++	}
+     }
+   im->sx = sx;
+   im->sy = sy;
+diff -rub gd-2.0.33/gd_gif_in.c gd-2.0.33jce3/gd_gif_in.c
+--- gd-2.0.33/gd_gif_in.c	2004-11-01 13:28:56.000000000 -0500
++++ gd-2.0.33jce3/gd_gif_in.c	2005-08-15 11:23:47.000000000 -0400
+@@ -1,3 +1,7 @@
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
+ #include <stdio.h>
+ #include <math.h>
+ #include <string.h>
+diff -rub gd-2.0.33/gd_gif_out.c gd-2.0.33jce3/gd_gif_out.c
+--- gd-2.0.33/gd_gif_out.c	2004-11-02 08:41:00.000000000 -0500
++++ gd-2.0.33jce3/gd_gif_out.c	2005-08-15 11:23:47.000000000 -0400
+@@ -1,3 +1,7 @@
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
+ #include <stdio.h>
+ #include <math.h>
+ #include <string.h>
+diff -rub gd-2.0.33/gd_topal.c gd-2.0.33jce3/gd_topal.c
+--- gd-2.0.33/gd_topal.c	2004-10-28 14:12:08.000000000 -0400
++++ gd-2.0.33jce3/gd_topal.c	2005-08-15 11:23:47.000000000 -0400
+@@ -49,6 +49,10 @@
+   #define ORIGINAL_LIB_JPEG_REVERSE_ODD_ROWS
+  */
+ 
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
+ #include <string.h>
+ #include "gd.h"
+ #include "gdhelpers.h"
+diff -rub gd-2.0.33/gdfontg.c gd-2.0.33jce3/gdfontg.c
+--- gd-2.0.33/gdfontg.c	2004-10-27 10:22:04.000000000 -0400
++++ gd-2.0.33jce3/gdfontg.c	2005-08-15 11:23:47.000000000 -0400
+@@ -10,6 +10,9 @@
+    "Libor Skarvada, libor@informatics.muni.cz"
+  */
+ 
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
+ 
+ #include "gdfontg.h"
+ 
+diff -rub gd-2.0.33/gdfontl.c gd-2.0.33jce3/gdfontl.c
+--- gd-2.0.33/gdfontl.c	2004-10-27 10:22:04.000000000 -0400
++++ gd-2.0.33jce3/gdfontl.c	2005-08-15 11:23:47.000000000 -0400
+@@ -11,6 +11,9 @@
+    "Libor Skarvada, libor@informatics.muni.cz"
+  */
+ 
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
+ 
+ #include "gdfontl.h"
+ 
+diff -rub gd-2.0.33/gdfontmb.c gd-2.0.33jce3/gdfontmb.c
+--- gd-2.0.33/gdfontmb.c	2004-10-27 10:22:04.000000000 -0400
++++ gd-2.0.33jce3/gdfontmb.c	2005-08-15 11:23:47.000000000 -0400
+@@ -9,6 +9,9 @@
+    No copyright info was found in the original bdf.
+  */
+ 
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
+ 
+ #include "gdfontmb.h"
+ 
+diff -rub gd-2.0.33/gdfonts.c gd-2.0.33jce3/gdfonts.c
+--- gd-2.0.33/gdfonts.c	2004-10-27 10:22:04.000000000 -0400
++++ gd-2.0.33jce3/gdfonts.c	2005-08-15 11:23:47.000000000 -0400
+@@ -7,6 +7,9 @@
+    No copyright info was found in the original bdf.
+  */
+ 
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
+ 
+ #include "gdfonts.h"
+ 
+diff -rub gd-2.0.33/gdfontt.c gd-2.0.33jce3/gdfontt.c
+--- gd-2.0.33/gdfontt.c	2004-10-27 10:22:04.000000000 -0400
++++ gd-2.0.33jce3/gdfontt.c	2005-08-15 11:23:47.000000000 -0400
+@@ -10,6 +10,9 @@
+    "Libor Skarvada, libor@informatics.muni.cz"
+  */
+ 
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
+ 
+ #include "gdfontt.h"
+ 
+diff -rub gd-2.0.33/gdft.c gd-2.0.33jce3/gdft.c
+--- gd-2.0.33/gdft.c	2004-11-02 16:00:48.000000000 -0500
++++ gd-2.0.33jce3/gdft.c	2005-08-15 11:23:47.000000000 -0400
+@@ -832,7 +832,7 @@
+   FT_Matrix matrix;
+   FT_Vector penf, oldpenf, delta, total_min = {0,0}, total_max = {0,0}, glyph_min, glyph_max;
+   FT_Face face;
+-  FT_CharMap charmap;
++  FT_CharMap charmap = NULL;
+   FT_Glyph image;
+   FT_GlyphSlot slot;
+   FT_Error err;
+@@ -966,8 +966,10 @@
+         }
+     }
+ 
++#if 0
+   if (fg < 0)
+       render_mode |= FT_LOAD_MONOCHROME;
++#endif
+ 
+   /* find requested charmap */
+   encodingfound = 0;
+@@ -1208,12 +1210,14 @@
+ 		so we don't have to recheck for the terminating number */
+ 	  if (! xshow_alloc) {
+ 		xshow_alloc = 100;
+-		strex->xshow = malloc(xshow_alloc);
++		strex->xshow = gdMalloc(xshow_alloc);
+ 		xshow_pos = 0;
+ 	  } 
+ 	  else if (xshow_pos + 20 > xshow_alloc) {
+ 		xshow_alloc += 100;
+ 		strex->xshow = realloc(strex->xshow, xshow_alloc);
++		if (! strex->xshow)
++	  	    return "Problem allocating memory with realloc";
+ 	}
+ 	  xshow_pos += sprintf(strex->xshow + xshow_pos, "%g ",
+ 		(double)(penf.x - oldpenf.x) * hdpi / (64 * METRIC_RES));
+@@ -1322,10 +1326,8 @@
+ 
+   if (brect)
+     {				/* only if need brect */
+-      double dpix, dpiy;
+-      
+-      dpix = 64 * METRIC_RES / hdpi;
+-      dpiy = 64 * METRIC_RES / vdpi;
++      double scalex = (double)hdpi / (64 * METRIC_RES);
++      double scaley = (double)vdpi / (64 * METRIC_RES);
+ 
+       /* increase by 1 pixel to allow for rounding */
+       total_min.x -= METRIC_RES;
+@@ -1334,14 +1336,14 @@
+       total_max.y += METRIC_RES;
+  
+       /* rotate bounding rectangle, scale and round to int pixels, and translate */
+-      brect[0] = x + (total_min.x * cos_a + total_max.y * sin_a)/dpix;
+-      brect[1] = y - (total_min.x * sin_a - total_max.y * cos_a)/dpiy;
+-      brect[2] = x + (total_max.x * cos_a + total_max.y * sin_a)/dpix;
+-      brect[3] = y - (total_max.x * sin_a - total_max.y * cos_a)/dpiy;
+-      brect[4] = x + (total_max.x * cos_a + total_min.y * sin_a)/dpix;
+-      brect[5] = y - (total_max.x * sin_a - total_min.y * cos_a)/dpiy;
+-      brect[6] = x + (total_min.x * cos_a + total_min.y * sin_a)/dpix;
+-      brect[7] = y - (total_min.x * sin_a - total_min.y * cos_a)/dpiy;
++      brect[0] = x + (total_min.x * cos_a + total_max.y * sin_a)*scalex;
++      brect[1] = y - (total_min.x * sin_a - total_max.y * cos_a)*scaley;
++      brect[2] = x + (total_max.x * cos_a + total_max.y * sin_a)*scalex;
++      brect[3] = y - (total_max.x * sin_a - total_max.y * cos_a)*scaley;
++      brect[4] = x + (total_max.x * cos_a + total_min.y * sin_a)*scalex;
++      brect[5] = y - (total_max.x * sin_a - total_min.y * cos_a)*scaley;
++      brect[6] = x + (total_min.x * cos_a + total_min.y * sin_a)*scalex;
++      brect[7] = y - (total_min.x * sin_a - total_min.y * cos_a)*scaley;
+     }
+ 
+   FT_Done_Size (platform_independent);
+@@ -1510,6 +1512,66 @@
+ 
+ #endif /* HAVE_LIBFONTCONFIG */
+ 
++#ifdef WIN32
++#define FONTSFX "\\FONTS"
++#define GDP     "GDFONTPATH="
++#define F_OK 0			/* Needed in Windows */
++
++/* chkWinFontPath:
++ * See if environment variable envv is defined and
++ * if the path $envv/FONTS exists. If so, return the path,
++ * else return NULL.
++ */
++static char*
++chkWinFontPath (char* envv)
++{
++	char* root;
++	char* path;
++	root = getenv(envv);
++	if (!root) return NULL;
++	path = (char*)gdMalloc(strlen(root)+strlen(FONTSFX)+1);
++	strcpy (path, root);
++	strcat (path, FONTSFX);
++	if (access (path, F_OK) == 0) { /* success */
++		return path;
++	}
++	else {
++		gdFree (path);
++		return NULL;
++	}
++}
++
++/* getWinFontPath:
++ * Find Windows system font directory. Use environment variables to
++ * find system directory with a FONTS subdirectory.
++ * If successful, set GDFONTPATH to this value, for caching, and return it.
++ * Else, return NULL
++ */
++static char*
++getWinFontPath ()
++{
++	char* path = chkWinFontPath("SystemRoot");
++	if (!path) {
++		path = chkWinFontPath ("WinDir");
++		if (!path)
++			return NULL;
++	}
++#ifdef HAVE_SETENV
++	setenv("GDFONTPATH", path, 1);
++#else
++	{
++		char* ebuf = (char*)gdMalloc(strlen(GDP)+strlen(path)+1);
++		int rv;
++		strcpy(ebuf,GDP);
++		strcat(ebuf,path);
++		rv = putenv(ebuf);
++	}
++#endif
++	return path;
++}
++
++#endif  /* WIN32 */
++
+ /* Look up font using font names as file names. */
+ static char * font_path(char **fontpath, char *name_list)
+ {
+@@ -1524,6 +1586,10 @@
+    */
+   *fontpath = NULL;
+   fontsearchpath = getenv ("GDFONTPATH");
++#ifdef WIN32
++  if (!fontsearchpath)
++    fontsearchpath = getWinFontPath ();
++#endif
+   if (!fontsearchpath)
+     fontsearchpath = DEFAULT_FONTPATH;
+   fontlist = strdup (name_list);
+diff -rub gd-2.0.33/gdfx.c gd-2.0.33jce3/gdfx.c
+--- gd-2.0.33/gdfx.c	2004-10-27 10:22:07.000000000 -0400
++++ gd-2.0.33jce3/gdfx.c	2005-08-15 11:23:47.000000000 -0400
+@@ -1,3 +1,7 @@
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
+ #include "gd.h"
+ #include <math.h>
+ 
+diff -rub gd-2.0.33/gdhelpers.h gd-2.0.33jce3/gdhelpers.h
+--- gd-2.0.33/gdhelpers.h	2004-10-28 13:09:12.000000000 -0400
++++ gd-2.0.33jce3/gdhelpers.h	2005-08-15 11:23:47.000000000 -0400
+@@ -29,30 +29,38 @@
+ 
+ /* 2.0.16: portable mutex support for thread safety. */
+ 
+-#ifdef WIN32
+-/* 2.0.18: must include windows.h to get CRITICAL_SECTION. */
+-#include <windows.h>
+-#define gdMutexDeclare(x) CRITICAL_SECTION x
+-#define gdMutexSetup(x) InitializeCriticalSection(&x)
+-#define gdMutexShutdown(x) DeleteCriticalSection(&x)
+-#define gdMutexLock(x) EnterCriticalSection(&x)
+-#define gdMutexUnlock(x) LeaveCriticalSection(&x)
+-#else
+-#ifdef HAVE_PTHREAD
+-#include <pthread.h>
+-#define gdMutexDeclare(x) pthread_mutex_t x
+-#define gdMutexSetup(x) pthread_mutex_init(&x, 0)
+-#define gdMutexShutdown(x) pthread_mutex_destroy(&x)
+-#define gdMutexLock(x) pthread_mutex_lock(&x)
+-#define gdMutexUnlock(x) pthread_mutex_unlock(&x)
++#ifdef DISABLE_THREADS
++#  define gdMutexDeclare(x)
++#  define gdMutexSetup(x)
++#  define gdMutexShutdown(x)
++#  define gdMutexLock(x)
++#  define gdMutexUnlock(x)
+ #else
+-#define gdMutexDeclare(x)
+-#define gdMutexSetup(x) 
+-#define gdMutexShutdown(x) 
+-#define gdMutexLock(x) 
+-#define gdMutexUnlock(x) 
+-#endif /* HAVE_PTHREAD */
+-#endif /* WIN32 */
++#  ifdef WIN32
++/* 2.0.18: must include windows.h to get CRITICAL_SECTION. */
++#    include <windows.h>
++#    define gdMutexDeclare(x) CRITICAL_SECTION x
++#    define gdMutexSetup(x) InitializeCriticalSection(&x)
++#    define gdMutexShutdown(x) DeleteCriticalSection(&x)
++#    define gdMutexLock(x) EnterCriticalSection(&x)
++#    define gdMutexUnlock(x) LeaveCriticalSection(&x)
++#  else
++#    ifdef HAVE_PTHREAD
++#      include <pthread.h>
++#      define gdMutexDeclare(x) pthread_mutex_t x
++#      define gdMutexSetup(x) pthread_mutex_init(&x, 0)
++#      define gdMutexShutdown(x) pthread_mutex_destroy(&x)
++#      define gdMutexLock(x) pthread_mutex_lock(&x)
++#      define gdMutexUnlock(x) pthread_mutex_unlock(&x)
++#    else
++#      define gdMutexDeclare(x)
++#      define gdMutexSetup(x) 
++#      define gdMutexShutdown(x) 
++#      define gdMutexLock(x) 
++#      define gdMutexUnlock(x) 
++#    endif /* HAVE_PTHREAD */
++#  endif /* WIN32 */
++#endif /* DISABLE_THREADS */
+ 
+ #endif /* GDHELPERS_H */
+ 

@@ -1,0 +1,314 @@
+\section{Inside the layouts}
+\label{sec:layouts}
+
+Each \gviz\ layout algorithm consists of multiple steps, some of
+which are optional.
+As the only entry point in the \gviz\ library for laying out
+a graph is the function {\tt gvLayout}, the control of which
+steps are used is determined by graph attributes, in the same
+way this is controlled when passing a graph to one of the layout
+programs. In this section, we provide a high-level description
+of the layout steps, and note the relevant attributes.
+
+Here, we will assume that the graph is connected. 
+All of the layouts handle unconnected graphs. Sometimes, though,
+an application may not want to use the built-in
+technique. For these cases, \gviz\ provides tools for 
+decomposing a graph, and then
+combining multiple layouts. This is described in Section~\ref{sec:unconnect}.
+
+In all of the algorithms, the first step is to call a layout-specific
+initialization function. These functions 
+initialize the graph for the particular algorithm.
+This will first call common routines to set up basic data structures,
+especially those related to the final layout results and
+code generation. In particular, the size and shape of nodes will
+have been analyzed and set at this point, which the application
+can access via the {\tt ND\_width}, {\tt ND\_height}, 
+{\tt ND\_ht}, {\tt ND\_lw}, 
+{\tt ND\_rw}, {\tt ND\_shape}, {\tt ND\_shape\_info}
+and {\tt ND\_label} attributes.
+Initialization will then establish the data
+structures specific to the given algorithm. Both the generic
+and specific layout resources are released when the corresponding
+cleanup function is called in {\tt gvFreeLayout} (cf. Section~\ref{sec:clean}).
+
+By default, the layout algorithms position the edges as well as the
+nodes of the graph. As this may be expensive to compute and irrelevant 
+to an application, an application may decide to avoid this. This can
+be achieved by setting the graph's {\tt splines} attribute to the
+empty string {\tt ""}.
+
+The algorithms all end with a postprocessing step.
+The role of this is to do some final tinkering with the
+layout, still in layout coordinates. Specifically, the function
+rotates the layout for \dot\ (if {\tt rankdir} is set),
+attaches the root graph's label, if any, and normalizes the drawing
+so that the lower left corner of its bounding box is at the origin.
+
+Except for dot, the algorithms also provide a node's position,
+in inches, in the array give by {\tt ND\_pos}.
+
+\subsection{\dot}
+
+The \dot\ algorithm produces a ranked layout of a graph respecting
+edge directions if possible. It is particularly appropriate for displaying
+hierarchies or directed acyclic graphs. The basic layout scheme
+is attributed to Sugiyama et al.\cite{stt} The specific algorithm
+used by \dot\ follows the steps described by Gansner et al.\cite{gknv:methods}
+
+The steps in the \dot\ layout are:
+\begin{verbatim}
+    initialize
+    rank
+    mincross
+    position
+    sameports
+    splines
+    compoundEdges
+\end{verbatim}
+
+After initialization, the algorithm
+assigns each node to a discrete rank ({\tt rank})
+using an integer program to minimize the sum of the (discrete) edge lengths. 
+The next step ({\tt mincross}) rearranges nodes within ranks to
+reduce edge crossings. This is followed by the assignment ({\tt position})
+of actual coordinates to the nodes, using another integer program to
+compact the graph and straighten edges. At this point, all nodes will
+have a position set in the {\tt coord} attribute. In addition, the
+bounding box {\tt bb} attribute of all clusters are set.
+
+The {\tt sameports} step
+is an addition to the basic layout. It
+implements the feature, based on the edge attributes {\tt "samehead"}
+and {\tt "sametail"}, by which certain edges sharing a node all connect
+to the node at the same point.
+
+Edge representations are generated in the {\tt splines} step.
+At present, \dot\ draws all edges as B-splines, though some edges will
+actually be the degenerate case of a line segment.
+
+Although \dot\ supports the notion of cluster subgraphs, its model does
+not correspond to general compound graphs. In particular, a graph cannot
+have edges connecting two clusters, or a cluster and a node. The
+layout can emulate this feature. Basically, if the head and tail nodes
+of an edge lie in different, non-nested clusters, the edge can specify
+these clusters as a logical head or logical tail using the {\tt lhead} or 
+{\tt ltail} attribute. The
+spline generated in {\tt splines} for the edge can then be clipped
+to the bounding box of the specified clusters.  
+This is accomplished in the {\tt compoundEdges} step.
+
+\subsection{\neato}
+\label{sec:neato}
+
+The layout computed by \neato\ is specified by a virtual physical
+model, i.e., one in which nodes are treated as physical objects
+influenced by forces, some of which arise from the edges in the
+graph. The layout is then derived by finding positions of the nodes
+which minimize the forces or total energy within the system.
+The forces need not correspond to true physical forces, and typically
+the solution represents some local minimum. 
+Such layouts are sometimes referred to as symmetric, as the
+principal aesthetics of such layouts tend to be the visualization
+of geometric symmetries within the graph. To further enhance the
+display of symmetries, such drawings tend to use line segments for edges.
+
+The model used by \neato\ comes from Kamada and Kawai\cite{kk}, 
+though it was first introduced by Kruskal and Seely\cite{kruskal} in a 
+different format. 
+The model assumes there is a spring between
+every pair of vertices, each with an ideal length. The ideal lengths
+are a function of the graph edges. The layout attempts to minimize the
+energy in this system.
+
+\begin{verbatim}
+    initialize
+    position
+    adjust
+    splines
+\end{verbatim}
+
+As usual, the layout starts with an initialization step.
+The actual layout is parameterized by the {\tt mode} and
+{\tt model} attributes.
+The mode attribute determines how the optimization problem
+is solved, either by the default, stress majorization\cite{gkn} mode,
+({\tt mode="major"}),
+or the gradient descent technique proposed by Kamada and Kawai\cite{kk}
+({\tt mode="KK"}).
+The latter mode is typically slower than the former, and introduces the
+possibility of cycling. It is maintained solely for backward compatibility.
+
+The model indicates how the ideal distances are computed between all
+pairs of nodes.  By default, \neato\
+uses a shortest path model ({\tt model="shortpath"}),
+so that the length of the spring between
+nodes $p$ and $q$ is the length of the shortest path between them
+in the graph. Note that the shortest path calculation takes
+into account the lengths of edges as specified by the {\tt "len"}
+attribute, with one inch being the default. 
+
+If {\tt mode="KK"} and the graph attribute {\tt pack} is false, 
+\neato\ sets the distance between nodes in separate connected components
+to $1.0 + L_{avg}\cdot\sqrt{|{\tt V}|}$, 
+where $L_{avg}$ is the average edge length and $|{\tt V}|$
+is the number of nodes in the graph.
+This supplies sufficient separation between components
+so that they do not overlap. Typically, the larger components will be
+centrally located, while smaller components will form a ring around
+the outside.
+
+In some cases, an application may decide to use the circuit model
+({\tt model="circuit"}),
+a model based on electrical circuits 
+as first proposed by Cohen\cite{cohen}. 
+In this model, the spring length is derived from resistances using
+Kirchoff's law. This means that the more paths between  $p$ and $q$
+in the graph, the smaller the spring length. This has the effect of
+pulling clusters closer together.
+We note that this approach only works if the graph is connected.
+If the graph is not connected, the layout automatically reverts to the
+shortest path model.
+
+The third model is the subset model ({\tt model="subset"}).
+This sets the length of each edge to be the number of nodes that are 
+neighbors of exactly one of the end points, and then calculates 
+remaining distances using shortest paths. This helps to separate 
+nodes with high degree. 
+
+The basic algorithm used by \neato\ performs the layout assuming
+point nodes. Since in many cases, the final drawing uses text
+labels and various node shapes, the drawing ends up with many
+nodes overlapping each other. For certain uses, the effect is
+desirable. If not, the application can use the {\tt adjust} step to
+reposition the nodes to eliminate overlaps. This is controlled by the
+graph attribute {\tt "overlap"}.
+
+With nodes positioned, the algorithm proceeds to draw the
+edges using its {\tt splines} function. 
+By default, edges are drawn as line
+segments. If, however, the {\tt "splines"} graph attribute is
+set to true, the edges will be constructed as
+splines\cite{paths}, 
+routing them around the nodes. Topologically, the spline
+follows the shortest path between two nodes while avoiding all others.
+Clearly, for this to work, there can be no node overlaps. If overlaps
+exist, edge creation reverts back to line segments.
+When this function returns, the positions of the nodes will be recorded
+in their {\tt coords} attribute, in points.
+
+The programmer should be aware of certain limitations and
+problems with the \neato\ algorithm. 
+First, as noted above, if {\tt mode="KK"}, 
+it is possible for the minimization technique used by \neato\
+to cycle, never finishing. At present, there
+is no way for the library to detect this, though once identified,
+it can easily be fixed by simply picking another initial position.
+Second, although multiedges affect the layout,
+the spline router does not yet handle them. Thus,
+two edges between the same nodes will receive the same spline.
+Finally, \neato\ provides no mechanism for drawing clusters. 
+If clusters are required, one should use the \fdp\ algorithm, which belongs
+to the same family as \neato\ and is described next.
+
+\subsection{\fdp}
+\label{sec:fdp}
+
+The \fdp\ layout is similar in appearance to \neato\ and also relies
+on a virtual physical model, this time proposed by Fruchterman and
+Reingold\cite{fr}. This model uses springs only between nodes
+connected with an edge, and an electrical repulsive force between
+all pairs of nodes. Also, it achieves a layout by minimizing the forces
+rather than energy of the system.
+
+Unlike \neato, \fdp\ supports cluster subgraphs. In addition, it
+allows edges between clusters and nodes, and between cluster and clusters.
+At present, an edge from a cluster cannot connect to a node or cluster
+with the cluster.
+
+\begin{verbatim}
+    initialize
+    position
+    splines
+\end{verbatim}
+
+The layout scheme is fairly simple: initialization; layout; and a call to
+route the edges. In \fdp, because it is necessary
+to keep clusters separate, the removal of overlaps is (usually)
+obligatory.
+
+\subsection{\sfdp}
+\label{sec:sfdp}
+
+The \sfdp\ layout is similar to \fdp\, except it uses a refined multilevel
+approach that enables it to handle very large graphs. The algorithm is
+due to Hu\cite{sfdp}.
+
+Unlike \fdp, \sfdp\ does not support cluster subgraphs. It also 
+does not model edge lengths or weights.
+
+\begin{verbatim}
+    initialize
+    position
+    adjust
+    splines
+\end{verbatim}
+
+The layout scheme is fairly simple: initialization; layout; node overlap removal; and a call to
+route the edges.
+
+\subsection{\twopi}
+\label{sec:twopi}
+
+The radial layout algorithm represented by {\tt twopi} is conceptually the 
+simplest in \gviz. Following an algorithm described by Wills\cite{nicheworks},
+it takes a node specified as the center of the layout and the root
+of the generated spanning tree. The remaining
+nodes are placed on a series of concentric circles about the center,
+the circle used corresponding to the graph-theoretic distance from the
+node to the center. Thus, for example, all of the neighbors of the
+center node are placed on the first circle around the center.
+The algorithm allocates angular slices to each branch of the 
+induced spanning tree to guarantee enough space for the tree on each ring.
+At present, the algorithm does not attempt to visualize clusters.
+
+\begin{verbatim}
+    initialize
+    position
+    adjust
+    splines
+\end{verbatim}
+
+As usual, the layout commences by initializing the graph.
+This is followed by the {\tt position} step, which is parameterized
+by the central node, specified by the graph's {\tt root} attribute.
+If unspecified, the algorithm will select some
+``most central'' node, i.e., one whose minimum distance from a leaf
+node is maximal.
+
+As with \neato, the layout allows an {\tt adjust} step 
+to eliminate node-node overlaps. Again as with \neato, the call to 
+{\tt splines} computes drawing information for edges. See
+Section~\ref{sec:neato} for more details.
+
+\subsection{\circo}
+\label{sec:circo}
+
+The \circo\ algorithm is based on the work of Six and Tollis\cite{st,st2},
+as modified by Kaufmann and Wiese\cite{kw}. The nodes in each 
+biconnected component are placed on a circle, with some attempt to 
+minimize edge crossings. Then, by considering each component as a single
+node, the derived tree is laid out in a similar fashion to \twopi,
+with some component considered as the root node.
+
+\begin{verbatim}
+    initialize
+    position
+    splines
+\end{verbatim}
+
+As with \fdp, the scheme is very simple.
+By construction, the \circo\ layout avoids node overlaps, so no
+{\tt adjust} step is necessary.
+

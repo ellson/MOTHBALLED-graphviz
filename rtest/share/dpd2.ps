@@ -1,0 +1,1071 @@
+%!PS-Adobe-2.0
+%%Creator: dot version 2.9.20060407.0440 (Fri Apr  7 07:41:14 GMT 2006)
+%%For: (ellson) John Ellson,[north]
+%%Title: G
+%%Pages: (atend)
+%%BoundingBox: (atend)
+%%EndComments
+save
+%%BeginProlog
+/DotDict 200 dict def
+DotDict begin
+
+/setupLatin1 {
+mark
+/EncodingVector 256 array def
+ EncodingVector 0
+
+ISOLatin1Encoding 0 255 getinterval putinterval
+EncodingVector 45 /hyphen put
+
+% Set up ISO Latin 1 character encoding
+/starnetISO {
+        dup dup findfont dup length dict begin
+        { 1 index /FID ne { def }{ pop pop } ifelse
+        } forall
+        /Encoding EncodingVector def
+        currentdict end definefont
+} def
+/Times-Roman starnetISO def
+/Times-Italic starnetISO def
+/Times-Bold starnetISO def
+/Times-BoldItalic starnetISO def
+/Helvetica starnetISO def
+/Helvetica-Oblique starnetISO def
+/Helvetica-Bold starnetISO def
+/Helvetica-BoldOblique starnetISO def
+/Courier starnetISO def
+/Courier-Oblique starnetISO def
+/Courier-Bold starnetISO def
+/Courier-BoldOblique starnetISO def
+cleartomark
+} bind def
+
+%%BeginResource: procset graphviz 0 0
+/coord-font-family /Times-Roman def
+/default-font-family /Times-Roman def
+/coordfont coord-font-family findfont 8 scalefont def
+
+/InvScaleFactor 1.0 def
+/set_scale {
+	dup 1 exch div /InvScaleFactor exch def
+	dup scale
+} bind def
+
+% styles
+/solid { [] 0 setdash } bind def
+/dashed { [9 InvScaleFactor mul dup ] 0 setdash } bind def
+/dotted { [1 InvScaleFactor mul 6 InvScaleFactor mul] 0 setdash } bind def
+/invis {/fill {newpath} def /stroke {newpath} def /show {pop newpath} def} bind def
+/bold { 2 setlinewidth } bind def
+/filled { } bind def
+/unfilled { } bind def
+/rounded { } bind def
+/diagonals { } bind def
+
+% hooks for setting color 
+/nodecolor { sethsbcolor } bind def
+/edgecolor { sethsbcolor } bind def
+/graphcolor { sethsbcolor } bind def
+/nopcolor {pop pop pop} bind def
+
+/beginpage {	% i j npages
+	/npages exch def
+	/j exch def
+	/i exch def
+	/str 10 string def
+	npages 1 gt {
+		gsave
+			coordfont setfont
+			0 0 moveto
+			(\() show i str cvs show (,) show j str cvs show (\)) show
+		grestore
+	} if
+} bind def
+
+/set_font {
+	findfont exch
+	scalefont setfont
+} def
+
+% draw aligned label in bounding box aligned to current point
+/alignedtext {			% width adj text
+	/text exch def
+	/adj exch def
+	/width exch def
+	gsave
+		width 0 gt {
+			text stringwidth pop adj mul 0 rmoveto
+		} if
+		[] 0 setdash
+		text show
+	grestore
+} def
+
+/boxprim {				% xcorner ycorner xsize ysize
+		4 2 roll
+		moveto
+		2 copy
+		exch 0 rlineto
+		0 exch rlineto
+		pop neg 0 rlineto
+		closepath
+} bind def
+
+/ellipse_path {
+	/ry exch def
+	/rx exch def
+	/y exch def
+	/x exch def
+	matrix currentmatrix
+	newpath
+	x y translate
+	rx ry scale
+	0 0 1 0 360 arc
+	setmatrix
+} bind def
+
+/endpage { showpage } bind def
+/showpage { } def
+
+/layercolorseq
+	[	% layer color sequence - darkest to lightest
+		[0 0 0]
+		[.2 .8 .8]
+		[.4 .8 .8]
+		[.6 .8 .8]
+		[.8 .8 .8]
+	]
+def
+
+/layerlen layercolorseq length def
+
+/setlayer {/maxlayer exch def /curlayer exch def
+	layercolorseq curlayer 1 sub layerlen mod get
+	aload pop sethsbcolor
+	/nodecolor {nopcolor} def
+	/edgecolor {nopcolor} def
+	/graphcolor {nopcolor} def
+} bind def
+
+/onlayer { curlayer ne {invis} if } def
+
+/onlayers {
+	/myupper exch def
+	/mylower exch def
+	curlayer mylower lt
+	curlayer myupper gt
+	or
+	{invis} if
+} def
+
+/curlayer 0 def
+
+%%EndResource
+%%EndProlog
+%%BeginSetup
+14 default-font-family set_font
+1 setmiterlimit
+% /arrowlength 10 def
+% /arrowwidth 5 def
+
+% make sure pdfmark is harmless for PS-interpreters other than Distiller
+/pdfmark where {pop} {userdict /pdfmark /cleartomark load put} ifelse
+% make '<<' and '>>' safe on PS Level 1 devices
+/languagelevel where {pop languagelevel}{1} ifelse
+2 lt {
+    userdict (<<) cvn ([) cvn load put
+    userdict (>>) cvn ([) cvn load put
+} if
+
+%%EndSetup
+%%Page: 1 1
+%%PageBoundingBox: 36 36 591 612
+%%PageOrientation: Portrait
+gsave
+36 36 591 612 boxprim clip newpath
+36 36 translate
+0 0 1 beginpage
+0.6819 set_scale
+6 6 translate 0 rotate
+0.000 0.000 1.000 graphcolor
+0.000 0.000 1.000 graphcolor
+newpath -9 -9 moveto
+-9 842 lineto
+811 842 lineto
+811 -9 lineto
+closepath
+fill
+0.000 0.000 1.000 graphcolor
+newpath -9 -9 moveto
+-9 842 lineto
+811 842 lineto
+811 -9 lineto
+closepath
+stroke
+0.000 0.000 0.000 graphcolor
+14.00 /Times-Roman set_font
+% Marden
+gsave 10 dict begin
+89 165 35 18 ellipse_path
+stroke
+gsave 10 dict begin
+66 162 moveto
+(Marden)
+[12.48 6.24 4.56 6.96 6.24 6.96]
+xshow
+end grestore
+end grestore
+% ldt
+gsave 10 dict begin
+215 229 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+207 226 moveto
+(ldt)
+[3.84 6.96 3.84]
+xshow
+end grestore
+end grestore
+% Marden--ldt
+newpath 114 178 moveto
+137 189 171 207 193 218 curveto
+stroke
+% kg
+gsave 10 dict begin
+241 299 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+233 296 moveto
+(kg)
+[6.72 6.96]
+xshow
+end grestore
+end grestore
+% Marden--kg
+newpath 107 181 moveto
+137 207 195 259 224 284 curveto
+stroke
+% hg
+gsave 10 dict begin
+340 202 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+332 199 moveto
+(hg)
+[6.96 6.96]
+xshow
+end grestore
+end grestore
+% Marden--hg
+newpath 123 170 moveto
+173 177 268 191 314 198 curveto
+stroke
+% ldt--hg
+newpath 241 223 moveto
+263 218 293 212 314 207 curveto
+stroke
+% ggt
+gsave 10 dict begin
+300 106 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+291 103 moveto
+(ggt)
+[6.96 6.96 3.84]
+xshow
+end grestore
+end grestore
+% ldt--ggt
+newpath 226 212 moveto
+243 189 272 146 288 123 curveto
+stroke
+% kt
+gsave 10 dict begin
+239 116 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+233 113 moveto
+(kt)
+[6.96 3.84]
+xshow
+end grestore
+end grestore
+% ldt--kt
+newpath 219 211 moveto
+224 190 231 155 235 134 curveto
+stroke
+% ds
+gsave 10 dict begin
+238 379 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+231 376 moveto
+(ds)
+[6.96 5.52]
+xshow
+end grestore
+end grestore
+% ldt--ds
+newpath 213 247 moveto
+211 261 210 281 212 299 curveto
+215 321 224 346 230 362 curveto
+stroke
+% cd
+gsave 10 dict begin
+186 438 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+179 435 moveto
+(cd)
+[6.24 6.96]
+xshow
+end grestore
+end grestore
+% ldt--cd
+newpath 212 247 moveto
+207 287 194 381 188 420 curveto
+stroke
+% vd
+gsave 10 dict begin
+512 238 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+504 235 moveto
+(vd)
+[6.96 6.96]
+xshow
+end grestore
+end grestore
+% kg--vd
+newpath 267 293 moveto
+319 282 434 256 486 244 curveto
+stroke
+% hg--kg
+newpath 325 217 moveto
+306 235 275 266 256 284 curveto
+stroke
+% lat
+gsave 10 dict begin
+485 50 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+477 47 moveto
+(lat)
+[3.84 6.24 3.84]
+xshow
+end grestore
+end grestore
+% hg--lat
+newpath 355 187 moveto
+383 158 443 95 470 65 curveto
+stroke
+% hg--vd
+newpath 366 207 moveto
+398 214 454 226 486 233 curveto
+stroke
+% cg
+gsave 10 dict begin
+525 369 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+518 366 moveto
+(cg)
+[6.24 6.96]
+xshow
+end grestore
+end grestore
+% hg--cg
+newpath 352 218 moveto
+370 240 403 281 436 310 curveto
+458 329 485 346 504 357 curveto
+stroke
+% Cannon
+gsave 10 dict begin
+134 48 35 18 ellipse_path
+stroke
+gsave 10 dict begin
+112 45 moveto
+(Cannon)
+[9.36 6.24 6.96 6.96 6.96 6.96]
+xshow
+end grestore
+end grestore
+% Cannon--ldt
+newpath 158 61 moveto
+171 70 187 84 194 100 curveto
+210 137 214 185 215 211 curveto
+stroke
+% Cannon--kg
+newpath 126 66 moveto
+122 76 119 88 120 100 curveto
+128 178 194 253 225 284 curveto
+stroke
+% Cannon--ggt
+newpath 163 58 moveto
+195 69 246 87 276 98 curveto
+stroke
+% ggt--hg
+newpath 307 124 moveto
+315 141 326 167 333 184 curveto
+stroke
+% ggt--lat
+newpath 325 98 moveto
+360 87 425 68 460 57 curveto
+stroke
+% Epstein
+gsave 10 dict begin
+157 100 34 18 ellipse_path
+stroke
+gsave 10 dict begin
+136 97 moveto
+(Epstein)
+[8.64 6.96 5.28 3.84 6.24 3.84 6.96]
+xshow
+end grestore
+end grestore
+% Epstein--ldt
+newpath 165 118 moveto
+176 142 196 187 207 212 curveto
+stroke
+% Epstein--kg
+newpath 158 118 moveto
+160 147 167 204 194 243 curveto
+204 257 217 272 227 283 curveto
+stroke
+% Epstein--hg
+newpath 181 113 moveto
+217 133 285 171 319 190 curveto
+stroke
+% Epstein--ggt
+newpath 191 97 moveto
+206 97 223 96 239 97 curveto
+250 97 263 99 274 101 curveto
+stroke
+% Conway
+gsave 10 dict begin
+406 19 36 18 ellipse_path
+stroke
+gsave 10 dict begin
+383 16 moveto
+(Conway)
+[9.36 6.96 6.48 9.6 5.76 6.96]
+xshow
+end grestore
+end grestore
+% Conway--hg
+newpath 400 37 moveto
+387 72 359 149 346 184 curveto
+stroke
+% Conway--ggt
+newpath 387 35 moveto
+368 51 337 76 317 92 curveto
+stroke
+% Conway--kt
+newpath 382 33 moveto
+357 47 316 71 280 92 curveto
+273 96 266 100 260 104 curveto
+stroke
+% Conway--lat
+newpath 435 30 moveto
+444 34 453 37 462 41 curveto
+stroke
+% Conway--vd
+newpath 414 37 moveto
+435 78 484 180 504 221 curveto
+stroke
+% kt--kg
+newpath 240 134 moveto
+242 156 244 196 244 229 curveto
+244 247 243 267 242 281 curveto
+stroke
+% kt--hg
+newpath 256 130 moveto
+274 146 304 172 323 188 curveto
+stroke
+% lat--vd
+newpath 488 68 moveto
+493 104 504 184 509 220 curveto
+stroke
+% crys
+gsave 10 dict begin
+618 115 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+606 112 moveto
+(crys)
+[6.24 5.04 6.48 5.52]
+xshow
+end grestore
+end grestore
+% lat--crys
+newpath 507 61 moveto
+532 73 571 92 596 104 curveto
+stroke
+% vd--crys
+newpath 526 222 moveto
+546 199 584 154 604 131 curveto
+stroke
+% gcv
+gsave 10 dict begin
+635 283 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+624 280 moveto
+(gcv)
+[6.96 6.24 6.96]
+xshow
+end grestore
+end grestore
+% vd--gcv
+newpath 536 247 moveto
+557 255 589 267 611 274 curveto
+stroke
+% cv
+gsave 10 dict begin
+545 466 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+538 463 moveto
+(cv)
+[6.24 6.96]
+xshow
+end grestore
+end grestore
+% vd--cv
+newpath 520 255 moveto
+531 280 550 327 554 369 curveto
+557 397 553 429 549 448 curveto
+stroke
+% Taylor
+gsave 10 dict begin
+725 165 31 18 ellipse_path
+stroke
+gsave 10 dict begin
+707 162 moveto
+(Taylor)
+[7.68 5.76 6.48 3.84 6.96 4.8]
+xshow
+end grestore
+end grestore
+% Taylor--vd
+newpath 698 174 moveto
+656 189 576 216 536 230 curveto
+stroke
+% Taylor--crys
+newpath 701 154 moveto
+683 145 658 134 640 126 curveto
+stroke
+% Taylor--gcv
+newpath 712 182 moveto
+695 204 664 244 647 267 curveto
+stroke
+% fd
+gsave 10 dict begin
+763 281 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+757 278 moveto
+(fd)
+[4.56 6.96]
+xshow
+end grestore
+end grestore
+% Taylor--fd
+newpath 731 183 moveto
+738 205 750 241 757 263 curveto
+stroke
+% crys--gcv
+newpath 620 133 moveto
+623 165 630 232 633 265 curveto
+stroke
+% crys--fd
+newpath 632 131 moveto
+660 162 722 234 749 265 curveto
+stroke
+% gcv--fd
+newpath 662 283 moveto
+684 282 714 282 736 281 curveto
+stroke
+% gcv--cg
+newpath 617 297 moveto
+597 313 563 339 543 355 curveto
+stroke
+% Almgren
+gsave 10 dict begin
+702 111 39 18 ellipse_path
+stroke
+gsave 10 dict begin
+676 108 moveto
+(Almgren)
+[10.08 3.84 10.8 7.2 4.8 6.24 6.96]
+xshow
+end grestore
+end grestore
+% Almgren--vd
+newpath 680 126 moveto
+643 151 567 201 531 225 curveto
+stroke
+% Almgren--crys
+newpath 663 113 moveto
+657 113 651 114 645 114 curveto
+stroke
+% Almgren--gcv
+newpath 695 129 moveto
+682 162 655 232 642 265 curveto
+stroke
+% Almgren--fd
+newpath 695 129 moveto
+692 140 690 153 692 165 curveto
+699 205 730 245 748 266 curveto
+stroke
+% Freedman
+gsave 10 dict begin
+417 183 41 18 ellipse_path
+stroke
+gsave 10 dict begin
+389 180 moveto
+(Freedman)
+[7.44 4.8 6.24 6.24 6.96 10.8 6.24 6.96]
+xshow
+end grestore
+end grestore
+% Freedman--ldt
+newpath 376 181 moveto
+364 181 352 181 340 183 curveto
+302 188 261 206 236 218 curveto
+stroke
+% Freedman--gcv
+newpath 451 193 moveto
+474 201 506 212 533 224 curveto
+563 238 595 258 615 270 curveto
+stroke
+% Freedman--ds
+newpath 402 200 moveto
+367 237 285 327 252 363 curveto
+stroke
+% ds--ggt
+newpath 246 362 moveto
+254 346 264 321 270 299 curveto
+287 236 296 159 299 124 curveto
+stroke
+% ds--cd
+newpath 224 395 moveto
+217 403 207 414 200 422 curveto
+stroke
+% fg
+gsave 10 dict begin
+197 535 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+191 532 moveto
+(fg)
+[4.56 6.96]
+xshow
+end grestore
+end grestore
+% ds--fg
+newpath 233 397 moveto
+226 427 210 487 202 517 curveto
+stroke
+% sg
+gsave 10 dict begin
+349 609 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+342 606 moveto
+(sg)
+[5.52 6.96]
+xshow
+end grestore
+end grestore
+% ds--sg
+newpath 246 396 moveto
+267 439 320 549 341 592 curveto
+stroke
+% Milnor
+gsave 10 dict begin
+112 267 33 18 ellipse_path
+stroke
+gsave 10 dict begin
+91 264 moveto
+(Milnor)
+[12.48 3.84 3.84 6.96 6.96 4.8]
+xshow
+end grestore
+end grestore
+% Milnor--ldt
+newpath 140 257 moveto
+156 251 176 244 191 238 curveto
+stroke
+% Milnor--hg
+newpath 144 262 moveto
+164 259 191 254 215 248 curveto
+252 240 293 223 318 212 curveto
+stroke
+% Milnor--kt
+newpath 126 251 moveto
+151 221 201 161 226 132 curveto
+stroke
+% Milnor--ds
+newpath 130 283 moveto
+154 304 198 343 222 365 curveto
+stroke
+% Milnor--cd
+newpath 120 285 moveto
+134 317 165 388 179 421 curveto
+stroke
+% cd--kg
+newpath 193 420 moveto
+198 409 204 393 209 379 curveto
+217 357 227 333 234 317 curveto
+stroke
+% cd--fg
+newpath 188 456 moveto
+190 473 193 499 195 517 curveto
+stroke
+% Douady
+gsave 10 dict begin
+37 347 36 18 ellipse_path
+stroke
+gsave 10 dict begin
+14 344 moveto
+(Douady)
+[10.08 6.96 6.96 6.24 6.96 6.96]
+xshow
+end grestore
+end grestore
+% Douady--kg
+newpath 70 339 moveto
+110 330 178 314 215 305 curveto
+stroke
+% Douady--ds
+newpath 72 353 moveto
+111 359 176 369 212 375 curveto
+stroke
+% Douady--cd
+newpath 60 361 moveto
+89 379 138 409 166 426 curveto
+stroke
+% Hubard
+gsave 10 dict begin
+67 424 34 18 ellipse_path
+stroke
+gsave 10 dict begin
+45 421 moveto
+(Hubard)
+[10.08 6.96 6.96 6.24 4.56 6.96]
+xshow
+end grestore
+end grestore
+% Hubard--kg
+newpath 87 409 moveto
+121 385 189 336 222 312 curveto
+stroke
+% Hubard--ds
+newpath 98 416 moveto
+131 407 182 394 213 386 curveto
+stroke
+% Hubard--cd
+newpath 100 428 moveto
+119 430 142 433 159 435 curveto
+stroke
+% Hubard--fg
+newpath 85 439 moveto
+110 461 156 500 180 521 curveto
+stroke
+% fg--kg
+newpath 202 517 moveto
+207 498 214 466 215 438 curveto
+216 412 205 405 209 379 curveto
+212 356 223 332 231 316 curveto
+stroke
+% fg--sg
+newpath 219 546 moveto
+248 560 298 584 327 598 curveto
+stroke
+% Mandelbrot
+gsave 10 dict begin
+71 505 46 18 ellipse_path
+stroke
+gsave 10 dict begin
+37 502 moveto
+(Mandelbrot)
+[12.48 6.24 6.96 6.96 6.24 3.84 6.96 4.8 6.72 3.84]
+xshow
+end grestore
+end grestore
+% Mandelbrot--kg
+newpath 85 488 moveto
+118 448 197 353 228 315 curveto
+stroke
+% Mandelbrot--cd
+newpath 97 490 moveto
+118 478 146 461 165 450 curveto
+stroke
+% Mandelbrot--fg
+newpath 111 514 moveto
+130 519 154 525 171 529 curveto
+stroke
+% Wilks
+gsave 10 dict begin
+402 569 30 18 ellipse_path
+stroke
+gsave 10 dict begin
+384 566 moveto
+(Wilks)
+[12.96 3.84 3.84 6.96 5.52]
+xshow
+end grestore
+end grestore
+% Wilks--cd
+newpath 381 556 moveto
+340 531 247 475 206 450 curveto
+stroke
+% Wilks--sg
+newpath 383 583 moveto
+378 587 372 591 367 595 curveto
+stroke
+% gv
+gsave 10 dict begin
+535 565 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+527 562 moveto
+(gv)
+[6.96 6.96]
+xshow
+end grestore
+end grestore
+% Wilks--gv
+newpath 432 568 moveto
+455 567 486 566 508 566 curveto
+stroke
+% Wilks--cg
+newpath 412 552 moveto
+435 514 492 423 515 386 curveto
+stroke
+% sg--gv
+newpath 374 603 moveto
+410 595 474 579 509 571 curveto
+stroke
+% sg--cv
+newpath 375 603 moveto
+390 599 409 593 425 583 curveto
+470 555 512 507 532 482 curveto
+stroke
+% dv
+gsave 10 dict begin
+352 814 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+344 811 moveto
+(dv)
+[6.96 6.96]
+xshow
+end grestore
+end grestore
+% sg--dv
+newpath 349 627 moveto
+350 666 351 757 352 796 curveto
+stroke
+% cg--fd
+newpath 549 360 moveto
+594 343 693 307 739 290 curveto
+stroke
+% Dobkin
+gsave 10 dict begin
+669 406 34 18 ellipse_path
+stroke
+gsave 10 dict begin
+647 403 moveto
+(Dobkin)
+[10.08 6.96 6.96 6.96 3.84 6.96]
+xshow
+end grestore
+end grestore
+% Dobkin--vd
+newpath 654 390 moveto
+623 357 556 285 527 254 curveto
+stroke
+% Dobkin--gv
+newpath 653 422 moveto
+643 433 629 446 617 459 curveto
+590 489 562 527 546 549 curveto
+stroke
+% Dobkin--cg
+newpath 638 398 moveto
+612 391 575 382 551 376 curveto
+stroke
+% Chazelle
+gsave 10 dict begin
+646 473 38 18 ellipse_path
+stroke
+gsave 10 dict begin
+621 470 moveto
+(Chazelle)
+[9.36 6.96 6.24 6.24 6.24 3.84 3.84 6.24]
+xshow
+end grestore
+end grestore
+% Chazelle--vd
+newpath 636 455 moveto
+611 412 546 298 522 255 curveto
+stroke
+% Chazelle--gv
+newpath 627 489 moveto
+606 506 572 534 552 551 curveto
+stroke
+% Chazelle--cg
+newpath 628 457 moveto
+604 437 564 403 542 383 curveto
+stroke
+% Peskin
+gsave 10 dict begin
+769 472 32 18 ellipse_path
+stroke
+gsave 10 dict begin
+749 469 moveto
+(Peskin)
+[7.44 6.24 5.52 6.96 3.84 6.96]
+xshow
+end grestore
+end grestore
+% Peskin--gcv
+newpath 757 455 moveto
+731 419 672 335 647 299 curveto
+stroke
+% Peskin--fd
+newpath 768 454 moveto
+767 417 765 335 764 299 curveto
+stroke
+% Peskin--gv
+newpath 743 482 moveto
+696 501 602 538 558 556 curveto
+stroke
+% Tarjan
+gsave 10 dict begin
+382 442 31 18 ellipse_path
+stroke
+gsave 10 dict begin
+363 439 moveto
+(Tarjan)
+[7.68 6.24 5.04 3.84 6.24 6.96]
+xshow
+end grestore
+end grestore
+% Tarjan--hg
+newpath 371 425 moveto
+357 403 336 364 329 326 curveto
+323 288 330 244 336 220 curveto
+stroke
+% Tarjan--cg
+newpath 405 430 moveto
+432 416 477 393 503 380 curveto
+stroke
+% Mumford
+gsave 10 dict begin
+467 296 40 18 ellipse_path
+stroke
+gsave 10 dict begin
+440 293 moveto
+(Mumford)
+[12.48 6.96 10.8 4.08 6.96 4.56 6.96]
+xshow
+end grestore
+end grestore
+% Mumford--kg
+newpath 427 297 moveto
+381 297 308 298 268 299 curveto
+stroke
+% Mumford--crys
+newpath 493 282 moveto
+506 274 521 264 533 252 curveto
+568 215 597 160 610 133 curveto
+stroke
+% Mumford--gcv
+newpath 507 293 moveto
+538 290 580 287 608 285 curveto
+stroke
+% Mumford--cg
+newpath 481 313 moveto
+490 325 503 341 512 353 curveto
+stroke
+% Mumford--cv
+newpath 474 314 moveto
+479 329 488 350 496 369 curveto
+509 398 526 430 536 449 curveto
+stroke
+% cv--vd
+newpath 549 448 moveto
+553 429 557 397 554 369 curveto
+550 327 531 280 520 255 curveto
+stroke
+% cv--gcv
+newpath 553 449 moveto
+571 414 609 335 627 300 curveto
+stroke
+% cv--gv
+newpath 543 484 moveto
+541 502 538 529 537 547 curveto
+stroke
+% cv--cg
+newpath 541 448 moveto
+537 431 532 404 529 387 curveto
+stroke
+% Thurston
+gsave 10 dict begin
+370 326 38 18 ellipse_path
+stroke
+gsave 10 dict begin
+344 323 moveto
+(Thurston)
+[8.64 6.96 6.96 4.8 5.28 3.84 6.96 6.96]
+xshow
+end grestore
+end grestore
+% Thurston--ldt
+newpath 347 311 moveto
+317 292 264 259 235 241 curveto
+stroke
+% Thurston--kg
+newpath 335 319 moveto
+314 315 287 309 267 305 curveto
+stroke
+% Thurston--ggt
+newpath 359 308 moveto
+346 285 323 242 311 202 curveto
+303 176 301 144 300 124 curveto
+stroke
+% Thurston--kt
+newpath 359 308 moveto
+335 269 274 172 250 133 curveto
+stroke
+% Thurston--vd
+newpath 392 311 moveto
+405 303 422 292 437 282 curveto
+455 271 476 259 492 250 curveto
+stroke
+% Thurston--cd
+newpath 346 340 moveto
+310 363 241 405 206 426 curveto
+stroke
+% Thurston--gv
+newpath 382 343 moveto
+413 387 494 505 524 549 curveto
+stroke
+% Thurston--cg
+newpath 403 335 moveto
+432 343 473 355 500 362 curveto
+stroke
+endpage
+showpage
+grestore
+%%PageTrailer
+%%EndPage: 1
+%%Trailer
+%%Pages: 1
+%%BoundingBox: 36 36 591 612
+end
+restore
+%%EOF

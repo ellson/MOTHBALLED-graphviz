@@ -1,0 +1,36 @@
+digraph g {
+	node [label="\N", fontsize=14, fontname="Times-Roman", fontcolor=black, shape=box, color=black, width="0.5"];
+	edge [fontsize=14, fontname="Times-Roman", fontcolor=black, color=black];
+	graph [bb="0,0,726,220"];
+	23296 [label="23296\n?", width="0.72", pname="?", kind=proc, pos="450,200", height="0.56"];
+	"182948-1" [label="182948-1\n182949-1\npipe", fontsize=7, shape=doublecircle, width="0.92", kind=file, fname=pipe, subkind=pipe, pos="205,34", height="0.93"];
+	23310 [label="23310\ncat", width="0.72", pname=cat, kind=proc, pos="205,124", height="0.56"];
+	"182950-1" [label="182950-1\n182951-1\npipe", fontsize=7, shape=doublecircle, width="0.92", kind=file, fname=pipe, subkind=pipe, pos="289,34", height="0.93"];
+	23311 [label="23311\ncat", width="0.69", pname=cat, kind=proc, pos="289,124", height="0.56"];
+	"182952-1" [label="182952-1\n182953-1\npipe", fontsize=7, shape=doublecircle, width="0.92", kind=file, fname=pipe, subkind=pipe, pos="373,34", height="0.93"];
+	23312 [label="23312\ncat", width="0.72", pname=cat, kind=proc, pos="373,124", height="0.56"];
+	"182954-1" [label="182954-1\n182955-1\npipe", fontsize=7, shape=doublecircle, width="0.92", kind=file, fname=pipe, subkind=pipe, pos="457,34", height="0.93"];
+	23313 [label="23313\ncat", width="0.72", pname=cat, kind=proc, pos="450,124", height="0.56"];
+	"79893+2568" [label="79893+2568\n/usr/share/lib/termcap", shape=ellipse, width="2.14", kind=file, fname="/usr/share/lib/termcap", pos="77,34", height="0.79"];
+	"85+2560" [label="85+2560\n?", shape=ellipse, width="1.14", kind=file, fname="?", pos="685,34", height="0.79"];
+	23314 [label="23314\ncat", width="0.72", pname=cat, kind=proc, pos="547,124", height="0.56"];
+	"4151865284+0" [label="4151865284+0\n/tmp/termcap", shape=ellipse, width="1.64", kind=file, fname="/tmp/termcap", pos="567,34", height="0.79"];
+	23296 -> 23310 [pos="e,231,135 424,193 386,184 314,164 255,144 250,142 245,140 240,139"];
+	23296 -> 23311 [pos="e,314,136 424,188 396,174 353,154 323,140"];
+	23311 -> "182948-1" [dir=back, pos="s,270,104 263,97 252,84 239,71 228,59"];
+	23310 -> "182948-1" [dir=forward, pos="e,205,68 205,104 205,96 205,87 205,78"];
+	23296 -> 23312 [pos="e,394,144 429,180 420,171 410,161 401,151"];
+	23312 -> "182952-1" [dir=forward, pos="e,373,68 373,104 373,96 373,87 373,78"];
+	23312 -> "182950-1" [dir=back, pos="s,354,104 347,97 336,84 323,71 312,59"];
+	23296 -> 23313 [pos="e,450,144 450,180 450,172 450,163 450,154"];
+	23313 -> "182954-1" [dir=forward, pos="e,455,67 452,104 453,96 453,87 454,77"];
+	23311 -> "182950-1" [dir=forward, pos="e,289,68 289,104 289,96 289,87 289,78"];
+	23310 -> "79893+2568" [dir=back, pos="s,179,106 171,100 153,87 131,72 113,60"];
+	23296 -> "85+2560" [dir=both, pos="s,476,195 e,660,57 486,192 521,180 536,171 573,144 604,121 632,88 653,65"];
+	23296 -> 23314 [pos="e,521,144 476,180 487,171 501,160 513,150"];
+	23314 -> "85+2560" [dir=both, pos="s,573,107 e,656,54 582,102 598,91 617,79 635,68 639,65 643,62 647,60"];
+	23314 -> "182954-1" [dir=back, pos="s,527,104 520,97 507,84 493,70 481,58"];
+	23296 -> "85+2560" [dir=both, pos="s,476,199 e,671,61 486,196 537,182 551,173 591,144 620,122 646,92 665,69"];
+	23314 -> "4151865284+0" [dir=forward, pos="e,561,63 552,104 554,95 556,84 559,73"];
+	23313 -> "182952-1" [dir=back, pos="s,433,104 426,96 416,85 405,71 395,60"];
+}

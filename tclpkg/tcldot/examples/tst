@@ -1,0 +1,12 @@
+#!/bin/sh
+# next line is a comment in tcl \
+exec tclsh "$0" ${1+"$@"}
+
+package require Tcldot
+
+for {set i 0} {$i < 20} {incr i} {
+	set f [open htg3.gv r]
+	set g [dotread $f]
+	close $f
+	$g delete
+}

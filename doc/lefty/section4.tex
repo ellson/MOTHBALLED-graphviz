@@ -1,0 +1,396 @@
+\chapter{Examples}
+\label{secexamples}
+
+\section{Fractals}
+This is an example of a type of figure easily described in a procedural
+language. Fractals are usually created by starting from a basic figure and
+recursively replacing parts of it with more complex constructs.
+
+In this example, the basic figure is the equilateral triangle; {\tt
+drawfractal} ``draws'' the three sides of the triangle:
+
+\vbox{
+\begin{verbatim}
+drawfractal = function () {
+    ...
+    fractal (0, length, fractalangle +  60);
+    fractal (0, length, fractalangle -  60);
+    fractal (0, length, fractalangle - 180);
+    ...
+};
+\end{verbatim}
+\vspace{-6pt}
+}
+
+The replacement rule is to replace each line segment with four:
+
+\centerline{\hbox{
+\begin{tabular}[b]{c@{\hspace{.1in}}c}
+{\epsfxsize=2.7in \epsfysize=0.9in \epsffile{figs/figfractalonea.ps}}&
+{\epsfxsize=2.7in \epsfysize=0.9in \epsffile{figs/figfractaloneb.ps}}\\
+original & replacement\\
+\end{tabular}
+}}
+
+{\tt fractal} does the recursive replacement:
+
+\vbox{
+\begin{verbatim}
+fractal = function (level, length, angle) {
+    local nlength, newpenpos;
+
+    if (level >= maxlevel) {
+        newpenpos.x = penpos.x + length * cos (angle);
+        newpenpos.y = penpos.y + length * sin (angle);
+        line (canvas, null, penpos, newpenpos, ['color' = 1;]);
+        penpos = newpenpos;
+        return;
+    }
+    nlength = length / 3;
+    fractal (level + 1, nlength, angle);
+    fractal (level + 1, nlength, angle + 60);
+    fractal (level + 1, nlength, angle - 60);
+    fractal (level + 1, nlength, angle);
+};
+\end{verbatim}
+\vspace{-12pt}
+}
+
+Recursion is controlled by {\tt level}. If {\tt level} exceeds {\tt maxlevel},
+{\tt fractal} returns, otherwise it makes the four recursive calls to itself.
+The fractal in Figure~\ref{fig2tp}a was drawn with {\tt maxlevel} set to {\tt
+4}.
+
+The picture is drawn using the concept of the {\it pen}. Drawing is done
+relative to {\tt pen}, which holds the current pen coordinates, and {\tt pen}
+is updated after each line is drawn.
+
+{\tt transformfractal} changes the size and orientation of the fractal. It
+takes two arguments, {\tt prevpoint} and {\tt currpoint}, and rotates and
+scales the fractal, relative to its center, so that {\tt prevpoint} is mapped
+to {\tt currpoint}. {\tt transformfractal} is called from {\tt leftup}.  {\tt
+prevpoint} is set to the mouse coordinates during the down event, while {\tt
+currpoint} is set to the coordinates during the up event. Neither {\tt
+prevpoint} nor {\tt currpoint} need lie on the fractal outline; rather than
+making the vertices or edges of the fractal selectable, {\tt setpick} is used
+to make the entire view a single selectable object. Figure~\ref{figfractalmv}
+shows how the picture changes as the user moves the cursor.
+
+\begin{figure}[htb]
+\centerline{\hbox{
+\begin{tabular}[b]{c@{\hspace{.5in}}c}
+{\epsfxsize=2.5in \epsffile{figs/figfractalmva.ps}}&
+{\epsfxsize=2.5in \epsffile{figs/figfractalmvb.ps}}\\
+(a) & (b)
+\end{tabular}
+}}
+\caption{Moving the cursor scales and rotates the picture}
+\label{figfractalmv}
+\end{figure}
+
+Figure~\ref{figfractaltrace} shows a trace of the functions executed when the
+user transforms the fractal in Figure~\ref{figfractalmv}a to the one in
+Figure~\ref{figfractalmv}b. For brevity, the trace does not show the lowest
+level of recursion for {\tt fractal}. Each level one {\tt fractal} call makes
+four calls to itself, each of which makes a call to {\tt line}. The pictures to
+the right of the trace depict the state of the WYSIWYG view as the program
+executes.
+
+\begin{figure}[htb]
+\centerline{\hbox{
+\begin{tabular}{cc}
+\parbox[b]{4in}{\tt
+\begin{tabbing}
+xxxx\= \kill
+\>xxxx\= \kill
+\>\>xxxx\= \kill
+\>\>\>xxxx\= \kill
+leftup (['ppos' = ['x' = 200; 'y' = 50;];\\
+\>\>'pos' = ['x' = 250; 'y' = 100;];])\\
+\>transformfractal (['x' = 200; 'y' = 50;],\\
+\>\>\>['x' = 250; 'y' = 100;])\\
+\>drawfractal ()\\
+\>\>fractal (0, 237.170825, 78.434949)\\
+\>\>\>fractal (1, 79.056942, 78.434949)\\
+\>\>\>fractal (1, 79.056942, 138.434949)\\
+\>\>\>fractal (1, 79.056942, 18.434949)\\
+\>\>\>fractal (1, 79.056942, 78.434949)\\
+\>\>fractal (0, 237.170825, -41.565051)\\
+\>\>\>fractal (1, 79.056942, -41.565051)\\
+\>\>\>fractal (1, 79.056942, 18.434949)\\
+\>\>\>fractal (1, 79.056942, -101.565051)\\
+\>\>\>fractal (1, 79.056942, -41.565051)\\
+\>\>fractal (0, 237.170825, -161.565051)\\
+\>\>\>fractal (1, 79.056942, -161.565051)\\
+\>\>\>fractal (1, 79.056942, -101.565051)\\
+\>\>\>fractal (1, 79.056942, -221.565051)\\
+\>\>\>fractal (1, 79.056942, -161.565051)\\
+\end{tabbing}
+} & \vbox{
+{\epsfysize=0.8in \epsffile{figs/figfractaltracea.ps}}
+\vspace{0.1in}
+{\epsfysize=0.8in \epsffile{figs/figfractaltraceb.ps}}
+\vspace{0.1in}
+{\epsfysize=0.8in \epsffile{figs/figfractaltracec.ps}}
+\vspace{0.3in}
+}\\
+\end{tabular}
+}}
+\vspace{-12pt}
+\caption{A trace of the execution sequence that draws a fractal}
+\label{figfractaltrace}
+\end{figure}
+
+\section{Trees}
+The program in this example draws trees of arbitrary degree. Each node of the
+tree is represented by an entry in {\tt nodearray}. Each entry contains a
+string label and information about the children of the node. {\tt inode} and
+{\tt iedge} insert new nodes and edges; {\tt inode} is called from {\tt
+leftdown}, while {\tt iedge} is called from {\tt middleup}. To insert an edge,
+the user pressed the middle button over the parent node, moves the mouse over
+the child node and releases the button. {\tt iedge} performs the following
+steps.
+
+\vbox{
+\begin{verbatim}
+iedge = function (node1, node2) {
+    node1.ch[node1.chn] = node2;
+    node1.chn = node1.chn + 1;
+    node2.depth = node1.depth + 1;
+    complayout ();
+    clear (canvas);
+    drawtree (tree);
+};
+\end{verbatim}
+\vspace{-10pt}
+}
+
+Whenever an edge is inserted, the program recomputes the tree layout. This is
+done by {\tt complayout}. The layout algorithm assigns distinct {\tt
+x}-coordinates to each leaf node, and positions each intermediate node midway
+between its leftmost and rightmost children. {\tt drawnode} and {\tt drawedge}
+draw the nodes and edges of the tree. The program contains two functions, {\tt
+boxnode} and {\tt circlenode}, which draw a node either as a box or a circle.
+Which one is used is controlled by assigning the appropriate function as a
+value to {\tt drawnode}. {\tt changenode} can be used to switch between the two
+styles, i.e., typing
+
+\vbox{
+\vspace{-2pt}
+\begin{verbatim}
+changenode (boxnode);
+\end{verbatim}
+\vspace{-12pt}
+}
+
+\noindent
+sets {\tt drawnode} to {\tt boxnode}, clears the display, and draws the tree
+using box-style nodes. Switching between styles could also be done from the
+WYSIWYG view, using a menu. Adding such a menu facility would require the
+following additions to the program.
+
+\vbox{
+\begin{verbatim}
+menu = [
+    0 = 'box';
+    1 = 'circle';
+];
+rightdown = function (data) {
+    local i;
+    if ((i = displaymenu (canvas, menu)) == 0)
+        changenode (boxnode);
+    else if (i == 1)
+        changenode (circlenode);
+};
+\end{verbatim}
+\vspace{-12pt}
+}
+
+Another modification to the tree program would be to allows it to draw binary
+search trees. {\tt dolayout} is modified to position each intermediate node so
+that it lies to the right of all the nodes in its left subtree and to the left
+of all the nodes in its right subtree.  Figures~\ref{figradixtree} and
+\ref{figbigtree} show two such trees; these were copied from Figures~17.5 and
+14.11 in Reference \cite{sedg}.
+
+\begin{figure}[htb]
+\centerline{\hbox{
+{\epsfxsize=2.5in \epsfysize=2.0in \epsffile{figs/figradixtree.ps}}
+}}
+\caption{A radix search tree}
+\label{figradixtree}
+\end{figure}
+
+\begin{figure}[htb]
+\centerline{\hbox{
+{\epsfxsize=2.5in \epsfysize=1.5in \epsffile{figs/figbigtree.ps}}
+}}
+\caption{A larger binary search tree}
+\label{figbigtree}
+\end{figure}
+
+\section{Delaunay Triangulations}
+In this example, an external process is used to maintain the delaunay
+triangulation of a set of sites. The user can insert new sites or move existing
+sites to new positions. {\tt insert} inserts a site at position {\tt p}:
+
+\vbox{
+\begin{verbatim}
+insert = function (point) {
+    local s;
+    sites[sitesnum].num = sitesnum;
+    sites[sitesnum].point = point;
+    s = concat ('new ', sitesnum, ' ', point.x, ' ', point.y);
+    writeline (triedfd, s);
+    sitesnum = sitesnum + 1;
+    while ((s = readline (triedfd)) ~= '')
+        run (s);
+    box (canvas, sites[sitesnum - 1],
+            [0 = ['x' = point.x - 5; 'y' = point.y - 5;];
+             1 = ['x' = point.x + 5; 'y' = point.y + 5;];
+            ]);
+};
+\end{verbatim}
+}
+
+\noindent
+{\tt insert} updates the editor's data structures, sends a message to the
+process indicating that a new site was inserted, processes its response, and
+draws the new site as a box. The process responds with a sequence of calls to
+{\tt insline} and {\tt delline}, which insert or delete an edge between two
+sites:
+
+\vbox{
+\begin{verbatim}
+insline = function (i, j) {
+    lines[i][j].f = sites[i];
+    lines[i][j].l = sites[j];
+    line (canvas, null, ['x' = sites[i].point.x; 'y' = sites[i].point.y;],
+            ['x' = sites[j].point.x; 'y' = sites[j].point.y;]);
+};
+delline = function (i, j) {
+    remove (j, lines[i]);
+    if (tablesize (lines[i]) == 0)
+        remove (i, lines);
+    line (canvas, null, ['x' = sites[i].point.x; 'y' = sites[i].point.y;],
+            ['x' = sites[j].point.x; 'y' = sites[j].point.y;],
+            ['color' = 0;]);
+};
+\end{verbatim}
+\vspace{-12pt}
+}
+
+\noindent
+Because the picture is a triangulation, i.e., there are no line intersections,
+the view can be updated incrementally by drawing and erasing lines. For
+example, {\tt delline} removes an edge from the screen by drawing it in the
+background color. Incremental techniques are also used to compute how the
+triangulation itself changes when a new site is inserted. For deletion,
+however, the incremental techniques are not significantly faster than
+recomputing the complete triangulation.
+
+Figure~\ref{figtri} shows a sample triangulation and how it changes when a new
+site is added to the upper right corner.
+
+\begin{figure}[htb]
+\centerline{\hbox{
+\begin{tabular}[b]{c@{\hspace{.1in}}c}
+{\epsfxsize=2.5in \epsffile{figs/figtria.ps}}&
+{\epsfxsize=2.5in \epsffile{figs/figtrib.ps}}\\
+(a) & (b)
+\end{tabular}
+}}
+\caption{Adding a new site to the triangulation in (a) produces (b)}
+\label{figtri}
+\end{figure}
+
+\section{Directed Acyclic Graphs}
+In this example, {\LEFTY} is programmed to handle graphs. It can control
+several windows with a different graph displayed in each one. {\LEFTY} uses
+{\DOT} \cite{dot-tse} as a layout server for the graphs. The resulting
+%{\DOT} \cite{dot-guide-tm} as a layout server for the graphs. The resulting
+tool is called {\DOTTY}. {\DOTTY} allows the user to read in graphs in {\DOT}'s
+language and to edit them in various ways.
+
+Each graph is represented as a {\LEFTY} table. Each table contains the data for
+the graph (nodes, edges, etc.) and functions that implement all the possible
+operations. There is a prototype graph table that is used to instantiate new
+graphs. Function {\tt dotty.protogt.insertnode} inserts a node into the graph
+data structure.
+
+\vbox{
+\begin{verbatim}
+dotty.protogt.insertnode = function (gt, pos, size, name, attr, show) {
+    local nid, node, aid;
+
+    nid = gt.graph.maxnid;
+    if (~name) {
+        while (gt.graph.nodedict[(name = concat ('n', nid))] >= 0)
+            nid = nid + 1;
+    } else if (gt.graph.nodedict[name] >= 0) {
+        dotty.message (0, concat ('node: ', name, ' exists'));
+        return null;
+    }
+    gt.graph.nodedict[name] = nid;
+    gt.graph.maxnid = nid + 1;
+    gt.graph.nodes[nid] = [
+        dotty.keys.nid   = nid;
+        dotty.keys.name  = name;
+        dotty.keys.attr  = copy (gt.graph.nodeattr);
+        dotty.keys.edges = [];
+    ];
+    node = gt.graph.nodes[nid];
+    if (~attr)
+        attr = [];
+    if (~attr.label)
+        attr.label = '\N';
+    for (aid in attr)
+        node.attr[aid] = attr[aid];
+    gt.unpacknodeattr (gt, node);
+    if (~pos)
+        pos = ['x' = 10; 'y' = 10;];
+    node[dotty.keys.pos] = copy (pos);
+    if (~size)
+        size = ['x' = strlen (attr.label) * 30; 'y' = 30;];
+    if (size.x == 0)
+        size.x = 30;
+    node[dotty.keys.size] = copy (size);
+    if (show)
+        gt.drawnode (gt, gt.views, node);
+    if (~gt.noundo) {
+        gt.startadd2undo (gt);
+        gt.currundo.inserted.nodes[nid] = node;
+        gt.endadd2undo (gt);
+    }
+    return node;
+};
+\end{verbatim}
+}
+
+{\LEFTY} uses {\DOT} (running as a separate process) to compute the layouts.
+{\tt dotfd} is an io channel to a {\DOT} process.
+
+\vbox{
+\begin{verbatim}
+...
+writegraph (dotfd, graph, 1);
+if (~(g = readgraph (dotfd))) {
+    ...
+}
+...
+\end{verbatim}
+}
+
+Figure~\ref{figdag} shows a sample DAG.
+
+\begin{figure}[htb]
+\centerline{\hbox{
+{\epsfxsize=2.5in \epsfysize=1.6in \epsffile{figs/figdag.ps}}
+}}
+\caption{A Directed Acyclic Graph}
+\label{figdag}
+\end{figure}
+
+{\DOTTY} itself has become the basis for further customizations
+\cite{dotty-guide}.
+%\cite{dotty-guide-tm}.

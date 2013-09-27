@@ -1,0 +1,14 @@
+digraph G {
+        graph [color=white,URL="default.html"]
+	node [color=palegreen,style=filled,URL="\N.html"];
+	edge [URL="edge.html"]
+
+	a [shape=polygon,sides=5,peripheries=3]
+	b
+	c [shape=polygon,sides=4,skew=.4]
+	d [shape=invtriangle]
+	e [shape=polygon,sides=4,distortion=.7]
+
+	a -> b -> c;
+	b -> d;
+}

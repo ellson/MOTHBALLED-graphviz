@@ -1,0 +1,63 @@
+#!/bin/sh
+# next line is a comment in tcl \
+exec tclsh "$0" ${1+"$@"}
+
+package require Tcldot
+
+set GDSCALE [expr 96.0/72.0]
+
+# gdtest - display a .gv file as a png using xv - ellson@graphviz.org 
+#
+# Usage: gdtest <file.gv>
+#
+# This script demonstrates the use of additional gd commands 
+
+# find a .gv file
+if {[llength $argv] == 0} {
+    puts "No .gv file specified. Assuming demo."
+    set argv "data/poly.gv"
+}
+if {[llength $argv] > 1} {puts "Too many args."; exit}
+if {[catch {open $argv r} f]} {puts "unable to open .gv file"; exit}
+set g [dotread $f]
+close $f
+
+# layout the graph (generate positional information)
+$g layout
+
+# find out actual size of graph
+scan [$g queryattr bb] "{%d %d %d %d}" ulx uly lrx lry
+set sizex [expr int(($lrx + $ulx)*$GDSCALE)]
+set sizey [expr int(($lry + $uly)*$GDSCALE)]
+
+# create image with extra space in lower right corner
+set gd [gd create [expr $sizex+20] [expr $sizey+9]]
+
+# set some colors
+set transparent [gd color new $gd 254 254 254]
+gd color transparent $gd $transparent
+set black [gd color new $gd 0 0 0]
+set blue [gd color new $gd 128 128 255]
+
+# add a background
+if {! [catch {open data/background.png r} f]} {
+    gd tile $gd [gd createFromPNG $f]
+    close $f
+    gd fill $gd tiled 0 0
+}
+
+# add a signature
+gd fillpolygon $gd $blue [expr $sizex - 20] [expr $sizey + 9] \
+                         [expr $sizex - 20] [expr $sizey - 3] \
+                         [expr $sizex - 16] [expr $sizey - 7] \
+		  	 [expr $sizex + 20] [expr $sizey - 7] \
+		  	 [expr $sizex + 20] [expr $sizey + 9]
+gd text $gd $black /usr/local/share/ttf/Times.ttf 8 0 [expr $sizex - 16] [expr $sizey + 4] "TclDot"
+ 
+# render graph
+$g rendergd $gd
+
+# display using xv
+if {[catch {open "| xv -" w} f]} {puts "unable to open output pipe to xv"; exit}
+gd writeGIF $gd $f
+close $f

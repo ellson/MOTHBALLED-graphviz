@@ -1,0 +1,4 @@
+digraph G {
+ node [style=filled,shape=plaintext];
+ plaintext;
+}

@@ -1,0 +1,5 @@
+digraph G {
+ node [style=filled,shape=invtriangle];
+ node [label=""];
+ invtriangle;
+}

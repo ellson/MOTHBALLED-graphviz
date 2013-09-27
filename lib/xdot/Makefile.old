@@ -1,0 +1,34 @@
+all:	libxdot.a
+ROOT=../..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
+
+INCS =  -I. \
+	    -I$(ROOT)
+
+DEFINES = -DHAVE_CONFIG_H
+
+HDRS = xdot.h
+
+OBJS = xdot.o
+
+libxdot.a : $(OBJS)
+	$(RM) libxdot.a
+	$(AR) cr libxdot.a $(OBJS)
+	$(RANLIB) libxdot.a
+
+install: libxdot.a 
+	$(MKPATH) $(INCDIR)
+	$(INSTALL) xdot.h $(INCDIR)
+	$(MKPATH) $(LIBDIR)
+	$(INSTALL) libxdot.a $(LIBDIR)
+	$(MKPATH) $(LIBMANDIR)
+	$(INSTALL) xdot.3 $(LIBMANDIR)
+
+xdot.o : xdot.h
+
+clean:
+	$(RM) core *.o
+
+distclean: clean
+	$(RM) *.a

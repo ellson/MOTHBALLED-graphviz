@@ -1,0 +1,121 @@
+\begin{verbatim}
+load ('def.lefty');
+definit ();
+# data structures
+#
+sitesnum = 0;
+sites = [];
+lines = [];
+canvas = defcanvas;
+wrect = [0 = ['x' = 0; 'y' = 0;]; 1 = ['x' = 400; 'y' = 500;];];
+setwidgetattr (canvas, ['window' = wrect;]);
+triedfd = openio ('pipe', 'tried', 'w+', '%e %i %o');
+
+# drawing functions
+#
+redraw = function (id) {
+    local i, j, rect, s;
+    rect = [];
+    clear (canvas);
+    for (i in lines) {
+        for (j in lines[i]) {
+            s = lines[i][j];
+            line (canvas, null, ['x' = s.f.point.x; 'y' = s.f.point.y;],
+                    ['x' = s.l.point.x; 'y' = s.l.point.y;]);
+        }
+    }
+    for (i = 0; i < sitesnum; i = i + 1) {
+        rect[0] = [
+            'x' = sites[i].point.x - 5; 'y' = sites[i].point.y - 5;
+        ];
+        rect[1] = [
+            'x' = sites[i].point.x + 5; 'y' = sites[i].point.y + 5;
+        ];
+        box (canvas, sites[i], rect);
+    }
+};
+
+# editing functions
+#
+insert = function (point) {
+    local s;
+    sites[sitesnum].num = sitesnum;
+    sites[sitesnum].point = point;
+    writeline (triedfd,
+            concat ('new ', sitesnum, ' ', point.x, ' ', point.y));
+    sitesnum = sitesnum + 1;
+    while ((s = readline (triedfd)) ~= '')
+        run (s);
+    box (canvas, sites[sitesnum - 1],
+            [0 = ['x' = point.x - 5; 'y' = point.y - 5;];
+             1 = ['x' = point.x + 5; 'y' = point.y + 5;];
+            ]);
+};
+mv = function (node, point) {
+    local i;
+    box (canvas, node, [
+            0 = ['x' = node.point.x - 5; 'y' = node.point.y - 5;];
+            1 = ['x' = node.point.x + 5; 'y' = node.point.y + 5;];
+            ], ['color' = 0;]);
+    clearpick (canvas, node);
+    for (i = 0; i < sitesnum; i = i + 1) {
+        if (lines[i][node.num])
+            delline (i, node.num);
+        if (lines[node.num][i])
+            delline (node.num, i);
+    }
+    node.point = point;
+    writeline (triedfd,
+            concat ('mv ', node.num, ' ', point.x, ' ', point.y));
+    while ((s = readline (triedfd)) ~= '')
+        run (s);
+    box (canvas, node, [
+            0 = ['x' = point.x - 5; 'y' = point.y - 5;];
+            1 = ['x' = point.x + 5; 'y' = point.y + 5;];
+            ]);
+};
+insline = function (i, j) {
+    lines[i][j].f = sites[i];
+    lines[i][j].l = sites[j];
+    line (canvas, null,
+            ['x' = sites[i].point.x; 'y' = sites[i].point.y;],
+            ['x' = sites[j].point.x; 'y' = sites[j].point.y;]);
+};
+delline = function (i, j) {
+    remove (j, lines[i]);
+    if (tablesize (lines[i]) == 0)
+        remove (i, lines);
+    line (canvas, null,
+            ['x' = sites[i].point.x; 'y' = sites[i].point.y;],
+            ['x' = sites[j].point.x; 'y' = sites[j].point.y;],
+            ['color' = 0;]);
+};
+
+# user interface functions
+#
+leftdown = function (data) {
+    if (~data.obj)
+        insert (data.pos);
+};
+leftmove = function (data) {
+    if (data.obj)
+        mv (data.obj, data.pos);
+};
+keydown = function (data) {
+    redraw (0);
+};
+dops = function () {
+    local r;
+
+    r = [0 = ['x' = 0; 'y' = 0;]; 1 = ['x' = 8 * 300; 'y' = 10.5 * 300;];];
+    canvas = createwidget (-1, [
+        'type' = 'ps';
+        'origin' = r[0];
+        'size' = r[1];
+    ]);
+    setwidgetattr (canvas, ['window' = wrect;]);
+    redraw (0);
+    destroywidget (canvas);
+    canvas=defcanvas;
+};
+\end{verbatim}

@@ -1,0 +1,10 @@
+digraph G {
+	graph [rankdir=RL];
+	node [label="\N"];
+	graph [label="this is a graph",
+		lp="72,12",
+		bb="0,0,144,60"];
+	a [pos="117,42", width="0.75", height="0.50"];
+	b [pos="27,42", width="0.75", height="0.50"];
+	a -> b [pos="e,54,42 90,42 82,42 73,42 64,42"];
+}

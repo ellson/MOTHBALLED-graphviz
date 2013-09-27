@@ -1,0 +1,109 @@
+digraph class_hierarchy {
+	graph [size="8.5,11", fontsize=14, fontname="Times-Roman", fontcolor=black, color=black];
+	node [label="\N", fontsize=14, fontname="Times-Roman", fontcolor=black, shape=ellipse, color=black];
+	edge [fontsize=14, fontname="Times-Roman", fontcolor=black, color=black];
+	graph [bb="0,0,2320,1608"];
+	"\<base-output\>" [label="{ \<base-output\> | { Ivars | Public } | { { output-name | output-title } | { active? | aseek-end-sequence | aseek-got-one-right\
+ | aseek-got-one-wrong | aseek-start-msg | create-link | destroy-link | done-init-supervisors | get-name | get-title | initializ\
+e | initialize-coderack | print@level | ready-to-guess-about-to-submit | reset | seek-declares-guess | shutdown | start-init-env\
+ironment | start-init-supervisors | update-views | workspace-seeded } } }", shape=record, pos="591,1260", rects="452,1512,730,1536 452,1488,586,1512 586,1488,730,1512 452,1236,538,1488 452,984,538,1236 538,1464,730,1488 538,1440,730,1464 538\
+,1416,730,1440 538,1392,730,1416 538,1368,730,1392 538,1344,730,1368 538,1320,730,1344 538,1296,730,1320 538,1272,730,1296 538,1\
+248,730,1272 538,1224,730,1248 538,1200,730,1224 538,1176,730,1200 538,1152,730,1176 538,1128,730,1152 538,1104,730,1128 538,108\
+0,730,1104 538,1056,730,1080 538,1032,730,1056 538,1008,730,1032 538,984,730,1008", width="3.86", height="7.67"];
+	"\<dangler\>" [label="{ \<dangler\> | { Ivars | Public } | { { children | name | parent | position } | { get-children | get-name | get-parent | get-po\
+sition | set-name! | set-position! } } }", shape=record, pos="871,1260", rects="798,1332,945,1356 798,1308,867,1332 867,1308,945,1332 798,1272,860,1308 798,1236,860,1272 798,1200,860,1236 798,1164,860,1200 86\
+0,1284,945,1308 860,1260,945,1284 860,1236,945,1260 860,1212,945,1236 860,1188,945,1212 860,1164,945,1188", width="2.03", height="2.67"];
+	"\<replace-dangler\>" [label="{ \<replace-dangler\> | { Ivars | Public } | { { by } | { gen-descriptor | init | run } } }", shape=record, pos="812,708", rects="748,744,876,768 748,720,807,744 807,720,876,744 748,648,779,720 779,696,876,720 779,672,876,696 779,648,876,672", width="1.78", height="1.67"];
+	"\<doubler-dangler\>" [label="{ \<doubler-dangler\> | { Ivars | Public } | { { result | spent } | { gen-descriptor | init | run } } }", shape=record, pos="966,708", rects="894,744,1039,768 894,720,962,744 962,720,1039,744 894,684,942,720 894,648,942,684 942,696,1039,720 942,672,1039,696 942,648,1039\
+,672", width="2.00", height="1.67"];
+	"\<seek-diagram\>" [label="{ \<seek-diagram\> | { Ivars | Protected | Public } | { { descriptor | diagram | dotgraph | dotoutput | graph | origdescriptor }\
+ | { eval-dangler | eval-descriptor } | { destroy | eval-dangler | eval-descriptor | gen-dotgraph | get-descriptor | get-diagram\
+ | get-dotgraph | get-dotoutput | get-graph | get-range | init | node-ref | print | reset | run! | runn! | stringify | update-de\
+scriptor | update-graph } } }", shape=record, pos="1116,1260", rects="962,1488,1271,1512 962,1464,1053,1488 1053,1464,1170,1488 1170,1464,1271,1488 962,1388,1056,1464 962,1312,1056,1388 962,1236,105\
+6,1312 962,1160,1056,1236 962,1084,1056,1160 962,1008,1056,1084 1056,1236,1156,1464 1056,1008,1156,1236 1156,1440,1271,1464 1156\
+,1416,1271,1440 1156,1392,1271,1416 1156,1368,1271,1392 1156,1344,1271,1368 1156,1320,1271,1344 1156,1296,1271,1320 1156,1272,12\
+71,1296 1156,1248,1271,1272 1156,1224,1271,1248 1156,1200,1271,1224 1156,1176,1271,1200 1156,1152,1271,1176 1156,1128,1271,1152 \
+1156,1104,1271,1128 1156,1080,1271,1104 1156,1056,1271,1080 1156,1032,1271,1056 1156,1008,1271,1032", width="4.28", height="7.00"];
+	"\<diagram-node\>" [label="{ \<diagram-node\> | { Ivars | Protected | Public } | { { children | current-danglers | danglers | in-run | name | output-tag | \
+parent | position | title | unique-name } | { run-danglers } | { add-danglers! | gen-descriptor | gen-dotgraph | gen-node-descri\
+ptor | get-children | get-danglers | get-name | get-parent | get-position | get-title | get-unique-name | init | reset | run! | \
+set-position! } } }", shape=record, pos="1449,1260", rects="1288,1440,1610,1464 1288,1416,1383,1440 1383,1416,1505,1440 1505,1416,1610,1440 1288,1380,1395,1416 1288,1344,1395,1380 1288,130\
+8,1395,1344 1288,1272,1395,1308 1288,1236,1395,1272 1288,1200,1395,1236 1288,1164,1395,1200 1288,1128,1395,1164 1288,1092,1395,1\
+128 1288,1056,1395,1092 1395,1056,1482,1416 1482,1392,1610,1416 1482,1368,1610,1392 1482,1344,1610,1368 1482,1320,1610,1344 1482\
+,1296,1610,1320 1482,1272,1610,1296 1482,1248,1610,1272 1482,1224,1610,1248 1482,1200,1610,1224 1482,1176,1610,1200 1482,1152,16\
+10,1176 1482,1128,1610,1152 1482,1104,1610,1128 1482,1080,1610,1104 1482,1056,1610,1080", width="4.47", height="5.67"];
+	"\<countup-node\>" [label="{ \<countup-node\> | { Ivars | Public } | { { curnum | firsttime | spent } | { init | run-node! } } }", shape=record, pos="1123,708", rects="1056,744,1190,768 1056,720,1118,744 1118,720,1190,744 1056,696,1119,720 1056,672,1119,696 1056,648,1119,672 1119,684,1190,720 11\
+19,648,1190,684", width="1.86", height="1.67"];
+	"\<constant-node\>" [label="{ \<constant-node\> | { Ivars | Public } | { { num | spent } | { gen-node-descriptor | init | run-node! } } }", shape=record, pos="1295,708", rects="1208,744,1382,768 1208,720,1290,744 1290,720,1382,744 1208,684,1254,720 1208,648,1254,684 1254,696,1382,720 1254,672,1382,696 12\
+54,648,1382,672", width="2.42", height="1.67"];
+	"\<repeat-node\>" [label="{ \<repeat-node\> | { Public } | { { init | run-node! } } }", shape=record, pos="1449,708", rects="1400,732,1498,756 1400,708,1498,732 1400,684,1498,708 1400,660,1498,684", width="1.36", height="1.33"];
+	"\<cycle-node\>" [label="{ \<cycle-node\> | { Ivars | Public } | { { current-children | spent } | { init | reset | run-node! } } }", shape=record, pos="1604,708", rects="1516,744,1692,768 1516,720,1599,744 1599,720,1692,744 1516,684,1621,720 1516,648,1621,684 1621,696,1692,720 1621,672,1692,696 16\
+21,648,1692,672", width="2.44", height="1.67"];
+	"\<tuple-node\>" [label="{ \<tuple-node\> | { Ivars | Public } | { { current-children } | { init | reset | run-node! } } }", shape=record, pos="1798,708", rects="1710,744,1886,768 1710,720,1793,744 1793,720,1886,744 1710,648,1815,720 1815,696,1886,720 1815,672,1886,696 1815,648,1886,672", width="2.44", height="1.67"];
+	"\<dot-thread\>" [label="{ \<dot-thread\> | { Ivars | Public } | { { gifbuffer | inp | outp | prcss } | { close | init-file | init-gif | init-plain | pro\
+cess-str | process-str-\>gif | send-str } } }", shape=record, pos="1712,1260", rects="1628,1344,1797,1368 1628,1320,1708,1344 1708,1320,1797,1344 1628,1278,1692,1320 1628,1236,1692,1278 1628,1194,1692,1236 1628,115\
+2,1692,1194 1692,1296,1797,1320 1692,1272,1797,1296 1692,1248,1797,1272 1692,1224,1797,1248 1692,1200,1797,1224 1692,1176,1797,1\
+200 1692,1152,1797,1176", width="2.33", height="3.00"];
+	"\<graphics-output\>" [label="{ \<graphics-output\> | { Ivars | Protected | Public } | { { active | conceptnet-view | diagram-view | lastrendered-sequence | o\
+utput-name | output-title | seektext-view | sequence | workspace-view } | { place-windows } | { active? | aseek-end-sequence | a\
+seek-got-one-right | aseek-got-one-wrong | aseek-start-msg | create-link | destroy-link | get-name | get-title | get-workspace-v\
+iew | initialize | pop-sequence | ready-to-guess-about-to-submit | reset | seek-declares-guess | shutdown | update-views | works\
+pace-seeded } } }", shape=record, pos="217,708", rects="0,924,434,948 0,900,133,924 133,900,292,924 292,900,434,924 0,852,140,900 0,804,140,852 0,756,140,804 0,708,140,756 0,660,140,70\
+8 0,612,140,660 0,564,140,612 0,516,140,564 0,468,140,516 140,468,242,900 242,876,434,900 242,852,434,876 242,828,434,852 242,80\
+4,434,828 242,780,434,804 242,756,434,780 242,732,434,756 242,708,434,732 242,684,434,708 242,660,434,684 242,636,434,660 242,61\
+2,434,636 242,588,434,612 242,564,434,588 242,540,434,564 242,516,434,540 242,492,434,516 242,468,434,492", width="6.03", height="6.67"];
+	"\<text-output\>" [label="{ \<text-output\> | { Ivars | Public } | { { output-name | output-title } | { active? | aseek-end-sequence | aseek-got-one-right\
+ | aseek-got-one-wrong | aseek-start-msg | done-init-supervisors | get-name | get-title | print@level | ready-to-guess-about-to-\
+submit | seek-declares-guess | start-init-supervisors } } }", shape=record, pos="591,708", rects="452,852,730,876 452,828,586,852 586,828,730,852 452,684,538,828 452,540,538,684 538,804,730,828 538,780,730,804 538,756,730,780 \
+538,732,730,756 538,708,730,732 538,684,730,708 538,660,730,684 538,636,730,660 538,612,730,636 538,588,730,612 538,564,730,588 \
+538,540,730,564", width="3.86", height="4.67"];
+	"\<seekstructure\>" [label="{ \<seekstructure\> | { Ivars | Public } | { { flex-info | happiness | name | salience } | { get-flex-info | get-happiness | get\
+-name | get-salience | get-type | init | set-flex-info! | set-happiness! | set-name! | set-salience! | stringify | type? } } }", shape=record, pos="1988,708", rects="1904,852,2072,876 1904,828,1983,852 1983,828,2072,852 1904,756,1976,828 1904,684,1976,756 1904,612,1976,684 1904,540,1976,612 19\
+76,804,2072,828 1976,780,2072,804 1976,756,2072,780 1976,732,2072,756 1976,708,2072,732 1976,684,2072,708 1976,660,2072,684 1976\
+,636,2072,660 1976,612,2072,636 1976,588,2072,612 1976,564,2072,588 1976,540,2072,564", width="2.33", height="4.67"];
+	"\<link\>" [label="{ \<link\> | { Ivars | Public } | { { directed? | from | to } | { get-directed? | get-from | get-to | get-type | init | set-dire\
+cted?! | set-from! | set-to! | stringify | type? } } }", shape=record, pos="1833,216", rects="1754,336,1913,360 1754,312,1829,336 1829,312,1913,336 1754,232,1821,312 1754,152,1821,232 1754,72,1821,152 1821,288,1913,312 182\
+1,264,1913,288 1821,240,1913,264 1821,216,1913,240 1821,192,1913,216 1821,168,1913,192 1821,144,1913,168 1821,120,1913,144 1821,\
+96,1913,120 1821,72,1913,96", width="2.19", height="4.00"];
+	"\<group\>" [label="{ \<group\> | { Ivars | Public } | { { from | items | ordered? | to } | { get-directed? | get-from | get-to | init | set-directe\
+d?! | set-from! | set-to! | stringify | type? } } }", shape=record, pos="2008,216", rects="1930,324,2087,348 1930,300,2004,324 2004,300,2087,324 1930,246,1995,300 1930,192,1995,246 1930,138,1995,192 1930,84,1995,138 199\
+5,276,2087,300 1995,252,2087,276 1995,228,2087,252 1995,204,2087,228 1995,180,2087,204 1995,156,2087,180 1995,132,2087,156 1995,\
+108,2087,132 1995,84,2087,108", width="2.17", height="3.67"];
+	"\<seekobject\>" [label="{ \<seekobject\> | { Ivars | Public } | { { groups-in | links-from | links-to | output-tag | serialization | tags } | { get-grou\
+ps-in | get-links-from | get-links-to | get-output-tag | get-type | init | marshal | print | set-groups-in! | set-links-from! | \
+set-links-to! | set-output-tag! | stringify | type? } } }", shape=record, pos="1988,1260", rects="1897,1428,2079,1452 1897,1404,1983,1428 1983,1404,2079,1428 1897,1348,1981,1404 1897,1292,1981,1348 1897,1236,1981,1292 1897,118\
+0,1981,1236 1897,1124,1981,1180 1897,1068,1981,1124 1981,1380,2079,1404 1981,1356,2079,1380 1981,1332,2079,1356 1981,1308,2079,1\
+332 1981,1284,2079,1308 1981,1260,2079,1284 1981,1236,2079,1260 1981,1212,2079,1236 1981,1188,2079,1212 1981,1164,2079,1188 1981\
+,1140,2079,1164 1981,1116,2079,1140 1981,1092,2079,1116 1981,1068,2079,1092", width="2.53", height="5.33"];
+	"\<numentry\>" [label="{ \<numentry\> | { Ivars | Public } | { { number | numspace-links | salience } | { get-number | get-numspace-links | get-salienc\
+e | get-type | init | set-number! | set-numspace-links! | set-salience! | stringify | type? } } }", shape=record, pos="2205,708", rects="2090,828,2321,852 2090,804,2201,828 2201,804,2321,828 2090,724,2194,804 2090,644,2194,724 2090,564,2194,644 2194,780,2321,804 21\
+94,756,2321,780 2194,732,2321,756 2194,708,2321,732 2194,684,2321,708 2194,660,2321,684 2194,636,2321,660 2194,612,2321,636 2194\
+,588,2321,612 2194,564,2321,588", width="3.19", height="4.00"];
+	"\<seqentry\>" [label="{ \<seqentry\> | { Ivars | Public } | { { ghost? | happiness | left | pos | right } | { get-ghost? | get-left | get-length | get\
+-pos | get-right | get-sequence | get-tags | get-type | init | set-ghost?! | set-left! | set-pos! | set-right! | set-tags! | str\
+ingify | type? } } }", shape=record, pos="2205,216", rects="2125,408,2286,432 2125,384,2201,408 2201,384,2286,408 2125,308,2197,384 2125,231,2197,308 2125,154,2197,231 2125,77,2197,154 212\
+5,0,2197,77 2197,360,2286,384 2197,336,2286,360 2197,312,2286,336 2197,288,2286,312 2197,264,2286,288 2197,240,2286,264 2197,216\
+,2286,240 2197,192,2286,216 2197,168,2286,192 2197,144,2286,168 2197,120,2286,144 2197,96,2286,120 2197,72,2286,96 2197,48,2286,\
+72 2197,24,2286,48 2197,0,2286,24", width="2.22", height="6.00"];
+	"\<base\>" [pos="1282,1590", width="0.94", height="0.50"];
+	"\<base\>" -> "\<base-output\>" [pos="e,730,1536 1248,1589 1140,1583 810,1567 739,1540"];
+	"\<base\>" -> "\<dangler\>" [pos="e,871,1356 1248,1589 1171,1586 989,1575 945,1536 898,1493 879,1424 872,1366"];
+	"\<dangler\>" -> "\<replace-dangler\>" [pos="e,818,768 861,1164 849,1054 830,877 819,778"];
+	"\<dangler\>" -> "\<doubler-dangler\>" [pos="e,956,768 888,1164 906,1054 937,876 954,778"];
+	"\<base\>" -> "\<seek-diagram\>" [pos="e,1243,1512 1273,1572 1267,1560 1258,1542 1248,1521"];
+	"\<base\>" -> "\<diagram-node\>" [pos="e,1346,1464 1291,1572 1301,1551 1320,1514 1341,1473"];
+	"\<diagram-node\>" -> "\<countup-node\>" [pos="e,1125,768 1352,1056 1333,1029 1312,1004 1288,984 1252,954 1221,982 1190,948 1147,902 1131,831 1126,778"];
+	"\<diagram-node\>" -> "\<constant-node\>" [pos="e,1312,768 1392,1056 1364,958 1334,848 1315,778"];
+	"\<diagram-node\>" -> "\<repeat-node\>" [pos="e,1449,756 1449,1056 1449,952 1449,835 1449,766"];
+	"\<diagram-node\>" -> "\<cycle-node\>" [pos="e,1587,768 1506,1056 1534,958 1565,848 1584,778"];
+	"\<diagram-node\>" -> "\<tuple-node\>" [pos="e,1790,768 1545,1056 1564,1029 1585,1004 1610,984 1646,953 1676,981 1710,948 1755,902 1777,831 1788,778"];
+	"\<base\>" -> "\<dot-thread\>" [pos="e,1706,1368 1316,1589 1394,1587 1582,1576 1628,1536 1672,1496 1694,1434 1704,1378"];
+	"\<base-output\>" -> "\<graphics-output\>" [pos="e,427,948 452,984 446,975 440,965 433,956"];
+	"\<base\>" -> "\<seekobject\>" [pos="e,1957,1452 1316,1589 1438,1586 1851,1572 1897,1536 1921,1516 1939,1490 1953,1461"];
+	"\<seekobject\>" -> "\<numentry\>" [pos="e,2135,852 2048,1068 2058,1039 2068,1011 2079,984 2095,944 2113,901 2131,861"];
+	"\<numentry\>" -> "\<seqentry\>" [pos="e,2205,432 2205,564 2205,526 2205,484 2205,442"];
+	"\<base-output\>" -> "\<text-output\>" [pos="e,591,876 591,984 591,951 591,917 591,886"];
+	"\<seekobject\>" -> "\<seekstructure\>" [pos="e,1988,876 1988,1068 1988,1008 1988,944 1988,886"];
+	"\<seekstructure\>" -> "\<link\>" [pos="e,1878,360 1935,540 1918,484 1898,424 1881,370"];
+	"\<seekstructure\>" -> "\<group\>" [pos="e,2003,348 1995,540 1998,481 2000,415 2002,358"];
+}

@@ -1,0 +1,7 @@
+- color schemes not working ?
+- graph jumps out of bounding box when entering topfish mode
+- zooming hard to control via mouse wheel - viewer appears to lag then
+	tries to process old events
+- make install doesn't install some share file for GUI
+- it appears there may be two copies of smyrna.glade in the source
+- settings window doesn't apply until a subsequent refresh is forced by another action

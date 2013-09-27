@@ -1,0 +1,11 @@
+--- config/ltmain.sh.orig	2004-07-05 23:30:16.000000000 -0400
++++ config/ltmain.sh	2004-07-20 09:20:52.980481383 -0400
+@@ -77,7 +77,7 @@
+ default_mode=
+ help="Try \`$progname --help' for more information."
+ magic="%%%MAGIC variable%%%"
+-mkdir="mkdir"
++mkdir="mkdir -p"
+ mv="mv -f"
+ rm="rm -f"
+ 

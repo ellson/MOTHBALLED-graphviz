@@ -1,0 +1,65 @@
+\documentstyle[11pt,draft,titlepage]{report}
+\input{epsf}
+% \epsfverbosetrue
+
+\catcode`@=11
+\def\@makechapterhead#1{
+    {
+        \parindent \z@ \raggedright \reset@font
+        \ifnum \c@secnumdepth >\m@ne
+            \Large\bfseries \@chapapp{} \thechapter . #1
+            \par\nobreak
+            \vskip 20\p@
+        \fi
+        \interlinepenalty\@M
+    }
+}
+\catcode`@=12
+
+\newcommand{\DOT}{{\sl dot}}
+\newcommand{\LEFTY}{{\sl lefty}}
+\newcommand{\DOTTY}{{\sl dotty}}
+
+\title{Editing Pictures with {\LEFTY}}
+\author{Eleftherios Koutsofios}
+\newcommand{\lastedited}{96c (09-24-96)}
+\date{\lastedited}
+
+\renewcommand{\textfraction}{0.01}
+\setlength\oddsidemargin{0.00pt}
+\setlength\evensidemargin{0.00pt}
+\setlength{\topmargin}{0pt}
+\setlength{\headheight}{0pt}
+\setlength{\headsep}{0pt}
+%\setlength{\footheight}{0pt}
+%\setlength{\footskip}{0pt}
+\setlength{\textheight}{8.5in}
+\setlength{\textwidth}{6.5in}
+\begin{document}
+\maketitle
+\begin{abstract}
+{\LEFTY} is a two-view graphics editor for technical pictures. This editor has
+no hardwired knowledge about specific picture layouts or editing operations.
+Each picture is described by a program that contains functions to draw the
+picture and functions to perform editing operations that are appropriate for
+the specific picture. Primitive user actions, like mouse and keyboard events,
+are also bound to functions in this program. Besides the graphical view of the
+picture itself, the editor presents a textual view of the program that
+describes the picture. Programmability and the two-view interface allow the
+editor to handle a variety of pictures, but are particularly useful for
+pictures used in technical contexts, e.g., graphs and trees. Also, {\LEFTY} can
+communicate with other processes. This feature allows it to use existing tools
+to compute specific picture layouts and allows external processes to use the
+editor as a front end to display their data structures graphically. The figure
+below shows a typical snapshot of {\LEFTY} in use. The editor has been
+programmed to edit delaunay triangulations. The window on the left shows the
+actual picture.  The user can use the mouse to insert or move cites and the
+triangulation is kept up to date by the editor (which uses an external process
+to compute the triangulation).  The window on the right shows the program view
+of the picture.
+
+\vspace{0.1in}
+\centerline{\hbox{\epsfxsize=5.5in \epsffile{figs/lefty.ps}}}
+\end{abstract}
+
+\bibliographystyle{alpha}

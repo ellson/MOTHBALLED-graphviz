@@ -1,0 +1,38 @@
+\documentclass[11pt]{article}
+\usepackage{graphicx}
+\usepackage{times}
+\usepackage{verbatim}
+\usepackage{url}
+\pagestyle{myheadings}
+\addtolength{\topmargin}{-0.75in}
+
+\author{Arif Bilgin and Emden R. Gansner}
+
+\def\smyrna{{\it smyrna}}
+\def\gvpr{{\it gvpr}}
+\def\DOT{{\it DOT}}
+\renewcommand{\date}{\today}
+\newcommand{\mymark}{{\it smyrna} User's Manual, \date \hfil }
+\markboth{\mymark}{\mymark}
+
+\begin{document}
+\bibliographystyle{alpha}
+\title{Viewing graphs with \smyrna}
+\maketitle
+\newpage
+\tableofcontents
+
+\newpage
+\input{intro}
+\input{using}
+\input{controls}
+\input{attributes}
+
+\appendix
+\clearpage
+\input{gui} 
+
+\bibliography{../dotguide/graphdraw}
+
+\end{document}
+

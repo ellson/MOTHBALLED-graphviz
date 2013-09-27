@@ -1,0 +1,90 @@
+#!/bin/sh
+# next line is a comment in tcl \
+exec wish "$0" ${1+"$@"}
+
+package require Tkspline
+package require Tcldot
+
+# disp - display a .gv file - John.Ellson@att.com 
+#
+# Usage: disp <file.gv>
+#
+# disp displays the graph in a canvas widget.  Clicking on a node, edge,
+#   or the background will list the attributes of that object to stdout.
+
+# scrollEnter - as the mouse moves over an object change its shading
+proc scrollEnter {c} {
+    upvar #0 tk_library tk_library saveFill saveFill
+    set item [string range [lindex [$c gettags current] 0] 1 end]
+    set saveFill [lindex [$c itemconfigure 1$item -fill] 4]
+    $c itemconfigure 1$item -fill black \
+	-stipple @$tk_library/demos/images/gray25.bmp
+}
+
+# scrollLeave - as the mouse moves out of an object restore its shading
+proc scrollLeave {c} {
+    upvar #0 saveFill  saveFill
+    set item [string range [lindex [$c gettags current] 0] 1 end]
+    $c itemconfigure 1$item -fill $saveFill -stipple {}
+}
+
+# select - if the mouse is currently over an object and button 1
+#  is pressed then print out its attributes to stdout
+proc select {c} {
+    upvar #0 g g
+    set item [string range [lindex [$c gettags current] 0] 1 end]
+    if {$item == ""} {set item $g}
+    puts [set name [$item showname]]
+    foreach attr [$item listattr] {
+        set val [lindex [$item queryattr $attr] 0]
+        # support dot's "\N" = name substitution in labels and URLS
+        if {"$attr" == "label" || "$attr" == "URL"} {
+	    regsub -all {\\N} $val $name val
+        }
+        puts "    $attr = $val"
+    }
+}
+
+# load a .gv file and render the graph to a canvas widget
+proc load {c} {
+    upvar #0 g g argc argc argv argv saveFill saveFill
+
+    set saveFill ""
+    catch {$g delete}
+    $c delete all
+
+    if {$argc == 0} {
+	puts "No .gv file specified. Assuming poly.gv demo."
+	set argv "data/poly.gv"
+    }
+    if {[llength $argv] > 1} {puts "Too many args."; exit}
+    if {[catch {open $argv r} f]} {puts "unable to open .gv file"; exit}
+    set g [dotread $f]
+    close $f
+    
+    $g layout
+    
+    eval [$g render]
+    
+    # size the window to match the bounding box of the graph layout
+    scan [$g queryattr bb] "{%d %d %d %d}" ulx uly lrx lry
+    $c configure -height [expr $lry + $uly]]p -width [expr $lrx + $ulx]p
+    
+    wm minsize . 100 100
+}
+
+# set up widgets and bindings and load initial file
+set c [canvas .c -highlightthickness 0]
+pack $c -expand 1 -fill both -side top
+pack [frame .tb] -expand 1 -fill x -side bottom
+
+pack [button .tb.b1 -highlightthickness 0 -command "load $c" -text reload] \
+    [button .tb.b2 -highlightthickness 0 -command exit -text quit] \
+    -side left -fill x -expand 1
+
+$c bind all <Any-Enter> "scrollEnter $c"
+$c bind all <Any-Leave> "scrollLeave $c"
+
+bind $c <1> "select $c"
+
+load $c

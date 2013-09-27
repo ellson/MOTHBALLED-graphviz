@@ -1,0 +1,185 @@
+digraph "UML Graph"
+{
+	label="UML Graph";
+	rankdir="TD";
+	/* size="11, 7" */
+	/* size="7, 11" */
+	/* rotate="90" */
+
+	node [shape="record", fontname="Helvetica", style="filled"];
+
+	edge [color="black", dir="back"];
+
+	class_dot_DotStringAttr [
+		label="{class DotStringAttr\n|DotStringAttr (String, String)\l|void write (StringBuffer)\l|String _key\lString _value\l}",
+		color="green4",
+		fontname="Helvetica-Bold"];
+	tri_class_dot_DotStringAttr [
+		label="",
+		shape="triangle"];
+	class_dot_DotColorAttr [
+		label="{class DotColorAttr\n|DotColorAttr (String)\l||}",
+		color="green4",
+		fontname="Helvetica-Bold"];
+	class_dot_DotGraphRotateAttr [
+		label="{class DotGraphRotateAttr\n|DotGraphRotateAttr (int)\l|void write (StringBuffer)\l|DotStringAttr _angle\l}",
+		color="green4",
+		fontname="Helvetica-Bold"];
+	class_dot_DotLabelAttr [
+		label="{class DotLabelAttr\n|DotLabelAttr (String)\l||}",
+		color="green4",
+		fontname="Helvetica-Bold"];
+	class_dot_DotNode [
+		label="{class DotNode\n|DotNode (String, String, DotNodeAttr[])\lDotNode (String, DotNodeAttr[])\l|void write (StringBuffer)\l|String _name\lString _label\lDotNodeAttr[] _attrs\l}",
+		color="green4",
+		fontname="Helvetica-Bold"];
+	class_dot_DotEdgeAttr [
+		label="{interface DotEdgeAttr\n||}",
+		color="yellow3",
+		fontname="Helvetica"];
+	tri_class_dot_DotEdgeAttr [
+		label="",
+		shape="triangle"];
+	class_dot_DotAttrNames [
+		label="{interface DotAttrNames\n||static String RANKDIR\lstatic String RATIO\lstatic String SIZE\lstatic String ROTATE\lstatic String COLOR\lstatic String FONTCOLOR\lstatic String FONTNAME\lstatic String FONTSIZE\lstatic String LABEL\lstatic String SHAPE\lstatic String STYLE\lstatic String DIR\lstatic String WEIGHT\l}",
+		color="yellow3",
+		fontname="Helvetica"];
+	tri_class_dot_DotAttrNames [
+		label="",
+		shape="triangle"];
+	class_dot_DotGraph [
+		label="{class DotGraph\n|DotGraph (String, String, DotGraphAttr[], DotNodeAttr[], DotEdgeAttr[])\lDotGraph (String, String, DotNodeAttr[], DotEdgeAttr[])\lDotGraph (String, String)\l|DotCluster get_cluster (String, String)\lDotCluster get_cluster (String)\lDotCluster get_cluster ()\lvoid add_cluster (DotCluster)\lvoid add_edge (String, String)\lvoid add_edge (String, String, DotEdgeAttr[])\lvoid write ()\lvoid write_clusters (PrintWriter)\lvoid write_intro (PrintWriter)\lvoid write_edges (PrintWriter)\lstatic void write_extro (PrintWriter)\l|String _title\lString _filename\lDotEdgeAttr[] _edge_defaults\lDotGraphAttr[] _graph_defaults\lVector _clusters\lVector _edges\l}",
+		color="green4",
+		fontname="Helvetica-Bold"];
+	class_dot_DotAttributes [
+		label="{interface DotAttributes\n||static DotGraphAttr GRAPH_TD\lstatic DotGraphAttr GRAPH_LR\lstatic DotGraphAttr GRAPH_FILL\lstatic DotGraphAttr GRAPH_A4_LANDSCAPE\lstatic DotGraphAttr GRAPH_A4_PORTRAIT\lstatic DotGraphAttr GRAPH_ROTATE_90\lstatic DotGraphAttr GRAPH_ROTATE_180\lstatic DotNodeAttr NODE_BLUE\lstatic DotNodeAttr NODE_BLUE1\lstatic DotNodeAttr NODE_BLUE2\lstatic DotNodeAttr NODE_BLUE3\lstatic DotNodeAttr NODE_BLUE4\lstatic DotNodeAttr NODE_GREEN\lstatic DotNodeAttr NODE_GREEN1\lstatic DotNodeAttr NODE_GREEN2\lstatic DotNodeAttr NODE_GREEN3\lstatic DotNodeAttr NODE_GREEN4\lstatic DotNodeAttr NODE_RED\lstatic DotNodeAttr NODE_RED1\lstatic DotNodeAttr NODE_RED2\lstatic DotNodeAttr NODE_RED3\lstatic DotNodeAttr NODE_RED4\lstatic DotNodeAttr NODE_YELLOW\lstatic DotNodeAttr NODE_YELLOW1\lstatic DotNodeAttr NODE_YELLOW2\lstatic DotNodeAttr NODE_YELLOW3\lstatic DotNodeAttr NODE_YELLOW4\lstatic DotNodeAttr NODE_WHITE\lstatic DotNodeAttr NODE_ORANGE\lstatic DotNodeAttr NODE_BLACK\lstatic DotNodeAttr NODE_GREY\lstatic DotNodeAttr NODE_LBLUE\lstatic DotNodeAttr NODE_LYELLOW\lstatic DotNodeAttr NODE_LGREY\lstatic DotNodeAttr NODE_BOLD\lstatic DotNodeAttr NODE_NORMAL\lstatic DotNodeAttr NODE_RECORD\lstatic DotNodeAttr NODE_TRIANGLE\lstatic DotNodeAttr NODE_CIRCLE\lstatic DotNodeAttr NODE_ELLIPSE\lstatic DotNodeAttr NODE_FILLED\lstatic DotEdgeAttr EDGE_NORMAL\lstatic DotEdgeAttr EDGE_BOLD\lstatic DotEdgeAttr EDGE_DOTTED\lstatic DotEdgeAttr EDGE_BLUE\lstatic DotEdgeAttr EDGE_BLUE1\lstatic DotEdgeAttr EDGE_BLUE2\lstatic DotEdgeAttr EDGE_BLUE3\lstatic DotEdgeAttr EDGE_BLUE4\lstatic DotEdgeAttr EDGE_GREEN1\lstatic DotEdgeAttr EDGE_GREEN2\lstatic DotEdgeAttr EDGE_GREEN3\lstatic DotEdgeAttr EDGE_GREEN4\lstatic DotEdgeAttr EDGE_GREEN\lstatic DotEdgeAttr EDGE_RED\lstatic DotEdgeAttr EDGE_RED1\lstatic DotEdgeAttr EDGE_RED2\lstatic DotEdgeAttr EDGE_RED3\lstatic DotEdgeAttr EDGE_RED4\lstatic DotEdgeAttr EDGE_YELLOW\lstatic DotEdgeAttr EDGE_YELLOW1\lstatic DotEdgeAttr EDGE_YELLOW2\lstatic DotEdgeAttr EDGE_YELLOW3\lstatic DotEdgeAttr EDGE_YELLOW4\lstatic DotEdgeAttr EDGE_WHITE\lstatic DotEdgeAttr EDGE_ORANGE\lstatic DotEdgeAttr EDGE_BLACK\lstatic DotEdgeAttr EDGE_GREY\lstatic DotEdgeAttr EDGE_LGREY\lstatic DotEdgeAttr EDGE_BACK\lstatic DotEdgeAttr EDGE_NONE\lstatic DotEdgeAttr EDGE_BOTH\l}",
+		color="yellow3",
+		fontname="Helvetica"];
+	tri_class_dot_DotAttributes [
+		label="",
+		shape="triangle"];
+	class_dot_DotCommentedAttr [
+		label="{class DotCommentedAttr\n|DotCommentedAttr (DotAttr)\l|void write (StringBuffer)\l|DotAttr _attr\l}",
+		color="green4",
+		fontname="Helvetica-Bold"];
+	class_dot_DotCluster [
+		label="{class DotCluster\n|DotCluster (DotNodeAttr[], String, String)\lDotCluster (DotNodeAttr[], String)\lDotCluster (DotNodeAttr[])\l|void add_node (String, String)\lvoid add_node (String, String, DotNodeAttr[])\lvoid add_node (String, DotNodeAttr[])\lvoid write (PrintWriter)\lvoid write_nodes (PrintWriter)\l|String _name\lString _label\lVector _nodes\lDotNodeAttr[] _node_defaults\l}",
+		color="green4",
+		fontname="Helvetica-Bold"];
+	tri_class_dot_DotCluster [
+		label="",
+		shape="triangle"];
+	class_example_SimpleGraph [
+		label="{class SimpleGraph\n|SimpleGraph ()\l|static void main (String[])\l|static DotGraphAttr[] GRAPH_DEFAULT\lstatic DotNodeAttr[] NODE_DEFAULT\lstatic DotNodeAttr[] RED_NODE\lstatic DotEdgeAttr[] EDGE_DEFAULT\l}",
+		color="green4",
+		fontname="Helvetica-Bold"];
+	class_dot_DotGraphSizeAttr [
+		label="{class DotGraphSizeAttr\n|DotGraphSizeAttr (int, int)\l|void write (StringBuffer)\l|DotStringAttr _size\l}",
+		color="green4",
+		fontname="Helvetica-Bold"];
+	class_dot_DotEdge [
+		label="{class DotEdge\n|DotEdge (String, String, DotEdgeAttr[])\l|void write (StringBuffer)\l|String _from\lString _to\lDotEdgeAttr[] _attrs\l}",
+		color="green4",
+		fontname="Helvetica-Bold"];
+	class_dot_DotGraphAttr [
+		label="{interface DotGraphAttr\n||}",
+		color="yellow3",
+		fontname="Helvetica"];
+	tri_class_dot_DotGraphAttr [
+		label="",
+		shape="triangle"];
+	class_dot_DotAttrValues [
+		label="{interface DotAttrValues\n||static String TOP_DOWN\lstatic String LEFT_RIGHT\lstatic String FILL\lstatic String STYLE_NORMAL\lstatic String STYLE_BOLD\lstatic String STYLE_DOTTED\lstatic String STYLE_FILLED\lstatic String SHAPE_RECORD\lstatic String SHAPE_ELLIPSE\lstatic String SHAPE_CIRCLE\lstatic String SHAPE_TRIANGLE\lstatic String DIR_BACK\lstatic String DIR_NONE\lstatic String DIR_BOTH\l}",
+		color="yellow3",
+		fontname="Helvetica"];
+	tri_class_dot_DotAttrValues [
+		label="",
+		shape="triangle"];
+	class_dot_DotNodeAttr [
+		label="{interface DotNodeAttr\n||}",
+		color="yellow3",
+		fontname="Helvetica"];
+	tri_class_dot_DotNodeAttr [
+		label="",
+		shape="triangle"];
+	class_dot_DotAttr [
+		label="{interface DotAttr\n|static void write (StringBuffer)\l|}",
+		color="yellow3",
+		fontname="Helvetica"];
+	tri_class_dot_DotAttr [
+		label="",
+		shape="triangle"];
+	tri_class_java_lang_Object [
+		label="java.lang.Object",
+		shape="record"];
+	class_dot_DotStringAttr -> tri_class_dot_DotStringAttr [
+		color="black"];
+	tri_class_dot_DotNodeAttr -> class_dot_DotStringAttr [
+		style="dotted"];
+	tri_class_dot_DotEdgeAttr -> class_dot_DotStringAttr [
+		style="dotted"];
+	tri_class_dot_DotGraphAttr -> class_dot_DotStringAttr [
+		style="dotted"];
+	tri_class_dot_DotStringAttr -> class_dot_DotColorAttr [
+		color="black"];
+	tri_class_dot_DotGraphAttr -> class_dot_DotGraphRotateAttr [
+		style="dotted"];
+	tri_class_dot_DotStringAttr -> class_dot_DotLabelAttr [
+		color="black"];
+	tri_class_java_lang_Object -> class_dot_DotNode [
+		color="black"];
+	class_dot_DotEdgeAttr -> tri_class_dot_DotEdgeAttr [
+		style="dotted"];
+	tri_class_dot_DotAttr -> class_dot_DotEdgeAttr [
+		style="dotted"];
+	class_dot_DotAttrNames -> tri_class_dot_DotAttrNames [
+		style="dotted"];
+	tri_class_java_lang_Object -> class_dot_DotAttrNames [
+		color="black"];
+	tri_class_dot_DotCluster -> class_dot_DotGraph [
+		color="black"];
+	class_dot_DotAttributes -> tri_class_dot_DotAttributes [
+		style="dotted"];
+	tri_class_dot_DotAttrNames -> class_dot_DotAttributes [
+		style="dotted"];
+	tri_class_dot_DotAttrValues -> class_dot_DotAttributes [
+		style="dotted"];
+	tri_class_dot_DotNodeAttr -> class_dot_DotCommentedAttr [
+		style="dotted"];
+	tri_class_dot_DotEdgeAttr -> class_dot_DotCommentedAttr [
+		style="dotted"];
+	tri_class_dot_DotGraphAttr -> class_dot_DotCommentedAttr [
+		style="dotted"];
+	class_dot_DotCluster -> tri_class_dot_DotCluster [
+		color="black"];
+	tri_class_java_lang_Object -> class_dot_DotCluster [
+		color="black"];
+	tri_class_dot_DotAttributes -> class_example_SimpleGraph [
+		style="dotted"];
+	tri_class_dot_DotAttrNames -> class_example_SimpleGraph [
+		style="dotted"];
+	tri_class_dot_DotAttrValues -> class_example_SimpleGraph [
+		style="dotted"];
+	tri_class_dot_DotGraphAttr -> class_dot_DotGraphSizeAttr [
+		style="dotted"];
+	tri_class_java_lang_Object -> class_dot_DotEdge [
+		color="black"];
+	class_dot_DotGraphAttr -> tri_class_dot_DotGraphAttr [
+		style="dotted"];
+	tri_class_dot_DotAttr -> class_dot_DotGraphAttr [
+		style="dotted"];
+	class_dot_DotAttrValues -> tri_class_dot_DotAttrValues [
+		style="dotted"];
+	tri_class_java_lang_Object -> class_dot_DotAttrValues [
+		color="black"];
+	class_dot_DotNodeAttr -> tri_class_dot_DotNodeAttr [
+		style="dotted"];
+	tri_class_dot_DotAttr -> class_dot_DotNodeAttr [
+		style="dotted"];
+	class_dot_DotAttr -> tri_class_dot_DotAttr [
+		style="dotted"];
+	tri_class_dot_DotAttrNames -> class_dot_DotAttr [
+		style="dotted"];
+	tri_class_dot_DotAttrValues -> class_dot_DotAttr [
+		style="dotted"];
+}

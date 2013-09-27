@@ -1,0 +1,15 @@
+These files were obtained from:
+
+x11:	rgb.txt
+		xorg-x11-server-utils-7.4-3.fc10.x86_64.rpm
+			/usr/share/X11/rgb.txt
+
+svg:	types.html
+		http://www.w3.org/TR/SVG/types.html
+
+	brewer_color : ?
+
+tk:	xcolors.c
+		tk-8.5.3-4.fc10.src.rpm
+			tk8.5.3/xlib/xcolors.c
+	

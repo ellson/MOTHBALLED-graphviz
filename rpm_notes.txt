@@ -1,0 +1,28 @@
+The following packages are known to depend on or use graphviz:
+
+Requires
+	webdot
+	doxygen
+	R
+	ImageMagick
+	anjuta
+
+Require - but just use dot's stdin/stdout simplisticly
+	perl-GraphViz
+	perl-Graph-Writer-GraphViz
+	perl-Graph-SocialMap
+	rpmDirectoryCheck,
+	k3d
+
+BuildRequires only (doxygen, graphviz)
+	libxml++
+	icu
+	taglib 
+	koffice 
+	bakery
+	cppunit
+	jrtplib
+	libburn
+	QuantLib
+	rapidsvn
+

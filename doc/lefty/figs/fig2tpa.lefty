@@ -1,0 +1,6 @@
+load ('fractal.lefty');
+maxlevel = 4;
+drawfractal ();
+length = 350;
+radius = 2 * length / sqrt (12);
+dops ();

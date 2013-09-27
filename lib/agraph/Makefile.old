@@ -1,0 +1,53 @@
+
+LIBNAME = libagraph.a
+
+all:	$(LIBNAME)
+
+ROOT=../..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
+
+INCS =	-I. -I../cdt -I$(ROOT)
+
+DEFINES = -DHAVE_CONFIG_H
+
+OBJS = apply.o attr.o edge.o agerror.o flatten.o \
+	grammar.o graph.o id.o imap.o io.o mem.o \
+	node.o obj.o pend.o rec.o refstr.o scan.o \
+	subg.o utils.o write.o
+
+$(LIBNAME): $(OBJS)
+	$(AR) cr $(LIBNAME) $(OBJS)
+	$(RANLIB) $(LIBNAME)
+
+# this is a home-made tool
+# trie.c : trie_input
+#	triegen  < trie_input > trie.c
+
+lexer.o : grammar.o
+
+grammar.c : grammar.y
+	$(YACC) -dv grammar.y
+	$(SED) "s/yy/aag/g" < y.tab.c > grammar.c
+	$(SED) "s/yy/aag/g" < y.tab.h > grammar.h
+	$(RM) y.tab.c y.tab.h
+
+scan.c : scan.l
+	$(FLEX) -i scan.l
+	$(SED) "s/yy/aag/g" < lex.yy.c > scan.c
+	$(RM) lex.yy.c
+
+install: $(LIBNAME)
+	$(MKPATH) $(LIBDIR)
+	$(INSTALL) $(LIBNAME) $(LIBDIR)
+#	$(SHLIB_LD) -o $(LIBDIR)/libagraph.so.$(VERSION) $(OBJS)
+	$(MKPATH) $(INCDIR)
+	$(INSTALL) agraph.h $(INCDIR)
+	$(MKPATH) $(LIBMANDIR)
+	$(INSTALL) agraph.3 $(LIBMANDIR)
+
+clean:
+	$(RM) *.o core grammar.[ch] scan.c
+
+distclean: clean
+	$(RM) *.a lib*.so.*

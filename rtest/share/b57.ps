@@ -1,0 +1,2138 @@
+%!PS-Adobe-2.0
+%%Creator: dot version 2.9.20060407.0440 (Fri Apr  7 07:41:14 GMT 2006)
+%%For: (ellson) John Ellson,[north]
+%%Title: process
+%%Pages: (atend)
+%%BoundingBox: (atend)
+%%EndComments
+save
+%%BeginProlog
+/DotDict 200 dict def
+DotDict begin
+
+/setupLatin1 {
+mark
+/EncodingVector 256 array def
+ EncodingVector 0
+
+ISOLatin1Encoding 0 255 getinterval putinterval
+EncodingVector 45 /hyphen put
+
+% Set up ISO Latin 1 character encoding
+/starnetISO {
+        dup dup findfont dup length dict begin
+        { 1 index /FID ne { def }{ pop pop } ifelse
+        } forall
+        /Encoding EncodingVector def
+        currentdict end definefont
+} def
+/Times-Roman starnetISO def
+/Times-Italic starnetISO def
+/Times-Bold starnetISO def
+/Times-BoldItalic starnetISO def
+/Helvetica starnetISO def
+/Helvetica-Oblique starnetISO def
+/Helvetica-Bold starnetISO def
+/Helvetica-BoldOblique starnetISO def
+/Courier starnetISO def
+/Courier-Oblique starnetISO def
+/Courier-Bold starnetISO def
+/Courier-BoldOblique starnetISO def
+cleartomark
+} bind def
+
+%%BeginResource: procset graphviz 0 0
+/coord-font-family /Times-Roman def
+/default-font-family /Times-Roman def
+/coordfont coord-font-family findfont 8 scalefont def
+
+/InvScaleFactor 1.0 def
+/set_scale {
+	dup 1 exch div /InvScaleFactor exch def
+	dup scale
+} bind def
+
+% styles
+/solid { [] 0 setdash } bind def
+/dashed { [9 InvScaleFactor mul dup ] 0 setdash } bind def
+/dotted { [1 InvScaleFactor mul 6 InvScaleFactor mul] 0 setdash } bind def
+/invis {/fill {newpath} def /stroke {newpath} def /show {pop newpath} def} bind def
+/bold { 2 setlinewidth } bind def
+/filled { } bind def
+/unfilled { } bind def
+/rounded { } bind def
+/diagonals { } bind def
+
+% hooks for setting color 
+/nodecolor { sethsbcolor } bind def
+/edgecolor { sethsbcolor } bind def
+/graphcolor { sethsbcolor } bind def
+/nopcolor {pop pop pop} bind def
+
+/beginpage {	% i j npages
+	/npages exch def
+	/j exch def
+	/i exch def
+	/str 10 string def
+	npages 1 gt {
+		gsave
+			coordfont setfont
+			0 0 moveto
+			(\() show i str cvs show (,) show j str cvs show (\)) show
+		grestore
+	} if
+} bind def
+
+/set_font {
+	findfont exch
+	scalefont setfont
+} def
+
+% draw aligned label in bounding box aligned to current point
+/alignedtext {			% width adj text
+	/text exch def
+	/adj exch def
+	/width exch def
+	gsave
+		width 0 gt {
+			text stringwidth pop adj mul 0 rmoveto
+		} if
+		[] 0 setdash
+		text show
+	grestore
+} def
+
+/boxprim {				% xcorner ycorner xsize ysize
+		4 2 roll
+		moveto
+		2 copy
+		exch 0 rlineto
+		0 exch rlineto
+		pop neg 0 rlineto
+		closepath
+} bind def
+
+/ellipse_path {
+	/ry exch def
+	/rx exch def
+	/y exch def
+	/x exch def
+	matrix currentmatrix
+	newpath
+	x y translate
+	rx ry scale
+	0 0 1 0 360 arc
+	setmatrix
+} bind def
+
+/endpage { showpage } bind def
+/showpage { } def
+
+/layercolorseq
+	[	% layer color sequence - darkest to lightest
+		[0 0 0]
+		[.2 .8 .8]
+		[.4 .8 .8]
+		[.6 .8 .8]
+		[.8 .8 .8]
+	]
+def
+
+/layerlen layercolorseq length def
+
+/setlayer {/maxlayer exch def /curlayer exch def
+	layercolorseq curlayer 1 sub layerlen mod get
+	aload pop sethsbcolor
+	/nodecolor {nopcolor} def
+	/edgecolor {nopcolor} def
+	/graphcolor {nopcolor} def
+} bind def
+
+/onlayer { curlayer ne {invis} if } def
+
+/onlayers {
+	/myupper exch def
+	/mylower exch def
+	curlayer mylower lt
+	curlayer myupper gt
+	or
+	{invis} if
+} def
+
+/curlayer 0 def
+
+%%EndResource
+%%EndProlog
+%%BeginSetup
+14 default-font-family set_font
+1 setmiterlimit
+% /arrowlength 10 def
+% /arrowwidth 5 def
+
+% make sure pdfmark is harmless for PS-interpreters other than Distiller
+/pdfmark where {pop} {userdict /pdfmark /cleartomark load put} ifelse
+% make '<<' and '>>' safe on PS Level 1 devices
+/languagelevel where {pop languagelevel}{1} ifelse
+2 lt {
+    userdict (<<) cvn ([) cvn load put
+    userdict (>>) cvn ([) cvn load put
+} if
+
+%%EndSetup
+%%Page: 1 1
+%%PageBoundingBox: 36 36 5138 545
+%%PageOrientation: Portrait
+gsave
+36 36 5138 545 boxprim clip newpath
+36 36 translate
+0 0 1 beginpage
+1.0000 set_scale
+4 4 translate 0 rotate
+0.000 0.000 1.000 graphcolor
+0.000 0.000 1.000 graphcolor
+newpath -6 -6 moveto
+-6 507 lineto
+5100 507 lineto
+5100 -6 lineto
+closepath
+fill
+0.000 0.000 1.000 graphcolor
+newpath -6 -6 moveto
+-6 507 lineto
+5100 507 lineto
+5100 -6 lineto
+closepath
+stroke
+0.000 0.000 0.000 graphcolor
+14.00 /Arial-Bold set_font
+% node1
+gsave 10 dict begin
+filled
+0.769 0.867 0.941 nodecolor
+0.769 0.867 0.941 nodecolor
+79 216 78 18 ellipse_path
+fill
+0.769 0.867 0.941 nodecolor
+gsave 10 dict begin
+0.000 0.000 1.000 nodecolor
+13 213 moveto
+(1 - Subscription page)
+[7.68 3.84 4.56 3.84 9.36 7.68 7.68 6.96 6.96 4.56 3.12 7.68 3.84 3.12 7.68 7.68 3.84 7.68 7.68 7.68 7.68]
+xshow
+end grestore
+end grestore
+% node2
+gsave 10 dict begin
+solid
+newpath 223 244 moveto
+303 244 lineto
+303 292 lineto
+223 292 lineto
+closepath
+stroke
+gsave 10 dict begin
+231 277 moveto
+(Popup)
+[8.88 7.68 7.68 7.68 7.68]
+xshow
+end grestore
+newpath 279 268 moveto
+279 292 lineto
+stroke
+gsave 10 dict begin
+291 277 moveto 8.0 -0.5 (2) alignedtext
+end grestore
+newpath 223 268 moveto
+303 268 lineto
+stroke
+gsave 10 dict begin
+232 253 moveto
+(Drops out)
+[10.08 4.56 7.68 7.68 6.96 3.84 7.68 7.68 3.84]
+xshow
+end grestore
+end grestore
+% node1->node2
+newpath 129 230 moveto
+158 238 195 249 223 257 curveto
+stroke
+% node20
+gsave 10 dict begin
+filled
+0.769 0.867 0.941 nodecolor
+0.769 0.867 0.941 nodecolor
+newpath 196 138 moveto
+330 138 lineto
+330 186 lineto
+196 186 lineto
+closepath
+fill
+0.769 0.867 0.941 nodecolor
+newpath 196 138 moveto
+330 138 lineto
+330 186 lineto
+196 186 lineto
+closepath
+stroke
+gsave 10 dict begin
+0.000 0.000 1.000 nodecolor
+226 171 moveto 5.0 -0.5 ( ) alignedtext
+end grestore
+newpath 257 162 moveto
+257 186 lineto
+stroke
+gsave 10 dict begin
+0.000 0.000 1.000 nodecolor
+285 171 moveto
+(20)
+[7.68 7.68]
+xshow
+end grestore
+newpath 196 162 moveto
+330 162 lineto
+stroke
+gsave 10 dict begin
+0.000 0.000 1.000 nodecolor
+204 147 moveto
+(Honey subscription)
+[10.08 7.68 7.68 7.44 6.96 3.84 6.96 7.68 7.68 6.96 6.96 4.56 3.12 7.68 3.84 3.12 7.68 7.68]
+xshow
+end grestore
+end grestore
+% node1->node20
+newpath 127 202 moveto
+148 196 173 189 196 182 curveto
+stroke
+% node3
+gsave 10 dict begin
+solid
+453 268 83 18 ellipse_path
+stroke
+gsave 10 dict begin
+383 265 moveto
+(3 - Subscription Popup)
+[7.68 3.84 4.56 3.84 9.36 7.68 7.68 6.96 6.96 4.56 3.12 7.68 3.84 3.12 7.68 7.68 3.84 8.88 7.68 7.68 7.68 7.68]
+xshow
+end grestore
+end grestore
+% node2->node3
+newpath 303 268 moveto
+319 268 340 268 360 268 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 360 272 moveto
+370 268 lineto
+360 265 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 360 272 moveto
+370 268 lineto
+360 265 lineto
+closepath
+stroke
+end grestore
+% node4
+gsave 10 dict begin
+solid
+newpath 593 244 moveto
+723 244 lineto
+723 292 lineto
+593 292 lineto
+closepath
+stroke
+gsave 10 dict begin
+614 277 moveto
+(Form)
+[8.4 7.68 4.56 11.76]
+xshow
+end grestore
+newpath 670 268 moveto
+670 292 lineto
+stroke
+gsave 10 dict begin
+696 277 moveto 8.0 -0.5 (4) alignedtext
+end grestore
+newpath 593 268 moveto
+723 268 lineto
+stroke
+gsave 10 dict begin
+601 253 moveto
+(Signup news letter)
+[9.36 3.12 7.68 7.68 7.68 7.68 3.84 7.68 7.44 10.08 6.96 3.84 3.12 7.44 3.84 3.6 7.68 4.56]
+xshow
+end grestore
+end grestore
+% node3->node4
+newpath 536 268 moveto
+555 268 575 268 593 268 curveto
+stroke
+% node5
+gsave 10 dict begin
+solid
+904 328 102 18 ellipse_path
+stroke
+gsave 10 dict begin
+814 325 moveto
+(5 - Signup submitted \(output\))
+[7.68 3.84 4.56 3.84 9.36 3.12 7.68 7.68 7.68 7.68 3.84 6.96 7.68 7.68 11.76 3.12 3.84 3.6 7.68 7.68 3.84 4.56 7.68 7.68 3.84 7.68 7.68 3.84 4.56]
+xshow
+end grestore
+end grestore
+% node4->node5
+newpath 723 284 moveto
+757 292 799 303 833 311 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 833 314 moveto
+843 313 lineto
+834 308 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 833 314 moveto
+843 313 lineto
+834 308 lineto
+closepath
+stroke
+end grestore
+% node8
+gsave 10 dict begin
+solid
+904 268 100 18 ellipse_path
+stroke
+gsave 10 dict begin
+817 265 moveto
+(8 - Signup submitted \(email\))
+[7.68 3.84 4.56 3.84 9.36 3.12 7.68 7.68 7.68 7.68 3.84 6.96 7.68 7.68 11.76 3.12 3.84 3.6 7.68 7.68 3.84 4.56 7.68 11.76 7.68 3.12 3.12 4.56]
+xshow
+end grestore
+end grestore
+% node4->node8
+newpath 723 268 moveto
+745 268 770 268 794 268 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 794 272 moveto
+804 268 lineto
+794 265 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 794 272 moveto
+804 268 lineto
+794 265 lineto
+closepath
+stroke
+end grestore
+% node6
+gsave 10 dict begin
+solid
+newpath 1069 310 moveto
+1196 310 lineto
+1196 358 lineto
+1069 358 lineto
+closepath
+stroke
+gsave 10 dict begin
+1088 343 moveto
+(Output)
+[10.8 7.68 3.84 7.68 7.68 3.84]
+xshow
+end grestore
+newpath 1149 334 moveto
+1149 358 lineto
+stroke
+gsave 10 dict begin
+1172 343 moveto 8.0 -0.5 (6) alignedtext
+end grestore
+newpath 1069 334 moveto
+1196 334 lineto
+stroke
+gsave 10 dict begin
+1076 319 moveto
+(Thanks for signup)
+[8.64 7.68 7.68 7.68 6.96 6.96 3.84 3.6 7.68 4.56 3.84 6.96 3.12 7.68 7.68 7.68 7.68]
+xshow
+end grestore
+end grestore
+% node5->node6
+newpath 1006 331 moveto
+1027 331 1049 332 1069 332 curveto
+stroke
+% node9
+gsave 10 dict begin
+solid
+newpath 1078 244 moveto
+1187 244 lineto
+1187 292 lineto
+1078 292 lineto
+closepath
+stroke
+gsave 10 dict begin
+1090 277 moveto
+(Timeout)
+[8.64 3.12 11.76 7.68 7.68 7.68 3.84]
+xshow
+end grestore
+newpath 1154 268 moveto
+1154 292 lineto
+stroke
+gsave 10 dict begin
+1170 277 moveto 8.0 -0.5 (9) alignedtext
+end grestore
+newpath 1078 268 moveto
+1187 268 lineto
+stroke
+gsave 10 dict begin
+1085 253 moveto
+(Signup timeout)
+[9.36 3.12 7.68 7.68 7.68 7.68 3.84 3.84 3.12 11.76 7.68 7.68 7.68 3.84]
+xshow
+end grestore
+end grestore
+% node8->node9
+newpath 1004 268 moveto
+1029 268 1056 268 1078 268 curveto
+stroke
+% node7
+gsave 10 dict begin
+filled
+0.000 0.000 0.000 nodecolor
+1328 334 79 18 ellipse_path
+fill
+0.000 0.000 0.000 nodecolor
+gsave 10 dict begin
+0.000 0.000 1.000 nodecolor
+1261 331 moveto
+(7 -   signup submitted)
+[7.68 3.84 4.56 3.84 3.84 3.84 6.96 3.12 7.68 7.68 7.68 7.68 3.84 6.96 7.68 7.68 11.76 3.12 3.84 3.6 7.68 7.68]
+xshow
+end grestore
+end grestore
+% node6->node7
+newpath 1196 334 moveto
+1210 334 1224 334 1238 334 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 1238 338 moveto
+1248 334 lineto
+1238 331 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 1238 338 moveto
+1248 334 lineto
+1238 331 lineto
+closepath
+stroke
+end grestore
+% node10
+gsave 10 dict begin
+solid
+1328 274 93 18 ellipse_path
+stroke
+gsave 10 dict begin
+1247 271 moveto
+(10 - Popup signup timeout)
+[6.72 7.68 3.84 4.56 3.84 8.88 7.68 7.68 7.68 7.68 3.84 6.96 3.12 7.68 7.68 7.68 7.68 3.84 3.84 3.12 11.76 7.68 7.68 7.68 3.84]
+xshow
+end grestore
+end grestore
+% node9->node10
+newpath 1187 270 moveto
+1199 270 1212 271 1225 271 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 1225 275 moveto
+1235 271 lineto
+1225 268 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 1225 275 moveto
+1235 271 lineto
+1225 268 lineto
+closepath
+stroke
+end grestore
+% node11
+gsave 10 dict begin
+solid
+newpath 1523 250 moveto
+1611 250 lineto
+1611 298 lineto
+1523 298 lineto
+closepath
+stroke
+gsave 10 dict begin
+1532 283 moveto
+(Email)
+[9.36 11.76 7.68 3.12 3.12]
+xshow
+end grestore
+newpath 1578 274 moveto
+1578 298 lineto
+stroke
+gsave 10 dict begin
+1587 283 moveto
+(11)
+[6 7.68]
+xshow
+end grestore
+newpath 1523 274 moveto
+1611 274 lineto
+stroke
+gsave 10 dict begin
+1531 259 moveto
+(Send Email)
+[9.36 7.68 7.68 7.68 3.84 9.36 11.76 7.68 3.12 3.12]
+xshow
+end grestore
+end grestore
+% node10->node11
+newpath 1422 274 moveto
+1457 274 1495 274 1523 274 curveto
+stroke
+% node12
+gsave 10 dict begin
+solid
+1991 341 81 18 ellipse_path
+stroke
+gsave 10 dict begin
+1923 338 moveto
+(12 - Popup Email sent)
+[6.72 7.68 3.84 4.56 3.84 8.88 7.68 7.68 7.68 7.68 3.84 9.36 11.76 7.68 3.12 3.12 3.84 6.96 7.68 7.68 3.84]
+xshow
+end grestore
+end grestore
+% node11->node12
+newpath 1611 281 moveto
+1683 293 1826 315 1915 329 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 1915 332 moveto
+1925 331 lineto
+1916 326 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 1915 332 moveto
+1925 331 lineto
+1916 326 lineto
+closepath
+stroke
+end grestore
+% node13
+gsave 10 dict begin
+solid
+newpath 2152 453 moveto
+2261 453 lineto
+2261 501 lineto
+2152 501 lineto
+closepath
+stroke
+gsave 10 dict begin
+2163 486 moveto
+(Bounce)
+[9.36 7.68 7.68 7.68 6.96 7.68]
+xshow
+end grestore
+newpath 2223 477 moveto
+2223 501 lineto
+stroke
+gsave 10 dict begin
+2234 486 moveto
+(13)
+[6.72 7.68]
+xshow
+end grestore
+newpath 2152 477 moveto
+2261 477 lineto
+stroke
+gsave 10 dict begin
+2159 462 moveto
+(Email bounced)
+[9.36 11.76 7.68 3.12 3.12 3.84 7.68 7.68 7.68 7.68 6.96 7.68 7.68]
+xshow
+end grestore
+end grestore
+% node12->node13
+newpath 2017 358 moveto
+2047 379 2100 414 2146 443 curveto
+2152 446 2158 450 2164 453 curveto
+stroke
+% node15
+gsave 10 dict begin
+solid
+newpath 2153 386 moveto
+2260 386 lineto
+2260 434 lineto
+2153 434 lineto
+closepath
+stroke
+gsave 10 dict begin
+2161 419 moveto
+(OptedOut)
+[10.8 7.68 3.6 7.68 7.68 10.8 7.68 3.84]
+xshow
+end grestore
+newpath 2229 410 moveto
+2229 434 lineto
+stroke
+gsave 10 dict begin
+2236 419 moveto
+(15)
+[6.72 7.68]
+xshow
+end grestore
+newpath 2153 410 moveto
+2260 410 lineto
+stroke
+gsave 10 dict begin
+2188 395 moveto
+(Email)
+[9.36 11.76 7.68 3.12 3.12]
+xshow
+end grestore
+end grestore
+% node12->node15
+newpath 2037 356 moveto
+2071 367 2117 382 2153 393 curveto
+stroke
+% node17
+gsave 10 dict begin
+solid
+newpath 2165 317 moveto
+2248 317 lineto
+2248 365 lineto
+2165 365 lineto
+closepath
+stroke
+gsave 10 dict begin
+2173 350 moveto
+(Click)
+[10.08 3.12 3.12 6.96 6.96]
+xshow
+end grestore
+newpath 2214 341 moveto
+2214 365 lineto
+stroke
+gsave 10 dict begin
+2223 350 moveto
+(17)
+[6.48 7.68]
+xshow
+end grestore
+newpath 2165 341 moveto
+2248 341 lineto
+stroke
+gsave 10 dict begin
+2172 326 moveto
+(Email click)
+[9.36 11.76 7.68 3.12 3.12 3.84 6.96 3.12 3.12 6.96 6.96]
+xshow
+end grestore
+end grestore
+% node12->node17
+newpath 2072 341 moveto
+2104 341 2139 341 2165 341 curveto
+stroke
+% node25
+gsave 10 dict begin
+solid
+newpath 2165 245 moveto
+2248 245 lineto
+2248 293 lineto
+2165 293 lineto
+closepath
+stroke
+gsave 10 dict begin
+2173 278 moveto
+(Click)
+[10.08 3.12 3.12 6.96 6.96]
+xshow
+end grestore
+newpath 2214 269 moveto
+2214 293 lineto
+stroke
+gsave 10 dict begin
+2223 278 moveto
+(25)
+[7.68 7.68]
+xshow
+end grestore
+newpath 2165 269 moveto
+2248 269 lineto
+stroke
+gsave 10 dict begin
+2172 254 moveto
+(Email click)
+[9.36 11.76 7.68 3.12 3.12 3.84 6.96 3.12 3.12 6.96 6.96]
+xshow
+end grestore
+end grestore
+% node12->node25
+newpath 2036 326 moveto
+2074 313 2128 295 2165 283 curveto
+stroke
+% node14
+gsave 10 dict begin
+filled
+0.000 0.000 0.000 nodecolor
+2826 478 94 18 ellipse_path
+fill
+0.000 0.000 0.000 nodecolor
+gsave 10 dict begin
+0.000 0.000 1.000 nodecolor
+2745 475 moveto
+(14 - Popup Email bounced)
+[6.48 7.68 3.84 4.56 3.84 8.88 7.68 7.68 7.68 7.68 3.84 9.36 11.76 7.68 3.12 3.12 3.84 7.68 7.68 7.68 7.68 6.96 7.68 7.68]
+xshow
+end grestore
+end grestore
+% node13->node14
+newpath 2261 477 moveto
+2364 477 2589 477 2722 478 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 2722 482 moveto
+2732 478 lineto
+2722 475 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 2722 482 moveto
+2732 478 lineto
+2722 475 lineto
+closepath
+stroke
+end grestore
+% node16
+gsave 10 dict begin
+filled
+0.000 0.000 0.000 nodecolor
+2826 424 69 18 ellipse_path
+fill
+0.000 0.000 0.000 nodecolor
+gsave 10 dict begin
+0.000 0.000 1.000 nodecolor
+2769 421 moveto
+(16 - Popup Email  )
+[6.72 7.68 3.84 4.56 3.84 8.88 7.68 7.68 7.68 7.68 3.84 9.36 11.76 7.68 3.12 3.12 3.84 3.84]
+xshow
+end grestore
+end grestore
+% node15->node16
+newpath 2260 411 moveto
+2370 414 2618 420 2746 422 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 2746 426 moveto
+2756 422 lineto
+2746 419 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 2746 426 moveto
+2756 422 lineto
+2746 419 lineto
+closepath
+stroke
+end grestore
+% node18
+gsave 10 dict begin
+solid
+2826 370 48 18 ellipse_path
+stroke
+gsave 10 dict begin
+2791 367 moveto
+(18 - Email  )
+[6.72 7.68 3.84 4.56 3.84 9.36 11.76 7.68 3.12 3.12 3.84 3.84]
+xshow
+end grestore
+end grestore
+% node17->node18
+newpath 2248 343 moveto
+2357 348 2645 361 2768 367 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 2768 370 moveto
+2778 368 lineto
+2768 364 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 2768 370 moveto
+2778 368 lineto
+2768 364 lineto
+closepath
+stroke
+end grestore
+% node22
+gsave 10 dict begin
+solid
+2826 316 69 18 ellipse_path
+stroke
+gsave 10 dict begin
+2769 313 moveto
+(22 - Email output  )
+[7.68 7.68 3.84 4.56 3.84 9.36 11.76 7.68 3.12 3.12 3.84 7.68 7.68 3.84 7.68 7.68 3.84 3.84 3.84]
+xshow
+end grestore
+end grestore
+% node17->node22
+newpath 2248 339 moveto
+2350 335 2614 325 2747 319 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 2747 323 moveto
+2757 319 lineto
+2747 316 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 2747 323 moveto
+2757 319 lineto
+2747 316 lineto
+closepath
+stroke
+end grestore
+% node19
+gsave 10 dict begin
+solid
+newpath 3000 355 moveto
+3054 355 lineto
+3054 403 lineto
+3000 403 lineto
+closepath
+stroke
+gsave 10 dict begin
+3011 388 moveto 5.0 -0.5 ( ) alignedtext
+end grestore
+newpath 3022 379 moveto
+3022 403 lineto
+stroke
+gsave 10 dict begin
+3030 388 moveto
+(19)
+[6.72 7.68]
+xshow
+end grestore
+newpath 3000 379 moveto
+3054 379 lineto
+stroke
+gsave 10 dict begin
+3009 364 moveto
+(Email)
+[9.36 11.76 7.68 3.12 3.12]
+xshow
+end grestore
+end grestore
+% node18->node19
+newpath 2874 372 moveto
+2913 374 2967 376 3000 378 curveto
+stroke
+% node23
+gsave 10 dict begin
+solid
+newpath 2979 289 moveto
+3076 289 lineto
+3076 337 lineto
+2979 337 lineto
+closepath
+stroke
+gsave 10 dict begin
+2988 322 moveto
+(Output)
+[10.8 7.68 3.84 7.68 7.68 3.84]
+xshow
+end grestore
+newpath 3040 313 moveto
+3040 337 lineto
+stroke
+gsave 10 dict begin
+3050 322 moveto
+(23)
+[7.68 7.68]
+xshow
+end grestore
+newpath 2979 313 moveto
+3076 313 lineto
+stroke
+gsave 10 dict begin
+2986 298 moveto
+(Output Email)
+[10.8 7.68 3.84 7.68 7.68 3.84 3.84 9.36 11.76 7.68 3.12 3.12]
+xshow
+end grestore
+end grestore
+% node22->node23
+newpath 2895 315 moveto
+2923 315 2954 314 2979 314 curveto
+stroke
+% node21
+gsave 10 dict begin
+filled
+0.000 0.000 0.000 nodecolor
+3221 379 65 18 ellipse_path
+fill
+0.000 0.000 0.000 nodecolor
+gsave 10 dict begin
+0.000 0.000 1.000 nodecolor
+3168 376 moveto
+(21 - Email   done)
+[7.2 7.68 3.84 4.56 3.84 9.36 11.76 7.68 3.12 3.12 3.84 3.84 3.84 7.68 7.68 7.68 7.68]
+xshow
+end grestore
+end grestore
+% node19->node21
+newpath 3054 379 moveto
+3077 379 3113 379 3145 379 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 3145 383 moveto
+3155 379 lineto
+3145 376 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 3145 383 moveto
+3155 379 lineto
+3145 376 lineto
+closepath
+stroke
+end grestore
+% node24
+gsave 10 dict begin
+filled
+0.000 0.000 0.000 nodecolor
+3221 313 86 18 ellipse_path
+fill
+0.000 0.000 0.000 nodecolor
+gsave 10 dict begin
+0.000 0.000 1.000 nodecolor
+3147 310 moveto
+(24 - Email output   done)
+[7.2 7.68 3.84 4.56 3.84 9.36 11.76 7.68 3.12 3.12 3.84 7.68 7.68 3.84 7.68 7.68 3.84 3.84 3.84 3.84 7.68 7.68 7.68 7.68]
+xshow
+end grestore
+end grestore
+% node23->node24
+newpath 3076 313 moveto
+3091 313 3107 313 3124 313 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 3124 317 moveto
+3134 313 lineto
+3124 310 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 3124 317 moveto
+3134 313 lineto
+3124 310 lineto
+closepath
+stroke
+end grestore
+% node26
+gsave 10 dict begin
+solid
+2826 262 89 18 ellipse_path
+stroke
+gsave 10 dict begin
+2749 259 moveto
+(26 - Popup Email clicked)
+[7.68 7.68 3.84 4.56 3.84 8.88 7.68 7.68 7.68 7.68 3.84 9.36 11.76 7.68 3.12 3.12 3.84 6.96 3.12 3.12 6.96 6.72 7.68 7.68]
+xshow
+end grestore
+end grestore
+% node25->node26
+newpath 2248 269 moveto
+2346 268 2589 265 2726 263 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 2726 267 moveto
+2736 263 lineto
+2726 260 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 2726 267 moveto
+2736 263 lineto
+2726 260 lineto
+closepath
+stroke
+end grestore
+% node27
+gsave 10 dict begin
+solid
+newpath 2977 215 moveto
+3078 215 lineto
+3078 263 lineto
+2977 263 lineto
+closepath
+stroke
+gsave 10 dict begin
+2985 248 moveto
+(Redirect)
+[9.84 7.68 7.68 3.12 4.32 7.68 6.96 3.84]
+xshow
+end grestore
+newpath 3045 239 moveto
+3045 263 lineto
+stroke
+gsave 10 dict begin
+3053 248 moveto
+(27)
+[7.44 7.68]
+xshow
+end grestore
+newpath 2977 239 moveto
+3078 239 lineto
+stroke
+gsave 10 dict begin
+2984 224 moveto
+(Email redirect)
+[9.36 11.76 7.68 3.12 3.12 3.84 4.32 7.68 7.68 3.12 4.32 7.68 6.96 3.84]
+xshow
+end grestore
+end grestore
+% node26->node27
+newpath 2904 253 moveto
+2928 250 2955 247 2977 245 curveto
+stroke
+% node27->node1
+newpath 2977 230 moveto
+2936 224 2878 217 2826 216 curveto
+263 216 263 216 263 216 curveto
+233 216 198 216 168 216 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 168 213 moveto
+158 216 lineto
+168 220 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 168 213 moveto
+158 216 lineto
+168 220 lineto
+closepath
+stroke
+end grestore
+% node28
+gsave 10 dict begin
+filled
+0.769 0.867 0.941 nodecolor
+0.769 0.867 0.941 nodecolor
+453 151 85 18 ellipse_path
+fill
+0.769 0.867 0.941 nodecolor
+gsave 10 dict begin
+0.000 0.000 1.000 nodecolor
+381 148 moveto
+(28 - Limbo subscription)
+[7.68 7.68 3.84 4.56 3.84 7.68 3.12 11.76 7.68 7.68 3.84 6.96 7.68 7.68 6.96 6.96 4.56 3.12 7.68 3.84 3.12 7.68 7.68]
+xshow
+end grestore
+end grestore
+% node20->node28
+newpath 330 158 moveto
+340 157 350 157 361 157 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 361 160 moveto
+371 156 lineto
+361 154 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 361 160 moveto
+371 156 lineto
+361 154 lineto
+closepath
+stroke
+end grestore
+% node29
+gsave 10 dict begin
+filled
+0.769 0.867 0.941 nodecolor
+0.769 0.867 0.941 nodecolor
+newpath 577 127 moveto
+740 127 lineto
+740 175 lineto
+577 175 lineto
+closepath
+fill
+0.769 0.867 0.941 nodecolor
+newpath 577 127 moveto
+740 127 lineto
+740 175 lineto
+577 175 lineto
+closepath
+stroke
+gsave 10 dict begin
+0.000 0.000 1.000 nodecolor
+596 160 moveto
+(Impression)
+[3.84 11.76 7.68 4.32 7.68 6.96 6.96 3.12 7.68 7.68]
+xshow
+end grestore
+newpath 684 151 moveto
+684 175 lineto
+stroke
+gsave 10 dict begin
+0.000 0.000 1.000 nodecolor
+704 160 moveto
+(29)
+[7.68 7.68]
+xshow
+end grestore
+newpath 577 151 moveto
+740 151 lineto
+stroke
+gsave 10 dict begin
+0.000 0.000 1.000 nodecolor
+584 136 moveto
+(Wait success confirmed)
+[12.72 7.68 3.12 3.84 3.84 6.96 7.68 6.96 6.96 7.68 6.96 6.96 3.84 6.96 7.68 7.68 3.84 3.12 4.56 11.76 7.68 7.68]
+xshow
+end grestore
+end grestore
+% node28->node29
+newpath 538 151 moveto
+551 151 564 151 577 151 curveto
+stroke
+% node46
+gsave 10 dict begin
+solid
+newpath 593 61 moveto
+723 61 lineto
+723 109 lineto
+593 109 lineto
+closepath
+stroke
+gsave 10 dict begin
+608 94 moveto
+(Timeout)
+[8.64 3.12 11.76 7.68 7.68 7.68 3.84]
+xshow
+end grestore
+newpath 675 85 moveto
+675 109 lineto
+stroke
+gsave 10 dict begin
+691 94 moveto
+(46)
+[7.68 7.68]
+xshow
+end grestore
+newpath 593 85 moveto
+723 85 lineto
+stroke
+gsave 10 dict begin
+601 70 moveto
+(Limbo sub timeout)
+[7.68 3.12 11.76 7.68 7.68 3.84 6.96 7.68 7.68 3.84 3.84 3.12 11.76 7.68 7.68 7.68 3.84]
+xshow
+end grestore
+end grestore
+% node28->node46
+newpath 500 136 moveto
+527 127 562 116 593 106 curveto
+stroke
+% node30
+gsave 10 dict begin
+filled
+0.769 0.867 0.941 nodecolor
+0.769 0.867 0.941 nodecolor
+904 142 125 18 ellipse_path
+fill
+0.769 0.867 0.941 nodecolor
+gsave 10 dict begin
+0.000 0.000 1.000 nodecolor
+791 139 moveto
+(30 - Honey subscription confirmation)
+[7.68 7.68 3.84 4.56 3.84 10.08 7.68 7.68 7.44 6.96 3.84 6.96 7.68 7.68 6.96 6.96 4.56 3.12 7.68 3.84 3.12 7.68 7.68 3.84 6.96 7.68 7.68 3.84 3.12 4.56 11.76 7.68 3.84 3.12 7.68 7.68]
+xshow
+end grestore
+end grestore
+% node29->node30
+newpath 740 148 moveto
+750 147 761 147 772 147 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 772 150 moveto
+782 146 lineto
+772 144 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 772 150 moveto
+782 146 lineto
+772 144 lineto
+closepath
+stroke
+end grestore
+% node31
+gsave 10 dict begin
+solid
+newpath 1071 115 moveto
+1194 115 lineto
+1194 163 lineto
+1071 163 lineto
+closepath
+stroke
+gsave 10 dict begin
+1084 148 moveto
+(Success)
+[9.36 7.68 6.96 6.96 7.68 6.96 6.96]
+xshow
+end grestore
+newpath 1151 139 moveto
+1151 163 lineto
+stroke
+gsave 10 dict begin
+1164 148 moveto
+(31)
+[6.96 7.68]
+xshow
+end grestore
+newpath 1071 139 moveto
+1194 139 lineto
+stroke
+gsave 10 dict begin
+1078 124 moveto
+(Magazine bought)
+[11.76 7.68 7.68 7.68 6.96 3.12 7.68 7.68 3.84 7.68 7.68 7.68 7.68 7.68 3.84]
+xshow
+end grestore
+end grestore
+% node30->node31
+newpath 1029 140 moveto
+1043 140 1058 140 1071 140 curveto
+stroke
+% node32
+gsave 10 dict begin
+solid
+1328 139 80 18 ellipse_path
+stroke
+gsave 10 dict begin
+1260 136 moveto
+(32 - Magazine bought)
+[7.68 7.68 3.84 4.56 3.84 11.76 7.68 7.68 7.68 6.96 3.12 7.68 7.68 3.84 7.68 7.68 7.68 7.68 7.68 3.84]
+xshow
+end grestore
+end grestore
+% node31->node32
+newpath 1194 139 moveto
+1208 139 1222 139 1237 139 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 1237 143 moveto
+1247 139 lineto
+1237 136 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 1237 143 moveto
+1247 139 lineto
+1237 136 lineto
+closepath
+stroke
+end grestore
+% node45
+gsave 10 dict begin
+solid
+1328 79 72 18 ellipse_path
+stroke
+gsave 10 dict begin
+1269 76 moveto
+(45 - Bill subcription)
+[7.68 7.68 3.84 4.56 3.84 9.36 3.12 3.12 3.12 3.84 6.96 7.68 7.68 6.96 4.56 3.12 7.68 3.84 3.12 7.68 7.68]
+xshow
+end grestore
+end grestore
+% node31->node45
+newpath 1194 120 moveto
+1219 112 1247 103 1272 96 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 1273 99 moveto
+1282 93 lineto
+1271 93 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 1273 99 moveto
+1282 93 lineto
+1271 93 lineto
+closepath
+stroke
+end grestore
+% node33
+gsave 10 dict begin
+solid
+newpath 1567 163 moveto
+1461 139 lineto
+1567 115 lineto
+1673 139 lineto
+closepath
+stroke
+gsave 10 dict begin
+1505 136 moveto
+(33 - Check 1st Xsell)
+[7.68 7.68 3.84 4.56 3.84 10.08 7.68 7.68 6.96 6.96 3.84 7.68 6.96 3.84 3.84 9.36 6.96 7.68 3.12 3.12]
+xshow
+end grestore
+end grestore
+% node32->node33
+newpath 1409 139 moveto
+1426 139 1443 139 1461 139 curveto
+stroke
+% node47
+gsave 10 dict begin
+solid
+newpath 1567 96 moveto
+1461 72 lineto
+1567 48 lineto
+1673 72 lineto
+closepath
+stroke
+gsave 10 dict begin
+1504 69 moveto
+(47 - Check if billable)
+[6.96 7.68 3.84 4.56 3.84 10.08 7.68 7.68 6.96 6.96 3.84 3.12 3.84 3.84 7.68 3.12 3.12 3.12 7.68 7.68 3.12 7.68]
+xshow
+end grestore
+end grestore
+% node45->node47
+newpath 1400 77 moveto
+1423 76 1449 76 1473 75 curveto
+stroke
+% node35
+gsave 10 dict begin
+solid
+3221 159 77 18 ellipse_path
+stroke
+gsave 10 dict begin
+3157 156 moveto
+(35 - End 1st Xselling)
+[7.68 7.68 3.84 4.56 3.84 9.36 7.68 7.68 3.84 7.68 6.96 3.84 3.84 9.36 6.96 7.68 3.12 3.12 3.12 7.68 7.68]
+xshow
+end grestore
+end grestore
+% node33->node35
+newpath 1629 149 moveto
+1649 152 1671 155 1692 157 curveto
+1825 172 1858 179 1991 178 curveto
+1991 178 1991 178 3027 178 curveto
+3066 178 3110 174 3146 170 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 3146 173 moveto
+3156 169 lineto
+3146 167 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 3146 173 moveto
+3156 169 lineto
+3146 167 lineto
+closepath
+stroke
+end grestore
+gsave 10 dict begin
+14.00 /Times-Roman set_font
+2284 183 moveto
+('HeartAndSoul' in decode_b64\(nvl\('vmi_cookie_mag_sold',encode_b64\([]\)\)\))
+[2.64 10.08 6.24 6.24 5.04 3.84 10.08 6.96 6.96 7.68 6.96 6.96 3.84 2.64 3.6 3.84 6.96 3.6 6.96 6.24 6.24 6.96 6.96 6.24 6.96 6.96 7.2 6.96 4.56 6.48 6.48 3.84 4.56 2.64 6.96 10.8 3.84 6.96 6.24 6.96 6.96 6.96 3.84 6.24 6.96 10.8 6.24 6.96 6.96 5.52 6.96 3.84 6.96 2.64 3.6 6.24 6.96 6.24 6.96 6.96 6.24 6.96 6.96 7.2 6.96 4.56 4.56 4.56 4.56 4.56 4.56]
+xshow
+end grestore
+% node42
+gsave 10 dict begin
+solid
+1991 129 116 18 ellipse_path
+stroke
+gsave 10 dict begin
+1887 126 moveto
+(42 - Wait before sending 1st Xsell)
+[7.68 7.68 3.84 4.56 3.84 12.72 7.68 3.12 3.84 3.84 7.68 7.68 3.6 7.68 4.32 7.68 3.84 6.96 7.68 7.68 7.68 3.12 7.68 7.68 3.84 7.68 6.96 3.84 3.84 9.36 6.96 7.68 3.12 3.12]
+xshow
+end grestore
+end grestore
+% node33->node42
+newpath 1663 137 moveto
+1723 135 1801 133 1866 132 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 1866 136 moveto
+1876 132 lineto
+1866 129 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 1866 136 moveto
+1876 132 lineto
+1866 129 lineto
+closepath
+stroke
+end grestore
+gsave 10 dict begin
+14.00 /Times-Roman set_font
+1754 142 moveto
+(default)
+[6.96 6.24 4.32 6.24 6.96 3.84 3.84]
+xshow
+end grestore
+% node36
+gsave 10 dict begin
+solid
+newpath 3456 183 moveto
+3347 159 lineto
+3456 135 lineto
+3565 159 lineto
+closepath
+stroke
+gsave 10 dict begin
+3391 156 moveto
+(36 - Check 2nd Xsell)
+[7.68 7.68 3.84 4.56 3.84 10.08 7.68 7.68 6.96 6.96 3.84 7.68 7.68 7.68 3.84 9.36 6.96 7.68 3.12 3.12]
+xshow
+end grestore
+end grestore
+% node35->node36
+newpath 3298 159 moveto
+3313 159 3330 159 3346 159 curveto
+stroke
+% node34
+gsave 10 dict begin
+solid
+newpath 2147 102 moveto
+2266 102 lineto
+2266 150 lineto
+2147 150 lineto
+closepath
+stroke
+gsave 10 dict begin
+2159 135 moveto
+(Timeout)
+[8.64 3.12 11.76 7.68 7.68 7.68 3.84]
+xshow
+end grestore
+newpath 2224 126 moveto
+2224 150 lineto
+stroke
+gsave 10 dict begin
+2237 135 moveto
+(34)
+[7.68 7.68]
+xshow
+end grestore
+newpath 2147 126 moveto
+2266 126 lineto
+stroke
+gsave 10 dict begin
+2154 111 moveto
+(1st Xsell timeout)
+[7.68 6.96 3.84 3.84 9.36 6.96 7.68 3.12 3.12 3.84 3.84 3.12 11.76 7.68 7.68 7.68 3.84]
+xshow
+end grestore
+end grestore
+% node42->node34
+newpath 2107 127 moveto
+2121 127 2134 127 2147 127 curveto
+stroke
+% node37
+gsave 10 dict begin
+filled
+0.000 0.000 0.000 nodecolor
+5028 159 65 18 ellipse_path
+fill
+0.000 0.000 0.000 nodecolor
+gsave 10 dict begin
+0.000 0.000 1.000 nodecolor
+4975 156 moveto
+(37 - End Xselling)
+[7.2 7.68 3.84 4.56 3.84 9.36 7.68 7.68 3.84 9.36 6.96 7.68 3.12 3.12 3.12 7.68 7.68]
+xshow
+end grestore
+end grestore
+% node36->node37
+newpath 3519 169 moveto
+3598 181 3736 199 3855 198 curveto
+3855 198 3855 198 4853 198 curveto
+4896 199 4944 187 4978 176 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 4979 179 moveto
+4988 173 lineto
+4977 173 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 4979 179 moveto
+4988 173 lineto
+4977 173 lineto
+closepath
+stroke
+end grestore
+gsave 10 dict begin
+14.00 /Times-Roman set_font
+4154 203 moveto
+('Honey' in decode_b64\(nvl\('vmi_cookie_mag_sold', encode_b64\([]\)\)\))
+[2.64 10.08 6.96 6.96 5.76 6.96 2.64 3.6 3.84 6.96 3.6 6.96 6.24 6.24 6.96 6.96 6.24 6.96 6.96 7.2 6.96 4.56 6.48 6.48 3.84 4.56 2.64 6.96 10.8 3.84 6.96 6.24 6.96 6.96 6.96 3.84 6.24 6.96 10.8 6.24 6.96 6.96 5.52 6.96 3.84 6.96 2.64 3.6 3.6 6.24 6.96 6.24 6.96 6.96 6.24 6.96 6.96 7.2 6.96 4.56 4.56 4.56 4.56 4.56 4.56]
+xshow
+end grestore
+% node36->node37
+newpath 3564 159 moveto
+3644 159 3757 160 3855 159 curveto
+3855 159 3855 159 4853 159 curveto
+4885 159 4922 159 4952 159 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 4952 163 moveto
+4962 159 lineto
+4952 156 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 4952 163 moveto
+4962 159 lineto
+4952 156 lineto
+closepath
+stroke
+end grestore
+gsave 10 dict begin
+14.00 /Times-Roman set_font
+4329 164 moveto
+(default)
+[6.96 6.24 4.32 6.24 6.96 3.84 3.84]
+xshow
+end grestore
+% node39
+gsave 10 dict begin
+solid
+3855 111 118 18 ellipse_path
+stroke
+gsave 10 dict begin
+3749 108 moveto
+(39 - Wait before sending 2nd Xsell)
+[7.68 7.68 3.84 4.56 3.84 12.72 7.68 3.12 3.84 3.84 7.68 7.68 3.6 7.68 4.32 7.68 3.84 6.96 7.68 7.68 7.68 3.12 7.68 7.68 3.84 7.68 7.68 7.68 3.84 9.36 6.96 7.68 3.12 3.12]
+xshow
+end grestore
+end grestore
+% node36->node39
+newpath 3505 146 moveto
+3529 140 3558 133 3584 129 curveto
+3631 122 3683 118 3729 115 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 3729 119 moveto
+3739 115 lineto
+3729 112 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 3729 119 moveto
+3739 115 lineto
+3729 112 lineto
+closepath
+stroke
+end grestore
+gsave 10 dict begin
+14.00 /Times-Roman set_font
+3584 134 moveto
+(!is_defined\('xsell_flag'\))
+[4.56 3.84 5.52 6.96 6.96 6.24 4.8 3.84 6.96 6.24 6.96 4.56 2.64 6.96 5.52 6.24 3.84 3.84 6.96 5.28 3.84 6.24 6.96 2.64 4.56]
+xshow
+end grestore
+% node38
+gsave 10 dict begin
+solid
+newpath 4013 83 moveto
+4136 83 lineto
+4136 131 lineto
+4013 131 lineto
+closepath
+stroke
+gsave 10 dict begin
+4026 116 moveto
+(Timeout)
+[8.64 3.12 11.76 7.68 7.68 7.68 3.84]
+xshow
+end grestore
+newpath 4092 107 moveto
+4092 131 lineto
+stroke
+gsave 10 dict begin
+4106 116 moveto
+(38)
+[7.68 7.68]
+xshow
+end grestore
+newpath 4013 107 moveto
+4136 107 lineto
+stroke
+gsave 10 dict begin
+4020 92 moveto
+(2nd Xsell timeout)
+[7.68 7.68 7.68 3.84 9.36 6.96 7.68 3.12 3.12 3.84 3.84 3.12 11.76 7.68 7.68 7.68 3.84]
+xshow
+end grestore
+end grestore
+% node39->node38
+newpath 3973 109 moveto
+3987 109 4000 108 4013 108 curveto
+stroke
+% node40
+gsave 10 dict begin
+solid
+4653 107 91 18 ellipse_path
+stroke
+gsave 10 dict begin
+4575 104 moveto
+(40 - Activate 2nd Xselling)
+[7.68 7.68 3.84 4.56 3.84 9.12 6.96 3.84 3.12 6.72 7.68 3.6 7.68 3.84 7.68 7.68 7.68 3.84 9.36 6.96 7.68 3.12 3.12 3.12 7.68 7.68]
+xshow
+end grestore
+end grestore
+% node38->node40
+newpath 4136 107 moveto
+4236 107 4432 107 4552 107 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 4552 111 moveto
+4562 107 lineto
+4552 104 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 4552 111 moveto
+4562 107 lineto
+4552 104 lineto
+closepath
+stroke
+end grestore
+% node41
+gsave 10 dict begin
+solid
+newpath 4782 83 moveto
+4924 83 lineto
+4924 131 lineto
+4782 131 lineto
+closepath
+stroke
+gsave 10 dict begin
+4799 116 moveto
+(NewFlow)
+[10.08 7.44 10.08 8.64 3.12 7.44 10.08]
+xshow
+end grestore
+newpath 4874 107 moveto
+4874 131 lineto
+stroke
+gsave 10 dict begin
+4891 116 moveto
+(41)
+[6.48 7.68]
+xshow
+end grestore
+newpath 4782 107 moveto
+4924 107 lineto
+stroke
+gsave 10 dict begin
+4790 92 moveto
+(Send SEP 2nd Xsell)
+[9.36 7.68 7.68 7.68 3.84 9.36 9.36 9.36 3.84 7.68 7.68 7.68 3.84 9.36 6.96 7.68 3.12 3.12]
+xshow
+end grestore
+end grestore
+% node40->node41
+newpath 4744 107 moveto
+4757 107 4770 107 4782 107 curveto
+stroke
+% node41->node37
+newpath 4924 128 moveto
+4941 133 4958 138 4973 143 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 4972 146 moveto
+4983 146 lineto
+4974 140 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 4972 146 moveto
+4983 146 lineto
+4974 140 lineto
+closepath
+stroke
+end grestore
+% node43
+gsave 10 dict begin
+solid
+2826 126 89 18 ellipse_path
+stroke
+gsave 10 dict begin
+2750 123 moveto
+(43 - Activate 1st Xselling)
+[7.68 7.68 3.84 4.56 3.84 9.12 6.96 3.84 3.12 6.72 7.68 3.6 7.68 3.84 7.68 6.96 3.84 3.84 9.36 6.96 7.68 3.12 3.12 3.12 7.68 7.68]
+xshow
+end grestore
+end grestore
+% node34->node43
+newpath 2266 126 moveto
+2373 126 2597 126 2727 126 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 2727 130 moveto
+2737 126 lineto
+2727 123 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 2727 130 moveto
+2737 126 lineto
+2727 123 lineto
+closepath
+stroke
+end grestore
+% node44
+gsave 10 dict begin
+solid
+newpath 2959 102 moveto
+3096 102 lineto
+3096 150 lineto
+2959 150 lineto
+closepath
+stroke
+gsave 10 dict begin
+2974 135 moveto
+(NewFlow)
+[10.08 7.44 10.08 8.64 3.12 7.44 10.08]
+xshow
+end grestore
+newpath 3048 126 moveto
+3048 150 lineto
+stroke
+gsave 10 dict begin
+3064 135 moveto
+(44)
+[7.68 7.68]
+xshow
+end grestore
+newpath 2959 126 moveto
+3096 126 lineto
+stroke
+gsave 10 dict begin
+2966 111 moveto
+(Send SEP 1st Xsell)
+[9.36 7.68 7.68 7.68 3.84 9.36 9.36 9.36 3.84 7.68 6.96 3.84 3.84 9.36 6.96 7.68 3.12 3.12]
+xshow
+end grestore
+end grestore
+% node43->node44
+newpath 2915 126 moveto
+2930 126 2945 126 2959 126 curveto
+stroke
+% node44->node35
+newpath 3096 138 moveto
+3113 141 3132 144 3149 146 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 3149 149 moveto
+3159 148 lineto
+3150 143 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 3149 149 moveto
+3159 148 lineto
+3150 143 lineto
+closepath
+stroke
+end grestore
+% node48
+gsave 10 dict begin
+solid
+1991 72 70 18 ellipse_path
+stroke
+gsave 10 dict begin
+1933 69 moveto
+(48 - Bill authorized)
+[7.68 7.68 3.84 4.56 3.84 9.36 3.12 3.12 3.12 3.84 7.68 7.68 3.84 7.68 7.68 4.56 3.12 6.96 7.68 7.68]
+xshow
+end grestore
+end grestore
+% node47->node48
+newpath 1674 72 moveto
+1747 72 1843 72 1910 72 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 1910 76 moveto
+1920 72 lineto
+1910 69 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 1910 76 moveto
+1920 72 lineto
+1910 69 lineto
+closepath
+stroke
+end grestore
+gsave 10 dict begin
+14.00 /Times-Roman set_font
+1692 77 moveto
+(is_defined\('vmi_cookie_ref'\))
+[3.84 5.52 6.96 6.96 6.24 4.8 3.84 6.96 6.24 6.96 4.56 2.64 6.96 10.8 3.84 6.96 6.24 6.96 6.96 6.96 3.84 6.24 6.96 4.8 6.24 4.56 2.64 4.56]
+xshow
+end grestore
+% node51
+gsave 10 dict begin
+filled
+0.000 0.000 0.000 nodecolor
+1991 18 63 18 ellipse_path
+fill
+0.000 0.000 0.000 nodecolor
+gsave 10 dict begin
+0.000 0.000 1.000 nodecolor
+1941 15 moveto
+(51 - Non billable)
+[6.72 7.68 3.84 4.56 3.84 10.08 7.68 7.68 3.84 7.68 3.12 3.12 3.12 7.68 7.68 3.12 7.68]
+xshow
+end grestore
+end grestore
+% node47->node51
+newpath 1629 62 moveto
+1649 59 1671 55 1692 52 curveto
+1770 42 1861 31 1921 25 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 1921 28 moveto
+1931 24 lineto
+1921 22 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 1921 28 moveto
+1931 24 lineto
+1921 22 lineto
+closepath
+stroke
+end grestore
+gsave 10 dict begin
+14.00 /Times-Roman set_font
+1754 57 moveto
+(default)
+[6.96 6.24 4.32 6.24 6.96 3.84 3.84]
+xshow
+end grestore
+% node49
+gsave 10 dict begin
+solid
+newpath 2150 36 moveto
+2263 36 lineto
+2263 84 lineto
+2150 84 lineto
+closepath
+stroke
+gsave 10 dict begin
+2169 69 moveto
+(Bill)
+[9.36 3.12 3.12 3.12]
+xshow
+end grestore
+newpath 2208 60 moveto
+2208 84 lineto
+stroke
+gsave 10 dict begin
+2227 69 moveto
+(49)
+[7.68 7.68]
+xshow
+end grestore
+newpath 2150 60 moveto
+2263 60 lineto
+stroke
+gsave 10 dict begin
+2157 45 moveto
+(Bill subscription)
+[9.36 3.12 3.12 3.12 3.84 6.96 7.68 7.68 6.96 6.96 4.56 3.12 7.68 3.84 3.12 7.68 7.68]
+xshow
+end grestore
+end grestore
+% node48->node49
+newpath 2060 68 moveto
+2089 67 2122 65 2150 63 curveto
+stroke
+% node50
+gsave 10 dict begin
+filled
+0.000 0.000 0.000 nodecolor
+2826 60 62 18 ellipse_path
+fill
+0.000 0.000 0.000 nodecolor
+gsave 10 dict begin
+0.000 0.000 1.000 nodecolor
+2777 57 moveto
+(50 - Subcription)
+[7.68 7.68 3.84 4.56 3.84 9.36 7.68 7.68 6.96 4.56 3.12 7.68 3.84 3.12 7.68 7.68]
+xshow
+end grestore
+end grestore
+% node49->node50
+newpath 2263 60 moveto
+2377 60 2630 60 2754 60 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 2754 64 moveto
+2764 60 lineto
+2754 57 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 2754 64 moveto
+2764 60 lineto
+2754 57 lineto
+closepath
+stroke
+end grestore
+% node52
+gsave 10 dict begin
+filled
+0.000 0.000 0.000 nodecolor
+904 85 109 18 ellipse_path
+fill
+0.000 0.000 0.000 nodecolor
+gsave 10 dict begin
+0.000 0.000 1.000 nodecolor
+807 82 moveto
+(52 - Limbo subscription timeout)
+[7.68 7.68 3.84 4.56 3.84 7.68 3.12 11.76 7.68 7.68 3.84 6.96 7.68 7.68 6.96 6.96 4.56 3.12 7.68 3.84 3.12 7.68 7.68 3.84 3.84 3.12 11.76 7.68 7.68 7.68 3.84]
+xshow
+end grestore
+end grestore
+% node46->node52
+newpath 723 85 moveto
+742 85 763 85 784 85 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 784 89 moveto
+794 85 lineto
+784 82 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 784 89 moveto
+794 85 lineto
+784 82 lineto
+closepath
+stroke
+end grestore
+endpage
+showpage
+grestore
+%%PageTrailer
+%%EndPage: 1
+%%Trailer
+%%Pages: 1
+%%BoundingBox: 36 36 5138 545
+end
+restore
+%%EOF

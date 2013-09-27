@@ -1,0 +1,17 @@
+0.3 - updated for tk8.3
+
+0.2 - changed splinetest.tcl to allow postscript printing on Windows. 
+      Patch from Michael Schwartz and Jan Nijtmans.  
+      Reported to work with Michael's "Printer" extension:
+          http://www.du.edu/~mschwart/tcl-tk.htm
+
+    - in postscript output use old spline function if number 
+      of points invalid.  Patch from Jan.Nijtmans@cmg.nl
+
+    - extend splinetest.tcl to work without dash patch if necessary
+      (e.g. if Tk_CreateSmoothMethod() gets into the core before
+      the rest of the dash patches.)
+
+    - support for TCL_STUBS ( tested with tk8.1.1+plus+dash )
+
+0.1 - first release

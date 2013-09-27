@@ -1,0 +1,135 @@
+\section{\smyrna\ Attributes}
+\label{sec:attribs}
+
+This section describes the various attributes used to control
+how \smyrna\ works. Unless otherwise noted, 
+all attributes belong to the root graph.
+
+ The following table lists the principal
+attributes used by \smyrna.\\
+\begin{center}
+{\footnotesize
+\begin{tabular}[t]{|l|p{2.5in}|l|} \hline
+{\bf Name} & {\bf Description} & {\bf Default} \\ \hline
+bgcolor & Background color & white (\#ffffff) \\
+bordercolor & Border color & \#38eb29 \\
+bordervisible & Draw graph border (boolean) & 1 \\ 
+gridcolor & Grid color & \#6033d8 \\ 
+gridsize & Grid size & 30 \\ 
+gridvisible & Draw grid (boolean) & 0 \\
+defaultlinewidth & Default line width  & 1 \\ 
+selectednodecolor & Color of selected nodes & \#8ce61d \\ 
+selectededgecolor & Color of selected edges & \#ffc0cb \\
+usermode & Advanced mode (boolean) & 1 \\
+drawnodes & Draw nodes (boolean) & 1 \\
+drawedges & Draw edges (boolean) & 1 \\
+drawlabels & Show node labels (boolean) & 1 \\
+defaultnodealpha & Overall alpha scale for all nodes. This 
+value is multiplied by a node's alpha value. & 0.8 \\
+defaultedgealpha & Overall alpha scale for all edges & 0.5 \\
+defaultnodeshape & OpenGL dots (0); spheres (1); custom (2) & 0 \\ 
+labelglutfont & Glut font id to use to render labels & 0 \\
+nodelabelcolor & node label color & \#8ce61d \\
+edgelabelcolor & edge label color & \#8ce61d \\
+nodelabelattribute & Node attribute used as node label & name \\
+edgelabelattribute & Edge attribute used as edge label & name \\
+labelwithdegree & Labels of high-degree nodes with 
+rendered before the ones with lower degree (boolean) & 0 \\
+labelnumberofnodes & Maximum number of node labels to be 
+rendered & 45 \\
+shownodelabels & Show node labels (boolean) & 1 \\
+showedgelabels & Show edge labels (boolean) & 1 \\
+colortheme & Color theme id for edges with no 
+color attribute. If unset, color is based on edge length; if
+set, edgecolorattribute is used & 1 \\
+defaultnodecolor & Default node color & blue \\
+defaultedgecolor & Color of edges with no color attribute. Active only when 
+colortheme attribute is set to "-1" & purple \\
+edgecolorattribute & Set this attribute when you need a 
+different value other than edge length to calculate color themes for edges & \\
+nodesize & Overall node size scale & 50 \\ 
+nodesselectable & Enable visual selection tools for nodes & 1 \\
+edgesselectable & Enable visual selection tools for edges & 1 \\ \hline
+\end{tabular}
+}
+\end{center}
+Most of these attributes are self-explanatory. 
+
+\subsection{usermode}
+What does this attribute do?
+
+\subsection{fonts}
+Explain font ids
+
+\subsection{colors}
+Explain color theme ids, default node and edge colors
+and edgecolorattribute
+
+\subsection{labels}
+name as pseudo-attribute \\
+labelwithdegree labelnumberofnodes
+
+\subsection{alpha values}
+Explain defaultedgealpha defaultnodealpha
+
+\subsection{Node shapes}
+The node shape attribute determines the look, flexibility and performance associated
+with how nodes are displayed. If {\tt defaultnodeshape} is set to 0, \smyrna\ uses
+OpenGL dots. This gives the best performance, but does not allow variations in size.
+A value of 1 causes \smyrna\ to use spherical node shapes. For large graphs, this will
+cause some slowdown when panning and zooming. On the other hand, one can set the
+size of each node individually via a node's {\tt size} attribute.
+Finally, if 2 is used, \smyrna\ will draw nothing.
+
+\newpage
+This table lists the attributes used by \smyrna
+in the topological fisheye mode.\\
+{\footnotesize
+\begin{tabular}[t]{|l|p{3.0in}|l|} \hline
+{\bf Name} & {\bf Description} & {\bf Default} \\ \hline
+topologicalfisheyefinenodes & Number of the fine nodes in topological fisheye view & 50 \\ 
+topologicalfisheyecoarseningfactor & Coarsening factor of topological fisheye & 2.5 \\ 
+topologicalfisheyedistortionfactor & Distortion Factor & 1 \\
+topologicalfisheyeanimate & Animate transitions (boolean) & 1 \\
+topologicalfisheyelabelfinenodes & Show fine node labels & 1 \\
+topologicalfisheyecolornodes & Color nodes (boolean) & 1 \\ 
+topologicalfisheyelabelfocus & Show focus node labels (boolean) & 1 \\
+topologicalfisheyefinestcolor & Color of fine nodes & red \\ 
+topologicalfisheyecoarsestcolor & Color of coarse nodes & green \\ \hline
+\end{tabular}
+}
+
+The following attributes affect the magnifying glass widget.\\
+{\footnotesize
+\begin{tabular}[t]{|l|p{3.0in}|l|} \hline
+{\bf Name} & {\bf Description} & {\bf Default} \\ \hline
+defaultfisheyemagnifierradius & Radius of magnifier glass & 350 \\ 
+defaultfisheyemagnifierdistort & Distortion value of magnifying glass & 5 \\ \hline
+\end{tabular}
+}
+
+The larger the distortion, the larger the magnification factor.
+
+\subsection{Node and Edge Attributes}
+At present, it is assumed that the input graph has been laid out. In particular,
+each node should have a {\tt pos} attribute specifying 2 or 3 real numbers giving the
+x and y and, if applicable, z coordinates of the node. 
+
+{\bf edge pos}
+If an edge does not possess a {\tt pos} attribute, the edge will be drawn as a line segment
+connect its end vertices.
+
+If a node or edge has a {\tt color} attribute, that will be used as its color.
+Similarly, a node may have a {\tt size} attribute, which will affect the node's size if
+{\tt defaultnodeshape == 1}.
+
+If a node or edge has a {\tt visible} attribute, that will be used to determine whether
+to draw the object or not. By default, the object is drawn.
+To make an object invisible, set {\tt visible = 0}.
+
+\smyrna\ also checks for a {\tt \_draw\_} attribute
+for nodes, edges and graphs. This is assumed to be a valid xdot string describing how to 
+render the object. If the graph has a {\tt \_draw\_} attribute, this will be drawn first to serve
+as a background for the node and edges of the graph.
+
+

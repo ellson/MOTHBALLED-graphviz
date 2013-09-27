@@ -1,0 +1,82 @@
+\section{Compiling and linking}
+\label{sec:build}
+This appendix provides a brief description of how to build
+your program using \gviz\ as a library. It also notes the 
+various libraries involved. As compilation systems vary
+greatly, we make no attempt to provide low-level build
+instructions. We assume that the user is capable of tailoring
+the build environment to use the necessary include files and
+libraries.
+
+All of the necessary include files and libraries are available
+in the {\tt include} and {\tt lib} directories where \gviz\
+is installed. At the simplest level, all an application needs
+to do to use the layout algorithms is to include {\tt gvc.h},
+which provides (indirectly) all of the \gviz\ types and functions,
+compile the code,
+and link the program with the necessary libraries.
+
+For linking, the application should use the \gviz\ libraries 
+\begin{itemize}
+\item {\tt gvc}
+\item {\tt graph}
+\item {\tt cdt}
+\end{itemize}
+If the system is configured to use plug-ins, these libraries
+are all that are necessary. At run time, the program will
+load the dynamic libraries it needs.
+
+If the program does not use plug-ins, then these libraries
+need to be incorporated at link time. These libraries may
+include
+\begin{itemize}
+\item {\tt gvplugin\_core}
+\item {\tt gvplugin\_dot\_layout}
+\item {\tt gvplugin\_neato\_layout}
+\item {\tt gvplugin\_gd}
+\item {\tt gvplugin\_pango}\footnote{
+For completeness, we note that it may be necessary to explicitly
+link in the following additional libraries, depending
+on the options set when \gviz\ was built:
+{\tt expat},
+{\tt fontconfig},
+{\tt freetype2},
+{\tt pangocairo},
+{\tt cairo},
+{\tt pango},
+{\tt gd},
+{\tt jpeg},
+{\tt png},
+{\tt z}, 
+{\tt ltdl},
+and other libraries required by Cairo and Pango.
+Typically, though, most builds handle these implicitly.}
+\end{itemize}
+plus any other plug-ins the program requires.
+
+If \gviz\ is built and installed with the GNU build tools,
+there are package configure files created in the {\tt lib/pkgconfig} 
+directory which can be used with the {\tt pkg-config} program
+to obtain the include file and library information for 
+a given installation.
+Assuming a Unix-like environment, a sample {\tt Makefile} for building the
+programs listed in Appendices~\ref{sec:simple}, \ref{sec:dot} 
+and \ref{sec:demo}\footnote{They
+can also be found, along with the {\tt Makefile}, in the
+{\tt dot.demo} directory of the \gviz\ source.}
+could have the form:
+
+\begin{verbatim}
+CFLAGS=`pkg-config libgvc --cflags` -Wall -g -O2
+LDFLAGS=`pkg-config libgvc --libs`
+
+all: simple dot demo
+
+simple: simple.o
+dot: dot.o
+demo: demo.o
+
+clean:
+    rm -rf simple dot demo *.o
+\end{verbatim}
+

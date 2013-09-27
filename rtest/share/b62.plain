@@ -1,0 +1,6 @@
+graph 1.000 1.028 1.500
+node routine1  0.514 1.250 1.027 0.500 routine1 solid ellipse black lightgrey
+node routine2  0.514 0.250 1.027 0.500 routine2 solid ellipse black lightgrey
+edge routine1 routine2 4 0.514 1.000 0.514 0.889 0.514 0.764 0.514 0.639 solid black
+ solid black
+stop

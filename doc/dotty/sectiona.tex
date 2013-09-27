@@ -1,0 +1,16 @@
+\chapter{Running {\DOTTY}}
+\label{apprunning}
+{\DOTTY} can be started by issuing the command:
+
+\begin{verbatim}
+dotty [-V] [-lm sync|async] [-el 0|1] [file1 file2 ...]
+\end{verbatim}
+
+\noindent
+If flag {\tt -V} is specified, the program version is printed.  If the option
+{\tt -lm sync} is specified, then graph layouts will be computed online
+({\DOTTY} will block until a layout is finished).  The option {\tt -el 1}
+enables the printing of warning messages.  If file names are specified on the
+command line, the graphs contained in these files will be displayed each in its
+own {\DOTTY} window.
+

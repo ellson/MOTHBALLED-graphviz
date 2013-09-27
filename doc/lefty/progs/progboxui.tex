@@ -1,0 +1,27 @@
+\begin{verbatim}
+leftdown = function (data) {
+    if (data.obj ~= null)
+        return;
+    leftbox = new (rectof (data.pos, data.pos));
+    drawbox (leftbox, 1);
+    setgfxattr (canvas, ['mode' = 'xor';]);
+};
+leftmove = function (data) {
+    if (~leftbox)
+        return;
+    drawbox (leftbox, 1);
+    clearpick (canvas, leftbox);
+    reshape (leftbox, rectof (data.ppos, data.pos));
+    drawbox (leftbox, 1);
+};
+leftup = function (data) {
+    if (~leftbox)
+        return;
+    drawbox (leftbox, 1);
+    clearpick (canvas, leftbox);
+    reshape (leftbox, rectof (data.ppos, data.pos));
+    setgfxattr (canvas, ['mode' = 'src';]);
+    drawbox (leftbox, 1);
+    remove ('leftbox');
+};
+\end{verbatim}

@@ -1,0 +1,111 @@
+\section{Introduction}
+\label{sec:intro}
+
+\smyrna\ is an application for viewing graphs. It allows the user
+to open a window on a graph; navigate around the graph using pan
+and zoom; and select nodes and edges with the mouse. The GUI provides various simple
+mechanisms for changing the view of the graph and querying information about nodes and edges. 
+In addition, \smyrna\
+allows the user to perform sophisticated querying and
+manipulation of graphs.
+
+Although it works with graphs of any size, \smyrna\ was 
+designed to handle large graphs, on the order of 100,000 nodes
+and edges. It uses the OpenGL library which allows it to take advantage 
+of modern video cards' graphics rendering features. 
+
+\subsection{File Format} 
+\label{sec:files}
+Currently, \smyrna\ supports only the Graphviz \DOT\ language.
+Please refer to 
+\begin{center}
+\url{http://www.graphviz.org/Documentation.php} 
+\end{center}
+to get more information about the \DOT\ language of Graphviz and
+the related attributes.
+
+\smyrna\ assumes the input graph has position information
+for all nodes. This is supplied by the {\tt pos} attribute, whose
+format is two or three numbers separated by comma. Thus, for a
+node {\tt start}, one might have
+\begin{center}
+{\tt start [pos="23.5,288"]}
+\end{center}
+If a graph is laid out using one of the Graphviz graph drawing programs,
+the position information is attached in this manner. For example, running the
+command
+\begin{center}
+{\tt sfdp -o outgraph.gv ingraph.gv}
+\end{center}
+will lay out the graph described in {\tt ingraph.gv} and create the file
+{\tt outgraph.gv}, which can be used as input to \smyrna.
+
+All \smyrna\ settings are stored as graph attributes.
+For example, you can change the background color by setting the
+{\tt bgcolor} attribute of the graph. Or the size of a 
+node can be altered by changing its {\tt size} attribute. 
+These attributes can be modified through the \smyrna\ GUI, 
+using the built-in scripting (cf.~\ref{sec:gvpr}),
+or by simply changing the graph file itself. 
+
+Normally in \smyrna, nodes are represented by filled disks, which
+can vary in size and color. For smaller graphs, \smyrna\ 
+can render the more complex shapes and styles available in Graphviz.
+This requires the nodes and edges in the graph to have the necessary
+{\it xdot} attributes to describe the rendering. This can be achieved
+by running the Graphviz layout with the {\tt -Txdot} flag, e.g.
+\begin{center}
+{\tt sfdp -Txdot -o outgraph.gv ingraph.gv}
+\end{center}
+For more information about {\it xdot} attributes and their formats,
+see
+\begin{center}
+\url{http://www.graphviz.org/doc/info/output.html#d:xdot }
+\end{center}
+
+\subsection{Visualization Modes} 
+\label{sec:vizmodes}
+{\it Smyrna} has three display modes:
+2D, 3D and topological fisheye. 
+In 2D mode, the graph is displayed in the plane. Navigation is
+limited to panning and zooming. Any third coordinate in a
+node's {\tt pos} attribute is ignored.
+In 3D mode, the graph is displayed using 3D graphics, allowing the
+user to rotate about the graph in addition to panning and zooming.
+Any node whose {\tt pos} attribute does not have a third coordinate
+will be placed in the xy plane.
+
+The topological fisheye mode~\cite{topfish} presents a 
+distorted, fisheye view of the
+graph, in which the areas of the graph near to one or more focus nodes
+are shown accurately, while the areas of the graph away from the foci
+become more ``compressed'' the further they are from the foci.
+For large graphs, this allows the user to see areas of interest clearly
+and in detail, while eliding detail away from the foci.
+Unlike ordinary fisheye techniques, in which
+the distortion is done geometrically, with remote nodes being
+drawn on top of each other, 
+topological fisheye is a specialized type of semantic zoom in which
+remote nodes are combined into meta-nodes with induced edges, thereby
+maintaining the graph's topology in a coarsened form.
+
+\subsection{Querying, Filtering and Modifying Graphs}   
+Beyond the simple viewing and navigating around a graph, \smyrna\
+also provides machinery for querying properties of the graph, modifying
+the graph and creating new graphs. The main engine for this is \gvpr,
+a scripting language specifically designed to edit graphs. By using 
+\gvpr, you can do almost anything related to graphs, from counting 
+the number of nodes with an attribute matching a given regular expression to
+fairly complex graph algorithms.
+
+One can use \gvpr\ to read and write files. In particular, \gvpr\ scripts
+can write to {\tt stdout}. This is implemented in \smyrna\ but a console
+window, which is part of the \gvpr\ control tab (Section~\ref{sec:gvprtab}).
+
+When \gvpr\ changes the structure or attributes of the active graph,
+these changes are reflected in \smyrna. Conversely, nodes and edges
+that are selected have an attribute {\tt selected=1}, which \gvpr\
+can use to provide actions on selected nodes and edges.
+
+The use of \gvpr\ is discussed in more detail in Section~\ref{sec:gvpr}.
+

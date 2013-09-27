@@ -1,0 +1,5 @@
+graph G {
+	size="2,2";
+	n0 -- n1 [len = 2,style=bold];
+    n1 -- n2 -- n3 -- n0;
+}

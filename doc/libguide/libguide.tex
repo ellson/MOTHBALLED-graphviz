@@ -1,0 +1,65 @@
+\documentclass[11pt]{article}
+%\usepackage{graphicx}
+\usepackage{times}
+\usepackage{url}
+
+%\addtolength{\oddsidemargin}{-0.5in}
+%\addtolength{\evensidemargin}{-0.5in}
+%\addtolength{\textheight}{2.0in}
+%\addtolength{\topmargin}{-0.75in}
+\addtolength{\topmargin}{-0.75in}
+\addtolength{\textheight}{1.5in}
+\addtolength{\oddsidemargin}{-0.75in}
+\addtolength{\evensidemargin}{-0.75in}
+\addtolength{\textwidth}{1.5in}
+
+\pagestyle{myheadings}
+
+\def\dot{{\it dot}}
+\def\DOT{{\it DOT}}
+\def\neato{{\it neato}}
+\def\fdp{{\it fdp}}
+\def\sfdp{{\it sfdp}}
+\def\twopi{{\it twopi}}
+\def\circo{{\it circo}}
+\def\gviz{{\it Graphviz}}
+\def\graph{{\tt cgraph}}
+\def\agraph{{\tt libagraph}}
+\def\pack{{\tt pack}}
+\def\gvc{{\tt GVC\_t}}
+
+\newcommand{\lastedited}{17 February 2013}
+\date{\today}
+\newcommand{\mymark}{\gviz{} Library Manual, \today \hfil }
+\markboth{\mymark}{\mymark}
+
+\begin{document}
+\bibliographystyle{alpha}
+\author{Emden R. Gansner}
+\title{Using \gviz\ as a Library \\
+(cgraph version)}
+\maketitle
+
+\newpage
+\tableofcontents
+\newpage
+\input{intro}
+\input{basic}
+\input{layouts}
+\input{drivers}
+\input{codegen}
+\input{plugins}
+\input{unconnect}
+%\input{overlap}
+%\input{paths}
+
+\clearpage
+\bibliography{graphdraw}
+
+\appendix
+\clearpage
+\input{build}
+\input{samples}
+\input{types}
+
+\end{document}

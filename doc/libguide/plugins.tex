@@ -1,0 +1,381 @@
+\section{Adding Plug-ins}
+\label{sec:pluginmain}
+
+The \gviz\ framework allows the programmer to use plug-ins to
+extend the system in several ways. For example, the programmer can add new
+graph layout engines along with new renderers and their related
+functions. Table~\ref{table:apis} describes the plug-in APIs
+supported by \gviz.
+\begin{table*}[htbp]\footnotesize
+\centering
+\begin{tabular}[t]{|l|l|c|p{2.0in}|} \hline
+\multicolumn{1}{|c|}{Kind} & \multicolumn{1}{|c|}{Functions} & \multicolumn{1}{|c|}{Features} & \multicolumn{1}{c|}{Description} \\ \hline
+{\tt API\_render} & {\tt gvrender\_engine\_t} & {\tt gvrender\_features\_t} & Functions for rendering a graph \\
+{\tt API\_device} & {\tt gvdevice\_engine\_t} & - & Functions for initializing and terminating a device \\
+{\tt API\_loadimage} & {\tt gvloadimage\_engine\_t} & - & Functions for converting from one image format to another \\
+{\tt API\_layout} & {\tt gvlayout\_engine\_t} & {\tt gvlayout\_features\_t} & Functions for laying out a graph \\
+{\tt API\_textlayout} & {\tt gvtextlayout\_engine\_t} & - & Functions for resolving font names and text size \\
+\hline
+\end{tabular}
+\caption{Plug-in API types}
+\label{table:apis}
+\end{table*}
+Each plug-in is defined by an engine structure containing its function
+entry points, and a features structure specifying features supported
+by the plug-in. Thus, a renderer is defined by values of type
+{\tt gvrender\_engine\_t} and {\tt gvrender\_features\_t}.
+
+Once all of the plug-ins of a given kind are defined, they should be
+gathered into a 0-terminated array of element type {\tt gvplugin\_installed\_t},
+whose fields are shown in Figure~\ref{fig:installed}.
+\begin{figure*}[htb]
+\centering
+\begin{tabular}{|l|} \hline
+int id; \\
+char *type; \\
+int quality; \\
+void *engine; \\
+void *features; \\
+\hline
+\end{tabular}
+\caption{Plug-in fields}
+\label{fig:installed}
+\end{figure*}
+The fields have the following meanings.
+\begin{description}
+\item[{\tt id}]
+Identifier for a given plug-in within a given package and with
+a given API kind. Note that the {\tt id} need only be unique within
+its plug-in package, as these packages are assumed to be independent.
+\item[{\tt type}]
+Name for a given plug-in, used during plug-in lookup.
+\item[{\tt quality}]
+An arbitrary integer used for ordering plug-ins with the same {\tt type}.
+Plug-ins with larger values will be chosen before plug-ins with smaller
+values.
+\item[{\tt engine}]
+Points to the related engine structure.
+\item[{\tt features}]
+Points to the related features structure.
+\end{description}
+
+As an example, suppose we wish to add various renderers for
+bitmap output. A collection of these might be combined as follows.
+\begin{verbatim}
+gvplugin_installed_t render_bitmap_types[] = {
+    {0, "jpg", 1, &jpg_engine, &jpg_features},
+    {0, "jpeg", 1, &jpg_engine, &jpg_features},
+    {1, "png", 1, &png_engine, &png_features},
+    {2, "gif", 1, &gif_engine, &gif_features},
+    {0, NULL, 0, NULL, NULL}
+};
+\end{verbatim}
+Note that this allows {\tt "jpg"} and {\tt "jpeg"} to refer to the
+same renderers.
+For the plug-in kinds without a features structure, the feature pointer in its
+{\tt gvplugin\_installed\_t} should be NULL.
+
+All of the plug-ins of all API kinds should then be
+gathered into a 0-terminated array of element type {\tt gvplugin\_api\_t}.
+For each element, 
+the first field indicates the kind of API, and the second points to the
+array of plug-ins described above ({\tt gvplugin\_installed\_t}).
+  
+Continuing our example, if we have supplied, in addition
+to the bitmap rendering plug-ins, plug-ins to render VRML, and
+plug-ins to load images, we would define
+\begin{verbatim}
+gvplugin_api_t apis[] = {
+    {API_render, &render_bitmap_types},
+    {API_render, &render_vrml_types},
+    {API_loadimage, &loadimage_bitmap_types},
+    {0, 0},
+};
+\end{verbatim}
+Here {\tt render\_vrml\_types} and  {\tt render\_vrml\_types}
+are also 0-terminated arrays of element type {\tt gvplugin\_installed\_t}.
+Note that there can be multiple items of the same API kind.
+
+A final definition is used to attach a name to the package of
+all the plug-ins. This is done using a {\tt gvplugin\_library\_t}
+structure. Its first field is a {\tt char*} giving the name of the
+package. The second field is a {\tt gvplugin\_api\_t*} pointing to
+the array described above. The structure itself must be named
+{\tt gvplugin\_{\em name}\_LTX\_library}, where {\em name} is the
+name of the package as defined in the first field. 
+
+For example, if we have decided to call our package {\tt "bitmap"},
+we could use the following definition:
+\begin{verbatim}
+gvplugin_library_t gvplugin_bitmap_LTX_library = { "bitmap", apis };
+\end{verbatim}
+
+To finish the installation of the package, it is necessary to create
+a dynamic library containing the {\tt gvplugin\_library\_t} value and
+all of the functions and data referred by it, either directly or
+indirectly. The library must be named {\tt gvplugin\_{\em name}},
+where again {\em name} is the name of the package. The actual filename
+of the library will be system-dependent. For example, on Linux systems,
+our library {\tt gvplugin\_bitmap} would have filename 
+{\tt libgvplugin\_bitmap.so.3}. 
+
+In most cases, \gviz\ is built with
+a plug-in version number. This number must be included in the library's
+filename, following any system-dependent conventions. 
+The number is given as the value of {\tt plugins} in the file
+{\tt libgvc.pc}, which can be found in the directory {\tt lib/pkgconfig}
+where \gviz\ was installed.
+In our example, the ``3'' in the library's filename gives the version number. 
+
+Finally, the library must be installed in the \gviz\ library directory,
+and {\tt dot -c} must be run to add the package to the \gviz\ configuration.
+Note that both of these steps typically assume that one has installer
+privileges.\footnote{
+Normally, for builds intended for local installation {\tt dot -c} is run 
+during {\tt make install}.
+It may be necessary to run this manually if cross-compiling or otherwise 
+manually moving binaries to a different system. 
+}
+
+In the remainder of this section, we shall look at the first 
+three types of plug-in APIs in more detail.
+
+\subsection{Writing a renderer plug-in}
+\label{sec:plugin}
+A renderer plug-in has two parts.
+The first consists of a structure of type {\tt gvrender\_engine\_t}
+defining the renderer's actions, as described in Section~\ref{sec:renderers}.
+Recall that any field may contain a NULL pointer. 
+
+For the second part, the programmer must provide a structure of type 
+{\tt gvrender\_features\_t}. This record provides \gviz\ with
+information about the renderer. 
+Figure~\ref{fig:features} list the fields involved.
+\begin{figure*}[htbp]
+\centering
+\begin{tabular}{|l|} \hline
+int flags; \\
+double default\_margin; \\
+double default\_pad; \\
+pointf default\_pagesize; \\
+pointf default\_dpi; \\
+char **knowncolors; \\
+int sz\_knowncolors; \\
+color\_type\_t color\_type; \\
+char *device; \\
+char *loadimage\_target; \\
+\hline
+\end{tabular}
+\caption{Features of a renderer}
+\label{fig:features}
+\end{figure*}
+Some of the default values may be overridden by the input graph.
+
+We now describe the fields in detail.
+\begin{description}
+\item[{\tt flags}]
+Bit-wise of {\tt or} flags indicating properties of the renderer.
+These flags are described in Table~\ref{table:renderflags}.
+\item[{\tt default\_margin}]
+Default margin size in points. This is the amount
+of space left around the drawing.
+\item[{\tt default\_pad}]
+Default pad size in points. This is the amount
+by which the graph is inset within the drawing region. Note that the
+drawing region may be filled with a background color.
+\item[{\tt default\_pagesize}]
+Default page size size in points. For example, an 8.5 by 11 inch letter-sized
+page would have a {\tt default\_pagesize} of 612 by 792.
+\item[{\tt default\_dpi}]
+Default resolution, in pixels per inch. Note that the x and y values
+may be different to support non-square pixels.
+\item[{\tt knowncolors}]
+An array of character pointers giving a lexicographically ordered
+\footnote{The ordering must be done byte-wise using 
+the {\tt LANG=C} locale for
+byte comparison.} list of the color names supported by the renderer.
+\item[{\tt sz\_knowncolors}]
+The number of items in the {\tt knowncolors} array.
+\item[{\tt color\_type}]
+The preferred representation for colors. See Section~\ref{sec:color}.
+\item[{\tt device}]
+The name of a device, if any, associated with the renderer. For example,
+a renderer using GTK for output might specify {\tt "gtk"} as its device.
+If a name is given, the library will look for a plug-in of type API\_device
+with that name, and use the associated functions to initialize and terminate
+the device. See Section~\ref{sec:device}. 
+\item[{\tt loadimage\_target}]
+The name of the preferred type of image format for the renderer.
+When a user-supplied image is given, the library will attempt to find
+a function that will convert the image from its original format to
+the renderer's preferred one. A user-defined renderer may need to
+provide, as additional plug-ins, its own functions for handling the conversion.
+\end{description}
+
+\begin{table*}[htbp]\footnotesize
+\centering
+\begin{tabular}[t]{|l|p{3.5in}|} \hline
+\multicolumn{1}{|c|}{Flag} & \multicolumn{1}{c|}{Description} \\ \hline
+{\tt GVRENDER\_DOES\_ARROWS} & Built-in arrowheads on splines \\
+{\tt GVRENDER\_DOES\_LAYERS} & Supports graph layers \\
+{\tt GVRENDER\_DOES\_MULTIGRAPH\_OUTPUT\_FILES} & If true, the renderer's
+output can contain multiple renderings \\
+{\tt GVRENDER\_DOES\_TRUECOLOR} & Supports a truecolor color model \\
+{\tt GVRENDER\_Y\_GOES\_DOWN} & Output coordinate system has the origin in
+the upper left corner \\
+{\tt GVRENDER\_X11\_EVENTS} & For GUI plug-ins, defers actual rendering until
+the GUI event loop invokes {\tt job->callbacks->refresh()} \\
+{\tt GVRENDER\_DOES\_TRANSFORM} & Can handle transformation (scaling,
+translation, rotation) from universal
+to device coordinates. If false, the library will do the transformation
+before passing any coordinates to the renderer \\
+{\tt GVRENDER\_DOES\_LABELS} & Wants an object's label, if any, provided 
+as text during rendering \\
+{\tt GVRENDER\_DOES\_MAPS} & Supports regions to which URLs can be attached.
+If true, URLs are provided to the renderer, 
+either as part of the {\tt job->obj} or via the renderer's {\tt begin\_anchor}
+function \\
+{\tt GVRENDER\_DOES\_MAP\_RECTANGLE} & Rectangular regions can be mapped \\
+{\tt GVRENDER\_DOES\_MAP\_CIRCLE} & Circular regions can be mapped \\
+{\tt GVRENDER\_DOES\_MAP\_POLYGON} & Polygons can be mapped \\
+{\tt GVRENDER\_DOES\_MAP\_ELLIPSE} & Ellipses can be mapped \\
+{\tt GVRENDER\_DOES\_MAP\_BSPLINE} & B-splines can be mapped \\
+{\tt GVRENDER\_DOES\_TOOLTIPS} & If true, tooltips are provided to the renderer,
+either as part of the {\tt job->obj} or via the renderer's {\tt begin\_anchor}
+function \\
+{\tt GVRENDER\_DOES\_TARGETS} & If true, targets are provided to the renderer, 
+either as part of the {\tt job->obj} or via the renderer's {\tt begin\_anchor}
+function \\
+{\tt GVRENDER\_DOES\_Z} & Uses a 3D output model \\
+\hline
+\end{tabular}
+\caption{Renderer properties}
+\label{table:renderflags}
+\end{table*}
+
+\subsection{Writing a device plug-in}
+\label{sec:device}
+
+A device plug-in provides hooks for \gviz\ to handle any
+device-specific operations needed before and after rendering.
+The related engine of type {\tt gvdevice\_engine\_t} has 2 entry points:
+\begin{verbatim}
+    void (*initialize) (GVJ_t*);
+    void (*finalize) (GVJ_t*);
+\end{verbatim}
+which are called at the beginning and end of rendering each job.
+The initialize routine might open a canvas on window system, or
+set up a new page for printing;
+the finalize routine might go into an event loop after which it could close
+the output device.
+
+\subsection{Writing an image loading plug-in}
+\label{sec:imageload}
+
+A image loading plug-in has engine type
+{\tt gvimageload\_engine\_t} and provides a single entry point which can be
+used to read in an image,
+convert the image from one format to another, and write the result.
+Since the function actually does rendering, it is usually closely tied
+to a specific renderer plug-in.
+\begin{verbatim}
+    void (*loadimage) (GVJ_t *job, usershape_t *us, boxf b, bool filled);
+\end{verbatim}
+When called, {\tt loadimage} is given the current job, a pointer to the
+input image {\tt us}, and the bounding box {\tt b} in device coordinates
+where the image should be written. The boolean {\tt filled} value indicates
+whether the bounding box should first be filled.
+
+The {\tt type} value for an image loading plug-in's 
+{\tt gvplugin\_installed\_t} entry should specify the input and output
+formats it handles. Thus, a plug-in converting JPEG to GIF would be
+called {\tt "jpeg2gif"}. Since an image loader may well want to read in
+an image in some format, and then render the image using the same format,
+it is quite reasonable for the input and output formats to be identical,
+e.g. {\tt "gif2gif"}.
+
+Concerning the type {\tt usershape\_t}, its most important fields
+are shown in Figure~\ref{fig:usershape}.
+\begin{figure*}[htbp]
+\centering
+\begin{tabular}{|l|} \hline
+char *name; \\
+FILE *f; \\
+imagetype\_t type; \\
+unsigned int x, y; \\
+unsigned int w, h; \\
+unsigned int dpi; \\
+void *data; \\
+size\_t datasize; \\
+void (*datafree)(usershape\_t *us); \\
+\hline
+\end{tabular}
+\caption{Fields in {\tt usershape\_t}}
+\label{fig:usershape}
+\end{figure*}
+These fields have the following meanings:
+\begin{description}
+\item[{\tt name}]
+The name of the image.
+\item[{\tt f}]
+An open input stream to the image's data. Since the image might
+be processed multiple times, the application should use a function
+such as {\tt fseek} to make sure the file pointer points to the
+beginning of the file.
+\item[{\tt type}]
+The format of the image. The formats supported in \gviz\ are
+{\tt FT\_BMP}, {\tt FT\_GIF}, {\tt FT\_PNG}, {\tt FT\_JPEG}, {\tt FT\_PDF}, 
+{\tt FT\_PS} and {\tt FT\_EPS}. The value {\tt FT\_NULL} indicates an
+unknown image type. 
+\item[{\tt x} and {\tt y}]
+The coordinates of the lower-left corner of image in image units.
+This is usually the origin but some images such as those in PostScript
+format may be translated away from the origin.
+\item[{\tt w} and {\tt h}]
+The width and height of image in image units
+\item[{\tt dpi}]
+The number of image units per inch
+\item[{\tt data}, {\tt datasize}, {\tt datafree}]
+These fields can be used to cache the converted image data so
+that the file I/O and conversion need only be done once. The
+data can be stored via {\tt data}, with {\tt datasize} giving the
+number of bytes used. In this case, the image loading code should
+store a clean-up handler in {\tt datafree}, which can be called
+to release any memory allocated. 
+
+If {\tt loadimage} does caching, it can check if {\tt us->data}
+is NULL. If so, it can read and cache the image. If not, it should
+check that the {\tt us->datafree} value points to its own {\tt datafree}
+routing. If not, then some other image loader has cached data there.
+The {\tt loadimage} function must them call the current {\tt us->datafree}
+function before caching its own version of the image. 
+
+The code template in Figure~\ref{fig:caching}
+indicates how caching should be handled.
+\end{description}
+\begin{figure}[hbt]
+\begin{verbatim}
+    if (us->data) {
+        if (us->datafree != my_datafree) {
+            us->datafree(us);  /* free incompatible cache data */
+            us->data = NULL;
+            us->datafree = NULL;
+            us->datasize = 0;
+        }
+    }
+
+    if (!us->data) { 
+       /* read image data from us->f and convert it;
+        * store the image data into memory pointed to by us->data;
+        * set us->datasize and us->datafree to the appropriate values.
+        */
+    }
+
+    if (us->data) {
+       /* emit the image data in us->data */
+    }
+\end{verbatim}
+\caption{Caching converted images}
+\label{fig:caching}
+\end{figure}
+

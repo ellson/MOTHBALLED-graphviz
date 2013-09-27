@@ -1,0 +1,23 @@
+load ('def.lefty');
+definit ();
+canvas = defcanvas;
+dops = function () {
+    local s;
+    s = ['x' = 8 * 300; 'y' = 10.5 * 300;];
+    canvas = createwidget (-1, ['type' = 'ps'; 'size' = s;]);
+    setwidgetattr (canvas, ['window' = wrect;]);
+    line (canvas, null, points[0], points[4]);
+    destroywidget (canvas);
+    canvas=defcanvas;
+};
+wrect = [0 = ['x' = 0; 'y' = -10;]; 1 = ['x' = 600; 'y' = 200;];];
+points = [
+    0 = [ 'x' = 0; 'y' = 0; ];
+    1 = [ 'x' = 200; 'y' = 0; ];
+    2 = [ 'x' = 300; 'y' = 200 - 26.79; ];
+    3 = [ 'x' = 400; 'y' = 0; ];
+    4 = [ 'x' = 600; 'y' = 0; ];
+];
+setwidgetattr (canvas, ['window' = wrect;]);
+line (canvas, null, points[0], points[4]);
+dops ();

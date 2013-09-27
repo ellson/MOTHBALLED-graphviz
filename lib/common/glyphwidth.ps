@@ -1,0 +1,106 @@
+%!PS-Adobe-2.0
+
+% glyphwidth.ps
+% prints Postscript glyph width tables for graphviz fontmetrics
+% execute:  gs -q -sDEVICE=nullpage glyphwidth.ps
+% by north 5 March 2004
+% i'm sure it could be more efficient but it works Ok.  Postscript
+% certainly has its oddities, e.g.
+%     /str 100 string def
+%	  1.23 str cvs print		% prints 1.23
+%     1.23 str cvs length		% says 100
+1000 dict begin
+% some tweakable constants
+/cols 8 def
+/sigdigits 4 def
+/unprintable ( ) def
+
+% probably never change these
+% 256 = assume 8 bit chars
+/rows 256 cols div def
+/allchars  256 string  def
+/allwidths 256 array   def
+/allstrwidths 256 array   def
+/thechar 1 string def
+/junkstr 100 string def
+/xstr 100 string def
+
+/width1glyph {
+	/str exch def
+	/ix exch def
+	/thechar str ix 1 getinterval def
+	newpath 0 0 moveto
+	thechar false charpath flattenpath pathbbox 
+	pop exch pop exch sub
+} bind def
+
+/width1string {
+	/str exch def
+	/ix exch def
+	/thechar str ix 1 getinterval def
+	newpath 0 0 moveto
+	% this gets the glyph size, typeset as a string
+	thechar stringwidth pop
+} bind def
+
+% array indexing
+/aix { %  i j   aix  ix
+	exch cols mul add
+} bind def
+
+/dprint {
+	% print integer part 
+	dup floor cvi junkstr cvs print (.) print
+	% get fractional part
+	dup truncate sub
+	% peel off digits for fixed-point printing
+	1 1 sigdigits { pop	% .1234
+		10.0 mul 	% 1.234
+		dup % 1.234 1.234
+		cvi % 1.234 1
+		junkstr cvs print  % 1.234
+		dup truncate sub % .234
+	} for
+} bind def
+
+/work {
+	/FontSize exch def
+	/CName exch def
+	/FontName exch def
+	FontName findfont FontSize scalefont setfont
+	0 1 255 {/i exch def allchars i i put} for
+	0 1 255 {allwidths exch dup allchars width1glyph put } for
+	0 1 255 {allstrwidths exch dup allchars width1string put } for
+
+	(static double ) print CName print (FontWidth[] = {\n) print
+	0 1 rows 1 sub {
+		/i exch def
+		0 1 cols 1 sub {
+			/j exch def
+			% if unprintable (width 0.0), the following makes it 1.0
+%			allwidths i j aix get 0.0 gt 
+%			{ allstrwidths i j aix get FontSize div } % scale it
+%			{ 1.0} ifelse
+			% we now use the value for all characters, expecially ' ', because 
+			% when stringwidth is applied to a string, these are the values
+			% used. Setting the width of ' ' to 1 doesn't work. 
+			allstrwidths i j aix get FontSize div % scale it
+			dprint
+			(,\t) print 
+		} for
+		(/* ) print
+		0 1 cols 1 sub {
+			i exch aix /ix exch def
+			allwidths ix get 0.0 gt {allchars ix 1 getinterval} {unprintable} ifelse
+			print
+		} for
+		( */\n) print
+	} for
+	(};\n) print
+} bind def
+
+/Times-Roman (times) 14 work
+/Helvetica (arial) 14 work
+/Courier (cour) 14 work
+% /Symbol (Symbol) 14 work
+quit

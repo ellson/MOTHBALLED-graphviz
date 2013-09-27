@@ -1,0 +1,415 @@
+\section{Graphics renderers}
+\label{sec:renderers}
+
+All graph output done in \gviz\ goes through a renderer
+with the type {\tt gvrender\_engine\_t}, used in the call
+to {\tt gvRender}.
+In addition to the renderers which are part of the library, an application
+can provide its own, allowing it to specialize or control the output
+as necessary. See Section~\ref{sec:plugin} for further details.
+
+As in the layout phase invoked by {\tt gvLayout}, all control over
+aspects of rendering are handled via graph attributes. For example,
+the attribute {\tt outputorder} determines whether all edges are drawn
+before any nodes, or all nodes are drawn before any edges.
+
+Before describing the renderer functions in detail, it may be helpful
+to give an overview of how output is done. Output can be viewed as a hierarchy
+of document components. At the highest level is the job, representing 
+an output format and target. Bound to a job might be multiple graphs,
+each embedded in some universal space. Each graph may be partitioned
+into multiple layers as determined by a graph's {\tt layers} attribute,
+if any. Each layer may be divided into a 2-dimensional array
+of pages. A page will then contain nodes, edges, and clusters. Each of
+these may contain an HTML anchor.
+During rendering, each component
+is reflected in paired calls to its corresponding {\tt begin\_...} and
+{\tt end\_...} functions. The layer and anchor components are omitted if
+there is only a single layer or the enclosing component has no browser
+information. 
+
+Figure~\ref{fig:codegen} lists the names and type signatures of
+the fields of {\tt gv\_render\_engine\_t}, which are used to emit the components
+described above.\footnote{Any types mentioned in this section are
+either described in this section or in Appendix~\ref{sec:types}.}
+All of the functions take a {\tt GVJ\_t*} value, which
+contains various information about the current rendering, such as the
+output stream, if any, or the device size and resolution.
+Section~\ref{sec:gvjfields} describes this data structure.
+
+Most of the functions handle the nested graph structure.
+All graphics output is handled by the {\tt textpara}, {\tt ellipse},
+{\tt polygon}, {\tt beziercurve}, and {\tt polyline} functions.
+The relevant drawing information such as color and pen style
+is available through the {\tt obj} field of the
+{\tt GVJ\_t*} parameter. 
+This is described in Section~\ref{sec:obj}.
+Font information is passed with the text.
+
+We note that, in \gviz, each node, edge or cluster in a graph 
+has a unique {\tt id}
+field, which can be used as a key for storing and accessing the object.
+
+\begin{figure*}[htb]
+\centering
+\begin{tabular}{|l|} \hline
+void (*begin\_job) (GVJ\_t*);  \\
+void (*end\_job) (GVJ\_t*); \\
+void (*begin\_graph) (GVJ\_t*); \\
+void (*end\_graph) (GVJ\_t*); \\
+void (*begin\_layer) (GVJ\_t*, char*, int, int); \\
+void (*end\_layer) (GVJ\_t*); \\
+void (*begin\_page) (GVJ\_t*); \\
+void (*end\_page) (GVJ\_t*); \\
+void (*begin\_cluster) (GVJ\_t*, char*, long); \\
+void (*end\_cluster) (GVJ\_t*); \\
+void (*begin\_nodes) (GVJ\_t*); \\
+void (*end\_nodes) (GVJ\_t*); \\
+void (*begin\_edges) (GVJ\_t*); \\
+void (*end\_edges) (GVJ\_t*); \\
+void (*begin\_node) (GVJ\_t*, char*, long); \\
+void (*end\_node) (GVJ\_t*); \\
+void (*begin\_edge) (GVJ\_t*, char*, bool, char*, long); \\
+void (*end\_edge) (GVJ\_t*); \\
+void (*begin\_anchor) (GVJ\_t*, char*, char*, char*); \\
+void (*end\_anchor) (GVJ\_t*); \\
+void (*textpara) (GVJ\_t*, pointf, textpara\_t*); \\
+void (*resolve\_color) (GVJ\_t*, gvcolor\_t*); \\
+void (*ellipse) (GVJ\_t*, pointf*, int); \\
+void (*polygon) (GVJ\_t*, pointf*, int, int); \\
+void (*beziercurve) (GVJ\_t*, pointf*, int, int, int, int); \\
+void (*polyline) (GVJ\_t*, pointf*, int); \\
+void (*comment) (GVJ\_t*, char*); \\ \hline
+\end{tabular}
+\caption{Interface for a renderer}
+\label{fig:codegen}
+\end{figure*}
+In the following, we describe the functions in more detail, though
+many are self-explanatory. 
+All positions and sizes are in points.
+
+\begin{description}
+\item[{\tt begin\_job(job)}]
+Called at the beginning of all graphics output for a graph,
+which may entail drawing multiple layers and multiple pages.
+\item[{\tt end\_job(job)}]
+Called at the end of all graphics output for graph. The output stream
+is still open, so the renderer can append any final information
+to the output.
+\item[{\tt begin\_graph(job)}]
+Called at the beginning of drawing a graph.
+The actual graph is available as {\tt job->obj->u.g}.
+\item[{\tt end\_graph(job)}]
+Called when the drawing of a graph is complete.
+\item[{\tt begin\_layer(job,layerName,n,nLayers)}]
+Called at the beginning of each layer, only if ${\tt nLayers} > 0$.
+The {\tt layerName} parameter is the logical layer name given in
+the {\tt layers} attribute. The layer has index {\tt n} out of
+{\tt nLayers}, starting from 0.
+\item[{\tt end\_layer(job)}] 
+Called at the end of drawing the current layer.
+\item[{\tt begin\_page(job)}] 
+Called at the beginning of a new output page.
+A page will contain a rectangular portion of the drawing of the graph.
+The value {\tt job->pageOffset} gives the lower left corner of the
+rectangle in layout coordinates.
+The point {\tt job->pagesArrayElem} is the index of the page in the array of 
+pages, with the page in the lower left corner indexed by (0,0). 
+The value {\tt job->zoom} provides a scale factor by which the drawing should
+be scaled. The value {\tt job->rotation}, if non-zero, indicates that the
+output should be rotated by $90^{\circ}$ counterclockwise.
+\item[{\tt end\_page(job)}] 
+Called when the drawing of a current page is complete.
+\item[{\tt begin\_cluster(job)}]
+Called at the beginning of drawing a cluster subgraph.
+The actual cluster is available as {\tt job->obj->u.sg}.
+\item[{\tt end\_cluster(job)}]
+Called at the end of drawing the current cluster subgraph.
+\item[{\tt begin\_nodes(job)}]
+Called at the beginning of drawing the nodes on the current page.
+Only called if the graph attribute {\tt outputorder} was set to a non-default
+value.
+\item[{\tt end\_nodes(job)}]
+Called when all nodes on a page have been drawn.
+Only called if the graph attribute {\tt outputorder} was set to a non-default
+value.
+\item[{\tt begin\_edges(job)}]
+Called at the beginning of drawing the edges on the current page.
+Only called if the graph attribute {\tt outputorder} was set to a non-default
+value.
+\item[{\tt end\_edges()}]
+Called when all edges on the current page are drawn.
+Only called if the graph attribute {\tt outputorder} was set to a non-default
+value.
+\item[{\tt begin\_node(job)}]
+Called at the start of drawing a node.
+The actual node is available as {\tt job->obj->u.n}.
+\item[{\tt end\_node(job)}]
+Called at the end of drawing the current node.
+\item[{\tt begin\_edge(job)}]
+Called at the start of drawing an edge.
+The actual edge is available as {\tt job->obj->u.e}.
+\item[{\tt end\_edge(job)}]
+Called at the end of drawing the current edge.
+\item[{\tt begin\_anchor(job,href,tooltip,target)}]
+Called at the start of an anchor context associated
+with the current node, edge, or graph, or its label, assuming the graph
+object or its label has a {\tt URL} or {\tt href} attribute. The
+{\tt href} parameter gives the associated href, while
+{\tt tooltip} and {\tt target} supply any tooltip or target information.
+If the object has no tooltip, its label will be used. 
+If the object has no target attribute, this parameter will be {\tt NULL}.
+
+If the anchor information is attached to a graph object,
+the {\tt begin\_anchor} and {\tt end\_anchor} calls 
+enclose the {\tt begin\_...} and {\tt end\_...} calls on the object.
+If the anchor information is attached to part of an object's label,
+the {\tt begin\_anchor} and {\tt end\_anchor} calls 
+enclose the rendering of that part of the label plus any subparts.
+\item[{\tt end\_anchor(job)}]
+Called at the end of the current anchor context.
+\item[{\tt textpara(job, p, txt)}]
+Draw text at point {\tt p} using the specified font and fontsize and color. 
+The {\tt txt} argument provides the text string {\tt txt->str},
+stored in UTF-8,
+a calculated width of the string {\tt txt->width} and 
+the horizontal alignment {\tt txt->just} of the string in relation to {\tt p}.
+The values {\tt txt->fontname} and {\tt txt->fontname} give the desired
+font name and font size, the latter in points.
+
+The base line of the text is given by {\tt p.y}. The interpretation
+of {\tt p.x} depends upon the value of {\tt txt->just}. Basically,
+{\tt p.x} provides the anchor point for the alignment.
+\begin{center}
+\begin{tabular}{ll}
+{\tt txt->just} & {\tt p.x} \\ \hline
+{\tt 'n'} & Center of text \\
+{\tt 'l'} & Left edge of text \\
+{\tt 'r'} & Right edge of text \\
+\end{tabular}
+\end{center}
+The leftmost x coordinate of the text, the parameter most graphics
+systems use for text placement, is given by 
+{\tt p.x + {\em j} * txt->width}, where {\em j} is 0.0 (-0.5,-1.0)
+if {\tt txt->just} is {\tt 'l'}({\tt 'n'},{\tt 'r'}), respectively.
+This representation allows the renderer to accurately compute
+the point for text placement that is appropriate for its format, as
+well as use its own mechanism for computing the width of the string.
+\item[{\tt resolve\_color(job, color)}]
+Resolve a color. The {\tt color} parameter points to a color representation
+of some particular type. The renderer can use this information to resolve
+the color to a representation appropriate for it. See Section~\ref{sec:color}
+for more details.
+\item[{\tt ellipse(job, ps, filled)}]
+Draw an ellipse with center at {\tt ps[0]}, with horizontal and vertical 
+half-axes {\tt ps[1].x - ps[0].x} and {\tt ps[1].y - ps[0].y} 
+using the current pen color and line style.
+If {\tt filled} is non-zero, the ellipse should be filled with the current
+fill color.
+\item[{\tt polygon(job, A, n, filled)}]
+Draw a polygon with the {\tt n} vertices given in the array {\tt A}, 
+using the current pen color and line style.
+If {\tt filled} is non-zero, the polygon should be filled with the current
+fill color.
+\item[{\tt beziercurve(job, A, n, arrow\_at\_start, arrow\_at\_end, filled)}]
+Draw a B-spline with the {\tt n} control points given in {\tt A}. This will
+consist of $(n - 1)/3$ cubic Bezier curves. The spline should be drawn
+using the current pen color and line style.
+If the renderer has specified that it does not want to do its own arrowheads
+(cf. Section~\ref{sec:plugin}),
+the parameters 
+{\tt arrow\_at\_start} and {\tt arrow\_at\_end}
+will both be 0. Otherwise, if {\tt arrow\_at\_start} ({\tt arrow\_at\_end}) 
+is true, the function should draw an arrowhead at the 
+first (last) point of {\tt A}.
+If {\tt filled} is non-zero, the bezier should be filled with the current
+fill color.
+\item[{\tt polyline(job,A,n)}]
+Draw a polyline with the {\tt n} vertices given in the array {\tt A}, 
+using the current pen color and line style.
+\item[{\tt comment(job, text)}]
+Emit text comments related to a graph object.
+For nodes, calls will pass the node's name and any {\tt comment}
+attribute attached to the node.
+For edges, calls will pass a string description of the edge 
+and any {\tt comment} attribute attached to the edge.
+For graphs and clusters, a call will pass a
+any {\tt comment} attribute attached to the object.
+\end{description}
+
+Although access to the graph object being drawn is available through
+the {\tt GVJ\_t} value, a renderer
+can often perform its role by just implementing the basic graphics operations.
+It need have no information about graphs or the related \gviz\ data structures.
+Indeed, a particular renderer need not define any particular rendering
+function, since a given entry point will only be called if non-NULL.
+
+\subsection{The {\tt GVJ\_t} data structure}
+\label{sec:gvjfields}
+We now describe some of the more important fields in the {\tt GVJ\_t} structure,
+concentrating on those regarding output. There are additional fields
+relevant to input and GUIs.
+\begin{description}
+\item[{\tt common}]
+This points to various information valid throughout the duration
+of the application using \gviz. In particular, 
+the {\tt common->info} contains \gviz\ version
+information, as described in Section~\ref{sec:info}.
+\item[{\tt output\_file}]
+The {\tt FILE*} value for an open stream on
+which the output should be written, if relevant.
+\item[{\tt pagesArraySize}]
+The size of the array of pages in which the graph will be output,
+given as a {\tt point}.
+If {\tt pagesArraySize.x} or {\tt pagesArraySize.y} is greater than one, 
+this indicates that a
+page size was set and the graph drawing is too large to be printed on a
+single page.
+Page (0,0) is the page containing the bottom, lefthand corner
+of the graph drawing; page (1,0) will contain that part of the graph
+drawing to the right of page (0,0); etc. 
+\item[{\tt bb}]
+The bounding box of the layout in the universal space
+in points. It has type {\tt boxf}.
+\item[{\tt boundingBox}]
+The bounding box of the layout in the device space in
+device coordinates. It has type {\tt box}.
+\item[{\tt layerNum}]
+The current layer number.
+\item[{\tt numLayers}]
+The total number of layers.
+\item[{\tt pagesArrayElem}]
+The row and column of the current page.
+\item[{\tt pageOffset}]
+The origin of the current page in the universal space in points. 
+\item[{\tt zoom}]
+Factor by which the output should be scaled.
+\item[{\tt rotation}]
+Indicates whether or not the rendering should be rotated.
+\item[{\tt obj}]
+Information related to the current object being rendered.
+This is a pointer of a value of type {\tt obj\_state\_t}.
+See Section~\ref{sec:obj} for more details.
+\end{description}
+
+\subsection{Inside the {\tt obj\_state\_t} data structure}
+\label{sec:obj}
+A value of type {\tt obj\_state\_t} encapsulates various information
+pertaining to the current object being rendered. In particular, it
+provides access to the current object, and provides the style
+information for any rendering operation.
+Figure~\ref{fig:obj} notes some of the more useful fields in the
+structure. 
+\begin{figure*}[htb]
+\centering
+\begin{tabular}{|l|} \hline
+obj\_type type; \\
+union \{ \\
+\multicolumn{1}{|l|}{\hspace{2em}graph\_t *g;} \\
+\multicolumn{1}{|l|}{\hspace{2em}graph\_t *sg;} \\
+\multicolumn{1}{|l|}{\hspace{2em}node\_t *n;} \\
+\multicolumn{1}{|l|}{\hspace{2em}edge\_t *e;} \\
+\} u; \\
+gvcolor\_t pencolor; \\
+gvcolor\_t fillcolor; \\
+pen\_type pen;   \\
+double penwidth; \\
+char *url; \\
+char *tailurl;  \\
+char *headurl;  \\
+char *tooltip; \\
+char *tailtooltip; \\
+char *headtooltip; \\
+char *target; \\
+char *tailtarget; \\
+char *headtarget; \\
+\hline
+\end{tabular}
+\caption{Some fields in {\tt obj\_state\_t}}
+\label{fig:obj}
+\end{figure*}
+
+\begin{description}
+\item[{\tt type} and {\tt u}]
+The {\tt type} field indicates what kind of graph object is currently
+being rendered. The possible values are 
+{\tt ROOTGRAPH\_OBJTYPE}, {\tt CLUSTER\_OBJTYPE},
+{\tt NODE\_OBJTYPE} and {\tt EDGE\_OBJTYPE},
+indicating the root graph, a cluster subgraph, a node and an edge,
+respectively.
+A pointer to the actual object is available via the subfields
+{\tt u.g}, {\tt u.sg}, {\tt u.n} and {\tt u.e}, respectively, 
+of the union {\tt u}.
+\item[{\tt pencolor}]
+The {\tt gvcolor\_t} value indicating the color used to draw lines,
+curves and text.
+\item[{\tt pen}]
+The style of pen to be used. The possible values are
+{\tt PEN\_NONE}, {\tt PEN\_DOTTED},
+{\tt PEN\_DASHED} and {\tt PEN\_SOLID}.
+\item[{\tt penwidth}]
+The size of the pen, in points.
+Note that, by convention, a value of 0 indicates using the smallest
+width supported by the output format.
+\item[{\tt fillcolor}]
+The {\tt gvcolor\_t} value indicating the color used to fill
+closed regions.
+\end{description}
+Note that font information is delivered as part of the 
+{\tt textpara\_t} value passed to the {\tt textpara} function.
+
+As for the url, tooltip and target fields, these will point to
+the associated attribute value of the current graph object,
+assuming it is defined and that the renderer support map, tooltips,
+and targets, respectively (cf. Section~\ref{sec:plugin}).
+
+\subsection{Color information}
+\label{sec:color}
+
+There are five ways in which a color can be specified in \gviz:
+RGB + alpha, HSV + alpha, CYMK, color index, and color name.
+In addition, the RGB + alpha values can be stored as bytes, words
+or doubles.
+
+A color value in \gviz\ has the type {\tt gvcolor\_t}, containing
+two fields: a union {\tt u}, containing the color data, and the
+{\tt type} field, indicating which color representation is used in
+the union. Table~\ref{table:color} describes the allowed color types,
+and the associated union field.
+\begin{table*}[htb]
+\centering
+\begin{tabular}[t]{|l|p{3.5in}|l|} \hline
+\multicolumn{1}{|c|}{Type} & \multicolumn{1}{c|}{Description} & \multicolumn{1}{c|}{Field}\\ \hline
+{\tt RGBA\_BYTE} & RGB + alpha format represented as 4 bytes from 0 to 255 & {\tt u.rgba} \\
+{\tt RGBA\_WORD} & RGB + alpha format represented as 4 words from 0 to 65535 & {\tt u.rrggbbaa} \\
+{\tt RGBA\_DOUBLE} & RGB + alpha format represented as 4 doubles from 0 to 1 & {\tt u.RGBA} \\
+{\tt HSVA\_DOUBLE} & HSV + alpha format represented as 4 doubles from 0 to 1 & {\tt u.HSVA} \\
+{\tt CYMK\_BYTE} & CYMK format represented as 4 bytes from 0 to 255 & {\tt u.cymk} \\
+{\tt COLOR\_STRING} & text name & {\tt u.string} \\
+{\tt COLOR\_INDEX} & integer index & {\tt u.index} \\
+\hline
+\end{tabular}
+\caption{Color type representations}
+\label{table:color}
+\end{table*}
+
+Before a color is used in rendering, \gviz\ will process a color description
+provided by the input graph into a form desired by the renderer.
+This is three step procedure. First, \gviz\ will see if the color matches
+the renderer's known colors, if any.
+If so, the color representation is {\tt COLOR\_STRING}. Otherwise, the
+library will convert the input color description into the renderer's
+preferred format. Finally, if the
+renderer also provides a {\tt resolve\_color} function, \gviz\ will then
+call that function, passing a pointer to the current color value. The
+renderer then has the opportunity to adjust the value, or convert it
+into another format. In a typical case, if a renderer uses a color map,
+it may request RGB values as input, and then store an associated
+color map index using the {\tt COLOR\_INDEX} format. If the renderer
+does a conversion to another color type, it must 
+reset the {\tt type} field to indicate this.
+It is this last representation which will be passed to the renderer's
+drawing routines.
+The renderer's known colors and preferred color format are
+described in Section~\ref{sec:plugin} below.
+
