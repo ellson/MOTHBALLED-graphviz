@@ -158,7 +158,7 @@ static char *parseRect(char *s, xdot_rect * rp)
     else
 	s = endp;
 
-    rp->y = strtod (s, &endp);
+    rp->h = strtod (s, &endp);
     if (s == endp)
 	return 0;
     else
