@@ -16,6 +16,11 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define INITIAL_XDOT_CAPACITY 512
 
 typedef enum {
@@ -92,7 +97,8 @@ typedef enum {
     xd_filled_bezier,  xd_unfilled_bezier,
     xd_polyline,       xd_text,
     xd_fill_color,     xd_pen_color, xd_font, xd_style, xd_image,
-    xd_grad_fill_color,     xd_grad_pen_color
+    xd_grad_fill_color,     xd_grad_pen_color,
+    xd_fontchar
 } xdot_kind; 
     
 typedef enum {
@@ -101,7 +107,8 @@ typedef enum {
     xop_bezier,
     xop_polyline,       xop_text,
     xop_fill_color,     xop_pen_color, xop_font, xop_style, xop_image,
-    xop_grad_fill_color,     xop_grad_pen_color
+    xop_grad_color,
+    xop_fontchar
 } xop_kind; 
     
 typedef struct _xdot_op xdot_op;
@@ -121,6 +128,7 @@ struct _xdot_op {
       xdot_color grad_color;   /* xd_grad_fill_color, xd_grad_pen_color */
       xdot_font font;          /* xd_font */
       char* style;             /* xd_style */
+      int fontchar;            /* xd_fontchar */
     } u;
     drawfunc_t drawfunc;
 };
@@ -149,6 +157,8 @@ typedef struct {
     int n_style;
     int n_color;
     int n_image;
+    int n_gradcolor;
+    int n_fontchar;
 } xdot_stats;
 
 /* ops are indexed by xop_kind */
@@ -164,4 +174,7 @@ extern xdot_grad_type colorTypeXDot (char*);
 extern char* parseXDotColor (char* cp, xdot_color* clr);
 extern void freeXDotColor (xdot_color*);
 
+#ifdef __cplusplus
+}
+#endif
 #endif

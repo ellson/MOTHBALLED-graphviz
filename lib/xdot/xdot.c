@@ -316,7 +316,7 @@ static char *parseOp(xdot_op * op, char *s, drawfunc_t ops[], int* error)
 	    op->kind = xd_grad_pen_color;
 	    op->u.grad_color = clr;
 	    if (ops)
-		op->drawfunc = ops[xop_grad_pen_color];
+		op->drawfunc = ops[xop_grad_color];
 	}
 	break;
 
@@ -335,7 +335,7 @@ static char *parseOp(xdot_op * op, char *s, drawfunc_t ops[], int* error)
 	    op->kind = xd_grad_fill_color;
 	    op->u.grad_color = clr;
 	    if (ops)
-		op->drawfunc = ops[xop_grad_fill_color];
+		op->drawfunc = ops[xop_grad_color];
 	}
 	break;
 
@@ -389,6 +389,14 @@ static char *parseOp(xdot_op * op, char *s, drawfunc_t ops[], int* error)
 	CHK(s);
 	if (ops)
 	    op->drawfunc = ops[xop_image];
+	break;
+
+    case 't':
+	op->kind = xd_fontchar;
+	s = parseInt(s, &op->u.fontchar);
+	CHK(s);
+	if (ops)
+	    op->drawfunc = ops[xop_fontchar];
 	break;
 
 
@@ -650,7 +658,6 @@ static void printXDot_Op(xdot_op * op, pf print, void *info, int more)
 	break;
     case xd_filled_bezier:
 	print("b", info);
-	op->kind = xd_filled_bezier;
 	printPolyline(&op->u.bezier, print, info);
 	break;
     case xd_unfilled_bezier:
@@ -689,9 +696,12 @@ static void printXDot_Op(xdot_op * op, pf print, void *info, int more)
 	break;
     case xd_font:
 	print("F", info);
-	op->kind = xd_font;
 	printFloat(op->u.font.size, print, info, 1);
 	printString(op->u.font.name, print, info);
+	break;
+    case xd_fontchar:
+	print("t", info);
+	printInt(op->u.fontchar, print, info);
 	break;
     case xd_style:
 	print("S", info);
@@ -821,6 +831,10 @@ static void jsonXDot_Op(xdot_op * op, pf print, void *info, int more)
 	print(",", info);
 	jsonString(op->u.font.name, print, info);
 	print("]", info);
+	break;
+    case xd_fontchar:
+	print("{t : ", info);
+	printInt(op->u.fontchar, print, info);
 	break;
     case xd_style:
 	print("{S : ", info);
@@ -975,8 +989,15 @@ int statXDot (xdot* x, xdot_stats* sp)
 	case xd_pen_color:
 	    sp->n_color++;
 	    break;
+	case xd_grad_fill_color:
+	case xd_grad_pen_color:
+	    sp->n_gradcolor++;
+	    break;
         case xd_font:
 	    sp->n_font++;
+	    break;
+        case xd_fontchar:
+	    sp->n_fontchar++;
 	    break;
 	case xd_style:
 	    sp->n_style++;
