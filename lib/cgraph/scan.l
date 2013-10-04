@@ -16,6 +16,7 @@
 %{
 #include <grammar.h>
 #include <cghdr.h>
+#include <agxbuf.h>
 #include <ctype.h>
 #define GRAPH_EOF_TOKEN		'@'		/* lex class must be defined below */
 	/* this is a workaround for linux flex */
@@ -191,13 +192,21 @@ ID		({NAME}|{NUMBER})
 %%
 void yyerror(char *str)
 {
+	unsigned char	xbuf[BUFSIZ];
 	char	buf[BUFSIZ];
-	if (InputFile)
-		sprintf(buf,"%s:%d: %s in line %d near '%s'\n",InputFile, line_num,
-			str,line_num,yytext);
-	else
-		sprintf(buf," %s in line %d near '%s'\n", str,line_num,yytext);
-	agerr(AGWARN,buf);
+	agxbuf  xb;
+
+	agxbinit(&xb, BUFSIZ, xbuf);
+	if (InputFile) {
+		agxbput (&xb, InputFile);
+		agxbput (&xb, ": ");
+	}
+	sprintf(buf," %s in line %d near '", str,line_num);
+	agxbput (&xb, buf);
+	agxbput (&xb, yytext);
+	agxbput (&xb,"'\n");
+	agerr(AGWARN,agxbuse(&xb));
+	agxbfree(&xb);
 }
 /* must be here to see flex's macro defns */
 void aglexeof() { unput(GRAPH_EOF_TOKEN); }
