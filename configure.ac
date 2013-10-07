@@ -10,6 +10,7 @@ AC_PREREQ(2.61)
 #	graphviz_version_micro
 #	graphviz_collection
 #	graphviz_version_date
+#	graphviz_version_commit
 m4_include(./version.m4)
 
 AC_INIT([graphviz],[graphviz_version_major.graphviz_version_minor.graphviz_version_micro],[http://www.graphviz.org/])
@@ -24,12 +25,16 @@ GRAPHVIZ_COLLECTION=graphviz_collection()
 #NB: date/time of last commit - or "now"
 GRAPHVIZ_VERSION_DATE=graphviz_version_date()
 
+#NB: git commit hash of last commit
+GRAPHVIZ_VERSION_COMMIT=graphviz_version_commit()
+
 GRAPHVIZ_SOURCES=graphviz/$GRAPHVIZ_COLLECTION/SOURCES
 
 AC_SUBST([GRAPHVIZ_VERSION_MAJOR])
 AC_SUBST([GRAPHVIZ_VERSION_MINOR])
 AC_SUBST([GRAPHVIZ_VERSION_MICRO])
 AC_SUBST([GRAPHVIZ_VERSION_DATE])
+AC_SUBST([GRAPHVIZ_VERSION_COMMIT])
 AC_SUBST([GRAPHVIZ_COLLECTION])
 AC_SUBST([GRAPHVIZ_SOURCES])
 

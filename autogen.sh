@@ -26,7 +26,8 @@ m4_define(graphviz_version_minor, 35)
 dnl NB: the next line gets changed to a date/time string for development releases
 m4_define(graphviz_version_micro, 0)
 m4_define(graphviz_version_date, $GRAPHVIZ_VERSION_DATE)
-m4_define(graphviz_collection, stable)
+m4_define(graphviz_collection, test)
+m4_define(graphviz_version_commit, unknown)
 EOF
 
 autoreconf -v --install --force || exit 1

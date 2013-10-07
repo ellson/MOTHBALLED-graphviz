@@ -22,7 +22,7 @@ git pull
 git log -1 --date raw |
 while read a b c; do
     case "$a" in
-    commit) COMMIT=$b;;
+    commit) VERSION_COMMIT=$b;;
     Date:) EPOCHSEC=$b; TZ=$c; break;;
     *) continue;;
     esac
@@ -35,14 +35,20 @@ VERSION_MAJOR=`grep 'm4_define(graphviz_version_major' version.m4 | sed 's/.*, \
 VERSION_MINOR=`grep 'm4_define(graphviz_version_minor' version.m4 | sed 's/.*, \([0-9]*\))/\1/'`
 VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_DATE
 
+if test $(( $VERSION_MINOR % 2 )) -eq 0; then
+    VERSION_COLLECTION="stable"
+else
+    VERSION_COLLECTION="development"
+fi
+
 sed "s/\(m4_define(graphviz_version_micro, \).*)/\1$VERSION_DATE)/" <version.m4 >t$$
 mv t$$ version.m4
-sed "s/\(m4_define(graphviz_collection, \).*)/\1development)/" <version.m4 >t$$
+sed "s/\(m4_define(graphviz_collection, \).*)/\1$VERSION_COLLECTION)/" <version.m4 >t$$
 mv t$$ version.m4
 sed "s/\(m4_define(graphviz_version_date, \).*)/\1$VERSION_DATE)/" <version.m4 >t$$
 mv t$$ version.m4
-
-exit
+sed "s/\(m4_define(graphviz_version_commit, \).*)/\1$VERSION_COMMIT)/" <version.m4 >t$$
+mv t$$ version.m4
 
 ./configure >/dev/null
 
