@@ -74,8 +74,8 @@ tar cf - rtest | gzip >rtest.tar.gz
 
 cp graphviz-$VERSION.tar.gz graphviz-$VERSION.tar.gz.md5 rtest.tar.gz $RPMBUILD/SOURCES/
 
-rpmbuild -ts -D "distroagnostic 1" $RPMBUILD/SOURCES/graphviz-$VERSION.tar.gz >/dev/null
+rpmbuild -ts -D "distroagnostic 1" $RPMBUILD/SOURCES/graphviz-$VERSION.tar.gz || exit 1
 
-rpmbuild --rebuild $RPMBUILD/SRPMS/graphviz-$VERSION-1.src.rpm
+rpmbuild --rebuild $RPMBUILD/SRPMS/graphviz-$VERSION-1.src.rpm || exit 1
 
 (cd $RPMBUILD; createrepo .)
