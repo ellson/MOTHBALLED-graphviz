@@ -101,7 +101,7 @@ static void usage(int v)
 
 static char *Info[] = {
     "smyrna",                   /* Program */
-    VERSION,                    /* Version */
+    PACKAGE_VERSION,            /* Version */
     BUILDDATE                   /* Build Date */
 };
 
