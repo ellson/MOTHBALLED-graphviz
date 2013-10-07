@@ -2,7 +2,8 @@ syntax: glob
 *~
 *.o
 *.a
-graphviz*.tar.gz
+graphviz*.tar.gz*
+rtest*.tar.gz*
 *.la
 *.lai
 *.lo
@@ -27,6 +28,7 @@ Doxyfile
 doxygen
 INSTALL
 aclocal.m4
+version.m4
 ast_common.h
 builddate.h
 stamp-h1

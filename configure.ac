@@ -4,32 +4,32 @@
 # Try to use version available on FC8
 AC_PREREQ(2.61)
 
-dnl graphviz package version number, (as distinct from shared library version)
-dnl For the minor number: odd => unstable series
-dnl                       even => stable series
-dnl For the micro number: 0 => in-progress development (from cvs)
-dnl                       timestamp => tar-file snapshot or release
-m4_define(graphviz_version_major, 2)
-m4_define(graphviz_version_minor, 35)
-#NB: the next line gets changed to a date/time string for development releases
-m4_define(graphviz_version_micro, 0)
+# set:
+#	graphviz_version_major
+#	graphviz_version_minor
+#	graphviz_version_micro
+#	graphviz_collection
+#	graphviz_version_date
+m4_include(./version.m4)
 
 AC_INIT([graphviz],[graphviz_version_major.graphviz_version_minor.graphviz_version_micro],[http://www.graphviz.org/])
 
 GRAPHVIZ_VERSION_MAJOR=graphviz_version_major()
 GRAPHVIZ_VERSION_MINOR=graphviz_version_minor()
 GRAPHVIZ_VERSION_MICRO=graphviz_version_micro()
+
+#NB: "stable" or "development"
+GRAPHVIZ_COLLECTION=graphviz_collection()
+
+#NB: date/time of last commit - or "now"
+GRAPHVIZ_VERSION_DATE=graphviz_version_date()
+
+GRAPHVIZ_SOURCES=graphviz/$GRAPHVIZ_COLLECTION/SOURCES
+
 AC_SUBST([GRAPHVIZ_VERSION_MAJOR])
 AC_SUBST([GRAPHVIZ_VERSION_MINOR])
 AC_SUBST([GRAPHVIZ_VERSION_MICRO])
-
-VERSION_DATE=`date -u +%Y%m%d.%H%M`
-AC_SUBST([VERSION_DATE])
-
-#NB: "stable" on the next line gets changed to "development" when building a development release
-GRAPHVIZ_COLLECTION=stable
-
-GRAPHVIZ_SOURCES=graphviz/$GRAPHVIZ_COLLECTION/SOURCES
+AC_SUBST([GRAPHVIZ_VERSION_DATE])
 AC_SUBST([GRAPHVIZ_COLLECTION])
 AC_SUBST([GRAPHVIZ_SOURCES])
 
@@ -192,7 +192,7 @@ DEFAULT_DPI=96
 AC_DEFINE_UNQUOTED(DEFAULT_DPI,$DEFAULT_DPI,Default DPI.)
 AC_DEFINE_UNQUOTED(BROWSER,"$BROWSER",[Command to open a browser on a URL])
 
-AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
+AM_INIT_AUTOMAKE([no-define])
 
 # Suppress verbose compile lines
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
