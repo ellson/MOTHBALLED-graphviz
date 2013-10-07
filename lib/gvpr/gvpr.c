@@ -51,7 +51,7 @@
 
 static char *Info[] = {
     "gvpr",                     /* Program */
-    VERSION,                    /* Version */
+    PACKAGE_VERSION,            /* Version */
     BUILDDATE                   /* Build Date */
 };
 

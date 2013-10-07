@@ -44,7 +44,7 @@ extern int graphviz_errors;
 
 static char *LibInfo[] = {
     "graphviz",         /* Program */
-    VERSION,            /* Version */
+    PACKAGE_VERSION,   /* Version */
     BUILDDATE           /* Build Date */
 };
 

@@ -13,7 +13,7 @@ AC_PREREQ(2.61)
 #	graphviz_version_commit
 m4_include(./version.m4)
 
-AC_INIT([graphviz],[graphviz_version_major.graphviz_version_minor.graphviz_version_micro],[http://www.graphviz.org/])
+AC_INIT([graphviz],[graphviz_version_major().graphviz_version_minor().graphviz_version_micro()],[http://www.graphviz.org/])
 
 GRAPHVIZ_VERSION_MAJOR=graphviz_version_major()
 GRAPHVIZ_VERSION_MINOR=graphviz_version_minor()
@@ -205,7 +205,7 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AC_CONFIG_HEADERS([config.h lib/common/types.h])
 
 # put BUILDDATE in its own file so that only targets that use it get rebuilt
-echo "#define BUILDDATE \"$VERSION_DATE\"" > builddate.h
+echo "#define BUILDDATE \"$GRAPHVIZ_VERSION_DATE\"" > builddate.h
 
 # only update ast_common.h (for GNU builds) from master if changed
 if ! `cmp -s $srcdir/ast_common.h.in ast_common.h`; then

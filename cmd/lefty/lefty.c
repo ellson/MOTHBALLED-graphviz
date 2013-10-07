@@ -458,7 +458,7 @@ static void processargs (int argc, char *argv[]) {
             Gpscanvasname = argv[1], argv++, argc--;
         else if (strcmp (argv[0], "-V") == 0) {
             fprintf (stderr, "lefty version %s\n", LEFTYVERSION);
-            fprintf (stderr, "graphviz version %s (%s)\n", VERSION, BUILDDATE);
+            fprintf (stderr, "graphviz version %s (%s)\n", PACKAGE_VERSION, BUILDDATE);
 	}
         else if (strcmp (argv[0], "-?") == 0)
             usage(0);

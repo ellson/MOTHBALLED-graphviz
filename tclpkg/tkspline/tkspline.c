@@ -242,7 +242,7 @@ Tcl_Interp *interp;
 
     Tk_CreateSmoothMethod(interp, &splineSmoothMethod);
 
-    return Tcl_PkgProvide(interp, "Tkspline", VERSION);
+    return Tcl_PkgProvide(interp, "Tkspline", PACKAGE_VERSION);
 }
 
 int Tkspline_SafeInit(Tcl_Interp * interp)

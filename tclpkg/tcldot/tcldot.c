@@ -340,7 +340,7 @@ int Tcldot_Init(Tcl_Interp * interp)
 	return TCL_ERROR;
     }
 #endif
-    if (Tcl_PkgProvide(interp, "Tcldot", VERSION) != TCL_OK) {
+    if (Tcl_PkgProvide(interp, "Tcldot", PACKAGE_VERSION) != TCL_OK) {
 	return TCL_ERROR;
     }
 
