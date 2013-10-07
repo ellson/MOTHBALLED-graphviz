@@ -7,6 +7,16 @@ if ! test -d .git; then
     exit 1
 fi
 
+count=0
+git status -s |
+while read rec; do
+	((count += 1))
+done
+if test $count -ne 0; then 
+    echo "you have uncommitted changes in this directory, quitting" >&2
+    exit 1
+fi
+
 HOST=`hostname`
 
 # $HOME/.rpmmacros must match this
