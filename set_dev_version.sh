@@ -40,15 +40,4 @@ VERSION_DATE=$DATE
 sed "s/VERSION_DATE=.*/VERSION_DATE=$VERSION_DATE/" <autogen.sh >t$$
 mv t$$ autogen.sh
 
-
-
-
-
-
-
-
-
-
-
-
-
+chmod +x autogen.sh
