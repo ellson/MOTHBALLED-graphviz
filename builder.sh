@@ -35,11 +35,11 @@ VERSION_MAJOR=`grep 'm4_define(graphviz_version_major' version.m4 | sed 's/.*, \
 VERSION_MINOR=`grep 'm4_define(graphviz_version_minor' version.m4 | sed 's/.*, \([0-9]*\))/\1/'`
 VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_DATE
 
-sed "s/\(m4_define(graphviz_version_micro, \)[0-9.]*)/\1$VERSION_DATE)/" <version.m4 >t$$
+sed "s/\(m4_define(graphviz_version_micro, \).*)/\1$VERSION_DATE)/" <version.m4 >t$$
 mv t$$ version.m4
 sed "s/\(m4_define(graphviz_collection, \).*)/\1\"development\")/" <version.m4 >t$$
 mv t$$ version.m4
-sed "s/\(m4_define(graphviz_version_date, \).*)/\1\"$VERSION_DATE\")/" <version.m4 >t$$
+sed "s/\(m4_define(graphviz_version_date, \).*)/\1$VERSION_DATE)/" <version.m4 >t$$
 mv t$$ version.m4
 
 exit
