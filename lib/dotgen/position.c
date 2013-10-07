@@ -605,6 +605,7 @@ set_xcoords(graph_t * g)
     }
 }
 
+#if 0
 /* adjustEqual:
  * Expand cluster g vertically by delta, assuming ranks
  * are equally spaced. We first try to split delta evenly
@@ -618,7 +619,7 @@ set_xcoords(graph_t * g)
  * whatever available space there is at top and bottom, but for
  * now, trying to figure that out seems more trouble than it is worth.
  */
-static void adjustEqual(graph_t * g, int delta)
+static void adjustEqual(graph_t * g, int delta, int margin_total)
 {
     int r, avail, half, deltop, delbottom;
     graph_t *root = agroot(g);
@@ -626,8 +627,8 @@ static void adjustEqual(graph_t * g, int delta)
     int maxr = GD_maxrank(g);
     int minr = GD_minrank(g);
 
-    deltop = rank[minr].ht2 - GD_ht2(g);
-    delbottom = rank[maxr].ht1 - GD_ht1(g);
+    deltop = rank[minr].ht2 - margin_total - GD_ht2(g);
+    delbottom = rank[maxr].ht1 - margin_total - GD_ht1(g);
     avail = deltop + delbottom;
     if (avail >= delta) {
  	half = (delta+1) / 2;
@@ -665,6 +666,7 @@ static void adjustEqual(graph_t * g, int delta)
 	GD_ht1(g) += yoff;
     }
 }
+#endif
 
 /* adjustSimple:
  * Expand cluster height by delta, adding half to top
@@ -673,8 +675,11 @@ static void adjustEqual(graph_t * g, int delta)
  * If the top expansion, including any shift from the bottom
  * expansion, exceeds to ht2 of the rank, shift the ranks above
  * the cluster up.
+ *
+ * FIX: There can be excess space between ranks. Not sure where this is
+ * coming from but it could be cleaned up.
  */
-static void adjustSimple(graph_t * g, int delta)
+static void adjustSimple(graph_t * g, int delta, int margin_total)
 {
     int r, bottom, deltop, delbottom;
     graph_t *root = agroot(g);
@@ -683,16 +688,16 @@ static void adjustSimple(graph_t * g, int delta)
     int minr = GD_minrank(g);
 
     bottom = (delta+1) / 2;
-    delbottom = GD_ht1(g) + bottom - rank[maxr].ht1;
+    delbottom = GD_ht1(g) + bottom - (rank[maxr].ht1 - margin_total);
     if (delbottom > 0) {
 	for (r = maxr; r >= minr; r--) {
 	    if (rank[r].n > 0)
 		ND_coord(rank[r].v[0]).y += delbottom;
  	}
-	deltop = GD_ht2(g) + (delta-bottom) + delbottom - rank[minr].ht2;
+	deltop = GD_ht2(g) + (delta-bottom) + delbottom - (rank[minr].ht2 - margin_total);
     }
     else
-	deltop = GD_ht2(g) + (delta-bottom) - rank[minr].ht2;
+	deltop = GD_ht2(g) + (delta-bottom) - (rank[minr].ht2 - margin_total);
     if (deltop > 0) {
 	for (r = minr-1; r >= GD_minrank(root); r--) {
 	    if (rank[r].n > 0)
@@ -709,7 +714,7 @@ static void adjustSimple(graph_t * g, int delta)
  * We divide the extra space between the top and bottom.
  * Adjust the ht1 and ht2 values in the process.
  */
-static void adjustRanks(graph_t * g, int equal)
+static void adjustRanks(graph_t * g, int margin_total)
 {
     int lht;			/* label height */
     int rht;			/* height between top and bottom ranks */
@@ -717,14 +722,17 @@ static void adjustRanks(graph_t * g, int equal)
     int c, ht1, ht2;
 
     rank_t *rank = GD_rank(agroot(g));
-    margin = late_int (g, G_margin, CL_OFFSET, 0);
+    if (g == agroot(g))
+	margin = 0;
+    else
+	margin = late_int (g, G_margin, CL_OFFSET, 0);
 
     ht1 = GD_ht1(g);
     ht2 = GD_ht2(g);
 
     for (c = 1; c <= GD_n_cluster(g); c++) {
 	graph_t *subg = GD_clust(g)[c];
-	adjustRanks(subg, equal);
+	adjustRanks(subg, margin+margin_total);
 	if (GD_maxrank(subg) == GD_maxrank(g))
 	    ht1 = MAX(ht1, GD_ht1(subg) + margin);
 	if (GD_minrank(subg) == GD_minrank(g))
@@ -741,10 +749,7 @@ static void adjustRanks(graph_t * g, int equal)
 	rht = ND_coord(rank[minr].v[0]).y - ND_coord(rank[maxr].v[0]).y;
 	delta = lht - (rht + ht1 + ht2);
 	if (delta > 0) {
-	    if (equal)
-		adjustEqual(g, delta);
-	    else
-		adjustSimple(g, delta);
+	    adjustSimple(g, delta, margin_total);
 	}
     }
 
@@ -875,6 +880,26 @@ static void set_ycoords(graph_t * g)
 	maxht = MAX(maxht, delta);
     }
 
+    /* If there are cluster labels and the drawing is rotated, we need special processing to
+     * allocate enough room. We use adjustRanks for this, and then recompute the maxht if
+     * the ranks are to be equally spaced. This seems simpler and appears to work better than
+     * handling equal spacing as a special case.
+     */
+    if (lbl && GD_flip(g)) {
+	adjustRanks(g, 0);
+	if (GD_exact_ranksep(g)) {  /* recompute maxht */
+	    maxht = 0;
+	    r = GD_maxrank(g);
+	    d0 = (ND_coord(rank[r].v[0])).y;
+	    while (--r >= GD_minrank(g)) {
+		d1 = (ND_coord(rank[r].v[0])).y;
+		delta = d1 - d0;
+		maxht = MAX(maxht, delta);
+		d0 = d1;
+	    }
+	}
+    }
+
     /* re-assign if ranks are equally spaced */
     if (GD_exact_ranksep(g)) {
 	for (r = GD_maxrank(g) - 1; r >= GD_minrank(g); r--)
@@ -882,9 +907,6 @@ static void set_ycoords(graph_t * g)
 			(ND_coord(rank[r].v[0])).y=
 		    (ND_coord(rank[r + 1].v[0])).y + maxht;
     }
-
-    if (lbl && GD_flip(g))
-	adjustRanks(g, GD_exact_ranksep(g));
 
     /* copy ycoord assignment from leftmost nodes to others */
     for (n = GD_nlist(g); n; n = ND_next(n))
