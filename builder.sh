@@ -21,7 +21,7 @@ HOST=`hostname`
 
 # $HOME/.rpmmacros must match this
 RPMBUILD=$HOME/rpmbuild/$HOST
-rpm -rf $RPMBUILD
+rm -rf $RPMBUILD
 mkdir -p $RPMBUILD/SOURCES
 
 # get lastest vanilla sources
