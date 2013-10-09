@@ -552,7 +552,7 @@ static int check_convergence(real max_overlap, real res, int has_penalty_terms, 
 }
 
 void remove_overlap(int dim, SparseMatrix A, real *x, real *label_sizes, int ntry, real initial_scaling, 
-		    int edge_labeling_scheme, int n_constr_nodes, int *constr_nodes, SparseMatrix A_constr, int *flag){
+		    int edge_labeling_scheme, int n_constr_nodes, int *constr_nodes, SparseMatrix A_constr, int do_shrinking, int *flag){
   /* 
      edge_labeling_scheme: if ELSCHEME_NONE, n_constr_nodes/constr_nodes/A_constr are not used
 
@@ -630,7 +630,7 @@ void remove_overlap(int dim, SparseMatrix A, real *x, real *label_sizes, int ntr
 	break;
       } else {
 	res = LARGE;
-	neighborhood_only = FALSE; shrink = 1;
+	neighborhood_only = FALSE; if (do_shrinking) shrink = 1;
 	continue;
       }
     }
@@ -654,7 +654,7 @@ void remove_overlap(int dim, SparseMatrix A, real *x, real *label_sizes, int ntr
   if (has_penalty_terms){
     /* now do without penalty */
     remove_overlap(dim, A, x, label_sizes, ntry, 0.,
-		   ELSCHEME_NONE, 0, NULL, NULL, flag);
+		   ELSCHEME_NONE, 0, NULL, NULL, TRUE, flag);
   }
 
 #ifdef DEBUG
@@ -685,7 +685,7 @@ void remove_overlap(int dim, SparseMatrix A, real *x, real *label_sizes, int ntr
 #else
 #include "types.h"
 #include "SparseMatrix.h"
-void remove_overlap(int dim, SparseMatrix A, int m, real *x, real *label_sizes, int ntry, real initial_scaling, int *flag)
+void remove_overlap(int dim, SparseMatrix A, int m, real *x, real *label_sizes, int ntry, real initial_scaling, int do_shrinking, int *flag)
 {
     agerr(AGERR, "remove_overlap: Graphviz not built with triangulation library\n");
 }

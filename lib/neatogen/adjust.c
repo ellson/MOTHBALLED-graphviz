@@ -814,7 +814,7 @@ fdpAdjust (graph_t* g, adjust_data* am)
     }
 
     remove_overlap(Ndim, A, pos, sizes, am->value, am->scaling, 
-	ELSCHEME_NONE, 0, NULL, NULL, &flag);
+		   ELSCHEME_NONE, 0, NULL, NULL, TRUE, &flag);
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	real *npos = pos + (Ndim * ND_id(n));
