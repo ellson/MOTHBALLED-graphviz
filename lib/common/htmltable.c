@@ -1490,6 +1490,7 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
 #else
 	e = agedge(rowg, t, h);
 #endif
+
 	y = 0;
 	for (r = 0; r < cp->rspan; r++)
 	    y += minr[cp->row + r];
@@ -1548,6 +1549,9 @@ void sizeArray(htmltbl_t * tbl)
 {
     graph_t *rowg;
     graph_t *colg;
+#ifdef WIN32
+    Agdesc_t dir = { 1, 0, 0, 1 };
+#endif
 
     /* Do the 1D cases by hand */
     if ((tbl->rc == 1) || (tbl->cc == 1)) {
@@ -1559,8 +1563,13 @@ void sizeArray(htmltbl_t * tbl)
     tbl->widths = N_NEW(tbl->cc + 1, int);
 
 #ifdef WITH_CGRAPH
+#ifdef WIN32
+    rowg = agopen("rowg", dir, NIL(Agdisc_t *));
+    colg = agopen("colg", dir, NIL(Agdisc_t *));
+#else
     rowg = agopen("rowg", Agdirected, NIL(Agdisc_t *));
     colg = agopen("colg", Agdirected, NIL(Agdisc_t *));
+#endif
     /* Only need GD_nlist */
     agbindrec(rowg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	// graph custom data
     agbindrec(colg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	// graph custom data
