@@ -1369,6 +1369,10 @@ static void closeGraphs(graph_t * rowg, graph_t * colg)
     agclose(colg);
 }
 
+/* checkChain:
+ * For each pair of nodes in the node list, add an edge if none exists.
+ * Assumes node list has nodes ordered correctly.
+ */
 static void checkChain(graph_t * g)
 {
     node_t *t;
@@ -1391,15 +1395,39 @@ static void checkChain(graph_t * g)
     }
 }
 
+/* checkEdge:
+ * Check for edge in g. If it exists, set its minlen to max of sz and
+ * current minlen. Else, create it and set minlen to sz.
+ */
+static void
+checkEdge (graph_t* g, node_t* t, node_t* h, int sz)
+{
+    edge_t* e;
+
+    e = agfindedge (g, t, h);
+    if (e)
+	ED_minlen(e) = MAX(ED_minlen(e), sz);
+    else {
+#ifdef WITH_CGRAPH
+	e = agedge(g, t, h, NULL, 1);
+	agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
+#else
+	e = agedge(g, t, h);
+#endif
+	ED_minlen(e) = sz;
+	elist_append(e, ND_out(t));
+	elist_append(e, ND_in(h));
+    }
+}
+
 /* makeGraphs:
  * Generate dags modeling the row and column constraints.
  * If the table has cc columns, we create the graph
  *  0 -> 1 -> 2 -> ... -> cc
  * and if a cell starts in column c with span cspan, with
  * width w, we add the edge c -> c+cspan [minlen = w].
+ * Ditto for rows.
  *
- * We might simplify the graph by removing multiedges,
- * using the max minlen, but will affect the balancing?
  */
 void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
 {
@@ -1408,10 +1436,7 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
     node_t *t;
     node_t *lastn;
     node_t *h;
-    edge_t *e;
     int i;
-    int *minc;
-    int *minr;
 
     lastn = NULL;
     for (i = 0; i <= tbl->cc; i++) {
@@ -1447,69 +1472,21 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
 	    lastn = GD_nlist(rowg) = t;
 	}
     }
-    minr = N_NEW(tbl->rc, int);
-    minc = N_NEW(tbl->cc, int);
+
     for (cells = tbl->u.n.cells; *cells; cells++) {
-	int x, y, c, r;
-	cp = *cells;
-	x = (cp->data.box.UR.x + (cp->cspan - 1)) / cp->cspan;
-	for (c = 0; c < cp->cspan; c++)
-	    minc[cp->col + c] = MAX(minc[cp->col + c], x);
-	y = (cp->data.box.UR.y + (cp->rspan - 1)) / cp->rspan;
-	for (r = 0; r < cp->rspan; r++)
-	    minr[cp->row + r] = MAX(minr[cp->row + r], y);
-    }
-    for (cells = tbl->u.n.cells; *cells; cells++) {
-	int x, y, c, r;
 	cp = *cells;
 	t = agfindnode(colg, nToName(cp->col));
 	h = agfindnode(colg, nToName(cp->col + cp->cspan));
-#ifdef WITH_CGRAPH
-	e = agedge(colg, t, h, NULL, 1);
-	agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
-#else
-	e = agedge(colg, t, h);
-#endif
-	x = 0;
-	for (c = 0; c < cp->cspan; c++)
-	    x += minc[cp->col + c];
-	ED_minlen(e) = x;
-	/* ED_minlen(e) = cp->data.box.UR.x; */
-#if (DEBUG==2)
-	fprintf(stderr, "col edge %s ", agnameof(t));
-	fprintf(stderr, "-> %s %d\n", agnameof(h), ED_minlen(e));
-#endif
-	elist_append(e, ND_out(t));
-	elist_append(e, ND_in(h));
+	checkEdge (colg, t, h, cp->data.box.UR.x);
 
 	t = agfindnode(rowg, nToName(cp->row));
 	h = agfindnode(rowg, nToName(cp->row + cp->rspan));
-#ifdef WITH_CGRAPH
-	e = agedge(rowg, t, h, NULL, 1);
-	agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
-#else
-	e = agedge(rowg, t, h);
-#endif
-
-	y = 0;
-	for (r = 0; r < cp->rspan; r++)
-	    y += minr[cp->row + r];
-	ED_minlen(e) = y;
-	/* ED_minlen(e) = cp->data.box.UR.y; */
-#if (DEBUG==2)
-	fprintf(stderr, "row edge %s -> %s %d\n", agnameof(t), agnameof(h),
-		ED_minlen(e));
-#endif
-	elist_append(e, ND_out(t));
-	elist_append(e, ND_in(h));
+	checkEdge (rowg, t, h, cp->data.box.UR.y);
     }
 
     /* Make sure that 0 <= 1 <= 2 ...k. This implies graph connected. */
     checkChain(colg);
     checkChain(rowg);
-
-    free(minc);
-    free(minr);
 }
 
 /* setSizes:
@@ -1550,7 +1527,9 @@ void sizeArray(htmltbl_t * tbl)
     graph_t *rowg;
     graph_t *colg;
 #ifdef WIN32
-    Agdesc_t dir = { 1, 0, 0, 1 };
+    Agdesc_t dir = { 1, 1, 0, 1 };
+#else
+    Agdesc_t dir = Agstrictdirected;
 #endif
 
     /* Do the 1D cases by hand */
@@ -1563,13 +1542,8 @@ void sizeArray(htmltbl_t * tbl)
     tbl->widths = N_NEW(tbl->cc + 1, int);
 
 #ifdef WITH_CGRAPH
-#ifdef WIN32
     rowg = agopen("rowg", dir, NIL(Agdisc_t *));
     colg = agopen("colg", dir, NIL(Agdisc_t *));
-#else
-    rowg = agopen("rowg", Agdirected, NIL(Agdisc_t *));
-    colg = agopen("colg", Agdirected, NIL(Agdisc_t *));
-#endif
     /* Only need GD_nlist */
     agbindrec(rowg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	// graph custom data
     agbindrec(colg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	// graph custom data
