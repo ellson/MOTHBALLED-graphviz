@@ -178,6 +178,7 @@ BuildRequires: libwebp-devel
 
 #-- main graphviz rpm ------------------------------------------------
 Requires:         urw-fonts
+Requires:         %{name}-libs = %{version}-%{release}
 Requires(post):   /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 
@@ -271,6 +272,23 @@ fi
 %{_mandir}/man1/twopi.1*
 %{_mandir}/man1/unflatten.1*
 %{_mandir}/man7/graphviz.7*
+%dir %{_datadir}/graphviz
+%{_datadir}/graphviz/gvpr/*
+%dir %{_libdir}/graphviz
+%{_libdir}/graphviz/libgvplugin_core.so.*
+%{_libdir}/graphviz/libgvplugin_dot_layout.so.*
+%{_libdir}/graphviz/libgvplugin_neato_layout.so.*
+
+#-- graphviz-libs rpm --------------------------------------------------
+%package libs
+Group:            Applications/Multimedia
+Summary:          Graphviz base libs
+
+%description libs
+Graphviz core libs 
+
+%files libs
+%defattr(-,root,root,-)
 %{_libdir}/libcdt.so.*
 %{_libdir}/libcgraph.so.*
 %if ! 0%{?CGRAPH}
@@ -280,12 +298,6 @@ fi
 %{_libdir}/libgvpr.so.*
 %{_libdir}/libpathplan.so.*
 %{_libdir}/libxdot.so.4*
-%dir %{_libdir}/graphviz
-%{_libdir}/graphviz/libgvplugin_core.so.*
-%{_libdir}/graphviz/libgvplugin_dot_layout.so.*
-%{_libdir}/graphviz/libgvplugin_neato_layout.so.*
-%dir %{_datadir}/graphviz
-%{_datadir}/graphviz/gvpr/*
 
 #-- graphviz-x rpm --------------------------------------------------
 %if 0%{?__X}
@@ -308,11 +320,18 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %{_bindir}/lefty
 %{_bindir}/lneato
 %{_bindir}/dotty
+%{_bindir}/vimdot
 %{_mandir}/man1/lefty.1*
 %{_mandir}/man1/lneato.1*
 %{_mandir}/man1/dotty.1*
 %{_mandir}/man1/vimdot.1*
 %{_datadir}/graphviz/lefty
+%if 0%{?SMYRNA}
+%{_bindir}/smyrna
+%{_datadir}/graphviz/smyrna
+%{_mandir}/man1/smyrna.1*
+%endif
+%{_libdir}/graphviz/libgvplugin_xlib.*
 %if 0%{?PANGOCAIRO}
 %{_libdir}/graphviz/libgvplugin_pango.*
 %endif
@@ -323,9 +342,7 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %{_libdir}/graphviz/libgvplugin_gdk_pixbuf.*
 %endif
 %if 0%{?GTK}
-%{_bindir}/vimdot
 %{_libdir}/graphviz/libgvplugin_gtk.*
-%{_libdir}/graphviz/libgvplugin_xlib.*
 %endif
 %if 0%{?GHOSTSCRIPT}
 %{_libdir}/graphviz/libgvplugin_gs.*
@@ -335,11 +352,6 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %endif
 %if 0%{?RSVG}
 %{_libdir}/graphviz/libgvplugin_rsvg.*
-%endif
-%if 0%{?SMYRNA}
-%{_bindir}/smyrna
-%{_datadir}/graphviz/smyrna
-%{_mandir}/man1/smyrna.1*
 %endif
 %endif
 
@@ -675,19 +687,43 @@ Various tcl packages (extensions) for the graphviz tools.
 %package devel
 Group:          Development/Libraries
 Summary:        Development package for graphviz
-Requires:       %{name} = %{version}-%{release}, pkgconfig
+Requires:       %{name}-libs = %{version}-%{release}, pkgconfig
 
 %description devel
 A collection of tools for the manipulation and layout
 of graphs (as in nodes and edges, not as in bar-charts).
-This package contains development files for graphviz.
+This package contains development files for graphviz-libs.
 
 %files devel
 %defattr(-,root,root,-)
 %{_includedir}/graphviz
-%{_libdir}/*.so
-%{_libdir}/pkgconfig/*.pc
-%{_mandir}/man3/*.3.*
+%{_libdir}/libcdt.so
+%{_mandir}/man3/cdt.3.*
+%{_libdir}/pkgconfig/libcdt.pc
+%{_libdir}/libcgraph.so
+%{_mandir}/man3/cgraph.3.*
+%{_libdir}/pkgconfig/libcgraph.pc
+%if ! 0%{?CGRAPH}
+%{_libdir}/libgraph.so
+%{_mandir}/man3/graph.3.*
+%{_libdir}/pkgconfig/libgraph.pc
+%else
+%exclude %{_mandir}/man3/graph.3.*
+%endif
+%{_libdir}/libgvc.so
+%{_mandir}/man3/gvc.3.*
+%{_libdir}/pkgconfig/libgvc.pc
+%{_libdir}/libgvpr.so
+#%{_mandir}/man3/gvpr.3.*
+%{_libdir}/pkgconfig/libgvpr.pc
+%{_libdir}/libpathplan.so
+%{_mandir}/man3/pathplan.3.*
+%{_libdir}/pkgconfig/libpathplan.pc
+%{_libdir}/libxdot.so
+%{_mandir}/man3/xdot.3.*
+%{_libdir}/pkgconfig/libxdot.pc
+%{_mandir}/man3/expr.3.*
+%{_mandir}/man3/pack.3.*
 %exclude %{_libdir}/graphviz/libgvplugin*
 %exclude %{_libdir}/graphviz/*.so
 
