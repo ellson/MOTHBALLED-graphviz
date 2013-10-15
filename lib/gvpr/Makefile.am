@@ -1,6 +1,7 @@
 # $Id$Revision: 
 ## Process this file with automake to produce Makefile.in
 
+pdfdir = $(pkgdatadir)/doc/pdf
 pkgconfigdir = $(libdir)/pkgconfig
 
 GVPR_VERSION="2:0:0"
@@ -25,8 +26,8 @@ noinst_HEADERS = actions.h compile.h gprstate.h parse.h queue.h trieFA.h trie.c
 noinst_LTLIBRARIES = libgvpr_C.la
 lib_LTLIBRARIES = libgvpr.la
 pkgconfig_DATA = libgvpr.pc
-man_MANS = libgvpr.3
-pdf_DATA = libgvpr.3.pdf
+man_MANS = gvpr.3
+pdf_DATA = gvpr.3.pdf
 
 libgvpr_C_la_SOURCES = actions.c compile.c gvpr.c gprstate.c parse.c queue.c 
 $(libgvpr_C_la_OBJECTS): gdefs.h
@@ -35,8 +36,8 @@ libgvpr_C_la_DEPENDENCIES = \
 	$(top_builddir)/lib/common/libcommon_C.la \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la
 
-libgvpr.3.pdf: $(srcdir)/libgvpr.3
-	- @GROFF@ -Tps -man $(srcdir)/libgvpr.3 | @PS2PDF@ - - >libgvpr.3.pdf
+gvpr.3.pdf: $(srcdir)/gvpr.3
+	- @GROFF@ -Tps -man $(srcdir)/gvpr.3 | @PS2PDF@ - - >gvpr.3.pdf
 
 
 libgvpr_la_LDFLAGS = -version-info $(GVPR_VERSION) -no-undefined
