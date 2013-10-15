@@ -714,7 +714,7 @@ This package contains development files for graphviz-libs.
 %{_mandir}/man3/gvc.3.*
 %{_libdir}/pkgconfig/libgvc.pc
 %{_libdir}/libgvpr.so
-#%{_mandir}/man3/gvpr.3.*
+%{_mandir}/man3/libgvpr.3.*
 %{_libdir}/pkgconfig/libgvpr.pc
 %{_libdir}/libpathplan.so
 %{_mandir}/man3/pathplan.3.*
