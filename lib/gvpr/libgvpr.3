@@ -1,0 +1,70 @@
+.TH LIBGVPR 3 "15 OCTOBER 2013"
+.SH NAME
+\fBlibgvpr\fR \- library for graph filtering
+.SH SYNOPSIS
+.ta .75i 1.5i 2.25i 3i 3.75i 4.5i 5.25i 6i
+.PP
+.nf
+\f5
+#include <graphviz/gvpr.h>
+
+
+  /* If set, gvpr calls exit() on errors */
+#define GV_USE_EXIT 1
+  /* If set, gvpr stores output graphs in gvpropts */
+#define GV_USE_OUTGRAPH 2
+
+typedef ssize_t (*gvprwr) (void*, const char *buf, size_t nbyte, void*);
+
+typedef struct {
+    Agraph_t** ingraphs;      /* NULL-terminated array of input graphs */
+    int n_outgraphs;          /* if GV_USE_OUTGRAPH set, output graphs */
+    Agraph_t** outgraphs;
+    gvprwr out;               /* write function for stdout */
+    gvprwr err;               /* write function for stderr */
+    int flags;
+} gvpropts;
+
+extern int gvpr (int argc, char *argv[], gvpropts* opts);
+
+\fP
+.fi
+.SH DESCRIPTION
+The \fBgvpr\fP library allows an application to perform general-purpose
+graph manipulation and filtering based on an awk-like language. (For a more
+complete description of this language, see gvpr(1).) 
+.P
+The library has a single entry point: the \fIgvpr()\fP function. This provides a
+standard \fIargc/argv\fP interface, along with a structure to support
+in-core graphs, application print functions, along with additional options.
+.P
+When called, \fIgvpr()\fP processes any flags provided in the \fIargv\fP array, and compiles
+the \fBgvpr\fP program to be run (provided either via the \fI-f\fP flag or as an item
+in \fIargv\fP). It then runs the program on each input graph. If \fIopt->ingraphs\fP is
+non-NULL, this is taken as a NULL-terminated array of in-core graphs to be used as input.
+Otherwise, the unprocessed elements of \fIargv\fP are taken to be the names of files containing
+graphs to be processed. (If none remain, \fBgvpr\fP will read from stdin.)
+.P
+Normally, \fBgvpr\fP writes any output graph to stdout. However, if 
+the flag \fIGV_USE_OUTGRAPH\fP is set in \fIopts->flags\fP, the output graphs will be stored in
+an array pointed to be \fIopts->outgraphs\fP and the count will be stored in \fIopts->n_outgraphs\fP.
+In this case, the application must call \fIagclose()\fP on each output graph when it is done with
+it.
+.P
+The application can override the default write functions for stdout and stderr using the
+\fIout\fP and \fIerr\fP fields in \fIopts\fP. When called by \fBgvpr\fP, the second argument
+will point to a buffer of characters to be written, while the third argument provides the
+number of characters. The function should return the number of bytes actually written.
+.SH RETURN VALUES
+Normally, \fBgvpr\fP returns 0 on success and non-zero if an error occurs. Any relevant
+error message will have been written to stderr or the application's \fIopts->err\fP function will
+have been called. If, however, \fIGV_USE_EXIT\fP is set in \fIopts->flags\fP, \fBgvpr\fP will call
+exit(3) in case of an error.
+.SH SEE ALSO
+.BR gvpr (1),
+.BR awk (1),
+.BR cgraph (3)
+
+.SH AUTHORS
+Emden Gansner (erg@research.att.com).
+
