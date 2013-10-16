@@ -29,11 +29,7 @@
 #include "gvcproc.h"
 
 /* for agerr() */
-#if WITH_CGRAPH
 #include "cgraph.h"
-#else
-#include "graph.h"
-#endif
 
 static int gvloadimage_select(GVJ_t * job, char *str)
 {

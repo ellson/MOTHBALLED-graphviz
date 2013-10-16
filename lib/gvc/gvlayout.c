@@ -23,11 +23,7 @@
 #include "const.h"
 #include "gvplugin_layout.h"
 #include "gvcint.h"
-#if WITH_CGRAPH
 #include "cgraph.h"
-#else
-#include "graph.h"
-#endif
 #include "gvcproc.h"
 #include "gvc.h"
 
@@ -63,9 +59,7 @@ int gvLayoutJobs(GVC_t * gvc, Agraph_t * g)
     char *p;
     int rc;
 
-#ifdef WITH_CGRAPH
     agbindrec(g, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
-#endif
     GD_gvc(g) = gvc;
     if (g != agroot(g))
 	GD_gvc(agroot(g)) = gvc;
@@ -106,11 +100,9 @@ int gvLayoutJobs(GVC_t * gvc, Agraph_t * g)
  */
 int gvFreeLayout(GVC_t * gvc, Agraph_t * g)
 {
-#ifdef WITH_CGRAPH
     /* skip if no Agraphinfo_t yet */
     if (! agbindrec(g, "Agraphinfo_t", 0, TRUE))
 	    return 0;
-#endif
 
     if (GD_cleanup(g)) {
 	(GD_cleanup(g))(g);
@@ -119,10 +111,6 @@ int gvFreeLayout(GVC_t * gvc, Agraph_t * g)
     
     if (GD_drawing(g)) {
 	graph_cleanup(g);
-#ifndef WITH_CGRAPH
-	GD_drawing(g) = NULL;
-	GD_drawing(g->root) = NULL;
-#endif
     }
     return 0;
 }
