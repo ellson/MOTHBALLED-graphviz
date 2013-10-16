@@ -46,6 +46,7 @@ extern int strcasecmp(const char *s1, const char *s2);
  */
 #define ELEM(x) #x,
 static char *api_names[] = { APIS };	/* "render", "layout", ... */
+
 #undef ELEM
 
 /* translate a string api name to its type, or -1 on error */
@@ -55,7 +56,7 @@ api_t gvplugin_api(char *str)
 
     for (api = 0; api < ARRAY_SIZE(api_names); api++) {
 	if (strcmp(str, api_names[api]) == 0)
-	    return (api_t)api;
+	    return (api_t) api;
     }
     return -1;			/* invalid api */
 }
@@ -74,12 +75,11 @@ char *gvplugin_api_name(api_t api)
  * last install wins.
  */
 boolean gvplugin_install(GVC_t * gvc, api_t api, const char *typestr,
-	int quality, gvplugin_package_t *package,
-	gvplugin_installed_t * typeptr)
+			 int quality, gvplugin_package_t * package, gvplugin_installed_t * typeptr)
 {
     gvplugin_available_t *plugin, **pnext;
 #define TYPSIZ 63
-    char *p, pins[TYPSIZ+1], pnxt[TYPSIZ+1];
+    char *p, pins[TYPSIZ + 1], pnxt[TYPSIZ + 1];
 
     if (api < 0)
 	return FALSE;
@@ -87,7 +87,7 @@ boolean gvplugin_install(GVC_t * gvc, api_t api, const char *typestr,
     strncpy(pins, typestr, TYPSIZ);
     if ((p = strchr(pins, ':')))
 	*p = '\0';
-    
+
     /* point to the beginning of the linked list of plugins for this api */
     pnext = &(gvc->apis[api]);
 
@@ -132,8 +132,7 @@ boolean gvplugin_install(GVC_t * gvc, api_t api, const char *typestr,
  * manually changed in the config file.
  */
 static boolean gvplugin_activate(GVC_t * gvc, api_t api,
-		 const char *typestr, char *name, char *path,
-		 gvplugin_installed_t * typeptr)
+				 const char *typestr, char *name, char *path, gvplugin_installed_t * typeptr)
 {
     gvplugin_available_t **pnext;
 
@@ -145,10 +144,10 @@ static boolean gvplugin_activate(GVC_t * gvc, api_t api,
     pnext = &(gvc->apis[api]);
 
     while (*pnext) {
-	if ( (strcasecmp(typestr, (*pnext)->typestr) == 0)
-	  && (strcasecmp(name, (*pnext)->package->name) == 0)
-	  && ((*pnext)->package->path != 0)
-	  && (strcasecmp(path, (*pnext)->package->path) == 0)) {
+	if ((strcasecmp(typestr, (*pnext)->typestr) == 0)
+	    && (strcasecmp(name, (*pnext)->package->name) == 0)
+	    && ((*pnext)->package->path != 0)
+	    && (strcasecmp(path, (*pnext)->package->path) == 0)) {
 	    (*pnext)->typeptr = typeptr;
 	    return TRUE;
 	}
@@ -157,7 +156,7 @@ static boolean gvplugin_activate(GVC_t * gvc, api_t api,
     return FALSE;
 }
 
-gvplugin_library_t *gvplugin_library_load(GVC_t *gvc, char *path)
+gvplugin_library_t *gvplugin_library_load(GVC_t * gvc, char *path)
 {
 #ifdef ENABLE_LTDL
     lt_dlhandle hndl;
@@ -169,19 +168,18 @@ gvplugin_library_t *gvplugin_library_load(GVC_t *gvc, char *path)
     char *libdir;
     char *suffix = "_LTX_library";
 
-    if (! gvc->common.demand_loading)
+    if (!gvc->common.demand_loading)
 	return NULL;
 
     libdir = gvconfig_libdir(gvc);
     len = strlen(libdir) + 1 + strlen(path) + 1;
     if (len > lenp) {
-	lenp = len+20;
+	lenp = len + 20;
 	if (p)
 	    p = grealloc(p, lenp);
 	else
 	    p = gmalloc(lenp);
     }
-	
 #ifdef WIN32
     if (path[1] == ':') {
 #else
@@ -195,50 +193,50 @@ gvplugin_library_t *gvplugin_library_load(GVC_t *gvc, char *path)
     }
 
     if (lt_dlinit()) {
-        agerr(AGERR, "failed to init libltdl\n");
-        return NULL;
+	agerr(AGERR, "failed to init libltdl\n");
+	return NULL;
     }
-    hndl = lt_dlopen (p);
+    hndl = lt_dlopen(p);
     if (!hndl) {
-        agerr(AGWARN, "Could not load \"%s\" - %s\n", p, (char*)lt_dlerror());
-        return NULL;
+	agerr(AGWARN, "Could not load \"%s\" - %s\n", p, (char *) lt_dlerror());
+	return NULL;
     }
     if (gvc->common.verbose >= 2)
 	fprintf(stderr, "Loading %s\n", p);
 
-	s = strrchr(p, DIRSEP[0]);
-    len = strlen(s); 
+    s = strrchr(p, DIRSEP[0]);
+    len = strlen(s);
 #if defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
     if (len < strlen("/gvplugin_x")) {
 #else
     if (len < strlen("/libgvplugin_x")) {
 #endif
-	agerr (AGERR,"invalid plugin path \"%s\"\n", p);
+	agerr(AGERR, "invalid plugin path \"%s\"\n", p);
 	return NULL;
     }
     sym = gmalloc(len + strlen(suffix) + 1);
 #if defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
-    strcpy(sym, s+1);         /* strip leading "/"  */
+    strcpy(sym, s + 1);		/* strip leading "/"  */
 #else
-    strcpy(sym, s+4);         /* strip leading "/lib" or "/cyg" */
+    strcpy(sym, s + 4);		/* strip leading "/lib" or "/cyg" */
 #endif
 #if defined(__CYGWIN__) || defined(__MINGW32__)
-    s = strchr(sym, '-');     /* strip trailing "-1.dll" */
-#else 
-    s = strchr(sym, '.');     /* strip trailing ".so.0" or ".dll" or ".sl" */
+    s = strchr(sym, '-');	/* strip trailing "-1.dll" */
+#else
+    s = strchr(sym, '.');	/* strip trailing ".so.0" or ".dll" or ".sl" */
 #endif
-    strcpy(s,suffix);         /* append "_LTX_library" */
+    strcpy(s, suffix);		/* append "_LTX_library" */
 
-    ptr = lt_dlsym (hndl, sym);
+    ptr = lt_dlsym(hndl, sym);
     if (!ptr) {
-        agerr (AGERR,"failed to resolve %s in %s\n", sym, p);
+	agerr(AGERR, "failed to resolve %s in %s\n", sym, p);
 	free(sym);
-        return NULL;
+	return NULL;
     }
     free(sym);
-    return (gvplugin_library_t *)(ptr);
+    return (gvplugin_library_t *) (ptr);
 #else
-    agerr (AGERR,"dynamic loading not available\n");
+    agerr(AGERR, "dynamic loading not available\n");
     return NULL;
 #endif
 }
@@ -272,43 +270,40 @@ gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, const char *str)
     if (api < 0)
 	return NULL;
 
-    if (api == API_device
-	|| api == API_loadimage) /* api dependencies - FIXME - find better way to code these *s */
-
-        apidep = API_render;	
+    if (api == API_device || api == API_loadimage)
+	/* api dependencies - FIXME - find better way to code these *s */
+	apidep = API_render;
     else
 	apidep = api;
 
-    strncpy(reqtyp, str, TYPBUFSIZ-1);
+    strncpy(reqtyp, str, TYPBUFSIZ - 1);
     reqdep = strchr(reqtyp, ':');
     if (reqdep) {
 	*reqdep++ = '\0';
-        reqpkg = strchr(reqdep, ':');
-        if (reqpkg)
-            *reqpkg++ = '\0';
-    }
-    else
+	reqpkg = strchr(reqdep, ':');
+	if (reqpkg)
+	    *reqpkg++ = '\0';
+    } else
 	reqpkg = NULL;
 
     /* iterate the linked list of plugins for this api */
     for (pnext = &(gvc->apis[api]); *pnext; pnext = &((*pnext)->next)) {
-        strncpy(typ, (*pnext)->typestr, TYPBUFSIZ-1);
+	strncpy(typ, (*pnext)->typestr, TYPBUFSIZ - 1);
 	dep = strchr(typ, ':');
-	if (dep) 
+	if (dep)
 	    *dep++ = '\0';
-	if (strcmp(typ, reqtyp)) 
-	    continue;  /* types empty or mismatched */
- 	if (dep && reqdep && strcmp(dep, reqdep))
-	    continue;  /* dependencies not empty, but mismatched */
-	if (! reqpkg || strcmp(reqpkg, (*pnext)->package->name) == 0)
-	{
-		/* found with no packagename constraints, or with required matching packagname */
-    
-		if (dep && (apidep != api)) /* load dependency if needed, continue if can't find */
-			if (! (gvplugin_load(gvc, apidep, dep)))
-				continue;
-		break;
-    }
+	if (strcmp(typ, reqtyp))
+	    continue;		/* types empty or mismatched */
+	if (dep && reqdep && strcmp(dep, reqdep))
+	    continue;		/* dependencies not empty, but mismatched */
+	if (!reqpkg || strcmp(reqpkg, (*pnext)->package->name) == 0) {
+	    /* found with no packagename constraints, or with required matching packagname */
+
+	    if (dep && (apidep != api))	/* load dependency if needed, continue if can't find */
+		if (!(gvplugin_load(gvc, apidep, dep)))
+		    continue;
+	    break;
+	}
     }
     rv = *pnext;
 
@@ -316,23 +311,17 @@ gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, const char *str)
 	library = gvplugin_library_load(gvc, rv->package->path);
 	if (library) {
 
-            /* Now activate the library with real type ptrs */
-            for (apis = library->apis; (types = apis->types); apis++) {
+	    /* Now activate the library with real type ptrs */
+	    for (apis = library->apis; (types = apis->types); apis++) {
 		for (i = 0; types[i].type; i++) {
 		    /* NB. quality is not checked or replaced
- 		     *   in case user has manually edited quality in config */
-                    gvplugin_activate(gvc,
-				apis->api,
-				types[i].type,
-				library->packagename,
-				rv->package->path,
-				&types[i]);
+		     *   in case user has manually edited quality in config */
+		    gvplugin_activate(gvc, apis->api, types[i].type, library->packagename, rv->package->path, &types[i]);
 		}
-            }
-    	    if (gvc->common.verbose >= 1)
-		fprintf(stderr, "Activated plugin library: %s\n",
-			rv->package->path ? rv->package->path : "<builtin>");
-        }
+	    }
+	    if (gvc->common.verbose >= 1)
+		fprintf(stderr, "Activated plugin library: %s\n", rv->package->path ? rv->package->path : "<builtin>");
+	}
     }
 
     /* one last check for successfull load */
@@ -340,11 +329,7 @@ gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, const char *str)
 	rv = NULL;
 
     if (rv && gvc->common.verbose >= 1)
-	fprintf(stderr, "Using %s: %s:%s\n",
-		api_names[api],
-		rv->typestr,
-		rv->package->name
-		);
+	fprintf(stderr, "Using %s: %s:%s\n", api_names[api], rv->typestr, rv->package->name);
 
     gvc->api[api] = rv;
     return rv;
@@ -367,7 +352,7 @@ char *gvplugin_list(GVC_t * gvc, api_t api, const char *str)
 	return NULL;
 
     /* check for valid str */
-    if (! str)
+    if (!str)
 	return NULL;
 
     if (first) {
@@ -384,17 +369,19 @@ char *gvplugin_list(GVC_t * gvc, api_t api, const char *str)
     /* point to the beginning of the linked list of plugins for this api */
     plugin = &(gvc->apis[api]);
 
-    if (p) {	/* if str contains a ':', and if we find a match for the type,
-		   then just list the alternative paths for the plugin */
+    if (p) {			/* if str contains a ':', and if we find a match for the type,
+				   then just list the alternative paths for the plugin */
 	for (pnext = plugin; *pnext; pnext = &((*pnext)->next)) {
-            q = strdup((*pnext)->typestr);
+	    q = strdup((*pnext)->typestr);
 	    if ((p = strchr(q, ':')))
-                *p++ = '\0';
+		*p++ = '\0';
 	    /* list only the matching type, or all types if s is an empty string */
 	    if (!s[0] || strcasecmp(s, q) == 0) {
 		/* list each member of the matching type as "type:path" */
-		agxbputc(&xb,' '); agxbput(&xb, (*pnext)->typestr);
-		agxbputc(&xb,':'); agxbput(&xb, (*pnext)->package->name);
+		agxbputc(&xb, ' ');
+		agxbput(&xb, (*pnext)->typestr);
+		agxbputc(&xb, ':');
+		agxbput(&xb, (*pnext)->package->name);
 		new = FALSE;
 	    }
 	    free(q);
@@ -411,14 +398,15 @@ char *gvplugin_list(GVC_t * gvc, api_t api, const char *str)
 		*p++ = '\0';
 	    if (!typestr_last || strcasecmp(typestr_last, q) != 0) {
 		/* list it as "type"  i.e. w/o ":path" */
-		agxbputc(&xb,' '); agxbput(&xb, q);
+		agxbputc(&xb, ' ');
+		agxbput(&xb, q);
 		new = FALSE;
 	    }
-	    if(!typestr_last)
+	    if (!typestr_last)
 		free(typestr_last);
 	    typestr_last = q;
 	}
-	if(!typestr_last)
+	if (!typestr_last)
 	    free(typestr_last);
     }
     if (new)
@@ -439,21 +427,22 @@ char *gvplugin_list(GVC_t * gvc, api_t api, const char *str)
  * At present, the str argument is unused, but may be used to modify
  * the search as in gvplugin_list above.
  */
-char **gvPluginList(GVC_t * gvc, char* kind, int* sz, const char *str)
+char **gvPluginList(GVC_t * gvc, char *kind, int *sz, const char *str)
 {
     int api;
     gvplugin_available_t **pnext, **plugin;
-    int cnt = 0;    
-    char** list = NULL;
+    int cnt = 0;
+    char **list = NULL;
     char *p, *q, *typestr_last;
 
-    if (!kind) return NULL;
+    if (!kind)
+	return NULL;
     for (api = 0; api < ARRAY_SIZE(api_names); api++) {
-	if (!strcasecmp(kind,api_names[api]))
+	if (!strcasecmp(kind, api_names[api]))
 	    break;
     }
     if (api == ARRAY_SIZE(api_names)) {
-        agerr(AGERR, "unrecognized api name \"%s\"\n", kind);
+	agerr(AGERR, "unrecognized api name \"%s\"\n", kind);
 	return NULL;
     }
 
@@ -461,12 +450,12 @@ char **gvPluginList(GVC_t * gvc, char* kind, int* sz, const char *str)
     plugin = &(gvc->apis[api]);
     typestr_last = NULL;
     for (pnext = plugin; *pnext; pnext = &((*pnext)->next)) {
-	    /* list only one instance of type */
+	/* list only one instance of type */
 	q = strdup((*pnext)->typestr);
 	if ((p = strchr(q, ':')))
 	    *p++ = '\0';
 	if (!typestr_last || strcasecmp(typestr_last, q) != 0) {
-	    list = RALLOC(cnt+1,list,char*);
+	    list = RALLOC(cnt + 1, list, char *);
 	    list[cnt++] = q;
 	}
 	typestr_last = q;
@@ -482,27 +471,26 @@ void gvplugin_write_status(GVC_t * gvc)
 
 #ifdef ENABLE_LTDL
     if (gvc->common.demand_loading) {
-        fprintf(stderr,"The plugin configuration file:\n\t%s\n", gvc->config_path);
-        if (gvc->config_found)
-	    fprintf(stderr,"\t\twas successfully loaded.\n");
-        else
-	    fprintf(stderr,"\t\twas not found or not usable. No on-demand plugins.\n");
-    }
-    else {
-        fprintf(stderr,"Demand loading of plugins is disabled.\n");
+	fprintf(stderr, "The plugin configuration file:\n\t%s\n", gvc->config_path);
+	if (gvc->config_found)
+	    fprintf(stderr, "\t\twas successfully loaded.\n");
+	else
+	    fprintf(stderr, "\t\twas not found or not usable. No on-demand plugins.\n");
+    } else {
+	fprintf(stderr, "Demand loading of plugins is disabled.\n");
     }
 #endif
 
     for (api = 0; api < ARRAY_SIZE(api_names); api++) {
-	if (gvc->common.verbose >= 2) 
-	    fprintf(stderr,"    %s\t: %s\n", api_names[api], gvplugin_list(gvc, api, ":"));
+	if (gvc->common.verbose >= 2)
+	    fprintf(stderr, "    %s\t: %s\n", api_names[api], gvplugin_list(gvc, api, ":"));
 	else
-	    fprintf(stderr,"    %s\t: %s\n", api_names[api], gvplugin_list(gvc, api, "?"));
+	    fprintf(stderr, "    %s\t: %s\n", api_names[api], gvplugin_list(gvc, api, "?"));
     }
 
 }
 
-Agraph_t * gvplugin_graph(GVC_t * gvc)
+Agraph_t *gvplugin_graph(GVC_t * gvc)
 {
     Agraph_t *g, *sg, *ssg;
     Agnode_t *n, *m;
@@ -530,19 +518,19 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
     agxset(g, a, "Plugins");
 
     for (package = gvc->packages; package; package = package->next) {
-        strcpy(bufa, "cluster_");
-        strcat(bufa, package->name); 
+	strcpy(bufa, "cluster_");
+	strcat(bufa, package->name);
 	sg = agsubg(g, bufa, 1);
-        a = agfindgraphattr(sg, "label");
+	a = agfindgraphattr(sg, "label");
 	agxset(sg, a, package->name);
-        strcpy(bufa, package->name); 
+	strcpy(bufa, package->name);
 	strcat(bufa, "_");
 	buf1 = bufa + strlen(bufa);
 	for (api = 0; api < ARRAY_SIZE(api_names); api++) {
 	    found = 0;
 	    strcpy(buf1, api_names[api]);
 	    ssg = agsubg(sg, bufa, 1);
-            a = agfindgraphattr(ssg, "rank");
+	    a = agfindgraphattr(ssg, "rank");
 	    agxset(ssg, a, "same");
 	    strcat(buf1, "_");
 	    buf2 = bufa + strlen(bufa);
@@ -550,7 +538,8 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 		if ((*pnext)->package == package) {
 		    found++;
 		    t = q = strdup((*pnext)->typestr);
-		    if ((p = strchr(q, ':'))) *p++ = '\0';
+		    if ((p = strchr(q, ':')))
+			*p++ = '\0';
 		    /* Now p = renderer, e.g. "gd"
 		     * and q = device, e.g. "png"
 		     * or  q = imageloader, e.g. "png" */
@@ -558,21 +547,21 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 		    case API_device:
 		    case API_loadimage:
 
-		        /* hack for aliases */
-		        if (!strncmp(q,"jp",2))
+			/* hack for aliases */
+			if (!strncmp(q, "jp", 2))
 			    q = "jpeg/jpe/jpg";
-		        else if (!strncmp(q,"tif",3))
+			else if (!strncmp(q, "tif", 3))
 			    q = "tiff/tif";
-		        else if (!strcmp(q,"x11") || !strcmp(q,"xlib"))
+			else if (!strcmp(q, "x11") || !strcmp(q, "xlib"))
 			    q = "x11/xlib";
-		        else if (!strcmp(q,"dot") || !strcmp(q,"gv"))
+			else if (!strcmp(q, "dot") || !strcmp(q, "gv"))
 			    q = "gv/dot";
 
-		        strcpy(buf2, q);
-		        n = agnode(ssg, bufa, 1);
-                        a = agfindnodeattr(g, "label");
-		        agxset(n, a, q);
-			if (! (p && *p)) {
+			strcpy(buf2, q);
+			n = agnode(ssg, bufa, 1);
+			a = agfindnodeattr(g, "label");
+			agxset(n, a, q);
+			if (!(p && *p)) {
 			    strcpy(bufb, "render_cg");
 			    m = agfindnode(sg, bufb);
 			    if (!m) {
@@ -585,11 +574,11 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 			break;
 		    case API_render:
 			strcpy(bufb, api_names[api]);
-		        strcat(bufb, "_");
-		        strcat(bufb, q);
-		        n = agnode(ssg, bufb, 1);
-                        a = agfindnodeattr(g, "label");
-		        agxset(n, a, q);
+			strcat(bufb, "_");
+			strcat(bufb, q);
+			n = agnode(ssg, bufb, 1);
+			a = agfindnodeattr(g, "label");
+			agxset(n, a, q);
 			break;
 		    default:
 			break;
@@ -598,7 +587,7 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 		}
 	    }
 	    if (!found)
-	        agdelete(sg, ssg);
+		agdelete(sg, ssg);
 	}
     }
 
@@ -606,7 +595,7 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
     a = agfindgraphattr(ssg, "rank");
     agxset(ssg, a, "same");
     for (package = gvc->packages; package; package = package->next) {
-        strcpy(bufa, package->name); 
+	strcpy(bufa, package->name);
 	strcat(bufa, "_");
 	buf1 = bufa + strlen(bufa);
 	for (api = 0; api < ARRAY_SIZE(api_names); api++) {
@@ -616,32 +605,33 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 	    for (pnext = &(gvc->apis[api]); *pnext; pnext = &((*pnext)->next)) {
 		if ((*pnext)->package == package) {
 		    t = q = strdup((*pnext)->typestr);
-		    if ((p = strchr(q, ':'))) *p++ = '\0';
+		    if ((p = strchr(q, ':')))
+			*p++ = '\0';
 		    /* Now p = renderer, e.g. "gd"
 		     * and q = device, e.g. "png"
 		     * or  q = imageloader, e.g. "png" */
 
 		    /* hack for aliases */
-		    if (!strncmp(q,"jp",2))
+		    if (!strncmp(q, "jp", 2))
 			q = "jpeg/jpe/jpg";
-		    else if (!strncmp(q,"tif",3))
+		    else if (!strncmp(q, "tif", 3))
 			q = "tiff/tif";
-		    else if (!strcmp(q,"x11") || !strcmp(q,"xlib"))
+		    else if (!strcmp(q, "x11") || !strcmp(q, "xlib"))
 			q = "x11/xlib";
-		    else if (!strcmp(q,"dot") || !strcmp(q,"gv"))
+		    else if (!strcmp(q, "dot") || !strcmp(q, "gv"))
 			q = "gv/dot";
 
 		    switch (api) {
 		    case API_device:
-		        strcpy(buf2, q);
+			strcpy(buf2, q);
 			n = agnode(g, bufa, 1);
-		        strcpy(bufb, "output_");
-		        strcat(bufb, q);
+			strcpy(bufb, "output_");
+			strcat(bufb, q);
 			m = agfindnode(ssg, bufb);
 			if (!m) {
 			    m = agnode(ssg, bufb, 1);
 			    a = agfindnodeattr(g, "label");
-		            agxset(m, a, q);
+			    agxset(m, a, q);
 			}
 			e = agfindedge(g, n, m);
 			if (!e)
@@ -651,22 +641,22 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 			    strcat(bufb, p);
 			    m = agfindnode(ssg, bufb);
 			    if (!m)
-			        m = agnode(g, bufb, 1);
+				m = agnode(g, bufb, 1);
 			    e = agfindedge(g, m, n);
 			    if (!e)
-			        e = agedge(g, m, n, NULL, 1);
+				e = agedge(g, m, n, NULL, 1);
 			}
 			break;
 		    case API_loadimage:
-		        strcpy(buf2, q);
+			strcpy(buf2, q);
 			n = agnode(g, bufa, 1);
-		        strcpy(bufb, "input_");
-		        strcat(bufb, q);
+			strcpy(bufb, "input_");
+			strcat(bufb, q);
 			m = agfindnode(g, bufb);
 			if (!m) {
 			    m = agnode(g, bufb, 1);
-                            a = agfindnodeattr(g, "label");
-		            agxset(m, a, q);
+			    a = agfindnodeattr(g, "label");
+			    agxset(m, a, q);
 			}
 			e = agfindedge(g, m, n);
 			if (!e)
@@ -675,7 +665,7 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 			strcat(bufb, p);
 			m = agfindnode(g, bufb);
 			if (!m)
-			    m = agnode(g, bufb, 1); 
+			    m = agnode(g, bufb, 1);
 			e = agfindedge(g, n, m);
 			if (!e)
 			    e = agedge(g, n, m, NULL, 1);
