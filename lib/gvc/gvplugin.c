@@ -513,78 +513,37 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
     char bufa[100], *buf1, *buf2, bufb[100], *p, *q, *t;
     int api, found;
 
-#ifndef WITH_CGRAPH
-    aginit();
-    agsetiodisc(NULL, gvfwrite, gvferror);
-    /* set persistent attributes here */
-    agraphattr(NULL, "label", "");
-    agraphattr(NULL, "rankdir", "");
-    agraphattr(NULL, "rank", "");
-    agraphattr(NULL, "ranksep", "");
-    agnodeattr(NULL, "label", NODENAME_ESC);
-
-    g = agopen("G", AGDIGRAPH);
-#else
     g = agopen("G", Agdirected, NIL(Agdisc_t *));
     agattr(g, AGRAPH, "label", "");
     agattr(g, AGRAPH, "rankdir", "");
     agattr(g, AGRAPH, "rank", "");
     agattr(g, AGRAPH, "ranksep", "");
     agattr(g, AGNODE, "label", NODENAME_ESC);
-#endif
 
     a = agfindgraphattr(g, "rankdir");
-#ifndef WITH_CGRAPH
-    agxset(g, a->index, "LR");
-#else
     agxset(g, a, "LR");
-#endif
 
     a = agfindgraphattr(g, "ranksep");
-#ifndef WITH_CGRAPH
-    agxset(g, a->index, "1.5");
-#else
     agxset(g, a, "1.5");
-#endif
 
     a = agfindgraphattr(g, "label");
-#ifndef WITH_CGRAPH
-    agxset(g, a->index, "Plugins");
-#else
     agxset(g, a, "Plugins");
-#endif
 
     for (package = gvc->packages; package; package = package->next) {
         strcpy(bufa, "cluster_");
         strcat(bufa, package->name); 
-#ifndef WITH_CGRAPH
-	sg = agsubg(g, bufa);
-#else
 	sg = agsubg(g, bufa, 1);
-#endif
         a = agfindgraphattr(sg, "label");
-#ifndef WITH_CGRAPH
-	agxset(sg, a->index, package->name);
-#else
 	agxset(sg, a, package->name);
-#endif
         strcpy(bufa, package->name); 
 	strcat(bufa, "_");
 	buf1 = bufa + strlen(bufa);
 	for (api = 0; api < ARRAY_SIZE(api_names); api++) {
 	    found = 0;
 	    strcpy(buf1, api_names[api]);
-#ifndef WITH_CGRAPH
-	    ssg = agsubg(sg, bufa);
-#else
 	    ssg = agsubg(sg, bufa, 1);
-#endif
             a = agfindgraphattr(ssg, "rank");
-#ifndef WITH_CGRAPH
-	    agxset(ssg, a->index, "same");
-#else
 	    agxset(ssg, a, "same");
-#endif
 	    strcat(buf1, "_");
 	    buf2 = bufa + strlen(bufa);
 	    for (pnext = &(gvc->apis[api]); *pnext; pnext = &((*pnext)->next)) {
@@ -610,55 +569,27 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 			    q = "gv/dot";
 
 		        strcpy(buf2, q);
-#ifndef WITH_CGRAPH
-		        n = agnode(ssg, bufa);
-#else
 		        n = agnode(ssg, bufa, 1);
-#endif
                         a = agfindnodeattr(g, "label");
-#ifndef WITH_CGRAPH
-		        agxset(n, a->index, q);
-#else
 		        agxset(n, a, q);
-#endif
 			if (! (p && *p)) {
 			    strcpy(bufb, "render_cg");
 			    m = agfindnode(sg, bufb);
 			    if (!m) {
-#ifndef WITH_CGRAPH
-				m = agnode(sg, bufb);
-#else
 				m = agnode(sg, bufb, 1);
-#endif
 				a = agfindgraphattr(g, "label");
-#ifndef WITH_CGRAPH
-				agxset(m, a->index, "cg");
-#else
 				agxset(m, a, "cg");
-#endif
 			    }
-#ifndef WITH_CGRAPH
-			    agedge(sg, m, n);
-#else
 			    agedge(sg, m, n, NULL, 1);
-#endif
 			}
 			break;
 		    case API_render:
 			strcpy(bufb, api_names[api]);
 		        strcat(bufb, "_");
 		        strcat(bufb, q);
-#ifndef WITH_CGRAPH
-		        n = agnode(ssg, bufb);
-#else
 		        n = agnode(ssg, bufb, 1);
-#endif
                         a = agfindnodeattr(g, "label");
-#ifndef WITH_CGRAPH
-		        agxset(n, a->index, q);
-#else
 		        agxset(n, a, q);
-#endif
 			break;
 		    default:
 			break;
@@ -667,25 +598,13 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 		}
 	    }
 	    if (!found)
-#ifndef WITH_CGRAPH
-		agdelete(ssg->meta_node->graph, ssg->meta_node);
-#else
 	        agdelete(sg, ssg);
-#endif
 	}
     }
 
-#ifndef WITH_CGRAPH
-    ssg = agsubg(g, "output_formats");
-#else
     ssg = agsubg(g, "output_formats", 1);
-#endif
     a = agfindgraphattr(ssg, "rank");
-#ifndef WITH_CGRAPH
-    agxset(ssg, a->index, "same");
-#else
     agxset(ssg, a, "same");
-#endif
     for (package = gvc->packages; package; package = package->next) {
         strcpy(bufa, package->name); 
 	strcat(bufa, "_");
@@ -715,99 +634,51 @@ Agraph_t * gvplugin_graph(GVC_t * gvc)
 		    switch (api) {
 		    case API_device:
 		        strcpy(buf2, q);
-#ifndef WITH_CGRAPH
-			n = agnode(g, bufa);
-#else
 			n = agnode(g, bufa, 1);
-#endif
 		        strcpy(bufb, "output_");
 		        strcat(bufb, q);
 			m = agfindnode(ssg, bufb);
 			if (!m) {
-#ifndef WITH_CGRAPH
-			    m = agnode(ssg, bufb);
-#else
 			    m = agnode(ssg, bufb, 1);
-#endif
 			    a = agfindnodeattr(g, "label");
-#ifndef WITH_CGRAPH
-		            agxset(m, a->index, q);
-#else
 		            agxset(m, a, q);
-#endif
 			}
 			e = agfindedge(g, n, m);
 			if (!e)
-#ifndef WITH_CGRAPH
-			    e = agedge(g, n, m);
-#else
 			    e = agedge(g, n, m, NULL, 1);
-#endif
 			if (p && *p) {
 			    strcpy(bufb, "render_");
 			    strcat(bufb, p);
 			    m = agfindnode(ssg, bufb);
 			    if (!m)
-#ifndef WITH_CGRAPH
-			        m = agnode(g, bufb);
-#else
 			        m = agnode(g, bufb, 1);
-#endif
 			    e = agfindedge(g, m, n);
 			    if (!e)
-#ifndef WITH_CGRAPH
-			        e = agedge(g, m, n);
-#else
 			        e = agedge(g, m, n, NULL, 1);
-#endif
 			}
 			break;
 		    case API_loadimage:
 		        strcpy(buf2, q);
-#ifndef WITH_CGRAPH
-			n = agnode(g, bufa);
-#else
 			n = agnode(g, bufa, 1);
-#endif
 		        strcpy(bufb, "input_");
 		        strcat(bufb, q);
 			m = agfindnode(g, bufb);
 			if (!m) {
-#ifndef WITH_CGRAPH
-			    m = agnode(g, bufb);
-#else
 			    m = agnode(g, bufb, 1);
-#endif
                             a = agfindnodeattr(g, "label");
-#ifndef WITH_CGRAPH
-		            agxset(m, a->index, q);
-#else
 		            agxset(m, a, q);
-#endif
 			}
 			e = agfindedge(g, m, n);
 			if (!e)
-#ifndef WITH_CGRAPH
-			    e = agedge(g, m, n);
-#else
 			    e = agedge(g, m, n, NULL, 1);
-#endif
 			strcpy(bufb, "render_");
 			strcat(bufb, p);
 			m = agfindnode(g, bufb);
 			if (!m)
-#ifndef WITH_CGRAPH
-			    m = agnode(g, bufb); 
-#else
 			    m = agnode(g, bufb, 1); 
-#endif
 			e = agfindedge(g, n, m);
 			if (!e)
-#ifndef WITH_CGRAPH
-			    e = agedge(g, n, m);
-#else
 			    e = agedge(g, n, m, NULL, 1);
-#endif
 			break;
 		    default:
 			break;
