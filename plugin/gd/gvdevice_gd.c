@@ -17,11 +17,7 @@
 
 
 #ifdef WIN32 /*dependencies*/
-#ifdef WITH_CGRAPH
     #pragma comment( lib, "cgraph.lib" )
-#else
-    #pragma comment( lib, "graph.lib" )
-#endif
     #pragma comment( lib, "libpng.lib" )
     #pragma comment( lib, "gd.lib" )
     #pragma comment( lib, "cairo.lib" )

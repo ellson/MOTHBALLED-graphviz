@@ -30,11 +30,7 @@
 
 
 #ifdef WIN32 //*dependencies
-#ifdef WITH_CGRAPH
     #pragma comment( lib, "cgraph.lib" )
-#else
-    #pragma comment( lib, "graph.lib" )
-#endif
     #pragma comment( lib, "gvc.lib" )
     #pragma comment( lib, "pathplan.lib" )
     #pragma comment( lib, "neatogen.lib" )

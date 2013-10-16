@@ -25,37 +25,17 @@ typedef enum { LAYOUT_DOT, } layout_type;
     #pragma comment( lib, "ingraphs.lib" )
     #pragma comment( lib, "cdt.lib" )
     #pragma comment( lib, "gvortho.lib" )
-
-#endif
-
-
-#ifdef WITH_CGRAPH
     #pragma comment( lib, "cgraph.lib" )
     #pragma comment( lib, "dotgen.lib" )
-    extern void dot_layout(graph_t * g);
-    extern void dot_cleanup(graph_t * g);
-
-    gvlayout_engine_t dotgen_engine = {
-    dot_layout,
-    dot_cleanup,
-    };
-
-
-#else
-    #pragma comment( lib, "graph.lib" )
-    #pragma comment( lib, "dotgen.lib" )
-    extern void dot_layout(graph_t * g);
-    extern void dot_cleanup(graph_t * g);
-
-    gvlayout_engine_t dotgen_engine = {
-    dot_layout,
-    dot_cleanup,
-    };
-
 #endif
 
+extern void dot_layout(graph_t * g);
+extern void dot_cleanup(graph_t * g);
 
-
+gvlayout_engine_t dotgen_engine = {
+    dot_layout,
+    dot_cleanup,
+};
 
 
 gvlayout_features_t dotgen_features = {

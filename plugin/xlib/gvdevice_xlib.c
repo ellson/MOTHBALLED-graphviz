@@ -48,9 +48,7 @@
 #endif
 
 #if 0
-#ifdef WITH_CGRAPH
 #include <poll.h>
-#endif
 #endif
 
 #include "gvplugin_device.h"
