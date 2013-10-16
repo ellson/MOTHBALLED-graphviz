@@ -24,9 +24,7 @@
 
 static void twopi_init_edge(edge_t * e)
 {
-#ifdef WITH_CGRAPH
     agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//edge custom data
-#endif /* WITH_CGRAPH */
     common_init_edge(e);
     ED_factor(e) = late_double(e, E_weight, 1.0, 0.0);
 }
@@ -174,11 +172,7 @@ static void twopi_cleanup_graph(graph_t * g)
 {
     free(GD_neato_nlist(g));
     if (g != agroot(g))
-#ifndef WITH_CGRAPH
-	memset(&(g->u), 0, sizeof(Agraphinfo_t));
-#else /* WITH_CGRAPH */
 	agclean(g,AGRAPH,"Agraphinfo_t");
-#endif /* WITH_CGRAPH */
 }
 
 /* twopi_cleanup:

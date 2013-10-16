@@ -43,13 +43,8 @@ void dot_sameports(graph_t * g)
     int n_sametail;		/* number of same_t groups on current node */
     int i;
 
-#ifndef WITH_CGRAPH
-    E_samehead = agfindattr(g->proto->e, "samehead");
-    E_sametail = agfindattr(g->proto->e, "sametail");
-#else /* WITH_CGRAPH */
     E_samehead = agattr(g, AGEDGE, "samehead",(char*)0);
     E_sametail = agattr(g, AGEDGE, "sametail",(char*)0);
-#endif /* WITH_CGRAPH */
     if (!(E_samehead || E_sametail))
 	return;
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
@@ -57,18 +52,10 @@ void dot_sameports(graph_t * g)
 	for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
 	    if (aghead(e) == agtail(e)) continue;  /* Don't support same* for loops */
 	    if (aghead(e) == n && E_samehead &&
-#ifndef WITH_CGRAPH
-		(id = agxget(e, E_samehead->index))[0])
-#else /* WITH_CGRAPH */
 	        (id = agxget(e, E_samehead))[0])
-#endif /* WITH_CGRAPH */
 		n_samehead = sameedge(samehead, n_samehead, n, e, id);
 	    else if (agtail(e) == n && E_sametail &&
-#ifndef WITH_CGRAPH
-	        (id = agxget(e, E_sametail->index))[0])
-#else /* WITH_CGRAPH */
 	        (id = agxget(e, E_sametail))[0])
-#endif /* WITH_CGRAPH */
 		n_sametail = sameedge(sametail, n_sametail, n, e, id);
 	}
 	for (i = 0; i < n_samehead; i++) {

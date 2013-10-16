@@ -1381,12 +1381,8 @@ static void checkChain(graph_t * g)
     t = GD_nlist(g);
     for (h = ND_next(t); h; h = ND_next(h)) {
 	if (!agfindedge(g, t, h)) {
-#ifdef WITH_CGRAPH
 	    e = agedge(g, t, h, NULL, 1);
 	    agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
-#else
-	    e = agedge(g, t, h);
-#endif
 	    ED_minlen(e) = 0;
 	    elist_append(e, ND_out(t));
 	    elist_append(e, ND_in(h));
@@ -1408,12 +1404,8 @@ checkEdge (graph_t* g, node_t* t, node_t* h, int sz)
     if (e)
 	ED_minlen(e) = MAX(ED_minlen(e), sz);
     else {
-#ifdef WITH_CGRAPH
 	e = agedge(g, t, h, NULL, 1);
 	agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
-#else
-	e = agedge(g, t, h);
-#endif
 	ED_minlen(e) = sz;
 	elist_append(e, ND_out(t));
 	elist_append(e, ND_in(h));
@@ -1440,12 +1432,8 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
 
     lastn = NULL;
     for (i = 0; i <= tbl->cc; i++) {
-#ifdef WITH_CGRAPH
 	t = agnode(colg, nToName(i), 1);
 	agbindrec(t, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
-#else
-	t = agnode(colg, nToName(i));
-#endif
 	alloc_elist(tbl->rc, ND_in(t));
 	alloc_elist(tbl->rc, ND_out(t));
 	if (lastn) {
@@ -1457,12 +1445,8 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
     }
     lastn = NULL;
     for (i = 0; i <= tbl->rc; i++) {
-#ifdef WITH_CGRAPH
 	t = agnode(rowg, nToName(i), 1);
 	agbindrec(t, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
-#else
-	t = agnode(rowg, nToName(i));
-#endif
 	alloc_elist(tbl->cc, ND_in(t));
 	alloc_elist(tbl->cc, ND_out(t));
 	if (lastn) {
@@ -1541,16 +1525,11 @@ void sizeArray(htmltbl_t * tbl)
     tbl->heights = N_NEW(tbl->rc + 1, int);
     tbl->widths = N_NEW(tbl->cc + 1, int);
 
-#ifdef WITH_CGRAPH
     rowg = agopen("rowg", dir, NIL(Agdisc_t *));
     colg = agopen("colg", dir, NIL(Agdisc_t *));
     /* Only need GD_nlist */
     agbindrec(rowg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	// graph custom data
     agbindrec(colg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	// graph custom data
-#else
-    rowg = agopen("rowg", AGDIGRAPH);
-    colg = agopen("colg", AGDIGRAPH);
-#endif
     makeGraphs(tbl, rowg, colg);
     rank(rowg, 2, INT_MAX);
     rank(colg, 2, INT_MAX);
@@ -1888,11 +1867,7 @@ static char *nameOf(void *obj, agxbuf * xb)
 {
     Agedge_t *ep;
     switch (agobjkind(obj)) {
-#ifndef WITH_CGRAPH
-    case AGGRAPH:
-#else
     case AGRAPH:
-#endif
 	agxbput(xb, agnameof(((Agraph_t *) obj)));
 	break;
     case AGNODE:
@@ -2058,11 +2033,7 @@ int make_html_label(void *obj, textlabel_t * lp)
 
     env.obj = obj;
     switch (agobjkind(obj)) {
-#ifdef WITH_CGRAPH
     case AGRAPH:
-#else
-    case AGGRAPH:
-#endif
 	env.g = ((Agraph_t *) obj)->root;
 	break;
     case AGNODE:

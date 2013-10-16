@@ -1,12 +1,6 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
-if WITH_CGRAPH
-GRAPH = cgraph
-else
-GRAPH = graph
-endif
-
 AM_CPPFLAGS = \
         -I$(top_srcdir) \
 	-I$(top_srcdir)/lib/gvc \
@@ -15,7 +9,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/xdot \
 	-I$(top_srcdir)/lib/fdpgen \
 	-I$(top_srcdir)/lib/pathplan \
-	-I$(top_srcdir)/lib/$(GRAPH) \
+	-I$(top_srcdir)/lib/cgraph \
 	-I$(top_srcdir)/lib/cdt $(GD_INCLUDES) $(EXPAT_INCLUDES) $(Z_INCLUDES)
 
 if WITH_WIN32

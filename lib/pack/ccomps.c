@@ -158,11 +158,7 @@ static int isLegal(char *p)
  */
 static void insertFn(Agnode_t * n, void *state)
 {
-#ifndef WITH_CGRAPH
-    aginsert((Agraph_t *) state, n);
-#else /* WITH_CGRAPH */
     agsubnode((Agraph_t *) state,n,1);
-#endif /* WITH_CGRAPH */
 }
 
 /* pccomps:
@@ -223,12 +219,8 @@ Agraph_t **pccomps(Agraph_t * g, int *ncc, char *pfx, boolean * pinned)
 	    continue;
 	if (!out) {
 	    sprintf(name + len, "%d", c_cnt);
-#ifndef WITH_CGRAPH
-	    out = agsubg(g, name);
-#else /* WITH_CGRAPH */
 	    out = agsubg(g, name,1);
 	    agbindrec(out, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	//node custom data
-#endif /* WITH_CGRAPH */
 	    ccs[c_cnt] = out;
 	    c_cnt++;
 	    pin = TRUE;
@@ -241,12 +233,8 @@ Agraph_t **pccomps(Agraph_t * g, int *ncc, char *pfx, boolean * pinned)
 	if (MARKED(n))
 	    continue;
 	sprintf(name + len, "%d", c_cnt);
-#ifndef WITH_CGRAPH
-	out = agsubg(g, name);
-#else /* WITH_CGRAPH */
 	out = agsubg(g, name,1);
 	agbindrec(out, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	//node custom data
-#endif /* WITH_CGRAPH */
 	dfs(g, n, insertFn, out, &stk);
 	if (c_cnt == bnd) {
 	    bnd *= 2;
@@ -331,12 +319,8 @@ Agraph_t **ccomps(Agraph_t * g, int *ncc, char *pfx)
 	if (MARKED(n))
 	    continue;
 	sprintf(name + len, "%d", c_cnt);
-#ifndef WITH_CGRAPH
-	out = agsubg(g, name);
-#else /* WITH_CGRAPH */
 	out = agsubg(g, name,1);
 	agbindrec(out, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	//node custom data
-#endif /* WITH_CGRAPH */
 	dfs(g, n, insertFn, out, &stk);
 	if (c_cnt == bnd) {
 	    bnd *= 2;
@@ -409,11 +393,7 @@ int nodeInduce(Agraph_t * g)
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(root, n); e; e = agnxtout(root, e)) {
 	    if (agcontains(g, aghead(e))) {	/* test will always be true */
-#ifndef WITH_CGRAPH
-		aginsert(g, e);	/* for connected component  */
-#else /* WITH_CGRAPH */
 		agsubedge(g,e,1);
-#endif /* WITH_CGRAPH */
 		e_cnt++;
 	    }
 	}

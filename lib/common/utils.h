@@ -56,14 +56,9 @@ extern "C" {
     extern void epsf_emit_body(GVJ_t *job, usershape_t *us);
     extern void epsf_define(GVJ_t * job);
     extern void undoClusterEdges(graph_t * g);
-#ifndef WITH_CGRAPH
-    extern attrsym_t* safe_dcl(graph_t*, void*, char*, char*,
-             attrsym_t * (*fun) (Agraph_t *, char *, char *));
-#else
     extern Dt_t* mkClustMap (Agraph_t* g);
     extern Agraph_t* findCluster (Dt_t* map, char* name);
     extern attrsym_t* safe_dcl(graph_t * g, int obj_kind, char *name, char *def);
-#endif
 
     extern int late_int(void *, Agsym_t *, int, int);
     extern double late_double(void *, Agsym_t *, double, double);
@@ -124,11 +119,9 @@ extern "C" {
     /* from psusershape.c */
     extern void cat_libfile(GVJ_t * job, const char **arglib, const char **stdlib);
 
-#ifdef WITH_CGRAPH
 Agnodeinfo_t* ninf(Agnode_t* n);
 Agraphinfo_t* ginf(Agraph_t* g);
 Agedgeinfo_t* einf(Agedge_t* e);
-#endif
     /**/
 #ifdef WIN32	
 	extern void fix_fc(void);

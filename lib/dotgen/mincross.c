@@ -240,22 +240,9 @@ static void ordered_edges(graph_t * g)
     }
     else
     {
-#ifndef WITH_CGRAPH
-	/* search meta-graph to find subgraphs that may be ordered */
-	graph_t *mg, *subg;
-	node_t *mm, *mn;
-	edge_t *me;
-
-	mm = g->meta_node;
-	mg = mm->graph;
-	for (me = agfstout(mg, mm); me; me = agnxtout(mg, me)) {
-	    mn = me->head;
-	    subg = agusergraph(mn);
-#else /* WITH_CGRAPH */
 	graph_t *subg;
 
 	for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
-#endif /* WITH_CGRAPH */
 	    /* clusters are processed by separate calls to ordered_edges */
 	    if (!is_cluster(subg))
 		ordered_edges(subg);
@@ -746,9 +733,7 @@ static void cleanup2(graph_t * g, int nc)
 		for (j = 0; (e = ND_flat_out(v).list[j]); j++)
 		    if (ED_edge_type(e) == FLATORDER) {
 			delete_flat_edge(e);
-#ifdef WITH_CGRAPH
 			free(e->base.data);
-#endif
 			free(e);
 			j--;
 		    }
@@ -854,16 +839,11 @@ void rec_reset_vlists(graph_t * g)
 #ifdef DEBUG
 	    assert(GD_rank(g->root)[r].v[ND_order(u)] == u);
 #endif
-#ifndef WITH_CGRAPH
-	    GD_rank(g)[r].v = ND_rank(g->root)[r].v + ND_order(u);
-#else /* WITH_CGRAPH */
 	    GD_rank(g)[r].v = GD_rank(agroot(g))[r].v + ND_order(u);
-#endif /* WITH_CGRAPH */
 	    GD_rank(g)[r].n = ND_order(w) - ND_order(u) + 1;
 	}
 }
 
-#ifdef WITH_CGRAPH
 /* realFillRanks:
  * The structures in crossing minimization and positioning require
  * that clusters have some node on each rank. This function recursively
@@ -924,7 +904,6 @@ fillRanks (Agraph_t* g)
     sg = realFillRanks (g, rnks, rnks_sz, NULL);
     free (rnks);
 }
-#endif
 
 static void init_mincross(graph_t * g)
 {
@@ -942,10 +921,8 @@ static void init_mincross(graph_t * g)
     TE_list = N_NEW(size, edge_t *);
     TI_list = N_NEW(size, int);
     mincross_options(g);
-#ifdef WITH_CGRAPH
     if (GD_flags(g) & NEW_RANK)
 	fillRanks (g);
-#endif
     class2(g);
     decompose(g, 1);
     allocate_ranks(g);
@@ -993,11 +970,7 @@ static void flat_search(graph_t * g, node_t * v)
 
     ND_mark(v) = TRUE;
     ND_onstack(v) = TRUE;
-#ifndef WITH_CGRAPH
-    hascl = (ND_n_cluster(g->root) > 0);
-#else /* WITH_CGRAPH */
     hascl = (GD_n_cluster(agroot(g)) > 0);
-#endif /* WITH_CGRAPH */
     if (ND_flat_out(v).list)
 	for (i = 0; (e = ND_flat_out(v).list[i]); i++) {
 	    if (hascl

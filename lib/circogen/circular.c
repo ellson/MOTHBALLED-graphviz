@@ -39,19 +39,10 @@ static void initGraphAttrs(Agraph_t * g, circ_state * state)
     if (rg != rootg) {		/* new root graph */
 	state->blockCount = 0;
 	rootg = rg;
-#ifndef WITH_CGRAPH
-	G_mindist = agfindattr(rootg, "mindist");
-#else /* WITH_CGRAPH */
 	G_mindist = agattr(rootg,AGRAPH, "mindist", NULL);
-#endif /* WITH_CGRAPH */
 	min_dist = late_double(rootg, G_mindist, MINDIST, 0.0);
-#ifndef WITH_CGRAPH
-	N_artpos = agfindattr(rootg->proto->n, "articulation_pos");
-	N_root = agfindattr(rootg->proto->n, "root");
-#else /* WITH_CGRAPH */
 	N_artpos = agattr(rootg,AGNODE, "articulation_pos", NULL);
 	N_root = agattr(rootg,AGNODE, "root", NULL);
-#endif /* WITH_CGRAPH */
 	rootname = agget(rootg, "root");
     }
     initBlocklist(&state->bl);
@@ -81,19 +72,11 @@ createOneBlock(Agraph_t * g, circ_state * state)
     Agnode_t* n;
 
     sprintf(name, "_block_%d", state->blockCount++);
-#ifdef WITH_CGRAPH
     subg = agsubg(g, name, 1);
-#else
-    subg = agsubg(g, name);
-#endif
     bp = mkBlock(subg);
 
     for (n = agfstnode(g); n; n = agnxtnode(g,n)) {
-#ifdef WITH_CGRAPH
 	agsubnode(bp->sub_graph, n, 1);
-#else
-	aginsert(bp->sub_graph, n);
-#endif
 	BLOCK(n) = bp;
     }
 

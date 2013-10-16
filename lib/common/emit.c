@@ -216,13 +216,8 @@ getObjId (GVJ_t* job, void* obj, agxbuf* xb)
     }
 
     switch (agobjkind(obj)) {
-#ifndef WITH_CGRAPH
-    case AGGRAPH:
-	idnum = ((graph_t*)obj)->meta_node->id;
-#else
     case AGRAPH:
 	idnum = AGSEQ(obj);
-#endif
 	if (root == obj)
 	    pfx = "graph";
 	else
@@ -1708,11 +1703,7 @@ static boolean clust_in_layer(GVJ_t *job, graph_t * sg)
 
     if (job->numLayers <= 1)
 	return TRUE;
-#ifndef WITH_CGRAPH
-    pg = late_string(sg, agfindattr(sg, "layer"), "");
-#else
     pg = late_string(sg, agattr(sg, AGRAPH, "layer", 0), "");
-#endif
     if (selectedlayer(job, pg))
 	return TRUE;
     if (pg[0])
@@ -2096,14 +2087,9 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
 
     rv = parseSegs (colors, num, &segs);
     if (rv > 1) {
-#ifndef WITH_CGRAPH
-	Agraph_t* g = e->tail->graph;
-	agerr (AGPREV, "in edge %s%s%s\n", agnameof(e->tail), (AG_IS_DIRECTED(g)?" -> ":" -- "), agnameof(e->head));
-#else
 	Agraph_t* g = agraphof(agtail(e));
 	agerr (AGPREV, "in edge %s%s%s\n", agnameof(agtail(e)), (agisdirected(g)?" -> ":" -- "), agnameof(aghead(e)));
 
-#endif
 	if (rv == 2)
 	    return 1;
     }
@@ -2201,11 +2187,7 @@ static radfunc_t
 taperfun (edge_t* e)
 {
     char* attr;
-#ifdef WITH_CGRAPH
     if (E_dir && ((attr = agxget(e, E_dir)))[0]) {
-#else
-    if (E_dir && ((attr = agxget(e, E_dir->index)))[0]) {
-#endif
 	if (streq(attr, "forward")) return forfunc;
 	if (streq(attr, "back")) return revfunc;
 	if (streq(attr, "both")) return bothfunc;
@@ -2488,11 +2470,7 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e, char** styles)
      */
     if (styles && ED_spl(e)) gvrender_set_style(job, styles);
 
-#ifndef WITH_CGRAPH
-    if (E_penwidth && ((s=agxget(e,E_penwidth->index)) && s[0])) {
-#else
     if (E_penwidth && ((s=agxget(e,E_penwidth)) && s[0])) {
-#endif
 	penwidth = late_double(e, E_penwidth, 1.0, 0.0);
 	gvrender_set_penwidth(job, penwidth);
     }
@@ -3059,17 +3037,10 @@ static void init_gvc(GVC_t * gvc, graph_t * g)
     G_penwidth = agfindgraphattr(g, "penwidth");
 
     /* default font */
-#ifndef WITH_CGRAPH
-    gvc->defaultfontname = late_nnstring(g->proto->n,
-                N_fontname, DEFAULT_FONTNAME);
-    gvc->defaultfontsize = late_double(g->proto->n,
-                N_fontsize, DEFAULT_FONTSIZE, MIN_FONTSIZE);
-#else
     gvc->defaultfontname = late_nnstring(NULL,
                 N_fontname, DEFAULT_FONTNAME);
     gvc->defaultfontsize = late_double(NULL,
                 N_fontsize, DEFAULT_FONTSIZE, MIN_FONTSIZE);
-#endif
 
     /* default line style */
     gvc->defaultlinestyle = defaultlinestyle;
@@ -3497,11 +3468,7 @@ fprintf(stderr,"focus=%g,%g view=%g,%g\n",
 	job->focus.x, job->focus.y, job->view.x, job->view.y);
 #endif
 
-#ifndef WITH_CGRAPH
-    s = late_string(g, agfindattr(g, "comment"), "");
-#else
     s = late_string(g, agattr(g, AGRAPH, "comment", 0), "");
-#endif
     gvrender_comment(job, s);
 
     job->layerNum = 0;
@@ -3531,11 +3498,7 @@ fprintf(stderr,"focus=%g,%g view=%g,%g\n",
 /* support for stderr_once */
 static void free_string_entry(Dict_t * dict, char *key, Dtdisc_t * disc)
 {
-#ifndef WITH_CGRAPH
-    agstrfree(key);
-#else
     free(key);
-#endif
 }
 
 static Dict_t *strings;
@@ -3556,11 +3519,7 @@ int emit_once(char *str)
     if (strings == 0)
 	strings = dtopen(&stringdict, Dtoset);
     if (!dtsearch(strings, str)) {
-#ifndef WITH_CGRAPH
-	dtinsert(strings, agstrdup(str));
-#else
 	dtinsert(strings, strdup(str));
-#endif
 	return TRUE;
     }
     return FALSE;

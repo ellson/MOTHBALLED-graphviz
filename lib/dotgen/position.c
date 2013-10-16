@@ -173,15 +173,11 @@ edge_t *make_aux_edge(node_t * u, node_t * v, double len, int wt)
 {
     edge_t *e;
 
-#ifndef WITH_CGRAPH
-    e = NEW(edge_t);
-#else
     Agedgepair_t* e2 = NEW(Agedgepair_t);
     AGTYPE(&(e2->in)) = AGINEDGE;
     AGTYPE(&(e2->out)) = AGOUTEDGE;
     e2->out.base.data = (Agrec_t*)NEW(Agedgeinfo_t);
     e = &(e2->out);
-#endif /* WITH_CGRAPH */
 
     agtail(e) = u;
     aghead(e) = v;
@@ -557,9 +553,7 @@ static void remove_aux_edges(graph_t * g)
 
     for (n = GD_nlist(g); n; n = ND_next(n)) {
 	for (i = 0; (e = ND_out(n).list[i]); i++) {
-#ifdef WITH_CGRAPH
 	    free(e->base.data);
-#endif
 	    free(e);
 	}
 	free_list(ND_out(n));
@@ -576,9 +570,7 @@ static void remove_aux_edges(graph_t * g)
 		ND_next(nprev) = nnext;
 	    else
 		GD_nlist(g) = nnext;
-#ifdef WITH_CGRAPH
 	    free(n->base.data);
-#endif
 	    free(n);
 	} else
 	    nprev = n;
@@ -1168,11 +1160,7 @@ static void do_leaves(graph_t * g, node_t * leader)
 	n = aghead(ND_out(leader).list[0]);
 	j = ND_order(leader) + 1;
 	for (e = agfstin(g, n); e; e = agnxtin(g, e)) {
-#ifndef WITH_CGRAPH
-	    edge_t *e1 = e;
-#else
 	    edge_t *e1 = AGMKOUT(e);
-#endif
 	    if ((agtail(e1) != leader) && (UF_find(agtail(e1)) == leader)) {
 		lbound = place_leaf(agtail(e1), lbound, j++);
 		unmerge_oneway(e1);

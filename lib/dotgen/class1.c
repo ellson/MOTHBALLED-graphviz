@@ -24,11 +24,7 @@ int nonconstraint_edge(edge_t * e)
 {
     char *constr;
 
-#ifndef WITH_CGRAPH
-    if (E_constr && (constr = agxget(e, E_constr->index))) {
-#else /* WITH_CGRAPH */
     if (E_constr && (constr = agxget(e, E_constr))) {
-#endif /* WITH_CGRAPH */
 	if (constr[0] && mapbool(constr) == FALSE)
 	    return TRUE;
     }

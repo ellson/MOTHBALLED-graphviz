@@ -93,21 +93,13 @@ static int inBoxf(pointf p, boxf * bb)
  * Returns NULL if no name is given, or subgraph of
  * that name does not exist.
  */
-#ifdef WITH_CGRAPH
 static graph_t *getCluster(graph_t * g, char *cluster_name, Dt_t* map)
-#else
-static graph_t *getCluster(graph_t * g, char *cluster_name)
-#endif
 {
     Agraph_t* sg;
 
     if (!cluster_name || (*cluster_name == '\0'))
 	return NULL;
-#ifdef WITH_CGRAPH
     sg = findCluster (map, cluster_name);
-#else
-    sg = agfindsubg(g, cluster_name);
-#endif
     if (sg == NULL) {
 	agerr(AGWARN, "cluster named %s not found\n", cluster_name);
     }
@@ -299,11 +291,7 @@ static int splineIntersectf(pointf * pts, boxf * bb)
  * with n control points where n >= 4 and n (mod 3) = 1.
  * If edge has arrowheads, reposition them.
  */
-#ifdef WITH_CGRAPH
 static void makeCompoundEdge(graph_t * g, edge_t * e, Dt_t* clustMap)
-#else
-static void makeCompoundEdge(graph_t * g, edge_t * e)
-#endif
 {
     graph_t *lh;		/* cluster containing head */
     graph_t *lt;		/* cluster containing tail */
@@ -320,13 +308,8 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
     int fixed;
 
     /* find head and tail target clusters, if defined */
-#ifdef WITH_CGRAPH
     lh = getCluster(g, agget(e, "lhead"), clustMap);
     lt = getCluster(g, agget(e, "ltail"), clustMap);
-#else
-    lh = getCluster(g, agget(e, "lhead"));
-    lt = getCluster(g, agget(e, "ltail"));
-#endif
     if (!lt && !lh)
 	return;
     if (!ED_spl(e)) return;
@@ -504,19 +487,11 @@ void dot_compoundEdges(graph_t * g)
 {
     edge_t *e;
     node_t *n;
-#ifdef WITH_CGRAPH
     Dt_t* clustMap = mkClustMap (g);
-#endif
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-#ifdef WITH_CGRAPH
 	    makeCompoundEdge(g, e, clustMap);
-#else
-	    makeCompoundEdge(g, e);
-#endif
 	}
     }
-#ifdef WITH_CGRAPH
     dtclose(clustMap);
-#endif
 }

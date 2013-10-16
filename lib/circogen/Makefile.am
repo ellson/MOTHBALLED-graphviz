@@ -1,12 +1,6 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
-if WITH_CGRAPH
-GRAPH = cgraph
-else
-GRAPH = graph
-endif
-
 pkgconfigdir = $(libdir)/pkgconfig
 
 AM_CPPFLAGS = \
@@ -17,7 +11,7 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/pack \
         -I$(top_srcdir)/lib/pathplan \
         -I$(top_srcdir)/lib/sparse \
-        -I$(top_srcdir)/lib/$(GRAPH) \
+        -I$(top_srcdir)/lib/cgraph \
         -I$(top_srcdir)/lib/cdt
 
 noinst_HEADERS = block.h blockpath.h blocktree.h circo.h \

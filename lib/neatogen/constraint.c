@@ -140,12 +140,8 @@ static void mapGraphs(graph_t * g, graph_t * cg, distfn dist)
 	    hp = (nitem *) ND_alg(aghead(e));
 	    delta = dist(&tp->bb, &hp->bb);
 	    h = hp->cnode;
-#ifndef WITH_CGRAPH
-	    ce = agedge(cg, t, h);
-#else
 	    ce = agedge(cg, t, h, NULL, 1);
 	    agbindrec(ce, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
-#endif
 	    ED_weight(ce) = 1;
 	    if (ED_minlen(ce) < delta) {
 		if (ED_minlen(ce) == 0.0) {
@@ -230,21 +226,13 @@ static graph_t *mkNConstraintG(graph_t * g, Dt_t * list,
     node_t *n;
     edge_t *e;
     node_t *lastn = NULL;
-#ifndef WITH_CGRAPH
-    graph_t *cg = agopen("cg", AGDIGRAPHSTRICT);
-#else
     graph_t *cg = agopen("cg", Agstrictdirected, NIL(Agdisc_t *));
     agbindrec(cg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);  // graph custom data
-#endif
 
     for (p = (nitem *) dtflatten(list); p;
 	 p = (nitem *) dtlink(list, (Dtlink_t *) p)) {
-#ifndef WITH_CGRAPH
-	n = agnode(cg, agnameof(p->np));	/* FIX */
-#else
 	n = agnode(cg, agnameof(p->np), 1);      /* FIX */
 	agbindrec(n, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE); //node custom data
-#endif
 	ND_alg(n) = p;
 	p->cnode = n;
 	alloc_elist(0, ND_in(n));
@@ -263,12 +251,8 @@ static graph_t *mkNConstraintG(graph_t * g, Dt_t * list,
 	    e = NULL;
 	    if (intersect(p, nxp)) {
 	        double delta = dist(&p->bb, &nxp->bb);
-#ifndef WITH_CGRAPH
-	        e = agedge(cg, p->cnode, nxp->cnode);
-#else
 	        e = agedge(cg, p->cnode, nxp->cnode, NULL, 1);
 		agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);   // edge custom data
-#endif
 		assert (delta <= 0xFFFF);
 		ED_minlen(e) = delta;
 		ED_weight(e) = 1;
@@ -327,12 +311,8 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
     double root_val;
 #endif
     node_t *lastn = NULL;
-#ifndef WITH_CGRAPH
-    graph_t *cg = agopen("cg", AGDIGRAPHSTRICT);
-#else
     graph_t *cg = agopen("cg", Agstrictdirected, NIL(Agdisc_t *));
     agbindrec(cg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);  // graph custom data
-#endif
 
     /* count distinct nodes */
     cnt = 0;
@@ -352,12 +332,8 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
 	if (oldval != p->val) {
 	    oldval = p->val;
 	    /* n = newNode (cg); */
-#ifndef WITH_CGRAPH
-	    n = agnode(cg, agnameof(p->np));	/* FIX */
-#else
 	    n = agnode(cg, agnameof(p->np), 1);	/* FIX */
 	    agbindrec(n, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE); //node custom data
-#endif
 	    ND_alg(n) = p;
 	    if (root) {
 		ND_next(lastn) = n;
@@ -375,12 +351,8 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
 		    alloc_elist(2 * (cnt - 1), ND_out(prev));
 		else
 		    alloc_elist(cnt - lcnt - 1, ND_out(prev));
-#ifndef WITH_CGRAPH
-		e = agedge(cg, prev, n);
-#else
 		e = agedge(cg, prev, n, NULL, 1);
 		agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);   // edge custom data
-#endif
 		ED_minlen(e) = SCALE;
 		ED_weight(e) = 1;
 		elist_append(e, ND_out(prev));
@@ -398,19 +370,11 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
      * Remaining outedges are immediate right neighbors.
      * FIX: Incremental algorithm to construct trans. reduction?
      */
-#ifndef WITH_CGRAPH
-    vg = agopen("vg", AGDIGRAPHSTRICT);
-#else
     vg = agopen("vg", Agstrictdirected, NIL(Agdisc_t *));
-#endif
     for (p = (nitem *) dtflatten(list); p;
 	 p = (nitem *) dtlink(list, (Dtlink_t *) p)) {
-#ifndef WITH_CGRAPH
-	n = agnode(vg, agnameof(p->np));     /* FIX */
-#else
 	n = agnode(vg, agnameof(p->np), 1);  /* FIX */
 	agbindrec(n, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);  //node custom data
-#endif
 	p->vnode = n;
 	ND_alg(n) = p;
     }
@@ -430,11 +394,7 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
 	for (nxp = nxt; nxp;
 	     nxp = (nitem *) dtlink(list, (Dtlink_t *) nxp)) {
 	    if (intersect(p, nxp))
-#ifndef WITH_CGRAPH
-		agedge(vg, p->vnode, nxp->vnode);
-#else
 		agedge(vg, p->vnode, nxp->vnode, NULL, 1);
-#endif
 	}
     }
 
@@ -465,28 +425,16 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
 	alloc_elist(1, ND_in(an));
 	alloc_elist(1, ND_out(an));
 
-#ifndef WITH_CGRAPH
-	e = agedge(cg, root, an);
-#else
 	e = agedge(cg, root, an, 1);
-#endif
 	ED_minlen(e) = p->val - root_val;
 	elist_append(e, ND_out(root));
 	elist_append(e, ND_in(an));
 
-#ifndef WITH_CGRAPH
-	e = agedge(cg, an, vn);
-#else
 	e = agedge(cg, an, vn, 1);
-#endif
 	elist_append(e, ND_out(an));
 	elist_append(e, ND_in(vn));
 
-#ifndef WITH_CGRAPH
-	e = agedge(cg, n, vn);
-#else
 	e = agedge(cg, n, vn, 1);
-#endif
 	elist_append(e, ND_out(n));
 	elist_append(e, ND_in(vn));
     }
@@ -568,30 +516,17 @@ static void constrainY(graph_t* g, nitem* nlist, int nnodes, intersectfn ifn,
     rank(cg, 2, INT_MAX);
 #ifdef DEBUG
     {
-#ifndef WITH_CGRAPH
-	Agsym_t *mlsym = agedgeattr(cg, "minlen", "");
-	Agsym_t *rksym = agnodeattr(cg, "rank", "");
-#else
 	Agsym_t *mlsym = agattr(cg, AGEDGE, "minlen", "");
 	Agsym_t *rksym = agattr(cg, AGNODE, "rank", "");
-#endif
 	char buf[100];
 	node_t *n;
 	edge_t *e;
 	for (n = agfstnode(cg); n; n = agnxtnode(cg, n)) {
 	    sprintf(buf, "%d", ND_rank(n));
-#ifndef WITH_CGRAPH
-	    agxset(n, rksym->index, buf);
-#else
 	    agxset(n, rksym, buf);
-#endif
 	    for (e = agfstedge(cg, n); e; e = agnxtedge(cg, e, n)) {
 		sprintf(buf, "%d", ED_minlen(e));
-#ifndef WITH_CGRAPH
-		agxset(e, mlsym->index, buf);
-#else
 		agxset(e, mlsym, buf);
-#endif
 	    }
 	}
     }

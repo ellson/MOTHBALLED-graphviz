@@ -27,7 +27,6 @@ double yDir (double y)
     return YDIR(y);
 }
 
-#ifdef WITH_CGRAPH
 static int (*putstr) (void *chan, const char *str);
 
 static void agputs (const char* s, FILE* fp)
@@ -41,7 +40,6 @@ static void agputc (int c, FILE* fp)
     putstr ((void*)fp, buf);
 }
 
-#endif
 
 static void printstring(FILE * f, char *prefix, char *s)
 {
@@ -92,15 +90,9 @@ static void setYInvert(graph_t * g)
  */
 static char* canon (graph_t *g, char* s)
 {
-#ifndef WITH_CGRAPH
-    char* ns = agstrdup (s);
-    char* cs = agcanonStr (ns);
-    agstrfree (ns);
-#else
     char* ns = agstrdup (g, s);
     char* cs = agcanonStr (ns);
     agstrfree (g, ns);
-#endif
     return cs;
 }
 
@@ -129,9 +121,7 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
     char *lbl;
     char* fillcolor;
 
-#ifdef WITH_CGRAPH
     putstr = g->clos->disc.io->putstr;
-#endif
 //    setup_graph(job, g);
     setYInvert(g);
     pt = GD_bb(g).UR;
@@ -145,11 +135,7 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
 	printstring(f, "node ", agcanonStr(agnameof(n)));
 	printpoint(f, ND_coord(n));
 	if (ND_label(n)->html)   /* if html, get original text */
-#ifndef WITH_CGRAPH
-	    lbl = agcanonStr (agxget(n, N_label->index));
-#else
 	    lbl = agcanonStr (agxget(n, N_label));
-#endif
 	else
 	    lbl = canon(agraphof(n),ND_label(n)->text);
         printdouble(f, " ", ND_width(n));
@@ -167,24 +153,12 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 
-#ifndef WITH_CGRAPH
-/* FIXME - there must be a proper way to get port info - these are 
- * supposed to be private to libgraph - from libgraph.h */
-#define TAILX 1
-#define HEADX 2
-
-	    if (extend && e->attr) {
-		tport = e->attr[TAILX];
-		hport = e->attr[HEADX];
-	    }
-#else /* WITH_CGRAPH */
 	    if (extend) {		//assuming these two attrs have already been created by cgraph
 		if (!(tport = agget(e,"tailport")))
 		    tport = "";
 		if (!(hport = agget(e,"headport")))
 		    hport = "";
 	    }
-#endif /* WITH_CGRAPH */
 	    else
 		tport = hport = "";
 	    if (ED_spl(e)) {
@@ -240,11 +214,7 @@ static void rec_attach_bb(graph_t * g, Agsym_t* bbsym)
 
     sprintf(buf, "%.5g,%.5g,%.5g,%.5g", GD_bb(g).LL.x, YDIR(GD_bb(g).LL.y),
 	    GD_bb(g).UR.x, YDIR(GD_bb(g).UR.y));
-#ifndef WITH_CGRAPH
-    agxset(g, bbsym->index, buf);
-#else
     agxset(g, bbsym, buf);
-#endif
     if (GD_label(g) && GD_label(g)->text[0]) {
 	pt = GD_label(g)->pos;
 	sprintf(buf, "%.5g,%.5g", pt.x, YDIR(pt.y));
@@ -277,39 +247,6 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
     e_arrows = s_arrows = 0;
     setYInvert(g);
     agxbinit(&xb, BUFSIZ, xbuffer);
-#ifndef WITH_CGRAPH
-    safe_dcl(g, g->proto->n, "pos", "", agnodeattr);
-    safe_dcl(g, g->proto->n, "rects", "", agnodeattr);
-    N_width = safe_dcl(g, g->proto->n, "width", "", agnodeattr);
-    N_height = safe_dcl(g, g->proto->n, "height", "", agnodeattr);
-    safe_dcl(g, g->proto->e, "pos", "", agedgeattr);
-    if (GD_has_labels(g) & NODE_XLABEL)
-	safe_dcl(g, g->proto->n, "xlp", "", agnodeattr);
-    if (GD_has_labels(g) & EDGE_LABEL)
-	safe_dcl(g, g->proto->e, "lp", "", agedgeattr);
-    if (GD_has_labels(g) & EDGE_XLABEL)
-	safe_dcl(g, g->proto->e, "xlp", "", agedgeattr);
-    if (GD_has_labels(g) & HEAD_LABEL)
-	safe_dcl(g, g->proto->e, "head_lp", "", agedgeattr);
-    if (GD_has_labels(g) & TAIL_LABEL)
-	safe_dcl(g, g->proto->e, "tail_lp", "", agedgeattr);
-    if (GD_label(g)) {
-	safe_dcl(g, g, "lp", "", agraphattr);
-	safe_dcl(g, g, "lwidth", "", agraphattr);
-	safe_dcl(g, g, "lheight", "", agraphattr);
-	if (GD_label(g)->text[0]) {
-	    ptf = GD_label(g)->pos;
-	    sprintf(buf, "%.5g,%.5g", ptf.x, YDIR(ptf.y));
-	    agset(g, "lp", buf);
-	    ptf = GD_label(g)->dimen;
-	    sprintf(buf, "%.2f", PS2INCH(ptf.x));
-	    agset(g, "lwidth", buf);
-	    sprintf(buf, "%.2f", PS2INCH(ptf.y));
-	    agset(g, "lheight", buf);
-	}
-    }
-    bbsym = safe_dcl(g, g, "bb", "", agraphattr);
-#else
     safe_dcl(g, AGNODE, "pos", "");
     safe_dcl(g, AGNODE, "rects", "");
     N_width = safe_dcl(g, AGNODE, "width", "");
@@ -341,7 +278,6 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 	}
     }
     bbsym = safe_dcl(g, AGRAPH, "bb", "");
-#endif
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (dim3) {
 	    int k;
@@ -358,15 +294,9 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 	    agset(n, "pos", buf);
 	}
 	sprintf(buf, "%.5g", PS2INCH(ND_ht(n)));
-#ifndef WITH_CGRAPH
-	agxset(n, N_height->index, buf);
-	sprintf(buf, "%.5g", PS2INCH(ND_lw(n) + ND_rw(n)));
-	agxset(n, N_width->index, buf);
-#else
 	agxset(n, N_height, buf);
 	sprintf(buf, "%.5g", PS2INCH(ND_lw(n) + ND_rw(n)));
 	agxset(n, N_width, buf);
-#endif
 	if (ND_xlabel(n) && ND_xlabel(n)->set) {
 	    ptf = ND_xlabel(n)->pos;
 	    sprintf(buf, "%.5g,%.5g", ptf.x, YDIR(ptf.y));
@@ -404,11 +334,7 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 				YFDIR(ND_height(n) / 2.0 * sin(i / (double) sides * M_PI * 2.0)));
 		    agxbput(&xb, buf);
 		}
-#ifndef WITH_CGRAPH
-		agxset(n, N_vertices->index, agxbuse(&xb));
-#else /* WITH_CGRAPH */
 		agxset(n, N_vertices, agxbuse(&xb));
-#endif /* WITH_CGRAPH */
 	    }
 	}
 	if (State >= GVSPLINES) {

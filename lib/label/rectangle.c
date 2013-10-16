@@ -21,14 +21,7 @@
 #include "logic.h"
 #include "arith.h"
 #include "rectangle.h"
-#ifdef WITH_CGRAPH
 #include <cgraph.h>
-#else
-typedef int Agraphinfo_t;
-typedef int Agnodeinfo_t;
-typedef int Agedgeinfo_t;
-#include <graph.h>
-#endif
 
 #define Undefined(x) ((x)->boundary[0] > (x)->boundary[NUMDIMS])
 

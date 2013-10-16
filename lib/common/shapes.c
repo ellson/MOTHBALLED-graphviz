@@ -454,11 +454,7 @@ static int stylenode(GVJ_t * job, node_t * n)
     if ((pstyle = checkStyle(n, &istyle)))
 	gvrender_set_style(job, pstyle);
 
-#ifndef WITH_CGRAPH
-    if (N_penwidth && ((s = agxget(n, N_penwidth->index)) && s[0])) {
-#else
     if (N_penwidth && ((s = agxget(n, N_penwidth)) && s[0])) {
-#endif
 	penwidth = late_double(n, N_penwidth, 1.0, 0.0);
 	gvrender_set_penwidth(job, penwidth);
     }
