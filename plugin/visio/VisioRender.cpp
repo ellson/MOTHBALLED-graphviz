@@ -204,11 +204,7 @@ namespace Visio
 					_graphics[0],
 					beginId == _nodeIds.end() ? 0 : beginId->second,
 					endId == _nodeIds.end() ? 0 : endId->second,
-#ifdef WITH_CGRAPH
 					EDGE_TYPE(agroot(edge))))
-#else
-					EDGE_TYPE(edge->head->graph->root)))
-#endif
 					firstConnector = false;
 				else
 					PrintOuterShape(job, *nextGraphic);

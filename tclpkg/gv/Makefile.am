@@ -3,20 +3,13 @@
 
 SUBDIRS = demo
 
-if WITH_CGRAPH
-GRAPH = cgraph
-DEFS += -DWITH_CGRAPH
-else
-GRAPH = graph
-endif
-
 pdfdir = $(pkgdatadir)/doc/pdf
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/common \
-	-I$(top_srcdir)/lib/$(GRAPH) \
+	-I$(top_srcdir)/lib/cgraph \
 	-I$(top_srcdir)/lib/cdt \
 	-I$(top_srcdir)/lib/pathplan
 
@@ -24,7 +17,7 @@ LIBS = -lc
 
 BASESOURCES = gv.cpp gv.i gv_builtins.c
 BASELIBS = $(top_builddir)/lib/gvc/libgvc.la \
-	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
+	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(top_builddir)/lib/cdt/libcdt.la
 BASECPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
 

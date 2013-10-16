@@ -30,7 +30,7 @@ Prefix: /usr
 # Available features are:
 #    SHARP GHOSTSCRIPT GUILE _IO JAVA LUA OCAML ORTHO PERL PHP
 #    PYTHON RUBY R_LANG TCL IPSEPCOLA MYLIBGD PANGOCAIRO RSVG
-#    GTK GLITZ SMYRNA DEVIL MING GDK_PIXBUF _QT WEBP CGRAPH
+#    GTK GLITZ SMYRNA DEVIL MING GDK_PIXBUF _QT WEBP
 
 # SuSE uses a different mechanism to generate BuildRequires
 # norootforbuild
@@ -43,7 +43,6 @@ BuildRequires: /bin/ksh bison m4 flex swig tk tcl >= 8.3 freetype-devel >= 2
 
 #-- All platforms
 %define __X 1
-%define CGRAPH 1
 
 #-- Red Hat Enterprise Linux (also Centos) specific Build Requirements
 %if 0%{?rhel}
@@ -274,9 +273,6 @@ Graphviz core libs
 %defattr(-,root,root,-)
 %{_libdir}/libcdt.so.*
 %{_libdir}/libcgraph.so.*
-%if ! 0%{?CGRAPH}
-%{_libdir}/libgraph.so.*
-%endif
 %{_libdir}/libgvc.so.*
 %{_libdir}/libgvpr.so.*
 %{_libdir}/libpathplan.so.*
@@ -766,13 +762,7 @@ This package contains development files for graphviz-libs.
 %{_libdir}/libcgraph.so
 %{_mandir}/man3/cgraph.3.*
 %{_libdir}/pkgconfig/libcgraph.pc
-%if ! 0%{?CGRAPH}
-%{_libdir}/libgraph.so
-%{_mandir}/man3/graph.3.*
-%{_libdir}/pkgconfig/libgraph.pc
-%else
 %exclude %{_mandir}/man3/graph.3.*
-%endif
 %{_libdir}/libgvc.so
 %{_mandir}/man3/gvc.3.*
 %{_libdir}/pkgconfig/libgvc.pc
@@ -860,7 +850,6 @@ CFLAGS="$RPM_OPT_FLAGS" \
         --enable-r%{!?R_LANG:=no} \
         --enable-ruby%{!?RUBY:=no} \
         --enable-tcl%{!?TCL:=no} \
-        --with%{!?CGRAPH:out}-cgraph \
         --with%{!?DEVIL:out}-devil \
         --with%{!?WEBP:out}-webp \
         --with%{!?GDK_PIXBUF:out}-gdk-pixbuf \

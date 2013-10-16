@@ -2953,23 +2953,6 @@ fi
 AM_CONDITIONAL(WITH_SMYRNA, [test "x$use_smyrna" = "xYes"])
 
 dnl -----------------------------------
-dnl CGRAPH 
-
-AC_ARG_WITH(cgraph,
-  [AS_HELP_STRING([--with-cgraph=yes],[Use CGRAPH library])],
-  [], [with_cgraph=yes])
-
-if test "x$with_cgraph" != "xyes"; then
-  use_cgraph="No (disabled)"
-  use_graph="Yes"
-else
-  use_cgraph="Yes"
-  use_graph="No (disabled deprecated)"
-  AC_DEFINE_UNQUOTED(WITH_CGRAPH,1,[Define if you want CGRAPH])
-fi
-AM_CONDITIONAL(WITH_CGRAPH, [test "x$use_cgraph" = "xYes"])
-
-dnl -----------------------------------
 dnl ORTHO 
 
 AC_ARG_WITH(ortho,
@@ -3150,8 +3133,6 @@ AC_CONFIG_FILES(Makefile
 	lib/Makefile
 	lib/cdt/Makefile
 	lib/cdt/libcdt.pc
-	lib/graph/Makefile
-	lib/graph/libgraph.pc
 	lib/cgraph/Makefile
 	lib/cgraph/libcgraph.pc
 	lib/rbtree/Makefile

@@ -1,12 +1,6 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
-if WITH_CGRAPH
-GRAPH = cgraph
-else
-GRAPH = graph
-endif
-
 pdfdir = $(pkgdatadir)/doc/pdf
 
 linkedman = neato.1 twopi.1 fdp.1 circo.1
@@ -24,7 +18,7 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/common \
         -I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/pathplan \
-	-I$(top_srcdir)/lib/$(GRAPH) \
+	-I$(top_srcdir)/lib/cgraph \
 	-I$(top_srcdir)/lib/cdt
 
 if ENABLE_SHARED
@@ -54,7 +48,7 @@ dot_SOURCES = dot.c no_builtins.c
 dot_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
 dot_LDADD = \
 	$(top_builddir)/lib/gvc/libgvc.la \
-	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la
+	$(top_builddir)/lib/cgraph/libcgraph.la
 
 install-data-hook:
 	(cd $(DESTDIR)$(man1dir); for i in $(linkedman); do rm -f $$i; $(LN_S) dot.1 $$i; done;)
@@ -89,7 +83,7 @@ dot_static_LDADD = \
 	$(top_builddir)/plugin/core/libgvplugin_core_C.la \
 	$(top_builddir)/lib/gvc/libgvc_C.la \
 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
-	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH)_C.la \
+	$(top_builddir)/lib/cgraph/libcgraph_C.la \
 	$(top_builddir)/lib/xdot/libxdot_C.la \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
        	$(PANGOCAIRO_LIBS) $(PANGOFT2_LIBS) $(GTS_LIBS) $(EXPAT_LIBS) $(Z_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
@@ -102,7 +96,7 @@ dot_builtins_LDADD = \
 	$(top_builddir)/plugin/core/libgvplugin_core.la \
 	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
-	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
+	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(top_builddir)/lib/xdot/libxdot.la \
 	$(top_builddir)/lib/cdt/libcdt.la \
        	$(GTS_LIBS) $(EXPAT_LIBS) $(Z_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)

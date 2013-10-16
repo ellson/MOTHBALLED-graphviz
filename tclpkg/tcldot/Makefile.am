@@ -3,12 +3,6 @@
 
 SUBDIRS = demo
 
-if WITH_CGRAPH
-GRAPH = cgraph
-else
-GRAPH = graph
-endif
-
 # tclhandle still needed for gd
 TCLHANDLE_INCLUDES=-I$(top_srcdir)/tclpkg/tclhandle
 TCLHANDLE_LIBS=$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la
@@ -22,7 +16,7 @@ AM_CPPFLAGS = \
         -I$(top_srcdir) \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/common \
-	-I$(top_srcdir)/lib/$(GRAPH) \
+	-I$(top_srcdir)/lib/cgraph \
 	-I$(top_srcdir)/lib/cdt \
 	-I$(top_srcdir)/lib/pathplan $(TCLHANDLE_INCLUDES) $(GD_INCLUDES) $(TCL_INCLUDES)
 
@@ -62,7 +56,7 @@ libtcldot_la_LDFLAGS = -no-undefined
 libtcldot_la_LIBADD = $(TCLHANDLE_LIBS) \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
 	$(top_builddir)/lib/cdt/libcdt.la \
-	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
+	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
 	$(top_builddir)/lib/gvc/libgvc.la 
 
@@ -92,7 +86,7 @@ libtcldot_builtin_la_LIBADD = $(TCLHANDLE_LIBS) \
 	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout_C.la \
 	$(top_builddir)/plugin/core/libgvplugin_core_C.la \
 	$(top_builddir)/lib/gvc/libgvc_C.la \
-	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH)_C.la \
+	$(top_builddir)/lib/cgraph/libcgraph_C.la \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la $(GTS_LIBS)

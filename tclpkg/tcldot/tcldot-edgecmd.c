@@ -26,44 +26,26 @@ int edgecmd(ClientData clientData, Tcl_Interp * interp,
     Agraph_t *g;
     Agedge_t *e;
     Agsym_t *a;
-#ifndef WITH_CGRAPH
-    char buf[32];
-    Agedge_t **ep;
-    ictx_t *ictx = (ictx_t *)clientData;
-#else
     gctx_t *gctx = (gctx_t *)clientData;
     ictx_t *ictx = gctx->ictx;
-#endif
     GVC_t *gvc = ictx->gvc;
 
     if (argc < 2) {
 	Tcl_AppendResult(interp, "Wrong # args: should be \"", argv[0], "\" option ?arg arg ...?", NULL);
 	return TCL_ERROR;
     }
-#ifndef WITH_CGRAPH
-    if (!(ep = (Agedge_t **) tclhandleXlate(ictx->edgeTblPtr, argv[0]))) {
-	Tcl_AppendResult(interp, "Edge \"", argv[0], "\" not found", NULL);
-	return TCL_ERROR;
-    }
-    e = *ep;
-#else
     e = cmd2e(argv[0]);
     if (!e) {
         Tcl_AppendResult(interp, "Edge \"", argv[0], "\" not found", NULL);
         return TCL_ERROR;
     }
-#endif
     g = agraphof(agtail(e));
 
     c = argv[1][0];
     length = strlen(argv[1]);
 
     if ((c == 'd') && (strncmp(argv[1], "delete", length) == 0)) {
-#ifndef WITH_CGRAPH
-	deleteEdge(ictx, g, e);
-#else
 	deleteEdge(gctx, g, e);
-#endif
 	reset_layout(gvc, g);
 	return TCL_OK;
 
@@ -73,18 +55,8 @@ int edgecmd(ClientData clientData, Tcl_Interp * interp,
 	return TCL_OK;
 
     } else if ((c == 'l') && (strncmp(argv[1], "listnodes", length) == 0)) {
-#ifndef WITH_CGRAPH
-	tclhandleString(ictx->nodeTblPtr, buf, AGID(agtail(e)));
-	Tcl_AppendElement(interp, buf);
-#else
 	Tcl_AppendElement(interp, obj2cmd(agtail(e)));
-#endif
-#ifndef WITH_CGRAPH
-	tclhandleString(ictx->nodeTblPtr, buf, AGID(aghead(e)));
-	Tcl_AppendElement(interp, buf);
-#else
 	Tcl_AppendElement(interp, obj2cmd(aghead(e)));
-#endif
 	return TCL_OK;
 
     } else if ((c == 'q')
@@ -96,11 +68,7 @@ int edgecmd(ClientData clientData, Tcl_Interp * interp,
 		return TCL_ERROR;
 	    for (j = 0; j < argc2; j++) {
 		if ((a = agfindedgeattr(g, argv2[j]))) {
-#ifndef WITH_CGRAPH
-		    Tcl_AppendElement(interp, agxget(e, a->index));
-#else
 		    Tcl_AppendElement(interp, agxget(e, a));
-#endif
 		} else {
 		    Tcl_AppendResult(interp, "No attribute named \"", argv2[j], "\"", NULL);
 		    return TCL_ERROR;
@@ -119,11 +87,7 @@ int edgecmd(ClientData clientData, Tcl_Interp * interp,
 	    for (j = 0; j < argc2; j++) {
 		if ((a = agfindedgeattr(g, argv2[j]))) {
 		    Tcl_AppendElement(interp, argv2[j]);
-#ifndef WITH_CGRAPH
-		    Tcl_AppendElement(interp, agxget(e, a->index));
-#else
 		    Tcl_AppendElement(interp, agxget(e, a));
-#endif
 		} else {
 		    Tcl_AppendResult(interp, "No attribute named \"", argv2[j], "\"", NULL);
 		    return TCL_ERROR;

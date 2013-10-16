@@ -26,11 +26,7 @@
 __declspec(dllimport) boolean MemTest;
 __declspec(dllimport) int GvExitOnUsage;
 /*gvc.lib cgraph.lib*/
-#ifdef WITH_CGRAPH
     #pragma comment( lib, "cgraph.lib" )
-#else
-    #pragma comment( lib, "graph.lib" )
-#endif
     #pragma comment( lib, "gvc.lib" )
 #else   /* not WIN32_DLL */
 #include "globals.h"
@@ -132,44 +128,24 @@ static graph_t *create_test_graph(void)
     char name[10];
 
     /* Create a new graph */
-#ifndef WITH_CGRAPH
-    aginit();
-    agsetiodisc(NULL, gvfwrite, gvferror);
-    g = agopen("new_graph", AGDIGRAPH);
-#else /* WITH_CGRAPH */
     g = agopen("new_graph", Agdirected,NIL(Agdisc_t *));
-#endif /* WITH_CGRAPH */
 
     /* Add nodes */
     for (j = 0; j < NUMNODES; j++) {
 	sprintf(name, "%d", j);
-#ifndef WITH_CGRAPH
-	node[j] = agnode(g, name);
-#else /* WITH_CGRAPH */
 	node[j] = agnode(g, name, 1);
 	agbindrec(node[j], "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);	//node custom data
-#endif /* WITH_CGRAPH */
     }
 
     /* Connect nodes */
     for (j = 0; j < NUMNODES; j++) {
 	for (k = j + 1; k < NUMNODES; k++) {
-#ifndef WITH_CGRAPH
-	    agedge(g, node[j], node[k]);
-#else /* WITH_CGRAPH */
 	    e = agedge(g, node[j], node[k], NULL, 1);
 	    agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//edge custom data
-#endif /* WITH_CGRAPH */
 	}
     }
-
-#ifndef WITH_CGRAPH
-    sg = agsubg (g, "cluster1");
-    aginsert (sg, node[0]);
-#else /* WITH_CGRAPH */
     sg = agsubg (g, "cluster1", 1);
     agsubnode (sg, node[0], 1);
-#endif /* WITH_CGRAPH */
 
     return g;
 }

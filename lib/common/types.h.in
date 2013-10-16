@@ -14,9 +14,6 @@
 #ifndef GV_TYPES_H
 #define GV_TYPES_H
 
-/* Define if you want CGRAPH */
-#undef WITH_CGRAPH
-
 #include <stdio.h>
 #include <assert.h>
 #include <signal.h>
@@ -36,6 +33,7 @@ typedef unsigned char boolean;
 #include "gvcext.h"
 #include "pathgeom.h"
 #include "textpara.h"
+#include "cgraph.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -557,7 +555,6 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define ED_dist(e) (((Agedgeinfo_t*)AGDATA(e))->dist)
 #define ED_weight(e) (((Agedgeinfo_t*)AGDATA(e))->weight)
 
-#include "cgraph.h"
 #define ag_xget(x,a) agxget(x,a)
 #define SET_RANKDIR(g,rd) (GD_rankdir2(g) = rd)
 #define agfindedge(g,t,h) (agedge(g,t,h,NULL,0))
