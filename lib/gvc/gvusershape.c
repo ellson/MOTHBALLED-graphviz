@@ -68,6 +68,8 @@ typedef struct {
 #define SVG_MAGIC  "<svg"
 #define RIFF_MAGIC  "RIFF"
 #define WEBP_MAGIC  "WEBP"
+// #define ICO_MAGIC  "unknown"
+// #define TIFF  "unknown"
 
 static knowntype_t knowntypes[] = {
     { PNG_MAGIC,  sizeof(PNG_MAGIC)-1,   FT_PNG,  "png",  },
@@ -80,6 +82,8 @@ static knowntype_t knowntypes[] = {
 /*    { SVG_MAGIC,  sizeof(SVG_MAGIC)-1,  FT_SVG,  "svg",  },  - viewers expect xml preamble */
     { XML_MAGIC,  sizeof(XML_MAGIC)-1,   FT_XML,  "xml",  },
     { RIFF_MAGIC,  sizeof(RIFF_MAGIC)-1, FT_RIFF, "riff", },
+//    { ICO_MAGIC,  sizeof(ICO_MAGIC)-1,   FT_ICO, "riff", },
+//    { TIFF_MAGIC,  sizeof(TIFF_MAGIC)-1, FT_TIFF, "riff", },
 };
 
 static int imagetype (usershape_t *us)
