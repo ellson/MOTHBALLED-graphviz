@@ -762,7 +762,6 @@ This package contains development files for graphviz-libs.
 %{_libdir}/libcgraph.so
 %{_mandir}/man3/cgraph.3.*
 %{_libdir}/pkgconfig/libcgraph.pc
-%exclude %{_mandir}/man3/graph.3.*
 %{_libdir}/libgvc.so
 %{_mandir}/man3/gvc.3.*
 %{_libdir}/pkgconfig/libgvc.pc
