@@ -8,7 +8,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/cgraph \
 	-I$(top_srcdir)/lib/cdt \
-	$(PANGOCAIRO_CFLAGS) $(GDK_PIXBUF_CFLAGS)
+	$(PANGOCAIRO_CFLAGS) $(GDK_PIXBUF_CFLAGS) $(GTK_CFLAGS)
 
 if WITH_PANGOCAIRO
 if WITH_GDK_PIXBUF

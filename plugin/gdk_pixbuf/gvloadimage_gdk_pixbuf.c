@@ -23,6 +23,7 @@
 #ifdef HAVE_PANGOCAIRO
 #include <cairo.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
+#include <gdk/gdkcairo.h>
 
 #ifdef WIN32 //*dependencies
     #pragma comment( lib, "gvc.lib" )
@@ -35,12 +36,14 @@
 
 typedef enum {
     FORMAT_BMP_CAIRO,
-    FORMAT_ICO_CAIRO,
     FORMAT_JPEG_CAIRO,
     FORMAT_PNG_CAIRO,
+    FORMAT_ICO_CAIRO,
     FORMAT_TIFF_CAIRO,
 } format_type;
 
+#if 0
+// FIXME - should be using a stream reader
 static cairo_status_t
 reader (void *closure, unsigned char *data, unsigned int length)
 {
@@ -49,58 +52,61 @@ reader (void *closure, unsigned char *data, unsigned int length)
         return CAIRO_STATUS_SUCCESS;
     return CAIRO_STATUS_READ_ERROR;
 }
+#endif
 
-static void cairo_freeimage(usershape_t *us)
+static void gdk_pixbuf_freeimage(usershape_t *us)
 {
-    cairo_surface_destroy((cairo_surface_t*)(us->data));
+    g_object_unref((GdkPixbuf*)(us->data));
 }
 
-static cairo_surface_t* cairo_loadimage(GVJ_t * job, usershape_t *us)
+static GdkPixbuf* gdk_pixbuf_loadimage(GVJ_t * job, usershape_t *us)
 {
-    cairo_surface_t *surface = NULL; /* source surface */
+    GdkPixbuf *image = NULL;
 
     assert(job);
     assert(us);
     assert(us->name);
 
     if (us->data) {
-        if (us->datafree == cairo_freeimage)
-             surface = (cairo_surface_t*)(us->data); /* use cached data */
+        if (us->datafree == gdk_pixbuf_freeimage)
+             image = (GdkPixbuf*)(us->data); /* use cached data */
         else {
              us->datafree(us);        /* free incompatible cache data */
              us->datafree = NULL;
              us->data = NULL;
         }
     }
-    if (!surface) { /* read file into cache */
+    if (!image) { /* read file into cache */
 	if (!gvusershape_file_access(us))
 	    return NULL;
         switch (us->type) {
-#ifdef CAIRO_HAS_PNG_FUNCTIONS
             case FT_PNG:
-                surface = cairo_image_surface_create_from_png_stream(reader, us->f);
-                cairo_surface_reference(surface);
+            case FT_JPEG:
+            case FT_BMP:
+//          case FT_ICO:
+//          case FT_TIFF:
+                // FIXME - should be using a stream reader
+                image = gdk_pixbuf_new_from_file(us->name, NULL);
                 break;
-#endif
             default:
-                surface = NULL;
+                image = NULL;
         }
-        if (surface) {
-            us->data = (void*)surface;
-            us->datafree = cairo_freeimage;
+        if (image) {
+            us->data = (void*)image;
+            us->datafree = gdk_pixbuf_freeimage;
         }
 	gvusershape_file_release(us);
     }
-    return surface;
+    return image;
 }
 
 static void gdk_pixbuf_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
 {
     cairo_t *cr = (cairo_t *) job->context; /* target context */
-    cairo_surface_t *surface;	 /* source surface */
+    GdkPixbuf *image;
 
-    surface = cairo_loadimage(job, us);
-    if (surface) {
+    image = gdk_pixbuf_loadimage(job, us);
+    if (image) {
         cairo_save(cr);
         cairo_translate(cr,
 		(b.LL.x + (b.UR.x - b.LL.x) * (1. - (job->dpi.x) / 96.) / 2.),
@@ -108,29 +114,28 @@ static void gdk_pixbuf_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, boo
         cairo_scale(cr,
 		((b.UR.x - b.LL.x) * (job->dpi.x) / (96. * us->w)),
                 ((b.UR.y - b.LL.y) * (job->dpi.y) / (96. * us->h)));
-        cairo_set_source_surface (cr, surface, 0, 0);
+        gdk_cairo_set_source_pixbuf (cr, image, 0, 0);
         cairo_paint (cr);
         cairo_restore(cr);
     }
 }
 
-static gvloadimage_engine_t engine_cairo = {
+static gvloadimage_engine_t engine_gdk_pixbuf = {
     gdk_pixbuf_loadimage_cairo
 };
 
 #endif
 
 gvplugin_installed_t gvloadimage_gdk_pixbuf_types[] = {
-#if 0
 #ifdef HAVE_PANGOCAIRO
-    {FORMAT_BMP_CAIRO, "bmp:cairo", -99, &engine_cairo, NULL},
-    {FORMAT_ICO_CAIRO, "ico:cairo", -99, &engine_cairo, NULL},
-    {FORMAT_JPEG_CAIRO, "jpg:cairo", -99, &engine_cairo, NULL},
-    {FORMAT_JPEG_CAIRO, "jpeg:cairo", -99, &engine_cairo, NULL},
-    {FORMAT_PNG_CAIRO, "png:cairo", -99, &engine_cairo, NULL},
-    {FORMAT_TIFF_CAIRO, "tif:cairo", -99, &engine_cairo, NULL},
-    {FORMAT_TIFF_CAIRO, "tiff`:cairo", -99, &engine_cairo, NULL},
-#endif
+    {FORMAT_BMP_CAIRO, "bmp:cairo", 1, &engine_gdk_pixbuf, NULL},
+    {FORMAT_JPEG_CAIRO, "jpe:cairo", 2, &engine_gdk_pixbuf, NULL},
+    {FORMAT_JPEG_CAIRO, "jpg:cairo", 2, &engine_gdk_pixbuf, NULL},
+    {FORMAT_JPEG_CAIRO, "jpeg:cairo", 2, &engine_gdk_pixbuf, NULL},
+    {FORMAT_PNG_CAIRO, "png:cairo", -1, &engine_gdk_pixbuf, NULL},
+//    {FORMAT_ICO_CAIRO, "ico:cairo", -99, &engine_gdk_pixbuf, NULL},
+//    {FORMAT_TIFF_CAIRO, "tif:cairo", -99, &engine_gdk_pixbuf, NULL},
+//    {FORMAT_TIFF_CAIRO, "tiff`:cairo", -99, &engine_gdk_pixbuf, NULL},
 #endif
     {0, NULL, 0, NULL, NULL}
 };
