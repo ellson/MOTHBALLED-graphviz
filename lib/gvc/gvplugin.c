@@ -493,13 +493,13 @@ void gvplugin_write_status(GVC_t * gvc)
 Agraph_t *gvplugin_graph(GVC_t * gvc)
 {
     Agraph_t *g, *sg, *ssg;
-    Agnode_t *n, *m;
+    Agnode_t *n, *m, *loadimage_n, *renderer_n, *device_n;
     Agedge_t *e;
     Agsym_t *a;
     gvplugin_package_t *package;
     gvplugin_available_t **pnext;
     char bufa[100], *buf1, *buf2, bufb[100], *p, *q, *t;
-    int api, found;
+    int api;
 
     g = agopen("G", Agdirected, NIL(Agdisc_t *));
     agattr(g, AGRAPH, "label", "");
@@ -507,6 +507,8 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
     agattr(g, AGRAPH, "rank", "");
     agattr(g, AGRAPH, "ranksep", "");
     agattr(g, AGNODE, "label", NODENAME_ESC);
+    agattr(g, AGNODE, "style", "");
+    agattr(g, AGEDGE, "style", "");
 
     a = agfindgraphattr(g, "rankdir");
     agxset(g, a, "LR");
@@ -518,6 +520,7 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
     agxset(g, a, "Plugins");
 
     for (package = gvc->packages; package; package = package->next) {
+        loadimage_n = renderer_n = device_n = NULL;
         strcpy(bufa, "cluster_");
         strcat(bufa, package->name);
         sg = agsubg(g, bufa, 1);
@@ -527,7 +530,6 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
         strcat(bufa, "_");
         buf1 = bufa + strlen(bufa);
         for (api = 0; api < ARRAY_SIZE(api_names); api++) {
-            found = 0;
             strcpy(buf1, api_names[api]);
             ssg = agsubg(sg, bufa, 1);
             a = agfindgraphattr(ssg, "rank");
@@ -536,13 +538,12 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
             buf2 = bufa + strlen(bufa);
             for (pnext = &(gvc->apis[api]); *pnext; pnext = &((*pnext)->next)) {
                 if ((*pnext)->package == package) {
-                    found++;
                     t = q = strdup((*pnext)->typestr);
                     if ((p = strchr(q, ':')))
                         *p++ = '\0';
                     /* Now p = renderer, e.g. "gd"
                      * and q = device, e.g. "png"
-                     * or  q = imageloader, e.g. "png" */
+                     * or  q = loadimage, e.g. "png" */
                     switch (api) {
                     case API_device:
                     case API_loadimage:
@@ -561,6 +562,10 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
                         n = agnode(ssg, bufa, 1);
                         a = agfindnodeattr(g, "label");
                         agxset(n, a, q);
+			if (api == API_device)
+                            device_n = n;
+                        else
+                            loadimage_n = n;
                         if (!(p && *p)) {
                             strcpy(bufb, "render_cg");
                             m = agfindnode(sg, bufb);
@@ -576,7 +581,7 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
                         strcpy(bufb, api_names[api]);
                         strcat(bufb, "_");
                         strcat(bufb, q);
-                        n = agnode(ssg, bufb, 1);
+                        renderer_n = n = agnode(ssg, bufb, 1);
                         a = agfindnodeattr(g, "label");
                         agxset(n, a, q);
                         break;
@@ -586,9 +591,50 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
                     free(t);
                 }
             }
-            if (!found)
-                agdelete(sg, ssg);
+            // add some invisible nodes (if needed) and invisible edges to 
+            //    improve layout of cluster
+            if (api == API_loadimage && !loadimage_n) {
+                strcpy(buf2, "invis");
+                loadimage_n = agnode(ssg, bufa, 1);
+                a = agfindnodeattr(g, "style");
+                agxset(loadimage_n, a, "invis");
+                a = agfindnodeattr(g, "label");
+                agxset(loadimage_n, a, "");
+
+                strcpy(buf2, "invis_src");
+                n = agnode(g, bufa, 1);
+                a = agfindnodeattr(g, "style");
+                agxset(n, a, "invis");
+                a = agfindnodeattr(g, "label");
+                agxset(n, a, "");
+
+                e = agedge(g, n, loadimage_n, NULL, 1);
+                a = agfindedgeattr(g, "style");
+                agxset(e, a, "invis");
+	    }
+            if (api == API_render && !renderer_n) {
+                strcpy(buf2, "invis");
+                renderer_n = agnode(ssg, bufa, 1);
+                a = agfindnodeattr(g, "style");
+                agxset(renderer_n, a, "invis");
+                a = agfindnodeattr(g, "label");
+                agxset(renderer_n, a, "");
+	    }
+            if (api == API_device && !device_n) {
+                strcpy(buf2, "invis");
+                device_n = agnode(ssg, bufa, 1);
+                a = agfindnodeattr(g, "style");
+                agxset(device_n, a, "invis");
+                a = agfindnodeattr(g, "label");
+                agxset(device_n, a, "");
+	    }
         }
+        e = agedge(sg, loadimage_n, renderer_n, NULL, 1);
+        a = agfindedgeattr(g, "style");
+        agxset(e, a, "invis");
+        e = agedge(sg, renderer_n, device_n, NULL, 1);
+        a = agfindedgeattr(g, "style");
+        agxset(e, a, "invis");
     }
 
     ssg = agsubg(g, "output_formats", 1);
