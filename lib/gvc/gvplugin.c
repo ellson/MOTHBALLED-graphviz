@@ -498,7 +498,7 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
     Agsym_t *a;
     gvplugin_package_t *package;
     gvplugin_available_t **pnext;
-    char bufa[100], *buf1, *buf2, bufb[100], *p, *q, *t;
+    char bufa[100], *buf1, *buf2, bufb[100], *p, *q, *lq, *t;
     int api, neededge_loadimage, neededge_device;
 
     g = agopen("G", Agdirected, NIL(Agdisc_t *));
@@ -507,6 +507,7 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
     agattr(g, AGRAPH, "rank", "");
     agattr(g, AGRAPH, "ranksep", "");
     agattr(g, AGNODE, "label", NODENAME_ESC);
+    agattr(g, AGNODE, "shape", "");
     agattr(g, AGNODE, "style", "");
     agattr(g, AGEDGE, "style", "");
 
@@ -550,19 +551,28 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
                     case API_loadimage:
 
                         /* hack for aliases */
-                        if (!strncmp(q, "jp", 2))
-                            q = "jpeg/jpe/jpg";
-                        else if (!strncmp(q, "tif", 3))
-                            q = "tiff/tif";
-                        else if (!strcmp(q, "x11") || !strcmp(q, "xlib"))
-                            q = "x11/xlib";
-                        else if (!strcmp(q, "dot") || !strcmp(q, "gv"))
-                            q = "gv/dot";
+			lq = q;
+                        if (!strncmp(q, "jp", 2)) {
+                            q = "jpg";                /* canonical - for node name */
+			    lq = "jpeg\\njpe\\njpg";  /* list - for label */
+			}
+                        else if (!strncmp(q, "tif", 3)) {
+                            q = "tif";
+			    lq = "tiff\\ntif";
+			}
+                        else if (!strcmp(q, "x11") || !strcmp(q, "xlib")) {
+                            q = "x11";
+                            lq = "x11\\nxlib";
+			}
+                        else if (!strcmp(q, "dot") || !strcmp(q, "gv")) {
+                            q = "gv";
+                            lq = "gv\\ndot";
+			}
 
                         strcpy(buf2, q);
                         n = agnode(ssg, bufa, 1);
                         a = agfindnodeattr(g, "label");
-                        agxset(n, a, q);
+                        agxset(n, a, lq);
 			if (api == API_device)
                             device_n = n;
                         else
@@ -666,15 +676,24 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
                      * and q = device, e.g. "png"
                      * or  q = imageloader, e.g. "png" */
 
-                    /* hack for aliases */
-                    if (!strncmp(q, "jp", 2))
-                        q = "jpeg/jpe/jpg";
-                    else if (!strncmp(q, "tif", 3))
-                        q = "tiff/tif";
-                    else if (!strcmp(q, "x11") || !strcmp(q, "xlib"))
-                        q = "x11/xlib";
-                    else if (!strcmp(q, "dot") || !strcmp(q, "gv"))
-                        q = "gv/dot";
+ 		    /* hack for aliases */
+                    lq = q;
+                    if (!strncmp(q, "jp", 2)) {
+                        q = "jpg";                /* canonical - for node name */
+                        lq = "jpeg\\njpe\\njpg";  /* list - for label */
+                    }
+                    else if (!strncmp(q, "tif", 3)) {
+                        q = "tif";
+                        lq = "tiff\\ntif";
+                    }
+                    else if (!strcmp(q, "x11") || !strcmp(q, "xlib")) {
+                        q = "x11";
+                        lq = "x11\\nxlib";
+                    }
+                    else if (!strcmp(q, "dot") || !strcmp(q, "gv")) {
+                        q = "gv";
+                        lq = "gv\\ndot";
+                    }
 
                     switch (api) {
                     case API_device:
@@ -686,7 +705,9 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
                         if (!m) {
                             m = agnode(ssg, bufb, 1);
                             a = agfindnodeattr(g, "label");
-                            agxset(m, a, q);
+                            agxset(m, a, lq);
+                            a = agfindnodeattr(g, "shape");
+                            agxset(m, a, "note");
                         }
                         e = agfindedge(g, n, m);
                         if (!e)
@@ -711,7 +732,9 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
                         if (!m) {
                             m = agnode(g, bufb, 1);
                             a = agfindnodeattr(g, "label");
-                            agxset(m, a, q);
+                            agxset(m, a, lq);
+                            a = agfindnodeattr(g, "shape");
+                            agxset(m, a, "note");
                         }
                         e = agfindedge(g, m, n);
                         if (!e)
