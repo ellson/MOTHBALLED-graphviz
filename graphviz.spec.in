@@ -786,7 +786,7 @@ Summary:        Demo graphs for graphviz
 %if 0%{?fedora} >= 11
 BuildArch: noarch
 %endif
-%if 0%{?rhel} >= 5
+%if 0%{?rhel} >= 6
 BuildArch: noarch
 %endif
 
@@ -808,7 +808,7 @@ Summary:        PDF and HTML documents for graphviz
 %if 0%{?fedora} >= 11
 BuildArch: noarch
 %endif
-%if 0%{?rhel} >= 5
+%if 0%{?rhel} >= 6
 BuildArch: noarch
 %endif
 
