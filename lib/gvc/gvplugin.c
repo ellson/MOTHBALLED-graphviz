@@ -499,7 +499,7 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
     gvplugin_package_t *package;
     gvplugin_available_t **pnext;
     char bufa[100], *buf1, *buf2, bufb[100], *p, *q, *t;
-    int api;
+    int api, neededge_loadimage, neededge_device;
 
     g = agopen("G", Agdirected, NIL(Agdisc_t *));
     agattr(g, AGRAPH, "label", "");
@@ -521,6 +521,7 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
 
     for (package = gvc->packages; package; package = package->next) {
         loadimage_n = renderer_n = device_n = NULL;
+        neededge_loadimage = neededge_device = 0;
         strcpy(bufa, "cluster_");
         strcat(bufa, package->name);
         sg = agsubg(g, bufa, 1);
@@ -594,6 +595,7 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
             // add some invisible nodes (if needed) and invisible edges to 
             //    improve layout of cluster
             if (api == API_loadimage && !loadimage_n) {
+		neededge_loadimage = 1;
                 strcpy(buf2, "invis");
                 loadimage_n = agnode(ssg, bufa, 1);
                 a = agfindnodeattr(g, "style");
@@ -613,6 +615,8 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
                 agxset(e, a, "invis");
 	    }
             if (api == API_render && !renderer_n) {
+		neededge_loadimage = 1;
+		neededge_device = 1;
                 strcpy(buf2, "invis");
                 renderer_n = agnode(ssg, bufa, 1);
                 a = agfindnodeattr(g, "style");
@@ -621,6 +625,7 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
                 agxset(renderer_n, a, "");
 	    }
             if (api == API_device && !device_n) {
+		neededge_device = 1;
                 strcpy(buf2, "invis");
                 device_n = agnode(ssg, bufa, 1);
                 a = agfindnodeattr(g, "style");
@@ -629,12 +634,16 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
                 agxset(device_n, a, "");
 	    }
         }
-        e = agedge(sg, loadimage_n, renderer_n, NULL, 1);
-        a = agfindedgeattr(g, "style");
-        agxset(e, a, "invis");
-        e = agedge(sg, renderer_n, device_n, NULL, 1);
-        a = agfindedgeattr(g, "style");
-        agxset(e, a, "invis");
+        if (neededge_loadimage) {
+            e = agedge(sg, loadimage_n, renderer_n, NULL, 1);
+            a = agfindedgeattr(g, "style");
+            agxset(e, a, "invis");
+        }
+        if (neededge_device) {
+            e = agedge(sg, renderer_n, device_n, NULL, 1);
+            a = agfindedgeattr(g, "style");
+            agxset(e, a, "invis");
+        }
     }
 
     ssg = agsubg(g, "output_formats", 1);
