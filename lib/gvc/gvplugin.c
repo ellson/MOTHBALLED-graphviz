@@ -493,7 +493,7 @@ void gvplugin_write_status(GVC_t * gvc)
 Agraph_t *gvplugin_graph(GVC_t * gvc)
 {
     Agraph_t *g, *sg, *ssg;
-    Agnode_t *n, *m, *loadimage_n, *renderer_n, *device_n;
+    Agnode_t *n, *m, *loadimage_n, *renderer_n, *device_n, *textlayout_n, *layout_n;
     Agedge_t *e;
     Agsym_t *a;
     gvplugin_package_t *package;
@@ -509,19 +509,20 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
     agattr(g, AGNODE, "label", NODENAME_ESC);
     agattr(g, AGNODE, "shape", "");
     agattr(g, AGNODE, "style", "");
+    agattr(g, AGNODE, "width", "");
     agattr(g, AGEDGE, "style", "");
 
     a = agfindgraphattr(g, "rankdir");
     agxset(g, a, "LR");
 
     a = agfindgraphattr(g, "ranksep");
-    agxset(g, a, "1.5");
+    agxset(g, a, "2.5");
 
     a = agfindgraphattr(g, "label");
     agxset(g, a, "Plugins");
 
     for (package = gvc->packages; package; package = package->next) {
-        loadimage_n = renderer_n = device_n = NULL;
+        loadimage_n = renderer_n = device_n = textlayout_n = layout_n = NULL;
         neededge_loadimage = neededge_device = 0;
         strcpy(bufa, "cluster_");
         strcat(bufa, package->name);
@@ -549,6 +550,8 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
                     switch (api) {
                     case API_device:
                     case API_loadimage:
+			/* draw device as box - record last device in plugin  (if any) in device_n */
+			/* draw loadimage as box - record last loadimage in plugin  (if any) in loadimage_n */
 
                         /* hack for aliases */
 			lq = q;
@@ -573,10 +576,17 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
                         n = agnode(ssg, bufa, 1);
                         a = agfindnodeattr(g, "label");
                         agxset(n, a, lq);
-			if (api == API_device)
+                        a = agfindnodeattr(g, "width");
+                        agxset(n, a, "1.0");
+                        a = agfindnodeattr(g, "shape");
+			if (api == API_device) {
+                            agxset(n, a, "box");
                             device_n = n;
-                        else
+			}
+                        else {
+                            agxset(n, a, "box");
                             loadimage_n = n;
+			}
                         if (!(p && *p)) {
                             strcpy(bufb, "render_cg");
                             m = agfindnode(sg, bufb);
@@ -589,10 +599,34 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
                         }
                         break;
                     case API_render:
+			/* draw renderers as ellipses - record last renderer in plugin (if any) in renderer_n */
                         strcpy(bufb, api_names[api]);
                         strcat(bufb, "_");
                         strcat(bufb, q);
                         renderer_n = n = agnode(ssg, bufb, 1);
+                        a = agfindnodeattr(g, "label");
+                        agxset(n, a, q);
+                        break;
+                    case API_textlayout:
+			/* draw textlayout  as invtriangle - record last textlayout in plugin  (if any) in textlayout_n */
+			/* FIXME? only one textlayout is loaded. Why? */
+                        strcpy(bufb, api_names[api]);
+                        strcat(bufb, "_");
+                        strcat(bufb, q);
+                        textlayout_n = n = agnode(ssg, bufb, 1);
+                        a = agfindnodeattr(g, "shape");
+                        agxset(n, a, "invtriangle");
+                        a = agfindnodeattr(g, "label");
+                        agxset(n, a, "T");
+                        break;
+                    case API_layout:
+			/* draw textlayout  as hexagon - record last layout in plugin  (if any) in layout_n */
+                        strcpy(bufb, api_names[api]);
+                        strcat(bufb, "_");
+                        strcat(bufb, q);
+                        layout_n = n = agnode(ssg, bufb, 1);
+                        a = agfindnodeattr(g, "shape");
+                        agxset(n, a, "hexagon");
                         a = agfindnodeattr(g, "label");
                         agxset(n, a, q);
                         break;
@@ -607,11 +641,13 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
             if (api == API_loadimage && !loadimage_n) {
 		neededge_loadimage = 1;
                 strcpy(buf2, "invis");
-                loadimage_n = agnode(ssg, bufa, 1);
+                loadimage_n = n = agnode(ssg, bufa, 1);
                 a = agfindnodeattr(g, "style");
-                agxset(loadimage_n, a, "invis");
+                agxset(n, a, "invis");
                 a = agfindnodeattr(g, "label");
-                agxset(loadimage_n, a, "");
+                agxset(n, a, "");
+                a = agfindnodeattr(g, "width");
+                agxset(n, a, "1.0");
 
                 strcpy(buf2, "invis_src");
                 n = agnode(g, bufa, 1);
@@ -628,20 +664,22 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
 		neededge_loadimage = 1;
 		neededge_device = 1;
                 strcpy(buf2, "invis");
-                renderer_n = agnode(ssg, bufa, 1);
+                renderer_n = n = agnode(ssg, bufa, 1);
                 a = agfindnodeattr(g, "style");
-                agxset(renderer_n, a, "invis");
+                agxset(n, a, "invis");
                 a = agfindnodeattr(g, "label");
-                agxset(renderer_n, a, "");
+                agxset(n, a, "");
 	    }
             if (api == API_device && !device_n) {
 		neededge_device = 1;
                 strcpy(buf2, "invis");
-                device_n = agnode(ssg, bufa, 1);
+                device_n = n = agnode(ssg, bufa, 1);
                 a = agfindnodeattr(g, "style");
-                agxset(device_n, a, "invis");
+                agxset(n, a, "invis");
                 a = agfindnodeattr(g, "label");
-                agxset(device_n, a, "");
+                agxset(n, a, "");
+                a = agfindnodeattr(g, "width");
+                agxset(n, a, "1.0");
 	    }
         }
         if (neededge_loadimage) {
@@ -651,6 +689,16 @@ Agraph_t *gvplugin_graph(GVC_t * gvc)
         }
         if (neededge_device) {
             e = agedge(sg, renderer_n, device_n, NULL, 1);
+            a = agfindedgeattr(g, "style");
+            agxset(e, a, "invis");
+        }
+        if (textlayout_n) {
+            e = agedge(sg, loadimage_n, textlayout_n, NULL, 1);
+            a = agfindedgeattr(g, "style");
+            agxset(e, a, "invis");
+        }
+        if (layout_n) {
+            e = agedge(sg, loadimage_n, layout_n, NULL, 1);
             a = agfindedgeattr(g, "style");
             agxset(e, a, "invis");
         }
