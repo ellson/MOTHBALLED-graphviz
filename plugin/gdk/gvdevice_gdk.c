@@ -66,7 +66,7 @@ writer ( const gchar *buf, gsize count, GError **error, gpointer data)
     return FALSE;
 }
 
-static void gdk_pixbuf_format(GVJ_t * job)
+static void gdk_format(GVJ_t * job)
 {
     char *format_str = "";
     GdkPixbuf *pixbuf;
@@ -108,13 +108,13 @@ static void gdk_pixbuf_format(GVJ_t * job)
     gdk_pixbuf_unref(pixbuf);
 }
 
-static gvdevice_engine_t gdk_pixbuf_engine = {
-    NULL,		/* gdk_pixbuf_initialize */
-    gdk_pixbuf_format,
-    NULL,		/* gdk_pixbuf_finalize */
+static gvdevice_engine_t gdk_engine = {
+    NULL,		/* gdk_initialize */
+    gdk_format,
+    NULL,		/* gdk_finalize */
 };
 
-static gvdevice_features_t device_features_gdk_pixbuf = {
+static gvdevice_features_t device_features_gdk = {
     GVDEVICE_BINARY_FORMAT
       | GVDEVICE_DOES_TRUECOLOR,/* flags */
     {0.,0.},                    /* default margin - points */
@@ -123,16 +123,16 @@ static gvdevice_features_t device_features_gdk_pixbuf = {
 };
 #endif
 
-gvplugin_installed_t gvdevice_gdk_pixbuf_types[] = {
+gvplugin_installed_t gvdevice_gdk_types[] = {
 #ifdef HAVE_PANGOCAIRO
-    {FORMAT_BMP, "bmp:cairo", 4, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
-    {FORMAT_ICO, "ico:cairo", 4, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
-    {FORMAT_JPEG, "jpe:cairo", 4, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
-    {FORMAT_JPEG, "jpeg:cairo", 4, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
-    {FORMAT_JPEG, "jpg:cairo", 4, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
-    {FORMAT_PNG, "png:cairo", 4, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
-    {FORMAT_TIFF, "tif:cairo", 4, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
-    {FORMAT_TIFF, "tiff:cairo", 4, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
+    {FORMAT_BMP, "bmp:cairo", 6, &gdk_engine, &device_features_gdk},
+    {FORMAT_ICO, "ico:cairo", 6, &gdk_engine, &device_features_gdk},
+    {FORMAT_JPEG, "jpe:cairo", 6, &gdk_engine, &device_features_gdk},
+    {FORMAT_JPEG, "jpeg:cairo", 6, &gdk_engine, &device_features_gdk},
+    {FORMAT_JPEG, "jpg:cairo", 6, &gdk_engine, &device_features_gdk},
+    {FORMAT_PNG, "png:cairo", 6, &gdk_engine, &device_features_gdk},
+    {FORMAT_TIFF, "tif:cairo", 6, &gdk_engine, &device_features_gdk},
+    {FORMAT_TIFF, "tiff:cairo", 6, &gdk_engine, &device_features_gdk},
 #endif
     {0, NULL, 0, NULL, NULL}
 };

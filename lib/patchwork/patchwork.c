@@ -208,18 +208,10 @@ static void finishNode(node_t * n)
 {
     char buf [40];
     if (N_fontsize) {
-#ifndef WITH_CGRAPH
-	char* str = agxget(n, N_fontsize->index);
-#else
 	char* str = agxget(n, N_fontsize);
-#endif
 	if (*str == '\0') {
 	    sprintf (buf, "%.03f", ND_ht(n)*0.7); 
-#ifndef WITH_CGRAPH
-	    agxset(n, N_fontsize->index, buf);
-#else /* WITH_CGRAPH */
 	    agxset(n, N_fontsize, buf);
-#endif /* WITH_CGRAPH */
 	}
     }
     common_init_node (n);

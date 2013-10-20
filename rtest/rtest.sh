@@ -280,14 +280,16 @@ function doTest
     $testcmd 2> errout
     RVAL=$?
 
+    if [[ -s errout ]]
+    then
+      cat errout
+    fi
+
     if [[ $RVAL != 0 || ! -s $OUTPATH ]]
     then
       (( CRASH_CNT+=1 ))
       print -u 2 "Test $TESTNAME:$i : == Layout failed =="
       print -u 2 "  $testcmd"
-    elif [[ -s errout ]]
-    then
-      cat errout
     elif [[ $GENERATE == 1 ]]
     then
       continue

@@ -147,11 +147,8 @@ static void gvloadimage_rsvg_cairo(GVJ_t * job, usershape_t *us, boxf b, boolean
 	cairo_surface_reference(surface);
 
         cairo_set_source_surface(cr, surface, 0, 0);
-
-        cairo_translate(cr, ROUND(b.LL.x), ROUND(-b.UR.y));
-        cairo_scale(cr, (b.UR.x - b.LL.x) / us->w,
-                       (b.UR.y - b.LL.y) / us->h);
-
+	cairo_translate(cr, b.LL.x, -b.UR.y);
+	cairo_scale(cr, (b.UR.x - b.LL.x)/(us->w), (b.UR.y - b.LL.y)/(us->h)); 
 	rsvg_handle_render_cairo(rsvgh, cr);
 
         cairo_paint (cr);

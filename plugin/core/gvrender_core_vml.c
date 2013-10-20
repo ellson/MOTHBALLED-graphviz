@@ -264,11 +264,7 @@ static void vml_begin_graph(GVJ_t * job)
     gvputs(job, "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
  
 
-#ifndef WITH_CGRAPH
-    name = obj->u.g->name;
-#else
     name = agnameof(obj->u.g);
-#endif
     if (name[0]) {
         gvputs(job, "<TITLE>");
 	gvputs(job, html_string(name));

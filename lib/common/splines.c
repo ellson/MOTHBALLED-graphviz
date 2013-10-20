@@ -1415,11 +1415,7 @@ void addEdgeLabels(graph_t* g, edge_t * e, pointf rp, pointf rq)
     makePortLabels(e);
 }
 
-#ifndef WITH_CGRAPH
-#define AGXGET(o,a) agxget(o,a->index)
-#else /* WITH_CGRAPH */
 #define AGXGET(o,a) agxget(o,a)
-#endif /* WITH_CGRAPH */
 
 /* vladimir */
 /* place_portlabel:

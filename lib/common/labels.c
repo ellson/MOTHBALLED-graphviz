@@ -116,11 +116,7 @@ textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *f
         char *s;
 
     switch (agobjkind(obj)) {
-#ifndef WITH_CGRAPH
-    case AGGRAPH:
-#else
     case AGRAPH:
-#endif
         sg = (graph_t*)obj;
 	g = sg->root;
 	break;
@@ -148,11 +144,7 @@ textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *f
 	rv->html = TRUE;
 	if (make_html_label(obj, rv)) {
 	    switch (agobjkind(obj)) {
-#ifndef WITH_CGRAPH
-	    case AGGRAPH:
-#else
 	    case AGRAPH:
-#endif
 	        agerr(AGPREV, "in label of graph %s\n",agnameof(sg));
 		break;
 	    case AGNODE:
@@ -303,11 +295,7 @@ static char *strdup_and_subst_obj0 (char *str, void *obj, int escBackslash)
 
     /* prepare substitution strings */
     switch (agobjkind(obj)) {
-#ifndef WITH_CGRAPH
-	case AGGRAPH:
-#else
 	case AGRAPH:
-#endif
 	    g_str = agnameof((graph_t *)obj);
 	    g_len = strlen(g_str);
 	    tl = GD_label((graph_t *)obj);

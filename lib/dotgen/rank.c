@@ -29,9 +29,7 @@
 #include	"dot.h"
 
 static void dot1_rank(graph_t * g, aspect_t* asp);
-#ifdef WITH_CGRAPH
 static void dot2_rank(graph_t * g, aspect_t* asp);
-#endif
 
 static void 
 renewlist(elist * L)
@@ -66,16 +64,6 @@ cleanup1(graph_t * g)
 	     */
 	    if (f && (e == ED_to_orig(f))) {
 		edge_t *e1, *f1;
-#ifndef WITH_CGRAPH
-		for (e1 = agfstout(g, n); e1; e1 = agnxtout(g, e1)) {
-		    if (e != e1) {
-			f1 = ED_to_virt(e1);
-			if (f1 && (f == f1)) {
-			    ED_to_virt(e1) = NULL;
-			}
-		    }
-		}
-#else
 		node_t *n1;
 		for (n1 = agfstnode(g); n1; n1 = agnxtnode(g, n1)) {
 		    for (e1 = agfstout(g, n1); e1; e1 = agnxtout(g, e1)) {
@@ -88,7 +76,6 @@ cleanup1(graph_t * g)
 		    }
 		}
 		free(f->base.data);
-#endif
 		free(f);
 	    }
 	    ED_to_virt(e) = NULL;
@@ -208,11 +195,7 @@ node_induce(graph_t * par, graph_t * g)
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(agroot(g), n); e; e = agnxtout(agroot(g), e)) {
 	    if (agcontains(g, aghead(e)))
-#ifndef WITH_CGRAPH
-		aginsert(g, e);
-#else /* WITH_CGRAPH */
 		agsubedge(g,e,1);
-#endif /* WITH_CGRAPH */
 	}
     }
 }
@@ -273,10 +256,6 @@ static void
 collapse_cluster(graph_t * g, graph_t * subg)
 {
     if (GD_parent(subg)) {
-#ifndef WITH_CGRAPH
-	agerr(AGWARN, "Cluster %s is multiply defined in %s and %s - this may cause problems.\n", subg->name,
-		g->name, GD_parent(subg)->name);
-#endif
 	return;
     }
     GD_parent(subg) = g;
@@ -301,17 +280,7 @@ collapse_sets(graph_t *rg, graph_t *g)
     node_t *n;
 #endif
 
-#ifndef WITH_CGRAPH
-    graph_t *mg;
-    node_t *mn;
-    edge_t *me;
-    mg = g->meta_node->graph;
-    for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
-	mn = aghead(me);
-	subg = agusergraph(mn);
-#else /* WITH_CGRAPH */
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
-#endif /* WITH_CGRAPH */
 	c = rank_set_class(subg);
 	if (c) {
 	    if ((c == CLUSTER) && CL_type == LOCAL)
@@ -336,18 +305,7 @@ static void
 find_clusters(graph_t * g)
 {
     graph_t *subg;
-#ifndef WITH_CGRAPH
-    graph_t *mg;
-    node_t *mn;
-    edge_t *me;
-
-    mg = g->meta_node->graph;
-    for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
-	mn = me->head;
-	subg = agusergraph(mn);
-#else /* WITH_CGRAPH */
     for (subg = agfstsubg(agroot(g)); subg; subg = agnxtsubg(subg)) {
-#endif /* WITH_CGRAPH */
 	if (GD_set_type(subg) == CLUSTER)
 	    collapse_cluster(g, subg);
     }
@@ -614,13 +572,11 @@ static void dot1_rank(graph_t * g, aspect_t* asp)
 
 void dot_rank(graph_t * g, aspect_t* asp)
 {
-#ifdef WITH_CGRAPH
     if (agget (g, "newrank")) {
 	GD_flags(g) |= NEW_RANK;
 	dot2_rank (g, asp);
     }
     else
-#endif
 	dot1_rank (g, asp);
     if (Verbose)
 	fprintf (stderr, "Maxrank = %d, minrank = %d\n", GD_maxrank(g), GD_minrank(g));
@@ -678,11 +634,7 @@ collapse_leaves(graph_t * g)
 	    continue;
 	if (agfstout(g, n) == NULL) {
 	    if ((e = agfstin(g, n)) && (agnxtin(g, e) == NULL)) {
-#ifndef WITH_CGRAPH
-		potential_leaf(g, e, n);
-#else
 		potential_leaf(g, AGMKOUT(e), n);
-#endif
 		continue;
 	    }
 	}
@@ -696,7 +648,6 @@ collapse_leaves(graph_t * g)
 }
 #endif
 
-#ifdef WITH_CGRAPH
 /* new ranking code:
  * Allows more constraints
  * Copy of level.c in dotgen2
@@ -1283,7 +1234,3 @@ void dot2_rank(graph_t * g, aspect_t* asp)
 #endif
     agclose(Xg);
 }
-
-#endif /* WITH_CGRAPH */
-/* end of new ranking code
- */

@@ -507,6 +507,7 @@ void gvconfig(GVC_t * gvc, boolean rescan)
         libdir = gvconfig_libdir(gvc);
         rc = stat(libdir, &libdir_st);
         if (rc == -1) {
+	    gvtextlayout_select(gvc);   /* choose best available textlayout plugin immediately */
     	    /* if we fail to stat it then it probably doesn't exist so just fail silently */
 	    return;
         }
@@ -521,6 +522,7 @@ void gvconfig(GVC_t * gvc, boolean rescan)
         if (rescan) {
     	    config_rescan(gvc, gvc->config_path);
     	    gvc->config_found = TRUE;
+	    gvtextlayout_select(gvc);   /* choose best available textlayout plugin immediately */
     	    return;
         }
     
@@ -528,6 +530,7 @@ void gvconfig(GVC_t * gvc, boolean rescan)
     
         rc = stat(gvc->config_path, &config_st);
         if (rc == -1) {
+	    gvtextlayout_select(gvc);   /* choose best available textlayout plugin immediately */
     	    /* silently return without setting gvc->config_found = TRUE */
     	    return;
         }

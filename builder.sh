@@ -2,8 +2,10 @@
 
 # build binary products all the way from git
 
+cd $( dirname $0 )
+
 if ! test -d .git; then
-    echo "must be run in git clone" >&2 
+    echo "must be run from the top directory of a git clone" >&2 
     exit 1
 fi
 

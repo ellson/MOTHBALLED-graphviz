@@ -16,7 +16,6 @@
 #include "dot.h"
 #include "aspect.h"
 
-#ifdef WITH_CGRAPH
 static void
 dot_init_subg(graph_t * g)
 {
@@ -28,15 +27,12 @@ dot_init_subg(graph_t * g)
 	dot_init_subg(subg);
     }
 }
-#endif
 
 
 static void 
 dot_init_node(node_t * n)
 {
-#ifdef WITH_CGRAPH
     agbindrec(n, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);	//graph custom data
-#endif /* WITH_CGRAPH */
     common_init_node(n);
     gv_nodesize(n, GD_flip(agraphof(n)));
     alloc_elist(4, ND_in(n));
@@ -51,9 +47,7 @@ static void
 dot_init_edge(edge_t * e)
 {
     char *tailgroup, *headgroup;
-#ifdef WITH_CGRAPH
     agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//graph custom data
-#endif /* WITH_CGRAPH */
     common_init_edge(e);
 
     ED_weight(e) = late_int(e, E_weight, 1, 0);
@@ -111,11 +105,7 @@ dot_cleanup_node(node_t * n)
     free_label(ND_label(n));
     if (ND_shape(n))
 	ND_shape(n)->fns->freefn(n);
-#ifndef WITH_CGRAPH
-    memset(&(n->u), 0, sizeof(Agnodeinfo_t));
-#else /* WITH_CGRAPH */
     agdelrec(n, "Agnodeinfo_t");	
-#endif /* WITH_CGRAPH */
 }
 
 static void free_virtual_edge_list(node_t * n)
@@ -126,17 +116,13 @@ static void free_virtual_edge_list(node_t * n)
     for (i = ND_in(n).size - 1; i >= 0; i--) {
 	e = ND_in(n).list[i];
 	delete_fast_edge(e);
-#ifdef WITH_CGRAPH
 	free(e->base.data);
-#endif
 	free(e);
     }
     for (i = ND_out(n).size - 1; i >= 0; i--) {
 	e = ND_out(n).list[i];
 	delete_fast_edge(e);
-#ifdef WITH_CGRAPH
 	free(e->base.data);
-#endif
 	free(e);
     }
 }
@@ -151,9 +137,7 @@ static void free_virtual_node_list(node_t * vn)
 	if (ND_node_type(vn) == VIRTUAL) {
 	    free_list(ND_out(vn));
 	    free_list(ND_in(vn));
-#ifdef WITH_CGRAPH
 	    free(vn->base.data);
-#endif
 	    free(vn);
 	}
 	vn = next_vn;
@@ -164,20 +148,10 @@ static void
 dot_cleanup_graph(graph_t * g)
 {
     int i;
-#ifndef WITH_CGRAPH
-    graph_t *clust;
-    int c;
-    for (c = 1; c <= GD_n_cluster(g); c++) {
-	clust = GD_clust(g)[c];
-	GD_parent(clust) = NULL;
-	dot_cleanup(clust);
-    }
-#else
     graph_t *subg;
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
 	dot_cleanup_graph(subg);
     }
-#endif
     if (GD_clust(g)) free (GD_clust(g));
     if (GD_rankleader(g)) free (GD_rankleader(g));
 
@@ -190,13 +164,8 @@ dot_cleanup_graph(graph_t * g)
 	else
 	    free(GD_rank(g));
     }
-#ifndef WITH_CGRAPH
-    if (g != agroot(g)) 
-	memset(&(g->u), 0, sizeof(Agraphinfo_t));
-#else /* WITH_CGRAPH */
     if (g != agroot(g)) 
 	agdelrec(g,"Agraphinfo_t");
-#endif /* WITH_CGRAPH */
 }
 
 /* delete the layout (but retain the underlying graph) */
@@ -250,7 +219,6 @@ dumpRanks (graph_t * g)
 #endif
 
 
-#ifdef WITH_CGRAPH
 static void
 remove_from_rank (Agraph_t * g, Agnode_t* n)
 {
@@ -293,14 +261,9 @@ removeFill (Agraph_t * g)
     agdelsubg (g, sg);
 
 }
-#endif
 
-#ifndef WITH_CGRAPH
-#define ag_xset(x,a,v) agxset(x,a->index,v)
-#else /* WITH_CGRAPH */
 #define ag_xset(x,a,v) agxset(x,a,v)
 #define agnodeattr(g,n,v) agattr(g,AGNODE,n,v)
-#endif /* WITH_CGRAPH */
 
 static void
 attach_phase_attrs (Agraph_t * g, int maxphase)
@@ -331,10 +294,7 @@ void dot_layout(Agraph_t * g)
     setEdgeType (g, ET_SPLINE);
     asp = setAspect (g, &aspect);
 
-#ifdef WITH_CGRAPH
     dot_init_subg(g);
-#endif
-
     dot_init_node_edge(g);
 
     do {
@@ -360,10 +320,8 @@ void dot_layout(Agraph_t * g)
 	}
 	aspect.nPasses--;
     } while (aspect.nextIter && aspect.nPasses);
-#ifdef WITH_CGRAPH
     if (GD_flags(g) & NEW_RANK)
 	removeFill (g);
-#endif
     dot_sameports(g);
     dot_splines(g);
     if (mapbool(agget(g, "compound")))

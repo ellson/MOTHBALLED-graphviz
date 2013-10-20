@@ -35,17 +35,9 @@
 #include "ingraphs.h"
 #include "pack.h"
 
-#ifndef WITH_CGRAPH
-extern Agdict_t *agdictof(void *);
-#endif
-
 
 #ifdef WIN32 /*dependencies*/
-#ifdef WITH_CGRAPH
     #pragma comment( lib, "cgraph.lib" )
-#else
-    #pragma comment( lib, "graph.lib" )
-#endif
     #pragma comment( lib, "gvc.lib" )
     #pragma comment( lib, "ingraphs.lib" )
     #pragma comment( lib, "neatogen.lib" )
@@ -56,8 +48,6 @@ extern Agdict_t *agdictof(void *);
     #pragma comment( lib, "glib-2.0.lib" )
     #pragma comment( lib, "cdt.lib" )
     #pragma comment( lib, "gvplugin_neato_layout.lib" )
-
-
 #endif
 
 
@@ -86,11 +76,7 @@ static int verbose = 0;
 static char **myFiles = 0;
 static int nGraphs = 0;		/* Guess as to no. of graphs */
 static FILE *outfp;		/* output; stdout by default */
-#ifndef WITH_CGRAPH
-static int kind;		/* type of graph */
-#else
 static Agdesc_t kind;		/* type of graph */
-#endif
 static int G_cnt;		/* No. of -G arguments */
 static int G_sz;		/* Storage size for -G arguments */
 static attr_t *G_args;		/* Storage for -G arguments */
@@ -182,7 +168,6 @@ static int setUInt(unsigned int *v, char *arg)
     return 0;
 }
 
-#ifdef WITH_CGRAPH
 static Agsym_t *agraphattr(Agraph_t *g, char *name, char *value)
 {
     return agattr(g, AGRAPH, name, value);
@@ -198,8 +183,6 @@ static Agsym_t *agedgeattr(Agraph_t *g, char *name, char *value)
     return agattr(g, AGEDGE, name, value);
 }
 
-#endif
-
 /* init:
  */
 static void init(int argc, char *argv[], pack_info* pinfo)
@@ -208,9 +191,6 @@ static void init(int argc, char *argv[], pack_info* pinfo)
     char buf[BUFSIZ];
     char* bp;
 
-#ifndef WITH_CGRAPH
-    aginit();
-#endif
     agnodeattr(NULL, "label", NODENAME_ESC);
     pinfo->mode = l_clust;
     pinfo->margin = CL_OFFSET;
@@ -319,11 +299,9 @@ static void init_graph(Agraph_t * g, boolean fill, GVC_t* gvc)
     node_t *n;
     edge_t *e;
 
-#ifdef WITH_CGRAPH
     aginit (g, AGRAPH, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
     aginit (g, AGNODE, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
     aginit (g, AGEDGE, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
-#endif
     GD_gvc(g) = gvc;
     graph_init(g, FALSE);
     d = late_int(g, agfindgraphattr(g, "dim"), 2, 2);
@@ -359,7 +337,6 @@ static void init_graph(Agraph_t * g, boolean fill, GVC_t* gvc)
  * Copy all attributes from old object to new. Assume
  * attributes have been initialized.
  */
-#ifdef WITH_CGRAPH
 static void cloneDfltAttrs(Agraph_t *old, Agraph_t *new, int kind)
 {
     Agsym_t *a;
@@ -387,19 +364,6 @@ static void cloneAttrs(void *old, void *new)
 	    agset(new, a->name, s);
     }
 }
-#else
-static void cloneAttrs(void *old, void *new)
-{
-    int j;
-    Agsym_t *a;
-    Agdict_t *dict = agdictof(old);
-
-    for (j = 0; j < dtsize(dict->dict); j++) {
-	a = dict->list[j];
-	agset(new, a->name, agxget(old, a->index));
-    }
-}
-#endif
 
 /* cloneEdge:
  * Note that here, and in cloneNode and cloneCluster,
@@ -469,7 +433,6 @@ static Dtdisc_t attrdisc = {
  * objp. If the attribute has already been defined and
  * has a different default, set default to "".
  */
-#ifdef WITH_CGRAPH
 static void fillDict(Dt_t * newdict, Agraph_t* g, int kind)
 {
     Agsym_t *a;
@@ -490,31 +453,6 @@ static void fillDict(Dt_t * newdict, Agraph_t* g, int kind)
 	    rv->value = "";
     }
 }
-#else
-static void fillDict(Dt_t * newdict, void *objp)
-{
-    int j;
-    Agsym_t *a;
-    Agdict_t *olddict = agdictof(objp);
-    char *name;
-    char *value;
-    attr_t *rv;
-
-    for (j = 0; j < dtsize(olddict->dict); j++) {
-	a = olddict->list[j];
-	name = a->name;
-	value = agxget(objp, a->index);
-	rv = (attr_t *) dtmatch(newdict, name);
-	if (!rv) {
-	    rv = NEW(attr_t);
-	    rv->name = name;
-	    rv->value = value;
-	    dtinsert(newdict, rv);
-	} else if (strcmp(value, rv->value))
-	    rv->value = "";
-    }
-}
-#endif
 
 /* fillGraph:
  * Use all the name-value entries in the dictionary d to define
@@ -549,15 +487,9 @@ static void initAttrs(Agraph_t * root, Agraph_t ** gs, int cnt)
 
     for (i = 0; i < cnt; i++) {
 	g = gs[i];
-#ifdef WITH_CGRAPH
 	fillDict(g_attrs, g, AGRAPH);
 	fillDict(n_attrs, g, AGNODE);
 	fillDict(e_attrs, g, AGEDGE);
-#else
-	fillDict(g_attrs, g);
-	fillDict(n_attrs, g->proto->n);
-	fillDict(e_attrs, g->proto->e);
-#endif
     }
 
     fillGraph(root, g_attrs, agraphattr);
@@ -574,13 +506,8 @@ static void initAttrs(Agraph_t * root, Agraph_t ** gs, int cnt)
 static void cloneGraphAttr(Agraph_t * g, Agraph_t * ng)
 {
     cloneAttrs(g, ng);
-#ifdef WITH_CGRAPH
     cloneDfltAttrs(g, ng, AGNODE);
     cloneDfltAttrs(g, ng, AGEDGE);
-#else
-    cloneAttrs(g->proto->n, ng->proto->n);
-    cloneAttrs(g->proto->e, ng->proto->e);
-#endif
 }
 
 #ifdef UNIMPL
@@ -653,11 +580,6 @@ static char *xName(Dt_t * names, char *oldname)
 static void
 cloneSubg(Agraph_t * g, Agraph_t * ng, Agsym_t * G_bb, Dt_t * gnames)
 {
-#ifndef WITH_CGRAPH
-    graph_t *mg;
-    edge_t *me;
-    node_t *mn;
-#endif
     node_t *n;
     node_t *nn;
     edge_t *e;
@@ -669,24 +591,12 @@ cloneSubg(Agraph_t * g, Agraph_t * ng, Agsym_t * G_bb, Dt_t * gnames)
 
     cloneGraphAttr(g, ng);
     if (doPack)
-#ifdef WITH_CGRAPH
 	agxset(ng, G_bb, "");	/* Unset all subgraph bb */
-#else
-	agxset(ng, G_bb->index, "");	/* Unset all subgraph bb */
-#endif
 
     /* clone subgraphs */
-#ifdef WITH_CGRAPH
     for (subg = agfstsubg (g); subg; subg = agfstsubg (subg)) {
 	nsubg = agsubg(ng, xName(gnames, agnameof(subg)), 1);
 	agbindrec (nsubg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
-#else
-    mg = g->meta_node->graph;
-    for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
-	mn = aghead(me);
-	subg = agusergraph(mn);
-	nsubg = agsubg(ng, xName(gnames, agnameof(subg)));
-#endif
 	cloneSubg(subg, nsubg, G_bb, gnames);
 	/* if subgraphs are clusters, point to the new 
 	 * one so we can find it later.
@@ -698,12 +608,7 @@ cloneSubg(Agraph_t * g, Agraph_t * ng, Agsym_t * G_bb, Dt_t * gnames)
     /* add remaining nodes */
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	nn = NEWNODE(n);
-#ifndef WITH_CGRAPH
-	if (!agfindnode(ng, agnameof(nn)))
-	    aginsert(ng, nn);
-#else
         agsubnode(ng, nn, 1);
-#endif
     }
 
     /* add remaining edges. libgraph doesn't provide a way to find
@@ -715,12 +620,8 @@ cloneSubg(Agraph_t * g, Agraph_t * ng, Agsym_t * G_bb, Dt_t * gnames)
 		continue;
 	    nt = NEWNODE(agtail(e));
 	    nh = NEWNODE(aghead(e));
-#ifndef WITH_CGRAPH
-	    ne = agedge(ng, nt, nh);
-#else
 	    ne = agedge(ng, nt, nh, NULL, 1);
 	    agbindrec (ne, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
-#endif
 	    cloneEdge(e, ne);
 	    MARK(e);
 	}
@@ -781,11 +682,7 @@ static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt, GVC_t * gvc)
 
     if (verbose)
 	fprintf(stderr, "Creating clone graph\n");
-#ifndef WITH_CGRAPH
-    root = agopen(gname, kind);
-#else
     root = agopen(gname, kind, &AgDefaultDisc);
-#endif
     initAttrs(root, gs, cnt);
     G_bb = agfindgraphattr(root, "bb");
     if (doPack) assert(G_bb);
@@ -794,15 +691,9 @@ static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt, GVC_t * gvc)
     for (i = 0; i < G_cnt; i++) {
 	rv = agfindgraphattr(root, G_args[i].name);
 	if (rv)
-#ifndef WITH_CGRAPH
-	    agxset(root, rv->index, G_args[i].value);
-	else
-	    agraphattr(root, G_args[i].name, G_args[i].value);
-#else
 	    agxset(root, rv, G_args[i].value);
 	else
 	    agattr(root, AGRAPH, G_args[i].name, G_args[i].value);
-#endif
     }
 
     /* do common initialization. This will handle root's label. */
@@ -826,23 +717,15 @@ static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt, GVC_t * gvc)
 		fprintf(stderr, "Some nodes will be renamed.\n");
 		doWarn = FALSE;
 	    }
-#ifndef WITH_CGRAPH
-	    np = agnode(root, xName(nnames, agnameof(n)));
-#else
 	    np = agnode(root, xName(nnames, agnameof(n)), 1);
 	    agbindrec (np, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
-#endif
 	    ND_alg(n) = np;
 	    cloneNode(n, np);
 	}
 
 	/* wrap the clone of g in a subgraph of root */
-#ifndef WITH_CGRAPH
-	subg = agsubg(root, xName(gnames, agnameof(g)));
-#else
 	subg = agsubg(root, xName(gnames, agnameof(g)), 1);
 	agbindrec (subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
-#endif
 	cloneSubg(g, subg, G_bb, gnames);
     }
     dtclose(gnames);
@@ -867,17 +750,10 @@ static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt, GVC_t * gvc)
     return root;
 }
 
-#ifdef WITH_CGRAPH
 static Agraph_t *gread(FILE * fp)
 {
     return agread(fp, (Agdisc_t *) 0);
 }
-#else
-static Agraph_t *gread(FILE * fp)
-{
-    return agread(fp);
-}
-#endif
 
 /* readGraphs:
  * Read input, parse the graphs, use init_nop (neato -n) to
@@ -914,18 +790,6 @@ static Agraph_t **readGraphs(int *cp, GVC_t* gvc)
 	    sz += nGraphs;
 	    gs = ALLOC(sz, gs, Agraph_t *);
 	}
-#ifndef WITH_CGRAPH
-	if (kindUnset) {
-	    kindUnset = 0;
-	    kind = g->kind;
-	}
-	else if ((kind & AGFLAG_DIRECTED) != AG_IS_DIRECTED(g)) {
-	    fprintf(stderr,
-		    "Error: all graphs must be directed or undirected\n");
-	    exit(1);
-	} else if (!AG_IS_STRICT(g))
-	    kind = g->kind;
-#else
 	if (kindUnset) {
 	    kindUnset = 0;
 	    kind = g->desc;
@@ -936,7 +800,6 @@ static Agraph_t **readGraphs(int *cp, GVC_t* gvc)
 	    exit(1);
 	} else if (!agisstrict(g))
 	    kind = g->desc;
-#endif
 	init_graph(g, doPack, gvc);
 	gs[cnt++] = g;
     }
@@ -983,23 +846,6 @@ void dump(Agraph_t * g)
     }
 }
 
-#ifndef WITH_CGRAPH
-void dumps(Agraph_t * g)
-{
-    graph_t *subg;
-    graph_t *mg;
-    edge_t *me;
-    node_t *mn;
-
-    mg = g->meta_node->graph;
-    for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
-	mn = aghead(me);
-	subg = agusergraph(mn);
-	dump(subg);
-	fprintf(stderr, "====\n");
-    }
-}
-#else
 void dumps(Agraph_t * g)
 {
     graph_t *subg;
@@ -1009,7 +855,6 @@ void dumps(Agraph_t * g)
 	fprintf(stderr, "====\n");
     }
 }
-#endif
 #endif
 
 int main(int argc, char *argv[])

@@ -35,9 +35,7 @@
 
 static void sfdp_init_edge(edge_t * e)
 {
-#ifdef WITH_CGRAPH
     agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//node custom data
-#endif /* WITH_CGRAPH */
     common_init_edge(e);
 }
 
@@ -183,11 +181,7 @@ late_mode (graph_t* g, Agsym_t* sym, int dflt)
     int rv;
 
     if (!sym) return dflt;
-#ifdef WITH_CGRAPH
     s = agxget (g, sym);
-#else
-    s = agxget (g, sym->index);
-#endif
     if (isdigit(*s)) {
 	if ((v = atoi (s)) <= METHOD_UNIFORM_STRESS)
 	    rv = v;
@@ -222,11 +216,7 @@ late_smooth (graph_t* g, Agsym_t* sym, int dflt)
     int rv;
 
     if (!sym) return dflt;
-#ifdef WITH_CGRAPH
     s = agxget (g, sym);
-#else
-    s = agxget (g, sym->index);
-#endif
     if (isdigit(*s)) {
 #if (HAVE_GTS || HAVE_TRIANGLE)
 	if ((v = atoi (s)) <= SMOOTHING_RNG)
@@ -272,11 +262,7 @@ late_quadtree_scheme (graph_t* g, Agsym_t* sym, int dflt)
     int rv;
 
     if (!sym) return dflt;
-#ifdef WITH_CGRAPH
     s = agxget (g, sym);
-#else
-    s = agxget (g, sym->index);
-#endif
     if (isdigit(*s)) {
       if ((v = atoi (s)) <= QUAD_TREE_FAST && v >= QUAD_TREE_NONE){
 	rv = v;

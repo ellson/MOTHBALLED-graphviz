@@ -43,9 +43,7 @@ static char *cc_pfx = "_neato_cc";
 
 void neato_init_node(node_t * n)
 {
-#ifdef WITH_CGRAPH
     agbindrec(n, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);	//node custom data
-#endif /* WITH_CGRAPH */
     common_init_node(n);
     ND_pos(n) = N_NEW(GD_ndim(agraphof(n)), double);
     gv_nodesize(n, GD_flip(agraphof(n)));
@@ -53,13 +51,8 @@ void neato_init_node(node_t * n)
 
 static void neato_init_edge(edge_t * e)
 {
-#ifdef WITH_CGRAPH
-	agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//node custom data
-#endif /* WITH_CGRAPH */
+    agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//node custom data
     common_init_edge(e);
-#ifndef WITH_CGRAPH
-
-#endif /* WITH_CGRAPH */
     ED_factor(e) = late_double(e, E_weight, 1.0, 1.0);
 }
 
@@ -72,11 +65,7 @@ int user_pos(attrsym_t * posptr, attrsym_t * pinptr, node_t * np, int nG)
     if (posptr == NULL)
 	return FALSE;
     pvec = ND_pos(np);
-#ifndef WITH_CGRAPH
-    p = agxget(np, posptr->index);
-#else
     p = agxget(np, posptr);
-#endif
     if (p[0]) {
 	c = '\0';
 	if ((Ndim >= 3) && 
@@ -89,11 +78,7 @@ int user_pos(attrsym_t * posptr, attrsym_t * pinptr, node_t * np, int nG)
 	    }
 	    if (Ndim > 3)
 		jitter_d(np, nG, 3);
-#ifndef WITH_CGRAPH
-	    if ((c == '!') || (pinptr && mapbool(agxget(np, pinptr->index))))
-#else
 	    if ((c == '!') || (pinptr && mapbool(agxget(np, pinptr))))
-#endif
 		ND_pinned(np) = P_PIN;
 	    return TRUE;
 	}
@@ -105,11 +90,7 @@ int user_pos(attrsym_t * posptr, attrsym_t * pinptr, node_t * np, int nG)
 		    pvec[i] = pvec[i] / PSinputscale;
 	    }
 	    if (Ndim > 2) {
-#ifndef WITH_CGRAPH
-		if (N_z && (p = agxget(np, N_z->index)) && (sscanf(p,"%lf",&z) == 1)) { 
-#else
 		if (N_z && (p = agxget(np, N_z)) && (sscanf(p,"%lf",&z) == 1)) { 
-#endif
 		    if (PSinputscale > 0.0) {
 			pvec[2] = z / PSinputscale;
 		    }
@@ -120,11 +101,7 @@ int user_pos(attrsym_t * posptr, attrsym_t * pinptr, node_t * np, int nG)
 		else
 		    jitter3d(np, nG);
 	    }
-#ifndef WITH_CGRAPH
-	    if ((c == '!') || (pinptr && mapbool(agxget(np, pinptr->index))))
-#else
 	    if ((c == '!') || (pinptr && mapbool(agxget(np, pinptr))))
-#endif
 		ND_pinned(np) = P_PIN;
 	    return TRUE;
 	} else
@@ -159,11 +136,7 @@ static void neato_cleanup_graph(graph_t * g)
     if (Nop || (Pack < 0))
 	free_scan_graph(g);
     if (g != agroot(g))
-#ifndef WITH_CGRAPH
-        memset(&(g->u), 0, sizeof(Agraphinfo_t));
-#else /* WITH_CGRAPH */
         agclean(g, AGRAPH , "Agraphinfo_t");
-#endif /* WITH_CGRAPH */
 }
 
 void neato_cleanup(graph_t * g)
@@ -211,12 +184,6 @@ static void set_label(void* obj, textlabel_t * l, char *name)
 #ifdef IPSEPCOLA
 static cluster_data* cluster_map(graph_t *mastergraph, graph_t *g)
 {
-#ifndef WITH_CGRAPH
-    /* search meta-graph to find clusters */
-    graph_t *mg;
-    node_t *mm, *mn;
-    edge_t *me;
-#endif
     graph_t *subg;
     node_t *n;
      /* array of arrays of node indices in each cluster */
@@ -226,15 +193,7 @@ static cluster_data* cluster_map(graph_t *mastergraph, graph_t *g)
     cluster_data *cdata = GNEW(cluster_data);
 
     cdata->ntoplevel = agnnodes(g);
-#ifndef WITH_CGRAPH
-    mm = mastergraph->meta_node;
-    mg = agraphof(mm); 
-    for (me = agfstout(mg, mm); me; me = agnxtout(mg, me)) {
-        mn = aghead(me);
-        subg = agusergraph(mn);
-#else
     for (subg = agfstsubg(mastergraph); subg; subg = agnxtsubg(subg)) {
-#endif
         if (!strncmp(agnameof(subg), "cluster", 7)) {
             nclusters++;
         }
@@ -243,14 +202,7 @@ static cluster_data* cluster_map(graph_t *mastergraph, graph_t *g)
     cdata->nclusters = nclusters;
     cs = cdata->clusters = N_GNEW(nclusters,int*);
     cn = cdata->clustersizes = N_GNEW(nclusters,int);
-#ifndef WITH_CGRAPH
-    /* fprintf(stderr,"search %d clusters...\n",nclusters); */
-    for (me = agfstout(mg, mm); me; me = agnxtout(mg, me)) {
-        mn = me->head;
-        subg = agusergraph(mn);
-#else
     for (subg = agfstsubg(mastergraph); subg; subg = agnxtsubg(subg)) {
-#endif
         /* clusters are processed by separate calls to ordered_edges */
         if (!strncmp(agnameof(subg), "cluster", 7)) {
             int *c;
@@ -316,11 +268,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
     int stype, etype;
     static boolean warned;
 
-#ifndef WITH_CGRAPH
-    pos = agxget(e, E_pos->index);
-#else
     pos = agxget(e, E_pos);
-#endif
     if (*pos == '\0')
 	return 0;
 
@@ -350,11 +298,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 	    gv_free_splines(e);
 	    if (!warned) {
 		warned = 1;
-#ifndef WITH_CGRAPH
-		agerr(AGWARN, "pos attribute for edge (%s,%s) doesn't have 3n+1 points\n", e->tail->name, e->head->name);
-#else
 		agerr(AGWARN, "pos attribute for edge (%s,%s) doesn't have 3n+1 points\n", agnameof(agtail(e)), agnameof(aghead(e)));
-#endif
 	    }
 	    return 0;
 	}
@@ -365,11 +309,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 	    if (i < 2) {
 		if (!warned) {
 		    warned = 1;
-#ifndef WITH_CGRAPH
-		    agerr(AGWARN, "syntax error in pos attribute for edge (%s,%s)\n", e->tail->name, e->head->name);
-#else
 		    agerr(AGWARN, "syntax error in pos attribute for edge (%s,%s)\n", agnameof(agtail(e)), agnameof(aghead(e)));
-#endif
 		}
 		free(ps);
 		gv_free_splines(e);
@@ -471,11 +411,7 @@ static int chkBB(Agraph_t * g, attrsym_t * G_bb, boxf* bbp)
     char *s;
     boxf bb;
 
-#ifndef WITH_CGRAPH
-    s = agxget(g, G_bb->index);
-#else
     s = agxget(g, G_bb);
-#endif
     if (sscanf(s, BS, &bb.LL.x, &bb.LL.y, &bb.UR.x, &bb.UR.y) == 4) {
 	if (bb.LL.y > bb.UR.y) {
 	/* If the LL.y coordinate is bigger than the UR.y coordinate,
@@ -512,35 +448,19 @@ static void nop_init_graphs(Agraph_t *, attrsym_t *, attrsym_t *);
  * of subg, using parentg as the parent graph.
  */
 static void
-#ifndef WITH_CGRAPH
-dfs(node_t * mn, Agraph_t * parentg, attrsym_t * G_lp, attrsym_t * G_bb)
-#else /* WITH_CGRAPH */
 dfs(Agraph_t * subg, Agraph_t * parentg, attrsym_t * G_lp, attrsym_t * G_bb)
-#endif /* WITH_CGRAPH */
 {
     boxf bb;
 
-#ifndef WITH_CGRAPH
-    graph_t *subg = agusergraph(mn);
-#endif
     if (!strncmp(agnameof(subg), "cluster", 7) && chkBB(subg, G_bb, &bb)) {
-#ifdef WITH_CGRAPH
 	agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
-#endif
 	GD_bb(subg) = bb;
 	add_cluster(parentg, subg);
 	nop_init_graphs(subg, G_lp, G_bb);
     } else {
-#ifndef WITH_CGRAPH
-	graph_t *mg = parentg->meta_node->graph;
-	edge_t *me;
-	for (me = agfstout(mg, mn); me; me = agnxtout(mg, me)) {
-	    dfs(me->head, parentg, G_lp, G_bb);
-#else
 	graph_t *sg;
 	for (sg = agfstsubg(subg); sg; sg = agnxtsubg(sg)) {
 	    dfs(sg, parentg, G_lp, G_bb);
-#endif
 	}
     }
 }
@@ -553,21 +473,12 @@ dfs(Agraph_t * subg, Agraph_t * parentg, attrsym_t * G_lp, attrsym_t * G_bb)
 static void
 nop_init_graphs(Agraph_t * g, attrsym_t * G_lp, attrsym_t * G_bb)
 {
-#ifndef WITH_CGRAPH
-    graph_t *mg;
-    edge_t *me;
-#else
     graph_t *subg;
-#endif
     char *s;
     double x, y;
 
     if (GD_label(g) && G_lp) {
-#ifndef WITH_CGRAPH
-	s = agxget(g, G_lp->index);
-#else
 	s = agxget(g, G_lp);
-#endif
 	if (sscanf(s, "%lf,%lf", &x, &y) == 2) {
 	    GD_label(g)->pos = pointfof(x, y);
 	    GD_label(g)->set = TRUE;
@@ -576,14 +487,8 @@ nop_init_graphs(Agraph_t * g, attrsym_t * G_lp, attrsym_t * G_bb)
 
     if (!G_bb)
 	return;
-#ifndef WITH_CGRAPH
-    mg = g->meta_node->graph;
-    for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
-	dfs(me->head, g, G_lp, G_bb);
-#else /* WITH_CGRAPH */
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
 	dfs(subg, g, G_lp, G_bb);
-#endif /* WITH_CGRAPH */
     }
 }
 
@@ -708,11 +613,7 @@ int init_nop(Agraph_t * g, int adjust)
 
     /* If G_bb not defined, define it */
     if (!G_bb)
-#ifndef WITH_CGRAPH
-	G_bb = agraphattr(g, "bb", "");
-#else /* WITH_CGRAPH */
 	G_bb = agattr(g, AGRAPH, "bb", "");
-#endif /* WITH_CGRAPH */
 
     scan_graph(g);		/* mainly to set up GD_neato_nlist */
     for (i = 0; (np = GD_neato_nlist(g)[i]); i++) {
@@ -807,11 +708,7 @@ static int neatoModel(graph_t * g)
 	    return MODEL_SHORTPATH;
     }
     if ((c == 'm') && streq(p, "mds")) {
-#ifndef WITH_CGRAPH
-	if (agindex(g->root->proto->e, "len") >= 0)
-#else /* WITH_CGRAPH */
 	if (agattr(g, AGEDGE, "len", 0))
-#endif /* WITH_CGRAPH */
 	    return MODEL_MDS;
 	else {
 	    agerr(AGWARN,
@@ -959,11 +856,7 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int mode, int m
 #ifdef DIGCOLA
     float *edists = NULL;
 #endif
-#ifndef WITH_CGRAPH
-    int haveLen;
-#else
     attrsym_t *haveLen;
-#endif
     int haveWt;
     int haveDir;
     PointMap *ps = newPM();
@@ -974,11 +867,7 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int mode, int m
 	haveLen = FALSE;
 	haveWt = FALSE;
     } else {
-#ifndef WITH_CGRAPH
-	haveLen = (agindex(g->root->proto->e, "len") >= 0);
-#else /* WITH_CGRAPH */
 	haveLen = agattr(g, AGEDGE, "len", 0) ;
-#endif /* WITH_CGRAPH */
 	haveWt = (E_weight != 0);
     }
     if (mode == MODE_HIER || mode == MODE_IPSEP)
@@ -1337,11 +1226,8 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
 		model, (init == INIT_SELF), opts & opt_exp_flag, MaxIter, Epsilon);
 	fprintf(stderr, "convert graph: ");
 	start_timer();
-#ifdef WITH_CGRAPH
         fprintf(stderr, "majorization\n");
-//	fprintf(stderr, "%i\n", count_nodes(g));
-
-#endif /* WITH_CGRAPH */
+//     fprintf(stderr, "%i\n", count_nodes(g));
     }
     gp = makeGraphData(g, nv, &ne, mode, model, &nodes);
 
@@ -1560,11 +1446,7 @@ static void addZ (Agraph_t* g)
     if ((Ndim >= 3) && N_z) { 
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    sprintf(buf, "%lf", POINTS_PER_INCH * (ND_pos(n)[2]));
-#ifndef WITH_CGRAPH
-	    agxset(n, N_z->index, buf);
-#else /* WITH_CGRAPH */
 	    agxset(n, N_z, buf);
-#endif /* WITH_CGRAPH */
 	}
     }
 }
@@ -1574,22 +1456,9 @@ static void
 addCluster (graph_t* g)
 {
     graph_t *subg;
-#ifndef WITH_CGRAPH
-    graph_t *mg;
-    node_t *mm, *mn;
-    edge_t *me;
-    mm = g->meta_node;
-    mg = agraphof(mm);
-    for (me = agfstout(mg, mm); me; me = agnxtout(mg, me)) {
-	mn = aghead(me);
-	subg = agusergraph(mn);
-#else
     for (subg = agfstsubg(agroot(g)); subg; subg = agnxtsubg(subg)) {
-#endif
 	if (!strncmp(agnameof(subg), "cluster", 7)) {
-#ifdef WITH_CGRAPH
 	    agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
-#endif
 	    add_cluster(g, subg);
 	    compute_bb(subg);
 	}
@@ -1680,9 +1549,7 @@ void neato_layout(Agraph_t * g)
 	    for (i = 0; i < n_cc; i++) {
 		gc = cc[i];
 		free_scan_graph(gc);
-#ifdef WITH_CGRAPH
 		agdelrec (gc, "Agraphinfo_t"); 
-#endif
 		agdelete(g, gc);
 	    }
 	    free (cc);

@@ -36,11 +36,7 @@ static void dfs(Agraph_t * g, Agnode_t * n, Agraph_t * out, char *marks)
     Agnode_t *other;
 
     MARK(n) = 1;
-#ifndef WITH_CGRAPH
-    aginsert(out, n);
-#else /* WITH_CGRAPH */
     agsubnode(out,n,1);
-#endif /* WITH_CGRAPH */
     for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
 	if ((other = agtail(e)) == n)
 	    other = aghead(e);
@@ -71,11 +67,6 @@ graph_t **findCComp(graph_t * g, int *cnt, int *pinned)
     bport_t *pp;
     graph_t **comps;
     graph_t **cp;
-#ifndef WITH_CGRAPH
-    graph_t *mg;
-    node_t *mn;
-    edge_t *me;
-#endif
     int pinflag = 0;
 
 /* fprintf (stderr, "comps of %s starting at %d \n", g->name, c_cnt); */
@@ -85,12 +76,8 @@ graph_t **findCComp(graph_t * g, int *cnt, int *pinned)
     subg = 0;
     if ((pp = PORTS(g))) {
 	sprintf(name, "cc%s_%d", agnameof(g), c_cnt++ + C_cnt);
-#ifndef WITH_CGRAPH
-	subg = agsubg(g, name);
-#else /* WITH_CGRAPH */
 	subg = agsubg(g, name,1);
 	agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
-#endif /* WITH_CGRAPH */
 	GD_alg(subg) = (void *) NEW(gdata);
 	PORTS(subg) = pp;
 	NPORTS(subg) = NPORTS(g);
@@ -110,12 +97,8 @@ graph_t **findCComp(graph_t * g, int *cnt, int *pinned)
 	    continue;
 	if (!subg) {
 	    sprintf(name, "cc%s_%d", agnameof(g), c_cnt++ + C_cnt);
-#ifndef WITH_CGRAPH
-	    subg = agsubg(g, name);
-#else /* WITH_CGRAPH */
 	    subg = agsubg(g, name,1);
 		agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
-#endif /* WITH_CGRAPH */
 	    GD_alg(subg) = (void *) NEW(gdata);
 	}
 	pinflag = 1;
@@ -129,12 +112,8 @@ graph_t **findCComp(graph_t * g, int *cnt, int *pinned)
 	if (MARK(n))
 	    continue;
 	sprintf(name, "cc%s+%d", agnameof(g), c_cnt++ + C_cnt);
-#ifndef WITH_CGRAPH
-	subg = agsubg(g, name);
-#else /* WITH_CGRAPH */
 	subg = agsubg(g, name,1);
 	agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	//node custom data
-#endif /* WITH_CGRAPH */
 	GD_alg(subg) = (void *) NEW(gdata);
 	dfs(g, n, subg, marks);
 	nodeInduce(subg);
@@ -148,15 +127,8 @@ graph_t **findCComp(graph_t * g, int *cnt, int *pinned)
 	*pinned = pinflag;
     /* freed in layout */
     comps = cp = N_NEW(c_cnt + 1, graph_t *);
-#ifndef WITH_CGRAPH
-    mg = g->meta_node->graph;
-    for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
-	mn = me->head;
-	*cp++ = agusergraph(mn);
-#else /* WITH_CGRAPH */
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
 	*cp++ = subg;
-#endif /* WITH_CGRAPH */
 	c_cnt--;
     }
     assert(c_cnt == 0);

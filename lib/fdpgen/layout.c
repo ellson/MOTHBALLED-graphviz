@@ -192,12 +192,8 @@ static node_t *mkDeriveNode(graph_t * dg, char *name)
 {
     node_t *dn;
 
-#ifndef WITH_CGRAPH
-    dn = agnode(dg, name);
-#else /* WITH_CGRAPH */
     dn = agnode(dg, name,1);
     agbindrec(dn, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);	//node custom data
-#endif /* WITH_CGRAPH */
     ND_alg(dn) = (void *) NEW(dndata);	/* free in freeDeriveNode */
     ND_pos(dn) = N_GNEW(GD_ndim(dg), double);
     /* fprintf (stderr, "Creating %s\n", dn->name); */
@@ -208,9 +204,7 @@ static void freeDeriveNode(node_t * n)
 {
     free(ND_alg(n));
     free(ND_pos(n));
-#ifdef WITH_CGRAPH
     agdelrec(n, "Agnodeinfo_t");
-#endif
 }
 
 static void freeGData(graph_t * g)
@@ -227,23 +221,17 @@ static void freeDerivedGraph(graph_t * g, graph_t ** cc)
 
     while ((cg = *cc++)) {
 	freeGData(cg);
-#ifdef WITH_CGRAPH
 	agdelrec(cg, "Agraphinfo_t");
-#endif
     }
     if (PORTS(g))
 	free(PORTS(g));
     freeGData(g);
-#ifdef WITH_CGRAPH
     agdelrec(g, "Agraphinfo_t");
-#endif
     for (dn = agfstnode(g); dn; dn = dnxt) {
 	dnxt = agnxtnode(g, dn);
 	for (e = agfstout(g, dn); e; e = agnxtout(g, e)) {
 	    free (ED_to_virt(e));
-#ifdef WITH_CGRAPH
 	    agdelrec(e, "Agedgeinfo_t");
-#endif
 	}
 	freeDeriveNode(dn);
     }
@@ -370,20 +358,11 @@ static void chkPos(graph_t* g, node_t* n, layout_info* infop, boxf* bbp)
     graph_t *parent;
     attrsym_t *G_coord = infop->G_coord;
 
-#ifndef WITH_CGRAPH
-    p = agxget(g, G_coord->index);
-#else /* WITH_CGRAPH */
     p = agxget(g, G_coord);
-#endif /* WITH_CGRAPH */
     if (p[0]) {
 	if (g != infop->rootg) {
-#ifndef WITH_CGRAPH
-	    parent = agusergraph((agfstin(g->meta_node->graph, g->meta_node))->tail);
-	    pp = agxget(parent, G_coord->index);
-#else /* WITH_CGRAPH */
 	    parent =agparent(g);
 	    pp = agxget(parent, G_coord);
-#endif /* WITH_CGRAPH */
 	    if ((pp == p) || !strcmp(p, pp))
 		return;
 	}
@@ -434,27 +413,13 @@ copyAttr (graph_t* g, graph_t* dg, char* attr)
     char*     ov_val;
     Agsym_t*  ov;
 
-#ifndef WITH_CGRAPH
-    if ((ov = agfindattr(g, attr))) {
-	ov_val = agxget(g,ov->index);
-	ov = agfindattr(dg, attr);
-#else /* WITH_CGRAPH */
     if ((ov = agattr(g,AGRAPH, attr, NULL))) {
 	ov_val = agxget(g,ov);
 	ov = agattr(dg,AGRAPH, attr, NULL);
-#endif /* WITH_CGRAPH */
 	if (ov)
-#ifndef WITH_CGRAPH
-	    agxset (dg, ov->index, ov_val);
-#else /* WITH_CGRAPH */
 	    agxset (dg, ov, ov_val);
-#endif /* WITH_CGRAPH */
 	else
-#ifndef WITH_CGRAPH
-	    agraphattr(dg, attr, ov_val);
-#else /* WITH_CGRAPH */
 	    agattr(dg, AGRAPH, attr, ov_val);
-#endif /* WITH_CGRAPH */
     }
 }
 
@@ -478,18 +443,10 @@ static graph_t *deriveGraph(graph_t * g, layout_info * infop)
 
     sprintf(name, "_dg_%d", infop->gid++);
     if (Verbose >= 2)
-#ifndef WITH_CGRAPH
-	fprintf(stderr, "derive graph %s of %s\n", name, g->name);
-#else /* WITH_CGRAPH */
 	fprintf(stderr, "derive graph %s of %s\n", name, agnameof(g));
-#endif
 
-#ifndef WITH_CGRAPH
-    dg = agopen(name, AGRAPHSTRICT);
-#else /* WITH_CGRAPH */
     dg = agopen("derived", Agstrictdirected,NIL(Agdisc_t *));
     agbindrec(dg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
-#endif /* WITH_CGRAPH */
     GD_alg(dg) = (void *) NEW(gdata);	/* freed in freeDeriveGraph */
 #ifdef DEBUG
     GORIG(dg) = g;
@@ -575,18 +532,10 @@ static graph_t *deriveGraph(graph_t * g, layout_info * infop)
 	    if (hd == tl)
 		continue;
 	    if (hd > tl)
-#ifndef WITH_CGRAPH
-		de = agedge(dg, tl, hd);
-#else /* WITH_CGRAPH */
 		de = agedge(dg, tl, hd, NULL,1);
-#endif /* WITH_CGRAPH */
 	    else
-#ifndef WITH_CGRAPH
-		de = agedge(dg, hd, tl);
-#else /* WITH_CGRAPH */
 		de = agedge(dg, hd, tl, NULL,1);
 	    agbindrec(de, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
-#endif /* WITH_CGRAPH */
 	    ED_dist(de) = ED_dist(e);
 	    ED_factor(de) = ED_factor(e);
 	    /* fprintf (stderr, "edge %s -- %s\n", tl->name, hd->name); */
@@ -617,18 +566,10 @@ static graph_t *deriveGraph(graph_t * g, layout_info * infop)
 		sz++;
 		ND_id(dn) = id++;
 		if (dn > m)
-#ifndef WITH_CGRAPH
-		    de = agedge(dg, m, dn);
-#else /* WITH_CGRAPH */
 		    de = agedge(dg, m, dn, NULL,1);
-#endif /* WITH_CGRAPH */
 		else
-#ifndef WITH_CGRAPH
-		    de = agedge(dg, dn, m);
-#else /* WITH_CGRAPH */
 		    de = agedge(dg, dn, m, NULL,1);
 		agbindrec(de, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
-#endif /* WITH_CGRAPH */
 		ED_dist(de) = ED_dist(pp->e);
 		ED_factor(de) = ED_factor(pp->e);
 		addEdge(de, pp->e);
@@ -1068,15 +1009,9 @@ static void setBB(graph_t * g)
  */
 void init_info(graph_t * g, layout_info * infop)
 {
-#ifndef WITH_CGRAPH
-    infop->G_coord = agfindattr(g, "coords");
-    infop->G_width = agfindattr(g, "width");
-    infop->G_height = agfindattr(g, "height");
-#else /* WITH_CGRAPH */
     infop->G_coord = agattr(g,AGRAPH, "coords", NULL);
     infop->G_width = agattr(g,AGRAPH, "width", NULL);
     infop->G_height = agattr(g, AGRAPH,"height", NULL);
-#endif /* WITH_CGRAPH */
     infop->rootg = g;
     infop->gid = 0;
     infop->pack.mode = getPackInfo(g, l_node, CL_OFFSET / 2, &(infop->pack));
@@ -1092,11 +1027,6 @@ void init_info(graph_t * g, layout_info * infop)
 static void
 mkClusters (graph_t * g, clist_t* pclist, graph_t* parent)
 {
-#ifndef WITH_CGRAPH
-    node_t*  mn;
-    edge_t*  me;
-    graph_t* mg;
-#endif /* WITH_CGRAPH */
     graph_t* subg;
     clist_t  list;
     clist_t* clist;
@@ -1107,19 +1037,11 @@ mkClusters (graph_t * g, clist_t* pclist, graph_t* parent)
     }
     else
 	clist = pclist;
-#ifndef WITH_CGRAPH
-    mg = g->meta_node->graph;
-    for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
-	mn = me->head;
-	subg = agusergraph(mn);
-	if (!strncmp(subg->name, "cluster", 7)) {
-#else /* WITH_CGRAPH */
 
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg))
 	{
 	if (!strncmp(agnameof(subg), "cluster", 7)) {
 	    agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
-#endif /* WITH_CGRAPH */
 	    GD_alg(subg) = (void *) NEW(gdata);	/* freed in cleanup_subgs */
 	    GD_ndim(subg) = GD_ndim(parent);
 	    LEVEL(subg) = LEVEL(parent) + 1;
@@ -1142,13 +1064,8 @@ void fdp_init_graph(Agraph_t * g)
 {
     setEdgeType (g, ET_LINE);
     GD_alg(g) = (void *) NEW(gdata);	/* freed in cleanup_graph */
-#ifndef WITH_CGRAPH
-    g->u.ndim = late_int(g, agfindattr(g, "dim"), 2, 2);
-    Ndim = g->u.ndim = MIN(g->u.ndim, MAXDIM);
-#else /* WITH_CGRAPH */
     GD_ndim(g) = late_int(g, agattr(g,AGRAPH, "dim", NULL), 2, 2);
     Ndim = GD_ndim(g) = MIN(GD_ndim(g), MAXDIM);
-#endif /* WITH_CGRAPH */
 
     mkClusters (g, NULL, g);
     fdp_initParams(g);

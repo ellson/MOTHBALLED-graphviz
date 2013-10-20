@@ -744,20 +744,12 @@ SparseMatrix makeMatrix(Agraph_t* g, int dim, SparseMatrix *D)
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    I[i] = row;
 	    J[i] = ND_id(aghead(e));
-#ifndef WITH_CGRAPH
-	    if (!sym || (sscanf(agxget(e, sym->index), "%lf", &v) != 1))
-#else
 	    if (!sym || (sscanf(agxget(e, sym), "%lf", &v) != 1))
-#endif
 		v = 1;
 	    val[i] = v;
 	/* edge length */
 	    if (symD) {
-#ifndef WITH_CGRAPH
-		if (sscanf (agxget (e, symD->index), "%lf", &v) != 1) v = 1;
-#else
 		if (sscanf (agxget (e, symD), "%lf", &v) != 1) v = 1;
-#endif
 		valD[i] = v;
 	    }
 	    i++;
@@ -814,7 +806,7 @@ fdpAdjust (graph_t* g, adjust_data* am)
     }
 
     remove_overlap(Ndim, A, pos, sizes, am->value, am->scaling, 
-	ELSCHEME_NONE, 0, NULL, NULL, &flag);
+		   ELSCHEME_NONE, 0, NULL, NULL, TRUE, &flag);
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	real *npos = pos + (Ndim * ND_id(n));

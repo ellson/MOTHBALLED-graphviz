@@ -3,12 +3,6 @@
 
 GVC_VERSION="6:0:0"
 
-if WITH_CGRAPH
-GRAPH = cgraph
-else
-GRAPH = graph
-endif
-
 pdfdir = $(pkgdatadir)/doc/pdf
 pkgconfigdir = $(libdir)/pkgconfig
 
@@ -16,7 +10,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib/common \
 	-I$(top_srcdir)/lib/pathplan \
-	-I$(top_srcdir)/lib/$(GRAPH) \
+	-I$(top_srcdir)/lib/cgraph \
 	-I$(top_srcdir)/lib/cdt \
 	$(INCLTDL) -DGVLIBDIR=\"$(pkglibdir)\"
 
@@ -64,7 +58,7 @@ libgvc_la_SOURCES = $(libgvc_C_la_SOURCES)
 libgvc_la_LIBADD = $(libgvc_C_la_LIBADD) \
 	$(top_builddir)/lib/xdot/libxdot.la \
 	$(top_builddir)/lib/cdt/libcdt.la \
-	$(top_builddir)/lib/$(GRAPH)/lib$(GRAPH).la \
+	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
 	$(EXPAT_LIBS) $(Z_LIBS) $(MATH_LIBS)
 libgvc_la_DEPENDENCIES = $(libgvc_C_la_DEPENDENCIES)

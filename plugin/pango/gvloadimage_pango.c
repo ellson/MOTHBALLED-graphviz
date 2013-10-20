@@ -30,14 +30,8 @@
     #pragma comment( lib, "pangocairo-1.0.lib" )
     #pragma comment( lib, "cairo.lib" )
     #pragma comment( lib, "gobject-2.0.lib" )
-#ifdef WITH_CGRAPH
     #pragma comment( lib, "cgraph.lib" )
-#else
-    #pragma comment( lib, "graph.lib" )
 #endif
-#endif
-
-
 
 
 typedef enum {
@@ -105,12 +99,8 @@ static void pango_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, boolean 
     surface = cairo_loadimage(job, us);
     if (surface) {
         cairo_save(cr);
-        cairo_translate(cr,
-		(b.LL.x + (b.UR.x - b.LL.x) * (1. - (job->dpi.x) / 96.) / 2.),
-		(-b.UR.y + (b.UR.y - b.LL.y) * (1. - (job->dpi.y) / 96.) / 2.));
-        cairo_scale(cr,
-		((b.UR.x - b.LL.x) * (job->dpi.x) / (96. * us->w)),
-                ((b.UR.y - b.LL.y) * (job->dpi.y) / (96. * us->h)));
+	cairo_translate(cr, b.LL.x, -b.UR.y);
+	cairo_scale(cr, (b.UR.x - b.LL.x)/(us->w), (b.UR.y - b.LL.y)/(us->h)); 
         cairo_set_source_surface (cr, surface, 0, 0);
         cairo_paint (cr);
         cairo_restore(cr);

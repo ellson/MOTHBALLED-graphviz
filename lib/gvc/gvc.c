@@ -22,16 +22,10 @@
 #include "gvcproc.h"
 #include "gvconfig.h"
 #include "gvio.h"
-#ifdef WITH_CGRAPH
 #include <stdlib.h>
-#endif
 
 #ifdef WIN32 /*dependencies*/
-#ifdef WITH_CGRAPH
     #pragma comment( lib, "cgraph.lib" )
-#else
-    #pragma comment( lib, "graph.lib" )
-#endif
     #pragma comment( lib, "cdt.lib" )
     #pragma comment( lib, "ltdl.lib" )
     #pragma comment( lib, "xml2.lib" )
@@ -44,12 +38,7 @@ GVC_t *gvContext(void)
 {
     GVC_t *gvc;
 
-#ifndef WITH_CGRAPH
-    aginit();
-    agnodeattr(NULL, "label", NODENAME_ESC);
-#else
     agattr(NULL, AGNODE, "label", NODENAME_ESC);
-#endif
     /* default to no builtins, demand loading enabled */
     gvc = gvNEWcontext(NULL, TRUE);
     gvconfig(gvc, FALSE); /* configure for available plugins */
@@ -60,12 +49,7 @@ GVC_t *gvContextPlugins(const lt_symlist_t *builtins, int demand_loading)
 {
     GVC_t *gvc;
 
-#ifndef WITH_CGRAPH
-    aginit();
-    agnodeattr(NULL, "label", NODENAME_ESC);
-#else
     agattr(NULL, AGNODE, "label", NODENAME_ESC);
-#endif
     gvc = gvNEWcontext(builtins, demand_loading);
     gvconfig(gvc, FALSE); /* configure for available plugins */
     return gvc;

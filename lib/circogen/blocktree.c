@@ -16,11 +16,7 @@
 
 static void addNode(block_t * bp, Agnode_t * n)
 {
-#ifndef WITH_CGRAPH
-    aginsert(bp->sub_graph, n);
-#else /* WITH_CGRAPH */
     agsubnode(bp->sub_graph, n,1);
-#endif /* WITH_CGRAPH */
     BLOCK(n) = bp;
 }
 
@@ -30,12 +26,8 @@ static Agraph_t *makeBlockGraph(Agraph_t * g, circ_state * state)
     Agraph_t *subg;
 
     sprintf(name, "_block_%d", state->blockCount++);
-#ifndef WITH_CGRAPH
-    subg = agsubg(g, name);
-#else /* WITH_CGRAPH */
     subg = agsubg(g, name,1);
     agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	//node custom data
-#endif /* WITH_CGRAPH */
     return subg;
 }
 

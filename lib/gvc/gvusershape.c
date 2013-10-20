@@ -66,8 +66,10 @@ typedef struct {
 #define EPS_MAGIC  "\xC5\xD0\xD3\xC6"
 #define XML_MAGIC  "<?xml"
 #define SVG_MAGIC  "<svg"
-#define RIFF_MAGIC  "RIFF"
-#define WEBP_MAGIC  "WEBP"
+#define RIFF_MAGIC "RIFF"
+#define WEBP_MAGIC "WEBP"
+//#define TIFF_MAGIC "II"
+#define ICO_MAGIC  "\x00\x00\x01\x00"
 
 static knowntype_t knowntypes[] = {
     { PNG_MAGIC,  sizeof(PNG_MAGIC)-1,   FT_PNG,  "png",  },
@@ -79,7 +81,9 @@ static knowntype_t knowntypes[] = {
     { EPS_MAGIC,  sizeof(EPS_MAGIC)-1,   FT_EPS,  "eps",  },
 /*    { SVG_MAGIC,  sizeof(SVG_MAGIC)-1,  FT_SVG,  "svg",  },  - viewers expect xml preamble */
     { XML_MAGIC,  sizeof(XML_MAGIC)-1,   FT_XML,  "xml",  },
-    { RIFF_MAGIC,  sizeof(RIFF_MAGIC)-1, FT_RIFF, "riff", },
+    { RIFF_MAGIC, sizeof(RIFF_MAGIC)-1,  FT_RIFF, "riff", },
+    { ICO_MAGIC,  sizeof(ICO_MAGIC)-1,   FT_ICO,  "ico",  },
+//    { TIFF_MAGIC, sizeof(TIFF_MAGIC)-1,  FT_TIFF, "tiff", },
 };
 
 static int imagetype (usershape_t *us)
@@ -248,6 +252,34 @@ static void png_size (usershape_t *us)
         us->h = h;
     }
 }
+
+static void ico_size (usershape_t *us)
+{
+    unsigned int w, h;
+
+    us->dpi = 0;
+    fseek(us->f, 6, SEEK_SET);
+    if (get_int_msb_first(us->f, 1, &w) && get_int_msb_first(us->f, 1, &h)) {
+        us->w = w;
+        us->h = h;
+    }
+}
+
+
+// FIXME - how to get the size of a tiff image?
+#if 0
+static void tiff_size (usershape_t *us)
+{
+    unsigned int w, h;
+
+    us->dpi = 0;
+    fseek(us->f, 6, SEEK_SET);
+    if (get_int_msb_first(us->f, 1, &w) && get_int_msb_first(us->f, 1, &h)) {
+        us->w = w;
+        us->h = h;
+    }
+}
+#endif
 
 static void webp_size (usershape_t *us)
 {
@@ -636,6 +668,12 @@ static usershape_t *gvusershape_open (char *name)
 	    case FT_PDF:
 		pdf_size(us);
 		break;
+	    case FT_ICO:
+		ico_size(us);
+		break;
+//	    case FT_TIFF:
+//		tiff_size(us);
+//		break;
 	    case FT_EPS:   /* no eps_size code available */
 	    default:
 	        break;

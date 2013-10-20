@@ -103,11 +103,7 @@ char *late_string(void *obj, attrsym_t * attr, char *def)
 {
     if (!attr || !obj)
 	return def;
-#ifndef WITH_CGRAPH
-    return agxget(obj, attr->index);
-#else /* WITH_CGRAPH */
     return agxget(obj, attr);
-#endif /* WITH_CGRAPH */
 }
 
 char *late_nnstring(void *obj, attrsym_t * attr, char *def)
@@ -122,25 +118,16 @@ boolean late_bool(void *obj, attrsym_t * attr, int def)
 {
     if (attr == NULL)
 	return def;
-#ifndef WITH_CGRAPH
-    return mapbool(agxget(obj, attr->index));
-#else /* WITH_CGRAPH */
 
     return mapbool(agxget(obj, attr));
-#endif /* WITH_CGRAPH */
 }
 
 /* union-find */
 node_t *UF_find(node_t * n)
 {
     while (ND_UF_parent(n) && (ND_UF_parent(n) != n)) {
-#ifndef WITH_CGRAPH
-	if (ND_UF_parent(n)->u.UF_parent)
-	    ND_UF_parent(n) = ND_UF_parent(n)->u.UF_parent;
-#else /* WITH_CGRAPH */
 	if (ND_UF_parent(ND_UF_parent(n)))
 	    ND_UF_parent(n) = ND_UF_parent(ND_UF_parent(n));
-#endif /* WITH_CGRAPH */
 	n = ND_UF_parent(n);
     }
     return n;
@@ -160,11 +147,7 @@ node_t *UF_union(node_t * u, node_t * v)
 	ND_UF_size(v) = 1;
     } else
 	v = UF_find(v);
-#ifndef WITH_CGRAPH
-    if (u->id > v->id) {
-#else /* WITH_CGRAPH */
     if (ND_id(u) > ND_id(v)) {
-#endif /* WITH_CGRAPH */
 	ND_UF_parent(u) = v;
 	ND_UF_size(v) += ND_UF_size(u);
     } else {
@@ -256,10 +239,8 @@ edge_t *debug_getedge(graph_t * g, char *s0, char *s1)
     else
 	return NULL;
 }
-#ifdef WITH_CGRAPH
 Agraphinfo_t* GD_info(g) { return ((Agraphinfo_t*)AGDATA(g));}
 Agnodeinfo_t* ND_info(n) { return ((Agnodeinfo_t*)AGDATA(n));}
-#endif
 #endif
 
 #if !defined(MSWIN32) && !defined(WIN32)
@@ -635,22 +616,14 @@ void common_init_node(node_t * n)
 	late_double(n, N_height, DEFAULT_NODEHEIGHT, MIN_NODEHEIGHT);
     ND_shape(n) =
 	bind_shape(late_nnstring(n, N_shape, DEFAULT_NODESHAPE), n);
-#ifndef WITH_CGRAPH
-    str = agxget(n, N_label->index);
-#else
     str = agxget(n, N_label);
-#endif
     fi.fontsize = late_double(n, N_fontsize, DEFAULT_FONTSIZE, MIN_FONTSIZE);
     fi.fontname = late_nnstring(n, N_fontname, DEFAULT_FONTNAME);
     fi.fontcolor = late_nnstring(n, N_fontcolor, DEFAULT_COLOR);
     ND_label(n) = make_label((void*)n, str,
 	        ((aghtmlstr(str) ? LT_HTML : LT_NONE) | ( (shapeOf(n) == SH_RECORD) ? LT_RECD : LT_NONE)),
 		fi.fontsize, fi.fontname, fi.fontcolor);
-#ifndef WITH_CGRAPH
-    if (N_xlabel && (str = agxget(n, N_xlabel->index)) && (str[0])) {
-#else
     if (N_xlabel && (str = agxget(n, N_xlabel)) && (str[0])) {
-#endif
 	ND_xlabel(n) = make_label((void*)n, str, (aghtmlstr(str) ? LT_HTML : LT_NONE),
 				fi.fontsize, fi.fontname, fi.fontcolor);
 	GD_has_labels(agraphof(n)) |= NODE_XLABEL;
@@ -688,11 +661,7 @@ noClip(edge_t *e, attrsym_t* sym)
     boolean		rv = FALSE;
 
     if (sym) {	/* mapbool isn't a good fit, because we want "" to mean true */
-#ifndef WITH_CGRAPH
-	str = agxget(e,sym->index);
-#else /* WITH_CGRAPH */
 	str = agxget(e,sym);
-#endif /* WITH_CGRAPH */
 	if (str && str[0]) rv = !mapbool(str);
 	else rv = FALSE;
     }
@@ -705,14 +674,9 @@ static port
 chkPort (port (*pf)(node_t*, char*, char*), node_t* n, char* s)
 { 
     port pt;
-#ifndef WITH_CGRAPH
-    char* cp = strchr(s,':');
-
-#else /* WITH_CGRAPH */
 	char* cp=NULL;
 	if(s)
 		cp= strchr(s,':');
-#endif /* WITH_CGRAPH */
     if (cp) {
 	*cp = '\0';
 	pt = pf(n, s, cp+1);
@@ -736,11 +700,7 @@ int common_init_edge(edge_t * e)
 
     fi.fontname = NULL;
     lfi.fontname = NULL;
-#ifndef WITH_CGRAPH
-    if (E_label && (str = agxget(e, E_label->index)) && (str[0])) {
-#else
     if (E_label && (str = agxget(e, E_label)) && (str[0])) {
-#endif
 	r = 1;
 	initFontEdgeAttr(e, &fi);
 	ED_label(e) = make_label((void*)e, str, (aghtmlstr(str) ? LT_HTML : LT_NONE),
@@ -750,11 +710,7 @@ int common_init_edge(edge_t * e)
 	    mapbool(late_string(e, E_label_float, "false"));
     }
 
-#ifndef WITH_CGRAPH
-    if (E_xlabel && (str = agxget(e, E_xlabel->index)) && (str[0])) {
-#else
     if (E_xlabel && (str = agxget(e, E_xlabel)) && (str[0])) {
-#endif
 	if (!fi.fontname)
 	    initFontEdgeAttr(e, &fi);
 	ED_xlabel(e) = make_label((void*)e, str, (aghtmlstr(str) ? LT_HTML : LT_NONE),
@@ -764,21 +720,13 @@ int common_init_edge(edge_t * e)
 
 
     /* vladimir */
-#ifndef WITH_CGRAPH
-    if (E_headlabel && (str = agxget(e, E_headlabel->index)) && (str[0])) {
-#else
     if (E_headlabel && (str = agxget(e, E_headlabel)) && (str[0])) {
-#endif
 	initFontLabelEdgeAttr(e, &fi, &lfi);
 	ED_head_label(e) = make_label((void*)e, str, (aghtmlstr(str) ? LT_HTML : LT_NONE),
 				lfi.fontsize, lfi.fontname, lfi.fontcolor);
 	GD_has_labels(sg) |= HEAD_LABEL;
     }
-#ifndef WITH_CGRAPH
-    if (E_taillabel && (str = agxget(e, E_taillabel->index)) && (str[0])) {
-#else
     if (E_taillabel && (str = agxget(e, E_taillabel)) && (str[0])) {
-#endif
 	if (!lfi.fontname)
 	    initFontLabelEdgeAttr(e, &fi, &lfi);
 	ED_tail_label(e) = make_label((void*)e, str, (aghtmlstr(str) ? LT_HTML : LT_NONE),
@@ -792,20 +740,16 @@ int common_init_edge(edge_t * e)
      * tailport = "abc".
      */
     str = agget(e, TAIL_ID);
-#ifdef WITH_CGRAPH
     /* libgraph always defines tailport/headport; libcgraph doesn't */
     if (!str) str = "";
-#endif
     if (str && str[0])
 	ND_has_port(agtail(e)) = TRUE;
     ED_tail_port(e) = chkPort (ND_shape(agtail(e))->fns->portfn, agtail(e), str);
     if (noClip(e, E_tailclip))
 	ED_tail_port(e).clip = FALSE;
     str = agget(e, HEAD_ID);
-#ifdef WITH_CGRAPH
     /* libgraph always defines tailport/headport; libcgraph doesn't */
     if (!str) str = "";
-#endif
     if (str && str[0])
 	ND_has_port(aghead(e)) = TRUE;
     ED_head_port(e) = chkPort(ND_shape(aghead(e))->fns->portfn, aghead(e), str);
@@ -894,11 +838,7 @@ void compute_bb(graph_t * g)
 	    if (ED_spl(e) == 0)
 		continue;
 	    for (i = 0; i < ED_spl(e)->size; i++) {
-#ifndef WITH_CGRAPH
-		for (j = 0; j < ED_spl(e)->list[i].size; j++) {
-#else
 		for (j = 0; j < (((Agedgeinfo_t*)AGDATA(e))->spl)->list[i].size; j++) {
-#endif
 		    ptf = ED_spl(e)->list[i].list[j];
 		    EXPANDBP(bb,ptf);
 		}
@@ -943,35 +883,18 @@ Agsym_t *setAttr(graph_t * g, void *obj, char *name, char *value,
 {
     if (ap == NULL) {
 	switch (agobjkind(obj)) {
-#ifndef WITH_CGRAPH
-	case AGGRAPH:
-	    ap = agraphattr(g, name, "");
-#else /* WITH_CGRAPH */
 	case AGRAPH:
 	    ap = agattr(g, AGRAPH,name, "");
-#endif /* WITH_CGRAPH */
 	    break;
 	case AGNODE:
-#ifndef WITH_CGRAPH
-	    ap = agnodeattr(g, name, "");
-#else /* WITH_CGRAPH */
 	    ap = agattr(g,AGNODE, name, "");
-#endif /* WITH_CGRAPH */
 	    break;
 	case AGEDGE:
-#ifndef WITH_CGRAPH
-	    ap = agedgeattr(g, name, "");
-#else /* WITH_CGRAPH */
 	    ap = agattr(g,AGEDGE, name, "");
-#endif /* WITH_CGRAPH */
 	    break;
 	}
     }
-#ifndef WITH_CGRAPH
-    agxset(obj, ap->index, value);
-#else /* WITH_CGRAPH */
     agxset(obj, ap, value);
-#endif /* WITH_CGRAPH */
     return ap;
 }
 
@@ -994,23 +917,14 @@ static node_t *clustNode(node_t * n, graph_t * cg, agxbuf * xb,
     agxbputc(xb, ':');
     agxbput(xb, agnameof(cg));
 
-#ifndef WITH_CGRAPH
-    cn = agnode(agroot(cg), agxbuse(xb));
-#else
     cn = agnode(agroot(cg), agxbuse(xb), 1);
     agbindrec(cn, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
-#endif /* WITH_CGRAPH */
 
     SET_CLUST_NODE(cn);
-#ifndef WITH_CGRAPH
-    aginsert(cg, cn);
-    aginsert(clg, n);
-#else /* WITH_CGRAPH */
 	agsubnode(cg,cn,1);
 	//aginsert(cg, cn);
 	agsubnode(clg,n,1);
 	//aginsert(clg, n);
-#endif /* WITH_CGRAPH */
 
     /* set attributes */
     N_label = setAttr(agraphof(cn), cn, "label", "", N_label);
@@ -1085,12 +999,8 @@ static Dtdisc_t mapDisc = {
 static edge_t *cloneEdge(edge_t * e, node_t * ct, node_t * ch)
 {
     graph_t *g = agraphof(ct);
-#ifndef WITH_CGRAPH
-    edge_t *ce = agedge(g, ct, ch);
-#else /* WITH_CGRAPH */
     edge_t *ce = agedge(g, ct, ch,NULL,1);
     agbindrec(ce, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
-#endif /* WITH_CGRAPH */
     agcopyattr(e, ce);
 
     return ce;
@@ -1142,20 +1052,11 @@ static item *mapEdge(Dt_t * map, edge_t * e)
  * so we could use a simpler model in which we create a single cluster
  * node for each cluster used in a cluster edge.
  */
-#ifndef WITH_CGRAPH
-#define MAPC(n) (strncmp((n)->name,"cluster",7)?NULL:agfindsubg((n)->graph, (n)->name))
-#else /* WITH_CGRAPH */
 #define MAPC(n) (strncmp(agnameof(n),"cluster",7)?NULL:findCluster(cmap,agnameof(n)))
-#endif /* WITH_CGRAPH */
 
 
-#ifdef WITH_CGRAPH
 static void
 checkCompound(edge_t * e, graph_t * clg, agxbuf * xb, Dt_t * map, Dt_t* cmap)
-#else
-static void
-checkCompound(edge_t * e, graph_t * clg, agxbuf * xb, Dt_t * map)
-#endif
 {
     graph_t *tg;
     graph_t *hg;
@@ -1235,27 +1136,17 @@ int processClusterEdges(graph_t * g)
     graph_t *clg;
     agxbuf xb;
     Dt_t *map;
-#ifdef WITH_CGRAPH
     Dt_t *cmap = mkClustMap (g);
-#endif
     unsigned char buf[SMALLBUF];
 
     map = dtopen(&mapDisc, Dtoset);
-#ifndef WITH_CGRAPH
-    clg = agsubg(g, "__clusternodes");
-#else /* WITH_CGRAPH */
     clg = agsubg(g, "__clusternodes",1);
     agbindrec(clg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
-#endif /* WITH_CGRAPH */
     agxbinit(&xb, SMALLBUF, buf);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (IS_CLUST_NODE(n)) continue;
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-#ifndef WITH_CGRAPH
-	    checkCompound(e, clg, &xb, map);
-#else
 	    checkCompound(e, clg, &xb, map, cmap);
-#endif
 	}
     }
     agxbfree(&xb);
@@ -1268,9 +1159,7 @@ int processClusterEdges(graph_t * g)
     agclose(clg);
     if (rv)
 	SET_CLUST_EDGE(g);
-#ifdef WITH_CGRAPH
     dtclose(cmap);
-#endif
     return rv;
 }
 
@@ -1284,11 +1173,6 @@ int processClusterEdges(graph_t * g)
  */
 static node_t *mapN(node_t * n, graph_t * clg)
 {
-#ifndef WITH_CGRAPH
-    extern Agdict_t *agdictof(void *);
-    Agdict_t *d;
-    Agsym_t **list;
-#endif /* WITH_CGRAPH */
     node_t *nn;
     char *name;
     graph_t *g = agraphof(n);
@@ -1296,38 +1180,20 @@ static node_t *mapN(node_t * n, graph_t * clg)
 
     if (!(IS_CLUST_NODE(n)))
 	return n;
-#ifndef WITH_CGRAPH
-    aginsert(clg, n);
-#else /* WITH_CGRAPH */
     agsubnode(clg, n, 1);
-#endif /* WITH_CGRAPH */
     name = strchr(agnameof(n), ':');
     assert(name);
     name++;
     if ((nn = agfindnode(g, name)))
 	return nn;
-#ifndef WITH_CGRAPH
-    nn = agnode(g, name);
-#else /* WITH_CGRAPH */
     nn = agnode(g, name, 1);
     agbindrec(nn, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
-#endif /* WITH_CGRAPH */
 
     /* Set all attributes to default */
-#ifndef WITH_CGRAPH
-    d = agdictof(n);
-    list = d->list;
-    while ((sym = *list++)) {
-	/* Can use pointer comparison because of ref strings. */
-	if (agxget(nn, sym->index) != sym->value)
-	    agxset(nn, sym->index, sym->value);
-    }
-#else /* WITH_CGRAPH */
     for (sym = agnxtattr(g, AGNODE, NULL); sym;  (sym = agnxtattr(g, AGNODE, sym))) {
 	if (agxget(nn, sym) != sym->defval)
 	    agxset(nn, sym, sym->defval);
     }
-#endif /* WITH_CGRAPH */
     return nn;
 }
 
@@ -1356,12 +1222,8 @@ void undoClusterEdges(graph_t * g)
     edge_t *e;
     graph_t *clg;
 
-#ifndef WITH_CGRAPH
-    clg = agsubg(g, "__clusternodes");
-#else /* WITH_CGRAPH */
     clg = agsubg(g, "__clusternodes",1);
 	agbindrec(clg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
-#endif /* WITH_CGRAPH */
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    undoCompound(e, clg);
@@ -1378,17 +1240,6 @@ void undoClusterEdges(graph_t * g)
  * with given name. If one does not exist, create it with the
  * default value def.
  */ 
-#ifndef WITH_CGRAPH
-attrsym_t*
-safe_dcl(graph_t * g, void *obj, char *name, char *def,
-         attrsym_t * (*fun) (Agraph_t *, char *, char *))
-{
-    attrsym_t *a = agfindattr(obj, name);
-    if (a == NULL)
-	a = fun(g, name, def);
-    return a;
-}
-#else /* WITH_CGRAPH */
 attrsym_t*
 safe_dcl(graph_t * g, int obj_kind, char *name, char *def)
 {
@@ -1397,7 +1248,6 @@ safe_dcl(graph_t * g, int obj_kind, char *name, char *def)
 	a = agattr(g,obj_kind,name,def);
     return a;
 }
-#endif /* WITH_CGRAPH */
 
 static int comp_entities(const void *e1, const void *e2) {
   return strcmp(((struct entities_s *)e1)->name, ((struct entities_s *)e2)->name);
@@ -2019,12 +1869,8 @@ void gv_cleanup_edge(edge_t * e)
     free_label(ED_xlabel(e));
     free_label(ED_head_label(e));
     free_label(ED_tail_label(e));
-#ifndef WITH_CGRAPH
-    memset(&(e->u), 0, sizeof(Agedgeinfo_t));
-#else /* WITH_CGRAPH */
 	/*FIX HERE , shallow cleaning may not be enough here */
 	agdelrec(e, "Agedgeinfo_t");	
-#endif /* WITH_CGRAPH */
 }
 
 void gv_cleanup_node(node_t * n)
@@ -2034,12 +1880,8 @@ void gv_cleanup_node(node_t * n)
         ND_shape(n)->fns->freefn(n);
     free_label(ND_label(n));
     free_label(ND_xlabel(n));
-#ifndef WITH_CGRAPH
-    memset(&(n->u), 0, sizeof(Agnodeinfo_t));
-#else /* WITH_CGRAPH */
 	/*FIX HERE , shallow cleaning may not be enough here */
 	agdelrec(n, "Agnodeinfo_t");	
-#endif /* WITH_CGRAPH */
 }
 
 void gv_nodesize(node_t * n, boolean flip)
@@ -2085,7 +1927,6 @@ double drand48(void)
     return d;
 }
 #endif
-#ifdef WITH_CGRAPH
 typedef struct {
     Dtlink_t link;
     char* name;
@@ -2155,10 +1996,7 @@ findCluster (Dt_t* map, char* name)
     else
 	return NULL;
 }
-#endif
 
-#ifdef WITH_CGRAPH
 Agnodeinfo_t* ninf(Agnode_t* n) {return (Agnodeinfo_t*)AGDATA(n);}
 Agraphinfo_t* ginf(Agraph_t* g) {return (Agraphinfo_t*)AGDATA(g);}
 Agedgeinfo_t* einf(Agedge_t* e) {return (Agedgeinfo_t*)AGDATA(e);}
-#endif

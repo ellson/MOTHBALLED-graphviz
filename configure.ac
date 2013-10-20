@@ -2376,6 +2376,28 @@ fi
 AM_CONDITIONAL(WITH_FONTCONFIG, [test "x$use_fontconfig" = "xYes"])
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for GDK
+
+AC_ARG_WITH(gdk,
+  [AS_HELP_STRING([--with-gdk=yes],[gdklibrary])],
+  [], [with_gdk=yes])
+
+if test "x$with_gdk" != "xyes"; then
+  use_gdk="No (disabled)"
+else
+  PKG_CHECK_MODULES(GDK, [gdk-2.0],[
+    use_gdk="Yes"
+    AC_DEFINE_UNQUOTED(HAVE_GDK,1,
+      [Define if you have the gdk library])
+    AC_SUBST([GDK_CFLAGS])
+    AC_SUBST([GDK_LIBS])
+  ],[
+    use_gdk_pixbuf="No (gdk library not available)"
+  ])
+fi
+AM_CONDITIONAL(WITH_GDK, [test "x$use_gdk" = "xYes"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for GDK_PIXBUF.
 
 AC_ARG_WITH(gdk-pixbuf,
@@ -2953,23 +2975,6 @@ fi
 AM_CONDITIONAL(WITH_SMYRNA, [test "x$use_smyrna" = "xYes"])
 
 dnl -----------------------------------
-dnl CGRAPH 
-
-AC_ARG_WITH(cgraph,
-  [AS_HELP_STRING([--with-cgraph=yes],[Use CGRAPH library])],
-  [], [with_cgraph=yes])
-
-if test "x$with_cgraph" != "xyes"; then
-  use_cgraph="No (disabled)"
-  use_graph="Yes"
-else
-  use_cgraph="Yes"
-  use_graph="No (disabled deprecated)"
-  AC_DEFINE_UNQUOTED(WITH_CGRAPH,1,[Define if you want CGRAPH])
-fi
-AM_CONDITIONAL(WITH_CGRAPH, [test "x$use_cgraph" = "xYes"])
-
-dnl -----------------------------------
 dnl ORTHO 
 
 AC_ARG_WITH(ortho,
@@ -3150,8 +3155,6 @@ AC_CONFIG_FILES(Makefile
 	lib/Makefile
 	lib/cdt/Makefile
 	lib/cdt/libcdt.pc
-	lib/graph/Makefile
-	lib/graph/libgraph.pc
 	lib/cgraph/Makefile
 	lib/cgraph/libcgraph.pc
 	lib/rbtree/Makefile
@@ -3197,7 +3200,7 @@ AC_CONFIG_FILES(Makefile
 	plugin/core/Makefile
 	plugin/devil/Makefile
 	plugin/gd/Makefile
-	plugin/gdk_pixbuf/Makefile
+	plugin/gdk/Makefile
 	plugin/gdiplus/Makefile
 	plugin/glitz/Makefile
 	plugin/gs/Makefile
@@ -3301,7 +3304,6 @@ echo ""
 echo "graphviz-$VERSION will be compiled with the following:"
 echo ""
 echo "options:"
-echo "  graph:         $use_graph"
 echo "  cgraph:        $use_cgraph"
 echo "  digcola:       $use_digcola"
 echo "  expat:         $use_expat"
@@ -3338,6 +3340,7 @@ echo "  core:          Yes (always enabled)"
 echo "  devil:         $use_devil"
 echo "  gd:            $use_gd"
 echo "  gdiplus:       $use_gdiplus"
+echo "  gdk:           $use_gdk"
 echo "  gdk_pixbuf:    $use_gdk_pixbuf"
 echo "  ghostscript:   $use_ghostscript"
 echo "  glitz:         $use_glitz"

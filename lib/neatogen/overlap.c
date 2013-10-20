@@ -136,11 +136,12 @@ void InfoDest(void *a){
   ;
 }
 
-static SparseMatrix get_overlap_graph(int dim, int n, real *x, real *width){
+static SparseMatrix get_overlap_graph(int dim, int n, real *x, real *width, int check_overlap_only){
+  /* if check_overlap_only = TRUE, we only check whether there is one overlap */
   scan_point *scanpointsx, *scanpointsy;
   int i, k, neighbor;
   SparseMatrix A = NULL, B = NULL;
-  rb_red_blk_node *newNode, *newNode0;
+  rb_red_blk_node *newNode, *newNode0, *newNode2 = NULL;
   rb_red_blk_tree* treey;
   real one = 1;
 
@@ -193,22 +194,38 @@ static SparseMatrix get_overlap_graph(int dim, int n, real *x, real *width){
 
       RBTreeInsert(treey, &(scanpointsy[k+n]), NULL);
     } else {
+      real bsta, bbsta, bsto, bbsto; int ii; 
+
       assert(scanpointsx[i].node >= n);
 
       newNode = newNode0 = RBExactQuery(treey, &(scanpointsy[k + n]));
+      ii = ((scan_point *)newNode->key)->node;
+      assert(ii < n);
+      bsta = scanpointsy[ii].x; bsto = scanpointsy[ii+n].x;
 
 #ifdef DEBUG_RBTREE
-      fprintf(stderr, "poping..%d....", scanpointsy[k + n].node);
+      fprintf(stderr, "poping..%d....yinterval={%f,%f}\n", scanpointsy[k + n].node, bsta, bsto);
       treey->PrintKey(newNode->key);
 #endif
 
-      assert(treey->nil != newNode);
-      while ((newNode) && ((newNode = TreePredecessor(treey, newNode)) != treey->nil) && ((scan_point *)newNode->key)->node != k){
+     assert(treey->nil != newNode);
+      while ((newNode) && ((newNode = TreePredecessor(treey, newNode)) != treey->nil)){
 	neighbor = (((scan_point *)newNode->key)->node)%n;
-	A = SparseMatrix_coordinate_form_add_entries(A, 1, &neighbor, &k, &one);
+	bbsta = scanpointsy[neighbor].x; bbsto = scanpointsy[neighbor+n].x;/* the y-interval of the node that has one end of the interval lower than the top of the leaving interval (bsto) */
 #ifdef DEBUG_RBTREE
-	fprintf(stderr,"%d %d\n",k,neighbor);
+	fprintf(stderr," predecessor is node %d y = %f\n", ((scan_point *)newNode->key)->node, ((scan_point *)newNode->key)->x);
 #endif
+	if (neighbor != k){
+	  if (ABS(0.5*(bsta+bsto) - 0.5*(bbsta+bbsto)) < 0.5*(bsto-bsta) + 0.5*(bbsto-bbsta)){/* if the distance of the centers of the interval is less than sum of width, we have overlap */
+	    A = SparseMatrix_coordinate_form_add_entries(A, 1, &neighbor, &k, &one);
+#ifdef DEBUG_RBTREE
+	    fprintf(stderr,"======================================  %d %d\n",k,neighbor);
+#endif
+	    if (check_overlap_only) goto check_overlap_RETURN;
+	  }
+	} else {
+	  newNode2 = newNode;
+	}
 
       }
 
@@ -218,19 +235,23 @@ static SparseMatrix get_overlap_graph(int dim, int n, real *x, real *width){
 #endif
 
       if (newNode0) RBDelete(treey,newNode0);
-      if (newNode != treey->nil && newNode != newNode0) {
+
+
+     if (newNode2 && newNode2 != treey->nil && newNode2 != newNode0) {
 
 #ifdef DEBUG_RBTREE
-	fprintf(stderr, "deleting2...");
-	treey->PrintKey(newNode->key)
+	fprintf(stderr, "deleteing2...");
+	treey->PrintKey(newNode2->key);
 #endif
 
-	if (newNode0) RBDelete(treey,newNode);
+	if (newNode0) RBDelete(treey,newNode2);
       }
+
     }
   }
 
-  FREE(scanpointsx);
+check_overlap_RETURN:
+   FREE(scanpointsx);
   FREE(scanpointsy);
   RBTreeDestroy(treey);
 
@@ -273,14 +294,94 @@ static relative_position_constraints relative_position_constraints_new(SparseMat
 
     return data;
 }
+static void scale_coord(int dim, int m, real *x, real scale){
+  int i;
+  for (i = 0; i < dim*m; i++) {
+    x[i] *= scale;
+  }
+}
 
+real overlap_scaling(int dim, int m, real *x, real *width, real scale_sta, real scale_sto, real epsilon, int maxiter){
+  /* do a bisection between scale_sta and scale_sto, up to maxiter iterations or till interval <= epsilon, to find the best scaling to avoid overlap
+     m: number of points
+     x: the coordinates
+     width: label size
+     scale_sta: starting bracket. If <= 0, assumed 0. If > 0, we will test this first and if no overlap, return.
+     scale_sto: stopping bracket. This must be overlap free if positive. If <= 0, we will find automatically by doubling from scale_sta, or epsilon if scale_sta <= 0.
+     typically usage: 
+     - for shrinking down a layout to reduce white space, we will assume scale_sta and scale_sto are both given and positive, and scale_sta is the current guess.
+     - for scaling up, we assume scale_sta, scale_sto <= 0
+   */
+  real scale = -1, scale_best = -1;
+  SparseMatrix C = NULL;
+  int check_overlap_only = 1;
+  int overlap = 0;
+  real two = 2;
+  int iter = 0;
+
+  assert(epsilon > 0);
+
+  if (scale_sta <= 0) {
+    scale_sta = 0;
+  } else {
+    scale_coord(dim, m, x, scale_sta);
+    C = get_overlap_graph(dim, m, x, width, check_overlap_only);
+    if (!C || C->nz == 0) {
+      if (Verbose) fprintf(stderr," shrinking with with %f works\n", scale_sta);
+      SparseMatrix_delete(C);
+      return scale_sta;
+    }
+    scale_coord(dim, m, x, 1./scale_sta);
+    SparseMatrix_delete(C);
+  }
+
+  if (scale_sto < 0){
+    if (scale_sta == 0) {
+      scale_sto = epsilon;
+    } else {
+      scale_sto = scale_sta;
+    }
+    scale_coord(dim, m, x, scale_sto);
+    do {
+      scale_sto *= two;
+      scale_coord(dim, m, x, two);
+      C = get_overlap_graph(dim, m, x, width, check_overlap_only);
+      overlap = (C && C->nz > 0);
+      SparseMatrix_delete(C);
+    } while (overlap);
+    scale_coord(dim, m, x, 1/scale_sto);/* unscale */
+  }
+
+  scale_best = scale_sto;
+  while (iter++ < maxiter && scale_sto - scale_sta > epsilon){
+
+    fprintf(stderr,"in overlap_scaling iter=%d, maxiter=%d, scaling bracket: {%f,%f}\n", iter, maxiter, scale_sta, scale_sto);
+
+    scale = 0.5*(scale_sta + scale_sto);
+    scale_coord(dim, m, x, scale);
+    C = get_overlap_graph(dim, m, x, width, check_overlap_only);
+    scale_coord(dim, m, x, 1./scale);/* unscale */
+    overlap = (C && C->nz > 0);
+    SparseMatrix_delete(C);
+    if (overlap){
+      scale_sta = scale;
+    } else {
+      scale_best = scale_sto = scale;
+    }
+  }
+
+  /* final scaling */
+  scale_coord(dim, m, x, scale_best);
+  return scale_best;
+}
+ 
 OverlapSmoother OverlapSmoother_new(SparseMatrix A, int m, 
 				    int dim, real lambda0, real *x, real *width, int include_original_graph, int neighborhood_only, 
 				    real *max_overlap, real *min_overlap,
 				    int edge_labeling_scheme, int n_constr_nodes, int *constr_nodes, SparseMatrix A_constr, int shrink
 				    ){
   OverlapSmoother sm;
-  int i, j, k, *iw, *jw, *id, *jd, jdiag;
+  int i, j, k, *iw, *jw, jdiag;
   SparseMatrix B;
   real *lambda, *d, *w, diag_d, diag_w, dist;
 
@@ -306,7 +407,7 @@ OverlapSmoother OverlapSmoother_new(SparseMatrix A, int m,
 
   if (!neighborhood_only){
     SparseMatrix C, D;
-    C = get_overlap_graph(dim, m, x, width);
+    C = get_overlap_graph(dim, m, x, width, 0);
     D = SparseMatrix_add(B, C);
     SparseMatrix_delete(B);
     SparseMatrix_delete(C);
@@ -340,16 +441,17 @@ OverlapSmoother OverlapSmoother_new(SparseMatrix A, int m,
 
   /* no overlap at all! */
   if (*max_overlap < 1 && shrink){
+    real scale_sta = MIN(1, *max_overlap*1.0001), scale_sto = 1;
+
     if (Verbose) fprintf(stderr," no overlap (overlap = %f), rescale to shrink\n", *max_overlap - 1);
-    for (i = 0; i < dim*m; i++) {
-      x[i] *= (*max_overlap);
-    }
+
+    scale_sta = overlap_scaling(dim, m, x, width, scale_sta, scale_sto, 0.0001, 15);
+
     *max_overlap = 1;
     goto RETURN;
   }
 
   iw = sm->Lw->ia; jw = sm->Lw->ja;
-  id = sm->Lwd->ia; jd = sm->Lwd->ja;
   w = (real*) sm->Lw->a; d = (real*) sm->Lwd->a;
 
   for (i = 0; i < m; i++){
@@ -450,7 +552,7 @@ static int check_convergence(real max_overlap, real res, int has_penalty_terms, 
 }
 
 void remove_overlap(int dim, SparseMatrix A, real *x, real *label_sizes, int ntry, real initial_scaling, 
-		    int edge_labeling_scheme, int n_constr_nodes, int *constr_nodes, SparseMatrix A_constr, int *flag){
+		    int edge_labeling_scheme, int n_constr_nodes, int *constr_nodes, SparseMatrix A_constr, int do_shrinking, int *flag){
   /* 
      edge_labeling_scheme: if ELSCHEME_NONE, n_constr_nodes/constr_nodes/A_constr are not used
 
@@ -528,7 +630,7 @@ void remove_overlap(int dim, SparseMatrix A, real *x, real *label_sizes, int ntr
 	break;
       } else {
 	res = LARGE;
-	neighborhood_only = FALSE; shrink = 1;
+	neighborhood_only = FALSE; if (do_shrinking) shrink = 1;
 	continue;
       }
     }
@@ -541,8 +643,7 @@ void remove_overlap(int dim, SparseMatrix A, real *x, real *label_sizes, int ntr
 #endif
     OverlapSmoother_delete(sm);
   }
-  if (Verbose) 
-    fprintf(stderr, "overlap removal neighbors only?= %d iter -- %d, overlap factor = %g underlap factor = %g\n", neighborhood_only, i, max_overlap - 1, min_overlap);
+  if (Verbose) fprintf(stderr, "overlap removal neighbors only?= %d iter -- %d, overlap factor = %g underlap factor = %g\n", neighborhood_only, i, max_overlap - 1, min_overlap);
 
 #ifdef ANIMATE
   fprintf(fp,"}");
@@ -553,7 +654,7 @@ void remove_overlap(int dim, SparseMatrix A, real *x, real *label_sizes, int ntr
   if (has_penalty_terms){
     /* now do without penalty */
     remove_overlap(dim, A, x, label_sizes, ntry, 0.,
-		   ELSCHEME_NONE, 0, NULL, NULL, flag);
+		   ELSCHEME_NONE, 0, NULL, NULL, TRUE, flag);
   }
 
 #ifdef DEBUG
@@ -584,7 +685,7 @@ void remove_overlap(int dim, SparseMatrix A, real *x, real *label_sizes, int ntr
 #else
 #include "types.h"
 #include "SparseMatrix.h"
-void remove_overlap(int dim, SparseMatrix A, int m, real *x, real *label_sizes, int ntry, real initial_scaling, int *flag)
+void remove_overlap(int dim, SparseMatrix A, int m, real *x, real *label_sizes, int ntry, real initial_scaling, int do_shrinking, int *flag)
 {
     agerr(AGERR, "remove_overlap: Graphviz not built with triangulation library\n");
 }

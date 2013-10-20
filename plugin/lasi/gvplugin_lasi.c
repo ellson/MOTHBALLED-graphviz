@@ -20,7 +20,7 @@ extern gvplugin_installed_t gvloadimage_lasi_types[];
 static gvplugin_api_t apis[] = {
     {API_device, gvdevice_lasi_types},
     {API_render, gvrender_lasi_types},
-    {API_render, gvloadimage_lasi_types},
+    {API_loadimage, gvloadimage_lasi_types},
     {(api_t)0, 0},
 };
 

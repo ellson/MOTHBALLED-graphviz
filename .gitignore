@@ -148,6 +148,7 @@ lib/graph/parser.c
 lib/graph/parser.h
 lib/gvc/gvc.3.pdf
 lib/gvpr/gdefs.h
+lib/gvpr/gvpr.3.pdf
 lib/gvpr/mkdefs
 lib/pack/pack.3.pdf
 lib/pathplan/pathplan.3.pdf

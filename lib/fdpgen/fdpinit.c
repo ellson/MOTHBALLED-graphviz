@@ -35,24 +35,12 @@ static void initialPositions(graph_t * g)
     char *p;
     char c;
 
-#ifndef WITH_CGRAPH
-    possym = agfindattr(g->proto->n, "pos");
-#else /* WITH_CGRAPH */
     possym = agattr(g,AGNODE, "pos", NULL);
-#endif /* WITH_CGRAPH */
     if (!possym)
 	return;
-#ifndef WITH_CGRAPH
-    pinsym = agfindattr(g->proto->n, "pin");
-#else /* WITH_CGRAPH */
     pinsym = agattr(g,AGNODE, "pin", NULL);
-#endif /* WITH_CGRAPH */
     for (i = 0; (np = GD_neato_nlist(g)[i]); i++) {
-#ifndef WITH_CGRAPH
-	p = agxget(np, possym->index);
-#else /* WITH_CGRAPH */
 	p = agxget(np, possym);
-#endif /* WITH_CGRAPH */
 	if (p[0]) {
 	    pvec = ND_pos(np);
 	    c = '\0';
@@ -64,11 +52,7 @@ static void initialPositions(graph_t * g)
 		}
 		ND_pinned(np) = P_SET;
 		if ((c == '!')
-#ifndef WITH_CGRAPH
-		    || (pinsym && mapbool(agxget(np, pinsym->index))))
-#else /* WITH_CGRAPH */
 		    || (pinsym && mapbool(agxget(np, pinsym))))
-#endif /* WITH_CGRAPH */
 		    ND_pinned(np) = P_PIN;
 	    } else
 		fprintf(stderr,
@@ -82,23 +66,19 @@ static void initialPositions(graph_t * g)
  */
 static void init_edge(edge_t * e, attrsym_t * E_len)
 {
-#ifdef WITH_CGRAPH
     agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//node custom data
-#endif /* WITH_CGRAPH */
     ED_factor(e) = late_double(e, E_weight, 1.0, 0.0);
     ED_dist(e) = late_double(e, E_len, fdp_parms->K, 0.0);
 
     common_init_edge(e);
 }
 
-#ifdef WITH_CGRAPH
 static void init_node(node_t * n)
 {
     common_init_node(n);
     ND_pos(n) = N_NEW(GD_ndim(agraphof(n)), double);
     gv_nodesize(n, GD_flip(agraphof(n)));
 }
-#endif
 
 void fdp_init_node_edge(graph_t * g)
 {
@@ -109,9 +89,7 @@ void fdp_init_node_edge(graph_t * g)
     int i;
     /* ndata* alg; */
 
-#ifdef WITH_CGRAPH
     aginit(g, AGNODE, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
-#endif
     processClusterEdges(g);
 
     /* Get node count after processClusterEdges(), as this function may
@@ -122,21 +100,13 @@ void fdp_init_node_edge(graph_t * g)
     GD_neato_nlist(g) = N_NEW(nn + 1, node_t *);
 
     for (i = 0, n = agfstnode(g); n; n = agnxtnode(g, n)) {
-#ifdef WITH_CGRAPH
 	init_node (n);
-#else
-	neato_init_node (n);
-#endif
 	/* ND_alg(n) = alg + i; */
 	GD_neato_nlist(g)[i] = n;
 	ND_id(n) = i++;
     }
 
-#ifndef WITH_CGRAPH
-    E_len = agfindattr(g->proto->e, "len");
-#else /* WITH_CGRAPH */
     E_len = agattr(g,AGEDGE, "len", NULL);
-#endif /* WITH_CGRAPH */
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    init_edge(e, E_len);
@@ -162,11 +132,7 @@ static void cleanup_subgs(graph_t * g)
     }
     free (GD_clust(g));
     if (g != agroot(g))
-#ifndef WITH_CGRAPH
-	memset(&(g->u), 0, sizeof(Agraphinfo_t));
-#else /* WITH_CGRAPH */
 	agdelrec(g, "Agraphinfo_t");				
-#endif /* WITH_CGRAPH */
 }
 
 static void fdp_cleanup_graph(graph_t * g)

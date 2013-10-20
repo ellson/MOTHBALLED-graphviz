@@ -14,8 +14,6 @@
 
 #include "tcldot.h"
 
-#ifdef WITH_CGRAPH
-
 // Agiddisc functions
 static void *myiddisc_open(Agraph_t *g, Agdisc_t *disc) {
     ictx_t *ictx = (ictx_t *)disc;
@@ -107,4 +105,3 @@ Agiddisc_t myiddisc = {
     myiddisc_close,
     myiddisc_idregister
 };
-#endif

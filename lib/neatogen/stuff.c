@@ -109,19 +109,11 @@ static void free_3array(double ***rv)
  * Return 1 if attribute not defined
  * Return 2 if attribute string bad
  */
-#ifdef WITH_CGRAPH
 static int lenattr(edge_t* e, Agsym_t* index, double* val)
-#else
-static int lenattr(edge_t* e, int index, double* val)
-#endif
 {
     char* s;
 
-#ifdef WITH_CGRAPH
     if (index == NULL)
-#else
-    if (index < 0)
-#endif
 	return 1;
 
     s = agxget(e, index);
@@ -201,11 +193,7 @@ static node_t *prune(graph_t * G, node_t * np, node_t * next)
     return next;
 }
 
-#ifdef WITH_CGRAPH
 static double setEdgeLen(graph_t * G, node_t * np, Agsym_t* lenx, double dfltlen)
-#else
-static double setEdgeLen(graph_t * G, node_t * np, int lenx, double dfltlen)
-#endif
 {
     edge_t *ep;
     double total_len = 0.0;
@@ -236,11 +224,7 @@ int scan_graph_mode(graph_t * G, int mode)
     node_t *np, *xp, *other;
     double total_len = 0.0;
     double dfltlen = 1.0;
-#ifdef WITH_CGRAPH
     Agsym_t* lenx;
-#else
-    int lenx;
-#endif /* WITH_CGRAPH */
 
     if (Verbose)
 	fprintf(stderr, "Scanning graph %s, %d nodes\n", agnameof(G),
@@ -264,11 +248,7 @@ int scan_graph_mode(graph_t * G, int mode)
     nV = agnnodes(G);
     nE = agnedges(G);
 
-#ifdef WITH_CGRAPH
     lenx = agattr(G, AGEDGE, "len", 0);
-#else
-    lenx = agindex(G->root->proto->e, "len");
-#endif
     if (mode == MODE_KK) {
 	Epsilon = .0001 * nV;
 	getdouble(G, "epsilon", &Epsilon);

@@ -73,9 +73,7 @@ static void cluster_init_graph(graph_t * g)
     }
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-#ifdef WITH_CGRAPH
 	    agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//edge custom data
-#endif /* WITH_CGRAPH */
 	    common_init_edge(e);
 	}
     }
@@ -128,13 +126,8 @@ layout (Agraph_t* g, int depth)
 
         /* add user sort values if necessary */
     if ((pinfo.mode == l_array) && (pinfo.flags & PK_USER_VALS)) {
-#ifdef WITH_CGRAPH
 	cattr = agattr(root, AGRAPH, "sortv", 0);
 	vattr = agattr(root, AGNODE, "sortv", 0);
-#else
-	cattr = agfindattr(root, "sortv");
-	vattr = agfindattr(root->proto->n, "sortv");
-#endif
 	if (cattr || vattr)
 	    pinfo.vals = N_NEW(total, unsigned char);
 	else
@@ -329,11 +322,6 @@ reposition (Agraph_t* g, int depth)
 static void
 mkClusters (Agraph_t* g, clist_t* pclist, Agraph_t* parent)
 {
-#ifndef WITH_CGRAPH
-    node_t*  mn;
-    edge_t*  me;
-    graph_t* mg;
-#endif
     graph_t* subg;
     clist_t  list;
     clist_t* clist;
@@ -345,7 +333,6 @@ mkClusters (Agraph_t* g, clist_t* pclist, Agraph_t* parent)
     else
         clist = pclist;
 
-#ifdef WITH_CGRAPH
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
         if (!strncmp(agnameof(subg), "cluster", 7)) {
 	    agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
@@ -357,21 +344,6 @@ mkClusters (Agraph_t* g, clist_t* pclist, Agraph_t* parent)
             mkClusters(subg, clist, parent);
         }
     }
-#else
-    mg = g->meta_node->graph;
-    for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
-        mn = me->head;
-        subg = agusergraph(mn);
-        if (!strncmp(agnameof(subg), "cluster", 7)) {
-	    do_graph_label (subg);
-            addCluster(clist, subg);
-            mkClusters(subg, NULL, subg);
-        }
-        else {
-            mkClusters(subg, clist, parent);
-        }
-    }
-#endif
     if (pclist == NULL) {
         GD_n_cluster(g) = list.cnt;
         if (list.cnt)

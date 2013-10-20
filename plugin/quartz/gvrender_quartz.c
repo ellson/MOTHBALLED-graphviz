@@ -25,11 +25,7 @@
 
 #include "gvplugin_device.h"
 #include "gvplugin_render.h"
-#ifdef WITH_CGRAPH
 #include "cgraph.h"
-#else
-#include "graph.h"
-#endif
 
 #include "gvplugin_quartz.h"
 

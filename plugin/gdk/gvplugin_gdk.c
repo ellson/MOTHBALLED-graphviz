@@ -13,13 +13,13 @@
 
 #include "gvplugin.h"
 
-extern gvplugin_installed_t gvdevice_gdk_pixbuf_types[];
-extern gvplugin_installed_t gvloadimage_gdk_pixbuf_types[];
+extern gvplugin_installed_t gvdevice_gdk_types[];
+extern gvplugin_installed_t gvloadimage_gdk_types[];
 
 static gvplugin_api_t apis[] = {
-    {API_device, gvdevice_gdk_pixbuf_types},
-    {API_loadimage, gvloadimage_gdk_pixbuf_types},
+    {API_device, gvdevice_gdk_types},
+    {API_loadimage, gvloadimage_gdk_types},
     {(api_t)0, 0},
 };
 
-gvplugin_library_t gvplugin_gdk_pixbuf_LTX_library = { "gdk_pixbuf", apis };
+gvplugin_library_t gvplugin_gdk_LTX_library = { "gdk", apis };

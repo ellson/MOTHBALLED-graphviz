@@ -19,18 +19,10 @@ map_interclust_node(node_t * n)
 {
     node_t *rv;
 
-#ifndef WITH_CGRAPH
-    if ((ND_clust(n) == NULL) || (ND_clust(n)->u.expanded))
-#else /* WITH_CGRAPH */
     if ((ND_clust(n) == NULL) || (  GD_expanded(ND_clust(n))) )
-#endif /* WITH_CGRAPH */
 	rv = n;
     else
-#ifndef WITH_CGRAPH
-	rv = ND_clust(n)->u.rankleader[ND_rank(n)];
-#else /* WITH_CGRAPH */
 	rv = GD_rankleader(ND_clust(n))[ND_rank(n)];
-#endif /* WITH_CGRAPH */
     return rv;
 }
 
@@ -40,34 +32,18 @@ make_slots(graph_t * root, int r, int pos, int d)
 {
     int i;
     node_t *v, **vlist;
-#ifndef WITH_CGRAPH
-    vlist = ND_rank(root)[r].v;
-#else /* WITH_CGRAPH */
     vlist = GD_rank(root)[r].v;
-#endif /* WITH_CGRAPH */
     if (d <= 0) {
-#ifndef WITH_CGRAPH
-	for (i = pos - d + 1; i < ND_rank(root)[r].n; i++) {
-#else /* WITH_CGRAPH */
 	for (i = pos - d + 1; i < GD_rank(root)[r].n; i++) {
-#endif /* WITH_CGRAPH */
 	    v = vlist[i];
 	    ND_order(v) = i + d - 1;
 	    vlist[ND_order(v)] = v;
 	}
-#ifndef WITH_CGRAPH
-	for (i = ND_rank(root)[r].n + d - 1; i < ND_rank(root)[r].n; i++)
-#else /* WITH_CGRAPH */
 	for (i = GD_rank(root)[r].n + d - 1; i < GD_rank(root)[r].n; i++)
-#endif /* WITH_CGRAPH */
 	    vlist[i] = NULL;
     } else {
 /*assert(ND_rank(root)[r].n + d - 1 <= ND_rank(root)[r].an);*/
-#ifndef WITH_CGRAPH
-	for (i = ND_rank(root)[r].n - 1; i > pos; i--) {
-#else /* WITH_CGRAPH */
 	for (i = GD_rank(root)[r].n - 1; i > pos; i--) {
-#endif /* WITH_CGRAPH */
 	    v = vlist[i];
 	    ND_order(v) = i + d - 1;
 	    vlist[ND_order(v)] = v;
@@ -75,11 +51,7 @@ make_slots(graph_t * root, int r, int pos, int d)
 	for (i = pos + 1; i < pos + d; i++)
 	    vlist[i] = NULL;
     }
-#ifndef WITH_CGRAPH
-    ND_rank(root)[r].n += d - 1;
-#else /* WITH_CGRAPH */
     GD_rank(root)[r].n += d - 1;
-#endif /* WITH_CGRAPH */
 }
 
 static node_t* 
@@ -205,10 +177,8 @@ void interclexp(graph_t * subg)
 	    if (agcontains(subg, e))
 		continue;
 
-#ifdef WITH_CGRAPH
-		/* canonicalize edge */
+	    /* canonicalize edge */
 	    e = AGMKOUT(e);
-#endif
 	    /* short/flat multi edges */
 	    if (mergeable(prev, e)) {
 		if (ND_rank(agtail(e)) == ND_rank(aghead(e)))
@@ -234,11 +204,6 @@ void interclexp(graph_t * subg)
 		}
 		continue;
 	    }
-
-/* This assertion is still valid if the new ranking is not used */
-#ifndef WITH_CGRAPH
-	    assert(ED_to_virt(e) != NULL);
-#endif
 
 	    /* forward edges */
 	    if (ND_rank(aghead(e)) > ND_rank(agtail(e))) {
@@ -270,44 +235,23 @@ merge_ranks(graph_t * subg)
 
     root = agroot(subg);
     if (GD_minrank(subg) > 0)
-#ifndef WITH_CGRAPH
-	ND_rank(root)[GD_minrank(subg) - 1].valid = FALSE;
-#else /* WITH_CGRAPH */
 	GD_rank(root)[GD_minrank(subg) - 1].valid = FALSE;
-#endif /* WITH_CGRAPH */
     for (r = GD_minrank(subg); r <= GD_maxrank(subg); r++) {
 	d = GD_rank(subg)[r].n;
-#ifndef WITH_CGRAPH
-	ipos = pos = GD_rankleader(subg)[r]->u.order;
-#else /* WITH_CGRAPH */
 	ipos = pos = ND_order(GD_rankleader(subg)[r]);
-#endif /* WITH_CGRAPH */
 	make_slots(root, r, pos, d);
 	for (i = 0; i < GD_rank(subg)[r].n; i++) {
-#ifndef WITH_CGRAPH
-	    v = ND_rank(root)[r].v[pos] = GD_rank(subg)[r].v[i];
-#else /* WITH_CGRAPH */
 	    v = GD_rank(root)[r].v[pos] = GD_rank(subg)[r].v[i];
-#endif /* WITH_CGRAPH */
 	    ND_order(v) = pos++;
-#ifndef WITH_CGRAPH
-	    v->graph = subg->root;
-#else /* WITH_CGRAPH */
 	/* real nodes automatically have v->root = root graph */
 	    if (ND_node_type(v) == VIRTUAL)
 		v->root = root;
-#endif /* WITH_CGRAPH */
 	    delete_fast_node(subg, v);
 	    fast_node(agroot(subg), v);
 	    GD_n_nodes(agroot(subg))++;
 	}
-#ifndef WITH_CGRAPH
-	GD_rank(subg)[r].v = ND_rank(root)[r].v + ipos;
-	ND_rank(root)[r].valid = FALSE;
-#else /* WITH_CGRAPH */
 	GD_rank(subg)[r].v = GD_rank(root)[r].v + ipos;
 	GD_rank(root)[r].valid = FALSE;
-#endif /* WITH_CGRAPH */
     }
     if (r < GD_maxrank(root))
 	GD_rank(root)[r].valid = FALSE;
@@ -384,11 +328,7 @@ void mark_clusters(graph_t * g)
 	    for (orig = agfstout(clust, n); orig;
 		 orig = agnxtout(clust, orig)) {
 		if ((e = ED_to_virt(orig))) {
-#ifndef WITH_CGRAPH
-		    while (e && (vn = e->head)->u.node_type == VIRTUAL) {
-#else /* WITH_CGRAPH */
 		    while (e && ND_node_type(vn =aghead(e)) == VIRTUAL) {
-#endif /* WITH_CGRAPH */
 			ND_clust(vn) = clust;
 			e = ND_out(aghead(e)).list[0];
 			/* trouble if concentrators and clusters are mixed */
@@ -462,11 +402,7 @@ void mark_lowclusters(Agraph_t * root)
 	ND_clust(n) = NULL;
 	for (orig = agfstout(root, n); orig; orig = agnxtout(root, orig)) {
 	    if ((e = ED_to_virt(orig))) {
-#ifndef WITH_CGRAPH
-		while (e && (vn = e->head)->u.node_type == VIRTUAL) {
-#else /* WITH_CGRAPH */
 		while (e && (ND_node_type(vn = aghead(e))) == VIRTUAL) {
-#endif /* WITH_CGRAPH */
 		    ND_clust(vn) = NULL;
 		    e = ND_out(aghead(e)).list[0];
 		}
@@ -495,11 +431,7 @@ static void mark_lowcluster_basic(Agraph_t * g)
 	    ND_clust(n) = g;
 	for (orig = agfstout(g, n); orig; orig = agnxtout(g, orig)) {
 	    if ((e = ED_to_virt(orig))) {
-#ifndef WITH_CGRAPH
-		while (e && (vn = e->head)->u.node_type == VIRTUAL) {
-#else /* WITH_CGRAPH */
 		while (e && (ND_node_type(vn = aghead(e))) == VIRTUAL) {
-#endif /* WITH_CGRAPH */
 		    if (ND_clust(vn) == NULL)
 			ND_clust(vn) = g;
 		    e = ND_out(aghead(e)).list[0];

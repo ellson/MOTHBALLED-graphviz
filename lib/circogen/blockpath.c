@@ -41,42 +41,24 @@ static Agraph_t *clone_graph(Agraph_t * ing, Agraph_t ** xg)
     static int id = 0;
 
     sprintf(gname, "_clone_%d", id++);
-#ifndef WITH_CGRAPH
-    clone = agsubg(ing, gname);
-#else /* WITH_CGRAPH */
     clone = agsubg(ing, gname,1);
     agbindrec(clone, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	//node custom data
-#endif /* WITH_CGRAPH */
     sprintf(gname, "_clone_%d", id++);
-#ifndef WITH_CGRAPH
-    xclone = agopen(gname, ing->kind);
-    for (n = agfstnode(ing); n; n = agnxtnode(ing, n)) {
-	aginsert(clone, n);
-	xn = agnode(xclone, agnameof(n));
-#else /* WITH_CGRAPH */
     xclone = agopen(gname, ing->desc,NIL(Agdisc_t *));
     for (n = agfstnode(ing); n; n = agnxtnode(ing, n)) {
 	agsubnode(clone,n,1);
 	xn = agnode(xclone, agnameof(n),1);
         agbindrec(xn, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);	//node custom data
-#endif /* WITH_CGRAPH */
 	CLONE(n) = xn;
     }
 
     for (n = agfstnode(ing); n; n = agnxtnode(ing, n)) {
 	xn = CLONE(n);
-#ifndef WITH_CGRAPH
-	for (e = agfstout(ing, n); e; e = agnxtout(ing, e)) {
-	    aginsert(clone, e);
-	    xh = CLONE(e->head);
-	    xe = agedge(xclone, xn, xh);
-#else /* WITH_CGRAPH */
 	for (e = agfstout(ing, n); e; e = agnxtout(ing, e)) {
 	    agsubedge(clone,e,1);
 	    xh = CLONE(aghead(e));
 	    xe = agedge(xclone, xn, xh, NULL, 1);
 	    agbindrec(xe, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//node custom data
-#endif /* WITH_CGRAPH */
 	    ORIGE(xe) = e;
 	    DEGREE(xn) += 1;
 	    DEGREE(xh) += 1;
@@ -167,12 +149,7 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 		    break;
 		tp = neighbors_without[mark];
 		hp = neighbors_without[mark + 1];
-#ifndef WITH_CGRAPH
-		agedge(g, tp, hp);
-#else /* WITH_CGRAPH */
 		agbindrec(agedge(g, tp, hp, NULL, 1), "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);   // edge custom data
-
-#endif /* WITH_CGRAPH */
 		DEGREE(tp)++;
 		DEGREE(hp)++;
 		diff--;
@@ -182,13 +159,7 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 	    while (diff > 0) {
 		tp = neighbors_without[0];
 		hp = neighbors_without[mark];
-#ifndef WITH_CGRAPH
-		agedge(g, tp, hp);
-#else /* WITH_CGRAPH */
-
 		agbindrec(agedge(g, tp, hp, NULL, 1), "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);   // edge custom data
-
-#endif /* WITH_CGRAPH */
 		DEGREE(tp)++;
 		DEGREE(hp)++;
 		mark++;
@@ -200,12 +171,7 @@ static void find_pair_edges(Agraph_t * g, Agnode_t * n, Agraph_t * outg)
 	    tp = neighbors_with[0];
 	    for (mark = 0; mark < no_pair_count; mark++) {
 		hp = neighbors_without[mark];
-#ifndef WITH_CGRAPH
-		agedge(g, tp, hp);
-#else /* WITH_CGRAPH */
 		agbindrec(agedge(g, tp, hp, NULL, 1), "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);	//node custom data
-
-#endif /* WITH_CGRAPH */
 		DEGREE(tp)++;
 		DEGREE(hp)++;
 	    }
@@ -379,11 +345,7 @@ static void dfs(Agraph_t * g, Agnode_t * n, Agraph_t * tree)
 
 	if (!VISITED(neighbor)) {
 	    /* add the edge to the dfs tree */
-#ifndef WITH_CGRAPH
-	    aginsert(tree, e);
-#else /* WITH_CGRAPH */
 	    agsubedge(tree,e,1);
-#endif /* WITH_CGRAPH */
 	    TPARENT(neighbor) = n;
 	    dfs(g, neighbor, tree);
 	}
@@ -401,19 +363,11 @@ static Agraph_t *spanning_tree(Agraph_t * g)
     static int id = 0;
 
     sprintf(gname, "_span_%d", id++);
-#ifndef WITH_CGRAPH
-    tree = agsubg(g, gname);
-#else /* WITH_CGRAPH */
     tree = agsubg(g, gname,1);
     agbindrec(tree, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	//node custom data
-#endif /* WITH_CGRAPH */
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-#ifndef WITH_CGRAPH
-	aginsert(tree, n);
-#else /* WITH_CGRAPH */
 	agsubnode(tree,n,1);
-#endif /* WITH_CGRAPH */
 	DISTONE(n) = 0;
 	DISTTWO(n) = 0;
 	UNSET_VISITED(n);
@@ -441,11 +395,7 @@ static void block_graph(Agraph_t * g, block_t * sn)
     for (n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    if (BLOCK(aghead(e)) == sn)
-#ifndef WITH_CGRAPH
-		aginsert(subg, e);
-#else /* WITH_CGRAPH */
 		agsubedge(subg,e,1);
-#endif /* WITH_CGRAPH */
 	}
     }
 }

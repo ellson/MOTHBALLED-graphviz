@@ -36,8 +36,8 @@ autoreconf -v --install --force || exit 1
 # otherwise "make dist" fails.
 touch config/depcomp
 
-# suppress automatic ./configure if there are any args
-if test $# -eq 0; then
+# suppress automatic ./configure  is "./autogen.sh NOCONFIG"
+if test "$1" != "NOCONFIG"; then
     # don't use any old cache, but create a new one
     rm -f config.cache
     ./configure -C "$@"

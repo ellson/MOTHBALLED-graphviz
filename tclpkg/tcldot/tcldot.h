@@ -44,18 +44,13 @@ Tcl_GetString(Tcl_Obj *obj) {
  * ictx - one per tcl interpreter, may support multiple graph namespaces
  */
 typedef struct {
-#ifdef WITH_CGRAPH
     Agdisc_t mydisc;    /* must be first to allow casting mydisc to ictx */
     Agiodisc_t myioDisc;
     unsigned long ctr;  /* odd number counter for anon objects over all g's in interp */
-#else
-    void *graphTblPtr, *nodeTblPtr, *edgeTblPtr;
-#endif
     Tcl_Interp *interp;
     GVC_t *gvc;
 } ictx_t;
 
-#ifdef WITH_CGRAPH
 /*
  * gctx - one for each graph in a tcl interp
  */
@@ -64,16 +59,10 @@ typedef struct {
     ictx_t *ictx;
     unsigned long idx; 
 } gctx_t;
-#endif
 
 #if HAVE_LIBGD
 extern void *GDHandleTable;
 extern int Gdtclft_Init(Tcl_Interp *);
-#endif
-
-#ifndef WITH_CGRAPH
-#undef AGID
-#define AGID(x) ((x)->handle)
 #endif
 
 extern int graphcmd(ClientData clientData, Tcl_Interp * interp,
@@ -98,7 +87,6 @@ extern int edgecmd(ClientData clientData, Tcl_Interp * interp,
 #endif
     );
 
-#ifdef WITH_CGRAPH
 /* rdr_t isn't exposed by cgraph/io.c */
 typedef struct {
     const char *data;
@@ -120,15 +108,6 @@ extern void deleteGraph(gctx_t *gctx, Agraph_t * g);
 extern void listGraphAttrs (Tcl_Interp * interp, Agraph_t* g);
 extern void listNodeAttrs (Tcl_Interp * interp, Agraph_t* g);
 extern void listEdgeAttrs (Tcl_Interp * interp, Agraph_t* g);
-#else
-extern void deleteEdge(ictx_t * ictx, Agraph_t * g, Agedge_t * e);
-extern void deleteNode(ictx_t * ictx, Agraph_t * g, Agnode_t * n);
-extern void deleteGraph(ictx_t * ictx, Agraph_t * g);
-extern void listGraphAttrs (Tcl_Interp * interp, Agraph_t* g);
-extern void listNodeAttrs (Tcl_Interp * interp, Agraph_t* g);
-extern void listEdgeAttrs (Tcl_Interp * interp, Agraph_t* g);
-extern char *mygets(char *ubuf, int n, FILE * channel);
-#endif
 
 extern void setgraphattributes(Agraph_t * g, char *argv[], int argc);
 extern void setedgeattributes(Agraph_t * g, Agedge_t * e, char *argv[], int argc);
@@ -139,5 +118,3 @@ extern size_t Tcldot_channel_writer(GVJ_t *job, const char *s, size_t len);
 
 extern void tcldot_layout(GVC_t *gvc, Agraph_t * g, char *engine);
 extern void reset_layout(GVC_t *gvc, Agraph_t * sg);
-
-

@@ -173,7 +173,6 @@ static void use_library(GVC_t *gvc, const char *name)
     gvc->common.lib = Lib;
 }
 
-#ifdef WITH_CGRAPH
 static void global_def(agxbuf* xb, char *dcl, int kind,
          attrsym_t * ((*dclfun) (Agraph_t *, int kind, char *, char *)) )
 {
@@ -190,24 +189,6 @@ static void global_def(agxbuf* xb, char *dcl, int kind,
     sym = dclfun(NULL, kind, agxbuse (xb), rhs);
     sym->fixed = 1;
 }
-#else
-static void global_def(agxbuf* xb, char *dcl,
-	attrsym_t * ((*dclfun) (Agraph_t *, char *, char *)))
-{
-    char *p;
-    char *rhs = "true";
-
-    attrsym_t *sym;
-    if ((p = strchr(dcl, '='))) {
-	agxbput_n (xb, dcl, p-dcl);
-        rhs = p+1;
-    }
-    else
-	agxbput (xb, dcl);
-    sym = dclfun(NULL, agxbuse (xb), rhs);
-    sym->fixed = 1;
-}
-#endif
 
 static int gvg_init(GVC_t *gvc, graph_t *g, char *fn, int gidx)
 {
@@ -272,9 +253,6 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
     Verbose = gvc->common.verbose;
     CmdName = gvc->common.cmdname;
 
-#ifndef WITH_CGRAPH
-    aginit();
-#endif
     nfiles = 0;
     for (i = 1; i < argc; i++)
 	if (argv[i] && argv[i][0] != '-')
@@ -288,11 +266,7 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 	    switch (c = argv[i][1]) {
 	    case 'G':
 		if (*rest)
-#ifdef WITH_CGRAPH
 		    global_def(&xb, rest, AGRAPH, agattr);
-#else
-		    global_def(&xb, rest, agraphattr);
-#endif
 		else {
 		    fprintf(stderr, "Missing argument for -G flag\n");
 		    return (dotneato_usage(1));
@@ -300,11 +274,7 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		break;
 	    case 'N':
 		if (*rest)
-#ifdef WITH_CGRAPH
 		    global_def(&xb, rest, AGNODE,agattr);
-#else
-		    global_def(&xb, rest, agnodeattr);
-#endif
 		else {
 		    fprintf(stderr, "Missing argument for -N flag\n");
 		    return (dotneato_usage(1));
@@ -312,11 +282,7 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		break;
 	    case 'E':
 		if (*rest)
-#ifdef WITH_CGRAPH
 		    global_def(&xb, rest, AGEDGE,agattr);
-#else
-		    global_def(&xb, rest, agedgeattr);
-#endif
 		else {
 		    fprintf(stderr, "Missing argument for -E flag\n");
 		    return (dotneato_usage(1));
@@ -460,13 +426,8 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
     }
 
     /* set persistent attributes here (if not already set from command line options) */
-#ifdef WITH_CGRAPH
     if (!agattr(NULL, AGNODE, "label", 0))
 	agattr(NULL, AGNODE, "label", NODENAME_ESC);
-#else
-    if (!(agfindnodeattr(agprotograph(), "label")))
-	agnodeattr(NULL, "label", NODENAME_ESC);
-#endif
     return 0;
 }
 
@@ -595,11 +556,7 @@ graph_t *gvNextInputGraph(GVC_t *gvc)
 #ifdef EXPERIMENTAL_MYFGETS
 	g = agread_usergets(fp, myfgets);
 #else
-#ifdef WITH_CGRAPH
 	g = agread(fp,NIL(Agdisc_t*));
-#else
-	g = agread(fp);
-#endif
 #endif
 	if (g) {
 	    gvg_init(gvc, g, fn, gidx++);
@@ -813,11 +770,7 @@ void graph_init(graph_t * g, boolean use_rankdir)
     N_fontcolor = agfindnodeattr(g, "fontcolor");
     N_label = agfindnodeattr(g, "label");
     if (!N_label)
-#ifdef WITH_CGRAPH
 	N_label = agattr(g, AGNODE, "label", NODENAME_ESC);
-#else
-	N_label = agnodeattr(g, "label", NODENAME_ESC);
-#endif
     N_xlabel = agfindnodeattr(g, "xlabel");
     N_showboxes = agfindnodeattr(g, "showboxes");
     N_penwidth = agfindnodeattr(g, "penwidth");
@@ -891,13 +844,9 @@ void graph_cleanup(graph_t *g)
     free(GD_drawing(g));
     GD_drawing(g) = NULL;
     free_label(GD_label(g));
-#ifdef WITH_CGRAPH
     //FIX HERE , STILL SHALLOW
     //memset(&(g->u), 0, sizeof(Agraphinfo_t));
     agclean(g, AGRAPH,"Agraphinfo_t");
-#else
-    memset(&(g->u), 0, sizeof(Agraphinfo_t));
-#endif
 }
 
 /* charsetToStr:

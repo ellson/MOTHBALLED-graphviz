@@ -78,32 +78,6 @@ QString stripFileExtension(QString fileName)
     return fileName.left(idx);
 }
 
-#ifndef WITH_CGRAPH
-static char*
-graph_reader(char *str, int num, FILE * stream)	//helper function to load / parse graphs from tstring
-{
-    if (num == 0)
-	return str;
-    const char *ptr;
-    char *optr;
-    char c;
-    int l;
-    rdr_t *s = (rdr_t *) stream;
-    if (s->cur >= s->len)
-	return NULL;
-    l = 0;
-    ptr = s->data + s->cur;
-    optr = str;
-    do {
-	*optr++ = c = *ptr++;
-	l++;
-    } while (c && (c != '\n') && (l < num - 1));
-    *optr = '\0';
-    s->cur += l;
-    return str;
-}
-#endif
-
 CFrmSettings::CFrmSettings()
 {
     this->gvc = gvContext();
@@ -318,12 +292,7 @@ bool CFrmSettings::createLayout()
     rdr.data = bytes.constData();
     rdr.len = strlen(rdr.data);
     rdr.cur = 0;
-#ifdef WITH_CGRAPH
     graph = agmemread(rdr.data);
-#else
-    graph = agread_usergets((FILE *) & rdr, (gets_f) graph_reader);
-    /* graph=agread_usergets(reinterpret_cast<FILE*>(this),(gets_f)graph_reader); */
-#endif
     if (!graph)
 	return false;
     if (agerrors()) {

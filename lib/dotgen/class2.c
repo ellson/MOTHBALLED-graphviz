@@ -278,11 +278,7 @@ void class2(graph_t * g)
 	    else {
 		/*other_edge(e); */
 		/* avoid when opp==e in undirected graph */
-#ifndef WITH_CGRAPH
-		if ((opp = agfindedge(g, aghead(e), agtail(e))) && (opp != e)) {
-#else
 		if ((opp = agfindedge(g, aghead(e), agtail(e))) && (aghead(opp) != aghead(e))) {
-#endif /* WITH_CGRAPH */
 		    /* shadows a forward edge */
 		    if (ED_to_virt(opp) == NULL)
 			make_chain(g, agtail(opp), aghead(opp), opp);

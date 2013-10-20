@@ -25,19 +25,6 @@ size_t Tcldot_channel_writer(GVJ_t *job, const char *s, size_t len)
     return Tcl_Write((Tcl_Channel)(job->output_file), s, len);
 }
 
-void reset_layout(GVC_t *gvc, Agraph_t * sg)
-{
-#ifndef WITH_CGRAPH
-    Agraph_t *g = agroot(sg);
-
-    if (GD_drawing(g)) {	/* only cleanup once between layouts */
-	gvFreeLayout(gvc, g);
-	GD_drawing(g) = NULL;
-    }
-#endif
-}
-
-#ifdef WITH_CGRAPH
 /* handles (tcl commands) to obj* */
 
 Agraph_t *cmd2g(char *cmd) {
@@ -77,9 +64,7 @@ char *obj2cmd (void *obj) {
     return buf;
 }
 
-#endif // WITH_CGRAPH
 
-#ifdef WITH_CGRAPH
 void deleteEdge(gctx_t *gctx, Agraph_t * g, Agedge_t *e)
 {
     char *hndl;
@@ -138,84 +123,6 @@ void deleteGraph(gctx_t * gctx, Agraph_t *g)
     }
     Tcl_DeleteCommand(gctx->ictx->interp, hndl);
 }
-#else
-void deleteEdge(ictx_t * ictx, Agraph_t * g, Agedge_t *e)
-{
-    Agedge_t **ep;
-    char buf[32];
-
-    tclhandleString(ictx->edgeTblPtr, buf, AGID(e));
-    Tcl_DeleteCommand(ictx->interp, buf);
-    ep = (Agedge_t **) tclhandleXlateIndex(ictx->edgeTblPtr, AGID(e));
-    if (!ep)
-	fprintf(stderr, "Bad entry in edgeTbl\n");
-    tclhandleFreeIndex(ictx->edgeTblPtr, AGID(e));
-    agdelete(agroot(g), e);
-}
-static void deleteNodeEdges(ictx_t * ictx, Agraph_t * g, Agnode_t * n)
-{
-    Agedge_t *e, *e1;
-
-    e = agfstedge(g, n);
-    while (e) {
-	e1 = agnxtedge(g, e, n);
-        deleteEdge(ictx, g, e);
-	e = e1;
-    }
-}
-void deleteNode(ictx_t * ictx, Agraph_t * g, Agnode_t *n)
-{
-    Agnode_t **np;
-    char buf[32];
-    
-    deleteNodeEdges(ictx, agroot(g), n);
-    tclhandleString(ictx->nodeTblPtr, buf, AGID(n));
-    Tcl_DeleteCommand(ictx->interp, buf);
-    np = (Agnode_t **) tclhandleXlateIndex(ictx->nodeTblPtr, AGID(n));
-    if (!np)
-	fprintf(stderr, "Bad entry in nodeTbl\n");
-    tclhandleFreeIndex(ictx->nodeTblPtr, AGID(n));
-    agdelete(agroot(g), n);
-}
-static void deleteGraphNodes(ictx_t * ictx, Agraph_t * g)
-{
-    Agnode_t *n, *n1;
-
-    n = agfstnode(g);
-    while (n) {
-	n1 = agnxtnode(g, n);
-	deleteNode(ictx, g, n);
-	n = n1;
-    }
-}
-void deleteGraph(ictx_t * ictx, Agraph_t * g)
-{
-    Agraph_t **sgp;
-    Agedge_t *e;
-    char buf[32];
-
-    if (g->meta_node) {
-	for (e = agfstout(g->meta_node->graph, g->meta_node); e;
-	     e = agnxtout(g->meta_node->graph, e)) {
-	    deleteGraph(ictx, agusergraph(aghead(e)));
-	}
-	tclhandleString(ictx->graphTblPtr, buf, AGID(g));
-	Tcl_DeleteCommand(ictx->interp, buf);
-	sgp = (Agraph_t **) tclhandleXlateIndex(ictx->graphTblPtr, AGID(g));
-	if (!sgp)
-	    fprintf(stderr, "Bad entry in graphTbl\n");
-	tclhandleFreeIndex(ictx->graphTblPtr, AGID(g));
-	deleteGraphNodes(ictx, g);
-	if (g == agroot(g)) {
-	    agclose(g);
-	} else {
-	    agdelete(g->meta_node->graph, g->meta_node);
-	}
-    } else {
-	fprintf(stderr, "Subgraph has no meta_node\n");
-    }
-}
-#endif
 
 void setgraphattributes(Agraph_t * g, char *argv[], int argc)
 {
@@ -223,15 +130,9 @@ void setgraphattributes(Agraph_t * g, char *argv[], int argc)
     Agsym_t *a;
 
     for (i = 0; i < argc; i++) {
-#ifndef WITH_CGRAPH
-	if (!(a = agfindgraphattr(agroot(g), argv[i])))
-	    a = agraphattr(agroot(g), argv[i], "");
-	agxset(g, a->index, argv[++i]);
-#else
 	if (!(a = agfindgraphattr(agroot(g), argv[i])))
 	    a = agattr(agroot(g), AGRAPH, argv[i], "");
 	agxset(g, a, argv[++i]);
-#endif
     }
 }
 
@@ -246,11 +147,6 @@ void setedgeattributes(Agraph_t * g, Agedge_t * e, char *argv[], int argc)
 	    i++;
 	    continue;
 	}
-#ifndef WITH_CGRAPH
-	if (!(a = agfindedgeattr(g, argv[i])))
-	    a = agedgeattr(agroot(g), argv[i], "");
-	agxset(e, a->index, argv[++i]);
-#else
 	if (e) {
 	    if (!(a = agfindedgeattr(g, argv[i])))
 		a = agattr(agroot(g), AGEDGE, argv[i], "");
@@ -260,7 +156,6 @@ void setedgeattributes(Agraph_t * g, Agedge_t * e, char *argv[], int argc)
 	    agattr(g, AGEDGE, argv[i], argv[i+1]);
 	    i++;
 	}
-#endif
     }
 }
 
@@ -270,11 +165,6 @@ void setnodeattributes(Agraph_t * g, Agnode_t * n, char *argv[], int argc)
     Agsym_t *a;
 
     for (i = 0; i < argc; i++) {
-#ifndef WITH_CGRAPH
-	if (!(a = agfindnodeattr(g, argv[i])))
-	    a = agnodeattr(agroot(g), argv[i], "");
-	agxset(n, a->index, argv[++i]);
-#else
 	if (n) {
 	    if (!(a = agfindnodeattr(g, argv[i])))
 		a = agattr(agroot(g), AGNODE, argv[i], "");
@@ -284,11 +174,9 @@ void setnodeattributes(Agraph_t * g, Agnode_t * n, char *argv[], int argc)
 	    agattr(g, AGNODE, argv[i], argv[i+1]);
 	    i++;
 	}
-#endif
     }
 }
 
-#ifdef WITH_CGRAPH
 void listGraphAttrs (Tcl_Interp * interp, Agraph_t* g)
 {
     Agsym_t *a = NULL;
@@ -310,38 +198,6 @@ void listEdgeAttrs (Tcl_Interp * interp, Agraph_t* g)
 	Tcl_AppendElement(interp, a->name);
     }
 }
-#else
-void listGraphAttrs (Tcl_Interp * interp, Agraph_t* g)
-{
-    int i;
-    Agsym_t *a;
-
-    for (i = 0; i < dtsize(g->univ->globattr->dict); i++) {
-	a = g->univ->globattr->list[i];
-	Tcl_AppendElement(interp, a->name);
-    }
-}
-void listNodeAttrs (Tcl_Interp * interp, Agraph_t* g)
-{
-    int i;
-    Agsym_t *a;
-
-    for (i = 0; i < dtsize(g->univ->nodeattr->dict); i++) {
-	a = g->univ->nodeattr->list[i];
-	Tcl_AppendElement(interp, a->name);
-    }
-}
-void listEdgeAttrs (Tcl_Interp * interp, Agraph_t* g)
-{
-    int i;
-    Agsym_t *a;
-
-    for (i = 0; i < dtsize(g->univ->edgeattr->dict); i++) {
-	a = g->univ->edgeattr->list[i];
-	Tcl_AppendElement(interp, a->name);
-    }
-}
-#endif
 
 void tcldot_layout(GVC_t *gvc, Agraph_t * g, char *engine)
 {
@@ -349,11 +205,7 @@ void tcldot_layout(GVC_t *gvc, Agraph_t * g, char *engine)
     Agsym_t *a;
     int rc;
 
-#ifndef WITH_CGRAPH
-    reset_layout(gvc, g);		/* in case previously drawn */
-#else
     gvFreeLayout(gvc, g);               /* in case previously drawn */
-#endif
 
 /* support old behaviors if engine isn't specified*/
     if (!engine || *engine == '\0') {
@@ -392,13 +244,7 @@ void tcldot_layout(GVC_t *gvc, Agraph_t * g, char *engine)
 	sprintf(buf, "%d %d %d %d",
 		ROUND(GD_bb(g).LL.x), ROUND(GD_bb(g).LL.y),
 		ROUND(GD_bb(g).UR.x), ROUND(GD_bb(g).UR.y));
-#ifndef WITH_CGRAPH
-    if (!(a = agfindgraphattr(g, "bb"))) 
-	a = agraphattr(g, "bb", "");
-    agxset(g, a->index, buf);
-#else
     if (!(a = agattr(g, AGRAPH, "bb", NULL))) 
 	a = agattr(g, AGRAPH, "bb", "");
     agxset(g, a, buf);
-#endif
 }

@@ -10,8 +10,6 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib/cdt
 
-# Always build cgraph, regardless of --without-cgraph, because gvpr needs it
-# if WITH_CGRAPH
 pkginclude_HEADERS = cgraph.h
 noinst_HEADERS = agxbuf.h cghdr.h malloc.h vmstub.h
 noinst_LTLIBRARIES = libcgraph_C.la
@@ -19,7 +17,6 @@ lib_LTLIBRARIES = libcgraph.la
 pkgconfig_DATA = libcgraph.pc
 man_MANS = cgraph.3
 pdf_DATA = cgraph.3.pdf
-# endif
 
 libcgraph_C_la_SOURCES = agerror.c agxbuf.c apply.c attr.c edge.c \
 	flatten.c graph.c grammar.y id.c imap.c io.c mem.c node.c \

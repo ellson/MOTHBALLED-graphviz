@@ -583,7 +583,7 @@ makeMap (SparseMatrix graph, int n, real* x, real* width, int* grouping,
       SparseMatrix D;
       D = SparseMatrix_get_real_adjacency_matrix_symmetrized(graph);
       remove_overlap(dim, D, x, width, 1000, 5000.,
-		     ELSCHEME_NONE, 0, NULL, NULL, &flag);
+		     ELSCHEME_NONE, 0, NULL, NULL, TRUE, &flag);
       
       nart = nart0;
       nrandom = nr0;
