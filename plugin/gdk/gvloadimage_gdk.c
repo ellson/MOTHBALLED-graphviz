@@ -83,8 +83,8 @@ static GdkPixbuf* gdk_loadimage(GVJ_t * job, usershape_t *us)
             case FT_PNG:
             case FT_JPEG:
             case FT_BMP:
-//          case FT_ICO:
-//          case FT_TIFF:
+            case FT_ICO:
+            case FT_TIFF:
                 // FIXME - should be using a stream reader
                 image = gdk_pixbuf_new_from_file(us->name, NULL);
                 break;
@@ -108,12 +108,8 @@ static void gdk_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, boolean fi
     image = gdk_loadimage(job, us);
     if (image) {
         cairo_save(cr);
-        cairo_translate(cr,
-		(b.LL.x + (b.UR.x - b.LL.x) * (1. - (job->dpi.x) / 96.) / 2.),
-		(-b.UR.y + (b.UR.y - b.LL.y) * (1. - (job->dpi.y) / 96.) / 2.));
-        cairo_scale(cr,
-		((b.UR.x - b.LL.x) * (job->dpi.x) / (96. * us->w)),
-                ((b.UR.y - b.LL.y) * (job->dpi.y) / (96. * us->h)));
+	cairo_translate(cr, b.LL.x, -b.UR.y);
+	cairo_scale(cr, (b.UR.x - b.LL.x)/(us->w), (b.UR.y - b.LL.y)/(us->h)); 
         gdk_cairo_set_source_pixbuf (cr, image, 0, 0);
         cairo_paint (cr);
         cairo_restore(cr);
@@ -128,14 +124,14 @@ static gvloadimage_engine_t engine_gdk = {
 
 gvplugin_installed_t gvloadimage_gdk_types[] = {
 #ifdef HAVE_PANGOCAIRO
-    {FORMAT_BMP_CAIRO, "bmp:cairo", 1, &engine_gdk, NULL},
+    {FORMAT_BMP_CAIRO,  "bmp:cairo", 1, &engine_gdk, NULL},
     {FORMAT_JPEG_CAIRO, "jpe:cairo", 2, &engine_gdk, NULL},
     {FORMAT_JPEG_CAIRO, "jpg:cairo", 2, &engine_gdk, NULL},
     {FORMAT_JPEG_CAIRO, "jpeg:cairo", 2, &engine_gdk, NULL},
-    {FORMAT_PNG_CAIRO, "png:cairo", -1, &engine_gdk, NULL},
-//    {FORMAT_ICO_CAIRO, "ico:cairo", -99, &engine_gdk, NULL},
-//    {FORMAT_TIFF_CAIRO, "tif:cairo", -99, &engine_gdk, NULL},
-//    {FORMAT_TIFF_CAIRO, "tiff`:cairo", -99, &engine_gdk, NULL},
+    {FORMAT_PNG_CAIRO,  "png:cairo", -1, &engine_gdk, NULL},
+    {FORMAT_ICO_CAIRO,  "ico:cairo", 1, &engine_gdk, NULL},
+    {FORMAT_TIFF_CAIRO, "tif:cairo", 1, &engine_gdk, NULL},
+    {FORMAT_TIFF_CAIRO, "tiff`:cairo", 1, &engine_gdk, NULL},
 #endif
     {0, NULL, 0, NULL, NULL}
 };
