@@ -30,7 +30,7 @@ Prefix: /usr
 # Available features are:
 #    SHARP GHOSTSCRIPT GUILE _IO JAVA LUA OCAML ORTHO PERL PHP
 #    PYTHON RUBY R_LANG TCL IPSEPCOLA MYLIBGD PANGOCAIRO RSVG
-#    GTK GLITZ SMYRNA DEVIL MING GDK_PIXBUF _QT WEBP
+#    GTK GLITZ SMYRNA DEVIL MING GDK _QT WEBP
 
 # SuSE uses a different mechanism to generate BuildRequires
 # norootforbuild
@@ -88,7 +88,7 @@ BuildRequires: ocaml
 BuildRequires: php-devel
 %define MYLIBGD 0
 BuildRequires: gd gd-devel
-%define GDK_PIXBUF 1
+%define GDK 1
 %define GHOSTSCRIPT 1
 BuildRequires: ghostscript-devel
 %define POPPLER 1
@@ -140,7 +140,7 @@ BuildRequires: DevIL-devel
 BuildRequires: gts-devel
 %define LASI 1
 BuildRequires: lasi-devel
-%define GDK_PIXBUF 1
+%define GDK 1
 %define IPSEPCOLA 1
 %define ORTHO 1
 %define GTK 1
@@ -359,8 +359,8 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %if 0%{?LASI}
 %{_libdir}/graphviz/libgvplugin_lasi.so.*
 %endif
-%if 0%{?GDK_PIXBUF}
-%{_libdir}/graphviz/libgvplugin_gdk_pixbuf.so.*
+%if 0%{?GDK}
+%{_libdir}/graphviz/libgvplugin_gdk.so.*
 %endif
 %if 0%{?GTK}
 %{_libdir}/graphviz/libgvplugin_gtk.so.*
@@ -857,7 +857,7 @@ CFLAGS="$RPM_OPT_FLAGS" \
         --enable-tcl%{!?TCL:=no} \
         --with%{!?DEVIL:out}-devil \
         --with%{!?WEBP:out}-webp \
-        --with%{!?GDK_PIXBUF:out}-gdk-pixbuf \
+        --with%{!?GDK:out}-gdk \
         --with%{!?GHOSTSCRIPT:out}-ghostscript \
         --with%{!?GLITZ:out}-glitz \
         --with%{!?IPSEPCOLA:out}-ipsepcola \

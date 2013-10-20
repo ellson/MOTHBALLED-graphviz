@@ -2376,6 +2376,28 @@ fi
 AM_CONDITIONAL(WITH_FONTCONFIG, [test "x$use_fontconfig" = "xYes"])
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for GDK
+
+AC_ARG_WITH(gdk,
+  [AS_HELP_STRING([--with-gdk=yes],[gdklibrary])],
+  [], [with_gdk=yes])
+
+if test "x$with_gdk" != "xyes"; then
+  use_gdk="No (disabled)"
+else
+  PKG_CHECK_MODULES(GDK, [gdk-2.0],[
+    use_gdk="Yes"
+    AC_DEFINE_UNQUOTED(HAVE_GDK,1,
+      [Define if you have the gdk library])
+    AC_SUBST([GDK_CFLAGS])
+    AC_SUBST([GDK_LIBS])
+  ],[
+    use_gdk_pixbuf="No (gdk library not available)"
+  ])
+fi
+AM_CONDITIONAL(WITH_GDK, [test "x$use_gdk" = "xYes"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for GDK_PIXBUF.
 
 AC_ARG_WITH(gdk-pixbuf,
@@ -3178,7 +3200,7 @@ AC_CONFIG_FILES(Makefile
 	plugin/core/Makefile
 	plugin/devil/Makefile
 	plugin/gd/Makefile
-	plugin/gdk_pixbuf/Makefile
+	plugin/gdk/Makefile
 	plugin/gdiplus/Makefile
 	plugin/glitz/Makefile
 	plugin/gs/Makefile
@@ -3318,6 +3340,7 @@ echo "  core:          Yes (always enabled)"
 echo "  devil:         $use_devil"
 echo "  gd:            $use_gd"
 echo "  gdiplus:       $use_gdiplus"
+echo "  gdk:           $use_gdk"
 echo "  gdk_pixbuf:    $use_gdk_pixbuf"
 echo "  ghostscript:   $use_ghostscript"
 echo "  glitz:         $use_glitz"

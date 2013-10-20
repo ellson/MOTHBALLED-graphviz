@@ -54,12 +54,12 @@ reader (void *closure, unsigned char *data, unsigned int length)
 }
 #endif
 
-static void gdk_pixbuf_freeimage(usershape_t *us)
+static void gdk_freeimage(usershape_t *us)
 {
     g_object_unref((GdkPixbuf*)(us->data));
 }
 
-static GdkPixbuf* gdk_pixbuf_loadimage(GVJ_t * job, usershape_t *us)
+static GdkPixbuf* gdk_loadimage(GVJ_t * job, usershape_t *us)
 {
     GdkPixbuf *image = NULL;
 
@@ -68,7 +68,7 @@ static GdkPixbuf* gdk_pixbuf_loadimage(GVJ_t * job, usershape_t *us)
     assert(us->name);
 
     if (us->data) {
-        if (us->datafree == gdk_pixbuf_freeimage)
+        if (us->datafree == gdk_freeimage)
              image = (GdkPixbuf*)(us->data); /* use cached data */
         else {
              us->datafree(us);        /* free incompatible cache data */
@@ -93,19 +93,19 @@ static GdkPixbuf* gdk_pixbuf_loadimage(GVJ_t * job, usershape_t *us)
         }
         if (image) {
             us->data = (void*)image;
-            us->datafree = gdk_pixbuf_freeimage;
+            us->datafree = gdk_freeimage;
         }
 	gvusershape_file_release(us);
     }
     return image;
 }
 
-static void gdk_pixbuf_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
+static void gdk_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
 {
     cairo_t *cr = (cairo_t *) job->context; /* target context */
     GdkPixbuf *image;
 
-    image = gdk_pixbuf_loadimage(job, us);
+    image = gdk_loadimage(job, us);
     if (image) {
         cairo_save(cr);
         cairo_translate(cr,
@@ -120,22 +120,22 @@ static void gdk_pixbuf_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, boo
     }
 }
 
-static gvloadimage_engine_t engine_gdk_pixbuf = {
-    gdk_pixbuf_loadimage_cairo
+static gvloadimage_engine_t engine_gdk = {
+    gdk_loadimage_cairo
 };
 
 #endif
 
-gvplugin_installed_t gvloadimage_gdk_pixbuf_types[] = {
+gvplugin_installed_t gvloadimage_gdk_types[] = {
 #ifdef HAVE_PANGOCAIRO
-    {FORMAT_BMP_CAIRO, "bmp:cairo", 1, &engine_gdk_pixbuf, NULL},
-    {FORMAT_JPEG_CAIRO, "jpe:cairo", 2, &engine_gdk_pixbuf, NULL},
-    {FORMAT_JPEG_CAIRO, "jpg:cairo", 2, &engine_gdk_pixbuf, NULL},
-    {FORMAT_JPEG_CAIRO, "jpeg:cairo", 2, &engine_gdk_pixbuf, NULL},
-    {FORMAT_PNG_CAIRO, "png:cairo", -1, &engine_gdk_pixbuf, NULL},
-//    {FORMAT_ICO_CAIRO, "ico:cairo", -99, &engine_gdk_pixbuf, NULL},
-//    {FORMAT_TIFF_CAIRO, "tif:cairo", -99, &engine_gdk_pixbuf, NULL},
-//    {FORMAT_TIFF_CAIRO, "tiff`:cairo", -99, &engine_gdk_pixbuf, NULL},
+    {FORMAT_BMP_CAIRO, "bmp:cairo", 1, &engine_gdk, NULL},
+    {FORMAT_JPEG_CAIRO, "jpe:cairo", 2, &engine_gdk, NULL},
+    {FORMAT_JPEG_CAIRO, "jpg:cairo", 2, &engine_gdk, NULL},
+    {FORMAT_JPEG_CAIRO, "jpeg:cairo", 2, &engine_gdk, NULL},
+    {FORMAT_PNG_CAIRO, "png:cairo", -1, &engine_gdk, NULL},
+//    {FORMAT_ICO_CAIRO, "ico:cairo", -99, &engine_gdk, NULL},
+//    {FORMAT_TIFF_CAIRO, "tif:cairo", -99, &engine_gdk, NULL},
+//    {FORMAT_TIFF_CAIRO, "tiff`:cairo", -99, &engine_gdk, NULL},
 #endif
     {0, NULL, 0, NULL, NULL}
 };

@@ -1,4 +1,4 @@
-all:	libgvplugin_gdk_pixbuf.a
+all:	libgvplugin_gdk.a
 ROOT=../..
 include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
@@ -13,16 +13,16 @@ INCS =  -I. \
 
 DEFINES = -DHAVE_CONFIG_H
 
-OBJS = gvformatter_gdk_pixbuf.o gvplugin_gdk_pixbuf.o
+OBJS = gvformatter_gdk.o gvplugin_gdk.o
 
-libgvplugin_gdk_pixbuf.a : $(OBJS)
-	$(RM) libgvplugin_gdk_pixbuf.a
-	$(AR) cr libgvplugin_gdk_pixbuf.a $(OBJS)
-	$(RANLIB) libgvplugin_gdk_pixbuf.a
+libgvplugin_gdk.a : $(OBJS)
+	$(RM) libgvplugin_gdk.a
+	$(AR) cr libgvplugin_gdk.a $(OBJS)
+	$(RANLIB) libgvplugin_gdk.a
 
-install: libgvplugin_gdk_pixbuf.a
+install: libgvplugin_gdk.a
 	$(MKPATH) $(LIBDIR)
-	$(INSTALL) libgvplugin_gdk_pixbuf.a $(LIBDIR)
+	$(INSTALL) libgvplugin_gdk.a $(LIBDIR)
 
 clean:
 	$(RM) core *.o
