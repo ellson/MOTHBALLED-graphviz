@@ -206,12 +206,21 @@ int Tcldot_Init(Tcl_Interp * interp)
     /* configure for available plugins */
     gvconfig(gvc, FALSE);
 
-    Tcl_CreateObjCommand(interp, "dotnew", dotnew,
-			 (ClientData) ictx, (Tcl_CmdDeleteProc *) NULL);
-    Tcl_CreateObjCommand(interp, "dotread", dotread,
-			 (ClientData) ictx, (Tcl_CmdDeleteProc *) NULL);
-    Tcl_CreateObjCommand(interp, "dotstring", dotstring,
-			 (ClientData) ictx, (Tcl_CmdDeleteProc *) NULL);
+#ifndef TCLOBJ
+     Tcl_CreateCommand(interp, "dotnew", dotnew,
+                      (ClientData) ictx, (Tcl_CmdDeleteProc *) NULL);
+     Tcl_CreateCommand(interp, "dotread", dotread,
+                      (ClientData) ictx, (Tcl_CmdDeleteProc *) NULL);
+     Tcl_CreateCommand(interp, "dotstring", dotstring,
+                      (ClientData) ictx, (Tcl_CmdDeleteProc *) NULL);
+#else                          /* TCLOBJ */
+     Tcl_CreateObjCommand(interp, "dotnew", dotnew,
+                         (ClientData) ictx, (Tcl_CmdDeleteProc *) NULL);
+     Tcl_CreateObjCommand(interp, "dotread", dotread,
+                         (ClientData) ictx, (Tcl_CmdDeleteProc *) NULL);
+     Tcl_CreateObjCommand(interp, "dotstring", dotstring,
+                         (ClientData) ictx, (Tcl_CmdDeleteProc *) NULL);
+#endif                         /* TCLOBJ */
 
     return TCL_OK;
 }

@@ -130,8 +130,8 @@ gvplugin_installed_t gvloadimage_gdk_types[] = {
     {FORMAT_JPEG_CAIRO, "jpeg:cairo", 2, &engine_gdk, NULL},
     {FORMAT_PNG_CAIRO,  "png:cairo", -1, &engine_gdk, NULL},
     {FORMAT_ICO_CAIRO,  "ico:cairo", 1, &engine_gdk, NULL},
-    {FORMAT_TIFF_CAIRO, "tif:cairo", 1, &engine_gdk, NULL},
-    {FORMAT_TIFF_CAIRO, "tiff`:cairo", 1, &engine_gdk, NULL},
+//    {FORMAT_TIFF_CAIRO, "tif:cairo", 1, &engine_gdk, NULL},
+//    {FORMAT_TIFF_CAIRO, "tiff`:cairo", 1, &engine_gdk, NULL},
 #endif
     {0, NULL, 0, NULL, NULL}
 };

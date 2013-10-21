@@ -78,7 +78,6 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	e = agedge(g, tail, head, NULL, 1);
 	Tcl_AppendResult(interp, obj2cmd(e), NULL);
 	setedgeattributes(agroot(g), e, &argv[4], argc - 4);
-	reset_layout(gvc, g);
 	return TCL_OK;
 
     } else if ((c == 'a') && (strncmp(argv[1], "addnode", length) == 0)) {
@@ -92,7 +91,6 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	}
 	Tcl_AppendResult(interp, obj2cmd(n), NULL);
 	setnodeattributes(agroot(g), n, &argv[i], argc - i);
-	reset_layout(gvc, g);
 	return TCL_OK;
 
     } else if ((c == 'a')
@@ -112,7 +110,6 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    i = 2;
 	}
 	setgraphattributes(sg, &argv[i], argc - i);
-	reset_layout(gvc, g);
 	return TCL_OK;
 
     } else if ((c == 'c') && (strncmp(argv[1], "countnodes", length) == 0)) {
@@ -126,7 +123,6 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	return TCL_OK;
 
     } else if ((c == 'd') && (strncmp(argv[1], "delete", length) == 0)) {
-	reset_layout(gvc, g);
 	deleteGraph(gctx, g);
 	return TCL_OK;
 
@@ -443,7 +439,6 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    }
 	    setgraphattributes(g, argv2, argc2);
 	    Tcl_Free((char *) argv2);
-	    reset_layout(gvc, g);
 	}
 	if (argc == 4 && strcmp(argv[2], "viewport") == 0) {
 	    /* special case to allow viewport to be set without resetting layout */
@@ -456,7 +451,6 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		return TCL_ERROR;
 	    }
 	    setgraphattributes(g, &argv[2], argc - 2);
-	    reset_layout(gvc, g);
 	}
 	return TCL_OK;
 
@@ -484,7 +478,6 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    }
 	    setedgeattributes(g, NULL, &argv[2], argc - 2);
 	}
-	reset_layout(gvc, g);
 	return TCL_OK;
 
     } else if ((c == 's')
@@ -511,7 +504,6 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    }
 	    setnodeattributes(g, NULL, &argv[2], argc - 2);
 	}
-	reset_layout(gvc, g);
 	return TCL_OK;
 
     } else if ((c == 's') && (strncmp(argv[1], "showname", length) == 0)) {

@@ -65,12 +65,10 @@ int nodecmd(ClientData clientData, Tcl_Interp * interp,
         e = agedge(g, n, head, NULL, 1);
         Tcl_AppendResult(interp, obj2cmd(e), NULL);
 	setedgeattributes(agroot(g), e, &argv[3], argc - 3);
-	reset_layout(gvc, g);
 	return TCL_OK;
 
     } else if ((c == 'd') && (strncmp(argv[1], "delete", length) == 0)) {
 	deleteNode(gctx, g, n);
-	reset_layout(gvc, g);
 	return TCL_OK;
 
     } else if ((c == 'f') && (strncmp(argv[1], "findedge", length) == 0)) {
@@ -180,7 +178,6 @@ int nodecmd(ClientData clientData, Tcl_Interp * interp,
 	    }
 	    setnodeattributes(g, n, &argv[2], argc - 2);
 	}
-	reset_layout(gvc, g);
 	return TCL_OK;
 
     } else if ((c == 's') && (strncmp(argv[1], "showname", length) == 0)) {
