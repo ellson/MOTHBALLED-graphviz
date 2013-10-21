@@ -46,7 +46,6 @@ int edgecmd(ClientData clientData, Tcl_Interp * interp,
 
     if ((c == 'd') && (strncmp(argv[1], "delete", length) == 0)) {
 	deleteEdge(gctx, g, e);
-	reset_layout(gvc, g);
 	return TCL_OK;
 
     } else if ((c == 'l')
@@ -121,7 +120,6 @@ int edgecmd(ClientData clientData, Tcl_Interp * interp,
 	    }
 	    setedgeattributes(agroot(g), e, &argv[2], argc - 2);
 	}
-	reset_layout(gvc, g);
 	return TCL_OK;
 
     } else if ((c == 's') && (strncmp(argv[1], "showname", length) == 0)) {

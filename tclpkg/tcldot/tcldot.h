@@ -117,4 +117,3 @@ extern size_t Tcldot_string_writer(GVJ_t *job, const char *s, size_t len);
 extern size_t Tcldot_channel_writer(GVJ_t *job, const char *s, size_t len);
 
 extern void tcldot_layout(GVC_t *gvc, Agraph_t * g, char *engine);
-extern void reset_layout(GVC_t *gvc, Agraph_t * sg);
