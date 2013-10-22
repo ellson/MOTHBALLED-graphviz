@@ -39,8 +39,8 @@ PYTHON_PACKAGE    = $(CURDIR)/debian/libgv-python
 RUBY_VERSION      = 1.8
 RUBY_PACKAGE      = $(CURDIR)/debian/libgv-ruby
 
-CONFIG_SCRIPTS=config/config.guess lib/gd/config/config.guess libltdl/config.guess \
-	       config/config.sub   lib/gd/config/config.sub   libltdl/config.sub
+CONFIG_SCRIPTS=config/config.guess libltdl/config.guess \
+	       config/config.sub   libltdl/config.sub
 
 configure: patch configure-stamp
 configure-stamp:
@@ -60,7 +60,7 @@ configure-stamp:
 	--disable-static \
 	--with-pangocairo \
 	--with-x \
-	--with-gdk-pixbuf \
+	--with-gdk \
 	--with-ghostscript \
 	--with-gtk \
 	--with-gtkgl \
