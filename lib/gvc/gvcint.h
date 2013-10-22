@@ -89,11 +89,6 @@ extern "C" {
 #undef ELEM
 	gvplugin_package_t *packages;   /* list of available packages */
 
-	/* keybindings for keyboard events */
-	gvevent_key_binding_t *keybindings;
-	int numkeys;
-	void *keycodes;
-
         /* externally provided write() displine */
 	size_t (*write_fn) (GVJ_t *job, const char *s, size_t len);
 

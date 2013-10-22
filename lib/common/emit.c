@@ -4005,8 +4005,6 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
     init_gvc(gvc, g);
     init_layering(gvc, g);
 
-    gvc->keybindings = gvevent_key_binding;
-    gvc->numkeys = gvevent_key_binding_size;
     gv_fixLocale (1);
     for (job = gvjobs_first(gvc); job; job = gvjobs_next(gvc)) {
 	if (gvc->gvg) {
@@ -4019,6 +4017,8 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	}
 	job->common = &(gvc->common);
 	job->layout_type = gvc->layout.type;
+	job->keybindings = gvevent_key_binding;
+	job->numkeys = gvevent_key_binding_size;
 	if (!GD_drawing(g)) {
 	    agerr (AGERR, "layout was not done\n");
 	    gv_fixLocale (0);

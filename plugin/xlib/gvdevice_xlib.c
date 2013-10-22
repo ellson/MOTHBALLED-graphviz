@@ -214,6 +214,7 @@ static int handle_xlib_events (GVJ_t *firstjob, Display *dpy)
                 case KeyPress:
 		    if (handle_keypress(job, &xev.xkey))
 			return -1;  /* exit code */
+		    rc++;
                     break;
                 case ConfigureNotify:
                     handle_configure_notify(job, &xev.xconfigure);
