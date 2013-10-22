@@ -236,7 +236,7 @@ static void svg_size (usershape_t *us)
 	    }
 	}
     }
-    us->dpi = 72;
+    us->dpi = 0;
     us->w = w;
     us->h = h;
 }
@@ -411,7 +411,7 @@ static void ps_size (usershape_t *us)
     int lx, ly, ux, uy;
     char* linep;
 
-    us->dpi = POINTS_PER_INCH;
+    us->dpi = 0;
     fseek(us->f, 0, SEEK_SET);
     saw_bb = FALSE;
     while (fgets(line, sizeof(line), us->f)) {
@@ -537,7 +537,7 @@ static void pdf_size (usershape_t *us)
 {
     boxf bb;
 
-    us->dpi = POINTS_PER_INCH;
+    us->dpi = 0;
     fseek(us->f, 0, SEEK_SET);
     if ( ! bboxPDF (us->f, &bb)) {
 	us->x = bb.LL.x;

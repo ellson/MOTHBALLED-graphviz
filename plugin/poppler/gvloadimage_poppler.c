@@ -130,12 +130,7 @@ static void gvloadimage_poppler_cairo(GVJ_t * job, usershape_t *us, boxf b, bool
 
         cairo_save(cr);
 
-// FIXME
-#define IMAGE_DPI 72
- 	surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-                                          IMAGE_DPI*(us->w)/72.0,
-                                          IMAGE_DPI*(us->h)/72.0);
-
+ 	surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, us->w, us->h);
 	cairo_surface_reference(surface);
 
         cairo_set_source_surface(cr, surface, 0, 0);

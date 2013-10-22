@@ -11,12 +11,14 @@ FORMATS="\
 	-Tpdf:cairo:cairo \
 	-Tico:cairo:gdk"
 
-echo "digraph { ranksep=2; hello -> world }" >hello.gv
+echo "digraph { ranksep=\"1.5\"; hello -> world }" >hello.gv
 
 dot hello.gv -v -Gmargin="0" $FORMATS -O
 
 (
-	echo "digraph { rankdir=LR; node [shape=box]"
+#	echo "digraph { rankdir=LR; dpi=300"
+	echo "digraph { rankdir=LR"
+	echo "  node [fontsize=9 shape=box width=\"0.1\"]"
 	edge=""
 	chain=""
 	for f in $FORMATS; do
