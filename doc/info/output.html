@@ -37,6 +37,8 @@ formats need to be interpreted in this manner.
  <TR><TD ALIGN=CENTER><A NAME=a:canon HREF=#d:canon>canon</A>
 <BR><A NAME=a:dot HREF=#d:dot>dot</A>
 <BR><A NAME=a:xdot HREF=#d:xdot>xdot</A>
+<BR><A NAME=a:xdot1.2 HREF=#d:xdot1.2>xdot1.2</A>
+<BR><A NAME=a:xdot1.4 HREF=#d:xdot1.4>xdot1.4</A>
 </TD><TD>DOT</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:cmap HREF=#d:cmap>cmap</A>
 </TD><TD>Client-side imagemap (deprecated)</TD> </TR>
@@ -103,6 +105,8 @@ formats need to be interpreted in this manner.
 <DT><A NAME=d:canon HREF=#a:canon><STRONG>canon</STRONG></A>
 ,<DT><A NAME=d:dot HREF=#a:dot><STRONG>dot</STRONG></A>
 ,<DT><A NAME=d:xdot HREF=#a:xdot><STRONG>xdot</STRONG></A>
+,<DT><A NAME=d:xdot1.2 HREF=#a:xdot1.2><STRONG>xdot1.2</STRONG></A>
+,<DT><A NAME=d:xdot1.4 HREF=#a:xdot1.4><STRONG>xdot1.4</STRONG></A>
 <DD>These formats produce output in the
 <A HREF=lang.html>dot language</A>.
 Using <B>canon</B> produces a prettyprinted version of the input,
@@ -135,10 +139,14 @@ The <B>xdot</B> format extends the
 how graph components are drawn. It relies on additional attributes
 for nodes, edges and graphs.
 <P>
-The format is preliminary; comments and
+The format is fluid; comments and
 suggestions for better representations are welcome.
 To allow for changes in the format, Graphviz attaches the attribute
 <TT>xdotversion</TT> to the graph.
+If the <TT>xdotversion</TT> attribute is set in the input graph, the renderer
+will only output features supported by that version. Note that the formats <TT>xdot1.2</TT>
+and <TT>xdot1.4</TT> are equivalent to setting <TT>xdotversion=1.2</TT> and <TT>xdotversion=1.4</TT>,
+respectively.
 <P>
 Additional drawing attributes can appear on nodes, edges, clusters and 
 on the graph itself. There are six new attributes: 

@@ -152,7 +152,7 @@ Produce <A HREF="http://www.adobe.com/svg/">SVG</A> output,
 the latter in compressed format.
 <P>
 See <A HREF=#ID>Note</A>.
-:canon/dot/xdot:DOT
+:canon/dot/xdot/xdot1.2/xdot1.4:DOT
 These formats produce output in the
 <A HREF=lang.html>dot language</A>.
 Using <B>canon</B> produces a prettyprinted version of the input,
@@ -185,10 +185,14 @@ The <B>xdot</B> format extends the
 how graph components are drawn. It relies on additional attributes
 for nodes, edges and graphs.
 <P>
-The format is preliminary; comments and
+The format is fluid; comments and
 suggestions for better representations are welcome.
 To allow for changes in the format, Graphviz attaches the attribute
 <TT>xdotversion</TT> to the graph.
+If the <TT>xdotversion</TT> attribute is set in the input graph, the renderer
+will only output features supported by that version. Note that the formats <TT>xdot1.2</TT>
+and <TT>xdot1.4</TT> are equivalent to setting <TT>xdotversion=1.2</TT> and <TT>xdotversion=1.4</TT>,
+respectively.
 <P>
 Additional drawing attributes can appear on nodes, edges, clusters and 
 on the graph itself. There are six new attributes: 
