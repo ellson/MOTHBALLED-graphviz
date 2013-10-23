@@ -72,6 +72,7 @@ static double penwidth [] = {
     1, 1, 1, 1,
     1, 1, 1, 1,
 };
+static unsigned int textflags[EMIT_ELABEL+1];
 
 typedef struct {
     attrsym_t *g_draw;
@@ -256,6 +257,8 @@ static void xdot_end_node(GVJ_t* job)
 	agxset(n, xd->n_l_draw, agxbuse(xbufs[EMIT_NLABEL]));
     penwidth[EMIT_NDRAW] = 1;
     penwidth[EMIT_NLABEL] = 1;
+    textflags[EMIT_NDRAW] = 0;
+    textflags[EMIT_NLABEL] = 0;
 }
 
 static void xdot_end_edge(GVJ_t* job)
@@ -280,6 +283,12 @@ static void xdot_end_edge(GVJ_t* job)
     penwidth[EMIT_HDRAW] = 1;
     penwidth[EMIT_TLABEL] = 1;
     penwidth[EMIT_HLABEL] = 1;
+    textflags[EMIT_EDRAW] = 0;
+    textflags[EMIT_ELABEL] = 0;
+    textflags[EMIT_TDRAW] = 0;
+    textflags[EMIT_HDRAW] = 0;
+    textflags[EMIT_TLABEL] = 0;
+    textflags[EMIT_HLABEL] = 0;
 }
 
 #ifdef NEW_XDOT
@@ -327,6 +336,8 @@ static void xdot_end_cluster(GVJ_t * job)
 	agxset(cluster_g, xd->g_l_draw, agxbuse(xbufs[EMIT_CLABEL]));
     penwidth[EMIT_CDRAW] = 1;
     penwidth[EMIT_CLABEL] = 1;
+    textflags[EMIT_CDRAW] = 0;
+    textflags[EMIT_CLABEL] = 0;
 }
 
 static unsigned short
@@ -481,6 +492,8 @@ static void xdot_end_graph(graph_t* g)
     free (xd);
     penwidth[EMIT_GDRAW] = 1;
     penwidth[EMIT_GLABEL] = 1;
+    textflags[EMIT_GDRAW] = 0;
+    textflags[EMIT_GLABEL] = 0;
 }
 
 typedef int (*putstrfn) (void *chan, const char *str);
@@ -553,8 +566,12 @@ static void xdot_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	flags = 0;
     if (xd->version >= 15) {
 	unsigned int mask = (xd->version >= 16?0x3F:0x1F);
-	sprintf (buf, "t %d ", flags & mask);
-	agxbput(xbufs[emit_state], buf);
+	unsigned int bits = flags & mask;
+	if (textflags[emit_state] != bits) {
+	    sprintf (buf, "t %d ", bits);
+	    agxbput(xbufs[emit_state], buf);
+	    textflags[emit_state] = bits;
+	}
     }
 
     p.y += para->yoffset_centerline;
