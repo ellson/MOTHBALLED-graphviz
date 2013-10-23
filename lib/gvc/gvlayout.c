@@ -65,6 +65,7 @@ int gvLayoutJobs(GVC_t * gvc, Agraph_t * g)
 	GD_gvc(agroot(g)) = gvc;
 
     if ((p = agget(g, "layout"))) {
+        gvc->layout.engine = NULL;
 	rc = gvlayout_select(gvc, p);
 	if (rc == NO_SUPPORT) {
 	    agerr (AGERR, "Layout type: \"%s\" not recognized. Use one of:%s\n",

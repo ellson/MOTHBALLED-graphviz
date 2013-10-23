@@ -604,7 +604,8 @@ static void gvevent_read (GVJ_t * job, const char *filename, const char *layout)
     aginit (g, AGEDGE, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
     gvc->g = g;
     GD_gvc(g) = gvc;
-    gvLayout(gvc, g, layout);
+    if (gvLayout(gvc, g, layout) == -1)
+	return;   /* FIXME - need some error handling */
     job->selected_obj = NULL;
     job->current_obj = NULL;
     job->needs_refresh = 1;
