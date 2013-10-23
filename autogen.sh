@@ -1,16 +1,5 @@
 #! /bin/sh
 
-# autoregen doesn't run libtoolize with --ltdl on older systems, so force it
-
-LIBTOOLIZE=libtoolize
-if test -x /opt/local/bin/glibtoolize; then
-    LIBTOOLIZE=/opt/local/bin/glibtoolize
-fi
-export LIBTOOLIZE
-
-echo "autogen.sh: running: $LIBTOOLIZE --copy --force --ltdl"
-$LIBTOOLIZE --copy --force --ltdl
-
 # Use "now" if we can't get time of last commit
 GRAPHVIZ_VERSION_DATE=$( date -u +%Y%m%d.%H%M )
 
