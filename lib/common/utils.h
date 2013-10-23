@@ -48,6 +48,7 @@ extern "C" {
     extern void attach_attrs(graph_t * g);
     extern void attach_attrs_and_arrows(graph_t*, int*, int*);
     extern char *xml_string(char *str);
+    extern char *xml_string0(char *str, boolean raw);
     extern void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend);
     extern double yDir (double y);
     extern char *ps_string(char *s, int);

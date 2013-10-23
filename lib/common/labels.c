@@ -477,6 +477,17 @@ static int xml_isentity(char *s)
 
 char *xml_string(char *s)
 {
+    return xml_string0 (s, FALSE);
+}
+
+/* xml_string0:
+ * Encode input string as an xml string.
+ * If raw is true, the input is interpreted as having no
+ * embedded escape sequences.
+ * Uses a static buffer, so non-re-entrant.
+ */
+char *xml_string0(char *s, boolean raw)
+{
     static char *buf = NULL;
     static int bufsize = 0;
     char *p, *sub, *prev = NULL;
@@ -495,7 +506,7 @@ char *xml_string(char *s)
 	    p = buf + pos;
 	}
 	/* escape '&' only if not part of a legal entity sequence */
-	if (*s == '&' && !(xml_isentity(s))) {
+	if (*s == '&' && (raw || !(xml_isentity(s)))) {
 	    sub = "&amp;";
 	    len = 5;
 	}

@@ -199,7 +199,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	if (flags & HTML_SUB)
 	    agxbput(&xb,"<sub>");
 
-	agxbput (&xb,xml_string(para->str));
+	agxbput (&xb,xml_string0(para->str, TRUE));
 
 	if (flags & HTML_SUB)
 	    agxbput(&xb,"</sub>");

@@ -436,7 +436,7 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	assert(0);		/* internal error */
     }
     gvputs(job, ">");
-    gvputs(job, xml_string(para->str));
+    gvputs(job, xml_string0(para->str, TRUE));
     gvputs(job, "</text>\n");
 }
 
