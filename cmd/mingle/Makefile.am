@@ -30,6 +30,7 @@ mingle_LDADD = \
 	$(top_builddir)/lib/rbtree/librbtree_C.la \
 	$(top_builddir)/lib/common/libcommon_C.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
+	$(top_builddir)/lib/cdt/libcdt.la \
 	$(ANN_LIBS) -lstdc++ -lm
 
 mingle.1.pdf: $(srcdir)/mingle.1
