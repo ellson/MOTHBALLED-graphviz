@@ -15,14 +15,11 @@
 #include "config.h"
 #endif
 
- /* until we can include cgraph.h or something else */
-typedef enum { AGWARN, AGERR, AGMAX, AGPREV } agerrlevel_t;
-extern int agerr(agerrlevel_t level, char *fmt, ...);
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include "cgraph.h"     /* for agerr() and friends */
 #include "delaunay.h"
 #include "memory.h"
 #include "logic.h"
