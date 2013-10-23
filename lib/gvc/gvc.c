@@ -74,7 +74,8 @@ int gvLayout(GVC_t *gvc, graph_t *g, const char *engine)
         return -1;
     }
 
-    gvLayoutJobs(gvc, g);
+    if (gvLayoutJobs(gvc, g) == -1)
+	return -1;
 
 /* set bb attribute for basic layout.
  * doesn't yet include margins, scaling or page sizes because
