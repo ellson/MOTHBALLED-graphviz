@@ -322,6 +322,7 @@ Verbose
 Version    
 write_plain    
 xml_string    
+xml_string0    
 xml_url_string    
 Y_invert    
 zmalloc    
