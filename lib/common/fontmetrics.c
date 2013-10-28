@@ -123,7 +123,7 @@ static double courFontWidth[] = {
  * fontsize to get appropriate value.
  */
 static void
-estimate_textlayout(graph_t *g, textpara_t * para, char **fontpath)
+estimate_textlayout(textpara_t * para, char **fontpath)
 {
     double *Fontwidth;
     char c, *p, *fp;
@@ -187,7 +187,7 @@ static PostscriptAlias* translate_postscript_fontname(char* fontname)
     return result;
 }
 
-pointf textsize(graph_t *g, textpara_t * para, char *fontname, double fontsize)
+pointf textsize(GVC_t *gvc, textpara_t * para, char *fontname, double fontsize)
 {
     char **fp = NULL, *fontpath = NULL;
     pointf size;
@@ -200,8 +200,8 @@ pointf textsize(graph_t *g, textpara_t * para, char *fontname, double fontsize)
     if (Verbose && emit_once(para->fontname))
 	fp = &fontpath;
 
-    if (! gvtextlayout(GD_gvc(g), para, fp))
-	estimate_textlayout(g, para, fp);
+    if (! gvtextlayout(gvc, para, fp))
+	estimate_textlayout(para, fp);
 
     if (fp) {
 	if (fontpath)

@@ -1057,7 +1057,7 @@ static int size_html_txt(graph_t * g, htmltxt_t * ftxt, htmlenv_t * env)
 		fname = env->finfo.name;
 		lp.font->flags = 0;
 	    }
-	    sz = textsize(g, &lp, fname, fsize);
+	    sz = textsize(GD_gvc(g), &lp, fname, fsize);
 	    free(ftxt->paras[i].items[j].str);
 	    ftxt->paras[i].items[j].str = lp.str;
 	    ftxt->paras[i].items[j].size = sz.x;
@@ -2067,7 +2067,7 @@ int make_html_label(void *obj, textlabel_t * lp)
 	}
 	free(lp->text);
 	lp->text = s;
-	make_simple_label(g, lp);
+	make_simple_label(GD_gvc(g), lp);
 	agxbfree(&xb);
 	return rv;
     }

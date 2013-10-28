@@ -18,7 +18,7 @@
 
 static char *strdup_and_subst_obj0 (char *str, void *obj, int escBackslash);
 
-static void storeline(graph_t *g, textlabel_t *lp, char *line, char terminator)
+static void storeline(GVC_t *gvc, textlabel_t *lp, char *line, char terminator)
 {
     pointf size;
     textpara_t *para;
@@ -29,7 +29,7 @@ static void storeline(graph_t *g, textlabel_t *lp, char *line, char terminator)
     para->str = line;
     para->just = terminator;
     if (line && line[0])
-        size = textsize(g, para, lp->fontname, lp->fontsize);
+        size = textsize(gvc, para, lp->fontname, lp->fontsize);
     else {
 	size.x = 0.0;
 	para->height = size.y = (int)(lp->fontsize * LINESPACING);
@@ -43,7 +43,7 @@ static void storeline(graph_t *g, textlabel_t *lp, char *line, char terminator)
 }
 
 /* compiles <str> into a label <lp> */
-void make_simple_label(graph_t * g, textlabel_t * lp)
+void make_simple_label(GVC_t * gvc, textlabel_t * lp)
 {
     char c, *p, *line, *lineptr, *str = lp->text;
     unsigned char byte = 0x00;
@@ -76,7 +76,7 @@ void make_simple_label(graph_t * g, textlabel_t * lp)
 		case 'l':
 		case 'r':
 		    *lineptr++ = '\0';
-		    storeline(g, lp, line, *p);
+		    storeline(gvc, lp, line, *p);
 		    line = lineptr;
 		    break;
 		default:
@@ -87,7 +87,7 @@ void make_simple_label(graph_t * g, textlabel_t * lp)
 		/* tcldot can enter real linend characters */
 	    } else if (c == '\n') {
 		*lineptr++ = '\0';
-		storeline(g, lp, line, 'n');
+		storeline(gvc, lp, line, 'n');
 		line = lineptr;
 	    } else {
 		*lineptr++ = c;
@@ -97,7 +97,7 @@ void make_simple_label(graph_t * g, textlabel_t * lp)
 
     if (line != lineptr) {
 	*lineptr++ = '\0';
-	storeline(g, lp, line, 'n');
+	storeline(gvc, lp, line, 'n');
     }
 
     lp->space = lp->dimen;
@@ -173,7 +173,7 @@ textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *f
 	}
         free(rv->text);
         rv->text = s;
-	make_simple_label(g, rv);
+	make_simple_label(GD_gvc(g), rv);
     }
     return rv;
 }

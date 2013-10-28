@@ -2959,7 +2959,7 @@ boxf xdotBB (Agraph_t* g)
 	    op->para = NEW(textpara_t);
 	    op->para->str = strdup (op->op.u.text.text);
 	    op->para->just = adjust [op->op.u.text.align];
-	    sz = textsize (g, op->para, fontname, fontsize);
+	    sz = textsize (GD_gvc(g), op->para, fontname, fontsize);
 	    bb0 = textBB (op->op.u.text.x, op->op.u.text.y, op->para);
 	    op->bb = bb0;
 	    expandBB (&bb, bb0.LL);

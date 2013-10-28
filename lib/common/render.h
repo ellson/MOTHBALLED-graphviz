@@ -153,11 +153,11 @@ extern "C" {
     extern void setup_graph(GVC_t * gvc, graph_t * g);
     extern shape_kind shapeOf(node_t *);
     extern void shape_clip(node_t * n, pointf curve[4]);
-    extern void make_simple_label (graph_t* g, textlabel_t* rv);
+    extern void make_simple_label (GVC_t * gvc, textlabel_t* rv);
     extern int stripedBox (GVJ_t * job, pointf* AF, char* clrs, int rotate);
     extern stroke_t* taper (bezier*, double (*radfunc_t)(double,double,double), double initwid, int linejoin, int linecap);
     extern stroke_t* taper0 (bezier* bez, double initwid);
-    extern pointf textsize(graph_t *g, textpara_t * para, char *fontname, double fontsize);
+    extern pointf textsize(GVC_t * gvc, textpara_t * para, char *fontname, double fontsize);
     extern void translate_bb(Agraph_t *, int);
     extern int wedgedEllipse (GVJ_t* job, pointf * pf, char* clrs);
     extern void update_bb_bz(boxf *bb, pointf *cp);
