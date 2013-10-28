@@ -51,6 +51,7 @@ struct spring_electrical_control_struct {
   int use_node_weights;
   int smoothing;
   int overlap;
+  int do_shrinking;
   int tscheme; /* octree scheme. 0 (no octree), 1 (normal), 2 (fast) */
   int method;/* spring_electical, spring_maxent */
   real initial_scaling;/* how to scale the layout of the graph before passing to overlap removal algorithm.

@@ -313,6 +313,7 @@ tuneControl (graph_t* g, spring_electrical_control ctrl)
     /* ctrl->method = late_mode(g, agfindgraphattr(g, "mode"), METHOD_SPRING_ELECTRICAL); */
     ctrl->method = METHOD_SPRING_ELECTRICAL;
     ctrl->beautify_leaves = mapBool (agget(g, "beautify"), FALSE);
+    ctrl->do_shrinking = mapBool (agget(g, "overlap_shrink"), TRUE);
     ctrl->rotation = late_double(g, agfindgraphattr(g, "rotation"), 0.0, -MAXDOUBLE);
     ctrl->edge_labeling_scheme = late_int(g, agfindgraphattr(g, "label_scheme"), 0, 0);
     if (ctrl->edge_labeling_scheme > 4) {

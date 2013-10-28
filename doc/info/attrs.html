@@ -342,6 +342,9 @@ This field indicates which graph component uses the attribute.
 </TD><TD ALIGN="CENTER">true</TD><TD></TD><TD>not dot</TD> </TR>
  <TR><TD><A NAME=a:overlap_scaling HREF=#d:overlap_scaling>overlap_scaling</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">-4</TD><TD>-1.0e10</TD><TD>prism only</TD> </TR>
+ <TR><TD><A NAME=a:overlap_shrink HREF=#d:overlap_shrink>overlap_shrink</A>
+</TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
+</TD><TD ALIGN="CENTER">true</TD><TD></TD><TD>prism only</TD> </TR>
  <TR><TD><A NAME=a:pack HREF=#d:pack>pack</A>
 </TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 <BR>int</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD>not dot</TD> </TR>
@@ -1397,6 +1400,10 @@ This field indicates which graph component uses the attribute.
   If <TT>overlap_scaling</TT> is positive, the layout is scaled by
   <TT>overlap_scaling</TT>.
   If <TT>overlap_scaling</TT> is zero, no scaling is done.
+
+<DT><A NAME=d:overlap_shrink HREF=#a:overlap_shrink><STRONG>overlap_shrink</STRONG></A>
+<DD>  If true, the overlap removal algorithm will perform a compression pass to reduce the
+  size of the layout.
 
 <DT><A NAME=d:pack HREF=#a:pack><STRONG>pack</STRONG></A>
 <DD>  This is true if the value of pack is "true" (case-insensitive) or a

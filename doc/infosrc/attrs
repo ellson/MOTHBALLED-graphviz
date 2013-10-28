@@ -849,6 +849,9 @@ If <TT>overlap_scaling</TT> is negative, the layout is scaled by
 If <TT>overlap_scaling</TT> is positive, the layout is scaled by
 <TT>overlap_scaling</TT>.
 If <TT>overlap_scaling</TT> is zero, no scaling is done.
+:overlap_shrink:G:bool:true; prism
+If true, the overlap removal algorithm will perform a compression pass to reduce the
+size of the layout.
 :pack:G:bool/int:false; notdot
 This is true if the value of pack is "true" (case-insensitive) or a
 non-negative integer. If true, each connected component of the graph is
