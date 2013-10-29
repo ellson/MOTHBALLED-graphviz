@@ -668,7 +668,7 @@ arrayRects (int ng, boxf* gs, pack_info* pinfo)
 	userVals = pinfo->vals;
 	qsort(sinfo, ng, sizeof(ainfo *), ucmpf);
     }
-    else {
+    else if (!(pinfo->flags & PK_INPUT_ORDER)) {
 	qsort(sinfo, ng, sizeof(ainfo *), acmpf);
     }
 
@@ -937,7 +937,7 @@ point *putGraphs(int ng, Agraph_t ** gs, Agraph_t * root,
 
     if (pinfo->mode == l_array) {
 	if (pinfo->flags & PK_USER_VALS) {
-	    pinfo->vals = N_NEW(ng, unsigned char);
+	    pinfo->vals = N_NEW(ng, packval_t);
 	    for (i = 0; i < ng; i++) {
 		s = agget (gs[i], "sortv");
 		if (s && (sscanf (s, "%d", &v) > 0) && (v >= 0))
@@ -1216,6 +1216,10 @@ chkFlags (char* p, pack_info* pinfo)
 	switch (c) {
 	case 'c' :
 	    pinfo->flags |= PK_COL_MAJOR;
+	    p++;
+	    break;
+	case 'i' :
+	    pinfo->flags |= PK_INPUT_ORDER;
 	    p++;
 	    break;
 	case 'u' :
