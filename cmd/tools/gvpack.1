@@ -54,13 +54,17 @@ integer \fIn\fP is supplied, this indicates the number of columns to use.
 .TP 
 
 If optional flags are supplied, these consist of an underscore followed
-by any of the letters "c", "t", "b", "l", "r" or "u".
+by any of the letters "c", "t", "b", "l", "r", "u" or "i".
 If "c" is supplied, the graphs are packed in column-major order, in which
 case a final integer specifies the number of rows.
 The flags "t", "b", "l", "r" indicate that components are aligned
 along the top, bottom, left or right, respectively.
-The "u" flag indicates that the insertion order is based on the
+By default, the insertion order is determined by sorting the graphs by size,
+largest to smallest. If
+the "u" flag is set, the graphs are sorted based on the non-negative integer
 \fIsortv\fP attribute attached to each graph.
+The "i" flag indicates that no sorting is done, with the graphs inserted in
+input order.
 .TP
 .BI \-G "name\fB=\fPvalue"
 Specifies attributes to be added to the resulting union graph. For

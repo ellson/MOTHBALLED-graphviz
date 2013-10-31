@@ -285,27 +285,46 @@ int IOwriteline (int ioi, char *bufp) {
 
 static FILE *serverconnect (char *name) {
     char *host, *portp, buf[1024];
-    int port;
-    struct hostent *hp;
-    struct sockaddr_in sin;
     int cfd;
+    struct addrinfo hints;
+    struct addrinfo *result, *rp;
+
+    memset(&hints, 0, sizeof(struct addrinfo));
+
+    hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
+    hints.ai_socktype = SOCK_STREAM;/* Stream socket */
+    hints.ai_flags = AI_PASSIVE;    /* For wildcard IP address */
+    hints.ai_protocol = 0;          /* Any protocol */
+    hints.ai_canonname = NULL;
+    hints.ai_addr = NULL;
+    hints.ai_next = NULL;
 
     strcpy (buf, name);
     host = buf + 9;
     portp = strchr (host, '/');
+
     if (*host == 0 || !portp)
         return NULL;
-    *portp++ = 0, port = atoi (portp);
-    if (!(hp = gethostbyname (host)))
+
+    *portp++ = 0;
+
+    if (!(cfd = getaddrinfo(host, portp, &hints, &result)))
         return NULL;
-    memset ((char *) &sin, 1, sizeof (sin));
-    memcpy ((char *) &sin.sin_addr, hp->h_addr, hp->h_length);
-    sin.sin_family = hp->h_addrtype;
-    sin.sin_port = htons (port);
-    if ((cfd = socket (hp->h_addrtype, SOCK_STREAM, 0)) < 0)
+
+    for (rp = result; rp != NULL; rp = rp->ai_next) {
+        cfd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+
+        if (cfd == -1)
+            continue;
+        if (connect(cfd, rp->ai_addr, rp->ai_addrlen) != -1)
+            break;                  /* Success */
+    }
+
+    freeaddrinfo(result);
+
+    if (cfd < 0 || rp == NULL)
         return NULL;
-    if (connect (cfd, (struct sockaddr *) &sin, sizeof (sin)) < 0)
-        return NULL;
+
     return fdopen (cfd, "w+");
 }
 

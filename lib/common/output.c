@@ -206,7 +206,7 @@ static void set_record_rects(node_t * n, field_t * f, agxbuf * xb)
 	set_record_rects(n, f->fld[i], xb);
 }
 
-static void rec_attach_bb(graph_t * g, Agsym_t* bbsym)
+static void rec_attach_bb(graph_t * g, Agsym_t* bbsym, Agsym_t* lpsym, Agsym_t* lwsym, Agsym_t* lhsym)
 {
     int c;
     char buf[BUFSIZ];
@@ -218,15 +218,15 @@ static void rec_attach_bb(graph_t * g, Agsym_t* bbsym)
     if (GD_label(g) && GD_label(g)->text[0]) {
 	pt = GD_label(g)->pos;
 	sprintf(buf, "%.5g,%.5g", pt.x, YDIR(pt.y));
-	agset(g, "lp", buf);
+	agxset(g, lpsym, buf);
 	pt = GD_label(g)->dimen;
 	sprintf(buf, "%.2f", PS2INCH(pt.x));
-	agset (g, "lwidth", buf);
+	agxset (g, lwsym, buf);
 	sprintf(buf, "%.2f", PS2INCH(pt.y));
-	agset (g, "lheight", buf);
+	agxset (g, lhsym, buf);
     }
     for (c = 1; c <= GD_n_cluster(g); c++)
-	rec_attach_bb(GD_clust(g)[c], bbsym);
+	rec_attach_bb(GD_clust(g)[c], bbsym, lpsym, lwsym, lhsym);
 }
 
 void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
@@ -242,6 +242,9 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
     pointf ptf;
     int dim3 = (GD_odim(g) >= 3);
     Agsym_t* bbsym;
+    Agsym_t* lpsym;
+    Agsym_t* lwsym;
+    Agsym_t* lhsym;
 
     gv_fixLocale (1);
     e_arrows = s_arrows = 0;
@@ -262,20 +265,10 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 	safe_dcl(g, AGEDGE, "head_lp", "");
     if (GD_has_labels(g) & TAIL_LABEL)
 	safe_dcl(g, AGEDGE, "tail_lp", "");
-    if (GD_label(g)) {
-	safe_dcl(g, AGRAPH, "lp", "");
-	safe_dcl(g, AGRAPH, "lwidth", "");
-	safe_dcl(g, AGRAPH, "lheight", "");
-	if (GD_label(g)->text[0]) {
-	    ptf = GD_label(g)->pos;
-	    sprintf(buf, "%.5g,%.5g", ptf.x, YDIR(ptf.y));
-	    agset(g, "lp", buf);
-	    ptf = GD_label(g)->dimen;
-	    sprintf(buf, "%.2f", PS2INCH(ptf.x));
-	    agset(g, "lwidth", buf);
-	    sprintf(buf, "%.2f", PS2INCH(ptf.y));
-	    agset(g, "lheight", buf);
-	}
+    if (GD_has_labels(g) & GRAPH_LABEL) {
+	lpsym = safe_dcl(g, AGRAPH, "lp", "");
+	lwsym = safe_dcl(g, AGRAPH, "lwidth", "");
+	lhsym = safe_dcl(g, AGRAPH, "lheight", "");
     }
     bbsym = safe_dcl(g, AGRAPH, "bb", "");
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
@@ -392,7 +385,7 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 	    }
 	}
     }
-    rec_attach_bb(g, bbsym);
+    rec_attach_bb(g, bbsym, lpsym, lwsym, lhsym);
     agxbfree(&xb);
 
     if (HAS_CLUST_EDGE(g))

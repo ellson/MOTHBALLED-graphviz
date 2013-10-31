@@ -42,8 +42,9 @@ extern "C" {
 #define PK_RIGHT_ALIGN (1 << 3)
 #define PK_TOP_ALIGN   (1 << 4)
 #define PK_BOT_ALIGN   (1 << 5)
+#define PK_INPUT_ORDER (1 << 6)
 
-typedef unsigned char packval_t;
+typedef unsigned int packval_t;
 
     typedef struct {
 	float aspect;		/* desired aspect ratio */

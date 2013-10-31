@@ -64,6 +64,7 @@ typedef struct {
     Dtlink_t link;
     char *name;
     char *value;
+    int cnt;
 } attr_t;
 
 typedef struct {
@@ -448,24 +449,30 @@ static void fillDict(Dt_t * newdict, Agraph_t* g, int kind)
 	    rv = NEW(attr_t);
 	    rv->name = name;
 	    rv->value = value;
+	    rv->cnt = 1;
 	    dtinsert(newdict, rv);
-	} else if (strcmp(value, rv->value))
-	    rv->value = "";
+	} else if (!strcmp(value, rv->value))
+	    rv->cnt++;
     }
 }
 
 /* fillGraph:
  * Use all the name-value entries in the dictionary d to define
  * to define universal node/edge/graph attributes for g.
+ * For a non-empty default value, the attribute must be defined and the
+ * same in all graphs.
  */
 static void
 fillGraph(Agraph_t * g, Dt_t * d,
-	  Agsym_t * (*setf) (Agraph_t *, char *, char *))
+	  Agsym_t * (*setf) (Agraph_t *, char *, char *), int cnt)
 {
     attr_t *av;
     for (av = (attr_t *) dtflatten(d); av;
 	 av = (attr_t *) dtlink(d, (Dtlink_t *) av)) {
-	setf(g, av->name, av->value);
+	if (cnt == av->cnt)
+	    setf(g, av->name, av->value);
+	else
+	    setf(g, av->name, "");
     }
 }
 
@@ -492,9 +499,9 @@ static void initAttrs(Agraph_t * root, Agraph_t ** gs, int cnt)
 	fillDict(e_attrs, g, AGEDGE);
     }
 
-    fillGraph(root, g_attrs, agraphattr);
-    fillGraph(root, n_attrs, agnodeattr);
-    fillGraph(root, e_attrs, agedgeattr);
+    fillGraph(root, g_attrs, agraphattr, cnt);
+    fillGraph(root, n_attrs, agnodeattr, cnt);
+    fillGraph(root, e_attrs, agedgeattr, cnt);
 
     dtclose(n_attrs);
     dtclose(e_attrs);
@@ -707,6 +714,7 @@ static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt, GVC_t * gvc)
 	if (verbose)
 	    fprintf(stderr, "Cloning graph %s\n", agnameof(g));
 	GD_n_cluster(root) += GD_n_cluster(g);
+	GD_has_labels(root) |= GD_has_labels(g);
 
 	/* Clone nodes, checking for node name conflicts */
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
