@@ -7,7 +7,7 @@ do
   F=$s.dot
   exec 3> $F
   echo "digraph G {" >&3
-  if [[ $s == "plaintext" || $s == "none" ]]
+  if [[ $s == "plaintext" || $s == "none" || $s == "underline" ]]
   then
     echo " node [shape=$s];" >&3
   else

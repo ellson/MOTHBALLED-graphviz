@@ -49,7 +49,7 @@ MPNG = plugins.png sdlshapes.png $(GRADPNG) $(STYLEPNG) $(TAPERPNG) $(SPLINEPNG)
 SGIF = Mcircle.gif Mdiamond.gif Msquare.gif box.gif \
       circle.gif diamond.gif doublecircle.gif \
       doubleoctagon.gif egg.gif ellipse.gif hexagon.gif house.gif \
-      invhouse.gif invtrapezium.gif invtriangle.gif none.gif \
+      invhouse.gif invtrapezium.gif invtriangle.gif none.gif underline.gif \
       octagon.gif oval.gif parallelogram.gif plaintext.gif \
       point.gif polygon.gif trapezium.gif triangle.gif \
       tripleoctagon.gif pentagon.gif septagon.gif rect.gif \
