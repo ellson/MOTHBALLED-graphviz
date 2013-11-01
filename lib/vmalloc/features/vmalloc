@@ -44,16 +44,23 @@ mal alloca note{ alloca is based on malloc() }end execute{
 	#if _hdr_alloca
 	#include	<alloca.h>
 	#endif
+	#include <dlfcn.h>
+	volatile int testing_alloca = 0;
 	#if _STD_
 	void* malloc(unsigned int size)
 	#else
 	void* malloc(size) unsigned int size;
 	#endif
-	{	exit(0);
+	{	if (!testing_alloca) {
+			return ((void *(*)(unsigned int)) dlsym(RTLD_NEXT, "malloc"))(size);
+		}
+		exit(0);
 		return 0;
 	}
 	main()
-	{	alloca(10);
+	{	testing_alloca = 1;
+		alloca(10);
+		testing_alloca = 0;
 		return 1;
 	}
 }end
