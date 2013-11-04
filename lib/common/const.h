@@ -212,6 +212,7 @@
 #define DOTTED		(1 << 7)
 #define DASHED		(1 << 8)
 #define WEDGED		(1 << 9)
+#define UNDERLINE	(1 << 10)
 
 #define SHAPE_MASK	(127 << 24)
 

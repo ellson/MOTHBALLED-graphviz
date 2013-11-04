@@ -17,6 +17,7 @@ lib mallopt
 lib mallinfo
 lib mstats
 hdr alloca
+hdr dlfcn
 
 std	malloc note{ stuck with standard malloc }end noexecute{
 	_BEGIN_EXTERNS_
@@ -44,16 +45,33 @@ mal alloca note{ alloca is based on malloc() }end execute{
 	#if _hdr_alloca
 	#include	<alloca.h>
 	#endif
+	#if _hdr_dlfcn
+	#include <dlfcn.h>
+	volatile int testing_alloca = 0;
+	#endif
 	#if _STD_
 	void* malloc(unsigned int size)
 	#else
 	void* malloc(size) unsigned int size;
 	#endif
-	{	exit(0);
+	{
+	#if _hdr_dlfcn
+		if (!testing_alloca) {
+			return ((void *(*)(unsigned int)) dlsym(RTLD_NEXT, "malloc"))(size);
+		}
+	#endif
+		exit(0);
 		return 0;
 	}
 	main()
-	{	alloca(10);
+	{
+	#if _hdr_dlfcn
+		testing_alloca = 1;
+	#endif
+		alloca(10);
+	#if _hdr_dlfcn
+		testing_alloca = 0;
+	#endif
 		return 1;
 	}
 }end

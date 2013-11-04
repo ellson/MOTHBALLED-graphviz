@@ -96,6 +96,7 @@ static polygon_t p_tab = { FALSE, 1, 4, 0., 0., 0., TAB };
 static polygon_t p_folder = { FALSE, 1, 4, 0., 0., 0., FOLDER };
 static polygon_t p_box3d = { FALSE, 1, 4, 0., 0., 0., BOX3D };
 static polygon_t p_component = { FALSE, 1, 4, 0., 0., 0., COMPONENT };
+static polygon_t p_underline = { FALSE, 1, 4, 0., 0., 0., UNDERLINE };
 
 /* redundant and undocumented builtin polygons */
 static polygon_t p_doublecircle = { TRUE, 2, 1, 0., 0., 0. };
@@ -242,6 +243,7 @@ static shape_desc Shapes[] = {	/* first entry is default for no such shape */
     {"invtriangle", &poly_fns, &p_invtriangle},
     {"invtrapezium", &poly_fns, &p_invtrapezium},
     {"invhouse", &poly_fns, &p_invhouse},
+    {"underline", &poly_fns, &p_underline},
     {"Mdiamond", &poly_fns, &p_Mdiamond},
     {"Msquare", &poly_fns, &p_Msquare},
     {"Mcircle", &poly_fns, &p_Mcircle},
@@ -307,15 +309,15 @@ static int same_side(pointf p0, pointf p1, pointf L0, pointf L1)
 }
 
 static
-void pencolor(GVJ_t * job, node_t * n)
+char* penColor(GVJ_t * job, node_t * n)
 {
     char *color;
 
     color = late_nnstring(n, N_color, "");
-    if (color[0])
-	gvrender_set_pencolor(job, color);
-    else
-	gvrender_set_pencolor(job, DEFAULT_COLOR);
+    if (!color[0])
+	color = DEFAULT_COLOR;
+    gvrender_set_pencolor(job, color);
+    return color;
 }
 
 static
@@ -2710,6 +2712,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     char *color, *name;
     int doMap = (obj->url || obj->explicit_tooltip);
     char* fillcolor;
+    char* pencolor;
     char* clrs[2];
 
     if (doMap && !(job->flags & EMIT_CLUSTERS_LAST))
@@ -2736,33 +2739,33 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     clrs[0] = NULL;
 
     if (ND_gui_state(n) & GUI_STATE_ACTIVE) {
-	color = late_nnstring(n, N_activepencolor, DEFAULT_ACTIVEPENCOLOR);
-	gvrender_set_pencolor(job, color);
+	pencolor = late_nnstring(n, N_activepencolor, DEFAULT_ACTIVEPENCOLOR);
+	gvrender_set_pencolor(job, pencolor);
 	color =
 	    late_nnstring(n, N_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
 	gvrender_set_fillcolor(job, color);
 	filled = FILL;
     } else if (ND_gui_state(n) & GUI_STATE_SELECTED) {
-	color =
+	pencolor =
 	    late_nnstring(n, N_selectedpencolor, DEFAULT_SELECTEDPENCOLOR);
-	gvrender_set_pencolor(job, color);
+	gvrender_set_pencolor(job, pencolor);
 	color =
 	    late_nnstring(n, N_selectedfillcolor,
 			  DEFAULT_SELECTEDFILLCOLOR);
 	gvrender_set_fillcolor(job, color);
 	filled = FILL;
     } else if (ND_gui_state(n) & GUI_STATE_DELETED) {
-	color =
+	pencolor =
 	    late_nnstring(n, N_deletedpencolor, DEFAULT_DELETEDPENCOLOR);
-	gvrender_set_pencolor(job, color);
+	gvrender_set_pencolor(job, pencolor);
 	color =
 	    late_nnstring(n, N_deletedfillcolor, DEFAULT_DELETEDFILLCOLOR);
 	gvrender_set_fillcolor(job, color);
 	filled = FILL;
     } else if (ND_gui_state(n) & GUI_STATE_VISITED) {
-	color =
+	pencolor =
 	    late_nnstring(n, N_visitedpencolor, DEFAULT_VISITEDPENCOLOR);
-	gvrender_set_pencolor(job, color);
+	gvrender_set_pencolor(job, pencolor);
 	color =
 	    late_nnstring(n, N_visitedfillcolor, DEFAULT_VISITEDFILLCOLOR);
 	gvrender_set_fillcolor(job, color);
@@ -2795,7 +2798,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	else {
 	    filled = FALSE;
 	}
-	pencolor(job, n);	/* emit pen color */
+	pencolor = penColor(job, n);	/* emit pen color */
     }
 
     pfilled = !ND_shape(n)->usershape || streq(ND_shape(n)->name, "custom");
@@ -2831,10 +2834,15 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 		    agerr (AGPREV, "in node %s\n", agnameof(n));
 	    }
 	    gvrender_polygon(job, AF, sides, 0);
+	} else if (style & UNDERLINE) {
+	    gvrender_set_pencolor(job, "transparent");
+	    gvrender_polygon(job, AF, sides, filled);
+	    gvrender_set_pencolor(job, pencolor);
+	    gvrender_polyline(job, AF+2, 2);
 	} else if (SPECIAL_CORNERS(style)) {
 	    round_corners(job, AF, sides, style, filled);
 	} else {
-	      gvrender_polygon(job, AF, sides, filled);
+	    gvrender_polygon(job, AF, sides, filled);
 	}
 	/* fill innermost periphery only */
 	filled = FALSE;
@@ -3062,7 +3070,7 @@ static void point_gencode(GVJ_t * job, node_t * n)
     } else {
 	color = findFillDflt(n, "black");
 	gvrender_set_fillcolor(job, color);	/* emit fill color */
-	pencolor(job, n);	/* emit pen color */
+	penColor(job, n);	/* emit pen color */
     }
     filled = TRUE;
 
@@ -3602,7 +3610,7 @@ static void gen_fields(GVJ_t * job, node_t * n, field_t * f)
     if (f->lp) {
 	f->lp->pos = add_pointf(mid_pointf(f->b.LL, f->b.UR), ND_coord(n));
 	emit_label(job, EMIT_NLABEL, f->lp);
-	pencolor(job, n);
+	penColor(job, n);
     }
 
     coord = ND_coord(n);
@@ -3648,7 +3656,7 @@ static void record_gencode(GVJ_t * job, node_t * n)
 			      obj->url, obj->tooltip, obj->target,
 			      obj->id);
     style = stylenode(job, n);
-    pencolor(job, n);
+    penColor(job, n);
     if (style & FILLED) {
 	char* fillcolor = findFill (n);
 	float frac;
