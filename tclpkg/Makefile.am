@@ -59,6 +59,8 @@ if WITH_PERL
 	fi
 endif
 if WITH_PHP
+
+	# use "cp" instead of "ln -s $(pkgphpdir)/gv.php" because of multilib conflict
 	-mkdir -p $(DESTDIR)@PHP_INSTALL_DIR@;
 	if test -w $(DESTDIR)@PHP_INSTALL_DIR@; then \
 		(cd $(DESTDIR)@PHP_INSTALL_DIR@; \
@@ -70,7 +72,7 @@ if WITH_PHP
 	-mkdir -p $(DESTDIR)@PHP_INSTALL_DATADIR@;
 	if test -w $(DESTDIR)@PHP_INSTALL_DATADIR@; then \
 		(cd $(DESTDIR)@PHP_INSTALL_DATADIR@; \
-			$(LN_S) -f $(pkgphpdir)/gv.php gv.php;) \
+			cp -f $(pkgphpdir)/gv.php gv.php;) \
 	else \
 		echo "Warning: @PHP_INSTALL_DATADIR@ is not writable."; \
 		echo "Skipping system installation of php binding."; \
