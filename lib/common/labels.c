@@ -557,7 +557,10 @@ char *xml_url_string(char *s)
 {
     static char *buf = NULL;
     static int bufsize = 0;
-    char *p, *sub, *prev = NULL;
+    char *p, *sub;
+#if 0
+    char *prev = NULL;
+#endif
     int len, pos = 0;
 
     if (!buf) {
@@ -614,7 +617,9 @@ char *xml_url_string(char *s)
 	    *p++ = *sub++;
 	    pos++;
 	}
+#if 0
 	prev = s;
+#endif
 	s++;
     }
     *p = '\0';

@@ -1390,7 +1390,9 @@ char* htmlEntityUTF8 (char* s, graph_t* g)
     unsigned char buf[BUFSIZ];
     unsigned char c;
     unsigned int v;
-    int rc;
+    int ignored;
+
+    NOTUSED(ignored);
 
     if (lastg != g) {
 	lastg = g;
@@ -1415,12 +1417,12 @@ char* htmlEntityUTF8 (char* s, graph_t* g)
 		    if (v < 0x7F) /* entity needs 1 byte in UTF8 */
 			c = v;
 		    else if (v < 0x07FF) { /* entity needs 2 bytes in UTF8 */
-			rc = agxbputc(&xb, (v >> 6) | 0xC0);
+			ignored = agxbputc(&xb, (v >> 6) | 0xC0);
 			c = (v & 0x3F) | 0x80;
 		    }
 		    else { /* entity needs 3 bytes in UTF8 */
-			rc = agxbputc(&xb, (v >> 12) | 0xE0);
-			rc = agxbputc(&xb, ((v >> 6) & 0x3F) | 0x80);
+			ignored = agxbputc(&xb, (v >> 12) | 0xE0);
+			ignored = agxbputc(&xb, ((v >> 6) & 0x3F) | 0x80);
 			c = (v & 0x3F) | 0x80;
 		    }
 		}
@@ -1428,7 +1430,7 @@ char* htmlEntityUTF8 (char* s, graph_t* g)
 	}
         else if (c < 0xE0) { /* copy 2 byte UTF8 characters */
 	    if ((*s & 0xC0) == 0x80) {
-	        rc = agxbputc(&xb, c);
+	        ignored = agxbputc(&xb, c);
 	        c = *(unsigned char*)s++;
 	    }
 	    else { 
@@ -1441,9 +1443,9 @@ char* htmlEntityUTF8 (char* s, graph_t* g)
 	}
 	else if (c < 0xF0) { /* copy 3 byte UTF8 characters */
 	    if (((*s & 0xC0) == 0x80) && ((s[1] & 0xC0) == 0x80)) {
-	        rc = agxbputc(&xb, c);
+	        ignored = agxbputc(&xb, c);
 	        c = *(unsigned char*)s++;
-	        rc = agxbputc(&xb, c);
+	        ignored = agxbputc(&xb, c);
 	        c = *(unsigned char*)s++;
 	    }
 	    else {
@@ -1461,7 +1463,7 @@ char* htmlEntityUTF8 (char* s, graph_t* g)
 	    }
 	    c = cvtAndAppend (c, &xb);
         }
-	rc = agxbputc(&xb, c);
+	ignored = agxbputc(&xb, c);
     }
     ns = strdup (agxbuse(&xb));
     agxbfree(&xb);
@@ -1479,7 +1481,9 @@ char* latin1ToUTF8 (char* s)
     agxbuf xb;
     unsigned char buf[BUFSIZ];
     unsigned int  v;
-    int rc;
+    int ignored;
+
+    NOTUSED(ignored);
     
     agxbinit(&xb, BUFSIZ, buf);
 
@@ -1492,15 +1496,15 @@ char* latin1ToUTF8 (char* s)
 	    if (!v) v = '&';
         }
 	if (v < 0x7F)
-	    rc = agxbputc(&xb, v);
+	    ignored = agxbputc(&xb, v);
 	else if (v < 0x07FF) {
-	    rc = agxbputc(&xb, (v >> 6) | 0xC0);
-	    rc = agxbputc(&xb, (v & 0x3F) | 0x80);
+	    ignored = agxbputc(&xb, (v >> 6) | 0xC0);
+	    ignored = agxbputc(&xb, (v & 0x3F) | 0x80);
 	}
 	else {
-	    rc = agxbputc(&xb, (v >> 12) | 0xE0);
-	    rc = agxbputc(&xb, ((v >> 6) & 0x3F) | 0x80);
-	    rc = agxbputc(&xb, (v & 0x3F) | 0x80);
+	    ignored = agxbputc(&xb, (v >> 12) | 0xE0);
+	    ignored = agxbputc(&xb, ((v >> 6) & 0x3F) | 0x80);
+	    ignored = agxbputc(&xb, (v & 0x3F) | 0x80);
 	}
     }
     ns = strdup (agxbuse(&xb));
@@ -1521,18 +1525,20 @@ utf8ToLatin1 (char* s)
     unsigned char buf[BUFSIZ];
     unsigned char c;
     unsigned char outc;
-    int rc;
+    int ignored;
+
+    NOTUSED(ignored);
     
     agxbinit(&xb, BUFSIZ, buf);
 
     while ((c = *(unsigned char*)s++)) {
 	if (c < 0x7F)
-	    rc = agxbputc(&xb, c);
+	    ignored = agxbputc(&xb, c);
 	else {
 	    outc = (c & 0x03) << 6;
 	    c = *(unsigned char*)s++;
 	    outc = outc | (c & 0x3F);
-	    rc = agxbputc(&xb, outc);
+	    ignored = agxbputc(&xb, outc);
 	}
     }
     ns = strdup (agxbuse(&xb));

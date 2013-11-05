@@ -2711,8 +2711,8 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     boolean pfilled;		/* true if fill not handled by user shape */
     char *color, *name;
     int doMap = (obj->url || obj->explicit_tooltip);
-    char* fillcolor;
-    char* pencolor;
+    char* fillcolor=NULL;
+    char* pencolor=NULL;
     char* clrs[2];
 
     if (doMap && !(job->flags & EMIT_CLUSTERS_LAST))

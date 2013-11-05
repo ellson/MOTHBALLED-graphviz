@@ -141,7 +141,7 @@ typedef struct {
 
 
 static vararr_t*
-newArr ()
+newArr (void)
 {
     vararr_t* arr = NEW(vararr_t);
 
@@ -281,14 +281,14 @@ stroke_t* taper (bezier* bez, radfunc_t radfunc, double initwid, int linejoin, i
 {
     int i, l, n;
     int pathcount, bevel;
-    double direction, direction_2;
+    double direction=0, direction_2=0;
     vararr_t* arr = pathtolines (bez, initwid);
     pathpoint* pathpoints;
     pathpoint cur_point, last_point, next_point;
-    double x, y, dist;
+    double x=0, y=0, dist;
     double nx, ny, ndir;
     double lx, ly, ldir;
-    double lineout, linerad, linelen;
+    double lineout=0, linerad=0, linelen=0;
     double theta, phi;
     stroke_t* p;
 
