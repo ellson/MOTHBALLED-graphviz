@@ -166,6 +166,7 @@ if WITH_TCL
 	-mkdir -p $(DESTDIR)@TCL_INSTALL_DIR@;
 	if test -w $(DESTDIR)@TCL_INSTALL_DIR@/; then \
 		(cd $(DESTDIR)@TCL_INSTALL_DIR@; \
+			rm -f $(DESTDIR)$(pkgtcldir)/*.so; \
 			mv -f $(DESTDIR)$(pkgtcldir) @PACKAGE_NAME@;) \
 	else \
 		echo "Warning: @TCL_INSTALL_DIR@ is not writable."; \
