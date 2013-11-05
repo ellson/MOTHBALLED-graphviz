@@ -125,33 +125,36 @@ static double courFontWidth[] = {
 static void
 estimate_textlayout(textpara_t * para, char **fontpath)
 {
-    double *Fontwidth;
-    char c, *p, *fp;
+    double *Fontwidth, fontsize;
+    char c, *p, *fpp, *fontname;
+
+    fontname = para->font->name;
+    fontsize = para->font->size;
 
     para->width = 0.0;
-    para->height = para->fontsize * LINESPACING;
+    para->height = fontsize * LINESPACING;
     para->yoffset_layout = 0.0;
-    para->yoffset_centerline = 0.1 * para->fontsize;
-    para->layout = para->fontname;
+    para->yoffset_centerline = 0.1 * fontsize;
+    para->layout = NULL;
     para->free_layout = NULL;
 
-    if (!strncasecmp(para->fontname, "cour", 4)) {
-	fp = "[internal courier]";
+    if (!strncasecmp(fontname, "cour", 4)) {
+	fpp = "[internal courier]";
 	Fontwidth = courFontWidth;
-    } else if (!strncasecmp(para->fontname, "arial", 5)
-	       || !strncasecmp(para->fontname, "helvetica", 9)) {
-	fp = "[internal arial]";
+    } else if (!strncasecmp(fontname, "arial", 5)
+	       || !strncasecmp(fontname, "helvetica", 9)) {
+	fpp = "[internal arial]";
 	Fontwidth = arialFontWidth;
     } else {
-	fp = "[internal times]";
+	fpp = "[internal times]";
 	Fontwidth = timesFontWidth;
     }
     if (fontpath)
-	*fontpath = fp;
+	*fontpath = fpp;
     if ((p = para->str)) {
 	while ((c = *p++))
 	    para->width += Fontwidth[(unsigned char) c];
-	para->width *= para->fontsize;
+	para->width *= fontsize;
     }
 }
 
@@ -189,26 +192,31 @@ static PostscriptAlias* translate_postscript_fontname(char* fontname)
 
 pointf textsize(GVC_t *gvc, textpara_t * para, char *fontname, double fontsize)
 {
-    char **fp = NULL, *fontpath = NULL;
+    char **fpp = NULL, *fontpath = NULL;
     pointf size;
+    htmlfont_t *font;
 
-    para->fontname = fontname;
-    para->fontsize = fontsize;
+    font = NEW(htmlfont_t);
+    font->name = strdup(fontname);
+    font->size = fontsize;
+    font->color = NULL;
+    font->flags = 0;
 
+    para->font = font;
     para->postscript_alias = translate_postscript_fontname(fontname);
 
-    if (Verbose && emit_once(para->fontname))
-	fp = &fontpath;
+    if (Verbose && emit_once(fontname))
+	fpp = &fontpath;
 
-    if (! gvtextlayout(gvc, para, fp))
-	estimate_textlayout(para, fp);
+    if (! gvtextlayout(gvc, para, fpp))
+	estimate_textlayout(para, fpp);
 
-    if (fp) {
+    if (fpp) {
 	if (fontpath)
 	    fprintf(stderr, "fontname: \"%s\" resolved to: %s\n",
-		    para->fontname, fontpath);
+		    fontname, fontpath);
 	else
-	    fprintf(stderr, "fontname: unable to resolve \"%s\"\n", para->fontname);
+	    fprintf(stderr, "fontname: unable to resolve \"%s\"\n", fontname);
     }
 
     size.x = para->width;

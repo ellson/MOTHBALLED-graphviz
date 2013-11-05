@@ -2915,8 +2915,8 @@ boxf xdotBB (Agraph_t* g)
 {
     exdot_op* op;
     int i;
-    double fontsize;
-    char* fontname;
+    double fontsize = 0.0;
+    char* fontname = NULL;
     pointf pts[2];
     pointf sz;
     boxf bb0;

@@ -116,9 +116,9 @@ emit_htextparas(GVJ_t * job, int nparas, htextpara_t * paras, pointf p,
 		double halfwidth_x, htmlfont_t finfo, boxf b, int simple)
 {
     int i, j;
-    double center_x, left_x, right_x, fsize_;
-    char *fname_, *fcolor_;
+    double center_x, left_x, right_x;
     textpara_t tl;
+    htmlfont_t tf;
     pointf p_ = { 0.0, 0.0 };
     textpara_t *ti;
 
@@ -151,24 +151,22 @@ emit_htextparas(GVJ_t * job, int nparas, htextpara_t * paras, pointf p,
 	ti = paras[i].items;
 	for (j = 0; j < paras[i].nitems; j++) {
 	    if (ti->font && (ti->font->size > 0))
-		fsize_ = ti->font->size;
+		tf.size = ti->font->size;
 	    else
-		fsize_ = finfo.size;
+		tf.size = finfo.size;
 	    if (ti->font && ti->font->name)
-		fname_ = ti->font->name;
+		tf.name = ti->font->name;
 	    else
-		fname_ = finfo.name;
+		tf.name = finfo.name;
 	    if (ti->font && ti->font->color)
-		fcolor_ = ti->font->color;
+		tf.color = ti->font->color;
 	    else
-		fcolor_ = finfo.color;
+		tf.color = finfo.color;
 
-	    gvrender_set_pencolor(job, fcolor_);
+	    gvrender_set_pencolor(job, tf.color);
 
 	    tl.str = ti->str;
-	    tl.fontname = fname_;
-	    tl.fontsize = fsize_;
-	    tl.font = ti->font;
+	    tl.font = &tf;
 	    tl.yoffset_layout = ti->yoffset_layout;
 	    if (simple)
 		tl.yoffset_centerline = ti->yoffset_centerline;
@@ -680,7 +678,7 @@ static void freeObj(GVJ_t * job)
 static double
 heightOfLbl (htmllabel_t * lp)
 {
-    double sz;
+    double sz = 0.0;
 
     switch (lp->kind) {
     case HTML_TBL:

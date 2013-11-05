@@ -442,19 +442,15 @@ static void pic_textpara(GVJ_t * job, pointf p, textpara_t * para)
         p.x -= para->width / 2;
         break;
     }
-#ifdef NOTDEF
-    /* Why on earth would we want this? SCN  11/29/2001 */
-    p.y -= para->fontsize / (5.0 * POINTS_PER_INCH);
-#endif
-    /* Why on earth would we do this either. But it works. SCN 2/26/2002 */
-    p.y += para->fontsize / (3.0 * POINTS_PER_INCH);
+    /* Why on earth would we do this. But it works. SCN 2/26/2002 */
+    p.y += para->font->size / (3.0 * POINTS_PER_INCH);
     p.x += para->width / (2.0 * POINTS_PER_INCH);
 
-    if (para->fontname && (!(lastname) || strcmp(lastname, para->fontname))) {
-        gvprintf(job, ".ft %s\n", picfontname(para->fontname));
-	lastname = para->fontname;
+    if (para->font->name && (!(lastname) || strcmp(lastname, para->font->name))) {
+        gvprintf(job, ".ft %s\n", picfontname(para->font->name));
+	lastname = para->font->name;
     }
-    if ((sz = (int)para->fontsize) < 1);
+    if ((sz = (int)para->font->size) < 1);
         sz = 1;
     if (sz != lastsize) {
         gvprintf(job, ".ps %d*\\n(SFu/%.0fu\n", sz, Fontscale);

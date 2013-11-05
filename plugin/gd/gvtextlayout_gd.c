@@ -121,17 +121,19 @@ char* gd_psfontResolve (PostscriptAlias* pa)
 
 static boolean gd_textlayout(textpara_t * para, char **fontpath)
 {
-    char *err;
-    char *fontlist;
+    char *err, *fontlist, *fontname;
+    double fontsize;
     int brect[8];
     gdFTStringExtra strex;
-    double fontsize;
+
+    fontname = para->font->name;
+    fontsize = para->font->size;
 
     strex.fontpath = NULL;
     strex.flags = gdFTEX_RETURNFONTPATHNAME | gdFTEX_RESOLUTION;
     strex.hdpi = strex.vdpi = POINTS_PER_INCH;
 
-    if (strstr(para->fontname, "/"))
+    if (strstr(fontname, "/"))
 	strex.flags |= gdFTEX_FONTPATHNAME;
     else
 	strex.flags |= gdFTEX_FONTCONFIG;
@@ -143,10 +145,9 @@ static boolean gd_textlayout(textpara_t * para, char **fontpath)
     para->layout = NULL;
     para->free_layout = NULL;
 
-    fontsize = para->fontsize;
     para->yoffset_centerline = 0.1 * fontsize;
 
-    if (para->fontname) {
+    if (fontname) {
 	if (fontsize <= FONTSIZE_MUCH_TOO_SMALL) {
 	    return TRUE; /* OK, but ignore text entirely */
 	} else if (fontsize <= FONTSIZE_TOO_SMALL) {
@@ -160,9 +161,9 @@ static boolean gd_textlayout(textpara_t * para, char **fontpath)
 	if (para->postscript_alias)
 	    fontlist = gd_psfontResolve (para->postscript_alias);
 	else
-	    fontlist = para->fontname;
+	    fontlist = fontname;
 #else
-	fontlist = gd_alternate_fontlist(para->fontname);
+	fontlist = gd_alternate_fontlist(fontname);
 #endif
 
 	err = gdImageStringFTEx(NULL, brect, -1, fontlist,
@@ -184,7 +185,7 @@ static boolean gd_textlayout(textpara_t * para, char **fontpath)
 	    /* 1.2 specifies how much extra space to leave between lines;
              * see LINESPACING in const.h.
              */
-	    para->height = (int)(para->fontsize * 1.2);
+	    para->height = (int)(fontsize * 1.2);
 	}
     }
     return TRUE;

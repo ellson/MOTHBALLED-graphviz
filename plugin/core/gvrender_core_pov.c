@@ -588,7 +588,7 @@ static void pov_textpara(GVJ_t * job, pointf c, textpara_t * para)
 	char *pov, *s, *r, *t, *p;
 
 	gvprintf(job, "//*** textpara: %s, fontsize = %.3f, fontname = %s\n",
-		 para->str, para->fontsize, para->fontname);
+		 para->str, para->font->size, para->font->name);
 	z = layerz - 9;
 
 #ifdef DEBUG
@@ -612,14 +612,14 @@ static void pov_textpara(GVJ_t * job, pointf c, textpara_t * para)
 	x = (c.x + job->translation.x) * job->scale.x;
 	y = (c.y + job->translation.y) * job->scale.y;
 
-	s = el(job, POV_SCALE1, para->fontsize * job->scale.x);
+	s = el(job, POV_SCALE1, para->font->size * job->scale.x);
 	r = el(job, POV_ROTATE, 0.0, 0.0, (float)job->rotation);
 	t = el(job, POV_TRANSLATE, x, y, z);
 	p = pov_color_as_str(job, job->obj->pencolor, 0.0);
 
 	//pov bundled fonts: timrom.ttf, cyrvetic.ttf
 	pov = el(job, POV_TEXT "    %s    %s    %s    %s    %s" END,
-		para->fontname, 0.25, 0.0,	//font, depth (0.5 ... 2.0), offset
+		para->font->name, 0.25, 0.0,	//font, depth (0.5 ... 2.0), offset
 		para->str, "    no_shadow\n", s, r, t, p);
 
 #ifdef DEBUG

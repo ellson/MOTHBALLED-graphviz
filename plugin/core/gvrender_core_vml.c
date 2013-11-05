@@ -386,8 +386,8 @@ static void vml_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	break;
     }
     p2.x=p1.x+para->width;
-    if (para->height <  para->fontsize){
-      para->height = 1 + (1.1*para->fontsize);
+    if (para->height <  para->font->size){
+      para->height = 1 + (1.1*para->font->size);
     }
 
     p1.x-=8; /* vml textbox margin fudge factor */
@@ -397,12 +397,12 @@ static void vml_textpara(GVJ_t * job, pointf p, textpara_t * para)
     /* text "y" was too high
      * Graphviz uses "baseline", VML seems to use bottom of descenders - so we fudge a little
      * (heuristics - based on eyeballs)  */
-    if (para->fontsize <12.){ /*     see graphs/directed/arrows.gv  */
-      p1.y+=1.4+para->fontsize/5; /* adjust by approx. descender */
-      p2.y+=1.4+para->fontsize/5; /* adjust by approx. descender */
+    if (para->font->size <12.){ /*     see graphs/directed/arrows.gv  */
+      p1.y+=1.4+para->font->size/5; /* adjust by approx. descender */
+      p2.y+=1.4+para->font->size/5; /* adjust by approx. descender */
     }else{
-      p1.y+=2+para->fontsize/5; /* adjust by approx. descender */
-      p2.y+=2+para->fontsize/5; /* adjust by approx. descender */
+      p1.y+=2+para->font->size/5; /* adjust by approx. descender */
+      p2.y+=2+para->font->size/5; /* adjust by approx. descender */
     }
 
     gvprintf(job, "<v:rect style=\"position:absolute; ");
@@ -421,9 +421,9 @@ static void vml_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	    gvprintf(job, "font-style: %s;", para->postscript_alias->style);
     }
     else {
-        gvprintf(job, "font-family: \'%s\';", para->fontname);
+        gvprintf(job, "font-family: \'%s\';", para->font->name);
     }
-    gvprintf(job, " font-size: %.2fpt;", para->fontsize);
+    gvprintf(job, " font-size: %.2fpt;", para->font->size);
     switch (obj->pencolor.type) {
     case COLOR_STRING:
 	if (strcasecmp(obj->pencolor.u.string, "black"))

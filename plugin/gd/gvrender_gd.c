@@ -402,11 +402,11 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	fontname = gd_psfontResolve (para->postscript_alias);
     else
 #endif
-	fontname = para->fontname;
+	fontname = para->font->name;
 
     gdgen_text(im, spf, epf,
 	    job->obj->pencolor.u.index,
-	    para->fontsize * job->zoom,
+	    para->font->size * job->zoom,
 	    job->dpi.x,
 	    job->rotation ? (M_PI / 2) : 0,
 	    fontname,

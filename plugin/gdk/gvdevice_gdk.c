@@ -105,7 +105,7 @@ static void gdk_format(GVJ_t * job)
 
     gdk_pixbuf_save_to_callback(pixbuf, writer, job, format_str, NULL, NULL);
 
-    gdk_pixbuf_unref(pixbuf);
+    g_object_unref(pixbuf);
 }
 
 static gvdevice_engine_t gdk_engine = {

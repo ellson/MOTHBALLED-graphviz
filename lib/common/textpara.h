@@ -57,8 +57,6 @@ extern "C" {
 	void *layout;
 	void (*free_layout) (void *layout);   /* FIXME - this is ugly */
 	htmlfont_t *font;
-	char *fontname; /* FIXME - use htmlfont_t */
-	double fontsize; /* FIXME - use htmlfont_t */
 	double size, yoffset_layout, yoffset_centerline;
 	double width, height; /* FIXME */
 	char just;	/* 'l' 'n' 'r' */ /* FIXME */

@@ -88,7 +88,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     if (!context) {
 	fontmap = pango_cairo_font_map_new();
 	gv_fmap = get_font_mapping(fontmap);
-	context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP(fontmap));
+	context = pango_font_map_create_context (fontmap);
 	options=cairo_font_options_create();
 	cairo_font_options_set_antialias(options,CAIRO_ANTIALIAS_GRAY);
 	cairo_font_options_set_hint_style(options,CAIRO_HINT_STYLE_FULL);
@@ -100,9 +100,9 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	g_object_unref(fontmap);
     }
 
-    if (!fontname || strcmp(fontname, para->fontname) != 0 || fontsize != para->fontsize) {
-	fontname = para->fontname;
-	fontsize = para->fontsize;
+    if (!fontname || strcmp(fontname, para->font->name) != 0 || fontsize != para->font->size) {
+	fontname = para->font->name;
+	fontsize = para->font->size;
 	pango_font_description_free (desc);
 
 	if (para->postscript_alias) {
@@ -250,7 +250,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
      * Use an assumed height based on the point size.
      */
 
-    para->height = (int)(para->fontsize * 1.1 + .5);
+    para->height = (int)(para->font->size * 1.1 + .5);
 
     /* The y offset from baseline to 0,0 of the bitmap representation */
 #if defined PANGO_VERSION_MAJOR && (PANGO_VERSION_MAJOR >= 1)
@@ -264,7 +264,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 #endif
 
     /* The distance below midline for y centering of text strings */
-    para->yoffset_centerline = 0.2 * para->fontsize;
+    para->yoffset_centerline = 0.2 * para->font->size;
 
     if (logical_rect.width == 0)
 	return FALSE;

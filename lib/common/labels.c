@@ -196,6 +196,8 @@ void free_textpara(textpara_t * tl, int cnt)
 	    free(tlp->str);
 	if (tlp->layout && tlp->free_layout)
 	    tlp->free_layout (tlp->layout);
+	if (tlp->font)
+	    free_html_font(tlp->font);
 	tlp++;
     }
     free(tl);

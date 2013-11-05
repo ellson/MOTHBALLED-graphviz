@@ -357,10 +357,10 @@ static void vrml_textpara(GVJ_t *job, pointf p, textpara_t * para)
 
     gdgen_text(im, spf, epf,
 	color_index(im, obj->pencolor),
-	para->fontsize,
+	para->font->size,
         DEFAULT_DPI,
 	job->rotation ? (M_PI / 2) : 0,
-	para->fontname,
+	para->font->name,
 	para->str);
 }
 

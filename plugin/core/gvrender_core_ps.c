@@ -279,8 +279,8 @@ static void psgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	return;  /* skip transparent text */
 
     ps_set_color(job, &(job->obj->pencolor));
-    gvprintdouble(job, para->fontsize);
-    gvprintf(job, " /%s set_font\n", para->fontname);
+    gvprintdouble(job, para->font->size);
+    gvprintf(job, " /%s set_font\n", para->font->name);
     str = ps_string(para->str,isLatin1);
     switch (para->just) {
     case 'r':

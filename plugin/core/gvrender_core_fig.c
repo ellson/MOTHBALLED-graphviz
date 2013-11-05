@@ -252,7 +252,7 @@ static void fig_textpara(GVJ_t * job, pointf p, textpara_t * para)
     int depth = Depth;
     int pen_style = 0;          /* not used */
     int font = -1;		/* init to xfig's default font */
-    double font_size = para->fontsize * job->zoom;
+    double font_size = para->font->size * job->zoom;
     double angle = job->rotation ? (M_PI / 2.0) : 0.0;
     int font_flags = 6;		/* PostScript font + Special text */
 /* Special text indicates that latex markup may exist

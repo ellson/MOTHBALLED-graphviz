@@ -543,9 +543,9 @@ static void xdot_textpara(GVJ_t * job, pointf p, textpara_t * para)
     int j;
     
     agxbput(xbufs[emit_state], "F ");
-    xdot_fmt_num (buf, para->fontsize);
+    xdot_fmt_num (buf, para->font->size);
     agxbput(xbufs[emit_state], buf);
-    xdot_str (job, "", para->fontname);
+    xdot_str (job, "", para->font->name);
     xdot_pencolor(job);
 
     switch (para->just) {

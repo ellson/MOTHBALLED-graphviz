@@ -170,7 +170,7 @@ static void tkgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     if (obj->pen != PEN_NONE) {
 	/* determine font size */
 	/* round fontsize down, better too small than too big */
-	size = (int)(para->fontsize * job->zoom);
+	size = (int)(para->font->size * job->zoom);
 	/* don't even bother if fontsize < 1 point */
 	if (size)  {
             tkgen_canvas(job);
@@ -188,7 +188,7 @@ static void tkgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	    if (para->postscript_alias)
 	        font = para->postscript_alias->family;
 	    else
-		font = para->fontname;
+		font = para->font->name;
             gvputs(job, "\"");
             gvputs(job, font);
             gvputs(job, "\"");

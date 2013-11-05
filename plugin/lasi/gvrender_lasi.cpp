@@ -395,9 +395,9 @@ static void lasi_textpara(GVJ_t * job, pointf p, textpara_t * para)
     }
 
     ps_set_color(job, &(job->obj->pencolor));
-//    gvprintdouble(job, para->fontsize);
-//    gvprintf(job, " /%s set_font\n", para->fontname);
-    doc->osBody() << setFont(font, style, weight, variant, stretch) << setFontSize(para->fontsize) << endl;
+//    gvprintdouble(job, para->font->size);
+//    gvprintf(job, " /%s set_font\n", para->font->name);
+    doc->osBody() << setFont(font, style, weight, variant, stretch) << setFontSize(para->font->size) << endl;
     switch (para->just) {
     case 'r':
         p.x -= para->width;

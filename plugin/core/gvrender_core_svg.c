@@ -398,7 +398,7 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	if (style)
 	    gvprintf(job, " font-style=\"%s\"", style);
     } else
-	gvprintf(job, " font-family=\"%s\"", para->fontname);
+	gvprintf(job, " font-family=\"%s\"", para->font->name);
     if ((para->font) && (flags = para->font->flags)) {
 	if ((flags & HTML_BF) && !weight)
 	    gvprintf(job, " font-weight=\"bold\"");
@@ -421,7 +421,7 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	    gvprintf(job, " baseline-shift=\"sub\"");
     }
 
-    gvprintf(job, " font-size=\"%.2f\"", para->fontsize);
+    gvprintf(job, " font-size=\"%.2f\"", para->font->size);
     switch (obj->pencolor.type) {
     case COLOR_STRING:
 	if (strcasecmp(obj->pencolor.u.string, "black"))
