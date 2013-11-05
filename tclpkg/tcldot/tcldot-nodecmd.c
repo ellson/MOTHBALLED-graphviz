@@ -28,8 +28,6 @@ int nodecmd(ClientData clientData, Tcl_Interp * interp,
     Agedge_t *e;
     Agsym_t *a;
     gctx_t *gctx = (gctx_t *)clientData;
-    ictx_t *ictx = gctx->ictx;
-    GVC_t *gvc = ictx->gvc;
 
     if (argc < 2) {
 	Tcl_AppendResult(interp, "Wrong # args: should be \"", argv[0], " option ?arg arg ...?\"", NULL);
