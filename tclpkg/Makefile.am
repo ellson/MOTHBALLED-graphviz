@@ -41,7 +41,8 @@ if WITH_LUA
 	-mkdir -p $(DESTDIR)@LUA_INSTALL_DIR@;
 	if test -w $(DESTDIR)@LUA_INSTALL_DIR@; then \
 		(cd $(DESTDIR)@LUA_INSTALL_DIR@; \
-			$(LN_S) -f $(pkgluadir)/libgv_lua.so gv.so;) \
+			rm -f $(DESTDIR)$(pkgluadir)/gv.so; \
+			mv -f $(DESTDIR)$(pkgluadir)/libgv_lua.so gv.so;) \
 	else \
 		echo "Warning: @LUA_INSTALL_DIR@ is not writable."; \
 		echo "Skipping system installation of lua binding."; \
@@ -51,20 +52,20 @@ if WITH_PERL
 	-mkdir -p $(DESTDIR)@PERL_INSTALL_DIR@;
 	if test -w $(DESTDIR)@PERL_INSTALL_DIR@; then \
 		(cd $(DESTDIR)@PERL_INSTALL_DIR@; \
-			$(LN_S) -f $(pkgperldir)/libgv_perl.so gv.so; \
-			$(LN_S) -f $(pkgperldir)/gv.pm gv.pm;) \
+			rm -f $(DESTDIR)$(pkgperldir)/gv.so; \
+			mv -f $(DESTDIR)$(pkgperldir)/libgv_perl.so gv.so; \
+			mv -f $(DESTDIR)$(pkgperldir)/gv.pm gv.pm;) \
 	else \
 		echo "Warning: @PERL_INSTALL_DIR@ is not writable."; \
 		echo "Skipping system installation of perl binding."; \
 	fi
 endif
 if WITH_PHP
-
-	# use "cp" instead of "ln -s $(pkgphpdir)/gv.php" because of multilib conflict
 	-mkdir -p $(DESTDIR)@PHP_INSTALL_DIR@;
 	if test -w $(DESTDIR)@PHP_INSTALL_DIR@; then \
 		(cd $(DESTDIR)@PHP_INSTALL_DIR@; \
-			$(LN_S) -f $(pkgphpdir)/libgv_php.so gv.so;) \
+			rm -f $(DESTDIR)$(pkgphpdir)/gv.so; \
+			mv -f $(DESTDIR)$(pkgphpdir)/libgv_php.so gv.so;) \
 	else \
 		echo "Warning: @PHP_INSTALL_DIR@ is not writable."; \
 		echo "Skipping system installation of php binding."; \
@@ -72,7 +73,7 @@ if WITH_PHP
 	-mkdir -p $(DESTDIR)@PHP_INSTALL_DATADIR@;
 	if test -w $(DESTDIR)@PHP_INSTALL_DATADIR@; then \
 		(cd $(DESTDIR)@PHP_INSTALL_DATADIR@; \
-			cp -f $(pkgphpdir)/gv.php gv.php;) \
+			mv -f $(DESTDIR)$(pkgphpdir)/gv.php gv.php;) \
 	else \
 		echo "Warning: @PHP_INSTALL_DATADIR@ is not writable."; \
 		echo "Skipping system installation of php binding."; \
@@ -82,8 +83,9 @@ if WITH_PYTHON
 	-mkdir -p $(DESTDIR)@PYTHON_INSTALL_DIR@;
 	if test -w $(DESTDIR)@PYTHON_INSTALL_DIR@; then \
 		(cd $(DESTDIR)@PYTHON_INSTALL_DIR@; \
-			$(LN_S) -f $(pkgpythondir)/libgv_python.so _gv.so; \
-			$(LN_S) -f $(pkgpythondir)/gv.py gv.py;) \
+			rm -f $(DESTDIR)$(pkgpythondir)/_gv.so; \
+			mv -f $(DESTDIR)$(pkgpythondir)/libgv_python.so _gv.so; \
+			mv -f $(DESTDIR)$(pkgpythondir)/gv.py gv.py;) \
 	else \
 		echo "Warning: @PYTHON_INSTALL_DIR@ is not writable."; \
 		echo "Skipping system installation of python binding."; \
@@ -93,8 +95,9 @@ if WITH_PYTHON23
 	-mkdir -p $(DESTDIR)@PYTHON23_INSTALL_DIR@;
 	if test -w $(DESTDIR)@PYTHON23_INSTALL_DIR@; then \
 		(cd $(DESTDIR)@PYTHON23_INSTALL_DIR@; \
-			$(LN_S) -f $(pkgpython23dir)/libgv_python23.so _gv.so; \
-			$(LN_S) -f $(pkgpython23dir)/gv.py gv.py;) \
+			rm -f $(DESTDIR)$(pkgpython23dir)/_gv.so; \
+			mv -f $(DESTDIR)$(pkgpython23dir)/libgv_python23.so _gv.so; \
+			mv -f $(DESTDIR)$(pkgpython23dir)/gv.py gv.py;) \
 	else \
 		echo "Warning: @PYTHON23_INSTALL_DIR@ is not writable."; \
 		echo "Skipping system installation of python23 binding."; \
@@ -104,8 +107,9 @@ if WITH_PYTHON24
 	-mkdir -p $(DESTDIR)@PYTHON24_INSTALL_DIR@;
 	if test -w $(DESTDIR)@PYTHON24_INSTALL_DIR@; then \
 		(cd $(DESTDIR)@PYTHON24_INSTALL_DIR@; \
-			$(LN_S) -f $(pkgpython24dir)/libgv_python24.so _gv.so; \
-			$(LN_S) -f $(pkgpython24dir)/gv.py gv.py;) \
+			rm -f $(DESTDIR)$(pkgpython24dir)/_gv.so; \
+			mv -f $(DESTDIR)$(pkgpython24dir)/libgv_python24.so _gv.so; \
+			mv -f $(DESTDIR)$(pkgpython24dir)/gv.py gv.py;) \
 	else \
 		echo "Warning: @PYTHON24_INSTALL_DIR@ is not writable."; \
 		echo "Skipping system installation of python24 binding."; \
@@ -115,8 +119,9 @@ if WITH_PYTHON25
 	-mkdir -p $(DESTDIR)@PYTHON25_INSTALL_DIR@;
 	if test -w $(DESTDIR)@PYTHON25_INSTALL_DIR@; then \
 		(cd $(DESTDIR)@PYTHON25_INSTALL_DIR@; \
-			$(LN_S) -f $(pkgpython25dir)/libgv_python25.so _gv.so; \
-			$(LN_S) -f $(pkgpython25dir)/gv.py gv.py;) \
+			rm -f $(DESTDIR)$(pkgpython25dir)/_gv.so; \
+			mv -f $(DESTDIR)$(pkgpython25dir)/libgv_python25.so _gv.so; \
+			mv -f $(DESTDIR)$(pkgpython25dir)/gv.py gv.py;) \
 	else \
 		echo "Warning: @PYTHON25_INSTALL_DIR@ is not writable."; \
 		echo "Skipping system installation of python25 binding."; \
@@ -126,8 +131,9 @@ if WITH_PYTHON26
 	-mkdir -p $(DESTDIR)@PYTHON26_INSTALL_DIR@;
 	if test -w $(DESTDIR)@PYTHON26_INSTALL_DIR@; then \
 		(cd $(DESTDIR)@PYTHON26_INSTALL_DIR@; \
-			$(LN_S) -f $(pkgpython26dir)/libgv_python26.so _gv.so; \
-			$(LN_S) -f $(pkgpython26dir)/gv.py gv.py;) \
+			rm -f $(DESTDIR)$(pkgpython26dir)/_gv.so; \
+			mv -f $(DESTDIR)$(pkgpython26dir)/libgv_python26.so _gv.so; \
+			mv -f $(DESTDIR)$(pkgpython26dir)/gv.py gv.py;) \
 	else \
 		echo "Warning: @PYTHON26_INSTALL_DIR@ is not writable."; \
 		echo "Skipping system installation of python26 binding."; \
@@ -137,8 +143,9 @@ if WITH_PYTHON27
 	-mkdir -p $(DESTDIR)@PYTHON27_INSTALL_DIR@;
 	if test -w $(DESTDIR)@PYTHON27_INSTALL_DIR@; then \
 		(cd $(DESTDIR)@PYTHON27_INSTALL_DIR@; \
-			$(LN_S) -f $(pkgpython27dir)/libgv_python27.so _gv.so; \
-			$(LN_S) -f $(pkgpython27dir)/gv.py gv.py;) \
+			rm -f $(DESTDIR)$(pkgpython27dir)/_gv.so; \
+			mv -f $(DESTDIR)$(pkgpython27dir)/libgv_python27.so _gv.so; \
+			mv -f $(DESTDIR)$(pkgpython27dir)/gv.py gv.py;) \
 	else \
 		echo "Warning: @PYTHON27_INSTALL_DIR@ is not writable."; \
 		echo "Skipping system installation of python27 binding."; \
@@ -148,7 +155,8 @@ if WITH_RUBY
 	-mkdir -p $(DESTDIR)@RUBY_INSTALL_DIR@;
 	if test -w $(DESTDIR)@RUBY_INSTALL_DIR@; then \
 		(cd $(DESTDIR)@RUBY_INSTALL_DIR@; \
-			$(LN_S) -f $(pkgrubydir)/libgv_ruby.so gv.so;) \
+			rm -f $(DESTDIR)$(pkgrubydir)/gv.so; \
+			mv -f $(DESTDIR)$(pkgrubydir)/libgv_ruby.so gv.so;) \
 	else \
 		echo "Warning: @RUBY_INSTALL_DIR@ is not writable."; \
 		echo "Skipping system installation of ruby binding."; \
@@ -158,7 +166,7 @@ if WITH_TCL
 	-mkdir -p $(DESTDIR)@TCL_INSTALL_DIR@;
 	if test -w $(DESTDIR)@TCL_INSTALL_DIR@/; then \
 		(cd $(DESTDIR)@TCL_INSTALL_DIR@; \
-			$(LN_S) -f $(pkgtcldir) @PACKAGE_NAME@;) \
+			mv -f $(DESTDIR)$(pkgtcldir) @PACKAGE_NAME@;) \
 	else \
 		echo "Warning: @TCL_INSTALL_DIR@ is not writable."; \
 		echo "Skipping system installation of tcl bindings."; \

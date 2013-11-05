@@ -559,8 +559,6 @@ Io extension for graphviz.
 
 %files lang-io
 %defattr(-,root,root,-)
-%dir %{_libdir}/graphviz/io
-%{_libdir}/graphviz/io/*
 %{_mandir}/man3/*.3io.*
 %endif
 
@@ -595,8 +593,6 @@ Lua extension for graphviz.
 
 %files lang-lua
 %defattr(-,root,root,-)
-%dir %{_libdir}/graphviz/lua
-%{_libdir}/graphviz/lua/*
 %{_libdir}/lua*/*
 %{_datadir}/graphviz/demo/*.lua*
 %{_mandir}/man3/*.3lua.*
@@ -633,8 +629,6 @@ Perl extension for graphviz.
 
 %files lang-perl
 %defattr(-,root,root,-)
-%dir %{_libdir}/graphviz/perl
-%{_libdir}/graphviz/perl/*
 %{_libdir}/perl*/*
 %{_datadir}/graphviz/demo/*.pl*
 %{_mandir}/man3/*.3perl.*
@@ -654,7 +648,6 @@ PHP extension for graphviz.
 %files lang-php
 %defattr(-,root,root,-)
 %config(noreplace) %{_sysconfdir}/php.d/%{name}.ini
-%{_libdir}/graphviz/php/
 %{php_extdir}/gv.so
 %{_datadir}/php*/*
 %{_datadir}/graphviz/demo/*.php*
@@ -674,8 +667,6 @@ Python extension for graphviz.
 
 %files lang-python
 %defattr(-,root,root,-)
-%dir %{_libdir}/graphviz/python
-%{_libdir}/graphviz/python/*
 %{_libdir}/python*/*
 %{_datadir}/graphviz/demo/*.py*
 %{_mandir}/man3/*.3python.*
@@ -712,8 +703,6 @@ Ruby extension for graphviz.
 
 %files lang-ruby
 %defattr(-,root,root,-)
-%dir %{_libdir}/graphviz/ruby
-%{_libdir}/graphviz/ruby/*
 %{_libdir}/*ruby*/*
 %{_datadir}/graphviz/demo/*.rb*
 %{_mandir}/man3/*.3ruby.*
@@ -732,8 +721,6 @@ Various tcl packages (extensions) for the graphviz tools.
 
 %files lang-tcl
 %defattr(-,root,root,-)
-%dir %{_libdir}/graphviz/tcl
-%{_libdir}/graphviz/tcl/*
 %{_libdir}/tcl*/*
 %{_datadir}/graphviz/demo/*.tcl*
 %{_datadir}/graphviz/demo/*_data
