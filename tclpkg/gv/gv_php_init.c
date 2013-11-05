@@ -12,6 +12,12 @@
  *************************************************************************/
 
 #include <php.h>
+#undef PACKAGE_BUGREPORT
+#undef PACKAGE_NAME
+#undef PACKAGE_STRING
+#undef PACKAGE_TARNAME
+#undef PACKAGE_VERSION
+
 #include "gvc.h"
 #include "gvplugin.h"
 #include "gvcjob.h"
