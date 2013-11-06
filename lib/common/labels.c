@@ -28,8 +28,17 @@ static void storeline(GVC_t *gvc, textlabel_t *lp, char *line, char terminator)
     span = &(lp->u.txt.span[lp->u.txt.nspans]);
     span->str = line;
     span->just = terminator;
-    if (line && line[0])
-        size = textsize(gvc, span, lp->fontname, lp->fontsize);
+    if (line && line[0]) {
+/* FIXME -- use mkFont() */
+	span->font = NEW(htmlfont_t);
+        span->font->name = strdup(lp->fontname);
+        span->font->size = lp->fontsize;
+        span->font->color = NULL;
+        span->font->flags = 0;
+        span->font->cnt = 1;
+/* */
+        size = textspan_size(gvc, span);
+    }
     else {
 	size.x = 0.0;
 	span->size.y = size.y = (int)(lp->fontsize * LINESPACING);

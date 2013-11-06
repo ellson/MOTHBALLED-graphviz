@@ -1055,7 +1055,9 @@ static int size_html_txt(graph_t * g, htmltxt_t * ftxt, htmlenv_t * env)
 		fname = env->finfo.name;
 		lp.font->flags = 0;
 	    }
-	    sz = textsize(GD_gvc(g), &lp, fname, fsize);
+	    lp.font->name = fname;
+	    lp.font->size = fsize;
+	    sz = textspan_size(GD_gvc(g), &lp);
 	    free(ftxt->spans[i].items[j].str);
 	    ftxt->spans[i].items[j].str = lp.str;
 	    ftxt->spans[i].items[j].size.x = sz.x;

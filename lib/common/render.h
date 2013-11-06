@@ -157,7 +157,7 @@ extern "C" {
     extern int stripedBox (GVJ_t * job, pointf* AF, char* clrs, int rotate);
     extern stroke_t* taper (bezier*, double (*radfunc_t)(double,double,double), double initwid, int linejoin, int linecap);
     extern stroke_t* taper0 (bezier* bez, double initwid);
-    extern pointf textsize(GVC_t * gvc, textspan_t * span, char *fontname, double fontsize);
+    extern pointf textspan_size(GVC_t * gvc, textspan_t * span);
     extern void translate_bb(Agraph_t *, int);
     extern int wedgedEllipse (GVJ_t* job, pointf * pf, char* clrs);
     extern void update_bb_bz(boxf *bb, pointf *cp);

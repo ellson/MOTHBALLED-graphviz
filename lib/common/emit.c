@@ -2958,7 +2958,14 @@ boxf xdotBB (Agraph_t* g)
 	    op->span = NEW(textspan_t);
 	    op->span->str = strdup (op->op.u.text.text);
 	    op->span->just = adjust [op->op.u.text.align];
-	    sz = textsize (GD_gvc(g), op->span, fontname, fontsize);
+/* FIXME - use mkFont() */
+	    op->span->font = NEW(htmlfont_t);
+	    op->span->font->name=fontname;
+	    op->span->font->size=fontsize;
+	    op->span->font->flags=0;
+	    op->span->font->cnt=1;
+/**/
+	    sz = textspan_size (GD_gvc(g), op->span);
 	    bb0 = textBB (op->op.u.text.x, op->op.u.text.y, op->span);
 	    op->bb = bb0;
 	    expandBB (&bb, bb0.LL);

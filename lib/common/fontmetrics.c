@@ -116,11 +116,11 @@ static double courFontWidth[] = {
     0.5999, 0.5999, 0.5999, 0.5999, 0.5999, 0.5999, 0.5999, 0.5999,	/* øùúû     */
 };
 
-/* estimate_textsize:
+/* estimate_textspan_size:
  * Estimate size of textspan, for given face and size, in points.
  */
 static void
-estimate_textlayout(textspan_t * span, char **fontpath)
+estimate_textspan_size(textspan_t * span, char **fontpath)
 {
     double *Fontwidth, fontsize;
     char c, *p, *fpp, *fontname;
@@ -190,32 +190,28 @@ static PostscriptAlias* translate_postscript_fontname(char* fontname)
     return result;
 }
 
-pointf textsize(GVC_t *gvc, textspan_t * span, char *fontname, double fontsize)
+pointf textspan_size(GVC_t *gvc, textspan_t * span)
 {
     char **fpp = NULL, *fontpath = NULL;
     htmlfont_t *font;
 
-    font = NEW(htmlfont_t);
-    font->name = strdup(fontname);
-    font->size = fontsize;
-    font->color = NULL;
-    font->flags = 0;
+    assert(span->font);
 
-    span->font = font;
-    span->postscript_alias = translate_postscript_fontname(fontname);
+    font = span->font;
+    span->postscript_alias = translate_postscript_fontname(font->name);
 
-    if (Verbose && emit_once(fontname))
+    if (Verbose && emit_once(font->name))
 	fpp = &fontpath;
 
     if (! gvtextlayout(gvc, span, fpp))
-	estimate_textlayout(span, fpp);
+	estimate_textspan_size(span, fpp);
 
     if (fpp) {
 	if (fontpath)
 	    fprintf(stderr, "fontname: \"%s\" resolved to: %s\n",
-		    fontname, fontpath);
+		    font->name, fontpath);
 	else
-	    fprintf(stderr, "fontname: unable to resolve \"%s\"\n", fontname);
+	    fprintf(stderr, "fontname: unable to resolve \"%s\"\n", font->name);
     }
 
     return span->size;
