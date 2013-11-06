@@ -73,13 +73,21 @@ static RsvgHandle* gvloadimage_rsvg_load(GVJ_t * job, usershape_t *us)
         switch (us->type) {
             case FT_SVG:
 
+#if HAVE_G_TYPE_INIT
+		g_type_init();
+#else
 		rsvg_init();
+#endif
 
       		rsvgh = rsvg_handle_new();
 		
 		if (rsvgh == NULL) {
 			fprintf(stderr, "rsvg_handle_new_from_file returned an error: %s\n", err->message);
+#if HAVE_G_TYPE_TERM
+			g_type_term();
+#else
 			rsvg_term();
+#endif
 			return NULL;
 		} 
 
@@ -90,24 +98,48 @@ static RsvgHandle* gvloadimage_rsvg_load(GVJ_t * job, usershape_t *us)
 		fileBuf = calloc(fileSize + 1, sizeof(guchar));
 
 		if (fileBuf == NULL) {
+#if HAVE_G_OBJECT_UNREF
+			g_object_unref(rsvgh);
+#else
 			rsvg_handle_free(rsvgh);
+#endif
+#if HAVE_G_TYPE_TERM
+			g_type_term();
+#else
 			rsvg_term();
+#endif
 			return NULL;
 		}
 	
 		rewind(us->f);
 
 		if ((result = fread(fileBuf, 1, fileSize, us->f)) < fileSize) {
+#if HAVE_G_OBJECT_UNREF
+			g_object_unref(rsvgh);
+#else
 			rsvg_handle_free(rsvgh);
+#endif
+#if HAVE_G_TYPE_TERM
+			g_type_term();
+#else
 			rsvg_term();
+#endif
 			return NULL;
 		}
 
 		if (rsvg_handle_write(rsvgh, (const guchar *)fileBuf, (gsize)fileSize, &err) == FALSE) {
 			fprintf(stderr, "rsvg_handle_write returned an error: %s\n", err->message);
 			free(fileBuf);
+#if HAVE_G_OBJECT_UNREF
+			g_object_unref(rsvgh);
+#else
 			rsvg_handle_free(rsvgh);
+#endif
+#if HAVE_G_TYPE_TERM
+			g_type_term();
+#else
 			rsvg_term();
+#endif
 			return NULL;
 		} 
 
