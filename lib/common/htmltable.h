@@ -156,7 +156,6 @@ extern "C" {
     extern void free_html_label(htmllabel_t *, int);
     extern void free_html_data(htmldata_t *);
     extern void free_html_text(htmltxt_t *);
-    extern void free_html_font(textfont_t*);
 
     extern boxf *html_port(node_t * n, char *pname, int* sides);
     extern int html_path(node_t * n, port* p, int side, boxf * rv, int *k);

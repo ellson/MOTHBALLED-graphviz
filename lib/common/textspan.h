@@ -44,11 +44,11 @@ extern "C" {
      */
     typedef struct {
 	char*  name;
-	double size;
 	char*  color;
-        int    flags:7;  /* HTML_UL, HTML_IF, HTML_BF, etc. */
 	PostscriptAlias *postscript_alias;
-	int    cnt:(sizeof(int) * 8 - 7);   /* reference count */
+	double size;
+	int    flags:7;  /* HTML_UL, HTML_IF, HTML_BF, etc. */
+	unsigned int cnt:(sizeof(unsigned int) * 8 - 7);   /* reference count */
     } textfont_t;
 
     /* atomic unit of text emitted using a single htmlfont_t */

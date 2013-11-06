@@ -29,14 +29,9 @@ static void storeline(GVC_t *gvc, textlabel_t *lp, char *line, char terminator)
     span->str = line;
     span->just = terminator;
     if (line && line[0]) {
-/* FIXME -- use mkFont() */
-	span->font = NEW(textfont_t);
+	span->font = new_textfont();
         span->font->name = strdup(lp->fontname);
         span->font->size = lp->fontsize;
-        span->font->color = NULL;
-        span->font->flags = 0;
-        span->font->cnt = 1;
-/* */
         size = textspan_size(gvc, span);
     }
     else {
@@ -206,7 +201,7 @@ void free_textspan(textspan_t * tl, int cnt)
 	if (tlp->layout && tlp->free_layout)
 	    tlp->free_layout (tlp->layout);
 	if (tlp->font)
-	    free_html_font(tlp->font);
+	    unref_textfont(tlp->font);
 	tlp++;
     }
     free(tl);

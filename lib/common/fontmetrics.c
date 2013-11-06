@@ -196,11 +196,10 @@ pointf textspan_size(GVC_t *gvc, textspan_t * span)
     textfont_t *font;
 
     assert(span->font);
-
-/* FIXME -- move into font creation function */
     font = span->font;
+
+    assert(font->name);
     font->postscript_alias = translate_postscript_fontname(font->name);
-/**/
 
     if (Verbose && emit_once(font->name))
 	fpp = &fontpath;
@@ -217,4 +216,31 @@ pointf textspan_size(GVC_t *gvc, textspan_t * span)
     }
 
     return span->size;
+}
+
+textfont_t * new_textfont(void)
+{
+    textfont_t *tf = calloc(1, sizeof(textfont_t));
+    assert(tf);
+    return tf;
+}
+
+void ref_textfont(textfont_t * tf)
+{
+    tf->cnt++;
+}
+
+void unref_textfont(textfont_t * tf)
+{
+    assert(tf);
+    if (tf->cnt) {
+	tf->cnt--;
+    }
+    else {
+	if (tf->name)
+	    free(tf->name);
+	if (tf->color)
+	    free(tf->color);
+	free(tf);
+    }
 }

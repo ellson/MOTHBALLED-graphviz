@@ -2958,13 +2958,11 @@ boxf xdotBB (Agraph_t* g)
 	    op->span = NEW(textspan_t);
 	    op->span->str = strdup (op->op.u.text.text);
 	    op->span->just = adjust [op->op.u.text.align];
-/* FIXME - use mkFont() */
-	    op->span->font = NEW(textfont_t);
-	    op->span->font->name=fontname;
-	    op->span->font->size=fontsize;
-	    op->span->font->flags=0;
-	    op->span->font->cnt=1;
-/**/
+
+	    op->span->font = new_textfont();
+	    op->span->font->name = strdup(fontname);
+	    op->span->font->size = fontsize;
+
 	    sz = textspan_size (GD_gvc(g), op->span);
 	    bb0 = textBB (op->op.u.text.x, op->op.u.text.y, op->span);
 	    op->bb = bb0;

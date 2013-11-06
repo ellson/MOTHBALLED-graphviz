@@ -565,7 +565,7 @@ static htmlimg_t *mkImg(char **atts)
 
 static textfont_t *mkFont(char **atts, int flags, int ul)
 {
-    textfont_t *font = NEW(textfont_t);
+    textfont_t *font = new_textfont();
 
     font->size = -1.0;		/* unassigned */
     font->flags = flags;

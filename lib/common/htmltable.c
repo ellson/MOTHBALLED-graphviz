@@ -743,18 +743,6 @@ void emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t * tp)
     freeObj(job);
 }
 
-void free_html_font(textfont_t * fp)
-{
-    fp->cnt--;
-    if (fp->cnt == 0) {
-	if (fp->name)
-	    free(fp->name);
-	if (fp->color)
-	    free(fp->color);
-	free(fp);
-    }
-}
-
 void free_html_data(htmldata_t * dp)
 {
     free(dp->href);
@@ -782,7 +770,7 @@ void free_html_text(htmltxt_t * t)
 	    if (ti->str)
 		free(ti->str);
 	    if (ti->font)
-		free_html_font(ti->font);
+		unref_textfont(ti->font);
 	    if (ti->layout && ti->free_layout)
 		ti->free_layout(ti->layout);
 	    ti++;
@@ -830,7 +818,7 @@ static void free_html_tbl(htmltbl_t * tbl)
 	free(tbl->u.n.cells);
     }
     if (tbl->font)
-	free_html_font(tbl->font);
+	unref_textfont(tbl->font);
     free_html_data(&tbl->data);
     free(tbl);
 }
@@ -982,13 +970,13 @@ static int size_html_txt(graph_t * g, htmltxt_t * ftxt, htmlenv_t * env)
     double width;
     char *fname;
     textspan_t lp;
-    textfont_t lhf;
     double maxoffset, mxysize;
     int simple = 1;              /* one item per span, same font size/face, no flags */
     double prev_fsize = -1;
     char* prev_fname = NULL;
 
-    lp.font = &lhf;
+    lp.font = new_textfont();   /* FIXME allocated - but where unref'ed ? */
+                                /* FIXME use by ref if not going to modify */
 
     for (i = 0; i < ftxt->nspans; i++) {
 	if (ftxt->spans[i].nitems > 1) {
@@ -1063,7 +1051,14 @@ static int size_html_txt(graph_t * g, htmltxt_t * ftxt, htmlenv_t * env)
 	    ftxt->spans[i].items[j].size.x = sz.x;
 	    ftxt->spans[i].items[j].yoffset_layout = lp.yoffset_layout;
 	    ftxt->spans[i].items[j].yoffset_centerline = lp.yoffset_centerline;
+
+/* FIXME !! */
+	    ftxt->spans[i].items[j].font = new_textfont();
 	    ftxt->spans[i].items[j].font->postscript_alias = lp.font->postscript_alias;
+	    ftxt->spans[i].items[j].font->name = strdup(fname);
+	    ftxt->spans[i].items[j].font->size = fsize;
+	    ftxt->spans[i].items[j].font->flags = lp.font->flags;
+/**/
 	    ftxt->spans[i].items[j].layout = lp.layout;
 	    ftxt->spans[i].items[j].free_layout = lp.free_layout;
 	    width += sz.x;
