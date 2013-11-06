@@ -579,7 +579,7 @@ static void xdot_textpara(GVJ_t * job, pointf p, textpara_t * para)
     xdot_point(xbufs[emit_state], p);
     sprintf(buf, "%d ", j);
     agxbput(xbufs[emit_state], buf);
-    xdot_fmt_num (buf, para->width);
+    xdot_fmt_num (buf, para->size.x);
     agxbput(xbufs[emit_state], buf);
     xdot_str (job, "", para->str);
 }

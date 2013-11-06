@@ -543,8 +543,8 @@ static void dia_textpara(GVJ_t * job, pointf p, textpara_t * para)
 #if 0
     gvputs(job, "      <dia:attribute name=\"obj_bb\">\n");
     gvprintf(job, "        <dia:rectangle val=\"%g,%g;%g,%g\"/>\n",
-	       p.x - (Scale * (para->width) / 2.), p.y - 0.4,
-	       p.x + (Scale * (para->width) / 2.), p.y + 0.4);
+	       p.x - (Scale * (para->size.x) / 2.), p.y - 0.4,
+	       p.x + (Scale * (para->size.x) / 2.), p.y + 0.4);
     gvputs(job, "      </dia:attribute>\n");
 #endif
     gvputs(job, "    </dia:object>\n");

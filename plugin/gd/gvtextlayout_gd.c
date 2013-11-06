@@ -138,8 +138,8 @@ static boolean gd_textlayout(textpara_t * para, char **fontpath)
     else
 	strex.flags |= gdFTEX_FONTCONFIG;
 
-    para->width = 0.0;
-    para->height = 0.0;
+    para->size.x = 0.0;
+    para->size.y = 0.0;
     para->yoffset_layout = 0.0;
 
     para->layout = NULL;
@@ -181,11 +181,11 @@ static boolean gd_textlayout(textpara_t * para, char **fontpath)
 
 	if (para->str && para->str[0]) {
 	    /* can't use brect on some archtectures if strlen 0 */
-	    para->width = (double) (brect[4] - brect[0]);
+	    para->size.x = (double) (brect[4] - brect[0]);
 	    /* 1.2 specifies how much extra space to leave between lines;
              * see LINESPACING in const.h.
              */
-	    para->height = (int)(fontsize * 1.2);
+	    para->size.y = (int)(fontsize * 1.2);
 	}
     }
     return TRUE;

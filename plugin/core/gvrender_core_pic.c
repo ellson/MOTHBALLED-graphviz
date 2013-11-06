@@ -435,16 +435,16 @@ static void pic_textpara(GVJ_t * job, pointf p, textpara_t * para)
     case 'l': 
         break;
     case 'r': 
-        p.x -= para->width;
+        p.x -= para->size.x;
         break;
     default:
     case 'n': 
-        p.x -= para->width / 2;
+        p.x -= para->size.x / 2;
         break;
     }
     /* Why on earth would we do this. But it works. SCN 2/26/2002 */
     p.y += para->font->size / (3.0 * POINTS_PER_INCH);
-    p.x += para->width / (2.0 * POINTS_PER_INCH);
+    p.x += para->size.x / (2.0 * POINTS_PER_INCH);
 
     if (para->font->name && (!(lastname) || strcmp(lastname, para->font->name))) {
         gvprintf(job, ".ft %s\n", picfontname(para->font->name));

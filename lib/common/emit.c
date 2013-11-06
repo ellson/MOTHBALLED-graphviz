@@ -2882,25 +2882,24 @@ static boxf
 textBB (double x, double y, textpara_t* para)
 {
     boxf bb;
-    double wd = para->width;
-    double ht = para->height;
+    pointf sz = para->size;
 
     switch (para->just) {
     case 'l':
 	bb.LL.x = x;
-	bb.UR.x = bb.LL.x + wd;
+	bb.UR.x = bb.LL.x + sz.x;
 	break; 
     case 'n':
-	bb.LL.x = x - wd/2.0; 
-	bb.UR.x = x + wd/2.0; 
+	bb.LL.x = x - sz.x / 2.0; 
+	bb.UR.x = x + sz.x / 2.0; 
 	break; 
     case 'r':
 	bb.UR.x = x; 
-	bb.LL.x = bb.UR.x - wd;
+	bb.LL.x = bb.UR.x - sz.x;
 	break; 
     }
     bb.UR.y = y + para->yoffset_layout;
-    bb.LL.y = bb.UR.y - ht;
+    bb.LL.y = bb.UR.y - sz.y;
     return bb;
 }
 

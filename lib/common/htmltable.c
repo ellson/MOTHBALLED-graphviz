@@ -174,13 +174,13 @@ emit_htextparas(GVJ_t * job, int nparas, htextpara_t * paras, pointf p,
 		tl.yoffset_centerline = 1;
 	    tl.postscript_alias = ti->postscript_alias;
 	    tl.layout = ti->layout;
-	    tl.width = ti->size;
-	    tl.height = paras[i].lfsize;
+	    tl.size.x = ti->size.x;
+	    tl.size.y = paras[i].lfsize;
 	    tl.just = 'l';
 
 	    p_.x = p.x;
 	    gvrender_textpara(job, p_, &tl);
-	    p.x += ti->size;
+	    p.x += ti->size.x;
 	    ti++;
 	}
     }
@@ -1058,7 +1058,7 @@ static int size_html_txt(graph_t * g, htmltxt_t * ftxt, htmlenv_t * env)
 	    sz = textsize(GD_gvc(g), &lp, fname, fsize);
 	    free(ftxt->paras[i].items[j].str);
 	    ftxt->paras[i].items[j].str = lp.str;
-	    ftxt->paras[i].items[j].size = sz.x;
+	    ftxt->paras[i].items[j].size.x = sz.x;
 	    ftxt->paras[i].items[j].yoffset_layout = lp.yoffset_layout;
 	    ftxt->paras[i].items[j].yoffset_centerline = lp.yoffset_centerline;
 	    ftxt->paras[i].items[j].postscript_alias = lp.postscript_alias;

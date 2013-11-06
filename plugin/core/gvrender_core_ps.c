@@ -284,20 +284,20 @@ static void psgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     str = ps_string(para->str,isLatin1);
     switch (para->just) {
     case 'r':
-        p.x -= para->width;
+        p.x -= para->size.x;
         break;
     case 'l':
         p.x -= 0.0;
         break;
     case 'n':
     default:
-        p.x -= para->width / 2.0;
+        p.x -= para->size.x / 2.0;
         break;
     }
     p.y += para->yoffset_centerline;
     gvprintpointf(job, p);
     gvputs(job, " moveto ");
-    gvprintdouble(job, para->width);
+    gvprintdouble(job, para->size.x);
     gvprintf(job, " %s alignedtext\n", str);
 }
 

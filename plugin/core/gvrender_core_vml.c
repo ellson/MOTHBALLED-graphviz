@@ -378,22 +378,22 @@ static void vml_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	p1.x=p.x;
 	break;
     case 'r':
-	p1.x=p.x-para->width;
+	p1.x=p.x-para->size.x;
 	break;
     default:
     case 'n':
-	p1.x=p.x-(para->width/2);
+	p1.x=p.x-(para->size.x/2);
 	break;
     }
-    p2.x=p1.x+para->width;
-    if (para->height <  para->font->size){
-      para->height = 1 + (1.1*para->font->size);
+    p2.x=p1.x+para->size.x;
+    if (para->size.y <  para->font->size){
+      para->size.y = 1 + (1.1*para->font->size);
     }
 
     p1.x-=8; /* vml textbox margin fudge factor */
     p2.x+=8; /* vml textbox margin fudge factor */
     p2.y=graphHeight-(p.y);
-    p1.y=(p2.y-para->height);
+    p1.y=(p2.y-para->size.y);
     /* text "y" was too high
      * Graphviz uses "baseline", VML seems to use bottom of descenders - so we fudge a little
      * (heuristics - based on eyeballs)  */

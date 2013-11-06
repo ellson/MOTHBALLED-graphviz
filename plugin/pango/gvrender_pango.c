@@ -229,14 +229,14 @@ static void cairogen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 
     switch (para->just) {
     case 'r':
-	p.x -= para->width;
+	p.x -= para->size.x;
 	break;
     case 'l':
 	p.x -= 0.0;
 	break;
     case 'n':
     default:
-	p.x -= para->width / 2.0;
+	p.x -= para->size.x / 2.0;
 	break;
     }
     p.y += para->yoffset_centerline + para->yoffset_layout;

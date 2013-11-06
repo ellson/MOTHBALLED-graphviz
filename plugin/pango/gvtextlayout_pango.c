@@ -240,8 +240,8 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	logical_rect.height = 0;
 
     textlayout_scale = POINTS_PER_INCH / (FONT_DPI * PANGO_SCALE);
-    para->width = (int)(logical_rect.width * textlayout_scale + 1);    /* round up so that width/height are never too small */
-    para->height = (int)(logical_rect.height * textlayout_scale + 1);
+    para->size.x = (int)(logical_rect.width * textlayout_scale + 1);    /* round up so that width/height are never too small */
+    para->size.y = (int)(logical_rect.height * textlayout_scale + 1);
 
     /* FIXME  -- Horrible kluge !!! */
 
@@ -250,7 +250,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
      * Use an assumed height based on the point size.
      */
 
-    para->height = (int)(para->font->size * 1.1 + .5);
+    para->size.y = (int)(para->font->size * 1.1 + .5);
 
     /* The y offset from baseline to 0,0 of the bitmap representation */
 #if defined PANGO_VERSION_MAJOR && (PANGO_VERSION_MAJOR >= 1)

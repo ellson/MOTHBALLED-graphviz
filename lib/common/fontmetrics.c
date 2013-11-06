@@ -131,8 +131,8 @@ estimate_textlayout(textpara_t * para, char **fontpath)
     fontname = para->font->name;
     fontsize = para->font->size;
 
-    para->width = 0.0;
-    para->height = fontsize * LINESPACING;
+    para->size.x = 0.0;
+    para->size.y = fontsize * LINESPACING;
     para->yoffset_layout = 0.0;
     para->yoffset_centerline = 0.1 * fontsize;
     para->layout = NULL;
@@ -153,8 +153,8 @@ estimate_textlayout(textpara_t * para, char **fontpath)
 	*fontpath = fpp;
     if ((p = para->str)) {
 	while ((c = *p++))
-	    para->width += Fontwidth[(unsigned char) c];
-	para->width *= fontsize;
+	    para->size.x += Fontwidth[(unsigned char) c];
+	para->size.x *= fontsize;
     }
 }
 
@@ -193,7 +193,6 @@ static PostscriptAlias* translate_postscript_fontname(char* fontname)
 pointf textsize(GVC_t *gvc, textpara_t * para, char *fontname, double fontsize)
 {
     char **fpp = NULL, *fontpath = NULL;
-    pointf size;
     htmlfont_t *font;
 
     font = NEW(htmlfont_t);
@@ -219,7 +218,5 @@ pointf textsize(GVC_t *gvc, textpara_t * para, char *fontname, double fontsize)
 	    fprintf(stderr, "fontname: unable to resolve \"%s\"\n", fontname);
     }
 
-    size.x = para->width;
-    size.y = para->height;
-    return size;
+    return para->size;
 }

@@ -32,7 +32,7 @@ static void storeline(GVC_t *gvc, textlabel_t *lp, char *line, char terminator)
         size = textsize(gvc, para, lp->fontname, lp->fontsize);
     else {
 	size.x = 0.0;
-	para->height = size.y = (int)(lp->fontsize * LINESPACING);
+	para->size.y = size.y = (int)(lp->fontsize * LINESPACING);
     }
 
     lp->u.txt.nparas++;
@@ -268,7 +268,7 @@ void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
 	gvrender_textpara(job, p, &(lp->u.txt.para[i]));
 
 	/* UL position for next para */
-	p.y -= lp->u.txt.para[i].height;
+	p.y -= lp->u.txt.para[i].size.y;
     }
 
     gvrender_end_label(job);

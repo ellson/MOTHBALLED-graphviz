@@ -601,11 +601,11 @@ static void pov_textpara(GVJ_t * job, pointf c, textpara_t * para)
 	case 'l':		//left justified
 		break;
 	case 'r':		//right justified
-		c.x = c.x - para->width;
+		c.x = c.x - para->size.x;
 		break;
 	default:
 	case 'n':		//centered
-		c.x = c.x - para->width / 2.0;
+		c.x = c.x - para->size.x / 2.0;
 		break;
 	}
 

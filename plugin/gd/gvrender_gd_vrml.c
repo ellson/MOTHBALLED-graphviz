@@ -342,14 +342,14 @@ static void vrml_textpara(GVJ_t *job, pointf p, textpara_t * para)
     case 'l':
 	break;
     case 'r':
-	p.x -= para->width;
+	p.x -= para->size.x;
 	break;
     default:
     case 'n':
-	p.x -= para->width / 2;
+	p.x -= para->size.x / 2;
 	break;
     }
-    q.x = p.x + para->width;
+    q.x = p.x + para->size.x;
     q.y = p.y;
 
     spf = vrml_node_point(job, obj->u.n, p);

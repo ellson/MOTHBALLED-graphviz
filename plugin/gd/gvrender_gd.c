@@ -366,7 +366,7 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     gdImagePtr im = (gdImagePtr) job->context;
     pointf spf, epf;
-    double parawidth = para->width * job->zoom * job->dpi.x / POINTS_PER_INCH;
+    double parawidth = para->size.x * job->zoom * job->dpi.x / POINTS_PER_INCH;
     char* fontname;
 
     if (!im)
