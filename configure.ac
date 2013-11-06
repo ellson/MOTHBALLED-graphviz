@@ -2393,7 +2393,7 @@ else
     AC_SUBST([GDK_LIBS])
     save_LIBS=$LIBS
     LIBS="$LIBS $GDK_LIBS"
-    AC_CHECK_FUNCS([g_object_unref])
+    AC_CHECK_FUNCS([g_object_unref g_type_init])
     LIBS=$save_LIBS
   ],[
     use_gdk_pixbuf="No (gdk library not available)"
