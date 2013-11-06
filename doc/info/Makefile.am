@@ -17,7 +17,7 @@ html_DATA = attrs.html colors.html command.html \
   aa_onormal.gif aa_orbox.gif aa_ordiamond.gif aa_orinv.gif \
   aa_ornormal.gif aa_rbox.gif aa_rcrow.gif aa_rdiamond.gif aa_rinv.gif \
   aa_rnormal.gif aa_rtee.gif aa_rvee.gif aa_tee.gif aa_vee.gif back.gif \
-  both.gif box.gif box3d.gif circle.gif colorlist.gif component.gif \
+  both.gif box.gif box3d.gif circle.gif colorlist.gif component.gif underline.gif \
   constraint.gif diamond.gif doublecircle.gif doubleoctagon.gif egg.gif \
   ellipse.gif fill.gif folder.gif forward.gif hexagon.gif house.gif \
   g_lin0.png g_lin270.png g_lin45.png g_rad0.png g_rad270.png g_rad45.png \
