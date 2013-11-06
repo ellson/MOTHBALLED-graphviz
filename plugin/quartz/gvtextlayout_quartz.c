@@ -106,7 +106,7 @@ void quartz_free_layout(void *layout)
 
 boolean quartz_textlayout(textpara_t *para, char **fontpath)
 {
-	void *line = quartz_new_layout(para->font->name, para->fonti->size, para->str);
+	void *line = quartz_new_layout(para->font->name, para->font->size, para->str);
 	if (line)
 	{
 		/* report the layout */
