@@ -172,7 +172,7 @@ emit_htextspans(GVJ_t * job, int nspans, htextspan_t * spans, pointf p,
 		tl.yoffset_centerline = ti->yoffset_centerline;
 	    else
 		tl.yoffset_centerline = 1;
-	    tl.postscript_alias = ti->postscript_alias;
+	    tl.font->postscript_alias = ti->font->postscript_alias;
 	    tl.layout = ti->layout;
 	    tl.size.x = ti->size.x;
 	    tl.size.y = spans[i].lfsize;
@@ -1063,7 +1063,7 @@ static int size_html_txt(graph_t * g, htmltxt_t * ftxt, htmlenv_t * env)
 	    ftxt->spans[i].items[j].size.x = sz.x;
 	    ftxt->spans[i].items[j].yoffset_layout = lp.yoffset_layout;
 	    ftxt->spans[i].items[j].yoffset_centerline = lp.yoffset_centerline;
-	    ftxt->spans[i].items[j].postscript_alias = lp.postscript_alias;
+	    ftxt->spans[i].items[j].font->postscript_alias = lp.font->postscript_alias;
 	    ftxt->spans[i].items[j].layout = lp.layout;
 	    ftxt->spans[i].items[j].free_layout = lp.free_layout;
 	    width += sz.x;

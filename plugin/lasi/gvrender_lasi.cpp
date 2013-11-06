@@ -341,6 +341,7 @@ static void lasi_textspan(GVJ_t * job, pointf p, textspan_t * span)
     FontStyle style;
     FontVariant variant;
     FontWeight weight; 
+    PostscriptAlias *pA;
 
     if (job->obj->pencolor.u.HSVA[3] < .5)
 	return;  /* skip transparent text */
@@ -379,16 +380,17 @@ static void lasi_textspan(GVJ_t * job, pointf p, textspan_t * span)
 	}
     }
     else {
-	font = span->postscript_alias->svg_font_family;
+	pA = span->font->postscript_alias;
+	font = pA->svg_font_family;
 	stretch = NORMAL_STRETCH;
-	if (span->postscript_alias->svg_font_style
-	&& strcmp(span->postscript_alias->svg_font_style, "italic") == 0)
+	if (pA->svg_font_style
+	&& strcmp(pA->svg_font_style, "italic") == 0)
 	    style = ITALIC;
 	else
 	    style = NORMAL_STYLE;
 	variant = NORMAL_VARIANT;
-	if (span->postscript_alias->svg_font_weight
-	&& strcmp(span->postscript_alias->svg_font_weight, "bold") == 0)
+	if (pA->svg_font_weight
+	&& strcmp(pA->svg_font_weight, "bold") == 0)
 	    weight = BOLD;
 	else
 	    weight = NORMAL_WEIGHT;

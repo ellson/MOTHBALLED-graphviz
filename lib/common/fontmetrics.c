@@ -198,7 +198,7 @@ pointf textspan_size(GVC_t *gvc, textspan_t * span)
     assert(span->font);
 
     font = span->font;
-    span->postscript_alias = translate_postscript_fontname(font->name);
+    font->postscript_alias = translate_postscript_fontname(font->name);
 
     if (Verbose && emit_once(font->name))
 	fpp = &fontpath;

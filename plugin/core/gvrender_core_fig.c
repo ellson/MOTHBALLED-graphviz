@@ -245,6 +245,7 @@ static void fig_end_edge(GVJ_t * job)
 static void fig_textspan(GVJ_t * job, pointf p, textspan_t * span)
 {
     obj_state_t *obj = job->obj;
+    PostscriptAlias *pA;
 
     int object_code = 4;        /* always 4 for text */
     int sub_type = 0;           /* text justification */
@@ -262,8 +263,9 @@ static void fig_textspan(GVJ_t * job, pointf p, textspan_t * span)
     double height = 0.0;
     double length = 0.0;
 
-    if (span->postscript_alias) /* if it is a standard postscript font */
-	font = span->postscript_alias->xfig_code; 
+    pA = span->font->postscript_alias;
+    if (pA) /* if it is a standard postscript font */
+	font = pA->xfig_code; 
 
     switch (span->just) {
     case 'l':

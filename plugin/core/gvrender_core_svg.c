@@ -365,7 +365,7 @@ static void svg_textspan(GVJ_t * job, pointf p, textspan_t * span)
     }
     p.y += span->yoffset_centerline;
     gvprintf(job, " x=\"%g\" y=\"%g\"", p.x, -p.y);
-    pA = span->postscript_alias;
+    pA = span->font->postscript_alias;
     if (pA) {
 	switch (GD_fontnames(job->gvc->g)) {
 	case PSFONTS:

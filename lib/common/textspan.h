@@ -26,18 +26,6 @@ extern "C" {
 #define HTML_SUB 16
 #define HTML_S   32
 
-    /* font information
-     * If name or color is NULL, or size < 0, that attribute
-     * is unspecified. 
-     */
-    typedef struct {
-	char*  name;
-	char*  color;
-        int    flags:7;  /* HTML_UL, HTML_IF, HTML_BF, etc. */
-	int    cnt:(sizeof(int) * 8 - 7);   /* reference count */
-	double size;
-    } htmlfont_t;
-
     typedef struct _PostscriptAlias {
         char* name;
         char* family;
@@ -50,13 +38,25 @@ extern "C" {
 	char* svg_font_style;
     } PostscriptAlias;
 
+    /* font information
+     * If name or color is NULL, or size < 0, that attribute
+     * is unspecified. 
+     */
+    typedef struct {
+	char*  name;
+	double size;
+	char*  color;
+        int    flags:7;  /* HTML_UL, HTML_IF, HTML_BF, etc. */
+	PostscriptAlias *postscript_alias;
+	int    cnt:(sizeof(int) * 8 - 7);   /* reference count */
+    } htmlfont_t;
+
     /* atomic unit of text emitted using a single htmlfont_t */
     typedef struct {
 	char *str;      /* stored in utf-8 */
-	PostscriptAlias *postscript_alias;
+	htmlfont_t *font;
 	void *layout;
 	void (*free_layout) (void *layout);   /* FIXME - this is ugly */
-	htmlfont_t *font;
 	double yoffset_layout, yoffset_centerline;
  	pointf size;
 	char just;	/* 'l' 'n' 'r' */ /* FIXME */

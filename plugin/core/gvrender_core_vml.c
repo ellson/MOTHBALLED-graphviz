@@ -372,6 +372,7 @@ static void vml_textspan(GVJ_t * job, pointf p, textspan_t * span)
 {
     pointf p1,p2;
     obj_state_t *obj = job->obj;
+    PostscriptAlias *pA;
 
     switch (span->just) {
     case 'l':
@@ -411,14 +412,15 @@ static void vml_textspan(GVJ_t * job, pointf p, textspan_t * span)
     gvputs(job, " stroked=\"false\" filled=\"false\">\n");
     gvputs(job, "<v:textbox inset=\"0,0,0,0\" style=\"position:absolute; v-text-wrapping:'false';padding:'0';");
 
-    if (span->postscript_alias) {
-        gvprintf(job, "font-family: '%s';", span->postscript_alias->family);
-        if (span->postscript_alias->weight)
-	    gvprintf(job, "font-weight: %s;", span->postscript_alias->weight);
-        if (span->postscript_alias->stretch)
-	    gvprintf(job, "font-stretch: %s;", span->postscript_alias->stretch);
-        if (span->postscript_alias->style)
-	    gvprintf(job, "font-style: %s;", span->postscript_alias->style);
+    pA = span->font->postscript_alias;
+    if (pA) {
+        gvprintf(job, "font-family: '%s';", pA->family);
+        if (pA->weight)
+	    gvprintf(job, "font-weight: %s;", pA->weight);
+        if (pA->stretch)
+	    gvprintf(job, "font-stretch: %s;", pA->stretch);
+        if (pA->style)
+	    gvprintf(job, "font-style: %s;", pA->style);
     }
     else {
         gvprintf(job, "font-family: \'%s\';", span->font->name);

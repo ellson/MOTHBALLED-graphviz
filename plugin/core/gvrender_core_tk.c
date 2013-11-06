@@ -165,6 +165,7 @@ static void tkgen_textspan(GVJ_t * job, pointf p, textspan_t * span)
 {
     obj_state_t *obj = job->obj;
     const char *font;
+    PostscriptAlias *pA;
     int size;
 
     if (obj->pen != PEN_NONE) {
@@ -185,8 +186,9 @@ static void tkgen_textspan(GVJ_t * job, pointf p, textspan_t * span)
             gvputs(job, " -font {");
 	    /* tk doesn't like PostScript font names like "Times-Roman" */
 	    /*    so use family names */
-	    if (span->postscript_alias)
-	        font = span->postscript_alias->family;
+	    pA = span->font->postscript_alias;
+	    if (pA)
+	        font = pA->family;
 	    else
 		font = span->font->name;
             gvputs(job, "\"");

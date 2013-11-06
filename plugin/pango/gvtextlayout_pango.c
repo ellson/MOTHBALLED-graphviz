@@ -84,6 +84,7 @@ static boolean pango_textlayout(textspan_t * span, char **fontpath)
 #endif
     char *text;
     double textlayout_scale;
+    PostscriptAlias *pA;
 
     if (!context) {
 	fontmap = pango_cairo_font_map_new();
@@ -109,10 +110,11 @@ static boolean pango_textlayout(textspan_t * span, char **fontpath)
 	fontsize = span->font->size;
 	pango_font_description_free (desc);
 
-	if (span->postscript_alias) {
-	    psfnt = fnt = gv_fmap[span->postscript_alias->xfig_code].gv_font;
+	pA = span->font->postscript_alias;
+	if (pA) {
+	    psfnt = fnt = gv_fmap[pA->xfig_code].gv_font;
 	    if(!psfnt)
-		psfnt = fnt = pango_psfontResolve (span->postscript_alias);
+		psfnt = fnt = pango_psfontResolve (pA);
 	}
 	else
 	    fnt = fontname;
