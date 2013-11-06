@@ -433,7 +433,7 @@ static void dia_set_style(char **s)
 #endif
 }
 
-static void dia_textpara(GVJ_t * job, pointf p, textpara_t * para)
+static void dia_textspan(GVJ_t * job, pointf p, textspan_t * span)
 {
     obj_state_t *obj = job->obj;
     PostscriptAlias *pA;
@@ -441,7 +441,7 @@ static void dia_textpara(GVJ_t * job, pointf p, textpara_t * para)
     double size;
     char *family=NULL, *weight=NULL, *stretch=NULL, *style=NULL;
 
-    switch (para->just) {
+    switch (span->just) {
     case 'l':
         anchor = 0;
         break;
@@ -453,9 +453,9 @@ static void dia_textpara(GVJ_t * job, pointf p, textpara_t * para)
         anchor = 1;
         break;
     }
-    p.y += para->yoffset_centerline;
+    p.y += span->yoffset_centerline;
 
-    pA = para->postscript_alias;
+    pA = span->postscript_alias;
     if (pA) {
         switch(GD_fontnames(job->gvc->g)) {
                 case PSFONTS:
@@ -486,8 +486,8 @@ static void dia_textpara(GVJ_t * job, pointf p, textpara_t * para)
 #endif
     }
     else
-	family = para->fontname;
-    size = para->fontsize;
+	family = span->fontname;
+    size = span->fontsize;
 
 #if 0
     switch (obj->pencolor.type) {
@@ -511,7 +511,7 @@ static void dia_textpara(GVJ_t * job, pointf p, textpara_t * para)
     gvputs(job, "        <dia:composite type=\"text\">\n");
     gvputs(job, "          <dia:attribute name=\"string\">\n");
     gvputs(job, "            <dia:string>#");
-    gvputs(job, xml_string(para->str));
+    gvputs(job, xml_string(span->str));
     gvputs(job, "#</dia:string>\n");
     gvputs(job, "          </dia:attribute>\n");
     gvputs(job, "          <dia:attribute name=\"font\">\n");
@@ -543,8 +543,8 @@ static void dia_textpara(GVJ_t * job, pointf p, textpara_t * para)
 #if 0
     gvputs(job, "      <dia:attribute name=\"obj_bb\">\n");
     gvprintf(job, "        <dia:rectangle val=\"%g,%g;%g,%g\"/>\n",
-	       p.x - (Scale * (para->size.x) / 2.), p.y - 0.4,
-	       p.x + (Scale * (para->size.x) / 2.), p.y + 0.4);
+	       p.x - (Scale * (span->size.x) / 2.), p.y - 0.4,
+	       p.x + (Scale * (span->size.x) / 2.), p.y + 0.4);
     gvputs(job, "      </dia:attribute>\n");
 #endif
     gvputs(job, "    </dia:object>\n");
@@ -953,7 +953,7 @@ gvrender_engine_t dia_engine = {
     dia_begin_edge, dia_end_edge,
     0, /* dia_begin_anchor */ 0, /* dia_end_anchor */
     0, /* dia_begin_label */ 0, /* dia_end_label */
-    dia_textpara, dia_resolve_color,
+    dia_textspan, dia_resolve_color,
     dia_ellipse, dia_polygon,
     dia_bezier, dia_polyline,
     dia_comment,
