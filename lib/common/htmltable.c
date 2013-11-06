@@ -44,7 +44,7 @@
 
 typedef struct {
     pointf pos;
-    htmlfont_t finfo;
+    textfont_t finfo;
     void *obj;
     graph_t *g;
     char *imgscale;
@@ -72,7 +72,7 @@ static void printCell(htmlcell_t * cp, int ind);
  * set in env. The attributes are restored via popFontInfo.
  */
 static void
-pushFontInfo(htmlenv_t * env, htmlfont_t * fp, htmlfont_t * savp)
+pushFontInfo(htmlenv_t * env, textfont_t * fp, textfont_t * savp)
 {
     if (env->finfo.name) {
 	if (fp->name) {
@@ -101,7 +101,7 @@ pushFontInfo(htmlenv_t * env, htmlfont_t * fp, htmlfont_t * savp)
  * Restore saved font attributes.
  * Copy only set values.
  */
-static void popFontInfo(htmlenv_t * env, htmlfont_t * savp)
+static void popFontInfo(htmlenv_t * env, textfont_t * savp)
 {
     if (savp->name)
 	env->finfo.name = savp->name;
@@ -113,12 +113,12 @@ static void popFontInfo(htmlenv_t * env, htmlfont_t * savp)
 
 static void
 emit_htextspans(GVJ_t * job, int nspans, htextspan_t * spans, pointf p,
-		double halfwidth_x, htmlfont_t finfo, boxf b, int simple)
+		double halfwidth_x, textfont_t finfo, boxf b, int simple)
 {
     int i, j;
     double center_x, left_x, right_x;
     textspan_t tl;
-    htmlfont_t tf;
+    textfont_t tf;
     pointf p_ = { 0.0, 0.0 };
     textspan_t *ti;
 
@@ -478,7 +478,7 @@ static void emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
     pointf pos = env->pos;
     htmlcell_t **cells = tbl->u.n.cells;
     htmlcell_t *cp;
-    static htmlfont_t savef;
+    static textfont_t savef;
     htmlmap_data_t saved;
     int anchor;			/* if true, we need to undo anchor settings. */
     int doAnchor = (tbl->data.href || tbl->data.target);
@@ -743,7 +743,7 @@ void emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t * tp)
     freeObj(job);
 }
 
-void free_html_font(htmlfont_t * fp)
+void free_html_font(textfont_t * fp)
 {
     fp->cnt--;
     if (fp->cnt == 0) {
@@ -982,7 +982,7 @@ static int size_html_txt(graph_t * g, htmltxt_t * ftxt, htmlenv_t * env)
     double width;
     char *fname;
     textspan_t lp;
-    htmlfont_t lhf;
+    textfont_t lhf;
     double maxoffset, mxysize;
     int simple = 1;              /* one item per span, same font size/face, no flags */
     double prev_fsize = -1;
@@ -1818,7 +1818,7 @@ size_html_tbl(graph_t * g, htmltbl_t * tbl, htmlcell_t * parent,
 {
     int i, wd, ht;
     int rv = 0;
-    static htmlfont_t savef;
+    static textfont_t savef;
 
     if (tbl->font)
 	pushFontInfo(env, tbl->font, &savef);

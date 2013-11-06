@@ -193,12 +193,14 @@ static PostscriptAlias* translate_postscript_fontname(char* fontname)
 pointf textspan_size(GVC_t *gvc, textspan_t * span)
 {
     char **fpp = NULL, *fontpath = NULL;
-    htmlfont_t *font;
+    textfont_t *font;
 
     assert(span->font);
 
+/* FIXME -- move into font creation function */
     font = span->font;
     font->postscript_alias = translate_postscript_fontname(font->name);
+/**/
 
     if (Verbose && emit_once(font->name))
 	fpp = &fontpath;

@@ -49,12 +49,12 @@ extern "C" {
         int    flags:7;  /* HTML_UL, HTML_IF, HTML_BF, etc. */
 	PostscriptAlias *postscript_alias;
 	int    cnt:(sizeof(int) * 8 - 7);   /* reference count */
-    } htmlfont_t;
+    } textfont_t;
 
     /* atomic unit of text emitted using a single htmlfont_t */
     typedef struct {
 	char *str;      /* stored in utf-8 */
-	htmlfont_t *font;
+	textfont_t *font;
 	void *layout;
 	void (*free_layout) (void *layout);   /* FIXME - this is ugly */
 	double yoffset_layout, yoffset_centerline;

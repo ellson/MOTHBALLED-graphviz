@@ -20,7 +20,7 @@
 extern int yyparse(void);
 
 typedef struct sfont_t {
-    htmlfont_t *cfont;	
+    textfont_t *cfont;	
     struct sfont_t *pfont;
 } sfont_t;
 
@@ -175,8 +175,8 @@ static Dtdisc_t fspanDisc = {
 
 /* dupFont:
  */
-static htmlfont_t *
-dupFont (htmlfont_t *f)
+static textfont_t *
+dupFont (textfont_t *f)
 {
     if (f) f->cnt++;
     return f;
@@ -388,10 +388,10 @@ static int nonSpace (char* s)
  * Fonts are allocated in the lexer.
  */
 static void
-pushFont (htmlfont_t *f)
+pushFont (textfont_t *f)
 {
     sfont_t *ft = NEW(sfont_t);
-    htmlfont_t* curfont = HTMLstate.fontstack->cfont;
+    textfont_t* curfont = HTMLstate.fontstack->cfont;
 
     if (curfont) {
 	if (!f->color && curfont->color)
@@ -429,7 +429,7 @@ popFont (void)
   htmltxt_t*  txt;
   htmlcell_t*  cell;
   htmltbl_t*   tbl;
-  htmlfont_t*  font;
+  textfont_t*  font;
   htmlimg_t*   img;
   pitem*       p;
 }

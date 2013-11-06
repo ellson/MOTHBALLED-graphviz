@@ -2959,7 +2959,7 @@ boxf xdotBB (Agraph_t* g)
 	    op->span->str = strdup (op->op.u.text.text);
 	    op->span->just = adjust [op->op.u.text.align];
 /* FIXME - use mkFont() */
-	    op->span->font = NEW(htmlfont_t);
+	    op->span->font = NEW(textfont_t);
 	    op->span->font->name=fontname;
 	    op->span->font->size=fontsize;
 	    op->span->font->flags=0;

@@ -110,7 +110,7 @@ extern "C" {
 	int *widths;		/* widths of the columns */
 	int rc;			/* number of rows */
 	int cc;			/* number of columns */
-	htmlfont_t *font;	/* font info */
+	textfont_t *font;	/* font info */
 	unsigned char flags;
     };
 
@@ -156,7 +156,7 @@ extern "C" {
     extern void free_html_label(htmllabel_t *, int);
     extern void free_html_data(htmldata_t *);
     extern void free_html_text(htmltxt_t *);
-    extern void free_html_font(htmlfont_t*);
+    extern void free_html_font(textfont_t*);
 
     extern boxf *html_port(node_t * n, char *pname, int* sides);
     extern int html_path(node_t * n, port* p, int side, boxf * rv, int *k);

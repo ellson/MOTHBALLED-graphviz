@@ -403,19 +403,19 @@ static int colspanfn(htmlcell_t * p, char *v)
     return 0;
 }
 
-static int fontcolorfn(htmlfont_t * p, char *v)
+static int fontcolorfn(textfont_t * p, char *v)
 {
     p->color = strdup(v);
     return 0;
 }
 
-static int facefn(htmlfont_t * p, char *v)
+static int facefn(textfont_t * p, char *v)
 {
     p->name = strdup(v);
     return 0;
 }
 
-static int ptsizefn(htmlfont_t * p, char *v)
+static int ptsizefn(textfont_t * p, char *v)
 {
     long u;
 
@@ -563,9 +563,9 @@ static htmlimg_t *mkImg(char **atts)
     return img;
 }
 
-static htmlfont_t *mkFont(char **atts, int flags, int ul)
+static textfont_t *mkFont(char **atts, int flags, int ul)
 {
-    htmlfont_t *font = NEW(htmlfont_t);
+    textfont_t *font = NEW(textfont_t);
 
     font->size = -1.0;		/* unassigned */
     font->flags = flags;
