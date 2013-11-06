@@ -177,7 +177,7 @@ static void gdiplusgen_textspan(GVJ_t *job, pointf p, textspan_t *span)
 	if (span->free_layout == &gdiplus_free_layout)
 		layout = (Layout*)span->layout;
 	else
-		layout = new Layout(span->fontname, span->fontsize, span->str);
+		layout = new Layout(span->font->name, span->font->size, span->str);
 
 		/* draw the text */
 		SolidBrush brush(Color(job->obj->pencolor.u.rgba [3], job->obj->pencolor.u.rgba [0], job->obj->pencolor.u.rgba [1], job->obj->pencolor.u.rgba [2]));

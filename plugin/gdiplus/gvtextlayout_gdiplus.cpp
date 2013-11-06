@@ -82,7 +82,7 @@ boolean gdiplus_textlayout(textspan_t *span, char **fontpath)
 	/* ensure GDI+ is started up: since we get called outside of a job, we can't rely on GDI+ startup then */
 	UseGdiplus();
 	
-	Layout* layout = new Layout(span->fontname, span->fontsize, span->str);
+	Layout* layout = new Layout(span->font->name, span->font->size, span->str);
 	
 	/* measure the text */
 	/* NOTE: use TextRenderingHintAntiAlias + GetGenericTypographic to get a layout without extra space at beginning and end */
