@@ -219,7 +219,7 @@ static void cairogen_end_page(GVJ_t * job)
     }
 }
 
-static void cairogen_textpara(GVJ_t * job, pointf p, textpara_t * para)
+static void cairogen_textspan(GVJ_t * job, pointf p, textspan_t * span)
 {
     obj_state_t *obj = job->obj;
     cairo_t *cr = (cairo_t *) job->context;
@@ -227,24 +227,24 @@ static void cairogen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     cairo_set_dash (cr, dashed, 0, 0.0);  /* clear any dashing */
     cairogen_set_color(cr, &(obj->pencolor));
 
-    switch (para->just) {
+    switch (span->just) {
     case 'r':
-	p.x -= para->size.x;
+	p.x -= span->size.x;
 	break;
     case 'l':
 	p.x -= 0.0;
 	break;
     case 'n':
     default:
-	p.x -= para->size.x / 2.0;
+	p.x -= span->size.x / 2.0;
 	break;
     }
-    p.y += para->yoffset_centerline + para->yoffset_layout;
+    p.y += span->yoffset_centerline + span->yoffset_layout;
 
     cairo_move_to (cr, p.x, -p.y);
     cairo_save(cr);
     cairo_scale(cr, POINTS_PER_INCH / FONT_DPI, POINTS_PER_INCH / FONT_DPI);
-    pango_cairo_show_layout(cr, (PangoLayout*)(para->layout));
+    pango_cairo_show_layout(cr, (PangoLayout*)(span->layout));
     cairo_restore(cr);
 }
 
@@ -426,7 +426,7 @@ static gvrender_engine_t cairogen_engine = {
     0,				/* cairogen_end_anchor */
     0,				/* cairogen_begin_label */
     0,				/* cairogen_end_label */
-    cairogen_textpara,
+    cairogen_textspan,
     0,				/* cairogen_resolve_color */
     cairogen_ellipse,
     cairogen_polygon,

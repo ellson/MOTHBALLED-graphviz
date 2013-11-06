@@ -582,48 +582,48 @@ static void pov_end_edge(GVJ_t * job)
 #endif
 }
 
-static void pov_textpara(GVJ_t * job, pointf c, textpara_t * para)
+static void pov_textspan(GVJ_t * job, pointf c, textspan_t * span)
 {
 	double x, y;
 	char *pov, *s, *r, *t, *p;
 
-	gvprintf(job, "//*** textpara: %s, fontsize = %.3f, fontname = %s\n",
-		 para->str, para->font->size, para->font->name);
+	gvprintf(job, "//*** textspan: %s, fontsize = %.3f, fontname = %s\n",
+		 span->str, span->font->size, span->font->name);
 	z = layerz - 9;
 
 #ifdef DEBUG
-	if (para->postscript_alias)
+	if (span->postscript_alias)
 		gvputs(job, "// Warning: postscript_alias not handled!\n");
 #endif
 
 	//handle text justification
-	switch (para->just) {
+	switch (span->just) {
 	case 'l':		//left justified
 		break;
 	case 'r':		//right justified
-		c.x = c.x - para->size.x;
+		c.x = c.x - span->size.x;
 		break;
 	default:
 	case 'n':		//centered
-		c.x = c.x - para->size.x / 2.0;
+		c.x = c.x - span->size.x / 2.0;
 		break;
 	}
 
 	x = (c.x + job->translation.x) * job->scale.x;
 	y = (c.y + job->translation.y) * job->scale.y;
 
-	s = el(job, POV_SCALE1, para->font->size * job->scale.x);
+	s = el(job, POV_SCALE1, span->font->size * job->scale.x);
 	r = el(job, POV_ROTATE, 0.0, 0.0, (float)job->rotation);
 	t = el(job, POV_TRANSLATE, x, y, z);
 	p = pov_color_as_str(job, job->obj->pencolor, 0.0);
 
 	//pov bundled fonts: timrom.ttf, cyrvetic.ttf
 	pov = el(job, POV_TEXT "    %s    %s    %s    %s    %s" END,
-		para->font->name, 0.25, 0.0,	//font, depth (0.5 ... 2.0), offset
-		para->str, "    no_shadow\n", s, r, t, p);
+		span->font->name, 0.25, 0.0,	//font, depth (0.5 ... 2.0), offset
+		span->str, "    no_shadow\n", s, r, t, p);
 
 #ifdef DEBUG
-	GV_OBJ_EXT("Text", pov, para->str);
+	GV_OBJ_EXT("Text", pov, span->str);
 	gvprintf(job, "sphere{<0, 0, 0>, 2\ntranslate<%f, %f, %f>\n"
 		 "pigment{color Red}\nno_shadow\n}\n", x, y, z - 1);
 #else
@@ -884,7 +884,7 @@ gvrender_engine_t pov_engine = {
 	0,			/* pov_end_anchor */
 	0,			/* pov_begin_label */
 	0,			/* pov_end_label */
-	pov_textpara,
+	pov_textspan,
 	0,			/* pov_resolve_color */
 	pov_ellipse,
 	pov_polygon,

@@ -21,21 +21,21 @@ static char *strdup_and_subst_obj0 (char *str, void *obj, int escBackslash);
 static void storeline(GVC_t *gvc, textlabel_t *lp, char *line, char terminator)
 {
     pointf size;
-    textpara_t *para;
-    int oldsz = lp->u.txt.nparas + 1;
+    textspan_t *span;
+    int oldsz = lp->u.txt.nspans + 1;
 
-    lp->u.txt.para = ZALLOC(oldsz + 1, lp->u.txt.para, textpara_t, oldsz);
-    para = &(lp->u.txt.para[lp->u.txt.nparas]);
-    para->str = line;
-    para->just = terminator;
+    lp->u.txt.span = ZALLOC(oldsz + 1, lp->u.txt.span, textspan_t, oldsz);
+    span = &(lp->u.txt.span[lp->u.txt.nspans]);
+    span->str = line;
+    span->just = terminator;
     if (line && line[0])
-        size = textsize(gvc, para, lp->fontname, lp->fontsize);
+        size = textsize(gvc, span, lp->fontname, lp->fontsize);
     else {
 	size.x = 0.0;
-	para->size.y = size.y = (int)(lp->fontsize * LINESPACING);
+	span->size.y = size.y = (int)(lp->fontsize * LINESPACING);
     }
 
-    lp->u.txt.nparas++;
+    lp->u.txt.nspans++;
     /* width = max line width */
     lp->dimen.x = MAX(lp->dimen.x, size.x);
     /* accumulate height */
@@ -178,17 +178,17 @@ textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *f
     return rv;
 }
 
-/* free_textpara:
- * Free resources related to textpara_t.
- * tl is an array of cnt textpara_t's.
+/* free_textspan:
+ * Free resources related to textspan_t.
+ * tl is an array of cnt textspan_t's.
  * It is also assumed that the text stored in the str field
- * is all stored in one large buffer shared by all of the textpara_t,
+ * is all stored in one large buffer shared by all of the textspan_t,
  * so only the first one needs to free its tlp->str.
  */
-void free_textpara(textpara_t * tl, int cnt)
+void free_textspan(textspan_t * tl, int cnt)
 {
     int i;
-    textpara_t* tlp = tl;
+    textspan_t* tlp = tl;
 
     if (!tl) return;
     for (i = 0; i < cnt; i++) { 
@@ -210,7 +210,7 @@ void free_label(textlabel_t * p)
 	if (p->html) {
 	    if (p->u.html) free_html_label(p->u.html, 1);
 	} else {
-	    free_textpara(p->u.txt.para, p->u.txt.nparas);
+	    free_textspan(p->u.txt.span, p->u.txt.nspans);
 	}
 	free(p);
     }
@@ -233,13 +233,13 @@ void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
     }
 
     /* make sure that there is something to do */
-    if (lp->u.txt.nparas < 1)
+    if (lp->u.txt.nspans < 1)
 	return;
 
     gvrender_begin_label(job, LABEL_PLAIN);
     gvrender_set_pencolor(job, lp->fontcolor);
 
-    /* position for first para */
+    /* position for first span */
     switch (lp->valign) {
 	case 't':
     	    p.y = lp->pos.y + lp->space.y / 2.0 - lp->fontsize;
@@ -252,8 +252,8 @@ void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
     	    p.y = lp->pos.y + lp->dimen.y / 2.0 - lp->fontsize;
 	    break;
     }
-    for (i = 0; i < lp->u.txt.nparas; i++) {
-	switch (lp->u.txt.para[i].just) {
+    for (i = 0; i < lp->u.txt.nspans; i++) {
+	switch (lp->u.txt.span[i].just) {
 	case 'l':
 	    p.x = lp->pos.x - lp->space.x / 2.0;
 	    break;
@@ -265,10 +265,10 @@ void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
 	    p.x = lp->pos.x;
 	    break;
 	}
-	gvrender_textpara(job, p, &(lp->u.txt.para[i]));
+	gvrender_textspan(job, p, &(lp->u.txt.span[i]));
 
-	/* UL position for next para */
-	p.y -= lp->u.txt.para[i].size.y;
+	/* UL position for next span */
+	p.y -= lp->u.txt.span[i].size.y;
     }
 
     gvrender_end_label(job);

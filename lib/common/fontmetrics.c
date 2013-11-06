@@ -117,26 +117,23 @@ static double courFontWidth[] = {
 };
 
 /* estimate_textsize:
- * Estimate width and height of text, for given face and size, in points.
- * Value is stored para->width.
- * NOTE: Tables are based on a font of size 1. Need to multiply by
- * fontsize to get appropriate value.
+ * Estimate size of textspan, for given face and size, in points.
  */
 static void
-estimate_textlayout(textpara_t * para, char **fontpath)
+estimate_textlayout(textspan_t * span, char **fontpath)
 {
     double *Fontwidth, fontsize;
     char c, *p, *fpp, *fontname;
 
-    fontname = para->font->name;
-    fontsize = para->font->size;
+    fontname = span->font->name;
+    fontsize = span->font->size;
 
-    para->size.x = 0.0;
-    para->size.y = fontsize * LINESPACING;
-    para->yoffset_layout = 0.0;
-    para->yoffset_centerline = 0.1 * fontsize;
-    para->layout = NULL;
-    para->free_layout = NULL;
+    span->size.x = 0.0;
+    span->size.y = fontsize * LINESPACING;
+    span->yoffset_layout = 0.0;
+    span->yoffset_centerline = 0.1 * fontsize;
+    span->layout = NULL;
+    span->free_layout = NULL;
 
     if (!strncasecmp(fontname, "cour", 4)) {
 	fpp = "[internal courier]";
@@ -151,10 +148,13 @@ estimate_textlayout(textpara_t * para, char **fontpath)
     }
     if (fontpath)
 	*fontpath = fpp;
-    if ((p = para->str)) {
+    if ((p = span->str)) {
 	while ((c = *p++))
-	    para->size.x += Fontwidth[(unsigned char) c];
-	para->size.x *= fontsize;
+	    span->size.x += Fontwidth[(unsigned char) c];
+ 	/* NOTE: Tables are based on a font of size 1. Need to multiply by
+ 	 * fontsize to get appropriate value.
+ 	 */
+	span->size.x *= fontsize;
     }
 }
 
@@ -190,7 +190,7 @@ static PostscriptAlias* translate_postscript_fontname(char* fontname)
     return result;
 }
 
-pointf textsize(GVC_t *gvc, textpara_t * para, char *fontname, double fontsize)
+pointf textsize(GVC_t *gvc, textspan_t * span, char *fontname, double fontsize)
 {
     char **fpp = NULL, *fontpath = NULL;
     htmlfont_t *font;
@@ -201,14 +201,14 @@ pointf textsize(GVC_t *gvc, textpara_t * para, char *fontname, double fontsize)
     font->color = NULL;
     font->flags = 0;
 
-    para->font = font;
-    para->postscript_alias = translate_postscript_fontname(fontname);
+    span->font = font;
+    span->postscript_alias = translate_postscript_fontname(fontname);
 
     if (Verbose && emit_once(fontname))
 	fpp = &fontpath;
 
-    if (! gvtextlayout(gvc, para, fpp))
-	estimate_textlayout(para, fpp);
+    if (! gvtextlayout(gvc, span, fpp))
+	estimate_textlayout(span, fpp);
 
     if (fpp) {
 	if (fontpath)
@@ -218,5 +218,5 @@ pointf textsize(GVC_t *gvc, textpara_t * para, char *fontname, double fontsize)
 	    fprintf(stderr, "fontname: unable to resolve \"%s\"\n", fontname);
     }
 
-    return para->size;
+    return span->size;
 }

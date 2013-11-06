@@ -368,41 +368,41 @@ static void vml_end_anchor(GVJ_t * job)
     gvputs(job, "</a>\n");
 }
 
-static void vml_textpara(GVJ_t * job, pointf p, textpara_t * para)
+static void vml_textspan(GVJ_t * job, pointf p, textspan_t * span)
 {
     pointf p1,p2;
     obj_state_t *obj = job->obj;
 
-    switch (para->just) {
+    switch (span->just) {
     case 'l':
 	p1.x=p.x;
 	break;
     case 'r':
-	p1.x=p.x-para->size.x;
+	p1.x=p.x-span->size.x;
 	break;
     default:
     case 'n':
-	p1.x=p.x-(para->size.x/2);
+	p1.x=p.x-(span->size.x/2);
 	break;
     }
-    p2.x=p1.x+para->size.x;
-    if (para->size.y <  para->font->size){
-      para->size.y = 1 + (1.1*para->font->size);
+    p2.x=p1.x+span->size.x;
+    if (span->size.y <  span->font->size){
+      span->size.y = 1 + (1.1*span->font->size);
     }
 
     p1.x-=8; /* vml textbox margin fudge factor */
     p2.x+=8; /* vml textbox margin fudge factor */
     p2.y=graphHeight-(p.y);
-    p1.y=(p2.y-para->size.y);
+    p1.y=(p2.y-span->size.y);
     /* text "y" was too high
      * Graphviz uses "baseline", VML seems to use bottom of descenders - so we fudge a little
      * (heuristics - based on eyeballs)  */
-    if (para->font->size <12.){ /*     see graphs/directed/arrows.gv  */
-      p1.y+=1.4+para->font->size/5; /* adjust by approx. descender */
-      p2.y+=1.4+para->font->size/5; /* adjust by approx. descender */
+    if (span->font->size <12.){ /*     see graphs/directed/arrows.gv  */
+      p1.y+=1.4+span->font->size/5; /* adjust by approx. descender */
+      p2.y+=1.4+span->font->size/5; /* adjust by approx. descender */
     }else{
-      p1.y+=2+para->font->size/5; /* adjust by approx. descender */
-      p2.y+=2+para->font->size/5; /* adjust by approx. descender */
+      p1.y+=2+span->font->size/5; /* adjust by approx. descender */
+      p2.y+=2+span->font->size/5; /* adjust by approx. descender */
     }
 
     gvprintf(job, "<v:rect style=\"position:absolute; ");
@@ -411,19 +411,19 @@ static void vml_textpara(GVJ_t * job, pointf p, textpara_t * para)
     gvputs(job, " stroked=\"false\" filled=\"false\">\n");
     gvputs(job, "<v:textbox inset=\"0,0,0,0\" style=\"position:absolute; v-text-wrapping:'false';padding:'0';");
 
-    if (para->postscript_alias) {
-        gvprintf(job, "font-family: '%s';", para->postscript_alias->family);
-        if (para->postscript_alias->weight)
-	    gvprintf(job, "font-weight: %s;", para->postscript_alias->weight);
-        if (para->postscript_alias->stretch)
-	    gvprintf(job, "font-stretch: %s;", para->postscript_alias->stretch);
-        if (para->postscript_alias->style)
-	    gvprintf(job, "font-style: %s;", para->postscript_alias->style);
+    if (span->postscript_alias) {
+        gvprintf(job, "font-family: '%s';", span->postscript_alias->family);
+        if (span->postscript_alias->weight)
+	    gvprintf(job, "font-weight: %s;", span->postscript_alias->weight);
+        if (span->postscript_alias->stretch)
+	    gvprintf(job, "font-stretch: %s;", span->postscript_alias->stretch);
+        if (span->postscript_alias->style)
+	    gvprintf(job, "font-style: %s;", span->postscript_alias->style);
     }
     else {
-        gvprintf(job, "font-family: \'%s\';", para->font->name);
+        gvprintf(job, "font-family: \'%s\';", span->font->name);
     }
-    gvprintf(job, " font-size: %.2fpt;", para->font->size);
+    gvprintf(job, " font-size: %.2fpt;", span->font->size);
     switch (obj->pencolor.type) {
     case COLOR_STRING:
 	if (strcasecmp(obj->pencolor.u.string, "black"))
@@ -437,7 +437,7 @@ static void vml_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	assert(0);		/* internal error */
     }
     gvputs(job, "\"><center>");
-    gvputs(job, html_string(para->str));
+    gvputs(job, html_string(span->str));
     gvputs(job, "</center></v:textbox>\n"); 
     gvputs(job, "</v:rect>\n");
 }
@@ -560,7 +560,7 @@ gvrender_engine_t vml_engine = {
     vml_end_anchor,
     0,                          /* vml_begin_label */
     0,                          /* vml_end_label */
-    vml_textpara,
+    vml_textspan,
     0,				/* vml_resolve_color */
     vml_ellipse,
     vml_polygon,

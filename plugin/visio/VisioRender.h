@@ -51,7 +51,7 @@ namespace Visio
 		void AddBezier(GVJ_t* job, pointf* A, int n, bool arrow_at_start, bool arrow_at_end, bool filled);
 		void AddPolygon(GVJ_t* job, pointf* A, int n, bool filled);
 		void AddPolyline(GVJ_t* job, pointf* A, int n);
-		void AddText(GVJ_t *job, pointf p, textpara_t *para);
+		void AddText(GVJ_t *job, pointf p, textspan_t *span);
 		void AddAnchor(GVJ_t *job, char *url, char *tooltip, char *target, char *id);
 		
 	private:

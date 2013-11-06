@@ -63,7 +63,7 @@ static char* pango_psfontResolve (PostscriptAlias* pa)
 #define FULL_MARKUP "<span weight=\"bold\" style=\"italic\" underline=\"single\"><sup><sub></sub></sup></span>"
 #endif
 
-static boolean pango_textlayout(textpara_t * para, char **fontpath)
+static boolean pango_textlayout(textspan_t * span, char **fontpath)
 {
     static char buf[1024];  /* returned in fontpath, only good until next call */
     static PangoFontMap *fontmap;
@@ -100,15 +100,15 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	g_object_unref(fontmap);
     }
 
-    if (!fontname || strcmp(fontname, para->font->name) != 0 || fontsize != para->font->size) {
-	fontname = para->font->name;
-	fontsize = para->font->size;
+    if (!fontname || strcmp(fontname, span->font->name) != 0 || fontsize != span->font->size) {
+	fontname = span->font->name;
+	fontsize = span->font->size;
 	pango_font_description_free (desc);
 
-	if (para->postscript_alias) {
-	    psfnt = fnt = gv_fmap[para->postscript_alias->xfig_code].gv_font;
+	if (span->postscript_alias) {
+	    psfnt = fnt = gv_fmap[span->postscript_alias->xfig_code].gv_font;
 	    if(!psfnt)
-		psfnt = fnt = pango_psfontResolve (para->postscript_alias);
+		psfnt = fnt = pango_psfontResolve (span->postscript_alias);
 	}
 	else
 	    fnt = fontname;
@@ -177,7 +177,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     }
 
 #ifdef ENABLE_PANGO_MARKUP
-    if ((para->font) && (flags = para->font->flags)) {
+    if ((span->font) && (flags = span->font->flags)) {
 	unsigned char buf[BUFSIZ];
 	agxbuf xb;
 
@@ -199,7 +199,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	if (flags & HTML_SUB)
 	    agxbput(&xb,"<sub>");
 
-	agxbput (&xb,xml_string0(para->str, TRUE));
+	agxbput (&xb,xml_string0(span->str, TRUE));
 
 	if (flags & HTML_SUB)
 	    agxbput(&xb,"</sub>");
@@ -209,22 +209,22 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	agxbput (&xb,"</span>");
 	if (!pango_parse_markup (agxbuse(&xb), -1, 0, &attrs, &text, NULL, &error)) {
 	    fprintf (stderr, "Error - pango_parse_markup: %s\n", error->message);
-	    text = para->str;
+	    text = span->str;
 	    attrs = NULL;
 	}
 	agxbfree (&xb);
     }
     else {
-	text = para->str;
+	text = span->str;
 	attrs = NULL;
     }
 #else
-    text = para->str;
+    text = span->str;
 #endif
 
     layout = pango_layout_new (context);
-    para->layout = (void *)layout;    /* layout free with textpara - see labels.c */
-    para->free_layout = pango_free_layout;    /* function for freeing pango layout */
+    span->layout = (void *)layout;    /* layout free with textspan - see labels.c */
+    span->free_layout = pango_free_layout;    /* function for freeing pango layout */
 
     pango_layout_set_text (layout, text, -1);
     pango_layout_set_font_description (layout, desc);
@@ -240,8 +240,8 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	logical_rect.height = 0;
 
     textlayout_scale = POINTS_PER_INCH / (FONT_DPI * PANGO_SCALE);
-    para->size.x = (int)(logical_rect.width * textlayout_scale + 1);    /* round up so that width/height are never too small */
-    para->size.y = (int)(logical_rect.height * textlayout_scale + 1);
+    span->size.x = (int)(logical_rect.width * textlayout_scale + 1);    /* round up so that width/height are never too small */
+    span->size.y = (int)(logical_rect.height * textlayout_scale + 1);
 
     /* FIXME  -- Horrible kluge !!! */
 
@@ -250,21 +250,21 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
      * Use an assumed height based on the point size.
      */
 
-    para->size.y = (int)(para->font->size * 1.1 + .5);
+    span->size.y = (int)(span->font->size * 1.1 + .5);
 
     /* The y offset from baseline to 0,0 of the bitmap representation */
 #if defined PANGO_VERSION_MAJOR && (PANGO_VERSION_MAJOR >= 1)
-    para->yoffset_layout = pango_layout_get_baseline (layout) * textlayout_scale;
+    span->yoffset_layout = pango_layout_get_baseline (layout) * textlayout_scale;
 #else
     {
 	/* do it the hard way on rhel5/centos5 */
 	PangoLayoutIter *iter = pango_layout_get_iter (layout);
-	para->yoffset_layout = pango_layout_iter_get_baseline (iter) * textlayout_scale;
+	span->yoffset_layout = pango_layout_iter_get_baseline (iter) * textlayout_scale;
     }
 #endif
 
     /* The distance below midline for y centering of text strings */
-    para->yoffset_centerline = 0.2 * para->font->size;
+    span->yoffset_centerline = 0.2 * span->font->size;
 
     if (logical_rect.width == 0)
 	return FALSE;

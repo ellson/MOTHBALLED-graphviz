@@ -332,7 +332,7 @@ static void ps_set_color(GVJ_t *job, gvcolor_t *color)
     }
 }
 
-static void lasi_textpara(GVJ_t * job, pointf p, textpara_t * para)
+static void lasi_textspan(GVJ_t * job, pointf p, textspan_t * span)
 {
     char *str;
     const char *font;
@@ -345,8 +345,8 @@ static void lasi_textpara(GVJ_t * job, pointf p, textpara_t * para)
     if (job->obj->pencolor.u.HSVA[3] < .5)
 	return;  /* skip transparent text */
 
-    if (para->layout) {
-	pango_font = pango_layout_get_font_description((PangoLayout*)(para->layout));
+    if (span->layout) {
+	pango_font = pango_layout_get_font_description((PangoLayout*)(span->layout));
 	font = pango_font_description_get_family(pango_font);
 	switch (pango_font_description_get_stretch(pango_font)) {
 	    case PANGO_STRETCH_ULTRA_CONDENSED: stretch = ULTRACONDENSED; break;
@@ -379,44 +379,44 @@ static void lasi_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	}
     }
     else {
-	font = para->postscript_alias->svg_font_family;
+	font = span->postscript_alias->svg_font_family;
 	stretch = NORMAL_STRETCH;
-	if (para->postscript_alias->svg_font_style
-	&& strcmp(para->postscript_alias->svg_font_style, "italic") == 0)
+	if (span->postscript_alias->svg_font_style
+	&& strcmp(span->postscript_alias->svg_font_style, "italic") == 0)
 	    style = ITALIC;
 	else
 	    style = NORMAL_STYLE;
 	variant = NORMAL_VARIANT;
-	if (para->postscript_alias->svg_font_weight
-	&& strcmp(para->postscript_alias->svg_font_weight, "bold") == 0)
+	if (span->postscript_alias->svg_font_weight
+	&& strcmp(span->postscript_alias->svg_font_weight, "bold") == 0)
 	    weight = BOLD;
 	else
 	    weight = NORMAL_WEIGHT;
     }
 
     ps_set_color(job, &(job->obj->pencolor));
-//    gvprintdouble(job, para->font->size);
-//    gvprintf(job, " /%s set_font\n", para->font->name);
-    doc->osBody() << setFont(font, style, weight, variant, stretch) << setFontSize(para->font->size) << endl;
-    switch (para->just) {
+//    gvprintdouble(job, span->font->size);
+//    gvprintf(job, " /%s set_font\n", span->font->name);
+    doc->osBody() << setFont(font, style, weight, variant, stretch) << setFontSize(span->font->size) << endl;
+    switch (span->just) {
     case 'r':
-        p.x -= para->size.x;
+        p.x -= span->size.x;
         break;
     case 'l':
         p.x -= 0.0;
         break;
     case 'n':
     default:
-        p.x -= para->size.x / 2.0;
+        p.x -= span->size.x / 2.0;
         break;
     }
-    p.y += para->yoffset_centerline;
+    p.y += span->yoffset_centerline;
     gvprintpointf(job, p);
     gvputs(job, " moveto ");
-//    gvprintdouble(job, para->size.x);
-//    str = ps_string(para->str,isLatin1);
+//    gvprintdouble(job, span->size.x);
+//    str = ps_string(span->str,isLatin1);
 //    gvprintf(job, " %s alignedtext\n", str);
-    doc->osBody() << show(para->str) << endl;
+    doc->osBody() << show(span->str) << endl;
 
 }
 
@@ -571,7 +571,7 @@ static gvrender_engine_t lasi_engine = {
     0,				/* lasi_end_anchor */
     0,				/* lasi_begin_label */
     0,				/* lasi_end_label */
-    lasi_textpara,
+    lasi_textspan,
     0,				/* lasi_resolve_color */
     lasi_ellipse,
     lasi_polygon,

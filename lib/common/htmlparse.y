@@ -28,7 +28,7 @@ static struct {
   htmllabel_t* lbl;       /* Generated label */
   htmltbl_t*   tblstack;  /* Stack of tables maintained during parsing */
   Dt_t*        fitemList; /* Dictionary for font text items */
-  Dt_t*        fparaList; 
+  Dt_t*        fspanList; 
   agxbuf*      str;       /* Buffer for text */
   sfont_t*     fontstack;
 } HTMLstate;
@@ -112,13 +112,13 @@ static Dtdisc_t cellDisc = {
 
 typedef struct {
     Dtlink_t    link;
-    textpara_t  ti;
+    textspan_t  ti;
 } fitem;
 
 typedef struct {
     Dtlink_t     link;
-    htextpara_t  lp;
-} fpara;
+    htextspan_t  lp;
+} fspan;
 
 static void 
 free_fitem(Dt_t* d, fitem* p, Dtdisc_t* ds)
@@ -131,9 +131,9 @@ free_fitem(Dt_t* d, fitem* p, Dtdisc_t* ds)
 }
 
 static void 
-free_fpara(Dt_t* d, fpara* p, Dtdisc_t* ds)
+free_fspan(Dt_t* d, fspan* p, Dtdisc_t* ds)
 {
-    textpara_t* ti;
+    textspan_t* ti;
 
     if (p->lp.nitems) {
 	int i;
@@ -161,10 +161,10 @@ static Dtdisc_t fstrDisc = {
 };
 
 
-static Dtdisc_t fparaDisc = {
+static Dtdisc_t fspanDisc = {
     0,
     0,
-    offsetof(fpara,link),
+    offsetof(fspan,link),
     NIL(Dtmake_f),
     (Dtfree_f)free_item,
     NIL(Dtcompar_f),
@@ -201,7 +201,7 @@ static void
 appendFLineList (int v)
 {
     int cnt;
-    fpara *ln = NEW(fpara);
+    fspan *ln = NEW(fspan);
     fitem *fi;
     Dt_t *ilist = HTMLstate.fitemList;
 
@@ -210,7 +210,7 @@ appendFLineList (int v)
     if (cnt) {
         int i = 0;
 	ln->lp.nitems = cnt;
-	ln->lp.items = N_NEW(cnt, textpara_t);
+	ln->lp.items = N_NEW(cnt, textspan_t);
 
 	fi = (fitem*)dtflatten(ilist);
 	for (; fi; fi = (fitem*)dtlink(fitemList,(Dtlink_t*)fi)) {
@@ -222,7 +222,7 @@ appendFLineList (int v)
 	}
     }
     else {
-	ln->lp.items = NEW(textpara_t);
+	ln->lp.items = NEW(textspan_t);
 	ln->lp.nitems = 1;
 	ln->lp.items[0].str = strdup("");
 	ln->lp.items[0].font = dupFont (HTMLstate.fontstack->cfont);
@@ -230,33 +230,33 @@ appendFLineList (int v)
 
     dtclear(ilist);
 
-    dtinsert(HTMLstate.fparaList, ln);
+    dtinsert(HTMLstate.fspanList, ln);
 }
 
 static htmltxt_t*
 mkText(void)
 {
     int cnt;
-    Dt_t * ipara = HTMLstate.fparaList;
-    fpara *fl ;
+    Dt_t * ispan = HTMLstate.fspanList;
+    fspan *fl ;
     htmltxt_t *hft = NEW(htmltxt_t);
     
     if (dtsize (HTMLstate.fitemList)) 
 	appendFLineList (UNSET_ALIGN);
 
-    cnt = dtsize(ipara);
-    hft->nparas = cnt;
+    cnt = dtsize(ispan);
+    hft->nspans = cnt;
     	
     if (cnt) {
 	int i = 0;
-	hft->paras = N_NEW(cnt,htextpara_t);	
-    	for(fl=(fpara *)dtfirst(ipara); fl; fl=(fpara *)dtnext(ipara,fl)) {
-    	    hft->paras[i] = fl->lp;
+	hft->spans = N_NEW(cnt,htextspan_t);	
+    	for(fl=(fspan *)dtfirst(ispan); fl; fl=(fspan *)dtnext(ispan,fl)) {
+    	    hft->spans[i] = fl->lp;
     	    i++;
     	}
     }
     
-    dtclear(ipara);
+    dtclear(ispan);
 
     return hft;
 }
@@ -364,9 +364,9 @@ static void cleanup (void)
   dtclear (HTMLstate.fitemList);
   fstrDisc.freef = (Dtfree_f)free_item;
 
-  fparaDisc.freef = (Dtfree_f)free_fpara;
-  dtclear (HTMLstate.fparaList);
-  fparaDisc.freef = (Dtfree_f)free_item;
+  fspanDisc.freef = (Dtfree_f)free_fspan;
+  dtclear (HTMLstate.fspanList);
+  fspanDisc.freef = (Dtfree_f)free_item;
 
   freeFontstack();
 }
@@ -613,7 +613,7 @@ parseHTML (char* txt, int* warn, int charset)
   HTMLstate.tblstack = 0;
   HTMLstate.lbl = 0;
   HTMLstate.fitemList = dtopen(&fstrDisc, Dtqueue);
-  HTMLstate.fparaList = dtopen(&fparaDisc, Dtqueue);
+  HTMLstate.fspanList = dtopen(&fspanDisc, Dtqueue);
 
   agxbinit (&str, SMALLBUF, buf);
   HTMLstate.str = &str;
@@ -629,10 +629,10 @@ parseHTML (char* txt, int* warn, int charset)
   }
 
   dtclose (HTMLstate.fitemList);
-  dtclose (HTMLstate.fparaList);
+  dtclose (HTMLstate.fspanList);
   
   HTMLstate.fitemList = NULL;
-  HTMLstate.fparaList = NULL;
+  HTMLstate.fspanList = NULL;
   HTMLstate.fontstack = NULL;
   
   agxbfree (&str);

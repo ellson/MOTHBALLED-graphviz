@@ -271,7 +271,7 @@ static void ps_set_color(GVJ_t *job, gvcolor_t *color)
     }
 }
 
-static void psgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
+static void psgen_textspan(GVJ_t * job, pointf p, textspan_t * span)
 {
     char *str;
 
@@ -279,25 +279,25 @@ static void psgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	return;  /* skip transparent text */
 
     ps_set_color(job, &(job->obj->pencolor));
-    gvprintdouble(job, para->font->size);
-    gvprintf(job, " /%s set_font\n", para->font->name);
-    str = ps_string(para->str,isLatin1);
-    switch (para->just) {
+    gvprintdouble(job, span->font->size);
+    gvprintf(job, " /%s set_font\n", span->font->name);
+    str = ps_string(span->str,isLatin1);
+    switch (span->just) {
     case 'r':
-        p.x -= para->size.x;
+        p.x -= span->size.x;
         break;
     case 'l':
         p.x -= 0.0;
         break;
     case 'n':
     default:
-        p.x -= para->size.x / 2.0;
+        p.x -= span->size.x / 2.0;
         break;
     }
-    p.y += para->yoffset_centerline;
+    p.y += span->yoffset_centerline;
     gvprintpointf(job, p);
     gvputs(job, " moveto ");
-    gvprintdouble(job, para->size.x);
+    gvprintdouble(job, span->size.x);
     gvprintf(job, " %s alignedtext\n", str);
 }
 
@@ -452,7 +452,7 @@ static gvrender_engine_t psgen_engine = {
     0,				/* psgen_end_anchor */
     0,				/* psgen_begin_label */
     0,				/* psgen_end_label */
-    psgen_textpara,
+    psgen_textspan,
     0,				/* psgen_resolve_color */
     psgen_ellipse,
     psgen_polygon,

@@ -35,23 +35,23 @@ extern "C" {
 
 #define UNSET_ALIGN 0
 
-    /* paras of text within a cell
-     * NOTE: As required, the str field in para is utf-8.
+    /* spans of text within a cell
+     * NOTE: As required, the str field in span is utf-8.
      * This translation is done when libexpat scans the input.
      */
 	
-    /* line of textpara_t's */
+    /* line of textspan_t's */
     typedef struct {
-	textpara_t *items;
+	textspan_t *items;
 	short nitems;
 	char just;
-	double size;   /* width of para */
+	double size;   /* width of span */
 	double lfsize; /* offset from previous baseline to current one */
-    } htextpara_t;
+    } htextspan_t;
 	
     typedef struct {
-	htextpara_t *paras;
-	short nparas;
+	htextspan_t *spans;
+	short nspans;
 	char simple;
 	boxf box;
     } htmltxt_t;

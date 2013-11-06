@@ -425,39 +425,39 @@ static void pic_end_page(GVJ_t * job)
 	"]\n.PE\n");
 }
 
-static void pic_textpara(GVJ_t * job, pointf p, textpara_t * para)
+static void pic_textspan(GVJ_t * job, pointf p, textspan_t * span)
 {
     static char *lastname;
     static int lastsize;
     int sz;
 
-    switch (para->just) {
+    switch (span->just) {
     case 'l': 
         break;
     case 'r': 
-        p.x -= para->size.x;
+        p.x -= span->size.x;
         break;
     default:
     case 'n': 
-        p.x -= para->size.x / 2;
+        p.x -= span->size.x / 2;
         break;
     }
     /* Why on earth would we do this. But it works. SCN 2/26/2002 */
-    p.y += para->font->size / (3.0 * POINTS_PER_INCH);
-    p.x += para->size.x / (2.0 * POINTS_PER_INCH);
+    p.y += span->font->size / (3.0 * POINTS_PER_INCH);
+    p.x += span->size.x / (2.0 * POINTS_PER_INCH);
 
-    if (para->font->name && (!(lastname) || strcmp(lastname, para->font->name))) {
-        gvprintf(job, ".ft %s\n", picfontname(para->font->name));
-	lastname = para->font->name;
+    if (span->font->name && (!(lastname) || strcmp(lastname, span->font->name))) {
+        gvprintf(job, ".ft %s\n", picfontname(span->font->name));
+	lastname = span->font->name;
     }
-    if ((sz = (int)para->font->size) < 1);
+    if ((sz = (int)span->font->size) < 1);
         sz = 1;
     if (sz != lastsize) {
         gvprintf(job, ".ps %d*\\n(SFu/%.0fu\n", sz, Fontscale);
 	lastsize = sz;
     }
     gvprintf(job, "\"%s\" at (%.5f,%.5f);\n",
-            pic_string(para->str), p.x, p.y);
+            pic_string(span->str), p.x, p.y);
 }
 
 static void pic_ellipse(GVJ_t * job, pointf * A, int filled)
@@ -645,7 +645,7 @@ gvrender_engine_t pic_engine = {
     0,				/* pic_end_anchor */
     0,				/* pic_begin_label */
     0,				/* pic_end_label */
-    pic_textpara,
+    pic_textspan,
     0,				/* pic_resolve_color */
     pic_ellipse,
     pic_polygon,

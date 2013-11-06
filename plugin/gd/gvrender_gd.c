@@ -362,29 +362,29 @@ void gdgen_text(gdImagePtr im, pointf spf, pointf epf, int fontcolor, double fon
 
 extern char* gd_psfontResolve (PostscriptAlias* pa);
 
-static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
+static void gdgen_textspan(GVJ_t * job, pointf p, textspan_t * span)
 {
     gdImagePtr im = (gdImagePtr) job->context;
     pointf spf, epf;
-    double parawidth = para->size.x * job->zoom * job->dpi.x / POINTS_PER_INCH;
+    double spanwidth = span->size.x * job->zoom * job->dpi.x / POINTS_PER_INCH;
     char* fontname;
 
     if (!im)
 	return;
 
-    switch (para->just) {
+    switch (span->just) {
     case 'l':
 	spf.x = 0.0;
 	break;
     case 'r':
-	spf.x = -parawidth;
+	spf.x = -spanwidth;
 	break;
     default:
     case 'n':
-	spf.x = -parawidth / 2;
+	spf.x = -spanwidth / 2;
 	break;
     }
-    epf.x = spf.x + parawidth;
+    epf.x = spf.x + spanwidth;
 
     if (job->rotation) {
 	spf.y = -spf.x + p.y;
@@ -394,23 +394,23 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     else {
 	spf.x += p.x;
 	epf.x += p.x;
-	epf.y = spf.y = p.y - para->yoffset_centerline * job->zoom * job->dpi.x / POINTS_PER_INCH;
+	epf.y = spf.y = p.y - span->yoffset_centerline * job->zoom * job->dpi.x / POINTS_PER_INCH;
     }
 
 #ifdef HAVE_GD_FONTCONFIG
-    if (para->postscript_alias)
-	fontname = gd_psfontResolve (para->postscript_alias);
+    if (span->postscript_alias)
+	fontname = gd_psfontResolve (span->postscript_alias);
     else
 #endif
-	fontname = para->font->name;
+	fontname = span->font->name;
 
     gdgen_text(im, spf, epf,
 	    job->obj->pencolor.u.index,
-	    para->font->size * job->zoom,
+	    span->font->size * job->zoom,
 	    job->dpi.x,
 	    job->rotation ? (M_PI / 2) : 0,
 	    fontname,
-	    para->str);
+	    span->str);
 }
 
 static int gdgen_set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr brush)
@@ -624,7 +624,7 @@ static gvrender_engine_t gdgen_engine = {
     0,				/* gdgen_end_anchor */
     0,				/* gdgen_begin_label */
     0,				/* gdgen_end_label */
-    gdgen_textpara,
+    gdgen_textspan,
     gdgen_resolve_color,
     gdgen_ellipse,
     gdgen_polygon,

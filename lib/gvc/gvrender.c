@@ -437,12 +437,12 @@ void gvrender_end_label(GVJ_t * job)
     }
 }
 
-void gvrender_textpara(GVJ_t * job, pointf p, textpara_t * para)
+void gvrender_textspan(GVJ_t * job, pointf p, textspan_t * span)
 {
     gvrender_engine_t *gvre = job->render.engine;
     pointf PF;
 
-    if (para->str && para->str[0]
+    if (span->str && span->str[0]
 	&& (!job->obj		/* because of xdgen non-conformity */
 	    || job->obj->pen != PEN_NONE)) {
 	if (job->flags & GVRENDER_DOES_TRANSFORM)
@@ -450,8 +450,8 @@ void gvrender_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	else
 	    PF = gvrender_ptf(job, p);
 	if (gvre) {
-	    if (gvre->textpara)
-		gvre->textpara(job, PF, para);
+	    if (gvre->textspan)
+		gvre->textspan(job, PF, span);
 	}
     }
 }

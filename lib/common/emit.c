@@ -39,7 +39,7 @@
 typedef struct {
     xdot_op op;
     boxf bb;
-    textpara_t* para;
+    textspan_t* span;
 } exdot_op;
 
 void* init_xdot (Agraph_t* g)
@@ -1463,7 +1463,7 @@ static void emit_xdot (GVJ_t * job, xdot* xd)
     	    if (boxf_overlap(op->bb, job->clip)) {
 		pts[0].x = op->op.u.text.x;
 		pts[0].y = op->op.u.text.y;
-		gvrender_textpara(job, pts[0], op->para);
+		gvrender_textspan(job, pts[0], op->span);
 	    }
 	    break;
 	case xd_fill_color :
@@ -2879,12 +2879,12 @@ ptsBB (xdot_point* inpts, int numpts, boxf* bb)
 }
 
 static boxf
-textBB (double x, double y, textpara_t* para)
+textBB (double x, double y, textspan_t* span)
 {
     boxf bb;
-    pointf sz = para->size;
+    pointf sz = span->size;
 
-    switch (para->just) {
+    switch (span->just) {
     case 'l':
 	bb.LL.x = x;
 	bb.UR.x = bb.LL.x + sz.x;
@@ -2898,7 +2898,7 @@ textBB (double x, double y, textpara_t* para)
 	bb.LL.x = bb.UR.x - sz.x;
 	break; 
     }
-    bb.UR.y = y + para->yoffset_layout;
+    bb.UR.y = y + span->yoffset_layout;
     bb.LL.y = bb.UR.y - sz.y;
     return bb;
 }
@@ -2907,7 +2907,7 @@ static void
 freePara (exdot_op* op)
 {
     if (op->op.kind == xd_text)
-	free_textpara (op->para, 1);
+	free_textspan (op->span, 1);
 }
 
 boxf xdotBB (Agraph_t* g)
@@ -2955,11 +2955,11 @@ boxf xdotBB (Agraph_t* g)
 	    op->bb = ptsBB (op->op.u.polygon.pts, op->op.u.polygon.cnt, &bb);
 	    break;
 	case xd_text :
-	    op->para = NEW(textpara_t);
-	    op->para->str = strdup (op->op.u.text.text);
-	    op->para->just = adjust [op->op.u.text.align];
-	    sz = textsize (GD_gvc(g), op->para, fontname, fontsize);
-	    bb0 = textBB (op->op.u.text.x, op->op.u.text.y, op->para);
+	    op->span = NEW(textspan_t);
+	    op->span->str = strdup (op->op.u.text.text);
+	    op->span->just = adjust [op->op.u.text.align];
+	    sz = textsize (GD_gvc(g), op->span, fontname, fontsize);
+	    bb0 = textBB (op->op.u.text.x, op->op.u.text.y, op->span);
 	    op->bb = bb0;
 	    expandBB (&bb, bb0.LL);
 	    expandBB (&bb, bb0.UR);

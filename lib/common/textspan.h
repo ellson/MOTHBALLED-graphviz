@@ -11,8 +11,8 @@
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
 
-#ifndef TEXTPARA_H
-#define TEXTPARA_H
+#ifndef TEXTSPAN_H
+#define TEXTSPAN_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -60,7 +60,7 @@ extern "C" {
 	double yoffset_layout, yoffset_centerline;
  	pointf size;
 	char just;	/* 'l' 'n' 'r' */ /* FIXME */
-    } textpara_t;
+    } textspan_t;
 
 #ifdef __cplusplus
 }

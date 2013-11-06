@@ -24,7 +24,7 @@ extern "C" {
 #endif
 
     struct gvtextlayout_engine_s {
-	boolean (*textlayout) (textpara_t *para, char** fontpath);
+	boolean (*textlayout) (textspan_t *span, char** fontpath);
     };
 
 #ifdef __cplusplus

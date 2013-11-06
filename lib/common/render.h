@@ -116,9 +116,9 @@ extern "C" {
     extern void epsf_init(node_t * n);
     extern void epsf_free(node_t * n);
     extern shape_desc *find_user_shape(const char *);
-    extern void free_line(textpara_t *);
+    extern void free_line(textspan_t *);
     extern void free_label(textlabel_t *);
-    extern void free_textpara(textpara_t * tl, int);
+    extern void free_textspan(textspan_t * tl, int);
     extern void getdouble(graph_t * g, char *name, double *result);
     extern splines *getsplinepoints(edge_t * e);
     extern void gv_fixLocale (int set);
@@ -157,7 +157,7 @@ extern "C" {
     extern int stripedBox (GVJ_t * job, pointf* AF, char* clrs, int rotate);
     extern stroke_t* taper (bezier*, double (*radfunc_t)(double,double,double), double initwid, int linejoin, int linecap);
     extern stroke_t* taper0 (bezier* bez, double initwid);
-    extern pointf textsize(GVC_t * gvc, textpara_t * para, char *fontname, double fontsize);
+    extern pointf textsize(GVC_t * gvc, textspan_t * span, char *fontname, double fontsize);
     extern void translate_bb(Agraph_t *, int);
     extern int wedgedEllipse (GVJ_t* job, pointf * pf, char* clrs);
     extern void update_bb_bz(boxf *bb, pointf *cp);

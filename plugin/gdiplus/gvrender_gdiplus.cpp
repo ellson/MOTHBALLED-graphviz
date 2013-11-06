@@ -154,36 +154,36 @@ static void gdiplusgen_begin_page(GVJ_t *job)
 
 
 
-static void gdiplusgen_textpara(GVJ_t *job, pointf p, textpara_t *para)
+static void gdiplusgen_textspan(GVJ_t *job, pointf p, textspan_t *span)
 {
 	Graphics* context = (Graphics*)job->context;
 		
 		/* adjust text position */
-		switch (para->just) {
+		switch (span->just) {
 		case 'r':
-			p.x -= para->width;
+			p.x -= span->size.x;
 			break;
 		case 'l':
 			p.x -= 0.0;
 			break;
 		case 'n':
 		default:
-			p.x -= para->width / 2.0;
+			p.x -= span->size.x / 2.0;
 			break;
 		}
-	p.y += para->yoffset_centerline + para->yoffset_layout;
+	p.y += span->yoffset_centerline + span->yoffset_layout;
 
 	Layout* layout;
-	if (para->free_layout == &gdiplus_free_layout)
-		layout = (Layout*)para->layout;
+	if (span->free_layout == &gdiplus_free_layout)
+		layout = (Layout*)span->layout;
 	else
-		layout = new Layout(para->fontname, para->fontsize, para->str);
+		layout = new Layout(span->fontname, span->fontsize, span->str);
 
 		/* draw the text */
 		SolidBrush brush(Color(job->obj->pencolor.u.rgba [3], job->obj->pencolor.u.rgba [0], job->obj->pencolor.u.rgba [1], job->obj->pencolor.u.rgba [2]));
 	context->DrawString(&layout->text[0], layout->text.size(), layout->font, PointF(p.x, -p.y), GetGenericTypographic(), &brush);
 	
-	if (para->free_layout != &gdiplus_free_layout)
+	if (span->free_layout != &gdiplus_free_layout)
 		delete layout;
 
 	}
@@ -299,7 +299,7 @@ static gvrender_engine_t gdiplusgen_engine = {
     0,							/* gdiplusgen_end_anchor */
     0,							/* gdiplusgen_begin_label */
     0,							/* gdiplusgen_end_label */
-    gdiplusgen_textpara,
+    gdiplusgen_textspan,
     0,
     gdiplusgen_ellipse,
     gdiplusgen_polygon,

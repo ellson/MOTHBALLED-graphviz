@@ -343,7 +343,7 @@ static void svg_end_anchor(GVJ_t * job)
     gvputs(job, "</g>\n");
 }
 
-static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
+static void svg_textspan(GVJ_t * job, pointf p, textspan_t * span)
 {
     obj_state_t *obj = job->obj;
     PostscriptAlias *pA;
@@ -351,7 +351,7 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
     int flags;
 
     gvputs(job, "<text");
-    switch (para->just) {
+    switch (span->just) {
     case 'l':
 	gvputs(job, " text-anchor=\"start\"");
 	break;
@@ -363,9 +363,9 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	gvputs(job, " text-anchor=\"middle\"");
 	break;
     }
-    p.y += para->yoffset_centerline;
+    p.y += span->yoffset_centerline;
     gvprintf(job, " x=\"%g\" y=\"%g\"", p.x, -p.y);
-    pA = para->postscript_alias;
+    pA = span->postscript_alias;
     if (pA) {
 	switch (GD_fontnames(job->gvc->g)) {
 	case PSFONTS:
@@ -398,8 +398,8 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	if (style)
 	    gvprintf(job, " font-style=\"%s\"", style);
     } else
-	gvprintf(job, " font-family=\"%s\"", para->font->name);
-    if ((para->font) && (flags = para->font->flags)) {
+	gvprintf(job, " font-family=\"%s\"", span->font->name);
+    if ((span->font) && (flags = span->font->flags)) {
 	if ((flags & HTML_BF) && !weight)
 	    gvprintf(job, " font-weight=\"bold\"");
 	if ((flags & HTML_IF) && !style)
@@ -421,7 +421,7 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	    gvprintf(job, " baseline-shift=\"sub\"");
     }
 
-    gvprintf(job, " font-size=\"%.2f\"", para->font->size);
+    gvprintf(job, " font-size=\"%.2f\"", span->font->size);
     switch (obj->pencolor.type) {
     case COLOR_STRING:
 	if (strcasecmp(obj->pencolor.u.string, "black"))
@@ -436,7 +436,7 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	assert(0);		/* internal error */
     }
     gvputs(job, ">");
-    gvputs(job, xml_string0(para->str, TRUE));
+    gvputs(job, xml_string0(span->str, TRUE));
     gvputs(job, "</text>\n");
 }
 
@@ -665,7 +665,7 @@ gvrender_engine_t svg_engine = {
     svg_end_anchor,
     0,				/* svg_begin_anchor */
     0,				/* svg_end_anchor */
-    svg_textpara,
+    svg_textspan,
     0,				/* svg_resolve_color */
     svg_ellipse,
     svg_polygon,

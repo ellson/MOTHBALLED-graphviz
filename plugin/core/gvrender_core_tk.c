@@ -161,7 +161,7 @@ static void tkgen_begin_edge(GVJ_t * job)
 	first_periphery = -1;     /* FIXME - this is an ugly ugly hack!  Need this one for arrowheads. */
 }
 
-static void tkgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
+static void tkgen_textspan(GVJ_t * job, pointf p, textspan_t * span)
 {
     obj_state_t *obj = job->obj;
     const char *font;
@@ -170,7 +170,7 @@ static void tkgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     if (obj->pen != PEN_NONE) {
 	/* determine font size */
 	/* round fontsize down, better too small than too big */
-	size = (int)(para->font->size * job->zoom);
+	size = (int)(span->font->size * job->zoom);
 	/* don't even bother if fontsize < 1 point */
 	if (size)  {
             tkgen_canvas(job);
@@ -178,23 +178,23 @@ static void tkgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
             p.y -= size * 0.55; /* cl correction */
             gvprintpointf(job, p);
             gvputs(job, " -text {");
-            gvputs(job, para->str);
+            gvputs(job, span->str);
             gvputs(job, "}");
             gvputs(job, " -fill ");
             tkgen_print_color(job, obj->pencolor);
             gvputs(job, " -font {");
 	    /* tk doesn't like PostScript font names like "Times-Roman" */
 	    /*    so use family names */
-	    if (para->postscript_alias)
-	        font = para->postscript_alias->family;
+	    if (span->postscript_alias)
+	        font = span->postscript_alias->family;
 	    else
-		font = para->font->name;
+		font = span->font->name;
             gvputs(job, "\"");
             gvputs(job, font);
             gvputs(job, "\"");
 	    /* use -ve fontsize to indicate pixels  - see "man n font" */
             gvprintf(job, " %d}", size);
-            switch (para->just) {
+            switch (span->just) {
             case 'l':
                 gvputs(job, " -anchor w");
                 break;
@@ -349,7 +349,7 @@ gvrender_engine_t tkgen_engine = {
     0,				/* tkgen_end_anchor */
     0,				/* tkgen_begin_label */
     0,				/* tkgen_end_label */
-    tkgen_textpara,
+    tkgen_textspan,
     0,				/* tkgen_resolve_color */
     tkgen_ellipse,
     tkgen_polygon,

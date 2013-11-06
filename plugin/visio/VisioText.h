@@ -81,7 +81,7 @@ namespace Visio
 	class Text
 	{
 	public:
-		static Text* CreateText(GVJ_t* job, pointf p, textpara_t* para);
+		static Text* CreateText(GVJ_t* job, pointf p, textspan_t* span);
 		
 		~Text();
 		

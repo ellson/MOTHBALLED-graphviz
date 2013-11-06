@@ -330,7 +330,7 @@ static void vrml_end_edge(GVJ_t *job)
 
 extern void gdgen_text(gdImagePtr im, pointf spf, pointf epf, int fontcolor, double fontsize, int fontdpi, double fontangle, char *fontname, char *str);
 
-static void vrml_textpara(GVJ_t *job, pointf p, textpara_t * para)
+static void vrml_textspan(GVJ_t *job, pointf p, textspan_t * span)
 {
     obj_state_t *obj = job->obj;
     pointf spf, epf, q;
@@ -338,18 +338,18 @@ static void vrml_textpara(GVJ_t *job, pointf p, textpara_t * para)
     if (! obj->u.n || ! im)   /* if not a node - or if no im (e.g. for cluster) */
 	return;
 
-    switch (para->just) {
+    switch (span->just) {
     case 'l':
 	break;
     case 'r':
-	p.x -= para->size.x;
+	p.x -= span->size.x;
 	break;
     default:
     case 'n':
-	p.x -= para->size.x / 2;
+	p.x -= span->size.x / 2;
 	break;
     }
-    q.x = p.x + para->size.x;
+    q.x = p.x + span->size.x;
     q.y = p.y;
 
     spf = vrml_node_point(job, obj->u.n, p);
@@ -357,11 +357,11 @@ static void vrml_textpara(GVJ_t *job, pointf p, textpara_t * para)
 
     gdgen_text(im, spf, epf,
 	color_index(im, obj->pencolor),
-	para->font->size,
+	span->font->size,
         DEFAULT_DPI,
 	job->rotation ? (M_PI / 2) : 0,
-	para->font->name,
-	para->str);
+	span->font->name,
+	span->str);
 }
 
 /* interpolate_zcoord:
@@ -814,7 +814,7 @@ static gvrender_engine_t vrml_engine = {
     0,                          /* vrml_end_anchor */
     0,                          /* vrml_begin_label */
     0,                          /* vrml_end_label */
-    vrml_textpara,
+    vrml_textspan,
     0,				/* vrml_resolve_color */
     vrml_ellipse,
     vrml_polygon,

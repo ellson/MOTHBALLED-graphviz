@@ -112,15 +112,15 @@ static void popFontInfo(htmlenv_t * env, htmlfont_t * savp)
 }
 
 static void
-emit_htextparas(GVJ_t * job, int nparas, htextpara_t * paras, pointf p,
+emit_htextspans(GVJ_t * job, int nspans, htextspan_t * spans, pointf p,
 		double halfwidth_x, htmlfont_t finfo, boxf b, int simple)
 {
     int i, j;
     double center_x, left_x, right_x;
-    textpara_t tl;
+    textspan_t tl;
     htmlfont_t tf;
     pointf p_ = { 0.0, 0.0 };
-    textpara_t *ti;
+    textspan_t *ti;
 
     center_x = p.x;
     left_x = center_x - halfwidth_x;
@@ -132,24 +132,24 @@ emit_htextparas(GVJ_t * job, int nparas, htextpara_t * paras, pointf p,
     p_.y = p.y + (b.UR.y - b.LL.y) / 2.0;
 
     gvrender_begin_label(job, LABEL_HTML);
-    for (i = 0; i < nparas; i++) {
+    for (i = 0; i < nspans; i++) {
 	/* set p.x to leftmost point where the line of text begins */
-	switch (paras[i].just) {
+	switch (spans[i].just) {
 	case 'l':
 	    p.x = left_x;
 	    break;
 	case 'r':
-	    p.x = right_x - paras[i].size;
+	    p.x = right_x - spans[i].size;
 	    break;
 	default:
 	case 'n':
-	    p.x = center_x - paras[i].size / 2.0;
+	    p.x = center_x - spans[i].size / 2.0;
 	    break;
 	}
-	p_.y -= paras[i].lfsize;	/* move to current base line */
+	p_.y -= spans[i].lfsize;	/* move to current base line */
 
-	ti = paras[i].items;
-	for (j = 0; j < paras[i].nitems; j++) {
+	ti = spans[i].items;
+	for (j = 0; j < spans[i].nitems; j++) {
 	    if (ti->font && (ti->font->size > 0))
 		tf.size = ti->font->size;
 	    else
@@ -175,11 +175,11 @@ emit_htextparas(GVJ_t * job, int nparas, htextpara_t * paras, pointf p,
 	    tl.postscript_alias = ti->postscript_alias;
 	    tl.layout = ti->layout;
 	    tl.size.x = ti->size.x;
-	    tl.size.y = paras[i].lfsize;
+	    tl.size.y = spans[i].lfsize;
 	    tl.just = 'l';
 
 	    p_.x = p.x;
-	    gvrender_textpara(job, p_, &tl);
+	    gvrender_textspan(job, p_, &tl);
 	    p.x += ti->size.x;
 	    ti++;
 	}
@@ -194,14 +194,14 @@ static void emit_html_txt(GVJ_t * job, htmltxt_t * tp, htmlenv_t * env)
     pointf p;
 
     /* make sure that there is something to do */
-    if (tp->nparas < 1)
+    if (tp->nspans < 1)
 	return;
 
     halfwidth_x = ((double) (tp->box.UR.x - tp->box.LL.x)) / 2.0;
     p.x = env->pos.x + ((double) (tp->box.UR.x + tp->box.LL.x)) / 2.0;
     p.y = env->pos.y + ((double) (tp->box.UR.y + tp->box.LL.y)) / 2.0;
 
-    emit_htextparas(job, tp->nparas, tp->paras, p, halfwidth_x, env->finfo,
+    emit_htextspans(job, tp->nspans, tp->spans, p, halfwidth_x, env->finfo,
 		    tp->box, tp->simple);
 }
 
@@ -768,15 +768,15 @@ void free_html_data(htmldata_t * dp)
 
 void free_html_text(htmltxt_t * t)
 {
-    htextpara_t *tl;
-    textpara_t *ti;
+    htextspan_t *tl;
+    textspan_t *ti;
     int i, j;
 
     if (!t)
 	return;
 
-    tl = t->paras;
-    for (i = 0; i < t->nparas; i++) {
+    tl = t->spans;
+    for (i = 0; i < t->nspans; i++) {
 	ti = tl->items;
 	for (j = 0; j < tl->nitems; j++) {
 	    if (ti->str)
@@ -789,8 +789,8 @@ void free_html_text(htmltxt_t * t)
 	}
 	tl++;
     }
-    if (t->paras)
-	free(t->paras);
+    if (t->spans)
+	free(t->spans);
     free(t);
 }
 
@@ -981,31 +981,31 @@ static int size_html_txt(graph_t * g, htmltxt_t * ftxt, htmlenv_t * env)
     int i, j;
     double width;
     char *fname;
-    textpara_t lp;
+    textspan_t lp;
     htmlfont_t lhf;
     double maxoffset, mxysize;
-    int simple = 1;              /* one item per param, same font size/face, no flags */
+    int simple = 1;              /* one item per span, same font size/face, no flags */
     double prev_fsize = -1;
     char* prev_fname = NULL;
 
     lp.font = &lhf;
 
-    for (i = 0; i < ftxt->nparas; i++) {
-	if (ftxt->paras[i].nitems > 1) {
+    for (i = 0; i < ftxt->nspans; i++) {
+	if (ftxt->spans[i].nitems > 1) {
 	    simple = 0;
 	    break;
 	}
-	if (ftxt->paras[i].items[0].font) {
-	    if (ftxt->paras[i].items[0].font->flags) {
+	if (ftxt->spans[i].items[0].font) {
+	    if (ftxt->spans[i].items[0].font->flags) {
 		simple = 0;
 		break;
 	    }
-	    if (ftxt->paras[i].items[0].font->size > 0)
-		fsize = ftxt->paras[i].items[0].font->size;
+	    if (ftxt->spans[i].items[0].font->size > 0)
+		fsize = ftxt->spans[i].items[0].font->size;
 	    else
 		fsize = env->finfo.size;
-	    if (ftxt->paras[i].items[0].font->name)
-		fname = ftxt->paras[i].items[0].font->name;
+	    if (ftxt->spans[i].items[0].font->name)
+		fname = ftxt->spans[i].items[0].font->name;
 	    else
 		fname = env->finfo.name;
 	}
@@ -1028,26 +1028,26 @@ static int size_html_txt(graph_t * g, htmltxt_t * ftxt, htmlenv_t * env)
     }
     ftxt->simple = simple;
 
-    for (i = 0; i < ftxt->nparas; i++) {
+    for (i = 0; i < ftxt->nspans; i++) {
 	width = 0;
 	mxysize = maxoffset = mxfsize = 0;
-	for (j = 0; j < ftxt->paras[i].nitems; j++) {
+	for (j = 0; j < ftxt->spans[i].nitems; j++) {
 	    lp.str =
-		strdup_and_subst_obj(ftxt->paras[i].items[j].str,
+		strdup_and_subst_obj(ftxt->spans[i].items[j].str,
 				     env->obj);
-	    if (ftxt->paras[i].items[j].font) {
-		if (ftxt->paras[i].items[j].font->flags)
-		    lp.font->flags = ftxt->paras[i].items[j].font->flags;
+	    if (ftxt->spans[i].items[j].font) {
+		if (ftxt->spans[i].items[j].font->flags)
+		    lp.font->flags = ftxt->spans[i].items[j].font->flags;
 		else if (env->finfo.flags > 0)
 		    lp.font->flags = env->finfo.flags;
 		else
 		    lp.font->flags = 0;
-		if (ftxt->paras[i].items[j].font->size > 0)
-		    fsize = ftxt->paras[i].items[j].font->size;
+		if (ftxt->spans[i].items[j].font->size > 0)
+		    fsize = ftxt->spans[i].items[j].font->size;
 		else
 		    fsize = env->finfo.size;
-		if (ftxt->paras[i].items[j].font->name)
-		    fname = ftxt->paras[i].items[j].font->name;
+		if (ftxt->spans[i].items[j].font->name)
+		    fname = ftxt->spans[i].items[j].font->name;
 		else
 		    fname = env->finfo.name;
 	    } else {
@@ -1056,48 +1056,48 @@ static int size_html_txt(graph_t * g, htmltxt_t * ftxt, htmlenv_t * env)
 		lp.font->flags = 0;
 	    }
 	    sz = textsize(GD_gvc(g), &lp, fname, fsize);
-	    free(ftxt->paras[i].items[j].str);
-	    ftxt->paras[i].items[j].str = lp.str;
-	    ftxt->paras[i].items[j].size.x = sz.x;
-	    ftxt->paras[i].items[j].yoffset_layout = lp.yoffset_layout;
-	    ftxt->paras[i].items[j].yoffset_centerline = lp.yoffset_centerline;
-	    ftxt->paras[i].items[j].postscript_alias = lp.postscript_alias;
-	    ftxt->paras[i].items[j].layout = lp.layout;
-	    ftxt->paras[i].items[j].free_layout = lp.free_layout;
+	    free(ftxt->spans[i].items[j].str);
+	    ftxt->spans[i].items[j].str = lp.str;
+	    ftxt->spans[i].items[j].size.x = sz.x;
+	    ftxt->spans[i].items[j].yoffset_layout = lp.yoffset_layout;
+	    ftxt->spans[i].items[j].yoffset_centerline = lp.yoffset_centerline;
+	    ftxt->spans[i].items[j].postscript_alias = lp.postscript_alias;
+	    ftxt->spans[i].items[j].layout = lp.layout;
+	    ftxt->spans[i].items[j].free_layout = lp.free_layout;
 	    width += sz.x;
 	    mxfsize = MAX(fsize, mxfsize);
 	    mxysize = MAX(sz.y, mxysize);
 	    maxoffset = MAX(lp.yoffset_centerline, maxoffset);
 	}
 	/* lsize = mxfsize * LINESPACING; */
-	ftxt->paras[i].size = width;
+	ftxt->spans[i].size = width;
 	/* ysize - curbline is the distance from the previous
 	 * baseline to the bottom of the previous line.
 	 * Then, in the current line, we set the baseline to
 	 * be 5/6 of the max. font size. Thus, lfsize gives the
 	 * distance from the previous baseline to the new one.
 	 */
-	/* ftxt->paras[i].lfsize = 5*mxfsize/6 + ysize - curbline; */
+	/* ftxt->spans[i].lfsize = 5*mxfsize/6 + ysize - curbline; */
 	if (simple) {
 	    lsize = mxysize;
 	    if (i == 0)
-		ftxt->paras[i].lfsize = mxfsize;
+		ftxt->spans[i].lfsize = mxfsize;
 	    else
-		ftxt->paras[i].lfsize = mxysize;
+		ftxt->spans[i].lfsize = mxysize;
 	}
 	else {
 	    lsize = mxfsize;
 	    if (i == 0)
-		ftxt->paras[i].lfsize = mxfsize - maxoffset;
+		ftxt->spans[i].lfsize = mxfsize - maxoffset;
 	    else
-		ftxt->paras[i].lfsize = mxfsize + ysize - curbline - maxoffset;
+		ftxt->spans[i].lfsize = mxfsize + ysize - curbline - maxoffset;
 	}
-	curbline += ftxt->paras[i].lfsize;
+	curbline += ftxt->spans[i].lfsize;
 	xsize = MAX(width, xsize);
 	ysize += lsize;
     }
     ftxt->box.UR.x = xsize;
-    if (ftxt->nparas == 1)
+    if (ftxt->nspans == 1)
 	ftxt->box.UR.y = mxysize;
     else
 	ftxt->box.UR.y = ysize;
@@ -1554,9 +1554,9 @@ static void pos_html_txt(htmltxt_t * ftxt, char c)
 {
     int i;
 
-    for (i = 0; i < ftxt->nparas; i++) {
-	if (ftxt->paras[i].just == UNSET_ALIGN)	/* unset */
-	    ftxt->paras[i].just = c;
+    for (i = 0; i < ftxt->nspans; i++) {
+	if (ftxt->spans[i].just == UNSET_ALIGN)	/* unset */
+	    ftxt->spans[i].just = c;
     }
 }
 
@@ -1907,20 +1907,20 @@ void printTxt(htmltxt_t * txt, int ind)
     int i, j;
 
     indent(ind);
-    fprintf(stderr, "txt paras = %d \n", txt->nparas);
-    for (i = 0; i < txt->nparas; i++) {
+    fprintf(stderr, "txt spans = %d \n", txt->nspans);
+    for (i = 0; i < txt->nspans; i++) {
 	indent(ind + 1);
-	fprintf(stderr, "[%d] %d items\n", i, txt->paras[i].nitems);
-	for (j = 0; j < txt->paras[i].nitems; j++) {
+	fprintf(stderr, "[%d] %d items\n", i, txt->spans[i].nitems);
+	for (j = 0; j < txt->spans[i].nitems; j++) {
 	    indent(ind + 2);
 	    fprintf(stderr, "[%d] (%f) \"%s\" ",
-		    j, txt->paras[i].items[j].size,
-		    txt->paras[i].items[j].str);
-	    if (txt->paras[i].items[j].font)
+		    j, txt->spans[i].items[j].size,
+		    txt->spans[i].items[j].str);
+	    if (txt->spans[i].items[j].font)
 		fprintf(stderr, "font %s color %s size %f\n",
-			txt->paras[i].items[j].font->name,
-			txt->paras[i].items[j].font->color,
-			txt->paras[i].items[j].font->size);
+			txt->spans[i].items[j].font->name,
+			txt->spans[i].items[j].font->color,
+			txt->spans[i].items[j].font->size);
 	    else
 		fprintf(stderr, "\n");
 	}

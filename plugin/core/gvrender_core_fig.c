@@ -242,7 +242,7 @@ static void fig_end_edge(GVJ_t * job)
     Depth = 2;
 }
 
-static void fig_textpara(GVJ_t * job, pointf p, textpara_t * para)
+static void fig_textspan(GVJ_t * job, pointf p, textspan_t * span)
 {
     obj_state_t *obj = job->obj;
 
@@ -252,7 +252,7 @@ static void fig_textpara(GVJ_t * job, pointf p, textpara_t * para)
     int depth = Depth;
     int pen_style = 0;          /* not used */
     int font = -1;		/* init to xfig's default font */
-    double font_size = para->font->size * job->zoom;
+    double font_size = span->font->size * job->zoom;
     double angle = job->rotation ? (M_PI / 2.0) : 0.0;
     int font_flags = 6;		/* PostScript font + Special text */
 /* Special text indicates that latex markup may exist
@@ -262,10 +262,10 @@ static void fig_textpara(GVJ_t * job, pointf p, textpara_t * para)
     double height = 0.0;
     double length = 0.0;
 
-    if (para->postscript_alias) /* if it is a standard postscript font */
-	font = para->postscript_alias->xfig_code; 
+    if (span->postscript_alias) /* if it is a standard postscript font */
+	font = span->postscript_alias->xfig_code; 
 
-    switch (para->just) {
+    switch (span->just) {
     case 'l':
         sub_type = 0;
         break;
@@ -282,7 +282,7 @@ static void fig_textpara(GVJ_t * job, pointf p, textpara_t * para)
             "%d %d %d %d %d %d %.1f %.4f %d %.1f %.1f %d %d %s\\001\n",
             object_code, sub_type, color, depth, pen_style, font,
             font_size, angle, font_flags, height, length, ROUND(p.x), ROUND(p.y),
-            fig_string(para->str));
+            fig_string(span->str));
 }
 
 static void fig_ellipse(GVJ_t * job, pointf * A, int filled)
@@ -498,7 +498,7 @@ gvrender_engine_t fig_engine = {
     0,				/* fig_end_anchor */
     0,				/* fig_begin_label */
     0,				/* fig_end_label */
-    fig_textpara,
+    fig_textspan,
     fig_resolve_color,
     fig_ellipse,
     fig_polygon,

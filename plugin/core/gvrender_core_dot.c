@@ -535,7 +535,7 @@ static void dot_end_graph(GVJ_t *job)
     g->clos->disc.io = io_save;
 }
 
-static void xdot_textpara(GVJ_t * job, pointf p, textpara_t * para)
+static void xdot_textspan(GVJ_t * job, pointf p, textspan_t * span)
 {
     emit_state_t emit_state = job->obj->emit_state;
     int flags;
@@ -543,12 +543,12 @@ static void xdot_textpara(GVJ_t * job, pointf p, textpara_t * para)
     int j;
     
     agxbput(xbufs[emit_state], "F ");
-    xdot_fmt_num (buf, para->font->size);
+    xdot_fmt_num (buf, span->font->size);
     agxbput(xbufs[emit_state], buf);
-    xdot_str (job, "", para->font->name);
+    xdot_str (job, "", span->font->name);
     xdot_pencolor(job);
 
-    switch (para->just) {
+    switch (span->just) {
     case 'l':
         j = -1; 
         break;
@@ -560,8 +560,8 @@ static void xdot_textpara(GVJ_t * job, pointf p, textpara_t * para)
         j = 0;
         break;
     }
-    if (para->font)
-	flags = para->font->flags;
+    if (span->font)
+	flags = span->font->flags;
     else
 	flags = 0;
     if (xd->version >= 15) {
@@ -574,14 +574,14 @@ static void xdot_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	}
     }
 
-    p.y += para->yoffset_centerline;
+    p.y += span->yoffset_centerline;
     agxbput(xbufs[emit_state], "T ");
     xdot_point(xbufs[emit_state], p);
     sprintf(buf, "%d ", j);
     agxbput(xbufs[emit_state], buf);
-    xdot_fmt_num (buf, para->size.x);
+    xdot_fmt_num (buf, span->size.x);
     agxbput(xbufs[emit_state], buf);
-    xdot_str (job, "", para->str);
+    xdot_str (job, "", span->str);
 }
 
 static void xdot_color_stop (agxbuf* xb, float v, gvcolor_t* clr)
@@ -756,7 +756,7 @@ gvrender_engine_t dot_engine = {
     0,				/* dot_end_anchor */
     0,				/* dot_begin_label */
     0,				/* dot_end_label */
-    0,				/* dot_textpara */
+    0,				/* dot_textspan */
     0,				/* dot_resolve_color */
     0,				/* dot_ellipse */
     0,				/* dot_polygon */
@@ -794,7 +794,7 @@ gvrender_engine_t xdot_engine = {
 #endif
     0,				/* xdot_begin_label */
     0,				/* xdot_end_label */
-    xdot_textpara,
+    xdot_textspan,
     0,				/* xdot_resolve_color */
     xdot_ellipse,
     xdot_polygon,

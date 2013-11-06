@@ -38,11 +38,11 @@ int gvtextlayout_select(GVC_t * gvc)
     return NO_SUPPORT;
 }
 
-boolean gvtextlayout(GVC_t *gvc, textpara_t *para, char **fontpath)
+boolean gvtextlayout(GVC_t *gvc, textspan_t *span, char **fontpath)
 {
     gvtextlayout_engine_t *gvte = gvc->textlayout.engine;
 
     if (gvte && gvte->textlayout)
-	return gvte->textlayout(para, fontpath);
+	return gvte->textlayout(span, fontpath);
     return FALSE;
 }

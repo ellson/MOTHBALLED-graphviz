@@ -54,7 +54,7 @@
 /* textlayout */
 
     extern int gvtextlayout_select(GVC_t * gvc);
-    extern boolean gvtextlayout(GVC_t *gvc, textpara_t *para, char **fontpath);
+    extern boolean gvtextlayout(GVC_t *gvc, textspan_t *span, char **fontpath);
 
 /* loadimage */
     extern void gvloadimage(GVJ_t *job, usershape_t *us, boxf b, boolean filled, const char *target);
@@ -99,7 +99,7 @@
     extern void gvrender_end_anchor(GVJ_t * job);
     extern void gvrender_begin_label(GVJ_t * job, label_type type);
     extern void gvrender_end_label(GVJ_t * job);
-    extern void gvrender_textpara(GVJ_t * job, pointf p, textpara_t * para);
+    extern void gvrender_textspan(GVJ_t * job, pointf p, textspan_t * span);
     extern void gvrender_set_pencolor(GVJ_t * job, char *name);
     extern void gvrender_set_penwidth(GVJ_t * job, double penwidth);
     extern void gvrender_set_fillcolor(GVJ_t * job, char *name);

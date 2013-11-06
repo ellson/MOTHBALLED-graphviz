@@ -77,12 +77,12 @@ void gdiplus_free_layout(void *layout)
 		delete (Layout*)layout;
 };
 
-boolean gdiplus_textlayout(textpara_t *para, char **fontpath)
+boolean gdiplus_textlayout(textspan_t *span, char **fontpath)
 {
 	/* ensure GDI+ is started up: since we get called outside of a job, we can't rely on GDI+ startup then */
 	UseGdiplus();
 	
-	Layout* layout = new Layout(para->fontname, para->fontsize, para->str);
+	Layout* layout = new Layout(span->fontname, span->fontsize, span->str);
 	
 	/* measure the text */
 	/* NOTE: use TextRenderingHintAntiAlias + GetGenericTypographic to get a layout without extra space at beginning and end */
@@ -102,12 +102,12 @@ boolean gdiplus_textlayout(textpara_t *para, char **fontpath)
 	layout->font->GetFamily(&fontFamily);
 	int style = layout->font->GetStyle();
 		
-	para->layout = (void*)layout;
-	para->free_layout = &gdiplus_free_layout;
-	para->width = boundingBox.Width;
-	para->height = layout->font->GetHeight(&measureGraphics);
-	para->yoffset_layout = fontFamily.GetCellAscent(style) * para->fontsize / fontFamily.GetEmHeight(style); /* convert design units to pixels */
-	para->yoffset_centerline = 0;
+	span->layout = (void*)layout;
+	span->free_layout = &gdiplus_free_layout;
+	span->width = boundingBox.Width;
+	span->height = layout->font->GetHeight(&measureGraphics);
+	span->yoffset_layout = fontFamily.GetCellAscent(style) * span->fontsize / fontFamily.GetEmHeight(style); /* convert design units to pixels */
+	span->yoffset_centerline = 0;
 	return TRUE;
 };
 

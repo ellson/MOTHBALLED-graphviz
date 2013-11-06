@@ -32,7 +32,7 @@ typedef unsigned char boolean;
 #include "geom.h"
 #include "gvcext.h"
 #include "pathgeom.h"
-#include "textpara.h"
+#include "textspan.h"
 #include "cgraph.h"
 
 #ifdef __cplusplus
@@ -125,8 +125,8 @@ extern "C" {
 	pointf pos;   /* the center of the space for the label */
 	union {
 	    struct {
-		textpara_t *para;
-		short nparas;
+		textspan_t *span;
+		short nspans;
 	    } txt;
 	    htmllabel_t *html;
 	} u;

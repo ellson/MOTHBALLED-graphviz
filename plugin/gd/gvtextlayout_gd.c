@@ -119,15 +119,15 @@ char* gd_psfontResolve (PostscriptAlias* pa)
     return buf;
 }
 
-static boolean gd_textlayout(textpara_t * para, char **fontpath)
+static boolean gd_textlayout(textspan_t * span, char **fontpath)
 {
     char *err, *fontlist, *fontname;
     double fontsize;
     int brect[8];
     gdFTStringExtra strex;
 
-    fontname = para->font->name;
-    fontsize = para->font->size;
+    fontname = span->font->name;
+    fontsize = span->font->size;
 
     strex.fontpath = NULL;
     strex.flags = gdFTEX_RETURNFONTPATHNAME | gdFTEX_RESOLUTION;
@@ -138,14 +138,14 @@ static boolean gd_textlayout(textpara_t * para, char **fontpath)
     else
 	strex.flags |= gdFTEX_FONTCONFIG;
 
-    para->size.x = 0.0;
-    para->size.y = 0.0;
-    para->yoffset_layout = 0.0;
+    span->size.x = 0.0;
+    span->size.y = 0.0;
+    span->yoffset_layout = 0.0;
 
-    para->layout = NULL;
-    para->free_layout = NULL;
+    span->layout = NULL;
+    span->free_layout = NULL;
 
-    para->yoffset_centerline = 0.1 * fontsize;
+    span->yoffset_centerline = 0.1 * fontsize;
 
     if (fontname) {
 	if (fontsize <= FONTSIZE_MUCH_TOO_SMALL) {
@@ -158,8 +158,8 @@ static boolean gd_textlayout(textpara_t * para, char **fontpath)
 	/* call gdImageStringFT with null *im to get brect and to set font cache */
 #ifdef HAVE_GD_FONTCONFIG
 	gdFTUseFontConfig(1);  /* tell gd that we really want to use fontconfig, 'cos it s not the default */
-	if (para->postscript_alias)
-	    fontlist = gd_psfontResolve (para->postscript_alias);
+	if (span->postscript_alias)
+	    fontlist = gd_psfontResolve (span->postscript_alias);
 	else
 	    fontlist = fontname;
 #else
@@ -167,7 +167,7 @@ static boolean gd_textlayout(textpara_t * para, char **fontpath)
 #endif
 
 	err = gdImageStringFTEx(NULL, brect, -1, fontlist,
-				fontsize, 0, 0, 0, para->str, &strex);
+				fontsize, 0, 0, 0, span->str, &strex);
 
 	if (err) {
 	    agerr(AGERR,"%s\n", err);
@@ -179,13 +179,13 @@ static boolean gd_textlayout(textpara_t * para, char **fontpath)
 	else
 	    free (strex.fontpath); /* strup'ed in libgd */
 
-	if (para->str && para->str[0]) {
+	if (span->str && span->str[0]) {
 	    /* can't use brect on some archtectures if strlen 0 */
-	    para->size.x = (double) (brect[4] - brect[0]);
+	    span->size.x = (double) (brect[4] - brect[0]);
 	    /* 1.2 specifies how much extra space to leave between lines;
              * see LINESPACING in const.h.
              */
-	    para->size.y = (int)(fontsize * 1.2);
+	    span->size.y = (int)(fontsize * 1.2);
 	}
     }
     return TRUE;
