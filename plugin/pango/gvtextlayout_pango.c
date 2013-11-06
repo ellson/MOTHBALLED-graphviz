@@ -88,7 +88,11 @@ static boolean pango_textlayout(textspan_t * span, char **fontpath)
     if (!context) {
 	fontmap = pango_cairo_font_map_new();
 	gv_fmap = get_font_mapping(fontmap);
+#ifdef HAVE_PANGO_FONT_MAP_CREATE_CONTEXT
 	context = pango_font_map_create_context (fontmap);
+#else
+	context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP(fontmap));
+#endif
 	options=cairo_font_options_create();
 	cairo_font_options_set_antialias(options,CAIRO_ANTIALIAS_GRAY);
 	cairo_font_options_set_hint_style(options,CAIRO_HINT_STYLE_FULL);

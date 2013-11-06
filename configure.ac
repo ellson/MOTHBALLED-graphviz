@@ -2231,7 +2231,7 @@ if test "x$use_pangocairo" = "xYes"; then
     save_LIBS=$LIBS
     PKG_CHECK_MODULES(PANGOFT2, [pangoft2])
     LIBS="$LIBS $PANGOCAIRO_LIBS $PANGOFT2_LIBS"
-    AC_CHECK_FUNCS([pango_fc_font_lock_face pango_fc_font_unlock_face])
+    AC_CHECK_FUNCS([pango_fc_font_lock_face pango_fc_font_unlock_face pango_font_map_create_context])
     LIBS=$save_LIBS
 fi
 
@@ -2391,6 +2391,10 @@ else
       [Define if you have the gdk library])
     AC_SUBST([GDK_CFLAGS])
     AC_SUBST([GDK_LIBS])
+    save_LIBS=$LIBS
+    LIBS="$LIBS $GDK_LIBS"
+    AC_CHECK_FUNCS([g_object_unref])
+    LIBS=$save_LIBS
   ],[
     use_gdk_pixbuf="No (gdk library not available)"
   ])
