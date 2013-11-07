@@ -16,6 +16,7 @@
 #include "htmltable.h"
 #include "htmlparse.h"
 #include "htmllex.h"
+#include "cdt.h"
 #include <ctype.h>
 
 #ifdef HAVE_EXPAT
@@ -565,14 +566,14 @@ static htmlimg_t *mkImg(char **atts)
 
 static textfont_t *mkFont(GVC_t *gvc, char **atts, int flags, int ul)
 {
-    textfont_t *font = new_textfont();
+    textfont_t tf = {NULL,NULL,NULL,0.0,0,0};
 
-    font->size = -1.0;		/* unassigned */
-    font->flags = flags;
+    tf.size = -1.0;		/* unassigned */
+    tf.flags = flags;
     if (atts)
-	doAttrs(font, font_items, sizeof(font_items) / ISIZE, atts, "<FONT>");
+	doAttrs(&tf, font_items, sizeof(font_items) / ISIZE, atts, "<FONT>");
 
-    return font;
+    return dtinsert(gvc->textfont_dt, &tf);
 }
 
 static htmlcell_t *mkCell(char **atts)

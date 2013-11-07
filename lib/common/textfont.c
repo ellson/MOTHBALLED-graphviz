@@ -203,7 +203,10 @@ pointf textspan_size(GVC_t *gvc, textspan_t * span)
     font = span->font;
 
     assert(font->name);
-    font->postscript_alias = translate_postscript_fontname(font->name);
+
+    /* only need to find alias once per font, since they are unique in dict */
+    if (! font->postscript_alias) 
+        font->postscript_alias = translate_postscript_fontname(font->name);
 
     if (Verbose && emit_once(font->name))
 	fpp = &fontpath;
@@ -222,119 +225,64 @@ pointf textspan_size(GVC_t *gvc, textspan_t * span)
     return span->size;
 }
 
-textfont_t * new_textfont(void)
-{
-    textfont_t *tf = calloc(1, sizeof(textfont_t));
-    assert(tf);
-    return tf;
-}
-
-void ref_textfont(textfont_t * tf)
-{
-    tf->cnt++;
-}
-
-void unref_textfont(textfont_t * tf)
-{
-    assert(tf);
-    if (tf->cnt) {
-	tf->cnt--;
-    }
-    else {
-	if (tf->name)
-	    free(tf->name);
-	if (tf->color)
-	    free(tf->color);
-	free(tf);
-    }
-}
-
 static Void_t* textfont_makef(Dt_t* dt, Void_t* obj, Dtdisc_t* disc)
 {
-	textfont_t *f1 = (textfont_t*)obj;
-	textfont_t *f2 = calloc(1,sizeof(textfont_t));
-	
-	/* key */
-	if (f1->name) f2->name = strdup(f1->name);
-	if (f1->color) f2->color = strdup(f1->color);
-	f2->flags = f1->flags;
-	f2->size = f1->size;
+    textfont_t *f1 = (textfont_t*)obj;
+    textfont_t *f2 = calloc(1,sizeof(textfont_t));
+    
+    /* key */
+    if (f1->name) f2->name = strdup(f1->name);
+    if (f1->color) f2->color = strdup(f1->color);
+    f2->flags = f1->flags;
+    f2->size = f1->size;
 
-	/* non key */
-	f2->postscript_alias = f1->postscript_alias;
+    /* non key */
+    f2->postscript_alias = f1->postscript_alias;
 
-	return f2;
+    return f2;
 }
 
 static void textfont_freef(Dt_t* dt, Void_t* obj, Dtdisc_t* disc)
 {
-	textfont_t *f = (textfont_t*)obj;
+    textfont_t *f = (textfont_t*)obj;
 
-	if (f->name) free(f->name);
-	if (f->color) free(f->color);
-	free(f);
+    if (f->name) free(f->name);
+    if (f->color) free(f->color);
+    free(f);
 }
 
 static int textfont_comparf (Dt_t* dt, Void_t* key1, Void_t* key2, Dtdisc_t* disc)
 {
-	int rc;
-	textfont_t *f1 = (textfont_t*)key1, *f2 = (textfont_t*)key2;
+    int rc;
+    textfont_t *f1 = (textfont_t*)key1, *f2 = (textfont_t*)key2;
 
-	rc = strcmp(f1->name, f2->name);
-	if (rc) return rc;
-	rc = strcmp(f1->color, f2->color);
-	if (rc) return rc;
-	rc = (f1->flags - f2->flags);
-	if (rc) return rc;
-	if (f1->size > f2->size) return 1;
-	if (f1->size < f2->size) return -1;
-	return 0;
+    if (f1->name || f2->name) {
+        if (! f1->name) return -1;
+        if (! f2->name) return 1;
+        rc = strcmp(f1->name, f2->name);
+        if (rc) return rc;
+    }
+    if (f1->color || f2->color) {
+        if (! f1->color) return -1;
+        if (! f2->color) return 1;
+        rc = strcmp(f1->color, f2->color);
+        if (rc) return rc;
+    }
+    rc = (f1->flags - f2->flags);
+    if (rc) return rc;
+    if (f1->size < f2->size) return -1;
+    if (f1->size > f2->size) return 1;
+    return 0;
 }
 
 Dt_t * textfont_dict_open(GVC_t *gvc)
 {
-	DTDISC(&(gvc->textfont_disc),0,sizeof(textfont_t),-1,textfont_makef,textfont_freef,textfont_comparf,NULL,NULL,NULL);
-	gvc->textfont_dt = dtopen(&(gvc->textfont_disc), Dtoset);
-	return gvc->textfont_dt;
+    DTDISC(&(gvc->textfont_disc),0,sizeof(textfont_t),-1,textfont_makef,textfont_freef,textfont_comparf,NULL,NULL,NULL);
+    gvc->textfont_dt = dtopen(&(gvc->textfont_disc), Dtoset);
+    return gvc->textfont_dt;
 }
 
 void textfont_dict_close(GVC_t *gvc)
 {
-	dtclose(gvc->textfont_dt);
+    dtclose(gvc->textfont_dt);
 }
-	
-
-#if 0
-
-textfont_t font1 = { "Times", "black", 0 };
-textfont_t font2 = { "Arial", "black", 0 };
-textfont_t font3 = { "Arial", "black", 4 };
-textfont_t font4 = { "Arial", "black", 0 };  /* dup of 2 */
-textfont_t font5 = { "Arial", "red", 0 };
-textfont_t font6 = { "Times", "black", 0 };  /* dup of 1 */
-	
-int main (void) 
-{
-	Dt_t *textfont_dt;
-	font_t *f1 = &font1, *f2 = &font2, *f3 = &font3, *f4 = &font4, *f5 = &font5, *f6 = &font6;
-
-	fprintf(stderr,"%p %p %p %p %p %p\n", f1, f2, f3, f4, f5, f6);
-	fprintf(stderr,"%s %s %s %s %s %s\n", f1->name, f2->name, f3->name, f4->name, f5->name, f6->name);
-
-	textfont_dt = dtopen( &textfont_disc, Dtoset);
-
-	f1 = dtinsert(textfont_dt, f1);
-	f2 = dtinsert(textfont_dt, f2);
-	f3 = dtinsert(textfont_dt, f3);
-	f4 = dtinsert(textfont_dt, f4);
-	f5 = dtinsert(textfont_dt, f5);
-	f6 = dtinsert(textfont_dt, f6);
-
-	fprintf(stderr,"%p %p %p %p %p %p\n", f1, f2, f3, f4, f5, f6);
-	fprintf(stderr,"%s %s %s %s %s %s\n", f1->name, f2->name, f3->name, f4->name, f5->name, f6->name);
-
-	dtclose(textfont_dt);
-
-	return 0;
-}
-#endif

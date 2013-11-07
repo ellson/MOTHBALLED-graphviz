@@ -37,6 +37,7 @@
 #include "agxbuf.h"
 #include "pointset.h"
 #include "intset.h"
+#include "cdt.h"
 
 #define DEFAULT_BORDER    1
 #define DEFAULT_CELLPADDING  2
@@ -759,8 +760,6 @@ void free_html_text(htmltxt_t * t)
 	for (j = 0; j < tl->nitems; j++) {
 	    if (ti->str)
 		free(ti->str);
-	    if (ti->font)
-		unref_textfont(ti->font);
 	    if (ti->layout && ti->free_layout)
 		ti->free_layout(ti->layout);
 	    ti++;
@@ -807,8 +806,6 @@ static void free_html_tbl(htmltbl_t * tbl)
 	}
 	free(tbl->u.n.cells);
     }
-    if (tbl->font)
-	unref_textfont(tbl->font);
     free_html_data(&tbl->data);
     free(tbl);
 }
@@ -959,14 +956,13 @@ static int size_html_txt(GVC_t *gvc, htmltxt_t * ftxt, htmlenv_t * env)
     int i, j;
     double width;
     char *fname;
+    int fflags;
     textspan_t lp;
+    textfont_t tf = {NULL,NULL,NULL,0.0,0,0};
     double maxoffset, mxysize;
     int simple = 1;              /* one item per span, same font size/face, no flags */
     double prev_fsize = -1;
     char* prev_fname = NULL;
-
-    lp.font = new_textfont();   /* FIXME allocated - but where unref'ed ? */
-                                /* FIXME use by ref if not going to modify */
 
     for (i = 0; i < ftxt->nspans; i++) {
 	if (ftxt->spans[i].nitems > 1) {
@@ -1015,11 +1011,11 @@ static int size_html_txt(GVC_t *gvc, htmltxt_t * ftxt, htmlenv_t * env)
 				     env->obj);
 	    if (ftxt->spans[i].items[j].font) {
 		if (ftxt->spans[i].items[j].font->flags)
-		    lp.font->flags = ftxt->spans[i].items[j].font->flags;
+		    fflags = ftxt->spans[i].items[j].font->flags;
 		else if (env->finfo.flags > 0)
-		    lp.font->flags = env->finfo.flags;
+		    fflags = env->finfo.flags;
 		else
-		    lp.font->flags = 0;
+		    fflags = 0;
 		if (ftxt->spans[i].items[j].font->size > 0)
 		    fsize = ftxt->spans[i].items[j].font->size;
 		else
@@ -1031,24 +1027,19 @@ static int size_html_txt(GVC_t *gvc, htmltxt_t * ftxt, htmlenv_t * env)
 	    } else {
 		fsize = env->finfo.size;
 		fname = env->finfo.name;
-		lp.font->flags = 0;
+		fflags = 0;
 	    }
-	    lp.font->name = fname;
-	    lp.font->size = fsize;
+	    tf.name=fname;
+	    tf.size=fsize;
+	    tf.flags=fflags;
+	    lp.font = dtinsert(gvc->textfont_dt, &tf);
 	    sz = textspan_size(gvc, &lp);
 	    free(ftxt->spans[i].items[j].str);
 	    ftxt->spans[i].items[j].str = lp.str;
 	    ftxt->spans[i].items[j].size.x = sz.x;
 	    ftxt->spans[i].items[j].yoffset_layout = lp.yoffset_layout;
 	    ftxt->spans[i].items[j].yoffset_centerline = lp.yoffset_centerline;
-
-/* FIXME !! */
-	    ftxt->spans[i].items[j].font = new_textfont();
-	    ftxt->spans[i].items[j].font->postscript_alias = lp.font->postscript_alias;
-	    ftxt->spans[i].items[j].font->name = strdup(fname);
-	    ftxt->spans[i].items[j].font->size = fsize;
-	    ftxt->spans[i].items[j].font->flags = lp.font->flags;
-/**/
+            ftxt->spans[i].items[j].font = lp.font;
 	    ftxt->spans[i].items[j].layout = lp.layout;
 	    ftxt->spans[i].items[j].free_layout = lp.free_layout;
 	    width += sz.x;

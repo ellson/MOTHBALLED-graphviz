@@ -26,6 +26,7 @@
 #include "agxbuf.h"
 #include "htmltable.h"
 #include "gvc.h"
+#include "cdt.h"
 #include "xdot.h"
 
 #ifdef WIN32
@@ -2912,6 +2913,7 @@ freePara (exdot_op* op)
 
 boxf xdotBB (Agraph_t* g)
 {
+    GVC_t *gvc = GD_gvc(g);
     exdot_op* op;
     int i;
     double fontsize = 0.0;
@@ -2921,6 +2923,7 @@ boxf xdotBB (Agraph_t* g)
     boxf bb0;
     boxf bb = GD_bb(g);
     xdot* xd = (xdot*)GD_drawing(g)->xdots;
+    textfont_t tf, null_tf = {NULL,NULL,NULL,0.0,0,0};
 
     if (!xd) return bb;
 
@@ -2931,6 +2934,7 @@ boxf xdotBB (Agraph_t* g)
 
     op = (exdot_op*)(xd->ops);
     for (i = 0; i < xd->cnt; i++) {
+	tf = null_tf;
 	switch (op->op.kind) {
 	case xd_filled_ellipse :
 	case xd_unfilled_ellipse :
@@ -2958,12 +2962,10 @@ boxf xdotBB (Agraph_t* g)
 	    op->span = NEW(textspan_t);
 	    op->span->str = strdup (op->op.u.text.text);
 	    op->span->just = adjust [op->op.u.text.align];
-
-	    op->span->font = new_textfont();
-	    op->span->font->name = strdup(fontname);
-	    op->span->font->size = fontsize;
-
-	    sz = textspan_size (GD_gvc(g), op->span);
+	    tf.name = fontname;
+	    tf.size = fontsize;
+            op->span->font = dtinsert(gvc->textfont_dt, &tf);
+	    sz = textspan_size (gvc, op->span);
 	    bb0 = textBB (op->op.u.text.x, op->op.u.text.y, op->span);
 	    op->bb = bb0;
 	    expandBB (&bb, bb0.LL);

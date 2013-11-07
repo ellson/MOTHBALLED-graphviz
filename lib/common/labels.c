@@ -22,6 +22,7 @@ static void storeline(GVC_t *gvc, textlabel_t *lp, char *line, char terminator)
 {
     pointf size;
     textspan_t *span;
+    static textfont_t tf;
     int oldsz = lp->u.txt.nspans + 1;
 
     lp->u.txt.span = ZALLOC(oldsz + 1, lp->u.txt.span, textspan_t, oldsz);
@@ -29,9 +30,9 @@ static void storeline(GVC_t *gvc, textlabel_t *lp, char *line, char terminator)
     span->str = line;
     span->just = terminator;
     if (line && line[0]) {
-	span->font = new_textfont();
-        span->font->name = strdup(lp->fontname);
-        span->font->size = lp->fontsize;
+	tf.name = lp->fontname;
+	tf.size = lp->fontsize;
+	span->font = dtinsert(gvc->textfont_dt, &tf);
         size = textspan_size(gvc, span);
     }
     else {
@@ -200,8 +201,6 @@ void free_textspan(textspan_t * tl, int cnt)
 	    free(tlp->str);
 	if (tlp->layout && tlp->free_layout)
 	    tlp->free_layout (tlp->layout);
-	if (tlp->font)
-	    unref_textfont(tlp->font);
 	tlp++;
     }
     free(tl);

@@ -125,8 +125,6 @@ free_fitem(Dt_t* d, fitem* p, Dtdisc_t* ds)
 {
     if (p->ti.str)
 	free (p->ti.str);
-    if (p->ti.font)
-        unref_textfont (p->ti.font);
     free (p);
 }
 
@@ -140,7 +138,6 @@ free_fspan(Dt_t* d, fspan* p, Dtdisc_t* ds)
 	ti = p->lp.items;
 	for (i = 0; i < p->lp.nitems; i++) {
 	    if (ti->str) free (ti->str);
-	    if (ti->font) unref_textfont (ti->font);
 	    ti++;
 	}
 	free (p->lp.items);
@@ -332,7 +329,6 @@ freeFontstack(void)
     sfont_t* next;
 
     for (s = HTMLstate.fontstack; (next = s->pfont); s = next) {
-	unref_textfont (s->cfont);
 	free(s);
     }
 }
@@ -417,7 +413,6 @@ popFont (void)
     sfont_t* curfont = HTMLstate.fontstack;
     sfont_t* prevfont = curfont->pfont;
 
-    unref_textfont (curfont->cfont);
     free (curfont);
     HTMLstate.fontstack = prevfont;
 }
