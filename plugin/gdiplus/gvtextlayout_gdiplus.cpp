@@ -104,9 +104,9 @@ boolean gdiplus_textlayout(textspan_t *span, char **fontpath)
 		
 	span->layout = (void*)layout;
 	span->free_layout = &gdiplus_free_layout;
-	span->width = boundingBox.Width;
-	span->height = layout->font->GetHeight(&measureGraphics);
-	span->yoffset_layout = fontFamily.GetCellAscent(style) * span->fontsize / fontFamily.GetEmHeight(style); /* convert design units to pixels */
+	span->size.x = boundingBox.Width;
+	span->size.y = layout->font->GetHeight(&measureGraphics);
+	span->yoffset_layout = fontFamily.GetCellAscent(style) * span->font->size / fontFamily.GetEmHeight(style); /* convert design units to pixels */
 	span->yoffset_centerline = 0;
 	return TRUE;
 };
