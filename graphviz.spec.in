@@ -596,6 +596,7 @@ Lua extension for graphviz.
 %{_libdir}/lua*/*
 %{_datadir}/graphviz/demo/*.lua*
 %{_mandir}/man3/*.3lua.*
+%exclude %{_libdir}/graphviz/lua/*.so
 %endif
 
 #-- graphviz-lang-ocaml rpm --------------------------------------------
@@ -632,6 +633,7 @@ Perl extension for graphviz.
 %{_libdir}/perl*/*
 %{_datadir}/graphviz/demo/*.pl*
 %{_mandir}/man3/*.3perl.*
+%exclude %{_libdir}/graphviz/perl/*.so
 %endif
 
 #-- graphviz-lang-php rpm ----------------------------------------------
@@ -652,6 +654,7 @@ PHP extension for graphviz.
 %{_datadir}/php*/*
 %{_datadir}/graphviz/demo/*.php*
 %{_mandir}/man3/*.3php.*
+%exclude %{_libdir}/graphviz/php/*.so
 %endif
 
 #-- graphviz-lang-python rpm -------------------------------------------
@@ -670,6 +673,7 @@ Python extension for graphviz.
 %{_libdir}/python*/*
 %{_datadir}/graphviz/demo/*.py*
 %{_mandir}/man3/*.3python.*
+%exclude %{_libdir}/graphviz/python/*.so
 %endif
 
 #-- graphviz-lang-R rpm ---------------------------------------------
@@ -706,6 +710,7 @@ Ruby extension for graphviz.
 %{_libdir}/*ruby*/*
 %{_datadir}/graphviz/demo/*.rb*
 %{_mandir}/man3/*.3ruby.*
+%exclude %{_libdir}/graphviz/ruby/*.so
 %endif
 
 #-- graphviz-lang-tcl rpm ----------------------------------------------
