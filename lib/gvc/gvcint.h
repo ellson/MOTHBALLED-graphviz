@@ -93,7 +93,7 @@ extern "C" {
 
 	/* fonts and textlayout */
 	Dtdisc_t textfont_disc;
-	Dt_t *textfont_dict;
+	Dt_t *textfont_dt;
 	gvplugin_active_textlayout_t textlayout; /* always use best avail for all jobs */
 //	void (*free_layout) (void *layout);   /* function for freeing layouts (mostly used by pango) */
 	

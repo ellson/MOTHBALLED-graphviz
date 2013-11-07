@@ -564,6 +564,7 @@ void gvconfig(GVC_t * gvc, boolean rescan)
     }
 #endif
     gvtextlayout_select(gvc);   /* choose best available textlayout plugin immediately */
+    textfont_dict_open(gvc);    /* initialize font dict */
 }
 
 #ifdef ENABLE_LTDL

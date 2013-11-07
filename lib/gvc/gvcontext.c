@@ -91,6 +91,7 @@ int gvFreeContext(GVC_t * gvc)
 	free(gvc->config_path);
     if (gvc->input_filenames)
 	free(gvc->input_filenames);
+    textfont_dict_close(gvc);
     free(gvc);
     return (graphviz_errors + agerrors());
 }

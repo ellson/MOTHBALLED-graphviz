@@ -159,6 +159,8 @@ extern "C" {
     extern stroke_t* taper0 (bezier* bez, double initwid);
     extern pointf textspan_size(GVC_t * gvc, textspan_t * span);
     extern textfont_t * new_textfont(void);
+    extern Dt_t * textfont_dict_open(GVC_t *gvc);
+    extern void textfont_dict_close(GVC_t *gvc);
     extern void ref_textfont(textfont_t *tf);
     extern void unref_textfont(textfont_t *tf);
     extern void translate_bb(Agraph_t *, int);
