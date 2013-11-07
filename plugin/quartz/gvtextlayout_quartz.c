@@ -104,7 +104,7 @@ void quartz_free_layout(void *layout)
 
 #endif
 
-boolean quartz_textlayout(textpara_t *para, char **fontpath)
+boolean quartz_textlayout(textspan_t *para, char **fontpath)
 {
 	void *line = quartz_new_layout(para->font->name, para->font->size, para->str);
 	if (line)
@@ -113,7 +113,7 @@ boolean quartz_textlayout(textpara_t *para, char **fontpath)
 		para->layout = (void*)line;
 		para->free_layout = &quartz_free_layout;
 		para->yoffset_centerline = 0;
-		quartz_size_layout((void*)line, &para->width, &para->height, &para->yoffset_layout);
+		quartz_size_layout((void*)line, &para->size.x, &para->size.y, &para->yoffset_layout);
 		return TRUE;
 	}
 	else

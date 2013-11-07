@@ -324,21 +324,21 @@ static void quartzgen_path(GVJ_t * job, int filled)
     CGContextDrawPath(context, filled ? kCGPathFillStroke : kCGPathStroke);
 }
 
-void quartzgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
+void quartzgen_textpara(GVJ_t * job, pointf p, textspan_t * para)
 {
     CGContextRef context = (CGContextRef) job->context;
 
     /* adjust text position */
     switch (para->just) {
     case 'r':
-	p.x -= para->width;
+	p.x -= para->size.x;
 	break;
     case 'l':
 	p.x -= 0.0;
 	break;
     case 'n':
     default:
-	p.x -= para->width / 2.0;
+	p.x -= para->size.x / 2.0;
 	break;
     }
     p.y += para->yoffset_centerline;
@@ -348,7 +348,7 @@ void quartzgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	layout = para->layout;
     else
 	layout =
-	    quartz_new_layout(para->fontname, para->fontsize, para->str);
+	    quartz_new_layout(para->font->name, para->font->size, para->str);
 
 #if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
     CGContextSaveGState(context);
