@@ -25,14 +25,14 @@ noinst_HEADERS = render.h utils.h memory.h \
 	logic.h const.h macros.h htmllex.h htmltable.h pointset.h intset.h
 noinst_LTLIBRARIES = libcommon_C.la
 
-libcommon_C_la_SOURCES = arrows.c colxlate.c ellipse.c fontmetrics.c \
+libcommon_C_la_SOURCES = arrows.c colxlate.c ellipse.c textfont.c \
 	args.c memory.c globals.c htmllex.c htmlparse.y htmltable.c input.c \
 	pointset.c intset.c postproc.c routespl.c splines.c psusershape.c \
 	timing.c labels.c ns.c shapes.c utils.c geom.c taper.c \
 	output.c emit.c ps_font_equiv.txt ps_fontmap.txt fontmap.cfg \
 	color_names
 
-fontmetrics.o fontmetrics.lo: ps_font_equiv.h
+textfont.o textfont.lo: ps_font_equiv.h
 
 # ensure font names are properly sorted for bsearch operation 
 ps_font_equiv.h: $(srcdir)/ps_font_equiv.txt $(srcdir)/fontmap.cfg $(srcdir)/ps_fontmap.txt
