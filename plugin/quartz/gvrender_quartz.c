@@ -324,36 +324,36 @@ static void quartzgen_path(GVJ_t * job, int filled)
     CGContextDrawPath(context, filled ? kCGPathFillStroke : kCGPathStroke);
 }
 
-void quartzgen_textpara(GVJ_t * job, pointf p, textspan_t * para)
+void quartzgen_textspan(GVJ_t * job, pointf p, textspan_t * span)
 {
     CGContextRef context = (CGContextRef) job->context;
 
     /* adjust text position */
-    switch (para->just) {
+    switch (span->just) {
     case 'r':
-	p.x -= para->size.x;
+	p.x -= span->size.x;
 	break;
     case 'l':
 	p.x -= 0.0;
 	break;
     case 'n':
     default:
-	p.x -= para->size.x / 2.0;
+	p.x -= span->size.x / 2.0;
 	break;
     }
-    p.y += para->yoffset_centerline;
+    p.y += span->yoffset_centerline;
 
     void *layout;
-    if (para->free_layout == &quartz_free_layout)
-	layout = para->layout;
+    if (span->free_layout == &quartz_free_layout)
+	layout = span->layout;
     else
 	layout =
-	    quartz_new_layout(para->font->name, para->font->size, para->str);
+	    quartz_new_layout(span->font->name, span->font->size, span->str);
 
 #if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
     CGContextSaveGState(context);
     CGContextScaleCTM(context, 1.0, -1.0);
-    p.y = -p.y - para->yoffset_layout;
+    p.y = -p.y - span->yoffset_layout;
 #endif
     CGContextSetRGBFillColor(context, job->obj->pencolor.u.RGBA[0],
 			     job->obj->pencolor.u.RGBA[1],
@@ -365,7 +365,7 @@ void quartzgen_textpara(GVJ_t * job, pointf p, textspan_t * para)
     CGContextRestoreGState(context);
 #endif
 
-    if (para->free_layout != &quartz_free_layout)
+    if (span->free_layout != &quartz_free_layout)
 	quartz_free_layout(layout);
 }
 
@@ -449,7 +449,7 @@ static gvrender_engine_t quartzgen_engine = {
     0,				/* quartzgen_end_anchor */
     0,				/* quartzgen_begin_label */
     0,				/* quartzgen_end_label */
-    quartzgen_textpara,
+    quartzgen_textspan,
     0,
     quartzgen_ellipse,
     quartzgen_polygon,
