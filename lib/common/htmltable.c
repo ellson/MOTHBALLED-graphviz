@@ -43,16 +43,6 @@
 #define DEFAULT_CELLSPACING  2
 
 typedef struct {
-    pointf pos;
-    textfont_t finfo;
-    void *obj;
-    graph_t *g;
-    char *imgscale;
-    char *objid;
-    boolean objid_set;
-} htmlenv_t;
-
-typedef struct {
     char *url;
     char *tooltip;
     char *target;
@@ -957,7 +947,7 @@ int html_path(node_t * n, port * p, int side, boxf * rv, int *k)
     return 0;
 }
 
-static int size_html_txt(graph_t * g, htmltxt_t * ftxt, htmlenv_t * env)
+static int size_html_txt(GVC_t *gvc, htmltxt_t * ftxt, htmlenv_t * env)
 {
     double xsize = 0.0;		/* width of text block */
     double ysize = 0.0;		/* height of text block */
@@ -1045,7 +1035,7 @@ static int size_html_txt(graph_t * g, htmltxt_t * ftxt, htmlenv_t * env)
 	    }
 	    lp.font->name = fname;
 	    lp.font->size = fsize;
-	    sz = textspan_size(GD_gvc(g), &lp);
+	    sz = textspan_size(gvc, &lp);
 	    free(ftxt->spans[i].items[j].str);
 	    ftxt->spans[i].items[j].str = lp.str;
 	    ftxt->spans[i].items[j].size.x = sz.x;
@@ -1160,7 +1150,7 @@ size_html_cell(graph_t * g, htmlcell_t * cp, htmltbl_t * parent,
 	rv = size_html_img(cp->child.u.img, env);
 	child_sz = cp->child.u.img->box.UR;
     } else {
-	rv = size_html_txt(g, cp->child.u.txt, env);
+	rv = size_html_txt(GD_gvc(g), cp->child.u.txt, env);
 	child_sz = cp->child.u.txt->box.UR;
     }
 
@@ -2044,7 +2034,7 @@ int make_html_label(void *obj, textlabel_t * lp)
     env.finfo.name = lp->fontname;
     env.finfo.color = lp->fontcolor;
     env.finfo.flags = 0;
-    lbl = parseHTML(lp->text, &rv, GD_charset(env.g));
+    lbl = parseHTML(lp->text, &rv, &env);
     if (!lbl) {
 	/* Parse of label failed; revert to simple text label */
 	agxbuf xb;
@@ -2078,7 +2068,7 @@ int make_html_label(void *obj, textlabel_t * lp)
 	lp->dimen.x = box.UR.x - box.LL.x;
 	lp->dimen.y = box.UR.y - box.LL.y;
     } else {
-	rv |= size_html_txt(g, lbl->u.txt, &env);
+	rv |= size_html_txt(GD_gvc(g), lbl->u.txt, &env);
 	wd2 = lbl->u.txt->box.UR.x  / 2;
 	ht2 = lbl->u.txt->box.UR.y  / 2;
 	box = boxfof(-wd2, -ht2, wd2, ht2);

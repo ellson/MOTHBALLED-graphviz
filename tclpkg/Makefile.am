@@ -41,7 +41,6 @@ if WITH_LUA
 	-mkdir -p $(DESTDIR)@LUA_INSTALL_DIR@;
 	if test -w $(DESTDIR)@LUA_INSTALL_DIR@; then \
 		(cd $(DESTDIR)@LUA_INSTALL_DIR@; \
-			rm -f $(DESTDIR)$(pkgluadir)/gv.so; \
 			mv -f $(DESTDIR)$(pkgluadir)/libgv_lua.so gv.so;) \
 	else \
 		echo "Warning: @LUA_INSTALL_DIR@ is not writable."; \
@@ -52,7 +51,6 @@ if WITH_PERL
 	-mkdir -p $(DESTDIR)@PERL_INSTALL_DIR@;
 	if test -w $(DESTDIR)@PERL_INSTALL_DIR@; then \
 		(cd $(DESTDIR)@PERL_INSTALL_DIR@; \
-			rm -f $(DESTDIR)$(pkgperldir)/gv.so; \
 			mv -f $(DESTDIR)$(pkgperldir)/libgv_perl.so gv.so; \
 			mv -f $(DESTDIR)$(pkgperldir)/gv.pm gv.pm;) \
 	else \
@@ -64,7 +62,6 @@ if WITH_PHP
 	-mkdir -p $(DESTDIR)@PHP_INSTALL_DIR@;
 	if test -w $(DESTDIR)@PHP_INSTALL_DIR@; then \
 		(cd $(DESTDIR)@PHP_INSTALL_DIR@; \
-			rm -f $(DESTDIR)$(pkgphpdir)/gv.so; \
 			mv -f $(DESTDIR)$(pkgphpdir)/libgv_php.so gv.so;) \
 	else \
 		echo "Warning: @PHP_INSTALL_DIR@ is not writable."; \
@@ -83,7 +80,6 @@ if WITH_PYTHON
 	-mkdir -p $(DESTDIR)@PYTHON_INSTALL_DIR@;
 	if test -w $(DESTDIR)@PYTHON_INSTALL_DIR@; then \
 		(cd $(DESTDIR)@PYTHON_INSTALL_DIR@; \
-			rm -f $(DESTDIR)$(pkgpythondir)/_gv.so; \
 			mv -f $(DESTDIR)$(pkgpythondir)/libgv_python.so _gv.so; \
 			mv -f $(DESTDIR)$(pkgpythondir)/gv.py gv.py;) \
 	else \
@@ -95,7 +91,6 @@ if WITH_PYTHON23
 	-mkdir -p $(DESTDIR)@PYTHON23_INSTALL_DIR@;
 	if test -w $(DESTDIR)@PYTHON23_INSTALL_DIR@; then \
 		(cd $(DESTDIR)@PYTHON23_INSTALL_DIR@; \
-			rm -f $(DESTDIR)$(pkgpython23dir)/_gv.so; \
 			mv -f $(DESTDIR)$(pkgpython23dir)/libgv_python23.so _gv.so; \
 			mv -f $(DESTDIR)$(pkgpython23dir)/gv.py gv.py;) \
 	else \
@@ -107,7 +102,6 @@ if WITH_PYTHON24
 	-mkdir -p $(DESTDIR)@PYTHON24_INSTALL_DIR@;
 	if test -w $(DESTDIR)@PYTHON24_INSTALL_DIR@; then \
 		(cd $(DESTDIR)@PYTHON24_INSTALL_DIR@; \
-			rm -f $(DESTDIR)$(pkgpython24dir)/_gv.so; \
 			mv -f $(DESTDIR)$(pkgpython24dir)/libgv_python24.so _gv.so; \
 			mv -f $(DESTDIR)$(pkgpython24dir)/gv.py gv.py;) \
 	else \
@@ -119,7 +113,6 @@ if WITH_PYTHON25
 	-mkdir -p $(DESTDIR)@PYTHON25_INSTALL_DIR@;
 	if test -w $(DESTDIR)@PYTHON25_INSTALL_DIR@; then \
 		(cd $(DESTDIR)@PYTHON25_INSTALL_DIR@; \
-			rm -f $(DESTDIR)$(pkgpython25dir)/_gv.so; \
 			mv -f $(DESTDIR)$(pkgpython25dir)/libgv_python25.so _gv.so; \
 			mv -f $(DESTDIR)$(pkgpython25dir)/gv.py gv.py;) \
 	else \
@@ -131,7 +124,6 @@ if WITH_PYTHON26
 	-mkdir -p $(DESTDIR)@PYTHON26_INSTALL_DIR@;
 	if test -w $(DESTDIR)@PYTHON26_INSTALL_DIR@; then \
 		(cd $(DESTDIR)@PYTHON26_INSTALL_DIR@; \
-			rm -f $(DESTDIR)$(pkgpython26dir)/_gv.so; \
 			mv -f $(DESTDIR)$(pkgpython26dir)/libgv_python26.so _gv.so; \
 			mv -f $(DESTDIR)$(pkgpython26dir)/gv.py gv.py;) \
 	else \
@@ -143,7 +135,6 @@ if WITH_PYTHON27
 	-mkdir -p $(DESTDIR)@PYTHON27_INSTALL_DIR@;
 	if test -w $(DESTDIR)@PYTHON27_INSTALL_DIR@; then \
 		(cd $(DESTDIR)@PYTHON27_INSTALL_DIR@; \
-			rm -f $(DESTDIR)$(pkgpython27dir)/_gv.so; \
 			mv -f $(DESTDIR)$(pkgpython27dir)/libgv_python27.so _gv.so; \
 			mv -f $(DESTDIR)$(pkgpython27dir)/gv.py gv.py;) \
 	else \
@@ -155,7 +146,6 @@ if WITH_RUBY
 	-mkdir -p $(DESTDIR)@RUBY_INSTALL_DIR@;
 	if test -w $(DESTDIR)@RUBY_INSTALL_DIR@; then \
 		(cd $(DESTDIR)@RUBY_INSTALL_DIR@; \
-			rm -f $(DESTDIR)$(pkgrubydir)/gv.so; \
 			mv -f $(DESTDIR)$(pkgrubydir)/libgv_ruby.so gv.so;) \
 	else \
 		echo "Warning: @RUBY_INSTALL_DIR@ is not writable."; \
@@ -166,7 +156,6 @@ if WITH_TCL
 	-mkdir -p $(DESTDIR)@TCL_INSTALL_DIR@;
 	if test -w $(DESTDIR)@TCL_INSTALL_DIR@/; then \
 		(cd $(DESTDIR)@TCL_INSTALL_DIR@; \
-			rm -f $(DESTDIR)$(pkgtcldir)/*.so; \
 			mv -f $(DESTDIR)$(pkgtcldir) @PACKAGE_NAME@;) \
 	else \
 		echo "Warning: @TCL_INSTALL_DIR@ is not writable."; \

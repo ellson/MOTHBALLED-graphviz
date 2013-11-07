@@ -600,7 +600,7 @@ VR  : T_vr T_end_vr
  * Set warn to 0 on success; 1 for warning message; 2 if no expat.
  */
 htmllabel_t*
-parseHTML (char* txt, int* warn, int charset)
+parseHTML (char* txt, int* warn, htmlenv_t *env)
 {
   unsigned char buf[SMALLBUF];
   agxbuf        str;
@@ -618,7 +618,7 @@ parseHTML (char* txt, int* warn, int charset)
   agxbinit (&str, SMALLBUF, buf);
   HTMLstate.str = &str;
   
-  if (initHTMLlexer (txt, &str, charset)) {/* failed: no libexpat - give up */
+  if (initHTMLlexer (txt, &str, env)) {/* failed: no libexpat - give up */
     *warn = 2;
     l = NULL;
   }

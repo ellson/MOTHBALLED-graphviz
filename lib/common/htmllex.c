@@ -563,7 +563,7 @@ static htmlimg_t *mkImg(char **atts)
     return img;
 }
 
-static textfont_t *mkFont(char **atts, int flags, int ul)
+static textfont_t *mkFont(GVC_t *gvc, char **atts, int flags, int ul)
 {
     textfont_t *font = new_textfont();
 
@@ -599,6 +599,8 @@ static htmltbl_t *mkTbl(char **atts)
 
 static void startElement(void *user, const char *name, char **atts)
 {
+    GVC_t *gvc = (GVC_t*)user;
+
     if (strcasecmp(name, "TABLE") == 0) {
 	htmllval.tbl = mkTbl(atts);
 	state.inCell = 0;
@@ -612,25 +614,25 @@ static void startElement(void *user, const char *name, char **atts)
 	htmllval.cell = mkCell(atts);
 	state.tok = T_cell;
     } else if (strcasecmp(name, "FONT") == 0) {
-	htmllval.font = mkFont(atts, 0, 0);
+	htmllval.font = mkFont(gvc, atts, 0, 0);
 	state.tok = T_font;
     } else if (strcasecmp(name, "B") == 0) {
-	htmllval.font = mkFont(0, HTML_BF, 0);
+	htmllval.font = mkFont(gvc, 0, HTML_BF, 0);
 	state.tok = T_bold;
     } else if (strcasecmp(name, "S") == 0) {
-	htmllval.font = mkFont(0, HTML_S, 0);
+	htmllval.font = mkFont(gvc, 0, HTML_S, 0);
 	state.tok = T_s;
     } else if (strcasecmp(name, "U") == 0) {
-	htmllval.font = mkFont(0, HTML_UL, 1);
+	htmllval.font = mkFont(gvc, 0, HTML_UL, 1);
 	state.tok = T_underline;
     } else if (strcasecmp(name, "I") == 0) {
-	htmllval.font = mkFont(0, HTML_IF, 0);
+	htmllval.font = mkFont(gvc, 0, HTML_IF, 0);
 	state.tok = T_italic;
     } else if (strcasecmp(name, "SUP") == 0) {
-	htmllval.font = mkFont(0, HTML_SUP, 0);
+	htmllval.font = mkFont(gvc, 0, HTML_SUP, 0);
 	state.tok = T_sup;
     } else if (strcasecmp(name, "SUB") == 0) {
-	htmllval.font = mkFont(0, HTML_SUB, 0);
+	htmllval.font = mkFont(gvc, 0, HTML_SUB, 0);
 	state.tok = T_sub;
     } else if (strcasecmp(name, "BR") == 0) {
 	mkBR(atts);
@@ -726,7 +728,7 @@ static void characterData(void *user, const char *s, int length)
 }
 #endif
 
-int initHTMLlexer(char *src, agxbuf * xb, int charset)
+int initHTMLlexer(char *src, agxbuf * xb, htmlenv_t *env)
 {
 #ifdef HAVE_EXPAT
     state.xb = xb;
@@ -738,7 +740,8 @@ int initHTMLlexer(char *src, agxbuf * xb, int charset)
     state.currtoklen = 0;
     state.prevtoklen = 0;
     state.inCell = 1;
-    state.parser = XML_ParserCreate(charsetToStr(charset));
+    state.parser = XML_ParserCreate(charsetToStr(GD_charset(env->g)));
+    XML_SetUserData(state.parser, GD_gvc(env->g));
     XML_SetElementHandler(state.parser,
 			  (XML_StartElementHandler) startElement,
 			  endElement);

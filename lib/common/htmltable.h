@@ -148,7 +148,17 @@ extern "C" {
 	unsigned char ruled;
     } pitem;
 	
-    extern htmllabel_t *parseHTML(char *, int *, int);
+    typedef struct {
+        pointf pos;
+        textfont_t finfo;
+        void *obj;
+        graph_t *g;
+        char *imgscale;
+        char *objid;
+        boolean objid_set;
+    } htmlenv_t;
+
+    extern htmllabel_t *parseHTML(char *, int *, htmlenv_t *);
 
     extern int make_html_label(void *obj, textlabel_t * lp);
     extern void emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t *);
