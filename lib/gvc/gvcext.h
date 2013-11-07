@@ -53,6 +53,7 @@ extern "C" {
 #undef ELEM
 
     typedef struct GVJ_s GVJ_t;
+    typedef struct GVG_s GVG_t;
     typedef struct GVC_s GVC_t;
 
     typedef struct {

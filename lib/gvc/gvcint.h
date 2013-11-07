@@ -20,6 +20,7 @@
 extern "C" {
 #endif
 
+#include "cdt.h"
 #include "gvcommon.h"
 #include "color.h"
 
@@ -54,8 +55,6 @@ extern "C" {
 	gvplugin_installed_t *typeptr;  /* pointer to jumptable for plugin,
 					or NULL if not yet loaded */
     };
-
-    typedef struct GVG_s GVG_t;
 
     struct GVG_s {
 	GVC_t *gvc;	/* parent gvc */
@@ -92,6 +91,12 @@ extern "C" {
         /* externally provided write() displine */
 	size_t (*write_fn) (GVJ_t *job, const char *s, size_t len);
 
+	/* fonts and textlayout */
+	Dtdisc_t textfont_disc;
+	Dt_t *textfont_dict;
+	gvplugin_active_textlayout_t textlayout; /* always use best avail for all jobs */
+//	void (*free_layout) (void *layout);   /* function for freeing layouts (mostly used by pango) */
+	
 /* FIXME - everything below should probably move to GVG_t */
 
 	/* gvrender_config() */
@@ -101,7 +106,6 @@ extern "C" {
 	graph_t *g;      /* current graph */
 
 	/* gvrender_begin_job() */
-	gvplugin_active_textlayout_t textlayout;
 	gvplugin_active_layout_t layout;
 
 	char *graphname;	/* name from graph */
