@@ -254,6 +254,7 @@ Ndim
 neato_closest    
 new_queue    
 new_spline    
+new_textfont
 newPM    
 newPS    
 nodeInduce    
@@ -280,6 +281,7 @@ putGraphs
 rank    
 rect2poly    
 Reduce    
+ref_textfont
 resolvePort    
 resolvePorts    
 round_corners    
@@ -307,7 +309,7 @@ State
 strdup_and_subst_obj    
 Syntax_errors    
 test_toggle    
-textsize    
+textspan_size    
 translate_bb    
 UF_find    
 UF_remove    
@@ -315,6 +317,7 @@ UF_setname
 UF_singleton    
 UF_union    
 undoClusterEdges    
+unref_textfont
 update_bb_bz    
 updateBB    
 utf8ToLatin1    
