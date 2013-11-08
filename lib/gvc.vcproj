@@ -265,7 +265,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\common\textpara.h"
+				RelativePath=".\common\textspan.h"
 				>
 			</File>
 			<File

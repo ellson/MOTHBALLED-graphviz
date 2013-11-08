@@ -254,7 +254,8 @@ Ndim
 neato_closest    
 new_queue    
 new_spline    
-new_textfont
+textfont_dict_open
+textfont_dict_close
 newPM    
 newPS    
 nodeInduce    
