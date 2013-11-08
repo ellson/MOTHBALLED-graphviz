@@ -634,6 +634,7 @@ Perl extension for graphviz.
 %{_datadir}/graphviz/demo/*.pl*
 %{_mandir}/man3/*.3perl.*
 %exclude %{_libdir}/graphviz/perl/*.so
+%exclude %{_libdir}/graphviz/perl/*.pm
 %endif
 
 #-- graphviz-lang-php rpm ----------------------------------------------
@@ -655,6 +656,7 @@ PHP extension for graphviz.
 %{_datadir}/graphviz/demo/*.php*
 %{_mandir}/man3/*.3php.*
 %exclude %{_libdir}/graphviz/php/*.so
+%exclude %{_libdir}/graphviz/php/*.php
 %endif
 
 #-- graphviz-lang-python rpm -------------------------------------------
@@ -674,6 +676,7 @@ Python extension for graphviz.
 %{_datadir}/graphviz/demo/*.py*
 %{_mandir}/man3/*.3python.*
 %exclude %{_libdir}/graphviz/python/*.so
+%exclude %{_libdir}/graphviz/python/*.py
 %endif
 
 #-- graphviz-lang-R rpm ---------------------------------------------
