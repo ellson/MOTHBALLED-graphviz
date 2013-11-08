@@ -31,6 +31,7 @@ static struct {
   Dt_t*        fspanList; 
   agxbuf*      str;       /* Buffer for text */
   sfont_t*     fontstack;
+  GVC_t*       gvc;
 } HTMLstate;
 
 /* free_ritem:
@@ -170,15 +171,6 @@ static Dtdisc_t fspanDisc = {
     NIL(Dtevent_f)
 };
 
-/* dupFont:
- */
-static textfont_t *
-dupFont (textfont_t *f)
-{
-    if (f) f->cnt++;
-    return f;
-}
-
 /* appendFItemList:
  * Append a new fitem to the list.
  */
@@ -188,7 +180,7 @@ appendFItemList (agxbuf *ag)
     fitem *fi = NEW(fitem);
 
     fi->ti.str = strdup(agxbuse(ag));
-    fi->ti.font = dupFont (HTMLstate.fontstack->cfont);
+    fi->ti.font = HTMLstate.fontstack->cfont;
     dtinsert(HTMLstate.fitemList, fi);
 }	
 
@@ -222,7 +214,7 @@ appendFLineList (int v)
 	ln->lp.items = NEW(textspan_t);
 	ln->lp.nitems = 1;
 	ln->lp.items[0].str = strdup("");
-	ln->lp.items[0].font = dupFont (HTMLstate.fontstack->cfont);
+	ln->lp.items[0].font = HTMLstate.fontstack->cfont;
     }
 
     dtclear(ilist);
@@ -384,23 +376,24 @@ static int nonSpace (char* s)
  * Fonts are allocated in the lexer.
  */
 static void
-pushFont (textfont_t *f)
+pushFont (textfont_t *fp)
 {
     sfont_t *ft = NEW(sfont_t);
     textfont_t* curfont = HTMLstate.fontstack->cfont;
+    textfont_t  f = *fp;
 
     if (curfont) {
-	if (!f->color && curfont->color)
-	    f->color = strdup(curfont->color);
-	if ((f->size < 0.0) && (curfont->size >= 0.0))
-	    f->size = curfont->size;
-	if (!f->name && curfont->name)
-	    f->name = strdup(curfont->name);
+	if (!f.color && curfont->color)
+	    f.color = curfont->color;
+	if ((f.size < 0.0) && (curfont->size >= 0.0))
+	    f.size = curfont->size;
+	if (!f.name && curfont->name)
+	    f.name = curfont->name;
 	if (curfont->flags)
-	    f->flags |= curfont->flags;
+	    f.flags |= curfont->flags;
     }
 
-    ft->cfont = dupFont (f);
+    ft->cfont = dtinsert(HTMLstate.gvc->textfont_dt, &f);
     ft->pfont = HTMLstate.fontstack;
     HTMLstate.fontstack = ft;
 }
@@ -532,7 +525,7 @@ table : opt_space T_table {
           $2->u.p.prev = HTMLstate.tblstack;
           $2->u.p.rows = dtopen(&rowDisc, Dtqueue);
           HTMLstate.tblstack = $2;
-          $2->font = dupFont (HTMLstate.fontstack->cfont);
+          $2->font = HTMLstate.fontstack->cfont;
           $<tbl>$ = $2;
         }
         rows T_end_table opt_space {
@@ -607,6 +600,7 @@ parseHTML (char* txt, int* warn, htmlenv_t *env)
   HTMLstate.fontstack = &dfltf;
   HTMLstate.tblstack = 0;
   HTMLstate.lbl = 0;
+  HTMLstate.gvc = GD_gvc(env->g);
   HTMLstate.fitemList = dtopen(&fstrDisc, Dtqueue);
   HTMLstate.fspanList = dtopen(&fspanDisc, Dtqueue);
 
