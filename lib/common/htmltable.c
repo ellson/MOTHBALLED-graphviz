@@ -153,6 +153,10 @@ emit_htextspans(GVJ_t * job, int nspans, htextspan_t * spans, pointf p,
 		tf.color = ti->font->color;
 	    else
 		tf.color = finfo.color;
+	    if (ti->font && ti->font->flags)
+		tf.flags = ti->font->flags;
+	    else
+		tf.flags = 0;
 
 	    gvrender_set_pencolor(job, tf.color);
 
@@ -948,15 +952,12 @@ static int size_html_txt(GVC_t *gvc, htmltxt_t * ftxt, htmlenv_t * env)
 {
     double xsize = 0.0;		/* width of text block */
     double ysize = 0.0;		/* height of text block */
-    double fsize;
     double lsize;		/* height of current line */
     double mxfsize = 0.0;	/* max. font size for the current line */
     double curbline = 0.0;	/* dist. of current base line from top */
     pointf sz;
     int i, j;
     double width;
-    char *fname;
-    int fflags;
     textspan_t lp;
     textfont_t tf = {NULL,NULL,NULL,0.0,0,0};
     double maxoffset, mxysize;
@@ -975,27 +976,27 @@ static int size_html_txt(GVC_t *gvc, htmltxt_t * ftxt, htmlenv_t * env)
 		break;
 	    }
 	    if (ftxt->spans[i].items[0].font->size > 0)
-		fsize = ftxt->spans[i].items[0].font->size;
+		tf.size = ftxt->spans[i].items[0].font->size;
 	    else
-		fsize = env->finfo.size;
+		tf.size = env->finfo.size;
 	    if (ftxt->spans[i].items[0].font->name)
-		fname = ftxt->spans[i].items[0].font->name;
+		tf.name = ftxt->spans[i].items[0].font->name;
 	    else
-		fname = env->finfo.name;
+		tf.name = env->finfo.name;
 	}
 	else {
-	    fsize = env->finfo.size;
-	    fname = env->finfo.name;
+	    tf.size = env->finfo.size;
+	    tf.name = env->finfo.name;
 	}
 	if (prev_fsize == -1)
-	    prev_fsize = fsize;
-	else if (fsize != prev_fsize) {
+	    prev_fsize = tf.size;
+	else if (tf.size != prev_fsize) {
 	    simple = 0;
 	    break;
 	}
 	if (prev_fname == NULL)
-	    prev_fname = fname;
-	else if (strcmp(fname,prev_fname)) {
+	    prev_fname = tf.name;
+	else if (strcmp(tf.name,prev_fname)) {
 	    simple = 0;
 	    break;
 	}
@@ -1011,27 +1012,29 @@ static int size_html_txt(GVC_t *gvc, htmltxt_t * ftxt, htmlenv_t * env)
 				     env->obj);
 	    if (ftxt->spans[i].items[j].font) {
 		if (ftxt->spans[i].items[j].font->flags)
-		    fflags = ftxt->spans[i].items[j].font->flags;
+		    tf.flags = ftxt->spans[i].items[j].font->flags;
 		else if (env->finfo.flags > 0)
-		    fflags = env->finfo.flags;
+		    tf.flags = env->finfo.flags;
 		else
-		    fflags = 0;
+		    tf.flags = 0;
 		if (ftxt->spans[i].items[j].font->size > 0)
-		    fsize = ftxt->spans[i].items[j].font->size;
+		    tf.size = ftxt->spans[i].items[j].font->size;
 		else
-		    fsize = env->finfo.size;
+		    tf.size = env->finfo.size;
 		if (ftxt->spans[i].items[j].font->name)
-		    fname = ftxt->spans[i].items[j].font->name;
+		    tf.name = ftxt->spans[i].items[j].font->name;
 		else
-		    fname = env->finfo.name;
+		    tf.name = env->finfo.name;
+		if (ftxt->spans[i].items[j].font->color)
+		    tf.color = ftxt->spans[i].items[j].font->color;
+		else
+		    tf.color = env->finfo.color;
 	    } else {
-		fsize = env->finfo.size;
-		fname = env->finfo.name;
-		fflags = 0;
+		tf.size = env->finfo.size;
+		tf.name = env->finfo.name;
+		tf.color = env->finfo.color;
+		tf.flags = env->finfo.flags;
 	    }
-	    tf.name=fname;
-	    tf.size=fsize;
-	    tf.flags=fflags;
 	    lp.font = dtinsert(gvc->textfont_dt, &tf);
 	    sz = textspan_size(gvc, &lp);
 	    free(ftxt->spans[i].items[j].str);
@@ -1043,7 +1046,7 @@ static int size_html_txt(GVC_t *gvc, htmltxt_t * ftxt, htmlenv_t * env)
 	    ftxt->spans[i].items[j].layout = lp.layout;
 	    ftxt->spans[i].items[j].free_layout = lp.free_layout;
 	    width += sz.x;
-	    mxfsize = MAX(fsize, mxfsize);
+	    mxfsize = MAX(tf.size, mxfsize);
 	    mxysize = MAX(sz.y, mxysize);
 	    maxoffset = MAX(lp.yoffset_centerline, maxoffset);
 	}
