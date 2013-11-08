@@ -676,7 +676,7 @@ Python extension for graphviz.
 %{_datadir}/graphviz/demo/*.py*
 %{_mandir}/man3/*.3python.*
 %exclude %{_libdir}/graphviz/python/*.so
-%exclude %{_libdir}/graphviz/python/*.py
+%exclude %{_libdir}/graphviz/python/*.py*
 %endif
 
 #-- graphviz-lang-R rpm ---------------------------------------------
@@ -735,6 +735,7 @@ Various tcl packages (extensions) for the graphviz tools.
 %{_datadir}/graphviz/demo/entities.html
 %{_mandir}/man3/*.3tcl.*
 %{_mandir}/man3/*.3tk.*
+%exclude %{_libdir}/graphviz/tcl/*
 %endif
 
 #-- graphviz-devel rpm --------------------------------------------
