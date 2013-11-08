@@ -317,7 +317,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\common\fontmetrics.c"
+				RelativePath=".\common\textspan.c"
 				>
 			</File>
 			<File
