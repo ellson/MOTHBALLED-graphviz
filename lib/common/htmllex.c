@@ -406,13 +406,13 @@ static int colspanfn(htmlcell_t * p, char *v)
 
 static int fontcolorfn(textfont_t * p, char *v)
 {
-    p->color = strdup(v);
+    p->color = v;
     return 0;
 }
 
 static int facefn(textfont_t * p, char *v)
 {
-    p->name = strdup(v);
+    p->name = v;
     return 0;
 }
 
