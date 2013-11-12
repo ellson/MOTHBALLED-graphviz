@@ -406,6 +406,11 @@ Additional styles are available in
 device-dependent form. Style lists are passed to device drivers, which
 can use this to generate appropriate output.
 <P>
+The style attribute affects the basic appearance of nodes, edges and graphs, 
+but has no effect on any text used in labels. For this, use the <A HREF=#d:fontname><TT>fontname</TT></A>, <A HREF=#d:fontsize><TT>fontsize</TT></A> and <A HREF=#d:fontcolor><TT>fontcolor</TT></A>
+attributes, or the <TT>&lt;FONT&gt;</TT>, <TT>&lt;B&gt;</TT>, <TT>&lt;I&gt;</TT>, etc. 
+elements in <A HREF=shapes.html#html>HTML-like labels</A>.
+<P>
 The <TT>setlinewidth</TT> style value can be
 used for more control over the width of node borders and edges than is
 allowed by <TT>bold</TT>. This style value takes an argument, specifying the

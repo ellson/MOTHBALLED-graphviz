@@ -338,13 +338,24 @@ when the graph is displayed or printed. As such, it is best to rely on
 font faces that are generally available, such as Times-Roman, Helvetica or
 Courier.
 <P>
+How font names are resolved also depends on the underlying library that handles
+font name resolution.
 If Graphviz was built using the
-<A HREF=http://pdx.freedesktop.org/~fontconfig/fontconfig-user.html>fontconfig library</A>, the latter library
-will be used to search for the font. However, if the <TT>fontname</TT> string
-contains a slash character "/", it is treated as a pathname for the font
-file, though font lookup will append the usual font suffixes.
+<A HREF=http://pdx.freedesktop.org/~fontconfig/fontconfig-user.html>fontconfig library</A>, 
+the latter library will be used to search for the font. 
+See the commands <B>fc-list</B>, <B>fc-match</B> and the other fontconfig commands for how
+names are resolved and which fonts are available.
+Other systems may provide their own font package, such as Quartz for OS X.
 <P>
-If Graphviz does not use fontconfig, <TT>fontname</TT> will be
+Note that various font attributes, such as weight and slant, can be built into the
+font name. Thus, using the <TT>fontname=times:italic</TT> will produce a slanted
+Times font from fontconfig, while <TT>fontname=times-bold</TT> will resolve to a bold
+Times using Quartz. Obviously, the syntax differs from system to system. 
+You will need
+to ascertain which package is used by your Graphviz system and refer to the relevant
+documentation.
+<P>
+If Graphviz is not built with a high-level font library, <TT>fontname</TT> will be
 considered the name of a Type 1 or True Type font file.
 If you specify <TT>fontname=schlbk</TT>, the tool will look for a
 file named  <TT>schlbk.ttf</TT> or <TT>schlbk.pfa</TT> or <TT>schlbk.pfb</TT>
