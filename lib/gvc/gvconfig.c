@@ -187,10 +187,6 @@ static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 	do {
 	    api = token(&nest, &s);
 	    gv_api = gvplugin_api(api);
-	    if (gv_api == -1) {
-		agerr(AGERR, "invalid api in config: %s %s\n", path, api);
-		return 0;
-	    }
 	    do {
 		if (nest == 2) {
 		    type = token(&nest, &s);
