@@ -62,6 +62,9 @@ static int glob (GVC_t * gvc, char*, int, int (*errfunc)(const char *, int), glo
 #include	"gvcint.h"
 #include        "gvcproc.h"
 
+/* FIXME */
+extern Dt_t * textfont_dict_open(GVC_t *gvc);
+
 /*
     A config for gvrender is a text file containing a
     list of plugin librariess and their capabilities using a tcl-like
