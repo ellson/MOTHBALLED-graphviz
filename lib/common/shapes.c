@@ -2398,16 +2398,20 @@ static double invflip_angle(double angle, int rankdir)
 	    angle = -0.25 * M_PI;
 	else if (angle == M_PI * 0.5)
 	    angle = 0;
+/* clang complains about self assignemnt:
 	else if (angle == M_PI * 0.25)
 	    angle = angle;
+ */
 	else if (angle == 0)
 	    angle = M_PI * 0.5;
 	else if (angle == M_PI * -0.25)
 	    angle = M_PI * 0.75;
 	else if (angle == M_PI * -0.5)
 	    angle = M_PI;
+/* clang complains about self assignemnt:
 	else if (angle == M_PI * -0.75)
 	    angle = angle;
+ */
 	break;
     }
     return angle;
