@@ -99,6 +99,24 @@ double late_double(void *obj, attrsym_t * attr, double def, double low)
     else return rv;
 }
 
+/* get_inputscale:
+ * Return value for PSinputscale. If this is > 0, it has been set on the
+ * command line and this value is used.
+ * Otherwise, we check the graph's inputscale attribute. If this is not set
+ * or has a bad value, we return -1. 
+ * If the value is 0, we return the default. Otherwise, we return the value.
+ * Set but negative values are treated like 0.
+ */ 
+double get_inputscale (graph_t* g)
+{
+    double d;
+
+    if (PSinputscale > 0) return PSinputscale;  /* command line flag prevails */
+    d = late_double(g, agfindgraphattr(g, "inputscale"), -1, 0);
+    if (d == 0) return POINTS_PER_INCH; 
+    else return d;
+}
+
 char *late_string(void *obj, attrsym_t * attr, char *def)
 {
     if (!attr || !obj)

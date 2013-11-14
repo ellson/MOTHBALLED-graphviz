@@ -303,10 +303,7 @@ bool CFrmSettings::createLayout()
     Agraph_t *G = this->graph;
     QString layout;
 
-    if(agfindnodeattr(G, (char*)"pos"))
-	layout="nop2";
-    else
-	layout=WIDGET(QComboBox, cbLayout)->currentText();
+    layout=WIDGET(QComboBox, cbLayout)->currentText();
 
 
     gvLayout(gvc, G, (char *)layout.toUtf8().constData());	/* library function */

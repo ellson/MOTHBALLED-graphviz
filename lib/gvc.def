@@ -116,6 +116,7 @@ getdouble
 getPack    
 getPackMode    
 getsplinepoints    
+get_inputscale
 gmalloc    
 graph_cleanup    
 graph_init    
