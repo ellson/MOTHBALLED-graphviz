@@ -48,8 +48,9 @@ static char *cmd;
 QTextStream errout(stderr, QIODevice::WriteOnly);
 
 static char *useString = "Usage: gvedit [-v?] <files>\n\
-  -v - verbose\n\
-  -? - print usage\n";
+  -s    - Scale input by 72\n\
+  -v    - verbose\n\
+  -?    - print usage\n";
 
 static void usage(int v)
 {
@@ -62,8 +63,11 @@ static char **parseArgs(int argc, char *argv[])
     int c;
 
     cmd = argv[0];
-    while ((c = getopt(argc, argv, ":v?")) != -1) {
+    while ((c = getopt(argc, argv, ":sv?")) != -1) {
 	switch (c) {
+	case 's':
+	    PSinputscale = POINTS_PER_INCH;
+	    break;
 	case 'v':
 	    Verbose = 1;
 	    break;
