@@ -2959,7 +2959,6 @@ boxf xdotBB (Agraph_t* g)
 	    op->bb = ptsBB (op->op.u.polygon.pts, op->op.u.polygon.cnt, &bb);
 	    break;
 	case xd_text :
-#if 1
 	    op->span = NEW(textspan_t);
 	    op->span->str = strdup (op->op.u.text.text);
 	    op->span->just = adjust [op->op.u.text.align];
@@ -2967,10 +2966,6 @@ boxf xdotBB (Agraph_t* g)
 	    tf.size = fontsize;
             op->span->font = dtinsert(gvc->textfont_dt, &tf);
 	    sz = textspan_size (gvc, op->span);
-#else
-// thinking about it ....
-	    op->span = new_textspan(gvc, op->op.u.text.text, adjust [op->op.u.text.align], NULL, fontname, fontsize, 0);
-#endif
 	    bb0 = textBB (op->op.u.text.x, op->op.u.text.y, op->span);
 	    op->bb = bb0;
 	    expandBB (&bb, bb0.LL);

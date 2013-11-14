@@ -441,7 +441,6 @@ void gvrender_textspan(GVJ_t * job, pointf p, textspan_t * span)
 {
     gvrender_engine_t *gvre = job->render.engine;
     pointf PF;
-    gvcolor_t *color = &(job->obj->pencolor);
 
     if (span->str && span->str[0]
 	&& (!job->obj		/* because of xdgen non-conformity */
@@ -451,13 +450,6 @@ void gvrender_textspan(GVJ_t * job, pointf p, textspan_t * span)
 	else
 	    PF = gvrender_ptf(job, p);
 	if (gvre) {
-#if 1
-            if (span->font->color) {
-                gvrender_resolve_color(job->render.features, span->font->color, color);
-	        if (gvre->resolve_color)
-	            gvre->resolve_color(job, color);
-            }
-#endif
 	    if (gvre->textspan)
 		gvre->textspan(job, PF, span);
 	}

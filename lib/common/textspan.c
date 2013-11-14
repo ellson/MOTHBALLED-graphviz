@@ -202,8 +202,6 @@ pointf textspan_size(GVC_t *gvc, textspan_t * span)
     assert(span->font);
     font = span->font;
 
-    span->color = span->font->color;
-
     assert(font->name);
 
     /* only need to find alias once per font, since they are unique in dict */
@@ -225,55 +223,6 @@ pointf textspan_size(GVC_t *gvc, textspan_t * span)
     }
 
     return span->size;
-}
-
-#if 0
-textspan_t * new_textspan(GVC_t *gvc, const char* str, const char *affinity, const char *color, const textfont_t *font)
-{
-	textspan_t *ts;
-
-	ts = calloc(1, sizeof(textspan_t));
-	assert(ts);
-
-	ts->str = strdup(str);
-	assert(ts->str);
-
-//	ts->affinity = strdup(affinity);
-//	assert(ts->affinity);
-
-//	ts->color = strdup(color);
-//	assert(ts->color)
-
-	ts->font = dtinsert(gvc->textfont_dt, font);
-	assert(ts->font);
-
-	textspan_size(gvc, ts);
-
-	return  ts;
-}
-#endif
-
-/* free_textspan:
- * Free resources related to textspan_t.
- * ts is an array of cnt textspan_t's.
- * It is also assumed that the text stored in the str field
- * is all stored in one large buffer shared by all of the textspan_t,
- * so only the first one needs to free its tsp->str.
- */
-void free_textspan(textspan_t * ts, int cnt)
-{
-    int i;
-    textspan_t* tsp = ts;
-
-    if (!ts) return;
-    for (i = 0; i < cnt; i++) {
-        if ((i == 0) && tsp->str)
-            free(tsp->str);
-        if (tsp->layout && tsp->free_layout)
-            tsp->free_layout (tsp->layout);
-        tsp++;
-    }
-    free(ts);
 }
 
 static Void_t* textfont_makef(Dt_t* dt, Void_t* obj, Dtdisc_t* disc)
@@ -307,27 +256,20 @@ static int textfont_comparf (Dt_t* dt, Void_t* key1, Void_t* key2, Dtdisc_t* dis
     int rc;
     textfont_t *f1 = (textfont_t*)key1, *f2 = (textfont_t*)key2;
 
-    // C-locale sorted comparison of name, incl. dealing with null
     if (f1->name || f2->name) {
         if (! f1->name) return -1;
         if (! f2->name) return 1;
         rc = strcmp(f1->name, f2->name);
         if (rc) return rc;
     }
-#if 0
-    // FIXME - color is not a useful differentiator of font from a layout pov - move to textspan
-    // C-locale sorted comparison of name, incl. dealing with null
     if (f1->color || f2->color) {
         if (! f1->color) return -1;
         if (! f2->color) return 1;
         rc = strcmp(f1->color, f2->color);
         if (rc) return rc;
     }
-#endif
-    // integer comparison of flags
     rc = (f1->flags - f2->flags);
     if (rc) return rc;
-    // comparison of size doubles - FIXME does this need some tolerance?
     if (f1->size < f2->size) return -1;
     if (f1->size > f2->size) return 1;
     return 0;

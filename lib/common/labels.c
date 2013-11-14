@@ -183,6 +183,29 @@ textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *f
     return rv;
 }
 
+/* free_textspan:
+ * Free resources related to textspan_t.
+ * tl is an array of cnt textspan_t's.
+ * It is also assumed that the text stored in the str field
+ * is all stored in one large buffer shared by all of the textspan_t,
+ * so only the first one needs to free its tlp->str.
+ */
+void free_textspan(textspan_t * tl, int cnt)
+{
+    int i;
+    textspan_t* tlp = tl;
+
+    if (!tl) return;
+    for (i = 0; i < cnt; i++) { 
+	if ((i == 0) && tlp->str)
+	    free(tlp->str);
+	if (tlp->layout && tlp->free_layout)
+	    tlp->free_layout (tlp->layout);
+	tlp++;
+    }
+    free(tl);
+}
+
 void free_label(textlabel_t * p)
 {
     if (p) {

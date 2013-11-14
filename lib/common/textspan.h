@@ -54,7 +54,6 @@ extern "C" {
     /* atomic unit of text emitted using a single htmlfont_t */
     typedef struct {
 	char *str;      /* stored in utf-8 */
-	char *color; 
 	textfont_t *font;
 	void *layout;
 	void (*free_layout) (void *layout);   /* FIXME - this is ugly */
