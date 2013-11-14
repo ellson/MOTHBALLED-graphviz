@@ -229,6 +229,8 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:imagescale HREF=#d:imagescale>imagescale</A>
 </TD><TD>N</TD><TD><A HREF=#k:bool>bool</A>
 <BR>string</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
+ <TR><TD><A NAME=a:inputscale HREF=#d:inputscale>inputscale</A>
+</TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">&#60;none&#62;</TD><TD></TD><TD>fdp, neato only</TD> </TR>
  <TR><TD><A NAME=a:label HREF=#d:label>label</A>
 </TD><TD>ENGC</TD><TD><A HREF=#k:lblString>lblString</A>
 </TD><TD ALIGN="CENTER">"&#92;N" (nodes)<BR>"" (otherwise)</TD><TD></TD><TD></TD> </TR>
@@ -1021,6 +1023,17 @@ This field indicates which graph component uses the attribute.
   image is scaled down to fit the node. As with the case of
   expansion, if  <TT>imagescale=true</TT>, width and height are
   scaled uniformly.
+
+<DT><A NAME=d:inputscale HREF=#a:inputscale><STRONG>inputscale</STRONG></A>
+<DD>  For layout algorithms that support initial input positions (specified by the <A HREF=#d:pos><B>pos</B></A> attribute),
+  this attribute can be used to appropriately scale the values. By default, fdp and neato interpret
+  the x and y values of pos as being in inches. (<B>NOTE</B>: neato -n(2) treats the coordinates as
+  being in points, being the unit used by the layout algorithms for the pos attribute.) Thus, if
+  the graph has pos attributes in points, one should set <TT>inputscale=72</TT>.
+  This can also be set on the command line using the <A HREF=command.html#minusK><TT>-s</TT> flag</A> flag.
+  <P>
+  If not set, no scaling is done and the units on input are treated as inches.
+  A value of 0 is equivalent to <TT>inputscale=72</TT>.
 
 <DT><A NAME=d:label HREF=#a:label><STRONG>label</STRONG></A>
 <DD>  Text label attached to objects.

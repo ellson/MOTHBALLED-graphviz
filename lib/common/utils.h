@@ -65,7 +65,8 @@ extern "C" {
     extern double late_double(void *, Agsym_t *, double, double);
     extern char *late_nnstring(void *, Agsym_t *, char *);
     extern char *late_string(void *, Agsym_t *, char *);
-	extern boolean late_bool(void *, Agsym_t *, int);
+    extern boolean late_bool(void *, Agsym_t *, int);
+    extern double get_inputscale (graph_t* g);
 
     extern Agnode_t *UF_find(Agnode_t *);
     extern Agnode_t *UF_union(Agnode_t *, Agnode_t *);

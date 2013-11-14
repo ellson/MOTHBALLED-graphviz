@@ -1121,6 +1121,9 @@ void fdp_layout(graph_t * g)
 {
     /* Agnode_t* n; */
 
+    double save_scale = PSinputscale;
+        
+    PSinputscale = get_inputscale (g);
     fdp_init_graph(g);
     if (setjmp(jbuf)) {
 	return;
@@ -1136,4 +1139,5 @@ void fdp_layout(graph_t * g)
     if (EDGE_TYPE(g) != ET_NONE) fdpSplines (g); 
 
     dotneato_postprocess(g);
+    PSinputscale = save_scale;
 }

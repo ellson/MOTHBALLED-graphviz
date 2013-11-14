@@ -512,6 +512,16 @@ corresponding dimension of the node, that dimension of the
 image is scaled down to fit the node. As with the case of
 expansion, if  <TT>imagescale=true</TT>, width and height are
 scaled uniformly.
+:inputscale:G:double:<none>;  neato,fdp
+For layout algorithms that support initial input positions (specified by the <A HREF=#d:pos><B>pos</B></A> attribute),
+this attribute can be used to appropriately scale the values. By default, fdp and neato interpret
+the x and y values of pos as being in inches. (<B>NOTE</B>: neato -n(2) treats the coordinates as
+being in points, being the unit used by the layout algorithms for the pos attribute.) Thus, if
+the graph has pos attributes in points, one should set <TT>inputscale=72</TT>.
+This can also be set on the command line using the <A HREF=command.html#minusK><TT>-s</TT> flag</A> flag.
+<P>
+If not set, no scaling is done and the units on input are treated as inches.
+A value of 0 is equivalent to <TT>inputscale=72</TT>.
 :K:GC:double:0.3:0;  fdp,sfdp
 Spring constant used in virtual physical model. It roughly corresponds
 to an ideal edge length (in inches), in that increasing K tends to

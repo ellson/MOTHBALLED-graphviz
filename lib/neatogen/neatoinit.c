@@ -1475,21 +1475,21 @@ void neato_layout(Agraph_t * g)
     pack_mode mode;
     pack_info pinfo;
     adjust_data am;
+    double save_scale = PSinputscale;
 
     if (Nop) {
-	int save = PSinputscale;
 	int ret;
 	PSinputscale = POINTS_PER_INCH;
 	neato_init_graph(g);
 	addZ (g);
 	ret = init_nop(g, 1);
-	PSinputscale = save;
 	if (ret < 0) {
 	    agerr(AGPREV, "as required by the -n flag\n");
 	    return;
 	}
 	else gv_postprocess(g, !ret);
     } else {
+	PSinputscale = get_inputscale (g);
 	neato_init_graph(g);
 	layoutMode = neatoMode(g);
 	graphAdjustMode (g, &am, 0);
@@ -1564,4 +1564,5 @@ void neato_layout(Agraph_t * g)
 	}
 	dotneato_postprocess(g);
     }
+    PSinputscale = save_scale;
 }
