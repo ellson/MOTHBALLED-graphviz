@@ -4,6 +4,9 @@ gvedit \- simple graph editor and viewer
 .SH SYNOPSIS
 .B gvedit
 [
+.B \-sv?
+]
+[
 .I file
 ]
 .SH DESCRIPTION
@@ -13,6 +16,20 @@ same time. The text of each graph is displayed in its own text window.
 .P
 The name of a Graphviz file can be specified on the command line. This graph
 file will be automatically opened on start-up.
+.SH OPTIONS
+The following options are supported:
+.TP
+.B \-s
+By default, the layout algorithms that use initial positions given by a node's pos attribute
+(currently, fdp and neato) assume the coordinates are in inches. Frequently, the input graph
+has these in points, especially if the graph is output by a Graphviz layout algorithm. This flag
+can be used to scale the coordinates from points to inches.
+.TP
+.B \-v
+Verbose mode.
+.TP
+.B \-?
+Prints usage information and exit.
 .SH AUTHOR
 Arif Bilgin <arif@research.att.com>
 .br
