@@ -62,6 +62,9 @@ static int glob (GVC_t * gvc, char*, int, int (*errfunc)(const char *, int), glo
 #include	"gvcint.h"
 #include        "gvcproc.h"
 
+/* FIXME */
+extern Dt_t * textfont_dict_open(GVC_t *gvc);
+
 /*
     A config for gvrender is a text file containing a
     list of plugin librariess and their capabilities using a tcl-like
@@ -187,10 +190,6 @@ static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 	do {
 	    api = token(&nest, &s);
 	    gv_api = gvplugin_api(api);
-	    if (gv_api == -1) {
-		agerr(AGERR, "invalid api in config: %s %s\n", path, api);
-		return 0;
-	    }
 	    do {
 		if (nest == 2) {
 		    type = token(&nest, &s);

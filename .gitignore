@@ -38,7 +38,6 @@ SWIGTYPE*
 tclpkg/*/gv.3*
 y.*
 
-
 cmd/dot/dot
 cmd/dot/dot_static
 cmd/dot/dot.1.pdf
@@ -98,6 +97,7 @@ cmd/tools/gvcolor.1.pdf
 cmd/tools/gvgen
 cmd/tools/gvgen.1.pdf
 cmd/tools/gvpack
+cmd/tools/gvpack_static
 cmd/tools/gvpack.1.pdf
 cmd/tools/gxl2gv
 cmd/tools/gxl2gv.1.pdf
