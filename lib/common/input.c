@@ -364,12 +364,14 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 	    case 's':
 		if (*rest) {
 		    PSinputscale = atof(rest);
-		    if (PSinputscale <= 0) {
+		    if (PSinputscale < 0) {
 			fprintf(stderr,
 				"Invalid parameter \"%s\" for -s flag\n",
 				rest);
 			return (dotneato_usage(1));
 		    }
+		    else if (PSinputscale == 0)
+			PSinputscale = POINTS_PER_INCH;
 		} else
 		    PSinputscale = POINTS_PER_INCH;
 		break;
