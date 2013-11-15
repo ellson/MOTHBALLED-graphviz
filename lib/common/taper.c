@@ -343,7 +343,7 @@ stroke_t* taper (bezier* bez, radfunc_t radfunc, double initwid, int linejoin, i
 	    }
 		 /* direction to junction point */
 	    direction = ndir+D2R(90)+phi;
-	    if ((0 != linejoin) || (lineout > currentmiterlimit * linrad)) {
+	    if ((0 != linejoin) || (lineout > currentmiterlimit * linerad)) {
 		bevel = TRUE;
 		lineout = linerad;
 		direction = mymod(ldir-D2R(90),D2R(360));
