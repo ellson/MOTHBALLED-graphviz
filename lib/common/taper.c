@@ -113,15 +113,6 @@ static double mymod (double original, double modulus)
     return original;
 }
 
-/*
- * allow division by zero
- */
-static double zdiv (double num, double denom)
-{
-    if (denom == 0) return 0;
-    else return (num/denom);
-}
-
 typedef struct {
     double x;
     double y;
@@ -352,7 +343,7 @@ stroke_t* taper (bezier* bez, radfunc_t radfunc, double initwid, int linejoin, i
 	    }
 		 /* direction to junction point */
 	    direction = ndir+D2R(90)+phi;
-	    if ((0 != linejoin) || (zdiv(lineout,linerad) > currentmiterlimit)) {
+	    if ((0 != linejoin) || (lineout > currentmiterlimit * linrad)) {
 		bevel = TRUE;
 		lineout = linerad;
 		direction = mymod(ldir-D2R(90),D2R(360));
