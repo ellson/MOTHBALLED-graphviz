@@ -187,6 +187,8 @@ static void arrow_match_name(char *name, int *flag)
 	}
 	if (f == ARR_TYPE_GAP && i == (NUMB_OF_ARROW_HEADS -1))
 	    f = ARR_TYPE_NONE;
+	if ((f == ARR_TYPE_GAP) && (i == 0) && (*rest == '\0'))
+	    f = ARR_TYPE_NONE;
 	if (f != ARR_TYPE_NONE)
 	    *flag |= (f << (i++ * BITS_PER_ARROW));
     }

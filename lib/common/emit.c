@@ -2184,6 +2184,19 @@ static double bothfunc (double curlen, double totallen, double initwid)
     else return ((1-fr)*initwid);
 }
 
+static radfunc_t 
+taperfun (edge_t* e)
+{
+    char* attr;
+    if (E_dir && ((attr = agxget(e, E_dir)))[0]) {
+	if (streq(attr, "forward")) return forfunc;
+	if (streq(attr, "back")) return revfunc;
+	if (streq(attr, "both")) return bothfunc;
+	if (streq(attr, "none")) return nonefunc;
+    }
+    return (agisdirected(agraphof(aghead(e))) ? forfunc : nonefunc);
+}
+
 static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 {
     int i, j, cnum, numc = 0, numsemi = 0;
@@ -2261,57 +2274,22 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 
 	if (tapered) {
 	    stroke_t* stp;
-	    radfunc_t taperfun;
-    	    char* attr;
-	    int taperhead, tapertail;
-	    if (agisdirected(agraphof(aghead(e)))) {
-		taperfun = forfunc;
-		taperhead = 1;
-		tapertail = 0;
-	    }
-	    else {
-	        taperfun = nonefunc;
-		taperhead = 0;
-		tapertail = 0;
-	    }
-            if (E_dir && ((attr = agxget(e, E_dir)))[0]) {
-	        if (streq(attr, "forward")) {
-		    taperfun = forfunc;
-		    taperhead = 1;
-		    tapertail = 0;
-		}
-	        else if (streq(attr, "back")) {
-		    taperfun = revfunc;
-		    taperhead = 0;
-		    tapertail = 1;
-		}
-	        else if (streq(attr, "both")) {
-		    taperfun = bothfunc;
-		    taperhead = 1;
-		    tapertail = 1;
-		}
-	        else if (streq(attr, "none")) {
-	            taperfun = nonefunc;
-		    taperhead = 0;
-		    tapertail = 0;
-		}
-            }
 	    if (*color == '\0') color = DEFAULT_COLOR;
 	    if (*fillcolor == '\0') fillcolor = DEFAULT_COLOR;
     	    gvrender_set_pencolor(job, "transparent");
 	    gvrender_set_fillcolor(job, color);
 	    bz = ED_spl(e)->list[0];
-	    stp = taper (&bz, taperfun, penwidth, 0, 0);
+	    stp = taper (&bz, taperfun (e), penwidth, 0, 0);
 	    gvrender_polygon(job, stp->vertices, stp->nvertices, TRUE);
 	    free_stroke (stp);
     	    gvrender_set_pencolor(job, color);
 	    if (fillcolor != color)
 		gvrender_set_fillcolor(job, fillcolor);
 	    if (bz.sflag) {
-		arrow_gen(job, EMIT_TDRAW, bz.sp, bz.list[0], arrowsize, tapertail?0:penwidth, bz.sflag);
+		arrow_gen(job, EMIT_TDRAW, bz.sp, bz.list[0], arrowsize, penwidth, bz.sflag);
 	    }
 	    if (bz.eflag) {
-		arrow_gen(job, EMIT_HDRAW, bz.ep, bz.list[bz.size - 1], arrowsize, taperhead?0:penwidth, bz.eflag);
+		arrow_gen(job, EMIT_HDRAW, bz.ep, bz.list[bz.size - 1], arrowsize, penwidth, bz.eflag);
 	    }
 	}
 	/* if more than one color - then generate parallel beziers, one per color */
