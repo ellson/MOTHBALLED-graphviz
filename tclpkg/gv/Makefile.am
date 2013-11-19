@@ -34,7 +34,7 @@ gv_sharp.cpp: gv.i
 
 pkggodir = $(pkglibdir)/go
 GO_data = gv.go gv_gc.c
-nodist_libgv_go_la_SOURCES = gv_go.cpp $(GO_data)
+nodist_libgv_go_la_SOURCES = gv_go.cpp
 libgv_go_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
 libgv_go_la_LIBADD = $(BASELIBS) $(GO_LIBS)
 libgv_go_la_LDFLAGS = -module -avoid-version
