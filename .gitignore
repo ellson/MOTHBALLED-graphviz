@@ -169,6 +169,9 @@ tclpkg/gv/gv.cmo
 tclpkg/gv/gv.cmx
 tclpkg/gv/gv.cmxa
 tclpkg/gv/gv.cs
+tclpkg/gv/gv.go
+tclpkg/gv/gv_gc.c
+tclpkg/gv/gv_go.cpp
 tclpkg/gv/gv.java
 tclpkg/gv/gv.ml
 tclpkg/gv/gv.mli

@@ -33,13 +33,13 @@ gv_sharp.cpp: gv.i
 	$(SWIG) -c++ -csharp -namespace gv -o gv_sharp.cpp $(srcdir)/gv.i
 
 pkggodir = $(pkglibdir)/go
-GO_data = 
+GO_data = gv.go gv_gv.c
 nodist_libgv_go_la_SOURCES = gv_go.cpp $(GO_data)
 libgv_go_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
 libgv_go_la_LIBADD = $(BASELIBS) $(GO_LIBS)
 libgv_go_la_LDFLAGS = -module -avoid-version
 libgv_go_la_CPPFLAGS = $(BASECPPFLAGS) $(GO_INCLUDES)
-# $(GO_data): gv_go.cpp
+$(GO_data): gv_go.cpp
 gv_go.cpp: gv.i
 	$(SWIG) -c++ -go -intgosize @SIZEOF_INT_BITS@ -o gv_go.cpp $(srcdir)/gv.i
 

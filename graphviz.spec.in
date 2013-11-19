@@ -28,7 +28,7 @@ Prefix: /usr
 # All features are off (undefined) by default
 # To enable, use: <percent>define FEATURE 1
 # Available features are:
-#    SHARP GHOSTSCRIPT GO GUILE _IO JAVA LUA OCAML ORTHO PERL PHP
+#    SHARP GHOSTSCRIPT _GO GUILE _IO JAVA LUA OCAML ORTHO PERL PHP
 #    PYTHON RUBY R_LANG TCL IPSEPCOLA MYLIBGD PANGOCAIRO RSVG
 #    GTK GLITZ SMYRNA DEVIL MING GDK _QT WEBP
 
@@ -162,7 +162,7 @@ BuildRequires: R-devel swig >= 1.3.33 perl-libs
 BuildRequires: libwebp-devel
 %endif
 %if %fedora >= 20
-%define GOLANG 1
+%define _GO 1
 BuildRequires: golang
 %endif
 %endif
@@ -533,7 +533,7 @@ C# extension for graphviz.
 %endif
 
 #-- graphviz-lang-go rpm --------------------------------------------
-%if 0%{?GOLANG}
+%if 0%{?_GO}
 %package lang-go
 Group:          Applications/Multimedia
 Summary:        GO extension for graphviz
@@ -862,7 +862,7 @@ CFLAGS="$RPM_OPT_FLAGS" \
         --disable-static \
         --disable-dependency-tracking \
         --enable-sharp%{!?SHARP:=no} \
-        --enable-go%{!?GOLANG:=no} \
+        --enable-go%{!?_GO:=no} \
         --enable-guile%{!?GUILE:=no} \
         --enable-io%{!?_IO:=no} \
         --enable-java%{!?JAVA:=no} \
