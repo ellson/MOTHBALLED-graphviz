@@ -41,7 +41,7 @@ libgv_go_la_LDFLAGS = -module -avoid-version
 libgv_go_la_CPPFLAGS = $(BASECPPFLAGS) $(GO_INCLUDES)
 # $(GO_data): gv_go.cpp
 gv_go.cpp: gv.i
-	$(SWIG) -c++ -go -o gv_go.cpp $(srcdir)/gv.i
+	$(SWIG) -c++ -go -intgosize @SIZEOF_INT_BITS@ -o gv_go.cpp $(srcdir)/gv.i
 
 pkgguiledir = $(pkglibdir)/guile
 GUILE_data = 

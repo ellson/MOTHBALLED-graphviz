@@ -28,7 +28,7 @@ Prefix: /usr
 # All features are off (undefined) by default
 # To enable, use: <percent>define FEATURE 1
 # Available features are:
-#    SHARP GHOSTSCRIPT GUILE _IO JAVA LUA OCAML ORTHO PERL PHP
+#    SHARP GHOSTSCRIPT GO GUILE _IO JAVA LUA OCAML ORTHO PERL PHP
 #    PYTHON RUBY R_LANG TCL IPSEPCOLA MYLIBGD PANGOCAIRO RSVG
 #    GTK GLITZ SMYRNA DEVIL MING GDK _QT WEBP
 
@@ -160,6 +160,10 @@ BuildRequires: R-devel swig >= 1.3.33 perl-libs
 %if %fedora >= 16
 %define WEBP 1
 BuildRequires: libwebp-devel
+%endif
+%if %fedora >= 20
+%define GO 1
+BuildRequires: golang
 %endif
 %endif
 
@@ -528,6 +532,24 @@ C# extension for graphviz.
 %{_mandir}/man3/*.3sharp.*
 %endif
 
+#-- graphviz-lang-go rpm --------------------------------------------
+%if 0%{?GO}
+%package lang-go
+Group:          Applications/Multimedia
+Summary:        GO extension for graphviz
+Requires:       %{name} = %{version}-%{release}, golang
+Obsoletes:	%{name}-go
+
+%description lang-go
+Guile extension for graphviz.
+
+%files lang-go
+%defattr(-,root,root,-)
+%dir %{_libdir}/graphviz/go
+%{_libdir}/graphviz/go/*
+%{_mandir}/man3/*.3.guile.*
+%endif
+
 #-- graphviz-lang-guile rpm --------------------------------------------
 %if 0%{?GUILE}
 %package lang-guile
@@ -840,6 +862,7 @@ CFLAGS="$RPM_OPT_FLAGS" \
         --disable-static \
         --disable-dependency-tracking \
         --enable-sharp%{!?SHARP:=no} \
+        --enable-go%{!?GO:=no} \
         --enable-guile%{!?GUILE:=no} \
         --enable-io%{!?_IO:=no} \
         --enable-java%{!?JAVA:=no} \

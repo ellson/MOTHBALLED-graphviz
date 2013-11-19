@@ -653,7 +653,7 @@ else
     if test `$SWIG -help 2>&1 | $EGREP -c '\-go* *- Generate'` = 0 ; then
       use_go="No (swig does not support -go option)"
     else
-      AC_CHECK_PROG(GO,6g,8g)
+      AC_CHECK_PROG(GO,go,go)
       if test "x$GO" = "x"; then
         use_go="No (GO compiler not available)"
       else
@@ -3142,6 +3142,8 @@ rm -f conftest*
 # -----------------------------------------------------------------------
 AC_CHECK_SIZEOF([long long])
 AC_CHECK_SIZEOF([int])
+SIZEOF_INT_BITS=$(( $ac_cv_sizeof_int * 8 ))
+AC_SUBST([SIZEOF_INT_BITS])
 # -----------------------------------------------------------------------
 
 # Generate Makefiles
