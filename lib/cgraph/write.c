@@ -60,9 +60,8 @@ static int strcasecmp(const char *s1, const char *s2)
 }
 #endif
 
-#define is_number_char(c) (isdigit(c) || ((c) == '.'))
-    /* alphanumeric, '.', or non-ascii; basically, non-punctuation */
-#define is_id_char(c) (isalnum(c) || ((c) == '.') || !isascii(c))
+    /* alphanumeric, '.', '-', or non-ascii; basically, chars used in unquoted ids */
+#define is_id_char(c) (isalnum(c) || ((c) == '.') || ((c) == '-') || !isascii(c))
 
 /* _agstrcanon:
  * Canonicalize ordinary strings. 
@@ -88,7 +87,7 @@ static char *_agstrcanon(char *arg, char *buf)
     p = buf;
     *p++ = '\"';
     uc = *(unsigned char *) s++;
-    maybe_num = is_number_char(uc) || (uc == '-');
+    maybe_num = isdigit(uc) || (uc == '.') || (uc == '-');
     while (uc) {
 	if (uc == '\"') {
 	    *p++ = '\\';
