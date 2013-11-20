@@ -1,0 +1,5 @@
+This directory is hopefully temporary,  containing various experimantal code towards a GO language extension.
+
+Currently requires a very recent GO installed in /usr/local/go
+
+(Later than the 1.1.2 available in fc20 or rawhide at this time.)
