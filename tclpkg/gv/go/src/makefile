@@ -1,7 +1,7 @@
 GO=$(GOROOT)/bin/go
 
 test: test.go prep
-	$(GO) build -work -gccgoflags '-lgvc' -compiler gccgo test.go
+	$(GO) build -x -work -gccgoflags '-lgvc' -compiler gccgo test.go
 
 .PHONY: prep
 prep:

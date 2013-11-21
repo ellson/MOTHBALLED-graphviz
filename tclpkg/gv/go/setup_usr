@@ -1,0 +1,2 @@
+export GOROOT=/usr/lib64/golang/
+export GOPATH=`pwd`

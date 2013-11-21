@@ -1,0 +1,2 @@
+export GOROOT=/home/ellson/FIX/Linux.x86_64/build/go
+export GOPATH=`pwd`

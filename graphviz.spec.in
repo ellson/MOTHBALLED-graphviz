@@ -163,7 +163,7 @@ BuildRequires: libwebp-devel
 %endif
 %if %fedora >= 19
 %define _GO 0
-BuildRequires: golang
+BuildRequires: golang >= 1.2 gcc-go
 %endif
 %endif
 
