@@ -161,8 +161,8 @@ BuildRequires: R-devel swig >= 1.3.33 perl-libs
 %define WEBP 1
 BuildRequires: libwebp-devel
 %endif
-%if %fedora >= 20
-%define _GO 1
+%if %fedora >= 19
+%define _GO 0
 BuildRequires: golang
 %endif
 %endif
