@@ -1,6 +1,0 @@
-This directory is hopefully temporary,  containing various experimental
-code towards a GO language extension.
-
-Currently requires a very recent GO.  i.e. Later than the 1.1.2
-available in fc20 or rawhide at this time.  Use appropriate setup_xxx, e.g.
-	. ./setup_usr_local
