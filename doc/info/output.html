@@ -152,7 +152,7 @@ Additional drawing attributes can appear on nodes, edges, clusters and
 on the graph itself. There are six new attributes: 
 <SPACER TYPE=VERTICAL size=10>
 <TABLE  border bgcolor=beige>
-<TR><TD>_draw_<TD colspan=2>Drawing operations
+<TR><TD>_draw_<TD colspan=2>General drawing without labels
 <TR><TD>_ldraw_<TD colspan=2>Label drawing
 <TR><TD>_hdraw_<TD>Head arrowhead<TD>Edge only
 <TR><TD>_tdraw_<TD>Tail arrowhead<TD>Edge only
@@ -218,6 +218,11 @@ Note that the filled figures (ellipses, polygons and B-Splines)
 imply two operations: first, drawing the filled figure with the
 current fill color; second, drawing an unfilled figure with the
 current pen color, pen width and pen style.
+<P>
+Within the context of a single drawing attribute, e.g., <TT>_draw_</TT>, there is
+an implicit state for the graphical attributes. That is, once a color, style, font, or
+font characteristic is set, it remains valid for all relevant drawing operations
+until the value is reset by another xdot cmd.
 <P>
 Style values which can be incorporated in the graphics model do not
 appear in xdot output. In particular, the style values
