@@ -33,15 +33,26 @@ gv_sharp.cpp: gv.i
 	$(SWIG) -c++ -csharp -namespace gv -o gv_sharp.cpp $(srcdir)/gv.i
 
 pkggodir = $(pkglibdir)/go
-GO_data = gv.go gv_gc.c
-nodist_libgv_go_la_SOURCES = gv_go.cpp
-libgv_go_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
-libgv_go_la_LIBADD = $(BASELIBS) $(GO_LIBS)
-libgv_go_la_LDFLAGS = -module -avoid-version
-libgv_go_la_CPPFLAGS = $(BASECPPFLAGS) $(GO_INCLUDES)
-$(GO_data): gv_go.cpp
-gv_go.cpp: gv.i
-	$(SWIG) -c++ -go -intgosize @SIZEOF_INT_BITS@ -o gv_go.cpp $(srcdir)/gv.i
+GO_data = 
+#nodist_libgv_go_la_SOURCES = gv_go.cpp
+#libgv_go_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
+#libgv_go_la_LIBADD = $(BASELIBS) $(GO_LIBS)
+#libgv_go_la_LDFLAGS = -module -avoid-version
+#libgv_go_la_CPPFLAGS = $(BASECPPFLAGS) $(GO_INCLUDES)
+gvgotest: gv.i gvgotest.go
+	( \
+	mkdir -p go/src/gv; \
+	$(SED) -e 's/#include "gvc.h"/#include <graphviz\/gvc.h>/' <$(srcdir)/gv.i >go/src/gv/gv.swigcxx; \
+	$(SED) -e 's/#include <gvc.h>/#include <graphviz\/gvc.h>/' <$(srcdir)/gv_dummy_init.c >go/src/gv/gv_dummy_init.c; \
+	$(SED) -e 's/#include "gvplugin.h"/#include <graphviz\/gvplugin.h>/' <$(srcdir)/gv_builtins.c >go/src/gv/gv_builtins.c; \
+	$(SED) -e 's/#include "gvc.h"/#include <graphviz\/gvc.h>/' -e 's/DEMAND_LOADING/1/' <$(srcdir)/gv.cpp >go/src/gv/gv.cpp; \
+	echo "package gv" >go/src/gv/gv.go; \
+	cat $(srcdir)/gvgotest.go >go/src/gvgotest.go; \
+	export GOROOT=/home/ellson/FIX/Linux.x86_64/build/go; \
+	export GOPATH=/home/ellson/FIX/Linux.x86_64/build/graphviz/tclpkg/gv/go ;\
+	cd go/src; \
+	$(GOROOT)/bin/go build -x -work -gccgoflags '-lgvc' -compiler gccgo gvgotest.go && mv gvgotest ../../; \
+	)
 
 pkgguiledir = $(pkglibdir)/guile
 GUILE_data = 
@@ -270,11 +281,11 @@ pkgsharp_LTLIBRARIES = libgv_sharp.la
 DEVTSTS += test_sharp
 endif
 if WITH_GO
-pkggo_DATA = $(GO_data)
-man_MANS += gv.3go
-pdf_DATA += gv.3go.pdf
-pkggo_LTLIBRARIES = libgv_go.la
-DEVTSTS += test_go
+#pkggo_DATA = $(GO_data)
+#man_MANS += gv.3go
+#pdf_DATA += gv.3go.pdf
+#pkggo_LTLIBRARIES = libgv_go.la
+#DEVTSTS += test_go
 endif
 if WITH_GUILE
 pkgguile_DATA = $(GUILE_data)
