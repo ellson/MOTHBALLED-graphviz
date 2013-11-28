@@ -40,11 +40,11 @@ static void initGraphAttrs(Agraph_t * g, circ_state * state)
 	state->blockCount = 0;
 	rootg = rg;
 	G_mindist = agattr(rootg,AGRAPH, "mindist", NULL);
-	min_dist = late_double(rootg, G_mindist, MINDIST, 0.0);
 	N_artpos = agattr(rootg,AGNODE, "articulation_pos", NULL);
 	N_root = agattr(rootg,AGNODE, "root", NULL);
-	rootname = agget(rootg, "root");
     }
+    rootname = agget(rootg, "root");
+    min_dist = late_double(rootg, G_mindist, MINDIST, 0.0);
     initBlocklist(&state->bl);
     state->orderCount = 1;
     state->min_dist = min_dist;
