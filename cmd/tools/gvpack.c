@@ -877,8 +877,7 @@ int main(int argc, char *argv[])
 
     doPack = (pinfo.mode != l_undef);
 
-    gvc = gvNEWcontext(lt_preloaded_symbols, DEMAND_LOADING);
-    gvconfig(gvc, FALSE); /* configure for available plugins */
+    gvc = gvContextPlugins(lt_preloaded_symbols, DEMAND_LOADING);
     gs = readGraphs(&cnt, gvc);
     if (cnt == 0)
 	exit(0);
