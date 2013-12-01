@@ -36,14 +36,19 @@ formats need to be interpreted in this manner.
 </TD><TD>Windows Bitmap Format</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:canon HREF=#d:canon>canon</A>
 <BR><A NAME=a:dot HREF=#d:dot>dot</A>
+<BR><A NAME=a:gv HREF=#d:gv>gv</A>
 <BR><A NAME=a:xdot HREF=#d:xdot>xdot</A>
 <BR><A NAME=a:xdot1.2 HREF=#d:xdot1.2>xdot1.2</A>
 <BR><A NAME=a:xdot1.4 HREF=#d:xdot1.4>xdot1.4</A>
 </TD><TD>DOT</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:cgimage HREF=#d:cgimage>cgimage</A>
+</TD><TD>CGImage bitmap format</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:cmap HREF=#d:cmap>cmap</A>
 </TD><TD>Client-side imagemap (deprecated)</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:eps HREF=#d:eps>eps</A>
 </TD><TD>Encapsulated PostScript</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:exr HREF=#d:exr>exr</A>
+</TD><TD>OpenEXR</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:fig HREF=#d:fig>fig</A>
 </TD><TD>FIG</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:gd HREF=#d:gd>gd</A>
@@ -63,27 +68,44 @@ formats need to be interpreted in this manner.
 </TD><TD>Server-side and client-side imagemaps</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:ismap HREF=#d:ismap>ismap</A>
 </TD><TD>Server-side imagemap (deprecated)</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:jp2 HREF=#d:jp2>jp2</A>
+</TD><TD>JPEG 2000</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:jpg HREF=#d:jpg>jpg</A>
 <BR><A NAME=a:jpeg HREF=#d:jpeg>jpeg</A>
 <BR><A NAME=a:jpe HREF=#d:jpe>jpe</A>
 </TD><TD>JPEG</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:pct HREF=#d:pct>pct</A>
+<BR><A NAME=a:pict HREF=#d:pict>pict</A>
+</TD><TD>PICT</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:pdf HREF=#d:pdf>pdf</A>
 </TD><TD>Portable Document Format (PDF)</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:pic HREF=#d:pic>pic</A>
+</TD><TD>Kernighan's PIC graphics language</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:plain HREF=#d:plain>plain</A>
 <BR><A NAME=a:plain-ext HREF=#d:plain-ext>plain-ext</A>
 </TD><TD>Simple text format</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:png HREF=#d:png>png</A>
 </TD><TD>Portable Network Graphics format</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:pov HREF=#d:pov>pov</A>
+</TD><TD>POV-Ray markup language (prototype)</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:ps HREF=#d:ps>ps</A>
 </TD><TD>PostScript</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:ps2 HREF=#d:ps2>ps2</A>
 </TD><TD>PostScript for PDF</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:psd HREF=#d:psd>psd</A>
+</TD><TD>PSD</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:sgi HREF=#d:sgi>sgi</A>
+</TD><TD>SGI</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:svg HREF=#d:svg>svg</A>
 <BR><A NAME=a:svgz HREF=#d:svgz>svgz</A>
 </TD><TD>Scalable Vector Graphics</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:tga HREF=#d:tga>tga</A>
+</TD><TD>Truevision TGA</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:tif HREF=#d:tif>tif</A>
 <BR><A NAME=a:tiff HREF=#d:tiff>tiff</A>
 </TD><TD>TIFF (Tag Image File Format)</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:tk HREF=#d:tk>tk</A>
+</TD><TD>TK graphics</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:vml HREF=#d:vml>vml</A>
 <BR><A NAME=a:vmlz HREF=#d:vmlz>vmlz</A>
 </TD><TD>Vector Markup Language (VML)</TD> </TR>
@@ -94,6 +116,7 @@ formats need to be interpreted in this manner.
  <TR><TD ALIGN=CENTER><A NAME=a:webp HREF=#d:webp>webp</A>
 </TD><TD>Image format for the Web</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:xlib HREF=#d:xlib>xlib</A>
+<BR><A NAME=a:x11 HREF=#d:x11>x11</A>
 </TD><TD>Xlib canvas</TD> </TR>
 </TABLE>
 <HR>
@@ -104,6 +127,7 @@ formats need to be interpreted in this manner.
 
 <DT><A NAME=d:canon HREF=#a:canon><STRONG>canon</STRONG></A>
 ,<DT><A NAME=d:dot HREF=#a:dot><STRONG>dot</STRONG></A>
+,<DT><A NAME=d:gv HREF=#a:gv><STRONG>gv</STRONG></A>
 ,<DT><A NAME=d:xdot HREF=#a:xdot><STRONG>xdot</STRONG></A>
 ,<DT><A NAME=d:xdot1.2 HREF=#a:xdot1.2><STRONG>xdot1.2</STRONG></A>
 ,<DT><A NAME=d:xdot1.4 HREF=#a:xdot1.4><STRONG>xdot1.4</STRONG></A>
@@ -275,6 +299,9 @@ Version info:
 <TR><TD>1.6</TD><TD>2.35</TD><TD>Add STRIKE-THROUGH bit for <tt>t</tt></TD</TR>
 </TABLE>
 
+<DT><A NAME=d:cgimage HREF=#a:cgimage><STRONG>cgimage</STRONG></A>
+<DD>Output using the <A HREF="https://developer.apple.com/library/mac/documentation/graphicsimaging/reference/CGImage/Reference/reference.html">CGImage format</A>.
+
 <DT><A NAME=d:cmap HREF=#a:cmap><STRONG>cmap</STRONG></A>
 <DD>Produces map files for client-side image maps. The cmap format is
 mostly identical to cmapx, but the latter is well-formed XML amenable
@@ -288,6 +315,9 @@ See <A HREF=#ID>Note</A>.
 At present, this is only guaranteed to be correct for a single
 input graph since the Bounding Box information has to appear
 at the beginning of the output, and this will be based on the first graph.
+
+<DT><A NAME=d:exr HREF=#a:exr><STRONG>exr</STRONG></A>
+<DD>Output in the OpenEXR format
 
 <DT><A NAME=d:fig HREF=#a:fig><STRONG>fig</STRONG></A>
 <DD>Outputs graphs in the FIG graphics language.
@@ -396,10 +426,17 @@ URL to be used. For both nodes and edges, if the URL has the escape
 sequence "&#92;N" embedded in its string, this will be replaced with the
 node or edge name.
 
+<DT><A NAME=d:jp2 HREF=#a:jp2><STRONG>jp2</STRONG></A>
+<DD>Output using the <A HREF="http://www.jpeg.org/jpeg2000/">JPEG 2000</A> format.
+
 <DT><A NAME=d:jpg HREF=#a:jpg><STRONG>jpg</STRONG></A>
 ,<DT><A NAME=d:jpeg HREF=#a:jpeg><STRONG>jpeg</STRONG></A>
 ,<DT><A NAME=d:jpe HREF=#a:jpe><STRONG>jpe</STRONG></A>
 <DD>Output JPEG compressed image files.
+
+<DT><A NAME=d:pct HREF=#a:pct><STRONG>pct</STRONG></A>
+,<DT><A NAME=d:pict HREF=#a:pict><STRONG>pict</STRONG></A>
+<DD>Output in the Apple PICT file format.
 
 <DT><A NAME=d:pdf HREF=#a:pdf><STRONG>pdf</STRONG></A>
 <DD>Produces <A HREF="http://www.adobe.com/devnet/pdf/">PDF</A> output.
@@ -409,6 +446,10 @@ produce PDF-compatible PostScript, and then use a ps-to-pdf converter.
 <P>
 Note: At present, this option does not support anchors, etc. To get these
 included in your PDF output, use <A HREF="#d:ps2">ps2</A>.
+
+<DT><A NAME=d:pic HREF=#a:pic><STRONG>pic</STRONG></A>
+<DD>Output is given in the text-based PIC language developed for troff.
+See <A HREF="https://en.wikipedia.org/wiki/Pic_language">Pic language</A>.
 
 <DT><A NAME=d:plain HREF=#a:plain><STRONG>plain</STRONG></A>
 ,<DT><A NAME=d:plain-ext HREF=#a:plain-ext><STRONG>plain-ext</STRONG></A>
@@ -501,6 +542,10 @@ information provided.
 <DT><A NAME=d:png HREF=#a:png><STRONG>png</STRONG></A>
 <DD>Produces output in the PNG (Portable Network Graphics) format.
 
+<DT><A NAME=d:pov HREF=#a:pov><STRONG>pov</STRONG></A>
+<DD>Scene-description language for 3D modelling for the 
+<A HREF="http://www.povray.org/">Persistence of Vision Raytracer</A>.
+
 <DT><A NAME=d:ps HREF=#a:ps><STRONG>ps</STRONG></A>
 <DD>Produces PostScript output.
 <P>
@@ -521,6 +566,12 @@ when viewed in a PDF-viewer, e.g.,
 is a link to the given URL. If a URL is attached to the graph, this serves
 as a base, such that relative URLs on nodes are derived from it.
 
+<DT><A NAME=d:psd HREF=#a:psd><STRONG>psd</STRONG></A>
+<DD>Output in the Adobe PhotoShop PSD file format.
+
+<DT><A NAME=d:sgi HREF=#a:sgi><STRONG>sgi</STRONG></A>
+<DD>Output in the SGI image file format.
+
 <DT><A NAME=d:svg HREF=#a:svg><STRONG>svg</STRONG></A>
 ,<DT><A NAME=d:svgz HREF=#a:svgz><STRONG>svgz</STRONG></A>
 <DD>Produce <A HREF="http://www.adobe.com/svg/">SVG</A> output,
@@ -528,9 +579,15 @@ the latter in compressed format.
 <P>
 See <A HREF=#ID>Note</A>.
 
+<DT><A NAME=d:tga HREF=#a:tga><STRONG>tga</STRONG></A>
+<DD>Output in the Truevision TGA or TARGA format.
+
 <DT><A NAME=d:tif HREF=#a:tif><STRONG>tif</STRONG></A>
 ,<DT><A NAME=d:tiff HREF=#a:tiff><STRONG>tiff</STRONG></A>
 <DD>Produces <A HREF="http://www.libtiff.org/">TIFF</A> output.
+
+<DT><A NAME=d:tk HREF=#a:tk><STRONG>tk</STRONG></A>
+<DD>Output using the text-based TK graphics primitives.
 
 <DT><A NAME=d:vml HREF=#a:vml><STRONG>vml</STRONG></A>
 ,<DT><A NAME=d:vmlz HREF=#a:vmlz><STRONG>vmlz</STRONG></A>
@@ -563,6 +620,7 @@ See Wikipedia's <a href="http://en.wikipedia.org/wiki/Webp">WebP</a>
 or Google's <a href="http://code.google.com/speed/webp/">webp</a> pages.
 
 <DT><A NAME=d:xlib HREF=#a:xlib><STRONG>xlib</STRONG></A>
+,<DT><A NAME=d:x11 HREF=#a:x11><STRONG>x11</STRONG></A>
 <DD>Creates an <A HREF="http://en.wikipedia.org/wiki/Xlib">Xlib</A> window and displays the output there.
 
 </DL>
