@@ -166,6 +166,8 @@ Text drawn using the baseline point $(x,y)$. The text consists of the
 $n$ bytes following {\tt '-'}. The text should be left-aligned (centered,
 right-aligned) on the point if $j$ is -1 (0, 1), respectively. The 
 value $w$ gives the width of the text as computed by the library.  \\
+${\tt t}\ f$ &
+Set font characteristics. The integer f is the OR of BOLD=1, ITALIC=2, UNDERLINE=4, SUPERSCRIPT=8, SUBSCRIPT=16, and STRIKE-THROUGH=32. \\
 ${\tt C}\ n\ {\tt -}c_{1}c_{2}\cdots c_{n}$ & Set color used to fill closed
 regions. The
 color is specified by the $n$ characters following {\tt '-'}. \\
@@ -177,6 +179,9 @@ size is $s$ points. The font name
 is specified by the $n$ characters following {\tt '-'}. \\
 ${\tt S}\ n\ {\tt -}c_{1}c_{2}\cdots c_{n}$ & Set style attribute. The
 style value is specified by the $n$ characters following {\tt '-'}. \\
+${\tt I}\ x\ y\ j\ w\ n\ {\tt -}c_{1}c_{2}\cdots c_{n}$ &
+Externally-specified image drawn in the box with lower left corner $(x,y)$ 
+and upper right corner $(x+w,y+h)$. The name of the image consists of the $n$ bytes following '-'. This is usually a bitmap image. Note that the image size, even when converted from pixels to points, might be different from the required size $(w,h)$. It is assumed the renderer will perform the necessary scaling.\\
 \hline
 \end{tabular}
 \caption{{\tt xdot} drawing operations}

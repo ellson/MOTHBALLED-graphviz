@@ -912,6 +912,16 @@ information with a call to {\tt gvFreeLayout}
 before invoking a new layout function.
 An example of this was given in Figure~\ref{fig:nop}.
 
+Note that if you render a graph into the {\tt dot} or {\tt xdot}
+format, this attaches attributes onto the graph. Some of these attributes
+are used during layout. For example, the {\tt neato} layout will use
+the {\tt pos} attribute of the nodes for an initial layout, while the
+{\tt twopi} layout may set the {\tt root} attribute, which will lock in
+this attribute for any future layouts using {\tt twopi}.
+To avoid having these attributes affecting another
+layout of the graph, the user should should set these attributes to the
+empty string before calling {\tt gvLayout} again.
+
 Once the application is totally done with a graph, it should call
 {\tt agclose} to close the graph and reclaim the remaining resources associated
 with it.
