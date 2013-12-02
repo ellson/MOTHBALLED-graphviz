@@ -160,7 +160,6 @@ __EXPORT__
 int Tcldot_Init(Tcl_Interp * interp)
 {
     ictx_t *ictx;
-    GVC_t *gvc;
 
     ictx = calloc(1, sizeof(ictx_t));
     if (!ictx)
@@ -196,15 +195,8 @@ int Tcldot_Init(Tcl_Interp * interp)
     Gdtclft_Init(interp);
 #endif
 
-    /* set persistent attributes here */
-    agattr(NULL, AGNODE, "label", NODENAME_ESC);
-
     /* create a GraphViz Context and pass a pointer to it in clientdata */
-    gvc = gvNEWcontext(lt_preloaded_symbols, DEMAND_LOADING);
-    ictx->gvc = gvc;
-
-    /* configure for available plugins */
-    gvconfig(gvc, FALSE);
+    ictx->gvc = gvContextPlugins(lt_preloaded_symbols, DEMAND_LOADING);
 
 #ifndef TCLOBJ
      Tcl_CreateCommand(interp, "dotnew", dotnew,
