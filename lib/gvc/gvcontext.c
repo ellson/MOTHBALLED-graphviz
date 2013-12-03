@@ -36,6 +36,9 @@
 /* from common/utils.c */
 extern void *zmalloc(size_t);
 
+/* from common/textspan.c */
+extern void textfont_dict_close(GVC_t *gvc);
+
 /* from common/emit.c */
 extern void emit_once_reset(void);
 
