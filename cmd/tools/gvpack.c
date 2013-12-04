@@ -601,7 +601,7 @@ cloneSubg(Agraph_t * g, Agraph_t * ng, Agsym_t * G_bb, Dt_t * gnames)
 	agxset(ng, G_bb, "");	/* Unset all subgraph bb */
 
     /* clone subgraphs */
-    for (subg = agfstsubg (g); subg; subg = agfstsubg (subg)) {
+    for (subg = agfstsubg (g); subg; subg = agnxtsubg (subg)) {
 	nsubg = agsubg(ng, xName(gnames, agnameof(subg)), 1);
 	agbindrec (nsubg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
 	cloneSubg(subg, nsubg, G_bb, gnames);
