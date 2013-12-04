@@ -9,7 +9,7 @@ the build environment to use the necessary include files and
 libraries.
 
 All of the necessary include files and libraries are available
-in the {\tt include} and {\tt lib} directories where \gviz\
+in the {\tt include}, {\tt lib} and {\tt bin} directories where \gviz\
 is installed. At the simplest level, all an application needs
 to do to use the layout algorithms is to include {\tt gvc.h},
 which provides (indirectly) all of the \gviz\ types and functions,
@@ -19,7 +19,7 @@ and link the program with the necessary libraries.
 For linking, the application should use the \gviz\ libraries 
 \begin{itemize}
 \item {\tt gvc}
-\item {\tt graph}
+\item {\tt cgraph}
 \item {\tt cdt}
 \end{itemize}
 If the system is configured to use plug-ins, these libraries
