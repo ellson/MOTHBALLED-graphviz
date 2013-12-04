@@ -806,7 +806,7 @@ void plot_dot_map(Agraph_t* gr, int n, int dim, real *x, SparseMatrix polys, Spa
 
   /*polygons */
   if (plot_polyQ) {
-    if (!gr) fprintf(f,"_draw_ = \"");
+    if (!gr) fprintf(f,"_background = \"");
     plot_dot_polygons(&sbuff, &len, &len_max, -1., NULL, polys, x_poly, polys_groups, r, g, b, opacity);
   }
 
@@ -818,7 +818,7 @@ void plot_dot_map(Agraph_t* gr, int n, int dim, real *x, SparseMatrix polys, Spa
     fprintf(f,"%s",sbuff);
     fprintf(f,"\"\n");/* close polygons/lines */
   } else {
-    agattr(gr, AGRAPH, "_draw_", sbuff);
+    agattr(gr, AGRAPH, "_background", sbuff);
     agwrite(gr, f);
   }
 

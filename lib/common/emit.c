@@ -48,7 +48,7 @@ void* init_xdot (Agraph_t* g)
     char* p;
     xdot* xd = NULL;
 
-    if ((p = agget(g, "_draw_")) && p[0]) {
+    if ((p = agget(g, "_background")) && p[0]) {
 #ifdef DEBUG
 	if (Verbose) {
 	    start_timer();
@@ -57,7 +57,7 @@ void* init_xdot (Agraph_t* g)
 	xd = parseXDotF (p, NULL, sizeof (exdot_op));
 
 	if (!xd) {
-	    agerr(AGWARN, "Could not parse \"_draw_\" attribute in graph %s\n", agnameof(g));
+	    agerr(AGWARN, "Could not parse \"_background\" attribute in graph %s\n", agnameof(g));
 	    agerr(AGPREV, "  \"%s\"\n", p);
 	}
 #ifdef DEBUG

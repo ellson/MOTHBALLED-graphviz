@@ -212,6 +212,8 @@ dotty.protogt.unpackalldraw = function (gt, attr) {
     o = [];
     if (attr._draw_)
         o._draw_ = gt.unpackdraw (gt, attr._draw_);
+    if (attr._background)
+        o._background = gt.unpackdraw (gt, attr._background);
     if (attr._ldraw_)
         o._ldraw_ = gt.unpackdraw (gt, attr._ldraw_);
     if (attr._hdraw_)

@@ -29,6 +29,8 @@ static xdot *parseXdotwithattrs(void *e)
     int cnt=0;
     xdot* xDot=NULL;
     xDot=parseXDotFOn (agget(e,"_draw_" ), OpFns,sizeof(sdot_op), xDot);
+    if (agobjkind(e) == AGRAPH)
+	xDot=parseXDotFOn (agget(e,"_background" ), OpFns,sizeof(sdot_op), xDot);
     xDot=parseXDotFOn (agget(e,"_ldraw_" ), OpFns,sizeof(sdot_op), xDot);
     xDot=parseXDotFOn (agget(e,"_hdraw_" ), OpFns,sizeof(sdot_op), xDot);
     xDot=parseXDotFOn (agget(e,"_tdraw_" ), OpFns,sizeof(sdot_op), xDot);

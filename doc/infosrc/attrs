@@ -43,6 +43,12 @@
 # the special character '\' can cause problems. When used as a literal, use
 # the HTML encoding &#92; to avoid problems.
 #    
+:_background:G:string:<none>;  
+A string in the <A HREF=output.html#d:xdot>xdot format</A> specifying an arbitrary background.  
+During rendering, the canvas is first filled as described in the
+<A href=#d:bgcolor>bgcolor attribute</A>. 
+Then, if <b>_background</b> is defined, the graphics
+operations described in the string are performed on the canvas.
 :Damping:G:double:0.99:0.0; neato
 Factor damping force motions. On each iteration, a nodes movement
 is limited to this factor of its potential motion. By being less than
@@ -127,12 +133,14 @@ color (after a colon) is missing, the default color is used for it.
 See also the <A HREF=#d:gradientangle>gradientangle</A> attribute
 for setting the gradient angle. 
 <P>
-If no background color is specified for the root graph, no graphics
-operation are performed on the background. This works fine for
-PostScript but for bitmap output, all bits are initialized to something.
-This means that when the bitmap output is included in some other
+For certain output formats, such as PostScript, no fill is done for
+the root graph unless
+<b>bgcolor</b> is explicitly set. For bitmap formats, however, 
+the bits need to be
+initialized to something, so the canvas is filled with white by default.
+This means that if the bitmap output is included in some other
 document, all of the bits within the bitmap's bounding box will be
-set, overwriting whatever color or graphics where already on the page.
+set, overwriting whatever color or graphics were already on the page.
 If this effect is not desired, and you only want to set bits explicitly
 assigned in drawing the graph, set <B>bgcolor</B>="transparent".
 #bottomlabel:N:string:"";
