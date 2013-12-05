@@ -1369,6 +1369,7 @@ orthofinish:
 	free (route_list[i].segs);
     free (route_list);
     freeMaze (mp);
+    free (es);
 }
 
 #ifdef DEBUG
