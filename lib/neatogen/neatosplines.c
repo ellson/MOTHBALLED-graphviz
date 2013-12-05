@@ -261,10 +261,12 @@ void makeSelfArcs(path * P, edge_t * e, int stepx)
  * Returns the constructed polygon on success, NULL on failure.
  * Failure means the node shape is not supported. 
  *
+ * If isOrtho is true, we have to use the bounding box of each node.
+ *
  * The polygon has its vertices in CW order.
  * 
  */
-Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin)
+Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin, boolean isOrtho)
 {
     Ppoly_t *obs;
     polygon_t *poly;
@@ -275,15 +277,36 @@ Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin)
     pointf pt;
     field_t *fld;
     epsf_t *desc;
+    int isPoly;
+    pointf* verts;
+    pointf vs[4];
+    pointf p;
 
     switch (shapeOf(n)) {
     case SH_POLY:
     case SH_POINT:
 	obs = NEW(Ppoly_t);
 	poly = (polygon_t *) ND_shape_info(n);
-	if (poly->sides >= 3) {
+	if (isOrtho) {
+	    isPoly = 1;
+	    sides = 4;
+	    p.x = -ND_lw(n); 
+	    p.y = -ND_ht(n)/2.0; 
+	    vs[0] = p;
+	    p.x = ND_lw(n);
+	    vs[1] = p;
+	    p.y = ND_ht(n)/2.0; 
+	    vs[2] = p;
+	    p.x = -ND_lw(n); 
+	    vs[3] = p;
+	    verts = vs;
+	}
+	else if (poly->sides >= 3) {
+	    isPoly = 1;
 	    sides = poly->sides;
+	    verts = poly->vertices;
 	} else {		/* ellipse */
+	    isPoly = 0;
 	    sides = 8;
 	    adj = drand48() * .01;
 	}
@@ -292,9 +315,9 @@ Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin)
 	/* assuming polys are in CCW order, and pathplan needs CW */
 	for (j = 0; j < sides; j++) {
 	    double xmargin = 0.0, ymargin = 0.0;
-	    if (poly->sides >= 3) {
+	    if (isPoly) {
 		if (pmargin->doAdd) {
-		    if (poly->sides == 4) {
+		    if (sides == 4) {
 			switch (j) {
 			case 0 :
 			    xmargin = pmargin->x;
@@ -313,18 +336,18 @@ Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin)
 			    ymargin = -pmargin->y;
 			    break;
 			}
-			polyp.x = poly->vertices[j].x + xmargin;
-			polyp.y = poly->vertices[j].y + ymargin;
+			polyp.x = verts[j].x + xmargin;
+			polyp.y = verts[j].y + ymargin;
 		    }
 		    else {
-			double h = LEN(poly->vertices[j].x,poly->vertices[j].y);
-			polyp.x = poly->vertices[j].x * (1.0 + pmargin->x/h);
-			polyp.y = poly->vertices[j].y * (1.0 + pmargin->y/h);
+			double h = LEN(verts[j].x,verts[j].y);
+			polyp.x = verts[j].x * (1.0 + pmargin->x/h);
+			polyp.y = verts[j].y * (1.0 + pmargin->y/h);
 		    }
 		}
 		else {
-		    polyp.x = poly->vertices[j].x * pmargin->x;
-		    polyp.y = poly->vertices[j].y * pmargin->y;
+		    polyp.x = verts[j].x * pmargin->x;
+		    polyp.y = verts[j].y * pmargin->y;
 		}
 	    } else {
 		double c, s;
@@ -525,7 +548,7 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
     if (edgetype >= ET_PLINE) {
 	obs = N_NEW(agnnodes(g), Ppoly_t *);
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	    obp = makeObstacle(n, pmargin);
+	    obp = makeObstacle(n, pmargin, edgetype == ET_ORTHO);
 	    if (obp) {
 		ND_lim(n) = i; 
 		obs[i++] = obp;
@@ -541,9 +564,12 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 	if ((legal = Plegal_arrangement(obs, npoly))) {
 	    if (edgetype != ET_ORTHO) vconfig = Pobsopen(obs, npoly);
 	}
-	else if (Verbose)
-	    fprintf(stderr,
-		"nodes touch - falling back to straight line edges\n");
+	else {
+	    if (edgetype == ET_ORTHO)
+		agerr(AGWARN, "the bounding boxes of some nodes with margin (%.02f,%.02f) touch - falling back to straight line edges\n", pmargin->x, pmargin->y);
+	    else 
+		agerr(AGWARN, "some nodes with margin (%.02f,%.02f) touch - falling back to straight line edges\n", pmargin->x, pmargin->y);
+	}
     }
 
     /* route edges  */
