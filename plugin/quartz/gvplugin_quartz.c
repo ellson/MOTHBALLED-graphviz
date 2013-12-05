@@ -27,25 +27,6 @@ extern gvplugin_installed_t gvdevice_quartz_types;
 
 #if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040
 extern gvplugin_installed_t gvdevice_quartz_types_for_cairo;
-
-/* Uniform Type Identifiers corresponding to each format_type */
-CFStringRef format_uti [] = {
-	NULL,
-	NULL,
-	CFSTR("com.microsoft.bmp"),
-	CFSTR("com.ilm.openexr-image"),
-	CFSTR("com.compuserve.gif"),
-	CFSTR("public.jpeg"),
-	CFSTR("public.jpeg-2000"),
-	CFSTR("com.adobe.pdf"),
-	CFSTR("com.apple.pict"),
-	CFSTR("public.png"),
-	CFSTR("com.adobe.photoshop-image"),
-	CFSTR("com.sgi.sgi-image"),
-	CFSTR("public.tiff"),
-	CFSTR("com.truevision.tga-image")
-};
-
 #endif
 /* data consumer backed by the gvdevice */
 
@@ -58,6 +39,40 @@ CGDataConsumerCallbacks device_data_consumer_callbacks = {
 	device_data_consumer_put_bytes,
 	NULL
 };
+
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040
+
+CFStringRef format_to_uti(format_type format)
+{
+	switch (format) {
+		case FORMAT_BMP:
+			return CFSTR("com.microsoft.bmp");
+		case FORMAT_EXR:
+			return CFSTR("com.ilm.openexr-image");
+		case FORMAT_GIF:
+			return CFSTR("com.compuserve.gif");
+		case FORMAT_JPEG:
+			return CFSTR("public.jpeg");
+		case FORMAT_JPEG2000:
+			return CFSTR("public.jpeg-2000");
+		case FORMAT_PICT:
+			return CFSTR("com.apple.pict");
+		case FORMAT_PNG:
+			return CFSTR("public.png");
+		case FORMAT_PSD:
+			return CFSTR("com.adobe.photoshop-image");
+		case FORMAT_SGI:
+			return CFSTR("com.sgi.sgi-image");
+		case FORMAT_TIFF:
+			return CFSTR("public.tiff");
+		case FORMAT_TGA:
+			return CFSTR("com.truevision.tga-image");
+		default:
+			return NULL;
+	}
+}
+
+#endif
 
 static gvplugin_api_t apis[] = {
     {API_render, &gvrender_quartz_types},

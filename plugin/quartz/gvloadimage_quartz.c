@@ -122,7 +122,7 @@ static CGImageRef quartz_loadimage(GVJ_t * job, usershape_t *us)
 		CFDictionaryRef options = hint_format_type == FORMAT_NONE ? NULL : CFDictionaryCreate(
 			kCFAllocatorDefault,
 			(const void **)&kCGImageSourceTypeIdentifierHint,
-			(const void **)(format_uti + hint_format_type),
+			(const void **)format_to_uti(hint_format_type),
 			1,
 			&kCFTypeDictionaryKeyCallBacks,
 			&kCFTypeDictionaryValueCallBacks);
