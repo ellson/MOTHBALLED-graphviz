@@ -62,11 +62,9 @@ void quartz_size_layout(void *layout, double* width, double* height, double* yof
 	CGFloat ascent = 0.0;
 	CGFloat descent = 0.0;
 	CGFloat leading = 0.0;
-	double typowidth = CTLineGetTypographicBounds((CTLineRef)layout, &ascent, &descent, &leading);
-	CGFloat typoheight = ascent + descent;
 	
-	*width = typowidth;
-	*height = leading == 0.0 ? typoheight * 1.2 : typoheight + leading;	/* if no leading, use 20% of height */
+	*width = CTLineGetTypographicBounds((CTLineRef)layout, &ascent, &descent, &leading);
+	*height = ascent + descent + leading;
 	*yoffset_layout = ascent;
 }
 
@@ -92,8 +90,8 @@ boolean quartz_textlayout(textspan_t *para, char **fontpath)
 		/* report the layout */
 		para->layout = (void*)line;
 		para->free_layout = &quartz_free_layout;
-		para->yoffset_centerline = 0;
 		quartz_size_layout((void*)line, &para->size.x, &para->size.y, &para->yoffset_layout);
+		para->yoffset_centerline = 0.2 * para->font->size;
 		return TRUE;
 	}
 	else
