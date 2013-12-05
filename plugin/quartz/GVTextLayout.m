@@ -76,18 +76,14 @@ static NSString* _defaultFontName = @"TimesNewRomanPSMT";
 	*yoffset = ascender;
 }
 
-- (void)drawAtPoint:(CGPoint)point inContext:(CGContextRef)context
-{
-	UIGraphicsPushContext(context);
-	[_text drawAtPoint:point withFont:_font];
-	UIGraphicsPopContext();
-}
-
 - (void)drawInContext:(CGContextRef)context atPosition:(CGPoint)position
 {
 	UIGraphicsPushContext(context);
-	[_text drawAtPoint:position withFont:_font];
-	UIGraphicsPopContext();	
+	CGContextSaveGState(context);
+	CGContextScaleCTM(context, 1.0, -1.0);
+	[_text drawAtPoint:CGPointMake(position.x, -position.y - _font.ascender) withFont:_font];
+	CGContextRestoreGState(context);
+	UIGraphicsPopContext();
 }
 
 - (void)dealloc

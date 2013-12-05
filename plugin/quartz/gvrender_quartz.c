@@ -349,20 +349,11 @@ void quartzgen_textspan(GVJ_t * job, pointf p, textspan_t * span)
 	layout =
 	    quartz_new_layout(span->font->name, span->font->size, span->str);
 
-#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
-    CGContextSaveGState(context);
-    CGContextScaleCTM(context, 1.0, -1.0);
-    p.y = -p.y - span->yoffset_layout;
-#endif
     CGContextSetRGBFillColor(context, job->obj->pencolor.u.RGBA[0],
 			     job->obj->pencolor.u.RGBA[1],
 			     job->obj->pencolor.u.RGBA[2],
 			     job->obj->pencolor.u.RGBA[3]);
     quartz_draw_layout(layout, context, CGPointMake(p.x, p.y));
-
-#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
-    CGContextRestoreGState(context);
-#endif
 
     if (span->free_layout != &quartz_free_layout)
 	quartz_free_layout(layout);
