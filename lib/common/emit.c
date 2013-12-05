@@ -1575,7 +1575,7 @@ static void emit_background(GVJ_t * job, graph_t *g)
 	}
 	else {
             gvrender_set_fillcolor(job, str);
-            gvrender_set_pencolor(job, str);
+    	    gvrender_set_pencolor(job, "transparent");
 	    gvrender_box(job, job->clip, FILL);	/* filled */
 	}
     }
