@@ -3138,6 +3138,8 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     Z = 1.0;
     if (GD_drawing(g)->size.x > 0.001 && GD_drawing(g)->size.y > 0.001) { /* graph size was given by user... */
 	size = GD_drawing(g)->size;
+	if (sz.x == 0) sz.x = size.x;
+	if (sz.y == 0) sz.y = size.y;
 	if ((size.x < sz.x) || (size.y < sz.y) /* drawing is too big (in either axis) ... */
 	    || ((GD_drawing(g)->filled) /* or ratio=filled requested and ... */
 		&& (size.x > sz.x) && (size.y > sz.y))) /* drawing is too small (in both axes) ... */
