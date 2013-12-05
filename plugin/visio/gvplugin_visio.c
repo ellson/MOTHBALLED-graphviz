@@ -43,6 +43,6 @@ __declspec(dllexport) gvplugin_library_t gvplugin_visio_LTX_library = { "visio",
 #ifdef GVDLL
 __declspec(dllexport) gvplugin_library_t gvplugin_visio_LTX_library = { "visio", apis };
 #else
-gvplugin_library_t gvplugin_pango_LTX_library = { "visio", apis };
+gvplugin_library_t gvplugin_visio_LTX_library = { "visio", apis };
 #endif
 #endif
