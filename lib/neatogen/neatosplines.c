@@ -281,6 +281,7 @@ Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin, boolean isOrtho)
     pointf* verts;
     pointf vs[4];
     pointf p;
+    pointf margin;
 
     switch (shapeOf(n)) {
     case SH_POLY:
@@ -300,11 +301,15 @@ Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin, boolean isOrtho)
 	    p.x = -ND_lw(n); 
 	    vs[3] = p;
 	    verts = vs;
+	    margin.x = 0;
+	    margin.y = 0;
 	}
 	else if (poly->sides >= 3) {
 	    isPoly = 1;
 	    sides = poly->sides;
 	    verts = poly->vertices;
+	    margin.x = pmargin->x;
+	    margin.y = pmargin->y;
 	} else {		/* ellipse */
 	    isPoly = 0;
 	    sides = 8;
@@ -320,20 +325,20 @@ Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin, boolean isOrtho)
 		    if (sides == 4) {
 			switch (j) {
 			case 0 :
-			    xmargin = pmargin->x;
-			    ymargin = pmargin->y;
+			    xmargin = margin.x;
+			    ymargin = margin.y;
 			    break;
 			case 1 :
-			    xmargin = -pmargin->x;
-			    ymargin = pmargin->y;
+			    xmargin = -margin.x;
+			    ymargin = margin.y;
 			    break;
 			case 2 :
-			    xmargin = -pmargin->x;
-			    ymargin = -pmargin->y;
+			    xmargin = -margin.x;
+			    ymargin = -margin.y;
 			    break;
 			case 3 :
-			    xmargin = pmargin->x;
-			    ymargin = -pmargin->y;
+			    xmargin = margin.x;
+			    ymargin = -margin.y;
 			    break;
 			}
 			polyp.x = verts[j].x + xmargin;
@@ -341,13 +346,13 @@ Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin, boolean isOrtho)
 		    }
 		    else {
 			double h = LEN(verts[j].x,verts[j].y);
-			polyp.x = verts[j].x * (1.0 + pmargin->x/h);
-			polyp.y = verts[j].y * (1.0 + pmargin->y/h);
+			polyp.x = verts[j].x * (1.0 + margin.x/h);
+			polyp.y = verts[j].y * (1.0 + margin.y/h);
 		    }
 		}
 		else {
-		    polyp.x = verts[j].x * pmargin->x;
-		    polyp.y = verts[j].y * pmargin->y;
+		    polyp.x = verts[j].x * margin.x;
+		    polyp.y = verts[j].y * margin.y;
 		}
 	    } else {
 		double c, s;
@@ -566,7 +571,7 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 	}
 	else {
 	    if (edgetype == ET_ORTHO)
-		agerr(AGWARN, "the bounding boxes of some nodes with margin (%.02f,%.02f) touch - falling back to straight line edges\n", pmargin->x, pmargin->y);
+		agerr(AGWARN, "the bounding boxes of some nodes touch - falling back to straight line edges\n");
 	    else 
 		agerr(AGWARN, "some nodes with margin (%.02f,%.02f) touch - falling back to straight line edges\n", pmargin->x, pmargin->y);
 	}
