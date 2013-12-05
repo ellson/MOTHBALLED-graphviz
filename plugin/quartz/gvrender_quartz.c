@@ -34,20 +34,38 @@ static CGFloat dotted[] = { 2.0, 6.0 };
 
 static void quartzgen_begin_job(GVJ_t * job)
 {
-    if (!job->external_context)
+	switch (job->device.id) {
+		case FORMAT_CGIMAGE:
+			/* save the passed-in context in the window field, so we can create a CGContext in the context field later on */
+			job->window = job->context;
+			*((CGImageRef *) job->window) = NULL;
+	}
+	
 	job->context = NULL;
-    else if (job->device.id == FORMAT_CGIMAGE) {
-	/* save the passed-in context in the window field, so we can create a CGContext in the context field later on */
-	job->window = job->context;
-	*((CGImageRef *) job->window) = NULL;
-	job->context = NULL;
-    }
 }
 
 static void quartzgen_end_job(GVJ_t * job)
 {
     CGContextRef context = (CGContextRef) job->context;
-    if (!job->external_context) {
+	
+#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
+	void* context_data;
+	size_t context_datalen;
+	
+	switch (job->device.id) {
+			
+		case FORMAT_PDF:
+			context_data = NULL;
+			context_datalen = 0;
+			break;
+			
+		default:
+			context_data = CGBitmapContextGetData(context);
+			context_datalen = CGBitmapContextGetBytesPerRow(context) * CGBitmapContextGetHeight(context);
+			break;
+	}
+#endif
+
 	switch (job->device.id) {
 
 	case FORMAT_PDF:
@@ -56,6 +74,8 @@ static void quartzgen_end_job(GVJ_t * job)
 	    break;
 
 	case FORMAT_CGIMAGE:
+		/* create an image and save it where the window field is, which was set to the passed-in context at begin job */
+		*((CGImageRef *) job->window) = CGBitmapContextCreateImage(context);
 	    break;
 
 #if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040
@@ -85,22 +105,13 @@ static void quartzgen_end_job(GVJ_t * job)
 	    break;
 #endif
 	}
+	
 	CGContextRelease(context);
-    } else if (job->device.id == FORMAT_CGIMAGE) {
-	/* create an image and save it where the window field is, which was set to the passed-in context at begin job */
-	*((CGImageRef *) job->window) =
-	    CGBitmapContextCreateImage(context);
+
 #if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
-	void *context_data = CGBitmapContextGetData(context);
-	size_t context_datalen =
-	    CGBitmapContextGetBytesPerRow(context) *
-	    CGBitmapContextGetHeight(context);
+	if (context_data && context_datalen)
+		munmap(context_data, context_datalen);
 #endif
-	CGContextRelease(context);
-#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
-	munmap(context_data, context_datalen);
-#endif
-    }
 }
 
 static void quartzgen_begin_page(GVJ_t * job)
