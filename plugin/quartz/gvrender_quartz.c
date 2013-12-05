@@ -496,6 +496,8 @@ gvplugin_installed_t gvdevice_quartz_types[] = {
     {FORMAT_BMP, "bmp:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_GIF, "gif:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_EXR, "exr:quartz", 8, NULL, &device_features_quartz},
+    {FORMAT_ICNS, "icns:quartz", 8, NULL, &device_features_quartz},
+    {FORMAT_ICO, "ico:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_JPEG, "jpe:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_JPEG, "jpeg:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_JPEG, "jpg:quartz", 8, NULL, &device_features_quartz},

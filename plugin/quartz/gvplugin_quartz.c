@@ -51,6 +51,10 @@ CFStringRef format_to_uti(format_type format)
 			return CFSTR("com.ilm.openexr-image");
 		case FORMAT_GIF:
 			return CFSTR("com.compuserve.gif");
+		case FORMAT_ICNS:
+			return CFSTR("com.apple.icns");
+		case FORMAT_ICO:
+			return CFSTR("com.microsoft.ico");
 		case FORMAT_JPEG:
 			return CFSTR("public.jpeg");
 		case FORMAT_JPEG2000:

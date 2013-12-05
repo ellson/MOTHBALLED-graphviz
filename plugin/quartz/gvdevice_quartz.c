@@ -87,6 +87,8 @@ gvplugin_installed_t gvdevice_quartz_types_for_cairo[] = {
 	{FORMAT_BMP, "bmp:cairo", 9, &quartz_engine, &device_features_quartz},
 	{FORMAT_GIF, "gif:cairo", 9, &quartz_engine, &device_features_quartz},
 	{FORMAT_EXR, "exr:cairo", 9, &quartz_engine, &device_features_quartz},
+	{FORMAT_ICNS, "icns:cairo", 9, &quartz_engine, &device_features_quartz},
+	{FORMAT_ICO, "ico:cairo", 9, &quartz_engine, &device_features_quartz},
 	{FORMAT_JPEG, "jpe:cairo", 9, &quartz_engine, &device_features_quartz},
 	{FORMAT_JPEG, "jpeg:cairo", 9, &quartz_engine, &device_features_quartz},
 	{FORMAT_JPEG, "jpg:cairo", 9, &quartz_engine, &device_features_quartz},
