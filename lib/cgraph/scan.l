@@ -211,6 +211,8 @@ void yyerror(char *str)
 /* must be here to see flex's macro defns */
 void aglexeof() { unput(GRAPH_EOF_TOKEN); }
 
+void aglexbad() { YY_FLUSH_BUFFER; }
+
 #ifndef YY_CALL_ONLY_ARG
 # define YY_CALL_ONLY_ARG void
 #endif

@@ -142,6 +142,7 @@ int aagparse(void);
 void aglexinit(Agdisc_t * disc, void *ifile);
 int aaglex(void);
 void aglexeof(void);
+void aglexbad(void);
 
 	/* ID management */
 int agmapnametoid(Agraph_t * g, int objtype, char *str,
