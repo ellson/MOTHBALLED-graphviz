@@ -21,7 +21,11 @@
 #include "gvplugin_textlayout.h"
 #include "gvplugin_quartz.h"
 
-#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1050
+#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 30200
+#include <CoreText/CoreText.h>
+#endif
+
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1050 || __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 30200
 
 void *quartz_new_layout(char* fontname, double fontsize, char* text)
 {

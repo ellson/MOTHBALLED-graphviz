@@ -78,7 +78,7 @@ static void quartzgen_end_job(GVJ_t * job)
 		*((CGImageRef *) job->window) = CGBitmapContextCreateImage(context);
 	    break;
 
-#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040 || __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 40000
 	default:		/* bitmap formats */
 	    {
 		/* create an image destination */
@@ -494,24 +494,26 @@ gvplugin_installed_t gvdevice_quartz_types[] = {
 #if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040 || __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
     {FORMAT_CGIMAGE, "cgimage:quartz", 8, NULL, &device_features_quartz},
 #endif
-#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040 || __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 40000
     {FORMAT_BMP, "bmp:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_GIF, "gif:quartz", 8, NULL, &device_features_quartz},
-    {FORMAT_EXR, "exr:quartz", 8, NULL, &device_features_quartz},
-    {FORMAT_ICNS, "icns:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_ICO, "ico:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_JPEG, "jpe:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_JPEG, "jpeg:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_JPEG, "jpg:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_JPEG2000, "jp2:quartz", 8, NULL, &device_features_quartz},
-    {FORMAT_PICT, "pct:quartz", 8, NULL, &device_features_quartz},
-    {FORMAT_PICT, "pict:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_PNG, "png:quartz", 8, NULL, &device_features_quartz},
-    {FORMAT_PSD, "psd:quartz", 8, NULL, &device_features_quartz},
-    {FORMAT_SGI, "sgi:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_TIFF, "tif:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_TIFF, "tiff:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_TGA, "tga:quartz", 8, NULL, &device_features_quartz},
+#endif
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040
+    {FORMAT_EXR, "exr:quartz", 8, NULL, &device_features_quartz},
+    {FORMAT_ICNS, "icns:quartz", 8, NULL, &device_features_quartz},
+    {FORMAT_PICT, "pct:quartz", 8, NULL, &device_features_quartz},
+    {FORMAT_PICT, "pict:quartz", 8, NULL, &device_features_quartz},
+    {FORMAT_PSD, "psd:quartz", 8, NULL, &device_features_quartz},
+    {FORMAT_SGI, "sgi:quartz", 8, NULL, &device_features_quartz},
 #endif
     {0, NULL, 0, NULL, NULL}
 };

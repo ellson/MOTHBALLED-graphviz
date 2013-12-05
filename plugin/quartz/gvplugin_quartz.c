@@ -40,7 +40,7 @@ CGDataConsumerCallbacks device_data_consumer_callbacks = {
 	NULL
 };
 
-#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040 || __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 40000
 
 CFStringRef format_to_uti(format_type format)
 {

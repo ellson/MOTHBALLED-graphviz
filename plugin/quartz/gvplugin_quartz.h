@@ -49,7 +49,7 @@ static const int BYTE_ALIGN = 15;			/* align to 16 bytes */
 static const int BITS_PER_COMPONENT = 8;	/* bits per color component */
 static const int BYTES_PER_PIXEL = 4;		/* bytes per pixel */
 
-#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040 || __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 40000
 CFStringRef format_to_uti(format_type format);
 #endif
 
