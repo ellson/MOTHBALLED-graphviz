@@ -1410,6 +1410,9 @@ char* htmlEntityUTF8 (char* s, graph_t* g)
     unsigned int v;
     int ignored;
 
+    int uc;
+    int ui;
+
     NOTUSED(ignored);
 
     if (lastg != g) {
@@ -1420,14 +1423,30 @@ char* htmlEntityUTF8 (char* s, graph_t* g)
     agxbinit(&xb, BUFSIZ, buf);
 
     while ((c = *(unsigned char*)s++)) {
-        if (c < 0xC0) {
+        if (c < 0xC0)
 	    /*
 	     * Handles properly formed UTF-8 characters between
 	     * 0x01 and 0x7F.  Also treats \0 and naked trail
 	     * bytes 0x80 to 0xBF as valid characters representing
 	     * themselves.
 	     */
-	    if (c == '&') {
+            uc = 0;
+        else if (c < 0xE0)
+            uc = 1;
+        else if (c < 0xF0)
+            uc = 2;
+        else if (c < 0xF8)
+            uc = 3;
+        else {
+            uc = -1;
+            if (!warned) {
+                agerr(AGWARN, "UTF8 codes > 4 bytes are not currently supported (graph %s) - treated as Latin-1. Perhaps \"-Gcharset=latin1\" is needed?\n", agnameof(g));
+                warned = 1;
+            }
+            c = cvtAndAppend (c, &xb);
+        }
+
+	    if (uc == 0 && c == '&') {
 		/* replace html entity sequences like: &amp;
 		 * and: &#123; with their UTF8 equivalents */
 	        v = htmlEntity (&s);
@@ -1443,45 +1462,23 @@ char* htmlEntityUTF8 (char* s, graph_t* g)
 			ignored = agxbputc(&xb, ((v >> 6) & 0x3F) | 0x80);
 			c = (v & 0x3F) | 0x80;
 		    }
-		}
-            }
-	}
-        else if (c < 0xE0) { /* copy 2 byte UTF8 characters */
-	    if ((*s & 0xC0) == 0x80) {
-	        ignored = agxbputc(&xb, c);
-	        c = *(unsigned char*)s++;
-	    }
-	    else { 
-		if (!warned) {
-		    agerr(AGWARN, "Invalid 2-byte UTF8 found in input of graph %s - treated as Latin-1. Perhaps \"-Gcharset=latin1\" is needed?\n", agnameof(g));
-		    warned = 1;
-		}
-		c = cvtAndAppend (c, &xb);
-	    }
-	}
-	else if (c < 0xF0) { /* copy 3 byte UTF8 characters */
-	    if (((*s & 0xC0) == 0x80) && ((s[1] & 0xC0) == 0x80)) {
-	        ignored = agxbputc(&xb, c);
-	        c = *(unsigned char*)s++;
-	        ignored = agxbputc(&xb, c);
-	        c = *(unsigned char*)s++;
-	    }
-	    else {
-		if (!warned) {
-		    agerr(AGWARN, "Invalid 3-byte UTF8 found in input of graph %s - treated as Latin-1. Perhaps \"-Gcharset=latin1\" is needed?\n", agnameof(g));
-		    warned = 1;
-		}
-		c = cvtAndAppend (c, &xb);
-	    }
-	}
-	else  {
-	    if (!warned) {
-		agerr(AGWARN, "UTF8 codes > 3 bytes are not currently supported (graph %s) - treated as Latin-1. Perhaps \"-Gcharset=latin1\" is needed?\n", agnameof(g));
-		warned = 1;
-	    }
-	    c = cvtAndAppend (c, &xb);
+		    }
         }
-	ignored = agxbputc(&xb, c);
+        else /* copy n byte UTF8 characters */
+            for (ui = 0; ui < uc; ++ui)
+                if ((*s & 0xC0) == 0x80) {
+                    ignored = agxbputc(&xb, c);
+                    c = *(unsigned char*)s++;
+                }
+                else { 
+		            if (!warned) {
+		                agerr(AGWARN, "Invalid %d-byte UTF8 found in input of graph %s - treated as Latin-1. Perhaps \"-Gcharset=latin1\" is needed?\n", uc + 1, agnameof(g));
+		                warned = 1;
+		            }
+		            c = cvtAndAppend (c, &xb);
+                    break;
+	            }
+	    ignored = agxbputc(&xb, c);
     }
     ns = strdup (agxbuse(&xb));
     agxbfree(&xb);
