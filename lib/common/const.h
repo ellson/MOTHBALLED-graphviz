@@ -64,7 +64,11 @@
 #define		DEFAULT_FONTSIZE	14.0
 #define		DEFAULT_LABEL_FONTSIZE	11.0	/* for head/taillabel */
 #define		MIN_FONTSIZE		1.0
+#if defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) || defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
+#define		DEFAULT_FONTNAME	"TimesNewRomanPSMT"
+#else
 #define		DEFAULT_FONTNAME	"Times-Roman"
+#endif
 #define		DEFAULT_FILL		"lightgrey"
 #define         LINESPACING             1.20
 
