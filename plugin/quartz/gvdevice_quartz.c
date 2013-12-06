@@ -39,7 +39,7 @@ static void quartz_format(GVJ_t *job)
 	/* image destination -> data consumer -> job's gvdevice */
 	/* data provider <- job's imagedata */
 	CGDataConsumerRef data_consumer = CGDataConsumerCreate(job, &device_data_consumer_callbacks);
-	CGImageDestinationRef image_destination = CGImageDestinationCreateWithDataConsumer(data_consumer, format_uti[job->device.id], 1, NULL);
+	CGImageDestinationRef image_destination = CGImageDestinationCreateWithDataConsumer(data_consumer, format_to_uti(job->device.id), 1, NULL);
 	CGDataProviderRef data_provider = CGDataProviderCreateDirect(job->imagedata, BYTES_PER_PIXEL * job->width * job->height, &memory_data_provider_callbacks);
 	
 	/* add the bitmap image to the destination and save it */
@@ -87,6 +87,8 @@ gvplugin_installed_t gvdevice_quartz_types_for_cairo[] = {
 	{FORMAT_BMP, "bmp:cairo", 9, &quartz_engine, &device_features_quartz},
 	{FORMAT_GIF, "gif:cairo", 9, &quartz_engine, &device_features_quartz},
 	{FORMAT_EXR, "exr:cairo", 9, &quartz_engine, &device_features_quartz},
+	{FORMAT_ICNS, "icns:cairo", 9, &quartz_engine, &device_features_quartz},
+	{FORMAT_ICO, "ico:cairo", 9, &quartz_engine, &device_features_quartz},
 	{FORMAT_JPEG, "jpe:cairo", 9, &quartz_engine, &device_features_quartz},
 	{FORMAT_JPEG, "jpeg:cairo", 9, &quartz_engine, &device_features_quartz},
 	{FORMAT_JPEG, "jpg:cairo", 9, &quartz_engine, &device_features_quartz},

@@ -34,20 +34,38 @@ static CGFloat dotted[] = { 2.0, 6.0 };
 
 static void quartzgen_begin_job(GVJ_t * job)
 {
-    if (!job->external_context)
+	switch (job->device.id) {
+		case FORMAT_CGIMAGE:
+			/* save the passed-in context in the window field, so we can create a CGContext in the context field later on */
+			job->window = job->context;
+			*((CGImageRef *) job->window) = NULL;
+	}
+	
 	job->context = NULL;
-    else if (job->device.id == FORMAT_CGIMAGE) {
-	/* save the passed-in context in the window field, so we can create a CGContext in the context field later on */
-	job->window = job->context;
-	*((CGImageRef *) job->window) = NULL;
-	job->context = NULL;
-    }
 }
 
 static void quartzgen_end_job(GVJ_t * job)
 {
     CGContextRef context = (CGContextRef) job->context;
-    if (!job->external_context) {
+	
+#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
+	void* context_data;
+	size_t context_datalen;
+	
+	switch (job->device.id) {
+			
+		case FORMAT_PDF:
+			context_data = NULL;
+			context_datalen = 0;
+			break;
+			
+		default:
+			context_data = CGBitmapContextGetData(context);
+			context_datalen = CGBitmapContextGetBytesPerRow(context) * CGBitmapContextGetHeight(context);
+			break;
+	}
+#endif
+
 	switch (job->device.id) {
 
 	case FORMAT_PDF:
@@ -56,9 +74,11 @@ static void quartzgen_end_job(GVJ_t * job)
 	    break;
 
 	case FORMAT_CGIMAGE:
+		/* create an image and save it where the window field is, which was set to the passed-in context at begin job */
+		*((CGImageRef *) job->window) = CGBitmapContextCreateImage(context);
 	    break;
 
-#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040 || __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 40000
 	default:		/* bitmap formats */
 	    {
 		/* create an image destination */
@@ -67,9 +87,8 @@ static void quartzgen_end_job(GVJ_t * job)
 					 &device_data_consumer_callbacks);
 		CGImageDestinationRef image_destination =
 		    CGImageDestinationCreateWithDataConsumer(data_consumer,
-							     format_uti
-							     [job->device.
-							      id], 1,
+							     format_to_uti(job->device.id),
+								 1,
 							     NULL);
 
 		/* add the bitmap image to the destination and save it */
@@ -86,22 +105,13 @@ static void quartzgen_end_job(GVJ_t * job)
 	    break;
 #endif
 	}
+	
 	CGContextRelease(context);
-    } else if (job->device.id == FORMAT_CGIMAGE) {
-	/* create an image and save it where the window field is, which was set to the passed-in context at begin job */
-	*((CGImageRef *) job->window) =
-	    CGBitmapContextCreateImage(context);
+
 #if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
-	void *context_data = CGBitmapContextGetData(context);
-	size_t context_datalen =
-	    CGBitmapContextGetBytesPerRow(context) *
-	    CGBitmapContextGetHeight(context);
+	if (context_data && context_datalen)
+		munmap(context_data, context_datalen);
 #endif
-	CGContextRelease(context);
-#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
-	munmap(context_data, context_datalen);
-#endif
-    }
 }
 
 static void quartzgen_begin_page(GVJ_t * job)
@@ -350,20 +360,11 @@ void quartzgen_textspan(GVJ_t * job, pointf p, textspan_t * span)
 	layout =
 	    quartz_new_layout(span->font->name, span->font->size, span->str);
 
-#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
-    CGContextSaveGState(context);
-    CGContextScaleCTM(context, 1.0, -1.0);
-    p.y = -p.y - span->yoffset_layout;
-#endif
     CGContextSetRGBFillColor(context, job->obj->pencolor.u.RGBA[0],
 			     job->obj->pencolor.u.RGBA[1],
 			     job->obj->pencolor.u.RGBA[2],
 			     job->obj->pencolor.u.RGBA[3]);
     quartz_draw_layout(layout, context, CGPointMake(p.x, p.y));
-
-#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
-    CGContextRestoreGState(context);
-#endif
 
     if (span->free_layout != &quartz_free_layout)
 	quartz_free_layout(layout);
@@ -493,22 +494,26 @@ gvplugin_installed_t gvdevice_quartz_types[] = {
 #if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040 || __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 20000
     {FORMAT_CGIMAGE, "cgimage:quartz", 8, NULL, &device_features_quartz},
 #endif
-#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040 || __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 40000
     {FORMAT_BMP, "bmp:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_GIF, "gif:quartz", 8, NULL, &device_features_quartz},
-    {FORMAT_EXR, "exr:quartz", 8, NULL, &device_features_quartz},
+    {FORMAT_ICO, "ico:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_JPEG, "jpe:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_JPEG, "jpeg:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_JPEG, "jpg:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_JPEG2000, "jp2:quartz", 8, NULL, &device_features_quartz},
-    {FORMAT_PICT, "pct:quartz", 8, NULL, &device_features_quartz},
-    {FORMAT_PICT, "pict:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_PNG, "png:quartz", 8, NULL, &device_features_quartz},
-    {FORMAT_PSD, "psd:quartz", 8, NULL, &device_features_quartz},
-    {FORMAT_SGI, "sgi:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_TIFF, "tif:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_TIFF, "tiff:quartz", 8, NULL, &device_features_quartz},
     {FORMAT_TGA, "tga:quartz", 8, NULL, &device_features_quartz},
+#endif
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1040
+    {FORMAT_EXR, "exr:quartz", 8, NULL, &device_features_quartz},
+    {FORMAT_ICNS, "icns:quartz", 8, NULL, &device_features_quartz},
+    {FORMAT_PICT, "pct:quartz", 8, NULL, &device_features_quartz},
+    {FORMAT_PICT, "pict:quartz", 8, NULL, &device_features_quartz},
+    {FORMAT_PSD, "psd:quartz", 8, NULL, &device_features_quartz},
+    {FORMAT_SGI, "sgi:quartz", 8, NULL, &device_features_quartz},
 #endif
     {0, NULL, 0, NULL, NULL}
 };

@@ -21,7 +21,11 @@
 #include "gvplugin_textlayout.h"
 #include "gvplugin_quartz.h"
 
-#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1050
+#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 30200
+#include <CoreText/CoreText.h>
+#endif
+
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1050 || __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 30200
 
 void *quartz_new_layout(char* fontname, double fontsize, char* text)
 {
@@ -32,12 +36,13 @@ void *quartz_new_layout(char* fontname, double fontsize, char* text)
 	if (fontnameref && textref) {
 		/* set up the Core Text line */
 		CTFontRef font = CTFontCreateWithName(fontnameref, fontsize, NULL);
-		
+		CFTypeRef attributeNames[] = { kCTFontAttributeName, kCTForegroundColorFromContextAttributeName };
+		CFTypeRef attributeValues[] = { font, kCFBooleanTrue };
 		CFDictionaryRef attributes = CFDictionaryCreate(
 			kCFAllocatorDefault,
-			(const void**)&kCTFontAttributeName,
-			(const void**)&font,
-			1,
+			(const void**)attributeNames,
+			(const void**)attributeValues,
+			2,
 			&kCFTypeDictionaryKeyCallBacks,
 			&kCFTypeDictionaryValueCallBacks);
 		CFAttributedStringRef attributed = CFAttributedStringCreate(kCFAllocatorDefault, textref, attributes);
@@ -61,39 +66,16 @@ void quartz_size_layout(void *layout, double* width, double* height, double* yof
 	CGFloat ascent = 0.0;
 	CGFloat descent = 0.0;
 	CGFloat leading = 0.0;
-	double typowidth = CTLineGetTypographicBounds((CTLineRef)layout, &ascent, &descent, &leading);
-	CGFloat typoheight = ascent + descent;
 	
-	*width = typowidth;
-	*height = leading == 0.0 ? typoheight * 1.2 : typoheight + leading;	/* if no leading, use 20% of height */
+	*width = CTLineGetTypographicBounds((CTLineRef)layout, &ascent, &descent, &leading);
+	*height = ascent + descent + leading;
 	*yoffset_layout = ascent;
 }
 
 void quartz_draw_layout(void *layout, CGContextRef context, CGPoint position)
 {
 	CGContextSetTextPosition(context, position.x, position.y);
-	
-	CFArrayRef runs = CTLineGetGlyphRuns((CTLineRef)layout);
-	CFIndex run_count = CFArrayGetCount(runs);
-	CFIndex run_index;
-	for (run_index = 0; run_index < run_count; ++run_index)
-	{
-		CTRunRef run = (CTRunRef)CFArrayGetValueAtIndex(runs, run_index);
-		CTFontRef run_font = CFDictionaryGetValue(CTRunGetAttributes(run), kCTFontAttributeName);
-		CGFontRef glyph_font = CTFontCopyGraphicsFont(run_font, NULL);
-		CFIndex glyph_count = CTRunGetGlyphCount(run);
-		CGGlyph glyphs[glyph_count];
-		CGPoint positions[glyph_count];
-		CFRange everything = CFRangeMake(0, 0);
-		CTRunGetGlyphs(run, everything, glyphs);
-		CTRunGetPositions(run, everything, positions);
-		
-		CGContextSetFont(context, glyph_font);
-		CGContextSetFontSize(context, CTFontGetSize(run_font));
-		CGContextShowGlyphsAtPositions(context, glyphs, positions, glyph_count);
-		
-		CGFontRelease(glyph_font);
-	}
+	CTLineDraw((CTLineRef)layout, context);
 }
 
 void quartz_free_layout(void *layout)
@@ -112,8 +94,8 @@ boolean quartz_textlayout(textspan_t *para, char **fontpath)
 		/* report the layout */
 		para->layout = (void*)line;
 		para->free_layout = &quartz_free_layout;
-		para->yoffset_centerline = 0;
 		quartz_size_layout((void*)line, &para->size.x, &para->size.y, &para->yoffset_layout);
+		para->yoffset_centerline = 0.2 * para->font->size;
 		return TRUE;
 	}
 	else
