@@ -580,6 +580,7 @@ Agraph_t *agconcat(Agraph_t *g, void *chan, Agdisc_t *disc)
 	Disc = (disc? disc :  &AgDefaultDisc);
 	aglexinit(Disc, chan);
 	yyparse();
+	if (Ag_G_global == NILgraph) aglexbad();
 	return Ag_G_global;
 }
 
