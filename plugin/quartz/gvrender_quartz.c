@@ -23,6 +23,10 @@
 #include <sys/mman.h>
 #endif
 
+#if __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 40000
+#include <ImageIO/ImageIO.h>
+#endif
+
 #include "gvplugin_device.h"
 #include "gvplugin_render.h"
 #include "cgraph.h"
