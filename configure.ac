@@ -3146,6 +3146,14 @@ SIZEOF_INT_BITS=$(( $ac_cv_sizeof_int * 8 ))
 AC_SUBST([SIZEOF_INT_BITS])
 # -----------------------------------------------------------------------
 
+# This is a historical artifact ... there are no other choices these days
+# This #define is never used in our sources,
+#    but apparently may still be in use by others
+AC_DEFINE_UNQUOTED(WITH_CGRAPH,1,[Historical artifact - always true])
+AM_CONDITIONAL(WITH_CGRAPH, [true])
+
+# -----------------------------------------------------------------------
+
 # Generate Makefiles
 AC_CONFIG_FILES(Makefile
 	debian/changelog
