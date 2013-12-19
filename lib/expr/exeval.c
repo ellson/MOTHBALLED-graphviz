@@ -713,16 +713,20 @@ exsplit(Expr_t * ex, register Exnode_t * expr, void *env)
 	v.integer = 0;
 	while (*str) {
 		sz = strspn (str, seps);
-		for (i = 0; i < sz; i++) {
-	    	addItem (arr, v, "");
-	    	v.integer++;
+	    if (sz) {
+			if (v.integer == 0) {  /* initial separator => empty field */
+	    		addItem (arr, v, "");
+	    		v.integer++;
+			}
+			for (i = 1; i < sz; i++) {
+	    		addItem (arr, v, "");
+	    		v.integer++;
+			}
 		}
 		str += sz;
-		if (*str == '\0') {
-	    	if (v.integer == sz) {  /* only separators */
-				addItem (arr, v, "");
-				v.integer++;
-	    	}
+		if (*str == '\0') { /* terminal separator => empty field */
+			addItem (arr, v, "");
+			v.integer++;
 	    	break;
 		}
 		sz = strcspn (str, seps);
