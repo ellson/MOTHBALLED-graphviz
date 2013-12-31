@@ -27,6 +27,11 @@
 
 #if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1050 || __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ >= 30200
 
+#if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 1060
+/* symbol defined in 10.5.x dylib but not in headers */
+extern const CFStringRef kCTForegroundColorFromContextAttributeName;
+#endif
+
 void *quartz_new_layout(char* fontname, double fontsize, char* text)
 {
 	CFStringRef fontnameref = CFStringCreateWithBytes(kCFAllocatorDefault, (const UInt8 *)fontname, strlen(fontname), kCFStringEncodingUTF8, FALSE);
