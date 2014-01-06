@@ -129,7 +129,8 @@ forms is just for simplicity. There is no semantic difference between
 <TT>abc_2</TT> and <TT>"abc_2"</TT>, or between <TT>2.34</TT> and 
 <TT>"2.34"</TT>. Obviously, to use a keyword as an ID, it must be quoted.
 Note that, in HTML strings, angle
-brackets must occur in matched pairs, and unescaped newlines are allowed.
+brackets must occur in matched pairs, and newlines and other formatting whitespace
+characters are allowed.
 In addition, the content must be legal XML, so that the special XML
 escape sequences for &quot;, &amp;, &lt;, and &gt; may be necessary
 in order to embed these characters in attribute values or raw text.
@@ -150,12 +151,13 @@ subgraph, since the precedence rules cause this sequence to be parsed as
 a subgraph with a heading and a body.
 Also, any amount of whitespace may be inserted between terminals.
 <P>
-As another aid for readability, dot allows single logical lines to
+As another aid for readability, dot allows double-quoted strings to
 span multiple physical lines using the standard C convention of a
-backslash immediately preceding a newline character. In addition, 
+backslash immediately preceding a newline character<SUP>2</SUP>. In addition, 
 double-quoted strings can be concatenated using a '+' operator.
-As HTML strings can contain newline characters, they do not support the
-concatenation operator.
+As HTML strings can contain newline characters, which are used solely for 
+formatting, the language does not allow escaped newlines or
+concatenation operators to be used within them.
 <H2>Subgraphs and Clusters</H2>
 Subgraphs play three roles in Graphviz. First, a subgraph can be used to 
 represent graph structure, indicating that certain nodes and edges should 
@@ -240,11 +242,17 @@ into a string, one can use the ascii sequence <TT>&amp;beta;</TT>.
 In general, one should only use entities that are allowed in the output
 character set, and for which there is a glyph in the font.
 <HR>
+<FONT size="2">
 <OL TYPE="1">
 <LI> In quoted strings in DOT, the only escaped character is double-quote
 ("). That is, in quoted strings, the dyad &#92;" is converted to "; all other
 characters are left unchanged. In particular, &#92;&#92; remains &#92;&#92;. Layout
 engines may apply additional escape sequences.
+<LI> Previous to 2.30, the language allowed escaped newlines to be used anywhere outside
+of HTML strings. The new lex-based scanner makes this difficult to implement. Given the
+perceived lack of usefulness of this generality, we have restricted this feature to
+double-quoted strings, where it can actually be helpful.
 </OL>
+</FONT>
 </BODY>
 </HTML>
