@@ -201,7 +201,8 @@ void yyerror(char *str)
 		agxbput (&xb, InputFile);
 		agxbput (&xb, ": ");
 	}
-	sprintf(buf," %s in line %d near '", str,line_num);
+	agxbput (&xb, str);
+	sprintf(buf," in line %d near '", line_num);
 	agxbput (&xb, buf);
 	agxbput (&xb, yytext);
 	agxbput (&xb,"'\n");
