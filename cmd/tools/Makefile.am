@@ -141,7 +141,7 @@ gc_LDADD = \
 gc.1.pdf: $(srcdir)/gc.1
 	- @GROFF@ -Tps -man $(srcdir)/gc.1 | @PS2PDF@ - - >gc.1.pdf
 
-gvpack_SOURCES = gvpack.c gvpack_builtins.c
+gvpack_SOURCES = gvpack.c
 gvpack_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=0
 
 gvpack_LDADD = \
@@ -152,7 +152,7 @@ gvpack_LDADD = \
 	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout.la
 
 if ENABLE_STATIC
-gvpack_static_SOURCES = gvpack.c gvpack_builtins.c
+gvpack_static_SOURCES = gvpack.c
 gvpack_static_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=0
 gvpack_static_LDADD = \
 	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout_C.la \
