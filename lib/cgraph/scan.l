@@ -129,15 +129,32 @@ static void ppDirective (void)
  * and report this to the user.
  */
 static int chkNum(void) {
-  unsigned char	c = (unsigned char)yytext[yyleng-1];   /* last character */
-  if (!isdigit(c) && (c != '.')) {  /* c is letter */
-	char	buf[BUFSIZ];
-	sprintf(buf,"syntax error - badly formed number '%s' in line %d of %s\n",yytext,line_num, InputFile);
-    strcat (buf, "splits into two name tokens\n");
-	agerr(AGWARN,buf);
-    return 1;
-  }
-  else return 0;
+    unsigned char c = (unsigned char)yytext[yyleng-1];   /* last character */
+    if (!isdigit(c) && (c != '.')) {  /* c is letter */
+	unsigned char xbuf[BUFSIZ];
+	char buf[BUFSIZ];
+	agxbuf  xb;
+	char* fname;
+
+	if (InputFile)
+	    fname = InputFile;
+	else
+	    fname = "input";
+
+	agxbinit(&xb, BUFSIZ, xbuf);
+
+	agxbput(&xb,"syntax ambiguity - badly delimited number '");
+	agxbput(&xb,yytext);
+	sprintf(buf,"' in line %d of ", line_num);
+	agxbput(&xb,buf);
+	agxbput(&xb,fname);
+	agxbput(&xb, " splits into two tokens\n");
+	agerr(AGWARN,agxbuse(&xb));
+
+	agxbfree(&xb);
+	return 1;
+    }
+    else return 0;
 }
 
 /* The LETTER class below consists of ascii letters, underscore, all non-ascii
