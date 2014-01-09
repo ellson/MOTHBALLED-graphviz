@@ -1154,7 +1154,7 @@ size_html_cell(graph_t * g, htmlcell_t * cp, htmltbl_t * parent,
 
     if (cp->data.flags & FIXED_FLAG) {
 	if (cp->data.width && cp->data.height) {
-	    if ((cp->data.width < sz.x) || (cp->data.height < sz.y)) {
+	    if (((cp->data.width < sz.x) || (cp->data.height < sz.y)) && (cp->child.kind != HTML_IMAGE)) {
 		agerr(AGWARN, "cell size too small for content\n");
 		rv = 1;
 	    }
