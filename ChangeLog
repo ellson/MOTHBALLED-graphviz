@@ -1,3 +1,9 @@
+January 11, 2014
+	- Release 2.36.0
+	- Resolves bugs: 2372, 2384, 2388, 2391, 2392, 2383, 2395, 2401, 2406
+	- Various MacOS Fixes from Pixleglow.
+	- Remove old libgraph sources from distributions.
+	- Move master git repo to github.com
 September 15, 2013
 	- Add <S> element for strike-through to HTML-like labels.
 September 6, 2013
