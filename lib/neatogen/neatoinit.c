@@ -575,6 +575,10 @@ static void translate(Agraph_t * g, pos_edge posEdges)
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	ND_pos(n)[0] -= offset.x;
 	ND_pos(n)[1] -= offset.y;
+	if (ND_xlabel(n) && ND_xlabel(n)->set) {
+	    ND_xlabel(n)->pos.x -= ll.x;
+	    ND_xlabel(n)->pos.y -= ll.y;
+	}
     }
     if (posEdges != NoEdges) {
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
