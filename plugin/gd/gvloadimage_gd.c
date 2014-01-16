@@ -146,13 +146,26 @@ static void gd_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, boolean fil
 							width, height, stride);
 
 	if (im->trueColor) {
-	    for (y = 0; y < height; y++) {
-		for (x = 0; x < width; x++) {
-		    px = gdImageTrueColorPixel(im, x, y);
-		    *data++ = gdTrueColorGetBlue(px);
-		    *data++ = gdTrueColorGetGreen(px);
-		    *data++ = gdTrueColorGetRed(px);
-		    *data++ = (0x7F-gdTrueColorGetAlpha(px)) << 1;
+	    if (im->saveAlphaFlag) {
+	        for (y = 0; y < height; y++) {
+		    for (x = 0; x < width; x++) {
+		        px = gdImageTrueColorPixel(im, x, y);
+		        *data++ = gdTrueColorGetBlue(px);
+		        *data++ = gdTrueColorGetGreen(px);
+		        *data++ = gdTrueColorGetRed(px);
+		        *data++ = (0x7F-gdTrueColorGetAlpha(px)) << 1;
+		    }
+		}
+	    }
+	    else {
+	        for (y = 0; y < height; y++) {
+		    for (x = 0; x < width; x++) {
+		        px = gdImageTrueColorPixel(im, x, y);
+		        *data++ = gdTrueColorGetBlue(px);
+		        *data++ = gdTrueColorGetGreen(px);
+		        *data++ = gdTrueColorGetRed(px);
+		        *data++ = 0xFF;
+		    }
 		}
 	    }
 	}
