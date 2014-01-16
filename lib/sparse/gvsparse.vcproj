@@ -177,6 +177,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\color_palette.c"
+				>
+			</File>
+			<File
 				RelativePath=".\colorutil.c"
 				>
 			</File>
