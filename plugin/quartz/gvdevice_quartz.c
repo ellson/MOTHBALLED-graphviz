@@ -51,7 +51,7 @@ static void quartz_format(GVJ_t *job)
 		BYTES_PER_PIXEL * 8,				/* bits per pixel */
 		BYTES_PER_PIXEL * job->width,		/* bytes per row: exactly width # of pixels */
 		color_space,						/* color space: sRGB */
-		kCGImageAlphaPremultipliedFirst,	/* bitmap info: corresponds to CAIRO_FORMAT_ARGB32 */
+		kCGImageAlphaPremultipliedFirst|kCGBitmapByteOrder32Little,	/* bitmap info: corresponds to CAIRO_FORMAT_ARGB32 */
 		data_provider,						/* data provider: from imagedata */
 		NULL,								/* decode: don't remap colors */
 		FALSE,								/* don't interpolate */
