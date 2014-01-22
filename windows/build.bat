@@ -36,7 +36,7 @@ REM *****************************************************
 wget -O %buildBaseDir%source.tar.gz %sourceUrl%
 7z x -y %buildBaseDir%source.tar.gz
 7z x -y %buildBaseDir%source.tar
-move /Y %buildBaseDir%graphviz-%VERSION%.* graphviz2
+move /Y %buildBaseDir%graphviz-*.* graphviz2
 REM **************End of source download*****************
 
 
