@@ -3175,6 +3175,10 @@ static field_t *parse_reclbl(node_t * n, int LR, int flag, char *text)
     wflag = TRUE;
     ishardspace = FALSE;
     while (wflag) {
+	if ((*reclblp < ' ') && *reclblp) {    /* Ignore non-0 control characters */
+	    reclblp++;
+	    continue;
+	}
 	switch (*reclblp) {
 	case '<':
 	    if (mode & (HASTABLE | HASPORT))
