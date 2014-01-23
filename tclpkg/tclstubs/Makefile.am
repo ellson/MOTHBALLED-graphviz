@@ -12,5 +12,3 @@ endif
 
 # tclStubLib.c is a dummy file just to fool automake
 libtclstubs_C_la_SOURCES = tclStubLib.c
-
-EXTRA_DIST = Makefile.old

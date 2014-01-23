@@ -7,5 +7,3 @@ noinst_LTLIBRARIES = libtclhandle_C.la
 endif
 
 libtclhandle_C_la_SOURCES = tclhandle.c
-
-EXTRA_DIST = Makefile.old

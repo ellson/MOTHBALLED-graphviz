@@ -48,5 +48,5 @@ libgvplugin_gd_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_gd_LTX_library
 endif
 endif
 
-EXTRA_DIST = Makefile.old gvplugin_gd.vcproj gvplugin_gd.def
+EXTRA_DIST = gvplugin_gd.vcproj gvplugin_gd.def
 

@@ -72,7 +72,7 @@ expr.3.pdf: $(srcdir)/expr.3
 	- @GROFF@ -Tps -man $(srcdir)/expr.3 | @PS2PDF@ - - >expr.3.pdf
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) \
-	Makefile.nmake Makefile.orig Makefile.old \
+	Makefile.nmake Makefile.orig \
 	exparse.c exparse.h exop.h \
 	y.tab.c y.tab.h y.output expr.vcproj
 
