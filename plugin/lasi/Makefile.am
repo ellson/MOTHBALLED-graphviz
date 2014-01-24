@@ -45,7 +45,7 @@ if WITH_DARWIN9
 libgvplugin_lasi_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_lasi_LTX_library
 endif
 
-EXTRA_DIST = ps.h Makefile.old
+EXTRA_DIST = ps.h
 
 DISTCLEANFILES = ps.h
 

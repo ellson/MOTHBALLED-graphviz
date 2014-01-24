@@ -48,7 +48,7 @@ y.output: $(top_srcdir)/lib/agraph/grammar.y
 agraph.3.pdf: $(srcdir)/agraph.3
 	- @GROFF@ -Tps -man $(srcdir)/agraph.3 | @PS2PDF@ - - >agraph.3.pdf
 
-EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old cmpnd.c dotdge.c \
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) cmpnd.c dotdge.c \
 	main.c tester.c README grammar.c grammar.h scan.c \
 	y.tab.c y.tab.h y.output
 

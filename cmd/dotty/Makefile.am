@@ -33,6 +33,6 @@ dotty.1.pdf: $(srcdir)/dotty.1
 
 EXTRA_DIST = $(lefty_DATA) $(man) $(pdf) \
 	dotty.bsh dotty.ksh dotty.sh \
-	Makefile.old notes mswin32 dotty.vcproj
+	notes mswin32 dotty.vcproj
 
 DISTCLEANFILES = $(pdf) dotty

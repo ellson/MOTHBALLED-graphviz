@@ -196,6 +196,6 @@ uninstall-hook:
 	-rm -rf $(DESTDIR)$(pkgtcldir);
 	-rm -rf $(DESTDIR)@TCL_INSTALL_DIR@/@PACKAGE_NAME@-@PACKAGE_VERSION@;
 
-EXTRA_DIST = Makefile.old mkpkgindex.sh
+EXTRA_DIST = mkpkgindex.sh
 
 DISTCLEANFILES = pkgIndex.tcl
