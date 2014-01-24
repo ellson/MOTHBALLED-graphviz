@@ -3,7 +3,7 @@ stmt_list     = [ stmt [ ';' ]  [ stmt_list ] ]
 stmt          =  node_stmt |  edge_stmt |  attr_stmt | ID '=' ID |  subgraph
 attr_stmt     =  ( T_graph | T_node | T_edge )  attr_list
 attr_list     =  '[' [ a_list ] ']' [ attr_list ]
-a_list        =  ID '=' ID [ ',' ] [ a_list ]
+a_list        =  ID '=' ID [ ( ';' | ',' ) ] [ a_list ]
 edge_stmt     =  ( node_id | subgraph ) edgeRHS [ attr_list ]
 edgeRHS       =  edgeop ( node_id | subgraph ) [ edgeRHS ]
 node_stmt     =  node_id [ attr_list ]
