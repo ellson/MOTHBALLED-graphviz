@@ -97,7 +97,7 @@ static void psgen_begin_graph(GVJ_t * job)
             cat_libfile(job, NULL, args);
         }
     }
-    isLatin1 = (GD_charset(obj->u.g) == CHAR_LATIN1);
+    isLatin1 = (GD_charset(obj->u.g) == CHAR_LATIN1 ? CHAR_LATIN1 : -1);
     /* We always setup Latin1. The charset info is always output,
      * and installing it is cheap. With it installed, we can then
      * rely on ps_string to convert UTF-8 characters whose encoding
@@ -110,8 +110,8 @@ static void psgen_begin_graph(GVJ_t * job)
     }
     /*  Set base URL for relative links (for Distiller >= 3.0)  */
     if (obj->url)
-	gvprintf(job, "[ {Catalog} << /URI << /Base (%s) >> >>\n"
-		"/PUT pdfmark\n", obj->url);
+	gvprintf(job, "[ {Catalog} << /URI << /Base %s >> >>\n"
+		"/PUT pdfmark\n", ps_string(obj->url,isLatin1));
 }
 
 static void psgen_begin_layer(GVJ_t * job, char *layername, int layerNum, int numLayers)

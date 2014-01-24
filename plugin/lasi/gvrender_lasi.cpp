@@ -25,6 +25,7 @@
 #include "gvio.h"
 #include "gvcint.h"
 #include "agxbuf.h"
+#include "const.h"
 #include "utils.h"
 #include "ps.h"
 
@@ -172,8 +173,8 @@ static void lasi_begin_graph(GVJ_t * job)
 //    }
     /*  Set base URL for relative links (for Distiller >= 3.0)  */
     if (obj->url)
-	gvprintf(job, "[ {Catalog} << /URI << /Base (%s) >> >>\n"
-		"/PUT pdfmark\n", obj->url);
+	gvprintf(job, "[ {Catalog} << /URI << /Base %s >> >>\n"
+		"/PUT pdfmark\n", ps_string(obj->url, CHAR_UTF8));
 }
 
 static void lasi_begin_layer(GVJ_t * job, char *layername, int layerNum, int numLayers)
@@ -276,8 +277,7 @@ static void lasi_begin_anchor(GVJ_t *job, char *url, char *tooltip, char *target
 		"  /Action << /Subtype /URI /URI %s >>\n"
 		"  /Subtype /Link\n"
 		"/ANN pdfmark\n",
-//		ps_string(url, isLatin1));
-		url);
+		ps_string(url, CHAR_UTF8));
     }
 }
 
