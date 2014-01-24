@@ -185,6 +185,7 @@ ID		({NAME}|{NUMBER})
 ^"#".*					ppDirective ();
 "#".*					/* ignore shell-like comments */
 [ \t\r]					/* ignore whitespace */
+"\xEF\xBB\xBF"				/* ignore BOM */
 "node"					return(T_node);			/* see tokens in agcanonstr */
 "edge"					return(T_edge);
 "graph"					if (!graphType) graphType = T_graph; return(T_graph);
