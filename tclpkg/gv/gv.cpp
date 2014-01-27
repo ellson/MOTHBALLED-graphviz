@@ -18,6 +18,7 @@
 extern "C" {
 extern void gv_string_writer_init(GVC_t *gvc);
 extern void gv_channel_writer_init(GVC_t *gvc);
+extern void gv_writer_reset(GVC_t *gvc);
 }
 
 #define agfindattr(x,s) agattrsym(x,s)
@@ -850,6 +851,7 @@ bool renderchannel(Agraph_t *g, const char *format, const char *channelname)
         return false;
     gv_channel_writer_init(gvc);
     err = gvRender(gvc, g, format, (FILE*)channelname);
+    gv_writer_reset (gvc);   /* Reset to default */
     return (! err);
 }
 
@@ -873,6 +875,7 @@ void renderresult(Agraph_t *g, const char *format, char *outdata)
         return;
     gv_string_writer_init(gvc);
     err = gvRender(gvc, g, format, (FILE*)outdata);
+    gv_writer_reset (gvc);   /* Reset to default */
 }
 
 // render to a malloc'ed data string, to be free'd by caller.

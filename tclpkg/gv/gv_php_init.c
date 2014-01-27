@@ -43,3 +43,4 @@ void gv_channel_writer_init(GVC_t *gvc)
     gvc->write_fn = gv_channel_writer;
 }
 
+void gv_writer_reset (GVC_t *gvc) {gvc->write_fn = NULL;}
