@@ -939,7 +939,7 @@ makeStraightEdge(graph_t * g, edge_t * e, int et, splineInfo* sinfo)
     edge_t* elist[MAX_EDGE];
     int i, e_cnt;
 
-    e_cnt = 0;
+    e_cnt = 1;
     e0 = e;
     while ((e0 = ED_to_virt(e0))) e_cnt++;
 
