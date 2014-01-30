@@ -225,7 +225,7 @@ void yyerror(char *str)
 	agxbput (&xb, buf);
 	agxbput (&xb, yytext);
 	agxbput (&xb,"'\n");
-	agerr(AGWARN,agxbuse(&xb));
+	agerr(AGERR,agxbuse(&xb));
 	agxbfree(&xb);
 }
 /* must be here to see flex's macro defns */
