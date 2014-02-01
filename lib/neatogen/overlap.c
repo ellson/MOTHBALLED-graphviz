@@ -355,7 +355,7 @@ real overlap_scaling(int dim, int m, real *x, real *width, real scale_sta, real 
   scale_best = scale_sto;
   while (iter++ < maxiter && scale_sto - scale_sta > epsilon){
 
-    fprintf(stderr,"in overlap_scaling iter=%d, maxiter=%d, scaling bracket: {%f,%f}\n", iter, maxiter, scale_sta, scale_sto);
+    if (Verbose) fprintf(stderr,"in overlap_scaling iter=%d, maxiter=%d, scaling bracket: {%f,%f}\n", iter, maxiter, scale_sta, scale_sto);
 
     scale = 0.5*(scale_sta + scale_sto);
     scale_coord(dim, m, x, scale);
