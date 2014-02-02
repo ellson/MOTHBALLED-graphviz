@@ -1822,7 +1822,7 @@ static void poly_init(node_t * n)
     point imagesize;
     pointf P, Q, R;
     pointf *vertices;
-    char *p, *sfile;
+    char *p, *sfile, *fxd;
     double temp, alpha, beta, gamma;
     double orientation, distortion, skew;
     double sectorangle, sidelength, skewdist, gdistortion, gskew;
@@ -1989,7 +1989,12 @@ static void poly_init(node_t * n)
     min_bb = bb;
 
     /* increase node size to width/height if needed */
-    if (mapbool(late_string(n, N_fixed, "false"))) {
+    fxd = late_string(n, N_fixed, "false");
+    if ((*fxd == 's') && streq(fxd,"shape")) {
+	bb.x = width;
+	bb.y = height;
+	poly->option |= FIXEDSHAPE;
+    } else if (mapbool(fxd)) {
 	/* check only label, as images we can scale to fit */
 	if ((width < ND_label(n)->dimen.x) || (height < ND_label(n)->dimen.y))
 	    agerr(AGWARN,
@@ -2024,11 +2029,12 @@ static void poly_init(node_t * n)
 	ND_label(n)->space.x = dimen.x - spacex;
     }
 
-
-    temp = bb.y - min_bb.y;
-    if (dimen.y < imagesize.y)
-	temp += imagesize.y - dimen.y;
-    ND_label(n)->space.y = dimen.y + temp;
+    if ((poly->option & FIXEDSHAPE) == 0) {
+	temp = bb.y - min_bb.y;
+	if (dimen.y < imagesize.y)
+	    temp += imagesize.y - dimen.y;
+	ND_label(n)->space.y = dimen.y + temp;
+    }
 
     outp = peripheries;
     if (peripheries < 1)
@@ -2190,8 +2196,14 @@ static void poly_init(node_t * n)
     poly->distortion = distortion;
     poly->vertices = vertices;
 
-    ND_width(n) = PS2INCH(bb.x);
-    ND_height(n) = PS2INCH(bb.y);
+    if (poly->option & FIXEDSHAPE) {
+	/* set width and height to reflect label and shape */
+	ND_width(n) = PS2INCH(MAX(dimen.x,bb.x));
+	ND_height(n) = PS2INCH(MAX(dimen.y,bb.y));
+    } else {
+	ND_width(n) = PS2INCH(bb.x);
+	ND_height(n) = PS2INCH(bb.y);
+    }
     ND_shape_info(n) = (void *) poly;
 }
 

@@ -217,6 +217,7 @@
 #define DASHED		(1 << 8)
 #define WEDGED		(1 << 9)
 #define UNDERLINE	(1 << 10)
+#define FIXEDSHAPE	(1 << 11)
 
 #define SHAPE_MASK	(127 << 24)
 
