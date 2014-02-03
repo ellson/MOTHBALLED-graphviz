@@ -1420,8 +1420,6 @@ static void emit_xdot (GVJ_t * job, xdot* xd)
     int image_warn = 1;
     int ptsize = INITPTS;
     pointf* pts = N_GNEW(INITPTS, pointf);
-    double fontsize;
-    char* fontname;
     exdot_op* op;
     int i, angle;
     char** styles = 0;
@@ -1509,12 +1507,14 @@ static void emit_xdot (GVJ_t * job, xdot* xd)
 	    agerr (AGWARN, "gradient pen colors not yet supported.\n");
 	    break;
 	case xd_font :
-	    fontsize = op->op.u.font.size;
-	    fontname = op->op.u.font.name;
+	    /* fontsize and fontname already encoded via xdotBB */
 	    break;
 	case xd_style :
 	    styles = parse_style (op->op.u.style);
             gvrender_set_style (job, styles);
+	    break;
+	case xd_fontchar :
+	    /* font characteristics already encoded via xdotBB */
 	    break;
 	case xd_image :
 	    if (image_warn) {
@@ -2917,6 +2917,7 @@ boxf xdotBB (Agraph_t* g)
     boxf bb = GD_bb(g);
     xdot* xd = (xdot*)GD_drawing(g)->xdots;
     textfont_t tf, null_tf = {NULL,NULL,NULL,0.0,0,0};
+    int fontflags;
 
     if (!xd) return bb;
 
@@ -2957,6 +2958,7 @@ boxf xdotBB (Agraph_t* g)
 	    op->span->just = adjust [op->op.u.text.align];
 	    tf.name = fontname;
 	    tf.size = fontsize;
+	    tf.flags = fontflags;
             op->span->font = dtinsert(gvc->textfont_dt, &tf);
 	    sz = textspan_size (gvc, op->span);
 	    bb0 = textBB (op->op.u.text.x, op->op.u.text.y, op->span);
@@ -2969,6 +2971,9 @@ boxf xdotBB (Agraph_t* g)
 	case xd_font :
 	    fontsize = op->op.u.font.size;
 	    fontname = op->op.u.font.name;
+	    break;
+	case xd_fontchar :
+	    fontflags = op->op.u.fontchar;
 	    break;
 	default :
 	    break;
