@@ -259,7 +259,7 @@ n bytes following '-'. The text should be left-aligned (centered,
 right-aligned) on the point if j is -1 (0, 1), respectively. The value
 w gives the width of the text as computed by the library.
 <TR><TD>t f
-<TD>Set font characteristics. The integer f is the OR of BOLD=1, ITALIC=2, UNDERLINE=4, SUPERSCRIPT=8, SUBSCRIPT=16, and STRIKE-THROUGH=32.
+<TD>Set font characteristics. The integer f is the OR of BOLD=1, ITALIC=2, UNDERLINE=4, SUPERSCRIPT=8, SUBSCRIPT=16, and STRIKE-THROUGH=32. (1.5)
 <TR><TD>C n -<I>b<sub>1</sub>b<sub>2</sub>...b<sub>n</sub></I>
 <TD>Set fill color. The color value consists of the
 n bytes following '-'. (1.1)
