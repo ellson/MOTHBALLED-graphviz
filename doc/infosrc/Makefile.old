@@ -27,7 +27,7 @@ INSTALL_DIR = ../info
 XGIF = forward.gif back.gif both.gif nohead.gif
 
 MGIF = constraint.gif record.gif html1.gif html2.gif fill.gif round.gif \
-       mrecord.gif html3.gif html4.gif colorlist.gif record2.gif
+       mrecord.gif html3.gif html4.gif colorlist.gif record2.gif fixed.gif
 
 MJPG = sdlshapes.jpg
 

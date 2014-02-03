@@ -178,7 +178,7 @@ of the layout programs.
 </TD><TD ALIGN="CENTER">lightgrey(nodes)<BR>black(clusters)</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:fixedsize HREF=#d:fixedsize>fixedsize</A>
 </TD><TD>N</TD><TD><A HREF=#k:bool>bool</A>
-</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
+<BR>string</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:fontcolor HREF=#d:fontcolor>fontcolor</A>
 </TD><TD>ENGC</TD><TD><A HREF=#k:color>color</A>
 </TD><TD ALIGN="CENTER">black</TD><TD></TD><TD></TD> </TR>
@@ -817,10 +817,28 @@ of the layout programs.
   <B>color</B> or <B>bgcolor</B> attribute set for the cluster.
 
 <DT><A NAME=d:fixedsize HREF=#a:fixedsize><STRONG>fixedsize</STRONG></A>
-<DD>  If true, the node size is specified by the values of the
-  <A HREF=#d:width><B>width</B></A>
-  and <A HREF=#d:height><B>height</B></A> attributes only
+<DD>  If <tt>false</tt>, the size of a node is determined by smallest width and height
+  needed to contain its label and image, if any, with a margin specified by
+  the <A HREF=#d:margin><TT>margin</TT></A> attribute. The width
+  and height must also be at least as large as the sizes specified by the
+  <A HREF=#d:width><TT>width</TT></A> and
+  <A HREF=#d:height><TT>height</TT></A> attributes, which specify
+  the minimum values for these parameters. 
+  <P>
+  If <tt>true</tt>, the node size is specified by the values of the
+  <A HREF=#d:width><TT>width</TT></A>
+  and <A HREF=#d:height><TT>height</TT></A> attributes only
   and is not expanded to contain the text label.
+  There will be a warning if the label (with margin)
+  cannot fit within these limits.
+  <P>
+  If the <A HREF=attrs.html#d:fixedsize><TT>fixedsize</TT></A> attribute is set 
+  to <tt>shape</tt>, the <A HREF=#d:width><TT>width</TT></A> and
+  <A HREF=#d:height><TT>height</TT></A> attributes also determine the size
+  of the node shape, but the label can be much larger. Both the label and
+  shape sizes are used when avoiding node overlap, but all edges to the
+  node ignore the label and only contact the node shape. No warning is given
+  if the label is too large.
 
 <DT><A NAME=d:fontcolor HREF=#a:fontcolor><STRONG>fontcolor</STRONG></A>
 <DD>  Color used for text.

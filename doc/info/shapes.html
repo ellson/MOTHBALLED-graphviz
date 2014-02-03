@@ -228,6 +228,38 @@ only affected by the <A HREF=attrs.html#d:peripheries><TT>peripheries</TT></A>,
 <A HREF=attrs.html#d:width><TT>width</TT></A> and
 <A HREF=attrs.html#d:height><TT>height</TT></A> attributes.
 <P>
+Normally, the size of a node is determined by smallest width and height
+needed to contain its label and image, if any, with a margin specified by
+the <A HREF=attrs.html#d:margin><TT>margin</TT></A> attribute. The width
+and height must also be at least as large as the sizes specified by the
+<A HREF=attrs.html#d:width><TT>width</TT></A> and
+<A HREF=attrs.html#d:height><TT>height</TT></A> attributes, which specify
+the minimum values for these parameters. 
+See the <A HREF=attrs.html#d:fixedsize><TT>fixedsize</TT></A> attribute
+for ways of restricting the node size.
+In particular, if <tt>fixedsize=shape</tt>, the node's shape will be fixed
+by the <A HREF=attrs.html#d:width><TT>width</TT></A> and
+<A HREF=attrs.html#d:height><TT>height</TT></A> attributes, and the shape
+is used for edge termination, but both the shape and label sizes are used
+preventing node overlap. For example, the following graph
+<XMP>
+digraph G {
+  { 
+    node [margin=0 fontcolor=blue fontsize=32 width=0.5 shape=circle style=filled]
+    b [fillcolor=yellow fixedsize=true label="a very long label"]
+    d [fixedsize=shape label="an even longer label"]
+  }
+  a -> {c d}
+  b -> {c d}
+}
+</XMP>
+yields the figure<BR>
+<IMG SRC=fixed.gif>
+<P>
+Note that the label of the yellow node, with <tt>fixedsize=true</tt>, overlaps
+the other node, where there is sufficient space for the gray node with
+<tt>fixedsize=shape</tt>.
+<P>
 The shapes: <TT>note</TT>, <TT>tab</TT>, <TT>folder</TT>,
 <TT>box3d</TT> and <TT>component</TT> were provided by Pander.
 The synthetic biology shapes:
