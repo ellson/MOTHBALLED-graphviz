@@ -291,11 +291,19 @@ Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin, boolean isOrtho)
 	if (isOrtho) {
 	    isPoly = 1;
 	    sides = 4;
+	    verts = vs;
 	    margin.x = margin.y = 0;
 		/* For fixedshape, we can't use the width and height, as this includes
 		 * the label. We only want to use the actual node shape.
 		 */
 	    if (poly->option & FIXEDSHAPE) {
+		b = polyBB (poly);
+		vs[0] = b.LL;
+		vs[1].x = b.UR.x;
+		vs[1].y = b.LL.y;
+		vs[2] = b.UR;
+		vs[3].x = b.LL.x;
+		vs[3].y = b.UR.y;
 	    } else {
 		p.x = -ND_lw(n);
 		p.y = -ND_ht(n)/2.0;
@@ -306,7 +314,6 @@ Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin, boolean isOrtho)
 		vs[2] = p;
 		p.x = -ND_lw(n);
 		vs[3] = p;
-		verts = vs;
 	    }
 	}
 	else if (poly->sides >= 3) {

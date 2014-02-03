@@ -2248,17 +2248,34 @@ static boolean poly_inside(inside_t * inside_context, pointf p)
     }
 
     if (n != lastn) {
+	double n_width, n_height;
 	poly = (polygon_t *) ND_shape_info(n);
 	vertex = poly->vertices;
 	sides = poly->sides;
 
-	/* get point and node size adjusted for rankdir=LR */
-	if (GD_flip(agraphof(n))) {
-	    ysize = ND_lw(n) + ND_rw(n);
-	    xsize = ND_ht(n);
+	if (poly->option & FIXEDSHAPE) {
+	   boxf bb = polyBB(poly); 
+	    n_width = bb.UR.x - bb.LL.x;
+	    n_height = bb.UR.y - bb.LL.y;
+	    /* get point and node size adjusted for rankdir=LR */
+	    if (GD_flip(agraphof(n))) {
+		ysize = n_width;
+		xsize = n_height;
+	    } else {
+		xsize = n_width;
+		ysize = n_height;
+	    }
 	} else {
-	    xsize = ND_lw(n) + ND_rw(n);
-	    ysize = ND_ht(n);
+	    /* get point and node size adjusted for rankdir=LR */
+	    if (GD_flip(agraphof(n))) {
+		ysize = ND_lw(n) + ND_rw(n);
+		xsize = ND_ht(n);
+	    } else {
+		xsize = ND_lw(n) + ND_rw(n);
+		ysize = ND_ht(n);
+	    }
+	    n_width = POINTS(ND_width(n));
+	    n_height = POINTS(ND_height(n));
 	}
 
 	/* scale */
@@ -2266,10 +2283,10 @@ static boolean poly_inside(inside_t * inside_context, pointf p)
 	    xsize = 1.0;
 	if (ysize == 0.0)
 	    ysize = 1.0;
-	scalex = POINTS(ND_width(n)) / xsize;
-	scaley = POINTS(ND_height(n)) / ysize;
-	box_URx = POINTS(ND_width(n)) / 2.0;
-	box_URy = POINTS(ND_height(n)) / 2.0;
+	scalex = n_width / xsize;
+	scaley = n_height / ysize;
+	box_URx = n_width / 2.0;
+	box_URy = n_height / 2.0;
 
 	/* index to outer-periphery */
 	outp = (poly->peripheries - 1) * sides;

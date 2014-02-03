@@ -810,6 +810,28 @@ static boxf addLabelBB(boxf bb, textlabel_t * lp, boolean flipxy)
     return bb;
 }
 
+/* polyBB:
+ * Compute the bounding box of a polygon.
+ * We only need to use the outer periphery.
+ */
+boxf
+polyBB (polygon_t* poly)
+{
+    int i, sides = poly->sides;
+    int peris = MAX(poly->peripheries,1);
+    pointf* verts = poly->vertices + (peris-1)*sides;
+    boxf bb;
+
+    bb.LL = bb.UR = verts[0];
+    for (i = 1; i < sides; i++) {
+	bb.LL.x = MIN(bb.LL.x,verts[i].x);
+	bb.LL.y = MIN(bb.LL.y,verts[i].y);
+	bb.UR.x = MAX(bb.UR.x,verts[i].x);
+	bb.UR.y = MAX(bb.UR.y,verts[i].y);
+    }
+    return bb;
+}
+
 /* updateBB:
  * Reset graph's bounding box to include bounding box of the given label.
  * Assume the label's position has been set.
