@@ -480,6 +480,80 @@ int colorxlate(char *str, gvcolor_t * color, color_type_t target_type)
     return rc;
 }
 
+static void rgba_wordToByte (int* rrggbbaa, unsigned char* rgba)
+{
+    int i;
+
+    for (i = 0; i < 4; i++) {
+	rgba[i] = rrggbbaa[i] * 255 / 65535;
+    }
+}
+
+static void rgba_dblToByte (double* RGBA, unsigned char* rgba)
+{
+    int i;
+
+    for (i = 0; i < 4; i++) {
+	rgba[i] = (unsigned char)(RGBA[i] * 255);
+    }
+}
+
+/* colorCvt:
+ * Color format converter. 
+ * Except for the trivial case, it converts the input color to a string
+ * representation and then calls colorxlate.
+ * ncolor must point to a gvcolor_t struct with type specifying the desired
+ * output type.
+ */
+int colorCvt(gvcolor_t *ocolor, gvcolor_t *ncolor)
+{
+    int rc;
+    char buf[BUFSIZ];
+    char* s;
+    unsigned char rgba[4];
+
+    if (ocolor->type == ncolor->type) {
+	memcpy (&ncolor->u, &ocolor->u, sizeof(ocolor->u));    
+	return COLOR_OK; 
+    }
+    s = buf;
+    switch (ocolor->type) {
+    case HSVA_DOUBLE :
+	sprintf (buf, "%.03f %.03f %.03f %.03f", 
+	    ocolor->u.HSVA[0], ocolor->u.HSVA[1], ocolor->u.HSVA[2], ocolor->u.HSVA[3]);
+	break;
+    case RGBA_BYTE :
+	sprintf (buf, "#%02x%02x%02x%02x", 
+	    ocolor->u.rgba[0], ocolor->u.rgba[1], ocolor->u.rgba[2], ocolor->u.rgba[3]);
+	break;
+    case RGBA_WORD:
+	rgba_wordToByte (ocolor->u.rrggbbaa, rgba);
+	sprintf (buf, "#%02x%02x%02x%02x", rgba[0], rgba[1], rgba[2], rgba[3]);
+	break;
+    case RGBA_DOUBLE:
+	rgba_dblToByte (ocolor->u.RGBA, rgba);
+	sprintf (buf, "#%02x%02x%02x%02x", rgba[0], rgba[1], rgba[2], rgba[3]);
+	break;
+    case COLOR_STRING:
+	s = ocolor->u.string;
+	break;
+    case CMYK_BYTE :
+	/* agerr (AGWARN, "Input color type 'CMYK_BYTE' not supported for conversion\n"); */
+	return COLOR_UNKNOWN;
+	break;
+    case COLOR_INDEX:
+	/* agerr (AGWARN, "Input color type 'COLOR_INDEX' not supported for conversion\n"); */
+	return COLOR_UNKNOWN;
+	break;
+    default:
+	/* agerr (AGWARN, "Unknown input color type value '%u'\n", ncolor->type); */
+	return COLOR_UNKNOWN;
+	break;
+    }
+    rc = colorxlate (s, ncolor, ncolor->type);
+    return rc;
+}
+
 /* setColorScheme:
  * Set current color scheme for resolving names.
  */
