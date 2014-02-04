@@ -1,7 +1,12 @@
-# Copyright (c) AT&T Corp. 1994, 1995.
-# This code is licensed by AT&T Corp.  For the
-# terms and conditions of the license, see
-# http://www.research.att.com/orgs/ssr/book/reuse
+/*************************************************************************
+ * Copyright (c) 2011 AT&T Intellectual Property
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: See CVS logs. Details at http://www.graphviz.org/
+ *************************************************************************/
 
 # remove leading underscore, then translate leading dot to underscore
 function canon(s) {
