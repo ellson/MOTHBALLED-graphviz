@@ -27,6 +27,7 @@ CmdName
 common_init_edge    
 common_init_node    
 compute_bb    
+polyBB
 Concentrate    
 coord    
 cwrotatep    
