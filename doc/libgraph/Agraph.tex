@@ -3,12 +3,34 @@
 \usepackage{graphicx}
 \usepackage{times}
 \usepackage{lgrind}
-\author{Stephen C. North\thanks{Updated by Emden R. Gansner} \\
-{\small AT\&T Shannon Laboratory, Florham Park, NJ, USA}\\
-{\small north@research.att.com}
+\usepackage{footnote}
+
+%\usepackage[margin=0.5in]{geometry}
+
+\addtolength{\oddsidemargin}{-.875in}
+\addtolength{\evensidemargin}{-.875in}
+\addtolength{\textwidth}{1.75in}
+
+\renewcommand\floatpagefraction{.9}
+\renewcommand\topfraction{.9}
+\renewcommand\bottomfraction{.9}
+\renewcommand\textfraction{.1}
+%\setcounter{totalnumber}{50}
+%\setcounter{topnumber}{50}
+%\setcounter{bottomnumber}{50}
+
+%\setlength{\textwidth}{8.0in}
+%\oddsidemargin 0in
+%\evensidemargin .5in
+%\textwidth 7.5in
+
+\author{Stephen C. North \\ 
+{\small scnorth@gmail.com}
+\and Emden R.~Gansner \\
+{\small erg@graphviz.com}
 }
 \title{Cgraph Tutorial}
-\date{1 March 2013}
+\date{\today}
 
 \begin{document}
 
@@ -212,8 +234,9 @@ the first node will be used as the tail node, and the second node as the head.}
 
 Because an edge is implemented as an edge pair, there are two valid pointers
 to the same edge, so simple pointer comparison does not work for edge equality.
-The function \verb"Ageqedge(Agedge_t *e0, Agedge_t *e1)" evaluates to true if
-the two pointers represent the same abstract edge.
+The function \verb"ageqedge(Agedge_t *e0, Agedge_t *e1)" evaluates to true if
+the two pointers represent the same abstract edge, and should usually be used
+for edge comparisons.
 
 An edge is made using
 
@@ -974,16 +997,54 @@ separate algorithm libraries.
 The dynamic \verb"Agrec_t" structures, described in Section~\ref{sec:internalattributes}, 
 allows each algorithm to attach its own required data structure.
 
+As noted in Section~\ref{sec:edges}, edges are implemented slightly
+differently in the two libraries, so comparison of edge pointers for
+equality should be replaced with \verb"ageqedge" unless you are certain
+that the two pointers have consistent types. As an example where problems
+could arise, we have the following code:
+\begin{verbatim}
+void traverse(Agraph_t *g, Agedge_t *e0)
+{
+  Agnode_t *n = aghead (e0);
+  Agedge_t *e;
+    
+  for (e = agfstout(g, n); n; n = agnxtout(g, e)) {
+    if (e == e0) continue;   /* avoid entry edge */
+    /* do something with e */
+  }
+\end{verbatim}
+If \verb"e0" is an in-edge (\verb"AGTYPE(e) == AGINEDGE"), the comparison
+with \verb"e" will always fail, as the latter is an out-edge.
+
 In Cgraph, the nesting of subgraphs forms a tree.
 In libgraph, a subgraph can belong to more than one parent,
 so they form a DAG (directed acyclic graph). Libgraph
 actually represents this DAG as a special meta-graph
 that is navigated by libgraph calls.  After gaining
 experience with libgraph, we decided this complexity
-was not worth its cost.
+was not worth its cost. In libgraph, the code for traversing
+subgraphs would have a form something like\label{subg}:
+\begin{verbatim}
+  Agedge_t* me;
+  Agnode_t* mn;
+  Agraph_t* mg = g->meta_node->graph;
+  Agraph_t* subg;
+  for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
+    mn = me->head;
+    subg = agusergraph(mn);
+      /* use subgraph subg */
+  }
+\end{verbatim}
+The similar traversal using Cgraph would have the form
+\begin{verbatim}
+  Agraph_t* subg;
+  for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
+      /* use subgraph subg */
+  }
+\end{verbatim}
 
 Finally, there are some small syntactic differences in the APIs.
-For example, in libgraph", the name of a node or graph and
+For example, in libgraph, the name of a node or graph and
 the head and tail nodes of an edge are
 directly accessible via pointers while in Cgraph, it is necessary to use
 the functions \verb"agnameof", \verb"agtail" and \verb"aghead".
@@ -992,6 +1053,83 @@ an object, or for handling different types of objects, e.g.,
 \verb"agnode" and \verb"agfindnode". Instead, Cgraph will use a single function
 with an additional parameter. Overall, the two libraries are vary close, both
 syntactically and semantically, so conversion is fairly straightforward.
+
+Tables~\ref{table:libgraph:g}--\ref{table:libgraph:a} list the common 
+constants and operations in
+libgraph, and the corresponding value or procedure in Cgraph, if any.
+
+\begin{savenotes}
+\begin{table*}[htb]
+\centering
+\begin{tabular}{|l|l|} \hline
+\multicolumn{1}{|c|}{\em libgraph} & \multicolumn{1}{c|}{\em Cgraph} \\ \hline
+\verb"AGRAPH"  &  \verb"Agundirected" \\ \hline
+\verb"AGRAPHSTRICT" &  \verb"Agstrictundirected" \\ \hline
+\verb"AGDIGRAPH" &  \verb"Agdirected" \\ \hline
+\verb"AGDIGRAPHSTRICT"  &  \verb"Agstrictdirected" \\ \hline
+\verb"aginit" &  not necessary\footnote{The Cgraph library has a function called \texttt{aginit}, but it has a different signature and semantics.} \\ \hline
+\verb"agopen(name,type)" &  \verb"agopen(name,type,NULL)"\\ \hline
+\verb"agread(filep)" &  \verb"agread(filep,NULL)"\\ \hline
+\verb"agread_usergets(filep,gets)" &  \verb"Agmemdisc_t mem = AgMemDisc;" \\
+                            &  \verb"Agiddisc_t id = AgIdDisc;" \\
+                            &  \verb"Agiodisc_t io = AgIoDisc;" \\
+                            &  \verb"io.afread = gets;"\footnote{Note that the order of the parameters differs from the \texttt{gets} used in libgraph.} \\
+                            &  \verb"agread(filep,disc);"\\ \hline
+\verb"agsetiodisc" &  no direct analogue; see above \\ \hline
+\verb"obj->name"   &  \verb"agnameof(obj);" \\ \hline
+\verb"graph->root"   &  \verb"agroot(graph);" \\ \hline
+\verb"node->graph"   &  \verb"aggraphof(node);" \\ \hline
+\verb"edge->head"   &  \verb"aghead(edge);" \\ \hline
+\verb"edge->tail"   &  \verb"agtail(edge);" \\ \hline
+\verb"AG_IS_DIRECTED(graph)" &  \verb"agisdirected(graph)"  \\ \hline
+\verb"AG_IS_STRICT(graph)" &  \verb"agisstrict(graph)"  \\ \hline
+\verb"agobjkind(obj)" &  \verb"AGTYPE(obj)" \\ \hline
+\verb"agsubg(parent,name)"      &   \verb"agsubg(parent,name,1)" \\ \hline
+\verb"agfindsubg(parent,name)"      &   \verb"agsubg(parent,name,0)" \\ \hline
+\verb"g->meta_node_graph"            &  \verb"agfstsubg/agnxtsubg" \\
+\verb"agusergraph(graph)"  &  See the examples on Page~\pageref{subg}\\ \hline
+\verb"aginsert(graph, obj)" &  \verb"agsubnode(graph,obj);" if obj is a node \\
+                      &  \verb"agsubedge(graph,obj);" if obj is a edge \\
+                      & not allowed if obj is a graph \\ \hline
+\end{tabular}
+\caption{Graph function conversions}
+\label{table:libgraph:g}
+\end{table*}
+
+\begin{table*}[ht]
+\centering
+\begin{tabular}{|l|l|} \hline
+\multicolumn{1}{|c|}{\em libgraph} & \multicolumn{1}{c|}{\em Cgraph} \\ \hline
+\verb"agnode(graph,name)" & \verb"agnode(graph,name,1") \\ \hline
+\verb"agfindnode(graph,name") & \verb"agnode(graph,name,0") \\ \hline
+\verb"agedge(graph,tail,head") & \verb"agedge(graph,tail,head,NULL,1") \\ \hline
+\verb"agfindedge(graph,tail,head") & \verb"agedge(graph,tail,head,NULL,0") \\ \hline
+\end{tabular}
+\caption{Node and edge function conversions}
+\label{table:libgraph:n}
+\end{table*}
+
+\begin{table*}[ht]
+\centering
+\begin{tabular}{|l|l|} \hline
+\multicolumn{1}{|c|}{\em libgraph} & \multicolumn{1}{c|}{\em Cgraph} \\ \hline
+\verb"agprotograph()"      &  no analogue \\ \hline
+\verb"agprotonode(graph)"  &  not used \\ \hline
+\verb"agprotoedge(graph)"  &  not used \\ \hline
+\verb"agattr(obj, name, default)" & \verb"agattr(agroot(obj),AGTYPE(obj),name,default)" \\ \hline
+\verb"agfindattr(obj, name)"& \verb"agattrsym(obj,name)" \\ \hline
+\verb"agraphattr(graph, name  default)" & \verb"agattr(graph,AGRAPH,name,default)"\\ \hline
+\verb"agnodeattr(graph, name, default)" & \verb"agattr(graph,AGNODE,name,default)"\\ \hline
+\verb"agedgeattr(graph, name, default)" & \verb"agattr(graph,AGEDGE,name,default)"\\ \hline
+\verb"agfstattr(obj)"   & \verb"agnxtattr(agroot(obj),AGTYPE(obj),NULL)"\\ \hline
+\verb"agnxtattr(obj,sym)"   & \verb"agnxtattr(agroot(obj),AGTYPE(obj),sym)"\\ \hline
+\verb"aglstattr(obj)" & no analogue\\ \hline
+\verb"agprvattr(obj, sym)" & no analogue\\ \hline
+\end{tabular}
+\caption{Attribute function conversions}
+\label{table:libgraph:a}
+\end{table*}
+
 
 {\bf Lgraph} is a successor to Cgraph, written in C++ by Gordon Woodhull.
 It follows Cgraph's overall graph model (particularly, its subgraphs and
@@ -1040,9 +1178,10 @@ a graph from objects delivered on demand from a foreign API (such as a
 relational database that stores graphs).  We are now experimenting with
 attacks on some of these problems.
 
-{\bf Additional primitives.}  To be done: Object renaming, cloning, first-class
-nodes and edges, etc.
+%{\bf Additional primitives.}  To be done: Object renaming, cloning, first-class
+%nodes and edges, etc.
 
+\end{savenotes}
 \section{Example}
 \label{sec:example}
 
@@ -1074,6 +1213,7 @@ contain only one node.)  {\it nodeInduce} is called to process the
 out-edges of nodes in this subgraph.  Such edges either belong to
 the component (and are added to it), or else point to a node in
 another component that must already have been processed.
+%\newpage
 
 \lgrindfile{sccmap.tex}
 
