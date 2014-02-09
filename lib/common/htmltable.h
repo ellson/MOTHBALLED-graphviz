@@ -32,6 +32,11 @@ extern "C" {
 #define BALIGN_RIGHT (1 << 8)
 #define BALIGN_LEFT (1 << 9)
 #define BALIGN_MASK (BALIGN_RIGHT | BALIGN_LEFT)
+#define BORDER_LEFT (1 << 10)
+#define BORDER_TOP (1 << 11)
+#define BORDER_RIGHT (1 << 12)
+#define BORDER_BOTTOM (1 << 13)
+#define BORDER_MASK (BORDER_LEFT|BORDER_TOP|BORDER_RIGHT|BORDER_BOTTOM)
 
 #define UNSET_ALIGN 0
 

@@ -243,9 +243,10 @@ static pointf *mkPts(pointf * AF, boxf b, int border)
  */
 static void doBorder(GVJ_t * job, htmldata_t * dp, boxf b)
 {
-    pointf AF[4];
+    pointf AF[6];
     char *sptr[2];
     char *color = (dp->pencolor ? dp->pencolor : DEFAULT_COLOR);
+    unsigned short sides;
 
     gvrender_set_pencolor(job, color);
     if ((dp->style & (DASHED | DOTTED))) {
@@ -261,7 +262,61 @@ static void doBorder(GVJ_t * job, htmldata_t * dp, boxf b)
 
     if (dp->style & ROUNDED)
 	round_corners(job, mkPts(AF, b, dp->border), 4, ROUNDED, 0);
-    else {
+    else if ((sides = (dp->flags & BORDER_MASK))) {
+	mkPts (AF+1, b, dp->border);  /* AF[1-4] has LL=SW,SW,UR=NE,NW */
+	switch (sides) {
+	case BORDER_BOTTOM :
+	    gvrender_polyline(job, AF+1, 2);
+	    break;
+	case BORDER_RIGHT :
+	    gvrender_polyline(job, AF+2, 2);
+	    break;
+	case BORDER_TOP :
+	    gvrender_polyline(job, AF+3, 2);
+	    break;
+	case BORDER_LEFT :
+	    AF[0] = AF[4];
+	    gvrender_polyline(job, AF, 2);
+	    break;
+	case BORDER_BOTTOM|BORDER_RIGHT :
+	    gvrender_polyline(job, AF+1, 3);
+	    break;
+	case BORDER_RIGHT|BORDER_TOP :
+	    gvrender_polyline(job, AF+2, 3);
+	    break;
+	case BORDER_TOP|BORDER_LEFT :
+	    AF[5] = AF[1];
+	    gvrender_polyline(job, AF+3, 3);
+	    break;
+	case BORDER_LEFT|BORDER_BOTTOM :
+	    AF[0] = AF[4];
+	    gvrender_polyline(job, AF, 3);
+	    break;
+	case BORDER_BOTTOM|BORDER_RIGHT|BORDER_TOP :
+	    gvrender_polyline(job, AF+1, 4);
+	    break;
+	case BORDER_RIGHT|BORDER_TOP|BORDER_LEFT :
+	    AF[5] = AF[1];
+	    gvrender_polyline(job, AF+2, 4);
+	    break;
+	case BORDER_TOP|BORDER_LEFT|BORDER_BOTTOM :
+	    AF[5] = AF[1];
+	    AF[6] = AF[2];
+	    gvrender_polyline(job, AF+3, 4);
+	    break;
+	case BORDER_LEFT|BORDER_BOTTOM|BORDER_RIGHT :
+	    AF[0] = AF[4];
+	    gvrender_polyline(job, AF, 4);
+	    break;
+	case BORDER_TOP|BORDER_BOTTOM :
+	    gvrender_polyline(job, AF+1, 2);
+	    gvrender_polyline(job, AF+3, 2);
+	    break;
+	case BORDER_LEFT|BORDER_RIGHT :
+	    AF[0] = AF[4];
+	    break;
+	}
+    } else {
 	if (dp->border > 1) {
 	    double delta = ((double) dp->border) / 2.0;
 	    b.LL.x += delta;

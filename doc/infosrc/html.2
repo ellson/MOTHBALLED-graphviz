@@ -40,6 +40,7 @@ Attribute values must appear in double quotes.
   ID="<I>value</I>"
   PORT="<I>portName</I>"
   ROWS="<I>value</I>"
+  SIDES="<I>value</I>"
   STYLE="<I>value</I>"
   TARGET="<I>value</I>"
   TITLE="<I>value</I>"
@@ -72,6 +73,7 @@ Attribute values must appear in double quotes.
   ID="<I>value</I>"
   PORT="<I>portName</I>"
   ROWSPAN="<I>value</I>"
+  SIDES="<I>value</I>"
   STYLE="<I>value</I>"
   TARGET="<I>value</I>"
   TITLE="<I>value</I>"
@@ -372,6 +374,17 @@ scaling being uniform in width and height if <I>SCALE=<TT>"true"</TT></I>.
 Note that the containing cell's <B><I>ALIGN</I></B> 
 and <B><I>VALIGN</I></B> attributes override
 an image's <B><I>SCALE</I></B> attribute.
+</BLOCKQUOTE>
+
+<B><I><FONT SIZE=-1>SIDES="value"</FONT></I></B>
+<BLOCKQUOTE>
+specifies which sides of a border in a cell or table should be drawn, if
+a border is drawn. By default, all sides are drawn. The <TT>"value"</TT>
+string can contain any collection of the (case-insensitive) 
+characters <TT>'L'</TT>, <TT>'T'</TT>, <TT>'R'</TT>, or <TT>'B'</TT>,
+corresponding to the left, top, right and, bottom sides of the border,
+respectively. For example, <TT>SIDES="LB"</TT> would indicate only the
+left and bottom segments of the  border should be drawn.
 </BLOCKQUOTE>
 
 <B><I><FONT SIZE=-1>SRC="value"</FONT></I></B>

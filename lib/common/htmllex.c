@@ -124,6 +124,35 @@ static int hreffn(htmldata_t * p, char *v)
     return 0;
 }
 
+static int sidesfn(htmldata_t * p, char *v)
+{
+    unsigned short flags = 0; 
+    char c;
+
+    while ((c = *v++)) {
+	switch (tolower(c)) {
+	case 'l' :
+	    flags |= BORDER_LEFT;
+	    break;
+	case 't' :
+	    flags |= BORDER_TOP;
+	    break;
+	case 'r' :
+	    flags |= BORDER_RIGHT;
+	    break;
+	case 'b' :
+	    flags |= BORDER_BOTTOM;
+	    break;
+	default :
+	    agerr(AGWARN, "Unrecognized character '%c' (%d) in sides attribute\n", c, c);
+	    break;
+	}
+    }
+    if (flags != BORDER_MASK)
+	p->flags |= flags;
+    return 0;
+}
+
 static int titlefn(htmldata_t * p, char *v)
 {
     p->title = strdup(v);
@@ -472,6 +501,7 @@ static attr_item tbl_items[] = {
     {"id", (attrFn) idfn},
     {"port", (attrFn) portfn},
     {"rows", (attrFn) rowsfn},
+    {"sides", (attrFn) sidesfn},
     {"style", (attrFn) stylefn},
     {"target", (attrFn) targetfn},
     {"title", (attrFn) titlefn},
@@ -496,6 +526,7 @@ static attr_item cell_items[] = {
     {"id", (attrFn) idfn},
     {"port", (attrFn) portfn},
     {"rowspan", (attrFn) rowspanfn},
+    {"sides", (attrFn) sidesfn},
     {"style", (attrFn) stylefn},
     {"target", (attrFn) targetfn},
     {"title", (attrFn) titlefn},
