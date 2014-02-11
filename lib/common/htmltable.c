@@ -2110,8 +2110,8 @@ int make_html_label(void *obj, textlabel_t * lp)
 	if (!lbl->u.tbl->data.pencolor && getPenColor(obj))
 	    lbl->u.tbl->data.pencolor = strdup(getPenColor(obj));
 	rv |= size_html_tbl(g, lbl->u.tbl, NULL, &env);
-	wd2 = (lbl->u.tbl->data.box.UR.x + 1) / 2;
-	ht2 = (lbl->u.tbl->data.box.UR.y + 1) / 2;
+	wd2 = (lbl->u.tbl->data.box.UR.x) / 2;
+	ht2 = (lbl->u.tbl->data.box.UR.y) / 2;
 	box = boxfof(-wd2, -ht2, wd2, ht2);
 	pos_html_tbl(lbl->u.tbl, box, BOTTOM | RIGHT | TOP | LEFT);
 	lp->dimen.x = box.UR.x - box.LL.x;
