@@ -27,7 +27,7 @@ INSTALL_DIR = ../info
 XGIF = forward.gif back.gif both.gif nohead.gif
 
 MGIF = constraint.gif record.gif html1.gif html2.gif fill.gif round.gif \
-       mrecord.gif html3.gif html4.gif colorlist.gif record2.gif fixed.gif
+       mrecord.gif html3.gif html4.gif colorlist.gif record2.gif fixed.gif tee.gif
 
 MJPG = sdlshapes.jpg
 
@@ -79,7 +79,7 @@ A2GIF= aa_box.gif aa_lbox.gif aa_rbox.gif aa_obox.gif aa_olbox.gif aa_orbox.gif\
        
 
 GIF = $(SGIF) $(AGIF) $(MGIF) $(A2GIF) $(XGIF)
-DOTS = html2.gv html3.gv html4.gv
+DOTS = html2.gv html3.gv html4.gv tee.gv
 HTML = attrs.html colors.html command.html lang.html output.html shapes.html \
        arrows.html
 INSTALL_FILES = $(HTML) $(DOTS) $(SGIF) $(AGIF) $(A2GIF) $(MGIF) $(XGIF) $(MJPG) $(MPNG)
