@@ -866,6 +866,32 @@ bool render(Agraph_t *g, const char *format, const char *filename)
     return (! err);
 }
 
+typedef struct {
+    char* data;
+    int sz;       /* buffer size */
+    int len;      /* length of array */
+} BA;
+
+// render to string result, using binding-dependent gv_string_writer()
+char* renderresult(Agraph_t *g, const char *format)
+{
+    int err;
+    BA ba;
+
+    if (!g)
+        return NULL;
+    if (!GD_alg(g))
+        return NULL;
+    ba.sz = BUFSIZ;
+    ba.data = (char*)malloc(ba.sz*sizeof(char));  /* must be freed by wrapper code */
+    ba.len = 0;
+    gv_string_writer_init(gvc);
+    err = gvRender(gvc, g, format, (FILE*)&ba);
+    gv_writer_reset (gvc);   /* Reset to default */
+    *((int*)GD_alg(g)) = ba.len;
+    return ba.data;
+}
+
 // render to string result, using binding-dependent gv_string_writer()
 void renderresult(Agraph_t *g, const char *format, char *outdata)
 {

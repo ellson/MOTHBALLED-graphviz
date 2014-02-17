@@ -1,5 +1,12 @@
 // test.java
 
+/*  On OSX:
+ * javac -classpath $HOME/lib/graphviz/java test.java
+ * java -classpath .:$HOME/lib/graphviz/java -Djava.library.path="$HOME/lib/graphviz/java/org/graphviz"  test
+ */
+
+import org.graphviz.*;
+
 public class test {
     static {
 	System.loadLibrary("gv");
@@ -9,6 +16,7 @@ public class test {
 	SWIGTYPE_p_Agraph_t g, sg;
 	SWIGTYPE_p_Agnode_t n, m;
 	SWIGTYPE_p_Agedge_t e;
+    byte[] ba;
 
 	g = gv.digraph("G");
 	System.out.println(gv.setv(g,"aaa","xxx"));
@@ -34,6 +42,9 @@ public class test {
 	g = gv.read("hello.gv");
 	gv.layout(g,"dot");
 	gv.render(g,"png","hello.png");
+	ba = gv.renderresult (g,"dot");
+	System.out.println("length = " + ba.length);
+
 	gv.rm(g);
     }
 }

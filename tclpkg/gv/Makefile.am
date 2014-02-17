@@ -78,16 +78,18 @@ libgv_io_la_CPPFLAGS = $(BASECPPFLAGS) $(IO_INCLUDES)
 gv_io.cpp: gv.i
 	$(SWIG) -c++ -io -o gv_io.cpp $(srcdir)/gv.i
 
-pkgjavadir = $(pkglibdir)/java
+JSHEXT=jnilib
+libjavadir = $(pkglibdir)/java
+pkgjavadir = $(libjavadir)/org/graphviz
 JAVA_data = gv.java gvJNI.java SWIGTYPE_p_Agraph_t.java SWIGTYPE_p_Agnode_t.java SWIGTYPE_p_Agedge_t.java SWIGTYPE_p_Agsym_t.java SWIGTYPE_p_FILE.java
 nodist_libgv_java_la_SOURCES = gv_java.cpp
-libgv_java_la_SOURCES = $(BASESOURCES)  gv_dummy_init.c
+libgv_java_la_SOURCES = $(BASESOURCES)  gv_java_init.c
 libgv_java_la_LIBADD = $(BASELIBS) $(JAVA_LIBS)
 libgv_java_la_LDFLAGS = -module -avoid-version
-libgv_java_la_CPPFLAGS = $(BASECPPFLAGS) $(JAVA_INCLUDES)
+libgv_java_la_CPPFLAGS = -DSWIGJAVA $(BASECPPFLAGS) $(JAVA_INCLUDES)
 $(JAVA_data): gv_java.cpp
 gv_java.cpp: gv.i
-	$(SWIG) -package org.graphviz -c++ -java -o gv_java.cpp $(srcdir)/gv.i
+	$(SWIG) -package org.graphviz -java -c++ -o gv_java.cpp $(srcdir)/gv.i
 
 pkgluadir = $(pkglibdir)/lua
 LUA_data = 
@@ -459,6 +461,9 @@ gv.3tcl.pdf: gv.3tcl
 	- $(GROFF) -Tps -man gv.3tcl | $(PS2PDF) - - >gv.3tcl.pdf
 
 install-data-hook:
+if WITH_JAVA
+	(cd $(DESTDIR)$(pkgjavadir); $(LN_S) org/graphviz/libgv_java.so ../../libgv.$(JSHEXT); javac -classpath $(DESTDIR)$(libjavadir) gv.java;)
+endif
 if WITH_LUA
 	(cd $(DESTDIR)$(pkgluadir);    rm -f gv.so;  $(LN_S) libgv_lua.so gv.so;)
 endif
@@ -499,7 +504,7 @@ devtsts: $(DEVTSTS)
 test_sharp: libgv_sharp.la
 	-(mkdir -p test_sharp; cd test_sharp; \
 		ln -fs ../.libs/libgv_sharp.so libgv_sharp.so; \
-		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.cs .; \
+		ln -fs ../$(srcdir)/*.gv ../$(srcdir)/*.cs .; \
 		$(SHARP) *.cs -out:test.exe; \
 		mono test.exe)
 
@@ -507,7 +512,7 @@ test_sharp: libgv_sharp.la
 test_go: libgv_go.la
 	-(mkdir -p test_go; cd test_go; \
 		ln -fs ../.libs/libgv_go.so libgv.so; \
-		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.go .; \
+		ln -fs ../$(srcdir)/*.gv ../$(srcdir)/*.go .; \
 		$(GO) *.go
 		LD_LIBRARY_PATH=. go test)
 
@@ -515,37 +520,40 @@ test_go: libgv_go.la
 test_guile: libgv_guile.la
 	-(mkdir -p test_guile; cd test_guile; \
 		ln -fs ../.libs/libgv_guile.so libgv.so; \
-		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.guile .; \
+		ln -fs ../$(srcdir)/*.gv ../$(srcdir)/*.guile .; \
 		$(GUILE) -s test.guile)
 
 .PHONY: test_io
 test_io: libgv_io.la
 	-(mkdir -p test_io; cd test_io; \
 		ln -fs ../.libs/libgv_io.so libgv.so; \
-		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.io .; \
+		ln -fs ../$(srcdir)/*.gv ../$(srcdir)/*.io .; \
 		ioc *.io; \
 		LD_LIBRARY_PATH=. io test)
 
 .PHONY: test_java
 test_java: libgv_java.la
-	-(mkdir -p test_java; cd test_java; \
-		ln -fs ../.libs/libgv_java.so libgv.so; \
-		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.java .; \
-		javac *.java; \
+	-(mkdir -p test_java/org/graphviz; cd test_java; \
+		ln -f ../.libs/libgv_java.so libgv.jnilib; \
+		ln -f ../$(srcdir)/*.java org/graphviz; \
+		ln -f ../$(srcdir)/test.java .; \
+		ln -f ../$(srcdir)/hello.gv  .; \
+		ln -f ../$(srcdir)/test.java .; \
+		CLASSPATH=. javac *.java; \
 		LD_LIBRARY_PATH=. CLASSPATH=. java test)
 
 .PHONY: test_lua
 test_lua: libgv_lua.la
 	-(mkdir -p test_lua; cd test_lua; \
 		ln -fs ../.libs/libgv_lua.so gv.so;\
-		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.lua .; \
+		ln -fs ../$(srcdir)/*.gv ../$(srcdir)/*.lua .; \
 		$(LUA) test.lua)
 
 .PHONY: test_ocaml
 test_ocaml: libgv_ocaml.la
 	-(mkdir -p test_ocaml; cd test_ocaml; \
 		ln -fs ../.libs/libgv_ocaml.so libgv.so; \
-		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.ml ../$(srcdir)/*.mli .; \
+		ln -fs ../$(srcdir)/*.gv ../$(srcdir)/*.ml ../$(srcdir)/*.mli .; \
 		ocamlc *.ocaml; \
 		LD_LIBRARY_PATH=. ocaml test)
 
@@ -553,42 +561,42 @@ test_ocaml: libgv_ocaml.la
 test_perl: libgv_perl.la
 	-(mkdir -p test_perl; cd test_perl; \
 		ln -fs ../.libs/libgv_perl.so gv.so; \
-		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.p[lm] .; \
+		ln -fs ../$(srcdir)/*.gv ../$(srcdir)/*.p[lm] .; \
 		$(PERL) ./test.pl)
 
 .PHONY: test_php
 test_php: libgv_php.la
 	-(mkdir -p test_php; cd test_php; \
 		ln -fs ../.libs/libgv_php.so libgv.so; \
-		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.php .; \
+		ln -fs ../$(srcdir)/*.gv ../$(srcdir)/*.php .; \
 		$(PHP) ./test.php)
 
 .PHONY: test_python
 test_python: libgv_python.la
 	-(mkdir -p test_python; cd test_python; \
 		ln -fs ../.libs/libgv_python.so _gv.so; \
-		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.py .; \
+		ln -fs ../$(srcdir)/*.gv ../$(srcdir)/*.py .; \
 		PYTHONPATH=. $(PYTHON) test.py)
 
 .PHONY: test_R
 test_R: libgv_R.la
 	-(mkdir -p test_R; cd test_R; \
 		ln -fs ../.libs/libgv_R.so gv.so; \
-		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.R .; \
+		ln -fs ../$(srcdir)/*.gv ../$(srcdir)/*.R .; \
 		$(R) test.R)
 
 .PHONY: test_ruby
 test_ruby: libgv_ruby.la
 	-(mkdir -p test_ruby; cd test_ruby; \
 		ln -fs ../.libs/libgv_ruby.so gv.so; \
-		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.rb .; \
+		ln -fs ../$(srcdir)/*.gv ../$(srcdir)/*.rb .; \
 		$(RUBY) test.rb)
 
 .PHONY: test_tcl
 test_tcl: libgv_tcl.la
 	-(mkdir -p test_tcl; cd test_tcl; \
 		ln -fs ../.libs/libgv_tcl.so libgv_tcl.so; \
-		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.tcl .; \
+		ln -fs ../$(srcdir)/*.gv ../$(srcdir)/*.tcl .; \
 		$(TCLSH) ./test.tcl)
 
 EXTRA_DIST = $(man) $(pdf) gv_doc_*.tcl

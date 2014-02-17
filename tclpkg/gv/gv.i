@@ -32,6 +32,22 @@
 }
 #endif
 
+#ifdef SWIGJAVA
+%typemap(jstype) char* renderresult "byte[]"
+%typemap(jtype)  char* renderresult "byte[]"
+%typemap(jni) char* renderresult "jbyteArray"
+%typemap(in) Agraph_t *ing (int sz) { 
+  $1 = *(Agraph_t **)&jarg1; 
+  GD_alg($1) = &sz;
+}
+%typemap(out) char* renderresult { 
+    $result = jenv->NewByteArray (sz1);
+    jenv->SetByteArrayRegion ($result, 0, sz1, (const jbyte*)$1);
+    free ($1);
+}
+#endif
+
+/*  */
 %inline %{
 /* some language headers (e.g. php.h, ruby.h) leave these defined */
 #undef PACKAGE_BUGREPORT
@@ -207,15 +223,18 @@ extern bool render(Agraph_t *g, const char *format);
 extern bool render(Agraph_t *g, const char *format, FILE *fout);
 /*** Render a layout to an unopened file by name */
 extern bool render(Agraph_t *g, const char *format, const char *filename);
+/*** Render to a string result */
+#ifdef SWIGJAVA
+extern char* renderresult(Agraph_t *ing, const char *format);
+#else
+extern void renderresult(Agraph_t *g, const char *format, char *outdata);
 /*** Render to an open channel */
 extern bool renderchannel(Agraph_t *g, const char *format, const char *channelname);
-/*** Render to a string result */
-extern void renderresult(Agraph_t *g, const char *format, char *outdata);
 /*** Render a layout to a malloc'ed string, to be free'd by the caller */
 /*** (deprecated - too easy to leak memory) */
 /*** (still needed for "eval [gv::renderdata $G tk]" ) */
+#endif
 extern char* renderdata(Agraph_t *g, const char *format);
-
 
 /*** Writing graph back to file */
 extern bool write(Agraph_t *g, const char *filename);
