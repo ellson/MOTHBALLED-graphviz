@@ -101,11 +101,11 @@ static void vdxgen_begin_anchor(GVJ_t *job, char *url, char *tooltip, char *targ
 		context->AddAnchor(job, url, tooltip, target, id);
 }
 
-static void vdxgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
+static void vdxgen_textspan(GVJ_t * job, pointf p, textspan_t * span)
 {
 	Visio::Render* context = (Visio::Render*)job->context;
 	if (context)
-		context->AddText(job, p, para);	
+		context->AddText(job, p, span);	
 }
 
 static void vdxgen_ellipse(GVJ_t * job, pointf * A, int filled)
@@ -159,7 +159,7 @@ gvrender_engine_t vdxgen_engine = {
     0,				/* vdxgen_end_anchor */
     0,				/* vdxgen_begin_label */
 	0,				/* vdxgen_end_label */
-    vdxgen_textpara,
+    vdxgen_textspan,
     0,				/* vdxgen_resolve_color */
     vdxgen_ellipse,
     vdxgen_polygon,

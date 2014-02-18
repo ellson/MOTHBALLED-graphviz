@@ -77,16 +77,16 @@ namespace Visio
 		gvprintf(job, "<pp IX='%d'/><cp IX='%d'/>%s\n", index, index, _text ? xml_string(_text) : "");	/* para mark + char mark + actual text */
 	}
 	
-	Text* Text::CreateText(GVJ_t* job, pointf p, textpara_t* para)
+	Text* Text::CreateText(GVJ_t* job, pointf p, textspan_t* span)
 	{
 		Para::HorzAlign horzAlign;
 		
 		/* compute text bounding box and VDX horizontal align */
 		boxf bounds;
-		bounds.LL.y = p.y + para->yoffset_centerline;
-		bounds.UR.y = p.y + para->yoffset_centerline + para->height;
-		double width = para->width;
-		switch (para->just)
+		bounds.LL.y = p.y + span->yoffset_centerline;
+		bounds.UR.y = p.y + span->yoffset_centerline + span->size.y;
+		double width = span->size.x;
+		switch (span->just)
 		{
 			case 'r':
 				horzAlign = Para::horzRight;
@@ -110,13 +110,13 @@ namespace Visio
 			new Para(
 				horzAlign),
 			new Char(
-				para->fontsize,
+				span->font->size,
 				job->obj->pencolor.u.rgba[0],
 				job->obj->pencolor.u.rgba[1],
 				job->obj->pencolor.u.rgba[2]),
 			new Run(
 				bounds,
-				para->str));
+				span->str));
 	}
 	
 	Text::Text(Para* para, Char* chars, Run* run):

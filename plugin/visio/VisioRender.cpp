@@ -233,9 +233,9 @@ namespace Visio
 		AddGraphic(job, Graphic::CreatePolyline(job, A, n));
 	}
 	
-	void Render::AddText(GVJ_t* job, pointf p, textpara_t *para)
+	void Render::AddText(GVJ_t* job, pointf p, textspan_t *span)
 	{
-		AddText(job, Text::CreateText(job, p, para));
+		AddText(job, Text::CreateText(job, p, span));
 	}
 
 	void Render::AddAnchor(GVJ_t *job, char *url, char *tooltip, char *target, char *id)
