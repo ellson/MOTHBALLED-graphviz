@@ -168,7 +168,7 @@ libgv_php_la_CPPFLAGS = $(BASECPPFLAGS) $(PHP_INCLUDES)
 gv.php: gv_php.cpp
 php_gv.h: gv_php.cpp
 gv_php.cpp: gv.i
-	$(SWIG) -c++ -php5 -o gv_php.cpp $(srcdir)/gv.i
+	$(SWIG) -c++ $(SWIG_PHP_OPT) -o gv_php.cpp $(srcdir)/gv.i
 
 pkgpythondir = $(pkglibdir)/python
 PYTHON_data = gv.py

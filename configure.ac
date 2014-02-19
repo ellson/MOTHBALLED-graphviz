@@ -1093,6 +1093,11 @@ else
   if test "x$use_swig" != "xYes"; then
     use_php="No (swig not available)"
   else
+    if test `$SWIG -php5 2>&1 | $EGREP -c 'Unable'` -eq 1; then
+      SWIG_PHP_OPT='-php'
+    else
+      SWIG_PHP_OPT='-php5'
+    fi
     if test `$SWIG -help 2>&1 | $EGREP -c '\-php5* *- Generate'` = 0 ; then
       use_php="No (swig does not support -php or -php5 option)"
     else
@@ -1121,6 +1126,7 @@ else
           AC_SUBST([PHP_INSTALL_DIR])
           AC_SUBST([PHP_INCLUDES])
           AC_SUBST([PHP_LIBS])
+          AC_SUBST([SWIG_PHP_OPT])
         fi
       fi
     fi

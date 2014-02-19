@@ -68,6 +68,8 @@ BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel li
 BuildRequires: libtool-ltdl libtool-ltdl-devel
 %define JAVA 1
 BuildRequires: java-devel
+%define PHP 1
+BuildRequires: php-devel
 %define PANGOCAIRO 1
 BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel gtk2-devel
 %define RSVG 1
@@ -84,8 +86,6 @@ BuildRequires: perl-devel perl-libs perl-ExtUtils-Embed
 BuildRequires: lua-devel
 %define OCAML 1
 BuildRequires: ocaml
-%define PHP 1
-BuildRequires: php-devel
 %define MYLIBGD 0
 BuildRequires: gd gd-devel
 %define GDK 1
