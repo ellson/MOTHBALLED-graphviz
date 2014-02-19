@@ -1093,7 +1093,7 @@ else
   if test "x$use_swig" != "xYes"; then
     use_php="No (swig not available)"
   else
-    if test `$SWIG -php5 2>&1 | $EGREP -c 'Unables'` -eq 1; then
+    if test `$SWIG -php5 2>&1 | $EGREP -c 'Unable'` -eq 1; then
       SWIG_PHP_OPT='-php'
     else
       SWIG_PHP_OPT='-php5'
