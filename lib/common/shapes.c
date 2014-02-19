@@ -3708,7 +3708,6 @@ static void record_gencode(GVJ_t * job, node_t * n)
 		filled = RGRADIENT;
 	    else
 		filled = GRADIENT;
-	    free (clrs[0]);
 	}
 	else {
 	    filled = FILL;
@@ -3732,6 +3731,8 @@ static void record_gencode(GVJ_t * job, node_t * n)
     }
 
     gen_fields(job, n, f);
+
+    free (clrs[0]);
 
     if (doMap) {
 	if (job->flags & EMIT_CLUSTERS_LAST)
