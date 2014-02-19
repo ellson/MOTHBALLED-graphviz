@@ -42,7 +42,7 @@
 }
 %typemap(out) char* renderresult { 
     $result = jenv->NewByteArray (sz1);
-    jenv->SetByteArrayRegion ($result, 0, sz1, (const jbyte*)$1);
+    jenv->SetByteArrayRegion ($result, 0, sz1, (jbyte*)$1);
     free ($1);
 }
 #endif
