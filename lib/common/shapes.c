@@ -1876,6 +1876,7 @@ static void poly_init(node_t * n)
     if (ROUND(abs(dimen.x)) || ROUND(abs(dimen.y))) {
 	/* padding */
 	if ((p = agget(n, "margin"))) {
+	    marginx = marginy = 0;
 	    i = sscanf(p, "%lf,%lf", &marginx, &marginy);
 	    if (marginx < 0)
 		marginx = 0;
