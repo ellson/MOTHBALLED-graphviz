@@ -664,18 +664,7 @@ Perl extension for graphviz.
 %package lang-php
 Group:          Applications/Multimedia
 Summary:        PHP extension for graphviz
-Requires:       %{name} = %{version}-%{release}
-%if 0%{?rhel}
-%if >rhel == 5
-Requires:       php53
-%endif
-%if %rhel >= 6
-Requires:       php
-%endif
-%endif
-%if 0%{?fedora}
-Requires:       php
-%endif
+Requires:       %{name} = %{version}-%{release}, /usr/bin/php
 Obsoletes:	%{name}-php
 
 %description lang-php
