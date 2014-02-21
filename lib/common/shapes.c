@@ -3695,6 +3695,7 @@ static void record_gencode(GVJ_t * job, node_t * n)
 			      obj->id);
     style = stylenode(job, n);
     penColor(job, n);
+    clrs[0] = NULL;
     if (style & FILLED) {
 	char* fillcolor = findFill (n);
 	float frac;
@@ -3733,7 +3734,7 @@ static void record_gencode(GVJ_t * job, node_t * n)
 
     gen_fields(job, n, f);
 
-    free (clrs[0]);
+    if (clrs[0]) free (clrs[0]);
 
     if (doMap) {
 	if (job->flags & EMIT_CLUSTERS_LAST)
