@@ -400,6 +400,9 @@ countClusterLabels (Agraph_t* g)
  *
  * TODO: interaction with spline=ortho
  */
+  /* True if edges geometries were computed and this edge has a geometry */
+#define HAVE_EDGE(ep) ((et != ET_NONE) && (ED_spl(ep) != NULL))
+
 static void addXLabels(Agraph_t * gp)
 {
     Agnode_t *np;
@@ -438,25 +441,25 @@ static void addXLabels(Agraph_t * gp)
 	    if (ED_xlabel(ep)) {
 		if (ED_xlabel(ep)->set)
 		    n_set_lbls++;
-		else if (et != ET_NONE)
+		else if (HAVE_EDGE(ep))
 		    n_elbls++;
 	    }
 	    if (ED_head_label(ep)) {
 		if (ED_head_label(ep)->set)
 		    n_set_lbls++;
-		else if (et != ET_NONE)
+		else if (HAVE_EDGE(ep))
 		    n_elbls++;
 	    }
 	    if (ED_tail_label(ep)) {
 		if (ED_tail_label(ep)->set)
 		    n_set_lbls++;
-		else if (et != ET_NONE)
+		else if (HAVE_EDGE(ep))
 		    n_elbls++;
 	    }
 	    if (ED_label(ep)) {
 		if (ED_label(ep)->set)
 		    n_set_lbls++;
-		else if (et != ET_NONE)
+		else if (HAVE_EDGE(ep))
 		    n_elbls++;
 	    }
 	}
@@ -496,7 +499,7 @@ static void addXLabels(Agraph_t * gp)
 		if (lp->set) {
 		    bb = addLabelObj (lp, objp, bb);
 		}
-		else if (et != ET_NONE) {
+		else if (HAVE_EDGE(ep)) {
 		    addXLabel (lp, objp, xlp, 1, edgeMidpoint(gp, ep)); 
 		    xlp++;
 		}
@@ -506,7 +509,7 @@ static void addXLabels(Agraph_t * gp)
 		if (lp->set) {
 		    bb = addLabelObj (lp, objp, bb);
 		}
-		else if (et != ET_NONE) {
+		else if (HAVE_EDGE(ep)) {
 		    addXLabel (lp, objp, xlp, 1, edgeTailpoint(ep)); 
 		    xlp++;
 		}
@@ -516,7 +519,7 @@ static void addXLabels(Agraph_t * gp)
 		if (lp->set) {
 		    bb = addLabelObj (lp, objp, bb);
 		}
-		else if (et != ET_NONE) {
+		else if (HAVE_EDGE(ep)) {
 		    addXLabel (lp, objp, xlp, 1, edgeHeadpoint(ep)); 
 		    xlp++;
 		}
@@ -526,7 +529,7 @@ static void addXLabels(Agraph_t * gp)
 		if (lp->set) {
 		    bb = addLabelObj (lp, objp, bb);
 		}
-		else if (et != ET_NONE) {
+		else if (HAVE_EDGE(ep)) {
 		    addXLabel (lp, objp, xlp, 1, edgeMidpoint(gp, ep)); 
 		    xlp++;
 		}
