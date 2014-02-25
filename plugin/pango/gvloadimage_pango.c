@@ -41,6 +41,8 @@ typedef enum {
 static cairo_status_t
 reader (void *closure, unsigned char *data, unsigned int length)
 {
+    if ((FILE *)closure == NULL)
+	return CAIRO_STATUS_READ_ERROR;
     if (length == fread(data, 1, length, (FILE *)closure)
      || feof((FILE *)closure))
         return CAIRO_STATUS_SUCCESS;
