@@ -35,6 +35,8 @@ extern "C" {
 #endif
 /*end visual studio*/
 	
+#define LAYOUT_DONE(g) (agbindrec(g, "Agraphinfo_t", 0, TRUE) && GD_drawing(g))
+
 /* misc */
 /* FIXME - this needs eliminating or renaming */
 extern void gvToggle(int);

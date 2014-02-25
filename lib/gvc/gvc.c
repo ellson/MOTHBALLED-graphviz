@@ -111,8 +111,8 @@ int gvRender(GVC_t *gvc, graph_t *g, const char *format, FILE *out)
     }
 
     job->output_lang = gvrender_select(job, job->output_langname);
-    if (!GD_drawing(g) && !(job->flags & LAYOUT_NOT_REQUIRED)) {
-	fprintf(stderr, "Layout was not done\n");
+    if (!LAYOUT_DONE(g) && !(job->flags & LAYOUT_NOT_REQUIRED)) {
+	agerrorf( "Layout was not done\n");
 	return -1;
     }
     job->output_file = out;
@@ -143,8 +143,8 @@ int gvRenderFilename(GVC_t *gvc, graph_t *g, const char *format, const char *fil
     }
 
     job->output_lang = gvrender_select(job, job->output_langname);
-    if (!GD_drawing(g) && !(job->flags & LAYOUT_NOT_REQUIRED)) {
-	fprintf(stderr, "Layout was not done\n");
+    if (!LAYOUT_DONE(g) && !(job->flags & LAYOUT_NOT_REQUIRED)) {
+	agerrorf( "Layout was not done\n");
 	return -1;
     }
     gvjobs_output_filename(gvc, filename);
@@ -174,8 +174,8 @@ int gvRenderContext(GVC_t *gvc, graph_t *g, const char *format, void *context)
     }
 	
     job->output_lang = gvrender_select(job, job->output_langname);
-    if (!GD_drawing(g) && !(job->flags & LAYOUT_NOT_REQUIRED)) {
-		fprintf(stderr, "Layout was not done\n");
+    if (!LAYOUT_DONE(g) && !(job->flags & LAYOUT_NOT_REQUIRED)) {
+	agerrorf( "Layout was not done\n");
 		return -1;
     }
 	
@@ -208,8 +208,8 @@ int gvRenderData(GVC_t *gvc, graph_t *g, const char *format, char **result, unsi
     }
 
     job->output_lang = gvrender_select(job, job->output_langname);
-    if (!GD_drawing(g) && !(job->flags & LAYOUT_NOT_REQUIRED)) {
-	fprintf(stderr, "Layout was not done\n");
+    if (!LAYOUT_DONE(g) && !(job->flags & LAYOUT_NOT_REQUIRED)) {
+	agerrorf( "Layout was not done\n");
 	return -1;
     }
 

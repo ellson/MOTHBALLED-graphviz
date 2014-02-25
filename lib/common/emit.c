@@ -4001,7 +4001,7 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
     if (Verbose)
 	start_timer();
     
-    if (!GD_drawing(g)) {
+    if (!LAYOUT_DONE(g)) {
         agerr (AGERR, "Layout was not done.  Missing layout plugins? \n");
 	FINISH();
         return -1;
