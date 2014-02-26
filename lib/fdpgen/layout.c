@@ -1083,8 +1083,6 @@ void fdpLayout(graph_t * g)
 
     /* Set bbox info for g and all clusters. This is needed for
      * spline drawing. We already know the graph bbox is at the origin.
-     * (We pass the origin to spline_edges0. This really isn't true,
-     * as the algorithm has done many translations.)
      * On return from spline drawing, all bounding boxes should be correct.
      */
     setBB(g);
@@ -1138,6 +1136,6 @@ void fdp_layout(graph_t * g)
 
     if (EDGE_TYPE(g) != ET_NONE) fdpSplines (g); 
 
-    dotneato_postprocess(g);
+    gv_postprocess(g, 0);
     PSinputscale = save_scale;
 }

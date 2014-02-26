@@ -400,6 +400,24 @@ static pos_edge nop_init_edges(Agraph_t * g)
 	return NoEdges;
 }
 
+/* freeEdgeInfo:
+ */
+static void freeEdgeInfo (Agraph_t * g)
+{
+    node_t *n;
+    edge_t *e;
+
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+	    gv_free_splines(e);
+	    free_label(ED_label(e));
+	    free_label(ED_xlabel(e));
+	    free_label(ED_head_label(e));
+	    free_label(ED_tail_label(e));
+	}
+    }
+}
+
 /* chkBB:
  * Scans for a correct bb attribute. If available, sets it
  * in the graph and returns 1.
@@ -492,107 +510,9 @@ nop_init_graphs(Agraph_t * g, attrsym_t * G_lp, attrsym_t * G_bb)
     }
 }
 
-/* translateE:
- * Translate edge by offset.
- * Assume ED_spl(e) != NULL
- */
-static void translateE(edge_t * e, pointf offset)
-{
-    int i, j;
-    pointf *pt;
-    bezier *bez;
-
-    bez = ED_spl(e)->list;
-    for (i = 0; i < ED_spl(e)->size; i++) {
-	pt = bez->list;
-	for (j = 0; j < bez->size; j++) {
-	    pt->x -= offset.x;
-	    pt->y -= offset.y;
-	    pt++;
-	}
-	if (bez->sflag) {
-	    bez->sp.x -= offset.x;
-	    bez->sp.y -= offset.y;
-	}
-	if (bez->eflag) {
-	    bez->ep.x -= offset.x;
-	    bez->ep.y -= offset.y;
-	}
-	bez++;
-    }
-
-    if (ED_label(e) && ED_label(e)->set) {
-	ED_label(e)->pos.x -= offset.x;
-	ED_label(e)->pos.y -= offset.y;
-    }
-    if (ED_xlabel(e) && ED_xlabel(e)->set) {
-	ED_xlabel(e)->pos.x -= offset.x;
-	ED_xlabel(e)->pos.y -= offset.y;
-    }
-    if (ED_head_label(e) && ED_head_label(e)->set) {
-	ED_head_label(e)->pos.x -= offset.x;
-	ED_head_label(e)->pos.y -= offset.y;
-    }
-    if (ED_tail_label(e) && ED_tail_label(e)->set) {
-	ED_tail_label(e)->pos.x -= offset.x;
-	ED_tail_label(e)->pos.y -= offset.y;
-    }
-}
-
-/* translateG:
- */
-static void translateG(Agraph_t * g, pointf offset)
-{
-    int i;
-
-    GD_bb(g).UR.x -= offset.x;
-    GD_bb(g).UR.y -= offset.y;
-    GD_bb(g).LL.x -= offset.x;
-    GD_bb(g).LL.y -= offset.y;
-
-    if (GD_label(g) && GD_label(g)->set) {
-	GD_label(g)->pos.x -= offset.x;
-	GD_label(g)->pos.y -= offset.y;
-    }
-
-    for (i = 1; i <= GD_n_cluster(g); i++)
-	translateG(GD_clust(g)[i], offset);
-}
-
-/* translate:
- */
-static void translate(Agraph_t * g, pos_edge posEdges)
-{
-    node_t *n;
-    edge_t *e;
-    pointf offset;
-    pointf ll;
-
-    ll = GD_bb(g).LL;
-
-    offset.x = PS2INCH(ll.x);
-    offset.y = PS2INCH(ll.y);
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	ND_pos(n)[0] -= offset.x;
-	ND_pos(n)[1] -= offset.y;
-	if (ND_xlabel(n) && ND_xlabel(n)->set) {
-	    ND_xlabel(n)->pos.x -= ll.x;
-	    ND_xlabel(n)->pos.y -= ll.y;
-	}
-    }
-    if (posEdges != NoEdges) {
-	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	    for (e = agfstout(g, n); e; e = agnxtout(g, e))
-		if (ED_spl(e))
-		    translateE(e, ll);
-	}
-    }
-    translateG(g, ll);
-}
-
 /* init_nop:
  * This assumes all nodes have been positioned.
- * It also assumes none of the * relevant fields in A*info_t have been set.
+ * It also assumes none of the relevant fields in A*info_t have been set.
  * The input may provide additional position information for
  * clusters, edges and labels. If certain position information
  * is missing, init_nop will use a standard neato technique to
@@ -602,7 +522,7 @@ static void translate(Agraph_t * g, pos_edge posEdges)
  * of the basic graph information. No tweaking of positions or 
  * filling in edge splines is done.
  *
- * Returns 0 on normal success, 1 if postprocess should be avoided, and -1
+ * Returns 0 on normal success, 1 if layout has a background, and -1
  * on failure.
  */
 int init_nop(Agraph_t * g, int adjust)
@@ -649,23 +569,14 @@ int init_nop(Agraph_t * g, int adjust)
  */
     }
 
-#if 0
-    /* If g does not have a good "bb" attribute or we adjusted the nodes, 
-     * compute it. 
-     */
-    if (!chkBB(g, G_bb) || didAdjust)
-#endif
-	compute_bb(g);
+    compute_bb(g);
 
     /* Adjust bounding box for any background */
     if (haveBackground)
 	GD_bb(g) = xdotBB (g);
 
     /* At this point, all bounding boxes should be correctly defined.
-     * If necessary, we translate the graph to the origin.
      */
-    if (adjust && !haveBackground && (ROUND(abs(GD_bb(g).LL.x)) || ROUND(abs(GD_bb(g).LL.y))))
-	translate(g, posEdges);
 
     if (!adjust) {
 	node_t *n;
@@ -675,12 +586,19 @@ int init_nop(Agraph_t * g, int adjust)
 	    ND_coord(n).y = POINTS_PER_INCH * (ND_pos(n)[1]);
 	}
     }
-    else if (posEdges != AllEdges)
-	spline_edges0(g);
     else {
-	State = GVSPLINES;
-	neato_set_aspect(g);
+	boolean didShift = neato_set_aspect(g);
+	/* if we have some edge positions and we either shifted or adjusted, free edge positions */
+	if ((posEdges != NoEdges) && (didShift || didAdjust)) {
+	    freeEdgeInfo (g);
+	    posEdges = NoEdges;
+	}
+	if (posEdges != AllEdges)
+	    spline_edges0(g, FALSE);   /* add edges */
+	else 
+	    State = GVSPLINES;
     }
+
     return haveBackground;
 }
 
@@ -1470,6 +1388,16 @@ addCluster (graph_t* g)
 }
 #endif
 
+/* doEdges:
+ * Simple wrapper to compute graph's bb, then route edges after
+ * a possible aspect ratio adjustment.
+ */
+static void doEdges(Agraph_t* g)
+{
+    compute_bb(g);
+    spline_edges0(g, TRUE);
+}
+
 /* neato_layout:
  */
 void neato_layout(Agraph_t * g)
@@ -1491,7 +1419,7 @@ void neato_layout(Agraph_t * g)
 	    agerr(AGPREV, "as required by the -n flag\n");
 	    return;
 	}
-	else gv_postprocess(g, !ret);
+	else gv_postprocess(g, 0);
     } else {
 	PSinputscale = get_inputscale (g);
 	neato_init_graph(g);
@@ -1527,7 +1455,7 @@ void neato_layout(Agraph_t * g)
 		    neatoLayout(g, gc, layoutMode, model, &am);
 		    removeOverlapWith(gc, &am);
 		    setEdgeType (gc, ET_LINE);
-		    spline_edges(gc);
+		    doEdges(gc);
 		}
 		if (pin) {
 		    bp = N_NEW(n_cc, boolean);
@@ -1544,7 +1472,7 @@ void neato_layout(Agraph_t * g)
 	    else {
 		neatoLayout(g, g, layoutMode, model, &am);
 		removeOverlapWith(g, &am);
-		spline_edges(g);
+		doEdges(g);
 	    }
 	    compute_bb(g);
 	    addZ (g);
@@ -1564,9 +1492,9 @@ void neato_layout(Agraph_t * g)
 	    neatoLayout(g, g, layoutMode, model, &am);
 	    removeOverlapWith(g, &am);
 	    addZ (g);
-	    spline_edges(g);
+	    doEdges(g);
 	}
-	dotneato_postprocess(g);
+	gv_postprocess(g, 0);
     }
     PSinputscale = save_scale;
 }

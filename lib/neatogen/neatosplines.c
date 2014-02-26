@@ -754,10 +754,10 @@ int spline_edges1(graph_t * g, int edgetype)
  * when output in dot or plain format.
  *
  */
-void spline_edges0(graph_t * g)
+void spline_edges0(graph_t * g, boolean set_aspect)
 {
     int et = EDGE_TYPE (g);
-    neato_set_aspect(g);
+    if (set_aspect) neato_set_aspect(g);
     if (et == ET_NONE) return;
 #ifndef ORTHO
     if (et == ET_ORTHO) {
@@ -805,7 +805,7 @@ void spline_edges(graph_t * g)
     }
 	
     shiftClusters (g, GD_bb(g).LL);
-    spline_edges0(g);
+    spline_edges0(g, TRUE);
 }
 
 /* scaleEdge:
@@ -888,22 +888,120 @@ static void scaleBB(graph_t * g, double xf, double yf)
 	scaleBB(GD_clust(g)[i], xf, yf);
 }
 
-/* _neato_set_aspect;
- * Assume all bounding boxes are correct and
- * that GD_bb(g).LL is at origin.
- * Also assume g is the root graph
+/* translateE:
+ * Translate edge by offset.
+ * Assume ED_spl(e) != NULL
  */
-static void _neato_set_aspect(graph_t * g)
+static void translateE(edge_t * e, pointf offset)
 {
-    /* int          i; */
+    int i, j;
+    pointf *pt;
+    bezier *bez;
+
+    bez = ED_spl(e)->list;
+    for (i = 0; i < ED_spl(e)->size; i++) {
+	pt = bez->list;
+	for (j = 0; j < bez->size; j++) {
+	    pt->x -= offset.x;
+	    pt->y -= offset.y;
+	    pt++;
+	}
+	if (bez->sflag) {
+	    bez->sp.x -= offset.x;
+	    bez->sp.y -= offset.y;
+	}
+	if (bez->eflag) {
+	    bez->ep.x -= offset.x;
+	    bez->ep.y -= offset.y;
+	}
+	bez++;
+    }
+
+    if (ED_label(e) && ED_label(e)->set) {
+	ED_label(e)->pos.x -= offset.x;
+	ED_label(e)->pos.y -= offset.y;
+    }
+    if (ED_xlabel(e) && ED_xlabel(e)->set) {
+	ED_xlabel(e)->pos.x -= offset.x;
+	ED_xlabel(e)->pos.y -= offset.y;
+    }
+    if (ED_head_label(e) && ED_head_label(e)->set) {
+	ED_head_label(e)->pos.x -= offset.x;
+	ED_head_label(e)->pos.y -= offset.y;
+    }
+    if (ED_tail_label(e) && ED_tail_label(e)->set) {
+	ED_tail_label(e)->pos.x -= offset.x;
+	ED_tail_label(e)->pos.y -= offset.y;
+    }
+}
+
+/* translateG:
+ */
+static void translateG(Agraph_t * g, pointf offset)
+{
+    int i;
+
+    GD_bb(g).UR.x -= offset.x;
+    GD_bb(g).UR.y -= offset.y;
+    GD_bb(g).LL.x -= offset.x;
+    GD_bb(g).LL.y -= offset.y;
+
+    if (GD_label(g) && GD_label(g)->set) {
+	GD_label(g)->pos.x -= offset.x;
+	GD_label(g)->pos.y -= offset.y;
+    }
+
+    for (i = 1; i <= GD_n_cluster(g); i++)
+	translateG(GD_clust(g)[i], offset);
+}
+
+/* translate:
+ */
+static void translate(Agraph_t * g)
+{
+    node_t *n;
+    edge_t *e;
+    pointf offset;
+    pointf ll;
+
+    ll = GD_bb(g).LL;
+
+    offset.x = PS2INCH(ll.x);
+    offset.y = PS2INCH(ll.y);
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	ND_pos(n)[0] -= offset.x;
+	ND_pos(n)[1] -= offset.y;
+	if (ND_xlabel(n) && ND_xlabel(n)->set) {
+	    ND_xlabel(n)->pos.x -= ll.x;
+	    ND_xlabel(n)->pos.y -= ll.y;
+	}
+    }
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	for (e = agfstout(g, n); e; e = agnxtout(g, e))
+	    if (ED_spl(e))
+		translateE(e, ll);
+    }
+    translateG(g, ll);
+}
+
+/* _neato_set_aspect;
+ * Assume all bounding boxes are correct.
+ * Return false if no transform is performed. This includes
+ * the possiblity that a translation was done.
+ */
+static boolean _neato_set_aspect(graph_t * g)
+{
     double xf, yf, actual, desired;
     node_t *n;
 
+    if (g->root != g)
+	return FALSE;
+
     /* compute_bb(g); */
     if (GD_drawing(g)->ratio_kind) {
+	if (ROUND(abs(GD_bb(g).LL.x)) || ROUND(abs(GD_bb(g).LL.y)))
+	    translate (g);
 	/* normalize */
-	assert(ROUND(GD_bb(g).LL.x) == 0);
-	assert(ROUND(GD_bb(g).LL.y) == 0);
 	if (GD_flip(g)) {
 	    double t = GD_bb(g).UR.x;
 	    GD_bb(g).UR.x = GD_bb(g).UR.y;
@@ -912,7 +1010,7 @@ static void _neato_set_aspect(graph_t * g)
 	if (GD_drawing(g)->ratio_kind == R_FILL) {
 	    /* fill is weird because both X and Y can stretch */
 	    if (GD_drawing(g)->size.x <= 0)
-		return;
+		return FALSE;
 	    xf = (double) GD_drawing(g)->size.x / GD_bb(g).UR.x;
 	    yf = (double) GD_drawing(g)->size.y / GD_bb(g).UR.y;
 	    /* handle case where one or more dimensions is too big */
@@ -927,14 +1025,14 @@ static void _neato_set_aspect(graph_t * g)
 	    }
 	} else if (GD_drawing(g)->ratio_kind == R_EXPAND) {
 	    if (GD_drawing(g)->size.x <= 0)
-		return;
+		return FALSE;
 	    xf = (double) GD_drawing(g)->size.x / GD_bb(g).UR.x;
 	    yf = (double) GD_drawing(g)->size.y / GD_bb(g).UR.y;
 	    if ((xf > 1.0) && (yf > 1.0)) {
 		double scale = MIN(xf, yf);
 		xf = yf = scale;
 	    } else
-		return;
+		return FALSE;
 	} else if (GD_drawing(g)->ratio_kind == R_VALUE) {
 	    desired = GD_drawing(g)->ratio;
 	    actual = (GD_bb(g).UR.y) / (GD_bb(g).UR.x);
@@ -946,7 +1044,7 @@ static void _neato_set_aspect(graph_t * g)
 		yf = 1.0;
 	    }
 	} else
-	    return;
+	    return FALSE;
 	if (GD_flip(g)) {
 	    double t = xf;
 	    xf = yf;
@@ -969,24 +1067,30 @@ static void _neato_set_aspect(graph_t * g)
 	    ND_pos(n)[1] = ND_pos(n)[1] * yf;
 	}
 	scaleBB(g, xf, yf);
+        return TRUE;
     }
+    else
+	return FALSE;
 }
 
 /* neato_set_aspect:
  * Sets aspect ratio if necessary; real work done in _neato_set_aspect;
  * This also copies the internal layout coordinates (ND_pos) to the 
  * external ones (ND_coord).
+ *
+ * Return true if some node moved.
  */
-void neato_set_aspect(graph_t * g)
+boolean neato_set_aspect(graph_t * g)
 {
     node_t *n;
+    boolean moved = FALSE;
 
 	/* setting aspect ratio only makes sense on root graph */
-    if (g->root == g)
-	_neato_set_aspect(g);
+    moved = _neato_set_aspect(g);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	ND_coord(n).x = POINTS_PER_INCH * (ND_pos(n)[0]);
 	ND_coord(n).y = POINTS_PER_INCH * (ND_pos(n)[1]);
     }
+    return moved;
 }
 
