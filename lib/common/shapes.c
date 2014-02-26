@@ -2886,9 +2886,9 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     if (ND_shape(n)->usershape) {
 	name = ND_shape(n)->name;
 	if (streq(name, "custom"))
-	    name = agget(n, "shapefile");
-	usershape_p = TRUE;
-    } else if ((name = agget(n, "image"))) {
+	    if ((name = agget(n, "shapefile")) && name[0])
+		usershape_p = TRUE;
+    } else if ((name = agget(n, "image")) && name[0]) {
 	usershape_p = TRUE;
     }
     if (usershape_p) {
