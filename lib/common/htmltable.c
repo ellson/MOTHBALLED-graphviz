@@ -624,6 +624,8 @@ static void emit_html_img(GVJ_t * job, htmlimg_t * cp, htmlenv_t * env)
 	scale = cp->scale;
     else
 	scale = env->imgscale;
+    assert(cp->src);
+    assert(cp->src[0]);
     gvrender_usershape(job, cp->src, A, 4, TRUE, scale);
 }
 
