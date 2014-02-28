@@ -767,13 +767,20 @@ bool rm(Agraph_t *g)
 
     if (!g)
         return false;
+#if 0
     Agraph_t* sg;
     for (sg = agfstsubg (g); sg; sg = agnxtsubg (sg))
 	rm(sg);
     if (g == agroot(g))
 	agclose(g);
     else
-        agdelete(agroot(g), g);
+        agdelete(agparent(g), g);
+#endif
+    /* The rm function appears to have the semantics of agclose, so
+     * we should just do that, and let cgraph take care of all the
+     * details.
+     */
+    agclose(g);
     return true;
 }
 
