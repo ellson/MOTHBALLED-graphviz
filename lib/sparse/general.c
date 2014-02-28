@@ -207,7 +207,7 @@ int comp_ascend_int(const void *s1, const void *s2){
 
 
 void vector_ordering(int n, real *v, int **p, int ascending){
-  /* give the position of the lagest, second largest etc in vector v if ascending = TRUE
+  /* give the position of the lagest, second largest etc in vector v if ascending = FALSE
 
      or
 
@@ -298,6 +298,7 @@ real point_distance(real *p1, real *p2, int dim){
 
 char *strip_dir(char *s){
   int i, first = TRUE;
+  if (!s) return s;
   for (i = strlen(s); i >= 0; i--) {
     if (first && s[i] == '.') {/* get rid of .mtx */
       s[i] = '\0';
@@ -341,4 +342,25 @@ void scale_to_box(real xmin, real ymin, real xmax, real ymax, int n, int dim, re
   }
   
   
+}
+
+int digitsQ(char *s){
+  while (*s && *s - '0' >= 0 && *s - '0' <= 9) {
+    s++;
+  }
+  if (*s) return 0;
+  return 1;
+}
+int validQ_int_string(char *to_convert, int *v){
+  /* check to see if this is a string is integer */
+  char *p = to_convert;
+  int errno = 0;
+  long val = strtoul(to_convert, &p, 10);
+  if (errno != 0 ||// conversion failed (EINVAL, ERANGE)
+      to_convert == p || // conversion failed (no characters consumed)
+      *p != 0
+      ) return 0;
+  if (val > INT_MAX || val < INT_MIN) return 0;
+  *v = (int) val;
+  return 1;
 }

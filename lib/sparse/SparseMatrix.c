@@ -622,15 +622,8 @@ static void SparseMatrix_export_csr(FILE *f, SparseMatrix A){
 
 }
 
-void SparseMatrix_export_binary(char *name, SparseMatrix A, int *flag){
-  FILE *f;
+void SparseMatrix_export_binary_fp(FILE *f, SparseMatrix A){
 
-  *flag = 0;
-  f = fopen(name, "wb");
-  if (!f) {
-    *flag = 1;
-    return;
-  }
   fwrite(&(A->m), sizeof(int), 1, f);
   fwrite(&(A->n), sizeof(int), 1, f);
   fwrite(&(A->nz), sizeof(int), 1, f);
@@ -646,21 +639,30 @@ void SparseMatrix_export_binary(char *name, SparseMatrix A, int *flag){
   }
   fwrite(A->ja, sizeof(int), A->nz, f);
   if (A->size > 0) fwrite(A->a, A->size, A->nz, f);
+
+}
+
+void SparseMatrix_export_binary(char *name, SparseMatrix A, int *flag){
+  FILE *f;
+
+  *flag = 0;
+  f = fopen(name, "wb");
+  if (!f) {
+    *flag = 1;
+    return;
+  }
+  SparseMatrix_export_binary_fp(f, A);
   fclose(f);
 
 }
 
 
 
-SparseMatrix SparseMatrix_import_binary(char *name){
+SparseMatrix SparseMatrix_import_binary_fp(FILE *f){
   SparseMatrix A = NULL;
   int m, n, nz, nzmax, type, format, property, iread;
   size_t sz;
-  FILE *f;
 
-  f = fopen(name, "rb");
-
-  if (!f) return NULL;
   iread = fread(&m, sizeof(int), 1, f);
   if (iread != 1) return NULL;
   iread = fread(&n, sizeof(int), 1, f);
@@ -697,6 +699,16 @@ SparseMatrix SparseMatrix_import_binary(char *name){
     if (iread != A->nz) return NULL;
   }
   fclose(f);
+  return A;
+}
+
+
+SparseMatrix SparseMatrix_import_binary(char *name){
+  SparseMatrix A = NULL;
+  FILE *f;
+  f = fopen(name, "rb");
+
+  A = SparseMatrix_import_binary_fp(f);
   return A;
 }
 
@@ -1342,23 +1354,42 @@ SparseMatrix SparseMatrix_scaled_by_vector(SparseMatrix A, real *v, int apply_to
 SparseMatrix SparseMatrix_multiply_by_scaler(SparseMatrix A, real s){
   /* A scaled by a number */
   int i, j, *ia, m;
-  real *a;
+  real *a, *b = NULL;
+  int *ai;
   assert(A->format == FORMAT_CSR);
-  assert(A->type == MATRIX_TYPE_REAL);
 
-  a = (real*) A->a;
-  ia = A->ia;
-
-  m = A->m;
-
-
-
-
-
-  for (i = 0; i < m; i++){
-    for (j = ia[i]; j < ia[i+1]; j++){
-      a[j] *= s;
+  switch (A->type){
+  case MATRIX_TYPE_INTEGER:
+    b = MALLOC(sizeof(real)*A->nz);
+    ai = (int*) A->a;
+    for (i = 0; i < A->nz; i++) b[i] = ai[i];
+    FREE(A->a);
+    A->a = b;
+    A->type = MATRIX_TYPE_REAL;
+  case MATRIX_TYPE_REAL:
+    a = (real*) A->a;
+    ia = A->ia;
+    m = A->m;
+    for (i = 0; i < m; i++){
+      for (j = ia[i]; j < ia[i+1]; j++){
+	a[j] *= s;
+      }
     }
+    break;
+  case MATRIX_TYPE_COMPLEX:
+    a = (real*) A->a;
+    ia = A->ia;
+    m = A->m;
+    for (i = 0; i < m; i++){
+      for (j = ia[i]; j < ia[i+1]; j++){
+	a[2*j] *= s;
+	a[2*j+1] *= s;
+      }
+    }
+
+    break;
+  default:
+    fprintf(stderr,"warning: scaling of matrix this type is not supported\n");
   }
 
   return A;
@@ -1788,6 +1819,26 @@ SparseMatrix SparseMatrix_sum_repeat_entries(SparseMatrix A, int what_to_sum){
 	  sta = ia[i+1];
 	  ia[i+1] = nz;
 	}
+      } else if (what_to_sum == SUM_IMGINARY_KEEP_LAST_REAL){
+	/* merge {i,j,R1,I1} and {i,j,R2,I2} into {i,j,R1+R2,I2}*/
+	nz = 0;
+	sta = ia[0];
+	for (i = 0; i < A->m; i++){
+	  for (j = sta; j < ia[i+1]; j++){
+	    if (mask[ja[j]] < ia[i]){
+	      ja[nz] = ja[j];
+	      a[2*nz] = a[2*j];
+	      a[2*nz+1] = a[2*j+1];
+	      mask[ja[j]] = nz++;
+	    } else {
+	      assert(ja[mask[ja[j]]] == ja[j]);
+	      a[2*mask[ja[j]]] += a[2*j];
+	      a[2*mask[ja[j]]+1] = a[2*j+1];
+	    }
+	  }
+	  sta = ia[i+1];
+	  ia[i+1] = nz;
+        }
       } else if (what_to_sum == SUM_REPEATED_REAL_PART){
 	int ymin, ymax, id;
 	ymax = ymin = a[1];
@@ -2244,6 +2295,61 @@ SparseMatrix SparseMatrix_normalize_by_row(SparseMatrix A){
   return A;
 }
 
+
+SparseMatrix SparseMatrix_to_complex(SparseMatrix A){
+  int i, *ia, *ja;
+  
+  if (!A) return A;
+  if (A->format != FORMAT_CSR) {
+#ifdef DEBUG
+    printf("only CSR format supported.\n");
+#endif
+    return A;
+  }
+
+  ia = A->ia;
+  ja = A->ja;
+  switch (A->type){
+  case MATRIX_TYPE_REAL:{
+    real *a = (real*) A->a;
+    int nz = A->nz;
+    A->a = a = REALLOC(a, 2*sizeof(real)*nz);
+    for (i = nz - 1; i >= 0; i--){
+      a[2*i] = a[i];
+      a[2*i - 1] = 0;
+    }
+    A->type = MATRIX_TYPE_COMPLEX;
+    A->size = 2*sizeof(real);
+    break;
+  }
+  case MATRIX_TYPE_COMPLEX:{
+    break;
+  }
+  case MATRIX_TYPE_INTEGER:{
+    int *a = (int*) A->a;
+    int nz = A->nz;
+    A->a = MALLOC(2*sizeof(real)*nz);
+    real *aa = A->a;
+    for (i = nz - 1; i >= 0; i--){
+      aa[2*i] = (real) a[i];
+      aa[2*i - 1] = 0;
+    }
+    A->type = MATRIX_TYPE_COMPLEX;
+    A->size = 2*sizeof(real);
+    FREE(a);
+    break;
+  }
+  case MATRIX_TYPE_PATTERN:{
+    break;
+  }
+  case MATRIX_TYPE_UNKNOWN:
+    return NULL;
+  default:
+    return NULL;
+  }
+
+  return A;
+}
 
 
 SparseMatrix SparseMatrix_apply_fun(SparseMatrix A, double (*fun)(double x)){
@@ -3155,8 +3261,8 @@ SparseMatrix SparseMatrix_largest_component(SparseMatrix A){
 
 }
 
-SparseMatrix SparseMatrix_delete_empty_columns(SparseMatrix A, int **new2old, int *nnew, int inplace){
-  /* delete empty columns in A. After than number of columns will be nnew, and 
+SparseMatrix SparseMatrix_delete_sparse_columns(SparseMatrix A, int threshold, int **new2old, int *nnew, int inplace){
+  /* delete sparse columns of threshold or less entries in A. After than number of columns will be nnew, and 
      the mapping from new matrix column to old matrix column is new2old.
      On entry, if new2old is NULL, it is allocated.
   */
@@ -3171,7 +3277,7 @@ SparseMatrix SparseMatrix_delete_empty_columns(SparseMatrix A, int **new2old, in
   B = SparseMatrix_transpose(A);
   ia = B->ia; ja = B->ja;
   for (i = 0; i < B->m; i++){
-    if (ia[i+1] > ia[i]){
+    if (ia[i+1] > ia[i] + threshold){
       (*nnew)++;
     }
   }
@@ -3179,7 +3285,7 @@ SparseMatrix SparseMatrix_delete_empty_columns(SparseMatrix A, int **new2old, in
 
   *nnew = 0;
   for (i = 0; i < B->m; i++){
-    if (ia[i+1] > ia[i]){
+    if (ia[i+1] > ia[i] + threshold){
       (*new2old)[*nnew] = i;
       old2new[i] = *nnew;
       (*nnew)++;
@@ -3203,6 +3309,10 @@ SparseMatrix SparseMatrix_delete_empty_columns(SparseMatrix A, int **new2old, in
   return B;
   
 
+}
+
+SparseMatrix SparseMatrix_delete_empty_columns(SparseMatrix A, int **new2old, int *nnew, int inplace){
+  return SparseMatrix_delete_sparse_columns(A, 0, new2old, nnew, inplace);
 }
 
 SparseMatrix SparseMatrix_set_entries_to_real_one(SparseMatrix A){
@@ -3282,6 +3392,7 @@ int SparseMatrix_k_centers(SparseMatrix D0, int weighted, int K, int root, int *
   real *dist = NULL;
   int nlist, *list = NULL;
   int flag = 0, i, j, k, nlevel;
+  int check_connected = FALSE;
 
   if (!SparseMatrix_is_symmetric(D, FALSE)){
     D = SparseMatrix_symmetrize(D, FALSE);
@@ -3291,13 +3402,14 @@ int SparseMatrix_k_centers(SparseMatrix D0, int weighted, int K, int root, int *
 
   dist_min = MALLOC(sizeof(real)*n);
   dist_sum = MALLOC(sizeof(real)*n);
+  for (i = 0; i < n; i++) dist_min[i] = -1;
   for (i = 0; i < n; i++) dist_sum[i] = 0;
   if (!(*centers)) *centers = MALLOC(sizeof(int)*K);
   if (!(*dist0)) *dist0 = MALLOC(sizeof(real)*K*n);
   if (!weighted){
     dist = MALLOC(sizeof(real)*n);
     SparseMatrix_pseudo_diameter_unweighted(D, root, aggressive, &end1, &end2, &connectedQ);
-    if (!connectedQ) {
+    if (check_connected && !connectedQ) {
       flag =  K_CENTER_DISCONNECTED;
       goto RETURN;
     }
@@ -3306,7 +3418,7 @@ int SparseMatrix_k_centers(SparseMatrix D0, int weighted, int K, int root, int *
       (*centers)[k] = root;
       //      fprintf(stderr,"k = %d, root = %d\n",k, root+1);
       SparseMatrix_level_sets(D, root, &nlevel, &levelset_ptr, &levelset, &mask, TRUE);
-      assert(levelset_ptr[nlevel] == n);
+      if (check_connected) assert(levelset_ptr[nlevel] == n);
       for (i = 0; i < nlevel; i++) {
 	for (j = levelset_ptr[i]; j < levelset_ptr[i+1]; j++){
 	  (*dist0)[k*n+levelset[j]] = i;
@@ -3324,6 +3436,8 @@ int SparseMatrix_k_centers(SparseMatrix D0, int weighted, int K, int root, int *
       dsum = dist_sum[0];
       root = 0;
       for (i = 0; i < n; i++) {
+	if (!check_connected && dist_min[i] < 0) continue;/* if the graph is disconnected, then we can not count on every node to be in level set. 
+							     Usee dist_min<0 to identify those not in level set */
 	if (dmax < dist_min[i] || (dmax == dist_min[i] && dsum < dist_sum[i])){/* tie break with avg dist */
 	  dmax = dist_min[i];
 	  dsum = dist_sum[i];
@@ -3333,7 +3447,7 @@ int SparseMatrix_k_centers(SparseMatrix D0, int weighted, int K, int root, int *
     }
  } else {
     SparseMatrix_pseudo_diameter_weighted(D, root, aggressive, &end1, &end2, &connectedQ);
-    if (!connectedQ) return K_CENTER_DISCONNECTED;
+    if (check_connected && !connectedQ) return K_CENTER_DISCONNECTED;
     root = end1;
     list = MALLOC(sizeof(int)*n);
 
@@ -3346,7 +3460,7 @@ int SparseMatrix_k_centers(SparseMatrix D0, int weighted, int K, int root, int *
 	flag = K_CENTER_MEM;
 	goto RETURN;
       }
-      assert(nlist == n);
+      if (check_connected) assert(nlist == n);
       for (i = 0; i < n; i++){
 	if (k == 0){
 	  dist_min[i] = dist[i];
@@ -3361,6 +3475,8 @@ int SparseMatrix_k_centers(SparseMatrix D0, int weighted, int K, int root, int *
       dsum = dist_sum[0];
       root = 0;
       for (i = 0; i < n; i++) {
+	if (!check_connected && dist_min[i] < 0) continue;/* if the graph is disconnected, then we can not count on every node to be in level set. 
+							     Usee dist_min<0 to identify those not in level set */
 	if (dmax < dist_min[i] || (dmax == dist_min[i] && dsum < dist_sum[i])){/* tie break with avg dist */
 	  dmax = dist_min[i];
 	  dsum = dist_sum[i];

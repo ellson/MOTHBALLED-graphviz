@@ -278,7 +278,7 @@ static real update_step(int adaptive_cooling, real step, real Fnorm, real Fnorm0
   if (Fnorm >= Fnorm0){
     step = cool*step;
   } else if (Fnorm > 0.95*Fnorm0){
-    step = step;
+    //    step = step;
   } else {
     step = 0.99*step/cool;
   }
@@ -471,7 +471,7 @@ void spring_electrical_embedding_fast(int dim, SparseMatrix A0, spring_electrica
   QuadTree qt = NULL;
   real counts[4], *force = NULL;
 #ifdef TIME
-  clock_t start, end, start0, start2;
+  clock_t start, end, start0;
   real qtree_cpu = 0, qtree_cpu0 = 0, qtree_new_cpu = 0, qtree_new_cpu0 = 0;
   real total_cpu = 0;
   start0 = clock();
@@ -513,7 +513,21 @@ void spring_electrical_embedding_fast(int dim, SparseMatrix A0, spring_electrica
 
   do {
 #ifdef TIME
-    start2 = clock();
+    //start2 = clock();
+#endif
+
+#ifdef GVIEWER
+    if (Gviewer){
+      char *lab;
+      lab = MALLOC(sizeof(char)*100);
+      sprintf(lab,"sfdp, iter=%d", iter);
+      gviewer_set_label(lab);
+      gviewer_reset_graph_coord(A, dim, x);
+      drawScene();
+      gviewer_dump_current_frame();
+      //if ((adaptive_cooling && iter%100 == 0) || (!adaptive_cooling && iter%10 == 0)) gviewer_dump_current_frame();
+      FREE(lab);
+    }
 #endif
 
     iter++;
@@ -600,14 +614,12 @@ void spring_electrical_embedding_fast(int dim, SparseMatrix A0, spring_electrica
 #endif
       oned_optimizer_train(qtree_level_optimizer, counts[0]+0.85*counts[1]+3.3*counts[2]);
     } else {   
-#ifdef DEBUG_PRINT
       if (Verbose) {
         fprintf(stderr, "\r                iter = %d, step = %f Fnorm = %f nz = %d  K = %f                                  ",iter, step, Fnorm, A->nz,K);
 #ifdef ENERGY
         fprintf(stderr, "energy = %f\n",spring_electrical_energy(dim, A, x, p, CRK, KP));
 #endif
       }
-#endif
     }
 
     step = update_step(adaptive_cooling, step, Fnorm, Fnorm0, cool);
@@ -978,6 +990,33 @@ void spring_electrical_embedding(int dim, SparseMatrix A0, spring_electrical_con
   f = MALLOC(sizeof(real)*dim);
   xold = MALLOC(sizeof(real)*dim*n); 
   do {
+
+    //#define VIS_MULTILEVEL
+#ifdef VIS_MULTILEVEL
+  {
+    FILE *f;
+    char fname[10000];
+    static int count = 0;
+    sprintf(fname, "/tmp/multilevel_%d",count++);
+    f = fopen(fname,"w");
+    export_embedding(f, dim, A, x, NULL);
+    fclose(f);
+  }
+#endif
+#ifdef GVIEWER
+    if (Gviewer){
+      char *lab;
+      lab = MALLOC(sizeof(char)*100);
+      sprintf(lab,"sfdp, adaptive_cooling = %d iter=%d", adaptive_cooling, iter);
+      gviewer_set_label(lab);
+      gviewer_reset_graph_coord(A, dim, x);
+      drawScene();
+      gviewer_dump_current_frame();
+      //if ((adaptive_cooling && iter%100 == 0) || (!adaptive_cooling && iter%10 == 0)) gviewer_dump_current_frame();
+      FREE(lab);
+    }
+#endif
+
     iter++;
     xold = MEMCPY(xold, x, sizeof(real)*dim*n);
     Fnorm0 = Fnorm;
@@ -1300,7 +1339,7 @@ void spring_maxent_embedding(int dim, SparseMatrix A0, SparseMatrix D, spring_el
     xold = MEMCPY(xold, x, sizeof(real)*dim*n);
     Fnorm0 = Fnorm;
     Fnorm = 0.;
-    nsuper_avg =- 0;
+    nsuper_avg = 0;
 #ifdef DEBUG
     stress = 0;
 #endif
@@ -1540,7 +1579,7 @@ void spring_electrical_spring_embedding(int dim, SparseMatrix A0, SparseMatrix D
     xold = MEMCPY(xold, x, sizeof(real)*dim*n);
     Fnorm0 = Fnorm;
     Fnorm = 0.;
-    nsuper_avg =- 0;
+    nsuper_avg = 0;
 
     if (USE_QT) {
       if (ctrl->use_node_weights){

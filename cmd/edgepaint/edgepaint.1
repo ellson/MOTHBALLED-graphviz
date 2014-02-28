@@ -1,14 +1,6 @@
-.EQ
-delim $$
-.EN
-.de TQ
-.  br
-.  ns
-.  TP \\$1
-..
 .TH CLARIFY 1 "26 February 2014"
 .SH NAME
-clarify \- edge coloring to disambiguate crossing edges
+edgepaint \- edge coloring to disambiguate crossing edges
 .SH SYNOPSIS
 .B 
 [
@@ -22,48 +14,50 @@ clarify \- edge coloring to disambiguate crossing edges
 .I files
 ]
 .SH DESCRIPTION
-.B clarify
+.B edgepaint
 takes as input a graph in DOT format with node position information (the \fIpos\fP attribute) and
-color the edges.
+colors the edges in a manner making it easier to tell them apart.
 .SH OPTIONS
 The following options are supported:
 .TP
-.BI \-accuracy="e"
+.BI \-accuracy=  e 
 accuracy with which to find the maximally different coloring for each node with regard to its neighbors. Default e = 0.01. 
 .TP
-.BI \-angle="a"
-if edge crossing is less than that angle a, then make the edge colors different. Default a=15.
+.BI \-angle= a
+color two edges differently if their incidence angle is less than \fIa\fP degrees. Default \fIa\fP=15.
 .TP
-.BI \-random_seed="s"
-random seed to use. s must be an integer. If s is negative, we do -s iterations with different seeds and pick the best. 
+.BI \-random_seed= s 
+random seed to use. \fIs\fP must be an integer. If \fIs\fP is negative, we do |\fIs\fP| iterations with different seeds and pick the best. 
 .TP
-.BI \-lightness="l1,l2"
-only applied for LAB color scheme: l1 must be integer >=0, l2 integer <=100, and l1 <=l2. By default we use 0,70 
+.BI \-lightness= "l1,l2j"
+only applies for the "lab" color scheme: \fIl1\fP and \fIl2\fP must integers, with 0 <= \fIl1\fP <= \fIl2 <=100. By default, we use "0,70" 
 .TP
 .BI \-share_endpoint
-if this option is specified, edges that shares an end point are not considered in conflict if they are close to parallel but is on the opposite ends of the shared point (around 180 degree). 
+if this option is specified, edges that shares an node are not considered in conflict if they are close to parallel but 
+are on the opposite sides of the node (around 180 degree). 
 .TP
 .BI \-o " f"  
-write output to file f (if not speficied, stdout).
+write output to file f (default: stdout).
 .TP
-.BI \-color_scheme="c"
-color scheme. It is a string of either rgb, gray, lab (default), or of the form #ff0000,#aabbed,#eeffaa representing a color pallet, or one of the ColorBrewer palettes: ColorBrewer_accent_3, ColorBrewer_accent_4, ColorBrewer_accent_5, ColorBrewer_accent_6, ColorBrewer_accent_7, ColorBrewer_accent_8, ColorBrewer_blues_3, ColorBrewer_blues_4, ColorBrewer_blues_5, ColorBrewer_blues_6, ColorBrewer_blues_7, ColorBrewer_blues_8, ColorBrewer_blues_9, ColorBrewer_brbg_10, ColorBrewer_brbg_11, ColorBrewer_brbg_3, ColorBrewer_brbg_4, ColorBrewer_brbg_5, ColorBrewer_brbg_6, ColorBrewer_brbg_7, ColorBrewer_brbg_8, ColorBrewer_brbg_9, ColorBrewer_bugn_3, ColorBrewer_bugn_4, ColorBrewer_bugn_5, ColorBrewer_bugn_6, ColorBrewer_bugn_7, ColorBrewer_bugn_8, ColorBrewer_bugn_9, ColorBrewer_bupu_3, ColorBrewer_bupu_4, ColorBrewer_bupu_5, ColorBrewer_bupu_6, ColorBrewer_bupu_7, ColorBrewer_bupu_8, ColorBrewer_bupu_9, ColorBrewer_dark2_3, ColorBrewer_dark2_4, ColorBrewer_dark2_5, ColorBrewer_dark2_6, ColorBrewer_dark2_7, ColorBrewer_dark2_8, ColorBrewer_gnbu_3, ColorBrewer_gnbu_4, ColorBrewer_gnbu_5, ColorBrewer_gnbu_6, ColorBrewer_gnbu_7, ColorBrewer_gnbu_8, ColorBrewer_gnbu_9, ColorBrewer_greens_3, ColorBrewer_greens_4, ColorBrewer_greens_5, ColorBrewer_greens_6, ColorBrewer_greens_7, ColorBrewer_greens_8, ColorBrewer_greens_9, ColorBrewer_greys_3, ColorBrewer_greys_4, ColorBrewer_greys_5, ColorBrewer_greys_6, ColorBrewer_greys_7, ColorBrewer_greys_8, ColorBrewer_greys_9, ColorBrewer_oranges_3, ColorBrewer_oranges_4, ColorBrewer_oranges_5, ColorBrewer_oranges_6, ColorBrewer_oranges_7, ColorBrewer_oranges_8, ColorBrewer_oranges_9, ColorBrewer_orrd_3, ColorBrewer_orrd_4, ColorBrewer_orrd_5, ColorBrewer_orrd_6, ColorBrewer_orrd_7, ColorBrewer_orrd_8, ColorBrewer_orrd_9, ColorBrewer_paired_10, ColorBrewer_paired_11, ColorBrewer_paired_12, ColorBrewer_paired_3, ColorBrewer_paired_4, ColorBrewer_paired_5, ColorBrewer_paired_6, ColorBrewer_paired_7, ColorBrewer_paired_8, ColorBrewer_paired_9, ColorBrewer_pastel1_3, ColorBrewer_pastel1_4, ColorBrewer_pastel1_5, ColorBrewer_pastel1_6, ColorBrewer_pastel1_7, ColorBrewer_pastel1_8, ColorBrewer_pastel1_9, ColorBrewer_pastel2_3, ColorBrewer_pastel2_4, ColorBrewer_pastel2_5, ColorBrewer_pastel2_6, ColorBrewer_pastel2_7, ColorBrewer_pastel2_8, ColorBrewer_piyg_10, ColorBrewer_piyg_11, ColorBrewer_piyg_3, ColorBrewer_piyg_4, ColorBrewer_piyg_5, ColorBrewer_piyg_6, ColorBrewer_piyg_7, ColorBrewer_piyg_8, ColorBrewer_piyg_9, ColorBrewer_prgn_10, ColorBrewer_prgn_11, ColorBrewer_prgn_3, ColorBrewer_prgn_4, ColorBrewer_prgn_5, ColorBrewer_prgn_6, ColorBrewer_prgn_7, ColorBrewer_prgn_8, ColorBrewer_prgn_9, ColorBrewer_pubu_3, ColorBrewer_pubu_4, ColorBrewer_pubu_5, ColorBrewer_pubu_6, ColorBrewer_pubu_7, ColorBrewer_pubu_8, ColorBrewer_pubu_9, ColorBrewer_pubugn_3, ColorBrewer_pubugn_4, ColorBrewer_pubugn_5, ColorBrewer_pubugn_6, ColorBrewer_pubugn_7, ColorBrewer_pubugn_8, ColorBrewer_pubugn_9, ColorBrewer_puor_10, ColorBrewer_puor_11, ColorBrewer_puor_3, ColorBrewer_puor_4, ColorBrewer_puor_5, ColorBrewer_puor_6, ColorBrewer_puor_7, ColorBrewer_puor_8, ColorBrewer_puor_9, ColorBrewer_purd_3, ColorBrewer_purd_4, ColorBrewer_purd_5, ColorBrewer_purd_6, ColorBrewer_purd_7, ColorBrewer_purd_8, ColorBrewer_purd_9, ColorBrewer_purples_3, ColorBrewer_purples_4, ColorBrewer_purples_5, ColorBrewer_purples_6, ColorBrewer_purples_7, ColorBrewer_purples_8, ColorBrewer_purples_9, ColorBrewer_rdbu_10, ColorBrewer_rdbu_11, ColorBrewer_rdbu_3, ColorBrewer_rdbu_4, ColorBrewer_rdbu_5, ColorBrewer_rdbu_6, ColorBrewer_rdbu_7, ColorBrewer_rdbu_8, ColorBrewer_rdbu_9, ColorBrewer_rdgy_10, ColorBrewer_rdgy_11, ColorBrewer_rdgy_3, ColorBrewer_rdgy_4, ColorBrewer_rdgy_5, ColorBrewer_rdgy_6, ColorBrewer_rdgy_7, ColorBrewer_rdgy_8, ColorBrewer_rdgy_9, ColorBrewer_rdpu_3, ColorBrewer_rdpu_4, ColorBrewer_rdpu_5, ColorBrewer_rdpu_6, ColorBrewer_rdpu_7, ColorBrewer_rdpu_8, ColorBrewer_rdpu_9, ColorBrewer_rdylbu_10, ColorBrewer_rdylbu_11, ColorBrewer_rdylbu_3, ColorBrewer_rdylbu_4, ColorBrewer_rdylbu_5, ColorBrewer_rdylbu_6, ColorBrewer_rdylbu_7, ColorBrewer_rdylbu_8, ColorBrewer_rdylbu_9, ColorBrewer_rdylgn_10, ColorBrewer_rdylgn_11, ColorBrewer_rdylgn_3, ColorBrewer_rdylgn_4, ColorBrewer_rdylgn_5, ColorBrewer_rdylgn_6, ColorBrewer_rdylgn_7, ColorBrewer_rdylgn_8, ColorBrewer_rdylgn_9, ColorBrewer_reds_3, ColorBrewer_reds_4, ColorBrewer_reds_5, ColorBrewer_reds_6, ColorBrewer_reds_7, ColorBrewer_reds_8, ColorBrewer_reds_9, ColorBrewer_set1_3, ColorBrewer_set1_4, ColorBrewer_set1_5, ColorBrewer_set1_6, ColorBrewer_set1_7, ColorBrewer_set1_8, ColorBrewer_set1_9, ColorBrewer_set2_3, ColorBrewer_set2_4, ColorBrewer_set2_5, ColorBrewer_set2_6, ColorBrewer_set2_7, ColorBrewer_set2_8, ColorBrewer_set3_10, ColorBrewer_set3_11, ColorBrewer_set3_12, ColorBrewer_set3_3, ColorBrewer_set3_4, ColorBrewer_set3_5, ColorBrewer_set3_6, ColorBrewer_set3_7, ColorBrewer_set3_8, ColorBrewer_set3_9, ColorBrewer_spectral_10, ColorBrewer_spectral_11, ColorBrewer_spectral_3, ColorBrewer_spectral_4, ColorBrewer_spectral_5, ColorBrewer_spectral_6, ColorBrewer_spectral_7, ColorBrewer_spectral_8, ColorBrewer_spectral_9, ColorBrewer_ylgn_3, ColorBrewer_ylgn_4, ColorBrewer_ylgn_5, ColorBrewer_ylgn_6, ColorBrewer_ylgn_7, ColorBrewer_ylgn_8, ColorBrewer_ylgn_9, ColorBrewer_ylgnbu_3, ColorBrewer_ylgnbu_4, ColorBrewer_ylgnbu_5, ColorBrewer_ylgnbu_6, ColorBrewer_ylgnbu_7, ColorBrewer_ylgnbu_8, ColorBrewer_ylgnbu_9, ColorBrewer_ylorbr_3, ColorBrewer_ylorbr_4, ColorBrewer_ylorbr_5, ColorBrewer_ylorbr_6, ColorBrewer_ylorbr_7, ColorBrewer_ylorbr_8, ColorBrewer_ylorbr_9, ColorBrewer_ylorrd_3, ColorBrewer_ylorrd_4, ColorBrewer_ylorrd_5, ColorBrewer_ylorrd_6, ColorBrewer_ylorrd_7, ColorBrewer_ylorrd_8, ColorBrewer_ylorrd_9 
+.BI \-color_scheme= "c"
+specifies the color scheme.  This can be "rgb", "gray", "lab" (default);
+or a comma-separated list of RGB colors in hex (e.g., "#ff0000,#aabbed,#eeffaa") representing a palette;
+or a string specifying a Brewer color scheme (e.g., "accent7"; see http://www.graphviz.org/content/color-names#brewer).
 .TP
-.BI \-v " k"  
-determines the verbose level used for tracing the algorithm. The value \fIk\fP is optional; if not
-provided, the value 1 is used.
+.B \-v 
+turns on verbose mode.
 .TP
 .BI \-? 
 Print usage and exit.
 
 .SH BUGS
-At present, \fBclarify\fP does not handle graphs with loops or directed multiedges. So, a graph with edges
+At present, \fBedgepaint\fP does not handle graphs with loops or directed multiedges. So, a graph with edges
 \fIa -> b\fP and \fIb -> a\fP is acceptable, but not if it has edges \fIa -> b\fP and \fIa -> b\fP or
 \fIa -- b\fP and \fIa -- b\fP.
 .SH AUTHOR
 Yifan Hu <yifanhu@research.att.com>
 .SH "SEE ALSO"
 .PP
-gvmap(1)
+gvmap(1), sfdp(1), neato (1), dot(1)
 .PP
 

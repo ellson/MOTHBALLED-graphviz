@@ -79,16 +79,16 @@ static void usage (char* cmd, int eval){
   fprintf(stderr, "Usage: %s <options> gv file with 2D coordinates.\n", cmd);
   fprintf(stderr, "Find a color assignment of the edges, such that edges that cross at small angle have as different as posible.\n");
   fprintf(stderr, "Options are: \n");
-  fprintf(stderr, "-accuracy=e: accuracy with which to find the maximally different coloring for each node with regard to its neighbors. Default 0.01.\n");
-  fprintf(stderr, "-angle=a: if edge crossing is less than that angle a, then make the edge colors different. Default 15.\n");
-  fprintf(stderr, "-random_seed=s: random seed to use. s must be an integer. If s is negative, we do -s iterations with different seeds and pick the best.\n");
-  fprintf(stderr, "-color_scheme=c: color scheme. It is a string of either rgb, gray, lab (default), or of the form #ff0000,#aabbed,#eeffaa representing a color pallet, or one of the ColorBrewer palettes: ");
-  color_palettes_name_print(stderr);
-  fprintf(stderr," \n");
-  fprintf(stderr, "-lightness=l1,l2: only applied for LAB color scheme: l1 must be integer >=0, l2 integer <=100, and l1 <=l2. By default we use 0,70\n");
-  fprintf(stderr, "-share_endpoint: if this option is specified, edges that shares an end point are not considered in conflict if they are close to parallel but is on the opposite ends of the shared point (around 180 degree).\n");
-  fprintf(stderr, "-v: verbose\n");
-  fprintf(stderr, "-o fname - write output to file fname (stdout)\n");
+  fprintf(stderr, " -accuracy=e      : accuracy with which to find the maximally different coloring for each node with regard to its neighbors. Default 0.01.\n");
+  fprintf(stderr, " -angle=a         : if edge crossing is less than that angle a, then make the edge colors different. Default 15.\n");
+  fprintf(stderr, " -random_seed=s   : random seed to use. s must be an integer. If s is negative, we do -s iterations with different seeds and pick the best.\n");
+  fprintf(stderr, " -color_scheme=c  : palette used. The string c should be \"rgb\", \"gray\", \"lab\" (default); or\n");
+  fprintf(stderr, "       a comma-separated list of RGB colors in hex (e.g., \"#ff0000,#aabbed,#eeffaa\"); or\n");
+  fprintf(stderr, "       a string specifying a Brewer color scheme (e.g., \"accent7\")\n");
+  fprintf(stderr, " -lightness=l1,l2 : only applied for LAB color scheme: l1 must be integer >=0, l2 integer <=100, and l1 <=l2. By default we use 0,70\n");
+  fprintf(stderr, " -share_endpoint  :  if this option is specified, edges that shares an end point are not considered in conflict if they are close to parallel but is on the opposite ends of the shared point (around 180 degree).\n");
+  fprintf(stderr, " -v               : verbose\n");
+  fprintf(stderr, " -o fname         :  write output to file fname (stdout)\n");
   exit(eval);
 }
 
