@@ -337,51 +337,6 @@ SparseMatrix_import_dot (Agraph_t* g, int dim, real **label_sizes, real **x, int
   return A;
 }
 
-/* get spline info */
-int Import_dot_splines(Agraph_t* g, int *ne, char ***xsplines){
-  /* get the list of splines for the edges in the order they appear, and store as a list of strings in xspline.
-     If *xsplines = NULL, it will be allocated. On exit (*xsplines)[i] is the control point string for the i-th edge. This string
-     is of the form "x1,y1 x2,y2...", the two end points of the edge is not included per Dot format 
-     Return 1 if success. 0 if not.
-  */
-  Agnode_t* n;
-  Agedge_t* e;
-  Agsym_t *sym;
-  int nedges;
-  int i;
-
-  if (!g){
-    return 0;
-  }
-
-  *ne = nedges = agnedges (g);
-
-  /* Assign node ids */
-  i = 0;
-  for (n = agfstnode (g); n; n = agnxtnode (g, n))
-    ND_id(n) = i++;
-
-  sym = agattr(g, AGEDGE, "pos", NULL); 
-  if (!sym) return 0;
-
-  if (!(*xsplines)) *xsplines = malloc(sizeof(char*)*nedges);
-
-  i = 0;
-  for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
-    for (e = agfstout (g, n); e; e = agnxtout (g, e)) {
-      /* edge weight */
-      if (sym) {
-	char *pos = ag_xget (e, sym);
-	(*xsplines)[i] = malloc(sizeof(char)*(strlen(pos)+1));
-	strcpy((*xsplines)[i], pos);
-      } else {
-	(*xsplines)[i] = NULL;
-      }
-      i++;
-    }
-  }
-  return 1;
-}
 
 static real dist(int dim, real *x, real *y){
   int k;
