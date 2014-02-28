@@ -3193,6 +3193,7 @@ AC_CONFIG_FILES(Makefile
 	lib/label/Makefile
 	lib/sfdpgen/Makefile
 	lib/osage/Makefile
+	lib/edgepaint/Makefile
 	lib/gvpr/Makefile
 	lib/gvpr/libgvpr.pc
 	lib/circogen/Makefile
@@ -3256,6 +3257,7 @@ AC_CONFIG_FILES(Makefile
 	cmd/smyrna/Makefile
 	cmd/gvmap/Makefile
 	cmd/mingle/Makefile
+	cmd/edgepaint/Makefile
 	cmd/gvedit/Makefile
 	cmd/gvedit/gvedit.pro
 	cmd/gvedit/ui/Makefile
