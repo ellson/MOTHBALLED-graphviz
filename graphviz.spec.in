@@ -215,6 +215,7 @@ of graphs (as in nodes and edges, not as in bar-charts).
 %{_bindir}/gxl2dot
 %{_bindir}/gxl2gv
 %{_bindir}/mingle
+%{_bindir}/edgepaint
 %{_bindir}/mm2gv
 %{_bindir}/neato
 %{_bindir}/nop
@@ -248,6 +249,7 @@ of graphs (as in nodes and edges, not as in bar-charts).
 %{_mandir}/man1/gvpr.1*
 %{_mandir}/man1/gxl2gv.1*
 %{_mandir}/man1/mingle.1*
+%{_mandir}/man1/edgepaint.1*
 %{_mandir}/man1/mm2gv.1*
 %{_mandir}/man1/neato.1*
 %{_mandir}/man1/nop.1*

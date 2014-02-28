@@ -24,6 +24,10 @@ extern Agraph_t* SparseMatrix_read_dot(FILE*);
 extern void setDotNodeID (Agnode_t* n, int v);
 extern int getDotNodeID (Agnode_t* n);
 
+extern void attach_edge_colors(Agraph_t* g, int dim, real *colors);
+
+extern void attach_embedding(Agraph_t *g, int dim, double sc, real *x);
+
 /* extern void attach_embedding(Agraph_t *g, int dim, double sc, real *x); */
 extern void attach_edge_colors(Agraph_t* g, int dim, real *colors);
 extern SparseMatrix SparseMatrix_import_dot(Agraph_t* g, int dim, real **label_sizes, real **x, int *n_edge_label_nodes,
@@ -41,5 +45,4 @@ void Dot_SetClusterColor(Agraph_t* g, float *rgb_r,  float *rgb_g,  float *rgb_b
 void attached_clustering(Agraph_t* g, int maxcluster, int clustering_scheme);
 
 int Import_dot_splines(Agraph_t* g, int *ne, char ***xsplines);
-
 #endif
