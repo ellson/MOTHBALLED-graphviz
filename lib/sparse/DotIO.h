@@ -28,8 +28,6 @@ extern void attach_edge_colors(Agraph_t* g, int dim, real *colors);
 
 extern void attach_embedding(Agraph_t *g, int dim, double sc, real *x);
 
-/* extern void attach_embedding(Agraph_t *g, int dim, double sc, real *x); */
-extern void attach_edge_colors(Agraph_t* g, int dim, real *colors);
 extern SparseMatrix SparseMatrix_import_dot(Agraph_t* g, int dim, real **label_sizes, real **x, int *n_edge_label_nodes,
 					    int **edge_label_nodes, int format, SparseMatrix *D);
 extern Agraph_t* makeDotGraph (SparseMatrix, char *title, int dim, real *x, int with_color, int with_label, int use_matrix_value);
