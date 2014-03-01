@@ -20,11 +20,6 @@
 #include "color_palette.h"
 #include "colorutil.h"
 
-#define ag_xget(x,a) agxget(x,a)
-#define ag_xset(x,a,c) agxset(x,a,c)
-#define agedgeattr(g,a,c) (agattr(g,AGEDGE,a,c))
-#define agfindedgeattr(g,a) (agattr(g,AGEDGE,a,NULL))
-
 typedef struct {
     Agrec_t h;
     unsigned int id;
@@ -166,7 +161,6 @@ SparseMatrix_import_dot (Agraph_t* g, int dim, real **label_sizes, real **x, int
     exit (1);
   }
 
-
   /* Assign node ids */
   i = 0;
   for (n = agfstnode (g); n; n = agnxtnode (g, n))
@@ -197,9 +191,9 @@ SparseMatrix_import_dot (Agraph_t* g, int dim, real **label_sizes, real **x, int
     val = N_NEW(nedges, real);
   }
 
-  sym = agfindedgeattr(g, "weight");
+  sym = agattr(g, AGEDGE, "weight", NULL);
   if (D) {
-    symD = agfindedgeattr(g, "len");
+    symD = agattr(g, AGEDGE, "len", NULL);
     valD = N_NEW(nedges, real);
   }
   i = 0;
@@ -260,8 +254,7 @@ SparseMatrix_import_dot (Agraph_t* g, int dim, real **label_sizes, real **x, int
 	(*label_sizes)[i*2+1] = 4*POINTS(0.5)*.5;
       }
     }
- }
-
+  }
 
   if (x && (psym = agattr(g, AGNODE, "pos", NULL))) {
     int has_positions = TRUE;
@@ -371,7 +364,7 @@ int Import_dot_splines(Agraph_t* g, int *ne, char ***xsplines){
 
   sym = agattr(g, AGNODE, "pos", 0); 
   if (!sym) return 0;
-
+ 
   if (!(*xsplines)) *xsplines = malloc(sizeof(char*)*nedges);
 
   i = 0;
