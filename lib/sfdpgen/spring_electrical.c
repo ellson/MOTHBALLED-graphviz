@@ -234,8 +234,9 @@ void export_embedding(FILE *fp, int dim, SparseMatrix A, real *x, real *width){
   if (width && dim == 2){
     for (i = 0; i < A->m; i++){
       if (i >= 0) fprintf(fp,",");
-      fprintf(fp,"(*%f,%f*){GrayLevel[.5,.5],Rectangle[{%f,%f},{%f,%f}]}", width[i*dim], width[i*dim+1],x[i*dim] - width[i*dim] + 5, x[i*dim+1] - width[i*dim+1] + 5,
-	      x[i*dim] + width[i*dim] - 5, x[i*dim+1] + width[i*dim+1] - 5);
+      fprintf(fp,"(*width={%f,%f}, x = {%f,%f}*){GrayLevel[.5,.5],Rectangle[{%f,%f},{%f,%f}]}", width[i*dim], width[i*dim+1], x[i*dim], x[i*dim + 1],
+          x[i*dim] - width[i*dim], x[i*dim+1] - width[i*dim+1],
+          x[i*dim] + width[i*dim], x[i*dim+1] + width[i*dim+1]);
     }
   }
 
@@ -479,7 +480,7 @@ void spring_electrical_embedding_fast(int dim, SparseMatrix A0, spring_electrica
   int max_qtree_level = ctrl->max_qtree_level;
   oned_optimizer qtree_level_optimizer = NULL;
 
-  if (!A) return;
+  if (!A || maxiter <= 0) return;
 
   m = A->m, n = A->n;
   if (n <= 0 || dim <= 0) return;
@@ -682,7 +683,7 @@ void spring_electrical_embedding_slow(int dim, SparseMatrix A0, spring_electrica
   oned_optimizer qtree_level_optimizer = NULL;
 
   fprintf(stderr,"spring_electrical_embedding_slow");
-  if (!A) return;
+  if (!A || maxiter <= 0) return;
 
   m = A->m, n = A->n;
   if (n <= 0 || dim <= 0) return;
@@ -941,7 +942,7 @@ void spring_electrical_embedding(int dim, SparseMatrix A0, spring_electrical_con
   int max_qtree_level = ctrl->max_qtree_level;
   oned_optimizer qtree_level_optimizer = NULL;
 
-  if (!A) return;
+  if (!A || maxiter <= 0) return;
 
   m = A->m, n = A->n;
   if (n <= 0 || dim <= 0) return;
@@ -1267,7 +1268,7 @@ void spring_maxent_embedding(int dim, SparseMatrix A0, SparseMatrix D, spring_el
   double stress = 0;
 #endif
 
-  if (!A) return;
+  if (!A || maxiter <= 0) return;
   m = A->m, n = A->n;
   if (n <= 0 || dim <= 0) return;
 
@@ -1525,7 +1526,7 @@ void spring_electrical_spring_embedding(int dim, SparseMatrix A0, SparseMatrix D
   real *center = NULL, *supernode_wgts = NULL, *distances = NULL, nsuper_avg, counts = 0;
   int max_qtree_level = 10;
 
-  if (!A) return;
+  if (!A  || maxiter <= 0) return;
   m = A->m, n = A->n;
   if (n <= 0 || dim <= 0) return;
 
@@ -2191,12 +2192,14 @@ static void multilevel_spring_electrical_embedding_core(int dim, SparseMatrix A0
 
   post_process_smoothing(dim, A, ctrl, node_weights, x, flag);
 
+  if (Verbose) fprintf(stderr, "ctrl->overlap=%d\n",ctrl->overlap);
+
+  /* rotation has to be done before overlap removal, since rotation could induce overlaps */
   if (dim == 2){
     pcp_rotate(n, dim, x);
   }
   if (ctrl->rotation != 0) rotate(n, dim, x, ctrl->rotation);
 
-  if (Verbose) fprintf(stderr, "ctrl->overlap=%d\n",ctrl->overlap);
 
   remove_overlap(dim, A, x, label_sizes, ctrl->overlap, ctrl->initial_scaling,
 		 ctrl->edge_labeling_scheme, n_edge_label_nodes, edge_label_nodes, A, ctrl->do_shrinking, flag);

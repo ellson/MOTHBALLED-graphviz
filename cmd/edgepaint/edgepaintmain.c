@@ -120,8 +120,6 @@ static void init(int argc, char *argv[], real *angle, real *accuracy, char **inf
 
   unsigned int c;
   char* cmd = argv[0];
-  int cs_len = 10000;
-  int r, g, b;
   outfile = NULL;
 
   Verbose = FALSE;
@@ -130,8 +128,7 @@ static void init(int argc, char *argv[], real *angle, real *accuracy, char **inf
   *infile = NULL;
   *check_edges_with_same_endpoint = 0;
   *seed = 123;
-  if (!(*color_scheme)) *color_scheme = malloc(sizeof(char)*cs_len);
-  strcpy(*color_scheme, "lab");
+  *color_scheme = "lab";
   *lightness = NULL;
 
   while ((c = getopt(argc, argv, ":vc:a:s:r:l:o")) != -1) {
@@ -167,14 +164,11 @@ static void init(int argc, char *argv[], real *angle, real *accuracy, char **inf
       break;
     case 'c':
       if (strncmp(optarg,"olor_scheme=", 12) == 0){
-	if (strcmp(optarg + 12,"rgb") != 0 && strcmp(optarg + 12,"lab") != 0 && strcmp(optarg + 12,"gray") != 0 &&
-	    (!color_palettes_Q(optarg + 12)) &&
-	    sscanf(optarg + 12,"#%02X%02X%02X", &r, &g, &b) != 3){
+	if (knownColorScheme(optarg + 12))
+          *color_scheme = optarg+12;
+        else {
 	  fprintf(stderr,"-color_scheme option must be a valid string\n");
 	  usage(cmd, 1);
-	} else {
-	  if (strlen(*color_scheme) < strlen(optarg + 12)) *color_scheme = realloc(*color_scheme, sizeof(char)*(strlen(optarg + 12) + 1));
-	  strcpy(*color_scheme, optarg + 12);
 	}
       } else {
 	usage(cmd, 1);
@@ -251,10 +245,10 @@ int main(int argc, char *argv[])
   int check_edges_with_same_endpoint, seed;
   char *color_scheme = NULL;
   char *lightness = NULL;
-	Agraph_t *g;
-	Agraph_t *prev = NULL;
-	ingraph_state ig;
-	int rv = 0;
+  Agraph_t *g;
+  Agraph_t *prev = NULL;
+  ingraph_state ig;
+  int rv = 0;
 
 	init(argc, argv, &angle, &accuracy, &infile, &check_edges_with_same_endpoint, &seed, &color_scheme, &lightness);
 	newIngraph(&ig, Files, gread);

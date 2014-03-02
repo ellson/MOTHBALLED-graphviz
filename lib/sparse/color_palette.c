@@ -1,5 +1,28 @@
+
+/*************************************************************************
+ * Copyright (c) 2013 AT&T Intellectual Property 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors: See CVS logs. Details at http://www.graphviz.org/
+ *************************************************************************/
+
 #include "color_palette.h"
 #include "string.h"
+#include "macros.h"
+
+int knownColorScheme (char* name)
+{
+  int r, g, b;
+
+  return streq(name,"rgb") 
+      || streq(name,"lab") 
+      || streq(name,"gray") 
+      || color_palettes_Q(name) 
+      || (sscanf(name,"#%02X%02X%02X", &r, &g, &b) == 3);
+}
 
 char *color_palettes_get(char *color_palette_name){
   int i;
