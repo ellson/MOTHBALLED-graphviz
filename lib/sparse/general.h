@@ -74,7 +74,9 @@ extern unsigned char Verbose;
 #define MEMCPY memcpy
 
 #ifndef DEBUG
+#ifndef NDEBUG
 #define NDEBUG /* switch off assert*/
+#endif
 #endif
 
 #ifdef DEBUG
