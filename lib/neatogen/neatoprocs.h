@@ -66,11 +66,11 @@ extern "C" {
     extern void solve_model(graph_t *, int);
     extern int solveCircuit(int nG, double **Gm, double **Gm_inv);
     extern void spline_edges(Agraph_t *);
-    extern void spline_edges0(Agraph_t *);
+    extern void spline_edges0(Agraph_t *, boolean);
     extern int spline_edges1(graph_t * g, int);
     extern int splineEdges(graph_t *,
 			   int (*edgefn) (graph_t *, expand_t*, int), int);
-    extern void neato_set_aspect(graph_t * g);
+    extern boolean neato_set_aspect(graph_t * g);
     extern void toggle(int);
     extern int user_pos(Agsym_t *, Agsym_t *, Agnode_t *, int);
     extern double **new_array(int i, int j, double val);

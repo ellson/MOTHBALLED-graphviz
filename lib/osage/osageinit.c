@@ -364,7 +364,7 @@ void osage_layout(Agraph_t *g)
 	    ND_pos(n)[0] = PS2INCH(ND_coord(n).x);
 	    ND_pos(n)[1] = PS2INCH(ND_coord(n).y);
 	}
-	spline_edges0(g);
+	spline_edges0(g, TRUE);
     }
     else {
 	int et = EDGE_TYPE (g);

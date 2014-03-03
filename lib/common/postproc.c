@@ -573,7 +573,7 @@ static void addXLabels(Agraph_t * gp)
     free(lbls);
 }
 
-/* dotneato_postprocess:
+/* gv_postprocess:
  * Set graph and cluster label positions.
  * Add space for root graph label and translate graph accordingly.
  * Set final nodesize using ns.
@@ -668,6 +668,8 @@ void gv_postprocess(Agraph_t * g, int allowTranslation)
     }
 }
 
+/* dotneato_postprocess:
+ */
 void dotneato_postprocess(Agraph_t * g)
 {
     gv_postprocess(g, 1);

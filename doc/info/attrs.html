@@ -1550,13 +1550,18 @@ of the layout programs.
   node from moving from the input position. This property can also be specified
   in the pos attribute itself (cf. the <A HREF=#k:point>point</A> type).
   <P>
-  <B>Note:</B> Due to an artifact of the implementation, final coordinates
+  <B>Note:</B> Due to an artifact of the implementation, 
+  previous to 27 Feb 2014, final coordinates
   are translated to the origin. Thus, if you look at the output coordinates
   given in the (x)dot or plain format, pinned nodes will not have the same
   output coordinates as were given on input. If this is important, a
   simple workaround is to maintain the coordinates of a pinned node. The vector
   difference between the old and new coordinates will give the translation,
   which can then be subtracted from all of the appropriate coordinates.
+  <P>
+  After 27 Feb 2014, this translation is no longer done. However, if the graph
+  specifies <A HREF="#d:overlap">node overlap removal</A> or a change in 
+  <A HREF="#d:ratio">aspect ratio</A>, node coordinates may still change. 
 
 <DT><A NAME=d:pos HREF=#a:pos><STRONG>pos</STRONG></A>
 <DD>  Position of node, or spline control points.

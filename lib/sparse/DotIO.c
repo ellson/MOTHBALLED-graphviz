@@ -70,6 +70,51 @@ attach_embedding (Agraph_t* g, int dim, double sc, real *x)
 }
 #endif
 
+static void color_string(int slen, char *buf, int dim, real *color){
+  if (dim > 3 || dim < 1){
+    fprintf(stderr,"can only 1, 2 or 3 dimensional color space. with color value between 0 to 1\n");
+    assert(0);
+  }
+  assert(slen >= 3);
+  if (dim == 3){
+    sprintf(buf,"#%02x%02x%02x", MIN((unsigned int)(color[0]*255),255), 
+	    MIN((unsigned int) (color[1]*255), 255), MIN((unsigned int)(color[2]*255), 255));
+  } else if (dim == 1){
+    sprintf(buf,"#%02x%02x%02x", MIN((unsigned int)(color[0]*255),255), 
+	    MIN((unsigned int) (color[0]*255), 255), MIN((unsigned int)(color[0]*255), 255));
+  } else if (dim == 2){
+    sprintf(buf,"#%02x%02x%02x", MIN((unsigned int)(color[0]*255),255), 
+	    0, MIN((unsigned int)(color[1]*255), 255));
+  }
+}
+
+void attach_edge_colors(Agraph_t* g, int dim, real *colors){
+  /* colors is array of dim*nedges, with color for edge i at colors[dim*i, dim(i+1))
+   */
+  Agsym_t* sym = agattr(g, AGEDGE, "color", 0); 
+  Agedge_t* e;
+  Agnode_t* n;
+  enum {slen = 1024};
+  char buf[slen];
+  int row, col;
+  int ie = 0;
+
+  if (!sym)
+    sym = agattr (g, AGEDGE, "color", "");
+
+  for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
+    row = ND_id(n);
+    for (e = agfstout (g, n); e; e = agnxtout (g, e)) {
+      col = ND_id(aghead(e));
+      if (row == col) continue;
+      color_string(slen, buf, dim, colors + ie*dim);
+      agxset(e, sym, buf);
+      ie++;
+    }
+  }
+
+}
+
 /* SparseMatrix_read_dot:
  * Wrapper for reading dot graph from file
  */
@@ -106,10 +151,12 @@ SparseMatrix_import_dot (Agraph_t* g, int dim, real **label_sizes, real **x, int
   real padding = 10;
   int nedge_nodes = 0;
 
+
+
   if (!g) return NULL;
   nnodes = agnnodes (g);
   nedges = agnedges (g);
-  if (format != FORMAT_CSR) {
+  if (format != FORMAT_CSR && format != FORMAT_COORD) {
     fprintf (stderr, "Format %d not supported\n", format);
     exit (1);
   }
@@ -119,13 +166,34 @@ SparseMatrix_import_dot (Agraph_t* g, int dim, real **label_sizes, real **x, int
   for (n = agfstnode (g); n; n = agnxtnode (g, n))
     ND_id(n) = i++;
 
-  I = N_NEW(nedges, int);
-  J = N_NEW(nedges, int);
-  val = N_NEW(nedges, real);
+  if (format == FORMAT_COORD){
+    A = SparseMatrix_new(i, i, nedges, MATRIX_TYPE_REAL, format);
+    A->nz = nedges;
+    I = A->ia;
+    J = A->ja;
+    val = (real*) A->a;
+  } else {
+    I = N_NEW(nedges, int);
+    J = N_NEW(nedges, int);
+    val = N_NEW(nedges, real);
+  }
 
-  sym = agattr(g, AGEDGE, "weight", NULL); 
+
+  if (format == FORMAT_COORD){
+    A = SparseMatrix_new(i, i, nedges, MATRIX_TYPE_REAL, format);
+    A->nz = nedges;
+    I = A->ia;
+    J = A->ja;
+    val = (real*) A->a;
+  } else {
+    I = N_NEW(nedges, int);
+    J = N_NEW(nedges, int);
+    val = N_NEW(nedges, real);
+  }
+
+  sym = agattr(g, AGEDGE, "weight", NULL);
   if (D) {
-    symD = agattr(g, AGEDGE, "len", NULL); 
+    symD = agattr(g, AGEDGE, "len", NULL);
     valD = N_NEW(nedges, real);
   }
   i = 0;
@@ -165,25 +233,28 @@ SparseMatrix_import_dot (Agraph_t* g, int dim, real **label_sizes, real **x, int
     nedge_nodes = 0;
   }
 
-  *label_sizes = MALLOC(sizeof(real)*2*nnodes);
+
+  if (label_sizes) *label_sizes = MALLOC(sizeof(real)*2*nnodes);
   for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
     real sz;
     i = ND_id(n);
     if (edge_label_nodes && strncmp(agnameof(n), "|edgelabel|",11)==0) {
       (*edge_label_nodes)[nedge_nodes++] = i;
     }
-    if (agget(n, "width") && agget(n, "height")){
-      sscanf(agget(n, "width"), "%lf", &sz);
-      /*      (*label_sizes)[i*2] = POINTS(sz)*.6;*/
-      (*label_sizes)[i*2] = POINTS(sz)*.5 + padding*0.5;
-      sscanf(agget(n, "height"), "%lf", &sz);
-      /*(*label_sizes)[i*2+1] = POINTS(sz)*.6;*/
-      (*label_sizes)[i*2+1] = POINTS(sz)*.5  + padding*0.5;
-    } else {
-      (*label_sizes)[i*2] = 4*POINTS(0.75)*.5;
-      (*label_sizes)[i*2+1] = 4*POINTS(0.5)*.5;
+    if (label_sizes){
+      if (agget(n, "width") && agget(n, "height")){
+	sscanf(agget(n, "width"), "%lf", &sz);
+	/*      (*label_sizes)[i*2] = POINTS(sz)*.6;*/
+	(*label_sizes)[i*2] = POINTS(sz)*.5 + padding*0.5;
+	sscanf(agget(n, "height"), "%lf", &sz);
+	/*(*label_sizes)[i*2+1] = POINTS(sz)*.6;*/
+	(*label_sizes)[i*2+1] = POINTS(sz)*.5  + padding*0.5;
+      } else {
+	(*label_sizes)[i*2] = 4*POINTS(0.75)*.5;
+	(*label_sizes)[i*2+1] = 4*POINTS(0.5)*.5;
+      }
     }
- }
+  }
 
   if (x && (psym = agattr(g, AGNODE, "pos", NULL))) {
     int has_positions = TRUE;
@@ -244,24 +315,73 @@ SparseMatrix_import_dot (Agraph_t* g, int dim, real **label_sizes, real **x, int
   else if (x)
     agerr (AGERR, "Error: graph %s has missing \"pos\" information", agnameof(g));
 
-  A = SparseMatrix_from_coordinate_arrays(nedges, nnodes, nnodes, I, J, val, type, sz);
+  if (format == FORMAT_CSR) A = SparseMatrix_from_coordinate_arrays(nedges, nnodes, nnodes, I, J, val, type, sz);
   if (edge_label_nodes) *n_edge_label_nodes = nedge_nodes;
 
   if (D) *D = SparseMatrix_from_coordinate_arrays(nedges, nnodes, nnodes, I, J, valD, type, sz);
 
-  FREE(I);
-  FREE(J);
-  FREE(val);
+  if (format != FORMAT_COORD){
+    FREE(I);
+    FREE(J);
+    FREE(val);
+  }
   if (valD) FREE(valD);
 
   return A;
 }
+
 
 static real dist(int dim, real *x, real *y){
   int k;
   real d = 0;
   for (k = 0; k < dim; k++) d += (x[k] - y[k])*(x[k]-y[k]);
   return sqrt(d);
+}
+
+/* get spline info */
+int Import_dot_splines(Agraph_t* g, int *ne, char ***xsplines){
+  /* get the list of splines for the edges in the order they appear, and store as a list of strings in xspline.
+     If *xsplines = NULL, it will be allocated. On exit (*xsplines)[i] is the control point string for the i-th edge. This string
+     is of the form "x1,y1 x2,y2...", the two end points of the edge is not included per Dot format 
+     Return 1 if success. 0 if not.
+  */
+  Agnode_t* n;
+  Agedge_t* e;
+  Agsym_t *sym;
+  int nedges;
+  int i;
+
+  if (!g){
+    return 0;
+  }
+
+  *ne = nedges = agnedges (g);
+
+  /* Assign node ids */
+  i = 0;
+  for (n = agfstnode (g); n; n = agnxtnode (g, n))
+    ND_id(n) = i++;
+
+  sym = agattr(g, AGNODE, "pos", 0); 
+  if (!sym) return 0;
+ 
+  if (!(*xsplines)) *xsplines = malloc(sizeof(char*)*nedges);
+
+  i = 0;
+  for (n = agfstnode (g); n; n = agnxtnode (g, n)) {
+    for (e = agfstout (g, n); e; e = agnxtout (g, e)) {
+      /* edge weight */
+      if (sym) {
+	char *pos = agxget (e, sym);
+	(*xsplines)[i] = malloc(sizeof(char)*(strlen(pos)+1));
+	strcpy((*xsplines)[i], pos);
+      } else {
+	(*xsplines)[i] = NULL;
+      }
+      i++;
+    }
+  }
+  return 1;
 }
 
 void edgelist_export(FILE* f, SparseMatrix A, int dim, real *x){
@@ -646,6 +766,17 @@ Agraph_t* assign_random_edge_color(Agraph_t* g){
   return g;
  }
 
+
+static int hex2int(char h){
+  if (h >= '0' && h <= '9') return h - '0';
+  if (h >= 'a' && h <= 'f') return 10 + h - 'a';
+  if (h >= 'A' && h <= 'F') return 10 + h - 'A';
+  return 0;
+}  
+static float hexcol2rgb(char *h){
+  return (hex2int(h[0])*16 + hex2int(h[1]))/255.;
+}
+
 void Dot_SetClusterColor(Agraph_t* g, float *rgb_r,  float *rgb_g,  float *rgb_b, int *clusters){
 
   Agnode_t* n;
@@ -911,6 +1042,13 @@ SparseMatrix Import_coord_clusters_from_dot(Agraph_t* g, int maxcluster, int dim
      (*rgb_b)[(*clusters)[i]] = color.u.RGBA[2];
    }
 
+   if (!noclusterinfo && agget(n, "cluster") && agget(n, "clustercolor") && strlen(agget(n, "clustercolor") ) >= 7 && pal){
+     char cc[10];
+     strcpy(cc, agget(n, "clustercolor"));
+     (*rgb_r)[(*clusters)[i]] = hexcol2rgb(cc+1);
+     (*rgb_g)[(*clusters)[i]] = hexcol2rgb(cc+3);
+     (*rgb_b)[(*clusters)[i]] = hexcol2rgb(cc+5);
+   }
 
   }
 

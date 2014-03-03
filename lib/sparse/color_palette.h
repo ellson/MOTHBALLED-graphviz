@@ -17,10 +17,12 @@
 enum {MAX_COLOR = 1001};
 
 enum {npalettes = 265};
+extern int knownColorScheme (char*);
 extern char *color_palettes[npalettes][2];
-char *color_palettes_get(char *color_palette_name);/* return a list of rgb in hex form: "#ff0000,#00ff00,..." */
-void color_palettes_name_print(FILE *fp);
-int color_palettes_Q(char *color_palette_name);
+  /* return a list of rgb in hex form: "#ff0000,#00ff00,..." */
+extern char *color_palettes_get(char *color_palette_name);
+extern void color_palettes_name_print(FILE *fp);
+extern int color_palettes_Q(char *color_palette_name);
 
 extern float palette_pastel[1001][3];
 extern float palette_blue_to_yellow[1001][3];
