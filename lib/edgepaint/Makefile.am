@@ -17,5 +17,5 @@ noinst_LTLIBRARIES = libedgepaint_C.la
 
 libedgepaint_C_la_SOURCES = edge_distinct_coloring.c  furtherest_point.c  intersection.c  lab.c  node_distinct_coloring.c
 
-EXTRA_DIST = edgepaintlib.vcproj
+A#EXTRA_DIST = edgepaintlib.vcproj
  
