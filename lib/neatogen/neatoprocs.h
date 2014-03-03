@@ -18,11 +18,6 @@
 extern "C" {
 #endif
 #include "adjust.h"
-#ifdef GVDLL
-#define extern __declspec(dllexport)
-#else
-#define extern
-#endif
 
     extern int allow_edits(int);
     extern void avoid_cycling(graph_t *, Agnode_t *, double *);
@@ -32,7 +27,6 @@ extern "C" {
     extern void D2E(Agraph_t *, int, int, double *);
     extern void diffeq_model(graph_t *, int);
     extern double distvec(double *, double *, double *);
-    extern void do_graph_label(Agraph_t *);
     extern void final_energy(graph_t *, int);
     extern double fpow32(double);
     extern Ppolyline_t getPath(edge_t *, vconfig_t *, int, Ppoly_t **,

@@ -56,11 +56,6 @@ typedef unsigned int packval_t;
 	packval_t* vals;	/* for arrays, sort numbers */
 	int flags;       
     } pack_info;
-#ifdef GVDLL
-#define extern __declspec(dllexport)
-#else
-#define extern
-#endif
 
 /*visual studio*/
 #ifdef WIN32_DLL
