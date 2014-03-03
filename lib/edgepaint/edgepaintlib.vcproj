@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="edgepaintlib"
-	ProjectGUID="{70575BD2-A532-41B8-9A17-B9876E992A84}"
+	ProjectGUID="{B1AA9FD1-0D24-44DF-8CAD-AEA73B52B3EC}"
 	RootNamespace="edgepaintlib"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
@@ -192,6 +192,10 @@
 			</File>
 			<File
 				RelativePath=".\lab.h"
+				>
+			</File>
+			<File
+				RelativePath=".\lab_gamut.h"
 				>
 			</File>
 			<File

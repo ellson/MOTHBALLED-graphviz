@@ -15,7 +15,10 @@
 #include "furtherest_point.h"
 #include "color_palette.h"
 
-inline static real mydist(int dim, real *x, real *y){
+#ifndef WIN32
+inline 
+#endif
+static real mydist(int dim, real *x, real *y){
   int k;
   real d = 0;
   for (k = 0; k < dim; k++) d += (x[k] - y[k])*(x[k]-y[k]);

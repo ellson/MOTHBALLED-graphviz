@@ -134,7 +134,7 @@ void furtherest_point(int k, int dim, real *wgt, real *pts, real *center, real w
 	}
 	if (!pruned){
 	  if (ncandidates2 >= ncandidates2_max){
-	    ncandidates2_max = ncandidates2_max + MAX(0.2*ncandidates2_max, 10);
+	    ncandidates2_max += (int)MAX(0.2*ncandidates2_max, 10);
 	    candidates2 = REALLOC(candidates2, sizeof(QuadTree)*ncandidates2_max);
 	  }
 	  candidates2[ncandidates2++] = qt->qts[ii];
@@ -266,7 +266,7 @@ void furtherest_point_in_list(int k, int dim, real *wgt, real *pts, QuadTree qt,
 	}
 	if (!pruned){
 	  if (ncandidates2 >= ncandidates2_max){
-	    ncandidates2_max = ncandidates2_max + MAX(0.2*ncandidates2_max, 10);
+	    ncandidates2_max += (int)MAX(0.2*ncandidates2_max, 10);
 	    candidates2 = REALLOC(candidates2, sizeof(QuadTree)*ncandidates2_max);
 	  }
 	  candidates2[ncandidates2++] = qt->qts[ii];

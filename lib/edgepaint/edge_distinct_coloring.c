@@ -80,14 +80,14 @@ static int splines_intersect(int dim, int u1, int v1, int u2, int v2,
     if (!xsplines1) break;
     xsplines1++;
     if (ns1*dim >= len1){
-      len1 = ns1*dim + MAX(10, 0.2*ns1*dim);
+      len1 = ns1*dim + (int)MAX(10, 0.2*ns1*dim);
       x1 = REALLOC(x1, sizeof(real)*len1);
     }
   }
   if (endp1){/* pad the end point at the last position */
     ns1++;
     if (ns1*dim >= len1){
-      len1 = ns1*dim + MAX(10, 0.2*ns1*dim);
+      len1 = ns1*dim + (int)MAX(10, 0.2*ns1*dim);
       x1 = REALLOC(x1, sizeof(real)*len1);
     }
     x1[(ns1-1)*dim] = tmp[0];  x1[(ns1-1)*dim + 1] = tmp[1]; 
@@ -118,14 +118,14 @@ static int splines_intersect(int dim, int u1, int v1, int u2, int v2,
     if (!xsplines2) break;
     xsplines2++;
     if (ns2*dim >= len2){
-      len2 = ns2*dim + MAX(10, 0.2*ns2*dim);
+      len2 = ns2*dim + (int)MAX(10, 0.2*ns2*dim);
       x2 = REALLOC(x2, sizeof(real)*len2);
     }
   }
   if (endp2){/* pad the end point at the last position */
     ns2++;
     if (ns2*dim >= len2){
-      len2 = ns2*dim + MAX(10, 0.2*ns2*dim);
+      len2 = ns2*dim + (int)MAX(10, 0.2*ns2*dim);
       x2 = REALLOC(x2, sizeof(real)*len2);
     }
     x2[(ns2-1)*dim] = tmp[0];  x2[(ns2-1)*dim + 1] = tmp[1]; 
@@ -156,7 +156,7 @@ for (i = 0; i < ns1 - 1; i++){
 }
 
 
-Agraph_t* edge_distinct_coloring(char *color_scheme, char *lightness, Agraph_t* g, real angle, real accuracy, real check_edges_with_same_endpoint, int seed){
+Agraph_t* edge_distinct_coloring(char *color_scheme, char *lightness, Agraph_t* g, real angle, real accuracy, int check_edges_with_same_endpoint, int seed){
   /* color the edges of a graph so that conflicting edges are as dinstrinct in color as possibl.
      color_scheme: rgb, lab, gray, or a list of comma separaterd RGB colors in hex, like #ff0000,#00ff00
      lightness: of the form 0,70, specifying the range of lightness of LAB color. Ignored if scheme is not COLOR_LAB.
