@@ -12,6 +12,7 @@
  *************************************************************************/
 
 #include "general.h"
+#include <errno.h>
 
 #ifdef DEBUG
 double _statistics[10];
@@ -353,8 +354,9 @@ int digitsQ(char *s){
 int validQ_int_string(char *to_convert, int *v){
   /* check to see if this is a string is integer */
   char *p = to_convert;
-  int errno = 0;
-  long val = strtoul(to_convert, &p, 10);
+  unsigned long val;
+  errno = 0;
+  val = strtoul(to_convert, &p, 10);
   if (errno != 0 ||// conversion failed (EINVAL, ERANGE)
       to_convert == p || // conversion failed (no characters consumed)
       *p != 0

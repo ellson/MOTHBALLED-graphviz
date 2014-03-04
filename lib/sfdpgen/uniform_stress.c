@@ -45,7 +45,7 @@ UniformStressSmoother UniformStressSmoother_new(int dim, SparseMatrix A, real *x
   ((real*) sm->data)[1] = M;
   sm->data_deallocator = FREE;
   sm->tol_cg = 0.01;
-  sm->maxit_cg = sqrt((double) A->m);
+  sm->maxit_cg = (int)sqrt((double) A->m);
 
   /* Lw and Lwd have diagonals */
   sm->Lw = SparseMatrix_new(m, m, A->nz + m, MATRIX_TYPE_REAL, FORMAT_CSR);

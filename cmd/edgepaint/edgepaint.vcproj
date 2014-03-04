@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="mingle"
-	ProjectGUID="{A6DF0D74-E4D1-4EF4-A642-59B0CF3E74BB}"
-	RootNamespace="mingle"
+	Name="edgepaint"
+	ProjectGUID="{B7A03994-C134-4FF7-98B4-97B5579EF13D}"
+	RootNamespace="edgepaint"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../lib/ingraphs;../../lib/common;../../lib/cdt;../../lib/cgraph;../../lib/sparse;../../lib/sfdpgen;../../;../../lib/mingle"
+				AdditionalIncludeDirectories="../../lib/ingraphs;../../lib/common;../../lib/cdt;../../lib/cgraph;../../lib/sparse;../../lib/sfdpgen;../../;../../lib/edgepaint"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;HAVE_CONFIG_H"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -117,7 +117,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="../../lib/ingraphs;../../lib/common;../../lib/cdt;../../lib/cgraph;../../lib/sparse;../../lib/sfdpgen;../../;../../lib/mingle"
+				AdditionalIncludeDirectories="../../lib/ingraphs;../../lib/common;../../lib/cdt;../../lib/cgraph;../../lib/sparse;../../lib/sfdpgen;../../;../../lib/edgepaint"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;HAVE_CONFIG_H"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -177,7 +177,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\minglemain.c"
+				RelativePath=".\edgepaintmain.c"
 				>
 			</File>
 		</Filter>

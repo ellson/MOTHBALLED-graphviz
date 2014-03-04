@@ -51,6 +51,11 @@ void gvloadimage(GVJ_t * job, usershape_t *us, boxf b, boolean filled, const cha
     gvloadimage_engine_t *gvli;
     char type[SMALLBUF];
 
+    assert(job);
+    assert(us);
+    assert(us->name);
+    assert(us->name[0]);
+
     strcpy(type, us->stringtype);
     strcat(type, ":");
     strcat(type, target);

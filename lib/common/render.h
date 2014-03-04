@@ -57,11 +57,6 @@ extern "C" {
     } epsf_t;
 
     typedef void (*nodesizefn_t) (Agnode_t *, boolean);
-#ifdef GVDLL
-#define extern __declspec(dllexport)
-#else
-#define extern
-#endif
 
 /*visual studio*/
 #ifdef WIN32_DLL

@@ -205,6 +205,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\QuadTree.c"
+				>
+			</File>
+			<File
 				RelativePath=".\SparseMatrix.c"
 				>
 			</File>

@@ -341,7 +341,7 @@ StressMajorizationSmoother StressMajorizationSmoother2_new(SparseMatrix A, int d
   sm->data = NULL;
   sm->scheme = SM_SCHEME_NORMAL;
   sm->tol_cg = 0.01;
-  sm->maxit_cg = sqrt((double) A->m);
+  sm->maxit_cg = (int)sqrt((double) A->m);
 
   lambda = sm->lambda = N_GNEW(m,real);
   for (i = 0; i < m; i++) sm->lambda[i] = lambda0;
@@ -543,7 +543,7 @@ StressMajorizationSmoother SparseStressMajorizationSmoother_new(SparseMatrix A, 
   sm->scheme = SM_SCHEME_NORMAL;
   sm->D = A;
   sm->tol_cg = 0.01;
-  sm->maxit_cg = sqrt((double) A->m);
+  sm->maxit_cg = (int)sqrt((double) A->m);
 
   lambda = sm->lambda = MALLOC(sizeof(real)*m);
   for (i = 0; i < m; i++) sm->lambda[i] = lambda0;
@@ -652,7 +652,7 @@ static real total_distance(int m, int dim, real* x, real* y){
 
 
 void SparseStressMajorizationSmoother_delete(SparseStressMajorizationSmoother sm){
-  return StressMajorizationSmoother_delete(sm);
+  StressMajorizationSmoother_delete(sm);
 }
 
 
@@ -696,7 +696,7 @@ static void get_edge_label_matrix(relative_position_constraints data, int m, int
       for (i = 0; i < n_constr_nodes; i++){
 	ii = constr_nodes[i];
 	k = ia[ii+1] - ia[ii];/*usually k = 2 */
-	nz += (k+1)*(k+1);
+	nz += (int)((k+1)*(k+1));
 	
       }
       irn = data->irn = MALLOC(sizeof(int)*nz);
@@ -1054,7 +1054,7 @@ TriangleSmoother TriangleSmoother_new(SparseMatrix A, int dim, real lambda0, rea
   sm->data = NULL;
   sm->scheme = SM_SCHEME_NORMAL;
   sm->tol_cg = 0.01;
-  sm->maxit_cg = sqrt((double) A->m);
+  sm->maxit_cg = (int)sqrt((double) A->m);
 
   lambda = sm->lambda = N_GNEW(m,real);
   for (i = 0; i < m; i++) sm->lambda[i] = lambda0;

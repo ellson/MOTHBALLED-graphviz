@@ -2328,8 +2328,7 @@ SparseMatrix SparseMatrix_to_complex(SparseMatrix A){
   case MATRIX_TYPE_INTEGER:{
     int *a = (int*) A->a;
     int nz = A->nz;
-    A->a = MALLOC(2*sizeof(real)*nz);
-    real *aa = A->a;
+    real *aa = A->a = MALLOC(2*sizeof(real)*nz);
     for (i = nz - 1; i >= 0; i--){
       aa[2*i] = (real) a[i];
       aa[2*i - 1] = 0;

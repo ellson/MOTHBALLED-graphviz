@@ -2259,6 +2259,6 @@ void multilevel_spring_electrical_embedding(int dim, SparseMatrix A, SparseMatri
 #else
 void multilevel_spring_electrical_embedding(int dim, SparseMatrix A, SparseMatrix D, spring_electrical_control ctrl, real *node_weights, real *label_sizes, 
 				 real *x, int n_edge_label_nodes, int *edge_label_nodes, int *flag){
-  return multilevel_spring_electrical_embedding_core(dim, A, D, ctrl, node_weights, label_sizes, x, n_edge_label_nodes, edge_label_nodes, flag);
+  multilevel_spring_electrical_embedding_core(dim, A, D, ctrl, node_weights, label_sizes, x, n_edge_label_nodes, edge_label_nodes, flag);
 }
 #endif

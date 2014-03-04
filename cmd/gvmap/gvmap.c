@@ -55,6 +55,7 @@ static char swork[maxlen];
     #pragma comment( lib, "gvc.lib" )
     #pragma comment( lib, "pathplan.lib" )
     #pragma comment( lib, "neatogen.lib" )
+    #pragma comment( lib, "edgepaintlib.lib" )
     #pragma comment( lib, "circogen.lib" )
     #pragma comment( lib, "twopigen.lib" )
     #pragma comment( lib, "fdpgen.lib" )

@@ -18,7 +18,7 @@
     #pragma comment( lib, "ingraphs.lib" )
     #pragma comment( lib, "sparse.lib" )
     #pragma comment( lib, "sfdp.lib" )
-    #pragma comment( lib, "clarifylib.lib" )
+    #pragma comment( lib, "edgepaintlib.lib" )
     #pragma comment( lib, "neatogen.lib" )
     #pragma comment( lib, "rbtree.lib" )
     #pragma comment( lib, "cdt.lib" )
