@@ -2613,19 +2613,19 @@ Agnode_t *openNode(Agraph_t * g, char *name)
 
 /* openEdge:
  * Create edge and initialize dynamic data.
- * The edge is always created in the root graph.
  */
 Agedge_t *openEdge(Agraph_t* g, Agnode_t * t, Agnode_t * h, char *key)
 {
     Agedge_t *ep;
     Agraph_t *root;
 
-    root = sameG(t, h, "openEdge", "tail and head node");
+    root = sameG(t, h, "openEdge", "tail and head nodes");
     if (!root)
 	return 0;
-    if (g && (root != agroot(g)))
-	return 0;
-    else
+    if (g) {
+	if (!sameG(g, root, "openEdge", "subgraph and nodes"))
+	    return 0;
+    } else
 	g = root;
 
     ep = agedge(g, t, h, key, 1);
