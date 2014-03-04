@@ -107,14 +107,19 @@ Agnode_t *node(Agraph_t *g, char *name)
     return agnode(g, name, 1);
 }
 
-Agedge_t *edge(Agnode_t *t, Agnode_t *h)
+Agedge_t *edge(Agraph_t* g, Agnode_t *t, Agnode_t *h)
 {
-    if (!gvc || !t || !h)
+    if (!gvc || !t || !h || !g)
         return NULL;
     // edges from/to the protonode are not permitted
     if (AGTYPE(t) == AGRAPH || AGTYPE(h) == AGRAPH)
 	return NULL;
-    return agedge(agraphof(t), t, h, NULL, 1);
+    return agedge(g, t, h, NULL, 1);
+}
+
+Agedge_t *edge(Agnode_t *t, Agnode_t *h)
+{
+    return edge(agraphof(t), t, h);
 }
 
 // induce tail if necessary
@@ -132,7 +137,7 @@ Agedge_t *edge(Agnode_t *t, char *hname)
 // induce tail/head if necessary
 Agedge_t *edge(Agraph_t *g, char *tname, char *hname)
 {
-    return edge(node(g, tname), node(g, hname));
+    return edge(g, node(g, tname), node(g, hname));
 }
 
 //-------------------------------------------------
