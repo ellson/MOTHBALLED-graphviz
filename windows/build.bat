@@ -15,14 +15,14 @@ set wgetPath=C:\wget\bin
 set SevenzPath="C:\Program Files\7-Zip"
 set pscpPath="C:\Program Files\PuTTY"
 set sdkPath="C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin"
-set VERSION="2.33"
+set VERSION="2.37"
 PATH=%PATH%;%VS2008DIR%;%wgetPath%;%SevenzPath%;%pscpPath%;%sdkPath%;
 
 REM *****************************************************
 REM 84716ny
 REM clean up code , if you rpvode source manually comment out this section
 REM *****************************************************
-rmdir /S /Q %buildBaseDir%graphviz2
+rmdir /S /Q %buildDir%
 rmdir /S /Q %targetDir%
 del %buildBaseDir%*.msi
 del %buildBaseDir%*.tar
@@ -36,9 +36,8 @@ REM *****************************************************
 wget -O %buildBaseDir%source.tar.gz %sourceUrl%
 7z x -y %buildBaseDir%source.tar.gz
 7z x -y %buildBaseDir%source.tar
-move /Y %buildBaseDir%graphviz-*.* graphviz2
+move /Y %buildBaseDir%graphviz-%VERSION%.* graphviz2
 REM **************End of source download*****************
-
 
 xcopy /Y %buildDir%windows\FEATURE %buildDir%\FEATURE\ /S
 xcopy /Y %sourceLibDir%GTS %buildDir%lib\GTS\ /S
@@ -60,6 +59,7 @@ copy /Y %buildDir%lib\common\geom.h %buildBaseDir%release\include\graphviz
 copy /Y %buildDir%lib\common\types.h %buildBaseDir%release\include\graphviz
 copy /Y %buildDir%lib\common\color.h %buildBaseDir%release\include\graphviz
 copy /Y %buildDir%lib\common\textpara.h %buildBaseDir%release\include\graphviz
+copy /Y %buildDir%lib\common\textspan.h %buildBaseDir%release\include\graphviz
 copy /Y %buildDir%lib\common\usershape.h %buildBaseDir%release\include\graphviz
 copy /Y %buildDir%lib\pathplan\pathplan.h %buildBaseDir%release\include\graphviz
 copy /Y %buildDir%lib\pathplan\pathgeom.h %buildBaseDir%release\include\graphviz
@@ -83,6 +83,7 @@ copy /Y %buildDir%windows\config.h %buildDir%
 copy /Y %buildDir%windows\ast_common.h %buildDir%
 copy /Y %sourceLibDir%getopt.h %buildDir%
 REM copy /Y %sourceLibDir%config.h %buildDir%
+
 
 REM *****************************************************
 REM Build release
