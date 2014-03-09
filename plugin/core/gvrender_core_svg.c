@@ -348,7 +348,7 @@ static void svg_textspan(GVJ_t * job, pointf p, textspan_t * span)
     obj_state_t *obj = job->obj;
     PostscriptAlias *pA;
     char *family = NULL, *weight = NULL, *stretch = NULL, *style = NULL;
-    int flags;
+    unsigned int flags;
 
     gvputs(job, "<text");
     switch (span->just) {
@@ -404,11 +404,15 @@ static void svg_textspan(GVJ_t * job, pointf p, textspan_t * span)
 	    gvprintf(job, " font-weight=\"bold\"");
 	if ((flags & HTML_IF) && !style)
 	    gvprintf(job, " font-style=\"italic\"");
-	if ((flags & (HTML_UL|HTML_S))) {
+	if ((flags & (HTML_UL|HTML_S|HTML_OL))) {
 	    int comma = 0;
 	    gvprintf(job, " text-decoration=\"");
 	    if ((flags & HTML_UL)) {
 		gvprintf(job, "underline");
+		comma = 1;
+	    }
+	    if ((flags & HTML_OL)) {
+		gvprintf(job, "%soverline", (comma?",":""));
 		comma = 1;
 	    }
 	    if ((flags & HTML_S))

@@ -62,6 +62,8 @@ static int dotted_len = ARRAY_SIZE(dotted);
 #include <cairo-svg.h>
 #endif
 
+static void cairogen_polyline(GVJ_t * job, pointf * A, int n);
+
 static void cairogen_set_color(cairo_t * cr, gvcolor_t * color)
 {
     cairo_set_source_rgba(cr, color->u.RGBA[0], color->u.RGBA[1],
@@ -223,6 +225,7 @@ static void cairogen_textspan(GVJ_t * job, pointf p, textspan_t * span)
 {
     obj_state_t *obj = job->obj;
     cairo_t *cr = (cairo_t *) job->context;
+    pointf A[2];
 
     cairo_set_dash (cr, dashed, 0, 0.0);  /* clear any dashing */
     cairogen_set_color(cr, &(obj->pencolor));
@@ -246,6 +249,13 @@ static void cairogen_textspan(GVJ_t * job, pointf p, textspan_t * span)
     cairo_scale(cr, POINTS_PER_INCH / FONT_DPI, POINTS_PER_INCH / FONT_DPI);
     pango_cairo_show_layout(cr, (PangoLayout*)(span->layout));
     cairo_restore(cr);
+
+    if ((span->font) && (span->font->flags & HTML_OL)) {
+	A[0].x = p.x;
+	A[1].x = p.x + span->size.x;
+	A[1].y = A[0].y = p.y;
+	cairogen_polyline(job, A, 2);
+    }
 }
 
 static void cairogen_set_penstyle(GVJ_t *job, cairo_t *cr)

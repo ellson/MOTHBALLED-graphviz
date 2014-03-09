@@ -128,7 +128,7 @@ struct _xdot_op {
       xdot_color grad_color;   /* xd_grad_fill_color, xd_grad_pen_color */
       xdot_font font;          /* xd_font */
       char* style;             /* xd_style */
-      int fontchar;            /* xd_fontchar */
+      unsigned int fontchar;   /* xd_fontchar */
     } u;
     drawfunc_t drawfunc;
 };

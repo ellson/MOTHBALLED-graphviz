@@ -215,7 +215,8 @@ n bytes following '-'. The text should be left-aligned (centered,
 right-aligned) on the point if j is -1 (0, 1), respectively. The value
 w gives the width of the text as computed by the library.
 <TR><TD>t f
-<TD>Set font characteristics. The integer f is the OR of BOLD=1, ITALIC=2, UNDERLINE=4, SUPERSCRIPT=8, SUBSCRIPT=16, and STRIKE-THROUGH=32. (1.5)
+<TD>Set font characteristics. The integer f is the OR of BOLD=1, ITALIC=2, UNDERLINE=4, SUPERSCRIPT=8, SUBSCRIPT=16, (1.5) STRIKE-THROUGH=32 (1.6),
+and OVERLINE=64 (1.7).
 <TR><TD>C n -<I>b<sub>1</sub>b<sub>2</sub>...b<sub>n</sub></I>
 <TD>Set fill color. The color value consists of the
 n bytes following '-'. (1.1)
@@ -297,6 +298,7 @@ Version info:
 <TR><TD>1.4</TD><TD>2.32</TD><TD>Add gradient colors</TD</TR>
 <TR><TD>1.5</TD><TD>2.34</TD><TD>Fix text layout problem; fix inverted vector in gradient; support version-specific output; new <B>t</B> op for text characteristics</TD</TR>
 <TR><TD>1.6</TD><TD>2.35</TD><TD>Add STRIKE-THROUGH bit for <tt>t</tt></TD</TR>
+<TR><TD>1.7</TD><TD>2.37</TD><TD>Add OVERLINE for <tt>t</tt></TD</TR>
 </TABLE>
 
 <DT><A NAME=d:cgimage HREF=#a:cgimage><STRONG>cgimage</STRONG></A>

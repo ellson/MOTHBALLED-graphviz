@@ -54,7 +54,7 @@ typedef enum {
 //    #pragma comment( lib, "ingraphs.lib" )
 #endif
 
-#define XDOTVERSION "1.6"
+#define XDOTVERSION "1.7"
 
 #define NUMXBUFS (EMIT_HLABEL+1)
 /* There are as many xbufs as there are values of emit_state_t.
@@ -535,6 +535,8 @@ static void dot_end_graph(GVJ_t *job)
     g->clos->disc.io = io_save;
 }
 
+static unsigned int flag_masks[] = { 0x1F, 0x3F, 0x7F };
+
 static void xdot_textspan(GVJ_t * job, pointf p, textspan_t * span)
 {
     emit_state_t emit_state = job->obj->emit_state;
@@ -565,10 +567,10 @@ static void xdot_textspan(GVJ_t * job, pointf p, textspan_t * span)
     else
 	flags = 0;
     if (xd->version >= 15) {
-	unsigned int mask = (xd->version >= 16?0x3F:0x1F);
+	unsigned int mask = flag_masks[xd->version-15];
 	unsigned int bits = flags & mask;
 	if (textflags[emit_state] != bits) {
-	    sprintf (buf, "t %d ", bits);
+	    sprintf (buf, "t %u ", bits);
 	    agxbput(xbufs[emit_state], buf);
 	    textflags[emit_state] = bits;
 	}
