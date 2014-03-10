@@ -175,10 +175,10 @@ static void svg_begin_graph(GVJ_t * job)
     gvprintf(job, "<svg width=\"%dpt\" height=\"%dpt\"\n",
 	     job->width, job->height);
     gvprintf(job, " viewBox=\"%.2f %.2f %.2f %.2f\"",
-	job->canvasBox.LL.x * (job->dpi.x/POINTS_PER_INCH),
-	job->canvasBox.LL.y * (job->dpi.y/POINTS_PER_INCH),
-	job->canvasBox.UR.x * (job->dpi.x/POINTS_PER_INCH),
-	job->canvasBox.UR.y * (job->dpi.y/POINTS_PER_INCH));
+	job->canvasBox.LL.x,
+	job->canvasBox.LL.y,
+	job->canvasBox.UR.x,
+	job->canvasBox.UR.y);
     /* namespace of svg */
     gvputs(job, " xmlns=\"http://www.w3.org/2000/svg\"");
     /* namespace of xlink */
