@@ -597,69 +597,6 @@ set_xcoords(graph_t * g)
     }
 }
 
-#if 0
-/* adjustEqual:
- * Expand cluster g vertically by delta, assuming ranks
- * are equally spaced. We first try to split delta evenly
- * using any available space at the top and bottom. If there
- * is not enough, we have to widen the space between the ranks.
- * We divide delta equally within the ranks of g plus its ht1
- * and ht2. To preserve equality of ranks, we add this space
- * between every pair of ranks.
- *
- * There is probably some way to add less than delta, by using
- * whatever available space there is at top and bottom, but for
- * now, trying to figure that out seems more trouble than it is worth.
- */
-static void adjustEqual(graph_t * g, int delta, int margin_total)
-{
-    int r, avail, half, deltop, delbottom;
-    graph_t *root = agroot(g);
-    rank_t *rank = GD_rank(root);
-    int maxr = GD_maxrank(g);
-    int minr = GD_minrank(g);
-
-    deltop = rank[minr].ht2 - margin_total - GD_ht2(g);
-    delbottom = rank[maxr].ht1 - margin_total - GD_ht1(g);
-    avail = deltop + delbottom;
-    if (avail >= delta) {
- 	half = (delta+1) / 2;
-	if (deltop <= delbottom) {
-	    if (half <= deltop) {
-		GD_ht2(g) += half;
-		GD_ht1(g) += (delta - half);
-	    }
-	    else {    
-		GD_ht2(g) += deltop;
-		GD_ht1(g) += (delta - deltop);
-	    }
-	}
-	else {
-	    if (half <= delbottom) {
-		GD_ht1(g) += half;
-		GD_ht2(g) += (delta - half);
-	    }
-	    else {    
-		GD_ht1(g) += delbottom;
-		GD_ht2(g) += (delta - delbottom);
-	    }
-	}
-    }
-    else {
-	int gaps = maxr - minr + 2;
-	int yoff = (delta + (gaps - 1)) / gaps;
-	int y = yoff;
-	for (r = GD_maxrank(root) - 1; r >= GD_minrank(root); r--) {
-	    if (rank[r].n > 0)
-		ND_coord(rank[r].v[0]).y += y;
-	    y += yoff;
-	}
-	GD_ht2(g) += yoff;
-	GD_ht1(g) += yoff;
-    }
-}
-#endif
-
 /* adjustSimple:
  * Expand cluster height by delta, adding half to top
  * and half to bottom. If the bottom expansion exceeds the
@@ -708,10 +645,11 @@ static void adjustSimple(graph_t * g, int delta, int margin_total)
  */
 static void adjustRanks(graph_t * g, int margin_total)
 {
-    int lht;			/* label height */
-    int rht;			/* height between top and bottom ranks */
-    int delta, maxr, minr, margin;
-    int c, ht1, ht2;
+    double lht;			/* label height */
+    double rht;			/* height between top and bottom ranks */
+    int maxr, minr, margin;
+    int c;
+    double delta, ht1, ht2;
 
     rank_t *rank = GD_rank(agroot(g));
     if (g == agroot(g))
@@ -760,7 +698,8 @@ static void adjustRanks(graph_t * g, int margin_total)
  */
 static int clust_ht(Agraph_t * g)
 {
-    int c, ht1, ht2;
+    int c;
+    double ht1, ht2;
     graph_t *subg;
     rank_t *rank = GD_rank(agroot(g));
     int margin, haveClustLabel = 0;
@@ -807,7 +746,8 @@ static int clust_ht(Agraph_t * g)
 /* set y coordinates of nodes, a rank at a time */
 static void set_ycoords(graph_t * g)
 {
-    int i, j, r, ht2, maxht, delta, d0, d1;
+    int i, j, r;
+    double ht2, maxht, delta, d0, d1;
     node_t *n;
     edge_t *e;
     rank_t *rank = GD_rank(g);
@@ -822,7 +762,7 @@ static void set_ycoords(graph_t * g)
 	    n = rank[r].v[i];
 
 	    /* assumes symmetry, ht1 = ht2 */
-	    ht2 = (ROUND(ND_ht(n)) + 1) / 2;
+	    ht2 = ND_ht(n) / 2;
 
 
 	    /* have to look for high self-edge labels, too */
@@ -915,7 +855,8 @@ static void set_ycoords(graph_t * g)
  */
 static void dot_compute_bb(graph_t * g, graph_t * root)
 {
-    int r, c, x, offset;
+    int r, c;
+    double x, offset;
     node_t *v;
     pointf LL, UR;
 

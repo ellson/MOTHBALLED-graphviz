@@ -203,8 +203,8 @@ extern "C" {
 	node_t **v;		/* ordered list of nodes in rank    */
 	int an;			/* globally allocated number of nodes   */
 	node_t **av;		/* allocated list of nodes in rank  */
-	int ht1, ht2;		/* height below/above centerline    */
-	int pht1, pht2;		/* as above, but only primitive nodes   */
+	double ht1, ht2;	/* height below/above centerline    */
+	double pht1, pht2;	/* as above, but only primitive nodes   */
 	boolean candidate;	/* for transpose () */
 	boolean valid;
 	int cache_nc;		/* caches number of crossings */
@@ -276,7 +276,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	boolean has_images;
 	unsigned char charset; /* input character set */
 	int rankdir;
-	int ht1, ht2;	/* below and above extremal ranks */
+	double ht1, ht2;	/* below and above extremal ranks */
 	unsigned short flags;
 	void *alg;
 	GVC_t *gvc;	/* context for "globals" over multiple graphs */
