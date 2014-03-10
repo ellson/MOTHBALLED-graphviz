@@ -1,3 +1,5 @@
+March 9, 2014
+	- Add overline text characteristic.
 March 4, 2014
 	- Fix bugs in gvpr and gv.cpp so edges can be created in subgraphs.
 	- Add edgepaint program for coloring edges to make them easier to tell apart.
