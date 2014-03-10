@@ -182,7 +182,7 @@ Agraph_t* edge_distinct_coloring(char *color_scheme, char *lightness, Agraph_t* 
 
   A = SparseMatrix_import_dot(g, dim, NULL, &x, NULL, NULL, FORMAT_COORD, NULL);
   if (!x){
-    fprintf(stderr,"The gv file contains no or not proper 2D coordinates\n");
+    fprintf(stderr,"The gv file contains no or improper 2D coordinates\n");
     return NULL;
   }
 
@@ -198,7 +198,8 @@ Agraph_t* edge_distinct_coloring(char *color_scheme, char *lightness, Agraph_t* 
     }
   }
 
-  fprintf(stderr,"cos = %f, nz2 = %d\n", cos_critical, nz2);
+  if (Verbose)
+    fprintf(stderr,"cos = %f, nz2 = %d\n", cos_critical, nz2);
   /* now find edge collision */
   nz = 0;
   B = SparseMatrix_new(nz2, nz2, 1, MATRIX_TYPE_REAL, FORMAT_COORD);
@@ -294,7 +295,8 @@ Agraph_t* edge_distinct_coloring(char *color_scheme, char *lightness, Agraph_t* 
   }
 #endif
 
-  fprintf(stderr,"The edge conflict graph has %d nodes and %d edges, final color_diff=%f color_diff_sum = %f\n",
+  if (Verbose)
+    fprintf(stderr,"The edge conflict graph has %d nodes and %d edges, final color_diff=%f color_diff_sum = %f\n",
 	  C->m, C->nz, color_diff, color_diff_sum);
 
   attach_edge_colors(g, cdim, colors);

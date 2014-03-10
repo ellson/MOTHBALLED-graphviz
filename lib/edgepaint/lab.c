@@ -176,7 +176,8 @@ double *lab_gamut_from_file(char *gamut_file, const char *lightness, int *n){
 
   *n = 0;
 
-  fprintf(stderr,"LAB color lightness range = %d,%d\n", l1, l2);
+  if (Verbose)
+    fprintf(stderr,"LAB color lightness range = %d,%d\n", l1, l2);
 
   fp = fopen(gamut_file, "r");
   if (!fp) return NULL;
@@ -218,12 +219,13 @@ double *lab_gamut(const char *lightness, int *n){
   }
 
 
-
-  fprintf(stderr,"LAB color lightness range = %d,%d\n", l1, l2);
+  if (Verbose)
+    fprintf(stderr,"LAB color lightness range = %d,%d\n", l1, l2);
 
   m = sizeof(lab_gamut_data)/sizeof(lab_gamut_data[0]);
 
-  fprintf(stderr,"size of lab gamut = %d\n", m);
+  if (Verbose)
+    fprintf(stderr,"size of lab gamut = %d\n", m);
 
   x = malloc(sizeof(double)*3*m);
   xx = x;
@@ -313,7 +315,8 @@ void color_blend_rgb2lab(char *color_list, const int maxpoints, double **colors0
   for (i = 0; i < nc - 1; i++){
     dists[i+1] += dists[i];
   }
-  fprintf(stderr,"sum = %f\n", dists[nc-1]);
+  if (Verbose)
+    fprintf(stderr,"sum = %f\n", dists[nc-1]);
 
   if (!(*colors0)){
     *colors0 = malloc(sizeof(double)*maxpoints*cdim);

@@ -244,7 +244,7 @@ void node_distinct_coloring(char *color_scheme, char *lightness, int weightedQ, 
 
   cdim = *cdim0 = 3;
   if (strcmp(color_scheme, "lab") == 0){
-    fprintf(stderr,"lab\n");
+    if (Verbose) fprintf(stderr,"lab\n");
     scheme =  COLOR_LAB;
     qt = lab_gamut_quadtree("lab_gamut", lightness, max_qtree_level);
     if (!qt){
@@ -253,7 +253,7 @@ void node_distinct_coloring(char *color_scheme, char *lightness, int weightedQ, 
       return;
     }
   } else if (strcmp(color_scheme, "rgb") == 0){
-    fprintf(stderr,"rgb\n");
+    if (Verbose) fprintf(stderr,"rgb\n");
     scheme = COLOR_RGB;
   } else if (strcmp(color_scheme, "gray") == 0){
     scheme = COLOR_GRAY;
