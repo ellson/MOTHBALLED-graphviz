@@ -430,7 +430,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 
 	/* for placing nodes */
 	int rank, order;	/* initially, order = 1 for ordered edges */
-	int mval;
+	double mval;
 	elist save_in, save_out;
 
 	/* for network-simplex */
