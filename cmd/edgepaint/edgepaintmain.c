@@ -84,9 +84,10 @@ static void usage (char* cmd, int eval){
   fprintf(stderr, " -random_seed=s   : random seed to use. s must be an integer. If s is negative, we do -s iterations with different seeds and pick the best.\n");
   fprintf(stderr, " -color_scheme=c  : palette used. The string c should be \"rgb\", \"gray\", \"lab\" (default); or\n");
   fprintf(stderr, "       a comma-separated list of RGB colors in hex (e.g., \"#ff0000,#aabbed,#eeffaa\"); or\n");
-  fprintf(stderr, "       a string specifying a Brewer color scheme (e.g., \"accent7\")\n");
+  fprintf(stderr, "       a string specifying a Brewer color scheme (e.g., \"accent7\"; see http://www.graphviz.org/content/color-names#brewer).\n");
   fprintf(stderr, " -lightness=l1,l2 : only applied for LAB color scheme: l1 must be integer >=0, l2 integer <=100, and l1 <=l2. By default we use 0,70\n");
-  fprintf(stderr, " -share_endpoint  :  if this option is specified, edges that shares an end point are not considered in conflict if they are close to parallel but is on the opposite ends of the shared point (around 180 degree).\n");
+  fprintf(stderr, " -share_endpoint  :  if this option is specified, edges that shares an end point are not considered in conflict if they are close to\n");
+  fprintf(stderr, "       parallel but is on the opposite ends of the shared point (around 180 degree).\n");
   fprintf(stderr, " -v               : verbose\n");
   fprintf(stderr, " -o fname         :  write output to file fname (stdout)\n");
   exit(eval);
