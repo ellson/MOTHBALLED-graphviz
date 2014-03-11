@@ -67,7 +67,7 @@ static void completeregularpath(path *, Agedge_t *, Agedge_t *,
 static int edgecmp(Agedge_t **, Agedge_t **);
 static void make_flat_edge(spline_info_t*, path *, Agedge_t **, int, int, int);
 static void make_regular_edge(spline_info_t*, path *, Agedge_t **, int, int, int);
-static boxf makeregularend(boxf, int, int);
+static boxf makeregularend(boxf, int, double);
 static boxf maximal_bbox(spline_info_t*, Agnode_t *, Agedge_t *, Agedge_t *);
 static Agnode_t *neighbor(Agnode_t *, Agedge_t *, Agedge_t *, int);
 static void place_vnlabel(Agnode_t *);
@@ -383,10 +383,16 @@ static void _dot_splines(graph_t * g, int normalize)
     }
 
     for (i = 0; i < n_edges;) {
+ 	boolean havePorts;
 	ind = i;
 	le0 = getmainedge((e0 = edges[i++]));
-	ea = (ED_tail_port(e0).defined
-	      || ED_head_port(e0).defined) ? e0 : le0;
+	if (ED_tail_port(e0).defined || ED_head_port(e0).defined) {
+	    havePorts = TRUE;
+	    ea = e0;
+	} else {
+	    havePorts = FALSE;
+	    ea =  le0;
+	}
 	if (ED_tree_index(ea) & BWDEDGE) {
 	    MAKEFWDEDGE(&fwdedgea.out, ea);
 	    ea = &fwdedgea.out;
@@ -395,8 +401,15 @@ static void _dot_splines(graph_t * g, int normalize)
 	    if (le0 != (le1 = getmainedge((e1 = edges[i]))))
 		break;
 	    if (ED_adjacent(e0)) continue; /* all flat adjacent edges at once */
-	    eb = (ED_tail_port(e1).defined
-		  || ED_head_port(e1).defined) ? e1 : le1;
+	    if (ED_tail_port(e1).defined || ED_head_port(e1).defined) {
+		if (!havePorts) break;
+		else
+		    eb = e1;
+	    } else {
+		if (havePorts) break;
+		else
+		    eb = le1;
+	    }
 	    if (ED_tree_index(eb) & BWDEDGE) {
 		MAKEFWDEDGE(&fwdedgeb.out, eb);
 		eb = &fwdedgeb.out;
@@ -794,17 +807,14 @@ cloneGraph (graph_t* g, attr_state_t* attr_state)
     GD_ranksep(auxg) = GD_ranksep(g);
 
 	//copy node attrs to auxg
-//	list = g->root->univ->nodeattr->list;
-	sym=agnxtattr(agroot(g),AGNODE,NULL); //get the first attr.
-	while ((sym = agnxtattr(agroot(g),AGNODE,sym))) {
-		agattr (auxg, AGNODE,sym->name, sym->defval	);
-    }
+    sym=agnxtattr(agroot(g),AGNODE,NULL); //get the first attr.
+    for (; sym; sym = agnxtattr(agroot(g),AGNODE,sym))
+	agattr (auxg, AGNODE,sym->name, sym->defval);
 
 	//copy edge attributes
-	sym=agnxtattr(agroot(g),AGEDGE,NULL); //get the first attr.
-	while ((sym = agnxtattr(agroot(g),AGEDGE,sym))) {
+    sym=agnxtattr(agroot(g),AGEDGE,NULL); //get the first attr.
+    for (; sym; sym = agnxtattr(agroot(g),AGEDGE,sym))
 	agattr (auxg, AGEDGE,sym->name, sym->defval);
-    }
 
     if (!agattr(auxg,AGEDGE, "headport", NULL))
 	agattr(auxg,AGEDGE, "headport", "");
@@ -895,6 +905,7 @@ cloneEdge (graph_t* g, node_t* tn, node_t* hn, edge_t* orig)
 {
     edge_t* e = agedge(g, tn, hn,NULL,1);
     /* for (; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig)); */
+    agbindrec(e, "Agedgeinfo_t", sizeof(Agedgeinfo_t), TRUE);
     agcopyattr (orig, e);
 /*
     if (orig->tail != ND_alg(tn)) {
@@ -2048,7 +2059,7 @@ completeregularpath(path * P, edge_t * first, edge_t * last,
  * nodes in a given rank can differ in height.
  * for now, regular edges always go from top to bottom 
  */
-static boxf makeregularend(boxf b, int side, int y)
+static boxf makeregularend(boxf b, int side, double y)
 {
     boxf newb;
     switch (side) {
