@@ -305,6 +305,7 @@ make_LR_constraints(graph_t * g)
 		    if (m0 > USHRT_MAX)
 			m0 = largeMinlen (m0);
 		    ED_minlen(e0) = MAX(ED_minlen(e0), m0);
+		    ED_weight(e0) = MAX(ED_weight(e0), ED_weight(e));
 		}
 		else if (!ED_label(e)) {
 		    /* unlabeled flat edge between non-neighbors 
