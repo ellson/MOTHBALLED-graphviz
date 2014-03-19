@@ -314,7 +314,8 @@ void country_graph_coloring_internal(int seed, SparseMatrix A, int **p, real *no
   }
 
   vector_ordering(n, v, p, TRUE);
-  fprintf(stderr, "cpu time for spectral ordering (before greedy) = %f\n", (real) (clock() - start)/(CLOCKS_PER_SEC));
+  if (Verbose)
+    fprintf(stderr, "cpu time for spectral ordering (before greedy) = %f\n", (real) (clock() - start)/(CLOCKS_PER_SEC));
 
   start2 = clock();
   /* swapping */
@@ -327,10 +328,12 @@ void country_graph_coloring_internal(int seed, SparseMatrix A, int **p, real *no
       assert(0);
     }
   }
-  fprintf(stderr, "cpu time for greedy refinement = %f\n", (real) (clock() - start2)/(CLOCKS_PER_SEC));
+  if (Verbose) {
+    fprintf(stderr, "cpu time for greedy refinement = %f\n", (real) (clock() - start2)/(CLOCKS_PER_SEC));
 
-  fprintf(stderr, "cpu time for spectral + greedy = %f\n", (real) (clock() - start)/(CLOCKS_PER_SEC));
+    fprintf(stderr, "cpu time for spectral + greedy = %f\n", (real) (clock() - start)/(CLOCKS_PER_SEC));
 
+  }
   get_12_norm(n, ia, ja, *p, norm1);
 
   *norm_1 = norm1[0];
