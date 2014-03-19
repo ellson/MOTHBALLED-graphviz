@@ -796,8 +796,8 @@ polyRects(int ng, boxf* gs, pack_info * pinfo)
  *  the array needs to be freed;
  * Returns NULL if problem occur or if ng == 0.
  * 
- * Depends on graph fields bb, node fields pos, xsize and ysize, and
- * edge field spl.
+ * Depends on graph fields GD_bb, node fields ND_pos(inches), ND_xsize and 
+ * ND_ysize, and edge field ED_spl.
  *
  * FIX: fixed mode does not always work. The fixed ones get translated
  * back to be centered on the origin.
