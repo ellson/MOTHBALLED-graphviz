@@ -1256,7 +1256,7 @@ static void applyPromotionHeuristic(graph_t * g)
 static int allNeighborsAreBelow(Agnode_t * n)
 {
     Agedge_t *e;
-    graph_t *g = agraphof(n);
+    /* graph_t *g = agraphof(n); */
     int i;
 
     //for (e = agfstout(g,n); e; e = agnxtout(g,e))

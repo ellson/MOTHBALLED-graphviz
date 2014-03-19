@@ -159,13 +159,13 @@ static void rebuild_vlists(graph_t * g)
 
     for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
 	lead = GD_rankleader(g)[r];
-	if (GD_rank(agroot(g))[r].v[ND_order(lead)] != lead) {
+	if (GD_rank(dot_root(g))[r].v[ND_order(lead)] != lead) {
 	    agerr(AGERR, "rebuiltd_vlists: rank lead %s not in order %d of rank %d\n", 
 		agnameof(lead), ND_order(lead), r);
 	    longjmp(jbuf, 1);
 	}
 	GD_rank(g)[r].v =
-	    GD_rank(agroot(g))[r].v + ND_order((GD_rankleader(g)[r]));
+	    GD_rank(dot_root(g))[r].v + ND_order((GD_rankleader(g)[r]));
 	maxi = -1;
 	for (i = 0; i < GD_rank(g)[r].n; i++) {
 	    if ((n = GD_rank(g)[r].v[i]) == NULL)
