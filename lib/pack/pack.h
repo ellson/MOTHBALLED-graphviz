@@ -83,6 +83,7 @@ typedef unsigned int packval_t;
 
     extern int isConnected(Agraph_t *);
     extern Agraph_t **ccomps(Agraph_t *, int *, char *);
+    extern Agraph_t **cccomps(Agraph_t *, int *, char *);
     extern Agraph_t **pccomps(Agraph_t *, int *, char *, boolean *);
     extern int nodeInduce(Agraph_t *);
 #undef extern
