@@ -714,12 +714,12 @@ splineEdges(graph_t * g, int (*edgefn) (graph_t *, expand_t*, int),
     map = dtopen(&edgeItemDisc, Dtoset);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    if (!(Nop > 1 && ED_spl(e))) {
-		/* with nop > 1 (use given edges)
-		 * and a given edge, no edges are created
-		 * so other edges being equivalent to this
-		 * also wouldn't be created
+	    if ((Nop > 1 && ED_spl(e))) {
+		/* If Nop > 1 (use given edges) and e has a spline, it
+ 		 * should have its own equivalence class.
 		 */
+		    ED_count(e)++;
+	    } else {
 		edge_t *leader = equivEdge(map, e);
 		if (leader != e) {
 		    fprintf(stderr, "leader != e\n");
@@ -727,8 +727,6 @@ splineEdges(graph_t * g, int (*edgefn) (graph_t *, expand_t*, int),
 		    ED_to_virt(e) = ED_to_virt(leader);
 		    ED_to_virt(leader) = e;
 		}
-	    } else {
-		    ED_count(e)++;
 	    }
 	}
     }
