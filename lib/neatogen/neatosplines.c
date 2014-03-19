@@ -722,7 +722,6 @@ splineEdges(graph_t * g, int (*edgefn) (graph_t *, expand_t*, int),
 	    } else {
 		edge_t *leader = equivEdge(map, e);
 		if (leader != e) {
-		    fprintf(stderr, "leader != e\n");
 		    ED_count(leader)++;
 		    ED_to_virt(e) = ED_to_virt(leader);
 		    ED_to_virt(leader) = e;
