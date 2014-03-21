@@ -385,11 +385,9 @@ void add_box(path * P, boxf b)
  * The extra space provided by FUDGE-2 prevents the edge from getting
  * too close the side of the node.
  *
- * The HT2 macro is needed because dot calculates ht2 and ht1 of ranks using
- * integers.
  */
 #define FUDGE 2
-#define HT2(n) ((ROUND(ND_ht(n))+1)/2)
+#define HT2(n) (ND_ht(n)/2)
 
 void
 beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
