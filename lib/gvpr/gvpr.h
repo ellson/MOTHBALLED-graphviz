@@ -19,6 +19,9 @@ extern "C" {
 #define GVPR_H
 
 #include "cgraph.h"
+#ifdef WIN32
+typedef int ssize_t;
+#endif
 
 /* Bits for flags variable in gvprstate_t.
  * Included here so that calling programs can use the first
