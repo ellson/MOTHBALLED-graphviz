@@ -6,10 +6,6 @@
 **      Written by Kiem-Phong Vo
 */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #define CDT_VERSION	20050420L
 
 #ifndef Void_t
@@ -21,12 +17,7 @@
 #endif
 
 #include <stddef.h>	/* size_t */
-#ifdef HAVE_STRING_H
 #include <string.h>
-#else
-extern int		memcmp _ARG_((const Void_t*, const Void_t*, size_t));
-extern int		strcmp _ARG_((const char*, const char*));
-#endif
 
 #ifndef _BEGIN_EXTERNS_
 #define _BEGIN_EXTERNS_

@@ -18,8 +18,10 @@ extern "C" {
 #ifndef GVPR_H
 #define GVPR_H
 
-#include "ast_common.h"
 #include "cgraph.h"
+#ifdef WIN32
+typedef int ssize_t;
+#endif
 
 /* Bits for flags variable in gvprstate_t.
  * Included here so that calling programs can use the first
