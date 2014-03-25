@@ -572,7 +572,7 @@ static Dtdisc_t ImageDictDisc = {
 
 usershape_t *gvusershape_find(char *name)
 {
-    usershape_t probe, *us;
+    usershape_t *us;
 
     assert(name);
     assert(name[0]);
@@ -580,8 +580,7 @@ usershape_t *gvusershape_find(char *name)
     if (!ImageDict)
 	return NULL;
 
-    probe.name = name;
-    us = dtsearch(ImageDict, &probe);
+    us = dtmatch(ImageDict, name);
     return us;
 }
 
@@ -643,7 +642,7 @@ static usershape_t *gvusershape_open (char *name)
         if (! (us = zmalloc(sizeof(usershape_t))))
 	    return NULL;
 
-	us->name = name;
+	us->name = agstrdup (0, name);
 	if (!gvusershape_file_access(us)) 
 	    return NULL;
 
