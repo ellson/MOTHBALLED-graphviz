@@ -437,8 +437,8 @@ void dot_layout(Agraph_t * g)
     dotneato_postprocess(g);
 }
 
-Agraph_t * dot_root (Agraph_t* g)
+Agraph_t * dot_root (void* p)
 {
-    return GD_dotroot(g);
+    return GD_dotroot(agroot(p));
 }
 

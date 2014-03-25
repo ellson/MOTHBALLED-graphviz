@@ -77,7 +77,7 @@ extern "C" {
 #if defined(_BLD_dot) && defined(_DLL)
 #   define extern __EXPORT__
 #endif
-    extern Agraph_t* dot_root(Agraph_t *);
+    extern Agraph_t* dot_root(void *);
     extern void dot_concentrate(Agraph_t *);
     extern void dot_mincross(Agraph_t *, int);
     extern void dot_position(Agraph_t *, aspect_t*);
