@@ -411,7 +411,7 @@ static void ps_size (usershape_t *us)
     int lx, ly, ux, uy;
     char* linep;
 
-    us->dpi = 0;
+    us->dpi = 72;
     fseek(us->f, 0, SEEK_SET);
     saw_bb = FALSE;
     while (fgets(line, sizeof(line), us->f)) {
