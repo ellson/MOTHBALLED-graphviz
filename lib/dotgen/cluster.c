@@ -97,7 +97,7 @@ map_path(node_t * from, node_t * to, edge_t * orig, edge_t * ve, int type)
 	u = from;
 	for (r = ND_rank(from); r < ND_rank(to); r++) {
 	    if (r < ND_rank(to) - 1)
-		v = clone_vn(agraphof(from), aghead(ve));
+		v = clone_vn(dot_root(from), aghead(ve));
 	    else
 		v = to;
 	    e = virtual_edge(u, v, orig);
@@ -167,13 +167,13 @@ void interclexp(graph_t * subg)
     node_t *n;
     edge_t *e, *prev, *next;
 
-    g = agroot(subg);
+    g = dot_root(subg);
     for (n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
 
 	/* N.B. n may be in a sub-cluster of subg */
 	prev = NULL;
-	for (e = agfstedge(agroot(subg), n); e; e = next) {
-	    next = agnxtedge(agroot(subg), e, n);
+	for (e = agfstedge(g, n); e; e = next) {
+	    next = agnxtedge(g, e, n);
 	    if (agcontains(subg, e))
 		continue;
 
@@ -217,7 +217,7 @@ void interclexp(graph_t * subg)
 /*
 I think that make_interclust_chain should create call other_edge(e) anyway 
 				if (agcontains(subg,agtail(e))
-					&& agfindedge(subg->root,aghead(e),agtail(e))) other_edge(e);
+					&& agfindedge(g,aghead(e),agtail(e))) other_edge(e);
 */
 		make_interclust_chain(g, aghead(e), agtail(e), e);
 		prev = e;
@@ -233,7 +233,7 @@ merge_ranks(graph_t * subg)
     node_t *v;
     graph_t *root;
 
-    root = agroot(subg);
+    root = dot_root(subg);
     if (GD_minrank(subg) > 0)
 	GD_rank(root)[GD_minrank(subg) - 1].valid = FALSE;
     for (r = GD_minrank(subg); r <= GD_maxrank(subg); r++) {
@@ -245,10 +245,10 @@ merge_ranks(graph_t * subg)
 	    ND_order(v) = pos++;
 	/* real nodes automatically have v->root = root graph */
 	    if (ND_node_type(v) == VIRTUAL)
-		v->root = root;
+		v->root = agroot(root);
 	    delete_fast_node(subg, v);
-	    fast_node(agroot(subg), v);
-	    GD_n_nodes(agroot(subg))++;
+	    fast_node(root, v);
+	    GD_n_nodes(root)++;
 	}
 	GD_rank(subg)[r].v = GD_rank(root)[r].v + ipos;
 	GD_rank(root)[r].valid = FALSE;
@@ -273,7 +273,7 @@ remove_rankleaders(graph_t * g)
 	    delete_fast_edge(e);
 	while ((e = ND_in(v).list[0]))
 	    delete_fast_edge(e);
-	delete_fast_node(agroot(g), v);
+	delete_fast_node(dot_root(g), v);
 	GD_rankleader(g)[r] = NULL;
     }
 }

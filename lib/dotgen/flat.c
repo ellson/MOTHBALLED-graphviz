@@ -143,7 +143,7 @@ flat_node(edge_t * e)
 
     if (ED_label(e) == NULL)
 	return;
-    g = agraphof(agtail(e));
+    g = dot_root(agtail(e));
     r = ND_rank(agtail(e));
 
     place = flat_limits(g, e);
@@ -224,7 +224,7 @@ checkFlatAdjacent (edge_t* e)
 	lo = ND_order(hn);
 	hi = ND_order(tn);
     }
-    rank = &(GD_rank(agraphof(tn))[ND_rank(tn)]);
+    rank = &(GD_rank(dot_root(tn))[ND_rank(tn)]);
     for (i = lo + 1; i < hi; i++) {
 	n = rank->v[i];
 	if ((ND_node_type(n) == VIRTUAL && ND_label(n)) || 
