@@ -1245,6 +1245,7 @@ make_flat_adj_edges(graph_t* g, path* P, edge_t** edges, int ind, int cnt, edge_
     }
     agxset (hvye, E_weight, "10000");
     GD_gvc(auxg) = GD_gvc(g);
+    GD_dotroot(auxg) = auxg;
     setEdgeType (auxg, et);
     dot_init_node_edge(auxg);
 
