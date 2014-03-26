@@ -24,7 +24,8 @@ dot_init_subg(graph_t * g, graph_t* droot)
 
     if ((g != agroot(g)))
 	agbindrec(g, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
-    GD_dotroot(g) = droot;
+    if (g == droot)
+	GD_dotroot(agroot(g)) = droot;
 	
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
 	dot_init_subg(subg, droot);
