@@ -356,10 +356,10 @@ of the layout programs.
 </TD><TD ALIGN="CENTER">true</TD><TD></TD><TD>prism only</TD> </TR>
  <TR><TD><A NAME=a:pack HREF=#d:pack>pack</A>
 </TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
-<BR>int</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD>not dot</TD> </TR>
+<BR>int</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:packmode HREF=#d:packmode>packmode</A>
 </TD><TD>G</TD><TD><A HREF=#k:packMode>packMode</A>
-</TD><TD ALIGN="CENTER">node</TD><TD></TD><TD>not dot</TD> </TR>
+</TD><TD ALIGN="CENTER">node</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:pad HREF=#d:pad>pad</A>
 </TD><TD>G</TD><TD>double<BR><A HREF=#k:point>point</A>
 </TD><TD ALIGN="CENTER">0.0555 (4 points)</TD><TD></TD><TD></TD> </TR>
@@ -428,7 +428,7 @@ of the layout programs.
 </TD><TD>N</TD><TD>int</TD><TD ALIGN="CENTER">8(output)<BR>20(overlap and image maps)</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:scale HREF=#d:scale>scale</A>
 </TD><TD>G</TD><TD>double<BR><A HREF=#k:point>point</A>
-</TD><TD ALIGN="CENTER"></TD><TD></TD><TD>twopi only</TD> </TR>
+</TD><TD ALIGN="CENTER"></TD><TD></TD><TD>not dot</TD> </TR>
  <TR><TD><A NAME=a:searchsize HREF=#d:searchsize>searchsize</A>
 </TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">30</TD><TD></TD><TD>dot only</TD> </TR>
  <TR><TD><A NAME=a:sep HREF=#d:sep>sep</A>
@@ -1736,8 +1736,7 @@ of the layout programs.
   overlapping nodes, and in image maps.
 
 <DT><A NAME=d:scale HREF=#a:scale><STRONG>scale</STRONG></A>
-<DD>  If set, after the initial layout, twopi will scale the layout by the given factors.
-  The scaling uses the root node of each component as the center of the scaling.
+<DD>  If set, after the initial layout, the layout is scaled by the given factors.
   If only a single number is given, this is used for both factors.
 
 <DT><A NAME=d:searchsize HREF=#a:searchsize><STRONG>searchsize</STRONG></A>
