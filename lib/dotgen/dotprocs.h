@@ -38,6 +38,7 @@ extern "C" {
     extern void dot_layout(Agraph_t * g);
     extern void dot_init_node_edge(graph_t * g);
     extern void dot_scan_ranks(graph_t * g);
+    extern void enqueue_neighbors(nodequeue * q, node_t * n0, int pass);
     extern void expand_cluster(Agraph_t *);
     extern Agedge_t *fast_edge(Agedge_t *);
     extern void fast_node(Agraph_t *, Agnode_t *);

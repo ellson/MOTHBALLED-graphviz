@@ -135,7 +135,7 @@ neato ps -Gmode=hier -Glevelsgap=1
 model
 mode.gv
 neato ps -Gmodel=circuit
-neato ps -Gmodel=subset
+neato ps -Goverlap=false -Gmodel=subset
 
 # cairo versions have problems
 nojustify

@@ -24,7 +24,8 @@ dot_init_subg(graph_t * g, graph_t* droot)
 
     if ((g != agroot(g)))
 	agbindrec(g, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
-    GD_dotroot(g) = droot;
+    if (g == droot)
+	GD_dotroot(agroot(g)) = droot;
 	
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
 	dot_init_subg(subg, droot);
@@ -421,6 +422,12 @@ static void doDot (Agraph_t* g)
 	    packSubgraphs(ncc, ccs, g, &pinfo);
 	    resetCoord (g);
 	} else {
+	    /* Not sure what semantics should be for non-trivial ratio
+             * attribute with multiple components.
+             * One possibility is to layout nodes, pack, then apply the ratio
+             * adjustment. We would then have to re-adjust all positions.
+             */
+	    dotLayout(g);
 	}
 
 	for (i = 0; i < ncc; i++) {
