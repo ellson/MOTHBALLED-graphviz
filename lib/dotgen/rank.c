@@ -193,7 +193,7 @@ node_induce(graph_t * par, graph_t * g)
     }
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	for (e = agfstout(agroot(g), n); e; e = agnxtout(agroot(g), e)) {
+	for (e = agfstout(dot_root(g), n); e; e = agnxtout(dot_root(g), e)) {
 	    if (agcontains(g, aghead(e)))
 		agsubedge(g,e,1);
 	}
@@ -305,7 +305,7 @@ static void
 find_clusters(graph_t * g)
 {
     graph_t *subg;
-    for (subg = agfstsubg(agroot(g)); subg; subg = agnxtsubg(subg)) {
+    for (subg = agfstsubg(dot_root(g)); subg; subg = agnxtsubg(subg)) {
 	if (GD_set_type(subg) == CLUSTER)
 	    collapse_cluster(g, subg);
     }
@@ -428,7 +428,7 @@ static void expand_ranksets(graph_t * g, aspect_t* asp)
 		UF_singleton(n);
 	    n = agnxtnode(g, n);
 	}
-	if (g == agroot(g)) {
+	if (g == dot_root(g)) {
 	    if (CL_type == LOCAL) {
 		for (c = 1; c <= GD_n_cluster(g); c++)
 		    set_minmax(GD_clust(g)[c]);

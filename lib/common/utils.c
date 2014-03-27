@@ -2003,7 +2003,7 @@ static void fillMap (Agraph_t* g, Dt_t* map)
     for (c = 1; c <= GD_n_cluster(g); c++) {
 	cl = GD_clust(g)[c];
 	s = agnameof(cl);
-	if (dtmatch (map, &s)) {
+	if (dtmatch (map, s)) {
 	    agerr(AGWARN, "Two clusters named %s - the second will be ignored\n", s);
 	}
 	else {

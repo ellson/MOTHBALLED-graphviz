@@ -25,7 +25,7 @@ label_vnode(graph_t * g, edge_t * orig)
     dimen = ED_label(orig)->dimen;
     v = virtual_node(g);
     ND_label(v) = ED_label(orig);
-    ND_lw(v) = GD_nodesep(agroot(agraphof(v)));
+    ND_lw(v) = GD_nodesep(agroot(v));
     if (!ED_label_ontop(orig)) {
 	if (GD_flip(agroot(g))) {
 	    ND_ht(v) = dimen.x;
@@ -300,7 +300,7 @@ void class2(graph_t * g)
 	}
     }
     /* since decompose() is not called on subgraphs */
-    if (g != agroot(g)) {
+    if (g != dot_root(g)) {
 	GD_comp(g).list = ALLOC(1, GD_comp(g).list, node_t *);
 	GD_comp(g).list[0] = GD_nlist(g);
     }

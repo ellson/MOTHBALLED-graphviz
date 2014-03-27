@@ -1078,6 +1078,35 @@ adjust_data *graphAdjustMode(graph_t *G, adjust_data* dp, char* dflt)
     return (getAdjustMode (G, am ? am : (dflt ? dflt : ""), dp));
 }
 
+#define ISZERO(d) ((fabs(d) < 0.000000001))
+
+/* simpleScaling:
+ */
+static int simpleScale (graph_t* g) 
+{
+    pointf sc;
+    node_t* n;
+    int i;
+    char* p;
+
+    if ((p = agget(g, "scale"))) {
+	if ((i = sscanf(p, "%lf,%lf", &sc.x, &sc.y))) {
+	    if (ISZERO(sc.x)) return 0;
+	    if (i == 1) sc.y = sc.x;
+	    else if (ISZERO(sc.y)) return 0;
+	    if ((sc.y == 1) && (sc.x == 1)) return 0;
+	    if (Verbose)
+		fprintf (stderr, "scale = (%.03f,%.03f)\n", sc.x, sc.y);
+	    for (n = agfstnode(g); n; n = agnxtnode(g,n)) {
+		ND_pos(n)[0] *= sc.x;
+		ND_pos(n)[1] *= sc.y;
+	    }
+	    return 1;
+	}
+    }
+    return 0;
+}
+
 /* removeOverlapWith:
  * Use adjust_data to determine if and how to remove
  * node overlaps.
@@ -1092,6 +1121,7 @@ removeOverlapWith (graph_t * G, adjust_data* am)
 	return 0;
 
     nret = normalize (G);
+    nret += simpleScale (G);
 
     if (am->mode == AM_NONE)
 	return nret;

@@ -17,6 +17,7 @@ bezier_clip
 bind_shape    
 cat_libfile    
 ccomps    
+cccomps    
 ccwrotatep    
 ccwrotatepf    
 charsetToStr    

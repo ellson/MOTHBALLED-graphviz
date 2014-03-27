@@ -580,7 +580,7 @@ static int mincross(graph_t * g, int startpass, int endpass, int doBalance)
     for (pass = startpass; pass <= endpass; pass++) {
 	if (pass <= 1) {
 	    maxthispass = MIN(4, MaxIter);
-	    if (g == agroot(g))
+	    if (g == dot_root(g))
 		build_ranks(g, pass);
 	    if (pass == 0)
 		flat_breakcycles(g);
@@ -837,9 +837,9 @@ void rec_reset_vlists(graph_t * g)
 	    w = furthestnode(g, v, 1);
 	    GD_rankleader(g)[r] = u;
 #ifdef DEBUG
-	    assert(GD_rank(g->root)[r].v[ND_order(u)] == u);
+	    assert(GD_rank(dot_root(g)[r].v[ND_order(u)] == u);
 #endif
-	    GD_rank(g)[r].v = GD_rank(agroot(g))[r].v + ND_order(u);
+	    GD_rank(g)[r].v = GD_rank(dot_root(g))[r].v + ND_order(u);
 	    GD_rank(g)[r].n = ND_order(w) - ND_order(u) + 1;
 	}
 }
@@ -866,7 +866,7 @@ realFillRanks (Agraph_t* g, int rnks[], int rnks_sz, Agraph_t* sg)
     for (c = 1; c <= GD_n_cluster(g); c++)
 	sg = realFillRanks (GD_clust(g)[c], rnks, rnks_sz, sg);
 
-    if (agroot(g) == g)
+    if (dot_root(g) == g)
 	return sg;
     memset (rnks, 0, sizeof(int)*rnks_sz);
     for (n = agfstnode(g); n; n = agnxtnode(g,n)) {
@@ -879,7 +879,7 @@ realFillRanks (Agraph_t* g, int rnks[], int rnks_sz, Agraph_t* sg)
     for (i = GD_minrank(g); i <= GD_maxrank(g); i++) {
 	if (rnks[i] == 0) {
 	    if (!sg) {
-		sg = agsubg (agroot(g), "_new_rank", 1);
+		sg = agsubg (dot_root(g), "_new_rank", 1);
 	    }
 	    n = agnode (sg, NULL, 1);
 	    agbindrec(n, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
@@ -917,7 +917,7 @@ static void init_mincross(graph_t * g)
     /* alloc +1 for the null terminator usage in do_ordering() */
     /* also, the +1 avoids attempts to alloc 0 sizes, something
        that efence complains about */
-    size = agnedges(agroot(g)) + 1;
+    size = agnedges(dot_root(g)) + 1;
     TE_list = N_NEW(size, edge_t *);
     TI_list = N_NEW(size, int);
     mincross_options(g);
@@ -970,7 +970,7 @@ static void flat_search(graph_t * g, node_t * v)
 
     ND_mark(v) = TRUE;
     ND_onstack(v) = TRUE;
-    hascl = (GD_n_cluster(agroot(g)) > 0);
+    hascl = (GD_n_cluster(dot_root(g)) > 0);
     if (ND_flat_out(v).list)
 	for (i = 0; (e = ND_flat_out(v).list[i]); i++) {
 	    if (hascl
@@ -1164,7 +1164,7 @@ void build_ranks(graph_t * g, int pass)
 	}
     }
 
-    if ((g == agroot(g)) && ncross(g) > 0)
+    if ((g == dot_root(g)) && ncross(g) > 0)
 	transpose(g, FALSE);
     free_queue(q);
 }
@@ -1709,7 +1709,7 @@ void check_exchange(node_t * v, node_t * w)
     r = ND_rank(v);
 
     for (i = ND_order(v) + 1; i < ND_order(w); i++) {
-	u = GD_rank(agraphof(v))[r].v[i];
+	u = GD_rank(dot_root(v))[r].v[i];
 	if (ND_clust(u))
 	    abort();
     }

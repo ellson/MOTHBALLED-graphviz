@@ -245,7 +245,7 @@ node_t *virtual_node(graph_t * g)
 //  agnameof(n) = "virtual";
     AGTYPE(n) = AGNODE;
     n->base.data = (Agrec_t*)NEW(Agnodeinfo_t);
-    n->root = g;
+    n->root = agroot(g);
     ND_node_type(n) = VIRTUAL;
     ND_lw(n) = ND_rw(n) = 1;
     ND_ht(n) = 1;
@@ -261,7 +261,7 @@ void flat_edge(graph_t * g, edge_t * e)
 {
     elist_append(e, ND_flat_out(agtail(e)));
     elist_append(e, ND_flat_in(aghead(e)));
-    GD_has_flat_edges(agroot(g)) = GD_has_flat_edges(g) = TRUE;
+    GD_has_flat_edges(dot_root(g)) = GD_has_flat_edges(g) = TRUE;
 }
 
 void delete_flat_edge(edge_t * e)
@@ -294,7 +294,7 @@ void fastgr(graph_t * g)
 	for (i = 0; (e = ND_out(n).list[i]); i++) {
 	    fprintf(stderr, " %s:%d", NAME(aghead(e)), ED_count(e));
 	    w = aghead(e);
-	    if (g == g->root) {
+	    if (g == agroot(g)) {
 		for (j = 0; (f = ND_in(w).list[j]); j++)
 		    if (e == f)
 			break;
@@ -305,7 +305,7 @@ void fastgr(graph_t * g)
 	for (i = 0; (e = ND_in(n).list[i]); i++) {
 	    fprintf(stderr, " %s:%d", NAME(agtail(e)), ED_count(e));
 	    w = agtail(e);
-	    if (g == g->root) {
+	    if (g == agroot(g)) {
 		for (j = 0; (f = ND_out(w).list[j]); j++)
 		    if (e == f)
 			break;
