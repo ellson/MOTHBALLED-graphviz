@@ -1025,22 +1025,6 @@ setPrismValues (Agraph_t* g, char* s, adjust_data* dp)
     dp->scaling = late_double(g, agfindgraphattr(g, "overlap_scaling"), -4.0, -1.e10);
 }
 
-/* setScaleValue:
- * Initialize and set scale value
- */
-static void
-setScaleValue (Agraph_t* g, char* s, adjust_data* dp)
-{
-    double v;
-    char* p;
-
-    v = strtod (s, &p);
-    if (p == s)  /* no number */
-	dp->scaling = 0;
-    else
-	dp->scaling = v;
-}
-
 /* getAdjustMode:
  * Convert string value to internal value of adjustment mode.
  * If s is NULL or empty, return NONE.
@@ -1063,8 +1047,6 @@ static adjust_data *getAdjustMode(Agraph_t* g, char *s, adjust_data* dp)
 		dp->print = ap->print;
 		if (ap->mode == AM_PRISM)
 		    setPrismValues (g, s + ap->len, dp);
-		else if (ap->mode == AM_NSCALE)
-		    setScaleValue (g, s + ap->len, dp);
 		break;
 	    }
 	    ap++;
@@ -1096,18 +1078,33 @@ adjust_data *graphAdjustMode(graph_t *G, adjust_data* dp, char* dflt)
     return (getAdjustMode (G, am ? am : (dflt ? dflt : ""), dp));
 }
 
+#define ISZERO(d) ((fabs(d) < 0.000000001))
+
 /* simpleScaling:
  */
-static int simpleScale (graph_t* g, double sc)
+static int simpleScale (graph_t* g) 
 {
+    pointf sc;
     node_t* n;
+    int i;
+    char* p;
 
-    if (sc == 1) return 0;
-    for (n = agfstnode(g); n; n = agnxtnode(g,n)) {
-	ND_pos(n)[0] *= sc;
-	ND_pos(n)[1] *= sc;
+    if ((p = agget(g, "scale"))) {
+	if ((i = sscanf(p, "%lf,%lf", &sc.x, &sc.y))) {
+	    if (ISZERO(sc.x)) return 0;
+	    if (i == 1) sc.y = sc.x;
+	    else if (ISZERO(sc.y)) return 0;
+	    if ((sc.y == 1) && (sc.x == 1)) return 0;
+	    if (Verbose)
+		fprintf (stderr, "scale = (%.03f,%.03f)\n", sc.x, sc.y);
+	    for (n = agfstnode(g); n; n = agnxtnode(g,n)) {
+		ND_pos(n)[0] *= sc.x;
+		ND_pos(n)[1] *= sc.y;
+	    }
+	    return 1;
+	}
     }
-    return 1;
+    return 0;
 }
 
 /* removeOverlapWith:
@@ -1124,6 +1121,7 @@ removeOverlapWith (graph_t * G, adjust_data* am)
 	return 0;
 
     nret = normalize (G);
+    nret += simpleScale (G);
 
     if (am->mode == AM_NONE)
 	return nret;
@@ -1135,10 +1133,7 @@ removeOverlapWith (graph_t * G, adjust_data* am)
 /* start_timer(); */
 	switch (am->mode) {
 	case AM_NSCALE:
-	    if (am->scaling)
-		ret = simpleScale(G, am->scaling);
-	    else
-		ret = scAdjust(G, 1);
+	    ret = scAdjust(G, 1);
 	    break;
 	case AM_SCALEXY:
 	    ret = scAdjust(G, 0);
