@@ -245,7 +245,7 @@ node_t *virtual_node(graph_t * g)
 //  agnameof(n) = "virtual";
     AGTYPE(n) = AGNODE;
     n->base.data = (Agrec_t*)NEW(Agnodeinfo_t);
-    n->root = g;
+    n->root = agroot(g);
     ND_node_type(n) = VIRTUAL;
     ND_lw(n) = ND_rw(n) = 1;
     ND_ht(n) = 1;
