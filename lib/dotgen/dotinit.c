@@ -422,6 +422,12 @@ static void doDot (Agraph_t* g)
 	    packSubgraphs(ncc, ccs, g, &pinfo);
 	    resetCoord (g);
 	} else {
+	    /* Not sure what semantics should be for non-trivial ratio
+             * attribute with multiple components.
+             * One possibility is to layout nodes, pack, then apply the ratio
+             * adjustment. We would then have to re-adjust all positions.
+             */
+	    dotLayout(g);
 	}
 
 	for (i = 0; i < ncc; i++) {
