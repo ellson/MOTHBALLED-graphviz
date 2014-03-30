@@ -899,7 +899,7 @@ If <TT>overlap_scaling</TT> is zero, no scaling is done.
 :overlap_shrink:G:bool:true; prism
 If true, the overlap removal algorithm will perform a compression pass to reduce the
 size of the layout.
-:pack:G:bool/int:false; notdot
+:pack:G:bool/int:false;
 This is true if the value of pack is "true" (case-insensitive) or a
 non-negative integer. If true, each connected component of the graph is
 laid out separately, and then the graphs are packed together.
@@ -912,7 +912,7 @@ The granularity and method of packing is influenced by the
 <P>
 For layouts which always do packing, such a twopi, the <B>pack</B>
 attribute is just used to set the margin.
-:packmode:G:packMode:node; notdot
+:packmode:G:packMode:node;
 This indicates how connected components should be packed
 (cf. <A HREF=#k:packMode>packMode</A>). Note that defining
 <B>packmode</B> will automatically turn on packing as though one had
@@ -1144,9 +1144,8 @@ attribute, and output is dot or xdot, this gives
 the number of points used for a node whose shape is a circle or ellipse.
 It plays the same role in neato, when adjusting the layout to avoid
 overlapping nodes, and in image maps.
-:scale:G:double/point; twopi
-If set, after the initial layout, twopi will scale the layout by the given factors.
-The scaling uses the root node of each component as the center of the scaling.
+:scale:G:double/point;  notdot
+If set, after the initial layout, the layout is scaled by the given factors.
 If only a single number is given, this is used for both factors.
 :searchsize:G:int:30; dot
 During network simplex, maximum number of edges with negative cut values
