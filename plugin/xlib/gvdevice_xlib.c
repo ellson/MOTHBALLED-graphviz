@@ -448,7 +448,7 @@ static int handle_file_events(GVJ_t *job, int inotify_fd)
             case IN_ONESHOT:
 		break;
     	    }
-	    ln = event->len + 4 * sizeof(int);
+	    ln = event->len + sizeof(struct inotify_event);
             bf += ln;
             len -= ln;
         }
