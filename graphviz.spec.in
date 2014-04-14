@@ -190,7 +190,8 @@ of graphs (as in nodes and edges, not as in bar-charts).
 
 %files
 %defattr(-,root,root,-)
-%doc AUTHORS COPYING ChangeLog NEWS README
+%license COPYING
+%doc AUTHORS ChangeLog NEWS README
 %exclude %{_bindir}/dot_builtins
 %{_bindir}/acyclic
 %{_bindir}/bcomps
