@@ -311,7 +311,7 @@ function doTest
 
 trap 'rm -f $TMPFILE1 $TMPFILE2 $TMPINFILE errout; exit' 0 1 2 3 15
 
-Usage=rrtest [-gvn] [TESTFILE]\n
+Usage='rtest [-gvn] [TESTFILE]\n
  -g : generate test data\n
  -v : verbose\n
  -n : print test'
