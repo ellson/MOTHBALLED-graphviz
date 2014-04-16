@@ -22,6 +22,8 @@ Allow arrowheads in the middle of edges.
 <li>
 Allow rotated text.
 <li>
+Allow text to align along an edge.
+<li>
 Support single, uniform font descriptors &#224; la pango.
 <li>
 Move generic code, such node adjustment and spline routing, out of neato.
@@ -44,7 +46,7 @@ Support aspect ratios < 1.
 <li>
 Allow maximum width contraints during layout.
 <li>
-Support Orthogonal coalesced edges (e.g., <A HREF=http://upload.wikimedia.org/wikipedia/commons/7/74/Uml_diagram.svg>this</A>).
+Support orthogonal coalesced edges (e.g., <A HREF=http://upload.wikimedia.org/wikipedia/commons/7/74/Uml_diagram.svg>this</A>).
 <li>
 Extend Graphviz to handle compound graphs.
 <li>
@@ -82,7 +84,7 @@ Allow varied rankdir values within clusters.
 <li>
 Allow varied layouts within clusters.
 <li>
-Improve Spline router, e.g., fewer inflection points).
+Improve the spline router, e.g., fewer inflection points.
 <li>
 Add an option of fast hierarchical layouts to dot.
 <li>
@@ -92,13 +94,13 @@ Add a new parallelogram shape where the angle is fixed for varying text.
 <li>
 Support rank=min/max within the context of a cluster.
 <li>
-Adjust graph to allow no edge-node overlap with line segment edges.
+Adjust graph to remove edge-node overlaps with line segment edges.
 <li>
-Re-implement tred to use a more efficient algorithm.
+Re-implement tred (transitive reduction) to use a more efficient algorithm.
 <li>
-Write a replacement for smyrna/gvedit/dotty that provides a GUI interface for Graphviz. In addition,
+Write a replacement for smyrna/gvedit/dotty that provides a GUI interface for Graphviz. In addition
 to the usual functions for viewing, the program should provide widgets for the easy altering of graph
-attributes. There could also be an interface to the gvpr library, to create multiple views. Ideally,
-the system could also the user to easily tailor the interactions.
+attributes. There could also be an interface to the gvpr library, to create multiple views and modify a graph. Ideally,
+the system could allow the user to easily tailor the interactions.
 </body>
 </html>
