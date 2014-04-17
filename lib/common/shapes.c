@@ -3074,6 +3074,8 @@ static void point_gencode(GVJ_t * job, node_t * n)
 	gvrender_set_style(job, point_style);
     else
 	gvrender_set_style(job, &point_style[1]);
+    if (N_penwidth)
+	gvrender_set_penwidth(job, late_double(n, N_penwidth, 1.0, 0.0));
 
     if (ND_gui_state(n) & GUI_STATE_ACTIVE) {
 	color = late_nnstring(n, N_activepencolor, DEFAULT_ACTIVEPENCOLOR);
