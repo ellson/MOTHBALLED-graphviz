@@ -241,6 +241,7 @@ extern "C" {
 	int explicit_edgetarget:1;
 	int explicit_tailurl:1;
 	int explicit_headurl:1;
+	int labeledgealigned:1;
 
 	/* primary mapped region - node shape, edge labels */
 	map_shape_t url_map_shape; 

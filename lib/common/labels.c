@@ -255,6 +255,8 @@ void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
     	    p.y = lp->pos.y + lp->dimen.y / 2.0 - lp->fontsize;
 	    break;
     }
+    if (obj->labeledgealigned)
+	p.y -= lp->pos.y;
     for (i = 0; i < lp->u.txt.nspans; i++) {
 	switch (lp->u.txt.span[i].just) {
 	case 'l':

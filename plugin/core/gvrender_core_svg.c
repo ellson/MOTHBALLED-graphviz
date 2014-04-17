@@ -57,12 +57,22 @@ static void svg_bzptarray(GVJ_t * job, pointf * A, int n)
     char c;
 
     c = 'M';			/* first point */
-    for (i = 0; i < n; i++) {
-	gvprintf(job, "%c%g,%g", c, A[i].x, -A[i].y);
-	if (i == 0)
-	    c = 'C';		/* second point */
-	else
-	    c = ' ';		/* remaining points */
+    if (A[0].x <= A[n-1].x) {
+	for (i = 0; i < n; i++) {
+	    gvprintf(job, "%c%g,%g", c, A[i].x, -A[i].y);
+	    if (i == 0)
+		c = 'C';		/* second point */
+	    else
+		c = ' ';		/* remaining points */
+	}
+    } else {
+	for (i = n-1; i >= 0; i--) {
+	    gvprintf(job, "%c%g,%g", c, A[i].x, -A[i].y);
+	    if (i == 0)
+		c = 'C';		/* second point */
+	    else
+		c = ' ';		/* remaining points */
+	}
     }
 }
 
@@ -364,7 +374,8 @@ static void svg_textspan(GVJ_t * job, pointf p, textspan_t * span)
 	break;
     }
     p.y += span->yoffset_centerline;
-    gvprintf(job, " x=\"%g\" y=\"%g\"", p.x, -p.y);
+    if (!obj->labeledgealigned)
+	gvprintf(job, " x=\"%g\" y=\"%g\"", p.x, -p.y);
     pA = span->font->postscript_alias;
     if (pA) {
 	switch (GD_fontnames(job->gvc->g)) {
@@ -440,7 +451,13 @@ static void svg_textspan(GVJ_t * job, pointf p, textspan_t * span)
 	assert(0);		/* internal error */
     }
     gvputs(job, ">");
+    if (obj->labeledgealigned) {
+	gvprintf (job, "<textPath xlink:href=\"#%s_p\" startOffset=\"50%%\">", xml_string(obj->id));
+	gvprintf (job, "<tspan x=\"0\" dy=\"%g\">", -p.y);
+    }
     gvputs(job, xml_string0(span->str, TRUE));
+    if (obj->labeledgealigned)
+	gvprintf (job, "</tspan></textPath>");
     gvputs(job, "</text>\n");
 }
 
@@ -558,7 +575,8 @@ static void
 svg_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 	   int arrow_at_end, int filled)
 {
-  int gid = 0;
+    int gid = 0;
+    obj_state_t *obj = job->obj;
   
     if (filled == GRADIENT) {
 	gid = svg_gradstyle(job, A, n);
@@ -566,6 +584,11 @@ svg_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 	gid = svg_rgradstyle(job, A, n);
     }
     gvputs(job, "<path");
+    if (obj->labeledgealigned) {
+	gvputs(job, " id=\"");
+	gvputs(job, xml_string(obj->id));
+	gvputs(job, "_p\" ");
+    } 
     svg_grstyle(job, filled, gid);
     gvputs(job, " d=\"");
     svg_bzptarray(job, A, n);
