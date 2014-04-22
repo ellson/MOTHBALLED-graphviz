@@ -1364,10 +1364,12 @@ Voronoi technique. dim' = (1+2*margin)*dim.
 #  Obsolete, replaced by sep
 #w:E:double:1.0; neato
 #  Redundant definition of weight in neato, cf. bug 9.
-:weight:E:int/double:1:0(dot)/1(neato,fdp);
+:weight:E:int/double:1:0(dot,twopi)/1(neato,fdp);
 Weight of edge. In dot, the heavier the weight, the shorter,
 straighter and more vertical the edge is.
 <B>N.B.</B> Weights in dot must be integers.
+For twopi, a weight of 0 indicates the edge should not be used in constructing a
+spanning tree from the root.
 For other layouts, a larger weight encourages the layout to 
 make the edge length closer to that specified by the 
 <A HREF=#d:len>len</A> attribute.
