@@ -868,30 +868,33 @@ void check_fast_node(node_t * n)
     assert(nptr != NULL);
 }
 
+static char* dump_node (node_t* n)
+{
+    static char buf[50];
+
+    if (ND_node_type(n)) {
+	sprintf(buf, "%p", n);
+	return buf;
+    }
+    else
+	return agnameof(n);
+}
+
 static void dump_graph (graph_t* g)
 {
     int i;
     edge_t *e;
     node_t *n,*w;
     FILE* fp = fopen ("ns.gv", "w");
-    fprintf (fp, "digraph %s {\n", agnameof(g));
+    fprintf (fp, "digraph \"%s\" {\n", agnameof(g));
     for (n = GD_nlist(g); n; n = ND_next(n)) {
-	if (streq(agnameof(n),"virtual"))
-	    fprintf (fp, "  \"%p\"\n", n);
-	else
-	    fprintf (fp, "  \"%s\"\n", agnameof(n));
+	fprintf (fp, "  \"%s\"\n", dump_node(n));
     }
     for (n = GD_nlist(g); n; n = ND_next(n)) {
 	for (i = 0; (e = ND_out(n).list[i]); i++) {
-	    if (streq(agnameof(n),"virtual"))
-		fprintf (fp, "  \"%p\"", n);
-	    else
-		fprintf (fp, "  \"%s\"", agnameof(n));
+	    fprintf (fp, "  \"%s\"", dump_node(n));
 	    w = aghead(e);
-	    if (streq(agnameof(w),"virtual"))
-		fprintf (fp, " -> \"%p\"\n", w);
-	    else
-		fprintf (fp, " -> \"%s\"\n", agnameof(w));
+	    fprintf (fp, " -> \"%s\"\n", dump_node(w));
 	}
     }
 
