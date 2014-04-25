@@ -3183,6 +3183,7 @@ static field_t *parse_reclbl(node_t * n, int LR, int flag, char *text)
     char *tmpport = NULL;
     int maxf, cnt, mode, wflag, ishardspace, fi;
     textlabel_t *lbl = ND_label(n);
+    unsigned char uc;
 
     fp = NULL;
     for (maxf = 1, cnt = 0, sp = reclblp; *sp; sp++) {
@@ -3209,7 +3210,7 @@ static field_t *parse_reclbl(node_t * n, int LR, int flag, char *text)
     wflag = TRUE;
     ishardspace = FALSE;
     while (wflag) {
-	if ((*reclblp < ' ') && *reclblp) {    /* Ignore non-0 control characters */
+	if ((uc = *(unsigned char*)reclblp) && (uc < ' ')) {    /* Ignore non-0 control characters */
 	    reclblp++;
 	    continue;
 	}
