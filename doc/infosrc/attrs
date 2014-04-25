@@ -1103,8 +1103,8 @@ Rectangles for fields of records, <A HREF=#points>in points</A>.
 :regular:N:bool:false;
 If true, force polygon to be regular, i.e., the vertices of the
 polygon will lie on a circle whose center is the center of the node.
-:remincross:G:bool:false;  dot
-If true and there are multiple clusters, run cross
+:remincross:G:bool:true;  dot
+If true and there are multiple clusters, run crossing
 minimization a second time.
 :repulsiveforce:G:double:1.0:0.0;  sfdp
 The power of the repulsive force used in an extended Fruchterman-Reingold 
