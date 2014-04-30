@@ -246,13 +246,13 @@ static int ok_to_make_edge(Agraph_t * g, Agnode_t * t, Agnode_t * h)
 
     /* protect against self, multi-edges in strict graphs */
     if (agisstrict(g)) {
-	if (g->desc.no_loop && (t == h)) /* simple graphs */
-	    return FALSE;
 	key = Tag;
 	key.objtype = 0;	/* wild card */
 	if (agfindedge_by_key(g, t, h, key))
 	    return FALSE;
     }
+    if (g->desc.no_loop && (t == h)) /* simple graphs */
+	return FALSE;
     return TRUE;
 }
 

@@ -5,6 +5,7 @@ pdfdir = $(pkgdatadir)/doc/pdf
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
+	-I$(top_srcdir)/lib/common \
 	-I$(top_srcdir)/lib/sparse \
 	-I$(top_srcdir)/lib/sfdpgen \
 	-I$(top_srcdir)/lib/edgepaint \

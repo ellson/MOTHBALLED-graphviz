@@ -532,7 +532,7 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
     if (flip) {
 	int i;
 	for (bi = 0; bi < boxn; bi++) {
-	    int v = boxes[bi].UR.y;
+	    double v = boxes[bi].UR.y;
 	    boxes[bi].UR.y = -1*boxes[bi].LL.y;
 	    boxes[bi].LL.y = -v;
 	}

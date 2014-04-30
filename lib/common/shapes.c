@@ -3074,6 +3074,8 @@ static void point_gencode(GVJ_t * job, node_t * n)
 	gvrender_set_style(job, point_style);
     else
 	gvrender_set_style(job, &point_style[1]);
+    if (N_penwidth)
+	gvrender_set_penwidth(job, late_double(n, N_penwidth, 1.0, 0.0));
 
     if (ND_gui_state(n) & GUI_STATE_ACTIVE) {
 	color = late_nnstring(n, N_activepencolor, DEFAULT_ACTIVEPENCOLOR);
@@ -3181,6 +3183,7 @@ static field_t *parse_reclbl(node_t * n, int LR, int flag, char *text)
     char *tmpport = NULL;
     int maxf, cnt, mode, wflag, ishardspace, fi;
     textlabel_t *lbl = ND_label(n);
+    unsigned char uc;
 
     fp = NULL;
     for (maxf = 1, cnt = 0, sp = reclblp; *sp; sp++) {
@@ -3207,7 +3210,7 @@ static field_t *parse_reclbl(node_t * n, int LR, int flag, char *text)
     wflag = TRUE;
     ishardspace = FALSE;
     while (wflag) {
-	if ((*reclblp < ' ') && *reclblp) {    /* Ignore non-0 control characters */
+	if ((uc = *(unsigned char*)reclblp) && (uc < ' ')) {    /* Ignore non-0 control characters */
 	    reclblp++;
 	    continue;
 	}
