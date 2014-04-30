@@ -383,14 +383,11 @@ static void _dot_splines(graph_t * g, int normalize)
     }
 
     for (i = 0; i < n_edges;) {
- 	boolean havePorts;
 	ind = i;
 	le0 = getmainedge((e0 = edges[i++]));
 	if (ED_tail_port(e0).defined || ED_head_port(e0).defined) {
-	    havePorts = TRUE;
 	    ea = e0;
 	} else {
-	    havePorts = FALSE;
 	    ea =  le0;
 	}
 	if (ED_tree_index(ea) & BWDEDGE) {
@@ -402,12 +399,8 @@ static void _dot_splines(graph_t * g, int normalize)
 		break;
 	    if (ED_adjacent(e0)) continue; /* all flat adjacent edges at once */
 	    if (ED_tail_port(e1).defined || ED_head_port(e1).defined) {
-		if (!havePorts) break;
-		else
 		    eb = e1;
 	    } else {
-		if (havePorts) break;
-		else
 		    eb = le1;
 	    }
 	    if (ED_tree_index(eb) & BWDEDGE) {
@@ -1685,7 +1678,7 @@ makeLineEdge(graph_t* g, edge_t* fe, pointf* points, node_t** hp)
 	    height = dimen.y;
 	}
 
-	lp = ED_label(e)->pos, lp;
+	lp = ED_label(e)->pos;
 	if (leftOf (endp,startp,lp)) {
 	    lp.x += width/2.0;
 	    lp.y -= height/2.0;
@@ -1746,6 +1739,7 @@ make_regular_edge(graph_t* g, spline_info_t* sp, path * P, edge_t ** edges, int 
     if (ABS(ND_rank(agtail(e)) - ND_rank(aghead(e))) > 1) {
 	fwdedgeai = *(Agedgeinfo_t*)e->base.data;
 	fwdedgea.out = *e;
+	fwdedgea.in = *AGOUT2IN(e);
 	fwdedgea.out.base.data = (Agrec_t*)&fwdedgeai;
 	if (ED_tree_index(e) & BWDEDGE) {
 	    MAKEFWDEDGE(&fwdedgeb.out, e);
@@ -1756,6 +1750,7 @@ make_regular_edge(graph_t* g, spline_info_t* sp, path * P, edge_t ** edges, int 
 	    fwdedgeb.out = *e;
 	    fwdedgeb.out.base.data = (Agrec_t*)&fwdedgebi;
 	    agtail(&fwdedgea.out) = agtail(e);
+	    fwdedgeb.in = *AGOUT2IN(e);
 	}
 	le = getmainedge(e);
 	while (ED_to_virt(le))
