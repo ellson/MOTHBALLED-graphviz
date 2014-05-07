@@ -169,8 +169,10 @@ dot_cleanup_graph(graph_t * g)
 	else
 	    free(GD_rank(g));
     }
-    if (g != agroot(g)) 
+    if (g != agroot(g)) {
+	free_label (GD_label(g));
 	agdelrec(g,"Agraphinfo_t");
+    }
 }
 
 /* delete the layout (but retain the underlying graph) */
@@ -348,6 +350,10 @@ initSubg (Agraph_t* sg, Agraph_t* g)
     GD_fontnames(sg) = GD_fontnames(g);
 }
 
+/* attachPos:
+ * the packing library assumes all units are in inches stored in ND_pos, so we
+ * have to copy the position info there.
+ */
 static void
 attachPos (Agraph_t* g)
 {
@@ -362,6 +368,10 @@ attachPos (Agraph_t* g)
     }
 }
 
+/* resetCoord:
+ * Store new position info from pack library call, stored in ND_pos in inches,
+ * back to ND_coord in points.
+ */
 static void
 resetCoord (Agraph_t* g)
 {
@@ -376,6 +386,57 @@ resetCoord (Agraph_t* g)
 	ps += 2;
     }
     free (sp);
+}
+
+/* copyCluster:
+ */
+static void
+copyCluster (Agraph_t* scl, Agraph_t* cl)
+{
+    int nclust, j;
+    Agraph_t* cg;
+
+    agbindrec(cl, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
+    GD_bb(cl) = GD_bb(scl);
+    GD_label_pos(cl) = GD_label_pos(scl);
+    memcpy(GD_border(cl), GD_border(scl), 4*sizeof(pointf));
+    nclust = GD_n_cluster(cl) = GD_n_cluster(scl);
+    GD_clust(cl) = N_NEW(nclust+1,Agraph_t*);
+    for (j = 1; j <= nclust; j++) {
+	cg = mapClust(GD_clust(scl)[j]);
+	GD_clust(cl)[j] = cg;
+	copyCluster (GD_clust(scl)[j], cg);
+    }
+    /* transfer cluster label to original cluster */
+    GD_label(cl) = GD_label(scl);
+    GD_label(scl) = NULL;
+}
+
+/* copyClusterInfo:
+ * Copy cluster tree and info from components to main graph.
+ * Note that the original clusters have no Agraphinfo_t at this time.
+ */
+static void
+copyClusterInfo (int ncc, Agraph_t** ccs, Agraph_t* root)
+{
+    int j, i, nclust = 0;
+    Agraph_t* sg;
+    Agraph_t* cg;
+
+    for (i = 0; i < ncc; i++) 
+	nclust += GD_n_cluster(ccs[i]);
+
+    GD_n_cluster(root) = nclust;
+    GD_clust(root) = N_NEW(nclust+1,Agraph_t*);
+    nclust = 1;
+    for (i = 0; i < ncc; i++) {
+	sg = ccs[i];
+	for (j = 1; j <= GD_n_cluster(sg); j++) {
+	    cg = mapClust(GD_clust(sg)[j]);
+	    GD_clust(root)[nclust++] = cg;
+	    copyCluster (GD_clust(sg)[j], cg);
+	}
+    } 
 }
 
 /* doDot:
@@ -400,7 +461,7 @@ static void doDot (Agraph_t* g)
     } else {
 	/* fill in default values */
 	if (mode == l_undef) 
-	    pinfo.mode = l_node;
+	    pinfo.mode = l_graph;
 	else if (Pack < 0)
 	    Pack = CL_OFFSET;
 	pinfo.margin = Pack;
@@ -421,6 +482,7 @@ static void doDot (Agraph_t* g)
 	    attachPos (g);
 	    packSubgraphs(ncc, ccs, g, &pinfo);
 	    resetCoord (g);
+	    copyClusterInfo (ncc, ccs, g);
 	} else {
 	    /* Not sure what semantics should be for non-trivial ratio
              * attribute with multiple components.
@@ -432,6 +494,7 @@ static void doDot (Agraph_t* g)
 
 	for (i = 0; i < ncc; i++) {
 	    free (GD_drawing(ccs[i]));
+	    dot_cleanup_graph(ccs[i]);
 	    agdelete(g, ccs[i]);
 	}
 	free(ccs);
