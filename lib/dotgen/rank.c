@@ -96,7 +96,7 @@ edgelabel_ranks(graph_t * g)
     node_t *n;
     edge_t *e;
 
-    if (GD_has_labels(g) & EDGE_LABEL) {
+    if (GD_has_labels(g->root) & EDGE_LABEL) {
 	for (n = agfstnode(g); n; n = agnxtnode(g, n))
 	    for (e = agfstout(g, n); e; e = agnxtout(g, e))
 		ED_minlen(e) *= 2;

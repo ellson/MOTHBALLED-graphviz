@@ -266,7 +266,7 @@ static void _dot_splines(graph_t * g, int normalize)
     if (et == ET_NONE) return; 
     if (et == ET_CURVED) {
 	resetRW (g);
-	if (GD_has_labels(g) & EDGE_LABEL) {
+	if (GD_has_labels(g->root) & EDGE_LABEL) {
 	    agerr (AGWARN, "edge labels with splines=curved not supported in dot - use xlabels\n");
 	}
 	for (n = agfstnode (g); n; n = agnxtnode(g, n)) {
@@ -279,7 +279,7 @@ static void _dot_splines(graph_t * g, int normalize)
 #ifdef ORTHO
     if (et == ET_ORTHO) {
 	resetRW (g);
-	if (GD_has_labels(g) & EDGE_LABEL) {
+	if (GD_has_labels(g->root) & EDGE_LABEL) {
 	    setEdgeLabelPos (g);
 	    orthoEdges (g, 1);
 	}
@@ -1558,7 +1558,7 @@ make_flat_edge(graph_t* g, spline_info_t* sp, path * P, edge_t ** edges, int ind
     r = ND_rank(tn);
     if (r > 0) {
 	rank_t* prevr;
-	if (GD_has_labels(g) & EDGE_LABEL)
+	if (GD_has_labels(g->root) & EDGE_LABEL)
 	    prevr = GD_rank(g) + (r-2);
 	else
 	    prevr = GD_rank(g) + (r-1);
@@ -1654,7 +1654,7 @@ makeLineEdge(graph_t* g, edge_t* fe, pointf* points, node_t** hp)
     hn = aghead(e);
     tn = agtail(e);
     delr = ABS(ND_rank(hn)-ND_rank(tn));
-    if ((delr == 1) || ((delr == 2) && (GD_has_labels(g) & EDGE_LABEL)))
+    if ((delr == 1) || ((delr == 2) && (GD_has_labels(g->root) & EDGE_LABEL)))
 	return 0;
     if (agtail(fe) == agtail(e)) {
 	*hp = hn;
@@ -1796,7 +1796,7 @@ make_regular_edge(graph_t* g, spline_info_t* sp, path * P, edge_t ** edges, int 
 	    boxes[boxn++] = rank_box(sp, g, ND_rank(tn));
 	    if (!smode
 	        && ((sl = straight_len(hn)) >=
-	    	((GD_has_labels(g) & EDGE_LABEL) ? 4 + 1 : 2 + 1))) {
+	    	((GD_has_labels(g->root) & EDGE_LABEL) ? 4 + 1 : 2 + 1))) {
 	        smode = TRUE;
 	        si = 1, sl -= 2;
 	    }
