@@ -514,17 +514,36 @@ int node_induce(Agraph_t * g, Agraph_t* eg)
     return e_cnt;
 }
 
+
+typedef struct {
+    Agrec_t h;
+    Agraph_t* orig;
+} orig_t;
+
+#define ORIG_REC "orig"
+
+Agraph_t*
+mapClust(Agraph_t *cl)
+{
+    orig_t* op = (orig_t*)aggetrec(cl, ORIG_REC, 0);
+    assert (op);
+    return op->orig;
+}
+
 /* projectG:
  * If any nodes of subg are in g, create a subgraph of g
  * and fill it with all nodes of subg in g and their induced
  * edges in subg. Copy the attributes of subg to g. Return the subgraph.
  * If not, return null.
+ * If subg is a cluster, the new subgraph will contain a pointer to it
+ * in the record "orig".
  */
 static Agraph_t *projectG(Agraph_t * subg, Agraph_t * g, int inCluster)
 {
     Agraph_t *proj = 0;
     Agnode_t *n;
     Agnode_t *m;
+    orig_t *op;
 
     for (n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
 	if ((m = agfindnode(g, agnameof(n)))) {
@@ -540,6 +559,10 @@ static Agraph_t *projectG(Agraph_t * subg, Agraph_t * g, int inCluster)
     if (proj) {
 	node_induce(proj, subg);
 	agcopyattr(subg, proj);
+	if (isCluster(proj)) {
+	    op = agbindrec(proj,ORIG_REC, sizeof(orig_t), 0);
+	    op->orig = subg;
+	}
     }
 
     return proj;
@@ -573,6 +596,15 @@ subGInduce(Agraph_t* g, Agraph_t * out)
     subgInduce(g, out, 0);
 }
 
+/* cccomps:
+ * Decompose g into "connected" components, where nodes are connected
+ * either by an edge or by being in the same cluster. The components
+ * are returned in an array of subgraphs. ncc indicates how many components
+ * there are. The subgraphs use the prefix pfx in their names, if non-NULL.
+ * Note that cluster subgraph of the main graph, corresponding to a component,
+ * is cloned within the subgraph. Each cloned cluster contains a record pointing
+ * to the real cluster.
+ */
 Agraph_t **cccomps(Agraph_t * g, int *ncc, char *pfx)
 {
     Agraph_t *dg;

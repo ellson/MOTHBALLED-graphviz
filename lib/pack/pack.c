@@ -919,7 +919,7 @@ point *putGraphs(int ng, Agraph_t ** gs, Agraph_t * root,
     int i, v;
     boxf* bbs;
     Agraph_t* g;
-    point* pts;
+    point* pts = 0;
     char* s;
 
     if (ng <= 0) return NULL;
@@ -1052,7 +1052,7 @@ static void shiftGraph(Agraph_t * g, int dx, int dy)
     bb.UR.y += dy;
     GD_bb(g) = bb;
 
-    if (GD_label(g))
+    if (GD_label(g) && GD_label(g)->set)
 	MOVEPT(GD_label(g)->pos);
 
     for (i = 1; i <= GD_n_cluster(g); i++) {

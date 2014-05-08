@@ -15,7 +15,7 @@ INCLUDEPATH += \
 	../..
 
 CONFIG += qt
-HEADERS = mainwindow.h mdichild.h csettings.h imageviewer.h ui_settings.h
-SOURCES = main.cpp mainwindow.cpp mdichild.cpp csettings.cpp imageviewer.cpp
-RESOURCES     = mdi.qrc
+HEADERS = @top_srcdir@/cmd/gvedit/mainwindow.h @top_srcdir@/cmd/gvedit/mdichild.h @top_srcdir@/cmd/gvedit/csettings.h @top_srcdir@/cmd/gvedit/imageviewer.h @top_srcdir@/cmd/gvedit/ui_settings.h
+SOURCES = @top_srcdir@/cmd/gvedit/main.cpp @top_srcdir@/cmd/gvedit/mainwindow.cpp @top_srcdir@/cmd/gvedit/mdichild.cpp @top_srcdir@/cmd/gvedit/csettings.cpp @top_srcdir@/cmd/gvedit/imageviewer.cpp
+RESOURCES     = @top_srcdir@/cmd/gvedit/mdi.qrc
 

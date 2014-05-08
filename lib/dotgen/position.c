@@ -222,7 +222,7 @@ make_LR_constraints(graph_t * g)
     rank_t *rank = GD_rank(g);
 
     /* Use smaller separation on odd ranks if g has edge labels */
-    if (GD_has_labels(g) & EDGE_LABEL) {
+    if (GD_has_labels(g->root) & EDGE_LABEL) {
 	sep[0] = GD_nodesep(g);
 	sep[1] = 5;
     }
