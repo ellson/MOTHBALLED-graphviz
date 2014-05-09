@@ -212,6 +212,7 @@ lt_dlsym
 make_label    
 make_simple_label    
 makeSelfEdge    
+mapClust
 mapbool    
 maptoken    
 MaxIter    
