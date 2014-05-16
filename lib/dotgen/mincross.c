@@ -45,6 +45,7 @@ static void save_best(graph_t * g);
 static void restore_best(graph_t * g);
 static adjmatrix_t *new_matrix(int i, int j);
 static void free_matrix(adjmatrix_t * p);
+static int ordercmpf(int *i0, int *i1);
 #ifdef DEBUG
 static int gd_minrank(Agraph_t *g) {return GD_minrank(g);}
 static int gd_maxrank(Agraph_t *g) {return GD_maxrank(g);}
@@ -145,6 +146,182 @@ static void dumpr (graph_t* g, int edges)
     }
 }
 #endif
+
+typedef struct {
+    Agrec_t h;
+    int x, lo, hi;
+    Agnode_t* np;
+} info_t;
+
+#define ND_x(n) (((info_t*)AGDATA(n))->x)
+#define ND_lo(n) (((info_t*)AGDATA(n))->lo)
+#define ND_hi(n) (((info_t*)AGDATA(n))->hi)
+#define ND_np(n) (((info_t*)AGDATA(n))->np)
+#define ND_idx(n) (ND_order(ND_np(n)))
+
+static void
+emptyComp (graph_t* sg)
+{
+    Agnode_t* n;
+    Agnode_t* nxt;
+
+    for (n = agfstnode(sg); n; n = nxt) {
+	nxt = agnxtnode (sg, n);
+	agdelnode(sg,n);
+    }
+}
+
+#define isBackedge(e) (ND_idx(aghead(e)) > ND_idx(agtail(e)))
+
+static Agnode_t*
+findSource (Agraph_t* g, Agraph_t* sg)
+{
+    Agnode_t* n;
+
+    for (n = agfstnode(sg); n; n = agnxtnode(sg, n))
+	if (agdegree(g,n,1,0) == 0) return n;
+    return NULL;
+}
+
+static int
+topsort (Agraph_t* g, Agraph_t* sg, Agnode_t** arr)
+{
+    Agnode_t* n;
+    Agedge_t* e;
+    Agedge_t* nxte;
+    int cnt = 0;
+
+    while ((n = findSource(g, sg))) {
+	arr[cnt++] = ND_np(n); 
+	agdelnode(sg, n);
+	for (e = agfstout(g, n); e; e = nxte) {
+	    nxte = agnxtout(g, e); 
+	    agdeledge(g, e);
+	}
+    }
+    return cnt;
+}
+
+static int
+getComp (graph_t* g, node_t* n, graph_t* comp, int* indices)
+{
+    int backedge = 0;
+    Agedge_t* e;
+
+    ND_x(n) = 1;
+    indices[agnnodes(comp)] = ND_idx(n);
+    agsubnode(comp, n, 1);
+    for (e = agfstout(g,n); e; e = agnxtout(g,e)) {
+	if (isBackedge(e)) backedge++;
+	if (!ND_x(aghead(e)))
+	    backedge += getComp(g, aghead(e), comp, indices);
+    }
+    for (e = agfstin(g,n); e; e = agnxtin(g,e)) {
+	if (isBackedge(e)) backedge++;
+	if (!ND_x(agtail(e)))
+	    backedge += getComp(g, agtail(e), comp, indices);
+    }
+    return backedge;
+}
+
+/* fixLabelOrder:
+ * For each pair of nodes (labels), we add an edge 
+ */
+static void
+fixLabelOrder (graph_t* g, rank_t* rk)
+{
+    int cnt, haveBackedge = FALSE;
+    Agnode_t** arr;
+    int* indices;
+    Agraph_t* sg;
+    Agnode_t* n;
+    Agnode_t* nxtp;
+    Agnode_t* v;
+
+    for (n = agfstnode(g); n; n = nxtp) {
+	v = nxtp = agnxtnode(g, n);
+	for (; v; v = agnxtnode(g, v)) {
+	    if (ND_hi(v) <= ND_lo(n)) { 
+		haveBackedge = TRUE;
+		agedge(g, v, n, NULL, 1);
+	    }
+	    else if (ND_hi(n) <= ND_lo(v)) { 
+		agedge(g, n, v, NULL, 1);
+	    }
+	}
+    }
+    if (!haveBackedge) return;
+    
+    sg = agsubg(g, "comp", 1);
+    arr = N_NEW(agnnodes(g), Agnode_t*);
+    indices = N_NEW(agnnodes(g), int);
+
+    for (n = agfstnode(g); n; n = agnxtnode(g,n)) {
+	if (ND_x(n) || (agdegree(g,n,1,1) == 0)) continue;
+	if (getComp(g, n, sg, indices)) {
+	    int i, sz = agnnodes(sg);
+	    cnt = topsort (g, sg, arr);
+	    assert (cnt == sz);
+	    qsort(indices, cnt, sizeof(int), (qsort_cmpf)ordercmpf);
+	    for (i = 0; i < sz; i++) {
+		ND_order(arr[i]) = indices[i];
+		rk->v[indices[i]] = arr[i];
+	    }
+       }
+       emptyComp(sg);
+    }
+    free (arr);
+}
+
+/* checkLabelOrder:
+ * Check that the ordering of labels for flat edges is consistent. 
+ * This is necessary because dot_position will attempt to force the label
+ * to be between the edge's vertices. This can lead to an infeasible problem.
+ *
+ * We check each rank for any flat edge labels (as dummy nodes) and create a
+ * graph with a node for each label. If the graph contains more than 1 node, we
+ * call fixLabelOrder to see if there really is a problem and, if so, fix it.
+ */ 
+void
+checkLabelOrder (graph_t* g)
+{
+    int j, r, lo, hi;
+    graph_t* lg = NULL;
+    char buf[BUFSIZ];
+    rank_t* rk;
+    Agnode_t* u;
+    Agnode_t* n;
+    Agedge_t* e;
+
+    for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
+	rk = GD_rank(g)+r;
+	for (j = 0; j < rk->n; j++) {
+	    u = rk->v[j];
+	    if ((e = (edge_t*)ND_alg(u))) {
+		if (!lg) lg = agopen ("lg", Agstrictdirected, 0);
+		sprintf (buf, "%d", j);
+		n = agnode(lg, buf, 1);
+		agbindrec(n, "info", sizeof(info_t), 1);
+		lo = ND_order(aghead(ND_out(u).list[0]));
+		hi = ND_order(aghead(ND_out(u).list[1]));
+		if (lo > hi) {
+		    int tmp;
+		    tmp = lo;
+		    lo = hi;
+		    hi = tmp;
+		}
+		ND_lo(n) = lo;
+		ND_hi(n) = hi;
+		ND_np(n) = u;
+	    }
+	}
+	if (lg) {
+	    if (agnnodes(lg) > 1) fixLabelOrder (lg, rk);
+	    agclose(lg);
+	    lg = NULL;
+	}
+    }
+}
 
 /* dot_mincross:
  * Minimize edge crossings

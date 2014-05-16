@@ -331,7 +331,9 @@ flat_edges(graph_t * g)
 	    }
 	}
     }
-    if (reset)
+    if (reset) {
+	checkLabelOrder(g);
 	rec_reset_vlists(g);
+    }
     return reset;
 }

@@ -557,7 +557,7 @@ static void dot1_rank(graph_t * g, aspect_t* asp)
     if (minmax_edges2(g, p))
 	decompose(g, 0);
 #ifdef ALLOW_LEVELS
-    if ((N_level = agattr(g, AGNODE, "level", NULL)))
+    if ((N_level = agattr(g,AGNODE,"level",NULL)))
 	setRanks(g, N_level);
     else
 #endif

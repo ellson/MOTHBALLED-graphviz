@@ -8,11 +8,7 @@ int main(int argc, char **argv)
     Agnode_t *n, *m;
     Agedge_t *e;
 
-#ifdef NO_LAYOUT_OR_RENDERING
-#ifndef WITH_CGRAPH
-    aginit();
-#endif
-#else
+#ifndef NO_LAYOUT_OR_RENDERING
     /* set up a graphviz context - but only once even for multiple graphs */
     static GVC_t *gvc;
 
@@ -21,17 +17,10 @@ int main(int argc, char **argv)
 #endif
 
     /* Create a simple digraph */
-#ifdef WITH_CGRAPH
-    g = agopen("g", Agdirected, 0);
-    n = agnode(g, "n", 1);
-    m = agnode(g, "m", 1);
-    e = agedge(g, n, m, 0, 1);
-#else
     g = agopen("g", AGDIGRAPH);
     n = agnode(g, "n");
     m = agnode(g, "m");
     e = agedge(g, n, m);
-#endif
 
     /* Set an attribute - in this case one that affects the visible rendering */
     agsafeset(n, "color", "red", "");
