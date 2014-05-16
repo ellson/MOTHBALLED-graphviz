@@ -441,7 +441,6 @@ static void expand_ranksets(graph_t * g, aspect_t* asp)
     }
 }
 
-#define ALLOW_LEVELS
 #ifdef ALLOW_LEVELS
 void
 setRanks (graph_t* g, attrsym_t* lsym)
