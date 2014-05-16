@@ -441,6 +441,7 @@ static void expand_ranksets(graph_t * g, aspect_t* asp)
     }
 }
 
+#define ALLOW_LEVELS
 #ifdef ALLOW_LEVELS
 void
 setRanks (graph_t* g, attrsym_t* lsym)
@@ -451,10 +452,10 @@ setRanks (graph_t* g, attrsym_t* lsym)
     long    v;
 
     for (n = agfstnode(g); n; n = agnxtnode(g,n)) {
-	s = agxget (n, lsym->index);
+	s = agxget (n, lsym);
 	v = strtol (s, &ep, 10);
 	if (ep == s)
-	    agerr(AGWARN, "no level attribute for node \"%s\"\n", n->name);
+	    agerr(AGWARN, "no level attribute for node \"%s\"\n", agnameof(n));
 	ND_rank(n) = v;
     }
 }
@@ -556,7 +557,7 @@ static void dot1_rank(graph_t * g, aspect_t* asp)
     if (minmax_edges2(g, p))
 	decompose(g, 0);
 #ifdef ALLOW_LEVELS
-    if ((N_level = agfindattr(g->proto->n, "level")))
+    if ((N_level = agattr(g, AGNODE, "level", NULL)))
 	setRanks(g, N_level);
     else
 #endif
@@ -1194,9 +1195,7 @@ void dot2_rank(graph_t * g, aspect_t* asp)
     int ncc, maxiter = INT_MAX;
     char *s;
     graph_t *Xg;
-#ifdef ALLOW_LEVELS
-    attrsym_t* N_level;
-#endif
+
     Last_node = NULL;
     Xg = agopen("level assignment constraints", Agstrictdirected, 0);
     agbindrec(Xg,"level graph rec",sizeof(Agraphinfo_t),TRUE);
