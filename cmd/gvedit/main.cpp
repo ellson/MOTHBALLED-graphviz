@@ -47,7 +47,7 @@ static char *cmd;
 
 QTextStream errout(stderr, QIODevice::WriteOnly);
 
-static char *useString = "Usage: gvedit [-v?] <files>\n\
+static char useString[] = "Usage: gvedit [-v?] <files>\n\
   -s    - Scale input by 72\n\
   -v    - verbose\n\
   -?    - print usage\n";
