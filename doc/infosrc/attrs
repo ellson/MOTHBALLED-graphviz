@@ -1236,17 +1236,27 @@ does not handle ports or, in dot, edge labels.
 drawn as curved arcs.
 <P>
 <TABLE>
-<TR><TD><IMG WIDTH="200" VSPACE="10" HSPACE="10" SRC="spline_none.png">
+<TR>
+     <TD><IMG WIDTH="200" VSPACE="10" HSPACE="10" SRC="spline_none.png">
     <TD><IMG WIDTH="200" VSPACE="10" HSPACE="10" SRC="spline_line.png">
+</TR>
+<TR>
+    <TD ALIGN="center">splines=none<BR>splines=""
+    <TD ALIGN="center">splines=line<BR>splines=false
+</TR>
+<TR>
     <TD><IMG WIDTH="200" VSPACE="10" HSPACE="10" SRC="spline_polyline.png">
     <TD><IMG WIDTH="200" VSPACE="10" HSPACE="10" SRC="spline_curved.png">
+</TR>
+<TR>
+    <TD ALIGN="center">splines=polyline
+    <TD ALIGN="center">splines=curved
+</TR>
+<TR>
     <TD><IMG WIDTH="200" VSPACE="10" HSPACE="10" SRC="spline_ortho.png">
     <TD><IMG WIDTH="200" VSPACE="10" HSPACE="10" SRC="spline_spline.png">
 </TR>
-<TR><TD ALIGN="center">splines=none<BR>splines=""
-    <TD ALIGN="center">splines=line<BR>splines=false
-    <TD ALIGN="center">splines=polyline
-    <TD ALIGN="center">splines=curved
+<TR>
     <TD ALIGN="center">splines=ortho
     <TD ALIGN="center">splines=spline<BR>splines=true
 </TR>
