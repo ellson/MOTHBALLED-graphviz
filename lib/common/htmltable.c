@@ -213,7 +213,7 @@ static void doSide(GVJ_t * job, pointf p, double wd, double ht)
 /* mkPts:
  * Convert boxf into four corner points
  * If border is > 1, inset the points by half the border.
- * It is assume AF is pointf[4], so the data is store there
+ * It is assumed AF is pointf[4], so the data is store there
  * and AF is returned.
  */
 static pointf *mkPts(pointf * AF, boxf b, int border)
@@ -243,7 +243,7 @@ static pointf *mkPts(pointf * AF, boxf b, int border)
  */
 static void doBorder(GVJ_t * job, htmldata_t * dp, boxf b)
 {
-    pointf AF[6];
+    pointf AF[7];
     char *sptr[2];
     char *color = (dp->pencolor ? dp->pencolor : DEFAULT_COLOR);
     unsigned short sides;
@@ -263,7 +263,7 @@ static void doBorder(GVJ_t * job, htmldata_t * dp, boxf b)
     if (dp->style & ROUNDED)
 	round_corners(job, mkPts(AF, b, dp->border), 4, ROUNDED, 0);
     else if ((sides = (dp->flags & BORDER_MASK))) {
-	mkPts (AF+1, b, dp->border);  /* AF[1-4] has LL=SW,SW,UR=NE,NW */
+	mkPts (AF+1, b, dp->border);  /* AF[1-4] has LL=SW,SE,UR=NE,NW */
 	switch (sides) {
 	case BORDER_BOTTOM :
 	    gvrender_polyline(job, AF+1, 2);
