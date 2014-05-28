@@ -50,7 +50,6 @@ static node_t*
 plain_vnode(graph_t * g, edge_t * orig)
 {
     node_t *v;
-    orig = orig;
     v = virtual_node(g);
     incr_width(g, v);
     return v;
