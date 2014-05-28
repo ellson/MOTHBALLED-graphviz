@@ -176,6 +176,9 @@ findVertical(pointf * pts, double tmin, double tmax,
     double t;
     int no_cross = countVertCross(pts, xcoord);
 
+    if (tmin >= tmax)
+	return -1.0;
+
     if (no_cross == 0)
 	return -1.0;
 
@@ -213,6 +216,9 @@ findHorizontal(pointf * pts, double tmin, double tmax,
     pointf Right[4];
     double t;
     int no_cross = countHorzCross(pts, ycoord);
+
+    if (tmin >= tmax)
+	return -1.0;
 
     if (no_cross == 0)
 	return -1.0;
