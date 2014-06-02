@@ -1,4 +1,4 @@
-.TH DOT 1 "12 July 2013"
+.TH DOT 1 "2 June 2014"
 .SH NAME
 dot \- filter for drawing directed graphs
 .br
@@ -13,6 +13,8 @@ fdp \- filter for drawing undirected graphs
 sfdp \- filter for drawing large undirected graphs
 .br
 patchwork \- filter for tree maps
+.br
+osage \- filter for tree maps
 .SH SYNOPSIS
 \fBdot\fR
 [\fIoptions\fP]
@@ -26,7 +28,7 @@ patchwork \- filter for tree maps
 [\fIoptions\fP]
 [files]
 .br
-\fBcircle\fR
+\fBcirco\fR
 [\fIoptions\fP]
 [files]
 .br
@@ -41,11 +43,16 @@ patchwork \- filter for tree maps
 \fBpatchwork\fR
 [\fIoptions\fP]
 [files]
+.br
+\fBosage\fR
+[\fIoptions\fP]
+[files]
 .SH DESCRIPTION
 These are a collection of programs for drawing graphs. 
 There is actually only one main program; the specific layout algorithms
 implemented as plugins. Thus, they largely share all of the same command-line 
 options.
+.PP
 .I dot
 draws directed graphs.  It works well on DAGs and other graphs
 that can be drawn as hierarchies.
@@ -95,6 +102,11 @@ of large graphs in a reasonably short time.
 draws the graph as a squarified treemap (see M. Bruls et al., "Squarified treemaps", Proc. Joint Eurographics 
 and IEEE TCVG Symp. on Visualization, 2000, pp. 33-42). The clusters of the graph are used to
 specify the tree.
+.PP
+.I osage
+draws the graph using its cluster structure. For a given cluster, each of its subclusters is laid out internally. 
+Then the subclusters, plus any remaining nodes, are repositioned based on the cluster's \fBpack\fP and \fBpackmode\fP
+attributes.
 .SH OUTPUT FORMATS
 Graphviz uses an extensible plugin mechanism for its output renderers,
 so to see what output formats your installation of dot supports
@@ -681,7 +693,7 @@ tcldot(n)
 .br
 xcolors(1)
 .br
-libgraph(3)
+libcgraph(3)
 .PP
 E. R. Gansner, S. C. North,  K. P. Vo, "DAG \(hy A Program to Draw Directed Graphs", Software \(hy Practice and Experience 17(1), 1988, pp. 1047\(hy1062.
 .br
