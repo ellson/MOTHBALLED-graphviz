@@ -1436,8 +1436,8 @@ static void emit_xdot (GVJ_t * job, xdot* xd)
     	    if (boxf_overlap(op->bb, job->clip)) {
 		pts[0].x = op->op.u.ellipse.x - op->op.u.ellipse.w;
 		pts[0].y = op->op.u.ellipse.y - op->op.u.ellipse.h;
-		pts[1].x = op->op.u.ellipse.w;
-		pts[1].y = op->op.u.ellipse.h;
+		pts[1].x = op->op.u.ellipse.x + op->op.u.ellipse.w;
+		pts[1].y = op->op.u.ellipse.y + op->op.u.ellipse.h;
 		gvrender_ellipse(job, pts, 2, (op->op.kind == xd_filled_ellipse?filled:0));
 	    }
 	    break;
