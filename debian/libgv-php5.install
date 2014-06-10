@@ -1,2 +1,3 @@
 usr/lib/graphviz/php
-usr/share
+usr/share/man/man3/gv.3php
+usr/share/php/gv.php
