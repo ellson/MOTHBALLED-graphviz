@@ -374,10 +374,12 @@ names are resolved and which fonts are available.
 Other systems may provide their own font package, such as Quartz for OS X.
 <P>
 Note that various font attributes, such as weight and slant, can be built into the
-font name. Thus, using the <TT>fontname=times:italic</TT> will produce a slanted
-Times font from fontconfig, while <TT>fontname=times-bold</TT> will resolve to a bold
-Times using Quartz. Obviously, the syntax differs from system to system. 
-You will need
+font name. Unfortunately, the syntax varies depending on which font system is dominant. 
+Thus, using <TT>fontname="times bold italic"</TT> will produce a bold, slanted Times font 
+using Pango, the usual main font library. Alternatively,  
+<TT>fontname="times:italic"</TT> will produce a slanted
+Times font from fontconfig, while <TT>fontname="times-bold"</TT> will resolve to a bold
+Times using Quartz. You will need
 to ascertain which package is used by your Graphviz system and refer to the relevant
 documentation.
 <P>
