@@ -249,8 +249,8 @@ static void quartzgen_begin_page(GVJ_t * job)
     CGContextRef context = (CGContextRef) job->context;
     CGContextBeginPage(context, &bounds);
     CGContextSaveGState(context);
-    CGContextSetMiterLimit(context, 1.0);
-    CGContextSetLineJoin(context, kCGLineJoinRound);
+    /* CGContextSetMiterLimit(context, 1.0); */
+    /* CGContextSetLineJoin(context, kCGLineJoinBevel); */
 
     /* set up the context transformation */
     CGContextScaleCTM(context, job->scale.x, job->scale.y);

@@ -176,7 +176,7 @@ static void cairogen_begin_page(GVJ_t * job)
     cairo_rectangle(cr, job->clip.LL.x, - job->clip.LL.y,
 	    job->clip.UR.x - job->clip.LL.x, - (job->clip.UR.y - job->clip.LL.y));
     cairo_clip(cr);
-    cairo_set_line_join(cr, CAIRO_LINE_JOIN_ROUND);
+    /* cairo_set_line_join(cr, CAIRO_LINE_JOIN_ROUND); */
 }
 
 static void cairogen_end_page(GVJ_t * job)
