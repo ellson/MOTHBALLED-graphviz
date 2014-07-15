@@ -164,7 +164,7 @@ BuildRequires: libwebp-devel
 %if %fedora >= 19
 %define SEPARATE_LICENSE 1
 %endif
-%if %fedora >= 22
+%if %fedora >= 23
 %define _GO 1
 BuildRequires: golang >= 1.2 gcc-go
 %endif

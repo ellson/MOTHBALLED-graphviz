@@ -34,25 +34,34 @@ gv_sharp.cpp: gv.i
 
 pkggodir = $(pkglibdir)/go
 GO_data = 
-#nodist_libgv_go_la_SOURCES = gv_go.cpp
-#libgv_go_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
-#libgv_go_la_LIBADD = $(BASELIBS) $(GO_LIBS)
-#libgv_go_la_LDFLAGS = -module -avoid-version
-#libgv_go_la_CPPFLAGS = $(BASECPPFLAGS) $(GO_INCLUDES)
-gvgotest: gv.i gvgotest.go
-	( \
-	mkdir -p go/src/gv; \
-	$(SED) -e 's/#include "gvc.h"/#include <graphviz\/gvc.h>/' <$(srcdir)/gv.i >go/src/gv/gv.swigcxx; \
-	$(SED) -e 's/#include <gvc.h>/#include <graphviz\/gvc.h>/' <$(srcdir)/gv_dummy_init.c >go/src/gv/gv_dummy_init.c; \
-	$(SED) -e 's/#include "gvplugin.h"/#include <graphviz\/gvplugin.h>/' <$(srcdir)/gv_builtins.c >go/src/gv/gv_builtins.c; \
-	$(SED) -e 's/#include "gvc.h"/#include <graphviz\/gvc.h>/' -e 's/DEMAND_LOADING/1/' <$(srcdir)/gv.cpp >go/src/gv/gv.cpp; \
-	echo "package gv" >go/src/gv/gv.go; \
-	cat $(srcdir)/gvgotest.go >go/src/gvgotest.go; \
-	cd go/src; \
-	GOROOT=/home/ellson/FIX/Linux.x86_64/build/go \
-	GOPATH=/home/ellson/FIX/Linux.x86_64/build/graphviz/tclpkg/gv/go \
-	/home/ellson/FIX/Linux.x86_64/build/go/bin/go build -x -work -gccgoflags -lgvc -compiler gccgo gvgotest.go && mv gvgotest ../../; \
-	)
+nodist_libgv_go_la_SOURCES = gv_go.cpp
+libgv_go_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
+libgv_go_la_LIBADD = $(BASELIBS) $(GO_LIBS)
+libgv_go_la_LDFLAGS = -module -avoid-version
+libgv_go_la_CPPFLAGS = $(BASECPPFLAGS) $(GO_INCLUDES)
+gv_go.cpp: gv.i
+	$(SWIG) -c++ -go -o gv_go.cpp $(srcdir)/gv.i
+	mv $@ $@.orig
+	sed '/include/s/malloc\.h/cstdlib/' $@.orig > $@
+	rm $@.orig
+
+
+
+
+#gvgotest: gv.i gvgotest.go
+#	( \
+#	mkdir -p go/src/gv; \
+#	$(SED) -e 's/#include "gvc.h"/#include <graphviz\/gvc.h>/' <$(srcdir)/gv.i >go/src/gv/gv.swigcxx; \
+#	$(SED) -e 's/#include <gvc.h>/#include <graphviz\/gvc.h>/' <$(srcdir)/gv_dummy_init.c >go/src/gv/gv_dummy_init.c; \
+#	$(SED) -e 's/#include "gvplugin.h"/#include <graphviz\/gvplugin.h>/' <$(srcdir)/gv_builtins.c >go/src/gv/gv_builtins.c; \
+#	$(SED) -e 's/#include "gvc.h"/#include <graphviz\/gvc.h>/' -e 's/DEMAND_LOADING/1/' <$(srcdir)/gv.cpp >go/src/gv/gv.cpp; \
+#	echo "package gv" >go/src/gv/gv.go; \
+#	cat $(srcdir)/gvgotest.go >go/src/gvgotest.go; \
+#	cd go/src; \
+#	GOROOT=/home/ellson/FIX/Linux.x86_64/build/go \
+#	GOPATH=/home/ellson/FIX/Linux.x86_64/build/graphviz/tclpkg/gv/go \
+#	/home/ellson/FIX/Linux.x86_64/build/go/bin/go build -x -work -gccgoflags -lgvc -compiler gccgo gvgotest.go && mv gvgotest ../../; \
+#	)
 
 pkgguiledir = $(pkglibdir)/guile
 GUILE_data = 
