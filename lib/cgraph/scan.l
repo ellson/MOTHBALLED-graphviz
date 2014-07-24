@@ -221,10 +221,28 @@ void yyerror(char *str)
 		agxbput (&xb, ": ");
 	}
 	agxbput (&xb, str);
-	sprintf(buf," in line %d near '", line_num);
+	sprintf(buf," in line %d", line_num);
 	agxbput (&xb, buf);
-	agxbput (&xb, yytext);
-	agxbput (&xb,"'\n");
+	if (*yytext) {
+		agxbput(&xb," near '");
+		agxbput (&xb, yytext);
+		agxbputc (&xb, '\'');
+	}
+	else switch (YYSTATE) {
+	case qstring :
+		sprintf(buf, " scanning a quoted string (missing endquote? longer than %d?)", YY_BUF_SIZE);
+		agxbput (&xb, buf);
+		break;
+	case hstring :
+		sprintf(buf, " scanning a HTML string (missing '>'? bad nesting? longer than %d?)", YY_BUF_SIZE);
+		agxbput (&xb, buf);
+		break;
+	case comment :
+		sprintf(buf, " scanning a /*...*/ comment (missing '*/? longer than %d?)", YY_BUF_SIZE);
+		agxbput (&xb, buf);
+		break;
+	}
+	agxbputc (&xb, '\n');
 	agerr(AGERR,agxbuse(&xb));
 	agxbfree(&xb);
 }
