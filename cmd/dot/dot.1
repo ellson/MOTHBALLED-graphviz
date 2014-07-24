@@ -193,6 +193,41 @@ Graphviz uses the \fIname\fP=\fIvalue\fP attributes, attached to graphs, subgrap
 nodes and edges, to tailor the layout and rendering. We list the more prominent
 attributes below. The complete list is available at 
 http://www.graphviz.org/content/attrs.
+.SH "  Attributes Common to Nodes, Edges, Clusters and Graphs"
+\fBhref=\fI"url"\fR the default url for image map files; in PostScript files,
+the base URL for all relative URLs, as recognized by Acrobat Distiller
+3.0 and up.
+.PP
+\fBURL=\fI"url"\fR ("URL" is a synonym for "href".)
+.PP
+\fBfontcolor=\fIcolorvalue\fR sets the label text color.
+.PP
+A \fIcolorvalue\fP may be "\fIh,s,v\fB"\fR (hue, saturation, brightness)
+floating point numbers between 0 and 1, or an X11 color name such as
+\fBwhite black red green blue yellow magenta cyan\fR or \fBburlywood\fR,
+or a "\fI#rrggbb" (red, green, blue, 2 hex characters each) value.
+.PP
+\fBfontsize=\fIn\fR sets the label type size to \fIn\fP points.
+.PP
+\fBfontname=\fIname\fR sets the label font family name.
+.PP
+\fBlabel=\fItext\fR where \fItext\fP may include escaped newlines
+\\\|n, \\\|l, or \\\|r for center, left, and right justified lines.
+The string '\\N' value will be replaced by the node name.
+The string '\\G' value will be replaced by the graph name.
+Record labels may contain recursive box lists delimited by { | }.
+Port identifiers in labels are set off by angle brackets < >.
+In the graph file, use colon (such as, \fBnode0:port28\fR).
+.PP
+For edges,
+if the substring '\\T' is found in a label it will be replaced by the tail_node name.
+If the substring '\\H' is found in a label it will be replaced by the head_node name.
+If the substring '\\E' value is found in a label it will be replaced by: tail_node_name\->head_node_name
+If the substring '\\G' is found in a label it will be replaced by the graph name.
+or by: tail_node_name\-\-head_node_name for undirected graphs.
+.PP
+Graphviz also supports special HTML-like labels for constructing complex node
+content. A full\(hydescription of these is given at http://www.graphviz.org/content/node-shapes#html.
 .SH "  Graph Attributes"
 \fBsize="\fIx,y\fP"\fR specifies the maximum bounding box of drawing in inches.
 .PP
@@ -224,12 +259,6 @@ a distinct rectangle of the layout.  Clusters may be nested.
 \fBcenter=\fIn\fR a non\(hyzero value centers the drawing on the page.
 .PP
 \fBcolor=\fIcolorvalue\fR sets foreground color (\fBbgcolor\fP for background).
-.PP
-\fBhref=\fI"url"\fR the default url for image map files; in PostScript files,
-the base URL for all relative URLs, as recognized by Acrobat Distiller
-3.0 and up.
-.PP
-\fBURL=\fI"url"\fR ("URL" is a synonym for "href".)
 .PP
 \fBstylesheet=\fI"file.css"\fR includes a reference to a stylesheet
 in \-Tsvg and \-Tsvgz outputs.  Ignored by other formats.
@@ -321,21 +350,6 @@ EPSF file to be automatically loaded for the node shape.
 See http://www.graphviz.org/content/node-shapes for a complete description
 of node shapes.
 .PP
-\fBlabel=\fItext\fR where \fItext\fP may include escaped newlines
-\\\|n, \\\|l, or \\\|r for center, left, and right justified lines.
-The string '\\N' value will be replaced by the node name.
-The string '\\G' value will be replaced by the graph name.
-Record labels may contain recursive box lists delimited by { | }.
-Port identifiers in labels are set off by angle brackets < >.
-In the graph file, use colon (such as, \fBnode0:port28\fR).
-.PP
-Graphviz also supports special HTML-like labels for constructing complex node
-content. A full\(hydescription of these is given at http://www.graphviz.org/content/node-shapes#html.
-.PP
-\fBfontsize=\fIn\fR sets the label type size to \fIn\fP points.
-.PP
-\fBfontname=\fIname\fR sets the label font family name.
-.PP
 \fBcolor=\fIcolorvalue\fR sets the outline color, and the default fill color
 if style=filled and \fBfillcolor\fR is not specified.
 .PP
@@ -343,22 +357,7 @@ if style=filled and \fBfillcolor\fR is not specified.
 when style=filled.  If not specified, the fillcolor when style=filled defaults
 to be the same as the outline color.
 .PP
-\fBfontcolor=\fIcolorvalue\fR sets the label text color.
-.PP
-A \fIcolorvalue\fP may be "\fIh,s,v\fB"\fR (hue, saturation, brightness)
-floating point numbers between 0 and 1, or an X11 color name such as
-\fBwhite black red green blue yellow magenta cyan\fR or \fBburlywood\fR,
-or a "\fI#rrggbb" (red, green, blue, 2 hex characters each) value.
-.PP
 \fBstyle=filled solid dashed dotted bold invis\fP or any Postscript code.
-.PP
-\fBhref=\fI"url"\fR sets the url for the node in imagemap, PostScript and SVG
-files.
-The substrings '\\N' and '\\G' are substituted in the same manner as
-for the node label attribute.
-Additionally the substring '\\L' is substituted with the node label string.
-.PP
-\fBURL=\fI"url"\fR ("URL" is a synonym for "href".)
 .PP
 \fBtarget=\fI"target"\fR is a target string for client\(hyside imagemaps
 and SVG, effective when nodes have a URL.
@@ -435,20 +434,6 @@ for flat edges).
 Values greater than 1 tend to shorten the edge.  Weight 0 flat
 edges are ignored for ordering nodes.
 .PP
-\fBlabel=\fItext\fR where \fItext\fR may include escaped newlines
-\\\|n, \\\|l, or \\\|r for centered, left, or right justified lines.
-If the substring '\\T' is found in a label it will be replaced by the tail_node name.
-If the substring '\\H' is found in a label it will be replaced by the head_node name.
-If the substring '\\E' value is found in a label it will be replaced by: tail_node_name\->head_node_name
-If the substring '\\G' is found in a label it will be replaced by the graph name.
-or by: tail_node_name\-\-head_node_name for undirected graphs.
-.PP
-\fBfontsize=\fIn\fR sets the label type size to \fIn\fP points.
-.PP
-\fBfontname=\fIname\fR sets the label font family name.
-.PP
-\fBfontcolor=\fIcolorvalue\fR sets the label text color.
-.PP
 \fBstyle=solid dashed dotted bold invis\fP
 .PP
 \fBcolor=\fIcolorvalue\fR sets the line color for edges.
@@ -459,14 +444,6 @@ parallel edges, one edge for each color.
 \fBdir=forward back both none\fP controls arrow direction.
 .PP
 \fBtailclip,headclip=false\fP disables endpoint shape clipping.
-.PP
-\fBhref=\fI"url"\fR sets the url for the node in imagemap, PostScript and SVG
-files.
-The substrings '\\T', '\\H', '\\E' and '\\G' are substituted in the same manner as
-for the edge label attribute.
-Additionally the substring '\\L' is substituted with the edge label string.
-.PP
-\fBURL=\fI"url"\fR ("URL" is a synonym for "href".)
 .PP
 \fBtarget=\fI"target"\fR is a target string for client\(hyside imagemaps
 and SVG, effective when edges have a URL.
