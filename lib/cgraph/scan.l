@@ -76,10 +76,12 @@ static void addstr(char *src) {
 
 static void endstr(void) {
 	yylval.str = (char*)agstrdup(Ag_G_global,Sbuf);
+	*Sbuf = 0;
 }
 
 static void endstr_html(void) {
 	yylval.str = (char*)agstrdup_html(Ag_G_global,Sbuf);
+	*Sbuf = 0;
 }
 
 static void
@@ -232,10 +234,24 @@ void yyerror(char *str)
 	case qstring :
 		sprintf(buf, " scanning a quoted string (missing endquote? longer than %d?)", YY_BUF_SIZE);
 		agxbput (&xb, buf);
+		if (*Sbuf) {
+			int len = strlen(Sbuf);
+			agxbput (&xb, "\nString starting:\"");
+			if (len > 80)
+				Sbuf[80] = '\0';
+			agxbput (&xb, Sbuf);
+		}
 		break;
 	case hstring :
 		sprintf(buf, " scanning a HTML string (missing '>'? bad nesting? longer than %d?)", YY_BUF_SIZE);
 		agxbput (&xb, buf);
+		if (*Sbuf) {
+			int len = strlen(Sbuf);
+			agxbput (&xb, "\nString starting:<");
+			if (len > 80)
+				Sbuf[80] = '\0';
+			agxbput (&xb, Sbuf);
+		}
 		break;
 	case comment :
 		sprintf(buf, " scanning a /*...*/ comment (missing '*/? longer than %d?)", YY_BUF_SIZE);
