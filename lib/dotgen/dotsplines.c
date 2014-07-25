@@ -269,12 +269,6 @@ static void _dot_splines(graph_t * g, int normalize)
 	if (GD_has_labels(g->root) & EDGE_LABEL) {
 	    agerr (AGWARN, "edge labels with splines=curved not supported in dot - use xlabels\n");
 	}
-	for (n = agfstnode (g); n; n = agnxtnode(g, n)) {
-	    for (e = agfstout(g, n); e; e = agnxtout(g,e)) {
-		makeStraightEdge(g, e, et, &sinfo);
-	    }
-	}
-	goto finish;
     } 
 #ifdef ORTHO
     if (et == ET_ORTHO) {
@@ -418,7 +412,10 @@ static void _dot_splines(graph_t * g, int normalize)
 		break;
 	}
 
-	if (agtail(e0) == aghead(e0)) {
+	if (et == ET_CURVED) {
+	    makeStraightEdges (g, edges+ind, cnt, et, &sinfo);
+	}
+	else if (agtail(e0) == aghead(e0)) {
 	    int b, sizey, r;
 	    n = agtail(e0);
 	    r = ND_rank(n);
