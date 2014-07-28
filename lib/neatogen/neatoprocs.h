@@ -64,6 +64,7 @@ extern "C" {
     extern int spline_edges1(graph_t * g, int);
     extern int splineEdges(graph_t *,
 			   int (*edgefn) (graph_t *, expand_t*, int), int);
+    extern void neato_translate(Agraph_t * g);
     extern boolean neato_set_aspect(graph_t * g);
     extern void toggle(int);
     extern int user_pos(Agsym_t *, Agsym_t *, Agnode_t *, int);

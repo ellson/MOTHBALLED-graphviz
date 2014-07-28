@@ -534,6 +534,7 @@ int init_nop(Agraph_t * g, int adjust)
     attrsym_t *G_bb = agfindgraphattr(g, "bb");
     int didAdjust = 0;  /* Have nodes been moved? */
     int haveBackground;
+    boolean translate = !mapBool(agget(g, "notranslate"), FALSE);
 
     /* If G_bb not defined, define it */
     if (!G_bb)
@@ -587,7 +588,10 @@ int init_nop(Agraph_t * g, int adjust)
 	}
     }
     else {
-	boolean didShift = neato_set_aspect(g);
+	boolean didShift;
+	if (translate && !haveBackground && ((GD_bb(g).LL.x != 0)||(GD_bb(g).LL.y != 0)))
+	    neato_translate (g);
+	didShift = neato_set_aspect(g);
 	/* if we have some edge positions and we either shifted or adjusted, free edge positions */
 	if ((posEdges != NoEdges) && (didShift || didAdjust)) {
 	    freeEdgeInfo (g);
@@ -1421,6 +1425,7 @@ void neato_layout(Agraph_t * g)
 	}
 	else gv_postprocess(g, 0);
     } else {
+	boolean noTranslate = mapBool(agget(g, "notranslate"), FALSE);
 	PSinputscale = get_inputscale (g);
 	neato_init_graph(g);
 	layoutMode = neatoMode(g);
@@ -1455,7 +1460,8 @@ void neato_layout(Agraph_t * g)
 		    neatoLayout(g, gc, layoutMode, model, &am);
 		    removeOverlapWith(gc, &am);
 		    setEdgeType (gc, ET_LINE);
-		    doEdges(gc);
+		    if (noTranslate) doEdges(g);
+		    else spline_edges(g);
 		}
 		if (pin) {
 		    bp = N_NEW(n_cc, boolean);
@@ -1472,7 +1478,8 @@ void neato_layout(Agraph_t * g)
 	    else {
 		neatoLayout(g, g, layoutMode, model, &am);
 		removeOverlapWith(g, &am);
-		doEdges(g);
+		if (noTranslate) doEdges(g);
+		else spline_edges(g);
 	    }
 	    compute_bb(g);
 	    addZ (g);
@@ -1492,7 +1499,8 @@ void neato_layout(Agraph_t * g)
 	    neatoLayout(g, g, layoutMode, model, &am);
 	    removeOverlapWith(g, &am);
 	    addZ (g);
-	    doEdges(g);
+	    if (noTranslate) doEdges(g);
+	    else spline_edges(g);
 	}
 	gv_postprocess(g, 0);
     }

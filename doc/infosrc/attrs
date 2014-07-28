@@ -788,6 +788,10 @@ layout so that the angle of the first edge is specified by the value of <TT>norm
 If  <TT>normalize</TT> is not a number, it is evaluated as a  <TT>bool</TT>, with true
 corresponding to 0 degrees. <B>NOTE:</B> Since the attribute is evaluated first as a number,
 0 and 1 cannot be used for false and true.
+:notranslate:G:bool:false;      neato
+By default, the final layout is translated so that the lower-left corner of the bounding box is
+at the origin. This can be annoying if some nodes are pinned or if the user runs <TT>neato -n</TT>. 
+To avoid this translation, set <TT>notranslate</TT> to true.
 :nslimit/nslimit1:G:double;  dot
 Used to set number of iterations in
 network simplex applications. <B>nslimit</B> is used in
@@ -989,7 +993,8 @@ simple workaround is to maintain the coordinates of a pinned node. The vector
 difference between the old and new coordinates will give the translation,
 which can then be subtracted from all of the appropriate coordinates.
 <P>
-After 27 Feb 2014, this translation is no longer done. However, if the graph
+After 27 Feb 2014, this translation can be avoided in neato by setting the 
+<A HREF="#d:notranslate">notranslate</A> to TRUE. However, if the graph
 specifies <A HREF="#d:overlap">node overlap removal</A> or a change in 
 <A HREF="#d:ratio">aspect ratio</A>, node coordinates may still change. 
 :pos:EN:point/splineType;

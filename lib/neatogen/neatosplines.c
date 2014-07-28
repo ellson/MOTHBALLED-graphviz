@@ -962,9 +962,9 @@ static void translateG(Agraph_t * g, pointf offset)
 	translateG(GD_clust(g)[i], offset);
 }
 
-/* translate:
+/* neato_translate:
  */
-static void translate(Agraph_t * g)
+void neato_translate(Agraph_t * g)
 {
     node_t *n;
     edge_t *e;
@@ -1000,14 +1000,17 @@ static boolean _neato_set_aspect(graph_t * g)
 {
     double xf, yf, actual, desired;
     node_t *n;
+    boolean translated = FALSE;
 
     if (g->root != g)
 	return FALSE;
 
     /* compute_bb(g); */
     if (GD_drawing(g)->ratio_kind) {
-	if (ROUND(abs(GD_bb(g).LL.x)) || ROUND(abs(GD_bb(g).LL.y)))
-	    translate (g);
+	if ((abs(GD_bb(g).LL.x)) || (abs(GD_bb(g).LL.y))) {
+	    translated = TRUE;
+	    neato_translate (g);
+	}
 	/* normalize */
 	if (GD_flip(g)) {
 	    double t = GD_bb(g).UR.x;
@@ -1017,7 +1020,7 @@ static boolean _neato_set_aspect(graph_t * g)
 	if (GD_drawing(g)->ratio_kind == R_FILL) {
 	    /* fill is weird because both X and Y can stretch */
 	    if (GD_drawing(g)->size.x <= 0)
-		return FALSE;
+		return (translated || FALSE);
 	    xf = (double) GD_drawing(g)->size.x / GD_bb(g).UR.x;
 	    yf = (double) GD_drawing(g)->size.y / GD_bb(g).UR.y;
 	    /* handle case where one or more dimensions is too big */
@@ -1032,14 +1035,14 @@ static boolean _neato_set_aspect(graph_t * g)
 	    }
 	} else if (GD_drawing(g)->ratio_kind == R_EXPAND) {
 	    if (GD_drawing(g)->size.x <= 0)
-		return FALSE;
+		return (translated || FALSE);
 	    xf = (double) GD_drawing(g)->size.x / GD_bb(g).UR.x;
 	    yf = (double) GD_drawing(g)->size.y / GD_bb(g).UR.y;
 	    if ((xf > 1.0) && (yf > 1.0)) {
 		double scale = MIN(xf, yf);
 		xf = yf = scale;
 	    } else
-		return FALSE;
+		return (translated || FALSE);
 	} else if (GD_drawing(g)->ratio_kind == R_VALUE) {
 	    desired = GD_drawing(g)->ratio;
 	    actual = (GD_bb(g).UR.y) / (GD_bb(g).UR.x);
@@ -1051,7 +1054,7 @@ static boolean _neato_set_aspect(graph_t * g)
 		yf = 1.0;
 	    }
 	} else
-	    return FALSE;
+	    return (translated || FALSE);
 	if (GD_flip(g)) {
 	    double t = xf;
 	    xf = yf;

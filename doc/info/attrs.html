@@ -334,6 +334,9 @@ of the layout programs.
  <TR><TD><A NAME=a:normalize HREF=#d:normalize>normalize</A>
 </TD><TD>G</TD><TD>double<BR><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD>not dot</TD> </TR>
+ <TR><TD><A NAME=a:notranslate HREF=#d:notranslate>notranslate</A>
+</TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
+</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD>neato only</TD> </TR>
  <TR><TD><A NAME=a:nslimit HREF=#d:nslimit>nslimit</A>
 <BR><A NAME=a:nslimit1 HREF=#d:nslimit1>nslimit1</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER"></TD><TD></TD><TD>dot only</TD> </TR>
@@ -1343,6 +1346,11 @@ of the layout programs.
   corresponding to 0 degrees. <B>NOTE:</B> Since the attribute is evaluated first as a number,
   0 and 1 cannot be used for false and true.
 
+<DT><A NAME=d:notranslate HREF=#a:notranslate><STRONG>notranslate</STRONG></A>
+<DD>  By default, the final layout is translated so that the lower-left corner of the bounding box is
+  at the origin. This can be annoying if some nodes are pinned or if the user runs <TT>neato -n</TT>. 
+  To avoid this translation, set <TT>notranslate</TT> to true.
+
 <DT><A NAME=d:nslimit HREF=#a:nslimit><STRONG>nslimit</STRONG></A>
 ,<DT><A NAME=d:nslimit1 HREF=#a:nslimit1><STRONG>nslimit1</STRONG></A>
 <DD>  Used to set number of iterations in
@@ -1561,7 +1569,8 @@ of the layout programs.
   difference between the old and new coordinates will give the translation,
   which can then be subtracted from all of the appropriate coordinates.
   <P>
-  After 27 Feb 2014, this translation is no longer done. However, if the graph
+  After 27 Feb 2014, this translation can be avoided in neato by setting the 
+  <A HREF="#d:notranslate">notranslate</A> to TRUE. However, if the graph
   specifies <A HREF="#d:overlap">node overlap removal</A> or a change in 
   <A HREF="#d:ratio">aspect ratio</A>, node coordinates may still change. 
 
