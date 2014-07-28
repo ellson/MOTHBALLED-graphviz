@@ -365,3 +365,4 @@ mkClustMap
 findCluster
 rank2
 makeStraightEdge
+makeStraightEdges
