@@ -1460,8 +1460,8 @@ void neato_layout(Agraph_t * g)
 		    neatoLayout(g, gc, layoutMode, model, &am);
 		    removeOverlapWith(gc, &am);
 		    setEdgeType (gc, ET_LINE);
-		    if (noTranslate) doEdges(g);
-		    else spline_edges(g);
+		    if (noTranslate) doEdges(gc);
+		    else spline_edges(gc);
 		}
 		if (pin) {
 		    bp = N_NEW(n_cc, boolean);
