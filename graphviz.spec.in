@@ -289,6 +289,7 @@ Graphviz core libs
 %{_libdir}/libgvpr.so.*
 %{_libdir}/libpathplan.so.*
 %{_libdir}/libxdot.so.4*
+%{_libdir}/liblab_gamut.so.*
 
 #-- graphviz-plugins-core rpm --------------------------------------------------
 %package plugins-core
@@ -800,6 +801,9 @@ This package contains development files for graphviz-libs.
 %{_libdir}/libxdot.so
 %{_mandir}/man3/xdot.3.*
 %{_libdir}/pkgconfig/libxdot.pc
+%{_libdir}/liblab_gamut.so
+#%{_mandir}/man3/lab_gamut.3.*
+#%{_libdir}/pkgconfig/liblab_gamut.pc
 %{_mandir}/man3/expr.3.*
 %{_mandir}/man3/pack.3.*
 %exclude %{_libdir}/graphviz/libgvplugin*
