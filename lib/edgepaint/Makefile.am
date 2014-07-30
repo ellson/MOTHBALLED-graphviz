@@ -20,6 +20,7 @@ noinst_HEADERS =  edge_distinct_coloring.h  furtherest_point.h  intersection.h  
 
 noinst_LTLIBRARIES = libedgepaint_C.la
 lib_LTLIBRARIES = liblab_gamut.la
+pkgconfig_DATA = liblab_gamut.pc
 man_MANS = lab_gamut.3
 pdf_DATA = lab_gamut.3.pdf
 

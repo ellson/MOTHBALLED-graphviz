@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@/@PACKAGE@
+
+Name: liblab_gamut
+Description: data library for default color labeling
+Version: @VERSION@
+Libs: -L${libdir} -llab_gamut
+Cflags: -I${includedir}
