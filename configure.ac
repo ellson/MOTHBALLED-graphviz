@@ -3194,6 +3194,7 @@ AC_CONFIG_FILES(Makefile
 	lib/sfdpgen/Makefile
 	lib/osage/Makefile
 	lib/edgepaint/Makefile
+	lib/edgepaint/liblab_gamut.pc
 	lib/gvpr/Makefile
 	lib/gvpr/libgvpr.pc
 	lib/circogen/Makefile
