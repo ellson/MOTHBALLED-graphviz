@@ -19,5 +19,5 @@ lib_LTLIBRARIES = liblab_gamut.la
 libedgepaint_C_la_SOURCES = edge_distinct_coloring.c  furtherest_point.c  intersection.c  lab.c  node_distinct_coloring.c
 liblab_gamut_la_SOURCES = lab_gamut.c
 
-EXTRA_DIST = edgepaintlib.vcproj
+EXTRA_DIST = edgepaintlib.vcproj lab_gamut.vcproj
  
