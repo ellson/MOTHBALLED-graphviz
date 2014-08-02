@@ -1281,14 +1281,16 @@ void post_process_smoothing(int dim, SparseMatrix A, spring_electrical_control c
   case SMOOTHING_RNG:
   case SMOOTHING_TRIANGLE:{
     TriangleSmoother sm;
-    
-    if (ctrl->smoothing == SMOOTHING_RNG){
-      sm = TriangleSmoother_new(A, dim, 0, x, FALSE);
-    } else {
-      sm = TriangleSmoother_new(A, dim, 0, x, TRUE);
+
+    if (A->m > 2) {  /* triangles need at least 3 nodes */
+      if (ctrl->smoothing == SMOOTHING_RNG){
+        sm = TriangleSmoother_new(A, dim, 0, x, FALSE);
+      } else {
+        sm = TriangleSmoother_new(A, dim, 0, x, TRUE);
+      }
+      TriangleSmoother_smooth(sm, dim, x);
+      TriangleSmoother_delete(sm);
     }
-    TriangleSmoother_smooth(sm, dim, x);
-    TriangleSmoother_delete(sm);
     break;
   }
   case SMOOTHING_STRESS_MAJORIZATION_GRAPH_DIST:
