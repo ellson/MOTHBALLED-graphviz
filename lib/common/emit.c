@@ -397,6 +397,10 @@ static double getSegLen (char* s)
  *  3 => warning message
  * There is a last sentinel segment with color == NULL; it will always follow
  * the last segment with t > 0.
+ *
+ * Note that psegs is only assigned to if the return value is 0 or 3.
+ * Otherwise, psegs is left unchanged and the allocated memory is
+ * freed before returning.
  */
 static int
 parseSegs (char* clrs, int nseg, colorsegs_t** psegs)
@@ -2151,7 +2155,7 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
 	if ((ED_spl(e)->size>1) && (bz.sflag||bz.eflag) && styles) 
 	    gvrender_set_style(job, styles);
     }
-    free (segs);
+    freeSegs (segs);
     return 0;
 }
 
@@ -4129,12 +4133,13 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
  */
 boolean findStopColor (char* colorlist, char* clrs[2], float* frac)
 {
-    colorsegs_t* segs;
+    colorsegs_t* segs = NULL;
     int rv;
 
     rv = parseSegs (colorlist, 0, &segs);
     if (rv || (segs->numc < 2) || (segs->segs[0].color == NULL)) {
 	clrs[0] = NULL;
+	freeSegs (segs);
 	return FALSE;
     }
 

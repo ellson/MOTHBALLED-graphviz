@@ -1007,7 +1007,7 @@ static boolean _neato_set_aspect(graph_t * g)
 
     /* compute_bb(g); */
     if (GD_drawing(g)->ratio_kind) {
-	if ((abs(GD_bb(g).LL.x)) || (abs(GD_bb(g).LL.y))) {
+	if (GD_bb(g).LL.x || GD_bb(g).LL.y) {
 	    translated = TRUE;
 	    neato_translate (g);
 	}

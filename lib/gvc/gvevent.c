@@ -455,7 +455,7 @@ static void gvevent_motion(GVJ_t * job, pointf pointer)
     double dx = (pointer.x - job->oldpointer.x) / job->devscale.x;
     double dy = (pointer.y - job->oldpointer.y) / job->devscale.y;
 
-    if (abs(dx) < EPSILON && abs(dy) < EPSILON)  /* ignore motion events with no motion */
+    if (fabs(dx) < EPSILON && fabs(dy) < EPSILON)  /* ignore motion events with no motion */
 	return;
 
     switch (job->button) {

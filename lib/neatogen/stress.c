@@ -756,7 +756,7 @@ float *mdsModel(vtx_data * graph, int nG)
 	    j = graph[i].edges[e];
 	    if (j < i)
 		continue;
-	    delta += abs(Dij[i * nG + j - shift] - graph[i].ewgts[e]);
+	    delta += fabsf(Dij[i * nG + j - shift] - graph[i].ewgts[e]);
 	    Dij[i * nG + j - shift] = graph[i].ewgts[e];
 	}
     }

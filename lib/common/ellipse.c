@@ -146,7 +146,7 @@ static void computeBounds(ellipse_t * ep)
     double bOnA = ep->b / ep->a;
     double etaXMin, etaXMax, etaYMin, etaYMax;
 
-    if (abs(ep->sinTheta) < 0.1) {
+    if (fabs(ep->sinTheta) < 0.1) {
 	double tanTheta = ep->sinTheta / ep->cosTheta;
 	if (ep->cosTheta < 0) {
 	    etaXMin = -atan(tanTheta * bOnA);
@@ -365,7 +365,7 @@ estimateError(ellipse_t * ep, int degree, double etaA, double etaB)
 	double dx = xB - xA;
 	double dy = yB - yA;
 
-	return abs(x * dy - y * dx + xB * yA - xA * yB)
+	return fabs(x * dy - y * dx + xB * yA - xA * yB)
 	    / sqrt(dx * dx + dy * dy);
 
     } else {

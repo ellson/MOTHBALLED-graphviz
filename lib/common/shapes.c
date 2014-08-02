@@ -1873,7 +1873,7 @@ static void poly_init(node_t * n)
     dimen = ND_label(n)->dimen;
 
     /* minimal whitespace around label */
-    if (ROUND(abs(dimen.x)) || ROUND(abs(dimen.y))) {
+    if ((dimen.x > 0) || (dimen.y > 0)) {
 	/* padding */
 	if ((p = agget(n, "margin"))) {
 	    marginx = marginy = 0;
