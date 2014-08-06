@@ -109,9 +109,10 @@ copy /Y %outputDir%*.lib  %targetDir%lib\release\lib
 copy /Y %outputDir%*.dll  %targetDir%lib\release\dll
 REM *****************************************************
 
-REM Copy smyrna shared files
+REM Copy smyrna and gvedit shared files
 xcopy /Y %buildDir%share\gui %targetDir%share\graphviz\smyrna\ /S
 xcopy /Y %buildDir%share\examples %targetDir%share\graphviz\examples\ /S
+copy /Y %buildDir%doc\infosrc\attrs  %targetDir%share\graphviz\gvedit\attributes.txt
 REM *****************************************************
 
 REM *****************************************************
