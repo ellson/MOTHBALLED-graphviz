@@ -124,6 +124,22 @@ void deleteGraph(gctx_t * gctx, Agraph_t *g)
     Tcl_DeleteCommand(gctx->ictx->interp, hndl);
 }
 
+static void myagxset(void *obj, Agsym_t *a, char *val)
+{
+    int len;
+    char *hs;
+
+    if (a->name[0] == 'l' && val[0] == '<' && strcmp(a->name, "label") == 0) {
+        len = strlen(val);
+        if (val[len-1] == '>') {
+            hs = strdup(val+1);
+                *(hs+len-2) = '\0';
+            val = agstrdup_html(agraphof(obj),hs);
+            free(hs);
+        }
+    }
+    agxset(obj, a, val);
+}
 void setgraphattributes(Agraph_t * g, char *argv[], int argc)
 {
     int i;
@@ -132,7 +148,7 @@ void setgraphattributes(Agraph_t * g, char *argv[], int argc)
     for (i = 0; i < argc; i++) {
 	if (!(a = agfindgraphattr(agroot(g), argv[i])))
 	    a = agattr(agroot(g), AGRAPH, argv[i], "");
-	agxset(g, a, argv[++i]);
+	myagxset(g, a, argv[++i]);
     }
 }
 
@@ -150,7 +166,7 @@ void setedgeattributes(Agraph_t * g, Agedge_t * e, char *argv[], int argc)
 	if (e) {
 	    if (!(a = agfindedgeattr(g, argv[i])))
 		a = agattr(agroot(g), AGEDGE, argv[i], "");
-	    agxset(e, a, argv[++i]);
+	    myagxset(e, a, argv[++i]);
 	}
 	else {
 	    agattr(g, AGEDGE, argv[i], argv[i+1]);
@@ -168,7 +184,7 @@ void setnodeattributes(Agraph_t * g, Agnode_t * n, char *argv[], int argc)
 	if (n) {
 	    if (!(a = agfindnodeattr(g, argv[i])))
 		a = agattr(agroot(g), AGNODE, argv[i], "");
-	    agxset(n, a, argv[++i]);
+	    myagxset(n, a, argv[++i]);
 	}
 	else {
 	    agattr(g, AGNODE, argv[i], argv[i+1]);
