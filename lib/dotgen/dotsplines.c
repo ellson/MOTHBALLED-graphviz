@@ -1185,7 +1185,7 @@ make_flat_adj_edges(graph_t* g, path* P, edge_t** edges, int ind, int cnt, edge_
     static int warned;
 
     tn = agtail(e0), hn = aghead(e0);
-    if ((shapeOf(tn) == SH_RECORD) || (shapeOf(tn) == SH_RECORD)) {
+    if ((shapeOf(tn) == SH_RECORD) || (shapeOf(hn) == SH_RECORD)) {
 	if (!warned) {
 	    warned = 1;
 	    agerr (AGWARN, "flat edge between adjacent nodes one of which has a record shape - replace records with HTML-like labels\n");
