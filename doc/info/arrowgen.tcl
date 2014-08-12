@@ -3,12 +3,16 @@
 set arrows {
     box
     crow
+    curve
     diamond
     dot
+    icurve
     inv
     lbox
     lcrow
+    lcurve
     ldiamond
+    licurve
     linv
     lnormal
     ltee
@@ -30,7 +34,9 @@ set arrows {
     ornormal
     rbox
     rcrow
+    rcurve
     rdiamond
+    ricurve
     rinv
     rnormal
     rtee
@@ -42,18 +48,18 @@ set arrows {
 set arrowexamples {
     box
     crow
+    curve
     diamond
     dot
     ediamond
     empty
-    forward
     halfopen
+    icurve
     inv
     invdot
     invempty
     invodot
     lteeoldiamond
-    nohead
     none
     normal
     obox

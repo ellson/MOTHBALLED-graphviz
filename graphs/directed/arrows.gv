@@ -80,4 +80,10 @@ digraph G {
 	lcurve -> lcurvelcurve [arrowhead=lcurvelcurve label=lcurvelcurve]
 	_curve -> rcurve [arrowhead=rcurve label=rcurve]
 	rcurve -> rcurvercurve [arrowhead=rcurvercurve label=rcurvercurve]
+	_icurve -> icurve [arrowhead=icurve label=icurve]
+	icurve -> icurveicurve [arrowhead=icurveicurve label=icurveicurve]
+	_icurve -> licurve [arrowhead=licurve label=licurve]
+	licurve -> licurvelicurve [arrowhead=licurvelicurve label=licurvelicurve]
+	_icurve -> ricurve [arrowhead=ricurve label=ricurve]
+	ricurve -> ricurvericurve [arrowhead=ricurvericurve label=ricurvericurve]
 }

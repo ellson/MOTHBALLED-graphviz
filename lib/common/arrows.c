@@ -103,6 +103,7 @@ static arrowname_t Arrownames[] = {
     /* Note that ARR_MOD_OPEN has expected meaning for ARR_TYPE_NORM shape */
     {"mpty", ARR_TYPE_NORM},
     {"curve", ARR_TYPE_CURVE},
+    {"icurve", (ARR_TYPE_CURVE | ARR_MOD_INV)},
     {(char *) 0, ARR_TYPE_NONE}
 };
 
@@ -644,11 +645,20 @@ static void arrow_type_curve(GVJ_t* job, pointf p, pointf u, double arrowsize, d
     AF[3].x = p.x - v.x + w.x;
     AF[3].y = p.y - v.y + w.y;
 
-    AF[1].x = p.x + 0.95 * v.x + w.x - w.x * 4.0 / 3.0;
-    AF[1].y = AF[0].y - w.y * 4.0 / 3.0;
+    if (flag & ARR_MOD_INV) {  /* ----(-| */
+        AF[1].x = p.x + 0.95 * v.x + w.x + w.x * 4.0 / 3.0;
+        AF[1].y = AF[0].y + w.y * 4.0 / 3.0;
 
-    AF[2].x = p.x - 0.95 * v.x + w.x - w.x * 4.0 / 3.0;
-    AF[2].y = AF[3].y - w.y * 4.0 / 3.0;
+        AF[2].x = p.x - 0.95 * v.x + w.x + w.x * 4.0 / 3.0;
+        AF[2].y = AF[3].y + w.y * 4.0 / 3.0;
+    }
+    else {  /* ----)-| */
+        AF[1].x = p.x + 0.95 * v.x + w.x - w.x * 4.0 / 3.0;
+        AF[1].y = AF[0].y - w.y * 4.0 / 3.0;
+
+        AF[2].x = p.x - 0.95 * v.x + w.x - w.x * 4.0 / 3.0;
+        AF[2].y = AF[3].y - w.y * 4.0 / 3.0;
+    }
 
     gvrender_polyline(job, a, 2);
     if (flag & ARR_MOD_LEFT)
