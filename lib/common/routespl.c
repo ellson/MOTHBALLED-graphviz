@@ -918,6 +918,7 @@ static void bend(pointf spl[4], pointf centroid)
         double vX = centroid.x - midpt.x;
         double vY = centroid.y - midpt.y;
         double magV = sqrt(vX*vX + vY*vY);
+	if (magV == 0) return;  /* if midpoint == centroid, don't divide by zero */
         a.x = midpt.x - vX / magV * r;      /* + would be closest point */
         a.y = midpt.y - vY / magV * r;
     }
