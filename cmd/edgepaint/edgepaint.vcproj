@@ -119,7 +119,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="../../lib/ingraphs;../../lib/common;../../lib/cdt;../../lib/cgraph;../../lib/sparse;../../lib/sfdpgen;../../;../../lib/edgepaint"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;HAVE_CONFIG_H"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;HAVE_CONFIG_H"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
