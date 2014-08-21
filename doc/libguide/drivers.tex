@@ -37,9 +37,12 @@ call the function {\tt gvParseArgs}:
 This function takes the context value, plus an array of strings
 using the same conventions as the parameters to {\tt main} function
 in a C program. In particular, {\tt argc} should be the number of
-values in {\tt argv}. If {\tt argv[0]} is the name of one of the
+values in {\tt argv}. If the base part of {\tt argv[0]} ({\tt argv[0]} with the
+directory portion removed) is the name of one of the
 layout algorithms, this will be bound to the \gvc\ value and used
 at layout time.
+(This can always be overridden by supplying a {\tt "-K"} flag, or by
+supplying a {\tt "layout"} attribute in the graph.)
 The remaining {\tt argv} values, if any, are interpreted exactly like
 the allowed command line flags for any \gviz\ program.
 Thus, {\tt "-T"} can be used to set the output type, and {\tt "-o"}

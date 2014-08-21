@@ -1,7 +1,7 @@
 \section{A sample program: {\tt simple.c}}
 \label{sec:simple}
 This following code illustrates an application which uses \gviz\ to
-position a graph using the \dot\ layout and then write the output
+position a graph using the \dot\ layout and then writes the output
 using the {\tt plain} format.
 An application can replace the call to {\tt gvRender} with its own
 function for rendering the graph, using the layout information
@@ -76,6 +76,14 @@ int main(int argc, char **argv)
 This example provides a modification of the previous example. Again it
 relies on the \gviz\ renderers, but now it creates the graph dynamically
 rather than reading the graph from a file.   
+
+Note that either the graph or the {\tt argv[]} values have to specify which
+layout algorithm is used, as explained in Section~\ref{sec:gvc}. Specifically,
+the input graph must have the {\tt layout} attribute set, or the command line
+arguments must contain a valid {\tt "-K"} flag.
+If not, {\tt gvParseArgs} will look at the base name part of {\tt argv[0]} and
+use that as the name of desired layout program. For this to work, the executable
+program needs to be renamed as one of the \gviz\ layout programs (cf. Section~\ref{sec:intro}).
 \begin{verbatim}
 #include <gvc.h>
 
