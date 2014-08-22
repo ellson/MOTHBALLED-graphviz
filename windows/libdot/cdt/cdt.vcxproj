@@ -1,0 +1,169 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\lib\cdt\dtclose.c" />
+    <ClCompile Include="..\..\..\lib\cdt\dtdisc.c" />
+    <ClCompile Include="..\..\..\lib\cdt\dtextract.c" />
+    <ClCompile Include="..\..\..\lib\cdt\dtflatten.c" />
+    <ClCompile Include="..\..\..\lib\cdt\dthash.c" />
+    <ClCompile Include="..\..\..\lib\cdt\dtlist.c" />
+    <ClCompile Include="..\..\..\lib\cdt\dtmethod.c" />
+    <ClCompile Include="..\..\..\lib\cdt\dtopen.c" />
+    <ClCompile Include="..\..\..\lib\cdt\dtrenew.c" />
+    <ClCompile Include="..\..\..\lib\cdt\dtrestore.c" />
+    <ClCompile Include="..\..\..\lib\cdt\dtsize.c" />
+    <ClCompile Include="..\..\..\lib\cdt\dtstat.c" />
+    <ClCompile Include="..\..\..\lib\cdt\dtstrhash.c" />
+    <ClCompile Include="..\..\..\lib\cdt\dttree.c" />
+    <ClCompile Include="..\..\..\lib\cdt\dttreeset.c" />
+    <ClCompile Include="..\..\..\lib\cdt\dtview.c" />
+    <ClCompile Include="..\..\..\lib\cdt\dtwalk.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\lib\cdt\cdt.h" />
+    <ClInclude Include="..\..\..\lib\cdt\dthdr.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{A2B25CEA-059E-41E7-A3A0-C017AB877A33}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>cdt</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>../../../;../../../lib/cdt;../../../lib/cgraph;../../../lib/common;../../../lib/dotgen;../../../lib/gvc;../../../lib/label;../../../lib/pack;../../../lib/pathplan;../../../lib/xdot;../../../plugin/core;../../../plugin/dot_layout;$(IncludePath);</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>../../../;../../../lib/cdt;../../../lib/cgraph;../../../lib/common;../../../lib/dotgen;../../../lib/gvc;../../../lib/label;../../../lib/pack;../../../lib/pathplan;../../../lib/xdot;../../../plugin/core;../../../plugin/dot_layout;$(IncludePath);</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>../../../;../../../lib/cdt;../../../lib/cgraph;../../../lib/common;../../../lib/dotgen;../../../lib/gvc;../../../lib/label;../../../lib/pack;../../../lib/pathplan;../../../lib/xdot;../../../plugin/core;../../../plugin/dot_layout;$(IncludePath);../../../lib/cdt;../../../lib/cgraph;../../../lib/common;../../../lib/dotgen;../../../lib/gvc;../../../lib/label;../../../lib/pack;../../../lib/pathplan;../../../lib/xdot;../../../plugin/core;../../../plugin/dot_layout;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>../../../;../../../lib/cdt;../../../lib/cgraph;../../../lib/common;../../../lib/dotgen;../../../lib/gvc;../../../lib/label;../../../lib/pack;../../../lib/pathplan;../../../lib/xdot;../../../plugin/core;../../../plugin/dot_layout;$(IncludePath);../../../lib/cdt;../../../lib/cgraph;../../../lib/common;../../../lib/dotgen;../../../lib/gvc;../../../lib/label;../../../lib/pack;../../../lib/pathplan;../../../lib/xdot;../../../plugin/core;../../../plugin/dot_layout;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;LIBDOT_STANDALONE;HAVE_CONFIG_H;WITH_CGRAPH;YY_NO_UNISTD_H;_DLL_BLD;_BLD_cdt;_dll_import;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;LIBDOT_STANDALONE;HAVE_CONFIG_H;WITH_CGRAPH;YY_NO_UNISTD_H;_DLL_BLD;_BLD_cdt;_dll_import;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;LIBDOT_STANDALONE;HAVE_CONFIG_H;WITH_CGRAPH;YY_NO_UNISTD_H;_DLL_BLD;_BLD_cdt;_dll_import;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;LIBDOT_STANDALONE;HAVE_CONFIG_H;WITH_CGRAPH;YY_NO_UNISTD_H;_DLL_BLD;_BLD_cdt;_dll_import;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

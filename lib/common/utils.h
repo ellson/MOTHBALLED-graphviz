@@ -25,6 +25,9 @@ extern "C" {
 #define extern __declspec(dllimport)
 #endif
 #endif
+#ifdef LIBDOT_STANDALONE
+#undef extern
+#endif
 /*end visual studio*/
 
 #ifndef HAVE_STRCASECMP

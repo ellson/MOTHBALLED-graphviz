@@ -24,7 +24,9 @@ extern "C" {
 #ifdef GVDLL
 #define extern __declspec(dllexport)
 #else
+#ifndef LIBDOT_STANDALONE
 #define extern
+#endif
 #endif
 
 /*visual studio*/

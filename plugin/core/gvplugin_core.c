@@ -40,6 +40,7 @@ extern gvplugin_installed_t gvloadimage_core_types[];
 
 static gvplugin_api_t apis[] = {
     {API_device, gvdevice_dot_types},
+#ifndef LIBDOT_STANDALONE
     {API_device, gvdevice_fig_types},
     {API_device, gvdevice_map_types},
     {API_device, gvdevice_ps_types},
@@ -48,8 +49,10 @@ static gvplugin_api_t apis[] = {
     {API_device, gvdevice_vml_types},
     {API_device, gvdevice_pic_types},
     {API_device, gvdevice_pov_types},
+#endif
 
     {API_render, gvrender_dot_types},
+#ifndef LIBDOT_STANDALONE
     {API_render, gvrender_fig_types},
     {API_render, gvrender_map_types},
     {API_render, gvrender_ps_types},
@@ -60,7 +63,7 @@ static gvplugin_api_t apis[] = {
     {API_render, gvrender_pov_types},
 
     {API_loadimage, gvloadimage_core_types},
-
+#endif
     {(api_t)0, 0},
 };
 
