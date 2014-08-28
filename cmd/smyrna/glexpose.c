@@ -20,7 +20,7 @@
 #include "hotkeymap.h"
 #include "polytess.h"
 
-int texture[3];
+GLuint texture[3];
 static int Status=0;									// Status Indicator
 
 void LoadGLTextures()									// Load Bitmaps And Convert To Textures
