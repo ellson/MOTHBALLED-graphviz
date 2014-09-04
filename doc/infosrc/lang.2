@@ -51,6 +51,18 @@ Subgraphs play three roles in Graphviz. First, a subgraph can be used to
 represent graph structure, indicating that certain nodes and edges should 
 be grouped together. This is the usual role for subgraphs 
 and typically specifies semantic information about the graph components. 
+It can also provide a convenient shorthand for edges. An edge statement allows
+a subgraph on both the left and right sides of the edge operator.
+When this occurs, an edge is created from every node on the left to every node
+on the right. For example, the specification
+<PRE>
+  A -> {B C}
+</PRE>
+is equivalent to
+<PRE>
+  A -> B
+  A -> C
+</PRE>
 <P>
 In the second role, a subgraph can provide a context for setting attributes.
 For example, a subgraph could specify that blue 
