@@ -83,6 +83,7 @@ static polygon_t p_triangle = { FALSE, 1, 3, 0., 0., 0. };
 static polygon_t p_box = { FALSE, 1, 4, 0., 0., 0. };
 static polygon_t p_square = { TRUE, 1, 4, 0., 0., 0. };
 static polygon_t p_plaintext = { FALSE, 0, 4, 0., 0., 0. };
+static polygon_t p_plain = { FALSE, 0, 4, 0., 0., 0. };
 static polygon_t p_diamond = { FALSE, 1, 4, 45., 0., 0. };
 static polygon_t p_trapezium = { FALSE, 1, 4, 0., -.4, 0. };
 static polygon_t p_parallelogram = { FALSE, 1, 4, 0., 0., .6 };
@@ -139,6 +140,7 @@ static polygon_t p_larrow = { FALSE, 1, 4, 0., 0., 0., LARROW};
 static polygon_t p_lpromoter = { FALSE, 1, 4, 0., 0., 0., LPROMOTER};
 
 #define IS_BOX(n) (ND_shape(n)->polygon == &p_box)
+#define IS_PLAIN(n) (ND_shape(n)->polygon == &p_plain)
 
 /* True if style requires processing through round_corners. */
 #define SPECIAL_CORNERS(style) ((style) & (ROUNDED | DIAGONALS | SHAPE_MASK))
@@ -221,6 +223,7 @@ static shape_desc Shapes[] = {	/* first entry is default for no such shape */
     {"triangle", &poly_fns, &p_triangle},
     {"none", &poly_fns, &p_plaintext},
     {"plaintext", &poly_fns, &p_plaintext},
+    {"plain", &poly_fns, &p_plain},
     {"diamond", &poly_fns, &p_diamond},
     {"trapezium", &poly_fns, &p_trapezium},
     {"parallelogram", &poly_fns, &p_parallelogram},
@@ -1831,6 +1834,7 @@ static void poly_init(node_t * n)
     int regular, peripheries, sides;
     int i, j, isBox, outp;
     polygon_t *poly = NEW(polygon_t);
+    boolean isPlain = IS_PLAIN(n);
 
     regular = ND_shape(n)->polygon->regular;
     peripheries = ND_shape(n)->polygon->peripheries;
@@ -1847,7 +1851,10 @@ static void poly_init(node_t * n)
      *   Else use minimum default value.
      * If node is not regular, use the current width and height.
      */
-    if (regular) {
+    if (isPlain) {
+	width = height = 0;
+    }
+    else if (regular) {
 	double sz = userSize(n);
 	if (sz > 0.0)
 	    width = height = sz;
@@ -1875,23 +1882,25 @@ static void poly_init(node_t * n)
     /* minimal whitespace around label */
     if ((dimen.x > 0) || (dimen.y > 0)) {
 	/* padding */
-	if ((p = agget(n, "margin"))) {
-	    marginx = marginy = 0;
-	    i = sscanf(p, "%lf,%lf", &marginx, &marginy);
-	    if (marginx < 0)
-		marginx = 0;
-	    if (marginy < 0)
-		marginy = 0;
-	    if (i > 0) {
-		dimen.x += 2 * POINTS(marginx);
-		if (i > 1)
-		    dimen.y += 2 * POINTS(marginy);
-		else
-		    dimen.y += 2 * POINTS(marginx);
+	if (!isPlain) {
+	    if ((p = agget(n, "margin"))) {
+		marginx = marginy = 0;
+		i = sscanf(p, "%lf,%lf", &marginx, &marginy);
+		if (marginx < 0)
+		    marginx = 0;
+		if (marginy < 0)
+		    marginy = 0;
+		if (i > 0) {
+		    dimen.x += 2 * POINTS(marginx);
+		    if (i > 1)
+			dimen.y += 2 * POINTS(marginy);
+		    else
+			dimen.y += 2 * POINTS(marginx);
+		} else
+		    PAD(dimen);
 	    } else
 		PAD(dimen);
-	} else
-	    PAD(dimen);
+	}
     }
     spacex = dimen.x - ND_label(n)->dimen.x;
 
