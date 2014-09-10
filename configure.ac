@@ -102,13 +102,16 @@ AC_SUBST([GRAPHVIZ_VERSION_BUILD])
 AC_SUBST([GRAPHVIZ_VERSION_REVISION])
 
 AC_ARG_VAR(LIBPOSTFIX, [subscript to lib, e.g. "/64" for "/usr/lib/64" on Solaris])
+AC_ARG_VAR(INTGOSIZE, [integer size for go, 32 or 64])
 
+INTGOSIZE=32
 if test -z "$LIBPOSTFIX"; then
   case "${host_os}" in
     *linux* )
       case "${host_cpu}" in
         aarch64 | powerpc64 | powerpc64le | s390x | x86_64 | sparc64 )
           LIBPOSTFIX="64"
+          INTGOSIZE=64
           ;;
       esac
       ;;
@@ -116,6 +119,7 @@ if test -z "$LIBPOSTFIX"; then
       case "${host_cpu}" in
         x86_64 | sparc64 )
           LIBPOSTFIX="/64"
+          INTGOSIZE=64
           ;;
       esac
       ;;
@@ -674,6 +678,7 @@ else
 #          AC_SUBST([GO_INSTALL_DIR])
           AC_SUBST([GO_INCLUDES])
           AC_SUBST([GO_LIBS])
+          AC_SUBST([INTGOSIZE])
         fi
       fi
     fi
