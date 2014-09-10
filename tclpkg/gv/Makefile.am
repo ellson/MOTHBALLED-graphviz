@@ -33,33 +33,42 @@ gv_sharp.cpp: gv.i
 	$(SWIG) -c++ -csharp -namespace gv -o gv_sharp.cpp $(srcdir)/gv.i
 
 pkggodir = $(pkglibdir)/go
-GO_data = 
-nodist_libgv_go_la_SOURCES = gv_go.cpp
+GO_data = runtime.h gv.go
+nodist_libgv_go_la_SOURCES = gv_go.cpp runtime.h gv.go
 libgv_go_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
 libgv_go_la_LIBADD = $(BASELIBS) $(GO_LIBS)
 libgv_go_la_LDFLAGS = -module -avoid-version
 libgv_go_la_CPPFLAGS = $(BASECPPFLAGS) $(GO_INCLUDES)
 gv_gc.c gv.go: gv_go.cpp
 gv_go.cpp: gv.i
-	$(SWIG) -c++ -go -intgosize $(INTGOSIZE) -o gv_go.cpp $(srcdir)/gv.i
+	$(SWIG) -c++ -go -intgosize $(INTGOSIZE) -o gv_go.cpp $(srcdir)/gv.i 
 	mv $@ $@.orig
 	sed '/include/s/malloc\.h/cstdlib/' $@.orig > $@
 	rm $@.orig
+runtime.h:
+	$(SWIG) -c++ -go -intgosize $(INTGOSIZE) -external-runtime runtime.h
+gv.go:
+	echo "package gv" >gv.go
+	
 
-gvgotest: gv.i gvgotest.go
+gvgotest: gv.i gvgotest.go gv.go runtime.h
 	( \
+	eval $(go env); \
 	mkdir -p go/src/gv; \
 	$(SED) -e 's/#include "gvc.h"/#include <graphviz\/gvc.h>/' <$(srcdir)/gv.i >go/src/gv/gv.swigcxx; \
 	$(SED) -e 's/#include <gvc.h>/#include <graphviz\/gvc.h>/' <$(srcdir)/gv_dummy_init.c >go/src/gv/gv_dummy_init.c; \
 	$(SED) -e 's/#include "gvplugin.h"/#include <graphviz\/gvplugin.h>/' <$(srcdir)/gv_builtins.c >go/src/gv/gv_builtins.c; \
 	$(SED) -e 's/#include "gvc.h"/#include <graphviz\/gvc.h>/' -e 's/DEMAND_LOADING/1/' <$(srcdir)/gv.cpp >go/src/gv/gv.cpp; \
-	echo "package gv" >go/src/gv/gv.go; \
+	cat gv.go >go/src/gv/gv.go; \
 	cat $(srcdir)/gvgotest.go >go/src/gvgotest.go; \
-        cat $(srcdir)/gv_gc.c >go/src/gv_gc.c; \
 	cd go/src; \
 	GOPATH=/home/ellson/FIX/Linux.x86_64/build/graphviz/tclpkg/gv/go \
-	$(GO) build -x -work -gccgoflags -lgvc -compiler gccgo gvgotest.go && mv gvgotest ../../; \
+	go build -x -work -gccgoflags -lgvc -compiler gccgo gvgotest.go && mv gvgotest ../../; \
 	)
+
+#        cat $(srcdir)/gv_gc.c >go/src/gv/gv_gc.c; \
+#        cat runtime.h >go/src/gv/runtime.h; \
+#
 
 pkgguiledir = $(pkglibdir)/guile
 GUILE_data = 
