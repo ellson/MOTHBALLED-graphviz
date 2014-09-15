@@ -57,7 +57,9 @@ static void svg_bzptarray(GVJ_t * job, pointf * A, int n)
     char c;
 
     c = 'M';			/* first point */
+#if EDGEALIGN
     if (A[0].x <= A[n-1].x) {
+#endif
 	for (i = 0; i < n; i++) {
 	    gvprintf(job, "%c%g,%g", c, A[i].x, -A[i].y);
 	    if (i == 0)
@@ -65,6 +67,7 @@ static void svg_bzptarray(GVJ_t * job, pointf * A, int n)
 	    else
 		c = ' ';		/* remaining points */
 	}
+#if EDGEALIGN
     } else {
 	for (i = n-1; i >= 0; i--) {
 	    gvprintf(job, "%c%g,%g", c, A[i].x, -A[i].y);
@@ -74,6 +77,7 @@ static void svg_bzptarray(GVJ_t * job, pointf * A, int n)
 		c = ' ';		/* remaining points */
 	}
     }
+#endif
 }
 
 static void svg_print_color(GVJ_t * job, gvcolor_t color)
