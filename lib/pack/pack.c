@@ -462,16 +462,14 @@ fits(int x, int y, ginfo * info, PointSet * ps, point * place, int step, boxf* b
  * graph is constructed where it will be.
  */
 static void
-placeFixed(ginfo * info, PointSet * ps, point * place)
+placeFixed(ginfo * info, PointSet * ps, point * place, point center)
 {
     point *cells = info->cells;
     int n = info->nc;
     int i;
 
-    /* place->x = -center.x; */
-    /* place->y = -center.y; */
-    place->x = 0;
-    place->y = 0;
+    place->x = -center.x;
+    place->y = -center.y;
 
     for (i = 0; i < n; i++) {
 	insertPS(ps, *cells++);
@@ -489,22 +487,22 @@ placeFixed(ginfo * info, PointSet * ps, point * place)
  * First graph (i == 0) is centered on the origin if possible.
  */
 static void
-placeGraph(int tryCenter, ginfo * info, PointSet * ps, point * place, int step,
-	   int margin, boxf* bbs, int cx, int cy)
+placeGraph(int i, ginfo * info, PointSet * ps, point * place, int step,
+	   int margin, boxf* bbs)
 {
     int x, y;
     int W, H;
     int bnd;
     boxf bb = bbs[info->index];
 
-    if (tryCenter) {
+    if (i == 0) {
 	W = GRID(bb.UR.x - bb.LL.x + 2 * margin, step);
 	H = GRID(bb.UR.y - bb.LL.y + 2 * margin, step);
 	if (fits(-W / 2, -H / 2, info, ps, place, step, bbs))
 	    return;
     }
 
-    if (fits(cx, cy, info, ps, place, step, bbs))
+    if (fits(0, 0, info, ps, place, step, bbs))
 	return;
     W = ceil(bb.UR.x - bb.LL.x);
     H = ceil(bb.UR.y - bb.LL.y);
@@ -513,19 +511,19 @@ placeGraph(int tryCenter, ginfo * info, PointSet * ps, point * place, int step,
 	    x = 0;
 	    y = -bnd;
 	    for (; x < bnd; x++)
-		if (fits(cx+x, cy+y, info, ps, place, step, bbs))
+		if (fits(x, y, info, ps, place, step, bbs))
 		    return;
 	    for (; y < bnd; y++)
-		if (fits(cx+x, cy+y, info, ps, place, step, bbs))
+		if (fits(x, y, info, ps, place, step, bbs))
 		    return;
 	    for (; x > -bnd; x--)
-		if (fits(cx+x, cy+y, info, ps, place, step, bbs))
+		if (fits(x, y, info, ps, place, step, bbs))
 		    return;
 	    for (; y > -bnd; y--)
-		if (fits(cx+x, cy+y, info, ps, place, step, bbs))
+		if (fits(x, y, info, ps, place, step, bbs))
 		    return;
 	    for (; x < 0; x++)
-		if (fits(cx+x, cy+y, info, ps, place, step, bbs))
+		if (fits(x, y, info, ps, place, step, bbs))
 		    return;
 	}
     } else {
@@ -533,19 +531,19 @@ placeGraph(int tryCenter, ginfo * info, PointSet * ps, point * place, int step,
 	    y = 0;
 	    x = -bnd;
 	    for (; y > -bnd; y--)
-		if (fits(cx+x, cy+y, info, ps, place, step, bbs))
+		if (fits(x, y, info, ps, place, step, bbs))
 		    return;
 	    for (; x < bnd; x++)
-		if (fits(cx+x, cy+y, info, ps, place, step, bbs))
+		if (fits(x, y, info, ps, place, step, bbs))
 		    return;
 	    for (; y < bnd; y++)
-		if (fits(cx+x, cy+y, info, ps, place, step, bbs))
+		if (fits(x, y, info, ps, place, step, bbs))
 		    return;
 	    for (; x > -bnd; x--)
-		if (fits(cx+x, cy+y, info, ps, place, step, bbs))
+		if (fits(x, y, info, ps, place, step, bbs))
 		    return;
 	    for (; y > 0; y--)
-		if (fits(cx+x, cy+y, info, ps, place, step, bbs))
+		if (fits(x, y, info, ps, place, step, bbs))
 		    return;
 	}
     }
@@ -764,8 +762,8 @@ polyRects(int ng, boxf* gs, pack_info * pinfo)
     ps = newPS();
     places = N_NEW(ng, point);
     for (i = 0; i < ng; i++)
-	placeGraph(i==0, sinfo[i], ps, places + (sinfo[i]->index),
-		       stepSize, pinfo->margin, gs, 0, 0);
+	placeGraph(i, sinfo[i], ps, places + (sinfo[i]->index),
+		       stepSize, pinfo->margin, gs);
 
     free(sinfo);
     for (i = 0; i < ng; i++)
@@ -866,18 +864,10 @@ polyGraphs(int ng, Agraph_t ** gs, Agraph_t * root, pack_info * pinfo)
     info = N_NEW(ng, ginfo);
     for (i = 0; i < ng; i++) {
 	Agraph_t *g = gs[i];
-	point ctr;
 	info[i].index = i;
-	
-	if (fixed && fixed[i]) {
-	    ctr.x = ROUND(GD_bb(g).LL.x);
-	    ctr.y = ROUND(GD_bb(g).LL.y);
-	}
-	else
-	    ctr = center;
 	if (pinfo->mode == l_graph)
-	    genBox(GD_bb(g), info + i, stepSize, pinfo->margin, ctr, agnameof(g));
-	else if (genPoly(root, gs[i], info + i, stepSize, pinfo, ctr)) {
+	    genBox(GD_bb(g), info + i, stepSize, pinfo->margin, center, agnameof(g));
+	else if (genPoly(root, gs[i], info + i, stepSize, pinfo, center)) {
 	    return 0;
 	}
     }
@@ -892,20 +882,20 @@ polyGraphs(int ng, Agraph_t ** gs, Agraph_t * root, pack_info * pinfo)
     ps = newPS();
     places = N_NEW(ng, point);
     if (fixed) {
-	CELL(center,stepSize);
 	for (i = 0; i < ng; i++) {
-	    if (fixed[sinfo[i]->index])
-		placeFixed(sinfo[i], ps, places + (sinfo[i]->index));
+	    if (fixed[i])
+		placeFixed(sinfo[i], ps, places + (sinfo[i]->index),
+			   center);
 	}
 	for (i = 0; i < ng; i++) {
-	    if (!fixed[sinfo[i]->index])
-		placeGraph(0, sinfo[i], ps, places + (sinfo[i]->index),
-			   stepSize, pinfo->margin, bbs, center.x, center.y);
+	    if (!fixed[i])
+		placeGraph(i, sinfo[i], ps, places + (sinfo[i]->index),
+			   stepSize, pinfo->margin, bbs);
 	}
     } else {
 	for (i = 0; i < ng; i++)
-	    placeGraph(i==0, sinfo[i], ps, places + (sinfo[i]->index),
-		       stepSize, pinfo->margin, bbs, 0, 0);
+	    placeGraph(i, sinfo[i], ps, places + (sinfo[i]->index),
+		       stepSize, pinfo->margin, bbs);
     }
 
     free(sinfo);
