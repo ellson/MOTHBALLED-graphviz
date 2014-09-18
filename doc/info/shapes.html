@@ -454,7 +454,7 @@ the markup for strike-through (<TT>&lt;S&gt;</TT>) requires versions later than 
 In addition, all of these markups are
 currently only available via the cairo and svg renderers.
 The horizontal and vertical rules </EM>(<TT>&lt;HR&gt;</TT> and <TT>&lt;VR&gt;</TT>)
-<EM>are only available in versions later than 8 July 2011.</EM>
+<EM>are only available in versions later than 8 July 2011.  </EM>
 <P>
 <B>NOTE:</B><EM>For releases later than 9 September 2014, one can use </EM><TT>shape=plain</TT> <EM>so that the size
 of the node is totally determined by the label. Otherwise, the node's margin, width and height values may cause the
@@ -557,6 +557,11 @@ Note that, as in HTML, element and attribute names are case-insensitive.
   <TD ALIGN=RIGHT></TD>
   <TD ALIGN=LEFT>|</TD>
   <TD ALIGN=LEFT><B>&lt;U&gt;</B> <I>text</I> <B>&lt;/U&gt</B></TD>
+</TR>
+<TR>
+  <TD ALIGN=RIGHT></TD>
+  <TD ALIGN=LEFT>|</TD>
+  <TD ALIGN=LEFT><B>&lt;O&gt;</B> <I>text</I> <B>&lt;/O&gt</B></TD>
 </TR>
 <TR>
   <TD ALIGN=RIGHT></TD>
@@ -744,8 +749,14 @@ Attribute values must appear in double quotes.
 &gt;
 </PRE>
 <P>
-  &lt;!-- Underlined text --&gt;
+  &lt;!-- Underline text --&gt;
 <PRE>&lt;U
+  &lt;!-- No attributes --&gt;
+&gt;
+</PRE>
+<P>
+  &lt;!-- Overline text --&gt;
+<PRE>&lt;O
   &lt;!-- No attributes --&gt;
 &gt;
 </PRE>
