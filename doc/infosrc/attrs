@@ -561,6 +561,13 @@ Text label attached to objects.
 If a node's <A HREF=#d:shape>shape</A> is record, then the label can
 have a <A HREF=shapes.html#record>special format</A>
 which describes the record layout.
+<P>
+Note that a node's default label is "\&#92;N", so the node's name or ID becomes
+its label. Technically, a node's name can be an HTML string but this will not
+mean that the node's label will be interpreted as an <a href="shapes.html#html">HTML-like label</a>. This is
+because the node's actual label is an ordinary string, which will be replaced 
+by the raw bytes stored in the node's name.
+To get an HTML-like label, the label attribute value itself must be an HTML string.
 :labelURL:E:escString:"";  map,svg
 If <B>labelURL</B> is defined, this is the link used for the label
 of an edge. This value overrides any <A HREF=#d:URL>URL</A>

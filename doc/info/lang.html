@@ -122,7 +122,7 @@ digits (<TT>[0-9]</TT>), not beginning with a digit;
 <LI> a numeral [<tt>-</tt>]<sup>?</sup>(<tt>.</tt>[<tt>0</tt>-<tt>9</tt>]<sup>+</sup>  | [<tt>0</tt>-<tt>9</tt>]<sup>+</sup>(<tt>.</tt>[<tt>0</tt>-<tt>9</tt>]<sup>*</sup>)<sup>?</sup> ); 
 <LI> any double-quoted string (&quot;...&quot;) possibly containing escaped 
 quotes (\&quot;)<SUP>1</SUP>;
-<LI> an <A NAME=html>HTML string</A> (&lt;...&gt;).
+<LI> an HTML string (&lt;...&gt;).
 </MENU>
 An ID is just a string; the lack of quote characters in the first two
 forms is just for simplicity. There is no semantic difference between
@@ -134,6 +134,9 @@ characters are allowed.
 In addition, the content must be legal XML, so that the special XML
 escape sequences for &quot;, &amp;, &lt;, and &gt; may be necessary
 in order to embed these characters in attribute values or raw text.
+As an ID, an HTML string can be any legal XML string. However, if used
+as a label attribute, it is interpreted specially and must follow the syntax
+for <A HREF=shapes.html#html>HTML-like labels</A>.
 <P>
 Both quoted strings and HTML strings are scanned as a unit, so
 any embedded comments will be treated as part of the strings.
