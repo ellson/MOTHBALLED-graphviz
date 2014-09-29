@@ -59,7 +59,7 @@ extern "C" {
     typedef void (*nodesizefn_t) (Agnode_t *, boolean);
 
 /*visual studio*/
-#ifdef WIN32_DLL
+#ifdef WIN32
 #ifndef GVC_EXPORTS
 #define extern __declspec(dllimport)
 #endif

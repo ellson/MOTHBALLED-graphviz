@@ -110,7 +110,7 @@ extern "C" {
 #endif
 
 /*visual studio*/
-#ifdef WIN32_DLL
+#ifdef WIN32
 #ifndef VMALLOC_EXPORTS
 #define extern __declspec(dllimport)
 #else

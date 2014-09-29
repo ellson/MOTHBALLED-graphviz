@@ -13,7 +13,7 @@
 #ifndef XDOT_H
 #define XDOT_H
 #include <stdio.h>
-#ifdef _WIN32
+#ifdef WIN32
 #include <windows.h>
 #endif
 
