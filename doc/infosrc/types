@@ -148,7 +148,7 @@ interpreting "forward" and "back".
 A colon-separated list of doubles: "<I>%f</I>(:<I>%f</I>)*"
  where each <I>%f</I> is a double.
 :escString
-string allowing escape sequences which are replaced according
+A string allowing escape sequences which are replaced according
 to the context.
 For node attributes, the substring "&#92;N" is replaced by the name of the node,
 and the substring "&#92;G" by the name of the graph.
@@ -169,6 +169,9 @@ In addition, if the associated attribute is
 the escape sequences "&#92;n", "&#92;l" and "&#92;r"
 divide the label into lines, centered, left-justified, and right-justified,
 respectively.
+<P>
+Obviously, one can use "&#92;&#92;" to get a single backslash. A backslash appearing before any
+character not listed above is ignored.
 :lblString
 an <A HREF=#k:escString>escString</A>
 or an <A HREF=shapes.html#html>HTML label</A>.

@@ -2230,7 +2230,7 @@ enclosed in the parentheses,  <TT>(...)+</TT> indicates 1 or more, and
    where each <I>%f</I> is a double.
 
 <DT><A NAME=k:escString><STRONG>escString</STRONG></A>
-<DD>string allowing escape sequences which are replaced according
+<DD>A string allowing escape sequences which are replaced according
   to the context.
   For node attributes, the substring "&#92;N" is replaced by the name of the node,
   and the substring "&#92;G" by the name of the graph.
@@ -2251,6 +2251,9 @@ enclosed in the parentheses,  <TT>(...)+</TT> indicates 1 or more, and
   the escape sequences "&#92;n", "&#92;l" and "&#92;r"
   divide the label into lines, centered, left-justified, and right-justified,
   respectively.
+  <P>
+  Obviously, one can use "&#92;&#92;" to get a single backslash. A backslash appearing before any
+  character not listed above is ignored.
 
 <DT><A NAME=k:layerList><STRONG>layerList</STRONG></A>
 <DD>list of strings separated by characters from the
