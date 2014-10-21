@@ -60,7 +60,7 @@ va_list args;			/* arg list if !argf    */
 
 #define SLACK		1024
     char buf[SF_MAXDIGITS + SLACK], data[SF_GRAIN];
-    int decimal = 0, thousand = 0;
+    char decimal = 0, thousand = 0;
 
     /* fast io system */
     reg uchar *d, *endd;
@@ -218,7 +218,7 @@ va_list args;			/* arg list if !argf    */
 	    flags |= SFFMT_ALTER;
 	    goto loop_flags;
 	case QUOTE:
-	    SFSETLOCALE(&decimal, &thousand);
+	    SFSETLOCALE(decimal, thousand);
 	    if (thousand)
 		flags |= SFFMT_THOUSAND;
 	    goto loop_flags;
@@ -869,7 +869,7 @@ va_list args;			/* arg list if !argf    */
 	    sp = endsp = buf + 1;	/* reserve space for sign */
 	    *endsp++ = *ep ? *ep++ : '0';
 
-	    SFSETLOCALE(&decimal, &thousand);
+	    SFSETLOCALE(decimal, thousand);
 	    if (precis > 0 || (flags & SFFMT_ALTER))
 		*endsp++ = decimal;
 	    ssp = endsp;
@@ -912,7 +912,7 @@ va_list args;			/* arg list if !argf    */
 		goto end_efg;
 	    }
 
-	    SFSETLOCALE(&decimal, &thousand);
+	    SFSETLOCALE(decimal, thousand);
 	    endsp = sp = buf + 1;	/* save a space for sign */
 	    endep = ep + decpt;
 	    if (decpt > 3 && (flags & SFFMT_THOUSAND)) {

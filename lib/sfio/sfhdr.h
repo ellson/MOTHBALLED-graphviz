@@ -493,13 +493,13 @@ extern "C" {
 #include	<locale.h>
 #define SFSETLOCALE(decimal,thousand) \
 	{ struct lconv*	lv; \
-	  if(*(decimal) == 0) \
-	  { *(decimal) = '.'; \
+	  if((decimal) == 0) \
+	  { (decimal) = '.'; \
 	    if((lv = localeconv())) \
 	    { if(lv->decimal_point && lv->decimal_point[0]) \
-	    	*(decimal) = lv->decimal_point[0]; \
-	      if(thousand != NULL && lv->thousands_sep && lv->thousands_sep[0]) \
-	    	*(thousand) = lv->thousands_sep[0]; \
+	    	(decimal) = lv->decimal_point[0]; \
+	      if(lv->thousands_sep && lv->thousands_sep[0]) \
+	    	(thousand) = lv->thousands_sep[0]; \
 	    } \
 	  } \
 	}

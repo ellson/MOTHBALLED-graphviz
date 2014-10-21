@@ -19,6 +19,8 @@
 #define STRONG_CLUSTER_WEIGHT   1000
 #define	NORANK		6
 
+extern void rank2(graph_t * g, int balance, int maxiter, int searchsize);
+
 static int is_a_strong_cluster(graph_t * g);
 static void compile_samerank(graph_t * ug, graph_t * parent_clust);
 static int is_internal_to_cluster(edge_t * e);

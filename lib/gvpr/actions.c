@@ -1045,7 +1045,6 @@ static char* resolveColor (char* str)
 
 #undef S
 
-static
 int colorxlate(char *str, gvcolor_t * color, color_type_t target_type)
 {
     static hsvrgbacolor_t *last;
