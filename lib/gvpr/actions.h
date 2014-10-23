@@ -20,7 +20,6 @@ extern "C" {
 
 #include "cgraph.h"
 #include "expr.h"
-#include "color.h"
 
     extern void nodeInduce(Agraph_t * selected);
     extern Agobj_t *clone(Agraph_t * g, Agobj_t * obj);
@@ -50,7 +49,6 @@ extern "C" {
     extern char *toLower(Expr_t * pgm, char *, Sfio_t*);
     extern char *toUpper(Expr_t * pgm, char *, Sfio_t*);
     extern int deleteObj(Agraph_t * g, Agobj_t * obj);
-    extern int colorxlate(char *str, gvcolor_t * color, color_type_t target_type);
     extern char *colorx (Expr_t* ex, char* incolor, char* fmt, Sfio_t* fp);
     extern void gvstart_timer(void);
     extern double gvelapsed_sec(void);
