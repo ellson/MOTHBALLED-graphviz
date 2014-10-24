@@ -752,7 +752,7 @@ Ruby extension for graphviz.
 %package lang-tcl
 Group:          Applications/Multimedia
 Summary:        Tcl extension & tools for graphviz
-Requires:       %{name} = %{version}-%{release}, tcl >= 8.3 tk
+Requires:       %{name} = %{version}-%{release}, tcl >= 8.3
 Obsoletes:	%{name}-tcl
 
 %description lang-tcl
@@ -765,7 +765,6 @@ Various tcl packages (extensions) for the graphviz tools.
 %{_datadir}/graphviz/demo/*_data
 %{_datadir}/graphviz/demo/entities.html
 %{_mandir}/man3/*.3tcl.*
-%{_mandir}/man3/*.3tk.*
 %exclude %{_libdir}/graphviz/tcl/*
 %endif
 
