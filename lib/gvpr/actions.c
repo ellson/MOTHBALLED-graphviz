@@ -813,6 +813,8 @@ char *canon(Expr_t * pgm, char *arg)
 }
 
 #undef S
+#define grealloc(p,x) gvpr_grealloc(p,x)
+
 static void *grealloc(void *ptr, size_t size)
 {
     void *p = realloc(ptr, size);
