@@ -1754,120 +1754,6 @@ AC_SUBST([TCL_STUB_LIB_SPEC])
 #AC_SUBST([TCL_STUB_LIB_PATH])
 
 dnl -----------------------------------
-dnl INCLUDES and LIBS for TK
-
-if test "x$use_tcl" != "xYes"; then
-    AC_MSG_WARN([No Tcl. The Tk packages will not be built either])
-    use_tk="No (no tcl)"
-fi
-
-if test "x$use_tk" = "x"; then
-    AC_ARG_WITH(wish,
-        [AS_HELP_STRING([--with-wish=PROG],[use a specific wish])],
-        WISH=$withval,)
-    if test "x$WISH" = "x"; then
-        AC_PATH_PROGS(WISH,[wish8.6 wish8.5 wish8.4 wish8.3 wish])
-        if test "x$WISH" = "x"; then
-            AC_MSG_WARN([Unable to find a wish. The Tk packages will not be built])
-            use_tk="No (wish not found)"
-    fi
-    fi
-fi
-
-if test "x$use_tk" = "x"; then
-    #TK_VERSION_FOUND=`echo 'puts [[info tkversion]]' | $WISH`
-    #
-    # No such var as tkversion.  Use tclversion instead.
-    TK_VERSION_FOUND=${TCL_VERSION_FOUND}
-    
-    # can't assume ksh on all architectures
-    # WISH_EXEC_PREFIX=${WISH%%/bin/tclsh.*}
-    # so use sed instead
-    WISH_EXEC_PREFIX=`echo $WISH|sed -e 's%/bin/.*wish.*$%%'`
-
-    if test -f ${WISH_EXEC_PREFIX}/include/tk${TK_VERSION_FOUND}/tk.h; then
-	TK_INCLUDES="-I${WISH_EXEC_PREFIX}/include/tk${TK_VERSION_FOUND} -I${WISH_EXEC_PREFIX}/include/tk${TK_VERSION_FOUND}/generic -I${WISH_EXEC_PREFIX}/include/tk${TK_VERSION_FOUND}/unix"
-    else
-        if test "x${WISH_EXEC_PREFIX}" != "x/usr" -a -f ${WISH_EXEC_PREFIX}/include/tk.h; then
-	    TK_INCLUDES=-I${WISH_EXEC_PREFIX}/include
-        fi
-    fi
-    if test "x$TK_INCLUDES" != "x" ; then
-	AC_MSG_RESULT([using tk headers from $TK_INCLUDES])
-    fi
-    AC_SUBST([TK_INCLUDES])
-    save_CPPFLAGS=$CPPFLAGS
-    CPPFLAGS="$CPPFLAGS $TCL_INCLUDES $TK_INCLUDES $X_CFLAGS"
-    AC_CHECK_HEADER(tk.h,,[
-        AC_MSG_WARN([Unable to find header tk.h. The Tk packages will not be built])
-        use_tk="No (missing header)"])
-    AC_CHECK_HEADERS(tk.h tkInt.h)
-    CPPFLAGS=$save_CPPFLAGS
-fi
-
-if test "x$use_tk" = "x"; then
-    # Some systems don't have Tcl.  Don't build
-    # Some systems have Tcl, but not Tk.  Don't build
-    # the Tk products if we don't have the library.
-    if test -f ${WISH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tk${TK_VERSION_FOUND}/tkConfig.sh; then
-        TKCONFIG=${WISH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tk${TK_VERSION_FOUND}/tkConfig.sh
-    else
-        if test -f ${WISH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tkConfig.sh; then
-	    TKCONFIG=${WISH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tkConfig.sh
-	else
-            if test -f ${WISH_EXEC_PREFIX}/lib/tkConfig.sh; then
-	        TKCONFIG=${WISH_EXEC_PREFIX}/lib/tkConfig.sh
-            fi
-        fi
-    fi
-    if test "x$TKCONFIG" != "x"; then
-        AC_MSG_RESULT([using $TKCONFIG])
-        file=${TKCONFIG}
-        . $file
-    else
-        AC_MSG_WARN([Unable to find tkConfig.sh. The Tk packages will not be built])
-        use_tk="No (missing tkConfig.sh)"
-    fi
-fi
-                                                                                
-if test "x$use_tk" = "x"; then
-    use_tk="Yes"
-    TK_SUBDIRS="tkstubs tkspline"
-else
-    TK_SUBDIRS=""
-fi
-AM_CONDITIONAL(WITH_TK, [test "x$use_tk" = "xYes"])
-
-# NB. No TK_SUPPORTS_STUBS set by tkConfig.sh
-if test "${TCL_SUPPORTS_STUBS}" = "1"; then
-    TK_CFLAGS="${TK_CFLAGS} -DUSE_TK_STUBS"
-fi
-
-AC_SUBST([TK_VERSION])
-AC_SUBST([TK_MAJOR_VERSION])
-AC_SUBST([TK_MINOR_VERSION])
-AC_SUBST([TK_PATCH_LEVEL])
-AC_SUBST([TK_DEFS])
-#AC_SUBST([TK_SHARED_BUILD])
-#AC_SUBST([TK_LIB_FILE])
-#AC_SUBST([TK_LIBS])
-#AC_SUBST([TK_PREFIX])
-#AC_SUBST([TK_EXEC_PREFIX])
-AC_SUBST([TK_XINCLUDES])
-#AC_SUBST([TK_XLIBSW])
-#AC_SUBST([TK_BUILD_LIB_SPEC])
-AC_SUBST([TK_LIB_SPEC])
-AC_SUBST([TK_SRC_DIR])
-AC_SUBST([TK_CFLAGS])
-#AC_SUBST([TK_SUPPORTS_STUBS])
-#AC_SUBST([TK_STUB_LIB_FILE])
-#AC_SUBST([TK_STUB_LIB_FLAG])
-#AC_SUBST([TK_BUILD_STUB_LIB_SPEC])
-AC_SUBST([TK_STUB_LIB_SPEC])
-#AC_SUBST([TK_BUILD_STUB_LIB_PATH])
-#AC_SUBST([TK_STUB_LIB_PATH])
-
-dnl -----------------------------------
 dnl Support for generic "extra" search paths for includes and libraries
 
 AC_ARG_WITH(extraincludedir,
@@ -2886,23 +2772,6 @@ fi
 fi
 AC_SUBST([TCLINT_INCLUDES])
 
-# -----------------------------------
-# tkInt.h
-if test -f "$TK_SRC_DIR/generic/tkInt.h"; then
-TKINT_INCLUDES="-I$TK_SRC_DIR/generic -I$TK_SRC_DIR/unix"
-else
-if test -f "/usr/include/tkInt.h"; then
-TKINT_INCLUDES=""
-else
-if test -f "/usr/local/include/tkInt.h"; then
-TKINT_INCLUDES="-I/usr/local/include"
-else
-TKINT_INCLUDES='-I$(top_srcdir)/tclpkg/tkstubs'
-fi
-fi
-fi
-AC_SUBST([TKINT_INCLUDES])
-
 # ------------------------------------
 # triangle.[ch]
 
@@ -2918,7 +2787,7 @@ fi
 TCL_PKGINDEX=""
 TCL_PKGINDEX_GD=""
 TCL_PKGINDEX_SWIG=""
-TK_PKGINDEX=""
+#TK_PKGINDEX=""
 if test "$use_tcl" = "Yes"; then
     TCL_PKGINDEX="tcldot/pkgIndex.tcl tclpathplan/pkgIndex.tcl"
     if test "x$with_libgd" = "xyes"; then
@@ -2927,14 +2796,10 @@ if test "$use_tcl" = "Yes"; then
     if test "x$SWIG" != "x"; then
 	TCL_PKGINDEX_SWIG="gv/pkgIndex.tcl"
     fi
-    if test "$use_tk" = "Yes"; then
-        TK_PKGINDEX="tkspline/pkgIndex.tcl"
-    fi
 fi
 AC_SUBST([TCL_PKGINDEX])
 AC_SUBST([TCL_PKGINDEX_GD])
 AC_SUBST([TCL_PKGINDEX_SWIG])
-AC_SUBST([TK_PKGINDEX])
 
 dnl -----------------------------------
 dnl SFDP
@@ -3271,7 +3136,6 @@ AC_CONFIG_FILES(Makefile
 	cmd/gvedit/images/Makefile
 	tclpkg/Makefile
 	tclpkg/tclstubs/Makefile
-	tclpkg/tkstubs/Makefile
 	tclpkg/tclhandle/Makefile
 	tclpkg/gdtclft/Makefile
 	tclpkg/gdtclft/demo/Makefile
@@ -3280,8 +3144,6 @@ AC_CONFIG_FILES(Makefile
 	tclpkg/tclpathplan/Makefile
 	tclpkg/tclpathplan/demo/Makefile
 	tclpkg/tclpathplan/demo/pathplan_data/Makefile
-	tclpkg/tkspline/Makefile
-	tclpkg/tkspline/demo/Makefile
 	tclpkg/gv/Makefile
 	tclpkg/gv/demo/Makefile
 	tclpkg/gv/META.gv
@@ -3319,12 +3181,6 @@ else
   else
     use_gdtclft="Yes"
   fi
-fi
-
-if test "x$use_tk" != "xYes"; then
-  use_tkspline="No (tk not available)"
-else
-  use_tkspline="Yes"
 fi
 
 echo ""
@@ -3407,5 +3263,4 @@ echo ""
 echo "  tcldot:        $use_tcldot"
 echo "  tclpathplan:   $use_tclpathplan"
 echo "  gdtclft:       $use_gdtclft"
-echo "  tkspline:      $use_tkspline"
 
