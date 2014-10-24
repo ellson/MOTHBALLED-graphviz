@@ -813,6 +813,8 @@ char *canon(Expr_t * pgm, char *arg)
 }
 
 #undef S
+#define grealloc(p,x) gvpr_grealloc(p,x)
+
 static void *grealloc(void *ptr, size_t size)
 {
     void *p = realloc(ptr, size);
@@ -821,6 +823,11 @@ static void *grealloc(void *ptr, size_t size)
     }
     return p;
 }
+
+#define colorxlate(a,b,c) gvpr_colorxlate(a,b,c)
+#define canontoken(s) gvpr_canontoken(s)
+#define colorCvt(o,n) gvpr_colorCvt(o,n)
+#define setColorScheme(s) gvpr_setColorScheme(s)
 
 #include "colxlate.c"
 
