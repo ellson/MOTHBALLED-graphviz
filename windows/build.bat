@@ -111,7 +111,7 @@ REM *****************************************************
 
 REM Copy smyrna and gvedit shared files
 xcopy /Y %buildDir%share\gui %targetDir%share\graphviz\smyrna\ /S
-xcopy /Y %buildDir%share\examples %targetDir%share\graphviz\examples\ /S
+REM xcopy /Y %buildDir%share\examples %targetDir%share\graphviz\examples\ /S
 copy /Y %buildDir%doc\infosrc\attrs  %targetDir%share\graphviz\gvedit\attributes.txt
 REM *****************************************************
 
