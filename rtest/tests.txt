@@ -344,3 +344,8 @@ xlabels
 =
 dot png
 neato png
+
+sides
+=
+dot ps
+

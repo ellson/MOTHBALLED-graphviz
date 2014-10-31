@@ -314,6 +314,8 @@ static void doBorder(GVJ_t * job, htmldata_t * dp, boxf b)
 	    break;
 	case BORDER_LEFT|BORDER_RIGHT :
 	    AF[0] = AF[4];
+	    gvrender_polyline(job, AF, 2);
+	    gvrender_polyline(job, AF+2, 2);
 	    break;
 	}
     } else {
