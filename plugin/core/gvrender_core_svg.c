@@ -88,7 +88,7 @@ static void svg_print_color(GVJ_t * job, gvcolor_t color)
 	break;
     case RGBA_BYTE:
 	if (color.u.rgba[3] == 0)	/* transparent */
-	    gvputs(job, "none");
+	    gvputs(job, "transparent");
 	else
 	    gvprintf(job, "#%02x%02x%02x",
 		     color.u.rgba[0], color.u.rgba[1], color.u.rgba[2]);
