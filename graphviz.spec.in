@@ -183,15 +183,33 @@ BuildRequires: golang >= 1.2 gcc-go swig >= 3.0.2
 
 
 #-- main graphviz rpm ------------------------------------------------
-Requires:         urw-fonts
-Requires:         %{name}-libs = %{version}-%{release}
-Requires:         %{name}-plugins-core = %{version}-%{release}
+Requires:         %{name}-nox = %{version}-%{release}
+Requires:         %{name}-x = %{version}-%{release}
 
 %description
 A collection of tools for the manipulation and layout
 of graphs (as in nodes and edges, not as in bar-charts).
 
 %files
+%defattr(-,root,root,-)
+%if 0%{?SEPARATE_LICENSE}
+%license COPYING
+%endif
+%doc COPYING AUTHORS ChangeLog NEWS README
+
+#-- graphviz-nox rpm --------------------------------------------------
+%package nox
+Group:            Applications/Multimedia
+Summary:          Graphviz commands that do not depend on X11 - all graphviz installation will want this.
+Requires:         urw-fonts
+Requires:         %{name}-libs = %{version}-%{release}
+Requires:         %{name}-plugins-core = %{version}-%{release}
+
+%description nox
+Graphviz plugins and commands that do not depend on x11. 
+When used alone, this is intended for mimimalist web-server apps with no X11 on the server.
+
+%files nox
 %defattr(-,root,root,-)
 %if 0%{?SEPARATE_LICENSE}
 %license COPYING
@@ -322,13 +340,18 @@ fi
 %package x
 Group:            Applications/Multimedia
 Summary:          Graphviz commands that depend on x11 - most installations will want this
-Requires:         %{name} = %{version}-%{release}
+Requires:         %{name}-nox = %{version}-%{release}
 Requires:         %{name}-plugins-x = %{version}-%{release}
 
 %description x
 Graphviz plugins and commands that depend on x11 - most installations will want this
 
 %files x
+%defattr(-,root,root,-)
+%if 0%{?SEPARATE_LICENSE}
+%license COPYING
+%endif
+%doc COPYING AUTHORS ChangeLog NEWS README
 %{_bindir}/lefty
 %{_bindir}/lneato
 %{_bindir}/dotty
