@@ -125,14 +125,28 @@ static void ppDirective (void)
     }
 }
 
+/* twoDots:
+ * Return true if token has more than one '.';
+ * we know the last character is a '.'.
+ */
+static int twoDots(void)
+{
+    int i;
+    for (i = yyleng-2; i >= 0; i--) {
+	if (((unsigned char)yytext[i]) == '.')
+	    return 1;
+    }
+    return 0;
+}
+
 /* chkNum:
- * The regexp for NUMBER allows a terminating letter.
+ * The regexp for NUMBER allows a terminating letter or '.'.
  * This way we can catch a number immediately followed by a name
- * and report this to the user.
+ * or something like 123.456.78, and report this to the user.
  */
 static int chkNum(void) {
     unsigned char c = (unsigned char)yytext[yyleng-1];   /* last character */
-    if (!isdigit(c) && (c != '.')) {  /* c is letter */
+    if ((!isdigit(c) && (c != '.')) || ((c == '.') && twoDots())) {  /* c is letter */
 	unsigned char xbuf[BUFSIZ];
 	char buf[BUFSIZ];
 	agxbuf  xb;
@@ -171,7 +185,7 @@ GRAPH_EOF_TOKEN				[@]
 LETTER [A-Za-z_\200-\377]
 DIGIT	[0-9]
 NAME	{LETTER}({LETTER}|{DIGIT})*
-NUMBER	[-]?(({DIGIT}+(\.{DIGIT}*)?)|(\.{DIGIT}+)){LETTER}?
+NUMBER	[-]?(({DIGIT}+(\.{DIGIT}*)?)|(\.{DIGIT}+))(\.|{LETTER})?
 ID		({NAME}|{NUMBER})
 %x comment
 %x qstring
