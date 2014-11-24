@@ -543,6 +543,20 @@ information provided.
 
 <DT><A NAME=d:png HREF=#a:png><STRONG>png</STRONG></A>
 <DD>Produces output in the PNG (Portable Network Graphics) format.
+<P>
+(25 November 2014) A standard Graphviz installation will render using both
+the Cairo and GD library. 
+By <A HREF=command.html#d:T>mixing the rendering and formatting</A> of these
+libraries, one can achieve different variations in the output.
+<DL> 
+  <DT><TT>-Tpng:gd</TT> (or <TT>-Tpng:gd:gd</TT>) 
+    <DD>Indexed color, no antialiasing
+  <DT><TT>-Tpng:cairo:gd</TT>
+    <DD>Indexed color, with antialiasing
+  <DT><TT>-Tpng</TT> (or <TT>-Tpng:cairo</TT>) 
+    <DD>True color, with antialiasing
+</DL> 
+These options are listed in increasing order of image quality and output size.
 
 <DT><A NAME=d:pov HREF=#a:pov><STRONG>pov</STRONG></A>
 <DD>Scene-description language for 3D modelling for the 
