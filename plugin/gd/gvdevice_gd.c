@@ -136,7 +136,7 @@ static void gd_format(GVJ_t * job)
 
 #ifdef HAVE_GD_PNG
     case FORMAT_PNG:
-	gdImageSaveAlpha(im, TRUE);
+        gdImageTrueColorToPalette(im, 0, 256);
 	gdImagePngCtx(im, &ctx);
         break;
 #endif
