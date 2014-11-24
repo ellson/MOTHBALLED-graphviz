@@ -225,6 +225,7 @@ ID		({NAME}|{NUMBER})
 <hstring>([^><\n]*)		addstr(yytext);
 .						return (yytext[0]);
 %%
+ 
 void yyerror(char *str)
 {
 	unsigned char	xbuf[BUFSIZ];
@@ -273,7 +274,7 @@ void yyerror(char *str)
 		break;
 	}
 	agxbputc (&xb, '\n');
-	agerr(AGERR,agxbuse(&xb));
+	agerr(AGERR, "%s", agxbuse(&xb));
 	agxbfree(&xb);
 }
 /* must be here to see flex's macro defns */
