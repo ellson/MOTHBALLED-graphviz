@@ -57,58 +57,58 @@ static void tkgen_print_tags(GVJ_t *job)
     char *ObjType;
     unsigned int ObjId;
     obj_state_t *obj = job->obj;
-    int ObjFlag;
+    void *ObjFlag;
 
     switch (obj->emit_state) {
     case EMIT_NDRAW:
 	ObjType = "node";
 	ObjFlag = 1;
-        ObjId = AGSEQ(obj->u.n);
+        ObjId = obj->u.n;
 	break;
     case EMIT_NLABEL:
 	ObjType = "node";
 	ObjFlag = 0;
-        ObjId = AGSEQ(obj->u.n);
+        ObjId = obj->u.n;
 	break;
     case EMIT_EDRAW:
     case EMIT_TDRAW:
     case EMIT_HDRAW:
 	ObjType = "edge";
 	ObjFlag = 1;
-        ObjId = AGSEQ(obj->u.e);
+        ObjId = obj->u.e;
 	break;
     case EMIT_ELABEL:
     case EMIT_TLABEL:
     case EMIT_HLABEL:
 	ObjType = "edge";
 	ObjFlag = 0;
-        ObjId = AGSEQ(obj->u.e);
+        ObjId = obj->u.e;
 	break;
     case EMIT_GDRAW:
 	ObjType = "graph";
 	ObjFlag = 1;
-	ObjId = -1;  /* hack! */
+	ObjId = obj->u.g;
 	break;
     case EMIT_GLABEL:
 	ObjFlag = 0;
 	ObjType = "graph label";
-	ObjId = -1;  /* hack! */
+	ObjId = obj->u.g;
 	break;
     case EMIT_CDRAW:
 	ObjType = "graph";
 	ObjFlag = 1;
-	ObjId = AGSEQ(obj->u.sg);
+	ObjId = obj->u.sg;
 	break;
     case EMIT_CLABEL:
 	ObjType = "graph";
 	ObjFlag = 0;
-	ObjId = AGSEQ(obj->u.sg);
+	ObjId = obj->u.sg;
 	break;
     default:
 	assert (0);
 	break;
     }
-    gvprintf(job, " -tags {%d%s%d}", ObjFlag, ObjType, ObjId);
+    gvprintf(job, " -tags {%d%s%p}", ObjFlag, ObjType, ObjId);
 }
 
 static void tkgen_canvas(GVJ_t * job)
