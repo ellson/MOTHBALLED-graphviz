@@ -64,7 +64,7 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    Tcl_AppendResult(interp, "Tail node ", argv[2], " is not in the graph.", NULL);
 	    return TCL_ERROR;
 	}
-        head = cmd2n(argv[2]);
+        head = cmd2n(argv[3]);
         if (!head) {
 	    if (!(head = agfindnode(g, argv[3]))) {
 		Tcl_AppendResult(interp, "Head node \"", argv[3], "\" not found.", NULL);
