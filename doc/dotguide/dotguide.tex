@@ -8,7 +8,7 @@
 \def\dag{{\it dag}}
 \def\DOT{{\it DOT}}
 \def\graphviz{{\it Graphviz}}
-\newcommand{\lastedited}{November 2, 2010}
+\newcommand{\lastedited}{December 11, 2014}
 \date{\lastedited}
 \newcommand{\mymark}{{\it dot} User's Manual, \lastedited \hfil }
 \markboth{\mymark}{\mymark}
@@ -1243,8 +1243,13 @@ the verbose messages may give some estimate of \dot's progress.
 \section{Miscellaneous}
 
 In the top-level graph heading, a graph may be declared a
-{\tt strict digraph}.  This forbids the creation of self-arcs
-and multi-edges; they are ignored in the input file.
+{\tt strict digraph} or a {\tt strict graph}. This forbids the creation 
+of multi-edges, i.e., there can be at most one edge with a given tail
+node and head node in the directed case. For undirected graphs, 
+there can be at most one
+edge connected to the same two nodes. Subsequent edge statements using
+the same two nodes will identify the edge with the previously defined one
+and apply any attributes given in the edge statement.
 
 Nodes, edges and graphs may have a {\tt URL} attribute. In certain
 output formats ({\tt ps2}, {\tt imap}, {\tt cmapx}, or {\tt svg}), 

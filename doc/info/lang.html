@@ -199,6 +199,33 @@ Note that, for good and bad, cluster subgraphs are not part of the
 DOT language, but solely a syntactic convention adhered to by
 certain of the layout engines.
 <H2>Lexical and Semantic Notes</H2>
+A graph must be specified as either a <B>digraph</B> or a <B>graph</B>.
+Semantically, this indicates whether or not there is a natural direction from
+one of the edge's nodes to the other. 
+Lexically, a digraph must specify an edge using the edge operator <TT>-></TT>
+while a undirected graph must use <TT>--</TT>.
+Operationally, the distinction is used to define different default rendering
+attributes. For example, edges in a digraph will be drawn, by default, with
+an arrowhead pointing to the head node. For ordinary graphs, edges are drawn
+without any arrowheads by default.
+<P>
+A graph may also be described as <B>strict</B>. 
+This forbids the creation of multi-edges, i.e., there can be at most one 
+edge with a given tail node and head node in the directed case. For undirected 
+graphs, there can be at most one
+edge connected to the same two nodes. Subsequent edge statements using
+the same two nodes will identify the edge with the previously defined one
+and apply any attributes given in the edge statement.
+For example, the graph
+<PRE>
+strict graph { 
+  a -- b
+  b -- a [color=blue]
+} 
+</PRE>
+will have a single edge connecting nodes <TT>a</TT> and <TT>b</TT>,
+whose color is blue.
+<P>
 If a default attribute is
 defined using a <B>node</B>,  <B>edge</B>, or  <B>graph</B> statement,
 or by an attribute assignment not attached to a node or edge, any object of the
