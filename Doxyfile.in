@@ -570,21 +570,36 @@ WARN_LOGFILE           =
 
 INPUT                  = cmd/dot \
                          lib/cdt \
+                         lib/cgraph \
                          lib/circogen \
                          lib/common \
                          lib/dotgen \
                          lib/fdpgen \
-                         lib/graph \
                          lib/gvc \
                          lib/neatogen \
+                         lib/osage \
                          lib/pack \
+                         lib/patchwork \
                          lib/pathplan \
+                         lib/rbtree \
+                         lib/sfdpgen \
+			 lib/sparse \
                          lib/twopigen \
+                         lib/xdot \
                          plugin/core \
+                         plugin/devil \
+                         plugin/gd \
+                         plugin/gdk \
+                         plugin/gtk \
+                         plugin/lasi \
                          plugin/pango \
                          plugin/dot_layout \
                          plugin/neato_layout \
-                         tclpkg/gv
+                         plugin/poppler \
+                         plugin/rsvg \
+                         plugin/xlib \
+                         tclpkg/gv \
+                         tclpkg/tcldot
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
