@@ -2000,10 +2000,6 @@ static SparseMatrix shorting_edge_label_nodes(SparseMatrix A, int n_edge_label_n
       if (mask[ja[j]] >= 0) {
 	irn[nz] = mask[i];
 	jcn[nz++] = mask[ja[j]];
-	if (mask[i] == 68 || mask[ja[j]] == 68){
-	  fprintf(stderr, "xxx %d %d\n",mask[i], mask[ja[j]]);
-	  mask[i] = mask[i];
-	}
 	continue;
       }
       ii = ja[j];
