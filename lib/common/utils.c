@@ -21,7 +21,7 @@
 #ifdef WIN32
 #include "libltdl/lt_system.h"
 #endif
-#ifndef WIN32
+#ifndef _MSC_VER
 #include <unistd.h>
 #endif
 #include <ctype.h>
