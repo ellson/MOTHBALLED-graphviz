@@ -187,7 +187,7 @@ layerPagePrefix (GVJ_t* job, agxbuf* xb)
 	agxbput (xb, job->gvc->layerIDs[job->layerNum]);
 	agxbputc (xb, '_');
     }
-    if ((job->pagesArrayElem.x > 0) || (job->pagesArrayElem.x > 0)) {
+    if ((job->pagesArrayElem.x > 0) || (job->pagesArrayElem.y > 0)) {
 	sprintf (buf, "page%d,%d_", job->pagesArrayElem.x, job->pagesArrayElem.y);
 	agxbput (xb, buf);
     }
