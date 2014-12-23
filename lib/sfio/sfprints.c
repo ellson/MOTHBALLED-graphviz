@@ -42,8 +42,10 @@ va_dcl
     /* make a fake stream */
     if (!f &&
 	!(f = sfnew(NIL(Sfio_t *), NIL(char *), (size_t) SF_UNBOUND,
-		    -1, SF_WRITE | SF_STRING)))
+		    -1, SF_WRITE | SF_STRING))) {
+	 va_end(args);
 	 return NIL(char *);
+    }
 
     sfseek(f, (Sfoff_t) 0, 0);
     rv = sfvprintf(f, form, args);

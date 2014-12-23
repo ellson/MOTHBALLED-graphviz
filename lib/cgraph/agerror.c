@@ -153,6 +153,7 @@ void agerrorf(const char *fmt, ...)
 
     va_start(args, fmt);
     agerr_va(AGERR, fmt, args);
+    va_end(args);
 }
 
 void agwarningf(const char *fmt, ...)
@@ -161,6 +162,7 @@ void agwarningf(const char *fmt, ...)
 
     va_start(args, fmt);
     agerr_va(AGWARN, fmt, args);
+    va_end(args);
 }
 
 int agerrors() { return agmaxerr; }
