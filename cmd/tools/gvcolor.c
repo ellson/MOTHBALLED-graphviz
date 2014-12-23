@@ -237,6 +237,7 @@ static void color(Agraph_t * g)
 	sprintf(buf, "%f %f %f", h, s, b);
 	agset(n, "color", buf);
     }
+    free(nlist);
 }
 
 static Agraph_t *gread(FILE * fp)
