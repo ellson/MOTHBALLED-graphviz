@@ -2734,6 +2734,7 @@ static port poly_port(node_t * n, char *portname, char *compass)
 	    unrecognized(n, portname);
     }
 
+    rv.name = NULL;
     return rv;
 }
 
