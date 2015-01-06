@@ -207,7 +207,7 @@ static char *errmsg[] = {
     /* G_ERRNOSUCHCURSOR       */ "no such cursor %s",
     /* G_ERRNOTACANVAS         */ "widget %d is not a canvas",
     /* G_ERRNOTIMPLEMENTED     */ "not implemented",
-    /* G_ERRNOTSUPPORTED       */ "not supported"
+    /* G_ERRNOTSUPPORTED       */ "not supported",
     /* G_ERRBADBITMAPID        */ "bad bitmap id %d",
     /* G_ERRCANNOTCREATEBITMAP */ "cannot create bitmap",
     /* G_ERRNOBITMAP           */ "no bitmap",

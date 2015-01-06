@@ -382,11 +382,7 @@ char *el(GVJ_t* job, char *template, ...)
 
 	va_start(arglist, template);
 	len = vsnprintf((char *)buf, BUFSIZ, template, arglist);
-	if (len < 0) {
-		job->common->errorfn("pov renderer:el - %s\n", strerror(errno));
-		str = strdup ("");
-	}
-	else if (len >= BUFSIZ) {
+	if (len >= BUFSIZ) {
 		str = malloc (len+1);
 		va_end(arglist);
 		va_start(arglist, template);

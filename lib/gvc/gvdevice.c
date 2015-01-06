@@ -400,11 +400,7 @@ void gvprintf(GVJ_t * job, const char *format, ...)
     va_start(argp, format);
 #ifdef HAVE_VSNPRINTF
     len = vsnprintf((char *)buf, BUFSIZ, format, argp);
-    if (len < 0) {
-	agerr (AGERR, "gvprintf: %s\n", strerror(errno));
-	return;
-    }
-    else if (len >= BUFSIZ) {
+    if (len >= BUFSIZ) {
     /* C99 vsnprintf returns the length that would be required
      * to write the string without truncation. 
      */

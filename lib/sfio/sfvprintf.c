@@ -1057,6 +1057,7 @@ va_list args;			/* arg list if !argf    */
     else
 	f->next += n;
 
+    va_end(oargs);
     SFOPEN(f, 0);
     SFMTXRETURN(f, n_output);
 }
