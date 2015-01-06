@@ -14,12 +14,12 @@ struct buff_s {
  */ 
 void *buffstderr(void)
 {
-    char *p;
+    int t;
     struct buff_s *b;
 
     assert ((b = malloc(sizeof(struct buff_s))));
     assert ((b->template = strdup("/tmp/stderr_buffer_XXXXXX")));
-    assert ((p = mktemp(b->template)));
+    assert ((t = mkstemp(b->template)) > 0);
     fflush(stderr);
     fgetpos(stderr, &(b->pos));
     b->fd = dup(fileno(stderr));

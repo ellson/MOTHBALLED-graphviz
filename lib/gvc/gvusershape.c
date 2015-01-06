@@ -570,7 +570,7 @@ static Dtdisc_t ImageDictDisc = {
     NIL(Dtevent_f)
 };
 
-usershape_t *gvusershape_find(char *name)
+usershape_t *gvusershape_find(const char *name)
 {
     usershape_t *us;
 
@@ -629,7 +629,7 @@ void gvusershape_file_release(usershape_t *us)
     }
 }
 
-static usershape_t *gvusershape_open (char *name)
+static usershape_t *gvusershape_open (const char *name)
 {
     usershape_t *us;
 
@@ -642,9 +642,11 @@ static usershape_t *gvusershape_open (char *name)
         if (! (us = zmalloc(sizeof(usershape_t))))
 	    return NULL;
 
-	us->name = agstrdup (0, name);
-	if (!gvusershape_file_access(us)) 
+	us->name = name;
+	if (!gvusershape_file_access(us)) {
+	    free(us);
 	    return NULL;
+	}
 
 	assert(us->f);
 

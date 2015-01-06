@@ -8,7 +8,7 @@
 \def\dag{{\it dag}}
 \def\DOT{{\it DOT}}
 \def\graphviz{{\it Graphviz}}
-\newcommand{\lastedited}{December 11, 2014}
+\newcommand{\lastedited}{January 5, 2015}
 \date{\lastedited}
 \newcommand{\mymark}{{\it dot} User's Manual, \lastedited \hfil }
 \markboth{\mymark}{\mymark}
@@ -863,7 +863,7 @@ There are two types of ports. Ports based on the
 8 compass points {\tt "n"}, {\tt "ne"}, {\tt "e"}, {\tt "se"}, 
 {\tt "s"}, {\tt "sw"}, {\tt "w"} or  {\tt "nw"} can be specified
 for any node. The end of the
-node will then be aimed at that position on the node. Thus, if
+edge will then be aimed at that position on the node. Thus, if
 {\tt se} port is specified, the edge will connect to the node at
 its southeast ``corner''.
 
@@ -1194,7 +1194,7 @@ layout attributes appended.
 for {\it format} are:
 
 \begin{description}
-\item[{\tt bmp}] Windoes bitMap format.
+\item[{\tt bmp}] Windows bitmap format.
 \item[{\tt canon}]
 Prettyprint input; no layout is done.
 \item[{\tt dot}] 
@@ -1733,16 +1733,25 @@ these shapes can be found at the web site
 \end{center}
 \begin{center}
 \begin{tabular}{ccc}
-\includegraphics{normal} & \includegraphics{dot} & \includegraphics{odot} \\
-normal & dot & odot \\
-\includegraphics{inv} & \includegraphics{invdot} & \includegraphics{invodot} \\
-inv & invdot & invodot \\
+\includegraphics{normal} & \includegraphics{dot} & \includegraphics{inv} \\
+normal & dot & inv \\
 \includegraphics{crow} & \includegraphics{tee} & \includegraphics{vee} \\
 crow & tee & vee \\
-\includegraphics{diamond} & \includegraphics{no_arrow} & \\
-diamond & none & \\
+\includegraphics{diamondarrow} & \includegraphics{no_arrow} & \includegraphics{boxarrow} \\
+diamond & none & box \\
+\includegraphics{curve} & \includegraphics{icurve} & \\
+curve & icurve & \\
 \end{tabular}
 \end{center}
+Arrowhead descriptions support a simple grammar to allow more complex, derived shapes,
+such as the examples below.
+\begin{center}
+\begin{tabular}{ccc}
+\includegraphics{odot} & \includegraphics{invdot} & \includegraphics{invodot} \\
+odot & invdot & invodot \\
+\end{tabular}
+\end{center}
+The web page cited above describes this grammar in detail.
 
 \clearpage
 \section{Color Names}
