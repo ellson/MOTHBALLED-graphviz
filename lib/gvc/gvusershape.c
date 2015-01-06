@@ -643,17 +643,20 @@ static usershape_t *gvusershape_open (char *name)
 	    return NULL;
 
 	us->name = agstrdup (0, name);
-	if (!gvusershape_file_access(us)) 
+	if (!gvusershape_file_access(us)) {
+	    free(us);
 	    return NULL;
+	}
 
 	assert(us->f);
 
         switch(imagetype(us)) {
 	    case FT_NULL:
-		if (!(us->data = (void*)find_user_shape(us->name)))
+		if (!(us->data = (void*)find_user_shape(us->name))) {
 		    agerr(AGWARN, "\"%s\" was not found as a file or as a shape library member\n", us->name);
 		    free(us);
 		    return NULL;
+		}
 		break;
 	    case FT_GIF:
 	        gif_size(us);

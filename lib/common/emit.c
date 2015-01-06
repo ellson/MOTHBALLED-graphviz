@@ -187,7 +187,7 @@ layerPagePrefix (GVJ_t* job, agxbuf* xb)
 	agxbput (xb, job->gvc->layerIDs[job->layerNum]);
 	agxbputc (xb, '_');
     }
-    if ((job->pagesArrayElem.x > 0) || (job->pagesArrayElem.x > 0)) {
+    if ((job->pagesArrayElem.x > 0) || (job->pagesArrayElem.y > 0)) {
 	sprintf (buf, "page%d,%d_", job->pagesArrayElem.x, job->pagesArrayElem.y);
 	agxbput (xb, buf);
     }
@@ -2693,30 +2693,40 @@ static void nodeIntersect (GVJ_t * job, pointf p,
 {
     obj_state_t *obj = job->obj;
     char* url;
+#if 0
     char* tooltip;
     char* target;
+#endif
     boolean explicit;
 
     if (explicit_iurl) url = iurl;
     else url = obj->url;
     if (explicit_itooltip) {
+#if 0
 	tooltip = itooltip;
+#endif
 	explicit = TRUE;
     }
     else if (obj->explicit_tooltip) {
+#if 0
 	tooltip = obj->tooltip;
+#endif
 	explicit = TRUE;
     }
     else {
-	explicit = FALSE;
+#if 0
 	tooltip = itooltip;
+#endif
+	explicit = FALSE;
     }
+#if 0
     if (explicit_itarget)
 	target = itarget;
     else if (obj->explicit_edgetarget)
 	target = obj->target;
     else
 	target = itarget;
+#endif
 
     if (url || explicit) {
 	map_point(job, p);
@@ -2921,7 +2931,7 @@ boxf xdotBB (Agraph_t* g)
     double fontsize = 0.0;
     char* fontname = NULL;
     pointf pts[2];
-    pointf sz;
+    /* pointf sz; */
     boxf bb0;
     boxf bb = GD_bb(g);
     xdot* xd = (xdot*)GD_drawing(g)->xdots;
@@ -2969,7 +2979,7 @@ boxf xdotBB (Agraph_t* g)
 	    tf.size = fontsize;
 	    tf.flags = fontflags;
             op->span->font = dtinsert(gvc->textfont_dt, &tf);
-	    sz = textspan_size (gvc, op->span);
+	    textspan_size (gvc, op->span);
 	    bb0 = textBB (op->op.u.text.x, op->op.u.text.y, op->span);
 	    op->bb = bb0;
 	    expandBB (&bb, bb0.LL);
@@ -3756,7 +3766,7 @@ static boolean is_style_delim(int c)
 static int style_token(char **s, agxbuf * xb)
 {
     char *p = *s;
-    int token, rc;
+    int token;
     char c;
 
     while (*p && (isspace(*p) || (*p == ',')))
@@ -3772,7 +3782,7 @@ static int style_token(char **s, agxbuf * xb)
     default:
 	token = SID;
 	while (!is_style_delim(c = *p)) {
-	    rc = agxbputc(xb, c);
+	    agxbputc(xb, c);
 	    p++;
 	}
     }
