@@ -114,6 +114,7 @@ static RsvgHandle* gvloadimage_rsvg_load(GVJ_t * job, usershape_t *us)
 		rewind(us->f);
 
 		if ((result = fread(fileBuf, 1, fileSize, us->f)) < fileSize) {
+			free(fileBuf);
 #if HAVE_G_OBJECT_UNREF
 			g_object_unref(rsvgh);
 #else
