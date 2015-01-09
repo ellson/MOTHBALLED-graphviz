@@ -107,6 +107,7 @@ void find_ints(struct vertex vertex_list[],
 	    templ = pvertex[i];	/*second neighbor */
 	}			/* end k for loop       */
     }				/* end i for loop       */
+    free(pvertex);
 }
 
 static int gt(struct vertex **i, struct vertex **j)

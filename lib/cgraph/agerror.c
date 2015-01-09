@@ -135,16 +135,18 @@ static int agerr_va(agerrlevel_t level, const char *fmt, va_list args)
     if (level != AGPREV)
 	aglast = ftell(agerrout);
     vfprintf(agerrout, fmt, args);
-    va_end(args);
     return 0;
 }
 
 int agerr(agerrlevel_t level, const char *fmt, ...)
 {
     va_list args;
+    int ret;
 
     va_start(args, fmt);
-    return agerr_va(level, fmt, args);
+    ret = agerr_va(level, fmt, args);
+    va_end(args);
+    return ret;
 }
 
 void agerrorf(const char *fmt, ...)
@@ -153,6 +155,7 @@ void agerrorf(const char *fmt, ...)
 
     va_start(args, fmt);
     agerr_va(AGERR, fmt, args);
+    va_end(args);
 }
 
 void agwarningf(const char *fmt, ...)
@@ -161,6 +164,7 @@ void agwarningf(const char *fmt, ...)
 
     va_start(args, fmt);
     agerr_va(AGWARN, fmt, args);
+    va_end(args);
 }
 
 int agerrors() { return agmaxerr; }

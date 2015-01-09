@@ -450,7 +450,7 @@ static void pic_textspan(GVJ_t * job, pointf p, textspan_t * span)
         gvprintf(job, ".ft %s\n", picfontname(span->font->name));
 	lastname = span->font->name;
     }
-    if ((sz = (int)span->font->size) < 1);
+    if ((sz = (int)span->font->size) < 1)
         sz = 1;
     if (sz != lastsize) {
         gvprintf(job, ".ps %d*\\n(SFu/%.0fu\n", sz, Fontscale);

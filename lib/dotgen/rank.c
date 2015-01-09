@@ -1035,7 +1035,11 @@ static void break_cycles(graph_t * g)
     for (n = agfstnode(g); n; n = agnxtnode(g, n))
 	dfs(g, n);
 }
-
+/* setMinMax:
+ * This will only be called with the root graph or a cluster
+ * which are guarenteed to contain nodes. Thus, leader will be
+ * set.
+ */
 static void setMinMax (graph_t* g, int doRoot)
 {
     int c, v;

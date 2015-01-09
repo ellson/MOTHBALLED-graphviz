@@ -629,6 +629,12 @@ void gvusershape_file_release(usershape_t *us)
     }
 }
 
+static void freeUsershape (usershape_t* us)
+{
+    if (us->name) agstrfree(0, (char*)us->name);
+    free (us);
+}
+
 static usershape_t *gvusershape_open (const char *name)
 {
     usershape_t *us;
@@ -642,9 +648,9 @@ static usershape_t *gvusershape_open (const char *name)
         if (! (us = zmalloc(sizeof(usershape_t))))
 	    return NULL;
 
-	us->name = name;
+	us->name = agstrdup (0, (char*)name);
 	if (!gvusershape_file_access(us)) {
-	    free(us);
+	    freeUsershape (us);
 	    return NULL;
 	}
 
@@ -652,10 +658,11 @@ static usershape_t *gvusershape_open (const char *name)
 
         switch(imagetype(us)) {
 	    case FT_NULL:
-		if (!(us->data = (void*)find_user_shape(us->name)))
+		if (!(us->data = (void*)find_user_shape(us->name))) {
 		    agerr(AGWARN, "\"%s\" was not found as a file or as a shape library member\n", us->name);
-		    free(us);
+		    freeUsershape (us);
 		    return NULL;
+		}
 		break;
 	    case FT_GIF:
 	        gif_size(us);
