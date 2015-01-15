@@ -71,7 +71,7 @@ extern void attach_attrs(graph_t *g);
 /* Render layout in a specified format to an open FILE */
 extern int gvRender(GVC_t *gvc, graph_t *g, const char *format, FILE *out);
 
-/* Render layout in a specified format to an open FILE */
+/* Render layout in a specified format to a file with the given name */
 extern int gvRenderFilename(GVC_t *gvc, graph_t *g, const char *format, const char *filename);
 
 /* Render layout in a specified format to an external context */
