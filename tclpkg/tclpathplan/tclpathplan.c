@@ -468,7 +468,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	    return TCL_ERROR;
 	}
 	/* accept either inline or delimited list */
-	if ((argc == 4)) {
+	if (argc == 4) {
 	    result =
 		Tcl_SplitList(interp, argv[3], &vargc,
 			      (CONST84 char ***) &vargv);
@@ -553,7 +553,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	    return TCL_ERROR;
 	}
 	/* accept either inline or delimited list */
-	if ((argc == 3)) {
+	if (argc == 3) {
 	    result =
 		Tcl_SplitList(interp, argv[2], &vargc,
 			      (CONST84 char ***) &vargv);

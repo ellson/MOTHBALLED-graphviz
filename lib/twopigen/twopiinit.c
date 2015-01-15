@@ -51,27 +51,23 @@ static void twopi_init_node_edge(graph_t * g)
     }
 }
 
-static void scaleGraph (graph_t * g, node_t* root, pointf sc)
-{
-    pointf ctr;
-    node_t* n;
-
-    ctr.x = ND_pos(root)[0];
-    ctr.y = ND_pos(root)[1];
-
-    for (n = agfstnode(g); n; n = agnxtnode (g, n)) {
-	if (n == root) continue;
-	ND_pos(n)[0] = sc.x*(ND_pos(n)[0] - ctr.x) + ctr.x;
-	ND_pos(n)[1] = sc.y*(ND_pos(n)[1] - ctr.y) + ctr.y;
-    }
-}
-
 void twopi_init_graph(graph_t * g)
 {
     setEdgeType (g, ET_LINE);
     /* GD_ndim(g) = late_int(g,agfindgraphattr(g,"dim"),2,2); */
 	Ndim = GD_ndim(g)=2;	/* The algorithm only makes sense in 2D */
     twopi_init_node_edge(g);
+}
+
+static Agnode_t* findRootNode (Agraph_t* sg, Agsym_t* rootattr)
+{
+    Agnode_t* n;
+
+    for (n = agfstnode(sg); n; n = agnxtnode(sg,n)) {
+	if (mapbool(agxget(n,rootattr))) return n;
+    }
+    return NULL;
+
 }
 
 /* twopi_layout:
@@ -81,14 +77,15 @@ void twopi_layout(Agraph_t * g)
     Agnode_t *ctr = 0;
     char *s;
     int setRoot = 0;
+    int setLocalRoot = 0;
     pointf sc;
     int doScale = 0;
     int r;
+    Agsym_t* rootattr;
 
     if (agnnodes(g) == 0) return;
 
     twopi_init_graph(g);
-    s = agget(g, "root");
     if ((s = agget(g, "root"))) {
 	if (*s) {
 	    ctr = agfindnode(g, s);
@@ -102,13 +99,14 @@ void twopi_layout(Agraph_t * g)
 	    setRoot = 1;
 	}
     }
+    if ((rootattr = agattr(g, AGNODE, "root", 0))) {
+	setLocalRoot = 1;
+    }
 
     if ((s = agget(g, "scale")) && *s) {
 	if ((r = sscanf (s, "%lf,%lf",&sc.x,&sc.y))) {
 	    if (r == 1) sc.y = sc.x;
 	    doScale = 1;
-	    if (Verbose)
-		fprintf (stderr, "scale = (%f,%f)\n", sc.x, sc.y);
 	}
     }
 
@@ -119,17 +117,22 @@ void twopi_layout(Agraph_t * g)
 	Agnode_t *n;
 	int ncc;
 	int i;
+	Agnode_t* lctr;
 
 	ccs = ccomps(g, &ncc, 0);
 	if (ncc == 1) {
-	    c = circleLayout(g, ctr);
+	    if (ctr)
+		lctr = ctr;
+	    else if (!(lctr = findRootNode(g, rootattr)))
+		lctr = 0;
+	    c = circleLayout(g, lctr);
 	    if (setRoot && !ctr)
 		ctr = c;
+	    if (setLocalRoot && !lctr)
+		agxset (c, rootattr, "1"); 
 	    n = agfstnode(g);
 	    free(ND_alg(n));
 	    ND_alg(n) = NULL;
-	    if (doScale)
-		scaleGraph (g, c, sc);
 	    adjustNodes(g);
 	    spline_edges(g);
 	} else {
@@ -140,15 +143,15 @@ void twopi_layout(Agraph_t * g)
 	    for (i = 0; i < ncc; i++) {
 		sg = ccs[i];
 		if (ctr && agcontains(sg, ctr))
-		    c = ctr;
-		else
-		    c = 0;
+		    lctr = ctr;
+		else if (!(lctr = findRootNode(sg, rootattr)))
+		    lctr = 0;
 		nodeInduce(sg);
-		c = circleLayout(sg, c);
+		c = circleLayout(sg, lctr);
 	        if (setRoot && !ctr)
 		    ctr = c;
-		if (doScale)
-		    scaleGraph (sg, c, sc);
+		if (setLocalRoot && (!lctr || (lctr == ctr)))
+		    agxset (c, rootattr, "1"); 
 		adjustNodes(sg);
 	    }
 	    n = agfstnode(g);

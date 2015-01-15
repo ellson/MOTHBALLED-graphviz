@@ -153,7 +153,7 @@
 /* for clusters */
 #define		CL_BACK		10	/* cost of backward pointing edge */
 #define		CL_OFFSET	8	/* margin of cluster box in PS points */
-#ifndef MSWIN32
+#ifndef WIN32
 #define		CL_CROSS	1000	/* cost of cluster skeleton edge crossing */
 #else
 #define		CL_CROSS	100	/* avoid 16 bit overflow */
@@ -217,6 +217,7 @@
 #define DASHED		(1 << 8)
 #define WEDGED		(1 << 9)
 #define UNDERLINE	(1 << 10)
+#define FIXEDSHAPE	(1 << 11)
 
 #define SHAPE_MASK	(127 << 24)
 

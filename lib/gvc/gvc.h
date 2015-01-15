@@ -28,13 +28,15 @@ extern "C" {
 #endif
 
 /*visual studio*/
-#ifdef WIN32_DLL
+#ifdef WIN32
 #ifndef GVC_EXPORTS
 #define extern __declspec(dllimport)
 #endif
 #endif
 /*end visual studio*/
 	
+#define LAYOUT_DONE(g) (agbindrec(g, "Agraphinfo_t", 0, TRUE) && GD_drawing(g))
+
 /* misc */
 /* FIXME - this needs eliminating or renaming */
 extern void gvToggle(int);

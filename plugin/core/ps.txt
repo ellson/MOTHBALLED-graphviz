@@ -156,7 +156,6 @@ def
 %%EndProlog
 %%BeginSetup
 14 default-font-family set_font
-1 setmiterlimit
 % /arrowlength 10 def
 % /arrowwidth 5 def
 

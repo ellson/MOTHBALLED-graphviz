@@ -1,0 +1,6 @@
+digraph G {
+graph [pad="0.05" rankdir=LR]
+a [label="" shape=point]
+b [label=""]
+a -> b [arrowhead=forward]
+}

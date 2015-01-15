@@ -222,7 +222,7 @@ make_LR_constraints(graph_t * g)
     rank_t *rank = GD_rank(g);
 
     /* Use smaller separation on odd ranks if g has edge labels */
-    if (GD_has_labels(g) & EDGE_LABEL) {
+    if (GD_has_labels(g->root) & EDGE_LABEL) {
 	sep[0] = GD_nodesep(g);
 	sep[1] = 5;
     }
@@ -305,6 +305,7 @@ make_LR_constraints(graph_t * g)
 		    if (m0 > USHRT_MAX)
 			m0 = largeMinlen (m0);
 		    ED_minlen(e0) = MAX(ED_minlen(e0), m0);
+		    ED_weight(e0) = MAX(ED_weight(e0), ED_weight(e));
 		}
 		else if (!ED_label(e)) {
 		    /* unlabeled flat edge between non-neighbors 
@@ -364,7 +365,7 @@ static void contain_clustnodes(graph_t * g)
     int c;
     edge_t	*e;
 
-    if (g != agroot(g)) {
+    if (g != dot_root(g)) {
 	contain_nodes(g);
 	if ((e = find_fast_edge(GD_ln(g),GD_rn(g))))	/* maybe from lrvn()?*/
 	    ED_weight(e) += 128;
@@ -412,16 +413,16 @@ static void keepout_othernodes(graph_t * g)
 	if (v == NULL)
 	    continue;
 	for (i = ND_order(v) - 1; i >= 0; i--) {
-	    u = GD_rank(agroot(g))[r].v[i];
+	    u = GD_rank(dot_root(g))[r].v[i];
 	    /* can't use "is_a_vnode_of" because elists are swapped */
 	    if ((ND_node_type(u) == NORMAL) || vnode_not_related_to(g, u)) {
 		make_aux_edge(u, GD_ln(g), margin + ND_rw(u), 0);
 		break;
 	    }
 	}
-	for (i = ND_order(v) + GD_rank(g)[r].n; i < GD_rank(agroot(g))[r].n;
+	for (i = ND_order(v) + GD_rank(g)[r].n; i < GD_rank(dot_root(g))[r].n;
 	     i++) {
-	    u = GD_rank(agroot(g))[r].v[i];
+	    u = GD_rank(dot_root(g))[r].v[i];
 	    if ((ND_node_type(u) == NORMAL) || vnode_not_related_to(g, u)) {
 		make_aux_edge(GD_rn(g), u, margin + ND_lw(u), 0);
 		break;
@@ -597,69 +598,6 @@ set_xcoords(graph_t * g)
     }
 }
 
-#if 0
-/* adjustEqual:
- * Expand cluster g vertically by delta, assuming ranks
- * are equally spaced. We first try to split delta evenly
- * using any available space at the top and bottom. If there
- * is not enough, we have to widen the space between the ranks.
- * We divide delta equally within the ranks of g plus its ht1
- * and ht2. To preserve equality of ranks, we add this space
- * between every pair of ranks.
- *
- * There is probably some way to add less than delta, by using
- * whatever available space there is at top and bottom, but for
- * now, trying to figure that out seems more trouble than it is worth.
- */
-static void adjustEqual(graph_t * g, int delta, int margin_total)
-{
-    int r, avail, half, deltop, delbottom;
-    graph_t *root = agroot(g);
-    rank_t *rank = GD_rank(root);
-    int maxr = GD_maxrank(g);
-    int minr = GD_minrank(g);
-
-    deltop = rank[minr].ht2 - margin_total - GD_ht2(g);
-    delbottom = rank[maxr].ht1 - margin_total - GD_ht1(g);
-    avail = deltop + delbottom;
-    if (avail >= delta) {
- 	half = (delta+1) / 2;
-	if (deltop <= delbottom) {
-	    if (half <= deltop) {
-		GD_ht2(g) += half;
-		GD_ht1(g) += (delta - half);
-	    }
-	    else {    
-		GD_ht2(g) += deltop;
-		GD_ht1(g) += (delta - deltop);
-	    }
-	}
-	else {
-	    if (half <= delbottom) {
-		GD_ht1(g) += half;
-		GD_ht2(g) += (delta - half);
-	    }
-	    else {    
-		GD_ht1(g) += delbottom;
-		GD_ht2(g) += (delta - delbottom);
-	    }
-	}
-    }
-    else {
-	int gaps = maxr - minr + 2;
-	int yoff = (delta + (gaps - 1)) / gaps;
-	int y = yoff;
-	for (r = GD_maxrank(root) - 1; r >= GD_minrank(root); r--) {
-	    if (rank[r].n > 0)
-		ND_coord(rank[r].v[0]).y += y;
-	    y += yoff;
-	}
-	GD_ht2(g) += yoff;
-	GD_ht1(g) += yoff;
-    }
-}
-#endif
-
 /* adjustSimple:
  * Expand cluster height by delta, adding half to top
  * and half to bottom. If the bottom expansion exceeds the
@@ -674,7 +612,7 @@ static void adjustEqual(graph_t * g, int delta, int margin_total)
 static void adjustSimple(graph_t * g, int delta, int margin_total)
 {
     int r, bottom, deltop, delbottom;
-    graph_t *root = agroot(g);
+    graph_t *root = dot_root(g);
     rank_t *rank = GD_rank(root);
     int maxr = GD_maxrank(g);
     int minr = GD_minrank(g);
@@ -708,13 +646,14 @@ static void adjustSimple(graph_t * g, int delta, int margin_total)
  */
 static void adjustRanks(graph_t * g, int margin_total)
 {
-    int lht;			/* label height */
-    int rht;			/* height between top and bottom ranks */
-    int delta, maxr, minr, margin;
-    int c, ht1, ht2;
+    double lht;			/* label height */
+    double rht;			/* height between top and bottom ranks */
+    int maxr, minr, margin;
+    int c;
+    double delta, ht1, ht2;
 
-    rank_t *rank = GD_rank(agroot(g));
-    if (g == agroot(g))
+    rank_t *rank = GD_rank(dot_root(g));
+    if (g == dot_root(g))
 	margin = 0;
     else
 	margin = late_int (g, G_margin, CL_OFFSET, 0);
@@ -734,7 +673,7 @@ static void adjustRanks(graph_t * g, int margin_total)
     GD_ht1(g) = ht1;
     GD_ht2(g) = ht2;
 
-    if ((g != agroot(g)) && GD_label(g)) {
+    if ((g != dot_root(g)) && GD_label(g)) {
 	lht = MAX(GD_border(g)[LEFT_IX].y, GD_border(g)[RIGHT_IX].y);
 	maxr = GD_maxrank(g);
 	minr = GD_minrank(g);
@@ -746,7 +685,7 @@ static void adjustRanks(graph_t * g, int margin_total)
     }
 
     /* update the global ranks */
-    if (g != agroot(g)) {
+    if (g != dot_root(g)) {
 	rank[GD_minrank(g)].ht2 = MAX(rank[GD_minrank(g)].ht2, GD_ht2(g));
 	rank[GD_maxrank(g)].ht1 = MAX(rank[GD_maxrank(g)].ht1, GD_ht1(g));
     }
@@ -760,12 +699,13 @@ static void adjustRanks(graph_t * g, int margin_total)
  */
 static int clust_ht(Agraph_t * g)
 {
-    int c, ht1, ht2;
+    int c;
+    double ht1, ht2;
     graph_t *subg;
-    rank_t *rank = GD_rank(agroot(g));
+    rank_t *rank = GD_rank(dot_root(g));
     int margin, haveClustLabel = 0;
 
-    if (g == agroot(g)) 
+    if (g == dot_root(g)) 
 	margin = CL_OFFSET;
     else
 	margin = late_int (g, G_margin, CL_OFFSET, 0);
@@ -785,7 +725,7 @@ static int clust_ht(Agraph_t * g)
 
     /* account for a possible cluster label in clusters */
     /* room for root graph label is handled in dotneato_postprocess */
-    if ((g != agroot(g)) && GD_label(g)) {
+    if ((g != dot_root(g)) && GD_label(g)) {
 	haveClustLabel = 1;
 	if (!GD_flip(agroot(g))) {
 	    ht1 += GD_border(g)[BOTTOM_IX].y;
@@ -796,7 +736,7 @@ static int clust_ht(Agraph_t * g)
     GD_ht2(g) = ht2;
 
     /* update the global ranks */
-    if (g != agroot(g)) {
+    if (g != dot_root(g)) {
 	rank[GD_minrank(g)].ht2 = MAX(rank[GD_minrank(g)].ht2, ht2);
 	rank[GD_maxrank(g)].ht1 = MAX(rank[GD_maxrank(g)].ht1, ht1);
     }
@@ -807,7 +747,8 @@ static int clust_ht(Agraph_t * g)
 /* set y coordinates of nodes, a rank at a time */
 static void set_ycoords(graph_t * g)
 {
-    int i, j, r, ht2, maxht, delta, d0, d1;
+    int i, j, r;
+    double ht2, maxht, delta, d0, d1;
     node_t *n;
     edge_t *e;
     rank_t *rank = GD_rank(g);
@@ -822,7 +763,7 @@ static void set_ycoords(graph_t * g)
 	    n = rank[r].v[i];
 
 	    /* assumes symmetry, ht1 = ht2 */
-	    ht2 = (ROUND(ND_ht(n)) + 1) / 2;
+	    ht2 = ND_ht(n) / 2;
 
 
 	    /* have to look for high self-edge labels, too */
@@ -915,11 +856,12 @@ static void set_ycoords(graph_t * g)
  */
 static void dot_compute_bb(graph_t * g, graph_t * root)
 {
-    int r, c, x, offset;
+    int r, c;
+    double x, offset;
     node_t *v;
     pointf LL, UR;
 
-    if (g == agroot(g)) {
+    if (g == dot_root(g)) {
 	LL.x = (double)(INT_MAX);
 	UR.x = (double)(-INT_MAX);
 	for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
@@ -1102,10 +1044,10 @@ static point resize_leaf(node_t * leaf, point lbound)
     return lbound;
 }
 
-static point place_leaf(node_t * leaf, point lbound, int order)
+static point place_leaf(graph_t* ing, node_t * leaf, point lbound, int order)
 {
     node_t *leader;
-    graph_t *g = agraphof(leaf);
+    graph_t *g = dot_root(ing);
 
     leader = UF_find(leaf);
     if (leaf != leader)
@@ -1162,7 +1104,7 @@ static void do_leaves(graph_t * g, node_t * leader)
 	for (e = agfstin(g, n); e; e = agnxtin(g, e)) {
 	    edge_t *e1 = AGMKOUT(e);
 	    if ((agtail(e1) != leader) && (UF_find(agtail(e1)) == leader)) {
-		lbound = place_leaf(agtail(e1), lbound, j++);
+		lbound = place_leaf(g, agtail(e1), lbound, j++);
 		unmerge_oneway(e1);
 		elist_append(e1, ND_in(aghead(e1)));
 	    }
@@ -1172,7 +1114,7 @@ static void do_leaves(graph_t * g, node_t * leader)
 	j = ND_order(leader) + 1;
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    if ((aghead(e) != leader) && (UF_find(aghead(e)) == leader)) {
-		lbound = place_leaf(aghead(e), lbound, j++);
+		lbound = place_leaf(g, aghead(e), lbound, j++);
 		unmerge_oneway(e);
 		elist_append(e, ND_out(agtail(e)));
 	    }
@@ -1240,12 +1182,12 @@ static void make_lrvn(graph_t * g)
 
     if (GD_ln(g))
 	return;
-    ln = virtual_node(agroot(g));
+    ln = virtual_node(dot_root(g));
     ND_node_type(ln) = SLACKNODE;
-    rn = virtual_node(agroot(g));
+    rn = virtual_node(dot_root(g));
     ND_node_type(rn) = SLACKNODE;
 
-    if (GD_label(g) && (g != agroot(g)) && !GD_flip(agroot(g))) {
+    if (GD_label(g) && (g != dot_root(g)) && !GD_flip(agroot(g))) {
 	int w = MAX(GD_border(g)[BOTTOM_IX].x, GD_border(g)[TOP_IX].x);
 	make_aux_edge(ln, rn, w, 0);
     }

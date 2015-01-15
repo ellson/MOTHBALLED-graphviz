@@ -309,6 +309,12 @@ the outdegree of a node.
 \fBdegree\fR : \fBint\fR
 the degree of a node.
 .TP
+\fBX\fR : \fBdouible\fR
+the X coordinate of a node. (Assumes the node has a \fIpos\fP attribute.)
+.TP
+\fBY\fR : \fBdouible\fR
+the Y coordinate of a node. (Assumes the node has a \fIpos\fP attribute.)
+.TP
 \fBroot\fR : \fBgraph_t\fR
 the root graph of an object. The root of a root graph
 is itself.
@@ -732,8 +738,8 @@ The separator characters are those given in the \fIseps\fP argument.
 If \fIseps\fP is not provided, the default value is " \\t\\n". 
 The functions return the number of fields or tokens.
 .sp
-The fields and tokens are stored in the argument array. The array must be \fBstring\fP-valued and,
-if an index type is specified, it must be \fBint\fP. The entries are indexed by consecutive
+The fields and tokens are stored in the argument array. The array must be \fBstring\fP-valued and
+have \fBint\fP as its index type. The entries are indexed by consecutive
 integers, starting at 0. Any values already stored in the array will be either overwritten, or
 still be present after the function returns.
 .SS "I/O"

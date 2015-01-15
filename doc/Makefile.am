@@ -5,7 +5,7 @@
 SUBDIRS = info schema
 
 pdf = dotguide.pdf dottyguide.pdf leftyguide.pdf neatoguide.pdf libgraph/Agraph.pdf libguide/libguide.pdf smyrna/smyrna.pdf
-html = build.html FAQ.html index.html winbuild.html pspdf.png char.html gdtclft.entities.example.png todo.html
+html = build.html FAQ.html index.html winbuild.html pspdf.png char.html gdtclft.entities.example.png todo.html internal_todo.html
 txt = Dot.ref latex_suggestions.txt fontfaq.txt addingLayout.txt
 
 pdfdir = $(pkgdatadir)/doc/pdf

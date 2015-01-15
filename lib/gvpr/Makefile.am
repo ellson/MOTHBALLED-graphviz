@@ -55,6 +55,6 @@ mkdefs_SOURCES = mkdefs.c
 gdefs.h: $(top_srcdir)/lib/gvpr/gprdata mkdefs
 	./mkdefs gdefs.h < $(top_srcdir)/lib/gvpr/gprdata
 
-EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old gprdata mkdefs.c gdefs.h trie.c gvprlib.vcproj
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) gprdata mkdefs.c gdefs.h trie.c gvprlib.vcproj
 
 DISTCLEANFILES = $(pdf_DATA) gdefs.h mkdefs

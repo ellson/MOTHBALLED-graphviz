@@ -18,11 +18,6 @@
 extern "C" {
 #endif
 #include "adjust.h"
-#ifdef GVDLL
-#define extern __declspec(dllexport)
-#else
-#define extern
-#endif
 
     extern int allow_edits(int);
     extern void avoid_cycling(graph_t *, Agnode_t *, double *);
@@ -32,7 +27,6 @@ extern "C" {
     extern void D2E(Agraph_t *, int, int, double *);
     extern void diffeq_model(graph_t *, int);
     extern double distvec(double *, double *, double *);
-    extern void do_graph_label(Agraph_t *);
     extern void final_energy(graph_t *, int);
     extern double fpow32(double);
     extern Ppolyline_t getPath(edge_t *, vconfig_t *, int, Ppoly_t **,
@@ -66,11 +60,12 @@ extern "C" {
     extern void solve_model(graph_t *, int);
     extern int solveCircuit(int nG, double **Gm, double **Gm_inv);
     extern void spline_edges(Agraph_t *);
-    extern void spline_edges0(Agraph_t *);
+    extern void spline_edges0(Agraph_t *, boolean);
     extern int spline_edges1(graph_t * g, int);
     extern int splineEdges(graph_t *,
 			   int (*edgefn) (graph_t *, expand_t*, int), int);
-    extern void neato_set_aspect(graph_t * g);
+    extern void neato_translate(Agraph_t * g);
+    extern boolean neato_set_aspect(graph_t * g);
     extern void toggle(int);
     extern int user_pos(Agsym_t *, Agsym_t *, Agnode_t *, int);
     extern double **new_array(int i, int j, double val);

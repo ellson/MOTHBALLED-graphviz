@@ -376,7 +376,7 @@ char *el(GVJ_t* job, char *template, ...)
 	return str;
 #elif defined(HAVE_VSNPRINTF)
 	char buf[BUFSIZ];
-	size_t len;
+	int len;
 	char *str;
 	va_list arglist;
 
@@ -508,8 +508,8 @@ static void pov_begin_graph(GVJ_t * job)
 	x = job->view.x / 2.0 * job->scale.x;
 	y = job->view.y / 2.0 * job->scale.y;
 	d = -500;
-	px = atanf(x / abs(d)) * 180 / M_PI * 2;
-	py = atanf(y / abs(d)) * 180 / M_PI * 2;
+	px = atanf(x / fabsf(d)) * 180 / M_PI * 2;
+	py = atanf(y / fabsf(d)) * 180 / M_PI * 2;
 	gvprintf(job, POV_CAMERA, x, y, d, x, y, 0.0,
 		 (px > py ? px : py) * 1.2);
 	gvputs(job, POV_SKY_AND_GND);

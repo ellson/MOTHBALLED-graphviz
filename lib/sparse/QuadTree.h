@@ -59,5 +59,6 @@ void QuadTree_get_repulsive_force(QuadTree qt, real *force, real *x, real bh, re
 /* find the nearest point and put in ymin, index in imin and distance in min */
 void QuadTree_get_nearest(QuadTree qt, real *x, real *ymin, int *imin, real *min, int *flag);
 
+QuadTree QuadTree_new_in_quadrant(int dim, real *center, real width, int max_level, int i);
 
 #endif

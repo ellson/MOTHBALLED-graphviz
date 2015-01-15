@@ -17,6 +17,7 @@ bezier_clip
 bind_shape    
 cat_libfile    
 ccomps    
+cccomps    
 ccwrotatep    
 ccwrotatepf    
 charsetToStr    
@@ -27,6 +28,7 @@ CmdName
 common_init_edge    
 common_init_node    
 compute_bb    
+polyBB
 Concentrate    
 coord    
 cwrotatep    
@@ -210,6 +212,7 @@ lt_dlsym
 make_label    
 make_simple_label    
 makeSelfEdge    
+mapClust
 mapbool    
 maptoken    
 MaxIter    
@@ -362,3 +365,4 @@ mkClustMap
 findCluster
 rank2
 makeStraightEdge
+makeStraightEdges

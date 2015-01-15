@@ -35,6 +35,3 @@ endif
 if WITH_DARWIN9
 libgvplugin_rsvg_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_rsvg_LTX_library
 endif
-
-EXTRA_DIST = Makefile.old
-

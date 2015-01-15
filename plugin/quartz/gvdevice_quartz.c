@@ -51,7 +51,7 @@ static void quartz_format(GVJ_t *job)
 		BYTES_PER_PIXEL * 8,				/* bits per pixel */
 		BYTES_PER_PIXEL * job->width,		/* bytes per row: exactly width # of pixels */
 		color_space,						/* color space: sRGB */
-		kCGImageAlphaPremultipliedFirst,	/* bitmap info: corresponds to CAIRO_FORMAT_ARGB32 */
+		kCGImageAlphaPremultipliedFirst|kCGBitmapByteOrder32Little,	/* bitmap info: corresponds to CAIRO_FORMAT_ARGB32 */
 		data_provider,						/* data provider: from imagedata */
 		NULL,								/* decode: don't remap colors */
 		FALSE,								/* don't interpolate */
@@ -84,23 +84,23 @@ static gvdevice_features_t device_features_quartz = {
 };
 
 gvplugin_installed_t gvdevice_quartz_types_for_cairo[] = {
-	{FORMAT_BMP, "bmp:cairo", 9, &quartz_engine, &device_features_quartz},
-	{FORMAT_GIF, "gif:cairo", 9, &quartz_engine, &device_features_quartz},
-	{FORMAT_EXR, "exr:cairo", 9, &quartz_engine, &device_features_quartz},
-	{FORMAT_ICNS, "icns:cairo", 9, &quartz_engine, &device_features_quartz},
-	{FORMAT_ICO, "ico:cairo", 9, &quartz_engine, &device_features_quartz},
-	{FORMAT_JPEG, "jpe:cairo", 9, &quartz_engine, &device_features_quartz},
-	{FORMAT_JPEG, "jpeg:cairo", 9, &quartz_engine, &device_features_quartz},
-	{FORMAT_JPEG, "jpg:cairo", 9, &quartz_engine, &device_features_quartz},
-	{FORMAT_JPEG2000, "jp2:cairo", 9, &quartz_engine, &device_features_quartz},
-	{FORMAT_PICT, "pct:cairo", 9, &quartz_engine, &device_features_quartz},
-	{FORMAT_PICT, "pict:cairo", 9, &quartz_engine, &device_features_quartz},
-	{FORMAT_PNG, "png:cairo", 9, &quartz_engine, &device_features_quartz},
-	{FORMAT_PSD, "psd:cairo", 9, &quartz_engine, &device_features_quartz},
-	{FORMAT_SGI, "sgi:cairo", 9, &quartz_engine, &device_features_quartz},
-	{FORMAT_TIFF, "tif:cairo", 9, &quartz_engine, &device_features_quartz},
-	{FORMAT_TIFF, "tiff:cairo", 9, &quartz_engine, &device_features_quartz},
-	{FORMAT_TGA, "tga:cairo", 9, &quartz_engine, &device_features_quartz},
+	{FORMAT_BMP, "bmp:cairo", 7, &quartz_engine, &device_features_quartz},
+	{FORMAT_GIF, "gif:cairo", 7, &quartz_engine, &device_features_quartz},
+	{FORMAT_EXR, "exr:cairo", 7, &quartz_engine, &device_features_quartz},
+	{FORMAT_ICNS, "icns:cairo", 7, &quartz_engine, &device_features_quartz},
+	{FORMAT_ICO, "ico:cairo", 7, &quartz_engine, &device_features_quartz},
+	{FORMAT_JPEG, "jpe:cairo", 7, &quartz_engine, &device_features_quartz},
+	{FORMAT_JPEG, "jpeg:cairo", 7, &quartz_engine, &device_features_quartz},
+	{FORMAT_JPEG, "jpg:cairo", 7, &quartz_engine, &device_features_quartz},
+	{FORMAT_JPEG2000, "jp2:cairo", 7, &quartz_engine, &device_features_quartz},
+	{FORMAT_PICT, "pct:cairo", 7, &quartz_engine, &device_features_quartz},
+	{FORMAT_PICT, "pict:cairo", 7, &quartz_engine, &device_features_quartz},
+	{FORMAT_PNG, "png:cairo", 7, &quartz_engine, &device_features_quartz},
+	{FORMAT_PSD, "psd:cairo", 7, &quartz_engine, &device_features_quartz},
+	{FORMAT_SGI, "sgi:cairo", 7, &quartz_engine, &device_features_quartz},
+	{FORMAT_TIFF, "tif:cairo", 7, &quartz_engine, &device_features_quartz},
+	{FORMAT_TIFF, "tiff:cairo", 7, &quartz_engine, &device_features_quartz},
+	{FORMAT_TGA, "tga:cairo", 7, &quartz_engine, &device_features_quartz},
 	{0, NULL, 0, NULL, NULL}
 };
 

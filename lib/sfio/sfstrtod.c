@@ -75,8 +75,8 @@ char **retp;			/* to return the remainder of string */
     reg int mode, fexp, sign, expsign;
     Sfdouble_t dval;
 #if _lib_locale
-    int decpoint = 0;
-    SFSETLOCALE(&decpoint, NIL(int *));
+    char decpoint = 0, thousand;
+    SFSETLOCALE(decpoint, thousand);
 #else
 #define decpoint	'.'
 #endif

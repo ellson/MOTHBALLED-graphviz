@@ -129,7 +129,7 @@ layout (Agraph_t* g, int depth)
 	cattr = agattr(root, AGRAPH, "sortv", 0);
 	vattr = agattr(root, AGNODE, "sortv", 0);
 	if (cattr || vattr)
-	    pinfo.vals = N_NEW(total, unsigned char);
+	    pinfo.vals = N_NEW(total, unsigned int);
 	else
 	    agerr (AGWARN, "Graph %s has array packing with user values but no \"sortv\" attributes are defined.",
 		agnameof(g));
@@ -364,7 +364,7 @@ void osage_layout(Agraph_t *g)
 	    ND_pos(n)[0] = PS2INCH(ND_coord(n).x);
 	    ND_pos(n)[1] = PS2INCH(ND_coord(n).y);
 	}
-	spline_edges0(g);
+	spline_edges0(g, TRUE);
     }
     else {
 	int et = EDGE_TYPE (g);

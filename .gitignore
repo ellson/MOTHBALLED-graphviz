@@ -37,7 +37,6 @@ pkgIndex.tcl
 SWIGTYPE*
 tclpkg/*/gv.3*
 y.*
-
 cmd/dot/dot
 cmd/dot/dot_static
 cmd/dot/dot.1.pdf
@@ -46,6 +45,8 @@ cmd/dot/osage.1.pdf
 cmd/dot/patchwork.1.pdf
 cmd/dotty/dotty
 cmd/dotty/dotty.1.pdf
+cmd/edgepaint/edgepaint
+cmd/edgepaint/edgepaint.1.pdf
 cmd/gvedit/attrs.txt
 cmd/gvedit/gvedit
 cmd/gvedit/gvedit.1.pdf

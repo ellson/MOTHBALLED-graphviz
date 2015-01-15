@@ -286,7 +286,7 @@ TYPEDEF_HIDES_STRUCT   = NO
 # 2^(16+SYMBOL_CACHE_SIZE). The valid range is 0..9, the default is 0,
 # corresponding to a cache size of 2^16 = 65536 symbols
 
-SYMBOL_CACHE_SIZE      = 0
+# SYMBOL_CACHE_SIZE      = 0
 
 #---------------------------------------------------------------------------
 # Build related configuration options
@@ -570,21 +570,36 @@ WARN_LOGFILE           =
 
 INPUT                  = cmd/dot \
                          lib/cdt \
+                         lib/cgraph \
                          lib/circogen \
                          lib/common \
                          lib/dotgen \
                          lib/fdpgen \
-                         lib/graph \
                          lib/gvc \
                          lib/neatogen \
+                         lib/osage \
                          lib/pack \
+                         lib/patchwork \
                          lib/pathplan \
+                         lib/rbtree \
+                         lib/sfdpgen \
+			 lib/sparse \
                          lib/twopigen \
+                         lib/xdot \
                          plugin/core \
+                         plugin/devil \
+                         plugin/gd \
+                         plugin/gdk \
+                         plugin/gtk \
+                         plugin/lasi \
                          plugin/pango \
                          plugin/dot_layout \
                          plugin/neato_layout \
-                         tclpkg/gv
+                         plugin/poppler \
+                         plugin/rsvg \
+                         plugin/xlib \
+                         tclpkg/gv \
+                         tclpkg/tcldot
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
@@ -1386,7 +1401,7 @@ HAVE_DOT               = YES
 # DOTFONTPATH environment variable or by setting DOT_FONTPATH to the directory
 # containing the font.
 
-DOT_FONTNAME           = FreeSans
+#DOT_FONTNAME           = FreeSans
 
 # The DOT_FONTSIZE tag can be used to set the size of the font of dot graphs.
 # The default size is 10pt.

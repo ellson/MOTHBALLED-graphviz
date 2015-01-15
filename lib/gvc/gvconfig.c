@@ -311,7 +311,7 @@ char * gvconfig_libdir(GVC_t * gvc)
 			char* s = tmp-1;
 			/* back up to previous slash (or head of string) */
 			while ((*s != '/') && (s > path)) s--;
-			if (strncmp (s, DOTLIBS, STRLEN(DOTLIBS)) == 0);
+			if (strncmp (s, DOTLIBS, STRLEN(DOTLIBS)) == 0)
 			    continue;
 		    }
 

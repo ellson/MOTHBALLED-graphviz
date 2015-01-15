@@ -16,6 +16,7 @@
 #include "config.h"
 #endif
 
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -23,213 +24,139 @@
 #include <tcl.h>
 #include <unistd.h>
 #include "gd.h"
-#include "tclhandle.h"
 
 #ifdef WIN32
 #include <windows.h>
 #endif
 
-void *GDHandleTable;
+static Tcl_UpdateStringProc GdPtrTypeUpdate;
+static Tcl_SetFromAnyProc GdPtrTypeSet;
+static Tcl_ObjType GdPtrType = {
+    .name = "gd",
+    .updateStringProc = GdPtrTypeUpdate,
+    .setFromAnyProc = GdPtrTypeSet
+};
+#define IMGPTR(O) (O->internalRep.otherValuePtr)
 
-/* global data */
-typedef struct {
-    tblHeader_pt handleTbl;
-} GdData;
+/* The only two symbols exported */
+Tcl_AppInitProc Gdtclft_Init, Gdtclft_SafeInit;
 
-typedef int (CmdFunc)(Tcl_Interp *, GdData *, int, Tcl_Obj *CONST []);
-typedef int (ColCmdFunc)(Tcl_Interp *, gdImagePtr, int, int[]);
+typedef int (GdDataFunction)(Tcl_Interp *interp, int argc, Tcl_Obj *CONST objv[]);
+typedef int (GdImgFunction)(Tcl_Interp *interp, gdImagePtr gdImg, int argc, const int args[]);
 
-static CmdFunc tclGdCreateCmd;
-static CmdFunc tclGdDestroyCmd;
-static CmdFunc tclGdWriteCmd;
-static CmdFunc tclGdColorCmd;
-static CmdFunc tclGdInterlaceCmd;
-static CmdFunc tclGdSetCmd;
-static CmdFunc tclGdLineCmd;
-static CmdFunc tclGdRectCmd;
-static CmdFunc tclGdArcCmd;
-static CmdFunc tclGdFillCmd;
-static CmdFunc tclGdSizeCmd;
-static CmdFunc tclGdTextCmd;
-static CmdFunc tclGdCopyCmd;
-static CmdFunc tclGdGetCmd;
-static CmdFunc tclGdBrushCmd;
-static CmdFunc tclGdStyleCmd;
-static CmdFunc tclGdTileCmd;
-static CmdFunc tclGdPolygonCmd;
-#ifdef HAVE_GD_PNG
-static CmdFunc tclGdWriteBufCmd;
-#endif
-
-static ColCmdFunc tclGdColorNewCmd;
-static ColCmdFunc tclGdColorExactCmd;
-static ColCmdFunc tclGdColorClosestCmd;
-static ColCmdFunc tclGdColorResolveCmd;
-static ColCmdFunc tclGdColorFreeCmd;
-static ColCmdFunc tclGdColorTranspCmd;
-static ColCmdFunc tclGdColorGetCmd;
+static GdDataFunction tclGdCreateCmd, tclGdDestroyCmd, tclGdWriteCmd,
+    tclGdColorCmd, tclGdInterlaceCmd, tclGdSetCmd, tclGdLineCmd,
+    tclGdRectCmd, tclGdArcCmd, tclGdFillCmd, tclGdSizeCmd,
+    tclGdTextCmd, tclGdCopyCmd, tclGdGetCmd, tclGdWriteBufCmd,
+    tclGdBrushCmd, tclGdStyleCmd, tclGdTileCmd, tclGdPolygonCmd;
+    
+static GdImgFunction tclGdColorNewCmd, tclGdColorExactCmd,
+    tclGdColorClosestCmd, tclGdColorResolveCmd, tclGdColorFreeCmd,
+    tclGdColorTranspCmd, tclGdColorGetCmd;
 
 typedef struct {
-    char *cmd;
-    CmdFunc *f;
-    int minargs, maxargs;
-    int subcmds;
-    int ishandle;
-    char *usage;
-} cmdOptions;
+    const char *cmd;
+    GdDataFunction *f;
+    unsigned int minargs, maxargs;
+    unsigned int subcmds;
+    unsigned int ishandle;
+    unsigned int unsafearg;
+    const char *usage;
+} cmdDataOptions;
 
 typedef struct {
-    char *cmd;
-    ColCmdFunc *f;
-    int minargs, maxargs;
-    int subcmds;
-    int ishandle;
-    char *usage;
-} colCmdOptions;
+    const char *cmd;
+    GdImgFunction *f;
+    unsigned int minargs, maxargs;
+    const char *usage;
+} cmdImgOptions;
 
 typedef struct {
     char *buf;
     int buflen;
 } BuffSinkContext;
 
-static cmdOptions subcmdVec[] = {
-    {"create", tclGdCreateCmd, 2, 2, 0, 0,
-     "width height"},
-    {"createTrueColor", tclGdCreateCmd, 2, 2, 0, 0,
-     "width height"},
-    {"createFromGD", tclGdCreateCmd, 1, 1, 0, 0,
-     "filehandle"},
+static cmdDataOptions subcmdVec[] = {
+    {"create",		tclGdCreateCmd, 2, 3, 0, 0, 0,	"width heighti ?true?"},
+    {"createTrueColor",	tclGdCreateCmd, 2, 2, 0, 0, 2,	"width height"},
+    {"createFromGD",	tclGdCreateCmd, 1, 1, 0, 0, 2,	"filehandle"},
 #ifdef HAVE_LIBZ
-    {"createFromGD2", tclGdCreateCmd, 1, 1, 0, 0,
-     "filehandle"},
+    {"createFromGD2",	tclGdCreateCmd,	1, 1, 0, 0, 2,	"filehandle"},
 #endif
 #ifdef HAVE_GD_GIF
-    {"createFromGIF", tclGdCreateCmd, 1, 1, 0, 0,
-     "filehandle"},
+    {"createFromGIF",	tclGdCreateCmd,	1, 1, 0, 0, 2,	"filehandle"},
 #endif
 #ifdef HAVE_GD_JPEG
-    {"createFromJPEG", tclGdCreateCmd, 1, 1, 0, 0,
-     "filehandle"},
+    {"createFromJPEG",	tclGdCreateCmd,	1, 1, 0, 0, 2,	"filehandle"},
 #endif
 #ifdef HAVE_GD_PNG
-    {"createFromPNG", tclGdCreateCmd, 1, 1, 0, 0,
-     "filehandle"},
+    {"createFromPNG",	tclGdCreateCmd,	1, 1, 0, 0, 2,	"filehandle"},
 #endif
-    {"createFromWBMP", tclGdCreateCmd, 1, 1, 0, 0,
-     "filehandle"},
+    {"createFromWBMP",	tclGdCreateCmd,	1, 1, 0, 0, 2,	"filehandle"},
 #ifdef HAVE_GD_XPM
-    {"createFromXBM", tclGdCreateCmd, 1, 1, 0, 0,
-     "filehandle"},
+    {"createFromXBM",	tclGdCreateCmd,	1, 1, 0, 0, 2,	"filehandle"},
 #endif
 
-    {"destroy", tclGdDestroyCmd, 1, 1, 0, 1,
-     "gdhandle"},
-
-    {"writeGD", tclGdWriteCmd, 2, 2, 0, 1,
-     "gdhandle filehandle"},
+    {"destroy",		tclGdDestroyCmd,1, 1, 0, 1, 0,	"gdhandle"},
+    {"writeGD",		tclGdWriteCmd,	2, 2, 0, 1, 3,	"gdhandle filehandle"},
 #ifdef HAVE_LIBZ
-    {"writeGD2", tclGdWriteCmd, 2, 2, 0, 1,
-     "gdhandle filehandle"},
+    {"writeGD2",	tclGdWriteCmd,	2, 2, 0, 1, 3,	"gdhandle filehandle"},
 #endif
 #ifdef HAVE_GD_GIF
-    {"writeGIF", tclGdWriteCmd, 2, 2, 0, 1,
-     "gdhandle filehandle"},
+    {"writeGIF",	tclGdWriteCmd,	2, 2, 0, 1, 3,	"gdhandle filehandle"},
 #endif
 #ifdef HAVE_GD_JPEG
-    {"writeJPEG", tclGdWriteCmd, 2, 2, 0, 1,
-     "gdhandle filehandle"},
+    {"writeJPEG",	tclGdWriteCmd,	2, 2, 0, 1, 3,	"gdhandle filehandle"},
 #endif
 #ifdef HAVE_GD_PNG
-    {"writePNG", tclGdWriteCmd, 2, 2, 0, 1,
-     "gdhandle filehandle"},
+    {"writePNG",	tclGdWriteCmd,	2, 2, 0, 1, 3,	"gdhandle filehandle"},
 #endif
-    {"writeWBMP", tclGdWriteCmd, 2, 2, 0, 1,
-     "gdhandle filehandle"},
+    {"writeWBMP",	tclGdWriteCmd,	2, 2, 0, 1, 3,	"gdhandle filehandle"},
 #ifdef HAVE_GD_XPM
-    {"writeXBM", tclGdWriteCmd, 2, 2, 0, 1,
-     "gdhandle filehandle"},
+    {"writeXBM",	tclGdWriteCmd,	2, 2, 0, 1, 3,	"gdhandle filehandle"},
 #endif
 #ifdef HAVE_GD_PNG
-    {"writePNGvar", tclGdWriteBufCmd, 2, 2, 0, 1,
-     "gdhandle var"},
+    {"writePNGvar",	tclGdWriteBufCmd,2, 2, 0, 1, 0,	"gdhandle var"},
 #endif
-
-    {"interlace", tclGdInterlaceCmd, 1, 2, 0, 1,
-     "gdhandle ?on-off?"},
-
-    {"color", tclGdColorCmd, 2, 5, 1, 1,
-     "option values..."},
-    {"brush", tclGdBrushCmd, 2, 2, 0, 2,
-     "gdhandle brushhandle"},
-    {"style", tclGdStyleCmd, 2, 999, 0, 1,
-     "gdhandle color..."},
-    {"tile", tclGdTileCmd, 2, 2, 0, 2,
-     "gdhandle tilehandle"},
-
-    {"set", tclGdSetCmd, 4, 4, 0, 1,
-     "gdhandle color x y"},
-    {"line", tclGdLineCmd, 6, 6, 0, 1,
-     "gdhandle color x1 y1 x2 y2"},
-    {"rectangle", tclGdRectCmd, 6, 6, 0, 1,
-     "gdhandle color x1 y1 x2 y2"},
-    {"fillrectangle", tclGdRectCmd, 6, 6, 0, 1,
-     "gdhandle color x1 y1 x2 y2"},
-    {"arc", tclGdArcCmd, 8, 8, 0, 1,
-     "gdhandle color cx cy width height start end"},
-    {"fillarc", tclGdArcCmd, 8, 8, 0, 1,
-     "gdhandle color cx cy width height start end"},
-    {"openarc", tclGdArcCmd, 8, 8, 0, 1,
-     "gdhandle color cx cy width height start end"},
-    {"chord", tclGdArcCmd, 8, 8, 0, 1,
-     "gdhandle color cx cy width height start end"},
-    {"fillchord", tclGdArcCmd, 8, 8, 0, 1,
-     "gdhandle color cx cy width height start end"},
-    {"openchord", tclGdArcCmd, 8, 8, 0, 1,
-     "gdhandle color cx cy width height start end"},
-    {"pie", tclGdArcCmd, 8, 8, 0, 1,
-     "gdhandle color cx cy width height start end"},
-    {"fillpie", tclGdArcCmd, 8, 8, 0, 1,
-     "gdhandle color cx cy width height start end"},
-    {"openpie", tclGdArcCmd, 8, 8, 0, 1,
-     "gdhandle color cx cy width height start end"},
-    {"polygon", tclGdPolygonCmd, 2, 999, 0, 1,
-     "gdhandle color x1 y1 x2 y2 x3 y3 ..."},
-    {"fillpolygon", tclGdPolygonCmd, 3, 999, 0, 1,
-     "gdhandle color x1 y1 x2 y2 x3 y3 ..."},
-    {"fill", tclGdFillCmd, 4, 5, 0, 1,
-     "gdhandle color x y ?bordercolor?"},
+    {"interlace",	tclGdInterlaceCmd,1, 2, 0, 1, 0,"gdhandle ?on-off?"},
+    {"color",		tclGdColorCmd,	2, 5, 1, 1, 0,	"option values..."},
+    {"brush",		tclGdBrushCmd,	2, 2, 0, 2, 0,	"gdhandle brushhandle"},
+    {"style",		tclGdStyleCmd,	2, 999, 0, 1, 0,"gdhandle color..."},
+    {"tile",		tclGdTileCmd,	2, 2, 0, 2, 0,	"gdhandle tilehandle"},
+    {"set",		tclGdSetCmd,	4, 4, 0, 1, 0,	"gdhandle color x y"},
+    {"line",		tclGdLineCmd,	6, 6, 0, 1, 0,	"gdhandle color x1 y1 x2 y2"},
+    {"rectangle",	tclGdRectCmd,	6, 6, 0, 1, 0,	"gdhandle color x1 y1 x2 y2"},
+    {"fillrectangle",	tclGdRectCmd,	6, 6, 0, 1, 0,	"gdhandle color x1 y1 x2 y2"},
+    {"arc",		tclGdArcCmd,	8, 8, 0, 1, 0,	"gdhandle color cx cy width height start end"},
+    {"fillarc",		tclGdArcCmd,	8, 8, 0, 1, 0,	"gdhandle color cx cy width height start end"},
+    {"openarc",		tclGdArcCmd,	8, 8, 0, 1, 0,	"gdhandle color cx cy width height start end"},
+    {"chord",		tclGdArcCmd,	8, 8, 0, 1, 0,	"gdhandle color cx cy width height start end"},
+    {"fillchord",	tclGdArcCmd,	8, 8, 0, 1, 0,	"gdhandle color cx cy width height start end"},
+    {"openchord",	tclGdArcCmd,	8, 8, 0, 1, 0,	"gdhandle color cx cy width height start end"},
+    {"pie",		tclGdArcCmd,	8, 8, 0, 1, 0,	"gdhandle color cx cy width height start end"},
+    {"fillpie",		tclGdArcCmd,	8, 8, 0, 1, 0,	"gdhandle color cx cy width height start end"},
+    {"openpie",		tclGdArcCmd,	8, 8, 0, 1, 0,	"gdhandle color cx cy width height start end"},
+    {"polygon",		tclGdPolygonCmd,2, 999, 0, 1, 0,"gdhandle color x1 y1 x2 y2 x3 y3 ..."},
+    {"fillpolygon",	tclGdPolygonCmd,3, 999, 0, 1, 0,"gdhandle color x1 y1 x2 y2 x3 y3 ..."},
+    {"fill",		tclGdFillCmd,	4, 5, 0, 1, 0,	"gdhandle color x y ?bordercolor?"},
 /* 
  * we allow null gd handles to the text command to allow program to get size
  * of text string, so the text command provides its own handle processing and checking
  */
-    {"text", tclGdTextCmd, 8, 8, 0, 0,
-     "gdhandle color fontname size angle x y string"},
-
-
-    {"copy", tclGdCopyCmd, 8, 10, 0, 2,
-     "desthandle srchandle destx desty srcx srcy destw desth ?srcw srch?"},
-
-    {"get", tclGdGetCmd, 3, 3, 0, 1,
-     "gdhandle x y"},
-    {"size", tclGdSizeCmd, 1, 1, 0, 1,
-     "gdhandle"},
+    {"text",		tclGdTextCmd,	8, 8, 0, 0, 4,	"gdhandle color fontname size angle x y string"},
+    {"copy",		tclGdCopyCmd,	8, 10, 0, 2, 0,	"desthandle srchandle destx desty srcx srcy destw desth ?srcw srch?"},
+    {"get",		tclGdGetCmd,	3, 3, 0, 1, 0,	"gdhandle x y"},
+    {"size",		tclGdSizeCmd,	1, 1, 0, 1, 0,	"gdhandle"},
 };
 
-static colCmdOptions colorCmdVec[] = {
-    {"new", tclGdColorNewCmd, 5, 5, 1, 1,
-     "gdhandle red green blue"},
-    {"exact", tclGdColorExactCmd, 5, 5, 1, 1,
-     "gdhandle red green blue"},
-    {"closest", tclGdColorClosestCmd, 5, 5, 1, 1,
-     "gdhandle red green blue"},
-    {"resolve", tclGdColorResolveCmd, 5, 5, 1, 1,
-     "gdhandle red green blue"},
-    {"free", tclGdColorFreeCmd, 3, 3, 1, 1,
-     "gdhandle color"},
-    {"transparent", tclGdColorTranspCmd, 2, 3, 1, 1,
-     "gdhandle ?color?"},
-    {"get", tclGdColorGetCmd, 2, 3, 1, 1,
-     "gdhandle ?color?"}
+static cmdImgOptions colorCmdVec[] = {
+    {"new",		tclGdColorNewCmd,	5, 5,	"red green blue"},
+    {"exact",		tclGdColorExactCmd,	5, 5,	"red green blue"},
+    {"closest",		tclGdColorClosestCmd,	5, 5,	"red green blue"},
+    {"resolve",		tclGdColorResolveCmd,	5, 5,	"red green blue"},
+    {"free",		tclGdColorFreeCmd,	3, 3,	"color"},
+    {"transparent",	tclGdColorTranspCmd,	2, 3,	"?color?"},
+    {"get",		tclGdColorGetCmd,	2, 3,	"?color?"}
 };
 
 /*
@@ -422,9 +349,8 @@ int
 gdCmd(ClientData clientData, Tcl_Interp * interp,
       int argc, Tcl_Obj * CONST objv[])
 {
-    GdData *gdData = (GdData *) clientData;
-    int argi, subi;
-    char buf[100];
+    unsigned int argi;
+    size_t subi;
     /* Check for subcommand. */
     if (argc < 2) {
 	Tcl_SetResult(interp,
@@ -439,81 +365,74 @@ gdCmd(ClientData clientData, Tcl_Interp * interp,
 	if (strcmp(subcmdVec[subi].cmd, Tcl_GetString(objv[1])) == 0) {
 
 	    /* Check arg count. */
-	    if (argc - 2 < subcmdVec[subi].minargs ||
-		argc - 2 > subcmdVec[subi].maxargs) {
-		sprintf(buf, "wrong # args: should be \"gd %s %s\"",
-			subcmdVec[subi].cmd, subcmdVec[subi].usage);
-		Tcl_SetResult(interp, buf, TCL_VOLATILE);
+	    if ((unsigned)argc - 2 < subcmdVec[subi].minargs || (unsigned)argc - 2 > subcmdVec[subi].maxargs) {
+		Tcl_WrongNumArgs(interp, 2, objv, subcmdVec[subi].usage);
 		return TCL_ERROR;
 	    }
 
 	    /* Check for valid handle(s). */
 	    if (subcmdVec[subi].ishandle > 0) {
-		/* Are any handles allocated? */
-		if (gdData->handleTbl == NULL) {
-		    sprintf(buf, "no such handle%s: ",
-			    subcmdVec[subi].ishandle > 1 ? "s" : "");
-		    Tcl_SetResult(interp, buf, TCL_VOLATILE);
-		    for (argi = 2 + subcmdVec[subi].subcmds;
-			 argi < 2 + subcmdVec[subi].subcmds +
-			 subcmdVec[subi].ishandle; argi++) {
-			Tcl_AppendResult(interp,
-					 Tcl_GetString(objv[argi]), " ",
-					 0);
-		    }
-		    return TCL_ERROR;
-		}
 		/* Check each handle to see if it's a valid handle. */
-		if (2 + subcmdVec[subi].subcmds +
-		    subcmdVec[subi].ishandle > argc) {
-		    Tcl_SetResult(interp, "GD handle(s) not specified",
-				  TCL_STATIC);
+		if (2 + subcmdVec[subi].subcmds + subcmdVec[subi].ishandle > (unsigned)argc) {
+		    Tcl_SetResult(interp, "GD handle(s) not specified", TCL_STATIC);
 		    return TCL_ERROR;
 		}
-		for (argi = 2 + subcmdVec[subi].subcmds;
-		     argi < (2 + subcmdVec[subi].subcmds +
-			     subcmdVec[subi].ishandle); argi++) {
-		    if (!tclhandleXlate(gdData->handleTbl,
-					Tcl_GetString(objv[argi])))
+		for (argi = 2 + subcmdVec[subi].subcmds; argi < (2 + subcmdVec[subi].subcmds + subcmdVec[subi].ishandle); argi++) {
+		    if (objv[argi]->typePtr != &GdPtrType && GdPtrTypeSet(interp, objv[argi]) != TCL_OK)
 			return TCL_ERROR;
 		}
 	    }
-
+	    /*
+	     * If we are operating in a safe interpreter, check,
+	     * if this command is suspect -- and only let existing
+	     * filehandles through, if so.
+	     */
+	    if (clientData != NULL && subcmdVec[subi].unsafearg != 0) {
+		const char *fname = Tcl_GetString(objv[subcmdVec[subi].unsafearg]);
+		if (!Tcl_IsChannelExisting(fname)) {
+			Tcl_AppendResult(interp, "Access to ", fname, " not allowed in safe interpreter", TCL_STATIC);
+			return TCL_ERROR;
+		}
+	    }
 	    /* Call the subcommand function. */
-	    return (*subcmdVec[subi].f) (interp, gdData, argc, objv);
+	    return (*subcmdVec[subi].f) (interp, argc, objv);
 	}
     }
 
     /* If we get here, the option doesn't match. */
-    Tcl_AppendResult(interp, "bad option \"",
-		     Tcl_GetString(objv[1]), "\": should be ", 0);
-    for (subi = 0; subi < (sizeof subcmdVec) / (sizeof subcmdVec[0]);
-	 subi++)
-	Tcl_AppendResult(interp, (subi > 0 ? ", " : ""),
-			 subcmdVec[subi].cmd, 0);
+    Tcl_AppendResult(interp, "bad option \"", Tcl_GetString(objv[1]), "\": should be ", 0);
+    for (subi = 0; subi < (sizeof subcmdVec) / (sizeof subcmdVec[0]); subi++)
+	Tcl_AppendResult(interp, (subi > 0 ? ", " : ""), subcmdVec[subi].cmd, 0);
     return TCL_ERROR;
 }
 
 static int
-tclGdCreateCmd(Tcl_Interp * interp, GdData * gdData,
-	       int argc, Tcl_Obj * CONST objv[])
+tclGdCreateCmd(Tcl_Interp * interp, int argc, Tcl_Obj * CONST objv[])
 {
     int w, h;
-    unsigned long idx;
     gdImagePtr im = NULL;
     FILE *filePtr;
     ClientData clientdata;
-    char *cmd, buf[50];
+    char *cmd;
+    Tcl_Obj *result;
     int fileByName;
 
     cmd = Tcl_GetString(objv[1]);
     if (strcmp(cmd, "create") == 0) {
+	int trueColor = 0;
 	if (Tcl_GetIntFromObj(interp, objv[2], &w) != TCL_OK)
 	    return TCL_ERROR;
 	if (Tcl_GetIntFromObj(interp, objv[3], &h) != TCL_OK)
 	    return TCL_ERROR;
-	im = gdImageCreate(w, h);
+	/* An optional argument may specify true for "TrueColor" */
+	if (argc == 5 && Tcl_GetBooleanFromObj(interp, objv[4], &trueColor) == TCL_ERROR)
+	    return TCL_ERROR;
+	if (trueColor)
+	    im = gdImageCreateTrueColor(w, h);
+	else
+	    im = gdImageCreate(w, h);
 	if (im == NULL) {
+	    char buf[255];
 	    sprintf(buf, "GD unable to allocate %d X %d image", w, h);
 	    Tcl_SetResult(interp, buf, TCL_VOLATILE);
 	    return TCL_ERROR;
@@ -525,24 +444,24 @@ tclGdCreateCmd(Tcl_Interp * interp, GdData * gdData,
 	    return TCL_ERROR;
 	im = gdImageCreateTrueColor(w, h);
 	if (im == NULL) {
+	    char buf[255];
 	    sprintf(buf, "GD unable to allocate %d X %d image", w, h);
 	    Tcl_SetResult(interp, buf, TCL_VOLATILE);
 	    return TCL_ERROR;
 	}
     } else {
+	char *arg2 = Tcl_GetString(objv[2]);
 	fileByName = 0;		/* first try to get file from open channel */
-	if (Tcl_GetOpenFile
-	    (interp, Tcl_GetString(objv[2]), 0, 1,
-	     &clientdata) == TCL_OK) {
+	if (Tcl_GetOpenFile(interp, arg2, 0, 1, &clientdata) == TCL_OK) {
 	    filePtr = (FILE *) clientdata;
 	} else {
 	    /* Not a channel, or Tcl_GetOpenFile() not supported.
 	     *   See if we can open directly.
 	     */
-	    fileByName++;
-	    if ((filePtr = fopen(Tcl_GetString(objv[2]), "rb")) == NULL) {
+	    if ((filePtr = fopen(arg2, "rb")) == NULL) {
 		return TCL_ERROR;
 	    }
+	    fileByName++;
 	    Tcl_ResetResult(interp);
 	}
 
@@ -569,63 +488,81 @@ tclGdCreateCmd(Tcl_Interp * interp, GdData * gdData,
 	    im = gdImageCreateFromWBMP(filePtr);
 #ifdef HAVE_GD_XPM
 	} else if (strcmp(&cmd[10], "XBM") == 0) {
-/* FIXME - also "XPM" ? */
 	    im = gdImageCreateFromXbm(filePtr);
 #endif
 	} else {
-	    /* no im struct - will result in error */
+	    Tcl_AppendResult(interp, cmd + 10, "unrecognizable format requested", NULL);
+	    if (fileByName) {
+	        fclose(filePtr);
+	    }
+            return TCL_ERROR;
 	}
 	if (fileByName) {
 	    fclose(filePtr);
 	}
 	if (im == NULL) {
-	    Tcl_SetResult(interp, "GD unable to read image file",
-			  TCL_STATIC);
+	    Tcl_AppendResult(interp, "GD unable to read image file '", arg2, "` as ", cmd + 10, NULL);
 	    return TCL_ERROR;
 	}
     }
 
-    *(gdImagePtr *) (tclhandleAlloc(gdData->handleTbl, buf, &idx)) = im;
-    Tcl_SetResult(interp, buf, TCL_VOLATILE);
+    result = Tcl_NewObj();
+    IMGPTR(result) = im;
+    result->typePtr = &GdPtrType;
+    result->bytes = NULL;
+    Tcl_SetObjResult(interp, result);
     return TCL_OK;
 }
 
 static int
-tclGdDestroyCmd(Tcl_Interp * interp, GdData * gdData, int argc,
-		Tcl_Obj * CONST objv[])
+tclGdDestroyCmd(Tcl_Interp * interp, int argc, Tcl_Obj * CONST objv[])
 {
     gdImagePtr im;
 
-    unsigned long idx;
-
-    if (tclhandleIndex(gdData->handleTbl, Tcl_GetString(objv[2]), &idx) != TCL_OK)
-
-	return TCL_ERROR;
-    im = *(gdImagePtr *) tclhandleXlateIndex(gdData->handleTbl, idx);
-    tclhandleFreeIndex(gdData->handleTbl, idx);
+    /* Get the image pointer and destroy it */
+    im = IMGPTR(objv[2]);
     gdImageDestroy(im);
 
     return TCL_OK;
 }
 
 static int
-tclGdWriteCmd(Tcl_Interp * interp, GdData * gdData, int argc,
-	      Tcl_Obj * CONST objv[])
+tclGdWriteCmd(Tcl_Interp * interp, int argc, Tcl_Obj * CONST objv[])
 {
     gdImagePtr im;
     FILE *filePtr;
     ClientData clientdata;
-    char *cmd;
+    const char *cmd, *fname;
     int fileByName;
+    int arg4;
 
     cmd = Tcl_GetString(objv[1]);
+    if (cmd[5] == 'J' || cmd[5] == 'W') {
+	/* JPEG and WBMP expect an extra (integer) argument */
+	if (argc < 5) {
+	    if (cmd[5] == 'J')
+		arg4 = -1; /* default quality-level */
+	    else {
+		Tcl_SetResult(interp, "WBMP saving requires the foreground pixel value", TCL_STATIC);
+		return TCL_ERROR;
+	    }
+	} else if (Tcl_GetIntFromObj(interp, objv[4], &arg4) != TCL_OK)
+	    return TCL_ERROR;
+
+	if (cmd[5] == 'J' && argc > 4 && (arg4 > 100 || arg4 < 1)) {
+	    Tcl_SetObjResult(interp, objv[4]);
+	    Tcl_AppendResult(interp, ": JPEG image quality, if specified, must be an integer from 1 to 100, or -1 for default", NULL);
+	    return TCL_ERROR;
+	}
+	/* XXX no error-checking for the WBMP case here */
+    }
     /* Get the image pointer. */
-    im = *(gdImagePtr *) tclhandleXlate(gdData->handleTbl,
-					Tcl_GetString(objv[2]));
+    im = IMGPTR(objv[2]);
+    fname = Tcl_GetString(objv[3]);
 
     /* Get the file reference. */
     fileByName = 0;		/* first try to get file from open channel */
-    if (Tcl_GetOpenFile(interp, Tcl_GetString(objv[3]), 1, 1, &clientdata)
+    if (Tcl_GetOpenFile(interp, fname, 1, 1, &clientdata)
 	== TCL_OK) {
 	filePtr = (FILE *) clientdata;
     } else {
@@ -633,7 +570,8 @@ tclGdWriteCmd(Tcl_Interp * interp, GdData * gdData, int argc,
 	 *   See if we can open directly.
 	 */
 	fileByName++;
-	if ((filePtr = fopen(Tcl_GetString(objv[3]), "wb")) == NULL) {
+	if ((filePtr = fopen(fname, "wb")) == NULL) {
+	    Tcl_AppendResult(interp, "could not open :", fname, "': ", strerror(errno), NULL);
 	    return TCL_ERROR;
 	}
 	Tcl_ResetResult(interp);
@@ -693,15 +631,13 @@ tclGdWriteCmd(Tcl_Interp * interp, GdData * gdData, int argc,
 }
 
 static int
-tclGdInterlaceCmd(Tcl_Interp * interp, GdData * gdData,
-		  int argc, Tcl_Obj * CONST objv[])
+tclGdInterlaceCmd(Tcl_Interp * interp, int argc, Tcl_Obj * CONST objv[])
 {
     gdImagePtr im;
     int on_off;
 
     /* Get the image pointer. */
-    im = *(gdImagePtr *) tclhandleXlate(gdData->handleTbl,
-					Tcl_GetString(objv[2]));
+    im = IMGPTR(objv[2]);
 
     if (argc == 4) {
 	/* Get the on_off values. */
@@ -718,10 +654,8 @@ tclGdInterlaceCmd(Tcl_Interp * interp, GdData * gdData,
     return TCL_OK;
 }
 
-
 static int
-tclGdColorCmd(Tcl_Interp * interp, GdData * gdData,
-	      int argc, Tcl_Obj * CONST objv[])
+tclGdColorCmd(Tcl_Interp * interp, int argc, Tcl_Obj * CONST objv[])
 {
     gdImagePtr im;
     int subi, nsub, i, args[3];
@@ -732,19 +666,15 @@ tclGdColorCmd(Tcl_Interp * interp, GdData * gdData,
 	for (subi = 0; subi < nsub; subi++) {
 	    if (strcmp(colorCmdVec[subi].cmd, Tcl_GetString(objv[2])) == 0) {
 		/* Check arg count. */
-		if (argc - 2 < colorCmdVec[subi].minargs ||
-		    argc - 2 > colorCmdVec[subi].maxargs) {
-		    Tcl_AppendResult(interp,
-				     "wrong # args: should be \"gd color ",
-				     colorCmdVec[subi].cmd, " ",
-				     colorCmdVec[subi].usage, "\"", 0);
+		if ((unsigned)argc - 2 < colorCmdVec[subi].minargs ||
+		    (unsigned)argc - 2 > colorCmdVec[subi].maxargs) {
+		    Tcl_WrongNumArgs(interp, 3, objv, colorCmdVec[subi].usage);
 		    return TCL_ERROR;
 		}
 
 		/* Get the image pointer. */
-		im = *(gdImagePtr *) tclhandleXlate(gdData->handleTbl,
-						    Tcl_GetString(objv
-								  [3]));
+		im = IMGPTR(objv[3]);
+
 		/* Parse off integer arguments.
 		 * 1st 4 are gd color <opt> <handle>
 		 */
@@ -789,7 +719,7 @@ tclGdColorCmd(Tcl_Interp * interp, GdData * gdData,
 }
 
 static int
-tclGdColorNewCmd(Tcl_Interp * interp, gdImagePtr im, int argc, int args[])
+tclGdColorNewCmd(Tcl_Interp * interp, gdImagePtr im, int argc, const int args[])
 {
     int color;
 
@@ -799,8 +729,7 @@ tclGdColorNewCmd(Tcl_Interp * interp, gdImagePtr im, int argc, int args[])
 }
 
 static int
-tclGdColorExactCmd(Tcl_Interp * interp, gdImagePtr im, int argc,
-		   int args[])
+tclGdColorExactCmd(Tcl_Interp * interp, gdImagePtr im, int argc, const int args[])
 {
     int color;
 
@@ -810,8 +739,7 @@ tclGdColorExactCmd(Tcl_Interp * interp, gdImagePtr im, int argc,
 }
 
 static int
-tclGdColorClosestCmd(Tcl_Interp * interp, gdImagePtr im, int argc,
-		     int args[])
+tclGdColorClosestCmd(Tcl_Interp * interp, gdImagePtr im, int argc, const int args[])
 {
     int color;
 
@@ -821,8 +749,7 @@ tclGdColorClosestCmd(Tcl_Interp * interp, gdImagePtr im, int argc,
 }
 
 static int
-tclGdColorResolveCmd(Tcl_Interp * interp, gdImagePtr im, int argc,
-		     int args[])
+tclGdColorResolveCmd(Tcl_Interp * interp, gdImagePtr im, int argc, const int args[])
 {
     int color;
 
@@ -832,15 +759,14 @@ tclGdColorResolveCmd(Tcl_Interp * interp, gdImagePtr im, int argc,
 }
 
 static int
-tclGdColorFreeCmd(Tcl_Interp * interp, gdImagePtr im, int argc, int args[])
+tclGdColorFreeCmd(Tcl_Interp * interp, gdImagePtr im, int argc, const int args[])
 {
     gdImageColorDeallocate(im, args[0]);
     return TCL_OK;
 }
 
 static int
-tclGdColorTranspCmd(Tcl_Interp * interp, gdImagePtr im, int argc,
-		    int args[])
+tclGdColorTranspCmd(Tcl_Interp * interp, gdImagePtr im, int argc, const int args[])
 {
     int color;
 
@@ -855,47 +781,50 @@ tclGdColorTranspCmd(Tcl_Interp * interp, gdImagePtr im, int argc,
 }
 
 static int
-tclGdColorGetCmd(Tcl_Interp * interp, gdImagePtr im, int argc, int args[])
+tclGdColorGetCmd(Tcl_Interp * interp, gdImagePtr im, int argc, const int args[])
 {
-    char buf[30];
-    int i;
+    int i, ncolors;
+    Tcl_Obj *tuple[4], *result;
 
+    ncolors = gdImageColorsTotal(im);
     /* IF one arg, return the single color, else return list of all colors. */
     if (argc == 1) {
 	i = args[0];
-	if (i >= gdImageColorsTotal(im) || im->open[i]) {
+	if (i >= ncolors || im->open[i]) {
 	    Tcl_SetResult(interp, "No such color", TCL_STATIC);
 	    return TCL_ERROR;
 	}
-	sprintf(buf, "%d %d %d %d", i,
-		gdImageRed(im, i),
-		gdImageGreen(im, i), gdImageBlue(im, i));
-	Tcl_SetResult(interp, buf, TCL_VOLATILE);
+	tuple[0] = Tcl_NewIntObj(i);
+	tuple[1] = Tcl_NewIntObj(gdImageRed(im,i));
+	tuple[2] = Tcl_NewIntObj(gdImageGreen(im,i));
+	tuple[3] = Tcl_NewIntObj(gdImageBlue(im,i));
+	Tcl_SetObjResult(interp, Tcl_NewListObj(4, tuple));
     } else {
-	for (i = 0; i < gdImageColorsTotal(im); i++) {
+	result = Tcl_NewListObj(0, NULL);
+	for (i = 0; i < ncolors; i++) {
 	    if (im->open[i])
 		continue;
-	    sprintf(buf, "%d %d %d %d", i,
-		    gdImageRed(im, i),
-		    gdImageGreen(im, i), gdImageBlue(im, i));
-	    Tcl_AppendElement(interp, buf);
+	    tuple[0] = Tcl_NewIntObj(i);
+	    tuple[1] = Tcl_NewIntObj(gdImageRed(im,i));
+	    tuple[2] = Tcl_NewIntObj(gdImageGreen(im,i));
+	    tuple[3] = Tcl_NewIntObj(gdImageBlue(im,i));
+	    Tcl_ListObjAppendElement(NULL, result,
+	    Tcl_NewListObj(4, tuple));
 	}
+	Tcl_SetObjResult(interp, result);
     }
 
     return TCL_OK;
 }
 
 static int
-tclGdBrushCmd(Tcl_Interp * interp, GdData * gdData,
-	      int argc, Tcl_Obj * CONST objv[])
+tclGdBrushCmd(Tcl_Interp * interp, int argc, Tcl_Obj * CONST objv[])
 {
     gdImagePtr im, imbrush;
 
     /* Get the image pointers. */
-    im = *(gdImagePtr *) tclhandleXlate(gdData->handleTbl,
-					Tcl_GetString(objv[2]));
-    imbrush = *(gdImagePtr *) tclhandleXlate(gdData->handleTbl,
-					     Tcl_GetString(objv[3]));
+    im = IMGPTR(objv[2]);
+    imbrush = IMGPTR(objv[3]);
 
     /* Do it. */
     gdImageSetBrush(im, imbrush);
@@ -904,16 +833,13 @@ tclGdBrushCmd(Tcl_Interp * interp, GdData * gdData,
 }
 
 static int
-tclGdTileCmd(Tcl_Interp * interp, GdData * gdData,
-	     int argc, Tcl_Obj * CONST objv[])
+tclGdTileCmd(Tcl_Interp * interp, int argc, Tcl_Obj * CONST objv[])
 {
     gdImagePtr im, tile;
 
     /* Get the image pointers. */
-    im = *(gdImagePtr *) tclhandleXlate(gdData->handleTbl,
-					Tcl_GetString(objv[2]));
-    tile = *(gdImagePtr *) tclhandleXlate(gdData->handleTbl,
-					  Tcl_GetString(objv[3]));
+    im = IMGPTR(objv[2]);
+    tile = IMGPTR(objv[3]);
 
     /* Do it. */
     gdImageSetTile(im, tile);
@@ -923,8 +849,7 @@ tclGdTileCmd(Tcl_Interp * interp, GdData * gdData,
 
 
 static int
-tclGdStyleCmd(Tcl_Interp * interp, GdData * gdData,
-	      int argc, Tcl_Obj * CONST objv[])
+tclGdStyleCmd(Tcl_Interp * interp, int argc, Tcl_Obj * CONST objv[])
 {
     gdImagePtr im;
     int ncolor, *colors = NULL, i;
@@ -932,8 +857,7 @@ tclGdStyleCmd(Tcl_Interp * interp, GdData * gdData,
     int retval = TCL_OK;
 
     /* Get the image pointer. */
-    im = *(gdImagePtr *) tclhandleXlate(gdData->handleTbl,
-					Tcl_GetString(objv[2]));
+    im = IMGPTR(objv[2]);
 
     /* Figure out how many colors in the style list and allocate memory. */
     ncolor = argc - 3;
@@ -969,15 +893,13 @@ tclGdStyleCmd(Tcl_Interp * interp, GdData * gdData,
 }
 
 static int
-tclGdSetCmd(Tcl_Interp * interp, GdData * gdData,
-	    int argc, Tcl_Obj * CONST objv[])
+tclGdSetCmd(Tcl_Interp * interp, int argc, Tcl_Obj * CONST objv[])
 {
     gdImagePtr im;
     int color, x, y;
 
     /* Get the image pointer. */
-    im = *(gdImagePtr *) tclhandleXlate(gdData->handleTbl,
-					Tcl_GetString(objv[2]));
+    im = IMGPTR(objv[2]);
 
     /* Get the color, x, y values. */
     if (tclGd_GetColor(interp, objv[3], &color) != TCL_OK)
@@ -994,15 +916,13 @@ tclGdSetCmd(Tcl_Interp * interp, GdData * gdData,
 }
 
 static int
-tclGdLineCmd(Tcl_Interp * interp, GdData * gdData,
-	     int argc, Tcl_Obj * CONST objv[])
+tclGdLineCmd(Tcl_Interp * interp, int argc, Tcl_Obj * CONST objv[])
 {
     gdImagePtr im;
     int color, x1, y1, x2, y2;
 
     /* Get the image pointer. */
-    im = *(gdImagePtr *) tclhandleXlate(gdData->handleTbl,
-					Tcl_GetString(objv[2]));
+    im = IMGPTR(objv[2]);
 
     /* Get the color, x, y values. */
     if (tclGd_GetColor(interp, objv[3], &color) != TCL_OK)
@@ -1023,16 +943,14 @@ tclGdLineCmd(Tcl_Interp * interp, GdData * gdData,
 }
 
 static int
-tclGdRectCmd(Tcl_Interp * interp, GdData * gdData,
-	     int argc, Tcl_Obj * CONST objv[])
+tclGdRectCmd(Tcl_Interp * interp, int argc, Tcl_Obj * CONST objv[])
 {
     gdImagePtr im;
     int color, x1, y1, x2, y2;
-    char *cmd;
+    const char *cmd;
 
     /* Get the image pointer. */
-    im = *(gdImagePtr *) tclhandleXlate(gdData->handleTbl,
-					Tcl_GetString(objv[2]));
+    im = IMGPTR(objv[2]);
 
     /* Get the color, x, y values. */
     if (tclGd_GetColor(interp, objv[3], &color) != TCL_OK)
@@ -1057,16 +975,14 @@ tclGdRectCmd(Tcl_Interp * interp, GdData * gdData,
 }
 
 static int
-tclGdArcCmd(Tcl_Interp * interp, GdData * gdData,
-	    int argc, Tcl_Obj * CONST objv[])
+tclGdArcCmd(Tcl_Interp * interp, int argc, Tcl_Obj * CONST objv[])
 {
     gdImagePtr im;
     int color, cx, cy, width, height, start, end;
-    char *cmd;
+    const char *cmd;
 
     /* Get the image pointer. */
-    im = *(gdImagePtr *) tclhandleXlate(gdData->handleTbl,
-					Tcl_GetString(objv[2]));
+    im = IMGPTR(objv[2]);
 
     /* Get the color, x, y values. */
     if (tclGd_GetColor(interp, objv[3], &color) != TCL_OK)
@@ -1112,8 +1028,7 @@ tclGdArcCmd(Tcl_Interp * interp, GdData * gdData,
 }
 
 static int
-tclGdPolygonCmd(Tcl_Interp * interp, GdData * gdData,
-		int argc, Tcl_Obj * CONST objv[])
+tclGdPolygonCmd(Tcl_Interp * interp, int argc, Tcl_Obj * CONST objv[])
 {
     gdImagePtr im;
     int color, npoints, i;
@@ -1123,8 +1038,7 @@ tclGdPolygonCmd(Tcl_Interp * interp, GdData * gdData,
     char *cmd;
 
     /* Get the image pointer. */
-    im = *(gdImagePtr *) tclhandleXlate(gdData->handleTbl,
-					Tcl_GetString(objv[2]));
+    im = IMGPTR(objv[2]);
 
     /* Get the color, x, y values. */
     if (tclGd_GetColor(interp, objv[3], &color) != TCL_OK)
@@ -1134,8 +1048,7 @@ tclGdPolygonCmd(Tcl_Interp * interp, GdData * gdData,
     npoints = argc - 4;
     /* If only one argument, treat it as a list. */
     if (npoints == 1)
-	if (Tcl_ListObjGetElements(interp, objv[4],
-				   &npoints, &pointObjv) != TCL_OK)
+	if (Tcl_ListObjGetElements(interp, objv[4], &npoints, &pointObjv) != TCL_OK)
 	    return TCL_ERROR;
 
     /* Error check size of point list. */
@@ -1169,7 +1082,7 @@ tclGdPolygonCmd(Tcl_Interp * interp, GdData * gdData,
 	    || Tcl_GetIntFromObj(interp, pointObjv[i * 2 + 1],
 				 &points[i].y) != TCL_OK) {
 	    retval = TCL_ERROR;
-	    break;
+	    goto out;
 	}
 
     /* Call the appropriate polygon function. */
@@ -1189,15 +1102,13 @@ tclGdPolygonCmd(Tcl_Interp * interp, GdData * gdData,
 }
 
 static int
-tclGdFillCmd(Tcl_Interp * interp, GdData * gdData,
-	     int argc, Tcl_Obj * CONST objv[])
+tclGdFillCmd(Tcl_Interp * interp, int argc, Tcl_Obj * CONST objv[])
 {
     gdImagePtr im;
     int color, x, y, border;
 
     /* Get the image pointer. */
-    im = *(gdImagePtr *) tclhandleXlate(gdData->handleTbl,
-					Tcl_GetString(objv[2]));
+    im = IMGPTR(objv[2]);
 
     /* Get the color, x, y and possibly bordercolor values. */
     if (tclGd_GetColor(interp, objv[3], &color) != TCL_OK)
@@ -1220,17 +1131,14 @@ tclGdFillCmd(Tcl_Interp * interp, GdData * gdData,
 }
 
 static int
-tclGdCopyCmd(Tcl_Interp * interp, GdData * gdData,
-	     int argc, Tcl_Obj * CONST objv[])
+tclGdCopyCmd(Tcl_Interp * interp, int argc, Tcl_Obj * CONST objv[])
 {
     gdImagePtr imdest, imsrc;
     int destx, desty, srcx, srcy, destw, desth, srcw, srch;
 
     /* Get the image pointer. */
-    imdest = *(gdImagePtr *) tclhandleXlate(gdData->handleTbl,
-					    Tcl_GetString(objv[2]));
-    imsrc = *(gdImagePtr *) tclhandleXlate(gdData->handleTbl,
-					   Tcl_GetString(objv[3]));
+    imdest = IMGPTR(objv[2]);
+    imsrc = IMGPTR(objv[3]);
 
     /* Get the x, y, etc. values. */
     if (Tcl_GetIntFromObj(interp, objv[4], &destx) != TCL_OK)
@@ -1262,15 +1170,13 @@ tclGdCopyCmd(Tcl_Interp * interp, GdData * gdData,
 }
 
 static int
-tclGdGetCmd(Tcl_Interp * interp, GdData * gdData,
-	    int argc, Tcl_Obj * CONST objv[])
+tclGdGetCmd(Tcl_Interp * interp, int argc, Tcl_Obj * CONST objv[])
 {
     gdImagePtr im;
     int color, x, y;
 
     /* Get the image pointer. */
-    im = *(gdImagePtr *) tclhandleXlate(gdData->handleTbl,
-					Tcl_GetString(objv[2]));
+    im = IMGPTR(objv[2]);
 
     /* Get the x, y values. */
     if (Tcl_GetIntFromObj(interp, objv[3], &x) != TCL_OK)
@@ -1285,40 +1191,38 @@ tclGdGetCmd(Tcl_Interp * interp, GdData * gdData,
 }
 
 static int
-tclGdSizeCmd(Tcl_Interp * interp, GdData * gdData,
-	     int argc, Tcl_Obj * CONST objv[])
+tclGdSizeCmd(Tcl_Interp * interp, int argc, Tcl_Obj * CONST objv[])
 {
     gdImagePtr im;
-    char buf[30];
+    Tcl_Obj *answers[2];
 
     /* Get the image pointer. */
-    im = *(gdImagePtr *) tclhandleXlate(gdData->handleTbl,
-					Tcl_GetString(objv[2]));
+    im = IMGPTR(objv[2]);
 
-    sprintf(buf, "%d %d", gdImageSX(im), gdImageSY(im));
-    Tcl_SetResult(interp, buf, TCL_VOLATILE);
+    answers[0] = Tcl_NewIntObj(gdImageSX(im));
+    answers[1] = Tcl_NewIntObj(gdImageSY(im));
+    Tcl_SetObjResult(interp, Tcl_NewListObj(2, answers));
     return TCL_OK;
 }
 
 static int
-tclGdTextCmd(Tcl_Interp * interp, GdData * gdData,
-	     int argc, Tcl_Obj * CONST objv[])
+tclGdTextCmd(Tcl_Interp * interp, int argc, Tcl_Obj * CONST objv[])
 {
     /* gd gdhandle color fontname size angle x y string */
     gdImagePtr im;
     int color, x, y;
     double ptsize, angle;
-    char *error, buf[32], *fontname, *handle;
+    char *error, *fontname;
     int i, brect[8], len;
     char *str;
+    Tcl_Obj *orect[8];
 
     /* Get the image pointer. (an invalid or null arg[2] will result in string
        size calculation but no rendering */
-    handle = Tcl_GetString(objv[2]);
-    if (!handle || *handle == '\0') {
-	im = (gdImagePtr) NULL;
+    if (argc == 2 || (objv[2]->typePtr != &GdPtrType && GdPtrTypeSet(NULL, objv[2]) != TCL_OK)) {
+	im = NULL;
     } else {
-	im = *(gdImagePtr *) tclhandleXlate(gdData->handleTbl, handle);
+	im = IMGPTR(objv[2]);
     }
 
     /* Get the color, values. */
@@ -1356,9 +1260,9 @@ tclGdTextCmd(Tcl_Interp * interp, GdData * gdData,
 	return TCL_ERROR;
     }
     for (i = 0; i < 8; i++) {
-	sprintf(buf, "%d", brect[i]);
-	Tcl_AppendElement(interp, buf);
+	orect[i] = Tcl_NewIntObj(brect[i]);
     }
+    Tcl_SetObjResult(interp, Tcl_NewListObj(8, orect));
     return TCL_OK;
 }
 
@@ -1375,8 +1279,6 @@ int Gdtclft_Init(Tcl_Interp * interp)
 #endif
 #endif
 {
-    static GdData gdData;
-
 #ifdef USE_TCL_STUBS
     if (Tcl_InitStubs(interp, TCL_VERSION, 0) == NULL) {
 	return TCL_ERROR;
@@ -1389,17 +1291,7 @@ int Gdtclft_Init(Tcl_Interp * interp)
     if (Tcl_PkgProvide(interp, "Gdtclft", PACKAGE_VERSION) != TCL_OK) {
 	return TCL_ERROR;
     }
-
-    GDHandleTable = gdData.handleTbl =
-	tclhandleInit("gd", sizeof(gdImagePtr), 2);
-    if (gdData.handleTbl == NULL) {
-	Tcl_AppendResult(interp, "unable to create table for GD handles.",
-			 0);
-	return TCL_ERROR;
-    }
-
-    Tcl_CreateObjCommand(interp, "gd", gdCmd, (ClientData) & gdData,
-			 (Tcl_CmdDeleteProc *) NULL);
+    Tcl_CreateObjCommand(interp, "gd", gdCmd, NULL, (Tcl_CmdDeleteProc *)NULL);
     return TCL_OK;
 }
 
@@ -1413,7 +1305,13 @@ int Gdtclft_SafeInit(Tcl_Interp * interp)
 #endif
 #endif
 {
-    return Gdtclft_Init(interp);
+    Tcl_CmdInfo info;
+    if (Gdtclft_Init(interp) != TCL_OK || Tcl_GetCommandInfo(interp, "gd", &info) != 1)
+        return TCL_ERROR;
+    info.objClientData = (char *)info.objClientData + 1; /* Non-NULL */
+    if (Tcl_SetCommandInfo(interp, "gd", &info) != 1)
+        return TCL_ERROR;
+    return TCL_OK;
 }
 
 #ifndef __CYGWIN__
@@ -1470,8 +1368,7 @@ static int BufferSinkFunc(void *context, const char *buffer, int len)
 }
 
 static int
-tclGdWriteBufCmd(Tcl_Interp * interp, GdData * gdData, int argc,
-		 Tcl_Obj * CONST objv[])
+tclGdWriteBufCmd(Tcl_Interp * interp, int argc, Tcl_Obj * CONST objv[])
 {
     gdImagePtr im;
     Tcl_Obj *output;
@@ -1487,10 +1384,8 @@ tclGdWriteBufCmd(Tcl_Interp * interp, GdData * gdData, int argc,
 
     buffsink.sink = BufferSinkFunc;
     buffsink.context = (void *) &bsc;
-    /* cmd = */ Tcl_GetString(objv[1]);
     /* Get the image pointer. */
-    im = *(gdImagePtr *) tclhandleXlate(gdData->handleTbl,
-					Tcl_GetString(objv[2]));
+    im = IMGPTR(objv[2]);
 
     gdImagePngToSink(im, &buffsink);
 
@@ -1509,5 +1404,26 @@ tclGdWriteBufCmd(Tcl_Interp * interp, GdData * gdData, int argc,
 	return TCL_ERROR;
     else
 	return TCL_OK;
+}
+
+static void
+GdPtrTypeUpdate(struct Tcl_Obj *O)
+{
+    O->bytes = Tcl_Alloc(strlen(GdPtrType.name) + (sizeof(void *) + 1) * 2 + 1);
+    O->length = sprintf(O->bytes, "%s%p", GdPtrType.name, IMGPTR(O));
+}
+
+static int
+GdPtrTypeSet(Tcl_Interp *I, struct Tcl_Obj *O)
+{
+    if (O->bytes == NULL || O->bytes[0] == '\0' ||
+	   strncmp(GdPtrType.name, O->bytes, strlen(GdPtrType.name)) != 0 ||
+	   sscanf(O->bytes + strlen(GdPtrType.name), "%p", &IMGPTR(O)) != 1) {
+	if (I != NULL)
+	    Tcl_AppendResult(I, O->bytes, " is not a ", GdPtrType.name, "-handle", NULL);
+	return TCL_ERROR;
+    }
+    O->typePtr = &GdPtrType;
+    return TCL_OK;
 }
 #endif

@@ -91,7 +91,7 @@ static void ming_end_page(GVJ_t * job)
 extern char* gvconfig_libdir(void);
 #define FONT "Bitstream_Vera_Serif.fdb"
 
-static void ming_textpara(GVJ_t * job, pointf p, textpara_t * para)
+static void ming_textspan(GVJ_t * job, pointf p, textspan_t * span)
 {
     SWFMovie movie = (SWFMovie)(job->context);
     SWFTextField textfield;
@@ -116,29 +116,29 @@ static void ming_textpara(GVJ_t * job, pointf p, textpara_t * para)
 
     textfield = newSWFTextField();
     SWFTextField_setFont(textfield, (SWFBlock)font);
-    SWFTextField_addChars(textfield, para->str);
-    SWFTextField_addUTF8String(textfield, para->str);
+    SWFTextField_addChars(textfield, span->str);
+    SWFTextField_addUTF8String(textfield, span->str);
     SWFTextField_setColor(textfield,
 	 pencolor.u.rgba[0],
 	 pencolor.u.rgba[1],
 	 pencolor.u.rgba[2],
 	 pencolor.u.rgba[3]);
-    SWFTextField_setHeight(textfield, para->fontsize);
+    SWFTextField_setHeight(textfield, span->font->size);
 
-    switch (para->just) {
+    switch (span->just) {
     case 'r':
 	offset.x = 0.;
 	break;
     case 'l':
-	offset.x = -para->width;
+	offset.x = -span->size.x;
 	break;
     case 'n':
     default:
-	offset.x = -para->width/2.;
+	offset.x = -span->size.x/2.;
 	break;
     }
     /* offset to baseline */
-    offset.y = -para->height + para->fontsize*.4;  /* empirically determined */
+    offset.y = -span->size.y + span->font->size*.4;  /* empirically determined */
 
     item = SWFMovie_add(movie, (SWFBlock)textfield);
     SWFDisplayItem_moveTo(item, p.x + offset.x, p.y + offset.y);
@@ -277,7 +277,7 @@ static gvrender_engine_t ming_engine = {
     0,				/* ming_end_anchor */
     0,				/* ming_begin_label */
     0,				/* ming_end_label */
-    ming_textpara,
+    ming_textspan,
     0,				/* ming_resolve_color */
     ming_ellipse,
     ming_polygon,

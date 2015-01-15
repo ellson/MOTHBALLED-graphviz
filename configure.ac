@@ -102,13 +102,16 @@ AC_SUBST([GRAPHVIZ_VERSION_BUILD])
 AC_SUBST([GRAPHVIZ_VERSION_REVISION])
 
 AC_ARG_VAR(LIBPOSTFIX, [subscript to lib, e.g. "/64" for "/usr/lib/64" on Solaris])
+AC_ARG_VAR(INTGOSIZE, [integer size for go, 32 or 64])
 
+INTGOSIZE=32
 if test -z "$LIBPOSTFIX"; then
   case "${host_os}" in
     *linux* )
       case "${host_cpu}" in
-        aarch64 | powerpc64 | s390x | x86_64 | sparc64 )
+        aarch64 | powerpc64 | powerpc64le | s390x | x86_64 | sparc64 )
           LIBPOSTFIX="64"
+          INTGOSIZE=64
           ;;
       esac
       ;;
@@ -116,6 +119,7 @@ if test -z "$LIBPOSTFIX"; then
       case "${host_cpu}" in
         x86_64 | sparc64 )
           LIBPOSTFIX="/64"
+          INTGOSIZE=64
           ;;
       esac
       ;;
@@ -674,6 +678,7 @@ else
 #          AC_SUBST([GO_INSTALL_DIR])
           AC_SUBST([GO_INCLUDES])
           AC_SUBST([GO_LIBS])
+          AC_SUBST([INTGOSIZE])
         fi
       fi
     fi
@@ -1093,6 +1098,11 @@ else
   if test "x$use_swig" != "xYes"; then
     use_php="No (swig not available)"
   else
+    if test `$SWIG -php5 2>&1 | $EGREP -c 'Unable'` -eq 1; then
+      SWIG_PHP_OPT='-php'
+    else
+      SWIG_PHP_OPT='-php5'
+    fi
     if test `$SWIG -help 2>&1 | $EGREP -c '\-php5* *- Generate'` = 0 ; then
       use_php="No (swig does not support -php or -php5 option)"
     else
@@ -1121,6 +1131,7 @@ else
           AC_SUBST([PHP_INSTALL_DIR])
           AC_SUBST([PHP_INCLUDES])
           AC_SUBST([PHP_LIBS])
+          AC_SUBST([SWIG_PHP_OPT])
         fi
       fi
     fi
@@ -1171,7 +1182,8 @@ else
       else
         PYTHON_PREFIX=`$PYTHON -c "import sys; print sys.prefix"`
         PYTHON_INCLUDES=-I$PYTHON_PREFIX/include/python$PYTHON_VERSION_SHORT
-        PYTHON_LIBS="-lpython$PYTHON_VERSION_SHORT"
+#        PYTHON_LIBS="-lpython$PYTHON_VERSION_SHORT"
+	PYTHON_LIBS="-undefined dynamic_lookup"
         PYTHON_INSTALL_DIR="`$PYTHON $srcdir/config/config_python.py archsitelib`"
         save_CPPFLAGS=$CPPFLAGS
         CPPFLAGS="$CPPFLAGS $PYTHON_INCLUDES"
@@ -1740,120 +1752,6 @@ AC_SUBST([TCL_SRC_DIR])
 AC_SUBST([TCL_STUB_LIB_SPEC])
 #AC_SUBST([TCL_BUILD_STUB_LIB_PATH])
 #AC_SUBST([TCL_STUB_LIB_PATH])
-
-dnl -----------------------------------
-dnl INCLUDES and LIBS for TK
-
-if test "x$use_tcl" != "xYes"; then
-    AC_MSG_WARN([No Tcl. The Tk packages will not be built either])
-    use_tk="No (no tcl)"
-fi
-
-if test "x$use_tk" = "x"; then
-    AC_ARG_WITH(wish,
-        [AS_HELP_STRING([--with-wish=PROG],[use a specific wish])],
-        WISH=$withval,)
-    if test "x$WISH" = "x"; then
-        AC_PATH_PROGS(WISH,[wish8.6 wish8.5 wish8.4 wish8.3 wish])
-        if test "x$WISH" = "x"; then
-            AC_MSG_WARN([Unable to find a wish. The Tk packages will not be built])
-            use_tk="No (wish not found)"
-    fi
-    fi
-fi
-
-if test "x$use_tk" = "x"; then
-    #TK_VERSION_FOUND=`echo 'puts [[info tkversion]]' | $WISH`
-    #
-    # No such var as tkversion.  Use tclversion instead.
-    TK_VERSION_FOUND=${TCL_VERSION_FOUND}
-    
-    # can't assume ksh on all architectures
-    # WISH_EXEC_PREFIX=${WISH%%/bin/tclsh.*}
-    # so use sed instead
-    WISH_EXEC_PREFIX=`echo $WISH|sed -e 's%/bin/.*wish.*$%%'`
-
-    if test -f ${WISH_EXEC_PREFIX}/include/tk${TK_VERSION_FOUND}/tk.h; then
-	TK_INCLUDES="-I${WISH_EXEC_PREFIX}/include/tk${TK_VERSION_FOUND} -I${WISH_EXEC_PREFIX}/include/tk${TK_VERSION_FOUND}/generic -I${WISH_EXEC_PREFIX}/include/tk${TK_VERSION_FOUND}/unix"
-    else
-        if test "x${WISH_EXEC_PREFIX}" != "x/usr" -a -f ${WISH_EXEC_PREFIX}/include/tk.h; then
-	    TK_INCLUDES=-I${WISH_EXEC_PREFIX}/include
-        fi
-    fi
-    if test "x$TK_INCLUDES" != "x" ; then
-	AC_MSG_RESULT([using tk headers from $TK_INCLUDES])
-    fi
-    AC_SUBST([TK_INCLUDES])
-    save_CPPFLAGS=$CPPFLAGS
-    CPPFLAGS="$CPPFLAGS $TCL_INCLUDES $TK_INCLUDES $X_CFLAGS"
-    AC_CHECK_HEADER(tk.h,,[
-        AC_MSG_WARN([Unable to find header tk.h. The Tk packages will not be built])
-        use_tk="No (missing header)"])
-    AC_CHECK_HEADERS(tk.h tkInt.h)
-    CPPFLAGS=$save_CPPFLAGS
-fi
-
-if test "x$use_tk" = "x"; then
-    # Some systems don't have Tcl.  Don't build
-    # Some systems have Tcl, but not Tk.  Don't build
-    # the Tk products if we don't have the library.
-    if test -f ${WISH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tk${TK_VERSION_FOUND}/tkConfig.sh; then
-        TKCONFIG=${WISH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tk${TK_VERSION_FOUND}/tkConfig.sh
-    else
-        if test -f ${WISH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tkConfig.sh; then
-	    TKCONFIG=${WISH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tkConfig.sh
-	else
-            if test -f ${WISH_EXEC_PREFIX}/lib/tkConfig.sh; then
-	        TKCONFIG=${WISH_EXEC_PREFIX}/lib/tkConfig.sh
-            fi
-        fi
-    fi
-    if test "x$TKCONFIG" != "x"; then
-        AC_MSG_RESULT([using $TKCONFIG])
-        file=${TKCONFIG}
-        . $file
-    else
-        AC_MSG_WARN([Unable to find tkConfig.sh. The Tk packages will not be built])
-        use_tk="No (missing tkConfig.sh)"
-    fi
-fi
-                                                                                
-if test "x$use_tk" = "x"; then
-    use_tk="Yes"
-    TK_SUBDIRS="tkstubs tkspline"
-else
-    TK_SUBDIRS=""
-fi
-AM_CONDITIONAL(WITH_TK, [test "x$use_tk" = "xYes"])
-
-# NB. No TK_SUPPORTS_STUBS set by tkConfig.sh
-if test "${TCL_SUPPORTS_STUBS}" = "1"; then
-    TK_CFLAGS="${TK_CFLAGS} -DUSE_TK_STUBS"
-fi
-
-AC_SUBST([TK_VERSION])
-AC_SUBST([TK_MAJOR_VERSION])
-AC_SUBST([TK_MINOR_VERSION])
-AC_SUBST([TK_PATCH_LEVEL])
-AC_SUBST([TK_DEFS])
-#AC_SUBST([TK_SHARED_BUILD])
-#AC_SUBST([TK_LIB_FILE])
-#AC_SUBST([TK_LIBS])
-#AC_SUBST([TK_PREFIX])
-#AC_SUBST([TK_EXEC_PREFIX])
-AC_SUBST([TK_XINCLUDES])
-#AC_SUBST([TK_XLIBSW])
-#AC_SUBST([TK_BUILD_LIB_SPEC])
-AC_SUBST([TK_LIB_SPEC])
-AC_SUBST([TK_SRC_DIR])
-AC_SUBST([TK_CFLAGS])
-#AC_SUBST([TK_SUPPORTS_STUBS])
-#AC_SUBST([TK_STUB_LIB_FILE])
-#AC_SUBST([TK_STUB_LIB_FLAG])
-#AC_SUBST([TK_BUILD_STUB_LIB_SPEC])
-AC_SUBST([TK_STUB_LIB_SPEC])
-#AC_SUBST([TK_BUILD_STUB_LIB_PATH])
-#AC_SUBST([TK_STUB_LIB_PATH])
 
 dnl -----------------------------------
 dnl Support for generic "extra" search paths for includes and libraries
@@ -2874,23 +2772,6 @@ fi
 fi
 AC_SUBST([TCLINT_INCLUDES])
 
-# -----------------------------------
-# tkInt.h
-if test -f "$TK_SRC_DIR/generic/tkInt.h"; then
-TKINT_INCLUDES="-I$TK_SRC_DIR/generic -I$TK_SRC_DIR/unix"
-else
-if test -f "/usr/include/tkInt.h"; then
-TKINT_INCLUDES=""
-else
-if test -f "/usr/local/include/tkInt.h"; then
-TKINT_INCLUDES="-I/usr/local/include"
-else
-TKINT_INCLUDES='-I$(top_srcdir)/tclpkg/tkstubs'
-fi
-fi
-fi
-AC_SUBST([TKINT_INCLUDES])
-
 # ------------------------------------
 # triangle.[ch]
 
@@ -2906,7 +2787,7 @@ fi
 TCL_PKGINDEX=""
 TCL_PKGINDEX_GD=""
 TCL_PKGINDEX_SWIG=""
-TK_PKGINDEX=""
+#TK_PKGINDEX=""
 if test "$use_tcl" = "Yes"; then
     TCL_PKGINDEX="tcldot/pkgIndex.tcl tclpathplan/pkgIndex.tcl"
     if test "x$with_libgd" = "xyes"; then
@@ -2915,14 +2796,10 @@ if test "$use_tcl" = "Yes"; then
     if test "x$SWIG" != "x"; then
 	TCL_PKGINDEX_SWIG="gv/pkgIndex.tcl"
     fi
-    if test "$use_tk" = "Yes"; then
-        TK_PKGINDEX="tkspline/pkgIndex.tcl"
-    fi
 fi
 AC_SUBST([TCL_PKGINDEX])
 AC_SUBST([TCL_PKGINDEX_GD])
 AC_SUBST([TCL_PKGINDEX_SWIG])
-AC_SUBST([TK_PKGINDEX])
 
 dnl -----------------------------------
 dnl SFDP
@@ -3179,7 +3056,6 @@ AC_CONFIG_FILES(Makefile
 	lib/sfio/Sfio_f/Makefile
 	lib/vmalloc/Makefile
 	lib/dotgen/Makefile
-	lib/dotgen2/Makefile
 	lib/neatogen/Makefile
 	lib/fdpgen/Makefile
 	lib/sparse/Makefile
@@ -3188,6 +3064,8 @@ AC_CONFIG_FILES(Makefile
 	lib/sfdpgen/Makefile
 	lib/sfdpgen/libsfdp.pc
 	lib/osage/Makefile
+	lib/edgepaint/Makefile
+	lib/edgepaint/liblab_gamut.pc
 	lib/gvpr/Makefile
 	lib/gvpr/libgvpr.pc
 	lib/circogen/Makefile
@@ -3251,13 +3129,13 @@ AC_CONFIG_FILES(Makefile
 	cmd/smyrna/Makefile
 	cmd/gvmap/Makefile
 	cmd/mingle/Makefile
+	cmd/edgepaint/Makefile
 	cmd/gvedit/Makefile
 	cmd/gvedit/gvedit.pro
 	cmd/gvedit/ui/Makefile
 	cmd/gvedit/images/Makefile
 	tclpkg/Makefile
 	tclpkg/tclstubs/Makefile
-	tclpkg/tkstubs/Makefile
 	tclpkg/tclhandle/Makefile
 	tclpkg/gdtclft/Makefile
 	tclpkg/gdtclft/demo/Makefile
@@ -3266,8 +3144,6 @@ AC_CONFIG_FILES(Makefile
 	tclpkg/tclpathplan/Makefile
 	tclpkg/tclpathplan/demo/Makefile
 	tclpkg/tclpathplan/demo/pathplan_data/Makefile
-	tclpkg/tkspline/Makefile
-	tclpkg/tkspline/demo/Makefile
 	tclpkg/gv/Makefile
 	tclpkg/gv/demo/Makefile
 	tclpkg/gv/META.gv
@@ -3305,12 +3181,6 @@ else
   else
     use_gdtclft="Yes"
   fi
-fi
-
-if test "x$use_tk" != "xYes"; then
-  use_tkspline="No (tk not available)"
-else
-  use_tkspline="Yes"
 fi
 
 echo ""
@@ -3393,5 +3263,4 @@ echo ""
 echo "  tcldot:        $use_tcldot"
 echo "  tclpathplan:   $use_tclpathplan"
 echo "  gdtclft:       $use_gdtclft"
-echo "  tkspline:      $use_tkspline"
 

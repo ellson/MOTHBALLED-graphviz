@@ -19,12 +19,15 @@ extern "C" {
 #endif
 
 /* Bold, Italic, Underline, Sup, Sub, Strike */
-#define HTML_BF 1
-#define HTML_IF 2
-#define HTML_UL 4
-#define HTML_SUP 8
-#define HTML_SUB 16
-#define HTML_S   32
+/* Stored in textfont_t.flags, which is 7 bits, so full */
+/* Probably should be moved to textspan_t */
+#define HTML_BF   (1 << 0)
+#define HTML_IF   (1 << 1)
+#define HTML_UL   (1 << 2)
+#define HTML_SUP  (1 << 3)
+#define HTML_SUB  (1 << 4)
+#define HTML_S    (1 << 5)
+#define HTML_OL   (1 << 6)
 
     typedef struct _PostscriptAlias {
         char* name;
@@ -47,7 +50,7 @@ extern "C" {
 	char*  color;
 	PostscriptAlias *postscript_alias;
 	double size;
-	int    flags:7;  /* HTML_UL, HTML_IF, HTML_BF, etc. */
+	unsigned int flags:7;  /* HTML_UL, HTML_IF, HTML_BF, etc. */
 	unsigned int cnt:(sizeof(unsigned int) * 8 - 7);   /* reference count */
     } textfont_t;
 

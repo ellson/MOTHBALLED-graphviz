@@ -400,6 +400,9 @@ countClusterLabels (Agraph_t* g)
  *
  * TODO: interaction with spline=ortho
  */
+  /* True if edges geometries were computed and this edge has a geometry */
+#define HAVE_EDGE(ep) ((et != ET_NONE) && (ED_spl(ep) != NULL))
+
 static void addXLabels(Agraph_t * gp)
 {
     Agnode_t *np;
@@ -438,25 +441,25 @@ static void addXLabels(Agraph_t * gp)
 	    if (ED_xlabel(ep)) {
 		if (ED_xlabel(ep)->set)
 		    n_set_lbls++;
-		else if (et != ET_NONE)
+		else if (HAVE_EDGE(ep))
 		    n_elbls++;
 	    }
 	    if (ED_head_label(ep)) {
 		if (ED_head_label(ep)->set)
 		    n_set_lbls++;
-		else if (et != ET_NONE)
+		else if (HAVE_EDGE(ep))
 		    n_elbls++;
 	    }
 	    if (ED_tail_label(ep)) {
 		if (ED_tail_label(ep)->set)
 		    n_set_lbls++;
-		else if (et != ET_NONE)
+		else if (HAVE_EDGE(ep))
 		    n_elbls++;
 	    }
 	    if (ED_label(ep)) {
 		if (ED_label(ep)->set)
 		    n_set_lbls++;
-		else if (et != ET_NONE)
+		else if (HAVE_EDGE(ep))
 		    n_elbls++;
 	    }
 	}
@@ -496,9 +499,14 @@ static void addXLabels(Agraph_t * gp)
 		if (lp->set) {
 		    bb = addLabelObj (lp, objp, bb);
 		}
-		else if (et != ET_NONE) {
+		else if (HAVE_EDGE(ep)) {
 		    addXLabel (lp, objp, xlp, 1, edgeMidpoint(gp, ep)); 
 		    xlp++;
+		}
+		else {
+		    agerr(AGWARN, "no position for edge with label %s",
+			    ED_label(ep)->text);
+		    continue;
 		}
 	        objp++;
 	    }
@@ -506,9 +514,14 @@ static void addXLabels(Agraph_t * gp)
 		if (lp->set) {
 		    bb = addLabelObj (lp, objp, bb);
 		}
-		else if (et != ET_NONE) {
+		else if (HAVE_EDGE(ep)) {
 		    addXLabel (lp, objp, xlp, 1, edgeTailpoint(ep)); 
 		    xlp++;
+		}
+		else {
+		    agerr(AGWARN, "no position for edge with tail label %s",
+			    ED_tail_label(ep)->text);
+		    continue;
 		}
 		objp++;
 	    }
@@ -516,9 +529,14 @@ static void addXLabels(Agraph_t * gp)
 		if (lp->set) {
 		    bb = addLabelObj (lp, objp, bb);
 		}
-		else if (et != ET_NONE) {
+		else if (HAVE_EDGE(ep)) {
 		    addXLabel (lp, objp, xlp, 1, edgeHeadpoint(ep)); 
 		    xlp++;
+		}
+		else {
+		    agerr(AGWARN, "no position for edge with head label %s",
+			    ED_head_label(ep)->text);
+		    continue;
 		}
 		objp++;
 	    }
@@ -526,9 +544,14 @@ static void addXLabels(Agraph_t * gp)
 		if (lp->set) {
 		    bb = addLabelObj (lp, objp, bb);
 		}
-		else if (et != ET_NONE) {
+		else if (HAVE_EDGE(ep)) {
 		    addXLabel (lp, objp, xlp, 1, edgeMidpoint(gp, ep)); 
 		    xlp++;
+		}
+		else {
+		    agerr(AGWARN, "no position for edge with xlabel %s",
+			    ED_xlabel(ep)->text);
+		    continue;
 		}
 		objp++;
 	    }
@@ -570,7 +593,7 @@ static void addXLabels(Agraph_t * gp)
     free(lbls);
 }
 
-/* dotneato_postprocess:
+/* gv_postprocess:
  * Set graph and cluster label positions.
  * Add space for root graph label and translate graph accordingly.
  * Set final nodesize using ns.
@@ -665,6 +688,8 @@ void gv_postprocess(Agraph_t * g, int allowTranslation)
     }
 }
 
+/* dotneato_postprocess:
+ */
 void dotneato_postprocess(Agraph_t * g)
 {
     gv_postprocess(g, 1);

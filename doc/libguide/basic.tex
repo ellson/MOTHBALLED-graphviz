@@ -233,21 +233,6 @@ If it has not, it declares the attribute, using its last argument as
 the required default value. It then sets the attribute value for the
 specific component.
 
-When an attribute is assigned a value, the graph library replicates the
-string. This means the application can use a temporary string as the
-argument; it does not have to keep the string throughout the application.
-Each node, edge, and graph maintains its own attribute 
-values. Obviously, many of these are the same strings, so to save
-memory, the graph library uses a reference counting mechanism to 
-share strings. An application can employ this mechanism by using
-the {\tt agstrdup()} function. If it does, it must also use the
-{\tt agstrfree()} function if it wishes to release the string.
-\gviz\ supports HTML-like tables as labels. To allow these to be handled
-transparently, the library uses a special version of reference counted
-strings. To create one of these, one uses {\tt agstrdup\_html()}
-rather than {\tt agstrdup()}. The {\tt agstrfree()} is still used to
-release the string.
-
 Note that some attributes are replicated in the graph, appearing once
 as the usual string-valued attribute, and also in an internal machine
 format such an {\tt int}, {\tt double} or some more structured type.
@@ -592,6 +577,39 @@ information or web actions. Table~\ref{tab:web} lists these.
 \caption{Miscellaneous attributes}
 \label{tab:web}
 \end{table}
+
+\subsubsection{Attribute and HTML Strings}
+\label{sec:attributes_strings}
+When an attribute is assigned a value, the graph library replicates the
+string. This means the application can use a temporary string as the
+argument; it does not have to keep the string throughout the application.
+Each node, edge, and graph maintains its own attribute 
+values. Obviously, many of these are the same strings, so to save
+memory, the graph library uses a reference counting mechanism to 
+share strings. An application can employ this mechanism by using
+the {\tt agstrdup()} function. If it does, it must also use the
+{\tt agstrfree()} function if it wishes to release the string.
+
+When using strings as labels, one can have some formatting control via
+the various inline escape sequences such as \verb+"\n"+, \verb+"\l"+, 
+\verb+"\N"+, etc., and attributes such as {\tt fontname} and {\tt fontcolor}.
+To get a great deal more flexibility, one can use HTML-like labels. 
+In the \DOT\ language, these strings are delimited by angle brackets
+{\tt <...>} rather than double quotes in order to be work seamlessly with
+ordinary strings. Even at the library level, these strings are semantically
+identical to ordinary strings except when used as labels. 
+To create one of these, one uses {\tt agstrdup\_html()}
+rather than {\tt agstrdup()}. The {\tt agstrfree()} is still used to
+release the string. For example, one might use the following code to attach
+an HTML string to a node:
+\begin{verbatim}
+Agnode_t* n;
+char* l = agstrdup_html(agroot(n), "<B>some bold text</B>");
+agset (n,"label",l);
+agstrfree (l);
+\end{verbatim}
+In addition, the function  {\tt aghtmlstr()} 
+can be used query if an attribute string is an HTML string.
 
 \subsection{Laying out the graph}
 

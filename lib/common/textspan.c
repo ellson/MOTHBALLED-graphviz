@@ -184,7 +184,8 @@ static PostscriptAlias* translate_postscript_fontname(char* fontname)
     static PostscriptAlias *result;
 
     if (key.name == NULL || strcasecmp(key.name, fontname)) {
-        key.name = fontname;
+	free(key.name);
+        key.name = strdup(fontname);
         result = (PostscriptAlias *) bsearch((void *) &key,
 			(void *) postscript_alias,
 			sizeof(postscript_alias) / sizeof(PostscriptAlias),

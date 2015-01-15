@@ -47,7 +47,7 @@ y.output: $(top_srcdir)/lib/cgraph/grammar.y
 cgraph.3.pdf: $(srcdir)/cgraph.3
 	- @GROFF@ -Tps -man $(srcdir)/cgraph.3 | @PS2PDF@ - - >cgraph.3.pdf
 
-EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old cmpnd.c \
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) cmpnd.c \
 	main.c tester.c grammar.c grammar.h scan.c \
 	y.tab.c y.tab.h y.output cgraph.vcproj cgraph.def
 

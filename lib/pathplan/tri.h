@@ -17,6 +17,8 @@ extern "C" {
 
 
 #include <pathgeom.h>
+
+/* Points in polygon must be in CCW order */
     int Ptriangulate(Ppoly_t * polygon,
 		      void (*fn) (void *closure, Ppoint_t tri[]),
 		      void *vc);

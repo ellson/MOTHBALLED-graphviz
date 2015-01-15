@@ -12,6 +12,3 @@ CLEANFILES = inkpot_lib_*.dat
 
 EXTRA_DIST = LICENSE CHANGES makefile.txt test_red_black_tree.c \
 	     simple_test.sh test_rb rbtree.vcproj
-
-DISTCLEANFILES = 
-

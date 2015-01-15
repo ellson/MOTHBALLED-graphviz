@@ -1,6 +1,9 @@
 </TABLE>
 As the figures suggest, the shapes <TT>rect</TT> and <TT>rectangle</TT> are synonyms for <TT>box</TT>, and <TT>none</TT> is a synonym for <TT>plaintext</TT>.
-Also, unlike the rest, we have shown these last two 
+The shape <TT>plain</TT> is similar to these two, except that it also enforces 
+<TT>width=0 height=0 margin=0</TT>, which guarantees that the actual size of the node is entirely determined by the label.
+This is useful, for example, when using <A HREF=shapes.html#html>HTML-like labels</A>.
+Also, unlike the rest, we have shown these three, as well as <TT>underline</TT>,
 without <TT>style=filled</TT>
 to indicate the normal use. If fill were turned on, the label text would
 appear in a filled rectangle.
@@ -19,6 +22,38 @@ The point shape is special in that it is
 only affected by the <A HREF=attrs.html#d:peripheries><TT>peripheries</TT></A>, 
 <A HREF=attrs.html#d:width><TT>width</TT></A> and
 <A HREF=attrs.html#d:height><TT>height</TT></A> attributes.
+<P>
+Normally, the size of a node is determined by smallest width and height
+needed to contain its label and image, if any, with a margin specified by
+the <A HREF=attrs.html#d:margin><TT>margin</TT></A> attribute. The width
+and height must also be at least as large as the sizes specified by the
+<A HREF=attrs.html#d:width><TT>width</TT></A> and
+<A HREF=attrs.html#d:height><TT>height</TT></A> attributes, which specify
+the minimum values for these parameters. 
+See the <A HREF=attrs.html#d:fixedsize><TT>fixedsize</TT></A> attribute
+for ways of restricting the node size.
+In particular, if <tt>fixedsize=shape</tt>, the node's shape will be fixed
+by the <A HREF=attrs.html#d:width><TT>width</TT></A> and
+<A HREF=attrs.html#d:height><TT>height</TT></A> attributes, and the shape
+is used for edge termination, but both the shape and label sizes are used
+preventing node overlap. For example, the following graph
+<XMP>
+digraph G {
+  { 
+    node [margin=0 fontcolor=blue fontsize=32 width=0.5 shape=circle style=filled]
+    b [fillcolor=yellow fixedsize=true label="a very long label"]
+    d [fixedsize=shape label="an even longer label"]
+  }
+  a -> {c d}
+  b -> {c d}
+}
+</XMP>
+yields the figure<BR>
+<IMG SRC=fixed.gif>
+<P>
+Note that the label of the yellow node, with <tt>fixedsize=true</tt>, overlaps
+the other node, where there is sufficient space for the gray node with
+<tt>fixedsize=shape</tt>.
 <P>
 The shapes: <TT>note</TT>, <TT>tab</TT>, <TT>folder</TT>,
 <TT>box3d</TT> and <TT>component</TT> were provided by Pander.
@@ -46,6 +81,11 @@ The synthetic biology shapes:
 were contributed by Jenny Cheng.
 
 <H2><A NAME=record>Record-based Nodes</A></H2>
+<B>NOTE:</B> Please see the note about record-based nodes at the
+<A HREF=#top>top</A> of this page. Also note that there are problems using 
+non-trivial edges (edges with ports or labels) between adjacent
+nodes on the same rank if one or both nodes has a record shape.
+<P>
 These are specified by shape values of "record" and "Mrecord".
 The structure of a record-based node is determined by 
 its <A HREF=attrs.html#d:label><TT>label</TT></A>,

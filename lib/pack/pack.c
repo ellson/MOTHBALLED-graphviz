@@ -796,8 +796,8 @@ polyRects(int ng, boxf* gs, pack_info * pinfo)
  *  the array needs to be freed;
  * Returns NULL if problem occur or if ng == 0.
  * 
- * Depends on graph fields bb, node fields pos, xsize and ysize, and
- * edge field spl.
+ * Depends on graph fields GD_bb, node fields ND_pos(inches), ND_xsize and 
+ * ND_ysize, and edge field ED_spl.
  *
  * FIX: fixed mode does not always work. The fixed ones get translated
  * back to be centered on the origin.
@@ -919,7 +919,7 @@ point *putGraphs(int ng, Agraph_t ** gs, Agraph_t * root,
     int i, v;
     boxf* bbs;
     Agraph_t* g;
-    point* pts;
+    point* pts = 0;
     char* s;
 
     if (ng <= 0) return NULL;
@@ -1052,7 +1052,7 @@ static void shiftGraph(Agraph_t * g, int dx, int dy)
     bb.UR.y += dy;
     GD_bb(g) = bb;
 
-    if (GD_label(g))
+    if (GD_label(g) && GD_label(g)->set)
 	MOVEPT(GD_label(g)->pos);
 
     for (i = 1; i <= GD_n_cluster(g); i++) {

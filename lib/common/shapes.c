@@ -83,6 +83,7 @@ static polygon_t p_triangle = { FALSE, 1, 3, 0., 0., 0. };
 static polygon_t p_box = { FALSE, 1, 4, 0., 0., 0. };
 static polygon_t p_square = { TRUE, 1, 4, 0., 0., 0. };
 static polygon_t p_plaintext = { FALSE, 0, 4, 0., 0., 0. };
+static polygon_t p_plain = { FALSE, 0, 4, 0., 0., 0. };
 static polygon_t p_diamond = { FALSE, 1, 4, 45., 0., 0. };
 static polygon_t p_trapezium = { FALSE, 1, 4, 0., -.4, 0. };
 static polygon_t p_parallelogram = { FALSE, 1, 4, 0., 0., .6 };
@@ -139,6 +140,7 @@ static polygon_t p_larrow = { FALSE, 1, 4, 0., 0., 0., LARROW};
 static polygon_t p_lpromoter = { FALSE, 1, 4, 0., 0., 0., LPROMOTER};
 
 #define IS_BOX(n) (ND_shape(n)->polygon == &p_box)
+#define IS_PLAIN(n) (ND_shape(n)->polygon == &p_plain)
 
 /* True if style requires processing through round_corners. */
 #define SPECIAL_CORNERS(style) ((style) & (ROUNDED | DIAGONALS | SHAPE_MASK))
@@ -221,6 +223,7 @@ static shape_desc Shapes[] = {	/* first entry is default for no such shape */
     {"triangle", &poly_fns, &p_triangle},
     {"none", &poly_fns, &p_plaintext},
     {"plaintext", &poly_fns, &p_plaintext},
+    {"plain", &poly_fns, &p_plain},
     {"diamond", &poly_fns, &p_diamond},
     {"trapezium", &poly_fns, &p_trapezium},
     {"parallelogram", &poly_fns, &p_parallelogram},
@@ -1822,7 +1825,7 @@ static void poly_init(node_t * n)
     point imagesize;
     pointf P, Q, R;
     pointf *vertices;
-    char *p, *sfile;
+    char *p, *sfile, *fxd;
     double temp, alpha, beta, gamma;
     double orientation, distortion, skew;
     double sectorangle, sidelength, skewdist, gdistortion, gskew;
@@ -1831,6 +1834,7 @@ static void poly_init(node_t * n)
     int regular, peripheries, sides;
     int i, j, isBox, outp;
     polygon_t *poly = NEW(polygon_t);
+    boolean isPlain = IS_PLAIN(n);
 
     regular = ND_shape(n)->polygon->regular;
     peripheries = ND_shape(n)->polygon->peripheries;
@@ -1847,7 +1851,10 @@ static void poly_init(node_t * n)
      *   Else use minimum default value.
      * If node is not regular, use the current width and height.
      */
-    if (regular) {
+    if (isPlain) {
+	width = height = 0;
+    }
+    else if (regular) {
 	double sz = userSize(n);
 	if (sz > 0.0)
 	    width = height = sz;
@@ -1873,24 +1880,27 @@ static void poly_init(node_t * n)
     dimen = ND_label(n)->dimen;
 
     /* minimal whitespace around label */
-    if (ROUND(abs(dimen.x)) || ROUND(abs(dimen.y))) {
+    if ((dimen.x > 0) || (dimen.y > 0)) {
 	/* padding */
-	if ((p = agget(n, "margin"))) {
-	    i = sscanf(p, "%lf,%lf", &marginx, &marginy);
-	    if (marginx < 0)
-		marginx = 0;
-	    if (marginy < 0)
-		marginy = 0;
-	    if (i > 0) {
-		dimen.x += 2 * POINTS(marginx);
-		if (i > 1)
-		    dimen.y += 2 * POINTS(marginy);
-		else
-		    dimen.y += 2 * POINTS(marginx);
+	if (!isPlain) {
+	    if ((p = agget(n, "margin"))) {
+		marginx = marginy = 0;
+		i = sscanf(p, "%lf,%lf", &marginx, &marginy);
+		if (marginx < 0)
+		    marginx = 0;
+		if (marginy < 0)
+		    marginy = 0;
+		if (i > 0) {
+		    dimen.x += 2 * POINTS(marginx);
+		    if (i > 1)
+			dimen.y += 2 * POINTS(marginy);
+		    else
+			dimen.y += 2 * POINTS(marginx);
+		} else
+		    PAD(dimen);
 	    } else
 		PAD(dimen);
-	} else
-	    PAD(dimen);
+	}
     }
     spacex = dimen.x - ND_label(n)->dimen.x;
 
@@ -1989,7 +1999,12 @@ static void poly_init(node_t * n)
     min_bb = bb;
 
     /* increase node size to width/height if needed */
-    if (mapbool(late_string(n, N_fixed, "false"))) {
+    fxd = late_string(n, N_fixed, "false");
+    if ((*fxd == 's') && streq(fxd,"shape")) {
+	bb.x = width;
+	bb.y = height;
+	poly->option |= FIXEDSHAPE;
+    } else if (mapbool(fxd)) {
 	/* check only label, as images we can scale to fit */
 	if ((width < ND_label(n)->dimen.x) || (height < ND_label(n)->dimen.y))
 	    agerr(AGWARN,
@@ -2024,11 +2039,12 @@ static void poly_init(node_t * n)
 	ND_label(n)->space.x = dimen.x - spacex;
     }
 
-
-    temp = bb.y - min_bb.y;
-    if (dimen.y < imagesize.y)
-	temp += imagesize.y - dimen.y;
-    ND_label(n)->space.y = dimen.y + temp;
+    if ((poly->option & FIXEDSHAPE) == 0) {
+	temp = bb.y - min_bb.y;
+	if (dimen.y < imagesize.y)
+	    temp += imagesize.y - dimen.y;
+	ND_label(n)->space.y = dimen.y + temp;
+    }
 
     outp = peripheries;
     if (peripheries < 1)
@@ -2190,8 +2206,14 @@ static void poly_init(node_t * n)
     poly->distortion = distortion;
     poly->vertices = vertices;
 
-    ND_width(n) = PS2INCH(bb.x);
-    ND_height(n) = PS2INCH(bb.y);
+    if (poly->option & FIXEDSHAPE) {
+	/* set width and height to reflect label and shape */
+	ND_width(n) = PS2INCH(MAX(dimen.x,bb.x));
+	ND_height(n) = PS2INCH(MAX(dimen.y,bb.y));
+    } else {
+	ND_width(n) = PS2INCH(bb.x);
+	ND_height(n) = PS2INCH(bb.y);
+    }
     ND_shape_info(n) = (void *) poly;
 }
 
@@ -2236,17 +2258,34 @@ static boolean poly_inside(inside_t * inside_context, pointf p)
     }
 
     if (n != lastn) {
+	double n_width, n_height;
 	poly = (polygon_t *) ND_shape_info(n);
 	vertex = poly->vertices;
 	sides = poly->sides;
 
-	/* get point and node size adjusted for rankdir=LR */
-	if (GD_flip(agraphof(n))) {
-	    ysize = ND_lw(n) + ND_rw(n);
-	    xsize = ND_ht(n);
+	if (poly->option & FIXEDSHAPE) {
+	   boxf bb = polyBB(poly); 
+	    n_width = bb.UR.x - bb.LL.x;
+	    n_height = bb.UR.y - bb.LL.y;
+	    /* get point and node size adjusted for rankdir=LR */
+	    if (GD_flip(agraphof(n))) {
+		ysize = n_width;
+		xsize = n_height;
+	    } else {
+		xsize = n_width;
+		ysize = n_height;
+	    }
 	} else {
-	    xsize = ND_lw(n) + ND_rw(n);
-	    ysize = ND_ht(n);
+	    /* get point and node size adjusted for rankdir=LR */
+	    if (GD_flip(agraphof(n))) {
+		ysize = ND_lw(n) + ND_rw(n);
+		xsize = ND_ht(n);
+	    } else {
+		xsize = ND_lw(n) + ND_rw(n);
+		ysize = ND_ht(n);
+	    }
+	    n_width = POINTS(ND_width(n));
+	    n_height = POINTS(ND_height(n));
 	}
 
 	/* scale */
@@ -2254,10 +2293,10 @@ static boolean poly_inside(inside_t * inside_context, pointf p)
 	    xsize = 1.0;
 	if (ysize == 0.0)
 	    ysize = 1.0;
-	scalex = POINTS(ND_width(n)) / xsize;
-	scaley = POINTS(ND_height(n)) / ysize;
-	box_URx = POINTS(ND_width(n)) / 2.0;
-	box_URy = POINTS(ND_height(n)) / 2.0;
+	scalex = n_width / xsize;
+	scaley = n_height / ysize;
+	box_URx = n_width / 2.0;
+	box_URy = n_height / 2.0;
 
 	/* index to outer-periphery */
 	outp = (poly->peripheries - 1) * sides;
@@ -2695,6 +2734,7 @@ static port poly_port(node_t * n, char *portname, char *compass)
 	    unrecognized(n, portname);
     }
 
+    rv.name = NULL;
     return rv;
 }
 
@@ -2855,10 +2895,12 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     usershape_p = FALSE;
     if (ND_shape(n)->usershape) {
 	name = ND_shape(n)->name;
-	if (streq(name, "custom"))
-	    name = agget(n, "shapefile");
-	usershape_p = TRUE;
-    } else if ((name = agget(n, "image"))) {
+	if (streq(name, "custom")) {
+	    if ((name = agget(n, "shapefile")) && name[0])
+		usershape_p = TRUE;
+	} else
+	    usershape_p = TRUE;
+    } else if ((name = agget(n, "image")) && name[0]) {
 	usershape_p = TRUE;
     }
     if (usershape_p) {
@@ -3042,6 +3084,8 @@ static void point_gencode(GVJ_t * job, node_t * n)
 	gvrender_set_style(job, point_style);
     else
 	gvrender_set_style(job, &point_style[1]);
+    if (N_penwidth)
+	gvrender_set_penwidth(job, late_double(n, N_penwidth, 1.0, 0.0));
 
     if (ND_gui_state(n) & GUI_STATE_ACTIVE) {
 	color = late_nnstring(n, N_activepencolor, DEFAULT_ACTIVEPENCOLOR);
@@ -3149,6 +3193,7 @@ static field_t *parse_reclbl(node_t * n, int LR, int flag, char *text)
     char *tmpport = NULL;
     int maxf, cnt, mode, wflag, ishardspace, fi;
     textlabel_t *lbl = ND_label(n);
+    unsigned char uc;
 
     fp = NULL;
     for (maxf = 1, cnt = 0, sp = reclblp; *sp; sp++) {
@@ -3175,6 +3220,10 @@ static field_t *parse_reclbl(node_t * n, int LR, int flag, char *text)
     wflag = TRUE;
     ishardspace = FALSE;
     while (wflag) {
+	if ((uc = *(unsigned char*)reclblp) && (uc < ' ')) {    /* Ignore non-0 control characters */
+	    reclblp++;
+	    continue;
+	}
 	switch (*reclblp) {
 	case '<':
 	    if (mode & (HASTABLE | HASPORT))
@@ -3661,6 +3710,7 @@ static void record_gencode(GVJ_t * job, node_t * n)
 			      obj->id);
     style = stylenode(job, n);
     penColor(job, n);
+    clrs[0] = NULL;
     if (style & FILLED) {
 	char* fillcolor = findFill (n);
 	float frac;
@@ -3675,7 +3725,6 @@ static void record_gencode(GVJ_t * job, node_t * n)
 		filled = RGRADIENT;
 	    else
 		filled = GRADIENT;
-	    free (clrs[0]);
 	}
 	else {
 	    filled = FILL;
@@ -3699,6 +3748,8 @@ static void record_gencode(GVJ_t * job, node_t * n)
     }
 
     gen_fields(job, n, f);
+
+    if (clrs[0]) free (clrs[0]);
 
     if (doMap) {
 	if (job->flags & EMIT_CLUSTERS_LAST)

@@ -48,7 +48,7 @@ SparseMatrix SparseMatrix_general_new(int m, int n, int nz, int type, size_t sz,
 
 /* this version sum repeated entries */
 SparseMatrix SparseMatrix_from_coordinate_format(SparseMatrix A);
-/* what_to_sum is SUM_REPEATED_NONE, SUM_REPEATED_ALL, SUM_REPEATED_REAL_PART, SUM_REPEATED_IMAGINARY_PART*/
+/* what_to_sum is SUM_REPEATED_NONE, SUM_REPEATED_ALL, SUM_REPEATED_REAL_PART, SUM_REPEATED_IMAGINARY_PART, SUM_IMGINARY_KEEP_LAST_REAL*/
 SparseMatrix SparseMatrix_from_coordinate_format_not_compacted(SparseMatrix A, int what_to_sum);
 
 SparseMatrix SparseMatrix_from_coordinate_arrays(int nz, int m, int n, int *irn, int *jcn, void *val, int type, size_t sz);
@@ -60,8 +60,10 @@ void SparseMatrix_print(char *, SparseMatrix A);/*print to stdout in Mathematica
 void SparseMatrix_export(FILE *f, SparseMatrix A);/* export into MM format except the header */
 
 SparseMatrix SparseMatrix_import_binary(char *name);
+SparseMatrix SparseMatrix_import_binary_fp(FILE *f);/* import into a preopenned file */
 
 void SparseMatrix_export_binary(char *name, SparseMatrix A, int *flag);
+void SparseMatrix_export_binary_fp(FILE *f, SparseMatrix A);/* export binary into a file preopened */
 
 void SparseMatrix_delete(SparseMatrix A);
 
@@ -74,8 +76,10 @@ SparseMatrix SparseMatrix_multiply3(SparseMatrix A, SparseMatrix B, SparseMatrix
    if what_to_sum = SUM_REPEATED_IMAGINARY_PART, we find entries {i,j,x + i y} and sum the y's if {i,j,Round(x)} are the same
    For other matrix, what_to_sum = SUM_REPEATED_REAL_PART is the same as what_to_sum = SUM_REPEATED_IMAGINARY_PART
    or what_to_sum = SUM_REPEATED_ALL
+   if what_to_sum = SUM_IMGINARY_KEEP_LAST_REAL, we merge {i,j,R1,I1} and {i,j,R2,I2} into {i,j,R1+R2,I2}. Useful if I1 and I2 are time stamps, 
+   .   and we use this to indicate that a user watched R1+R2 seconds, last watch is I2.
 */
-enum {SUM_REPEATED_NONE = 0, SUM_REPEATED_ALL, SUM_REPEATED_REAL_PART, SUM_REPEATED_IMAGINARY_PART};
+enum {SUM_REPEATED_NONE = 0, SUM_REPEATED_ALL, SUM_REPEATED_REAL_PART, SUM_REPEATED_IMAGINARY_PART, SUM_IMGINARY_KEEP_LAST_REAL};
 SparseMatrix SparseMatrix_sum_repeat_entries(SparseMatrix A, int what_to_sum);
 SparseMatrix SparseMatrix_coordinate_form_add_entries(SparseMatrix A, int nentries, int *irn, int *jcn, void *val);
 int SparseMatrix_is_symmetric(SparseMatrix A, int test_pattern_symmetry_only);
@@ -121,7 +125,9 @@ SparseMatrix SparseMatrix_to_square_matrix(SparseMatrix A, int bipartite_options
 
 SparseMatrix SparseMatrix_largest_component(SparseMatrix A);
 
+/* columns with <= threhold entries are deleted */
 SparseMatrix SparseMatrix_delete_empty_columns(SparseMatrix A, int **new2old, int *nnew, int inplace);
+SparseMatrix SparseMatrix_delete_sparse_columns(SparseMatrix A, int threshold, int **new2old, int *nnew, int inplace);
 
 SparseMatrix SparseMatrix_sort(SparseMatrix A);
 
@@ -157,6 +163,14 @@ void SparseMatrix_page_rank(SparseMatrix A, real teleport_probablity, int weight
 #define SparseMatrix_set_pattern_symmetric(A) set_flag((A)->property, MATRIX_PATTERN_SYMMETRIC)
 #define SparseMatrix_set_skew(A) set_flag((A)->property, MATRIX_SKEW)
 #define SparseMatrix_set_hemitian(A) set_flag((A)->property, MATRIX_HERMITIAN)
+
+
+#define SparseMatrix_clear_undirected(A) clear_flag((A)->property, MATRIX_UNDIRECTED)
+#define SparseMatrix_clear_symmetric(A) clear_flag((A)->property, MATRIX_SYMMETRIC)
+#define SparseMatrix_clear_pattern_symmetric(A) clear_flag((A)->property, MATRIX_PATTERN_SYMMETRIC)
+#define SparseMatrix_clear_skew(A) clear_flag((A)->property, MATRIX_SKEW)
+#define SparseMatrix_clear_hemitian(A) clear_flag((A)->property, MATRIX_HERMITIAN)
+
 
 #define SparseMatrix_known_undirected(A) test_flag((A)->property, MATRIX_UNDIRECTED)
 #define SparseMatrix_known_symmetric(A) test_flag((A)->property, MATRIX_SYMMETRIC)

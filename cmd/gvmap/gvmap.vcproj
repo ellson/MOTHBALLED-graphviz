@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../lib/ingraphs;../../lib/neatogen;../../lib/common;../../lib/cdt;../../lib/cgraph;../../lib/sparse;../../lib/sfdpgen;../../"
+				AdditionalIncludeDirectories="../../lib/edgepaint;../../lib/ingraphs;../../lib/neatogen;../../lib/common;../../lib/cdt;../../lib/cgraph;../../lib/sparse;../../lib/sfdpgen;../../"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;HAVE_CONFIG_H"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -113,7 +113,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../../lib/ingraphs;../../lib/neatogen;../../lib/common;../../lib/cdt;../../lib/cgraph;../../lib/sparse;../../lib/sfdpgen;../../"
+				AdditionalIncludeDirectories="../../lib/edgepaint;../../lib/ingraphs;../../lib/neatogen;../../lib/common;../../lib/cdt;../../lib/cgraph;../../lib/sparse;../../lib/sfdpgen;../../"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;HAVE_CONFIG_H"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"

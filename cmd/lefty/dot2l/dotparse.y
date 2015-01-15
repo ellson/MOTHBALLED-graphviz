@@ -135,12 +135,11 @@ port_location: ':' T_id
     {
         strcat (portstr, $2); free ($2);
     }
-| ':' '(' T_id ',' T_id ')'
+| ':' T_id ':' T_id 
     {
-        strcat (portstr, "("); strcat (portstr, $3);
-        strcat (portstr, ","); strcat (portstr, $5);
-        strcat (portstr, ")");
-        free ($3), free ($5);
+        strcat (portstr, $2);
+        strcat (portstr, ":"); strcat (portstr, $4);
+        free ($2), free ($4);
     }
 ;
 

@@ -32,6 +32,67 @@
 #endif /* not SINGLE */
 /* #include "triangle.h" */
 
+#include "lab.h"
+#include "node_distinct_coloring.h"
+
+void map_palette_optimal_coloring(char *color_scheme, char *lightness, SparseMatrix A0, real accuracy, int seed, 
+				  float **rgb_r, float **rgb_g, float **rgb_b){
+  /*
+    for a graph A, get a distinctive color of its nodes so that the color distanmce among all nodes are maximized. Here
+    color distance on a node is defined as the minimum of color differences between a node and its neighbors.
+    accuracy is the threshold given so that when finding the coloring for each node, the optimal is
+    with in "accuracy" of the true global optimal.
+    color_scheme: rgb, gray, lab, or one of the color palettes in color_palettes.h, or a list of hex rgb colors separaterd by comma like "#ff0000,#00ff00"
+    lightness: of the form 0,70, specifying the range of lightness of LAB color. Ignored if scheme is not COLOR_LAB.
+    .          if NULL, 0,70 is assumed
+    A: the graph of n nodes
+    accuracy: how accurate to find the optimal
+    cdim: dimension of the color space
+    seed: random_seed. If negative, consider -seed as the number of random start iterations
+    rgb_r, rgb_g, rgb_b: float array of length A->m + 1, which contains color for each country. 1-based
+  */
+ 
+  /*color: On input an array of size n*cdim, if NULL, will be allocated. On exit the final color assignment for node i is [cdim*i,cdim*(i+1)), in RGB (between 0 to 1)
+    color_diff: the minuimum color difference across all edges
+    color_diff_sum: the sum of min color dfference across all nodes
+  */
+  real *colors = NULL, color_diff, color_diff_sum;
+  int flag;
+  int n = A0->m, i, cdim;
+
+  SparseMatrix A, B;
+  int weightedQ = TRUE;
+  int iter_max = 100;
+
+  {real *dist = NULL;
+    A = SparseMatrix_symmetrize(A0, FALSE);
+    SparseMatrix_distance_matrix(A, 0, &dist);
+    SparseMatrix_delete(A);
+    A = SparseMatrix_from_dense(n, n, dist);
+    FREE(dist);
+    A = SparseMatrix_remove_diagonal(A);
+    SparseMatrix_export(stdout, A);
+  }
+
+  //  A = SparseMatrix_multiply(A0, A0);
+  node_distinct_coloring(color_scheme, lightness, weightedQ, A, accuracy, iter_max, seed, &cdim, &colors, &color_diff, &color_diff_sum, &flag);
+
+  if (A != A0){
+    SparseMatrix_delete(A);
+  }
+  *rgb_r = MALLOC(sizeof(float)*(n+1));
+  *rgb_g = MALLOC(sizeof(float)*(n+1));
+  *rgb_b = MALLOC(sizeof(float)*(n+1));
+
+  for (i = 0; i < n; i++){
+    (*rgb_r)[i+1] = (float) colors[cdim*i];
+    (*rgb_g)[i+1] = (float) colors[cdim*i + 1];
+    (*rgb_b)[i+1] = (float) colors[cdim*i + 2];
+  }
+  FREE(colors);
+
+}
+
 void map_optimal_coloring(int seed, SparseMatrix A, float *rgb_r,  float *rgb_g, float *rgb_b){
   int *p = NULL;
   float *u = NULL;

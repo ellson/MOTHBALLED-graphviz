@@ -166,6 +166,32 @@ static char *xyOf(Expr_t * pgm, char *pt, int getx)
     return v;
 }
 
+/* posOf:
+ * Get pos data from node; store x or y into v if successful and return  0;
+ * else return -1
+ */
+static int posOf(Agnode_t* np, int idx, double* v)
+{
+    static Agraph_t* root;
+    static Agsym_t* pos;
+    Agraph_t* nroot = agroot(np);
+    char* ps;
+    double p[2];
+
+    if (root != nroot) {
+	root = nroot;
+	pos = agattr(root, AGNODE, "pos", 0);
+    } 
+    if (!pos) return -1;
+    ps = agxget(np, pos);
+    if (sscanf(ps, "%lf,%lf", &p[0], &p[1]) == 2) {
+	*v = p[idx];
+	return 0;
+    }
+    else return -1;
+    
+}
+
 #ifdef DEBUG
 static char *symName(Expr_t * ex, int op)
 {
@@ -453,6 +479,24 @@ static int lookup(Expr_t * pgm, Agobj_t * objp, Exid_t * sym, Extype_t * v,
 		v->integer = agdegree(agroot(objp), (Agnode_t *) objp, 1, 1);
 	    else {
 		exerror("degree of non-node");
+		return -1;
+	    }
+	    break;
+	case M_X:
+	    if (AGTYPE(objp) == AGNODE) {
+		if (posOf ((Agnode_t *) objp, 0, &(v->floating)))
+		    exerror("no x coordinate for node \"%s\"", agnameof(objp));
+	    } else {
+		exerror("x coordinate of non-node");
+		return -1;
+	    }
+	    break;
+	case M_Y:
+	    if (AGTYPE(objp) == AGNODE) {
+		if (posOf ((Agnode_t *) objp, 1, &(v->floating)))
+		    exerror("no y coordinate for node \"%s\"", agnameof(objp));
+	    } else {
+		exerror("x coordinate of non-node");
 		return -1;
 	    }
 	    break;
@@ -2613,19 +2657,19 @@ Agnode_t *openNode(Agraph_t * g, char *name)
 
 /* openEdge:
  * Create edge and initialize dynamic data.
- * The edge is always created in the root graph.
  */
 Agedge_t *openEdge(Agraph_t* g, Agnode_t * t, Agnode_t * h, char *key)
 {
     Agedge_t *ep;
     Agraph_t *root;
 
-    root = sameG(t, h, "openEdge", "tail and head node");
+    root = sameG(t, h, "openEdge", "tail and head nodes");
     if (!root)
 	return 0;
-    if (g && (root != agroot(g)))
-	return 0;
-    else
+    if (g) {
+	if (!sameG(g, root, "openEdge", "subgraph and nodes"))
+	    return 0;
+    } else
 	g = root;
 
     ep = agedge(g, t, h, key, 1);

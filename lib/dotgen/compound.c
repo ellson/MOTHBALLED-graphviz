@@ -174,13 +174,17 @@ findVertical(pointf * pts, double tmin, double tmax,
     pointf Left[4];
     pointf Right[4];
     double t;
-    int no_cross = countVertCross(pts, xcoord);
+    int no_cross;
 
+    if (tmin == tmax)
+	return tmin;
+
+    no_cross = countVertCross(pts, xcoord);
     if (no_cross == 0)
 	return -1.0;
 
-    /* if 1 crossing and on the line x == xcoord (within 1 point) */
-    if ((no_cross == 1) && (ROUND(pts[3].x) == ROUND(xcoord))) {
+    /* if 1 crossing and on the line x == xcoord (within 0.005 point) */
+    if ((no_cross == 1) && (abs(pts[3].x - xcoord) <= 0.005)) {
 	if ((ymin <= pts[3].y) && (pts[3].y <= ymax)) {
 	    return tmax;
 	} else
@@ -212,13 +216,17 @@ findHorizontal(pointf * pts, double tmin, double tmax,
     pointf Left[4];
     pointf Right[4];
     double t;
-    int no_cross = countHorzCross(pts, ycoord);
+    int no_cross;
 
+    if (tmin == tmax)
+	return tmin;
+
+    no_cross = countHorzCross(pts, ycoord);
     if (no_cross == 0)
 	return -1.0;
 
-    /* if 1 crossing and on the line y == ycoord (within 1 point) */
-    if ((no_cross == 1) && (ROUND(pts[3].y) == ROUND(ycoord))) {
+    /* if 1 crossing and on the line y == ycoord (within 0.005 point) */
+    if ((no_cross == 1) && (abs(pts[3].y - ycoord) <= 0.005)) {
 	if ((xmin <= pts[3].x) && (pts[3].x <= xmax)) {
 	    return tmax;
 	} else

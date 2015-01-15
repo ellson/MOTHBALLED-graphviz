@@ -101,6 +101,7 @@ static char *parseReal(char *s, double *fp)
     return (p);
 }
 
+
 static char *parseInt(char *s, int *ip)
 {
     char* endp;
@@ -112,6 +113,17 @@ static char *parseInt(char *s, int *ip)
 #endif
 
     *ip = (int)strtol (s, &endp, 10);
+    if (s == endp)
+	return 0;
+    else
+	return endp;
+}
+
+static char *parseUInt(char *s, unsigned int *ip)
+{
+    char* endp;
+
+    *ip = (unsigned int)strtoul (s, &endp, 10);
     if (s == endp)
 	return 0;
     else
@@ -393,7 +405,7 @@ static char *parseOp(xdot_op * op, char *s, drawfunc_t ops[], int* error)
 
     case 't':
 	op->kind = xd_fontchar;
-	s = parseInt(s, &op->u.fontchar);
+	s = parseUInt(s, &op->u.fontchar);
 	CHK(s);
 	if (ops)
 	    op->drawfunc = ops[xop_fontchar];

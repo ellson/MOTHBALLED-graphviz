@@ -96,7 +96,7 @@ edgelabel_ranks(graph_t * g)
     node_t *n;
     edge_t *e;
 
-    if (GD_has_labels(g) & EDGE_LABEL) {
+    if (GD_has_labels(g->root) & EDGE_LABEL) {
 	for (n = agfstnode(g); n; n = agnxtnode(g, n))
 	    for (e = agfstout(g, n); e; e = agnxtout(g, e))
 		ED_minlen(e) *= 2;
@@ -193,7 +193,7 @@ node_induce(graph_t * par, graph_t * g)
     }
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	for (e = agfstout(agroot(g), n); e; e = agnxtout(agroot(g), e)) {
+	for (e = agfstout(dot_root(g), n); e; e = agnxtout(dot_root(g), e)) {
 	    if (agcontains(g, aghead(e)))
 		agsubedge(g,e,1);
 	}
@@ -305,7 +305,7 @@ static void
 find_clusters(graph_t * g)
 {
     graph_t *subg;
-    for (subg = agfstsubg(agroot(g)); subg; subg = agnxtsubg(subg)) {
+    for (subg = agfstsubg(dot_root(g)); subg; subg = agnxtsubg(subg)) {
 	if (GD_set_type(subg) == CLUSTER)
 	    collapse_cluster(g, subg);
     }
@@ -428,7 +428,7 @@ static void expand_ranksets(graph_t * g, aspect_t* asp)
 		UF_singleton(n);
 	    n = agnxtnode(g, n);
 	}
-	if (g == agroot(g)) {
+	if (g == dot_root(g)) {
 	    if (CL_type == LOCAL) {
 		for (c = 1; c <= GD_n_cluster(g); c++)
 		    set_minmax(GD_clust(g)[c]);
@@ -451,10 +451,10 @@ setRanks (graph_t* g, attrsym_t* lsym)
     long    v;
 
     for (n = agfstnode(g); n; n = agnxtnode(g,n)) {
-	s = agxget (n, lsym->index);
+	s = agxget (n, lsym);
 	v = strtol (s, &ep, 10);
 	if (ep == s)
-	    agerr(AGWARN, "no level attribute for node \"%s\"\n", n->name);
+	    agerr(AGWARN, "no level attribute for node \"%s\"\n", agnameof(n));
 	ND_rank(n) = v;
     }
 }
@@ -556,7 +556,7 @@ static void dot1_rank(graph_t * g, aspect_t* asp)
     if (minmax_edges2(g, p))
 	decompose(g, 0);
 #ifdef ALLOW_LEVELS
-    if ((N_level = agfindattr(g->proto->n, "level")))
+    if ((N_level = agattr(g,AGNODE,"level",NULL)))
 	setRanks(g, N_level);
     else
 #endif
@@ -1035,7 +1035,11 @@ static void break_cycles(graph_t * g)
     for (n = agfstnode(g); n; n = agnxtnode(g, n))
 	dfs(g, n);
 }
-
+/* setMinMax:
+ * This will only be called with the root graph or a cluster
+ * which are guarenteed to contain nodes. Thus, leader will be
+ * set.
+ */
 static void setMinMax (graph_t* g, int doRoot)
 {
     int c, v;
@@ -1194,9 +1198,7 @@ void dot2_rank(graph_t * g, aspect_t* asp)
     int ncc, maxiter = INT_MAX;
     char *s;
     graph_t *Xg;
-#ifdef ALLOW_LEVELS
-    attrsym_t* N_level;
-#endif
+
     Last_node = NULL;
     Xg = agopen("level assignment constraints", Agstrictdirected, 0);
     agbindrec(Xg,"level graph rec",sizeof(Agraphinfo_t),TRUE);

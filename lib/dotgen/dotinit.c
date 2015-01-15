@@ -14,17 +14,21 @@
 
 #include <time.h>
 #include "dot.h"
+#include "pack.h"
 #include "aspect.h"
 
 static void
-dot_init_subg(graph_t * g)
+dot_init_subg(graph_t * g, graph_t* droot)
 {
     graph_t* subg;
 
     if ((g != agroot(g)))
 	agbindrec(g, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
+    if (g == droot)
+	GD_dotroot(agroot(g)) = droot;
+	
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
-	dot_init_subg(subg);
+	dot_init_subg(subg, droot);
     }
 }
 
@@ -103,6 +107,7 @@ dot_cleanup_node(node_t * n)
     free_list(ND_flat_in(n));
     free_list(ND_other(n));
     free_label(ND_label(n));
+    free_label(ND_xlabel(n));
     if (ND_shape(n))
 	ND_shape(n)->fns->freefn(n);
     agdelrec(n, "Agnodeinfo_t");	
@@ -164,8 +169,10 @@ dot_cleanup_graph(graph_t * g)
 	else
 	    free(GD_rank(g));
     }
-    if (g != agroot(g)) 
+    if (g != agroot(g)) {
+	free_label (GD_label(g));
 	agdelrec(g,"Agraphinfo_t");
+    }
 }
 
 /* delete the layout (but retain the underlying graph) */
@@ -285,7 +292,7 @@ attach_phase_attrs (Agraph_t * g, int maxphase)
     }
 }
 
-void dot_layout(Agraph_t * g)
+static void dotLayout(Agraph_t * g)
 {
     aspect_t aspect;
     aspect_t* asp;
@@ -294,7 +301,7 @@ void dot_layout(Agraph_t * g)
     setEdgeType (g, ET_SPLINE);
     asp = setAspect (g, &aspect);
 
-    dot_init_subg(g);
+    dot_init_subg(g,g);
     dot_init_node_edge(g);
 
     do {
@@ -326,6 +333,182 @@ void dot_layout(Agraph_t * g)
     dot_splines(g);
     if (mapbool(agget(g, "compound")))
 	dot_compoundEdges(g);
-    dotneato_postprocess(g);
-
 }
+
+static void
+initSubg (Agraph_t* sg, Agraph_t* g)
+{
+    agbindrec(sg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
+    GD_drawing(sg) = NEW(layout_t);
+    GD_drawing(sg)->quantum = GD_drawing(g)->quantum; 
+    GD_drawing(sg)->dpi = GD_drawing(g)->dpi;
+    GD_gvc(sg) = GD_gvc (g);
+    GD_charset(sg) = GD_charset (g);
+    GD_rankdir2(sg) = GD_rankdir2 (g);
+    GD_nodesep(sg) = GD_nodesep(g);
+    GD_ranksep(sg) = GD_ranksep(g);
+    GD_fontnames(sg) = GD_fontnames(g);
+}
+
+/* attachPos:
+ * the packing library assumes all units are in inches stored in ND_pos, so we
+ * have to copy the position info there.
+ */
+static void
+attachPos (Agraph_t* g)
+{
+    node_t* np;
+    double* ps = N_NEW(2*agnnodes(g), double);
+
+    for (np = agfstnode(g); np; np = agnxtnode(g, np)) {
+	ND_pos(np) = ps;
+	ps[0] = PS2INCH(ND_coord(np).x);
+	ps[1] = PS2INCH(ND_coord(np).y);
+	ps += 2;
+    }
+}
+
+/* resetCoord:
+ * Store new position info from pack library call, stored in ND_pos in inches,
+ * back to ND_coord in points.
+ */
+static void
+resetCoord (Agraph_t* g)
+{
+    node_t* np = agfstnode(g);
+    double* sp = ND_pos(np);
+    double* ps = sp;
+
+    for (np = agfstnode(g); np; np = agnxtnode(g, np)) {
+	ND_pos(np) = 0;
+	ND_coord(np).x = INCH2PS(ps[0]);
+	ND_coord(np).y = INCH2PS(ps[1]);
+	ps += 2;
+    }
+    free (sp);
+}
+
+/* copyCluster:
+ */
+static void
+copyCluster (Agraph_t* scl, Agraph_t* cl)
+{
+    int nclust, j;
+    Agraph_t* cg;
+
+    agbindrec(cl, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
+    GD_bb(cl) = GD_bb(scl);
+    GD_label_pos(cl) = GD_label_pos(scl);
+    memcpy(GD_border(cl), GD_border(scl), 4*sizeof(pointf));
+    nclust = GD_n_cluster(cl) = GD_n_cluster(scl);
+    GD_clust(cl) = N_NEW(nclust+1,Agraph_t*);
+    for (j = 1; j <= nclust; j++) {
+	cg = mapClust(GD_clust(scl)[j]);
+	GD_clust(cl)[j] = cg;
+	copyCluster (GD_clust(scl)[j], cg);
+    }
+    /* transfer cluster label to original cluster */
+    GD_label(cl) = GD_label(scl);
+    GD_label(scl) = NULL;
+}
+
+/* copyClusterInfo:
+ * Copy cluster tree and info from components to main graph.
+ * Note that the original clusters have no Agraphinfo_t at this time.
+ */
+static void
+copyClusterInfo (int ncc, Agraph_t** ccs, Agraph_t* root)
+{
+    int j, i, nclust = 0;
+    Agraph_t* sg;
+    Agraph_t* cg;
+
+    for (i = 0; i < ncc; i++) 
+	nclust += GD_n_cluster(ccs[i]);
+
+    GD_n_cluster(root) = nclust;
+    GD_clust(root) = N_NEW(nclust+1,Agraph_t*);
+    nclust = 1;
+    for (i = 0; i < ncc; i++) {
+	sg = ccs[i];
+	for (j = 1; j <= GD_n_cluster(sg); j++) {
+	    cg = mapClust(GD_clust(sg)[j]);
+	    GD_clust(root)[nclust++] = cg;
+	    copyCluster (GD_clust(sg)[j], cg);
+	}
+    } 
+}
+
+/* doDot:
+ * Assume g has nodes.
+ */
+static void doDot (Agraph_t* g)
+{
+    Agraph_t **ccs;
+    Agraph_t *sg;
+    int ncc;
+    int i;
+    pack_info pinfo;
+    int Pack = getPack(g, -1, CL_OFFSET);
+    pack_mode mode = getPackModeInfo (g, l_undef, &pinfo);
+    getPackInfo(g, l_node, CL_OFFSET, &pinfo);
+
+    if ((mode == l_undef) && (Pack < 0)) {
+	/* No pack information; use old dot with components
+         * handled during layout
+         */
+	dotLayout(g);
+    } else {
+	/* fill in default values */
+	if (mode == l_undef) 
+	    pinfo.mode = l_graph;
+	else if (Pack < 0)
+	    Pack = CL_OFFSET;
+	pinfo.margin = Pack;
+	pinfo.fixed = 0;
+
+          /* components using clusters */
+	ccs = cccomps(g, &ncc, 0);
+	if (ncc == 1) {
+	    dotLayout(g);
+	} else if (GD_drawing(g)->ratio_kind == R_NONE) {
+	    pinfo.doSplines = 1;
+
+	    for (i = 0; i < ncc; i++) {
+		sg = ccs[i];
+		initSubg (sg, g);
+		dotLayout (sg);
+	    }
+	    attachPos (g);
+	    packSubgraphs(ncc, ccs, g, &pinfo);
+	    resetCoord (g);
+	    copyClusterInfo (ncc, ccs, g);
+	} else {
+	    /* Not sure what semantics should be for non-trivial ratio
+             * attribute with multiple components.
+             * One possibility is to layout nodes, pack, then apply the ratio
+             * adjustment. We would then have to re-adjust all positions.
+             */
+	    dotLayout(g);
+	}
+
+	for (i = 0; i < ncc; i++) {
+	    free (GD_drawing(ccs[i]));
+	    dot_cleanup_graph(ccs[i]);
+	    agdelete(g, ccs[i]);
+	}
+	free(ccs);
+    }
+}
+
+void dot_layout(Agraph_t * g)
+{
+    if (agnnodes(g)) doDot (g);
+    dotneato_postprocess(g);
+}
+
+Agraph_t * dot_root (void* p)
+{
+    return GD_dotroot(agroot(p));
+}
+

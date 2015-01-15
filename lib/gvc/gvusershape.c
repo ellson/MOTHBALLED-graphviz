@@ -411,7 +411,7 @@ static void ps_size (usershape_t *us)
     int lx, ly, ux, uy;
     char* linep;
 
-    us->dpi = 0;
+    us->dpi = 72;
     fseek(us->f, 0, SEEK_SET);
     saw_bb = FALSE;
     while (fgets(line, sizeof(line), us->f)) {
@@ -570,15 +570,18 @@ static Dtdisc_t ImageDictDisc = {
     NIL(Dtevent_f)
 };
 
-usershape_t *gvusershape_find(char *name)
+usershape_t *gvusershape_find(const char *name)
 {
-    usershape_t probe;
+    usershape_t *us;
+
+    assert(name);
+    assert(name[0]);
 
     if (!ImageDict)
 	return NULL;
 
-    probe.name = name;
-    return (dtsearch(ImageDict, &probe));
+    us = dtmatch(ImageDict, name);
+    return us;
 }
 
 #define MAX_USERSHAPE_FILES_OPEN 50
@@ -589,26 +592,30 @@ boolean gvusershape_file_access(usershape_t *us)
 
     assert(us);
     assert(us->name);
+    assert(us->name[0]);
 
     if (us->f)
 	fseek(us->f, 0, SEEK_SET);
     else {
-        if ((fn = safefile(us->name))) {
-#ifndef WIN32
-	    us->f = fopen(fn, "r");
-#else
-	    us->f = fopen(fn, "rb");
-#endif
-	    if (us->f == NULL) {
-		agerr(AGWARN, "%s while opening %s\n", strerror(errno), fn);
-		return FALSE;
-	    }
-	    if (usershape_files_open_cnt >= MAX_USERSHAPE_FILES_OPEN)
-		us->nocache = TRUE;
-	    else
-	        usershape_files_open_cnt++;
+        if (! (fn = safefile(us->name))) {
+	    agerr(AGWARN, "Filename \"%s\" is unsafe\n", us->name);
+	    return FALSE;
 	}
+#ifndef WIN32
+	us->f = fopen(fn, "r");
+#else
+	us->f = fopen(fn, "rb");
+#endif
+	if (us->f == NULL) {
+	    agerr(AGWARN, "%s while opening %s\n", strerror(errno), fn);
+	    return FALSE;
+	}
+	if (usershape_files_open_cnt >= MAX_USERSHAPE_FILES_OPEN)
+	    us->nocache = TRUE;
+	else
+	    usershape_files_open_cnt++;
     }
+    assert(us->f);
     return TRUE;
 }
 
@@ -622,9 +629,17 @@ void gvusershape_file_release(usershape_t *us)
     }
 }
 
-static usershape_t *gvusershape_open (char *name)
+static void freeUsershape (usershape_t* us)
+{
+    if (us->name) agstrfree(0, (char*)us->name);
+    free (us);
+}
+
+static usershape_t *gvusershape_open (const char *name)
 {
     usershape_t *us;
+
+    assert(name);
 
     if (!ImageDict)
         ImageDict = dtopen(&ImageDictDisc, Dttree);
@@ -633,16 +648,21 @@ static usershape_t *gvusershape_open (char *name)
         if (! (us = zmalloc(sizeof(usershape_t))))
 	    return NULL;
 
-	us->name = name;
-	if (!gvusershape_file_access(us)) 
+	us->name = agstrdup (0, (char*)name);
+	if (!gvusershape_file_access(us)) {
+	    freeUsershape (us);
 	    return NULL;
+	}
+
+	assert(us->f);
 
         switch(imagetype(us)) {
 	    case FT_NULL:
-		if (!(us->data = (void*)find_user_shape(us->name)))
+		if (!(us->data = (void*)find_user_shape(us->name))) {
 		    agerr(AGWARN, "\"%s\" was not found as a file or as a shape library member\n", us->name);
-		    free(us);
+		    freeUsershape (us);
 		    return NULL;
+		}
 		break;
 	    case FT_GIF:
 	        gif_size(us);
@@ -678,11 +698,11 @@ static usershape_t *gvusershape_open (char *name)
 	    default:
 	        break;
         }
+        gvusershape_file_release(us);
         dtinsert(ImageDict, us);
+        return us;
     }
-
     gvusershape_file_release(us);
-
     return us;
 }
 

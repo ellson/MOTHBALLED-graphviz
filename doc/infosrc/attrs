@@ -319,11 +319,29 @@ for setting the gradient angle.
 Note that a cluster inherits the root graph's attributes if defined.
 Thus, if the root graph has defined a <B>fillcolor</B>, this will override a
 <B>color</B> or <B>bgcolor</B> attribute set for the cluster.
-:fixedsize  (N_fixed):N:bool:false;
-If true, the node size is specified by the values of the
-<A HREF=#d:width><B>width</B></A>
-and <A HREF=#d:height><B>height</B></A> attributes only
+:fixedsize  (N_fixed):N:bool/string:false;
+If <tt>false</tt>, the size of a node is determined by smallest width and height
+needed to contain its label and image, if any, with a margin specified by
+the <A HREF=#d:margin><TT>margin</TT></A> attribute. The width
+and height must also be at least as large as the sizes specified by the
+<A HREF=#d:width><TT>width</TT></A> and
+<A HREF=#d:height><TT>height</TT></A> attributes, which specify
+the minimum values for these parameters. 
+<P>
+If <tt>true</tt>, the node size is specified by the values of the
+<A HREF=#d:width><TT>width</TT></A>
+and <A HREF=#d:height><TT>height</TT></A> attributes only
 and is not expanded to contain the text label.
+There will be a warning if the label (with margin)
+cannot fit within these limits.
+<P>
+If the <A HREF=attrs.html#d:fixedsize><TT>fixedsize</TT></A> attribute is set 
+to <tt>shape</tt>, the <A HREF=#d:width><TT>width</TT></A> and
+<A HREF=#d:height><TT>height</TT></A> attributes also determine the size
+of the node shape, but the label can be much larger. Both the label and
+shape sizes are used when avoiding node overlap, but all edges to the
+node ignore the label and only contact the node shape. No warning is given
+if the label is too large.
 :fontcolor:ENGC:color:black;
 Color used for text.
 :fontnames:G:string:"";    svg
@@ -356,10 +374,12 @@ names are resolved and which fonts are available.
 Other systems may provide their own font package, such as Quartz for OS X.
 <P>
 Note that various font attributes, such as weight and slant, can be built into the
-font name. Thus, using the <TT>fontname=times:italic</TT> will produce a slanted
-Times font from fontconfig, while <TT>fontname=times-bold</TT> will resolve to a bold
-Times using Quartz. Obviously, the syntax differs from system to system. 
-You will need
+font name. Unfortunately, the syntax varies depending on which font system is dominant. 
+Thus, using <TT>fontname="times bold italic"</TT> will produce a bold, slanted Times font 
+using Pango, the usual main font library. Alternatively,  
+<TT>fontname="times:italic"</TT> will produce a slanted
+Times font from fontconfig, while <TT>fontname="times-bold"</TT> will resolve to a bold
+Times using Quartz. You will need
 to ascertain which package is used by your Graphviz system and refer to the relevant
 documentation.
 <P>
@@ -541,6 +561,13 @@ Text label attached to objects.
 If a node's <A HREF=#d:shape>shape</A> is record, then the label can
 have a <A HREF=shapes.html#record>special format</A>
 which describes the record layout.
+<P>
+Note that a node's default label is "\&#92;N", so the node's name or ID becomes
+its label. Technically, a node's name can be an HTML string but this will not
+mean that the node's label will be interpreted as an <a href="shapes.html#html">HTML-like label</a>. This is
+because the node's actual label is an ordinary string, which will be replaced 
+by the raw bytes stored in the node's name.
+To get an HTML-like label, the label attribute value itself must be an HTML string.
 :labelURL:E:escString:"";  map,svg
 If <B>labelURL</B> is defined, this is the link used for the label
 of an edge. This value overrides any <A HREF=#d:URL>URL</A>
@@ -768,6 +795,10 @@ layout so that the angle of the first edge is specified by the value of <TT>norm
 If  <TT>normalize</TT> is not a number, it is evaluated as a  <TT>bool</TT>, with true
 corresponding to 0 degrees. <B>NOTE:</B> Since the attribute is evaluated first as a number,
 0 and 1 cannot be used for false and true.
+:notranslate:G:bool:false;      neato
+By default, the final layout is translated so that the lower-left corner of the bounding box is
+at the origin. This can be annoying if some nodes are pinned or if the user runs <TT>neato -n</TT>. 
+To avoid this translation, set <TT>notranslate</TT> to true.
 :nslimit/nslimit1:G:double;  dot
 Used to set number of iterations in
 network simplex applications. <B>nslimit</B> is used in
@@ -881,7 +912,7 @@ If <TT>overlap_scaling</TT> is zero, no scaling is done.
 :overlap_shrink:G:bool:true; prism
 If true, the overlap removal algorithm will perform a compression pass to reduce the
 size of the layout.
-:pack:G:bool/int:false; notdot
+:pack:G:bool/int:false;
 This is true if the value of pack is "true" (case-insensitive) or a
 non-negative integer. If true, each connected component of the graph is
 laid out separately, and then the graphs are packed together.
@@ -894,7 +925,7 @@ The granularity and method of packing is influenced by the
 <P>
 For layouts which always do packing, such a twopi, the <B>pack</B>
 attribute is just used to set the margin.
-:packmode:G:packMode:node; notdot
+:packmode:G:packMode:node;
 This indicates how connected components should be packed
 (cf. <A HREF=#k:packMode>packMode</A>). Note that defining
 <B>packmode</B> will automatically turn on packing as though one had
@@ -960,13 +991,19 @@ If true and the node has a pos attribute on input, neato or fdp prevents the
 node from moving from the input position. This property can also be specified
 in the pos attribute itself (cf. the <A HREF=#k:point>point</A> type).
 <P>
-<B>Note:</B> Due to an artifact of the implementation, final coordinates
+<B>Note:</B> Due to an artifact of the implementation, 
+previous to 27 Feb 2014, final coordinates
 are translated to the origin. Thus, if you look at the output coordinates
 given in the (x)dot or plain format, pinned nodes will not have the same
 output coordinates as were given on input. If this is important, a
 simple workaround is to maintain the coordinates of a pinned node. The vector
 difference between the old and new coordinates will give the translation,
 which can then be subtracted from all of the appropriate coordinates.
+<P>
+After 27 Feb 2014, this translation can be avoided in neato by setting the 
+<A HREF="#d:notranslate">notranslate</A> to TRUE. However, if the graph
+specifies <A HREF="#d:overlap">node overlap removal</A> or a change in 
+<A HREF="#d:ratio">aspect ratio</A>, node coordinates may still change. 
 :pos:EN:point/splineType;
 Position of node, or spline control points.
 For nodes, the position indicates the center of the node.
@@ -1080,8 +1117,8 @@ Rectangles for fields of records, <A HREF=#points>in points</A>.
 :regular:N:bool:false;
 If true, force polygon to be regular, i.e., the vertices of the
 polygon will lie on a circle whose center is the center of the node.
-:remincross:G:bool:false;  dot
-If true and there are multiple clusters, run cross
+:remincross:G:bool:true;  dot
+If true and there are multiple clusters, run crossing
 minimization a second time.
 :repulsiveforce:G:double:1.0:0.0;  sfdp
 The power of the repulsive force used in an extended Fruchterman-Reingold 
@@ -1092,7 +1129,7 @@ This is a synonym for the <A HREF=#d:dpi>dpi</A> attribute.
 :root:GN:string/bool:<none>(graphs)/false(nodes);  twopi,circo
 This specifies nodes to be used as the center of the
 layout and the root of the generated spanning tree. As a graph attribute,
-this gives the name of the node. As a node attribute (circo only), it
+this gives the name of the node. As a node attribute, it
 specifies that the node should be used as a central node. In twopi,
 this will actually be the central node. In circo, the block containing
 the node will be central in the drawing of its connected component.
@@ -1101,6 +1138,10 @@ twopi will pick a most central node, and circo will pick a random node.
 <P>
 If the root attribute is defined as the empty string, twopi will reset it
 to name of the node picked as the root node.
+<P>
+For twopi, it is possible to have multiple roots, presumably one for each
+component. If more than one node in a component is marked as the root, twopi
+will pick one.
 :rotate:G:int:0;
 If 90, set drawing orientation to landscape.
 :rotation:G:double:0;   sfdp
@@ -1121,9 +1162,8 @@ attribute, and output is dot or xdot, this gives
 the number of points used for a node whose shape is a circle or ellipse.
 It plays the same role in neato, when adjusting the layout to avoid
 overlapping nodes, and in image maps.
-:scale:G:double/point; twopi
-If set, after the initial layout, twopi will scale the layout by the given factors.
-The scaling uses the root node of each component as the center of the scaling.
+:scale:G:double/point;  notdot
+If set, after the initial layout, the layout is scaled by the given factors.
 If only a single number is given, this is used for both factors.
 :searchsize:G:int:30; dot
 During network simplex, maximum number of edges with negative cut values
@@ -1214,17 +1254,27 @@ does not handle ports or, in dot, edge labels.
 drawn as curved arcs.
 <P>
 <TABLE>
-<TR><TD><IMG WIDTH="200" VSPACE="10" HSPACE="10" SRC="spline_none.png">
+<TR>
+     <TD><IMG WIDTH="200" VSPACE="10" HSPACE="10" SRC="spline_none.png">
     <TD><IMG WIDTH="200" VSPACE="10" HSPACE="10" SRC="spline_line.png">
+</TR>
+<TR>
+    <TD ALIGN="center">splines=none<BR>splines=""
+    <TD ALIGN="center">splines=line<BR>splines=false
+</TR>
+<TR>
     <TD><IMG WIDTH="200" VSPACE="10" HSPACE="10" SRC="spline_polyline.png">
     <TD><IMG WIDTH="200" VSPACE="10" HSPACE="10" SRC="spline_curved.png">
+</TR>
+<TR>
+    <TD ALIGN="center">splines=polyline
+    <TD ALIGN="center">splines=curved
+</TR>
+<TR>
     <TD><IMG WIDTH="200" VSPACE="10" HSPACE="10" SRC="spline_ortho.png">
     <TD><IMG WIDTH="200" VSPACE="10" HSPACE="10" SRC="spline_spline.png">
 </TR>
-<TR><TD ALIGN="center">splines=none<BR>splines=""
-    <TD ALIGN="center">splines=line<BR>splines=false
-    <TD ALIGN="center">splines=polyline
-    <TD ALIGN="center">splines=curved
+<TR>
     <TD ALIGN="center">splines=ortho
     <TD ALIGN="center">splines=spline<BR>splines=true
 </TR>
@@ -1342,10 +1392,12 @@ Voronoi technique. dim' = (1+2*margin)*dim.
 #  Obsolete, replaced by sep
 #w:E:double:1.0; neato
 #  Redundant definition of weight in neato, cf. bug 9.
-:weight:E:int/double:1:0(dot)/1(neato,fdp);
+:weight:E:int/double:1:0(dot,twopi)/1(neato,fdp);
 Weight of edge. In dot, the heavier the weight, the shorter,
 straighter and more vertical the edge is.
 <B>N.B.</B> Weights in dot must be integers.
+For twopi, a weight of 0 indicates the edge should not be used in constructing a
+spanning tree from the root.
 For other layouts, a larger weight encourages the layout to 
 make the edge length closer to that specified by the 
 <A HREF=#d:len>len</A> attribute.

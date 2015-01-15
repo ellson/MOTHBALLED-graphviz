@@ -25,11 +25,11 @@ if WITH_TCL
 pkgindex_DATA = pkgIndex.tcl
 endif
 
-SUBDIRS = tclstubs tkstubs tclhandle gdtclft tcldot tclpathplan tkspline gv
+SUBDIRS = tclstubs tclhandle gdtclft tcldot tclpathplan gv
 
-pkgIndex.tcl: @TCL_PKGINDEX@ @TCL_PKGINDEX_GD@ @TCL_PKGINDEX_SWIG@ @TK_PKGINDEX@
+pkgIndex.tcl: @TCL_PKGINDEX@ @TCL_PKGINDEX_GD@ @TCL_PKGINDEX_SWIG@
 	echo "# end" >end
-	cat @TCL_PKGINDEX@ @TCL_PKGINDEX_GD@ @TCL_PKGINDEX_SWIG@ @TK_PKGINDEX@ end >$@
+	cat @TCL_PKGINDEX@ @TCL_PKGINDEX_GD@ @TCL_PKGINDEX_SWIG@ end >$@
 	rm -f end
 
 # Installation of softlinks into non-owned directories is done as a
@@ -196,6 +196,6 @@ uninstall-hook:
 	-rm -rf $(DESTDIR)$(pkgtcldir);
 	-rm -rf $(DESTDIR)@TCL_INSTALL_DIR@/@PACKAGE_NAME@-@PACKAGE_VERSION@;
 
-EXTRA_DIST = Makefile.old mkpkgindex.sh
+EXTRA_DIST = mkpkgindex.sh
 
 DISTCLEANFILES = pkgIndex.tcl

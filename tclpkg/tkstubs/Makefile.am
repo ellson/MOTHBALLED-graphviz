@@ -12,5 +12,3 @@ endif
 
 # tkStubLib.c is a dummy file just to fool automake
 libtkstubs_C_la_SOURCES = tkStubLib.c tkStubImg.c
-
-EXTRA_DIST =

@@ -19,29 +19,9 @@
 
 static jmp_buf jbuf;
 
-#define MARKED(n) ND_mark(n)
-#define MARK(n) (ND_mark(n) = 1)
-#define ONSTACK(n) (ND_mark(n) = 1)
-#define UNMARK(n) (ND_mark(n) = 0)
-
-typedef void (*dfsfn) (Agnode_t *, void *);
-
-#if 0
-static void dfs(Agraph_t * g, Agnode_t * n, dfsfn action, void *state)
-{
-    Agedge_t *e;
-    Agnode_t *other;
-
-    MARK(n);
-    action(n, state);
-    for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
-	if ((other = agtail(e)) == n)
-	    other = aghead(e);
-	if (!MARKED(other))
-	    dfs(g, other, action, state);
-    }
-}
-#endif
+#define MARKED(stk,n) ((stk)->markfn(n,-1))
+#define MARK(stk,n)   ((stk)->markfn(n,1))
+#define UNMARK(stk,n) ((stk)->markfn(n,0))
 
 typedef struct blk_t {
     Agnode_t **data;
@@ -54,18 +34,23 @@ typedef struct {
     blk_t *fstblk;
     blk_t *curblk;
     Agnode_t **curp;
+    void (*actionfn) (Agnode_t *, void *);
+    int (*markfn) (Agnode_t *, int);
 } stk_t;
 
 #define INITBUF 1024
 #define BIGBUF 1000000
 
-static void initStk(stk_t* sp, blk_t* bp, Agnode_t** base)
+static void initStk(stk_t* sp, blk_t* bp, Agnode_t** base, void (*actionfn) (Agnode_t *, void *),
+     int (*markfn) (Agnode_t *, int))
 {
     bp->data = base;
     bp->endp = bp->data + INITBUF;
     bp->prev = bp->next = NULL;
     sp->curblk = sp->fstblk = bp;
     sp->curp = sp->curblk->data;
+    sp->actionfn = actionfn;
+    sp->markfn = markfn;
 }
 
 static void freeBlk (blk_t* bp)
@@ -107,7 +92,7 @@ static void push(stk_t* sp, Agnode_t * np)
 	sp->curblk = sp->curblk->next;
 	sp->curp = sp->curblk->data;
     }
-    ONSTACK(np);
+    MARK(sp,np);
     *sp->curp++ = np;
 }
 
@@ -124,22 +109,24 @@ static Agnode_t *pop(stk_t* sp)
 }
 
 
-static void dfs(Agraph_t * g, Agnode_t * n, dfsfn action, void *state, stk_t* stk)
+static int dfs(Agraph_t * g, Agnode_t * n, void *state, stk_t* stk)
 {
     Agedge_t *e;
     Agnode_t *other;
+    int cnt = 0;
 
     push (stk, n);
     while ((n = pop(stk))) {
-	MARK(n);
-	action(n, state);
+	cnt++;
+	if (stk->actionfn) stk->actionfn(n, state);
         for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
 	    if ((other = agtail(e)) == n)
 		other = aghead(e);
-            if (!MARKED(other))
+            if (!MARKED(stk,other))
                 push(stk, other);
         }
     }
+    return cnt;
 }
 
 static int isLegal(char *p)
@@ -159,6 +146,39 @@ static int isLegal(char *p)
 static void insertFn(Agnode_t * n, void *state)
 {
     agsubnode((Agraph_t *) state,n,1);
+}
+
+/* markFn:
+ */
+static int markFn (Agnode_t* n, int v)
+{
+    int ret;
+    if (v < 0) return ND_mark(n);
+    ret = ND_mark(n);
+    ND_mark(n) = v;
+    return ret;
+}
+
+/* setPrefix:
+ */
+static char*
+setPrefix (char* pfx, int* lenp, char* buf, int buflen)
+{
+    int len;
+    char* name;
+
+    if (!pfx || !isLegal(pfx)) {
+        pfx = "_cc_";
+    }
+    len = strlen(pfx);
+    if (len + 25 <= buflen)
+        name = buf;
+    else {
+        if (!(name = (char *) gmalloc(len + 25))) return NULL;
+    }
+    strcpy(name, pfx);
+    *lenp = len;
+    return name;
 }
 
 /* pccomps:
@@ -193,29 +213,21 @@ Agraph_t **pccomps(Agraph_t * g, int *ncc, char *pfx, boolean * pinned)
 	*ncc = 0;
 	return 0;
     }
-    if (!pfx || !isLegal(pfx)) {
-	pfx = "_cc_";
-    }
-    len = strlen(pfx);
-    if (len + 25 <= SMALLBUF)
-	name = buffer;
-    else
-	name = (char *) gmalloc(len + 25);
-    strcpy(name, pfx);
-
-    for (n = agfstnode(g); n; n = agnxtnode(g, n))
-	UNMARK(n);
+    name = setPrefix (pfx, &len, buffer, SMALLBUF);
 
     ccs = N_GNEW(bnd, Agraph_t *);
 
-    initStk (&stk, &blk, base);
+    initStk (&stk, &blk, base, insertFn, markFn);
+    for (n = agfstnode(g); n; n = agnxtnode(g, n))
+	UNMARK(&stk,n);
+
     if (setjmp(jbuf)) {
 	error = 1;
 	goto packerror;
     }
     /* Component with pinned nodes */
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	if (MARKED(n) || !isPinned(n))
+	if (MARKED(&stk,n) || !isPinned(n))
 	    continue;
 	if (!out) {
 	    sprintf(name + len, "%d", c_cnt);
@@ -225,17 +237,17 @@ Agraph_t **pccomps(Agraph_t * g, int *ncc, char *pfx, boolean * pinned)
 	    c_cnt++;
 	    pin = TRUE;
 	}
-	dfs (g, n, insertFn, out, &stk);
+	dfs (g, n, out, &stk);
     }
 
     /* Remaining nodes */
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	if (MARKED(n))
+	if (MARKED(&stk,n))
 	    continue;
 	sprintf(name + len, "%d", c_cnt);
 	out = agsubg(g, name,1);
 	agbindrec(out, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	//node custom data
-	dfs(g, n, insertFn, out, &stk);
+	dfs(g, n, out, &stk);
 	if (c_cnt == bnd) {
 	    bnd *= 2;
 	    ccs = RALLOC(bnd, ccs, Agraph_t *);
@@ -291,22 +303,13 @@ Agraph_t **ccomps(Agraph_t * g, int *ncc, char *pfx)
 	*ncc = 0;
 	return 0;
     }
-    if (!pfx || !isLegal(pfx)) {
-	pfx = "_cc_";
-    }
-    len = strlen(pfx);
-    if (len + 25 <= SMALLBUF)
-	name = buffer;
-    else {
-	if (!(name = (char *) gmalloc(len + 25))) return NULL;
-    }
-    strcpy(name, pfx);
-
-    for (n = agfstnode(g); n; n = agnxtnode(g, n))
-	UNMARK(n);
+    name = setPrefix (pfx, &len, buffer, SMALLBUF);
 
     ccs = N_GNEW(bnd, Agraph_t *);
-    initStk (&stk, &blk, base);
+    initStk (&stk, &blk, base, insertFn, markFn);
+    for (n = agfstnode(g); n; n = agnxtnode(g, n))
+	UNMARK(&stk,n);
+
     if (setjmp(jbuf)) {
 	freeStk (&stk);
 	free (ccs);
@@ -316,12 +319,12 @@ Agraph_t **ccomps(Agraph_t * g, int *ncc, char *pfx)
 	return NULL;
     }
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	if (MARKED(n))
+	if (MARKED(&stk,n))
 	    continue;
 	sprintf(name + len, "%d", c_cnt);
 	out = agsubg(g, name,1);
 	agbindrec(out, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	//node custom data
-	dfs(g, n, insertFn, out, &stk);
+	dfs(g, n, out, &stk);
 	if (c_cnt == bnd) {
 	    bnd *= 2;
 	    ccs = RALLOC(bnd, ccs, Agraph_t *);
@@ -337,11 +340,338 @@ Agraph_t **ccomps(Agraph_t * g, int *ncc, char *pfx)
     return ccs;
 }
 
-/* cntFn:
- */
-static void cntFn(Agnode_t * n, void *s)
+typedef struct {
+    Agrec_t h;
+    char cc_subg;   /* true iff subgraph corresponds to a component */
+} ccgraphinfo_t;
+
+typedef struct {
+    Agrec_t h;
+    char mark;
+    union {
+	Agraph_t* g;
+	Agnode_t* n;
+	void*     v;
+    } ptr;
+} ccgnodeinfo_t;
+
+#define GRECNAME "ccgraphinfo"
+#define NRECNAME "ccgnodeinfo"
+#define GD_cc_subg(g)  (((ccgraphinfo_t*)aggetrec(g, GRECNAME, FALSE))->cc_subg)
+#ifdef DEBUG
+Agnode_t*
+dnodeOf (Agnode_t* v)
 {
-    *(int *) s += 1;
+  ccgnodeinfo_t* ip = (ccgnodeinfo_t*)aggetrec(v, NRECNAME, FALSE);
+  if (ip)
+    return ip->ptr.n;
+  fprintf (stderr, "nodeinfo undefined\n");
+  return 0;
+}
+void
+dnodeSet (Agnode_t* v, Agnode_t* n)
+{
+  ((ccgnodeinfo_t*)aggetrec(v, NRECNAME, FALSE))->ptr.n = n;
+}
+#else
+#define dnodeOf(v)  (((ccgnodeinfo_t*)aggetrec(v, NRECNAME, FALSE))->ptr.n)
+#define dnodeSet(v,w) (((ccgnodeinfo_t*)aggetrec(v, NRECNAME, FALSE))->ptr.n=w)
+#endif
+
+#define ptrOf(np)  (((ccgnodeinfo_t*)((np)->base.data))->ptr.v)
+#define nodeOf(np)  (((ccgnodeinfo_t*)((np)->base.data))->ptr.n)
+#define clustOf(np)  (((ccgnodeinfo_t*)((np)->base.data))->ptr.g)
+#define clMark(n) (((ccgnodeinfo_t*)(n->base.data))->mark)
+
+/* isCluster:
+ * Return true if graph is a cluster
+ */
+#define isCluster(g) (strncmp(agnameof(g), "cluster", 7) == 0)
+
+/* deriveClusters:
+ * Construct nodes in derived graph corresponding top-level clusters.
+ * Since a cluster might be wrapped in a subgraph, we need to traverse
+ * down into the tree of subgraphs
+ */
+static void deriveClusters(Agraph_t* dg, Agraph_t * g)
+{
+    Agraph_t *subg;
+    Agnode_t *dn;
+    Agnode_t *n;
+
+    for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
+	if (isCluster(subg)) {
+	    dn = agnode(dg, agnameof(subg), 1);
+	    agbindrec (dn, NRECNAME, sizeof(ccgnodeinfo_t), TRUE);
+	    clustOf(dn) = subg;
+	    for (n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
+		if (dnodeOf(n)) {
+		   fprintf (stderr, "Error: node \"%s\" belongs to two non-nested clusters \"%s\" and \"%s\"\n",
+			agnameof (n), agnameof(subg), agnameof(dnodeOf(n)));  
+		}
+		dnodeSet(n,dn);
+	    }
+	}
+	else {
+	    deriveClusters (dg, subg);
+	}
+    }
+}
+
+/* deriveGraph:
+ * Create derived graph dg of g where nodes correspond to top-level nodes 
+ * or clusters, and there is an edge in dg if there is an edge in g
+ * between any nodes in the respective clusters.
+ */
+static Agraph_t *deriveGraph(Agraph_t * g)
+{
+    Agraph_t *dg;
+    Agnode_t *dn;
+    Agnode_t *n;
+
+    dg = agopen("dg", Agstrictundirected, (Agdisc_t *) 0);
+
+    deriveClusters (dg, g);
+
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	if (dnodeOf(n))
+	    continue;
+	dn = agnode(dg, agnameof(n), 1);
+	agbindrec (dn, NRECNAME, sizeof(ccgnodeinfo_t), TRUE);
+	nodeOf(dn) = n;
+	dnodeSet(n,dn);
+    }
+
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	Agedge_t *e;
+	Agnode_t *hd;
+	Agnode_t *tl = dnodeOf(n);
+	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+	    hd = aghead(e);
+	    hd = dnodeOf(hd);
+	    if (hd == tl)
+		continue;
+	    if (hd > tl)
+		agedge(dg, tl, hd, 0, 1);
+	    else
+		agedge(dg, hd, tl, 0, 1);
+	}
+    }
+
+    return dg;
+}
+
+/* unionNodes:
+ * Add all nodes in cluster nodes of dg to g
+ */
+static void unionNodes(Agraph_t * dg, Agraph_t * g)
+{
+    Agnode_t *n;
+    Agnode_t *dn;
+    Agraph_t *clust;
+
+    for (dn = agfstnode(dg); dn; dn = agnxtnode(dg, dn)) {
+	if (AGTYPE(ptrOf(dn)) == AGNODE) {
+	    agsubnode(g, nodeOf(dn), 1);
+	} else {
+	    clust = clustOf(dn);
+	    for (n = agfstnode(clust); n; n = agnxtnode(clust, n))
+		agsubnode(g, n, 1);
+	}
+    }
+}
+
+/* clMarkFn:
+ */
+static int clMarkFn (Agnode_t* n, int v)
+{
+    int ret;
+    if (v < 0) return clMark(n);
+    ret = clMark(n);
+    clMark(n) = v;
+    return ret;
+}
+
+/* node_induce:
+ * Using the edge set of eg, add to g any edges
+ * with both endpoints in g.
+ * Returns the number of edges added.
+ */
+int node_induce(Agraph_t * g, Agraph_t* eg)
+{
+    Agnode_t *n;
+    Agedge_t *e;
+    int e_cnt = 0;
+
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	for (e = agfstout(eg, n); e; e = agnxtout(eg, e)) {
+	    if (agsubnode(g, aghead(e),0)) {
+		agsubedge(g,e,1);
+		e_cnt++;
+	    }
+	}
+    }
+    return e_cnt;
+}
+
+
+typedef struct {
+    Agrec_t h;
+    Agraph_t* orig;
+} orig_t;
+
+#define ORIG_REC "orig"
+
+Agraph_t*
+mapClust(Agraph_t *cl)
+{
+    orig_t* op = (orig_t*)aggetrec(cl, ORIG_REC, 0);
+    assert (op);
+    return op->orig;
+}
+
+/* projectG:
+ * If any nodes of subg are in g, create a subgraph of g
+ * and fill it with all nodes of subg in g and their induced
+ * edges in subg. Copy the attributes of subg to g. Return the subgraph.
+ * If not, return null.
+ * If subg is a cluster, the new subgraph will contain a pointer to it
+ * in the record "orig".
+ */
+static Agraph_t *projectG(Agraph_t * subg, Agraph_t * g, int inCluster)
+{
+    Agraph_t *proj = 0;
+    Agnode_t *n;
+    Agnode_t *m;
+    orig_t *op;
+
+    for (n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
+	if ((m = agfindnode(g, agnameof(n)))) {
+	    if (proj == 0) {
+		proj = agsubg(g, agnameof(subg), 1);
+	    }
+	    agsubnode(proj, m, 1);
+	}
+    }
+    if (!proj && inCluster) {
+	proj = agsubg(g, agnameof(subg), 1);
+    }
+    if (proj) {
+	node_induce(proj, subg);
+	agcopyattr(subg, proj);
+	if (isCluster(proj)) {
+	    op = agbindrec(proj,ORIG_REC, sizeof(orig_t), 0);
+	    op->orig = subg;
+	}
+    }
+
+    return proj;
+}
+
+/* subgInduce:
+ * Project subgraphs of root graph on subgraph.
+ * If non-empty, add to subgraph.
+ */
+static void
+subgInduce(Agraph_t * root, Agraph_t * g, int inCluster)
+{
+    Agraph_t *subg;
+    Agraph_t *proj;
+    int in_cluster;
+
+/* fprintf (stderr, "subgInduce %s inCluster %d\n", agnameof(root), inCluster); */
+    for (subg = agfstsubg(root); subg; subg = agnxtsubg(subg)) {
+	if (GD_cc_subg(subg))
+	    continue;
+	if ((proj = projectG(subg, g, inCluster))) {
+	    in_cluster = (inCluster || isCluster(subg));
+	    subgInduce(subg, proj, in_cluster);
+	}
+    }
+}
+
+static void
+subGInduce(Agraph_t* g, Agraph_t * out)
+{
+    subgInduce(g, out, 0);
+}
+
+/* cccomps:
+ * Decompose g into "connected" components, where nodes are connected
+ * either by an edge or by being in the same cluster. The components
+ * are returned in an array of subgraphs. ncc indicates how many components
+ * there are. The subgraphs use the prefix pfx in their names, if non-NULL.
+ * Note that cluster subgraph of the main graph, corresponding to a component,
+ * is cloned within the subgraph. Each cloned cluster contains a record pointing
+ * to the real cluster.
+ */
+Agraph_t **cccomps(Agraph_t * g, int *ncc, char *pfx)
+{
+    Agraph_t *dg;
+    long n_cnt, c_cnt, e_cnt;
+    char *name;
+    Agraph_t *out;
+    Agraph_t *dout;
+    Agnode_t *dn;
+    char buffer[SMALLBUF];
+    Agraph_t **ccs;
+    stk_t stk;
+    blk_t blk;
+    Agnode_t* base[INITBUF];
+    int len, sz = sizeof(ccgraphinfo_t);
+
+    if (agnnodes(g) == 0) {
+	*ncc = 0;
+	return 0;
+    }
+    
+    /* Bind ccgraphinfo to graph and all subgraphs */
+    aginit(g, AGRAPH, GRECNAME, -sz, FALSE);
+
+    /* Bind ccgraphinfo to graph and all subgraphs */
+    aginit(g, AGNODE, NRECNAME, sizeof(ccgnodeinfo_t), FALSE);
+
+    name = setPrefix (pfx, &len, buffer, SMALLBUF);
+
+    dg = deriveGraph(g);
+
+    ccs = N_GNEW(agnnodes(dg), Agraph_t *);
+    initStk (&stk, &blk, base, insertFn, clMarkFn);
+
+    c_cnt = 0;
+    for (dn = agfstnode(dg); dn; dn = agnxtnode(dg, dn)) {
+	if (MARKED(&stk,dn))
+	    continue;
+	sprintf(name + len, "%ld", c_cnt);
+	dout = agsubg(dg, name, 1);
+	out = agsubg(g, name, 1);
+	agbindrec(out, GRECNAME, sizeof(ccgraphinfo_t), FALSE);
+	GD_cc_subg(out) = 1;
+	n_cnt = dfs(dg, dn, dout, &stk);
+	unionNodes(dout, out);
+	e_cnt = nodeInduce(out);
+	subGInduce(g, out);
+	ccs[c_cnt] = out;
+	agdelete(dg, dout);
+	if (Verbose)
+	    fprintf(stderr, "(%4ld) %7ld nodes %7ld edges\n",
+		    c_cnt, n_cnt, e_cnt);
+	c_cnt++;
+    }
+
+    if (Verbose)
+	fprintf(stderr, "       %7d nodes %7d edges %7ld components %s\n",
+	    agnnodes(g), agnedges(g), c_cnt, agnameof(g));
+
+    agclose(dg);
+    agclean (g, AGRAPH, GRECNAME);
+    agclean (g, AGNODE, NRECNAME);
+    freeStk (&stk);
+    ccs = RALLOC(c_cnt, ccs, Agraph_t *);
+    if (name != buffer)
+	free(name);
+    *ncc = c_cnt;
+    return ccs;
 }
 
 /* isConnected:
@@ -358,21 +688,23 @@ int isConnected(Agraph_t * g)
     blk_t blk;
     Agnode_t* base[INITBUF];
 
+    if (agnnodes(g) == 0)
+	return 1;
+
+    initStk (&stk, &blk, base, NULL, markFn);
     for (n = agfstnode(g); n; n = agnxtnode(g, n))
-	UNMARK(n);
+	UNMARK(&stk,n);
+
+    if (setjmp(jbuf)) {
+	freeStk (&stk);
+	return -1;
+    }
 
     n = agfstnode(g);
-    if (n) {
-	initStk (&stk, &blk, base);
-	if (setjmp(jbuf)) {
-	    freeStk (&stk);
-	    return -1;
-        }
-	dfs(g, n, cntFn, &cnt, &stk);
-	if (cnt != agnnodes(g))
-	    ret = 0;
-	freeStk (&stk);
-    }
+    cnt = dfs(g, agfstnode(g), NULL, &stk);
+    if (cnt != agnnodes(g))
+	ret = 0;
+    freeStk (&stk);
     return ret;
 }
 
@@ -385,18 +717,5 @@ int isConnected(Agraph_t * g)
  */
 int nodeInduce(Agraph_t * g)
 {
-    Agnode_t *n;
-    Agraph_t *root = g->root;
-    Agedge_t *e;
-    int e_cnt = 0;
-
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	for (e = agfstout(root, n); e; e = agnxtout(root, e)) {
-	    if (agcontains(g, aghead(e))) {	/* test will always be true */
-		agsubedge(g,e,1);
-		e_cnt++;
-	    }
-	}
-    }
-    return e_cnt;
+    return node_induce (g, g->root);
 }

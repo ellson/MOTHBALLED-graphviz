@@ -1,9 +1,37 @@
+September 9, 2014
+	- Add plain shape for use with HTML-like labels.
+August 12, 2014
+	- Add icurve arrowhead.
+April 13, 2014
+	- Release 2.38.0
+	- Resolves bugs: 2409, 2413, 2417, 2420, 2422, 2423, 2425
+March 27, 2014
+	- Enable packing for dot
+	- Allow scaling to work for all non-dot layouts
+March 9, 2014
+	- Add overline text characteristic.
+March 4, 2014
+	- Fix bugs in gvpr and gv.cpp so edges can be created in subgraphs.
+	- Add edgepaint program for coloring edges to make them easier to tell apart.
+	- Modify neato to avoid unnecessary translations of output. This allows positions
+	given on input to remain the same on output.
+	- Fix swig java package to work and support gv.renderresult.
+	- Fix test for the absence of layout (old test relied on statically allocated Agraphinfo_t).
+	- HTML-like tables and cells can now specify which borders should be drawn.
+	- The fixedsize attribute now takes the value "shape" which allows labels much larger than the
+	node shape.
+January 11, 2014
+	- Release 2.36.0
+	- Resolves bugs: 2372, 2384, 2388, 2391, 2392, 2383, 2395, 2401, 2406
+	- Various MacOS Fixes from Pixleglow.
+	- Remove old libgraph sources from distributions.
+	- Move master git repo to github.com
 September 15, 2013
 	- Add <S> element for strike-through to HTML-like labels.
 September 6, 2013
 	- Release 2.34.0
-    - New version of xdot supporting inline text characteristics such as <b> and
-      version-specific output based on xdotversion
+	- New version of xdot supporting inline text characteristics such as <b> and
+	version-specific output based on xdotversion
 	- Resolves bugs: 2325, 2326, 2333, 2334, 2337, 2338, 2340, 2343,
 		2345, 2346, 2349, 2350, 2351, 2352, 2353, 2354, 2357, 2359
 	- Resolves Redhat bug: BZ#847458
@@ -43,8 +71,8 @@ February 27, 2012
 	- Support arbitrary lists of layers; allow the user to specify arbitrary layers for output.
 February 24, 2012
 	- A collection of gvpr scripts, which were part of the source package, are now
-      installed in <prefix>/share/graphviz/gvpr, and the that path is used as part of th
-      default built-in path for gvpr.
+	installed in <prefix>/share/graphviz/gvpr, and the that path is used as part of th
+	default built-in path for gvpr.
 February 15, 2012
 	- Update libexpr to reflect Glenn Fowler's changes including scopes for variables.
 February 9, 2012
@@ -68,11 +96,11 @@ August 24, 2011
 August 16, 2011
 	- Add tapered edges
 August 3, 2011
-    - Add support for external labels
+	- Add support for external labels
 July 14, 2011
-    - Add initial implementation of graphml2gv
+	- Add initial implementation of graphml2gv
 July 8, 2011
-    - Add basic horizontal and vertical rules to html tables
+	- Add basic horizontal and vertical rules to html tables
 May 6, 2011
 	- Release 2.28.0
 	- incremented library api version:

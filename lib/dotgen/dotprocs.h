@@ -28,6 +28,7 @@ extern "C" {
     extern void allocate_ranks(Agraph_t *);
     extern void build_ranks(Agraph_t *, int);
     extern void build_skeleton(Agraph_t *, Agraph_t *);
+    extern void checkLabelOrder (graph_t* g);
     extern void class1(Agraph_t *);
     extern void class2(Agraph_t *);
     extern void decompose(Agraph_t *, int);
@@ -38,6 +39,7 @@ extern "C" {
     extern void dot_layout(Agraph_t * g);
     extern void dot_init_node_edge(graph_t * g);
     extern void dot_scan_ranks(graph_t * g);
+    extern void enqueue_neighbors(nodequeue * q, node_t * n0, int pass);
     extern void expand_cluster(Agraph_t *);
     extern Agedge_t *fast_edge(Agedge_t *);
     extern void fast_node(Agraph_t *, Agnode_t *);
@@ -77,6 +79,7 @@ extern "C" {
 #if defined(_BLD_dot) && defined(_DLL)
 #   define extern __EXPORT__
 #endif
+    extern Agraph_t* dot_root(void *);
     extern void dot_concentrate(Agraph_t *);
     extern void dot_mincross(Agraph_t *, int);
     extern void dot_position(Agraph_t *, aspect_t*);

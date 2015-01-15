@@ -1,0 +1,33 @@
+.TH LIBLAB_GAMUT 3 "30 JULY 2014"
+.SH NAME
+\fBliblab_gamut\fR \- data library for default color labeling
+.SH SYNOPSIS
+.ta .75i 1.5i 2.25i 3i 3.75i 4.5i 5.25i 6i
+.PP
+.nf
+\f5
+#include <lab_gamut.h>
+
+typedef struct {
+  signed char l, a, b;/* l: 0 to 100, a,b: -128 tp 128 */
+} char_color_lab;
+
+extern const char_color_lab lab_gamut_data[];
+extern int lab_gamut_data_size;
+
+\fP
+.fi
+.SH DESCRIPTION
+This library contains a large table of color specifications 
+used by default to disambiguate nodes or edges by distinct colors.
+It is not meant to be accessed directly by the user.
+The number of colors is given by \f5lab_gamut_data_size\fP. 
+.SH SEE ALSO
+.BR edgepaint (1),
+.BR gvmap (1),
+.BR cluster (3)
+
+.SH AUTHORS
+Yifan Hu <yifanhu@yahoo.com>
+Emden Gansner <erg@graphviz.org>
+

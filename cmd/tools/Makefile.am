@@ -141,7 +141,7 @@ gc_LDADD = \
 gc.1.pdf: $(srcdir)/gc.1
 	- @GROFF@ -Tps -man $(srcdir)/gc.1 | @PS2PDF@ - - >gc.1.pdf
 
-gvpack_SOURCES = gvpack.c gvpack_builtins.c
+gvpack_SOURCES = gvpack.c
 gvpack_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=0
 
 gvpack_LDADD = \
@@ -152,7 +152,7 @@ gvpack_LDADD = \
 	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout.la
 
 if ENABLE_STATIC
-gvpack_static_SOURCES = gvpack.c gvpack_builtins.c
+gvpack_static_SOURCES = gvpack.c
 gvpack_static_CPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=0
 gvpack_static_LDADD = \
 	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout_C.la \
@@ -240,7 +240,7 @@ gvgen_LDADD = \
 gvgen.1.pdf: $(srcdir)/gvgen.1
 	- @GROFF@ -Tps -man $(srcdir)/gvgen.1 | @PS2PDF@ - - >gvgen.1.pdf
 
-EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old bcomps.vcproj \
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) bcomps.vcproj \
 	acyclic.vcproj bcomps.vcproj ccomps.vcproj dijkstra.vcproj gc.vcproj \
 	gv2gxl.vcproj gvcolor.vcproj gvgen.vcproj gvpack.vcproj gxl2gv.vcproj \
 	mm2gv.vcproj nop.vcproj sccmap.vcproj tred.vcproj unflatten.vcproj \

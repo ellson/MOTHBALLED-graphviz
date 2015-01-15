@@ -27,7 +27,7 @@ INSTALL_DIR = ../info
 XGIF = forward.gif back.gif both.gif nohead.gif
 
 MGIF = constraint.gif record.gif html1.gif html2.gif fill.gif round.gif \
-       mrecord.gif html3.gif html4.gif colorlist.gif record2.gif
+       mrecord.gif html3.gif html4.gif colorlist.gif record2.gif fixed.gif tee.gif
 
 MJPG = sdlshapes.jpg
 
@@ -61,7 +61,7 @@ SGIF = Mcircle.gif Mdiamond.gif Msquare.gif box.gif \
       proteinstab.gif rpromoter.gif rarrow.gif larrow.gif lpromoter.gif
 
 AGIF = a_normal.gif a_inv.gif a_dot.gif a_invdot.gif a_odot.gif \
-       a_invodot.gif a_curve.gif a_none.gif \
+       a_invodot.gif a_curve.gif a_icurve.gif a_none.gif \
        a_tee.gif a_empty.gif a_invempty.gif a_open.gif \
        a_diamond.gif a_odiamond.gif a_box.gif a_obox.gif a_crow.gif \
        a_halfopen.gif a_ediamond.gif a_lteeoldiamond.gif
@@ -75,11 +75,13 @@ A2GIF= aa_box.gif aa_lbox.gif aa_rbox.gif aa_obox.gif aa_olbox.gif aa_orbox.gif\
        aa_normal.gif aa_lnormal.gif aa_rnormal.gif aa_onormal.gif aa_olnormal.gif aa_ornormal.gif\
        aa_tee.gif aa_ltee.gif aa_rtee.gif \
        aa_vee.gif aa_lvee.gif aa_rvee.gif \
-       aa_curve.gif aa_lcurve.gif aa_rcurve.gif
+       aa_curve.gif aa_lcurve.gif aa_rcurve.gif \
+       aa_icurve.gif aa_licurve.gif aa_ricurve.gif
+
        
 
 GIF = $(SGIF) $(AGIF) $(MGIF) $(A2GIF) $(XGIF)
-DOTS = html2.gv html3.gv html4.gv
+DOTS = html2.gv html3.gv html4.gv tee.gv
 HTML = attrs.html colors.html command.html lang.html output.html shapes.html \
        arrows.html
 INSTALL_FILES = $(HTML) $(DOTS) $(SGIF) $(AGIF) $(A2GIF) $(MGIF) $(XGIF) $(MJPG) $(MPNG)

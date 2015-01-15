@@ -213,7 +213,7 @@ static void doSide(GVJ_t * job, pointf p, double wd, double ht)
 /* mkPts:
  * Convert boxf into four corner points
  * If border is > 1, inset the points by half the border.
- * It is assume AF is pointf[4], so the data is store there
+ * It is assumed AF is pointf[4], so the data is store there
  * and AF is returned.
  */
 static pointf *mkPts(pointf * AF, boxf b, int border)
@@ -243,9 +243,10 @@ static pointf *mkPts(pointf * AF, boxf b, int border)
  */
 static void doBorder(GVJ_t * job, htmldata_t * dp, boxf b)
 {
-    pointf AF[4];
+    pointf AF[7];
     char *sptr[2];
     char *color = (dp->pencolor ? dp->pencolor : DEFAULT_COLOR);
+    unsigned short sides;
 
     gvrender_set_pencolor(job, color);
     if ((dp->style & (DASHED | DOTTED))) {
@@ -261,7 +262,63 @@ static void doBorder(GVJ_t * job, htmldata_t * dp, boxf b)
 
     if (dp->style & ROUNDED)
 	round_corners(job, mkPts(AF, b, dp->border), 4, ROUNDED, 0);
-    else {
+    else if ((sides = (dp->flags & BORDER_MASK))) {
+	mkPts (AF+1, b, dp->border);  /* AF[1-4] has LL=SW,SE,UR=NE,NW */
+	switch (sides) {
+	case BORDER_BOTTOM :
+	    gvrender_polyline(job, AF+1, 2);
+	    break;
+	case BORDER_RIGHT :
+	    gvrender_polyline(job, AF+2, 2);
+	    break;
+	case BORDER_TOP :
+	    gvrender_polyline(job, AF+3, 2);
+	    break;
+	case BORDER_LEFT :
+	    AF[0] = AF[4];
+	    gvrender_polyline(job, AF, 2);
+	    break;
+	case BORDER_BOTTOM|BORDER_RIGHT :
+	    gvrender_polyline(job, AF+1, 3);
+	    break;
+	case BORDER_RIGHT|BORDER_TOP :
+	    gvrender_polyline(job, AF+2, 3);
+	    break;
+	case BORDER_TOP|BORDER_LEFT :
+	    AF[5] = AF[1];
+	    gvrender_polyline(job, AF+3, 3);
+	    break;
+	case BORDER_LEFT|BORDER_BOTTOM :
+	    AF[0] = AF[4];
+	    gvrender_polyline(job, AF, 3);
+	    break;
+	case BORDER_BOTTOM|BORDER_RIGHT|BORDER_TOP :
+	    gvrender_polyline(job, AF+1, 4);
+	    break;
+	case BORDER_RIGHT|BORDER_TOP|BORDER_LEFT :
+	    AF[5] = AF[1];
+	    gvrender_polyline(job, AF+2, 4);
+	    break;
+	case BORDER_TOP|BORDER_LEFT|BORDER_BOTTOM :
+	    AF[5] = AF[1];
+	    AF[6] = AF[2];
+	    gvrender_polyline(job, AF+3, 4);
+	    break;
+	case BORDER_LEFT|BORDER_BOTTOM|BORDER_RIGHT :
+	    AF[0] = AF[4];
+	    gvrender_polyline(job, AF, 4);
+	    break;
+	case BORDER_TOP|BORDER_BOTTOM :
+	    gvrender_polyline(job, AF+1, 2);
+	    gvrender_polyline(job, AF+3, 2);
+	    break;
+	case BORDER_LEFT|BORDER_RIGHT :
+	    AF[0] = AF[4];
+	    gvrender_polyline(job, AF, 2);
+	    gvrender_polyline(job, AF+2, 2);
+	    break;
+	}
+    } else {
 	if (dp->border > 1) {
 	    double delta = ((double) dp->border) / 2.0;
 	    b.LL.x += delta;
@@ -569,6 +626,8 @@ static void emit_html_img(GVJ_t * job, htmlimg_t * cp, htmlenv_t * env)
 	scale = cp->scale;
     else
 	scale = env->imgscale;
+    assert(cp->src);
+    assert(cp->src[0]);
     gvrender_usershape(job, cp->src, A, 4, TRUE, scale);
 }
 
@@ -1154,7 +1213,7 @@ size_html_cell(graph_t * g, htmlcell_t * cp, htmltbl_t * parent,
 
     if (cp->data.flags & FIXED_FLAG) {
 	if (cp->data.width && cp->data.height) {
-	    if ((cp->data.width < sz.x) || (cp->data.height < sz.y)) {
+	    if (((cp->data.width < sz.x) || (cp->data.height < sz.y)) && (cp->child.kind != HTML_IMAGE)) {
 		agerr(AGWARN, "cell size too small for content\n");
 		rv = 1;
 	    }
@@ -2055,8 +2114,8 @@ int make_html_label(void *obj, textlabel_t * lp)
 	if (!lbl->u.tbl->data.pencolor && getPenColor(obj))
 	    lbl->u.tbl->data.pencolor = strdup(getPenColor(obj));
 	rv |= size_html_tbl(g, lbl->u.tbl, NULL, &env);
-	wd2 = (lbl->u.tbl->data.box.UR.x + 1) / 2;
-	ht2 = (lbl->u.tbl->data.box.UR.y + 1) / 2;
+	wd2 = (lbl->u.tbl->data.box.UR.x) / 2;
+	ht2 = (lbl->u.tbl->data.box.UR.y) / 2;
 	box = boxfof(-wd2, -ht2, wd2, ht2);
 	pos_html_tbl(lbl->u.tbl, box, BOTTOM | RIGHT | TOP | LEFT);
 	lp->dimen.x = box.UR.x - box.LL.x;

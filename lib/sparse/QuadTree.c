@@ -373,6 +373,7 @@ QuadTree QuadTree_new_from_point_list(int dim, int n, int max_level, real *coord
     center[i] = (xmin[i] + xmax[i])*0.5;
     width = MAX(width, xmax[i] - xmin[i]);
   }
+  if (width == 0) width = 0.00001;/* if we only have one point, width = 0! */
   width *= 0.52;
   qt = QuadTree_new(dim, center, width, max_level);
 
@@ -446,7 +447,7 @@ static int QuadTree_get_quadrant(int dim, real *center, real *coord){
   return d;
 }
 
-static QuadTree QuadTree_new_in_quadrant(int dim, real *center, real width, int max_level, int i){
+QuadTree QuadTree_new_in_quadrant(int dim, real *center, real width, int max_level, int i){
   /* a new quadtree in quadrant i of the original cell. The original cell is centered at 'center".
      The new cell have width "width".
    */

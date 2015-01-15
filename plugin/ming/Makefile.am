@@ -38,4 +38,4 @@ if WITH_DARWIN9
 libgvplugin_ming_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_ming_LTX_library
 endif
 
-EXTRA_DIST = Makefile.old Bitstream_Vera_Sans.fdb Bitstream_Vera_Serif.fdb
+EXTRA_DIST = Bitstream_Vera_Sans.fdb Bitstream_Vera_Serif.fdb

@@ -11,6 +11,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/neatogen \
 	-I$(top_srcdir)/lib/sfdpgen \
 	-I$(top_srcdir)/lib/sparse \
+	-I$(top_srcdir)/lib/edgepaint \
 	-I$(top_srcdir)/lib/cgraph \
 	-I$(top_srcdir)/lib/ingraphs \
 	-I$(top_srcdir)/lib/cdt
@@ -31,22 +32,26 @@ gvmap_CPPFLAGS = $(AM_CPPFLAGS)
 cluster_CPPFLAGS = $(AM_CPPFLAGS) -g
 
 gvmap_LDADD = \
+	$(top_builddir)/lib/edgepaint/libedgepaint_C.la \
 	$(top_builddir)/lib/sfdpgen/libsfdpgen_C.la \
 	$(top_builddir)/lib/neatogen/libneatogen_C.la \
 	$(top_builddir)/lib/sparse/libsparse_C.la \
 	$(top_builddir)/lib/rbtree/librbtree_C.la \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(top_builddir)/lib/common/libcommon_C.la \
+	$(top_builddir)/lib/edgepaint/liblab_gamut.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(GTS_LIBS) -lm
 
 cluster_LDADD = \
+	$(top_builddir)/lib/edgepaint/libedgepaint_C.la \
 	$(top_builddir)/lib/sfdpgen/libsfdpgen_C.la \
 	$(top_builddir)/lib/neatogen/libneatogen_C.la \
 	$(top_builddir)/lib/sparse/libsparse_C.la \
 	$(top_builddir)/lib/rbtree/librbtree_C.la \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(top_builddir)/lib/common/libcommon_C.la \
+	$(top_builddir)/lib/edgepaint/liblab_gamut.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(GTS_LIBS) -lm
 

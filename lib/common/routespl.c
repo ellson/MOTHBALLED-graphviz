@@ -532,7 +532,7 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
     if (flip) {
 	int i;
 	for (bi = 0; bi < boxn; bi++) {
-	    int v = boxes[bi].UR.y;
+	    double v = boxes[bi].UR.y;
 	    boxes[bi].UR.y = -1*boxes[bi].LL.y;
 	    boxes[bi].LL.y = -v;
 	}
@@ -918,6 +918,7 @@ static void bend(pointf spl[4], pointf centroid)
         double vX = centroid.x - midpt.x;
         double vY = centroid.y - midpt.y;
         double magV = sqrt(vX*vX + vY*vY);
+	if (magV == 0) return;  /* if midpoint == centroid, don't divide by zero */
         a.x = midpt.x - vX / magV * r;      /* + would be closest point */
         a.y = midpt.y - vY / magV * r;
     }
@@ -930,22 +931,52 @@ static void bend(pointf spl[4], pointf centroid)
  *
  * FIX: handle ports on boundary?
  */
+#define MAX_EDGE 20
 void 
 makeStraightEdge(graph_t * g, edge_t * e, int et, splineInfo* sinfo)
 {
+    edge_t *e0;
+    edge_t** edges;
+    edge_t* elist[MAX_EDGE];
+    int i, e_cnt;
+
+    e_cnt = 1;
+    e0 = e;
+    while ((e0 = ED_to_virt(e0))) e_cnt++;
+
+    if (e_cnt <= MAX_EDGE)
+	edges = elist;
+    else
+	edges = N_NEW(e_cnt,edge_t*);
+    e0 = e;
+    for (i = 0; i < e_cnt; i++) {
+	edges[i] = e0;
+	e0 = ED_to_virt(e0);
+    }
+    makeStraightEdges (g, edges, e_cnt, et, sinfo);
+    if (e_cnt > MAX_EDGE) free (edges);
+
+}
+
+void 
+makeStraightEdges(graph_t * g, edge_t** edges, int e_cnt, int et, splineInfo* sinfo)
+{
     pointf dumb[4];
-    node_t *n = agtail(e);
-    node_t *head = aghead(e);
-    int e_cnt = ED_count(e);
+    node_t *n;
+    node_t *head;
     int curved = (et == ET_CURVED);
     pointf perp;
     pointf del;
     edge_t *e0;
+    edge_t *e;
     int i, j, xstep, dx;
     double l_perp;
     pointf dumber[4];
     pointf p, q;
 
+    e = edges[0];
+    n = agtail(e);
+    head = aghead(e);
     p = dumb[1] = dumb[0] = add_pointf(ND_coord(n), ED_tail_port(e).p);
     q = dumb[2] = dumb[3] = add_pointf(ND_coord(head), ED_head_port(e).p);
     if ((e_cnt == 1) || Concentrate) {
@@ -978,6 +1009,7 @@ makeStraightEdge(graph_t * g, edge_t * e, int et, splineInfo* sinfo)
     }
 
     for (i = 0; i < e_cnt; i++) {
+	e0 = edges[i];
 	if (aghead(e0) == head) {
 	    p = dumb[0];
 	    q = dumb[3];
@@ -1007,7 +1039,6 @@ makeStraightEdge(graph_t * g, edge_t * e, int et, splineInfo* sinfo)
 	    clip_and_install(e0, aghead(e0), dumber, 4, sinfo);
 
 	addEdgeLabels(g, e0, p, q);
-	e0 = ED_to_virt(e0);
 	dumb[1].x += del.x;
 	dumb[1].y += del.y;
 	dumb[2].x += del.x;

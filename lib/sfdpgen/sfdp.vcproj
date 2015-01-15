@@ -177,10 +177,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\QuadTree.c"
-				>
-			</File>
-			<File
 				RelativePath=".\sfdpinit.c"
 				>
 			</File>

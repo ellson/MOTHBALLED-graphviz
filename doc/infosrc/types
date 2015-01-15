@@ -148,7 +148,7 @@ interpreting "forward" and "back".
 A colon-separated list of doubles: "<I>%f</I>(:<I>%f</I>)*"
  where each <I>%f</I> is a double.
 :escString
-string allowing escape sequences which are replaced according
+A string allowing escape sequences which are replaced according
 to the context.
 For node attributes, the substring "&#92;N" is replaced by the name of the node,
 and the substring "&#92;G" by the name of the graph.
@@ -169,6 +169,9 @@ In addition, if the associated attribute is
 the escape sequences "&#92;n", "&#92;l" and "&#92;r"
 divide the label into lines, centered, left-justified, and right-justified,
 respectively.
+<P>
+Obviously, one can use "&#92;&#92;" to get a single backslash. A backslash appearing before any
+character not listed above is ignored.
 :lblString
 an <A HREF=#k:escString>escString</A>
 or an <A HREF=shapes.html#html>HTML label</A>.
@@ -368,20 +371,34 @@ Examples of tapered line styles are given below.
 Examples of linear and radial gradient fill can be seen under  <A HREF=#k:colorList>colorList</A>.
 <P>
   <TABLE border=1>
-    <TR><TD align="center"><tt>solid</tt><TD align="center"><tt>dashed</tt><TD align="center"><tt>dotted</tt><TD align="center"><tt>bold</tt><TD align="center"><tt>rounded</tt><TD align="center"><tt>diagonals</tt><TD align="center"><tt>filled</tt><TD align="center"><tt>striped</tt><TD align="center"><tt>wedged</tt></TR>
-    <TR><TD><IMG SRC="n_solid.png"><TD><IMG SRC="n_dashed.png"><TD><IMG SRC="n_dotted.png"><TD><IMG SRC="n_bold.png"><TD><IMG SRC="n_rounded.png"><TD><IMG SRC="n_diagonals.png"><TD><IMG SRC="n_filled.png"><TD><IMG SRC="n_striped.png"><TD><IMG SRC="n_wedged.png"></TR>
+    <TR><TD align="center"><tt>solid</tt> <TD><IMG SRC="n_solid.png">
+       <TD align="center"><tt>dashed</tt> <TD><IMG SRC="n_dashed.png">
+       <TD align="center"><tt>dotted</tt> <TD><IMG SRC="n_dotted.png"> </TR>
+    <TR><TD align="center"><tt>bold</tt> <TD><IMG SRC="n_bold.png">
+       <TD align="center"><tt>rounded</tt> <TD><IMG SRC="n_rounded.png">
+       <TD align="center"><tt>diagonals</tt> <TD><IMG SRC="n_diagonals.png"> </TR>
+    <TR><TD align="center"><tt>filled</tt> <TD><IMG SRC="n_filled.png">
+       <TD align="center"><tt>striped</tt> <TD><IMG SRC="n_striped.png">
+       <TD align="center"><tt>wedged</tt> <TD><IMG SRC="n_wedged.png"></TR>
     <CAPTION>Basic style settings for nodes</CAPTION>
   </TABLE>
 <P>
   <TABLE border=1>
-    <TR><TD align="center"><tt>solid</tt><TD align="center"><tt>dashed</tt><TD align="center"><tt>dotted</tt><TD align="center"><tt>bold</tt></TR>
-    <TR><TD><IMG SRC="e_solid.png"><TD><IMG SRC="e_dashed.png"><TD><IMG SRC="e_dotted.png"><TD><IMG SRC="e_bold.png"></TR>
+    <TR><TD align="center"><tt>solid</tt> <TD><IMG SRC="e_solid.png"> 
+        <TD align="center"><tt>dashed</tt> <TD><IMG SRC="e_dashed.png"> </TR>
+    <TR><TD align="center"><tt>dotted</tt> <TD><IMG SRC="e_dotted.png">
+        <TD align="center"><tt>bold</tt> <TD><IMG SRC="e_bold.png"></TR> <TR>
     <CAPTION>Basic style settings for edges</CAPTION>
   </TABLE>
 <P>
   <TABLE border=1>
-    <TR><TD align="center"><tt>solid</tt><TD align="center"><tt>dashed</tt><TD align="center"><tt>dotted</tt><TD align="center"><tt>bold</tt><TD align="center"><tt>rounded</tt><TD align="center"><tt>filled</tt><TD align="center"><tt>striped</tt></TR>
-    <TR><TD><IMG SRC="c_solid.png"><TD><IMG SRC="c_dashed.png"><TD><IMG SRC="c_dotted.png"><TD><IMG SRC="c_bold.png"><TD><IMG SRC="c_rounded.png"><TD><IMG SRC="c_filled.png"><TD><IMG SRC="c_striped.png"></TR>
+    <TR><TD align="center"><tt>solid</tt> <TD><IMG SRC="c_solid.png"> 
+        <TD align="center"><tt>dashed</tt> <TD><IMG SRC="c_dashed.png">
+        <TD align="center"><tt>dotted</tt> <TD><IMG SRC="c_dotted.png">
+        <TD align="center"><tt>bold</tt> <TD><IMG SRC="c_bold.png"> </TR>
+    <TR><TD align="center"><tt>rounded</tt> <TD><IMG SRC="c_rounded.png">
+        <TD align="center"><tt>filled</tt> <TD><IMG SRC="c_filled.png">
+        <TD align="center"><tt>striped</tt> <TD><IMG SRC="c_striped.png"></TR>
     <CAPTION>Basic style settings for clusters</CAPTION>
   </TABLE>
 <P>
@@ -401,9 +418,11 @@ supplied via a <A HREF=#k:colorList>colorList</A> are ignored.
 The following table illustrates the <tt>style=tapered</tt> with <tt>penwidth=7</tt> and
 <tt>arrowtail=none</tt>.
   <TABLE border=1>
-    <TR><TD><tt>arrowhead</tt> &#92; <tt>dir</tt><TD align="center"><tt>forward</tt><TD align="center"><tt>back</tt><TD align="center"><tt>both</tt><TD align="center"><tt>none</tt></TR>
-    <TR><TD><tt>normal</tt><TD><IMG SRC="normal_forward.png"><TD><IMG SRC="normal_back.png"><TD><IMG SRC="normal_both.png"><TD><IMG SRC="normal_none.png"></TR>
-    <TR><TD><tt>none</tt><TD><IMG SRC="none_forward.png"><TD><IMG SRC="none_back.png"><TD><IMG SRC="none_both.png"><TD><IMG SRC="none_none.png"></TR>
+    <TR><TD><tt>dir</tt> &#92; <tt>arrowhead</tt><TD align="center"><tt>normal</tt><TD align="center"><tt>none</tt></TR>
+    <TR><TD align="center"><tt>forward</tt> <TD><IMG SRC="normal_forward.png"> <TD><IMG SRC="none_forward.png"> </TR>
+    <TR><TD align="center"><tt>back</tt> <TD><IMG SRC="normal_back.png"> <TD><IMG SRC="none_back.png"> </TR>
+    <TR><TD align="center"><tt>both</tt> <TD><IMG SRC="normal_both.png"> <TD><IMG SRC="none_both.png"> </TR>
+    <TR><TD align="center"><tt>none</tt> <TD><IMG SRC="normal_none.png"> <TD><IMG SRC="none_none.png"></TR>
   </TABLE>
 <P>
 Additional styles are available in

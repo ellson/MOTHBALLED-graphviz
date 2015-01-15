@@ -74,7 +74,9 @@ extern unsigned char Verbose;
 #define MEMCPY memcpy
 
 #ifndef DEBUG
+#ifndef NDEBUG
 #define NDEBUG /* switch off assert*/
+#endif
 #endif
 
 #ifdef DEBUG
@@ -116,6 +118,8 @@ real vector_percentile(int n, real *x, real y);/* find the value such that y% of
 void vector_print(char *s, int n, real *x);
 
 #define MACHINEACC 1.0e-16
+#define SQRT_MACHINEACC 1.0e-8
+
 
 int excute_system_command3(char *s1, char *s2, char *s3);
 int excute_system_command(char *s1, char *s2);
@@ -133,6 +137,12 @@ real point_distance(real *p1, real *p2, int dim);
 char *strip_dir(char *s);
 
 void scale_to_box(real xmin, real ymin, real xmax, real ymax, int n, int dim, real *x);
+
+/* check to see if this is a string is integer (that can be casted into an integer variable hence very long list of digits are not valid, like 123456789012345. Return 1 if true, 0 if false. */
+int validQ_int_string(char *to_convert, int *v);
+
+/* check to see if this is a string of digits consists of 0-9 */
+int digitsQ(char *to_convert);
 
 #endif
 

@@ -3,9 +3,9 @@
 
 error() { echo "$0: $*" >&2; exit 1; }
 
-editor="/usr/bin/vim"
+editor="vim"
 
-if ! test -x "$editor"; then error "the \"$editor\" editor not found or not executable"; fi
+if ! test -x "$(command -v "$editor")"; then error "the \"$editor\" editor not found or not executable"; fi
 
 default="noname.gv"
 

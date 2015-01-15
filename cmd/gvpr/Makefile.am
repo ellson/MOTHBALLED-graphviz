@@ -46,6 +46,6 @@ gvpr_static_LDADD = \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
        	$(MATH_LIBS)
 
-EXTRA_DIST = $(man_MANS) $(pdf_DATA) lib Makefile.old gvpr.vcproj
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) lib gvpr.vcproj
 
 DISTCLEANFILES = $(pdf_DATA)

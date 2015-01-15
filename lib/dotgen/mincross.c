@@ -26,11 +26,6 @@
 #define saveorder(v)	(ND_coord(v)).x
 #define flatindex(v)	ND_low(v)
 
-static int gd_minrank(Agraph_t *g) {return GD_minrank(g);}
-static int gd_maxrank(Agraph_t *g) {return GD_maxrank(g);}
-static rank_t *gd_rank(Agraph_t *g, int r) {return &GD_rank(g)[r];}
-static int nd_order(Agnode_t *v) { return ND_order(v); }
-
 	/* forward declarations */
 static boolean medians(graph_t * g, int r0, int r1);
 static int nodeposcmpf(node_t ** n0, node_t ** n1);
@@ -50,7 +45,13 @@ static void save_best(graph_t * g);
 static void restore_best(graph_t * g);
 static adjmatrix_t *new_matrix(int i, int j);
 static void free_matrix(adjmatrix_t * p);
+static int ordercmpf(int *i0, int *i1);
 #ifdef DEBUG
+static int gd_minrank(Agraph_t *g) {return GD_minrank(g);}
+static int gd_maxrank(Agraph_t *g) {return GD_maxrank(g);}
+static rank_t *gd_rank(Agraph_t *g, int r) {return &GD_rank(g)[r];}
+static int nd_order(Agnode_t *v) { return ND_order(v); }
+
 void check_rs(graph_t * g, int null_ok);
 void check_order(void);
 void check_vlists(graph_t * g);
@@ -67,6 +68,260 @@ static int GlobalMinRank, GlobalMaxRank;
 static edge_t **TE_list;
 static int *TI_list;
 static boolean ReMincross;
+
+#ifdef DEBUG
+static void indent(graph_t* g)
+{
+  if (g->parent) {
+    fprintf (stderr, "  ");
+    indent(g->parent);
+  }
+}
+
+static char* nname(node_t* v)
+{
+        static char buf[1000];
+	if (ND_node_type(v)) {
+		if (ND_ranktype(v) == CLUSTER)
+			sprintf (buf, "v%s_%p", agnameof(ND_clust(v)), v);
+		else
+			sprintf (buf, "v_%p", v);
+	} else
+		sprintf (buf, "%s", agnameof(v));
+	return buf;
+}
+static void dumpg (graph_t* g)
+{
+    int j, i, r;
+    node_t* v;
+    edge_t* e;
+
+    fprintf (stderr, "digraph A {\n");
+    for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
+	fprintf (stderr, "  subgraph {rank=same  ");
+	for (i = 0; i < GD_rank(g)[r].n; i++) {
+	  v = GD_rank(g)[r].v[i];
+          if (i > 0)
+ 	    fprintf (stderr, " -> %s", nname(v));
+          else
+ 	    fprintf (stderr, "%s", nname(v));
+        }
+        if (i > 1) fprintf (stderr, " [style=invis]}\n");
+        else fprintf (stderr, " }\n");
+    }
+    for (r = GD_minrank(g); r < GD_maxrank(g); r++) {
+	for (i = 0; i < GD_rank(g)[r].n; i++) {
+	  v = GD_rank(g)[r].v[i];
+	  for (j = 0; (e = ND_out(v).list[j]); j++) {
+             fprintf (stderr, "%s -> ", nname(v));
+             fprintf (stderr, "%s\n", nname(aghead(e)));
+          }
+        }
+    }
+    fprintf (stderr, "}\n");
+}
+static void dumpr (graph_t* g, int edges)
+{
+    int j, i, r;
+    node_t* v;
+    edge_t* e;
+
+    for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
+	fprintf (stderr, "[%d] ", r);
+	for (i = 0; i < GD_rank(g)[r].n; i++) {
+	  v = GD_rank(g)[r].v[i];
+ 	  fprintf (stderr, "%s(%.02f,%d) ", nname(v), saveorder(v),ND_order(v));
+        }
+	fprintf (stderr, "\n");
+    }
+    if (edges == 0) return;
+    for (r = GD_minrank(g); r < GD_maxrank(g); r++) {
+	for (i = 0; i < GD_rank(g)[r].n; i++) {
+	  v = GD_rank(g)[r].v[i];
+	  for (j = 0; (e = ND_out(v).list[j]); j++) {
+             fprintf (stderr, "%s -> ", nname(v));
+             fprintf (stderr, "%s\n", nname(aghead(e)));
+          }
+        }
+    }
+}
+#endif
+
+typedef struct {
+    Agrec_t h;
+    int x, lo, hi;
+    Agnode_t* np;
+} info_t;
+
+#define ND_x(n) (((info_t*)AGDATA(n))->x)
+#define ND_lo(n) (((info_t*)AGDATA(n))->lo)
+#define ND_hi(n) (((info_t*)AGDATA(n))->hi)
+#define ND_np(n) (((info_t*)AGDATA(n))->np)
+#define ND_idx(n) (ND_order(ND_np(n)))
+
+static void
+emptyComp (graph_t* sg)
+{
+    Agnode_t* n;
+    Agnode_t* nxt;
+
+    for (n = agfstnode(sg); n; n = nxt) {
+	nxt = agnxtnode (sg, n);
+	agdelnode(sg,n);
+    }
+}
+
+#define isBackedge(e) (ND_idx(aghead(e)) > ND_idx(agtail(e)))
+
+static Agnode_t*
+findSource (Agraph_t* g, Agraph_t* sg)
+{
+    Agnode_t* n;
+
+    for (n = agfstnode(sg); n; n = agnxtnode(sg, n))
+	if (agdegree(g,n,1,0) == 0) return n;
+    return NULL;
+}
+
+static int
+topsort (Agraph_t* g, Agraph_t* sg, Agnode_t** arr)
+{
+    Agnode_t* n;
+    Agedge_t* e;
+    Agedge_t* nxte;
+    int cnt = 0;
+
+    while ((n = findSource(g, sg))) {
+	arr[cnt++] = ND_np(n); 
+	agdelnode(sg, n);
+	for (e = agfstout(g, n); e; e = nxte) {
+	    nxte = agnxtout(g, e); 
+	    agdeledge(g, e);
+	}
+    }
+    return cnt;
+}
+
+static int
+getComp (graph_t* g, node_t* n, graph_t* comp, int* indices)
+{
+    int backedge = 0;
+    Agedge_t* e;
+
+    ND_x(n) = 1;
+    indices[agnnodes(comp)] = ND_idx(n);
+    agsubnode(comp, n, 1);
+    for (e = agfstout(g,n); e; e = agnxtout(g,e)) {
+	if (isBackedge(e)) backedge++;
+	if (!ND_x(aghead(e)))
+	    backedge += getComp(g, aghead(e), comp, indices);
+    }
+    for (e = agfstin(g,n); e; e = agnxtin(g,e)) {
+	if (isBackedge(e)) backedge++;
+	if (!ND_x(agtail(e)))
+	    backedge += getComp(g, agtail(e), comp, indices);
+    }
+    return backedge;
+}
+
+/* fixLabelOrder:
+ * For each pair of nodes (labels), we add an edge 
+ */
+static void
+fixLabelOrder (graph_t* g, rank_t* rk)
+{
+    int cnt, haveBackedge = FALSE;
+    Agnode_t** arr;
+    int* indices;
+    Agraph_t* sg;
+    Agnode_t* n;
+    Agnode_t* nxtp;
+    Agnode_t* v;
+
+    for (n = agfstnode(g); n; n = nxtp) {
+	v = nxtp = agnxtnode(g, n);
+	for (; v; v = agnxtnode(g, v)) {
+	    if (ND_hi(v) <= ND_lo(n)) { 
+		haveBackedge = TRUE;
+		agedge(g, v, n, NULL, 1);
+	    }
+	    else if (ND_hi(n) <= ND_lo(v)) { 
+		agedge(g, n, v, NULL, 1);
+	    }
+	}
+    }
+    if (!haveBackedge) return;
+    
+    sg = agsubg(g, "comp", 1);
+    arr = N_NEW(agnnodes(g), Agnode_t*);
+    indices = N_NEW(agnnodes(g), int);
+
+    for (n = agfstnode(g); n; n = agnxtnode(g,n)) {
+	if (ND_x(n) || (agdegree(g,n,1,1) == 0)) continue;
+	if (getComp(g, n, sg, indices)) {
+	    int i, sz = agnnodes(sg);
+	    cnt = topsort (g, sg, arr);
+	    assert (cnt == sz);
+	    qsort(indices, cnt, sizeof(int), (qsort_cmpf)ordercmpf);
+	    for (i = 0; i < sz; i++) {
+		ND_order(arr[i]) = indices[i];
+		rk->v[indices[i]] = arr[i];
+	    }
+       }
+       emptyComp(sg);
+    }
+    free (arr);
+}
+
+/* checkLabelOrder:
+ * Check that the ordering of labels for flat edges is consistent. 
+ * This is necessary because dot_position will attempt to force the label
+ * to be between the edge's vertices. This can lead to an infeasible problem.
+ *
+ * We check each rank for any flat edge labels (as dummy nodes) and create a
+ * graph with a node for each label. If the graph contains more than 1 node, we
+ * call fixLabelOrder to see if there really is a problem and, if so, fix it.
+ */ 
+void
+checkLabelOrder (graph_t* g)
+{
+    int j, r, lo, hi;
+    graph_t* lg = NULL;
+    char buf[BUFSIZ];
+    rank_t* rk;
+    Agnode_t* u;
+    Agnode_t* n;
+    Agedge_t* e;
+
+    for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
+	rk = GD_rank(g)+r;
+	for (j = 0; j < rk->n; j++) {
+	    u = rk->v[j];
+	    if ((e = (edge_t*)ND_alg(u))) {
+		if (!lg) lg = agopen ("lg", Agstrictdirected, 0);
+		sprintf (buf, "%d", j);
+		n = agnode(lg, buf, 1);
+		agbindrec(n, "info", sizeof(info_t), 1);
+		lo = ND_order(aghead(ND_out(u).list[0]));
+		hi = ND_order(aghead(ND_out(u).list[1]));
+		if (lo > hi) {
+		    int tmp;
+		    tmp = lo;
+		    lo = hi;
+		    hi = tmp;
+		}
+		ND_lo(n) = lo;
+		ND_hi(n) = hi;
+		ND_np(n) = u;
+	    }
+	}
+	if (lg) {
+	    if (agnnodes(lg) > 1) fixLabelOrder (lg, rk);
+	    agclose(lg);
+	    lg = NULL;
+	}
+    }
+}
 
 /* dot_mincross:
  * Minimize edge crossings
@@ -580,7 +835,7 @@ static int mincross(graph_t * g, int startpass, int endpass, int doBalance)
     for (pass = startpass; pass <= endpass; pass++) {
 	if (pass <= 1) {
 	    maxthispass = MIN(4, MaxIter);
-	    if (g == agroot(g))
+	    if (g == dot_root(g))
 		build_ranks(g, pass);
 	    if (pass == 0)
 		flat_breakcycles(g);
@@ -635,10 +890,16 @@ static int mincross(graph_t * g, int startpass, int endpass, int doBalance)
 static void restore_best(graph_t * g)
 {
     node_t *n;
-    int r;
+    int i, r;
 
-    for (n = GD_nlist(g); n; n = ND_next(n))
-	ND_order(n) = saveorder(n);
+    /* for (n = GD_nlist(g); n; n = ND_next(n)) */
+	/* ND_order(n) = saveorder(n); */
+    for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
+	for (i = 0; i < GD_rank(g)[r].n; i++) {
+	    n = GD_rank(g)[r].v[i];
+	    ND_order(n) = saveorder(n);
+	}
+    }
     for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
 	GD_rank(Root)[r].valid = FALSE;
 	qsort(GD_rank(g)[r].v, GD_rank(g)[r].n, sizeof(GD_rank(g)[0].v[0]),
@@ -649,8 +910,15 @@ static void restore_best(graph_t * g)
 static void save_best(graph_t * g)
 {
     node_t *n;
-    for (n = GD_nlist(g); n; n = ND_next(n))
-	saveorder(n) = ND_order(n);
+    /* for (n = GD_nlist(g); n; n = ND_next(n)) */
+	/* saveorder(n) = ND_order(n); */
+    int i, r;
+    for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
+	for (i = 0; i < GD_rank(g)[r].n; i++) {
+	    n = GD_rank(g)[r].v[i];
+	    saveorder(n) = ND_order(n);
+	}
+    }
 }
 
 /* merges the connected components of g */
@@ -837,9 +1105,9 @@ void rec_reset_vlists(graph_t * g)
 	    w = furthestnode(g, v, 1);
 	    GD_rankleader(g)[r] = u;
 #ifdef DEBUG
-	    assert(GD_rank(g->root)[r].v[ND_order(u)] == u);
+	    assert(GD_rank(dot_root(g)[r].v[ND_order(u)] == u);
 #endif
-	    GD_rank(g)[r].v = GD_rank(agroot(g))[r].v + ND_order(u);
+	    GD_rank(g)[r].v = GD_rank(dot_root(g))[r].v + ND_order(u);
 	    GD_rank(g)[r].n = ND_order(w) - ND_order(u) + 1;
 	}
 }
@@ -866,7 +1134,7 @@ realFillRanks (Agraph_t* g, int rnks[], int rnks_sz, Agraph_t* sg)
     for (c = 1; c <= GD_n_cluster(g); c++)
 	sg = realFillRanks (GD_clust(g)[c], rnks, rnks_sz, sg);
 
-    if (agroot(g) == g)
+    if (dot_root(g) == g)
 	return sg;
     memset (rnks, 0, sizeof(int)*rnks_sz);
     for (n = agfstnode(g); n; n = agnxtnode(g,n)) {
@@ -879,7 +1147,7 @@ realFillRanks (Agraph_t* g, int rnks[], int rnks_sz, Agraph_t* sg)
     for (i = GD_minrank(g); i <= GD_maxrank(g); i++) {
 	if (rnks[i] == 0) {
 	    if (!sg) {
-		sg = agsubg (agroot(g), "_new_rank", 1);
+		sg = agsubg (dot_root(g), "_new_rank", 1);
 	    }
 	    n = agnode (sg, NULL, 1);
 	    agbindrec(n, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);
@@ -917,7 +1185,7 @@ static void init_mincross(graph_t * g)
     /* alloc +1 for the null terminator usage in do_ordering() */
     /* also, the +1 avoids attempts to alloc 0 sizes, something
        that efence complains about */
-    size = agnedges(agroot(g)) + 1;
+    size = agnedges(dot_root(g)) + 1;
     TE_list = N_NEW(size, edge_t *);
     TI_list = N_NEW(size, int);
     mincross_options(g);
@@ -970,7 +1238,7 @@ static void flat_search(graph_t * g, node_t * v)
 
     ND_mark(v) = TRUE;
     ND_onstack(v) = TRUE;
-    hascl = (GD_n_cluster(agroot(g)) > 0);
+    hascl = (GD_n_cluster(dot_root(g)) > 0);
     if (ND_flat_out(v).list)
 	for (i = 0; (e = ND_flat_out(v).list[i]); i++) {
 	    if (hascl
@@ -1164,7 +1432,7 @@ void build_ranks(graph_t * g, int pass)
 	}
     }
 
-    if ((g == agroot(g)) && ncross(g) > 0)
+    if ((g == dot_root(g)) && ncross(g) > 0)
 	transpose(g, FALSE);
     free_queue(q);
 }
@@ -1709,7 +1977,7 @@ void check_exchange(node_t * v, node_t * w)
     r = ND_rank(v);
 
     for (i = ND_order(v) + 1; i < ND_order(w); i++) {
-	u = GD_rank(agraphof(v))[r].v[i];
+	u = GD_rank(dot_root(v))[r].v[i];
 	if (ND_clust(u))
 	    abort();
     }

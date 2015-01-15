@@ -13,6 +13,11 @@
 
 #include "gvplugin.h"
 
+/*visual studio*/
+#if defined(WIN32)
+#define extern __declspec(dllimport)
+#endif
+/*end visual studio*/
 extern gvplugin_library_t gvplugin_neato_layout_LTX_library;
 
 lt_symlist_t lt_preloaded_symbols[] = {

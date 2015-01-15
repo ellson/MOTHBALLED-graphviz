@@ -1,5 +1,11 @@
 graphviz (@VERSION@-1) intrepid; urgency=low
 
+  * Remove tkspline references
+
+ -- John Ellson <ellson@research.att.com>  Tue, 25 Nov 2014 10:14:00 -0400
+
+graphviz (@VERSION@-1) intrepid; urgency=low
+
   * Modified build scripts for Launchpad use
 
  -- Graphviz Development <gviz_adm@graphviz.org>  Wed, 17 Oct 2012 13:07:00 -0400

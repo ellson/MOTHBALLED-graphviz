@@ -76,10 +76,12 @@ static void addstr(char *src) {
 
 static void endstr(void) {
 	yylval.str = (char*)agstrdup(Ag_G_global,Sbuf);
+	*Sbuf = 0;
 }
 
 static void endstr_html(void) {
 	yylval.str = (char*)agstrdup_html(Ag_G_global,Sbuf);
+	*Sbuf = 0;
 }
 
 static void
@@ -123,21 +125,52 @@ static void ppDirective (void)
     }
 }
 
+/* twoDots:
+ * Return true if token has more than one '.';
+ * we know the last character is a '.'.
+ */
+static int twoDots(void)
+{
+    int i;
+    for (i = yyleng-2; i >= 0; i--) {
+	if (((unsigned char)yytext[i]) == '.')
+	    return 1;
+    }
+    return 0;
+}
+
 /* chkNum:
- * The regexp for NUMBER allows a terminating letter.
+ * The regexp for NUMBER allows a terminating letter or '.'.
  * This way we can catch a number immediately followed by a name
- * and report this to the user.
+ * or something like 123.456.78, and report this to the user.
  */
 static int chkNum(void) {
-  unsigned char	c = (unsigned char)yytext[yyleng-1];   /* last character */
-  if (!isdigit(c) && (c != '.')) {  /* c is letter */
-	char	buf[BUFSIZ];
-	sprintf(buf,"syntax error - badly formed number '%s' in line %d of %s\n",yytext,line_num, InputFile);
-    strcat (buf, "splits into two name tokens\n");
-	agerr(AGWARN,buf);
-    return 1;
-  }
-  else return 0;
+    unsigned char c = (unsigned char)yytext[yyleng-1];   /* last character */
+    if ((!isdigit(c) && (c != '.')) || ((c == '.') && twoDots())) {  /* c is letter */
+	unsigned char xbuf[BUFSIZ];
+	char buf[BUFSIZ];
+	agxbuf  xb;
+	char* fname;
+
+	if (InputFile)
+	    fname = InputFile;
+	else
+	    fname = "input";
+
+	agxbinit(&xb, BUFSIZ, xbuf);
+
+	agxbput(&xb,"syntax ambiguity - badly delimited number '");
+	agxbput(&xb,yytext);
+	sprintf(buf,"' in line %d of ", line_num);
+	agxbput(&xb,buf);
+	agxbput(&xb,fname);
+	agxbput(&xb, " splits into two tokens\n");
+	agerr(AGWARN,agxbuse(&xb));
+
+	agxbfree(&xb);
+	return 1;
+    }
+    else return 0;
 }
 
 /* The LETTER class below consists of ascii letters, underscore, all non-ascii
@@ -152,7 +185,7 @@ GRAPH_EOF_TOKEN				[@]
 LETTER [A-Za-z_\200-\377]
 DIGIT	[0-9]
 NAME	{LETTER}({LETTER}|{DIGIT})*
-NUMBER	[-]?(({DIGIT}+(\.{DIGIT}*)?)|(\.{DIGIT}+)){LETTER}?
+NUMBER	[-]?(({DIGIT}+(\.{DIGIT}*)?)|(\.{DIGIT}+))(\.|{LETTER})?
 ID		({NAME}|{NUMBER})
 %x comment
 %x qstring
@@ -168,6 +201,7 @@ ID		({NAME}|{NUMBER})
 ^"#".*					ppDirective ();
 "#".*					/* ignore shell-like comments */
 [ \t\r]					/* ignore whitespace */
+"\xEF\xBB\xBF"				/* ignore BOM */
 "node"					return(T_node);			/* see tokens in agcanonstr */
 "edge"					return(T_edge);
 "graph"					if (!graphType) graphType = T_graph; return(T_graph);
@@ -181,6 +215,7 @@ ID		({NAME}|{NUMBER})
 ["]						BEGIN(qstring); beginstr();
 <qstring>["]			BEGIN(INITIAL); endstr(); return (T_qatom);
 <qstring>[\\]["]		addstr ("\"");
+<qstring>[\\][\\]		addstr ("\\\\");
 <qstring>[\\][\n]		line_num++; /* ignore escaped newlines */
 <qstring>([^"\\]*|[\\])		addstr(yytext);
 [<]						BEGIN(hstring); html_nest = 1; beginstr();
@@ -190,6 +225,7 @@ ID		({NAME}|{NUMBER})
 <hstring>([^><\n]*)		addstr(yytext);
 .						return (yytext[0]);
 %%
+ 
 void yyerror(char *str)
 {
 	unsigned char	xbuf[BUFSIZ];
@@ -201,11 +237,44 @@ void yyerror(char *str)
 		agxbput (&xb, InputFile);
 		agxbput (&xb, ": ");
 	}
-	sprintf(buf," %s in line %d near '", str,line_num);
+	agxbput (&xb, str);
+	sprintf(buf," in line %d", line_num);
 	agxbput (&xb, buf);
-	agxbput (&xb, yytext);
-	agxbput (&xb,"'\n");
-	agerr(AGWARN,agxbuse(&xb));
+	if (*yytext) {
+		agxbput(&xb," near '");
+		agxbput (&xb, yytext);
+		agxbputc (&xb, '\'');
+	}
+	else switch (YYSTATE) {
+	case qstring :
+		sprintf(buf, " scanning a quoted string (missing endquote? longer than %d?)", YY_BUF_SIZE);
+		agxbput (&xb, buf);
+		if (*Sbuf) {
+			int len = strlen(Sbuf);
+			agxbput (&xb, "\nString starting:\"");
+			if (len > 80)
+				Sbuf[80] = '\0';
+			agxbput (&xb, Sbuf);
+		}
+		break;
+	case hstring :
+		sprintf(buf, " scanning a HTML string (missing '>'? bad nesting? longer than %d?)", YY_BUF_SIZE);
+		agxbput (&xb, buf);
+		if (*Sbuf) {
+			int len = strlen(Sbuf);
+			agxbput (&xb, "\nString starting:<");
+			if (len > 80)
+				Sbuf[80] = '\0';
+			agxbput (&xb, Sbuf);
+		}
+		break;
+	case comment :
+		sprintf(buf, " scanning a /*...*/ comment (missing '*/? longer than %d?)", YY_BUF_SIZE);
+		agxbput (&xb, buf);
+		break;
+	}
+	agxbputc (&xb, '\n');
+	agerr(AGERR, "%s", agxbuse(&xb));
 	agxbfree(&xb);
 }
 /* must be here to see flex's macro defns */

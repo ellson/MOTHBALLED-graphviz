@@ -64,7 +64,7 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    Tcl_AppendResult(interp, "Tail node ", argv[2], " is not in the graph.", NULL);
 	    return TCL_ERROR;
 	}
-        head = cmd2n(argv[2]);
+        head = cmd2n(argv[3]);
         if (!head) {
 	    if (!(head = agfindnode(g, argv[3]))) {
 		Tcl_AppendResult(interp, "Head node \"", argv[3], "\" not found.", NULL);
@@ -385,9 +385,12 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	gvjobs_delete(gvc);
 	return TCL_OK;
 
+#if 0
 #if HAVE_LIBGD
     } else if ((c == 'r') && (strncmp(argv[1], "rendergd", length) == 0)) {
+#if 0
 	void **hdl;
+#endif
 
 	if (argc < 3) {
 	    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
@@ -401,11 +404,15 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	}
         job = gvc->job;
 
+#if 0
 	if (!  (hdl = tclhandleXlate(GDHandleTable, argv[2]))) {
 	    Tcl_AppendResult(interp, "GD Image not found.", NULL);
 	    return TCL_ERROR;
 	}
 	job->context = *hdl;
+#else
+	job->context = (void*)(((Tcl_Obj*)(argv[2]))->internalRep.otherValuePtr);
+#endif
 	job->external_context = TRUE;
 
 	/* make sure that layout is done */
@@ -421,6 +428,7 @@ int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	gvjobs_delete(gvc);
 	Tcl_AppendResult(interp, argv[2], NULL);
 	return TCL_OK;
+#endif
 #endif
 
     } else if ((c == 's')

@@ -196,10 +196,6 @@
 				RelativePath=".\gvpack.c"
 				>
 			</File>
-			<File
-				RelativePath=".\gvpack_builtins.c"
-				>
-			</File>
 		</Filter>
 	</Files>
 	<Globals>

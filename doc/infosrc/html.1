@@ -11,9 +11,12 @@ the markup for strike-through (<TT>&lt;S&gt;</TT>) requires versions later than 
 In addition, all of these markups are
 currently only available via the cairo and svg renderers.
 The horizontal and vertical rules </EM>(<TT>&lt;HR&gt;</TT> and <TT>&lt;VR&gt;</TT>)
-<EM>are only available in versions
-later than 8 July 2011.
-</EM>
+<EM>are only available in versions later than 8 July 2011.  </EM>
+<P>
+<B>NOTE:</B><EM>For releases later than 9 September 2014, one can use </EM><TT>shape=plain</TT> <EM>so that the size
+of the node is totally determined by the label. Otherwise, the node's margin, width and height values may cause the
+node to be larger, so that edges are clipped away from the label. In effect, </EM><TT>shape=plain</TT> <EM>is shorthand
+for </EM> <TT>shape=none width=0 height=0 margin=0</TT>.
 <P>
 If the value of a label attribute
 (<A HREF=attrs.html#d:label><TT>label</TT></A> for nodes, edges, clusters, and

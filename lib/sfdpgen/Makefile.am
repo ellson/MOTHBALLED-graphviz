@@ -22,7 +22,7 @@ pkgconfig_DATA = libsfdp.pc
 noinst_HEADERS = sfdpinternal.h spring_electrical.h \
 	sparse_solve.h post_process.h \
 	stress_model.h uniform_stress.h \
-	QuadTree.h Multilevel.h sfdp.h PriorityQueue.h 
+	Multilevel.h sfdp.h PriorityQueue.h 
 
 pkginclude_HEADERS = sfdp.h spring_electrical.h \
 	stress_model.h uniform_stress.h \
@@ -51,5 +51,4 @@ libsfdp_la_LIBADD = $(libsfdpgen_C_la_LIBADD) \
 	$(top_builddir)/lib/rbtree/librbtree_C.la \
 	$(GTS_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
 
-
-EXTRA_DIST = Makefile.old sfdp.vcproj
+EXTRA_DIST = sfdp.vcproj

@@ -124,6 +124,35 @@ static int hreffn(htmldata_t * p, char *v)
     return 0;
 }
 
+static int sidesfn(htmldata_t * p, char *v)
+{
+    unsigned short flags = 0; 
+    char c;
+
+    while ((c = *v++)) {
+	switch (tolower(c)) {
+	case 'l' :
+	    flags |= BORDER_LEFT;
+	    break;
+	case 't' :
+	    flags |= BORDER_TOP;
+	    break;
+	case 'r' :
+	    flags |= BORDER_RIGHT;
+	    break;
+	case 'b' :
+	    flags |= BORDER_BOTTOM;
+	    break;
+	default :
+	    agerr(AGWARN, "Unrecognized character '%c' (%d) in sides attribute\n", c, c);
+	    break;
+	}
+    }
+    if (flags != BORDER_MASK)
+	p->flags |= flags;
+    return 0;
+}
+
 static int titlefn(htmldata_t * p, char *v)
 {
     p->title = strdup(v);
@@ -472,6 +501,7 @@ static attr_item tbl_items[] = {
     {"id", (attrFn) idfn},
     {"port", (attrFn) portfn},
     {"rows", (attrFn) rowsfn},
+    {"sides", (attrFn) sidesfn},
     {"style", (attrFn) stylefn},
     {"target", (attrFn) targetfn},
     {"title", (attrFn) titlefn},
@@ -496,6 +526,7 @@ static attr_item cell_items[] = {
     {"id", (attrFn) idfn},
     {"port", (attrFn) portfn},
     {"rowspan", (attrFn) rowspanfn},
+    {"sides", (attrFn) sidesfn},
     {"style", (attrFn) stylefn},
     {"target", (attrFn) targetfn},
     {"title", (attrFn) titlefn},
@@ -626,6 +657,9 @@ static void startElement(void *user, const char *name, char **atts)
     } else if (strcasecmp(name, "U") == 0) {
 	htmllval.font = mkFont(gvc, 0, HTML_UL, 1);
 	state.tok = T_underline;
+    } else if (strcasecmp(name, "O") == 0) {
+	htmllval.font = mkFont(gvc, 0, HTML_OL, 1);
+	state.tok = T_overline;
     } else if (strcasecmp(name, "I") == 0) {
 	htmllval.font = mkFont(gvc, 0, HTML_IF, 0);
 	state.tok = T_italic;
@@ -671,6 +705,8 @@ static void endElement(void *user, const char *name)
 	state.tok = T_n_bold;
     } else if (strcasecmp(name, "U") == 0) {
 	state.tok = T_n_underline;
+    } else if (strcasecmp(name, "O") == 0) {
+	state.tok = T_n_overline;
     } else if (strcasecmp(name, "I") == 0) {
 	state.tok = T_n_italic;
     } else if (strcasecmp(name, "SUP") == 0) {
@@ -924,6 +960,12 @@ static void printTok(int tok)
 	break;
     case T_n_underline:
 	s = "T_n_underline";
+	break;
+    case T_overline:
+	s = "T_overline";
+	break;
+    case T_n_overline:
+	s = "T_n_overline";
 	break;
     case T_italic:
 	s = "T_italic";

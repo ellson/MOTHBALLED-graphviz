@@ -11,6 +11,7 @@ ARROWHEADFILES = \
     normal.pdf diamondarrow.pdf dot.pdf odot.pdf \
     inv.pdf invdot.pdf invodot.pdf \
     crow.pdf vee.pdf tee.pdf \
+    boxarrow.pdf curve.pdf icurve.pdf \
     no_arrow.pdf diamond.pdf
 
 GRAPHFILES =  \
@@ -47,5 +48,5 @@ dotguide.aux : dotguide.tex $(GRAPHFILES)
 	pdflatex dotguide
 
 clean: 
-	rm -rf *.ps *.pdf *.log 
+	rm -rf *.ps *.pdf *.log  dotguide.aux dotguide.blg dotguide.bbl
 

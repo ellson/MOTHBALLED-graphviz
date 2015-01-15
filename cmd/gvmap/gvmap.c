@@ -36,6 +36,8 @@
 #include "ingraphs.h"
 #include "DotIO.h"
 #include "colorutil.h"
+#include "color_palette.h"
+
 #ifdef WIN32
 #define strdup(x) _strdup(x)
 #endif
@@ -53,6 +55,7 @@ static char swork[maxlen];
     #pragma comment( lib, "gvc.lib" )
     #pragma comment( lib, "pathplan.lib" )
     #pragma comment( lib, "neatogen.lib" )
+    #pragma comment( lib, "edgepaintlib.lib" )
     #pragma comment( lib, "circogen.lib" )
     #pragma comment( lib, "twopigen.lib" )
     #pragma comment( lib, "fdpgen.lib" )
@@ -109,6 +112,7 @@ typedef struct {
     int plotedges;
     int color_scheme;
     real line_width;
+    char *color_scheme_str;
     char *opacity;
     char *plot_label;
     real *bg_color;
@@ -275,6 +279,7 @@ init(int argc, char **argv, params_t* pm)
 
   pm->outfile = NULL;
   pm->opacity = NULL;
+  pm->color_scheme_str = NULL;
   pm->nrandom = -1;
   pm->dim = 2;
   pm->shore_depth_tol = 0;
@@ -385,8 +390,12 @@ init(int argc, char **argv, params_t* pm)
         pm->opacity = strdup(stmp);
       } else if ((sscanf(optarg,"%d",&r) > 0) && r >= COLOR_SCHEME_NONE && r <= COLOR_SCHEME_GREY){
         pm->color_scheme = r;
+      } else if (knownColorScheme(optarg)) {
+        pm->color_scheme = COLOR_SCHEME_NONE;
+        pm->color_scheme_str = optarg;
       } else {
-        usage(cmd,1);
+        fprintf(stderr,"-c option %s is invalid, must be a valid integer or string\n", optarg);
+        usage(cmd, 1);
       }
       break;
     case 'd':
@@ -560,6 +569,10 @@ makeMap (SparseMatrix graph, int n, real* x, real* width, int* grouping,
   /* compute a good color permutation */
   if (pm->color_optimize && country_graph && rgb_r && rgb_g && rgb_b) 
     map_optimal_coloring(pm->seed, country_graph, rgb_r,  rgb_g, rgb_b);
+  else if (pm->color_scheme_str){
+    map_palette_optimal_coloring(pm->color_scheme_str, "0,100", country_graph, 0.01, -10,
+               &rgb_r, &rgb_g, &rgb_b);
+  }
 
 #ifdef TIME
   fprintf(stderr, "map making time = %f\n",((real) (clock() - cpu)) / CLOCKS_PER_SEC);

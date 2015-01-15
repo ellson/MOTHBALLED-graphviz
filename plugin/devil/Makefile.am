@@ -34,6 +34,3 @@ endif
 if WITH_DARWIN9
 libgvplugin_devil_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_devil_LTX_library
 endif
-
-EXTRA_DIST = Makefile.old
-

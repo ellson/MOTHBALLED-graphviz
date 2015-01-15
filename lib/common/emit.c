@@ -48,32 +48,35 @@ void* init_xdot (Agraph_t* g)
     char* p;
     xdot* xd = NULL;
 
-    if ((p = agget(g, "_background")) && p[0]) {
-#ifdef DEBUG
-	if (Verbose) {
-	    start_timer();
+    if (!((p = agget(g, "_background")) && p[0])) {
+	if (!((p = agget(g, "_draw_")) && p[0])) {
+	    return NULL;
 	}
-#endif
-	xd = parseXDotF (p, NULL, sizeof (exdot_op));
-
-	if (!xd) {
-	    agerr(AGWARN, "Could not parse \"_background\" attribute in graph %s\n", agnameof(g));
-	    agerr(AGPREV, "  \"%s\"\n", p);
-	}
-#ifdef DEBUG
-	if (Verbose) {
-	    xdot_stats stats;
-	    double et = elapsed_sec();
-	    statXDot (xd, &stats);
-	    fprintf (stderr, "%d ops %.2f sec\n", stats.cnt, et);
-	    fprintf (stderr, "%d polygons %d points\n", stats.n_polygon, stats.n_polygon_pts);
-	    fprintf (stderr, "%d polylines %d points\n", stats.n_polyline, stats.n_polyline_pts);
-	    fprintf (stderr, "%d beziers %d points\n", stats.n_bezier, stats.n_bezier_pts);
-	    fprintf (stderr, "%d ellipses\n", stats.n_ellipse);
-	    fprintf (stderr, "%d texts\n", stats.n_text);
-	}
-#endif
     }
+#ifdef DEBUG
+    if (Verbose) {
+	start_timer();
+    }
+#endif
+    xd = parseXDotF (p, NULL, sizeof (exdot_op));
+
+    if (!xd) {
+	agerr(AGWARN, "Could not parse \"_background\" attribute in graph %s\n", agnameof(g));
+	agerr(AGPREV, "  \"%s\"\n", p);
+    }
+#ifdef DEBUG
+    if (Verbose) {
+	xdot_stats stats;
+	double et = elapsed_sec();
+	statXDot (xd, &stats);
+	fprintf (stderr, "%d ops %.2f sec\n", stats.cnt, et);
+	fprintf (stderr, "%d polygons %d points\n", stats.n_polygon, stats.n_polygon_pts);
+	fprintf (stderr, "%d polylines %d points\n", stats.n_polyline, stats.n_polyline_pts);
+	fprintf (stderr, "%d beziers %d points\n", stats.n_bezier, stats.n_bezier_pts);
+	fprintf (stderr, "%d ellipses\n", stats.n_ellipse);
+	fprintf (stderr, "%d texts\n", stats.n_text);
+    }
+#endif
     return xd;
 }
 
@@ -184,7 +187,7 @@ layerPagePrefix (GVJ_t* job, agxbuf* xb)
 	agxbput (xb, job->gvc->layerIDs[job->layerNum]);
 	agxbputc (xb, '_');
     }
-    if ((job->pagesArrayElem.x > 0) || (job->pagesArrayElem.x > 0)) {
+    if ((job->pagesArrayElem.x > 0) || (job->pagesArrayElem.y > 0)) {
 	sprintf (buf, "page%d,%d_", job->pagesArrayElem.x, job->pagesArrayElem.y);
 	agxbput (xb, buf);
     }
@@ -394,6 +397,10 @@ static double getSegLen (char* s)
  *  3 => warning message
  * There is a last sentinel segment with color == NULL; it will always follow
  * the last segment with t > 0.
+ *
+ * Note that psegs is only assigned to if the return value is 0 or 3.
+ * Otherwise, psegs is left unchanged and the allocated memory is
+ * freed before returning.
  */
 static int
 parseSegs (char* clrs, int nseg, colorsegs_t** psegs)
@@ -1420,8 +1427,6 @@ static void emit_xdot (GVJ_t * job, xdot* xd)
     int image_warn = 1;
     int ptsize = INITPTS;
     pointf* pts = N_GNEW(INITPTS, pointf);
-    double fontsize;
-    char* fontname;
     exdot_op* op;
     int i, angle;
     char** styles = 0;
@@ -1435,8 +1440,8 @@ static void emit_xdot (GVJ_t * job, xdot* xd)
     	    if (boxf_overlap(op->bb, job->clip)) {
 		pts[0].x = op->op.u.ellipse.x - op->op.u.ellipse.w;
 		pts[0].y = op->op.u.ellipse.y - op->op.u.ellipse.h;
-		pts[1].x = op->op.u.ellipse.w;
-		pts[1].y = op->op.u.ellipse.h;
+		pts[1].x = op->op.u.ellipse.x + op->op.u.ellipse.w;
+		pts[1].y = op->op.u.ellipse.y + op->op.u.ellipse.h;
 		gvrender_ellipse(job, pts, 2, (op->op.kind == xd_filled_ellipse?filled:0));
 	    }
 	    break;
@@ -1509,12 +1514,14 @@ static void emit_xdot (GVJ_t * job, xdot* xd)
 	    agerr (AGWARN, "gradient pen colors not yet supported.\n");
 	    break;
 	case xd_font :
-	    fontsize = op->op.u.font.size;
-	    fontname = op->op.u.font.name;
+	    /* fontsize and fontname already encoded via xdotBB */
 	    break;
 	case xd_style :
 	    styles = parse_style (op->op.u.style);
             gvrender_set_style (job, styles);
+	    break;
+	case xd_fontchar :
+	    /* font characteristics already encoded via xdotBB */
 	    break;
 	case xd_image :
 	    if (image_warn) {
@@ -2148,7 +2155,7 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
 	if ((ED_spl(e)->size>1) && (bz.sflag||bz.eflag) && styles) 
 	    gvrender_set_style(job, styles);
     }
-    free (segs);
+    freeSegs (segs);
     return 0;
 }
 
@@ -2458,6 +2465,8 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e, char** styles)
     obj->type = EDGE_OBJTYPE;
     obj->u.e = e;
     obj->emit_state = EMIT_EDRAW;
+    if (ED_label(e) && !ED_label(e)->html && mapBool(agget(e,"labelaligned"),FALSE))
+	obj->labeledgealigned = TRUE;
 
     /* We handle the edge style and penwidth here because the width
      * is needed below for calculating polygonal image maps
@@ -2684,30 +2693,40 @@ static void nodeIntersect (GVJ_t * job, pointf p,
 {
     obj_state_t *obj = job->obj;
     char* url;
+#if 0
     char* tooltip;
     char* target;
+#endif
     boolean explicit;
 
     if (explicit_iurl) url = iurl;
     else url = obj->url;
     if (explicit_itooltip) {
+#if 0
 	tooltip = itooltip;
+#endif
 	explicit = TRUE;
     }
     else if (obj->explicit_tooltip) {
+#if 0
 	tooltip = obj->tooltip;
+#endif
 	explicit = TRUE;
     }
     else {
-	explicit = FALSE;
+#if 0
 	tooltip = itooltip;
+#endif
+	explicit = FALSE;
     }
+#if 0
     if (explicit_itarget)
 	target = itarget;
     else if (obj->explicit_edgetarget)
 	target = obj->target;
     else
 	target = itarget;
+#endif
 
     if (url || explicit) {
 	map_point(job, p);
@@ -2912,11 +2931,12 @@ boxf xdotBB (Agraph_t* g)
     double fontsize = 0.0;
     char* fontname = NULL;
     pointf pts[2];
-    pointf sz;
+    /* pointf sz; */
     boxf bb0;
     boxf bb = GD_bb(g);
     xdot* xd = (xdot*)GD_drawing(g)->xdots;
     textfont_t tf, null_tf = {NULL,NULL,NULL,0.0,0,0};
+    int fontflags;
 
     if (!xd) return bb;
 
@@ -2957,8 +2977,9 @@ boxf xdotBB (Agraph_t* g)
 	    op->span->just = adjust [op->op.u.text.align];
 	    tf.name = fontname;
 	    tf.size = fontsize;
+	    tf.flags = fontflags;
             op->span->font = dtinsert(gvc->textfont_dt, &tf);
-	    sz = textspan_size (gvc, op->span);
+	    textspan_size (gvc, op->span);
 	    bb0 = textBB (op->op.u.text.x, op->op.u.text.y, op->span);
 	    op->bb = bb0;
 	    expandBB (&bb, bb0.LL);
@@ -2969,6 +2990,9 @@ boxf xdotBB (Agraph_t* g)
 	case xd_font :
 	    fontsize = op->op.u.font.size;
 	    fontname = op->op.u.font.name;
+	    break;
+	case xd_fontchar :
+	    fontflags = op->op.u.fontchar;
 	    break;
 	default :
 	    break;
@@ -3742,7 +3766,7 @@ static boolean is_style_delim(int c)
 static int style_token(char **s, agxbuf * xb)
 {
     char *p = *s;
-    int token, rc;
+    int token;
     char c;
 
     while (*p && (isspace(*p) || (*p == ',')))
@@ -3758,7 +3782,7 @@ static int style_token(char **s, agxbuf * xb)
     default:
 	token = SID;
 	while (!is_style_delim(c = *p)) {
-	    rc = agxbputc(xb, c);
+	    agxbputc(xb, c);
 	    p++;
 	}
     }
@@ -3996,7 +4020,7 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
     if (Verbose)
 	start_timer();
     
-    if (!GD_drawing(g)) {
+    if (!LAYOUT_DONE(g)) {
         agerr (AGERR, "Layout was not done.  Missing layout plugins? \n");
 	FINISH();
         return -1;
@@ -4119,12 +4143,13 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
  */
 boolean findStopColor (char* colorlist, char* clrs[2], float* frac)
 {
-    colorsegs_t* segs;
+    colorsegs_t* segs = NULL;
     int rv;
 
     rv = parseSegs (colorlist, 0, &segs);
     if (rv || (segs->numc < 2) || (segs->segs[0].color == NULL)) {
 	clrs[0] = NULL;
+	freeSegs (segs);
 	return FALSE;
     }
 

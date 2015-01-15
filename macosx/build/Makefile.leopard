@@ -57,9 +57,7 @@ $(GV_DIR)/cmd/dot/.libs/$(DOT): $(GV_DIR)/Makefile
 	@echo MAKING GRAPHVIZ...
 	@echo
 	if [[ -e $@ ]]; then $(MAKE) -C $(GV_DIR) clean; fi
-	$(MAKE) -C $(GV_DIR)/tclpkg/tkstubs
 	$(MAKE) -C $(GV_DIR)/tclpkg/tclstubs
-	$(MAKE) -C $(GV_DIR)/tclpkg/tkspline CFLAGS="-O2 -arch ppc -arch i386 -I$(PREFIX)/include" LDFLAGS="-arch ppc -arch i386 -L$(PREFIX)/lib -Wl,-dead_strip"
 	$(MAKE) -C $(GV_DIR)
 	
 $(GV_DIR)/Makefile: $(GV_DIR)/configure

@@ -29,10 +29,9 @@ static void initGraphAttrs(Agraph_t * g, circ_state * state)
     static Agraph_t *rootg;
     static attrsym_t *N_artpos;
     static attrsym_t *N_root;
-    static double min_dist;
+    static attrsym_t *G_mindist;
     static char *rootname;
     Agraph_t *rg;
-    attrsym_t *G_mindist;
     node_t *n = agfstnode(g);
 
     rg = agraphof(ORIGN(n));
@@ -44,10 +43,9 @@ static void initGraphAttrs(Agraph_t * g, circ_state * state)
 	N_root = agattr(rootg,AGNODE, "root", NULL);
     }
     rootname = agget(rootg, "root");
-    min_dist = late_double(rootg, G_mindist, MINDIST, 0.0);
     initBlocklist(&state->bl);
     state->orderCount = 1;
-    state->min_dist = min_dist;
+    state->min_dist = late_double(rootg, G_mindist, MINDIST, 0.0);
     state->N_artpos = N_artpos;
     state->N_root = N_root;
     state->rootname = rootname;

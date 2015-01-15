@@ -246,13 +246,13 @@ static int ok_to_make_edge(Agraph_t * g, Agnode_t * t, Agnode_t * h)
 
     /* protect against self, multi-edges in strict graphs */
     if (agisstrict(g)) {
-	if (g->desc.no_loop && (t == h)) /* simple graphs */
-	    return FALSE;
 	key = Tag;
 	key.objtype = 0;	/* wild card */
 	if (agfindedge_by_key(g, t, h, key))
 	    return FALSE;
     }
+    if (g->desc.no_loop && (t == h)) /* simple graphs */
+	return FALSE;
     return TRUE;
 }
 
@@ -413,7 +413,7 @@ int agedgeidcmpf(Dict_t * d, void *arg_e0, void *arg_e1, Dtdisc_t * disc)
     NOTUSED(disc);
     v = AGID(e0->node) - AGID(e1->node);
     if (v == 0) {		/* same node */
-	if ((AGTYPE(e0) == 0) || (AGTYPE(e1) == 0))
+	if ((AGID(e0) == 0) || (AGID(e1) == 0))
 	    v = 0;
 	else
 	    v = AGID(e0) - AGID(e1);

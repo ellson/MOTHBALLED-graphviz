@@ -18,6 +18,7 @@
 extern "C" {
 extern void gv_string_writer_init(GVC_t *gvc);
 extern void gv_channel_writer_init(GVC_t *gvc);
+extern void gv_writer_reset(GVC_t *gvc);
 }
 
 #define agfindattr(x,s) agattrsym(x,s)
@@ -106,14 +107,19 @@ Agnode_t *node(Agraph_t *g, char *name)
     return agnode(g, name, 1);
 }
 
-Agedge_t *edge(Agnode_t *t, Agnode_t *h)
+Agedge_t *edge(Agraph_t* g, Agnode_t *t, Agnode_t *h)
 {
-    if (!gvc || !t || !h)
+    if (!gvc || !t || !h || !g)
         return NULL;
     // edges from/to the protonode are not permitted
     if (AGTYPE(t) == AGRAPH || AGTYPE(h) == AGRAPH)
 	return NULL;
-    return agedge(agraphof(t), t, h, NULL, 1);
+    return agedge(g, t, h, NULL, 1);
+}
+
+Agedge_t *edge(Agnode_t *t, Agnode_t *h)
+{
+    return edge(agraphof(t), t, h);
 }
 
 // induce tail if necessary
@@ -131,7 +137,7 @@ Agedge_t *edge(Agnode_t *t, char *hname)
 // induce tail/head if necessary
 Agedge_t *edge(Agraph_t *g, char *tname, char *hname)
 {
-    return edge(node(g, tname), node(g, hname));
+    return edge(g, node(g, tname), node(g, hname));
 }
 
 //-------------------------------------------------
@@ -578,7 +584,7 @@ Agnode_t *nexthead(Agnode_t *n, Agnode_t *h)
     if (!e)
         return NULL;
     do {
-        e = agnxtout(g, e);
+        e = agnxtout(g, AGMKOUT(e));
         if (!e)
             return NULL;
     } while (aghead(e) == h);
@@ -665,7 +671,7 @@ Agnode_t *nexttail(Agnode_t *n, Agnode_t *t)
     if (!e)
         return NULL;
     do {
-        e = agnxtin(g, e);
+        e = agnxtin(g, AGMKIN(e));
         if (!e)
             return NULL;
     } while (agtail(e) == t);
@@ -766,13 +772,20 @@ bool rm(Agraph_t *g)
 
     if (!g)
         return false;
+#if 0
     Agraph_t* sg;
     for (sg = agfstsubg (g); sg; sg = agnxtsubg (sg))
 	rm(sg);
     if (g == agroot(g))
 	agclose(g);
     else
-        agdelete(agroot(g), g);
+        agdelete(agparent(g), g);
+#endif
+    /* The rm function appears to have the semantics of agclose, so
+     * we should just do that, and let cgraph take care of all the
+     * details.
+     */
+    agclose(g);
     return true;
 }
 
@@ -850,6 +863,7 @@ bool renderchannel(Agraph_t *g, const char *format, const char *channelname)
         return false;
     gv_channel_writer_init(gvc);
     err = gvRender(gvc, g, format, (FILE*)channelname);
+    gv_writer_reset (gvc);   /* Reset to default */
     return (! err);
 }
 
@@ -864,6 +878,32 @@ bool render(Agraph_t *g, const char *format, const char *filename)
     return (! err);
 }
 
+typedef struct {
+    char* data;
+    int sz;       /* buffer size */
+    int len;      /* length of array */
+} BA;
+
+// render to string result, using binding-dependent gv_string_writer()
+char* renderresult(Agraph_t *g, const char *format)
+{
+    int err;
+    BA ba;
+
+    if (!g)
+        return NULL;
+    if (!GD_alg(g))
+        return NULL;
+    ba.sz = BUFSIZ;
+    ba.data = (char*)malloc(ba.sz*sizeof(char));  /* must be freed by wrapper code */
+    ba.len = 0;
+    gv_string_writer_init(gvc);
+    err = gvRender(gvc, g, format, (FILE*)&ba);
+    gv_writer_reset (gvc);   /* Reset to default */
+    *((int*)GD_alg(g)) = ba.len;
+    return ba.data;
+}
+
 // render to string result, using binding-dependent gv_string_writer()
 void renderresult(Agraph_t *g, const char *format, char *outdata)
 {
@@ -873,6 +913,7 @@ void renderresult(Agraph_t *g, const char *format, char *outdata)
         return;
     gv_string_writer_init(gvc);
     err = gvRender(gvc, g, format, (FILE*)outdata);
+    gv_writer_reset (gvc);   /* Reset to default */
 }
 
 // render to a malloc'ed data string, to be free'd by caller.

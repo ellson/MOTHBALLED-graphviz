@@ -75,7 +75,7 @@ inkpot.3.pdf: inkpot.3
 
 CLEANFILES = inkpot_lib_*.dat
 
-EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old *.tcl data/* \
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) *.tcl data/* \
 	inkpot_lib_define.h inkpot_lib_value.h inkpot_lib_scheme.h inkpot_lib_string.h
 
 DISTCLEANFILES = $(pdf_DATA) \

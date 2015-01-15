@@ -916,7 +916,7 @@ int scAdjust(graph_t * g, int equal)
 	    free(nlist);
 	    return 0;
 	}
-	fprintf(stderr, "compress %g \n", s.x);
+	if (Verbose) fprintf(stderr, "compress %g \n", s.x);
     } else {
 	aarr = mkOverlapSet(nlist, nnodes, &m);
 
@@ -932,6 +932,7 @@ int scAdjust(graph_t * g, int equal)
 	    s = computeScaleXY(aarr, m);
 	}
 	free(aarr);
+	if (Verbose) fprintf(stderr, "scale by %g,%g \n", s.x, s.y);
     }
 
     p = nlist;

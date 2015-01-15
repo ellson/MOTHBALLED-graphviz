@@ -8,7 +8,6 @@ pkgtcldir = $(pkglibdir)/tcl
 
 AM_CPPFLAGS = \
 	 -I$(top_srcdir) \
-	-I$(top_srcdir)/tclpkg/tclhandle \
 	@GD_INCLUDES@ @TCL_INCLUDES@
 
 LIBS = @LIBS@ -lc
@@ -32,7 +31,6 @@ libgdtclft_la_LDFLAGS = -no-undefined
 
 if WITH_LIBGD
 libgdtclft_la_LIBADD = \
-	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
 	$(GD_LIBS)
 
@@ -50,7 +48,7 @@ endif
 gdtclft.3tcl.pdf: $(srcdir)/gdtclft.3tcl
 	- @GROFF@ -Tps -man $(srcdir)/gdtclft.3tcl | @PS2PDF@ - - >gdtclft.3tcl.pdf
 
-EXTRA_DIST = $(man) $(pdf) Makefile.old
+EXTRA_DIST = $(man) $(pdf)
 
 CLEANFILES = pkgIndex.tcl
 

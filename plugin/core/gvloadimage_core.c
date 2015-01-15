@@ -48,12 +48,10 @@ typedef enum {
 static void core_loadimage_svg(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
 {
 
-// FIXME - no idea why this magic 72/96 is needed for images!  >>>
-    double width = (b.UR.x-b.LL.x)*72/96;
-    double height = (b.UR.y-b.LL.y)*72/96;
+    double width = (b.UR.x-b.LL.x);
+    double height = (b.UR.y-b.LL.y);
     double originx = (b.UR.x+b.LL.x - width)/2;
     double originy = (b.UR.y+b.LL.y + height)/2;
-// <<<
     assert(job);
     assert(us);
     assert(us->name);

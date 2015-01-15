@@ -32,6 +32,38 @@ typedef struct {
     int cur;
 } rdr_t;
 
+#ifdef WIN32
+#define BSZ 1024
+
+QString findAttrFile ()
+{
+    char line[BSZ];
+    int r;
+    char* s;
+    QString path;
+    MEMORY_BASIC_INFORMATION mbi;
+
+    if (VirtualQuery (&findAttrFile, &mbi, sizeof(mbi)) == 0) {
+	errout << "failed to get handle for executable.\n";
+	return path;
+    }
+    r = GetModuleFileNameA((HMODULE)mbi.AllocationBase, line, BSZ);
+    if (!r || (r == BSZ)) {
+	errout << "failed to get path for executable.\n";
+	return path;
+    }
+    s = strstr(line,"\\bin\\");
+    if (!s) {
+	errout << "no \"\\bin\" in path " << line << "\n";
+	return path;
+    }
+    *s = '\0';
+    path.append(line);
+    path.append("\\share\\graphviz\\gvedit\\attributes.txt");
+    return path;
+}
+#endif
+ 
 bool loadAttrs(const QString fileName, QComboBox * cbNameG,
 	       QComboBox * cbNameN, QComboBox * cbNameE)
 {
@@ -63,6 +95,7 @@ bool loadAttrs(const QString fileName, QComboBox * cbNameG,
     } else {
 	errout << "Could not open attribute name file \"" << fileName <<
 	    "\" for reading\n" << flush;
+	return true;
     }
 
     return false;
@@ -120,9 +153,15 @@ CFrmSettings::CFrmSettings()
     loadAttrs(path + "/attrs.txt", WIDGET(QComboBox, cbNameG),
 	      WIDGET(QComboBox, cbNameN), WIDGET(QComboBox, cbNameE));
 #else
-    loadAttrs("../share/graphviz/gvedit/attributes.txt",
+    if (loadAttrs("../share/graphviz/gvedit/attributes.txt",
+	      WIDGET(QComboBox, cbNameG), WIDGET(QComboBox, cbNameN),
+	      WIDGET(QComboBox, cbNameE))) {
+	path = findAttrFile();
+	if (!path.isEmpty())
+	    loadAttrs(path,
 	      WIDGET(QComboBox, cbNameG), WIDGET(QComboBox, cbNameN),
 	      WIDGET(QComboBox, cbNameE));
+    }
 #endif
     setWindowIcon(QIcon(":/images/icon.png"));
 }

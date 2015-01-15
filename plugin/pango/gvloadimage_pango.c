@@ -41,6 +41,7 @@ typedef enum {
 static cairo_status_t
 reader (void *closure, unsigned char *data, unsigned int length)
 {
+    assert(closure);
     if (length == fread(data, 1, length, (FILE *)closure)
      || feof((FILE *)closure))
         return CAIRO_STATUS_SUCCESS;
@@ -59,6 +60,7 @@ static cairo_surface_t* cairo_loadimage(GVJ_t * job, usershape_t *us)
     assert(job);
     assert(us);
     assert(us->name);
+    assert(us->name[0]);
 
     if (us->data) {
         if (us->datafree == cairo_freeimage)
@@ -72,6 +74,7 @@ static cairo_surface_t* cairo_loadimage(GVJ_t * job, usershape_t *us)
     if (!surface) { /* read file into cache */
 	if (!gvusershape_file_access(us))
 	    return NULL;
+        assert(us->f);
         switch (us->type) {
 #ifdef CAIRO_HAS_PNG_FUNCTIONS
             case FT_PNG:
@@ -95,6 +98,11 @@ static void pango_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, boolean 
 {
     cairo_t *cr = (cairo_t *) job->context; /* target context */
     cairo_surface_t *surface;	 /* source surface */
+
+    assert(job);
+    assert(us);
+    assert(us->name);
+    assert(us->name[0]);
 
     surface = cairo_loadimage(job, us);
     if (surface) {

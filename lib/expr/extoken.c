@@ -381,6 +381,7 @@ extoken_fn(register Expr_t* ex)
 			/*FALLTHROUGH*/
 		case ' ':
 		case '\t':
+		case '\r':
 			break;
 		case '(':
 		case '{':

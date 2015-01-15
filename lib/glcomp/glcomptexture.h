@@ -18,7 +18,7 @@
 #ifndef glCompFontURE_H
 #define glCompFontURE_H
 
-#ifdef _WIN32
+#ifdef WIN32
 #include "windows.h"
 #endif
 #include <stdio.h>

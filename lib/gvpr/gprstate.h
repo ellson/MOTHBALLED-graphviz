@@ -82,7 +82,7 @@ extern "C" {
     extern void initGPRState(Gpr_t *, Vmalloc_t *);
     extern int validTVT(int);
 
-#ifdef WIN32_DLL
+#ifdef WIN32
     extern int pathisrelative (char* path);
 #endif
 

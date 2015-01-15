@@ -501,6 +501,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_21C4743810CB4A48A3572AC822EEA0BF"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_21C69AFD4A7340DCA6D98F836B5C6BBE"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -664,6 +670,12 @@
         "Entry"
         {
         "MsmKey" = "8:_297B3C9FBDC44A18A19BC17E3BCCB629"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_29FD58C1B88948E2A27F2F901494800F"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1929,6 +1941,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_749F77DD014D48179A82BFCA758B2EE6"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_74EEB3F85F164B9E8A8E01EA8DBF95D1"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2139,6 +2157,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_80AB8133C263411B830ED7D4DA57F5FB"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_80BC052126CF4394B9A60FEB4A45E226"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2320,6 +2344,12 @@
         "Entry"
         {
         "MsmKey" = "8:_8DFB2432DA3B467DA558B83725408F5D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8E011C9671D643D3992718AC309DF0BF"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2715,12 +2745,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_A5199651888840D58828CBAEFACAA2E8"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_A64A4F60B2D440FEAF16DBA573EE03FB"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2944,12 +2968,6 @@
         "Entry"
         {
         "MsmKey" = "8:_B241BC632881401E8006C5969B40BCF4"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_B28186595FBE4964BFE7E220515E68E9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3279,6 +3297,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_C958B6B7FB824BDCBA30563FF52A1453"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_C96CA5380AC646589776AF36E30AC202"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3310,6 +3334,12 @@
         "Entry"
         {
         "MsmKey" = "8:_CBBECFFA5C324412ABF29EBF4FA77292"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_CC2F295DD8A74905B6CB3BAD1D1B4699"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -5756,6 +5786,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_21C4743810CB4A48A3572AC822EEA0BF"
+            {
+            "SourcePath" = "8:..\\..\\release\\bin\\lab_gamut.dll"
+            "TargetName" = "8:lab_gamut.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_2CB80ACEA55C4CCD8EC8A66D0DE2ADA9"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_21C69AFD4A7340DCA6D98F836B5C6BBE"
             {
             "SourcePath" = "8:..\\..\\release\\fonts\\conf.avail\\49-sansserif.conf"
@@ -6302,6 +6352,26 @@
             "TargetName" = "8:nhg.gv"
             "Tag" = "8:"
             "Folder" = "8:_488EAAE31D3E4C10A7C204F32D3DF29D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_29FD58C1B88948E2A27F2F901494800F"
+            {
+            "SourcePath" = "8:..\\..\\release\\lib\\release\\lib\\lab_gamut.lib"
+            "TargetName" = "8:lab_gamut.lib"
+            "Tag" = "8:"
+            "Folder" = "8:_0F18EC14CB9E4053A952F7D6E985BA78"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -10516,6 +10586,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_749F77DD014D48179A82BFCA758B2EE6"
+            {
+            "SourcePath" = "8:..\\..\\release\\lib\\release\\dll\\lab_gamut.dll"
+            "TargetName" = "8:lab_gamut.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_4F6E35FF8AF049FFB5270298E3BF6F4D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_74EEB3F85F164B9E8A8E01EA8DBF95D1"
             {
             "SourcePath" = "8:..\\..\\release\\share\\graphviz\\smyrna\\mouse_actions.txt"
@@ -11216,6 +11306,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_80AB8133C263411B830ED7D4DA57F5FB"
+            {
+            "SourcePath" = "8:..\\..\\release\\lib\\debug\\lib\\lab_gamut.lib"
+            "TargetName" = "8:lab_gamut.lib"
+            "Tag" = "8:"
+            "Folder" = "8:_E630780592AF4A139D075370DF107A89"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_80BC052126CF4394B9A60FEB4A45E226"
             {
             "SourcePath" = "8:..\\..\\release\\fonts\\conf.avail\\69-unifont.conf"
@@ -11822,6 +11932,26 @@
             "TargetName" = "8:back.gif"
             "Tag" = "8:"
             "Folder" = "8:_7704C4199BC641AB8AB08D3B01715F0A"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8E011C9671D643D3992718AC309DF0BF"
+            {
+            "SourcePath" = "8:..\\..\\release\\lib\\debug\\dll\\lab_gamut.dll"
+            "TargetName" = "8:lab_gamut.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_E95C230A024E4AE68F5A30B47956E2C4"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -13136,26 +13266,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A5199651888840D58828CBAEFACAA2E8"
-            {
-            "SourcePath" = "8:..\\..\\release\\share\\graphviz\\examples\\world.gv"
-            "TargetName" = "8:world.gv"
-            "Tag" = "8:"
-            "Folder" = "8:_D9210589EFDF424CBF2E6F2D8DBD1A3F"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A64A4F60B2D440FEAF16DBA573EE03FB"
             {
             "SourcePath" = "8:..\\..\\release\\share\\man\\man1\\neato.1"
@@ -13902,26 +14012,6 @@
             "TargetName" = "8:license.rtf"
             "Tag" = "8:"
             "Folder" = "8:_D63509F437B34254B738CAF3D055F760"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B28186595FBE4964BFE7E220515E68E9"
-            {
-            "SourcePath" = "8:..\\..\\release\\share\\graphviz\\examples\\4elt.gv"
-            "TargetName" = "8:4elt.gv"
-            "Tag" = "8:"
-            "Folder" = "8:_D9210589EFDF424CBF2E6F2D8DBD1A3F"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -15016,6 +15106,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C958B6B7FB824BDCBA30563FF52A1453"
+            {
+            "SourcePath" = "8:..\\..\\release\\include\\graphviz\\textspan.h"
+            "TargetName" = "8:textspan.h"
+            "Tag" = "8:"
+            "Folder" = "8:_BCF10C11D7364DB385CC373F50E624DC"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C96CA5380AC646589776AF36E30AC202"
             {
             "SourcePath" = "8:..\\..\\release\\bin\\prune.exe"
@@ -15122,6 +15232,26 @@
             "TargetName" = "8:aa_lbox.gif"
             "Tag" = "8:"
             "Folder" = "8:_7704C4199BC641AB8AB08D3B01715F0A"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CC2F295DD8A74905B6CB3BAD1D1B4699"
+            {
+            "SourcePath" = "8:..\\..\\release\\bin\\edgepaint.exe"
+            "TargetName" = "8:edgepaint.exe"
+            "Tag" = "8:"
+            "Folder" = "8:_2CB80ACEA55C4CCD8EC8A66D0DE2ADA9"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -17573,7 +17703,7 @@
                 {
                     "{9EF0B969-E518-4E46-987F-47570745A589}:_7311E34D27CB4695BDD9C87AEE0F24EA"
                     {
-                    "Name" = "8:Graphviz 2.33"
+                    "Name" = "8:Graphviz 2.39"
                     "AlwaysCreate" = "11:FALSE"
                     "Condition" = "8:"
                     "Transitive" = "11:FALSE"
@@ -17997,17 +18127,6 @@
                                         {
                                         }
                                     }
-                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_D9210589EFDF424CBF2E6F2D8DBD1A3F"
-                                    {
-                                    "Name" = "8:examples"
-                                    "AlwaysCreate" = "11:FALSE"
-                                    "Condition" = "8:"
-                                    "Transitive" = "11:FALSE"
-                                    "Property" = "8:_B4A43E1308064064A91337C4C4D6F2CF"
-                                        "Folders"
-                                        {
-                                        }
-                                    }
                                     "{9EF0B969-E518-4E46-987F-47570745A589}:_EA2EA6B45DEE4C35ACA33AA91E799532"
                                     {
                                     "Name" = "8:doc"
@@ -18136,7 +18255,7 @@
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:FALSE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:2.33"
+        "ProductVersion" = "8:2.39"
         "Manufacturer" = "8:AT&T Research Labs."
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

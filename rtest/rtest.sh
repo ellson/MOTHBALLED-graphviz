@@ -37,7 +37,7 @@ TESTNAME=   # name of test
 GRAPH=      # graph specification
 IDX=
 typeset -i i j SUBTESTCNT
-typeset -i CRASH_CNT DIFF_CNT TOT_CNT
+typeset -i CRASH_CNT=0 DIFF_CNT=0 TOT_CNT=0
 typeset -i LINECNT=0
 typeset -A TESTTYPES
 typeset -a ALG
@@ -341,7 +341,7 @@ do
   \? )
     if [[ "$OPTARG" == '?' ]]
     then
-      echo $Usage
+      print $Usage
       exit 0
     else
       echo "rtest: unknown flag $OPTARG - ignored"
@@ -402,9 +402,12 @@ while readTest
 do
   doTest
 done
-if [[ $NOOP != 1 ]]
+if [[ $NOOP == 1 ]]
 then
-print -u 2 "No. tests: $TOT_CNT Layout failures: $CRASH_CNT Changes: $DIFF_CNT"
-else
 print -u 2 "No. tests: $TOT_CNT"
+elif [[ $GENERATE == 1 ]]
+then
+print -u 2 "No. tests: $TOT_CNT Layout failures: $CRASH_CNT"
+else
+print -u 2 "No. tests: $TOT_CNT Layout failures: $CRASH_CNT Changes: $DIFF_CNT"
 fi

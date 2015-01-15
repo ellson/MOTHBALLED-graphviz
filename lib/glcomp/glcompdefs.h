@@ -18,7 +18,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <math.h>
-#ifdef _WIN32
+#ifdef WIN32
 #include <windows.h>
 #include <winuser.h>
 #include <tchar.h>
