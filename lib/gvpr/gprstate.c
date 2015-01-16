@@ -19,7 +19,7 @@
 
 #ifdef WIN32
 #include "windows.h"
-#include "Shlwapi.h"
+#include "shlwapi.h"
 #endif
 
 #include <gprstate.h>
