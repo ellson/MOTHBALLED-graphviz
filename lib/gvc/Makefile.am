@@ -36,6 +36,10 @@ libgvc_C_la_SOURCES = gvrender.c gvlayout.c gvdevice.c gvloadimage.c \
 	gvcontext.c gvjobs.c gvevent.c gvplugin.c gvconfig.c \
 	gvtextlayout.c gvusershape.c gvc.c
 #	gvbuffstderr.c
+if WITH_WIN32
+libgvc_C_la_SOURCES += regex_win32.c
+endif
+
 libgvc_C_la_LIBADD = \
 	$(top_builddir)/lib/pack/libpack_C.la \
 	$(top_builddir)/lib/xdot/libxdot_C.la \
