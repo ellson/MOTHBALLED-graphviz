@@ -103,7 +103,7 @@ copy /Y %outputDir%dot.exe %targetDir%bin\neato.exe
 copy /Y %outputDir%dot.exe %targetDir%bin\fdp.exe
 copy /Y %outputDir%dot.exe %targetDir%bin\twopi.exe
 copy /Y %outputDir%dot.exe %targetDir%bin\osage.exe
-copy /Y %outputDir%gv2gml.exe %targetDir%bin\gml2gv.exe
+copy /Y %outputDir%gxl2gv.exe %targetDir%bin\gv2gxl.exe
 copy /Y %outputDir%*.dll  %targetDir%bin
 copy /Y %outputDir%*.lib  %targetDir%lib\release\lib
 copy /Y %outputDir%*.dll  %targetDir%lib\release\dll
