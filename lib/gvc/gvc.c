@@ -125,7 +125,7 @@ int gvRender(GVC_t *gvc, graph_t *g, const char *format, FILE *out)
     return rc;
 }
 
-/* Render layout in a specified format to an open FILE */
+/* Render layout in a specified format to a file with the given name */
 int gvRenderFilename(GVC_t *gvc, graph_t *g, const char *format, const char *filename)
 {
     int rc;

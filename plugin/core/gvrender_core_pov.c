@@ -376,7 +376,7 @@ char *el(GVJ_t* job, char *template, ...)
 	return str;
 #elif defined(HAVE_VSNPRINTF)
 	char buf[BUFSIZ];
-	size_t len;
+	int len;
 	char *str;
 	va_list arglist;
 

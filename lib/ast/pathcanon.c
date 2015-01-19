@@ -50,6 +50,7 @@ char *pathcanon(char *path, int flags)
     register int dots;
     char *phys;
     char *v;
+    char* e = path + PATH_MAX;
     int loop;
     int oerrno;
 #if defined(FS_3D)
@@ -141,6 +142,10 @@ char *pathcanon(char *path, int flags)
 		    dots = pathgetlink(phys, buf, sizeof(buf));
 		    *(t - 1) = c;
 		    if (dots > 0) {
+			if ((t + dots + 1) >= e) { /* make sure path fits in buf */
+			    strcpy(path, s);
+                            return 0;
+			}
 			loop++;
 			strcpy(buf + dots, s - (*s != 0));
 			if (*buf == '/')

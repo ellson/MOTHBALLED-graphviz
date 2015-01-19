@@ -393,7 +393,7 @@ void gvdevice_finalize(GVJ_t * job)
 void gvprintf(GVJ_t * job, const char *format, ...)
 {
     char buf[BUFSIZ];
-    size_t len;
+    int len;
     va_list argp;
     char* bp = buf;
 

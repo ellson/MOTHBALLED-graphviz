@@ -34,7 +34,8 @@ pdf_DATA = gvc.3.pdf
 
 libgvc_C_la_SOURCES = gvrender.c gvlayout.c gvdevice.c gvloadimage.c \
 	gvcontext.c gvjobs.c gvevent.c gvplugin.c gvconfig.c \
-	gvtextlayout.c gvusershape.c gvbuffstderr.c gvc.c
+	gvtextlayout.c gvusershape.c gvc.c
+#	gvbuffstderr.c
 libgvc_C_la_LIBADD = \
 	$(top_builddir)/lib/pack/libpack_C.la \
 	$(top_builddir)/lib/xdot/libxdot_C.la \

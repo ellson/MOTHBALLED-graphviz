@@ -458,10 +458,10 @@ tclGdCreateCmd(Tcl_Interp * interp, int argc, Tcl_Obj * CONST objv[])
 	    /* Not a channel, or Tcl_GetOpenFile() not supported.
 	     *   See if we can open directly.
 	     */
-	    fileByName++;
 	    if ((filePtr = fopen(arg2, "rb")) == NULL) {
 		return TCL_ERROR;
 	    }
+	    fileByName++;
 	    Tcl_ResetResult(interp);
 	}
 
@@ -492,6 +492,9 @@ tclGdCreateCmd(Tcl_Interp * interp, int argc, Tcl_Obj * CONST objv[])
 #endif
 	} else {
 	    Tcl_AppendResult(interp, cmd + 10, "unrecognizable format requested", NULL);
+	    if (fileByName) {
+	        fclose(filePtr);
+	    }
             return TCL_ERROR;
 	}
 	if (fileByName) {

@@ -14,12 +14,22 @@ struct buff_s {
  */ 
 void *buffstderr(void)
 {
+#ifdef _WIN32
     char *p;
+#else
+    int t;
+#endif
     struct buff_s *b;
 
     assert ((b = malloc(sizeof(struct buff_s))));
     assert ((b->template = strdup("/tmp/stderr_buffer_XXXXXX")));
-    assert ((p = mktemp(b->template)));
+#ifdef _WIN32
+    p = mktemp(b->template);
+    assert (p);
+#else
+    t = mkstemp(b->template);
+    assert (t > 0);
+#endif
     fflush(stderr);
     fgetpos(stderr, &(b->pos));
     b->fd = dup(fileno(stderr));
