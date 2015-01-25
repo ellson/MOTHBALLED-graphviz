@@ -13,6 +13,9 @@ rtest*.tar.gz*
 *.so.*
 *.soT
 *.pc
+*.sdf
+*.suo
+*.opensdf
 .libs
 .deps
 libtool
@@ -201,3 +204,9 @@ tclpkg/tcldot/tcldot.3tcl.pdf
 tclpkg/tkspline/tkspline.3tk.pdf
 windows/Properties/AssemblyInfo.cs
 windows/build/graphviz.wxs
+windows/libdot/*/Debug/
+windows/libdot/*/Release/
+windows/libdot/*/x64/
+windows/libdot/Debug/
+windows/libdot/Release/
+windows/libdot/x64/

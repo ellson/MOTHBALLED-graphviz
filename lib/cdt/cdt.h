@@ -27,8 +27,10 @@
 #endif
 
 #ifdef WIN32
+#ifndef LIBDOT_STANDALONE
 #define __EXPORT__  __declspec (dllexport)
 #define __IMPORT__	__declspec (dllimport)
+#endif
 #endif
 
 
@@ -184,7 +186,9 @@ struct _dtstat_s
 
 _BEGIN_EXTERNS_	/* public data */
 #if _BLD_cdt && defined(__EXPORT__)
+#ifndef LIBDOT_STANDALONE
 #define extern	__EXPORT__
+#endif
 #endif
 #if !_BLD_cdt && defined(__IMPORT__)
 #define extern	__IMPORT__
@@ -216,7 +220,9 @@ _END_EXTERNS_
 
 _BEGIN_EXTERNS_	/* public functions */
 #if _BLD_cdt && defined(__EXPORT__)
+#ifndef LIBDOT_STANDALONE
 #define extern	__EXPORT__
+#endif
 #endif
 
 extern Dt_t*		dtopen _ARG_((Dtdisc_t*, Dtmethod_t*));

@@ -25,10 +25,12 @@ extern "C" {
 #include "geom.h"
 
 #ifdef WIN32
+#ifndef LIBDOT_STANDALONE
 #ifdef GVDLL
 #define extern __declspec(dllexport)
 #else
 #define extern __declspec(dllimport)
+#endif
 #endif
 #endif	
 

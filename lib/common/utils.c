@@ -19,7 +19,11 @@
 #include "gvc.h"
 
 #ifdef WIN32
+#ifdef LIBDOT_STANDALONE
+#define R_OK 4
+#else
 #include "libltdl/lt_system.h"
+#endif
 #endif
 #ifndef WIN32
 #include <unistd.h>

@@ -183,7 +183,9 @@ struct Agdisc_s {		/* user's discipline */
 
 /*visual studio*/
 #if defined(WIN32) && !defined(CGRAPH_EXPORTS)
+#ifndef LIBDOT_STANDALONE
 #define extern __declspec(dllimport)
+#endif
 #endif
 /*end visual studio*/
 
@@ -420,7 +422,9 @@ extern agusererrf agseterrf(agusererrf);
 #   endif
 #endif
 #if defined(WIN32) && !defined(CGRAPH_EXPORTS)
+#ifndef LIBDOT_STANDALONE
 #define extern __declspec(dllimport)
+#endif
 #endif
 
 extern Agdesc_t Agdirected, Agstrictdirected, Agundirected,
