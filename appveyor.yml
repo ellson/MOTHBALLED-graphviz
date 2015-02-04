@@ -5,6 +5,7 @@ clone_folder: c:\graphviz-ms
 
 build_script:
   - '"%VS90COMNTOOLS%\..\..\VC\vcvarsall.bat" x86'
+  - devenv /setup
 # download busybox-w32 and save it as wget.exe
   - ps: (new-object net.webclient).DownloadFile("ftp://ftp.tigress.co.uk/pub/gpl/6.0.0/busybox/busybox.exe", "C:\graphviz-ms\wget.exe")
   - c:\graphviz-ms\windows\build.bat
