@@ -1,0 +1,3 @@
+build_script:
+  - ps: Copy-item C:\projects\graphviz c:\graphviz-ms -recurse
+  - c:\graphviz-ms\windows\build.bat
