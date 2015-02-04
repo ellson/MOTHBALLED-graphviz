@@ -2,6 +2,7 @@
 clone_depth: 50
 
 build_script:
+  - '"%VS90COMNTOOLS%\..\..\VC\vcvarsall.bat" x86'
   - ps: Copy-item C:\projects\graphviz c:\graphviz-ms -recurse
 # download busybox-w32 and save it as wget.exe
   - ps: (new-object net.webclient).DownloadFile("ftp://ftp.tigress.co.uk/pub/gpl/6.0.0/busybox/busybox.exe", "C:\graphviz-ms\wget.exe")
