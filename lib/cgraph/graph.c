@@ -45,7 +45,7 @@ Agraph_t *agopen(char *name, Agdesc_t desc, Agdisc_t * arg_disc)
 {
     Agraph_t *g;
     Agclos_t *clos;
-    unsigned long gid;
+    IDTYPE gid;
 
     clos = agclos(arg_disc);
     g = clos->disc.mem->alloc(clos->state.mem, sizeof(Agraph_t));
@@ -241,7 +241,7 @@ int agdegree(Agraph_t * g, Agnode_t * n, int want_in, int want_out)
 
 int agraphidcmpf(Dict_t * d, void *arg0, void *arg1, Dtdisc_t * disc)
 {
-    long	v;
+    ptrdiff_t	v;
     Agraph_t *sg0, *sg1;
     sg0 = (Agraph_t *) arg0;
     sg1 = (Agraph_t *) arg1;

@@ -38,12 +38,12 @@ extern "C" {
 /* agxbput_n:
  * Append string s of length n into xb
  */
-    extern int agxbput_n(agxbuf * xb, const char *s, unsigned int n);
+    extern size_t agxbput_n(agxbuf * xb, const char *s, size_t n);
 
 /* agxbput:
  * Append string s into xb
  */
-    extern int agxbput(agxbuf * xb, const char *s);
+    extern size_t agxbput(agxbuf * xb, const char *s);
 
 /* agxbfree:
  * Free any malloced resources.
@@ -58,7 +58,7 @@ extern "C" {
 /* agxbmore:
  * Expand buffer to hold at least ssz more bytes.
  */
-    extern int agxbmore(agxbuf * xb, int unsigned ssz);
+    extern int agxbmore(agxbuf * xb, size_t ssz);
 
 /* agxbputc:
  * Add character to buffer.
