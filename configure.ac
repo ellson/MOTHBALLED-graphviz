@@ -183,7 +183,7 @@ case "${host_os}" in
 	PATHSEPARATOR=":"
         NO_POSTSCRIPT_ALIAS=0
 	BROWSER="xdg-open"
-	JSHEXT=jnilib
+	JSHEXT=so
 	;;
 esac
 AC_SUBST([CYGWIN])
