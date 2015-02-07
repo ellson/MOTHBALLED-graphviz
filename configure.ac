@@ -139,6 +139,7 @@ case "${host_os}" in
 	PATHSEPARATOR=";"
         NO_POSTSCRIPT_ALIAS=1
 	BROWSER="xdg-open"
+	JSHEXT=so
 	;;
   *-cygwin* )
 	CYGWIN=yes
@@ -147,6 +148,7 @@ case "${host_os}" in
         NO_POSTSCRIPT_ALIAS=1
 	AC_DEFINE(NO_POSTSCRIPT_ALIAS,1,[Alias PostScript font names to URW type 1 fonts])
 	BROWSER="xdg-open"
+	JSHEXT=so
 	;;
   *-mingw32* )
 	MINGW32=yes
@@ -154,6 +156,7 @@ case "${host_os}" in
 	PATHSEPARATOR=":"
         NO_POSTSCRIPT_ALIAS=1
 	BROWSER="xdg-open"
+	JSHEXT=so
 	;;
   *-darwin* )
 	DARWIN=yes
@@ -162,7 +165,7 @@ case "${host_os}" in
 	PATHSEPARATOR=":"
         NO_POSTSCRIPT_ALIAS=1
 	BROWSER="open"
-	JNI_EXTRA_LDFLAGS="-shrext .jnilib"
+	JSHEXT=jnilib
 	case "${host_os}" in
 	*-darwin9*)
 		DARWIN9=yes
@@ -180,6 +183,7 @@ case "${host_os}" in
 	PATHSEPARATOR=":"
         NO_POSTSCRIPT_ALIAS=0
 	BROWSER="xdg-open"
+	JSHEXT=jnilib
 	;;
 esac
 AC_SUBST([CYGWIN])
@@ -187,7 +191,9 @@ AC_SUBST([MINGW32])
 AC_SUBST([DARWIN])
 AC_SUBST([DARWIN9])
 AC_SUBST([EXTRA_SMYRNA_LDFLAGS])
+JNI_EXTRA_LDFLAGS="-shrext .$JSHEXT"
 AC_SUBST([JNI_EXTRA_LDFLAGS])
+AC_SUBST([JSHEXT])
 AC_DEFINE_UNQUOTED(DEFAULT_FONTPATH,"$DEFAULT_FONTPATH",[Path to TrueType fonts.])
 AC_DEFINE_UNQUOTED(PATHSEPARATOR,"$PATHSEPARATOR",[Path separator character.])
 AC_DEFINE_UNQUOTED(NO_POSTSCRIPT_ALIAS,$NO_POSTSCRIPT_ALIAS,[Postscript fontnames.])
