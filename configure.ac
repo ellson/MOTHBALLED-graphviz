@@ -131,7 +131,7 @@ CYGWIN=no
 MINGW32=no
 DARWIN9=no
 case "${host_os}" in
-  *uwin* )
+  *-uwin* )
 	UWIN=yes
 	DEFAULT_FONTPATH="C:/WINDOWS/FONTS;C:/WINNT/Fonts;C:/winnt/fonts"
 	CFLAGS="${CFLAGS} -DWIN32 -DMSWIN32"
@@ -140,7 +140,7 @@ case "${host_os}" in
         NO_POSTSCRIPT_ALIAS=1
 	BROWSER="xdg-open"
 	;;
-  *cygwin* )
+  *-cygwin* )
 	CYGWIN=yes
 	DEFAULT_FONTPATH="C:/WINDOWS/FONTS;C:/WINNT/Fonts;C:/winnt/fonts"
 	PATHSEPARATOR=";"
@@ -148,36 +148,32 @@ case "${host_os}" in
 	AC_DEFINE(NO_POSTSCRIPT_ALIAS,1,[Alias PostScript font names to URW type 1 fonts])
 	BROWSER="xdg-open"
 	;;
-  *mingw32* )
+  *-mingw32* )
 	MINGW32=yes
 	DEFAULT_FONTPATH="C:/WINDOWS/FONTS;C:/WINNT/Fonts;C:/winnt/fonts"
 	PATHSEPARATOR=":"
         NO_POSTSCRIPT_ALIAS=1
 	BROWSER="xdg-open"
 	;;
-  *darwin9* )
+  *-darwin* )
 	DARWIN=yes
 	AC_DEFINE_UNQUOTED(DARWIN,1,[Define for any Darwin-based OS.])
-	DARWIN9=yes
 	DEFAULT_FONTPATH="~/Library/Fonts:/Library/Fonts:/Network/Library/Fonts:/System/Library/Fonts"
 	PATHSEPARATOR=":"
         NO_POSTSCRIPT_ALIAS=1
-	AC_DEFINE_UNQUOTED(DARWIN_DYLIB,"$DARWIN_DYLIB",[Define for Darwin-style shared library names.])
 	BROWSER="open"
+	JNI_EXTRA_LDFLAGS="-shrext .jnilib"
 	case "${host_os}" in
-	*darwin9.4* | *darwin9.5* )
+	*-darwin9*)
+		DARWIN9=yes
+		AC_DEFINE_UNQUOTED(DARWIN_DYLIB,"$DARWIN_DYLIB",[Define for Darwin-style shared library names.])
+		;;
+        esac
+	case "${host_os}" in
+	*-darwin9.4* | *darwin9.5* )
 		EXTRA_SMYRNA_LDFLAGS="-dylib_file /System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib"
 		;;
-	esac
-	;;
-  *darwin* )
-	DARWIN=yes
-	AC_DEFINE_UNQUOTED(DARWIN,1,[Define for any Darwin-based OS.])
-	DEFAULT_FONTPATH="~/Library/Fonts:/Library/Fonts:/Network/Library/Fonts:/System/Library/Fonts"
-	PATHSEPARATOR=":"
-        NO_POSTSCRIPT_ALIAS=1
-	BROWSER="open"
-	AC_DEFINE_UNQUOTED(DARWIN_DYLIB,"$DARWIN_DYLIB",[Define for Darwin-style shared library names.])
+        esac
 	;;
   * ) # This sucks!  Whatever happened to standards for file system layout?   (Good job its no longer used unless fontconfig is unavailable.)
 	DEFAULT_FONTPATH="/usr/share/fonts/sun/TrueType:/usr/share/fonts/TrueType:/usr/X11/lib/X11/fonts/TrueType:/usr/share/fonts/sun/Type1:/usr/openwin/lib/X11/fonts/Type1:/usr/share/fonts/X11/Type1:/usr/share/fonts/default/Type1:/usr/X11R6/lib/X11/fonts/TrueType:/usr/X11R6/lib/X11/fonts/truetype:/usr/X11R6/lib/X11/fonts/TTF:/usr/share/fonts/truetype:/usr/openwin/lib/X11/fonts/TrueType:/usr/X11R6/lib/X11/fonts/Type1:/usr/common/share/fonts/ttf";
@@ -191,6 +187,7 @@ AC_SUBST([MINGW32])
 AC_SUBST([DARWIN])
 AC_SUBST([DARWIN9])
 AC_SUBST([EXTRA_SMYRNA_LDFLAGS])
+AC_SUBST([JNI_EXTRA_LDFLAGS])
 AC_DEFINE_UNQUOTED(DEFAULT_FONTPATH,"$DEFAULT_FONTPATH",[Path to TrueType fonts.])
 AC_DEFINE_UNQUOTED(PATHSEPARATOR,"$PATHSEPARATOR",[Path separator character.])
 AC_DEFINE_UNQUOTED(NO_POSTSCRIPT_ALIAS,$NO_POSTSCRIPT_ALIAS,[Postscript fontnames.])

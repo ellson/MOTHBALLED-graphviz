@@ -101,7 +101,7 @@ JAVA_data = gv.java gvJNI.java SWIGTYPE_p_Agraph_t.java SWIGTYPE_p_Agnode_t.java
 nodist_libgv_java_la_SOURCES = gv_java.cpp
 libgv_java_la_SOURCES = $(BASESOURCES)  gv_java_init.c
 libgv_java_la_LIBADD = $(BASELIBS) $(JAVA_LIBS)
-libgv_java_la_LDFLAGS = -module -avoid-version
+libgv_java_la_LDFLAGS = -module -avoid-version $(JNI_EXTRA_LDFLAGS)
 libgv_java_la_CPPFLAGS = -DSWIGJAVA $(BASECPPFLAGS) $(JAVA_INCLUDES)
 $(JAVA_data): gv_java.cpp
 gv_java.cpp: gv.i
