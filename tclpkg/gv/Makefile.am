@@ -94,7 +94,6 @@ libgv_io_la_CPPFLAGS = $(BASECPPFLAGS) $(IO_INCLUDES)
 gv_io.cpp: gv.i
 	$(SWIG) -c++ -io -o gv_io.cpp $(srcdir)/gv.i
 
-JSHEXT=jnilib
 libjavadir = $(pkglibdir)/java
 pkgjavadir = $(libjavadir)/org/graphviz
 JAVA_data = gv.java gvJNI.java SWIGTYPE_p_Agraph_t.java SWIGTYPE_p_Agnode_t.java SWIGTYPE_p_Agedge_t.java SWIGTYPE_p_Agsym_t.java SWIGTYPE_p_FILE.java
