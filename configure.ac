@@ -131,7 +131,7 @@ CYGWIN=no
 MINGW32=no
 DARWIN9=no
 case "${host_os}" in
-  *-uwin* )
+  *uwin* )
 	UWIN=yes
 	DEFAULT_FONTPATH="C:/WINDOWS/FONTS;C:/WINNT/Fonts;C:/winnt/fonts"
 	CFLAGS="${CFLAGS} -DWIN32 -DMSWIN32"
@@ -141,7 +141,7 @@ case "${host_os}" in
 	BROWSER="xdg-open"
 	JSHEXT=so
 	;;
-  *-cygwin* )
+  *cygwin* )
 	CYGWIN=yes
 	DEFAULT_FONTPATH="C:/WINDOWS/FONTS;C:/WINNT/Fonts;C:/winnt/fonts"
 	PATHSEPARATOR=";"
@@ -150,7 +150,7 @@ case "${host_os}" in
 	BROWSER="xdg-open"
 	JSHEXT=so
 	;;
-  *-mingw32* )
+  *mingw32* )
 	MINGW32=yes
 	DEFAULT_FONTPATH="C:/WINDOWS/FONTS;C:/WINNT/Fonts;C:/winnt/fonts"
 	PATHSEPARATOR=":"
@@ -158,7 +158,7 @@ case "${host_os}" in
 	BROWSER="xdg-open"
 	JSHEXT=so
 	;;
-  *-darwin* )
+  *darwin* )
 	DARWIN=yes
 	AC_DEFINE_UNQUOTED(DARWIN,1,[Define for any Darwin-based OS.])
 	DEFAULT_FONTPATH="~/Library/Fonts:/Library/Fonts:/Network/Library/Fonts:/System/Library/Fonts"
@@ -167,13 +167,13 @@ case "${host_os}" in
 	BROWSER="open"
 	JSHEXT=jnilib
 	case "${host_os}" in
-	*-darwin9*)
+	*darwin9*)
 		DARWIN9=yes
 		AC_DEFINE_UNQUOTED(DARWIN_DYLIB,"$DARWIN_DYLIB",[Define for Darwin-style shared library names.])
 		;;
         esac
 	case "${host_os}" in
-	*-darwin9.4* | *darwin9.5* )
+	*darwin9.4* | *darwin9.5* )
 		EXTRA_SMYRNA_LDFLAGS="-dylib_file /System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib"
 		;;
         esac
