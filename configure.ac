@@ -166,10 +166,10 @@ case "${host_os}" in
         NO_POSTSCRIPT_ALIAS=1
 	BROWSER="open"
 	JSHEXT=jnilib
+	AC_DEFINE_UNQUOTED(DARWIN_DYLIB,"$DARWIN_DYLIB",[Define for Darwin-style shared library names.])
 	case "${host_os}" in
 	*darwin9*)
 		DARWIN9=yes
-		AC_DEFINE_UNQUOTED(DARWIN_DYLIB,"$DARWIN_DYLIB",[Define for Darwin-style shared library names.])
 		;;
         esac
 	case "${host_os}" in
