@@ -96,6 +96,7 @@ obj_state_t *push_obj_state(GVJ_t *job) {
 
   parent = obj->parent = job->obj;
   job->obj = obj;
+  
   if (parent) {
     obj->pencolor = parent->pencolor; /* default styles to parent's style */
     obj->fillcolor = parent->fillcolor;
@@ -104,6 +105,7 @@ obj_state_t *push_obj_state(GVJ_t *job) {
     obj->penwidth = parent->penwidth;
     obj->gradient_angle = parent->gradient_angle;
     obj->stopcolor = parent->stopcolor;
+    obj->events = parent->events;
   } else {
     /* obj->pencolor = NULL */
     /* obj->fillcolor = NULL */
@@ -120,6 +122,7 @@ void pop_obj_state(GVJ_t *job) {
 
   assert(obj);
 
+  //free(obj->events);
   free(obj->id);
   free(obj->url);
   free(obj->labelurl);
@@ -2382,7 +2385,44 @@ static void emit_begin_edge(GVJ_t *job, edge_t *e, char **styles) {
     s = getObjId(job, e, &xb);
     obj->id = strdup_and_subst_obj(s, (void *)e);
     agxbfree(&xb);
-
+    
+    if ((s = agget(e, "onfocusin")) && s[0]) 
+          obj->events.onfocusin = strdup_and_subst_obj(s, (void *)e);
+    if ((s = agget(e, "onfocusout")) && s[0]) 
+          obj->events.onfocusout = strdup_and_subst_obj(s, (void *)e);
+    if ((s = agget(e, "onactivate")) && s[0]) 
+          obj->events.onactivate = strdup_and_subst_obj(s, (void *)e);
+    if ((s = agget(e, "onclick")) && s[0]) 
+          obj->events.onclick = strdup_and_subst_obj(s, (void *)e);
+    if ((s = agget(e, "onmousedown")) && s[0]) 
+          obj->events.onmousedown = strdup_and_subst_obj(s, (void *)e);
+    if ((s = agget(e, "onmouseup")) && s[0]) 
+          obj->events.onmouseup = strdup_and_subst_obj(s, (void *)e);
+    if ((s = agget(e, "onmouseover")) && s[0]) 
+          obj->events.onmouseover = strdup_and_subst_obj(s, (void *)e);
+    if ((s = agget(e, "onmousemove")) && s[0]) 
+          obj->events.onmousemove = strdup_and_subst_obj(s, (void *)e);
+    if ((s = agget(e, "onmouseout")) && s[0]) 
+          obj->events.onmouseout = strdup_and_subst_obj(s, (void *)e);
+    if ((s = agget(e, "onunload")) && s[0]) 
+          obj->events.onunload = strdup_and_subst_obj(s, (void *)e);
+    if ((s = agget(e, "onabort")) && s[0]) 
+          obj->events.onabort = strdup_and_subst_obj(s, (void *)e);
+    if ((s = agget(e, "onerror")) && s[0]) 
+          obj->events.onerror = strdup_and_subst_obj(s, (void *)e);
+    if ((s = agget(e, "onresize")) && s[0]) 
+          obj->events.onresize = strdup_and_subst_obj(s, (void *)e);
+    if ((s = agget(e, "onscroll")) && s[0])
+          obj->events.onscroll = strdup_and_subst_obj(s, (void *)e);
+    if ((s = agget(e, "onzoom")) && s[0])
+          obj->events.onzoom = strdup_and_subst_obj(s, (void *)e);
+    if ((s = agget(e, "onbegin")) && s[0])
+          obj->events.onbegin = strdup_and_subst_obj(s, (void *)e);
+    if ((s = agget(e, "onend")) && s[0]) 
+          obj->events.onend = strdup_and_subst_obj(s, (void *)e);
+    if ((s = agget(e, "onrepeat")) && s[0]) 
+      obj->events.onrepeat = strdup_and_subst_obj(s, (void *)e);
+      
     if (((s = agget(e, "href")) && s[0]) || ((s = agget(e, "URL")) && s[0]))
       dflt_url = strdup_and_subst_obj(s, (void *)e);
     if (((s = agget(e, "edgehref")) && s[0]) ||

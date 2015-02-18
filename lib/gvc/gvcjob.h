@@ -234,10 +234,34 @@ typedef enum {
   EMIT_ELABEL,
 } emit_state_t;
 
+typedef struct events_s events_t;
+
+struct events_s {
+  char *onfocusin;
+  char *onfocusout;
+  char *onactivate;
+  char *onclick;
+  char *onmousedown;
+  char *onmouseup;
+  char *onmouseover;
+  char *onmousemove;
+  char *onmouseout;
+  char *onunload;
+  char *onabort;
+  char *onerror;
+  char *onresize;
+  char *onscroll;
+  char *onzoom;
+  char *onbegin;
+  char *onend;
+  char *onrepeat;
+};
+
 typedef struct obj_state_s obj_state_t;
 
 struct obj_state_s {
   obj_state_t *parent;
+  events_t events;
 
   obj_type type;
   union {
