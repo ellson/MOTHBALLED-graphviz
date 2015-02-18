@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,15 +15,13 @@
 extern "C" {
 #endif
 
-
-
 #ifndef PCA_H
 #define PCA_H
 
 #include "defs.h"
 
-    extern void PCA_alloc(DistType **, int, int, double **, int);
-    extern boolean iterativePCA_1D(double **, int, int, double *);
+extern void PCA_alloc(DistType **, int, int, double **, int);
+extern boolean iterativePCA_1D(double **, int, int, double *);
 
 #endif
 

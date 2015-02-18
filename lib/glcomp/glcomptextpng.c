@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,23 +16,23 @@
 #include <gtk/gtk.h>
 #include <png.h>
 
-unsigned char *glCompLoadPng (char *filename, int *imageWidth, int *imageHeight)
-{
-    cairo_surface_t *surface;
-    cairo_format_t format;
-    int w, h;
-    unsigned char *d;
-    surface = NULL;
+unsigned char *glCompLoadPng(char *filename, int *imageWidth,
+                             int *imageHeight) {
+  cairo_surface_t *surface;
+  cairo_format_t format;
+  int w, h;
+  unsigned char *d;
+  surface = NULL;
 
-    surface = cairo_image_surface_create_from_png(filename);
-    if (!surface) return 0;
-    w = cairo_image_surface_get_width(surface);
-    h = cairo_image_surface_get_height(surface);
-    *imageWidth = w;
-    *imageHeight = h;
-    format = cairo_image_surface_get_format(surface);
-    d = cairo_image_surface_get_data(surface);
-    return d;
+  surface = cairo_image_surface_create_from_png(filename);
+  if (!surface) return 0;
+  w = cairo_image_surface_get_width(surface);
+  h = cairo_image_surface_get_height(surface);
+  *imageWidth = w;
+  *imageHeight = h;
+  format = cairo_image_surface_get_format(surface);
+  d = cairo_image_surface_get_data(surface);
+  return d;
 }
 
 #if 0
@@ -145,5 +145,3 @@ unsigned char *load_png2(char *file_name, int *imageWidth,
     return imageData;
 }
 #endif
-
-

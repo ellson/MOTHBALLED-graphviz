@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,8 +11,8 @@
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
 
-#ifndef			GVC_H
-#define			GVC_H
+#ifndef GVC_H
+#define GVC_H
 
 #include "types.h"
 #include "gvplugin.h"
@@ -34,7 +34,7 @@ extern "C" {
 #endif
 #endif
 /*end visual studio*/
-	
+
 #define LAYOUT_DONE(g) (agbindrec(g, "Agraphinfo_t", 0, TRUE) && GD_drawing(g))
 
 /* misc */
@@ -47,12 +47,13 @@ extern GVC_t *gvNEWcontext(const lt_symlist_t *builtins, int demand_loading);
 /*  set up a graphviz context - and init graph - retaining old API */
 extern GVC_t *gvContext(void);
 /*  set up a graphviz context - and init graph - with builtins */
-extern GVC_t *gvContextPlugins(const lt_symlist_t *builtins, int demand_loading);
+extern GVC_t *gvContextPlugins(const lt_symlist_t *builtins,
+                               int demand_loading);
 
 /* get information associated with a graphviz context */
-extern char **gvcInfo(GVC_t*);
-extern char *gvcVersion(GVC_t*);
-extern char *gvcBuildDate(GVC_t*);
+extern char **gvcInfo(GVC_t *);
+extern char *gvcVersion(GVC_t *);
+extern char *gvcBuildDate(GVC_t *);
 
 /* parse command line args - minimally argv[0] sets layout engine */
 extern int gvParseArgs(GVC_t *gvc, int argc, char **argv);
@@ -72,16 +73,19 @@ extern void attach_attrs(graph_t *g);
 extern int gvRender(GVC_t *gvc, graph_t *g, const char *format, FILE *out);
 
 /* Render layout in a specified format to a file with the given name */
-extern int gvRenderFilename(GVC_t *gvc, graph_t *g, const char *format, const char *filename);
+extern int gvRenderFilename(GVC_t *gvc, graph_t *g, const char *format,
+                            const char *filename);
 
 /* Render layout in a specified format to an external context */
-extern int gvRenderContext(GVC_t *gvc, graph_t *g, const char *format, void *context);
+extern int gvRenderContext(GVC_t *gvc, graph_t *g, const char *format,
+                           void *context);
 
 /* Render layout in a specified format to a malloc'ed string */
-extern int gvRenderData(GVC_t *gvc, graph_t *g, const char *format, char **result, unsigned int *length);
+extern int gvRenderData(GVC_t *gvc, graph_t *g, const char *format,
+                        char **result, unsigned int *length);
 
 /* Free memory allocated and pointed to by *result in gvRenderData */
-extern void gvFreeRenderData (char* data);
+extern void gvFreeRenderData(char *data);
 
 /* Render layout according to -T and -o options found by gvParseArgs */
 extern int gvRenderJobs(GVC_t *gvc, graph_t *g);
@@ -104,7 +108,7 @@ extern int gvFreeContext(GVC_t *gvc);
  * At present, the str argument is unused, but may be used to modify
  * the search as in gvplugin_list above.
  */
-extern char** gvPluginList (GVC_t *gvc, char* kind, int* sz, char*);
+extern char **gvPluginList(GVC_t *gvc, char *kind, int *sz, char *);
 
 /** Add a library from your user application
  * @param gvc Graphviz context to add library to
@@ -119,4 +123,4 @@ extern void gvAddLibrary(GVC_t *gvc, gvplugin_library_t *lib);
 }
 #endif
 
-#endif			/* GVC_H */
+#endif /* GVC_H */

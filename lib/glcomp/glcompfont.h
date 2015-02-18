@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -40,15 +40,17 @@ extern "C" {
     void glprintf(glCompFont *, GLfloat, GLfloat, GLfloat, GLfloat, char *);
 #endif
 
-    void glprintfglut(void *font, GLfloat xpos, GLfloat ypos, GLfloat zpos, char *bf);
+void glprintfglut(void *font, GLfloat xpos, GLfloat ypos, GLfloat zpos,
+                  char *bf);
 
-    glCompFont *glNewFont(glCompSet * s, char *text, glCompColor * c,
-          glCompFontType type, char *fontdesc, int fs,int is2D);
-    glCompFont *glNewFontFromParent(glCompObj * o, char *text);
-    void glDeleteFont(glCompFont * f);
-    void glCompDrawText(glCompFont * f,GLfloat x,GLfloat y);
-    void glCompRenderText(glCompFont * f, glCompObj * parentObj);
-    void glCompDrawText3D(glCompFont * f,GLfloat x,GLfloat y,GLfloat z,GLfloat w,GLfloat h);
+glCompFont *glNewFont(glCompSet *s, char *text, glCompColor *c,
+                      glCompFontType type, char *fontdesc, int fs, int is2D);
+glCompFont *glNewFontFromParent(glCompObj *o, char *text);
+void glDeleteFont(glCompFont *f);
+void glCompDrawText(glCompFont *f, GLfloat x, GLfloat y);
+void glCompRenderText(glCompFont *f, glCompObj *parentObj);
+void glCompDrawText3D(glCompFont *f, GLfloat x, GLfloat y, GLfloat z, GLfloat w,
+                      GLfloat h);
 
 #ifdef __cplusplus
 }

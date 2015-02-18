@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,7 +18,7 @@
 extern "C" {
 #endif
 
-#if defined HAVE_STDBOOL_H && ! defined __cplusplus
+#if defined HAVE_STDBOOL_H && !defined __cplusplus
 #include <stdbool.h>
 #endif
 
@@ -28,7 +28,7 @@ extern "C" {
 
 #if 0
 /* HAVE_BOOL only tested the CC compiler, we know C++ must define bool */
-#if ! defined HAVE_BOOL && ! defined __cplusplus
+#if !defined HAVE_BOOL && !defined __cplusplus
 typedef unsigned char bool;
 #define false 0
 #define true NOT(false)
@@ -36,7 +36,7 @@ typedef unsigned char bool;
 #endif
 
 #ifndef FALSE
-#define	FALSE (0)
+#define FALSE (0)
 #endif
 #ifndef TRUE
 #define TRUE (!FALSE)
@@ -59,4 +59,3 @@ typedef unsigned char bool;
 #endif
 
 #endif
-

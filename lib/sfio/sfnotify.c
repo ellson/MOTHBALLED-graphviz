@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,20 +11,18 @@
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
 
-#include	"sfhdr.h"
-
+#include "sfhdr.h"
 
 /*	Set the function to be called when a stream is opened or closed
 **
 **	Written by Kiem-Phong Vo.
 */
 #if __STD_C
-int sfnotify(void (*notify) (Sfio_t *, int, int))
+int sfnotify(void (*notify)(Sfio_t *, int, int))
 #else
-int sfnotify(notify)
-void (*notify) ();
+int sfnotify(notify) void (*notify)();
 #endif
 {
-    _Sfnotify = notify;
-    return 0;
+  _Sfnotify = notify;
+  return 0;
 }

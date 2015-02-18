@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,19 +20,19 @@ extern "C" {
 
 #include "geometry.h"
 
-    typedef struct {
-	Point origin;
-	Point corner;
-	int nverts;
-	Point *verts;
-	int kind;
-    } Poly;
+typedef struct {
+  Point origin;
+  Point corner;
+  int nverts;
+  Point *verts;
+  int kind;
+} Poly;
 
-    extern void polyFree(void);
-    extern int polyOverlap(Point, Poly *, Point, Poly *);
-    extern int makePoly(Poly *, Agnode_t *, float, float);
-    extern int makeAddPoly(Poly *, Agnode_t *, float, float);
-    extern void breakPoly(Poly *);
+extern void polyFree(void);
+extern int polyOverlap(Point, Poly *, Point, Poly *);
+extern int makePoly(Poly *, Agnode_t *, float, float);
+extern int makeAddPoly(Poly *, Agnode_t *, float, float);
+extern void breakPoly(Poly *);
 
 #endif
 

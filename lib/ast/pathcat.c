@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,24 +20,20 @@
 
 #include <ast.h>
 
-char *pathcat(char *path, register const char *dirs, int sep,
-	      const char *a, register const char *b)
-{
-    register char *s;
+char *pathcat(char *path, register const char *dirs, int sep, const char *a,
+              register const char *b) {
+  register char *s;
 
-    s = path;
-    while (*dirs && *dirs != sep)
-	*s++ = *dirs++;
-    if (s != path)
-	*s++ = '/';
-    if (a) {
-	while ((*s = *a++))
-	    s++;
-	if (b)
-	    *s++ = '/';
-    } else if (!b)
-	b = ".";
-    if (b)
-	while ((*s++ = *b++));
-    return (*dirs ? (char *) ++dirs : 0);
+  s = path;
+  while (*dirs && *dirs != sep) *s++ = *dirs++;
+  if (s != path) *s++ = '/';
+  if (a) {
+    while ((*s = *a++)) s++;
+    if (b) *s++ = '/';
+  } else if (!b)
+    b = ".";
+  if (b)
+    while ((*s++ = *b++))
+      ;
+  return (*dirs ? (char *)++dirs : 0);
 }

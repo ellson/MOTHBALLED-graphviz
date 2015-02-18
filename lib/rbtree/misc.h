@@ -33,11 +33,10 @@ extern jmp_buf rb_jbuf;
 /*                variable name is gNewtonsConstant. */
 
 void Assert(int assertion, char* error);
-void * SafeMalloc(size_t size);
+void* SafeMalloc(size_t size);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif
-

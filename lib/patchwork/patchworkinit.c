@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,10 +11,10 @@
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
 
-#include    "patchwork.h"
-#include    "adjust.h"
-#include    "pack.h"
-#include    "neatoprocs.h"
+#include "patchwork.h"
+#include "adjust.h"
+#include "pack.h"
+#include "neatoprocs.h"
 
 /* the following code shamelessly copied from lib/fdpgen/layout.c
 and should be extracted and made into a common function */
@@ -22,16 +22,15 @@ and should be extracted and made into a common function */
 #define CL_CHUNK 10
 
 typedef struct {
-    graph_t **cl;
-    int sz;
-    int cnt;
+  graph_t **cl;
+  int sz;
+  int cnt;
 } clist_t;
 
-static void initCList(clist_t * clist)
-{
-    clist->cl = 0;
-    clist->sz = 0;
-    clist->cnt = 0;
+static void initCList(clist_t *clist) {
+  clist->cl = 0;
+  clist->sz = 0;
+  clist->cnt = 0;
 }
 
 /* addCluster:
@@ -40,14 +39,13 @@ static void initCList(clist_t * clist)
  * Normally, we increase the array when cnt == sz.
  * The test for cnt > sz is necessary for the first time.
  */
-static void addCluster(clist_t * clist, graph_t * subg)
-{
-    clist->cnt++;
-    if (clist->cnt >= clist->sz) {
-	clist->sz += CL_CHUNK;
-	clist->cl = RALLOC(clist->sz, clist->cl, graph_t *);
-    }
-    clist->cl[clist->cnt] = subg;
+static void addCluster(clist_t *clist, graph_t *subg) {
+  clist->cnt++;
+  if (clist->cnt >= clist->sz) {
+    clist->sz += CL_CHUNK;
+    clist->cl = RALLOC(clist->sz, clist->cl, graph_t *);
+  }
+  clist->cl[clist->cnt] = subg;
 }
 
 /* mkClusters:
@@ -57,120 +55,109 @@ static void addCluster(clist_t * clist, graph_t * subg)
  * If pclist is non-NULL, we are recursively scanning a non-cluster
  * subgraph for cluster children.
  */
-static void
-mkClusters (graph_t * g, clist_t* pclist, graph_t* parent)
-{
-    graph_t* subg;
-    clist_t  list;
-    clist_t* clist;
+static void mkClusters(graph_t *g, clist_t *pclist, graph_t *parent) {
+  graph_t *subg;
+  clist_t list;
+  clist_t *clist;
 
-    if (pclist == NULL) {
-        clist = &list;
-        initCList(clist);
-    }
-    else
-        clist = pclist;
+  if (pclist == NULL) {
+    clist = &list;
+    initCList(clist);
+  } else
+    clist = pclist;
 
-    for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
-        if (!strncmp(agnameof(subg), "cluster", 7)) {
-	    agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
+  for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
+    if (!strncmp(agnameof(subg), "cluster", 7)) {
+      agbindrec(subg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
 #ifdef FDP_GEN
-            GD_alg(subg) = (void *) NEW(gdata); /* freed in cleanup_subgs */
-            GD_ndim(subg) = GD_ndim(parent);
-            LEVEL(subg) = LEVEL(parent) + 1;
-            GPARENT(subg) = parent;
+      GD_alg(subg) = (void *)NEW(gdata); /* freed in cleanup_subgs */
+      GD_ndim(subg) = GD_ndim(parent);
+      LEVEL(subg) = LEVEL(parent) + 1;
+      GPARENT(subg) = parent;
 #endif
-            addCluster(clist, subg);
-            mkClusters(subg, NULL, subg);
-        }
-        else {
-            mkClusters(subg, clist, parent);
-        }
+      addCluster(clist, subg);
+      mkClusters(subg, NULL, subg);
+    } else {
+      mkClusters(subg, clist, parent);
     }
-    if (pclist == NULL) {
-        GD_n_cluster(g) = list.cnt;
-        if (list.cnt)
-            GD_clust(g) = RALLOC(list.cnt + 1, list.cl, graph_t*);
+  }
+  if (pclist == NULL) {
+    GD_n_cluster(g) = list.cnt;
+    if (list.cnt) GD_clust(g) = RALLOC(list.cnt + 1, list.cl, graph_t *);
+  }
+}
+
+static void patchwork_init_node(node_t *n) {
+  agset(n, "shape", "box");
+  /* common_init_node_opt(n,FALSE); */
+}
+
+static void patchwork_init_edge(edge_t *e) {
+  agbindrec(e, "Agedgeinfo_t", sizeof(Agnodeinfo_t), TRUE);  // edge custom data
+  /* common_init_edge(e); */
+}
+
+static void patchwork_init_node_edge(graph_t *g) {
+  node_t *n;
+  edge_t *e;
+  int i = 0;
+  rdata *alg = N_NEW(agnnodes(g), rdata);
+
+  GD_neato_nlist(g) = N_NEW(agnnodes(g) + 1, node_t *);
+  for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+    agbindrec(n, "Agnodeinfo_t", sizeof(Agnodeinfo_t),
+              TRUE);  // node custom data
+    ND_alg(n) = alg + i;
+    GD_neato_nlist(g)[i++] = n;
+    patchwork_init_node(n);
+
+    for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+      patchwork_init_edge(e);
     }
+  }
 }
 
-static void patchwork_init_node(node_t * n)
-{
-    agset(n,"shape","box");
-    /* common_init_node_opt(n,FALSE); */
-}
-
-static void patchwork_init_edge(edge_t * e)
-{
-    agbindrec(e, "Agedgeinfo_t", sizeof(Agnodeinfo_t), TRUE);  // edge custom data
-    /* common_init_edge(e); */
-}
-
-static void patchwork_init_node_edge(graph_t * g)
-{
-    node_t *n;
-    edge_t *e;
-    int i = 0;
-    rdata* alg = N_NEW(agnnodes(g), rdata);
-
-    GD_neato_nlist(g) = N_NEW(agnnodes(g) + 1, node_t *);
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	agbindrec(n, "Agnodeinfo_t", sizeof(Agnodeinfo_t), TRUE);  // node custom data
-	ND_alg(n) = alg + i;
-	GD_neato_nlist(g)[i++] = n;
-	patchwork_init_node(n);
-
-	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    patchwork_init_edge(e);
-	}
-    }
-}
-
-static void patchwork_init_graph(graph_t * g)
-{
-    N_shape = agattr(g, AGNODE, "shape","box");
-    setEdgeType (g, ET_LINE);
-    /* GD_ndim(g) = late_int(g,agfindattr(g,"dim"),2,2); */
-    Ndim = GD_ndim(g) = 2;	/* The algorithm only makes sense in 2D */
-    mkClusters(g, NULL, g);
-    patchwork_init_node_edge(g);
+static void patchwork_init_graph(graph_t *g) {
+  N_shape = agattr(g, AGNODE, "shape", "box");
+  setEdgeType(g, ET_LINE);
+  /* GD_ndim(g) = late_int(g,agfindattr(g,"dim"),2,2); */
+  Ndim = GD_ndim(g) = 2; /* The algorithm only makes sense in 2D */
+  mkClusters(g, NULL, g);
+  patchwork_init_node_edge(g);
 }
 
 /* patchwork_layout:
- * The current version makes no use of edges, neither for a notion of connectivity
+ * The current version makes no use of edges, neither for a notion of
+ * connectivity
  * nor during drawing.
  */
-void patchwork_layout(Agraph_t *g)
-{
-    patchwork_init_graph(g);
+void patchwork_layout(Agraph_t *g) {
+  patchwork_init_graph(g);
 
-    if ((agnnodes(g) == 0) && (GD_n_cluster(g) == 0)) return;
+  if ((agnnodes(g) == 0) && (GD_n_cluster(g) == 0)) return;
 
-    patchworkLayout (g);
+  patchworkLayout(g);
 
-    dotneato_postprocess(g);
+  dotneato_postprocess(g);
 }
 
-static void patchwork_cleanup_graph(graph_t * g)
-{
-    free(GD_neato_nlist(g));
-    if (g != agroot(g))
-        agclean(g, AGRAPH , "Agraphinfo_t");
+static void patchwork_cleanup_graph(graph_t *g) {
+  free(GD_neato_nlist(g));
+  if (g != agroot(g)) agclean(g, AGRAPH, "Agraphinfo_t");
 }
 
-void patchwork_cleanup(graph_t * g)
-{
-    node_t *n;
-    edge_t *e;
+void patchwork_cleanup(graph_t *g) {
+  node_t *n;
+  edge_t *e;
 
-    n = agfstnode(g);
-    if (!n) return;
-    free (ND_alg(n));
-    for (; n; n = agnxtnode(g, n)) {
-	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    gv_cleanup_edge(e);
-	}
-	gv_cleanup_node(n);
+  n = agfstnode(g);
+  if (!n) return;
+  free(ND_alg(n));
+  for (; n; n = agnxtnode(g, n)) {
+    for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+      gv_cleanup_edge(e);
     }
-    patchwork_cleanup_graph(g);
+    gv_cleanup_node(n);
+  }
+  patchwork_cleanup_graph(g);
 }

@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,14 +16,10 @@
 #include "mem.h"
 #include "info.h"
 
-
-Info_t *nodeInfo;		/* Array of node info */
+Info_t *nodeInfo; /* Array of node info */
 static Freelist pfl;
 
-void infoinit()
-{
-    freeinit(&pfl, sizeof(PtItem));
-}
+void infoinit() { freeinit(&pfl, sizeof(PtItem)); }
 
 /* compare:
  * returns -1 if p < q
@@ -34,83 +30,80 @@ void infoinit()
  * For equal angles (which should not happen in our context)
  * ordering is by closeness to origin.
  */
-static int compare(Point * o, PtItem * p, PtItem * q)
-{
-    double x0;
-    double y0;
-    double x1;
-    double y1;
-    double a, b;
+static int compare(Point *o, PtItem *p, PtItem *q) {
+  double x0;
+  double y0;
+  double x1;
+  double y1;
+  double a, b;
 
-    if (q == NULL)
-	return -1;
-    if ((p->p.x == q->p.x) && (p->p.y == q->p.y))
-	return 0;
+  if (q == NULL) return -1;
+  if ((p->p.x == q->p.x) && (p->p.y == q->p.y)) return 0;
 
-    x0 = ((double) (p->p.x)) - ((double) (o->x));
-    y0 = ((double) (p->p.y)) - ((double) (o->y));
-    x1 = ((double) (q->p.x)) - ((double) (o->x));
-    y1 = ((double) (q->p.y)) - ((double) (o->y));
-    if (x0 >= 0.0) {
-	if (x1 < 0.0)
-	    return -1;
-	else if (x0 > 0.0) {
-	    if (x1 > 0.0) {
-		a = y1 / x1;
-		b = y0 / x0;
-		if (b < a)
-		    return -1;
-		else if (b > a)
-		    return 1;
-		else if (x0 < x1)
-		    return -1;
-		else
-		    return 1;
-	    } else {		/* x1 == 0.0 */
-		if (y1 > 0.0)
-		    return -1;
-		else
-		    return 1;
-	    }
-	} else {		/* x0 == 0.0 */
-	    if (x1 > 0.0) {
-		if (y0 <= 0.0)
-		    return -1;
-		else
-		    return 1;
-	    } else {		/* x1 == 0.0 */
-		if (y0 < y1) {
-		    if (y1 <= 0.0)
-			return 1;
-		    else
-			return -1;
-		} else {
-		    if (y0 <= 0.0)
-			return -1;
-		    else
-			return 1;
-		}
-	    }
-	}
-    } else {
-	if (x1 >= 0.0)
-	    return 1;
-	else {
-	    a = y1 / x1;
-	    b = y0 / x0;
-	    if (b < a)
-		return -1;
-	    else if (b > a)
-		return 1;
-	    else if (x0 > x1)
-		return -1;
-	    else
-		return 1;
-	}
+  x0 = ((double)(p->p.x)) - ((double)(o->x));
+  y0 = ((double)(p->p.y)) - ((double)(o->y));
+  x1 = ((double)(q->p.x)) - ((double)(o->x));
+  y1 = ((double)(q->p.y)) - ((double)(o->y));
+  if (x0 >= 0.0) {
+    if (x1 < 0.0)
+      return -1;
+    else if (x0 > 0.0) {
+      if (x1 > 0.0) {
+        a = y1 / x1;
+        b = y0 / x0;
+        if (b < a)
+          return -1;
+        else if (b > a)
+          return 1;
+        else if (x0 < x1)
+          return -1;
+        else
+          return 1;
+      } else {/* x1 == 0.0 */
+        if (y1 > 0.0)
+          return -1;
+        else
+          return 1;
+      }
+    } else {/* x0 == 0.0 */
+      if (x1 > 0.0) {
+        if (y0 <= 0.0)
+          return -1;
+        else
+          return 1;
+      } else {/* x1 == 0.0 */
+        if (y0 < y1) {
+          if (y1 <= 0.0)
+            return 1;
+          else
+            return -1;
+        } else {
+          if (y0 <= 0.0)
+            return -1;
+          else
+            return 1;
+        }
+      }
     }
+  } else {
+    if (x1 >= 0.0)
+      return 1;
+    else {
+      a = y1 / x1;
+      b = y0 / x0;
+      if (b < a)
+        return -1;
+      else if (b > a)
+        return 1;
+      else if (x0 > x1)
+        return -1;
+      else
+        return 1;
+    }
+  }
 }
 
-#if 0				/* not used */
+#if 0 /* not used */
 static void printV(PtItem * vp)
 {
     if (vp == NULL) {
@@ -133,7 +126,7 @@ static void error(Info_t * ip, Site * s, double x, double y)
 }
 #endif
 
-#if 0				/* not used */
+#if 0 /* not used */
 static int sorted(Point * origin, PtItem * vp)
 {
     PtItem *next;
@@ -158,50 +151,47 @@ static int sorted(Point * origin, PtItem * vp)
 }
 #endif
 
-void addVertex(Site * s, double x, double y)
-{
-    Info_t *ip;
-    PtItem *p;
-    PtItem *curr;
-    PtItem *prev;
-    Point *origin = &(s->coord);
-    PtItem tmp;
-    int cmp;
+void addVertex(Site *s, double x, double y) {
+  Info_t *ip;
+  PtItem *p;
+  PtItem *curr;
+  PtItem *prev;
+  Point *origin = &(s->coord);
+  PtItem tmp;
+  int cmp;
 
-    ip = nodeInfo + (s->sitenbr);
-    curr = ip->verts;
+  ip = nodeInfo + (s->sitenbr);
+  curr = ip->verts;
 
-    tmp.p.x = x;
-    tmp.p.y = y;
+  tmp.p.x = x;
+  tmp.p.y = y;
 
-    cmp = compare(origin, &tmp, curr);
-    if (cmp == 0)
-	return;
-    else if (cmp < 0) {
-	p = (PtItem *) getfree(&pfl);
-	p->p.x = x;
-	p->p.y = y;
-	p->next = curr;
-	ip->verts = p;
-	return;
-    }
-
-    prev = curr;
-    curr = curr->next;
-    while ((cmp = compare(origin, &tmp, curr)) > 0) {
-	prev = curr;
-	curr = curr->next;
-    }
-    if (cmp == 0)
-	return;
-    p = (PtItem *) getfree(&pfl);
+  cmp = compare(origin, &tmp, curr);
+  if (cmp == 0)
+    return;
+  else if (cmp < 0) {
+    p = (PtItem *)getfree(&pfl);
     p->p.x = x;
     p->p.y = y;
-    prev->next = p;
     p->next = curr;
+    ip->verts = p;
+    return;
+  }
 
-    /* This test should be unnecessary */
-    /* if (!sorted(origin,ip->verts))  */
-    /* error (ip,s,x,y); */
+  prev = curr;
+  curr = curr->next;
+  while ((cmp = compare(origin, &tmp, curr)) > 0) {
+    prev = curr;
+    curr = curr->next;
+  }
+  if (cmp == 0) return;
+  p = (PtItem *)getfree(&pfl);
+  p->p.x = x;
+  p->p.y = y;
+  prev->next = p;
+  p->next = curr;
 
+  /* This test should be unnecessary */
+  /* if (!sorted(origin,ip->verts))  */
+  /* error (ip,s,x,y); */
 }

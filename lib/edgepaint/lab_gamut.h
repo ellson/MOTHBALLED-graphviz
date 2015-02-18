@@ -1,5 +1,5 @@
 /*************************************************************************
- * Copyright (c) 2014 AT&T Intellectual Property 
+ * Copyright (c) 2014 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,7 @@ extern "C" {
 #endif
 
 typedef struct {
-  signed char l, a, b;/* l: 0 to 100, a,b: -128 tp 128 */
+  signed char l, a, b; /* l: 0 to 100, a,b: -128 tp 128 */
 } char_color_lab;
 
 /*visual studio*/

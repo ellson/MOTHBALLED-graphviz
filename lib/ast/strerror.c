@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,6 @@
  *
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
-
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -21,12 +20,11 @@
 extern int sys_nerr;
 extern char *sys_errlist[];
 
-char *strerror(int errorNumber)
-{
-    if (errorNumber > 0 && errorNumber < sys_nerr) {
-	return sys_errlist[errorNumber];
-    } else {
-	return "";
-    }
+char *strerror(int errorNumber) {
+  if (errorNumber > 0 && errorNumber < sys_nerr) {
+    return sys_errlist[errorNumber];
+  } else {
+    return "";
+  }
 }
 #endif

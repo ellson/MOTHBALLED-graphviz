@@ -17,9 +17,10 @@ typedef struct {
   double x, y;
 } point_t;
 
-/* given a list of edges, find the best ink bundling by making them meet at 2 points
+/* given a list of edges, find the best ink bundling by making them meet at 2
+   points
    \                       /
-   -meet1 ---------- meet2 - 
+   -meet1 ---------- meet2 -
    /                       \
    edges: list of edges
    numEdges: number of edges
@@ -29,7 +30,8 @@ typedef struct {
    meet1, meet2: meeting point
    return: best ink needed if bundled.
 */
-double ink(pedge* edges, int numEdges, int *pick, double *ink0, point_t *meet1, point_t *meet2, real angle_param, real angle);
+double ink(pedge *edges, int numEdges, int *pick, double *ink0, point_t *meet1,
+           point_t *meet2, real angle_param, real angle);
 double ink1(pedge e);
 
 extern double ink_count;

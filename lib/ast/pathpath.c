@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -49,73 +49,64 @@ extern char **environ;
 #endif
 char **opt_info_argv;
 
-char *pathpath(register char *path, const char *p, const char *a, int mode)
-{
-    register char *s;
-    char *x;
-    char buf[PATH_MAX];
+char *pathpath(register char *path, const char *p, const char *a, int mode) {
+  register char *s;
+  char *x;
+  char buf[PATH_MAX];
 
-    static char *cmd;
+  static char *cmd;
 
-    if (!path)
-	path = buf;
-    if (!p) {
-	if (cmd)
-	    free(cmd);
-	cmd = a ? strdup(a) : (char *) 0;
-	return 0;
+  if (!path) path = buf;
+  if (!p) {
+    if (cmd) free(cmd);
+    cmd = a ? strdup(a) : (char *)0;
+    return 0;
+  }
+  if (strlen(p) < PATH_MAX) {
+    strcpy(path, p);
+    if (pathexists(path, mode)) return (path == buf) ? strdup(path) : path;
+  }
+  if (*p == '/')
+    a = 0;
+  else if ((s = (char *)a)) {
+    x = s;
+    if (strchr(p, '/')) {
+      a = p;
+      p = "..";
+    } else
+      a = 0;
+    if ((!cmd || *cmd) &&
+        (strchr(s, '/') ||
+         (((s = cmd) || (opt_info_argv && (s = *opt_info_argv))) &&
+          strchr(s, '/') && !strchr(s, '\n') && !access(s, F_OK)) ||
+         (environ && (s = *environ) && *s++ == '_' && *s++ == '=' &&
+          strchr(s, '/') && !strneq(s, "/bin/", 5) &&
+          !strneq(s, "/usr/bin/", 9)) ||
+         (*x && !access(x, F_OK) && (s = getenv("PWD")) && *s == '/'))) {
+      if (!cmd) cmd = strdup(s);
+      if (strlen(s) < (sizeof(buf) - 6)) {
+        s = strcopy(path, s);
+        for (;;) {
+          do
+            if (s <= path) goto normal;
+          while (*--s == '/');
+          do
+            if (s <= path) goto normal;
+          while (*--s != '/');
+          strcpy(s + 1, "bin");
+          if (pathexists(path, PATH_EXECUTE)) {
+            if ((s = pathaccess(path, path, p, a, mode)))
+              return path == buf ? strdup(s) : s;
+            goto normal;
+          }
+        }
+      normal:
+        ;
+      }
     }
-    if (strlen(p) < PATH_MAX) {
-	strcpy(path, p);
-	if (pathexists(path, mode))
-	    return (path == buf) ? strdup(path) : path;
-    }
-    if (*p == '/')
-	a = 0;
-    else if ((s = (char *) a)) {
-	x = s;
-	if (strchr(p, '/')) {
-	    a = p;
-	    p = "..";
-	} else
-	    a = 0;
-	if ((!cmd || *cmd) &&
-	    (strchr(s, '/') ||
-	     (((s = cmd) || (opt_info_argv && (s = *opt_info_argv))) &&
-	      strchr(s, '/') && !strchr(s, '\n') && !access(s, F_OK)) ||
-	     (environ && (s = *environ) && *s++ == '_' &&
-	      *s++ == '=' && strchr(s, '/') && !strneq(s, "/bin/", 5) &&
-	      !strneq(s, "/usr/bin/", 9)) ||
-	     (*x && !access(x, F_OK) && (s = getenv("PWD")) && *s == '/')
-	    )
-	    ) {
-	    if (!cmd)
-		cmd = strdup(s);
-	    if (strlen(s) < (sizeof(buf) - 6)) {
-		s = strcopy(path, s);
-		for (;;) {
-		    do
-			if (s <= path)
-			    goto normal;
-		    while (*--s == '/');
-		    do
-			if (s <= path)
-			    goto normal;
-		    while (*--s != '/');
-		    strcpy(s + 1, "bin");
-		    if (pathexists(path, PATH_EXECUTE)) {
-			if ((s = pathaccess(path, path, p, a, mode)))
-			    return path == buf ? strdup(s) : s;
-			goto normal;
-		    }
-		}
-	      normal:;
-	    }
-	}
-    }
-    x = !a && strchr(p, '/') ? "" : pathbin();
-    if (!(s = pathaccess(path, x, p, a, mode)) && !*x
-	&& (x = getenv("FPATH")))
-	s = pathaccess(path, x, p, a, mode);
-    return (s && path == buf) ? strdup(s) : s;
+  }
+  x = !a && strchr(p, '/') ? "" : pathbin();
+  if (!(s = pathaccess(path, x, p, a, mode)) && !*x && (x = getenv("FPATH")))
+    s = pathaccess(path, x, p, a, mode);
+  return (s && path == buf) ? strdup(s) : s;
 }

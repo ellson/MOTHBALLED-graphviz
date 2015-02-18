@@ -1,5 +1,1 @@
-main()
-{
-
-	printf("%x\n",sbrk(0));
-}
+main() { printf("%x\n", sbrk(0)); }

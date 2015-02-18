@@ -32,34 +32,30 @@
 
 /* this is used for creating images in main memory */
 
-typedef struct fileIOCtx
-{
+typedef struct fileIOCtx {
   gdIOCtx ctx;
   FILE *f;
-}
-fileIOCtx;
+} fileIOCtx;
 
-gdIOCtx *newFileCtx (FILE * f);
+gdIOCtx *newFileCtx(FILE *f);
 
-static int fileGetbuf (gdIOCtx *, void *, int);
-static int filePutbuf (gdIOCtx *, const void *, int);
-static void filePutchar (gdIOCtx *, int);
-static int fileGetchar (gdIOCtx * ctx);
+static int fileGetbuf(gdIOCtx *, void *, int);
+static int filePutbuf(gdIOCtx *, const void *, int);
+static void filePutchar(gdIOCtx *, int);
+static int fileGetchar(gdIOCtx *ctx);
 
-static int fileSeek (struct gdIOCtx *, const int);
-static long fileTell (struct gdIOCtx *);
-static void gdFreeFileCtx (gdIOCtx * ctx);
+static int fileSeek(struct gdIOCtx *, const int);
+static long fileTell(struct gdIOCtx *);
+static void gdFreeFileCtx(gdIOCtx *ctx);
 
 /* return data as a dynamic pointer */
-BGD_DECLARE(gdIOCtx *) gdNewFileCtx (FILE * f)
-{
+BGD_DECLARE(gdIOCtx *) gdNewFileCtx(FILE *f) {
   fileIOCtx *ctx;
 
-  ctx = (fileIOCtx *) gdMalloc (sizeof (fileIOCtx));
-  if (ctx == NULL)
-    {
-      return NULL;
-    }
+  ctx = (fileIOCtx *)gdMalloc(sizeof(fileIOCtx));
+  if (ctx == NULL) {
+    return NULL;
+  }
 
   ctx->f = f;
 
@@ -74,71 +70,51 @@ BGD_DECLARE(gdIOCtx *) gdNewFileCtx (FILE * f)
 
   ctx->ctx.gd_free = gdFreeFileCtx;
 
-  return (gdIOCtx *) ctx;
+  return (gdIOCtx *)ctx;
 }
 
-static void
-gdFreeFileCtx (gdIOCtx * ctx)
-{
-  gdFree (ctx);
-}
+static void gdFreeFileCtx(gdIOCtx *ctx) { gdFree(ctx); }
 
-
-static int
-filePutbuf (gdIOCtx * ctx, const void *buf, int size)
-{
+static int filePutbuf(gdIOCtx *ctx, const void *buf, int size) {
   fileIOCtx *fctx;
-  fctx = (fileIOCtx *) ctx;
+  fctx = (fileIOCtx *)ctx;
 
-  return fwrite (buf, 1, size, fctx->f);
-
+  return fwrite(buf, 1, size, fctx->f);
 }
 
-static int
-fileGetbuf (gdIOCtx * ctx, void *buf, int size)
-{
+static int fileGetbuf(gdIOCtx *ctx, void *buf, int size) {
   fileIOCtx *fctx;
-  fctx = (fileIOCtx *) ctx;
+  fctx = (fileIOCtx *)ctx;
 
-  return (fread (buf, 1, size, fctx->f));
-
+  return (fread(buf, 1, size, fctx->f));
 }
 
-static void
-filePutchar (gdIOCtx * ctx, int a)
-{
+static void filePutchar(gdIOCtx *ctx, int a) {
   unsigned char b;
   fileIOCtx *fctx;
-  fctx = (fileIOCtx *) ctx;
+  fctx = (fileIOCtx *)ctx;
 
   b = a;
 
-  putc (b, fctx->f);
+  putc(b, fctx->f);
 }
 
-static int
-fileGetchar (gdIOCtx * ctx)
-{
+static int fileGetchar(gdIOCtx *ctx) {
   fileIOCtx *fctx;
-  fctx = (fileIOCtx *) ctx;
+  fctx = (fileIOCtx *)ctx;
 
-  return getc (fctx->f);
+  return getc(fctx->f);
 }
 
-
-static int
-fileSeek (struct gdIOCtx *ctx, const int pos)
-{
+static int fileSeek(struct gdIOCtx *ctx, const int pos) {
   fileIOCtx *fctx;
-  fctx = (fileIOCtx *) ctx;
-  return (fseek (fctx->f, pos, SEEK_SET) == 0);
+  fctx = (fileIOCtx *)ctx;
+  return (fseek(fctx->f, pos, SEEK_SET) == 0);
 }
 
-static long
-fileTell (struct gdIOCtx *ctx)
-{
+static long fileTell(struct gdIOCtx *ctx) {
   fileIOCtx *fctx;
-  fctx = (fileIOCtx *) ctx;
+  fctx = (fileIOCtx *)ctx;
 
-  return ftell (fctx->f);
+  return ftell(fctx->f);
 }

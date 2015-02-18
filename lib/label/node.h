@@ -20,14 +20,14 @@ extern "C" {
 #include <index.h>
 
 typedef struct Branch {
-    Rect_t rect;
-    struct Node *child;
+  Rect_t rect;
+  struct Node *child;
 } Branch_t;
 
 typedef struct Node {
-    int count;
-    int level;			/* 0 is leaf, others positive */
-    struct Branch branch[NODECARD];
+  int count;
+  int level; /* 0 is leaf, others positive */
+  struct Branch branch[NODECARD];
 } Node_t;
 
 void RTreeFreeNode(RTree_t *, Node_t *);
@@ -40,12 +40,12 @@ void DisconBranch(Node_t *, int);
 void PrintBranch(int, Branch_t *);
 Node_t *RTreeNewNode(RTree_t *);
 #ifdef RTDEBUG
-void PrintNode(Node_t * n);
-void PrintBranch(int i, Branch_t * b);
+void PrintNode(Node_t *n);
+void PrintBranch(int i, Branch_t *b);
 #endif
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif				/*NODE_H */
+#endif /*NODE_H */
