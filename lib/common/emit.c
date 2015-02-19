@@ -2500,6 +2500,7 @@ static void emit_begin_edge(GVJ_t *job, edge_t *e, char **styles) {
       obj->headtooltip = strdup(obj->headlabel);
   }
 
+  free(msg);
   free(dflt_url);
   free(dflt_target);
 

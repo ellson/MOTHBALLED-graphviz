@@ -229,45 +229,82 @@ static void svg_end_page(GVJ_t *job) { gvputs(job, "</g>\n"); }
 
 static void svg_begin_cluster(GVJ_t *job) {
   obj_state_t *obj = job->obj;
+  char *msg;
 
   gvputs(job, "<g id=\"");
   gvputs(job, xml_string(obj->id));
-  if(job->obj->events.onfocusin != NULL )
-    gvputs(job, printf("onfocusin=\"%s\"",job->obj->events.onfocusin));
-  if(job->obj->events.onfocusout != NULL )
-    gvputs(job, printf("onfocusout=\"%s\"",job->obj->events.onfocusout));
-  if(job->obj->events.onactivate != NULL )
-    gvputs(job, printf("onactivate=\"%s\"",job->obj->events.onactivate));
-  if(job->obj->events.onclick != NULL )
-    gvputs(job, printf("onclick=\"%s\"",job->obj->events.onclick));
-  if(job->obj->events.onmousedown != NULL )
-    gvputs(job, printf("onmousedown=\"%s\"",job->obj->events.onmousedown));
-  if(job->obj->events.onmouseup != NULL )
-    gvputs(job, printf("onmouseup=\"%s\"",job->obj->events.onmouseup));
-  if(job->obj->events.onmouseover != NULL )
-    gvputs(job, printf("onmouseover=\"%s\"",job->obj->events.onmouseover));
-  if(job->obj->events.onmousemove != NULL )
-    gvputs(job, printf("onmousemove=\"%s\"",job->obj->events.onmousemove));
-  if(job->obj->events.onmouseout != NULL )
-    gvputs(job, printf("onmouseout=\"%s\"",job->obj->events.onmouseout));
-  if(job->obj->events.onunload != NULL )
-    gvputs(job, printf("onunload=\"%s\"",job->obj->events.onunload));
-  if(job->obj->events.onabort != NULL )
-    gvputs(job, printf("onabort=\"%s\"",job->obj->events.onabort));
-  if(job->obj->events.onerror != NULL )
-    gvputs(job, printf("onerror=\"%s\"",job->obj->events.onerror));
-  if(job->obj->events.onresize != NULL )
-    gvputs(job, printf("onresize=\"%s\"",job->obj->events.onresize));
-  if(job->obj->events.onscroll != NULL )
-    gvputs(job, printf("onscroll=\"%s\"",job->obj->events.onscroll));
-  if(job->obj->events.onzoom != NULL )
-    gvputs(job, printf("onzoom=\"%s\"",job->obj->events.onzoom));
-  if(job->obj->events.onbegin != NULL )
-    gvputs(job, printf("onbegin=\"%s\"",job->obj->events.onbegin));
-  if(job->obj->events.onend != NULL )
-    gvputs(job, printf("onend=\"%s\"",job->obj->events.onend));
-  if(job->obj->events.onrepeat != NULL )
-    gvputs(job, printf("onrepeat=\"%s\"",job->obj->events.onrepeat));
+  if(obj->events.onfocusin != NULL ){
+    asprintf( &msg, "onfocusin=\"%s\"",obj->events.onfocusin);
+    gvputs(job, msg);
+  }
+  if(obj->events.onfocusout != NULL ){
+    asprintf( &msg, "onfocusout=\"%s\"",obj->events.onfocusout );
+    gvputs(job, msg);
+  }
+  if(obj->events.onactivate != NULL ){
+    asprintf( &msg, "onactivate=\"%s\"",obj->events.onactivate );
+    gvputs(job, msg);
+  }
+  if(obj->events.onclick != NULL ){
+    asprintf( &msg, "onclick=\"%s\"",obj->events.onclick );
+    gvputs(job, msg);
+  }
+  if(obj->events.onmousedown != NULL ){
+    asprintf( &msg, "onmousedown=\"%s\"",obj->events.onmousedown );
+    gvputs(job, msg);
+  }
+  if(obj->events.onmouseup != NULL ){
+    asprintf( &msg, "onmouseup=\"%s\"",obj->events.onmouseup );
+    gvputs(job, msg);
+  }
+  if(obj->events.onmouseover != NULL ){
+    asprintf( &msg, "onmouseover=\"%s\"",obj->events.onmouseover );
+    gvputs(job, msg);
+  }
+  if(obj->events.onmousemove != NULL ){
+    asprintf( &msg, "onmousemove=\"%s\"",obj->events.onmousemove );
+    gvputs(job, msg);
+  }
+  if(obj->events.onmouseout != NULL ){
+    asprintf( &msg, "onmouseout=\"%s\"",obj->events.onmouseout );
+    gvputs(job, msg);
+  }
+  if(obj->events.onunload != NULL ){
+    asprintf( &msg, "onunload=\"%s\"",obj->events.onunload );
+    gvputs(job, msg);
+  }
+  if(obj->events.onabort != NULL ){
+    asprintf( &msg, "onabort=\"%s\"",obj->events.onabort );
+    gvputs(job, msg);
+  }
+  if(obj->events.onerror != NULL ){
+    asprintf( &msg, "onerror=\"%s\"",obj->events.onerror );
+    gvputs(job, msg);
+  }
+  if(obj->events.onresize != NULL ){
+    asprintf( &msg, "onresize=\"%s\"",obj->events.onresize );
+    gvputs(job, msg);
+  }
+  if(obj->events.onscroll != NULL ){
+    asprintf( &msg, "onscroll=\"%s\"",obj->events.onscroll );
+    gvputs(job, msg);
+  }
+  if(obj->events.onzoom != NULL ){
+    asprintf( &msg, "onzoom=\"%s\"",obj->events.onzoom );
+    gvputs(job, msg);
+  }
+  if(obj->events.onbegin != NULL ){
+    asprintf( &msg, "onbegin=\"%s\"",obj->events.onbegin );
+    gvputs(job, msg);
+  }
+  if(obj->events.onend != NULL ){
+    asprintf( &msg, "onend=\"%s\"",obj->events.onend );
+    gvputs(job, msg);
+  }
+  if(obj->events.onrepeat != NULL ){
+    asprintf( &msg, "onrepeat=\"%s\"",job->obj->events.onrepeat );
+    gvputs(job, msg);
+  }
   gvputs(job, "\" class=\"cluster\">");
   gvputs(job, "<title>");
   gvputs(job, xml_string(agnameof(obj->u.g)));
