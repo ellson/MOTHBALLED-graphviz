@@ -641,6 +641,14 @@ expr		:	'(' expr ')'
 			if (!expr.program->errors && $1->op == CONSTANT && $3->op == CONSTANT)
 			{
 				$$->data.constant.value = exeval(expr.program, $$, NiL);
+				/* If a constant string, re-allocate from program heap. This is because the
+				 * value was constructed from string operators, which create a value in the 
+				 * temporary heap, which is cleared when exeval is called again. 
+				 */
+				if ($$->type == STRING) {
+					$$->data.constant.value.string =
+						vmstrdup(expr.program->vm, $$->data.constant.value.string);
+				}
 				$$->binary = 0;
 				$$->op = CONSTANT;
 				exfreenode(expr.program, $1);

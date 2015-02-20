@@ -2004,7 +2004,7 @@ static int stringOf(Expr_t *prog, register Exnode_t *x, int arg,
     }
   }
   x->type = STRING;
-  return 0;
+  return rv;
 }
 
 /* convert:
