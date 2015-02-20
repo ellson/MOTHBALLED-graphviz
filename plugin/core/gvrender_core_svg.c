@@ -229,82 +229,9 @@ static void svg_end_page(GVJ_t *job) { gvputs(job, "</g>\n"); }
 
 static void svg_begin_cluster(GVJ_t *job) {
   obj_state_t *obj = job->obj;
-  char *msg;
 
   gvputs(job, "<g id=\"");
   gvputs(job, xml_string(obj->id));
-  if(obj->events.onfocusin != NULL ){
-    asprintf( &msg, "onfocusin=\"%s\"",obj->events.onfocusin);
-    gvputs(job, msg);
-  }
-  if(obj->events.onfocusout != NULL ){
-    asprintf( &msg, "onfocusout=\"%s\"",obj->events.onfocusout );
-    gvputs(job, msg);
-  }
-  if(obj->events.onactivate != NULL ){
-    asprintf( &msg, "onactivate=\"%s\"",obj->events.onactivate );
-    gvputs(job, msg);
-  }
-  if(obj->events.onclick != NULL ){
-    asprintf( &msg, "onclick=\"%s\"",obj->events.onclick );
-    gvputs(job, msg);
-  }
-  if(obj->events.onmousedown != NULL ){
-    asprintf( &msg, "onmousedown=\"%s\"",obj->events.onmousedown );
-    gvputs(job, msg);
-  }
-  if(obj->events.onmouseup != NULL ){
-    asprintf( &msg, "onmouseup=\"%s\"",obj->events.onmouseup );
-    gvputs(job, msg);
-  }
-  if(obj->events.onmouseover != NULL ){
-    asprintf( &msg, "onmouseover=\"%s\"",obj->events.onmouseover );
-    gvputs(job, msg);
-  }
-  if(obj->events.onmousemove != NULL ){
-    asprintf( &msg, "onmousemove=\"%s\"",obj->events.onmousemove );
-    gvputs(job, msg);
-  }
-  if(obj->events.onmouseout != NULL ){
-    asprintf( &msg, "onmouseout=\"%s\"",obj->events.onmouseout );
-    gvputs(job, msg);
-  }
-  if(obj->events.onunload != NULL ){
-    asprintf( &msg, "onunload=\"%s\"",obj->events.onunload );
-    gvputs(job, msg);
-  }
-  if(obj->events.onabort != NULL ){
-    asprintf( &msg, "onabort=\"%s\"",obj->events.onabort );
-    gvputs(job, msg);
-  }
-  if(obj->events.onerror != NULL ){
-    asprintf( &msg, "onerror=\"%s\"",obj->events.onerror );
-    gvputs(job, msg);
-  }
-  if(obj->events.onresize != NULL ){
-    asprintf( &msg, "onresize=\"%s\"",obj->events.onresize );
-    gvputs(job, msg);
-  }
-  if(obj->events.onscroll != NULL ){
-    asprintf( &msg, "onscroll=\"%s\"",obj->events.onscroll );
-    gvputs(job, msg);
-  }
-  if(obj->events.onzoom != NULL ){
-    asprintf( &msg, "onzoom=\"%s\"",obj->events.onzoom );
-    gvputs(job, msg);
-  }
-  if(obj->events.onbegin != NULL ){
-    asprintf( &msg, "onbegin=\"%s\"",obj->events.onbegin );
-    gvputs(job, msg);
-  }
-  if(obj->events.onend != NULL ){
-    asprintf( &msg, "onend=\"%s\"",obj->events.onend );
-    gvputs(job, msg);
-  }
-  if(obj->events.onrepeat != NULL ){
-    asprintf( &msg, "onrepeat=\"%s\"",job->obj->events.onrepeat );
-    gvputs(job, msg);
-  }
   gvputs(job, "\" class=\"cluster\">");
   gvputs(job, "<title>");
   gvputs(job, xml_string(agnameof(obj->u.g)));
@@ -315,12 +242,87 @@ static void svg_end_cluster(GVJ_t *job) { gvputs(job, "</g>\n"); }
 
 static void svg_begin_node(GVJ_t *job) {
   obj_state_t *obj = job->obj;
+  char *msg;
 
   gvputs(job, "<g id=\"");
   gvputs(job, xml_string(obj->id));
   if (job->layerNum > 1)
     gvprintf(job, "_%s", xml_string(job->gvc->layerIDs[job->layerNum]));
-  gvputs(job, "\" class=\"node\">");
+  gvputs(job, "\"");
+  
+  if(obj->events.onfocusin != NULL ){
+    asprintf( &msg, " onfocusin=\"%s\"",obj->events.onfocusin);
+    gvputs(job, msg);
+  }
+  if(obj->events.onfocusout != NULL ){
+    asprintf( &msg, " onfocusout=\"%s\"",obj->events.onfocusout );
+    gvputs(job, msg);
+  }
+  if(obj->events.onactivate != NULL ){
+    asprintf( &msg, " onactivate=\"%s\"",obj->events.onactivate );
+    gvputs(job, msg);
+  }
+  if(obj->events.onclick != NULL ){
+    asprintf( &msg, " onclick=\"%s\"",obj->events.onclick );
+    gvputs(job, msg);
+  }
+  if(obj->events.onmousedown != NULL ){
+    asprintf( &msg, " onmousedown=\"%s\"",obj->events.onmousedown );
+    gvputs(job, msg);
+  }
+  if(obj->events.onmouseup != NULL ){
+    asprintf( &msg, " onmouseup=\"%s\"",obj->events.onmouseup );
+    gvputs(job, msg);
+  }
+  if(obj->events.onmouseover != NULL ){
+    asprintf( &msg, " onmouseover=\"%s\"",obj->events.onmouseover );
+    gvputs(job, msg);
+  }
+  if(obj->events.onmousemove != NULL ){
+    asprintf( &msg, " onmousemove=\"%s\"",obj->events.onmousemove );
+    gvputs(job, msg);
+  }
+  if(obj->events.onmouseout != NULL ){
+    asprintf( &msg, " onmouseout=\"%s\"",obj->events.onmouseout );
+    gvputs(job, msg);
+  }
+  if(obj->events.onunload != NULL ){
+    asprintf( &msg, " onunload=\"%s\"",obj->events.onunload );
+    gvputs(job, msg);
+  }
+  if(obj->events.onabort != NULL ){
+    asprintf( &msg, " onabort=\"%s\"",obj->events.onabort );
+    gvputs(job, msg);
+  }
+  if(obj->events.onerror != NULL ){
+    asprintf( &msg, " onerror=\"%s\"",obj->events.onerror );
+    gvputs(job, msg);
+  }
+  if(obj->events.onresize != NULL ){
+    asprintf( &msg, " onresize=\"%s\"",obj->events.onresize );
+    gvputs(job, msg);
+  }
+  if(obj->events.onscroll != NULL ){
+    asprintf( &msg, " onscroll=\"%s\"",obj->events.onscroll );
+    gvputs(job, msg);
+  }
+  if(obj->events.onzoom != NULL ){
+    asprintf( &msg, " onzoom=\"%s\"",obj->events.onzoom );
+    gvputs(job, msg);
+  }
+  if(obj->events.onbegin != NULL ){
+    asprintf( &msg, " onbegin=\"%s\"",obj->events.onbegin );
+    gvputs(job, msg);
+  }
+  if(obj->events.onend != NULL ){
+    asprintf( &msg, " onend=\"%s\"",obj->events.onend );
+    gvputs(job, msg);
+  }
+  if(obj->events.onrepeat != NULL ){
+    asprintf( &msg, " onrepeat=\"%s\"",job->obj->events.onrepeat );
+    gvputs(job, msg);
+  }
+  gvputs(job, " class=\"node\">");
   gvputs(job, "<title>");
   gvputs(job, xml_string(agnameof(obj->u.n)));
   gvputs(job, "</title>\n");
@@ -331,10 +333,85 @@ static void svg_end_node(GVJ_t *job) { gvputs(job, "</g>\n"); }
 static void svg_begin_edge(GVJ_t *job) {
   obj_state_t *obj = job->obj;
   char *ename;
+  char *msg;
 
   gvputs(job, "<g id=\"");
   gvputs(job, xml_string(obj->id));
-  gvputs(job, "\" class=\"edge\">");
+  gvputs(job, "\"");
+  
+  if(obj->events.onfocusin != NULL ){
+    asprintf( &msg, " onfocusin=\"%s\"",obj->events.onfocusin);
+    gvputs(job, msg);
+  }
+  if(obj->events.onfocusout != NULL ){
+    asprintf( &msg, " onfocusout=\"%s\"",obj->events.onfocusout );
+    gvputs(job, msg);
+  }
+  if(obj->events.onactivate != NULL ){
+    asprintf( &msg, " onactivate=\"%s\"",obj->events.onactivate );
+    gvputs(job, msg);
+  }
+  if(obj->events.onclick != NULL ){
+    asprintf( &msg, " onclick=\"%s\"",obj->events.onclick );
+    gvputs(job, msg);
+  }
+  if(obj->events.onmousedown != NULL ){
+    asprintf( &msg, " onmousedown=\"%s\"",obj->events.onmousedown );
+    gvputs(job, msg);
+  }
+  if(obj->events.onmouseup != NULL ){
+    asprintf( &msg, " onmouseup=\"%s\"",obj->events.onmouseup );
+    gvputs(job, msg);
+  }
+  if(obj->events.onmouseover != NULL ){
+    asprintf( &msg, " onmouseover=\"%s\"",obj->events.onmouseover );
+    gvputs(job, msg);
+  }
+  if(obj->events.onmousemove != NULL ){
+    asprintf( &msg, " onmousemove=\"%s\"",obj->events.onmousemove );
+    gvputs(job, msg);
+  }
+  if(obj->events.onmouseout != NULL ){
+    asprintf( &msg, " onmouseout=\"%s\"",obj->events.onmouseout );
+    gvputs(job, msg);
+  }
+  if(obj->events.onunload != NULL ){
+    asprintf( &msg, " onunload=\"%s\"",obj->events.onunload );
+    gvputs(job, msg);
+  }
+  if(obj->events.onabort != NULL ){
+    asprintf( &msg, " onabort=\"%s\"",obj->events.onabort );
+    gvputs(job, msg);
+  }
+  if(obj->events.onerror != NULL ){
+    asprintf( &msg, " onerror=\"%s\"",obj->events.onerror );
+    gvputs(job, msg);
+  }
+  if(obj->events.onresize != NULL ){
+    asprintf( &msg, " onresize=\"%s\"",obj->events.onresize );
+    gvputs(job, msg);
+  }
+  if(obj->events.onscroll != NULL ){
+    asprintf( &msg, " onscroll=\"%s\"",obj->events.onscroll );
+    gvputs(job, msg);
+  }
+  if(obj->events.onzoom != NULL ){
+    asprintf( &msg, " onzoom=\"%s\"",obj->events.onzoom );
+    gvputs(job, msg);
+  }
+  if(obj->events.onbegin != NULL ){
+    asprintf( &msg, " onbegin=\"%s\"",obj->events.onbegin );
+    gvputs(job, msg);
+  }
+  if(obj->events.onend != NULL ){
+    asprintf( &msg, " onend=\"%s\"",obj->events.onend );
+    gvputs(job, msg);
+  }
+  if(obj->events.onrepeat != NULL ){
+    asprintf( &msg, " onrepeat=\"%s\"",job->obj->events.onrepeat );
+    gvputs(job, msg);
+  }
+  gvputs(job, " class=\"edge\">");
 
   gvputs(job, "<title>");
   ename = strdup_and_subst_obj("\\E", (void *)(obj->u.e));

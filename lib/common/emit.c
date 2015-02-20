@@ -154,6 +154,7 @@ int initMapData(GVJ_t *job, char *lbl, char *url, char *tooltip, char *target,
   obj_state_t *obj = job->obj;
   int flags = job->flags;
   int assigned = 0;
+  char *s;
 
   if ((flags & GVRENDER_DOES_LABELS) && lbl) obj->label = lbl;
   if (flags & GVRENDER_DOES_MAPS) {
@@ -162,6 +163,43 @@ int initMapData(GVJ_t *job, char *lbl, char *url, char *tooltip, char *target,
       obj->url = strdup_and_subst_obj(url, gobj);
       assigned = 1;
     }
+    
+    if ((s = agget(gobj, "onfocusin")) && s[0]) 
+          obj->events.onfocusin = strdup_and_subst_obj(s, gobj);
+    if ((s = agget(gobj, "onfocusout")) && s[0]) 
+          obj->events.onfocusout = strdup_and_subst_obj(s, gobj);
+    if ((s = agget(gobj, "onactivate")) && s[0]) 
+          obj->events.onactivate = strdup_and_subst_obj(s, gobj);
+    if ((s = agget(gobj, "onclick")) && s[0]) 
+          obj->events.onclick = strdup_and_subst_obj(s, gobj);
+    if ((s = agget(gobj, "onmousedown")) && s[0]) 
+          obj->events.onmousedown = strdup_and_subst_obj(s, gobj);
+    if ((s = agget(gobj, "onmouseup")) && s[0]) 
+          obj->events.onmouseup = strdup_and_subst_obj(s, gobj);
+    if ((s = agget(gobj, "onmouseover")) && s[0]) 
+          obj->events.onmouseover = strdup_and_subst_obj(s, gobj);
+    if ((s = agget(gobj, "onmousemove")) && s[0]) 
+          obj->events.onmousemove = strdup_and_subst_obj(s, gobj);
+    if ((s = agget(gobj, "onmouseout")) && s[0]) 
+          obj->events.onmouseout = strdup_and_subst_obj(s, gobj);
+    if ((s = agget(gobj, "onunload")) && s[0]) 
+          obj->events.onunload = strdup_and_subst_obj(s, gobj);
+    if ((s = agget(gobj, "onabort")) && s[0]) 
+          obj->events.onabort = strdup_and_subst_obj(s, gobj);
+    if ((s = agget(gobj, "onerror")) && s[0]) 
+          obj->events.onerror = strdup_and_subst_obj(s, gobj);
+    if ((s = agget(gobj, "onresize")) && s[0]) 
+          obj->events.onresize = strdup_and_subst_obj(s, gobj);
+    if ((s = agget(gobj, "onscroll")) && s[0])
+          obj->events.onscroll = strdup_and_subst_obj(s, gobj);
+    if ((s = agget(gobj, "onzoom")) && s[0])
+          obj->events.onzoom = strdup_and_subst_obj(s, gobj);
+    if ((s = agget(gobj, "onbegin")) && s[0])
+          obj->events.onbegin = strdup_and_subst_obj(s, gobj);
+    if ((s = agget(gobj, "onend")) && s[0]) 
+          obj->events.onend = strdup_and_subst_obj(s, gobj);
+    if ((s = agget(gobj, "onrepeat")) && s[0]) 
+      obj->events.onrepeat = strdup_and_subst_obj(s, gobj);
   }
   if (flags & GVRENDER_DOES_TOOLTIPS) {
     if (tooltip && tooltip[0]) {
@@ -260,7 +298,6 @@ static void initObjMapData(GVJ_t *job, textlabel_t *lab, void *gobj) {
     url = agget(gobj, "URL");
   id = getObjId(job, gobj, &xb);
   initMapData(job, lbl, url, tooltip, target, id, gobj);
-
   agxbfree(&xb);
 }
 
@@ -2500,7 +2537,6 @@ static void emit_begin_edge(GVJ_t *job, edge_t *e, char **styles) {
       obj->headtooltip = strdup(obj->headlabel);
   }
 
-  free(msg);
   free(dflt_url);
   free(dflt_target);
 
