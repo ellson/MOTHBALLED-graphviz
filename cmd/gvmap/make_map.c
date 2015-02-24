@@ -60,7 +60,7 @@ void map_palette_optimal_coloring(char *color_scheme, char *lightness, SparseMat
   int flag;
   int n = A0->m, i, cdim;
 
-  SparseMatrix A, B;
+  SparseMatrix A;
   int weightedQ = TRUE;
   int iter_max = 100;
 
@@ -170,7 +170,7 @@ void improve_contiguity(int n, int dim, int *grouping, SparseMatrix poly_point_m
     }
   }
 
-  if (Verbose || 1) fprintf(stderr,"ratio (edges among discontigous regions vs total edges)=%f\n",((real) nbad)/ia[n]);
+  if (Verbose) fprintf(stderr,"ratio (edges among discontiguous regions vs total edges)=%f\n",((real) nbad)/ia[n]);
   stress_model(dim, D, D, &x, FALSE, maxit, tol, &flag);
 
   assert(!flag);
@@ -1712,7 +1712,7 @@ static void get_polygons(int exclude_random, int n, int nrandom, int dim, Sparse
 	  (groups[comps[comps_ptr[i]]] != GRP_BBOX)) break;
     }
     ncomps = i + 1;
-    if (Verbose) fprintf(stderr," ncomps = %d\n",ncomps);
+    if (Verbose) fprintf(stderr,"ncomps = %d\n",ncomps);
   } else {/* alwasy exclud bounding box */
     for (i = ncomps - 1; i >= 0; i--) {
       if (groups[comps[comps_ptr[i]]] != GRP_BBOX) break;
@@ -1802,11 +1802,9 @@ int make_map_internal(int exclude_random, int include_OK_points,
   } else {
     *nrandom -= 4;
   }
-  if (Verbose) fprintf(stderr,"nrandom=%d\n",*nrandom);
-
-  if (Verbose) fprintf(stderr,"nrandom=%d\n",*nrandom);
 
   if (shore_depth_tol < 0) shore_depth_tol = sqrt(area/(real) n); /* set to average distance for random distribution */
+  if (Verbose) fprintf(stderr,"nrandom=%d shore_depth_tol=%.08f\n",*nrandom, shore_depth_tol);
 
 
   /* add artificial points along each edge to avoid as much as possible 
@@ -1866,6 +1864,22 @@ int make_map_internal(int exclude_random, int include_OK_points,
 	xmin[i] -= boxsize[i]*(-bounding_box_margin[i]);
 	xmax[i] += boxsize[i]*(-bounding_box_margin[i]);
       }
+    }
+    if (Verbose) {
+      real bbm0 = bounding_box_margin[0];
+      real bbm1 = bounding_box_margin[1];
+      if (bbm0 > 0)
+	fprintf (stderr, "bounding box margin: %.06f", bbm0);
+      else if (bbm0 == 0)
+	fprintf (stderr, "bounding box margin: %.06f", MAX(boxsize[0]*0.2, 2*shore_depth_tol));
+      else 
+	fprintf (stderr, "bounding box margin: (%.06f * %.06f)", boxsize[0], -bbm0);
+      if (bbm1 > 0)
+	fprintf (stderr, " %.06f\n", bbm1);
+      else if (bbm1 == 0)
+	fprintf (stderr, " %.06f\n", MAX(boxsize[1]*0.2, 2*shore_depth_tol));
+      else 
+	fprintf (stderr, " (%.06f * %.06f)\n", boxsize[1], -bbm1);
     }
     if (*nrandom < 0) {
       real n1, n2, area2;
@@ -2128,9 +2142,9 @@ int make_map_from_rectangle_groups(int exclude_random, int include_OK_points,
 				   SparseMatrix *country_graph, int highlight_cluster, int *flag){
 
   /* create a list of polygons from a list of rectangles in 2D. rectangles belong to groups. rectangles in the same group that are also close 
-     gemetrically will be in the same polygon describing the outline of the group. The main difference for this function and
+     geometrically will be in the same polygon describing the outline of the group. The main difference for this function and
      make_map_from_point_groups is that in this function, the input are points with width/heights, and we try not to place
-     "lakes" inside these rectangles. The is achieved approximately by adding artificial points along the perimeter of the rectangles,
+     "lakes" inside these rectangles. This is achieved approximately by adding artificial points along the perimeter of the rectangles,
      as well as near the center.
 
      input:
@@ -2149,13 +2163,13 @@ int make_map_from_rectangle_groups(int exclude_random, int include_OK_points,
      .        If nrandom = 0, no points are inserted, if nrandom < 0, the number is decided automatically.
      .        On exit, it is the actual number of random points used. The last 4 "random" points is always the
      .        
-     nart: on entry, number of artificla points to be added along rach side of a rectangle enclosing the labels. if < 0, auto-selected.
+     nart: on entry, number of artificial points to be added along each side of a rectangle enclosing the labels. if < 0, auto-selected.
      . On exit, actual number of artificial points added.
      nedgep: number of artificial points are adding along edges to establish as much as possible a bright between nodes 
      .       connected by the edge, and avoid islands that are connected. k = 0 mean no points.
      shore_depth_tol: nrandom random points are inserted in the bounding box of the points,
      .      such random points are then weeded out if it is within distance of shore_depth_tol from 
-     .      real points. If < 0, auto assigned
+     .      real points. If 0, auto assigned
      edge_bridge_tol: insert points on edges to give an bridge effect.These points will be evenly spaced
      .       along each edge, and be less than a distance of edge_bridge_tol from each other and from the two ends of the edge.
      .       If < 0, -edge_bridge_tol is the average number of points inserted per half edge

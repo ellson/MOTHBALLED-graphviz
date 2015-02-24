@@ -226,7 +226,7 @@ void improve_antibandwidth_by_swapping_cheap(SparseMatrix A, int *p){
 
 void improve_antibandwidth_by_swapping(SparseMatrix A, int *p){
   int improved = TRUE;
-  int n = A->m, i, j, *ia = A->ia, *ja = A->ja;
+  int cnt = 1, n = A->m, i, j, *ia = A->ia, *ja = A->ja;
   real norm = n, norm1[3], norm2[3], norm11[3], norm22[3];
   real pi, pj;
   real start = clock();
@@ -268,7 +268,7 @@ void improve_antibandwidth_by_swapping(SparseMatrix A, int *p){
     }
     if (Verbose) {
       get_12_norm(n, ia, ja, p, norm1);
-      fprintf(stderr, "aband = %f, aband_avg = %f\n", norm1[0], norm1[2]);
+      fprintf(stderr, "[%d] aband = %f, aband_avg = %f\n", cnt++, norm1[0], norm1[2]);
       fprintf(fp,"%f %f %f\n", (real) (clock() - start)/(CLOCKS_PER_SEC), norm1[0], norm1[2]);
     }
   }
