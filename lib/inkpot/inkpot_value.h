@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,10 +21,10 @@ extern "C" {
 typedef int BIT_VTYPE_t;
 
 typedef enum {
-    VTYPE_rgba = 0,
-    VTYPE_hsva,
-    VTYPE_cmyk,
-    SZT_VTYPE
+  VTYPE_rgba = 0,
+  VTYPE_hsva,
+  VTYPE_cmyk,
+  SZT_VTYPE
 } inkpot_value_vtype_t;
 
 typedef struct inkpot_values_s {
@@ -50,19 +50,26 @@ typedef struct inkpot_values_s {
 } inkpot_values_t;
 
 typedef struct inkpot_value_s {
-    IDX_VALUES_t index;      /* write by set,  read by get, write by first, read/write by next */
-    BIT_VTYPE_t  vtype;      /*  read by set, write by get,  read by first,       read by next */
-    unsigned short value[4]; /*  read by set, write by get, write by first,      write by next */
+  IDX_VALUES_t
+      index; /* write by set,  read by get, write by first, read/write by next
+                */
+  BIT_VTYPE_t vtype; /*  read by set, write by get,  read by first,       read
+                        by next */
+  unsigned short value[4]; /*  read by set, write by get, write by first,
+                              write by next */
 } inkpot_value_t;
 
-extern inkpot_status_t  inkpot_value_set       ( inkpot_values_t *values, inkpot_value_t *value );
-extern inkpot_status_t  inkpot_value_get       ( inkpot_values_t *values, inkpot_value_t *value );
+extern inkpot_status_t inkpot_value_set(inkpot_values_t *values,
+                                        inkpot_value_t *value);
+extern inkpot_status_t inkpot_value_get(inkpot_values_t *values,
+                                        inkpot_value_t *value);
 
-extern inkpot_status_t  inkpot_value_get_first ( inkpot_values_t *values, inkpot_value_t *value );
-extern inkpot_status_t  inkpot_value_get_next  ( inkpot_values_t *values, inkpot_value_t *value );
+extern inkpot_status_t inkpot_value_get_first(inkpot_values_t *values,
+                                              inkpot_value_t *value);
+extern inkpot_status_t inkpot_value_get_next(inkpot_values_t *values,
+                                             inkpot_value_t *value);
 
 #ifdef __cplusplus
 }
 #endif
 #endif /* INKPOT_VALUE_H */
-

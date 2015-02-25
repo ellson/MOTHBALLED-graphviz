@@ -1,10 +1,10 @@
 /* $Id$Revision: */
 /* vim:set shiftwidth=4 ts=8: */
-    
+
 /**********************************************************
 *      See the LICENSE file for copyright infomation.     *
 **********************************************************/
-    
+
 #ifndef STACK_H
 #define STACK_H
 
@@ -50,20 +50,20 @@ extern "C" {
 
 typedef struct stk_stack_node {
   DATA_TYPE info;
-  struct stk_stack_node * next;
+  struct stk_stack_node *next;
 } stk_stack_node;
 
-typedef struct stk_stack { 
-  stk_stack_node * top;
-  stk_stack_node * tail;
-} stk_stack ;
+typedef struct stk_stack {
+  stk_stack_node *top;
+  stk_stack_node *tail;
+} stk_stack;
 
 /*  These functions are all very straightforward and self-commenting so */
 /*  I didn't think additional comments would be useful */
-stk_stack * StackJoin(stk_stack * stack1, stk_stack * stack2);
-stk_stack * StackCreate(void);
-void StackPush(stk_stack * theStack, DATA_TYPE newInfoPointer);
-void * StackPop(stk_stack * theStack);
+stk_stack *StackJoin(stk_stack *stack1, stk_stack *stack2);
+stk_stack *StackCreate(void);
+void StackPush(stk_stack *theStack, DATA_TYPE newInfoPointer);
+void *StackPop(stk_stack *theStack);
 intptr_t StackNotEmpty(stk_stack *);
 
 #ifdef __cplusplus

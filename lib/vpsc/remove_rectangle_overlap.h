@@ -12,7 +12,7 @@
  * This version is released under the CPL (Common Public License) with
  * the Graphviz distribution.
  * A version is also available under the LGPL as part of the Adaptagrams
- * project: http://sourceforge.net/projects/adaptagrams.  
+ * project: http://sourceforge.net/projects/adaptagrams.
  * If you make improvements or bug fixes to this code it would be much
  * appreciated if you could also contribute those changes back to the
  * Adaptagrams repository.
@@ -22,7 +22,7 @@
 
 class Rectangle;
 
-void removeRectangleOverlap(Rectangle *rs[], int n, double xBorder, double yBorder);
-
+void removeRectangleOverlap(Rectangle *rs[], int n, double xBorder,
+                            double yBorder);
 
 #endif /* !REMOVE_RECTANGLE_OVERLAP_H_SEEN */

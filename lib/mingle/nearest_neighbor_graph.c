@@ -17,8 +17,10 @@
 #include "nearest_neighbor_graph_ann.h"
 #include "nearest_neighbor_graph.h"
 
-SparseMatrix nearest_neighbor_graph(int nPts, int num_neigbors, int dim, double *x, double eps){
-  /* Gives a nearest neighbor graph of a list of dim-dimendional points. The result is a sparse matrix
+SparseMatrix nearest_neighbor_graph(int nPts, int num_neigbors, int dim,
+                                    double *x, double eps) {
+  /* Gives a nearest neighbor graph of a list of dim-dimendional points. The
+    result is a sparse matrix
      of nPts x nPts, with num_neigbors entries per row.
 
     nPts: number of points
@@ -34,14 +36,16 @@ SparseMatrix nearest_neighbor_graph(int nPts, int num_neigbors, int dim, double 
   int k = num_neigbors;
 
   /* need to *2 as we do two sweeps of neighbors, so could have repeats */
-  irn =  MALLOC(sizeof(int)*nPts*k*2);
-  jcn =  MALLOC(sizeof(int)*nPts*k*2);
-  val =  MALLOC(sizeof(double)*nPts*k*2);
+  irn = MALLOC(sizeof(int) * nPts * k * 2);
+  jcn = MALLOC(sizeof(int) * nPts * k * 2);
+  val = MALLOC(sizeof(double) * nPts * k * 2);
 
 #ifdef HAVE_ANN
-  nearest_neighbor_graph_ann(nPts, dim, num_neigbors, eps, x, &nz, &irn, &jcn, &val);
+  nearest_neighbor_graph_ann(nPts, dim, num_neigbors, eps, x, &nz, &irn, &jcn,
+                             &val);
 
-  A = SparseMatrix_from_coordinate_arrays(nz, nPts, nPts, irn, jcn, (void *) val, MATRIX_TYPE_REAL, sizeof(real));
+  A = SparseMatrix_from_coordinate_arrays(nz, nPts, nPts, irn, jcn, (void *)val,
+                                          MATRIX_TYPE_REAL, sizeof(real));
 #else
   A = NULL;
 #endif
@@ -51,6 +55,4 @@ SparseMatrix nearest_neighbor_graph(int nPts, int num_neigbors, int dim, double 
   FREE(val);
 
   return A;
-
-
 }

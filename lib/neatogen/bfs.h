@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,67 +21,61 @@ extern "C" {
 #include "defs.h"
 
 #ifdef __cplusplus
-    class Queue {
-      private:
-	int *data;
-	int queueSize;
-	int end;
-	int start;
-      public:
-	 Queue(int size) {
-	    data = new int[size];
-	     queueSize = size;
-	     start = 0;
-	     end = 0;
-	} ~Queue() {
-	    delete[]data;
-	} void initQueue(int startVertex) {
-	    data[0] = startVertex;
-	    start = 0;
-	    end = 1;
-	}
+class Queue {
+ private:
+  int *data;
+  int queueSize;
+  int end;
+  int start;
 
-	bool dequeue(int &vertex) {
+ public:
+  Queue(int size) {
+    data = new int[size];
+    queueSize = size;
+    start = 0;
+    end = 0;
+  }
+  ~Queue() { delete[] data; }
+  void initQueue(int startVertex) {
+    data[0] = startVertex;
+    start = 0;
+    end = 1;
+  }
 
-	    if (start >= end)
-		return false;	/* underflow */
+  bool dequeue(int &vertex) {
 
-	    vertex = data[start++];
-	    return true;
+    if (start >= end) return false; /* underflow */
 
-	}
+    vertex = data[start++];
+    return true;
+  }
 
-	bool enqueue(int vertex) {
-	    if (end >= queueSize)
-		return false;	/* overflow */
-	    data[end++] = vertex;
-	    return true;
-	}
-    };
+  bool enqueue(int vertex) {
+    if (end >= queueSize) return false; /* overflow */
+    data[end++] = vertex;
+    return true;
+  }
+};
 
-
-    void bfs(int vertex, vtx_data * graph, int n, DistType * dist,
-	     Queue & Q);
-    void bfs_bounded(int vertex, vtx_data * graph, int n, DistType * dist,
-		     Queue & Q, int bound, int *visited_nodes,
-		     int &num_visited_nodes);
+void bfs(int vertex, vtx_data *graph, int n, DistType *dist, Queue &Q);
+void bfs_bounded(int vertex, vtx_data *graph, int n, DistType *dist, Queue &Q,
+                 int bound, int *visited_nodes, int &num_visited_nodes);
 #else
-    typedef struct {
-	int *data;
-	int queueSize;
-	int end;
-	int start;
-    } Queue;
+typedef struct {
+  int *data;
+  int queueSize;
+  int end;
+  int start;
+} Queue;
 
-    extern void mkQueue(Queue *, int);
-    extern void freeQueue(Queue *);
-    extern void initQueue(Queue *, int startVertex);
-    extern boolean deQueue(Queue *, int *);
-    extern boolean enQueue(Queue *, int);
+extern void mkQueue(Queue *, int);
+extern void freeQueue(Queue *);
+extern void initQueue(Queue *, int startVertex);
+extern boolean deQueue(Queue *, int *);
+extern boolean enQueue(Queue *, int);
 
-    extern void bfs(int, vtx_data *, int, DistType *, Queue *);
-    extern int bfs_bounded(int, vtx_data *, int, DistType *, Queue *, int,
-			   int *);
+extern void bfs(int, vtx_data *, int, DistType *, Queue *);
+extern int bfs_bounded(int, vtx_data *, int, DistType *, Queue *, int, int *);
 #endif
 
 #endif

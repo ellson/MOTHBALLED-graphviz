@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,55 +20,51 @@
 */
 
 #if __STD_C
-static int slowexcept(Sfio_t * f, int type, Void_t * v, Sfdisc_t * disc)
+static int slowexcept(Sfio_t *f, int type, Void_t *v, Sfdisc_t *disc)
 #else
-static int slowexcept(f, type, v, disc)
-Sfio_t *f;
+static int slowexcept(f, type, v, disc) Sfio_t *f;
 int type;
 Void_t *v;
 Sfdisc_t *disc;
 #endif
 {
-    NOTUSED(f);
-    NOTUSED(v);
-    NOTUSED(disc);
+  NOTUSED(f);
+  NOTUSED(v);
+  NOTUSED(disc);
 
-    switch (type) {
+  switch (type) {
     case SF_FINAL:
     case SF_DPOP:
-	free(disc);
-	break;
+      free(disc);
+      break;
     case SF_READ:
     case SF_WRITE:
-	if (errno == EINTR)
-	    return (-1);
-	break;
-    }
+      if (errno == EINTR) return (-1);
+      break;
+  }
 
-    return (0);
+  return (0);
 }
 
 #if __STD_C
-int sfdcslow(Sfio_t * f)
+int sfdcslow(Sfio_t *f)
 #else
-int sfdcslow(f)
-Sfio_t *f;
+int sfdcslow(f) Sfio_t *f;
 #endif
 {
-    Sfdisc_t *disc;
+  Sfdisc_t *disc;
 
-    if (!(disc = (Sfdisc_t *) malloc(sizeof(Sfdisc_t))))
-	return (-1);
+  if (!(disc = (Sfdisc_t *)malloc(sizeof(Sfdisc_t)))) return (-1);
 
-    disc->readf = NIL(Sfread_f);
-    disc->writef = NIL(Sfwrite_f);
-    disc->seekf = NIL(Sfseek_f);
-    disc->exceptf = slowexcept;
+  disc->readf = NIL(Sfread_f);
+  disc->writef = NIL(Sfwrite_f);
+  disc->seekf = NIL(Sfseek_f);
+  disc->exceptf = slowexcept;
 
-    if (sfdisc(f, disc) != disc) {
-	free(disc);
-	return (-1);
-    }
+  if (sfdisc(f, disc) != disc) {
+    free(disc);
+    return (-1);
+  }
 
-    return (0);
+  return (0);
 }

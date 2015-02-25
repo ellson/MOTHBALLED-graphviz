@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,16 +21,16 @@ extern "C" {
 #ifdef HAVE_MALLOC_H
 #include <malloc.h>
 #endif
-    typedef void Vmalloc_t;
-#define vmalloc(heap,size) malloc(size)
-#define vmopen(x,y,z) (Vmalloc_t*)(0)
+typedef void Vmalloc_t;
+#define vmalloc(heap, size) malloc(size)
+#define vmopen(x, y, z) (Vmalloc_t *)(0)
 #define vmclose(x) while (0)
-#define vmresize(heap,ptr,size,oktomoveflag)  realloc((ptr),(size))
-#define vmfree(heap,ptr) free(ptr)
+#define vmresize(heap, ptr, size, oktomoveflag) realloc((ptr), (size))
+#define vmfree(heap, ptr) free(ptr)
 #ifndef EXTERN
 #define EXTERN extern
 #endif
-    EXTERN void *Vmregion;
+EXTERN void *Vmregion;
 #endif
 
 #ifdef __cplusplus

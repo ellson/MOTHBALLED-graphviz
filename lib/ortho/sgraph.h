@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,25 +23,25 @@ struct snode {
   int n_val, n_idx;
   snode* n_dad;
   sedge* n_edge;
-  short   n_adj;
-  short   save_n_adj;
+  short n_adj;
+  short save_n_adj;
   struct cell* cells[2];
 
-    /* edges incident on this node 
-     * -- stored as indices of the edges array in the graph
-     */
-  int* adj_edge_list;  
+  /* edges incident on this node
+   * -- stored as indices of the edges array in the graph
+   */
+  int* adj_edge_list;
   int index;
-  boolean isVert;  /* true if node corresponds to vertical segment */
+  boolean isVert; /* true if node corresponds to vertical segment */
 };
 
 struct sedge {
-  double weight;    /* weight of edge */
-  int cnt;          /* paths using edge */
-      /* end-points of the edge 
-       * -- stored as indices of the nodes vector in the graph
-       */
-  int v1, v2;      
+  double weight; /* weight of edge */
+  int cnt;       /* paths using edge */
+                 /* end-points of the edge
+   * -- stored as indices of the nodes vector in the graph
+   */
+  int v1, v2;
 };
 
 typedef struct {
@@ -54,10 +54,10 @@ typedef struct {
 extern void reset(sgraph*);
 extern void gsave(sgraph*);
 extern sgraph* createSGraph(int);
-extern void freeSGraph (sgraph*);
-extern void initSEdges (sgraph* g, int maxdeg);
-extern int shortPath (sgraph* g, snode* from, snode* to);
-extern snode* createSNode (sgraph*);
-extern sedge* createSEdge (sgraph* g, snode* v0, snode* v1, double wt);
+extern void freeSGraph(sgraph*);
+extern void initSEdges(sgraph* g, int maxdeg);
+extern int shortPath(sgraph* g, snode* from, snode* to);
+extern snode* createSNode(sgraph*);
+extern sedge* createSEdge(sgraph* g, snode* v0, snode* v1, double wt);
 
 #endif

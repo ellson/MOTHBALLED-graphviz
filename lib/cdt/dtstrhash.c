@@ -1,4 +1,4 @@
-#include	"dthdr.h"
+#include "dthdr.h"
 
 /* Hashing a string into an unsigned integer.
 ** The basic method is to continuingly accumulate bytes and multiply
@@ -16,25 +16,21 @@
 #if __STD_C
 uint dtstrhash(reg uint h, Void_t* args, reg int n)
 #else
-uint dtstrhash(h,args,n)
-reg uint	h;
-Void_t*		args;
-reg int		n;
+uint dtstrhash(h, args, n) reg uint h;
+Void_t* args;
+reg int n;
 #endif
 {
-	reg unsigned char*	s = (unsigned char*)args;
+  reg unsigned char* s = (unsigned char*)args;
 
-	if(n <= 0)
-	{	for(; *s != 0; s += s[1] ? 2 : 1)
-			h = (h + (s[0]<<8) + s[1])*DT_PRIME;
-		n = s - (unsigned char*)args;
-	}
-	else
-	{	reg unsigned char*	ends;
-		for(ends = s+n-1; s < ends; s += 2)
-			h = (h + (s[0]<<8) + s[1])*DT_PRIME;
-		if(s <= ends)
-			h = (h + (s[0]<<8))*DT_PRIME;
-	}
-	return (h+n)*DT_PRIME;
+  if (n <= 0) {
+    for (; *s != 0; s += s[1] ? 2 : 1) h = (h + (s[0] << 8) + s[1]) * DT_PRIME;
+    n = s - (unsigned char*)args;
+  } else {
+    reg unsigned char* ends;
+    for (ends = s + n - 1; s < ends; s += 2)
+      h = (h + (s[0] << 8) + s[1]) * DT_PRIME;
+    if (s <= ends) h = (h + (s[0] << 8)) * DT_PRIME;
+  }
+  return (h + n) * DT_PRIME;
 }

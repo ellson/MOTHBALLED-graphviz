@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -21,8 +21,8 @@
 extern "C" {
 #endif
 
-    typedef Dict_t PointSet;
-    typedef Dict_t PointMap;
+typedef Dict_t PointSet;
+typedef Dict_t PointMap;
 #ifdef GVDLL
 #define extern __declspec(dllexport)
 #else
@@ -37,20 +37,20 @@ extern "C" {
 #endif
 /*end visual studio*/
 
-	extern PointSet *newPS(void);
-    extern void freePS(PointSet *);
-    extern void insertPS(PointSet *, point);
-    extern void addPS(PointSet *, int, int);
-    extern int inPS(PointSet *, point);
-    extern int isInPS(PointSet *, int, int);
-    extern int sizeOf(PointSet *);
-    extern point *pointsOf(PointSet *);
+extern PointSet *newPS(void);
+extern void freePS(PointSet *);
+extern void insertPS(PointSet *, point);
+extern void addPS(PointSet *, int, int);
+extern int inPS(PointSet *, point);
+extern int isInPS(PointSet *, int, int);
+extern int sizeOf(PointSet *);
+extern point *pointsOf(PointSet *);
 
-    extern PointMap *newPM(void);
-    extern void clearPM(PointMap *);
-    extern void freePM(PointMap *);
-    extern int insertPM(PointMap *, int, int, int);
-    extern int updatePM(PointMap * pm, int x, int y, int v);
+extern PointMap *newPM(void);
+extern void clearPM(PointMap *);
+extern void freePM(PointMap *);
+extern int insertPM(PointMap *, int, int, int);
+extern int updatePM(PointMap *pm, int x, int y, int v);
 
 #undef extern
 #ifdef __cplusplus

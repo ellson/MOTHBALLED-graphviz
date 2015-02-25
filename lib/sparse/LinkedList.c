@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,9 +18,7 @@
 #define FREE free
 #define MEMCPY memcpy
 
-
-
-SingleLinkedList SingleLinkedList_new(void *data){
+SingleLinkedList SingleLinkedList_new(void *data) {
   SingleLinkedList head;
   head = GNEW(struct SingleLinkedList_struct);
   head->data = data;
@@ -28,15 +26,15 @@ SingleLinkedList SingleLinkedList_new(void *data){
   return head;
 }
 
-SingleLinkedList SingleLinkedList_new_int(int i){
+SingleLinkedList SingleLinkedList_new_int(int i) {
   int *data;
   data = malloc(sizeof(int));
   data[0] = i;
-  return SingleLinkedList_new((void*) data);
+  return SingleLinkedList_new((void *)data);
 }
-  
 
-void SingleLinkedList_delete(SingleLinkedList head,  void (*linklist_deallocator)(void*)){
+void SingleLinkedList_delete(SingleLinkedList head,
+                             void (*linklist_deallocator)(void *)) {
   SingleLinkedList next;
 
   if (!head) return;
@@ -46,42 +44,37 @@ void SingleLinkedList_delete(SingleLinkedList head,  void (*linklist_deallocator
     if (head) FREE(head);
     head = next;
   } while (head);
-
 }
 
-
-SingleLinkedList SingleLinkedList_prepend(SingleLinkedList l, void *data){
+SingleLinkedList SingleLinkedList_prepend(SingleLinkedList l, void *data) {
   SingleLinkedList head = SingleLinkedList_new(data);
   head->next = l;
   return head;
 }
 
-SingleLinkedList SingleLinkedList_prepend_int(SingleLinkedList l, int i){
+SingleLinkedList SingleLinkedList_prepend_int(SingleLinkedList l, int i) {
   int *data;
   data = malloc(sizeof(int));
   data[0] = i;
-  return SingleLinkedList_prepend(l, (void*) data);
+  return SingleLinkedList_prepend(l, (void *)data);
 }
 
-void* SingleLinkedList_get_data(SingleLinkedList l){
-  return l->data;
-}
+void *SingleLinkedList_get_data(SingleLinkedList l) { return l->data; }
 
-SingleLinkedList SingleLinkedList_get_next(SingleLinkedList l){
+SingleLinkedList SingleLinkedList_get_next(SingleLinkedList l) {
   return l->next;
 }
-void SingleLinkedList_print(SingleLinkedList head, void (*linkedlist_print)(void*)){
+void SingleLinkedList_print(SingleLinkedList head,
+                            void (*linkedlist_print)(void *)) {
 
   if (!head) return;
   do {
     if (head->data) linkedlist_print(head->data);
     head = head->next;
   } while (head);
- 
 }
 
-
-DoubleLinkedList DoubleLinkedList_new(void *data){
+DoubleLinkedList DoubleLinkedList_new(void *data) {
   DoubleLinkedList head;
   head = GNEW(struct DoubleLinkedList_struct);
   head->data = data;
@@ -90,7 +83,8 @@ DoubleLinkedList DoubleLinkedList_new(void *data){
   return head;
 }
 
-void DoubleLinkedList_delete(DoubleLinkedList head,  void (*linklist_deallocator)(void*)){
+void DoubleLinkedList_delete(DoubleLinkedList head,
+                             void (*linklist_deallocator)(void *)) {
   DoubleLinkedList next;
 
   if (!head) return;
@@ -100,45 +94,44 @@ void DoubleLinkedList_delete(DoubleLinkedList head,  void (*linklist_deallocator
     if (head) FREE(head);
     head = next;
   } while (head);
-
 }
 
-
-DoubleLinkedList DoubleLinkedList_prepend(DoubleLinkedList l, void *data){
+DoubleLinkedList DoubleLinkedList_prepend(DoubleLinkedList l, void *data) {
   DoubleLinkedList head = DoubleLinkedList_new(data);
-  if (l){
+  if (l) {
     head->next = l;
     l->prev = head;
   }
   return head;
 }
 
-void* DoubleLinkedList_get_data(DoubleLinkedList l){
-  return l->data;
-}
+void *DoubleLinkedList_get_data(DoubleLinkedList l) { return l->data; }
 
-DoubleLinkedList DoubleLinkedList_get_next(DoubleLinkedList l){
+DoubleLinkedList DoubleLinkedList_get_next(DoubleLinkedList l) {
   return l->next;
 }
 
-void DoubleLinkedList_print(DoubleLinkedList head, void (*linkedlist_print)(void*)){
+void DoubleLinkedList_print(DoubleLinkedList head,
+                            void (*linkedlist_print)(void *)) {
 
   if (!head) return;
   do {
     if (head->data) linkedlist_print(head->data);
     head = head->next;
   } while (head);
- 
 }
 
-void DoubleLinkedList_delete_element(DoubleLinkedList l, void (*linklist_deallocator)(void*), DoubleLinkedList *head){
-  /* delete an entry in the chain of linked list. If the head changes due to this (if l is the first element in the list), update */
+void DoubleLinkedList_delete_element(DoubleLinkedList l,
+                                     void (*linklist_deallocator)(void *),
+                                     DoubleLinkedList *head) {
+  /* delete an entry in the chain of linked list. If the head changes due to
+   * this (if l is the first element in the list), update */
   DoubleLinkedList next, prev;
 
-  if (l){
+  if (l) {
     next = l->next;
     prev = l->prev;
-    
+
     if (l->data) linklist_deallocator(l->data);
     FREE(l);
     l = NULL;
@@ -148,7 +141,6 @@ void DoubleLinkedList_delete_element(DoubleLinkedList l, void (*linklist_dealloc
     if (!prev) *head = next;
   }
 }
-
 
 /*
 static void print_int(void *d){
@@ -170,7 +162,7 @@ main(){
     j = malloc(sizeof(int));
     j[0] = i;
     l = DoubleLinkedList_prepend(l, (void*) j);
-    
+
   }
   DoubleLinkedList_print(l, print_int);
 

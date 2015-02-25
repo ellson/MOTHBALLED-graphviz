@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,30 +19,36 @@
 #include "rawgraph.h"
 
 typedef struct {
-    double p1, p2;
+  double p1, p2;
 } paird;
 
 typedef struct {
-    int a,b;
+  int a, b;
 } pair;
 
 typedef struct {
-	pair t1, t2;
+  pair t1, t2;
 } pair2;
 
-typedef enum {B_NODE, B_UP, B_LEFT, B_DOWN, B_RIGHT} bend;
+typedef enum {
+  B_NODE,
+  B_UP,
+  B_LEFT,
+  B_DOWN,
+  B_RIGHT
+} bend;
 
-/* Example : segment connecting maze point (3,2) 
+/* Example : segment connecting maze point (3,2)
  * and (3,8) has isVert = 1, common coordinate = 3, p1 = 2, p2 = 8
  */
 typedef struct segment {
   boolean isVert;
   boolean flipped;
-  double comm_coord;  /* the common coordinate */
-  paird p;      /* end points */
-  bend l1, l2; 
-  int ind_no;      /* index number of this segment in its channel */
-  int track_no;    /* track number assigned in the channel */
+  double comm_coord; /* the common coordinate */
+  paird p;           /* end points */
+  bend l1, l2;
+  int ind_no;   /* index number of this segment in its channel */
+  int track_no; /* track number assigned in the channel */
   struct segment* prev;
   struct segment* next;
 } segment;
@@ -54,8 +60,8 @@ typedef struct {
 
 typedef struct {
   Dtlink_t link;
-  paird p;   /* extrema of channel */
-  int cnt;   /* number of segments */
+  paird p;            /* extrema of channel */
+  int cnt;            /* number of segments */
   segment** seg_list; /* array of segment pointers */
   rawgraph* G;
   struct cell* cp;

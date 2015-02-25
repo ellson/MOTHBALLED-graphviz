@@ -18,11 +18,12 @@ extern "C" {
 #endif
 
 /*
- * this library is derived from an archived home directory of Antonin Guttman 
+ * this library is derived from an archived home directory of Antonin Guttman
  * that implemented the ideas described in
  * "R-trees: a dynamic index structure for spatial searching"
  * Antonin Guttman, University of California, Berkeley
- * SIGMOD '84 Proceedings of the 1984 ACM SIGMOD international conference on Management of data
+ * SIGMOD '84 Proceedings of the 1984 ACM SIGMOD international conference on
+ * Management of data
  * ISBN:0-89791-128-8
  * http://dx.doi.org/10.1145/602259.602266
  * this copy of the code was retrieved from
@@ -41,7 +42,7 @@ extern "C" {
 #define NUMDIMS 2
 #endif /*NUMDIMS*/
 /* #define NDEBUG */
-#define NUMSIDES 2*NUMDIMS
+#define NUMSIDES 2 * NUMDIMS
 /* branching factor of a node */
 /* #define NODECARD (int)((PGSIZE-(2*sizeof(int)))/sizeof(struct Branch))*/
 #define NODECARD 64
@@ -51,79 +52,78 @@ typedef struct RTree RTree_t;
 #include <node.h>
 #include <split.q.h>
 
-#define CX(i)  (i)
-#define NX(i)  (i+NUMDIMS)
-#define CY(i)  (i+1)
-#define NY(i)  (i+1+NUMDIMS)
+#define CX(i) (i)
+#define NX(i) (i + NUMDIMS)
+#define CY(i) (i + 1)
+#define NY(i) (i + 1 + NUMDIMS)
 
 typedef struct Leaf {
-    Rect_t rect;
-    void *data;
+  Rect_t rect;
+  void *data;
 } Leaf_t;
 
 typedef struct LeafList {
-    struct LeafList *next;
-    Leaf_t *leaf;
+  struct LeafList *next;
+  Leaf_t *leaf;
 } LeafList_t;
 
 #ifndef METHODS
 #define METHODS 1
 #endif /*METHODS*/
-    struct RTree {
-    Node_t *root;
+struct RTree {
+  Node_t *root;
 
-    SplitQ_t split;
+  SplitQ_t split;
 
-    /* balance criterion for node splitting */
-    int MinFill;
+  /* balance criterion for node splitting */
+  int MinFill;
 
-    /* times */
-    long ElapsedTime;
-    float UserTime, SystemTime;
+  /* times */
+  long ElapsedTime;
+  float UserTime, SystemTime;
 
-    int Deleting;
+  int Deleting;
 
-    /* variables for statistics */
-    int StatFlag;		/* tells if we are counting or not */
-    /* counters affected only when StatFlag set */
-    int InsertCount;
-    int DeleteCount;
-    int ReInsertCount;
-    int InSplitCount;
-    int DeSplitCount;
-    int ElimCount;
-    int EvalCount;
-    int InTouchCount;
-    int DeTouchCount;
-    int SeTouchCount;
-    int CallCount;
-    float SplitMeritSum;
+  /* variables for statistics */
+  int StatFlag; /* tells if we are counting or not */
+  /* counters affected only when StatFlag set */
+  int InsertCount;
+  int DeleteCount;
+  int ReInsertCount;
+  int InSplitCount;
+  int DeSplitCount;
+  int ElimCount;
+  int EvalCount;
+  int InTouchCount;
+  int DeTouchCount;
+  int SeTouchCount;
+  int CallCount;
+  float SplitMeritSum;
 
-    /* counters used even when StatFlag not set */
-    int RectCount;
-    int NodeCount;
-    int LeafCount, NonLeafCount;
-    int EntryCount;
-    int SearchCount;
-    int HitCount;
-
+  /* counters used even when StatFlag not set */
+  int RectCount;
+  int NodeCount;
+  int LeafCount, NonLeafCount;
+  int EntryCount;
+  int SearchCount;
+  int HitCount;
 };
 
 typedef struct ListNode {
-    struct ListNode *next;
-    struct Node *node;
+  struct ListNode *next;
+  struct Node *node;
 } ListNode_t;
 
 RTree_t *RTreeOpen(void);
-int RTreeClose(RTree_t * rtp);
-Node_t *RTreeNewIndex(RTree_t * rtp);
+int RTreeClose(RTree_t *rtp);
+Node_t *RTreeNewIndex(RTree_t *rtp);
 LeafList_t *RTreeSearch(RTree_t *, Node_t *, Rect_t *);
 int RTreeInsert(RTree_t *, Rect_t *, void *, Node_t **, int);
 int RTreeDelete(RTree_t *, Rect_t *, void *, Node_t **);
 
-LeafList_t *RTreeNewLeafList(Leaf_t * lp);
-LeafList_t *RTreeLeafListAdd(LeafList_t * llp, Leaf_t * lp);
-void RTreeLeafListFree(LeafList_t * llp);
+LeafList_t *RTreeNewLeafList(Leaf_t *lp);
+LeafList_t *RTreeLeafListAdd(LeafList_t *llp, Leaf_t *lp);
+void RTreeLeafListFree(LeafList_t *llp);
 
 #ifdef RTDEBUG
 void PrintNode(Node_t *);
@@ -133,4 +133,4 @@ void PrintNode(Node_t *);
 }
 #endif
 
-#endif				/*INDEX_H */
+#endif /*INDEX_H */

@@ -19,7 +19,7 @@
  * This version is released under the CPL (Common Public License) with
  * the Graphviz distribution.
  * A version is also available under the LGPL as part of the Adaptagrams
- * project: http://sourceforge.net/projects/adaptagrams.  
+ * project: http://sourceforge.net/projects/adaptagrams.
  * If you make improvements or bug fixes to this code it would be much
  * appreciated if you could also contribute those changes back to the
  * Adaptagrams repository.
@@ -44,84 +44,80 @@
 // ******************ERRORS********************************
 // Throws Underflow as warranted
 
-
 // Node and forward declaration because g++ does
 // not understand nested classes.
-template <class T> 
+template <class T>
 class PairingHeap;
 
 template <class T>
-std::ostream& operator<< (std::ostream &os,const PairingHeap<T> &b);
+std::ostream &operator<<(std::ostream &os, const PairingHeap<T> &b);
 
 template <class T>
-class PairNode
-{
-	friend std::ostream& operator<< <T>(std::ostream &os,const PairingHeap<T> &b);
-	T   element;
-	PairNode    *leftChild;
-	PairNode    *nextSibling;
-	PairNode    *prev;
+class PairNode {
+  friend std::ostream &operator<<<T>(std::ostream &os, const PairingHeap<T> &b);
+  T element;
+  PairNode *leftChild;
+  PairNode *nextSibling;
+  PairNode *prev;
 
-	PairNode( const T & theElement ) :
-	       	element( theElement ),
-		leftChild(NULL), nextSibling(NULL), prev(NULL)
-       	{ }
-	friend class PairingHeap<T>;
+  PairNode(const T &theElement)
+      : element(theElement), leftChild(NULL), nextSibling(NULL), prev(NULL) {}
+  friend class PairingHeap<T>;
 };
 
 template <class T>
-class Comparator
-{
-public:
-	virtual bool isLessThan(T const &lhs, T const &rhs) const = 0;
+class Comparator {
+ public:
+  virtual bool isLessThan(T const &lhs, T const &rhs) const = 0;
 };
 
 template <class T>
-class PairingHeap
-{
-	friend std::ostream& operator<< <T>(std::ostream &os,const PairingHeap<T> &b);
-public:
-	PairingHeap( bool (*lessThan)(T const &lhs, T const &rhs) );
-	PairingHeap( const PairingHeap & rhs );
-	~PairingHeap( );
+class PairingHeap {
+  friend std::ostream &operator<<<T>(std::ostream &os, const PairingHeap<T> &b);
 
-	bool isEmpty( ) const;
-	bool isFull( ) const;
-	int size();
+ public:
+  PairingHeap(bool (*lessThan)(T const &lhs, T const &rhs));
+  PairingHeap(const PairingHeap &rhs);
+  ~PairingHeap();
 
-	PairNode<T> *insert( const T & x );
-	const T & findMin( ) const;
-	void deleteMin( );
-	void makeEmpty( );
-	void decreaseKey( PairNode<T> *p, const T & newVal );
-	void merge( PairingHeap<T> *rhs )
-	{	
-		PairNode<T> *broot=rhs->getRoot();
-		if (root == NULL) {
-			if(broot != NULL) {
-				root = broot;
-			}
-		} else {
-			compareAndLink(root, broot);
-		}
-		counter+=rhs->size();
-	}
+  bool isEmpty() const;
+  bool isFull() const;
+  int size();
 
-	const PairingHeap & operator=( const PairingHeap & rhs );
-protected:
-	PairNode<T> * getRoot() {
-		PairNode<T> *r=root;
-		root=NULL;
-		return r;
-	}
-private:
-	PairNode<T> *root;
-	bool (*lessThan)(T const &lhs, T const &rhs);
-	int counter;
-	void reclaimMemory( PairNode<T> *t ) const;
-	void compareAndLink( PairNode<T> * & first, PairNode<T> *second ) const;
-	PairNode<T> * combineSiblings( PairNode<T> *firstSibling ) const;
-	PairNode<T> * clone( PairNode<T> * t ) const;
+  PairNode<T> *insert(const T &x);
+  const T &findMin() const;
+  void deleteMin();
+  void makeEmpty();
+  void decreaseKey(PairNode<T> *p, const T &newVal);
+  void merge(PairingHeap<T> *rhs) {
+    PairNode<T> *broot = rhs->getRoot();
+    if (root == NULL) {
+      if (broot != NULL) {
+        root = broot;
+      }
+    } else {
+      compareAndLink(root, broot);
+    }
+    counter += rhs->size();
+  }
+
+  const PairingHeap &operator=(const PairingHeap &rhs);
+
+ protected:
+  PairNode<T> *getRoot() {
+    PairNode<T> *r = root;
+    root = NULL;
+    return r;
+  }
+
+ private:
+  PairNode<T> *root;
+  bool (*lessThan)(T const &lhs, T const &rhs);
+  int counter;
+  void reclaimMemory(PairNode<T> *t) const;
+  void compareAndLink(PairNode<T> *&first, PairNode<T> *second) const;
+  PairNode<T> *combineSiblings(PairNode<T> *firstSibling) const;
+  PairNode<T> *clone(PairNode<T> *t) const;
 };
 
 #include "PairingHeap.cpp"

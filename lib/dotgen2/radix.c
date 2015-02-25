@@ -26,94 +26,87 @@ typedef unsigned long ulong;
 typedef radixrec_t rec;
 
 /* replaced byte with bitsOffset to avoid *8 operation in loop */
-static void radix (short bitsOffset, ulong N, rec *source, rec *dest)
-{
-/* suppressed the need for index as it is reported in count */
-        ulong count[256];
-/* added temp variables to simplify writing, understanding and compiler optimization job */
-/* most of them will be allocated as registers */
-        ulong *cp, c, i, s;
-		rec	  *sp, srec;
+static void radix(short bitsOffset, ulong N, rec *source, rec *dest) {
+  /* suppressed the need for index as it is reported in count */
+  ulong count[256];
+  /* added temp variables to simplify writing, understanding and compiler
+   * optimization job */
+  /* most of them will be allocated as registers */
+  ulong *cp, c, i, s;
+  rec *sp, srec;
 
-/* faster than MemSet */
-        cp = count;
-        for (i = 256; i > 0; --i, ++cp)
-                *cp = 0;
+  /* faster than MemSet */
+  cp = count;
+  for (i = 256; i > 0; --i, ++cp) *cp = 0;
 
-/* count occurences of every byte value */
-        sp = source;
-        for (i = N; i > 0; --i, ++sp) {
-                cp = count + ByteOf (sp->key);
-                ++(*cp);
-        }
+  /* count occurences of every byte value */
+  sp = source;
+  for (i = N; i > 0; --i, ++sp) {
+    cp = count + ByteOf(sp->key);
+    ++(*cp);
+  }
 
-/* transform count into index by summing elements and storing into same array */
-        s = 0;
-        cp = count;
-        for (i = 256; i > 0; --i, ++cp) {
-                c = *cp;
-                *cp = s;
-                s += c;
-        }
+  /* transform count into index by summing elements and storing into same array
+   */
+  s = 0;
+  cp = count;
+  for (i = 256; i > 0; --i, ++cp) {
+    c = *cp;
+    *cp = s;
+    s += c;
+  }
 
-/* fill dest with the right values in the right place */
-        sp = source;
-        for (i = N; i > 0; --i, ++sp) {
-                srec = *sp;
-                cp = count + ByteOf (srec.key);
-                dest[*cp] = srec;
-                ++(*cp);
-        }
+  /* fill dest with the right values in the right place */
+  sp = source;
+  for (i = N; i > 0; --i, ++sp) {
+    srec = *sp;
+    cp = count + ByteOf(srec.key);
+    dest[*cp] = srec;
+    ++(*cp);
+  }
 }
 
-void radix_sort (rec *source, ulong N)
-{
-/* allocate heap memory to avoid the need of additional parameter */
-        rec *temp = malloc (N * sizeof (rec));
-        assert (temp != NULL);
+void radix_sort(rec *source, ulong N) {
+  /* allocate heap memory to avoid the need of additional parameter */
+  rec *temp = malloc(N * sizeof(rec));
+  assert(temp != NULL);
 
-        radix (0, N, source, temp);
-        radix (8, N, temp, source);
-        radix (16, N, source, temp);
-        radix (24, N, temp, source);
+  radix(0, N, source, temp);
+  radix(8, N, temp, source);
+  radix(16, N, source, temp);
+  radix(24, N, temp, source);
 
-        free (temp);
+  free(temp);
 }
 
 #ifdef MAIN
-static void make_random (rec *data, ulong N)
-{
-        for ( ; N > 0; --N, ++data) {
-                data->key = rand () | (rand () << 16);
-				data->data = (void*)((data->key)^0xdeadbeef);
-		}
+static void make_random(rec *data, ulong N) {
+  for (; N > 0; --N, ++data) {
+    data->key = rand() | (rand() << 16);
+    data->data = (void *)((data->key) ^ 0xdeadbeef);
+  }
 }
 
-static void check_order (rec *data, ulong N)
-{
-/* only signal errors if any (should not be) */
-        --N;
-        for ( ; N > 0; --N, ++data) {
-                assert (data[0].key <= data[1].key);
-				assert (data->data == (void*)((data->key)^0xdeadbeef));
-		}
+static void check_order(rec *data, ulong N) {
+  /* only signal errors if any (should not be) */
+  --N;
+  for (; N > 0; --N, ++data) {
+    assert(data[0].key <= data[1].key);
+    assert(data->data == (void *)((data->key) ^ 0xdeadbeef));
+  }
 }
 
 /* test for big number of elements */
-static void test_radix (ulong N)
-{
-        rec *data = malloc (N * sizeof (rec));
-        assert (data != NULL);
+static void test_radix(ulong N) {
+  rec *data = malloc(N * sizeof(rec));
+  assert(data != NULL);
 
-        make_random (data, N);
-        radix_sort (data, N);
-        check_order (data, N);
+  make_random(data, N);
+  radix_sort(data, N);
+  check_order(data, N);
 
-        free (data);
+  free(data);
 }
 
-void main (void)
-{
-        test_radix (10000000);
-}
+void main(void) { test_radix(10000000); }
 #endif

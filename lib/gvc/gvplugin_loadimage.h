@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,7 +23,7 @@ extern "C" {
 #endif
 
 #ifdef GVDLL
-#  define extern __declspec(dllexport)
+#define extern __declspec(dllexport)
 #endif
 
 /*visual studio*/
@@ -37,9 +37,9 @@ extern "C" {
 extern boolean gvusershape_file_access(usershape_t *us);
 extern void gvusershape_file_release(usershape_t *us);
 
-    struct gvloadimage_engine_s {
-	void (*loadimage) (GVJ_t *job, usershape_t *us, boxf b, boolean filled);
-    };
+struct gvloadimage_engine_s {
+  void (*loadimage)(GVJ_t *job, usershape_t *us, boxf b, boolean filled);
+};
 
 #ifdef extern
 #undef extern
@@ -48,4 +48,4 @@ extern void gvusershape_file_release(usershape_t *us);
 #ifdef __cplusplus
 }
 #endif
-#endif				/* GVPLUGIN_IMAGELOAD_H */
+#endif /* GVPLUGIN_IMAGELOAD_H */

@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,16 +34,17 @@ extern "C" {
 #endif
 /*end visual studio*/
 
-    extern size_t gvwrite (GVJ_t * job, const char *s, size_t len);
-    extern size_t gvfwrite (const void *ptr, size_t size, size_t nmemb, FILE *stream);
-    extern int gvferror (FILE *stream);
-    extern int gvputc(GVJ_t * job, int c);
-    extern int gvputs(GVJ_t * job, const char *s);
-    extern int gvflush (GVJ_t * job);
-    extern void gvprintf(GVJ_t * job, const char *format, ...);
-    extern void gvprintdouble(GVJ_t * job, double num); 
-    extern void gvprintpointf(GVJ_t * job, pointf p);
-    extern void gvprintpointflist(GVJ_t * job, pointf *p, int n);
+extern size_t gvwrite(GVJ_t *job, const char *s, size_t len);
+extern size_t gvfwrite(const void *ptr, size_t size, size_t nmemb,
+                       FILE *stream);
+extern int gvferror(FILE *stream);
+extern int gvputc(GVJ_t *job, int c);
+extern int gvputs(GVJ_t *job, const char *s);
+extern int gvflush(GVJ_t *job);
+extern void gvprintf(GVJ_t *job, const char *format, ...);
+extern void gvprintdouble(GVJ_t *job, double num);
+extern void gvprintpointf(GVJ_t *job, pointf p);
+extern void gvprintpointflist(GVJ_t *job, pointf *p, int n);
 
 #undef extern
 
@@ -51,4 +52,4 @@ extern "C" {
 }
 #endif
 
-#endif				/* GVDEVICE_H */
+#endif /* GVDEVICE_H */

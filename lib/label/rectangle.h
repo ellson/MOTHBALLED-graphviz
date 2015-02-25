@@ -18,10 +18,10 @@ extern "C" {
 #endif
 
 typedef struct Rect {
-    int boundary[NUMSIDES];
+  int boundary[NUMSIDES];
 } Rect_t;
 
-void InitRect(Rect_t * r);
+void InitRect(Rect_t *r);
 #ifdef RTDEBUG
 void PrintRect(Rect_t *);
 #endif
@@ -35,4 +35,4 @@ Rect_t NullRect(void);
 }
 #endif
 
-#endif				/*RECTANGLE_H */
+#endif /*RECTANGLE_H */

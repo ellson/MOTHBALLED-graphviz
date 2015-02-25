@@ -10,7 +10,7 @@
  * This version is released under the CPL (Common Public License) with
  * the Graphviz distribution.
  * A version is also available under the LGPL as part of the Adaptagrams
- * project: http://sourceforge.net/projects/adaptagrams.  
+ * project: http://sourceforge.net/projects/adaptagrams.
  * If you make improvements or bug fixes to this code it would be much
  * appreciated if you could also contribute those changes back to the
  * Adaptagrams repository.
@@ -38,55 +38,54 @@ extern "C" {
 #endif /* MOSEK */
 
 typedef struct CMajEnvVPSC {
-	float **A;
-	float *packedMat;
-	int nv;   /* number of actual vars */
-	int nldv; /* number of dummy nodes included in lap matrix */
-	int ndv;  /* number of dummy nodes not included in lap matrix */
-	Variable **vs;
-	int m; /* total number of constraints for next iteration */
-	int gm; /* number of global constraints */
-	Constraint **cs;
-	/* global constraints are persistant throughout optimisation process */
-	Constraint **gcs;
-	VPSC *vpsc;
-	float *fArray1; /* utility arrays - reusable memory */
-	float *fArray2;
-	float *fArray3;
+  float **A;
+  float *packedMat;
+  int nv;   /* number of actual vars */
+  int nldv; /* number of dummy nodes included in lap matrix */
+  int ndv;  /* number of dummy nodes not included in lap matrix */
+  Variable **vs;
+  int m;  /* total number of constraints for next iteration */
+  int gm; /* number of global constraints */
+  Constraint **cs;
+  /* global constraints are persistant throughout optimisation process */
+  Constraint **gcs;
+  VPSC *vpsc;
+  float *fArray1; /* utility arrays - reusable memory */
+  float *fArray2;
+  float *fArray3;
 #ifdef MOSEK
-	MosekEnv *mosekEnv;
+  MosekEnv *mosekEnv;
 #endif /* MOSEK */
 } CMajEnvVPSC;
 
-extern CMajEnvVPSC* initCMajVPSC(int n, float *packedMat, vtx_data* graph, ipsep_options *opt, int diredges);
+extern CMajEnvVPSC *initCMajVPSC(int n, float *packedMat, vtx_data *graph,
+                                 ipsep_options *opt, int diredges);
 
-extern int constrained_majorization_vpsc(CMajEnvVPSC*, float*, float*, int);
+extern int constrained_majorization_vpsc(CMajEnvVPSC *, float *, float *, int);
 
 extern void deleteCMajEnvVPSC(CMajEnvVPSC *e);
-extern void generateNonoverlapConstraints(
-        CMajEnvVPSC* e,
-        float nsizeScale,
-        float** coords,
-        int k,
-	boolean transitiveClosure,
-	ipsep_options* opt
-);
+extern void generateNonoverlapConstraints(CMajEnvVPSC *e, float nsizeScale,
+                                          float **coords, int k,
+                                          boolean transitiveClosure,
+                                          ipsep_options *opt);
 
-extern void removeoverlaps(int,float**,ipsep_options*);
+extern void removeoverlaps(int, float **, ipsep_options *);
 
 typedef struct {
-	int *nodes;
-	int num_nodes;
+  int *nodes;
+  int num_nodes;
 } DigColaLevel;
 
 /*
  * unpack the "ordering" array into an array of DigColaLevel (as defined above)
  */
-extern DigColaLevel* assign_digcola_levels(int *ordering, int n, int *level_inds, int num_divisions);
+extern DigColaLevel *assign_digcola_levels(int *ordering, int n,
+                                           int *level_inds, int num_divisions);
 extern void delete_digcola_levels(DigColaLevel *l, int num_levels);
-extern void print_digcola_levels(FILE* logfile, DigColaLevel *levels, int num_levels);
+extern void print_digcola_levels(FILE *logfile, DigColaLevel *levels,
+                                 int num_levels);
 int get_num_digcola_constraints(DigColaLevel *levels, int num_levels);
-#endif 
+#endif
 
 #endif /* _QUAD_PROG_VPSC_H_ */
 
