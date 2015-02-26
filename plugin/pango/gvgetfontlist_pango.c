@@ -59,7 +59,7 @@ char* strcasestr (const char *str, const char *pat)
 #include "gvgetfontlist.h"
 #endif
 
-extern int Verbose;
+extern unsigned char Verbose;
 
 #define FNT_BOLD	1<<0
 #define FNT_BOOK	1<<1
@@ -532,8 +532,10 @@ gv_font_map* get_font_mapping(PangoFontMap * fontmap)
     agxbfree(&xb);
     agxbfree(&xb2);
 #ifndef WIN32
-    if (Verbose > 1)
+    if (Verbose > 1) {
+	fprintf(stderr, "Verbose %d\n", Verbose);
 	printFontMap (gv_fmap, ps_fontnames_sz);
+    }
 #endif
     return gv_fmap;
 }
