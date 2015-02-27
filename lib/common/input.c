@@ -344,6 +344,10 @@ int dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		break;
 	    case 'o':
 		val = getFlagOpt(argc, argv, &i);
+		if (!val) {
+		    fprintf(stderr, "Missing argument for -o flag\n");
+		    return (dotneato_usage(1));
+		}
 		if (! gvc->common.auto_outfile_names)
 		    gvjobs_output_filename(gvc, val);
 		break;
