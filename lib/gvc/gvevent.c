@@ -618,7 +618,28 @@ static void gvevent_layout (GVJ_t * job, const char *layout)
 
 static void gvevent_render (GVJ_t * job, const char *format, const char *filename)
 {
+/* If gvc->jobs is set, a new job for doing the rendering won't be created.
+ * If gvc->active_jobs is set, this will be used in a call to gv_end_job.
+ * If we assume this function is called by an interactive front-end which
+ * actually wants to write a file, the above possibilities can cause problems,
+ * with either gvc->job being NULL or the creation of a new window. To avoid 
+ * this, we null out these values for rendering the file, and restore them
+ * afterwards. John may have a better way around this.
+ */
+    GVJ_t* save_jobs;
+    GVJ_t* save_active;
+    if (job->gvc->jobs && (job->gvc->job == NULL)) {
+	save_jobs = job->gvc->jobs;
+	save_active = job->gvc->active_jobs;
+	job->gvc->active_jobs = job->gvc->jobs = NULL;
+    }
+    else
+	save_jobs = NULL;
     gvRenderFilename(job->gvc, job->gvc->g, format, filename);
+    if (save_jobs) {
+	job->gvc->jobs = save_jobs;
+	job->gvc->active_jobs = save_active;
+    }
 }
 
 
