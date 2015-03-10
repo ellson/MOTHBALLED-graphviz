@@ -327,7 +327,7 @@ real overlap_scaling(int dim, int m, real *x, real *width, real scale_sta, real 
     scale_coord(dim, m, x, scale_sta);
     C = get_overlap_graph(dim, m, x, width, check_overlap_only);
     if (!C || C->nz == 0) {
-      if (Verbose) fprintf(stderr," shrinking with with %f works\n", scale_sta);
+      if (Verbose) fprintf(stderr," shrinking with %f works\n", scale_sta);
       SparseMatrix_delete(C);
       return scale_sta;
     }
