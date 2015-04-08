@@ -15,7 +15,7 @@
 
 #include "common.h"
 #include "g.h"
-#include "io.h"
+#include "leftyio.h"
 #include "mem.h"
 
 io_t *iop;

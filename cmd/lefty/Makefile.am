@@ -46,7 +46,7 @@ man = lefty.1
 pdf = lefty.1.pdf
 
 noinst_HEADERS = code.h common.h display.h exec.h g.h gfxview.h internal.h \
-	io.h lex.h mem.h parse.h str.h tbl.h txtview.h
+	leftyio.h lex.h mem.h parse.h str.h tbl.h txtview.h
 
 if WITH_X
 if WITH_XAW

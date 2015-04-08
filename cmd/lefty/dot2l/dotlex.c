@@ -17,7 +17,7 @@ typedef void *Tobj;
 #include "common.h"
 #include "dotparse.h"
 #include "dot2l.h"
-#include "io.h"
+#include "leftyio.h"
 #include "triefa.c"
 
 static int syntax_errors;

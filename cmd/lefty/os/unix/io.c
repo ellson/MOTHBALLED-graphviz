@@ -14,7 +14,7 @@
 /* Lefteris Koutsofios - AT&T Labs Research */
 
 #include "common.h"
-#include "io.h"
+#include "leftyio.h"
 #ifdef FEATURE_CS
 #include "cs2l.h"
 #endif

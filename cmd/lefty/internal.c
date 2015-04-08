@@ -16,7 +16,7 @@
 #include "common.h"
 #include "g.h"
 #include "mem.h"
-#include "io.h"
+#include "leftyio.h"
 #include "code.h"
 #include "tbl.h"
 #include "parse.h"
