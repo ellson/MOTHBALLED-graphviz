@@ -332,7 +332,7 @@ if test "${GCC}" != "yes" ; then
 	    ;;
     esac
 else
-    AC_CHECK_PROGS(RC,windres,false)
+    AC_CHECK_PROGS(RC,[windres ${host}-windres],false)
     case "${CC}" in
 	*icc* )
 	    # -Wall causes relocation errors with icc

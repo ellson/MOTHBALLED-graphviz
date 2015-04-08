@@ -81,7 +81,7 @@ lefty.res : ws/mswin32/lefty.rc
 	rc -l 0x409 -Iws/mswin32 '-IC:\\progra~1\\microsoft visual studio 8\\vc\\PlatformSDK\\include' -DNDEBUG -fo lefty.res ws/mswin32/lefty.rc
 else
 lefty.res : ws/mswin32/lefty.rc
-	windres -l 0x409 -Iws/mswin32 -DNDEBUG -Ocoff -o lefty.res ws/mswin32/lefty.rc
+	$(RC) -l 0x409 -I$(top_srcdir)/cmd/lefty/ws/mswin32 -DNDEBUG -Ocoff -o lefty.res $(top_srcdir)/cmd/lefty/ws/mswin32/lefty.rc
 endif
 
 else
