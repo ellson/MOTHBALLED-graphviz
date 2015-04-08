@@ -360,3 +360,4 @@ findCluster
 rank2
 makeStraightEdge
 makeStraightEdges
+orthoEdges
