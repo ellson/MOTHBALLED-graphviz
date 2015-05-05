@@ -1,0 +1,12 @@
+language: c
+sudo: false
+addons:
+  apt:
+    packages:
+      - libgd2-xpm-dev
+      - ksh
+script:
+  - ./autogen.sh
+  - ./configure
+  - make
+  - make check
