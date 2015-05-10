@@ -281,6 +281,7 @@ extern Agnode_t *aglstnode(Agraph_t * g);
 extern Agnode_t *agprvnode(Agraph_t * g, Agnode_t * n);
 
 extern Agsubnode_t *agsubrep(Agraph_t * g, Agnode_t * n);
+extern int agnodebefore(Agnode_t *u, Agnode_t *v); /* we have no shame */
 
 /* edges */
 extern Agedge_t *agedge(Agraph_t * g, Agnode_t * t, Agnode_t * h,

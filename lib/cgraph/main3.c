@@ -1,24 +1,19 @@
 #include <stdio.h>
 #include "cgraph.h"
-#include "bla.h"
 
 int main(int argc, char **argv)
 {
     Agraph_t *g;
-    Agnode_t *n;
-	Agnoderef_t *nref;
-	Agedge_t *e;
-	Agedgeref_t *eref;
+    Agnode_t *u, *v;
+	int rv;
 
 	g = agread(stdin,0);
-	for (nref = FIRSTNREF(g); nref; nref = NEXTNREF(nref)) {
-		n = NODEOF(nref);
-		fprintf(stderr,"%s\n",agnameof(n));
-		for (eref = FIRSTOUTREF(g,nref); eref; eref = NEXTEREF(nref,eref)) {
-			e = EDGEOF(nref,eref);
-			fprintf(stderr,"\t %s ", agnameof(agtail(e)));
-			fprintf(stderr,"-> %s\n", agnameof(aghead(e)));
-		}
+	if (argc >= 3) {
+		u = agnode(g,argv[1],FALSE);
+		v = agnode(g,argv[2],FALSE);
+		rv = agnodebefore(u,v);
+		fprintf(stderr,"agnodebefore returns %d\n",rv);
+		fprintf(stderr,"dtsize %d\n",dtsize(g->n_seq));
 	}
-    return 1;
+	agwrite(g,stdout);
 }

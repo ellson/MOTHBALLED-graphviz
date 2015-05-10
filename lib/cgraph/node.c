@@ -330,3 +330,47 @@ Dtdisc_t Ag_subnode_seq_disc = {
     agdictobjmem,
     NIL(Dtevent_f)
 };
+
+void agnodesetfinger(Agraph_t * g, Agnode_t * n, void *ignored)
+{
+    static Agsubnode_t template;
+	template.node = n;
+	dtsearch(g->n_seq,&template);
+    NOTUSED(ignored);
+}
+
+void agnoderenew(Agraph_t * g, Agnode_t * n, void *ignored)
+{
+    dtrenew(g->n_seq, dtfinger(g->n_seq));
+    NOTUSED(n);
+    NOTUSED(ignored);
+}
+
+int agnodebefore(Agnode_t *fst, Agnode_t *snd)
+{
+	Agraph_t *g;
+	Agnode_t *n, *nxt;
+	
+
+	g = agroot(fst);
+	if (AGSEQ(fst) > AGSEQ(snd)) return SUCCESS;
+
+	/* move snd out of the way somewhere */
+	n = snd;
+	if (agapply (g, (Agobj_t *) n, (agobjfn_t) agnodesetfinger, n, FALSE) != SUCCESS) return FAILURE;
+	AGSEQ(snd) = (g->clos->seq[AGNODE] + 2);
+	if (agapply (g, (Agobj_t *) n, (agobjfn_t) agnoderenew, n, FALSE) != SUCCESS) return FAILURE;
+	n = agprvnode(g,snd);
+	do {
+		nxt = agprvnode(g,n);
+		if (agapply (g, (Agobj_t *) n, (agobjfn_t) agnodesetfinger, n, FALSE) != SUCCESS) return FAILURE;
+		AGSEQ(n) = AGSEQ(n) + 1;
+		if (agapply (g, (Agobj_t *) n, (agobjfn_t) agnoderenew, n, FALSE) != SUCCESS) return FAILURE;
+		if (n == fst) break;
+		n = nxt;
+	} while (n);
+	if (agapply (g, (Agobj_t *) snd, (agobjfn_t) agnodesetfinger, n, FALSE) != SUCCESS) return FAILURE;
+	AGSEQ(snd) = AGSEQ(fst) - 1;
+	if (agapply (g, (Agobj_t *) snd, (agobjfn_t) agnoderenew, snd, FALSE) != SUCCESS) return FAILURE;
+	return SUCCESS;
+} 
