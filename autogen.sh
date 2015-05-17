@@ -1,7 +1,14 @@
 #! /bin/sh
 
-# Use "now" if we can't get time of last commit
-GRAPHVIZ_VERSION_DATE=$( date -u +%Y%m%d.%H%M )
+GRAPHVIZ_VERSION_DATE=$( git log -n 1 --format=%ct )
+if test $? -eq 0; then
+    GRAPHVIZ_VERSION_DATE=$( date -u +%Y%m%d.%H%M -d @$GRAPHVIZ_VERSION_DATE )
+    echo "Version date is based on time of last commit: $GRAPHVIZ_VERSION_DATE"
+else
+    GRAPHVIZ_VERSION_DATE=$( date -u +%Y%m%d.%H%M )
+    echo "Warning: we do not appear to be running in a git clone."
+    echo "Version date is based on time now: $GRAPHVIZ_VERSION_DATE"
+fi
 
 # initialize version for a "stable" build
 cat >./version.m4 <<EOF
