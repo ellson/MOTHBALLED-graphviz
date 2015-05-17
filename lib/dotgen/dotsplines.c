@@ -413,7 +413,19 @@ static void _dot_splines(graph_t * g, int normalize)
 	}
 
 	if (et == ET_CURVED) {
-	    makeStraightEdges (g, edges+ind, cnt, et, &sinfo);
+	    int ii;
+	    edge_t* e0;
+	    edge_t** edgelist;
+	    if (cnt == 1)
+		edgelist = &e0;
+	    else
+		edgelist = N_NEW(cnt, edge_t*);
+	    edgelist[0] = getmainedge((edges+ind)[0]);
+	    for (ii = 1; ii < cnt; ii++)
+		edgelist[ii] = (edges+ind)[ii];
+	    makeStraightEdges (g, edgelist, cnt, et, &sinfo);
+	    if (cnt > 1)
+		free (edgelist);
 	}
 	else if (agtail(e0) == aghead(e0)) {
 	    int b, sizey, r;
