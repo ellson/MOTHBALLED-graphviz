@@ -22,7 +22,7 @@ GRAPHVIZ_VERSION_MICRO=graphviz_version_micro()
 #NB: "stable" or "development"
 GRAPHVIZ_COLLECTION=graphviz_collection()
 
-#NB: date/time of last commit - or "now"
+#NB: date/time of last commit - or "0"
 GRAPHVIZ_VERSION_DATE=graphviz_version_date()
 
 #NB: git commit hash of last commit
