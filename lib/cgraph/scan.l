@@ -165,7 +165,7 @@ static int chkNum(void) {
 	agxbput(&xb,buf);
 	agxbput(&xb,fname);
 	agxbput(&xb, " splits into two tokens\n");
-	agerr(AGWARN,agxbuse(&xb));
+	agerr(AGWARN, "%s", agxbuse(&xb));
 
 	agxbfree(&xb);
 	return 1;
