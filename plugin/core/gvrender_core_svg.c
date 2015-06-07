@@ -340,7 +340,7 @@ svg_begin_anchor(GVJ_t * job, char *href, char *tooltip, char *target,
 #endif
     if (tooltip && tooltip[0]) {
 	gvputs(job, " xlink:title=\"");
-	gvputs(job, xml_string(tooltip));
+	gvputs(job, xml_string0(tooltip, 1));
 	gvputs(job, "\"");
     }
     if (target && target[0]) {
