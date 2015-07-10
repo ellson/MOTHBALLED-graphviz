@@ -117,7 +117,7 @@ static void ppDirective (void)
 	    char* p = s + cnt;
 	    char* e = p;
 	    while (*e && (*e != '"')) e++; 
-	    if (e != p) {
+	    if (e != p && *e == '"') {
  		*e = '\0';
 		storeFileName (p, e-p);
 	    }
