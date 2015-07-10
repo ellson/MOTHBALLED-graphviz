@@ -204,7 +204,7 @@ static int gvg_init(GVC_t *gvc, graph_t *g, char *fn, int gidx)
     gvg->g = g;
     gvg->input_filename = fn;
     gvg->graph_index = gidx;
-	return 0;
+    return 0;
 }
 
 static graph_t *P_graph;
