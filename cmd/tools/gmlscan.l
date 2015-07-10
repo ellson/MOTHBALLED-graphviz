@@ -127,7 +127,7 @@ void yyerror(char *str)
 	return;
     errors = 1;
     sprintf(buf," %s in line %d near '%s'\n", str,line_num,yytext);
-    agerr(AGWARN,buf);
+    agerr(AGWARN, "%s", buf);
 }
 
 int gmlerrors()
