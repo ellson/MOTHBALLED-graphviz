@@ -137,6 +137,8 @@ static void tkgen_begin_job(GVJ_t * job)
     gvputs(job, ")\n");
 }
 
+static int first_periphery;
+
 static void tkgen_begin_graph(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
@@ -147,9 +149,9 @@ static void tkgen_begin_graph(GVJ_t * job)
 	gvputs(job, tkgen_string(agnameof(obj->u.g)));
     }
     gvprintf(job, " Pages: %d\n", job->pagesArraySize.x * job->pagesArraySize.y);
-}
 
-static int first_periphery;
+    first_periphery = 0;
+}
 
 static void tkgen_begin_node(GVJ_t * job)
 {
