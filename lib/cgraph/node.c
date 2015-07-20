@@ -13,7 +13,7 @@
 
 #include <cghdr.h>
 
-Agnode_t *agfindnode_by_id(Agraph_t * g, unsigned long id)
+Agnode_t *agfindnode_by_id(Agraph_t * g, IDTYPE id)
 {
     Agsubnode_t *sn;
     static Agsubnode_t template;
@@ -27,7 +27,7 @@ Agnode_t *agfindnode_by_id(Agraph_t * g, unsigned long id)
 
 Agnode_t *agfindnode_by_name(Agraph_t * g, char *name)
 {
-    unsigned long id;
+    IDTYPE id;
 
     if (agmapnametoid(g, AGNODE, name, &id, FALSE))
 	return agfindnode_by_id(g, id);
@@ -67,7 +67,7 @@ Agnode_t *agprvnode(Agraph_t * g, Agnode_t * n)
 
 
 /* internal node constructor */
-static Agnode_t *newnode(Agraph_t * g, unsigned long id, unsigned long seq)
+static Agnode_t *newnode(Agraph_t * g, IDTYPE id, unsigned long seq)
 {
     Agnode_t *n;
 
@@ -116,7 +116,7 @@ static void initnode(Agraph_t * g, Agnode_t * n)
 }
 
 /* external node constructor - create by id */
-Agnode_t *agidnode(Agraph_t * g, unsigned long id, int cflag)
+Agnode_t *agidnode(Agraph_t * g, IDTYPE id, int cflag)
 {
     Agraph_t *root;
     Agnode_t *n;
@@ -143,7 +143,7 @@ Agnode_t *agnode(Agraph_t * g, char *name, int cflag)
 {
     Agraph_t *root;
     Agnode_t *n;
-    unsigned long id;
+    IDTYPE id;
 
     root = agroot(g);
     /* probe for existing node */
@@ -231,7 +231,7 @@ static void dict_relabel(Agnode_t * n, void *arg)
 int agrelabel_node(Agnode_t * n, char *newname)
 {
     Agraph_t *g;
-    unsigned long new_id;
+    IDTYPE new_id;
 
     g = agroot(agraphof(n));
     if (agfindnode_by_name(g, newname))
@@ -273,7 +273,7 @@ Agnode_t *agsubnode(Agraph_t * g, Agnode_t * n0, int cflag)
 
 int agsubnodeidcmpf(Dict_t * d, void *arg0, void *arg1, Dtdisc_t * disc)
 {
-    long	v;
+    long long	v;
     Agsubnode_t *sn0, *sn1;
     sn0 = (Agsubnode_t *) arg0;
     sn1 = (Agsubnode_t *) arg1;

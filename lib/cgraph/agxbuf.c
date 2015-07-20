@@ -41,11 +41,11 @@ void agxbinit(agxbuf * xb, unsigned int hint, unsigned char *init)
 /* agxbmore;
  * Expand buffer to hold at least ssz more bytes.
  */
-int agxbmore(agxbuf * xb, unsigned int ssz)
+int agxbmore(agxbuf * xb, size_t ssz)
 {
-    int cnt;			/* current no. of characters in buffer */
-    int size;			/* current buffer size */
-    int nsize;			/* new buffer size */
+    size_t cnt;			/* current no. of characters in buffer */
+    size_t size;		/* current buffer size */
+    size_t nsize;		/* new buffer size */
     unsigned char *nbuf;	/* new buffer */
 
     size = xb->eptr - xb->buf;
@@ -69,7 +69,7 @@ int agxbmore(agxbuf * xb, unsigned int ssz)
 /* agxbput_n:
  * Append string s of length n onto xb
  */
-int agxbput_n(agxbuf * xb, const char *s, unsigned int ssz)
+size_t agxbput_n(agxbuf * xb, const char *s, size_t ssz)
 {
     if (xb->ptr + ssz > xb->eptr)
 	agxbmore(xb, ssz);
@@ -81,9 +81,9 @@ int agxbput_n(agxbuf * xb, const char *s, unsigned int ssz)
 /* agxbput:
  * Append string s into xb
  */
-int agxbput(agxbuf * xb, const char *s)
+size_t agxbput(agxbuf * xb, const char *s)
 {
-    unsigned int ssz = strlen(s);
+    size_t ssz = strlen(s);
 
     return agxbput_n(xb, s, ssz);
 }
