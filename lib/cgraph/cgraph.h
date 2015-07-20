@@ -37,8 +37,17 @@ extern "C" {
 #define NILedge			NIL(Agedge_t*)
 #define NILsym			NIL(Agsym_t*)
 
+#if 0
+// FIXME  -  I didn't understand this comment about Win64.
+//    - What is that loss?
+//    - Do we ever cast a pointer to an IDTYPE in graphviz?
+//    - Is uintptr_t is available on all architectures/compilers? 
+
 /* avoid loss when casting pointer to unsigned long on Win64 */
 typedef uintptr_t IDTYPE;
+#else
+typedef unsigned long IDTYPE;
+#endif
 
 /* forward struct type declarations */
 typedef struct Agtag_s Agtag_t;
