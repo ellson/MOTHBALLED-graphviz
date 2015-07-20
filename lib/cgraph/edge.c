@@ -404,37 +404,38 @@ Agedge_t *agsubedge(Agraph_t * g, Agedge_t * e, int cflag)
 /* edge comparison.  OBJTYPE(e) == 0 means ID is a wildcard. */
 int agedgeidcmpf(Dict_t * d, void *arg_e0, void *arg_e1, Dtdisc_t * disc)
 {
-    long long v;
     Agedge_t *e0, *e1;
 
     NOTUSED(d);
     e0 = arg_e0;
     e1 = arg_e1;
     NOTUSED(disc);
-    v = AGID(e0->node) - AGID(e1->node);
-    if (v == 0) {		/* same node */
-	if ((AGID(e0) == 0) || (AGID(e1) == 0))
-	    v = 0;
-	else
-	    v = AGID(e0) - AGID(e1);
-    }
-    return ((v==0)?0:(v<0?-1:1));
+
+    if (AGID(e0->node) < AGID(e1->node)) return -1;
+    if (AGID(e0->node) > AGID(e1->node)) return 1;
+    return 0;
 }
 
 /* edge comparison.  for ordered traversal. */
 int agedgeseqcmpf(Dict_t * d, void *arg_e0, void *arg_e1, Dtdisc_t * disc)
 {
-    long long v;
     Agedge_t *e0, *e1;
 
     NOTUSED(d);
     e0 = arg_e0;
     e1 = arg_e1;
     NOTUSED(disc);
-	assert(arg_e0 && arg_e1);
-	if (e0->node != e1->node) v = AGSEQ(e0->node) - AGSEQ(e1->node);
-	else v = (AGSEQ(e0) - AGSEQ(e1));
-    return ((v==0)?0:(v<0?-1:1));
+    assert(arg_e0 && arg_e1);
+
+    if (e0->node != e1->node) {
+        if (AGSEQ(e0->node) < AGSEQ(e1->node)) return -1;
+        if (AGSEQ(e0->node) > AGSEQ(e1->node)) return 1;
+    }
+    else {
+        if (AGSEQ(e0) < AGSEQ(e1)) return -1;
+        if (AGSEQ(e0) > AGSEQ(e1)) return 1;
+    }
+    return 0;
 }
 
 /* indexing for ordered traversal */

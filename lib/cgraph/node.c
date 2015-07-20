@@ -273,22 +273,26 @@ Agnode_t *agsubnode(Agraph_t * g, Agnode_t * n0, int cflag)
 
 int agsubnodeidcmpf(Dict_t * d, void *arg0, void *arg1, Dtdisc_t * disc)
 {
-    long long	v;
     Agsubnode_t *sn0, *sn1;
+
     sn0 = (Agsubnode_t *) arg0;
     sn1 = (Agsubnode_t *) arg1;
-    v = (AGID(sn0->node) - AGID(sn1->node));
-    return ((v==0)?0:(v<0?-1:1));
+    
+    if (AGID(sn0->node) < AGID(sn1->node)) return -1;
+    if (AGID(sn0->node) > AGID(sn1->node)) return 1;
+    return 0; 
 }
 
 int agsubnodeseqcmpf(Dict_t * d, void *arg0, void *arg1, Dtdisc_t * disc)
 {
     Agsubnode_t *sn0, *sn1;
-    long	v;
+
     sn0 = (Agsubnode_t *) arg0;
     sn1 = (Agsubnode_t *) arg1;
-    v = (AGSEQ(sn0->node) - AGSEQ(sn1->node));
-    return ((v==0)?0:(v<0?-1:1));
+
+    if (AGSEQ(sn0->node) < AGSEQ(sn1->node)) return -1;
+    if (AGSEQ(sn0->node) > AGSEQ(sn1->node)) return 1;
+    return 0; 
 }
 
 /* free_subnode:
