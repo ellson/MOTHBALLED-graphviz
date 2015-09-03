@@ -413,6 +413,11 @@ int agedgeidcmpf(Dict_t * d, void *arg_e0, void *arg_e1, Dtdisc_t * disc)
 
     if (AGID(e0->node) < AGID(e1->node)) return -1;
     if (AGID(e0->node) > AGID(e1->node)) return 1;
+    /* same node */
+    if ((AGID(e0) != 0) && (AGID(e1) != 0)) {
+        if (AGID(e0) < AGID(e1)) return -1;
+        if (AGID(e0) > AGID(e1)) return 1;
+    }
     return 0;
 }
 
