@@ -21,7 +21,7 @@ struct xyz_struct {
 typedef struct xyz_struct color_xyz;
 
 struct lab_struct {
-  double l, a, b;/* l: 0 to 100, a,b: -128 tp 128 */
+  signed char l, a, b;/* l: 0 to 100, a,b: -128 tp 128 */
 };
 typedef struct lab_struct color_lab;
 
