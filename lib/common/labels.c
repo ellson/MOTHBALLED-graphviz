@@ -490,7 +490,8 @@ char *xml_string(char *s)
 /* xml_string0:
  * Encode input string as an xml string.
  * If raw is true, the input is interpreted as having no
- * embedded escape sequences.
+ * embedded escape sequences, and \n and \r are changed
+ * into &#10; and &#13;, respectively.
  * Uses a static buffer, so non-re-entrant.
  */
 char *xml_string0(char *s, boolean raw)
@@ -542,6 +543,14 @@ char *xml_string0(char *s, boolean raw)
 	}
 	else if (*s == '\'') {
 	    sub = "&#39;";
+	    len = 5;
+	}
+	else if ((*s == '\n') && raw) {
+	    sub = "&#10;";
+	    len = 5;
+	}
+	else if ((*s == '\r') && raw) {
+	    sub = "&#13;";
 	    len = 5;
 	}
 	else {

@@ -23,7 +23,7 @@ typedef struct symlist_s {
 /* this record describes one pending callback on one object */
 typedef struct {
     Dtlink_t link;
-    unsigned long key;		/* universal key for main or sub-object */
+    IDTYPE key;		/* universal key for main or sub-object */
     Agraph_t *g;
     Agobj_t *obj;
     symlist_t *symlist;		/* attributes involved */
@@ -129,7 +129,7 @@ static Dict_t *dictof(pendingset_t * ds, Agobj_t * obj, int kind)
     return *dict_ref;
 }
 
-static unsigned long genkey(Agobj_t * obj)
+static IDTYPE genkey(Agobj_t * obj)
 {
     return obj->tag.id;
 }

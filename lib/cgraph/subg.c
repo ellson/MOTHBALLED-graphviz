@@ -13,7 +13,7 @@
 
 #include <cghdr.h>
 
-static Agraph_t *agfindsubg_by_id(Agraph_t * g, unsigned long id)
+static Agraph_t *agfindsubg_by_id(Agraph_t * g, IDTYPE id)
 {
     Agraph_t template;
 
@@ -22,7 +22,7 @@ static Agraph_t *agfindsubg_by_id(Agraph_t * g, unsigned long id)
     return (Agraph_t *) dtsearch(g->g_dict, &template);
 }
 
-static Agraph_t *localsubg(Agraph_t * g, unsigned long id)
+static Agraph_t *localsubg(Agraph_t * g, IDTYPE id)
 {
     Agraph_t *subg;
 
@@ -40,7 +40,7 @@ static Agraph_t *localsubg(Agraph_t * g, unsigned long id)
     return agopen1(subg);
 }
 
-Agraph_t *agidsubg(Agraph_t * g, unsigned long id, int cflag)
+Agraph_t *agidsubg(Agraph_t * g, IDTYPE id, int cflag)
 {
     Agraph_t *subg;
     subg = agfindsubg_by_id(g, id);
@@ -51,7 +51,7 @@ Agraph_t *agidsubg(Agraph_t * g, unsigned long id, int cflag)
 
 Agraph_t *agsubg(Agraph_t * g, char *name, int cflag)
 {
-    unsigned long id;
+    IDTYPE id;
     Agraph_t *subg;
 
     if (name && agmapnametoid(g, AGRAPH, name, &id, FALSE)) {

@@ -460,16 +460,16 @@ static void error_context(void)
     if (buf < p) {
 	c = *p;
 	*p = '\0';
-	agerr(AGPREV, buf);
+	agerr(AGPREV, "%s", buf);
 	*p = c;
     }
     agerr(AGPREV, " >>> ");
     c = *LexPtr;
     *LexPtr = '\0';
-    agerr(AGPREV, p);
+    agerr(AGPREV, "%s", p);
     *LexPtr = c;
     agerr(AGPREV, " <<< ");
-    agerr(AGPREV, LexPtr);
+    agerr(AGPREV, "%s", LexPtr);
 }
 
 void agerror(char *msg)

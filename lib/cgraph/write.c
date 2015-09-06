@@ -185,8 +185,8 @@ char *agstrcanon(char *arg, char *buf)
 static char *getoutputbuffer(char *str)
 {
     static char *rv;
-    static int len;
-    int req;
+    static size_t len = 0;
+    size_t req;
 
     req = MAX(2 * strlen(str) + 2, BUFSIZ);
     if (req > len) {

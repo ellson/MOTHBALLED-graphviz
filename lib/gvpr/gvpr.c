@@ -1045,7 +1045,6 @@ int gvpr (int argc, char *argv[], gvpropts * uopts)
 		    state->curgraph = (Agraph_t*)clone (0, (Agobj_t*)(state->curgraph));
 		state->curobj = (Agobj_t *) state->curgraph;
 		state->tvroot = 0;
-		state->tvt = TV_flat;
 		if (bp->begg_stmt)
 		    exeval(xprog->prog, bp->begg_stmt, state);
 

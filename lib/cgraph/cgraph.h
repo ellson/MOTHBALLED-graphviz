@@ -37,6 +37,18 @@ extern "C" {
 #define NILedge			NIL(Agedge_t*)
 #define NILsym			NIL(Agsym_t*)
 
+#if 0
+// FIXME  -  I didn't understand this comment about Win64.
+//    - What is that loss?
+//    - Do we ever cast a pointer to an IDTYPE in graphviz?
+//    - Is uintptr_t is available on all architectures/compilers? 
+
+/* avoid loss when casting pointer to unsigned long on Win64 */
+typedef uintptr_t IDTYPE;
+#else
+typedef unsigned long IDTYPE;
+#endif
+
 /* forward struct type declarations */
 typedef struct Agtag_s Agtag_t;
 typedef struct Agobj_s Agobj_t;	/* generic object header */
@@ -80,7 +92,7 @@ struct Agtag_s {
     unsigned mtflock:1;		/* move-to-front lock, see above */
     unsigned attrwf:1;		/* attrs written (parity, write.c) */
     unsigned seq:(sizeof(unsigned) * 8 - 4);	/* sequence no. */
-    unsigned long id;		/* client  ID */
+    IDTYPE id;		        /* client  ID */
 };
 
 	/* object tags */
@@ -157,11 +169,11 @@ struct Agmemdisc_s {		/* memory allocator */
 
 struct Agiddisc_s {		/* object ID allocator */
     void *(*open) (Agraph_t * g, Agdisc_t*);	/* associated with a graph */
-    long (*map) (void *state, int objtype, char *str, unsigned long *id,
+    long (*map) (void *state, int objtype, char *str, IDTYPE *id,
 		 int createflag);
-    long (*alloc) (void *state, int objtype, unsigned long id);
-    void (*free) (void *state, int objtype, unsigned long id);
-    char *(*print) (void *state, int objtype, unsigned long id);
+    long (*alloc) (void *state, int objtype, IDTYPE id);
+    void (*free) (void *state, int objtype, IDTYPE id);
+    char *(*print) (void *state, int objtype, IDTYPE id);
     void (*close) (void *state);
     void (*idregister) (void *state, int objtype, void *obj);
 };
@@ -273,7 +285,7 @@ extern int agissimple(Agraph_t * g);
 
 /* nodes */
 extern Agnode_t *agnode(Agraph_t * g, char *name, int createflag);
-extern Agnode_t *agidnode(Agraph_t * g, unsigned long id, int createflag);
+extern Agnode_t *agidnode(Agraph_t * g, IDTYPE id, int createflag);
 extern Agnode_t *agsubnode(Agraph_t * g, Agnode_t * n, int createflag);
 extern Agnode_t *agfstnode(Agraph_t * g);
 extern Agnode_t *agnxtnode(Agraph_t * g, Agnode_t * n);
@@ -287,7 +299,7 @@ extern int agnodebefore(Agnode_t *u, Agnode_t *v); /* we have no shame */
 extern Agedge_t *agedge(Agraph_t * g, Agnode_t * t, Agnode_t * h,
 			char *name, int createflag);
 extern Agedge_t *agidedge(Agraph_t * g, Agnode_t * t, Agnode_t * h,
-			  unsigned long id, int createflag);
+              IDTYPE id, int createflag);
 extern Agedge_t *agsubedge(Agraph_t * g, Agedge_t * e, int createflag);
 extern Agedge_t *agfstin(Agraph_t * g, Agnode_t * n);
 extern Agedge_t *agnxtin(Agraph_t * g, Agedge_t * e);
@@ -364,7 +376,7 @@ extern int agsafeset(void* obj, char* name, char* value, char* def);
 
 /* defintions for subgraphs */
 extern Agraph_t *agsubg(Agraph_t * g, char *name, int cflag);	/* constructor */
-extern Agraph_t *agidsubg(Agraph_t * g, unsigned long id, int cflag);	/* constructor */
+extern Agraph_t *agidsubg(Agraph_t * g, IDTYPE id, int cflag);	/* constructor */
 extern Agraph_t *agfstsubg(Agraph_t * g), *agnxtsubg(Agraph_t * subg);
 extern Agraph_t *agparent(Agraph_t * g);
 

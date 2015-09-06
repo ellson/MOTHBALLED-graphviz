@@ -244,6 +244,76 @@ getObjId (GVJ_t* job, void* obj, agxbuf* xb)
     return agxbuse(xb);
 }
 
+/* interpretCRNL:
+ * Map "\n" to ^J, "\r" to ^M and "\l" to ^J.
+ * Map "\\" to backslash.
+ * Map "\x" to x.
+ * Mapping is done in place.
+ * Return input string.
+ */
+
+static char*
+interpretCRNL (char* ins)
+{
+    char* rets = ins;
+    char* outs = ins;
+    char c;
+    boolean backslash_seen = FALSE;
+
+    while ((c = *ins++)) {
+	if (backslash_seen) {
+	    switch (c) {
+	    case 'n' :
+	    case 'l' :
+		*outs++ = '\n';
+		break;
+	    case 'r' :
+		*outs++ = '\r';
+		break;
+	    default :
+		*outs++ = c;
+		break;
+	    }
+	    backslash_seen = FALSE;
+	}
+	else {
+	    if (c == '\\')
+		backslash_seen = TRUE;
+	    else
+		*outs++ = c;
+	}
+    }
+    *outs = '\0';
+    return rets;
+}
+ 
+/* preprocessTooltip:
+ * Tooltips are a weak form of escString, so we expect object substitution
+ * and newlines to be handled. The former occurs in initMapData. Here we
+ * map "\r", "\l" and "\n" to newlines. (We don't try to handle alignment
+ * as in real labels.) To make things uniform when the 
+ * tooltip is emitted latter as visible text, we also convert HTML escape
+ * sequences into UTF8. This is already occurring when tooltips are input
+ * via HTML-like tables.
+ */ 
+static char*
+preprocessTooltip(char* s, void* gobj)
+{
+    Agraph_t* g = agroot(gobj);
+    int charset = GD_charset(g);
+    char* news;
+    switch (charset) {
+	case CHAR_LATIN1:
+	    news = latin1ToUTF8(s);
+	    break;
+	default: /* UTF8 */
+	    news = htmlEntityUTF8(s, g);
+	    break;
+    }
+    
+    return interpretCRNL (news);
+}
+ 
 static void
 initObjMapData (GVJ_t* job, textlabel_t *lab, void* gobj)
 {
@@ -262,8 +332,11 @@ initObjMapData (GVJ_t* job, textlabel_t *lab, void* gobj)
     if (!url || !*url)  /* try URL as an alias for href */
 	url = agget(gobj, "URL");
     id = getObjId (job, gobj, &xb);
+    if (tooltip) 
+	tooltip = preprocessTooltip (tooltip, gobj);
     initMapData (job, lbl, url, tooltip, target, id, gobj);
 
+    free (tooltip);
     agxbfree(&xb);
 }
 
@@ -2564,28 +2637,36 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e, char** styles)
     if (flags & GVRENDER_DOES_TOOLTIPS) {
         if (((s = agget(e, "tooltip")) && s[0]) ||
             ((s = agget(e, "edgetooltip")) && s[0])) {
-            obj->tooltip = strdup_and_subst_obj(s, (void*)e);
+	    char* tooltip = preprocessTooltip (s, e);
+            obj->tooltip = strdup_and_subst_obj(tooltip, (void*)e);
+	    free (tooltip);
 	    obj->explicit_tooltip = TRUE;
 	}
 	else if (obj->label)
 	    obj->tooltip = strdup(obj->label);
 
         if ((s = agget(e, "labeltooltip")) && s[0]) {
-            obj->labeltooltip = strdup_and_subst_obj(s, (void*)e);
+	    char* tooltip = preprocessTooltip (s, e);
+            obj->labeltooltip = strdup_and_subst_obj(tooltip, (void*)e);
+	    free (tooltip);
 	    obj->explicit_labeltooltip = TRUE;
 	}
 	else if (obj->label)
 	    obj->labeltooltip = strdup(obj->label);
 
         if ((s = agget(e, "tailtooltip")) && s[0]) {
-            obj->tailtooltip = strdup_and_subst_obj(s, (void*)e);
+	    char* tooltip = preprocessTooltip (s, e);
+            obj->tailtooltip = strdup_and_subst_obj(tooltip, (void*)e);
+	    free (tooltip);
 	    obj->explicit_tailtooltip = TRUE;
 	}
 	else if (obj->taillabel)
 	    obj->tailtooltip = strdup(obj->taillabel);
 
         if ((s = agget(e, "headtooltip")) && s[0]) {
-            obj->headtooltip = strdup_and_subst_obj(s, (void*)e);
+	    char* tooltip = preprocessTooltip (s, e);
+            obj->headtooltip = strdup_and_subst_obj(tooltip, (void*)e);
+	    free (tooltip);
 	    obj->explicit_headtooltip = TRUE;
 	}
 	else if (obj->headlabel)

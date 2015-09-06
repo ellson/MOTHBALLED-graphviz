@@ -16,7 +16,7 @@
 typedef struct IMapEntry_s {
     Dtlink_t namedict_link;
     Dtlink_t iddict_link;
-    unsigned long id;
+    IDTYPE id;
     char *str;
 } IMapEntry_t;
 
@@ -28,7 +28,18 @@ static int idcmpf(Dict_t * d, void *arg_p0, void *arg_p1, Dtdisc_t * disc)
     p0 = arg_p0;
     p1 = arg_p1;
     NOTUSED(disc);
-    return (p0->id - p1->id);
+    if (p0->id > p1->id)
+    {
+        return 1;
+    }
+    else if (p0->id < p1->id)
+    {
+        return -1;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 /* note, OK to compare pointers into shared string pool 
@@ -43,7 +54,18 @@ static int namecmpf(Dict_t * d, void *arg_p0, void *arg_p1,
     p0 = arg_p0;
     p1 = arg_p1;
     NOTUSED(disc);
-    return (p0->str - p1->str);
+    if (p0->str > p1->str)
+    {
+        return 1;
+    }
+    else if (p0->str < p1->str)
+    {
+        return -1;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 static Dtdisc_t LookupByName = {
@@ -71,7 +93,7 @@ static Dtdisc_t LookupById = {
 };
 
 int aginternalmaplookup(Agraph_t * g, int objtype, char *str,
-			unsigned long *result)
+            IDTYPE *result)
 {
     Dict_t *d;
     IMapEntry_t *sym, template;
@@ -94,7 +116,7 @@ int aginternalmaplookup(Agraph_t * g, int objtype, char *str,
 
 /* caller GUARANTEES that this is a new entry */
 void aginternalmapinsert(Agraph_t * g, int objtype, char *str,
-			 unsigned long id)
+             IDTYPE id)
 {
     IMapEntry_t *ent;
     Dict_t *d_name_to_id, *d_id_to_name;
@@ -115,7 +137,7 @@ void aginternalmapinsert(Agraph_t * g, int objtype, char *str,
     dtinsert(d_id_to_name, ent);
 }
 
-static IMapEntry_t *find_isym(Agraph_t * g, int objtype, unsigned long id)
+static IMapEntry_t *find_isym(Agraph_t * g, int objtype, IDTYPE id)
 {
     Dict_t *d;
     IMapEntry_t *isym, itemplate;
@@ -130,7 +152,7 @@ static IMapEntry_t *find_isym(Agraph_t * g, int objtype, unsigned long id)
     return isym;
 }
 
-char *aginternalmapprint(Agraph_t * g, int objtype, unsigned long id)
+char *aginternalmapprint(Agraph_t * g, int objtype, IDTYPE id)
 {
     IMapEntry_t *isym;
 
@@ -140,7 +162,7 @@ char *aginternalmapprint(Agraph_t * g, int objtype, unsigned long id)
 }
 
 
-int aginternalmapdelete(Agraph_t * g, int objtype, unsigned long id)
+int aginternalmapdelete(Agraph_t * g, int objtype, IDTYPE id)
 {
     IMapEntry_t *isym;
 

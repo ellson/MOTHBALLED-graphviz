@@ -144,7 +144,7 @@ static Agedge_t *agfindedge_by_key(Agraph_t * g, Agnode_t * t, Agnode_t * h,
 }
 
 static Agedge_t *agfindedge_by_id(Agraph_t * g, Agnode_t * t, Agnode_t * h,
-				  unsigned long id)
+                  IDTYPE id)
 {
     Agtag_t tag;
 
@@ -211,7 +211,7 @@ static void subedge(Agraph_t * g, Agedge_t * e)
 }
 
 static Agedge_t *newedge(Agraph_t * g, Agnode_t * t, Agnode_t * h,
-			 unsigned long id)
+             IDTYPE id)
 {
     Agedgepair_t *e2;
     Agedge_t *in, *out;
@@ -257,7 +257,7 @@ static int ok_to_make_edge(Agraph_t * g, Agnode_t * t, Agnode_t * h)
 }
 
 Agedge_t *agidedge(Agraph_t * g, Agnode_t * t, Agnode_t * h,
-		   unsigned long id, int cflag)
+           IDTYPE id, int cflag)
 {
     Agraph_t *root;
     Agedge_t *e;
@@ -282,7 +282,7 @@ Agedge_t *agedge(Agraph_t * g, Agnode_t * t, Agnode_t * h, char *name,
 		 int cflag)
 {
     Agedge_t *e;
-    unsigned long id;
+    IDTYPE id;
     int have_id;
 
     have_id = agmapnametoid(g, AGEDGE, name, &id, FALSE);
@@ -404,37 +404,43 @@ Agedge_t *agsubedge(Agraph_t * g, Agedge_t * e, int cflag)
 /* edge comparison.  OBJTYPE(e) == 0 means ID is a wildcard. */
 int agedgeidcmpf(Dict_t * d, void *arg_e0, void *arg_e1, Dtdisc_t * disc)
 {
-    long v;
     Agedge_t *e0, *e1;
 
     NOTUSED(d);
     e0 = arg_e0;
     e1 = arg_e1;
     NOTUSED(disc);
-    v = AGID(e0->node) - AGID(e1->node);
-    if (v == 0) {		/* same node */
-	if ((AGID(e0) == 0) || (AGID(e1) == 0))
-	    v = 0;
-	else
-	    v = AGID(e0) - AGID(e1);
+
+    if (AGID(e0->node) < AGID(e1->node)) return -1;
+    if (AGID(e0->node) > AGID(e1->node)) return 1;
+    /* same node */
+    if ((AGID(e0) != 0) && (AGID(e1) != 0)) {
+        if (AGID(e0) < AGID(e1)) return -1;
+        if (AGID(e0) > AGID(e1)) return 1;
     }
-    return ((v==0)?0:(v<0?-1:1));
+    return 0;
 }
 
 /* edge comparison.  for ordered traversal. */
 int agedgeseqcmpf(Dict_t * d, void *arg_e0, void *arg_e1, Dtdisc_t * disc)
 {
-    long v;
     Agedge_t *e0, *e1;
 
     NOTUSED(d);
     e0 = arg_e0;
     e1 = arg_e1;
     NOTUSED(disc);
-	assert(arg_e0 && arg_e1);
-	if (e0->node != e1->node) v = AGSEQ(e0->node) - AGSEQ(e1->node);
-	else v = (AGSEQ(e0) - AGSEQ(e1));
-    return ((v==0)?0:(v<0?-1:1));
+    assert(arg_e0 && arg_e1);
+
+    if (e0->node != e1->node) {
+        if (AGSEQ(e0->node) < AGSEQ(e1->node)) return -1;
+        if (AGSEQ(e0->node) > AGSEQ(e1->node)) return 1;
+    }
+    else {
+        if (AGSEQ(e0) < AGSEQ(e1)) return -1;
+        if (AGSEQ(e0) > AGSEQ(e1)) return 1;
+    }
+    return 0;
 }
 
 /* indexing for ordered traversal */

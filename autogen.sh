@@ -1,9 +1,20 @@
 #! /bin/sh
 
-GRAPHVIZ_VERSION_DATE=$( git log -n 1 --format=%ct )
+GRAPHVIZ_GIT_DATE=$( git log -n 1 --format=%ci )
+
 if test $? -eq 0; then
-    GRAPHVIZ_VERSION_DATE=$( date -u +%Y%m%d.%H%M -d @$GRAPHVIZ_VERSION_DATE )
-    echo "Version date is based on time of last commit: $GRAPHVIZ_VERSION_DATE"
+    GRAPHVIZ_VERSION_DATE=$( date -u +%Y%m%d.%H%M -d "$GRAPHVIZ_GIT_DATE" 2>/dev/null )
+    if test $? -ne 0; then
+        # try date with FreeBSD syntax
+        GRAPHVIZ_VERSION_DATE=$( date -u -j -f "%Y-%m-%d %H:%M:%S %z" "$GRAPHVIZ_GIT_DATE" +%Y%m%d.%H%M )
+        if test $? -ne 0; then
+            echo "Warning: we do not know how to invoke date correctly." >$2
+        else
+            echo "Version date is based on time of last commit: $GRAPHVIZ_VERSION_DATE"
+        fi
+    else
+        echo "Version date is based on time of last commit: $GRAPHVIZ_VERSION_DATE"
+    fi
 else
     GRAPHVIZ_VERSION_DATE="0"
     echo "Warning: we do not appear to be running in a git clone." >$2

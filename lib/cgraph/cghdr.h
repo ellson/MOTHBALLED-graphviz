@@ -110,7 +110,7 @@ int agstrclose(Agraph_t * g);
 void agmarkhtmlstr(char *s);
 
 	/* object set management */
-Agnode_t *agfindnode_by_id(Agraph_t * g, unsigned long id);
+Agnode_t *agfindnode_by_id(Agraph_t * g, IDTYPE id);
 Dtcompar_f agdictorder(Agraph_t *, Dict_t *, Dtcompar_f);
 int agedgecmpf(Dict_t * d, void *arg_e0, void *arg_e1, Dtdisc_t * disc);
 int agnamecmpf(Dict_t * d, void *, void *, Dtdisc_t * disc);
@@ -146,16 +146,16 @@ void aglexbad(void);
 
 	/* ID management */
 int agmapnametoid(Agraph_t * g, int objtype, char *str,
-		  unsigned long *result, int allocflag);
-int agallocid(Agraph_t * g, int objtype, unsigned long request);
-void agfreeid(Agraph_t * g, int objtype, unsigned long id);
+          IDTYPE *result, int allocflag);
+int agallocid(Agraph_t * g, int objtype, IDTYPE request);
+void agfreeid(Agraph_t * g, int objtype, IDTYPE id);
 char *agprintid(Agobj_t * obj);
 int aginternalmaplookup(Agraph_t * g, int objtype, char *str,
-			unsigned long *result);
+            IDTYPE *result);
 void aginternalmapinsert(Agraph_t * g, int objtype, char *str,
-			 unsigned long result);
-char *aginternalmapprint(Agraph_t * g, int objtype, unsigned long id);
-int aginternalmapdelete(Agraph_t * g, int objtype, unsigned long id);
+             IDTYPE result);
+char *aginternalmapprint(Agraph_t * g, int objtype, IDTYPE id);
+int aginternalmapdelete(Agraph_t * g, int objtype, IDTYPE id);
 void aginternalmapclose(Agraph_t * g);
 void agregister(Agraph_t * g, int objtype, void *obj);
 

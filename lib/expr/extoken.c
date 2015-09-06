@@ -86,6 +86,10 @@ trace(Expr_t* ex, int lev, char* op, int c)
 		s = " GE ";
 		t = ">=";
 		break;
+	case CONSTANT:
+		s = " CONSTANT ";
+		t = exlval.id->name;
+		break;
 	case ID:
 		s = " ID ";
 		t = exlval.id->name;

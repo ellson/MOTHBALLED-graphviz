@@ -117,7 +117,7 @@ static void ppDirective (void)
 	    char* p = s + cnt;
 	    char* e = p;
 	    while (*e && (*e != '"')) e++; 
-	    if (e != p) {
+	    if (e != p && *e == '"') {
  		*e = '\0';
 		storeFileName (p, e-p);
 	    }
@@ -165,7 +165,7 @@ static int chkNum(void) {
 	agxbput(&xb,buf);
 	agxbput(&xb,fname);
 	agxbput(&xb, " splits into two tokens\n");
-	agerr(AGWARN,agxbuse(&xb));
+	agerr(AGWARN, "%s", agxbuse(&xb));
 
 	agxbfree(&xb);
 	return 1;
