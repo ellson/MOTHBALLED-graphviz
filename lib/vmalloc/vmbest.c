@@ -44,9 +44,9 @@ static int Vmcheck = 0;		/* 1 if checking                        */
 
 /* Check to see if a block is in the free tree */
 #if __STD_C
-static vmintree(Block_t * node, Block_t * b)
+static int vmintree(Block_t * node, Block_t * b)
 #else
-static vmintree(node, b)
+static int vmintree(node, b)
 Block_t *node;
 Block_t *b;
 #endif
@@ -65,9 +65,9 @@ Block_t *b;
 
 /* Check to see if a block is known to be free */
 #if __STD_C
-static vmisfree(Vmdata_t * vd, Block_t * b)
+static int vmisfree(Vmdata_t * vd, Block_t * b)
 #else
-static vmisfree(vd, b)
+static int vmisfree(vd, b)
 Vmdata_t *vd;
 Block_t *b;
 #endif
@@ -89,9 +89,9 @@ Block_t *b;
 
 /* check to see if the tree is in good shape */
 #if __STD_C
-static vmchktree(Block_t * node)
+static int vmchktree(Block_t * node)
 #else
-static vmchktree(node)
+static int vmchktree(node)
 Block_t *node;
 #endif
 {
@@ -115,9 +115,9 @@ Block_t *node;
 }
 
 #if __STD_C
-static vmonlist(Block_t * list, Block_t * b)
+static int vmonlist(Block_t * list, Block_t * b)
 #else
-static vmonlist(list, b)
+static int vmonlist(list, b)
 Block_t *list;
 Block_t *b;
 #endif
@@ -129,9 +129,9 @@ Block_t *b;
 }
 
 #if __STD_C
-static vmcheck(Vmdata_t * vd, size_t size, int wild)
+static int vmcheck(Vmdata_t * vd, size_t size, int wild)
 #else
-static vmcheck(vd, size, wild)
+static int vmcheck(vd, size, wild)
 Vmdata_t *vd;
 size_t size;			/* if > 0, checking that no large free block >size      */
 int wild;			/* if != 0, do above but allow wild to be >size         */

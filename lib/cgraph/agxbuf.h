@@ -71,7 +71,7 @@ extern "C" {
  * Null-terminates buffer; resets and returns pointer to data;
  *  char* agxbuse(agxbuf* xb)
  */
-#define agxbuse(X) (agxbputc(X,'\0'),(char*)((X)->ptr = (X)->buf))
+#define agxbuse(X) ((void)agxbputc(X,'\0'),(char*)((X)->ptr = (X)->buf))
 
 /* agxbstart:
  * Return pointer to beginning of buffer.

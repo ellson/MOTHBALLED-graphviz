@@ -200,29 +200,6 @@ fastn (graph_t * g)
     for (u = GD_nlist(g); u; u = ND_next(u)) cnt++;
     return cnt;
 }
-
-static void
-dumpRanks (graph_t * g)
-{
-    int i, j;
-    node_t* u;
-    rank_t *rank = GD_rank(g);
-    int rcnt = 0;
-    for (i = GD_minrank(g); i <= GD_maxrank(g); i++) {
-	fprintf (stderr, "[%d] :", i);
-	for (j = 0; j < rank[i].n; j++) {
-	    u = rank[i].v[j];
-            rcnt++;
-	    if (streq(agnameof(u),"virtual"))
-	        fprintf (stderr, " %x", u);
-	    else
-	        fprintf (stderr, " %s", agnameof(u));
-      
-        }
-	fprintf (stderr, "\n");
-    }
-    fprintf (stderr, "count %d rank count = %d\n", fastn(g), rcnt);
-}
 #endif
 
 

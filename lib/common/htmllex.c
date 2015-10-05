@@ -883,6 +883,7 @@ int htmllineno()
 #endif
 }
 
+/*
 #ifdef DEBUG
 static void printTok(int tok)
 {
@@ -997,6 +998,7 @@ static void printTok(int tok)
 }
 
 #endif
+*/
 
 int htmllex()
 {

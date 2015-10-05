@@ -3463,38 +3463,6 @@ static void pos_reclbl(field_t * f, pointf ul, int sides)
     }
 }
 
-#ifdef DEBUG
-static void indent(int l)
-{
-    int i;
-    for (i = 0; i < l; i++)
-	fputs("  ", stderr);
-}
-
-static void prbox(boxf b)
-{
-    fprintf(stderr, "((%.5g,%.5g),(%.5g,%.5g))\n", b.LL.x, b.LL.y, b.UR.x,
-	    b.UR.y);
-}
-
-static void dumpL(field_t * info, int level)
-{
-    int i;
-
-    indent(level);
-    if (info->n_flds == 0) {
-	fprintf(stderr, "Label \"%s\" ", info->lp->text);
-	prbox(info->b);
-    } else {
-	fprintf(stderr, "Tbl ");
-	prbox(info->b);
-	for (i = 0; i < info->n_flds; i++) {
-	    dumpL(info->fld[i], level + 1);
-	}
-    }
-}
-#endif
-
 /* syntax of labels: foo|bar|baz or foo|(recursive|label)|baz */
 static void record_init(node_t * n)
 {

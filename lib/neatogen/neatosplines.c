@@ -558,9 +558,12 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
     vconfig_t *vconfig = 0;
     path *P = NULL;
     int useEdges = (Nop > 1);
-    router_t* rtr = 0;
     int legal = 0;
 
+#ifdef HAVE_GTS
+    router_t* rtr = 0;
+#endif
+    
     /* build configuration */
     if (edgetype >= ET_PLINE) {
 	obs = N_NEW(agnnodes(g), Ppoly_t *);

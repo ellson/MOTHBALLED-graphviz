@@ -741,7 +741,7 @@ float *mdsModel(vtx_data * graph, int nG)
     int i, j, e;
     float *Dij;
     int shift = 0;
-    double delta;
+    double delta = 0.0;
 
     if (graph->ewgts == NULL)
 	return 0;
@@ -864,19 +864,6 @@ float *compute_apsp_artifical_weights_packed(vtx_data * graph, int n)
     }
     return Dij;
 }
-
-#ifdef DEBUG
-static void dumpMatrix(float *Dij, int n)
-{
-    int i, j, count = 0;
-    for (i = 0; i < n; i++) {
-	for (j = i; j < n; j++) {
-	    fprintf(stderr, "%.02f  ", Dij[count++]);
-	}
-	fputs("\n", stderr);
-    }
-}
-#endif
 
 /* Accumulator type for diagonal of Laplacian. Needs to be as large
  * as possible. Use long double; configure to double if necessary.

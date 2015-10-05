@@ -149,8 +149,10 @@ void prData(Agnode_t * n, int pass)
 	pname = "<P0>";
     if (BLOCK(n))
 	bname = agnameof(BLOCK(n)->sub_graph);
-    else
+    else {
 	pname = "<B0>";
+    bname = "";
+    }
     fprintf(stderr, "%s: %x %s %s ", agnameof(n), FLAGS(n), pname, bname);
     switch (pass) {
     case 0:

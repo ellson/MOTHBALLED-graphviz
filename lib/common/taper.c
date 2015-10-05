@@ -156,6 +156,7 @@ insertArr (vararr_t* arr, pointf p, double l)
     arr->pts[arr->cnt++].lengthsofar = l; 
 }
 
+/*
 #ifdef DEBUG
 static void
 printArr (vararr_t* arr, FILE* fp)
@@ -170,6 +171,7 @@ printArr (vararr_t* arr, FILE* fp)
     }
 }
 #endif
+*/
 
 static void
 fixArr (vararr_t* arr)

@@ -672,7 +672,7 @@ double *getSizes(Agraph_t * g, pointf pad, int* n_elabels, int** elabels)
 {
     Agnode_t *n;
     real *sizes = N_GNEW(2 * agnnodes(g), real);
-    int i, nedge_nodes;
+    int i, nedge_nodes = 0;
     int* elabs;
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
@@ -1140,9 +1140,11 @@ removeOverlapWith (graph_t * G, adjust_data* am)
 	    break;
 	case AM_PUSH:
 	    /* scanAdjust (G, 1); */
+        ret = 0;
 	    break;
 	case AM_PUSHPULL:
 	    /* scanAdjust (G, 0); */
+        ret = 0;
 	    break;
 	case AM_PORTHO_YX:
 	case AM_PORTHO:
@@ -1153,6 +1155,7 @@ removeOverlapWith (graph_t * G, adjust_data* am)
 	case AM_ORTHOXY:
 	case AM_ORTHOYX:
 	    cAdjust(G, am->mode);
+        ret = 0;
 	    break;
 	case AM_COMPRESS:
 	    ret = scAdjust(G, -1);
@@ -1173,6 +1176,7 @@ removeOverlapWith (graph_t * G, adjust_data* am)
 	default:		/* to silence warnings */
 	    if ((am->mode != AM_VOR) && (am->mode != AM_SCALE))
 		agerr(AGWARN, "Unhandled adjust option %s\n", am->print);
+	    ret = 0;
 	    break;
 	}
 /* fprintf (stderr, "%s %.4f sec\n", am->print, elapsed_sec()); */

@@ -239,6 +239,8 @@ static void printDad(int *vis, int n)
 }
 #endif
 
+#ifdef GASP
+
 static Ppoint_t Bezpt[1000];
 static int Bezctr;
 
@@ -296,8 +298,6 @@ static void append_bezier(Ppoint_t * bezier)
 	append_bezier(right);
     }
 }
-
-#ifdef GASP
 
 FILE *GASPout = stderr;
 
