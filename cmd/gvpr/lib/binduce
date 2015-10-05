@@ -23,7 +23,7 @@ N[aget($,aname)==value] {
     for (e = fstedge($); e; e = nxtedge(e, $))
       nbrs[cnt++] = opp(e,$);
     for (i = 0; i < cnt-1; i++) {
-      if (e = isEdge(nbrs[i],nbrs[i+1],"")) {
+      if ((e = isEdge(nbrs[i],nbrs[i+1],"")) != NULL) {
         wt[e] += 1;
       }
       else if ($G.directed && (e = isEdge(nbrs[i+1],nbrs[i],""))) {
