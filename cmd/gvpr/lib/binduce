@@ -39,7 +39,6 @@ N[aget($,aname)==value] {
   delete($G,$);
 }
 END_G{
-  printf(2, "#nodes = %d\n", $.n_nodes);
   for (wt[e]) {
     e.weight = sprintf ("%d", wt[e]);
   }
