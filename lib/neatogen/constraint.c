@@ -371,6 +371,7 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
      * FIX: Incremental algorithm to construct trans. reduction?
      */
     vg = agopen("vg", Agstrictdirected, NIL(Agdisc_t *));
+    agbindrec(vg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);	//node custom data
     for (p = (nitem *) dtflatten(list); p;
 	 p = (nitem *) dtlink(list, (Dtlink_t *) p)) {
 	n = agnode(vg, agnameof(p->np), 1);  /* FIX */

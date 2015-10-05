@@ -1003,6 +1003,15 @@ static void setBB(graph_t * g)
     }
 }
 
+static void
+fdp_init_subg(graph_t * g)
+{
+    graph_t* subg;
+    agbindrec(g, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
+    for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg))
+        fdp_init_subg(subg);
+}
+
 /* init_info:
  * Initialize graph-dependent information and
  * state variable.s
@@ -1066,6 +1075,10 @@ void fdp_init_graph(Agraph_t * g)
     GD_alg(g) = (void *) NEW(gdata);	/* freed in cleanup_graph */
     GD_ndim(g) = late_int(g, agattr(g,AGRAPH, "dim", NULL), 2, 2);
     Ndim = GD_ndim(g) = MIN(GD_ndim(g), MAXDIM);
+
+    graph_t* subg;
+    for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg))
+        fdp_init_subg(subg);
 
     mkClusters (g, NULL, g);
     fdp_initParams(g);
