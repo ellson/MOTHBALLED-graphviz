@@ -87,8 +87,8 @@ bool CmpNodePos::operator() (const Node* u, const Node* v) const {
 NodeSet* getLeftNeighbours(NodeSet &scanline,Node *v) {
 	NodeSet *leftv = new NodeSet;
 	NodeSet::iterator i=scanline.find(v);
-	while(i--!=scanline.begin()) {
-		Node *u=*(i);
+	while(i!=scanline.begin()) {
+		Node *u=*(--i);
 		if(u->r->overlapX(v->r)<=0) {
 			leftv->insert(u);
 			return leftv;
@@ -169,8 +169,8 @@ int generateXConstraints(const int n, Rectangle** rs, Variable** vars, Constrain
 				);
 			} else {
 				NodeSet::iterator it=scanline.find(v);
-				if(it--!=scanline.begin()) {
-					Node *u=*it;
+				if(it!=scanline.begin()) {
+					Node *u=*--it;
 					v->firstAbove=u;
 					u->firstBelow=v;
 				}
@@ -247,8 +247,8 @@ int generateYConstraints(const int n, Rectangle** rs, Variable** vars, Constrain
 		if(e->type==Open) {
 			scanline.insert(v);
 			NodeSet::iterator i=scanline.find(v);
-			if(i--!=scanline.begin()) {
-				Node *u=*i;
+			if(i!=scanline.begin()) {
+				Node *u=*--i;
 				v->firstAbove=u;
 				u->firstBelow=v;
 			}
