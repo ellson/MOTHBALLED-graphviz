@@ -1105,7 +1105,7 @@ void rec_reset_vlists(graph_t * g)
 	    w = furthestnode(g, v, 1);
 	    GD_rankleader(g)[r] = u;
 #ifdef DEBUG
-	    assert(GD_rank(dot_root(g)[r].v[ND_order(u)] == u);
+	    assert(GD_rank(dot_root(g))[r].v[ND_order(u)] == u);
 #endif
 	    GD_rank(g)[r].v = GD_rank(dot_root(g))[r].v + ND_order(u);
 	    GD_rank(g)[r].n = ND_order(w) - ND_order(u) + 1;

@@ -592,7 +592,7 @@ static void pov_textspan(GVJ_t * job, pointf c, textspan_t * span)
 	z = layerz - 9;
 
 #ifdef DEBUG
-	if (span->postscript_alias)
+	if (span->font->postscript_alias)
 		gvputs(job, "// Warning: postscript_alias not handled!\n");
 #endif
 
