@@ -883,7 +883,6 @@ int htmllineno()
 #endif
 }
 
-/*
 #ifdef DEBUG
 static void printTok(int tok)
 {
@@ -998,7 +997,6 @@ static void printTok(int tok)
 }
 
 #endif
-*/
 
 int htmllex()
 {
@@ -1052,7 +1050,9 @@ int htmllex()
 	if (endp)
 	    state.ptr = endp;
     } while (state.tok == 0);
-    /* printTok (state.tok); */
+#if DEBUG
+    printTok (state.tok);
+#endif
     return state.tok;
 #else
     return EOF;

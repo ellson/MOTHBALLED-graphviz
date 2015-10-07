@@ -164,5 +164,21 @@ PQupdate (PQ* pq, PQTYPE n, PQVTYPE d)
 #endif
 }
 
+#if DEBUG > 1
+
+static void
+PQprint (PQ* pq)
+{
+    int	i;
+    PQTYPE  n;
+
+    fprintf (stderr, "Q: ");
+    for (i = 1; i <= pq->PQcnt; i++) {
+	n = pq->pq[i];
+	fprintf (stderr, "(%d:%f) ", N_IDX(pq,n), N_VAL(pq,n));
+    }
+    fprintf (stderr, "\n");
+}
+#endif
 #endif
 

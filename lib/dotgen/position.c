@@ -34,6 +34,28 @@ static void make_lrvn(graph_t * g);
 static void contain_nodes(graph_t * g);
 static boolean idealsize(graph_t * g, double);
 
+#if DEBUG > 1
+static void
+dumpNS (graph_t * g)
+{
+    node_t* n = GD_nlist(g);
+    elist el;
+    edge_t* e;
+    int i;
+
+    while (n) {
+	el = ND_out(n);
+	for (i = 0; i < el.size; i++) {
+	    e = el.list[i];
+	    fprintf (stderr, "%s(%x) -> ", agnameof(agtail(e)),agtail(e));
+	    fprintf (stderr, "%s(%x) : %d\n", agnameof(aghead(e)), aghead(e),
+		ED_minlen(e));
+	}
+	n = ND_next(n); 
+    }
+}
+#endif
+
 static double
 largeMinlen (double l)
 {

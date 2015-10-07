@@ -192,6 +192,23 @@ static int posOf(Agnode_t* np, int idx, double* v)
     
 }
 
+#if DEBUG > 1
+static char *symName(Expr_t * ex, int op)
+{
+    if (op >= MINNAME && op <= MAXNAME)
+	return gprnames[op];
+    else {
+	Sfio_t *sf = sfstropen();
+	char *s;
+
+	sfprintf(sf, "<unknown (%d)>", op);
+	s = exstring(ex, sfstruse(sf));
+	sfclose(sf);
+	return s;
+    }
+}
+#endif
+
 /* xargs:
  * Convert string argument to graph to type of graph desired.
  *   u => undirected

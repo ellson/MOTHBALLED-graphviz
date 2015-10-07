@@ -154,6 +154,51 @@ static void mapGraphs(graph_t * g, graph_t * cg, distfn dist)
     }
 }
 
+#if DEBUG > 1
+static int
+indegree (graph_t * g, node_t *n)
+{
+  edge_t *e;
+  int cnt = 0;
+  for (e = agfstin(g,n); e; e = agnxtin(g,e)) cnt++;
+  return cnt; 
+}
+
+static int
+outdegree (graph_t * g, node_t *n)
+{
+  edge_t *e;
+  int cnt = 0;
+  for (e = agfstout(g,n); e; e = agnxtout(g,e)) cnt++;
+  return cnt; 
+}
+
+static void
+validate(graph_t * g)
+{
+    node_t *n;
+    edge_t *e;
+    int    i, cnt;
+  
+    cnt = 0;
+    for (n = GD_nlist(g);n; n = ND_next(n)) {
+      assert(outdegree(g,n) == ND_out(n).size);
+      for (i = 0; (e = ND_out(n).list[i]); i++) {
+        assert(agtail(e) == n);
+        assert( e == agfindedge(g, n, aghead(e))); 
+      }
+      assert(indegree(g,n) == ND_in(n).size);
+      for (i = 0; (e = ND_in(n).list[i]); i++) {
+        assert(aghead(e) == n);
+        assert( e == agfindedge(g, agtail(e), n)); 
+      }
+      cnt++;
+    }
+
+    assert (agnnodes(g) == cnt); 
+}
+#endif
+
 #ifdef OLD
 static node_t *newNode(graph_t * g)
 {

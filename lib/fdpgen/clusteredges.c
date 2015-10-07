@@ -41,6 +41,27 @@ typedef struct {
  */
 #define INIT_SZ 100
 
+#if DEBUG > 1
+static void dumpObj(Ppoly_t * p)
+{
+    int j;
+    Ppoint_t pt;
+    for (j = 0; j < p->pn; j++) {
+	pt = p->ps[j];
+	fprintf(stderr, " %.5g %.5g", pt.x, pt.y);
+    }
+    fputs("\n", stderr);
+}
+
+static void dumpObjlist(objlist * l)
+{
+    int i;
+    for (i = 0; i < l->cnt; i++) {
+	dumpObj(l->obs[i]);
+    }
+}
+#endif
+
 static void addObj(objlist * l, Ppoly_t * obj)
 {
     if (l->sz == l->cnt) {

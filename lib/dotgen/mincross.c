@@ -47,6 +47,12 @@ static adjmatrix_t *new_matrix(int i, int j);
 static void free_matrix(adjmatrix_t * p);
 static int ordercmpf(int *i0, int *i1);
 #ifdef DEBUG
+#if DEBUG > 1
+static int gd_minrank(Agraph_t *g) {return GD_minrank(g);}
+static int gd_maxrank(Agraph_t *g) {return GD_maxrank(g);}
+static rank_t *gd_rank(Agraph_t *g, int r) {return &GD_rank(g)[r];}
+static int nd_order(Agnode_t *v) { return ND_order(v); }
+#endif
 void check_rs(graph_t * g, int null_ok);
 void check_order(void);
 void check_vlists(graph_t * g);
@@ -63,6 +69,84 @@ static int GlobalMinRank, GlobalMaxRank;
 static edge_t **TE_list;
 static int *TI_list;
 static boolean ReMincross;
+
+#if DEBUG > 1
+static void indent(graph_t* g)
+{
+  if (g->parent) {
+    fprintf (stderr, "  ");
+    indent(g->parent);
+  }
+}
+
+static char* nname(node_t* v)
+{
+        static char buf[1000];
+	if (ND_node_type(v)) {
+		if (ND_ranktype(v) == CLUSTER)
+			sprintf (buf, "v%s_%p", agnameof(ND_clust(v)), v);
+		else
+			sprintf (buf, "v_%p", v);
+	} else
+		sprintf (buf, "%s", agnameof(v));
+	return buf;
+}
+static void dumpg (graph_t* g)
+{
+    int j, i, r;
+    node_t* v;
+    edge_t* e;
+
+    fprintf (stderr, "digraph A {\n");
+    for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
+	fprintf (stderr, "  subgraph {rank=same  ");
+	for (i = 0; i < GD_rank(g)[r].n; i++) {
+	  v = GD_rank(g)[r].v[i];
+          if (i > 0)
+ 	    fprintf (stderr, " -> %s", nname(v));
+          else
+ 	    fprintf (stderr, "%s", nname(v));
+        }
+        if (i > 1) fprintf (stderr, " [style=invis]}\n");
+        else fprintf (stderr, " }\n");
+    }
+    for (r = GD_minrank(g); r < GD_maxrank(g); r++) {
+	for (i = 0; i < GD_rank(g)[r].n; i++) {
+	  v = GD_rank(g)[r].v[i];
+	  for (j = 0; (e = ND_out(v).list[j]); j++) {
+             fprintf (stderr, "%s -> ", nname(v));
+             fprintf (stderr, "%s\n", nname(aghead(e)));
+          }
+        }
+    }
+    fprintf (stderr, "}\n");
+}
+static void dumpr (graph_t* g, int edges)
+{
+    int j, i, r;
+    node_t* v;
+    edge_t* e;
+
+    for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
+	fprintf (stderr, "[%d] ", r);
+	for (i = 0; i < GD_rank(g)[r].n; i++) {
+	  v = GD_rank(g)[r].v[i];
+ 	  fprintf (stderr, "%s(%.02f,%d) ", nname(v), saveorder(v),ND_order(v));
+        }
+	fprintf (stderr, "\n");
+    }
+    if (edges == 0) return;
+    for (r = GD_minrank(g); r < GD_maxrank(g); r++) {
+	for (i = 0; i < GD_rank(g)[r].n; i++) {
+	  v = GD_rank(g)[r].v[i];
+	  for (j = 0; (e = ND_out(v).list[j]); j++) {
+             fprintf (stderr, "%s -> ", nname(v));
+             fprintf (stderr, "%s\n", nname(aghead(e)));
+          }
+        }
+    }
+}
+#endif
 
 typedef struct {
     Agrec_t h;

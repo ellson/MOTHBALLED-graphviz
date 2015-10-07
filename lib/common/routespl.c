@@ -64,6 +64,43 @@ static void printboxes(int boxn, boxf* boxes)
     Show_boxes[Show_cnt+1] = NULL;
 }
 
+#if DEBUG > 1
+static void psprintpolypts(Ppoint_t * p, int sz)
+{
+    int i;
+
+    fprintf(stderr, "%%!\n");
+    fprintf(stderr, "%% constraint poly\n");
+    fprintf(stderr, "newpath\n");
+    for (i = 0; i < sz; i++)
+	fprintf(stderr, "%f %f %s\n", p[i].x, p[i].y,
+		(i == 0 ? "moveto" : "lineto"));
+    fprintf(stderr, "closepath stroke\n");
+}
+static void psprintpoint(point p)
+{
+    fprintf(stderr, "gsave\n");
+    fprintf(stderr,
+	    "newpath %d %d moveto %d %d 2 0 360 arc closepath fill stroke\n",
+	    p.x, p.y, p.x, p.y);
+    fprintf(stderr, "/Times-Roman findfont 4 scalefont setfont\n");
+    fprintf(stderr, "%d %d moveto (\\(%d,%d\\)) show\n", p.x + 5, p.y + 5,
+	    p.x, p.y);
+    fprintf(stderr, "grestore\n");
+}
+static void psprintpointf(pointf p)
+{
+    fprintf(stderr, "gsave\n");
+    fprintf(stderr,
+	    "newpath %.5g %.5g moveto %.5g %.5g 2 0 360 arc closepath fill stroke\n",
+	    p.x, p.y, p.x, p.y);
+    fprintf(stderr, "/Times-Roman findfont 4 scalefont setfont\n");
+    fprintf(stderr, "%.5g %.5g moveto (\\(%.5g,%.5g\\)) show\n", p.x + 5, p.y + 5,
+	    p.x, p.y);
+    fprintf(stderr, "grestore\n");
+}
+#endif
+
 static void psprintspline(Ppolyline_t spl)
 {
     char buf[BUFSIZ];

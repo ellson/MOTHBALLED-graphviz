@@ -687,6 +687,36 @@ rectIntersect (boxf *d, const boxf *r0, const boxf *r1)
     return 1;
 }
 
+#if DEBUG > 1
+static void
+dumpTrap (trap_t* tr, int n)
+{
+    int i;
+    for (i = 1; i <= n; i++) {
+      tr++;
+      fprintf (stderr, "%d : %d %d (%f,%f) (%f,%f) %d %d %d %d\n", i,
+         tr->lseg, tr->rseg, tr->hi.x, tr->hi.y, tr->lo.x, tr->lo.y,
+         tr->u0, tr->u1,  tr->d0, tr->d1);
+      fprintf (stderr, "    %d %d %d %d\n", tr->sink, tr->usave,
+         tr->uside, tr->state);
+    }
+    fprintf (stderr, "====\n");
+}
+
+static void
+dumpSegs (segment_t* sg, int n)
+{
+    int i;
+    for (i = 1; i <= n; i++) {
+      sg++;
+      fprintf (stderr, "%d : (%f,%f) (%f,%f) %d %d %d %d %d\n", i,
+         sg->v0.x, sg->v0.y, sg->v1.x, sg->v1.y,
+         sg->is_inserted, sg->root0,  sg->root1, sg->next, sg->prev);
+    }
+    fprintf (stderr, "====\n");
+}
+#endif
+
 boxf*
 partition (cell* cells, int ncells, int* nrects, boxf bb)
 {
