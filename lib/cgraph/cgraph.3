@@ -592,29 +592,31 @@ can be retreived by calling \fBaglasterr\fP.
 The function \fBagerrors\fP returns non-zero if errors have been reported. 
 .SH "EXAMPLE PROGRAM"
 .P0
+#include <stdio.h>
 #include <cgraph.h>
+
 typedef struct {Agrec_t hdr; int x,y,z;} mydata;
 
-main(int argc, char **argv)
+void main(int argc, char **argv)
 {
-    Agraph_t    *g;
+    Agraph_t    *g, *h;
     Agnode_t    *v;
     Agedge_t    *e;
     Agsym_t     *attr;
-    Dict_t      *d
+    Dict_t      *d;
     int         cnt;
     mydata      *p;
 
     if (g = agread(stdin,NIL(Agdisc_t*))) {
         cnt = 0; attr = 0;
         while (attr = agnxtattr(g, AGNODE, attr)) cnt++;
-        printf("The graph %s has %d attributes\n",agnameof(g),cnt);
+        printf("The graph %s has %d attributes\\n",agnameof(g),cnt);
 
         /* make the graph have a node color attribute, default is blue */
         attr = agattr(g,AGNODE,"color","blue");
 
         /* create a new graph of the same kind as g */
-        h = agopen("tmp",g->desc);
+        h = agopen("tmp",g->desc, NULL);
 
         /* this is a way of counting all the edges of the graph */
         cnt = 0;
@@ -624,20 +626,21 @@ main(int argc, char **argv)
 
         /* attach records to edges */
         for (v = agfstnode(g); v; v = agnxtnode(g,v))
-            for (e = agfstout(g,v); e; e; = agnxtout(g,e)) {
-                p = (mydata*) agbindrec(g,e,"mydata",sizeof(mydata),TRUE);
+            for (e = agfstout(g,v); e; e = agnxtout(g,e)) {
+                p = (mydata*) agbindrec(e,"mydata",sizeof(mydata),TRUE);
                 p->x = 27;  /* meaningless data access example */
                 ((mydata*)(AGDATA(e)))->y = 999; /* another example */
         }
     }
 }
+
 .P1
 .SH "EXAMPLE GRAPH FILES"
 .P0
 digraph G {
     a -> b;
     c [shape=box];
-    a -> c [weight=29,label="some text];
+    a -> c [weight=29,label="some text"];
     subgraph anything {
         /* the following affects only x,y,z */
         node [shape=circle];
