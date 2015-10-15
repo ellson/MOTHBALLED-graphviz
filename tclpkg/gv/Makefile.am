@@ -251,6 +251,17 @@ libgv_python27_la_CPPFLAGS = $(BASECPPFLAGS) $(PYTHON27_INCLUDES)
 gv_python27.cpp: gv.i
 	$(SWIG) -c++ -python -o gv_python27.cpp $(srcdir)/gv.i
 
+pkgpython34dir = $(pkglibdir)/python34
+PYTHON34_data = gv.py
+nodist_libgv_python34_la_SOURCES = gv_python34.cpp $(PYTHON34_data)
+libgv_python34_la_SOURCES = $(BASESOURCES) gv_dummy_init.c
+libgv_python34_la_LIBADD = $(BASELIBS) $(PYTHON34_LIBS)
+libgv_python34_la_LDFLAGS = -module -avoid-version
+libgv_python34_la_CPPFLAGS = $(BASECPPFLAGS) $(PYTHON34_INCLUDES)
+# $(PYTHON34_data): gv_python34.cpp
+gv_python34.cpp: gv.i
+	$(SWIG) -c++ -python -o gv_python34.cpp $(srcdir)/gv.i
+
 pkgRdir = $(pkglibdir)/R
 R_data = 
 nodist_libgv_R_la_SOURCES = gv_R.cpp $(R_data)
@@ -395,6 +406,13 @@ py_data = gv.3python.pdf
 pkgpython27_LTLIBRARIES = libgv_python27.la
 #DEVTSTS += test_python27
 endif
+if WITH_PYTHON34
+pkgpython34_DATA = $(PYTHON34_data)
+py_mans = gv.3python
+py_data = gv.3python.pdf
+pkgpython34_LTLIBRARIES = libgv_python34.la
+#DEVTSTS += test_python34
+endif
 man_MANS += $(py_mans)
 pdf_DATA += $(py_data)
 if WITH_R
@@ -505,6 +523,9 @@ if WITH_PYTHON26
 endif
 if WITH_PYTHON27
 	(cd $(DESTDIR)$(pkgpython27dir); rm -f _gv.so; $(LN_S) libgv_python27.so _gv.so;)
+endif
+if WITH_PYTHON34
+	(cd $(DESTDIR)$(pkgpython34dir); rm -f _gv.so; $(LN_S) libgv_python34.so _gv.so;)
 endif
 if WITH_R
 	(cd $(DESTDIR)$(pkgRdir);   rm -f gv.so;  $(LN_S) libgv_R.so gv.so;)
@@ -632,6 +653,7 @@ CLEANFILES = test_*/* pkgIndex.tcl \
 	gv_python25.cpp $(PYTHON25_data) gv.pyc \
 	gv_python26.cpp $(PYTHON26_data) gv.pyc \
 	gv_python27.cpp $(PYTHON27_data) gv.pyc \
+	gv_python34.cpp $(PYTHON34_data) gv.pyc \
 	gv_R.cpp $(R_data) \
 	gv_ruby.cpp $(RUBY_data) \
 	gv_tcl.cpp $(TCL_data) pkgIndex.tcl

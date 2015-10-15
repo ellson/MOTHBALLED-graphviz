@@ -1528,6 +1528,68 @@ fi
 AM_CONDITIONAL(WITH_PYTHON27, [test "x$use_python27" = "xYes"])
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for PYTHON34
+
+AC_ARG_ENABLE(python34,
+  [AS_HELP_STRING([--enable-python34=no],[python34 language bindings])],
+  [], [enable_python34=no])
+
+if test "x$enable_python34" != "xyes"; then
+  use_python34="No (disabled by default - for multiversion installs)"
+else
+  if test "x$use_swig" != "xYes"; then
+    use_python34="No (swig not available)"
+  else
+    if test `$SWIG -help 2>&1 | $EGREP -c '\-python *- Generate'` = 0; then
+      use_python34="No (swig does not support -python option)"
+    else
+      AC_CHECK_PROG(PYTHON34,python3.4,python3.4)
+      if test "x$PYTHON34" = "x"; then
+        use_python34="No (python34 not available)"
+      else
+        PYTHON34_VERSION=`$PYTHON34 -V 2>&1 | $EGREP Python | cut -d ' ' -f 2`
+        if test "x$PYTHON34_VERSION" = "x"; then
+          PYTHON34=
+        else
+          PYTHON34_VERSION_MAJOR=`echo $PYTHON34_VERSION | cut -d '.' -f 1`
+          PYTHON34_VERSION_MINOR=`echo $PYTHON34_VERSION | cut -d '.' -f 2`
+          PYTHON34_VERSION_SHORT=$PYTHON34_VERSION_MAJOR.$PYTHON34_VERSION_MINOR
+          if test $PYTHON34_VERSION_MAJOR -lt 3; then
+            if test $PYTHON34_VERSION_MINOR -lt 4; then
+	          PYTHON34=
+            fi
+          fi
+        fi
+      fi
+      if test "x$PYTHON34" = "x"; then
+	    use_python34="No (python34 is too old)"
+      else
+        PYTHON34_PREFIX=`$PYTHON3 -c "import sys; print sys.prefix"`
+#        PYTHON34_INCLUDES=-I$PYTHON34_PREFIX/include/python$PYTHON34_VERSION_SHORT
+# FIXME - whats the stupid "m" for?
+        PYTHON34_INCLUDES=-I/usr/include/python3.4m
+        PYTHON34_LIBS="-lpython$PYTHON_VERSION_SHORT"
+        PYTHON34_INSTALL_DIR="`$PYTHON34 $srcdir/config/config_python.py archsitelib`"
+        save_CPPFLAGS=$CPPFLAGS
+        CPPFLAGS="$CPPFLAGS $PYTHON34_INCLUDES"
+        AC_CHECK_HEADER(Python.h,,[
+          use_python34="No (missing header)"
+          PYTHON34=
+        ])
+        CPPFLAGS=$save_CPPFLAGS
+	if test "x$PYTHON34" != "x"; then
+	  use_python34="Yes"
+          AC_SUBST([PYTHON34_INSTALL_DIR])
+          AC_SUBST([PYTHON34_INCLUDES])
+          AC_SUBST([PYTHON34_LIBS])
+        fi
+      fi
+    fi
+  fi
+fi
+AM_CONDITIONAL(WITH_PYTHON34, [test "x$use_python34" = "xYes"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for R
 
 AC_ARG_ENABLE(r,
@@ -3258,6 +3320,7 @@ echo "  gv_python24:   $use_python24"
 echo "  gv_python25:   $use_python25"
 echo "  gv_python26:   $use_python26"
 echo "  gv_python27:   $use_python27"
+echo "  gv_python34:   $use_python34"
 echo "  gv_R:          $use_r"
 echo "  gv_ruby:       $use_ruby"
 echo "  gv_tcl:        $use_gv_tcl"
