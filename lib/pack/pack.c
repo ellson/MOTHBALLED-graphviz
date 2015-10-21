@@ -919,7 +919,7 @@ point *putGraphs(int ng, Agraph_t ** gs, Agraph_t * root,
     int i, v;
     boxf* bbs;
     Agraph_t* g;
-    point* pts = 0;
+    point* pts = NULL;
     char* s;
 
     if (ng <= 0) return NULL;

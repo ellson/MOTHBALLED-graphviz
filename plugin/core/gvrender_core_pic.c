@@ -26,6 +26,7 @@
 #include "agxbuf.h"
 #include "utils.h"
 #include "color.h"
+#include "colorprocs.h"
 
 #include "const.h"
 

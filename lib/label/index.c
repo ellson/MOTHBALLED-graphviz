@@ -368,7 +368,7 @@ int RTreeDelete(RTree_t * rtp, Rect_t * r, void *data, Node_t ** nn)
 
     assert(r && nn);
     assert(*nn);
-    assert(data >= 0);
+    assert(data);
 
     rtp->Deleting = TRUE;
 

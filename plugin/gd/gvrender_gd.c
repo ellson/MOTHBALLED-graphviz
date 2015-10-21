@@ -368,7 +368,9 @@ static void gdgen_textspan(GVJ_t * job, pointf p, textspan_t * span)
     pointf spf, epf;
     double spanwidth = span->size.x * job->zoom * job->dpi.x / POINTS_PER_INCH;
     char* fontname;
+#ifdef HAVE_GD_FONTCONFIG
     PostscriptAlias *pA;
+#endif
 
     if (!im)
 	return;
@@ -415,7 +417,7 @@ static void gdgen_textspan(GVJ_t * job, pointf p, textspan_t * span)
 	    span->str);
 }
 
-static int gdgen_set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr brush)
+static int gdgen_set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr* brush)
 {
     obj_state_t *obj = job->obj;
     int i, pen, width, dashstyle[40];
@@ -445,15 +447,15 @@ static int gdgen_set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr brush)
     /* use brush instead of Thickness to improve end butts */
     if (width != PENWIDTH_NORMAL) {
 	if (im->trueColor) {
-	    brush = gdImageCreateTrueColor(width,width);
+	    *brush = gdImageCreateTrueColor(width,width);
 	}
 	else {
-	    brush = gdImageCreate(width, width);
-	    gdImagePaletteCopy(brush, im);
+	    *brush = gdImageCreate(width, width);
+	    gdImagePaletteCopy(*brush, im);
 	}
-	gdImageFilledRectangle(brush, 0, 0, width - 1, width - 1,
+	gdImageFilledRectangle(*brush, 0, 0, width - 1, width - 1,
 			       obj->pencolor.u.index);
-	gdImageSetBrush(im, brush);
+	gdImageSetBrush(im, *brush);
 	if (pen == gdStyled)
 	    pen = gdStyledBrushed;
 	else
@@ -478,7 +480,7 @@ gdgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
     if (!im)
 	return;
 
-    pen = gdgen_set_penstyle(job, im, brush);
+    pen = gdgen_set_penstyle(job, im, &brush);
     pen_ok = (pen != gdImageGetTransparent(im));
     fill_ok = (filled && obj->fillcolor.u.index != gdImageGetTransparent(im));
 
@@ -522,7 +524,7 @@ static void gdgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
     if (!im)
 	return;
 
-    pen = gdgen_set_penstyle(job, im, brush);
+    pen = gdgen_set_penstyle(job, im, &brush);
     pen_ok = (pen != gdImageGetTransparent(im));
     fill_ok = (filled && obj->fillcolor.u.index != gdImageGetTransparent(im));
 
@@ -557,7 +559,7 @@ static void gdgen_ellipse(GVJ_t * job, pointf * A, int filled)
     if (!im)
 	return;
 
-    pen = gdgen_set_penstyle(job, im, brush);
+    pen = gdgen_set_penstyle(job, im, &brush);
     pen_ok = (pen != gdImageGetTransparent(im));
     fill_ok = (filled && obj->fillcolor.u.index != gdImageGetTransparent(im));
 
@@ -587,7 +589,7 @@ static void gdgen_polyline(GVJ_t * job, pointf * A, int n)
     if (!im)
 	return;
 
-    pen = gdgen_set_penstyle(job, im, brush);
+    pen = gdgen_set_penstyle(job, im, &brush);
     pen_ok = (pen != gdImageGetTransparent(im));
 
     if (pen_ok) {

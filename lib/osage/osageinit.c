@@ -129,7 +129,7 @@ layout (Agraph_t* g, int depth)
 	cattr = agattr(root, AGRAPH, "sortv", 0);
 	vattr = agattr(root, AGNODE, "sortv", 0);
 	if (cattr || vattr)
-	    pinfo.vals = N_NEW(total, unsigned int);
+	    pinfo.vals = N_NEW(total, packval_t);
 	else
 	    agerr (AGWARN, "Graph %s has array packing with user values but no \"sortv\" attributes are defined.",
 		agnameof(g));

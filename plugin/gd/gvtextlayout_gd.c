@@ -125,7 +125,9 @@ static boolean gd_textlayout(textspan_t * span, char **fontpath)
     double fontsize;
     int brect[8];
     gdFTStringExtra strex;
+#ifdef HAVE_GD_FONTCONFIG
     PostscriptAlias *pA;
+#endif
 
     fontname = span->font->name;
     fontsize = span->font->size;
