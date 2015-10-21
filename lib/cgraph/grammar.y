@@ -64,6 +64,7 @@ static void applyattrs(void *obj);
 static void endgraph(void);
 static void endnode(void);
 static void endedge(void);
+static void freestack(void);
 static char* concat(char*, char*);
 static char* concatPort(char*, char*);
 
@@ -95,7 +96,7 @@ static gstack_t *S;
 %%
 
 graph		:  hdr body {endgraph();}
-			|  error	{if (G) {agclose(G); G = Ag_G_global = NIL(Agraph_t*);}}
+			|  error	{freestack(); if (G) {endgraph(); agclose(G); G = Ag_G_global = NIL(Agraph_t*);}}
 			|  /* empty */
 			;
 
@@ -569,6 +570,16 @@ static void closesubg()
 	S = pop(S);
 	S->subg = subg;
 	assert(subg);
+}
+
+static void freestack()
+{
+	while (S) {
+		deletelist(&(S->nodelist));
+		deletelist(&(S->attrlist));
+		deletelist(&(S->edgelist));
+		S = pop(S);
+	}
 }
 
 extern FILE *yyin;
