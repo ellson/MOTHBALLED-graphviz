@@ -29,7 +29,7 @@ N[aget($,aname)==value] {
       else if ($G.directed && (e = isEdge(nbrs[i+1],nbrs[i],""))) {
         wt[e] += 1;
       }
-      else {
+      else if (nbrs[i] != nbrs[i+1]) { // avoid loops
         e = edge(nbrs[i],nbrs[i+1],"");
         wt[e] = 1;
       }
@@ -40,6 +40,6 @@ N[aget($,aname)==value] {
 }
 END_G{
   for (wt[e]) {
-    e.weight = sprintf ("%d", wt[e]);
+    e.multiplicity = sprintf ("%d", wt[e]);
   }
 }
