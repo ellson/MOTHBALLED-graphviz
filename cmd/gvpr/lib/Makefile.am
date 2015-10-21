@@ -6,7 +6,7 @@ gvprdir = $(pkgdatadir)/gvpr
 gvpr_DATA = addranks addrings anon attr bb bbox bipart binduce chkclusters \
 	cliptree col collapse color cycle dechain deghist \
 	deledges delmulti delnodes depath dijkstra \
-	flatten get-layers-list group indent knbhd \
+	flatten get-layers-list histogram group indent knbhd \
 	maxdeg path rotate scale scalexy span topon \
 	treetoclust 
 
