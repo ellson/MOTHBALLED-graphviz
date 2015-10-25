@@ -655,6 +655,8 @@ monotonate_trapezoids(int nsegs, segment_t*seg, trap_t* tr,
 	size = traverse_polygon (visited, decomp, 0, seg, tr, 0, tr_start, tr[tr_start].u0, flip, TR_FROM_UP);
     else if (tr[tr_start].d0 > 0)
 	size = traverse_polygon (visited, decomp, 0, seg, tr, 0, tr_start, tr[tr_start].d0, flip, TR_FROM_DN);
+    else
+	size = 0;
   
     free (visited);
     free (mchain);
@@ -685,7 +687,7 @@ rectIntersect (boxf *d, const boxf *r0, const boxf *r1)
     return 1;
 }
 
-#ifdef DEBUG
+#if DEBUG > 1
 static void
 dumpTrap (trap_t* tr, int n)
 {

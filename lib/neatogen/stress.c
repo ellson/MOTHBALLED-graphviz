@@ -741,7 +741,7 @@ float *mdsModel(vtx_data * graph, int nG)
     int i, j, e;
     float *Dij;
     int shift = 0;
-    double delta;
+    double delta = 0.0;
 
     if (graph->ewgts == NULL)
 	return 0;
@@ -865,7 +865,7 @@ float *compute_apsp_artifical_weights_packed(vtx_data * graph, int n)
     return Dij;
 }
 
-#ifdef DEBUG
+#if DEBUG > 1
 static void dumpMatrix(float *Dij, int n)
 {
     int i, j, count = 0;

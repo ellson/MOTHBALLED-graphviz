@@ -203,7 +203,7 @@ double ArrowScale = 1.0;
 #define         ARROW_WIDTH      5
 /* #define DEGREES(rad)   ((rad)/M_PI * 180.0) */
 
-static char *plog = "%%!PS-Adobe-2.0\n\n\
+static char *plog = "%!PS-Adobe-2.0\n\n\
 /Times-Roman findfont 14 scalefont setfont\n\
 /lLabel {\n\
 \tmoveto\n\
@@ -283,7 +283,7 @@ static void pswrite(Agraph_t * g, FILE * fp, int expMode)
     double arrow_w, arrow_l;
     int portColor;
 
-    fprintf(fp, plog);
+    fprintf(fp, "%s", plog);
 
 /*
     if (agisdirected (g) && DoArrow) {
@@ -470,7 +470,7 @@ static void pswrite(Agraph_t * g, FILE * fp, int expMode)
 	}
     }
 
-    fprintf(fp, elog);
+    fprintf(fp, "%s", elog);
 }
 
 void outputGraph(Agraph_t * g, FILE * fp, int expMode)

@@ -226,7 +226,9 @@ static vararr_t* pathtolines (bezier* bez, double initwid)
 	}
     }
     fixArr (arr);
-    /* printArr (arr, stderr); */
+#ifdef DEBUG
+    printArr (arr, stderr);
+#endif
     return arr;
 }
 

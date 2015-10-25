@@ -257,8 +257,8 @@ edge_t *debug_getedge(graph_t * g, char *s0, char *s1)
     else
 	return NULL;
 }
-Agraphinfo_t* GD_info(g) { return ((Agraphinfo_t*)AGDATA(g));}
-Agnodeinfo_t* ND_info(n) { return ((Agnodeinfo_t*)AGDATA(n));}
+Agraphinfo_t* GD_info(graph_t * g) { return ((Agraphinfo_t*)AGDATA(g));}
+Agnodeinfo_t* ND_info(node_t * n) { return ((Agnodeinfo_t*)AGDATA(n));}
 #endif
 
 #if !defined(MSWIN32) && !defined(WIN32)

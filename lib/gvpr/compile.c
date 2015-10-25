@@ -192,7 +192,7 @@ static int posOf(Agnode_t* np, int idx, double* v)
     
 }
 
-#ifdef DEBUG
+#if DEBUG > 1
 static char *symName(Expr_t * ex, int op)
 {
     if (op >= MINNAME && op <= MAXNAME)

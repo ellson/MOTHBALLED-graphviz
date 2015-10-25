@@ -37,7 +37,6 @@
 
 typedef enum { FORMAT_PIC, } format_type;
 
-static int BezierSubdivision = 10;
 static int onetime = TRUE;
 static double Fontscale;
 
@@ -68,10 +67,6 @@ static const char picgen_msghdr[] = "dot pic plugin: ";
 static void unsupported(char *s)
 {
     agerr(AGWARN, "%s%s unsupported\n", picgen_msghdr, s);
-}
-static void warn(char *s)
-{
-    agerr(AGWARN, "%s%s\n", picgen_msghdr, s);
 }
 
 /* troff font mapping */
@@ -138,49 +133,6 @@ static char *picfontname(char *psname)
     return rv;
 }
 
-static void pic_set_color(GVJ_t *job, char *name)
-{
-    gvcolor_t color;
-
-    colorxlate(name, &color, HSVA_DOUBLE);
-    /* just v used to set grayscale value */
-    gvprintf(job, "setfillval %f\n", color.u.HSVA[2]);
-}
-
-static void pic_set_style(GVJ_t *job, char **s)
-{
-    const char *line, *p;
-    char skip = 0;
-    char buf[BUFSIZ];
-
-    buf[0] = '\0';
-    gvprintf(job, "define attrs%d %%", 0);
-    while ((p = line = *s++)) {
-        while (*p)
-            p++;
-        p++;
-        while (*p) {
-            if (!strcmp(line, "setlinewidth")) {        /* a hack to handle the user-defined (PS) style spec in proc3d.gv */
-                long n = atol(p);
-
-                sprintf(buf,
-                        "oldlinethick = linethick;linethick = %ld * scalethickness / %.0f\n",
-                        n, Fontscale);
-                skip = 1;
-            } else
-                gvprintf(job, " %s", p);
-            while (*p)
-                p++;
-            p++;
-        }
-        if (!skip)
-            gvprintf(job, " %s", line);
-        skip = 0;
-    }
-    gvprintf(job, " %%\n");
-    gvprintf(job, "%s", buf);
-}
-
 static void picptarray(GVJ_t *job, pointf * A, int n, int close)
 {
     int i;
@@ -233,39 +185,6 @@ static char *pic_string(char *s)
     }
     *p = '\0';
     return buf;
-}
-
-static int picColorResolve(int *new, int r, int g, int b)
-{
-#define maxColors 256
-    static int top = 0;
-    static short red[maxColors], green[maxColors], blue[maxColors];
-    int c;
-    int ct = -1;
-    long rd, gd, bd, dist;
-    long mindist = 3 * 255 * 255;       /* init to max poss dist */
-
-    *new = 0;                   /* in case it is not a new color */
-    for (c = 0; c < top; c++) {
-        rd = (long) (red[c] - r);
-        gd = (long) (green[c] - g);
-        bd = (long) (blue[c] - b);
-        dist = rd * rd + gd * gd + bd * bd;
-        if (dist < mindist) {
-            if (dist == 0)
-                return c;       /* Return exact match color */
-            mindist = dist;
-            ct = c;
-        }
-    }
-    /* no exact match.  We now know closest, but first try to allocate exact */
-    if (top++ == maxColors)
-        return ct;              /* Return closest available color */
-    red[c] = r;
-    green[c] = g;
-    blue[c] = b;
-    *new = 1;                   /* flag new color */
-    return c;                   /* Return newly allocated color */
 }
 
 static void pic_line_style(obj_state_t *obj, int *line_style, double *style_val)
@@ -480,18 +399,18 @@ static void pic_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 {
     obj_state_t *obj = job->obj;
 
-    int object_code = 3;        /* always 3 for spline */
+//  int object_code = 3;        /* always 3 for spline */
     int sub_type;
     int line_style;		/* solid, dotted, dashed */
-    int thickness = obj->penwidth;
-    int pen_color = obj->pencolor.u.index;
+//  int thickness = obj->penwidth;
+//  int pen_color = obj->pencolor.u.index;
     int fill_color = obj->fillcolor.u.index;
-    int pen_style = 0;          /* not used */
+//  int pen_style = 0;          /* not used */
     int area_fill;
     double style_val;
-    int cap_style = 0;
-    int forward_arrow = 0;
-    int backward_arrow = 0;
+//  int cap_style = 0;
+//  int forward_arrow = 0;
+//  int backward_arrow = 0;
     int npoints = n;
     int i;
 
@@ -567,21 +486,21 @@ static void pic_polygon(GVJ_t * job, pointf * A, int n, int filled)
 {
     obj_state_t *obj = job->obj;
 
-    int object_code = 2;        /* always 2 for polyline */
-    int sub_type = 3;           /* always 3 for polygon */
+//  int object_code = 2;        /* always 2 for polyline */
+//  int sub_type = 3;           /* always 3 for polygon */
     int line_style;		/* solid, dotted, dashed */
-    int thickness = obj->penwidth;
-    int pen_color = obj->pencolor.u.index;
-    int fill_color = obj->fillcolor.u.index;
-    int pen_style = 0;          /* not used */
-    int area_fill = filled ? 20 : -1;
+//  int thickness = obj->penwidth;
+//  int pen_color = obj->pencolor.u.index;
+//  int fill_color = obj->fillcolor.u.index;
+//  int pen_style = 0;          /* not used */
+//  int area_fill = filled ? 20 : -1;
     double style_val;
-    int join_style = 0;
-    int cap_style = 0;
-    int radius = 0;
-    int forward_arrow = 0;
-    int backward_arrow = 0;
-    int npoints = n + 1;
+//  int join_style = 0;
+//  int cap_style = 0;
+//  int radius = 0;
+//  int forward_arrow = 0;
+//  int backward_arrow = 0;
+//  int npoints = n + 1;
 
     pic_line_style(obj, &line_style, &style_val);
 
@@ -597,21 +516,21 @@ static void pic_polyline(GVJ_t * job, pointf * A, int n)
 {
     obj_state_t *obj = job->obj;
 
-    int object_code = 2;        /* always 2 for polyline */
-    int sub_type = 1;           /* always 1 for polyline */
+//  int object_code = 2;        /* always 2 for polyline */
+//  int sub_type = 1;           /* always 1 for polyline */
     int line_style;		/* solid, dotted, dashed */
-    int thickness = obj->penwidth;
-    int pen_color = obj->pencolor.u.index;
-    int fill_color = 0;
-    int pen_style = 0;          /* not used */
-    int area_fill = 0;
+//  int thickness = obj->penwidth;
+//  int pen_color = obj->pencolor.u.index;
+//  int fill_color = 0;
+//  int pen_style = 0;          /* not used */
+//  int area_fill = 0;
     double style_val;
-    int join_style = 0;
-    int cap_style = 0;
-    int radius = 0;
-    int forward_arrow = 0;
-    int backward_arrow = 0;
-    int npoints = n;
+//  int join_style = 0;
+//  int cap_style = 0;
+//  int radius = 0;
+//  int forward_arrow = 0;
+//  int backward_arrow = 0;
+//  int npoints = n;
 
     pic_line_style(obj, &line_style, &style_val);
 

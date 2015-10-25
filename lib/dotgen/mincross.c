@@ -47,11 +47,12 @@ static adjmatrix_t *new_matrix(int i, int j);
 static void free_matrix(adjmatrix_t * p);
 static int ordercmpf(int *i0, int *i1);
 #ifdef DEBUG
+#if DEBUG > 1
 static int gd_minrank(Agraph_t *g) {return GD_minrank(g);}
 static int gd_maxrank(Agraph_t *g) {return GD_maxrank(g);}
 static rank_t *gd_rank(Agraph_t *g, int r) {return &GD_rank(g)[r];}
 static int nd_order(Agnode_t *v) { return ND_order(v); }
-
+#endif
 void check_rs(graph_t * g, int null_ok);
 void check_order(void);
 void check_vlists(graph_t * g);
@@ -69,7 +70,7 @@ static edge_t **TE_list;
 static int *TI_list;
 static boolean ReMincross;
 
-#ifdef DEBUG
+#if DEBUG > 1
 static void indent(graph_t* g)
 {
   if (g->parent) {
@@ -1920,7 +1921,7 @@ void check_rs(graph_t * g, int null_ok)
 		if (null_ok == FALSE)
 		    abort();
 	    } else {
-		fprintf(stderr, "%s(%d)\t", agnameof(v), ND_mval(v));
+		fprintf(stderr, "%s(%f)\t", agnameof(v), ND_mval(v));
 		assert(ND_rank(v) == r);
 		assert(v != prev);
 		prev = v;

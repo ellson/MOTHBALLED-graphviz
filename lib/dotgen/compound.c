@@ -184,7 +184,7 @@ findVertical(pointf * pts, double tmin, double tmax,
 	return -1.0;
 
     /* if 1 crossing and on the line x == xcoord (within 0.005 point) */
-    if ((no_cross == 1) && (abs(pts[3].x - xcoord) <= 0.005)) {
+    if ((no_cross == 1) && (fabs(pts[3].x - xcoord) <= 0.005)) {
 	if ((ymin <= pts[3].y) && (pts[3].y <= ymax)) {
 	    return tmax;
 	} else
@@ -226,7 +226,7 @@ findHorizontal(pointf * pts, double tmin, double tmax,
 	return -1.0;
 
     /* if 1 crossing and on the line y == ycoord (within 0.005 point) */
-    if ((no_cross == 1) && (abs(pts[3].y - ycoord) <= 0.005)) {
+    if ((no_cross == 1) && (fabs(pts[3].y - ycoord) <= 0.005)) {
 	if ((xmin <= pts[3].x) && (pts[3].x <= xmax)) {
 	    return tmax;
 	} else

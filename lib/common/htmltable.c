@@ -1953,8 +1953,9 @@ void printTxt(htmltxt_t * txt, int ind)
 	fprintf(stderr, "[%d] %d items\n", i, txt->spans[i].nitems);
 	for (j = 0; j < txt->spans[i].nitems; j++) {
 	    indent(ind + 2);
-	    fprintf(stderr, "[%d] (%f) \"%s\" ",
-		    j, txt->spans[i].items[j].size,
+	    fprintf(stderr, "[%d] (%f,%f) \"%s\" ",
+		    j, txt->spans[i].items[j].size.x,
+            txt->spans[i].items[j].size.y,
 		    txt->spans[i].items[j].str);
 	    if (txt->spans[i].items[j].font)
 		fprintf(stderr, "font %s color %s size %f\n",

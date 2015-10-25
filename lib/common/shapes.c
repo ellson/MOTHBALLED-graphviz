@@ -3463,7 +3463,7 @@ static void pos_reclbl(field_t * f, pointf ul, int sides)
     }
 }
 
-#ifdef DEBUG
+#if DEBUG > 1
 static void indent(int l)
 {
     int i;
