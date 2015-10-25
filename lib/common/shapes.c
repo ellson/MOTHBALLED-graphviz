@@ -2237,12 +2237,13 @@ static void poly_free(node_t * n)
  */
 static boolean poly_inside(inside_t * inside_context, pointf p)
 {
-    static node_t *lastn;	/* last node argument */
-    static polygon_t *poly;
-    static int last, outp, sides;
+    polygon_t *poly;
+    static int last;
+    int outp, sides;
     static pointf O;		/* point (0,0) */
-    static pointf *vertex;
-    static double xsize, ysize, scalex, scaley, box_URx, box_URy;
+    pointf *vertex;
+    double xsize, ysize, scalex, scaley, box_URx, box_URy;
+    double n_width, n_height;
 
     int i, i1, j, s;
     pointf P, Q, R;
@@ -2256,9 +2257,7 @@ static boolean poly_inside(inside_t * inside_context, pointf p)
 	boxf bbox = *bp;
 	return INSIDE(P, bbox);
     }
-
-    if (n != lastn) {
-	double n_width, n_height;
+    
 	poly = (polygon_t *) ND_shape_info(n);
 	vertex = poly->vertices;
 	sides = poly->sides;
@@ -2302,8 +2301,6 @@ static boolean poly_inside(inside_t * inside_context, pointf p)
 	outp = (poly->peripheries - 1) * sides;
 	if (outp < 0)
 	    outp = 0;
-	lastn = n;
-    }
 
     /* scale */
     P.x *= scalex;
@@ -3026,15 +3023,14 @@ static void point_init(node_t * n)
 
 static boolean point_inside(inside_t * inside_context, pointf p)
 {
-    static node_t *lastn;	/* last node argument */
-    static double radius;
+    double radius;
     pointf P;
+    int outp;
+
     node_t *n = inside_context->s.n;
 
     P = ccwrotatepf(p, 90 * GD_rankdir(agraphof(n)));
 
-    if (n != lastn) {
-	int outp;
 	polygon_t *poly = (polygon_t *) ND_shape_info(n);
 
 	/* index to outer-periphery */
@@ -3043,8 +3039,6 @@ static boolean point_inside(inside_t * inside_context, pointf p)
 	    outp = 0;
 
 	radius = poly->vertices[outp + 1].x;
-	lastn = n;
-    }
 
     /* inside bounding box? */
     if ((fabs(P.x) > radius) || (fabs(P.y) > radius))
@@ -3919,10 +3913,9 @@ static void star_vertices (pointf* vertices, pointf* bb)
 
 static boolean star_inside(inside_t * inside_context, pointf p)
 {
-    static node_t *lastn;	/* last node argument */
-    static polygon_t *poly;
-    static int outp, sides;
-    static pointf *vertex;
+    polygon_t *poly;
+    int outp, sides;
+    pointf *vertex;
     static pointf O;		/* point (0,0) */
 
     boxf *bp = inside_context->s.bp;
@@ -3938,8 +3931,7 @@ static boolean star_inside(inside_t * inside_context, pointf p)
 	return INSIDE(P, bbox);
     }
 
-    if (n != lastn) {
-	poly = (polygon_t *) ND_shape_info(n);
+    poly = (polygon_t *) ND_shape_info(n);
 	vertex = poly->vertices;
 	sides = poly->sides;
 
@@ -3947,8 +3939,6 @@ static boolean star_inside(inside_t * inside_context, pointf p)
 	outp = (poly->peripheries - 1) * sides;
 	if (outp < 0)
 	    outp = 0;
-	lastn = n;
-    }
 
     outcnt = 0;
     for (i = 0; i < sides; i += 2) {
