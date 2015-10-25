@@ -30,6 +30,7 @@
 extern void graph_init(Agraph_t *g, boolean use_rankdir);
 extern void graph_cleanup(Agraph_t *g);
 extern void gv_fixLocale (int set);
+extern void gv_initShapes ();
 
 int gvlayout_select(GVC_t * gvc, const char *layout)
 {
@@ -81,6 +82,7 @@ int gvLayoutJobs(GVC_t * gvc, Agraph_t * g)
     gv_fixLocale (1);
     graph_init(g, gvc->layout.features->flags & LAYOUT_USES_RANKDIR);
     GD_drawing(agroot(g)) = GD_drawing(g);
+    gv_initShapes ();
     if (gvle && gvle->layout) {
 	gvle->layout(g);
 

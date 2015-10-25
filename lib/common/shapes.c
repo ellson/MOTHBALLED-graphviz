@@ -2246,9 +2246,16 @@ static boolean poly_inside(inside_t * inside_context, pointf p)
 
     int i, i1, j, s;
     pointf P, Q, R;
-    boxf *bp = inside_context->s.bp;
-    node_t *n = inside_context->s.n;
+    boxf *bp;
+    node_t *n;
 
+    if (!inside_context) {
+	lastn = NULL;
+	return FALSE;
+    }
+
+    bp = inside_context->s.bp;
+    n = inside_context->s.n;
     P = ccwrotatepf(p, 90 * GD_rankdir(agraphof(n)));
 
     /* Quick test if port rectangle is target */
@@ -3029,8 +3036,14 @@ static boolean point_inside(inside_t * inside_context, pointf p)
     static node_t *lastn;	/* last node argument */
     static double radius;
     pointf P;
-    node_t *n = inside_context->s.n;
+    node_t *n;
 
+    if (!inside_context) {
+	lastn = NULL;
+	return FALSE;
+    }
+
+    n = inside_context->s.n;
     P = ccwrotatepf(p, 90 * GD_rankdir(agraphof(n)));
 
     if (n != lastn) {
@@ -3925,6 +3938,10 @@ static boolean star_inside(inside_t * inside_context, pointf p)
     static pointf *vertex;
     static pointf O;		/* point (0,0) */
 
+    if (!inside_context) {
+	lastn = NULL;
+	return FALSE;
+    }
     boxf *bp = inside_context->s.bp;
     node_t *n = inside_context->s.n;
     pointf P, Q, R;
@@ -4086,3 +4103,12 @@ void resolvePorts(edge_t * e)
 	ED_head_port(e) =
 	    resolvePort(aghead(e), agtail(e), &ED_head_port(e));
 }
+
+void gv_initShapes()
+{
+    pointf p;
+    poly_inside(NULL, p);
+    point_inside(NULL, p);
+    star_inside(NULL, p);
+}
+
