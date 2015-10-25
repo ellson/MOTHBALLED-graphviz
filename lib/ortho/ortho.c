@@ -474,7 +474,7 @@ addLoop (sgraph* sg, cell* cp, snode* dp, snode* sp)
 	    ocp = onp->cells[0];
 	}
 	p = sidePt (onp, ocp);
-	wt = abs(p.x - midp.x) +  abs(p.y - midp.y);
+	wt = fabs(p.x - midp.x) +  fabs(p.y - midp.y);
 	if (onTop)
 	    createSEdge (sg, sp, onp, 0);  /* FIX weight */
 	else
@@ -504,7 +504,7 @@ addNodeEdges (sgraph* sg, cell* cp, snode* np)
 	else
 	    ocp = onp->cells[0];
 	p = sidePt (onp, ocp);
-	wt = abs(p.x - midp.x) +  abs(p.y - midp.y);
+	wt = fabs(p.x - midp.x) +  fabs(p.y - midp.y);
 	createSEdge (sg, np, onp, 0);  /* FIX weight */
     }
     sg->nnodes++;

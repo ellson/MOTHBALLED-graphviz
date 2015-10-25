@@ -164,7 +164,7 @@ PQupdate (PQ* pq, PQTYPE n, PQVTYPE d)
 #endif
 }
 
-#ifdef DEBUG
+#if DEBUG > 1
 
 static void
 PQprint (PQ* pq)

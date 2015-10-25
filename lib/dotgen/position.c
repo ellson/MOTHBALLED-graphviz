@@ -34,7 +34,7 @@ static void make_lrvn(graph_t * g);
 static void contain_nodes(graph_t * g);
 static boolean idealsize(graph_t * g, double);
 
-#ifdef DEBUG
+#if DEBUG > 1
 static void
 dumpNS (graph_t * g)
 {

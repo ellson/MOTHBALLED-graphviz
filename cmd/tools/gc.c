@@ -326,7 +326,7 @@ static void emit(Agraph_t * g, int root, int cl_count)
 static int eval(Agraph_t * g, int root)
 {
     Agraph_t *subg;
-    int cl_count;
+    int cl_count = 0;
 
     if (root && !(GTYPE(g) & gtype))
 	return 1;
@@ -335,10 +335,8 @@ static int eval(Agraph_t * g, int root)
 	aginit(g, AGNODE, "nodeinfo", sizeof(Agnodeinfo_t), TRUE);
     }
 
-    if ((flags & CL) && root) {
-	cl_count = 0;
-	agapply(g, (Agobj_t *) g, cntCluster, &cl_count, 0);
-    }
+    if ((flags & CL) && root)
+        agapply(g, (Agobj_t *) g, cntCluster, &cl_count, 0);
 
     emit(g, root, cl_count);
 

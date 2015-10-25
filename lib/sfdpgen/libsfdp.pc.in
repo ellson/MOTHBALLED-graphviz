@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@/@PACKAGE@
+
+Name: libsfdp
+Description: SFDP layout algorithm
+Version: @VERSION@
+Libs: -L${libdir} -lsfdp
+Cflags: -I${includedir}

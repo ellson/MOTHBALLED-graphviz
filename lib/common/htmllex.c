@@ -1050,7 +1050,9 @@ int htmllex()
 	if (endp)
 	    state.ptr = endp;
     } while (state.tok == 0);
-    /* printTok (state.tok); */
+#if DEBUG
+    printTok (state.tok);
+#endif
     return state.tok;
 #else
     return EOF;

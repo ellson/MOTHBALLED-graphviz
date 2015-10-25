@@ -64,6 +64,7 @@ static void printboxes(int boxn, boxf* boxes)
     Show_boxes[Show_cnt+1] = NULL;
 }
 
+#if DEBUG > 1
 static void psprintpolypts(Ppoint_t * p, int sz)
 {
     int i;
@@ -98,6 +99,7 @@ static void psprintpointf(pointf p)
 	    p.x, p.y);
     fprintf(stderr, "grestore\n");
 }
+#endif
 
 static void psprintspline(Ppolyline_t spl)
 {

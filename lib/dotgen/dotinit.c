@@ -201,6 +201,7 @@ fastn (graph_t * g)
     return cnt;
 }
 
+#if DEBUG > 1
 static void
 dumpRanks (graph_t * g)
 {
@@ -223,6 +224,7 @@ dumpRanks (graph_t * g)
     }
     fprintf (stderr, "count %d rank count = %d\n", fastn(g), rcnt);
 }
+#endif
 #endif
 
 
