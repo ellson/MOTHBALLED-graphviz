@@ -300,6 +300,7 @@ static int write_hdr(Agraph_t * g, iochan_t * ofile, int top)
 {
     char *name, *sep, *kind, *strict;
     int root = 0;
+    int hasName = 1;
 
     Attrs_not_written_flag = AGATTRWF(g);
     strict = "";
@@ -318,17 +319,19 @@ static int write_hdr(Agraph_t * g, iochan_t * ofile, int top)
     }
     name = agnameof(g);
     sep = " ";
-    if (!name || name[0] == LOCALNAMEPREFIX)
+    if (!name || name[0] == LOCALNAMEPREFIX) {
 	sep = name = "";
+	hasName = 0;
+    }
     CHKRV(indent(g, ofile));
     CHKRV(ioput(g, ofile, strict));
 
     /* output "<kind>graph" only for root graphs or graphs with names */
-    if (*name || root) {
+    if (root || hasName) {
 	CHKRV(ioput(g, ofile, kind));
 	CHKRV(ioput(g, ofile, "graph "));
     }
-    if (name[0])
+    if (hasName)
 	CHKRV(write_canonstr(g, ofile, name));
     CHKRV(ioput(g, ofile, sep));
     CHKRV(ioput(g, ofile, "{\n"));
