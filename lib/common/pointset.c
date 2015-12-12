@@ -72,16 +72,23 @@ void freePS(PointSet * ps)
 
 void insertPS(PointSet * ps, point pt)
 {
-    dtinsert(ps, mkPair(pt));
+    pair *pp;
+
+    pp = mkPair(pt);
+    if (dtinsert(ps, pp) != pp)
+        free(pp);
 }
 
 void addPS(PointSet * ps, int x, int y)
 {
     point pt;
+    pair *pp;
 
     pt.x = x;
     pt.y = y;
-    dtinsert(ps, mkPair(pt));
+    pp = mkPair(pt);
+    if (dtinsert(ps, pp) != pp)
+        free(pp);
 }
 
 int inPS(PointSet * ps, point pt)
