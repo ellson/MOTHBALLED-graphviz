@@ -39,4 +39,5 @@ endif
 
 if WITH_DARWIN9
 libgvplugin_quartz_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_quartz_LTX_library
+AM_LIBTOOLSFLAGS = --tag=CC
 endif
