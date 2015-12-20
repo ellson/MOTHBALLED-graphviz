@@ -1,5 +1,5 @@
 graph         = [ T_strict ] ( T_graph | T_digraph ) [ ID ] '{' stmt_list '}' 
-stmt_list     = [ stmt [ ';' ]  [ stmt_list ] ] 
+stmt_list     = [ stmt [ ';' ]  stmt_list ] 
 stmt          =  node_stmt |  edge_stmt |  attr_stmt | ID '=' ID |  subgraph
 attr_stmt     =  ( T_graph | T_node | T_edge )  attr_list
 attr_list     =  '[' [ a_list ] ']' [ attr_list ]
