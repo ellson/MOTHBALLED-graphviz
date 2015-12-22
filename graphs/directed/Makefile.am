@@ -28,11 +28,9 @@ test:
 		-Tcmap -Tcmapx -Tismap -Timap \
 		-Tjpg -Tpdf -Tfig -Tgif \
 		-Tpng:cairo -Tpng:gd -Tpng:cairo:gd -Tpng:cairo:cairo -Tpng:gd:gd \
-		-Tps -Tps2 -Tps:cairo -Tpdf \
+		-Tps -Tps:lasi -Tps2 -Tps:cairo -Tpdf \
 		-Tsvg -Tsvg:cairo -Tsvgz -Tvrml \
 		-O $(GRAPHS) 
-
-##  FIXME - This broke at some point:  -Tps:lasi
 
 ins_test:
 	dot \
@@ -40,11 +38,9 @@ ins_test:
                 -Tcmap -Tcmapx -Tismap -Timap \
                 -Tjpg -Tpdf -Tfig -Tgif -Tpng \
 		-Tpng:cairo -Tpng:gd -Tpng:cairo:gd -Tpng:cairo:cairo -Tpng:gd:gd \
-                -Tps -Tps2 -Tps:cairo -Tpdf \
+                -Tps -Tps2 -Tps:lasi -Tps:cairo -Tpdf \
                 -Tsvg -Tsvg:cairo -Tsvgz -Tvrml \
                 -O $(GRAPHS) 
-
-##  FIXME - This broke at some point:  -Tps:lasi
 
 canon:
 	for i in $(GRAPHS); do echo "dot $$i"; \
