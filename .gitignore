@@ -143,6 +143,7 @@ lib/expr/exop.h
 lib/expr/exparse.c
 lib/expr/exparse.h
 lib/expr/expr.3.pdf
+lib/edgepaint/lab_gamut.3.pdf
 lib/gd/gd.html
 lib/graph/graph.3.pdf
 lib/graph/parser.c
