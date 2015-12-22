@@ -451,7 +451,7 @@ static void undirfn (int t, int h)
 }
 
 static void
-closeOpen ()
+closeOpen (void)
 {
     if (opts.directed)
 	fprintf(opts.outfile, "}\ndigraph {\n");
