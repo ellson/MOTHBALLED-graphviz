@@ -101,7 +101,7 @@ nodist_libgv_java_la_SOURCES = gv_java.cpp
 libgv_java_la_SOURCES = $(BASESOURCES)  gv_java_init.c
 libgv_java_la_LIBADD = $(BASELIBS) $(JAVA_LIBS)
 libgv_java_la_LDFLAGS = -module -avoid-version $(JNI_EXTRA_LDFLAGS)
-libgv_java_la_CPPFLAGS = -DSWIGJAVA $(BASECPPFLAGS) $(JAVA_INCLUDES)
+libgv_java_la_CPPFLAGS = $(BASECPPFLAGS) $(JAVA_INCLUDES)
 $(JAVA_data): gv_java.cpp
 gv_java.cpp: gv.i
 	$(SWIG) -package org.graphviz -java -c++ -o gv_java.cpp $(srcdir)/gv.i
