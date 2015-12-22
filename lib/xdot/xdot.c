@@ -26,7 +26,7 @@ typedef struct {
 } agxbuf;
 
 #define agxbputc(X,C) ((((X)->ptr >= (X)->eptr) ? agxbmore(X,1) : 0), \
-          (int)(*(X)->ptr++ = ((unsigned char)C)))
+          (void)(*(X)->ptr++ = ((unsigned char)C)))
 #define agxbuse(X) (agxbputc(X,'\0'),(char*)((X)->ptr = (X)->buf))
 
 static void agxbinit(agxbuf * xb, unsigned int hint, unsigned char *init)
