@@ -30,7 +30,7 @@
 extern void graph_init(Agraph_t *g, boolean use_rankdir);
 extern void graph_cleanup(Agraph_t *g);
 extern void gv_fixLocale (int set);
-extern void gv_initShapes ();
+extern void gv_initShapes (void);
 
 int gvlayout_select(GVC_t * gvc, const char *layout)
 {
