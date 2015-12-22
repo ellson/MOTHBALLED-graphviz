@@ -175,7 +175,7 @@ static Agnode_t *base[SMALLBUF];
 static blk_t Blk;
 static stk_t Stk;
 
-static void initStk()
+static void initStk(void)
 {
     Blk.data = base;
     Blk.endp = Blk.data + SMALLBUF;
@@ -209,7 +209,7 @@ static void push(Agnode_t * np)
     *Stk.curp++ = np;
 }
 
-static Agnode_t *pop()
+static Agnode_t *pop(void)
 {
     if (Stk.curp == Stk.curblk->data) {
 	if (Stk.curblk == Stk.fstblk)
