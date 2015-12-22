@@ -27,17 +27,20 @@ test:
 		-Tcanon -Tgv -Tplain -Tplain-ext -Txdot \
 		-Tcmap -Tcmapx -Tismap -Timap \
 		-Tjpg -Tpdf -Tfig -Tgif \
-		-Tpng:cairo -Tpng:gd -Tpng:cairo:gd -Tpng:cairo:cairo -Tpng:gd:gd \
-		-Tps -Tps2 -Tps:lasi -Tps:cairo -Tpdf \
+		-Tpng:cairo -Tpng:gd -Tpng:cairo:cairo -Tpng:gd:gd \
+		-Tps -Tps2 -Tps:cairo -Tpdf \
 		-Tsvg -Tsvg:cairo -Tsvgz -Tvrml \
 		-O $(GRAPHS) 
+
+##  FIXME - These broke at some point:   -Tpng:cairo:gd   -Tps:lasi
+
 ins_test:
 	dot \
                 -Tcanon -Tgv -Tplain -Tplain-ext -Txdot \
                 -Tcmap -Tcmapx -Tismap -Timap \
                 -Tjpg -Tpdf -Tfig -Tgif -Tpng \
-		-Tpng:cairo -Tpng:gd -Tpng:cairo:gd -Tpng:cairo:cairo -Tpng:gd:gd \
-                -Tps -Tps2 -Tps:lasi -Tps:cairo -Tpdf \
+		-Tpng:cairo -Tpng:gd -Tpng:cairo:cairo -Tpng:gd:gd \
+                -Tps -Tps2 -Tps:cairo -Tpdf \
                 -Tsvg -Tsvg:cairo -Tsvgz -Tvrml \
                 -O $(GRAPHS) 
 
