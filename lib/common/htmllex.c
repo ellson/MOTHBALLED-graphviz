@@ -749,7 +749,7 @@ static void endElement(void *user, const char *name)
  */
 static void characterData(void *user, const char *s, int length)
 {
-    int i, rc, cnt = 0;
+    int i, cnt = 0;
     unsigned char c;
 
     if (state.inCell) {
@@ -757,7 +757,7 @@ static void characterData(void *user, const char *s, int length)
 	    c = *s++;
 	    if (c >= ' ') {
 		cnt++;
-		rc = agxbputc(state.xb, c);
+		agxbputc(state.xb, c);
 	    }
 	}
 	if (cnt) state.tok = T_string;
@@ -845,7 +845,6 @@ static char *findNext(char *s, agxbuf* xb)
 {
     char* t = s + 1;
     char c;
-    int rc;
 
     if (*s == '<') {
 	if ((*t == '!') && !strncmp(t + 1, "--", 2))
@@ -865,7 +864,7 @@ static char *findNext(char *s, agxbuf* xb)
 		t = scanEntity(t + 1, xb);
 	    }
 	    else {
-		rc = agxbputc(xb, c);
+		agxbputc(xb, c);
 		t++;
 	    }
 	}

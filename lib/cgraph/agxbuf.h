@@ -64,8 +64,7 @@ extern "C" {
  * Add character to buffer.
  *  int agxbputc(agxbuf*, char)
  */
-#define agxbputc(X,C) ((((X)->ptr >= (X)->eptr) ? agxbmore(X,1) : 0), \
-          (int)(*(X)->ptr++ = ((unsigned char)C)))
+#define agxbputc(X,C) ((((X)->ptr >= (X)->eptr) ? agxbmore(X,1) : 0), (void)(*(X)->ptr++ = ((unsigned char)C)))
 
 /* agxbuse:
  * Null-terminates buffer; resets and returns pointer to data;
