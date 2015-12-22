@@ -716,8 +716,6 @@ Agsym_t *firstattr(Agraph_t *g)
 
 Agsym_t *nextattr(Agraph_t *g, Agsym_t *a)
 {
-    int i;
-
     if (!g || !a)
         return NULL;
     g = agroot(g);
@@ -737,7 +735,6 @@ Agsym_t *firstattr(Agnode_t *n)
 Agsym_t *nextattr(Agnode_t *n, Agsym_t *a)
 {
     Agraph_t *g;
-    int i;
 
     if (!n || !a)
         return NULL;
@@ -758,7 +755,6 @@ Agsym_t *firstattr(Agedge_t *e)
 Agsym_t *nextattr(Agedge_t *e, Agsym_t *a)
 {
     Agraph_t *g;
-    int i;
 
     if (!e || !a)
         return NULL;
@@ -768,8 +764,6 @@ Agsym_t *nextattr(Agedge_t *e, Agsym_t *a)
 
 bool rm(Agraph_t *g)
 {
-    Agedge_t *e;
-
     if (!g)
         return false;
 #if 0
@@ -887,7 +881,6 @@ typedef struct {
 // render to string result, using binding-dependent gv_string_writer()
 char* renderresult(Agraph_t *g, const char *format)
 {
-    int err;
     BA ba;
 
     if (!g)
@@ -898,7 +891,7 @@ char* renderresult(Agraph_t *g, const char *format)
     ba.data = (char*)malloc(ba.sz*sizeof(char));  /* must be freed by wrapper code */
     ba.len = 0;
     gv_string_writer_init(gvc);
-    err = gvRender(gvc, g, format, (FILE*)&ba);
+    (void)gvRender(gvc, g, format, (FILE*)&ba);
     gv_writer_reset (gvc);   /* Reset to default */
     *((int*)GD_alg(g)) = ba.len;
     return ba.data;
@@ -907,12 +900,10 @@ char* renderresult(Agraph_t *g, const char *format)
 // render to string result, using binding-dependent gv_string_writer()
 void renderresult(Agraph_t *g, const char *format, char *outdata)
 {
-    int err;
-
     if (!g)
         return;
     gv_string_writer_init(gvc);
-    err = gvRender(gvc, g, format, (FILE*)outdata);
+    (void)gvRender(gvc, g, format, (FILE*)outdata);
     gv_writer_reset (gvc);   /* Reset to default */
 }
 
