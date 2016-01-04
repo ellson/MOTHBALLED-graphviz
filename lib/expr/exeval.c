@@ -106,7 +106,7 @@ evaldyn (Expr_t * ex, register Exnode_t * expr, void *env, int delete)
 				key = (*ex->disc->keyf) (ex, v, type, ex->disc);
 			} else
 				key.integer = v.integer;
-			sfsprintf(buf, sizeof(buf), "0x%I*x", sizeof(v.integer), key.integer);
+			sfsprintf(buf, sizeof(buf), "%I*x", sizeof(v.integer), key.integer);
 			keyname = buf;
 		} else
 			keyname = v.string;
