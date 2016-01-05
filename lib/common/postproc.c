@@ -629,6 +629,9 @@ static void addXLabels(Agraph_t * gp)
 	xlabs.p0 = objs;
 #if defined(WIN32)
 	qsort_s(objs, n_objs, sizeof(object_t), (qsortr_cmpf)cmp_obj, &xlabs);
+#elif (__GLIBC__ == 2 && __GLIBC_MINOR__ < 8)
+	// EL5 has glibc 2.5 and no qsort_r
+	git__insertsort_r(objs, n_objs, sizeof(object_t), NULL, (qsortr_cmpf)cmp_obj, &xlabs);
 #else
 	qsort_r(objs, n_objs, sizeof(object_t), (qsortr_cmpf)cmp_obj, &xlabs);
 #endif
