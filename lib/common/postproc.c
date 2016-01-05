@@ -432,31 +432,6 @@ static int cmp_obj(object_t* obj0, object_t* obj1, xlabel_state* state)
 }
 #endif
 
-#if (__GLIBC__ == 2 && __GLIBC_MINOR__ < 8)
-void git__insertsort_r(
-	void *els, size_t nel, size_t elsize, void *swapel,
-	git__sort_r_cmp cmp, void *payload)
-{
-	uint8_t *base = els;
-	uint8_t *end = base + nel * elsize;
-	uint8_t *i, *j;
-	bool freeswap = !swapel;
-
-	if (freeswap)
-		swapel = git__malloc(elsize);
-
-	for (i = base + elsize; i < end; i += elsize)
-		for (j = i; j > base && cmp(j, j - elsize, payload) < 0; j -= elsize) {
-			memcpy(swapel, j, elsize);
-			memcpy(j, j - elsize, elsize);
-			memcpy(j - elsize, swapel, elsize);
-		}
-
-	if (freeswap)
-		git__free(swapel);
-}
-#endif
-
 static void addXLabels(Agraph_t * gp)
 {
     Agnode_t *np;
@@ -656,7 +631,7 @@ static void addXLabels(Agraph_t * gp)
 	qsort_s(objs, n_objs, sizeof(object_t), (qsortr_cmpf)cmp_obj, &xlabs);
 #elif (__GLIBC__ == 2 && __GLIBC_MINOR__ < 8)
 	// EL5 has glibc 2.5 and no qsort_r
-	qsort_s(objs, n_objs, sizeof(object_t), (qsortr_cmpf)cmp_obj, &xlabs);
+	// FIXME - need alternative implementation here
 #else
 	qsort_r(objs, n_objs, sizeof(object_t), (qsortr_cmpf)cmp_obj, &xlabs);
 #endif
