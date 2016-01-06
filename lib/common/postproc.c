@@ -641,8 +641,10 @@ static void addXLabels(Agraph_t * gp)
     if (priorities) {
 	xlabs.priorities = priorities;
 	xlabs.p0 = objs;
-#if defined(WIN32)  || defined(DARWIN)
+#if defined(WIN32)
 	qsort_s(objs, n_objs, sizeof(object_t), (qsort_s_cmpf)cmp_obj, &xlabs);
+#elif defined(DARWIN)
+	qsort_r(objs, n_objs, sizeof(object_t), &xlabs, (qsort_s_cmpf)cmp_obj);
 #elif (__GLIBC__ == 2 && __GLIBC_MINOR__ < 8)
 	// EL5 has glibc 2.5 and no qsort_r
 	XLABS=&xlabs;  //uses global - non-rentrant
