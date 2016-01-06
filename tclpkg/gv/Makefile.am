@@ -19,7 +19,7 @@ BASESOURCES = gv.cpp gv.i gv_builtins.c
 BASELIBS = $(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(top_builddir)/lib/cdt/libcdt.la
-BASECPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
+BASECPPFLAGS = $(AM_CPPFLAGS) $(SWIG_CPPFLAGS) -DDEMAND_LOADING=1
 
 pkgsharpdir = $(pkglibdir)/sharp
 SHARP_data = gv.cs gvPINVOKE.cs SWIGTYPE_p_Agraph_t.cs SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agedge_t.cs SWIGTYPE_p_Agsym_t.cs SWIGTYPE_p_FILE.cs
