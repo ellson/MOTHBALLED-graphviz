@@ -409,7 +409,7 @@ typedef struct {
 } xlabel_state;
 
 #if defined(WIN32) || defined(DARWIN)
-typedef int (*qsortr_cmpf) (void*, const void *, const void *);
+typedef int (*qsort_s_cmpf) (void*, const void *, const void *);
 
 static int cmp_obj(xlabel_state* state, object_t* obj0, object_t* obj1)
 {
@@ -419,8 +419,22 @@ static int cmp_obj(xlabel_state* state, object_t* obj0, object_t* obj1)
     else if (prior0 > prior1) return -1;
     else return 0;
 }
+#elif (__GLIBC__ == 2 && __GLIBC_MINOR__ < 8)
+// EL5 has glibc 2.5 and no qsort_r
+xlabel_state *XLABS;  // global
+
+typedef int (*qsort_r_cmpf) (const void *, const void *);
+
+static int cmp_obj(object_t* obj0, object_t* obj1)
+{
+    int prior0 = XLABS->priorities[obj0 - XLABS->p0];
+    int prior1 = XLABS->priorities[obj1 - XLABS->p0];
+    if (prior0 < prior1) return 1;
+    else if (prior0 > prior1) return -1;
+    else return 0;
+}
 #else
-typedef int (*qsortr_cmpf) (const void *, const void *, void*);
+typedef int (*qsort_r_cmpf) (const void *, const void *, void*);
 
 static int cmp_obj(object_t* obj0, object_t* obj1, xlabel_state* state)
 {
@@ -627,13 +641,14 @@ static void addXLabels(Agraph_t * gp)
     if (priorities) {
 	xlabs.priorities = priorities;
 	xlabs.p0 = objs;
-#if defined(WIN32) 
-	qsort_s(objs, n_objs, sizeof(object_t), (qsortr_cmpf)cmp_obj, &xlabs);
+#if defined(WIN32)  || defined(DARWIN)
+	qsort_s(objs, n_objs, sizeof(object_t), (qsort_s_cmpf)cmp_obj, &xlabs);
 #elif (__GLIBC__ == 2 && __GLIBC_MINOR__ < 8)
 	// EL5 has glibc 2.5 and no qsort_r
-	// FIXME - need alternative implementation here
+	XLABS=&xlabs;  //uses global - non-rentrant
+	qsort(objs, n_objs, sizeof(object_t), (qsort_cmpf)cmp_obj);
 #else
-	qsort_r(objs, n_objs, sizeof(object_t), (qsortr_cmpf)cmp_obj, &xlabs);
+	qsort_r(objs, n_objs, sizeof(object_t), (qsort_r_cmpf)cmp_obj, &xlabs);
 #endif
 	free (priorities);
     }
