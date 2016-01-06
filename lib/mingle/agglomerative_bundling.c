@@ -296,7 +296,7 @@ static Agglomerative_Ink_Bundling Agglomerative_Ink_Bundling_establish(Agglomera
 }
 
 
-
+#ifndef  NOTUSED
 static Agglomerative_Ink_Bundling Agglomerative_Ink_Bundling_aggressive_establish(Agglomerative_Ink_Bundling grid, int *pick, real angle_param, real angle){
   /* this does a true single-linkage clustering: find the edge that gives the best saving, merge, find again. 
      As oppose to: find the edge of node i that gives the best ink saving, merge, then do the same for node i+1, etc etc.
@@ -541,6 +541,7 @@ static Agglomerative_Ink_Bundling Agglomerative_Ink_Bundling_aggressive_establis
   FREE(mask);
   return grid;
 }
+#endif
 
 static Agglomerative_Ink_Bundling Agglomerative_Ink_Bundling_new(SparseMatrix A0, pedge *edges, real angle_param, real angle){
   /* give a link of edges and their nearest neighbor graph, return a multilevel of edge bundling based on ink saving */
