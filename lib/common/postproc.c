@@ -421,7 +421,7 @@ static int cmp_obj(xlabel_state* state, object_t* obj0, object_t* obj1)
 }
 #elif (__GLIBC__ == 2 && __GLIBC_MINOR__ < 8)
 // EL5 has glibc 2.5 and no qsort_r
-xlabel_state *XLABS;  // global
+static xlabel_state *XLABS;  // global
 
 typedef int (*qsort_r_cmpf) (const void *, const void *);
 
