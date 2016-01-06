@@ -604,8 +604,8 @@ else
 	else
           # EL5 has swig-1.3.29 which does not define SWIGJAVA
 	  if test $SWIG_VERSION_MICRO -lt 40; then
-            SWIG_CPPFLAGS=-DSWIGJAVA
-            AC_SUBST([SWIG_CPPFLAGS])
+            SWIGJAVA_CPPFLAGS=-DSWIGJAVA
+            AC_SUBST([SWIGJAVA_CPPFLAGS])
 	  fi
         fi
       fi

@@ -19,7 +19,7 @@ BASESOURCES = gv.cpp gv.i gv_builtins.c
 BASELIBS = $(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(top_builddir)/lib/cdt/libcdt.la
-BASECPPFLAGS = $(AM_CPPFLAGS) $(SWIG_CPPFLAGS) -DDEMAND_LOADING=1
+BASECPPFLAGS = $(AM_CPPFLAGS) -DDEMAND_LOADING=1
 
 pkgsharpdir = $(pkglibdir)/sharp
 SHARP_data = gv.cs gvPINVOKE.cs SWIGTYPE_p_Agraph_t.cs SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agedge_t.cs SWIGTYPE_p_Agsym_t.cs SWIGTYPE_p_FILE.cs
@@ -101,7 +101,7 @@ nodist_libgv_java_la_SOURCES = gv_java.cpp
 libgv_java_la_SOURCES = $(BASESOURCES)  gv_java_init.c
 libgv_java_la_LIBADD = $(BASELIBS) $(JAVA_LIBS)
 libgv_java_la_LDFLAGS = -module -avoid-version $(JNI_EXTRA_LDFLAGS)
-libgv_java_la_CPPFLAGS = $(BASECPPFLAGS) $(JAVA_INCLUDES)
+libgv_java_la_CPPFLAGS = $(BASECPPFLAGS) $(SWIGJAVA_CPPFLAGS) $(JAVA_INCLUDES)
 $(JAVA_data): gv_java.cpp
 gv_java.cpp: gv.i
 	$(SWIG) -package org.graphviz -java -c++ -o gv_java.cpp $(srcdir)/gv.i
