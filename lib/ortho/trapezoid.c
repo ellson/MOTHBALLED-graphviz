@@ -431,7 +431,7 @@ add_segment (int segnum, segment_t* seg, trap_t* tr, qnode_t* qs)
 {
   segment_t s;
   int tu, tl, sk, tfirst, tlast;
-  int tfirstr, tlastr, tfirstl, tlastl;
+  int tfirstr = 0, tlastr = 0, tfirstl = 0, tlastl = 0;
   int i1, i2, t, tn;
   pointf tpt;
   int tritop = 0, tribot = 0, is_swapped;

@@ -618,7 +618,7 @@ static void exchange(node_t * v, node_t * w)
 static void balanceNodes(graph_t * g, int r, node_t * v, node_t * w)
 {
     node_t *s;			/* separator node */
-    int sepIndex;
+    int sepIndex = 0;
     int nullType;		/* type of null nodes */
     int cntDummy = 0, cntOri = 0;
     int k = 0, m = 0, k1 = 0, m1 = 0, i = 0;

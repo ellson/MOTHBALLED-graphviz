@@ -20,7 +20,7 @@ int		type;
 	Dtlink_t	*root, *t;
 	int		cmp, lk, sz, ky;
 	Void_t		*o, *k, *key;
-	Dtlink_t	*l, *r, *me, link;
+	Dtlink_t	*l, *r, *me = NULL, link;
 	int		n, minp, turn[DT_MINP];
 	Dtcompar_f	cmpf;
 	Dtdisc_t*	disc;

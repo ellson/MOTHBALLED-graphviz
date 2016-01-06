@@ -710,7 +710,7 @@ extoken_fn(register Expr_t* ex)
 					{
 						int	b;
 						int	n;
-						int	pc;
+						int	pc = 0;
 						int	po;
 						int	t;
 

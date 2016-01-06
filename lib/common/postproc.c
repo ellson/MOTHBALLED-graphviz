@@ -464,10 +464,10 @@ static void addXLabels(Agraph_t * gp)
     object_t* objp;
     xlabel_t* xlp;
     Agsym_t* force;
-    Agsym_t* edge_xlab_prior;
-    Agsym_t* node_xlab_prior;
-    Agsym_t* hd_edge_xlab_prior;
-    Agsym_t* tl_edge_xlab_prior;
+    Agsym_t* edge_xlab_prior = NULL;
+    Agsym_t* node_xlab_prior = NULL;
+    Agsym_t* hd_edge_xlab_prior = NULL;
+    Agsym_t* tl_edge_xlab_prior = NULL;
     int* priorities = NULL;
     int et = EDGE_TYPE(gp);
     xlabel_state xlabs;

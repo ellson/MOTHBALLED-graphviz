@@ -278,7 +278,7 @@ Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin, boolean isOrtho)
     field_t *fld;
     epsf_t *desc;
     int isPoly;
-    pointf* verts;
+    pointf* verts = NULL;
     pointf vs[4];
     pointf p;
     pointf margin;

@@ -702,8 +702,8 @@ static void reduceMaxWidth(graph_t * g)
 static void reduceMaxWidth2(graph_t * g)
 {
     int i;
-    int maxLayerIndex;
-    double nextMaxWidth;
+    int maxLayerIndex = 0;
+    double nextMaxWidth = 0.0;
     double w = 0;
     double targetWidth;
     int fst;

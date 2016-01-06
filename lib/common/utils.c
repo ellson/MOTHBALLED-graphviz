@@ -1430,7 +1430,6 @@ char* htmlEntityUTF8 (char* s, graph_t* g)
     unsigned char buf[BUFSIZ];
     unsigned char c;
     unsigned int v;
-    int ignored;
 
     int uc;
     int ui;

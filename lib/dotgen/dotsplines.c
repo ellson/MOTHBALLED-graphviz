@@ -256,8 +256,8 @@ static void _dot_splines(graph_t * g, int normalize)
     node_t *n;
     Agedgeinfo_t fwdedgeai, fwdedgebi;
     Agedgepair_t fwdedgea, fwdedgeb;
-    edge_t *e, *e0, *e1, *ea, *eb, *le0, *le1, **edges;
-    path *P;
+    edge_t *e, *e0, *e1, *ea, *eb, *le0, *le1, **edges = NULL;
+    path *P = NULL;
     spline_info_t sd;
     int et = EDGE_TYPE(g);
     fwdedgea.out.base.data = (Agrec_t*)&fwdedgeai;

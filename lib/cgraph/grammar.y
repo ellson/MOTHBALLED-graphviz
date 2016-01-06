@@ -336,7 +336,7 @@ static void nomacros(void)
 static void attrstmt(int tkind, char *macroname)
 {
 	item			*aptr;
-	int				kind;
+	int				kind = 0;
 	Agsym_t*  sym;
 
 		/* creating a macro def */
