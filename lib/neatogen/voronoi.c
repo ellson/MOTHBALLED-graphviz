@@ -23,7 +23,7 @@ void voronoi(int triangulate, Site * (*nextsite) (void))
 {
     Site *newsite, *bot, *top, *temp, *p;
     Site *v;
-    Point newintstar;
+    Point newintstar = {0};
     char pm;
     Halfedge *lbnd, *rbnd, *llbnd, *rrbnd, *bisector;
     Edge *e;

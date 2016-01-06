@@ -209,7 +209,7 @@ get_vertex_positions (int v0, int v1, int *ip, int *iq)
   vertexchain_t *vp0, *vp1;
   register int i;
   double angle, temp;
-  int tp, tq;
+  int tp = 0, tq = 0;
 
   vp0 = &vert[v0];
   vp1 = &vert[v1];

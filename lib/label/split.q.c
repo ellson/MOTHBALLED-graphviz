@@ -141,7 +141,7 @@ static void MethodZero(RTree_t * rtp)
 {
     register Rect_t *r;
     register int i, growth0, growth1, diff, biggestDiff;
-    register int group, chosen, betterGroup;
+    register int group, chosen = 0, betterGroup = 0;
 
     InitPVars(rtp);
     PickSeeds(rtp);
@@ -220,7 +220,7 @@ static void PickSeeds(RTree_t * rtp)
 {
   register int i, j;
   unsigned int waste, worst;
-  int seed0, seed1;
+  int seed0 = 0, seed1 = 0;
   unsigned int area[NODECARD + 1];
 
     for (i = 0; i < NODECARD + 1; i++)

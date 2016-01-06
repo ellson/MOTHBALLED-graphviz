@@ -585,7 +585,7 @@ int deleteObj(Agraph_t * g, Agobj_t * obj)
  */
 int sfioWrite(Agraph_t * g, Sfio_t* fp, Agiodisc_t* dfltDisc)
 {
-    Agiodisc_t* saveio;
+    Agiodisc_t* saveio = NULL;
     int rv;
 
     if (g->clos->disc.io != dfltDisc) {
@@ -1285,7 +1285,7 @@ int colorxlate(char *str, gvcolor_t * color, color_type_t target_type)
  */
 char *colorx (Expr_t* ex, char* incolor, char* fmt, Sfio_t* fp)
 {
-    gvcolor_t color;
+    gvcolor_t color = {0};
     color_type_t type;
     int rc;
     int alpha;

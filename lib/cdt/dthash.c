@@ -84,13 +84,13 @@ reg Void_t*	obj;
 int		type;
 #endif
 {
-	reg Dtlink_t	*t, *r, *p;
+	reg Dtlink_t	*t, *r = NULL, *p;
 	reg Void_t	*k, *key;
 	reg uint	hsh;
 	reg int		lk, sz, ky;
 	reg Dtcompar_f	cmpf;
 	reg Dtdisc_t*	disc;
-	reg Dtlink_t	**s, **ends;
+	reg Dtlink_t	**s = NULL, **ends;
 
 	UNFLATTEN(dt);
 

@@ -152,7 +152,7 @@ convertSPtoRoute (sgraph* g, snode* fst, snode* lst)
     segment seg;
     double fix, b1, b2;
     int l1, l2;
-    pointf bp1, bp2, prevbp;  /* bend points */
+    pointf bp1, bp2, prevbp = {0.0,0.0};  /* bend points */
 
 	/* count no. of nodes in shortest path */
     for (ptr = fst; ptr; ptr = N_DAD(ptr)) sz++;
@@ -518,7 +518,7 @@ addNodeEdges (sgraph* sg, cell* cp, snode* np)
 #include <intset.h>
 static char* bendToStr (bend b)
 {
-  char* s;
+  char* s = NULL;
   switch (b) {
   case B_NODE :
     s = "B_NODE";

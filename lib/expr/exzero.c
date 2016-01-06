@@ -27,7 +27,7 @@
 Extype_t
 exzero(int type)
 {
-	Extype_t	v;
+	Extype_t	v = {0};
 
 	switch (type)
 	{

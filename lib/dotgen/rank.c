@@ -1044,7 +1044,7 @@ static void setMinMax (graph_t* g, int doRoot)
 {
     int c, v;
     node_t *n;
-    node_t* leader;
+    node_t* leader = NULL;
 
       /* Do child clusters */
     for (c = 1; c <= GD_n_cluster(g); c++)

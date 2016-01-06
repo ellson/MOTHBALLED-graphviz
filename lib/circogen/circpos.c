@@ -261,7 +261,7 @@ positionChildren (Agraph_t* g, posinfo_t* pi, posstate * stp, int length, double
 {
     block_t *child;
     double childAngle, childRadius, incidentAngle;
-    double mindistAngle, rotateAngle, midAngle;
+    double mindistAngle, rotateAngle, midAngle = 0.0;
     int midChild, cnt = 0;
     double snRadius = stp->subtreeR;	/* max subtree radius */
     double firstAngle = stp->firstAngle;

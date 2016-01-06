@@ -935,7 +935,7 @@ eval(Expr_t* ex, register Exnode_t* expr, void* env)
 	register Extype_t**	t;
 	register int		n;
 	Extype_t		v;
-	Extype_t		r;
+	Extype_t		r = {0};
 	Extype_t		i;
 	char*			e;
 	Exnode_t		tmp;

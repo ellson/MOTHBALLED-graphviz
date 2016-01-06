@@ -170,7 +170,7 @@ static void post(Agraph_t * g)
     char buf[256];
     char dflt[256];
     Agsym_t *sym;
-    Agsym_t *psym;
+    Agsym_t *psym = NULL;
     double dist, oldmax;
     double maxdist = 0.0;	/* maximum "finite" distance */
 

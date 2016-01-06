@@ -241,10 +241,10 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
     edge_t *e;
     pointf ptf;
     int dim3 = (GD_odim(g) >= 3);
-    Agsym_t* bbsym;
-    Agsym_t* lpsym;
-    Agsym_t* lwsym;
-    Agsym_t* lhsym;
+    Agsym_t* bbsym = NULL;
+    Agsym_t* lpsym = NULL;
+    Agsym_t* lwsym = NULL;
+    Agsym_t* lhsym = NULL;
 
     gv_fixLocale (1);
     e_arrows = s_arrows = 0;

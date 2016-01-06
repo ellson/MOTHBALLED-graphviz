@@ -333,7 +333,7 @@ getRankseps (Agraph_t* g, int maxrank)
     char c;
     int i, rk = 1;
     double* ranks = N_NEW(maxrank+1, double);
-    double xf = 0, delx, d;
+    double xf = 0.0, delx = 0.0, d;
 
     if ((p = late_string(g, agfindgraphattr(g->root, "ranksep"), NULL))) {
 	while ((rk <= maxrank) && ((d = strtod (p, &endp)) > 0)) {

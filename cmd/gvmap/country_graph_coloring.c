@@ -230,7 +230,7 @@ void improve_antibandwidth_by_swapping(SparseMatrix A, int *p){
   real norm = n, norm1[3], norm2[3], norm11[3], norm22[3];
   real pi, pj;
   real start = clock();
-  FILE *fp;
+  FILE *fp = NULL;
   
   if (Verbose){
     fprintf(stderr,"saving timing vs antiband data to timing_greedy\n");

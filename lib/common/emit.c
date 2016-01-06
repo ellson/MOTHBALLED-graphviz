@@ -202,8 +202,8 @@ getObjId (GVJ_t* job, void* obj, agxbuf* xb)
     char* id;
     graph_t* root = job->gvc->g;
     char* gid = GD_drawing(root)->id;
-    long idnum;
-    char* pfx;
+    long idnum = 0;
+    char* pfx = NULL;
     char buf[64]; /* large enough for a decimal 64-bit int */
 
     layerPagePrefix (job, xb);
@@ -2162,7 +2162,7 @@ static int multicolor (GVJ_t * job, edge_t * e, char** styles, char* colors, int
     int i, rv;
     colorsegs_t* segs;
     colorseg_t* s;
-    char* endcolor;
+    char* endcolor = NULL;
     double left;
     int first;  /* first segment with t > 0 */
 
@@ -3017,7 +3017,7 @@ boxf xdotBB (Agraph_t* g)
     boxf bb = GD_bb(g);
     xdot* xd = (xdot*)GD_drawing(g)->xdots;
     textfont_t tf, null_tf = {NULL,NULL,NULL,0.0,0,0};
-    int fontflags;
+    int fontflags = 0;
 
     if (!xd) return bb;
 
