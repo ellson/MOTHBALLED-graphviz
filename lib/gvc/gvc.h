@@ -104,7 +104,7 @@ extern int gvFreeContext(GVC_t *gvc);
  * At present, the str argument is unused, but may be used to modify
  * the search as in gvplugin_list above.
  */
-extern char** gvPluginList (GVC_t *gvc, char* kind, int* sz, char*);
+extern char** gvPluginList (GVC_t *gvc, const char* kind, int* sz, char*);
 
 /** Add a library from your user application
  * @param gvc Graphviz context to add library to

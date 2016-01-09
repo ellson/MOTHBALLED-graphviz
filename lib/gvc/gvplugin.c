@@ -412,7 +412,7 @@ char *gvplugin_list(GVC_t * gvc, api_t api, const char *str)
  * At present, the str argument is unused, but may be used to modify
  * the search as in gvplugin_list above.
  */
-char **gvPluginList(GVC_t * gvc, char *kind, int *sz, const char *str)
+char **gvPluginList(GVC_t * gvc, const char *kind, int *sz, const char *str)
 {
     int api;
     gvplugin_available_t **pnext, **plugin;
