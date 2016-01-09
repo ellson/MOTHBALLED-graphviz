@@ -2106,6 +2106,7 @@ AC_ARG_WITH(rsvg,
   [AS_HELP_STRING([--with-rsvg=yes],[rsvg library])],
   [], [with_rsvg=yes])
 
+have_svg_2_36="no"
 if test "x$with_rsvg" != "xyes"; then
   use_rsvg="No (disabled)"
 else
@@ -2118,6 +2119,12 @@ else
   ],[
     use_rsvg="No (rsvg library not available)"
   ])
+  PKG_CHECK_MODULES([SVG_2_36], [librsvg-2.0 >= 2.36.0 cairo >= 1.0.0],[
+      have_svg_2_36="yes"
+      AC_DEFINE(HAVE_SVG_2_36, 1, [Have librsvg >= 2.36])
+    ],[
+      have_svg_2_36="no"
+    ])
 fi
 AM_CONDITIONAL(WITH_RSVG, [test "x$use_rsvg" = "xYes"])
 
