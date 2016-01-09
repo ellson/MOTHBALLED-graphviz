@@ -4104,11 +4104,10 @@ void resolvePorts(edge_t * e)
 	    resolvePort(aghead(e), agtail(e), &ED_head_port(e));
 }
 
-void gv_initShapes()
+void gv_initShapes(void)
 {
     pointf p;
     poly_inside(NULL, p);
     point_inside(NULL, p);
     star_inside(NULL, p);
 }
-
