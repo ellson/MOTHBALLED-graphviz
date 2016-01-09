@@ -63,7 +63,7 @@ static int QSIZE;
 static int TRSIZE;
 
 /* Return a new node to be added into the query tree */
-static int newnode()
+static int newnode(void)
 {
     if (q_idx < QSIZE)
 	return q_idx++;
