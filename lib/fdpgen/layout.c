@@ -1094,7 +1094,7 @@ fdpSplines (graph_t * g)
     int trySplines = 0;
     int et = EDGE_TYPE(g);
 
-    if (et != ET_LINE) {
+    if (et > ET_ORTHO) {
 	if (et == ET_COMPOUND) {
 	    trySplines = splineEdges(g, compoundEdges, ET_SPLINE);
 	    /* When doing the edges again, accept edges done by compoundEdges */
@@ -1105,6 +1105,7 @@ fdpSplines (graph_t * g)
 	    if (HAS_CLUST_EDGE(g)) {
 		agerr(AGWARN,
 		      "splines and cluster edges not supported - using line segments\n");
+		et = ET_LINE;
 	    } else {
 		spline_edges1(g, et);
 	    }
@@ -1112,7 +1113,7 @@ fdpSplines (graph_t * g)
 	Nop = 0;
     }
     if (State < GVSPLINES)
-	spline_edges1(g, ET_LINE);
+	spline_edges1(g, et);
 }
 
 void fdp_layout(graph_t * g)
