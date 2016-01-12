@@ -423,7 +423,8 @@ static int cmp_obj(xlabel_state* state, object_t* obj0, object_t* obj1)
 // EL5 has glibc 2.5 and no qsort_r
 static xlabel_state *XLABS;  // global
 
-typedef int (*qsort_cmpf) (const void *, const void *);
+//Already defined in types.h
+//typedef int (*qsort_cmpf) (const void *, const void *);
 
 static int cmp_obj(object_t* obj0, object_t* obj1)
 {
