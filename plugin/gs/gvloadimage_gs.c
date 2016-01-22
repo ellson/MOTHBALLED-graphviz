@@ -72,11 +72,11 @@ static void gs_error(GVJ_t * job, const char *name, const char *funstr, int err)
 
     assert (err < 0);
 
-    if (err >= e_VMerror) 
+    if (err >= gs_error_VMerror) 
 	errsrc = "PostScript Level 1"; 
-    else if (err >= e_unregistered)
+    else if (err >= gs_error_unregistered)
 	errsrc = "PostScript Level 2";
-    else if (err >= e_invalidid)
+    else if (err >= gs_error_invalidid)
 	errsrc = "DPS error";
     else
 	errsrc = "Ghostscript internal error";
