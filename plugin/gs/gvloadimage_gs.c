@@ -32,6 +32,21 @@
 #include <ghostscript/ierrors.h>
 #include <cairo/cairo.h>
 
+
+/** Ensure compatibility with Ghostscipt versions newer than 9.16 **/
+
+#ifndef e_VMerror
+#define e_VMerror gs_error_VMerror
+#endif
+
+#ifndef e_unregistered
+#define e_unregistered gs_error_unregistered
+#endif
+
+#ifndef e_invalidid
+#define e_invalidid gs_error_invalidid
+#endif
+
 #ifdef WIN32
 #define NUL_FILE "nul"
 #else
@@ -72,11 +87,11 @@ static void gs_error(GVJ_t * job, const char *name, const char *funstr, int err)
 
     assert (err < 0);
 
-    if (err >= gs_error_VMerror) 
+    if (err >= e_VMerror) 
 	errsrc = "PostScript Level 1"; 
-    else if (err >= gs_error_unregistered)
+    else if (err >= e_unregistered)
 	errsrc = "PostScript Level 2";
-    else if (err >= gs_error_invalidid)
+    else if (err >= e_invalidid)
 	errsrc = "DPS error";
     else
 	errsrc = "Ghostscript internal error";
