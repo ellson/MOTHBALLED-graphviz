@@ -33,7 +33,10 @@
 #include <cairo/cairo.h>
 
 
-/** Ensure compatibility with Ghostscipt versions newer than 9.16 **/
+/**
+ * Ensure compatibility with Ghostscipt versions newer than 9.18
+ * while maintaining compatibility with the older versions.
+ **/
 
 #ifndef e_VMerror
 #define e_VMerror gs_error_VMerror
