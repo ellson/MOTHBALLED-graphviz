@@ -49,11 +49,11 @@ typedef struct {
 typedef struct {
     Agrec_t h;
     int id;
-} gid_t;
+} gvid_t;
 
 #define ID "id"
-#define ND_gid(n) (((gid_t*)aggetrec(n, ID, FALSE))->id) 
-#define ED_gid(n) (((gid_t*)aggetrec(n, ID, FALSE))->id) 
+#define ND_gid(n) (((gvid_t*)aggetrec(n, ID, FALSE))->id) 
+#define ED_gid(n) (((gvid_t*)aggetrec(n, ID, FALSE))->id) 
 
 static void json_begin_graph(GVJ_t *job)
 {
@@ -311,8 +311,8 @@ static void write_graph(Agraph_t * g, GVJ_t * job, int top, state_t* sp)
     int ecnt = 0;
 
     if (top) {
-	aginit(g, AGNODE, ID, sizeof(gid_t), FALSE);
-	aginit(g, AGEDGE, ID, sizeof(gid_t), FALSE);
+	aginit(g, AGNODE, ID, sizeof(gvid_t), FALSE);
+	aginit(g, AGEDGE, ID, sizeof(gvid_t), FALSE);
 	for (np = agfstnode(g); np; np = agnxtnode(g,np)) {
 	    ND_gid(np) = ncnt++;
 	    for (ep = agfstout(g, np); ep; ep = agnxtout(g,ep)) {
