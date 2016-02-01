@@ -25,6 +25,7 @@ endif
 libgvplugin_core_C_la_SOURCES = \
 	gvplugin_core.c \
 	gvrender_core_dot.c \
+	gvrender_core_json.c \
 	gvrender_core_fig.c \
 	gvrender_core_map.c \
 	gvrender_core_ps.c \

@@ -143,6 +143,9 @@ extern "C" {
 	int fontrenaming;
     };
 
+extern GVC_t* gvCloneGVC (GVC_t *);
+extern void gvFreeCloneGVC (GVC_t *);
+
 #ifdef WIN32
 #define DIRSEP "\\"
 #else

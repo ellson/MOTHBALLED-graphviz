@@ -98,3 +98,22 @@ int gvFreeContext(GVC_t * gvc)
     free(gvc);
     return (graphviz_errors + agerrors());
 }
+
+GVC_t* gvCloneGVC (GVC_t * gvc0)
+{
+    GVC_t *gvc = zmalloc(sizeof(GVC_t));
+
+    gvc->common = gvc0->common;
+    memcpy (&gvc->apis, &gvc0->apis, sizeof(gvc->apis));
+    memcpy (&gvc->api, &gvc0->api, sizeof(gvc->api));
+    gvc->packages = gvc->packages;
+    
+    return gvc;
+}
+
+void gvFreeCloneGVC (GVC_t * gvc)
+{
+    gvjobs_delete(gvc);
+    free(gvc);
+}
+
