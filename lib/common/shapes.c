@@ -98,6 +98,7 @@ static polygon_t p_folder = { FALSE, 1, 4, 0., 0., 0., FOLDER };
 static polygon_t p_box3d = { FALSE, 1, 4, 0., 0., 0., BOX3D };
 static polygon_t p_component = { FALSE, 1, 4, 0., 0., 0., COMPONENT };
 static polygon_t p_underline = { FALSE, 1, 4, 0., 0., 0., UNDERLINE };
+static polygon_t p_cylinder = { FALSE, 1, 4, 0., 0., 0., CYLINDER };
 
 /* redundant and undocumented builtin polygons */
 static polygon_t p_doublecircle = { TRUE, 2, 1, 0., 0., 0. };
@@ -237,6 +238,7 @@ static shape_desc Shapes[] = {	/* first entry is default for no such shape */
     {"folder", &poly_fns, &p_folder},
     {"box3d", &poly_fns, &p_box3d},
     {"component", &poly_fns, &p_component},
+    {"cylinder", &poly_fns, &p_cylinder},
     {"rect", &poly_fns, &p_box},
     {"rectangle", &poly_fns, &p_box},
     {"square", &poly_fns, &p_square},
@@ -771,6 +773,43 @@ void round_corners(GVJ_t * job, pointf * AF, int sides, int style, int filled)
 
 	free(D);
 	break;
+
+    case CYLINDER:
+    /*
+    *  B[3] ^ ,------. ^ B[0]
+    *        /        \
+    *  B[4] +          + B[11]
+    *       |\        /|
+    *  B[5] + `------� + B[10]
+    *        \        /
+    *  B[6] v `------� v B[9]
+    *
+    */
+    assert(sides == 4);
+    D = N_NEW(13, pointf);
+    D[0] = B[4];
+    D[1] = B[4];
+    D[2] = B[5];
+    D[3] = B[5];
+    D[4] = B[6];
+    D[5] = B[9];
+    D[6] = B[10];
+    D[7] = B[10];
+    D[8] = B[11];
+    D[9] = B[11];
+    D[10] = B[0];
+    D[11] = B[3];
+    D[12] = B[4];
+    gvrender_beziercurve(job, D, 13, FALSE, FALSE, filled);
+    free(D);
+
+    /* Draw the inner edge. */
+    C[0] = B[4];
+    C[1] = B[5];
+    C[2] = B[10];
+    C[3] = B[11];
+    gvrender_beziercurve(job, C, 4, FALSE, FALSE, FALSE);
+    break;
 
     case PROMOTER:
 	/*

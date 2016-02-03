@@ -247,6 +247,7 @@
 #define RARROW		(23 << 24)
 #define LARROW		(24 << 24)
 #define LPROMOTER	(25 << 24)
+#define CYLINDER	(26 << 24)
 
 /* fill types */
 #define FILL      	1
