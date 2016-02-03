@@ -23,6 +23,10 @@
 #include	<unistd.h>
 #endif
 
+#ifdef WIN32
+extern double drand48(void);
+#endif
+
 static double Epsilon2;
 
 

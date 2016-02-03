@@ -43,7 +43,7 @@
     #pragma comment( lib, "glib-2.0.lib" )
     #pragma comment( lib, "vpsc.lib" )
     #pragma comment( lib, "patchwork.lib" )
-    #pragma comment( lib, "gvortho.lib" )
+    #pragma comment( lib, "ortho.lib" )
 #endif
 
 

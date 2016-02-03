@@ -16,7 +16,13 @@
 #ifndef GVCPROC_H
 #define GVCPROC_H
 
-#define extern
+/*visual studio*/
+#ifdef WIN32
+#ifndef GVC_EXPORTS
+#define extern __declspec(dllimport)
+#endif
+#endif
+/*end visual studio*/
 
 /* these are intended to be private entry points - see gvc.h for the public ones */
 

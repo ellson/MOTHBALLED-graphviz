@@ -1,0 +1,15 @@
+add_gvlib(graphviz_lib_fdpgen
+    clusteredges.c
+    comp.c
+    dbg.c
+    fdpinit.c
+    grid.c
+    layout.c
+    tlayout.c
+    xlayout.c
+)
+target_link_libraries(graphviz_lib_fdpgen
+    PRIVATE
+        ${GV_GRAPH_LIB}
+        graphviz_lib_neatogen
+)
