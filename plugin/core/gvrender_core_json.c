@@ -211,7 +211,7 @@ static void write_edge(Agedge_t * e, GVJ_t * job, int top, state_t* sp)
 	indent (job, sp->Level++);
 	gvputs(job, "{\n");
 	indent (job, sp->Level);
-	gvprintf(job, "\"id\" : %d,\n", ED_gid(e));
+	gvprintf(job, "\"_gvid\" : %d,\n", ED_gid(e));
 	indent (job, sp->Level);
 	gvprintf(job, "\"tail\" : %d,\n", ND_gid(agtail(e)));
 	indent (job, sp->Level);
@@ -264,7 +264,7 @@ static void write_node(Agnode_t * n, GVJ_t * job, int top, state_t* sp)
     if (top) {
 	gvputs(job, "{\n");
 	indent (job, sp->Level);
-	gvprintf(job, "\"id\" : %d,\n", ND_gid(n));
+	gvprintf(job, "\"_gvid\" : %d,\n", ND_gid(n));
 	indent (job, sp->Level);
 	gvprintf(job, "\"name\" : \"%s\"", stoj (agnameof(n), sp));
     	write_attrs((Agobj_t*)n, job, sp);
