@@ -7,7 +7,7 @@
 /* #undef C_ALLOCA */
 
 /* Define for any Darwin-based OS. */
-/* #undef DARWIN */
+#cmakedefine DARWIN 1
 
 /* Define for Darwin-style shared library names. */
 /* #undef DARWIN_DYLIB */

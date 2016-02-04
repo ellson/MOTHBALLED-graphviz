@@ -91,6 +91,10 @@ check_symbol_exists(strncasecmp  "strings.h" HAVE_STRNCASECMP)
 check_symbol_exists(strcasecmp   "strings.h" HAVE_STRCASECMP)
 check_symbol_exists(strcasestr   "strings.h" HAVE_STRCASESTR)
 
+if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+    set(DARWIN 1)
+endif()
+
 # Compat with original configure
 # HACK: Disable for now
 #set(HAVE_EXPAT ${HAVE_EXPAT_H} AND ${EXPAT_FOUND})
