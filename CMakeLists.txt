@@ -48,7 +48,7 @@ set(GV_GRAPH_LIB graphviz_lib_cgraph)
 find_package(BISON REQUIRED)
 find_package(FLEX REQUIRED)
 
-find_package(EXPAT REQUIRED)
+find_package(EXPAT)
 
 find_library(M_LIBRARY m)
 if (NOT M_LIBRARY)
