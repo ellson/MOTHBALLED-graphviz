@@ -61,6 +61,7 @@ endif()
 
 # BEGIN: Platform checks
 check_include_files(expat.h       HAVE_EXPAT_H)
+check_include_files(inttypes.h    HAVE_INTTYPES_H)
 check_include_files(limits.h      HAVE_LIMITS_H)
 check_include_files(malloc.h      HAVE_MALLOC_H)
 check_include_files(memory.h      HAVE_MEMORY_H)
