@@ -403,50 +403,6 @@ countClusterLabels (Agraph_t* g)
   /* True if edges geometries were computed and this edge has a geometry */
 #define HAVE_EDGE(ep) ((et != ET_NONE) && (ED_spl(ep) != NULL))
 
-typedef struct {
-    int* priorities;
-    object_t* p0;
-} xlabel_state;
-
-#if defined(WIN32) || defined(DARWIN)
-typedef int (*qsort_s_cmpf) (void*, const void *, const void *);
-
-static int cmp_obj(xlabel_state* state, object_t* obj0, object_t* obj1)
-{
-    int prior0 = state->priorities[obj0 - state->p0];
-    int prior1 = state->priorities[obj1 - state->p0];
-    if (prior0 < prior1) return 1;
-    else if (prior0 > prior1) return -1;
-    else return 0;
-}
-#elif (__GLIBC__ == 2 && __GLIBC_MINOR__ < 8)
-// EL5 has glibc 2.5 and no qsort_r
-static xlabel_state *XLABS;  // global
-
-//Already defined in types.h
-//typedef int (*qsort_cmpf) (const void *, const void *);
-
-static int cmp_obj(object_t* obj0, object_t* obj1)
-{
-    int prior0 = XLABS->priorities[obj0 - XLABS->p0];
-    int prior1 = XLABS->priorities[obj1 - XLABS->p0];
-    if (prior0 < prior1) return 1;
-    else if (prior0 > prior1) return -1;
-    else return 0;
-}
-#else
-typedef int (*qsort_r_cmpf) (const void *, const void *, void*);
-
-static int cmp_obj(object_t* obj0, object_t* obj1, xlabel_state* state)
-{
-    int prior0 = state->priorities[obj0 - state->p0];
-    int prior1 = state->priorities[obj1 - state->p0];
-    if (prior0 < prior1) return 1;
-    else if (prior0 > prior1) return -1;
-    else return 0;
-}
-#endif
-
 static void addXLabels(Agraph_t * gp)
 {
     Agnode_t *np;
@@ -465,13 +421,7 @@ static void addXLabels(Agraph_t * gp)
     object_t* objp;
     xlabel_t* xlp;
     Agsym_t* force;
-    Agsym_t* edge_xlab_prior = NULL;
-    Agsym_t* node_xlab_prior = NULL;
-    Agsym_t* hd_edge_xlab_prior = NULL;
-    Agsym_t* tl_edge_xlab_prior = NULL;
-    int* priorities = NULL;
     int et = EDGE_TYPE(gp);
-    xlabel_state xlabs;
 
     if (!(GD_has_labels(gp) & NODE_XLABEL) &&
 	!(GD_has_labels(gp) & EDGE_XLABEL) &&
@@ -521,40 +471,29 @@ static void addXLabels(Agraph_t * gp)
     n_lbls = n_nlbls + n_elbls;
     if (n_lbls == 0) return;
 
-    /* An object for each node, each positioned external label, including dot edge labels, and
-     * any cluster label.
-     * An xlabel for all unset edge labels and xlabels.
+    /* An object for each node, each positioned external label, any cluster label, 
+     * and all unset edge labels and xlabels.
      */
-    n_objs = agnnodes(gp) + n_set_lbls + n_clbls;
+    n_objs = agnnodes(gp) + n_set_lbls + n_clbls + n_elbls;
     objp = objs = N_NEW(n_objs, object_t);
     xlp = lbls = N_NEW(n_lbls, xlabel_t);
     bb.LL = pointfof(INT_MAX, INT_MAX);
     bb.UR = pointfof(-INT_MAX, -INT_MAX);
 
-    if ((node_xlab_prior = agattr(gp, AGNODE, "node_xlabel_prior", "")) ||
-        (hd_edge_xlab_prior = agattr(gp, AGEDGE, "head_edge_xlabel_prior", "")) ||
-        (tl_edge_xlab_prior = agattr(gp, AGEDGE, "tail_edge_xlabel_prior", "")) ||
-        (edge_xlab_prior = agattr(gp, AGEDGE, "edge_xlabel_prior", ""))) {
-	priorities = N_NEW(n_objs, int);
-        i = 0;
-    }
     for (np = agfstnode(gp); np; np = agnxtnode(gp, np)) {
 
 	bb = addNodeObj (np, objp, bb);
 	if ((lp = ND_xlabel(np))) {
 	    if (lp->set) {
 		objp++;
-		i++;
 		bb = addLabelObj (lp, objp, bb);
 	    }
 	    else {
-		priorities[i] = late_int (np, node_xlab_prior, 0, 0);
 		addXLabel (lp, objp, xlp, 0, ur); 
 		xlp++;
 	    }
 	}
 	objp++;
-	i++;
 	for (ep = agfstout(gp, np); ep; ep = agnxtout(gp, ep)) {
 	    if ((lp = ED_label(ep))) {
 		if (lp->set) {
@@ -562,7 +501,6 @@ static void addXLabels(Agraph_t * gp)
 		}
 		else if (HAVE_EDGE(ep)) {
 		    addXLabel (lp, objp, xlp, 1, edgeMidpoint(gp, ep)); 
-		    priorities[i] = late_int (ep, edge_xlab_prior, 0, 0);
 		    xlp++;
 		}
 		else {
@@ -571,7 +509,6 @@ static void addXLabels(Agraph_t * gp)
 		    continue;
 		}
 	        objp++;
-		i++;
 	    }
 	    if ((lp = ED_tail_label(ep))) {
 		if (lp->set) {
@@ -579,7 +516,6 @@ static void addXLabels(Agraph_t * gp)
 		}
 		else if (HAVE_EDGE(ep)) {
 		    addXLabel (lp, objp, xlp, 1, edgeTailpoint(ep)); 
-		    priorities[i] = late_int (ep, tl_edge_xlab_prior, 0, 0);
 		    xlp++;
 		}
 		else {
@@ -588,7 +524,6 @@ static void addXLabels(Agraph_t * gp)
 		    continue;
 		}
 		objp++;
-		i++;
 	    }
 	    if ((lp = ED_head_label(ep))) {
 		if (lp->set) {
@@ -596,7 +531,6 @@ static void addXLabels(Agraph_t * gp)
 		}
 		else if (HAVE_EDGE(ep)) {
 		    addXLabel (lp, objp, xlp, 1, edgeHeadpoint(ep)); 
-		    priorities[i] = late_int (ep, hd_edge_xlab_prior, 0, 0);
 		    xlp++;
 		}
 		else {
@@ -605,7 +539,6 @@ static void addXLabels(Agraph_t * gp)
 		    continue;
 		}
 		objp++;
-		i++;
 	    }
 	    if ((lp = ED_xlabel(ep))) {
 		if (lp->set) {
@@ -613,7 +546,6 @@ static void addXLabels(Agraph_t * gp)
 		}
 		else if (HAVE_EDGE(ep)) {
 		    addXLabel (lp, objp, xlp, 1, edgeMidpoint(gp, ep)); 
-		    priorities[i] = late_int (ep, edge_xlab_prior, 0, 0);
 		    xlp++;
 		}
 		else {
@@ -622,7 +554,6 @@ static void addXLabels(Agraph_t * gp)
 		    continue;
 		}
 		objp++;
-		i++;
 	    }
 	}
     }
@@ -638,24 +569,6 @@ static void addXLabels(Agraph_t * gp)
 
     params.force = late_bool(gp, force, TRUE);
     params.bb = bb;
-
-    if (priorities) {
-	xlabs.priorities = priorities;
-	xlabs.p0 = objs;
-#if defined(WIN32)
-	qsort_s(objs, n_objs, sizeof(object_t), (qsort_s_cmpf)cmp_obj, &xlabs);
-#elif defined(DARWIN)
-	qsort_r(objs, n_objs, sizeof(object_t), &xlabs, (qsort_s_cmpf)cmp_obj);
-#elif (__GLIBC__ == 2 && __GLIBC_MINOR__ < 8)
-	// EL5 has glibc 2.5 and no qsort_r
-	XLABS=&xlabs;  //uses global - non-rentrant
-	qsort(objs, n_objs, sizeof(object_t), (qsort_cmpf)cmp_obj);
-#else
-	qsort_r(objs, n_objs, sizeof(object_t), (qsort_r_cmpf)cmp_obj, &xlabs);
-#endif
-	free (priorities);
-    }
-
     placeLabels(objs, n_objs, lbls, n_lbls, &params);
     if (Verbose)
 	printData(objs, n_objs, lbls, n_lbls, &params);
