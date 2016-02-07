@@ -27,6 +27,7 @@
 
 #include "macros.h"
 #include "const.h"
+#include "xdot.h"
 
 #include "gvplugin_render.h"
 #include "gvplugin_device.h"
@@ -146,6 +147,197 @@ static void set_attrwf(Agraph_t * g, int toplevel, int value)
     }
 }
 
+static void write_polyline (GVJ_t * job, xdot_polyline* polyline)
+{
+    int i;
+    int cnt = polyline->cnt;
+    xdot_point* pts = polyline->pts;
+
+    gvprintf(job, "\"pts\" : [");
+    for (i = 0; i < cnt; i++) {
+	if (i > 0) gvprintf(job, ",");
+	gvprintf(job, "%.03f,%.03f", pts[i].x, pts[i].y);
+    }
+    gvprintf(job, "]\n");
+}
+
+static void write_stops (GVJ_t * job, int n_stops, xdot_color_stop* stp, state_t* sp)
+{
+    int i;
+
+    gvprintf(job, "\"stops\" : [");
+    for (i = 0; i < n_stops; i++) {
+	if (i > 0) gvprintf(job, ",");
+	gvprintf(job, "{\"frac\" : %.03f, \"color\" : \"%s\"}",
+	    stp[i].frac, stoj(stp[i].color, sp));
+    }
+    gvprintf(job, "]\n");
+} 
+
+static void write_radial_grad (GVJ_t * job, xdot_radial_grad* rg, state_t* sp)
+{
+    indent (job, sp->Level);
+    gvprintf(job, "\"p0\" : [%.03f,%.03f,%.03f],\n", rg->x0, rg->y0, rg->r0); 
+    indent (job, sp->Level);
+    gvprintf(job, "\"p1\" : [%.03f,%.03f,%.03f],\n", rg->x1, rg->y1, rg->r1); 
+    indent (job, sp->Level);
+    write_stops (job, rg->n_stops, rg->stops, sp);
+}
+
+static void write_linear_grad (GVJ_t * job, xdot_linear_grad* lg, state_t* sp)
+{
+    indent (job, sp->Level);
+    gvprintf(job, "\"p0\" : [%.03f,%.03f],\n", lg->x0, lg->y0); 
+    indent (job, sp->Level);
+    gvprintf(job, "\"p1\" : [%.03f,%.03f],\n", lg->x1, lg->y1); 
+    indent (job, sp->Level);
+    write_stops (job, lg->n_stops, lg->stops, sp);
+}
+
+static void write_xdot (xdot_op * op, GVJ_t * job, state_t* sp)
+{
+    indent (job, sp->Level++);
+    gvputs(job, "{\n");
+    indent (job, sp->Level);
+
+    switch (op->kind) {
+    case xd_filled_ellipse :
+    case xd_unfilled_ellipse :
+	gvprintf(job, "\"op\" : \"%c\",\n", 
+	    (op->kind == xd_filled_ellipse ? 'E' : 'e')); 
+ 	indent (job, sp->Level);
+	gvprintf(job, "\"rect\" : [%.03f,%.03f,%.03f,%.03f]\n", 
+	    op->u.ellipse.x, op->u.ellipse.y, op->u.ellipse.w, op->u.ellipse.h);
+	break;
+    case xd_filled_polygon :
+    case xd_unfilled_polygon :
+	gvprintf(job, "\"op\" : \"%c\",\n",
+	    (op->kind == xd_filled_polygon ? 'P' : 'p')); 
+ 	indent (job, sp->Level);
+	write_polyline (job, &op->u.polygon);
+	break;
+    case xd_filled_bezier :
+    case xd_unfilled_bezier :
+	gvprintf(job, "\"op\" : \"%c\",\n",
+	    (op->kind == xd_filled_bezier ? 'B' : 'b')); 
+ 	indent (job, sp->Level);
+	write_polyline (job, &op->u.bezier);
+	break;
+    case xd_polyline :
+	gvprintf(job, "\"op\" : \"L\",\n"); 
+ 	indent (job, sp->Level);
+	write_polyline (job, &op->u.polyline);
+	break;
+    case xd_text :
+	gvprintf(job, "\"op\" : \"T\",\n"); 
+ 	indent (job, sp->Level);
+	gvprintf(job, "\"pt\" : [%.03f,%.03f],\n", op->u.text.x, op->u.text.y); 
+ 	indent (job, sp->Level);
+	gvprintf(job, "\"align\" : \"%c\",\n",
+	    (op->u.text.align == xd_left? 'l' : 
+	    (op->u.text.align == xd_center ? 'c' : 'r'))); 
+ 	indent (job, sp->Level);
+	gvprintf(job, "\"width\" : %.03f,\n", op->u.text.width); 
+ 	indent (job, sp->Level);
+	gvprintf(job, "\"text\" : \"%s\"\n", stoj(op->u.text.text, sp));
+	break;
+    case xd_fill_color :
+    case xd_pen_color :
+	gvprintf(job, "\"op\" : \"%c\",\n", 
+	    (op->kind == xd_fill_color ? 'C' : 'c')); 
+ 	indent (job, sp->Level);
+	gvprintf(job, "\"grad\" : \"none\",\n"); 
+ 	indent (job, sp->Level);
+	gvprintf(job, "\"color\" : \"%s\"\n", stoj(op->u.color, sp));
+	break;
+    case xd_grad_pen_color :
+    case xd_grad_fill_color :
+	gvprintf(job, "\"op\" : \"%c\",\n", 
+	    (op->kind == xd_grad_fill_color ? 'C' : 'c')); 
+ 	indent (job, sp->Level);
+	if (op->u.grad_color.type == xd_none) {
+	    gvprintf(job, "\"grad\" : \"none\",\n"); 
+ 	    indent (job, sp->Level);
+	    gvprintf(job, "\"color\" : \"%s\"\n", 
+		stoj(op->u.grad_color.u.clr, sp));
+	}
+	else {
+	    if (op->u.grad_color.type == xd_linear) {
+		gvprintf(job, "\"grad\" : \"linear\",\n"); 
+		indent (job, sp->Level);
+		write_linear_grad (job, &op->u.grad_color.u.ling, sp);
+	    }
+	    else {
+		gvprintf(job, "\"grad\" : \"radial\",\n"); 
+		indent (job, sp->Level);
+		write_radial_grad (job, &op->u.grad_color.u.ring, sp);
+	    }
+	}
+	break;
+    case xd_font :
+	gvprintf(job, "\"op\" : \"F\",\n");
+ 	indent (job, sp->Level);
+	gvprintf(job, "\"size\" : %.03f,\n", op->u.font.size); 
+ 	indent (job, sp->Level);
+	gvprintf(job, "\"face\" : \"%s\"\n", stoj(op->u.font.name, sp)); 
+	break;
+    case xd_style :
+	gvprintf(job, "\"op\" : \"S\",\n");
+ 	indent (job, sp->Level);
+	gvprintf(job, "\"style\" : \"%s\"\n", stoj(op->u.style, sp));
+	break;
+    case xd_image :
+	break;
+    case xd_fontchar :
+	gvprintf(job, "\"op\" : \"t\",\n");
+ 	indent (job, sp->Level);
+	gvprintf(job, "\"fontchar\" : %d\n", op->u.fontchar);
+	break;
+    }
+    sp->Level--;
+    indent (job, sp->Level);
+    gvputs(job, "}");
+}
+
+static void write_xdots (char * val, GVJ_t * job, state_t* sp)
+{
+    xdot* cmds;
+    int i;
+    int not_first = 0;
+
+    if (!val || (*val == '\0')) return;
+
+    cmds = parseXDot(val);
+    if (!cmds) {
+	agerr(AGWARN, "Could not parse xdot \"%s\"\n", val);
+	return;
+    }
+
+    gvputs(job, ",\n");
+    indent (job, sp->Level++);
+    gvputs(job, "[\n");
+    for (i = 0; i < cmds->cnt; i++) {
+	if (not_first) 
+	    gvputs(job, ",\n");
+	else
+	    not_first = 1;
+	write_xdot (cmds->ops+i, job, sp);
+    }
+    sp->Level--;
+    gvputs(job, "\n");
+    indent (job, sp->Level);
+    gvputs(job, "]");
+    freeXDot(cmds);
+}
+
+static int isXDot (char* name)
+{
+  return ((*name++ == '_') &&
+          (streq(name,"draw_") || streq(name,"ldraw_") ||
+          streq(name,"hdraw_") || streq(name,"tdraw_") ||
+          streq(name,"hldraw_") || streq(name,"tldraw_")));
+}
+
 static void write_attrs(Agobj_t * obj, GVJ_t * job, state_t* sp)
 {
     Agraph_t* g = agroot(obj);
@@ -157,7 +349,10 @@ static void write_attrs(Agobj_t * obj, GVJ_t * job, state_t* sp)
 	gvputs(job, ",\n");
 	indent (job, sp->Level);
 	gvprintf(job, "\"%s\" : ", stoj(sym->name, sp));
-	gvprintf(job, "\"%s\"", stoj(agxget(obj, sym), sp));
+	if (isXDot(sym->name))
+	    write_xdots(agxget(obj, sym), job, sp);
+	else
+	    gvprintf(job, "\"%s\"", stoj(agxget(obj, sym), sp));
     }
 }
 
