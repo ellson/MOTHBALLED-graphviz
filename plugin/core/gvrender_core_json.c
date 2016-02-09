@@ -153,10 +153,10 @@ static void write_polyline (GVJ_t * job, xdot_polyline* polyline)
     int cnt = polyline->cnt;
     xdot_point* pts = polyline->pts;
 
-    gvprintf(job, "\"pts\" : [");
+    gvprintf(job, "\"points\" : [");
     for (i = 0; i < cnt; i++) {
 	if (i > 0) gvprintf(job, ",");
-	gvprintf(job, "%.03f,%.03f", pts[i].x, pts[i].y);
+	gvprintf(job, "[%.03f,%.03f]", pts[i].x, pts[i].y);
     }
     gvprintf(job, "]\n");
 }
