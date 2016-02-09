@@ -313,6 +313,7 @@ static void write_xdots (char * val, GVJ_t * job, state_t* sp)
 	return;
     }
 
+    gvputs(job, "\n");
     indent (job, sp->Level++);
     gvputs(job, "[\n");
     for (i = 0; i < cmds->cnt; i++) {
@@ -528,7 +529,10 @@ static void write_graph(Agraph_t * g, GVJ_t * job, int top, state_t* sp)
     gvputs(job, "\n");
     sp->Level--;
     indent (job, sp->Level);
-    gvputs(job, "}");
+    if (top)
+	gvputs(job, "}\n");
+    else
+	gvputs(job, "}");
 }
 
 typedef int (*putstrfn) (void *chan, const char *str);
