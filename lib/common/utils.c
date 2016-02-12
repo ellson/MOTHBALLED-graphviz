@@ -1243,12 +1243,26 @@ static void undoCompound(edge_t * e, graph_t * clg)
     node_t *h = aghead(e);
     node_t *ntail;
     node_t *nhead;
+    edge_t* ce;
 
     if (!(IS_CLUST_NODE(t) || IS_CLUST_NODE(h)))
 	return;
     ntail = mapN(t, clg);
     nhead = mapN(h, clg);
-    cloneEdge(e, ntail, nhead);
+    ce = cloneEdge(e, ntail, nhead);
+
+    /* transfer drawing information */
+    ED_spl(ce) = ED_spl(e);
+    ED_spl(e) = NULL;
+    ED_label(ce) = ED_label(e);
+    ED_label(e) = NULL;
+    ED_xlabel(ce) = ED_xlabel(e);
+    ED_xlabel(e) = NULL;
+    ED_head_label(ce) = ED_head_label(e);
+    ED_head_label(e) = NULL;
+    ED_tail_label(ce) = ED_tail_label(e);
+    ED_tail_label(e) = NULL;
+    gv_cleanup_edge(e);
 }
 
 /* undoClusterEdges:
@@ -1259,17 +1273,20 @@ static void undoCompound(edge_t * e, graph_t * clg)
 void undoClusterEdges(graph_t * g)
 {
     node_t *n;
+    node_t *nextn;
     edge_t *e;
     graph_t *clg;
 
     clg = agsubg(g, "__clusternodes",1);
-	agbindrec(clg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
+    agbindrec(clg, "Agraphinfo_t", sizeof(Agraphinfo_t), TRUE);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    undoCompound(e, clg);
 	}
     }
-    for (n = agfstnode(clg); n; n = agnxtnode(clg, n)) {
+    for (n = agfstnode(clg); n; n = nextn) { 
+	nextn = agnxtnode(clg, n);
+	gv_cleanup_node(n);
 	agdelete(g, n);
     }
     agclose(clg);
@@ -2034,3 +2051,4 @@ findCluster (Dt_t* map, char* name)
 Agnodeinfo_t* ninf(Agnode_t* n) {return (Agnodeinfo_t*)AGDATA(n);}
 Agraphinfo_t* ginf(Agraph_t* g) {return (Agraphinfo_t*)AGDATA(g);}
 Agedgeinfo_t* einf(Agedge_t* e) {return (Agedgeinfo_t*)AGDATA(e);}
+/* void dumpG(Agraph_t* g) { agwrite(g, stderr); } */
