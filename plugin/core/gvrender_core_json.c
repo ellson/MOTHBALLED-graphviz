@@ -55,6 +55,9 @@ typedef struct {
 #define ID "id"
 #define ND_gid(n) (((gvid_t*)aggetrec(n, ID, FALSE))->id) 
 #define ED_gid(n) (((gvid_t*)aggetrec(n, ID, FALSE))->id) 
+#define GD_gid(n) (((gvid_t*)aggetrec(n, ID, FALSE))->id) 
+
+#define IS_CLUSTER(s) (!strncmp(agnameof(s), "cluster", 7))
 
 static void json_begin_graph(GVJ_t *job)
 {
@@ -378,7 +381,20 @@ static void write_hdr(Agraph_t * g, GVJ_t * job, int top, state_t* sp)
 
 static void write_graph(Agraph_t * g, GVJ_t * job, int top, state_t* sp);
 
-static int write_subgs(Agraph_t * g, GVJ_t * job, state_t* sp)
+static void write_subg(Agraph_t * g, GVJ_t * job, state_t* sp)
+{
+    Agraph_t* sg;
+
+    write_graph (g, job, FALSE, sp);
+    for (sg = agfstsubg(g); sg; sg = agnxtsubg(sg)) {
+	gvputs(job, ",\n");
+	indent(job, sp->Level-1);
+	write_subg(sg, job, sp);
+    }
+}
+
+/*
+static int write_subgs(Agraph_t * g, GVJ_t * job, int top, state_t* sp)
 {
     Agraph_t* sg;
     int not_first = 0;
@@ -394,12 +410,49 @@ static int write_subgs(Agraph_t * g, GVJ_t * job, state_t* sp)
 	    gvputs(job, ",\n");
 	else
 	    not_first = 1;
-	write_graph (sg, job, FALSE, sp);
+	write_subg (sg, job, top, sp);
     }
     sp->Level--;
     gvputs(job, "\n");
     indent (job, sp->Level);
     gvputs(job, "]");
+    return 1;
+}
+*/
+
+static int write_subgs(Agraph_t * g, GVJ_t * job, int top, state_t* sp)
+{
+    Agraph_t* sg;
+    int not_first = 0;
+
+    sg = agfstsubg(g);
+    if (!sg) return 0;
+   
+    gvputs(job, ",\n");
+    indent (job, sp->Level++);
+    if (top)
+	gvputs(job, "\"objects\": [\n");
+    else {
+	gvputs(job, "\"subgraphs\": [\n");
+	indent (job, sp->Level);
+    }
+    for (; sg; sg = agnxtsubg(sg)) {
+	if (not_first) 
+	    gvputs(job, ",\n");
+	else
+	    not_first = 1;
+        if (top)
+	    write_subg (sg, job, sp);
+	else
+	    gvprintf(job, "%d", GD_gid(sg));
+    }
+    if (!top) {
+	sp->Level--;
+	gvputs(job, "\n");
+	indent (job, sp->Level);
+	gvputs(job, "]");
+    }
+
     return 1;
 }
 
@@ -435,8 +488,16 @@ static int write_edges(Agraph_t * g, GVJ_t * job, int top, state_t* sp)
 
     np = agfstnode(g);
     if (!np) return 0;
-    ep = agfstout(g, np);
+    ep = NULL;
+    /* find a first edge */
+    for (; np; np = agnxtnode(g,np)) {
+	for (ep = agfstout(g, np); ep; ep = agnxtout(g,ep)) {
+	    if (ep) break;
+	}
+	if (ep) break;
+    }
     if (!ep) return 0;
+
     gvputs(job, ",\n");
     indent (job, sp->Level++);
     gvputs(job, "\"edges\": [\n");
@@ -458,8 +519,8 @@ static int write_edges(Agraph_t * g, GVJ_t * job, int top, state_t* sp)
 
 static void write_node(Agnode_t * n, GVJ_t * job, int top, state_t* sp)
 {
-    indent (job, sp->Level++);
     if (top) {
+	indent (job, sp->Level++);
 	gvputs(job, "{\n");
 	indent (job, sp->Level);
 	gvprintf(job, "\"_gvid\": %d,\n", ND_gid(n));
@@ -473,23 +534,37 @@ static void write_node(Agnode_t * n, GVJ_t * job, int top, state_t* sp)
     }
     else {
 	gvprintf(job, "%d", ND_gid(n));
-	sp->Level--;
     }
 }
 
-static int write_nodes(Agraph_t * g, GVJ_t * job, int top, state_t* sp)
+static int write_nodes(Agraph_t * g, GVJ_t * job, int top, int has_subgs, state_t* sp)
 {
     Agnode_t* n;
     int not_first = 0;
 
     n = agfstnode(g);
-    if (!n) return 0;
+    if (!n) {
+	if (has_subgs) {
+	    sp->Level--;
+	    gvputs(job, "\n");
+	    indent (job, sp->Level);
+	    gvputs(job, "]");
+	}
+	return 0;
+    }
     gvputs(job, ",\n");
     indent (job, sp->Level++);
-    gvputs(job, "\"nodes\": [\n");
+    if (top) {
+	if (!has_subgs) gvputs(job, "\"objects\": [\n");
+    }
+    else {
+	gvputs(job, "\"nodes\": [\n");
+	indent (job, sp->Level);
+    }
     for (; n; n = agnxtnode(g, n)) {
+	if (IS_CLUSTER(n)) continue;
 	if (not_first) 
-	    gvputs(job, ",\n");
+	    gvputs(job, ",");
 	else
 	    not_first = 1;
 	write_node (n, job, top, sp);
@@ -501,30 +576,115 @@ static int write_nodes(Agraph_t * g, GVJ_t * job, int top, state_t* sp)
     return 1;
 }
 
+typedef struct {
+    Dtlink_t link;
+    char* id;
+    int v;
+} intm;
+
+static void freef(Dt_t * dt, intm * obj, Dtdisc_t * disc)
+{
+    free(obj->id);
+    free(obj);
+}
+
+static Dtdisc_t intDisc = {
+    offsetof(intm, id),
+    -1,
+    offsetof(intm, link),
+    (Dtmake_f) NULL,
+    (Dtfree_f) freef,
+    (Dtcompar_f) NULL,
+    0,
+    0,
+    0
+};
+
+#define NEW(t)          (t*)calloc(1,sizeof(t))
+
+static int lookup (Dt_t* map, char* name)
+{
+    intm* ip = (intm*)dtmatch(map, name);    
+    if (ip) return ip->v;
+    else return -1;
+}
+ 
+static void insert (Dt_t* map, char* name, int v)
+{
+    intm* ip = (intm*)dtmatch(map, name);    
+
+    if (ip) {
+	if (ip->v != v)
+	    agerr(AGWARN, "Duplicate cluster name \"%s\"\n", name);
+	return;
+    }
+    ip = NEW(intm);
+    ip->id = strdup(name);
+    ip->v = v;
+    dtinsert (map, ip);
+}
+
+static int label_subgs(Agraph_t* g, int lbl, Dt_t* map)
+{
+    Agraph_t* sg;
+
+    if (g != agroot(g)) {
+	GD_gid(g) = lbl++;
+	if (IS_CLUSTER(g))
+	    insert (map, agnameof(g), GD_gid(g)); 
+    }
+    for (sg = agfstsubg(g); sg; sg = agnxtsubg(sg)) {
+	lbl = label_subgs(sg, lbl, map);
+    }
+    return lbl;
+}
+
+
 static void write_graph(Agraph_t * g, GVJ_t * job, int top, state_t* sp)
 {
     Agnode_t* np; 
     Agedge_t* ep; 
     int ncnt = 0;
     int ecnt = 0;
+    int sgcnt = 0;
+    int has_subgs;
+    Dt_t* map;
 
     if (top) {
+	map = dtopen (&intDisc, Dtoset);
 	aginit(g, AGNODE, ID, sizeof(gvid_t), FALSE);
 	aginit(g, AGEDGE, ID, sizeof(gvid_t), FALSE);
+	aginit(g, AGRAPH, ID, -((int)sizeof(gvid_t)), FALSE);
+	sgcnt = label_subgs(g, sgcnt, map);
 	for (np = agfstnode(g); np; np = agnxtnode(g,np)) {
-	    ND_gid(np) = ncnt++;
-	    for (ep = agfstout(g, np); ep; ep = agnxtout(g,ep)) {
-		ED_gid(ep) = ecnt++;
+	    if (IS_CLUSTER(np)) {
+		ND_gid(np) = lookup(map, agnameof(np));
+	    }
+	    else {
+		ND_gid(np) = sgcnt + ncnt++;
+		for (ep = agfstout(g, np); ep; ep = agnxtout(g,ep)) {
+		    ED_gid(ep) = ecnt++;
+		}
 	    }
 	}
+	dtclose(map);
     }
 
     indent (job, sp->Level++);
     gvputs(job, "{\n");
     write_hdr(g, job, top, sp);
     write_attrs((Agobj_t*)g, job, sp);
-    write_subgs(g, job, sp);
-    write_nodes (g, job, top, sp);
+    if (top) {
+	gvputs(job, ",\n");
+	indent (job, sp->Level);
+	gvprintf(job, "\"_subgraph_cnt\": %d", sgcnt);
+    } else {
+	gvputs(job, ",\n");
+	indent (job, sp->Level);
+	gvprintf(job, "\"_gvid\": %d", GD_gid(g));
+    }
+    has_subgs = write_subgs(g, job, top, sp);
+    write_nodes (g, job, top, has_subgs, sp);
     write_edges (g, job, top, sp);
     gvputs(job, "\n");
     sp->Level--;
