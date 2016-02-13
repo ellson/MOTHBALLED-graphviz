@@ -18,12 +18,12 @@ html_DATA = attrs.html colors.html command.html \
   aa_ornormal.gif aa_rbox.gif aa_rcrow.gif aa_rdiamond.gif aa_rinv.gif \
   aa_rnormal.gif aa_rtee.gif aa_rvee.gif aa_tee.gif aa_vee.gif back.gif \
   both.gif box.gif box3d.gif circle.gif colorlist.gif component.gif underline.gif \
-  constraint.gif diamond.gif doublecircle.gif doubleoctagon.gif egg.gif \
+  constraint.gif cylinder.gif diamond.gif doublecircle.gif doubleoctagon.gif egg.gif \
   ellipse.gif fill.gif folder.gif forward.gif hexagon.gif house.gif \
   g_lin0.png g_lin270.png g_lin45.png g_rad0.png g_rad270.png g_rad45.png \
   g_lin180.png g_lin360.png g_lin90.png g_rad180.png g_rad360.png g_rad90.png \
   html1.gif html2.gif html3.gif html4.gif invhouse.gif invtrapezium.gif \
-  invtriangle.gif mrecord.gif nohead.gif none.gif note.gif octagon.gif \
+  invtriangle.gif mrecord.gif nohead.gif none.gif plain.gif note.gif octagon.gif \
   oval.gif parallelogram.gif pentagon.gif plaintext.gif point.gif polygon.gif \
   record.gif record2.gif rect.gif rectangle.gif round.gif septagon.gif tab.gif \
   trapezium.gif triangle.gif tripleoctagon.gif sdlshapes.jpg sdlshapes.png \

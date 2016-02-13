@@ -70,6 +70,15 @@ static poly_desc_t star_gen = {
     star_vertices,
 };
 
+static pointf cylinder_size (pointf);
+static void cylinder_vertices (pointf*, pointf*);
+static void cylinder_draw(GVJ_t * job, pointf * AF, int sides, int style, int filled);
+/* static boolean cylinder_inside(inside_t * inside_context, pointf p); */
+static poly_desc_t cylinder_gen = {
+    cylinder_size,
+    cylinder_vertices,
+};
+
 /* polygon descriptions.  "polygon" with 0 sides takes all user control */
 
 /*			       regul perip sides orien disto skew */
@@ -98,6 +107,7 @@ static polygon_t p_folder = { FALSE, 1, 4, 0., 0., 0., FOLDER };
 static polygon_t p_box3d = { FALSE, 1, 4, 0., 0., 0., BOX3D };
 static polygon_t p_component = { FALSE, 1, 4, 0., 0., 0., COMPONENT };
 static polygon_t p_underline = { FALSE, 1, 4, 0., 0., 0., UNDERLINE };
+static polygon_t p_cylinder = { FALSE, 1, 19, 0., 0., 0., CYLINDER, (pointf*)&cylinder_gen };
 
 /* redundant and undocumented builtin polygons */
 static polygon_t p_doublecircle = { TRUE, 2, 1, 0., 0., 0. };
@@ -211,6 +221,14 @@ static shape_functions star_fns = {
     poly_path,
     poly_gencode
 };
+static shape_functions cylinder_fns = {
+    poly_init,
+    poly_free,
+    poly_port,
+    poly_inside,
+    poly_path,
+    poly_gencode
+};
 
 static shape_desc Shapes[] = {	/* first entry is default for no such shape */
     {"box", &poly_fns, &p_box},
@@ -237,6 +255,7 @@ static shape_desc Shapes[] = {	/* first entry is default for no such shape */
     {"folder", &poly_fns, &p_folder},
     {"box3d", &poly_fns, &p_box3d},
     {"component", &poly_fns, &p_component},
+    {"cylinder", &cylinder_fns, &p_cylinder},
     {"rect", &poly_fns, &p_box},
     {"rectangle", &poly_fns, &p_box},
     {"square", &poly_fns, &p_square},
@@ -508,6 +527,10 @@ void round_corners(GVJ_t * job, pointf * AF, int sides, int style, int filled)
 	mode = shape;
     else
 	mode = ROUNDED;
+    if (mode == CYLINDER) {
+	cylinder_draw (job, AF, sides, style, filled);
+	return;
+    } 
     B = N_NEW(4 * sides + 4, pointf);
     i = 0;
     /* rbconst is distance offset from a corner of the polygon.
@@ -3980,6 +4003,89 @@ static boolean star_inside(inside_t * inside_context, pointf p)
     }
     return TRUE;
 }
+
+static pointf cylinder_size (pointf sz)
+{
+    sz.y *= 1.375;
+    return sz;
+}
+
+static void cylinder_vertices (pointf* vertices, pointf* bb)
+{
+    double x = bb->x/2;
+    double y = bb->y/2;
+    double yr = bb->y/11;
+
+    vertices[0].x = x;
+    vertices[0].y = y-yr;
+    vertices[1].x = x;
+    vertices[1].y = y-(1-0.551784)*yr;
+    vertices[2].x = 0.551784*x;
+    vertices[2].y = y;
+    vertices[3].x = 0;
+    vertices[3].y = y;
+    vertices[4].x = -0.551784*x;
+    vertices[4].y = y;
+    vertices[5].x = -x;
+    vertices[5].y = vertices[1].y;
+    vertices[6].x = -x;
+    vertices[6].y = y-yr;
+    vertices[7] = vertices[6];
+    vertices[8].x = -x;
+    vertices[8].y = yr-y;
+    vertices[9] = vertices[8];
+    vertices[10].x = -x;
+    vertices[10].y = -vertices[1].y;
+    vertices[11].x = vertices[4].x;
+    vertices[11].y = -vertices[4].y;
+    vertices[12].x = vertices[3].x;
+    vertices[12].y = -vertices[3].y;
+    vertices[13].x = vertices[2].x;
+    vertices[13].y = -vertices[2].y;
+    vertices[14].x = vertices[1].x;
+    vertices[14].y = -vertices[1].y;
+    vertices[15].x = vertices[0].x;
+    vertices[15].y = -vertices[0].y;
+    vertices[16] = vertices[15];
+    vertices[18] = vertices[17] = vertices[0];
+}
+
+static void cylinder_draw(GVJ_t * job, pointf * AF, int sides, int style, int filled)
+{
+    pointf vertices[7];
+    double y0 = AF[0].y;
+    double y02 = y0+y0;
+
+    vertices[0] = AF[0];
+    vertices[1].x = AF[1].x;
+    vertices[1].y = y02 - AF[1].y;
+    vertices[2].x = AF[2].x;
+    vertices[2].y = y02 - AF[2].y;
+    vertices[3].x = AF[3].x;
+    vertices[3].y = y02 - AF[3].y;
+    vertices[4].x = AF[4].x;
+    vertices[4].y = y02 - AF[4].y;
+    vertices[5].x = AF[5].x;
+    vertices[5].y = y02 - AF[5].y;
+    vertices[6] = AF[6];
+
+    gvrender_beziercurve(job, AF, sides, FALSE, FALSE, filled);
+    gvrender_beziercurve(job, vertices, 7, FALSE, FALSE, FALSE);
+}
+
+#if 0
+/* cylinder_inside:
+ * At present, we use just the polygonal outline provided by vertices.
+ * This cold be made more precise by using a finer-grained polyline path
+ * to the spline top and bottom. Another approach might be to approximate
+ * the top and bottom by ellipses. Then the test would involve a check if
+ * the point is in the rectangle or one of the two ellipses.
+ */ 
+static boolean cylinder_inside(inside_t * inside_context, pointf p)
+{
+    return TRUE;
+}
+#endif
 
 static char *side_port[] = { "s", "e", "n", "w" };
 
