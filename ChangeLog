@@ -1,6 +1,10 @@
 February 13, 2016
 	- Add cylinder shape for databases.
 	- Free installed plugins
+	- Update makefile for dot so that the using libpanco_C in the static build include PANGOFT2
+      as well as PANGOCAIRO_LIBS
+	- Update makefile for dot so that the using libpanco_C in the static build include PANGOFT2
+      as well as PANGOCAIRO_LIBS (needed for some versions of Ubuntu)
 September 9, 2014
 	- Add plain shape for use with HTML-like labels.
 August 12, 2014
