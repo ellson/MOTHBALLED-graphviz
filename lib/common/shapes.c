@@ -4004,6 +4004,10 @@ static boolean star_inside(inside_t * inside_context, pointf p)
     return TRUE;
 }
 
+/* cylinder:
+ * Code based on PostScript version by Brandon Rhodes.
+ * http://rhodesmill.org/brandon/2007/a-database-symbol-for-graphviz/
+ */
 static pointf cylinder_size (pointf sz)
 {
     sz.y *= 1.375;
