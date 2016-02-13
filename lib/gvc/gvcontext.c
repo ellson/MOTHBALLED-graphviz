@@ -75,6 +75,13 @@ int gvFreeContext(GVC_t * gvc)
 {
     GVG_t *gvg, *gvg_next;
     gvplugin_package_t *package, *package_next;
+    gvplugin_available_t *api, *api_next;
+
+#define ELEM(x) +1
+    /* See gvcext.h for APIS and gvcint.h for an example usage of "+1"
+       to get the number of APIs. */
+    unsigned int num_apis = APIS, i;
+#undef ELEM
 
     emit_once_reset();
     gvg_next = gvc->gvgs;
@@ -95,6 +102,12 @@ int gvFreeContext(GVC_t * gvc)
     if (gvc->input_filenames)
 	free(gvc->input_filenames);
     textfont_dict_close(gvc);
+    for (i = 0; i != num_apis; ++i) {
+	for (api = gvc->apis[i]; api != NULL; api = api_next) {
+	    api_next = api->next;
+	    free(api);
+	}
+    }
     free(gvc);
     return (graphviz_errors + agerrors());
 }
