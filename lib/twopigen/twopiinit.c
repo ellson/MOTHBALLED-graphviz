@@ -123,7 +123,7 @@ void twopi_layout(Agraph_t * g)
 	if (ncc == 1) {
 	    if (ctr)
 		lctr = ctr;
-	    else if (!(lctr = findRootNode(g, rootattr)))
+	    else if (!rootattr || !(lctr = findRootNode(g, rootattr)))
 		lctr = 0;
 	    c = circleLayout(g, lctr);
 	    if (setRoot && !ctr)
@@ -144,7 +144,7 @@ void twopi_layout(Agraph_t * g)
 		sg = ccs[i];
 		if (ctr && agcontains(sg, ctr))
 		    lctr = ctr;
-		else if (!(lctr = findRootNode(sg, rootattr)))
+		else if (!rootattr || !(lctr = findRootNode(sg, rootattr)))
 		    lctr = 0;
 		nodeInduce(sg);
 		c = circleLayout(sg, lctr);
