@@ -39,12 +39,13 @@
 
 typedef enum {
 	FORMAT_JSON,
+	FORMAT_JSON0,
 } format_type;
 
 typedef struct {
     int Level;
-    int isLatin;
-    unsigned char Attrs_not_written_flag;
+    boolean isLatin;
+    boolean Attrs_not_written_flag;
 } state_t;
 
 typedef struct {
@@ -61,10 +62,12 @@ typedef struct {
 
 static void json_begin_graph(GVJ_t *job)
 {
-    GVC_t* gvc = gvCloneGVC (job->gvc); 
-    graph_t *g = job->obj->u.g;
-    gvRender (gvc, g, "xdot", NULL); 
-    gvFreeCloneGVC (gvc);
+    if (job->render.id == FORMAT_JSON) {
+	GVC_t* gvc = gvCloneGVC (job->gvc); 
+	graph_t *g = job->obj->u.g;
+	gvRender (gvc, g, "xdot", NULL); 
+	gvFreeCloneGVC (gvc);
+    }
 }
 
 #define LOCALNAMEPREFIX		'%'
@@ -755,8 +758,19 @@ gvrender_engine_t json_engine = {
     0,				/* json_library_shape */
 };
 
-gvrender_features_t render_features_json = {
+gvrender_features_t render_features_json0 = {
     GVRENDER_DOES_TRANSFORM,	/* not really - uses raw graph coords */  /* flags */
+    0.,                         /* default pad - graph units */
+    NULL,			/* knowncolors */
+    0,				/* sizeof knowncolors */
+    COLOR_STRING,		/* color_type */
+};
+
+gvrender_features_t render_features_json = {
+    GVRENDER_DOES_TRANSFORM	/* not really - uses raw graph coords */
+	| GVRENDER_DOES_MAPS
+	| GVRENDER_DOES_TARGETS
+	| GVRENDER_DOES_TOOLTIPS, /* flags */
     0.,                         /* default pad - graph units */
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
@@ -772,10 +786,12 @@ gvdevice_features_t device_features_json = {
 
 gvplugin_installed_t gvrender_json_types[] = {
     {FORMAT_JSON, "json", 1, &json_engine, &render_features_json},
+    {FORMAT_JSON0, "json0", 1, &json_engine, &render_features_json},
     {0, NULL, 0, NULL, NULL}
 };
 
 gvplugin_installed_t gvdevice_json_types[] = {
     {FORMAT_JSON, "json:json", 1, NULL, &device_features_json},
+    {FORMAT_JSON0, "json0:json0", 1, NULL, &device_features_json},
     {0, NULL, 0, NULL, NULL}
 };
