@@ -40,11 +40,14 @@
 typedef enum {
 	FORMAT_JSON,
 	FORMAT_JSON0,
+	FORMAT_DOT_JSON,
+	FORMAT_XDOT_JSON,
 } format_type;
 
 typedef struct {
     int Level;
     boolean isLatin;
+    boolean doXDot;
     boolean Attrs_not_written_flag;
 } state_t;
 
@@ -67,6 +70,9 @@ static void json_begin_graph(GVJ_t *job)
 	graph_t *g = job->obj->u.g;
 	gvRender (gvc, g, "xdot", NULL); 
 	gvFreeCloneGVC (gvc);
+    }
+    else if (job->render.id == FORMAT_JSON0) {
+	attach_attrs(job->gvc->g);
     }
 }
 
@@ -358,7 +364,7 @@ static void write_attrs(Agobj_t * obj, GVJ_t * job, state_t* sp)
 	gvputs(job, ",\n");
 	indent (job, sp->Level);
 	gvprintf(job, "\"%s\": ", stoj(sym->name, sp));
-	if (isXDot(sym->name))
+	if (sp->doXDot && isXDot(sym->name))
 	    write_xdots(agxget(obj, sym), job, sp);
 	else
 	    gvprintf(job, "\"%s\"", stoj(agxget(obj, sym), sp));
@@ -720,6 +726,7 @@ static void json_end_graph(GVJ_t *job)
     set_attrwf(g, TRUE, FALSE);
     sp.Level = 0;
     sp.isLatin = (GD_charset(g) == CHAR_LATIN1);
+    sp.doXDot = ((job->render.id == FORMAT_JSON) || (job->render.id == FORMAT_XDOT_JSON));
     sp.Attrs_not_written_flag = 0;
     write_graph(g, job, TRUE, &sp);
     /* agwrite(g, (FILE*)job); */
@@ -758,7 +765,7 @@ gvrender_engine_t json_engine = {
     0,				/* json_library_shape */
 };
 
-gvrender_features_t render_features_json0 = {
+gvrender_features_t render_features_json1 = {
     GVRENDER_DOES_TRANSFORM,	/* not really - uses raw graph coords */  /* flags */
     0.,                         /* default pad - graph units */
     NULL,			/* knowncolors */
@@ -777,6 +784,13 @@ gvrender_features_t render_features_json = {
     COLOR_STRING,		/* color_type */
 };
 
+gvdevice_features_t device_features_json_nop = {
+    LAYOUT_NOT_REQUIRED,	/* flags */
+    {0.,0.},			/* default margin - points */
+    {0.,0.},			/* default page width, height - points */
+    {72.,72.},			/* default dpi */
+};
+
 gvdevice_features_t device_features_json = {
     0,				/* flags */
     {0.,0.},			/* default margin - points */
@@ -787,11 +801,15 @@ gvdevice_features_t device_features_json = {
 gvplugin_installed_t gvrender_json_types[] = {
     {FORMAT_JSON, "json", 1, &json_engine, &render_features_json},
     {FORMAT_JSON0, "json0", 1, &json_engine, &render_features_json},
+    {FORMAT_DOT_JSON, "dot_json", 1, &json_engine, &render_features_json},
+    {FORMAT_XDOT_JSON, "xdot_json", 1, &json_engine, &render_features_json},
     {0, NULL, 0, NULL, NULL}
 };
 
 gvplugin_installed_t gvdevice_json_types[] = {
     {FORMAT_JSON, "json:json", 1, NULL, &device_features_json},
-    {FORMAT_JSON0, "json0:json0", 1, NULL, &device_features_json},
+    {FORMAT_JSON0, "json0:json", 1, NULL, &device_features_json},
+    {FORMAT_DOT_JSON, "dot_json:json", 1, NULL, &device_features_json_nop},
+    {FORMAT_XDOT_JSON, "xdot_json:json", 1, NULL, &device_features_json_nop},
     {0, NULL, 0, NULL, NULL}
 };
