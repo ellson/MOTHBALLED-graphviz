@@ -140,7 +140,8 @@ static char* dotneato_basename (char* path)
 	if (dotp && !strcasecmp(dotp+1,"exe")) *dotp = '\0';
     }
 #endif
-    while (*s) s++; s--;
+    while (*s) s++;
+    s--;
     /* skip over trailing slashes, nulling out as we go */
     while ((s > path) && ((*s == '/') || (*s == '\\')))
 	*s-- = '\0';
