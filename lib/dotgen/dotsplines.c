@@ -988,7 +988,7 @@ makeSimpleFlatLabels (node_t* tn, node_t* hn, edge_t** edges, int ind, int cnt, 
     int i, pointn;
     double leftend, rightend, ctrx, ctry, miny, maxy;
     double uminx, umaxx;
-    double lminx, lmaxx;
+    double lminx=0.0, lmaxx=0.0;
 
     edge_t** earray = N_NEW(cnt, edge_t*);
 
