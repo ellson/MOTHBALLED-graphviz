@@ -493,10 +493,12 @@ bundle (Agraph_t* g, opts_t* opts)
 
 	edges = edge_bundling(A, 2, x, opts->outer_iter, opts->K, opts->method, opts->nneighbors, opts->compatibility_method, opts->max_recursion, opts->angle_param, opts->angle, 0);
 	
-	if (opts->fmt == FMT_GV)
-    	export_dot (outfile, A->m, edges, g);
-    else
-    	pedge_export_gv(outfile, A->m, edges);
+	if (opts->fmt == FMT_GV) {
+	    	export_dot (outfile, A->m, edges, g);
+	}
+	else {
+		pedge_export_gv(outfile, A->m, edges);
+	}
 	return rv;
 }
 
