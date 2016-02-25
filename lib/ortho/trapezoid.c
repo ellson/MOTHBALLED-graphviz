@@ -19,7 +19,9 @@
 #include <string.h>
 #include <assert.h>
 #include <stdio.h>
+#ifndef __USE_ISOC99
 #define __USE_ISOC99
+#endif
 #include <math.h>
 #include <geom.h>
 #include <logic.h>
