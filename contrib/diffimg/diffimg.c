@@ -136,9 +136,6 @@ static gdImagePtr imageLoad (char *filename)
 #endif
     }
     else if (strcasecmp(ext, ".jpg") == 0) {
-#ifndef HAVE_HAVE_LIBJPEG
-#undef HAVE_GD_JPEG
-#endif
 #ifdef HAVE_GD_JPEG
         im = gdImageCreateFromJpeg(f);
 #else
