@@ -13,7 +13,7 @@
 
 #include "common.h"
 #include "mem.h"
-#include "io.h"
+#include "leftyio.h"
 #include "code.h"
 #include "tbl.h"
 #include "dot2l.h"

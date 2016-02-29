@@ -429,7 +429,7 @@ DEP_CPP_LEFTY=\
 	".\g.h"\
 	".\gfxview.h"\
 	".\internal.h"\
-	".\io.h"\
+	".\leftyio.h"\
 	".\mem.h"\
 	".\parse.h"\
 	".\str.h"\
@@ -460,7 +460,7 @@ DEP_CPP_INTER=\
 	".\g.h"\
 	".\gfxview.h"\
 	".\internal.h"\
-	".\io.h"\
+	".\leftyio.h"\
 	".\mem.h"\
 	".\parse.h"\
 	".\tbl.h"\
@@ -487,7 +487,7 @@ DEP_CPP_GFXVI=\
 	".\exec.h"\
 	".\g.h"\
 	".\gfxview.h"\
-	".\io.h"\
+	".\leftyio.h"\
 	".\mem.h"\
 	".\parse.h"\
 	".\tbl.h"\
@@ -614,7 +614,7 @@ DEP_CPP_DOTLE=\
 	".\dot2l\triefa.c"\
 	".\dot2l\triefa.h"\
 	".\dotparse.h"\
-	".\io.h"\
+	".\leftyio.h"\
 	{$(INCLUDE)}"\sys\STAT.H"\
 	{$(INCLUDE)}"\sys\TYPES.H"\
 	
@@ -632,7 +632,7 @@ DEP_CPP_DOT2L=\
 	".\./dot2l\dot2l.h"\
 	".\code.h"\
 	".\common.h"\
-	".\io.h"\
+	".\leftyio.h"\
 	".\mem.h"\
 	".\tbl.h"\
 	{$(INCLUDE)}"\sys\STAT.H"\
@@ -651,7 +651,7 @@ SOURCE=.\os\mswin32\io.c
 DEP_CPP_IO_C22=\
 	".\common.h"\
 	".\g.h"\
-	".\io.h"\
+	".\leftyio.h"\
 	".\mem.h"\
 	{$(INCLUDE)}"\sys\STAT.H"\
 	{$(INCLUDE)}"\sys\TYPES.H"\

@@ -50,6 +50,10 @@ libgvpr_la_LIBADD = $(libgvpr_C_la_LIBADD) \
 	$(MATH_LIBS)
 libgvpr_la_DEPENDENCIES = $(libgvpr_C_la_DEPENDENCIES)
 
+if WITH_WIN32
+libgvpr_la_LDFLAGS += -export-symbols-regex gvpr
+endif
+
 mkdefs_SOURCES = mkdefs.c
 
 gdefs.h: $(top_srcdir)/lib/gvpr/gprdata mkdefs$(EXEEXT)

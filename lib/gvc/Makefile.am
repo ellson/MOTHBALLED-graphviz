@@ -68,6 +68,10 @@ libgvc_la_LIBADD = $(libgvc_C_la_LIBADD) \
 	$(EXPAT_LIBS) $(Z_LIBS) $(MATH_LIBS)
 libgvc_la_DEPENDENCIES = $(libgvc_C_la_DEPENDENCIES)
 
+if WITH_WIN32
+libgvc_la_LDFLAGS += -export-symbols $(top_srcdir)/lib/gvc.def
+endif
+
 gvc.3.pdf: $(srcdir)/gvc.3
 	- @GROFF@ -Tps -man $(srcdir)/gvc.3 | @PS2PDF@ - - > gvc.3.pdf
 

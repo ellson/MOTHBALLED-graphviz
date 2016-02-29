@@ -27,6 +27,10 @@
 #endif				/* _POSIX_ */
 #endif				/* _UWIN */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef __CYGWIN__
 #if defined(_BLD_dotneato) && defined(_DLL)
 #   define external __EXPORT__
@@ -55,10 +59,6 @@
 #endif
 #ifndef EXTERN
 #define EXTERN extern
-#endif
-
-#ifdef __cplusplus
-extern "C" {
 #endif
 
     EXTERN char *Version;
