@@ -32,6 +32,24 @@
 #include <ghostscript/ierrors.h>
 #include <cairo/cairo.h>
 
+
+/**
+ * Ensure compatibility with Ghostscipt versions newer than 9.18
+ * while maintaining compatibility with the older versions.
+ **/
+
+#ifndef e_VMerror
+#define e_VMerror gs_error_VMerror
+#endif
+
+#ifndef e_unregistered
+#define e_unregistered gs_error_unregistered
+#endif
+
+#ifndef e_invalidid
+#define e_invalidid gs_error_invalidid
+#endif
+
 #ifdef WIN32
 #define NUL_FILE "nul"
 #else
