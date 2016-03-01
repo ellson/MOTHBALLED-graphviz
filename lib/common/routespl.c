@@ -944,7 +944,7 @@ makeStraightEdge(graph_t * g, edge_t * e, int et, splineInfo* sinfo)
 
     e_cnt = 1;
     e0 = e;
-    while ((e0 = ED_to_virt(e0))) e_cnt++;
+    while ((e0 != ED_to_virt(e0)) && (e0 = ED_to_virt(e0))) e_cnt++;
 
     if (e_cnt <= MAX_EDGE)
 	edges = elist;
