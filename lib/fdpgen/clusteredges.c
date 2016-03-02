@@ -29,6 +29,7 @@
 #include <fdp.h>
 #include <neatoprocs.h>
 #include "vispath.h"
+#include "pack.h"
 
 typedef struct {
     int cnt;
@@ -284,10 +285,17 @@ int compoundEdges(graph_t * g, expand_t* pm, int edgetype)
 		    }
 		}
 		else {
-		    if (Verbose)
-			fprintf(stderr,
-				"nodes touch - falling back to straight line edges\n");
-		    rv = 1;
+		    if (rv == 0) {
+			expand_t margin = sepFactor(g);
+			int pack = getPack (g, CL_OFFSET, CL_OFFSET); 
+			agerr(AGWARN, "compoundEdges: nodes touch - falling back to straight line edges\n");
+			if ((pack <= pm->x) || (pack <= pm->y))
+			    agerr(AGPREV, "pack value %d is smaller than esep (%.03f,%.03f)\n", pack, pm->x, pm->y);
+			else if ((margin.x <= pm->x) || (margin.y <= pm->y))
+			    agerr(AGPREV, "sep value (%.03f,%.03f) is smaller than esep (%.03f,%.03f)\n",  
+				margin.x, margin.y, pm->x, pm->y);
+			rv = 1;
+		    }
 		    continue;
 		}
 
