@@ -1242,7 +1242,7 @@ int adjustNodes(graph_t * G)
  * Return 1 on success, 0 on failure
  */
 static int
-parseFactor (char* s, expand_t* pp, float sepfact)
+parseFactor (char* s, expand_t* pp, float sepfact, float dflt)
 {
     int i;
     float x, y;
@@ -1257,8 +1257,18 @@ parseFactor (char* s, expand_t* pp, float sepfact)
     if ((i = sscanf(s, "%f,%f", &x, &y))) {
 	if (i == 1) y = x;
 	if (pp->doAdd) {
-	    pp->x = x/sepfact;
-	    pp->y = y/sepfact;
+	    if (sepfact > 1) {
+		pp->x = MIN(dflt,x/sepfact);
+		pp->y = MIN(dflt,y/sepfact);
+	    }
+	    else if (sepfact < 1) {
+		pp->x = MAX(dflt,x/sepfact);
+		pp->y = MAX(dflt,y/sepfact);
+	    }
+	    else {
+		pp->x = x;
+		pp->y = y;
+	    }
 	}
 	else {
 	    pp->x = 1.0 + x/sepfact;
@@ -1277,9 +1287,9 @@ sepFactor(graph_t* g)
     expand_t pmargin;
     char*  marg;
 
-    if ((marg = agget(g, "sep")) && parseFactor(marg, &pmargin, 1.0)) {
+    if ((marg = agget(g, "sep")) && parseFactor(marg, &pmargin, 1.0, 0)) {
     }
-    else if ((marg = agget(g, "esep")) && parseFactor(marg, &pmargin, SEPFACT)) {
+    else if ((marg = agget(g, "esep")) && parseFactor(marg, &pmargin, SEPFACT, DFLT_MARGIN)) {
     }
     else { /* default */
 	pmargin.x = pmargin.y = DFLT_MARGIN;
@@ -1303,9 +1313,9 @@ esepFactor(graph_t* g)
     expand_t pmargin;
     char*  marg;
 
-    if ((marg = agget(g, "esep")) && parseFactor(marg, &pmargin, 1.0)) {
+    if ((marg = agget(g, "esep")) && parseFactor(marg, &pmargin, 1.0, 0)) {
     }
-    else if ((marg = agget(g, "sep")) && parseFactor(marg, &pmargin, 1.0/SEPFACT)) {
+    else if ((marg = agget(g, "sep")) && parseFactor(marg, &pmargin, 1.0/SEPFACT, SEPFACT*DFLT_MARGIN)) {
     }
     else {
 	pmargin.x = pmargin.y = SEPFACT*DFLT_MARGIN;
