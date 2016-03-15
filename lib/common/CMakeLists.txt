@@ -74,6 +74,7 @@ target_include_directories(graphviz_lib_common
 )
 target_link_libraries(graphviz_lib_common
     PRIVATE
+    graphviz_lib_gvc # FIXME: Circular dep
     graphviz_lib_label
     graphviz_lib_fdpgen
     graphviz_lib_cgraph

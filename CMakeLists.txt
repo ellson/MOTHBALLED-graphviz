@@ -18,11 +18,16 @@ cmake_minimum_required (VERSION 2.8.11) # feature: string(TIMESTAMP ...)
 
 project(Graphviz C)
 
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH})
+
 include(CheckIncludeFiles)
 include(CheckSymbolExists)
 include(CheckCCompilerFlag)
 include(CheckSymbolExists)
 include(CMakeParseArguments)
+include(CTest)
+
+include(ECMAddTests)
 
 # BEGIN: Constants
 set(GV_VERSION_MAJOR "2")
@@ -189,6 +194,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_subdirectory(lib)
 add_subdirectory(plugin)
+add_subdirectory(tests)
 
 configure_file(builddate.h.in builddate.h)
 configure_file(config.h.in config.h)
