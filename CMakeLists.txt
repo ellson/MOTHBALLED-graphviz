@@ -119,9 +119,14 @@ add_definitions(-DGVC_EXPORTS -DCGRAPH_EXPORTS -D_BLD_cdt)
 if (NOT HAVE_UNISTD_H)
     add_definitions("-DYY_NO_UNISTD_H")
 endif()
+
 if (MSVC)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /wd4242 /wd4244 /wd4305 /wd4996")
     set(CMAKE_C_FLAGS "/MP ${CMAKE_C_FLAGS}")
+endif()
+if (APPLE)
+    # Work-around https://cmake.org/Bug/view.php?id=10342
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-common")
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
