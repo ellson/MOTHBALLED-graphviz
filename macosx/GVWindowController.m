@@ -43,6 +43,8 @@
 	NSWindow *window = [self window];
 	if (![window isZoomed])
 		[window zoom:self];
+
+	[documentView setDelegate:self];
 }
 
 - (void)graphDocumentDidChange:(NSNotification*)notification
@@ -87,6 +89,13 @@
 - (IBAction)printGraphDocument:(id)sender
 {
 	[documentView printWithInfo:[[self document] printInfo] autoRotate:NO];
+}
+
+- (void)PDFViewWillClickOnLink:(PDFView *)sender withURL:(NSURL *)URL
+{
+	NSURL* baseURL = [[self document] fileURL];
+	NSURL* targetURL = [NSURL URLWithString:[URL absoluteString] relativeToURL:baseURL];
+	[[NSWorkspace sharedWorkspace] openURL:targetURL];
 }
 
 - (BOOL)validateUserInterfaceItem:(id <NSValidatedUserInterfaceItem>)anItem

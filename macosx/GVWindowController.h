@@ -34,6 +34,8 @@
 
 - (IBAction)printGraphDocument:(id)sender;
 
+- (void)PDFViewWillClickOnLink:(PDFView *)sender withURL:(NSURL *)URL;
+
 - (BOOL)validateUserInterfaceItem:(id <NSValidatedUserInterfaceItem>)anItem;
 
 - (void)dealloc;
