@@ -3391,7 +3391,7 @@ static pointf size_reclbl(node_t * n, field_t * f)
 		    if (i > 1)
 			dimen.y += 2 * POINTS(marginy);
 		    else
-			dimen.y += 2 * POINTS(marginy);
+			dimen.y += 2 * POINTS(marginx);
 		} else
 		    PAD(dimen);
 	    } else
