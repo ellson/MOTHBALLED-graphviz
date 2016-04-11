@@ -647,7 +647,7 @@ shape
      shapes : polygon-based, record-based and PostScript-based.
 splineType
      spline ( ';' spline )*
-      where spline= (endp)? (startp)? point (triple)]*
+      where spline= (startp)? (endp)? point (triple)]*
        and triple = point point point
          and endp = "e,%d,%d"
        and startp = "s,%d,%d"
