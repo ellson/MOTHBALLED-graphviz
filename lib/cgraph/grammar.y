@@ -95,8 +95,8 @@ static gstack_t *S;
 
 %%
 
-graph		:  hdr body {endgraph();}
-			|  error	{freestack(); if (G) {endgraph(); agclose(G); G = Ag_G_global = NIL(Agraph_t*);}}
+graph		:  hdr body {freestack(); endgraph();}
+			|  error	{if (G) {freestack(); endgraph(); agclose(G); G = Ag_G_global = NIL(Agraph_t*);}}
 			|  /* empty */
 			;
 
