@@ -3,8 +3,13 @@ sudo: false
 addons:
   apt:
     packages:
-      - libgd2-xpm-dev
       - ksh
+      - libgd2-xpm-dev
+      - tcl-dev
+      - libdevil-dev
+      - libxaw7-dev
+      - freeglut3-dev
+
 script:
   - ./autogen.sh
   - ./configure
