@@ -3,6 +3,8 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
+export TAR_OPTIONS = --owner=0 --group=0
+
 txtdir = $(pkgdatadir)/doc
 htmldir = $(pkgdatadir)/doc/html
 
