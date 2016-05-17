@@ -397,7 +397,6 @@ static void write_subg(Agraph_t * g, GVJ_t * job, state_t* sp)
     write_graph (g, job, FALSE, sp);
     for (sg = agfstsubg(g); sg; sg = agnxtsubg(sg)) {
 	gvputs(job, ",\n");
-	indent(job, sp->Level-1);
 	write_subg(sg, job, sp);
     }
 }
@@ -483,9 +482,7 @@ static void write_edge(Agedge_t * e, GVJ_t * job, int top, state_t* sp)
 	gvputs(job, "}");
     }
     else {
-	indent (job, sp->Level++);
 	gvprintf(job, "%d", ED_gid(e));
-	sp->Level--;
     }
 }
 
@@ -510,10 +507,15 @@ static int write_edges(Agraph_t * g, GVJ_t * job, int top, state_t* sp)
     gvputs(job, ",\n");
     indent (job, sp->Level++);
     gvputs(job, "\"edges\": [\n");
+    if (!top)
+        indent (job, sp->Level);
     for (; np; np = agnxtnode(g,np)) {
 	for (ep = agfstout(g, np); ep; ep = agnxtout(g,ep)) {
 	    if (not_first) 
-		gvputs(job, ",\n");
+                if (top)
+		    gvputs(job, ",\n");
+                else
+		    gvputs(job, ",");
 	    else
 		not_first = 1;
 	    write_edge(ep, job, top, sp);
@@ -553,7 +555,7 @@ static int write_nodes(Agraph_t * g, GVJ_t * job, int top, int has_subgs, state_
 
     n = agfstnode(g);
     if (!n) {
-	if (has_subgs) {
+	if (has_subgs && top) {
 	    sp->Level--;
 	    gvputs(job, "\n");
 	    indent (job, sp->Level);
@@ -562,18 +564,24 @@ static int write_nodes(Agraph_t * g, GVJ_t * job, int top, int has_subgs, state_
 	return 0;
     }
     gvputs(job, ",\n");
-    indent (job, sp->Level++);
     if (top) {
-	if (!has_subgs) gvputs(job, "\"objects\": [\n");
+	if (!has_subgs) {
+            indent (job, sp->Level++);
+            gvputs(job, "\"objects\": [\n");
+        }
     }
     else {
+        indent (job, sp->Level++);
 	gvputs(job, "\"nodes\": [\n");
 	indent (job, sp->Level);
     }
     for (; n; n = agnxtnode(g, n)) {
 	if (IS_CLUSTER(n)) continue;
 	if (not_first) 
-	    gvputs(job, ",");
+            if (top)
+	        gvputs(job, ",\n");
+            else
+	        gvputs(job, ",");
 	else
 	    not_first = 1;
 	write_node (n, job, top, sp);
