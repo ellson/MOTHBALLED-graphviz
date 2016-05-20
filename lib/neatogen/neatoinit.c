@@ -1502,7 +1502,7 @@ void neato_layout(Agraph_t * g)
 	    if (noTranslate) doEdges(g);
 	    else spline_edges(g);
 	}
-	gv_postprocess(g, 0);
+	gv_postprocess(g, !noTranslate);
     }
     PSinputscale = save_scale;
 }
