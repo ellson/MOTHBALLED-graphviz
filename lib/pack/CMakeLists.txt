@@ -6,6 +6,7 @@ target_link_libraries(graphviz_lib_pack
     graphviz_lib_common
     graphviz_lib_xdot
 )
+add_dependencies(graphviz_lib_pack graphviz_lib_common_pre)
 
 install(FILES
     pack.h

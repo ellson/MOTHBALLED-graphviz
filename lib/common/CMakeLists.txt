@@ -17,11 +17,11 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/colortbl.h
 )
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/brewer_lib
     COMMAND awk -f ${Graphviz_SOURCE_DIR}/awk/brewer.awk ${CMAKE_CURRENT_SOURCE_DIR}/brewer_colors > brewer_lib
-    MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/brewer_colors
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/brewer_colors
 )
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/svgcolor_lib
     COMMAND awk -f ${Graphviz_SOURCE_DIR}/awk/svgcolor.awk ${CMAKE_CURRENT_SOURCE_DIR}/svgcolor_names > svgcolor_lib
-    MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/svgcolor_names
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/svgcolor_names
 )
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/ps_font_equiv.h
@@ -64,9 +64,16 @@ add_gvlib(graphviz_lib_common
     ${CMAKE_CURRENT_BINARY_DIR}/colortbl.h
     ${CMAKE_CURRENT_BINARY_DIR}/ps_font_equiv.h
 )
-execute_process(
-    COMMAND sed "s/#undef WITH_CGRAPH/#define WITH_CGRAPH 1/" ${CMAKE_CURRENT_SOURCE_DIR}/types.h.in
-    OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/types.h
+# FIXME: Should be just a `add_custom_command`, unfortunately the cyclic dependency between common <-> pack breaks this
+# types.h is needed by both common & pack.
+# Work-around via custom target
+add_custom_target(graphviz_lib_common_pre
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/types.h
+)
+add_custom_command(OUTPUT types.h
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/types.h.in
+    COMMAND sed "s/#undef WITH_CGRAPH/#define WITH_CGRAPH 1/" ${CMAKE_CURRENT_SOURCE_DIR}/types.h.in > types.h
+    VERBATIM
 )
 target_include_directories(graphviz_lib_common
     PUBLIC ../gvc # FIXME
@@ -84,6 +91,7 @@ target_link_libraries(graphviz_lib_common
     ${EXPAT_LIBRARIES}
     ${Z_LIBRARY}
 )
+add_dependencies(graphviz_lib_common graphviz_lib_common_pre)
 
 install(FILES
     arith.h
