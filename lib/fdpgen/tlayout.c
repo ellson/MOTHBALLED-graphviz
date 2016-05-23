@@ -559,13 +559,13 @@ static pointf initPositions(graph_t * g, bport_t * pp)
      * TODO: place unfixed points using adjacent ports or fixed pts.
      */
     if (pp) {
-/* fprintf (stderr, "initPos %s ctr (%g,%g) Wd %g Ht %g\n", g->name, ctr.x, ctr.y, Wd, Ht); */
+/* fprintf (stderr, "initPos %s ctr (%g,%g) Wd %g Ht %g\n", agnameof(g), ctr.x, ctr.y, T_Wd, T_Ht); */
 	while (pp->e) {		/* position ports on ellipse */
 	    np = pp->n;
 	    ND_pos(np)[0] = T_Wd * cos(pp->alpha) + ctr.x;
 	    ND_pos(np)[1] = T_Ht * sin(pp->alpha) + ctr.y;
 	    ND_pinned(np) = P_SET;
-/* fprintf (stderr, "%s pt (%g,%g) %g\n", np->name, ND_pos(np)[0], ND_pos(np)[1], pp->alpha); */
+/* fprintf (stderr, "%s pt (%g,%g) %g\n", agnameof(np), ND_pos(np)[0], ND_pos(np)[1], pp->alpha); */
 	    pp++;
 	}
 	for (np = agfstnode(g); np; np = agnxtnode(g, np)) {
