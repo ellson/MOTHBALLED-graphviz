@@ -893,8 +893,10 @@ void layout(graph_t * g, layout_info * infop)
     cc = pg = findCComp(dg, &c_cnt, &pinned);
 
     while ((cg = *pg++)) {
+	node_t* nxtnode;
 	fdp_tLayout(cg, &xpms);
-	for (n = agfstnode(cg); n; n = agnxtnode(cg, n)) {
+	for (n = agfstnode(cg); n; n = nxtnode) {
+	    nxtnode = agnxtnode(cg, n);
 	    if (ND_clust(n)) {
 		pointf pt;
 		sg = expandCluster(n, cg);	/* attach ports to sg */
