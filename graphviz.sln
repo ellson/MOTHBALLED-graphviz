@@ -237,8 +237,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sfdp", "lib\sfdpgen\sfdp.vc
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rbtree", "lib\rbtree\rbtree.vcproj", "{D6CEB142-BF8E-471C-AE16-4300F2D5DEDA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gts", "lib\GTS\gts.vcproj", "{0DEA7FAC-4190-4B39-BEF0-1C055758FED3}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvprlib", "lib\gvpr\gvprlib.vcproj", "{8C103DE9-BC35-4173-A08D-63906EC5EEFD}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C0663A08-F276-4DD6-B17C-E501EE066F7C} = {C0663A08-F276-4DD6-B17C-E501EE066F7C}
@@ -288,8 +286,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mingle", "cmd\mingle\mingle
 		{70575BD2-A532-41B8-9A17-B9876E992A84} = {70575BD2-A532-41B8-9A17-B9876E992A84}
 		{D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04} = {D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04}
 	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libann", "lib\ann\MS_Win32\dll\dll.vcproj", "{A7D00B21-CB9C-4BBB-8DEE-51025104F867}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "edgepaintlib", "lib\edgepaint\edgepaintlib.vcproj", "{B1AA9FD1-0D24-44DF-8CAD-AEA73B52B3EC}"
 	ProjectSection(ProjectDependencies) = postProject
