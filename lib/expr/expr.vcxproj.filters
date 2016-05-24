@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="exgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="exlib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="exop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="expr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="excc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="excontext.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="exdata.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="exerror.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="exeval.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="exexpr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="exlexname.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="exnospace.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="exopen.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="exparse.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="exrewind.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="exstash.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="extoken.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="extype.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="exzero.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

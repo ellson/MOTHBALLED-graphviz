@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7DC8987A-C87D-465A-94CF-1F6DF59B38FB}</ProjectGuid>
+    <RootNamespace>sfio</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.25123.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>Debug\</OutDir>
+    <IntDir>Debug\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>Release\</OutDir>
+    <IntDir>Release\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)/lib/sfio/Sfio_dc;C:\gtk\lib\glib-2.0\include;C:\gtk\include\glib-2.0;C:\gtk\include\pango-1.0\;C:\gtk\include\cairo;C:\gtk\include\freetype2;C:\gtk\include;$(SolutionDir)/libltdl;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/agutil;$(SolutionDir)/windows/lib/cdt;$(SolutionDir)/;$(SolutionDir)/lib/graph;$(SolutionDir)/lib/vpsc;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/twopigen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/sfpdpgen;$(SolutionDir)/lib/rbtree;$(SolutionDir)/lib/pathplan;$(SolutionDir)/lib/patchwork;$(SolutionDir)/lib/pack;$(SolutionDir)/lib/ortho;$(SolutionDir)/lib/inkpot;$(SolutionDir)/lib/ingraphs;$(SolutionDir)/lib/gd;$(SolutionDir)/lib/filter;$(SolutionDir)/lib/fdpgen;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/dotgen;$(SolutionDir)/lib/circogen;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/agraph;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvc;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>c:/graphviz-ms/bin/$(ProjectName).lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\gtk\lib\glib-2.0\include;C:\gtk\include\glib-2.0;C:\gtk\include\pango-1.0\;C:\gtk\include\cairo;C:\gtk\include\freetype2;C:\gtk\include;$(SolutionDir)/libltdl;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/agutil;$(SolutionDir)/windows/lib/cdt;$(SolutionDir)/;$(SolutionDir)/lib/graph;$(SolutionDir)/lib/vpsc;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/twopigen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/sfpdpgen;$(SolutionDir)/lib/rbtree;$(SolutionDir)/lib/pathplan;$(SolutionDir)/lib/patchwork;$(SolutionDir)/lib/pack;$(SolutionDir)/lib/ortho;$(SolutionDir)/lib/inkpot;$(SolutionDir)/lib/ingraphs;$(SolutionDir)/lib/gd;$(SolutionDir)/lib/filter;$(SolutionDir)/lib/fdpgen;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/dotgen;$(SolutionDir)/lib/circogen;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/agraph;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvc;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>c:/graphviz-ms/bin/$(ProjectName).lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="sfhdr.h" />
+    <ClInclude Include="sfio.h" />
+    <ClInclude Include="sfio_t.h" />
+    <ClInclude Include="vthread.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="sfclose.c" />
+    <ClCompile Include="sfclrlock.c" />
+    <ClCompile Include="sfcvt.c" />
+    <ClCompile Include="sfdisc.c" />
+    <ClCompile Include="sfdlen.c" />
+    <ClCompile Include="sfexcept.c" />
+    <ClCompile Include="sfexit.c" />
+    <ClCompile Include="sfextern.c" />
+    <ClCompile Include="sffcvt.c" />
+    <ClCompile Include="sffilbuf.c" />
+    <ClCompile Include="sfflsbuf.c" />
+    <ClCompile Include="sfgetd.c" />
+    <ClCompile Include="sfgetl.c" />
+    <ClCompile Include="sfgetm.c" />
+    <ClCompile Include="sfgetr.c" />
+    <ClCompile Include="sfgetu.c" />
+    <ClCompile Include="sfio_f\_sfclrerr.c" />
+    <ClCompile Include="sfio_f\_sfdlen.c" />
+    <ClCompile Include="sfio_f\_sfeof.c" />
+    <ClCompile Include="sfio_f\_sferror.c" />
+    <ClCompile Include="sfio_f\_sffileno.c" />
+    <ClCompile Include="sfio_f\_sfgetc.c" />
+    <ClCompile Include="sfio_f\_sfllen.c" />
+    <ClCompile Include="sfio_f\_sfputc.c" />
+    <ClCompile Include="sfio_f\_sfputd.c" />
+    <ClCompile Include="sfio_f\_sfputl.c" />
+    <ClCompile Include="sfio_f\_sfputm.c" />
+    <ClCompile Include="sfio_f\_sfputu.c" />
+    <ClCompile Include="sfio_f\_sfslen.c" />
+    <ClCompile Include="sfio_f\_sfstacked.c" />
+    <ClCompile Include="sfio_f\_sfulen.c" />
+    <ClCompile Include="sfio_f\_sfvalue.c" />
+    <ClCompile Include="sfllen.c" />
+    <ClCompile Include="sfmode.c" />
+    <ClCompile Include="sfmove.c" />
+    <ClCompile Include="sfmutex.c" />
+    <ClCompile Include="sfnew.c" />
+    <ClCompile Include="sfnotify.c" />
+    <ClCompile Include="sfnputc.c" />
+    <ClCompile Include="sfopen.c" />
+    <ClCompile Include="sfpkrd.c" />
+    <ClCompile Include="sfpoll.c" />
+    <ClCompile Include="sfpool.c" />
+    <ClCompile Include="sfpopen.c" />
+    <ClCompile Include="sfprintf.c" />
+    <ClCompile Include="sfprints.c" />
+    <ClCompile Include="sfpurge.c" />
+    <ClCompile Include="sfputd.c" />
+    <ClCompile Include="sfputl.c" />
+    <ClCompile Include="sfputm.c" />
+    <ClCompile Include="sfputr.c" />
+    <ClCompile Include="sfputu.c" />
+    <ClCompile Include="sfraise.c" />
+    <ClCompile Include="sfrd.c" />
+    <ClCompile Include="sfread.c" />
+    <ClCompile Include="sfreserve.c" />
+    <ClCompile Include="sfresize.c" />
+    <ClCompile Include="sfscanf.c" />
+    <ClCompile Include="sfseek.c" />
+    <ClCompile Include="sfset.c" />
+    <ClCompile Include="sfsetbuf.c" />
+    <ClCompile Include="sfsetfd.c" />
+    <ClCompile Include="sfsize.c" />
+    <ClCompile Include="sfsk.c" />
+    <ClCompile Include="sfstack.c" />
+    <ClCompile Include="sfstrtod.c" />
+    <ClCompile Include="sfswap.c" />
+    <ClCompile Include="sfsync.c" />
+    <ClCompile Include="sftable.c" />
+    <ClCompile Include="sftell.c" />
+    <ClCompile Include="sftmp.c" />
+    <ClCompile Include="sfungetc.c" />
+    <ClCompile Include="sfvprintf.c" />
+    <ClCompile Include="sfvscanf.c" />
+    <ClCompile Include="sfwr.c" />
+    <ClCompile Include="sfwrite.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

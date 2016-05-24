@@ -1,0 +1,240 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="adjust.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="bfs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="call_tri.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="closest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="conjgrad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="delaunay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="digcola.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dijkstra.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="edges.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="embed_graph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fPQ.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="geometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="heap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hedges.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="info.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="kkutils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix_ops.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mosek_quad_solve.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="multispline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="neato.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="neatoprocs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="overlap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pca.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="poly.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="quad_prog_solver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="quad_prog_vpsc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="site.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sparsegraph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stress.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="voronoi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="adjust.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="bfs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="call_tri.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="circuit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="closest.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="compute_hierarchy.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="conjgrad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="constrained_majorization.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="constrained_majorization_ipsep.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="constraint.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="delaunay.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dijkstra.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="edges.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="embed_graph.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="geometry.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="heap.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hedges.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="info.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="kkutils.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="legal.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lu.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="matinv.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="matrix_ops.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="memory.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mosek_quad_solve.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="multispline.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="neatoinit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="neatosplines.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="opt_arrangement.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="overlap.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pca.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="poly.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="printvis.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="quad_prog_solve.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="quad_prog_vpsc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="site.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smart_ini_x.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="solve.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stress.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stuff.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="voronoi.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

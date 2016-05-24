@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="agxbuf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cghdr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cgraph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="malloc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vmstub.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="agerror.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="agxbuf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="apply.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="attr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="edge.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="flatten.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="grammar.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="graph.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="id.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="imap.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="io.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mem.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="node.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="obj.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pend.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rec.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="refstr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="scan.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="subg.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="utils.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="write.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cgraph.def">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

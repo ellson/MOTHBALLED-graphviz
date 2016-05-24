@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{CCEF85C9-BC40-4C26-8755-581276C8B7DA}</ProjectGuid>
+    <RootNamespace>glcomp</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.25123.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>Debug\</OutDir>
+    <IntDir>Debug\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>Release\</OutDir>
+    <IntDir>Release\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>C:\gtk\lib\gtk-2.0\include;C:\gtk\include\gtk-2.0\;C:\gtk\lib\glib-2.0\include;C:\gtk\include\glib-2.0;C:\gtk\include\pango-1.0\;C:\gtk\include;$(SolutionDir)/lib/glut/glut-3.7.6-bin;$(SolutionDir)/lib/common;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;$(SolutionDir)/lib/xdot;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/gvc;C:\gtk\include\libglade-2.0;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/topfish;C:\gtk\lib\gtkglext-1.0\include;C:\gtk\include\gtkglext-1.0\;C:\gtk\include\cairo;C:\gtk\include\atk-1.0;C:\gtk\lib\gtk-2.0\include\cairo;C:\gtk\lib\gtk-2.0\include;C:\gtk\include\gtk-2.0\;$(SolutionDir)/cmd/smyrna/gui;$(SolutionDir)/cmd/smyrna;$(SolutionDir);$(SolutionDir)/lib/glcomp;C:\gtk\lib\glib-2.0\include;C:\gtk\include\glib-2.0;C:\gtk\include\pango-1.0\;C:\gtk\include;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvpr;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;$(SolutionDir)/lib/glut/glut-3.7.6-bin;$(SolutionDir)/lib/xdot;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>c:/graphviz-ms/bin/$(ProjectName).lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\gtk\lib\gtk-2.0\include;C:\gtk\include\gtk-2.0\;C:\gtk\lib\glib-2.0\include;C:\gtk\include\glib-2.0;C:\gtk\include\pango-1.0\;C:\gtk\include;$(SolutionDir)/lib/glut/glut-3.7.6-bin;$(SolutionDir)/lib/common;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;$(SolutionDir)/lib/xdot;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/gvc;C:\gtk\include\libglade-2.0;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/topfish;C:\gtk\lib\gtkglext-1.0\include;C:\gtk\include\gtkglext-1.0\;C:\gtk\include\cairo;C:\gtk\include\atk-1.0;C:\gtk\lib\gtk-2.0\include\cairo;C:\gtk\lib\gtk-2.0\include;C:\gtk\include\gtk-2.0\;$(SolutionDir)/cmd/smyrna/gui;$(SolutionDir)/cmd/smyrna;$(SolutionDir);$(SolutionDir)/lib/glcomp;C:\gtk\lib\glib-2.0\include;C:\gtk\include\glib-2.0;C:\gtk\include\pango-1.0\;C:\gtk\include;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvpr;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;$(SolutionDir)/lib/glut/glut-3.7.6-bin;$(SolutionDir)/lib/xdot;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>c:/graphviz-ms/bin/$(ProjectName).lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="glcompbutton.h" />
+    <ClInclude Include="glcompfont.h" />
+    <ClInclude Include="glcompimage.h" />
+    <ClInclude Include="glcomplabel.h" />
+    <ClInclude Include="glcomppanel.h" />
+    <ClInclude Include="glcompset.h" />
+    <ClInclude Include="glcomptextpng.h" />
+    <ClInclude Include="glcomptrackbar.h" />
+    <ClInclude Include="glpangofont.h" />
+    <ClInclude Include="glutils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="glcompbutton.c" />
+    <ClCompile Include="glcompfont.c" />
+    <ClCompile Include="glcompimage.c" />
+    <ClCompile Include="glcomplabel.c" />
+    <ClCompile Include="glcompmouse.c" />
+    <ClCompile Include="glcomppanel.c" />
+    <ClCompile Include="glcompset.c" />
+    <ClCompile Include="glcomptextpng.c" />
+    <ClCompile Include="glcomptexture.c" />
+    <ClCompile Include="glpangofont.c" />
+    <ClCompile Include="glutils.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

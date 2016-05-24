@@ -1,0 +1,261 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="sfhdr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sfio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sfio_t.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vthread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="sfio_f\_sfclrerr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfio_f\_sfdlen.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfio_f\_sfeof.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfio_f\_sferror.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfio_f\_sffileno.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfio_f\_sfgetc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfio_f\_sfllen.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfio_f\_sfputc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfio_f\_sfputd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfio_f\_sfputl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfio_f\_sfputm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfio_f\_sfputu.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfio_f\_sfslen.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfio_f\_sfstacked.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfio_f\_sfulen.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfio_f\_sfvalue.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfclose.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfclrlock.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfcvt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfdisc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfdlen.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfexcept.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfexit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfextern.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sffcvt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sffilbuf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfflsbuf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfgetd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfgetl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfgetm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfgetr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfgetu.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfllen.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfmode.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfmove.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfmutex.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfnew.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfnotify.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfnputc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfopen.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfpkrd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfpoll.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfpool.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfpopen.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfprintf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfprints.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfpurge.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfputd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfputl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfputm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfputr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfputu.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfraise.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfrd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfread.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfreserve.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfresize.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfscanf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfseek.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfset.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfsetbuf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfsetfd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfsize.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfsk.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfstack.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfstrtod.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfswap.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfsync.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sftable.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sftell.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sftmp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfungetc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfvprintf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfvscanf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfwr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sfwrite.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

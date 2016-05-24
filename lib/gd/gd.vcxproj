@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{05BE968C-B4F4-4B5F-AC4F-C6F8585023BC}</ProjectGuid>
+    <RootNamespace>gd</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.25123.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>Debug\</OutDir>
+    <IntDir>Debug\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>Release\</OutDir>
+    <IntDir>Release\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>C:\gtk\lib\glib-2.0\include;C:\gtk\include\glib-2.0;C:\gtk\include\pango-1.0\;C:\gtk\include\cairo;C:\gtk\include\freetype2;C:\gtk\include;$(SolutionDir)/libltdl;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/agutil;$(SolutionDir)/windows/lib/cdt;$(SolutionDir)/;$(SolutionDir)/lib/graph;$(SolutionDir)/lib/vpsc;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/twopigen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/sfpdpgen;$(SolutionDir)/lib/rbtree;$(SolutionDir)/lib/pathplan;$(SolutionDir)/lib/patchwork;$(SolutionDir)/lib/pack;$(SolutionDir)/lib/ortho;$(SolutionDir)/lib/inkpot;$(SolutionDir)/lib/ingraphs;$(SolutionDir)/lib/gd;$(SolutionDir)/lib/filter;$(SolutionDir)/lib/fdpgen;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/dotgen;$(SolutionDir)/lib/circogen;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/agraph;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvc;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;HAVE_CONFIG_H;BGDWIN32;MSWIN32;NONDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>c:/graphviz-ms/bin/$(ProjectName).lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\gtk\lib\glib-2.0\include;C:\gtk\include\glib-2.0;C:\gtk\include\pango-1.0\;C:\gtk\include\cairo;C:\gtk\include\freetype2;C:\gtk\include;$(SolutionDir)/libltdl;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/agutil;$(SolutionDir)/windows/lib/cdt;$(SolutionDir)/;$(SolutionDir)/lib/graph;$(SolutionDir)/lib/vpsc;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/twopigen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/sfpdpgen;$(SolutionDir)/lib/rbtree;$(SolutionDir)/lib/pathplan;$(SolutionDir)/lib/patchwork;$(SolutionDir)/lib/pack;$(SolutionDir)/lib/ortho;$(SolutionDir)/lib/inkpot;$(SolutionDir)/lib/ingraphs;$(SolutionDir)/lib/gd;$(SolutionDir)/lib/filter;$(SolutionDir)/lib/fdpgen;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/dotgen;$(SolutionDir)/lib/circogen;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/agraph;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvc;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;HAVE_CONFIG_H;BGDWIN32;MSWIN32;NONDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <OutputFile>c:/graphviz-ms/bin/$(ProjectName).lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="entities.h" />
+    <ClInclude Include="gd.h" />
+    <ClInclude Include="gdcache.h" />
+    <ClInclude Include="gdfontg.h" />
+    <ClInclude Include="gdfontl.h" />
+    <ClInclude Include="gdfontmb.h" />
+    <ClInclude Include="gdfonts.h" />
+    <ClInclude Include="gdfontt.h" />
+    <ClInclude Include="gdfx.h" />
+    <ClInclude Include="gdhelpers.h" />
+    <ClInclude Include="gd_io.h" />
+    <ClInclude Include="jisx0208.h" />
+    <ClInclude Include="wbmp.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="annotate.c" />
+    <ClCompile Include="circletexttest.c" />
+    <ClCompile Include="fontconfigtest.c" />
+    <ClCompile Include="fontsizetest.c" />
+    <ClCompile Include="fontwheeltest.c" />
+    <ClCompile Include="gd.c" />
+    <ClCompile Include="gd2copypal.c" />
+    <ClCompile Include="gd2time.c" />
+    <ClCompile Include="gd2togif.c" />
+    <ClCompile Include="gd2topng.c" />
+    <ClCompile Include="gdcache.c" />
+    <ClCompile Include="gdcmpgif.c" />
+    <ClCompile Include="gddemo.c" />
+    <ClCompile Include="gdfontg.c" />
+    <ClCompile Include="gdfontl.c" />
+    <ClCompile Include="gdfontmb.c" />
+    <ClCompile Include="gdfonts.c" />
+    <ClCompile Include="gdfontt.c" />
+    <ClCompile Include="gdft.c" />
+    <ClCompile Include="gdfx.c" />
+    <ClCompile Include="gdhelpers.c" />
+    <ClCompile Include="gdkanji.c" />
+    <ClCompile Include="gdparttopng.c" />
+    <ClCompile Include="gdtables.c" />
+    <ClCompile Include="gdtest.c" />
+    <ClCompile Include="gdtestft.c" />
+    <ClCompile Include="gdtopng.c" />
+    <ClCompile Include="gdxpm.c" />
+    <ClCompile Include="gd_gd.c" />
+    <ClCompile Include="gd_gd2.c" />
+    <ClCompile Include="gd_gif_in.c" />
+    <ClCompile Include="gd_gif_out.c" />
+    <ClCompile Include="gd_io.c" />
+    <ClCompile Include="gd_io_dp.c" />
+    <ClCompile Include="gd_io_file.c" />
+    <ClCompile Include="gd_io_ss.c" />
+    <ClCompile Include="gd_jpeg.c" />
+    <ClCompile Include="gd_png.c" />
+    <ClCompile Include="gd_security.c" />
+    <ClCompile Include="gd_ss.c" />
+    <ClCompile Include="gd_topal.c" />
+    <ClCompile Include="gd_wbmp.c" />
+    <ClCompile Include="gifanimtest.c" />
+    <ClCompile Include="giftogd2.c" />
+    <ClCompile Include="pngtogd.c" />
+    <ClCompile Include="pngtogd2.c" />
+    <ClCompile Include="wbmp.c" />
+    <ClCompile Include="webpng.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="entities.html" />
+    <None Include="index.html" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

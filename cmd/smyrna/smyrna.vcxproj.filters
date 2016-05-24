@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="gui\appmouse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\beacon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="btree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\callbacks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\datalistcallbacks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="draw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="filter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\filterscallbacks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\glcompui.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="glexpose.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="glmotion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gltemplate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\gui.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hotkeymap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="materials.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\menucallbacks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="selection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="selectionfuncs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smyrnadefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="support.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\toolboxcallbacks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="topfisheyeview.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="topview.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="topviewdata.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="topviewdefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui\topviewsettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="trackball.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tvnodes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="viewport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="viewportcamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="gui\appmouse.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="arcball.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\datalistcallbacks.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="draw.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\frmobjectui.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\glcompui.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="glexpose.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="glmotion.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gltemplate.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="glutrender.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\gui.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gvprpipe.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hier.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hotkeymap.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="md5.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\menucallbacks.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="polytess.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="selectionfuncs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smyrna_utils.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\toolboxcallbacks.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="topfisheyeview.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="topviewfuncs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\topviewsettings.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tvnodes.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="viewport.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="viewportcamera.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
