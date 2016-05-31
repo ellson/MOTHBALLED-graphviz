@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML VERSION="2.0">
+<HEAD>
+<TITLE>Command-line Invocation</TITLE>
+</HEAD>
+<BODY BGCOLOR=white>
+<A NAME="top"></A>
+<H1 align=CENTER>Command-line Invocation</H1>
+<HR>
+<H2>Flags</H1>
+<DL>
+<DT>-Gname=value   
+<DT>Set graph attribue
+<DT>-Nname=value   
+<DT>Set default node attribue
+<DT>-Ename=value   
+<DT>Set default edge attribue
+<DT>-T<lang>       
+<DT>Set output language (see output_info)
+<DT>-V             
+<DT>Emit version info and exit
+<DT>-l<libfile>    
+<DT>User-supplied, device-depende library. Multiple libraries may
+be given. These names are passed to the code generator at the
+beginning of output.
+<DT>-n[<num>]      
+<DT>Sets no-op flag in neato. In this case, neato assumes nodes
+have already been positioned and have a pos attribute giving
+this position. It then just computes the edge layouts and
+emits the graph in the appropriate format. If <num> is used
+and > 1, neato checks for previously positioned edges, with
+control points provided in the pos attribute. It uses these
+if given; otherwise, it computes the edge layout.
+<DT>-o<outfile>    
+<DT>write output to outfile (default: stdout)
+<DT>-s<scale>      
+<DT>Set input scale to <scale>. If this value is omitted,
+72.0 is used. This number is used to convert pos point
+units into inches. For example, dot -Tdot produces pos
+values in points. To use this as input to neato -n, one
+needs -s (equivalently, -s72).
+<DT>-v             
+<DT>verbose mode
+<DT>-x             
+<DT>In neato, on input, prune isolated nodes and peninsulas
+</DL>
+</BODY>
+</HTML>
