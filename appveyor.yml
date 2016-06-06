@@ -7,6 +7,7 @@ build:
   verbosity: detailed
 
 before_build:
+  # Install GTK
+  - ps: C:\cygwin\setup-x86.exe -qnNdO -R C:/%cygwin% -s http://cygwin.mirror.constant.com -l C:/%cygwin%/var/cache/setup -P libgtk2.0 libgtk2.0-devel
+  - ps: set PATH=%PATH%;C:\cygwin\bin
   - ps: cp windows/config.h config.h
-  - ps: C:\MinGW\bin\mingw-get install mingw-w64-gtk2
-  - ps: set PATH=%PATH%;C:\MinGW\mingw
