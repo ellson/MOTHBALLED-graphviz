@@ -5,3 +5,6 @@ image: Visual Studio 2015
 build:
   project: graphviz.sln
   verbosity: detailed
+
+before_build:
+  - ps: windows/config.h config.h
