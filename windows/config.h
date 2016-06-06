@@ -1,7 +1,5 @@
 /* manually generated configuration for Windows */
 
-#include "graphviz_version.h"
-
 /* Command to open a browser on a URL */
 #define BROWSER "xdg-open"
 
