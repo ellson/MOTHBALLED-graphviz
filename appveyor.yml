@@ -8,6 +8,6 @@ build:
 
 before_build:
   # Install GTK
-  - C:\cygwin\setup-x86.exe -qnNdO -R C:/%cygwin% -s http://cygwin.mirror.constant.com -l C:/%cygwin%/var/cache/setup -P libgtk2.0 libgtk2.0-devel
+  - C:\cygwin\setup-x86.exe -qnNdO -R C:/%cygwin% -s http://cygwin.mirror.constant.com -l C:/%cygwin%/var/cache/setup -P libgtk2.0_0 libgtk2.0-devel
   - set PATH=%PATH%;C:\cygwin\bin;C:\cygwin\lib
   - cp windows/config.h config.h
