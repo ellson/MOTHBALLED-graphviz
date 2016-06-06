@@ -7,4 +7,4 @@ build:
   verbosity: detailed
 
 before_build:
-  - ps: windows/config.h config.h
+  - ps: cp windows/config.h config.h
