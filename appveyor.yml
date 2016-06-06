@@ -8,3 +8,5 @@ build:
 
 before_build:
   - ps: cp windows/config.h config.h
+  - ps: 'C:\MinGW\bin\mingw-get install gtk2'
+  - ps: set PATH=%PATH%;C:\MinGW\mingw
