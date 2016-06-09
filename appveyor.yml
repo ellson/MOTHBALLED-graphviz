@@ -15,11 +15,11 @@ build_script:
 
       if ($env:compiler -eq "msys2") {
         $BashPath = "C:\msys64\usr\bin\bash"
-        & $BashPath -lc "pacman -S --noconfirm autoconf-archive"
+        & $BashPath -lc "pacman -S --noconfirm autoconf-archive mingw-w64-x86_64-cairo expat mingw-w64-x86_64-freetype mingw-w64-x86_64-fontconfig glib2 mingw-w64-x86_64-libpng mingw-w64-x86_64-pango zlib mingw-w64-x86_64-gts"
       }
 
       if ($env:compiler -eq "cygwin") {
-        C:\cygwin64\setup-x86_64.exe -qnNdO -R C:/cygwin64 -s http://cygwin.mirror.constant.com -l C:/cygwin64/var/cache/setup -P autoconf-archive -P flex -P swig
+        C:\cygwin64\setup-x86_64.exe -qnNdO -R C:/cygwin64 -s http://cygwin.mirror.constant.com -l C:/cygwin64/var/cache/setup -P autoconf-archive -P flex -P swig -P mingw64-x86_64-cairo -P expat -P mingw64-x86_64-freetype -P mingw64-x86_64-fontconfig -P mingw64-x86_64-glib2.0 -P mingw64-x86_64-libpng -P mingw64-x86_64-pango -P zlib -P mingw64-x86_64-libpng
         $BashPath = "C:\cygwin64\bin\bash"
         # For some reason Cygwin ignores CHERE_INVOKING=1 for the first bash command.
         # Executing some arbitrary command solves this. So without this next line, the build will fail.
