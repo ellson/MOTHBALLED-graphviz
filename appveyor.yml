@@ -15,7 +15,7 @@ build_script:
 
       if ($env:compiler -eq "msys2") {
         $BashPath = "C:\msys64\usr\bin\bash"
-        & $BashPath -lc "pacman -S --noconfirm autoconf-archive mingw-w64-x86_64-cairo expat mingw-w64-x86_64-freetype mingw-w64-x86_64-fontconfig glib2 mingw-w64-x86_64-libpng mingw-w64-x86_64-pango zlib mingw-w64-x86_64-gts"
+        & $BashPath -lc "pacman -S --noconfirm autoconf-archive mingw-w64-x86_64-cairo mingw-w64-x86_64-freetype mingw-w64-x86_64-fontconfig mingw-w64-x86_64-libpng mingw-w64-x86_64-pango"
       }
 
       if ($env:compiler -eq "cygwin") {
