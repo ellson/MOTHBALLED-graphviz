@@ -26,13 +26,9 @@ build_script:
         & $BashPath -lc "ls"
       }
 
-      Write-Output "Execute ./autogen.sh"
+      Write-Output "Execute ./autogen.sh, which also executes ./configure"
 
       & $BashPath -lc "./autogen.sh"
-
-      Write-Output "Execute ./configure"
-
-      & $BashPath -lc "./configure"
       
       Write-Output "Execute make"
 
