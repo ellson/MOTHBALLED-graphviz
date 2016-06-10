@@ -10,12 +10,15 @@ else
             echo "Warning: we do not know how to invoke date correctly." >&2
         fi    
     fi
-    echo "Graphviz version date is based on time of last commit: $GRAPHVIZ_VERSION_DATE"
+    echo "Graphviz: version date is based on time of last commit: $GRAPHVIZ_VERSION_DATE"
+
+    GRAPHVIZ_VERSION_COMMIT=$( git log -n 1 --format=%h )
+    echo "Graphviz: abbreviated hash of last commit: $GRAPHVIZ_VERSION_COMMIT"
 fi
 
 # initialize version for a "stable" build
 cat >./version.m4 <<EOF
-dnl graphviz package version number, (as distinct from shared library version)
+dnl Graphviz package version number, (as distinct from shared library version)
 dnl For the minor number: odd => unstable series
 dnl                       even => stable series
 dnl For the micro number: 0 => in-progress development
@@ -26,7 +29,7 @@ dnl NB: the next line gets changed to a date/time string for development release
 m4_define(graphviz_version_micro, $GRAPHVIZ_VERSION_DATE)
 m4_define(graphviz_version_date, $GRAPHVIZ_VERSION_DATE)
 m4_define(graphviz_collection, test)
-m4_define(graphviz_version_commit, unknown)
+m4_define(graphviz_version_commit, $GRAPHVIZ_VERSION_COMMIT)
 EOF
 
 # attempt to suppress ar messages for 'u' when 'D' present.
