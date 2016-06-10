@@ -28,7 +28,7 @@ m4_define(graphviz_version_minor, 39)
 dnl NB: the next line gets changed to a date/time string for development releases
 m4_define(graphviz_version_micro, $GRAPHVIZ_VERSION_DATE)
 m4_define(graphviz_version_date, $GRAPHVIZ_VERSION_DATE)
-m4_define(graphviz_collection, test)
+m4_define(graphviz_collection, development)
 m4_define(graphviz_version_commit, $GRAPHVIZ_VERSION_COMMIT)
 EOF
 
