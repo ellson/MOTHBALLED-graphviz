@@ -8,7 +8,7 @@ if test $? -eq 0; then
         # try date with FreeBSD syntax
         GRAPHVIZ_VERSION_DATE=$( date -u -j -f "%Y-%m-%d %H:%M:%S %z" "$GRAPHVIZ_GIT_DATE" +%Y%m%d.%H%M )
         if test $? -ne 0; then
-            echo "Warning: we do not know how to invoke date correctly." >$2
+            echo "Warning: we do not know how to invoke date correctly." >&2
         else
             echo "Version date is based on time of last commit: $GRAPHVIZ_VERSION_DATE"
         fi
@@ -17,7 +17,7 @@ if test $? -eq 0; then
     fi
 else
     GRAPHVIZ_VERSION_DATE="0"
-    echo "Warning: we do not appear to be running in a git clone." >$2
+    echo "Warning: we do not appear to be running in a git clone." >&2
 fi
 
 # initialize version for a "stable" build
