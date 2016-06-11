@@ -29,7 +29,6 @@ doxygen
 INSTALL
 aclocal.m4
 version.m4
-ast_common.h
 builddate.h
 stamp-h1
 FEATURE
