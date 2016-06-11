@@ -635,7 +635,6 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
 	agerr(AGWARN, "Unable to reclaim box space in spline routing for edge \"%s\" -> \"%s\". Something is probably seriously wrong.\n", agnameof(agtail(realedge)), agnameof(aghead(realedge)));
 	make_polyline (pl, &polyspl);
 	limitBoxes (boxes, boxn, polyspl.ps, polyspl.pn, INIT_DELTA);
-	free (polyspl.ps);
     }
 
     *npoints = spl.pn;
