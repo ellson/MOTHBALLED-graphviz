@@ -19,7 +19,6 @@ libtool
 libltdl
 m4
 configure
-config.*
 Makefile
 Makefile.in
 autom4te.cache
