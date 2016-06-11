@@ -7,9 +7,17 @@ environment:
     - compiler: msys2
     - compiler: cygwin
 
+install:
+  - cinst ghostscript
+
 build_script:
+  # Add Ghostscript folder to the path so ps2pdf can be called to create docs.
+  # When executing ps2pdf, 'gs' gets called. On Windows the program is required program is called gswin64c.exe,
+  # so we create a symlink called 'gs' that points to gswin64c.
+  - SET PATH="%PATH%;C:\Program Files\gs\gs9.19\lib;C:\Program Files\gs\gs9.19\bin;"
+  - mklink "C:\Program Files\gs\gs9.19\bin\gs" "C:\Program Files\gs\gs9.19\bin\gswin64c.exe"
   - ps: >-
-      cd $env:APPVEYOR_BUILD_FOLDER    
+      cd $env:APPVEYOR_BUILD_FOLDER 
 
       $BashPath = ""
 
