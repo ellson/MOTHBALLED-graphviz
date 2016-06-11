@@ -202,3 +202,7 @@ tclpkg/tcldot/tcldot.3tcl.pdf
 tclpkg/tkspline/tkspline.3tk.pdf
 windows/Properties/AssemblyInfo.cs
 windows/build/graphviz.wxs
+
+# Ignore Visual Studio DB files
+*.VC.db
+*.VC.opendb
