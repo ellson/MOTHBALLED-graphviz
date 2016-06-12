@@ -25,6 +25,12 @@
 /* Define if you want DIGCOLA */
 #define DIGCOLA 1
 
+/* Filename for plugin configuration file. */
+#define GVPLUGIN_CONFIG_FILE "config6"
+
+/* Compatibility version number for plugins. */
+#define GVPLUGIN_VERSION 6
+
 /* Define if you want on-demand plugin loading */
 #define ENABLE_LTDL 1
 
@@ -437,6 +443,24 @@
 /* Define if you want ORTHO */
 /* #undef ORTHO */
 #define ORTHO 1
+
+/* Define to the address where bug reports for this package should be sent. */
+#define PACKAGE_BUGREPORT "http://www.graphviz.org/"
+
+/* Define to the full name of this package. */
+#define PACKAGE_NAME "graphviz"
+
+/* Define to the full name and version of this package. */
+#define PACKAGE_STRING "graphviz 2.39.20160612.1140"
+
+/* Define to the one symbol short name of this package. */
+#define PACKAGE_TARNAME "graphviz"
+
+/* Define to the home page for this package. */
+#define PACKAGE_URL ""
+
+/* Define to the version of this package. */
+#define PACKAGE_VERSION "2.39.20160612.1140"
 
 /* Path separator character. */
 #define PATHSEPARATOR ":"
