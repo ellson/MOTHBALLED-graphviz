@@ -80,7 +80,7 @@
     </ClCompile>
     <Link>
       <OutputFile>c:/graphviz-ms/bin/$(ProjectName).dll</OutputFile>
-      <AdditionalLibraryDirectories>C:\graphviz-ms\bin;C:\gtk\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\graphviz-ms\bin;$(SolutionDir)windows\dependencies\GTK2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>cdt.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>

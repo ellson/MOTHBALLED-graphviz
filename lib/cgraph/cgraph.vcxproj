@@ -62,7 +62,7 @@
     <Link>
       <AdditionalDependencies />
       <OutputFile>c:/graphviz-ms/bin/$(ProjectName).dll</OutputFile>
-      <AdditionalLibraryDirectories>C:\graphviz-ms\bin;C:\graphviz-ms\bin;C:\gtk\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\graphviz-ms\bin;C:\graphviz-ms\bin;$(SolutionDir)windows\dependencies\GTK2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>cgraph.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -86,7 +86,7 @@
     <Link>
       <AdditionalDependencies />
       <OutputFile>c:/graphviz-ms/bin/$(ProjectName).dll</OutputFile>
-      <AdditionalLibraryDirectories>C:\graphviz-ms\bin;C:\gtk\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\graphviz-ms\bin;$(SolutionDir)windows\dependencies\GTK2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>cgraph.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
