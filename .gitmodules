@@ -1,0 +1,3 @@
+[submodule "windows/dependencies/GTK2"]
+	path = windows/dependencies/GTK2
+	url = https://github.com/ErwinJanssen/gtk2-win32-development-libraries.git
