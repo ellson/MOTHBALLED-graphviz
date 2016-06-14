@@ -3,7 +3,7 @@
 
 VERSION=0.2
 
-AM_CPPFLAGS = @GD_INCLUDES@
+AM_CPPFLAGS = @GDLIB_CFLAGS@
 
 pdfdir = $(pkgdatadir)/doc/pdf
 
@@ -16,7 +16,7 @@ endif
 
 diffimg_SOURCES = diffimg.c
 
-diffimg_LDADD = @GD_LIBS@ @MATH_LIBS@
+diffimg_LDADD = @GDLIB_LIBS@ @MATH_LIBS@
 
 diffimg.1.pdf: $(srcdir)/diffimg.1
 	- $(GROFF) -Tps -man $(srcdir)/diffimg.1 | $(PS2PDF) - - >diffimg.1.pdf

@@ -4,6 +4,7 @@ syntax: glob
 *.a
 graphviz*.tar.gz*
 rtest*.tar.gz*
+*.ih
 *.la
 *.lai
 *.lo

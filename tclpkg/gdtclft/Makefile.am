@@ -8,7 +8,7 @@ pkgtcldir = $(pkglibdir)/tcl
 
 AM_CPPFLAGS = \
 	 -I$(top_srcdir) \
-	@GD_INCLUDES@ @TCL_INCLUDES@
+	@GDLIB_CFLAGS@ @TCL_INCLUDES@
 
 LIBS = @LIBS@ -lc
 
@@ -32,7 +32,7 @@ libgdtclft_la_LDFLAGS = -no-undefined
 if WITH_LIBGD
 libgdtclft_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
-	$(GD_LIBS)
+	$(GDLIB_LIBS)
 
 if WITH_TCL
 all-local: pkgIndex.tcl
