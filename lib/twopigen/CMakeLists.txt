@@ -1,0 +1,11 @@
+add_gvlib(graphviz_lib_twopigen
+    circle.c
+    twopiinit.c
+)
+target_link_libraries(graphviz_lib_twopigen
+    graphviz_lib_common
+    graphviz_lib_pack
+    graphviz_lib_neatogen
+    graphviz_lib_circogen
+    graphviz_lib_sfdpgen
+)

@@ -65,7 +65,7 @@ static char swork[maxlen];
     #pragma comment( lib, "glib-2.0.lib" )
     #pragma comment( lib, "vpsc.lib" )
     #pragma comment( lib, "patchwork.lib" )
-    #pragma comment( lib, "gvortho.lib" )
+    #pragma comment( lib, "ortho.lib" )
     #pragma comment( lib, "sfdp.lib" )
     #pragma comment( lib, "rbtree.lib" )
 #endif   /* not WIN32_DLL */

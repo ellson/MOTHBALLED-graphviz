@@ -18,11 +18,16 @@
 #include "logic.h"
 #include "gvc.h"
 
+#ifdef ENABLE_LTDLL
 #ifdef WIN32
 #include "libltdl/lt_system.h"
 #endif
+#endif
+
 #ifndef _MSC_VER
 #include <unistd.h>
+#else
+#define R_OK 04                      /* Needed in Windows */
 #endif
 #include <ctype.h>
 

@@ -68,6 +68,12 @@ Agraph_t *agopen(char *name, Agdesc_t desc, Agdisc_t * arg_disc)
  */
 Agraph_t *agopen1(Agraph_t * g)
 {
+    if (!AgDefaultDisc.mem) {
+        AgDefaultDisc.mem = &AgMemDisc;
+        AgDefaultDisc.id = &AgIdDisc;
+        AgDefaultDisc.io = &AgIoDisc;
+    }
+
     Agraph_t *par;
 
     g->n_seq = agdtopen(g, &Ag_subnode_seq_disc, Dttree);
@@ -278,7 +284,7 @@ Agdesc_t Agstrictdirected = { 1, 1, 0, 1 };
 Agdesc_t Agundirected = { 0, 0, 0, 1 };
 Agdesc_t Agstrictundirected = { 0, 1, 0, 1 };
 
-Agdisc_t AgDefaultDisc = { &AgMemDisc, &AgIdDisc, &AgIoDisc };
+Agdisc_t AgDefaultDisc;
 
 
 #include <stdio.h>

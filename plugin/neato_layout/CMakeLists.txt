@@ -1,0 +1,13 @@
+add_gvplugin(graphviz_plugin_neato_layout
+    gvlayout_neato_layout.c
+    gvplugin_neato_layout.c
+)
+target_link_libraries(graphviz_plugin_neato_layout
+    graphviz_lib_gvc
+    graphviz_lib_circogen
+    graphviz_lib_neatogen
+    graphviz_lib_patchwork
+    graphviz_lib_twopigen
+    graphviz_lib_osage
+    graphviz_lib_fdpgen
+)

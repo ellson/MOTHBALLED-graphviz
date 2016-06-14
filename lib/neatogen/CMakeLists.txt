@@ -1,0 +1,52 @@
+add_gvlib(graphviz_lib_neatogen
+    adjust.c
+    bfs.c
+    call_tri.c
+    circuit.c
+    closest.c
+    compute_hierarchy.c
+    conjgrad.c
+    constrained_majorization.c
+    constrained_majorization_ipsep.c
+    constraint.c
+    delaunay.c
+    dijkstra.c
+    edges.c
+    embed_graph.c
+    #find_ints.c
+    geometry.c
+    heap.c
+    hedges.c
+    info.c
+    #intersect.c
+    kkutils.c
+    legal.c
+    lu.c
+    matinv.c
+    matrix_ops.c
+    memory.c
+    multispline.c
+    neatoinit.c
+    neatosplines.c
+    opt_arrangement.c
+    overlap.c
+    pca.c
+    poly.c
+    printvis.c
+    quad_prog_solve.c
+    site.c
+    smart_ini_x.c
+    solve.c
+    stress.c
+    stuff.c
+    voronoi.c
+    quad_prog_vpsc.c
+)
+
+target_link_libraries(graphviz_lib_neatogen
+    PRIVATE
+    graphviz_lib_pack
+    graphviz_lib_pathplan
+    graphviz_lib_sparse
+    graphviz_lib_ortho
+)

@@ -1,16 +1,8 @@
-#include "newdot.h"
-
-#ifdef WIN32 /*dependencies*/
-    #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "cdt.lib" )
-    #pragma comment( lib, "ltdl.lib" )
-    #pragma comment( lib, "xml2.lib" )
-    #pragma comment( lib, "expat.lib" )
-    #pragma comment( lib, "regex_win32.lib" )
-    #pragma comment( lib, "zdll.lib" )
+#ifdef HAVE_CONFIG_H
+#include "config.h"
 #endif
 
-
+#include "newdot.h"
 
 void readin_attrs(graph_t *g)
 {
@@ -60,7 +52,7 @@ int main(int argc, char *argv[])
 	g = agread(in,0);
 	init_graph(g);
 	readin_attrs(g);
-	dot_levels(g);
+	//dot_levels(g);
 //	if (argc <= 2) dot_mincross(g);
 	attach_attributes(g);
 	agwrite(g,stdout);

@@ -1,0 +1,28 @@
+#ifndef GRAPHVIZ_VERSION
+#define GRAPHVIZ_VERSION
+
+/* Filename for plugin configuration file. */
+#define GVPLUGIN_CONFIG_FILE "@GV_PLUGIN_CONFIG_FILE@"
+
+/* Compatibility version number for plugins. */
+#define GVPLUGIN_VERSION @GV_PLUGIN_VERSION@
+
+/* Define to the address where bug reports for this package should be sent. */
+#define PACKAGE_BUGREPORT "http://www.graphviz.org/"
+
+/* Define to the full name of this package. */
+#define PACKAGE_NAME "graphviz"
+
+/* Define to the full name and version of this package. */
+#define PACKAGE_STRING "graphviz @GV_VERSION_STRING@"
+
+/* Define to the one symbol short name of this package. */
+#define PACKAGE_TARNAME "graphviz"
+
+/* Define to the home page for this package. */
+#define PACKAGE_URL ""
+
+/* Define to the version of this package. */
+#define PACKAGE_VERSION "@GV_VERSION_STRING@"
+
+#endif
