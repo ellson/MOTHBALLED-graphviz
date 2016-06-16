@@ -4,6 +4,9 @@
 # Try to use version available on FC8
 AC_PREREQ(2.61)
 
+dnl ===========================================================================
+dnl Set Graphviz version information
+
 # set:
 #	graphviz_version_major
 #	graphviz_version_minor
@@ -19,13 +22,13 @@ GRAPHVIZ_VERSION_MAJOR=graphviz_version_major()
 GRAPHVIZ_VERSION_MINOR=graphviz_version_minor()
 GRAPHVIZ_VERSION_MICRO=graphviz_version_micro()
 
-#NB: "stable" or "development"
+# NB: "stable" or "development"
 GRAPHVIZ_COLLECTION=graphviz_collection()
 
-#NB: date/time of last commit - or "0"
+# NB: date/time of last commit - or "0"
 GRAPHVIZ_VERSION_DATE=graphviz_version_date()
 
-#NB: git commit hash of last commit
+# NB: git commit hash of last commit
 GRAPHVIZ_VERSION_COMMIT=graphviz_version_commit()
 
 GRAPHVIZ_SOURCES=graphviz/$GRAPHVIZ_COLLECTION/SOURCES
