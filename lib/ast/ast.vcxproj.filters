@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="align.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ast.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="compat_unistd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="error.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hashkey.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sfstr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="chresc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="chrtoi.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="error.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fmtbuf.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fmtesc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pathaccess.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pathbin.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pathcanon.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pathcat.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pathexists.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pathfind.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pathgetlink.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pathpath.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="strcopy.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="strerror.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stresc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="strmatch.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="strton.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

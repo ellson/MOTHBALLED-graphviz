@@ -1,0 +1,208 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="entities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gd_io.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gdcache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gdfontg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gdfontl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gdfontmb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gdfonts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gdfontt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gdfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gdhelpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jisx0208.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wbmp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="annotate.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="circletexttest.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fontconfigtest.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fontsizetest.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fontwheeltest.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gd2copypal.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gd2time.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gd2togif.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gd2topng.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gd_gd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gd_gd2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gd_gif_in.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gd_gif_out.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gd_io.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gd_io_dp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gd_io_file.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gd_io_ss.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gd_jpeg.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gd_png.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gd_security.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gd_ss.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gd_topal.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gd_wbmp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gdcache.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gdcmpgif.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gddemo.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gdfontg.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gdfontl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gdfontmb.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gdfonts.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gdfontt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gdft.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gdfx.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gdhelpers.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gdkanji.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gdparttopng.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gdtables.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gdtest.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gdtestft.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gdtopng.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gdxpm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gifanimtest.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="giftogd2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pngtogd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pngtogd2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wbmp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="webpng.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="entities.html" />
+    <None Include="index.html" />
+  </ItemGroup>
+</Project>

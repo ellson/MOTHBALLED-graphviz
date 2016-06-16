@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="glcompbutton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="glcompfont.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="glcompimage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="glcomplabel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="glcomppanel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="glcompset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="glcomptextpng.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="glcomptrackbar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="glpangofont.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="glutils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="glcompbutton.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="glcompfont.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="glcompimage.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="glcomplabel.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="glcompmouse.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="glcomppanel.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="glcompset.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="glcomptextpng.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="glcomptexture.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="glpangofont.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="glutils.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

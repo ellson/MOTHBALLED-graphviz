@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="block.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="blockpath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="blocktree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="circo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="circpos.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="circular.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deglist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="edgelist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="nodelist.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="nodeset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="block.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="blockpath.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="blocktree.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="circpos.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="circular.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="circularinit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="deglist.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="edgelist.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nodelist.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="nodeset.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

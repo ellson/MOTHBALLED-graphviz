@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="aspect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dotprocs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="acyclic.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="aspect.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="class1.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="class2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cluster.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="compound.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="conc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="decomp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dotinit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dotsplines.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fastgr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="flat.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mincross.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="position.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rank.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sameport.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

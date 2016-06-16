@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{15229511-9F6C-48A5-9194-660CA6492563}</ProjectGuid>
+    <RootNamespace>gvc</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.25123.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>Debug\</OutDir>
+    <IntDir>Debug\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>Release\</OutDir>
+    <IntDir>Release\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)/lib/xdot;C:\gtk\lib\glib-2.0\include;C:\gtk\include\glib-2.0;C:\gtk\include\pango-1.0\;C:\gtk\include\cairo;C:\gtk\include\freetype2;C:\gtk\include;$(SolutionDir)/libltdl;$(SolutionDir)/lib/label;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/agutil;$(SolutionDir)/windows/lib/cdt;$(SolutionDir)/;$(SolutionDir)/lib/graph;$(SolutionDir)/lib/vpsc;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/twopigen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/sfpdpgen;$(SolutionDir)/lib/rbtree;$(SolutionDir)/lib/pathplan;$(SolutionDir)/lib/patchwork;$(SolutionDir)/lib/pack;$(SolutionDir)/lib/ortho;$(SolutionDir)/lib/inkpot;$(SolutionDir)/lib/ingraphs;$(SolutionDir)/lib/gd;$(SolutionDir)/lib/filter;$(SolutionDir)/lib/fdpgen;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/dotgen;$(SolutionDir)/lib/circogen;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/agraph;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvc;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;$(SolutionDir)/lib/regex_win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>MSWIN32;WIN32;_DEBUG;_WINDOWS;_USRDLL;GVC_EXPORTS;WIN32_DLL;HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies />
+      <OutputFile>c:/graphviz-ms/bin/$(ProjectName).dll</OutputFile>
+      <AdditionalLibraryDirectories>C:\gtk\lib;C:\graphviz-ms\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>gvc.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)/lib/xdot;C:\gtk\lib\glib-2.0\include;C:\gtk\include\glib-2.0;C:\gtk\include\pango-1.0\;C:\gtk\include\cairo;C:\gtk\include\freetype2;C:\gtk\include;$(SolutionDir)/libltdl;$(SolutionDir)/lib/label;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/agutil;$(SolutionDir)/windows/lib/cdt;$(SolutionDir)/;$(SolutionDir)/lib/graph;$(SolutionDir)/lib/vpsc;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/twopigen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/sfpdpgen;$(SolutionDir)/lib/rbtree;$(SolutionDir)/lib/pathplan;$(SolutionDir)/lib/patchwork;$(SolutionDir)/lib/pack;$(SolutionDir)/lib/ortho;$(SolutionDir)/lib/inkpot;$(SolutionDir)/lib/ingraphs;$(SolutionDir)/lib/gd;$(SolutionDir)/lib/filter;$(SolutionDir)/lib/fdpgen;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/dotgen;$(SolutionDir)/lib/circogen;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/agraph;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvc;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;$(SolutionDir)/lib/regex_win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;GVC_EXPORTS;WIN32_DLL;HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies />
+      <OutputFile>c:/graphviz-ms/bin/$(ProjectName).dll</OutputFile>
+      <AdditionalLibraryDirectories>C:\graphviz-ms\bin;C:\gtk\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>gvc.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="common\arith.h" />
+    <ClInclude Include="common\color.h" />
+    <ClInclude Include="common\colorprocs.h" />
+    <ClInclude Include="common\colortbl.h" />
+    <ClInclude Include="common\const.h" />
+    <ClInclude Include="common\entities.h" />
+    <ClInclude Include="common\exparse.h" />
+    <ClInclude Include="common\geom.h" />
+    <ClInclude Include="common\geomprocs.h" />
+    <ClInclude Include="common\globals.h" />
+    <ClInclude Include="common\htmllex.h" />
+    <ClInclude Include="common\htmlparse.h" />
+    <ClInclude Include="common\htmltable.h" />
+    <ClInclude Include="common\logic.h" />
+    <ClInclude Include="common\macros.h" />
+    <ClInclude Include="common\memory.h" />
+    <ClInclude Include="common\pointset.h" />
+    <ClInclude Include="common\ps_font_equiv.h" />
+    <ClInclude Include="common\render.h" />
+    <ClInclude Include="common\textspan.h" />
+    <ClInclude Include="common\types.h" />
+    <ClInclude Include="common\usershape.h" />
+    <ClInclude Include="common\utils.h" />
+    <ClInclude Include="gvc\regex_win32.h" />
+    <ClInclude Include="pack\pack.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="common\args.c" />
+    <ClCompile Include="common\arrows.c" />
+    <ClCompile Include="common\colxlate.c" />
+    <ClCompile Include="common\ellipse.c" />
+    <ClCompile Include="common\emit.c" />
+    <ClCompile Include="common\geom.c" />
+    <ClCompile Include="common\globals.c" />
+    <ClCompile Include="common\htmllex.c" />
+    <ClCompile Include="common\htmlparse.c" />
+    <ClCompile Include="common\htmltable.c" />
+    <ClCompile Include="common\input.c" />
+    <ClCompile Include="common\intset.c" />
+    <ClCompile Include="common\labels.c" />
+    <ClCompile Include="common\memory.c" />
+    <ClCompile Include="common\ns.c" />
+    <ClCompile Include="common\output.c" />
+    <ClCompile Include="common\pointset.c" />
+    <ClCompile Include="common\postproc.c" />
+    <ClCompile Include="common\psusershape.c" />
+    <ClCompile Include="common\routespl.c" />
+    <ClCompile Include="common\shapes.c" />
+    <ClCompile Include="common\splines.c" />
+    <ClCompile Include="common\taper.c" />
+    <ClCompile Include="common\textspan.c" />
+    <ClCompile Include="common\timing.c" />
+    <ClCompile Include="common\utils.c" />
+    <ClCompile Include="gvc\gvc.c" />
+    <ClCompile Include="gvc\gvconfig.c" />
+    <ClCompile Include="gvc\gvcontext.c" />
+    <ClCompile Include="gvc\gvdevice.c" />
+    <ClCompile Include="gvc\gvevent.c" />
+    <ClCompile Include="gvc\gvjobs.c" />
+    <ClCompile Include="gvc\gvlayout.c" />
+    <ClCompile Include="gvc\gvloadimage.c" />
+    <ClCompile Include="gvc\gvplugin.c" />
+    <ClCompile Include="gvc\gvrender.c" />
+    <ClCompile Include="gvc\gvtextlayout.c" />
+    <ClCompile Include="gvc\gvusershape.c" />
+    <ClCompile Include="gvc\regex_win32.c" />
+    <ClCompile Include="label\index.c" />
+    <ClCompile Include="label\node.c" />
+    <ClCompile Include="label\rectangle.c" />
+    <ClCompile Include="label\split.q.c" />
+    <ClCompile Include="label\xlabels.c" />
+    <ClCompile Include="pack\ccomps.c" />
+    <ClCompile Include="pack\pack.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="common\entities.html" />
+    <None Include="gvc.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="cdt\cdt.vcxproj">
+      <Project>{83cf0498-7884-49d3-8b3c-263c5af5fe1b}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="patchwork\gvpatchwork.vcxproj">
+      <Project>{6bd77bde-151d-4824-a8bc-9f067662f7ab}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="pathplan\Pathplan.vcxproj">
+      <Project>{bd347753-a09d-48b4-8752-f1d8d9cf235d}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="xdot\xdot.vcxproj">
+      <Project>{c99c1195-2032-408b-9822-f09f49006a3c}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

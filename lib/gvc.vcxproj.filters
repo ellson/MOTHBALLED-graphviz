@@ -1,0 +1,240 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="common\arith.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\color.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\colorprocs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\colortbl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\const.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\entities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\exparse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\geom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\geomprocs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\globals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\htmllex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\htmlparse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\htmltable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\logic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\macros.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\memory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pack\pack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\pointset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\ps_font_equiv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\regex_win32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\render.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\textspan.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\usershape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="common\utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="common\args.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\arrows.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pack\ccomps.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\colxlate.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\ellipse.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\emit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\textspan.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\geom.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\globals.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gvc\gvc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gvc\gvconfig.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gvc\gvcontext.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gvc\gvdevice.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gvc\gvevent.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gvc\gvjobs.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gvc\gvlayout.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gvc\gvloadimage.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gvc\gvplugin.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gvc\gvrender.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gvc\gvtextlayout.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gvc\gvusershape.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\htmllex.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\htmlparse.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\htmltable.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="label\index.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\input.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\intset.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\labels.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\memory.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="label\node.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\ns.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\output.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pack\pack.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\pointset.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\postproc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\psusershape.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="label\rectangle.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gvc\regex_win32.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\routespl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\shapes.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\splines.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="label\split.q.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\taper.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\timing.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\utils.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="label\xlabels.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="gvc.def">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="common\entities.html" />
+  </ItemGroup>
+</Project>

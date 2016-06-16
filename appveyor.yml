@@ -1,11 +1,54 @@
-# do a shallow clone so the initial download doesn't take as long
-clone_depth: 50
+version: 2.38.{build}
 
-clone_folder: c:\graphviz-ms
+image: Visual Studio 2015
+
+environment:
+  # Required so bash starts in the same folder as from where it was called.
+  CHERE_INVOKING: 1
+  matrix:
+    - compiler: msbuild
+    #- compiler: msys2
+    #- compiler: cygwin
+
+install:
+  # Only has to be installed when MSYS2 or Cygwin are enabled.
+  #- cinst ghostscript
 
 build_script:
-  - '"%VS90COMNTOOLS%\..\..\VC\vcvarsall.bat" x86'
-  - devenv /setup
-# download busybox-w32 and save it as wget.exe
-  - ps: (new-object net.webclient).DownloadFile("ftp://ftp.tigress.co.uk/pub/gpl/6.0.0/busybox/busybox.exe", "C:\graphviz-ms\wget.exe")
-  - c:\graphviz-ms\windows\build.bat
+  # Ghostscript only has to be configured when MSYS2 or Cygwin are enabled.
+  ## Add Ghostscript folder to the path so ps2pdf can be called to create docs.
+  ## When executing ps2pdf, 'gs' gets called. On Windows the program is required program is called gswin64c.exe,
+  ## so we create a symlink called 'gs' that points to gswin64c.
+  ##- SET PATH="%PATH%;C:\Program Files\gs\gs9.19\lib;C:\Program Files\gs\gs9.19\bin;"
+  ##- mklink "C:\Program Files\gs\gs9.19\bin\gs" "C:\Program Files\gs\gs9.19\bin\gswin64c.exe"
+  - ps: >-
+      cd $env:APPVEYOR_BUILD_FOLDER 
+
+      if($env:compiler -eq "msbuild") {
+        msbuild /p:Configuration=Release
+      }
+      
+      if ($env:compiler -eq "msys2" -Or $env:compiler -eq "cygwin") {
+        $BashPath = ""
+
+        if ($env:compiler -eq "msys2") {
+          $BashPath = "C:\msys64\usr\bin\bash"
+          & $BashPath -lc "pacman -S --noconfirm autoconf-archive mingw-w64-x86_64-cairo mingw-w64-x86_64-freetype mingw-w64-x86_64-fontconfig mingw-w64-x86_64-libpng mingw-w64-x86_64-pango"
+        }
+
+        if ($env:compiler -eq "cygwin") {
+          C:\cygwin64\setup-x86_64.exe -qnNdO -R C:/cygwin64 -s http://cygwin.mirror.constant.com -l C:/cygwin64/var/cache/setup -P autoconf-archive -P flex -P swig -P mingw64-x86_64-cairo -P expat -P mingw64-x86_64-freetype -P mingw64-x86_64-fontconfig -P mingw64-x86_64-glib2.0 -P mingw64-x86_64-libpng -P mingw64-x86_64-pango -P zlib -P mingw64-x86_64-libpng
+          $BashPath = "C:\cygwin64\bin\bash"
+          # For some reason Cygwin ignores CHERE_INVOKING=1 for the first bash command.
+          # Executing some arbitrary command solves this. So without this next line, the build will fail.
+          & $BashPath -lc "ls"
+        }
+
+        Write-Output "Execute ./autogen.sh, which also executes ./configure"
+
+        & $BashPath -lc "./autogen.sh"
+        
+        Write-Output "Execute make"
+
+        & $BashPath -lc "make"
+      }
