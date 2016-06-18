@@ -37,8 +37,7 @@ before_deploy:
 
 deploy:
   provider: releases
-#  api_key:
-#    secure: yAzN0eQhLmZGRPji7FfjHXrH5vDOc5cmdO1ZvZf0Evu7Z1XArPmf6oZNSImQ9iGpFzeUQd0NnjKWCjD0JZboqmo5jgFpGnEdPzeXy8H0tMJhzaCuEUC6GQ97SwQwywonPcbAaj6Yj1xhbPAeqIHSdTIDx7cxK+FGHLMdr/HHojZXofoLl+s18fMq528OieZqd+TUkRSoovCBsCcSYs+Sezt5zHNUduFbPeAWCzG4Nq1aHMkolrv2//ojsD7Di+8UgWTglGbvlrQWaZWwjFKjmYOGXPho9I0fwTu8fGvCuxX9tY1Muvy1Ho2Ja2yOq3vwyWjeT1rltUtv/jY7hV8GA2YQiPqNhBSuKQHFrG9NNOkWTTQvQGeJYdnuwLWs0hZReZq+8K9rTzGu/RDHA4kSRkC2uOc59K0Ct5mTwrpGv00dm/oefkoUiCnW3dbgsv8Rctbaa3YF+F56IirkopdJU3ojOm6xKFf6NkG3FpOhszsZyRnm4tnW8V3gY/jmtdDSzc/6ZydGVpyxYhbrtc+hH8PFGSfVm7GgTxrQE/+aCsHd4/E5fsdFCPYLGllUdgIyqkxjLjK95p7LbaTD6XRKbGjiITy/Txq5VodfTgpixVYOnRr/D91psB7xT0N150l+Ipp2ijsU6Q6XXqzb3AyZ09aW/yvhNtXy0/BXgkeFHFg=
+  api_key: ${GITHUB_OAUTH_TOKEN}
   file_glob: true
   file: ${GRAPHVIZ_PACKAGE_NAME}
   skip_cleanup: true
