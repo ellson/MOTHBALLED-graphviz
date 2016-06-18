@@ -1,3 +1,6 @@
 [submodule "windows/dependencies/GTK2"]
 	path = windows/dependencies/GTK2
 	url = https://github.com/ErwinJanssen/gtk2-win32-development-libraries.git
+[submodule "windows/dependencies/expat"]
+	path = windows/dependencies/expat
+	url = https://github.com/ErwinJanssen/expat-xml-parser-win32.git
