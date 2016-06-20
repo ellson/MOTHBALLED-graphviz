@@ -9,6 +9,7 @@ environment:
     - compiler: msbuild
       BISON: C:\ProgramData\chocolatey\lib\winflexbison\tools\win_bison.exe
       FLEX: C:\ProgramData\chocolatey\lib\winflexbison\tools\win_flex.exe
+      SED: C:\Program Files (x86)\GnuWin32\bin\sed.exe
     #- compiler: msys2
     #- compiler: cygwin
 
@@ -18,6 +19,7 @@ install:
   # Only has to be installed when MSYS2 or Cygwin are enabled.
   #- cinst ghostscript
   - cinst winflexbison
+  - cinst gnuwin32-sed.install
 
 build_script:
   # Ghostscript only has to be configured when MSYS2 or Cygwin are enabled.
