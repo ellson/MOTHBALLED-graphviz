@@ -71,7 +71,11 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PreBuildEvent>
-      <Command>%BISON% -dy common\htmlparse.y -o common\htmlparse.c</Command>
+      <Command>%BISON% -dy common\htmlparse.y -o common\htmlparse-intermediate.c
+"%SED%" "s/yy/html/g" &lt; common\htmlparse-intermediate.c &gt; common\htmlparse.c
+"%SED%" "s/yy/html/g" &lt; common\htmlparse-intermediate.h &gt; common\htmlparse.h
+del common\htmlparse-intermediate.c
+del common\htmlparse-intermediate.h</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -97,7 +101,11 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PreBuildEvent>
-      <Command>%BISON% -dy common\htmlparse.y -o common\htmlparse.c</Command>
+      <Command>%BISON% -dy common\htmlparse.y -o common\htmlparse-intermediate.c
+"%SED%" "s/yy/html/g" &lt; common\htmlparse-intermediate.c &gt; common\htmlparse.c
+"%SED%" "s/yy/html/g" &lt; common\htmlparse-intermediate.h &gt; common\htmlparse.h
+del common\htmlparse-intermediate.c
+del common\htmlparse-intermediate.h</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
