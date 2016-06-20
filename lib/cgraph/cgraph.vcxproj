@@ -71,7 +71,8 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PreBuildEvent>
-      <Command>%BISON% -dy grammar.y -o grammar.c &amp;&amp; %FLEX% -o scan.c scan.l</Command>
+      <Command>"%BISON%" -dy grammar.y -o grammar.c
+"%FLEX%" -o scan.c scan.l</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -94,7 +95,8 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PreBuildEvent>
-      <Command>%BISON% -dy grammar.y -o grammar.c &amp;&amp; %FLEX% -o scan.c scan.l</Command>
+      <Command>"%BISON%" -dy grammar.y -o grammar.c
+"%FLEX%" -o scan.c scan.l</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
