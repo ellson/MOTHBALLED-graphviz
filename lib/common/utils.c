@@ -18,12 +18,7 @@
 #include "logic.h"
 #include "gvc.h"
 
-#ifdef WIN32
-#include "libltdl/lt_system.h"
-#endif
-#ifndef _MSC_VER
 #include <unistd.h>
-#endif
 #include <ctype.h>
 
 /*
