@@ -32,7 +32,7 @@
 #define GVPLUGIN_VERSION 6
 
 /* Define if you want on-demand plugin loading */
-/* #undef ENABLE_LTDL 1 */
+#define ENABLE_LTDL 1
 
 /* Define to 1 if you have `alloca', as a function or macro. */
 #define HAVE_ALLOCA 1

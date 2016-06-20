@@ -18,6 +18,10 @@
 #include "logic.h"
 #include "gvc.h"
 
+#ifdef WIN32
+#include "libltdl/lt_system.h"
+#endif
+
 #include <unistd.h>
 #include <ctype.h>
 
