@@ -194,12 +194,8 @@ struct Agdisc_s {		/* user's discipline */
 	/* default resource disciplines */
 
 /*visual studio*/
-#if defined(WIN32)
-#   if !defined(CGRAPH_EXPORTS)
-#       define extern __declspec(dllimport)
-#   else
-#       define extern __declspec(dllexport)
-#   endif
+#if defined(_MSC_VER) && !defined(CGRAPH_EXPORTS)
+#define extern __declspec(dllimport)
 #endif
 /*end visual studio*/
 
