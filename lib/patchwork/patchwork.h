@@ -17,12 +17,6 @@
 #include "render.h"
 #include "fdp.h"
 
-/*visual studio*/
-#if defined(WIN32)
-#   define extern __declspec(dllexport)
-#endif
-/*end visual studio*/
-
 #ifdef __cplusplus
 extern "C" {
 #endif
