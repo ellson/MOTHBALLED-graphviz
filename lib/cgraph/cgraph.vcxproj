@@ -69,6 +69,7 @@
       <SubSystem>Windows</SubSystem>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
+      <ModuleDefinitionFile>cgraph.def</ModuleDefinitionFile>
     </Link>
     <PreBuildEvent>
       <Command>"%BISON%" -dy grammar.y -o grammar.c
@@ -93,6 +94,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
+      <ModuleDefinitionFile>cgraph.def</ModuleDefinitionFile>
     </Link>
     <PreBuildEvent>
       <Command>"%BISON%" -dy grammar.y -o grammar.c

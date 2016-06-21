@@ -65,6 +65,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
+      <ModuleDefinitionFile>gvc.def</ModuleDefinitionFile>
     </Link>
     <PreBuildEvent>
       <Command>%BISON% -dy common\htmlparse.y -o common\htmlparse-intermediate.c
@@ -91,6 +92,7 @@ del common\htmlparse-intermediate.h</Command>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
+      <ModuleDefinitionFile>gvc.def</ModuleDefinitionFile>
     </Link>
     <PreBuildEvent>
       <Command>%BISON% -dy common\htmlparse.y -o common\htmlparse-intermediate.c
