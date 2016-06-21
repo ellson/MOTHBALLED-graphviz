@@ -4,3 +4,6 @@
 [submodule "windows/dependencies/expat"]
 	path = windows/dependencies/expat
 	url = https://github.com/ErwinJanssen/expat-xml-parser-win32.git
+[submodule "windows/dependencies/libtool"]
+	path = windows/dependencies/libtool
+	url = https://github.com/ErwinJanssen/libtool-win32.git
