@@ -14,6 +14,7 @@
     <ProjectGuid>{15229511-9F6C-48A5-9194-660CA6492563}</ProjectGuid>
     <RootNamespace>gvc</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -38,14 +39,12 @@
     <_ProjectFileVersion>14.0.25123.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>Debug\</OutDir>
+    <OutDir>$(SolutionDir)Debug\Graphviz\bin\</OutDir>
     <IntDir>Debug\</IntDir>
-    <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>Release\</OutDir>
+    <OutDir>$(SolutionDir)Graphviz\bin\</OutDir>
     <IntDir>Release\</IntDir>
-    <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -60,10 +59,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies />
-      <OutputFile>c:/graphviz-ms/bin/$(ProjectName).dll</OutputFile>
-      <AdditionalLibraryDirectories>$(SolutionDir)windows\dependencies\GTK2\lib;$(SolutionDir)windows\dependencies\libtool\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ModuleDefinitionFile>gvc.def</ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>$(SolutionDir)windows\dependencies\GTK2\lib;$(SolutionDir)windows\dependencies\libtool\lib;$(SolutionDir)windows\dependencies\expat\Bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -85,13 +81,9 @@ del common\htmlparse-intermediate.h</Command>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies />
-      <OutputFile>c:/graphviz-ms/bin/$(ProjectName).dll</OutputFile>
-      <AdditionalLibraryDirectories>$(SolutionDir)windows\dependencies\GTK2\lib;$(SolutionDir)windows\dependencies\libtool\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ModuleDefinitionFile>gvc.def</ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>$(SolutionDir)windows\dependencies\GTK2\lib;$(SolutionDir)windows\dependencies\libtool\lib;$(SolutionDir)windows\dependencies\expat\Bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -132,6 +124,19 @@ del common\htmlparse-intermediate.h</Command>
     <ClInclude Include="common\types.h" />
     <ClInclude Include="common\usershape.h" />
     <ClInclude Include="common\utils.h" />
+    <ClInclude Include="gvc\gvc.h" />
+    <ClInclude Include="gvc\gvcext.h" />
+    <ClInclude Include="gvc\gvcint.h" />
+    <ClInclude Include="gvc\gvcjob.h" />
+    <ClInclude Include="gvc\gvcommon.h" />
+    <ClInclude Include="gvc\gvconfig.h" />
+    <ClInclude Include="gvc\gvcproc.h" />
+    <ClInclude Include="gvc\gvio.h" />
+    <ClInclude Include="gvc\gvplugin.h" />
+    <ClInclude Include="gvc\gvplugin_device.h" />
+    <ClInclude Include="gvc\gvplugin_layout.h" />
+    <ClInclude Include="gvc\gvplugin_loadimage.h" />
+    <ClInclude Include="gvc\gvplugin_render.h" />
     <ClInclude Include="gvc\regex_win32.h" />
     <ClInclude Include="pack\pack.h" />
   </ItemGroup>

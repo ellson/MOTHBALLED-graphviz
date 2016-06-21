@@ -90,6 +90,45 @@
     <ClInclude Include="common\utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="gvc\gvc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvplugin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvcext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvcint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvcjob.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvcommon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvconfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvcproc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvplugin_device.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvplugin_layout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvplugin_loadimage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvplugin_render.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="common\args.c">
