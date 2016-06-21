@@ -27,16 +27,6 @@ extern "C" {
 #   define extern __EXPORT__
 #endif
 
-/*visual studio*/
-#if defined(WIN32)
-#   if !defined(PATHPLAN_EXPORTS)
-#       define extern __declspec(dllimport)
-#   else
-#       define extern __declspec(dllexport)
-#   endif
-#endif
-/*end visual studio*/
-
 /* find shortest euclidean path within a simple polygon */
     extern int Pshortestpath(Ppoly_t * boundary, Ppoint_t endpoints[2],
 			     Ppolyline_t * output_route);
