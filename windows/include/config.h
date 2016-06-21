@@ -175,7 +175,7 @@
 #define HAVE_GTKGLEXT 1
 
 /* Define if you have the gts library */
-#define HAVE_GTS 1
+#define HAVE_GTS 0
 
 /* Define if you have the iconv() function. */
 #define HAVE_ICONV 1
