@@ -57,20 +57,35 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ccomps", "cmd\tools\ccomps.vcxproj", "{1B030847-602F-4095-8FA2-E8B5CF793F60}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dijkstra", "cmd\tools\dijkstra.vcxproj", "{E7BAB639-AECF-4E03-A0A2-B9C8D25E1AB0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C0663A08-F276-4DD6-B17C-E501EE066F7C} = {C0663A08-F276-4DD6-B17C-E501EE066F7C}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gc", "cmd\tools\gc.vcxproj", "{D470C91D-70E3-4FC8-AFCB-0B615A2EA15D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvcolor", "cmd\tools\gvcolor.vcxproj", "{5CCA377A-754B-45AD-B46D-DE10C2635184}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C0663A08-F276-4DD6-B17C-E501EE066F7C} = {C0663A08-F276-4DD6-B17C-E501EE066F7C}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvgen", "cmd\tools\gvgen.vcxproj", "{2EF2B285-6C4F-4707-A584-FF76727C4775}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04} = {D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvpack", "cmd\tools\gvpack.vcxproj", "{BD15CF1D-DAD5-4AF2-A2AA-AEEAAF44C415}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gxl2gv", "cmd\tools\gxl2gv.vcxproj", "{A37FB355-3178-4008-8E11-E7E21AE660DA}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mm2gv", "cmd\tools\mm2gv.vcxproj", "{659CCC36-163F-4681-AA1C-654CD2B0D151}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C0663A08-F276-4DD6-B17C-E501EE066F7C} = {C0663A08-F276-4DD6-B17C-E501EE066F7C}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nop", "cmd\tools\nop.vcxproj", "{907889A8-EAC3-450D-BA29-A7DBE3712142}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04} = {D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sccmap", "cmd\tools\sccmap.vcxproj", "{AC65B4FC-EF7C-4321-B201-62B57ED254DB}"
 EndProject
@@ -85,8 +100,14 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unflatten", "cmd\tools\unflatten.vcxproj", "{0062B64B-88F1-4104-A063-3823925A7A34}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "prune", "contrib\prune\prune.vcxproj", "{1F1136E6-D04B-4B7D-A2A7-78A3887F8A3A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04} = {D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "diffimg", "contrib\diffimg\diffimg.vcxproj", "{89ED80CE-5DEF-46B1-9A12-1D991236EE3E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{05BE968C-B4F4-4B5F-AC4F-C6F8585023BC} = {05BE968C-B4F4-4B5F-AC4F-C6F8585023BC}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glcomp", "lib\glcomp\glcomp.vcxproj", "{CCEF85C9-BC40-4C26-8755-581276C8B7DA}"
 EndProject
@@ -111,12 +132,21 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvortho", "lib\ortho\gvortho.vcxproj", "{2D29953F-2D74-471E-A064-5D184E762DFF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gml2gv", "cmd\tools\gml2gv.vcxproj", "{2C551E96-B2EE-48B2-84BF-F6494AF7C004}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C0663A08-F276-4DD6-B17C-E501EE066F7C} = {C0663A08-F276-4DD6-B17C-E501EE066F7C}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvmap", "cmd\gvmap\gvmap.vcxproj", "{10015250-7CFF-45BE-90F3-13648727C0A0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C5CEB09E-79AF-4091-ACCF-D28EC3D7D90F} = {C5CEB09E-79AF-4091-ACCF-D28EC3D7D90F}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "graphml2gv", "cmd\tools\graphml2gv.vcxproj", "{DE3057E9-F665-4691-929D-4A7DDED63F73}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gv2gml", "cmd\tools\gv2gml.vcxproj", "{58E6D7CC-5122-4830-B841-D6FB796B00E8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{83CF0498-7884-49D3-8B3C-263C5AF5FE1B} = {83CF0498-7884-49D3-8B3C-263C5AF5FE1B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvedit", "cmd\gvedit\gvedit.vcxproj", "{33E97266-F213-3639-BCAB-2F3F95E15B16}"
 EndProject
