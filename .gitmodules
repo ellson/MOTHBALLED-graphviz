@@ -7,3 +7,6 @@
 [submodule "windows/dependencies/libtool"]
 	path = windows/dependencies/libtool
 	url = https://github.com/ErwinJanssen/libtool-win32.git
+[submodule "windows/dependencies/freeglut"]
+	path = windows/dependencies/freeglut
+	url = https://github.com/ErwinJanssen/freeglut-win32.git
