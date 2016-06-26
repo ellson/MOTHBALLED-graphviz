@@ -14,6 +14,7 @@
     <ProjectGuid>{0F4D5D8F-F4D6-4A5D-97E0-9B482257F493}</ProjectGuid>
     <RootNamespace>gvplugin_gdiplus</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -40,12 +41,12 @@
     <_ProjectFileVersion>14.0.25123.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>Debug\</OutDir>
+    <OutDir>$(SolutionDir)Debug\Graphviz\bin\</OutDir>
     <IntDir>Debug\</IntDir>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>Release\</OutDir>
+    <OutDir>$(SolutionDir)Graphviz\bin\</OutDir>
     <IntDir>Release\</IntDir>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
@@ -64,7 +65,6 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>libpng.lib;gtk-win32-2.0.lib;asprintf.lib;atk-1.0.lib;bz2.lib;cairo.lib;charset.lib;croco-0.6.lib;expat.lib;expatw.lib;glade-2.0.lib;fontconfig.lib;freetype.lib;gdk_pixbuf-2.0.lib;gdkglext-win32-1.0.lib;gdk-win32-2.0.lib;glib-2.0.lib;pathplan.lib;gmodule-2.0.lib;gobject-2.0.lib;gsf-1.lib;gsf-win32-1.lib;gthread-2.0.lib;gtkglext-win32-1.0.lib;iconv.lib;intl.lib;jpeg.lib;libexpat.lib;libexpatw.lib;pango-1.0.lib;pangocairo-1.0.lib;pangoft2-1.0.lib;pangowin32-1.0.lib;popt.lib;rsvg-2.lib;tiff.lib;xml2.lib;libgdkglext-win32-1.0.dll.a;libgtkglext-win32-1.0.dll.a;glu32.lib;opengl32.lib;ltdl.lib;zdll.lib;cdt.lib;graph.lib;gvc.lib;circogen.lib;neatogen.lib;fdpgen.lib;patchwork.lib;sparse.lib;twopigen.lib;gd.lib;gts.lib;Gdiplus.lib;Ole32.lib;user32.lib;gdi32.lib</AdditionalDependencies>
-      <OutputFile>c:/graphviz-ms/bin/$(ProjectName).dll</OutputFile>
       <AdditionalLibraryDirectories>$(SolutionDir)windows\dependencies\GTK2\lib;C:\graphviz-ms\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>gvplugin_gdiplus.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -86,7 +86,6 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>libpng.lib;gtk-win32-2.0.lib;asprintf.lib;atk-1.0.lib;bz2.lib;cairo.lib;charset.lib;croco-0.6.lib;expat.lib;expatw.lib;glade-2.0.lib;fontconfig.lib;freetype.lib;gdk_pixbuf-2.0.lib;gdkglext-win32-1.0.lib;gdk-win32-2.0.lib;glib-2.0.lib;pathplan.lib;gmodule-2.0.lib;gobject-2.0.lib;gsf-1.lib;gsf-win32-1.lib;gthread-2.0.lib;gtkglext-win32-1.0.lib;iconv.lib;intl.lib;jpeg.lib;libexpat.lib;libexpatw.lib;pango-1.0.lib;pangocairo-1.0.lib;pangoft2-1.0.lib;pangowin32-1.0.lib;popt.lib;rsvg-2.lib;tiff.lib;xml2.lib;libgdkglext-win32-1.0.dll.a;libgtkglext-win32-1.0.dll.a;glu32.lib;opengl32.lib;ltdl.lib;zdll.lib;cdt.lib;graph.lib;gvc.lib;circogen.lib;neatogen.lib;fdpgen.lib;patchwork.lib;sparse.lib;twopigen.lib;gd.lib;gts.lib;Ole32.lib;user32.lib;gdi32.lib;gdiplus.lib</AdditionalDependencies>
-      <OutputFile>c:/graphviz-ms/bin/$(ProjectName).dll</OutputFile>
       <AdditionalLibraryDirectories>C:\graphviz-ms\bin;$(SolutionDir)windows\dependencies\GTK2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>gvplugin_gdiplus.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>

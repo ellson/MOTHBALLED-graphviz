@@ -14,6 +14,7 @@
     <ProjectGuid>{33E97266-F213-3639-BCAB-2F3F95E15B16}</ProjectGuid>
     <RootNamespace>gvedit</RootNamespace>
     <Keyword>Qt4VSv1.0</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -40,13 +41,13 @@
     <_ProjectFileVersion>14.0.25123.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>debug\</OutDir>
-    <IntDir>debug\</IntDir>
+    <OutDir>$(SolutionDir)Debug\Graphviz\bin\</OutDir>
+    <IntDir>Debug\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>release\</OutDir>
-    <IntDir>release\</IntDir>
+    <OutDir>$(SolutionDir)Graphviz\bin\</OutDir>
+    <IntDir>Release\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
@@ -81,7 +82,6 @@
     <Link>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type=%27win32%27 name=%27Microsoft.Windows.Common-Controls%27 version=%276.0.0.0%27 publicKeyToken=%276595b64144ccf1df%27 language=%27*%27 processorArchitecture=%27*%27" %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>c:\Qt\4.8.3\lib\qtmaind.lib;C:/graphviz-ms/bin\gvc.lib;C:/graphviz-ms/bin\ingraphs.lib;C:/graphviz-ms/bin\cgraph.lib;C:/graphviz-ms/bin\cdt.lib;C:/gtk/lib\expat.lib;C:/gtk/lib\z.lib;C:/gtk/lib\ltdl.lib;c:\Qt\4.8.3\lib\QtGuid4.lib;c:\Qt\4.8.3\lib\QtCored4.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>c:/graphviz-ms/bin/$(ProjectName).exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>c:\Qt\4.8.3\lib;C:/gtk/lib;C:\Qt\4.8.3\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -121,7 +121,6 @@
     <Link>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type=%27win32%27 name=%27Microsoft.Windows.Common-Controls%27 version=%276.0.0.0%27 publicKeyToken=%276595b64144ccf1df%27 language=%27*%27 processorArchitecture=%27*%27" %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>c:\Qt\4.8.3\lib\qtmain.lib;C:/graphviz-ms/bin\gvc.lib;C:/graphviz-ms/bin\cgraph.lib;C:/graphviz-ms/bin\cdt.lib;C:/gtk/lib\expat.lib;C:/gtk/lib\z.lib;C:/gtk/lib\ltdl.lib;c:\Qt\4.8.3\lib\QtGui4.lib;c:\Qt\4.8.3\lib\QtCore4.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>c:/graphviz-ms/bin/$(ProjectName).exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>c:\Qt\4.8.3\lib;C:/gtk/lib;C:/graphviz-ms/bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
