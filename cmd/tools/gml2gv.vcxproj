@@ -64,6 +64,16 @@
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
+    <PreBuildEvent>
+      <Command>%FLEX%  -o gmlscan-intermediate.c -i gmlscan.l
+%SED% "s/yy/gml/g" &lt; gmlscan-intermediate.c &gt; gmlscan.c
+del gmlscan-intermediate.c
+%BISON% -dy gmlparse.y -o gmlparse-intermediate.c
+%SED% "s/yy/gml/g" &lt; gmlparse-intermediate.h &gt; gmlparse.h
+%SED% "s/yy/gml/g" &lt; gmlparse-intermediate.c &gt; gmlparse.c
+del gmlparse-intermediate.h
+del gmlparse-intermediate.c</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -82,6 +92,16 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
+    <PreBuildEvent>
+      <Command>%FLEX%  -o gmlscan-intermediate.c -i gmlscan.l
+%SED% "s/yy/gml/g" &lt; gmlscan-intermediate.c &gt; gmlscan.c
+del gmlscan-intermediate.c
+%BISON% -dy gmlparse.y -o gmlparse-intermediate.c
+%SED% "s/yy/gml/g" &lt; gmlparse-intermediate.h &gt; gmlparse.h
+%SED% "s/yy/gml/g" &lt; gmlparse-intermediate.c &gt; gmlparse.c
+del gmlparse-intermediate.h
+del gmlparse-intermediate.c</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="gml2gv.h" />
