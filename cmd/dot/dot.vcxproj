@@ -158,10 +158,6 @@
       <Project>{189e64e3-8a67-4477-8b18-3b174c03f6b9}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\..\plugin\gd\gvplugin_gd.vcxproj">
-      <Project>{2fddc7c5-66e5-4520-b735-fd1a065aa9ba}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
     <ProjectReference Include="..\..\plugin\neato_layout\gvplugin_neato_layout.vcxproj">
       <Project>{92ea9398-9244-4daa-8e7d-2f6bec338cab}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
