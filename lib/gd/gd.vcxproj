@@ -64,6 +64,12 @@
       <EnablePREfast>true</EnablePREfast>
     </ClCompile>
     <Lib />
+    <Lib>
+      <AdditionalDependencies>jpeg.lib</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)windows\dependencies\GTK2\lib</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -76,6 +82,12 @@
       <EnablePREfast>true</EnablePREfast>
     </ClCompile>
     <Lib />
+    <Lib>
+      <AdditionalDependencies>jpeg.lib</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)windows\dependencies\GTK2\lib</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="entities.h" />
