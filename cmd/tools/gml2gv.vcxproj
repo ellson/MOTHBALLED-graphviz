@@ -70,12 +70,12 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PreBuildEvent>
-      <Command>%FLEX%  -o gmlscan-intermediate.c -i gmlscan.l
-%SED% "s/yy/gml/g" &lt; gmlscan-intermediate.c &gt; gmlscan.c
+      <Command>"%FLEX%"  -o gmlscan-intermediate.c -i gmlscan.l
+"%SED%" "s/yy/gml/g" &lt; gmlscan-intermediate.c &gt; gmlscan.c
 del gmlscan-intermediate.c
-%BISON% -dy gmlparse.y -o gmlparse-intermediate.c
-%SED% "s/yy/gml/g" &lt; gmlparse-intermediate.h &gt; gmlparse.h
-%SED% "s/yy/gml/g" &lt; gmlparse-intermediate.c &gt; gmlparse.c
+"%BISON%" -dy gmlparse.y -o gmlparse-intermediate.c
+"%SED%" "s/yy/gml/g" &lt; gmlparse-intermediate.h &gt; gmlparse.h
+"%SED%" "s/yy/gml/g" &lt; gmlparse-intermediate.c &gt; gmlparse.c
 del gmlparse-intermediate.h
 del gmlparse-intermediate.c</Command>
     </PreBuildEvent>
@@ -99,12 +99,12 @@ del gmlparse-intermediate.c</Command>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PreBuildEvent>
-      <Command>%FLEX%  -o gmlscan-intermediate.c -i gmlscan.l
-%SED% "s/yy/gml/g" &lt; gmlscan-intermediate.c &gt; gmlscan.c
+      <Command>"%FLEX%"  -o gmlscan-intermediate.c -i gmlscan.l
+"%SED%" "s/yy/gml/g" &lt; gmlscan-intermediate.c &gt; gmlscan.c
 del gmlscan-intermediate.c
-%BISON% -dy gmlparse.y -o gmlparse-intermediate.c
-%SED% "s/yy/gml/g" &lt; gmlparse-intermediate.h &gt; gmlparse.h
-%SED% "s/yy/gml/g" &lt; gmlparse-intermediate.c &gt; gmlparse.c
+"%BISON%" -dy gmlparse.y -o gmlparse-intermediate.c
+"%SED%" "s/yy/gml/g" &lt; gmlparse-intermediate.h &gt; gmlparse.h
+"%SED%" "s/yy/gml/g" &lt; gmlparse-intermediate.c &gt; gmlparse.c
 del gmlparse-intermediate.h
 del gmlparse-intermediate.c</Command>
     </PreBuildEvent>
