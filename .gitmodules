@@ -10,3 +10,6 @@
 [submodule "windows/dependencies/freeglut"]
 	path = windows/dependencies/freeglut
 	url = https://github.com/ErwinJanssen/freeglut-win32.git
+[submodule "windows/dependencies/ANN"]
+	path = windows/dependencies/ANN
+	url = https://github.com/ErwinJanssen/ANN-win32.git
