@@ -28,11 +28,9 @@
 #define GLOB_NOMATCH    3   /* No matches found.  */
 #define GLOB_NOSORT     4
 #define DMKEY "Software\\Microsoft" //key to look for library dir
-#include "regex_win32.h"
-#else
-#include <regex.h>
 #endif
 
+#include <regex.h>
 #include "types.h"
 #include "logic.h"
 #include "memory.h"

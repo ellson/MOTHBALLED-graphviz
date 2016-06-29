@@ -72,9 +72,6 @@
     <ClInclude Include="common\ps_font_equiv.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gvc\regex_win32.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="common\render.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -240,9 +237,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="label\rectangle.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gvc\regex_win32.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="common\routespl.c">
