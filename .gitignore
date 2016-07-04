@@ -36,6 +36,8 @@ pkgIndex.tcl
 SWIGTYPE*
 tclpkg/*/gv.3*
 y.*
+
+
 cmd/dot/dot
 cmd/dot/dot_static
 cmd/dot/dot.1.pdf
