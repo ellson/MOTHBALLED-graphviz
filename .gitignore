@@ -1,16 +1,23 @@
 syntax: glob
-*~
-*.a
+
+
+#*~
+#*.a
+#rtest*.tar.gz*
+#*.lai
+#*.Po
+#*.Plo
+#*.so
+#*.so.*
+#*.soT
+#COPYING
+#doxygen
+
+# product of: make dist
 graphviz*.tar.gz*
-rtest*.tar.gz*
-*.lai
-*.Po
-*.Plo
-*.so
-*.so.*
-*.soT
-COPYING
-doxygen
+
+lib/rxspencer/re
+lib/rxspencer/*.oo
 
 cmd/gvedit/moc_csettings.cpp
 cmd/gvedit/moc_imageviewer.cpp
