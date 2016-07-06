@@ -24,7 +24,7 @@ In practice, graphs are usually generated from an external data sources, but the
 
 ## Contacts
 
-If you have a bug or believe something is not working as expected, please submit a bug report ( http://www.graphviz.org/content/graphviz-issue-tracker ).
+If you have a bug or believe something is not working as expected, please submit a bug report ( https://github.com/ellson/graphviz/issues ).
 
 If you have a general question or are unsure how things work, please consider posting first to the Graphviz mailing list ( http://www.graphviz.org/MailingList.php ) or on the user forum ( http://www.graphviz.org/forums/general-discussion ). We follow these, but there are also many users who might be able to respond to you better or faster than we can. Please do not send detailed bug reports there.
 
