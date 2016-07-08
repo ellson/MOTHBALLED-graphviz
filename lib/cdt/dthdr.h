@@ -8,7 +8,7 @@
 **	Written by Kiem-Phong Vo (5/25/96)
 */
 
-#if _PACKAGE_ast
+#if defined(_PACKAGE_ast)
 #include	<ast.h>
 #else
 #include	<ast_common.h>
@@ -54,7 +54,7 @@
 #define RROTATE(x,y)	(rrotate(x,y), (x) = (y))
 #define LROTATE(x,y)	(lrotate(x,y), (x) = (y))
 
-#if !_PACKAGE_ast
+#if !defined(_PACKAGE_ast)
 _BEGIN_EXTERNS_
 extern Void_t*	malloc _ARG_((size_t));
 extern Void_t*	realloc _ARG_((Void_t*, size_t));

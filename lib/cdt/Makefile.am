@@ -27,6 +27,6 @@ libcdt_la_SOURCES = $(libcdt_C_la_SOURCES)
 cdt.3.pdf: $(srcdir)/cdt.3
 	- @GROFF@ -Tps -man $(srcdir)/cdt.3 | @PS2PDF@ - - >cdt.3.pdf
 
-EXTRA_DIST = $(man_MANS) $(pdf_DATA) features cdt.vcproj cdt.def
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) features cdt.vcxproj* cdt.def
 
 DISTCLEANFILES = $(pdf_DATA)

@@ -80,6 +80,22 @@ static void svg_bzptarray(GVJ_t * job, pointf * A, int n)
 #endif
 }
 
+static void svg_print_id_class(GVJ_t * job, char* id, char* idx, char* kind, void* obj)
+{
+    char* str;
+
+    gvputs(job, "<g id=\"");
+    gvputs(job, xml_string(id));
+    if (idx)
+	gvprintf (job, "_%s", xml_string(idx));
+    gvprintf(job, "\" class=\"%s", kind);
+    if ((str = agget(obj, "class")) && *str) {
+	gvputs(job, " ");
+	gvputs(job, xml_string(str));
+    }
+    gvputs(job, "\"");
+}
+
 static void svg_print_color(GVJ_t * job, gvcolor_t color)
 {
     switch (color.type) {
@@ -209,16 +225,9 @@ static void svg_begin_layer(GVJ_t * job, char *layername, int layerNum,
 			    int numLayers)
 {
     obj_state_t *obj = job->obj;
-    char *str;
 
-    gvputs(job, "<g id=\"");
-    gvputs(job, xml_string(layername));
-    gvputs(job, "\" class=\"layer");
-    if ((str = agget(obj->u.n, "class"))) {
-	gvputs(job, " ");
-	gvputs(job, xml_string(str));
-    }
-    gvputs(job, "\">\n");
+    svg_print_id_class(job, layername, NULL, "layer", obj->u.g);
+    gvputs(job, ">\n");
 }
 
 static void svg_end_layer(GVJ_t * job)
@@ -233,19 +242,12 @@ static void svg_end_layer(GVJ_t * job)
 static void svg_begin_page(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
-    char *str;
 
     /* its really just a page of the graph, but its still a graph,
      * and it is the entire graph if we're not currently paging */
-    gvputs(job, "<g id=\"");
-    gvputs(job, xml_string(obj->id));
-    gvputs(job, "\" class=\"graph");
-    if ((str = agget(obj->u.n, "class"))) {
-        gvputs(job, " ");
-        gvputs(job, xml_string(str));
-    }
+    svg_print_id_class(job, obj->id, NULL, "graph", obj->u.g);
     gvprintf(job,
-	     "\" transform=\"scale(%g %g) rotate(%d) translate(%g %g)\">\n",
+	     " transform=\"scale(%g %g) rotate(%d) translate(%g %g)\">\n",
 	     job->scale.x, job->scale.y, -job->rotation,
 	     job->translation.x, -job->translation.y);
     /* default style */
@@ -264,16 +266,9 @@ static void svg_end_page(GVJ_t * job)
 static void svg_begin_cluster(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
-    char *str;
 
-    gvputs(job, "<g id=\"");
-    gvputs(job, xml_string(obj->id));
-    gvputs(job, "\" class=\"cluster");
-    if ((str = agget(obj->u.n, "class"))) {
-        gvputs(job, " ");
-        gvputs(job, xml_string(str));
-    }
-    gvputs(job, "\">\n");
+    svg_print_id_class(job, obj->id, NULL, "cluster", obj->u.sg);
+    gvputs(job, ">\n");
     gvputs(job, "<title>");
     gvputs(job, xml_string(agnameof(obj->u.g)));
     gvputs(job, "</title>\n");
@@ -287,18 +282,14 @@ static void svg_end_cluster(GVJ_t * job)
 static void svg_begin_node(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
-    char *str;
+    char* idx;
 
-    gvputs(job, "<g id=\"");
-    gvputs(job, xml_string(obj->id));
     if (job->layerNum > 1)
-	gvprintf (job, "_%s", xml_string(job->gvc->layerIDs[job->layerNum]));
-    gvputs(job, "\" class=\"node");
-    if ((str = agget(obj->u.n, "class"))) {
-        gvputs(job, " ");
-        gvputs(job, xml_string(str));
-    }
-    gvputs(job, "\">\n");
+	idx = job->gvc->layerIDs[job->layerNum];
+    else
+	idx = NULL;
+    svg_print_id_class(job, obj->id, idx, "node", obj->u.n);
+    gvputs(job, ">\n");
     gvputs(job, "<title>");
     gvputs(job, xml_string(agnameof(obj->u.n)));
     gvputs(job, "</title>\n");
@@ -313,16 +304,9 @@ static void svg_begin_edge(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
     char *ename;
-    char *str;
 
-    gvputs(job, "<g id=\"");
-    gvputs(job, xml_string(obj->id));
-    gvputs(job, "\" class=\"edge");
-    if ((str = agget(obj->u.n, "class"))) {
-        gvputs(job, " ");
-        gvputs(job, xml_string(str));
-    }
-    gvputs(job, "\">\n");
+    svg_print_id_class(job, obj->id, NULL, "edge", obj->u.e);
+    gvputs(job, ">\n");
 
     gvputs(job, "<title>");
     ename = strdup_and_subst_obj("\\E", (void *) (obj->u.e));

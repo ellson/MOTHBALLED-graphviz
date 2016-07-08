@@ -4,6 +4,9 @@
 # Try to use version available on FC8
 AC_PREREQ(2.61)
 
+dnl ===========================================================================
+dnl Set Graphviz version information
+
 # set:
 #	graphviz_version_major
 #	graphviz_version_minor
@@ -19,13 +22,13 @@ GRAPHVIZ_VERSION_MAJOR=graphviz_version_major()
 GRAPHVIZ_VERSION_MINOR=graphviz_version_minor()
 GRAPHVIZ_VERSION_MICRO=graphviz_version_micro()
 
-#NB: "stable" or "development"
+# NB: "stable" or "development"
 GRAPHVIZ_COLLECTION=graphviz_collection()
 
-#NB: date/time of last commit - or "0"
+# NB: date/time of last commit - or "0"
 GRAPHVIZ_VERSION_DATE=graphviz_version_date()
 
-#NB: git commit hash of last commit
+# NB: git commit hash of last commit
 GRAPHVIZ_VERSION_COMMIT=graphviz_version_commit()
 
 GRAPHVIZ_SOURCES=graphviz/$GRAPHVIZ_COLLECTION/SOURCES
@@ -2677,15 +2680,52 @@ if test "x$with_libgd" != "xyes"; then
 fi
 
 if test "x$use_gd" = "x"; then
+   PKG_CHECK_MODULES(GTK, [gdlib >= 2.0.33],[
+      have_gdlib=1
+# FIXME - why no features in the gdlib.pc?
+      GD_FEATURES="GD_PNG GD_JPEG GD_XPM GD_FONTCONFIG GD_FREETYPE GD_GIF GD_GIFANIM GD_OPENPOLYGON"
+   ],[
       AC_PATH_PROG(GDLIB_CONFIG,gdlib-config)
       if test -n "$GDLIB_CONFIG"; then
-        GD_INCLUDES=`$GDLIB_CONFIG --includes`
-        GD_LDFLAGS=`$GDLIB_CONFIG --ldflags | sed 's/-xarch=[^ ]* //'`
-        GD_LIBS=`$GDLIB_CONFIG --libs`
-        GD_MAJORVERSION=`$GDLIB_CONFIG --majorversion`
-        GD_MINORVERSION=`$GDLIB_CONFIG --minorversion`
-        GD_REVISION=`$GDLIB_CONFIG --revision`
-        for f in `$GDLIB_CONFIG --features` ; do
+         have_gdlib=1
+         GDLIB_CFLAGS=`$GDLIB_CONFIG --includes`
+         GDLIB_LIBS=`$GDLIB_CONFIG --libs`
+         GDLIB_VERSION=`$GDLIB_CONFIG --version 2>/dev/null`
+         GD_LDFLAGS=`$GDLIB_CONFIG --ldflags | sed 's/-xarch=[^ ]* //'`
+         GD_FEATURES=`$GDLIB_CONFIG --features`
+
+         # GD version check >= 2.0.33  -- centos-5.8 has gd-2.0.33
+         GDLIB_VERSION_MAJOR=`echo $GDLIB_VERSION | cut -d '.' -f 1`
+         GDLIB_VERSION_MINOR=`echo $GDLIB_VERSION | cut -d '.' -f 2`
+         GDLIB_VERSION_MICRO=`echo $GDLIB_VERSION | cut -d '.' -f 3`
+         REQ_GDLIB_VERSION_MAJOR=2
+         REQ_GDLIB_VERSION_MINOR=0
+         REQ_GDLIB_VERSION_MICRO=33
+         if test $GDLIB_VERSION_MAJOR -lt $REQ_GDLIB_VERSION_MAJOR; then
+            use_gd="No (major version too old)"
+         else
+            if test $GDLIB_VERSION_MAJOR -eq $REQ_GDLIB_VERSION_MAJOR; then
+              if test $GDLIB_VERSION_MINOR -lt $REQ_GDLIB_VERSION_MINOR; then
+                 use_gd="No (minor version too old)"
+              else
+                 if test $GDLIB_VERSION_MINOR -eq $REQ_GDLIB_VERSION_MINOR; then
+		            if test $GDLIB_VERSION_MICRO -lt $REQ_GDLIB_VERSION_MICRO; then
+                       use_gd="No (revision too old)"
+		            fi
+	             fi
+	          fi
+           fi
+        fi
+        if test "x$use_gd" != "x"; then
+            AC_MSG_WARN(GD library version $GDLIB_VERSION_MAJOR.$GDLIB_VERSION_MINOR.$GDLIB_VERSION_MICRO < $REQ_GDLIB_VERSION_MAJOR.$REQ_GDLIB_VERSION_MINOR.$REQ_GDLIB_VERSION_MICRO)
+        fi
+     else
+        AC_MSG_WARN(GD neither gdlib pkgconfig nor gdlib-config was found)
+     fi
+  ])
+  if test "x$have_gdlib" != "x"; then
+      AC_DEFINE_UNQUOTED(HAVE_GDLIB,1,[Define if you have the gdlib library])
+      for f in $GD_FEATURES ; do
 	    if test "$f" = "GD_PNG"; then
                 AC_DEFINE_UNQUOTED(HAVE_GD_PNG,1,[Define if the GD library supports PNG])
 	    fi
@@ -2696,12 +2736,12 @@ if test "x$use_gd" = "x"; then
                 AC_DEFINE_UNQUOTED(HAVE_GD_XPM,1,[Define if the GD library supports XPM])
 	    fi
 	    if test "$f" = "GD_FONTCONFIG"; then
-		HAVE_GD_FONTCONFIG=1
                 AC_DEFINE_UNQUOTED(HAVE_GD_FONTCONFIG,1,[Define if the GD library supports FONTCONFIG])
+		        have_gd_fontconfig=1
 	    fi
 	    if test "$f" = "GD_FREETYPE"; then
-		HAVE_GD_FREETYPE=1
                 AC_DEFINE_UNQUOTED(HAVE_GD_FREETYPE,1,[Define if the GD library supports FREETYPE])
+		        have_gd_freetype=1
 	    fi
 	    if test "$f" = "GD_GIF"; then
                 AC_DEFINE_UNQUOTED(HAVE_GD_GIF,1,[Define if the GD library supports GIF])
@@ -2712,43 +2752,19 @@ if test "x$use_gd" = "x"; then
 	    if test "$f" = "GD_OPENPOLYGON"; then
                 AC_DEFINE_UNQUOTED(HAVE_GD_OPENPOLYGON,1,[Define if the GD library supports OPENPOLYGON])
 	    fi
-        done
+      done
 
-	if test "x$HAVE_GD_FONTCONFIG" = "x"; then
-            AC_MSG_WARN(Your libgd was not built with freetype support. This may result in problems displaying fonts.)
+	if test "x$have_gd_fontconfig" = "x"; then
+        AC_MSG_WARN(Your libgd was not built with fontconfig support. This may result in problems displaying fonts.)
 	fi
-	if test "x$HAVE_GD_FREETYPE" = "x"; then
-	    AC_MSG_WARN(Your libgd was not built with fontconfig support. This may result in problems resolving fonts.)
-        fi
+	if test "x$have_gd_freetype" = "x"; then
+	    AC_MSG_WARN(Your libgd was not built with freetype support. This may result in problems resolving fonts.)
+    fi
+  fi
 
-        # GD version check >= 2.0.33  -- centos-5.8 has gd-2.0.33
-        REQ_GD_MAJORVERSION=2
-        REQ_GD_MINORVERSION=0
-        REQ_GD_REVISION=33
-        if test $GD_MAJORVERSION -lt $REQ_GD_MAJORVERSION; then
-            use_gd="No (major version too old)"
-        else
-            if test $GD_MAJORVERSION -eq $REQ_GD_MAJORVERSION; then
-                if test $GD_MINORVERSION -lt $REQ_GD_MINORVERSION; then
-                    use_gd="No (minor version too old)"
-	        else
-                    if test $GD_MINORVERSION -eq $REQ_GD_MINORVERSION; then
-		        if test $GD_REVISION -lt $REQ_GD_REVISION; then
-                            use_gd="No (revision too old)"
-		        fi
-	            fi
-	        fi
-            fi
-        fi
-        if test "x$use_gd" != "x"; then
-            AC_MSG_WARN(GD library version < $REQ_GD_MAJORVERSION.$REQ_GD_MINORVERSION.$REQ_GD_REVISION)
-        fi
-      else
-            AC_MSG_WARN(GD gdlib-config not found)
-      fi
   # prevent explicit use of -I/usr/include as it breaks mingw cross-compiles
-  if test "x$GD_INCLUDES" = "x-I/usr/include"; then
-     GD_INCLUDES="";
+  if test "x$GDLIB_CFLAGS" = "x-I/usr/include"; then
+     GDLIB_CFLAGS="";
   fi
   # prevent explicit use of -L/usr/lib or -L/usr/lib64, unnecessary clutter
   if test "x$GD_LDFLAGS" = "x-L/usr/lib"; then
@@ -2765,13 +2781,13 @@ if test "x$use_gd" = "x"; then
       save_LDFLAGS=$LDFLAGS
       AC_ARG_WITH(gdincludedir,
         [AS_HELP_STRING([--with-gdincludedir=DIR],[use GD includes from DIR])],
-        GD_INCLUDES="-I$withval")
-      CPPFLAGS="$CPPFLAGS $GD_INCLUDES"
+        GDLIB_CFLAGS="-I$withval")
+      CPPFLAGS="$CPPFLAGS $GDLIB_CFLAGS"
       AC_ARG_WITH(gdlibdir,
         [AS_HELP_STRING([--with-gdlibdir=DIR],[use GD libraries from DIR])],
         [GD_LDFLAGS="-L$withval"])
-      GD_LIBS="$GD_LDFLAGS -lgd $GD_LIBS"
-      LDFLAGS="$LDFLAGS $GD_LIBS"
+      GDLIB_LIBS="$GD_LDFLAGS -lgd $GDLIB_LIBS"
+      LDFLAGS="$LDFLAGS $GDLIB_LIBS"
       AC_CHECK_HEADER(gd.h,,[
         AC_MSG_WARN(Optional GD library not available - no gd.h)
         use_gd="No (gd headers not found)"
@@ -2791,8 +2807,8 @@ if test "x$use_gd" = "x"; then
       CPPFLAGS=$save_CPPFLAGS
     fi
   fi
-  AC_SUBST([GD_INCLUDES])
-  AC_SUBST([GD_LIBS])
+  AC_SUBST([GDLIB_CFLAGS])
+  AC_SUBST([GDLIB_LIBS])
 fi
 AM_CONDITIONAL(WITH_LIBGD, [test "x$with_libgd" = "xyes"])
 

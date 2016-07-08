@@ -1,3 +1,5 @@
+June 18, 2016
+	- Experimenting with Travis CI
 February 13, 2016
 	- Add cylinder shape for databases.
 	- Free installed plugins
@@ -5,10 +7,17 @@ February 13, 2016
       as well as PANGOCAIRO_LIBS
 	- Update makefile for dot so that the using libpanco_C in the static build include PANGOFT2
       as well as PANGOCAIRO_LIBS (needed for some versions of Ubuntu)
+February 1, 2016
+	- Add json output format
+April 26, 2015
+	- output class value in svg files
 September 9, 2014
 	- Add plain shape for use with HTML-like labels.
 August 12, 2014
 	- Add icurve arrowhead.
+July 28, 2014
+	- Revert to old, translate to origin semantics in neato, etc. Add flag notranslate if that is
+          what the user desires.
 April 13, 2014
 	- Release 2.38.0
 	- Resolves bugs: 2409, 2413, 2417, 2420, 2422, 2423, 2425

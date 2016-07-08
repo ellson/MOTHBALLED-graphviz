@@ -18,7 +18,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/common \
 	-I$(top_srcdir)/lib/cgraph \
 	-I$(top_srcdir)/lib/cdt \
-	-I$(top_srcdir)/lib/pathplan $(TCLHANDLE_INCLUDES) $(GD_INCLUDES) $(TCL_INCLUDES)
+	-I$(top_srcdir)/lib/pathplan $(TCLHANDLE_INCLUDES) $(GDLIB_CFLAGS) $(TCL_INCLUDES)
 
 LIBS = -lc
 
@@ -64,7 +64,7 @@ libtcldot_la_DEPENDENCIES =  $(top_builddir)/lib/gvc/libgvc.la
 
 # GDTCLFT requires gd libs to be builtin
 if WITH_LIBGD
-libtcldot_la_LIBADD += $(GD_LIBS)
+libtcldot_la_LIBADD += $(GDLIB_LIBS)
 endif
 
 libtcldot_la_LIBADD += $(LIBGEN_LIBS) $(MATH_LIBS)

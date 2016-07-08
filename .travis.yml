@@ -11,7 +11,35 @@ addons:
       - freeglut3-dev
 
 script:
-  - ./autogen.sh
-  - ./configure
+  - GRAPHVIZ_DESTINATION_FOLDER="graphviz-build"
+
+  # Build and install to non-root folder
+  - ./autogen.sh NOCONFIG
+  - ./configure --prefix=${TRAVIS_BUILD_DIR}/${GRAPHVIZ_DESTINATION_FOLDER}
   - make
+  - make install
+  # List contents of directory to see if the install created the directory succesfully
+  - ls
+  # Show contents of created directory
+  - ls ${GRAPHVIZ_DESTINATION_FOLDER}
+
+  # Add build/bin folder to path so the tests can run
+  - PATH=${TRAVIS_BUILD_DIR}/${GRAPHVIZ_DESTINATION_FOLDER}/bin:$PATH
+  - echo $PATH
+  - dot -V
+  - dot -c
   - make check
+
+before_deploy:
+  # Put package in tar.gz
+  - GRAPHVIZ_PACKAGE_NAME="graphviz-${TRAVIS_TAG}-linux.tar.gz"
+  - tar czf ${GRAPHVIZ_PACKAGE_NAME} ${GRAPHVIZ_DESTINATION_FOLDER}
+
+deploy:
+  provider: releases
+  api_key: ${GITHUB_OAUTH_TOKEN}
+  file_glob: true
+  file: ${GRAPHVIZ_PACKAGE_NAME}
+  skip_cleanup: true
+  on:
+    tags: true
