@@ -169,7 +169,7 @@ BuildRequires: libwebp-devel
 BuildRequires: golang >= 1.2 gcc-go swig >= 3.0.2
 %endif
 %if %fedora >= 25
-%define PHP 0
+%undef PHP
 # disable PHP7 in fc25 until such time as swig supports it
 %endif
 %endif
