@@ -116,8 +116,6 @@ BuildRequires: guile-devel
 BuildRequires: python python-devel
 %define JAVA 1
 BuildRequires: java-devel
-%define PHP 1
-BuildRequires: php-devel
 %define _QT 1
 BuildRequires: qt-devel
 %ifnarch ppc64
@@ -167,6 +165,11 @@ BuildRequires: libwebp-devel
 %if %fedora >= 21
 %define _GO 1
 BuildRequires: golang >= 1.2 gcc-go swig >= 3.0.2
+%endif
+%if %fedora <= 24
+%define PHP 1
+BuildRequires: php-devel
+# disable PHP7 in fc25 until swig supports it
 %endif
 %endif
 
