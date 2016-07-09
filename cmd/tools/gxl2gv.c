@@ -23,7 +23,7 @@
     #pragma comment( lib, "cdt.lib" )
     #pragma comment( lib, "ingraphs.lib" )
     #pragma comment( lib, "gvc.lib" )
-    #pragma comment( lib, "expat.lib" )
+    #pragma comment( lib, "libexpat.lib" )
 #endif
 
 

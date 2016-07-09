@@ -259,7 +259,7 @@ static boolean pango_textlayout(textspan_t * span, char **fontpath)
     span->size.y = (int)(span->font->size * 1.1 + .5);
 
     /* The y offset from baseline to 0,0 of the bitmap representation */
-#if defined PANGO_VERSION_MAJOR && (PANGO_VERSION_MAJOR >= 1)
+#if !defined(WIN32) && defined PANGO_VERSION_MAJOR && (PANGO_VERSION_MAJOR >= 1)
     span->yoffset_layout = pango_layout_get_baseline (layout) * textlayout_scale;
 #else
     {

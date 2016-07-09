@@ -72,9 +72,6 @@
     <ClInclude Include="common\ps_font_equiv.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gvc\regex_win32.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="common\render.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -88,6 +85,45 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="common\utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvplugin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvcext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvcint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvcjob.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvcommon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvconfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvcproc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvplugin_device.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvplugin_layout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvplugin_loadimage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gvc\gvplugin_render.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -201,9 +237,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="label\rectangle.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gvc\regex_win32.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="common\routespl.c">

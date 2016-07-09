@@ -51,52 +51,86 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vmalloc", "lib\vmalloc\vmalloc.vcxproj", "{1A6CABA9-DA28-4BC1-9DF4-F809231221BC}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "acyclic", "cmd\tools\acyclic.vcxproj", "{E72DB0B2-A9B1-47D0-B6CE-563A20434F6E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04} = {D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bcomps", "cmd\tools\bcomps.vcxproj", "{98127EF3-6289-4251-A057-D7C34B1B67AC}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ccomps", "cmd\tools\ccomps.vcxproj", "{1B030847-602F-4095-8FA2-E8B5CF793F60}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dijkstra", "cmd\tools\dijkstra.vcxproj", "{E7BAB639-AECF-4E03-A0A2-B9C8D25E1AB0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C0663A08-F276-4DD6-B17C-E501EE066F7C} = {C0663A08-F276-4DD6-B17C-E501EE066F7C}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gc", "cmd\tools\gc.vcxproj", "{D470C91D-70E3-4FC8-AFCB-0B615A2EA15D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04} = {D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvcolor", "cmd\tools\gvcolor.vcxproj", "{5CCA377A-754B-45AD-B46D-DE10C2635184}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C0663A08-F276-4DD6-B17C-E501EE066F7C} = {C0663A08-F276-4DD6-B17C-E501EE066F7C}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvgen", "cmd\tools\gvgen.vcxproj", "{2EF2B285-6C4F-4707-A584-FF76727C4775}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04} = {D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvpack", "cmd\tools\gvpack.vcxproj", "{BD15CF1D-DAD5-4AF2-A2AA-AEEAAF44C415}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gxl2gv", "cmd\tools\gxl2gv.vcxproj", "{A37FB355-3178-4008-8E11-E7E21AE660DA}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mm2gv", "cmd\tools\mm2gv.vcxproj", "{659CCC36-163F-4681-AA1C-654CD2B0D151}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C0663A08-F276-4DD6-B17C-E501EE066F7C} = {C0663A08-F276-4DD6-B17C-E501EE066F7C}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nop", "cmd\tools\nop.vcxproj", "{907889A8-EAC3-450D-BA29-A7DBE3712142}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04} = {D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sccmap", "cmd\tools\sccmap.vcxproj", "{AC65B4FC-EF7C-4321-B201-62B57ED254DB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04} = {D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tred", "cmd\tools\tred.vcxproj", "{AC95C5B1-0EDB-4127-858E-0F08A3FC7B69}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lefty", "cmd\lefty\lefty.vcxproj", "{40597156-1B95-4A22-8F2B-D6B81B747CF0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04} = {D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dotty", "cmd\dotty\dotty.vcxproj", "{863A7931-DC7C-47C4-94E6-3D053BFE771A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lneato", "cmd\lneato\lneato.vcxproj", "{23D7A1F0-621B-474A-A45F-2490C9935C1E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unflatten", "cmd\tools\unflatten.vcxproj", "{0062B64B-88F1-4104-A063-3823925A7A34}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C0663A08-F276-4DD6-B17C-E501EE066F7C} = {C0663A08-F276-4DD6-B17C-E501EE066F7C}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "prune", "contrib\prune\prune.vcxproj", "{1F1136E6-D04B-4B7D-A2A7-78A3887F8A3A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04} = {D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "diffimg", "contrib\diffimg\diffimg.vcxproj", "{89ED80CE-5DEF-46B1-9A12-1D991236EE3E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{05BE968C-B4F4-4B5F-AC4F-C6F8585023BC} = {05BE968C-B4F4-4B5F-AC4F-C6F8585023BC}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glcomp", "lib\glcomp\glcomp.vcxproj", "{CCEF85C9-BC40-4C26-8755-581276C8B7DA}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xdot", "lib\xdot\xdot.vcxproj", "{C99C1195-2032-408B-9822-F09F49006A3C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "smyrna", "cmd\smyrna\smyrna.vcxproj", "{13145C00-3694-4342-AFBE-4FAA7E1086BC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{15229511-9F6C-48A5-9194-660CA6492563} = {15229511-9F6C-48A5-9194-660CA6492563}
+		{7D3723C5-06C8-4730-BDA1-1B61D6CCBEB8} = {7D3723C5-06C8-4730-BDA1-1B61D6CCBEB8}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "topfish", "lib\topfish\topfish.vcxproj", "{3CD86498-8B4C-4018-A9BF-F9E008F376DD}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvplugin_gdiplus", "plugin\gdiplus\gvplugin_gdiplus.vcxproj", "{0F4D5D8F-F4D6-4A5D-97E0-9B482257F493}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "osage", "lib\osage\osage.vcxproj", "{8E82D6BD-74D0-48C3-887A-1754EA71DA5A}"
 EndProject
@@ -111,14 +145,24 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvortho", "lib\ortho\gvortho.vcxproj", "{2D29953F-2D74-471E-A064-5D184E762DFF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gml2gv", "cmd\tools\gml2gv.vcxproj", "{2C551E96-B2EE-48B2-84BF-F6494AF7C004}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C0663A08-F276-4DD6-B17C-E501EE066F7C} = {C0663A08-F276-4DD6-B17C-E501EE066F7C}
+		{15229511-9F6C-48A5-9194-660CA6492563} = {15229511-9F6C-48A5-9194-660CA6492563}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvmap", "cmd\gvmap\gvmap.vcxproj", "{10015250-7CFF-45BE-90F3-13648727C0A0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D6CEB142-BF8E-471C-AE16-4300F2D5DEDA} = {D6CEB142-BF8E-471C-AE16-4300F2D5DEDA}
+		{C5CEB09E-79AF-4091-ACCF-D28EC3D7D90F} = {C5CEB09E-79AF-4091-ACCF-D28EC3D7D90F}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "graphml2gv", "cmd\tools\graphml2gv.vcxproj", "{DE3057E9-F665-4691-929D-4A7DDED63F73}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gv2gml", "cmd\tools\gv2gml.vcxproj", "{58E6D7CC-5122-4830-B841-D6FB796B00E8}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvedit", "cmd\gvedit\gvedit.vcxproj", "{33E97266-F213-3639-BCAB-2F3F95E15B16}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C0663A08-F276-4DD6-B17C-E501EE066F7C} = {C0663A08-F276-4DD6-B17C-E501EE066F7C}
+		{83CF0498-7884-49D3-8B3C-263C5AF5FE1B} = {83CF0498-7884-49D3-8B3C-263C5AF5FE1B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "minglelib", "lib\mingle\minglelib.vcxproj", "{70575BD2-A532-41B8-9A17-B9876E992A84}"
 EndProject
@@ -127,6 +171,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "edgepaintlib", "lib\edgepaint\edgepaintlib.vcxproj", "{B1AA9FD1-0D24-44DF-8CAD-AEA73B52B3EC}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "edgepaint", "cmd\edgepaint\edgepaint.vcxproj", "{B7A03994-C134-4FF7-98B4-97B5579EF13D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D6CEB142-BF8E-471C-AE16-4300F2D5DEDA} = {D6CEB142-BF8E-471C-AE16-4300F2D5DEDA}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lab_gamut", "lib\edgepaint\lab_gamut.vcxproj", "{A1E78E36-1C11-4AB4-AB43-8BB7933075FB}"
 EndProject
@@ -221,9 +268,6 @@ Global
 		{98127EF3-6289-4251-A057-D7C34B1B67AC}.Debug|Win32.ActiveCfg = Debug|Win32
 		{98127EF3-6289-4251-A057-D7C34B1B67AC}.Release|Win32.ActiveCfg = Release|Win32
 		{98127EF3-6289-4251-A057-D7C34B1B67AC}.Release|Win32.Build.0 = Release|Win32
-		{1B030847-602F-4095-8FA2-E8B5CF793F60}.Debug|Win32.ActiveCfg = Debug|Win32
-		{1B030847-602F-4095-8FA2-E8B5CF793F60}.Release|Win32.ActiveCfg = Release|Win32
-		{1B030847-602F-4095-8FA2-E8B5CF793F60}.Release|Win32.Build.0 = Release|Win32
 		{E7BAB639-AECF-4E03-A0A2-B9C8D25E1AB0}.Debug|Win32.ActiveCfg = Debug|Win32
 		{E7BAB639-AECF-4E03-A0A2-B9C8D25E1AB0}.Release|Win32.ActiveCfg = Release|Win32
 		{E7BAB639-AECF-4E03-A0A2-B9C8D25E1AB0}.Release|Win32.Build.0 = Release|Win32
@@ -255,9 +299,6 @@ Global
 		{AC95C5B1-0EDB-4127-858E-0F08A3FC7B69}.Debug|Win32.ActiveCfg = Debug|Win32
 		{AC95C5B1-0EDB-4127-858E-0F08A3FC7B69}.Release|Win32.ActiveCfg = Release|Win32
 		{AC95C5B1-0EDB-4127-858E-0F08A3FC7B69}.Release|Win32.Build.0 = Release|Win32
-		{40597156-1B95-4A22-8F2B-D6B81B747CF0}.Debug|Win32.ActiveCfg = Debug|Win32
-		{40597156-1B95-4A22-8F2B-D6B81B747CF0}.Release|Win32.ActiveCfg = Release|Win32
-		{40597156-1B95-4A22-8F2B-D6B81B747CF0}.Release|Win32.Build.0 = Release|Win32
 		{863A7931-DC7C-47C4-94E6-3D053BFE771A}.Debug|Win32.ActiveCfg = Debug|Win32
 		{863A7931-DC7C-47C4-94E6-3D053BFE771A}.Release|Win32.ActiveCfg = Release|Win32
 		{863A7931-DC7C-47C4-94E6-3D053BFE771A}.Release|Win32.Build.0 = Release|Win32
@@ -285,9 +326,6 @@ Global
 		{3CD86498-8B4C-4018-A9BF-F9E008F376DD}.Debug|Win32.ActiveCfg = Debug|Win32
 		{3CD86498-8B4C-4018-A9BF-F9E008F376DD}.Release|Win32.ActiveCfg = Release|Win32
 		{3CD86498-8B4C-4018-A9BF-F9E008F376DD}.Release|Win32.Build.0 = Release|Win32
-		{0F4D5D8F-F4D6-4A5D-97E0-9B482257F493}.Debug|Win32.ActiveCfg = Debug|Win32
-		{0F4D5D8F-F4D6-4A5D-97E0-9B482257F493}.Release|Win32.ActiveCfg = Release|Win32
-		{0F4D5D8F-F4D6-4A5D-97E0-9B482257F493}.Release|Win32.Build.0 = Release|Win32
 		{8E82D6BD-74D0-48C3-887A-1754EA71DA5A}.Debug|Win32.ActiveCfg = Debug|Win32
 		{8E82D6BD-74D0-48C3-887A-1754EA71DA5A}.Release|Win32.ActiveCfg = Release|Win32
 		{8E82D6BD-74D0-48C3-887A-1754EA71DA5A}.Release|Win32.Build.0 = Release|Win32
@@ -319,9 +357,6 @@ Global
 		{58E6D7CC-5122-4830-B841-D6FB796B00E8}.Debug|Win32.ActiveCfg = Debug|Win32
 		{58E6D7CC-5122-4830-B841-D6FB796B00E8}.Release|Win32.ActiveCfg = Release|Win32
 		{58E6D7CC-5122-4830-B841-D6FB796B00E8}.Release|Win32.Build.0 = Release|Win32
-		{33E97266-F213-3639-BCAB-2F3F95E15B16}.Debug|Win32.ActiveCfg = Debug|Win32
-		{33E97266-F213-3639-BCAB-2F3F95E15B16}.Release|Win32.ActiveCfg = Release|Win32
-		{33E97266-F213-3639-BCAB-2F3F95E15B16}.Release|Win32.Build.0 = Release|Win32
 		{70575BD2-A532-41B8-9A17-B9876E992A84}.Debug|Win32.ActiveCfg = Debug|Win32
 		{70575BD2-A532-41B8-9A17-B9876E992A84}.Release|Win32.ActiveCfg = Release|Win32
 		{70575BD2-A532-41B8-9A17-B9876E992A84}.Release|Win32.Build.0 = Release|Win32

@@ -51,6 +51,7 @@ typedef enum {
 #ifdef WIN32 /*dependencies*/
     #pragma comment( lib, "cgraph.lib" )
     #pragma comment( lib, "gvc.lib" )
+    #pragma comment( lib, "xdot.lib" )
 //    #pragma comment( lib, "ingraphs.lib" )
 #endif
 

@@ -14,6 +14,7 @@
     <ProjectGuid>{CCEF85C9-BC40-4C26-8755-581276C8B7DA}</ProjectGuid>
     <RootNamespace>glcomp</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -38,41 +39,43 @@
     <_ProjectFileVersion>14.0.25123.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>Debug\</OutDir>
+    <OutDir>$(SolutionDir)Debug\Graphviz\bin\</OutDir>
     <IntDir>Debug\</IntDir>
+    <CodeAnalysisRuleSet>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Team Tools\Static Analysis Tools\Rule Sets\NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>Release\</OutDir>
+    <OutDir>$(SolutionDir)Graphviz\bin\</OutDir>
     <IntDir>Release\</IntDir>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>C:\gtk\lib\gtk-2.0\include;C:\gtk\include\gtk-2.0\;C:\gtk\lib\glib-2.0\include;C:\gtk\include\glib-2.0;C:\gtk\include\pango-1.0\;C:\gtk\include;$(SolutionDir)/lib/glut/glut-3.7.6-bin;$(SolutionDir)/lib/common;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;$(SolutionDir)/lib/xdot;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/gvc;C:\gtk\include\libglade-2.0;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/topfish;C:\gtk\lib\gtkglext-1.0\include;C:\gtk\include\gtkglext-1.0\;C:\gtk\include\cairo;C:\gtk\include\atk-1.0;C:\gtk\lib\gtk-2.0\include\cairo;C:\gtk\lib\gtk-2.0\include;C:\gtk\include\gtk-2.0\;$(SolutionDir)/cmd/smyrna/gui;$(SolutionDir)/cmd/smyrna;$(SolutionDir);$(SolutionDir)/lib/glcomp;C:\gtk\lib\glib-2.0\include;C:\gtk\include\glib-2.0;C:\gtk\include\pango-1.0\;C:\gtk\include;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvpr;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;$(SolutionDir)/lib/glut/glut-3.7.6-bin;$(SolutionDir)/lib/xdot;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)windows\dependencies\freeglut\include;$(SolutionDir)windows\dependencies\GTK2\lib\gtk-2.0\include;$(SolutionDir)windows\dependencies\GTK2\include\gtk-2.0\;$(SolutionDir)windows\dependencies\GTK2\lib\glib-2.0\include;$(SolutionDir)windows\dependencies\GTK2\include\glib-2.0;$(SolutionDir)windows\dependencies\GTK2\include\pango-1.0\;$(SolutionDir)windows\dependencies\GTK2\include;$(SolutionDir)/lib/glut/glut-3.7.6-bin;$(SolutionDir)/lib/common;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;$(SolutionDir)/lib/xdot;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/gvc;$(SolutionDir)windows\dependencies\GTK2\include\libglade-2.0;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/topfish;$(SolutionDir)windows\dependencies\GTK2\lib\gtkglext-1.0\include;$(SolutionDir)windows\dependencies\GTK2\include\gtkglext-1.0\;$(SolutionDir)windows\dependencies\GTK2\include\cairo;$(SolutionDir)windows\dependencies\GTK2\include\atk-1.0;$(SolutionDir)windows\dependencies\GTK2\lib\gtk-2.0\include\cairo;$(SolutionDir)/cmd/smyrna/gui;$(SolutionDir)/cmd/smyrna;$(SolutionDir);$(SolutionDir)/lib/glcomp;$(SolutionDir)/lib/gvpr;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader />
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <EnablePREfast>true</EnablePREfast>
     </ClCompile>
-    <Lib>
-      <OutputFile>c:/graphviz-ms/bin/$(ProjectName).lib</OutputFile>
-    </Lib>
+    <Lib />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\gtk\lib\gtk-2.0\include;C:\gtk\include\gtk-2.0\;C:\gtk\lib\glib-2.0\include;C:\gtk\include\glib-2.0;C:\gtk\include\pango-1.0\;C:\gtk\include;$(SolutionDir)/lib/glut/glut-3.7.6-bin;$(SolutionDir)/lib/common;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;$(SolutionDir)/lib/xdot;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/gvc;C:\gtk\include\libglade-2.0;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/topfish;C:\gtk\lib\gtkglext-1.0\include;C:\gtk\include\gtkglext-1.0\;C:\gtk\include\cairo;C:\gtk\include\atk-1.0;C:\gtk\lib\gtk-2.0\include\cairo;C:\gtk\lib\gtk-2.0\include;C:\gtk\include\gtk-2.0\;$(SolutionDir)/cmd/smyrna/gui;$(SolutionDir)/cmd/smyrna;$(SolutionDir);$(SolutionDir)/lib/glcomp;C:\gtk\lib\glib-2.0\include;C:\gtk\include\glib-2.0;C:\gtk\include\pango-1.0\;C:\gtk\include;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvpr;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;$(SolutionDir)/lib/glut/glut-3.7.6-bin;$(SolutionDir)/lib/xdot;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)windows\dependencies\freeglut\include;$(SolutionDir)windows\dependencies\GTK2\lib\gtk-2.0\include;$(SolutionDir)windows\dependencies\GTK2\include\gtk-2.0\;$(SolutionDir)windows\dependencies\GTK2\lib\glib-2.0\include;$(SolutionDir)windows\dependencies\GTK2\include\glib-2.0;$(SolutionDir)windows\dependencies\GTK2\include\pango-1.0\;$(SolutionDir)windows\dependencies\GTK2\include;$(SolutionDir)/lib/glut/glut-3.7.6-bin;$(SolutionDir)/lib/common;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;$(SolutionDir)/lib/xdot;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/gvc;$(SolutionDir)windows\dependencies\GTK2\include\libglade-2.0;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/topfish;$(SolutionDir)windows\dependencies\GTK2\lib\gtkglext-1.0\include;$(SolutionDir)windows\dependencies\GTK2\include\gtkglext-1.0\;$(SolutionDir)windows\dependencies\GTK2\include\cairo;$(SolutionDir)windows\dependencies\GTK2\include\atk-1.0;$(SolutionDir)windows\dependencies\GTK2\lib\gtk-2.0\include\cairo;$(SolutionDir)/cmd/smyrna/gui;$(SolutionDir)/cmd/smyrna;$(SolutionDir);$(SolutionDir)/lib/glcomp;$(SolutionDir)/lib/gvpr;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader />
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <EnablePREfast>true</EnablePREfast>
     </ClCompile>
-    <Lib>
-      <OutputFile>c:/graphviz-ms/bin/$(ProjectName).lib</OutputFile>
-    </Lib>
+    <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="glcompbutton.h" />
