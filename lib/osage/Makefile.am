@@ -17,6 +17,6 @@ noinst_HEADERS = osage.h
 noinst_LTLIBRARIES = libosage_C.la
 
 libosage_C_la_SOURCES = osageinit.c
-EXTRA_DIST = osage.vcproj
+EXTRA_DIST = osage.vcxproj*
 
 

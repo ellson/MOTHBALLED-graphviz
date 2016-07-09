@@ -6,4 +6,4 @@ SUBDIRS = cdt cgraph pathplan sfio vmalloc ast rxspencer \
 	pack xdot label gvc ingraphs topfish glcomp mingle edgepaint \
 	circogen dotgen fdpgen neatogen twopigen sfdpgen osage gvpr
 
-EXTRA_DIST = gvc.vcproj gvc.def 
+EXTRA_DIST = gvc.vcxproj* gvc.def 

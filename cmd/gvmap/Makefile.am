@@ -66,6 +66,6 @@ cluster.1.pdf: $(srcdir)/cluster.1
 gvmap.sh.1.pdf: $(srcdir)/gvmap.sh.1
 	- @GROFF@ -Tps -man $(srcdir)/gvmap.sh.1 | @PS2PDF@ - - >gvmap.sh.1.pdf
 
-EXTRA_DIST = $(man_MANS) $(pdf_DATA) gvmap.vcproj
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) gvmap.vcxproj*
 
 DISTCLEANFILES = $(pdf_DATA)

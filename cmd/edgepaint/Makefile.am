@@ -36,6 +36,6 @@ edgepaint_LDADD = \
 edgepaint.1.pdf: $(srcdir)/edgepaint.1
 	- @GROFF@ -e -Tps -man -t $(srcdir)/edgepaint.1 | @PS2PDF@ - - >edgepaint.1.pdf
 
-EXTRA_DIST = $(man_MANS) $(pdf_DATA) edgepaint.vcproj
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) edgepaint.vcxproj*
 
 DISTCLEANFILES = $(pdf_DATA)

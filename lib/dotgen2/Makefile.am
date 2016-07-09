@@ -16,4 +16,4 @@ noinst_LTLIBRARIES = libdotgen2_C.la
 libdotgen2_C_la_LDFLAGS = -no-undefined
 libdotgen2_C_la_SOURCES = dotinit.c level.c minc2.c ns.c groups.c minc_utils.c decomp.c
 
-# EXTRA_DIST = dotgen2.vcproj
+# EXTRA_DIST = dotgen2.vcxproj*

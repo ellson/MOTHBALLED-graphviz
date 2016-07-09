@@ -242,12 +242,15 @@ gvgen_LDADD = \
 gvgen.1.pdf: $(srcdir)/gvgen.1
 	- @GROFF@ -Tps -man $(srcdir)/gvgen.1 | @PS2PDF@ - - >gvgen.1.pdf
 
-EXTRA_DIST = $(man_MANS) $(pdf_DATA) bcomps.vcproj \
-	acyclic.vcproj bcomps.vcproj ccomps.vcproj dijkstra.vcproj gc.vcproj \
-	gv2gxl.vcproj gvcolor.vcproj gvgen.vcproj gvpack.vcproj gxl2gv.vcproj \
-	mm2gv.vcproj nop.vcproj sccmap.vcproj tred.vcproj unflatten.vcproj \
-	gmlscan.c gmlparse.c gmlparse.h y.output y.tab.c y.tab.h gml2gv.vcproj \
-	graphml2gv.vcproj gv2gml.vcproj
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) bcomps.vcxproj* \
+	acyclic.vcxproj* bcomps.vcxproj* ccomps.vcxproj* dijkstra.vcxproj* gc.vcxproj* \
+    gvcolor.vcxproj* gvgen.vcxproj* gvpack.vcxproj* gxl2gv.vcxproj* \
+	mm2gv.vcxproj* nop.vcxproj* sccmap.vcxproj* tred.vcxproj* unflatten.vcxproj* \
+	gmlscan.c gmlparse.c gmlparse.h y.output y.tab.c y.tab.h gml2gv.vcxproj* \
+	graphml2gv.vcxproj* gv2gml.vcxproj*
+
+# FIXME - these are missing
+#	gv2gxl.vcxproj*
 		
 CLEANFILES = stamp.h 
 

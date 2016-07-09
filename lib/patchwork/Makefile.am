@@ -18,4 +18,4 @@ noinst_LTLIBRARIES = libpatchwork_C.la
 
 libpatchwork_C_la_SOURCES = patchwork.c patchworkinit.c tree_map.c
 
-EXTRA_DIST = gvpatchwork.vcproj
+EXTRA_DIST = gvpatchwork.vcxproj*

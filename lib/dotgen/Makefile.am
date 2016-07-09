@@ -19,4 +19,4 @@ libdotgen_C_la_SOURCES = acyclic.c class1.c class2.c cluster.c compound.c \
 	conc.c decomp.c fastgr.c flat.c dotinit.c mincross.c \
 	position.c rank.c sameport.c dotsplines.c aspect.c
 
-EXTRA_DIST = gvdotgen.vcproj
+EXTRA_DIST = gvdotgen.vcxproj*

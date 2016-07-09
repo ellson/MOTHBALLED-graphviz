@@ -41,5 +41,5 @@ if WITH_DARWIN9
 libgvplugin_dot_layout_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_dot_layout_LTX_library
 endif
 
-EXTRA_DIST = gvplugin_dot_layout.vcproj gvplugin_dot_layout.def
+EXTRA_DIST = gvplugin_dot_layout.vcxproj* gvplugin_dot_layout.def
 

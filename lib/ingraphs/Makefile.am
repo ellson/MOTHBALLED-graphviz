@@ -11,4 +11,4 @@ noinst_LTLIBRARIES = libingraphs_C.la
 
 libingraphs_C_la_SOURCES = ingraphs.c
 
-EXTRA_DIST = ingraphs.vcproj
+EXTRA_DIST = ingraphs.vcxproj*

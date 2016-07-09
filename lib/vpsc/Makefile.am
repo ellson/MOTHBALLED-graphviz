@@ -16,5 +16,5 @@ libvpsc_C_la_SOURCES = \
 	pairingheap/PairingHeap.cpp remove_rectangle_overlap.cpp \
 	solve_VPSC.cpp csolve_VPSC.cpp variable.cpp
 
-EXTRA_DIST = vpsc.vcproj
+EXTRA_DIST = vpsc.vcxproj*
 
