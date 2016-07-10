@@ -24,17 +24,17 @@ extern char *color_palettes_get(char *color_palette_name);
 extern void color_palettes_name_print(FILE *fp);
 extern int color_palettes_Q(char *color_palette_name);
 
-extern float palette_pastel[1001][3];
-extern float palette_blue_to_yellow[1001][3];
-extern float palette_grey_to_red[1001][3];
-extern float palette_grey_to_red[1001][3];
-extern float palette_white_to_red[1001][3];
-extern float palette_grey[1001][3];
-extern float palette_primary[1001][3];
-extern float palette_sequential_singlehue_red[1001][3];
-extern float palette_sequential_singlehue_red_lighter[1001][3];
-extern float palette_adam_blend[1001][3];
-extern float palette_adam[11][3];
+extern double palette_pastel[1001][3];
+extern double palette_blue_to_yellow[1001][3];
+extern double palette_grey_to_red[1001][3];
+extern double palette_grey_to_red[1001][3];
+extern double palette_white_to_red[1001][3];
+extern double palette_grey[1001][3];
+extern double palette_primary[1001][3];
+extern double palette_sequential_singlehue_red[1001][3];
+extern double palette_sequential_singlehue_red_lighter[1001][3];
+extern double palette_adam_blend[1001][3];
+extern double palette_adam[11][3];
 
 #endif
 
