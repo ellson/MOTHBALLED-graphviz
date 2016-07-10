@@ -100,18 +100,18 @@
 #define __DEFINE__(T,obj,val)	T obj = val
 #endif
 #ifndef _AST_STD_H
-#	if defined(_hdr_stddef)
+#	if _hdr_stddef
 #	include	<stddef.h>
 #	endif
-#	if defined(_sys_types)
+#	if _sys_types
 #	include	<sys/types.h>
 #	endif
 #endif
-#if !defined(_typ_size_t)
+#if !_typ_size_t
 #	define _typ_size_t	1
 typedef int size_t;
 #endif
-#if !defined(_typ_ssize_t)
+#if !_typ_ssize_t
 #	define _typ_ssize_t	1
 typedef int ssize_t;
 #endif
