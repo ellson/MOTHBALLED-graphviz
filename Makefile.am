@@ -26,7 +26,7 @@ doxygen:
 	doxygen
 
 dist-hook:
-	find $(distdir) -name CVS -type d -prune -exec rm -rf {} \;
+#	find $(distdir) -name CVS -type d -prune -exec rm -rf {} \;
 #	rm -f ToPAS
 #	find $(distdir) -type f -exec md5sum {} >>ToPAS \;
 
