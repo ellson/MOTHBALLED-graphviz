@@ -1,6 +1,0 @@
-AC_INIT([rxspencer],[alpha3.8.g5])
-AC_CONFIG_SRCDIR(regcomp.c)
-AM_INIT_AUTOMAKE
-LT_INIT
-AC_CONFIG_FILES(Makefile)
-AC_OUTPUT
