@@ -67,4 +67,4 @@ $(GDIPLUS_HEADS) : %.h : $(PLATFORMSDKINCLUDE_ESCAPED)/%.h
 	fi
 endif
 	
-EXTRA_DIST = $(PATCHES) gvplugin_gdiplus.vcproj gvplugin_gdiplus.def
+EXTRA_DIST = $(PATCHES) gvplugin_gdiplus.vcxproj* gvplugin_gdiplus.def

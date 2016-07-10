@@ -27,4 +27,4 @@ libsfdpgen_C_la_SOURCES = sfdpinit.c spring_electrical.c \
 	stress_model.c uniform_stress.c \
 	Multilevel.c PriorityQueue.c
 
-EXTRA_DIST = sfdp.vcproj
+EXTRA_DIST = sfdp.vcxproj*

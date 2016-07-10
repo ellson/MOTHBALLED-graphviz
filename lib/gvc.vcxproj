@@ -14,6 +14,7 @@
     <ProjectGuid>{15229511-9F6C-48A5-9194-660CA6492563}</ProjectGuid>
     <RootNamespace>gvc</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -38,61 +39,79 @@
     <_ProjectFileVersion>14.0.25123.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>Debug\</OutDir>
+    <OutDir>$(SolutionDir)Debug\Graphviz\bin\</OutDir>
     <IntDir>Debug\</IntDir>
-    <LinkIncremental>true</LinkIncremental>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>Release\</OutDir>
+    <OutDir>$(SolutionDir)Graphviz\bin\</OutDir>
     <IntDir>Release\</IntDir>
-    <LinkIncremental>true</LinkIncremental>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)/lib/xdot;C:\gtk\lib\glib-2.0\include;C:\gtk\include\glib-2.0;C:\gtk\include\pango-1.0\;C:\gtk\include\cairo;C:\gtk\include\freetype2;C:\gtk\include;$(SolutionDir)/libltdl;$(SolutionDir)/lib/label;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/agutil;$(SolutionDir)/windows/lib/cdt;$(SolutionDir)/;$(SolutionDir)/lib/graph;$(SolutionDir)/lib/vpsc;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/twopigen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/sfpdpgen;$(SolutionDir)/lib/rbtree;$(SolutionDir)/lib/pathplan;$(SolutionDir)/lib/patchwork;$(SolutionDir)/lib/pack;$(SolutionDir)/lib/ortho;$(SolutionDir)/lib/inkpot;$(SolutionDir)/lib/ingraphs;$(SolutionDir)/lib/gd;$(SolutionDir)/lib/filter;$(SolutionDir)/lib/fdpgen;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/dotgen;$(SolutionDir)/lib/circogen;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/agraph;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvc;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;$(SolutionDir)/lib/regex_win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)windows\dependencies\rxspencer\include\rxspencer;$(SolutionDir)windows\dependencies\GTK2\include;$(SolutionDir)windows\dependencies\expat\Source\lib;$(SolutionDir)windows\dependencies\libtool\include;$(SolutionDir)windows\include;$(SolutionDir);$(SolutionDir)lib\xdot;$(SolutionDir)lib\label;$(SolutionDir)lib\pathplan;$(SolutionDir)lib\fdpgen;$(SolutionDir)lib\common;$(SolutionDir)lib\gvc;$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)cmd\tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>MSWIN32;WIN32;_DEBUG;_WINDOWS;_USRDLL;GVC_EXPORTS;WIN32_DLL;HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader />
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <EnablePREfast>true</EnablePREfast>
     </ClCompile>
     <Link>
-      <AdditionalDependencies />
-      <OutputFile>c:/graphviz-ms/bin/$(ProjectName).dll</OutputFile>
-      <AdditionalLibraryDirectories>C:\gtk\lib;C:\graphviz-ms\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ModuleDefinitionFile>gvc.def</ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>$(SolutionDir)windows\dependencies\rxspencer\lib;$(SolutionDir)windows\dependencies\GTK2\lib;$(SolutionDir)windows\dependencies\libtool\lib;$(SolutionDir)windows\dependencies\expat\Bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
+      <ModuleDefinitionFile>gvc.def</ModuleDefinitionFile>
     </Link>
+    <PreBuildEvent>
+      <Command>"%BISON%" -dy common\htmlparse.y -o common\htmlparse-intermediate.c
+"%SED%" "s/yy/html/g" &lt; common\htmlparse-intermediate.c &gt; common\htmlparse.c
+"%SED%" "s/yy/html/g" &lt; common\htmlparse-intermediate.h &gt; common\htmlparse.h
+del common\htmlparse-intermediate.c
+del common\htmlparse-intermediate.h</Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>copy $(SolutionDir)windows\dependencies\libtool\bin\libltdl3.dll $(OutDir)libltdl3.dll</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)/lib/xdot;C:\gtk\lib\glib-2.0\include;C:\gtk\include\glib-2.0;C:\gtk\include\pango-1.0\;C:\gtk\include\cairo;C:\gtk\include\freetype2;C:\gtk\include;$(SolutionDir)/libltdl;$(SolutionDir)/lib/label;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/agutil;$(SolutionDir)/windows/lib/cdt;$(SolutionDir)/;$(SolutionDir)/lib/graph;$(SolutionDir)/lib/vpsc;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/twopigen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/sfpdpgen;$(SolutionDir)/lib/rbtree;$(SolutionDir)/lib/pathplan;$(SolutionDir)/lib/patchwork;$(SolutionDir)/lib/pack;$(SolutionDir)/lib/ortho;$(SolutionDir)/lib/inkpot;$(SolutionDir)/lib/ingraphs;$(SolutionDir)/lib/gd;$(SolutionDir)/lib/filter;$(SolutionDir)/lib/fdpgen;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/dotgen;$(SolutionDir)/lib/circogen;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/agraph;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvc;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;$(SolutionDir)/lib/regex_win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)windows\dependencies\rxspencer\include\rxspencer;$(SolutionDir)windows\dependencies\GTK2\include;$(SolutionDir)windows\dependencies\expat\Source\lib;$(SolutionDir)windows\dependencies\libtool\include;$(SolutionDir)windows\include;$(SolutionDir);$(SolutionDir)lib\xdot;$(SolutionDir)lib\label;$(SolutionDir)lib\pathplan;$(SolutionDir)lib\fdpgen;$(SolutionDir)lib\common;$(SolutionDir)lib\gvc;$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)cmd\tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;GVC_EXPORTS;WIN32_DLL;HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader />
-      <WarningLevel>TurnOffAllWarnings</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <WarningLevel>Level4</WarningLevel>
+      <EnablePREfast>true</EnablePREfast>
     </ClCompile>
     <Link>
-      <AdditionalDependencies />
-      <OutputFile>c:/graphviz-ms/bin/$(ProjectName).dll</OutputFile>
-      <AdditionalLibraryDirectories>C:\graphviz-ms\bin;C:\gtk\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ModuleDefinitionFile>gvc.def</ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>$(SolutionDir)windows\dependencies\rxspencer\lib;$(SolutionDir)windows\dependencies\GTK2\lib;$(SolutionDir)windows\dependencies\libtool\lib;$(SolutionDir)windows\dependencies\expat\Bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
+      <ModuleDefinitionFile>gvc.def</ModuleDefinitionFile>
     </Link>
+    <PreBuildEvent>
+      <Command>"%BISON%" -dy common\htmlparse.y -o common\htmlparse-intermediate.c
+"%SED%" "s/yy/html/g" &lt; common\htmlparse-intermediate.c &gt; common\htmlparse.c
+"%SED%" "s/yy/html/g" &lt; common\htmlparse-intermediate.h &gt; common\htmlparse.h
+del common\htmlparse-intermediate.c
+del common\htmlparse-intermediate.h</Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>copy $(SolutionDir)windows\dependencies\libtool\bin\libltdl3.dll $(OutDir)libltdl3.dll
+copy $(SolutionDir)windows\dependencies\rxspencer\bin\rxspencer.dll $(OutDir)rxspencer.dll</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="common\arith.h" />
@@ -118,7 +137,19 @@
     <ClInclude Include="common\types.h" />
     <ClInclude Include="common\usershape.h" />
     <ClInclude Include="common\utils.h" />
-    <ClInclude Include="gvc\regex_win32.h" />
+    <ClInclude Include="gvc\gvc.h" />
+    <ClInclude Include="gvc\gvcext.h" />
+    <ClInclude Include="gvc\gvcint.h" />
+    <ClInclude Include="gvc\gvcjob.h" />
+    <ClInclude Include="gvc\gvcommon.h" />
+    <ClInclude Include="gvc\gvconfig.h" />
+    <ClInclude Include="gvc\gvcproc.h" />
+    <ClInclude Include="gvc\gvio.h" />
+    <ClInclude Include="gvc\gvplugin.h" />
+    <ClInclude Include="gvc\gvplugin_device.h" />
+    <ClInclude Include="gvc\gvplugin_layout.h" />
+    <ClInclude Include="gvc\gvplugin_loadimage.h" />
+    <ClInclude Include="gvc\gvplugin_render.h" />
     <ClInclude Include="pack\pack.h" />
   </ItemGroup>
   <ItemGroup>
@@ -160,7 +191,6 @@
     <ClCompile Include="gvc\gvrender.c" />
     <ClCompile Include="gvc\gvtextlayout.c" />
     <ClCompile Include="gvc\gvusershape.c" />
-    <ClCompile Include="gvc\regex_win32.c" />
     <ClCompile Include="label\index.c" />
     <ClCompile Include="label\node.c" />
     <ClCompile Include="label\rectangle.c" />

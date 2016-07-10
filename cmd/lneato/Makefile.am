@@ -30,6 +30,6 @@ lneato.1.pdf: $(srcdir)/lneato.1
 	- @GROFF@ -Tps -man $(srcdir)/lneato.1 | @PS2PDF@ - - >lneato.1.pdf
 
 EXTRA_DIST = $(man) $(pdf) lneato.bsh lneato.ksh lneato.sh \
-	mswin32 lneato.vcproj
+	mswin32 lneato.vcxproj*
 
 DISTCLEANFILES = lneato $(pdf)

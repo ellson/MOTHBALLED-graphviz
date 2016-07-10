@@ -48,6 +48,6 @@ graph.3.pdf: $(srcdir)/graph.3
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) triefa.cP \
 	parser.c parser.h \
-	y.tab.c y.tab.h y.output graph.vcproj graph.def
+	y.tab.c y.tab.h y.output graph.vcxproj* graph.def
 
 DISTCLEANFILES = y.output parser.c parser.h y.tab.[ch] $(pdf_DATA)

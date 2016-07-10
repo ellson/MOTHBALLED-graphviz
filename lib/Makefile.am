@@ -1,9 +1,9 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = cdt cgraph pathplan sfio vmalloc ast rxspencer \
+SUBDIRS = cdt cgraph pathplan sfio vmalloc ast \
 	vpsc rbtree ortho sparse patchwork expr common \
 	pack xdot label gvc ingraphs topfish glcomp mingle edgepaint \
 	circogen dotgen fdpgen neatogen twopigen sfdpgen osage gvpr
 
-EXTRA_DIST = gvc.vcproj gvc.def 
+EXTRA_DIST = gvc.vcxproj* gvc.def 

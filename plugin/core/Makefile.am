@@ -29,6 +29,7 @@ libgvplugin_core_C_la_SOURCES = \
 	gvrender_core_json.c \
 	gvrender_core_fig.c \
 	gvrender_core_map.c \
+	gvrender_core_mp.c \
 	gvrender_core_ps.c \
 	gvrender_core_svg.c \
 	gvrender_core_tk.c \
@@ -58,7 +59,7 @@ if WITH_DARWIN9
 libgvplugin_core_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_core_LTX_library
 endif
 
-EXTRA_DIST = ps.h plugincore.vcproj gvplugin_core.vcproj gvplugin_core.def
+EXTRA_DIST = ps.h plugincore.vcproj gvplugin_core.vcxproj* gvplugin_core.def
 
 DISTCLEANFILES = ps.h
 

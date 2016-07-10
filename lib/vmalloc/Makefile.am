@@ -17,4 +17,4 @@ $(libvmalloc_C_la_OBJECTS): ${top_builddir}/FEATURE/vmalloc
 
 DISTCLEANFILES = ${top_builddir}/FEATURE/vmalloc
 
-EXTRA_DIST = README features vmalloc.vcproj
+EXTRA_DIST = README features vmalloc.vcxproj*

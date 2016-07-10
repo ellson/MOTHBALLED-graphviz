@@ -32,6 +32,6 @@ liblab_gamut_la_SOURCES = lab_gamut.c
 lab_gamut.3.pdf: $(srcdir)/lab_gamut.3
 	- @GROFF@ -Tps -man $(srcdir)/lab_gamut.3 | @PS2PDF@ - - >lab_gamut.3.pdf
 
-EXTRA_DIST =  $(man_MANS) $(pdf_DATA) edgepaintlib.vcproj lab_gamut.vcproj lab_gamut.def
+EXTRA_DIST =  $(man_MANS) $(pdf_DATA) edgepaintlib.vcxproj* lab_gamut.vcxproj* lab_gamut.def
  
 DISTCLEANFILES = $(pdf_DATA)

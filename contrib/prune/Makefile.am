@@ -23,7 +23,7 @@ prune_LDADD = $(top_builddir)/lib/ingraphs/libingraphs_C.la \
 .1.pdf:
 	- @GROFF@ -Tps -man $< | @PS2PDF@ - - >$@
 
-EXTRA_DIST = $(man_MANS) $(pdf_DATA) README test.gv prune.vcproj
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) README test.gv prune.vcxproj*
 
 
 DISTCLEANFILES = $(pdf_DATA)

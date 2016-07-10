@@ -17,4 +17,4 @@ noinst_LTLIBRARIES = libtwopigen_C.la
 
 libtwopigen_C_la_SOURCES = twopiinit.c circle.c
 
-EXTRA_DIST = gvtwopigen.vcproj
+EXTRA_DIST = gvtwopigen.vcxproj*

@@ -7,12 +7,19 @@ environment:
   CHERE_INVOKING: 1
   matrix:
     - compiler: msbuild
+      BISON: C:\ProgramData\chocolatey\lib\winflexbison\tools\win_bison.exe
+      FLEX: C:\ProgramData\chocolatey\lib\winflexbison\tools\win_flex.exe
+      SED: C:\Program Files (x86)\GnuWin32\bin\sed.exe
     #- compiler: msys2
     #- compiler: cygwin
 
 install:
+  # Retrieve submodules, dependencies are stored there.
+  - git submodule update --init
   # Only has to be installed when MSYS2 or Cygwin are enabled.
   #- cinst ghostscript
+  - cinst winflexbison
+  - cinst gnuwin32-sed.install
 
 build_script:
   # Ghostscript only has to be configured when MSYS2 or Cygwin are enabled.
@@ -52,3 +59,7 @@ build_script:
 
         & $BashPath -lc "make"
       }
+
+artifacts:
+  - path: Graphviz
+    name: graphviz-windows

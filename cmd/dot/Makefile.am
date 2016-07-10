@@ -130,6 +130,6 @@ dot_builtins_LDADD += $(top_builddir)/plugin/lasi/libgvplugin_lasi.la $(LASI_LIB
 endif
 
 
-EXTRA_DIST = dot.1 dot.1.pdf osage.1 osage.1.pdf patchwork.1 patchwork.1.pdf dot.vcproj
+EXTRA_DIST = dot.1 dot.1.pdf osage.1 osage.1.pdf patchwork.1 patchwork.1.pdf dot.vcxproj*
 
 DISTCLEANFILES = dot.1.pdf osage.1.pdf

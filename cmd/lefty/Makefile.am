@@ -97,6 +97,6 @@ lefty.1.pdf: $(srcdir)/lefty.1
 	- @GROFF@ -Tps -man $(srcdir)/lefty.1 | @PS2PDF@ - - >lefty.1.pdf
 
 EXTRA_DIST = $(lefty_DATA) $(man) $(pdf) \
-	lefty.vcproj colors.txt aix_mods cs2l/*
+	lefty.vcxproj* colors.txt aix_mods cs2l/*
 
 DISTCLEANFILES = $(pdf)

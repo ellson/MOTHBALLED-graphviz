@@ -33,4 +33,4 @@ $(libsfio_la_OBJECTS): $(top_builddir)/FEATURE/sfio
 
 DISTCLEANFILES = $(top_builddir)/FEATURE/sfio
 
-EXTRA_DIST = README Makefile.orig features sfio.vcproj
+EXTRA_DIST = README Makefile.orig features sfio.vcxproj*

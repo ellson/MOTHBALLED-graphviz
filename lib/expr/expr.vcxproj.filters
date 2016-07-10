@@ -56,9 +56,6 @@
     <ClCompile Include="exopen.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="exparse.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="exrewind.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -72,6 +69,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="exzero.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\windows\exparse.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

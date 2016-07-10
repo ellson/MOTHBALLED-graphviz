@@ -1,0 +1,18 @@
+[submodule "windows/dependencies/GTK2"]
+	path = windows/dependencies/GTK2
+	url = https://github.com/ErwinJanssen/gtk2-win32-development-libraries.git
+[submodule "windows/dependencies/expat"]
+	path = windows/dependencies/expat
+	url = https://github.com/ErwinJanssen/expat-xml-parser-win32.git
+[submodule "windows/dependencies/libtool"]
+	path = windows/dependencies/libtool
+	url = https://github.com/ErwinJanssen/libtool-win32.git
+[submodule "windows/dependencies/freeglut"]
+	path = windows/dependencies/freeglut
+	url = https://github.com/ErwinJanssen/freeglut-win32.git
+[submodule "windows/dependencies/ANN"]
+	path = windows/dependencies/ANN
+	url = https://github.com/ErwinJanssen/ANN-win32.git
+[submodule "windows/dependencies/rxspencer"]
+	path = windows/dependencies/rxspencer
+	url = https://github.com/ErwinJanssen/rxspencer-win32.git

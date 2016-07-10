@@ -24,12 +24,12 @@ diffimg.1.pdf: $(srcdir)/diffimg.1
 GRAPH = "digraph G { hello -> world }"
 
 test: diffimg
-	echo $(GRAPH) | dot -Tpng:cg >hello1.png
-	echo $(GRAPH) | dot -Tpng:cg >hello2.png
+	echo $(GRAPH) | dot -Tpng >hello1.png
+	echo $(GRAPH) | dot -Tpng >hello2.png
 	if `./diffimg hello1.png hello2.png >test1.png`;then echo same;else echo different;fi
-	echo $(GRAPH) | dot -Grankdir=LR -Tpng:cg >hello2.png
+	echo $(GRAPH) | dot -Grankdir=LR -Tpng >hello2.png
 	if `./diffimg hello1.png hello2.png >test2.png`;then echo same;else echo different;fi
 
 CLEANFILES = *.png
-EXTRA_DIST = diffimg.vcproj diffimg.1 diffimg.1.pdf
+EXTRA_DIST = diffimg.vcxproj* diffimg.1 diffimg.1.pdf
 DISTCLEANFILES = diffimg.1.pdf

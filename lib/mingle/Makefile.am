@@ -19,5 +19,5 @@ endif
 
 libmingle_C_la_SOURCES = edge_bundling.c ink.c agglomerative_bundling.c nearest_neighbor_graph.c nearest_neighbor_graph_ann.cpp
 
-EXTRA_DIST = minglelib.vcproj
+EXTRA_DIST = minglelib.vcxproj*
  
