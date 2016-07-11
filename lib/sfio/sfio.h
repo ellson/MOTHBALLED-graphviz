@@ -25,7 +25,7 @@ extern "C" {
 **	Written by Kiem-Phong Vo
 */
 
-#if _PACKAGE_ast
+#if defined(_PACKAGE_ast)
 #include	<ast_std.h>
 #else
 #include	<ast_common.h>
@@ -93,7 +93,7 @@ extern "C" {
 #endif
 #endif
 
-#endif				/* _PACKAGE_ast */
+#endif				/* defined(_PACKAGE_ast) */
 
 /* Sfoff_t should be large enough for largest file address */
 

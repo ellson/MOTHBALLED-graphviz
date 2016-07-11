@@ -12,7 +12,7 @@
  *************************************************************************/
 
 %{
-#if _PACKAGE_ast
+#if defined(_PACKAGE_ast)
 #include <ast.h>
 #endif
 #include <stdio.h>

@@ -17,7 +17,7 @@
 **	Any required functions for process exiting.
 **	Written by Kiem-Phong Vo, kpv@research.att.com (05/25/93).
 */
-#if _PACKAGE_ast || _lib_atexit
+#if defined(_PACKAGE_ast) || _lib_atexit
 int Vm_atexit_already_defined;
 #else
 

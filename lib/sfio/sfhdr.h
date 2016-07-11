@@ -32,7 +32,7 @@ extern "C" {
 #include	<vthread.h>
 
 /* file system info */
-#if _PACKAGE_ast
+#if defined(_PACKAGE_ast)
 
 #include	<ast.h>
 #include	<ast_time.h>
@@ -47,7 +47,7 @@ extern "C" {
 #define _lib_locale	1
 #endif
 
-#else				/*!_PACKAGE_ast */
+#else				/*!defined(_PACKAGE_ast) */
 
 #if __mips == 2 && !defined(_NO_LARGEFILE64_SOURCE)
 #define _NO_LARGEFILE64_SOURCE  1
@@ -143,7 +143,7 @@ extern "C" {
 #include	<unistd.h>
 #endif
 
-#endif /*_PACKAGE_ast*/
+#endif /*defined(_PACKAGE_ast)*/
 
 #include	<errno.h>
 #include	<ctype.h>
@@ -459,7 +459,7 @@ extern "C" {
 #define ESPIPE	29
 #endif
 /* see if we can use memory mapping for io */
-#if !_PACKAGE_ast && _mmap_worthy
+#if !defined(_PACKAGE_ast) && _mmap_worthy
 #	ifdef _LARGEFILE64_SOURCE
 #		undef	mmap
 #	endif
@@ -823,7 +823,7 @@ extern "C" {
 
 #define	SF_RADIX	64	/* maximum integer conversion base */
 
-#if _PACKAGE_ast
+#if defined(_PACKAGE_ast)
 #define SF_MAXINT	INT_MAX
 #define SF_MAXLONG	LONG_MAX
 #else
@@ -928,7 +928,7 @@ extern "C" {
 #define max(x,y)	((x) > (y) ? (x) : (y))
 
 /* fast functions for memory copy and memory clear */
-#if _PACKAGE_ast
+#if defined(_PACKAGE_ast)
 #define memclear(s,n)	memzero(s,n)
 #else
 #if _lib_bcopy && !_lib_memcpy
@@ -939,7 +939,7 @@ extern "C" {
 #else
 #define memclear(s,n)	memset((s),'\0',(n))
 #endif
-#endif /*_PACKAGE_ast*/
+#endif /*defined(_PACKAGE_ast)*/
 
 /* note that MEMCPY advances the associated pointers */
 #define MEMCPY(to,fr,n) \
@@ -1000,7 +1000,7 @@ extern "C" {
     extern int munmap _ARG_((Void_t *, size_t));
 #endif
 
-#if !_PACKAGE_ast
+#if !defined(_PACKAGE_ast)
 
 #if /*!__STDC__ &&*/ !_hdr_stdlib
     extern void abort _ARG_((void));
@@ -1089,7 +1089,7 @@ extern "C" {
     extern int open _ARG_((const char *, int, ...));
 #endif
 
-#endif				/* _PACKAGE_ast */
+#endif				/* defined(_PACKAGE_ast) */
 
      _END_EXTERNS_
 #endif /*_SFHDR_H*/

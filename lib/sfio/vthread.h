@@ -31,7 +31,7 @@ extern "C" {
 #include	<errno.h>
 
 /* ast doesn't do threads yet */
-#if _PACKAGE_ast && !defined(vt_threaded)
+#if defined(_PACKAGE_ast) && !defined(vt_threaded)
 #define vt_threaded     0
 #endif
 

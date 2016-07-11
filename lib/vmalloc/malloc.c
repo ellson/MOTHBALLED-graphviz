@@ -159,7 +159,7 @@ char *file;
     }
 
     *next = '\0';
-#if _PACKAGE_ast
+#if defined(_PACKAGE_ast)
     return open(buf, O_WRONLY | O_CREAT | O_TRUNC, CREAT_MODE);
 #else
     return creat(buf, CREAT_MODE);

@@ -240,7 +240,7 @@ extern int		dtstat _ARG_((Dt_t*, Dtstat_t*, int));
 extern unsigned int	dtstrhash _ARG_((unsigned int, Void_t*, int));
 
 #if 0
-#if !_PACKAGE_ast
+#if !defined(_PACKAGE_ast)
 extern int		memcmp _ARG_((const Void_t*, const Void_t*, size_t));
 extern int		strcmp _ARG_((const char*, const char*));
 #endif
