@@ -162,7 +162,7 @@ int Pshortestpath(Ppoly_t * polyp, Ppoint_t * eps, Ppolyline_t * output)
 	}
     }
 
-#if DEBUG >= 1
+#if defined(DEBUG) && DEBUG >= 1
     fprintf(stderr, "points\n%d\n", pnll);
     for (pnli = 0; pnli < pnll; pnli++)
 	fprintf(stderr, "%f %f\n", pnls[pnli].pp->x, pnls[pnli].pp->y);
@@ -171,7 +171,7 @@ int Pshortestpath(Ppoly_t * polyp, Ppoint_t * eps, Ppolyline_t * output)
     /* generate list of triangles */
     triangulate(pnlps, pnll);
 
-#if DEBUG >= 2
+#if defined(DEBUG) && DEBUG >= 2
     fprintf(stderr, "triangles\n%d\n", tril);
     for (trii = 0; trii < tril; trii++)
 	for (ei = 0; ei < 3; ei++)
@@ -283,7 +283,7 @@ int Pshortestpath(Ppoly_t * polyp, Ppoint_t * eps, Ppolyline_t * output)
 	    }
     }
 
-#if DEBUG >= 1
+#if defined(DEBUG) && DEBUG >= 1
     fprintf(stderr, "polypath");
     for (pnlp = &epnls[1]; pnlp; pnlp = pnlp->link)
 	fprintf(stderr, " %f %f", pnlp->pp->x, pnlp->pp->y);

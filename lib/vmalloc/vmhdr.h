@@ -481,7 +481,7 @@ extern "C" {
 #if !_typ_ssize_t
     typedef int ssize_t;
 #endif
-#if !_WIN32
+#if !defined(_WIN32)
     extern Vmuchar_t *sbrk _ARG_((ssize_t));
 #endif
 

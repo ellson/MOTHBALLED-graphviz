@@ -13,7 +13,7 @@
 
 #include <stdio.h>
 #include <cghdr.h>
-#if WIN32
+#if defined(WIN32)
 #include <io.h>
 #endif
 
