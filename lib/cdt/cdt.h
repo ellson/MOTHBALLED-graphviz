@@ -183,10 +183,10 @@ struct _dtstat_s
 #define DT_HASHSIZE	7	/* setting hash table size		*/
 
 _BEGIN_EXTERNS_	/* public data */
-#if _BLD_cdt && defined(__EXPORT__)
+#if defined(_BLD_cdt) && defined(__EXPORT__)
 #define extern	__EXPORT__
 #endif
-#if !_BLD_cdt && defined(__IMPORT__)
+#if !defined(_BLD_cdt) && defined(__IMPORT__)
 #define extern	__IMPORT__
 #endif
 
@@ -215,7 +215,7 @@ extern Dtmethod_t	_Dtstack;
 _END_EXTERNS_
 
 _BEGIN_EXTERNS_	/* public functions */
-#if _BLD_cdt && defined(__EXPORT__)
+#if defined(_BLD_cdt) && defined(__EXPORT__)
 #define extern	__EXPORT__
 #endif
 
