@@ -7,9 +7,9 @@ environment:
   CHERE_INVOKING: 1
   matrix:
     - compiler: msbuild
-      BISON: C:\ProgramData\chocolatey\lib\winflexbison\tools\win_bison.exe
-      FLEX: C:\ProgramData\chocolatey\lib\winflexbison\tools\win_flex.exe
-      SED: C:\Program Files (x86)\GnuWin32\bin\sed.exe
+      BISON: \%APPVEYOR_BUILD_FOLDER\%\windows\dependencies\graphviz-build-utilities\bison.exe
+      FLEX: \%APPVEYOR_BUILD_FOLDER\%\windows\dependencies\graphviz-build-utilities\flex.exe
+      SED: \%APPVEYOR_BUILD_FOLDER\%\windows\dependencies\graphviz-build-utilities\sed.exe
     #- compiler: msys2
     #- compiler: cygwin
 
@@ -18,8 +18,6 @@ install:
   - git submodule update --init
   # Only has to be installed when MSYS2 or Cygwin are enabled.
   #- cinst ghostscript
-  - cinst winflexbison
-  - cinst gnuwin32-sed.install
   # Compile libgd
   - ps: >-
       cd windows\dependencies\libgd

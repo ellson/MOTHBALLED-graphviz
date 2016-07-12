@@ -19,3 +19,6 @@
 [submodule "windows/dependencies/libgd"]
 	path = windows/dependencies/libgd
 	url = https://github.com/libgd/libgd.git
+[submodule "windows/dependencies/graphviz-build-utilities"]
+	path = windows/dependencies/graphviz-build-utilities
+	url = https://github.com/ErwinJanssen/graphviz-build-utilities.git
