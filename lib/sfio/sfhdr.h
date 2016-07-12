@@ -49,11 +49,12 @@ extern "C" {
 
 #else				/*!defined(_PACKAGE_ast) */
 
-#if __mips == 2 && !defined(_NO_LARGEFILE64_SOURCE)
+#if defined(__mips) && __mips == 2 && !defined(_NO_LARGEFILE64_SOURCE)
 #define _NO_LARGEFILE64_SOURCE  1
 #endif
 #if !defined(_NO_LARGEFILE64_SOURCE) && \
-	_lib_lseek64 && _lib_stat64 && _lib_mmap64 && _typ_off64_t && _typ_struct_stat64
+	_lib_lseek64 && _lib_stat64 && _lib_mmap64 && defined(_typ_off64_t) && \
+	_typ_struct_stat64
 #	if !defined(_LARGEFILE64_SOURCE)
 #	define _LARGEFILE64_SOURCE     1
 #	endif
@@ -64,7 +65,7 @@ extern "C" {
 /* when building the binary compatibility package, a number of header files
    are not needed and they may get in the way so we remove them here.
 */
-#if _SFBINARY_H
+#if defined(_SFBINARY_H)
 #undef  _hdr_time
 #undef  _sys_time
 #undef  _sys_stat
@@ -194,7 +195,7 @@ extern "C" {
 #endif
 #endif /*_lib_select_*/
 
-#if _lib_poll
+#if defined(_lib_poll)
 #include	<poll.h>
 
 #if _lib_poll_fd_1
@@ -219,10 +220,10 @@ extern "C" {
 
 /* alternative process forking */
 #if _lib_vfork && !defined(fork) && !defined(sparc) && !defined(__sparc)
-#if _hdr_vfork
+#if defined(_hdr_vfork)
 #include	<vfork.h>
 #endif
-#if _sys_vfork
+#if defined(_sys_vfork)
 #include	<sys/vfork.h>
 #endif
 #define fork	vfork
@@ -269,7 +270,7 @@ extern "C" {
 #endif
 #endif
 
-#if !defined(SF_MAXDOUBLE) && _hdr_floatingpoint
+#if !defined(SF_MAXDOUBLE) && defined(_hdr_floatingpoint)
 #include	<floatingpoint.h>
 #if !defined(SF_MAXDOUBLE) && defined(MAXDOUBLE)
 #define SF_MAXDOUBLE	MAXDOUBLE
@@ -289,13 +290,13 @@ extern "C" {
 #endif
 #endif
 
-#if !_ast_fltmax_double
+#if !defined(_ast_fltmax_double)
 
 #if !defined(SF_MAXDOUBLE)
 #define SF_MAXDOUBLE	1.79769313486231570e+308
 #endif
 
-#if _lib_qfrexp && _lib_qldexp
+#if defined(_lib_qfrexp) && _lib_qldexp
 #define _has_expfuncs	1
 #define frexp		qfrexp
 #define ldexp		qldexp
@@ -459,7 +460,7 @@ extern "C" {
 #define ESPIPE	29
 #endif
 /* see if we can use memory mapping for io */
-#if !defined(_PACKAGE_ast) && _mmap_worthy
+#if !defined(_PACKAGE_ast) && defined(_mmap_worthy)
 #	ifdef _LARGEFILE64_SOURCE
 #		undef	mmap
 #	endif
@@ -677,7 +678,7 @@ extern "C" {
 #define SF_NMAP		8
 
 /* set/unset sequential states for mmap */
-#if _lib_madvise && defined(MADV_SEQUENTIAL) && defined(MADV_NORMAL)
+#if defined(_lib_madvise) && defined(MADV_SEQUENTIAL) && defined(MADV_NORMAL)
 #define SFMMSEQON(f,a,s)	(void)(madvise((caddr_t)(a),(size_t)(s),MADV_SEQUENTIAL) )
 #define SFMMSEQOFF(f,a,s)	(void)(madvise((caddr_t)(a),(size_t)(s),MADV_NORMAL) )
 #else
@@ -836,7 +837,7 @@ extern "C" {
 /* floating point to ascii conversion */
 #define SF_MAXEXP10	6
 #define SF_MAXPOW10	(1 << SF_MAXEXP10)
-#if !_ast_fltmax_double
+#if !defined(_ast_fltmax_double)
 #define SF_FDIGITS	1024	/* max allowed fractional digits */
 #define SF_IDIGITS	(8*1024)	/* max number of digits in int part */
 #else
@@ -995,7 +996,7 @@ extern "C" {
 #endif
 #endif
 
-#if !_hdr_mman && !_sys_mman
+#if !defined(_hdr_mman) && !_sys_mman
     extern Void_t *mmap _ARG_((Void_t *, size_t, int, int, int, off_t));
     extern int munmap _ARG_((Void_t *, size_t));
 #endif
@@ -1073,11 +1074,11 @@ extern "C" {
     extern int fstat _ARG_((int, Stat_t *));
 #endif
 
-#if _lib_vfork && !_hdr_vfork && !_sys_vfork
+#if _lib_vfork && !defined(_hdr_vfork) && !defined(_sys_vfork)
     extern pid_t vfork _ARG_((void));
 #endif /*_lib_vfork*/
 
-#if _lib_poll
+#if defined(_lib_poll)
 #if _lib_poll_fd_1
     extern int poll _ARG_((struct pollfd *, ulong, int));
 #else
@@ -1085,7 +1086,7 @@ extern "C" {
 #endif
 #endif /*_lib_poll*/
 
-#if _proto_open && __cplusplus
+#if _proto_open && defined(__cplusplus)
     extern int open _ARG_((const char *, int, ...));
 #endif
 

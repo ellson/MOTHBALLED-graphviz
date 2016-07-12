@@ -214,7 +214,7 @@ extern "C" {
 #define SF_STRING	0000004	/* a string stream                      */
 
 #define SF_APPENDWR	0000010	/* file is in append mode only.         */
-#if !_mac_SF_APPEND
+#if defined(_mac_SF_APPEND) && !_mac_SF_APPEND
 #define SF_APPEND	SF_APPENDWR	/* this was the original append bit */
     /* but BSDI stat.h now uses this symbol. */
     /* So we leave it out in such cases.    */
@@ -246,7 +246,7 @@ extern "C" {
 #define SF_SEEK		3	/* seek error                           */
 
 #define SF_CLOSING	4	/* stream is about to be closed.        */
-#if !_mac_SF_CLOSE
+#if defined(_mac_SF_CLOSE) && !_mac_SF_CLOSE
 #define SF_CLOSE	SF_CLOSING	/* this was the original close event */
     /* but AIX now uses this symbol. So we  */
     /* avoid defining it in such cases.     */
@@ -277,7 +277,7 @@ extern "C" {
 
      _BEGIN_EXTERNS_ extern ssize_t _Sfi;
 
-#if _BLD_sfio && defined(GVDLL)
+#if defined(_BLD_sfio) && defined(GVDLL)
 #define extern	__declspec(dllexport)
 #endif
 /* standard in/out/err streams */
@@ -289,7 +289,7 @@ extern "C" {
     extern Sfio_t _Sfstderr;
 #undef extern
 
-#if _DLL && _DLL_INDIRECT_DATA
+#if defined(_DLL) && defined(_DLL_INDIRECT_DATA)
 /* The Uwin shared library environment requires these to be defined
    in a global structure set up by the Uwin start-up procedure.
 */
@@ -298,7 +298,7 @@ extern "C" {
 #define sfstderr	((Sfio_t*)_ast_dll->_ast_stderr)
 #endif
 
-#if _BLD_sfio && defined(__EXPORT__)
+#if defined(_BLD_sfio) && defined(__EXPORT__)
 #define extern	__EXPORT__
 #endif
 
@@ -403,7 +403,7 @@ extern "C" {
 #define SF_U2		(SF_U1*SF_U1)
 #define SF_U3		(SF_U2*SF_U1)
 #define SF_U4		(SF_U3*SF_U1)
-#if __cplusplus
+#if defined(__cplusplus)
 #define _SF_(f)		(f)
 #else
 #define _SF_(f)		((Sfio_t*)(f))
@@ -428,7 +428,7 @@ extern "C" {
 #define __sf_stacked(f)	((f) ? (_SF_(f)->push != (Sfio_t*)0) : 0)
 #define __sf_value(f)	((f) ? (_SF_(f)->val) : 0)
 #define __sf_slen()	(_Sfi)
-#if defined(__INLINE__) && !_BLD_sfio
+#if defined(__INLINE__) && !defined(_BLD_sfio)
      __INLINE__ int sfputd(Sfio_t * f, Sfdouble_t v) {
 	return __sf_putd(f, v);
     } __INLINE__ int sfputl(Sfio_t * f, Sflong_t v) {

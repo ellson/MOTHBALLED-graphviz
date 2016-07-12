@@ -44,7 +44,7 @@ extern "C" {
 #undef vt_threaded
 #undef _may_use_threads	
 
-#if _may_use_threads && !defined(vt_threaded) && _hdr_pthread
+#if defined(_may_use_threads) && !defined(vt_threaded) && defined(_hdr_pthread)
 #define vt_threaded		1
 #include			<pthread.h>
     typedef pthread_mutex_t _vtmtx_t;
@@ -59,7 +59,7 @@ extern "C" {
 
 #endif
 
-#if _may_use_threads && !defined(vt_threaded) && _WIN32
+#if defined(_may_use_threads) && !defined(vt_threaded) && defined(_WIN32)
 #define vt_threaded		1
 #include			<windows.h>
     typedef CRITICAL_SECTION _vtmtx_t;
@@ -123,7 +123,7 @@ extern "C" {
     extern int vtonceerror _ARG_((Vtonce_t *));
 
      _END_EXTERNS_
-#if vt_threaded
+#if defined(vt_threaded) && vt_threaded
 /* mutex structure */
 	struct _vtmutex_s {
 	_vtmtx_t lock;
@@ -151,7 +151,7 @@ extern "C" {
 	int error;
     };
 
-#if _WIN32
+#if defined(_WIN32)
 #define VTONCE_INITDATA		{0, 0}
 #else
 #define VTONCE_INITDATA		{0, PTHREAD_ONCE_INIT }
@@ -165,7 +165,7 @@ extern "C" {
 #endif				/*vt_threaded */
 
 /* fake structures and functions */
-#if !vt_threaded
+#if defined(vt_threaded) && !vt_threaded
     struct _vtmutex_s {
 	int error;
     };
