@@ -16,3 +16,6 @@
 [submodule "windows/dependencies/rxspencer"]
 	path = windows/dependencies/rxspencer
 	url = https://github.com/ErwinJanssen/rxspencer-win32.git
+[submodule "windows/dependencies/libgd"]
+	path = windows/dependencies/libgd
+	url = https://github.com/libgd/libgd.git
