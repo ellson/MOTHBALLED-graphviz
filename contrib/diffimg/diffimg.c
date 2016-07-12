@@ -26,7 +26,7 @@
 
 
 #ifdef WIN32 /*dependencies*/
-    #pragma comment( lib, "gd.lib" )
+    #pragma comment( lib, "libgd.lib" )
     #pragma comment( lib, "png.lib" )
     #pragma comment( lib, "gvc.lib" )
 #endif
