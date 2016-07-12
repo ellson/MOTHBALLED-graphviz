@@ -107,10 +107,6 @@
     <None Include="gvplugin_gd.def" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\lib\gd\gd.vcxproj">
-      <Project>{05be968c-b4f4-4b5f-ac4f-c6f8585023bc}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
     <ProjectReference Include="..\core\gvplugin_core.vcxproj">
       <Project>{ae706502-3203-4815-bf50-4d73bf96ba58}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

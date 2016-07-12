@@ -114,10 +114,6 @@
       <Project>{5ec4407d-0dcd-47e0-9fdb-09011efa6382}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\..\lib\gd\gd.vcxproj">
-      <Project>{05be968c-b4f4-4b5f-ac4f-c6f8585023bc}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
     <ProjectReference Include="..\..\lib\gvc.vcxproj">
       <Project>{15229511-9f6c-48a5-9194-660ca6492563}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
