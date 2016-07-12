@@ -7,9 +7,9 @@ environment:
   CHERE_INVOKING: 1
   matrix:
     - compiler: msbuild
-      BISON: \%APPVEYOR_BUILD_FOLDER\%\windows\dependencies\graphviz-build-utilities\bison.exe
-      FLEX: \%APPVEYOR_BUILD_FOLDER\%\windows\dependencies\graphviz-build-utilities\flex.exe
-      SED: \%APPVEYOR_BUILD_FOLDER\%\windows\dependencies\graphviz-build-utilities\sed.exe
+      BISON: C:\projects\graphviz\windows\dependencies\graphviz-build-utilities\bison.exe
+      FLEX: C:\projects\graphviz\windows\dependencies\graphviz-build-utilities\flex.exe
+      SED: C:\projects\graphviz\windows\dependencies\graphviz-build-utilities\sed.exe
     #- compiler: msys2
     #- compiler: cygwin
 
@@ -48,14 +48,12 @@ install:
 
       cd ..
   - cmd: >-
-      cd windows\dependencies\libgd
-
       call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86
 
       set WITH_DEVEL=deps
 
       set WITH_BUILD=gdbuild
-      
+
       nmake /f windows/Makefile.vc build_libs
 
 build_script:
