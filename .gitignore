@@ -94,7 +94,6 @@ FEATURE/
 cmd/dot/dot_builtins
 cmd/gvedit/gvedit
 cmd/gvedit/attrs.txt
-lib/gd/gd.html
 lib/rxspencer/regex.h
 tclpkg/**/pkgIndex.tcl
 tclpkg/gv/SWIGTYPE*
