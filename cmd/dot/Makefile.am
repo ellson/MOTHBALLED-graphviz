@@ -102,8 +102,8 @@ dot_builtins_LDADD = \
        	$(GTS_LIBS) $(EXPAT_LIBS) $(Z_LIBS) $(LIBGEN_LIBS) $(SOCKET_LIBS) $(IPSEPCOLA_LIBS) $(MATH_LIBS)
 
 if WITH_LIBGD
-dot_static_LDADD += $(top_builddir)/plugin/gd/.libs/libgvplugin_gd_C.a $(GD_LIBS)
-dot_builtins_LDADD += $(top_builddir)/plugin/gd/libgvplugin_gd.la $(GD_LIBS)
+dot_static_LDADD += $(top_builddir)/plugin/gd/.libs/libgvplugin_gd_C.a $(GDLIB_LIBS)
+dot_builtins_LDADD += $(top_builddir)/plugin/gd/libgvplugin_gd.la $(GDLIB_LIBS)
 endif
 
 if WITH_PANGOCAIRO
