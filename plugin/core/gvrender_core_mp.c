@@ -163,6 +163,9 @@ static void mp_resolve_color(GVJ_t *job, gvcolor_t * color)
 			color->u.rgba[2]);
 	    color->u.index = i;
 	    break;
+        case HSVA_DOUBLE: /* TODO: implement color conversion */
+	    color->u.index = 0;
+            break;
 	default:
 	    assert(0);	/* internal error */
     }
