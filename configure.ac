@@ -304,6 +304,27 @@ if test "x$TCLSH" = "x"; then
 #  fi
 fi
 
+dnl ===========================================================================
+dnl Set GCC compiler flags
+
+if [test "${GCC}" == "yes"]
+then
+  # Enable c99
+  CFLAGS="${CFLAGS} -std=c99"
+  
+  # When enabling c99 on this codebase, this POSIX version should be defined
+  CFLAGS="${CFLAGS} -D_POSIX_C_SOURCE=200112L"
+  
+  # Enable common warnings flags
+  CFLAGS="${CFLAGS} -Wall"
+  
+  # Enable common extra flags
+  CFLAGS="${CFLAGS} -Wextra"
+  
+  # Enable specific warning flags not included by -Wall or -Wextra
+  CFLAGS="${CFLAGS} -Wdouble-promotion -Wmissing-include-dirs -Wswitch-default -Wtrampolines -Wfloat-equal -Wundef -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wconversion -Wlogical-op -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs"
+fi
+
 dnl -----------------------------------
 dnl checks for compilers
 

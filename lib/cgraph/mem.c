@@ -15,12 +15,12 @@
 
 /* memory management discipline and entry points */
 
-#if (HAVE_AST || HAVE_VMALLOC)
+#if defined(HAVE_AST) || defined(HAVE_VMALLOC)
 
 	/* vmalloc based allocator */
 static void *memopen(void)
 {
-#if DEBUG || MEMDEBUG
+#if defined(DEBUG) || defined(MEMDEBUG)
     return vmopen(Vmdcheap, Vmdebug,
 		  VM_MTDEBUG | VM_DBCHECK | VM_DBABORT | VM_TRACE);
 #else

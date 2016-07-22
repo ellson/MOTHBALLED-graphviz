@@ -255,7 +255,7 @@ struct Agraph_s {
 };
 
 
-#if _PACKAGE_ast
+#if defined(_PACKAGE_ast)
 /* fine control of object callbacks */
 #   if defined(_BLD_cgraph) && defined(__EXPORT__)
 #	define extern  __EXPORT__
@@ -427,7 +427,7 @@ extern agusererrf agseterrf(agusererrf);
 #define TAILPORT_ID		"tailport"
 #define HEADPORT_ID		"headport"
 
-#if _PACKAGE_ast
+#if defined(_PACKAGE_ast)
 #   if !defined(_BLD_cgraph) && defined(__IMPORT__)
 #	define extern  __IMPORT__
 #   endif
@@ -470,7 +470,7 @@ and edges are embedded in main graph objects but allocated separately in subgrap
 #define EDGEOF(sn,rep)		(AGSNMAIN(sn)?((Agedge_t*)((unsigned char*)(rep) - offsetof(Agedge_t,seq_link))) : ((Dthold_t*)(rep))->obj)
 
 #undef extern
-#if _PACKAGE_ast
+#if defined(_PACKAGE_ast)
 _END_EXTERNS_
 #endif
 #ifdef __cplusplus

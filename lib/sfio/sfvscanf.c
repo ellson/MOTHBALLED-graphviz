@@ -549,7 +549,7 @@ va_list args;
 
 	    if (value) {
 		*val = '\0';
-#if !_ast_fltmax_double
+#if !defined(_ast_fltmax_double)
 		if (FMTCMP(size, Sfdouble_t, Sfdouble_t))
 		    argv.ld = _sfstrtod(accept, NIL(char **));
 		else
@@ -559,7 +559,7 @@ va_list args;
 
 	    if (value) {
 		n_assign += 1;
-#if !_ast_fltmax_double
+#if !defined(_ast_fltmax_double)
 		if (FMTCMP(size, Sfdouble_t, Sfdouble_t))
 		    *((Sfdouble_t *) value) = argv.ld;
 		else

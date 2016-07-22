@@ -34,7 +34,7 @@
  *	n    - the order of the matrices A and Ainv
  */
 
-#if _PACKAGE_ast
+#if defined(_PACKAGE_ast)
 #include <ast.h>
 #else
 #endif

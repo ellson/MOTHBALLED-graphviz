@@ -12,7 +12,7 @@
  *************************************************************************/
 
 #include	"sfhdr.h"
-#if !_PACKAGE_ast
+#if !defined(_PACKAGE_ast)
 #ifndef FIONREAD
 #if _sys_ioctl
 #include	<sys/ioctl.h>

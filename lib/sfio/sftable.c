@@ -378,7 +378,7 @@ int type;
 			fp[n].argv.i = va_arg(args, int);
 		    break;
 		case SFFMT_FLOAT:
-#if !_ast_fltmax_double
+#if !defined(_ast_fltmax_double)
 		    if (FMTCMP(size, Sfdouble_t, Sfdouble_t))
 			fp[n].argv.ld = va_arg(args, Sfdouble_t);
 		    else
