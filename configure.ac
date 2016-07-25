@@ -322,9 +322,10 @@ then
   CFLAGS="${CFLAGS} -Wextra"
   
   # Enable specific warning flags not included by -Wall or -Wextra
-  CFLAGS="${CFLAGS} -Wmissing-include-dirs -Wswitch-default Wfloat-equal -Wundef -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wconversion -Wlogical-op -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs"
+  CFLAGS="${CFLAGS} -Wmissing-include-dirs -Wswitch-default -Wfloat-equal -Wundef -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wconversion -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs"
 
-# FIXME - The are not available of centos [6] - need smarted config:  -Wdouble-promotion -Wtrampolines 
+# FIXME - The are not available of centos [6] - need smarter config:
+#    -Wdouble-promotion -Wtrampolines -Wlogical-op
 
 fi
 
