@@ -333,7 +333,10 @@ then
  if [test "${ac_cv_prog_cc_c99}" != "no"]
  then
     # When enabling c99 on this codebase, this POSIX version should be defined
-    CFLAGS="${CFLAGS} -D_POSIX_C_SOURCE=200112L -Wdouble-promotion -Wtrampolines -Wlogical-op"
+    CFLAGS="${CFLAGS} -D_POSIX_C_SOURCE=200112L"
+
+    # FIXME - not available on centos[56]: gcc-4.1.2, gcc-4.4.7
+    # -Wdouble-promotion -Wtrampolines -Wlogical-op
   fi
 fi
 # Workaround for native compilers
