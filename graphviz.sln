@@ -34,8 +34,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvplugin_pango", "plugin\pa
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvplugin_gd", "plugin\gd\gvplugin_gd.vcxproj", "{2FDDC7C5-66E5-4520-B735-FD1A065AA9BA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gd", "lib\gd\gd.vcxproj", "{05BE968C-B4F4-4B5F-AC4F-C6F8585023BC}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sfio", "lib\sfio\sfio.vcxproj", "{7DC8987A-C87D-465A-94CF-1F6DF59B38FB}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ast", "lib\ast\ast.vcxproj", "{7D3723C5-06C8-4730-BDA1-1B61D6CCBEB8}"
@@ -116,9 +114,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "prune", "contrib\prune\prun
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "diffimg", "contrib\diffimg\diffimg.vcxproj", "{89ED80CE-5DEF-46B1-9A12-1D991236EE3E}"
-	ProjectSection(ProjectDependencies) = postProject
-		{05BE968C-B4F4-4B5F-AC4F-C6F8585023BC} = {05BE968C-B4F4-4B5F-AC4F-C6F8585023BC}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glcomp", "lib\glcomp\glcomp.vcxproj", "{CCEF85C9-BC40-4C26-8755-581276C8B7DA}"
 EndProject
@@ -236,9 +231,6 @@ Global
 		{2FDDC7C5-66E5-4520-B735-FD1A065AA9BA}.Debug|Win32.ActiveCfg = Debug|Win32
 		{2FDDC7C5-66E5-4520-B735-FD1A065AA9BA}.Release|Win32.ActiveCfg = Release|Win32
 		{2FDDC7C5-66E5-4520-B735-FD1A065AA9BA}.Release|Win32.Build.0 = Release|Win32
-		{05BE968C-B4F4-4B5F-AC4F-C6F8585023BC}.Debug|Win32.ActiveCfg = Debug|Win32
-		{05BE968C-B4F4-4B5F-AC4F-C6F8585023BC}.Release|Win32.ActiveCfg = Release|Win32
-		{05BE968C-B4F4-4B5F-AC4F-C6F8585023BC}.Release|Win32.Build.0 = Release|Win32
 		{7DC8987A-C87D-465A-94CF-1F6DF59B38FB}.Debug|Win32.ActiveCfg = Debug|Win32
 		{7DC8987A-C87D-465A-94CF-1F6DF59B38FB}.Release|Win32.ActiveCfg = Release|Win32
 		{7DC8987A-C87D-465A-94CF-1F6DF59B38FB}.Release|Win32.Build.0 = Release|Win32

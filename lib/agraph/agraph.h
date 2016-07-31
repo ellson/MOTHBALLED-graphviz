@@ -230,7 +230,7 @@ for the name. */
     };
 
 
-#if _PACKAGE_ast
+#if defined(_PACKAGE_ast)
 /* fine control of object callbacks */
 #   if defined(_BLD_agraph) && defined(__EXPORT__)
 #	define extern  __EXPORT__
@@ -395,7 +395,7 @@ for the name. */
 #define aghead(e)		AGHEAD(e)
 #define agopp(e)		AGOPP(e)
 
-#if _PACKAGE_ast
+#if defined(_PACKAGE_ast)
 #   if !defined(_BLD_agraph) && defined(__IMPORT__)
 #	define extern  __IMPORT__
 #   endif
@@ -408,7 +408,7 @@ for the name. */
 	Agstrictundirected;
 
 #undef extern
-#if _PACKAGE_ast
+#if defined(_PACKAGE_ast)
      _END_EXTERNS_
 #endif
 #ifdef __cplusplus

@@ -81,10 +81,10 @@
 /* */
 
 /* __STD_C indicates that the language is ANSI-C or C++ */
-#if !defined(__STD_C) && __STDC__
+#if !defined(__STD_C) && defined(__STDC__)
 #define __STD_C         1
 #endif
-#if !defined(__STD_C) && (__cplusplus || c_plusplus)
+#if !defined(__STD_C) && (defined(__cplusplus) || defined(c_plusplus))
 #define __STD_C         1
 #endif
 #if !defined(__STD_C) && _proto_stdc
@@ -96,7 +96,7 @@
 
 /* extern symbols must be protected against C++ name mangling */
 #ifndef _BEGIN_EXTERNS_
-#  if __cplusplus || c_plusplus
+#  if defined(__cplusplus) || defined(c_plusplus)
 #    define _BEGIN_EXTERNS_ extern "C" {
 #    define _END_EXTERNS_   }
 #  else
@@ -133,10 +133,10 @@
 
 /* dynamic linked library external scope handling */
 #undef extern
-#if _dll_import && !defined(__EXPORT__) && _DLL_BLD
+#if defined(_dll_import) && !defined(__EXPORT__) && _DLL_BLD
 #define __EXPORT__      __declspec(dllexport)
 #endif
-#if _dll_import && !defined(__IMPORT__)
+#if defined(_dll_import) && !defined(__IMPORT__)
 #define __IMPORT__      __declspec(dllimport)
 #endif
 #if !defined(_astimport)
@@ -147,7 +147,7 @@
 #endif
 #endif /*_astimport*/
 
-#if !_DLL_BLD && _dll_import
+#if !defined(_DLL_BLD) && defined(_dll_import)
 #define __EXTERN__(T,obj)       extern T obj; T* _imp__ ## obj = &obj
 #define __DEFINE__(T,obj,val)   T obj = val; T* _imp__ ## obj = &obj
 #else
@@ -156,16 +156,16 @@
 #endif
 
 #ifndef _AST_STD_H
-#       if _hdr_stddef
+#       if defined(_hdr_stddef)
 #       include <stddef.h>
 #       endif
-#       if _hdr_stdarg
+#       if defined(_hdr_stdarg)
 #       include <stdarg.h>
 #       endif
-#       if _hdr_varargs
+#       if defined(_hdr_varargs)
 #       include <varargs.h>
 #       endif
-#       if _sys_types
+#       if defined(_sys_types)
 #       include <sys/types.h>
 #       endif
 #endif

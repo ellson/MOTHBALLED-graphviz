@@ -53,7 +53,8 @@ Print usage and exit.
 .SH BUGS
 At present, \fBedgepaint\fP does not handle graphs with loops or directed multiedges. So, a graph with edges
 \fIa -> b\fP and \fIb -> a\fP is acceptable, but not if it has edges \fIa -> b\fP and \fIa -> b\fP or
-\fIa -- b\fP and \fIa -- b\fP.
+\fIa -- b\fP and \fIa -- b\fP. Ports are ignored in this analysis, so having
+\fIa.x -> b\fP and \fIa.y -> b\fP is also not supported.
 .SH AUTHOR
 Yifan Hu <yifanhu@yahoo.com>
 .SH "SEE ALSO"

@@ -352,7 +352,7 @@ static int splinefits(Pedge_t * edges, int edgen, Ppoint_t pa,
 	    growops(opl + 4);
 	    for (pi = 1; pi < 4; pi++)
 		ops[opl].x = sps[pi].x, ops[opl++].y = sps[pi].y;
-#if DEBUG >= 1
+#if defined(DEBUG) && DEBUG >= 1
 	    fprintf(stderr, "success: %f %f\n", a, b);
 #endif
 	    return 1;
@@ -362,7 +362,7 @@ static int splinefits(Pedge_t * edges, int edgen, Ppoint_t pa,
 		growops(opl + 4);
 		for (pi = 1; pi < 4; pi++)
 		    ops[opl].x = sps[pi].x, ops[opl++].y = sps[pi].y;
-#if DEBUG >= 1
+#if defined(DEBUG) && DEBUG >= 1
 		fprintf(stderr, "forced straight line: %f %f\n", a, b);
 #endif
 		return 1;
@@ -374,7 +374,7 @@ static int splinefits(Pedge_t * edges, int edgen, Ppoint_t pa,
 	else
 	    a = b = 0;
     }
-#if DEBUG >= 1
+#if defined(DEBUG) && DEBUG >= 1
     fprintf(stderr, "failure\n");
 #endif
     return 0;

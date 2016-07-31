@@ -221,7 +221,7 @@ static int clarify(Agraph_t* g, real angle, real accuracy, char *infile, int che
   enum {buf_len = 10000};
 
   if (checkG(g)) {
-    agerr (AGERR, "Graph %s (%s) contains loops or multiedges\n");
+    agerr (AGERR, "Graph %s contains loops or multiedges\n", agnameof(g));
     return 1;
   }
 

@@ -260,8 +260,8 @@ static void fig_textspan(GVJ_t * job, pointf p, textspan_t * span)
  * in the output - but note that dot knows nothing about latex,
  * so the node sizes may be wrong.
  */
-    double height = 0.0;
-    double length = 0.0;
+    double height = font_size;
+    double length = 2.0*font_size/3.0  * (double)strlen(span->str) / 2.0;
 
     pA = span->font->postscript_alias;
     if (pA) /* if it is a standard postscript font */
@@ -280,10 +280,16 @@ static void fig_textspan(GVJ_t * job, pointf p, textspan_t * span)
         break;
     }
 
+/*	object_code	sub_type	color	depth	pen_style	font
+	4			1		0		1		0		0	
+         font_size	angle	font_flags	height	length	ROUND(p.x)	ROUND(p.y),
+	14.0		0.0000	6		14.0		51.3		1237		570	
+	$A	\\in	M_0$\001
+*/
     gvprintf(job,
             "%d %d %d %d %d %d %.1f %.4f %d %.1f %.1f %d %d %s\\001\n",
             object_code, sub_type, color, depth, pen_style, font,
-            font_size, angle, font_flags, height, length, ROUND(p.x), ROUND(p.y),
+            font_size, angle, font_flags, height, length, ROUND(p.x), ROUND((p.y-72.0)),
             fig_string(span->str));
 }
 

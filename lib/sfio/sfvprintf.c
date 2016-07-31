@@ -42,7 +42,7 @@ va_list args;			/* arg list if !argf    */
     int sign, decpt;
     ssize_t size;
     double dval;
-#if !_ast_fltmax_double
+#if !defined(_ast_fltmax_double)
     Sfdouble_t ldval;
 #endif
     char *tls[2], **ls;		/* for %..[separ]s              */
@@ -434,7 +434,7 @@ va_list args;			/* arg list if !argf    */
 		    argv.i = va_arg(args, int);
 		break;
 	    case SFFMT_FLOAT:
-#if !_ast_fltmax_double
+#if !defined(_ast_fltmax_double)
 		if (FMTCMP(size, Sfdouble_t, Sfdouble_t))
 		    argv.ld = va_arg(args, Sfdouble_t);
 		else
@@ -786,7 +786,7 @@ va_list args;			/* arg list if !argf    */
 	case 'e':
 	case 'E':
 	case 'f':
-#if !_ast_fltmax_double
+#if !defined(_ast_fltmax_double)
 	    if (FMTCMP(size, Sfdouble_t, Sfdouble_t))
 		ldval = argv.ld;
 	    else
@@ -799,7 +799,7 @@ va_list args;			/* arg list if !argf    */
 
 	    if (fmt == 'e' || fmt == 'E') {
 		n = (precis = precis < 0 ? FPRECIS : precis) + 1;
-#if !_ast_fltmax_double
+#if !defined(_ast_fltmax_double)
 		if (FMTCMP(size, Sfdouble_t, Sfdouble_t)) {
 		    ep = _sfcvt(&ldval, min(n, SF_FDIGITS),
 				&decpt, &sign,
@@ -813,7 +813,7 @@ va_list args;			/* arg list if !argf    */
 		goto e_format;
 	    } else if (fmt == 'f' || fmt == 'F') {
 		precis = precis < 0 ? FPRECIS : precis;
-#if !_ast_fltmax_double
+#if !defined(_ast_fltmax_double)
 		if (FMTCMP(size, Sfdouble_t, Sfdouble_t)) {
 		    ep = _sfcvt(&ldval, min(precis, SF_FDIGITS),
 				&decpt, &sign, SFFMT_LDOUBLE);
@@ -828,7 +828,7 @@ va_list args;			/* arg list if !argf    */
 
 	    /* 'g' or 'G' format */
 	    precis = precis < 0 ? FPRECIS : precis == 0 ? 1 : precis;
-#if !_ast_fltmax_double
+#if !defined(_ast_fltmax_double)
 	    if (FMTCMP(size, Sfdouble_t, Sfdouble_t)) {
 		ep = _sfcvt(&ldval, min(precis, SF_FDIGITS),
 			    &decpt, &sign, SFFMT_EFORMAT | SFFMT_LDOUBLE);
@@ -879,7 +879,7 @@ va_list args;			/* arg list if !argf    */
 
 	    /* build the exponent */
 	    ep = endep = buf + (sizeof(buf) - 1);
-#if !_ast_fltmax_double
+#if !defined(_ast_fltmax_double)
 	    if (FMTCMP(size, Sfdouble_t, Sfdouble_t))
 		dval = ldval ? 1. : 0.;	/* so the below test works */
 #endif

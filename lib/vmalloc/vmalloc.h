@@ -25,7 +25,7 @@ extern "C" {
 
 #define VMALLOC_VERSION	19990805L
 
-#if _PACKAGE_ast
+#if defined(_PACKAGE_ast)
 #include	<ast_std.h>
 #else
 #include	<ast_common.h>

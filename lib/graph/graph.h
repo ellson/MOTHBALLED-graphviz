@@ -16,7 +16,7 @@
 #ifndef _GRAPH_H
 #define _GRAPH_H 1
 
-#if _PACKAGE_ast
+#if defined(_PACKAGE_ast)
 #include    <ast.h>
 #else
 #include <sys/types.h>
@@ -122,7 +122,7 @@ extern "C" {
 	Agproto_t *prev;
     };
 
-#if _PACKAGE_ast
+#if defined(_PACKAGE_ast)
      _BEGIN_EXTERNS_		/* public data */
 #if _BLD_graph && defined(__EXPORT__)
 #define extern  __EXPORT__
@@ -229,7 +229,7 @@ extern "C" {
 #define agmetanode(g)		((g)->meta_node)
 
 #undef extern
-#if _PACKAGE_ast
+#if defined(_PACKAGE_ast)
      _END_EXTERNS_
 #endif
 #ifdef __cplusplus

@@ -304,16 +304,41 @@ if test "x$TCLSH" = "x"; then
 #  fi
 fi
 
+
 dnl -----------------------------------
 dnl checks for compilers
 
 AM_PROG_CC_C_O
-#AC_PROG_CC
+AC_PROG_CC_C99
 AC_PROG_CXX
 AC_PROG_OBJC
 
 AC_C_INLINE
 
+dnl ===========================================================================
+dnl Set GCC compiler flags
+
+if [test "${GCC}" == "yes"]
+then
+  # Enable common warnings flags
+  CFLAGS="${CFLAGS} -Wall"
+  
+  # Enable common extra flags
+  CFLAGS="${CFLAGS} -Wextra"
+  
+  # Enable specific warning flags not included by -Wall or -Wextra
+  CFLAGS="${CFLAGS} -Wmissing-include-dirs -Wswitch-default -Wfloat-equal -Wundef -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wconversion -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs"
+
+ # if C99, then enable additional warnings
+ if [test "${ac_cv_prog_cc_c99}" != "no"]
+ then
+    # When enabling c99 on this codebase, this POSIX version should be defined
+    CFLAGS="${CFLAGS} -D_POSIX_C_SOURCE=200112L"
+
+    # FIXME - not available on centos[56]: gcc-4.1.2, gcc-4.4.7
+    # -Wdouble-promotion -Wtrampolines -Wlogical-op
+  fi
+fi
 # Workaround for native compilers
 #  HP  : http://bugs.gnome.org/db/31/3163.html
 #  DEC : Enable NaN/Inf
@@ -3284,7 +3309,7 @@ echo ""
 echo "graphviz-$VERSION will be compiled with the following:"
 echo ""
 echo "options:"
-echo "  cgraph:        $use_cgraph"
+echo "  cgraph:        Yes (always enabled)"
 echo "  digcola:       $use_digcola"
 echo "  expat:         $use_expat"
 echo "  fontconfig:    $use_fontconfig"

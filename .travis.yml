@@ -13,6 +13,7 @@ script:
 - GRAPHVIZ_DESTINATION_FOLDER="graphviz-build"
 - "./autogen.sh NOCONFIG"
 - "./configure --prefix=${TRAVIS_BUILD_DIR}/${GRAPHVIZ_DESTINATION_FOLDER}"
+- make dist
 - make
 - make install
 - ls

@@ -30,7 +30,7 @@ extern "C" {
 */
 
 
-#if _PACKAGE_ast
+#if defined(_PACKAGE_ast)
 
 #if defined(__STDPP__directive) && defined(__STDPP__hide)
     __STDPP__directive pragma pp:hide getpagesize
@@ -51,7 +51,7 @@ extern "C" {
 #include	<ast_common.h>
 #include	"FEATURE/vmalloc"
 
-#endif /*_PACKAGE_ast*/
+#endif /*defined(_PACKAGE_ast)*/
 
 #undef free
 #undef malloc
@@ -435,7 +435,7 @@ extern "C" {
      _BEGIN_EXTERNS_ extern Vmextern_t _Vmextern;
 
 
-#if !_PACKAGE_ast
+#if !defined(_PACKAGE_ast)
 
     extern size_t getpagesize _ARG_((void));
 
@@ -481,7 +481,7 @@ extern "C" {
 #if !_typ_ssize_t
     typedef int ssize_t;
 #endif
-#if !_WIN32
+#if !defined(_WIN32)
     extern Vmuchar_t *sbrk _ARG_((ssize_t));
 #endif
 

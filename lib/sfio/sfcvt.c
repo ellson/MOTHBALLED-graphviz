@@ -45,7 +45,7 @@ int format;			/* conversion format            */
 
     *sign = *decpt = 0;
 
-#if !_ast_fltmax_double
+#if !defined(_ast_fltmax_double)
     if (format & SFFMT_LDOUBLE) {
 	Sfdouble_t dval = *((Sfdouble_t *) dv);
 

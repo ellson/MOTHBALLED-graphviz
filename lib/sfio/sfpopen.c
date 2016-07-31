@@ -17,7 +17,7 @@
 **	Written by Kiem-Phong Vo.
 */
 
-#if _PACKAGE_ast
+#if defined(_PACKAGE_ast)
 #include	<proc.h>
 #else
 
@@ -123,7 +123,7 @@ char *argcmd;
     _exit(EXIT_NOTFOUND);
 }
 
-#endif /*_PACKAGE_ast*/
+#endif /*defined(_PACKAGE_ast)*/
 
 #ifndef WIN32
 #if __STD_C
@@ -135,7 +135,7 @@ char *command;			/* command to execute */
 char *mode;			/* mode of the stream */
 #endif
 {
-#if _PACKAGE_ast
+#if defined(_PACKAGE_ast)
     reg Proc_t *proc;
     reg int sflags;
     reg long flags;
@@ -292,6 +292,6 @@ char *mode;			/* mode of the stream */
 	}
 	return NIL(Sfio_t *);
     }
-#endif /*_PACKAGE_ast*/
+#endif /*defined(_PACKAGE_ast)*/
 }
 #endif

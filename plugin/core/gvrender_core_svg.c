@@ -737,7 +737,7 @@ gvdevice_features_t device_features_svg = {
 };
 
 gvdevice_features_t device_features_svgz = {
-    GVDEVICE_BINARY_FORMAT | GVDEVICE_COMPRESSED_FORMAT | GVDEVICE_DOES_TRUECOLOR,	/* flags */
+    GVDEVICE_DOES_TRUECOLOR|GVDEVICE_DOES_LAYERS|GVDEVICE_BINARY_FORMAT|GVDEVICE_COMPRESSED_FORMAT, /* flags */
     {0., 0.},			/* default margin - points */
     {0., 0.},			/* default page width, height - points */
     {72., 72.},			/* default dpi */

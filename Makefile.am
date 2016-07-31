@@ -3,7 +3,7 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-export TAR_OPTIONS = --owner=0 --group=0
+export TAR_OPTIONS = --owner=0 --group=0 --exclude=windows/dependencies/*/*
 
 txtdir = $(pkgdatadir)/doc
 htmldir = $(pkgdatadir)/doc/html
@@ -26,7 +26,7 @@ doxygen:
 	doxygen
 
 dist-hook:
-	find $(distdir) -name CVS -type d -prune -exec rm -rf {} \;
+#	find $(distdir) -name CVS -type d -prune -exec rm -rf {} \;
 #	rm -f ToPAS
 #	find $(distdir) -type f -exec md5sum {} >>ToPAS \;
 

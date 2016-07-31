@@ -19,7 +19,7 @@ extern "C" {
 #ifndef _LIBGRAPH_H
 #define _LIBGRAPH_H 1
 
-#if _PACKAGE_ast
+#if defined(_PACKAGE_ast)
 #include    <ast.h>
 #else
 #include <stdarg.h>
