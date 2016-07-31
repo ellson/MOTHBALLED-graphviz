@@ -3,12 +3,16 @@
 from AT&T Research and Lucent Bell Labs
 * http://www.graphviz.org/
 
-See doc/build.html for prerequisites and detailed build notes.
+See doc/build.html within the source tree or http://ellson.github.io/graphviz/doc/html/build.html for prerequisites and detailed build notes.
 
 ## master GIT Repository
 
 The master GIT Repository for graphviz can be found at:
 * http://github.com/ellson/graphviz/
+
+## Documentation
+
+The Graphviz documents are currently hosted at http://ellson.github.io/graphviz/doc/html/index.html
 
 ## Graph Visualization ( http://www.graphviz.org/About.php )
 
