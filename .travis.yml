@@ -1,5 +1,5 @@
 language: c
-sudo: false
+sudo: true
 addons:
   apt:
     packages:
@@ -9,7 +9,19 @@ addons:
     - libdevil-dev
     - libxaw7-dev
     - freeglut3-dev
+
+install:
+# Install unit testing framework Criterion.
+- cd dependencies/criterion
+- mkdir build
+- cd build
+- cmake ..
+- cmake --build .
+- sudo make install
+- sudo ldconfig
+
 script:
+- cd ${TRAVIS_BUILD_DIR}
 - GRAPHVIZ_DESTINATION_FOLDER="graphviz-build"
 - "./autogen.sh NOCONFIG"
 - "./configure --prefix=${TRAVIS_BUILD_DIR}/${GRAPHVIZ_DESTINATION_FOLDER}"
