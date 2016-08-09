@@ -19,7 +19,7 @@ pkginclude_HEADERS = $(top_builddir)/graphviz_version.h
 man_MANS = graphviz.7
 
 # $(subdirs) contains the list from: AC_CONFIG_SUBDIRS
-SUBDIRS = $(subdirs) lib plugin cmd tclpkg doc contrib share graphs rtest
+SUBDIRS = $(subdirs) lib plugin cmd tclpkg doc contrib share graphs rtest tests
 
 .PHONY: doxygen
 doxygen:
