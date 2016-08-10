@@ -34,12 +34,13 @@ script:
 - make dist
 
 before_deploy:
-- GRAPHVIZ_PACKAGE_NAME="graphviz-${TRAVIS_TAG}-linux.tar.gz"
-- tar czf ${GRAPHVIZ_PACKAGE_NAME} ${GRAPHVIZ_DESTINATION_FOLDER}
+- export DEPLOYED_FILE=$(ls *.tar.gz)
+- echo "deploying ${DEPLOYED_FILE} to GitHub releases"
 deploy:
   provider: releases
   api_key:
     secure: EmdyQU0yNlq2mYtCz4xRj1Eyd73s5xYcD5tP+E42QmQhCoTSD0nb7J6H9MlzAXby2lgqDxcINvkXuEWGyySi4QHs32H7THbKs0U/dD7FuC7zFIfd2o/Q0kWyASTm8hPwu/OghmitmBXy37+QdfO4Snzy+AqVmHH3VtUax3kf0+qg12fQiNsDRXFJfO9mBddKNjxktjmfdN87pNfcVcNkCZz5DDs91ldIr6FiC+YMbfedtXqEjkavYSpFU/IX6/GJ9suJseGNH7+hmlSfw9yZT5TNd/8dnmUr2j4cD6pKgZWBQfWE/GmoJbYFbfIYfFzkwvLm3OEbr0rnsNabvKmApGpr8XBiO+w1raEXHXLsblp7eQi2BdQFu2QmVhh6vQP0uqAM12oEoC+m2FtR5WVy43RHA4tvK4hddikfUcRDRFQov9rqXj6x/cdmEhuimjugTbzmekrZ9RITucOs6YLtLry05oUjED1AD47rknTJAmZ3W93LANY7CLt8JsLhAODCZO/lTRhrXGOE2mSEiq/fqw2ZPrDPjI8J2BysYO7xb+IW1/S3seOnzL0m2Ox0wZkvDZyg9+HfjIa8AcCdJZ7EXlfDL+ExXcSbGTzwWhvy48f249cSjKM96q0SmVcIyCEapgFSIOyLSYQv3i/+5PB/ZLVT2rOdvj6zPVymAhAxEX4=
-#  file: ''
+  skip_cleanup: true
+  file: "${DEPLOYED_FILE}"
   on:
     repo: ellson/graphviz
