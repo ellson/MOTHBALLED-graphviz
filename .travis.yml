@@ -9,8 +9,11 @@ addons:
     - libdevil-dev
     - libxaw7-dev
     - freeglut3-dev
+    - colorgcc
 
 install:
+# Enable colored gcc output
+- export CC=colorgcc
 # Install unit testing framework Criterion.
 - cd dependencies/criterion
 - mkdir build
