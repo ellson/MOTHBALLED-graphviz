@@ -25,19 +25,14 @@ install:
 
 script:
 - cd ${TRAVIS_BUILD_DIR}
-- GRAPHVIZ_DESTINATION_FOLDER="graphviz-build"
-- "./autogen.sh NOCONFIG"
-- "./configure --prefix=${TRAVIS_BUILD_DIR}/${GRAPHVIZ_DESTINATION_FOLDER}"
-- make dist
+# Build and test code
+- ./autogen.sh
 - make
-- make install
-- ls
-- ls ${GRAPHVIZ_DESTINATION_FOLDER}
-- PATH=${TRAVIS_BUILD_DIR}/${GRAPHVIZ_DESTINATION_FOLDER}/bin:$PATH
-- echo $PATH
-- dot -V
-- dot -c
+- sudo make install
 - make check
+# Create source package to deploy
+- make dist
+
 before_deploy:
 - GRAPHVIZ_PACKAGE_NAME="graphviz-${TRAVIS_TAG}-linux.tar.gz"
 - tar czf ${GRAPHVIZ_PACKAGE_NAME} ${GRAPHVIZ_DESTINATION_FOLDER}
