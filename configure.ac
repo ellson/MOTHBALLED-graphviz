@@ -3124,6 +3124,7 @@ cat > conftest.$ac_ext <<EOF
 #include "confdefs.h"
 #include "assert.h"
 int main(int argc, char **argv) {
+(void)argv;
 assert(argc);
 ; return 0; }
 EOF
