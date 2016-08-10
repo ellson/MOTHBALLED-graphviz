@@ -3167,7 +3167,7 @@ AC_CHECK_LIB(
   ],
   []
 )
-AM_CONDITIONAL(HAVE_CRITERION, test $use_criterion = "Yes")
+AM_CONDITIONAL(HAVE_CRITERION, test "$use_criterion" = "Yes")
 
 # -----------------------------------------------------------------------
 
