@@ -679,9 +679,9 @@ static void write_graph(Agraph_t * g, GVJ_t * job, int top, state_t* sp)
 	    }
 	    else {
 		ND_gid(np) = sgcnt + ncnt++;
-		for (ep = agfstout(g, np); ep; ep = agnxtout(g,ep)) {
-		    ED_gid(ep) = ecnt++;
-		}
+	    }
+	    for (ep = agfstout(g, np); ep; ep = agnxtout(g,ep)) {
+		ED_gid(ep) = ecnt++;
 	    }
 	}
 	dtclose(map);
