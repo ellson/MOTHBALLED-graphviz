@@ -1151,7 +1151,7 @@ else
         if test -d /usr/include/php5; then
           PHP_INCLUDES="-I/usr/include/php5 -I/usr/include/php5/main -I/usr/include/php5/Zend -I/usr/include/php5/TSRM"
         else
-          PHP_INCLUDES="-I/usr/include/php -I/usr/include/php/main -I/usr/include/php/Zend -I/usr/include/php/TSRM"
+          PHP_INCLUDES="-I/usr/include/php -I/usr/include/php/main -I/usr/include/php/TSRM -I/usr/include/php/Zend -I/usr/include/php/ext -I/usr/include/php/ext/date/lib"
         fi
         PHP_INSTALL_DIR="/usr/lib${LIBPOSTFIX}/php/modules"
         PHP_INSTALL_DATADIR="/usr/share/php"
