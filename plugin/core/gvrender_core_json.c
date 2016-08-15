@@ -188,36 +188,36 @@ static void write_stops (GVJ_t * job, int n_stops, xdot_color_stop* stp, state_t
 
 static void write_radial_grad (GVJ_t * job, xdot_radial_grad* rg, state_t* sp)
 {
-    indent (job, sp->Level);
+    indent(job, sp->Level);
     gvprintf(job, "\"p0\": [%.03f,%.03f,%.03f],\n", rg->x0, rg->y0, rg->r0); 
-    indent (job, sp->Level);
+    indent(job, sp->Level);
     gvprintf(job, "\"p1\": [%.03f,%.03f,%.03f],\n", rg->x1, rg->y1, rg->r1); 
-    indent (job, sp->Level);
+    indent(job, sp->Level);
     write_stops (job, rg->n_stops, rg->stops, sp);
 }
 
 static void write_linear_grad (GVJ_t * job, xdot_linear_grad* lg, state_t* sp)
 {
-    indent (job, sp->Level);
+    indent(job, sp->Level);
     gvprintf(job, "\"p0\": [%.03f,%.03f],\n", lg->x0, lg->y0); 
-    indent (job, sp->Level);
+    indent(job, sp->Level);
     gvprintf(job, "\"p1\": [%.03f,%.03f],\n", lg->x1, lg->y1); 
-    indent (job, sp->Level);
+    indent(job, sp->Level);
     write_stops (job, lg->n_stops, lg->stops, sp);
 }
 
 static void write_xdot (xdot_op * op, GVJ_t * job, state_t* sp)
 {
-    indent (job, sp->Level++);
+    indent(job, sp->Level++);
     gvputs(job, "{\n");
-    indent (job, sp->Level);
+    indent(job, sp->Level);
 
     switch (op->kind) {
     case xd_filled_ellipse :
     case xd_unfilled_ellipse :
 	gvprintf(job, "\"op\": \"%c\",\n", 
 	    (op->kind == xd_filled_ellipse ? 'E' : 'e')); 
- 	indent (job, sp->Level);
+ 	indent(job, sp->Level);
 	gvprintf(job, "\"rect\": [%.03f,%.03f,%.03f,%.03f]\n", 
 	    op->u.ellipse.x, op->u.ellipse.y, op->u.ellipse.w, op->u.ellipse.h);
 	break;
@@ -225,89 +225,89 @@ static void write_xdot (xdot_op * op, GVJ_t * job, state_t* sp)
     case xd_unfilled_polygon :
 	gvprintf(job, "\"op\": \"%c\",\n",
 	    (op->kind == xd_filled_polygon ? 'P' : 'p')); 
- 	indent (job, sp->Level);
+ 	indent(job, sp->Level);
 	write_polyline (job, &op->u.polygon);
 	break;
     case xd_filled_bezier :
     case xd_unfilled_bezier :
 	gvprintf(job, "\"op\": \"%c\",\n",
 	    (op->kind == xd_filled_bezier ? 'B' : 'b')); 
- 	indent (job, sp->Level);
+ 	indent(job, sp->Level);
 	write_polyline (job, &op->u.bezier);
 	break;
     case xd_polyline :
 	gvprintf(job, "\"op\": \"L\",\n"); 
- 	indent (job, sp->Level);
+ 	indent(job, sp->Level);
 	write_polyline (job, &op->u.polyline);
 	break;
     case xd_text :
 	gvprintf(job, "\"op\": \"T\",\n"); 
- 	indent (job, sp->Level);
+ 	indent(job, sp->Level);
 	gvprintf(job, "\"pt\": [%.03f,%.03f],\n", op->u.text.x, op->u.text.y); 
- 	indent (job, sp->Level);
+ 	indent(job, sp->Level);
 	gvprintf(job, "\"align\": \"%c\",\n",
 	    (op->u.text.align == xd_left? 'l' : 
 	    (op->u.text.align == xd_center ? 'c' : 'r'))); 
- 	indent (job, sp->Level);
+ 	indent(job, sp->Level);
 	gvprintf(job, "\"width\": %.03f,\n", op->u.text.width); 
- 	indent (job, sp->Level);
+ 	indent(job, sp->Level);
 	gvprintf(job, "\"text\": \"%s\"\n", stoj(op->u.text.text, sp));
 	break;
     case xd_fill_color :
     case xd_pen_color :
 	gvprintf(job, "\"op\": \"%c\",\n", 
 	    (op->kind == xd_fill_color ? 'C' : 'c')); 
- 	indent (job, sp->Level);
+ 	indent(job, sp->Level);
 	gvprintf(job, "\"grad\": \"none\",\n"); 
- 	indent (job, sp->Level);
+ 	indent(job, sp->Level);
 	gvprintf(job, "\"color\": \"%s\"\n", stoj(op->u.color, sp));
 	break;
     case xd_grad_pen_color :
     case xd_grad_fill_color :
 	gvprintf(job, "\"op\": \"%c\",\n", 
 	    (op->kind == xd_grad_fill_color ? 'C' : 'c')); 
- 	indent (job, sp->Level);
+ 	indent(job, sp->Level);
 	if (op->u.grad_color.type == xd_none) {
 	    gvprintf(job, "\"grad\": \"none\",\n"); 
- 	    indent (job, sp->Level);
+ 	    indent(job, sp->Level);
 	    gvprintf(job, "\"color\": \"%s\"\n", 
 		stoj(op->u.grad_color.u.clr, sp));
 	}
 	else {
 	    if (op->u.grad_color.type == xd_linear) {
 		gvprintf(job, "\"grad\": \"linear\",\n"); 
-		indent (job, sp->Level);
+		indent(job, sp->Level);
 		write_linear_grad (job, &op->u.grad_color.u.ling, sp);
 	    }
 	    else {
 		gvprintf(job, "\"grad\": \"radial\",\n"); 
-		indent (job, sp->Level);
+		indent(job, sp->Level);
 		write_radial_grad (job, &op->u.grad_color.u.ring, sp);
 	    }
 	}
 	break;
     case xd_font :
 	gvprintf(job, "\"op\": \"F\",\n");
- 	indent (job, sp->Level);
+ 	indent(job, sp->Level);
 	gvprintf(job, "\"size\": %.03f,\n", op->u.font.size); 
- 	indent (job, sp->Level);
+ 	indent(job, sp->Level);
 	gvprintf(job, "\"face\": \"%s\"\n", stoj(op->u.font.name, sp)); 
 	break;
     case xd_style :
 	gvprintf(job, "\"op\": \"S\",\n");
- 	indent (job, sp->Level);
+ 	indent(job, sp->Level);
 	gvprintf(job, "\"style\": \"%s\"\n", stoj(op->u.style, sp));
 	break;
     case xd_image :
 	break;
     case xd_fontchar :
 	gvprintf(job, "\"op\": \"t\",\n");
- 	indent (job, sp->Level);
+ 	indent(job, sp->Level);
 	gvprintf(job, "\"fontchar\": %d\n", op->u.fontchar);
 	break;
     }
     sp->Level--;
-    indent (job, sp->Level);
+    indent(job, sp->Level);
     gvputs(job, "}");
 }
 
@@ -326,7 +326,7 @@ static void write_xdots (char * val, GVJ_t * job, state_t* sp)
     }
 
     gvputs(job, "\n");
-    indent (job, sp->Level++);
+    indent(job, sp->Level++);
     gvputs(job, "[\n");
     for (i = 0; i < cmds->cnt; i++) {
 	if (not_first) 
@@ -337,7 +337,7 @@ static void write_xdots (char * val, GVJ_t * job, state_t* sp)
     }
     sp->Level--;
     gvputs(job, "\n");
-    indent (job, sp->Level);
+    indent(job, sp->Level);
     gvputs(job, "]");
     freeXDot(cmds);
 }
@@ -362,7 +362,7 @@ static void write_attrs(Agobj_t * obj, GVJ_t * job, state_t* sp)
 	if (!(attrval = agxget(obj, sym))) continue;
 	if ((*attrval == '\0') && !streq(sym->name, "label")) continue;
 	gvputs(job, ",\n");
-	indent (job, sp->Level);
+	indent(job, sp->Level);
 	gvprintf(job, "\"%s\": ", stoj(sym->name, sp));
 	if (sp->doXDot && isXDot(sym->name))
 	    write_xdots(agxget(obj, sym), job, sp);
@@ -376,14 +376,14 @@ static void write_hdr(Agraph_t * g, GVJ_t * job, int top, state_t* sp)
     char *name;
 
     name = agnameof(g);
-    indent (job, sp->Level);
+    indent(job, sp->Level);
     gvprintf(job, "\"name\": \"%s\"", stoj (name, sp));
 
     if (top) {
 	gvputs(job, ",\n");
-	indent (job, sp->Level);
+	indent(job, sp->Level);
 	gvprintf(job, "\"directed\": %s,\n", (agisdirected(g)?"true":"false"));
-	indent (job, sp->Level);
+	indent(job, sp->Level);
 	gvprintf(job, "\"strict\": %s", (agisstrict(g)?"true":"false"));
     }
 }
@@ -411,7 +411,7 @@ static int write_subgs(Agraph_t * g, GVJ_t * job, int top, state_t* sp)
     if (!sg) return 0;
    
     gvputs(job, ",\n");
-    indent (job, sp->Level++);
+    indent(job, sp->Level++);
     gvputs(job, "\"subgraphs\": [\n");
     for (; sg; sg = agnxtsubg(sg)) {
 	if (not_first) 
@@ -422,7 +422,7 @@ static int write_subgs(Agraph_t * g, GVJ_t * job, int top, state_t* sp)
     }
     sp->Level--;
     gvputs(job, "\n");
-    indent (job, sp->Level);
+    indent(job, sp->Level);
     gvputs(job, "]");
     return 1;
 }
@@ -437,12 +437,12 @@ static int write_subgs(Agraph_t * g, GVJ_t * job, int top, state_t* sp)
     if (!sg) return 0;
    
     gvputs(job, ",\n");
-    indent (job, sp->Level++);
+    indent(job, sp->Level++);
     if (top)
 	gvputs(job, "\"objects\": [\n");
     else {
 	gvputs(job, "\"subgraphs\": [\n");
-	indent (job, sp->Level);
+	indent(job, sp->Level);
     }
     for (; sg; sg = agnxtsubg(sg)) {
 	if (not_first) 
@@ -457,7 +457,7 @@ static int write_subgs(Agraph_t * g, GVJ_t * job, int top, state_t* sp)
     if (!top) {
 	sp->Level--;
 	gvputs(job, "\n");
-	indent (job, sp->Level);
+	indent(job, sp->Level);
 	gvputs(job, "]");
     }
 
@@ -467,18 +467,18 @@ static int write_subgs(Agraph_t * g, GVJ_t * job, int top, state_t* sp)
 static void write_edge(Agedge_t * e, GVJ_t * job, int top, state_t* sp)
 {
     if (top) {
-	indent (job, sp->Level++);
+	indent(job, sp->Level++);
 	gvputs(job, "{\n");
-	indent (job, sp->Level);
+	indent(job, sp->Level);
 	gvprintf(job, "\"_gvid\": %d,\n", ED_gid(e));
-	indent (job, sp->Level);
+	indent(job, sp->Level);
 	gvprintf(job, "\"tail\": %d,\n", ND_gid(agtail(e)));
-	indent (job, sp->Level);
+	indent(job, sp->Level);
 	gvprintf(job, "\"head\": %d", ND_gid(aghead(e)));
     	write_attrs((Agobj_t*)e, job, sp);
 	gvputs(job, "\n");
 	sp->Level--;
-	indent (job, sp->Level);
+	indent(job, sp->Level);
 	gvputs(job, "}");
     }
     else {
@@ -505,10 +505,10 @@ static int write_edges(Agraph_t * g, GVJ_t * job, int top, state_t* sp)
     if (!ep) return 0;
 
     gvputs(job, ",\n");
-    indent (job, sp->Level++);
+    indent(job, sp->Level++);
     gvputs(job, "\"edges\": [\n");
     if (!top)
-        indent (job, sp->Level);
+        indent(job, sp->Level);
     for (; np; np = agnxtnode(g,np)) {
 	for (ep = agfstout(g, np); ep; ep = agnxtout(g,ep)) {
 	    if (not_first) 
@@ -523,7 +523,7 @@ static int write_edges(Agraph_t * g, GVJ_t * job, int top, state_t* sp)
     }
     sp->Level--;
     gvputs(job, "\n");
-    indent (job, sp->Level);
+    indent(job, sp->Level);
     gvputs(job, "]");
     return 1;
 }
@@ -531,16 +531,16 @@ static int write_edges(Agraph_t * g, GVJ_t * job, int top, state_t* sp)
 static void write_node(Agnode_t * n, GVJ_t * job, int top, state_t* sp)
 {
     if (top) {
-	indent (job, sp->Level++);
+	indent(job, sp->Level++);
 	gvputs(job, "{\n");
-	indent (job, sp->Level);
+	indent(job, sp->Level);
 	gvprintf(job, "\"_gvid\": %d,\n", ND_gid(n));
-	indent (job, sp->Level);
+	indent(job, sp->Level);
 	gvprintf(job, "\"name\": \"%s\"", stoj (agnameof(n), sp));
     	write_attrs((Agobj_t*)n, job, sp);
 	gvputs(job, "\n");
 	sp->Level--;
-	indent (job, sp->Level);
+	indent(job, sp->Level);
 	gvputs(job, "}");
     }
     else {
@@ -558,7 +558,7 @@ static int write_nodes(Agraph_t * g, GVJ_t * job, int top, int has_subgs, state_
 	if (has_subgs && top) {
 	    sp->Level--;
 	    gvputs(job, "\n");
-	    indent (job, sp->Level);
+	    indent(job, sp->Level);
 	    gvputs(job, "]");
 	}
 	return 0;
@@ -566,14 +566,14 @@ static int write_nodes(Agraph_t * g, GVJ_t * job, int top, int has_subgs, state_
     gvputs(job, ",\n");
     if (top) {
 	if (!has_subgs) {
-            indent (job, sp->Level++);
+            indent(job, sp->Level++);
             gvputs(job, "\"objects\": [\n");
         }
     }
     else {
-        indent (job, sp->Level++);
+        indent(job, sp->Level++);
 	gvputs(job, "\"nodes\": [\n");
-	indent (job, sp->Level);
+	indent(job, sp->Level);
     }
     for (; n; n = agnxtnode(g, n)) {
 	if (IS_CLUSTER(n)) continue;
@@ -588,7 +588,7 @@ static int write_nodes(Agraph_t * g, GVJ_t * job, int top, int has_subgs, state_
     }
     sp->Level--;
     gvputs(job, "\n");
-    indent (job, sp->Level);
+    indent(job, sp->Level);
     gvputs(job, "]");
     return 1;
 }
@@ -679,25 +679,25 @@ static void write_graph(Agraph_t * g, GVJ_t * job, int top, state_t* sp)
 	    }
 	    else {
 		ND_gid(np) = sgcnt + ncnt++;
-		for (ep = agfstout(g, np); ep; ep = agnxtout(g,ep)) {
-		    ED_gid(ep) = ecnt++;
-		}
+	    }
+	    for (ep = agfstout(g, np); ep; ep = agnxtout(g,ep)) {
+		ED_gid(ep) = ecnt++;
 	    }
 	}
 	dtclose(map);
     }
 
-    indent (job, sp->Level++);
+    indent(job, sp->Level++);
     gvputs(job, "{\n");
     write_hdr(g, job, top, sp);
     write_attrs((Agobj_t*)g, job, sp);
     if (top) {
 	gvputs(job, ",\n");
-	indent (job, sp->Level);
+	indent(job, sp->Level);
 	gvprintf(job, "\"_subgraph_cnt\": %d", sgcnt);
     } else {
 	gvputs(job, ",\n");
-	indent (job, sp->Level);
+	indent(job, sp->Level);
 	gvprintf(job, "\"_gvid\": %d", GD_gid(g));
     }
     has_subgs = write_subgs(g, job, top, sp);
@@ -705,7 +705,7 @@ static void write_graph(Agraph_t * g, GVJ_t * job, int top, state_t* sp)
     write_edges (g, job, top, sp);
     gvputs(job, "\n");
     sp->Level--;
-    indent (job, sp->Level);
+    indent(job, sp->Level);
     if (top)
 	gvputs(job, "}\n");
     else
