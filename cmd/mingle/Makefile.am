@@ -14,10 +14,10 @@ AM_CPPFLAGS = \
 
 if WITH_ANN
 bin_PROGRAMS = mingle
+endif
 
 man_MANS = mingle.1
 pdf_DATA = mingle.1.pdf
-endif
 
 mingle_SOURCES = minglemain.c
 mingle_CPPFLAGS = $(AM_CPPFLAGS)

@@ -7,11 +7,12 @@ pdfdir = $(pkgdatadir)/doc/pdf
 gveditdir = $(pkgdatadir)/gvedit
 
 if WITH_QT
-man_MANS = gvedit.1
-pdf_DATA = gvedit.1.pdf
 bin_PROGRAMS = gvedit
 gvedit_DATA = attrs.txt
 endif
+
+man_MANS = gvedit.1
+pdf_DATA = gvedit.1.pdf
 
 AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/common \

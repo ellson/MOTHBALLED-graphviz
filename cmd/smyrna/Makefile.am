@@ -3,11 +3,6 @@
 
 pdfdir = $(pkgdatadir)/doc/pdf
 
-
-man = smyrna.1
-pdf = smyrna.1.pdf
-
-
 AM_CPPFLAGS = \
 	-DSMYRNA_PATH=\""$(pkgdatadir)/smyrna"\" \
         -I$(top_srcdir) \
@@ -26,12 +21,8 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/cmd/smyrna/gui \
 	$(GTK_CFLAGS) $(GLUT_CFLAGS) $(GTKGLEXT_CFLAGS) $(GLADE_CFLAGS) $(FREETYPE2_CFLAGS) $(FONTCONFIG_CFLAGS) $(GTS_CFLAGS)
 
-man_MANS =
-pdf_DATA =
 bin_PROGRAMS =
 if WITH_SMYRNA
-man_MANS += $(man)
-pdf_DATA += $(pdf)
 if ENABLE_SHARED
 bin_PROGRAMS += smyrna 
 endif
@@ -39,6 +30,9 @@ if ENABLE_STATIC
 bin_PROGRAMS += smyrna_static
 endif
 endif
+
+man_MANS = smyrna.1
+pdf_DATA = smyrna.1.pdf
 
 noinst_HEADERS = arcball.h draw.h glexpose.h \
 	glmotion.h gltemplate.h gui/appmouse.h gui/callbacks.h \
@@ -88,7 +82,7 @@ smyrna_static_LDADD = $(top_builddir)/lib/cgraph/libcgraph_C.la \
 smyrna.1.pdf: $(srcdir)/smyrna.1
 	- @GROFF@ -Tps -man $(srcdir)/smyrna.1 | @PS2PDF@ - - >smyrna.1.pdf
 
-EXTRA_DIST = smyrna.vcxproj* $(man) $(pdf)
+EXTRA_DIST = smyrna.vcxproj* $(man_MANS) $(pdf_DATA)
 
-DISTCLEANFILES = $(pdf)
+DISTCLEANFILES = $(pdf_DATA)
 
