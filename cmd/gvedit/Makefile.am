@@ -6,13 +6,15 @@ SUBDIRS = ui images
 pdfdir = $(pkgdatadir)/doc/pdf
 gveditdir = $(pkgdatadir)/gvedit
 
+mans = gvedit.1
+pdfs = gvedit.1.pdf
+
 if WITH_QT
 bin_PROGRAMS = gvedit
 gvedit_DATA = attrs.txt
+man_MANS = $(mans)
+pdf_DATA = $(pdfs)
 endif
-
-man_MANS = gvedit.1
-pdf_DATA = gvedit.1.pdf
 
 AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/common \
@@ -59,7 +61,7 @@ attrs.txt: $(top_srcdir)/doc/infosrc/attrs
 gvedit.1.pdf: $(srcdir)/gvedit.1
 	- $(GROFF) -Tps -man $(srcdir)/gvedit.1 | @PS2PDF@ - - >gvedit.1.pdf
 
-EXTRA_DIST = gvedit.vcxproj* gvedit.pro.in mdi.qrc $(man_MANS) $(pdf_DATA)
+EXTRA_DIST = gvedit.vcxproj* gvedit.pro.in mdi.qrc $(mans) $(pdfs)
 
 CLEANFILES = moc_csettings.cpp moc_imageviewer.cpp moc_mainwindow.cpp moc_mdichild.cpp qrc_mdi.cpp
 	
