@@ -332,11 +332,6 @@ then
  # if C99, then enable additional warnings
 # if [test "${ac_cv_prog_cc_c99}" != "no"]
 # then
-    # When enabling c99 on this codebase, this POSIX version should be defined
-
-    # FIXME - enabling this flag breaks configure test for php.h
-    # CFLAGS="${CFLAGS} -D_POSIX_C_SOURCE=200112L"
-
     # FIXME - not available on centos[56]: gcc-4.1.2, gcc-4.4.7
     # CFLAGS="${CFLAGS} -Wdouble-promotion -Wtrampolines -Wlogical-op"
 #  fi
