@@ -89,7 +89,7 @@
       ]
     },
     "metanode": {
-      "title": "nor or cluster subgraph",
+      "title": "node or subgraph",
       "type": "object",
       "properties": {
         "_gvid": {
@@ -97,28 +97,28 @@
         },
         "name": {
           "type": "string",
-          "description": "The node or cluster name"
+          "description": "The node or subgraph name"
         },
         "subgraphs": {
           "type": "array",
           "items": {
             "type": "integer"
           },
-          "description": "index of a child cluster"
+          "description": "index of a child subgraph"
         },
         "nodes": {
           "type": "array",
           "items": {
             "type": "integer"
           },
-          "description": "index of a node in this cluster"
+          "description": "index of a node in this subgraph"
         },
         "edges": {
           "type": "array",
           "items": {
             "type": "integer"
           },
-          "description": "index of an edge in this cluster"
+          "description": "index of an edge in this subgraph"
         },
         "_draw_": {
           "$ref": "#/definitions/drawops"
