@@ -56,6 +56,11 @@ install:
 
       nmake /f windows/Makefile.vc build_libs
 
+before_build:
+# This file is deleted to reduce noise in the build output. Otherwise several 
+# "target does not exist and will be ignored" messages are printed.
+- del "C:\Program Files (x86)\MSBuild\14.0\Microsoft.Common.targets\ImportAfter\Xamarin.Common.targets"
+
 build_script:
   # Ghostscript only has to be configured when MSYS2 or Cygwin are enabled.
   ## Add Ghostscript folder to the path so ps2pdf can be called to create docs.
