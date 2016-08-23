@@ -87,7 +87,7 @@ del common\htmlparse-intermediate.h</Command>
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)windows\dependencies\rxspencer\include\rxspencer;$(SolutionDir)windows\dependencies\GTK2\include;$(SolutionDir)windows\dependencies\expat\Source\lib;$(SolutionDir)windows\dependencies\libtool\include;$(SolutionDir)windows\include;$(SolutionDir);$(SolutionDir)lib\xdot;$(SolutionDir)lib\label;$(SolutionDir)lib\pathplan;$(SolutionDir)lib\fdpgen;$(SolutionDir)lib\common;$(SolutionDir)lib\gvc;$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)cmd\tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;GVC_EXPORTS;WIN32_DLL;HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>Level4</WarningLevel>
       <EnablePREfast>true</EnablePREfast>
