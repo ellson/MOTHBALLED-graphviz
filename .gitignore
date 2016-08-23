@@ -212,6 +212,7 @@ Graphviz/**
 
 # User specific Visual Studio folders and files
 .vs/**
+.vscode/**
 *.VC.db
 *.VC.opendb
 *.vcxproj.user
