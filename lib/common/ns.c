@@ -917,9 +917,9 @@ static node_t *checkdfs(graph_t* g, node_t * n)
 	if (ND_onstack(w)) {
 	    dump_graph (g);
 	    fprintf(stderr, "cycle: last edge %lx %s(%lx) %s(%lx)\n",
-		(unsigned long int)e,
-	       	agnameof(n), (unsigned long int)n,
-		agnameof(w), (unsigned long int)w);
+		(uint64_t)e,
+	       	agnameof(n), (uint64_t)n,
+		agnameof(w), (uint64_t)w);
 	    return w;
 	}
 	else {
@@ -927,8 +927,8 @@ static node_t *checkdfs(graph_t* g, node_t * n)
 		x = checkdfs(g, w);
 		if (x) {
 		    fprintf(stderr,"unwind %lx %s(%lx)\n",
-			(unsigned long int)e,
-			agnameof(n), (unsigned long int)n);
+			(uint64_t)e,
+			agnameof(n), (uint64_t)n);
 		    if (x != n) return x;
 		    fprintf(stderr,"unwound to root\n");
 		    fflush(stderr);

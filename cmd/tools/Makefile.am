@@ -191,10 +191,14 @@ gv2gml_LDADD = \
 gml2gv_SOURCES = gml2gv.c gmlparse.y gmlscan.l
 
 gmlparse.c: y.tab.c
-	@SED@ "s/yy/gml/g" < y.tab.c > gmlparse.c
+	@SED@ "s/yy/gml/g" < y.tab.c | \
+		@SED@ "s/unsigned long int/uint64_t/g" | \
+                @SED@ "s/unsigned long/uint64_t/g"  > gmlparse.c
 
 gmlparse.h: y.tab.h
-	@SED@ "s/yy/gml/g" < y.tab.h > gmlparse.h
+	@SED@ "s/yy/gml/g" < y.tab.h | \
+		@SED@ "s/unsigned long int/uint64_t/g" | \
+                @SED@ "s/unsigned long/uint64_t/g"  > gmlparse.h
 
 y.tab.c y.tab.h : y.output
 

@@ -21,10 +21,10 @@ extern "C" {
 #endif
 
     typedef struct {
-	unsigned long nStepsToLeaf;
-	unsigned long subtreeSize;
-	unsigned long nChildren;
-	unsigned long nStepsToCenter;
+	uint64_t nStepsToLeaf;
+	uint64_t subtreeSize;
+	uint64_t nChildren;
+	uint64_t nStepsToCenter;
 	node_t *parent;
 	double span;
 	double theta;

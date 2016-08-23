@@ -21,6 +21,8 @@ extern "C" {
 #define _BLD_sfio	1
 #endif
 
+#include <inttypes.h>
+
 /*	Internal definitions for sfio.
 **	Written by Kiem-Phong Vo
 */
@@ -375,7 +377,7 @@ extern "C" {
 #define uchar		unsigned char
 #endif
 #ifndef ulong
-#define ulong		unsigned long
+#define ulong		uint64_t
 #endif
 #ifndef uint
 #define uint		unsigned int

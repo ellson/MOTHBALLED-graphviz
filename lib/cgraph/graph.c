@@ -154,7 +154,7 @@ int agclose(Agraph_t * g)
     return SUCCESS;
 }
 
-unsigned long agnextseq(Agraph_t * g, int objtype)
+uint64_t agnextseq(Agraph_t * g, int objtype)
 {
     return ++(g->clos->seq[objtype]);
 }

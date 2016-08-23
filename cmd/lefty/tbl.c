@@ -32,9 +32,9 @@ Tobj Ttrue, Tfalse;
     T_ISSTRING (ko)  && strcmp (((Tstring_t *) (ko))->s, (sk)) == 0 \
 )
 
-#define GETIKINDEX(tp, ik) (unsigned long) ik  % tp->ln
-#define GETRKINDEX(tp, rk) (unsigned long) rk  % tp->ln
-#define GETSKINDEX(tp, sk) (unsigned long) *sk % tp->ln
+#define GETIKINDEX(tp, ik) (uint64_t) ik  % tp->ln
+#define GETRKINDEX(tp, rk) (uint64_t) rk  % tp->ln
+#define GETSKINDEX(tp, sk) (uint64_t) *sk % tp->ln
 
 typedef struct mapentry_t {
     struct mapentry_t *next;
@@ -655,7 +655,7 @@ static void mapinsert (Tobj fmo, Tobj too) {
     mapentry_t **lp;
     mapentry_t *cep;
 
-    lp = &map.list[(unsigned long) fmo % MAPLISTN];
+    lp = &map.list[(uint64_t) fmo % MAPLISTN];
     if (!(cep = Mallocate (MAPENTRYSIZE)))
         panic1 (POS, "mapinsert", "cannot allocate mapentry");
     cep->fmo = fmo, cep->too = too;
@@ -666,7 +666,7 @@ static Tobj mapfind (Tobj fmo) {
     mapentry_t **lp;
     mapentry_t *cep;
 
-    lp = &map.list[(unsigned long) fmo % MAPLISTN];
+    lp = &map.list[(uint64_t) fmo % MAPLISTN];
     for (cep = *lp; cep; cep = cep->next)
         if (cep->fmo == fmo)
             return cep->too;

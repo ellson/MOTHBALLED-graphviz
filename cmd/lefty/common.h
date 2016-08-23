@@ -59,6 +59,7 @@ extern "C" {
 #endif
 #endif
 
+#include <inttypes.h>
 #include <math.h>
 #include <stdio.h>
 #include <setjmp.h>

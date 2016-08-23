@@ -43,6 +43,8 @@ extern "C" {
 #include <string.h>
 #endif
 
+#include <inttypes.h>
+
 #include "types.h"
 #include "macros.h"
 #include "const.h"

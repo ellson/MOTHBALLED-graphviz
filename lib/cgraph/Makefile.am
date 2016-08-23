@@ -34,10 +34,14 @@ scan.c: $(top_srcdir)/lib/cgraph/scan.l
 	rm @LEX_OUTPUT_ROOT@.c
 
 grammar.c: y.tab.c
-	@SED@ "s/yy/aag/g" < y.tab.c > grammar.c
+	@SED@ "s/yy/aag/g" < y.tab.c | \
+		@SED@ "s/unsigned long int/uint64_t/g" | \
+                @SED@ "s/unsigned long/uint64_t/g" > grammar.c
 
 grammar.h: y.tab.h
-	@SED@ "s/yy/aag/g" < y.tab.h > grammar.h
+	@SED@ "s/yy/aag/g" < y.tab.h | \
+		@SED@ "s/unsigned long int/uint64_t/g" | \
+                @SED@ "s/unsigned long/uint64_t/g" > grammar.h
 
 y.tab.c y.tab.h: y.output
 

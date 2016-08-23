@@ -46,7 +46,7 @@ Tcl_GetString(Tcl_Obj *obj) {
 typedef struct {
     Agdisc_t mydisc;    /* must be first to allow casting mydisc to ictx */
     Agiodisc_t myioDisc;
-    unsigned long ctr;  /* odd number counter for anon objects over all g's in interp */
+    uint64_t ctr;  /* odd number counter for anon objects over all g's in interp */
     Tcl_Interp *interp;
     GVC_t *gvc;
 } ictx_t;
@@ -57,7 +57,7 @@ typedef struct {
 typedef struct {
     Agraph_t *g;        /* the graph */
     ictx_t *ictx;
-    unsigned long idx; 
+    uint64_t idx; 
 } gctx_t;
 
 #if HAVE_LIBGD

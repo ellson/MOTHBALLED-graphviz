@@ -486,7 +486,7 @@ static void fillnode (txtnode_t *pnode, txtnode_t *cnode) {
     case TXT_SEEN:
         cnode->u.s.text = Sseen (cnode->ko, cnode->u.s.txtnode->path);
         buttondata[3].u.t = cnode->u.s.text;
-        buttondata[4].u.u = (unsigned long) cnode->vo;
+        buttondata[4].u.u = (uint64_t) cnode->vo;
         cnode->u.s.wi = Gcreatewidget (
             pnode->u.f.t.mwi, G_BUTTONWIDGET, 5, &buttondata[0]
         );
@@ -494,7 +494,7 @@ static void fillnode (txtnode_t *pnode, txtnode_t *cnode) {
     case TXT_ABSTRACT:
         cnode->u.a.text = Sabstract (cnode->ko, cnode->vo);
         buttondata[3].u.t = cnode->u.a.text;
-        buttondata[4].u.u = (unsigned long) cnode->vo;
+        buttondata[4].u.u = (uint64_t) cnode->vo;
         cnode->u.a.wi = Gcreatewidget (
             pnode->u.f.t.mwi, G_BUTTONWIDGET, 5, &buttondata[0]
         );
@@ -504,7 +504,7 @@ static void fillnode (txtnode_t *pnode, txtnode_t *cnode) {
             cnode->u.f.t.ftext = Stfull (cnode->ko);
             cnode->u.f.t.ltext = "];";
             buttondata[3].u.t = cnode->u.f.t.ftext;
-            buttondata[4].u.u = (unsigned long) cnode->vo;
+            buttondata[4].u.u = (uint64_t) cnode->vo;
             cnode->u.f.t.fwi = Gcreatewidget (
                 pnode->u.f.t.mwi, G_BUTTONWIDGET, 5, &buttondata[0]
             );
@@ -512,14 +512,14 @@ static void fillnode (txtnode_t *pnode, txtnode_t *cnode) {
                 pnode->u.f.t.mwi, G_ARRAYWIDGET, 2, &arraydata[0]
             );
             buttondata[3].u.t = cnode->u.f.t.ltext;
-            buttondata[4].u.u = (unsigned long) cnode->vo;
+            buttondata[4].u.u = (uint64_t) cnode->vo;
             cnode->u.f.t.lwi = Gcreatewidget (
                 pnode->u.f.t.mwi, G_BUTTONWIDGET, 5, &buttondata[0]
             );
         } else {
             cnode->u.f.s.text = Ssfull (cnode->ko, cnode->vo);
             buttondata[3].u.t = cnode->u.f.s.text;
-            buttondata[4].u.u = (unsigned long) cnode->vo;
+            buttondata[4].u.u = (uint64_t) cnode->vo;
             cnode->u.f.s.wi = Gcreatewidget (
                 pnode->u.f.t.mwi, G_BUTTONWIDGET, 5, &buttondata[0]
             );

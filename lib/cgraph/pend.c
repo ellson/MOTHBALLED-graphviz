@@ -59,7 +59,7 @@ static void freef(Dict_t * dict, void *ptr, Dtdisc_t * disc)
 
 static Dtdisc_t Disc = {
     offsetof(pending_cb_t, key),	/* sort by 'key' */
-    sizeof(unsigned long),
+    sizeof(uint64_t),
     0,				/* link offset */
     NIL(Dtmake_f),
     freef,

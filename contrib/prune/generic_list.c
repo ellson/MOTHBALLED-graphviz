@@ -14,13 +14,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <inttypes.h>
 #include <errno.h>
 
 #include <generic_list.h>
 
 #define DFLT_SIZE 100
 
-generic_list_t *new_generic_list(unsigned long size)
+generic_list_t *new_generic_list(uint64_t size)
 {
     generic_list_t *list;
 
@@ -52,7 +53,7 @@ void free_generic_list(generic_list_t * list)
 
 generic_list_t *add_to_generic_list(generic_list_t * list, gl_data element)
 {
-    unsigned long new_size;
+    uint64_t new_size;
     gl_data *new_data;
 
     if (list->size == list->used) {
