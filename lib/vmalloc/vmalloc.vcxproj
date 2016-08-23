@@ -52,7 +52,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)windows\include;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/agutil;$(SolutionDir)/;$(SolutionDir)/lib/graph;$(SolutionDir)/lib/vpsc;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/twopigen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/sfpdpgen;$(SolutionDir)/lib/rbtree;$(SolutionDir)/lib/pathplan;$(SolutionDir)/lib/patchwork;$(SolutionDir)/lib/pack;$(SolutionDir)/lib/ortho;$(SolutionDir)/lib/inkpot;$(SolutionDir)/lib/ingraphs;$(SolutionDir)/lib/filter;$(SolutionDir)/lib/fdpgen;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/dotgen;$(SolutionDir)/lib/circogen;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/agraph;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvc;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32_DLL;VMALLOC_EXPORTS;WIN32;_DEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -74,7 +74,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)windows\include;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/agutil;$(SolutionDir)/;$(SolutionDir)/lib/graph;$(SolutionDir)/lib/vpsc;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/twopigen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/sfpdpgen;$(SolutionDir)/lib/rbtree;$(SolutionDir)/lib/pathplan;$(SolutionDir)/lib/patchwork;$(SolutionDir)/lib/pack;$(SolutionDir)/lib/ortho;$(SolutionDir)/lib/inkpot;$(SolutionDir)/lib/ingraphs;$(SolutionDir)/lib/filter;$(SolutionDir)/lib/fdpgen;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/dotgen;$(SolutionDir)/lib/circogen;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/agraph;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvc;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;VMALLOC_EXPORTS;WIN32_DLL;MSWIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>

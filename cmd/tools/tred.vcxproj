@@ -53,7 +53,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)windows\dependencies\GTK2\lib\glib-2.0\include;$(SolutionDir)windows\dependencies\GTK2\include\glib-2.0;$(SolutionDir)windows\dependencies\GTK2\include\pango-1.0\;$(SolutionDir)windows\dependencies\GTK2\include\cairo;$(SolutionDir)windows\dependencies\GTK2\include\freetype2;$(SolutionDir)windows\dependencies\GTK2\include;$(SolutionDir)/libltdl;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/agutil;$(SolutionDir)/windows/lib/cdt;$(SolutionDir)/;$(SolutionDir)/lib/graph;$(SolutionDir)/lib/vpsc;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/twopigen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/sfpdpgen;$(SolutionDir)/lib/rbtree;$(SolutionDir)/lib/pathplan;$(SolutionDir)/lib/patchwork;$(SolutionDir)/lib/pack;$(SolutionDir)/lib/ortho;$(SolutionDir)/lib/inkpot;$(SolutionDir)/lib/ingraphs;$(SolutionDir)/lib/filter;$(SolutionDir)/lib/fdpgen;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/dotgen;$(SolutionDir)/lib/circogen;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/agraph;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvc;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -63,6 +62,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <EnablePREfast>true</EnablePREfast>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\ingraphs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)Debug\Graphviz\bin\;$(SolutionDir)windows\dependencies\GTK2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -75,7 +75,6 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)windows\dependencies\GTK2\lib\glib-2.0\include;$(SolutionDir)windows\dependencies\GTK2\include\glib-2.0;$(SolutionDir)windows\dependencies\GTK2\include\pango-1.0\;$(SolutionDir)windows\dependencies\GTK2\include\cairo;$(SolutionDir)windows\dependencies\GTK2\include\freetype2;$(SolutionDir)windows\dependencies\GTK2\include;$(SolutionDir)/libltdl;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/agutil;$(SolutionDir)/windows/lib/cdt;$(SolutionDir)/;$(SolutionDir)/lib/graph;$(SolutionDir)/lib/vpsc;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/twopigen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/sfpdpgen;$(SolutionDir)/lib/rbtree;$(SolutionDir)/lib/pathplan;$(SolutionDir)/lib/patchwork;$(SolutionDir)/lib/pack;$(SolutionDir)/lib/ortho;$(SolutionDir)/lib/inkpot;$(SolutionDir)/lib/ingraphs;$(SolutionDir)/lib/filter;$(SolutionDir)/lib/fdpgen;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/dotgen;$(SolutionDir)/lib/circogen;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/agraph;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvc;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;WIN32_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
@@ -83,6 +82,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <EnablePREfast>true</EnablePREfast>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\ingraphs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)Graphviz\bin\;$(SolutionDir)windows\dependencies\GTK2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

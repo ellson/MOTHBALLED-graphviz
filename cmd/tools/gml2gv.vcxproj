@@ -53,7 +53,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)windows\dependencies\GTK2\lib\glib-2.0\include;$(SolutionDir)windows\dependencies\GTK2\include\glib-2.0;$(SolutionDir)windows\dependencies\GTK2\include\pango-1.0\;$(SolutionDir)windows\dependencies\GTK2\include\cairo;$(SolutionDir)windows\dependencies\GTK2\include\freetype2;$(SolutionDir)windows\dependencies\GTK2\include;$(SolutionDir)/libltdl;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/agutil;$(SolutionDir)/windows/lib/cdt;$(SolutionDir)/;$(SolutionDir)/lib/graph;$(SolutionDir)/lib/vpsc;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/twopigen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/sfpdpgen;$(SolutionDir)/lib/rbtree;$(SolutionDir)/lib/pathplan;$(SolutionDir)/lib/patchwork;$(SolutionDir)/lib/pack;$(SolutionDir)/lib/ortho;$(SolutionDir)/lib/inkpot;$(SolutionDir)/lib/ingraphs;$(SolutionDir)/lib/filter;$(SolutionDir)/lib/fdpgen;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/dotgen;$(SolutionDir)/lib/circogen;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/cgraph;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvc;$(SolutionDir)/lib/cdt;$(SolutionDir)/cmd/tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir);$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -83,7 +83,7 @@ del gmlparse-intermediate.c</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)windows\dependencies\GTK2\lib\glib-2.0\include;$(SolutionDir)windows\dependencies\GTK2\include\glib-2.0;$(SolutionDir)windows\dependencies\GTK2\include\pango-1.0\;$(SolutionDir)windows\dependencies\GTK2\include\cairo;$(SolutionDir)windows\dependencies\GTK2\include\freetype2;$(SolutionDir)windows\dependencies\GTK2\include;$(SolutionDir)/libltdl;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/agutil;$(SolutionDir)/windows/lib/cdt;$(SolutionDir)/;$(SolutionDir)/lib/graph;$(SolutionDir)/lib/vpsc;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/twopigen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/sfpdpgen;$(SolutionDir)/lib/rbtree;$(SolutionDir)/lib/pathplan;$(SolutionDir)/lib/patchwork;$(SolutionDir)/lib/pack;$(SolutionDir)/lib/ortho;$(SolutionDir)/lib/inkpot;$(SolutionDir)/lib/ingraphs;$(SolutionDir)/lib/filter;$(SolutionDir)/lib/fdpgen;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/dotgen;$(SolutionDir)/lib/circogen;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/cgraph;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvc;$(SolutionDir)/lib/cdt;$(SolutionDir)/cmd/tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir);$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />

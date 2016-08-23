@@ -51,7 +51,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)windows\dependencies\rxspencer\include\rxspencer;$(SolutionDir)windows\dependencies\GTK2\include;$(SolutionDir)windows\dependencies\expat\Source\lib;$(SolutionDir)windows\dependencies\libtool\include;$(SolutionDir)windows\include;$(SolutionDir);$(SolutionDir)lib\xdot;$(SolutionDir)lib\label;$(SolutionDir)lib\pathplan;$(SolutionDir)lib\fdpgen;$(SolutionDir)lib\common;$(SolutionDir)lib\gvc;$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)cmd\tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)windows\include;$(SolutionDir)windows\dependencies\rxspencer\include\rxspencer;$(SolutionDir)windows\dependencies\GTK2\include;$(SolutionDir)windows\dependencies\expat\Source\lib;$(SolutionDir)windows\dependencies\libtool\include;$(SolutionDir);$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\common;$(SolutionDir)lib\fdpgen;$(SolutionDir)lib\label;$(SolutionDir)lib\pathplan;$(SolutionDir)lib\gvc;$(SolutionDir)lib\xdot;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>MSWIN32;WIN32;_DEBUG;_WINDOWS;_USRDLL;GVC_EXPORTS;WIN32_DLL;HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -83,7 +83,7 @@ del common\htmlparse-intermediate.h</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)windows\dependencies\rxspencer\include\rxspencer;$(SolutionDir)windows\dependencies\GTK2\include;$(SolutionDir)windows\dependencies\expat\Source\lib;$(SolutionDir)windows\dependencies\libtool\include;$(SolutionDir)windows\include;$(SolutionDir);$(SolutionDir)lib\xdot;$(SolutionDir)lib\label;$(SolutionDir)lib\pathplan;$(SolutionDir)lib\fdpgen;$(SolutionDir)lib\common;$(SolutionDir)lib\gvc;$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)cmd\tools;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)windows\include;$(SolutionDir)windows\dependencies\rxspencer\include\rxspencer;$(SolutionDir)windows\dependencies\GTK2\include;$(SolutionDir)windows\dependencies\expat\Source\lib;$(SolutionDir)windows\dependencies\libtool\include;$(SolutionDir);$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\common;$(SolutionDir)lib\fdpgen;$(SolutionDir)lib\label;$(SolutionDir)lib\pathplan;$(SolutionDir)lib\gvc;$(SolutionDir)lib\xdot;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;GVC_EXPORTS;WIN32_DLL;HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
