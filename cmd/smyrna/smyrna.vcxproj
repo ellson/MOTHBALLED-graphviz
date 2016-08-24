@@ -65,7 +65,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>asprintf.lib;ast.lib;atk-1.0.lib;bz2.lib;libcairo-2.lib;cdt.lib;cgraph.lib;charset.lib;croco-0.6.lib;expr.lib;fontconfig.lib;freetype.lib;Gdi32.lib;gdk_pixbuf-2.0.lib;gdkglext-win32-1.0.lib;gdk-win32-2.0.lib;glade-2.0.lib;gladeui-1.lib;glcomp.lib;glib-2.0.lib;glu32.lib;gmodule-2.0.lib;gobject-2.0.lib;gsf-1.lib;gsf-win32-1.lib;gthread-2.0.lib;gtkglext-win32-1.0.lib;gtk-win32-2.0.lib;gvprlib.lib;iconv.lib;ingraphs.lib;intl.lib;jpeg.lib;libgtkglext-win32-1.0.dll.a;ltdl.lib;neatogen.lib;opengl32.lib;pango-1.0.lib;pangocairo-1.0.lib;pangoft2-1.0.lib;pangowin32-1.0.lib;popt.lib;rsvg-2.lib;sfio.lib;shlwapi.lib;tiff.lib;topfish.lib;User32.lib;vmalloc.lib;xdot.lib;xml2.lib;z.lib;gvc.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)windows\dependencies\freeglut\lib;$(SolutionDir)windows\dependencies\libtool\lib;$(SolutionDir)Debug\Graphviz\bin\;$(SolutionDir)windows\dependencies\GTK2\lib;C:\GnuWin32\lib;C:\Projects\graphviz2\lib\zlib-1.2.3\lib;C:\Projects\cairo_build\lib;C:\Projects\ATT\GTK\GTKTest2\lib;$(SolutionDir)windows\dependencies\GTK2GLExt\1.0\lib;$(SolutionDir)windows\dependencies\GTK2\2.0\bin;$(SolutionDir)windows\dependencies\GTK2\2.0\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\dependencies\freeglut\lib;$(SolutionDir)windows\dependencies\libtool\lib;$(SolutionDir)windows\dependencies\GTK2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -86,7 +86,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>asprintf.lib;ast.lib;atk-1.0.lib;bz2.lib;libcairo-2.lib;cdt.lib;cgraph.lib;charset.lib;croco-0.6.lib;expr.lib;fontconfig.lib;freetype.lib;Gdi32.lib;gdk_pixbuf-2.0.lib;gdkglext-win32-1.0.lib;gdk-win32-2.0.lib;glade-2.0.lib;gladeui-1.lib;glcomp.lib;glib-2.0.lib;glu32.lib;gmodule-2.0.lib;gobject-2.0.lib;gsf-1.lib;gsf-win32-1.lib;gthread-2.0.lib;gtkglext-win32-1.0.lib;gtk-win32-2.0.lib;gvprlib.lib;iconv.lib;ingraphs.lib;intl.lib;jpeg.lib;libgtkglext-win32-1.0.dll.a;ltdl.lib;neatogen.lib;opengl32.lib;pango-1.0.lib;pangocairo-1.0.lib;pangoft2-1.0.lib;pangowin32-1.0.lib;popt.lib;rsvg-2.lib;sfio.lib;shlwapi.lib;tiff.lib;topfish.lib;User32.lib;vmalloc.lib;xdot.lib;xml2.lib;z.lib;gvc.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)windows\dependencies\freeglut\lib;$(SolutionDir)windows\dependencies\libtool\lib;$(SolutionDir)Graphviz\bin\;$(SolutionDir)windows\dependencies\GTK2\lib;C:\GnuWin32\lib;C:\Projects\graphviz2\lib\zlib-1.2.3\lib;C:\Projects\cairo_build\lib;C:\Projects\ATT\GTK\GTKTest2\lib;$(SolutionDir)windows\dependencies\GTK2GLExt\1.0\lib;$(SolutionDir)windows\dependencies\GTK2\2.0\bin;$(SolutionDir)windows\dependencies\GTK2\2.0\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\dependencies\freeglut\lib;$(SolutionDir)windows\dependencies\libtool\lib;$(SolutionDir)windows\dependencies\GTK2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
