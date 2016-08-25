@@ -78,7 +78,10 @@ del common\htmlparse-intermediate.c
 del common\htmlparse-intermediate.h</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)windows\dependencies\libtool\bin\libltdl3.dll $(OutDir)libltdl3.dll</Command>
+      <Command>copy $(SolutionDir)windows\dependencies\libtool\bin\libltdl3.dll $(OutDir)libltdl3.dll
+copy $(SolutionDir)windows\dependencies\rxspencer\bin\rxspencer.dll $(OutDir)rxspencer.dll
+copy $(SolutionDir)windows\dependencies\expat\Bin\libexpat.dll $(OutDir)libexpat.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\zlib1.dll $(OutDir)zlib1.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -110,7 +113,9 @@ del common\htmlparse-intermediate.h</Command>
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)windows\dependencies\libtool\bin\libltdl3.dll $(OutDir)libltdl3.dll
-copy $(SolutionDir)windows\dependencies\rxspencer\bin\rxspencer.dll $(OutDir)rxspencer.dll</Command>
+copy $(SolutionDir)windows\dependencies\rxspencer\bin\rxspencer.dll $(OutDir)rxspencer.dll
+copy $(SolutionDir)windows\dependencies\expat\Bin\libexpat.dll $(OutDir)libexpat.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\zlib1.dll $(OutDir)zlib1.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

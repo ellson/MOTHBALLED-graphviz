@@ -70,6 +70,23 @@
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(SolutionDir)windows\dependencies\GTK2\bin\libcairo-2.dll $(OutDir)libcairo-2.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libpng12.dll $(OutDir)libpng12.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\zlib1.dll $(OutDir)zlib1.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libxml2.dll $(OutDir)libxml2.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\iconv.dll $(OutDir)iconv.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libglib-2.0-0.dll $(OutDir)libglib-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libpango-1.0-0.dll $(OutDir)libpango-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangocairo-1.0-0.dll $(OutDir)libpangocairo-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libgobject-2.0-0.dll $(OutDir)libgobject-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\intl.dll $(OutDir)intl.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libgmodule-2.0-0.dll $(OutDir)libgmodule-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangoft2-1.0-0.dll $(OutDir)libpangoft2-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangowin32-1.0-0.dll $(OutDir)libpangowin32-1.0-0.dll</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -92,6 +109,23 @@
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(SolutionDir)windows\dependencies\GTK2\bin\libcairo-2.dll $(OutDir)libcairo-2.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libpng12.dll $(OutDir)libpng12.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\zlib1.dll $(OutDir)zlib1.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libxml2.dll $(OutDir)libxml2.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\iconv.dll $(OutDir)iconv.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libglib-2.0-0.dll $(OutDir)libglib-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libpango-1.0-0.dll $(OutDir)libpango-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangocairo-1.0-0.dll $(OutDir)libpangocairo-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libgobject-2.0-0.dll $(OutDir)libgobject-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\intl.dll $(OutDir)intl.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libgmodule-2.0-0.dll $(OutDir)libgmodule-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangoft2-1.0-0.dll $(OutDir)libpangoft2-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangowin32-1.0-0.dll $(OutDir)libpangowin32-1.0-0.dll</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="gvgetfontlist.h" />

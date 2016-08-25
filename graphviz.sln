@@ -49,9 +49,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vmalloc", "lib\vmalloc\vmalloc.vcxproj", "{1A6CABA9-DA28-4BC1-9DF4-F809231221BC}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "acyclic", "cmd\tools\acyclic.vcxproj", "{E72DB0B2-A9B1-47D0-B6CE-563A20434F6E}"
-	ProjectSection(ProjectDependencies) = postProject
-		{D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04} = {D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bcomps", "cmd\tools\bcomps.vcxproj", "{98127EF3-6289-4251-A057-D7C34B1B67AC}"
 EndProject

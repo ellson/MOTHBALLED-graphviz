@@ -71,6 +71,16 @@
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(SolutionDir)windows\dependencies\libgd\gdbuild\libgd.dll $(OutDir)libgd.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libcairo-2.dll $(OutDir)libcairo-2.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libpng12.dll $(OutDir)libpng12.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\zlib1.dll $(OutDir)zlib1.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libxml2.dll $(OutDir)libxml2.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\iconv.dll $(OutDir)iconv.dll</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -94,6 +104,16 @@
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(SolutionDir)windows\dependencies\libgd\gdbuild\libgd.dll $(OutDir)libgd.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libcairo-2.dll $(OutDir)libcairo-2.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libpng12.dll $(OutDir)libpng12.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\zlib1.dll $(OutDir)zlib1.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libxml2.dll $(OutDir)libxml2.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\iconv.dll $(OutDir)iconv.dll</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="gvdevice_gd.c" />
