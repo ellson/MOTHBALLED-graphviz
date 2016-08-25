@@ -19,34 +19,20 @@ install:
   # Only has to be installed when MSYS2 or Cygwin are enabled.
   #- cinst ghostscript
   # Compile libgd
-  - ps: >-
-      cd windows\dependencies\libgd
-
-      mkdir deps
-
-      cd deps
-
-      wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/freetype-2.6.2-vc14-x86.zip -O freetype.zip
-
-      wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/libiconv-1.14-vc14-x86.zip -O iconv.zip
-
-      wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/libjpeg-9b-vc14-x86.zip -O jpeg.zip
-
-      wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/libpng-1.6.21-vc14-x86.zip -O png.zip
-
-      wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/zlib-1.2.8-vc14-x86.zip -O zlib.zip
-
-      7z x freetype.zip
-
-      7z x iconv.zip
-
-      7z x jpeg.zip
-
-      7z x png.zip
-
-      7z x zlib.zip
-
-      cd ..
+  - cd windows\dependencies\libgd
+  - mkdir deps
+  - cd deps
+  - ps: wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/freetype-2.6.2-vc14-x86.zip -O freetype.zip
+  - ps: wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/libiconv-1.14-vc14-x86.zip -O iconv.zip
+  - ps: wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/libjpeg-9b-vc14-x86.zip -O jpeg.zip
+  - ps: wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/libpng-1.6.21-vc14-x86.zip -O png.zip
+  - ps: wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/zlib-1.2.8-vc14-x86.zip -O zlib.zip
+  - 7z x freetype.zip
+  - 7z x iconv.zip
+  - 7z x jpeg.zip
+  - 7z x png.zi
+  - 7z x zlib.zip
+  - cd ..
   - cmd: >-
       call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86
 
