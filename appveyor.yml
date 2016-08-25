@@ -30,7 +30,7 @@ install:
   - 7z x freetype.zip
   - 7z x iconv.zip
   - 7z x jpeg.zip
-  - 7z x png.zi
+  - 7z x png.zip
   - 7z x zlib.zip
   - cd ..
   - cmd: >-
