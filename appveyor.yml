@@ -58,7 +58,14 @@ build_script:
       cd $env:APPVEYOR_BUILD_FOLDER 
 
       if($env:compiler -eq "msbuild") {
-        msbuild /p:Configuration=Release
+        msbuild /p:Configuration=Release;
+        cp -R Graphviz graphviz-debug-information\Graphviz;
+        cp -R Graphviz graphviz-release\Graphviz;
+        rm graphviz-release\Graphviz\bin\*.pdb;
+        rm graphviz-release\Graphviz\bin\*.lastcodeanalysissucceeded;
+        rm graphviz-release\Graphviz\bin\*.iobj;
+        rm graphviz-release\Graphviz\bin\*.ipdb;
+        rm graphviz-release\Graphviz\bin\*.ilk;
       }
       
       if ($env:compiler -eq "msys2" -Or $env:compiler -eq "cygwin") {
@@ -87,5 +94,7 @@ build_script:
       }
 
 artifacts:
-  - path: Graphviz
+  - path: graphviz-release
     name: graphviz-windows
+  - path: graphviz-debug-information
+    name: graphviz-windows-debug-information
