@@ -59,7 +59,6 @@ build_script:
 
       if($env:compiler -eq "msbuild") {
         msbuild /p:Configuration=Release;
-        rm Release\Graphviz\bin\*.pdb;
         rm Release\Graphviz\bin\*.lastcodeanalysissucceeded;
         rm Release\Graphviz\bin\*.iobj;
         rm Release\Graphviz\bin\*.ipdb;
