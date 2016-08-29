@@ -59,13 +59,12 @@ build_script:
 
       if($env:compiler -eq "msbuild") {
         msbuild /p:Configuration=Release;
-        cp -R Graphviz graphviz-debug-information\Graphviz;
-        cp -R Graphviz graphviz-release\Graphviz;
-        rm graphviz-release\Graphviz\bin\*.pdb;
-        rm graphviz-release\Graphviz\bin\*.lastcodeanalysissucceeded;
-        rm graphviz-release\Graphviz\bin\*.iobj;
-        rm graphviz-release\Graphviz\bin\*.ipdb;
-        rm graphviz-release\Graphviz\bin\*.ilk;
+        rm Release\Graphviz\bin\*.pdb;
+        rm Release\Graphviz\bin\*.lastcodeanalysissucceeded;
+        rm Release\Graphviz\bin\*.iobj;
+        rm Release\Graphviz\bin\*.ipdb;
+        rm Release\Graphviz\bin\*.ilk;
+        msbuild /p:Configuration=Debug;
       }
       
       if ($env:compiler -eq "msys2" -Or $env:compiler -eq "cygwin") {
@@ -94,7 +93,7 @@ build_script:
       }
 
 artifacts:
-  - path: graphviz-release
+  - path: Release
     name: graphviz-windows
-  - path: graphviz-debug-information
-    name: graphviz-windows-debug-information
+  - path: Debug
+    name: graphviz-windows-debug
