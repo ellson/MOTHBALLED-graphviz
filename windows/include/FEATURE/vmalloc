@@ -1,17 +1,43 @@
 /* : : generated from ../../lib/vmalloc/features/vmalloc by iffe version 2004-08-11 : : */
 #ifndef _def_atexit_vmalloc
 #define _def_atexit_vmalloc	1
+
+#undef _sys_types
 #define _sys_types	1	/* #include <sys/types.h> ok */
+
+#undef _lib_atexit
 #define _lib_atexit	1	/* atexit() in default lib(s) */
+
+#undef _lib_getpagesize
 #define _lib_getpagesize	0	/* getpagesize() in default lib(s) */
+
+#undef _hdr_stdlib
 #define _hdr_stdlib	1	/* #include <stdlib.h> ok */
+
+#undef _sys_stat
 #define _sys_stat	1	/* #include <sys/stat.h> ok */
+
+#undef _hdr_time
 #define _hdr_time	1	/* #include <time.h> ok */
+
+#undef _sys_time
 #define _sys_time	1	/* #include <sys/time.h> ok */
+
+#undef _hdr_stddef
 #define _hdr_stddef	1	/* #include <stddef.h> ok */
+
+#undef _typ_ssize_t
 #define _typ_ssize_t	1	/* ssize_t is a type */
+
+#undef _hdr_malloc
 #define _hdr_malloc	1	/* #include <malloc.h> ok */
+
+#undef _hdr_malloc
 #define _lib_alloca	1	/* alloca exists */
+
+#undef _mal_alloca
 #define _mal_alloca	1	/* alloca is based on malloc() */
+
+#undef _stk_down
 #define _stk_down	1	/* stack grows downward */
 #endif
