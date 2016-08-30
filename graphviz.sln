@@ -169,6 +169,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "edgepaint", "cmd\edgepaint\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lab_gamut", "lib\edgepaint\lab_gamut.vcxproj", "{A1E78E36-1C11-4AB4-AB43-8BB7933075FB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ccomps", "cmd\tools\ccomps.vcxproj", "{1B030847-602F-4095-8FA2-E8B5CF793F60}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -411,6 +413,10 @@ Global
 		{A1E78E36-1C11-4AB4-AB43-8BB7933075FB}.Debug|Win32.Build.0 = Debug|Win32
 		{A1E78E36-1C11-4AB4-AB43-8BB7933075FB}.Release|Win32.ActiveCfg = Release|Win32
 		{A1E78E36-1C11-4AB4-AB43-8BB7933075FB}.Release|Win32.Build.0 = Release|Win32
+		{1B030847-602F-4095-8FA2-E8B5CF793F60}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1B030847-602F-4095-8FA2-E8B5CF793F60}.Debug|Win32.Build.0 = Debug|Win32
+		{1B030847-602F-4095-8FA2-E8B5CF793F60}.Release|Win32.ActiveCfg = Release|Win32
+		{1B030847-602F-4095-8FA2-E8B5CF793F60}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
