@@ -138,7 +138,7 @@ static arrowtype_t Arrowtypes[] = {
 static char *arrow_match_name_frag(char *name, arrowname_t * arrownames, int *flag)
 {
     arrowname_t *arrowname;
-    int namelen = 0;
+    size_t namelen = 0;
     char *rest = name;
 
     for (arrowname = arrownames; arrowname->name; arrowname++) {
