@@ -452,7 +452,7 @@ concat (char* s1, char* s2)
   char*  s;
   char   buf[BUFSIZ];
   char*  sym;
-  int    len = strlen(s1) + strlen(s2) + 1;
+  size_t len = strlen(s1) + strlen(s2) + 1;
 
   if (len <= BUFSIZ) sym = buf;
   else sym = (char*)malloc(len);
@@ -473,7 +473,7 @@ concatPort (char* s1, char* s2)
   char*  s;
   char   buf[BUFSIZ];
   char*  sym;
-  int    len = strlen(s1) + strlen(s2) + 2;  /* one more for ':' */
+  size_t len = strlen(s1) + strlen(s2) + 2;  /* one more for ':' */
 
   if (len <= BUFSIZ) sym = buf;
   else sym = (char*)malloc(len);
