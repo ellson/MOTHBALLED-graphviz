@@ -193,7 +193,7 @@ static Agrec_t *agmakeattrs(Agraph_t * context, void *obj)
 	sz = topdictsize(obj);
 	if (sz < MINATTR)
 	    sz = MINATTR;
-	rec->str = agalloc(agraphof(obj), sz * sizeof(char *));
+	rec->str = agalloc(agraphof(obj), (size_t) sz * sizeof(char *));
 	/* doesn't call agxset() so no obj-modified callbacks occur */
 	for (sym = (Agsym_t *) dtfirst(datadict); sym;
 	     sym = (Agsym_t *) dtnext(datadict, sym))
