@@ -221,7 +221,7 @@ static char *buildBindings(char *s1, char *s2)
  */
 {
     char *s3;
-    int l;
+    size_t l;
 
     if (s2[0] == '+') {
 	if (s1) {
@@ -413,7 +413,7 @@ static int
 vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
 	  char *argv[])
 {
-    int vargc, length, i, j, n, result;
+    int vargc, i, j, n, result;
     char c, *s, **vargv, vbuf[30];
     vgpane_t *vgp, **vgpp;
     point p, q, *ps;
@@ -439,7 +439,7 @@ vgpanecmd(ClientData clientData, Tcl_Interp * interp, int argc,
     vgp = *vgpp;
 
     c = argv[1][0];
-    length = strlen(argv[1]);
+    size_t length = strlen(argv[1]);
 
     if ((c == 'c') && (strncmp(argv[1], "coords", length) == 0)) {
 	if ((argc < 3)) {
