@@ -94,7 +94,7 @@ void *agbindrec(void *arg_obj, char *recname, unsigned int recsize,
     g = agraphof(obj);
     rec = aggetrec(obj, recname, FALSE);
     if ((rec == NIL(Agrec_t *)) && (recsize > 0)) {
-	rec = (Agrec_t *) agalloc(g, (int) recsize);
+	rec = (Agrec_t *) agalloc(g, recsize);
 	rec->name = agstrdup(g, recname);
 	switch (obj->tag.objtype) {
 	case AGRAPH:
@@ -200,11 +200,18 @@ void aginit(Agraph_t * g, int kind, char *rec_name, int arg_rec_size, int mtf)
     Agnode_t *n;
     Agedge_t *e;
     Agraph_t *s;
-	int		 rec_size;
-	int		 recur;	/* if recursive on subgraphs */
+    unsigned int rec_size;
+    int recur; /* if recursive on subgraphs */
 
-	if (arg_rec_size < 0) {recur = 1; rec_size = -arg_rec_size;}
-	else {recur = 0; rec_size= arg_rec_size;}
+    if (arg_rec_size < 0)
+    {
+        recur = 1;
+    }
+    else
+    {
+        recur = 0;
+    }
+    rec_size = (unsigned int) abs(arg_rec_size);
     switch (kind) {
     case AGRAPH:
 	agbindrec(g, rec_name, rec_size, mtf);
