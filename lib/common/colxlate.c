@@ -145,9 +145,9 @@ static int colorcmpf(const void *p0, const void *p1)
 char *canontoken(char *str)
 {
     static unsigned char *canon;
-    static int allocated;
+    static size_t allocated;
     unsigned char c, *p, *q;
-    int len;
+    size_t len;
 
     p = (unsigned char *) str;
     len = strlen(str);
@@ -162,7 +162,7 @@ char *canontoken(char *str)
 	/* if (isalnum(c) == FALSE) */
 	    /* continue; */
 	if (isupper(c))
-	    c = tolower(c);
+	    c = (unsigned char) tolower(c);
 	*q++ = c;
     }
     *q = '\0';
@@ -175,8 +175,8 @@ char *canontoken(char *str)
 static char* fullColor (char* prefix, char* str)
 {
     static char *fulls;
-    static int allocated;
-    int len = strlen (prefix) + strlen (str) + 3;
+    static size_t allocated;
+    size_t len = strlen(prefix) + strlen(str) + 3;
 
     if (len >= allocated) {
 	allocated = len + 10;
@@ -255,14 +255,15 @@ int colorxlate(char *str, gvcolor_t * color, color_type_t target_type)
 {
     static hsvrgbacolor_t *last;
     static unsigned char *canon;
-    static int allocated;
+    static size_t allocated;
     unsigned char *p, *q;
     hsvrgbacolor_t fake;
     unsigned char c;
     double H, S, V, A, R, G, B;
     double C, M, Y, K;
     unsigned int r, g, b, a;
-    int len, rc;
+    size_t len;
+    int rc;
 
     color->type = target_type;
 
