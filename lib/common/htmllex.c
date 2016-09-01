@@ -174,7 +174,7 @@ static int stylefn(htmldata_t * p, char *v)
     char* tk;
     char* buf = strdup (v);
     for (tk = strtok (buf, DELIM); tk; tk = strtok (NULL, DELIM)) {
-	c = toupper(*tk);
+	c = (char) toupper(*tk);
 	if (c == 'R') {
 	    if (!strcasecmp(tk + 1, "OUNDED")) p->style |= ROUNDED;
 	    else if (!strcasecmp(tk + 1, "ADIAL")) p->style |= RADIAL;
@@ -313,7 +313,7 @@ static int rowsfn(htmltbl_t * p, char *v)
 static int fixedsizefn(htmldata_t * p, char *v)
 {
     int rv = 0;
-    char c = toupper(*(unsigned char *) v);
+    char c = (char) toupper(*(unsigned char *) v);
     if ((c == 'T') && !strcasecmp(v + 1, "RUE"))
 	p->flags |= FIXED_FLAG;
     else if ((c != 'F') || strcasecmp(v + 1, "ALSE")) {
@@ -326,7 +326,7 @@ static int fixedsizefn(htmldata_t * p, char *v)
 static int valignfn(htmldata_t * p, char *v)
 {
     int rv = 0;
-    char c = toupper(*v);
+    char c = (char) toupper(*v);
     if ((c == 'B') && !strcasecmp(v + 1, "OTTOM"))
 	p->flags |= VALIGN_BOTTOM;
     else if ((c == 'T') && !strcasecmp(v + 1, "OP"))
@@ -341,7 +341,7 @@ static int valignfn(htmldata_t * p, char *v)
 static int halignfn(htmldata_t * p, char *v)
 {
     int rv = 0;
-    char c = toupper(*v);
+    char c = (char) toupper(*v);
     if ((c == 'L') && !strcasecmp(v + 1, "EFT"))
 	p->flags |= HALIGN_LEFT;
     else if ((c == 'R') && !strcasecmp(v + 1, "IGHT"))
@@ -356,7 +356,7 @@ static int halignfn(htmldata_t * p, char *v)
 static int cell_halignfn(htmldata_t * p, char *v)
 {
     int rv = 0;
-    char c = toupper(*v);
+    char c = (char) toupper(*v);
     if ((c == 'L') && !strcasecmp(v + 1, "EFT"))
 	p->flags |= HALIGN_LEFT;
     else if ((c == 'R') && !strcasecmp(v + 1, "IGHT"))
@@ -373,7 +373,7 @@ static int cell_halignfn(htmldata_t * p, char *v)
 static int balignfn(htmldata_t * p, char *v)
 {
     int rv = 0;
-    char c = toupper(*v);
+    char c = (char) toupper(*v);
     if ((c == 'L') && !strcasecmp(v + 1, "EFT"))
 	p->flags |= BALIGN_LEFT;
     else if ((c == 'R') && !strcasecmp(v + 1, "IGHT"))
@@ -470,7 +470,7 @@ static int scalefn(htmlimg_t * p, char *v)
 static int alignfn(int *p, char *v)
 {
     int rv = 0;
-    char c = toupper(*v);
+    char c = (char) toupper(*v);
     if ((c == 'R') && !strcasecmp(v + 1, "IGHT"))
 	*p = 'r';
     else if ((c == 'L') || !strcasecmp(v + 1, "EFT"))
