@@ -330,14 +330,11 @@ then
   CFLAGS="${CFLAGS} -Wmissing-include-dirs -Wswitch-default -Wfloat-equal -Wundef -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wconversion -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs"
 
  # if C99, then enable additional warnings
- if [test "${ac_cv_prog_cc_c99}" != "no"]
- then
-    # When enabling c99 on this codebase, this POSIX version should be defined
-    CFLAGS="${CFLAGS} -D_POSIX_C_SOURCE=200112L"
-
+# if [test "${ac_cv_prog_cc_c99}" != "no"]
+# then
     # FIXME - not available on centos[56]: gcc-4.1.2, gcc-4.4.7
-    # -Wdouble-promotion -Wtrampolines -Wlogical-op
-  fi
+    # CFLAGS="${CFLAGS} -Wdouble-promotion -Wtrampolines -Wlogical-op"
+#  fi
 fi
 # Workaround for native compilers
 #  HP  : http://bugs.gnome.org/db/31/3163.html
@@ -1151,7 +1148,7 @@ else
         if test -d /usr/include/php5; then
           PHP_INCLUDES="-I/usr/include/php5 -I/usr/include/php5/main -I/usr/include/php5/Zend -I/usr/include/php5/TSRM"
         else
-          PHP_INCLUDES="-I/usr/include/php -I/usr/include/php/main -I/usr/include/php/Zend -I/usr/include/php/TSRM"
+          PHP_INCLUDES="-I/usr/include/php -I/usr/include/php/main -I/usr/include/php/TSRM -I/usr/include/php/Zend -I/usr/include/php/ext -I/usr/include/php/ext/date/lib"
         fi
         PHP_INSTALL_DIR="/usr/lib${LIBPOSTFIX}/php/modules"
         PHP_INSTALL_DATADIR="/usr/share/php"

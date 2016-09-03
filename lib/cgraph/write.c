@@ -397,7 +397,7 @@ static int has_no_edges(Agraph_t * g, Agnode_t * n)
 }
 
 static int has_no_predecessor_below(Agraph_t * g, Agnode_t * n,
-				    unsigned long val)
+				    uint64_t val)
 {
     Agedge_t *e;
 
@@ -547,7 +547,7 @@ static int write_node(Agnode_t * n, iochan_t * ofile, Dict_t * d)
  * or has non-default attributes.
  */
 static int write_node_test(Agraph_t * g, Agnode_t * n,
-			   unsigned long pred_id)
+			   uint64_t pred_id)
 {
     if (NOT(node_in_subg(g, n)) && has_no_predecessor_below(g, n, pred_id)) {
 	if (has_no_edges(g, n) || not_default_attrs(g, n))

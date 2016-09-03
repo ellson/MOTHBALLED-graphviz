@@ -79,7 +79,7 @@ extern "C" {
  *    **** This macro provides no checks *****
  */
 #define TBL_ENTRY(hdrPtr, entryPtr) \
-    ((unsigned long) ((entryPtr - (hdrPtr->bodyPtr)) / (hdrPtr->entrySize)))
+    ((uint64_t) ((entryPtr - (hdrPtr->bodyPtr)) / (hdrPtr->entrySize)))
 
 /*
  * This macros to convert between pointers to the user and header area of
@@ -95,21 +95,21 @@ extern "C" {
  */
 
     void *tclhandleFreeIndex(tblHeader_pt headerPtr,
-			     unsigned long entryIdx);
+			     uint64_t entryIdx);
     void *tclhandleFree(tblHeader_pt headerPtr, char *handle);
     tblHeader_pt tclhandleInit(char *prefix, int entrySize,
 			       int initEntries);
     int tclhandleReset(tblHeader_pt tblHdrPtr, int initEntries);
     int tclhandleDestroy(tblHeader_pt tblHdrPtr);
     void *tclhandleXlateIndex(tblHeader_pt headerPtr,
-			      unsigned long entryIdx);
+			      uint64_t entryIdx);
     void *tclhandleXlate(tblHeader_pt headerPtr, char *handle);
     entryHeader_pt tclhandleAlloc(tblHeader_pt tblHdrPtr, char *handle,
-				  unsigned long *entryIdxPtr);
+				  uint64_t *entryIdxPtr);
     void tclhandleString(tblHeader_pt tblHdrPtr, char *handle,
-			 unsigned long entryIdx);
+			 uint64_t entryIdx);
     int tclhandleIndex(tblHeader_pt tblHdrPtr, char *handle,
-		       unsigned long *entryIdxPtr);
+		       uint64_t *entryIdxPtr);
 
 #ifdef __cplusplus
 }

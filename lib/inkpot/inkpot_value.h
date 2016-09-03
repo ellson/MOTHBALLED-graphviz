@@ -30,9 +30,9 @@ typedef enum {
 typedef struct inkpot_values_s {
 #if 0
 /* FIXME - not sure about all this ... */
-    unsigned long *         named[SZT_VTYPE];
-    unsigned long *       unnamed[SZT_VTYPE];
-    unsigned long *       palette[SZT_VTYPE];
+    uint64_t *         named[SZT_VTYPE];
+    uint64_t *       unnamed[SZT_VTYPE];
+    uint64_t *       palette[SZT_VTYPE];
     size_t          named_64_size[SZT_VTYPE];
     size_t          named_48_size[SZT_VTYPE];
     size_t          named_32_size[SZT_VTYPE];

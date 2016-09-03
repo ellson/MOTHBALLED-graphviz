@@ -67,7 +67,7 @@ Agnode_t *agprvnode(Agraph_t * g, Agnode_t * n)
 
 
 /* internal node constructor */
-static Agnode_t *newnode(Agraph_t * g, IDTYPE id, unsigned long seq)
+static Agnode_t *newnode(Agraph_t * g, IDTYPE id, uint64_t seq)
 {
     Agnode_t *n;
 
@@ -217,10 +217,10 @@ int agdelnode(Agraph_t * g, Agnode_t * n)
 static void dict_relabel(Agnode_t * n, void *arg)
 {
     Agraph_t *g;
-    unsigned long new_id;
+    uint64_t new_id;
 
     g = agraphof(n);
-    new_id = *(unsigned long *) arg;
+    new_id = *(uint64_t *) arg;
     dtdelete(g->n_id, n);	/* wrong, should be subrep */
     AGID(n) = new_id;
     dtinsert(g->n_id, n);	/* also wrong */

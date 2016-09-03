@@ -39,6 +39,7 @@
 #include                <unistd.h>
 #endif
 
+#include <inttypes.h>
 #include <assert.h>
 #include <math.h>
 #include <pathutil.h>
@@ -205,7 +206,7 @@ void triangle_callback(void *vgparg, point pqr[])
 
     if (vgp->triangle_cmd) {
 	sprintf(vbuf, "vgpane%lu",
-		(unsigned long) (((ubyte_pt) vgp - (vgpaneTable->bodyPtr))
+		(uint64_t) (((ubyte_pt) vgp - (vgpaneTable->bodyPtr))
 				 / (vgpaneTable->entrySize)));
 	expandPercentsEval(vgp->interp, vgp->triangle_cmd, vbuf, 3, pqr);
     }

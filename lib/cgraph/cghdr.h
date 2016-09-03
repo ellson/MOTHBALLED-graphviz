@@ -115,7 +115,7 @@ Dtcompar_f agdictorder(Agraph_t *, Dict_t *, Dtcompar_f);
 int agedgecmpf(Dict_t * d, void *arg_e0, void *arg_e1, Dtdisc_t * disc);
 int agnamecmpf(Dict_t * d, void *, void *, Dtdisc_t * disc);
 void agset_node_disc(Agraph_t * g, Dtdisc_t * disc);
-unsigned long agnextseq(Agraph_t * g, int objtype);
+uint64_t agnextseq(Agraph_t * g, int objtype);
 
 /* dict helper functions */
 Dict_t *agdtopen(Agraph_t * g, Dtdisc_t * disc, Dtmethod_t * method);

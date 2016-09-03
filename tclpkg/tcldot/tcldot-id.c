@@ -24,7 +24,7 @@ static void *myiddisc_open(Agraph_t *g, Agdisc_t *disc) {
     gctx->ictx = ictx;
     return (void *)gctx;
 }
-static long myiddisc_map(void *state, int objtype, char *str, unsigned long *id, int createflag) {
+static long myiddisc_map(void *state, int objtype, char *str, uint64_t *id, int createflag) {
     gctx_t *gctx = (gctx_t *)state;
     ictx_t *ictx = gctx->ictx;
     char *s;
@@ -34,7 +34,7 @@ static long myiddisc_map(void *state, int objtype, char *str, unsigned long *id,
             s = agstrdup(gctx->g, str);
         else
             s = agstrbind(gctx->g, str);
-        *id = (unsigned long) s;
+        *id = (uint64_t) s;
     } else {
         *id = ictx->ctr;  /* counter maintained in per-interp space, so that
 		ids are unique across all graphs in the interp */
@@ -43,13 +43,13 @@ static long myiddisc_map(void *state, int objtype, char *str, unsigned long *id,
     return TRUE;
 }
 /* we don't allow users to explicitly set IDs, either */
-static long myiddisc_alloc(void *state, int objtype, unsigned long request_id) {
+static long myiddisc_alloc(void *state, int objtype, uint64_t request_id) {
     NOTUSED(state);
     NOTUSED(objtype);
     NOTUSED(request_id);
     return FALSE;
 }
-static void myiddisc_free(void *state, int objtype, unsigned long id) {
+static void myiddisc_free(void *state, int objtype, uint64_t id) {
     gctx_t *gctx = (gctx_t *)state;
 
 /* FIXME no obj* available
@@ -67,7 +67,7 @@ static void myiddisc_free(void *state, int objtype, unsigned long id) {
     if (id % 2 == 0)
         agstrfree(gctx->g, (char *) id);
 }
-static char *myiddisc_print(void *state, int objtype, unsigned long id) {
+static char *myiddisc_print(void *state, int objtype, uint64_t id) {
     NOTUSED(state);
     NOTUSED(objtype);
     if (id % 2 == 0)

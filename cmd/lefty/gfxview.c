@@ -1581,7 +1581,7 @@ static void rectinsert (int ni, Tobj ko, Grect_t r) {
     gfxrect_t **rp;
     gfxrect_t *crp;
 
-    rp = &gfxnodes[ni].rect[(unsigned long) ko % LISTSIZE];
+    rp = &gfxnodes[ni].rect[(uint64_t) ko % LISTSIZE];
     for (crp = *rp; crp; crp = crp->next)
         if (crp->ko == ko) {
             crp->r.o.x = min (r.o.x, r.c.x);
@@ -1606,7 +1606,7 @@ static void rectmerge (int ni, Tobj ko, Grect_t r) {
     gfxrect_t **rp;
     gfxrect_t *crp;
 
-    rp = &gfxnodes[ni].rect[(unsigned long) ko % LISTSIZE];
+    rp = &gfxnodes[ni].rect[(uint64_t) ko % LISTSIZE];
     for (crp = *rp; crp; crp = crp->next)
         if (crp->ko == ko) {
             crp->r.o.x = min (crp->r.o.x, min (r.o.x, r.c.x));
@@ -1648,7 +1648,7 @@ static void rectdelete (int ni, Tobj ko) {
     gfxrect_t **rp;
     gfxrect_t *crp, *prp;
 
-    rp = &gfxnodes[ni].rect[(unsigned long) ko % LISTSIZE];
+    rp = &gfxnodes[ni].rect[(uint64_t) ko % LISTSIZE];
     for (crp = *rp, prp = NULL; crp; prp = crp, crp = crp->next)
         if (crp->ko == ko) {
             if (crp == *rp)
@@ -1683,7 +1683,7 @@ static void menuinsert (int ni, Tobj ko, long time, int mi) {
     gfxmenu_t **mp;
     gfxmenu_t *cmp;
 
-    mp = &gfxnodes[ni].menu[(unsigned long) ko % LISTSIZE];
+    mp = &gfxnodes[ni].menu[(uint64_t) ko % LISTSIZE];
     for (cmp = *mp; cmp; cmp = cmp->next)
         if (cmp->ko == ko) {
             cmp->time = time, cmp->mi = mi;
@@ -1703,7 +1703,7 @@ static int menufind (int ni, Tobj ko, long time) {
     gfxmenu_t **mp;
     gfxmenu_t *cmp;
 
-    mp = &gfxnodes[ni].menu[(unsigned long) ko % LISTSIZE];
+    mp = &gfxnodes[ni].menu[(uint64_t) ko % LISTSIZE];
     for (cmp = *mp; cmp; cmp = cmp->next)
         if (cmp->ko == ko && cmp->time == time)
             return cmp->mi;

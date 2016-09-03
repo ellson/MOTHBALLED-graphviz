@@ -523,7 +523,7 @@ Agedge_t *agopp(Agedge_t * e)
 static Agedge_t *agfindedge_by_name(Agraph_t * g, Agnode_t * t,
 				    Agnode_t * h, char *name)
 {
-    unsigned long id;
+    uint64_t id;
 
     if (agmapnametoid(agraphof(t), AGEDGE, name, &id, FALSE))
 	return agfindedge_by_id(g, t, h, id);

@@ -1325,7 +1325,7 @@ static void cluster_ranksetup(Agraph_t *ug)
 static int printfn(Dict_t *dict, void *arg, void *data)
 {
 	repkey_t *rk = arg;
-	printf("%lx=>%d,%lx\n",(long unsigned int)(rk->key),rk->val.type,(long unsigned int)(rk->val.p));
+	printf("%lx=>%d,%lx\n",(uint64_t)(rk->key),rk->val.type,(uint64_t)(rk->val.p));
 	return 0;
 }
 static void dumpdict(Agraph_t *model)

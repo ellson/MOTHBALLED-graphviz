@@ -24,6 +24,8 @@ extern "C" {
 #include <io.h>
 #endif
 
+#include <inttypes.h>
+
 /*	Common types, and macros for vmalloc functions.
 **
 **	Written by Kiem-Phong Vo, kpv@research.att.com, 01/16/94.
@@ -59,7 +61,7 @@ extern "C" {
 #undef BITS
 
     typedef unsigned char Vmuchar_t;
-    typedef unsigned long Vmulong_t;
+    typedef uint64_t Vmulong_t;
 
     typedef union _head_u Head_t;
     typedef union _body_u Body_t;

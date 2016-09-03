@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -44,7 +45,7 @@
 static FILE *outFile;
 static char *CmdName;
 static char **Files;
-static unsigned long id;
+static uint64_t id;
 
 #define streq(s,t) (!strcmp(s,t))
 
@@ -94,7 +95,7 @@ typedef struct {
 
 typedef struct Agnodeinfo_t {
     Agrec_t h;
-    unsigned long id;
+    uint64_t id;
 } Agnodeinfo_t;
 
 #define ID(n)  (((Agnodeinfo_t*)(n->base.data))->id)
@@ -615,7 +616,7 @@ emitEdgeAttrs (Agraph_t* G, Agedge_t* ep, FILE* outFile, int ix)
 static void 
 emitEdge (Agraph_t* G, Agedge_t* e, FILE* outFile)
 {
-    fprintf (outFile, "  edge [\n    id %lu\n", (unsigned long)AGSEQ(e));
+    fprintf (outFile, "  edge [\n    id %lu\n", (uint64_t)AGSEQ(e));
     fprintf (outFile, "    source %lu\n", ID(agtail(e)));
     fprintf (outFile, "    target %lu\n", ID(aghead(e)));
     emitEdgeAttrs (G, e, outFile, 2);

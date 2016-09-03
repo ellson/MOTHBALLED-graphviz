@@ -14,7 +14,8 @@
 #ifndef ATT_GRAPH_H
 #define ATT_GRAPH_H
 
-#include		"cdt.h"
+#include <inttypes.h>
+#include "cdt.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,17 +38,7 @@ extern "C" {
 #define NILedge			NIL(Agedge_t*)
 #define NILsym			NIL(Agsym_t*)
 
-#if 0
-// FIXME  -  I didn't understand this comment about Win64.
-//    - What is that loss?
-//    - Do we ever cast a pointer to an IDTYPE in graphviz?
-//    - Is uintptr_t is available on all architectures/compilers? 
-
-/* avoid loss when casting pointer to unsigned long on Win64 */
-typedef uintptr_t IDTYPE;
-#else
-typedef unsigned long IDTYPE;
-#endif
+typedef uint64_t IDTYPE;
 
 /* forward struct type declarations */
 typedef struct Agtag_s Agtag_t;
@@ -235,7 +226,7 @@ struct Agclos_s {
     Agdisc_t disc;		/* resource discipline functions */
     Agdstate_t state;		/* resource closures */
     Dict_t *strdict;		/* shared string dict */
-    unsigned long seq[3];	/* local object sequence number counter */
+    uint64_t seq[3];	/* local object sequence number counter */
     Agcbstack_t *cb;		/* user and system callback function stacks */
     unsigned char callbacks_enabled;	/* issue user callbacks or hold them? */
     Dict_t *lookup_by_name[3];

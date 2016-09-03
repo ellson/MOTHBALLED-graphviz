@@ -26,6 +26,7 @@ extern "C" {
 #define _EXPR_H
 
 #include <ast.h>
+#include <inttypes.h>
 
 #undef	RS	/* hp.pa <signal.h> grabs this!! */
 
@@ -159,7 +160,7 @@ struct Exref_s				/* . reference list		*/
 
 typedef struct Exbuf_s			/* sized buffer			*/
 {
-	unsigned long	size;		/* buffer size			*/
+	uint64_t	size;		/* buffer size			*/
 	char*		data;		/* buffer data			*/
 } Exbuf_t;
 
@@ -223,8 +224,8 @@ struct Exnode_s				/* expression tree node		*/
 
 struct Exdisc_s				/* discipline			*/
 {
-	unsigned long	version;	/* EX_VERSION			*/
-	unsigned long	flags;		/* EX_* flags			*/
+	uint64_t	version;	/* EX_VERSION			*/
+	uint64_t	flags;		/* EX_* flags			*/
 	Exid_t*		symbols;	/* static symbols		*/
 	char**		data;		/* compiled function arg data	*/
 	char*		lib;		/* pathfind() lib		*/
@@ -276,7 +277,7 @@ struct Exccdisc_s			/* excc() discipline		*/
 {
 	Sfio_t*		text;		/* text output stream		*/
 	char*		id;		/* symbol prefix		*/
-	unsigned long	flags;		/* EXCC_* flags			*/
+	uint64_t	flags;		/* EXCC_* flags			*/
 	int		(*ccf)(Excc_t*, Exnode_t*, Exid_t*, Exref_t*, Exnode_t*, Exccdisc_t*);
 					/* program generator function	*/
 };

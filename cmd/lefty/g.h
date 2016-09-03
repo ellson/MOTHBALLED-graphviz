@@ -177,7 +177,7 @@ typedef struct Gwattr_t {
         Grect_t r;
         Gcolor_t c;
         void *func;
-        unsigned long u;
+        uint64_t u;
     } u;
 } Gwattr_t;
 typedef struct Gwlist_t {
@@ -429,7 +429,7 @@ typedef struct Gwidget_t {
         Gtw_t *t;
         Gvw_t *v;
     } u;
-    unsigned long udata;
+    uint64_t udata;
 } Gwidget_t;
 #define WIDGETINCR 20
 #define WIDGETSIZE sizeof (Gwidget_t)
@@ -523,7 +523,7 @@ int Gawgetmode (Gwidget_t *);
 void Gawdefcoordscb (int, Gawdata_t *);
 
 Gwidget_t *newwidget (int);
-Gwidget_t *findwidget (unsigned long, int);
+Gwidget_t *findwidget (uint64_t, int);
 Gbitmap_t *newbitmap (void);
 void Gerr (char *, int, int, ...);
 

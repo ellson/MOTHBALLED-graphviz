@@ -21,12 +21,12 @@
  * reference counted strings.
  */
 
-static unsigned long HTML_BIT;	/* msbit of unsigned long */
-static unsigned long CNT_BITS;	/* complement of HTML_BIT */
+static uint64_t HTML_BIT;	/* msbit of uint64_t */
+static uint64_t CNT_BITS;	/* complement of HTML_BIT */
 
 typedef struct refstr_t {
     Dtlink_t link;
-    unsigned long refcnt;
+    uint64_t refcnt;
     char *s;
     char store[1];		/* this is actually a dynamic array */
 } refstr_t;

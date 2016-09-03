@@ -2,8 +2,6 @@
 ## Process this file with automake to produce Makefile.in
 
 pdfdir = $(pkgdatadir)/doc/pdf
-man_MANS = gvmap.1 cluster.1 gvmap.sh.1
-pdf_DATA = gvmap.1.pdf cluster.1.pdf gvmap.sh.1.pdf
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
@@ -20,6 +18,9 @@ if WITH_SFDP
 bin_PROGRAMS = gvmap cluster 
 dist_bin_SCRIPTS = gvmap.sh
 endif
+
+man_MANS = gvmap.1 cluster.1 gvmap.sh.1
+pdf_DATA = gvmap.1.pdf cluster.1.pdf gvmap.sh.1.pdf
 
 noinst_HEADERS = make_map.h power.h country_graph_coloring.h
 

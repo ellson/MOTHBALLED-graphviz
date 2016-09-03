@@ -354,7 +354,7 @@ int digitsQ(char *s){
 int validQ_int_string(char *to_convert, int *v){
   /* check to see if this is a string is integer */
   char *p = to_convert;
-  unsigned long val;
+  uint64_t val;
   errno = 0;
   val = strtoul(to_convert, &p, 10);
   if (errno != 0 ||// conversion failed (EINVAL, ERANGE)

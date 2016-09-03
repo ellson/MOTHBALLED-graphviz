@@ -791,18 +791,18 @@ found:
     return new;
 }
 
-Gwidget_t *findwidget (unsigned long w, int type) {
+Gwidget_t *findwidget (uint64_t w, int type) {
     int wi;
 
     if (type == G_WTYPESIZE) {
         for (wi = 0; wi < Gwidgetn; wi++)
-            if (Gwidgets[wi].inuse && (unsigned long) Gwidgets[wi].w == w)
+            if (Gwidgets[wi].inuse && (uint64_t) Gwidgets[wi].w == w)
                 return &Gwidgets[wi];
     } else {
         for (wi = 0; wi < Gwidgetn; wi++)
             if (
                 Gwidgets[wi].inuse && Gwidgets[wi].type == type &&
-                (unsigned long) Gwidgets[wi].w == w
+                (uint64_t) Gwidgets[wi].w == w
             )
                 return &Gwidgets[wi];
     }

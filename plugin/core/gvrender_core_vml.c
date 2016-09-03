@@ -18,6 +18,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include "macros.h"
 #include "const.h"
@@ -135,7 +136,7 @@ char *html_string(char *s)
     int len, pos = 0;
     int temp,cnt,remaining=0;
     char workstr[16];
-    long unsigned int charnum=0;
+    uint64_t charnum=0;
     unsigned char byte;
     unsigned char mask;
 
