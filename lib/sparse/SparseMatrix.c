@@ -2470,7 +2470,7 @@ SparseMatrix SparseMatrix_crop(SparseMatrix A, real epsilon){
 SparseMatrix SparseMatrix_copy(SparseMatrix A){
   SparseMatrix B;
   if (!A) return A;
-  B = SparseMatrix_new(A->m, A->n, A->nz, A->type, A->format);
+  B = SparseMatrix_general_new(A->m, A->n, A->nz, A->type, A->size, A->format);
   MEMCPY(B->ia, A->ia, sizeof(int)*((size_t)(A->m+1)));
   MEMCPY(B->ja, A->ja, sizeof(int)*((size_t)(A->ia[A->m])));
   if (A->a) MEMCPY(B->a, A->a, A->size*((size_t)A->nz));
