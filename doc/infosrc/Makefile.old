@@ -1,11 +1,15 @@
 #
 # Generator for on-line documentation.
 #
-# Required tools: cc, dot, awk, ksh, yacc, gs.
+# Required tools: cc, dot, awk, ksh, yacc, gs, python.
 #  gs and awk are used in ps_to_jpg.sh
 #  dot is used in mkarrows.sh, mkshapes.sh, mkstyles.sh, mktapers.sh, mksplines.sh
 #  ps_to_png.sh and other make rules rely on netpbm tools 
 #  and ps2raster, which is part of the GMT library.
+#  
+#  python is used to run jconvert.py, which converts the json schema
+#  graphviz_json_schema.json to html. This also relies on the python
+#  package json2html.
 #
 # The main product are 7 web pages:
 #    arrows.html  - arrow_grammar
@@ -83,7 +87,7 @@ A2GIF= aa_box.gif aa_lbox.gif aa_rbox.gif aa_obox.gif aa_olbox.gif aa_orbox.gif\
 GIF = $(SGIF) $(AGIF) $(MGIF) $(A2GIF) $(XGIF)
 DOTS = html2.gv html3.gv html4.gv tee.gv
 HTML = attrs.html colors.html command.html lang.html output.html shapes.html \
-       arrows.html
+       arrows.html schema.html
 INSTALL_FILES = $(HTML) $(DOTS) $(SGIF) $(AGIF) $(A2GIF) $(MGIF) $(XGIF) $(MJPG) $(MPNG)
 
 .SUFFIXES: .gv .gif .dot .png
@@ -136,8 +140,9 @@ colors.html : colors.1 colors.n ../../lib/common/color_names ../../lib/common/sv
 	cat colors.n >> colors.html
 	rm -rf colortmp
 
-output.html : output.1 output.2 outputs mkoutput.sh plugins.png
+output.html : output.1 output.2 outputs mkoutput.sh plugins.png jconvert.py
 	cat output.1 > output.html
+	./jconvert.py graphviz_json_schema.json schema.html
 	./mkoutput.sh < outputs >> output.html
 	cat output.2 >> output.html
 

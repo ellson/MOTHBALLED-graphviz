@@ -5,6 +5,13 @@
 <HTML VERSION="2.0">
 <HEAD>
 <TITLE>Output Formats</TITLE>
+<style>
+.jsontable {
+    border: 1px solid black;
+    background-color: beige;
+}
+</style>
+<script src="http://www.w3schools.com/lib/w3data.js"></script>
 </HEAD>
 <BODY BGCOLOR=white>
 <A NAME="top"></A>
@@ -74,6 +81,11 @@ formats need to be interpreted in this manner.
 <BR><A NAME=a:jpeg HREF=#d:jpeg>jpeg</A>
 <BR><A NAME=a:jpe HREF=#d:jpe>jpe</A>
 </TD><TD>JPEG</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:json HREF=#d:json>json</A>
+<BR><A NAME=a:json0 HREF=#d:json0>json0</A>
+<BR><A NAME=a:dot_json HREF=#d:dot_json>dot_json</A>
+<BR><A NAME=a:xdot_json HREF=#d:xdot_json>xdot_json</A>
+</TD><TD>Dot graph represented in JSON format</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:pct HREF=#d:pct>pct</A>
 <BR><A NAME=a:pict HREF=#d:pict>pict</A>
 </TD><TD>PICT</TD> </TR>
@@ -435,6 +447,35 @@ node or edge name.
 ,<DT><A NAME=d:jpeg HREF=#a:jpeg><STRONG>jpeg</STRONG></A>
 ,<DT><A NAME=d:jpe HREF=#a:jpe><STRONG>jpe</STRONG></A>
 <DD>Output JPEG compressed image files.
+
+<DT><A NAME=d:json HREF=#a:json><STRONG>json</STRONG></A>
+,<DT><A NAME=d:json0 HREF=#a:json0><STRONG>json0</STRONG></A>
+,<DT><A NAME=d:dot_json HREF=#a:dot_json><STRONG>dot_json</STRONG></A>
+,<DT><A NAME=d:xdot_json HREF=#a:xdot_json><STRONG>xdot_json</STRONG></A>
+<DD>These formats produce a JSON output encoding the DOT language.
+Using <B>json0</B> produces output in JSON format that contains the
+same information produced by  <A HREF=#d:dot>-Tdot</A>. 
+Using <B>json</B> produces output in JSON format that contains the
+same information produced by <A HREF=#d:xdot>-Txdot</A>. 
+Both of these assume the graph has been processed by one of the layout
+algorithms.
+The <B>dot_json</B> and <B>xdot_json</B> also produce JSON output similar to
+to <B>json0</B> and <B>json</B>, respectively, except they only use the
+content of the graph on input. In particular, they do not assume that the
+graph has been processed by any layout algorithm, and the only xdot information
+appearing in the output was in the original input file.
+<P>
+The output produced by these follows the json schema shown below.
+Note that the <b>objects</b> array has all of the subgraphs first,
+followed by all of the nodes. The <b>_gvid</b> value is the index of
+the subgraph or node in the <b>objects</b> array. This also holds
+true for the edges in the <b>objects</b> array. Note that this format
+allows clustered graphs, where edges can connect clusters as well as nodes.
+<div w3-include-html="schema.html"></div>
+<script>
+w3IncludeHTML();
+</script>
+
 
 <DT><A NAME=d:pct HREF=#a:pct><STRONG>pct</STRONG></A>
 ,<DT><A NAME=d:pict HREF=#a:pict><STRONG>pict</STRONG></A>

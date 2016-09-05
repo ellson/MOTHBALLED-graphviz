@@ -55,6 +55,31 @@ See <A HREF="https://en.wikipedia.org/wiki/Pic_language">Pic language</A>.
 :pov:POV-Ray markup language (prototype)
 Scene-description language for 3D modelling for the 
 <A HREF="http://www.povray.org/">Persistence of Vision Raytracer</A>.
+:json/json0/dot_json/xdot_json:Dot graph represented in JSON format
+These formats produce a JSON output encoding the DOT language.
+Using <B>json0</B> produces output in JSON format that contains the
+same information produced by  <A HREF=#d:dot>-Tdot</A>. 
+Using <B>json</B> produces output in JSON format that contains the
+same information produced by <A HREF=#d:xdot>-Txdot</A>. 
+Both of these assume the graph has been processed by one of the layout
+algorithms.
+The <B>dot_json</B> and <B>xdot_json</B> also produce JSON output similar to
+to <B>json0</B> and <B>json</B>, respectively, except they only use the
+content of the graph on input. In particular, they do not assume that the
+graph has been processed by any layout algorithm, and the only xdot information
+appearing in the output was in the original input file.
+<P>
+The output produced by these follows the json schema shown below.
+Note that the <b>objects</b> array has all of the subgraphs first,
+followed by all of the nodes. The <b>_gvid</b> value is the index of
+the subgraph or node in the <b>objects</b> array. This also holds
+true for the edges in the <b>objects</b> array. Note that this format
+allows clustered graphs, where edges can connect clusters as well as nodes.
+<div w3-include-html="schema.html"></div>
+<script>
+w3IncludeHTML();
+</script>
+
 :png:Portable Network Graphics format
 Produces output in the PNG (Portable Network Graphics) format.
 <P>

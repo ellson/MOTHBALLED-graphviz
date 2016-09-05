@@ -16,11 +16,13 @@
       "description": "True if the graph is strict"
     },
     "_subgraph_cnt": {
-      "type": "integer"
+      "type": "integer",
+      "description": "Number of subgraphs in the graph"
     },
     "objects": {
       "type": "array",
-      "items": { "$ref": "#/definitions/metanode" }
+      "items": { "$ref": "#/definitions/metanode" },
+      "description": "The graph's subgraphs followed by the graph's nodes"
     },
     "edges": {
       "type": "array",
