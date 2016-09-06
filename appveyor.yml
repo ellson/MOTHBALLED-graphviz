@@ -13,6 +13,10 @@ environment:
     #- compiler: msys2
     #- compiler: cygwin
 
+configuration:
+  - Debug
+  - Release
+
 install:
   # Retrieve submodules, dependencies are stored there.
   - git submodule update --init
@@ -58,12 +62,13 @@ build_script:
       cd $env:APPVEYOR_BUILD_FOLDER 
 
       if($env:compiler -eq "msbuild") {
-        msbuild /p:Configuration=Release;
-        rm Release\Graphviz\bin\*.lastcodeanalysissucceeded;
-        rm Release\Graphviz\bin\*.iobj;
-        rm Release\Graphviz\bin\*.ipdb;
-        rm Release\Graphviz\bin\*.ilk;
-        msbuild /p:Configuration=Debug;
+        msbuild /p:Configuration=$env:configuration;
+        if($env:configuration -eq "Release") {
+          rm Release\Graphviz\bin\*.lastcodeanalysissucceeded;
+          rm Release\Graphviz\bin\*.iobj;
+          rm Release\Graphviz\bin\*.ipdb;
+          rm Release\Graphviz\bin\*.ilk;
+        }
       }
       
       if ($env:compiler -eq "msys2" -Or $env:compiler -eq "cygwin") {
