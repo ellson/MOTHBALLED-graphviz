@@ -343,49 +343,49 @@ public:
 
     void retranslateUi(QDialog *Dialog)
     {
-        Dialog->setWindowTitle(QApplication::translate("Dialog", "Dialog", 0, QApplication::UnicodeUTF8));
-        actionCSettingsOK->setText(QApplication::translate("Dialog", "CSettingsOK", 0, QApplication::UnicodeUTF8));
-        label->setText(QApplication::translate("Dialog", "Layout Engine", 0, QApplication::UnicodeUTF8));
+        Dialog->setWindowTitle(QApplication::translate("Dialog", "Dialog", 0));
+        actionCSettingsOK->setText(QApplication::translate("Dialog", "CSettingsOK", 0));
+        label->setText(QApplication::translate("Dialog", "Layout Engine", 0));
         cbLayout->clear();
         cbLayout->insertItems(0, QStringList()
-         << QApplication::translate("Dialog", "dot", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("Dialog", "circo", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("Dialog", "fdp", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("Dialog", "neato", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("Dialog", "nop", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("Dialog", "nop1", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("Dialog", "nop2", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("Dialog", "osage", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("Dialog", "patchwork", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("Dialog", "sfdp", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("Dialog", "twopi", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("Dialog", "dot", 0)
+         << QApplication::translate("Dialog", "circo", 0)
+         << QApplication::translate("Dialog", "fdp", 0)
+         << QApplication::translate("Dialog", "neato", 0)
+         << QApplication::translate("Dialog", "nop", 0)
+         << QApplication::translate("Dialog", "nop1", 0)
+         << QApplication::translate("Dialog", "nop2", 0)
+         << QApplication::translate("Dialog", "osage", 0)
+         << QApplication::translate("Dialog", "patchwork", 0)
+         << QApplication::translate("Dialog", "sfdp", 0)
+         << QApplication::translate("Dialog", "twopi", 0)
         );
-        label_3->setText(QApplication::translate("Dialog", "Output File Type", 0, QApplication::UnicodeUTF8));
+        label_3->setText(QApplication::translate("Dialog", "Output File Type", 0));
         cbExtension->clear();
         cbExtension->insertItems(0, QStringList()
-         << QApplication::translate("Dialog", "png", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("Dialog", "jpg", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("Dialog", "ps", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("Dialog", "dot", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("Dialog", "png", 0)
+         << QApplication::translate("Dialog", "jpg", 0)
+         << QApplication::translate("Dialog", "ps", 0)
+         << QApplication::translate("Dialog", "dot", 0)
         );
-        label_2->setText(QApplication::translate("Dialog", "Output File Name", 0, QApplication::UnicodeUTF8));
-        pbOut->setText(QApplication::translate("Dialog", "...", 0, QApplication::UnicodeUTF8));
-        label_5->setText(QApplication::translate("Dialog", "Scope", 0, QApplication::UnicodeUTF8));
+        label_2->setText(QApplication::translate("Dialog", "Output File Name", 0));
+        pbOut->setText(QApplication::translate("Dialog", "...", 0));
+        label_5->setText(QApplication::translate("Dialog", "Scope", 0));
         cbScope->clear();
         cbScope->insertItems(0, QStringList()
-         << QApplication::translate("Dialog", "graph", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("Dialog", "node", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("Dialog", "edge", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("Dialog", "graph", 0)
+         << QApplication::translate("Dialog", "node", 0)
+         << QApplication::translate("Dialog", "edge", 0)
         );
-        label_6->setText(QApplication::translate("Dialog", "Name", 0, QApplication::UnicodeUTF8));
-        label_7->setText(QApplication::translate("Dialog", "Value", 0, QApplication::UnicodeUTF8));
-        pbAdd->setText(QApplication::translate("Dialog", "Add", 0, QApplication::UnicodeUTF8));
-        pbHelp->setText(QApplication::translate("Dialog", "Help", 0, QApplication::UnicodeUTF8));
-        pbNew->setText(QApplication::translate("Dialog", "clear", 0, QApplication::UnicodeUTF8));
-        pbOpen->setText(QApplication::translate("Dialog", "load", 0, QApplication::UnicodeUTF8));
-        pbSave->setText(QApplication::translate("Dialog", "save", 0, QApplication::UnicodeUTF8));
-        btnCancel->setText(QApplication::translate("Dialog", "Cancel", 0, QApplication::UnicodeUTF8));
-        btnOK->setText(QApplication::translate("Dialog", "OK", 0, QApplication::UnicodeUTF8));
+        label_6->setText(QApplication::translate("Dialog", "Name", 0));
+        label_7->setText(QApplication::translate("Dialog", "Value", 0));
+        pbAdd->setText(QApplication::translate("Dialog", "Add", 0));
+        pbHelp->setText(QApplication::translate("Dialog", "Help", 0));
+        pbNew->setText(QApplication::translate("Dialog", "clear", 0));
+        pbOpen->setText(QApplication::translate("Dialog", "load", 0));
+        pbSave->setText(QApplication::translate("Dialog", "save", 0));
+        btnCancel->setText(QApplication::translate("Dialog", "Cancel", 0));
+        btnOK->setText(QApplication::translate("Dialog", "OK", 0));
     } // retranslateUi
 
 };

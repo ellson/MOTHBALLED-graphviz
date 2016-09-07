@@ -39,16 +39,12 @@
     <_ProjectFileVersion>14.0.25123.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)Debug\Graphviz\bin\</OutDir>
-    <IntDir>Debug\</IntDir>
-    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Configuration)\Graphviz\bin\</OutDir>
     <CodeAnalysisRuleSet>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Team Tools\Static Analysis Tools\Rule Sets\NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)Graphviz\bin\</OutDir>
-    <IntDir>Release\</IntDir>
-    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Configuration)\Graphviz\bin\</OutDir>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
@@ -56,7 +52,7 @@
     <ClCompile>
       <AdditionalOptions>/D "_CRT_SECURE_NO_DEPRECATE" %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)windows\dependencies\freeglut\include;$(SolutionDir)windows\include;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/gvc;$(SolutionDir)windows\dependencies\GTK2\include\libglade-2.0;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/topfish;$(SolutionDir)windows\dependencies\GTK2\lib\gtkglext-1.0\include;$(SolutionDir)windows\dependencies\GTK2\include\gtkglext-1.0\;$(SolutionDir)windows\dependencies\GTK2\include\cairo;$(SolutionDir)windows\dependencies\GTK2\include\atk-1.0;$(SolutionDir)windows\dependencies\GTK2\lib\gtk-2.0\include\cairo;$(SolutionDir)windows\dependencies\GTK2\lib\gtk-2.0\include;$(SolutionDir)windows\dependencies\GTK2\include\gtk-2.0\;$(SolutionDir)/cmd/smyrna/gui;$(SolutionDir)/cmd/smyrna;$(SolutionDir);$(SolutionDir)/lib/glcomp;$(SolutionDir)windows\dependencies\GTK2\lib\glib-2.0\include;$(SolutionDir)windows\dependencies\GTK2\include\glib-2.0;$(SolutionDir)windows\dependencies\GTK2\include\pango-1.0\;$(SolutionDir)windows\dependencies\GTK2\include;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvpr;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;$(SolutionDir)/lib/glut/glut-3.7.6-bin;$(SolutionDir)/lib/xdot;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)gui;$(SolutionDir)windows\include;$(SolutionDir)windows\dependencies\freeglut\include;$(SolutionDir)windows\dependencies\GTK2\include\libglade-2.0;$(SolutionDir)windows\dependencies\GTK2\lib\gtkglext-1.0\include;$(SolutionDir)windows\dependencies\GTK2\include\gtkglext-1.0\;$(SolutionDir)windows\dependencies\GTK2\include\cairo;$(SolutionDir)windows\dependencies\GTK2\include\atk-1.0;$(SolutionDir)windows\dependencies\GTK2\lib\gtk-2.0\include\cairo;$(SolutionDir)windows\dependencies\GTK2\lib\gtk-2.0\include;$(SolutionDir)windows\dependencies\GTK2\include\gtk-2.0\;$(SolutionDir)windows\dependencies\GTK2\lib\glib-2.0\include;$(SolutionDir)windows\dependencies\GTK2\include\glib-2.0;$(SolutionDir)windows\dependencies\GTK2\include\pango-1.0\;$(SolutionDir)windows\dependencies\GTK2\include;$(SolutionDir);$(SolutionDir)lib\ast;$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\common;$(SolutionDir)lib\glcomp;$(SolutionDir)lib\gvpr;$(SolutionDir)lib\neatogen;$(SolutionDir)lib\sfio;$(SolutionDir)lib\topfish;$(SolutionDir)lib\xdot;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;HAVE_TRIANGLE;HAVE_CONFIG_H;HAVE_GTS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -64,40 +60,86 @@
       <PrecompiledHeader />
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <DisableSpecificWarnings>4995;4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
       <EnablePREfast>true</EnablePREfast>
     </ClCompile>
     <Link>
       <AdditionalDependencies>asprintf.lib;ast.lib;atk-1.0.lib;bz2.lib;libcairo-2.lib;cdt.lib;cgraph.lib;charset.lib;croco-0.6.lib;expr.lib;fontconfig.lib;freetype.lib;Gdi32.lib;gdk_pixbuf-2.0.lib;gdkglext-win32-1.0.lib;gdk-win32-2.0.lib;glade-2.0.lib;gladeui-1.lib;glcomp.lib;glib-2.0.lib;glu32.lib;gmodule-2.0.lib;gobject-2.0.lib;gsf-1.lib;gsf-win32-1.lib;gthread-2.0.lib;gtkglext-win32-1.0.lib;gtk-win32-2.0.lib;gvprlib.lib;iconv.lib;ingraphs.lib;intl.lib;jpeg.lib;libgtkglext-win32-1.0.dll.a;ltdl.lib;neatogen.lib;opengl32.lib;pango-1.0.lib;pangocairo-1.0.lib;pangoft2-1.0.lib;pangowin32-1.0.lib;popt.lib;rsvg-2.lib;sfio.lib;shlwapi.lib;tiff.lib;topfish.lib;User32.lib;vmalloc.lib;xdot.lib;xml2.lib;z.lib;gvc.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)windows\dependencies\freeglut\lib;$(SolutionDir)windows\dependencies\libtool\lib;$(SolutionDir)Debug\Graphviz\bin\;$(SolutionDir)windows\dependencies\GTK2\lib;C:\GnuWin32\lib;C:\Projects\graphviz2\lib\zlib-1.2.3\lib;C:\Projects\cairo_build\lib;C:\Projects\ATT\GTK\GTKTest2\lib;$(SolutionDir)windows\dependencies\GTK2GLExt\1.0\lib;$(SolutionDir)windows\dependencies\GTK2\2.0\bin;$(SolutionDir)windows\dependencies\GTK2\2.0\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\dependencies\freeglut\lib;$(SolutionDir)windows\dependencies\libtool\lib;$(SolutionDir)windows\dependencies\GTK2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(SolutionDir)windows\dependencies\GTK2\bin\libcairo-2.dll $(OutDir)libcairo-2.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libpng12.dll $(OutDir)libpng12.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\zlib1.dll $(OutDir)zlib1.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libxml2.dll $(OutDir)libxml2.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\iconv.dll $(OutDir)iconv.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libglib-2.0-0.dll $(OutDir)libglib-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libpango-1.0-0.dll $(OutDir)libpango-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangocairo-1.0-0.dll $(OutDir)libpangocairo-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libgobject-2.0-0.dll $(OutDir)libgobject-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\intl.dll $(OutDir)intl.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libgmodule-2.0-0.dll $(OutDir)libgmodule-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangoft2-1.0-0.dll $(OutDir)libpangoft2-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangowin32-1.0-0.dll $(OutDir)libpangowin32-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libgdkglext-win32-1.0-0.dll $(OutDir)libgdkglext-win32-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libgdk-win32-2.0-0.dll $(OutDir)libgdk-win32-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libgdk_pixbuf-2.0-0.dll $(OutDir)libgdk_pixbuf-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libglade-2.0-0.dll $(OutDir)libglade-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libatk-1.0-0.dll $(OutDir)libatk-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libgtk-win32-2.0-0.dll $(OutDir)libgtk-win32-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\freeglut\bin\freeglut.dll $(OutDir)freeglut.dll</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)windows\dependencies\freeglut\include;$(SolutionDir)windows\include;$(SolutionDir)/lib/expr;$(SolutionDir)/lib/vmalloc;$(SolutionDir)/lib/ast;$(SolutionDir)/lib/sfio;$(SolutionDir)/lib/gvc;$(SolutionDir)windows\dependencies\GTK2\include\libglade-2.0;$(SolutionDir)/lib/neatogen;$(SolutionDir)/lib/sparse;$(SolutionDir)/lib/topfish;$(SolutionDir)windows\dependencies\GTK2\lib\gtkglext-1.0\include;$(SolutionDir)windows\dependencies\GTK2\include\gtkglext-1.0\;$(SolutionDir)windows\dependencies\GTK2\include\cairo;$(SolutionDir)windows\dependencies\GTK2\include\atk-1.0;$(SolutionDir)windows\dependencies\GTK2\lib\gtk-2.0\include\cairo;$(SolutionDir)windows\dependencies\GTK2\lib\gtk-2.0\include;$(SolutionDir)windows\dependencies\GTK2\include\gtk-2.0\;$(SolutionDir)/cmd/smyrna/gui;$(SolutionDir)/cmd/smyrna;$(SolutionDir);$(SolutionDir)/lib/glcomp;$(SolutionDir)windows\dependencies\GTK2\lib\glib-2.0\include;$(SolutionDir)windows\dependencies\GTK2\include\glib-2.0;$(SolutionDir)windows\dependencies\GTK2\include\pango-1.0\;$(SolutionDir)windows\dependencies\GTK2\include;$(SolutionDir)/lib/common;$(SolutionDir)/lib/gvpr;$(SolutionDir)/lib/cdt;$(SolutionDir)/lib/cgraph;$(SolutionDir)/lib/glut/glut-3.7.6-bin;$(SolutionDir)/lib/xdot;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)gui;$(SolutionDir)windows\include;$(SolutionDir)windows\dependencies\freeglut\include;$(SolutionDir)windows\dependencies\GTK2\include\libglade-2.0;$(SolutionDir)windows\dependencies\GTK2\lib\gtkglext-1.0\include;$(SolutionDir)windows\dependencies\GTK2\include\gtkglext-1.0\;$(SolutionDir)windows\dependencies\GTK2\include\cairo;$(SolutionDir)windows\dependencies\GTK2\include\atk-1.0;$(SolutionDir)windows\dependencies\GTK2\lib\gtk-2.0\include\cairo;$(SolutionDir)windows\dependencies\GTK2\lib\gtk-2.0\include;$(SolutionDir)windows\dependencies\GTK2\include\gtk-2.0\;$(SolutionDir)windows\dependencies\GTK2\lib\glib-2.0\include;$(SolutionDir)windows\dependencies\GTK2\include\glib-2.0;$(SolutionDir)windows\dependencies\GTK2\include\pango-1.0\;$(SolutionDir)windows\dependencies\GTK2\include;$(SolutionDir);$(SolutionDir)lib\ast;$(SolutionDir)lib\cdt;$(SolutionDir)lib\cgraph;$(SolutionDir)lib\common;$(SolutionDir)lib\glcomp;$(SolutionDir)lib\gvpr;$(SolutionDir)lib\neatogen;$(SolutionDir)lib\sfio;$(SolutionDir)lib\topfish;$(SolutionDir)lib\xdot;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;HAVE_TRIANGLE;HAVE_CONFIG_H;HAVE_GTS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;WIN32_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>Level4</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <EnablePREfast>true</EnablePREfast>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalDependencies>asprintf.lib;ast.lib;atk-1.0.lib;bz2.lib;libcairo-2.lib;cdt.lib;cgraph.lib;charset.lib;croco-0.6.lib;expr.lib;fontconfig.lib;freetype.lib;Gdi32.lib;gdk_pixbuf-2.0.lib;gdkglext-win32-1.0.lib;gdk-win32-2.0.lib;glade-2.0.lib;gladeui-1.lib;glcomp.lib;glib-2.0.lib;glu32.lib;gmodule-2.0.lib;gobject-2.0.lib;gsf-1.lib;gsf-win32-1.lib;gthread-2.0.lib;gtkglext-win32-1.0.lib;gtk-win32-2.0.lib;gvprlib.lib;iconv.lib;ingraphs.lib;intl.lib;jpeg.lib;libgtkglext-win32-1.0.dll.a;ltdl.lib;neatogen.lib;opengl32.lib;pango-1.0.lib;pangocairo-1.0.lib;pangoft2-1.0.lib;pangowin32-1.0.lib;popt.lib;rsvg-2.lib;sfio.lib;shlwapi.lib;tiff.lib;topfish.lib;User32.lib;vmalloc.lib;xdot.lib;xml2.lib;z.lib;gvc.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)windows\dependencies\freeglut\lib;$(SolutionDir)windows\dependencies\libtool\lib;$(SolutionDir)Graphviz\bin\;$(SolutionDir)windows\dependencies\GTK2\lib;C:\GnuWin32\lib;C:\Projects\graphviz2\lib\zlib-1.2.3\lib;C:\Projects\cairo_build\lib;C:\Projects\ATT\GTK\GTKTest2\lib;$(SolutionDir)windows\dependencies\GTK2GLExt\1.0\lib;$(SolutionDir)windows\dependencies\GTK2\2.0\bin;$(SolutionDir)windows\dependencies\GTK2\2.0\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)windows\dependencies\freeglut\lib;$(SolutionDir)windows\dependencies\libtool\lib;$(SolutionDir)windows\dependencies\GTK2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>No</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(SolutionDir)windows\dependencies\GTK2\bin\libcairo-2.dll $(OutDir)libcairo-2.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libfontconfig-1.dll $(OutDir)libfontconfig-1.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libfreetype-6.dll $(OutDir)libfreetype-6.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libpng12.dll $(OutDir)libpng12.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\zlib1.dll $(OutDir)zlib1.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libxml2.dll $(OutDir)libxml2.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\iconv.dll $(OutDir)iconv.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libglib-2.0-0.dll $(OutDir)libglib-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libpango-1.0-0.dll $(OutDir)libpango-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangocairo-1.0-0.dll $(OutDir)libpangocairo-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libgobject-2.0-0.dll $(OutDir)libgobject-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\intl.dll $(OutDir)intl.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libgmodule-2.0-0.dll $(OutDir)libgmodule-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangoft2-1.0-0.dll $(OutDir)libpangoft2-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangowin32-1.0-0.dll $(OutDir)libpangowin32-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libgdkglext-win32-1.0-0.dll $(OutDir)libgdkglext-win32-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libgdk-win32-2.0-0.dll $(OutDir)libgdk-win32-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libgdk_pixbuf-2.0-0.dll $(OutDir)libgdk_pixbuf-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libglade-2.0-0.dll $(OutDir)libglade-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libatk-1.0-0.dll $(OutDir)libatk-1.0-0.dll
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libgtk-win32-2.0-0.dll $(OutDir)libgtk-win32-2.0-0.dll
+copy $(SolutionDir)windows\dependencies\freeglut\bin\freeglut.dll $(OutDir)freeglut.dll</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="btree.h" />

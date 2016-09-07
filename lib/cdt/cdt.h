@@ -27,6 +27,8 @@
 #endif
 
 #ifdef WIN32
+#undef __EXPORT__
+#undef __IMPORT__
 #define __EXPORT__  __declspec (dllexport)
 #define __IMPORT__	__declspec (dllimport)
 #endif

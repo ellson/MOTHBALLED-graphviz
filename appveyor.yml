@@ -13,40 +13,30 @@ environment:
     #- compiler: msys2
     #- compiler: cygwin
 
+configuration:
+  - Debug
+  - Release
+
 install:
   # Retrieve submodules, dependencies are stored there.
   - git submodule update --init
   # Only has to be installed when MSYS2 or Cygwin are enabled.
   #- cinst ghostscript
   # Compile libgd
-  - ps: >-
-      cd windows\dependencies\libgd
-
-      mkdir deps
-
-      cd deps
-
-      wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/freetype-2.6.2-vc14-x86.zip -O freetype.zip
-
-      wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/libiconv-1.14-vc14-x86.zip -O iconv.zip
-
-      wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/libjpeg-9b-vc14-x86.zip -O jpeg.zip
-
-      wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/libpng-1.6.21-vc14-x86.zip -O png.zip
-
-      wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/zlib-1.2.8-vc14-x86.zip -O zlib.zip
-
-      7z x freetype.zip
-
-      7z x iconv.zip
-
-      7z x jpeg.zip
-
-      7z x png.zip
-
-      7z x zlib.zip
-
-      cd ..
+  - cd windows\dependencies\libgd
+  - mkdir deps
+  - cd deps
+  - ps: wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/freetype-2.6.2-vc14-x86.zip -O freetype.zip
+  - ps: wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/libiconv-1.14-vc14-x86.zip -O iconv.zip
+  - ps: wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/libjpeg-9b-vc14-x86.zip -O jpeg.zip
+  - ps: wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/libpng-1.6.21-vc14-x86.zip -O png.zip
+  - ps: wget http://windows.php.net/downloads/php-sdk/deps/vc14/x86/zlib-1.2.8-vc14-x86.zip -O zlib.zip
+  - 7z x freetype.zip
+  - 7z x iconv.zip
+  - 7z x jpeg.zip
+  - 7z x png.zip
+  - 7z x zlib.zip
+  - cd ..
   - cmd: >-
       call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86
 
@@ -55,6 +45,11 @@ install:
       set WITH_BUILD=gdbuild
 
       nmake /f windows/Makefile.vc build_libs
+
+before_build:
+# This file is deleted to reduce noise in the build output. Otherwise several 
+# "target does not exist and will be ignored" messages are printed.
+- del "C:\Program Files (x86)\MSBuild\14.0\Microsoft.Common.targets\ImportAfter\Xamarin.Common.targets"
 
 build_script:
   # Ghostscript only has to be configured when MSYS2 or Cygwin are enabled.
@@ -67,7 +62,13 @@ build_script:
       cd $env:APPVEYOR_BUILD_FOLDER 
 
       if($env:compiler -eq "msbuild") {
-        msbuild /p:Configuration=Release
+        msbuild /p:Configuration=$env:configuration;
+        if($env:configuration -eq "Release") {
+          rm Release\Graphviz\bin\*.lastcodeanalysissucceeded;
+          rm Release\Graphviz\bin\*.iobj;
+          rm Release\Graphviz\bin\*.ipdb;
+          rm Release\Graphviz\bin\*.ilk;
+        }
       }
       
       if ($env:compiler -eq "msys2" -Or $env:compiler -eq "cygwin") {
@@ -96,5 +97,7 @@ build_script:
       }
 
 artifacts:
-  - path: Graphviz
+  - path: Release
     name: graphviz-windows
+  - path: Debug
+    name: graphviz-windows-debug

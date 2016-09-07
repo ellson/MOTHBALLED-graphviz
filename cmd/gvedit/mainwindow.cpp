@@ -289,7 +289,7 @@ void CMainWindow::setChild ()
 	msg.append("working on ");
 	msg.append(activeMdiChild()->currentFile());
 	msg.append("\n");
-	errorPipe((char *) msg.toAscii().constData());
+	errorPipe((char *) msg.toLatin1().constData());
 	prevChild = activeMdiChild();
     }
 }
