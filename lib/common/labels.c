@@ -62,7 +62,7 @@ void make_simple_label(GVC_t * gvc, textlabel_t * lp)
     line = lineptr = N_GNEW(strlen(p) + 1, char);
     *line = 0;
     while ((c = *p++)) {
-	byte = (unsigned int) c;
+	byte = (unsigned char) c;
 	/* wingraphviz allows a combination of ascii and big-5. The latter
          * is a two-byte encoding, with the first byte in 0xA1-0xFE, and
          * the second in 0x40-0x7e or 0xa1-0xfe. We assume that the input
@@ -292,10 +292,10 @@ static char *strdup_and_subst_obj0 (char *str, void *obj, int escBackslash)
     char *tp_str = "", *hp_str = "";
     char *g_str = "\\G", *n_str = "\\N", *e_str = "\\E",
 	*h_str = "\\H", *t_str = "\\T", *l_str = "\\L";
-    int g_len = 2, n_len = 2, e_len = 2,
+    size_t g_len = 2, n_len = 2, e_len = 2,
 	h_len = 2, t_len = 2, l_len = 2,
 	tp_len = 0, hp_len = 0;
-    int newlen = 0;
+    size_t newlen = 0;
     int isEdge = 0;
     textlabel_t *tl;
     port pt;

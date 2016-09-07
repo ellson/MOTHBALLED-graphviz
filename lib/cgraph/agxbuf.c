@@ -43,16 +43,16 @@ void agxbinit(agxbuf * xb, unsigned int hint, unsigned char *init)
  */
 int agxbmore(agxbuf * xb, size_t ssz)
 {
-    size_t cnt;			/* current no. of characters in buffer */
-    size_t size;		/* current buffer size */
-    size_t nsize;		/* new buffer size */
-    unsigned char *nbuf;	/* new buffer */
+    size_t cnt = 0;         /* current no. of characters in buffer */
+    size_t size = 0;        /* current buffer size */
+    size_t nsize = 0;       /* new buffer size */
+    unsigned char *nbuf;    /* new buffer */
 
-    size = xb->eptr - xb->buf;
+    size = (size_t) (xb->eptr - xb->buf);
     nsize = 2 * size;
-    if (size + (int)ssz > nsize)
+    if (size + ssz > nsize)
 	nsize = size + ssz;
-    cnt = xb->ptr - xb->buf;
+    cnt = (size_t) (xb->ptr - xb->buf);
     if (xb->dyna) {
 	nbuf = realloc(xb->buf, nsize);
     } else {
