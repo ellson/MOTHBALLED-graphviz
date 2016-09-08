@@ -25,13 +25,7 @@ install:
 
 script:
 - cd ${TRAVIS_BUILD_DIR}
-# Build and test code
-- ./autogen.sh
-- make
-- sudo make install
-- make check
-# Create source package to deploy
-- make dist
+- sudo ./ci/build_and_test.sh
 
 before_deploy:
 - export DEPLOYED_FILE=$(ls *.tar.gz)
