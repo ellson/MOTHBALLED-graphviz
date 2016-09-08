@@ -5,13 +5,7 @@
 **	Written by Kiem-Phong Vo (05/25/96)
 */
 
-#if __STD_C
 Dtmethod_t* dtmethod(Dt_t* dt, Dtmethod_t* meth)
-#else
-Dtmethod_t* dtmethod(dt, meth)
-Dt_t*		dt;
-Dtmethod_t*	meth;
-#endif
 {
 	reg Dtlink_t	*list, *r;
 	reg Dtdisc_t*	disc = dt->disc;

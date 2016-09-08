@@ -5,12 +5,7 @@
 **	Written by Kiem-Phong Vo (5/25/96).
 */
 
-#if __STD_C
 Dtlink_t* dtextract(reg Dt_t* dt)
-#else
-Dtlink_t* dtextract(dt)
-reg Dt_t*	dt;
-#endif
 {
 	reg Dtlink_t	*list, **s, **ends;
 

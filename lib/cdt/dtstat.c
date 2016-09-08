@@ -5,15 +5,7 @@
 **	Written by Kiem-Phong Vo (5/25/96)
 */
 
-#if __STD_C
 static void dttstat(Dtstat_t* ds, Dtlink_t* root, int depth, int* level)
-#else
-static void dttstat(ds,root,depth,level)
-Dtstat_t*	ds;
-Dtlink_t*	root;
-int		depth;
-int*		level;
-#endif
 {
 	if(root->left)
 		dttstat(ds,root->left,depth+1,level);
@@ -25,14 +17,7 @@ int*		level;
 		level[depth] += 1;
 }
 
-#if __STD_C
 static void dthstat(reg Dtdata_t* data, Dtstat_t* ds, reg int* count)
-#else
-static void dthstat(data, ds, count)
-reg Dtdata_t*	data;
-Dtstat_t*	ds;
-reg int*	count;
-#endif
 {
 	reg Dtlink_t*	t;
 	reg int		n, h;
@@ -51,14 +36,7 @@ reg int*	count;
 	}
 }
 
-#if __STD_C
 int dtstat(reg Dt_t* dt, Dtstat_t* ds, int all)
-#else
-int dtstat(dt, ds, all)
-reg Dt_t*	dt;
-Dtstat_t*	ds;
-int		all;
-#endif
 {
 	reg int		i;
 	static int	*Count, Size;

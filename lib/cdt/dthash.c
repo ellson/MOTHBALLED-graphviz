@@ -9,12 +9,7 @@
 */
 
 /* resize the hash table */
-#if __STD_C
 static void dthtab(Dt_t* dt)
-#else
-static void dthtab(dt)
-Dt_t*	dt;
-#endif
 {
 	reg Dtlink_t	*t, *r, *p, **s, **hs, **is, **olds;
 	int		n, k;
@@ -75,14 +70,7 @@ Dt_t*	dt;
 	}
 }
 
-#if __STD_C
 static Void_t* dthash(Dt_t* dt, reg Void_t* obj, int type)
-#else
-static Void_t* dthash(dt,obj,type)
-Dt_t*		dt;
-reg Void_t*	obj;
-int		type;
-#endif
 {
 	reg Dtlink_t	*t, *r = NULL, *p;
 	reg Void_t	*k, *key;

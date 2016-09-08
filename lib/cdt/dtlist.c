@@ -5,14 +5,7 @@
 **	Written by Kiem-Phong Vo (05/25/96)
 */
 
-#if __STD_C
 static Void_t* dtlist(reg Dt_t* dt, reg Void_t* obj, reg int type)
-#else
-static Void_t* dtlist(dt, obj, type)
-reg Dt_t*	dt;
-reg Void_t*	obj;
-reg int		type;
-#endif
 {
 	reg int		lk, sz, ky;
 	reg Dtcompar_f	cmpf;

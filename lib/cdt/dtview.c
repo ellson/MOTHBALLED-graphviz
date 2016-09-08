@@ -6,14 +6,7 @@
 */
 
 
-#if __STD_C
 static Void_t* dtvsearch(Dt_t* dt, reg Void_t* obj, reg int type)
-#else
-static Void_t* dtvsearch(dt,obj,type)
-Dt_t*		dt;
-reg Void_t*	obj;
-reg int		type;
-#endif
 {
 	Dt_t		*d, *p;
 	Void_t		*o, *n, *ok, *nk;
@@ -93,13 +86,7 @@ reg int		type;
 	}
 }
 
-#if __STD_C
 Dt_t* dtview(reg Dt_t* dt, reg Dt_t* view)
-#else
-Dt_t* dtview(dt,view)
-reg Dt_t*	dt;
-reg Dt_t*	view;
-#endif
 {
 	reg Dt_t*	d;
 

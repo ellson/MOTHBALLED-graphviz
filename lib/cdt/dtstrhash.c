@@ -13,14 +13,7 @@
 ** Written by Kiem-Phong Vo (02/28/03)
 */
 
-#if __STD_C
 uint dtstrhash(reg uint h, Void_t* args, reg int n)
-#else
-uint dtstrhash(h,args,n)
-reg uint	h;
-Void_t*		args;
-reg int		n;
-#endif
 {
 	reg unsigned char*	s = (unsigned char*)args;
 
