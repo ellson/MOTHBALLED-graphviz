@@ -31,7 +31,7 @@ edgepaint_LDADD = \
 	$(top_builddir)/lib/edgepaint/liblab_gamut.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(top_builddir)/lib/cdt/libcdt.la \
-	$(ANN_LIBS) -lstdc++ -lm
+	$(ANN_LIBS) -lm
 
 edgepaint.1.pdf: $(srcdir)/edgepaint.1
 	- @GROFF@ -e -Tps -man -t $(srcdir)/edgepaint.1 | @PS2PDF@ - - >edgepaint.1.pdf
