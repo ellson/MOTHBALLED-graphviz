@@ -198,7 +198,7 @@ static void gvrender_resolve_color(gvrender_features_t * features,
 	||
 	(bsearch
 	 (tok, features->knowncolors, features->sz_knowncolors,
-	  sizeof(char *), (__compar_fn_t) strcmp)) == NULL) {
+	  sizeof(char *), (int(*)(const void*, const void*)) strcmp)) == NULL) {
 	/* if tok was not found in known_colors */
 	rc = colorxlate(name, color, features->color_type);
 	if (rc != COLOR_OK) {
