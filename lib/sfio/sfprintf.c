@@ -18,12 +18,7 @@
 **	Written by Kiem-Phong Vo.
 */
 
-#if __STD_C
 int sfprintf(Sfio_t * f, const char *form, ...)
-#else
-int sfprintf(va_alist)
-va_dcl
-#endif
 {
     va_list args;
     reg int rv;
@@ -43,15 +38,7 @@ va_dcl
     return rv;
 }
 
-#if __STD_C
 int sfvsprintf(char *s, int n, const char *form, va_list args)
-#else
-int sfvsprintf(s, n, form, args)
-char *s;
-int n;
-char *form;
-va_list args;
-#endif
 {
     Sfio_t f;
     reg int rv;
@@ -75,12 +62,7 @@ va_list args;
     return rv;
 }
 
-#if __STD_C
 int sfsprintf(char *s, int n, const char *form, ...)
-#else
-int sfsprintf(va_alist)
-va_dcl
-#endif
 {
     va_list args;
     reg int rv;

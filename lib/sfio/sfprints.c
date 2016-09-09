@@ -20,12 +20,7 @@
 **	Written by Kiem-Phong Vo.
 */
 
-#if __STD_C
 char *sfprints(const char *form, ...)
-#else
-char *sfprints(va_alist)
-va_dcl
-#endif
 {
     va_list args;
     reg int rv;

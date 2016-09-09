@@ -18,13 +18,11 @@
 **	Written by Kiem-Phong Vo.
 */
 
-#if __STD_C
+/**
+ * @param f write a portable long to this stream
+ * @param v the value to be written
+ */
 int _sfputl(reg Sfio_t * f, Sflong_t v)
-#else
-int _sfputl(f, v)
-reg Sfio_t *f;			/* write a portable long to this stream */
-Sflong_t v;			/* the value to be written */
-#endif
 {
 #define N_ARRAY		(2*sizeof(Sflong_t))
     reg uchar *s, *ps;

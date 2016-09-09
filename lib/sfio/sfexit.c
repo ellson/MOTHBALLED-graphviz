@@ -25,12 +25,7 @@ int _AST_already_has_them;
 #if !_lib_atexit
 #if _lib_onexit
 
-#if __STD_C
 int atexit(void (*exitf) (void))
-#else
-int atexit(exitf)
-void (*exitf) ();
-#endif
 {
 #if _lib_onexit
     return onexit(exitf);
@@ -45,12 +40,7 @@ typedef struct _exit_s {
 } Exit_t;
 static Exit_t *Exit;
 
-#if __STD_C
 atexit(void (*exitf) (void))
-#else
-atexit(exitf)
-void (*exitf) ();
-#endif
 {
     Exit_t *e;
     int rv;
@@ -73,11 +63,7 @@ void (*exitf) ();
 
 #if _exit_cleanup
 /* since exit() calls _cleanup(), we only need to redefine _cleanup() */
-#if __STD_C
 _cleanup(void)
-#else
-_cleanup()
-#endif
 {
     Exit_t *e;
     for (e = Exit; e; e = e->next)
@@ -89,12 +75,7 @@ _cleanup()
 #else
 
 /* in this case, we have to redefine exit() itself */
-#if __STD_C
 exit(int type)
-#else
-exit(type)
-int type;
-#endif
 {
     Exit_t *e;
     for (e = Exit; e; e = e->next)
@@ -124,14 +105,7 @@ typedef struct _wait_ {
 static Waitpid_t *Wait;
 
 #ifndef WIN32
-#if __STD_C
 waitpid(int pid, int *status, int options)
-#else
-waitpid(pid, status, options)
-int pid;
-int *status;
-int options;
-#endif
 {
     int id, ps;
     Waitpid_t *w;

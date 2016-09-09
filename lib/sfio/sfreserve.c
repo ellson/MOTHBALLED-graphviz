@@ -18,14 +18,12 @@
 **	Written by Kiem-Phong Vo.
 */
 
-#if __STD_C
+/**
+ * @param f file to peek
+ * @param size size of peek
+ * @param type LOCKR: lock stream, LASTR: last record
+ */
 Void_t *sfreserve(reg Sfio_t * f, ssize_t size, int type)
-#else
-Void_t *sfreserve(f, size, type)
-reg Sfio_t *f;			/* file to peek */
-ssize_t size;			/* size of peek */
-int type;			/* LOCKR: lock stream, LASTR: last record */
-#endif
 {
     reg ssize_t n, sz;
     reg Sfrsrv_t *rsrv;

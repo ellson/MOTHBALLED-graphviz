@@ -17,16 +17,8 @@
 **
 **	Written by Kiem-Phong Vo.
 */
-#if __STD_C
 static int _uexcept(reg Sfio_t * f, reg int type, Void_t * val,
 		    reg Sfdisc_t * disc)
-#else
-static int _uexcept(f, type, val, disc)
-reg Sfio_t *f;
-reg int type;
-Void_t *val;
-reg Sfdisc_t *disc;
-#endif
 {
     NOTUSED(val);
 
@@ -41,13 +33,11 @@ reg Sfdisc_t *disc;
     return 1;
 }
 
-#if __STD_C
+/**
+ * @param f push back one byte to this stream
+ * @param c the value to be pushed back
+ */
 int sfungetc(reg Sfio_t * f, reg int c)
-#else
-int sfungetc(f, c)
-reg Sfio_t *f;			/* push back one byte to this stream */
-reg int c;			/* the value to be pushed back */
-#endif
 {
     reg Sfio_t *uf;
 

@@ -17,14 +17,13 @@
 **
 **	Written by Kiem-Phong Vo.
 */
-#if __STD_C
+/**
+ * @param f stream
+ * @param type type of event
+ * @param data associated data
+ * @param 
+ */
 int sfraise(Sfio_t * f, int type, Void_t * data)
-#else
-int sfraise(f, type, data)
-Sfio_t *f;			/* stream               */
-int type;			/* type of event        */
-Void_t *data;			/* associated data      */
-#endif
 {
     reg Sfdisc_t *disc, *next, *d;
     reg int local, rv;

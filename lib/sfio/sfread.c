@@ -18,14 +18,13 @@
 **	Written by Kiem-Phong Vo.
 */
 
-#if __STD_C
+/**
+ * @param f read from this stream
+ * @param buf buffer to read into
+ * @param n number of bytes to be read
+ * @param 
+ */
 ssize_t sfread(reg Sfio_t * f, Void_t * buf, reg size_t n)
-#else
-ssize_t sfread(f, buf, n)
-reg Sfio_t *f;			/* read from this stream.       */
-Void_t *buf;			/* buffer to read into          */
-reg size_t n;			/* number of bytes to be read.  */
-#endif
 {
     reg uchar *s, *begs;
     reg ssize_t r;

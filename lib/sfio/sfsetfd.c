@@ -18,13 +18,7 @@
 **	Written by Kiem-Phong Vo.
 */
 
-#if __STD_C
 static int _sfdup(reg int fd, reg int newfd)
-#else
-static int _sfdup(fd, newfd)
-reg int fd;
-reg int newfd;
-#endif
 {
     reg int dupfd;
 
@@ -47,13 +41,7 @@ reg int newfd;
 #endif
 }
 
-#if __STD_C
 int sfsetfd(reg Sfio_t * f, reg int newfd)
-#else
-int sfsetfd(f, newfd)
-reg Sfio_t *f;
-reg int newfd;
-#endif
 {
     reg int oldfd;
 

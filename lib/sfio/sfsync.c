@@ -19,11 +19,7 @@
 **	Written by Kiem-Phong Vo.
 */
 
-#if __STD_C
 static int _sfall(void)
-#else
-static int _sfall()
-#endif
 {
     reg Sfpool_t *p, *next;
     reg Sfio_t *f;
@@ -70,12 +66,10 @@ static int _sfall()
     return rv;
 }
 
-#if __STD_C
+/**
+ * @param f stream to be synchronized
+ */
 int sfsync(reg Sfio_t * f)
-#else
-int sfsync(f)
-reg Sfio_t *f;			/* stream to be synchronized */
-#endif
 {
     int local, rv, mode;
     Sfio_t *origf;

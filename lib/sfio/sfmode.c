@@ -45,11 +45,7 @@ typedef void (*Sfsignal_f) _ARG_((int));
 static int _Sfsigp = 0;		/* # of streams needing SIGPIPE protection */
 
 /* done at exiting time */
-#if __STD_C
 static void _sfcleanup(void)
-#else
-static void _sfcleanup()
-#endif
 {
     reg Sfpool_t *p;
     reg Sfio_t *f;
@@ -94,12 +90,7 @@ static void _sfcleanup()
 }
 
 /* put into discrete pool */
-#if __STD_C
 int _sfsetpool(Sfio_t * f)
-#else
-int _sfsetpool(f)
-Sfio_t *f;
-#endif
 {
     reg Sfpool_t *p;
     reg Sfio_t **array;
@@ -148,13 +139,7 @@ Sfio_t *f;
 }
 
 /* create an auxiliary buffer for sfgetr/sfreserve/sfputr */
-#if __STD_C
 Sfrsrv_t *_sfrsrv(reg Sfio_t * f, reg ssize_t size)
-#else
-Sfrsrv_t *_sfrsrv(f, size)
-reg Sfio_t *f;
-reg ssize_t size;
-#endif
 {
     Sfrsrv_t *rsrv, *rs;
 
@@ -182,26 +167,19 @@ reg ssize_t size;
 }
 
 #ifdef SIGPIPE
-#if __STD_C
 static void ignoresig(int sig)
-#else
-static void ignoresig(sig)
-int sig;
-#endif
 {
     signal(sig, ignoresig);
 }
 #endif
 
-#if __STD_C
+/**
+ * @param f
+ * @param fd
+ * @param pid
+ * @param stdio stdio popen() does not reset SIGPIPE handler
+ */
 int _sfpopen(reg Sfio_t * f, int fd, int pid, int stdio)
-#else
-int _sfpopen(f, fd, pid, stdio)
-reg Sfio_t *f;
-int fd;
-int pid;
-int stdio;			/* stdio popen() does not reset SIGPIPE handler */
-#endif
 {
     reg Sfproc_t *p;
 
@@ -233,12 +211,10 @@ int stdio;			/* stdio popen() does not reset SIGPIPE handler */
     return 0;
 }
 
-#if __STD_C
+/**
+ * @param f stream to close
+ */
 int _sfpclose(reg Sfio_t * f)
-#else
-int _sfpclose(f)
-reg Sfio_t *f;			/* stream to close */
-#endif
 {
     Sfproc_t *p;
     int pid, status;
@@ -287,13 +263,7 @@ reg Sfio_t *f;			/* stream to close */
     return status;
 }
 
-#if __STD_C
 static int _sfpmode(Sfio_t * f, int type)
-#else
-static int _sfpmode(f, type)
-Sfio_t *f;
-int type;
-#endif
 {
     Sfproc_t *p;
 
@@ -335,14 +305,12 @@ int type;
     return 0;
 }
 
-#if __STD_C
+/**
+ * @param f change r/w mode and sync file pointer for this stream
+ * @param wanted desired mode
+ * @param local a local call
+ */
 int _sfmode(reg Sfio_t * f, reg int wanted, reg int local)
-#else
-int _sfmode(f, wanted, local)
-reg Sfio_t *f;			/* change r/w mode and sync file pointer for this stream */
-reg int wanted;			/* desired mode */
-reg int local;			/* a local call */
-#endif
 {
     reg int n;
     Sfoff_t addr;

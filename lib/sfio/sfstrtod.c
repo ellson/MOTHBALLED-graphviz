@@ -24,12 +24,7 @@
 #define FPART		1	/* doing fractional part */
 #define EPART		2	/* doing exponent part */
 
-#if __STD_C
 static Sfdouble_t sfpow10(reg int n)
-#else
-static Sfdouble_t sfpow10(n)
-reg int n;
-#endif
 {
     Sfdouble_t dval;
 
@@ -63,13 +58,11 @@ reg int n;
     return dval;
 }
 
-#if __STD_C
+/**
+ * @param s string to convert
+ * @param retp to return the remainder of string
+ */
 Sfdouble_t _sfstrtod(reg const char *s, char **retp)
-#else
-Sfdouble_t _sfstrtod(s, retp)
-reg char *s;			/* string to convert */
-char **retp;			/* to return the remainder of string */
-#endif
 {
     reg int n, c, m;
     reg int mode, fexp, sign, expsign;

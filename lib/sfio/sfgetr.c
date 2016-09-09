@@ -19,14 +19,12 @@
 **	Written by Kiem-Phong Vo
 */
 
-#if __STD_C
+/**
+ * @param f stream to read from. r11 on vax
+ * @param rc record separator. r10 on Vax
+ * @param type
+ */
 char *sfgetr(reg Sfio_t * f, reg int rc, int type)
-#else
-char *sfgetr(f, rc, type)
-reg Sfio_t *f;			/* stream to read from. r11 on vax              */
-reg int rc;			/* record separator. r10 on Vax                 */
-int type;
-#endif
 {
     reg ssize_t n;
     reg uchar *s, *ends, *us;

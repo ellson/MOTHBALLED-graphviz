@@ -29,13 +29,11 @@
 	  return(rv); \
 	}
 
-#if __STD_C
+/**
+ * @param f1 base of stack
+ * @param f2 top of stack
+ */
 Sfio_t *sfstack(Sfio_t * f1, Sfio_t * f2)
-#else
-Sfio_t *sfstack(f1, f2)
-Sfio_t *f1;			/* base of stack        */
-Sfio_t *f2;			/* top of stack */
-#endif
 {
     reg int n;
     reg Sfio_t *rf;

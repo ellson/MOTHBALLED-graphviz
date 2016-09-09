@@ -18,12 +18,7 @@
 **	Written by Kiem-Phong Vo.
 */
 
-#if __STD_C
 int sfscanf(Sfio_t * f, const char *form, ...)
-#else
-int sfscanf(va_alist)
-va_dcl
-#endif
 {
     va_list args;
     reg int rv;
@@ -43,14 +38,7 @@ va_dcl
     return rv;
 }
 
-#if __STD_C
 int sfvsscanf(const char *s, const char *form, va_list args)
-#else
-int sfvsscanf(s, form, args)
-char *s;
-char *form;
-va_list args;
-#endif
 {
     Sfio_t f;
 
@@ -69,12 +57,7 @@ va_list args;
     return sfvscanf(&f, form, args);
 }
 
-#if __STD_C
 int sfsscanf(const char *s, const char *form, ...)
-#else
-int sfsscanf(va_alist)
-va_dcl
-#endif
 {
     va_list args;
     reg int rv;

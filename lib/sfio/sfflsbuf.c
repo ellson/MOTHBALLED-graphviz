@@ -19,13 +19,11 @@
 **	Written by Kiem-Phong Vo
 */
 
-#if __STD_C
+/**
+ * @param f write out the buffered content of this stream
+ * @param c if c>=0, c is also written out
+ */
 int _sfflsbuf(reg Sfio_t * f, reg int c)
-#else
-int _sfflsbuf(f, c)
-reg Sfio_t *f;			/* write out the buffered content of this stream */
-reg int c;			/* if c>=0, c is also written out */
-#endif
 {
     reg ssize_t n, w;
     reg uchar *data;

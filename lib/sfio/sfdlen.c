@@ -18,12 +18,7 @@
 **	Written by Kiem-Phong Vo
 */
 
-#if __STD_C
 int _sfdlen(Sfdouble_t v)
-#else
-int _sfdlen(v)
-Sfdouble_t v;
-#endif
 {
 #define N_ARRAY		(16*sizeof(Sfdouble_t))
     reg int n, w;

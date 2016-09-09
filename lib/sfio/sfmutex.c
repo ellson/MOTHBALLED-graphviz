@@ -19,13 +19,7 @@
 */
 
 /* the main locking/unlocking interface */
-#if __STD_C
 int sfmutex(Sfio_t * f, int type)
-#else
-int sfmutex(f, type)
-Sfio_t *f;
-int type;
-#endif
 {
 #if !vt_threaded
     return 0;

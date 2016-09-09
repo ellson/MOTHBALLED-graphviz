@@ -18,14 +18,7 @@
 **	Written by Kiem-Phong Vo.
 */
 
-#if __STD_C
 int sfset(reg Sfio_t * f, reg int flags, reg int set)
-#else
-int sfset(f, flags, set)
-reg Sfio_t *f;
-reg int flags;
-reg int set;
-#endif
 {
     reg int oflags;
 

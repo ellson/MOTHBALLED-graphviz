@@ -20,13 +20,11 @@
 
 #define MAXWIDTH	(int)(((uint)~0)>>1)	/* max amount to scan   */
 
-#if __STD_C
+/**
+ * @param form format string
+ * @param accept accepted characters are set to 1
+ */
 static char *setclass(reg char *form, reg char *accept)
-#else
-static char *setclass(form, accept)
-reg char *form;			/* format string                        */
-reg char *accept;		/* accepted characters are set to 1     */
-#endif
 {
     reg int fmt, c, yes;
 
@@ -59,13 +57,7 @@ reg char *accept;		/* accepted characters are set to 1     */
     return form;
 }
 
-#if __STD_C
 static void _sfbuf(Sfio_t * f, int *rs)
-#else
-static void _sfbuf(f, rs)
-Sfio_t *f;
-int *rs;
-#endif
 {
     if (f->next >= f->endb) {
 	if (*rs > 0) {		/* try peeking for a share stream if possible */
@@ -80,14 +72,12 @@ int *rs;
     }
 }
 
-#if __STD_C
+/**
+ * @param f file to be scanned
+ * @param form scanning format
+ * @param args
+ */
 int sfvscanf(Sfio_t * f, reg const char *form, va_list args)
-#else
-int sfvscanf(f, form, args)
-Sfio_t *f;			/* file to be scanned */
-reg char *form;			/* scanning format */
-va_list args;
-#endif
 {
     reg uchar *d, *endd, *data;
     reg int inp, shift, base, width;

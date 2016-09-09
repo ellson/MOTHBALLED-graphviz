@@ -18,12 +18,7 @@
 **	Written by Kiem-Phong Vo
 */
 
-#if __STD_C
 Sfdouble_t sfgetd(Sfio_t * f)
-#else
-Sfdouble_t sfgetd(f)
-Sfio_t *f;
-#endif
 {
     reg uchar *s, *ends, c;
     reg int p, sign, exp;
