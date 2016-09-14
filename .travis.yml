@@ -11,6 +11,13 @@ addons:
     - freeglut3-dev
     - colorgcc
 
+services:
+- docker
+
+env:
+- DOCKER_BUILD=FALSE
+- DOCKER_BUILD=TRUE
+
 install:
 # Enable colored gcc output
 - export CC=colorgcc
@@ -22,16 +29,13 @@ install:
 - cmake --build .
 - sudo make install
 - sudo ldconfig
-
+- cd ${TRAVIS_BUILD_DIR}
+- if [ ${DOCKER_BUILD} == "TRUE" ] ; then docker build -t centos7-build-env ci/centos7/ ; fi
+    
 script:
 - cd ${TRAVIS_BUILD_DIR}
-# Build and test code
-- ./autogen.sh
-- make
-- sudo make install
-- make check
-# Create source package to deploy
-- make dist
+- if [ ${DOCKER_BUILD} == "FALSE" ] ; then sudo ./ci/build_and_test.sh ; fi
+- if [ ${DOCKER_BUILD} == "TRUE" ] ; then docker run --rm -v `pwd`:/graphviz -w /graphviz -i -t centos7-build-env bash "ci/build_and_test.sh" ; fi
 
 before_deploy:
 - export DEPLOYED_FILE=$(ls *.tar.gz)
