@@ -36,7 +36,7 @@ libgvplugin_gdiplus_C_la_SOURCES = \
 libgvplugin_gdiplus_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@ -Wl,"$(PLATFORMSDKLIB)\GdiPlus.lib"
 nodist_libgvplugin_gdiplus_la_SOURCES = GdiPlus*.h
 libgvplugin_gdiplus_la_SOURCES = $(libgvplugin_gdiplus_C_la_SOURCES)
-libgvplugin_gdiplus_la_LIBADD = -lgdi32 -lole32 -luuid $(top_builddir)/lib/gvc/libgvc.la
+libgvplugin_gdiplus_la_LIBADD = -lgdi32 -lole32 -lstdc++ -luuid $(top_builddir)/lib/gvc/libgvc.la
 
 if WITH_WIN32
 libgvplugin_gdiplus_la_LDFLAGS += -no-undefined

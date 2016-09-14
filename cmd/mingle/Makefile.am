@@ -31,7 +31,7 @@ mingle_LDADD = \
 	$(top_builddir)/lib/common/libcommon_C.la \
 	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(top_builddir)/lib/cdt/libcdt.la \
-	$(ANN_LIBS) -lm
+	$(ANN_LIBS) -lstdc++ -lm 
 
 mingle.1.pdf: $(srcdir)/mingle.1
 	- @GROFF@ -e -Tps -man -t $(srcdir)/mingle.1 | @PS2PDF@ - - >mingle.1.pdf
