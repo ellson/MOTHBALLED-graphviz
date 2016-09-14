@@ -18,13 +18,7 @@
 **	Written by Kiem-Phong Vo, kpv@research.att.com, 01/16/94.
 */
 
-#if __STD_C
 static Void_t *lastalloc(Vmalloc_t * vm, size_t size)
-#else
-static Void_t *lastalloc(vm, size)
-Vmalloc_t *vm;
-size_t size;
-#endif
 {
     reg Block_t *tp, *next;
     reg Seg_t *seg, *last;
@@ -84,13 +78,7 @@ size_t size;
     return (Void_t *) tp;
 }
 
-#if __STD_C
 static int lastfree(Vmalloc_t * vm, reg Void_t * data)
-#else
-static int lastfree(vm, data)
-Vmalloc_t *vm;
-reg Void_t *data;
-#endif
 {
     reg Seg_t *seg;
     reg Block_t *fp;
@@ -134,16 +122,8 @@ reg Void_t *data;
     return 0;
 }
 
-#if __STD_C
 static Void_t *lastresize(Vmalloc_t * vm, reg Void_t * data, size_t size,
 			  int type)
-#else
-static Void_t *lastresize(vm, data, size, type)
-Vmalloc_t *vm;
-reg Void_t *data;
-size_t size;
-int type;
-#endif
 {
     reg Block_t *tp;
     reg Seg_t *seg;
@@ -281,13 +261,7 @@ int type;
 }
 
 
-#if __STD_C
 static long lastaddr(Vmalloc_t * vm, Void_t * addr)
-#else
-static long lastaddr(vm, addr)
-Vmalloc_t *vm;
-Void_t *addr;
-#endif
 {
     reg Vmdata_t *vd = vm->data;
 
@@ -300,13 +274,7 @@ Void_t *addr;
 	return (Vmuchar_t *) addr - (Vmuchar_t *) vd->free;
 }
 
-#if __STD_C
 static long lastsize(Vmalloc_t * vm, Void_t * addr)
-#else
-static long lastsize(vm, addr)
-Vmalloc_t *vm;
-Void_t *addr;
-#endif
 {
     reg Vmdata_t *vd = vm->data;
 
@@ -321,12 +289,7 @@ Void_t *addr;
 	    sizeof(Head_t);
 }
 
-#if __STD_C
 static int lastcompact(Vmalloc_t * vm)
-#else
-static int lastcompact(vm)
-Vmalloc_t *vm;
-#endif
 {
     reg Block_t *fp;
     reg Seg_t *seg, *next;
@@ -362,14 +325,7 @@ Vmalloc_t *vm;
     return 0;
 }
 
-#if __STD_C
 static Void_t *lastalign(Vmalloc_t * vm, size_t size, size_t align)
-#else
-static Void_t *lastalign(vm, size, align)
-Vmalloc_t *vm;
-size_t size;
-size_t align;
-#endif
 {
     reg Vmuchar_t *data;
     reg size_t s, orgsize = 0, orgalign = 0;

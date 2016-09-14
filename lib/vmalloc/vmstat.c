@@ -18,13 +18,7 @@
 **	Written by Kiem-Phong Vo, kpv@research.att.com, 01/16/94.
 */
 
-#if __STD_C
 int vmstat(Vmalloc_t * vm, Vmstat_t * st)
-#else
-int vmstat(vm, st)
-Vmalloc_t *vm;
-Vmstat_t *st;
-#endif
 {
     reg Seg_t *seg;
     reg Block_t *b, *endb;

@@ -23,16 +23,15 @@ static char *Version = "\n@(#)Vmalloc (AT&T Labs - kpv) 1999-08-05\0\n";
 **	Written by Kiem-Phong Vo, kpv@research.att.com, 01/16/94.
 */
 
-/* Get more memory for a region */
-#if __STD_C
+/**
+ * Get more memory for a region
+ *
+ * @param vm region to increase in size
+ * @param size desired amount of space
+ * @param searchf tree search function
+ */
 static Block_t *vmextend(reg Vmalloc_t * vm, size_t size,
 			 Vmsearch_f searchf)
-#else
-static Block_t *vmextend(vm, size, searchf)
-reg Vmalloc_t *vm;		/* region to increase in size   */
-size_t size;			/* desired amount of space      */
-Vmsearch_f searchf;		/* tree search function         */
-#endif
 {
     reg size_t s;
     reg Seg_t *seg;
@@ -185,16 +184,15 @@ Vmsearch_f searchf;		/* tree search function         */
     return bp;
 }
 
-/* Truncate a segment if possible */
-#if __STD_C
+/**
+ * Truncate a segment if possible
+ *
+ * @param vm containing region
+ * @param seg the one to be truncated
+ * @param size amount of free space
+ * @param exact amount given was exact
+ */
 static int vmtruncate(Vmalloc_t * vm, Seg_t * seg, size_t size, int exact)
-#else
-static int vmtruncate(vm, seg, size, exact)
-Vmalloc_t *vm;			/* containing region            */
-Seg_t *seg;			/* the one to be truncated      */
-size_t size;			/* amount of free space         */
-int exact;			/* amount given was exact       */
-#endif
 {
     reg Void_t *caddr;
     reg Seg_t *last;

@@ -17,17 +17,15 @@
 **
 **	Written by Kiem-Phong Vo, kpv@research.att.com, 01/16/94.
 */
-#if __STD_C
+/**
+ * @param vm region doing allocation from
+ * @param caddr current low address
+ * @param csize current size
+ * @param nsize new size
+ * @param disc discipline structure
+ */
 static Void_t *heapmem(Vmalloc_t * vm, Void_t * caddr,
 		       size_t csize, size_t nsize, Vmdisc_t * disc)
-#else
-static Void_t *heapmem(vm, caddr, csize, nsize, disc)
-Vmalloc_t *vm;			/* region doing allocation from         */
-Void_t *caddr;			/* current low address                  */
-size_t csize;			/* current size                         */
-size_t nsize;			/* new size                             */
-Vmdisc_t *disc;			/* discipline structure                 */
-#endif
 {
     NOTUSED(vm);
     NOTUSED(disc);

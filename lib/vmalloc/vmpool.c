@@ -24,13 +24,7 @@
 **	Written by Kiem-Phong Vo, kpv@research.att.com, 01/16/94.
 */
 
-#if __STD_C
 static Void_t *poolalloc(Vmalloc_t * vm, reg size_t size)
-#else
-static Void_t *poolalloc(vm, size)
-Vmalloc_t *vm;
-reg size_t size;
-#endif
 {
     reg Vmdata_t *vd = vm->data;
     reg Block_t *tp, *next;
@@ -103,13 +97,7 @@ reg size_t size;
     return (Void_t *) tp;
 }
 
-#if __STD_C
 static long pooladdr(Vmalloc_t * vm, reg Void_t * addr)
-#else
-static long pooladdr(vm, addr)
-Vmalloc_t *vm;
-reg Void_t *addr;
-#endif
 {
     reg Block_t *bp, *tp;
     reg Vmuchar_t *laddr, *baddr;
@@ -153,13 +141,7 @@ reg Void_t *addr;
     return offset;
 }
 
-#if __STD_C
 static int poolfree(reg Vmalloc_t * vm, reg Void_t * data)
-#else
-static int poolfree(vm, data)
-reg Vmalloc_t *vm;
-reg Void_t *data;
-#endif
 {
     reg Block_t *bp;
     reg Vmdata_t *vd = vm->data;
@@ -195,16 +177,8 @@ reg Void_t *data;
     return 0;
 }
 
-#if __STD_C
 static Void_t *poolresize(Vmalloc_t * vm, Void_t * data, size_t size,
 			  int type)
-#else
-static Void_t *poolresize(vm, data, size, type)
-Vmalloc_t *vm;
-Void_t *data;
-size_t size;
-int type;
-#endif
 {
     reg Vmdata_t *vd = vm->data;
 
@@ -244,23 +218,12 @@ int type;
     return data;
 }
 
-#if __STD_C
 static long poolsize(Vmalloc_t * vm, Void_t * addr)
-#else
-static long poolsize(vm, addr)
-Vmalloc_t *vm;
-Void_t *addr;
-#endif
 {
     return pooladdr(vm, addr) == 0 ? (long) vm->data->pool : -1L;
 }
 
-#if __STD_C
 static int poolcompact(Vmalloc_t * vm)
-#else
-static int poolcompact(vm)
-Vmalloc_t *vm;
-#endif
 {
     reg Block_t *fp;
     reg Seg_t *seg, *next;
@@ -296,14 +259,7 @@ Vmalloc_t *vm;
     return 0;
 }
 
-#if __STD_C
 static Void_t *poolalign(Vmalloc_t * vm, size_t size, size_t align)
-#else
-static Void_t *poolalign(vm, size, align)
-Vmalloc_t *vm;
-size_t size;
-size_t align;
-#endif
 {
     NOTUSED(vm);
     NOTUSED(size);
