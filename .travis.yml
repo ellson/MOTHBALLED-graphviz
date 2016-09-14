@@ -40,6 +40,8 @@ script:
 before_deploy:
 - export DEPLOYED_FILE=$(ls *.tar.gz)
 - echo "deploying ${DEPLOYED_FILE} to GitHub releases"
+- sudo chown travis ${DEPLOYED_FILE}
+
 deploy:
   provider: releases
   api_key:
@@ -48,3 +50,4 @@ deploy:
   file: "${DEPLOYED_FILE}"
   on:
     repo: ellson/graphviz
+    condition: ${DOCKER_BUILD} == "FALSE"
