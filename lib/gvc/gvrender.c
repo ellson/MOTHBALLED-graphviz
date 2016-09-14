@@ -185,11 +185,6 @@ pointf *gvrender_ptf_A(GVJ_t * job, pointf * af, pointf * AF, int n)
     return AF;
 }
 
-static int gvrender_comparestr(const void *s1, const void *s2)
-{
-    return strcmp(*(char**)s1, *(char**)s2);
-}
-
 static void gvrender_resolve_color(gvrender_features_t * features,
 				   char *name, gvcolor_t * color)
 {
@@ -202,8 +197,8 @@ static void gvrender_resolve_color(gvrender_features_t * features,
     if (!features->knowncolors
 	||
 	(bsearch
-	 (&tok, features->knowncolors, features->sz_knowncolors,
-	  sizeof(char *), gvrender_comparestr)) == NULL) {
+	 (tok, features->knowncolors, features->sz_knowncolors,
+	  sizeof(char *), (int(*)(const void*, const void*)) strcmp)) == NULL) {
 	/* if tok was not found in known_colors */
 	rc = colorxlate(name, color, features->color_type);
 	if (rc != COLOR_OK) {
