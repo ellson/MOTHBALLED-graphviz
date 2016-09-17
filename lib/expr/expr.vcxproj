@@ -63,6 +63,13 @@
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Lib />
+    <PreBuildEvent>
+      <Command>"%BISON%" -dy exparse.y -o exparse-intermediate.c
+"%SED%" "s/yy/ex/g" &lt; exparse-intermediate.c | "%SED%" "s/YY/EX/g" &gt; exparse.c
+"%SED%" "s/yy/ex/g" &lt; exparse-intermediate.h | "%SED%" "s/YY/EX/g" &gt; exparse.h
+del exparse-intermediate.c
+del exparse-intermediate.h</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -75,15 +82,23 @@
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Lib />
+    <PreBuildEvent>
+      <Command>"%BISON%" -dy exparse.y -o exparse-intermediate.c
+"%SED%" "s/yy/ex/g" &lt; exparse-intermediate.c | "%SED%" "s/YY/EX/g" &gt; exparse.c
+"%SED%" "s/yy/ex/g" &lt; exparse-intermediate.h | "%SED%" "s/YY/EX/g" &gt; exparse.h
+del exparse-intermediate.c
+del exparse-intermediate.h</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="exgram.h" />
     <ClInclude Include="exlib.h" />
     <ClInclude Include="exop.h" />
+    <ClInclude Include="exparse.h" />
     <ClInclude Include="expr.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\windows\exparse.c" />
+    <ClCompile Include="exparse.c" />
     <ClCompile Include="excc.c" />
     <ClCompile Include="excontext.c" />
     <ClCompile Include="exdata.c" />
