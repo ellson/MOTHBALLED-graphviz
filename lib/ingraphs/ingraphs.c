@@ -215,9 +215,7 @@ char *fileName(ingraph_state * sp)
 	return "<stdin>";
 }
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #ifndef HAVE_GETOPT_DECL
 /*

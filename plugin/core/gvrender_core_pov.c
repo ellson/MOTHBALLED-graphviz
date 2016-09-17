@@ -16,10 +16,8 @@
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
 
-#ifdef HAVE_CONFIG_H
 #define _GNU_SOURCE
 #include "config.h"
-#endif
 
 #include <stdarg.h>
 #include <stdlib.h>

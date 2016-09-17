@@ -61,7 +61,7 @@
       <AdditionalOptions>-Zm200 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\..\..\Qt\4.8.3\include\QtCore;..\..\..\..\Qt\4.8.3\include\QtGui;..\..\..\..\Qt\4.8.3\include;..\..\lib\gvc;..\..\lib\common;..\..\lib\pathplan;..\..\lib\cgraph;..\..\lib\cdt;..\..;..\..\..\..\Qt\4.8.3\include\ActiveQt;debug;..\..\..\..\Qt\4.8.3\mkspecs\win32-msvc2008;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;HAVE_CONFIG_H;QT_DLL;QT_GUI_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_DLL;QT_GUI_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -77,7 +77,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;HAVE_CONFIG_H;QT_DLL;QT_GUI_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_DLL;QT_GUI_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type=%27win32%27 name=%27Microsoft.Windows.Common-Controls%27 version=%276.0.0.0%27 publicKeyToken=%276595b64144ccf1df%27 language=%27*%27 processorArchitecture=%27*%27" %(AdditionalOptions)</AdditionalOptions>
@@ -100,7 +100,7 @@
       <AdditionalOptions>-Zm200 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
       <Optimization>MaxSpeed</Optimization>
       <AdditionalIncludeDirectories>..\..\..\..\Qt\4.8.3\include\QtCore;..\..\..\..\Qt\4.8.3\include\QtGui;..\..\..\..\Qt\4.8.3\include;..\..\lib\gvc;..\..\lib\common;..\..\lib\pathplan;..\..\lib\cgraph;..\..\lib\cdt;..\..;..\..\..\..\Qt\4.8.3\include\ActiveQt;release;..\..\..\..\Qt\4.8.3\mkspecs\win32-msvc2008;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;HAVE_CONFIG_H;QT_DLL;QT_NO_DEBUG;QT_GUI_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_DLL;QT_NO_DEBUG;QT_GUI_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -116,7 +116,7 @@
       <DebugInformationFormat />
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;HAVE_CONFIG_H;QT_DLL;QT_NO_DEBUG;QT_GUI_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_DLL;QT_NO_DEBUG;QT_GUI_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type=%27win32%27 name=%27Microsoft.Windows.Common-Controls%27 version=%276.0.0.0%27 publicKeyToken=%276595b64144ccf1df%27 language=%27*%27 processorArchitecture=%27*%27" %(AdditionalOptions)</AdditionalOptions>
@@ -169,48 +169,48 @@
   <ItemGroup>
     <CustomBuild Include="csettings.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">MOC csettings.h</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Qt\4.8.3\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DHAVE_CONFIG_H -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"..\..\..\..\Qt\4.8.3\include\QtCore" -I"..\..\..\..\Qt\4.8.3\include\QtGui" -I"..\..\..\..\Qt\4.8.3\include" -I"..\..\lib\gvc" -I"..\..\lib\common" -I"..\..\lib\pathplan" -I"..\..\lib\cgraph" -I"..\..\lib\cdt" -I"..\.." -I"..\..\..\..\Qt\4.8.3\include\ActiveQt" -I"debug" -I..\..\..\..\Qt\4.8.3\mkspecs\win32-msvc2008 -D_MSC_VER=1500 -DWIN32 csettings.h -o debug\moc_csettings.cpp
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Qt\4.8.3\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"..\..\..\..\Qt\4.8.3\include\QtCore" -I"..\..\..\..\Qt\4.8.3\include\QtGui" -I"..\..\..\..\Qt\4.8.3\include" -I"..\..\lib\gvc" -I"..\..\lib\common" -I"..\..\lib\pathplan" -I"..\..\lib\cgraph" -I"..\..\lib\cdt" -I"..\.." -I"..\..\..\..\Qt\4.8.3\include\ActiveQt" -I"debug" -I..\..\..\..\Qt\4.8.3\mkspecs\win32-msvc2008 -D_MSC_VER=1500 -DWIN32 csettings.h -o debug\moc_csettings.cpp
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Qt\4.8.3\bin\moc.exe;csettings.h;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">debug\moc_csettings.cpp;%(Outputs)</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MOC csettings.h</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Qt\4.8.3\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DHAVE_CONFIG_H -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"..\..\..\..\Qt\4.8.3\include\QtCore" -I"..\..\..\..\Qt\4.8.3\include\QtGui" -I"..\..\..\..\Qt\4.8.3\include" -I"..\..\lib\gvc" -I"..\..\lib\common" -I"..\..\lib\pathplan" -I"..\..\lib\cgraph" -I"..\..\lib\cdt" -I"..\.." -I"..\..\..\..\Qt\4.8.3\include\ActiveQt" -I"release" -I..\..\..\..\Qt\4.8.3\mkspecs\win32-msvc2008 -D_MSC_VER=1500 -DWIN32 csettings.h -o release\moc_csettings.cpp
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Qt\4.8.3\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"..\..\..\..\Qt\4.8.3\include\QtCore" -I"..\..\..\..\Qt\4.8.3\include\QtGui" -I"..\..\..\..\Qt\4.8.3\include" -I"..\..\lib\gvc" -I"..\..\lib\common" -I"..\..\lib\pathplan" -I"..\..\lib\cgraph" -I"..\..\lib\cdt" -I"..\.." -I"..\..\..\..\Qt\4.8.3\include\ActiveQt" -I"release" -I..\..\..\..\Qt\4.8.3\mkspecs\win32-msvc2008 -D_MSC_VER=1500 -DWIN32 csettings.h -o release\moc_csettings.cpp
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Qt\4.8.3\bin\moc.exe;csettings.h;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">release\moc_csettings.cpp;%(Outputs)</Outputs>
     </CustomBuild>
     <CustomBuild Include="imageviewer.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">MOC imageviewer.h</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Qt\4.8.3\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DHAVE_CONFIG_H -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"..\..\..\..\Qt\4.8.3\include\QtCore" -I"..\..\..\..\Qt\4.8.3\include\QtGui" -I"..\..\..\..\Qt\4.8.3\include" -I"..\..\lib\gvc" -I"..\..\lib\common" -I"..\..\lib\pathplan" -I"..\..\lib\cgraph" -I"..\..\lib\cdt" -I"..\.." -I"..\..\..\..\Qt\4.8.3\include\ActiveQt" -I"debug" -I..\..\..\..\Qt\4.8.3\mkspecs\win32-msvc2008 -D_MSC_VER=1500 -DWIN32 imageviewer.h -o debug\moc_imageviewer.cpp
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Qt\4.8.3\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"..\..\..\..\Qt\4.8.3\include\QtCore" -I"..\..\..\..\Qt\4.8.3\include\QtGui" -I"..\..\..\..\Qt\4.8.3\include" -I"..\..\lib\gvc" -I"..\..\lib\common" -I"..\..\lib\pathplan" -I"..\..\lib\cgraph" -I"..\..\lib\cdt" -I"..\.." -I"..\..\..\..\Qt\4.8.3\include\ActiveQt" -I"debug" -I..\..\..\..\Qt\4.8.3\mkspecs\win32-msvc2008 -D_MSC_VER=1500 -DWIN32 imageviewer.h -o debug\moc_imageviewer.cpp
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Qt\4.8.3\bin\moc.exe;imageviewer.h;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">debug\moc_imageviewer.cpp;%(Outputs)</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MOC imageviewer.h</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Qt\4.8.3\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DHAVE_CONFIG_H -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"..\..\..\..\Qt\4.8.3\include\QtCore" -I"..\..\..\..\Qt\4.8.3\include\QtGui" -I"..\..\..\..\Qt\4.8.3\include" -I"..\..\lib\gvc" -I"..\..\lib\common" -I"..\..\lib\pathplan" -I"..\..\lib\cgraph" -I"..\..\lib\cdt" -I"..\.." -I"..\..\..\..\Qt\4.8.3\include\ActiveQt" -I"release" -I..\..\..\..\Qt\4.8.3\mkspecs\win32-msvc2008 -D_MSC_VER=1500 -DWIN32 imageviewer.h -o release\moc_imageviewer.cpp
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Qt\4.8.3\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"..\..\..\..\Qt\4.8.3\include\QtCore" -I"..\..\..\..\Qt\4.8.3\include\QtGui" -I"..\..\..\..\Qt\4.8.3\include" -I"..\..\lib\gvc" -I"..\..\lib\common" -I"..\..\lib\pathplan" -I"..\..\lib\cgraph" -I"..\..\lib\cdt" -I"..\.." -I"..\..\..\..\Qt\4.8.3\include\ActiveQt" -I"release" -I..\..\..\..\Qt\4.8.3\mkspecs\win32-msvc2008 -D_MSC_VER=1500 -DWIN32 imageviewer.h -o release\moc_imageviewer.cpp
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Qt\4.8.3\bin\moc.exe;imageviewer.h;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">release\moc_imageviewer.cpp;%(Outputs)</Outputs>
     </CustomBuild>
     <CustomBuild Include="mainwindow.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">MOC mainwindow.h</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Qt\4.8.3\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DHAVE_CONFIG_H -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"..\..\..\..\Qt\4.8.3\include\QtCore" -I"..\..\..\..\Qt\4.8.3\include\QtGui" -I"..\..\..\..\Qt\4.8.3\include" -I"..\..\lib\gvc" -I"..\..\lib\common" -I"..\..\lib\pathplan" -I"..\..\lib\cgraph" -I"..\..\lib\cdt" -I"..\.." -I"..\..\..\..\Qt\4.8.3\include\ActiveQt" -I"debug" -I..\..\..\..\Qt\4.8.3\mkspecs\win32-msvc2008 -D_MSC_VER=1500 -DWIN32 mainwindow.h -o debug\moc_mainwindow.cpp
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Qt\4.8.3\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"..\..\..\..\Qt\4.8.3\include\QtCore" -I"..\..\..\..\Qt\4.8.3\include\QtGui" -I"..\..\..\..\Qt\4.8.3\include" -I"..\..\lib\gvc" -I"..\..\lib\common" -I"..\..\lib\pathplan" -I"..\..\lib\cgraph" -I"..\..\lib\cdt" -I"..\.." -I"..\..\..\..\Qt\4.8.3\include\ActiveQt" -I"debug" -I..\..\..\..\Qt\4.8.3\mkspecs\win32-msvc2008 -D_MSC_VER=1500 -DWIN32 mainwindow.h -o debug\moc_mainwindow.cpp
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Qt\4.8.3\bin\moc.exe;mainwindow.h;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">debug\moc_mainwindow.cpp;%(Outputs)</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MOC mainwindow.h</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Qt\4.8.3\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DHAVE_CONFIG_H -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"..\..\..\..\Qt\4.8.3\include\QtCore" -I"..\..\..\..\Qt\4.8.3\include\QtGui" -I"..\..\..\..\Qt\4.8.3\include" -I"..\..\lib\gvc" -I"..\..\lib\common" -I"..\..\lib\pathplan" -I"..\..\lib\cgraph" -I"..\..\lib\cdt" -I"..\.." -I"..\..\..\..\Qt\4.8.3\include\ActiveQt" -I"release" -I..\..\..\..\Qt\4.8.3\mkspecs\win32-msvc2008 -D_MSC_VER=1500 -DWIN32 mainwindow.h -o release\moc_mainwindow.cpp
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Qt\4.8.3\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"..\..\..\..\Qt\4.8.3\include\QtCore" -I"..\..\..\..\Qt\4.8.3\include\QtGui" -I"..\..\..\..\Qt\4.8.3\include" -I"..\..\lib\gvc" -I"..\..\lib\common" -I"..\..\lib\pathplan" -I"..\..\lib\cgraph" -I"..\..\lib\cdt" -I"..\.." -I"..\..\..\..\Qt\4.8.3\include\ActiveQt" -I"release" -I..\..\..\..\Qt\4.8.3\mkspecs\win32-msvc2008 -D_MSC_VER=1500 -DWIN32 mainwindow.h -o release\moc_mainwindow.cpp
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Qt\4.8.3\bin\moc.exe;mainwindow.h;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">release\moc_mainwindow.cpp;%(Outputs)</Outputs>
     </CustomBuild>
     <CustomBuild Include="mdichild.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">MOC mdichild.h</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Qt\4.8.3\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DHAVE_CONFIG_H -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"..\..\..\..\Qt\4.8.3\include\QtCore" -I"..\..\..\..\Qt\4.8.3\include\QtGui" -I"..\..\..\..\Qt\4.8.3\include" -I"..\..\lib\gvc" -I"..\..\lib\common" -I"..\..\lib\pathplan" -I"..\..\lib\cgraph" -I"..\..\lib\cdt" -I"..\.." -I"..\..\..\..\Qt\4.8.3\include\ActiveQt" -I"debug" -I..\..\..\..\Qt\4.8.3\mkspecs\win32-msvc2008 -D_MSC_VER=1500 -DWIN32 mdichild.h -o debug\moc_mdichild.cpp
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Qt\4.8.3\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"..\..\..\..\Qt\4.8.3\include\QtCore" -I"..\..\..\..\Qt\4.8.3\include\QtGui" -I"..\..\..\..\Qt\4.8.3\include" -I"..\..\lib\gvc" -I"..\..\lib\common" -I"..\..\lib\pathplan" -I"..\..\lib\cgraph" -I"..\..\lib\cdt" -I"..\.." -I"..\..\..\..\Qt\4.8.3\include\ActiveQt" -I"debug" -I..\..\..\..\Qt\4.8.3\mkspecs\win32-msvc2008 -D_MSC_VER=1500 -DWIN32 mdichild.h -o debug\moc_mdichild.cpp
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Qt\4.8.3\bin\moc.exe;mdichild.h;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">debug\moc_mdichild.cpp;%(Outputs)</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MOC mdichild.h</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Qt\4.8.3\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DHAVE_CONFIG_H -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"..\..\..\..\Qt\4.8.3\include\QtCore" -I"..\..\..\..\Qt\4.8.3\include\QtGui" -I"..\..\..\..\Qt\4.8.3\include" -I"..\..\lib\gvc" -I"..\..\lib\common" -I"..\..\lib\pathplan" -I"..\..\lib\cgraph" -I"..\..\lib\cdt" -I"..\.." -I"..\..\..\..\Qt\4.8.3\include\ActiveQt" -I"release" -I..\..\..\..\Qt\4.8.3\mkspecs\win32-msvc2008 -D_MSC_VER=1500 -DWIN32 mdichild.h -o release\moc_mdichild.cpp
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Qt\4.8.3\bin\moc.exe  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -I"..\..\..\..\Qt\4.8.3\include\QtCore" -I"..\..\..\..\Qt\4.8.3\include\QtGui" -I"..\..\..\..\Qt\4.8.3\include" -I"..\..\lib\gvc" -I"..\..\lib\common" -I"..\..\lib\pathplan" -I"..\..\lib\cgraph" -I"..\..\lib\cdt" -I"..\.." -I"..\..\..\..\Qt\4.8.3\include\ActiveQt" -I"release" -I..\..\..\..\Qt\4.8.3\mkspecs\win32-msvc2008 -D_MSC_VER=1500 -DWIN32 mdichild.h -o release\moc_mdichild.cpp
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Qt\4.8.3\bin\moc.exe;mdichild.h;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">release\moc_mdichild.cpp;%(Outputs)</Outputs>

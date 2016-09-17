@@ -18,9 +18,7 @@ extern "C" {
 #ifndef SPARSEGRAPH_H
 #define SPARSEGRAPH_H
 
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
+#include "config.h"
 
 #ifdef __cplusplus
     enum Style { regular, invisible };

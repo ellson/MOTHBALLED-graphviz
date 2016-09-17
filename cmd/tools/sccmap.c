@@ -22,9 +22,7 @@
  * connected components, and writes each as a separate graph
  * along with a map of the components.
  */
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>

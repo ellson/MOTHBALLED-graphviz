@@ -58,9 +58,7 @@
  *     Tokyo 102 Japan. TEL +81-3-234-2692
  */
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 #include <stdio.h>
 
 #ifdef HAVE_ERRNO_H

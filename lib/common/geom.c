@@ -14,9 +14,7 @@
 /* geometric functions (e.g. on points and boxes) with application to, but
  * no specific dependance on graphs */
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include "geom.h"
 #include "geomprocs.h"

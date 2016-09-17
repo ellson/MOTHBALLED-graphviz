@@ -4,9 +4,7 @@
 #include <stdlib.h>
 #include <gml2gv.h>
 #include <gmlparse.h>
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #ifndef HAVE_UNISTD_H
 #define YY_NO_UNISTD_H

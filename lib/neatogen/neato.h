@@ -15,9 +15,7 @@
 #ifndef         NEATO_H
 #define         NEATO_H
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #define MODEL_SHORTPATH      0
 #define MODEL_CIRCUIT        1

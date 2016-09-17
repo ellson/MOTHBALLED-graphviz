@@ -12,9 +12,7 @@
  *************************************************************************/
 
 
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
+#include "config.h"
 #include "builddate.h"
 //windows.h for win machines
 #if defined(_WIN32) && !defined(__CYGWIN__)

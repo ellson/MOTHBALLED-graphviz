@@ -14,9 +14,7 @@
 #ifndef SFDP_H
 #define SFDP_H
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include "render.h"
 

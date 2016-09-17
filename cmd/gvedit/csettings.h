@@ -20,9 +20,7 @@ class MdiChild;
 #include <QString>
 #include "ui_settings.h"
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include "gvc.h"
 

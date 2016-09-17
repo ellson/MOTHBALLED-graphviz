@@ -16,9 +16,7 @@
  *  Compile-time and run-time interface between gpr and libexpr
  */
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 #include <stdlib.h>
 #ifdef HAVE_STDINT_H
 #include <stdint.h>

@@ -21,7 +21,6 @@ extern "C" {
 #define _COMMON_H
 
 /* some config and conversion definitions from graphviz distribution */
-#ifdef HAVE_CONFIG_H
 #include "config.h"
 /* we set some parameters which graphviz assumes.
  * At some point, we could consider allowing these to be set in configure
@@ -38,7 +37,6 @@ extern "C" {
 #endif
 #else
 #define FEATURE_X11 1
-#endif
 #endif
 
 #ifdef _PACKAGE_ast

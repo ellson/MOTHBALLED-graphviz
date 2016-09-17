@@ -17,9 +17,7 @@
  *  This library forms the socket for run-time loadable loadimage plugins.  
  */
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include <string.h>
 

@@ -12,9 +12,7 @@
  *************************************************************************/
 
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 /* TODO:
  * If cut point is in exactly 2 blocks, expand block circles to overlap

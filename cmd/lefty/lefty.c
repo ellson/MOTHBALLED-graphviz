@@ -13,9 +13,7 @@
 
 /* Lefteris Koutsofios - AT&T Labs Research */
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #define LEFTYVERSION "10 Mar 2005"
 

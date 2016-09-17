@@ -15,9 +15,7 @@
  *  This library forms the socket for run-time loadable device plugins.  
  */
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include <stdarg.h>
 #include <stdlib.h>

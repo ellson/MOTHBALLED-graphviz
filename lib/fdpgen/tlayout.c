@@ -25,9 +25,7 @@
  * via port nodes.
  */
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 /* uses PRIVATE interface */
 #define FDP_PRIVATE 1
