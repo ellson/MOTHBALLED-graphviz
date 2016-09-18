@@ -14,9 +14,7 @@
 #include "config.h"
 
 #include <stdlib.h>
-#ifdef HAVE_STRING_H
 #include <string.h>
-#endif
 
 #include "const.h"
 #include "gvplugin_render.h"

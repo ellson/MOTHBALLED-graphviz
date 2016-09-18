@@ -39,7 +39,6 @@ hdr stdarg
 hdr stdbool
 hdr stddef
 hdr stdint
-hdr string
 hdr strings
 hdr termios
 hdr unistd

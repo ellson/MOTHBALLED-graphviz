@@ -427,7 +427,7 @@ dnl Checks for header files
 # AC_HEADER_STDC
 AC_CHECK_HEADERS(stdarg.h stddef.h stddef.h stdint.h malloc.h \
 	fcntl.h search.h pthread.h values.h float.h limits.h termios.h \
-	errno.h time.h unistd.h fenv.h string.h strings.h inttypes.h setjmp.h \
+	errno.h time.h unistd.h fenv.h strings.h inttypes.h setjmp.h \
 	sys/time.h sys/times.h sys/types.h sys/select.h fpu_control.h \
 	sys/fpu.h sys/socket.h sys/stat.h sys/mman.h \
 	sys/ioctl.h sys/inotify.h langinfo.h libintl.h crt_externs.h)
