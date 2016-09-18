@@ -147,12 +147,6 @@
 /* Define to 1 if you have the `getenv' function. */
 #define HAVE_GETENV 1
 
-/* Define if getopt externs are declared */
-#define HAVE_GETOPT_DECL 1
-
-/* Define to 1 if you have the <getopt.h> header file. */
-#define HAVE_GETOPT_H 1
-
 /* Define to 1 if you have the `getrusage' function. */
 /* #undef HAVE_GETRUSAGE */
 

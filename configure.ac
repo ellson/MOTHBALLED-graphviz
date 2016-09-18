@@ -426,7 +426,7 @@ dnl Checks for header files
 
 # AC_HEADER_STDC
 AC_CHECK_HEADERS(stdarg.h stddef.h stddef.h stdlib.h stdint.h malloc.h \
-	fcntl.h search.h getopt.h pthread.h values.h float.h limits.h termios.h \
+	fcntl.h search.h pthread.h values.h float.h limits.h termios.h \
 	errno.h time.h unistd.h fenv.h string.h strings.h inttypes.h setjmp.h \
 	sys/time.h sys/times.h sys/types.h sys/select.h fpu_control.h \
 	sys/fpu.h sys/socket.h sys/stat.h sys/mman.h \
@@ -3078,20 +3078,6 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>
 	]], [[if ( errno < sys_nerr ) return sys_errlist[errno];
 	]])],[AC_MSG_RESULT(yes)
 	AC_DEFINE_UNQUOTED(HAVE_ERRNO_DECL,1,Define if errno externs are declared)
-	],[AC_MSG_RESULT(no)
-	])
-
-# -----------------------------------
-
-AC_MSG_CHECKING(if getopt externs are declared)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
-	#include <stdio.h>
-	#if HAVE_UNISTD_H
-	#include <unistd.h>
-	#endif
-	]], [[if ( optopt ) exit(0); else exit(1);
-	]])],[AC_MSG_RESULT(yes)
-	AC_DEFINE_UNQUOTED(HAVE_GETOPT_DECL,1,Define if getopt externs are declared)
 	],[AC_MSG_RESULT(no)
 	])
 

@@ -39,9 +39,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <setjmp.h>
-#ifdef HAVE_GETOPT_H
 #include <getopt.h>
-#endif
 
 #ifndef DFLT_GVPRPATH
 #define DFLT_GVPRPATH    "."
