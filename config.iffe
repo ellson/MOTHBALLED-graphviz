@@ -39,7 +39,6 @@ hdr stdarg
 hdr stdbool
 hdr stddef
 hdr stdint
-hdr stdlib
 hdr string
 hdr strings
 hdr termios
@@ -84,9 +83,7 @@ else {
 endif
 
 link{
-    #if HAVE_STDLIB_H
     #include <stdlib.h>
-    #endif
     #if HAVE_STDINT_H
     #include <stdint.h>
     #endif

@@ -101,9 +101,7 @@ extern char *sys_errlist[];
 extern char *getwd (char *);
 #endif /* !defined (SVR4) && !defined (SYSV) && !defined (USG) */
 
-#ifdef HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
+#include <stdlib.h>
 
 #ifdef HAVE_STDINT_H
 #include <stdint.h>

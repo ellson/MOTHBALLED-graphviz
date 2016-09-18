@@ -22,14 +22,12 @@ extern "C" {
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
-#ifdef HAVE_STDLIB_H
 #if !defined(WIN32) && !defined(DARWIN)
 #define __USE_GNU
 #include <stdlib.h>
 #undef __USE_GNU
 #else
 #include <stdlib.h>
-#endif
 #endif
 #ifdef HAVE_STDDEF_H
 #include <stddef.h>

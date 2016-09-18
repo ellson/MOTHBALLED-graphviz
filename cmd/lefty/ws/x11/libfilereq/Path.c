@@ -58,9 +58,7 @@ extern uid_t getuid ();
 extern void qsort ();
 #endif /* defined (SVR4) || defined (SYSV) || defined (USG) */
 
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
 
 #include "SFDecls.h"
 

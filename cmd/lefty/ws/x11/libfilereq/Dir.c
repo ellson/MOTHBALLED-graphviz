@@ -79,9 +79,7 @@
 extern void qsort ();
 #endif /* defined (SVR4) || defined (SYSV) || defined (USG) */
 
-#ifdef HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
+#include <stdlib.h>
 
 #include "SFDecls.h"
 
