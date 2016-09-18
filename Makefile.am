@@ -43,7 +43,7 @@ EXTRA_DIST = $(txt) $(html) graphviz.spec.in graphviz.spec \
 	graphviz.7 Doxyfile.in Doxyfile awk \
 	config/config_perl.pl config/config_python.py \
 	config/config_ruby.rb config/config_tcl.tcl dot.demo  plugin.demo \
-	macosx windows debian graphviz.vcproj graphviz.sln
+	macosx windows debian graphviz.sln
 
 .PHONY: rpm
 rpm: dist
