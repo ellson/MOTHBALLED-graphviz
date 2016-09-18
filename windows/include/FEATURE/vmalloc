@@ -11,9 +11,6 @@
 #undef _lib_getpagesize
 #define _lib_getpagesize	0	/* getpagesize() in default lib(s) */
 
-#undef _hdr_stdlib
-#define _hdr_stdlib	1	/* #include <stdlib.h> ok */
-
 #undef _sys_stat
 #define _sys_stat	1	/* #include <sys/stat.h> ok */
 

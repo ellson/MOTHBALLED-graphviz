@@ -43,10 +43,6 @@
 #  define _sys_times 1
 #endif
 
-#ifdef HAVE_STDLIB_H
-#  define _hdr_stdlib 1
-#endif
-
 #ifdef HAVE_SYS_SOCKET_H
 #  define _sys_socket 1
 #endif

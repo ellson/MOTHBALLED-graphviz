@@ -446,22 +446,12 @@ extern "C" {
     extern ssize_t write _ARG_((int, const void *, size_t));
 #endif
 
-#if !__STDC__ && !_hdr_stdlib
-    extern size_t strlen _ARG_((const char *));
-    extern char *strcpy _ARG_((char *, const char *));
-    extern int strcmp _ARG_((const char *, const char *));
-    extern int atexit _ARG_((void (*)(void)));
-    extern char *getenv _ARG_((const char *));
-    extern Void_t *memcpy _ARG_((Void_t *, const Void_t *, size_t));
-    extern Void_t *memset _ARG_((Void_t *, int, size_t));
-#else
 #ifndef cfree
 #define cfree ______cfree
 #endif
 #include	<stdlib.h>
 #undef cfree
 #include	<string.h>
-#endif
 
 /* for malloc.c */
 #ifndef WIN32

@@ -169,17 +169,6 @@ extern "C" {
 				     Vmdisc_t *)));
     extern char *vmstrdup _ARG_((Vmalloc_t *, const char *));
 
-#if !defined(_AST_STD_H) && \
-	!defined(__stdlib_h) && !defined(__STDLIB_H) && !defined(_hdr_stdlib) && \
-	!defined(_STDLIB_INCLUDED) && !defined(_INC_STDLIB)
-    extern Void_t *malloc _ARG_((size_t));
-    extern Void_t *realloc _ARG_((Void_t *, size_t));
-    extern void free _ARG_((Void_t *));
-    extern void cfree _ARG_((Void_t *));
-    extern Void_t *calloc _ARG_((size_t, size_t));
-    extern Void_t *memalign _ARG_((size_t, size_t));
-    extern Void_t *valloc _ARG_((size_t));
-#endif
 
 #undef extern
      _END_EXTERNS_

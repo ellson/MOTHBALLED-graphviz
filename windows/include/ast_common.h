@@ -33,9 +33,6 @@
 #undef _sys_times
 #define _sys_times	0	/* #include <sys/times.h> ok */
 
-#undef _hdr_stdlib
-#define _hdr_stdlib	0	/* #include <stdlib.h> ok */
-
 #undef _typ_size_t
 #define _typ_size_t	1	/* size_t is a type */
 

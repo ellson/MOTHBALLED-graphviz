@@ -90,9 +90,7 @@ extern "C" {
 #undef  _sys_ioctl
 #endif
 
-#if _hdr_stdlib
 #include	<stdlib.h>
-#endif
 
 #if _hdr_string
 #include	<string.h>
@@ -1004,30 +1002,6 @@ extern "C" {
 #endif
 
 #if !defined(_PACKAGE_ast)
-
-#if /*!__STDC__ &&*/ !_hdr_stdlib
-    extern void abort _ARG_((void));
-    extern int atexit _ARG_((void (*)(void)));
-    extern char *getenv _ARG_((const char *));
-    extern void *malloc _ARG_((size_t));
-    extern void *realloc _ARG_((void *, size_t));
-    extern void free _ARG_((void *));
-    extern size_t strlen _ARG_((const char *));
-    extern char *strcpy _ARG_((char *, const char *));
-
-    extern Void_t *memset _ARG_((void *, int, size_t));
-    extern Void_t *memchr _ARG_((const void *, int, size_t));
-    extern Void_t *memccpy _ARG_((void *, const void *, int, size_t));
-#ifndef memcpy
-    extern Void_t *memcpy _ARG_((void *, const void *, size_t));
-#endif
-#if !defined(strtod)
-    extern double strtod _ARG_((const char *, char **));
-#endif
-#if !defined(remove)
-    extern int remove _ARG_((const char *));
-#endif
-#endif				/* !__STDC__ && !_hdr_stdlib */
 
 #ifdef WIN32
 #undef SF_ERROR
