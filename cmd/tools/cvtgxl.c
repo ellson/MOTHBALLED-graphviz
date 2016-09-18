@@ -16,6 +16,8 @@
  * Written by Emden R. Gansner and Krishnam Pericherla 
  */
 
+#include "config.h"
+
 #include <ctype.h>
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>

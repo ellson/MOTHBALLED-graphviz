@@ -14,6 +14,7 @@
 
 #include    "convert.h"
 #include    "agxbuf.h"
+#include    <getopt.h>
 #ifdef HAVE_EXPAT
 #include    <expat.h>
 #include    <ctype.h>
@@ -23,7 +24,7 @@
     #pragma comment( lib, "cdt.lib" )
     #pragma comment( lib, "ingraphs.lib" )
     #pragma comment( lib, "gvc.lib" )
-    #pragma comment( lib, "expat.lib" )
+    #pragma comment( lib, "libexpat.lib" )
 #endif
 
 
