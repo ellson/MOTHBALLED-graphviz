@@ -438,23 +438,6 @@ AC_HEADER_STDBOOL
 # Internationalization macros
 # AM_GNU_GETTEXT
 
-# Check for socklen_t
-AC_MSG_CHECKING([for socklen_t])
-AC_CACHE_VAL(ac_cv_type_socklen_t,[AC_EGREP_CPP(changequote(<<,>>)dnl
-<<(^|[^a-zA-Z_0-9])socklen_t[^a-zA-Z_0-9]>>dnl
-changequote([,]),[
-    #include <sys/types.h>
-    #include <sys/socket.h>
-    #if STDC_HEADERS
-    #include <stdlib.h>
-    #include <stddef.h>
-    #endif
-    ], ac_cv_type_socklen_t=yes, ac_cv_type_socklen_t=no)])
-AC_MSG_RESULT($ac_cv_type_socklen_t)
-if test $ac_cv_type_socklen_t = no; then
-    AC_DEFINE(socklen_t, unsigned, [Define to unsigned if socklet_t is missing])
-fi
-
 # -----------------------------------
 # Test if compiler supports bool
 AC_MSG_CHECKING([for bool])

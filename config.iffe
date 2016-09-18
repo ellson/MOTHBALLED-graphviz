@@ -100,23 +100,6 @@ link{
 #define HAVE_INTPTR_T 1
 }end
 
-link{
-    #if HAVE_NETDB_H
-    #include <netdb.h>
-    #endif
-    #if HAVE_SYS_SOCKET_H
-    #include <sys/socket.h>
-    #endif
-    #if HAVE_UNISTD_H
-    #include <unistd.h>
-    #endif
-    socklen_t  abc;
-    int main() {}
-}end yes{
-/* Define if intptr_t is declared */
-#define HAVE_SOCKLEN_T 1
-}end
-
 compile{
     #ifdef HAVE_STDBOOL_H
     #include <stdbool.h>
