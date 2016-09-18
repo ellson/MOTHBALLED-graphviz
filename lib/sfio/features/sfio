@@ -9,7 +9,6 @@
 hdr time
 sys time
 
-hdr string
 hdr math
 lib qfrexp
 lib qldexp

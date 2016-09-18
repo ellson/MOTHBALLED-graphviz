@@ -91,10 +91,7 @@ extern "C" {
 #endif
 
 #include	<stdlib.h>
-
-#if _hdr_string
 #include	<string.h>
-#endif
 
 #if _hdr_stdint
 #include	<stdint.h>

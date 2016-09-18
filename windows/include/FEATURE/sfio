@@ -4,7 +4,6 @@
 #define _sys_types	1	/* #include <sys/types.h> ok */
 #define _hdr_time	1	/* #include <time.h> ok */
 #define _sys_time	1	/* #include <sys/time.h> ok */
-#define _hdr_string	1	/* #include <string.h> ok */
 #define _hdr_math	1	/* #include <math.h> ok */
 //#define _hdr_unistd	1	/* #include <unistd.h> ok */
 #define _hdr_values	1	/* #include <values.h> ok */
