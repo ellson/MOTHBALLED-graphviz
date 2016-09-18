@@ -439,21 +439,6 @@ AC_HEADER_STDBOOL
 # AM_GNU_GETTEXT
 
 # -----------------------------------
-# Test if compiler supports bool
-AC_MSG_CHECKING([for bool])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-    #ifdef HAVE_STDBOOL_H>
-    #include <stdbool.h>
-    #endif
-    ]], [[
-    bool foo==true, bar=false;
-    ]])],[
-AC_MSG_RESULT(yes)
-AC_DEFINE(HAVE_BOOL, 1,[Define to 1 if compiler supports bool])
-    ],[
-AC_MSG_RESULT(no)])
-
-# -----------------------------------
 # Test for direct I/O
 AC_MSG_CHECKING([for struct dioattr])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>

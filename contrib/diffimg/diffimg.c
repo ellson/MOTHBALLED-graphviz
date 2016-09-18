@@ -59,9 +59,6 @@
 #endif
 
 #define NOT(v) (!(v))
-#if ! defined HAVE_BOOL && ! defined HAVE_STDBOOL_H && ! defined __cplusplus
-typedef unsigned char bool;
-#endif
 #ifndef false
 #define false 0
 #define true NOT(false)

@@ -100,16 +100,6 @@ link{
 }end
 
 compile{
-    #ifdef HAVE_STDBOOL_H
-    #include <stdbool.h>
-    #endif
-    bool xx = true, yy = false; 
-}end yes{
-/* Define to 1 if compiler supports bool */
-#define HAVE_BOOL 1
-}end
-
-compile{
     #include <iconv.h>
     iconv_t xx; 
 }end yes{
