@@ -27,11 +27,7 @@
 #include    "cgraph.h"
 #include    "ingraphs.h"
 
-#ifdef HAVE_GETOPT_H
 #include <getopt.h>
-#else
-#include "compat_getopt.h"
-#endif
 
 static int Do_fans = 0;
 static int MaxMinlen = 0;

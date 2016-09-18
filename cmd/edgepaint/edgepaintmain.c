@@ -26,11 +26,7 @@
 #include <agxbuf.h>
 #include <ingraphs.h>
 #include <pointset.h>
-#ifdef HAVE_GETOPT_H
 #include <getopt.h>
-#else
-#include "compat_getopt.h"
-#endif
 
 #include "general.h"
 #include "SparseMatrix.h"

@@ -19,11 +19,7 @@
 #include "config.h"
 
 #include <ctype.h>
-#ifdef HAVE_GETOPT_H
 #include <getopt.h>
-#else
-#include "compat_getopt.h"
-#endif
 
 #include "convert.h"
 #include "ingraphs.h"

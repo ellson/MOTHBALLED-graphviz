@@ -20,11 +20,7 @@
 
 #include "config.h"
 
-#ifdef HAVE_GETOPT_H
 #include <getopt.h>
-#else
-#include "compat_getopt.h"
-#endif
 
 #include <assert.h>
 #include "gvc.h"

@@ -30,11 +30,7 @@
 #include <unistd.h>
 #endif
 
-#ifdef HAVE_GETOPT_H
 #include <getopt.h>
-#else
-#include "compat_getopt.h"
-#endif
 
 #include <cgraph.h>
 #include <ctype.h>

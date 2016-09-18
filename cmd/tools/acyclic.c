@@ -46,11 +46,7 @@ typedef struct {
 #define ND_onstack(n) (((Agnodeinfo_t*)((n)->base.data))->onstack)
 #define graphName(g) (agnameof(g))
 
-#ifdef HAVE_GETOPT_H
 #include <getopt.h>
-#else
-#include "compat_getopt.h"
-#endif
 
 static FILE *inFile;
 static FILE *outFile;

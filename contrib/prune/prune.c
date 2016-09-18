@@ -21,11 +21,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#ifdef HAVE_GETOPT_H
 #include <getopt.h>
-#else
-#include "compat_getopt.h"
-#endif
 
 #include "cgraph.h"
 #include "ingraphs.h"

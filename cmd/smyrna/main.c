@@ -38,11 +38,7 @@
 #include "glexpose.h"
 #include "glutrender.h"
 
-#ifdef HAVE_GETOPT_H
 #include <getopt.h>
-#else
-#include "compat_getopt.h"
-#endif
 
 #ifdef G_OS_WIN32
 gchar *package_prefix;

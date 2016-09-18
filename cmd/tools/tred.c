@@ -39,11 +39,7 @@ typedef struct {
 #endif
 #include "ingraphs.h"
 
-#ifdef HAVE_GETOPT_H
 #include <getopt.h>
-#else
-#include "compat_getopt.h"
-#endif
 
 char **Files;
 char *CmdName;

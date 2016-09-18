@@ -25,11 +25,7 @@
 #include <math.h>
 #include "cgraph.h"
 #include "ingraphs.h"
-#ifdef HAVE_GETOPT_H
 #include <getopt.h>
-#else
-#include "compat_getopt.h"
-#endif
 
 #ifndef HUGE
 /* HUGE is not defined on 64bit HP-UX */

@@ -25,11 +25,7 @@
 #include "agxbuf.h"
 #include "SparseMatrix.h"
 #include "matrix_market.h"
-#ifdef HAVE_GETOPT_H
 #include <getopt.h>
-#else
-#include "compat_getopt.h"
-#endif
 
 #define MALLOC malloc
 #define FREE free

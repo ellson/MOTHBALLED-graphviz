@@ -44,11 +44,7 @@ typedef struct {
 #define ND_clust(n)  ((Agraph_t*)ND_ptr(n))
 #define agfindnode(G,N) (agnode(G, N, 0))
 
-#ifdef HAVE_GETOPT_H
 #include <getopt.h>
-#else
-#include "compat_getopt.h"
-#endif
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
