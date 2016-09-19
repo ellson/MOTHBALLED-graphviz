@@ -349,13 +349,13 @@ static Void_t* dttree(Dt_t* dt, Void_t* obj, int type)
 /* make this method available */
 static Dtmethod_t	_Dtoset =  { dttree, DT_OSET };
 static Dtmethod_t	_Dtobag =  { dttree, DT_OBAG };
-__DEFINE__(Dtmethod_t*,Dtoset,&_Dtoset);
-__DEFINE__(Dtmethod_t*,Dtobag,&_Dtobag);
+Dtmethod_t* Dtoset = &_Dtoset;
+Dtmethod_t* Dtobag = &_Dtobag;
 
 #ifndef KPVDEL /* backward compatibility - delete next time around */
 Dtmethod_t		_Dttree = { dttree, DT_OSET };
-__DEFINE__(Dtmethod_t*,Dtorder,&_Dttree);
-__DEFINE__(Dtmethod_t*,Dttree,&_Dttree);
+Dtmethod_t* Dtorder = &_Dttree;
+Dtmethod_t* Dttree = &_Dttree;
 #endif
 
 #ifdef NoF

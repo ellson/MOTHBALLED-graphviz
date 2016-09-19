@@ -84,13 +84,6 @@
 #define _astimport	extern
 #endif
 #endif /*_astimport*/
-#if !defined(_DLL_BLD) && defined(_dll_import)
-#define __EXTERN__(T,obj)	extern T obj; T* _imp__ ## obj = &obj
-#define __DEFINE__(T,obj,val)	T obj = val; T* _imp__ ## obj = &obj
-#else
-#define __EXTERN__(T,obj)	extern T obj
-#define __DEFINE__(T,obj,val)	T obj = val
-#endif
 #ifndef _AST_STD_H
 #	if _hdr_stddef
 #	include	<stddef.h>

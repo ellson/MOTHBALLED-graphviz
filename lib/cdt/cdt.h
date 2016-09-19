@@ -29,15 +29,6 @@
 #define __IMPORT__	__declspec (dllimport)
 #endif
 
-
-#if !defined(_DLL_BLD) && defined(_dll_import)
-#define __EXTERN__(T,obj)       extern T obj; T* _imp__ ## obj = &obj
-#define __DEFINE__(T,obj,val)   T obj = val; T* _imp__ ## obj = &obj
-#else
-#define __EXTERN__(T,obj)       extern T obj
-#define __DEFINE__(T,obj,val)   T obj = val
-#endif
-
 typedef struct _dtlink_s	Dtlink_t;
 typedef struct _dthold_s	Dthold_t;
 typedef struct _dtdisc_s	Dtdisc_t;

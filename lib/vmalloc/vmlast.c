@@ -396,4 +396,4 @@ static Vmethod_t _Vmlast = {
     VM_MTLAST
 };
 
-__DEFINE__(Vmethod_t *, Vmlast, &_Vmlast);
+Vmethod_t* Vmlast = &_Vmlast;

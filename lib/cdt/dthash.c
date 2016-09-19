@@ -322,12 +322,12 @@ static Void_t* dthash(Dt_t* dt, reg Void_t* obj, int type)
 
 static Dtmethod_t	_Dtset = { dthash, DT_SET };
 static Dtmethod_t	_Dtbag = { dthash, DT_BAG };
-__DEFINE__(Dtmethod_t*,Dtset,&_Dtset);
-__DEFINE__(Dtmethod_t*,Dtbag,&_Dtbag);
+Dtmethod_t* Dtset = &_Dtset;
+Dtmethod_t* Dtbag = &_Dtbag;
 
 #ifndef KPVDEL	/* for backward compatibility - remove next time */
 Dtmethod_t		_Dthash = { dthash, DT_SET };
-__DEFINE__(Dtmethod_t*,Dthash,&_Dthash);
+Dtmethod_t* Dthash = &_Dthash;
 #endif
 
 #ifdef NoF

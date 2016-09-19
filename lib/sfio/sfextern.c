@@ -79,10 +79,10 @@ Sfio_t *sfstdin = &_Sfstdin;
 Sfio_t *sfstdout = &_Sfstdout;
 Sfio_t *sfstderr = &_Sfstderr;
 
-__EXTERN__(ssize_t, _Sfi);
-__EXTERN__(Sfio_t, _Sfstdin);
-__EXTERN__(Sfio_t, _Sfstdout);
-__EXTERN__(Sfio_t, _Sfstderr);
-__EXTERN__(Sfio_t *, sfstdin);
-__EXTERN__(Sfio_t *, sfstdout);
-__EXTERN__(Sfio_t *, sfstderr);
+extern ssize_t _Sfi;
+extern Sfio_t _Sfstdin;
+extern Sfio_t _Sfstdout;
+extern Sfio_t _Sfstderr;
+extern Sfio_t *sfstdin;
+extern Sfio_t *sfstdout;
+extern Sfio_t *sfstderr;

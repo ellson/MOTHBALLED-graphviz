@@ -651,4 +651,4 @@ static Vmethod_t _Vmdebug = {
     VM_MTDEBUG
 };
 
-__DEFINE__(Vmethod_t *, Vmdebug, &_Vmdebug);
+Vmethod_t* Vmdebug = &_Vmdebug;

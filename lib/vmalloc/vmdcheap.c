@@ -40,4 +40,4 @@ static Void_t *heapmem(Vmalloc_t * vm, Void_t * caddr,
 
 static Vmdisc_t _Vmdcheap = { heapmem, NIL(Vmexcept_f), 0 };
 
-__DEFINE__(Vmdisc_t *, Vmdcheap, &_Vmdcheap);
+Vmdisc_t* Vmdcheap = &_Vmdcheap;

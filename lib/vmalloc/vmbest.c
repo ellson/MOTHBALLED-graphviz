@@ -1179,7 +1179,7 @@ static Vmalloc_t _Vmheap = {
     NIL(Vmalloc_t *)		/* next             */
 };
 
-__DEFINE__(Vmalloc_t *, Vmheap, &_Vmheap);
-__DEFINE__(Vmalloc_t *, Vmregion, &_Vmheap);
-__DEFINE__(Vmethod_t *, Vmbest, &_Vmbest);
-__DEFINE__(Vmdisc_t *, Vmdcsbrk, &_Vmdcsbrk);
+Vmalloc_t* Vmheap = &_Vmheap;
+Vmalloc_t* Vmregion = &_Vmheap;
+Vmethod_t* Vmbest = &_Vmbest;
+Vmdisc_t* Vmdcsbrk = &_Vmdcsbrk;
