@@ -27,6 +27,9 @@
     <ClInclude Include="expr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="exparse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="excc.c">
@@ -71,7 +74,7 @@
     <ClCompile Include="exzero.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\windows\exparse.c">
+    <ClCompile Include="exparse.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
