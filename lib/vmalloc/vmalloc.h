@@ -186,27 +186,12 @@ extern "C" {
 				 (*(_VM_(vm)->meth.freef))((vm),(Void_t*)(d)) )
 #define vmalign(vm,sz,align)	(_VMFL_(vm), \
 				 (*(_VM_(vm)->meth.alignf))((vm),(sz),(align)) )
-#if __STD_C || defined(__STDPP__) || defined(__GNUC__)
 #define malloc(s)		(_VMFL_(Vmregion), malloc((size_t)(s)) )
 #define realloc(d,s)		(_VMFL_(Vmregion), realloc((Void_t*)(d),(size_t)(s)) )
 #define calloc(n,s)		(_VMFL_(Vmregion), calloc((size_t)n, (size_t)(s)) )
 #define free(d)			(_VMFL_(Vmregion), free((Void_t*)(d)) )
 #define memalign(a,s)		(_VMFL_(Vmregion), memalign((size_t)(a),(size_t)(s)) )
 #define valloc(s)		(_VMFL_(Vmregion), valloc((size_t)(s) )
-#else
-#define _VMNM_(a,b,c,d,e,f)	a/**/b/**/c/**/d/**/e/**/f
-#define malloc(s)		(_VMFL_(Vmregion), _VMNM_(mallo,/,*,*,/,c)\
-						((size_t)(s)) )
-#define realloc(d,s)		(_VMFL_(Vmregion), _VMNM_(reallo,/,*,*,/,c)\
-						((Void_t*)(d),(size_t)(s)) )
-#define calloc(n,s)		(_VMFL_(Vmregion), _VMNM_(callo,/,*,*,/,c)\
-						((size_t)n, (size_t)(s)) )
-#define free(d)			(_VMFL_(Vmregion), _VMNM_(fre,/,*,*,/,e)((Void_t*)(d)) )
-#define memalign(a,s)		(_VMFL_(Vmregion), _VMNM_(memalig,/,*,*,/,n)\
-						((size_t)(a),(size_t)(s)) )
-#define valloc(s)		(_VMFL_(Vmregion), _VMNM_(vallo,/,*,*,/,c)\
-						((size_t)(s) )
-#endif /*__STD_C || defined(__STDPP__) || defined(__GNUC__)*/
 #define cfree(d)		free(d)
 #endif				/*defined(VMFL) && defined(__FILE__) && defined(__LINE__) */
 /* non-debugging/profiling allocation calls */

@@ -22,17 +22,7 @@ int sfscanf(Sfio_t * f, const char *form, ...)
 {
     va_list args;
     reg int rv;
-
-#if __STD_C
     va_start(args, form);
-#else
-    reg Sfio_t *f;
-    reg char *form;
-    va_start(args);
-    f = va_arg(args, Sfio_t *);
-    form = va_arg(args, char *);
-#endif
-
     rv = (f && form) ? sfvscanf(f, form, args) : -1;
     va_end(args);
     return rv;
@@ -61,16 +51,7 @@ int sfsscanf(const char *s, const char *form, ...)
 {
     va_list args;
     reg int rv;
-#if __STD_C
     va_start(args, form);
-#else
-    reg char *s;
-    reg char *form;
-    va_start(args);
-    s = va_arg(args, char *);
-    form = va_arg(args, char *);
-#endif
-
     rv = (s && form) ? sfvsscanf(s, form, args) : -1;
     va_end(args);
     return rv;

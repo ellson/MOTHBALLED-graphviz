@@ -258,11 +258,7 @@ extern "C" {
 #endif
 
 /* to get rid of pesky compiler warnings */
-#if __STD_C
 #define NOTUSED(x)	(void)(x)
-#else
-#define NOTUSED(x)	(&x,1)
-#endif
 
 /* Private flags in the "bits" field */
 #define SF_MMAP		00000001	/* in memory mapping mode               */

@@ -25,14 +25,7 @@ char *sfprints(const char *form, ...)
     va_list args;
     reg int rv;
     static Sfio_t *f;
-
-#if __STD_C
     va_start(args, form);
-#else
-    reg char *form;
-    va_start(args);
-    form = va_arg(args, char *);
-#endif
 
     /* make a fake stream */
     if (!f &&

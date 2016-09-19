@@ -23,15 +23,7 @@ int sfprintf(Sfio_t * f, const char *form, ...)
     va_list args;
     reg int rv;
 
-#if __STD_C
     va_start(args, form);
-#else
-    reg Sfio_t *f;
-    reg char *form;
-    va_start(args);
-    f = va_arg(args, Sfio_t *);
-    form = va_arg(args, char *);
-#endif
     rv = sfvprintf(f, form, args);
 
     va_end(args);
@@ -66,19 +58,7 @@ int sfsprintf(char *s, int n, const char *form, ...)
 {
     va_list args;
     reg int rv;
-
-#if __STD_C
     va_start(args, form);
-#else
-    reg char *s;
-    reg int n;
-    reg char *form;
-    va_start(args);
-    s = va_arg(args, char *);
-    n = va_arg(args, int);
-    form = va_arg(args, char *);
-#endif
-
     rv = sfvsprintf(s, n, form, args);
     va_end(args);
 

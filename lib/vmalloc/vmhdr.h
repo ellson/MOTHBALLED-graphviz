@@ -71,11 +71,7 @@ extern "C" {
 
 #define NIL(t)		((t)0)
 #define reg		register
-#if __STD_C
 #define NOTUSED(x)	(void)(x)
-#else
-#define NOTUSED(x)	(&x,1)
-#endif
 
 /* convert an address to an integral value */
 #define VLONG(addr)	((Vmulong_t)((char*)(addr) - (char*)0) )
