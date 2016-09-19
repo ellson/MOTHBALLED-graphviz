@@ -257,7 +257,7 @@ static int _tmpexcept(Sfio_t * f, int type, Void_t * val, Sfdisc_t * disc)
     reg int fd, m;
     reg Sfio_t *sf;
     Sfio_t newf, savf;
-    void (*notifyf) _ARG_((Sfio_t *, int, int));
+    void (*notifyf) (Sfio_t *, int, int);
 
     NOTUSED(val);
 

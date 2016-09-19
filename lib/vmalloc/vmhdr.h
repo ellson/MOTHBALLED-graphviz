@@ -88,7 +88,7 @@ extern "C" {
 #define ASSERT(p)
 #define COUNT(n)
 #else
-    extern int printf _ARG_((const char *, ...));
+    extern int printf(const char *, ...);
 #if defined(__LINE__) && defined(__FILE__)
 #define PRFILELINE	printf("Assertion failed at %s:%d\n",__FILE__,__LINE__)
 #else
@@ -410,16 +410,16 @@ extern "C" {
 	}
 
 /* external symbols for internal use by vmalloc */
-    typedef Block_t *(*Vmsearch_f) _ARG_((Vmdata_t *, size_t, Block_t *));
+    typedef Block_t *(*Vmsearch_f) (Vmdata_t *, size_t, Block_t *);
     typedef struct _vmextern_ {
-	Block_t *(*vm_extend) _ARG_((Vmalloc_t *, size_t, Vmsearch_f));
-	int (*vm_truncate) _ARG_((Vmalloc_t *, Seg_t *, size_t, int));
+	Block_t *(*vm_extend) (Vmalloc_t *, size_t, Vmsearch_f);
+	int (*vm_truncate) (Vmalloc_t *, Seg_t *, size_t, int);
 	size_t vm_pagesize;
-	char *(*vm_strcpy) _ARG_((char *, char *, int));
-	char *(*vm_itoa) _ARG_((Vmulong_t, int));
-	void (*vm_trace) _ARG_((Vmalloc_t *,
-				Vmuchar_t *, Vmuchar_t *, size_t, size_t));
-	void (*vm_pfclose) _ARG_((Vmalloc_t *));
+	char *(*vm_strcpy) (char *, char *, int);
+	char *(*vm_itoa) (Vmulong_t, int);
+	void (*vm_trace) (Vmalloc_t *,
+				Vmuchar_t *, Vmuchar_t *, size_t, size_t);
+	void (*vm_pfclose) (Vmalloc_t *);
     } Vmextern_t;
 
 #define _Vmextend	(_Vmextern.vm_extend)
@@ -435,11 +435,11 @@ extern "C" {
 
 #if !defined(_PACKAGE_ast)
 
-    extern size_t getpagesize _ARG_((void));
+    extern size_t getpagesize(void);
 
 #ifndef WIN32
-    extern void abort _ARG_((void));
-    extern ssize_t write _ARG_((int, const void *, size_t));
+    extern void abort(void);
+    extern ssize_t write(int, const void *, size_t);
 #endif
 
 #ifndef cfree
@@ -451,17 +451,17 @@ extern "C" {
 
 /* for malloc.c */
 #ifndef WIN32
-    extern int creat _ARG_((const char *, int));
-    extern int close _ARG_((int));
+    extern int creat(const char *, int);
+    extern int close(int);
 #endif
-    extern int getpid _ARG_((void));
+    extern int getpid(void);
 
 /* for vmexit.c */
 #ifndef WIN32
-    extern int onexit _ARG_((void (*)(void)));
-    extern void _exit _ARG_((int));
+    extern int onexit(void(*)(void));
+    extern void _exit(int);
 #endif
-    extern void _cleanup _ARG_((void));
+    extern void _cleanup(void);
 
 #endif				/*!PACKAGE_ast */
 
@@ -470,7 +470,7 @@ extern "C" {
     typedef int ssize_t;
 #endif
 #if !defined(_WIN32)
-    extern Vmuchar_t *sbrk _ARG_((ssize_t));
+    extern Vmuchar_t *sbrk(ssize_t);
 #endif
 
      _END_EXTERNS_

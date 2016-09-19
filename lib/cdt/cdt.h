@@ -12,10 +12,6 @@
 #define Void_t		void
 #endif
 
-#ifndef _ARG_
-#define _ARG_(x)	x
-#endif
-
 #include <stddef.h>	/* size_t */
 #include <string.h>
 
@@ -50,13 +46,13 @@ typedef struct _dtdata_s	Dtdata_t;
 typedef struct _dt_s		Dt_t;
 typedef struct _dt_s		Dict_t;	/* for libdict compatibility */
 typedef struct _dtstat_s	Dtstat_t;
-typedef Void_t*			(*Dtmemory_f)_ARG_((Dt_t*,Void_t*,size_t,Dtdisc_t*));
-typedef Void_t*			(*Dtsearch_f)_ARG_((Dt_t*,Void_t*,int));
-typedef Void_t* 		(*Dtmake_f)_ARG_((Dt_t*,Void_t*,Dtdisc_t*));
-typedef void 			(*Dtfree_f)_ARG_((Dt_t*,Void_t*,Dtdisc_t*));
-typedef int			(*Dtcompar_f)_ARG_((Dt_t*,Void_t*,Void_t*,Dtdisc_t*));
-typedef unsigned int		(*Dthash_f)_ARG_((Dt_t*,Void_t*,Dtdisc_t*));
-typedef int			(*Dtevent_f)_ARG_((Dt_t*,int,Void_t*,Dtdisc_t*));
+typedef Void_t*			(*Dtmemory_f)(Dt_t*,Void_t*,size_t,Dtdisc_t*);
+typedef Void_t*			(*Dtsearch_f)(Dt_t*,Void_t*,int);
+typedef Void_t* 		(*Dtmake_f)(Dt_t*,Void_t*,Dtdisc_t*);
+typedef void 			(*Dtfree_f)(Dt_t*,Void_t*,Dtdisc_t*);
+typedef int			(*Dtcompar_f)(Dt_t*,Void_t*,Void_t*,Dtdisc_t*);
+typedef unsigned int		(*Dthash_f)(Dt_t*,Void_t*,Dtdisc_t*);
+typedef int			(*Dtevent_f)(Dt_t*,int,Void_t*,Dtdisc_t*);
 
 struct _dtlink_s
 {	Dtlink_t*	right;	/* right child		*/
@@ -221,25 +217,25 @@ _BEGIN_EXTERNS_	/* public functions */
 #define extern	__EXPORT__
 #endif
 
-extern Dt_t*		dtopen _ARG_((Dtdisc_t*, Dtmethod_t*));
-extern int		dtclose _ARG_((Dt_t*));
-extern Dt_t*		dtview _ARG_((Dt_t*, Dt_t*));
-extern Dtdisc_t*	dtdisc _ARG_((Dt_t* dt, Dtdisc_t*, int));
-extern Dtmethod_t*	dtmethod _ARG_((Dt_t*, Dtmethod_t*));
+extern Dt_t*		dtopen(Dtdisc_t*, Dtmethod_t*);
+extern int		dtclose(Dt_t*);
+extern Dt_t*		dtview(Dt_t*, Dt_t*);
+extern Dtdisc_t*	dtdisc(Dt_t* dt, Dtdisc_t*, int);
+extern Dtmethod_t*	dtmethod(Dt_t*, Dtmethod_t*);
 
-extern Dtlink_t*	dtflatten _ARG_((Dt_t*));
-extern Dtlink_t*	dtextract _ARG_((Dt_t*));
-extern int		dtrestore _ARG_((Dt_t*, Dtlink_t*));
+extern Dtlink_t*	dtflatten(Dt_t*);
+extern Dtlink_t*	dtextract(Dt_t*);
+extern int		dtrestore(Dt_t*, Dtlink_t*);
 
-extern int		dttreeset _ARG_((Dt_t*, int, int));
+extern int		dttreeset(Dt_t*, int, int);
 
-extern int		dtwalk _ARG_((Dt_t*, int(*)(Dt_t*,Void_t*,Void_t*), Void_t*));
+extern int		dtwalk(Dt_t*, int(*)(Dt_t*,Void_t*,Void_t*), Void_t*);
 
-extern Void_t*		dtrenew _ARG_((Dt_t*, Void_t*));
+extern Void_t*		dtrenew(Dt_t*, Void_t*);
 
-extern int		dtsize _ARG_((Dt_t*));
-extern int		dtstat _ARG_((Dt_t*, Dtstat_t*, int));
-extern unsigned int	dtstrhash _ARG_((unsigned int, Void_t*, int));
+extern int		dtsize(Dt_t*);
+extern int		dtstat(Dt_t*, Dtstat_t*, int);
+extern unsigned int	dtstrhash(unsigned int, Void_t*, int);
 
 #undef extern
 _END_EXTERNS_

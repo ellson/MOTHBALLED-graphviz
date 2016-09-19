@@ -69,11 +69,6 @@
 #  endif
 #endif /*_BEGIN_EXTERNS_*/
 
-/* _ARG_ simplifies function prototyping among flavors of C */
-#ifndef _ARG_
-#define _ARG_(x)        x
-#endif /*_ARG_*/
-
 /* __INLINE__ is the inline keyword */
 #if !defined(__INLINE__) && defined(__cplusplus)
 #define __INLINE__      inline

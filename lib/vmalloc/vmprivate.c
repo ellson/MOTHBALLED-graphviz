@@ -256,9 +256,9 @@ static int vmtruncate(Vmalloc_t * vm, Seg_t * seg, size_t size, int exact)
 Vmextern_t _Vmextern = { vmextend,	/* _Vmextend    */
     vmtruncate,			/* _Vmtruncate  */
     0,				/* _Vmpagesize  */
-    NIL(char *(*)_ARG_((char *, char *, int))),	/* _Vmstrcpy    */
-    NIL(char *(*)_ARG_((Vmulong_t, int))),	/* _Vmitoa      */
-    NIL(void (*)_ARG_((Vmalloc_t *,
-		       Vmuchar_t *, Vmuchar_t *, size_t, size_t))),	/* _Vmtrace   */
-    NIL(void (*)_ARG_((Vmalloc_t *)))	/* _Vmpfclose       */
+    NIL(char *(*)(char *, char *, int)),	/* _Vmstrcpy    */
+    NIL(char *(*)(Vmulong_t, int)),	/* _Vmitoa      */
+    NIL(void (*)(Vmalloc_t *,
+		       Vmuchar_t *, Vmuchar_t *, size_t, size_t)),	/* _Vmtrace   */
+    NIL(void (*)(Vmalloc_t *))	/* _Vmpfclose       */
 };

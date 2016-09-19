@@ -40,7 +40,7 @@ static char *Version = "\n@(#)sfio (AT&T Labs - kpv) 2001-02-01\0\n";
 #define Sfsignal_f	Sig_handler_t
 #else
 #include		<signal.h>
-typedef void (*Sfsignal_f) _ARG_((int));
+typedef void (*Sfsignal_f) (int);
 #endif
 static int _Sfsigp = 0;		/* # of streams needing SIGPIPE protection */
 

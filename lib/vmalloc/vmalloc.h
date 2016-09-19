@@ -36,9 +36,9 @@ extern "C" {
     typedef struct _vmdisc_s Vmdisc_t;
     typedef struct _vmethod_s Vmethod_t;
     typedef Void_t *(*Vmemory_f)
-	_ARG_((Vmalloc_t *, Void_t *, size_t, size_t, Vmdisc_t *));
+	(Vmalloc_t *, Void_t *, size_t, size_t, Vmdisc_t *);
     typedef int (*Vmexcept_f)
-	_ARG_((Vmalloc_t *, int, Void_t *, Vmdisc_t *));
+	(Vmalloc_t *, int, Void_t *, Vmdisc_t *);
 
     struct _vmstat_s {
 	int n_busy;		/* number of busy blocks        */
@@ -58,13 +58,13 @@ extern "C" {
     };
 
     struct _vmethod_s {
-	Void_t *(*allocf) _ARG_((Vmalloc_t *, size_t));
-	Void_t *(*resizef) _ARG_((Vmalloc_t *, Void_t *, size_t, int));
-	int (*freef) _ARG_((Vmalloc_t *, Void_t *));
-	long (*addrf) _ARG_((Vmalloc_t *, Void_t *));
-	long (*sizef) _ARG_((Vmalloc_t *, Void_t *));
-	int (*compactf) _ARG_((Vmalloc_t *));
-	Void_t *(*alignf) _ARG_((Vmalloc_t *, size_t, size_t));
+	Void_t *(*allocf) (Vmalloc_t *, size_t);
+	Void_t *(*resizef) (Vmalloc_t *, Void_t *, size_t, int);
+	int (*freef) (Vmalloc_t *, Void_t *);
+	long (*addrf) (Vmalloc_t *, Void_t *);
+	long (*sizef) (Vmalloc_t *, Void_t *);
+	int (*compactf) (Vmalloc_t *);
+	Void_t *(*alignf) (Vmalloc_t *, size_t, size_t);
 	unsigned short meth;
     };
 
@@ -135,39 +135,39 @@ extern "C" {
 #if _BLD_vmalloc && defined(__EXPORT__)
 #define extern	__EXPORT__
 #endif
-     extern Vmalloc_t *vmopen _ARG_((Vmdisc_t *, Vmethod_t *, int));
-    extern int vmclose _ARG_((Vmalloc_t *));
-    extern int vmclear _ARG_((Vmalloc_t *));
-    extern int vmcompact _ARG_((Vmalloc_t *));
+     extern Vmalloc_t *vmopen(Vmdisc_t *, Vmethod_t *, int);
+    extern int vmclose(Vmalloc_t *);
+    extern int vmclear(Vmalloc_t *);
+    extern int vmcompact(Vmalloc_t *);
 
-    extern Vmdisc_t *vmdisc _ARG_((Vmalloc_t *, Vmdisc_t *));
+    extern Vmdisc_t *vmdisc(Vmalloc_t *, Vmdisc_t *);
 
-    extern Void_t *vmalloc _ARG_((Vmalloc_t *, size_t));
-    extern Void_t *vmalign _ARG_((Vmalloc_t *, size_t, size_t));
-    extern Void_t *vmresize _ARG_((Vmalloc_t *, Void_t *, size_t, int));
-    extern int vmfree _ARG_((Vmalloc_t *, Void_t *));
+    extern Void_t *vmalloc(Vmalloc_t *, size_t);
+    extern Void_t *vmalign(Vmalloc_t *, size_t, size_t);
+    extern Void_t *vmresize(Vmalloc_t *, Void_t *, size_t, int);
+    extern int vmfree(Vmalloc_t *, Void_t *);
 
-    extern long vmaddr _ARG_((Vmalloc_t *, Void_t *));
-    extern long vmsize _ARG_((Vmalloc_t *, Void_t *));
+    extern long vmaddr(Vmalloc_t *, Void_t *);
+    extern long vmsize(Vmalloc_t *, Void_t *);
 
-    extern Vmalloc_t *vmregion _ARG_((Void_t *));
-    extern Void_t *vmsegment _ARG_((Vmalloc_t *, Void_t *));
-    extern int vmset _ARG_((Vmalloc_t *, int, int));
+    extern Vmalloc_t *vmregion(Void_t *);
+    extern Void_t *vmsegment(Vmalloc_t *, Void_t *);
+    extern int vmset(Vmalloc_t *, int, int);
 
-    extern Void_t *vmdbwatch _ARG_((Void_t *));
-    extern int vmdbcheck _ARG_((Vmalloc_t *));
+    extern Void_t *vmdbwatch(Void_t *);
+    extern int vmdbcheck(Vmalloc_t *);
 
-    extern int vmprofile _ARG_((Vmalloc_t *, int));
+    extern int vmprofile(Vmalloc_t *, int);
 
-    extern int vmtrace _ARG_((int));
-    extern int vmtrbusy _ARG_((Vmalloc_t *));
+    extern int vmtrace(int);
+    extern int vmtrbusy(Vmalloc_t *);
 
-    extern int vmstat _ARG_((Vmalloc_t *, Vmstat_t *));
+    extern int vmstat(Vmalloc_t *, Vmstat_t *);
 
-    extern int vmwalk _ARG_((Vmalloc_t *,
+    extern int vmwalk(Vmalloc_t *,
 			     int (*)(Vmalloc_t *, Void_t *, size_t,
-				     Vmdisc_t *)));
-    extern char *vmstrdup _ARG_((Vmalloc_t *, const char *));
+				     Vmdisc_t *));
+    extern char *vmstrdup(Vmalloc_t *, const char *);
 
 
 #undef extern

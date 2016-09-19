@@ -101,26 +101,26 @@ extern "C" {
 #define EPERM			1
 #endif
 
-     _BEGIN_EXTERNS_ extern Vthread_t *vtopen _ARG_((Vthread_t *, int));
-    extern int vtclose _ARG_((Vthread_t *));
-    extern int vtset _ARG_((Vthread_t *, int, Void_t *));
-    extern int vtrun _ARG_((Vthread_t *, void *(*)(void *), void *));
-    extern int vtkill _ARG_((Vthread_t *));
-    extern int vtwait _ARG_((Vthread_t *));
+     _BEGIN_EXTERNS_ extern Vthread_t *vtopen(Vthread_t *, int);
+    extern int vtclose(Vthread_t *);
+    extern int vtset(Vthread_t *, int, Void_t *);
+    extern int vtrun(Vthread_t *, void *(*)(void *), void *);
+    extern int vtkill(Vthread_t *);
+    extern int vtwait(Vthread_t *);
 
-/*    extern int vtonce _ARG_((Vtonce_t *, void (*)())); */
+/*    extern int vtonce(Vtonce_t *, void (*)()); */
 
-    extern Vtmutex_t *vtmtxopen _ARG_((Vtmutex_t *, int));
-    extern int vtmtxclose _ARG_((Vtmutex_t *));
-    extern int vtmtxlock _ARG_((Vtmutex_t *));
-    extern int vtmtxtrylock _ARG_((Vtmutex_t *));
-    extern int vtmtxunlock _ARG_((Vtmutex_t *));
-    extern int vtmtxclrlock _ARG_((Vtmutex_t *));
+    extern Vtmutex_t *vtmtxopen(Vtmutex_t *, int);
+    extern int vtmtxclose(Vtmutex_t *);
+    extern int vtmtxlock(Vtmutex_t *);
+    extern int vtmtxtrylock(Vtmutex_t *);
+    extern int vtmtxunlock(Vtmutex_t *);
+    extern int vtmtxclrlock(Vtmutex_t *);
 
-    extern Void_t *vtstatus _ARG_((Vthread_t *));
-    extern int vterror _ARG_((Vthread_t *));
-    extern int vtmtxerror _ARG_((Vtmutex_t *));
-    extern int vtonceerror _ARG_((Vtonce_t *));
+    extern Void_t *vtstatus(Vthread_t *);
+    extern int vterror(Vthread_t *);
+    extern int vtmtxerror(Vtmutex_t *);
+    extern int vtonceerror(Vtonce_t *);
 
      _END_EXTERNS_
 #if defined(vt_threaded) && vt_threaded

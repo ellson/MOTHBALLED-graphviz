@@ -21,8 +21,8 @@ hdr dlfcn
 
 std	malloc note{ stuck with standard malloc }end noexecute{
 	_BEGIN_EXTERNS_
-	extern void _exit _ARG_((int));
-	extern char* strdup _ARG_((const char*));
+	extern void _exit(int);
+	extern char* strdup(const char*);
 	#if _STD_
 	char* malloc(unsigned n) { _exit(0); return 0; }
 	#else
@@ -94,8 +94,8 @@ stk down note{ stack grows downward }end execute{
 exit    cleanup note{ stuck with standard _cleanup }end execute{
         #include <stdio.h>
         _BEGIN_EXTERNS_
-        extern void exit _ARG_((int));
-        extern void _exit _ARG_((int));
+        extern void exit(int);
+        extern void _exit(int);
         extern void _cleanup();
         void _cleanup() { _exit(0); }
         _END_EXTERNS_
