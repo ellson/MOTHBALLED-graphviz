@@ -14,10 +14,7 @@ lib qfrexp
 lib qldexp
 
 hdr unistd
-hdr values
-hdr floatingpoint
 hdr float
-hdr limits
 lib atexit
 lib onexit
 

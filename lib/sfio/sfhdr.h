@@ -80,10 +80,7 @@ extern "C" {
 #undef  _hdr_vfork
 #undef  _sys_vfork
 #undef  _lib_vfork
-#undef  _hdr_floatingpoint
 #undef  _hdr_float
-#undef  _hdr_values
-#undef  _hdr_limits
 #undef  _hdr_math
 #undef  _sys_mman
 #undef  _hdr_mman
@@ -229,66 +226,13 @@ extern "C" {
 
 #if _hdr_math
 #include	<math.h>
-#if !defined(SF_MAXDOUBLE) && defined(MAXDOUBLE)
-#define SF_MAXDOUBLE	MAXDOUBLE
-#endif
-#if !defined(SF_MAXDOUBLE) && defined(DBL_MAX)
-#define SF_MAXDOUBLE	DBL_MAX
-#endif
 #endif
 
-#ifdef MAXFLOAT			/* on some platforms, these are defined in both values.h and math.h */
-#undef MAXFLOAT			/* we don't need them so we zap them here to avoid compiler warnings */
-#endif
-#ifdef MAXSHORT
-#undef MAXSHORT
-#endif
-#ifdef MAXINT
-#undef MAXINT
-#endif
-#ifdef MAXLONG
-#undef MAXLONG
-#endif
-
-#if _hdr_limits
-#include	<limits.h>
-#else
-#if _hdr_values
-#include	<values.h>
-#if !defined(SF_MAXDOUBLE) && defined(MAXDOUBLE)
-#define SF_MAXDOUBLE	MAXDOUBLE
-#endif
-#if !defined(SF_MAXDOUBLE) && defined(DBL_MAX)
-#define SF_MAXDOUBLE	DBL_MAX
-#endif
-#endif
-#endif
-
-#if !defined(SF_MAXDOUBLE) && defined(_hdr_floatingpoint)
-#include	<floatingpoint.h>
-#if !defined(SF_MAXDOUBLE) && defined(MAXDOUBLE)
-#define SF_MAXDOUBLE	MAXDOUBLE
-#endif
-#if !defined(SF_MAXDOUBLE) && defined(DBL_MAX)
-#define SF_MAXDOUBLE	DBL_MAX
-#endif
-#endif
-
-#if !defined(SF_MAXDOUBLE) && _hdr_float
+#if _hdr_float
 #include	<float.h>
-#if !defined(SF_MAXDOUBLE) && defined(MAXDOUBLE)
-#define SF_MAXDOUBLE	MAXDOUBLE
-#endif
-#if !defined(SF_MAXDOUBLE) && defined(DBL_MAX)
-#define SF_MAXDOUBLE	DBL_MAX
-#endif
 #endif
 
 #if !defined(_ast_fltmax_double)
-
-#if !defined(SF_MAXDOUBLE)
-#define SF_MAXDOUBLE	1.79769313486231570e+308
-#endif
 
 #if defined(_lib_qfrexp) && _lib_qldexp
 #define _has_expfuncs	1

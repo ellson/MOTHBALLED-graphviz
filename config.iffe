@@ -30,7 +30,6 @@ hdr ft2build
 hdr getopt
 hdr iconv
 hdr inttypes
-hdr limits
 hdr malloc
 hdr ndir
 hdr netdb
@@ -42,7 +41,6 @@ hdr stdint
 hdr strings
 hdr termios
 hdr unistd
-hdr values
 
 sys types
 sys socket

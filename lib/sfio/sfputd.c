@@ -47,7 +47,7 @@ Sfdouble_t v;
 	n = 0;
 
 #if !defined(_ast_fltmax_double)		/* don't know how to do these yet */
-    if (v > SF_MAXDOUBLE && !_has_expfuncs) {
+    if (v > DBL_MAX && !_has_expfuncs) {
 	SFOPEN(f, 0);
 	SFMTXRETURN(f, -1);
     }
