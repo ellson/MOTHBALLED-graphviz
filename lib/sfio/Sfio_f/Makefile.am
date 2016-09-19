@@ -19,5 +19,3 @@ ${top_builddir}/FEATURE/sfio:  ${top_srcdir}/lib/sfio/features/sfio
 $(libsfiof_C_la_OBJECTS): ${top_builddir}/FEATURE/sfio
 
 DISTCLEANFILES = ${top_builddir}/FEATURE/sfio
-
-EXTRA_DIST = Makefile.old
