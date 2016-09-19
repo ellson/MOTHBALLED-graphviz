@@ -11,9 +11,7 @@
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,11 +20,7 @@
 #include "QuadTree.h"
 #include <time.h>
 #include "SparseMatrix.h"
-#ifdef HAVE_GETOPT_H
 #include <getopt.h>
-#else
-#include "compat_getopt.h"
-#endif
 #include "string.h"
 #include "make_map.h"
 #include "spring_electrical.h"

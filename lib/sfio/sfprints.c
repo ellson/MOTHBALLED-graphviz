@@ -20,24 +20,12 @@
 **	Written by Kiem-Phong Vo.
 */
 
-#if __STD_C
 char *sfprints(const char *form, ...)
-#else
-char *sfprints(va_alist)
-va_dcl
-#endif
 {
     va_list args;
     reg int rv;
     static Sfio_t *f;
-
-#if __STD_C
     va_start(args, form);
-#else
-    reg char *form;
-    va_start(args);
-    form = va_arg(args, char *);
-#endif
 
     /* make a fake stream */
     if (!f &&

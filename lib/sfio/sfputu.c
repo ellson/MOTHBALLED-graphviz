@@ -18,13 +18,13 @@
 **	Written by Kiem-Phong Vo.
 */
 
-#if __STD_C
+/**
+ * @param f write a portable ulong to this stream
+ * @param v the unsigned value to be written
+ * @param 
+ * @param 
+ */
 int _sfputu(reg Sfio_t * f, Sfulong_t v)
-#else
-int _sfputu(f, v)
-reg Sfio_t *f;			/* write a portable ulong to this stream */
-Sfulong_t v;			/* the unsigned value to be written */
-#endif
 {
 #define N_ARRAY		(2*sizeof(Sfulong_t))
     reg uchar *s, *ps;

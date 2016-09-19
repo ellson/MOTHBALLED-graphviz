@@ -32,12 +32,7 @@
 static char Meta[1 << CHAR_BIT], **Path;
 
 /* execute command directly if possible; else use the shell */
-#if __STD_C
 static void execute(const char *argcmd)
-#else
-static void execute(argcmd)
-char *argcmd;
-#endif
 {
     reg char *s, *cmd, **argv, **p, *interp;
     reg int n;
@@ -126,14 +121,12 @@ char *argcmd;
 #endif /*defined(_PACKAGE_ast)*/
 
 #ifndef WIN32
-#if __STD_C
+/**
+ * @param f
+ * @param command command to execute
+ * @param mode mode of the stream
+ */
 Sfio_t *sfpopen(Sfio_t * f, const char *command, const char *mode)
-#else
-Sfio_t *sfpopen(f, command, mode)
-Sfio_t *f;
-char *command;			/* command to execute */
-char *mode;			/* mode of the stream */
-#endif
 {
 #if defined(_PACKAGE_ast)
     reg Proc_t *proc;

@@ -17,12 +17,7 @@
 **
 **	Written by Kiem-Phong Vo, kpv@research.att.com, 01/16/94.
 */
-#if __STD_C
 int vmclose(Vmalloc_t * vm)
-#else
-int vmclose(vm)
-Vmalloc_t *vm;
-#endif
 {
     reg Seg_t *seg, *vmseg;
     reg Vmemory_f memoryf;

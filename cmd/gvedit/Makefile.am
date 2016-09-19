@@ -28,7 +28,6 @@ gvedit_CPPFLAGS = \
 	$(QTGUI_CFLAGS) \
 	$(QTCORE_CFLAGS) \
 	-DDEMAND_LOADING=1 \
-	-DHAVE_CONFIG_H \
 	-DGVEDIT_DATADIR=\""$(pkgdatadir)/gvedit"\"
 
 gvedit_LDADD = \

@@ -22,15 +22,13 @@
 */
 #define MAX_SSIZE	((ssize_t)((~((size_t)0)) >> 1))
 
-#if __STD_C
+/**
+ * @param fr moving data from this stream
+ * @param fw moving data to this stream
+ * @param n number of bytes/records to move. <0 for unbounded move
+ * @param rc record separator
+ */
 Sfoff_t sfmove(Sfio_t * fr, Sfio_t * fw, Sfoff_t n, reg int rc)
-#else
-Sfoff_t sfmove(fr, fw, n, rc)
-Sfio_t *fr;			/* moving data from this stream */
-Sfio_t *fw;			/* moving data to this stream */
-Sfoff_t n;			/* number of bytes/records to move. <0 for unbounded move */
-reg int rc;			/* record separator */
-#endif
 {
     reg uchar *cp, *next;
     reg ssize_t r, w;

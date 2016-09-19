@@ -12,9 +12,7 @@
  *************************************************************************/
 
 
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
+#include "config.h"
 #include "builddate.h"
 //windows.h for win machines
 #if defined(_WIN32) && !defined(__CYGWIN__)
@@ -40,11 +38,7 @@
 #include "glexpose.h"
 #include "glutrender.h"
 
-#ifdef HAVE_GETOPT_H
 #include <getopt.h>
-#else
-#include "compat_getopt.h"
-#endif
 
 #ifdef G_OS_WIN32
 gchar *package_prefix;

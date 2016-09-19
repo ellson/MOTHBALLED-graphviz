@@ -18,12 +18,7 @@
 **	Written by Kiem-Phong Vo.
 */
 
-#if __STD_C
 int sfpurge(reg Sfio_t * f)
-#else
-int sfpurge(f)
-reg Sfio_t *f;
-#endif
 {
     reg int mode;
 

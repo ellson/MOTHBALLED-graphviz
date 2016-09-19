@@ -111,16 +111,8 @@ typedef struct {
 static char_type rmask[9] =
     { 0x00, 0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f, 0x7f, 0xff };
 
-#if __STD_C
 static int peek(Sfio_t * f, char_type ** bufp, int count,
 		reg LZW_Disc * disc)
-#else
-static int peek(f, bufp, count, disc)
-Sfio_t *f;
-char_type **bufp;
-int count;
-reg LZW_Disc *disc;
-#endif
 {
     reg int io_sz, j;
 
@@ -156,13 +148,7 @@ reg LZW_Disc *disc;
  * 	code or -1 is returned.
  */
 
-#if __STD_C
 static code_int getcode(Sfio_t * f, LZW_Disc * disc)
-#else
-static code_int getcode(f, disc)
-Sfio_t *f;
-LZW_Disc *disc;
-#endif
 {
     reg code_int code;
     reg int r_off, bits;
@@ -220,15 +206,7 @@ LZW_Disc *disc;
 }
 
 
-#if __STD_C
 static int lzwExcept(Sfio_t * f, int type, Void_t * data, Sfdisc_t * disc)
-#else
-static int lzwExcept(f, type, data, disc)
-Sfio_t *f;
-int type;
-Void_t *data;
-Sfdisc_t *disc;
-#endif
 {
     if (type == SF_FINAL || type == SF_DPOP)
 	free(disc);
@@ -243,16 +221,8 @@ Sfdisc_t *disc;
  * with those of the compress() routine.  See the definitions above.
  */
 
-#if __STD_C
 ssize_t lzwRead(Sfio_t * f, Void_t * iobuf, size_t iocnt,
 		Sfdisc_t * sfdisc)
-#else
-ssize_t lzwRead(f, iobuf, iocnt, sfdisc)
-Sfio_t *f;
-Void_t *iobuf;
-size_t iocnt;
-Sfdisc_t *sfdisc;
-#endif
 {
     LZW_Disc *disc = (LZW_Disc *) sfdisc;
     reg char_type *stackp;
@@ -358,42 +328,21 @@ Sfdisc_t *sfdisc;
     END_REGS return ioptr - (char *) iobuf;
 }
 
-#if __STD_C
 static Sfoff_t lzwSeek(Sfio_t * f, Sfoff_t offset, int whence,
 		       Sfdisc_t * disc)
-#else
-static Sfoff_t lzwSeek(f, offset, whence, disc)
-Sfio_t *f;
-Sfoff_t offset;
-int whence;
-Sfdisc_t *disc;
-#endif
 {
     return (Sfoff_t) (-1);
 }
 
 
-#if __STD_C
 static ssize_t lzwWrite(Sfio_t * f, const Void_t * buf, size_t count,
 			Sfdisc_t * disc)
-#else
-static ssize_t lzwWrite(f, buf, count, disc)
-Sfio_t *f;
-Void_t *buf;
-size_t count;
-Sfdisc_t *disc;
-#endif
 {
     return (ssize_t) (-1);
 }
 
 
-#if __STD_C
 int sfdclzw(Sfio_t * f)
-#else
-int sfdclzw(f)
-Sfio_t *f;
-#endif
 {
     LZW_Disc *lz;
 

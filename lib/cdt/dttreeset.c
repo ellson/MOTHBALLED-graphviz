@@ -5,13 +5,7 @@
 ** Written by Kiem-Phong Vo (09/17/2001)
 */
 
-#if __STD_C
 static Dtlink_t* treebalance(Dtlink_t* list, int size)
-#else
-static Dtlink_t* treebalance(list, size)
-Dtlink_t*	list;
-int		size;
-#endif
 {
 	int		n;
 	Dtlink_t	*l, *mid;
@@ -28,14 +22,7 @@ int		size;
 	return mid;
 }
 
-#if __STD_C
 int dttreeset(Dt_t* dt, int minp, int balance)
-#else
-int dttreeset(dt, minp, balance)
-Dt_t*	dt;
-int	minp;
-int	balance;
-#endif
 {
 	int	size;
 

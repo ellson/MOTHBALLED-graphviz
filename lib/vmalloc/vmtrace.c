@@ -21,14 +21,7 @@
 static int Trfile = -1;
 static char Trbuf[128];
 
-#if __STD_C
 static char *trstrcpy(char *to, char *from, int endc)
-#else
-static char *trstrcpy(to, from, endc)
-char *to;
-char *from;
-int endc;
-#endif
 {
     reg int n;
 
@@ -40,14 +33,13 @@ int endc;
     return to;
 }
 
-/* convert a long value to an ascii representation */
-#if __STD_C
+/*
+ * convert a long value to an ascii representation
+ *
+ * @param v value to convert
+ * @param type =0 base-16, >0: unsigned base-10, <0: signed base-10
+ */
 static char *tritoa(Vmulong_t v, int type)
-#else
-static char *tritoa(v, type)
-Vmulong_t v;			/* value to convert                                     */
-int type;			/* =0 base-16, >0: unsigned base-10, <0: signed base-10 */
-#endif
 {
     char *s;
 
@@ -82,19 +74,17 @@ int type;			/* =0 base-16, >0: unsigned base-10, <0: signed base-10 */
     return s + 1;
 }
 
-/* generate a trace of some call */
-#if __STD_C
+/**
+ * generate a trace of some call
+ * @param vm region call was made from
+ * @param newaddr old data address
+ * @param newaddr new data address
+ * @param size size of piece
+ * @param align alignment
+ */
 static void trtrace(Vmalloc_t * vm,
 		    Vmuchar_t * oldaddr, Vmuchar_t * newaddr, size_t size,
 		    size_t align)
-#else
-static void trtrace(vm, oldaddr, newaddr, size, align)
-Vmalloc_t *vm;			/* region call was made from    */
-Vmuchar_t *oldaddr;		/* old data address             */
-Vmuchar_t *newaddr;		/* new data address             */
-size_t size;			/* size of piece                */
-size_t align;			/* alignment                    */
-#endif
 {
     char buf[1024], *bufp, *endbuf;
     reg Vmdata_t *vd = vm->data;
@@ -144,12 +134,7 @@ size_t align;			/* alignment                    */
     write(Trfile, buf, (bufp - buf));
 }
 
-#if __STD_C
 int vmtrace(int file)
-#else
-int vmtrace(file)
-int file;
-#endif
 {
     int fd;
 
@@ -162,12 +147,7 @@ int file;
     return fd;
 }
 
-#if __STD_C
 int vmtrbusy(Vmalloc_t * vm)
-#else
-int vmtrbusy(vm)
-Vmalloc_t *vm;
-#endif
 {
     Seg_t *seg;
     Vmdata_t *vd = vm->data;

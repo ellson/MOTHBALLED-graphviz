@@ -18,14 +18,10 @@ extern "C" {
 #ifndef CONVERT_H
 #define CONVERT_H
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include <stdio.h>
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
 #include <string.h>
 
 #include "cgraph.h"

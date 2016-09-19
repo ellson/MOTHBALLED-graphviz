@@ -17,9 +17,7 @@
  * Updated by Emden Gansner
  */
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #ifdef WIN32 /*dependencies*/
     #pragma comment( lib, "cgraph.lib" )
@@ -47,11 +45,7 @@ typedef struct Agnodeinfo_t {
 #include <unistd.h>
 #endif
 
-#ifdef HAVE_GETOPT_H
 #include <getopt.h>
-#else
-#include "compat_getopt.h"
-#endif
 
 double Defcolor[NC] = { 0.0, 0.0, 1.0 };	/* white */
 int Forward = 1;		/* how to propagate colors w.r.t. ranks */

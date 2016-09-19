@@ -80,27 +80,16 @@ extern "C" {
 #undef  _hdr_vfork
 #undef  _sys_vfork
 #undef  _lib_vfork
-#undef  _hdr_floatingpoint
 #undef  _hdr_float
-#undef  _hdr_values
-#undef  _hdr_limits
 #undef  _hdr_math
 #undef  _sys_mman
 #undef  _hdr_mman
 #undef  _sys_ioctl
 #endif
 
-#if _hdr_stdlib
 #include	<stdlib.h>
-#endif
-
-#if _hdr_string
 #include	<string.h>
-#endif
-
-#if _hdr_stdint
 #include	<stdint.h>
-#endif
 
 #if _hdr_stddef
 #include	<stddef.h>
@@ -237,66 +226,13 @@ extern "C" {
 
 #if _hdr_math
 #include	<math.h>
-#if !defined(SF_MAXDOUBLE) && defined(MAXDOUBLE)
-#define SF_MAXDOUBLE	MAXDOUBLE
-#endif
-#if !defined(SF_MAXDOUBLE) && defined(DBL_MAX)
-#define SF_MAXDOUBLE	DBL_MAX
-#endif
 #endif
 
-#ifdef MAXFLOAT			/* on some platforms, these are defined in both values.h and math.h */
-#undef MAXFLOAT			/* we don't need them so we zap them here to avoid compiler warnings */
-#endif
-#ifdef MAXSHORT
-#undef MAXSHORT
-#endif
-#ifdef MAXINT
-#undef MAXINT
-#endif
-#ifdef MAXLONG
-#undef MAXLONG
-#endif
-
-#if _hdr_limits
-#include	<limits.h>
-#else
-#if _hdr_values
-#include	<values.h>
-#if !defined(SF_MAXDOUBLE) && defined(MAXDOUBLE)
-#define SF_MAXDOUBLE	MAXDOUBLE
-#endif
-#if !defined(SF_MAXDOUBLE) && defined(DBL_MAX)
-#define SF_MAXDOUBLE	DBL_MAX
-#endif
-#endif
-#endif
-
-#if !defined(SF_MAXDOUBLE) && defined(_hdr_floatingpoint)
-#include	<floatingpoint.h>
-#if !defined(SF_MAXDOUBLE) && defined(MAXDOUBLE)
-#define SF_MAXDOUBLE	MAXDOUBLE
-#endif
-#if !defined(SF_MAXDOUBLE) && defined(DBL_MAX)
-#define SF_MAXDOUBLE	DBL_MAX
-#endif
-#endif
-
-#if !defined(SF_MAXDOUBLE) && _hdr_float
+#if _hdr_float
 #include	<float.h>
-#if !defined(SF_MAXDOUBLE) && defined(MAXDOUBLE)
-#define SF_MAXDOUBLE	MAXDOUBLE
-#endif
-#if !defined(SF_MAXDOUBLE) && defined(DBL_MAX)
-#define SF_MAXDOUBLE	DBL_MAX
-#endif
 #endif
 
 #if !defined(_ast_fltmax_double)
-
-#if !defined(SF_MAXDOUBLE)
-#define SF_MAXDOUBLE	1.79769313486231570e+308
-#endif
 
 #if defined(_lib_qfrexp) && _lib_qldexp
 #define _has_expfuncs	1
@@ -322,11 +258,7 @@ extern "C" {
 #endif
 
 /* to get rid of pesky compiler warnings */
-#if __STD_C
 #define NOTUSED(x)	(void)(x)
-#else
-#define NOTUSED(x)	(&x,1)
-#endif
 
 /* Private flags in the "bits" field */
 #define SF_MMAP		00000001	/* in memory mapping mode               */
@@ -1004,30 +936,6 @@ extern "C" {
 #endif
 
 #if !defined(_PACKAGE_ast)
-
-#if /*!__STDC__ &&*/ !_hdr_stdlib
-    extern void abort _ARG_((void));
-    extern int atexit _ARG_((void (*)(void)));
-    extern char *getenv _ARG_((const char *));
-    extern void *malloc _ARG_((size_t));
-    extern void *realloc _ARG_((void *, size_t));
-    extern void free _ARG_((void *));
-    extern size_t strlen _ARG_((const char *));
-    extern char *strcpy _ARG_((char *, const char *));
-
-    extern Void_t *memset _ARG_((void *, int, size_t));
-    extern Void_t *memchr _ARG_((const void *, int, size_t));
-    extern Void_t *memccpy _ARG_((void *, const void *, int, size_t));
-#ifndef memcpy
-    extern Void_t *memcpy _ARG_((void *, const void *, size_t));
-#endif
-#if !defined(strtod)
-    extern double strtod _ARG_((const char *, char **));
-#endif
-#if !defined(remove)
-    extern int remove _ARG_((const char *));
-#endif
-#endif				/* !__STDC__ && !_hdr_stdlib */
 
 #ifdef WIN32
 #undef SF_ERROR

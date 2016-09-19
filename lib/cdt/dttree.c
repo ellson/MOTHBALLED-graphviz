@@ -8,14 +8,7 @@
 **      Written by Kiem-Phong Vo (5/25/96)
 */
 
-#if __STD_C
 static Void_t* dttree(Dt_t* dt, Void_t* obj, int type)
-#else
-static Void_t* dttree(dt,obj,type)
-Dt_t*		dt;
-Void_t* 	obj;
-int		type;
-#endif
 {
 	Dtlink_t	*root, *t;
 	int		cmp, lk, sz, ky;

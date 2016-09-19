@@ -40,9 +40,7 @@
  *         erik@sra.co.jp
  */
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 #include <stdio.h>
 
 #ifdef SEL_FILE_IGNORE_CASE
@@ -81,9 +79,7 @@
 extern void qsort ();
 #endif /* defined (SVR4) || defined (SYSV) || defined (USG) */
 
-#ifdef HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
+#include <stdlib.h>
 
 #include "SFDecls.h"
 

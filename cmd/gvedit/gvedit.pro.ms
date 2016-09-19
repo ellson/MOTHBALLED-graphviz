@@ -1,5 +1,4 @@
 # Rename gvedit.pro, run 'qmake -tp vc' to create gvedit.vcproj file
-DEFINES += HAVE_CONFIG_H
 LIBS += \
         -LC:/gtk/lib \
         -LC:/graphviz-ms/bin \

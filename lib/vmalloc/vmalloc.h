@@ -169,17 +169,6 @@ extern "C" {
 				     Vmdisc_t *)));
     extern char *vmstrdup _ARG_((Vmalloc_t *, const char *));
 
-#if !defined(_AST_STD_H) && \
-	!defined(__stdlib_h) && !defined(__STDLIB_H) && !defined(_hdr_stdlib) && \
-	!defined(_STDLIB_INCLUDED) && !defined(_INC_STDLIB)
-    extern Void_t *malloc _ARG_((size_t));
-    extern Void_t *realloc _ARG_((Void_t *, size_t));
-    extern void free _ARG_((Void_t *));
-    extern void cfree _ARG_((Void_t *));
-    extern Void_t *calloc _ARG_((size_t, size_t));
-    extern Void_t *memalign _ARG_((size_t, size_t));
-    extern Void_t *valloc _ARG_((size_t));
-#endif
 
 #undef extern
      _END_EXTERNS_
@@ -197,27 +186,12 @@ extern "C" {
 				 (*(_VM_(vm)->meth.freef))((vm),(Void_t*)(d)) )
 #define vmalign(vm,sz,align)	(_VMFL_(vm), \
 				 (*(_VM_(vm)->meth.alignf))((vm),(sz),(align)) )
-#if __STD_C || defined(__STDPP__) || defined(__GNUC__)
 #define malloc(s)		(_VMFL_(Vmregion), malloc((size_t)(s)) )
 #define realloc(d,s)		(_VMFL_(Vmregion), realloc((Void_t*)(d),(size_t)(s)) )
 #define calloc(n,s)		(_VMFL_(Vmregion), calloc((size_t)n, (size_t)(s)) )
 #define free(d)			(_VMFL_(Vmregion), free((Void_t*)(d)) )
 #define memalign(a,s)		(_VMFL_(Vmregion), memalign((size_t)(a),(size_t)(s)) )
 #define valloc(s)		(_VMFL_(Vmregion), valloc((size_t)(s) )
-#else
-#define _VMNM_(a,b,c,d,e,f)	a/**/b/**/c/**/d/**/e/**/f
-#define malloc(s)		(_VMFL_(Vmregion), _VMNM_(mallo,/,*,*,/,c)\
-						((size_t)(s)) )
-#define realloc(d,s)		(_VMFL_(Vmregion), _VMNM_(reallo,/,*,*,/,c)\
-						((Void_t*)(d),(size_t)(s)) )
-#define calloc(n,s)		(_VMFL_(Vmregion), _VMNM_(callo,/,*,*,/,c)\
-						((size_t)n, (size_t)(s)) )
-#define free(d)			(_VMFL_(Vmregion), _VMNM_(fre,/,*,*,/,e)((Void_t*)(d)) )
-#define memalign(a,s)		(_VMFL_(Vmregion), _VMNM_(memalig,/,*,*,/,n)\
-						((size_t)(a),(size_t)(s)) )
-#define valloc(s)		(_VMFL_(Vmregion), _VMNM_(vallo,/,*,*,/,c)\
-						((size_t)(s) )
-#endif /*__STD_C || defined(__STDPP__) || defined(__GNUC__)*/
 #define cfree(d)		free(d)
 #endif				/*defined(VMFL) && defined(__FILE__) && defined(__LINE__) */
 /* non-debugging/profiling allocation calls */

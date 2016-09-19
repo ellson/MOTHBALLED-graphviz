@@ -6,12 +6,7 @@
 **	Written by Kiem-Phong Vo (5/25/96).
 */
 
-#if __STD_C
 Dtlink_t* dtflatten(Dt_t* dt)
-#else
-Dtlink_t* dtflatten(dt)
-Dt_t*	dt;
-#endif
 {
 	reg Dtlink_t	*t, *r, *list, *last, **s, **ends;
 

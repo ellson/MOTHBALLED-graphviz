@@ -56,9 +56,7 @@
 #undef PACKAGE_VERSION
 #undef PACKAGE_NAME
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 #include "gvc.h"
 
 /** New graphs */

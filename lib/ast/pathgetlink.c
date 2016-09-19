@@ -16,9 +16,7 @@
 * AT&T Bell Laboratories
 */
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 #include "errno.h"
 
 #ifdef UNIV_MAX

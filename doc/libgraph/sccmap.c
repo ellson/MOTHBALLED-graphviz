@@ -9,9 +9,7 @@
  * Contributors: See CVS logs. Details at http://www.graphviz.org/
  *************************************************************************/
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,11 +19,7 @@
 #include "cgraph.h"
 #include "ingraphs.h"
 
-#ifdef HAVE_GETOPT_H
 #include <getopt.h>
-#else
-#include "compat_getopt.h"
-#endif
 
 #define INF ((unsigned int)(-1))
 

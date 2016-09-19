@@ -44,9 +44,6 @@
 /* Define if you have the ann library */
 #define HAVE_ANN 1
 
-/* Define to 1 if compiler supports bool */
-#define HAVE_BOOL 1
-
 /* Define to 1 if you have the `cbrt' function. */
 //#define HAVE_CBRT 1
 
@@ -146,12 +143,6 @@
 
 /* Define to 1 if you have the `getenv' function. */
 #define HAVE_GETENV 1
-
-/* Define if getopt externs are declared */
-#define HAVE_GETOPT_DECL 1
-
-/* Define to 1 if you have the <getopt.h> header file. */
-#define HAVE_GETOPT_H 1
 
 /* Define to 1 if you have the `getrusage' function. */
 /* #undef HAVE_GETRUSAGE */
@@ -304,9 +295,6 @@
 /* Define to 1 if you have the <stdint.h> header file. */
 //#define HAVE_STDINT_H 1
 
-/* Define to 1 if you have the <stdlib.h> header file. */
-#define HAVE_STDLIB_H 1
-
 /* Define to 1 if you have the `strcasecmp' function. */
 //#define HAVE_STRCASECMP 1
 
@@ -321,9 +309,6 @@
 
 /* Define to 1 if you have the <strings.h> header file. */
 //#define HAVE_STRINGS_H 1
-
-/* Define to 1 if you have the <string.h> header file. */
-#define HAVE_STRING_H 1
 
 /* Define to 1 if you have the `strncasecmp' function. */
 //#define HAVE_STRNCASECMP 1
@@ -420,8 +405,6 @@
 /* Define to 1 if the system has the type `_Bool'. */
 #define HAVE__BOOL 1
 
-#define HAVE_BOOLEAN 1
-
 /* Define to 1 if you have the `_NSGetEnviron' function. */
 /* #undef HAVE__NSGETENVIRON */
 
@@ -513,9 +496,6 @@
 
 /* Define to `unsigned int' if <sys/types.h> does not define. */
 /* #undef size_t */
-
-/* Define to unsigned if socklet_t is missing */
-#define socklen_t unsigned
 
 /* Define to `int' if <sys/types.h> does not define. */
 //#define ssize_t int

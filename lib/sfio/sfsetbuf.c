@@ -44,14 +44,12 @@ _END_EXTERNS_
 #define fstat(fd,st)	(-1)
 #endif /*_sys_stat*/
 
-#if __STD_C
+/**
+ * @param f stream to be buffered
+ * @param buf new buffer
+ * @param size buffer size, -1 for default size
+ */
 Void_t *sfsetbuf(reg Sfio_t * f, reg Void_t * buf, reg size_t size)
-#else
-Void_t *sfsetbuf(f, buf, size)
-reg Sfio_t *f;			/* stream to be buffered */
-reg Void_t *buf;		/* new buffer */
-reg size_t size;		/* buffer size, -1 for default size */
-#endif
 {
     reg int sf_malloc;
     reg uchar *obuf;

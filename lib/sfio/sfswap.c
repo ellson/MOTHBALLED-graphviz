@@ -21,13 +21,7 @@
 **	Written by Kiem-Phong Vo.
 */
 
-#if __STD_C
 Sfio_t *sfswap(reg Sfio_t * f1, reg Sfio_t * f2)
-#else
-Sfio_t *sfswap(f1, f2)
-reg Sfio_t *f1;
-reg Sfio_t *f2;
-#endif
 {
     Sfio_t tmp;
     int f1pool, f2pool, f1mode, f2mode, f1flags, f2flags;

@@ -18,13 +18,7 @@
 **	Written by Kiem-Phong Vo.
 */
 
-#if __STD_C
 int _sfputd(Sfio_t * f, Sfdouble_t v)
-#else
-int _sfputd(f, v)
-Sfio_t *f;
-Sfdouble_t v;
-#endif
 {
 #define N_ARRAY		(16*sizeof(Sfdouble_t))
     reg ssize_t n, w;
@@ -47,7 +41,7 @@ Sfdouble_t v;
 	n = 0;
 
 #if !defined(_ast_fltmax_double)		/* don't know how to do these yet */
-    if (v > SF_MAXDOUBLE && !_has_expfuncs) {
+    if (v > DBL_MAX && !_has_expfuncs) {
 	SFOPEN(f, 0);
 	SFMTXRETURN(f, -1);
     }

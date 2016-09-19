@@ -1,24 +1,14 @@
 #ifndef _AST_COMMON_H
 #define _AST_COMMON_H   1
 
-#ifdef HAVE_CONFIG_H
-#  include "config.h"
-#endif
+#include "config.h"
 
 #ifdef HAVE_SYS_TYPES_H
 #  define _sys_types 1
 #endif
 
-#ifdef HAVE_LIMITS_H
-#  define _hdr_limits 1
-#endif
-
 #ifdef HAVE_FLOAT_H
 #  define _hdr_float 1
-#endif
-
-#ifdef HAVE_VALUES_H
-#  define _hdr_values 1
 #endif
 
 #ifdef HAVE_SYS_TYPES_H
@@ -45,24 +35,12 @@
 #  define _sys_times 1
 #endif
 
-#ifdef HAVE_STDLIB_H
-#  define _hdr_stdlib 1
-#endif
-
 #ifdef HAVE_SYS_SOCKET_H
 #  define _sys_socket 1
 #endif
 
 #ifdef HAVE_SYS_STAT_H
 #  define _sys_stat 1
-#endif
-
-#ifdef HAVE_STRING_H
-#  define _hdr_string 1
-#endif
-
-#ifdef HAVE_STDINT_H
-#  define _hdr_stdint 1
 #endif
 
 #ifdef HAVE_STDARG_H
@@ -80,20 +58,6 @@
 #define _proto_stdc 1		/* Standard-C prototypes ok  */
 /* */
 
-/* __STD_C indicates that the language is ANSI-C or C++ */
-#if !defined(__STD_C) && defined(__STDC__)
-#define __STD_C         1
-#endif
-#if !defined(__STD_C) && (defined(__cplusplus) || defined(c_plusplus))
-#define __STD_C         1
-#endif
-#if !defined(__STD_C) && _proto_stdc
-#define __STD_C         1
-#endif
-#if !defined(__STD_C)
-#define __STD_C         0
-#endif
-
 /* extern symbols must be protected against C++ name mangling */
 #ifndef _BEGIN_EXTERNS_
 #  if defined(__cplusplus) || defined(c_plusplus)
@@ -107,11 +71,7 @@
 
 /* _ARG_ simplifies function prototyping among flavors of C */
 #ifndef _ARG_
-#if __STD_C
 #define _ARG_(x)        x
-#else
-#define _ARG_(x)        ()
-#endif
 #endif /*_ARG_*/
 
 /* __INLINE__ is the inline keyword */
@@ -124,11 +84,7 @@
 
 /* Void_t is defined so that Void_t* can address any type */
 #ifndef Void_t
-#if __STD_C
 #define Void_t          void
-#else
-#define Void_t          char
-#endif
 #endif				/*Void_t */
 
 /* dynamic linked library external scope handling */

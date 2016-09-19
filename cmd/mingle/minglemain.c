@@ -8,9 +8,7 @@
  *
  *************************************************************************/
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #ifdef WIN32 /*dependencies*/
     #pragma comment( lib, "cgraph.lib" )
@@ -28,11 +26,7 @@
 #include <agxbuf.h>
 #include <ingraphs.h>
 #include <pointset.h>
-#ifdef HAVE_GETOPT_H
 #include <getopt.h>
-#else
-#include "compat_getopt.h"
-#endif
 
 #include "DotIO.h"
 #include "edge_bundling.h"

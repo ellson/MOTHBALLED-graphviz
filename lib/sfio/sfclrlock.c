@@ -19,12 +19,7 @@
 **
 **	Written by Kiem-Phong Vo
 */
-#if __STD_C
 int sfclrlock(reg Sfio_t * f)
-#else
-int sfclrlock(f)
-reg Sfio_t *f;
-#endif
 {
     int rv;
 

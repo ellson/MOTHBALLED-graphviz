@@ -22,9 +22,7 @@
  * transitive reduction on stdout
  */
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include "cgraph.h"
 #include <stdlib.h>
@@ -41,11 +39,7 @@ typedef struct {
 #endif
 #include "ingraphs.h"
 
-#ifdef HAVE_GETOPT_H
 #include <getopt.h>
-#else
-#include "compat_getopt.h"
-#endif
 
 char **Files;
 char *CmdName;

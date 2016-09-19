@@ -23,14 +23,12 @@
 **	Written by Kiem-Phong Vo.
 */
 
-#if __STD_C
+/**
+ * @param f old stream structure
+ * @param file file/string to be opened
+ * @param mode mode of the stream
+ */
 Sfio_t *sfopen(reg Sfio_t * f, const char *file, const char *mode)
-#else
-Sfio_t *sfopen(f, file, mode)
-reg Sfio_t *f;			/* old stream structure */
-char *file;			/* file/string to be opened */
-reg char *mode;			/* mode of the stream */
-#endif
 {
     int fd, oldfd, oflags, sflags;
 
@@ -126,14 +124,7 @@ reg char *mode;			/* mode of the stream */
     return f;
 }
 
-#if __STD_C
 int _sftype(reg const char *mode, int *oflagsp, int *uflagp)
-#else
-int _sftype(mode, oflagsp, uflagp)
-reg char *mode;
-int *oflagsp;
-int *uflagp;
-#endif
 {
     reg int sflags, oflags, uflag;
 

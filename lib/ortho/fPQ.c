@@ -13,9 +13,7 @@
 
 /* Priority Queue Code for shortest path in graph */
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 #include <memory.h>
 #include <assert.h>
 

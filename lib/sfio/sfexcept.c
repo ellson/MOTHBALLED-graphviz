@@ -17,15 +17,13 @@
 **	Written by Kiem-Phong Vo
 */
 
-#if __STD_C
+/**
+ * @param f stream where the exception happened
+ * @param type type that was performed
+ * @param io return value that indicated exception
+ * @param disc discipline in use
+ */
 int _sfexcept(Sfio_t * f, int type, ssize_t io, Sfdisc_t * disc)
-#else
-int _sfexcept(f, type, io, disc)
-Sfio_t *f;			/* stream where the exception happened */
-int type;			/* io type that was performed */
-ssize_t io;			/* the io return value that indicated exception */
-Sfdisc_t *disc;			/* discipline in use */
-#endif
 {
     reg int ev, local, lock;
     reg ssize_t size;

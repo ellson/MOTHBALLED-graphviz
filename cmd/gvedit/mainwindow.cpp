@@ -16,9 +16,7 @@
 #include "mainwindow.h"
 #include "mdichild.h"
 #include "csettings.h"
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include	<string.h>
 

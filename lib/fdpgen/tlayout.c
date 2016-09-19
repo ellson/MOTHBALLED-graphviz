@@ -25,9 +25,7 @@
  * via port nodes.
  */
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 /* uses PRIVATE interface */
 #define FDP_PRIVATE 1
@@ -35,9 +33,7 @@
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
 #include <time.h>
 #ifndef WIN32
 #include <unistd.h>

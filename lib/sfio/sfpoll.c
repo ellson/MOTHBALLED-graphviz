@@ -20,14 +20,12 @@
 **	Written by Kiem-Phong Vo.
 */
 
-#if __STD_C
+/**
+ * @param fa array of streams to poll
+ * @param n number of streams in array
+ * @param tm the amount of time in ms to wait for selecting
+ */
 int sfpoll(Sfio_t ** fa, reg int n, int tm)
-#else
-int sfpoll(fa, n, tm)
-Sfio_t **fa;			/* array of streams to poll */
-reg int n;			/* number of streams in array */
-int tm;				/* the amount of time in ms to wait for selecting */
-#endif
 {
     reg int r, c, m;
     reg Sfio_t *f;

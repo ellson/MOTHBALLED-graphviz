@@ -4,12 +4,7 @@
 **
 **	Written by Kiem-Phong Vo (05/25/96)
 */
-#if __STD_C
 int dtclose(reg Dt_t* dt)
-#else
-int dtclose(dt)
-reg Dt_t*	dt;
-#endif
 {
 	Dtdisc_t	*disc;
 	int		ev = 0;

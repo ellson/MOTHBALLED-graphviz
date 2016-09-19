@@ -33,9 +33,6 @@
 #undef _sys_times
 #define _sys_times	0	/* #include <sys/times.h> ok */
 
-#undef _hdr_stdlib
-#define _hdr_stdlib	0	/* #include <stdlib.h> ok */
-
 #undef _typ_size_t
 #define _typ_size_t	1	/* size_t is a type */
 
@@ -47,20 +44,6 @@
 
 #undef _proto_stdc
 #define _proto_stdc	1	/* Standard-C prototypes ok */
-
-/* __STD_C indicates that the language is ANSI-C or C++ */
-#if !defined(__STD_C) && defined(__STDC__)
-#define	__STD_C		1
-#endif
-#if !defined(__STD_C) && (defined(__cplusplus) || defined(c_plusplus))
-#define __STD_C		1
-#endif
-#if !defined(__STD_C) && defined(_proto_stdc)
-#define __STD_C		1
-#endif
-#if !defined(__STD_C)
-#define __STD_C		0
-#endif
 
 /* extern symbols must be protected against C++ name mangling */
 #ifndef _BEGIN_EXTERNS_
@@ -75,11 +58,7 @@
 
 /* _ARG_ simplifies function prototyping among flavors of C */
 #ifndef _ARG_
-#if __STD_C
 #define _ARG_(x)	x
-#else
-#define _ARG_(x)	()
-#endif
 #endif /*_ARG_*/
 
 /* __INLINE__ is the inline keyword */
@@ -92,11 +71,7 @@
 
 /* Void_t is defined so that Void_t* can address any type */
 #ifndef Void_t
-#if __STD_C
 #define Void_t		void
-#else
-#define Void_t		char
-#endif
 #endif				/*Void_t */
 
 /* dynamic linked library external scope handling */

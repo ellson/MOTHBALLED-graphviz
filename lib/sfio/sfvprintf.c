@@ -26,14 +26,12 @@
 #define FPRECIS		6	/* default precision for floats         */
 
 
-#if __STD_C
+/**
+ * @param f file to print to
+ * @param form format to use
+ * @param args arg list if !argf
+ */
 int sfvprintf(Sfio_t * f, const char *form, va_list args)
-#else
-int sfvprintf(f, form, args)
-Sfio_t *f;			/* file to print to     */
-char *form;			/* format to use        */
-va_list args;			/* arg list if !argf    */
-#endif
 {
     reg int v = 0, n_s, base, fmt, flags;
     Sflong_t lv;

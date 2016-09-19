@@ -31,14 +31,14 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/cmd/lefty/os/mswin32 \
 	-I$(top_srcdir)/cmd/lefty/dot2l @XAW_INCLUDES@
 
-AM_CFLAGS = -DHAVE_CONFIG_H @X_CFLAGS@
+AM_CFLAGS = @X_CFLAGS@
 else
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/cmd/lefty/ws/x11 \
 	-I$(top_srcdir)/cmd/lefty/os/unix \
 	-I$(top_srcdir)/cmd/lefty/dot2l @XAW_INCLUDES@
 
-AM_CFLAGS = -DLEFTYDATADIR=\"$(leftydir)\" -DHAVE_CONFIG_H @X_CFLAGS@
+AM_CFLAGS = -DLEFTYDATADIR=\"$(leftydir)\" @X_CFLAGS@
 endif
 
 noinst_HEADERS = code.h common.h display.h exec.h g.h gfxview.h internal.h \

@@ -20,9 +20,7 @@
     #pragma comment( lib, "ingraphs.lib" )
 #endif
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,11 +29,7 @@
 #endif
 #include <string.h>
 #include <ctype.h>
-#ifdef HAVE_GETOPT_H
 #include <getopt.h>
-#else
-#include "compat_getopt.h"
-#endif
 #include "graph_generator.h"
 
 typedef enum { unknown, grid, circle, complete, completeb, 

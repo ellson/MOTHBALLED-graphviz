@@ -18,13 +18,11 @@
 **	Written by Kiem-Phong Vo, kpv@research.att.com, 02/07/95
 */
 
-#if __STD_C
+/**
+ * @param vm region
+ * @param addr address
+ */
 Void_t *vmsegment(Vmalloc_t * vm, Void_t * addr)
-#else
-Void_t *vmsegment(vm, addr)
-Vmalloc_t *vm;			/* region       */
-Void_t *addr;			/* address      */
-#endif
 {
     reg Seg_t *seg;
     reg Vmdata_t *vd = vm->data;

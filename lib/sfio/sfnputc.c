@@ -18,14 +18,12 @@
 **	Written by Kiem-Phong Vo.
 */
 
-#if __STD_C
+/**
+ * @param f file to write
+ * @param c char to be written
+ * @param number of time to repeat
+ */
 ssize_t sfnputc(reg Sfio_t * f, reg int c, reg size_t n)
-#else
-ssize_t sfnputc(f, c, n)
-reg Sfio_t *f;			/* file to write */
-reg int c;			/* char to be written */
-reg size_t n;			/* number of time to repeat */
-#endif
 {
     reg uchar *ps;
     reg ssize_t p, w;

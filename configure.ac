@@ -425,9 +425,9 @@ dnl -----------------------------------
 dnl Checks for header files
 
 # AC_HEADER_STDC
-AC_CHECK_HEADERS(stdarg.h stddef.h stddef.h stdlib.h stdint.h malloc.h \
-	fcntl.h search.h getopt.h pthread.h values.h float.h limits.h termios.h \
-	errno.h time.h unistd.h fenv.h string.h strings.h inttypes.h setjmp.h \
+AC_CHECK_HEADERS(stdarg.h stddef.h stddef.h stdint.h malloc.h \
+	fcntl.h search.h pthread.h values.h float.h limits.h termios.h \
+	errno.h time.h unistd.h fenv.h strings.h inttypes.h setjmp.h \
 	sys/time.h sys/times.h sys/types.h sys/select.h fpu_control.h \
 	sys/fpu.h sys/socket.h sys/stat.h sys/mman.h \
 	sys/ioctl.h sys/inotify.h langinfo.h libintl.h crt_externs.h)
@@ -437,38 +437,6 @@ AC_HEADER_STDBOOL
 
 # Internationalization macros
 # AM_GNU_GETTEXT
-
-# Check for socklen_t
-AC_MSG_CHECKING([for socklen_t])
-AC_CACHE_VAL(ac_cv_type_socklen_t,[AC_EGREP_CPP(changequote(<<,>>)dnl
-<<(^|[^a-zA-Z_0-9])socklen_t[^a-zA-Z_0-9]>>dnl
-changequote([,]),[
-    #include <sys/types.h>
-    #include <sys/socket.h>
-    #if STDC_HEADERS
-    #include <stdlib.h>
-    #include <stddef.h>
-    #endif
-    ], ac_cv_type_socklen_t=yes, ac_cv_type_socklen_t=no)])
-AC_MSG_RESULT($ac_cv_type_socklen_t)
-if test $ac_cv_type_socklen_t = no; then
-    AC_DEFINE(socklen_t, unsigned, [Define to unsigned if socklet_t is missing])
-fi
-
-# -----------------------------------
-# Test if compiler supports bool
-AC_MSG_CHECKING([for bool])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-    #ifdef HAVE_STDBOOL_H>
-    #include <stdbool.h>
-    #endif
-    ]], [[
-    bool foo==true, bar=false;
-    ]])],[
-AC_MSG_RESULT(yes)
-AC_DEFINE(HAVE_BOOL, 1,[Define to 1 if compiler supports bool])
-    ],[
-AC_MSG_RESULT(no)])
 
 # -----------------------------------
 # Test for direct I/O
@@ -3078,20 +3046,6 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>
 	]], [[if ( errno < sys_nerr ) return sys_errlist[errno];
 	]])],[AC_MSG_RESULT(yes)
 	AC_DEFINE_UNQUOTED(HAVE_ERRNO_DECL,1,Define if errno externs are declared)
-	],[AC_MSG_RESULT(no)
-	])
-
-# -----------------------------------
-
-AC_MSG_CHECKING(if getopt externs are declared)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
-	#include <stdio.h>
-	#if HAVE_UNISTD_H
-	#include <unistd.h>
-	#endif
-	]], [[if ( optopt ) exit(0); else exit(1);
-	]])],[AC_MSG_RESULT(yes)
-	AC_DEFINE_UNQUOTED(HAVE_GETOPT_DECL,1,Define if getopt externs are declared)
 	],[AC_MSG_RESULT(no)
 	])
 

@@ -18,9 +18,7 @@
  * expression library default lexical analyzer
  */
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include "exlib.h"
 #include <string.h>

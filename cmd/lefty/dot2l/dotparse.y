@@ -22,10 +22,7 @@ typedef void *Tobj;
 #include "config.h"
 #include "dot2l.h"
 
-#ifdef HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
-
+#include <stdlib.h>
 #include <string.h>
 
 static char portstr[SMALLBUF];

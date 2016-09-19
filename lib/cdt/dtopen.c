@@ -6,13 +6,7 @@ static char*     Version = "\n@(#)$Id$\0\n";
 **	Written by Kiem-Phong Vo (5/25/96)
 */
 
-#if __STD_C
 Dt_t* dtopen(Dtdisc_t* disc, Dtmethod_t* meth)
-#else
-Dt_t*	dtopen(disc, meth)
-Dtdisc_t*	disc;
-Dtmethod_t*	meth;
-#endif
 {
 	Dt_t*		dt = (Dt_t*)Version;	/* shut-up unuse warning */
 	reg int		e;

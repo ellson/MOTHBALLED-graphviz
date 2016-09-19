@@ -18,14 +18,12 @@
 **	Written by Kiem-Phong Vo.
 */
 
-#if __STD_C
+/**
+ * @param f write to this stream
+ * @param buf buffer to be written
+ * @param n number of bytes
+ */
 ssize_t sfwrite(reg Sfio_t * f, const Void_t * buf, reg size_t n)
-#else
-ssize_t sfwrite(f, buf, n)
-reg Sfio_t *f;			/* write to this stream.        */
-Void_t *buf;			/* buffer to be written.        */
-reg size_t n;			/* number of bytes.             */
-#endif
 {
     reg uchar *s, *begs, *next;
     reg ssize_t w;

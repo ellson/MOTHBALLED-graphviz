@@ -18,9 +18,7 @@
  * include style search support
  */
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 #include <ast.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>

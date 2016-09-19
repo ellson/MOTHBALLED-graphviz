@@ -26,15 +26,6 @@ extern "C" {
 #define NOT(v) (!(v))
 #endif
 
-#if 0
-/* HAVE_BOOL only tested the CC compiler, we know C++ must define bool */
-#if ! defined HAVE_BOOL && ! defined __cplusplus
-typedef unsigned char bool;
-#define false 0
-#define true NOT(false)
-#endif
-#endif
-
 #ifndef FALSE
 #define	FALSE (0)
 #endif

@@ -16,9 +16,7 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include "const.h"
 #include "gvplugin_layout.h"

@@ -17,18 +17,12 @@
  *
  * Written by Emden Gansner
  */
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
-#ifdef HAVE_GETOPT_H
 #include <getopt.h>
-#else
-#include "compat_getopt.h"
-#endif
 
 #include <stdlib.h>
 #include "cgraph.h"

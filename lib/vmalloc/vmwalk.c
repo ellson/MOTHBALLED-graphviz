@@ -18,14 +18,8 @@
 **	Written by Kiem-Phong Vo, kpv@research.att.com (02/08/96)
 */
 
-#if __STD_C
 int vmwalk(Vmalloc_t * vm,
 	   int (*segf) (Vmalloc_t *, Void_t *, size_t, Vmdisc_t *))
-#else
-int vmwalk(vm, segf)
-Vmalloc_t *vm;
-int (*segf) ( /* Vmalloc_t*, Void_t*, size_t, Vmdisc_t* */ );
-#endif
 {
     reg Seg_t *seg;
     reg int rv;

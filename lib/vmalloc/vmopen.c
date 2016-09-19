@@ -29,14 +29,12 @@ typedef struct _vminit_ {
     char a[3 * ALIGN];		/* extra to fuss with alignment */
 } Vminit_t;
 
-#if __STD_C
+/**
+ * @param disc discipline to get segments
+ * @param meth method to manage space
+ * @param mode type of region
+ */
 Vmalloc_t *vmopen(Vmdisc_t * disc, Vmethod_t * meth, int mode)
-#else
-Vmalloc_t *vmopen(disc, meth, mode)
-Vmdisc_t *disc;			/* discipline to get segments   */
-Vmethod_t *meth;		/* method to manage space       */
-int mode;			/* type of region               */
-#endif
 {
     reg Vmalloc_t *vm;
     reg Vmdata_t *vd;

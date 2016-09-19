@@ -30,7 +30,6 @@ hdr ft2build
 hdr getopt
 hdr iconv
 hdr inttypes
-hdr limits
 hdr malloc
 hdr ndir
 hdr netdb
@@ -39,12 +38,9 @@ hdr stdarg
 hdr stdbool
 hdr stddef
 hdr stdint
-hdr stdlib
-hdr string
 hdr strings
 hdr termios
 hdr unistd
-hdr values
 
 sys types
 sys socket
@@ -84,9 +80,7 @@ else {
 endif
 
 link{
-    #if HAVE_STDLIB_H
     #include <stdlib.h>
-    #endif
     #if HAVE_STDINT_H
     #include <stdint.h>
     #endif
@@ -101,47 +95,6 @@ link{
 }end yes{
 /* Define if intptr_t is declared */
 #define HAVE_INTPTR_T 1
-}end
-
-link{
-	#include <stdlib.h>
-	#include <stdio.h>
-	#if HAVE_UNISTD_H
-	#include <unistd.h>
-	#endif
-    int main () {
-	if ( optopt ) exit(0); else exit(1);
-	}
-}end yes{
-/* Define if getopt externs are declared */
-#define HAVE_GETOPT_DECL 1
-}end
-
-link{
-    #if HAVE_NETDB_H
-    #include <netdb.h>
-    #endif
-    #if HAVE_SYS_SOCKET_H
-    #include <sys/socket.h>
-    #endif
-    #if HAVE_UNISTD_H
-    #include <unistd.h>
-    #endif
-    socklen_t  abc;
-    int main() {}
-}end yes{
-/* Define if intptr_t is declared */
-#define HAVE_SOCKLEN_T 1
-}end
-
-compile{
-    #ifdef HAVE_STDBOOL_H
-    #include <stdbool.h>
-    #endif
-    bool xx = true, yy = false; 
-}end yes{
-/* Define to 1 if compiler supports bool */
-#define HAVE_BOOL 1
 }end
 
 compile{

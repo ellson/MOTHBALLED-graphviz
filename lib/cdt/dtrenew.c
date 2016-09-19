@@ -6,13 +6,7 @@
 **	Written by Kiem-Phong Vo (5/25/96)
 */
 
-#if __STD_C
 Void_t* dtrenew(Dt_t* dt, reg Void_t* obj)
-#else
-Void_t* dtrenew(dt, obj)
-Dt_t*		dt;
-reg Void_t*	obj;
-#endif
 {
 	reg Void_t*	key;
 	reg Dtlink_t	*e, *t, **s;

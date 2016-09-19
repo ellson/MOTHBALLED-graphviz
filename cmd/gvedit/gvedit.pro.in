@@ -1,5 +1,4 @@
 
-DEFINES += HAVE_CONFIG_H
 LIBS += \
         -L$(top_builddir)/lib/gvc/.libs -lgvc \
         -L$(top_builddir)/lib/cgraph/.libs -lcgraph \

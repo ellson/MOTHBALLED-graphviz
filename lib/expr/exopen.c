@@ -18,9 +18,7 @@
  * expression library
  */
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #ifdef GVDLL
 #define _BLD_sfio 1

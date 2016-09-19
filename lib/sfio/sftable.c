@@ -18,13 +18,7 @@
 **	Written by Kiem-Phong Vo.
 */
 
-#if __STD_C
 static char *sffmtint(const char *str, int *v)
-#else
-static char *sffmtint(str, v)
-char *str;
-int *v;
-#endif
 {
     for (*v = 0; isdigit(*str); ++str)
 	*v = *v * 10 + (*str - '0');
@@ -32,16 +26,8 @@ int *v;
     return (char *) str;
 }
 
-#if __STD_C
 static Fmtpos_t *sffmtpos(Sfio_t * f, const char *form, va_list args,
 			  int type)
-#else
-static Fmtpos_t *sffmtpos(f, form, args, type)
-Sfio_t *f;
-char *form;
-va_list args;
-int type;
-#endif
 {
     int base, fmt, flags, dot, width, precis;
     ssize_t n_str, size = 0;

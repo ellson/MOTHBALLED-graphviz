@@ -18,13 +18,7 @@
 **	Written by Kiem-Phong Vo
 */
 
-#if __STD_C
 Sfdisc_t *sfdisc(reg Sfio_t * f, reg Sfdisc_t * disc)
-#else
-Sfdisc_t *sfdisc(f, disc)
-reg Sfio_t *f;
-reg Sfdisc_t *disc;
-#endif
 {
     reg Sfdisc_t *d, *rdisc;
     reg Sfread_f oreadf;
