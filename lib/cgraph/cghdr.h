@@ -55,14 +55,6 @@
 #ifndef streq
 #define streq(s,t)		((*s == *t) && !strcmp((s),(t)))
 #endif
-#ifdef offsetof
-#undef offsetof
-#endif
-#ifdef HAVE_INTPTR_T
-#define offsetof(typ,fld)  ((intptr_t)(&(((typ*)0)->fld)))
-#else
-#define offsetof(typ,fld)  ((int)(&(((typ*)0)->fld)))
-#endif
 #define NOTUSED(var)	(void) var
 
 #define NILgraph			NIL(Agraph_t*)

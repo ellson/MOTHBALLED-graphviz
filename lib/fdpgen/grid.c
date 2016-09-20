@@ -94,11 +94,6 @@ static cell *getCell(Grid * g)
     return cp;
 }
 
-#ifndef offsetof
-#define offsetof(typ,fld)  ((int)(&(((typ*)0)->fld)))
-#endif
-
-
 static int ijcmpf(Dt_t * d, gridpt * p1, gridpt * p2, Dtdisc_t * disc)
 {
     int diff;

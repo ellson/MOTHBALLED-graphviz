@@ -99,12 +99,6 @@ struct _dtdisc_s
 	  (dc)->comparf = (cmpf), (dc)->hashf = (hshf), \
 	  (dc)->memoryf = (memf), (dc)->eventf = (evf) )
 
-#ifdef offsetof
-#define DTOFFSET(struct_s, member)	offsetof(struct_s, member)
-#else
-#define DTOFFSET(struct_s, member)	((int)(&((struct_s*)0)->member))
-#endif
-
 /* the dictionary structure itself */
 struct _dt_s
 {	Dtsearch_f	searchf;/* search function			*/
