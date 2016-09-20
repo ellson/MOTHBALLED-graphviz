@@ -1,6 +1,10 @@
 #ifndef _CDT_H
 #define _CDT_H		1
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*	Public interface for the dictionary library
 **
 **      Written by Kiem-Phong Vo
@@ -10,13 +14,6 @@
 
 #include <stddef.h>	/* size_t */
 #include <string.h>
-
-#ifndef _BEGIN_EXTERNS_
-#define _BEGIN_EXTERNS_
-#endif
-#ifndef _END_EXTERNS_
-#define _END_EXTERNS_
-#endif
 
 #ifdef WIN32
 #undef __EXPORT__
@@ -161,7 +158,7 @@ struct _dtstat_s
 #define DT_ENDCLOSE	6	/* dtclose() is done			*/
 #define DT_HASHSIZE	7	/* setting hash table size		*/
 
-_BEGIN_EXTERNS_	/* public data */
+/* public data */
 #if defined(_BLD_cdt) && defined(__EXPORT__)
 #define extern	__EXPORT__
 #endif
@@ -191,9 +188,8 @@ extern Dtmethod_t	_Dtstack;
 #endif
 
 #undef extern
-_END_EXTERNS_
 
-_BEGIN_EXTERNS_	/* public functions */
+/* public functions */
 #if defined(_BLD_cdt) && defined(__EXPORT__)
 #define extern	__EXPORT__
 #endif
@@ -219,7 +215,6 @@ extern int		dtstat(Dt_t*, Dtstat_t*, int);
 extern unsigned int	dtstrhash(unsigned int, void*, int);
 
 #undef extern
-_END_EXTERNS_
 
 /* internal functions for translating among holder, object and key */
 #define _DT(dt)		((Dt_t*)(dt))
@@ -290,5 +285,9 @@ _END_EXTERNS_
 
 #define DT_PRIME	17109811 /* 2#00000001 00000101 00010011 00110011 */
 #define dtcharhash(h,c) (((unsigned int)(h) + (unsigned int)(c)) * DT_PRIME )
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _CDT_H */
