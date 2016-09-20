@@ -62,7 +62,7 @@ Vmalloc_t *vmopen(Vmdisc_t * disc, Vmethod_t * meth, int mode)
     if (disc->exceptf) {
 	addr = NIL(Vmuchar_t *);
 	if ((e =
-	     (*disc->exceptf) (vm, VM_OPEN, (Void_t *) (&addr),
+	     (*disc->exceptf) (vm, VM_OPEN, (void *) (&addr),
 			       disc)) != 0) {
 	    if (e < 0 || !addr)
 		goto open_error;
@@ -90,7 +90,7 @@ Vmalloc_t *vmopen(Vmdisc_t * disc, Vmethod_t * meth, int mode)
 
     /* get space for region data */
     s = ROUND(sizeof(Vminit_t), incr);
-    if (!(addr = (Vmuchar_t *) (*memoryf) (vm, NIL(Void_t *), 0, s, disc))) {
+    if (!(addr = (Vmuchar_t *) (*memoryf) (vm, NIL(void *), 0, s, disc))) {
 	vmfree(Vmheap, vm);
 	return NIL(Vmalloc_t *);
     }
@@ -125,7 +125,7 @@ Vmalloc_t *vmopen(Vmdisc_t * disc, Vmethod_t * meth, int mode)
     seg = vd->seg;
     seg->next = NIL(Seg_t *);
     seg->vm = vm;
-    seg->addr = (Void_t *) (addr - (a ? ALIGN - a : 0));
+    seg->addr = (void *) (addr - (a ? ALIGN - a : 0));
     seg->extent = s;
     seg->baddr = addr + s - (a ? ALIGN : 0);
     seg->size = s;		/* this size is larger than usual so that the segment

@@ -27,12 +27,12 @@ Dt_t* dtopen(Dtdisc_t* disc, Dtmethod_t* meth)
 	dt->type = DT_MALLOC;
 	dt->nview = 0;
 	dt->view = dt->walk = NIL(Dt_t*);
-	dt->user = NIL(Void_t*);
+	dt->user = NIL(void*);
 
 	if(disc->eventf)
 	{	/* if shared/persistent dictionary, get existing data */
 		data = NIL(Dtdata_t*);
-		if((e = (*disc->eventf)(dt,DT_OPEN,(Void_t*)(&data),disc)) < 0)
+		if((e = (*disc->eventf)(dt,DT_OPEN,(void*)(&data),disc)) < 0)
 			goto err_open;
 		else if(e > 0)
 		{	if(data)
@@ -44,7 +44,7 @@ Dt_t* dtopen(Dtdisc_t* disc, Dtmethod_t* meth)
 			if(!disc->memoryf)
 				goto err_open;
 
-			free((Void_t*)dt);
+			free((void*)dt);
 			if(!(dt = (*disc->memoryf)(0, 0, sizeof(Dt_t), disc)) )
 				return NIL(Dt_t*);
 			dt->searchf = NIL(Dtsearch_f);
@@ -58,9 +58,9 @@ Dt_t* dtopen(Dtdisc_t* disc, Dtmethod_t* meth)
 	}
 
 	/* allocate sharable data */
-	if(!(data = (Dtdata_t*)(dt->memoryf)(dt,NIL(Void_t*),sizeof(Dtdata_t),disc)) )
+	if(!(data = (Dtdata_t*)(dt->memoryf)(dt,NIL(void*),sizeof(Dtdata_t),disc)) )
 	{ err_open:
-		free((Void_t*)dt);
+		free((void*)dt);
 		return NIL(Dt_t*);
 	}
 
@@ -76,7 +76,7 @@ done:
 	dt->meth = meth;
 
 	if(disc->eventf)
-		(*disc->eventf)(dt, DT_ENDOPEN, (Void_t*)dt, disc);
+		(*disc->eventf)(dt, DT_ENDOPEN, (void*)dt, disc);
 
 	return dt;
 }

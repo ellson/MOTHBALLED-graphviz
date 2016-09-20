@@ -24,7 +24,7 @@
  * @param nsize new size
  * @param disc discipline structure
  */
-static Void_t *heapmem(Vmalloc_t * vm, Void_t * caddr,
+static void *heapmem(Vmalloc_t * vm, void * caddr,
 		       size_t csize, size_t nsize, Vmdisc_t * disc)
 {
     NOTUSED(vm);
@@ -33,7 +33,7 @@ static Void_t *heapmem(Vmalloc_t * vm, Void_t * caddr,
     if (csize == 0)
 	return vmalloc(Vmheap, nsize);
     else if (nsize == 0)
-	return vmfree(Vmheap, caddr) >= 0 ? caddr : NIL(Void_t *);
+	return vmfree(Vmheap, caddr) >= 0 ? caddr : NIL(void *);
     else
 	return vmresize(Vmheap, caddr, nsize, 0);
 }

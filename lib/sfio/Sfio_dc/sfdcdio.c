@@ -31,7 +31,7 @@ typedef struct _direct_s {
 #define P2I(p)	(Sfulong_t)((char*)(p) - (char*)0)
 
 #ifdef HAVE_STRUCT_DIOATTR
-static ssize_t diordwr(Sfio_t * f, Void_t * buf, size_t n, Direct_t * di,
+static ssize_t diordwr(Sfio_t * f, void * buf, size_t n, Direct_t * di,
 		       int type)
 {
     size_t rw, done;
@@ -58,7 +58,7 @@ static ssize_t diordwr(Sfio_t * f, Void_t * buf, size_t n, Direct_t * di,
 	    if (rv > 0) {
 		rw -= rv;
 		done += rv;
-		buf = (Void_t *) ((char *) buf + rv);
+		buf = (void *) ((char *) buf + rv);
 	    }
 
 	    if (rv < io || rw < di->dio.d_miniosz)
@@ -80,18 +80,18 @@ static ssize_t diordwr(Sfio_t * f, Void_t * buf, size_t n, Direct_t * di,
     return done ? done : rv;
 }
 
-static ssize_t dioread(Sfio_t * f, Void_t * buf, size_t n, Sfdisc_t * disc)
+static ssize_t dioread(Sfio_t * f, void * buf, size_t n, Sfdisc_t * disc)
 {
     return diordwr(f, buf, n, (Direct_t *) disc, SF_READ);
 }
 
-static ssize_t diowrite(Sfio_t * f, const Void_t * buf, size_t n,
+static ssize_t diowrite(Sfio_t * f, const void * buf, size_t n,
 			Sfdisc_t * disc)
 {
-    return diordwr(f, (Void_t *) buf, n, (Direct_t *) disc, SF_WRITE);
+    return diordwr(f, (void *) buf, n, (Direct_t *) disc, SF_WRITE);
 }
 
-static int dioexcept(Sfio_t * f, int type, Void_t * data, Sfdisc_t * disc)
+static int dioexcept(Sfio_t * f, int type, void * data, Sfdisc_t * disc)
 {
     Direct_t *di = (Direct_t *) disc;
 
@@ -114,7 +114,7 @@ int sfdcdio(Sfio_t * f, size_t bufsize)
 #else
     int cntl;
     struct dioattr dio;
-    Void_t *buf;
+    void *buf;
     Direct_t *di;
 
     if (f->extent < 0 || (f->flags & SF_STRING))
@@ -142,7 +142,7 @@ int sfdcdio(Sfio_t * f, size_t bufsize)
     if (!(di = (Direct_t *) malloc(sizeof(Direct_t))))
 	goto no_direct;
 
-    if (!(buf = (Void_t *) memalign(dio.d_mem, bufsize))) {
+    if (!(buf = (void *) memalign(dio.d_mem, bufsize))) {
 	free(di);
 	goto no_direct;
     }

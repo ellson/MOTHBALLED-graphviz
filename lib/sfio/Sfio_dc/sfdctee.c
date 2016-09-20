@@ -34,7 +34,7 @@ typedef struct _tee_s {
  * @param size the data size
  * @param disc the tee discipline
  */
-static ssize_t teewrite(Sfio_t * f, const Void_t * buf, size_t size,
+static ssize_t teewrite(Sfio_t * f, const void * buf, size_t size,
 			Sfdisc_t * disc)
 {
     reg Tee_t *te = (Tee_t *) disc;
@@ -48,7 +48,7 @@ static ssize_t teewrite(Sfio_t * f, const Void_t * buf, size_t size,
 }
 
 /* on close, remove the discipline */
-static int teeexcept(Sfio_t * f, int type, Void_t * data, Sfdisc_t * disc)
+static int teeexcept(Sfio_t * f, int type, void * data, Sfdisc_t * disc)
 {
     if (type == SF_FINAL || type == SF_DPOP)
 	free(disc);

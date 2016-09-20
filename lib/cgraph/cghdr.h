@@ -112,9 +112,9 @@ Dict_t *agdtopen(Agraph_t * g, Dtdisc_t * disc, Dtmethod_t * method);
 void agdtdisc(Agraph_t * g, Dict_t * dict, Dtdisc_t * disc);
 long agdtdelete(Agraph_t * g, Dict_t * dict, void *obj);
 int agdtclose(Agraph_t * g, Dict_t * dict);
-void *agdictobjmem(Dict_t * dict, Void_t * p, size_t size,
+void *agdictobjmem(Dict_t * dict, void * p, size_t size,
 		   Dtdisc_t * disc);
-void agdictobjfree(Dict_t * dict, Void_t * p, Dtdisc_t * disc);
+void agdictobjfree(Dict_t * dict, void * p, Dtdisc_t * disc);
 
 	/* name-value pair operations */
 Agdatadict_t *agdatadict(Agraph_t * g, int cflag);

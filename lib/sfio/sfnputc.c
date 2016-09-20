@@ -57,7 +57,7 @@ ssize_t sfnputc(reg Sfio_t * f, reg int c, reg size_t n)
     }
 
     for (;;) {			/* hard write of data */
-	if ((p = SFWRITE(f, (Void_t *) ps, p)) <= 0 || (n -= p) <= 0) {
+	if ((p = SFWRITE(f, (void *) ps, p)) <= 0 || (n -= p) <= 0) {
 	    w -= n;
 	    goto done;
 	}

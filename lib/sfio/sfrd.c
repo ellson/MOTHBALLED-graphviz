@@ -46,7 +46,7 @@ static void _sfwrsync(void)
     }
 }
 
-ssize_t sfrd(reg Sfio_t * f, reg Void_t * buf, reg size_t n,
+ssize_t sfrd(reg Sfio_t * f, reg void * buf, reg size_t n,
 	     Sfdisc_t * disc)
 {
     Sfoff_t r;
@@ -193,11 +193,11 @@ ssize_t sfrd(reg Sfio_t * f, reg Void_t * buf, reg size_t n,
 		(void) SFSK(f, f->here, SEEK_SET, dc);
 
 		/* make a buffer */
-		(void) SFSETBUF(f, (Void_t *) f->tiny,
+		(void) SFSETBUF(f, (void *) f->tiny,
 				(size_t) SF_UNBOUND);
 
 		if (!buf) {
-		    buf = (Void_t *) f->data;
+		    buf = (void *) f->data;
 		    n = f->size;
 		}
 	    }

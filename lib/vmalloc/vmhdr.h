@@ -271,7 +271,7 @@ extern "C" {
     struct _seg_s {
 	Vmalloc_t *vm;		/* the region that holds this   */
 	Seg_t *next;		/* next segment                 */
-	Void_t *addr;		/* starting segment address     */
+	void *addr;		/* starting segment address     */
 	size_t extent;		/* extent of segment            */
 	Vmuchar_t *baddr;	/* bottom of usable memory      */
 	size_t size;		/* allocable size               */
@@ -292,7 +292,7 @@ extern "C" {
 #define RIGHT(b)	((b)->body.body.right)
 #define VM(b)		(SEG(b)->vm)
 
-#define DATA(b)		((Void_t*)((b)->body.data) )
+#define DATA(b)		((void*)((b)->body.data) )
 #define BLOCK(d)	((Block_t*)((char*)(d) - sizeof(Head_t)) )
 #define SELF(b)		((Block_t**)((b)->body.data + SIZE(b) - sizeof(Block_t*)) )
 #define LAST(b)		(*((Block_t**)(((char*)(b)) - sizeof(Block_t*)) ) )
@@ -388,7 +388,7 @@ extern "C" {
 /* clear and copy functions */
 #define INTCOPY(to,fr,n) \
 	switch(n/sizeof(int)) \
-	{ default: memcpy((Void_t*)to,(Void_t*)fr,n); break; \
+	{ default: memcpy((void*)to,(void*)fr,n); break; \
 	  case 7:	*to++ = *fr++; \
 	  case 6:	*to++ = *fr++; \
 	  case 5:	*to++ = *fr++; \
@@ -399,7 +399,7 @@ extern "C" {
 	}
 #define INTZERO(d,n) \
 	switch(n/sizeof(int)) \
-	{ default: memset((Void_t*)d,0,n); break; \
+	{ default: memset((void*)d,0,n); break; \
 	  case 7:	*d++ = 0; \
 	  case 6:	*d++ = 0; \
 	  case 5:	*d++ = 0; \

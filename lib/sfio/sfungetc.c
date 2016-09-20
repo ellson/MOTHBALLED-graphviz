@@ -17,7 +17,7 @@
 **
 **	Written by Kiem-Phong Vo.
 */
-static int _uexcept(reg Sfio_t * f, reg int type, Void_t * val,
+static int _uexcept(reg Sfio_t * f, reg int type, void * val,
 		    reg Sfdisc_t * disc)
 {
     NOTUSED(val);

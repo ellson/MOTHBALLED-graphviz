@@ -64,11 +64,6 @@
 #define __INLINE__	__inline
 #endif
 
-/* Void_t is defined so that Void_t* can address any type */
-#ifndef Void_t
-#define Void_t		void
-#endif				/*Void_t */
-
 /* dynamic linked library external scope handling */
 #undef extern
 #if defined(_dll_import) && !defined(__EXPORT__) && defined(_DLL_BLD)

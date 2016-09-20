@@ -41,7 +41,7 @@ int dtrestore(reg Dt_t* dt, reg Dtlink_t* list)
 		{	dt->data->size = 0;
 			while(list)
 			{	t = list->right;
-				(*searchf)(dt,(Void_t*)list,DT_RENEW);
+				(*searchf)(dt,(void*)list,DT_RENEW);
 				list = t;
 			}
 		}

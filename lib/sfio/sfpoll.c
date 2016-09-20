@@ -151,7 +151,7 @@ int sfpoll(Sfio_t ** fa, reg int n, int tm)
 	    break;
 	}
 
-	free((Void_t *) fds);
+	free((void *) fds);
     }
 #endif /*_lib_poll*/
 
@@ -205,7 +205,7 @@ int sfpoll(Sfio_t ** fa, reg int n, int tm)
 	if (status[c] <= 0)
 	    continue;
 	if ((d = fa[c]->disc) && d->exceptf) {
-	    if ((r = (*d->exceptf) (fa[c], SF_READY, (Void_t *) 0, d)) < 0)
+	    if ((r = (*d->exceptf) (fa[c], SF_READY, (void *) 0, d)) < 0)
 		goto done;
 	    else if (r > 0)
 		goto retry;
@@ -225,6 +225,6 @@ int sfpoll(Sfio_t ** fa, reg int n, int tm)
     }
 
   done:
-    free((Void_t *) status);
+    free((void *) status);
     return r;
 }

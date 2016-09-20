@@ -23,7 +23,7 @@
  * @param data associated data
  * @param 
  */
-int sfraise(Sfio_t * f, int type, Void_t * data)
+int sfraise(Sfio_t * f, int type, void * data)
 {
     reg Sfdisc_t *disc, *next, *d;
     reg int local, rv;

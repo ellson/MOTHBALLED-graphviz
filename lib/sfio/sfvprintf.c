@@ -83,7 +83,7 @@ int sfvprintf(Sfio_t * f, const char *form, va_list args)
 #define SFwrite(f,s,n) \
 	{ if((endd-d) >= n) { MEMCPY(d,s,n); } \
 	  else \
-	  { SFEND(f); n_output += (w = SFWRITE(f,(Void_t*)s,n)) > 0 ? w : 0; SFBUF(f); \
+	  { SFEND(f); n_output += (w = SFWRITE(f,(void*)s,n)) > 0 ? w : 0; SFBUF(f); \
 	    if(n != w) goto done; \
 	  } \
 	}
@@ -180,7 +180,7 @@ int sfvprintf(Sfio_t * f, const char *form, va_list args)
 			    FMTSET(ft, form, args,
 				   LEFTP, 0, 0, 0, 0, 0, NIL(char *), 0);
 			    n = (*ft->extf)
-				(f, (Void_t *) & argv, ft);
+				(f, (void *) & argv, ft);
 			    if (n < 0)
 				goto pop_fmt;
 			    if (!(ft->flags & SFFMT_VALUE))
@@ -263,7 +263,7 @@ int sfvprintf(Sfio_t * f, const char *form, va_list args)
 	    else if (ft && ft->extf) {
 		FMTSET(ft, form, args, '.', dot, 0, 0, 0, 0, NIL(char *),
 		       0);
-		if ((*ft->extf) (f, (Void_t *) (&argv), ft) < 0)
+		if ((*ft->extf) (f, (void *) (&argv), ft) < 0)
 		    goto pop_fmt;
 		if (ft->flags & SFFMT_VALUE)
 		    v = argv.i;
@@ -325,7 +325,7 @@ int sfvprintf(Sfio_t * f, const char *form, va_list args)
 		else if (ft && ft->extf) {
 		    FMTSET(ft, form, args, 'I', sizeof(int), 0, 0, 0, 0,
 			   NIL(char *), 0);
-		    if ((*ft->extf) (f, (Void_t *) (&argv), ft) < 0)
+		    if ((*ft->extf) (f, (void *) (&argv), ft) < 0)
 			goto pop_fmt;
 		    if (ft->flags & SFFMT_VALUE)
 			size = argv.i;
@@ -401,7 +401,7 @@ int sfvprintf(Sfio_t * f, const char *form, va_list args)
 		   t_str, n_str);
 	    SFEND(f);
 	    SFOPEN(f, 0);
-	    v = (*ft->extf) (f, (Void_t *) (&argv), ft);
+	    v = (*ft->extf) (f, (void *) (&argv), ft);
 	    SFLOCK(f, 0);
 	    SFBUF(f);
 
@@ -440,7 +440,7 @@ int sfvprintf(Sfio_t * f, const char *form, va_list args)
 		    argv.d = va_arg(args, double);
 		break;
 	    case SFFMT_POINTER:
-		argv.vp = va_arg(args, Void_t *);
+		argv.vp = va_arg(args, void *);
 		break;
 	    case SFFMT_BYTE:
 		if (base >= 0)
@@ -469,7 +469,7 @@ int sfvprintf(Sfio_t * f, const char *form, va_list args)
 		goto pop_fmt;
 	    if (!argv.ft->form && ft) {	/* change extension functions */
 		if (ft->eventf &&
-		    (*ft->eventf) (f, SF_DPOP, (Void_t *) form, ft) < 0)
+		    (*ft->eventf) (f, SF_DPOP, (void *) form, ft) < 0)
 		    continue;
 		fmstk->ft = ft = argv.ft;
 	    } else {		/* stack a new environment */
@@ -1013,8 +1013,8 @@ int sfvprintf(Sfio_t * f, const char *form, va_list args)
     while ((fm = fmstk)) {	/* pop the format stack and continue */
 	if (fm->eventf) {
 	    if (!form || !form[0])
-		(*fm->eventf) (f, SF_FINAL, NIL(Void_t *), ft);
-	    else if ((*fm->eventf) (f, SF_DPOP, (Void_t *) form, ft) < 0)
+		(*fm->eventf) (f, SF_FINAL, NIL(void *), ft);
+	    else if ((*fm->eventf) (f, SF_DPOP, (void *) form, ft) < 0)
 		goto loop_fmt;
 	}
 
@@ -1037,7 +1037,7 @@ int sfvprintf(Sfio_t * f, const char *form, va_list args)
 	free(fp);
     while ((fm = fmstk)) {
 	if (fm->eventf)
-	    (*fm->eventf) (f, SF_FINAL, NIL(Void_t *), fm->ft);
+	    (*fm->eventf) (f, SF_FINAL, NIL(void *), fm->ft);
 	fmstk = fm->next;
 	free(fm);
     }
@@ -1051,7 +1051,7 @@ int sfvprintf(Sfio_t * f, const char *form, va_list args)
 
     if ((((flags = f->flags) & SF_SHARE) && !(flags & SF_PUBLIC)) ||
 	(n > 0 && (d == (uchar *) data || (flags & SF_LINE))))
-	(void) SFWRITE(f, (Void_t *) d, n);
+	(void) SFWRITE(f, (void *) d, n);
     else
 	f->next += n;
 

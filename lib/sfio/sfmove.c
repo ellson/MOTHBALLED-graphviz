@@ -114,7 +114,7 @@ Sfoff_t sfmove(Sfio_t * fr, Sfio_t * fw, Sfoff_t n, reg int rc)
 			    goto done_filbuf;
 			else if (n > 1 && !fr->disc) {
 			    r = sfpkrd(fr->file,
-				       (Void_t *) fr->data,
+				       (void *) fr->data,
 				       fr->size, rc, -1, (int) (-n));
 			    if (r <= 0)
 				goto one_r;
@@ -181,7 +181,7 @@ Sfoff_t sfmove(Sfio_t * fr, Sfio_t * fw, Sfoff_t n, reg int rc)
 	    r = cp - next;
 	    if (fr->mode & SF_PKRD) {	/* advance the read point by proper amount */
 		fr->mode &= ~SF_PKRD;
-		(void) read(fr->file, (Void_t *) next, r);
+		(void) read(fr->file, (void *) next, r);
 		fr->here += r;
 		if (!direct)
 		    fr->endb = cp;
@@ -195,7 +195,7 @@ Sfoff_t sfmove(Sfio_t * fr, Sfio_t * fw, Sfoff_t n, reg int rc)
 	else if ((w = endb - cp) > 0) {	/* move left-over to read stream */
 	    if (w > fr->size)
 		w = fr->size;
-	    memcpy((Void_t *) fr->data, (Void_t *) cp, w);
+	    memcpy((void *) fr->data, (void *) cp, w);
 	    fr->endb = fr->data + w;
 	    if ((w = endb - (cp + w)) > 0)
 		(void) SFSK(fr, (Sfoff_t) (-w), SEEK_CUR, fr->disc);
@@ -205,9 +205,9 @@ Sfoff_t sfmove(Sfio_t * fr, Sfio_t * fw, Sfoff_t n, reg int rc)
 	    if (direct == SF_WRITE)
 		fw->next += r;
 	    else if (r <= (fw->endb - fw->next)) {
-		memcpy((Void_t *) fw->next, (Void_t *) next, r);
+		memcpy((void *) fw->next, (void *) next, r);
 		fw->next += r;
-	    } else if ((w = SFWRITE(fw, (Void_t *) next, r)) != r) {	/* a write error happened */
+	    } else if ((w = SFWRITE(fw, (void *) next, r)) != r) {	/* a write error happened */
 		if (w > 0) {
 		    r -= w;
 		    if (rc < 0)

@@ -31,7 +31,7 @@ int vmclose(Vmalloc_t * vm)
 	return -1;
 
     if (vm->disc->exceptf &&
-	(*vm->disc->exceptf) (vm, VM_CLOSE, NIL(Void_t *), vm->disc) < 0)
+	(*vm->disc->exceptf) (vm, VM_CLOSE, NIL(void *), vm->disc) < 0)
 	return -1;
 
     /* make this region inaccessible until it disappears */

@@ -422,7 +422,7 @@ static void cloneCluster(Agraph_t * old, Agraph_t * new)
 /* freef:
  * Generic free function for dictionaries.
  */
-static void freef(Dt_t * dt, Void_t * obj, Dtdisc_t * disc)
+static void freef(Dt_t * dt, void * obj, Dtdisc_t * disc)
 {
     free(obj);
 }

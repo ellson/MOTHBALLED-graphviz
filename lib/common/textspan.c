@@ -226,7 +226,7 @@ pointf textspan_size(GVC_t *gvc, textspan_t * span)
     return span->size;
 }
 
-static Void_t* textfont_makef(Dt_t* dt, Void_t* obj, Dtdisc_t* disc)
+static void* textfont_makef(Dt_t* dt, void* obj, Dtdisc_t* disc)
 {
     textfont_t *f1 = (textfont_t*)obj;
     textfont_t *f2 = calloc(1,sizeof(textfont_t));
@@ -243,7 +243,7 @@ static Void_t* textfont_makef(Dt_t* dt, Void_t* obj, Dtdisc_t* disc)
     return f2;
 }
 
-static void textfont_freef(Dt_t* dt, Void_t* obj, Dtdisc_t* disc)
+static void textfont_freef(Dt_t* dt, void* obj, Dtdisc_t* disc)
 {
     textfont_t *f = (textfont_t*)obj;
 
@@ -252,7 +252,7 @@ static void textfont_freef(Dt_t* dt, Void_t* obj, Dtdisc_t* disc)
     free(f);
 }
 
-static int textfont_comparf (Dt_t* dt, Void_t* key1, Void_t* key2, Dtdisc_t* disc)
+static int textfont_comparf (Dt_t* dt, void* key1, void* key2, Dtdisc_t* disc)
 {
     int rc;
     textfont_t *f1 = (textfont_t*)key1, *f2 = (textfont_t*)key2;

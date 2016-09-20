@@ -23,7 +23,7 @@
  * @param buf buffer to be written
  * @param n number of bytes
  */
-ssize_t sfwrite(reg Sfio_t * f, const Void_t * buf, reg size_t n)
+ssize_t sfwrite(reg Sfio_t * f, const void * buf, reg size_t n)
 {
     reg uchar *s, *begs, *next;
     reg ssize_t w;

@@ -103,7 +103,7 @@ extern "C" {
 
      _BEGIN_EXTERNS_ extern Vthread_t *vtopen(Vthread_t *, int);
     extern int vtclose(Vthread_t *);
-    extern int vtset(Vthread_t *, int, Void_t *);
+    extern int vtset(Vthread_t *, int, void *);
     extern int vtrun(Vthread_t *, void *(*)(void *), void *);
     extern int vtkill(Vthread_t *);
     extern int vtwait(Vthread_t *);
@@ -117,7 +117,7 @@ extern "C" {
     extern int vtmtxunlock(Vtmutex_t *);
     extern int vtmtxclrlock(Vtmutex_t *);
 
-    extern Void_t *vtstatus(Vthread_t *);
+    extern void *vtstatus(Vthread_t *);
     extern int vterror(Vthread_t *);
     extern int vtmtxerror(Vtmutex_t *);
     extern int vtonceerror(Vtonce_t *);
@@ -141,7 +141,7 @@ extern "C" {
 	size_t stack;		/* stack size           */
 	int state;		/* execution state      */
 	int error;		/* error status         */
-	Void_t *exit;		/* exit value           */
+	void *exit;		/* exit value           */
     };
 
 /* structure for exactly once execution */
@@ -197,7 +197,7 @@ extern "C" {
 #define vtmtxunlock(mtx)	(void)(-1)
 #define vtmtxclrlock(mtx)	(void)(-1)
 
-#define vtstatus(vt)		((Void_t*)0)
+#define vtstatus(vt)		((void*)0)
 #define vterror(vt)		(0)
 #define vtmtxerror(mtx)		(0)
 #define vtonceerror(once)	(0)

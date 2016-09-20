@@ -496,7 +496,7 @@ extern "C" {
 	double d;
 	float f;
 	char c, *s, **sp;
-	Void_t *vp;
+	void *vp;
 	Sffmt_t *ft;
     } Argv_t;
 
@@ -652,8 +652,8 @@ extern "C" {
 			 ((v) || (f)->extent < 0 || \
 			  ((f)->flags&(SF_SHARE|SF_APPENDWR|SF_WHOLE)) ) )
 #define SFSK(f,a,o,d)	(SETLOCAL(f),sfsk(f,(Sfoff_t)a,o,d))
-#define SFRD(f,b,n,d)	(SETLOCAL(f),sfrd(f,(Void_t*)b,n,d))
-#define SFWR(f,b,n,d)	(SETLOCAL(f),sfwr(f,(Void_t*)b,n,d))
+#define SFRD(f,b,n,d)	(SETLOCAL(f),sfrd(f,(void*)b,n,d))
+#define SFWR(f,b,n,d)	(SETLOCAL(f),sfwr(f,(void*)b,n,d))
 #define SFSYNC(f)	(SETLOCAL(f),sfsync(f))
 #define SFCLOSE(f)	(SETLOCAL(f),sfclose(f))
 #define SFFLSBUF(f,n)	(SETLOCAL(f),_sfflsbuf(f,n))
@@ -878,7 +878,7 @@ extern "C" {
 /* note that MEMCPY advances the associated pointers */
 #define MEMCPY(to,fr,n) \
 	switch(n) \
-	{ default : memcpy((Void_t*)to,(Void_t*)fr,n); to += n; fr += n; break; \
+	{ default : memcpy((void*)to,(void*)fr,n); to += n; fr += n; break; \
 	  case  7 : *to++ = *fr++; \
 	  case  6 : *to++ = *fr++; \
 	  case  5 : *to++ = *fr++; \
@@ -889,7 +889,7 @@ extern "C" {
 	}
 #define MEMSET(s,c,n) \
 	switch(n) \
-	{ default : memset((Void_t*)s,(int)c,n); s += n; break; \
+	{ default : memset((void*)s,(int)c,n); s += n; break; \
 	  case  7 : *s++ = c; \
 	  case  6 : *s++ = c; \
 	  case  5 : *s++ = c; \
@@ -909,7 +909,7 @@ extern "C" {
     extern int _sfexcept(Sfio_t *, int, ssize_t, Sfdisc_t *);
     extern Sfrsrv_t *_sfrsrv(Sfio_t *, ssize_t);
     extern int _sfsetpool(Sfio_t *);
-    extern char *_sfcvt(Void_t *, int, int *, int *, int);
+    extern char *_sfcvt(void *, int, int *, int *, int);
     extern char **_sfgetpath(char *);
     extern Sfdouble_t _sfstrtod(const char *, char **);
 
@@ -930,8 +930,8 @@ extern "C" {
 #endif
 
 #if !defined(_hdr_mman) && !_sys_mman
-    extern Void_t *mmap(Void_t *, size_t, int, int, int, off_t);
-    extern int munmap(Void_t *, size_t);
+    extern void *mmap(void *, size_t, int, int, int, off_t);
+    extern int munmap(void *, size_t);
 #endif
 
 #if !defined(_PACKAGE_ast)

@@ -107,11 +107,11 @@ extern "C" {
 
     typedef struct _sfdisc_s Sfdisc_t;
     typedef ssize_t(*Sfread_f)
-	(Sfio_t *, Void_t *, size_t, Sfdisc_t *);
+	(Sfio_t *, void *, size_t, Sfdisc_t *);
     typedef ssize_t(*Sfwrite_f)
-	(Sfio_t *, const Void_t *, size_t, Sfdisc_t *);
+	(Sfio_t *, const void *, size_t, Sfdisc_t *);
     typedef Sfoff_t(*Sfseek_f) (Sfio_t *, Sfoff_t, int, Sfdisc_t *);
-    typedef int (*Sfexcept_f) (Sfio_t *, int, Void_t *, Sfdisc_t *);
+    typedef int (*Sfexcept_f) (Sfio_t *, int, void *, Sfdisc_t *);
 
 /* discipline structure */
     struct _sfdisc_s {
@@ -141,8 +141,8 @@ extern "C" {
 
 /* formatting environment */
     typedef struct _sffmt_s Sffmt_t;
-    typedef int (*Sffmtext_f)(Sfio_t *, Void_t *, Sffmt_t *);
-    typedef int (*Sffmtevent_f)(Sfio_t *, int, Void_t *, Sffmt_t *);
+    typedef int (*Sffmtext_f)(Sfio_t *, void *, Sffmt_t *);
+    typedef int (*Sffmtevent_f)(Sfio_t *, int, void *, Sffmt_t *);
     struct _sffmt_s {
 	long version;		/* version of this structure            */
 	Sffmtext_f extf;	/* function to process arguments        */
@@ -161,7 +161,7 @@ extern "C" {
 	char *t_str;		/* type string                          */
 	ssize_t n_str;		/* length of t_str                      */
 
-	Void_t *noop;		/* as yet unused                        */
+	void *noop;		/* as yet unused                        */
     };
 #define sffmtversion(fe,type) \
 		(type ? ((fe)->version = SFIO_VERSION) : (fe)->version)
@@ -301,7 +301,7 @@ extern "C" {
 #define extern	__EXPORT__
 #endif
 
-    extern Sfio_t *sfnew(Sfio_t *, Void_t *, size_t, int, int);
+    extern Sfio_t *sfnew(Sfio_t *, void *, size_t, int, int);
     extern Sfio_t *sfopen(Sfio_t *, const char *, const char *);
     extern Sfio_t *sfpopen(Sfio_t *, const char *, const char *);
     extern Sfio_t *sfstack(Sfio_t *, Sfio_t *);
@@ -309,18 +309,18 @@ extern "C" {
     extern Sfio_t *sftmp(size_t);
     extern int sfpurge(Sfio_t *);
     extern int sfpoll(Sfio_t **, int, int);
-    extern Void_t *sfreserve(Sfio_t *, ssize_t, int);
+    extern void *sfreserve(Sfio_t *, ssize_t, int);
     extern int sfsync(Sfio_t *);
     extern int sfclrlock(Sfio_t *);
-    extern Void_t *sfsetbuf(Sfio_t *, Void_t *, size_t);
+    extern void *sfsetbuf(Sfio_t *, void *, size_t);
     extern Sfdisc_t *sfdisc(Sfio_t *, Sfdisc_t *);
-    extern int sfraise(Sfio_t *, int, Void_t *);
+    extern int sfraise(Sfio_t *, int, void *);
     extern int sfnotify(void (*)(Sfio_t *, int, int));
     extern int sfset(Sfio_t *, int, int);
     extern int sfsetfd(Sfio_t *, int);
     extern Sfio_t *sfpool(Sfio_t *, Sfio_t *, int);
-    extern ssize_t sfread(Sfio_t *, Void_t *, size_t);
-    extern ssize_t sfwrite(Sfio_t *, const Void_t *, size_t);
+    extern ssize_t sfread(Sfio_t *, void *, size_t);
+    extern ssize_t sfwrite(Sfio_t *, const void *, size_t);
     extern Sfoff_t sfmove(Sfio_t *, Sfio_t *, Sfoff_t, int);
     extern int sfclose(Sfio_t *);
     extern Sfoff_t sftell(Sfio_t *);
@@ -344,10 +344,10 @@ extern "C" {
     extern int sfmutex(Sfio_t *, int);
 
 /* io functions with discipline continuation */
-    extern ssize_t sfrd(Sfio_t *, Void_t *, size_t, Sfdisc_t *);
-    extern ssize_t sfwr(Sfio_t *, const Void_t *, size_t, Sfdisc_t *);
+    extern ssize_t sfrd(Sfio_t *, void *, size_t, Sfdisc_t *);
+    extern ssize_t sfwr(Sfio_t *, const void *, size_t, Sfdisc_t *);
     extern Sfoff_t sfsk(Sfio_t *, Sfoff_t, int, Sfdisc_t *);
-    extern ssize_t sfpkrd(int, Void_t *, size_t, int, long, int);
+    extern ssize_t sfpkrd(int, void *, size_t, int, long, int);
 
 /* portable handling of primitive types */
     extern int sfdlen(Sfdouble_t);

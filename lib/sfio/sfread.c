@@ -24,7 +24,7 @@
  * @param n number of bytes to be read
  * @param 
  */
-ssize_t sfread(reg Sfio_t * f, Void_t * buf, reg size_t n)
+ssize_t sfread(reg Sfio_t * f, void * buf, reg size_t n)
 {
     reg uchar *s, *begs;
     reg ssize_t r;
