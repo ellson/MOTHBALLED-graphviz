@@ -15,7 +15,7 @@
 
 /* memory management discipline and entry points */
 
-#if defined(HAVE_AST) || defined(HAVE_VMALLOC)
+#if defined(HAVE_VMALLOC)
 
 	/* vmalloc based allocator */
 static void *memopen(void)

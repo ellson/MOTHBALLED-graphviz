@@ -25,10 +25,6 @@
 
 #include	 	<ctype.h>
 
-#ifdef HAVE_AST
-#include		<ast.h>
-#include		<vmalloc.h>
-#else
 #ifdef HAVE_VMALLOC
 #include		<vmalloc.h>
 #endif				/* HAVE_VMALLOC */
@@ -39,7 +35,6 @@
 #ifdef HAVE_UNISTD_H
 #include	<unistd.h>
 #endif				/* HAVE_UNISTD_H */
-#endif				/* HAVE_AST */
 #ifdef DEBUG
 #include <assert.h>
 #else
