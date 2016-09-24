@@ -82,7 +82,6 @@ extern "C" {
 #undef  _lib_vfork
 #undef  _hdr_math
 #undef  _sys_mman
-#undef  _hdr_mman
 #undef  _sys_ioctl
 #endif
 
@@ -392,9 +391,6 @@ extern "C" {
 #if !defined(_PACKAGE_ast) && defined(_mmap_worthy)
 #	ifdef _LARGEFILE64_SOURCE
 #		undef	mmap
-#	endif
-#	if _hdr_mman
-#		include	<mman.h>
 #	endif
 #	if _sys_mman
 #		include	<sys/mman.h>
@@ -924,7 +920,7 @@ extern "C" {
 #endif
 #endif
 
-#if !defined(_hdr_mman) && !_sys_mman
+#if !_sys_mman
     extern void *mmap(void *, size_t, int, int, int, off_t);
     extern int munmap(void *, size_t);
 #endif
