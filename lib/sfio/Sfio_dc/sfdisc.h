@@ -22,7 +22,6 @@ extern "C" {
 
     _BEGIN_EXTERNS_
 /* functions to create disciplines */
-    extern int sfdcdio(Sfio_t *, size_t);
     extern int sfdcdos(Sfio_t *);
     extern int sfdcfilter(Sfio_t *, const char *);
     extern int sfdclzw(Sfio_t *);

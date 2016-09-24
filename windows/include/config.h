@@ -325,9 +325,6 @@
 /* Define to 1 if you have the `strtoull' function. */
 #define HAVE_STRTOULL 1
 
-/* Define to 1 if you have struct dioattr */
-/* #undef HAVE_STRUCT_DIOATTR */
-
 /* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
    */
 /* #undef HAVE_SYS_DIR_H */

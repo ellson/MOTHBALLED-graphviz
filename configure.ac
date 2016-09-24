@@ -438,18 +438,6 @@ AC_HEADER_STDBOOL
 # Internationalization macros
 # AM_GNU_GETTEXT
 
-# -----------------------------------
-# Test for direct I/O
-AC_MSG_CHECKING([for struct dioattr])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
-#include <fcntl.h>
-#include <stdio.h>]], [[
-struct dioattr dio;]])],[
-AC_MSG_RESULT(yes)
-AC_DEFINE(HAVE_STRUCT_DIOATTR, 1,
-[Define to 1 if you have struct dioattr])],[
-AC_MSG_RESULT(no)])
-
 dnl -----------------------------------
 dnl Checks for -lm library
 
