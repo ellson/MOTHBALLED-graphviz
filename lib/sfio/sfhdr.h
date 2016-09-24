@@ -80,7 +80,6 @@ extern "C" {
 #undef  _hdr_vfork
 #undef  _sys_vfork
 #undef  _lib_vfork
-#undef  _hdr_float
 #undef  _hdr_math
 #undef  _sys_mman
 #undef  _hdr_mman
@@ -226,10 +225,6 @@ extern "C" {
 
 #if _hdr_math
 #include	<math.h>
-#endif
-
-#if _hdr_float
-#include	<float.h>
 #endif
 
 #if !defined(_ast_fltmax_double)

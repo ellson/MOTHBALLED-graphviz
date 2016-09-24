@@ -13,6 +13,8 @@
 
 #include	"sfhdr.h"
 
+#include <float.h>
+
 /*	Write out a floating point value in a portable format
 **
 **	Written by Kiem-Phong Vo.

@@ -7,10 +7,6 @@
 #  define _sys_types 1
 #endif
 
-#ifdef HAVE_FLOAT_H
-#  define _hdr_float 1
-#endif
-
 #ifdef HAVE_SYS_TYPES_H
 #  define _sys_types 1
 #endif
