@@ -10,9 +10,6 @@
    */
 /* #undef CRAY_STACKSEG_END */
 
-/* Define to 1 if using `alloca.c'. */
-/* #undef C_ALLOCA */
-
 /* Define for Darwin-style shared library names. */
 /* #undef DARWIN_DYLIB */
 
@@ -33,13 +30,6 @@
 
 /* Define if you want on-demand plugin loading */
 #define ENABLE_LTDL 1
-
-/* Define to 1 if you have `alloca', as a function or macro. */
-#define HAVE_ALLOCA 1
-
-/* Define to 1 if you have <alloca.h> and it should be used (not on Ultrix).
-   */
-/* #undef HAVE_ALLOCA_H */
 
 /* Define if you have the ann library */
 #define HAVE_ANN 1
