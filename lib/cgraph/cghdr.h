@@ -24,10 +24,6 @@
 #include <cgraph.h>
 
 #include	 	<ctype.h>
-
-#ifdef HAVE_VMALLOC
-#include		<vmalloc.h>
-#endif				/* HAVE_VMALLOC */
 #include		<sys/types.h>
 #include		<stdarg.h>
 #include		<stdlib.h>

@@ -14,10 +14,6 @@
 #include <stdio.h>
 #include <graphviz/cgraph.h>
 
-static void prstats(Agraph_t * g, int verbose);
-static void do_it(Agraph_t * g, int dostat);
-
-
 static void my_ins(Agraph_t * g, Agobj_t * obj, void *context)
 {
     Agnode_t *n;
@@ -44,35 +40,9 @@ main(int argc, char **argv)
     prev = agopen("some_name", Agdirected, NIL(Agdisc_t *));
     agcallbacks(prev, FALSE);
     agpushdisc(prev, &mydisc, NIL(void *));
-    while (g = agconcat(prev, stdin, NIL(Agdisc_t *))) {
-	/*do_it(g, dostat); */
-    }
     /*agwrite(prev,stdout); */
     fprintf(stderr, "ready to go, computer fans\n");
     agcallbacks(prev, TRUE);
     agclose(prev);
     return 1;
-}
-
-static void prstats(Agraph_t * g, int verbose)
-{
-#ifdef HAVE_VMALLOC
-    Vmstat_t ss, *s;
-    vmstat(g->cmn->heap, &ss);
-    s = &ss;
-    if (verbose)
-	fprintf(stderr,
-		"n_busy %d n_free %d s_busy %d s_free %d m_busy %d m_free %d n_seg %d extent %d\n",
-		s->n_busy, s->n_free, s->s_busy, s->s_free, s->m_busy,
-		s->m_free, s->n_seg, s->extent);
-    else
-	fprintf(stderr, "%d (%d,%d)\n", s->extent, s->s_busy, s->s_free);
-#endif
-}
-
-static void do_it(Agraph_t * g, int dostat)
-{
-    agwrite(g, stdout);
-    if (dostat)
-	prstats(g, dostat > 1);
 }
