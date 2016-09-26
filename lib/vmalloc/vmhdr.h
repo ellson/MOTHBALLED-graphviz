@@ -430,7 +430,7 @@ extern "C" {
 #define _Vmtrace	(_Vmextern.vm_trace)
 #define _Vmpfclose	(_Vmextern.vm_pfclose)
 
-     _BEGIN_EXTERNS_ extern Vmextern_t _Vmextern;
+     extern Vmextern_t _Vmextern;
 
 
 #if !defined(_PACKAGE_ast)
@@ -473,7 +473,6 @@ extern "C" {
     extern Vmuchar_t *sbrk(ssize_t);
 #endif
 
-     _END_EXTERNS_
 #endif				/* _VMHDR_H */
 #ifdef __cplusplus
 }

@@ -101,7 +101,7 @@ extern "C" {
 #define VM_BADADDR	3	/* bad addr in vmfree/vmresize  */
 #define VM_DISC		4	/* discipline being changed     */
 
-     _BEGIN_EXTERNS_		/* public data */
+/* public data */
 #if _BLD_vmalloc && defined(__EXPORT__)
 #define extern	__EXPORT__
 #endif
@@ -131,7 +131,7 @@ extern "C" {
     extern Vmalloc_t *Vmheap;	/* heap region                  */
     extern Vmalloc_t *Vmregion;	/* malloc region                */
 
-     _END_EXTERNS_ _BEGIN_EXTERNS_	/* public functions */
+/* public functions */
 #if _BLD_vmalloc && defined(__EXPORT__)
 #define extern	__EXPORT__
 #endif
@@ -171,7 +171,7 @@ extern "C" {
 
 
 #undef extern
-     _END_EXTERNS_
+
 /* to coerce any value to a Vmalloc_t*, make ANSI happy */
 #define _VM_(vm)	((Vmalloc_t*)(vm))
 /* enable recording of where a call originates from */

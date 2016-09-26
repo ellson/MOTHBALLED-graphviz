@@ -274,7 +274,7 @@ extern "C" {
 #define SF_BUFSIZE	8192	/* default buffer size                  */
 #define SF_UNBOUND	(-1)	/* unbounded buffer size                */
 
-     _BEGIN_EXTERNS_ extern ssize_t _Sfi;
+     extern ssize_t _Sfi;
 
 #if defined(_BLD_sfio) && defined(GVDLL)
 #define extern	__declspec(dllexport)
@@ -389,7 +389,7 @@ extern "C" {
     extern ssize_t sfslen(void);
 
 #undef extern
-     _END_EXTERNS_
+
 /* coding long integers in a portable and compact fashion */
 #define SF_SBITS	6
 #define SF_UBITS	7

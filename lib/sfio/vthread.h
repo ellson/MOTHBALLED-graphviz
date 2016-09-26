@@ -101,7 +101,7 @@ extern "C" {
 #define EPERM			1
 #endif
 
-     _BEGIN_EXTERNS_ extern Vthread_t *vtopen(Vthread_t *, int);
+    extern Vthread_t *vtopen(Vthread_t *, int);
     extern int vtclose(Vthread_t *);
     extern int vtset(Vthread_t *, int, void *);
     extern int vtrun(Vthread_t *, void *(*)(void *), void *);
@@ -122,7 +122,6 @@ extern "C" {
     extern int vtmtxerror(Vtmutex_t *);
     extern int vtonceerror(Vtonce_t *);
 
-     _END_EXTERNS_
 #if defined(vt_threaded) && vt_threaded
 /* mutex structure */
 	struct _vtmutex_s {

@@ -890,7 +890,7 @@ extern "C" {
 	  case  1 : *s++ = c; \
 	}
 
-     _BEGIN_EXTERNS_ extern Sfextern_t _Sfextern;
+    extern Sfextern_t _Sfextern;
     extern Sftab_t _Sftable;
 
     extern int _sfpopen(Sfio_t *, int, int, int);
@@ -992,7 +992,6 @@ extern "C" {
 
 #endif				/* defined(_PACKAGE_ast) */
 
-     _END_EXTERNS_
 #endif /*_SFHDR_H*/
 #ifdef __cplusplus
 }

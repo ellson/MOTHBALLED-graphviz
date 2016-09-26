@@ -20,7 +20,6 @@ extern "C" {
 
 #include	<sfio.h>
 
-    _BEGIN_EXTERNS_
 /* functions to create disciplines */
     extern int sfdcdos(Sfio_t *);
     extern int sfdcfilter(Sfio_t *, const char *);
@@ -30,7 +29,6 @@ extern "C" {
     extern int sfdcsubstream(Sfio_t *, Sfio_t *, Sfoff_t, Sfoff_t);
     extern int sfdctee(Sfio_t *, Sfio_t *);
     extern int sfdcunion(Sfio_t *, Sfio_t **, int);
-     _END_EXTERNS_
 #endif
 #ifdef __cplusplus
 }
