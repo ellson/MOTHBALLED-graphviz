@@ -12,12 +12,7 @@
  *************************************************************************/
 
 #include "config.h"
-#ifdef HAVE_STDINT_H
 #include <stdint.h>
-#endif
-#if HAVE_INTTYPES_H
-#include <inttypes.h>
-#endif
 #ifdef HAVE_INTPTR_T
 #define INT2PTR(t,v) ((t)(intptr_t)(v))
 #else

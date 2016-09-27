@@ -14,12 +14,7 @@ extern "C" {
 
 /* needed for intptr_t */
 #include "config.h"
-#ifdef HAVE_STDINT_H
 #include <stdint.h>
-#endif
-#if HAVE_INTTYPES_H
-#include <inttypes.h>
-#endif
 
 #include "misc.h"
 

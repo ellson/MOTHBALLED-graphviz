@@ -174,9 +174,6 @@
 /* Define if intptr_t is declared */
 #define HAVE_INTPTR_T 1
 
-/* Define to 1 if you have the <inttypes.h> header file. */
-//#define HAVE_INTTYPES_H 1
-
 /* Define to 1 if you have the <langinfo.h> header file. */
 /* #undef HAVE_LANGINFO_H */
 
@@ -281,9 +278,6 @@
 
 /* Define to 1 if you have the <stddef.h> header file. */
 #define HAVE_STDDEF_H 1
-
-/* Define to 1 if you have the <stdint.h> header file. */
-//#define HAVE_STDINT_H 1
 
 /* Define to 1 if you have the `strcasecmp' function. */
 //#define HAVE_STRCASECMP 1

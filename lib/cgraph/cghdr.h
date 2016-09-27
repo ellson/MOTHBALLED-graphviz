@@ -36,12 +36,7 @@
 #else
 #define assert(x)
 #endif
-#ifdef HAVE_STDINT_H
 #include <stdint.h>
-#endif
-#ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
-#endif
 
 #ifndef streq
 #define streq(s,t)		((*s == *t) && !strcmp((s),(t)))

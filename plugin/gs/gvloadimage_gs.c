@@ -14,12 +14,7 @@
 #include "config.h"
 
 #include <stdlib.h>
-#ifdef HAVE_STDINT_H
 #include <stdint.h>
-#endif
-#ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
-#endif
 #include <sys/stat.h>
 
 #include "gvplugin_loadimage.h"
