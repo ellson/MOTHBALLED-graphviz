@@ -17,7 +17,17 @@ services:
 
 env:
 - DOCKER_BUILD=FALSE
+  BUILD_SYSTEM=autotools
+
+- DOCKER_BUILD=FALSE
+  BUILD_SYSTEM=cmake
+
 - DOCKER_BUILD=TRUE
+  BUILD_SYSTEM=autotools
+
+- DOCKER_BUILD=TRUE
+  BUILD_SYSTEM=cmake
+
 
 install:
 # Enable colored gcc output
@@ -35,8 +45,8 @@ install:
     
 script:
 - cd ${TRAVIS_BUILD_DIR}
-- if [ ${DOCKER_BUILD} == "FALSE" ] ; then sudo ./ci/build_and_test.sh ; fi
-- if [ ${DOCKER_BUILD} == "TRUE" ] ; then docker run --rm -v `pwd`:/graphviz -w /graphviz -i -t centos7-build-env bash "ci/build_and_test.sh" ; fi
+- if [ ${DOCKER_BUILD} == "FALSE" ] ; then sudo ./ci/${BUILD_SYSTEM}-build_and_test.sh ; fi
+- if [ ${DOCKER_BUILD} == "TRUE" ] ; then docker run --rm -v `pwd`:/graphviz -w /graphviz -i -t centos7-build-env bash "ci/${BUILD_SYSTEM}-build_and_test.sh" ; fi
 
 before_deploy:
 - export DEPLOYED_FILE=$(ls *.tar.gz)
@@ -54,7 +64,7 @@ deploy:
   file: "${DEPLOYED_FILE}"
   on:
     repo: ellson/graphviz
-    condition: ${DOCKER_BUILD} == "FALSE"
+    condition: ${DOCKER_BUILD} == "FALSE" && ${BUILD_SYSTEM} == "autotools"
 
 notifications:
   email:
