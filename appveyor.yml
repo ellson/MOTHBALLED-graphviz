@@ -6,9 +6,10 @@ environment:
   # Required so bash starts in the same folder as from where it was called.
   CHERE_INVOKING: 1
   matrix:
-    - compiler: msbuild
-    #- compiler: msys2
-    #- compiler: cygwin
+    - build_system: msbuild
+    - build_system: cmake
+    #- build_system: msys2
+    #- build_system: cygwin
 
 configuration:
   - Debug
@@ -35,7 +36,7 @@ build_script:
   - ps: >-
       cd $env:APPVEYOR_BUILD_FOLDER 
 
-      if($env:compiler -eq "msbuild") {
+      if($env:build_system -eq "msbuild") {
         $env:Path += ";" + $env:APPVEYOR_BUILD_FOLDER + "\windows\dependencies\graphviz-build-utilities";
         msbuild /p:Configuration=$env:configuration;
         if($env:configuration -eq "Release") {
@@ -52,15 +53,22 @@ build_script:
         ./regression_tests.bat; 
       }
       
-      if ($env:compiler -eq "msys2" -Or $env:compiler -eq "cygwin") {
+      if($env:build_system -eq "cmake") {
+        mkdir build;
+        cd build;
+        cmake ..;
+        cmake --build . --config $env:configuration;
+      }
+      
+      if ($env:build_system -eq "msys2" -Or $env:compiler -eq "cygwin") {
         $BashPath = ""
 
-        if ($env:compiler -eq "msys2") {
+        if ($env:build_system -eq "msys2") {
           $BashPath = "C:\msys64\usr\bin\bash"
           & $BashPath -lc "pacman -S --noconfirm autoconf-archive mingw-w64-x86_64-cairo mingw-w64-x86_64-freetype mingw-w64-x86_64-fontconfig mingw-w64-x86_64-libpng mingw-w64-x86_64-pango"
         }
 
-        if ($env:compiler -eq "cygwin") {
+        if ($env:build_system -eq "cygwin") {
           C:\cygwin64\setup-x86_64.exe -qnNdO -R C:/cygwin64 -s http://cygwin.mirror.constant.com -l C:/cygwin64/var/cache/setup -P autoconf-archive -P flex -P swig -P mingw64-x86_64-cairo -P expat -P mingw64-x86_64-freetype -P mingw64-x86_64-fontconfig -P mingw64-x86_64-glib2.0 -P mingw64-x86_64-libpng -P mingw64-x86_64-pango -P zlib -P mingw64-x86_64-libpng
           $BashPath = "C:\cygwin64\bin\bash"
           # For some reason Cygwin ignores CHERE_INVOKING=1 for the first bash command.
