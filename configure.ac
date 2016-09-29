@@ -3222,8 +3222,9 @@ AC_CONFIG_FILES(Makefile
 	tclpkg/gv/META.gv
 	rtest/Makefile
   tests/Makefile
-  tests/lib/Makefile
-  tests/lib/common/Makefile
+  tests/unit_tests/Makefile
+  tests/unit_tests/lib/Makefile
+  tests/unit_tests/lib/common/Makefile
 	share/Makefile
 	share/examples/Makefile
 	share/gui/Makefile
