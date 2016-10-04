@@ -4,13 +4,13 @@
 #include <stdlib.h>
 #include <subset.h>
 
-static Void_t *mkPtrItem(Dt_t * d, ptritem * obj, Dtdisc_t * disc)
+static void *mkPtrItem(Dt_t * d, ptritem * obj, Dtdisc_t * disc)
 {
 	NOTUSED(d);
 	NOTUSED(disc);
 	ptritem *np = NEW(ptritem);
 	np->v = obj->v;
-	return (Void_t *) np;
+	return (void *) np;
 }
 
 static void freePtrItem(Dt_t * d, ptritem * obj, Dtdisc_t * disc)
