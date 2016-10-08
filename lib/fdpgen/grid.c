@@ -94,11 +94,6 @@ static cell *getCell(Grid * g)
     return cp;
 }
 
-#ifndef offsetof
-#define offsetof(typ,fld)  ((int)(&(((typ*)0)->fld)))
-#endif
-
-
 static int ijcmpf(Dt_t * d, gridpt * p1, gridpt * p2, Dtdisc_t * disc)
 {
     int diff;
@@ -237,7 +232,7 @@ void addGrid(Grid * g, int i, int j, Agnode_t * n)
     }
 }
 
-typedef int (*walkfn_t) (Dt_t *, Void_t *, Void_t *);
+typedef int (*walkfn_t) (Dt_t *, void *, void *);
 
 /* walkGrid:
  * Apply function walkf to each cell in the grid.

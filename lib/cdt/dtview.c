@@ -6,10 +6,10 @@
 */
 
 
-static Void_t* dtvsearch(Dt_t* dt, reg Void_t* obj, reg int type)
+static void* dtvsearch(Dt_t* dt, reg void* obj, reg int type)
 {
 	Dt_t		*d, *p;
-	Void_t		*o, *n, *ok, *nk;
+	void		*o, *n, *ok, *nk;
 	int		cmp, lk, sz, ky;
 	Dtcompar_f	cmpf;
 
@@ -28,9 +28,9 @@ static Void_t* dtvsearch(Dt_t* dt, reg Void_t* obj, reg int type)
 
 	if(dt->meth->type & (DT_OBAG|DT_OSET) )
 	{	if(!(type & (DT_FIRST|DT_LAST|DT_NEXT|DT_PREV)) )
-			return NIL(Void_t*);
+			return NIL(void*);
 
-		n = nk = NIL(Void_t*); p = NIL(Dt_t*);
+		n = nk = NIL(void*); p = NIL(Dt_t*);
 		for(d = dt; d; d = d->view)
 		{	if(!(o = (*d->meth->searchf)(d, obj, type)) )
 				continue;
@@ -56,7 +56,7 @@ static Void_t* dtvsearch(Dt_t* dt, reg Void_t* obj, reg int type)
 
 	/* non-ordered methods */
 	if(!(type & (DT_NEXT|DT_PREV)) )
-		return NIL(Void_t*);
+		return NIL(void*);
 
 	if(!dt->walk || obj != _DTOBJ(dt->walk->data->here, dt->walk->disc->link) )
 	{	for(d = dt; d; d = d->view)
@@ -64,7 +64,7 @@ static Void_t* dtvsearch(Dt_t* dt, reg Void_t* obj, reg int type)
 				break;
 		dt->walk = d;
 		if(!(obj = o) )
-			return NIL(Void_t*);
+			return NIL(void*);
 	}
 
 	for(d = dt->walk, obj = (*d->meth->searchf)(d, obj, type);; )
@@ -79,10 +79,10 @@ static Void_t* dtvsearch(Dt_t* dt, reg Void_t* obj, reg int type)
 		}
 
 		if(!(d = dt->walk = d->view) ) /* move on to next dictionary */
-			return NIL(Void_t*);
+			return NIL(void*);
 		else if(type&DT_NEXT)
-			obj = (*(d->meth->searchf))(d,NIL(Void_t*),DT_FIRST);
-		else	obj = (*(d->meth->searchf))(d,NIL(Void_t*),DT_LAST);
+			obj = (*(d->meth->searchf))(d,NIL(void*),DT_FIRST);
+		else	obj = (*(d->meth->searchf))(d,NIL(void*),DT_LAST);
 	}
 }
 

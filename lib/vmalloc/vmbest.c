@@ -485,7 +485,7 @@ static int bestreclaim(reg Vmdata_t * vd, Block_t * wanted, int c)
  * @param vm region allocating from
  * @param size desired block size
  */
-static Void_t *bestalloc(Vmalloc_t * vm, reg size_t size)
+static void *bestalloc(Vmalloc_t * vm, reg size_t size)
 {
     reg Vmdata_t *vd = vm->data;
     reg size_t s;
@@ -498,7 +498,7 @@ static Void_t *bestalloc(Vmalloc_t * vm, reg size_t size)
     if (!(local = vd->mode & VM_TRUST)) {
 	GETLOCAL(vd, local);
 	if (ISLOCK(vd, local))
-	    return NIL(Void_t *);
+	    return NIL(void *);
 	SETLOCK(vd, local);
 	orgsize = size;
     }
@@ -578,7 +578,7 @@ static Void_t *bestalloc(Vmalloc_t * vm, reg size_t size)
 	    vd->mode &= ~VM_AGAIN;
 	else {
 	    CLRLOCK(vd, local);
-	    return NIL(Void_t *);
+	    return NIL(void *);
 	}
     }
 
@@ -627,7 +627,7 @@ static Void_t *bestalloc(Vmalloc_t * vm, reg size_t size)
  * @param vm region allocating from
  * @param addr address to check
  */
-static long bestaddr(Vmalloc_t * vm, Void_t * addr)
+static long bestaddr(Vmalloc_t * vm, void * addr)
 {
     reg Seg_t *seg;
     reg Block_t *b, *endb;
@@ -682,7 +682,7 @@ static long bestaddr(Vmalloc_t * vm, Void_t * addr)
     return offset;
 }
 
-static int bestfree(Vmalloc_t * vm, Void_t * data)
+static int bestfree(Vmalloc_t * vm, void * data)
 {
     reg Vmdata_t *vd = vm->data;
     reg Block_t *bp, **cache;
@@ -738,7 +738,7 @@ static int bestfree(Vmalloc_t * vm, Void_t * data)
  * @param size new size
  * @param type !=0 to move, <0 for not copy
  */
-static Void_t *bestresize(Vmalloc_t * vm, Void_t * data, reg size_t size,
+static void *bestresize(Vmalloc_t * vm, void * data, reg size_t size,
 			  int type)
 {
     reg Vmdata_t *vd = vm->data;
@@ -746,7 +746,7 @@ static Void_t *bestresize(Vmalloc_t * vm, Void_t * data, reg size_t size,
     reg size_t s, bs;
     reg int local, *d, *ed;
     size_t oldsize = 0, orgsize = 0;
-    Void_t *orgdata;
+    void *orgdata;
     orgdata = 0;
 
      /**/ COUNT(N_resize);
@@ -760,15 +760,15 @@ static Void_t *bestresize(Vmalloc_t * vm, Void_t * data, reg size_t size,
     }
     if (size == 0) {
 	(void) bestfree(vm, data);
-	return NIL(Void_t *);
+	return NIL(void *);
     }
 
     if (!(local = vd->mode & VM_TRUST)) {
 	GETLOCAL(vd, local);
 	if (ISLOCK(vd, local))
-	    return NIL(Void_t *);
+	    return NIL(void *);
 	if (!local && KPVADDR(vm, data, bestaddr) != 0)
-	    return NIL(Void_t *);
+	    return NIL(void *);
 	SETLOCK(vd, local);
 
 	orgdata = data;		/* for tracing */
@@ -841,7 +841,7 @@ static Void_t *bestresize(Vmalloc_t * vm, Void_t * data, reg size_t size,
 	goto do_free;
     } else if (s < size) {
 	if (!(type & (VM_RSMOVE | VM_RSCOPY)))	/* see if old data is moveable */
-	    data = NIL(Void_t *);
+	    data = NIL(void *);
 	else {
 	    ed = (int *) data;
 	    if (size < ((s & ~BITS) + bs))
@@ -885,7 +885,7 @@ static Void_t *bestresize(Vmalloc_t * vm, Void_t * data, reg size_t size,
  * @param vm region allocating from
  * @param addr address to check
  */
-static long bestsize(Vmalloc_t * vm, Void_t * addr)
+static long bestsize(Vmalloc_t * vm, void * addr)
 {
     reg Seg_t *seg;
     reg Block_t *b, *endb;
@@ -991,7 +991,7 @@ static int bestcompact(Vmalloc_t * vm)
     return 0;
 }
 
-static Void_t *bestalign(Vmalloc_t * vm, size_t size, size_t align)
+static void *bestalign(Vmalloc_t * vm, size_t size, size_t align)
 {
     reg Vmuchar_t *data;
     reg Block_t *tp, *np;
@@ -1001,12 +1001,12 @@ static Void_t *bestalign(Vmalloc_t * vm, size_t size, size_t align)
     reg Vmdata_t *vd = vm->data;
 
     if (size <= 0 || align <= 0)
-	return NIL(Void_t *);
+	return NIL(void *);
 
     if (!(local = vd->mode & VM_TRUST)) {
 	GETLOCAL(vd, local);
 	if (ISLOCK(vd, local))
-	    return NIL(Void_t *);
+	    return NIL(void *);
 	SETLOCK(vd, local);
 	orgsize = size;
 	orgalign = align;
@@ -1081,7 +1081,7 @@ static Void_t *bestalign(Vmalloc_t * vm, size_t size, size_t align)
 
      /**/ ASSERT(!vd->root || vmchktree(vd->root));
 
-    return (Void_t *) data;
+    return (void *) data;
 }
 
 /*	A discipline to get memory using sbrk() or VirtualAlloc on win32 */
@@ -1092,7 +1092,7 @@ static Void_t *bestalign(Vmalloc_t * vm, size_t size, size_t align)
  * @param nsize new size
  * @param disc discipline structure
  */
-static Void_t *sbrkmem(Vmalloc_t * vm, Void_t * caddr,
+static void *sbrkmem(Vmalloc_t * vm, void * caddr,
 		       size_t csize, size_t nsize, Vmdisc_t * disc)
 {
 #if _std_malloc || _BLD_INSTRUMENT || cray
@@ -1100,23 +1100,23 @@ static Void_t *sbrkmem(Vmalloc_t * vm, Void_t * caddr,
     NOTUSED(disc);
 
     if (csize == 0)
-	return (Void_t *) malloc(nsize);
+	return (void *) malloc(nsize);
     if (nsize == 0)
 	free(caddr);
-    return NIL(Void_t *);
+    return NIL(void *);
 #else
 #if defined(_WIN32)
     NOTUSED(vm);
     NOTUSED(disc);
 
     if (csize == 0)
-	return (Void_t *) VirtualAlloc(NIL(LPVOID), nsize, MEM_COMMIT,
+	return (void *) VirtualAlloc(NIL(LPVOID), nsize, MEM_COMMIT,
 				       PAGE_READWRITE);
     else if (nsize == 0)
 	return VirtualFree((LPVOID) caddr, 0,
-			   MEM_RELEASE) ? caddr : NIL(Void_t *);
+			   MEM_RELEASE) ? caddr : NIL(void *);
     else
-	return NIL(Void_t *);
+	return NIL(void *);
 #else
     reg Vmuchar_t *addr;
     reg ssize_t size;
@@ -1125,7 +1125,7 @@ static Void_t *sbrkmem(Vmalloc_t * vm, Void_t * caddr,
 
     /* sbrk, see if still own current address */
     if (csize > 0 && sbrk(0) != (Vmuchar_t *) caddr + csize)
-	return NIL(Void_t *);
+	return NIL(void *);
 
     /* do this because sbrk() uses 'ssize_t' argument */
     size =
@@ -1133,9 +1133,9 @@ static Void_t *sbrkmem(Vmalloc_t * vm, Void_t * caddr,
 	csize ? (ssize_t) (nsize - csize) : -(ssize_t) (csize - nsize);
 
     if ((addr = sbrk(size)) == (Vmuchar_t *) (-1))
-	return NIL(Void_t *);
+	return NIL(void *);
     else
-	return csize == 0 ? (Void_t *) addr : caddr;
+	return csize == 0 ? (void *) addr : caddr;
 #endif
 #endif
 }
@@ -1179,7 +1179,7 @@ static Vmalloc_t _Vmheap = {
     NIL(Vmalloc_t *)		/* next             */
 };
 
-__DEFINE__(Vmalloc_t *, Vmheap, &_Vmheap);
-__DEFINE__(Vmalloc_t *, Vmregion, &_Vmheap);
-__DEFINE__(Vmethod_t *, Vmbest, &_Vmbest);
-__DEFINE__(Vmdisc_t *, Vmdcsbrk, &_Vmdcsbrk);
+Vmalloc_t* Vmheap = &_Vmheap;
+Vmalloc_t* Vmregion = &_Vmheap;
+Vmethod_t* Vmbest = &_Vmbest;
+Vmdisc_t* Vmdcsbrk = &_Vmdcsbrk;

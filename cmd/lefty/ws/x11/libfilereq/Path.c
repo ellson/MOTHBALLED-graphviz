@@ -62,12 +62,7 @@ extern void qsort ();
 
 #include "SFDecls.h"
 
-#ifdef HAVE_STDINT_H
 #include <stdint.h>
-#endif
-#ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
-#endif
 #ifdef HAVE_INTPTR_T
 #define INT2PTR(t,v) ((t)(intptr_t)(v))
 #define PTR2INT(v) ((Sflong_t)(intptr_t)(v))

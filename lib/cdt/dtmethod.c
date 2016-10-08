@@ -15,7 +15,7 @@ Dtmethod_t* dtmethod(Dt_t* dt, Dtmethod_t* meth)
 		return oldmeth;
 
 	if(disc->eventf &&
-	   (*disc->eventf)(dt,DT_METH,(Void_t*)meth,disc) < 0)
+	   (*disc->eventf)(dt,DT_METH,(void*)meth,disc) < 0)
 		return NIL(Dtmethod_t*);
 
 	dt->data->minp = 0;
@@ -27,7 +27,7 @@ Dtmethod_t* dtmethod(Dt_t* dt, Dtmethod_t* meth)
 		dt->data->head = NIL(Dtlink_t*);
 	else if(dt->data->type&(DT_SET|DT_BAG) )
 	{	if(dt->data->ntab > 0)
-			(*dt->memoryf)(dt,(Void_t*)dt->data->htab,0,disc);
+			(*dt->memoryf)(dt,(void*)dt->data->htab,0,disc);
 		dt->data->ntab = 0;
 		dt->data->htab = NIL(Dtlink_t**);
 	}
@@ -53,7 +53,7 @@ Dtmethod_t* dtmethod(Dt_t* dt, Dtmethod_t* meth)
 	{	dt->data->size = 0;
 		while(list)
 		{	r = list->right;
-			(*meth->searchf)(dt,(Void_t*)list,DT_RENEW);
+			(*meth->searchf)(dt,(void*)list,DT_RENEW);
 			list = r;
 		}
 	}
@@ -67,11 +67,11 @@ Dtmethod_t* dtmethod(Dt_t* dt, Dtmethod_t* meth)
 		while(list)
 		{	r = list->right;
 			if(rehash)
-			{	reg Void_t* key = _DTOBJ(list,disc->link);
+			{	reg void* key = _DTOBJ(list,disc->link);
 				key = _DTKEY(key,disc->key,disc->size);
 				list->hash = _DTHSH(dt,key,disc,disc->size);
 			}
-			(void)(*meth->searchf)(dt,(Void_t*)list,DT_RENEW);
+			(void)(*meth->searchf)(dt,(void*)list,DT_RENEW);
 			list = r;
 		}
 	}

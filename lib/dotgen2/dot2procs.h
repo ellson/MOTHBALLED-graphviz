@@ -14,10 +14,6 @@
 #ifndef DOT2PROCS_H
 #define DOT2PROCS_H
 
-#ifdef _BEGIN_EXTERNS_
-_BEGIN_EXTERNS_                 /* public data */
-#endif
-/* tabs at 8, or you're a sorry loser */
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -34,9 +30,6 @@ extern int is_nonconstraint(edge_t * e);
     /* extern void dot_splines(Agraph_t *); */
 #undef extern
 
-#ifdef _END_EXTERNS_
-     _END_EXTERNS_
-#endif
 #ifdef __cplusplus
 }
 #endif

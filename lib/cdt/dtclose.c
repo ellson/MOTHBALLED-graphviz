@@ -15,29 +15,29 @@ int dtclose(reg Dt_t* dt)
 	/* announce the close event to see if we should continue */
 	disc = dt->disc;
 	if(disc->eventf &&
-	   (ev = (*disc->eventf)(dt,DT_CLOSE,NIL(Void_t*),disc)) < 0)
+	   (ev = (*disc->eventf)(dt,DT_CLOSE,NIL(void*),disc)) < 0)
 		return -1;
 
 	if(dt->view)	/* turn off viewing */
 		dtview(dt,NIL(Dt_t*));
 
 	if(ev == 0) /* release all allocated data */
-	{	(void)(*(dt->meth->searchf))(dt,NIL(Void_t*),DT_CLEAR);
+	{	(void)(*(dt->meth->searchf))(dt,NIL(void*),DT_CLEAR);
 		if(dtsize(dt) > 0)
 			return -1;
 
 		if(dt->data->ntab > 0)
-			(*dt->memoryf)(dt,(Void_t*)dt->data->htab,0,disc);
-		(*dt->memoryf)(dt,(Void_t*)dt->data,0,disc);
+			(*dt->memoryf)(dt,(void*)dt->data->htab,0,disc);
+		(*dt->memoryf)(dt,(void*)dt->data,0,disc);
 	}
 
 	if(dt->type == DT_MALLOC)
-		free((Void_t*)dt);
+		free((void*)dt);
 	else if(ev == 0 && dt->type == DT_MEMORYF)
-		(*dt->memoryf)(dt, (Void_t*)dt, 0, disc);
+		(*dt->memoryf)(dt, (void*)dt, 0, disc);
 
 	if(disc->eventf)
-		(void)(*disc->eventf)(dt, DT_ENDCLOSE, NIL(Void_t*), disc);
+		(void)(*disc->eventf)(dt, DT_ENDCLOSE, NIL(void*), disc);
 
 	return 0;
 }

@@ -414,17 +414,17 @@ int vmprofile(Vmalloc_t * vm, int fd)
     return 0;
 }
 
-static Void_t *pfalloc(Vmalloc_t * vm, size_t size)
+static void *pfalloc(Vmalloc_t * vm, size_t size)
 {
     reg size_t s;
-    reg Void_t *data;
+    reg void *data;
     reg char *file;
     reg int line;
     reg Vmdata_t *vd = vm->data;
 
     VMFILELINE(vm, file, line);
     if (!(vd->mode & VM_TRUST) && ISLOCK(vd, 0))
-	return NIL(Void_t *);
+	return NIL(void *);
     SETLOCK(vd, 0);
 
     s = ROUND(size, ALIGN) + PF_EXTRA;
@@ -443,7 +443,7 @@ static Void_t *pfalloc(Vmalloc_t * vm, size_t size)
     return data;
 }
 
-static int pffree(Vmalloc_t * vm, Void_t * data)
+static int pffree(Vmalloc_t * vm, void * data)
 {
     reg Pfobj_t *pf;
     reg size_t s;
@@ -489,12 +489,12 @@ static int pffree(Vmalloc_t * vm, Void_t * data)
     return (*(Vmbest->freef)) (vm, data);
 }
 
-static Void_t *pfresize(Vmalloc_t * vm, Void_t * data, size_t size,
+static void *pfresize(Vmalloc_t * vm, void * data, size_t size,
 			int type)
 {
     reg Pfobj_t *pf;
     reg size_t s, news;
-    reg Void_t *addr;
+    reg void *addr;
     reg char *file;
     reg int line;
     reg size_t oldsize;
@@ -507,13 +507,13 @@ static Void_t *pfresize(Vmalloc_t * vm, Void_t * data, size_t size,
     }
     if (size == 0) {
 	(void) pffree(vm, data);
-	return NIL(Void_t *);
+	return NIL(void *);
     }
 
     VMFILELINE(vm, file, line);
     if (!(vd->mode & VM_TRUST)) {
 	if (ISLOCK(vd, 0))
-	    return NIL(Void_t *);
+	    return NIL(void *);
 	SETLOCK(vd, 0);
     }
 
@@ -521,7 +521,7 @@ static Void_t *pfresize(Vmalloc_t * vm, Void_t * data, size_t size,
 	if (vm->disc->exceptf)
 	    (void) (*vm->disc->exceptf) (vm, VM_BADADDR, data, vm->disc);
 	CLRLOCK(vd, 0);
-	return NIL(Void_t *);
+	return NIL(void *);
     }
 
     pf = PFOBJ(data);
@@ -570,12 +570,12 @@ static Void_t *pfresize(Vmalloc_t * vm, Void_t * data, size_t size,
     return addr;
 }
 
-static long pfsize(Vmalloc_t * vm, Void_t * addr)
+static long pfsize(Vmalloc_t * vm, void * addr)
 {
     return (*Vmbest->addrf) (vm, addr) != 0 ? -1L : (long) PFSIZE(addr);
 }
 
-static long pfaddr(Vmalloc_t * vm, Void_t * addr)
+static long pfaddr(Vmalloc_t * vm, void * addr)
 {
     return (*Vmbest->addrf) (vm, addr);
 }
@@ -585,10 +585,10 @@ static int pfcompact(Vmalloc_t * vm)
     return (*Vmbest->compactf) (vm);
 }
 
-static Void_t *pfalign(Vmalloc_t * vm, size_t size, size_t align)
+static void *pfalign(Vmalloc_t * vm, size_t size, size_t align)
 {
     reg size_t s;
-    reg Void_t *data;
+    reg void *data;
     reg char *file;
     reg int line;
     reg Vmdata_t *vd = vm->data;
@@ -596,7 +596,7 @@ static Void_t *pfalign(Vmalloc_t * vm, size_t size, size_t align)
     VMFILELINE(vm, file, line);
 
     if (!(vd->mode & VM_TRUST) && ISLOCK(vd, 0))
-	return NIL(Void_t *);
+	return NIL(void *);
     SETLOCK(vd, 0);
 
     s = (size <= TINYSIZE ? TINYSIZE : ROUND(size, ALIGN)) + PF_EXTRA;
@@ -627,4 +627,4 @@ static Vmethod_t _Vmprofile = {
     VM_MTPROFILE
 };
 
-__DEFINE__(Vmethod_t *, Vmprofile, &_Vmprofile);
+Vmethod_t* Vmprofile = &_Vmprofile;

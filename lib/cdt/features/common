@@ -80,11 +80,6 @@ cat{
 	#endif
 	#endif /*_BEGIN_EXTERNS_*/
 
-	/* _ARG_ simplifies function prototyping among flavors of C */
-	#ifndef _ARG_
-	#define _ARG_(x)	x
-	#endif /*_ARG_*/
-
 	/* __INLINE__ is the inline keyword */
 	#if !defined(__INLINE__) && defined(__cplusplus)
 	#define __INLINE__	inline
@@ -92,11 +87,6 @@ cat{
 	#if !defined(__INLINE__) && defined(_WIN32) && !defined(__GNUC__)
 	#define __INLINE__	__inline
 	#endif
-
-	/* Void_t is defined so that Void_t* can address any type */
-	#ifndef Void_t
-	#define Void_t		void
-	#endif /*Void_t*/
 
 	/* dynamic linked library external scope handling */
 	#undef extern
@@ -113,16 +103,6 @@ cat{
 	#define _astimport	extern
 	#endif
 	#endif /*_astimport*/
-}end
-
-cat{
-	#if !_DLL_BLD && _dll_import
-	#define __EXTERN__(T,obj)	extern T obj; T* _imp__ ## obj = &obj
-	#define __DEFINE__(T,obj,val)	T obj = val; T* _imp__ ## obj = &obj
-	#else
-	#define __EXTERN__(T,obj)	extern T obj
-	#define __DEFINE__(T,obj,val)	T obj = val
-	#endif
 }end
 
 cat{
@@ -159,7 +139,7 @@ tst	- -DN=0 - -DN=1 - -DN=2 - -DN=3 - -DN=4 - -DN=5 - -DN=6 - -DN=7 - -DN=8 outp
 	#endif
 
 	_BEGIN_EXTERNS_
-	extern int	printf _ARG_((const char*, ...));
+	extern int	printf(const char*, ...);
 	_END_EXTERNS_
 	
 	#if N == 0
@@ -296,7 +276,7 @@ tst - -DTRY=1 - -DTRY=1 -Dvoid=char - -DTRY=2 - -DTRY=3 - -DTRY=4 output{
 	#endif
 	#undef	printf
 	_BEGIN_EXTERNS_
-	extern int	printf _ARG_((const char*, ...));
+	extern int	printf(const char*, ...);
 	_END_EXTERNS_
 	static va_list ap;
 	main()

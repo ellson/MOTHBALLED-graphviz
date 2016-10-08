@@ -14,54 +14,6 @@
 #include <cghdr.h>
 
 /* memory management discipline and entry points */
-
-#if defined(HAVE_AST) || defined(HAVE_VMALLOC)
-
-	/* vmalloc based allocator */
-static void *memopen(void)
-{
-#if defined(DEBUG) || defined(MEMDEBUG)
-    return vmopen(Vmdcheap, Vmdebug,
-		  VM_MTDEBUG | VM_DBCHECK | VM_DBABORT | VM_TRACE);
-#else
-    return vmopen(Vmdcheap, Vmbest, VM_MTBEST);
-#endif
-}
-
-static void *memalloc(void *heap, size_t request)
-{
-    void *rv;
-    rv = vmalloc((Vmalloc_t *) heap, request);
-    if (rv) memset(rv, 0, request);
-    return rv;
-}
-
-static void *memresize(void *heap, void *ptr, size_t oldsize,
-		       size_t request)
-{
-    void *rv;
-
-    rv = vmresize((Vmalloc_t *) heap, ptr, request, VM_RSCOPY | VM_RSZERO);
-    return rv;
-}
-
-static void memfree(void *heap, void *ptr)
-{
-    vmfree((Vmalloc_t *) heap, ptr);
-}
-
-static void memclose(void *heap)
-{
-    vmclose((Vmalloc_t *) heap);
-}
-
-Agmemdisc_t AgMemDisc =
-    { memopen, memalloc, memresize, memfree, memclose };
-
-#else
-
-	/* malloc based allocator */
-
 static void *memopen(Agdisc_t* disc)
 {
     return NIL(void *);
@@ -106,9 +58,6 @@ static void memclose(void *heap)
 
 Agmemdisc_t AgMemDisc =
     { memopen, memalloc, memresize, memfree, memclose };
-
-#endif
-
 
 void *agalloc(Agraph_t * g, size_t size)
 {

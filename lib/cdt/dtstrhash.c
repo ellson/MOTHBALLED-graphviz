@@ -13,7 +13,7 @@
 ** Written by Kiem-Phong Vo (02/28/03)
 */
 
-uint dtstrhash(reg uint h, Void_t* args, reg int n)
+uint dtstrhash(reg uint h, void* args, reg int n)
 {
 	reg unsigned char*	s = (unsigned char*)args;
 

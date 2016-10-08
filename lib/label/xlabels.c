@@ -23,13 +23,13 @@
 
 extern int Verbose;
 
-static int icompare(Dt_t *, Void_t *, Void_t *, Dtdisc_t *);
+static int icompare(Dt_t *, void *, void *, Dtdisc_t *);
 
 Dtdisc_t Hdisc = { offsetof(HDict_t, key), sizeof(int), -1, 0, 0,
     icompare, 0, 0, 0
 };
 
-static int icompare(Dt_t * dt, Void_t * v1, Void_t * v2, Dtdisc_t * disc)
+static int icompare(Dt_t * dt, void * v1, void * v2, Dtdisc_t * disc)
 {
     int k1 = *((int *) v1), k2 = *((int *) v2);
     return k1 - k2;
@@ -612,7 +612,7 @@ static void xlhdxunload(XLabels_t * xlp)
 {
   int size=dtsize(xlp->hdx), freed=0;
   while(dtsize(xlp->hdx) ) {
-    Void_t*vp=dtfinger(xlp->hdx);
+    void*vp=dtfinger(xlp->hdx);
     assert(vp);
     if(vp) {
       dtdetach(xlp->hdx, vp);

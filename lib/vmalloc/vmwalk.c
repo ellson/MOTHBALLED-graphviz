@@ -19,7 +19,7 @@
 */
 
 int vmwalk(Vmalloc_t * vm,
-	   int (*segf) (Vmalloc_t *, Void_t *, size_t, Vmdisc_t *))
+	   int (*segf) (Vmalloc_t *, void *, size_t, Vmdisc_t *))
 {
     reg Seg_t *seg;
     reg int rv;

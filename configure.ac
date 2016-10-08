@@ -425,9 +425,9 @@ dnl -----------------------------------
 dnl Checks for header files
 
 # AC_HEADER_STDC
-AC_CHECK_HEADERS(stdarg.h stddef.h stddef.h stdint.h malloc.h \
+AC_CHECK_HEADERS(stdarg.h stddef.h stddef.h malloc.h \
 	fcntl.h search.h pthread.h values.h float.h limits.h termios.h \
-	errno.h time.h unistd.h fenv.h strings.h inttypes.h setjmp.h \
+	errno.h time.h unistd.h fenv.h strings.h setjmp.h \
 	sys/time.h sys/times.h sys/types.h sys/select.h fpu_control.h \
 	sys/fpu.h sys/socket.h sys/stat.h sys/mman.h \
 	sys/ioctl.h sys/inotify.h langinfo.h libintl.h crt_externs.h)
@@ -437,18 +437,6 @@ AC_HEADER_STDBOOL
 
 # Internationalization macros
 # AM_GNU_GETTEXT
-
-# -----------------------------------
-# Test for direct I/O
-AC_MSG_CHECKING([for struct dioattr])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
-#include <fcntl.h>
-#include <stdio.h>]], [[
-struct dioattr dio;]])],[
-AC_MSG_RESULT(yes)
-AC_DEFINE(HAVE_STRUCT_DIOATTR, 1,
-[Define to 1 if you have struct dioattr])],[
-AC_MSG_RESULT(no)])
 
 dnl -----------------------------------
 dnl Checks for -lm library
@@ -480,8 +468,6 @@ AC_SUBST([LIBGEN_LIBS])
 # -----------------------------------
 
 # Checks for library functions
-AC_FUNC_ALLOCA
-
 AC_CHECK_FUNCS([lrand48 drand48 srand48 setmode setenv getenv \
 	__freadable _sysconf getrusage strerror cbrt lsqrt vsnprintf \
 	strtoul strtoll strtoull uname memset nl_langinfo pow sqrt \
@@ -3053,12 +3039,7 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>
 
 AC_MSG_CHECKING(if intptr_t is declared)
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
-	#if HAVE_STDINT_H
-	#include <stdint.h>
-	#endif
-	#if HAVE_INTTYPES_H
-	#include <inttypes.h>
-	#endif
+  #include <stdint.h>
 	#if HAVE_UNISTD_H
 	#include <unistd.h>
 	#endif

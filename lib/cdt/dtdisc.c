@@ -7,16 +7,16 @@
 **	Written by Kiem-Phong Vo (5/26/96)
 */
 
-static Void_t* dtmemory(Dt_t* dt,Void_t* addr,size_t size,Dtdisc_t* disc)
+static void* dtmemory(Dt_t* dt,void* addr,size_t size,Dtdisc_t* disc)
 {
 	if(addr)
 	{	if(size == 0)
 		{	free(addr);
-			return NIL(Void_t*);
+			return NIL(void*);
 		}
 		else	return realloc(addr,size);
 	}
-	else	return size > 0 ? malloc(size) : NIL(Void_t*);
+	else	return size > 0 ? malloc(size) : NIL(void*);
 }
 
 Dtdisc_t* dtdisc(Dt_t* dt, Dtdisc_t* disc, int type)
@@ -40,7 +40,7 @@ Dtdisc_t* dtdisc(Dt_t* dt, Dtdisc_t* disc, int type)
 
 	UNFLATTEN(dt);
 
-	if(old->eventf && (*old->eventf)(dt,DT_DISC,(Void_t*)disc,old) < 0)
+	if(old->eventf && (*old->eventf)(dt,DT_DISC,(void*)disc,old) < 0)
 		return NIL(Dtdisc_t*);
 
 	dt->disc = disc;
@@ -80,10 +80,10 @@ Dtdisc_t* dtdisc(Dt_t* dt, Dtdisc_t* disc, int type)
 		{	t = r->right;
 			if(!(type&DT_SAMEHASH))	/* new hash value */
 			{	k = (char*)_DTOBJ(r,disc->link);
-				k = _DTKEY((Void_t*)k,disc->key,disc->size);
+				k = _DTKEY((void*)k,disc->key,disc->size);
 				r->hash = _DTHSH(dt,k,disc,disc->size);
 			}
-			(void)(*searchf)(dt,(Void_t*)r,DT_RENEW);
+			(void)(*searchf)(dt,(void*)r,DT_RENEW);
 			r = t;
 		}
 	}

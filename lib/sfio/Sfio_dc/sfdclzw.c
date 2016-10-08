@@ -206,7 +206,7 @@ static code_int getcode(Sfio_t * f, LZW_Disc * disc)
 }
 
 
-static int lzwExcept(Sfio_t * f, int type, Void_t * data, Sfdisc_t * disc)
+static int lzwExcept(Sfio_t * f, int type, void * data, Sfdisc_t * disc)
 {
     if (type == SF_FINAL || type == SF_DPOP)
 	free(disc);
@@ -221,7 +221,7 @@ static int lzwExcept(Sfio_t * f, int type, Void_t * data, Sfdisc_t * disc)
  * with those of the compress() routine.  See the definitions above.
  */
 
-ssize_t lzwRead(Sfio_t * f, Void_t * iobuf, size_t iocnt,
+ssize_t lzwRead(Sfio_t * f, void * iobuf, size_t iocnt,
 		Sfdisc_t * sfdisc)
 {
     LZW_Disc *disc = (LZW_Disc *) sfdisc;
@@ -335,7 +335,7 @@ static Sfoff_t lzwSeek(Sfio_t * f, Sfoff_t offset, int whence,
 }
 
 
-static ssize_t lzwWrite(Sfio_t * f, const Void_t * buf, size_t count,
+static ssize_t lzwWrite(Sfio_t * f, const void * buf, size_t count,
 			Sfdisc_t * disc)
 {
     return (ssize_t) (-1);

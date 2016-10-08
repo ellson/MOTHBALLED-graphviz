@@ -22,14 +22,14 @@
  * @param vm region
  * @param addr address
  */
-Void_t *vmsegment(Vmalloc_t * vm, Void_t * addr)
+void *vmsegment(Vmalloc_t * vm, void * addr)
 {
     reg Seg_t *seg;
     reg Vmdata_t *vd = vm->data;
 
     if (!(vd->mode & VM_TRUST)) {
 	if (ISLOCK(vd, 0))
-	    return NIL(Void_t *);
+	    return NIL(void *);
 	SETLOCK(vd, 0);
     }
 
@@ -39,5 +39,5 @@ Void_t *vmsegment(Vmalloc_t * vm, Void_t * addr)
 	    break;
 
     CLRLOCK(vd, 0);
-    return seg ? (Void_t *) seg->addr : NIL(Void_t *);
+    return seg ? (void *) seg->addr : NIL(void *);
 }

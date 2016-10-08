@@ -626,11 +626,9 @@ case `(getopts '[-][123:xyz]' opt --xyz; echo 0$opt) 2>/dev/null` in
 	following at the top to hide dialect differences:]{
 		[+#if defined(__STDC__) || defined(__cplusplus) || defined(c_plusplus)?]
 		[+#define _STD_ 1?]
-		[+#define _ARG_(x) x?]
 		[+#define _VOID_ void?]
 		[+#else?]
 		[+#define _STD_ 0?]
-		[+#define _ARG_(x) ()?]
 		[+#define _VOID_ char?]
 		[+#endif?]
 		[+#if defined(__cplusplus)?]
@@ -1040,11 +1038,9 @@ status=2
 
 std='#if defined(__STDC__) || defined(__cplusplus) || defined(c_plusplus)
 #define _STD_		1
-#define _ARG_(x)	x
 #define _VOID_		void
 #else
 #define _STD_		0
-#define _ARG_(x)	()
 #define _VOID_		char
 #endif
 #if defined(__cplusplus)
@@ -3267,7 +3263,7 @@ $inc
 $ext
 _BEGIN_EXTERNS_
 struct _iffe_struct { int _iffe_member; };
-extern struct _iffe_struct* $v _ARG_((struct _iffe_struct*));
+extern struct _iffe_struct* $v (struct _iffe_struct*);
 _END_EXTERNS_
 "
 				$cc -c $tmp.c <&$nullin >&$nullout

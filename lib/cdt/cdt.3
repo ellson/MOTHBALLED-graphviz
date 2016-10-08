@@ -27,7 +27,6 @@
 .Ce
 .Ss "DICTIONARY TYPES"
 .Cs
-Void_t*;
 Dt_t;
 Dtdisc_t;
 Dtmethod_t;
@@ -59,37 +58,37 @@ Dtmethod_t* Dtdeque;
 .Cs
 #define DTOFFSET(struct_s,member)
 #define DTDISC(disc,key,size,link,makef,freef,comparf,hashf,memoryf,eventf)
-typedef Void_t*      (*Dtmake_f)(Dt_t*, Void_t*, Dtdisc_t*);
-typedef void         (*Dtfree_f)(Dt_t*, Void_t*, Dtdisc_t*);
-typedef int          (*Dtcompar_f)(Dt_t*, Void_t*, Void_t*, Dtdisc_t*);
-typedef unsigned int (*Dthash_f)(Dt_t*, Void_t*, Dtdisc_t*);
-typedef Void_t*      (*Dtmemory_f)(Dt_t*, Void_t*, size_t, Dtdisc_t*);
-typedef int          (*Dtevent_f)(Dt_t*, int, Void_t*, Dtdisc_t*);
+typedef void*      (*Dtmake_f)(Dt_t*, void*, Dtdisc_t*);
+typedef void         (*Dtfree_f)(Dt_t*, void*, Dtdisc_t*);
+typedef int          (*Dtcompar_f)(Dt_t*, void*, void*, Dtdisc_t*);
+typedef unsigned int (*Dthash_f)(Dt_t*, void*, Dtdisc_t*);
+typedef void*      (*Dtmemory_f)(Dt_t*, void*, size_t, Dtdisc_t*);
+typedef int          (*Dtevent_f)(Dt_t*, int, void*, Dtdisc_t*);
 .Ce
 .Ss "OBJECT OPERATIONS"
 .Cs
-Void_t*   dtinsert(Dt_t* dt, Void_t* obj);
-Void_t*   dtappend(Dt_t* dt, Void_t* obj);
-Void_t*   dtdelete(Dt_t* dt, Void_t* obj);
-Void_t*   dtattach(Dt_t* dt, Void_t* obj);
-Void_t*   dtdetach(Dt_t* dt, Void_t* obj);
-Void_t*   dtsearch(Dt_t* dt, Void_t* obj);
-Void_t*   dtmatch(Dt_t* dt, Void_t* key);
-Void_t*   dtfirst(Dt_t* dt);
-Void_t*   dtnext(Dt_t* dt, Void_t* obj);
-Void_t*   dtlast(Dt_t* dt);
-Void_t*   dtprev(Dt_t* dt, Void_t* obj);
-Void_t*   dtfinger(Dt_t* dt);
-Void_t*   dtrenew(Dt_t* dt, Void_t* obj);
-int       dtwalk(Dt_t* dt, int (*userf)(Dt_t*, Void_t*, Void_t*), Void_t*);
+void*   dtinsert(Dt_t* dt, void* obj);
+void*   dtappend(Dt_t* dt, void* obj);
+void*   dtdelete(Dt_t* dt, void* obj);
+void*   dtattach(Dt_t* dt, void* obj);
+void*   dtdetach(Dt_t* dt, void* obj);
+void*   dtsearch(Dt_t* dt, void* obj);
+void*   dtmatch(Dt_t* dt, void* key);
+void*   dtfirst(Dt_t* dt);
+void*   dtnext(Dt_t* dt, void* obj);
+void*   dtlast(Dt_t* dt);
+void*   dtprev(Dt_t* dt, void* obj);
+void*   dtfinger(Dt_t* dt);
+void*   dtrenew(Dt_t* dt, void* obj);
+int       dtwalk(Dt_t* dt, int (*userf)(Dt_t*, void*, void*), void*);
 Dtlink_t* dtflatten(Dt_t* dt);
 Dtlink_t* dtlink(Dt_t*, Dtlink_t* link);
-Void_t*   dtobj(Dt_t* dt, Dtlink_t* link);
+void*   dtobj(Dt_t* dt, Dtlink_t* link);
 Dtlink_t* dtextract(Dt_t* dt);
 int       dtrestore(Dt_t* dt, Dtlink_t* link);
 
-#define   DTTREESEARCH(Dt_t* dt, Void_t* obj, action)
-#define   DTTREEMATCH(Dt_t* dt, Void_t* key, action)
+#define   DTTREESEARCH(Dt_t* dt, void* obj, action)
+#define   DTTREEMATCH(Dt_t* dt, void* key, action)
 .Ce
 .Ss "DICTIONARY STATUS"
 .Cs
@@ -110,11 +109,6 @@ unsigned int dtcharhash(unsigned int h, unsigned char c);
 unordered set/multiset, ordered set/multiset, list, stack, and queue.
 .PP
 .Ss "DICTIONARY TYPES"
-.PP
-.Ss "  Void_t*"
-This type is used to pass objects between \fICdt\fP and application code.
-\f5Void_t\fP is defined as \f5void\fP for ANSI-C and C++
-and \f5char\fP for other compilation environments.
 .PP
 .Ss "  Dt_t"
 This is the type of a dictionary handle.
@@ -263,11 +257,11 @@ defined in the type \f5Dtdisc_t\fP:
 Each object \f5obj\fP is identified by a key used for object comparison or hashing.
 \f5key\fP should be non-negative and defines an offset into \f5obj\fP.
 If \f5size\fP is negative, the key is a null-terminated
-string with starting address \f5*(Void_t**)((char*)obj+key)\fP.
+string with starting address \f5*(void**)((char*)obj+key)\fP.
 If \f5size\fP is zero, the key is a null-terminated string with starting address
-\f5(Void_t*)((char*)obj+key)\fP.
+\f5(void*)((char*)obj+key)\fP.
 Finally, if \f5size\fP is positive, the key is a byte array of length \f5size\fP
-starting at \f5(Void_t*)((char*)obj+key)\fP.
+starting at \f5(void*)((char*)obj+key)\fP.
 .PP
 .Ss "  int link"
 Let \f5obj\fP be an object to be inserted into \f5dt\fP as discussed below.
@@ -276,17 +270,17 @@ to hold \f5obj\fP. Otherwise, \f5obj\fP should have
 a \f5Dtlink_t\fP structure embedded \f5link\fP bytes into it,
 i.e., at address \f5(Dtlink_t*)((char*)obj+link)\fP.
 .PP
-.Ss "  Void_t* (*makef)(Dt_t* dt, Void_t* obj, Dtdisc_t* disc)"
+.Ss "  void* (*makef)(Dt_t* dt, void* obj, Dtdisc_t* disc)"
 If \f5makef\fP is not \f5NULL\fP,
 \f5dtinsert(dt,obj)\fP or \f5dtappend()\fP will call it
 to make a copy of \f5obj\fP suitable for insertion into \f5dt\fP.
 If \f5makef\fP is \f5NULL\fP, \f5obj\fP itself will be inserted into \f5dt\fP.
 .PP
-.Ss "  void (*freef)(Dt_t* dt, Void_t* obj, Dtdisc_t* disc)"
+.Ss "  void (*freef)(Dt_t* dt, void* obj, Dtdisc_t* disc)"
 If not \f5NULL\fP,
 \f5freef\fP is used to destroy data associated with \f5obj\fP.
 .PP
-.Ss "int (*comparf)(Dt_t* dt, Void_t* key1, Void_t* key2, Dtdisc_t* disc)"
+.Ss "int (*comparf)(Dt_t* dt, void* key1, void* key2, Dtdisc_t* disc)"
 If not \f5NULL\fP, \f5comparf\fP is used to compare two keys.
 Its return value should be \f5<0\fP, \f5=0\fP, or \f5>0\fP to indicate
 whether \f5key1\fP is smaller, equal to, or larger than \f5key2\fP.
@@ -296,14 +290,14 @@ indicates equality and a non-zero value indicates inequality.
 If \f5(*comparf)()\fP is \f5NULL\fP, an internal function is used
 to compare the keys as defined by the \f5Dtdisc_t.size\fP field.
 .PP
-.Ss "  unsigned int (*hashf)(Dt_t* dt, Void_t* key, Dtdisc_t* disc)"
+.Ss "  unsigned int (*hashf)(Dt_t* dt, void* key, Dtdisc_t* disc)"
 If not \f5NULL\fP,
 \f5hashf\fP is used to compute the hash value of \f5key\fP.
 It is required that keys compared equal will also have same hash values.
 If \f5hashf\fP is \f5NULL\fP, an internal function is used to hash
 the key as defined by the \f5Dtdisc_t.size\fP field.
 .PP
-.Ss "  Void_t* (*memoryf)(Dt_t* dt, Void_t* addr, size_t size, Dtdisc_t* disc)"
+.Ss "  void* (*memoryf)(Dt_t* dt, void* addr, size_t size, Dtdisc_t* disc)"
 If not \f5NULL\fP, \f5memoryf\fP is used to allocate and free memory.
 When \f5addr\fP is \f5NULL\fP, a memory segment of size \f5size\fP is requested. 
 If \f5addr\fP is not \f5NULL\fP and \f5size\fP is zero, \f5addr\fP is to be freed.
@@ -311,7 +305,7 @@ If \f5addr\fP is not \f5NULL\fP and \f5size\fP is positive,
 \f5addr\fP is to be resized to the given size.
 If \f5memoryf\fP is \f5NULL\fP, \fImalloc(3)\fP is used.
 .PP
-.Ss "  int (*eventf)(Dt_t* dt, int type, Void_t* data, Dtdisc_t* disc)"
+.Ss "  int (*eventf)(Dt_t* dt, int type, void* data, Dtdisc_t* disc)"
 If not \f5NULL\fP, \f5eventf\fP announces various events.
 Each event may have particular handling of the return values from \f5eventf\fP.
 But a negative return value typically means failure.
@@ -322,9 +316,9 @@ Following are the events:
 If \f5eventf\fP returns negative, the opening process terminates with failure.
 If \f5eventf\fP returns zero, the opening process proceeds in a default manner.
 A positive return value indicates special treatment of memory as follows.
-If \f5*(Void_t**)data\fP is set to point to some memory segment
+If \f5*(void**)data\fP is set to point to some memory segment
 as discussed in \f5memoryf\fP, that segment of memory is used to start
-the dictionary. If \f5*(Void_t**)data\fP is \f5NULL\fP, 
+the dictionary. If \f5*(void**)data\fP is \f5NULL\fP, 
 all memory including that of the dictionary handle itself
 will be allocated via \f5memoryf\fP.
 .Tp
@@ -383,8 +377,8 @@ with the given values.
 .PP
 .Ss "OBJECT OPERATIONS"
 .PP
-.Ss "  Void_t* dtinsert(Dt_t* dt, Void_t* obj)"
-.Ss "  Void_t* dtappend(Dt_t* dt, Void_t* obj)"
+.Ss "  void* dtinsert(Dt_t* dt, void* obj)"
+.Ss "  void* dtappend(Dt_t* dt, void* obj)"
 These functions add an object prototyped by \f5obj\fP into \f5dt\fP.
 \f5dtinsert()\fP and \f5dtappend()\fP perform the same function
 for all methods except for \f5Dtlist\fP. See \f5Dtlist\fP for details.
@@ -396,7 +390,7 @@ See \f5Dtdisc_t.makef\fP for object construction.
 The new object or a matching object as noted will be returned on success
 while \f5NULL\fP is returned on error.
 .PP
-.Ss "  Void_t* dtdelete(Dt_t* dt, Void_t* obj)"
+.Ss "  void* dtdelete(Dt_t* dt, void* obj)"
 If \f5obj\fP is \f5NULL\fP, methods \f5Dtstack\fP and \f5Dtqueue\fP
 delete respectively stack top or queue head while other methods do nothing.
 If \f5obj\fP is not \f5NULL\fP, there are two cases.
@@ -409,24 +403,24 @@ See \f5Dtdisc_t.freef\fP for object destruction.
 \f5dtdelete()\fP returns the deleted object (even if it was deallocated)
 or \f5NULL\fP on error.
 .PP
-.Ss "  Void_t* dtattach(Dt_t* dt, Void_t* obj)"
+.Ss "  void* dtattach(Dt_t* dt, void* obj)"
 This function is similar to \f5dtinsert()\fP but \f5obj\fP itself
 will be inserted into \f5dt\fP even if a discipline
 function \f5makef\fP is defined.
 .PP
-.Ss "  Void_t* dtdetach(Dt_t* dt, Void_t* obj)"
+.Ss "  void* dtdetach(Dt_t* dt, void* obj)"
 This function is similar to \f5dtdelete()\fP but the object to be deleted
 from \f5dt\fP will not be freed (via the discipline \f5freef\fP function).
 .PP
-.Ss "  Void_t* dtsearch(Dt_t* dt, Void_t* obj)"
-.Ss "  Void_t* dtmatch(Dt_t* dt, Void_t* key)"
+.Ss "  void* dtsearch(Dt_t* dt, void* obj)"
+.Ss "  void* dtmatch(Dt_t* dt, void* key)"
 These functions find an object matching \f5obj\fP or \f5key\fP either from \f5dt\fP or
 from some dictionary accessible from \f5dt\fP via a viewpath (see \f5dtview()\fP.)
 \f5dtsearch()\fP and \f5dtmatch()\fP return the matching object or
 \f5NULL\fP on failure.
 .PP
-.Ss "  Void_t* dtfirst(Dt_t* dt)"
-.Ss "  Void_t* dtnext(Dt_t* dt, Void_t* obj)"
+.Ss "  void* dtfirst(Dt_t* dt)"
+.Ss "  void* dtnext(Dt_t* dt, void* obj)"
 \f5dtfirst()\fP returns the first object in \f5dt\fP.
 \f5dtnext()\fP returns the object following \f5obj\fP.
 Objects are ordered based on the storage method in use.
@@ -450,14 +444,14 @@ balanced by a \f5dtnext()/dtprev()\fP call as described.
 Nested loops will require multiple balancing, once per loop.
 If loop balancing is not done carefully, either performance is degraded
 or unexpected behaviors may result.
-.Ss "  Void_t* dtlast(Dt_t* dt)"
-.Ss "  Void_t* dtprev(Dt_t* dt, Void_t* obj)"
+.Ss "  void* dtlast(Dt_t* dt)"
+.Ss "  void* dtprev(Dt_t* dt, void* obj)"
 \f5dtlast()\fP and \f5dtprev()\fP are like \f5dtfirst()\fP and \f5dtnext()\fP
 but work in reverse order.
 Note that dictionaries on a viewpath are still walked in order
 but objects in each dictionary are walked in reverse order.
 .PP
-.Ss "  Void_t* dtfinger(Dt_t* dt)"
+.Ss "  void* dtfinger(Dt_t* dt)"
 This function returns the \fIcurrent object\fP of \f5dt\fP, if any.
 The current object is defined after a successful call to one of
 \f5dtsearch()\fP, \f5dtmatch()\fP, \f5dtinsert()\fP,
@@ -466,12 +460,12 @@ As a side effect of this implementation of \fICdt\fP,
 when a dictionary is based on \f5Dtoset\fP and \f5Dtobag\fP,
 the current object is always defined and is the root of the tree.
 .PP
-.Ss "  Void_t* dtrenew(Dt_t* dt, Void_t* obj)"
+.Ss "  void* dtrenew(Dt_t* dt, void* obj)"
 This function repositions and perhaps rehashes
 an object \f5obj\fP after its key has been changed.
 \f5dtrenew()\fP only works if \f5obj\fP is the current object (see \f5dtfinger()\fP).
 .PP
-.Ss "  dtwalk(Dt_t* dt, int (*userf)(Dt_t*, Void_t*, Void_t*), Void_t* data)"
+.Ss "  dtwalk(Dt_t* dt, int (*userf)(Dt_t*, void*, void*), void* data)"
 This function calls \f5(*userf)(walk,obj,data)\fP on each object in \f5dt\fP and
 other dictionaries viewable from it.
 \f5walk\fP is the dictionary containing \f5obj\fP.
@@ -481,7 +475,7 @@ If \f5userf()\fP returns a \f5<0\fP value,
 .PP
 .Ss "  Dtlink_t* dtflatten(Dt_t* dt)"
 .Ss "  Dtlink_t* dtlink(Dt_t* dt, Dtlink_t* link)"
-.Ss "  Void_t* dtobj(Dt_t* dt, Dtlink_t* link)"
+.Ss "  void* dtobj(Dt_t* dt, Dtlink_t* link)"
 Using \f5dtfirst()/dtnext()\fP or \f5dtlast()/dtprev()\fP
 to walk a single dictionary can incur significant cost due to function calls.
 For efficient walking of a single directory (i.e., no viewpathing),
@@ -492,7 +486,7 @@ Objects in \f5dt\fP are made into a linked list and walked as follows:
 .Ce
 .PP
 Note that \f5dtflatten()\fP returns a list of type \f5Dtlink_t*\fP,
-not \f5Void_t*\fP. That is, it returns a dictionary holder pointer,
+not \f5void*\fP. That is, it returns a dictionary holder pointer,
 not a user object pointer
 (although both are the same if the discipline field \f5link\fP is zero.)
 The macro function \f5dtlink()\fP
@@ -515,8 +509,8 @@ in an application that creates many concurrent dictionaries.
 It is important that the same discipline and method are in use at both
 extraction and restoration. Otherwise, undefined behaviors may result.
 .PP
-.Ss "  #define   DTTREESEARCH(Dt_t* dt, Void_t* obj, action)"
-.Ss "  #define   DTTREEMATCH(Dt_t* dt, Void_t* key, action)"
+.Ss "  #define   DTTREESEARCH(Dt_t* dt, void* obj, action)"
+.Ss "  #define   DTTREEMATCH(Dt_t* dt, void* key, action)"
 These macro functions are analogues of \f5dtsearch()\fP and \f5dtmatch()\fP
 but they can only be used on a dictionary based on a binary
 search tree, i.e., \f5Dtoset\fP or \f5Dtobag\fP.

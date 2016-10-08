@@ -14,7 +14,6 @@ lib qfrexp
 lib qldexp
 
 hdr unistd
-hdr float
 lib atexit
 lib onexit
 
@@ -35,8 +34,8 @@ typ struct_stat64 compile{
 exit    cleanup note{ stuck with standard _cleanup }end execute{
         #include <stdio.h>
         _BEGIN_EXTERNS_
-        extern void exit _ARG_((int));
-        extern void _exit _ARG_((int));
+        extern void exit(int);
+        extern void _exit(int);
         extern void _cleanup();
         void _cleanup() { _exit(0); }
         _END_EXTERNS_
@@ -169,10 +168,10 @@ tst	output{
 	#include	<sys/times.h>
 	
 	_BEGIN_EXTERNS_
-	int creat _ARG_((char*, int));
-	int open _ARG_((char*, int));
-	int unlink _ARG_((char*));
-	int read _ARG_((int, char*, int));
+	int creat(char*, int);
+	int open(char*, int);
+	int unlink(char*);
+	int read(int, char*, int);
 	_END_EXTERNS_
 	
 	#define MAPSIZE (64*1024)
@@ -288,9 +287,9 @@ lib getpagesize
 tmp rmfail note{ file not removable if still opened }end execute{
 	#include	<sys/time.h>
 	_BEGIN_EXTERNS_
-	extern int creat _ARG_((char*, int));
-	extern int unlink _ARG_((char*));
-	extern int write _ARG_((int, char*, int));
+	extern int creat(char*, int);
+	extern int unlink(char*);
+	extern int write(int, char*, int);
 	_END_EXTERNS_
 	main()
 	{	int		fw, fr;
@@ -349,7 +348,7 @@ proto open note{ open() has a vararg prototype }end compile{
 	#include	<fcntl.h>
 
 	_BEGIN_EXTERNS_
-	extern int open _ARG_((const char*,int,...));
+	extern int open(const char*,int,...);
 	_END_EXTERNS_
 	main()
 	{
@@ -377,7 +376,7 @@ proto bzero note{ bzero() has prototype }end compile{
 lib     poll_fd_1 note{ fd is first arg to poll() }end execute{
         #include <poll.h>
         _BEGIN_EXTERNS_
-        extern int      pipe _ARG_((int*));
+        extern int      pipe(int*);
         _END_EXTERNS_
         main()
         {       int             rw[2];
@@ -393,7 +392,7 @@ lib     poll_fd_1 note{ fd is first arg to poll() }end execute{
 lib     poll_fd_2 note{ fd is second arg to poll() }end execute{
         #include <poll.h>
         _BEGIN_EXTERNS_
-        extern int      pipe _ARG_((int*));
+        extern int      pipe(int*);
         _END_EXTERNS_
         main()
         {       int             rw[2];

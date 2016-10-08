@@ -10,9 +10,6 @@
    */
 /* #undef CRAY_STACKSEG_END */
 
-/* Define to 1 if using `alloca.c'. */
-/* #undef C_ALLOCA */
-
 /* Define for Darwin-style shared library names. */
 /* #undef DARWIN_DYLIB */
 
@@ -33,13 +30,6 @@
 
 /* Define if you want on-demand plugin loading */
 #define ENABLE_LTDL 1
-
-/* Define to 1 if you have `alloca', as a function or macro. */
-#define HAVE_ALLOCA 1
-
-/* Define to 1 if you have <alloca.h> and it should be used (not on Ultrix).
-   */
-/* #undef HAVE_ALLOCA_H */
 
 /* Define if you have the ann library */
 #define HAVE_ANN 1
@@ -184,9 +174,6 @@
 /* Define if intptr_t is declared */
 #define HAVE_INTPTR_T 1
 
-/* Define to 1 if you have the <inttypes.h> header file. */
-//#define HAVE_INTTYPES_H 1
-
 /* Define to 1 if you have the <langinfo.h> header file. */
 /* #undef HAVE_LANGINFO_H */
 
@@ -292,9 +279,6 @@
 /* Define to 1 if you have the <stddef.h> header file. */
 #define HAVE_STDDEF_H 1
 
-/* Define to 1 if you have the <stdint.h> header file. */
-//#define HAVE_STDINT_H 1
-
 /* Define to 1 if you have the `strcasecmp' function. */
 //#define HAVE_STRCASECMP 1
 
@@ -324,9 +308,6 @@
 
 /* Define to 1 if you have the `strtoull' function. */
 #define HAVE_STRTOULL 1
-
-/* Define to 1 if you have struct dioattr */
-/* #undef HAVE_STRUCT_DIOATTR */
 
 /* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
    */

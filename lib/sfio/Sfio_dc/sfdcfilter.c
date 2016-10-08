@@ -38,7 +38,7 @@ typedef struct _filter_s {
  * @param n number of bytes requested
  * @param disc discipline
  */
-static ssize_t filterread(Sfio_t * f, Void_t * buf, size_t n,
+static ssize_t filterread(Sfio_t * f, void * buf, size_t n,
 			  Sfdisc_t * disc)
 {
     Filter_t *fi;
@@ -87,7 +87,7 @@ static ssize_t filterread(Sfio_t * f, Void_t * buf, size_t n,
  * @param n number of bytes requested
  * @param disc discipline
  */
-static ssize_t filterwrite(Sfio_t * f, const Void_t * buf, size_t n,
+static ssize_t filterwrite(Sfio_t * f, const void * buf, size_t n,
 			   Sfdisc_t * disc)
 {
     return -1;
@@ -105,7 +105,7 @@ static Sfoff_t filterseek(Sfio_t * f, Sfoff_t addr, int offset,
 }
 
 /* on close, remove the discipline */
-static int filterexcept(Sfio_t * f, int type, Void_t * data,
+static int filterexcept(Sfio_t * f, int type, void * data,
 			Sfdisc_t * disc)
 {
     if (type == SF_FINAL || type == SF_DPOP) {
@@ -130,7 +130,7 @@ int sfdcfilter(Sfio_t * f, const char *cmd)
 	return -1;
 
     /* unbuffered so that write data will get to the pipe right away */
-    sfsetbuf(filter, NIL(Void_t *), 0);
+    sfsetbuf(filter, NIL(void *), 0);
 
     /* make the write descriptor nonblocking */
     sfset(filter, SF_READ, 0);

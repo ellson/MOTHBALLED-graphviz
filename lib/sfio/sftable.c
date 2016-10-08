@@ -322,7 +322,7 @@ static Fmtpos_t *sffmtpos(Sfio_t * f, const char *form, va_list args,
 	    memcpy(ft, &fp[n].ft, sizeof(Sffmt_t));
 	    va_copy(ft->args, args);
 	    ft->flags |= SFFMT_ARGPOS;
-	    v = (*ft->extf) (f, (Void_t *) (&fp[n].argv), ft);
+	    v = (*ft->extf) (f, (void *) (&fp[n].argv), ft);
 	    va_copy(args, ft->args);
 	    memcpy(&fp[n].ft, ft, sizeof(Sffmt_t));
 	    if (v < 0) {
@@ -348,7 +348,7 @@ static Fmtpos_t *sffmtpos(Sfio_t * f, const char *form, va_list args,
 		if (ft)
 		    memcpy(&savft, ft, sizeof(Sffmt_t));
 	    } else if (type > 0)	/* from sfvscanf */
-		fp[n].argv.vp = va_arg(args, Void_t *);
+		fp[n].argv.vp = va_arg(args, void *);
 	    else
 		switch (_Sftype[fp[n].ft.fmt]) {
 		case SFFMT_INT:
@@ -372,7 +372,7 @@ static Fmtpos_t *sffmtpos(Sfio_t * f, const char *form, va_list args,
 			fp[n].argv.d = va_arg(args, double);
 		    break;
 		case SFFMT_POINTER:
-		    fp[n].argv.vp = va_arg(args, Void_t *);
+		    fp[n].argv.vp = va_arg(args, void *);
 		    break;
 		case SFFMT_BYTE:
 		    if (fp[n].ft.base >= 0)

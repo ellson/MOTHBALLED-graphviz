@@ -78,7 +78,7 @@ static Block_t *vmextend(reg Vmalloc_t * vm, size_t size,
 
     while (!addr) {		/* try to get space */
 	if ((addr =
-	     (Vmuchar_t *) (*memoryf) (vm, NIL(Void_t *), 0, size,
+	     (Vmuchar_t *) (*memoryf) (vm, NIL(void *), 0, size,
 				       vm->disc)))
 	    break;
 
@@ -89,7 +89,7 @@ static Block_t *vmextend(reg Vmalloc_t * vm, size_t size,
 	    int rv, lock;
 	    lock = vd->mode & VM_LOCK;
 	    vd->mode &= ~VM_LOCK;
-	    rv = (*exceptf) (vm, VM_NOMEM, (Void_t *) size, vm->disc);
+	    rv = (*exceptf) (vm, VM_NOMEM, (void *) size, vm->disc);
 	    vd->mode |= lock;
 	    if (rv <= 0) {
 		if (rv == 0)
@@ -136,7 +136,7 @@ static Block_t *vmextend(reg Vmalloc_t * vm, size_t size,
 
 	seg = (Seg_t *) addr;
 	seg->vm = vm;
-	seg->addr = (Void_t *) (addr - (s ? ALIGN - s : 0));
+	seg->addr = (void *) (addr - (s ? ALIGN - s : 0));
 	seg->extent = size;
 	seg->baddr = addr + size - (s ? 2 * ALIGN : 0);
 	seg->free = NIL(Block_t *);
@@ -194,7 +194,7 @@ static Block_t *vmextend(reg Vmalloc_t * vm, size_t size,
  */
 static int vmtruncate(Vmalloc_t * vm, Seg_t * seg, size_t size, int exact)
 {
-    reg Void_t *caddr;
+    reg void *caddr;
     reg Seg_t *last;
     reg Vmdata_t *vd = vm->data;
     reg Vmemory_f memoryf = vm->disc->memoryf;
@@ -256,9 +256,9 @@ static int vmtruncate(Vmalloc_t * vm, Seg_t * seg, size_t size, int exact)
 Vmextern_t _Vmextern = { vmextend,	/* _Vmextend    */
     vmtruncate,			/* _Vmtruncate  */
     0,				/* _Vmpagesize  */
-    NIL(char *(*)_ARG_((char *, char *, int))),	/* _Vmstrcpy    */
-    NIL(char *(*)_ARG_((Vmulong_t, int))),	/* _Vmitoa      */
-    NIL(void (*)_ARG_((Vmalloc_t *,
-		       Vmuchar_t *, Vmuchar_t *, size_t, size_t))),	/* _Vmtrace   */
-    NIL(void (*)_ARG_((Vmalloc_t *)))	/* _Vmpfclose       */
+    NIL(char *(*)(char *, char *, int)),	/* _Vmstrcpy    */
+    NIL(char *(*)(Vmulong_t, int)),	/* _Vmitoa      */
+    NIL(void (*)(Vmalloc_t *,
+		       Vmuchar_t *, Vmuchar_t *, size_t, size_t)),	/* _Vmtrace   */
+    NIL(void (*)(Vmalloc_t *))	/* _Vmpfclose       */
 };

@@ -1,6 +1,10 @@
 #ifndef _CDT_H
 #define _CDT_H		1
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*	Public interface for the dictionary library
 **
 **      Written by Kiem-Phong Vo
@@ -8,38 +12,14 @@
 
 #define CDT_VERSION	20050420L
 
-#ifndef Void_t
-#define Void_t		void
-#endif
-
-#ifndef _ARG_
-#define _ARG_(x)	x
-#endif
-
 #include <stddef.h>	/* size_t */
 #include <string.h>
-
-#ifndef _BEGIN_EXTERNS_
-#define _BEGIN_EXTERNS_
-#endif
-#ifndef _END_EXTERNS_
-#define _END_EXTERNS_
-#endif
 
 #ifdef WIN32
 #undef __EXPORT__
 #undef __IMPORT__
 #define __EXPORT__  __declspec (dllexport)
 #define __IMPORT__	__declspec (dllimport)
-#endif
-
-
-#if !defined(_DLL_BLD) && defined(_dll_import)
-#define __EXTERN__(T,obj)       extern T obj; T* _imp__ ## obj = &obj
-#define __DEFINE__(T,obj,val)   T obj = val; T* _imp__ ## obj = &obj
-#else
-#define __EXTERN__(T,obj)       extern T obj
-#define __DEFINE__(T,obj,val)   T obj = val
 #endif
 
 typedef struct _dtlink_s	Dtlink_t;
@@ -50,13 +30,13 @@ typedef struct _dtdata_s	Dtdata_t;
 typedef struct _dt_s		Dt_t;
 typedef struct _dt_s		Dict_t;	/* for libdict compatibility */
 typedef struct _dtstat_s	Dtstat_t;
-typedef Void_t*			(*Dtmemory_f)_ARG_((Dt_t*,Void_t*,size_t,Dtdisc_t*));
-typedef Void_t*			(*Dtsearch_f)_ARG_((Dt_t*,Void_t*,int));
-typedef Void_t* 		(*Dtmake_f)_ARG_((Dt_t*,Void_t*,Dtdisc_t*));
-typedef void 			(*Dtfree_f)_ARG_((Dt_t*,Void_t*,Dtdisc_t*));
-typedef int			(*Dtcompar_f)_ARG_((Dt_t*,Void_t*,Void_t*,Dtdisc_t*));
-typedef unsigned int		(*Dthash_f)_ARG_((Dt_t*,Void_t*,Dtdisc_t*));
-typedef int			(*Dtevent_f)_ARG_((Dt_t*,int,Void_t*,Dtdisc_t*));
+typedef void*			(*Dtmemory_f)(Dt_t*,void*,size_t,Dtdisc_t*);
+typedef void*			(*Dtsearch_f)(Dt_t*,void*,int);
+typedef void* 		(*Dtmake_f)(Dt_t*,void*,Dtdisc_t*);
+typedef void 			(*Dtfree_f)(Dt_t*,void*,Dtdisc_t*);
+typedef int			(*Dtcompar_f)(Dt_t*,void*,void*,Dtdisc_t*);
+typedef unsigned int		(*Dthash_f)(Dt_t*,void*,Dtdisc_t*);
+typedef int			(*Dtevent_f)(Dt_t*,int,void*,Dtdisc_t*);
 
 struct _dtlink_s
 {	Dtlink_t*	right;	/* right child		*/
@@ -69,7 +49,7 @@ struct _dtlink_s
 /* private structure to hold an object */
 struct _dthold_s
 {	Dtlink_t	hdr;	/* header		*/
-	Void_t*		obj;	/* user object		*/
+	void*		obj;	/* user object		*/
 };
 
 /* method to manipulate dictionary structure */
@@ -112,12 +92,6 @@ struct _dtdisc_s
 	  (dc)->comparf = (cmpf), (dc)->hashf = (hshf), \
 	  (dc)->memoryf = (memf), (dc)->eventf = (evf) )
 
-#ifdef offsetof
-#define DTOFFSET(struct_s, member)	offsetof(struct_s, member)
-#else
-#define DTOFFSET(struct_s, member)	((int)(&((struct_s*)0)->member))
-#endif
-
 /* the dictionary structure itself */
 struct _dt_s
 {	Dtsearch_f	searchf;/* search function			*/
@@ -129,7 +103,7 @@ struct _dt_s
 	int		nview;	/* number of parent view dictionaries	*/
 	Dt_t*		view;	/* next on viewpath			*/
 	Dt_t*		walk;	/* dictionary being walked		*/
-	Void_t*		user;	/* for user's usage			*/
+	void*		user;	/* for user's usage			*/
 };
 
 /* structure to get status of a dictionary */
@@ -184,7 +158,7 @@ struct _dtstat_s
 #define DT_ENDCLOSE	6	/* dtclose() is done			*/
 #define DT_HASHSIZE	7	/* setting hash table size		*/
 
-_BEGIN_EXTERNS_	/* public data */
+/* public data */
 #if defined(_BLD_cdt) && defined(__EXPORT__)
 #define extern	__EXPORT__
 #endif
@@ -214,50 +188,41 @@ extern Dtmethod_t	_Dtstack;
 #endif
 
 #undef extern
-_END_EXTERNS_
 
-_BEGIN_EXTERNS_	/* public functions */
+/* public functions */
 #if defined(_BLD_cdt) && defined(__EXPORT__)
 #define extern	__EXPORT__
 #endif
 
-extern Dt_t*		dtopen _ARG_((Dtdisc_t*, Dtmethod_t*));
-extern int		dtclose _ARG_((Dt_t*));
-extern Dt_t*		dtview _ARG_((Dt_t*, Dt_t*));
-extern Dtdisc_t*	dtdisc _ARG_((Dt_t* dt, Dtdisc_t*, int));
-extern Dtmethod_t*	dtmethod _ARG_((Dt_t*, Dtmethod_t*));
+extern Dt_t*		dtopen(Dtdisc_t*, Dtmethod_t*);
+extern int		dtclose(Dt_t*);
+extern Dt_t*		dtview(Dt_t*, Dt_t*);
+extern Dtdisc_t*	dtdisc(Dt_t* dt, Dtdisc_t*, int);
+extern Dtmethod_t*	dtmethod(Dt_t*, Dtmethod_t*);
 
-extern Dtlink_t*	dtflatten _ARG_((Dt_t*));
-extern Dtlink_t*	dtextract _ARG_((Dt_t*));
-extern int		dtrestore _ARG_((Dt_t*, Dtlink_t*));
+extern Dtlink_t*	dtflatten(Dt_t*);
+extern Dtlink_t*	dtextract(Dt_t*);
+extern int		dtrestore(Dt_t*, Dtlink_t*);
 
-extern int		dttreeset _ARG_((Dt_t*, int, int));
+extern int		dttreeset(Dt_t*, int, int);
 
-extern int		dtwalk _ARG_((Dt_t*, int(*)(Dt_t*,Void_t*,Void_t*), Void_t*));
+extern int		dtwalk(Dt_t*, int(*)(Dt_t*,void*,void*), void*);
 
-extern Void_t*		dtrenew _ARG_((Dt_t*, Void_t*));
+extern void*		dtrenew(Dt_t*, void*);
 
-extern int		dtsize _ARG_((Dt_t*));
-extern int		dtstat _ARG_((Dt_t*, Dtstat_t*, int));
-extern unsigned int	dtstrhash _ARG_((unsigned int, Void_t*, int));
-
-#if 0
-#if !defined(_PACKAGE_ast)
-extern int		memcmp _ARG_((const Void_t*, const Void_t*, size_t));
-extern int		strcmp _ARG_((const char*, const char*));
-#endif
-#endif
+extern int		dtsize(Dt_t*);
+extern int		dtstat(Dt_t*, Dtstat_t*, int);
+extern unsigned int	dtstrhash(unsigned int, void*, int);
 
 #undef extern
-_END_EXTERNS_
 
 /* internal functions for translating among holder, object and key */
 #define _DT(dt)		((Dt_t*)(dt))
 #define _DTDSC(dc,ky,sz,lk,cmpf) \
 			(ky = dc->key, sz = dc->size, lk = dc->link, cmpf = dc->comparf)
 #define _DTLNK(o,lk)	((Dtlink_t*)((char*)(o) + lk) )
-#define _DTOBJ(e,lk)	(lk < 0 ? ((Dthold_t*)(e))->obj : (Void_t*)((char*)(e) - lk) )
-#define _DTKEY(o,ky,sz)	(Void_t*)(sz < 0 ? *((char**)((char*)(o)+ky)) : ((char*)(o)+ky))
+#define _DTOBJ(e,lk)	(lk < 0 ? ((Dthold_t*)(e))->obj : (void*)((char*)(e) - lk) )
+#define _DTKEY(o,ky,sz)	(void*)(sz < 0 ? *((char**)((char*)(o)+ky)) : ((char*)(o)+ky))
 
 #define _DTCMP(dt,k1,k2,dc,cmpf,sz) \
 			(cmpf ? (*cmpf)(dt,k1,k2,dc) : \
@@ -266,7 +231,7 @@ _END_EXTERNS_
 
 /* special search function for tree structure only */
 #define _DTMTCH(dt,key,action) \
-	do { Dtlink_t* _e; Void_t *_o, *_k, *_key; Dtdisc_t* _dc; \
+	do { Dtlink_t* _e; void *_o, *_k, *_key; Dtdisc_t* _dc; \
 	     int _ky, _sz, _lk, _cmp; Dtcompar_f _cmpf; \
 	     _dc = (dt)->disc; _DTDSC(_dc, _ky, _sz, _lk, _cmpf); \
 	     _key = (key); \
@@ -275,11 +240,11 @@ _END_EXTERNS_
 		if((_cmp = _DTCMP((dt), _key, _k, _dc, _cmpf, _sz)) == 0) \
 			break; \
 	     } \
-	     action (_e ? _o : (Void_t*)0); \
+	     action (_e ? _o : (void*)0); \
 	} while(0)
 
 #define _DTSRCH(dt,obj,action) \
-	do { Dtlink_t* _e; Void_t *_o, *_k, *_key; Dtdisc_t* _dc; \
+	do { Dtlink_t* _e; void *_o, *_k, *_key; Dtdisc_t* _dc; \
 	     int _ky, _sz, _lk, _cmp; Dtcompar_f _cmpf; \
 	     _dc = (dt)->disc; _DTDSC(_dc, _ky, _sz, _lk, _cmpf); \
 	     _key = _DTKEY(obj, _ky, _sz); \
@@ -288,11 +253,11 @@ _END_EXTERNS_
 		if((_cmp = _DTCMP((dt), _key, _k, _dc, _cmpf, _sz)) == 0) \
 			break; \
 	     } \
-	     action (_e ? _o : (Void_t*)0); \
+	     action (_e ? _o : (void*)0); \
 	} while(0)
 
-#define DTTREEMATCH(dt,key,action)	_DTMTCH(_DT(dt),(Void_t*)(key),action)
-#define DTTREESEARCH(dt,obj,action)	_DTSRCH(_DT(dt),(Void_t*)(obj),action)
+#define DTTREEMATCH(dt,key,action)	_DTMTCH(_DT(dt),(void*)(key),action)
+#define DTTREESEARCH(dt,obj,action)	_DTSRCH(_DT(dt),(void*)(obj),action)
 
 #define dtvnext(d)	(_DT(d)->view)
 #define dtvcount(d)	(_DT(d)->nview)
@@ -300,25 +265,29 @@ _END_EXTERNS_
 
 #define dtlink(d,e)	(((Dtlink_t*)(e))->right)
 #define dtobj(d,e)	_DTOBJ((e), _DT(d)->disc->link)
-#define dtfinger(d)	(_DT(d)->data->here ? dtobj((d),_DT(d)->data->here):(Void_t*)(0))
+#define dtfinger(d)	(_DT(d)->data->here ? dtobj((d),_DT(d)->data->here):(void*)(0))
 
-#define dtfirst(d)	(*(_DT(d)->searchf))((d),(Void_t*)(0),DT_FIRST)
-#define dtnext(d,o)	(*(_DT(d)->searchf))((d),(Void_t*)(o),DT_NEXT)
-#define dtleast(d,o)	(*(_DT(d)->searchf))((d),(Void_t*)(o),DT_SEARCH|DT_NEXT)
-#define dtlast(d)	(*(_DT(d)->searchf))((d),(Void_t*)(0),DT_LAST)
-#define dtprev(d,o)	(*(_DT(d)->searchf))((d),(Void_t*)(o),DT_PREV)
-#define dtmost(d,o)	(*(_DT(d)->searchf))((d),(Void_t*)(o),DT_SEARCH|DT_PREV)
-#define dtsearch(d,o)	(*(_DT(d)->searchf))((d),(Void_t*)(o),DT_SEARCH)
-#define dtmatch(d,o)	(*(_DT(d)->searchf))((d),(Void_t*)(o),DT_MATCH)
-#define dtinsert(d,o)	(*(_DT(d)->searchf))((d),(Void_t*)(o),DT_INSERT)
-#define dtappend(d,o)	(*(_DT(d)->searchf))((d),(Void_t*)(o),DT_INSERT|DT_APPEND)
-#define dtdelete(d,o)	(*(_DT(d)->searchf))((d),(Void_t*)(o),DT_DELETE)
-#define dtattach(d,o)	(*(_DT(d)->searchf))((d),(Void_t*)(o),DT_ATTACH)
-#define dtdetach(d,o)	(*(_DT(d)->searchf))((d),(Void_t*)(o),DT_DETACH)
-#define dtclear(d)	(*(_DT(d)->searchf))((d),(Void_t*)(0),DT_CLEAR)
+#define dtfirst(d)	(*(_DT(d)->searchf))((d),(void*)(0),DT_FIRST)
+#define dtnext(d,o)	(*(_DT(d)->searchf))((d),(void*)(o),DT_NEXT)
+#define dtleast(d,o)	(*(_DT(d)->searchf))((d),(void*)(o),DT_SEARCH|DT_NEXT)
+#define dtlast(d)	(*(_DT(d)->searchf))((d),(void*)(0),DT_LAST)
+#define dtprev(d,o)	(*(_DT(d)->searchf))((d),(void*)(o),DT_PREV)
+#define dtmost(d,o)	(*(_DT(d)->searchf))((d),(void*)(o),DT_SEARCH|DT_PREV)
+#define dtsearch(d,o)	(*(_DT(d)->searchf))((d),(void*)(o),DT_SEARCH)
+#define dtmatch(d,o)	(*(_DT(d)->searchf))((d),(void*)(o),DT_MATCH)
+#define dtinsert(d,o)	(*(_DT(d)->searchf))((d),(void*)(o),DT_INSERT)
+#define dtappend(d,o)	(*(_DT(d)->searchf))((d),(void*)(o),DT_INSERT|DT_APPEND)
+#define dtdelete(d,o)	(*(_DT(d)->searchf))((d),(void*)(o),DT_DELETE)
+#define dtattach(d,o)	(*(_DT(d)->searchf))((d),(void*)(o),DT_ATTACH)
+#define dtdetach(d,o)	(*(_DT(d)->searchf))((d),(void*)(o),DT_DETACH)
+#define dtclear(d)	(*(_DT(d)->searchf))((d),(void*)(0),DT_CLEAR)
 #define dtfound(d)	(_DT(d)->type & DT_FOUND)
 
 #define DT_PRIME	17109811 /* 2#00000001 00000101 00010011 00110011 */
 #define dtcharhash(h,c) (((unsigned int)(h) + (unsigned int)(c)) * DT_PRIME )
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _CDT_H */

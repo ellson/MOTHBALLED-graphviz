@@ -26,7 +26,7 @@ __STDPP__directive pragma pp:nohide getpagesize
 #endif
 
 #if _lib_getpagesize
-_BEGIN_EXTERNS_ extern int getpagesize _ARG_((void));
+_BEGIN_EXTERNS_ extern int getpagesize(void);
 _END_EXTERNS_
 #endif
 /*	Set a (new) buffer for a stream.
@@ -49,7 +49,7 @@ _END_EXTERNS_
  * @param buf new buffer
  * @param size buffer size, -1 for default size
  */
-Void_t *sfsetbuf(reg Sfio_t * f, reg Void_t * buf, reg size_t size)
+void *sfsetbuf(reg Sfio_t * f, reg void * buf, reg size_t size)
 {
     reg int sf_malloc;
     reg uchar *obuf;
@@ -63,28 +63,28 @@ Void_t *sfsetbuf(reg Sfio_t * f, reg Void_t * buf, reg size_t size)
 
     SFONCE();
 
-    SFMTXSTART(f, NIL(Void_t *));
+    SFMTXSTART(f, NIL(void *));
 
     GETLOCAL(f, local);
 
     if (size == 0 && buf) {	/* special case to get buffer info */
 	_Sfi = f->val =
 	    (f->bits & SF_MMAP) ? (f->endb - f->data) : f->size;
-	SFMTXRETURN(f, (Void_t *) f->data);
+	SFMTXRETURN(f, (void *) f->data);
     }
 
     /* cleanup actions already done, don't allow write buffering any more */
     if (_Sfexiting && !(f->flags & SF_STRING) && (f->mode & SF_WRITE)) {
-	buf = NIL(Void_t *);
+	buf = NIL(void *);
 	size = 0;
     }
 
     if ((init = f->mode & SF_INIT)) {
 	if (!f->pool && _sfsetpool(f) < 0)
-	    SFMTXRETURN(f, NIL(Void_t *));
+	    SFMTXRETURN(f, NIL(void *));
     } else if ((f->mode & SF_RDWR) != SFMODE(f, local)
 	       && _sfmode(f, 0, local) < 0)
-	SFMTXRETURN(f, NIL(Void_t *));
+	SFMTXRETURN(f, NIL(void *));
 
     if (init)
 	f->mode = (f->mode & SF_RDWR) | SF_LOCK;
@@ -94,14 +94,14 @@ Void_t *sfsetbuf(reg Sfio_t * f, reg Void_t * buf, reg size_t size)
 	/* make sure there is no hidden read data */
 	if (f->proc && (f->flags & SF_READ) && (f->mode & SF_WRITE) &&
 	    _sfmode(f, SF_READ, local) < 0)
-	    SFMTXRETURN(f, NIL(Void_t *));
+	    SFMTXRETURN(f, NIL(void *));
 
 	/* synchronize first */
 	SFLOCK(f, local);
 	rv = SFSYNC(f);
 	SFOPEN(f, local);
 	if (rv < 0)
-	    SFMTXRETURN(f, NIL(Void_t *));
+	    SFMTXRETURN(f, NIL(void *));
 
 	/* turn off the SF_SYNCED bit because buffer is changing */
 	f->mode &= ~SF_SYNCED;
@@ -273,19 +273,19 @@ Void_t *sfsetbuf(reg Sfio_t * f, reg Void_t * buf, reg size_t size)
 	else if ((ssize_t) (size = _Sfpage) < blksize)
 	    size = blksize;
 
-	buf = NIL(Void_t *);
+	buf = NIL(void *);
     }
 
     sf_malloc = 0;
     if (size > 0 && !buf && !(f->bits & SF_MMAP)) {	/* try to allocate a buffer */
 	if (obuf && size == (size_t) osize && init) {
-	    buf = (Void_t *) obuf;
+	    buf = (void *) obuf;
 	    obuf = NIL(uchar *);
 	    sf_malloc = (oflags & SF_MALLOC);
 	}
 	if (!buf) {		/* do allocation */
 	    while (!buf && size > 0) {
-		if ((buf = (Void_t *) malloc(size)))
+		if ((buf = (void *) malloc(size)))
 		    break;
 		else
 		    size /= 2;
@@ -297,7 +297,7 @@ Void_t *sfsetbuf(reg Sfio_t * f, reg Void_t * buf, reg size_t size)
 
     if (size == 0 && !(f->flags & SF_STRING) && !(f->bits & SF_MMAP) && (f->mode & SF_READ)) {	/* use the internal buffer */
 	size = sizeof(f->tiny);
-	buf = (Void_t *) f->tiny;
+	buf = (void *) f->tiny;
     }
 
     /* set up new buffer */
@@ -318,7 +318,7 @@ Void_t *sfsetbuf(reg Sfio_t * f, reg Void_t * buf, reg size_t size)
     f->flags = (f->flags & ~SF_MALLOC) | sf_malloc;
 
     if (obuf && obuf != f->data && osize > 0 && (oflags & SF_MALLOC)) {
-	free((Void_t *) obuf);
+	free((void *) obuf);
 	obuf = NIL(uchar *);
     }
 
@@ -326,5 +326,5 @@ Void_t *sfsetbuf(reg Sfio_t * f, reg Void_t * buf, reg size_t size)
 
     SFOPEN(f, local);
 
-    SFMTXRETURN(f, (Void_t *) obuf);
+    SFMTXRETURN(f, (void *) obuf);
 }

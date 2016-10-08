@@ -13,6 +13,8 @@
 
 #include	"sfhdr.h"
 
+#include <float.h>
+
 /*	Write out a floating point value in a portable format
 **
 **	Written by Kiem-Phong Vo.
@@ -81,7 +83,7 @@ int _sfputd(Sfio_t * f, Sfdouble_t v)
 
     /* write out coded bytes */
     n = ends - s + 1;
-    w = SFWRITE(f, (Void_t *) s, n) == n ? w + n : -1;
+    w = SFWRITE(f, (void *) s, n) == n ? w + n : -1;
 
     SFOPEN(f, 0);
     SFMTXRETURN(f, w);

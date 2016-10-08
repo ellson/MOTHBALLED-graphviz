@@ -12,12 +12,7 @@
  *************************************************************************/
 
 #include "config.h"
-#ifdef HAVE_STDINT_H
 #include <stdint.h>
-#endif
-#if HAVE_INTTYPES_H
-#include <inttypes.h>
-#endif
 #ifdef HAVE_INTPTR_T
 #define INT2PTR(t,v) ((t)(intptr_t)(v))
 #else
@@ -43,7 +38,7 @@ static Dbfile_t *Dbfile;
 /* global watch list */
 #define S_WATCH	32
 static int Dbnwatch;
-static Void_t *Dbwatch[S_WATCH];
+static void *Dbwatch[S_WATCH];
 
 /* types of warnings reported by dbwarn() */
 #define	DB_CHECK	0
@@ -81,7 +76,7 @@ static void vmdbwarn(Vmalloc_t * vm, char *mesg, int n)
  * @param line line number of call
  * @param type operation being done
  */
-static void dbwarn(Vmalloc_t * vm, Void_t * data, int where, char *file,
+static void dbwarn(Vmalloc_t * vm, void * data, int where, char *file,
 		   int line, int type)
 {
     char buf[1024], *bufp, *endbuf, *s;
@@ -168,7 +163,7 @@ static void dbwarn(Vmalloc_t * vm, Void_t * data, int where, char *file,
 }
 
 /* check for watched address and issue warnings */
-static void dbwatch(Vmalloc_t * vm, Void_t * data, char *file, int line,
+static void dbwatch(Vmalloc_t * vm, void * data, char *file, int line,
 		    int type)
 {
     reg int n;
@@ -234,7 +229,7 @@ static void dbsetinfo(Vmuchar_t * data, size_t size, char *file, int line)
 ** This returns -(offset+1) if block is already freed, +(offset+1)
 ** if block is live, 0 if no match.
 */
-static long dbaddr(Vmalloc_t * vm, Void_t * addr)
+static long dbaddr(Vmalloc_t * vm, void * addr)
 {
     reg Block_t *b = NULL, *endb = NULL;
     reg Seg_t *seg;
@@ -291,7 +286,7 @@ static long dbaddr(Vmalloc_t * vm, Void_t * addr)
 }
 
 
-static long dbsize(Vmalloc_t * vm, Void_t * addr)
+static long dbsize(Vmalloc_t * vm, void * addr)
 {
     reg Block_t *b, *endb;
     reg Seg_t *seg;
@@ -310,7 +305,7 @@ static long dbsize(Vmalloc_t * vm, Void_t * addr)
 	    (Vmuchar_t *) addr >= (Vmuchar_t *) endb)
 	    continue;
 	while (b < endb) {
-	    if (addr == (Void_t *) DB2DEBUG(DATA(b))) {
+	    if (addr == (void *) DB2DEBUG(DATA(b))) {
 		if (ISBUSY(SIZE(b)) && !ISJUNK(SIZE(b)))
 		    size = (long) DBSIZE(addr);
 		goto done;
@@ -324,7 +319,7 @@ static long dbsize(Vmalloc_t * vm, Void_t * addr)
     return size;
 }
 
-static Void_t *dballoc(Vmalloc_t * vm, size_t size)
+static void *dballoc(Vmalloc_t * vm, size_t size)
 {
     reg size_t s;
     reg Vmuchar_t *data;
@@ -336,7 +331,7 @@ static Void_t *dballoc(Vmalloc_t * vm, size_t size)
 
     if (ISLOCK(vd, 0)) {
 	dbwarn(vm, NIL(Vmuchar_t *), 0, file, line, DB_ALLOC);
-	return NIL(Void_t *);
+	return NIL(void *);
     }
     SETLOCK(vd, 0);
 
@@ -366,11 +361,11 @@ static Void_t *dballoc(Vmalloc_t * vm, size_t size)
 
   done:
     CLRLOCK(vd, 0);
-    return (Void_t *) data;
+    return (void *) data;
 }
 
 
-static int dbfree(Vmalloc_t * vm, Void_t * data)
+static int dbfree(Vmalloc_t * vm, void * data)
 {
     char *file;
     int line;
@@ -418,7 +413,7 @@ static int dbfree(Vmalloc_t * vm, Void_t * data)
 	*ip++ = 0;
 
     CLRLOCK(vd, 0);
-    return (*(Vmbest->freef)) (vm, (Void_t *) DB2BEST(data));
+    return (*(Vmbest->freef)) (vm, (void *) DB2BEST(data));
 }
 
 /*	Resizing an existing block */
@@ -428,7 +423,7 @@ static int dbfree(Vmalloc_t * vm, Void_t * data)
  * @param size new size
  * @param type !=0 for movable, >0 for copy
  */
-static Void_t *dbresize(Vmalloc_t * vm, Void_t * addr, reg size_t size,
+static void *dbresize(Vmalloc_t * vm, void * addr, reg size_t size,
 			int type)
 {
     reg Vmuchar_t *data;
@@ -445,14 +440,14 @@ static Void_t *dbresize(Vmalloc_t * vm, Void_t * addr, reg size_t size,
     }
     if (size == 0) {
 	(void) dbfree(vm, addr);
-	return NIL(Void_t *);
+	return NIL(void *);
     }
 
     VMFILELINE(vm, file, line);
 
     if (ISLOCK(vd, 0)) {
 	dbwarn(vm, NIL(Vmuchar_t *), 0, file, line, DB_RESIZE);
-	return NIL(Void_t *);
+	return NIL(void *);
     }
     SETLOCK(vd, 0);
 
@@ -465,7 +460,7 @@ static Void_t *dbresize(Vmalloc_t * vm, Void_t * addr, reg size_t size,
 	dbwarn(vm, (Vmuchar_t *) addr, offset == -1L ? 0 : 1, file, line,
 	       DB_RESIZE);
 	CLRLOCK(vd, 0);
-	return NIL(Void_t *);
+	return NIL(void *);
     }
 
     if (Dbnwatch > 0)
@@ -481,7 +476,7 @@ static Void_t *dbresize(Vmalloc_t * vm, Void_t * addr, reg size_t size,
     s = ROUND(size, ALIGN) + DB_EXTRA;
     if (s < sizeof(Body_t))
 	s = sizeof(Body_t);
-    data = (Vmuchar_t *) KPVRESIZE(vm, (Void_t *) data, s,
+    data = (Vmuchar_t *) KPVRESIZE(vm, (void *) data, s,
 				   (type & ~VM_RSZERO),
 				   (*(Vmbest->resizef)));
     if (!data) {		/* failed, reset data for old block */
@@ -508,7 +503,7 @@ static Void_t *dbresize(Vmalloc_t * vm, Void_t * addr, reg size_t size,
 	    *d++ = 0;
 	} while (d < ed);
     }
-    return (Void_t *) data;
+    return (void *) data;
 }
 
 /* compact any residual free space */
@@ -574,12 +569,12 @@ int vmdbcheck(Vmalloc_t * vm)
  *
  * @param addr address to insert
  */
-Void_t *vmdbwatch(Void_t * addr)
+void *vmdbwatch(void * addr)
 {
     reg int n;
-    reg Void_t *out;
+    reg void *out;
 
-    out = NIL(Void_t *);
+    out = NIL(void *);
     if (!addr)
 	Dbnwatch = 0;
     else {
@@ -600,7 +595,7 @@ Void_t *vmdbwatch(Void_t * addr)
     return out;
 }
 
-static Void_t *dbalign(Vmalloc_t * vm, size_t size, size_t align)
+static void *dbalign(Vmalloc_t * vm, size_t size, size_t align)
 {
     reg Vmuchar_t *data;
     reg size_t s;
@@ -611,11 +606,11 @@ static Void_t *dbalign(Vmalloc_t * vm, size_t size, size_t align)
     VMFILELINE(vm, file, line);
 
     if (size <= 0 || align <= 0)
-	return NIL(Void_t *);
+	return NIL(void *);
 
     if (!(vd->mode & VM_TRUST)) {
 	if (ISLOCK(vd, 0))
-	    return NIL(Void_t *);
+	    return NIL(void *);
 	SETLOCK(vd, 0);
     }
 
@@ -637,7 +632,7 @@ static Void_t *dbalign(Vmalloc_t * vm, size_t size, size_t align)
 
   done:
     CLRLOCK(vd, 0);
-    return (Void_t *) data;
+    return (void *) data;
 }
 
 static Vmethod_t _Vmdebug = {
@@ -651,4 +646,4 @@ static Vmethod_t _Vmdebug = {
     VM_MTDEBUG
 };
 
-__DEFINE__(Vmethod_t *, Vmdebug, &_Vmdebug);
+Vmethod_t* Vmdebug = &_Vmdebug;

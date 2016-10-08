@@ -27,7 +27,7 @@
  * @param file file descriptor to read/write from
  * @param flags type of file stream
  */
-Sfio_t *sfnew(Sfio_t * oldf, Void_t * buf, size_t size, int file,
+Sfio_t *sfnew(Sfio_t * oldf, void * buf, size_t size, int file,
 	      int flags)
 {
     reg Sfio_t *f;
@@ -60,7 +60,7 @@ Sfio_t *sfnew(Sfio_t * oldf, Void_t * buf, size_t size, int file,
 	    if (f->data
 		&& ((flags & SF_STRING) || size != (size_t) SF_UNBOUND)) {
 		if (sflags & SF_MALLOC)
-		    free((Void_t *) f->data);
+		    free((void *) f->data);
 		f->data = NIL(uchar *);
 	    }
 	    if (!f->data)

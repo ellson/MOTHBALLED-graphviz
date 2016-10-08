@@ -198,7 +198,7 @@ static int vmflinit(void)
 		    env += 1;
 		else if (env[0] == '0' && (env[1] == 'x' || env[1] == 'X')) {
 		    if ((addr = atou(&env)) != 0)
-			vmdbwatch((Void_t *) addr);
+			vmdbwatch((void *) addr);
 		} else {
 		    _Vmdbcheck = atou(&env);
 		    setcheck = 1;
@@ -244,7 +244,7 @@ static int vmflinit(void)
     return 0;
 }
 
-Void_t *malloc(reg size_t size)
+void *malloc(reg size_t size)
 {
     VMFLINIT();
     return (*Vmregion->meth.allocf) (Vmregion, size);
@@ -254,39 +254,39 @@ Void_t *malloc(reg size_t size)
  * @param data block to be reallocated
  * @param size new size
  */
-Void_t *realloc(reg Void_t * data, reg size_t size)
+void *realloc(reg void * data, reg size_t size)
 {
     VMFLINIT();
     return (*Vmregion->meth.resizef) (Vmregion, data, size,
 				      VM_RSCOPY | VM_RSMOVE);
 }
 
-void free(reg Void_t * data)
+void free(reg void * data)
 {
     VMFLINIT();
     (void) (*Vmregion->meth.freef) (Vmregion, data);
 }
 
-Void_t *calloc(reg size_t n_obj, reg size_t s_obj)
+void *calloc(reg size_t n_obj, reg size_t s_obj)
 {
     VMFLINIT();
-    return (*Vmregion->meth.resizef) (Vmregion, NIL(Void_t *),
+    return (*Vmregion->meth.resizef) (Vmregion, NIL(void *),
 				      n_obj * s_obj, VM_RSZERO);
 }
 
-void cfree(reg Void_t * data)
+void cfree(reg void * data)
 {
     VMFLINIT();
     (void) (*Vmregion->meth.freef) (Vmregion, data);
 }
 
-Void_t *memalign(reg size_t align, reg size_t size)
+void *memalign(reg size_t align, reg size_t size)
 {
     VMFLINIT();
     return (*Vmregion->meth.alignf) (Vmregion, size, align);
 }
 
-Void_t *valloc(reg size_t size)
+void *valloc(reg size_t size)
 {
     VMFLINIT();
     GETPAGESIZE(_Vmpagesize);
@@ -351,56 +351,5 @@ struct mstats mstats(void)
 #endif
 
 #endif/*_hdr_malloc*/
-
-#if !_lib_alloca || _mal_alloca
-#ifndef _stk_down
-#define _stk_down	0
-#endif
-typedef struct _alloca_s Alloca_t;
-union _alloca_u {
-    struct {
-	char *addr;
-	Alloca_t *next;
-    } head;
-    char array[ALIGN];
-};
-struct _alloca_s {
-    union _alloca_u head;
-    Vmuchar_t data[1];
-};
-
-Void_t *alloca(size_t size)
-{
-    char array[ALIGN];
-    char *file;
-    int line;
-    reg Alloca_t *f;
-    static Alloca_t *Frame;
-
-    VMFLINIT();
-    VMFILELINE(Vmregion, file, line);
-    while (Frame) {
-	if ((_stk_down && &array[0] > Frame->head.head.addr) ||
-	    (!_stk_down && &array[0] < Frame->head.head.addr)) {
-	    f = Frame;
-	    Frame = f->head.head.next;
-	    (void) (*Vmregion->meth.freef) (Vmregion, f);
-	} else
-	    break;
-    }
-
-    Vmregion->file = file;
-    Vmregion->line = line;
-    f = (Alloca_t *) (*Vmregion->meth.allocf) (Vmregion,
-					       size + sizeof(Alloca_t) -
-					       1);
-
-    f->head.head.addr = &array[0];
-    f->head.head.next = Frame;
-    Frame = f;
-
-    return (Void_t *) f->data;
-}
-#endif				/*!_lib_alloca || _mal_alloca */
 
 #endif /*_std_malloc || _BLD_INSTRUMENT_ || cray*/

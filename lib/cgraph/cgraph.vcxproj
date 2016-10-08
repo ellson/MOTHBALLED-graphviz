@@ -105,7 +105,6 @@
     <ClInclude Include="cghdr.h" />
     <ClInclude Include="cgraph.h" />
     <ClInclude Include="malloc.h" />
-    <ClInclude Include="vmstub.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="agerror.c" />

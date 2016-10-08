@@ -107,11 +107,11 @@ extern "C" {
 
     typedef struct _sfdisc_s Sfdisc_t;
     typedef ssize_t(*Sfread_f)
-	_ARG_((Sfio_t *, Void_t *, size_t, Sfdisc_t *));
+	(Sfio_t *, void *, size_t, Sfdisc_t *);
     typedef ssize_t(*Sfwrite_f)
-	_ARG_((Sfio_t *, const Void_t *, size_t, Sfdisc_t *));
-    typedef Sfoff_t(*Sfseek_f) _ARG_((Sfio_t *, Sfoff_t, int, Sfdisc_t *));
-    typedef int (*Sfexcept_f) _ARG_((Sfio_t *, int, Void_t *, Sfdisc_t *));
+	(Sfio_t *, const void *, size_t, Sfdisc_t *);
+    typedef Sfoff_t(*Sfseek_f) (Sfio_t *, Sfoff_t, int, Sfdisc_t *);
+    typedef int (*Sfexcept_f) (Sfio_t *, int, void *, Sfdisc_t *);
 
 /* discipline structure */
     struct _sfdisc_s {
@@ -141,9 +141,8 @@ extern "C" {
 
 /* formatting environment */
     typedef struct _sffmt_s Sffmt_t;
-    typedef int (*Sffmtext_f) _ARG_((Sfio_t *, Void_t *, Sffmt_t *));
-    typedef int (*Sffmtevent_f)
-	_ARG_((Sfio_t *, int, Void_t *, Sffmt_t *));
+    typedef int (*Sffmtext_f)(Sfio_t *, void *, Sffmt_t *);
+    typedef int (*Sffmtevent_f)(Sfio_t *, int, void *, Sffmt_t *);
     struct _sffmt_s {
 	long version;		/* version of this structure            */
 	Sffmtext_f extf;	/* function to process arguments        */
@@ -162,7 +161,7 @@ extern "C" {
 	char *t_str;		/* type string                          */
 	ssize_t n_str;		/* length of t_str                      */
 
-	Void_t *noop;		/* as yet unused                        */
+	void *noop;		/* as yet unused                        */
     };
 #define sffmtversion(fe,type) \
 		(type ? ((fe)->version = SFIO_VERSION) : (fe)->version)
@@ -275,7 +274,7 @@ extern "C" {
 #define SF_BUFSIZE	8192	/* default buffer size                  */
 #define SF_UNBOUND	(-1)	/* unbounded buffer size                */
 
-     _BEGIN_EXTERNS_ extern ssize_t _Sfi;
+     extern ssize_t _Sfi;
 
 #if defined(_BLD_sfio) && defined(GVDLL)
 #define extern	__declspec(dllexport)
@@ -302,96 +301,95 @@ extern "C" {
 #define extern	__EXPORT__
 #endif
 
-    extern Sfio_t *sfnew _ARG_((Sfio_t *, Void_t *, size_t, int, int));
-    extern Sfio_t *sfopen _ARG_((Sfio_t *, const char *, const char *));
-    extern Sfio_t *sfpopen _ARG_((Sfio_t *, const char *, const char *));
-    extern Sfio_t *sfstack _ARG_((Sfio_t *, Sfio_t *));
-    extern Sfio_t *sfswap _ARG_((Sfio_t *, Sfio_t *));
-    extern Sfio_t *sftmp _ARG_((size_t));
-    extern int sfpurge _ARG_((Sfio_t *));
-    extern int sfpoll _ARG_((Sfio_t **, int, int));
-    extern Void_t *sfreserve _ARG_((Sfio_t *, ssize_t, int));
-    extern int sfsync _ARG_((Sfio_t *));
-    extern int sfclrlock _ARG_((Sfio_t *));
-    extern Void_t *sfsetbuf _ARG_((Sfio_t *, Void_t *, size_t));
-    extern Sfdisc_t *sfdisc _ARG_((Sfio_t *, Sfdisc_t *));
-    extern int sfraise _ARG_((Sfio_t *, int, Void_t *));
-    extern int sfnotify _ARG_((void (*)(Sfio_t *, int, int)));
-    extern int sfset _ARG_((Sfio_t *, int, int));
-    extern int sfsetfd _ARG_((Sfio_t *, int));
-    extern Sfio_t *sfpool _ARG_((Sfio_t *, Sfio_t *, int));
-    extern ssize_t sfread _ARG_((Sfio_t *, Void_t *, size_t));
-    extern ssize_t sfwrite _ARG_((Sfio_t *, const Void_t *, size_t));
-    extern Sfoff_t sfmove _ARG_((Sfio_t *, Sfio_t *, Sfoff_t, int));
-    extern int sfclose _ARG_((Sfio_t *));
-    extern Sfoff_t sftell _ARG_((Sfio_t *));
-    extern Sfoff_t sfseek _ARG_((Sfio_t *, Sfoff_t, int));
-    extern ssize_t sfputr _ARG_((Sfio_t *, const char *, int));
-    extern char *sfgetr _ARG_((Sfio_t *, int, int));
-    extern ssize_t sfnputc _ARG_((Sfio_t *, int, size_t));
-    extern int sfungetc _ARG_((Sfio_t *, int));
-    extern int sfprintf _ARG_((Sfio_t *, const char *, ...));
-    extern char *sfprints _ARG_((const char *, ...));
-    extern int sfsprintf _ARG_((char *, int, const char *, ...));
-    extern int sfvsprintf _ARG_((char *, int, const char *, va_list));
-    extern int sfvprintf _ARG_((Sfio_t *, const char *, va_list));
-    extern int sfscanf _ARG_((Sfio_t *, const char *, ...));
-    extern int sfsscanf _ARG_((const char *, const char *, ...));
-    extern int sfvsscanf _ARG_((const char *, const char *, va_list));
-    extern int sfvscanf _ARG_((Sfio_t *, const char *, va_list));
-    extern int sfresize _ARG_((Sfio_t *, Sfoff_t));
+    extern Sfio_t *sfnew(Sfio_t *, void *, size_t, int, int);
+    extern Sfio_t *sfopen(Sfio_t *, const char *, const char *);
+    extern Sfio_t *sfpopen(Sfio_t *, const char *, const char *);
+    extern Sfio_t *sfstack(Sfio_t *, Sfio_t *);
+    extern Sfio_t *sfswap(Sfio_t *, Sfio_t *);
+    extern Sfio_t *sftmp(size_t);
+    extern int sfpurge(Sfio_t *);
+    extern int sfpoll(Sfio_t **, int, int);
+    extern void *sfreserve(Sfio_t *, ssize_t, int);
+    extern int sfsync(Sfio_t *);
+    extern int sfclrlock(Sfio_t *);
+    extern void *sfsetbuf(Sfio_t *, void *, size_t);
+    extern Sfdisc_t *sfdisc(Sfio_t *, Sfdisc_t *);
+    extern int sfraise(Sfio_t *, int, void *);
+    extern int sfnotify(void (*)(Sfio_t *, int, int));
+    extern int sfset(Sfio_t *, int, int);
+    extern int sfsetfd(Sfio_t *, int);
+    extern Sfio_t *sfpool(Sfio_t *, Sfio_t *, int);
+    extern ssize_t sfread(Sfio_t *, void *, size_t);
+    extern ssize_t sfwrite(Sfio_t *, const void *, size_t);
+    extern Sfoff_t sfmove(Sfio_t *, Sfio_t *, Sfoff_t, int);
+    extern int sfclose(Sfio_t *);
+    extern Sfoff_t sftell(Sfio_t *);
+    extern Sfoff_t sfseek(Sfio_t *, Sfoff_t, int);
+    extern ssize_t sfputr(Sfio_t *, const char *, int);
+    extern char *sfgetr(Sfio_t *, int, int);
+    extern ssize_t sfnputc(Sfio_t *, int, size_t);
+    extern int sfungetc(Sfio_t *, int);
+    extern int sfprintf(Sfio_t *, const char *, ...);
+    extern char *sfprints(const char *, ...);
+    extern int sfsprintf(char *, int, const char *, ...);
+    extern int sfvsprintf(char *, int, const char *, va_list);
+    extern int sfvprintf(Sfio_t *, const char *, va_list);
+    extern int sfscanf(Sfio_t *, const char *, ...);
+    extern int sfsscanf(const char *, const char *, ...);
+    extern int sfvsscanf(const char *, const char *, va_list);
+    extern int sfvscanf(Sfio_t *, const char *, va_list);
+    extern int sfresize(Sfio_t *, Sfoff_t);
 
 /* mutex locking for thread-safety */
-    extern int sfmutex _ARG_((Sfio_t *, int));
+    extern int sfmutex(Sfio_t *, int);
 
 /* io functions with discipline continuation */
-    extern ssize_t sfrd _ARG_((Sfio_t *, Void_t *, size_t, Sfdisc_t *));
-    extern ssize_t sfwr
-	_ARG_((Sfio_t *, const Void_t *, size_t, Sfdisc_t *));
-    extern Sfoff_t sfsk _ARG_((Sfio_t *, Sfoff_t, int, Sfdisc_t *));
-    extern ssize_t sfpkrd _ARG_((int, Void_t *, size_t, int, long, int));
+    extern ssize_t sfrd(Sfio_t *, void *, size_t, Sfdisc_t *);
+    extern ssize_t sfwr(Sfio_t *, const void *, size_t, Sfdisc_t *);
+    extern Sfoff_t sfsk(Sfio_t *, Sfoff_t, int, Sfdisc_t *);
+    extern ssize_t sfpkrd(int, void *, size_t, int, long, int);
 
 /* portable handling of primitive types */
-    extern int sfdlen _ARG_((Sfdouble_t));
-    extern int sfllen _ARG_((Sflong_t));
-    extern int sfulen _ARG_((Sfulong_t));
+    extern int sfdlen(Sfdouble_t);
+    extern int sfllen(Sflong_t);
+    extern int sfulen(Sfulong_t);
 
-    extern int sfputd _ARG_((Sfio_t *, Sfdouble_t));
-    extern int sfputl _ARG_((Sfio_t *, Sflong_t));
-    extern int sfputu _ARG_((Sfio_t *, Sfulong_t));
-    extern int sfputm _ARG_((Sfio_t *, Sfulong_t, Sfulong_t));
-    extern int sfputc _ARG_((Sfio_t *, int));
+    extern int sfputd(Sfio_t *, Sfdouble_t);
+    extern int sfputl(Sfio_t *, Sflong_t);
+    extern int sfputu(Sfio_t *, Sfulong_t);
+    extern int sfputm(Sfio_t *, Sfulong_t, Sfulong_t);
+    extern int sfputc(Sfio_t *, int);
 
-    extern Sfdouble_t sfgetd _ARG_((Sfio_t *));
-    extern Sflong_t sfgetl _ARG_((Sfio_t *));
-    extern Sfulong_t sfgetu _ARG_((Sfio_t *));
-    extern Sfulong_t sfgetm _ARG_((Sfio_t *, Sfulong_t));
-    extern int sfgetc _ARG_((Sfio_t *));
+    extern Sfdouble_t sfgetd(Sfio_t *);
+    extern Sflong_t sfgetl(Sfio_t *);
+    extern Sfulong_t sfgetu(Sfio_t *);
+    extern Sfulong_t sfgetm(Sfio_t *, Sfulong_t);
+    extern int sfgetc(Sfio_t *);
 
-    extern int _sfputd _ARG_((Sfio_t *, Sfdouble_t));
-    extern int _sfputl _ARG_((Sfio_t *, Sflong_t));
-    extern int _sfputu _ARG_((Sfio_t *, Sfulong_t));
-    extern int _sfputm _ARG_((Sfio_t *, Sfulong_t, Sfulong_t));
-    extern int _sfflsbuf _ARG_((Sfio_t *, int));
+    extern int _sfputd(Sfio_t *, Sfdouble_t);
+    extern int _sfputl(Sfio_t *, Sflong_t);
+    extern int _sfputu(Sfio_t *, Sfulong_t);
+    extern int _sfputm(Sfio_t *, Sfulong_t, Sfulong_t);
+    extern int _sfflsbuf(Sfio_t *, int);
 
-    extern int _sffilbuf _ARG_((Sfio_t *, int));
+    extern int _sffilbuf(Sfio_t *, int);
 
-    extern int _sfdlen _ARG_((Sfdouble_t));
-    extern int _sfllen _ARG_((Sflong_t));
-    extern int _sfulen _ARG_((Sfulong_t));
+    extern int _sfdlen(Sfdouble_t);
+    extern int _sfllen(Sflong_t);
+    extern int _sfulen(Sfulong_t);
 
 /* miscellaneous function analogues of fast in-line functions */
-    extern Sfoff_t sfsize _ARG_((Sfio_t *));
-    extern int sfclrerr _ARG_((Sfio_t *));
-    extern int sfeof _ARG_((Sfio_t *));
-    extern int sferror _ARG_((Sfio_t *));
-    extern int sffileno _ARG_((Sfio_t *));
-    extern int sfstacked _ARG_((Sfio_t *));
-    extern ssize_t sfvalue _ARG_((Sfio_t *));
-    extern ssize_t sfslen _ARG_((void));
+    extern Sfoff_t sfsize(Sfio_t *);
+    extern int sfclrerr(Sfio_t *);
+    extern int sfeof(Sfio_t *);
+    extern int sferror(Sfio_t *);
+    extern int sffileno(Sfio_t *);
+    extern int sfstacked(Sfio_t *);
+    extern ssize_t sfvalue(Sfio_t *);
+    extern ssize_t sfslen(void);
 
 #undef extern
-     _END_EXTERNS_
+
 /* coding long integers in a portable and compact fashion */
 #define SF_SBITS	6
 #define SF_UBITS	7
