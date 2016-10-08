@@ -1,6 +1,6 @@
 /* vim:set shiftwidth=4 ts=4: */
 
-#include <spinehdr.h>
+#include "spinehdr.h"
 #include <subset.h>
 #include <quad.h>
 #include "union_find.h"
