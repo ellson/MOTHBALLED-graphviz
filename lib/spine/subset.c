@@ -1,8 +1,9 @@
 /* vim:set shiftwidth=4 ts=4: */
 
-#include <spinehdr.h>
 #include <stdlib.h>
-#include <subset.h>
+
+#include "spinehdr.h"
+#include "subset.h"
 
 static void *mkPtrItem(Dt_t * d, ptritem * obj, Dtdisc_t * disc)
 {

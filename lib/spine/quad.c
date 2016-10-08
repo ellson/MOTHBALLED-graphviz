@@ -1,10 +1,11 @@
 /* vim:set shiftwidth=4 ts=4: */
 
-#include <spinehdr.h>
 #include <stdlib.h>
-#include <quad.h>
-#include <subset.h>
 #include <assert.h>
+
+#include "spinehdr.h"
+#include "quad.h"
+#include "subset.h"
 
 static int cmpdeg(const void *v0, const void *v1)
 {

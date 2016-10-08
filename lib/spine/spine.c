@@ -1,13 +1,15 @@
 /* vim:set shiftwidth=4 ts=4: */
 
-#include "spinehdr.h"
-#include <subset.h>
-#include <quad.h>
-#include "union_find.h"
-#include "assert.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+
+#include "spinehdr.h"
+#include "subset.h"
+#include "quad.h"
+#include "union_find.h"
+
 #ifdef MAIN
 #include <getopt.h>
 #include "ingraphs.h"
