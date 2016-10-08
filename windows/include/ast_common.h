@@ -56,11 +56,6 @@
 #endif
 #endif /*_BEGIN_EXTERNS_*/
 
-/* _ARG_ simplifies function prototyping among flavors of C */
-#ifndef _ARG_
-#define _ARG_(x)	x
-#endif /*_ARG_*/
-
 /* __INLINE__ is the inline keyword */
 #if !defined(__INLINE__) && defined(__cplusplus)
 #define __INLINE__	inline
@@ -68,11 +63,6 @@
 #if !defined(__INLINE__) && defined(_WIN32) && !defined(__GNUC__)
 #define __INLINE__	__inline
 #endif
-
-/* Void_t is defined so that Void_t* can address any type */
-#ifndef Void_t
-#define Void_t		void
-#endif				/*Void_t */
 
 /* dynamic linked library external scope handling */
 #undef extern
@@ -89,13 +79,6 @@
 #define _astimport	extern
 #endif
 #endif /*_astimport*/
-#if !defined(_DLL_BLD) && defined(_dll_import)
-#define __EXTERN__(T,obj)	extern T obj; T* _imp__ ## obj = &obj
-#define __DEFINE__(T,obj,val)	T obj = val; T* _imp__ ## obj = &obj
-#else
-#define __EXTERN__(T,obj)	extern T obj
-#define __DEFINE__(T,obj,val)	T obj = val
-#endif
 #ifndef _AST_STD_H
 #	if _hdr_stddef
 #	include	<stddef.h>

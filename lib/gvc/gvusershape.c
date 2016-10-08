@@ -543,7 +543,7 @@ static void pdf_size (usershape_t *us)
     }
 }
 
-static void usershape_close (Dict_t * dict, Void_t * p, Dtdisc_t * disc)
+static void usershape_close (Dict_t * dict, void * p, Dtdisc_t * disc)
 {
     usershape_t *us = (usershape_t *)p;
 

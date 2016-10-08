@@ -18,12 +18,7 @@
 #endif
 #include <stdlib.h>
 #include <stddef.h>
-#ifdef HAVE_STDINT_H
 #include <stdint.h>
-#endif
-#ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
-#endif
 #include <string.h>
 #include <fcntl.h>
 

@@ -106,16 +106,6 @@ compile{
 }end
 
 compile{
-    #include <sys/types.h>
-    #include <fcntl.h>
-    #include <stdio.h>
-    struct dioattr  xx; 
-}end yes{
-/* Define if you have struct dioattr in <sys/fcntl.h>. */
-#define HAVE_STRUCT_DIOATTR 1
-}end
-
-compile{
     #include <fenv.h>
     void foo() {fesetenv (FE_NONIEEE_ENV);} 
 }end yes{

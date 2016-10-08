@@ -49,7 +49,7 @@ int _sfputl(reg Sfio_t * f, Sflong_t v)
     n = (ps - s) + 1;
 
     if (n > 8 || SFWPEEK(f, ps, p) < n)
-	n = SFWRITE(f, (Void_t *) s, n);	/* write the hard way */
+	n = SFWRITE(f, (void *) s, n);	/* write the hard way */
     else {
 	switch (n) {
 	case 8:

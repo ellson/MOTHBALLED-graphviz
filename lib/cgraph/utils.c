@@ -16,7 +16,7 @@
 static Agraph_t *Ag_dictop_G;
 
 /* only indirect call through dtopen() is expected */
-void *agdictobjmem(Dict_t * dict, Void_t * p, size_t size, Dtdisc_t * disc)
+void *agdictobjmem(Dict_t * dict, void * p, size_t size, Dtdisc_t * disc)
 {
     Agraph_t *g;
 
@@ -37,7 +37,7 @@ void *agdictobjmem(Dict_t * dict, Void_t * p, size_t size, Dtdisc_t * disc)
     return NIL(void *);
 }
 
-void agdictobjfree(Dict_t * dict, Void_t * p, Dtdisc_t * disc)
+void agdictobjfree(Dict_t * dict, void * p, Dtdisc_t * disc)
 {
     Agraph_t *g;
 
@@ -70,7 +70,7 @@ long agdtdelete(Agraph_t * g, Dict_t * dict, void *obj)
     return (long) dtdelete(dict, obj);
 }
 
-int agobjfinalize(Void_t * obj)
+int agobjfinalize(void * obj)
 {
     agfree(Ag_dictop_G, obj);
     return 0;

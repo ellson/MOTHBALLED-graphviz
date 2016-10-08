@@ -38,8 +38,8 @@ extern "C" {
 	struct _sfpool_s*	pool;	/* the pool containing this	*/ \
 	struct _sfrsrv_s*	rsrv;	/* reserved buffer		*/ \
 	struct _sfproc_s*	proc;	/* coprocess id, etc.		*/ \
-	Void_t*			mutex;	/* mutex for thread-safety	*/ \
-	Void_t*			stdio;	/* stdio FILE if any		*/ \
+	void*			mutex;	/* mutex for thread-safety	*/ \
+	void*			stdio;	/* stdio FILE if any		*/ \
 	Sfoff_t			lpos;	/* last seek position		*/ \
 	size_t			iosz;	/* prefer size for I/O          */
 
@@ -77,7 +77,7 @@ extern "C" {
 	  (struct _sfrsrv_s*)0,				/* rsrv		*/ \
 	  (struct _sfproc_s*)0,				/* proc		*/ \
 	  (mutex),					/* mutex	*/ \
-	  (Void_t*)0,					/* stdio	*/ \
+	  (void*)0,					/* stdio	*/ \
 	  (Sfoff_t)0,					/* lpos		*/ \
 	  (size_t)0					/* iosz		*/ \
 	}
@@ -105,7 +105,7 @@ extern "C" {
 	  (f)->rsrv = (struct _sfrsrv_s*)0,		/* rsrv		*/ \
 	  (f)->proc = (struct _sfproc_s*)0,		/* proc		*/ \
 	  (f)->mutex = (mtx),				/* mutex	*/ \
-	  (f)->stdio = (Void_t*)0,			/* stdio	*/ \
+	  (f)->stdio = (void*)0,			/* stdio	*/ \
 	  (f)->lpos = (Sfoff_t)0,			/* lpos		*/ \
 	  (f)->iosz = (size_t)0				/* iosz		*/ \
 	)

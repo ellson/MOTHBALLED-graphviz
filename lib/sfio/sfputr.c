@@ -101,7 +101,7 @@ ssize_t sfputr(reg Sfio_t * f, const char *s, reg int rc)
 	if (n > w)
 	    n = w;
 	f->next -= n;
-	(void) SFWRITE(f, (Void_t *) f->next, n);
+	(void) SFWRITE(f, (void *) f->next, n);
     }
 
     SFOPEN(f, 0);

@@ -155,7 +155,7 @@ Sfio_t *sfpopen(Sfio_t * f, const char *command, const char *mode)
     av[3] = 0;
     if (!(proc = procopen(0, av, 0, 0, flags)))
 	return 0;
-    if (!(f = sfnew(f, NIL(Void_t *), (size_t) SF_UNBOUND,
+    if (!(f = sfnew(f, NIL(void *), (size_t) SF_UNBOUND,
 		    (sflags & SF_READ) ? proc->rfd : proc->wfd, sflags)) ||
 	((f->bits |= bits),
 	 _sfpopen(f, (sflags & SF_READ) ? proc->wfd : -1, proc->pid)) < 0)
@@ -213,7 +213,7 @@ Sfio_t *sfpopen(Sfio_t * f, const char *command, const char *mode)
 	/* make the streams */
 	if (!
 	    (f =
-	     sfnew(f, NIL(Void_t *), (size_t) SF_UNBOUND, parent[pkeep],
+	     sfnew(f, NIL(void *), (size_t) SF_UNBOUND, parent[pkeep],
 		   sflags)))
 	    goto error;
 	CLOSE(parent[!pkeep]);

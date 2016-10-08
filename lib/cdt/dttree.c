@@ -8,11 +8,11 @@
 **      Written by Kiem-Phong Vo (5/25/96)
 */
 
-static Void_t* dttree(Dt_t* dt, Void_t* obj, int type)
+static void* dttree(Dt_t* dt, void* obj, int type)
 {
 	Dtlink_t	*root, *t;
 	int		cmp, lk, sz, ky;
-	Void_t		*o, *k, *key;
+	void		*o, *k, *key;
 	Dtlink_t	*l, *r, *me = NULL, link;
 	int		n, minp, turn[DT_MINP];
 	Dtcompar_f	cmpf;
@@ -25,7 +25,7 @@ static Void_t* dttree(Dt_t* dt, Void_t* obj, int type)
 	root = dt->data->here;
 	if(!obj)
 	{	if(!root || !(type&(DT_CLEAR|DT_FIRST|DT_LAST)) )
-			return NIL(Void_t*);
+			return NIL(void*);
 
 		if(type&DT_CLEAR) /* delete all objects */
 		{	if(disc->freef || disc->link < 0)
@@ -36,13 +36,13 @@ static Void_t* dttree(Dt_t* dt, Void_t* obj, int type)
 					if(disc->freef)
 						(*disc->freef)(dt,_DTOBJ(root,lk),disc);
 					if(disc->link < 0)
-						(*dt->memoryf)(dt,(Void_t*)root,0,disc);
+						(*dt->memoryf)(dt,(void*)root,0,disc);
 				} while((root = t) );
 			}
 
 			dt->data->size = 0;
 			dt->data->here = NIL(Dtlink_t*);
-			return NIL(Void_t*);
+			return NIL(void*);
 		}
 		else /* computing largest/smallest element */
 		{	if(type&DT_LAST)
@@ -103,7 +103,7 @@ static Void_t* dttree(Dt_t* dt, Void_t* obj, int type)
 				else
 				{	turn[n] = cmp;	
 					if(!(t = cmp < 0 ? t->left : t->right) )
-						return NIL(Void_t*);
+						return NIL(void*);
 				}
 			}
 
@@ -260,7 +260,7 @@ static Void_t* dttree(Dt_t* dt, Void_t* obj, int type)
 			if(disc->freef && (type&DT_DELETE))
 				(*disc->freef)(dt,obj,disc);
 			if(disc->link < 0)
-				(*dt->memoryf)(dt,(Void_t*)root,0,disc);
+				(*dt->memoryf)(dt,(void*)root,0,disc);
 			if((dt->data->size -= 1) < 0)
 				dt->data->size = -1;
 			goto no_root;
@@ -280,7 +280,7 @@ static Void_t* dttree(Dt_t* dt, Void_t* obj, int type)
 			{	if(disc->freef)
 					(*disc->freef)(dt,obj,disc);
 				if(disc->link < 0)
-					(*dt->memoryf)(dt,(Void_t*)me,0,disc);
+					(*dt->memoryf)(dt,(void*)me,0,disc);
 			}
 			else
 			{	me->left = NIL(Dtlink_t*);
@@ -306,7 +306,7 @@ static Void_t* dttree(Dt_t* dt, Void_t* obj, int type)
 				r = t;
 			r->left = link.right;
 			dt->data->here = link.left;
-			return (type&DT_DELETE) ? obj : NIL(Void_t*);
+			return (type&DT_DELETE) ? obj : NIL(void*);
 		}
 		else if(type&(DT_INSERT|DT_ATTACH))
 		{ dt_insert:
@@ -317,7 +317,7 @@ static Void_t* dttree(Dt_t* dt, Void_t* obj, int type)
 					root = _DTLNK(obj,lk);
 				else
 				{	root = (Dtlink_t*)(*dt->memoryf)
-						(dt,NIL(Void_t*),sizeof(Dthold_t),disc);
+						(dt,NIL(void*),sizeof(Dthold_t),disc);
 					if(root)
 						((Dthold_t*)root)->obj = obj;
 					else if(disc->makef && disc->freef &&
@@ -338,24 +338,24 @@ static Void_t* dttree(Dt_t* dt, Void_t* obj, int type)
 			goto has_root;
 		}
 		else /*if(type&DT_DELETE)*/
-		{	obj = NIL(Void_t*);
+		{	obj = NIL(void*);
 			goto no_root;
 		}
 	}
 
-	return NIL(Void_t*);
+	return NIL(void*);
 }
 
 /* make this method available */
 static Dtmethod_t	_Dtoset =  { dttree, DT_OSET };
 static Dtmethod_t	_Dtobag =  { dttree, DT_OBAG };
-__DEFINE__(Dtmethod_t*,Dtoset,&_Dtoset);
-__DEFINE__(Dtmethod_t*,Dtobag,&_Dtobag);
+Dtmethod_t* Dtoset = &_Dtoset;
+Dtmethod_t* Dtobag = &_Dtobag;
 
 #ifndef KPVDEL /* backward compatibility - delete next time around */
 Dtmethod_t		_Dttree = { dttree, DT_OSET };
-__DEFINE__(Dtmethod_t*,Dtorder,&_Dttree);
-__DEFINE__(Dtmethod_t*,Dttree,&_Dttree);
+Dtmethod_t* Dtorder = &_Dttree;
+Dtmethod_t* Dttree = &_Dttree;
 #endif
 
 #ifdef NoF

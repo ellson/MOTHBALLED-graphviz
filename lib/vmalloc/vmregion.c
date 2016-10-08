@@ -18,7 +18,7 @@
 **
 **	Written by Kiem-Phong Vo, kpv@research.att.com, 01/16/94.
 */
-Vmalloc_t *vmregion(reg Void_t * addr)
+Vmalloc_t *vmregion(reg void * addr)
 {
     return addr ? VM(BLOCK(addr)) : NIL(Vmalloc_t *);
 }

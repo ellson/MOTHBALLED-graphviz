@@ -6,7 +6,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/lib/sfio
 noinst_HEADERS = sfdchdr.h sfdisc.h
 noinst_LTLIBRARIES = libsfiodc_C.la
 
-libsfiodc_C_la_SOURCES = sfdcdio.c sfdcdos.c sfdcfilter.c sfdclzw.c \
+libsfiodc_C_la_SOURCES = sfdcdos.c sfdcfilter.c sfdclzw.c \
 	sfdcseekable.c sfdcslow.c sfdcsubstream.c sfdctee.c sfdcunion.c
 
 ${top_builddir}/FEATURE/sfio:  ${top_srcdir}/lib/sfio/features/sfio

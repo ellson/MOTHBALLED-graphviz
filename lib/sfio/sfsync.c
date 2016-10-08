@@ -94,7 +94,7 @@ int sfsync(reg Sfio_t * f)
 
     for (; f; f = f->push) {
 	if ((f->flags & SF_IOCHECK) && f->disc && f->disc->exceptf)
-	    (void) (*f->disc->exceptf) (f, SF_SYNC, (Void_t *) ((int) 1),
+	    (void) (*f->disc->exceptf) (f, SF_SYNC, (void *) ((int) 1),
 					f->disc);
 
 	SFLOCK(f, local);
@@ -138,7 +138,7 @@ int sfsync(reg Sfio_t * f)
 	SFOPEN(f, local);
 
 	if ((f->flags & SF_IOCHECK) && f->disc && f->disc->exceptf)
-	    (void) (*f->disc->exceptf) (f, SF_SYNC, (Void_t *) ((int) 0),
+	    (void) (*f->disc->exceptf) (f, SF_SYNC, (void *) ((int) 0),
 					f->disc);
     }
 

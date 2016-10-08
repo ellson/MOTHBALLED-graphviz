@@ -25,7 +25,7 @@ typedef struct {
     void *np;
 } nsitem;
 
-static Void_t *makef(Dt_t * d, nsitem * obj, Dtdisc_t * disc)
+static void *makef(Dt_t * d, nsitem * obj, Dtdisc_t * disc)
 {
     nsitem *p;
 

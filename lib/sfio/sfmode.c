@@ -40,7 +40,7 @@ static char *Version = "\n@(#)sfio (AT&T Labs - kpv) 2001-02-01\0\n";
 #define Sfsignal_f	Sig_handler_t
 #else
 #include		<signal.h>
-typedef void (*Sfsignal_f) _ARG_((int));
+typedef void (*Sfsignal_f) (int);
 #endif
 static int _Sfsigp = 0;		/* # of streams needing SIGPIPE protection */
 
@@ -68,7 +68,7 @@ static void _sfcleanup(void)
 	    SFMTXLOCK(f);
 
 	    /* let application know that we are leaving */
-	    (void) SFRAISE(f, SF_ATEXIT, NIL(Void_t *));
+	    (void) SFRAISE(f, SF_ATEXIT, NIL(void *));
 
 	    if (f->flags & SF_STRING)
 		continue;
@@ -80,7 +80,7 @@ static void _sfcleanup(void)
 		(void) _sfmode(f, SF_WRITE, 1);
 	    if (((f->bits & SF_MMAP) && f->data) ||
 		((f->mode & SF_WRITE) && f->next == f->data))
-		(void) SFSETBUF(f, NIL(Void_t *), 0);
+		(void) SFSETBUF(f, NIL(void *), 0);
 	    f->mode |= pool;
 
 	    SFMTXUNLOCK(f);
@@ -118,10 +118,10 @@ int _sfsetpool(Sfio_t * f)
 		goto done;
 
 	    /* move old array to new one */
-	    memcpy((Void_t *) array, (Void_t *) p->sf,
+	    memcpy((void *) array, (void *) p->sf,
 		   p->n_sf * sizeof(Sfio_t *));
 	    if (p->sf != p->array)
-		free((Void_t *) p->sf);
+		free((void *) p->sf);
 
 	    p->sf = array;
 	    p->s_sf = n;
@@ -283,13 +283,13 @@ static int _sfpmode(Sfio_t * f, int type)
 	    }
 	}
 	if (p->ndata > 0)
-	    memcpy((Void_t *) p->rdata, (Void_t *) f->next, p->ndata);
+	    memcpy((void *) p->rdata, (void *) f->next, p->ndata);
 	f->endb = f->data;
     } else {			/* restore read data */
 	if (p->ndata > f->size)	/* may lose data!!! */
 	    p->ndata = f->size;
 	if (p->ndata > 0) {
-	    memcpy((Void_t *) f->data, (Void_t *) p->rdata, p->ndata);
+	    memcpy((void *) f->data, (void *) p->rdata, p->ndata);
 	    f->endb = f->data + p->ndata;
 	    p->ndata = 0;
 	}
@@ -344,7 +344,7 @@ int _sfmode(reg Sfio_t * f, reg int wanted, reg int local)
 	f->mode &= ~SF_GETR;
 #ifdef MAP_TYPE
 	if ((f->bits & SF_MMAP) && (f->tiny[0] += 1) >= (4 * SF_NMAP)) {	/* turn off mmap to avoid page faulting */
-	    sfsetbuf(f, (Void_t *) f->tiny, (size_t) SF_UNBOUND);
+	    sfsetbuf(f, (void *) f->tiny, (size_t) SF_UNBOUND);
 	    f->tiny[0] = 0;
 	} else
 #endif
@@ -496,7 +496,7 @@ int _sfmode(reg Sfio_t * f, reg int wanted, reg int local)
 	if (f->bits & SF_MMAP) {
 	    if (f->data)
 		SFMUNMAP(f, f->data, f->endb - f->data);
-	    (void) SFSETBUF(f, (Void_t *) f->tiny, (size_t) SF_UNBOUND);
+	    (void) SFSETBUF(f, (void *) f->tiny, (size_t) SF_UNBOUND);
 	}
 #endif
 	if (f->data == f->tiny) {

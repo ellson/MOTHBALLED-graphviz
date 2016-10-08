@@ -29,12 +29,6 @@
 #undef _hdr_malloc
 #define _hdr_malloc	1	/* #include <malloc.h> ok */
 
-#undef _hdr_malloc
-#define _lib_alloca	1	/* alloca exists */
-
-#undef _mal_alloca
-#define _mal_alloca	1	/* alloca is based on malloc() */
-
 #undef _stk_down
 #define _stk_down	1	/* stack grows downward */
 #endif

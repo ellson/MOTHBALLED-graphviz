@@ -38,7 +38,7 @@
  *               <0: no peeking, if rc>=0, get -action records,
  *               =0: no peeking, if rc>=0, must get a single record
  */
-ssize_t sfpkrd(int fd, Void_t * argbuf, size_t n, int rc, long tm,
+ssize_t sfpkrd(int fd, void * argbuf, size_t n, int rc, long tm,
 	       int action)
 {
     reg ssize_t r;

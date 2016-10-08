@@ -16,13 +16,12 @@ hdr malloc
 lib mallopt
 lib mallinfo
 lib mstats
-hdr alloca
 hdr dlfcn
 
 std	malloc note{ stuck with standard malloc }end noexecute{
 	_BEGIN_EXTERNS_
-	extern void _exit _ARG_((int));
-	extern char* strdup _ARG_((const char*));
+	extern void _exit(int);
+	extern char* strdup(const char*);
 	#if _STD_
 	char* malloc(unsigned n) { _exit(0); return 0; }
 	#else
@@ -30,50 +29,6 @@ std	malloc note{ stuck with standard malloc }end noexecute{
 	#endif
 	_END_EXTERNS_
 	main() { strdup("yo"); _exit(1); }
-}end
-
-lib alloca note{ alloca exists }end compile{
-	#if _hdr_alloca
-	#include	<alloca.h>
-	#endif
-	main()
-	{	alloca(10);
-	}
-}end
-
-mal alloca note{ alloca is based on malloc() }end execute{
-	#if _hdr_alloca
-	#include	<alloca.h>
-	#endif
-	#if _hdr_dlfcn
-	#include <dlfcn.h>
-	volatile int testing_alloca = 0;
-	#endif
-	#if _STD_
-	void* malloc(unsigned int size)
-	#else
-	void* malloc(size) unsigned int size;
-	#endif
-	{
-	#if _hdr_dlfcn
-		if (!testing_alloca) {
-			return ((void *(*)(unsigned int)) dlsym(RTLD_NEXT, "malloc"))(size);
-		}
-	#endif
-		exit(0);
-		return 0;
-	}
-	main()
-	{
-	#if _hdr_dlfcn
-		testing_alloca = 1;
-	#endif
-		alloca(10);
-	#if _hdr_dlfcn
-		testing_alloca = 0;
-	#endif
-		return 1;
-	}
 }end
 
 stk down note{ stack grows downward }end execute{
@@ -94,8 +49,8 @@ stk down note{ stack grows downward }end execute{
 exit    cleanup note{ stuck with standard _cleanup }end execute{
         #include <stdio.h>
         _BEGIN_EXTERNS_
-        extern void exit _ARG_((int));
-        extern void _exit _ARG_((int));
+        extern void exit(int);
+        extern void _exit(int);
         extern void _cleanup();
         void _cleanup() { _exit(0); }
         _END_EXTERNS_

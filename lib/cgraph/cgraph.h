@@ -461,9 +461,7 @@ and edges are embedded in main graph objects but allocated separately in subgrap
 #define EDGEOF(sn,rep)		(AGSNMAIN(sn)?((Agedge_t*)((unsigned char*)(rep) - offsetof(Agedge_t,seq_link))) : ((Dthold_t*)(rep))->obj)
 
 #undef extern
-#if defined(_PACKAGE_ast)
-_END_EXTERNS_
-#endif
+
 #ifdef __cplusplus
 }
 #endif

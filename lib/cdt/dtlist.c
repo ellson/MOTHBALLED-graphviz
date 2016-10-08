@@ -5,13 +5,13 @@
 **	Written by Kiem-Phong Vo (05/25/96)
 */
 
-static Void_t* dtlist(reg Dt_t* dt, reg Void_t* obj, reg int type)
+static void* dtlist(reg Dt_t* dt, reg void* obj, reg int type)
 {
 	reg int		lk, sz, ky;
 	reg Dtcompar_f	cmpf;
 	reg Dtdisc_t*	disc;
 	reg Dtlink_t	*r, *t;
-	reg Void_t	*key, *k;
+	reg void	*key, *k;
 
 	UNFLATTEN(dt);
 	disc = dt->disc; _DTDSC(disc,ky,sz,lk,cmpf);
@@ -24,11 +24,11 @@ static Void_t* dtlist(reg Dt_t* dt, reg Void_t* obj, reg int type)
 					r = r->left;
 				dt->data->here = r;
 			}
-			return r ? _DTOBJ(r,lk) : NIL(Void_t*);
+			return r ? _DTOBJ(r,lk) : NIL(void*);
 		}
 		else if(type&(DT_DELETE|DT_DETACH))
 		{	if((dt->data->type&(DT_LIST|DT_DEQUE)) || !(r = dt->data->head))
-				return NIL(Void_t*);
+				return NIL(void*);
 			else	goto dt_delete;
 		}
 		else if(type&DT_CLEAR)
@@ -38,31 +38,31 @@ static Void_t* dtlist(reg Dt_t* dt, reg Void_t* obj, reg int type)
 					if(disc->freef)
 						(*disc->freef)(dt,_DTOBJ(r,lk),disc);
 					if(disc->link < 0)
-						(*dt->memoryf)(dt,(Void_t*)r,0,disc);
+						(*dt->memoryf)(dt,(void*)r,0,disc);
 				}
 			}
 			dt->data->head = dt->data->here = NIL(Dtlink_t*);
 			dt->data->size = 0;
-			return NIL(Void_t*);
+			return NIL(void*);
 		}
-		else	return NIL(Void_t*);
+		else	return NIL(void*);
 	}
 
 	if(type&(DT_INSERT|DT_ATTACH))
 	{	if(disc->makef && (type&DT_INSERT) &&
 		   !(obj = (*disc->makef)(dt,obj,disc)) )
-			return NIL(Void_t*);
+			return NIL(void*);
 		if(lk >= 0)
 			r = _DTLNK(obj,lk);
 		else
 		{	r = (Dtlink_t*)(*dt->memoryf)
-				(dt,NIL(Void_t*),sizeof(Dthold_t),disc);
+				(dt,NIL(void*),sizeof(Dthold_t),disc);
 			if(r)
 				((Dthold_t*)r)->obj = obj;
 			else
 			{	if(disc->makef && disc->freef && (type&DT_INSERT))
 					(*disc->freef)(dt,obj,disc);
-				return NIL(Void_t*);
+				return NIL(void*);
 			}
 		}
 
@@ -130,7 +130,7 @@ static Void_t* dtlist(reg Dt_t* dt, reg Void_t* obj, reg int type)
 	}
 
 	if(!r)
-		return NIL(Void_t*);
+		return NIL(void*);
 	dt->type |= DT_FOUND;
 
 	if(type&(DT_DELETE|DT_DETACH))
@@ -155,7 +155,7 @@ static Void_t* dtlist(reg Dt_t* dt, reg Void_t* obj, reg int type)
 		if(disc->freef && (type&DT_DELETE))
 			(*disc->freef)(dt,obj,disc);
 		if(disc->link < 0)
-			(*dt->memoryf)(dt,(Void_t*)r,0,disc);
+			(*dt->memoryf)(dt,(void*)r,0,disc);
 		return obj;
 	}
 	else if(type&DT_NEXT)
@@ -164,7 +164,7 @@ static Void_t* dtlist(reg Dt_t* dt, reg Void_t* obj, reg int type)
 		r = r == dt->data->head ? NIL(Dtlink_t*) : r->left;
 
 	dt->data->here = r;
-	return r ? _DTOBJ(r,lk) : NIL(Void_t*);
+	return r ? _DTOBJ(r,lk) : NIL(void*);
 }
 
 #ifndef KPVDEL	/* to be remove next round */
@@ -175,10 +175,10 @@ static Dtmethod_t _Dtdeque  = { dtlist, DT_DEQUE  };
 static Dtmethod_t _Dtstack = { dtlist, DT_STACK };
 static Dtmethod_t _Dtqueue = { dtlist, DT_QUEUE };
 
-__DEFINE__(Dtmethod_t*,Dtlist,&_Dtlist);
-__DEFINE__(Dtmethod_t*,Dtdeque,&_Dtdeque);
-__DEFINE__(Dtmethod_t*,Dtstack,&_Dtstack);
-__DEFINE__(Dtmethod_t*,Dtqueue,&_Dtqueue);
+Dtmethod_t* Dtlist = &_Dtlist;
+Dtmethod_t* Dtdeque = &_Dtdeque;
+Dtmethod_t* Dtstack = &_Dtstack;
+Dtmethod_t* Dtqueue = &_Dtqueue;
 
 #ifdef NoF
 NoF(dtlist)

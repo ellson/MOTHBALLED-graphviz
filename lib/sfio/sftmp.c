@@ -44,7 +44,7 @@ struct _file_s {
 
 static File_t *File;		/* list pf temp files   */
 
-static int _tmprmfile(Sfio_t * f, int type, Void_t * val, Sfdisc_t * disc)
+static int _tmprmfile(Sfio_t * f, int type, void * val, Sfdisc_t * disc)
 {
     reg File_t *ff, *last;
 
@@ -71,7 +71,7 @@ static int _tmprmfile(Sfio_t * f, int type, Void_t * val, Sfdisc_t * disc)
 	    while (remove(ff->name) < 0 && errno == EINTR)
 		errno = 0;
 
-	    free((Void_t *) ff);
+	    free((void *) ff);
 	}
 	vtmtxunlock(_Sfmutex);
     }
@@ -86,7 +86,7 @@ static void _rmfiles(void)
     vtmtxlock(_Sfmutex);
     for (ff = File; ff; ff = next) {
 	next = ff->next;
-	_tmprmfile(ff->f, SF_CLOSING, NIL(Void_t *), ff->f->disc);
+	_tmprmfile(ff->f, SF_CLOSING, NIL(void *), ff->f->disc);
     }
     vtmtxunlock(_Sfmutex);
 }
@@ -252,12 +252,12 @@ static int _tmpfd(Sfio_t * f)
     return fd;
 }
 
-static int _tmpexcept(Sfio_t * f, int type, Void_t * val, Sfdisc_t * disc)
+static int _tmpexcept(Sfio_t * f, int type, void * val, Sfdisc_t * disc)
 {
     reg int fd, m;
     reg Sfio_t *sf;
     Sfio_t newf, savf;
-    void (*notifyf) _ARG_((Sfio_t *, int, int));
+    void (*notifyf) (Sfio_t *, int, int);
 
     NOTUSED(val);
 
@@ -280,7 +280,7 @@ static int _tmpexcept(Sfio_t * f, int type, Void_t * val, Sfdisc_t * disc)
     /* make sure that the notify function won't be called here since
        we are only interested in creating the file, not the stream */
     _Sfnotify = 0;
-    sf = sfnew(&newf, NIL(Void_t *), (size_t) SF_UNBOUND, fd,
+    sf = sfnew(&newf, NIL(void *), (size_t) SF_UNBOUND, fd,
 	       SF_READ | SF_WRITE);
     _Sfnotify = notifyf;
     if (!sf)
@@ -298,8 +298,8 @@ static int _tmpexcept(Sfio_t * f, int type, Void_t * val, Sfdisc_t * disc)
     sfset(sf, (f->mode & (SF_READ | SF_WRITE)), 1);
 
     /* now remake the old stream into the new image */
-    memcpy((Void_t *) (&savf), (Void_t *) f, sizeof(Sfio_t));
-    memcpy((Void_t *) f, (Void_t *) sf, sizeof(Sfio_t));
+    memcpy((void *) (&savf), (void *) f, sizeof(Sfio_t));
+    memcpy((void *) f, (void *) sf, sizeof(Sfio_t));
     f->push = savf.push;
     f->pool = savf.pool;
     f->rsrv = savf.rsrv;
@@ -310,12 +310,12 @@ static int _tmpexcept(Sfio_t * f, int type, Void_t * val, Sfdisc_t * disc)
     if (savf.data) {
 	SFSTRSIZE(&savf);
 	if (!(savf.flags & SF_MALLOC))
-	    (void) sfsetbuf(f, (Void_t *) savf.data, savf.size);
+	    (void) sfsetbuf(f, (void *) savf.data, savf.size);
 	if (savf.extent > 0)
-	    (void) sfwrite(f, (Void_t *) savf.data, (size_t) savf.extent);
+	    (void) sfwrite(f, (void *) savf.data, (size_t) savf.extent);
 	(void) sfseek(f, (Sfoff_t) (savf.next - savf.data), 0);
 	if ((savf.flags & SF_MALLOC))
-	    free((Void_t *) savf.data);
+	    free((void *) savf.data);
     }
 
     /* announce change of status */
@@ -355,7 +355,7 @@ Sfio_t *sftmp(reg size_t s)
 	f->disc = &Tmpdisc;
 
     /* make the file now */
-    if (s == 0 && _tmpexcept(f, SF_DPOP, NIL(Void_t *), f->disc) < 0) {
+    if (s == 0 && _tmpexcept(f, SF_DPOP, NIL(void *), f->disc) < 0) {
 	sfclose(f);
 	return NIL(Sfio_t *);
     }

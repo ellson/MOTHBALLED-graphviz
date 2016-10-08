@@ -95,7 +95,7 @@ int sfvscanf(Sfio_t * f, reg const char *form, va_list args)
     va_list oargs;
     int argp, argn;
 
-    Void_t *value;		/* location to assign scanned value */
+    void *value;		/* location to assign scanned value */
     char *t_str;
     ssize_t n_str;
     int rs;
@@ -103,7 +103,7 @@ int sfvscanf(Sfio_t * f, reg const char *form, va_list args)
 #define SFBUF(f)	(_sfbuf(f,&rs), (data = d = f->next), (endd = f->endb) )
 #define SFLEN(f)	(d-data)
 #define SFEND(f)	((n_input += d-data), \
-			 (rs > 0 ? SFREAD(f,(Void_t*)data,d-data) : ((f->next = d), 0)) )
+			 (rs > 0 ? SFREAD(f,(void*)data,d-data) : ((f->next = d), 0)) )
 #define SFGETC(f,c)	((c) = (d < endd || (SFEND(f), SFBUF(f), d < endd)) ? \
 				(int)(*d++) : -1 )
 #define SFUNGETC(f,c)	(--d)
@@ -179,7 +179,7 @@ int sfvscanf(Sfio_t * f, reg const char *form, va_list args)
 	width = dot = 0;
 	t_str = NIL(char *);
 	n_str = 0;
-	value = NIL(Void_t *);
+	value = NIL(void *);
 	argp = -1;
 
       loop_flags:		/* LOOP FOR FLAGS, WIDTH, BASE, TYPE */
@@ -218,7 +218,7 @@ int sfvscanf(Sfio_t * f, reg const char *form, va_list args)
 			    FMTSET(ft, form, args,
 				   LEFTP, 0, 0, 0, 0, 0, NIL(char *), 0);
 			    n = (*ft->extf)
-				(f, (Void_t *) & argv, ft);
+				(f, (void *) & argv, ft);
 			    if (n < 0)
 				goto pop_fmt;
 			    if (!(ft->flags & SFFMT_VALUE))
@@ -260,7 +260,7 @@ int sfvscanf(Sfio_t * f, reg const char *form, va_list args)
 		else if (ft && ft->extf) {
 		    FMTSET(ft, form, args, '.', dot, 0, 0, 0, 0,
 			   NIL(char *), 0);
-		    if ((*ft->extf) (f, (Void_t *) (&argv), ft) < 0)
+		    if ((*ft->extf) (f, (void *) (&argv), ft) < 0)
 			goto pop_fmt;
 		    if (ft->flags & SFFMT_VALUE)
 			v = argv.i;
@@ -324,7 +324,7 @@ int sfvscanf(Sfio_t * f, reg const char *form, va_list args)
 		else if (ft && ft->extf) {
 		    FMTSET(ft, form, args, 'I', sizeof(int), 0, 0, 0, 0,
 			   NIL(char *), 0);
-		    if ((*ft->extf) (f, (Void_t *) (&argv), ft) < 0)
+		    if ((*ft->extf) (f, (void *) (&argv), ft) < 0)
 			goto pop_fmt;
 		    if (ft->flags & SFFMT_VALUE)
 			size = argv.i;
@@ -403,7 +403,7 @@ int sfvscanf(Sfio_t * f, reg const char *form, va_list args)
 		   n_str);
 	    SFEND(f);
 	    SFOPEN(f, 0);
-	    v = (*ft->extf) (f, (Void_t *) & argv, ft);
+	    v = (*ft->extf) (f, (void *) & argv, ft);
 	    SFLOCK(f, 0);
 	    SFBUF(f);
 
@@ -434,7 +434,7 @@ int sfvscanf(Sfio_t * f, reg const char *form, va_list args)
 		continue;
 	    if (!argv.ft->form && ft) {	/* change extension functions */
 		if (ft->eventf &&
-		    (*ft->eventf) (f, SF_DPOP, (Void_t *) form, ft) < 0)
+		    (*ft->eventf) (f, SF_DPOP, (void *) form, ft) < 0)
 		    continue;
 		fmstk->ft = ft = argv.ft;
 	    } else {		/* stack a new environment */
@@ -468,7 +468,7 @@ int sfvscanf(Sfio_t * f, reg const char *form, va_list args)
 
 	/* get the address to assign value */
 	if (!value && !(flags & SFFMT_SKIP))
-	    value = va_arg(args, Void_t *);
+	    value = va_arg(args, void *);
 
 	if (fmt == 'n') {	/* return length of consumed input */
 #if !_ast_intmax_long
@@ -667,9 +667,9 @@ int sfvscanf(Sfio_t * f, reg const char *form, va_list args)
 
 		if (fmt == 'p')
 #if _more_void_int
-		    *((Void_t **) value) = (Void_t *) ((ulong) argv.lu);
+		    *((void **) value) = (void *) ((ulong) argv.lu);
 #else
-		    *((Void_t **) value) = (Void_t *) ((uint) argv.lu);
+		    *((void **) value) = (void *) ((uint) argv.lu);
 #endif
 #if !_ast_intmax_long
 		else if (FMTCMP(size, Sflong_t, Sflong_t))
@@ -757,8 +757,8 @@ int sfvscanf(Sfio_t * f, reg const char *form, va_list args)
     while ((fm = fmstk)) {	/* pop the format stack and continue */
 	if (fm->eventf) {
 	    if (!form || !form[0])
-		(*fm->eventf) (f, SF_FINAL, NIL(Void_t *), ft);
-	    else if ((*fm->eventf) (f, SF_DPOP, (Void_t *) form, ft) < 0)
+		(*fm->eventf) (f, SF_FINAL, NIL(void *), ft);
+	    else if ((*fm->eventf) (f, SF_DPOP, (void *) form, ft) < 0)
 		goto loop_fmt;
 	}
 
@@ -781,7 +781,7 @@ int sfvscanf(Sfio_t * f, reg const char *form, va_list args)
 	free(fp);
     while ((fm = fmstk)) {
 	if (fm->eventf)
-	    (*fm->eventf) (f, SF_FINAL, NIL(Void_t *), fm->ft);
+	    (*fm->eventf) (f, SF_FINAL, NIL(void *), fm->ft);
 	fmstk = fm->next;
 	free(fm);
     }

@@ -70,10 +70,10 @@ static void dthtab(Dt_t* dt)
 	}
 }
 
-static Void_t* dthash(Dt_t* dt, reg Void_t* obj, int type)
+static void* dthash(Dt_t* dt, reg void* obj, int type)
 {
 	reg Dtlink_t	*t, *r = NULL, *p;
-	reg Void_t	*k, *key;
+	reg void	*k, *key;
 	reg uint	hsh;
 	reg int		lk, sz, ky;
 	reg Dtcompar_f	cmpf;
@@ -91,7 +91,7 @@ static Void_t* dthash(Dt_t* dt, reg Void_t* obj, int type)
 			goto end_walk;
 
 		if(dt->data->size <= 0 || !(type&(DT_CLEAR|DT_FIRST|DT_LAST)) )
-			return NIL(Void_t*);
+			return NIL(void*);
 
 		ends = (s = dt->data->htab) + dt->data->ntab;
 		if(type&DT_CLEAR)
@@ -106,14 +106,14 @@ static Void_t* dthash(Dt_t* dt, reg Void_t* obj, int type)
 					if(disc->freef)
 						(*disc->freef)(dt,_DTOBJ(t,lk),disc);
 					if(disc->link < 0)
-						(*dt->memoryf)(dt,(Void_t*)t,0,disc);
+						(*dt->memoryf)(dt,(void*)t,0,disc);
 					t = r;
 				}
 			}
 			dt->data->here = NIL(Dtlink_t*);
 			dt->data->size = 0;
 			dt->data->loop = 0;
-			return NIL(Void_t*);
+			return NIL(void*);
 		}
 		else	/* computing the first/last object */
 		{	t = NIL(Dtlink_t*);
@@ -125,14 +125,14 @@ static Void_t* dthash(Dt_t* dt, reg Void_t* obj, int type)
 
 			dt->data->loop += 1;
 			dt->data->here = t;
-			return t ? _DTOBJ(t,lk) : NIL(Void_t*);
+			return t ? _DTOBJ(t,lk) : NIL(void*);
 		}
 	}
 
 	/* allow apps to delete an object "actually" in the dictionary */
 	if(dt->meth->type == DT_BAG && (type&(DT_DELETE|DT_DETACH)) )
 	{	if(!dtsearch(dt,obj) )
-			return NIL(Void_t*);
+			return NIL(void*);
 
 		s = dt->data->htab + HINDEX(dt->data->ntab,dt->data->here->hash);
 		r = NIL(Dtlink_t*);
@@ -187,7 +187,7 @@ static Void_t* dthash(Dt_t* dt, reg Void_t* obj, int type)
 
 	if(type&(DT_MATCH|DT_SEARCH|DT_VSEARCH))
 	{	if(!t)
-			return NIL(Void_t*);
+			return NIL(void*);
 		if(p && (dt->data->type&DT_SET) && dt->data->loop <= 0)
 		{	/* move-to-front heuristic */
 			p->right = t->right;
@@ -205,18 +205,18 @@ static Void_t* dthash(Dt_t* dt, reg Void_t* obj, int type)
 
 		if(disc->makef && (type&DT_INSERT) &&
 		   !(obj = (*disc->makef)(dt,obj,disc)) )
-			return NIL(Void_t*);
+			return NIL(void*);
 		if(lk >= 0)
 			r = _DTLNK(obj,lk);
 		else
 		{	r = (Dtlink_t*)(*dt->memoryf)
-				(dt,NIL(Void_t*),sizeof(Dthold_t),disc);
+				(dt,NIL(void*),sizeof(Dthold_t),disc);
 			if(r)
 				((Dthold_t*)r)->obj = obj;
 			else
 			{	if(disc->makef && disc->freef && (type&DT_INSERT))
 					(*disc->freef)(dt,obj,disc);
-				return NIL(Void_t*);
+				return NIL(void*);
 			}
 		}
 		r->hash = hsh;
@@ -230,8 +230,8 @@ static Void_t* dthash(Dt_t* dt, reg Void_t* obj, int type)
 			if(disc->freef && (type&DT_INSERT))
 				(*disc->freef)(dt,obj,disc);
 			if(disc->link < 0)
-				(*disc->memoryf)(dt,(Void_t*)r,0,disc);
-			return NIL(Void_t*);
+				(*disc->memoryf)(dt,(void*)r,0,disc);
+			return NIL(void*);
 		}
 		s = dt->data->htab + HINDEX(dt->data->ntab,hsh);
 		if(t)
@@ -277,7 +277,7 @@ static Void_t* dthash(Dt_t* dt, reg Void_t* obj, int type)
 				dt->data->loop = 0;
 			if(dt->data->size > HLOAD(dt->data->ntab) && dt->data->loop <= 0)
 				dthtab(dt);
-			return NIL(Void_t*);
+			return NIL(void*);
 		}
 		else
 		{	dt->data->type |= DT_WALK;
@@ -291,15 +291,15 @@ static Void_t* dthash(Dt_t* dt, reg Void_t* obj, int type)
 		{	if(disc->freef)
 				(*disc->freef)(dt,obj,disc);
 			if(disc->link < 0)
-				(*dt->memoryf)(dt,(Void_t*)r,0,disc);
-			return t ? _DTOBJ(t,lk) : NIL(Void_t*);
+				(*dt->memoryf)(dt,(void*)r,0,disc);
+			return t ? _DTOBJ(t,lk) : NIL(void*);
 		}
 	}
 	else /*if(type&(DT_DELETE|DT_DETACH))*/
 	{	/* take an element out of the dictionary */
 	do_delete:
 		if(!t)
-			return NIL(Void_t*);
+			return NIL(void*);
 		else if(p)
 			p->right = t->right;
 		else if((p = *s) == t)
@@ -315,19 +315,19 @@ static Void_t* dthash(Dt_t* dt, reg Void_t* obj, int type)
 		if(disc->freef && (type&DT_DELETE))
 			(*disc->freef)(dt,obj,disc);
 		if(disc->link < 0)
-			(*dt->memoryf)(dt,(Void_t*)t,0,disc);
+			(*dt->memoryf)(dt,(void*)t,0,disc);
 		return obj;
 	}
 }
 
 static Dtmethod_t	_Dtset = { dthash, DT_SET };
 static Dtmethod_t	_Dtbag = { dthash, DT_BAG };
-__DEFINE__(Dtmethod_t*,Dtset,&_Dtset);
-__DEFINE__(Dtmethod_t*,Dtbag,&_Dtbag);
+Dtmethod_t* Dtset = &_Dtset;
+Dtmethod_t* Dtbag = &_Dtbag;
 
 #ifndef KPVDEL	/* for backward compatibility - remove next time */
 Dtmethod_t		_Dthash = { dthash, DT_SET };
-__DEFINE__(Dtmethod_t*,Dthash,&_Dthash);
+Dtmethod_t* Dthash = &_Dthash;
 #endif
 
 #ifdef NoF

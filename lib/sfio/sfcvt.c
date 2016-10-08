@@ -30,7 +30,7 @@ static char *Inf = "Inf", *Zero = "0";
  * @param sign return sign
  * @param format conversion format
  */
-char *_sfcvt(Void_t * dv, int n_digit, int *decpt, int *sign, int format)
+char *_sfcvt(void * dv, int n_digit, int *decpt, int *sign, int format)
 {
     reg char *sp;
     reg long n, v;

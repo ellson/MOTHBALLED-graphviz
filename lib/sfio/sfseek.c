@@ -187,7 +187,7 @@ Sfoff_t sfseek(Sfio_t * f, Sfoff_t p, int type)
     if (f->bits & SF_MMAP) {	/* if mmap is not great, stop mmaping if moving around too much */
 #if _mmap_worthy < 2
 	if ((f->next - f->data) < ((f->endb - f->data) / 4)) {
-	    SFSETBUF(f, (Void_t *) f->tiny, (size_t) SF_UNBOUND);
+	    SFSETBUF(f, (void *) f->tiny, (size_t) SF_UNBOUND);
 	    hardseek = 1;	/* this forces a hard seek below */
 	} else
 #endif

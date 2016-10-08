@@ -27,15 +27,10 @@
 /* for sincos */
 #define _GNU_SOURCE 1
 
-#ifdef HAVE_AST
-#include                <ast.h>
-#include                <vmalloc.h>
-#else
 #include                <sys/types.h>
 #include                <stdlib.h>
 #include                <string.h>
 #include                <unistd.h>
-#endif
 
 #include <inttypes.h>
 #include <assert.h>
