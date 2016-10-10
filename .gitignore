@@ -201,6 +201,7 @@ rtest/ndata
 rtest/nhtml
 tests/**/*.log
 tests/**/*.trs
+tests/**/output/**
 
 ## Binaries
 tests/unit_tests/lib/common/command_line
