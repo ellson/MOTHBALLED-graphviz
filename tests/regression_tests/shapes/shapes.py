@@ -1,5 +1,9 @@
 from subprocess import Popen, PIPE
-import os.path
+import os.path, sys
+
+# Import helper function to compare graphs from tests/regressions_tests
+sys.path.insert(0, os.path.abspath('../'))
+from regression_test_helpers import compare_graphs
 
 shapes = [
     'box',
@@ -99,7 +103,17 @@ def generate_shape_graph(shape, output_type):
             else:
                 file.write(line)
 
+failures = 0
 for shape in shapes:
     for output_type in output_types:
-        print('Generating: ' + shape + '.' + output_type)
         generate_shape_graph(shape, output_type)
+        if not compare_graphs(shape, output_type):
+            failures += 1
+
+print('')
+print('Results for "shapes" regression test:')
+print('    Number of tests: ' + str(len(shapes) * len(output_types)))
+print('    Number of failures: ' + str(failures))
+
+if not failures == 0:
+    exit(1) 

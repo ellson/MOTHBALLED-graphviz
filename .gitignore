@@ -202,6 +202,7 @@ rtest/nhtml
 tests/**/*.log
 tests/**/*.trs
 tests/**/output/**
+tests/**/difference/**
 
 ## Binaries
 tests/unit_tests/lib/common/command_line
@@ -227,3 +228,6 @@ tests/unit_tests/lib/common/command_line
 
 # Don't ignore any of the submodules
 !windows/dependencies/**
+
+# Python byte code
+*.pyc
