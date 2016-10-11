@@ -33,9 +33,6 @@
 #undef _sys_times
 #define _sys_times	0	/* #include <sys/times.h> ok */
 
-#undef _typ_size_t
-#define _typ_size_t	1	/* size_t is a type */
-
 #undef _typ_ssize_t
 #define _typ_ssize_t	0	/* ssize_t is a type */
 
@@ -86,11 +83,6 @@
 #	if _sys_types
 #	include	<sys/types.h>
 #	endif
-#endif
-#if !_typ_size_t
-#   undef _typ_size_t
-#	define _typ_size_t	1
-typedef int size_t;
 #endif
 #if !_typ_ssize_t
 #   undef _typ_ssize_t

@@ -48,7 +48,6 @@
 #endif
 
 /* FIXME - need proper config test for these */
-#define _typ_size_t     1	/* size_t is a type */
 #define _typ_ssize_t    1	/* ssize_t is a type */
 #define _typ_long_double        1	/* long double is a type */
 #define _proto_stdc 1		/* Standard-C prototypes ok  */
@@ -102,10 +101,6 @@
 #       if defined(_sys_types)
 #       include <sys/types.h>
 #       endif
-#endif
-#if !_typ_size_t
-#       define _typ_size_t      1
-typedef int size_t;
 #endif
 #if !_typ_ssize_t
 #       define _typ_ssize_t     1

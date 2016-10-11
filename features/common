@@ -112,10 +112,6 @@ cat{
 	#	include	<sys/types.h>
 	#	endif
 	#endif
-	#if !_typ_size_t
-	#	define _typ_size_t	1
-		typedef int size_t;
-	#endif
 	#if !_typ_ssize_t
 	#	define _typ_ssize_t	1
 		typedef int ssize_t;
