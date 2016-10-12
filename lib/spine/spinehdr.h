@@ -9,8 +9,10 @@
 */
 #include <spine.h>
 
-#define N_NEW(n,t)       (t*)calloc((n),sizeof(t))
-#define NEW(t)       (t*)calloc((1),sizeof(t))
+#define N_NEW(n,t)       (t*)mcalloc((n),sizeof(t))
+#define NEW(t)       (t*)mcalloc((1),sizeof(t))
+
+extern void *mcalloc(size_t nmemb, size_t size);
 
 #define NOTUSED(var)     (void) var
 

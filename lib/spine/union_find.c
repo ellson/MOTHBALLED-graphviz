@@ -1,9 +1,8 @@
 /* vim:set shiftwidth=4 ts=4: */
 
+#include <spinehdr.h>
+#include <union_find.h>
 #include <assert.h>
-
-#include "spinehdr.h"
-#include "union_find.h"
 
 typedef Agnode_t node_t;
 
@@ -32,7 +31,9 @@ node_t *UF_union(node_t * u, node_t * v)
 		ND_UF_size(v) = 1;
 	} else
 		v = UF_find(v);
-	if (ND_id(u) > ND_id(v)) {
+	if (u == v)
+		return u;
+	if (ND_UF_size(u) < ND_UF_size(v)) {
 		ND_UF_parent(u) = v;
 		ND_UF_size(v) += ND_UF_size(u);
 	} else {

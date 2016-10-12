@@ -1,9 +1,8 @@
-/* vim:set shiftwidth=4 ts=4: */
+/* vim:set shiftwidth=4 ts=4 */
 
+#include <spinehdr.h>
 #include <stdlib.h>
-
-#include "spinehdr.h"
-#include "subset.h"
+#include <subset.h>
 
 static void *mkPtrItem(Dt_t * d, ptritem * obj, Dtdisc_t * disc)
 {
@@ -59,6 +58,11 @@ void addSubset(Dt_t * s, void *n)
 	dtinsert(s, &dummy);
 }
 
+void* inSubset(Dt_t * s, void *n)
+{
+	return dtmatch(s, &n);
+}
+
 int sizeSubset(Dt_t * s)
 {
 	return dtsize(s);
@@ -72,6 +76,45 @@ void clearSubset(Dt_t * s)
 void closeSubset(Dt_t * s)
 {
 	dtclose(s);
+}
+
+typedef struct {
+	Dt_t* s;
+    int sz;
+} setsize_t;
+
+static int union_fn(Agnode_t * n, setsize_t *state)
+{
+	if (!inSubset(state->s, n))
+		state->sz++;
+	return 0;
+}
+
+int union_size(Dt_t* s0, Dt_t* s1)
+{
+	setsize_t state;
+
+    state.s = s0;
+	state.sz = sizeSubset(s0);
+	walkSubset(s1, (walkfn)union_fn, &state);
+	return state.sz;
+}
+
+static int intersect_fn(Agnode_t * n, setsize_t *state)
+{
+	if (inSubset(state->s, n))
+		state->sz++;
+	return 0;
+}
+
+int intersect_size(Dt_t* s0, Dt_t* s1)
+{
+	setsize_t state;
+
+    state.s = s0;
+	state.sz = 0;
+	walkSubset(s1, (walkfn)intersect_fn, &state);
+	return state.sz;
 }
 
 typedef struct {

@@ -1,15 +1,13 @@
 /* vim:set shiftwidth=4 ts=4: */
 
-#include <assert.h>
+#include <spinehdr.h>
+#include <subset.h>
+#include <quad.h>
+#include "union_find.h"
+#include "assert.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
-#include "spinehdr.h"
-#include "subset.h"
-#include "quad.h"
-#include "union_find.h"
-
 #ifdef MAIN
 #include <getopt.h>
 #include "ingraphs.h"
@@ -22,12 +20,38 @@ typedef struct {
 } opts_t;
 #endif
 
+typedef int (*qsort_cmpf) (const void *, const void *);
+
+#define MIN(a,b)	((a)<(b)?(a):(b))
+#define MAX(a,b)	((a)>(b)?(a):(b))
+
+void* mcalloc (size_t cnt, size_t sz)
+{
+	void* p = calloc(cnt, sz);
+	/* fprintf(stderr, "alloc %lu bytes %p\n", cnt*sz, p); */
+	return p;
+}
+ 
 #if 0
 static float ewt(Agedge_t * e)
 {
 	return ED_wt(e);
 }
 #endif
+
+static int cmpe(void *v0, void *v1)
+{
+	Agedge_t *e0 = *(Agedge_t **) v0;
+	Agedge_t *e1 = *(Agedge_t **) v1;
+
+	if (ED_wt(e0) > ED_wt(e1))
+		return -1;
+	else if (ED_wt(e0) < ED_wt(e1))
+		return 1;
+	else
+		return 0;
+}
+
 
 static void doEdge(Agraph_t * g, Agnode_t * v, Agnode_t * w, int *quadcnt)
 {
@@ -65,34 +89,161 @@ recordQuads(Agnode_t * v, Agnode_t * w, Dt_t * subset, void *state)
 	}
 }
 
-static void setEdgeWeights(Agraph_t * g)
+static void
+reweightEdge (Agedge_t* e, Dt_t* nbr0, Dt_t* nbr1, Agedge_t*** nbrs, int verbose)
 {
-	int *quadcnt = N_NEW(agnedges(g), int);
-	int *que = N_NEW(agnnodes(g), int);
-	Agnode_t *n;
-	/* Agnode_t *v; */
-	Agedge_t *e;
-	int wt;
+	Agnode_t* tail = agtail(e);
+	Agnode_t* head = aghead(e);
+	Agedge_t** tail_edgelist = nbrs[ND_id(tail)];
+	long int len0 = nbrs[ND_id(tail)+1] - tail_edgelist;
+	Agedge_t** head_edgelist = nbrs[ND_id(head)];
+	long int len1 = nbrs[ND_id(head)+1] - head_edgelist;
+	long int minlen = MIN(len0, len1);
+	long int i;
+	long int maxi = 0;
+	double wt, maxwt = 0;
+	double common_cnt = 0;
+	double union_cnt = 0;
+	Agnode_t* n0;
+	Agnode_t* n1;
+	double oldwt;
 
+	clearSubset(nbr0);
+	clearSubset(nbr1);
+		
+	if (verbose > 1)
+		oldwt = ED_wt(e);
+
+#ifdef TEST_JACCARD
+    Dt_t* nbr00 = mkSubset();
+	Dt_t* nbr11 = mkSubset();
+    double wt0;
+#endif
+	for (i = 0; i < minlen; i++) {
+		n0 = (*tail_edgelist++)->node;
+		n1 = (*head_edgelist++)->node;
+		assert(n0 != tail);
+		assert(n1 != head);
+#ifdef TEST_JACCARD
+		addSubset(nbr00, n0);
+		addSubset(nbr11, n1);
+#endif
+/* fprintf (stderr, "add %s  %s\n", agnameof(n0), agnameof(n1)); */
+		if (n0 != n1) {
+			if (inSubset(nbr1, n0)) common_cnt++;
+			else {
+				addSubset (nbr0, n0);
+				union_cnt++;
+			}
+			if (inSubset(nbr0, n1)) common_cnt++;
+            else {
+				addSubset (nbr1, n1);
+				union_cnt++;
+			}
+		}
+		else {
+			common_cnt++;
+			union_cnt++;
+		}
+		wt = common_cnt/union_cnt;
+#ifdef TEST_JACCARD
+		wt0 = ((double)intersect_size(nbr00,nbr11))/union_size(nbr00,nbr11);
+		assert(wt == wt0);
+#endif
+		if (wt > maxwt) {
+			maxi = i;
+			maxwt = wt;
+		}
+	}
+	if (len0 > minlen) {
+		for (; i < len0; i++) {
+			n0 = (*tail_edgelist++)->node;
+/* fprintf (stderr, "add %s  -\n", agnameof(n0)); */
+#ifdef TEST_JACCARD
+			addSubset(nbr00, n0);
+#endif
+			if (inSubset(nbr1, n0)) common_cnt++;
+			else union_cnt++;
+			wt = common_cnt/union_cnt;
+#ifdef TEST_JACCARD
+			wt0 = ((double)intersect_size(nbr00,nbr11))/union_size(nbr00,nbr11);
+			assert(wt == wt0);
+#endif
+			if (wt > maxwt) {
+				maxi = i;
+				maxwt = wt;
+			}
+		}
+	}
+	else if (len1 > minlen) {
+		for (; i < len1; i++) {
+			n1 = (*head_edgelist++)->node;
+/* fprintf (stderr, "add - %s\n", agnameof(n1)); */
+#ifdef TEST_JACCARD
+			addSubset(nbr11, n1);
+#endif
+			if (inSubset(nbr0, n1)) common_cnt++;
+			else union_cnt++;
+			wt = common_cnt/union_cnt;
+#ifdef TEST_JACCARD
+			wt0 = ((double)intersect_size(nbr00,nbr11))/union_size(nbr00,nbr11);
+			assert(wt == wt0);
+#endif
+			if (wt > maxwt) {
+				maxi = i;
+				maxwt = wt;
+			}
+		}
+	}
+	
+	ED_wt(e) = maxwt;
+	if (verbose > 1)
+		fprintf(stderr, "%s : %s %f %ld/%ld %f\n",
+			agnameof(tail), agnameof(head), maxwt, maxi, MAX(len0, len1), oldwt);
+#ifdef TEST_JACCARD
+    closeSubset(nbr00);
+    closeSubset(nbr11);
+#endif
+}
+
+static void setEdgeWeights(Agraph_t * g, int verbose)
+{
+	int *quadcnt = N_NEW((size_t)agnedges(g), int);
+	int ncnt = agnnodes(g);
+	int *que = N_NEW((size_t)ncnt, int);
+	Agnode_t *n;
+	Agedge_t *e;
+	int iwt;
+	int edgecnt = 0; 
+	long int i = 0;
+
+    /* Count the number q(u,v) of quadrilaterals each edge is in.
+     * This is stored in quadcnt, indexed by the edges index. 
+     */
 	genQuads(g, recordQuads, quadcnt);
+
+    /* Weight node v by q(v), the sum of the q(u,v) for all neighbors v of u.
+     * This is stored in que, indexed by the node's index.
+     */
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-		wt = 0;
+		ND_id(n) = i++;
+		iwt = 0;
 		for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-			if (aghead(e) == n)
-				continue;
-			wt += quadcnt[ED_id(e)];
+			iwt += quadcnt[ED_id(e)];
+			edgecnt++;
 		}
 		for (e = agfstin(g, n); e; e = agnxtin(g, e)) {
-			if (agtail(e) == n)
-				continue;
-			wt += quadcnt[ED_id(e)];
+			iwt += quadcnt[ED_id(e)];
 		}
-		que[ND_id(n)] = wt;
+		que[ND_id(n)] = iwt;
 #if 0
 		fprintf(stderr, " %s quad %d\n", agnameof(n), que[ND_id(n)]);
 #endif
 	}
 
+    /* Assign each edge a normalized initial weight Q(u,v) which is q(u,v)/sqrt(q(u)q(v)).
+     * This is stored in ED_wt.
+     */
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 		for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 			int quadv = quadcnt[ED_id(e)];
@@ -105,23 +256,80 @@ static void setEdgeWeights(Agraph_t * g)
 #if 0
 			fprintf(stderr, " %s--%s quadcnt %d wt %f\n",
 					agnameof(n), agnameof(aghead(e)), quadcnt[ED_id(e)],
-					ED_wt(e));
+					jD_wt(e));
 #endif
 		}
 	}
 
 	free(quadcnt);
 	free(que);
+
+	Agedge_t** edges = N_NEW((size_t)(2*edgecnt+1),Agedge_t*);
+	Agedge_t*** nbrs = N_NEW((size_t)ncnt+1, Agedge_t**);
+	Agedge_t** edgelist = edges;
+	size_t degree;
+    /* For each node, sort its edges by Q(u,v). */
+	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+		degree = 0;
+		nbrs[ND_id(n)] = edgelist;
+		for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+			degree++;
+			*edgelist++ = e;
+		}
+		for (e = agfstin(g, n); e; e = agnxtin(g, e)) {
+			degree++;
+			*edgelist++ = e;
+		}
+		qsort(nbrs[ND_id(n)], degree, sizeof(Agedge_t **), (qsort_cmpf)cmpe);
+/*
+		fprintf (stderr, "sort %s(%d) degree %lu %d %p\n", 
+			agnameof(n), ND_id(n), degree, agdegree(g,n,1,1), nbrs[ND_id(n)]);
+*/
+	}
+	nbrs[ncnt] = edgelist;
+
+#if 0
+	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+		edgelist = nbrs[ND_id(n)];
+		long int len0 = nbrs[ND_id(n)+1] - edgelist;
+		fprintf (stderr, "%s len %lu degree %d\n", agnameof(n), len0, agdegree(g,n,1,1));
+		for (i = 0; i < len0; i++) {
+			e = *edgelist++;
+			fprintf (stderr, "%s %s %lf\n",
+				agnameof(agtail(e)), agnameof(aghead(e)), ED_wt(e));
+		}
+	}
+#endif
+
+    /* Finally, for each edge (u,v), compute the Jaccard coefficient of the union of
+     * k neighbors of u and v, using the sorted edges. The final edge weight is the
+     * maximum Jaccard coefficient.
+     */
+	Dt_t* nbr0 = mkSubset();
+	Dt_t* nbr1 = mkSubset();
+	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+		edgelist = nbrs[ND_id(n)];
+		long int len0 = nbrs[ND_id(n)+1] - edgelist;
+		for (i = 0; i < len0; i++) {
+			e = *edgelist++;
+			if (AGTYPE(e)==AGINEDGE) continue;
+			reweightEdge (e, nbr0, nbr1, nbrs, verbose);
+		}
+	}
+	closeSubset(nbr0);
+	closeSubset(nbr1);
+	free(edges);
+	free(nbrs);
 }
 
 /* Return number in range [0,nedges] */
-static int computeIndex(int nedges, float s)
+static size_t computeIndex(size_t nedges, float s)
 {
-	int r = ceilf(nedges * (1 - s));
+	size_t r = ceilf(nedges * (1 - s));
 	return r;
 }
 
-static int doBucket(Agedge_t ** edgelist, int idx, Dt_t * M)
+static size_t doBucket(Agedge_t ** edgelist, size_t idx, Dt_t * M)
 {
 	Agedge_t *e;
 	float weight = ED_wt(edgelist[idx]);
@@ -142,12 +350,12 @@ static int walker(Agedge_t * e, Agraph_t * sg)
 	return 0;
 }
 
-static Agraph_t *findUMST(Agraph_t * g, Agedge_t ** edgelist, int nedges)
+static Agraph_t *findUMST(Agraph_t * g, Agedge_t ** edgelist, size_t nedges)
 {
 	Agraph_t *sg = agsubg(g, "UMST", 1);
 	Dt_t *M = mkSubset();
 
-	int i = 0;
+	size_t i = 0;
 	while (i < nedges) {
 		i = doBucket(edgelist, i, M);
 		/* for each edge in M, add to sg, and union nodes */
@@ -159,19 +367,49 @@ static Agraph_t *findUMST(Agraph_t * g, Agedge_t ** edgelist, int nedges)
 	return sg;
 }
 
-static int cmpe(const void *v0, const void *v1)
+/* Remove loops and multiedges. */
+static void cleanGraph (Agraph_t * g, int verbose)
 {
-	Agedge_t *e0 = *(Agedge_t **) v0;
-	Agedge_t *e1 = *(Agedge_t **) v1;
-
-	if (ED_wt(e0) > ED_wt(e1))
-		return -1;
-	else if (ED_wt(e0) < ED_wt(e1))
-		return 1;
-	else
-		return 0;
+	Agnode_t *n;
+	Agnode_t *head;
+	Agedge_t *e;
+	Agedge_t *nexte;
+	Agedge_t *inexte;
+	Agedge_t *backe;
+	Agedge_t *preve = NULL;
+    int loopcnt = 0;
+    int multicnt = 0;
+	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+		preve = NULL;
+		for (e = agfstout(g, n); e; e = nexte) {
+			head = aghead(e);
+			nexte = agnxtout(g, e);
+			if (head == n) {
+				agdelete(g, e);
+				preve = NULL;
+				loopcnt++;
+			}
+			else if (preve && (head == aghead(preve))) {
+				agdelete(g, e);
+				multicnt++;
+			}
+			else {
+				preve = e;
+				if ((backe = agedge(g, head, n, 0, 0))) {
+					while (backe && (agtail(backe) == head)) {
+						multicnt++;
+						inexte = agnxtin(g, backe);	
+						agdelete(g, backe);
+						backe = inexte;
+					}
+				}
+			
+			}
+		}
+	}
+	if (verbose)
+		fprintf (stderr, "cleanGraph: %d loops %d multiedges removed\n", loopcnt, multicnt);
 }
-
 
 void genSpine(Agraph_t * g, float sparse_ratio, int verbose)
 {
@@ -179,13 +417,15 @@ void genSpine(Agraph_t * g, float sparse_ratio, int verbose)
 	Agnode_t *n;
 	Agedge_t *e;
 	Agedge_t **edgelist;
-	int i, index;
-	int nedges = agnedges(g);
+	size_t i, index;
+	size_t nedges;
 	float threshhold;
 
+	cleanGraph (g, verbose);
+	nedges = agnedges(g);
 	if (verbose)
-		fprintf(stderr, "Graph %s %d nodes %d edges:\n", agnameof(g),
-				agnnodes(g), agnedges(g));
+		fprintf(stderr, "Graph %s %d nodes %lu edges:\n", agnameof(g),
+				agnnodes(g), nedges);
 	aginit(g, AGNODE, "nodeinfo", sizeof(nodeinfo_t), 1);
 	aginit(g, AGEDGE, "edgeinfo", sizeof(edgeinfo_t), 1);
 
@@ -197,19 +437,19 @@ void genSpine(Agraph_t * g, float sparse_ratio, int verbose)
 	}
 	if (verbose)
 		fprintf(stderr, "setEdgeWeights\n");
-	setEdgeWeights(g);
+	setEdgeWeights(g, verbose);
 
 	/* sort edges by non-increasing weight */
 	if (verbose)
 		fprintf(stderr, "sorting\n");
-	edgelist = N_NEW(nedges + 1, Agedge_t *);	/* NULL at end */
+	edgelist = N_NEW((size_t)(nedges + 1), Agedge_t *);	/* NULL at end */
 	i = 0;
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 		for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 			edgelist[i++] = e;
 		}
 	}
-	qsort(edgelist, nedges, sizeof(Agedge_t *), cmpe);
+	qsort(edgelist, nedges, sizeof(Agedge_t *), (qsort_cmpf)cmpe);
 #if 0
 	float curwt = -1;
 	int cnt = 0;
@@ -241,7 +481,7 @@ void genSpine(Agraph_t * g, float sparse_ratio, int verbose)
 	/* Find index of the |E|(1-sparse_ratio)th edge */
 	index = computeIndex(nedges, sparse_ratio);
 	if (verbose)
-		fprintf(stderr, " index %d out of %d\n", index, nedges);
+		fprintf(stderr, " index %lu out of %lu\n", index, nedges);
 
 	/* set of edges with weights above threshhold */
 	/* Add all edges with wt >= wt(edgelist[index]) */
@@ -277,7 +517,7 @@ void genSpine(Agraph_t * g, float sparse_ratio, int verbose)
 				extra_edges, agnedges(sg_union));
 
 	/* layout graph sg_union */
-	Agsym_t *sym = agattr(g, AGEDGE, "weight", "0");
+	Agsym_t *sym = agattr(g, AGEDGE, "spine", "0");
 	int ncnt = 0;
 	int ecnt = 0;
 	for (n = agfstnode(sg_union); n; n = agnxtnode(sg_union, n)) {
@@ -287,7 +527,8 @@ void genSpine(Agraph_t * g, float sparse_ratio, int verbose)
 			agxset(e, sym, "1");
 		}
 	}
-	fprintf(stderr, "ncnt %d ecnt %d\n", ncnt, ecnt);
+	if (verbose)
+		fprintf(stderr, "final ncnt %d ecnt %d\n", ncnt, ecnt);
 }
 
 #ifdef MAIN
@@ -310,6 +551,24 @@ static FILE *openFile(char *cmd, char *name, char *mode)
 	return fp;
 }
 
+static int setInt(char *s, int *v)
+{
+	char *endp;
+	long int l = strtol(s, char &endp, 10);
+
+	if (s == endp) {
+		fprintf(stderr, "Option value \"%s\" must be an integer\n", s);
+		return 1;
+	}
+	if (l < 0) {
+		fprintf(stderr, "Option value \"%s\" must be non-negative.\n", s);
+		return 1;
+	}
+	*v = (int)l;
+	return 0;
+
+}
+
 static int setFloat(char *s, float *v)
 {
 	char *endp;
@@ -330,8 +589,8 @@ static int setFloat(char *s, float *v)
 
 static char *Usage = "Usage: %s [-?] [options]\n\
  -r<n>         : sparsification ratio [0,1] (0.5) \n\
- -o<outfile>   : put output in <outfile> (stdout)\n\
- -v            : verbose mode \n\
+ -o<outfile>   : put output in <outfile> (stderr)\n\
+ -v[<val>]     : verbose mode \n\
  -?            : print usage\n";
 
 static void usage(char *cmd, int v)
@@ -351,13 +610,20 @@ static void doOpts(int argc, char *argv[], opts_t * op)
 	op->sparse_ratio = 0.5;
 
 	opterr = 0;
-	while ((c = getopt(argc, argv, "o:r:v")) != -1) {
+	while ((c = getopt(argc, argv, "o:r:v::")) != -1) {
 		switch (c) {
 		case 'o':
 			op->outfp = openFile(cmd, optarg, "w");
 			break;
 		case 'v':
-			op->verbose = 1;
+			if (optarg)
+				if (setInt(optarg, &(op->verbose))) {
+					fprintf(stderr, "%s: bad value for flag -%c - ignored\n",
+							cmd, c);
+				}
+			}
+			else
+				op->verbose = 1;
 			break;
 		case 'r':
 			if (setFloat(optarg, &(op->sparse_ratio))) {
@@ -372,6 +638,8 @@ static void doOpts(int argc, char *argv[], opts_t * op)
 				fprintf(stderr, "%s: option -%c unrecognized - ignored\n",
 						cmd, optopt);
 			break;
+		default:
+			break;
 		}
 	}
 	argv += optind;
@@ -380,7 +648,7 @@ static void doOpts(int argc, char *argv[], opts_t * op)
 	if (argc)
 		op->Files = argv;
 	if (op->outfp == NULL)
-		op->outfp = stdout;
+		op->outfp = stderr;
 	if (op->verbose)
 		fprintf(stderr, "sparse ratio = %f\n", op->sparse_ratio);
 }
@@ -399,8 +667,8 @@ int main(int argc, char *argv[])
 	doOpts(argc, argv, &opts);
 	newIngraph(&ig, opts.Files, gread);
 	while ((g = nextGraph(&ig)) != 0) {
-		genSpine(g, ops.sparse_ratio, ops.verbose);
-		agwrite(g, ops.outfp);
+		genSpine(g, opts.sparse_ratio, opts.verbose);
+		agwrite(g, opts.outfp);
 		agclose(g);
 	}
 
