@@ -39,7 +39,7 @@ Prefix: /usr
 BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires: zlib-devel expat-devel ann-devel
-BuildRequires: /bin/ksh bison m4 flex swig tk tcl >= 8.3 freetype-devel >= 2
+BuildRequires: ksh bison m4 flex swig tk tcl >= 8.3 freetype-devel >= 2
 
 #-- All platforms
 %define __X 1
