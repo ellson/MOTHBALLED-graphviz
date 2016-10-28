@@ -7,9 +7,6 @@ environment:
   CHERE_INVOKING: 1
   matrix:
     - compiler: msbuild
-      BISON: C:\projects\graphviz\windows\dependencies\graphviz-build-utilities\bison.exe
-      FLEX: C:\projects\graphviz\windows\dependencies\graphviz-build-utilities\flex.exe
-      SED: C:\projects\graphviz\windows\dependencies\graphviz-build-utilities\sed.exe
     #- compiler: msys2
     #- compiler: cygwin
 
@@ -62,6 +59,7 @@ build_script:
       cd $env:APPVEYOR_BUILD_FOLDER 
 
       if($env:compiler -eq "msbuild") {
+        $env:Path += ";" + $env:APPVEYOR_BUILD_FOLDER + "\windows\dependencies\graphviz-build-utilities";
         msbuild /p:Configuration=$env:configuration;
         if($env:configuration -eq "Release") {
           rm Release\Graphviz\bin\*.lastcodeanalysissucceeded;
