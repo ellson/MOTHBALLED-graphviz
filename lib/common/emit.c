@@ -1984,8 +1984,14 @@ static void emit_node(GVJ_t * job, node_t * n)
 
 	emit_begin_node(job, n);
 	ND_shape(n)->fns->codefn(job, n);
-	if (ND_xlabel(n) && ND_xlabel(n)->set)
+	if (ND_xlabel(n) && ND_xlabel(n)->set) {
+	    obj_state_t *obj = push_obj_state(job);
+	    obj->type = NODE_OBJTYPE;
+	    obj->u.n = n;
+	    obj->emit_state = EMIT_NDRAW;
 	    emit_label(job, EMIT_NLABEL, ND_xlabel(n));
+	    pop_obj_state(job);
+	}
 	emit_end_node(job);
     }
 }
