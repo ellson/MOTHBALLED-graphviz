@@ -2,7 +2,6 @@
 #ifndef _def_time_Sfio_f
 #define _def_time_Sfio_f	1
 #define _sys_types	1	/* #include <sys/types.h> ok */
-#define _sys_time	1	/* #include <sys/time.h> ok */
 #define _hdr_math	1	/* #include <math.h> ok */
 //#define _hdr_unistd	1	/* #include <unistd.h> ok */
 #define _lib_atexit	1	/* atexit() in default lib(s) */

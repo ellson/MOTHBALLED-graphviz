@@ -15,14 +15,6 @@
 #  define hdr_stddef 1
 #endif
 
-#ifdef HAVE_SYS_TIME_H
-#  define _sys_time 1
-#endif
-
-#ifdef HAVE_SYS_TIMES_H
-#  define _sys_times 1
-#endif
-
 #ifdef HAVE_SYS_SOCKET_H
 #  define _sys_socket 1
 #endif

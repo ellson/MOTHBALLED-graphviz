@@ -21,12 +21,6 @@
 #undef _sys_types
 #define _sys_types	1	/* #include <sys/types.h> ok */
 
-#undef _sys_time
-#define _sys_time	0	/* #include <sys/time.h> ok */
-
-#undef _sys_times
-#define _sys_times	0	/* #include <sys/times.h> ok */
-
 #undef _typ_ssize_t
 #define _typ_ssize_t	0	/* ssize_t is a type */
 
