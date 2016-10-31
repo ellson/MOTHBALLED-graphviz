@@ -1,6 +1,5 @@
 iff	AST_COMMON
 hdr	pthread
-hdr	stddef
 hdr	types
 sys	types
 typ	size_t,ssize_t
@@ -105,9 +104,6 @@ cat{
 
 cat{
 	#ifndef _AST_STD_H
-	#	if _hdr_stddef
-	#	include	<stddef.h>
-	#	endif
 	#	if _sys_types
 	#	include	<sys/types.h>
 	#	endif
