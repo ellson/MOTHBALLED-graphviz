@@ -17,7 +17,7 @@
 **	Any required functions for process exiting.
 **	Written by Kiem-Phong Vo, kpv@research.att.com (05/25/93).
 */
-#if defined(_PACKAGE_ast) || _lib_atexit
+#if  _lib_atexit
 int Vm_atexit_already_defined;
 #else
 
@@ -64,4 +64,4 @@ void exit(int type)
 
 #endif				/* _lib_onexit || _lib_on_exit */
 
-#endif				/*!PACKAGE_ast */
+#endif				/*_lib_atexit */

@@ -75,9 +75,6 @@ int Iparsegraphlabel (int, Tonm_t *);
 int Ireadgraph (int, Tonm_t *);
 int Iwritegraph (int, Tonm_t *);
 #endif
-#ifdef _PACKAGE_ast
-int Imatch (int, Tonm_t *);
-#endif
 #ifdef FEATURE_CS
 int C2Lreadcsmessage (int, Tonm_t *);
 #endif
@@ -150,9 +147,6 @@ Ifunc_t Ifuncs[] = {
     { "parsegraphlabel", Iparsegraphlabel, 2, 2 },
     { "readgraph",       Ireadgraph,       1, 2 },
     { "writegraph",      Iwritegraph,      3, 3 },
-#endif
-#ifdef _PACKAGE_ast
-    { "match", Imatch, 2, 2 },
 #endif
 #ifdef FEATURE_CS
     { "readcsmessage", C2Lreadcsmessage, 1, 1 },
@@ -823,17 +817,6 @@ int Iwritegraph (int argc, lvar_t *argv) {
     if ((ioi = Tgetnumber (argv[0].o)) < 0 || ioi >= ion)
         return L_FAILURE;
     D2Lwritegraph (ioi, argv[1].o, Tgetinteger (argv[2].o));
-    return L_SUCCESS;
-}
-#endif
-
-#ifdef _PACKAGE_ast
-/* ast related functions */
-
-int Imatch (int argc, lvar_t *argv) {
-    if (!T_ISSTRING (argv[0].o) || !T_ISSTRING (argv[1].o))
-        return L_FAILURE;
-    rtno = Tinteger (strmatch (Tgetstring (argv[0].o), Tgetstring (argv[1].o)));
     return L_SUCCESS;
 }
 #endif

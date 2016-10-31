@@ -31,29 +31,8 @@ extern "C" {
 **	Written by Kiem-Phong Vo, kpv@research.att.com, 01/16/94.
 */
 
-
-#if defined(_PACKAGE_ast)
-
-#if defined(__STDPP__directive) && defined(__STDPP__hide)
-    __STDPP__directive pragma pp:hide getpagesize
-#else
-#define getpagesize	______getpagesize
-#endif
-
-#include	<ast.h>
-
-#if defined(__STDPP__directive) && defined(__STDPP__hide)
-    __STDPP__directive pragma pp:nohide getpagesize
-#else
-#undef	getpagesize
-#endif
-
-#else
-
 #include	<ast_common.h>
 #include	"FEATURE/vmalloc"
-
-#endif /*defined(_PACKAGE_ast)*/
 
 #undef free
 #undef malloc
@@ -432,9 +411,6 @@ extern "C" {
 
      extern Vmextern_t _Vmextern;
 
-
-#if !defined(_PACKAGE_ast)
-
     extern size_t getpagesize(void);
 
 #ifndef WIN32
@@ -462,8 +438,6 @@ extern "C" {
     extern void _exit(int);
 #endif
     extern void _cleanup(void);
-
-#endif				/*!PACKAGE_ast */
 
 /* for vmdcsbrk.c */
 #if !_typ_ssize_t

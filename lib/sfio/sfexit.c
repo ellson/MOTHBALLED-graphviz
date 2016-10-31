@@ -18,10 +18,6 @@
 **	Written by Kiem-Phong Vo
 */
 
-#if PACKAGE_ast
-int _AST_already_has_them;
-#else
-
 #if !_lib_atexit
 #if _lib_onexit
 
@@ -158,5 +154,4 @@ waitpid(int pid, int *status, int options)
 
 #endif /*_lib_waitpid*/
 
-#endif				/*!PACKAGE_ast */
 #endif

@@ -25,9 +25,6 @@ extern "C" {
 **	Written by Kiem-Phong Vo
 */
 
-#if defined(_PACKAGE_ast)
-#include	<ast_std.h>
-#else
 #include	<ast_common.h>
 
 #include <stdarg.h>
@@ -92,8 +89,6 @@ extern "C" {
 #define FILE	struct _sfio_s	/* because certain stdarg.h needs FILE  */
 #endif
 #endif
-
-#endif				/* defined(_PACKAGE_ast) */
 
 /* Sfoff_t should be large enough for largest file address */
 

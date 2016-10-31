@@ -30,12 +30,6 @@ extern "C" {
 #include	<ast_common.h>
 #include	<errno.h>
 
-/* ast doesn't do threads yet */
-#if defined(_PACKAGE_ast) && !defined(vt_threaded)
-#define vt_threaded     0
-#endif
-
-
 #if !defined(vt_threaded) || (defined(vt_threaded) && vt_threaded == 1)
 #define _may_use_threads	1
 #else

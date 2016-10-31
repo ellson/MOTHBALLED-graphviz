@@ -122,7 +122,6 @@ static int _rmtmp(Sfio_t * f, char *file)
     return 0;
 }
 
-#if !defined(_PACKAGE_ast)
 #include	<time.h>
 #define		TMPDFLT		"/tmp"
 static char **Tmppath, **Tmpcur;
@@ -167,15 +166,12 @@ char **_sfgetpath(char *path)
     return dirs;
 }
 
-#endif				/*!defined(_PACKAGE_ast) */
-
 static int _tmpfd(Sfio_t * f)
 {
     reg char *file;
     reg int fd;
     int t;
 
-#if !defined(_PACKAGE_ast)
     /* set up path of dirs to create temp files */
     if (!Tmppath && !(Tmppath = _sfgetpath("TMPPATH"))) {
 	if (!(Tmppath = (char **) malloc(2 * sizeof(char *))))
@@ -196,12 +192,10 @@ static int _tmpfd(Sfio_t * f)
 	Tmpcur += 1;
     if (!Tmpcur || !Tmpcur[0])
 	Tmpcur = Tmppath;
-#endif				/*!defined(_PACKAGE_ast) */
 
     file = NIL(char *);
     fd = -1;
     for (t = 0; t < 10; ++t) {	/* compute a random name */
-#if !defined(_PACKAGE_ast)
 	static ulong Key, A;
 	if (A == 0 || t > 0) {	/* get a quasi-random coefficient */
 	    reg int r;
@@ -216,9 +210,6 @@ static int _tmpfd(Sfio_t * f)
 	Key = A * Key + 987654321;
 	file = sfprints("%s/sf%3.3.32lu.%3.3.32lu",
 			Tmpcur[0], (Key >> 15) & 0x7fff, Key & 0x7fff);
-#else
-	file = pathtmp(file, NiL, "sf", NiL);
-#endif				/*!defined(_PACKAGE_ast) */
 
 	if (!file)
 	    return -1;
@@ -245,9 +236,6 @@ static int _tmpfd(Sfio_t * f)
 
     if (fd >= 0)
 	_rmtmp(f, file);
-#if defined(_PACKAGE_ast)
-    free(file);
-#endif /*defined(_PACKAGE_ast)*/
 
     return fd;
 }
