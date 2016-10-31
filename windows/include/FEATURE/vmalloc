@@ -14,9 +14,6 @@
 #undef _sys_stat
 #define _sys_stat	1	/* #include <sys/stat.h> ok */
 
-#undef _hdr_time
-#define _hdr_time	1	/* #include <time.h> ok */
-
 #undef _sys_time
 #define _sys_time	1	/* #include <sys/time.h> ok */
 

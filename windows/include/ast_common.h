@@ -21,9 +21,6 @@
 #undef _sys_types
 #define _sys_types	1	/* #include <sys/types.h> ok */
 
-#undef _hdr_time
-#define _hdr_time	1	/* #include <time.h> ok */
-
 #undef _sys_time
 #define _sys_time	0	/* #include <sys/time.h> ok */
 
