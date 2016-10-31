@@ -11,10 +11,6 @@
 #  define _sys_types 1
 #endif
 
-#ifdef HAVE_PTHREAD_H
-#  define _hdr_pthread 1
-#endif
-
 #ifdef HAVE_STDDEF_H
 #  define hdr_stddef 1
 #endif

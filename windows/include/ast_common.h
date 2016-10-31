@@ -15,9 +15,6 @@
 #ifndef _AST_COMMON_H
 #define _AST_COMMON_H	1
 
-#undef _hdr_pthread
-#define _hdr_pthread	1	/* #include <pthread.h> ok */
-
 #undef _hdr_stddef
 #define _hdr_stddef	1	/* #include <stddef.h> ok */
 
