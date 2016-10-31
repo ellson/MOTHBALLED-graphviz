@@ -33,9 +33,6 @@
 #undef _typ_long_double
 #define _typ_long_double	1	/* long double is a type */
 
-#undef _proto_stdc
-#define _proto_stdc	1	/* Standard-C prototypes ok */
-
 /* extern symbols must be protected against C++ name mangling */
 #ifndef _BEGIN_EXTERNS_
 #if defined(__cplusplus) || defined(c_plusplus)

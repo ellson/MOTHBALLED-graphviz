@@ -42,7 +42,6 @@
 /* FIXME - need proper config test for these */
 #define _typ_ssize_t    1	/* ssize_t is a type */
 #define _typ_long_double        1	/* long double is a type */
-#define _proto_stdc 1		/* Standard-C prototypes ok  */
 /* */
 
 /* extern symbols must be protected against C++ name mangling */
