@@ -97,7 +97,6 @@
     <ClCompile Include="vmdcheap.c" />
     <ClCompile Include="vmdebug.c" />
     <ClCompile Include="vmdisc.c" />
-    <ClCompile Include="vmexit.c" />
     <ClCompile Include="vmlast.c" />
     <ClCompile Include="vmopen.c" />
     <ClCompile Include="vmpool.c" />

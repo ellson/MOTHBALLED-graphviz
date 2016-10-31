@@ -11,8 +11,6 @@ lib qfrexp
 lib qldexp
 
 hdr unistd
-lib atexit
-lib onexit
 
 lib ftruncate
 

@@ -41,9 +41,6 @@
     <ClCompile Include="vmdisc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vmexit.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="vmlast.c">
       <Filter>Source Files</Filter>
     </ClCompile>

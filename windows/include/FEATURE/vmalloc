@@ -5,9 +5,6 @@
 #undef _sys_types
 #define _sys_types	1	/* #include <sys/types.h> ok */
 
-#undef _lib_atexit
-#define _lib_atexit	1	/* atexit() in default lib(s) */
-
 #undef _lib_getpagesize
 #define _lib_getpagesize	0	/* getpagesize() in default lib(s) */
 
