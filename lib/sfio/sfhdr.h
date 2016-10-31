@@ -68,8 +68,6 @@ extern "C" {
    are not needed and they may get in the way so we remove them here.
 */
 #if defined(_SFBINARY_H)
-#undef  _hdr_time
-#undef  _sys_time
 #undef  _sys_stat
 #undef  _hdr_stat
 #undef  _hdr_filio
@@ -91,13 +89,6 @@ extern "C" {
 
 #if _hdr_stddef
 #include	<stddef.h>
-#endif
-
-#if _hdr_time
-#include	<time.h>
-#endif
-#if _sys_time
-#include	<sys/time.h>
 #endif
 
 #if _sys_stat
