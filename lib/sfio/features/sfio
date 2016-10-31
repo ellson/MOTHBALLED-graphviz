@@ -271,8 +271,6 @@ lib vfork
 # file control checks
 ##################################################
 
-hdr filio
-sys filio
 sys ioctl
 lib remove
 lib unlink

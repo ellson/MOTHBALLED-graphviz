@@ -52,8 +52,6 @@ extern "C" {
 #if defined(_SFBINARY_H)
 #undef  _sys_stat
 #undef  _hdr_stat
-#undef  _hdr_filio
-#undef  _sys_filio
 #undef  _lib_poll
 #undef  _stream_peek
 #undef  _socket_peek
@@ -86,18 +84,6 @@ extern "C" {
 #endif
 
 #include	<fcntl.h>
-
-#ifndef F_SETFD
-#ifndef FIOCLEX
-#if _hdr_filio
-#include	<filio.h>
-#else
-#if _sys_filio
-#include	<sys/filio.h>
-#endif /*_sys_filio*/
-#endif /*_hdr_filio*/
-#endif /*_FIOCLEX*/
-#endif				/*F_SETFD */
 
 #if _hdr_unistd
 #include	<unistd.h>
