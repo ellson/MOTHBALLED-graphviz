@@ -35,14 +35,6 @@
 #endif
 #endif /*_BEGIN_EXTERNS_*/
 
-/* __INLINE__ is the inline keyword */
-#if !defined(__INLINE__) && defined(__cplusplus)
-#define __INLINE__	inline
-#endif
-#if !defined(__INLINE__) && defined(_WIN32) && !defined(__GNUC__)
-#define __INLINE__	__inline
-#endif
-
 /* dynamic linked library external scope handling */
 #undef extern
 #if defined(_dll_import) && !defined(__EXPORT__) && defined(_DLL_BLD)
