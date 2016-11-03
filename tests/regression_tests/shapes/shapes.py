@@ -71,7 +71,8 @@ shapes = [
 ]
 
 output_types = [
-    'gv'
+    'gv',
+    'svg'
 ]
 
 def generate_shape_graph(shape, output_type):
