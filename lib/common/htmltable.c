@@ -545,7 +545,7 @@ static void emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
     pts.UR.y += pos.y;
 
     if (doAnchor && !(job->flags & EMIT_CLUSTERS_LAST))
-	anchor = initAnchor(job, env, &tbl->data, pts, &saved, 0);
+	anchor = initAnchor(job, env, &tbl->data, pts, &saved, 1);
     else
 	anchor = 0;
 
@@ -582,26 +582,13 @@ static void emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
 		emit_html_rules(job, cp, env, tbl->data.pencolor, *cells);
 	}
 
-	if (tbl->data.border) {
-	    if (anchor) {
-		agxbuf xb;
-    		obj_state_t *obj = job->obj;
-		unsigned char buf[SMALLBUF];
-		agxbinit(&xb, SMALLBUF, buf);
-		agxbput(&xb, obj->id);
-		agxbputc(&xb, 'b');
-		char* id = agxbuse(&xb);
-		gvrender_begin_anchor(job,
-			      obj->url, obj->tooltip, obj->target,
-			      id);
-		agxbfree(&xb);
-	    }
+	if (tbl->data.border)
 	    doBorder(job, &tbl->data, pts);
-	}
+
     }
 
     if (anchor)
-	endAnchor(job, &saved, 0);
+	endAnchor(job, &saved, 1);
 
     if (doAnchor && (job->flags & EMIT_CLUSTERS_LAST)) {
 	if (initAnchor(job, env, &tbl->data, pts, &saved, 0))
@@ -658,7 +645,7 @@ static void emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
     pts.UR.y += pos.y;
 
     if (doAnchor && !(job->flags & EMIT_CLUSTERS_LAST))
-	inAnchor = initAnchor(job, env, &cp->data, pts, &saved, 0);
+	inAnchor = initAnchor(job, env, &cp->data, pts, &saved, 1);
     else
 	inAnchor = 0;
 
@@ -688,7 +675,7 @@ static void emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
     }
 
     if (inAnchor)
-	endAnchor(job, &saved, 0);
+	endAnchor(job, &saved, 1);
 
     if (doAnchor && (job->flags & EMIT_CLUSTERS_LAST)) {
 	if (initAnchor(job, env, &cp->data, pts, &saved, 0))
