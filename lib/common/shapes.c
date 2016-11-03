@@ -2888,7 +2888,18 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	for (i = 0; i < sides; i++) {
 	    P = vertices[i + j * sides];
 	    AF[i].x = P.x * xsize + ND_coord(n).x;
-	    AF[i].y = P.y * ysize + ND_coord(n).y;
+        AF[i].y = P.y * ysize + ND_coord(n).y;
+
+        // Set values that are close to zero, to absolute zero.
+        // This prevents coördinates like 7.10543e-15
+        if (AF[i].x > -0.00001 && AF[i].x < 0.00001)
+        {
+            AF[i].x = 0;
+        }
+        if (AF[i].y > -0.00001 && AF[i].y < 0.00001)
+        {
+            AF[i].y = 0;
+        }
 	}
 	if (sides <= 2) {
 	    if ((style & WEDGED) && (j == 0) && multicolor(fillcolor)) {
