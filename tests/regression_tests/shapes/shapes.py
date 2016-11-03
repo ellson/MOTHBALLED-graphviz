@@ -72,7 +72,8 @@ shapes = [
 
 output_types = [
     'gv',
-    'svg'
+    'svg',
+    'xdot'
 ]
 
 def generate_shape_graph(shape, output_type):
