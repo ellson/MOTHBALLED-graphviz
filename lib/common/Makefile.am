@@ -80,4 +80,4 @@ EXTRA_DIST = README.imap chars.tcl ps_font_equiv.h \
 	strcasecmp.c strncasecmp.c htmlparse.c htmlparse.h \
 	y.tab.c y.tab.h y.output entities.html entities.tcl \
 	brewer_colors brewer_lib svgcolor_names svgcolor_lib \
-	color_names color_lib colortbl.h mksvgfonts.pl types.h.in
+	color_names color_lib colortbl.h mksvgfonts.pl

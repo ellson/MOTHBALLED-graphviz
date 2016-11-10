@@ -73,7 +73,6 @@ doc/schema/Makefile
 cmd/gvedit/gvedit.pro
 debian/changelog
 lib/common/stamp-h2
-lib/common/types.h
 macosx/Info.plist
 macosx/build/graphviz.pmdoc/01local.xml
 macosx/build/graphviz.pmdoc/02graphviz.xml
