@@ -18,7 +18,7 @@
 #include "logic.h"
 #include "gvc.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #include "libltdl/lt_system.h"
 #endif
 
@@ -260,7 +260,7 @@ Agraphinfo_t* GD_info(graph_t * g) { return ((Agraphinfo_t*)AGDATA(g));}
 Agnodeinfo_t* ND_info(node_t * n) { return ((Agnodeinfo_t*)AGDATA(n));}
 #endif
 
-#if !defined(MSWIN32) && !defined(WIN32)
+#if !defined(MSWIN32) && !defined(_WIN32)
 #include	<pwd.h>
 
 #if 0
@@ -327,7 +327,7 @@ char *Fgets(FILE * fp)
  * N.B. safefile uses a fixed buffer, so functions using it should use the
  * value immediately or make a copy.
  */
-#ifdef WIN32
+#ifdef _WIN32
 #define PATHSEP ";"
 #else
 #define PATHSEP ":"
@@ -607,7 +607,7 @@ static int Tflag;
 void gvToggle(int s)
 {
     Tflag = !Tflag;
-#if !defined(MSWIN32) && !defined(WIN32)
+#if !defined(MSWIN32) && !defined(_WIN32)
     signal(SIGUSR1, gvToggle);
 #endif
 }
@@ -1951,7 +1951,7 @@ void gv_nodesize(node_t * n, boolean flip)
     }
 }
 
-#ifdef WIN32	
+#ifdef _WIN32	
 void fix_fc(void)
 {
     char buf[28192];

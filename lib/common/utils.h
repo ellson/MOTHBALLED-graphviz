@@ -20,7 +20,7 @@ extern "C" {
 
 
 /*visual studio*/
-#ifdef WIN32
+#ifdef _WIN32
 #ifndef GVC_EXPORTS
 #define extern __declspec(dllimport)
 #endif
@@ -120,7 +120,7 @@ Agnodeinfo_t* ninf(Agnode_t* n);
 Agraphinfo_t* ginf(Agraph_t* g);
 Agedgeinfo_t* einf(Agedge_t* e);
     /**/
-#ifdef WIN32	
+#ifdef _WIN32	
 	extern void fix_fc(void);
 #endif
 

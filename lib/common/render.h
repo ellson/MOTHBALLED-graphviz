@@ -22,7 +22,7 @@ extern "C" {
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
-#if !defined(WIN32) && !defined(DARWIN)
+#if !defined(_WIN32) && !defined(DARWIN)
 #define __USE_GNU
 #include <stdlib.h>
 #undef __USE_GNU
@@ -61,7 +61,7 @@ extern "C" {
     typedef void (*nodesizefn_t) (Agnode_t *, boolean);
 
 /*visual studio*/
-#ifdef WIN32
+#ifdef _WIN32
 #ifndef GVC_EXPORTS
 #define extern __declspec(dllimport)
 #endif

@@ -15,7 +15,7 @@
  *  Adapted from psgen.c.  See 1st_read.mp.
  */
 #include "render.h"
-#ifndef WIN32
+#ifndef _WIN32
 #include <unistd.h>
 #endif
 #include <sys/stat.h>
