@@ -772,7 +772,7 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int mode, int m
     vtx_data *graph;
     node_t** nodes;
     int ne = agnedges(g);	/* upper bound */
-    int *edges;
+    int *edges = NULL;
     float *ewgts = NULL;
     node_t *np;
     edge_t *ep;
@@ -914,10 +914,13 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int mode, int m
 
     *nedges = ne;
     if (nodedata)
-	*nodedata = nodes;
+        *nodedata = nodes;
     else
-	free (nodes);
+        free (nodes);
     freePM(ps);
+    free(edges);
+    free(edists);
+    free(ewgts);
     return graph;
 }
 
