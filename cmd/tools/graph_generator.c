@@ -393,7 +393,7 @@ void makeTetrix(int depth, edgefn ef)
     depth--;
     n = 4 + 2 * (((int) (pow(4.0, (double) depth) + 0.5) - 1));
 
-    nedges = (int) (pow(6.0, depth + 1.0) + 0.5);
+    nedges = 6 * (int) (pow(4.0, depth) + 0.5);
 
     graph = N_NEW(n + 1, vtx_data);
     edges = N_NEW(6 * n, int);

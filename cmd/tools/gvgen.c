@@ -34,7 +34,7 @@
 
 typedef enum { unknown, grid, circle, complete, completeb, 
     path, tree, torus, cylinder, mobius, randomg, randomt, ball,
-    sierpinski, tetrix, hypercube, star, wheel, trimesh
+    sierpinski, hypercube, star, wheel, trimesh
 } GraphType;
 
 typedef struct {
@@ -91,8 +91,8 @@ static char *Usage = "Usage: %s [-dv?] [options]\n\
  -r<x>,<n>     : random graph\n\
  -R<n>         : random rooted tree on <n> vertices\n\
  -s<x>         : star\n\
- -S<x>         : sierpinski\n\
- -X<x>         : tetrix (3d sierpinski)\n\
+ -S<x>         : 2D sierpinski\n\
+ -S<x>,<d>     : <d>D sierpinski (<d> = 2,3)\n\
  -t<x>         : binary tree \n\
  -t<x>,<n>     : n-ary tree \n\
  -T<x,y>       : torus \n\
@@ -375,14 +375,13 @@ static GraphType init(int argc, char *argv[], opts_t* opts)
 	    break;
 	case 'S':
 	    graphType = sierpinski;
-	    if (setOne(optarg, opts))
+	    if (setTwoOpt(optarg, opts, 2))
 		errexit(c);
+	    if (opts->graphSize2 > 3) {
+		fprintf(stderr, "%dD Sierpinski not implemented - use 2 or 3 ", opts->graphSize2);
+		errexit(c);
+	    }
 	    break;
-	case 'X':
-		graphType = tetrix;
-		if (setOne(optarg, opts))
-		errexit(c);
-		break;
 	case 's':
 	    graphType = star;
 	    if (setOne(optarg, opts))
@@ -513,10 +512,10 @@ int main(int argc, char *argv[])
 	makeMobius(opts.graphSize1, opts.graphSize2, ef);
 	break;
     case sierpinski:
-	makeSierpinski(opts.graphSize1, ef);
-	break;
-	case tetrix:
-	makeTetrix(opts.graphSize1, ef);
+	if (opts.graphSize2 == 2)
+	    makeSierpinski(opts.graphSize1, ef);
+	else
+	    makeTetrix(opts.graphSize1, ef);
 	break;
     case complete:
 	makeComplete(opts.graphSize1, ef);
