@@ -34,7 +34,7 @@
 
 typedef enum { unknown, grid, circle, complete, completeb, 
     path, tree, torus, cylinder, mobius, randomg, randomt, ball,
-    sierpinski, hypercube, star, wheel, trimesh
+    sierpinski, tetrix, hypercube, star, wheel, trimesh
 } GraphType;
 
 typedef struct {
@@ -92,6 +92,7 @@ static char *Usage = "Usage: %s [-dv?] [options]\n\
  -R<n>         : random rooted tree on <n> vertices\n\
  -s<x>         : star\n\
  -S<x>         : sierpinski\n\
+ -X<x>         : tetrix (3d sierpinski)\n\
  -t<x>         : binary tree \n\
  -t<x>,<n>     : n-ary tree \n\
  -T<x,y>       : torus \n\
@@ -286,7 +287,7 @@ static char* setFold(char *s, opts_t* opts)
     return next;
 }
 
-static char *optList = ":i:M:m:n:N:c:C:dg:G:h:k:b:B:o:p:r:R:s:S:t:T:vw:";
+static char *optList = ":i:M:m:n:N:c:C:dg:G:h:k:b:B:o:p:r:R:s:S:X:t:T:vw:";
 
 static GraphType init(int argc, char *argv[], opts_t* opts)
 {
@@ -377,6 +378,11 @@ static GraphType init(int argc, char *argv[], opts_t* opts)
 	    if (setOne(optarg, opts))
 		errexit(c);
 	    break;
+	case 'X':
+		graphType = tetrix;
+		if (setOne(optarg, opts))
+		errexit(c);
+		break;
 	case 's':
 	    graphType = star;
 	    if (setOne(optarg, opts))
@@ -508,6 +514,9 @@ int main(int argc, char *argv[])
 	break;
     case sierpinski:
 	makeSierpinski(opts.graphSize1, ef);
+	break;
+	case tetrix:
+	makeTetrix(opts.graphSize1, ef);
 	break;
     case complete:
 	makeComplete(opts.graphSize1, ef);
