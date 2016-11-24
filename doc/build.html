@@ -152,7 +152,7 @@ Run make and make install.
 	
 <h2>Build tools for win32</h2>
 <p>See separate
-<A HREF="http://www.graphviz.org/doc/winbuild.html">
+<A HREF="winbuild.html">
 build notes</A> for Microsoft Windows.
 <p>
 With some persistence you can likely get Graphviz to build on
@@ -356,10 +356,13 @@ To produce graphviz-(ver).tar.gz from Mercurial sources.
 	make dist
 -->
 To produce graphviz-(ver).tar.gz from GIT sources using cogito.
+<!--
 	cg clone http://www.graphviz.org/pub/scm/graphviz2/.git
-	cd graphviz2
+-->
+    cg clone https://github.com/ellson/graphviz.git
+	cd graphviz
 or to update from GIT
-	cd graphviz2
+	cd graphviz
 	cg update
 then
 	./autogen.sh
