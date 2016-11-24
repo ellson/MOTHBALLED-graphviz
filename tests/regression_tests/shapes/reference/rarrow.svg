@@ -12,7 +12,7 @@
 <!-- a -->
 <g id="node1" class="node">
 <title>a</title>
-<polygon fill="none" stroke="#000000" points="36,-30 0,-30 0,-6 36,-6 36,-0 54,-18 36,-36 36,-30"/>
+<polygon fill="none" stroke="#000000" points="36,-30 0,-30 0,-6 36,-6 36,0 54,-18 36,-36 36,-30"/>
 </g>
 </g>
 </svg>

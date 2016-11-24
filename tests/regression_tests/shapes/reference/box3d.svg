@@ -12,9 +12,9 @@
 <!-- a -->
 <g id="node1" class="node">
 <title>a</title>
-<polygon fill="none" stroke="#000000" points="54,-36 4,-36 0,-32 0,-0 50,-0 54,-4 54,-36"/>
+<polygon fill="none" stroke="#000000" points="54,-36 4,-36 0,-32 0,0 50,0 54,-4 54,-36"/>
 <polyline fill="none" stroke="#000000" points="50,-32 0,-32 "/>
-<polyline fill="none" stroke="#000000" points="50,-32 50,-0 "/>
+<polyline fill="none" stroke="#000000" points="50,-32 50,0 "/>
 <polyline fill="none" stroke="#000000" points="50,-32 54,-36 "/>
 </g>
 </g>
