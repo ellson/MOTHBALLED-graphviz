@@ -1,3 +1,18 @@
+November 26, 2016
+    - Release 2.40.0
+	- number rounding added to SVG renderer (same as PS and TK rounding) to
+	aid regression testing.
+	- additional regressson test framework, used in Travis CI builds. (Erwin
+	Janssen)
+	- Allow user to specify clustering algorithm in gvmap.
+	- Add Sierpinski graph generator to gvgen
+	- Extensive code cleanup (Erwin Janssen)
+	- Removal of libgd source - use vanilla libgd from separate install 
+	- Windows builds (Erwin Janssen)
+	- Appveyor CI for Mac builds (Erwin Janssen)
+	- Travis CI for Fedora/Centos builds (Erwin Janssen)
+	- Added JSON output format, -Tjson  (Emden Gansner)
+	- Resolves bugs: 2599, 
 June 18, 2016
 	- Experimenting with Travis CI
 February 13, 2016
