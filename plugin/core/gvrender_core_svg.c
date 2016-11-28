@@ -408,7 +408,7 @@ static void svg_textspan(GVJ_t * job, pointf p, textspan_t * span)
 	gvputs(job, " x=\"");
         gvprintdouble(job, p.x);
         gvputs(job, "\" y=\"");
-        gvprintdouble(job, p.y);
+        gvprintdouble(job, -p.y);
         gvputs(job, "\"");
     }
     pA = span->font->postscript_alias;
