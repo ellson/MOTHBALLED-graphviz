@@ -1,4 +1,4 @@
-November 26, 2016
+November 29, 2016
     - Release 2.40.0
 	- number rounding added to SVG renderer (same as PS and TK rounding) to
 	aid regression testing.
@@ -12,14 +12,13 @@ November 26, 2016
 	- Appveyor CI for Mac builds (Erwin Janssen)
 	- Travis CI for Fedora/Centos builds (Erwin Janssen)
 	- Added JSON output format, -Tjson  (Emden Gansner)
+	- New curved arrowhead, cylinder node shape.
 	- Resolves bugs: 2599, 
 June 18, 2016
 	- Experimenting with Travis CI
 February 13, 2016
 	- Add cylinder shape for databases.
 	- Free installed plugins
-	- Update makefile for dot so that the using libpanco_C in the static build include PANGOFT2
-      as well as PANGOCAIRO_LIBS
 	- Update makefile for dot so that the using libpanco_C in the static build include PANGOFT2
       as well as PANGOCAIRO_LIBS (needed for some versions of Ubuntu)
 February 1, 2016
