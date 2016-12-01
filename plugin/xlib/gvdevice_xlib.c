@@ -573,8 +573,10 @@ static void xlib_finalize(GVJ_t *firstjob)
 	if (watching_stdin_p) {
 	    if (FD_ISSET(stdin_fd, &rfds)) {
                 ret = handle_stdin_events(firstjob, stdin_fd);
-	        if (ret < 0)
+	        if (ret < 0) {
 	            watching_stdin_p = FALSE;
+                    FD_CLR(stdin_fd, &rfds);
+                }
 	        events += ret;
 	    }
 	    if (watching_stdin_p) 
