@@ -1,12 +1,12 @@
 # $Id$ $Revision$
-# @configure_input@
+# graphviz.spec.  Generated from graphviz.spec.in by configure.
 
 # Note: pre gd-2.0.34 graphviz uses its own gd tree with gif support and other fixes
 
 #-- Global graphviz rpm and src.rpm tags-------------------------------------
 Name:    graphviz
 Summary: Graph Visualization Tools
-Version: @VERSION@
+Version: 2.39.20161129.2123
 
 %define truerelease 1
 %{?distroagnostic: %define release %{truerelease}}
@@ -16,7 +16,7 @@ Release: %{?release}
 Group:   Applications/Multimedia
 License: EPL
 URL:     http://www.graphviz.org/
-Source0: http://www.graphviz.org/pub/@GRAPHVIZ_SOURCES@/graphviz-@VERSION@.tar.gz
+Source0: http://www.graphviz.org/pub/graphviz/development/SOURCES/graphviz-2.39.20161129.2123.tar.gz
 
 # graphviz is relocatable - Caution: this feature is used in AT&T,
 #   but probably will not be supported in Redhat/Fedora/Centos distros
