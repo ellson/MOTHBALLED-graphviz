@@ -1087,22 +1087,30 @@ else
   if test "x$use_swig" != "xYes"; then
     use_php="No (swig not available)"
   else
-    if test `$SWIG -php5 2>&1 | $EGREP -c 'Unable'` -eq 1; then
-      SWIG_PHP_OPT='-php'
+    if test `$SWIG -php7 2>&1 | $EGREP -c 'Unable'` -eq 1; then
+      if test `$SWIG -php5 2>&1 | $EGREP -c 'Unable'` -eq 1; then
+        SWIG_PHP_OPT='-php'
+      else
+        SWIG_PHP_OPT='-php5'
+      fi
     else
-      SWIG_PHP_OPT='-php5'
+      SWIG_PHP_OPT='-php7'
     fi
     if test `$SWIG -help 2>&1 | $EGREP -c '\-php5* *- Generate'` = 0 ; then
       use_php="No (swig does not support -php or -php5 option)"
     else
-      AC_CHECK_PROGS(PHP,php5 php)
+      AC_CHECK_PROGS(PHP,php7,php,php5)
       if test "x$PHP" = "x"; then
         use_php="No (php not available)"
       else
-        if test -d /usr/include/php5; then
-          PHP_INCLUDES="-I/usr/include/php5 -I/usr/include/php5/main -I/usr/include/php5/Zend -I/usr/include/php5/TSRM"
+        if test -d /usr/include/php7; then
+          PHP_INCLUDES="-I/usr/include/php7 -I/usr/include/php7/main -I/usr/include/php7/Zend -I/usr/include/php7/TSRM"
         else
-          PHP_INCLUDES="-I/usr/include/php -I/usr/include/php/main -I/usr/include/php/TSRM -I/usr/include/php/Zend -I/usr/include/php/ext -I/usr/include/php/ext/date/lib"
+          if test -d /usr/include/php5; then
+            PHP_INCLUDES="-I/usr/include/php5 -I/usr/include/php5/main -I/usr/include/php5/Zend -I/usr/include/php5/TSRM"
+          else
+            PHP_INCLUDES="-I/usr/include/php -I/usr/include/php/main -I/usr/include/php/TSRM -I/usr/include/php/Zend -I/usr/include/php/ext -I/usr/include/php/ext/date/lib"
+          fi
         fi
         PHP_INSTALL_DIR="/usr/lib${LIBPOSTFIX}/php/modules"
         PHP_INSTALL_DATADIR="/usr/share/php"
