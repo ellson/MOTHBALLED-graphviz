@@ -576,8 +576,7 @@ static void gvevent_read (GVJ_t * job, const char *filename, const char *layout)
 
     gvc = job->gvc;
     if (!filename) {
-	g = agopen("G", Agdirected, NIL(Agdisc_t *));
-	job->output_filename = "new.gv";
+	g = agread(stdin,NIL(Agdisc_t *));  // continue processing stdin
     }
     else {
 	f = fopen(filename, "r");
@@ -586,6 +585,7 @@ static void gvevent_read (GVJ_t * job, const char *filename, const char *layout)
 	g = agread(f,NIL(Agdisc_t *));
 	fclose(f);
     }
+
     if (!g)
 	return;   /* FIXME - need some error handling */
 
