@@ -2160,30 +2160,7 @@ fi
 AM_CONDITIONAL(WITH_VISIO, [test "x$use_visio" = "xYes"])
 
 dnl -----------------------------------
-dnl INCLUDES and LIBS for CAIRO
-                                                                                
-AC_ARG_WITH(cairo,
-  [AS_HELP_STRING([--with-cairo=yes],[cairo library])],
-  [], [with_cairo=yes])
-
-if test "x$with_cairo" != "xyes"; then
-  use_cairo="No (disabled)"
-else
-  # require at least the version available on centos5 (fc6 has 1.14.10)
-  PKG_CHECK_MODULES(CAIRO, [cairo >= 1.14.9],[
-    use_cairo="Yes"
-    AC_DEFINE_UNQUOTED(HAVE_CAIRO,1,
-      [Define if you have the cairo library])
-    AC_SUBST([CAIRO_CFLAGS])
-    AC_SUBST([CAIRO_LIBS])
-  ],[
-    use_cairo="No (cairo library not available)"
-  ])
-fi
-AM_CONDITIONAL(WITH_CAIRO, [test "x$use_cairo" = "xYes"])
-
-dnl -----------------------------------
-dnl INCLUDES and LIBS for PANGO
+dnl INCLUDES and LIBS for PANGOCAIRO
                                                                                 
 AC_ARG_WITH(pangocairo,
   [AS_HELP_STRING([--with-pangocairo=yes],[pangocairo library])],
