@@ -2177,20 +2177,16 @@ AC_ARG_WITH(pangocairo,
 if test "x$with_pangocairo" != "xyes"; then
   use_pangocairo="No (disabled)"
 else
-  if test "x$use_cairo" != "xYes"; then
-    use_pangocairo="No (missing cairo support)"
-  else
-    # require at least the version available on centos5 (fc6 has 1.14.10)
-    PKG_CHECK_MODULES(PANGOCAIRO, [pangocairo >= 1.14.9],[
-      use_pangocairo="Yes"
-      AC_DEFINE_UNQUOTED(HAVE_PANGOCAIRO,1,
-        [Define if you have the pangocairo library])
-      AC_SUBST([PANGOCAIRO_CFLAGS])
-      AC_SUBST([PANGOCAIRO_LIBS])
-    ],[
-      use_pangocairo="No (pangocairo library not available)"
-    ])
-  fi
+  # require at least the version available on centos5 (fc6 has 1.14.10)
+  PKG_CHECK_MODULES(PANGOCAIRO, [pangocairo >= 1.14.9],[
+    use_pangocairo="Yes"
+    AC_DEFINE_UNQUOTED(HAVE_PANGOCAIRO,1,
+      [Define if you have the pangocairo library])
+    AC_SUBST([PANGOCAIRO_CFLAGS])
+    AC_SUBST([PANGOCAIRO_LIBS])
+  ],[
+    use_pangocairo="No (pangocairo library not available)"
+  ])
 fi
 AM_CONDITIONAL(WITH_PANGOCAIRO, [test "x$use_pangocairo" = "xYes"])
 
