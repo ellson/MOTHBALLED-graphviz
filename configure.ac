@@ -2160,7 +2160,30 @@ fi
 AM_CONDITIONAL(WITH_VISIO, [test "x$use_visio" = "xYes"])
 
 dnl -----------------------------------
-dnl INCLUDES and LIBS for PANGO, CAIRO et.al.
+dnl INCLUDES and LIBS for CAIRO
+                                                                                
+AC_ARG_WITH(cairo,
+  [AS_HELP_STRING([--with-cairo=yes],[cairo library])],
+  [], [with_cairo=yes])
+
+if test "x$with_cairo" != "xyes"; then
+  use_cairo="No (disabled)"
+else
+  # require at least the version available on centos5 (fc6 has 1.14.10)
+  PKG_CHECK_MODULES(CAIRO, [cairo >= 1.14.9],[
+    use_cairo="Yes"
+    AC_DEFINE_UNQUOTED(HAVE_CAIRO,1,
+      [Define if you have the cairo library])
+    AC_SUBST([CAIRO_CFLAGS])
+    AC_SUBST([CAIRO_LIBS])
+  ],[
+    use_cairo="No (cairo library not available)"
+  ])
+fi
+AM_CONDITIONAL(WITH_CAIRO, [test "x$use_cairo" = "xYes"])
+
+dnl -----------------------------------
+dnl INCLUDES and LIBS for PANGO
                                                                                 
 AC_ARG_WITH(pangocairo,
   [AS_HELP_STRING([--with-pangocairo=yes],[pangocairo library])],
@@ -2169,16 +2192,20 @@ AC_ARG_WITH(pangocairo,
 if test "x$with_pangocairo" != "xyes"; then
   use_pangocairo="No (disabled)"
 else
-  # require at least the version available on centos5 (fc6 has 1.14.10)
-  PKG_CHECK_MODULES(PANGOCAIRO, [pangocairo >= 1.14.9],[
-    use_pangocairo="Yes"
-    AC_DEFINE_UNQUOTED(HAVE_PANGOCAIRO,1,
-      [Define if you have the pangocairo library])
-    AC_SUBST([PANGOCAIRO_CFLAGS])
-    AC_SUBST([PANGOCAIRO_LIBS])
-  ],[
-    use_pangocairo="No (pangocairo library not available)"
-  ])
+  if test "x$use_cairo" != "xYes"; then
+    use_pangocairo="No (missing cairo support)"
+  else
+    # require at least the version available on centos5 (fc6 has 1.14.10)
+    PKG_CHECK_MODULES(PANGOCAIRO, [pangocairo >= 1.14.9],[
+      use_pangocairo="Yes"
+      AC_DEFINE_UNQUOTED(HAVE_PANGOCAIRO,1,
+        [Define if you have the pangocairo library])
+      AC_SUBST([PANGOCAIRO_CFLAGS])
+      AC_SUBST([PANGOCAIRO_LIBS])
+    ],[
+      use_pangocairo="No (pangocairo library not available)"
+    ])
+  fi
 fi
 AM_CONDITIONAL(WITH_PANGOCAIRO, [test "x$use_pangocairo" = "xYes"])
 
