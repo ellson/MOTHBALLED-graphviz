@@ -10,7 +10,7 @@ December 5, 2016
 	- Extensive code cleanup (Erwin Janssen)
 	- Removal of libgd source - use vanilla libgd from separate install 
 	- Windows builds (Erwin Janssen)
-	- Appveyor CI for Mac builds (Erwin Janssen)
+	- Appveyor CI for automated Windows build testing (Erwin Janssen)
 	- Travis CI for Fedora/Centos builds (Erwin Janssen)
 	- Added JSON output format, -Tjson  (Emden Gansner)
 	- New curved arrowhead, cylinder node shape.
