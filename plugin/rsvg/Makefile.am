@@ -8,7 +8,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/cgraph \
 	-I$(top_srcdir)/lib/cdt \
-	$(RSVG_CFLAGS) $(PANGOCAIRO_CFLAGS)
+	$(RSVG_CFLAGS) $(PANGOCAIRO_CFLAGS) $(XRENDER_CFLAGS)
 
 if WITH_RSVG
 noinst_LTLIBRARIES = libgvplugin_rsvg_C.la
@@ -26,7 +26,8 @@ libgvplugin_rsvg_C_la_SOURCES = \
 libgvplugin_rsvg_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_rsvg_la_SOURCES = $(libgvplugin_rsvg_C_la_SOURCES)
 libgvplugin_rsvg_la_LIBADD = \
-	$(top_builddir)/lib/gvc/libgvc.la @RSVG_LIBS@ @PANGOCAIRO_LIBS@
+	$(top_builddir)/lib/gvc/libgvc.la \
+	@RSVG_LIBS@ @PANGOCAIRO_LIBS@ @XRENDER_LIBS@
 
 if WITH_WIN32
 libgvplugin_rsvg_la_LDFLAGS += -no-undefined

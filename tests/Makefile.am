@@ -1,4 +1,4 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = lib 
+SUBDIRS = unit_tests regression_tests

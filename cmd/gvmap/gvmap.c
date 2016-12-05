@@ -103,6 +103,7 @@ typedef struct {
     real bbox_margin[2]; 
     int whatout;
     int useClusters;
+    int clusterMethod;
     int plotedges;
     int color_scheme;
     real line_width;
@@ -279,6 +280,7 @@ init(int argc, char **argv, params_t* pm)
   pm->shore_depth_tol = 0;
   pm->highlight_cluster = 0;
   pm->useClusters = 0;
+  pm->clusterMethod = CLUSTERING_MODULARITY;
   pm->plotedges = 0;
   pm->whatout = 0;
   pm->show_points = 0;
@@ -304,7 +306,7 @@ init(int argc, char **argv, params_t* pm)
   pm->bbox_margin[0] =  pm->bbox_margin[1] = 0;
 
   opterr = 0;
-  while ((c = getopt(argc, argv, ":evODko:m:s:r:p:c:C:l:b:g:t:a:h:z:d:")) != -1) {
+  while ((c = getopt(argc, argv, ":evODQko:m:s:r:p:c:C:l:b:g:t:a:h:z:d:")) != -1) {
     switch (c) {
     case 'm':
       if ((sscanf(optarg,"%lf",&s) > 0) && (s != 0)){
@@ -312,6 +314,9 @@ init(int argc, char **argv, params_t* pm)
       } else {
         usage(cmd, 1);
       }
+      break;
+    case 'Q':
+      pm->clusterMethod = CLUSTERING_MQ;
       break;
 #if 0
     case 'q':
@@ -703,7 +708,7 @@ static void mapFromGraph (Agraph_t* g, params_t* pm)
 
   initDotIO(g);
   graph = Import_coord_clusters_from_dot(g, pm->maxcluster, pm->dim, &n, &width, &x, &grouping, 
-					   &rgb_r,  &rgb_g,  &rgb_b,  &fsz, &labels, pm->color_scheme, CLUSTERING_MODULARITY, pm->useClusters);
+					   &rgb_r,  &rgb_g,  &rgb_b,  &fsz, &labels, pm->color_scheme, pm->clusterMethod, pm->useClusters);
   makeMap (graph, n, x, width, grouping, labels, fsz, rgb_r, rgb_g, rgb_b, pm, g);
 }
 

@@ -358,11 +358,11 @@ setFill(GVJ_t * job, char *color, int angle, int style, char *clrs[2])
 }
 
 /* initAnchor:
- * Save current map values
+ * Save current map values.
  * Initialize fields in job->obj pertaining to anchors.
  * In particular, this also sets the output rectangle.
- * If there is something to do, close current anchor if
- * necessary, start the anchor and returns 1.
+ * If there is something to do, 
+ * start the anchor and returns 1.
  * Otherwise, it returns 0.
  *
  * FIX: Should we provide a tooltip if none is set, as is done
@@ -370,7 +370,7 @@ setFill(GVJ_t * job, char *color, int angle, int style, char *clrs[2])
  */
 static int
 initAnchor(GVJ_t * job, htmlenv_t * env, htmldata_t * data, boxf b,
-	   htmlmap_data_t * save, int closePrev)
+  htmlmap_data_t * save)
 {
     obj_state_t *obj = job->obj;
     int changed;
@@ -406,8 +406,6 @@ initAnchor(GVJ_t * job, htmlenv_t * env, htmldata_t * data, boxf b,
 	agxbfree(&xb);
 
     if (changed) {
-	if (closePrev && (save->url || save->explicit_tooltip))
-	    gvrender_end_anchor(job);
 	if (obj->url || obj->explicit_tooltip) {
 	    emit_map_rect(job, b);
 	    gvrender_begin_anchor(job,
@@ -424,7 +422,7 @@ initAnchor(GVJ_t * job, htmlenv_t * env, htmldata_t * data, boxf b,
 /* endAnchor:
  * Pop context pushed by initAnchor.
  * This is done by ending current anchor, restoring old values and
- * freeing new, and reopening previous anchor if necessary.
+ * freeing new.
  *
  * NB: We don't save or restore geometric map info. This is because
  * this preservation of map context is only necessary for SVG-like
@@ -432,7 +430,7 @@ initAnchor(GVJ_t * job, htmlenv_t * env, htmldata_t * data, boxf b,
  * top-down. For ordinary map anchors, this is all done bottom-up, so
  * the geometric map info at the higher level hasn't been emitted yet.
  */
-static void endAnchor(GVJ_t * job, htmlmap_data_t * save, int openPrev)
+static void endAnchor(GVJ_t * job, htmlmap_data_t * save)
 {
     obj_state_t *obj = job->obj;
 
@@ -443,10 +441,6 @@ static void endAnchor(GVJ_t * job, htmlmap_data_t * save, int openPrev)
     RESET(target);
     RESET(id);
     obj->explicit_tooltip = save->explicit_tooltip;
-    if (openPrev && (obj->url || obj->explicit_tooltip))
-	gvrender_begin_anchor(job,
-			      obj->url, obj->tooltip, obj->target,
-			      obj->id);
 }
 
 /* forward declaration */
@@ -545,7 +539,7 @@ static void emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
     pts.UR.y += pos.y;
 
     if (doAnchor && !(job->flags & EMIT_CLUSTERS_LAST))
-	anchor = initAnchor(job, env, &tbl->data, pts, &saved, 1);
+	anchor = initAnchor(job, env, &tbl->data, pts, &saved);
     else
 	anchor = 0;
 
@@ -588,11 +582,11 @@ static void emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
     }
 
     if (anchor)
-	endAnchor(job, &saved, 1);
+	endAnchor(job, &saved);
 
     if (doAnchor && (job->flags & EMIT_CLUSTERS_LAST)) {
-	if (initAnchor(job, env, &tbl->data, pts, &saved, 0))
-	    endAnchor(job, &saved, 0);
+	if (initAnchor(job, env, &tbl->data, pts, &saved))
+	    endAnchor(job, &saved);
     }
 
     if (tbl->font)
@@ -645,7 +639,7 @@ static void emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
     pts.UR.y += pos.y;
 
     if (doAnchor && !(job->flags & EMIT_CLUSTERS_LAST))
-	inAnchor = initAnchor(job, env, &cp->data, pts, &saved, 1);
+	inAnchor = initAnchor(job, env, &cp->data, pts, &saved);
     else
 	inAnchor = 0;
 
@@ -675,11 +669,11 @@ static void emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
     }
 
     if (inAnchor)
-	endAnchor(job, &saved, 1);
+	endAnchor(job, &saved);
 
     if (doAnchor && (job->flags & EMIT_CLUSTERS_LAST)) {
-	if (initAnchor(job, env, &cp->data, pts, &saved, 0))
-	    endAnchor(job, &saved, 0);
+	if (initAnchor(job, env, &cp->data, pts, &saved))
+	    endAnchor(job, &saved);
     }
 }
 

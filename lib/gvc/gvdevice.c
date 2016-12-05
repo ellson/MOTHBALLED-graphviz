@@ -427,8 +427,8 @@ void gvprintf(GVJ_t * job, const char *format, ...)
  *	cc -DGVPRINTNUM_TEST gvprintnum.c -o gvprintnum
  */
 
-#define DECPLACES 2
-#define DECPLACES_SCALE 100
+#define DECPLACES 4
+#define DECPLACES_SCALE 10000
 
 /* use macro so maxnegnum is stated just once for both double and string versions */
 #define val_str(n, x) static double n = x; static char n##str[] = #x;

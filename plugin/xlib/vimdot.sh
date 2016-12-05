@@ -38,7 +38,6 @@ fi
 if ! test -w "$f"; then error "$f is not writable"; fi
 
 # dot -Txlib watches the file $f for changes using inotify()
-# run it in an xterm window to handle any stderr
-xterm -e dot -Txlib "$f" 2>/dev/null &
+dot -Txlib "$f" 2>/dev/null &
 # open an editor on the file $f (could be any editor; gvim &'s itself)
 exec $editor "$f"

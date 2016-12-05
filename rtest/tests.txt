@@ -64,6 +64,7 @@ html2
 = 
 dot gv 
 dot ps
+dot svg
 
 pslib
 =

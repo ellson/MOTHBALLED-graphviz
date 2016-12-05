@@ -42,6 +42,9 @@ before_deploy:
 - echo "deploying ${DEPLOYED_FILE} to GitHub releases"
 - sudo chown travis ${DEPLOYED_FILE}
 
+# If no tag is set, deploy as nightly
+- if [ !${TRAVIS_TAG} ] ; then export TRAVIS_TAG=Nightly ; fi
+
 deploy:
   provider: releases
   api_key:

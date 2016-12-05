@@ -1,0 +1,9 @@
+graph G {
+	graph [bb="0,0,55.985,36"];
+	node [label="\N"];
+	a	 [height=0.5,
+		label="",
+		pos="27.992,18",
+		shape=parallelogram,
+		width=0.77756];
+}

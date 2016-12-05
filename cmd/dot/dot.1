@@ -117,13 +117,25 @@ and to force a particular variant, use, for example: ``dot \-Tpng:gd''
 .P
 Traditionally, Graphviz supports the following:
 .br
+\fB\-Tdot\fP (Dot format containing layout infomation),
+.br
+\fB\-Txdot\fP (Dot format containing complete layout infomation),
+.br
 \fB\-Tps\fP (PostScript),
+.br
+\fB\-Tpdf\fP (PDF),
 .br
 \fB\-Tsvg\fP \fB\-Tsvgz\fP (Structured Vector Graphics),
 .br
 \fB\-Tfig\fP (XFIG graphics),
 .br
-\fB\-Tpng\fP \fB\-Tgif\fP (bitmap graphics),
+\fB\-Tpng\fP (png bitmap graphics),
+.br
+\fB\-Tgif\fP (gif bitmap graphics),
+.br
+\fB\-Tjpg\fP \fB\-Tjpeg\fP (jpeg bitmap graphics),
+.br
+\fB\-Tjson\fP (xdot information encoded in JSON),
 .br
 \fB\-Timap\fP (imagemap files for httpd servers for each node or edge
 that has a non\(hynull \fBhref\fP attribute.),

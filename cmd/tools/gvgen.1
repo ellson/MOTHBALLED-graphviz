@@ -55,6 +55,9 @@ gvgen \- generate graphs
 .BI -S n
 ]
 [
+.BI -S n,d
+]
+[
 .BI -t n
 ]
 [
@@ -154,8 +157,14 @@ This will have \fIn-1\fP edges.
 .TP
 .BI \-S " n"
 Generate a Sierpinski graph of order \fIn\fP.
-This will have \fI3*(3^(n-1) - 1)/2\fP vertices and
+This will have \fI3*(3^(n-1) + 1)/2\fP vertices and
 \fI3^n\fP edges.
+.TP
+.BI \-S " n,d"
+Generate a \fId\fP-dimensional Sierpinski graph of order \fIn\fP.
+At present, \fId\fP must be 2 or 3.
+For d equal to 3, there will be \fI4*(4^(n-1) + 1)/2\fP vertices and
+\fI6 * 4^(n-1)\fP edges.
 .TP
 .BI \-t " n"
 Generate a binary tree of height \fIn\fP.

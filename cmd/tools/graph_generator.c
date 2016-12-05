@@ -332,6 +332,93 @@ void makeSierpinski(int depth, edgefn ef)
     free(graph);
 }
 
+static void
+constructTetrix(int v1, int v2, int v3, int v4, int depth, vtx_data* graph)
+{
+    static int last_used_node_name = 4;
+    int v5, v6, v7, v8, v9, v10;
+
+    int nedges;
+
+    if (depth > 0) {
+        v5 = ++last_used_node_name;
+        v6 = ++last_used_node_name;
+        v7 = ++last_used_node_name;
+        v8 = ++last_used_node_name;
+        v9 = ++last_used_node_name;
+        v10 = ++last_used_node_name;
+        constructTetrix(v1, v5, v6, v8, depth - 1, graph);
+        constructTetrix(v2, v6, v7, v9, depth - 1, graph);
+        constructTetrix(v3, v5, v7, v10, depth - 1, graph);
+        constructTetrix(v4, v8, v9, v10, depth - 1, graph);
+        return;
+    }
+    // depth==0, Construct graph:
+    nedges = graph[v1].nedges;
+    graph[v1].edges[nedges++] = v2;
+    graph[v1].edges[nedges++] = v3;
+    graph[v1].edges[nedges++] = v4;
+    graph[v1].nedges = nedges;
+
+    nedges = graph[v2].nedges;
+    graph[v2].edges[nedges++] = v1;
+    graph[v2].edges[nedges++] = v3;
+    graph[v2].edges[nedges++] = v4;
+    graph[v2].nedges = nedges;
+
+    nedges = graph[v3].nedges;
+    graph[v3].edges[nedges++] = v1;
+    graph[v3].edges[nedges++] = v2;
+    graph[v3].edges[nedges++] = v4;
+    graph[v3].nedges = nedges;
+
+    nedges = graph[v4].nedges;
+    graph[v4].edges[nedges++] = v1;
+    graph[v4].edges[nedges++] = v2;
+    graph[v4].edges[nedges++] = v3;
+    graph[v4].nedges = nedges;
+
+    return;
+
+}
+
+void makeTetrix(int depth, edgefn ef)
+{
+    vtx_data* graph;
+    int* edges;
+    int n;
+    int nedges;
+    int i, j;
+
+    depth--;
+    n = 4 + 2 * (((int) (pow(4.0, (double) depth) + 0.5) - 1));
+
+    nedges = 6 * (int) (pow(4.0, depth) + 0.5);
+
+    graph = N_NEW(n + 1, vtx_data);
+    edges = N_NEW(6 * n, int);
+
+    for (i = 1; i <= n; i++) {
+        graph[i].edges = edges;
+        edges += 6;
+        graph[i].nedges = 0;
+    }
+
+    constructTetrix(1, 2, 3, 4, depth, graph);
+
+    for (i = 1; i <= n; i++) {
+        int nghbr;
+        // write the neighbors of the node i
+        for (j = 0; j < graph[i].nedges; j++) {
+            nghbr = graph[i].edges[j];
+            if (i < nghbr) ef( i, nghbr);
+        }
+    }
+
+    free(graph[1].edges);
+    free(graph);
+}
+
 void makeHypercube(int dim, edgefn ef)
 {
     int i, j, n;

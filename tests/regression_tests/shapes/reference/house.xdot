@@ -1,0 +1,13 @@
+graph G {
+	graph [_draw_="c 9 -#fffffe00 C 7 -#ffffff P 4 0 0 0 36 54 36 54 0 ",
+		bb="0,0,54,36",
+		xdotversion=1.7
+	];
+	node [label="\N"];
+	a	 [_draw_="c 7 -#000000 p 5 54 23.56 27 36 0 23.56 0.03 3.44 53.97 3.44 ",
+		height=0.5,
+		label="",
+		pos="27,18",
+		shape=house,
+		width=0.75];
+}

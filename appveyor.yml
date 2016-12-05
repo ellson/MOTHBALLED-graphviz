@@ -69,6 +69,12 @@ build_script:
           rm Release\Graphviz\bin\*.ipdb;
           rm Release\Graphviz\bin\*.ilk;
         }
+
+        # Append build destination to the PATH, configure dot and execute regression tests 
+        $env:Path += ";" + $env:APPVEYOR_BUILD_FOLDER + "\" + $env:configuration + "\Graphviz\bin";
+        dot -c;
+        cd tests\regression_tests;
+        ./regression_tests.bat; 
       }
       
       if ($env:compiler -eq "msys2" -Or $env:compiler -eq "cygwin") {

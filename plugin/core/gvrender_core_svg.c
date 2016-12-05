@@ -59,7 +59,10 @@ static void svg_bzptarray(GVJ_t * job, pointf * A, int n)
     if (A[0].x <= A[n-1].x) {
 #endif
 	for (i = 0; i < n; i++) {
-	    gvprintf(job, "%c%g,%g", c, A[i].x, -A[i].y);
+	    gvprintf(job, "%c", c);
+            gvprintdouble(job, A[i].x);
+            gvputs(job, ",");
+            gvprintdouble(job, -A[i].y);
 	    if (i == 0)
 		c = 'C';		/* second point */
 	    else
@@ -68,7 +71,10 @@ static void svg_bzptarray(GVJ_t * job, pointf * A, int n)
 #if EDGEALIGN
     } else {
 	for (i = n-1; i >= 0; i--) {
-	    gvprintf(job, "%c%g,%g", c, A[i].x, -A[i].y);
+	    gvprintf(job, "%c", c);
+            gvprintdouble(job, A[i].x);
+            gvputs(job, ",");
+            gvprintdouble(job, -A[i].y);
 	    if (i == 0)
 		c = 'C';		/* second point */
 	    else
@@ -133,8 +139,10 @@ static void svg_grstyle(GVJ_t * job, int filled, int gid)
     }
     gvputs(job, "\" stroke=\"");
     svg_print_color(job, obj->pencolor);
-    if (obj->penwidth != PENWIDTH_NORMAL)
-	gvprintf(job, "\" stroke-width=\"%g", obj->penwidth);
+    if (obj->penwidth != PENWIDTH_NORMAL) {
+	gvputs(job, "\" stroke-width=\"");
+        gvprintdouble(job, obj->penwidth);
+    }
     if (obj->pen == PEN_DASHED) {
 	gvprintf(job, "\" stroke-dasharray=\"%s", sdasharray);
     } else if (obj->pen == PEN_DOTTED) {
@@ -244,10 +252,15 @@ static void svg_begin_page(GVJ_t * job)
     /* its really just a page of the graph, but its still a graph,
      * and it is the entire graph if we're not currently paging */
     svg_print_id_class(job, obj->id, NULL, "graph", obj->u.g);
-    gvprintf(job,
-	     " transform=\"scale(%g %g) rotate(%d) translate(%g %g)\">\n",
-	     job->scale.x, job->scale.y, -job->rotation,
-	     job->translation.x, -job->translation.y);
+    gvputs(job, " transform=\"scale(");
+    gvprintdouble(job, job->scale.x);
+    gvputs(job, " ");
+    gvprintdouble(job, job->scale.y);
+    gvprintf(job, ") rotate(%d) translate(", -job->rotation);
+    gvprintdouble(job, job->translation.x);
+    gvputs(job, " ");
+    gvprintdouble(job, -job->translation.y);
+    gvputs(job, ")\">\n");
     /* default style */
     if (agnameof(obj->u.g)[0]) {
 	gvputs(job, "<title>");
@@ -391,8 +404,13 @@ static void svg_textspan(GVJ_t * job, pointf p, textspan_t * span)
 	break;
     }
     p.y += span->yoffset_centerline;
-    if (!obj->labeledgealigned)
-	gvprintf(job, " x=\"%g\" y=\"%g\"", p.x, -p.y);
+    if (!obj->labeledgealigned) {
+	gvputs(job, " x=\"");
+        gvprintdouble(job, p.x);
+        gvputs(job, "\" y=\"");
+        gvprintdouble(job, -p.y);
+        gvputs(job, "\"");
+    }
     pA = span->font->postscript_alias;
     if (pA) {
 	switch (GD_fontnames(job->gvc->g)) {
@@ -469,8 +487,10 @@ static void svg_textspan(GVJ_t * job, pointf p, textspan_t * span)
     }
     gvputs(job, ">");
     if (obj->labeledgealigned) {
-	gvprintf (job, "<textPath xlink:href=\"#%s_p\" startOffset=\"50%%\">", xml_string(obj->id));
-	gvprintf (job, "<tspan x=\"0\" dy=\"%g\">", -p.y);
+	gvprintf(job, "<textPath xlink:href=\"#%s_p\" startOffset=\"50%%\">", xml_string(obj->id));
+	gvputs(job, "<tspan x=\"0\" dy=\"");
+        gvprintdouble(job, -p.y);
+        gvputs(job, "\">");
     }
     gvputs(job, xml_string0(span->str, TRUE));
     if (obj->labeledgealigned)
@@ -495,8 +515,15 @@ static int svg_gradstyle(GVJ_t * job, pointf * A, int n)
 
     gvprintf(job,
 	     "<defs>\n<linearGradient id=\"l_%d\" gradientUnits=\"userSpaceOnUse\" ", id);
-    gvprintf(job, "x1=\"%g\" y1=\"%g\" x2=\"%g\" y2=\"%g\" >\n", G[0].x,
-	     G[0].y, G[1].x, G[1].y);
+    gvputs(job, "x1=\"");
+    gvprintdouble(job, G[0].x);
+    gvputs(job, "\" y1=\"");
+    gvprintdouble(job, G[0].y);
+    gvputs(job, "\" x2=\"");
+    gvprintdouble(job, G[1].x);
+    gvputs(job, "\" y2=\"");
+    gvprintdouble(job, G[1].y);
+    gvputs(job, "\" >\n");
     if (obj->gradient_frac > 0)
 	gvprintf(job, "<stop offset=\"%.03f\" style=\"stop-color:", obj->gradient_frac - 0.001);
     else
@@ -582,10 +609,15 @@ static void svg_ellipse(GVJ_t * job, pointf * A, int filled)
     }
     gvputs(job, "<ellipse");
     svg_grstyle(job, filled, gid);
-    gvprintf(job, " cx=\"%g\" cy=\"%g\"", A[0].x, -A[0].y);
-    gvprintf(job, " rx=\"%g\" ry=\"%g\"",
-	     A[1].x - A[0].x, A[1].y - A[0].y);
-    gvputs(job, "/>\n");
+    gvputs(job, " cx=\"");
+    gvprintdouble(job, A[0].x);
+    gvputs(job, "\" cy=\"");
+    gvprintdouble(job, -A[0].y);
+    gvputs(job, "\" rx=\"");
+    gvprintdouble(job, A[1].x - A[0].x);
+    gvputs(job, "\" ry=\"");
+    gvprintdouble(job, A[1].y - A[0].y);
+    gvputs(job, "\"/>\n");
 }
 
 static void
@@ -623,9 +655,16 @@ static void svg_polygon(GVJ_t * job, pointf * A, int n, int filled)
     gvputs(job, "<polygon");
     svg_grstyle(job, filled, gid);
     gvputs(job, " points=\"");
-    for (i = 0; i < n; i++)
-	gvprintf(job, "%g,%g ", A[i].x, -A[i].y);
-    gvprintf(job, "%g,%g", A[0].x, -A[0].y);	/* because Adobe SVG is broken */
+    for (i = 0; i < n; i++) {
+        gvprintdouble(job, A[i].x);
+        gvputs(job, ",");
+        gvprintdouble(job, -A[i].y);
+        gvputs(job, " ");
+    }
+    /* repeat the first point because Adobe SVG is broken */
+    gvprintdouble(job, A[0].x);
+    gvputs(job, ",");
+    gvprintdouble(job, -A[0].y);
     gvputs(job, "\"/>\n");
 }
 
@@ -636,8 +675,12 @@ static void svg_polyline(GVJ_t * job, pointf * A, int n)
     gvputs(job, "<polyline");
     svg_grstyle(job, 0, 0);
     gvputs(job, " points=\"");
-    for (i = 0; i < n; i++)
-	gvprintf(job, "%g,%g ", A[i].x, -A[i].y);
+    for (i = 0; i < n; i++) {
+        gvprintdouble(job, A[i].x);
+        gvputs(job, ",");
+        gvprintdouble(job, -A[i].y);
+        gvputs(job, " ");
+    }
     gvputs(job, "\"/>\n");
 }
 
