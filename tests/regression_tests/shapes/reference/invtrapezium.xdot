@@ -4,7 +4,7 @@ graph G {
 		xdotversion=1.7
 	];
 	node [label="\N"];
-	a	 [_draw_="c 7 -#000000 p 4 11.23 0 42.77 0 54 36 -0 36 ",
+	a	 [_draw_="c 7 -#000000 p 4 11.23 0 42.77 0 54 36 0 36 ",
 		height=0.5,
 		label="",
 		pos="27,18",

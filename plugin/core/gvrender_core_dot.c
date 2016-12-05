@@ -140,6 +140,11 @@ static void xdot_trim_zeros (char* buf, int addSpace)
  */
 static void xdot_fmt_num (char* buf, double v)
 {
+    // Prevents values like -0
+    if (v > -0.00000001 && v < 0.00000001)
+    {
+        v = 0;
+    }
     sprintf(buf, "%.02f", v);
     xdot_trim_zeros (buf, 1);
 }
