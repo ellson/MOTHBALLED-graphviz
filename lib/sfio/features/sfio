@@ -6,16 +6,11 @@
 # Converted to sfio v10/01/94 by Giampiero Sierra (06/08/95).
 ##################################################################
 
-hdr time
-sys time
-
 hdr math
 lib qfrexp
 lib qldexp
 
 hdr unistd
-lib atexit
-lib onexit
 
 lib ftruncate
 
@@ -276,8 +271,6 @@ lib vfork
 # file control checks
 ##################################################
 
-hdr filio
-sys filio
 sys ioctl
 lib remove
 lib unlink

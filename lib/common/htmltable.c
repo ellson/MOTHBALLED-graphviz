@@ -1542,7 +1542,7 @@ void sizeArray(htmltbl_t * tbl)
 {
     graph_t *rowg;
     graph_t *colg;
-#ifdef WIN32
+#ifdef _WIN32
     Agdesc_t dir = { 1, 1, 0, 1 };
 #else
     Agdesc_t dir = Agstrictdirected;

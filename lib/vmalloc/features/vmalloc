@@ -5,8 +5,6 @@
 # Written by Kiem-Phong Vo (08/15/95).
 ####################################################################
 
-lib atexit
-lib onexit
 lib getpagesize
 hdr stat
 hdr stdlib

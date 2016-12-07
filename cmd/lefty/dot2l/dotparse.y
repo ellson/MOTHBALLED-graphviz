@@ -12,9 +12,6 @@
  *************************************************************************/
 
 %{
-#if defined(_PACKAGE_ast)
-#include <ast.h>
-#endif
 #include <stdio.h>
 
 typedef void *Tobj;

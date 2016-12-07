@@ -27,7 +27,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include <compat_unistd.h>
 #endif
 /* #include "lclib.h" */

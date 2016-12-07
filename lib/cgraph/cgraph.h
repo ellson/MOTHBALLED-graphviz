@@ -245,17 +245,6 @@ struct Agraph_s {
     Agclos_t *clos;		/* shared resources */
 };
 
-
-#if defined(_PACKAGE_ast)
-/* fine control of object callbacks */
-#   if defined(_BLD_cgraph) && defined(__EXPORT__)
-#	define extern  __EXPORT__
-#   endif
-#   if !defined(_BLD_cgraph) && defined(__IMPORT__)
-#	define extern  __IMPORT__
-#   endif
-#endif
-
 extern void agpushdisc(Agraph_t * g, Agcbdisc_t * disc, void *state);
 extern int agpopdisc(Agraph_t * g, Agcbdisc_t * disc);
 extern int agcallbacks(Agraph_t * g, int flag);	/* return prev value */
@@ -418,11 +407,6 @@ extern agusererrf agseterrf(agusererrf);
 #define TAILPORT_ID		"tailport"
 #define HEADPORT_ID		"headport"
 
-#if defined(_PACKAGE_ast)
-#   if !defined(_BLD_cgraph) && defined(__IMPORT__)
-#	define extern  __IMPORT__
-#   endif
-#endif
 #if defined(_MSC_VER) && !defined(CGRAPH_EXPORTS)
 #define extern __declspec(dllimport)
 #endif

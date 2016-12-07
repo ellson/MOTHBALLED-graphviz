@@ -36,7 +36,6 @@ hdr netdb
 hdr search
 hdr stdarg
 hdr stdbool
-hdr stddef
 hdr stdint
 hdr strings
 hdr termios

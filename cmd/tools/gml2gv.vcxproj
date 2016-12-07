@@ -72,12 +72,12 @@
       <AdditionalDependencies>getopt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>"%FLEX%"  -o gmlscan-intermediate.c -i gmlscan.l
-"%SED%" "s/yy/gml/g" &lt; gmlscan-intermediate.c &gt; gmlscan.c
+      <Command>flex  -o gmlscan-intermediate.c -i gmlscan.l
+sed "s/yy/gml/g" &lt; gmlscan-intermediate.c &gt; gmlscan.c
 del gmlscan-intermediate.c
-"%BISON%" -dy gmlparse.y -o gmlparse-intermediate.c
-"%SED%" "s/yy/gml/g" &lt; gmlparse-intermediate.h &gt; gmlparse.h
-"%SED%" "s/yy/gml/g" &lt; gmlparse-intermediate.c &gt; gmlparse.c
+bison -dy gmlparse.y -o gmlparse-intermediate.c
+sed "s/yy/gml/g" &lt; gmlparse-intermediate.h &gt; gmlparse.h
+sed "s/yy/gml/g" &lt; gmlparse-intermediate.c &gt; gmlparse.c
 del gmlparse-intermediate.h
 del gmlparse-intermediate.c</Command>
     </PreBuildEvent>
@@ -102,12 +102,12 @@ del gmlparse-intermediate.c</Command>
       <AdditionalDependencies>getopt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>"%FLEX%"  -o gmlscan-intermediate.c -i gmlscan.l
-"%SED%" "s/yy/gml/g" &lt; gmlscan-intermediate.c &gt; gmlscan.c
+      <Command>flex  -o gmlscan-intermediate.c -i gmlscan.l
+sed "s/yy/gml/g" &lt; gmlscan-intermediate.c &gt; gmlscan.c
 del gmlscan-intermediate.c
-"%BISON%" -dy gmlparse.y -o gmlparse-intermediate.c
-"%SED%" "s/yy/gml/g" &lt; gmlparse-intermediate.h &gt; gmlparse.h
-"%SED%" "s/yy/gml/g" &lt; gmlparse-intermediate.c &gt; gmlparse.c
+bison -dy gmlparse.y -o gmlparse-intermediate.c
+sed "s/yy/gml/g" &lt; gmlparse-intermediate.h &gt; gmlparse.h
+sed "s/yy/gml/g" &lt; gmlparse-intermediate.c &gt; gmlparse.c
 del gmlparse-intermediate.h
 del gmlparse-intermediate.c</Command>
     </PreBuildEvent>

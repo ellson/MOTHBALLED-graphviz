@@ -71,8 +71,8 @@
       <ModuleDefinitionFile>cgraph.def</ModuleDefinitionFile>
     </Link>
     <PreBuildEvent>
-      <Command>"%BISON%" -dy grammar.y -o grammar.c
-"%FLEX%" -o scan.c scan.l</Command>
+      <Command>bison -dy grammar.y -o grammar.c
+flex -o scan.c scan.l</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -96,8 +96,8 @@
       <ModuleDefinitionFile>cgraph.def</ModuleDefinitionFile>
     </Link>
     <PreBuildEvent>
-      <Command>"%BISON%" -dy grammar.y -o grammar.c
-"%FLEX%" -o scan.c scan.l</Command>
+      <Command>bison -dy grammar.y -o grammar.c
+flex -o scan.c scan.l</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

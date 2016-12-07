@@ -24,7 +24,7 @@ extern "C" {
 
 #include "geom.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #ifdef GVDLL
 #define extern __declspec(dllexport)
 #else
@@ -52,7 +52,7 @@ extern void rect2poly(pointf *p);
 
 extern int line_intersect (pointf a, pointf b, pointf c, pointf d, pointf* p);
 
-#if defined(MSWIN32) || defined(WIN32)
+#if defined(MSWIN32) || defined(_WIN32)
 #define inline __inline
 #endif
 

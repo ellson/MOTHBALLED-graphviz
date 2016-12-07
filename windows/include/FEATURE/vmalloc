@@ -5,23 +5,11 @@
 #undef _sys_types
 #define _sys_types	1	/* #include <sys/types.h> ok */
 
-#undef _lib_atexit
-#define _lib_atexit	1	/* atexit() in default lib(s) */
-
 #undef _lib_getpagesize
 #define _lib_getpagesize	0	/* getpagesize() in default lib(s) */
 
 #undef _sys_stat
 #define _sys_stat	1	/* #include <sys/stat.h> ok */
-
-#undef _hdr_time
-#define _hdr_time	1	/* #include <time.h> ok */
-
-#undef _sys_time
-#define _sys_time	1	/* #include <sys/time.h> ok */
-
-#undef _hdr_stddef
-#define _hdr_stddef	1	/* #include <stddef.h> ok */
 
 #undef _typ_ssize_t
 #define _typ_ssize_t	1	/* ssize_t is a type */

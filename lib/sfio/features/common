@@ -1,6 +1,5 @@
 iff	AST_COMMON
 hdr	pthread
-hdr	stddef
 hdr	types
 sys	types
 typ	size_t,ssize_t
@@ -78,14 +77,6 @@ cat{
 	#endif
 	#endif /*_BEGIN_EXTERNS_*/
 
-	/* __INLINE__ is the inline keyword */
-	#if !defined(__INLINE__) && defined(__cplusplus)
-	#define __INLINE__	inline
-	#endif
-	#if !defined(__INLINE__) && defined(_WIN32) && !defined(__GNUC__)
-	#define __INLINE__	__inline
-	#endif
-
 	/* dynamic linked library external scope handling */
 	#undef extern
 	#if _dll_import && !defined(__EXPORT__) && _DLL_BLD
@@ -105,16 +96,9 @@ cat{
 
 cat{
 	#ifndef _AST_STD_H
-	#	if _hdr_stddef
-	#	include	<stddef.h>
-	#	endif
 	#	if _sys_types
 	#	include	<sys/types.h>
 	#	endif
-	#endif
-	#if !_typ_size_t
-	#	define _typ_size_t	1
-		typedef int size_t;
 	#endif
 	#if !_typ_ssize_t
 	#	define _typ_ssize_t	1

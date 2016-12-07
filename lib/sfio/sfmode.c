@@ -34,14 +34,8 @@ static char *Version = "\n@(#)sfio (AT&T Labs - kpv) 2001-02-01\0\n";
 */
 
 /* the below is for protecting the application from SIGPIPE */
-#if defined(_PACKAGE_ast)
-#include		<sig.h>
-#include		<wait.h>
-#define Sfsignal_f	Sig_handler_t
-#else
 #include		<signal.h>
 typedef void (*Sfsignal_f) (int);
-#endif
 static int _Sfsigp = 0;		/* # of streams needing SIGPIPE protection */
 
 /* done at exiting time */
@@ -233,18 +227,12 @@ int _sfpclose(reg Sfio_t * f)
 	    CLOSE(p->file);
 
 	/* wait for process termination */
-#if defined(_PACKAGE_ast)
-	sigcritical(1);
-#endif
 #ifndef WIN32
 	while ((pid = waitpid(p->pid, &status, 0)) == -1
 	       && errno == EINTR);
 #endif
 	if (pid < 0)
 	    status = -1;
-#if defined(_PACKAGE_ast)
-	sigcritical(0);
-#endif
 
 #ifdef SIGPIPE
 	vtmtxlock(_Sfmutex);

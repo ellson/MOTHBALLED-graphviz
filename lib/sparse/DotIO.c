@@ -676,6 +676,8 @@ char *cat_string3(char *s1, char *s2, char *s3, int id){
 
 
 Agraph_t *convert_edge_labels_to_nodes(Agraph_t* g){
+  if (!g) return NULL;
+
   Agnode_t *n, *newnode;
   Agraph_t *dg;
 
@@ -694,7 +696,6 @@ Agraph_t *convert_edge_labels_to_nodes(Agraph_t* g){
 
   dg = agopen("test", g->desc, 0);
 
-  if (!g) return NULL;
   nnodes = agnnodes (g);
   nedges = agnedges (g);
 

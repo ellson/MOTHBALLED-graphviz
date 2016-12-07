@@ -15,7 +15,7 @@
 
 
 #include <stdlib.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include <string.h>
 #include <ctype.h>
 #include "compat.h"

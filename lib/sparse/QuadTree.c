@@ -356,7 +356,12 @@ QuadTree QuadTree_new_from_point_list(int dim, int n, int max_level, real *coord
   xmin = MALLOC(sizeof(real)*dim);
   xmax = MALLOC(sizeof(real)*dim);
   center = MALLOC(sizeof(real)*dim);
-  if (!xmin || !xmax || !center) return NULL;
+  if (!xmin || !xmax || !center) {
+      FREE(xmin);
+      FREE(xmax);
+      FREE(center);
+      return NULL;
+  }
 
   for (i = 0; i < dim; i++) xmin[i] = coord[i];
   for (i = 0; i < dim; i++) xmax[i] = coord[i];

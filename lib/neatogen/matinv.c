@@ -34,10 +34,6 @@
  *	n    - the order of the matrices A and Ainv
  */
 
-#if defined(_PACKAGE_ast)
-#include <ast.h>
-#else
-#endif
 #include <stdlib.h>
 #include "render.h"
 extern int lu_decompose(double **a, int n);

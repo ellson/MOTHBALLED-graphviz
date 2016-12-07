@@ -2,14 +2,10 @@
 #ifndef _def_time_Sfio_f
 #define _def_time_Sfio_f	1
 #define _sys_types	1	/* #include <sys/types.h> ok */
-#define _hdr_time	1	/* #include <time.h> ok */
-#define _sys_time	1	/* #include <sys/time.h> ok */
 #define _hdr_math	1	/* #include <math.h> ok */
 //#define _hdr_unistd	1	/* #include <unistd.h> ok */
-#define _lib_atexit	1	/* atexit() in default lib(s) */
 #define _lib_ftruncate	0	/* ftruncate() in default lib(s) */
 #define _lib_lseek64	1	/* lseek64() in default lib(s) */
-#define _hdr_stddef	1	/* #include <stddef.h> ok */
 #define _typ_off64_t	1	/* off64_t is a type */
 #define _lib_memcpy	1	/* memcpy() in default lib(s) */
 #define _lib_memset	1	/* memset() in default lib(s) */

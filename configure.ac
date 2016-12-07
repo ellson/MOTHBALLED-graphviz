@@ -212,7 +212,7 @@ AM_INIT_AUTOMAKE([no-define])
 # Suppress verbose compile lines
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
-AC_CONFIG_HEADERS([config.h lib/common/types.h])
+AC_CONFIG_HEADERS([config.h])
 
 # put BUILDDATE in its own file so that only targets that use it get rebuilt
 echo "#define BUILDDATE \"$GRAPHVIZ_VERSION_DATE\"" > builddate.h
