@@ -345,7 +345,7 @@ void sfdp_layout(graph_t * g)
 #endif
 
 	if ((am.mode == AM_PRISM) && doAdjust) {
-	    doAdjust = 0;  /* overlap removal done in sfpd */
+	    doAdjust = 0;  /* overlap removal done in sfdp */
 	    ctrl->overlap = am.value;
     	    ctrl->initial_scaling = am.scaling;
 	    sep = sepFactor(g);
@@ -361,6 +361,9 @@ void sfdp_layout(graph_t * g)
    		/* Turn off overlap removal in sfdp if prism not used */
 	    ctrl->overlap = -1;
 	}
+
+	if (Verbose)
+	    spring_electrical_control_print(ctrl);
 
 	ccs = ccomps(g, &ncc, 0);
 	if (ncc == 1) {

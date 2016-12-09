@@ -2,7 +2,7 @@
 /* vim:set shiftwidth=4 ts=8: */
 
 /*************************************************************************
- * Copyright (c) 2011 AT&T Intellectual Property 
+ * Copyright (c) 2011 AT&T Intellectual Property
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,7 +34,7 @@ spring_electrical_control spring_electrical_control_new(){
   spring_electrical_control ctrl;
   ctrl = MALLOC(sizeof(struct spring_electrical_control_struct));
   ctrl->p = AUTOP;/*a negativve number default to -1. repulsive force = dist^p */
-  ctrl->q = 1;/*a positive number default to 1. Only apply to maxent. 
+  ctrl->q = 1;/*a positive number default to 1. Only apply to maxent.
 		attractive force = dist^q. Stress energy = (||x_i-x_j||-d_ij)^{q+1} */
   ctrl->random_start = TRUE;/* whether to apply SE from a random layout, or from exisiting layout */
   ctrl->K = -1;/* the natural distance. If K < 0, K will be set to the average distance of an edge */
@@ -74,6 +74,35 @@ void spring_electrical_control_delete(spring_electrical_control ctrl){
   FREE(ctrl);
 }
 
+static char* smoothings[] = {
+  "NONE", "STRESS_MAJORIZATION_GRAPH_DIST", "STRESS_MAJORIZATION_AVG_DIST", "STRESS_MAJORIZATION_POWER_DIST", "SPRING", "TRIANGLE", "RNG"
+};
+
+static char* tschemes[] = {
+  "NONE", "NORMAL", "FAST", "HYBRID"
+};
+
+static char* methods[] = {
+  "SPRING_ELECTRICAL", "SPRING_MAXENT", "STRESS_MAXENT", "STRESS_APPROX", "STRESS", "UNIFORM_STRESS", "FULL_STRESS", "NONE"
+};
+
+void spring_electrical_control_print(spring_electrical_control ctrl){
+  fprintf (stderr, "spring_electrical_control:\n");
+  fprintf (stderr, "  repulsive and attractive exponents: %.03f %.03f\n", ctrl->p, ctrl->q);
+  fprintf (stderr, "  random start %d seed %d\n", ctrl->random_start, ctrl->random_seed);
+  fprintf (stderr, "  K : %.03f C : %.03f\n", ctrl->K, ctrl->C);
+  fprintf (stderr, "  max levels %d coarsen_scheme %d coarsen_node %d\n", ctrl->multilevels,
+    ctrl->multilevel_coarsen_scheme,ctrl->multilevel_coarsen_mode);
+  fprintf (stderr, "  quadtree size %d max_level %d\n", ctrl->quadtree_size, ctrl->max_qtree_level);
+  fprintf (stderr, "  Barnes-Hutt constant %.03f tolerance  %.03f maxiter %d\n", ctrl->bh, ctrl->tol, ctrl->maxiter);
+  fprintf (stderr, "  cooling %.03f step size  %.03f adaptive %d\n", ctrl->cool, ctrl->step, ctrl->adaptive_cooling);
+  fprintf (stderr, "  beautify_leaves %d node weights %d rotation %.03f\n",
+    ctrl->beautify_leaves, ctrl->use_node_weights, ctrl->rotation);
+  fprintf (stderr, "  smoothing %s overlap %d initial_scaling %.03f do_shrinking %d\n",
+    smoothings[ctrl->smoothing], ctrl->overlap, ctrl->do_shrinking, ctrl->initial_scaling);
+  fprintf (stderr, "  octree scheme %s method %s\n", tschemes[ctrl->tscheme], methods[ctrl->method]);
+  fprintf (stderr, "  edge_labeling_scheme %d\n", ctrl->edge_labeling_scheme);
+}
 
 void oned_optimizer_delete(oned_optimizer opt){
   FREE(opt);
@@ -89,7 +118,7 @@ oned_optimizer oned_optimizer_new(int i){
 
 void oned_optimizer_train(oned_optimizer opt, real work){
   int i = opt->i;
- 
+
   assert(i >= 0);
   opt->work[i] = work;
   if (opt->direction == OPT_INIT){
@@ -150,7 +179,7 @@ real average_edge_length(SparseMatrix A, int dim, real *coord){
 
 #ifdef ENERGY
 static real spring_electrical_energy(int dim, SparseMatrix A, real *x, real p, real CRK, real KP){
-      /* 1. Grad[||x-y||^k,x] = k||x-y||^(k-1)*0.5*(x-y)/||x-y|| = k/2*||x-y||^(k-2) (x-y) 
+      /* 1. Grad[||x-y||^k,x] = k||x-y||^(k-1)*0.5*(x-y)/||x-y|| = k/2*||x-y||^(k-2) (x-y)
 	 which should equal to -force (force = -gradient),
 	 hence energy for force ||x-y||^m (y-x) is ||x-y||^(m+2)*2/(m+2) where m != 2
 	 2. Grad[Log[||x-y||],x] = 1/||x-y||*0.5*(x-y)/||x-y|| = 0.5*(x-y)/||x-y||^2,
@@ -167,7 +196,7 @@ static real spring_electrical_energy(int dim, SparseMatrix A, real *x, real p, r
       dist = distance(x, dim, i, ja[j]);
       energy += CRK*pow(dist, 3.)*2./3.;
     }
-    
+
     /* repulsive force K^(1 - p)/||x_i-x_j||^(1 - p) (x_i - x_j) */
     for (j = 0; j < n; j++){
       if (j == i) continue;
@@ -228,7 +257,7 @@ void export_embedding(FILE *fp, int dim, SparseMatrix A, real *x, real *width){
   }
 
   fprintf(fp,"}],Hue[%f]",/*drand()*/1.);
- 
+
   if (width && dim == 2){
     for (i = 0; i < A->m; i++){
       if (i >= 0) fprintf(fp,",");
@@ -283,7 +312,7 @@ static real update_step(int adaptive_cooling, real step, real Fnorm, real Fnorm0
   }
   return step;
 }
- 
+
 
 #define node_degree(i) (ia[(i)+1] - ia[(i)])
 
@@ -292,14 +321,14 @@ void check_real_array_size(real **a, int len, int *lenmax){
     *lenmax = len + MAX((int) 0.2*len, 10);
     *a = REALLOC(*a, sizeof(real)*(*lenmax));
   }
-  
+
 }
 void check_int_array_size(int **a, int len, int *lenmax){
   if (len >= *lenmax){
     *lenmax = len + MAX((int) 0.2*len, 10);
     *a = REALLOC(*a, sizeof(int)*(*lenmax));
   }
-  
+
 }
 
 real get_angle(real *x, int dim, int i, int j){
@@ -387,7 +416,7 @@ static void beautify_leaves(int dim, SparseMatrix A, real *x){
 	maxang = 0;
 	for (k = 0; k < nangles - 1; k++){
 	  if (angles[k+1] - angles[k] > maxang){
-	    maxang = angles[k+1] - angles[k]; 
+	    maxang = angles[k+1] - angles[k];
 	    ang1 = angles[k]; ang2 = angles[k+1];
 	  }
 	}
@@ -421,7 +450,7 @@ ang1 = 0; ang2 = 2*PI; maxang = 2*PI;
 
 void force_print(FILE *fp, int n, int dim, real *x, real *force){
   int i, k;
-  
+
   fprintf(fp,"Graphics[{");
   for (i = 0; i < n; i++){
     if (i > 0) fprintf(fp, ",");
@@ -474,7 +503,7 @@ void spring_electrical_embedding_fast(int dim, SparseMatrix A0, spring_electrica
   real qtree_cpu = 0, qtree_cpu0 = 0, qtree_new_cpu = 0, qtree_new_cpu0 = 0;
   real total_cpu = 0;
   start0 = clock();
-#endif  
+#endif
   int max_qtree_level = ctrl->max_qtree_level;
   oned_optimizer qtree_level_optimizer = NULL;
 
@@ -507,7 +536,7 @@ void spring_electrical_embedding_fast(int dim, SparseMatrix A0, spring_electrica
   KP = pow(K, 1 - p);
   CRK = pow(C, (2.-p)/3.)/K;
 
-  xold = MALLOC(sizeof(real)*dim*n); 
+  xold = MALLOC(sizeof(real)*dim*n);
   force = MALLOC(sizeof(real)*dim*n);
 
   do {
@@ -535,7 +564,7 @@ void spring_electrical_embedding_fast(int dim, SparseMatrix A0, spring_electrica
     Fnorm = 0.;
 
     max_qtree_level = oned_optimizer_get(qtree_level_optimizer);
-    
+
 #ifdef TIME
     start = clock();
 #endif
@@ -544,7 +573,7 @@ void spring_electrical_embedding_fast(int dim, SparseMatrix A0, spring_electrica
     } else {
       qt = QuadTree_new_from_point_list(dim, n, max_qtree_level, x, NULL);
     }
-  
+
 #ifdef TIME
     qtree_new_cpu += ((real) (clock() - start))/CLOCKS_PER_SEC;
 #endif
@@ -574,7 +603,7 @@ void spring_electrical_embedding_fast(int dim, SparseMatrix A0, spring_electrica
 	}
       }
     }
-  
+
 
     /* move */
     for (i = 0; i < n; i++){
@@ -603,8 +632,8 @@ void spring_electrical_embedding_fast(int dim, SparseMatrix A0, spring_electrica
       qtree_cpu0 = qtree_cpu - qtree_cpu0;
       qtree_new_cpu0 = qtree_new_cpu - qtree_new_cpu0;
       /*      if (Verbose) fprintf(stderr, "\r iter=%d cpu=%.2f, quadtree=%.2f quad_force=%.2f other=%.2f counts={%.2f,%.2f,%.2f} step=%f Fnorm=%f nz=%d  K=%f qtree_lev = %d",
-			   iter, ((real) (clock() - start2)) / CLOCKS_PER_SEC, qtree_new_cpu0, 
-			   qtree_cpu0,((real) (clock() - start2))/CLOCKS_PER_SEC - qtree_cpu0 - qtree_new_cpu0, 
+			   iter, ((real) (clock() - start2)) / CLOCKS_PER_SEC, qtree_new_cpu0,
+			   qtree_cpu0,((real) (clock() - start2))/CLOCKS_PER_SEC - qtree_cpu0 - qtree_new_cpu0,
 			   counts[0], counts[1], counts[2],
 			   step, Fnorm, A->nz,K,max_qtree_level);
       */
@@ -612,7 +641,7 @@ void spring_electrical_embedding_fast(int dim, SparseMatrix A0, spring_electrica
       qtree_new_cpu0 = qtree_new_cpu;
 #endif
       oned_optimizer_train(qtree_level_optimizer, counts[0]+0.85*counts[1]+3.3*counts[2]);
-    } else {   
+    } else {
       if (Verbose) {
         fprintf(stderr, "\r                iter = %d, step = %f Fnorm = %f nz = %d  K = %f                                  ",iter, step, Fnorm, A->nz,K);
 #ifdef ENERGY
@@ -676,7 +705,7 @@ void spring_electrical_embedding_slow(int dim, SparseMatrix A0, spring_electrica
   real qtree_cpu = 0, qtree_cpu0 = 0;
   real total_cpu = 0;
   start0 = clock();
-#endif  
+#endif
   int max_qtree_level = ctrl->max_qtree_level;
   oned_optimizer qtree_level_optimizer = NULL;
 
@@ -730,7 +759,7 @@ void spring_electrical_embedding_slow(int dim, SparseMatrix A0, spring_electrica
 #endif
 
   f = MALLOC(sizeof(real)*dim);
-  xold = MALLOC(sizeof(real)*dim*n); 
+  xold = MALLOC(sizeof(real)*dim*n);
   do {
     for (i = 0; i < dim*n; i++) force[i] = 0;
 
@@ -760,7 +789,7 @@ void spring_electrical_embedding_slow(int dim, SparseMatrix A0, spring_electrica
 #ifdef TIME
 	start = clock();
 #endif
-	QuadTree_get_supernodes(qt, ctrl->bh, &(x[dim*i]), i, &nsuper, &nsupermax, 
+	QuadTree_get_supernodes(qt, ctrl->bh, &(x[dim*i]), i, &nsuper, &nsupermax,
 				&center, &supernode_wgts, &distances, &counts, flag);
 #ifdef TIME
 	end = clock();
@@ -809,7 +838,7 @@ void spring_electrical_embedding_slow(int dim, SparseMatrix A0, spring_electrica
       for (k = 0; k < dim; k++) force[i*dim+k] += f[k];
     }
 
- 
+
 
     for (i = 0; i < n; i++){
       for (k = 0; k < dim; k++) f[k] = 0.;
@@ -829,7 +858,7 @@ void spring_electrical_embedding_slow(int dim, SparseMatrix A0, spring_electrica
     for (i = 0; i < n; i++){
      /* normalize force */
       for (k = 0; k < dim; k++) f[k] = force[i*dim+k];
-     
+
       F = 0.;
       for (k = 0; k < dim; k++) F += f[k]*f[k];
       F = sqrt(F);
@@ -852,7 +881,7 @@ void spring_electrical_embedding_slow(int dim, SparseMatrix A0, spring_electrica
 #endif
       if (Verbose && 0) fprintf(stderr, "nsuper_avg=%f, counts_avg = %f 2*nsuper+counts=%f\n",nsuper_avg,counts_avg, 2*nsuper_avg+counts_avg);
       oned_optimizer_train(qtree_level_optimizer, 5*nsuper_avg + counts_avg);
-    }    
+    }
 
 #ifdef ENERGY
     if (Verbose) {
@@ -936,7 +965,7 @@ void spring_electrical_embedding(int dim, SparseMatrix A0, spring_electrical_con
   real qtree_cpu = 0, qtree_cpu0 = 0;
   real total_cpu = 0;
   start0 = clock();
-#endif  
+#endif
   int max_qtree_level = ctrl->max_qtree_level;
   oned_optimizer qtree_level_optimizer = NULL;
 
@@ -987,7 +1016,7 @@ void spring_electrical_embedding(int dim, SparseMatrix A0, spring_electrical_con
 #endif
 
   f = MALLOC(sizeof(real)*dim);
-  xold = MALLOC(sizeof(real)*dim*n); 
+  xold = MALLOC(sizeof(real)*dim*n);
   do {
 
     //#define VIS_MULTILEVEL
@@ -1032,7 +1061,7 @@ void spring_electrical_embedding(int dim, SparseMatrix A0, spring_electrical_con
 	qt = QuadTree_new_from_point_list(dim, n, max_qtree_level, x, NULL);
       }
 
-	  
+	
     }
 #ifdef TIME
     start2 = clock();
@@ -1054,7 +1083,7 @@ void spring_electrical_embedding(int dim, SparseMatrix A0, spring_electrical_con
 #ifdef TIME
 	start = clock();
 #endif
-	QuadTree_get_supernodes(qt, ctrl->bh, &(x[dim*i]), i, &nsuper, &nsupermax, 
+	QuadTree_get_supernodes(qt, ctrl->bh, &(x[dim*i]), i, &nsuper, &nsupermax,
 				&center, &supernode_wgts, &distances, &counts, flag);
 
 #ifdef TIME
@@ -1125,7 +1154,7 @@ void spring_electrical_embedding(int dim, SparseMatrix A0, spring_electrical_con
 #endif
       if (Verbose & 0) fprintf(stderr, "nsuper_avg=%f, counts_avg = %f 2*nsuper+counts=%f\n",nsuper_avg,counts_avg, 2*nsuper_avg+counts_avg);
       oned_optimizer_train(qtree_level_optimizer, 5*nsuper_avg + counts_avg);
-    }    
+    }
 
 #ifdef ENERGY
     if (Verbose) {
@@ -1197,7 +1226,7 @@ static void scale_coord(int n, int dim, real *x, int *id, int *jd, real *d, real
       dist = distance_cropped(x, dim, i, jd[j]);
       if (d){
 	dj = d[j];
-      } 
+      }
       assert(dj > 0);
       w_ij = 1./(dj*dj);
       /* spring force */
@@ -1227,7 +1256,7 @@ static real dmean_get(int n, int *id, int *jd, real* d){
 }
 
 void spring_maxent_embedding(int dim, SparseMatrix A0, SparseMatrix D, spring_electrical_control ctrl, real *node_weights, real *x, real rho, int *flag){
-  /* x is a point to a 1D array, x[i*dim+j] gives the coordinate of the i-th node at dimension j. 
+  /* x is a point to a 1D array, x[i*dim+j] gives the coordinate of the i-th node at dimension j.
 
      Minimize \Sum_{(i,j)\in E} w_ij (||x_i-x_j||-d_ij)^2 - \rho \Sum_{(i,j)\NotIn E} Log ||x_i-x_j||
 
@@ -1242,7 +1271,7 @@ void spring_maxent_embedding(int dim, SparseMatrix A0, SparseMatrix D, spring_el
      or
 
       d E/d x_i = \Sum_{(i,j)\in E} w_ij (||x_i-x_j||-d_ij) (x_i-x_j)/||x_i-x_j|| - \rho \Sum_{(i,j)\NotIn E} ||x_i-x_j||^(p-2) (x_i-x_j)
-    
+
       if D == NULL, unit weight assumed
 
   */
@@ -1311,7 +1340,7 @@ void spring_maxent_embedding(int dim, SparseMatrix A0, SparseMatrix D, spring_el
      s = (\Sum_{(ij)\in E} w_ij d_ij ||x_i-x_j||)/(\Sum_{(i,j)\in E} w_ij ||x_i-x_j||^2)
   */
 
-  } 
+  }
   scale_coord(n, dim, x, id, jd, d, dj);
 
 
@@ -1332,7 +1361,7 @@ void spring_maxent_embedding(int dim, SparseMatrix A0, SparseMatrix D, spring_el
 #endif
 
   f = MALLOC(sizeof(real)*dim);
-  xold = MALLOC(sizeof(real)*dim*n); 
+  xold = MALLOC(sizeof(real)*dim*n);
   do {
     iter++;
     xold = MEMCPY(xold, x, sizeof(real)*dim*n);
@@ -1365,7 +1394,7 @@ void spring_maxent_embedding(int dim, SparseMatrix A0, SparseMatrix D, spring_el
 	dist = distance_cropped(x, dim, i, jd[j]);
 	if (d){
 	  dj = d[j];
-	} 
+	}
 	assert(dj > 0);
 	/* spring force */
 	if (ctrl->q == 2){
@@ -1418,7 +1447,7 @@ void spring_maxent_embedding(int dim, SparseMatrix A0, SparseMatrix D, spring_el
 
       /* repulsive force ||x_i-x_j||^(1 - p) (x_i - x_j) */
       if (USE_QT){
-	QuadTree_get_supernodes(qt, ctrl->bh, &(x[dim*i]), i, &nsuper, &nsupermax, 
+	QuadTree_get_supernodes(qt, ctrl->bh, &(x[dim*i]), i, &nsuper, &nsupermax,
 				&center, &supernode_wgts, &distances, &counts, flag);
 	nsuper_avg += nsuper;
 	if (*flag) goto RETURN;
@@ -1480,7 +1509,7 @@ void spring_maxent_embedding(int dim, SparseMatrix A0, SparseMatrix D, spring_el
       fprintf(stderr, "\r                iter = %d, step = %f Fnorm = %f nsuper = %d nz = %d stress = %f                                  ",iter, step, Fnorm, (int) nsuper_avg,A->nz, stress);
     }
 #endif
-    
+
     step = update_step(adaptive_cooling, step, Fnorm, Fnorm0, cool);
   } while (step > tol && iter < maxiter);
 
@@ -1504,7 +1533,7 @@ void spring_maxent_embedding(int dim, SparseMatrix A0, SparseMatrix D, spring_el
 
 
 void spring_electrical_spring_embedding(int dim, SparseMatrix A0, SparseMatrix D, spring_electrical_control ctrl, real *node_weights, real *x, int *flag){
-  /* x is a point to a 1D array, x[i*dim+j] gives the coordinate of the i-th node at dimension j. Same as the spring-electrical except we also 
+  /* x is a point to a 1D array, x[i*dim+j] gives the coordinate of the i-th node at dimension j. Same as the spring-electrical except we also
      introduce force due to spring length
    */
   SparseMatrix A = A0;
@@ -1572,7 +1601,7 @@ void spring_electrical_spring_embedding(int dim, SparseMatrix A0, SparseMatrix D
 #endif
 
   f = MALLOC(sizeof(real)*dim);
-  xold = MALLOC(sizeof(real)*dim*n); 
+  xold = MALLOC(sizeof(real)*dim*n);
   do {
     iter++;
     xold = MEMCPY(xold, x, sizeof(real)*dim*n);
@@ -1615,7 +1644,7 @@ void spring_electrical_spring_embedding(int dim, SparseMatrix A0, SparseMatrix D
 
       /* repulsive force K^(1 - p)/||x_i-x_j||^(1 - p) (x_i - x_j) */
       if (USE_QT){
-	QuadTree_get_supernodes(qt, ctrl->bh, &(x[dim*i]), i, &nsuper, &nsupermax, 
+	QuadTree_get_supernodes(qt, ctrl->bh, &(x[dim*i]), i, &nsuper, &nsupermax,
 				&center, &supernode_wgts, &distances, &counts, flag);
 	nsuper_avg += nsuper;
 	if (*flag) goto RETURN;
@@ -1679,7 +1708,7 @@ void spring_electrical_spring_embedding(int dim, SparseMatrix A0, SparseMatrix D
 #endif
     }
 #endif
-    
+
     step = update_step(adaptive_cooling, step, Fnorm, Fnorm0, cool);
   } while (step > tol && iter < maxiter);
 
@@ -1855,10 +1884,10 @@ void pcp_rotate(int n, int dim, real *x){
   if (y[1] == 0) {
     axis[0] = 0; axis[1] = 1;
   } else {
-    /*         Eigensystem[{{x0, x1}, {x1, x3}}] = 
-	       {{(x0 + x3 - Sqrt[x0^2 + 4*x1^2 - 2*x0*x3 + x3^2])/2, 
-	       (x0 + x3 + Sqrt[x0^2 + 4*x1^2 - 2*x0*x3 + x3^2])/2}, 
-	       {{-(-x0 + x3 + Sqrt[x0^2 + 4*x1^2 - 2*x0*x3 + x3^2])/(2*x1), 1}, 
+    /*         Eigensystem[{{x0, x1}, {x1, x3}}] =
+	       {{(x0 + x3 - Sqrt[x0^2 + 4*x1^2 - 2*x0*x3 + x3^2])/2,
+	       (x0 + x3 + Sqrt[x0^2 + 4*x1^2 - 2*x0*x3 + x3^2])/2},
+	       {{-(-x0 + x3 + Sqrt[x0^2 + 4*x1^2 - 2*x0*x3 + x3^2])/(2*x1), 1},
 	       {-(-x0 + x3 - Sqrt[x0^2 + 4*x1^2 - 2*x0*x3 + x3^2])/(2*x1), 1}}}
     */
     axis[0] = -(-y[0] + y[3] - sqrt(y[0]*y[0]+4*y[1]*y[1]-2*y[0]*y[3]+y[3]*y[3]))/(2*y[1]);
@@ -1877,7 +1906,7 @@ void pcp_rotate(int n, int dim, real *x){
 
 
 }
- 
+
 static void rotate(int n, int dim, real *x, real angle){
   int i, k;
   real axis[2], center[2], x0, x1;
@@ -1905,7 +1934,7 @@ static void rotate(int n, int dim, real *x, real angle){
     x[dim*i + 1] = x1;
   }
 
-  
+
 }
 
 static void attach_edge_label_coordinates(int dim, SparseMatrix A, int n_edge_label_nodes, int *edge_label_nodes, real *x, real *x2){
@@ -2023,9 +2052,9 @@ static SparseMatrix shorting_edge_label_nodes(SparseMatrix A, int n_edge_label_n
 
 }
 
-static void multilevel_spring_electrical_embedding_core(int dim, SparseMatrix A0, SparseMatrix D0, spring_electrical_control ctrl, real *node_weights, real *label_sizes, 
+static void multilevel_spring_electrical_embedding_core(int dim, SparseMatrix A0, SparseMatrix D0, spring_electrical_control ctrl, real *node_weights, real *label_sizes,
 					    real *x, int n_edge_label_nodes, int *edge_label_nodes, int *flag){
-  
+
 
   Multilevel_control mctrl = NULL;
   int n, plg, coarsen_scheme_used;
@@ -2100,7 +2129,7 @@ static void multilevel_spring_electrical_embedding_core(int dim, SparseMatrix A0
     ctrl->p = -1;
     if (plg) ctrl->p = -1.8;
   }
-  
+
   do {
 #ifdef DEBUG_PRINT
     if (Verbose) {
@@ -2227,7 +2256,7 @@ void multilevel_spring_electrical_embedding_gv(void* data){
   multilevel_spring_electrical_embedding_core(d->dim, d->A, d->D, d->ctrl, d->node_weights, d->label_sizes, d->x, d->n_edge_label_nodes, d->edge_label_nodes, d->flag);
   gviewer_reset_graph_coord(d->A, d->dim, d->x);/* A inside spring_electrical gets deleted */
 }
-void multilevel_spring_electrical_embedding(int dim, SparseMatrix A, SparseMatrix D, spring_electrical_control ctrl, real *node_weights, real *label_sizes, 
+void multilevel_spring_electrical_embedding(int dim, SparseMatrix A, SparseMatrix D, spring_electrical_control ctrl, real *node_weights, real *label_sizes,
 				 real *x, int n_edge_label_nodes, int *edge_label_nodes, int *flag){
   struct multilevel_spring_electrical_embedding_data data = {dim, A, D, ctrl, node_weights, label_sizes, x, n_edge_label_nodes, edge_label_nodes, flag};
 
@@ -2251,7 +2280,7 @@ void multilevel_spring_electrical_embedding(int dim, SparseMatrix A, SparseMatri
 
 }
 #else
-void multilevel_spring_electrical_embedding(int dim, SparseMatrix A, SparseMatrix D, spring_electrical_control ctrl, real *node_weights, real *label_sizes, 
+void multilevel_spring_electrical_embedding(int dim, SparseMatrix A, SparseMatrix D, spring_electrical_control ctrl, real *node_weights, real *label_sizes,
 				 real *x, int n_edge_label_nodes, int *edge_label_nodes, int *flag){
   multilevel_spring_electrical_embedding_core(dim, A, D, ctrl, node_weights, label_sizes, x, n_edge_label_nodes, edge_label_nodes, flag);
 }

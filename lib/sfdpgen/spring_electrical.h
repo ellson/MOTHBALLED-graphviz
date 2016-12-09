@@ -68,6 +68,7 @@ struct spring_electrical_control_struct {
 typedef struct  spring_electrical_control_struct  *spring_electrical_control; 
 
 spring_electrical_control spring_electrical_control_new(void);
+void spring_electrical_control_print(spring_electrical_control ctrl);
 
 void spring_electrical_embedding(int dim, SparseMatrix A0, spring_electrical_control ctrl, real *node_weights, real *x, int *flag);
 void spring_electrical_embedding_fast(int dim, SparseMatrix A0, spring_electrical_control ctrl, real *node_weights, real *x, int *flag);
