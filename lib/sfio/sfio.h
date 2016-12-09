@@ -93,10 +93,10 @@ extern "C" {
 /* Sfoff_t should be large enough for largest file address */
 
 
-#define Sfoff_t		_ast_intmax_t
-#define Sflong_t	_ast_intmax_t
-#define Sfulong_t	unsigned _ast_intmax_t
-#define Sfdouble_t	_ast_fltmax_t
+#define Sfoff_t		long long
+#define Sflong_t	long long
+#define Sfulong_t	unsigned long long
+#define Sfdouble_t	long double
 
 	typedef struct _sfio_s Sfio_t;
 

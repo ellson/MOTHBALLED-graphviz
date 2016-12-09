@@ -64,20 +64,6 @@
 typedef int ssize_t;
 #endif
 
-/* FIXME - need proper configure tests for these */
-#define _ast_int1_t             char
-#define _ast_int2_t             short
-#define _ast_int4_t             int
-#define _ast_int8_t             long long
-#define _ast_intmax_t           _ast_int8_t
-#define _ast_intswap            7
-
-#define _ast_flt4_t             float
-#define _ast_flt8_t             double
-#define _ast_flt12_t            long double
-#define _ast_fltmax_t           _ast_flt12_t
-/* */
-
 #ifndef va_listref
 #define va_listref(p) (p)	/* pass va_list to varargs function */
 #define va_listval(p) (p)	/* retrieve va_list from va_arg(ap,va_listarg) */
