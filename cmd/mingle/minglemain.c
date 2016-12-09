@@ -124,8 +124,8 @@ checkG (Agraph_t* g)
 
 static void init(int argc, char *argv[], opts_t* opts)
 {
-	unsigned int c;
-	char* CmdName = argv[0];
+	int c;
+	char* cmd = argv[0];
 	real s;
     int i;
 
@@ -179,7 +179,7 @@ static void init(int argc, char *argv[], opts_t* opts)
 				fprintf (stderr, "-k arg %s must be an integer >= 2 - ignored\n", optarg); 
 			break;
 		case 'o':
-			outfile = openFile(optarg, "w", CmdName);
+			outfile = openFile(optarg, "w", cmd);
 			break;
 		case 'p':
             if ((sscanf(optarg,"%lf",&s) > 0))
@@ -204,7 +204,7 @@ static void init(int argc, char *argv[], opts_t* opts)
 		case 'v':
 			Verbose = 1;
             if ((sscanf(optarg,"%d",&i) > 0) && (i >= 0))
-				Verbose =  i;
+				Verbose =  (unsigned char)i;
 			else 
 				optind--;
 			break;
@@ -212,7 +212,7 @@ static void init(int argc, char *argv[], opts_t* opts)
 			if (optopt == 'v')
 				Verbose = 1;
 			else {
-				fprintf(stderr, "%s: option -%c missing argument\n", CmdName, optopt);
+				fprintf(stderr, "%s: option -%c missing argument\n", cmd, optopt);
 				usage(1);
 			}
 			break;
@@ -220,7 +220,9 @@ static void init(int argc, char *argv[], opts_t* opts)
 			if (optopt == '?')
 				usage(0);
 			else
-				fprintf(stderr, "%s: option -%c unrecognized - ignored\n", CmdName, optopt);
+				fprintf(stderr, "%s: option -%c unrecognized - ignored\n", cmd, optopt);
+			break;
+		default:
 			break;
 		}
     }

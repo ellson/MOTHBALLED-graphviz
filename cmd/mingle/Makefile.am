@@ -9,6 +9,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/sfdpgen \
 	-I$(top_srcdir)/lib/mingle \
 	-I$(top_srcdir)/lib/ingraphs \
+	-I$(top_srcdir)/lib/common \
 	-I$(top_srcdir)/lib/cgraph \
 	-I$(top_srcdir)/lib/cdt
 
