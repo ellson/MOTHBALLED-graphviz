@@ -1069,6 +1069,9 @@ static adjust_data *getAdjustMode(Agraph_t* g, char *s, adjust_data* dp)
 		setPrismValues (g, "", dp);
 	}
     }
+    if (Verbose) {
+	fprintf(stderr, "overlap: %s value %d scaling %.04f\n", dp->print, dp->value, dp->scaling);
+    }
     return dp;
 }
 
