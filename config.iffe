@@ -34,7 +34,6 @@ hdr malloc
 hdr ndir
 hdr netdb
 hdr search
-hdr stdarg
 hdr stdbool
 hdr stdint
 hdr strings

@@ -258,9 +258,6 @@
 /* Define to 1 if you have the `srand48' function. */
 /* #undef HAVE_SRAND48 */
 
-/* Define to 1 if you have the <stdarg.h> header file. */
-#define HAVE_STDARG_H 1
-
 /* Define to 1 if stdbool.h conforms to C99. */
 //#define HAVE_STDBOOL_H 1
 
