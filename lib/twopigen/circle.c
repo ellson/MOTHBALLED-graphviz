@@ -422,10 +422,10 @@ Agnode_t* circleLayout(Agraph_t * sg, Agnode_t * center)
 
     if (!center)
 	center = findCenterNode(sg);
-    if (Verbose)
-	fprintf(stderr, "root = %s depth = %d\n", agnameof(center), SLEAF(center)-1);
 
     maxNStepsToCenter = setParentNodes(sg,center);
+    if (Verbose)
+	fprintf(stderr, "root = %s max steps to root = %d\n", agnameof(center), maxNStepsToCenter);
     if (maxNStepsToCenter < 0) {
 	agerr(AGERR, "twopi: use of weight=0 creates disconnected component.\n");
 	return center;
