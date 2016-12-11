@@ -326,9 +326,6 @@
 /* Define to 1 if you have the <termios.h> header file. */
 /* #undef HAVE_TERMIOS_H */
 
-/* Define to 1 if you have the <time.h> header file. */
-#define HAVE_TIME_H 1
-
 /* Define to 1 if you have the <tkInt.h> header file. */
 /* #undef HAVE_TKINT_H */
 
