@@ -80,9 +80,6 @@
 /* Define if FILE structure provides _r */
 /* #undef HAVE_FILE_R */
 
-/* Define to 1 if you have the <float.h> header file. */
-#define HAVE_FLOAT_H 1
-
 /* Define if you have the fontconfig library */
 #define HAVE_FONTCONFIG 1
 
