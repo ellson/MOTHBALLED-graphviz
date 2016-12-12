@@ -159,9 +159,6 @@
 /* Define if intptr_t is declared */
 #define HAVE_INTPTR_T 1
 
-/* Define to 1 if you have the <langinfo.h> header file. */
-/* #undef HAVE_LANGINFO_H */
-
 /* Define if you have the lasi library */
 /* #undef HAVE_LASI */
 
@@ -170,9 +167,6 @@
 
 /* Define if the LIBGEN library has the basename feature */
 /* #undef HAVE_LIBGEN */
-
-/* Define to 1 if you have the <libintl.h> header file. */
-#define HAVE_LIBINTL_H 1
 
 /* Define if you have the JPEG library */
 #define HAVE_LIBJPEG 1
@@ -225,9 +219,6 @@
 /* Define to 1 if you have the `pow' function. */
 #define HAVE_POW 1
 
-/* Define to 1 if you have the <pthread.h> header file. */
-/* #undef HAVE_PTHREAD_H */
-
 /* Define if you have the Quartz framework for Mac OS X */
 /* #undef HAVE_QUARTZ */
 
@@ -239,9 +230,6 @@
 
 /* Define to 1 if you have the `setenv' function. */
 /* #undef HAVE_SETENV */
-
-/* Define to 1 if you have the <setjmp.h> header file. */
-#define HAVE_SETJMP_H 1
 
 /* Define to 1 if you have the `setmode' function. */
 #define HAVE_SETMODE 1
@@ -310,9 +298,6 @@
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #define HAVE_SYS_STAT_H 1
-
-/* Define to 1 if you have the <sys/times.h> header file. */
-/* #undef HAVE_SYS_TIMES_H */
 
 /* Define to 1 if you have the <sys/time.h> header file. */
 #define HAVE_SYS_TIME_H 1

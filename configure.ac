@@ -426,11 +426,11 @@ dnl Checks for header files
 
 # AC_HEADER_STDC
 AC_CHECK_HEADERS(malloc.h \
-	fcntl.h search.h pthread.h values.h limits.h termios.h \
-	errno.h unistd.h strings.h setjmp.h \
-	sys/time.h sys/times.h sys/types.h sys/select.h \
+	fcntl.h search.h values.h limits.h termios.h \
+	errno.h unistd.h strings.h \
+	sys/time.h sys/types.h sys/select.h \
 	sys/stat.h sys/mman.h \
-	sys/ioctl.h sys/inotify.h langinfo.h libintl.h crt_externs.h)
+	sys/ioctl.h sys/inotify.h crt_externs.h)
 AC_HEADER_TIME
 AC_HEADER_DIRENT
 AC_HEADER_STDBOOL
