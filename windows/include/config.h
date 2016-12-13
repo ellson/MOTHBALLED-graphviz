@@ -68,15 +68,6 @@
 /* Define to 1 if you have the <expat.h> header file. */
 #define HAVE_EXPAT_H 1
 
-/* Define to 1 if you have the `feenableexcept' function. */
-/* #undef HAVE_FEENABLEEXCEPT */
-
-/* Define to 1 if you have the <fenv.h> header file. */
-#define HAVE_FENV_H 1
-
-/* Define to 1 if you have the `fesetenv' function. */
-#define HAVE_FESETENV 1
-
 /* Define if FILE structure provides _cnt */
 #define HAVE_FILE_CNT 1
 
@@ -94,9 +85,6 @@
 
 /* Define if you have the fontconfig library */
 #define HAVE_FONTCONFIG 1
-
-/* Define to 1 if you have the <fpu_control.h> header file. */
-/* #undef HAVE_FPU_CONTROL_H */
 
 /* Define if you have the freetype2 library */
 #define HAVE_FREETYPE2 1
@@ -312,9 +300,6 @@
 /* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
    */
 /* #undef HAVE_SYS_DIR_H */
-
-/* Define to 1 if you have the <sys/fpu.h> header file. */
-/* #undef HAVE_SYS_FPU_H */
 
 /* Define to 1 if you have the <sys/inotify.h> header file. */
 /* #undef HAVE_SYS_INOTIFY_H */
