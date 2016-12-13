@@ -5,6 +5,13 @@
 <HTML VERSION="2.0">
 <HEAD>
 <TITLE>Output Formats</TITLE>
+<style>
+.jsontable {
+    border: 1px solid black;
+    background-color: beige;
+}
+</style>
+<script src="http://www.w3schools.com/lib/w3data.js"></script>
 </HEAD>
 <BODY BGCOLOR=white>
 <A NAME="top"></A>
@@ -17,7 +24,7 @@ is one of the parameters listed below.
 The formats actually available in a given Graphviz system depend on
 how the system was built and the presence of additional libraries.
 To see what formats <b>dot</b> supports, run <TT>dot -T?</TT>.
-See the <A HREF=command.html#d.T> description of the -T</A>
+See the <A HREF=command.html#d:T> description of the -T</A>
 flag for additional information.
 <P>
 Note that the internal coordinate system has the origin
@@ -36,14 +43,19 @@ formats need to be interpreted in this manner.
 </TD><TD>Windows Bitmap Format</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:canon HREF=#d:canon>canon</A>
 <BR><A NAME=a:dot HREF=#d:dot>dot</A>
+<BR><A NAME=a:gv HREF=#d:gv>gv</A>
 <BR><A NAME=a:xdot HREF=#d:xdot>xdot</A>
+<BR><A NAME=a:xdot1.2 HREF=#d:xdot1.2>xdot1.2</A>
+<BR><A NAME=a:xdot1.4 HREF=#d:xdot1.4>xdot1.4</A>
 </TD><TD>DOT</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:cgimage HREF=#d:cgimage>cgimage</A>
+</TD><TD>CGImage bitmap format</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:cmap HREF=#d:cmap>cmap</A>
 </TD><TD>Client-side imagemap (deprecated)</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=a:dia HREF=#d:dia>dia</A>
-</TD><TD>Dia format</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:eps HREF=#d:eps>eps</A>
 </TD><TD>Encapsulated PostScript</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:exr HREF=#d:exr>exr</A>
+</TD><TD>OpenEXR</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:fig HREF=#d:fig>fig</A>
 </TD><TD>FIG</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:gd HREF=#d:gd>gd</A>
@@ -53,8 +65,6 @@ formats need to be interpreted in this manner.
 </TD><TD>GIF</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:gtk HREF=#d:gtk>gtk</A>
 </TD><TD>GTK canvas</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=a:hpgl HREF=#d:hpgl>hpgl</A>
-</TD><TD>HP-GL/2</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:ico HREF=#d:ico>ico</A>
 </TD><TD>Icon Image File Format</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:imap HREF=#d:imap>imap</A>
@@ -65,47 +75,60 @@ formats need to be interpreted in this manner.
 </TD><TD>Server-side and client-side imagemaps</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:ismap HREF=#d:ismap>ismap</A>
 </TD><TD>Server-side imagemap (deprecated)</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:jp2 HREF=#d:jp2>jp2</A>
+</TD><TD>JPEG 2000</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:jpg HREF=#d:jpg>jpg</A>
 <BR><A NAME=a:jpeg HREF=#d:jpeg>jpeg</A>
 <BR><A NAME=a:jpe HREF=#d:jpe>jpe</A>
 </TD><TD>JPEG</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=a:mif HREF=#d:mif>mif</A>
-</TD><TD>FrameMaker MIF format</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=a:mp HREF=#d:mp>mp</A>
-</TD><TD>MetaPost</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=a:pcl HREF=#d:pcl>pcl</A>
-</TD><TD>PCL</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:json HREF=#d:json>json</A>
+<BR><A NAME=a:json0 HREF=#d:json0>json0</A>
+<BR><A NAME=a:dot_json HREF=#d:dot_json>dot_json</A>
+<BR><A NAME=a:xdot_json HREF=#d:xdot_json>xdot_json</A>
+</TD><TD>Dot graph represented in JSON format</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:pct HREF=#d:pct>pct</A>
+<BR><A NAME=a:pict HREF=#d:pict>pict</A>
+</TD><TD>PICT</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:pdf HREF=#d:pdf>pdf</A>
 </TD><TD>Portable Document Format (PDF)</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:pic HREF=#d:pic>pic</A>
-</TD><TD>PIC</TD> </TR>
+</TD><TD>Kernighan's PIC graphics language</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:plain HREF=#d:plain>plain</A>
 <BR><A NAME=a:plain-ext HREF=#d:plain-ext>plain-ext</A>
 </TD><TD>Simple text format</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:png HREF=#d:png>png</A>
 </TD><TD>Portable Network Graphics format</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:pov HREF=#d:pov>pov</A>
+</TD><TD>POV-Ray markup language (prototype)</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:ps HREF=#d:ps>ps</A>
 </TD><TD>PostScript</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:ps2 HREF=#d:ps2>ps2</A>
 </TD><TD>PostScript for PDF</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:psd HREF=#d:psd>psd</A>
+</TD><TD>PSD</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:sgi HREF=#d:sgi>sgi</A>
+</TD><TD>SGI</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:svg HREF=#d:svg>svg</A>
 <BR><A NAME=a:svgz HREF=#d:svgz>svgz</A>
 </TD><TD>Scalable Vector Graphics</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:tga HREF=#d:tga>tga</A>
-</TD><TD>Truevision Targa Format (TGA)</TD> </TR>
+</TD><TD>Truevision TGA</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:tif HREF=#d:tif>tif</A>
 <BR><A NAME=a:tiff HREF=#d:tiff>tiff</A>
 </TD><TD>TIFF (Tag Image File Format)</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:tk HREF=#d:tk>tk</A>
+</TD><TD>TK graphics</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:vml HREF=#d:vml>vml</A>
 <BR><A NAME=a:vmlz HREF=#d:vmlz>vmlz</A>
 </TD><TD>Vector Markup Language (VML)</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:vrml HREF=#d:vrml>vrml</A>
 </TD><TD>VRML</TD> </TR>
- <TR><TD ALIGN=CENTER><A NAME=a:vtx HREF=#d:vtx>vtx</A>
-</TD><TD>Visual Thought format</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:wbmp HREF=#d:wbmp>wbmp</A>
 </TD><TD>Wireless BitMap format</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:webp HREF=#d:webp>webp</A>
+</TD><TD>Image format for the Web</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:xlib HREF=#d:xlib>xlib</A>
+<BR><A NAME=a:x11 HREF=#d:x11>x11</A>
 </TD><TD>Xlib canvas</TD> </TR>
 </TABLE>
 <HR>
@@ -116,7 +139,10 @@ formats need to be interpreted in this manner.
 
 <DT><A NAME=d:canon HREF=#a:canon><STRONG>canon</STRONG></A>
 ,<DT><A NAME=d:dot HREF=#a:dot><STRONG>dot</STRONG></A>
+,<DT><A NAME=d:gv HREF=#a:gv><STRONG>gv</STRONG></A>
 ,<DT><A NAME=d:xdot HREF=#a:xdot><STRONG>xdot</STRONG></A>
+,<DT><A NAME=d:xdot1.2 HREF=#a:xdot1.2><STRONG>xdot1.2</STRONG></A>
+,<DT><A NAME=d:xdot1.4 HREF=#a:xdot1.4><STRONG>xdot1.4</STRONG></A>
 <DD>These formats produce output in the
 <A HREF=lang.html>dot language</A>.
 Using <B>canon</B> produces a prettyprinted version of the input,
@@ -149,16 +175,20 @@ The <B>xdot</B> format extends the
 how graph components are drawn. It relies on additional attributes
 for nodes, edges and graphs.
 <P>
-The format is preliminary; comments and
+The format is fluid; comments and
 suggestions for better representations are welcome.
 To allow for changes in the format, Graphviz attaches the attribute
 <TT>xdotversion</TT> to the graph.
+If the <TT>xdotversion</TT> attribute is set in the input graph, the renderer
+will only output features supported by that version. Note that the formats <TT>xdot1.2</TT>
+and <TT>xdot1.4</TT> are equivalent to setting <TT>xdotversion=1.2</TT> and <TT>xdotversion=1.4</TT>,
+respectively.
 <P>
 Additional drawing attributes can appear on nodes, edges, clusters and 
 on the graph itself. There are six new attributes: 
 <SPACER TYPE=VERTICAL size=10>
 <TABLE  border bgcolor=beige>
-<TR><TD>_draw_<TD colspan=2>Drawing operations
+<TR><TD>_draw_<TD colspan=2>General drawing without labels
 <TR><TD>_ldraw_<TD colspan=2>Label drawing
 <TR><TD>_hdraw_<TD>Head arrowhead<TD>Edge only
 <TR><TD>_tdraw_<TD>Tail arrowhead<TD>Edge only
@@ -196,6 +226,9 @@ was in the original specification.)
 n bytes following '-'. The text should be left-aligned (centered,
 right-aligned) on the point if j is -1 (0, 1), respectively. The value
 w gives the width of the text as computed by the library.
+<TR><TD>t f
+<TD>Set font characteristics. The integer f is the OR of BOLD=1, ITALIC=2, UNDERLINE=4, SUPERSCRIPT=8, SUBSCRIPT=16, (1.5) STRIKE-THROUGH=32 (1.6),
+and OVERLINE=64 (1.7).
 <TR><TD>C n -<I>b<sub>1</sub>b<sub>2</sub>...b<sub>n</sub></I>
 <TD>Set fill color. The color value consists of the
 n bytes following '-'. (1.1)
@@ -222,13 +255,35 @@ Note that the filled figures (ellipses, polygons and B-Splines)
 imply two operations: first, drawing the filled figure with the
 current fill color; second, drawing an unfilled figure with the
 current pen color, pen width and pen style.
-the
+<P>
+Within the context of a single drawing attribute, e.g., <TT>_draw_</TT>, there is
+an implicit state for the graphical attributes. That is, once a color, style, font, or
+font characteristic is set, it remains valid for all relevant drawing operations
+until the value is reset by another xdot cmd.
 <P>
 Style values which can be incorporated in the graphics model do not
 appear in xdot output. In particular, the style values
 <TT>filled</TT>, <TT>rounded</TT>, <TT>diagonals</TT>, and <TT>invis</TT>
 will not appear. Indeed, if style contains <TT>invis</TT>, 
 there will not be any xdot output at all.
+<P>
+With version 1.4 of xdot, color strings may now encode linear and radial gradients. Linear
+gradients have the form <br>
+&nbsp;&nbsp;&nbsp;&nbsp;'[' x<sub>0</sub> y<sub>0</sub> x<sub>1</sub> y<sub>1</sub> n [<I>color-stop</I>]<sup>+</sup> ']'<br>
+where (x<sub>0</sub>,y<sub>0</sub>) and (x<sub>1</sub>,y<sub>1</sub>) define the starting and
+ending points of the gradient line segment, and n gives the number of <I>color-stops</I>. Each
+<I>color-stop</I> has the form<br>
+&nbsp;&nbsp;&nbsp;&nbsp;v m -<I>b<sub>1</sub>b<sub>2</sub>...b<sub>m</sub></I><br>
+where v is a number in the range [0,1] defining a position on the gradient line segment, with
+color specified by the m byte string <I>b<sub>1</sub>b<sub>2</sub>...b<sub>m</sub></I>, 
+the same format as used for colors in the 'c' and 'C' operations.
+<P>
+Radial gradients have the form<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'(' x<sub>0</sub> y<sub>0</sub> r<sub>0</sub> x<sub>1</sub> y<sub>1</sub> r<sub>1</sub> n [<I>color-stop</I>]<sup>+</sup> ')' <br>
+where x<sub><i>j</i></sub> y<sub><i>j</i></sub> r<sub><i>j</i></sub>, for <i>j</i>=0,1, specify
+the center and radius of the start and ending circle, and n gives the number of <I>color-stops</I>.
+A <I>color-stop</I> has the same format as defined for linear gradients, again given the fractional
+offset and its associated color. 
 <P>
 In handling text alignment, the application may want to recompute the
 string width using its own rendering primitives.
@@ -246,12 +301,20 @@ Note though that if
 an edge or node is invisible, no drawing operations are attached to it.
 <P>
 Version info:
-<TABLE  border >
-<TR><TH>Xdot version</TH><TH>Graphviz version</TH></TR>
-<TR><TD>1.0</TD><TD>1.9</TD></TR>
-<TR><TD>1.1</TD><TD>2.8</TD></TR>
-<TR><TD>1.2</TD><TD>2.13</TD></TR>
+<TABLE  border="1" >
+<TR><TH>Xdot version</TH><TH>Graphviz version</TH><TH>Modification</TH></TR>
+<TR><TD>1.0</TD> <TD>1.9</TD><TD> </TD></TR>
+<TR><TD>1.1</TD> <TD>2.8</TD><TD>First plug-in version</TD></TR>
+<TR><TD>1.2</TD><TD>2.13</TD><TD>Support image operator <b>I</b></TD></TR>
+<TR><TD>1.3</TD><TD>2.31</TD><TD>Add numerical precision</TD</TR>
+<TR><TD>1.4</TD><TD>2.32</TD><TD>Add gradient colors</TD</TR>
+<TR><TD>1.5</TD><TD>2.34</TD><TD>Fix text layout problem; fix inverted vector in gradient; support version-specific output; new <B>t</B> op for text characteristics</TD</TR>
+<TR><TD>1.6</TD><TD>2.35</TD><TD>Add STRIKE-THROUGH bit for <tt>t</tt></TD</TR>
+<TR><TD>1.7</TD><TD>2.37</TD><TD>Add OVERLINE for <tt>t</tt></TD</TR>
 </TABLE>
+
+<DT><A NAME=d:cgimage HREF=#a:cgimage><STRONG>cgimage</STRONG></A>
+<DD>Output using the <A HREF="https://developer.apple.com/library/mac/documentation/graphicsimaging/reference/CGImage/Reference/reference.html">CGImage format</A>.
 
 <DT><A NAME=d:cmap HREF=#a:cmap><STRONG>cmap</STRONG></A>
 <DD>Produces map files for client-side image maps. The cmap format is
@@ -261,14 +324,14 @@ to processing by XML tools. In particular, the cmapx output is wrapped in
 <P>
 See <A HREF=#ID>Note</A>.
 
-<DT><A NAME=d:dia HREF=#a:dia><STRONG>dia</STRONG></A>
-<DD>Produces <A HREF="http://www.gnome.org/projects/dia/">Dia</A> output.
-
 <DT><A NAME=d:eps HREF=#a:eps><STRONG>eps</STRONG></A>
 <DD>Produces Encapsulated PostScript output.
 At present, this is only guaranteed to be correct for a single
 input graph since the Bounding Box information has to appear
 at the beginning of the output, and this will be based on the first graph.
+
+<DT><A NAME=d:exr HREF=#a:exr><STRONG>exr</STRONG></A>
+<DD>Output in the OpenEXR format
 
 <DT><A NAME=d:fig HREF=#a:fig><STRONG>fig</STRONG></A>
 <DD>Outputs graphs in the FIG graphics language.
@@ -284,21 +347,23 @@ formats used by the gd library. The latter is compressed.
 <DT><A NAME=d:gtk HREF=#a:gtk><STRONG>gtk</STRONG></A>
 <DD>Creates a <A HREF="http://www.gtk.org/">GTK</A> window and displays the output there.
 
-<DT><A NAME=d:hpgl HREF=#a:hpgl><STRONG>hpgl</STRONG></A>
-<DD>Produces output in the HP-GL/2 vector graphic printer language.
-
 <DT><A NAME=d:ico HREF=#a:ico><STRONG>ico</STRONG></A>
 <DD>Outputs images in the Windows <A HREF="http://en.wikipedia.org/wiki/ICO_(icon_image_file_format)">ICO format</A>.
 
 <DT><A NAME=d:imap HREF=#a:imap><STRONG>imap</STRONG></A>
 ,<DT><A NAME=d:cmapx HREF=#a:cmapx><STRONG>cmapx</STRONG></A>
-<DD>Produces map files for server-side and client-side image maps,
+<DD>Produces map files for server-side and client-side image maps.
 These can be used in a web page with
-a graphical form of the output, e.g. in JPEG or GIF format, to attach
-links to nodes and edges. For example, to create a server-side map
+a graphical form of the output, e.g. in JPEG, GIF or PNG format, to attach
+links to nodes and edges. 
+Graphviz generates an object's map information only if the object has a non-trival 
+<A HREF=attrs.html#d:URL>URL</A> or <A HREF=attrs.html#d:href>href</A>
+attribute, or if it has an explicit <A HREF=attrs.html#d:tooltip>tooltip</A> attribute.
+<P>
+For example, to create a server-side map
 given the dot file
 <PRE>
-/* x.dot */
+/* x.gv */
 digraph mainmap {
   URL="http://www.research.att.com/base.html";
   command [URL="http://www.research.att.com/command.html"];
@@ -307,7 +372,7 @@ digraph mainmap {
 </PRE>
 one would process the graph and generate two output files:
 <PRE>
-dot -Timap -ox.map -Tgif -ox.gif x.dot
+dot -Timap -ox.map -Tgif -ox.gif x.gv
 </PRE>
 and then refer to it in a web page:
 <XMP>
@@ -315,13 +380,24 @@ and then refer to it in a web page:
 </XMP>
 For client-side maps, one again generates two output files:
 <PRE>
-dot -Tcmapx -ox.map -Tgif -ox.gif x.dot
+dot -Tcmapx -ox.map -Tgif -ox.gif x.gv
 </PRE>
 and uses the HTML
 <XMP>
 <IMG SRC="x.gif" USEMAP="#mainmap" />
 ... [content of x.map] ...
 </XMP>
+Note that the name given in the USEMAP attribute must be the same
+as the ID attribute of the MAP element. The Graphviz renderer
+uses the name of the graph as the ID. Thus, in the example above,
+where the graph's name is <T>mainmap</T>, we have <T>USEMAP="#mainmap"</T>
+in the IMG attribute, and x.map will look like
+<XMP>
+<map id="mainmap" name="mainmap">
+... 
+</map>
+</XMP>
+<P>
 <A HREF=attrs.html#d:URL>URLs</A> can be attached to the root
 graph, nodes and edges. If a node has a URL, clicking in the node
 will activate the link.
@@ -338,9 +414,9 @@ The analogous description holds for the tail and the
 A URL associated with the graph is used as a default link.
 <P>
 If the URL
-of a node contains the escape sequence "\N", it will be replaced by
+of a node contains the escape sequence "&#92;N", it will be replaced by
 the node's name.
-If the headURL is defined and contains the escape sequence "\N",
+If the headURL is defined and contains the escape sequence "&#92;N",
 it will be replaced by
 the <A HREF=attrs.html#d:headlabel>headlabel</A>, if defined.
 The analogous result holds for the tailURL and the
@@ -361,25 +437,49 @@ nodes and edges. Since edge
 links are attached to edge labels, an edge must
 have a <A HREF=attrs.html#d:label>label</A> for its
 URL to be used. For both nodes and edges, if the URL has the escape
-sequence "\N" embedded in its string, this will be replaced with the
+sequence "&#92;N" embedded in its string, this will be replaced with the
 node or edge name.
+
+<DT><A NAME=d:jp2 HREF=#a:jp2><STRONG>jp2</STRONG></A>
+<DD>Output using the <A HREF="http://www.jpeg.org/jpeg2000/">JPEG 2000</A> format.
 
 <DT><A NAME=d:jpg HREF=#a:jpg><STRONG>jpg</STRONG></A>
 ,<DT><A NAME=d:jpeg HREF=#a:jpeg><STRONG>jpeg</STRONG></A>
 ,<DT><A NAME=d:jpe HREF=#a:jpe><STRONG>jpe</STRONG></A>
 <DD>Output JPEG compressed image files.
 
-<DT><A NAME=d:mif HREF=#a:mif><STRONG>mif</STRONG></A>
-<DD>Generates Frame Maker MIF files.
+<DT><A NAME=d:json HREF=#a:json><STRONG>json</STRONG></A>
+,<DT><A NAME=d:json0 HREF=#a:json0><STRONG>json0</STRONG></A>
+,<DT><A NAME=d:dot_json HREF=#a:dot_json><STRONG>dot_json</STRONG></A>
+,<DT><A NAME=d:xdot_json HREF=#a:xdot_json><STRONG>xdot_json</STRONG></A>
+<DD>These formats produce a JSON output encoding the DOT language.
+Using <B>json0</B> produces output in JSON format that contains the
+same information produced by  <A HREF=#d:dot>-Tdot</A>. 
+Using <B>json</B> produces output in JSON format that contains the
+same information produced by <A HREF=#d:xdot>-Txdot</A>. 
+Both of these assume the graph has been processed by one of the layout
+algorithms.
+The <B>dot_json</B> and <B>xdot_json</B> also produce JSON output similar to
+to <B>json0</B> and <B>json</B>, respectively, except they only use the
+content of the graph on input. In particular, they do not assume that the
+graph has been processed by any layout algorithm, and the only xdot information
+appearing in the output was in the original input file.
+<P>
+The output produced by these follows the json schema shown below.
+Note that the <b>objects</b> array has all of the subgraphs first,
+followed by all of the nodes. The <b>_gvid</b> value is the index of
+the subgraph or node in the <b>objects</b> array. This also holds
+true for the edges in the <b>objects</b> array. Note that this format
+allows clustered graphs, where edges can connect clusters as well as nodes.
+<div w3-include-html="schema.html"></div>
+<script>
+w3IncludeHTML();
+</script>
 
-<DT><A NAME=d:mp HREF=#a:mp><STRONG>mp</STRONG></A>
-<DD>Produces <A HREF="http://cm.bell-labs.com/who/hobby/MetaPost.html">MetaPost</A> output.
 
-<DT><A NAME=d:pcl HREF=#a:pcl><STRONG>pcl</STRONG></A>
-<DD>Produces output in the PCL printer language.
-<A HREF=#d:hpgl>HP-GL</A> is a subset of
-PCL, so that PCL output is the same as HP-GL, wrapped with some initial
-and final commands to set the printer to and from HP-GL mode.
+<DT><A NAME=d:pct HREF=#a:pct><STRONG>pct</STRONG></A>
+,<DT><A NAME=d:pict HREF=#a:pict><STRONG>pict</STRONG></A>
+<DD>Output in the Apple PICT file format.
 
 <DT><A NAME=d:pdf HREF=#a:pdf><STRONG>pdf</STRONG></A>
 <DD>Produces <A HREF="http://www.adobe.com/devnet/pdf/">PDF</A> output.
@@ -391,7 +491,8 @@ Note: At present, this option does not support anchors, etc. To get these
 included in your PDF output, use <A HREF="#d:ps2">ps2</A>.
 
 <DT><A NAME=d:pic HREF=#a:pic><STRONG>pic</STRONG></A>
-<DD>Outputs in PIC, the picture description language in the troff-family
+<DD>Output is given in the text-based PIC language developed for troff.
+See <A HREF="https://en.wikipedia.org/wiki/Pic_language">Pic language</A>.
 
 <DT><A NAME=d:plain HREF=#a:plain><STRONG>plain</STRONG></A>
 ,<DT><A NAME=d:plain-ext HREF=#a:plain-ext><STRONG>plain-ext</STRONG></A>
@@ -483,6 +584,24 @@ information provided.
 
 <DT><A NAME=d:png HREF=#a:png><STRONG>png</STRONG></A>
 <DD>Produces output in the PNG (Portable Network Graphics) format.
+<P>
+(25 November 2014) A standard Graphviz installation will render using both
+the Cairo and GD library. 
+By <A HREF=command.html#d:T>mixing the rendering and formatting</A> of these
+libraries, one can achieve different variations in the output.
+<DL> 
+  <DT><TT>-Tpng:gd</TT> (or <TT>-Tpng:gd:gd</TT>) 
+    <DD>Indexed color, no antialiasing
+  <DT><TT>-Tpng:cairo:gd</TT>
+    <DD>Indexed color, with antialiasing
+  <DT><TT>-Tpng</TT> (or <TT>-Tpng:cairo</TT>) 
+    <DD>True color, with antialiasing
+</DL> 
+These options are listed in increasing order of image quality and output size.
+
+<DT><A NAME=d:pov HREF=#a:pov><STRONG>pov</STRONG></A>
+<DD>Scene-description language for 3D modelling for the 
+<A HREF="http://www.povray.org/">Persistence of Vision Raytracer</A>.
 
 <DT><A NAME=d:ps HREF=#a:ps><STRONG>ps</STRONG></A>
 <DD>Produces PostScript output.
@@ -504,6 +623,12 @@ when viewed in a PDF-viewer, e.g.,
 is a link to the given URL. If a URL is attached to the graph, this serves
 as a base, such that relative URLs on nodes are derived from it.
 
+<DT><A NAME=d:psd HREF=#a:psd><STRONG>psd</STRONG></A>
+<DD>Output in the Adobe PhotoShop PSD file format.
+
+<DT><A NAME=d:sgi HREF=#a:sgi><STRONG>sgi</STRONG></A>
+<DD>Output in the SGI image file format.
+
 <DT><A NAME=d:svg HREF=#a:svg><STRONG>svg</STRONG></A>
 ,<DT><A NAME=d:svgz HREF=#a:svgz><STRONG>svgz</STRONG></A>
 <DD>Produce <A HREF="http://www.adobe.com/svg/">SVG</A> output,
@@ -512,11 +637,14 @@ the latter in compressed format.
 See <A HREF=#ID>Note</A>.
 
 <DT><A NAME=d:tga HREF=#a:tga><STRONG>tga</STRONG></A>
-<DD>Produces <A HREF="http://en.wikipedia.org/wiki/Truevision_TGA">Targa</A> output.
+<DD>Output in the Truevision TGA or TARGA format.
 
 <DT><A NAME=d:tif HREF=#a:tif><STRONG>tif</STRONG></A>
 ,<DT><A NAME=d:tiff HREF=#a:tiff><STRONG>tiff</STRONG></A>
 <DD>Produces <A HREF="http://www.libtiff.org/">TIFF</A> output.
+
+<DT><A NAME=d:tk HREF=#a:tk><STRONG>tk</STRONG></A>
+<DD>Output using the text-based TK graphics primitives.
 
 <DT><A NAME=d:vml HREF=#a:vml><STRONG>vml</STRONG></A>
 ,<DT><A NAME=d:vmlz HREF=#a:vmlz><STRONG>vmlz</STRONG></A>
@@ -538,21 +666,22 @@ used to texture-fill the node shapes. However, if
 <A HREF=attrs.html#d:shape>shape</A><TT>=point</TT>,
 a node is drawn as a 3D sphere.
 
-<DT><A NAME=d:vtx HREF=#a:vtx><STRONG>vtx</STRONG></A>
-<DD>Generates graph diagrams in the format for
-<A HREF="http://www.bombshellstudios.com/samples/co/vt.html">Confluents's Visual Thought</A>.
-
 <DT><A NAME=d:wbmp HREF=#a:wbmp><STRONG>wbmp</STRONG></A>
 <DD>Produces output in the Wireless BitMap (WBMP) format, optimized for
 mobile computing.
 
+<DT><A NAME=d:webp HREF=#a:webp><STRONG>webp</STRONG></A>
+<DD>Produces output in the image format for the Web (WEBP) format, optimized for
+web devices such as tablets.
+See Wikipedia's <a href="http://en.wikipedia.org/wiki/Webp">WebP</a>
+or Google's <a href="http://code.google.com/speed/webp/">webp</a> pages.
+
 <DT><A NAME=d:xlib HREF=#a:xlib><STRONG>xlib</STRONG></A>
+,<DT><A NAME=d:x11 HREF=#a:x11><STRONG>x11</STRONG></A>
 <DD>Creates an <A HREF="http://en.wikipedia.org/wiki/Xlib">Xlib</A> window and displays the output there.
 
 </DL>
 <HR>
-</BODY>
-</HTML>
 <H1 align=CENTER><A NAME=d:image_fmts>Image Formats</A></H1>
 <HR>
 The <A HREF=attrs.html#a:image>image</A> and <A HREF=attrs.html#a:shapefile>shapefile</A> attributes specify an image file to be included
@@ -573,10 +702,12 @@ one of the plugins, in which case, that transformation is not possible.
 <H2>Notes</H2>
 <OL TYPE="1">
 <LI>
-<A NAME=ID>In the formats: -Tcmap, -Tcmapx, -Tsvg, -Tvml, the output generates
+<A NAME=ID></A>In the formats: -Tcmap, -Tcmapx, -Tsvg, -Tvml, the output generates
 'id="node#"' properties for nodes, 'id="edge#"' properties for edges, and 'id="cluster#"' properties for clusters, with the '#' replaced by an internally assigned integer. These strings can be provided instead by an externally provided "id=xxx" attribute on the object.
-Normal "\N" "\E" "\G" substitutions are applied.
+Normal "&#92;N" "&#92;E" "&#92;G" substitutions are applied.
 Externally provided id values are not used internally, and it is the use's reponsibilty to ensure
 that they are sufficiently unique for their intended downstream use.
-Note, in particular, that "\E" is not a unique id for multiedges.
+Note, in particular, that "&#92;E" is not a unique id for multiedges.
 </OL>
+</BODY>
+</HTML>

@@ -5,6 +5,27 @@
 <body bgcolor=#ffffff>
 <h2>Graphviz Build Instructions for Windows</h2>
 <P>
+<b>(Graphviz versions &ge; 2.30)</b>
+<P>
+The current build process for Windows using Visual Studio is fairly 
+simple <b>assuming all of the necessary files are available and have
+been put in the correct place</b>. The build assumes you have installed
+binary versions of <A HREF="http://www.gtk.org">GTK 2.0</A> or later,
+<A HREF="http://www.qt.io/">Qt</A>, 
+and <A HREF="http://gnuwin32.sourceforge.net/packages/libtool.htm">ltdl</A>, 
+and source versions of <A HREF="http://gts.sourceforge.net/">GTS</A> 
+and <A HREF="http://www.cs.umd.edu/~mount/ANN/">ann</A>.  
+Further instructions can be found in the
+<A HREF="https://github.com/ellson/graphviz/issues/36">Graphviz github repository</A>.
+<P>
+This whole process could and should be simplified. In particular, the
+3rd-party software should not be stored in two places, and the Graphviz
+files that are made part of the release should come from the source package,
+and not be stored separately.
+In addition, the GTS and ANN build should be separate from the Graphviz 
+build. As 3rd-party libraries, these should only be built when the source
+is updated.
+<P>
 <b>(Graphviz versions &ge; 2.22)</b>
 <P>
 We now build both Visual Studio and MinGW versions of Graphviz.
@@ -61,18 +82,18 @@ export LDFLAGS="-L$GTKDIR/lib -no-undefined"
 export FONTCONFIG_CFLAGS=-I$GTKDIR/include/
 export FONTCONFIG_LIBS="-L$FONTCONFIGLIBDIR -lfontconfig"
 export FREETYPE2_CFLAGS=-I$FREETYPEINCLUDEDIR
-export FREETYPE2_LIBS="-L$FREETYPELIBDIR
+export FREETYPE2_LIBS=-L$FREETYPELIBDIR
 export PKG_CONFIG=$GTKDIR/bin/pkg-config
 export PKG_CONFIG_PATH=$GTKDIR/lib/pkgconfig
 
-export PANGOFLAGS="--with-fontconfig --with-fontconfiglibdir$FONTCONFIGLIBDIR --with-fontconfigincludedir=$FONTCONFIGINCLUDEDIR --with-pangocairo"
+export PANGOFLAGS="--with-fontconfig --with-fontconfiglibdir=$FONTCONFIGLIBDIR --with-fontconfigincludedir=$FONTCONFIGINCLUDEDIR --with-pangocairo"
 
 </PRE>
 </CODE>
 <LI> Change directory to $ROOT and run configure:<BR>
 <CODE>
 <PRE>
-./configure -C --prefix=$INSTALLROOT --without-gdk-pixbuf --with-mylibgd --disable-swig --without-x  --disable-tcl --without-ipsepcola --with-codegens --enable-shared --disable-static --with-freetype=$GTKDIR/lib --enable-ltdl $PANGOFLAGS --without-gtk --without-gtkgl
+./configure -C --prefix=$INSTALLROOT --without-gdk-pixbuf --with-mylibgd --disable-swig --without-x  --disable-tcl --without-ipsepcola --enable-shared --disable-static --with-freetype=$GTKDIR/lib --enable-ltdl $PANGOFLAGS --without-gtk --without-gtkgl
 
 </PRE>
 </CODE>

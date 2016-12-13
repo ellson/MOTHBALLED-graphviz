@@ -55,6 +55,16 @@ Vertical bars | separate alternatives.
 <TR>
   <TD ALIGN=RIGHT></TD>
   <TD ALIGN=LEFT>|</TD>
+  <TD ALIGN=LEFT><B>curve</B></TD>
+</TR>
+<TR>
+  <TD ALIGN=RIGHT></TD>
+  <TD ALIGN=LEFT>|</TD>
+  <TD ALIGN=LEFT><B>icurve</B></TD>
+</TR>
+<TR>
+  <TD ALIGN=RIGHT></TD>
+  <TD ALIGN=LEFT>|</TD>
   <TD ALIGN=LEFT><B>diamond</B></TD>
 </TR>
 <TR>
@@ -95,12 +105,18 @@ The primitive shapes are:
   <TR>
     <TD>"box"<TD><IMG SRC="a_box.gif">
     <TD>"crow"<TD><IMG SRC="a_crow.gif">
+    <TD>"curve"<TD><IMG SRC="a_curve.gif">
     <TD>"diamond"<TD><IMG SRC="a_diamond.gif">
   </TR>
   <TR>
+  </TR>
+  <TR>
     <TD>"dot"<TD><IMG SRC="a_dot.gif">
+    <TD>"icurve"<TD><IMG SRC="a_icurve.gif">
     <TD>"inv"<TD><IMG SRC="a_inv.gif">
     <TD>"none"<TD><IMG SRC="a_none.gif">
+  </TR>
+  <TR>
   </TR>
   <TR>
     <TD>"normal"<TD><IMG SRC="a_normal.gif">
@@ -129,6 +145,8 @@ As an example, the arrow shape <TT>lteeoldiamond</TT> is parsed as
 </CENTER>
 Note that the first arrow shape specified occurs closest to the node.
 Subsequent arrow shapes, if specified, occur further from the node.
+Also, a shape of <tt>none</tt> uses space, so, for example, the arrowhead <tt>nonenormal</tt>
+is not the same as <tt>normal</tt>.
 <P>
 Not all syntactically legal combinations of modifiers are meaningful
 or semantically valid.
@@ -141,24 +159,28 @@ The following table indicates which modifiers are allowed with which shapes.
  <TH>Modifier</TH>
  <TH>box
  <TH>crow
+ <TH>curve
  <TH>diamond
  <TH>dot
+ <TH>icurve
  <TH>inv
  <TH>none
  <TH>normal
  <TH>tee
  <TH>vee
 </TR>
-<TR ALIGN=CENTER><TD>'l'/'r'<TD>X<TD>X<TD>X<TD>&nbsp;<TD>X<TD>&nbsp;<TD>X<TD>X<TD>X</TR>
-<TR ALIGN=CENTER><TD>'o'    <TD>X<TD>&nbsp;<TD>X<TD>X<TD>X<TD>&nbsp;<TD>X<TD>&nbsp;<TD>&nbsp;</TR>
+<TR ALIGN=CENTER><TD>'l'/'r'<TD>X<TD>X<TD>X<TD>X<TD>&nbsp;<TD>X<TD>&nbsp;<TD>X<TD>X<TD>X</TR>
+<TR ALIGN=CENTER><TD>'o'    <TD>X<TD>&nbsp;<TD>&nbsp;<TD>X<TD>X<TD>X<TD>&nbsp;<TD>X<TD>&nbsp;<TD>&nbsp;</TR>
 </TABLE>
 </CENTER>
 <P>
-This yields 36 different arrow shapes. The optional second, third, fourth shapes
-can independently be any of the 36, but since <TT>nonenone</TT> 
-is redundant, there are 35**4 + 35**3 + 35**2 + 35 + 1 = 1,544,761 different combinations.
+This yields 42 different arrow shapes. The optional second, third, fourth shapes
+can independently be any of the 42, except the last cannot be <TT>none</TT> as
+this would create a redundant shape.
+Thus, there are 41 &middot; 42<sup>3</sup> + 41 &middot; 42<sup>2</sup> + 41 &middot; 42 + 42 = 3,111,696 different combinations.
+
 <P>
-The following display contains the 36 combinations possible with a single
+The following display contains the 42 combinations possible with a single
 arrow shape. The node attached to the arrow is not drawn but would appear
 on the right side of the edge.
 <P>
@@ -271,6 +293,22 @@ on the right side of the edge.
     <TD>vee
     <TD>lvee
     <TD>rvee
+  </TR>
+  <TR ALIGN=CENTER>
+    <TD><IMG SRC="aa_curve.gif">
+    <TD><IMG SRC="aa_lcurve.gif">
+    <TD><IMG SRC="aa_rcurve.gif">
+    <TD><IMG SRC="aa_icurve.gif">
+    <TD><IMG SRC="aa_licurve.gif">
+    <TD><IMG SRC="aa_ricurve.gif">
+  </TR>
+  <TR ALIGN=CENTER>
+    <TD>curve
+    <TD>lcurve
+    <TD>rcurve
+    <TD>icurve
+    <TD>licurve
+    <TD>ricurve
   </TR>
 </TABLE>
 </CENTER>

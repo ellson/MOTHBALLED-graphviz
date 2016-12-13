@@ -334,6 +334,16 @@
 	
 	<!--  ATTRIBUTES -->
 
+	<xsd:attribute name="imagepath" type="xsd:string" default="UTF-8">
+		<xsd:annotation>
+			<xsd:documentation>
+				<html:p>
+					Specifies the path to images referenced within the graph.
+				</html:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+
 	<xsd:attribute name="Damping" type="xsd:decimal" default="0.99" gv:layouts="neato">
 		<xsd:annotation>
 			<xsd:documentation>
@@ -1270,6 +1280,26 @@
 				<html:p>
 					Specifies the separator characters used to split the 
 					<html:a rel="attr">layers </html:a>attribute into a list of layer names.
+				</html:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+	
+	<xsd:attribute name="layout" type="xsd:string">
+		<xsd:annotation>
+			<xsd:documentation>
+				<html:p>
+					Specifies the name of the layout algorithm to use, such as <html:span class="val">dot</html:span>
+					or <html:span class="val">neato</html:span>. Normally, graphs should be kept independent of a type of
+					layout. In some cases, however, it can be convenient to embed the type
+					of layout desired within the graph. For example, a graph containing
+					position information from a layout might want to record what the
+					associated layout algorithm was.
+				</html:p>
+				<html:p>
+					This attribute takes precedence over 
+					the <html:a href="http://www.graphviz.org/doc/info/command.html#minusK">-K flag</html:a> 
+					or the actual command name used.
 				</html:p>
 			</xsd:documentation>
 		</xsd:annotation>
@@ -2522,6 +2552,7 @@
 	</xsd:complexType>
 	
 	<xsd:complexType name="graph">
+		<xsd:attribute ref="imagepath" />
 		<xsd:attribute ref="Damping" default="0.99" />
 		<xsd:attribute ref="K" default="0.3" />
 		<xsd:attribute ref="URL" />
@@ -2551,6 +2582,7 @@
 		<xsd:attribute ref="landscape" default="false" />
 		<xsd:attribute ref="layers" default="false" />
 		<xsd:attribute ref="layersep" default=" :	" />
+		<xsd:attribute ref="layout" />
 		<xsd:attribute ref="levelsgap" default="0.0" />
 		<xsd:attribute ref="lp" />
 		<xsd:attribute ref="margin" />

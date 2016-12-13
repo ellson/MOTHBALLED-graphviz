@@ -114,7 +114,7 @@ name translation.
 
 Font selection.  ===============
 
-The fontname attribute in .dot graphs is a fontconfig style specification.
+The fontname attribute in .gv graphs is a fontconfig style specification.
 From: http://www.fontconfig.org/fontconfig-user.html
 
 	Fontconfig provides a textual representation for patterns that
@@ -165,7 +165,7 @@ How can I tell what fonts are available?
 	$ fc-list
 
 How can I tell what fonts dot is using;
-	$ dot foo.dot -Tpng -o foo.png -v 2>&1 | grep font
+	$ dot foo.gv -Tpng -o foo.png -v 2>&1 | grep font
 
 How can I add a custom font?
   In the current version of Graphviz with fontconfig, Cairo and
@@ -317,3 +317,4 @@ No gd and no cairopango =====
 This is basically the original Graphviz without any external fonts.
 It cannot render any raster formats, so it's mainly good for Postscript.
 It relies on a few internal font tables
+

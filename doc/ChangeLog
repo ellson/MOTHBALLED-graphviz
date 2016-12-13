@@ -1,11 +1,208 @@
+December 5, 2016
+    - Release 2.40.0
+	- number rounding added to SVG renderer (same as PS and TK rounding) to
+	aid regression testing.
+	- additional regressson test framework, used in Travis CI builds. (Erwin
+	Janssen)
+	- PHP7 support (requires swig-3.0.11 or later)
+	- Allow user to specify clustering algorithm in gvmap.
+	- Add Sierpinski graph generator to gvgen
+	- Extensive code cleanup (Erwin Janssen)
+	- Removal of libgd source - use vanilla libgd from separate install 
+	- Windows builds (Erwin Janssen)
+	- Appveyor CI for automated Windows build testing (Erwin Janssen)
+	- Travis CI for Fedora/Centos builds (Erwin Janssen)
+	- Added JSON output format, -Tjson  (Emden Gansner)
+	- New curved arrowhead, cylinder node shape.
+	- Resolves bugs: 2599, 
+June 18, 2016
+	- Experimenting with Travis CI
+February 13, 2016
+	- Add cylinder shape for databases.
+	- Free installed plugins
+	- Update makefile for dot so that the using libpanco_C in the static build include PANGOFT2
+      as well as PANGOCAIRO_LIBS (needed for some versions of Ubuntu)
+February 1, 2016
+	- Add json output format
+April 26, 2015
+	- output class value in svg files
+September 9, 2014
+	- Add plain shape for use with HTML-like labels.
+August 12, 2014
+	- Add icurve arrowhead.
+July 28, 2014
+	- Revert to old, translate to origin semantics in neato, etc. Add flag notranslate if that is
+          what the user desires.
+April 13, 2014
+	- Release 2.38.0
+	- Resolves bugs: 2409, 2413, 2417, 2420, 2422, 2423, 2425
+March 27, 2014
+	- Enable packing for dot
+	- Allow scaling to work for all non-dot layouts
+March 9, 2014
+	- Add overline text characteristic.
+March 4, 2014
+	- Fix bugs in gvpr and gv.cpp so edges can be created in subgraphs.
+	- Add edgepaint program for coloring edges to make them easier to tell apart.
+	- Modify neato to avoid unnecessary translations of output. This allows positions
+	given on input to remain the same on output.
+	- Fix swig java package to work and support gv.renderresult.
+	- Fix test for the absence of layout (old test relied on statically allocated Agraphinfo_t).
+	- HTML-like tables and cells can now specify which borders should be drawn.
+	- The fixedsize attribute now takes the value "shape" which allows labels much larger than the
+	node shape.
+January 11, 2014
+	- Release 2.36.0
+	- Resolves bugs: 2372, 2384, 2388, 2391, 2392, 2383, 2395, 2401, 2406
+	- Various MacOS Fixes from Pixleglow.
+	- Remove old libgraph sources from distributions.
+	- Move master git repo to github.com
+September 15, 2013
+	- Add <S> element for strike-through to HTML-like labels.
+September 6, 2013
+	- Release 2.34.0
+	- New version of xdot supporting inline text characteristics such as <b> and
+	version-specific output based on xdotversion
+	- Resolves bugs: 2325, 2326, 2333, 2334, 2337, 2338, 2340, 2343,
+		2345, 2346, 2349, 2350, 2351, 2352, 2353, 2354, 2357, 2359
+	- Resolves Redhat bug: BZ#847458
+August 21, 2013
+	- Added mingle command and library for edge bundling
+August 1, 2013
+	- Release 2.32.0
+	- New version of xdot format, annotating gradient color schemes
+	- Support for reading pdf images using poppler
+	- Lefty/dotty/lneato now accept anonymous graphs
+July 2, 2013
+	- Add star node shape
+	- Add two-tone (non-gradient) fill
+February 14, 2013
+	- Release 2.30.1
+	- various build fixes
+January 13, 2013
+	- Release 2.30.0
+	- Replaced libgraph with libcgraph; use of libgraph is now deprecated
+	- New ranking algorithm that allows multiple subgraph constraints
+November 27, 2012
+	- Add graphml2gv and gv2gml to Windows package.
+September 25, 2012
+	- Support edges using curved arcs.
+August 16, 2012
+	- Added new shapes used by the synthetic biology community.
+July 12, 2012
+	- For HTML-like labels, provide rounded cells, and dashed or dotted borders.
+	- Add lcurve and rcurve arrowheads.
+	- Add prototype pie chart and striped fills.
+	- Support insets in treemaps to make containment clear
+June 7, 2012
+	- Add random rooted tree generation to gvgen
+February 29, 2012
+	- Allow GVPRPATH to specify that the default path be prepended or appended to it.
+February 27, 2012
+	- Support arbitrary lists of layers; allow the user to specify arbitrary layers for output.
+February 24, 2012
+	- A collection of gvpr scripts, which were part of the source package, are now
+	installed in <prefix>/share/graphviz/gvpr, and the that path is used as part of th
+	default built-in path for gvpr.
+February 15, 2012
+	- Update libexpr to reflect Glenn Fowler's changes including scopes for variables.
+February 9, 2012
+	- Add next graph variable to gvpr
+February 8, 2012
+	- Modify dot and fdp so that a cluster's margin attribute will affect the space
+	  between the bounding box and nodes
+January 26, 2012
+	- Modify the dijkstra tool to use only directed edges
+	- Output numbers without quotes if quotes are not needed on input
+	- Support gradient fill
+January 23, 2012
+	- Provide support for webp images
+January 17, 2012
+	- Fix tapered edges to use the dir attribute and arrowhead
+September 21, 2011
+	- Add imagepath attribute
+	- Add help functionality to Graphviz.app
+August 24, 2011
+	- Add <B>,<I>,<U> to html strings via svg
+August 16, 2011
+	- Add tapered edges
+August 3, 2011
+	- Add support for external labels
+July 14, 2011
+	- Add initial implementation of graphml2gv
+July 8, 2011
+	- Add basic horizontal and vertical rules to html tables
+May 6, 2011
+	- Release 2.28.0
+	- incremented library api version:
+	    libcdt, libgraph, libcgraph, libgvpr, libgvc
+	- Add gvmap, cluster and gvmap.sh
+	- Deprecate dotty; prefer gvedit
+	- Add patchwork supporting squarified tree maps
+	- Add ordering as a node attribute
+	- Fix problems with font resolution
+	- Fix problems with text placement
+	- Fix twopi to set root attribute
+	- Make available layouts and formats available via the API
+	- Fix error message system so that an application can capture the messages
+	- New Qt-based version of gvedit
+	- New attributes and features for sfdp
+	- gvgen now allows the user to specify graph name and node name template
+	- Make overlap=false denote overlap=prism
+	- More efficient xdot library
+	- HTML-like labels provide ID
+	- Fixed bugs: 1480 1980 2044 2087 2088 2089 2091 2093 2094 
+	2095 2101 2102 2103 2104 2112 2113 2118 2128 2129 2139 2149 
+	2157 2113 2159 2160 2161 2163
+March 31, 2011
+	- Add many new gvpr scripts to release package
+	- Add scale attribute to twopi
+October 14, 2010
+	- Add <B>,<I>,<U> to html strings via cairo
+February 15, 2010
+	- migrated to 2005 version of cdt 
+January 26, 2010
+	- Release 2.26.3
+	- libcgraph.so   version bumped from 4 to 5 due to API changes
+	- Allow ranksep to specify multiple radial differences in twopi
+	- Allow the user to specify all pairwise distances in neato with
+	- Fixed bugs: 1280 1409 1567 1583 1624 1631 1655 1708 1709
+	1727 1784 1792 1798 1800 1813 1814 1830 1831 1833 1836 1839
+model=mds
+December 10, 2009
+	- Release 2.26.0
+	- Core features:
+		- added: "smyrna" - a new opengl-based viewer for large graphs
+		- added: rudimentary "gml2gv", "gv2gml" converters
+		- extended support for various image formats in node images
+		- removed vestiges of codegens, now all putput formats supported
+		  through plugins.  Dropped some output formats for which
+		  plugins have not been developed: -Tdia, -Tmif
+		- gvpr converted to a library; additional array handling and
+		  text processing functions added; language extended to allow 
+		  multiple BEG_G/N/E blocks. 
+		- allow background images specified via xdot
+	- Ports added/dropped from nightly builds:
+	  (The dropped ports could probably be re-added if there was demand.)
+		- added MacOSX SnowLeopard  (multiarch:  i386/x86_64/ppc)
+		- added Fedora 12 (i386, x86_64)
+		- added Fedora 13 (Rawhide) (i386, x86_64)
+		- dropped Fedora 7 (i386, x86_64)
+		- dropped Fedora 8 (i386, x86_64)
+		- dropped RHEL 3 (i386, x86_64, ia64)
+		- dropped Ubuntu 8 (i386)
+	- Fixed bugs: 1683 1713 1718 1720 1738 1747 1759 1770 1776 1786
+	  1799 1816 1827
+
 June 16, 2009
 	- Release 2.24.0
 	- Core:
 		- add new layout engine for large graphs: sfdp
-	- Fixed bugs:
-		1515, 1590, 1598, 1601, 1605, 1607, 1609, 1610, 1611,
-		1614, 1615, 1617, 1625, 1628, 1634, 1635, 1640, 1641,
-		1642, 1646, 1649, 1651, 1652
+		- add new layout engine for nested graphs: osage
+        - pack library extended to handle array-based packing modes
+          using array bounds, aspect ratio, user-controlled sorting, etc. 
+	- Fixed bugs: 1515 1590 1598 1601 1605 1607 1609 1610 1611 1614
+	1615 1617 1625 1628 1634 1635 1640 1641 1642 1646 1649 1651 1652
 	
 March 13, 2009
 	- Release 2.22.2
@@ -61,19 +258,15 @@ March 3, 2009
 		- fixed problem with writing dot, xdot, plain, canon to 
 		  memory or to Tcl_Channels
 		- renamed man pages to Debian style:  gv.3tcl, gv.3perl, etc
-	- Fixed bugs:
-		827, 1365, 1366, 1367, 1368, 1374, 1375, 1376, 1378, 1380, 1382,
-		1383, 1385, 1386, 1388, 1390, 1391, 1392, 1394, 1395, 1397,
-		1398, 1399, 1405, 1407, 1410, 1412, 1414, 1415, 1416, 1421,
-		1424, 1425, 1427, 1429, 1431, 1433, 1435, 1436, 1437, 1438,
-		1440, 1441, 1444, 1446, 1451, 1452, 1453, 1456, 1457, 1459,
-		1460, 1461, 1462, 1463, 1464, 1465, 1466, 1470, 1474, 1475,
-		1476, 1477, 1478, 1484, 1485, 1489, 1490, 1492, 1493, 1495,
-		1496, 1499, 1500, 1501, 1502, 1503, 1505, 1509, 1513, 1521,
-		1523, 1525, 1530, 1531, 1532, 1533, 1535, 1536, 1539, 1540,
-		1542, 1543, 1546, 1547, 1551, 1553, 1554, 1561, 1565, 1566, 
-		1568, 1569, 1570, 1571, 1573, 1577, 1578, 1579, 1580, 1581,
-		1582, 1584, 1586,
+	- Fixed bugs: 827 1365 1366 1367 1368 1374 1375 1376 1378 1380 1382
+	1383 1385 1386 1388 1390 1391 1392 1394 1395 1397 1398 1399 1405
+	1407 1410 1412 1414 1415 1416 1421 1424 1425 1427 1429 1431 1433
+	1435 1436 1437 1438 1440 1441 1444 1446 1451 1452 1453 1456 1457
+	1459 1460 1461 1462 1463 1464 1465 1466 1470 1474 1475 1476 1477
+	1478 1484 1485 1489 1490 1492 1493 1495 1496 1499 1500 1501 1502
+	1503 1505 1509 1513 1521 1523 1525 1530 1531 1532 1533 1535 1536
+	1539 1540 1542 1543 1546 1547 1551 1553 1554 1561 1565 1566 1568
+	1569 1570 1571 1573 1577 1578 1579 1580 1581 1582 1584 1586
 		
 June 25, 2008
 	- Release 2.20.2
@@ -94,7 +287,7 @@ June 20, 2008
 	- Add MacOS support (Glen Low)
 March 10, 2008
 	- Release 2.18
-	- Fixed bugs: 1249, 1255, 1256, 1268, 1276, 1289, 1295, 1300, 
+	- Fixed bugs: 1249 1255 1256 1268 1276 1289 1295 1300 
 		Fedora BZ#247376, 
 	- in -Tps use a new number formatter that suppresses trailing 0.
 	- support tcl/tk-8.5
@@ -107,7 +300,7 @@ March 10, 2008
 	- add "smyna" large graph view (thanks Arif) (not yet included in binary distros)
 December 12, 2007
 	- Release 2.16.1
-	- Fixed bugs: 1228, 1234, 1238, 1239, 1245
+	- Fixed bugs: 1228 1234 1238 1239 1245
 	- Improvements to PHP binding
 	- Improvements to OCAML binding
 	- Make regression tests run from the build tree, rather than require installation
@@ -116,10 +309,10 @@ December 12, 2007
 	- Fix some dotty regressions
 November 9, 2007
 	- Release 2.16
-	- Fixed bugs: 456, 473, 1021, 1153, 1154, 1155, 1159, 1160, 1162,
-	1165, 1166, 1168, 1169, 1170, 1172, 1173, 1174, 1175, 1177, 1178,
-	1179, 1181, 1182, 1183, 1185, 1187, 1189, 1192, 1193, 1195, 1196,
-	1199, 1204, 1207, 1210, 1215, 1216, 1217, 1218, 1219, 1220, 1223
+	- Fixed bugs: 456 473 1021 1153 1154 1155 1159 1160 1162 1165 1166
+	1168 1169 1170 1172 1173 1174 1175 1177 1178 1179 1181 1182 1183
+	1185 1187 1189 1192 1193 1195 1196 1199 1204 1207 1210 1215 1216
+	1217 1218 1219 1220 1223
 	- new regression test suite
 	- new cgraph library (will eventually replace graph and agraph)
 	- add "image" and "imagescale" for simpler support for images in nodes
@@ -146,19 +339,19 @@ August 15, 2007
 August 2, 2007
 	- release 2.14
 	- Fixed (or otherwise closed) bugs:
-		74, 130, 162, 184, 190, 197, 219, 223, 281, 295, 311, 316,
-		324, 352, 364, 385, 393, 404, 420, 447, 455, 474, 489, 507,
-		530, 532, 537, 543, 551, 564, 571, 574, 577, 583, 587, 588,
-		590, 592, 595, 599, 638, 647, 650, 660, 675, 667, 668, 669,
-		676, 684, 685, 686, 721, 725, 734, 740, 746, 747, 748, 749,
-		752, 755, 756, 765, 778, 780, 781, 782, 785, 794, 803, 814,
-		822, 828, 836, 840, 847, 852, 862, 866, 868, 893, 928, 944,
-		948, 950, 955, 961, 976, 985, 992, 1024, 1057, 1064, 1065,
-		1066, 1069, 1072, 1074, 1079, 1085, 1086, 1089, 1091, 1092,
-		1093, 1094, 1096, 1107, 1111, 1123, 1124, 1130, 1138, 1145,
-		1151, 1152, 1156
-	- Fixed Redhat bugs: 218191, 237497
-	- Fixed Debian bugs: 321128, 422862, 422873
+		74 130 162 184 190 197 219 223 281 295 311 316
+		324 352 364 385 393 404 420 447 455 474 489 507
+		530 532 537 543 551 564 571 574 577 583 587 588
+		590 592 595 599 638 647 650 660 675 667 668 669
+		676 684 685 686 721 725 734 740 746 747 748 749
+		752 755 756 765 778 780 781 782 785 794 803 814
+		822 828 836 840 847 852 862 866 868 893 928 944
+		948 950 955 961 976 985 992 1024 1057 1064 1065
+		1066 1069 1072 1074 1079 1085 1086 1089 1091 1092
+		1093 1094 1096 1107 1111 1123 1124 1130 1138 1145
+		1151 1152 1156
+	- Fixed Redhat bugs: 218191 237497
+	- Fixed Debian bugs: 321128 422862 422873
 	- Fixed Gentoo bugs: 173676
 	- Using system version of libgd if gd-2.0.34 or later. (Fedora 7 and 8 distros)
 	        internal copy of gd updated to gd-2.0.35.
@@ -240,10 +433,10 @@ February 3, 2006
 	- Add special purpose code to deal with html labels from language
 	bindings.
 	- Various portability fixes for: HPUX, Mac OS/X, Cygwin, Windows.
-	- Fix bugs 784, 786, 787, 788, 789, 790, 791, 793, 795, 796, 798, 799,
-	    800, 801, 804, 806, 811, 812, 817, 820, 821, 823, 824, 825, 830,
-	    837, 839, 841, 842, 843, 848, 850, 851, 854, 855, 856, 857, 858,
-	    859, 861, 863, 866, 867, 869, 872, 874, 876, 877
+	- Fix bugs 784 786 787 788 789 790 791 793 795 796 798 799
+	    800 801 804 806 811 812 817 820 821 823 824 825 830
+	    837 839 841 842 843 848 850 851 854 855 856 857 858
+	    859 861 863 866 867 869 872 874 876 877
 
 August 28, 2005
 	- release 2.6
@@ -259,9 +452,9 @@ August 28, 2005
 	- additional "event" support for GUIs (e.g. "DotEdit" graphviz-cairo)
 	- add some information about plugins to "dot -v" output.
 	- lefty/dotty fixes
-	- fix bugs 746, 750, 752, 753, 754, 756, 761, 763, 764, 765, 768, 
-		771, 772, 773, 774, 775, 776, 777, 778
-	- not a bug 757, 760, 770
+	- fix bugs 746 750 752 753 754 756 761 763 764 765 768 
+		771 772 773 774 775 776 777 778
+	- not a bug 757 760 770
 July 20, 2005
 	- release 2.4
 	- major code restructuring
@@ -270,18 +463,18 @@ July 20, 2005
 	- C-API now in libgvc (no more dotneato.[ch] or dotneato-config.sh]
 	- pkgconfig now used for reusable libraries
 	- lefty upgrade
-	- fix bugs 156, 255, 492, 631, 641, 647, 659, 662, 665, 670, 690, 691,
-			701, 702, 703, 705, 730, 731, 732, 741, 743
+	- fix bugs 156 255 492 631 641 647 659 662 665 670 690 691
+			701 702 703 705 730 731 732 741 743
 April 7, 2005
 	- release 2.2.1
 	- correct license headers to CPL in .cpp files
 	- undo indentation cleanup to dynagraph .h files
-	- fix bugs: 183, 247, 419, 615, 616, 625, 626, 627, 643,
-		646, 651, 658, 661, 664, 674
+	- fix bugs: 183 247 419 615 616 625 626 627 643
+		646 651 658 661 664 674
 	- fix buffer overrun in Gvfilepath construction
 January 19, 2005
 	- release 2.2
-	- fix bugs: 86, 345, 517, 579, 580, 597, 600, 601, 604
+	- fix bugs: 86 345 517 579 580 597 600 601 604
 	- use the original cpl1.0.txt as the license master, instead of CPL.html        - fix for bug generating in memory bitmaps that was affecting webdot
 	- fixes for windows builds
 	- documentation updates
@@ -292,7 +485,7 @@ December 11, 2004
 December 11, 2004
 	- release 1.18
 	dotneato
-	- fix bugs: 451, 536, 545, 547, 548, 559, 561, 565, 572
+	- fix bugs: 451 536 545 547 548 559 561 565 572
 	- increase max size  of HTML tables.
 	- spline cluster edges in fdp
 	- center userimages in nodes
@@ -306,7 +499,7 @@ December 11, 2004
 September 14, 2004
 	- release 1.16
 	dotneato
-	- fix bugs: 275, 523, 526, 527, 529, 534
+	- fix bugs: 275 523 526 527 529 534
 August 30, 2004
 	- release 1.14
     dotneato
@@ -359,11 +552,11 @@ August 30, 2004
 	- various configuration and portablity fixes
 	- provide pdf version of man pages
 	- Windows package provides graphviz libraries and header files
-	- Closed bugs: 195, 198, 234, 321, 330, 399, 401, 406, 410, 411,
-		412, 413, 415, 416, 417, 423, 424, 427, 430, 431, 433, 434, 435,
-		438, 441, 442, 444, 445, 449, 450, 452, 454, 457, 458, 462, 463,
-		464, 467, 468, 469, 471, 475, 480, 482, 485, 495, 496, 498, 499,
-		500, 501, 504, 508, 511, 512, 514
+	- Closed bugs: 195 198 234 321 330 399 401 406 410 411
+		412 413 415 416 417 423 424 427 430 431 433 434 435
+		438 441 442 444 445 449 450 452 454 457 458 462 463
+		464 467 468 469 471 475 480 482 485 495 496 498 499
+		500 501 504 508 511 512 514
 
 March 5, 2004
     - added glyphwidths.ps support utility
@@ -440,7 +633,7 @@ July 3, 2003
 	    - sync with gd-2.0.15
 	    - optimize line drawing code
 	- dot, neato, twopi
-	    - fix bugs 240,270,274,293,298,303
+	    - fix bugs 240 270 274 293 298 303
 	    - support "peripheries=0" without crashing
 	    - add support for "dia" output format (-Tdia)
 	    - espf fixes (use of showpage)
@@ -489,8 +682,8 @@ January 31, 2003
 	    - eliminate use of suffix rules which confused some makes.
 	    - DOT language allows '+' for concatenation of quoted strings
 	- dot, neato, twopi
-	    - fix bugs 209, 210, 214, 216, 217, 222, 224, 225, 229,
-			230, 233, 236, 237
+	    - fix bugs 209 210 214 216 217 222 224 225 229
+			230 233 236 237
 	    - update gd into alignment with gd-2.0.9
 	    - change to make libagraph output compatible with libgraph input
 	    - add shapes: septagon, pentagon, a_ediamond, rect, rectangle

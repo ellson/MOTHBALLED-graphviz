@@ -3,7 +3,7 @@
 <HTML><HEAD><TITLE>Graphviz FAQ 2008-06-06</TITLE>
 <META HTTP-EQUIV="content-type" CONTENT="text/html; charset=utf-8">
 </HEAD><BODY>
-<H1>Graphviz FAQ 2008-06-06</H1>
+<H1>Graphviz FAQ 2009-09-10</H1>
 
 <A HREF="mailto:gviz-bugs@research.att.com">The Graphviz Project</A>
 <p>
@@ -521,7 +521,6 @@ might already rely on.
 <P>
 <A name=Q16 HREF=#Q16>
 <B>Q16</A>. How can I get custom shapes or images in my graph?</B>
-
 <P>
 Please see the
 <A HREF="http://www.graphviz.org/Documentation/html/shapehowto.html">
@@ -531,8 +530,15 @@ custom shapes that work with dot/neato, dotty
 front end), because they don't share any universal back end structure.
 We're thinking about it.
 <P>
-<A name=Q17>
-<B>Q. Sometimes in dotty, right mouse click shows the global menu
+<A name=Q16 HREF=#Q16b>
+<B>Q16b</A>. Why don't my custom GIF images appears? What is the meaning of <tt>Warning: No loadimage plugin for "gif:cairo"</tt>?</B>
+<P>
+Prior to graphviz-2.25.20090911* the 
+cairo based renderers couldn't import GIF or JPG. Workarounds, use PNG images. (Possibly, install 
+Imagemagick and run "convert shape.gif shape.png". Or try <tt>-Tgif:gd</tt>.)
+<P>
+<A name=Q17 HREF=#Q17>
+<B>Q17. Sometimes in dotty, right mouse click shows the global menu
 but none of the items can be selected.</B>
 </A>
 <P>
@@ -550,7 +556,7 @@ Typically this error is reported as:
 >> context:  >>>  <<< digraph G {
 >> dotty.lefty: giving up on dot
 >> dotty.lefty: graph that causes dot
->> dotty.lefty: to fail has been saved in file dottybug.dot
+>> dotty.lefty: to fail has been saved in file dottybug.gv
 </pre>
 Probably there is a command in your shell environment (such as
 .alias or .profile) that does output even for non-interactive shells.
@@ -608,7 +614,7 @@ file.
 
 Then run <tt>neato -s -n2</tt>. For example:
 <pre>
-neato -s -n2 -Tgif file.dot -o file.gif
+neato -s -n2 -Tgif file.gv -o file.gif
 </pre>
 Note that if an edge does not have a <TT>pos</TT> attribute
 defined, neato will perform whatever edge routing it would
@@ -624,7 +630,7 @@ It's not really too convenient to use dot for this.
 It is possible to use neato for this,
 running neato -s -n For example:
 <pre>
-neato -s -n -Tgif file.dot -o file.gif
+neato -s -n -Tgif file.gv -o file.gif
 </pre>
 neato will use the node positions, but use its technique
 for routing the edges. There are several things to note. First,
@@ -673,7 +679,7 @@ and that it is not commented out!
 but when I execute a Perl/CGI script through Apache, no output is generated.</A>
 For example, the code
 <tt>
-system("/usr/local/bin/dot -Tpng /tmp/tree.dot -o /tmp/tree.png");
+system("/usr/local/bin/dot -Tpng /tmp/tree.gv -o /tmp/tree.png");
 </tt>
 produces no file <tt>/tmp/tree.png</tt>.</B>
 <P>
@@ -846,8 +852,8 @@ of the nodes. It is quite possible that if you run neato again,
 but with a different random seed value,
 or more iterations, you'll get a better layout.  For example:
 <pre>
-neato -Gstart=5 file.dot -Tps -o file.ps
-neato -Gepsilon=.0000001 file.dot -Tps -o file.ps
+neato -Gstart=5 file.gv -Tps -o file.ps
+neato -Gepsilon=.0000001 file.gv -Tps -o file.ps
 </pre>
 <P>
 In particular, note that there are no guarantees that neato will produce
@@ -1047,9 +1053,9 @@ or
 <p>
 which deletes the Launch Services database and rebuilds it from existing apps. You may need to sudo to do this.
 <p>
-3.	Verify that the Graphviz.app can now open .dot files and Microsoft Word can still open its own .dot files.
+3.	Verify that the Graphviz.app can now open .gv files and Microsoft Word can still open its own .gv files.
 <p>
-One artifact of this will be that Microsoft .dot files may appear with the Graphviz document icon. Unfortunately there doesn't seem any a priori way of getting the system to determine whether an arbitrary .dot file belongs to Word or Graphviz -- you can choose which application to open with by right-clicking or control-clicking on the document icon and choosing the app.
+One artifact of this will be that Microsoft .gv files may appear with the Graphviz document icon. Unfortunately there doesn't seem any a priori way of getting the system to determine whether an arbitrary .gv file belongs to Word or Graphviz -- you can choose which application to open with by right-clicking or control-clicking on the document icon and choosing the app.
 <p>
 As for why the Launch Services database doesn't automatically register Graphviz,
 we're not entirely sure but suspect this only happens if both conditions
