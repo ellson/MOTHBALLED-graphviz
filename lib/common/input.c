@@ -572,7 +572,7 @@ graph_t *gvNextInputGraph(GVC_t *gvc)
 	}
 	if (fp != stdin)
 	    fclose (fp);
-	fp = NULL;
+	oldfp = fp = NULL;
 	gidx = 0;
     }
     return g;
