@@ -55,7 +55,8 @@ deploy:
     repo: ellson/graphviz
     condition: ${DOCKER_BUILD} == "FALSE"
 
-
 notifications:
   email:
-  - john.ellson@comcast.net
+    recipients:
+      - john.ellson@comcast.net
+    on_success: always
