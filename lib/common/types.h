@@ -406,6 +406,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	char state;
 	unsigned char gui_state; /* Node state for GUI ops */
 	boolean clustnode;
+	int mark;           /* for tools like tred */
 
 #ifndef DOT_ONLY
 	unsigned char pinned;
@@ -419,7 +420,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	node_t *set;
 
 	/* fast graph */
-	char node_type, mark, onstack;
+	char node_type, onstack;
 	char ranktype, weight_class;
 	node_t *next, *prev;
 	elist in, out, flat_out, flat_in, other;

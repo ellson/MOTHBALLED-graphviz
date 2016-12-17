@@ -19,10 +19,10 @@ pdfdir = $(pkgdatadir)/doc/pdf
 noinst_HEADERS = colortbl.h convert.h mmio.h matrix_market.h \
 	 graph_generator.h gml2gv.h gmlparse.h
 if ENABLE_STATIC
-bin_PROGRAMS = gc gvcolor gxl2gv acyclic nop ccomps sccmap tred \
+bin_PROGRAMS = gc gvcolor gxl2gv acyclic nop ccomps sccmap tred tred2\
 	unflatten gvpack gvpack_static dijkstra bcomps mm2gv gvgen gml2gv gv2gml graphml2gv
 else
-bin_PROGRAMS = gc gvcolor gxl2gv acyclic nop ccomps sccmap tred \
+bin_PROGRAMS = gc gvcolor gxl2gv acyclic nop ccomps sccmap tred tred2\
 	unflatten gvpack dijkstra bcomps mm2gv gvgen gml2gv gv2gml graphml2gv
 endif
 
@@ -78,6 +78,13 @@ ccomps_LDADD = \
 
 ccomps.1.pdf: $(srcdir)/ccomps.1
 	- @GROFF@ -Tps -man $(srcdir)/ccomps.1 | @PS2PDF@ - - >ccomps.1.pdf
+
+tred2_SOURCES = tred2.c
+
+tred2_LDADD = \
+	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
+	$(top_builddir)/lib/cgraph/libcgraph.la \
+	$(top_builddir)/lib/gvc/libgvc.la
 
 tred_SOURCES = tred.c
 

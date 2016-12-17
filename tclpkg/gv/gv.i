@@ -238,5 +238,8 @@ extern char* renderdata(Agraph_t *g, const char *format);
 extern bool write(Agraph_t *g, const char *filename);
 extern bool write(Agraph_t *g, FILE *f);
 
+/*** Graph transformation tools */
+extern bool tred(Agraph_t *g);
+
 %}
 

@@ -111,8 +111,12 @@ extern char** gvPluginList (GVC_t *gvc, const char* kind, int* sz, char*);
  * @param gvc Graphviz context to add library to
  * @param lib library to add
  */
-
 extern void gvAddLibrary(GVC_t *gvc, gvplugin_library_t *lib);
+
+/** Perform a Transitive Reduction on a graph
+ * @param g  graph to be transformed.
+ */
+extern void gvToolTred(graph_t *g);
 
 #undef extern
 

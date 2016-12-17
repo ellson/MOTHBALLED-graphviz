@@ -191,6 +191,7 @@ cmd/tools/mm2gv
 cmd/tools/nop
 cmd/tools/sccmap
 cmd/tools/tred
+cmd/tools/tred2
 cmd/tools/unflatten
 contrib/diffimg/diffimg
 contrib/prune/prune
