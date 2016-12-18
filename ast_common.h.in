@@ -71,16 +71,4 @@ typedef int ssize_t;
 #endif
 #endif
 
-#ifdef HAVE_LIMITS_H
-#include <limits.h>
-#else
-#ifdef HAVE_VALUES_H
-#include <values.h>
-#endif
-#endif
-
-#ifndef MAXINT
-#define MAXINT INT_MAX
-#endif
-
 #endif				/*AST_COMMON_H */
