@@ -1,9 +1,8 @@
-December 5, 2016
+December 18, 2016
     - Release 2.40.0
-	- number rounding added to SVG renderer (same as PS and TK rounding) to
-	aid regression testing.
-	- additional regressson test framework, used in Travis CI builds. (Erwin
-	Janssen)
+	- built-in tred tool now available in the various swig generated language bindings
+	- number rounding added to SVG renderer (same as PS and TK rounding) to aid regression testing.
+	- additional regressson test framework, used in Travis CI builds. (Erwin Janssen)
 	- PHP7 support (requires swig-3.0.11 or later)
 	- Allow user to specify clustering algorithm in gvmap.
 	- Add Sierpinski graph generator to gvgen

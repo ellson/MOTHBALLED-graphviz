@@ -219,7 +219,6 @@ When used alone, this is intended for mimimalist web-server apps with no X11 on 
 %endif
 %doc COPYING AUTHORS ChangeLog NEWS README
 %exclude %{_bindir}/dot_builtins
-%exclude %{_bindir}/tred2
 %{_bindir}/acyclic
 %{_bindir}/bcomps
 %{_bindir}/ccomps
