@@ -45,19 +45,4 @@
 typedef int ssize_t;
 #endif
 
-#ifndef va_listref
-#define va_listref(p) (p)	/* pass va_list to varargs function */
-#define va_listval(p) (p)	/* retrieve va_list from va_arg(ap,va_listarg) */
-#define va_listarg va_list	/* va_arg() va_list type */
-#ifndef va_copy
-#define va_copy(to,fr) ((to)=(fr))	/* copy va_list fr -> to */
-#endif
-#undef  _ast_va_list
-#ifdef  va_start
-#define _ast_va_list va_list
-#else
-#define _ast_va_list void*	/* va_list that avoids #include */
-#endif
-#endif
-
 #endif				/*AST_COMMON_H */
