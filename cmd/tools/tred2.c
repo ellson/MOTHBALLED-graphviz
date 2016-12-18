@@ -92,8 +92,12 @@ int main(int argc, char **argv)
     newIngraph(&ig, Files, gread);
 
     while ((g = nextGraph(&ig)) != 0) {
-	if (agisdirected(g))
+	if (agisdirected(g)) {
+            aginit(g, AGNODE, "info", sizeof(Agnodeinfo_t), TRUE);
 	    gvToolTred(g);
+            agwrite(g, stdout);
+            fflush(stdout);
+        }
 	agclose(g);
     }
 
