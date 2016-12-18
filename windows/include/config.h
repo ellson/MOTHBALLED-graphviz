@@ -424,9 +424,6 @@
 /* Define to `int' if <sys/types.h> does not define. */
 /* #undef pid_t */
 
-/* Define to `unsigned int' if <sys/types.h> does not define. */
-/* #undef size_t */
-
 /* Define to `int' if <sys/types.h> does not define. */
 //#define ssize_t int
 
