@@ -950,11 +950,11 @@ bool write(Agraph_t *g, const char *filename)
 
 bool tred(Agraph_t *g)
 {
-    int err = 0;
+    int err;
 
     if (!g)
         return false;
-    gvToolTred(g);    // FIXME - gvToolTred should rteturn errors code
+    err = gvToolTred(g);
     return (! err);
 }
 

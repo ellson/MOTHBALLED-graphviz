@@ -27,6 +27,13 @@
 #include "cgraph.h"
 #include "gvc.h"
 
+typedef struct {
+    Agrec_t h;
+    int mark;
+} Agmarknodeinfo_t;
+
+#define MARK(n)  (((Agmarknodeinfo_t*)(n->base.data))->mark)
+
 #define agrootof(n) ((n)->root)
 
 static int dfs(Agnode_t * n, Agedge_t * link, int warn)
@@ -35,18 +42,18 @@ static int dfs(Agnode_t * n, Agedge_t * link, int warn)
     Agedge_t *f;
     Agraph_t *g = agrootof(n);
 
-    ND_mark(n) = 1;
+    MARK(n) = 1;
 
     for (e = agfstin(g, n); e; e = f) {
 	f = agnxtin(g, e);
 	if (e == link)
 	    continue;
-	if (ND_mark(agtail(e)))
+	if (MARK(agtail(e)))
 	    agdelete(g, e);
     }
 
     for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	if (ND_mark(aghead(e))) {
+	if (MARK(aghead(e))) {
 	    if (!warn) {
 		warn++;
 		fprintf(stderr,
@@ -59,21 +66,24 @@ static int dfs(Agnode_t * n, Agedge_t * link, int warn)
 	    warn = dfs(aghead(e), AGOUT2IN(e), warn);
     }
 
-    ND_mark(n) = 0;
+    MARK(n) = 0;
     return warn;
 }
 
-void gvToolTred(Agraph_t * g)
+int gvToolTred(Agraph_t * g)
 {
     Agnode_t *n;
     int warn = 0;
 
     if (agisdirected(g)) {
+        aginit(g, AGNODE, "info", sizeof(Agmarknodeinfo_t), TRUE);
         for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    warn = dfs(n, NULL, warn);
         }
+        agclean(g, AGNODE, "info");
     } else {
 	fprintf(stderr, "warning: %s is not a directed graph, not attempting tred\n",
 			agnameof(g));
     }
+    return 0;    // FIXME - return proper errors
 }

@@ -116,7 +116,7 @@ extern void gvAddLibrary(GVC_t *gvc, gvplugin_library_t *lib);
 /** Perform a Transitive Reduction on a graph
  * @param g  graph to be transformed.
  */
-extern void gvToolTred(graph_t *g);
+extern int gvToolTred(graph_t *g);
 
 #undef extern
 
