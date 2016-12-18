@@ -113,7 +113,6 @@
     <ClCompile Include="dtstat.c" />
     <ClCompile Include="dtstrhash.c" />
     <ClCompile Include="dttree.c" />
-    <ClCompile Include="dttreeset.c" />
     <ClCompile Include="dtview.c" />
     <ClCompile Include="dtwalk.c" />
   </ItemGroup>
