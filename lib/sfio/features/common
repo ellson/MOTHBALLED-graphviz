@@ -65,18 +65,6 @@ xopen	stdio note{ Stdio fseek/fflush are X/Open-compliant }end execute{
 }end
 
 cat{
-
-	/* extern symbols must be protected against C++ name mangling */
-	#ifndef _BEGIN_EXTERNS_
-	#if __cplusplus || c_plusplus
-	#define _BEGIN_EXTERNS_	extern "C" {
-	#define _END_EXTERNS_	}
-	#else
-	#define _BEGIN_EXTERNS_
-	#define _END_EXTERNS_
-	#endif
-	#endif /*_BEGIN_EXTERNS_*/
-
 	/* dynamic linked library external scope handling */
 	#undef extern
 	#if _dll_import && !defined(__EXPORT__) && _DLL_BLD

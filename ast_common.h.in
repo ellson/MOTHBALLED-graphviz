@@ -19,17 +19,6 @@
 #define _typ_ssize_t    1	/* ssize_t is a type */
 /* */
 
-/* extern symbols must be protected against C++ name mangling */
-#ifndef _BEGIN_EXTERNS_
-#  if defined(__cplusplus) || defined(c_plusplus)
-#    define _BEGIN_EXTERNS_ extern "C" {
-#    define _END_EXTERNS_   }
-#  else
-#    define _BEGIN_EXTERNS_
-#    define _END_EXTERNS_
-#  endif
-#endif /*_BEGIN_EXTERNS_*/
-
 /* dynamic linked library external scope handling */
 #undef extern
 #if defined(_dll_import) && !defined(__EXPORT__) && _DLL_BLD
