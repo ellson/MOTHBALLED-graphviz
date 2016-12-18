@@ -422,9 +422,6 @@
 #define gid_t int
 
 /* Define to `int' if <sys/types.h> does not define. */
-/* #undef mode_t */
-
-/* Define to `int' if <sys/types.h> does not define. */
 /* #undef pid_t */
 
 /* Define to `unsigned int' if <sys/types.h> does not define. */

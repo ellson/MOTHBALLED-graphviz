@@ -414,7 +414,6 @@ AM_CONDITIONAL(RC_IS_WINDRES, [test "x$RC" = "xwindres"])
 dnl -----------------------------------
 dnl Check for various typedefs and provide substitutes if they do not exist.
 
-AC_TYPE_MODE_T
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T
