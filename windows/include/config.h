@@ -418,9 +418,6 @@
    `char[]'. */
 /* #undef YYTEXT_POINTER */
 
-/* Define to empty if `const' does not conform to ANSI C. */
-/* #undef const */
-
 /* Define to `int' if <sys/types.h> doesn't define. */
 #define gid_t int
 
