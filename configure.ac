@@ -466,9 +466,7 @@ AC_SUBST([LIBGEN_LIBS])
 
 # Checks for library functions
 AC_CHECK_FUNCS([lrand48 drand48 srand48 setmode setenv getenv \
-	__freadable _sysconf getrusage strerror cbrt lsqrt vsnprintf \
-	strtoul strtoll strtoull uname memset nl_langinfo pow sqrt \
-	strchr strdup strerror strstr _NSGetEnviron])
+	strerror cbrt vsnprintf _NSGetEnviron])
 
 AC_REPLACE_FUNCS([strcasecmp strncasecmp strcasestr])
 
