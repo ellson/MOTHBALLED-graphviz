@@ -93,7 +93,10 @@ copy $(SolutionDir)windows\dependencies\GTK2\bin\libgdk_pixbuf-2.0-0.dll $(OutDi
 copy $(SolutionDir)windows\dependencies\GTK2\bin\libglade-2.0-0.dll $(OutDir)libglade-2.0-0.dll
 copy $(SolutionDir)windows\dependencies\GTK2\bin\libatk-1.0-0.dll $(OutDir)libatk-1.0-0.dll
 copy $(SolutionDir)windows\dependencies\GTK2\bin\libgtk-win32-2.0-0.dll $(OutDir)libgtk-win32-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\freeglut\bin\freeglut.dll $(OutDir)freeglut.dll</Command>
+copy $(SolutionDir)windows\dependencies\freeglut\bin\freeglut.dll $(OutDir)freeglut.dll
+xcopy /E $(SolutionDir)windows\dependencies\GTK2\lib\pango $(OutDir)..\lib\pango\
+if not exist "$(OutDir)..\etc\pango\" mkdir $(OutDir)..\etc\pango\
+$(SolutionDir)windows\dependencies\GTK2\bin\pango-querymodules.exe &gt; $(OutDir)..\etc\pango\pango.modules</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -138,7 +141,10 @@ copy $(SolutionDir)windows\dependencies\GTK2\bin\libgdk_pixbuf-2.0-0.dll $(OutDi
 copy $(SolutionDir)windows\dependencies\GTK2\bin\libglade-2.0-0.dll $(OutDir)libglade-2.0-0.dll
 copy $(SolutionDir)windows\dependencies\GTK2\bin\libatk-1.0-0.dll $(OutDir)libatk-1.0-0.dll
 copy $(SolutionDir)windows\dependencies\GTK2\bin\libgtk-win32-2.0-0.dll $(OutDir)libgtk-win32-2.0-0.dll
-copy $(SolutionDir)windows\dependencies\freeglut\bin\freeglut.dll $(OutDir)freeglut.dll</Command>
+copy $(SolutionDir)windows\dependencies\freeglut\bin\freeglut.dll $(OutDir)freeglut.dll
+xcopy /E $(SolutionDir)windows\dependencies\GTK2\lib\pango $(OutDir)..\lib\pango\
+if not exist "$(OutDir)..\etc\pango\" mkdir $(OutDir)..\etc\pango\
+$(SolutionDir)windows\dependencies\GTK2\bin\pango-querymodules.exe &gt; $(OutDir)..\etc\pango\pango.modules</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
