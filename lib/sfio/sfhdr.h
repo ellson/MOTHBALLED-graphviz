@@ -854,7 +854,7 @@ extern "C" {
 #endif
 
 #ifndef errno
-    _astimport int errno;
+    extern int errno;
 #endif
 
 /* for portable encoding of double values */

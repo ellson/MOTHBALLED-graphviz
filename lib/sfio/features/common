@@ -65,24 +65,6 @@ xopen	stdio note{ Stdio fseek/fflush are X/Open-compliant }end execute{
 }end
 
 cat{
-	/* dynamic linked library external scope handling */
-	#undef extern
-	#if _dll_import && !defined(__EXPORT__) && _DLL_BLD
-	#define __EXPORT__	__declspec(dllexport)
-	#endif
-	#if _dll_import && !defined(__IMPORT__)
-	#define __IMPORT__	__declspec(dllimport)
-	#endif
-	#if !defined(_astimport)
-	#if defined(__IMPORT__) && _DLL_BLD
-	#define _astimport	__IMPORT__
-	#else
-	#define _astimport	extern
-	#endif
-	#endif /*_astimport*/
-}end
-
-cat{
 	#ifndef _AST_STD_H
 	#	if _sys_types
 	#	include	<sys/types.h>
