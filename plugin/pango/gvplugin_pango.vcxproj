@@ -84,7 +84,10 @@ copy $(SolutionDir)windows\dependencies\GTK2\bin\libgobject-2.0-0.dll $(OutDir)l
 copy $(SolutionDir)windows\dependencies\GTK2\bin\intl.dll $(OutDir)intl.dll
 copy $(SolutionDir)windows\dependencies\GTK2\bin\libgmodule-2.0-0.dll $(OutDir)libgmodule-2.0-0.dll
 copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangoft2-1.0-0.dll $(OutDir)libpangoft2-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangowin32-1.0-0.dll $(OutDir)libpangowin32-1.0-0.dll</Command>
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangowin32-1.0-0.dll $(OutDir)libpangowin32-1.0-0.dll
+xcopy /E $(SolutionDir)windows\dependencies\GTK2\lib\pango $(OutDir)..\lib\pango\
+if not exist "$(OutDir)..\etc\pango\" mkdir $(OutDir)..\etc\pango\
+$(SolutionDir)windows\dependencies\GTK2\bin\pango-querymodules.exe &gt; $(OutDir)..\etc\pango\pango.modules</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -121,7 +124,10 @@ copy $(SolutionDir)windows\dependencies\GTK2\bin\libgobject-2.0-0.dll $(OutDir)l
 copy $(SolutionDir)windows\dependencies\GTK2\bin\intl.dll $(OutDir)intl.dll
 copy $(SolutionDir)windows\dependencies\GTK2\bin\libgmodule-2.0-0.dll $(OutDir)libgmodule-2.0-0.dll
 copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangoft2-1.0-0.dll $(OutDir)libpangoft2-1.0-0.dll
-copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangowin32-1.0-0.dll $(OutDir)libpangowin32-1.0-0.dll</Command>
+copy $(SolutionDir)windows\dependencies\GTK2\bin\libpangowin32-1.0-0.dll $(OutDir)libpangowin32-1.0-0.dll
+xcopy /E $(SolutionDir)windows\dependencies\GTK2\lib\pango $(OutDir)..\lib\pango\
+if not exist "$(OutDir)..\etc\pango\" mkdir $(OutDir)..\etc\pango\
+$(SolutionDir)windows\dependencies\GTK2\bin\pango-querymodules.exe &gt; $(OutDir)..\etc\pango\pango.modules</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
