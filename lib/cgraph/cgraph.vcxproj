@@ -97,7 +97,7 @@ flex -oscan.c scan.l</Command>
     </Link>
     <PreBuildEvent>
       <Command>bison -dy grammar.y -o grammar.c
-flex -o scan.c scan.l</Command>
+flex -oscan.c scan.l</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
