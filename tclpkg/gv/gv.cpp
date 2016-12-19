@@ -947,3 +947,14 @@ bool write(Agraph_t *g, const char *filename)
     fclose(f);
     return (! err);
 }
+
+bool tred(Agraph_t *g)
+{
+    int err;
+
+    if (!g)
+        return false;
+    err = gvToolTred(g);
+    return (! err);
+}
+

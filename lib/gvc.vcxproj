@@ -71,9 +71,9 @@
       <ModuleDefinitionFile>gvc.def</ModuleDefinitionFile>
     </Link>
     <PreBuildEvent>
-      <Command>"%BISON%" -dy common\htmlparse.y -o common\htmlparse-intermediate.c
-"%SED%" "s/yy/html/g" &lt; common\htmlparse-intermediate.c &gt; common\htmlparse.c
-"%SED%" "s/yy/html/g" &lt; common\htmlparse-intermediate.h &gt; common\htmlparse.h
+      <Command>bison -dy common\htmlparse.y -o common\htmlparse-intermediate.c
+sed "s/yy/html/g" &lt; common\htmlparse-intermediate.c &gt; common\htmlparse.c
+sed "s/yy/html/g" &lt; common\htmlparse-intermediate.h &gt; common\htmlparse.h
 del common\htmlparse-intermediate.c
 del common\htmlparse-intermediate.h</Command>
     </PreBuildEvent>
@@ -105,9 +105,9 @@ copy $(SolutionDir)windows\dependencies\GTK2\bin\zlib1.dll $(OutDir)zlib1.dll</C
       <ModuleDefinitionFile>gvc.def</ModuleDefinitionFile>
     </Link>
     <PreBuildEvent>
-      <Command>"%BISON%" -dy common\htmlparse.y -o common\htmlparse-intermediate.c
-"%SED%" "s/yy/html/g" &lt; common\htmlparse-intermediate.c &gt; common\htmlparse.c
-"%SED%" "s/yy/html/g" &lt; common\htmlparse-intermediate.h &gt; common\htmlparse.h
+      <Command>bison -dy common\htmlparse.y -o common\htmlparse-intermediate.c
+sed "s/yy/html/g" &lt; common\htmlparse-intermediate.c &gt; common\htmlparse.c
+sed "s/yy/html/g" &lt; common\htmlparse-intermediate.h &gt; common\htmlparse.h
 del common\htmlparse-intermediate.c
 del common\htmlparse-intermediate.h</Command>
     </PreBuildEvent>

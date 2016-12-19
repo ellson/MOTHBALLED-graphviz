@@ -32,10 +32,6 @@ m4_define(graphviz_collection, development)
 m4_define(graphviz_version_commit, $GRAPHVIZ_VERSION_COMMIT)
 EOF
 
-# attempt to suppress ar messages for 'u' when 'D' present.
-# need to be set during libtoolize
-export AR_FLAGS=crD 
-
 autoreconf -v --install --force || exit 1
 
 # ensure config/depcomp exists even if still using automake-1.4

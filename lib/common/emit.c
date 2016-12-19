@@ -27,7 +27,7 @@
 #include "cdt.h"
 #include "xdot.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #define strtok_r strtok_s
 #endif
 

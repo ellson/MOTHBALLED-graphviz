@@ -70,7 +70,7 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PreBuildEvent>
-      <Command>"%BISON%" -dy dot2l\dotparse.y -o dot2l\dotparse.c</Command>
+      <Command>bison -dy dot2l\dotparse.y -o dot2l\dotparse.c</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -93,7 +93,7 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PreBuildEvent>
-      <Command>"%BISON%" -dy dot2l\dotparse.y -o dot2l\dotparse.c</Command>
+      <Command>bison -dy dot2l\dotparse.y -o dot2l\dotparse.c</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

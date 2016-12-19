@@ -34,7 +34,7 @@ pdf_DATA = gvc.3.pdf
 
 libgvc_C_la_SOURCES = gvrender.c gvlayout.c gvdevice.c gvloadimage.c \
 	gvcontext.c gvjobs.c gvevent.c gvplugin.c gvconfig.c \
-	gvtextlayout.c gvusershape.c gvc.c
+	gvtool_tred.c gvtextlayout.c gvusershape.c gvc.c
 #	gvbuffstderr.c
 
 libgvc_C_la_LIBADD = \

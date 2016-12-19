@@ -153,7 +153,7 @@
 /* for clusters */
 #define		CL_BACK		10	/* cost of backward pointing edge */
 #define		CL_OFFSET	8	/* margin of cluster box in PS points */
-#ifndef WIN32
+#ifndef _WIN32
 #define		CL_CROSS	1000	/* cost of cluster skeleton edge crossing */
 #else
 #define		CL_CROSS	100	/* avoid 16 bit overflow */

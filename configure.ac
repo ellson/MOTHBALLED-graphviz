@@ -212,7 +212,7 @@ AM_INIT_AUTOMAKE([no-define])
 # Suppress verbose compile lines
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
-AC_CONFIG_HEADERS([config.h lib/common/types.h])
+AC_CONFIG_HEADERS([config.h])
 
 # put BUILDDATE in its own file so that only targets that use it get rebuilt
 echo "#define BUILDDATE \"$GRAPHVIZ_VERSION_DATE\"" > builddate.h
@@ -427,9 +427,9 @@ dnl Checks for header files
 # AC_HEADER_STDC
 AC_CHECK_HEADERS(stdarg.h stddef.h stddef.h malloc.h \
 	fcntl.h search.h pthread.h values.h float.h limits.h termios.h \
-	errno.h time.h unistd.h fenv.h strings.h setjmp.h \
-	sys/time.h sys/times.h sys/types.h sys/select.h fpu_control.h \
-	sys/fpu.h sys/socket.h sys/stat.h sys/mman.h \
+	errno.h time.h unistd.h strings.h setjmp.h \
+	sys/time.h sys/times.h sys/types.h sys/select.h \
+	sys/socket.h sys/stat.h sys/mman.h \
 	sys/ioctl.h sys/inotify.h langinfo.h libintl.h crt_externs.h)
 AC_HEADER_TIME
 AC_HEADER_DIRENT
@@ -447,7 +447,7 @@ AC_SUBST([MATH_LIBS])
 
 # Check for functions that might need -lm
 LIBS="$LIBS $MATH_LIBS"
-AC_CHECK_FUNCS([feenableexcept fesetenv log2 sincos])
+AC_CHECK_FUNCS([log2 sincos])
 
 LIBS=$save_LIBS
 

@@ -130,7 +130,7 @@ static char* dotneato_basename (char* path)
     char* ret;
     char* s = path;
     if (*s == '\0') return path; /* empty string */
-#ifdef WIN32
+#ifdef _WIN32
     /* On Windows, executables, by convention, end in ".exe". Thus,
      * this may be part of the path name and must be removed for
      * matching to work.
@@ -151,7 +151,7 @@ static char* dotneato_basename (char* path)
 	if ((*s == '/') || (*s == '\\')) ret = s+1;
 	else ret = path;
     }
-#ifdef WIN32
+#ifdef _WIN32
     /* On Windows, names are case-insensitive, so make name lower-case
      */
     {
@@ -572,7 +572,7 @@ graph_t *gvNextInputGraph(GVC_t *gvc)
 	}
 	if (fp != stdin)
 	    fclose (fp);
-	fp = NULL;
+	oldfp = fp = NULL;
 	gidx = 0;
     }
     return g;

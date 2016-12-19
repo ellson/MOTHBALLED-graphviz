@@ -33,24 +33,6 @@ extern "C" {
 /* note that the macro vt_threaded has effect on vthread.h */
 #include	<vthread.h>
 
-/* file system info */
-#if defined(_PACKAGE_ast)
-
-#include	<ast.h>
-#include	<ast_time.h>
-#include	<ast_tty.h>
-#include	<ls.h>
-
-#if _mem_st_blksize_stat
-#define _stat_blksize	1
-#endif
-
-#if _lib_localeconv && _hdr_locale
-#define _lib_locale	1
-#endif
-
-#else				/*!defined(_PACKAGE_ast) */
-
 #if defined(__mips) && __mips == 2 && !defined(_NO_LARGEFILE64_SOURCE)
 #define _NO_LARGEFILE64_SOURCE  1
 #endif
@@ -68,12 +50,8 @@ extern "C" {
    are not needed and they may get in the way so we remove them here.
 */
 #if defined(_SFBINARY_H)
-#undef  _hdr_time
-#undef  _sys_time
 #undef  _sys_stat
 #undef  _hdr_stat
-#undef  _hdr_filio
-#undef  _sys_filio
 #undef  _lib_poll
 #undef  _stream_peek
 #undef  _socket_peek
@@ -88,17 +66,7 @@ extern "C" {
 #include	<stdlib.h>
 #include	<string.h>
 #include	<stdint.h>
-
-#if _hdr_stddef
-#include	<stddef.h>
-#endif
-
-#if _hdr_time
-#include	<time.h>
-#endif
-#if _sys_time
-#include	<sys/time.h>
-#endif
+#include	<stddef.h>]
 
 #if _sys_stat
 #include	<sys/stat.h>
@@ -117,23 +85,9 @@ extern "C" {
 
 #include	<fcntl.h>
 
-#ifndef F_SETFD
-#ifndef FIOCLEX
-#if _hdr_filio
-#include	<filio.h>
-#else
-#if _sys_filio
-#include	<sys/filio.h>
-#endif /*_sys_filio*/
-#endif /*_hdr_filio*/
-#endif /*_FIOCLEX*/
-#endif				/*F_SETFD */
-
 #if _hdr_unistd
 #include	<unistd.h>
 #endif
-
-#endif /*defined(_PACKAGE_ast)*/
 
 #include	<errno.h>
 #include	<ctype.h>
@@ -388,7 +342,7 @@ extern "C" {
 #define ESPIPE	29
 #endif
 /* see if we can use memory mapping for io */
-#if !defined(_PACKAGE_ast) && defined(_mmap_worthy)
+#if defined(_mmap_worthy)
 #	ifdef _LARGEFILE64_SOURCE
 #		undef	mmap
 #	endif
@@ -749,13 +703,8 @@ extern "C" {
 
 #define	SF_RADIX	64	/* maximum integer conversion base */
 
-#if defined(_PACKAGE_ast)
-#define SF_MAXINT	INT_MAX
-#define SF_MAXLONG	LONG_MAX
-#else
 #define SF_MAXINT	((int)(((uint)~0) >> 1))
 #define SF_MAXLONG	((long)(((ulong)~0L) >> 1))
-#endif
 
 #define SF_MAXCHAR	((uchar)(~0))
 
@@ -853,9 +802,6 @@ extern "C" {
 #define max(x,y)	((x) > (y) ? (x) : (y))
 
 /* fast functions for memory copy and memory clear */
-#if defined(_PACKAGE_ast)
-#define memclear(s,n)	memzero(s,n)
-#else
 #if _lib_bcopy && !_lib_memcpy
 #define memcpy(to,fr,n)	bcopy((fr),(to),(n))
 #endif
@@ -864,7 +810,6 @@ extern "C" {
 #else
 #define memclear(s,n)	memset((s),'\0',(n))
 #endif
-#endif /*defined(_PACKAGE_ast)*/
 
 /* note that MEMCPY advances the associated pointers */
 #define MEMCPY(to,fr,n) \
@@ -924,8 +869,6 @@ extern "C" {
     extern void *mmap(void *, size_t, int, int, int, off_t);
     extern int munmap(void *, size_t);
 #endif
-
-#if !defined(_PACKAGE_ast)
 
 #ifdef WIN32
 #undef SF_ERROR
@@ -989,8 +932,6 @@ extern "C" {
 #if _proto_open && defined(__cplusplus)
     extern int open(const char *, int, ...);
 #endif
-
-#endif				/* defined(_PACKAGE_ast) */
 
 #endif /*_SFHDR_H*/
 #ifdef __cplusplus

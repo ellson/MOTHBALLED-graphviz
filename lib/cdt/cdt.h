@@ -15,7 +15,7 @@ extern "C" {
 #include <stddef.h>	/* size_t */
 #include <string.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #undef __EXPORT__
 #undef __IMPORT__
 #define __EXPORT__  __declspec (dllexport)

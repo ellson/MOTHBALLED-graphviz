@@ -30,44 +30,7 @@ extern "C" {
 #include	<ast_common.h>
 #include	<errno.h>
 
-/* ast doesn't do threads yet */
-#if defined(_PACKAGE_ast) && !defined(vt_threaded)
-#define vt_threaded     0
-#endif
-
-
-#if !defined(vt_threaded) || (defined(vt_threaded) && vt_threaded == 1)
-#define _may_use_threads	1
-#else
-#define _may_use_threads	0
-#endif
 #undef vt_threaded
-#undef _may_use_threads	
-
-#if defined(_may_use_threads) && !defined(vt_threaded) && defined(_hdr_pthread)
-#define vt_threaded		1
-#include			<pthread.h>
-    typedef pthread_mutex_t _vtmtx_t;
-    typedef pthread_once_t _vtonce_t;
-    typedef pthread_t _vtself_t;
-    typedef pthread_t _vtid_t;
-    typedef pthread_attr_t _vtattr_t;
-
-#if !defined(PTHREAD_ONCE_INIT) && defined(pthread_once_init)
-#define PTHREAD_ONCE_INIT	pthread_once_init
-#endif
-
-#endif
-
-#if defined(_may_use_threads) && !defined(vt_threaded) && defined(_WIN32)
-#define vt_threaded		1
-#include			<windows.h>
-    typedef CRITICAL_SECTION _vtmtx_t;
-    typedef int _vtonce_t;
-    typedef HANDLE _vtself_t;
-    typedef DWORD _vtid_t;
-    typedef SECURITY_ATTRIBUTES _vtattr_t;
-#endif
 
 #ifndef vt_threaded
 #define vt_threaded		0

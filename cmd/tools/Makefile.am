@@ -79,6 +79,13 @@ ccomps_LDADD = \
 ccomps.1.pdf: $(srcdir)/ccomps.1
 	- @GROFF@ -Tps -man $(srcdir)/ccomps.1 | @PS2PDF@ - - >ccomps.1.pdf
 
+tred2_SOURCES = tred2.c
+
+tred2_LDADD = \
+	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
+	$(top_builddir)/lib/cgraph/libcgraph.la \
+	$(top_builddir)/lib/gvc/libgvc.la
+
 tred_SOURCES = tred.c
 
 tred_LDADD = \

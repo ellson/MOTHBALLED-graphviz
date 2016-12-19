@@ -17,10 +17,6 @@
 **	Written by Kiem-Phong Vo.
 */
 
-#if defined(_PACKAGE_ast)
-#include	<proc.h>
-#else
-
 #define EXIT_NOTFOUND	127
 
 #define READ		0
@@ -118,8 +114,6 @@ static void execute(const char *argcmd)
     _exit(EXIT_NOTFOUND);
 }
 
-#endif /*defined(_PACKAGE_ast)*/
-
 #ifndef WIN32
 /**
  * @param f
@@ -128,46 +122,6 @@ static void execute(const char *argcmd)
  */
 Sfio_t *sfpopen(Sfio_t * f, const char *command, const char *mode)
 {
-#if defined(_PACKAGE_ast)
-    reg Proc_t *proc;
-    reg int sflags;
-    reg long flags;
-    reg int bits;
-    char *av[4];
-
-    if (!command || !command[0] || !(sflags = _sftype(mode, NiL, NiL)))
-	return 0;
-
-    if (f == (Sfio_t *) (-1)) {	/* stdio compatibility mode */
-	f = NIL(Sfio_t *);
-	bits = SF_STDIO;
-    } else
-	bits = 0;
-
-    flags = 0;
-    if (sflags & SF_READ)
-	flags |= PROC_READ;
-    if (sflags & SF_WRITE)
-	flags |= PROC_WRITE;
-    av[0] = "sh";
-    av[1] = "-c";
-    av[2] = (char *) command;
-    av[3] = 0;
-    if (!(proc = procopen(0, av, 0, 0, flags)))
-	return 0;
-    if (!(f = sfnew(f, NIL(void *), (size_t) SF_UNBOUND,
-		    (sflags & SF_READ) ? proc->rfd : proc->wfd, sflags)) ||
-	((f->bits |= bits),
-	 _sfpopen(f, (sflags & SF_READ) ? proc->wfd : -1, proc->pid)) < 0)
-    {
-	if (f)
-	    sfclose(f);
-	procclose(proc);
-	return 0;
-    }
-    procfree(proc);
-    return f;
-#else
     reg int pid, fd, pkeep, ckeep, sflags;
     int stdio, parent[2], child[2];
     Sfio_t sf;
@@ -285,6 +239,5 @@ Sfio_t *sfpopen(Sfio_t * f, const char *command, const char *mode)
 	}
 	return NIL(Sfio_t *);
     }
-#endif /*defined(_PACKAGE_ast)*/
 }
 #endif

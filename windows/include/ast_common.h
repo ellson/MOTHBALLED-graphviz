@@ -15,35 +15,14 @@
 #ifndef _AST_COMMON_H
 #define _AST_COMMON_H	1
 
-#undef _hdr_pthread
-#define _hdr_pthread	1	/* #include <pthread.h> ok */
-
-#undef _hdr_stddef
-#define _hdr_stddef	1	/* #include <stddef.h> ok */
-
 #undef _sys_types
 #define _sys_types	1	/* #include <sys/types.h> ok */
-
-#undef _hdr_time
-#define _hdr_time	1	/* #include <time.h> ok */
-
-#undef _sys_time
-#define _sys_time	0	/* #include <sys/time.h> ok */
-
-#undef _sys_times
-#define _sys_times	0	/* #include <sys/times.h> ok */
-
-#undef _typ_size_t
-#define _typ_size_t	1	/* size_t is a type */
 
 #undef _typ_ssize_t
 #define _typ_ssize_t	0	/* ssize_t is a type */
 
 #undef _typ_long_double
 #define _typ_long_double	1	/* long double is a type */
-
-#undef _proto_stdc
-#define _proto_stdc	1	/* Standard-C prototypes ok */
 
 /* extern symbols must be protected against C++ name mangling */
 #ifndef _BEGIN_EXTERNS_
@@ -55,14 +34,6 @@
 #define _END_EXTERNS_
 #endif
 #endif /*_BEGIN_EXTERNS_*/
-
-/* __INLINE__ is the inline keyword */
-#if !defined(__INLINE__) && defined(__cplusplus)
-#define __INLINE__	inline
-#endif
-#if !defined(__INLINE__) && defined(_WIN32) && !defined(__GNUC__)
-#define __INLINE__	__inline
-#endif
 
 /* dynamic linked library external scope handling */
 #undef extern
@@ -80,17 +51,9 @@
 #endif
 #endif /*_astimport*/
 #ifndef _AST_STD_H
-#	if _hdr_stddef
-#	include	<stddef.h>
-#	endif
 #	if _sys_types
 #	include	<sys/types.h>
 #	endif
-#endif
-#if !_typ_size_t
-#   undef _typ_size_t
-#	define _typ_size_t	1
-typedef int size_t;
 #endif
 #if !_typ_ssize_t
 #   undef _typ_ssize_t

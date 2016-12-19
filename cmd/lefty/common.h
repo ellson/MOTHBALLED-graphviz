@@ -39,10 +39,6 @@ extern "C" {
 #define FEATURE_X11 1
 #endif
 
-#ifdef _PACKAGE_ast
-#include <ast.h>
-#define HAVE_STRERROR 1
-#else
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
@@ -54,7 +50,6 @@ extern "C" {
 #endif
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
-#endif
 #endif
 
 #include <inttypes.h>

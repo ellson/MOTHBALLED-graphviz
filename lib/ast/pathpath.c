@@ -38,7 +38,7 @@
 #include <crt_externs.h>
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 #define environ _environ
 #else
 #if defined(HAVE_CRT_EXTERNS_H) && defined(HAVE__NSGETENVIRON)

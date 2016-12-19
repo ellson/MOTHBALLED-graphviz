@@ -883,7 +883,7 @@ static mcGraph *createMatrixIn(Agraph_t * g)
 	addAdjEdges(v);
     id = countAllX(mcG);
 #ifdef DEBUG
-    #ifdef WIN32
+    #ifdef _WIN32
     dumpGraph (mcG, "c:/temp/before.gv");
     #else
     dumpGraph (mcG, "before.gv");
@@ -894,7 +894,7 @@ static mcGraph *createMatrixIn(Agraph_t * g)
 
 
 #ifdef DEBUG
-    #ifdef WIN32
+    #ifdef _WIN32
     dumpGraph (mcG, "c:/temp/after_trans.gv");
     #else
     dumpGraph (mcG, "after_trans.gv");

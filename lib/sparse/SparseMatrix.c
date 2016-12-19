@@ -67,11 +67,12 @@ SparseMatrix SparseMatrix_make_undirected(SparseMatrix A){
   return SparseMatrix_remove_upper(B);
 }
 SparseMatrix SparseMatrix_transpose(SparseMatrix A){
+  if (!A) return NULL;
+
   int *ia = A->ia, *ja = A->ja, *ib, *jb, nz = A->nz, m = A->m, n = A->n, type = A->type, format = A->format;
   SparseMatrix B;
   int i, j;
 
-  if (!A) return NULL;
   assert(A->format == FORMAT_CSR);/* only implemented for CSR right now */
 
   B = SparseMatrix_new(n, m, nz, type, format);
@@ -175,6 +176,8 @@ SparseMatrix SparseMatrix_symmetrize_nodiag(SparseMatrix A, int pattern_symmetri
 }
 
 int SparseMatrix_is_symmetric(SparseMatrix A, int test_pattern_symmetry_only){
+  if (!A) return FALSE;
+
   /* assume no repeated entries! */
   SparseMatrix B;
   int *ia, *ja, *ib, *jb, type, m;
@@ -182,8 +185,6 @@ int SparseMatrix_is_symmetric(SparseMatrix A, int test_pattern_symmetry_only){
   int res = FALSE;
   int i, j;
   assert(A->format == FORMAT_CSR);/* only implemented for CSR right now */
-
-  if (!A) return FALSE;
 
   if (SparseMatrix_known_symmetric(A)) return TRUE;
   if (test_pattern_symmetry_only && SparseMatrix_known_strucural_symmetric(A)) return TRUE;

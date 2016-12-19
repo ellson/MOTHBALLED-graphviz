@@ -64,9 +64,9 @@
     </ClCompile>
     <Lib />
     <PreBuildEvent>
-      <Command>"%BISON%" -dy exparse.y -o exparse-intermediate.c
-"%SED%" "s/yy/ex/g" &lt; exparse-intermediate.c | "%SED%" "s/YY/EX/g" &gt; exparse.c
-"%SED%" "s/yy/ex/g" &lt; exparse-intermediate.h | "%SED%" "s/YY/EX/g" &gt; exparse.h
+      <Command>bison -dy exparse.y -o exparse-intermediate.c
+sed "s/yy/ex/g" &lt; exparse-intermediate.c | sed "s/YY/EX/g" &gt; exparse.c
+sed "s/yy/ex/g" &lt; exparse-intermediate.h | sed "s/YY/EX/g" &gt; exparse.h
 del exparse-intermediate.c
 del exparse-intermediate.h</Command>
     </PreBuildEvent>
@@ -83,9 +83,9 @@ del exparse-intermediate.h</Command>
     </ClCompile>
     <Lib />
     <PreBuildEvent>
-      <Command>"%BISON%" -dy exparse.y -o exparse-intermediate.c
-"%SED%" "s/yy/ex/g" &lt; exparse-intermediate.c | "%SED%" "s/YY/EX/g" &gt; exparse.c
-"%SED%" "s/yy/ex/g" &lt; exparse-intermediate.h | "%SED%" "s/YY/EX/g" &gt; exparse.h
+      <Command>bison -dy exparse.y -o exparse-intermediate.c
+sed "s/yy/ex/g" &lt; exparse-intermediate.c | sed "s/YY/EX/g" &gt; exparse.c
+sed "s/yy/ex/g" &lt; exparse-intermediate.h | sed "s/YY/EX/g" &gt; exparse.h
 del exparse-intermediate.c
 del exparse-intermediate.h</Command>
     </PreBuildEvent>
