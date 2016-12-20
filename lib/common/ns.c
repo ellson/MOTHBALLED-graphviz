@@ -323,8 +323,16 @@ static subtree_t *STsetUnion(subtree_t *s0, subtree_t *s1)
 
   for (r0 = s0; r0->par && (r0->par != r0); r0 = r0->par);
   for (r1 = s1; r1->par && (r1->par != r1); r1 = r1->par);
-  if (r1->size <= r0->size) {r = r0; r1->par = r; r->size += r1->size;}
-  else {r = r1; r0->par = r; r->size += r0->size;}
+  if (r0 == r1) return r0;  /* safety code but shouldn't happen */
+  assert((r0->heap_index > -1) || (r1->heap_index > -1));
+  if (r1->heap_index == -1) r = r0;
+  else if (r0->heap_index == -1) r = r1;
+  else if (r1->size < r0->size) r = r0;
+  else r = r1;
+
+  r0->par = r1->par = r;
+  r->size = r0->size + r1->size;
+  assert(r->heap_index >= 0);
   return r;
 }
 
@@ -385,6 +393,7 @@ void STheapify(STheap_t *heap, int i)
         if ((left < heap->size) && (elt[left]->size < elt[i]->size)) smallest = left;
         else smallest = i;
         if ((right < heap->size) && (elt[right]->size < elt[smallest]->size)) smallest = right;
+        else smallest = i;
         if (smallest != i) {
             subtree_t *temp;
             temp = elt[i];
@@ -419,6 +428,7 @@ subtree_t *STextractmin(STheap_t *heap)
     rv = heap->elt[0];
     rv->heap_index = -1;
     heap->elt[0] = heap->elt[heap->size - 1];
+    heap->elt[0]->heap_index = 0;
     heap->elt[heap->size -1] = rv;    /* needed to free storage later */
     heap->size--;
     STheapify(heap,0);
@@ -457,7 +467,7 @@ subtree_t *merge_trees(Agedge_t *e)   /* entering tree edge */
 
   //fprintf(stderr,"merge trees of %d %d of %d, delta %d\n",t0->size,t1->size,N_nodes,delta);
 
-  if (t0->size < t1->size) {    // move t0
+  if (t0->heap_index == -1) {   // move t0
     delta = SLACK(e);
     tree_adjust(t0->rep,(Agnode_t*)0,delta);
   }
@@ -467,6 +477,7 @@ subtree_t *merge_trees(Agedge_t *e)   /* entering tree edge */
   }
   add_tree_edge(e);
   rv = STsetUnion(t0,t1);
+  
   return rv;
 }
 
@@ -504,7 +515,6 @@ int feasible_tree(void)
     ee = inter_tree_edge(tree0);
     tree1 = merge_trees(ee);
     STheapify(heap,tree1->heap_index);
-    //free(tree0);
   }
 
   free(heap);
