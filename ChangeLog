@@ -1,11 +1,14 @@
-December 18, 2016
+December 20, 2016
     - Release 2.40.0
-	- built-in tred tool now available in the various swig generated language bindings
-	- number rounding added to SVG renderer (same as PS and TK rounding) to aid regression testing.
+        - network-simplex fixes and optimization (Stephen North)
+	- built-in tred tool now available in the various swig generated
+	language bindings (John Ellson)
+	- number rounding added to SVG renderer (same as PS and TK rounding)
+	to aid regression testing. (John Ellson)
 	- additional regressson test framework, used in Travis CI builds. (Erwin Janssen)
-	- PHP7 support (requires swig-3.0.11 or later)
-	- Allow user to specify clustering algorithm in gvmap.
-	- Add Sierpinski graph generator to gvgen
+	- PHP7 support (requires swig-3.0.11 or later). (John Ellson)
+	- Allow user to specify clustering algorithm in gvmap. (Emden Gansner)
+	- Add Sierpinski graph generator to gvgen. (Emden Gansner)
 	- Extensive code cleanup (Erwin Janssen)
 	- Removal of libgd source - use vanilla libgd from separate install 
 	- Windows builds (Erwin Janssen)
@@ -13,14 +16,14 @@ December 18, 2016
 	- Travis CI for Fedora/Centos builds (Erwin Janssen)
 	- Added JSON output format, -Tjson  (Emden Gansner)
 	- New curved arrowhead, cylinder node shape.
-	- Resolves bugs: 2599, 
+	- Resolves bugs: 2599, 1172
 June 18, 2016
 	- Experimenting with Travis CI
 February 13, 2016
 	- Add cylinder shape for databases.
 	- Free installed plugins
 	- Update makefile for dot so that the using libpanco_C in the static build include PANGOFT2
-      as well as PANGOCAIRO_LIBS (needed for some versions of Ubuntu)
+        as well as PANGOCAIRO_LIBS (needed for some versions of Ubuntu)
 February 1, 2016
 	- Add json output format
 April 26, 2015
