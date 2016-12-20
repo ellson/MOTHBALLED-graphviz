@@ -1,6 +1,5 @@
 /* $Id$ $Revision$ */
 /* vim:set shiftwidth=4 ts=8: */
-#define DEBUG 1
 
 /*************************************************************************
  * Copyright (c) 2011 AT&T Intellectual Property 
