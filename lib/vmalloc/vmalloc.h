@@ -25,7 +25,11 @@ extern "C" {
 
 #define VMALLOC_VERSION	19990805L
 
-#include	<ast_common.h>
+#include "config.h"
+
+#ifdef HAVE_SYS_TYPES_H
+#   include <sys/types.h>
+#endif // HAVE_SYS_TYPES_H
 
     typedef struct _vmalloc_s Vmalloc_t;
     typedef struct _vmstat_s Vmstat_t;

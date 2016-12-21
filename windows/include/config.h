@@ -80,9 +80,6 @@
 /* Define if FILE structure provides _r */
 /* #undef HAVE_FILE_R */
 
-/* Define to 1 if you have the <float.h> header file. */
-#define HAVE_FLOAT_H 1
-
 /* Define if you have the fontconfig library */
 #define HAVE_FONTCONFIG 1
 
@@ -122,9 +119,6 @@
 /* Define to 1 if you have the `getenv' function. */
 #define HAVE_GETENV 1
 
-/* Define to 1 if you have the `getrusage' function. */
-/* #undef HAVE_GETRUSAGE */
-
 /* Define if you have the glade library */
 #define HAVE_GLADE 1
 
@@ -162,9 +156,6 @@
 /* Define if intptr_t is declared */
 #define HAVE_INTPTR_T 1
 
-/* Define to 1 if you have the <langinfo.h> header file. */
-/* #undef HAVE_LANGINFO_H */
-
 /* Define if you have the lasi library */
 /* #undef HAVE_LASI */
 
@@ -173,9 +164,6 @@
 
 /* Define if the LIBGEN library has the basename feature */
 /* #undef HAVE_LIBGEN */
-
-/* Define to 1 if you have the <libintl.h> header file. */
-#define HAVE_LIBINTL_H 1
 
 /* Define if you have the JPEG library */
 #define HAVE_LIBJPEG 1
@@ -195,26 +183,17 @@
 /* Define to 1 if you have the `lrand48' function. */
 /* #undef HAVE_LRAND48 */
 
-/* Define to 1 if you have the `lsqrt' function. */
-/* #undef HAVE_LSQRT */
-
 /* Define to 1 if you have the <malloc.h> header file. */
 #define HAVE_MALLOC_H 1
 
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1
 
-/* Define to 1 if you have the `memset' function. */
-#define HAVE_MEMSET 1
-
 /* Define if you have the ming library for SWF support */
 /* #undef HAVE_MING */
 
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 /* #undef HAVE_NDIR_H */
-
-/* Define to 1 if you have the `nl_langinfo' function. */
-/* #undef HAVE_NL_LANGINFO */
 
 /* Define if you have the pangocairo library */
 #define HAVE_PANGOCAIRO 1
@@ -224,12 +203,6 @@
 
 /* Define to 1 if you have the `pango_fc_font_unlock_face' function. */
 /* #undef HAVE_PANGO_FC_FONT_UNLOCK_FACE */
-
-/* Define to 1 if you have the `pow' function. */
-#define HAVE_POW 1
-
-/* Define to 1 if you have the <pthread.h> header file. */
-/* #undef HAVE_PTHREAD_H */
 
 /* Define if you have the Quartz framework for Mac OS X */
 /* #undef HAVE_QUARTZ */
@@ -243,38 +216,20 @@
 /* Define to 1 if you have the `setenv' function. */
 /* #undef HAVE_SETENV */
 
-/* Define to 1 if you have the <setjmp.h> header file. */
-#define HAVE_SETJMP_H 1
-
 /* Define to 1 if you have the `setmode' function. */
 #define HAVE_SETMODE 1
 
 /* Define if libm provides a *working* sincos function */
 /* #undef HAVE_SINCOS */
 
-/* Define to 1 if you have the `sqrt' function. */
-#define HAVE_SQRT 1
-
 /* Define to 1 if you have the `srand48' function. */
 /* #undef HAVE_SRAND48 */
-
-/* Define to 1 if you have the <stdarg.h> header file. */
-#define HAVE_STDARG_H 1
 
 /* Define to 1 if stdbool.h conforms to C99. */
 //#define HAVE_STDBOOL_H 1
 
-/* Define to 1 if you have the <stddef.h> header file. */
-#define HAVE_STDDEF_H 1
-
 /* Define to 1 if you have the `strcasecmp' function. */
 //#define HAVE_STRCASECMP 1
-
-/* Define to 1 if you have the `strchr' function. */
-#define HAVE_STRCHR 1
-
-/* Define to 1 if you have the `strdup' function. */
-#define HAVE_STRDUP 1
 
 /* Define to 1 if you have the `strerror' function. */
 #define HAVE_STRERROR 1
@@ -284,18 +239,6 @@
 
 /* Define to 1 if you have the `strncasecmp' function. */
 //#define HAVE_STRNCASECMP 1
-
-/* Define to 1 if you have the `strstr' function. */
-#define HAVE_STRSTR 1
-
-/* Define to 1 if you have the `strtoll' function. */
-#define HAVE_STRTOLL 1
-
-/* Define to 1 if you have the `strtoul' function. */
-#define HAVE_STRTOUL 1
-
-/* Define to 1 if you have the `strtoull' function. */
-#define HAVE_STRTOULL 1
 
 /* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
    */
@@ -317,14 +260,8 @@
 /* Define to 1 if you have the <sys/select.h> header file. */
 /* #undef HAVE_SYS_SELECT_H */
 
-/* Define to 1 if you have the <sys/socket.h> header file. */
-/* #undef HAVE_SYS_SOCKET_H */
-
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #define HAVE_SYS_STAT_H 1
-
-/* Define to 1 if you have the <sys/times.h> header file. */
-/* #undef HAVE_SYS_TIMES_H */
 
 /* Define to 1 if you have the <sys/time.h> header file. */
 #define HAVE_SYS_TIME_H 1
@@ -338,9 +275,6 @@
 /* Define to 1 if you have the <termios.h> header file. */
 /* #undef HAVE_TERMIOS_H */
 
-/* Define to 1 if you have the <time.h> header file. */
-#define HAVE_TIME_H 1
-
 /* Define to 1 if you have the <tkInt.h> header file. */
 /* #undef HAVE_TKINT_H */
 
@@ -349,9 +283,6 @@
 
 /* Define if triangle.[ch] are available. */
 /* #undef HAVE_TRIANGLE */
-
-/* Define to 1 if you have the `uname' function. */
-/* #undef HAVE_UNAME */
 
 /* Define to 1 if you have the <unistd.h> header file. */
 //#define HAVE_UNISTD_H 1
@@ -373,12 +304,6 @@
 
 /* Define to 1 if you have the `_NSGetEnviron' function. */
 /* #undef HAVE__NSGETENVIRON */
-
-/* Define to 1 if you have the `_sysconf' function. */
-/* #undef HAVE__SYSCONF */
-
-/* Define to 1 if you have the `__freadable' function. */
-/* #undef HAVE___FREADABLE */
 
 /* Define as const if the declaration of iconv() needs const. */
 #define ICONV_CONST const
@@ -448,23 +373,14 @@
    `char[]'. */
 /* #undef YYTEXT_POINTER */
 
-/* Define to empty if `const' does not conform to ANSI C. */
-/* #undef const */
-
 /* Define to `int' if <sys/types.h> doesn't define. */
 #define gid_t int
 
 /* Define to `int' if <sys/types.h> does not define. */
-/* #undef mode_t */
-
-/* Define to `int' if <sys/types.h> does not define. */
 /* #undef pid_t */
 
-/* Define to `unsigned int' if <sys/types.h> does not define. */
-/* #undef size_t */
-
 /* Define to `int' if <sys/types.h> does not define. */
-//#define ssize_t int
+typedef int ssize_t;
 
 /* Define to `int' if <sys/types.h> doesn't define. */
 #define uid_t int
