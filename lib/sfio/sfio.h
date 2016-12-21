@@ -25,7 +25,11 @@ extern "C" {
 **	Written by Kiem-Phong Vo
 */
 
-#include	<ast_common.h>
+#include "config.h"
+
+#ifdef HAVE_SYS_TYPES_H
+#   include <sys/types.h>
+#endif // HAVE_SYS_TYPES_H
 
 #include <stdarg.h>
 

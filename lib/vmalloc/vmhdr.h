@@ -31,7 +31,12 @@ extern "C" {
 **	Written by Kiem-Phong Vo, kpv@research.att.com, 01/16/94.
 */
 
-#include	<ast_common.h>
+#include "config.h"
+
+#ifdef HAVE_SYS_TYPES_H
+#   include <sys/types.h>
+#endif // HAVE_SYS_TYPES_H
+
 #include	"FEATURE/vmalloc"
 
 #undef free
