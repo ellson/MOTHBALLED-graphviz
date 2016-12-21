@@ -217,11 +217,6 @@ AC_CONFIG_HEADERS([config.h])
 # put BUILDDATE in its own file so that only targets that use it get rebuilt
 echo "#define BUILDDATE \"$GRAPHVIZ_VERSION_DATE\"" > builddate.h
 
-# only update ast_common.h (for GNU builds) from master if changed
-if ! `cmp -s $srcdir/ast_common.h.in ast_common.h`; then
-	cp $srcdir/ast_common.h.in ast_common.h;
-fi
-
 AC_PREFIX_DEFAULT([/usr/local])
 if test "x${prefix}" = "xNONE"; then
 	prefix=${ac_default_prefix}

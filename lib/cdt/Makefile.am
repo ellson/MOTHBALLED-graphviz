@@ -10,7 +10,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 AM_CPPFLAGS = -I$(top_srcdir)
 
 pkginclude_HEADERS = cdt.h
-noinst_HEADERS = dthdr.h $(top_builddir)/ast_common.h
+noinst_HEADERS = dthdr.h
 noinst_LTLIBRARIES = libcdt_C.la
 lib_LTLIBRARIES = libcdt.la
 man_MANS = cdt.3

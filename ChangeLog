@@ -1,3 +1,5 @@
+December 21, 2016
+	- Remove usage of ast_common.h
 December 20, 2016
     - Release 2.40.0
         - network-simplex fixes and optimization (Stephen North)
