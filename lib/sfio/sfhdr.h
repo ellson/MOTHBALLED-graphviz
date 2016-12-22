@@ -66,7 +66,7 @@ extern "C" {
 #include	<stdlib.h>
 #include	<string.h>
 #include	<stdint.h>
-#include	<stddef.h>]
+#include	<stddef.h>
 
 #if _sys_stat
 #include	<sys/stat.h>
@@ -854,7 +854,7 @@ extern "C" {
 #endif
 
 #ifndef errno
-    _astimport int errno;
+    extern int errno;
 #endif
 
 /* for portable encoding of double values */

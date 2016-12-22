@@ -10,6 +10,7 @@ addons:
     - libxaw7-dev
     - freeglut3-dev
     - colorgcc
+    - libgd-dev
 
 services:
 - docker

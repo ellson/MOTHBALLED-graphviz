@@ -217,11 +217,6 @@ AC_CONFIG_HEADERS([config.h])
 # put BUILDDATE in its own file so that only targets that use it get rebuilt
 echo "#define BUILDDATE \"$GRAPHVIZ_VERSION_DATE\"" > builddate.h
 
-# only update ast_common.h (for GNU builds) from master if changed
-if ! `cmp -s $srcdir/ast_common.h.in ast_common.h`; then
-	cp $srcdir/ast_common.h.in ast_common.h;
-fi
-
 AC_PREFIX_DEFAULT([/usr/local])
 if test "x${prefix}" = "xNONE"; then
 	prefix=${ac_default_prefix}
@@ -413,11 +408,8 @@ AM_CONDITIONAL(RC_IS_WINDRES, [test "x$RC" = "xwindres"])
 
 dnl -----------------------------------
 dnl Check for various typedefs and provide substitutes if they do not exist.
-                                                                                
-AC_C_CONST
-AC_TYPE_MODE_T
+
 AC_TYPE_PID_T
-AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T
 AC_TYPE_UID_T
 
@@ -425,12 +417,12 @@ dnl -----------------------------------
 dnl Checks for header files
 
 # AC_HEADER_STDC
-AC_CHECK_HEADERS(stdarg.h stddef.h stddef.h malloc.h \
-	fcntl.h search.h pthread.h values.h float.h limits.h termios.h \
-	errno.h time.h unistd.h strings.h setjmp.h \
-	sys/time.h sys/times.h sys/types.h sys/select.h \
-	sys/socket.h sys/stat.h sys/mman.h \
-	sys/ioctl.h sys/inotify.h langinfo.h libintl.h crt_externs.h)
+AC_CHECK_HEADERS(malloc.h \
+	fcntl.h search.h values.h limits.h termios.h \
+	errno.h unistd.h strings.h \
+	sys/time.h sys/types.h sys/select.h \
+	sys/stat.h sys/mman.h \
+	sys/ioctl.h sys/inotify.h crt_externs.h)
 AC_HEADER_TIME
 AC_HEADER_DIRENT
 AC_HEADER_STDBOOL
@@ -469,9 +461,7 @@ AC_SUBST([LIBGEN_LIBS])
 
 # Checks for library functions
 AC_CHECK_FUNCS([lrand48 drand48 srand48 setmode setenv getenv \
-	__freadable _sysconf getrusage strerror cbrt lsqrt vsnprintf \
-	strtoul strtoll strtoull uname memset nl_langinfo pow sqrt \
-	strchr strdup strerror strstr _NSGetEnviron])
+	strerror cbrt vsnprintf _NSGetEnviron])
 
 AC_REPLACE_FUNCS([strcasecmp strncasecmp strcasestr])
 

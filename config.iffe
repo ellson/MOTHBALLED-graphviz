@@ -34,7 +34,6 @@ hdr malloc
 hdr ndir
 hdr netdb
 hdr search
-hdr stdarg
 hdr stdbool
 hdr stdint
 hdr strings
@@ -42,7 +41,6 @@ hdr termios
 hdr unistd
 
 sys types
-sys socket
 sys mman
 sys stat
 sys select
