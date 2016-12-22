@@ -143,12 +143,12 @@ Agraph_t *agmemread(const char *cp)
     disc.mem = &AgMemDisc;
     disc.id = &AgIdDisc;
     disc.io = &memIoDisc;  
+    g = agread (&rdr, &disc);
     /* Null out filename and reset line number 
      * The name may have been set with a ppDirective, and
      * we want to reset line_num.
      */
     agsetfile(NULL);
-    g = agread (&rdr, &disc);
     return g;
 }
 
