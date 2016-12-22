@@ -1,5 +1,8 @@
 # Graphviz - Graph Visualization Tools
 
+[![Linux build status](https://img.shields.io/travis/ellson/graphviz/master.svg?label=Linux)](https://travis-ci.org/ellson/graphviz)
+[![Windows Build Status](https://img.shields.io/appveyor/ci/ellson/graphviz/master.svg?label=Windows)](https://ci.appveyor.com/project/ellson/graphviz/branch/master)
+
 from AT&T Research and Lucent Bell Labs
 * http://www.graphviz.org/
 
