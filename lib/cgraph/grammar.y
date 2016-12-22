@@ -352,6 +352,8 @@ static void attrstmt(int tkind, char *macroname)
 	}
 	bindattrs(kind);	/* set up defaults for new attributes */
 	for (aptr = S->attrlist.first; aptr; aptr = aptr->next) {
+		/* If the tag is still T_atom, aptr->u.asym has not been set */
+		if (aptr->tag == T_atom) continue;
 		if (!(aptr->u.asym->fixed) || (S->g != G))
 			sym = agattr(S->g,kind,aptr->u.asym->name,aptr->str);
 		else
