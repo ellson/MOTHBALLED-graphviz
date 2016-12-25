@@ -24,9 +24,10 @@ dnl                       even => stable series
 dnl For the micro number: 0 => in-progress development
 dnl                       timestamp => tar-file snapshot or release
 m4_define(graphviz_version_major, 2)
-m4_define(graphviz_version_minor, 41)
+m4_define(graphviz_version_minor, 40)
+m4_define(graphviz_version_micro, 1)
 dnl NB: the next line gets changed to a date/time string for development releases
-m4_define(graphviz_version_micro, $GRAPHVIZ_VERSION_DATE)
+dnl m4_define(graphviz_version_micro, $GRAPHVIZ_VERSION_DATE)
 m4_define(graphviz_version_date, $GRAPHVIZ_VERSION_DATE)
 m4_define(graphviz_collection, development)
 m4_define(graphviz_version_commit, $GRAPHVIZ_VERSION_COMMIT)
