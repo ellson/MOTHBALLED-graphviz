@@ -1,7 +1,6 @@
 cmake_minimum_required (VERSION 2.8 FATAL_ERROR)
 
-# Build dependencies
-# ==================
+# Required to set build version
 find_package(Git REQUIRED)
 
 # General project information
@@ -27,5 +26,10 @@ if(NOT git_result EQUAL 0)
 endif()
 
 message(STATUS "Graphviz version: ${GRAPHVIZ_VERSION_MAJROR}.${GRAPHVIZ_VERSION_MINOR}.${GRAPHVIZ_VERSION_BUILD}")
+
+# Build dependencies
+# ==================
+find_package(BISON REQUIRED)
+find_package(FLEX REQUIRED)
 
 add_subdirectory(lib)

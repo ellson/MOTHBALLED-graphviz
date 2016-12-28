@@ -54,6 +54,7 @@ build_script:
       }
       
       if($env:build_system -eq "cmake") {
+        $env:Path += ";" + $env:APPVEYOR_BUILD_FOLDER + "\windows\dependencies\graphviz-build-utilities";
         mkdir build;
         cd build;
         cmake ..;
