@@ -62,18 +62,6 @@
 #include <stdio.h>
 #include <errno.h>
 
-#ifndef HAVE_STRERROR
-#  ifndef HAVE_ERRNO_DECL
-extern int errno;
-extern int sys_nerr;
-#    if (linux)
-extern const char *const sys_errlist[];
-#    else
-extern char *sys_errlist[];
-#    endif
-#  endif
-#endif
-
 #include <sys/param.h>
 #include <X11/cursorfont.h>
 #include <X11/Intrinsic.h>
@@ -609,7 +597,6 @@ FILE *SFopenFile (char *name, char *mode, char *prompt, char *failed) {
     SFchdir (SFstartDir);
     if ((fp = fopen (name, mode)) == NULL) {
         char *buf;
-#ifdef HAVE_STRERROR
         char *errormsg = strerror (errno);
         if (errormsg) {
             buf = XtMalloc (
@@ -618,17 +605,6 @@ FILE *SFopenFile (char *name, char *mode, char *prompt, char *failed) {
             strcpy (buf, failed);
             strcat (buf, errormsg);
             strcat (buf, "\n");
-#else
-        if (errno < sys_nerr) {
-            buf = XtMalloc (
-                strlen (failed) + strlen (sys_errlist[errno]) +
-                strlen (prompt) + 2
-            );
-            strcpy (buf, failed);
-            strcat (buf, sys_errlist[errno]);
-            strcat (buf, "\n");
-            strcat (buf, prompt);
-#endif
         } else {
             buf = XtMalloc (strlen (failed) + strlen (prompt) + 2);
             strcpy (buf, failed);

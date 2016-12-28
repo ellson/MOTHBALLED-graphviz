@@ -56,9 +56,6 @@
 /* Define to 1 if you have the `drand48' function. */
 /* #undef HAVE_DRAND48 */
 
-/* Define if errno externs are declared */
-/* #undef HAVE_ERRNO_DECL */
-
 /* Define if you have the expat library */
 #define HAVE_EXPAT 1
 
@@ -227,9 +224,6 @@
 
 /* Define to 1 if you have the `strcasecmp' function. */
 //#define HAVE_STRCASECMP 1
-
-/* Define to 1 if you have the `strerror' function. */
-#define HAVE_STRERROR 1
 
 /* Define to 1 if you have the <strings.h> header file. */
 //#define HAVE_STRINGS_H 1

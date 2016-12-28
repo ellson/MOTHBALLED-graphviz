@@ -461,7 +461,7 @@ AC_SUBST([LIBGEN_LIBS])
 
 # Checks for library functions
 AC_CHECK_FUNCS([lrand48 drand48 srand48 setmode setenv getenv \
-	strerror cbrt vsnprintf _NSGetEnviron])
+	cbrt vsnprintf _NSGetEnviron])
 
 AC_REPLACE_FUNCS([strcasecmp strncasecmp strcasestr])
 
@@ -3019,17 +3019,6 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>
 	i=f->_IO_read_end;
 	]])],[AC_MSG_RESULT(yes)
 	AC_DEFINE_UNQUOTED(HAVE_FILE_IO_READ_END,1,Define if FILE structure provides _IO_read_end)
-	],[AC_MSG_RESULT(no)
-	])
-
-# -----------------------------------
-
-AC_MSG_CHECKING(if errno externs are declared)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>
-	#include <errno.h>
-	]], [[if ( errno < sys_nerr ) return sys_errlist[errno];
-	]])],[AC_MSG_RESULT(yes)
-	AC_DEFINE_UNQUOTED(HAVE_ERRNO_DECL,1,Define if errno externs are declared)
 	],[AC_MSG_RESULT(no)
 	])
 
