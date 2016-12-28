@@ -418,7 +418,7 @@ dnl Checks for header files
 
 # AC_HEADER_STDC
 AC_CHECK_HEADERS(malloc.h \
-	fcntl.h search.h values.h limits.h termios.h \
+	fcntl.h search.h termios.h \
 	unistd.h strings.h \
 	sys/time.h sys/types.h sys/select.h \
 	sys/stat.h sys/mman.h \

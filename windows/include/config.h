@@ -171,9 +171,6 @@
 /* Define if you have the Z library */
 #define HAVE_LIBZ 1
 
-/* Define to 1 if you have the <limits.h> header file. */
-#define HAVE_LIMITS_H 1
-
 /* Define to 1 if you have the `lrand48' function. */
 /* #undef HAVE_LRAND48 */
 
@@ -277,9 +274,6 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 //#define HAVE_UNISTD_H 1
-
-/* Define to 1 if you have the <values.h> header file. */
-//#define HAVE_VALUES_H 1
 
 /* Define to 1 if you have the `vsnprintf' function. */
 #define HAVE_VSNPRINTF 1

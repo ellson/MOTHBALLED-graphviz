@@ -32,13 +32,7 @@
 #define FDP_PRIVATE 1
 
 #include "config.h"
-#ifdef HAVE_LIMITS_H
 #include <limits.h>
-#else
-#ifdef HAVE_VALUES_H
-#include <values.h>
-#endif
-#endif
 #include <inttypes.h>
 #include <assert.h>
 #include "tlayout.h"
