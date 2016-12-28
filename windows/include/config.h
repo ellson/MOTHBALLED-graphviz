@@ -156,9 +156,6 @@
 /* Define if either internal or external GD library is availabel */
 #define HAVE_LIBGD 1
 
-/* Define if the LIBGEN library has the basename feature */
-/* #undef HAVE_LIBGEN */
-
 /* Define if you have the JPEG library */
 #define HAVE_LIBJPEG 1
 
