@@ -33,9 +33,7 @@
 #ifdef HAVE_SYS_INOTIFY_H
 #include <sys/inotify.h>
 #endif
-#ifdef HAVE_ERRNO_H
 #include <errno.h>
-#endif
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
@@ -147,7 +145,7 @@ static Visual *find_argb_visual(Display * dpy, int scr)
 
 static void browser_show(GVJ_t *job)
 {
-#if defined HAVE_SYS_TYPES_H && defined HAVE_UNISTD_H && defined HAVE_ERRNO_H
+#if defined HAVE_SYS_TYPES_H && defined HAVE_UNISTD_H
    char *exec_argv[3] = {BROWSER, NULL, NULL};
    pid_t pid;
    int err;

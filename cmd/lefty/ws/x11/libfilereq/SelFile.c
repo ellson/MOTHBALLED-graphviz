@@ -60,10 +60,7 @@
 
 #include "config.h"
 #include <stdio.h>
-
-#ifdef HAVE_ERRNO_H
 #include <errno.h>
-#endif
 
 #ifndef HAVE_STRERROR
 #  ifndef HAVE_ERRNO_DECL

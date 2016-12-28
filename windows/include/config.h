@@ -59,9 +59,6 @@
 /* Define if errno externs are declared */
 /* #undef HAVE_ERRNO_DECL */
 
-/* Define to 1 if you have the <errno.h> header file. */
-#define HAVE_ERRNO_H 1
-
 /* Define if you have the expat library */
 #define HAVE_EXPAT 1
 
