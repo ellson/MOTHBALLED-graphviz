@@ -59,6 +59,9 @@ build_script:
         cd build;
         cmake ..;
         cmake --build . --config $env:configuration;
+        if($env:configuration -eq "Release") {
+          cpack;
+        }
       }
       
       if ($env:build_system -eq "msys2" -Or $env:compiler -eq "cygwin") {

@@ -28,3 +28,23 @@ add_library(cdt SHARED
     # Link definition file for Windows
     cdt.def
 )
+
+# Installation location of library files
+install(
+    TARGETS cdt
+    RUNTIME DESTINATION ${BINARY_INSTALL_DIR}
+    LIBRARY DESTINATION ${LIBRARY_INSTALL_DIR}
+    ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
+)
+
+# Installation location of header files
+install(
+    FILES cdt.h
+    DESTINATION ${HEADER_INSTALL_DIR}
+)
+
+# Installation location of man page
+install(
+    FILES cdt.3
+    DESTINATION ${MAN_INSTALL_DIR}
+)

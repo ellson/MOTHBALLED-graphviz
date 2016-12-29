@@ -32,4 +32,20 @@ message(STATUS "Graphviz version: ${GRAPHVIZ_VERSION_MAJROR}.${GRAPHVIZ_VERSION_
 find_package(BISON REQUIRED)
 find_package(FLEX REQUIRED)
 
+# Convenient values for CMake configuration
+# =========================================
+set(BINARY_INSTALL_DIR bin)
+set(LIBRARY_INSTALL_DIR lib)
+set(HEADER_INSTALL_DIR include/graphviz)
+set(MAN_INSTALL_DIR share/man/man3)
+# TODO: Find a way to check for groff and ps2pdf for manpage pdf generation
+# set(MAN_PDF_INSTALL_DIR share/graphviz/doc/pdf)
+
+
+# Packaging information
+# =====================
+set(CPACK_GENERATOR ZIP)
+
+include(CPack)
+
 add_subdirectory(lib)
