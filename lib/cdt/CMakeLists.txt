@@ -37,14 +37,20 @@ install(
     ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
 )
 
-# Installation location of header files
+# Specify headers to be installed
 install(
     FILES cdt.h
     DESTINATION ${HEADER_INSTALL_DIR}
 )
 
-# Installation location of man page
+# Specify man pages to be installed
 install(
     FILES cdt.3
     DESTINATION ${MAN_INSTALL_DIR}
+)
+
+# Specify library version and soversion
+set_target_properties(cdt PROPERTIES
+    VERSION 5.0.0
+    SOVERSION 5
 )
