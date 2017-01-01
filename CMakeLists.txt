@@ -1,4 +1,5 @@
 cmake_minimum_required (VERSION 2.8 FATAL_ERROR)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 # Required to set build version
 find_package(Git REQUIRED)
@@ -40,7 +41,12 @@ set(HEADER_INSTALL_DIR include/graphviz)
 set(MAN_INSTALL_DIR share/man/man3)
 # TODO: Find a way to check for groff and ps2pdf for manpage pdf generation
 # set(MAN_PDF_INSTALL_DIR share/graphviz/doc/pdf)
+set(GRAPHVIZ_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
+# Check avaiable headers, functions and libraries and write the result to config.h
+# ================================================================================
+include(config_checks)
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # Packaging information
 # =====================
@@ -48,6 +54,8 @@ set(CPACK_GENERATOR ZIP)
 
 include(CPack)
 
+# Specify subdirectories to build
+# ===============================
 add_subdirectory(lib)
 
 # Uninstall target

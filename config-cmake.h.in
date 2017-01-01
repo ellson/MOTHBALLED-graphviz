@@ -1,0 +1,5 @@
+// Functions
+#cmakedefine HAVE_STRCASECMP
+
+// Include headers
+#cmakedefine HAVE_UNISTD_H
