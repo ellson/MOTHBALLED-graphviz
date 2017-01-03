@@ -282,16 +282,16 @@ Agedge_t *agedge(Agraph_t * g, Agnode_t * t, Agnode_t * h, char *name,
 		 int cflag)
 {
     Agedge_t *e;
-    IDTYPE id;
+    IDTYPE my_id;
     int have_id;
 
-    have_id = agmapnametoid(g, AGEDGE, name, &id, FALSE);
+    have_id = agmapnametoid(g, AGEDGE, name, &my_id, FALSE);
     if (have_id || ((name == NILstr) && (NOT(cflag) || agisstrict(g)))) {
 	/* probe for pre-existing edge */
 	Agtag_t key;
 	key = Tag;
 	if (have_id) {
-	    key.id = id;
+	    key.id = my_id;
 	    key.objtype = AGEDGE;
 	} else {
 	    key.id = key.objtype = 0;
@@ -315,8 +315,8 @@ Agedge_t *agedge(Agraph_t * g, Agnode_t * t, Agnode_t * h, char *name,
     }
 
     if (cflag && ok_to_make_edge(g, t, h)
-	&& agmapnametoid(g, AGEDGE, name, &id, TRUE)) { /* reserve id */
-	e = newedge(g, t, h, id);
+	&& agmapnametoid(g, AGEDGE, name, &my_id, TRUE)) { /* reserve id */
+	e = newedge(g, t, h, my_id);
 	agregister(g, AGEDGE, e); /* register new object in external namespace */
     }
     else
@@ -401,7 +401,7 @@ Agedge_t *agsubedge(Agraph_t * g, Agedge_t * e, int cflag)
     return rv;
 }
 
-/* edge comparison.  OBJTYPE(e) == 0 means ID is a wildcard. */
+/* edge comparison.  AGTYPE(e) == 0 means ID is a wildcard. */
 int agedgeidcmpf(Dict_t * d, void *arg_e0, void *arg_e1, Dtdisc_t * disc)
 {
     Agedge_t *e0, *e1;
@@ -414,7 +414,7 @@ int agedgeidcmpf(Dict_t * d, void *arg_e0, void *arg_e1, Dtdisc_t * disc)
     if (AGID(e0->node) < AGID(e1->node)) return -1;
     if (AGID(e0->node) > AGID(e1->node)) return 1;
     /* same node */
-    if ((AGID(e0) != 0) && (AGID(e1) != 0)) {
+    if ((AGTYPE(e0) != 0) && (AGTYPE(e1) != 0)) {
         if (AGID(e0) < AGID(e1)) return -1;
         if (AGID(e0) > AGID(e1)) return 1;
     }
