@@ -14,7 +14,7 @@
 #define EXTERN
 #include <cghdr.h>
 
-const char AgraphVersion[] = "VERSION";
+const char AgraphVersion[] = PACKAGE_VERSION;
 
 /*
  * this code sets up the resource management discipline
