@@ -107,7 +107,6 @@ extern "C" {
     extern int emit_once(char *message);
     extern void emit_jobs_eof(GVC_t * gvc);
     extern void emit_map_rect(GVJ_t *job, boxf b);
-    extern void enqueue_neighbors(nodequeue *, Agnode_t *, int);
     extern void endpath(path *, Agedge_t *, int, pathend_t *, boolean);
     extern void epsf_init(node_t * n);
     extern void epsf_free(node_t * n);
