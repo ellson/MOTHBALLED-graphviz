@@ -493,7 +493,16 @@ Dtdisc_t Ag_subedge_id_disc = {
     NIL(Dtevent_f)
 };
 
-/* debug functions */
+/* expose macros as functions for ease of debugging
+and to expose them to foreign languages without C preprocessor. */
+#ifdef ageqedge
+#undef ageqedge
+#endif
+Agnode_t *ageqedge(Agedge_t * e, Agedge_t * f)
+{
+    return AGEQEDGE(e, f);
+}
+
 #ifdef agtail
 #undef agtail
 #endif
