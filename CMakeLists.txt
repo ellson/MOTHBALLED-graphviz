@@ -42,10 +42,12 @@ if(NOT git_result EQUAL 0)
     set(GRAPHVIZ_VERSION_BUILD 0)
 endif()
 
-message(STATUS "Graphviz version: ${GRAPHVIZ_VERSION_MAJROR}.${GRAPHVIZ_VERSION_MINOR}.${GRAPHVIZ_VERSION_BUILD}")
+set(GRAPHVIZ_VERSION_FULL "${GRAPHVIZ_VERSION_MAJROR}.${GRAPHVIZ_VERSION_MINOR}.${GRAPHVIZ_VERSION_BUILD}")
 
-# Check avaiable headers, functions and libraries and write the result to config.h
-# ================================================================================
+message(STATUS "Graphviz version: ${GRAPHVIZ_VERSION_FULL}")
+
+# Generate config.h with proper defines
+# =====================================
 include(config_checks)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 

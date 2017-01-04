@@ -1,3 +1,6 @@
+// Values
+#define PACKAGE_VERSION "@GRAPHVIZ_VERSION_FULL@"
+
 // Include headers
 #cmakedefine HAVE_UNISTD_H
 
