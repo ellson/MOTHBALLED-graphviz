@@ -1,13 +1,15 @@
 # Header checks
 include(CheckIncludeFile)
 
-CHECK_INCLUDE_FILE(unistd.h HAVE_UNISTD_H)
+check_include_file(unistd.h HAVE_UNISTD_H)
 
 # Function checks
 include(CheckFunctionExists)
 
-CHECK_FUNCTION_EXISTS( cbrt        HAVE_CBRT       )
-CHECK_FUNCTION_EXISTS( strcasecmp  HAVE_STRCASECMP )
+check_function_exists( drand48     HAVE_DRAND48    )
+check_function_exists( cbrt        HAVE_CBRT       )
+check_function_exists( srand48     HAVE_SRAND48    )
+check_function_exists( strcasecmp  HAVE_STRCASECMP )
 
 # Write check results to config.h header
 configure_file(config-cmake.h.in config.h)

@@ -5,5 +5,7 @@
 #cmakedefine HAVE_UNISTD_H
 
 // Functions
+#cmakedefine HAVE_DRAND48
 #cmakedefine HAVE_CBRT
+#cmakedefine HAVE_SRAND48
 #cmakedefine HAVE_STRCASECMP

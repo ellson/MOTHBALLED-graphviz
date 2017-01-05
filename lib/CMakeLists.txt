@@ -2,6 +2,7 @@
 add_subdirectory(cdt)
 add_subdirectory(circogen)
 add_subdirectory(dotgen)
+add_subdirectory(fdpgen)
 add_subdirectory(patchwork)
 add_subdirectory(pathplan)
 add_subdirectory(twopigen)
