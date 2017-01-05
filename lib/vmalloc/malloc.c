@@ -13,7 +13,7 @@
 
 #include	"vmhdr.h"
 
-#if _std_malloc || _BLD_INSTRUMENT_ || cray
+#if _BLD_INSTRUMENT_ || cray
 int _STUB_malloc;
 #else
 
@@ -348,4 +348,4 @@ struct mstats mstats(void)
 
 #endif/* HAVE_MALLOC_H */
 
-#endif /*_std_malloc || _BLD_INSTRUMENT_ || cray*/
+#endif /*_BLD_INSTRUMENT_ || cray*/

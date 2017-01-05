@@ -37,8 +37,6 @@ extern "C" {
 #   include <sys/types.h>
 #endif // HAVE_SYS_TYPES_H
 
-#include	"FEATURE/vmalloc"
-
 #undef free
 #undef malloc
 #undef realloc
