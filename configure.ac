@@ -418,8 +418,8 @@ dnl Checks for header files
 
 # AC_HEADER_STDC
 AC_CHECK_HEADERS(malloc.h \
-	fcntl.h search.h values.h limits.h termios.h \
-	errno.h unistd.h strings.h \
+	fcntl.h search.h termios.h \
+	unistd.h strings.h stat.h \
 	sys/time.h sys/types.h sys/select.h \
 	sys/stat.h sys/mman.h \
 	sys/ioctl.h sys/inotify.h crt_externs.h)
@@ -443,25 +443,11 @@ AC_CHECK_FUNCS([log2 sincos])
 
 LIBS=$save_LIBS
 
-dnl -----------------------------------
-dnl INCLUDES and LIBS for libgen (provides basename function)
-
-save_CPPFLAGS=$CPPFLAGS
-save_LDFLAGS=$LDFLAGS
-AC_CHECK_HEADER(libgen.h,
-        AC_CHECK_LIB(gen,basename,
-                [LIBGEN_LIBS="-lgen"
-                AC_DEFINE_UNQUOTED(HAVE_LIBGEN,1,[Define if the LIBGEN library has the basename feature])]),
-        AC_MSG_WARN(libgen.h header not available))
-LDFLAGS=$save_LDFLAGS
-CPPFLAGS=$save_CPPFLAGS
-AC_SUBST([LIBGEN_LIBS])
-
 # -----------------------------------
 
 # Checks for library functions
 AC_CHECK_FUNCS([lrand48 drand48 srand48 setmode setenv getenv \
-	strerror cbrt vsnprintf _NSGetEnviron])
+	cbrt vsnprintf _NSGetEnviron mallopt mallinfo mstats getpagesize])
 
 AC_REPLACE_FUNCS([strcasecmp strncasecmp strcasestr])
 
@@ -3019,17 +3005,6 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>
 	i=f->_IO_read_end;
 	]])],[AC_MSG_RESULT(yes)
 	AC_DEFINE_UNQUOTED(HAVE_FILE_IO_READ_END,1,Define if FILE structure provides _IO_read_end)
-	],[AC_MSG_RESULT(no)
-	])
-
-# -----------------------------------
-
-AC_MSG_CHECKING(if errno externs are declared)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>
-	#include <errno.h>
-	]], [[if ( errno < sys_nerr ) return sys_errlist[errno];
-	]])],[AC_MSG_RESULT(yes)
-	AC_DEFINE_UNQUOTED(HAVE_ERRNO_DECL,1,Define if errno externs are declared)
 	],[AC_MSG_RESULT(no)
 	])
 

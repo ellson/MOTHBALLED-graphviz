@@ -1095,7 +1095,7 @@ static void *bestalign(Vmalloc_t * vm, size_t size, size_t align)
 static void *sbrkmem(Vmalloc_t * vm, void * caddr,
 		       size_t csize, size_t nsize, Vmdisc_t * disc)
 {
-#if _std_malloc || _BLD_INSTRUMENT || cray
+#if _BLD_INSTRUMENT || cray
     NOTUSED(vm);
     NOTUSED(disc);
 

@@ -56,12 +56,6 @@
 /* Define to 1 if you have the `drand48' function. */
 /* #undef HAVE_DRAND48 */
 
-/* Define if errno externs are declared */
-/* #undef HAVE_ERRNO_DECL */
-
-/* Define to 1 if you have the <errno.h> header file. */
-#define HAVE_ERRNO_H 1
-
 /* Define if you have the expat library */
 #define HAVE_EXPAT 1
 
@@ -162,9 +156,6 @@
 /* Define if either internal or external GD library is availabel */
 #define HAVE_LIBGD 1
 
-/* Define if the LIBGEN library has the basename feature */
-/* #undef HAVE_LIBGEN */
-
 /* Define if you have the JPEG library */
 #define HAVE_LIBJPEG 1
 
@@ -176,9 +167,6 @@
 
 /* Define if you have the Z library */
 #define HAVE_LIBZ 1
-
-/* Define to 1 if you have the <limits.h> header file. */
-#define HAVE_LIMITS_H 1
 
 /* Define to 1 if you have the `lrand48' function. */
 /* #undef HAVE_LRAND48 */
@@ -230,9 +218,6 @@
 
 /* Define to 1 if you have the `strcasecmp' function. */
 //#define HAVE_STRCASECMP 1
-
-/* Define to 1 if you have the `strerror' function. */
-#define HAVE_STRERROR 1
 
 /* Define to 1 if you have the <strings.h> header file. */
 //#define HAVE_STRINGS_H 1
@@ -286,9 +271,6 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 //#define HAVE_UNISTD_H 1
-
-/* Define to 1 if you have the <values.h> header file. */
-//#define HAVE_VALUES_H 1
 
 /* Define to 1 if you have the `vsnprintf' function. */
 #define HAVE_VSNPRINTF 1

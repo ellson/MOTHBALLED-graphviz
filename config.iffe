@@ -19,7 +19,6 @@ lib srand48
 lib sincos
 lib strcasecmp
 lib strncasecmp
-lib strerror
 
 hdr dirent
 hdr dlfcn
@@ -47,11 +46,6 @@ sys select
 sys fpu
 sys ndir
 cat{ }end
-
-dat errno stdio.h errno.h yes{
-/* Define if errno is declared in system include files.  */
-#define HAVE_ERRNO_DECL 1
-}end
 
 #  Specify internal structure of FILE.
 #  This is used to determine if more characters are waiting in the stream.
