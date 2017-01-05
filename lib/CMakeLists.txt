@@ -7,6 +7,7 @@ add_subdirectory(label)
 add_subdirectory(patchwork)
 add_subdirectory(pathplan)
 add_subdirectory(twopigen)
+add_subdirectory(vmalloc)
 
 # Dependent on: cdt
 add_subdirectory(cgraph)

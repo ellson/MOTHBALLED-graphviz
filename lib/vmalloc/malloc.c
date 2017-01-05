@@ -33,10 +33,10 @@ int _STUB_malloc;
 **	Written by Kiem-Phong Vo, kpv@research.att.com, 01/16/94.
 */
 
-#if HAVE_STAT_H
+#ifdef HAVE_STAT_H
 #include	<stat.h>
 #else
-#if HAVE_SYS_STAT_H
+#ifdef HAVE_SYS_STAT_H
 #include	<sys/stat.h>
 #endif
 #endif
