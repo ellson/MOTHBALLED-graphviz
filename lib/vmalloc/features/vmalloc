@@ -7,14 +7,12 @@
 
 lib getpagesize
 hdr stat
-hdr stdlib
 sys stat
 typ ssize_t
 hdr malloc
 lib mallopt
 lib mallinfo
 lib mstats
-hdr dlfcn
 
 std	malloc note{ stuck with standard malloc }end noexecute{
 	_BEGIN_EXTERNS_
@@ -27,30 +25,4 @@ std	malloc note{ stuck with standard malloc }end noexecute{
 	#endif
 	_END_EXTERNS_
 	main() { strdup("yo"); _exit(1); }
-}end
-
-stk down note{ stack grows downward }end execute{
-	static growdown()
-	{	static char*	addr = 0;
-		char		array[4];
-		if(!addr)
-		{	addr = &array[0];
-			return growdown();
-		}
-		else if(addr < &array[0])
-			return 0;
-		else	return 1;	
-	}
-	main() { return growdown() ? 0 : 1; }
-}end
-
-exit    cleanup note{ stuck with standard _cleanup }end execute{
-        #include <stdio.h>
-        _BEGIN_EXTERNS_
-        extern void exit(int);
-        extern void _exit(int);
-        extern void _cleanup();
-        void _cleanup() { _exit(0); }
-        _END_EXTERNS_
-        main() { printf("cleanup\n"); exit(1); }
 }end
