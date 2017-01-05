@@ -2,17 +2,4 @@
 #ifndef _def_atexit_vmalloc
 #define _def_atexit_vmalloc	1
 
-#undef _sys_types
-#define _sys_types	1	/* #include <sys/types.h> ok */
-
-#undef _lib_getpagesize
-#define _lib_getpagesize	0	/* getpagesize() in default lib(s) */
-
-#undef _sys_stat
-#define _sys_stat	1	/* #include <sys/stat.h> ok */
-
-#undef _typ_ssize_t
-#define _typ_ssize_t	1	/* ssize_t is a type */
-
-#undef _hdr_malloc
-#define _hdr_malloc	1	/* #include <malloc.h> ok */
+#endif

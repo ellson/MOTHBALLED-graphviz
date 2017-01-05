@@ -82,7 +82,7 @@ extern "C" {
 #define COUNT(n)	((n) += 1)
 #endif /*DEBUG*/
 #define VMPAGESIZE	8192
-#if _lib_getpagesize
+#if HAVE_GETPAGESIZE
 #define GETPAGESIZE(x)	((x) ? (x) : \
 			 (((x)=getpagesize()) < VMPAGESIZE ? ((x)=VMPAGESIZE) : (x)) )
 #else
@@ -445,9 +445,6 @@ extern "C" {
     extern void _cleanup(void);
 
 /* for vmdcsbrk.c */
-#if !_typ_ssize_t
-    typedef int ssize_t;
-#endif
 #if !defined(_WIN32)
     extern Vmuchar_t *sbrk(ssize_t);
 #endif

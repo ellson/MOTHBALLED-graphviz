@@ -33,10 +33,10 @@ int _STUB_malloc;
 **	Written by Kiem-Phong Vo, kpv@research.att.com, 01/16/94.
 */
 
-#if _hdr_stat
+#if HAVE_STAT_H
 #include	<stat.h>
 #else
-#if _sys_stat
+#if HAVE_SYS_STAT_H
 #include	<sys/stat.h>
 #endif
 #endif
@@ -289,7 +289,7 @@ void *valloc(reg size_t size)
     return (*Vmregion->meth.alignf) (Vmregion, size, _Vmpagesize);
 }
 
-#if _hdr_malloc
+#ifdef HAVE_MALLOC_H
 
 #define calloc	______calloc
 #define free	______free
@@ -301,7 +301,7 @@ void *valloc(reg size_t size)
 /* in Windows, this is a macro defined in malloc.h and not a function */
 #undef alloca
 
-#if _lib_mallopt
+#ifdef HAVE_MALLOPT
 int mallopt(int cmd, int value)
 {
     VMFLINIT();
@@ -309,7 +309,7 @@ int mallopt(int cmd, int value)
 }
 #endif
 
-#if _lib_mallinfo
+#ifdef HAVE_MALLINFO
 struct mallinfo mallinfo(void)
 {
     Vmstat_t sb;
@@ -327,7 +327,7 @@ struct mallinfo mallinfo(void)
 }
 #endif
 
-#if _lib_mstats
+#ifdef HAVE_MSTATS
 struct mstats mstats(void)
 {
     Vmstat_t sb;
@@ -346,6 +346,6 @@ struct mstats mstats(void)
 }
 #endif
 
-#endif/*_hdr_malloc*/
+#endif/* HAVE_MALLOC_H */
 
 #endif /*_std_malloc || _BLD_INSTRUMENT_ || cray*/

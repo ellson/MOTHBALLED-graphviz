@@ -5,15 +5,6 @@
 # Written by Kiem-Phong Vo (08/15/95).
 ####################################################################
 
-lib getpagesize
-hdr stat
-sys stat
-typ ssize_t
-hdr malloc
-lib mallopt
-lib mallinfo
-lib mstats
-
 std	malloc note{ stuck with standard malloc }end noexecute{
 	_BEGIN_EXTERNS_
 	extern void _exit(int);

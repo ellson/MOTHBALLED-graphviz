@@ -419,7 +419,7 @@ dnl Checks for header files
 # AC_HEADER_STDC
 AC_CHECK_HEADERS(malloc.h \
 	fcntl.h search.h termios.h \
-	unistd.h strings.h \
+	unistd.h strings.h stat.h \
 	sys/time.h sys/types.h sys/select.h \
 	sys/stat.h sys/mman.h \
 	sys/ioctl.h sys/inotify.h crt_externs.h)
@@ -447,7 +447,7 @@ LIBS=$save_LIBS
 
 # Checks for library functions
 AC_CHECK_FUNCS([lrand48 drand48 srand48 setmode setenv getenv \
-	cbrt vsnprintf _NSGetEnviron])
+	cbrt vsnprintf _NSGetEnviron mallopt mallinfo mstats getpagesize])
 
 AC_REPLACE_FUNCS([strcasecmp strncasecmp strcasestr])
 
