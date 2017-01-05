@@ -43,6 +43,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vpsc", "lib\vpsc\vpsc.vcxproj", "{2F5A730B-132C-4319-A1B3-DCBE05E2E1B1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gvpr", "cmd\gvpr\gvpr.vcxproj", "{397C6B2C-B305-4CB2-B8CE-2366B508AB7C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04} = {D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ingraphs", "lib\ingraphs\ingraphs.vcxproj", "{D6FD0DE5-5305-458E-8CA5-FCA4B8E05B04}"
 EndProject
