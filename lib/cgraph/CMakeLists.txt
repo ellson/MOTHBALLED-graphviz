@@ -32,9 +32,9 @@ add_custom_command(
 add_definitions(-DCGRAPH_EXPORTS -DYY_NO_UNISTD_H)
 
 include_directories(
-    .
-    ${GRAPHVIZ_LIB_DIR}/cdt
+    ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
+    ${GRAPHVIZ_LIB_DIR}/cdt
 )
 
 add_library(cgraph SHARED

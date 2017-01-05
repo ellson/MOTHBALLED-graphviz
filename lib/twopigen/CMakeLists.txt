@@ -1,5 +1,5 @@
 include_directories(
-    .
+    ${CMAKE_CURRENT_SOURCE_DIR}
     ${GRAPHVIZ_LIB_DIR}/cdt
     ${GRAPHVIZ_LIB_DIR}/cgraph
     ${GRAPHVIZ_LIB_DIR}/common

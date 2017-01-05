@@ -1,6 +1,6 @@
 add_definitions(-D_BLD_cdt)
 
-include_directories(.)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_library(cdt SHARED
     # Header files
