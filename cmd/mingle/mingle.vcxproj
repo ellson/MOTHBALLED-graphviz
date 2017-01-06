@@ -70,7 +70,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>getopt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>getopt.lib;cdt.lib;cgraph.lib;gvc.lib;ingraphs.lib;sparse.lib;sfdp.lib;minglelib.lib;neatogen.lib;rbtree.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)windows\dependencies\ANN\ANN.dll $(OutDir)ANN.dll</Command>
@@ -96,7 +96,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>getopt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>getopt.lib;cdt.lib;cgraph.lib;gvc.lib;ingraphs.lib;sparse.lib;sfdp.lib;minglelib.lib;neatogen.lib;rbtree.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)windows\dependencies\ANN\ANN.dll $(OutDir)ANN.dll</Command>

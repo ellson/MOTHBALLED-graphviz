@@ -37,11 +37,6 @@ static Agnode_t *ChainNode;
 static FILE *outFile;
 static char *cmd;
 
-#ifdef WIN32 //*dependencies
-    #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "ingraphs.lib" )
-#endif
-
 static int myindegree(Agnode_t *n)
 {
 	return agdegree(n->root, n, TRUE, FALSE);

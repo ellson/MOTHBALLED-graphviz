@@ -24,8 +24,6 @@
 __declspec(dllimport) boolean MemTest;
 __declspec(dllimport) int GvExitOnUsage;
 /*gvc.lib cgraph.lib*/
-    #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "gvc.lib" )
 #else   /* not WIN32_DLL */
 #include "globals.h"
 #endif

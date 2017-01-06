@@ -29,21 +29,6 @@
 #include "ingraphs.h"
 #include "pack.h"
 
-
-#ifdef WIN32 /*dependencies*/
-    #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "gvc.lib" )
-    #pragma comment( lib, "ingraphs.lib" )
-    #pragma comment( lib, "neatogen.lib" )
-    #pragma comment( lib, "pathplan.lib" )
-    #pragma comment( lib, "vpsc.lib" )
-    #pragma comment( lib, "sparse.lib" )
-    //#pragma comment( lib, "gts.lib" )
-    #pragma comment( lib, "glib-2.0.lib" )
-    #pragma comment( lib, "cdt.lib" )
-    #pragma comment( lib, "gvplugin_neato_layout.lib" )
-#endif
-
 /*visual studio*/
 #if defined(WIN32)
 #define extern __declspec(dllimport)

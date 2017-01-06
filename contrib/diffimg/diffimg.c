@@ -23,15 +23,6 @@
  * John Ellson <ellson@research.att.com>
  */
 
-
-
-#ifdef WIN32 /*dependencies*/
-    #pragma comment( lib, "libgd.lib" )
-    #pragma comment( lib, "png.lib" )
-    #pragma comment( lib, "gvc.lib" )
-#endif
-
-
 #include "config.h"
 
 #include <stdio.h>

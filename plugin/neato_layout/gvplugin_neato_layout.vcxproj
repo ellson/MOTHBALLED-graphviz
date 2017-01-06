@@ -69,6 +69,7 @@
       <SubSystem>Windows</SubSystem>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>cgraph.lib;gvc.lib;pathplan.lib;neatogen.lib;circogen.lib;twopigen.lib;fdpgen.lib;sparse.lib;cdt.lib;glib-2.0.lib;vpsc.lib;patchwork.lib;gvortho.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -90,6 +91,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>cgraph.lib;gvc.lib;pathplan.lib;neatogen.lib;circogen.lib;twopigen.lib;fdpgen.lib;sparse.lib;cdt.lib;glib-2.0.lib;vpsc.lib;patchwork.lib;gvortho.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

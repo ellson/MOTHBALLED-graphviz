@@ -31,17 +31,6 @@
 
 #include "gvpr.h"
 
-
-#ifdef WIN32 //*dependencies
-    #pragma comment( lib, "cgraph.lib" )
-    #pragma comment( lib, "cdt.lib" )
-    #pragma comment( lib, "gvprlib.lib" )
-    #pragma comment( lib, "ingraphs.lib" )
-    #pragma comment( lib, "gvc.lib" )
-
-
-#endif
-
 #ifdef DEBUG
 #include "sfio.h"
 static ssize_t outfn (void* sp, const char *buf, size_t nbyte, void* dp)

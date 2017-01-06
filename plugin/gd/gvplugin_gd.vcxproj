@@ -69,6 +69,7 @@
       <SubSystem>Windows</SubSystem>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>cgraph.lib;libpng12.lib;libgd.lib;libcairo-2.lib;fontconfig.lib;gvc.lib;freetype.lib;iconv.lib;jpeg.lib;z.lib;pathplan.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)windows\dependencies\libgd\build\libgd.dll $(OutDir)libgd.dll
@@ -100,6 +101,7 @@ copy $(SolutionDir)windows\dependencies\GTK2\bin\iconv.dll $(OutDir)iconv.dll</C
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>cgraph.lib;libpng12.lib;libgd.lib;libcairo-2.lib;fontconfig.lib;gvc.lib;freetype.lib;iconv.lib;jpeg.lib;z.lib;pathplan.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)windows\dependencies\libgd\build\libgd.dll $(OutDir)libgd.dll

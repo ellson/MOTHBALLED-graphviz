@@ -69,6 +69,7 @@
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
       <ModuleDefinitionFile>gvc.def</ModuleDefinitionFile>
+      <AdditionalDependencies>cdt.lib;cgraph.lib;ltdl.lib;xml2.lib;libexpat.lib;z.lib;rxspencer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>bison -dy common\htmlparse.y -o common\htmlparse-intermediate.c
@@ -103,6 +104,7 @@ copy $(SolutionDir)windows\dependencies\GTK2\bin\zlib1.dll $(OutDir)zlib1.dll</C
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
       <ModuleDefinitionFile>gvc.def</ModuleDefinitionFile>
+      <AdditionalDependencies>cdt.lib;cgraph.lib;ltdl.lib;xml2.lib;libexpat.lib;z.lib;rxspencer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>bison -dy common\htmlparse.y -o common\htmlparse-intermediate.c
