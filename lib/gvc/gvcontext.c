@@ -117,7 +117,7 @@ GVC_t* gvCloneGVC (GVC_t * gvc0)
     gvc->common = gvc0->common;
     memcpy (&gvc->apis, &gvc0->apis, sizeof(gvc->apis));
     memcpy (&gvc->api, &gvc0->api, sizeof(gvc->api));
-    gvc->packages = gvc->packages;
+    gvc->packages = gvc0->packages;
     
     return gvc;
 }
