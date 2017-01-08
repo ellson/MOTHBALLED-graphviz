@@ -175,18 +175,6 @@ extern "C" {
 #define remove	unlink
 #endif
 
-#if !defined(_ast_fltmax_double)
-
-#if defined(_lib_qfrexp) && _lib_qldexp
-#define _has_expfuncs	1
-#define frexp		qfrexp
-#define ldexp		qldexp
-#else
-#define _has_expfuncs	0
-#endif
-
-#endif/*_ast_fltmax_double*/
-
 /* 64-bit vs 32-bit file stuff */
 #if _sys_stat
 #ifdef _LARGEFILE64_SOURCE
@@ -706,13 +694,8 @@ extern "C" {
 /* floating point to ascii conversion */
 #define SF_MAXEXP10	6
 #define SF_MAXPOW10	(1 << SF_MAXEXP10)
-#if !defined(_ast_fltmax_double)
-#define SF_FDIGITS	1024	/* max allowed fractional digits */
-#define SF_IDIGITS	(8*1024)	/* max number of digits in int part */
-#else
 #define SF_FDIGITS	256	/* max allowed fractional digits */
 #define SF_IDIGITS	1024	/* max number of digits in int part */
-#endif
 #define SF_MAXDIGITS	(((SF_FDIGITS+SF_IDIGITS)/sizeof(int) + 1)*sizeof(int))
 
 /* tables for numerical translation */
