@@ -6,7 +6,6 @@
 # Converted to sfio v10/01/94 by Giampiero Sierra (06/08/95).
 ##################################################################
 
-hdr math
 lib qfrexp
 lib qldexp
 

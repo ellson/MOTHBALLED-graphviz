@@ -58,7 +58,6 @@ extern "C" {
 #undef  _hdr_vfork
 #undef  _sys_vfork
 #undef  _lib_vfork
-#undef  _hdr_math
 #undef  _sys_mman
 #undef  _sys_ioctl
 #endif
@@ -174,10 +173,6 @@ extern "C" {
 
 #if _lib_unlink
 #define remove	unlink
-#endif
-
-#if _hdr_math
-#include	<math.h>
 #endif
 
 #if !defined(_ast_fltmax_double)

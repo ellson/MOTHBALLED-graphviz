@@ -2,7 +2,6 @@
 #ifndef _def_time_Sfio_f
 #define _def_time_Sfio_f	1
 #define _sys_types	1	/* #include <sys/types.h> ok */
-#define _hdr_math	1	/* #include <math.h> ok */
 //#define _hdr_unistd	1	/* #include <unistd.h> ok */
 #define _lib_ftruncate	0	/* ftruncate() in default lib(s) */
 #define _lib_lseek64	1	/* lseek64() in default lib(s) */
