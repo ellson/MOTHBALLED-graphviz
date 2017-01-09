@@ -780,14 +780,7 @@ extern "C" {
 #define max(x,y)	((x) > (y) ? (x) : (y))
 
 /* fast functions for memory copy and memory clear */
-#if _lib_bcopy && !_lib_memcpy
-#define memcpy(to,fr,n)	bcopy((fr),(to),(n))
-#endif
-#if _lib_bzero && !_lib_memset
-#define memclear(s,n)	bzero((s),(n))
-#else
 #define memclear(s,n)	memset((s),'\0',(n))
-#endif
 
 /* note that MEMCPY advances the associated pointers */
 #define MEMCPY(to,fr,n) \

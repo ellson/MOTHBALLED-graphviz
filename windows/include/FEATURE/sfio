@@ -6,8 +6,6 @@
 #define _lib_ftruncate	0	/* ftruncate() in default lib(s) */
 #define _lib_lseek64	1	/* lseek64() in default lib(s) */
 #define _typ_off64_t	1	/* off64_t is a type */
-#define _lib_memcpy	1	/* memcpy() in default lib(s) */
-#define _lib_memset	1	/* memset() in default lib(s) */
 #define _sys_stat	1	/* stat() in default lib(s) */
 #define _lib_remove	1	/* remove() in default lib(s) */
 #define _lib_unlink	1	/* unlink() in default lib(s) */

@@ -35,8 +35,6 @@ exit    cleanup note{ stuck with standard _cleanup }end execute{
 
 lib bcopy
 lib bzero
-lib memcpy
-lib memset
 
 lib memchr note{ see if memchr is fast }end execute{
 	#include	<sys/types.h>
