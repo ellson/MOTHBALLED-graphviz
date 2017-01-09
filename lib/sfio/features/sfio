@@ -12,7 +12,6 @@ lib ftruncate
 
 lib lseek64
 lib stat64
-lib mmap64
 typ off64_t
 typ struct_stat64 compile{
 	#include	<sys/types.h>
@@ -61,112 +60,6 @@ hdr stat note{ stat() in default lib(s) }end link{
 	}
 }end
 
-#############################################################
-# See if  memory mapping is available and fast enough to use
-#############################################################
-sys mman
-
-tst	output{
-	#include	<sys/types.h>
-	#include	<sys/mman.h>
-	#include	<sys/times.h>
-	
-	_BEGIN_EXTERNS_
-	int creat(char*, int);
-	int open(char*, int);
-	int unlink(char*);
-	int read(int, char*, int);
-	_END_EXTERNS_
-	
-	#define MAPSIZE (64*1024)
-	#define BUFSIZE	(MAPSIZE/8)
-	#define WRITE   (64)
-	#define RUN	(64)
-	
-	#define Failed(file)	(unlink(file),1)
-	
-	#if _STD_
-	main(int argc, char** argv)
-	#else
-	main(argc,argv)
-	int     argc;
-	char**  argv;
-	#endif
-	{
-		caddr_t		mm;
-		char		*t, *f;
-		int		i, fd, k, run;
-		char		file[1024], buf[MAPSIZE];
-		struct tms	stm, etm;
-		clock_t		rdtm, mmtm;
-	
-		/* create data file */
-		f = argv[0]; t = file;
-		while (*t = *f++)
-			t++;
-		*t++ = '.'; *t++ = 'D'; *t = 0;
-		if ((fd = creat(file,0666)) < 0)
-			return 1;
-	
-		for (i = 0; i < sizeof(buf); ++i)
-			buf[i] = '0' + (i%10);
-		for (i = 0; i < WRITE; ++i)
-			if (write(fd,buf,sizeof(buf)) != sizeof(buf))
-				return Failed(file);
-		close(fd);
-	
-		/* read time */
-		times(&stm);
-		for(run = 0; run < RUN; ++run)
-		{	if((fd = open(file, 0)) < 0)
-				return Failed(file);
-			for (i = 0; i < WRITE; ++i)
-			{	for(k = 0; k < MAPSIZE; k += BUFSIZE)
-					if (read(fd,buf,BUFSIZE) != BUFSIZE)
-						return Failed(file);
-			}
-			close(fd);
-		}
-		times(&etm);
-		rdtm = (etm.tms_utime-stm.tms_utime) + (etm.tms_stime-stm.tms_stime);
-	
-		/* mmap time */
-		times(&stm);
-		for(run = 0; run < RUN; ++run)
-		{	if ((fd = open(file,0)) < 0)
-				return Failed(file);
-			for(i = 0, mm = (caddr_t)0; i < WRITE; ++i)
-			{	if(mm)
-					munmap(mm, MAPSIZE);
-				mm = (caddr_t)mmap((caddr_t)0, MAPSIZE,
-						   (PROT_READ|PROT_WRITE),
-						   MAP_PRIVATE, fd, i*MAPSIZE );
-				if(mm == (caddr_t)(-1) || mm == (caddr_t)0)
-					return Failed(file);
-	
-				/* the memcpy is < BUFSIZE to simulate the
-				   fact that functions like sfreserve/sfgetr do
-				   not do buffer copying.
-				*/
-				t = (char*)mm;
-				for(k = 0; k < MAPSIZE; k += BUFSIZE, t += BUFSIZE)
-					memcpy(buf,t,(3*BUFSIZE)/4);
-			}
-			close(fd);
-		}
-		times(&etm);
-		mmtm = (etm.tms_utime-stm.tms_utime) + (etm.tms_stime-stm.tms_stime);
-
-		unlink(file);
-	
-		if(4*mmtm <= 3*rdtm)		/* mmap is great! */
-			printf("#define _mmap_worthy	2	\n");
-		else if(4*mmtm <= 5*rdtm)	/* mmap is good	*/
-			printf("#define _mmap_worthy	1	\n");
-	
-		return 0;
-	}
-}end
 
 ##################################################
 # vfork and any associated header files

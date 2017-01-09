@@ -36,7 +36,7 @@ extern "C" {
 #define _NO_LARGEFILE64_SOURCE  1
 #endif
 #if !defined(_NO_LARGEFILE64_SOURCE) && \
-	_lib_lseek64 && _lib_stat64 && _lib_mmap64 && defined(_typ_off64_t) && \
+	_lib_lseek64 && _lib_stat64 && defined(_typ_off64_t) && \
 	_typ_struct_stat64
 #	if !defined(_LARGEFILE64_SOURCE)
 #	define _LARGEFILE64_SOURCE     1
@@ -57,7 +57,6 @@ extern "C" {
 #undef  _hdr_vfork
 #undef  _sys_vfork
 #undef  _lib_vfork
-#undef  _sys_mman
 #undef  _sys_ioctl
 #endif
 
@@ -301,21 +300,6 @@ extern "C" {
 #ifndef ESPIPE
 #define ESPIPE	29
 #endif
-/* see if we can use memory mapping for io */
-#if defined(_mmap_worthy)
-#	ifdef _LARGEFILE64_SOURCE
-#		undef	mmap
-#	endif
-#	if _sys_mman
-#		include	<sys/mman.h>
-#	endif
-#	ifdef _LARGEFILE64_SOURCE
-#		ifndef off_t
-#			define off_t		off64_t
-#		endif
-#		define mmap		mmap64
-#	endif
-#endif
 /* function to get the decimal point for local environment */
 #if _lib_locale
 #ifdef MAXFLOAT			/* we don't need these, so we zap them to avoid compiler warnings */
@@ -531,9 +515,6 @@ extern "C" {
 
 #ifndef MAP_VARIABLE
 #define MAP_VARIABLE	0
-#endif
-#ifndef _mmap_fixed
-#define _mmap_fixed	0
 #endif
 
 /* the bottomless bit bucket */
@@ -811,11 +792,6 @@ extern "C" {
     extern double frexp(double, int *);
     extern double ldexp(double, int);
 #endif
-#endif
-
-#if !_sys_mman
-    extern void *mmap(void *, size_t, int, int, int, off_t);
-    extern int munmap(void *, size_t);
 #endif
 
 #ifdef WIN32

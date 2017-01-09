@@ -33,12 +33,6 @@ Sfoff_t sfsk(reg Sfio_t * f, Sfoff_t addr, reg int type, Sfdisc_t * disc)
 	    SFMTXRETURN(f, (Sfoff_t) (-1));
 	if (SFSYNC(f) < 0)
 	    SFMTXRETURN(f, (Sfoff_t) (-1));
-#if MAP_TYPE
-	if (f->mode == SF_READ && (f->bits & SF_MMAP) && f->data) {
-	    SFMUNMAP(f, f->data, f->endb - f->data);
-	    f->data = NIL(uchar *);
-	}
-#endif
 	f->next = f->endb = f->endr = f->endw = f->data;
     }
 
