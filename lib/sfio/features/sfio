@@ -6,9 +6,6 @@
 # Converted to sfio v10/01/94 by Giampiero Sierra (06/08/95).
 ##################################################################
 
-lib qfrexp
-lib qldexp
-
 hdr unistd
 
 lib ftruncate
@@ -40,7 +37,6 @@ lib bcopy
 lib bzero
 lib memcpy
 lib memset
-lib memalign
 
 lib memchr note{ see if memchr is fast }end execute{
 	#include	<sys/types.h>
