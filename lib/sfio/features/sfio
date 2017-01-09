@@ -6,8 +6,6 @@
 # Converted to sfio v10/01/94 by Giampiero Sierra (06/08/95).
 ##################################################################
 
-hdr unistd
-
 lib ftruncate
 
 lib lseek64
@@ -65,15 +63,12 @@ hdr stat note{ stat() in default lib(s) }end link{
 # vfork and any associated header files
 ##################################################
 
-hdr vfork
-sys vfork
 lib vfork
 
 ##################################################
 # file control checks
 ##################################################
 
-sys ioctl
 lib remove
 lib unlink
 lib waitpid

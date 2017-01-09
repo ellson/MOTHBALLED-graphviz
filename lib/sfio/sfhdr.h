@@ -29,6 +29,7 @@ extern "C" {
 
 #include	"FEATURE/sfio"
 #include	"sfio_t.h"
+#include	"config.h"
 
 #include	<vthread.h>
 
@@ -54,10 +55,10 @@ extern "C" {
 #undef  _lib_poll
 #undef  _stream_peek
 #undef  _socket_peek
-#undef  _hdr_vfork
-#undef  _sys_vfork
+#undef  HAVE_VFORK_H
+#undef  _HAVE_SYS_VFORK_H
 #undef  _lib_vfork
-#undef  _sys_ioctl
+#undef  HAVE_SYS_IOCTL_H
 #endif
 
 #include	<stdlib.h>
@@ -82,7 +83,7 @@ extern "C" {
 
 #include	<fcntl.h>
 
-#if _hdr_unistd
+#if HAVE_UNISTD_H
 #include	<unistd.h>
 #endif
 
@@ -138,10 +139,10 @@ extern "C" {
 
 /* alternative process forking */
 #if _lib_vfork && !defined(fork) && !defined(sparc) && !defined(__sparc)
-#if defined(_hdr_vfork)
+#if defined(HAVE_VFORK_H)
 #include	<vfork.h>
 #endif
-#if defined(_sys_vfork)
+#if defined(_HAVE_SYS_VFORK_H)
 #include	<sys/vfork.h>
 #endif
 #define fork	vfork
@@ -799,7 +800,7 @@ extern "C" {
 #include <io.h>
 #define SF_ERROR	0000400	/* an error happened                    */
 #else
-#if !_hdr_unistd
+#if !HAVE_UNISTD_H
     extern int close(int);
     extern ssize_t read(int, void *, size_t);
     extern ssize_t write(int, const void *, size_t);
@@ -819,7 +820,7 @@ extern "C" {
     extern int unlink(const char *);
 #endif
 
-#endif /*_hdr_unistd*/
+#endif /*HAVE_UNISTD_H*/
 #endif /* WIN32 */
 
     extern time_t time(time_t *);
@@ -834,7 +835,7 @@ extern "C" {
     extern int fstat(int, Stat_t *);
 #endif
 
-#if _lib_vfork && !defined(_hdr_vfork) && !defined(_sys_vfork)
+#if _lib_vfork && !defined(HAVE_VFORK_H) && !defined(_HAVE_SYS_VFORK_H)
     extern pid_t vfork(void);
 #endif /*_lib_vfork*/
 
