@@ -846,13 +846,6 @@ extern "C" {
 #endif /*_hdr_unistd*/
 #endif /* WIN32 */
 
-#if _lib_bcopy && !_proto_bcopy
-    extern void bcopy(const void *, void *, size_t);
-#endif
-#if _lib_bzero && !_proto_bzero
-    extern void bzero(void *, size_t);
-#endif
-
     extern time_t time(time_t *);
     extern int waitpid(int, int *, int);
 #ifndef WIN32

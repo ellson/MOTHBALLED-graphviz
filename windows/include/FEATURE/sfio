@@ -12,8 +12,6 @@
 #define _lib_getpagesize	0	/* getpagesize() in default lib(s) */
 #define _tmp_rmfail	1	/* file not removable if still opened */
 #define _proto_open	1	/* open() has a vararg prototype */
-#define _proto_bcopy	1	/* bcopy() has prototype */
-#define _proto_bzero	1	/* bzero() has prototype */
 #define _lib_strtod	1	/* strtod() in default lib(s) */
 #define _lib_locale	1	/* Check for localeconv */
 #endif

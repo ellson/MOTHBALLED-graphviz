@@ -33,9 +33,6 @@ exit    cleanup note{ stuck with standard _cleanup }end execute{
         main() { printf("cleanup\n"); exit(1); }
 }end
 
-lib bcopy
-lib bzero
-
 lib memchr note{ see if memchr is fast }end execute{
 	#include	<sys/types.h>
 	#include	<sys/times.h>
@@ -340,22 +337,6 @@ proto open note{ open() has a vararg prototype }end compile{
 	{
 		open("file",0);
 		open("file",0,1);
-	}
-}end
-
-proto bcopy note{ bcopy() has prototype }end compile{
-	#include	<string.h>
-	main()
-	{	char	buf[128];
-		bcopy(buf, "abc", 3);
-	}
-}end
-
-proto bzero note{ bzero() has prototype }end compile{
-	#include	<string.h>
-	main()
-	{	char	buf[128];
-		bzero(buf, 128);
 	}
 }end
 
