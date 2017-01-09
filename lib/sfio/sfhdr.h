@@ -30,7 +30,6 @@ extern "C" {
 #include	"FEATURE/sfio"
 #include	"sfio_t.h"
 
-/* note that the macro vt_threaded has effect on vthread.h */
 #include	<vthread.h>
 
 #if defined(__mips) && __mips == 2 && !defined(_NO_LARGEFILE64_SOURCE)
@@ -91,25 +90,6 @@ extern "C" {
 #include	<errno.h>
 #include	<ctype.h>
 
-#if vt_threaded
-
-/* initialization */
-#define SFONCE()	(_Sfdone ? 0 : vtonce(_Sfonce,_Sfoncef))
-
-/* to lock/unlock a stream on entering and returning from some function */
-#define SFMTXLOCK(f)	 (((f)->flags&SF_MTSAFE) ? sfmutex(f,SFMTX_LOCK) : 0)
-#define SFMTXUNLOCK(f)	 (((f)->flags&SF_MTSAFE) ? sfmutex(f,SFMTX_UNLOCK) : 0)
-#define SFMTXSTART(f,v)  { if(!f || SFMTXLOCK(f) != 0) return(v); }
-#define SFMTXRETURN(f,v) { SFMTXUNLOCK(f); return(v); }
-
-/* start and end critical region for a pool */
-#define POOLMTXLOCK(p)		( vtmtxlock(&(p)->mutex) )
-#define POOLMTXUNLOCK(p)	( vtmtxunlock(&(p)->mutex) )
-#define POOLMTXSTART(p)		{ POOLMTXLOCK(p); }
-#define POOLMTXRETURN(p,v)	{ POOLMTXUNLOCK(p); return(v); }
-
-#else				/*!vt_threaded */
-
 #undef SF_MTSAFE		/* no need to worry about thread-safety */
 #define SF_MTSAFE		0
 
@@ -124,9 +104,6 @@ extern "C" {
 #define POOLMTXUNLOCK(p)
 #define POOLMTXSTART(p)
 #define POOLMTXRETURN(p,v)	{ return(v); }
-
-#endif				/*vt_threaded */
-
 
 /* functions for polling readiness of streams */
 #if _lib_select

@@ -21,8 +21,6 @@ extern "C" {
 #define VTHREAD_VERSION    20001201L
 
 /*	Header for the Vthread library.
-**	Note that the macro vt_threaded may be defined
-**	outside of vthread.h to suppress threading.
 **
 **	Written by Kiem-Phong Vo
 */
@@ -34,12 +32,6 @@ extern "C" {
 #ifdef HAVE_SYS_TYPES_H
 #   include <sys/types.h>
 #endif // HAVE_SYS_TYPES_H
-
-#undef vt_threaded
-
-#ifndef vt_threaded
-#define vt_threaded		0
-#endif
 
 /* common attributes for various structures */
 #define VT_RUNNING	000000001	/* thread is running            */
@@ -90,49 +82,7 @@ extern "C" {
     extern int vtmtxerror(Vtmutex_t *);
     extern int vtonceerror(Vtonce_t *);
 
-#if defined(vt_threaded) && vt_threaded
-/* mutex structure */
-	struct _vtmutex_s {
-	_vtmtx_t lock;
-	int count;
-	_vtid_t owner;
-	int state;
-	int error;
-    };
-
-/* structure for states of thread */
-    struct _vthread_s {
-	_vtself_t self;		/* self-handle          */
-	_vtid_t id;		/* thread id            */
-	_vtattr_t attrs;	/* attributes           */
-	size_t stack;		/* stack size           */
-	int state;		/* execution state      */
-	int error;		/* error status         */
-	void *exit;		/* exit value           */
-    };
-
-/* structure for exactly once execution */
-    struct _vtonce_s {
-	int done;
-	_vtonce_t once;
-	int error;
-    };
-
-#if defined(_WIN32)
-#define VTONCE_INITDATA		{0, 0}
-#else
-#define VTONCE_INITDATA		{0, PTHREAD_ONCE_INIT }
-#endif
-
-#define vtstatus(vt)		((vt)->exit)
-#define vterror(vt)		((vt)->error)
-#define vtmtxerror(mtx)		((mtx)->error)
-#define vtonceerror(once)	((once)->error)
-
-#endif				/*vt_threaded */
-
 /* fake structures and functions */
-#if defined(vt_threaded) && !vt_threaded
     struct _vtmutex_s {
 	int error;
     };
@@ -168,8 +118,6 @@ extern "C" {
 #define vterror(vt)		(0)
 #define vtmtxerror(mtx)		(0)
 #define vtonceerror(once)	(0)
-
-#endif				/*!vt_threaded */
 
 #endif /*_VTHREAD_H*/
 
