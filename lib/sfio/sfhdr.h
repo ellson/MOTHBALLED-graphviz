@@ -302,7 +302,6 @@ extern "C" {
 #define ESPIPE	29
 #endif
 /* function to get the decimal point for local environment */
-#if _lib_locale
 #ifdef MAXFLOAT			/* we don't need these, so we zap them to avoid compiler warnings */
 #undef MAXFLOAT
 #endif
@@ -328,9 +327,6 @@ extern "C" {
 	    } \
 	  } \
 	}
-#else
-#define SFSETLOCALE(decimal,thousand)
-#endif
 /* stream pool structure. */
     typedef struct _sfpool_s Sfpool_t;
     struct _sfpool_s {
@@ -778,10 +774,6 @@ extern "C" {
     extern char *_sfcvt(void *, int, int *, int *, int);
     extern char **_sfgetpath(char *);
     extern Sfdouble_t _sfstrtod(const char *, char **);
-
-#if !_lib_strtod
-#define strtod		_sfstrtod
-#endif
 
 #ifndef errno
     extern int errno;

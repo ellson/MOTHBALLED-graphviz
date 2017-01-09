@@ -248,17 +248,3 @@ vax asm note{ register layout ok for vax string operations }end execute{
         #endif
         }
 }end
-
-lib strtod note{ native strtod exists }end
-
-################################################################
-## See if there is "locale" stuff for conditioning printf/scanf
-################################################################
-
-lib locale note{ Check for localeconv }end compile{
-	#include	<locale.h>
-	main()
-	{	struct lconv* lv = localeconv();
-		return 0;
-	}
-}end
